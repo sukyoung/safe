@@ -11,7 +11,11 @@ but note that we use **sbt** instead of **ant** to build SAFE, which required sl
 
 ### Introduction
 
-SAFE provides a scalable and pluggable analysis frameowkr for JavaScript web applications.  We provide a formal specification of the SAFE framework:
+SAFE is a scalable and pluggable analysis frameowkr for JavaScript web applications developed by the Programming Language Research Group at KAIST:
+
+    http://plrg.kaist.ac.kr
+
+We provide a formal specification of the SAFE framework:
 
     http://plrg.kaist.ac.kr/redmine/projects/jsf/repository/revisions/master/show/doc/manual
     
