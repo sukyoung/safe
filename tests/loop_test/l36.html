@@ -1,0 +1,19 @@
+<script>
+var xx = [];
+function f(i){
+  if(i==11) {
+    xx[i] = i;
+    return i;
+  }
+  var j = 0;
+  while(j < 1){
+    xx[i] = f(i+1);
+    j++;
+  }
+  return 1;
+}
+f(0);
+var y = xx[4];
+
+// y = 1
+</script>

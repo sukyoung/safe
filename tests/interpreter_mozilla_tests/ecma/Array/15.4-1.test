@@ -1,0 +1,27 @@
+################################################################################
+#    Copyright (c) 2012, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=15.4-1
+INTERPRETER_TESTS_DIR=${JS_HOME}/tests/interpreter_mozilla_tests/ecma/Array
+interpret_mozilla
+interpret_mozilla_out_WCIequals=\
+15.4-1 Array Objects\n\
+ PASSED! var myarr = new Array(); myarr[Math.pow(2,32)-2]='hi'; myarr[Math.pow(2,32)-2] = hi expected: hi\n\
+ PASSED! var myarr = new Array(); myarr[Math.pow(2,32)-2]='hi'; myarr.length = 4294967295 expected: 4294967295\n\
+ PASSED! var myarr = new Array(); myarr[Math.pow(2,32)-3]='hi'; myarr[Math.pow(2,32)-3] = hi expected: hi\n\
+ PASSED! var myarr = new Array(); myarr[Math.pow(2,32)-3]='hi'; myarr.length = 4294967294 expected: 4294967294\n\
+ PASSED! var myarr = new Array(); myarr[Math.pow(2,31)-2]='hi'; myarr[Math.pow(2,31)-2] = hi expected: hi\n\
+ PASSED! var myarr = new Array(); myarr[Math.pow(2,31)-2]='hi'; myarr.length = 2147483647 expected: 2147483647\n\
+ PASSED! var myarr = new Array(); myarr[Math.pow(2,31)-1]='hi'; myarr[Math.pow(2,31)-1] = hi expected: hi\n\
+ PASSED! var myarr = new Array(); myarr[Math.pow(2,31)-1]='hi'; myarr.length = 2147483648 expected: 2147483648\n\
+ PASSED! var myarr = new Array(); myarr[Math.pow(2,31)]='hi'; myarr[Math.pow(2,31)] = hi expected: hi\n\
+ PASSED! var myarr = new Array(); myarr[Math.pow(2,31)]='hi'; myarr.length = 2147483649 expected: 2147483649\n\
+ PASSED! var myarr = new Array(); myarr[Math.pow(2,30)-2]='hi'; myarr[Math.pow(2,30)-2] = hi expected: hi\n\
+ PASSED! var myarr = new Array(); myarr[Math.pow(2,30)-2]='hi'; myarr.length = 1073741823 expected: 1073741823\n\
+\n
+interpret_err_equals=

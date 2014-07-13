@@ -1,0 +1,26 @@
+################################################################################
+#    Copyright (c) 2012, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=date-2
+INTERPRETER_TESTS_DIR=${JS_HOME}/tests/interpreter_tests
+interpret
+interpret_out_WCIequals=\
+629458201234\n\
+629458201000\n\
+629458200000\n\
+629424000000\n\
+628507801234\n\
+628507801000\n\
+628507800000\n\
+628473600000\n\
+599650201234\n\
+599650201000\n\
+599650200000\n\
+599616000000\n\
+Normal(PASS)\n
+interpret_err_equals=

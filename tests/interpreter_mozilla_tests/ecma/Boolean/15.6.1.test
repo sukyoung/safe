@@ -1,0 +1,35 @@
+################################################################################
+#    Copyright (c) 2012, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=15.6.1
+INTERPRETER_TESTS_DIR=${JS_HOME}/tests/interpreter_mozilla_tests/ecma/Boolean
+interpret_mozilla
+interpret_mozilla_out_WCIequals=\
+15.6.1 The Boolean constructor called as a function: Boolean( value ) and Boolean()\n\
+ PASSED! Boolean(1) = true expected: true\n\
+ PASSED! Boolean(0) = false expected: false\n\
+ PASSED! Boolean(-1) = true expected: true\n\
+ PASSED! Boolean('1') = true expected: true\n\
+ PASSED! Boolean('0') = true expected: true\n\
+ PASSED! Boolean('-1') = true expected: true\n\
+ PASSED! Boolean(true) = true expected: true\n\
+ PASSED! Boolean(false) = false expected: false\n\
+ PASSED! Boolean('true') = true expected: true\n\
+ PASSED! Boolean('false') = true expected: true\n\
+ PASSED! Boolean(null) = false expected: false\n\
+ PASSED! Boolean(-Infinity) = true expected: true\n\
+ PASSED! Boolean(NaN) = false expected: false\n\
+ PASSED! Boolean(void(0)) = false expected: false\n\
+ PASSED! Boolean(x=0) = false expected: false\n\
+ PASSED! Boolean(x=1) = true expected: true\n\
+ PASSED! Boolean(x=false) = false expected: false\n\
+ PASSED! Boolean(x=true) = true expected: true\n\
+ PASSED! Boolean(x=null) = false expected: false\n\
+ PASSED! Boolean() = false expected: false\n\
+\n
+interpret_err_equals=

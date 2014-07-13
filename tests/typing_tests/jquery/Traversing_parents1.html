@@ -1,0 +1,27 @@
+<!------------------------------------------------------------------------------
+    Copyright (c) 2013, S-Core.
+    All rights reserved.
+
+    Use is subject to license terms.
+
+    This distribution may include materials developed by third parties.
+------------------------------------------------------------------------------->
+
+<html>
+<head>
+    <script src="jquery.js"></script>
+</head>
+<body>
+<div id="test1" class="parent">
+    <span id="test1_1"></span>
+</div>
+<script>
+    var x = $("#test1_1")
+    var y = x.parents()
+    var __result1 = y[0].id
+    var __expect1 = "test1"
+    var __result2 = y[1].tagName
+    var __expect2 = "BODY"
+</script>
+</body>
+</html>

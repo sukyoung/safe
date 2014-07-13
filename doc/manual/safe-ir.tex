@@ -1,0 +1,6048 @@
+\chapter{IR Semantics}
+
+\begin{itemize}
+\item  Environments in the semantics are references.
+\end{itemize}
+
+\section{Domains}
+\[
+\begin{array}{rlcrll}
+b & \in & \Bool & ::= & \true \mid \false\\
+n & \in & \Num  & ::= & {\tt NaN} \mid {\tt Infinity} \mid {\tt 0} \mid {\tt 1} \mid \ldots\\
+s & \in & \Str  & ::= & {\tt \dquote{foo}} \mid {\tt \dquote{bar}} \mid \ldots\\
+x,y,z & \in & \Var & ::= & {\tt this} \mid {\tt foo} \mid {\tt bar} \mid \ldots\\
+p & \in & \pname& = & \Str\ \cup \Var
+\\
+\pv & \in & \pval & = & \{ {\tt undefined},\ {\tt null} \} \cup \Bool \cup \Num \cup \Str\\
+l & \in & \Loc & ::= &
+\lg
+%\mid {\tt \#Object}
+\mid {\tt \#ObjProto} \mid {\tt \#FtnProto} \mid {\tt \#ArrProto}
+\mid {\tt \#StrProto}
+\mid {\tt \#BoolProto}
+\mid {\tt \#NumProto}\\
+%\mid {\tt \#ErrProto}\\
+&&&
+%\mid &{\tt \#Temp}
+\mid &\nullL \mid l_1 \mid \ldots\\
+v & \in & \Val & = & \Loc \cup \pval\\
+\emph{fv} & \in & \FVal & ::= &
+{\sf function} \ \ir{f} \verb+(+\ir{\emph{this}}\verb+,+\ir{\emph{arguments}}\verb+) {+ \ir\stmt \verb+}+~\mid~\irget~\mid~\irset\\
+%L & \in & \emph{LabelSet} & = & \wp(\Var) \\
+%
+\multicolumn{6}{l}{\mbox{\inblue 4.2 Language Overview:
+{\tt Error}, {\tt EvalError}, {\tt RangeError}, {\tt ReferenceError},
+{\tt SyntaxError}, {\tt TypeError} and {\tt URIError}}}\\
+\emph{err} & \in & \emph{Error} &=& \{{\tt Error}, {\tt EvalError}, {\tt RangeError}, \re,
+{\tt SyntaxError}, \te, {\tt URIError}\}\\
+\emph{ve} & \in & \ve & = & \Val \cup \Error\\
+
+%
+\multicolumn{6}{l}{\mbox{\inblue 8.6.2 Object Internal Properties and Methods:
+Table 8--Internal Properties Common to All Objects}}\\
+\multicolumn{6}{l}{\mbox{\inblue\phantom{8.6.2}
+{\tt[[Prototype]]}, {\tt[[Class]]}, {\tt[[Extensible]]}, {\tt[[Get]]}, {\tt[[GetOwnProperty]]},
+{\tt[[GetProperty]]}, {\tt[[Put]]},}}\\
+\multicolumn{6}{l}{\mbox{\inblue\phantom{8.6.2}
+{\tt[[CanPut]]}, {\tt[[HasProperty]]}, {\tt[[Delete]]},
+{\tt[[DefaultValue]]}, {\tt[[DefineOwnProperty]]}
+}}\\
+
+o & \in & \Obj & ::= &
+ {\tt \{[[Class]]:} \Str,\\
+&&&& \phantom{\{}{\tt [[Extensible]]:} \Bool,& \\
+&&&& \phantom{\{}{\tt [[Prototype]]:} \Loc,& \\
+&&&& \phantom{\{}{\tt @property: \pname\mapsto\ObjV}& \\
+&&&& \phantom{\{}(,{\tt [[Code]]:} \FVal,\\
+&&&& \phantom{\{(,}{\tt [[Scope]]:} \Env)^?\} & \\
+%
+%
+
+\multicolumn{6}{l}{\mbox{\inblue 8.6.1 Property Attributes}}\\
+\emph{ov} & \in & \ObjV & = & \emph{DataProp} \cup \emph{AccessorProp}\\
+
+\multicolumn{6}{l}{\mbox{\inblue Table 5--Attributes of a Named Data Property:
+{\tt [[Value]]}, {\tt [[Writable]]}, {\tt [[Enumerable]]}, {\tt [[Configurable]]}}}\\
+\emph{dp} & \in & \emph{DataProp} & ::= &
+ \{{\tt [[Value]]:} \Val ,\\
+&&&& \phantom{\{}{\tt [[Writable]]:} \Bool,& \\
+&&&& \phantom{\{}{\tt [[Enumerable]]:} \Bool,& \\
+&&&& \phantom{\{}{\tt [[Configurable]]:} \Bool\}& \\
+
+\multicolumn{6}{l}{\mbox{\inblue Table 6--Attributes of a Named Accessor Property:
+{\tt [[Get]]}, {\tt [[Set]]}, {\tt [[Enumerable]]}, {\tt [[Configurable]]}}}\\
+\emph{ap} & \in & \emph{AccessorProp} & ::= &
+ \{{\tt [[Get]]:} \Val ,\\
+&&&& \phantom{\{}{\tt [[Set]]:} \Val,& \\
+&&&& \phantom{\{}{\tt [[Enumerable]]:} \Bool,& \\
+&&&& \phantom{\{}{\tt [[Configurable]]:} \Bool\}& \\
+
+\emph{sv}&\in&\sv & ::= &
+\{{\tt [[Value]]:}\ve\
+{\cup\ \{\bot\}},\
+{\tt [[Mutable]]:}\Bool,
+{\tt [[Configurable]]:}\Bool\}\\
+
+H, K & \in & \Heap & = & \Loc \finto \Obj\\
+&&&&\mbox{\inred $\nullL\not\in\hf{Dom}(H)$}\\
+
+
+
+\end{array}
+\]
+
+
+\[
+\begin{array}{rlcrll}
+
+\multicolumn{6}{l}{\inblue
+\mbox{10.2 Lexical Environments:
+A Lexical Environment consists of an Environment Record and a possibly null reference}}\\
+\multicolumn{6}{l}{\inblue
+\mbox{to an outer Lexical Environment.}}\\
+
+A, B & \in & \Env & ::= & \lg \mid \mkst{\emph{er}}A\\
+
+\multicolumn{6}{l}{\inblue
+\mbox{10.2.1 Environment Records:
+An environment record is either a declarative environment record or an object}}\\
+\multicolumn{6}{l}{\inblue
+\mbox{environment record.}}\\
+
+\emph{er} & \in & \emph{EnvRec} & = & \emph{DeclEnvRec} \cup \emph{ObjEnvRec}\\
+
+\multicolumn{6}{l}{\inblue
+\mbox{10.2.1.1 Declarative Environment Records:
+A declarative environment record binds the set of identifiers defined by}}\\
+\multicolumn{6}{l}{\inblue
+\mbox{the declarations contained within its scope.}}\\
+\er & \in & \emph{DeclEnvRec} & = & \Var \finto \sv&\\
+
+\multicolumn{6}{l}{\inblue
+\mbox{10.2.1.2 Object Environment Records:
+Each object environment record is associated with an object called its binding object.}}\\
+l & \in & \emph{ObjEnvRec} & = & \Loc\\
+
+\emph{bs} & \in & \emph{EnvRec} \cup \Loc\\
+
+\emph{bv} & \in & \emph{BindingValue} & = & \emph{StoreValue} \cup \emph{ObjectValue}\\
+
+
+\tb &\in&\emph{ThisBinding} & = & \Loc\\
+\state &\in&\State & = & \Heap \times \Env \times \emph{ThisBinding}\\
+
+\multicolumn{6}{l}{\inblue\mbox{
+8.9 The Completion Specification Type}}\\
+\emph{ct}&\in&\emph{Completion} &::=& \emph{nc} \mid \emph{ac}\\
+\vorempty&\in&\Val \cup \{{\tt empty}\}\\
+\emph{nc}&\in&\emph{NormalCompletion} &::=& {\tt Normal}(\vorempty)\\
+
+\multicolumn{6}{l}{\inblue\mbox{
+The term ``abrupt completion'' referes to any completion with a type other than normal.}}\\
+\emph{ac}&\in&\emph{AbruptCompletion} &::=&
+{\tt Break}(\vorempty, x) \mid
+{\tt Return}(\vorempty) \mid
+{\tt Throw}(\emph{ve})\\
+\end{array}
+\]
+
+\section{Our Own Helpers}
+\[
+\begin{array}{l@{}c@{}l}
+\UndefVB &=& (\{{\tt [[Value]]:} \undef,
+{\tt [[Writable]]:} \false,
+{\tt [[Enumerable]]:} \false,
+{\tt [[Configurable]]:} \false\}, \nullL)
+\\[1em]
+\hf{isIndex} & : & \Str \rightarrow \Bool \\
+\hf{isIndex}(s) &=&
+\left\{\begin{array}{ll}
+\false& \ifc{s \not= \hf{ToString}(\hf{ToUint32}(s))}\\
+\true& \ifc{s = \hf{ToString}(\hf{ToUint32}(s))}\\
+\end{array}\right.
+\\\\
+
+\hf{NewLoc} & :& () \rightarrow \Loc \\
+\hf{NewLoc}() &=& l_{\emph{new}}
+\\[1em]
+\hf{Inherit}&:& \Heap \times \Loc \times \Loc \rightarrow \Bool \\
+\hf{Inherit}(H, l_1, l_2) &=&
+\left\{\begin{array}{ll}
+\false& \ifc{l_1 = \nullL}\\
+\true& \ifc{l_1 \not= \nullL\wedge l_1 = l_2}\\
+\hf{Inherit}(H,H(l_1).{\tt [[Prototype]]},l_2) & \ifc{l_1 \not= \nullL\wedge l_1 \not= l_2}\\
+\end{array}\right.
+\\\\
+
+\multicolumn{3}{l}{\mbox{\inblue 11.4.3 The {\tt typeof} Operator}}\\
+\hf{TypeTag} & :& \Heap \times \Val \rightarrow \Str \\
+\hf{TypeTag}(H,v) &=&
+\left\{ \begin{array}{ll}
+\verb+"undefined"+ &\mbox{if $v\ = \undef$}\\
+\verb+"object"+ &\mbox{if $v\ = \nullK$}\\
+\verb+"boolean"+&\mbox{if $v\in\Bool$}\\
+\verb+"number"+ &\mbox{if $v\in\Num$}\\
+\verb+"string"+ &\mbox{if $v\in\Str$}\\
+\verb+"object"+ &\mbox{if $v\in\Loc\wedge\neg\hf{IsCallable}(H,v)$}\\
+\verb+"function"+ &\mbox{if $v\in\Loc\wedge\hf{IsCallable}(H,v)$}\\
+\end{array}
+\right.
+\\[1em]
+
+\multicolumn{3}{l}{\mbox{\inblue 10.4.3 Entering Function Code}}\\
+\hf{GetThis} & :& Heap \times \Val \rightarrow \Heap \times \Loc \\
+\hf{GetThis}(H, v) &=&
+\left\{ \begin{array}{ll}
+(H, \lg) &\mbox{if $v\ = \undef\vee v\ = \nullK$}\\
+\hf{ToObject}(H, v)&\mbox{if $v\in\Bool\cup\Num\cup\Str$}\\
+(H, v)&\mbox{if $v\in\Loc$}\\
+\end{array}
+\right.
+\\\\
+
+\hf{ParamsSize} & :& \FVal \rightarrow \Num \\
+\hf{ParamsSize}(\emph{fv}) &=&\
+|\ir{\stmt_{\emph{params}}}|
+\quad\mbox{where}\ \emph{fv} =
+\_ \ \ir{f} \verb+(+\ir{\emph{this}}\verb+,+\ir{\emph{arguments}}\verb+) {+
+\ir{\stmt_{\emph{params}}}\
+\ir{\stmt_{\emph{vds}}}\
+\ir{\stmt_{\emph{fds}}}\
+\ir{\stmt_{\emph{stmts}}}
+\verb+}+
+\\[1em]
+
+\hf{GetBody} & :& \FVal \rightarrow \hf{Stmt} \\
+\hf{GetBody}(\emph{fv}) &=&\
+{\ir\stmt}
+\quad\mbox{where}\ \emph{fv} =
+\_ \ \ir{f} \verb+(+\ir{\emph{this}}\verb+,+\ir{\emph{arguments}}\verb+) {+ \ir\stmt \verb+}+
+\\[1em]
+
+
+\end{array}
+\]
+
+
+\[
+\begin{array}{l@{}c@{}l}
+\multicolumn{3}{l}{\mbox{\inblue 15.4 Array Objects}}\\
+\hf{IsArrayIndex} & :& \Val \rightarrow \Bool \\
+\hf{IsArrayIndex}(v) &=&
+\left\{ \begin{array}{ll}
+\true &\mbox{if $\hf{ToString}(\hf{ToUnit32}(\hf{ToString}(v))) = \hf{ToString}(v) \wedge
+\hf{ToUnit32}(\hf{ToString}(v)) \not= 2^{32}-1$}\\
+\false&\mbox{otherwise}\\
+\end{array}
+\right.
+\\\\
+
+\multicolumn{3}{l}{\mbox{\inblue 15.9 Date Objects}}\\
+\hf{IsDate} & :& \Heap \times \Val \rightarrow \Bool \\
+\hf{IsDate}(H,v) &=&
+\left\{ \begin{array}{ll}
+\true &\ifc{v \in \Loc\wedge
+H(v).{\tt[[Class]]} = {\tt ``Date"}%''
+}\\
+\false&\mbox{otherwise}\\
+\end{array}
+\right.
+\\[1em]
+
+
+
+\multicolumn{3}{l}{\mbox{\inblue 12.6.4 The {\tt for-in} Statement}}\\
+\hf{IteratorInit} & :& \wp(\pname) \rightarrow \Obj \\
+\hf{IteratorInit}(P) &=&
+\hf{NewObj}().{\tt@property}[
+{\tt``length"} \mapsto n,%''
+{\tt``@i"} \mapsto0,%''
+{\tt``0"} \mapsto\emph{pn}_0,%''
+\ldots
+{\tt``n-1"} \mapsto\emph{pn}_{n-1}]%''
+\\
+&&
+\mbox{where}\
+P = \{\emph{pn}_0, \ldots, \emph{pn}_{n-1}\}
+\\\\
+
+% Closer to the Interpreter implementation
+%
+% \hf{CollectProps} & :& \Heap \times \Loc \rightarrow \wp(\pname) \\
+% \hf{CollectProps}(H, l) &=&
+% \left\{ \begin{array}{ll}
+% \hf{Dom}(H(l).{\tt @property}) \cup \hf{CollectProps}(H, H(l).{\tt [[Prototype]]})
+% &\ifc{l \in\hf{Dom}(H) \wedge H(l).{\tt [[Prototype]]} \not= \nullL}\\
+% \hf{Dom}(H(l).{\tt @property})
+% &\ifc{l \in\hf{Dom}(H) \wedge H(l).{\tt [[Prototype]]} = \nullL}\\
+% \{\} &\ifc{l \not\in \hf{Dom}(H)}
+% \end{array}
+% \right.
+% \\\\
+ \hf{CollectProps}(H, l) &=&
+ \left\{ \begin{array}{ll}
+ \hf{Dom}(H(l).{\tt @property}) \cup \hf{CollectProps}(H, H(l).{\tt [[Prototype]]})
+&\ifc{l \in\hf{Dom}(H)}\\
+\{\} &\ifc{l \not\in \hf{Dom}(H)}
+ \end{array}
+ \right.
+ \\\\
+
+
+\hf{IsEnumerable} & :& \Heap \times \Loc \times \pname \rightarrow \Bool \\
+\hf{IsEnumerable}(H, l, x) &=&
+\left\{ \begin{array}{ll}
+H(l).{\tt @property}(x).{\tt[[Enumerable]]}
+&\ifc{l \in\hf{Dom}(H) \wedge x\in\hf{Dom}(H(l))}\\
+\hf{IsEnumerable}(H, H(l).{\tt [[Prototype]]}, x)
+&\ifc{l \in\hf{Dom}(H) \wedge x\not\in\hf{Dom}(H(l))}\\
+\false &\ifc{l \not\in\hf{Dom}(H)}\\
+\end{array}
+\right.
+\\\\
+
+\hf{Next} & :& \Heap \times \Obj \times \Num \times \Loc \rightarrow \Num \\
+\hf{Next}(H, o, n, l) &=&
+\left\{ \begin{array}{ll}
+n &\ifc{n \not\in\hf{Dom}(o) \wedge n \ge o.{\tt@property}(``{\tt length}")}\\
+\hf{Next}(H, o, n+1, l) &\ifc{n \not\in\hf{Dom}(o) \wedge n < o.{\tt@property}(``{\tt length}")}\\
+n &\ifc{n \in\hf{Dom}(o) \wedge \hf{IsEnumerable}(H, l, o.{\tt@property}(n))}\\
+\hf{Next}(H, o, n+1, l)
+ &\ifc{n \in\hf{Dom}(o) \wedge \neg\hf{IsEnumerable}(H, l, o.{\tt@property}(n))}\\
+\end{array}
+\right.
+\\\\
+
+\hf{Negate} & :& \Num \rightarrow \Num \\
+\hf{Negate}(n) &=&
+\left\{ \begin{array}{ll}
+{\tt NaN} &\ifc{n = {\tt NaN}}\\
+0-n &\mbox{otherwise}\\
+\end{array}
+\right.
+\\\\
+
+\hf{Negate} & :& \Bool \rightarrow \Bool \\
+\hf{Negate}(b) &=&
+\left\{ \begin{array}{ll}
+\false &\ifc{b = \true}\\
+\true &\mbox{otherwise}\\
+\end{array}
+\right.
+\\\\
+
+
+\hf{ExnLoc} & :& \ValError \rightarrow \Val \\
+\hf{ExnLoc}(\emph{ve}) &=&
+\left\{ \begin{array}{ll}
+{\tt \#Error} &\ifc{\emph{ve} = {\tt Error}}\\
+{\tt \#EvalError} &\ifc{\emph{ve} = {\tt EvalError}}\\
+{\tt \#RangeError} &\ifc{\emph{ve} = {\tt RangeError}}\\
+{\tt \#ReferenceError} &\ifc{\emph{ve} = {\tt ReferenceError}}\\
+{\tt \#SyntaxError} &\ifc{\emph{ve} = {\tt SyntaxError}}\\
+{\tt \#TypeError} &\ifc{\emph{ve} = {\tt TypeError}}\\
+{\tt \#URIError} &\ifc{\emph{ve} = {\tt URIError}}\\
+v&\ifc{\emph{ve} \in \Val}\\
+\end{array}
+\right.
+\\\\
+\end{array}
+\]
+
+
+\section{Helpers from the Specification}
+\subsection*{\inblue 8.7 The Reference Specification Type}
+\[
+\begin{array}{l@{}c@{}l}
+% \multicolumn{3}{l}{\mbox{\inblue 8.7.1 {\tt GetValue(V)}}}\\
+% \hf{GetValue} & :& \Heap \times (\emph{BindingValue} \times (\EnvRec\cup\Loc)) \times \strict
+%  \rightarrow \ValError \\
+% \hf{GetValue}(H, (\emph{bv}, \emph{bs}), b) &=&
+% \left\{\begin{array}{ll}
+% \re & \mbox{if $\emph{bv} \in \sv \wedge \emph{bv}.{\tt[[Value]]} = \bot$}\\
+% \hf{GetValueCore}(H, \emph{bv}.{\tt[[Value]]}, \emph{bs}, b) & \mbox{if $\emph{bv} \in \sv \wedge \emph{bv}.{\tt[[Value]]} \not= \bot$}\\
+% \hf{GetValueCore}(H, \emph{dp}.{\tt[[Value]]}, \emph{bs}, b) & \mbox{if $\emph{bv} \in \emph{DataProp}$}\\
+% \hf{GetValueCore}(H, \emph{ap}.{\tt[[Get]]}, \emph{bs}, b) & \mbox{if $\emph{bv} \in \emph{AccessorProp}$}\\
+% \end{array}\right.
+% \\[2em]
+
+% \hf{GetValueCore} & :&  \Heap \times \Val \times (\EnvRec\cup\Loc) \times \strict \rightarrow \ValError \\
+% \hf{GetValueCore}(H, v,\emph{bs}, b) &=&
+% \left\{\begin{array}{ll}
+% v & \ifc{v \not\in \Loc}\\
+% \hf{GetBindingValue}(H,\emph{bs},``v",b)%''
+% &\ifc{v\in\Loc \wedge \emph{bs}\in\emph{EnvRec}}\\
+% % \hf{GetBindingValue}(H,\emph{bs},``v",b)%''
+% % &\ifc{v\in\Loc \wedge \emph{bs}\in\emph{ObjEnvRec}}\\
+% \re & \ifc{v \in \Loc \wedge \emph{bs}\not\in\EnvRec\wedge
+% \emph{bs}\in\Loc \wedge \emph{bs}\not\in\hf{Dom}(H)}\\
+% Get(H,\emph{bs},``v")%''
+% %H(l).{\tt[[Get]]}(H(l),v)
+% & \ifc{v \in \Loc \wedge  \emph{bs}\not\in\EnvRec\wedge
+% \emph{bs}\in\Loc \wedge \emph{bs}\in\hf{Dom}(H)}\\
+% & \mbox{\inred For primitive base values, see 8.7.1.}\\
+% \end{array}\right.
+% \\\\
+
+% 2.	Let base be the result of calling GetBase(V). 3.	If IsUnresolvableReference(V), then
+% a.	If IsStrictReference(V) is true, then i.	Throw ReferenceError exception.
+% b.	Call the [[Put]] internal method of the global object, passing GetReferencedName(V) for the property name, W for the value, and false for the Throw flag.
+% 4.	Else if IsPropertyReference(V), then a.	If HasPrimitiveBase(V) is false, then let put be the [[Put]] internal method of base, otherwise let put
+% be the special [[Put]] internal method defined below. b.	Call the put internal method using base as its this value, and passing GetReferencedName(V) for the
+% property name, W for the value, and IsStrictReference(V) for the Throw flag. 5.	Else base must be a reference whose base is an environment record. So,
+% a.	Call the SetMutableBinding (10.2.1) concrete method of base, passing GetReferencedName(V), W, and IsStrictReference(V) as arguments.
+% 6. Return.
+
+\multicolumn{3}{l}{\mbox{\inblue 8.7.2 {\tt PutValue(V, W)}}}\\
+\hf{PutValue} & :& \Heap \times \Env \times \Var \times \Val \times \strict
+\rightarrow \Heap \times \Env \times \ve\\
+\hf{PutValue}(H,A,x,v,b) &=&
+\left\{\begin{array}{ll}
+(H,A,\re)
+&\ifc{\hf{Lookup}(H,A,x,\strict) = l \wedge l = \nullL \wedge b}\\
+\hf{Put}(H,A,\lg,x,v,\false)
+&\ifc{\hf{Lookup}(H,A,x,\strict) = l \wedge l = \nullL \wedge \neg b}\\
+
+%(H,A,\re)
+%&\ifc{\hf{Lookup}(H,A,x,\strict) = l \wedge \neg\hf{HasProperty}(H,l,x)\wedge b}\\
+%\hf{Put}(H,A,l,x,v,\false)
+%&\ifc{\hf{Lookup}(H,A,x,\strict) = l \wedge \neg\hf{HasProperty}(H,l,x)\wedge \neg b}\\
+\hf{Put}(H,A,l,x,v,b)
+&\ifc{\hf{Lookup}(H,A,x,\strict) = l  \wedge l \not= \nullL }\\ %\wedge \hf{HasProperty}(H,l,x)}\\
+\hf{SetBindingDER}(H,A,x,v,b)
+&\ifc{\hf{Lookup}(H,A,x,\strict) = \er}\\
+& \mbox{\inred For primitive base values, see 8.7.2.}\\
+\end{array}\right.
+\\\\
+
+
+% \hf{PutValue} & :& \Heap \times \Env \times \Val \times \Val \times \strict
+% \rightarrow \Heap \times \Env \times \ve\\
+% \hf{PutValue}(H,A,v_1,v_2,b) &=&
+% \left\{\begin{array}{ll}
+% (H,A,\re) & \ifc{v_1 \not\in\Loc}\\
+% (H,A,\re) &\ifc{v_1 \in\Loc\wedge A = \lg \wedge \neg\hf{HasProperty}(H,\varloc{Global},``v_1")\wedge b}\\
+% \hf{Put}(H,A,\lg,``v_1",v_2,\false)
+% &\ifc{v_1 \in\Loc\wedge A = \lg \wedge \neg\hf{HasProperty}(H,\varloc{Global},``v_1") \wedge \neg b}\\
+% \hf{Put}(H,A,\lg,``v_1",v_2,b)
+% &\ifc{v_1 \in\Loc\wedge A = \lg \wedge \hf{HasProperty}(H,\varloc{Global},``v_1")}\\
+% %\hf{SetBinding}(H,A,``v_1",v_2,b)
+% \hf{Put}(H,A,\lg,``v_1",v_2,b)
+% &\ifc{v_1 \in\Loc\wedge A = \mkst{\emph{er}}A'}\\
+
+% & \mbox{\inred For primitive base values, see 8.7.2.}\\
+% \end{array}\right.
+% \\\\\\
+\end{array}
+\]
+
+
+\[
+\begin{array}{l@{}c@{}l}
+\multicolumn{3}{l}{\mbox{\inblue 8.12.1 {\tt [[GetOwnProperty]](P)}:
+Let $X$ be $O$'s own property named $P$. {\ingreen$x\in\hf{Dom}(H(l))$}}}\\
+\hf{Dom}(o) &=&
+\set{x\ \mid\ x\mapsto \emph{ov} \in o.{\tt @property}}
+%\cup \set{x\ \mid\ x:\_ \in o}
+\\[1em]
+
+\multicolumn{3}{l}{\mbox{\inblue 8.12.1 {\tt [[GetOwnProperty]](P)}:
+A {\tt String} object has a more elaborate {\tt [[GetOwnProperty]]} internal method {\inred (15.5.5.2)}.}}\\
+\hf{GetOwnProperty} & :& \Heap \times \Loc \times \Prop \rightarrow \ObjV \times \Loc \\
+\hf{GetOwnProperty}(H,l,x) & =&
+\left\{\begin{array}{ll}
+\UndefVB & \ifc{l\not\in \hf{Dom}(H)} \\
+\UndefVB & \ifc{l\in\hf{Dom}(H)\wedge x\not\in\hf{Dom}(H(l))} \\
+(copy(H(l).{\tt @property}(x)), l) & \ifc{l\in\hf{Dom}(H)\wedge x\in\hf{Dom}(H(l))}
+\end{array}\right.
+\\[2em]
+\end{array}
+\]
+
+
+\subsection*{\inblue 8.12 Algorithms for Object Internal Methods}
+\[
+\begin{array}{l@{}c@{}l}
+
+\multicolumn{3}{l}{\mbox{\inblue 8.12.2 {\tt [[GetProperty]](P)}}}\\
+%\hf{GetProperty} & :& \Heap \times \Loc \times \Prop \times \strict \rightarrow \ObjV \times \Loc \\
+\hf{GetProperty} & :& \Heap \times \Loc \times \Prop \rightarrow \ObjV \times \Loc \\
+\hf{GetProperty}(H,l,x) &=\\
+\multicolumn{3}{l}{
+\rulesep\rulesep
+\left\{\begin{array}{ll}
+\UndefVB & \ifc{l\not\in \hf{Dom}(H)} \\
+\UndefVB & \ifc{l\in\hf{Dom}(H)\wedge x\not\in\hf{Dom}(H(l)) \wedge
+H(l).{\tt [[Prototype]]} = \nullL} \\
+\hf{GetProperty}(H,H(l).{\tt [[Prototype]]},x) &
+\ifc{l\in\hf{Dom}(H)\wedge x\not\in\hf{Dom}(H(l)) \wedge
+H(l).{\tt [[Prototype]]} \not= \nullL}\\
+\hf{GetOwnProperty}(H,l,x) &
+\ifc{l\in\hf{Dom}(H)\wedge x\in\hf{Dom}(H(l))}
+\end{array}\right.
+}
+\\\\
+
+\multicolumn{3}{l}{\mbox{\inblue 8.12.3 {\tt [[Get]](P)} {\ingreen$H(l).{\tt[[Get]](P)}$}}}\\
+\hf{Get} & :& \Heap \times \Loc \times \Prop \rightarrow \Val \\
+\hf{Get}(H,l,x) &=&
+\left\{\begin{array}{ll}
+\undef & \ifc{\hf{GetProperty}(H,l,x) = \UndefVB} \\
+\emph{dp}.{\tt[[Value]]} & \ifc{\hf{GetProperty}(H,l,x) = (\emph{dp}, \_)} \\
+\undef & \ifc{\hf{GetProperty}(H,l,x) = (\emph{ap}, \_) \wedge
+\emph{ap}.{\tt[[Get]]} = \undef} \\
+\emph{ap}.{\tt[[Get]]}.{\tt[[Call]]}(H(l),[])
+ & \ifc{\hf{GetProperty}(H,l,x) = (\emph{ap}, \_) \wedge
+\emph{ap}.{\tt[[Get]]} \not= \undef} \\
+\end{array}\right.
+\\\\
+
+\multicolumn{3}{l}{\mbox{\inblue 8.12.4 {\tt [[CanPut]](P)}}}\\
+\hf{CanPut} & :& \Heap \times \Loc \times \Prop \rightarrow \Bool \\
+\hf{CanPut}(H,l,x) &=&\\
+\multicolumn{3}{l}{
+\rulesep\rulesep
+\left\{\begin{array}{ll}
+\false &\ifc{\hf{GetOwnProperty}(H,l,x) = (\emph{ap},\_) \wedge \emph{ap}.{\tt[[Set]]} = \undef}\\
+\true &\ifc{\hf{GetOwnProperty}(H,l,x) = (\emph{ap},\_) \wedge \emph{ap}.{\tt[[Set]]} \not= \undef}\\
+\hf{dp}.{\tt[[Writable]]} &\ifc{\hf{GetOwnProperty}(H,l,x) = (\emph{dp},\_)}\\
+H(l).{\tt[[Extensible]]}
+&\ifc{\hf{GetOwnProperty}(H,l,x) = \UndefVB\wedge H(l).{\tt[[Prototype]]} = \nullL}\\
+H(l).{\tt[[Extensible]]}
+&\ifc{\hf{GetOwnProperty}(H,l,x) = \UndefVB\wedge H(l).{\tt[[Prototype]]} \not= \nullL\wedge}\\
+&\mbox{\phantom{ if\ }$\hf{GetProperty}(H,l,x)=\UndefVB$}\\
+\false
+&\ifc{\hf{GetOwnProperty}(H,l,x) = \UndefVB\wedge H(l).{\tt[[Prototype]]} \not= \nullL\wedge}\\
+&\mbox{\phantom{ if\ }$\hf{GetProperty}(H,l,x)=(\emph{ap}, \_)\wedge
+\emph{ap}.{\tt[[Set]]} = \undef$}\\
+\true
+&\ifc{\hf{GetOwnProperty}(H,l,x) = \UndefVB\wedge H(l).{\tt[[Prototype]]} \not= \nullL\wedge}\\
+&\mbox{\phantom{ if\ }$\hf{GetProperty}(H,l,x)=(\emph{ap}, \_)\wedge
+\emph{ap}.{\tt[[Set]]} \not= \undef$}\\
+\false
+&\ifc{\hf{GetOwnProperty}(H,l,x) = \UndefVB\wedge H(l).{\tt[[Prototype]]} \not= \nullL\wedge}\\
+&\mbox{\phantom{ if\ }$\hf{GetProperty}(H,l,x)=(\emph{dp}, \_)\wedge
+\neg H(l).{\tt[[Extensible]]}$}\\
+\emph{dp}.{\tt[[Writable]]}
+&\ifc{\hf{GetOwnProperty}(H,l,x) = \UndefVB\wedge H(l).{\tt[[Prototype]]} \not= \nullL\wedge}\\
+&\mbox{\phantom{ if\ }$\hf{GetProperty}(H,l,x)=(\emph{dp}, \_)\wedge
+H(l).{\tt[[Extensible]]}$}\\
+\end{array}\right.
+}
+\\\\
+
+\multicolumn{3}{l}{\mbox{\inblue 8.12.5 {\tt [[Put]](P,V,Throw)}}}\\
+\hf{Put} & :& \Heap \times \Env \times \Loc \times \Prop \times \Val \times \Bool
+\rightarrow \Heap \times \Env \times \ValError \\
+\hf{Put}(H,A,l,x,v,b) &=&
+\left\{\begin{array}{ll}
+(H, A, \te) & \ifc{\neg\hf{CanPut}(H,l,x)\wedge b} \\
+(H, A, v) & \ifc{\neg\hf{CanPut}(H,l,x)\wedge \neg b} \\
+\hf{DefineOwnProperty}(H,A,l,x,\emph{dp}',b)
+&\ifc{\hf{CanPut}(H,l,x)\wedge}\\
+&\mbox{\phantom{if \ }$\hf{GetOwnProperty}(H,l,x) = (\emph{dp}, \_)\not=\UndefVB\wedge$}\\
+&\mbox{\phantom{if \ }$\emph{dp}' = \{{\tt[[Value]]:}v\}$}\\
+\emph{ap}.{\tt[[Set]]}.{\tt[[Call]]}(H(l), v)
+&\ifc{\hf{CanPut}(H,l,x)\wedge\hf{GetOwnProperty}(H,l,x) \not= (dp, \_)\wedge}\\
+&\mbox{\phantom{if \ }$\hf{GetProperty}(H,l,x) = (ap, \_)$}\\
+\hf{DefineOwnProperty}(H,A,l,x,\emph{dp}',b)
+&\ifc{\hf{CanPut}(H,l,x)\wedge\hf{GetOwnProperty}(H,l,x) \not= (dp, \_)\wedge}\\
+&\mbox{\phantom{if \ }$\hf{GetProperty}(H,l,x) = (dp, \_)\wedge$}\\
+&\mbox{\phantom{if \ }$\emph{dp}' = \{{\tt[[Value]]:}v, {\tt[[Writable]]:}\true,$}\\
+&\mbox{\phantom{if \ \emph{dp}' = \{}${\tt[[Enumerable]]:}\true,
+ {\tt[[Configurable]]:}\true\}$}
+\end{array}\right.
+\\\\
+
+\end{array}
+\]
+
+\[
+\begin{array}{l@{}c@{}l}
+
+\multicolumn{3}{l}{\mbox{\inblue 8.12.6 {\tt [[HasProperty]](P)}}}\\
+\hf{HasProperty} & :& \Heap \times \Loc \times \Prop \rightarrow \Bool \\
+\hf{HasProperty}(H,l,x) &=&
+\left\{\begin{array}{ll}
+\false & \ifc{\hf{GetProperty}(H,l,x) = \UndefVB} \\
+\true & \ifc{\hf{GetProperty}(H,l,x) \not= \UndefVB} \\
+\end{array}\right.
+\\[2em]
+
+\multicolumn{3}{l}{\mbox{\inblue 10.2.1.1.5 {\tt DeleteBinding(N)}}}\\
+\multicolumn{3}{l}{\mbox{\inblue 10.2.1.2.5 {\tt DeleteBinding(N)}}}\\
+\hf{DeleteBinding} & :& \Heap \times \Env \times \Str \times \strict \rightarrow
+\Heap \times \Env \times (\Bool\cup\Error) \\
+\hf{DeleteBinding}(H,A,s,b) &=&
+\left\{\begin{array}{ll}
+(H,A,\true) &\ifc{A = \lg \wedge
+ s\not\in\hf{Dom}(H(\varloc{Global}))}\\
+% \neg\hf{HasOwnProperty}(H,\varloc{Global},s)}\\
+\hf{Delete}(H,A,\lg,s,b) &\ifc{A = \lg \wedge
+ s\in\hf{Dom}(H(\varloc{Global}))}\\
+% \hf{HasOwnProperty}(H,\varloc{Global},s)}\\
+(H, (\er - s)::A', \true) &\ifc{A = \er::A'\wedge s\in\hf{Dom}(\er) \wedge \er(s).[[{\tt Configurable}]]} \\
+(H, A, \false) &\ifc{A = \er::A'\wedge s\in\hf{Dom}(\er) \wedge \neg\er(s).[[{\tt Configurable}]]} \\
+(H',\er::A'',\emph{ve})
+&\ifc{A = \er::A'\wedge s\not\in\hf{Dom}(\er) \wedge}\\
+&\mbox{\phantom{if\ }\hf{DeleteBinding}(H, A', s, b) = (H',A'',\emph{ve})}\\
+\hf{Delete}(H,A,l,s,b)
+&\ifc{A = l::A' \wedge s\in\hf{Dom}(H(l))} \\
+(H',l::A'',\emph{ve})
+&\ifc{A = l::A' \wedge s\not\in\hf{Dom}(H(l))\ \wedge}\\
+&\mbox{\phantom{if\ }$\hf{DeleteBinding}(H, A', s, b) = (H',A'',\emph{ve})$} \\
+\end{array}\right.
+\\\\
+
+\multicolumn{3}{l}{\mbox{\inblue 8.12.7 {\tt [[Delete]](P, Throw)}}}\\
+\hf{Delete}&:&\Heap \times \Env \times \Loc \times \Str \times \Bool \rightarrow
+\Heap \times \Env \times \ValError\\
+\hf{Delete}(H,A,l,s,b) &=&
+\left\{\begin{array}{ll}
+(H, A, \true) & \ifc{\hf{GetOwnProperty}(H, l, s) = \UndefVB}\\
+(H', A, \true) & \ifc{\hf{GetOwnProperty}(H, l, s) = (\emph{ov}, \_) \wedge}\\
+&\mbox{\phantom{if\ }}
+\emph{ov}.{\tt[[Configurable]]} \wedge\\
+&\mbox{\phantom{if\ }}H' = H[l\mapsto H(l)-s]\\
+(H, A, \te)&\ifc{\hf{GetOwnProperty}(H, l, s) = (\emph{ov}, \_) \wedge
+\neg\emph{ov}.{\tt[[Configurable]]} \wedge b}\\
+(H, A, \false)& \mbox{otherwise}
+\end{array}\right.
+\\\\
+
+\multicolumn{3}{l}{\mbox{\inblue Less precise but simpler!}}\\
+\multicolumn{3}{l}{\mbox{\inblue 8.12.8 {\tt [[DefaultValue]](hint)}}}\\
+\hf{DefaultValue} & :& \Heap \times \Loc \times \Str \rightarrow \pval \cup \Error \\
+\hf{DefaultValue}(H,l,{\tt String}) &=&
+\left\{\begin{array}{ll}
+s   & \ifc{``H(l)" = s \wedge s \in\pval} \\%''
+v & \ifc{``H(l)" \not\in\pval \wedge {\tt valueOf}(H(l)) = v \wedge v\in\pval}\\%''
+\te & \mbox{otherwise}
+\end{array}\right.
+\\[2em]
+
+\hf{DefaultValue}(H,l,{\tt Number}) &=&
+\left\{\begin{array}{ll}
+v & \ifc{{\tt valueOf}(H(l)) = v \wedge v\in\pval} \\%''
+s & \ifc{{\tt valueOf}(H(l)) \not\in \pval \wedge ``H(l)" = s \wedge s\in\pval}\\%''
+\te & \mbox{otherwise}
+\end{array}\right.
+\\[4em]
+
+\multicolumn{3}{l}{\mbox{\inblue Precise but too complicated!}}\\
+\multicolumn{3}{l}{\mbox{\inblue 8.12.8 {\tt [[DefaultValue]](hint)}}}\\
+\hf{DefaultValue} & :& \Heap \times \Loc \times \Str \rightarrow \pval \cup \Error \\
+\hf{DefaultValue}(H,l,{\tt String}) &=&
+\left\{\begin{array}{ll}
+s   & \ifc{\hf{Get}(H,l,{\tt toString}) = v \wedge
+\hf{IsCallable}(H,v) \wedge
+v.{\tt[[Call]]}(H(l), []) = s \wedge
+s\in\pval} \\
+v'' & \ifc{\hf{Get}(H,l,{\tt toString}) = v \wedge
+(\neg \hf{IsCallable}(H,v) \vee
+v.{\tt[[Call]]}(H(l), []) \not\in\pval) \wedge} \\
+& \mbox{\phantom{if \ }$
+\hf{Get}(H,l,{\tt valueOf}) = v' \wedge
+\hf{IsCallable}(H,v') \wedge
+v'.{\tt[[Call]]}(H(l), []) = v'' \wedge
+v''\in\pval$}\\
+\te & \ifc{\hf{Get}(H,l,{\tt toString}) = v \wedge
+(\neg \hf{IsCallable}(H,v) \vee
+v.{\tt[[Call]]}(H(l), []) \not\in\pval) \wedge} \\
+& \mbox{\phantom{if \ }$
+\hf{Get}(H,l,{\tt valueOf}) = v' \wedge
+(\neg \hf{IsCallable}(H,v') \vee
+v'.{\tt[[Call]]}(H(l), []) \not\in\pval)$}
+\end{array}\right.
+\\[2em]
+
+\hf{DefaultValue}(H,l,{\tt Number}) &=&
+\left\{\begin{array}{ll}
+v'   & \ifc{\hf{Get}(H,l,{\tt valueOf}) = v \wedge
+\hf{IsCallable}(H,v) \wedge
+v.{\tt[[Call]]}(H(l), []) = v' \wedge
+v'\in\pval} \\
+s & \ifc{\hf{Get}(H,l,{\tt valueOf}) = v \wedge
+(\neg \hf{IsCallable}(H,v) \vee
+v.{\tt[[Call]]}(H(l), []) \not\in\pval) \wedge} \\
+& \mbox{\phantom{if \ }$
+\hf{Get}(H,l,{\tt toString}) = v' \wedge
+\hf{IsCallable}(H,v') \wedge
+v'.{\tt[[Call]]}(H(l), []) = s \wedge
+s\in\pval$}\\
+\te & \ifc{\hf{Get}(H,l,{\tt valueOf}) = v \wedge
+(\neg \hf{IsCallable}(H,v) \vee
+v.{\tt[[Call]]}(H(l), []) \not\in\pval) \wedge} \\
+& \mbox{\phantom{if \ }$
+\hf{Get}(H,l,{\tt toString}) = v' \wedge
+(\neg \hf{IsCallable}(H,v') \vee
+v'.{\tt[[Call]]}(H(l), []) \not\in\pval)$}
+\end{array}\right.
+\end{array}
+\]
+
+\[
+\begin{array}{l@{}c@{}l}
+\multicolumn{3}{l}{\mbox{\inblue 8.12.9 {\tt [[DefineOwnProperty]](P,Desc,Throw)}}}\\
+\hf{DefineOwnProperty} & :& \Heap \times \Env \times \Loc \times \Var \times \ObjV \times \Bool
+\rightarrow \Heap \times \Env \times \ValError \\
+\hf{DefineOwnProperty}(H,A,l,x,\emph{ov},b) &=&\\
+%% Reject means
+%% if b, throw TypeError, otherwise false
+%% current = GetOwnProperty(H,l,x)
+%% extensible = H(l).[[Extensible]]
+\multicolumn{3}{l}{
+%\rulesep
+\left\{\begin{array}{ll}
+\multicolumn{2}{l}{\mbox{\inblue Step 3}}\\
+(H,A,\te) &\ifc{\hf{GetOwnProperty}(H,l,x) = \UndefVB \wedge
+      \neg H(l).{\tt[[Extensible]]} \wedge b}\\
+(H,A, \false) &\ifc{\hf{GetOwnProperty}(H,l,x) = \UndefVB \wedge
+        \neg H(l).{\tt[[Extensible]]} \wedge \neg b}\\
+% 4-a)
+\multicolumn{2}{l}{\mbox{\inblue Step 4}}\\
+(H[l\mapsto H(l).{\tt@property}[x\mapsto{\inred copy(}\emph{ov}{\inred)}]], 
+&\ifc{\hf{GetOwnProperty}(H,l,x) = \UndefVB \wedge   H(l).{\tt[[Extensible]]}}\\
+\phantom{(}
+A,\true)\\
+% 5 or 6
+\multicolumn{2}{l}{\mbox{\inblue Steps 5\&6}}\\
+(H,A,\true)
+&\ifc{\hf{GetOwnProperty}(H,l,x) = (\emph{ov}', \_) \wedge
+(\emph{ov} = \emptyset \vee \emph{ov}\subseteq\emph{ov}')}\\
+% 7-a)
+\multicolumn{2}{l}{\mbox{\inblue Step 7-a}}\\
+(H,A,\te)
+&\ifc{\hf{GetOwnProperty}(H,l,x) = (\emph{ov}', \_) \wedge
+  \neg \emph{ov}'.{\tt[[Configurable]]} \wedge}\\
+&\mbox{\phantom{if \ }$\emph{ov}.{\tt[[Configurable]]} \wedge b$}\\
+(H,A,\false)
+&\ifc{\hf{GetOwnProperty}(H,l,x) = (\emph{ov}', \_) \wedge
+  \neg \emph{ov}'.{\tt[[Configurable]]} \wedge}\\
+&\mbox{\phantom{if \ }$\emph{ov}.{\tt[[Configurable]]} \wedge \neg b$}\\
+\multicolumn{2}{l}{\mbox{\inblue Step 7-b}}\\
+% 7-b)
+(H,A,\te)
+&\ifc{\hf{GetOwnProperty}(H,l,x) = (\emph{ov}', \_) \wedge
+  \neg \emph{ov}'.{\tt[[Configurable]]} \wedge}\\
+&\mbox{\phantom{if \ }$\emph{ov}.{\tt[[Enumerable]]}\not=\emph{ov}'.{\tt[[Enumerable]]} \wedge b$}\\
+(H,A,\false)
+&\ifc{\hf{GetOwnProperty}(H,l,x) = (\emph{ov}', \_) \wedge
+  \neg \emph{ov}'.{\tt[[Configurable]]} \wedge}\\
+&\mbox{\phantom{if \ }$\emph{ov}.{\tt[[Enumerable]]}\not=\emph{ov}'.{\tt[[Enumerable]]} \wedge \neg b$}\\
+% 9
+\multicolumn{2}{l}{\mbox{\inblue Step 9-a}}\\
+(H,A,\te)
+&\ifc{\hf{GetOwnProperty}(H,l,x) = (\emph{ov}', \_) \wedge
+\emph{ov} \in \emph{DataProp} \wedge
+\emph{ov}' \in \emph{AccProp} \wedge}\\
+&\mbox{\phantom{if \ }$
+\neg \emph{ov}'.{\tt[[Configurable]]} \wedge b$}\\
+(H,A,\false)
+&\ifc{\hf{GetOwnProperty}(H,l,x) = (\emph{ov}', \_) \wedge
+\emph{ov} \in \emph{DataProp} \wedge
+\emph{ov}' \in \emph{AccProp} \wedge}\\
+&\mbox{\phantom{if \ }$
+\neg \emph{ov}'.{\tt[[Configurable]]} \wedge \neg b$}\\
+(H,A,\te)
+&\ifc{\hf{GetOwnProperty}(H,l,x) = (\emph{ov}', \_) \wedge
+\emph{ov} \in \emph{AccProp} \wedge
+\emph{ov}' \in \emph{DataProp} \wedge}\\
+&\mbox{\phantom{if \ }$
+\neg \emph{ov}'.{\tt[[Configurable]]} \wedge b$}\\
+(H,A,\false)
+&\ifc{\hf{GetOwnProperty}(H,l,x) = (\emph{ov}', \_) \wedge
+\emph{ov} \in \emph{AccProp} \wedge
+\emph{ov}' \in \emph{DataProp} \wedge}\\
+&\mbox{\phantom{if \ }$
+\neg \emph{ov}'.{\tt[[Configurable]]} \wedge \neg b$}\\
+\multicolumn{2}{l}{\mbox{\inblue Step 9-b-i}}\\
+(H[l\mapsto H(l).{\tt@property}[x\mapsto{\inred copy(}\emph{ov}{\inred)}]], 
+&\ifc{\hf{GetOwnProperty}(H,l,x) = (\emph{ov}', \_) \wedge
+\emph{ov} \in \emph{AccProp} \wedge
+\emph{ov}' \in \emph{DataProp}}\\
+\phantom{(}A,\true)
+\\
+\multicolumn{2}{l}{\mbox{\inblue Step 9-c-i}}\\
+(H[l\mapsto H(l).{\tt@property}[x\mapsto{\inred copy(}\emph{ov}{\inred)}]], 
+&\ifc{\hf{GetOwnProperty}(H,l,x) = (\emph{ov}', \_) \wedge
+\emph{ov} \in \emph{DataProp} \wedge
+\emph{ov}' \in \emph{AccProp}}\\
+\phantom{(}A,\true)\\
+% 10
+\multicolumn{2}{l}{\mbox{\inblue Step 10-a-i}}\\
+(H,A,\te)
+&\ifc{\hf{GetOwnProperty}(H,l,x) = (\emph{ov}', \_) \wedge
+\emph{ov} \in \emph{DataProp} \wedge
+\emph{ov}' \in \emph{DataProp} \wedge}\\
+&\mbox{\phantom{if \ }$
+\neg \emph{ov}'.{\tt[[Configurable]]} \wedge \neg\emph{ov}'.{\tt[[Writable]]} \wedge
+\emph{ov}.{\tt[[Writable]]}
+ \wedge b$}\\
+(H,A,\false)
+&\ifc{\hf{GetOwnProperty}(H,l,x) = (\emph{ov}', \_) \wedge
+\emph{ov} \in \emph{DataProp} \wedge
+\emph{ov}' \in \emph{DataProp} \wedge}\\
+&\mbox{\phantom{if \ }$
+\neg \emph{ov}'.{\tt[[Configurable]]} \wedge \neg\emph{ov}'.{\tt[[Writable]]} \wedge
+\emph{ov}.{\tt[[Writable]]}
+\neg \wedge b$}\\
+
+\multicolumn{2}{l}{\mbox{\inblue Step 10-a-ii}}\\
+(H,A,\te)
+&\ifc{\hf{GetOwnProperty}(H,l,x) = (\emph{ov}', \_) \wedge
+\emph{ov} \in \emph{DataProp} \wedge
+\emph{ov}' \in \emph{DataProp} \wedge}\\
+&\mbox{\phantom{if \ }$
+\neg \emph{ov}'.{\tt[[Configurable]]} \wedge \neg\emph{ov}'.{\tt[[Writable]]} \wedge
+\emph{ov}.{\tt[[Value]]} \not= \emph{ov}'.{\tt[[Value]]} \wedge b$}\\
+
+(H,A,\false)
+&\ifc{\hf{GetOwnProperty}(H,l,x) = (\emph{ov}', \_) \wedge
+\emph{ov} \in \emph{DataProp} \wedge
+\emph{ov}' \in \emph{DataProp} \wedge}\\
+&\mbox{\phantom{if \ }$\neg \emph{ov}'.{\tt[[Configurable]]} \wedge \neg\emph{ov}'.{\tt[[Writable]]} \wedge
+\emph{ov}.{\tt[[Value]]} \not= \emph{ov}'.{\tt[[Value]]} \wedge \neg b$}\\
+
+\multicolumn{2}{l}{\mbox{\inblue Step 10-b}}\\
+(H[l\mapsto H(l).{\tt@property}[x\mapsto{\inred copy(}\emph{ov}{\inred)}]], 
+&\ifc{\hf{GetOwnProperty}(H,l,x) = (\emph{ov}', \_) \wedge
+\emph{ov} \in \emph{DataProp} \wedge
+\emph{ov}' \in \emph{DataProp} \wedge}\\
+\phantom{(}A,\true)\\
+&\mbox{\phantom{if \ }$\emph{ov}'.{\tt[[Configurable]]}$}\\
+
+% 11
+\multicolumn{2}{l}{\mbox{\inblue Step 11-a-i}}\\
+(H,A,\te)
+&\ifc{\hf{GetOwnProperty}(H,l,x) = (\emph{ov}', \_) \wedge
+\emph{ov} \in \emph{AccProp} \wedge
+\emph{ov}' \in \emph{AccProp} \wedge}\\
+&\mbox{\phantom{if \ }$
+\neg \emph{ov}'.{\tt[[Configurable]]} \wedge
+\emph{ov}'.{\tt[[Set]]} \not= \emph{ov}.{\tt[[Set]]} \wedge b$}\\
+(H,A,\false)
+&\ifc{\hf{GetOwnProperty}(H,l,x) = (\emph{ov}', \_) \wedge
+\emph{ov} \in \emph{AccProp} \wedge
+\emph{ov}' \in \emph{AccProp} \wedge}\\
+&\mbox{\phantom{if \ }$
+\neg \emph{ov}'.{\tt[[Configurable]]} \wedge
+\emph{ov}'.{\tt[[Set]]} \not= \emph{ov}.{\tt[[Set]]} \wedge \neg b$}\\
+\multicolumn{2}{l}{\mbox{\inblue Step 11-a-ii}}\\
+(H,A,\te)
+&\ifc{\hf{GetOwnProperty}(H,l,x) = (\emph{ov}', \_) \wedge
+\emph{ov} \in \emph{AccProp} \wedge
+\emph{ov}' \in \emph{AccProp} \wedge}\\
+&\mbox{\phantom{if \ }$
+\neg \emph{ov}'.{\tt[[Configurable]]} \wedge
+\emph{ov}'.{\tt[[Get]]} \not= \emph{ov}.{\tt[[Get]]} \wedge b$}\\
+(H,A,\false)
+&\ifc{\hf{GetOwnProperty}(H,l,x) = (\emph{ov}', \_) \wedge
+\emph{ov} \in \emph{AccProp} \wedge
+\emph{ov}' \in \emph{AccProp} \wedge}\\
+&\mbox{\phantom{if \ }$
+\neg \emph{ov}'.{\tt[[Configurable]]} \wedge
+\emph{ov}'.{\tt[[Get]]} \not= \emph{ov}.{\tt[[Get]]} \wedge \neg b$}\\
+\multicolumn{2}{l}{\mbox{\inblue Step 12}}\\
+(H[l\mapsto H(l).{\tt@property}[x\mapsto{\inred copy(}\emph{ov}{\inred)}]], 
+&\mbox{otherwise}\\
+\phantom{(}A,\true)\\
+&\mbox{\inred For {\tt Array} objects, see 15.4.5.1.}
+\end{array}\right.
+}
+\\[2em]
+
+\end{array}
+\]
+
+\[
+\begin{array}{l@{}c@{}l}
+\hf{DeleteArray} &:& \Heap \times \Env \times \Loc \times \Num \times \Num \times \ObjV \times \Bool \times \Bool
+\rightarrow \Heap \times \Env \times (\Bool \cup \Error) \\
+ov'  & =& ov.\{[[{\tt Value}]] \mapsto \hf{oldLen}\}\\
+ov'' & =& ov'.\{{\tt[[Writable]]} \mapsto \false\}\\
+\multicolumn{3}{l}{
+\hf{DeleteArray}(H,A,l,\hf{newLen},\hf{oldLen},ov,b,b')\ =}\\
+\multicolumn{3}{l}{
+\left\{\begin{array}{ll}
+\multicolumn{2}{l}{\mbox{\inblue Step 3.l}}\\
+(H, A, \true)  &\ifc{\hf{newLen} \geq \hf{oldLen}}\\
+\multicolumn{2}{l}{\mbox{\inblue Step 3.l.ii}}\\
+(H, A, \err)  &\ifc{\hf{newLen} < \hf{oldLen} \wedge \hf{DeleteBinding}(H, A,  \hf{ToString}(H, \hf{oldLen}-1), \false) = (H', A', \err)}\\
+
+\multicolumn{2}{l}{\mbox{\inblue Step 3.l.iii / writable = true / DefineOwnProperty = err}}\\
+(H, A, \err)  &\ifc{\hf{newLen} < \hf{oldLen} \wedge \hf{DeleteBinding}(H, A,  \hf{ToString}(H, \hf{oldLen}-1), \false) = (H', A', \false)\\
+    \wedge b=\true 
+    \wedge \hf{DefineOwnProperty}(H', A', l, ``{\tt length}", ov', \false) = (H'', A'', \err)}\\
+\multicolumn{2}{l}{\mbox{\inblue Step 3.l.iii / writable = true / DefineOwnProperty $\not=$ err}}\\
+(H, A, {\rejectbb})  &\ifc{\hf{newLen} < \hf{oldLen} \wedge \hf{DeleteBinding}(H, A,  \hf{ToString}(H, \hf{oldLen}-1), \false) = (H', A', \false)\\
+    \wedge b=\true 
+    \wedge \hf{DefineOwnProperty}(H', A', l, ``{\tt length}", ov', \false) = (H'', A'', v)}\\
+
+\multicolumn{2}{l}{\mbox{\inblue Step 3.l.iii / writable = fase / DefineOwnProperty = err}}\\
+(H, A, \err)  &\ifc{\hf{newLen} < \hf{oldLen} \wedge \hf{DeleteBinding}(H, A,  \hf{ToString}(H, \hf{oldLen}-1), \false) = (H', A', \false)\\
+
+    \wedge b=\false 
+    \wedge \hf{DefineOwnProperty}(H', A', l, ``{\tt length}", ov'', \false) = (H'', A'', \err)}\\
+\multicolumn{2}{l}{\mbox{\inblue Step 3.l.iii / writable = fase / DefineOwnProperty $\not=$ err}}\\
+(H, A, {\rejectbb})  &\ifc{\hf{newLen} < \hf{oldLen} \wedge \hf{DeleteBinding}(H, A,  \hf{ToString}(H, \hf{oldLen}-1), \false) = (H', A', \false)\\
+%    ov.\{[[{\tt Value}]] \mapsto \hf{oldLen}, {\tt[[Writable]]} \mapsto \false\} 
+    \wedge b=\false
+    \wedge \hf{DefineOwnProperty}(H', A', l, ``{\tt length}", ov'', \false) = (H'', A'', v)}\\
+
+\multicolumn{2}{l}{\mbox{\inblue Step 3.l.ii}}\\
+\hf{DeleteArray}(H', A', l, \hf{newLen}, &\ifc{\hf{newLen} < \hf{oldLen} \wedge \hf{DeleteBinding}(H, A,  \hf{ToString}(H, \hf{oldLen}-1), \false) = (H', A', \true)}\\
+\phantom{\hf{DeleteArray}(}
+\hf{oldLen}-1, ov, b)
+ \end{array}\right.
+}
+\\[2em]
+
+\end{array}
+\]
+
+\[
+\begin{array}{l@{}c@{}l}
+\multicolumn{3}{l}{\mbox{\inblue 15.4.5.1 {\tt [[DefineOwnProperty]](P,Desc,Throw)} for Array}}\\
+\hf{DefineOwnPropertyArray} & :& \Heap \times \Env \times \Loc \times \Var \times \ObjV \times \Bool
+\rightarrow \Heap \times \Env \times (\Bool \cup \Error) \\
+\hf{DefineOwnPropertyArray}(H,A,l,x,\emph{ov},b) &=&\\
+\multicolumn{3}{l}{\mbox{where}}\\
+\hf{index} &=& \hf{ToUint32}(H, x)\\
+\hf{newLenDesc} & =& \hf{copy}(\ov)\\
+\hf{newLen} & = & \hf{ToUint32}(ov.[[{\tt Value}]])\\
+\hf{newLenDesc}' & = & \hf{newLenDesc}\{[[{\tt Value}]] \mapsto \hf{newLen}\}\\
+\hf{newLenDesc}'' & = & \hf{newLenDesc}'\{{\tt[[Writable]]} \mapsto \true\}\\
+\hf{newLenNum} & = & \hf{ToNumber}(H, ov.[[{\tt Value}]])\\
+\hf{oldLenDesc} & =& \hf{GetOwnProperty}(H, l, ``{\tt length}")\\
+\hf{oldLen} & = & \hf{oldLenDesc}.[[{\tt Value}]]\\
+\hf{oldLenDesc}' & =& \hf{oldLenDesc}\{[[{\tt Value}]] \mapsto \hf{index}+1\}\\
+%% Reject means
+%% if b, throw TypeError, otherwise false
+%% current = GetOwnProperty(H,l,x)
+%% extensible = H(l).[[Extensible]]
+\multicolumn{3}{l}{
+%\rulesep
+\left\{\begin{array}{ll}
+\multicolumn{2}{l}{\mbox{\inblue Step 3.a}}\\
+\hf{DefineOwnProperty}(H, A, l, ``{\tt length}", ov, b)  &\ifc{\hf{ToString}(H, x) = ``{\tt length}" \wedge [[{\tt Value}]] \notin \ov}\\
+\multicolumn{2}{l}{\mbox{\inblue Step 3.d}}\\
+(H,A,{\tt RangeError})   &\ifc{\hf{ToString}(H, x) = ``{\tt length}" \wedge [[{\tt Value}]] \in \ov \wedge \hf{newLen} \not= \hf{newLenNum}}\\
+\multicolumn{2}{l}{\mbox{\inblue Step 3.f.i}}\\
+\hf{DefineOwnProperty}(H, A, l, ``{\tt length}",%''
+&\ifc{\hf{ToString}(H, x) = ``{\tt length}"%''''
+\wedge [[{\tt Value}]] \in \ov \wedge \hf{newLen} = \hf{newLenNum}} \\
+\phantom{\hf{DefineOwnProperty}(}
+\hf{newLenDesc}', b)
+&\phantom{\mbox{if~}}
+\wedge \hf{newLen} \geq \hf{oldLen}\\
+\multicolumn{2}{l}{\mbox{\inblue Step 3.g}}\\
+(H,A,{\rejectb})   &\ifc{\hf{ToString}(H, x) = ``{\tt length}" \wedge [[{\tt Value}]] \in \ov \wedge \hf{newLen} = \hf{newLenNum} \\
+    \wedge \hf{newLen} < \hf{oldLen} \wedge \neg \hf{oldLenDesc}.{\tt[[Writable]]}}\\
+
+\multicolumn{2}{l}{\mbox{\inblue Step 3.h : set newWritable = true \& 3.j}}\\
+(H',A', \err)   &\ifc{\hf{ToString}(H, x) = ``{\tt length}" \wedge [[{\tt Value}]] \in \ov \wedge \hf{newLen} = \hf{newLenNum} \\
+    \wedge \hf{newLen} < \hf{oldLen} \wedge \hf{oldLenDesc}.{\tt[[Writable]]} \\
+    \wedge ({\tt[[Writable]]} \notin \hf{newLenDesc} \vee \hf{newLenDesc}.{\tt[[Writable]]})\\
+    \wedge \hf{DefineOwnProperty}(H, A, l, ``{\tt length}", \hf{newLenDesc}', b) = (H', A', \err) }\\
+
+\multicolumn{2}{l}{\mbox{\inblue Step 3.h : set newWritable = true \& 3.k}}\\
+(H',A', \false)   &\ifc{\hf{ToString}(H, x) = ``{\tt length}" \wedge [[{\tt Value}]] \in \ov \wedge \hf{newLen} = \hf{newLenNum} \\
+    \wedge \hf{newLen} < \hf{oldLen} \wedge \hf{oldLenDesc}.{\tt[[Writable]]} \\
+    \wedge ({\tt[[Writable]]} \notin \hf{newLenDesc} \vee \hf{newLenDesc}.{\tt[[Writable]]})\\
+    \wedge \hf{DefineOwnProperty}(H, A, l, ``{\tt length}", \hf{newLenDesc}', b) = (H', A', \false) }\\
+
+    
+
+ \end{array}\right.
+}
+\\[2em]
+
+\end{array}
+\]
+    
+\[
+\begin{array}{l@{}c}
+\multicolumn{2}{l}{
+%\rulesep
+\left\{\begin{array}{ll}
+
+\multicolumn{2}{l}{\mbox{\inblue Step 3.h : set newWritable = true \& 3.l}}\\
+(H'',A'', \err)   &\ifc{\hf{ToString}(H, x) = ``{\tt length}" \wedge [[{\tt Value}]] \in \ov \wedge \hf{newLen} = \hf{newLenNum} \\
+    \wedge \hf{newLen} < \hf{oldLen} \wedge \hf{oldLenDesc}.{\tt[[Writable]]} \\
+    \wedge ({\tt[[Writable]]} \notin \hf{newLenDesc} \vee \hf{newLenDesc}.{\tt[[Writable]]})\\
+    \wedge \hf{DefineOwnProperty}(H, A, l, ``{\tt length}", \hf{newLenDesc}', b) = (H', A', \true) \\
+    \wedge DeleteArray(H', A',l, \hf{newLen}, \hf{oldLen}, \hf{newLenDesc}', \true, b) = (H'', A'', \err)}\\
+
+\multicolumn{2}{l}{\mbox{\inblue Step 3.h : set newWritable = true \& 3.l}}\\
+(H'',A'', {\rejectb})   &\ifc{\hf{ToString}(H, x) = ``{\tt length}" \wedge [[{\tt Value}]] \in \ov \wedge \hf{newLen} = \hf{newLenNum} \\
+    \wedge \hf{newLen} < \hf{oldLen} \wedge \hf{oldLenDesc}.{\tt[[Writable]]} \\
+    \wedge ({\tt[[Writable]]} \notin \hf{newLenDesc} \vee \hf{newLenDesc}.{\tt[[Writable]]})\\
+    \wedge \hf{DefineOwnProperty}(H, A, l, ``{\tt length}", \hf{newLenDesc}', b) = (H', A', \true) \\
+    \wedge DeleteArray(H', A',l, \hf{newLen}, \hf{oldLen}, \hf{newLenDesc}', \true, b) = (H'', A'', \false)}\\
+
+\multicolumn{2}{l}{\mbox{\inblue Step 3.h : set newWritable = true \& 3.l}}\\
+(H'',A'', \true)   &\ifc{\hf{ToString}(H, x) = ``{\tt length}" \wedge [[{\tt Value}]] \in \ov \wedge \hf{newLen} = \hf{newLenNum} \\
+    \wedge \hf{newLen} < \hf{oldLen} \wedge \hf{oldLenDesc}.{\tt[[Writable]]} \\
+    \wedge ({\tt[[Writable]]} \notin \hf{newLenDesc} \vee \hf{newLenDesc}.{\tt[[Writable]]})\\
+    \wedge \hf{DefineOwnProperty}(H, A, l, ``{\tt length}", \hf{newLenDesc}', b) = (H', A', \true) \\
+    \wedge DeleteArray(H', A',l, \hf{newLen}, \hf{oldLen}, \hf{newLenDesc}', \true, b) = (H'', A'', \true)}\\
+
+\multicolumn{2}{l}{\mbox{\inblue Step 3.h : set newWritable = false \& 3.j}}\\
+(H',A', \err)   &\ifc{\hf{ToString}(H, x) = ``{\tt length}" \wedge [[{\tt Value}]] \in \ov \wedge \hf{newLen} = \hf{newLenNum} \\
+    \wedge \hf{newLen} < \hf{oldLen} \wedge \hf{oldLenDesc}.{\tt[[Writable]]} \wedge \neg\hf{newLenDesc}.{\tt[[Writable]]} \\
+    \wedge \hf{DefineOwnProperty}(H, A, l, ``{\tt length}", \hf{newLenDesc}'', b) = (H', A', \err) }\\
+
+\multicolumn{2}{l}{\mbox{\inblue Step 3.h : set newWritable = false \& 3.k}}\\
+(H',A', \false)   &\ifc{\hf{ToString}(H, x) = ``{\tt length}" \wedge [[{\tt Value}]] \in \ov \wedge \hf{newLen} = \hf{newLenNum} \\
+    \wedge \hf{newLen} < \hf{oldLen} \wedge \hf{oldLenDesc}.{\tt[[Writable]]} \wedge \neg\hf{newLenDesc}.{\tt[[Writable]]} \\
+    \wedge \hf{DefineOwnProperty}(H, A, l, ``{\tt length}", \hf{newLenDesc}'', b) = (H', A', \false) }\\
+
+\multicolumn{2}{l}{\mbox{\inblue Step 3.h : set newWritable = false \& 3.l}}\\
+(H'',A'', \err)   &\ifc{\hf{ToString}(H, x) = ``{\tt length}" \wedge [[{\tt Value}]] \in \ov \wedge \hf{newLen} = \hf{newLenNum} \\
+    \wedge \hf{newLen} < \hf{oldLen} \wedge \hf{oldLenDesc}.{\tt[[Writable]]} \wedge \neg\hf{newLenDesc}.{\tt[[Writable]]} \\
+    \wedge \hf{DefineOwnProperty}(H, A, l, ``{\tt length}", \hf{newLenDesc}'', b) = (H', A', \true) \\
+    \wedge DeleteArray(H', A',l, \hf{newLen}, \hf{oldLen}, \hf{newLenDesc}'', \false, b) = (H'', A'', \err)}\\
+
+\multicolumn{2}{l}{\mbox{\inblue Step 3.h : set newWritable = false \& 3.l}}\\
+(H'',A'', {\rejectb})   &\ifc{\hf{ToString}(H, x) = ``{\tt length}" \wedge [[{\tt Value}]] \in \ov \wedge \hf{newLen} = \hf{newLenNum} \\
+    \wedge \hf{newLen} < \hf{oldLen} \wedge \hf{oldLenDesc}.{\tt[[Writable]]} \wedge \neg\hf{newLenDesc}.{\tt[[Writable]]} \\
+    \wedge \hf{DefineOwnProperty}(H, A, l, ``{\tt length}", \hf{newLenDesc}'', b) = (H', A', \true) \\
+    \wedge DeleteArray(H', A',l, \hf{newLen}, \hf{oldLen}, \hf{newLenDesc}'', \false, b) = (H'', A'', \false)}\\
+
+
+\multicolumn{2}{l}{\mbox{\inblue Step 3.h : set newWritable = false \& 3.m}}\\
+(H^r,A^r, ve)   &\ifc{\hf{ToString}(H, x) = ``{\tt length}" \wedge [[{\tt Value}]] \in \ov \wedge \hf{newLen} = \hf{newLenNum} \\
+    \wedge \hf{newLen} < \hf{oldLen} \wedge \hf{oldLenDesc}.{\tt[[Writable]]} \wedge \neg\hf{newLenDesc}.{\tt[[Writable]]} \\
+    \wedge \hf{DefineOwnProperty}(H, A, l, ``{\tt length}", \hf{newLenDesc}'', b) = (H', A', \true) \\
+    \wedge DeleteArray(H', A',l, \hf{newLen}, \hf{oldLen}, \hf{newLenDesc}'', \false, b) = (H'', A'', \true)\\
+    \wedge \hf{DefineOwnProperty}(H'', A'', l, ``{\tt length}", \{{\tt[[Writable]]}:\false\}, \false) =}\\
+&(H^r, A^r, ve)\\
+
+\multicolumn{2}{l}{\mbox{\inblue Step 4.b}}\\
+(H,A, {\rejectb})   &\ifc{\hf{isIndex}(\hf{ToString}(H, x)) \wedge \hf{index} \geq \hf{oldLen} \wedge \neg\hf{oldLenDesc}.{\tt[[Writable]]}}\\
+
+\multicolumn{2}{l}{\mbox{\inblue Step 4.c}}\\
+(H',A', \err)   &\ifc{\hf{isIndex}(\hf{ToString}(H, x)) \wedge (\hf{index} < \hf{oldLen} \vee \hf{oldLenDesc}.{\tt[[Writable]]})\\
+    \wedge \hf{DefineOwnProperty}(H, A, l, x, ov, \false) = (H', A',\err)}\\
+
+\multicolumn{2}{l}{\mbox{\inblue Step 4.d}}\\
+(H',A', {\rejectb})   &\ifc{\hf{isIndex}(\hf{ToString}(H, x)) \wedge (\hf{index} < \hf{oldLen} \vee \hf{oldLenDesc}.{\tt[[Writable]]})\\
+    \wedge \hf{DefineOwnProperty}(H, A, l, x, ov, \false) = (H', A',\false)}\\
+
+\multicolumn{2}{l}{\mbox{\inblue Step 4.e.ii}}\\
+(H',A', \err)   &\ifc{\hf{isIndex}(\hf{ToString}(H, x)) \wedge (\hf{index} < \hf{oldLen} \vee \hf{oldLenDesc}.{\tt[[Writable]]})\\
+    \wedge \hf{DefineOwnProperty}(H, A, l, x, ov, \false) = (H', A',\true) \wedge \hf{index} \geq \hf{oldLen}\\
+    \wedge \hf{DefineOwnProperty}(H', A', l, ``{\tt length}", \hf{oldLenDesc}', \false) = (H'', A'',\err)}\\
+
+\multicolumn{2}{l}{\mbox{\inblue Step 4.e.ii}}\\
+(H',A', \true)   &\ifc{\hf{isIndex}(\hf{ToString}(H, x)) \wedge (\hf{index} < \hf{oldLen} \vee \hf{oldLenDesc}.{\tt[[Writable]]})\\
+    \wedge \hf{DefineOwnProperty}(H, A, l, x, ov, \false) = (H', A',\true) \wedge \hf{index} \geq \hf{oldLen}\\
+    \wedge \hf{DefineOwnProperty}(H', A', l, ``{\tt length}", \hf{oldLenDesc}', \false) = (H'', A'',v)}\\
+
+\multicolumn{2}{l}{\mbox{\inblue Step 4.f}}\\
+(H',A', \true)   &\ifc{\hf{isIndex}(\hf{ToString}(H, x)) \wedge (\hf{index} < \hf{oldLen} \vee \hf{oldLenDesc}.{\tt[[Writable]]})\\
+    \wedge \hf{DefineOwnProperty}(H, A, l, x, ov, \false) = (H', A',\true) \wedge \hf{index} < \hf{oldLen}}\\
+
+\multicolumn{2}{l}{\mbox{\inblue Step 5}}\\
+\hf{DefinOwnPropety}(H, A, l, x, ov, b)   &\ifc{\neg \hf{ToString}(H, x) = ``{\tt length}" \wedge \neg \hf{isIndex}(\hf{ToString}(H, x))}\\
+    
+\end{array}\right.
+}
+\\[2em]
+
+\end{array}
+\]
+        
+
+            
+         
+
+
+%        
+%(H,A,\te) &\ifc{}\\
+%(H,A,\te) &\ifc{}\\
+%(H,A,\te) &\ifc{}\\
+%(H,A,\te) &\ifc{}\\
+%(H,A,\te) &\ifc{}\\
+%(H,A,\te) &\ifc{}\\
+%(H,A,\te) &\ifc{}\\
+%(H,A,\te) &\ifc{}\\
+%(H,A,\te) &\ifc{}\\
+%
+%(H,A, \false) &\ifc{\hf{GetOwnProperty}(H,l,x) = \UndefVB \wedge
+%        \neg H(l).{\tt[[Extensible]]} \wedge \neg b}\\
+%% 4-a)
+%\multicolumn{2}{l}{\mbox{\inblue Step 4}}\\
+%(H[l\mapsto H(l).{\tt@property}[x\mapsto{\inred copy(}\emph{ov}{\inred)}]], A,\true)
+%&\ifc{\hf{GetOwnProperty}(H,l,x) = \UndefVB \wedge   H(l).{\tt[[Extensible]]}}\\
+%% 5 or 6
+%\multicolumn{2}{l}{\mbox{\inblue Steps 5\&6}}\\
+%(H,A,\true)
+%&\ifc{\hf{GetOwnProperty}(H,l,x) = (\emph{ov}', \_) \wedge
+%(\emph{ov} = \emptyset \vee \emph{ov}\subseteq\emph{ov}')}\\
+%% 7-a)
+%\multicolumn{2}{l}{\mbox{\inblue Step 7-a}}\\
+%(H,A,\te)
+%&\ifc{\hf{GetOwnProperty}(H,l,x) = (\emph{ov}', \_) \wedge
+%  \neg \emph{ov}'.{\tt[[Configurable]]} \wedge}\\
+%&\mbox{\phantom{if \ }$\emph{ov}.{\tt[[Configurable]]} \wedge b$}\\
+%(H,A,\false)
+%&\ifc{\hf{GetOwnProperty}(H,l,x) = (\emph{ov}', \_) \wedge
+%  \neg \emph{ov}'.{\tt[[Configurable]]} \wedge}\\
+%&\mbox{\phantom{if \ }$\emph{ov}.{\tt[[Configurable]]} \wedge \neg b$}\\
+%\multicolumn{2}{l}{\mbox{\inblue Step 7-b}}\\
+%% 7-b)
+%(H,A,\te)
+%&\ifc{\hf{GetOwnProperty}(H,l,x) = (\emph{ov}', \_) \wedge
+%  \neg \emph{ov}'.{\tt[[Configurable]]} \wedge}\\
+%&\mbox{\phantom{if \ }$\emph{ov}.{\tt[[Enumerable]]}\not=\emph{ov}'.{\tt[[Enumerable]]} \wedge b$}\\
+%(H,A,\false)
+%&\ifc{\hf{GetOwnProperty}(H,l,x) = (\emph{ov}', \_) \wedge
+%  \neg \emph{ov}'.{\tt[[Configurable]]} \wedge}\\
+%&\mbox{\phantom{if \ }$\emph{ov}.{\tt[[Enumerable]]}\not=\emph{ov}'.{\tt[[Enumerable]]} \wedge \neg b$}\\
+%% 9
+%\multicolumn{2}{l}{\mbox{\inblue Step 9-a}}\\
+%(H,A,\te)
+%&\ifc{\hf{GetOwnProperty}(H,l,x) = (\emph{ov}', \_) \wedge
+%\emph{ov} \in \emph{DataProp} \wedge
+%\emph{ov}' \in \emph{AccProp} \wedge}\\
+%&\mbox{\phantom{if \ }$
+%\neg \emph{ov}'.{\tt[[Configurable]]} \wedge b$}\\
+%(H,A,\false)
+%&\ifc{\hf{GetOwnProperty}(H,l,x) = (\emph{ov}', \_) \wedge
+%\emph{ov} \in \emph{DataProp} \wedge
+%\emph{ov}' \in \emph{AccProp} \wedge}\\
+%&\mbox{\phantom{if \ }$
+%\neg \emph{ov}'.{\tt[[Configurable]]} \wedge \neg b$}\\
+%(H,A,\te)
+%&\ifc{\hf{GetOwnProperty}(H,l,x) = (\emph{ov}', \_) \wedge
+%\emph{ov} \in \emph{AccProp} \wedge
+%\emph{ov}' \in \emph{DataProp} \wedge}\\
+%&\mbox{\phantom{if \ }$
+%\neg \emph{ov}'.{\tt[[Configurable]]} \wedge b$}\\
+%(H,A,\false)
+%&\ifc{\hf{GetOwnProperty}(H,l,x) = (\emph{ov}', \_) \wedge
+%\emph{ov} \in \emph{AccProp} \wedge
+%\emph{ov}' \in \emph{DataProp} \wedge}\\
+%&\mbox{\phantom{if \ }$
+%\neg \emph{ov}'.{\tt[[Configurable]]} \wedge \neg b$}\\
+%\multicolumn{2}{l}{\mbox{\inblue Step 9-b-i}}\\
+%(H[l\mapsto H(l).{\tt@property}[x\mapsto{\inred copy(}\emph{ov}{\inred)}]], A,\true)
+%&\ifc{\hf{GetOwnProperty}(H,l,x) = (\emph{ov}', \_) \wedge
+%\emph{ov} \in \emph{AccProp} \wedge
+%\emph{ov}' \in \emph{DataProp}}\\
+%\multicolumn{2}{l}{\mbox{\inblue Step 9-c-i}}\\
+%(H[l\mapsto H(l).{\tt@property}[x\mapsto{\inred copy(}\emph{ov}{\inred)}]], A,\true)
+%&\ifc{\hf{GetOwnProperty}(H,l,x) = (\emph{ov}', \_) \wedge
+%\emph{ov} \in \emph{DataProp} \wedge
+%\emph{ov}' \in \emph{AccProp}}\\
+%
+%% 10
+%\multicolumn{2}{l}{\mbox{\inblue Step 10-a-i}}\\
+%(H,A,\te)
+%&\ifc{\hf{GetOwnProperty}(H,l,x) = (\emph{ov}', \_) \wedge
+%\emph{ov} \in \emph{DataProp} \wedge
+%\emph{ov}' \in \emph{DataProp} \wedge}\\
+%&\mbox{\phantom{if \ }$
+%\neg \emph{ov}'.{\tt[[Configurable]]} \wedge \neg\emph{ov}'.{\tt[[Writable]]} \wedge
+%\emph{ov}.{\tt[[Writable]]}
+% \wedge b$}\\
+%(H,A,\false)
+%&\ifc{\hf{GetOwnProperty}(H,l,x) = (\emph{ov}', \_) \wedge
+%\emph{ov} \in \emph{DataProp} \wedge
+%\emph{ov}' \in \emph{DataProp} \wedge}\\
+%&\mbox{\phantom{if \ }$
+%\neg \emph{ov}'.{\tt[[Configurable]]} \wedge \neg\emph{ov}'.{\tt[[Writable]]} \wedge
+%\emph{ov}.{\tt[[Writable]]}
+%\neg \wedge b$}\\
+%
+%\multicolumn{2}{l}{\mbox{\inblue Step 10-a-ii}}\\
+%(H,A,\te)
+%&\ifc{\hf{GetOwnProperty}(H,l,x) = (\emph{ov}', \_) \wedge
+%\emph{ov} \in \emph{DataProp} \wedge
+%\emph{ov}' \in \emph{DataProp} \wedge}\\
+%&\mbox{\phantom{if \ }$
+%\neg \emph{ov}'.{\tt[[Configurable]]} \wedge \neg\emph{ov}'.{\tt[[Writable]]} \wedge
+%\emph{ov}.{\tt[[Value]]} \not= \emph{ov}'.{\tt[[Value]]} \wedge b$}\\
+%
+%(H,A,\false)
+%&\ifc{\hf{GetOwnProperty}(H,l,x) = (\emph{ov}', \_) \wedge
+%\emph{ov} \in \emph{DataProp} \wedge
+%\emph{ov}' \in \emph{DataProp} \wedge}\\
+%&\mbox{\phantom{if \ }$\neg \emph{ov}'.{\tt[[Configurable]]} \wedge \neg\emph{ov}'.{\tt[[Writable]]} \wedge
+%\emph{ov}.{\tt[[Value]]} \not= \emph{ov}'.{\tt[[Value]]} \wedge \neg b$}\\
+%
+%\multicolumn{2}{l}{\mbox{\inblue Step 10-b}}\\
+%(H[l\mapsto H(l).{\tt@property}[x\mapsto{\inred copy(}\emph{ov}{\inred)}]], A,\true)
+%&\ifc{\hf{GetOwnProperty}(H,l,x) = (\emph{ov}', \_) \wedge
+%\emph{ov} \in \emph{DataProp} \wedge
+%\emph{ov}' \in \emph{DataProp} \wedge}\\
+%&\mbox{\phantom{if \ }$\emph{ov}'.{\tt[[Configurable]]}$}\\
+%
+%% 11
+%\multicolumn{2}{l}{\mbox{\inblue Step 11-a-i}}\\
+%(H,A,\te)
+%&\ifc{\hf{GetOwnProperty}(H,l,x) = (\emph{ov}', \_) \wedge
+%\emph{ov} \in \emph{AccProp} \wedge
+%\emph{ov}' \in \emph{AccProp} \wedge}\\
+%&\mbox{\phantom{if \ }$
+%\neg \emph{ov}'.{\tt[[Configurable]]} \wedge
+%\emph{ov}'.{\tt[[Set]]} \not= \emph{ov}.{\tt[[Set]]} \wedge b$}\\
+%(H,A,\false)
+%&\ifc{\hf{GetOwnProperty}(H,l,x) = (\emph{ov}', \_) \wedge
+%\emph{ov} \in \emph{AccProp} \wedge
+%\emph{ov}' \in \emph{AccProp} \wedge}\\
+%&\mbox{\phantom{if \ }$
+%\neg \emph{ov}'.{\tt[[Configurable]]} \wedge
+%\emph{ov}'.{\tt[[Set]]} \not= \emph{ov}.{\tt[[Set]]} \wedge \neg b$}\\
+%\multicolumn{2}{l}{\mbox{\inblue Step 11-a-ii}}\\
+%(H,A,\te)
+%&\ifc{\hf{GetOwnProperty}(H,l,x) = (\emph{ov}', \_) \wedge
+%\emph{ov} \in \emph{AccProp} \wedge
+%\emph{ov}' \in \emph{AccProp} \wedge}\\
+%&\mbox{\phantom{if \ }$
+%\neg \emph{ov}'.{\tt[[Configurable]]} \wedge
+%\emph{ov}'.{\tt[[Get]]} \not= \emph{ov}.{\tt[[Get]]} \wedge b$}\\
+%(H,A,\false)
+%&\ifc{\hf{GetOwnProperty}(H,l,x) = (\emph{ov}', \_) \wedge
+%\emph{ov} \in \emph{AccProp} \wedge
+%\emph{ov}' \in \emph{AccProp} \wedge}\\
+%&\mbox{\phantom{if \ }$
+%\neg \emph{ov}'.{\tt[[Configurable]]} \wedge
+%\emph{ov}'.{\tt[[Get]]} \not= \emph{ov}.{\tt[[Get]]} \wedge \neg b$}\\
+%\multicolumn{2}{l}{\mbox{\inblue Step 12}}\\
+%(H[l\mapsto H(l).{\tt@property}[x\mapsto{\inred copy(}\emph{ov}{\inred)}]], A,\true)
+%&\mbox{otherwise}\\
+%&\mbox{\inred For {\tt Array} objects, see 15.4.5.1.}
+%\end{array}\right.
+%}
+%\\[2em]
+%
+%\end{array}
+%\]
+
+\subsection*{\inblue 9 Type Conversion and Testing}
+
+\[
+\begin{array}{l@{}l@{}ll}
+\multicolumn{3}{l}{\mbox{\inblue 9.1 {\tt ToPrimitive}}}\\
+\hf{ToPrimitive} & :& \Heap \times \Val \times \Str \rightarrow \pval \\
+\hf{ToPrimitive}(H,v,s) &=&
+\left\{ \begin{array}{ll}
+\hf{DefaultValue}(H,v,s) &\mbox{if $v\in\Loc$}\\
+v&\mbox{otherwise}\\
+\end{array}
+\right.
+\\[1em]
+
+\multicolumn{3}{l}{\mbox{\inblue 9.2 {\tt ToBoolean}}}\\
+\hf{ToBoolean} & :& \Val \rightarrow \Bool \\
+\hf{ToBoolean}(v) &=&
+\left\{ \begin{array}{ll}
+\false &\mbox{if $v\ = \undef$}\\
+\false &\mbox{if $v\ = \nullK$}\\
+v &\mbox{if $v\ \in \Bool$}\\
+\false &\mbox{if $v\in\{{\tt +0}, {\tt -0}, {\tt NaN}\}$}\\
+\true &\mbox{if $v\in\Num\setminus\{{\tt +0}, {\tt -0}, {\tt NaN}\}$}\\
+\false &\mbox{if $v = ${\tt ""}}\\
+\true &\mbox{if $v\in\Str\setminus\{{\tt ""}\}$}\\
+\true &\mbox{if $v\in\Loc$}\\
+\end{array}
+\right.
+\\[1em]
+
+\multicolumn{3}{l}{\mbox{\inblue 9.3 {\tt ToNumber}}}\\
+\hf{ToNumber} & :& \Heap \times \Val \rightarrow \Num \\
+\hf{ToNumber}(H,v) &=&
+\left\{ \begin{array}{ll}
+{\tt NaN} &\mbox{if $v\ = \undef$}\\
+{\tt +0} &\mbox{if $v\ = \nullK \vee v\ = \false$}\\
+{\tt 1} &\mbox{if $v\ = \true$}\\
+v &\mbox{if $v\in\Num$}\\
+{\inred v.{\tt toString}} &\mbox{if $v\in\Str\quad{\inred See 9.3.1.}$}\\
+\hf{ToNumber}(H,\hf{ToPrimitive}(H,v,\verb+Number+)) &\mbox{if $v\in\Loc$}\\
+\end{array}
+\right.
+\\[1em]
+
+
+\multicolumn{3}{l}{\mbox{\inblue 9.5 {\tt ToInt32}}}\\
+\multicolumn{3}{l}{\mbox{\inblue 9.6 {\tt ToUint32}}}\\
+{\inred SKIP!}\\[1em]
+
+
+\multicolumn{3}{l}{\mbox{\inblue 9.8 {\tt ToString}}}\\
+\hf{ToString} & :& \Heap \times \Val \rightarrow \Str \\
+\hf{ToString}(H,v) &=&
+\left\{ \begin{array}{ll}
+\verb+"undefined"+ &\mbox{if $v\ = \undef$}\\
+\verb+"null"+ &\mbox{if $v\ = \nullK$}\\
+\verb+"+v\verb+"+&\mbox{if $v\ \in \Bool$}\\
+\verb+"+v\verb+"+ &\mbox{if $v\in\Num$\quad{\inred See 9.8.1.}}\\
+v &\mbox{if $v\in\Str$}\\
+\hf{ToString}(H,\hf{ToPrimitive}(H,v,\verb+String+)) &\mbox{if $v\in\Loc$}\\
+\end{array}
+\right.
+\\[1em]
+
+\multicolumn{3}{l}{\mbox{\inblue 9.9 {\tt ToObject}}}\\
+\hf{ToObject} & :& \Heap \times \Val \rightarrow \Heap \times (\Loc \cup \Error) \\
+\hf{ToObject}(H, v) &=&
+\left\{ \begin{array}{ll}
+(H, \te) &\mbox{if $v\ = \undef \vee v\ = \nullK$}\\
+(H[l\mapsto\hf{NewBoolObject}(v)], l)&\mbox{if $v\ \in \Bool\wedge l = \hf{NewLoc}()$}\\
+(H[l\mapsto\hf{NewNumObject}(v)], l)&\mbox{if $v\ \in \Num\wedge l = \hf{NewLoc}()$}\\
+(H[l\mapsto\hf{NewStrObject}(v)], l)&\mbox{if $v\ \in \Str\wedge l = \hf{NewLoc}()$}\\
+(H, v) &\mbox{if $v\ \in \Loc$}\\
+\end{array}
+\right.
+\\[1em]
+
+\multicolumn{3}{l}{\mbox{\inblue 9.10 {\tt CheckObjectCoercible}}}\\
+\hf{CheckObjectCoercible} & :& \Val \rightarrow \ValError \\
+\hf{CheckObjectCoercible}(v) &=&
+\left\{ \begin{array}{ll}
+\te &\mbox{if $v\ = \undef \vee v\ = \nullK$}\\
+v &\mbox{if $v\ \not= \undef \wedge v\ \not= \nullK$}\\
+\end{array}
+\right.
+\\[1em]
+
+\multicolumn{3}{l}{\mbox{\inblue 9.11 {\tt IsCallable}}}\\
+\hf{IsCallable} & :& \Heap \times \Val \rightarrow \Bool \\
+\hf{IsCallable}(H,v) &=&\
+v \in \hf{Dom}(H) \wedge {\tt[[Code]]} \in \hf{Dom}(H(l))
+\end{array}
+\]
+
+
+
+\subsection*{\inblue 10.2.1 Environment Records}
+
+\[
+\begin{array}{l@{}c@{}l}
+\multicolumn{3}{l}{\mbox{{\inblue 10.2.1.1 Declarative Environment Records}}}\\
+\multicolumn{3}{l}{\mbox{\inblue 10.2.1.1.1 {\tt HasBinding(N)} {\ingreen$x\in\hf{Dom}(\er)$}}}\\
+\hf{HasBinding} & :& \Env \times \Var \rightarrow \Bool \\
+\hf{HasBinding}(A, x) &=&
+\left\{\begin{array}{ll}
+\false &\ifc{A = \lg}\\
+x \in \hf{Dom}(\er) &\ifc{A = \mkst{\er}{A'}}\\
+\hf{HasBinding}(A',x) &\ifc{A = \mkst{l}{A'}}\\
+\end{array}
+\right.
+ \\[1em]
+\hf{Dom}(\er) &=& \set{x\ \mid\ x\mapsto \emph{sv} \in \er} \\[1em]
+
+\end{array}
+\]
+
+
+\[
+\begin{array}{l@{}c@{}l}
+
+\multicolumn{3}{l}{\mbox{{\inblue 10.2.1.2 Object Environment Records}}}\\
+\multicolumn{3}{l}{\mbox{\inblue 10.2.1.2.1 {\tt HasBinding(N)}
+8.12.6 {\tt [[HasProperty]](P)}
+{\ingreen \hf{HasProperty}$(H,l,x)$}}}\\
+\hf{Dom}(H) &=& \set{l\ \mid\ l\mapsto o \in H} \\[1em]
+
+
+\multicolumn{3}{l}{\mbox{\inblue 10.2.1.1.2 {\tt CreateMutableBinding(N,D)}
+{\ingreen Assert: $x\not\in\hf{Dom}(\er)$}}}
+\\
+\hf{CreateBinding} & :& \Heap \times \Env \times \Var \times \eval \rightarrow \Heap \times \Env \\
+\hf{CreateBinding}(H,A,x,b) & =\\
+\lefteqn{
+\rulesep
+\left\{\begin{array}{ll}
+(H[\lg\mapsto H(\lg).{\tt @property}[x\mapsto\{{\tt [[Value]]:} \undef,
+&\ifc{A = \lg}\\
+\phantom{(H[\lg\mapsto H(\lg).{\tt @property}[x\mapsto\{}
+{\tt [[Writable]]:} \true,\\
+\phantom{(H[\lg\mapsto H(\lg).{\tt @property}[x\mapsto\{}
+{\tt [[Enumerable]]:} \true,\\
+\phantom{(H[\lg\mapsto H(\lg).{\tt @property}[x\mapsto\{}
+{\tt [[Configurable]]:} b\}]], A)
+\\
+{\inred \hf{InterpreterError}}
+&\ifc{A = \mkst{\er}A'\wedge x\in\hf{Dom}(\er)}\\
+%
+%
+(H, \mkst{\er[x\mapsto\{{\tt[[Value]]:}\undef,
+{\tt[[Mutable]]:}\true,\\
+\phantom{(H, \mkst{\er[x\mapsto}{}}
+{\tt[[Configurable]]:}b\}]}A')\\
+&\ifc{A = \mkst{\er}A'\wedge x\not\in\hf{Dom}(\er)}\\
+%%%%&\mbox{\phantom{if }\hf{CreateBinding}$(H,A',x,b)=(H',A'')$}\\
+%
+%
+(H',\mkst{l}A'')&\ifc{A = \mkst{l}A' \wedge}\\
+&\mbox{\phantom{if }\hf{CreateBinding}$(H,A',x,b)=(H',A'')$}
+% H[l\mapsto H(l).{\tt @property}[x\mapsto\{{\tt [[Value]]:} \undef,
+% {\tt [[Writable]]:} \true,
+% &\ifc{A = \mkst{l}A'}\\
+% \phantom{H[l\mapsto H(l).{\tt @property}[x\mapsto\{}
+% {\tt [[Enumerable]]:} \true,
+% {\tt [[Configurable]]:} b\}]]
+\end{array}\right.
+}\\\\
+
+\multicolumn{3}{l}{\mbox{\inblue 10.2.1.1.3 {\tt SetMutableBinding(N,V,S)}}}\\
+%{\ingreen Assert: $x\in\hf{Dom}(\er)$}}}\\
+\hf{SetBinding} & :& \Heap \times \Env \times \Var \times \Val \times \strict \rightarrow \Heap \times \Env \times \ve \\
+\hf{SetBinding}(H,A,x,v,b) & =\\
+\multicolumn{3}{l}{
+\rulesep
+\left\{\begin{array}{ll}
+(H[\lg\mapsto H(\lg).{\tt @property}[x\mapsto v]], A, v)
+&\ifc{A = \lg}\\
+%
+(H, \mkst{\er[x\mapsto\{{\tt [[Value]]:}v, {\tt [[Mutable]]:}\true, \\
+\phantom{(H, \mkst{\er[x\mapsto}{}}
+{\tt [[Configurable]]:} b\}]}A', v)\\
+&\ifc{A = \mkst{\er}A'\wedge x\in\hf{Dom}(\er)
+\wedge}\\
+&\mbox{\phantom{if\ }} \er(x).{\tt [[Mutable]]}\\
+%
+(H, A, \te)
+&\ifc{A = \mkst{\er}A'\wedge x\in\hf{Dom}(\er) \wedge}\\
+&\mbox{\phantom{if\ }} \neg\er(x).{\tt[[Mutable]]} \wedge b\\
+%
+(H, A, v)
+&\ifc{A = \mkst{\er}A'\wedge x\in\hf{Dom}(\er) \wedge}\\
+&\mbox{\phantom{if\ }}  \neg\er(x).{\tt[[Mutable]]} \wedge \neg b\\
+%
+%
+%%%%%{\inred \hf{InterpreterError}}
+\hf{SetBinding}(H',A',x,v,b)
+&\ifc{A = \mkst{\er}A'\wedge x\not\in\hf{Dom}(\er) \wedge}\\
+&\mbox{\phantom{if }\hf{CreateBinding}$(H,A,x,b)=(H',A')$}\\
+%
+%(H',\mkst{\er}A'', \emph{ve})&\ifc{A = \mkst{\er}A'\wedge x\not\in\hf{Dom}(\er)}\\
+%&\mbox{\phantom{if }\hf{SetBinding}$(H,A',x,v,b)=(H',A'', \emph{ve})$}\\
+%
+%
+(H',\mkst{l}A'', \emph{ve})&\ifc{A = \mkst{l}A'}\\
+&\mbox{\phantom{if }\hf{SetBinding}$(H,A',x,v,b)=(H',A'', \emph{ve})$}\\
+\end{array}\right.
+}
+\\[2em]
+\hf{SetBindingDER} & :& \Heap \times \Env \times \Var \times \Val \times \strict \rightarrow \Heap \times \Env \times \ve \\
+\hf{SetBindingDER}(H,A,x,v,b) & =\\
+\multicolumn{3}{l}{
+\rulesep
+\left\{\begin{array}{ll}
+{\inred \hf{InterpreterError}}
+&\ifc{A = \lg}\\
+(H, \mkst{\er[x\mapsto\{{\tt [[Value]]:}v, {\tt [[Mutable]]:}\true,\\
+\phantom{(H, \mkst{\er[x\mapsto}{}}
+ {\tt [[Configurable]]:} b\}]}A', v)\\
+&\ifc{A = \mkst{\er}A'\wedge x\in\hf{Dom}(\er) \wedge}\\
+&\mbox{\phantom{if\ }}\er(x).{\tt[[Mutable]]}\\
+(H, A, \te)
+&\ifc{A = \mkst{\er}A'\wedge x\in\hf{Dom}(\er) \wedge}\\
+&\mbox{\phantom{if\ }}\neg\er(x).{\tt[[Mutable]]} \wedge b\\
+(H, A, v)
+&\ifc{A = \mkst{\er}A'\wedge x\in\hf{Dom}(\er) \wedge}\\
+&\mbox{\phantom{if\ }}\neg\er(x).{\tt[[Mutable]]} \wedge \neg b\\
+(H',\mkst\er{A''}, \emph{ve})
+&\ifc{A = \mkst{\er}A'\wedge x\not\in\hf{Dom}(\er) \wedge}\\
+&\mbox{\phantom{if }\hf{SetBindingDER}$(H,A',x,v,b)=(H',A'', \emph{ve})$}\\
+(H',\mkst{l}A'', \emph{ve})&\ifc{A = \mkst{l}A'}\\
+&\mbox{\phantom{if }\hf{SetBindingDER}$(H,A',x,v,b)=(H',A'', \emph{ve})$}\\
+\end{array}\right.
+}
+\\\\
+
+
+
+
+
+\multicolumn{3}{l}{\mbox{\inblue 10.2.1.1.4 {\tt GetBindingValue(N,S)}
+{\ingreen Assert: $x\in\hf{Dom}(\er)$}}}\\
+\hf{GetBindingValue} & :& \Heap \times \emph{DeclEnvRec} \times \Var \times \Bool \rightarrow \ValError\\
+\hf{GetBindingValue}(H,\er,x,b) & =&
+\left\{\begin{array}{ll}
+%\ingreen x &\ingreen \ifc{x \in Loc \wedge x \in \hf{Dom}(H)}\\
+\undef &\ifc{\er(x).{\tt[[Value]]} = \bot \wedge \neg\er(x).{\tt[[Mutable]]} \wedge \neg b}\\
+\re &\ifc{\er(x).{\tt[[Value]]} = \bot \wedge \neg\er(x).{\tt[[Mutable]]} \wedge b}\\
+\er(x).{\tt[[Value]]}&\ifc{\er(x).{\tt[[Value]]} \not= \bot \vee \er(x).{\tt[[Mutable]]}}\\
+\end{array}\right.
+\\[2em]
+
+\multicolumn{3}{l}{\mbox{\inblue 10.2.1.1.7 {\tt CreateImmutableBinding(N)}
+{\ingreen Assert: $x\not\in\hf{Dom}(\er)$}}}\\
+\hf{CreateImmutableBinding} & :& \Heap \times \Env \times \Var \times \eval \rightarrow \Heap \times \Env \\
+\hf{CreateImmutableBinding}(H,A,x,b) & =\\
+\lefteqn{
+\rulesep
+\left\{\begin{array}{ll}
+(H, \mkst{\er[x\mapsto\{{\tt[[Value]]:}\undef,
+{\tt[[Mutable]]:}\false,
+{\tt[[Configurable]]:}b\}]}A')
+&\ifc{A = \mkst{\er}A'\wedge x\not\in\hf{Dom}(\er)}\\
+{\inred \hf{InterpreterError}}
+&\mbox{otherwise}\\
+\end{array}\right.
+}\\[1em]
+\end{array}
+\]
+
+
+\[
+\begin{array}{l@{}c@{}l}
+
+\multicolumn{3}{l}{\mbox{\inblue 10.2.1.1.8 {\tt InitializeImmutableBinding(N,V)}
+{\ingreen Assert: $x\in\hf{Dom}(\er)$}}}\\
+\hf{InitializeImmutableBinding} & :& \Heap \times \Env \times \Var \times \Val \times \strict \rightarrow \Heap \times \Env \times \ve \\
+\hf{InitializeImmutableBinding}(H,A,x,v,b) & =\\
+\multicolumn{3}{l}{
+\rulesep
+\left\{\begin{array}{ll}
+
+(H, \mkst{\er[x\mapsto\{{\tt [[Value]]:}v, {\tt [[Mutable]]:}\false, {\tt [[Configurable]]:} b\}]}A', v)
+&\ifc{A = \mkst{\er}A'\wedge x\in\hf{Dom}(\er)
+}\\
+{\inred \hf{InterpreterError}}
+&\mbox{otherwise}\\
+\end{array}\right.
+}
+\\[2em]
+
+% \hf{SetBinding} & :& \Heap \times \Env \times \Loc \times \Val \times \Bool
+% \rightarrow \Heap \times \Env \times \ValError\\
+% \hf{SetBinding}(H,A,l,v, b) & =&\hf{Put}(H,A,\lg,l,v,b)
+%\\[2em]
+
+\multicolumn{3}{l}{\mbox{\inblue 10.2.1.2.4 {\tt GetBindingValue(N,S)}}}\\
+\hf{GetBindingValue} & :& \Heap \times \emph{ObjEnvRec} \times \Var \times \Bool \rightarrow \ValError\\
+\hf{GetBindingValue}(H,l,x,b) & =&
+\left\{\begin{array}{ll}
+\ingreen\re &\ingreen \ifc{l = \nullL}\\
+\undef &\ifc{\neg\hf{HasProperty}(H,l,x) \wedge \neg b}\\
+\re &\ifc{\neg\hf{HasProperty}(H,l,x) \wedge b}\\
+\hf{Get}(H,l,x)&\ifc{\hf{HasProperty}(H,l,x)}\\
+\end{array}\right.
+\\[2em]
+
+\multicolumn{3}{l}{\mbox{\inblue 10.2.2.1 {\tt GetIdentifierReference(lex, name,{\inred strict})}}}\\
+\hf{Lookup} & :& \Heap \times \Env \times \pname \times \strict \rightarrow \emph{EnvRec} \\
+\hf{Lookup}(H,A,x,\strict) &=&
+\left\{\begin{array}{ll}
+\nullL & \ifc{A = \lg \wedge \neg\hf{HasProperty}(H,\varloc{Global},x)}\\
+%\hf{GetProperty}(H, \varloc{Global}, x) & \ifc{A = \lg \wedge \hf{HasProperty}(H,\varloc{Global},x)} \\
+l & \ifc{A = \lg \wedge \hf{HasProperty}(H,\varloc{Global},x) \wedge} \\
+& \mbox{\phantom{if }  \hf{GetProperty}$(H,\varloc{Global},x)=(\_, l)$} \\
+\er &\ifc{A = \er::A'\wedge x\in\hf{Dom}(\er)} \\
+\hf{Lookup}(H, A',x,\strict) &\ifc{A = \er::A'\wedge x\not\in\hf{Dom}(\er)}\\
+%\hf{GetProperty}(H,l,x)  &\ifc{A = l::A' \wedge \hf{HasProperty}(H,l,x)} \\
+l'  &\ifc{A = l::A' \wedge \hf{HasProperty}(H,l,x) \wedge} \\
+& \mbox{\phantom{if }  \hf{GetProperty}$(H,l,x)=(\_, l')$} \\
+\hf{Lookup}(H, A',x,\strict) &\ifc{A = l::A' \wedge \neg\hf{HasProperty}(H,l,x)} \\
+\end{array}\right.
+\\[2em]
+\end{array}
+\]
+
+
+
+\subsection*{\inblue 15 Standard Built-in ECMAScript Objects}
+\[
+\begin{array}{rl}
+
+\multicolumn{2}{l}{\emph{InitHeap} = \{}\\
+\multicolumn{2}{l}{\mbox{\inblue 15.1 The Global Object}}\\
+\multicolumn{2}{l}{\phantom{\emph{InitHeap} = \{}
+\lg\mapsto \{\},}\\
+\multicolumn{2}{l}{\mbox{\inblue 15.2.3.1 {\tt Object.prototype}}}\\
+\multicolumn{2}{l}{\mbox{\inblue 15.2.4 Properties of the Object Prototype Object}}\\
+\multicolumn{2}{l}{\phantom{\emph{InitHeap} = \{}
+{\tt\#ObjProto} \mapsto
+\{{\tt [[Class]]: ``Object"}, {\tt [[Extensible]]: \true}, {\tt [[Prototype]]: \nullK}\},}\\
+
+\multicolumn{2}{l}{\mbox{\inblue 15.3.3.1 {\tt Function.prototype}}}\\
+\multicolumn{2}{l}{\mbox{\inblue 15.3.4 Properties of the Function Prototype Object}}\\
+\multicolumn{2}{l}{\phantom{\emph{InitHeap} = \{}
+{\tt\#FtnProto} \mapsto \{{\tt [[Class]]: ``Function"}, {\tt [[Extensible]]:} \true,%''''
+{\tt [[Prototype]]: \#ObjProto},}\\
+\multicolumn{2}{l}{\phantom{\emph{InitHeap} = \{{\tt\#FtnProto} \mapsto \{}
+{\tt [[Code]]:} {\sf function} \ \ir{\_} {\tt(}\ir{\emph{this}}{\tt,}\ir{\emph{arguments}}{\tt) \{}
+{\sf return} \ \undef {\tt\}}, {\tt length:} 0\},}\\
+
+\multicolumn{2}{l}{\mbox{\inblue 15.4.3.1 {\tt Array.prototype}}}\\
+\multicolumn{2}{l}{\mbox{\inblue 15.4.4 Properties of the Array Prototype Object}}\\
+\multicolumn{2}{l}{\phantom{\emph{InitHeap} = \{}
+{\tt\#ArrProto} \mapsto \{{\tt [[Class]]: ``Array"}, {\tt [[Extensible]]:} \true,%''''
+{\tt [[Prototype]]: \#ObjProto},
+% \\
+% \multicolumn{2}{l}{\phantom{\emph{InitHeap} = \{{\tt\#FtnProto} \mapsto \{}
+{\tt length:} 0\},}\\
+
+\multicolumn{2}{l}{\mbox{\inblue 15.5.3.1 {\tt String.prototype}}}\\
+\multicolumn{2}{l}{\mbox{\inblue 15.5.4 Properties of the String Prototype Object}}\\
+\multicolumn{2}{l}{\phantom{\emph{InitHeap} = \{}
+{\tt\#StrProto} \mapsto \{{\tt [[Class]]: ``String"}, {\tt [[Extensible]]: \true}, {\tt [[Prototype]]: \#ObjProto}, {\tt [[PrimitiveValue]]: ``"} \},}\\
+
+\multicolumn{2}{l}{\mbox{\inblue 15.6.3.1 {\tt Boolean.prototype}}}\\
+\multicolumn{2}{l}{\mbox{\inblue 15.6.4 Properties of the Boolean Prototype Object}}\\
+\multicolumn{2}{l}{\phantom{\emph{InitHeap} = \{}
+{\tt\#BoolProto} \mapsto \{{\tt [[Class]]: ``Boolean"}, {\tt [[Extensible]]: \true}, {\tt [[Prototype]]: \#ObjProto}, {\tt [[PrimitiveValue]]: \false} \},}\\
+
+
+\multicolumn{2}{l}{\mbox{\inblue 15.7.3.1 {\tt Number.prototype}}}\\
+\multicolumn{2}{l}{\mbox{\inblue 15.7.4 Properties of the Number Prototype Object}}\\
+\multicolumn{2}{l}{\phantom{\emph{InitHeap} = \{}
+{\tt\#NumProto} \mapsto \{{\tt [[Class]]: ``Number"}, {\tt [[Extensible]]: \true}, {\tt [[Prototype]]: \#ObjProto},
+{\tt [[PrimitiveValue]]: {\tt+0}} \},}\\%''''''''
+
+\multicolumn{2}{l}{\mbox{\inblue 15.11.3.1 {\tt Error.prototype}}}\\
+\multicolumn{2}{l}{\mbox{\inblue 15.11.4 Properties of the Error Prototype Object}}\\
+\multicolumn{2}{l}{\phantom{\emph{InitHeap} = \{}
+{\tt\#ErrProto} \mapsto \{{\tt [[Class]]: ``Error"}, {\tt [[Extensible]]: \true}, {\tt [[Prototype]]: \#ObjProto}
+\},}\\%''''''''
+
+\multicolumn{2}{l}{\mbox{\inblue 15.11 {\tt Error} Objects}}\\
+\multicolumn{2}{l}{\mbox{\inblue 15.11.1 {\tt Error(message)}}}\\
+\multicolumn{2}{l}{\phantom{\emph{InitHeap} = \{}
+{\tt\#Error} \mapsto \{{\tt [[Class]]: ``Error"}, {\tt [[Extensible]]: \true}, {\tt [[Prototype]]: \#ErrProto}
+\},}\\%''''''''
+
+
+\end{array}
+\]
+
+\[
+\begin{array}{rl}
+
+\multicolumn{2}{l}{\mbox{\inblue 15.11.6 Native Error Types Used in This Standard}}\\
+\multicolumn{2}{l}{\mbox{\inblue 15.11.7 NativeError Object Structure}}\\
+\multicolumn{2}{l}{\mbox{\inblue 15.11.7.5 Properties of the NativeError}}\\
+\multicolumn{2}{l}{\phantom{\emph{InitHeap} = \{}
+{\tt\#EvalError} \mapsto \{{\tt [[Class]]: ``Error"}, {\tt [[Extensible]]: \true}, {\tt [[Prototype]]: \#ErrProto}
+\},}\\%''''''''
+\multicolumn{2}{l}{\phantom{\emph{InitHeap} = \{}
+{\tt\#RangeError} \mapsto \{{\tt [[Class]]: ``Error"}, {\tt [[Extensible]]: \true}, {\tt [[Prototype]]: \#ErrProto}
+\},}\\%''''''''
+\multicolumn{2}{l}{\phantom{\emph{InitHeap} = \{}
+{\tt\#ReferenceError} \mapsto \{{\tt [[Class]]: ``Error"}, {\tt [[Extensible]]: \true}, {\tt [[Prototype]]: \#ErrProto}
+\},}\\%''''''''
+\multicolumn{2}{l}{\phantom{\emph{InitHeap} = \{}
+{\tt\#SyntaxError} \mapsto \{{\tt [[Class]]: ``Error"}, {\tt [[Extensible]]: \true}, {\tt [[Prototype]]: \#ErrProto}
+\},}\\%''''''''
+\multicolumn{2}{l}{\phantom{\emph{InitHeap} = \{}
+{\tt\#TypeError} \mapsto \{{\tt [[Class]]: ``Error"}, {\tt [[Extensible]]: \true}, {\tt [[Prototype]]: \#ErrProto}
+\},}\\%''''''''
+\multicolumn{2}{l}{\phantom{\emph{InitHeap} = \{}
+{\tt\#URIError} \mapsto \{{\tt [[Class]]: ``Error"}, {\tt [[Extensible]]: \true}, {\tt [[Prototype]]: \#ErrProto}
+\}}\\%''''''''
+
+
+\multicolumn{2}{l}{\phantom{\emph{InitHeap} = }
+\}}
+\\[2em]
+
+
+\multicolumn{2}{l}{\mbox{\inblue 15.4 Array Objects}}\\
+\multicolumn{2}{l}{\mbox{\inblue 15.4.2.1 new Array([item0[, item1[, ...]]])}}\\
+\hf{NewArrObject} : & \Num \rightarrow \Obj\\
+\hf{NewArrObject}(n)=&
+ {\tt \{[[Class]]: ``Array"}, {\tt [[Extensible]]:} \true,%''
+{\tt [[Prototype]]: \#ArrProto},\\
+& \phantom{\{}{\tt @property: \{``length"\mapsto}\{{\tt [[Value]]:}n,
+ {\tt [[Writable]]:} \true,\\%''
+& \phantom{\{{\tt @property: \{``length"\mapsto}\{}%''
+ {\tt [[Enumerable]]:} \false,
+ {\tt [[Configurable]]:} \false\}\}\}
+\\[1em]
+
+
+\multicolumn{2}{l}{\mbox{\inblue 15.5 String Objects}}\\
+\multicolumn{2}{l}{\mbox{\inblue 15.5.2.1 new String([value])}}\\
+\hf{NewStrObject} : & \Str \rightarrow \Obj\\
+\hf{NewStrObject}(s)=&
+ {\tt \{[[Class]]: ``String"}, {\tt [[Extensible]]:} \true,%''
+{\tt [[Prototype]]: \#StrProto},
+{\tt [[PrimitiveValue]]:} s\} \\[1em]
+
+\multicolumn{2}{l}{\mbox{\inblue 15.6 Boolean Objects}}\\
+\multicolumn{2}{l}{\mbox{\inblue 15.6.2.1 new Boolean(value)}}\\
+\hf{NewBoolObject} : & \Bool \rightarrow \Obj\\
+\hf{NewBoolObject}(b)=&
+ {\tt \{[[Class]]: ``Boolean"}, {\tt [[Extensible]]:} \true,
+{\tt [[Prototype]]: \#BoolProto},
+{\tt [[PrimitiveValue]]:} b\} \\[1em]%''''
+
+\multicolumn{2}{l}{\mbox{\inblue 15.7 Number Objects}}\\
+\multicolumn{2}{l}{\mbox{\inblue 15.7.2.1 new Number([value])}}\\
+\hf{NewNumObject}: & \Num \rightarrow \Obj\\
+\hf{NewNumObject}(n)=&
+ {\tt \{[[Class]]: ``Number"}, {\tt [[Extensible]]:} \true,
+{\tt [[Prototype]]: \#NumProto},
+{\tt [[PrimitiveValue]]:} n\}%''''
+\\[2em]
+
+
+\multicolumn{2}{l}{\mbox{\inblue 13.2 {\tt Creating Function Objects}: The following properties are omitted for now:}}\\
+\multicolumn{2}{l}{\mbox{\inblue \phantom{13.2} {\tt [[Get]]}: 15.3.5.4 {\tt [[Get]](P)}}}\\
+\multicolumn{2}{l}{\mbox{\inblue \phantom{13.2} {\tt [[Call]]}: 13.2.1 {\tt [[Call]]}}}\\
+\multicolumn{2}{l}{\mbox{\inblue \phantom{13.2} {\tt [[Construct]]}: 13.2.2 {\tt [[Construct]]}}}\\
+\multicolumn{2}{l}{\mbox{\inblue \phantom{13.2} {\tt [[HasInstance]]}: 15.3.5.3 {\tt [[HasInstance]](V)}}}\\
+\multicolumn{2}{l}{\mbox{\inblue \phantom{13.2} {\tt [[FormalParameters]]}}}\\
+
+\hf{NewFtnObject}: & \Heap \times \Env \times \FVal \rightarrow \Heap \times \Loc\\
+\hf{NewFtnObject}(H,A,\emph{fv})=&
+(H[l\mapsto\hf{NewFtnObj}(\emph{fv},A,l',\strict), l'\mapsto o], l)
+\\[.5em]
+\mbox{where} &
+l = \hf{NewLoc}()
+\rulesep
+l' = \hf{NewLoc}()
+\\
+&
+o = \hf{NewObj}().{\tt @property}[{\tt``constructor"\mapsto}\{{\tt [[Value]]:}l,%''
+ {\tt [[Writable]]:} \true,\\
+&\phantom{o = \hf{NewObj}().{\tt @property}[{\tt``constructor"\mapsto}\{}%''
+ {\tt [[Enumerable]]:} \false,
+ {\tt [[Configurable]]:} \true\}]
+
+% \mbox{where} &
+% \hf{NewLoc}() = l
+% \rulesep
+% \hf{NewLoc}() = l'
+% \rulesep
+% \hf{NewObj}() = o
+% \\
+% &
+% o.{\tt @property}[{\tt``constructor"\mapsto}\{{\tt [[Value]]:}l,%''
+%  {\tt [[Writable]]:} \true,\\
+% &\phantom{o.{\tt @property}[{\tt``constructor"\mapsto}\{}%''
+%  {\tt [[Enumerable]]:} \false,
+%  {\tt [[Configurable]]:} \true\}]
+\\[2em]
+
+
+
+
+\hf{NewFtnObj} :& \FVal \times \Env \times \Loc \times \strict \rightarrow \Obj \\
+\hf{NewFtnObj}(\emph{fv},A,l,b) =&
+{\tt \{[[Class]]: ``Function"}, \\%''
+& \phantom{\{}
+{\tt [[Extensible]]:} \true,\\
+& \phantom{\{}{\tt [[Prototype]]: \#FtnProto},\\
+& \phantom{\{}{\tt @property: \{``prototype"\mapsto}\{{\tt [[Value]]:}l,
+ {\tt [[Writable]]:} \true,\\%''
+& \phantom{\{{\tt @property: \{``prototype"\mapsto}\{}%''
+ {\tt [[Enumerable]]:} \false,
+ {\tt [[Configurable]]:} \false\}, \\
+
+& \phantom{\{ {\tt @property: \{ } }
+ {\tt``length"\mapsto}\{{\tt [[Value]]:}\hf{ParamsSize}(\emph{fv}),%''
+ {\tt [[Writable]]:} \false,\\
+& \phantom{\{{\tt @property: \{``length"\mapsto}\{}%''
+ {\tt [[Enumerable]]:} \false,
+ {\tt [[Configurable]]:} \false\}\},\\
+ 
+ 
+& \phantom{\{}{\tt [[Code]]:} \emph{fv},\\
+& \phantom{\{}{\tt [[Scope]]:} {A}\}\\[1em]
+% & \phantom{\{}{\tt length:}
+% \{{\tt [[Value]]:} |\emph{arguments}|,\quad\mbox{where ...}
+% {\tt [[Writable]]:} \false,
+% {\tt [[Enumerable]]:} \false,
+% {\tt [[Configurable]]:} \false\},\\
+% proto's constructor
+% & \phantom{\{}{\tt constructor:}
+% \{{\tt [[Value]]:} itself,
+% {\tt [[Writable]]:} \true,
+% {\tt [[Enumerable]]:} \false,
+% {\tt [[Configurable]]:} \true\},\\
+
+
+\end{array}
+\]
+
+
+\[
+\begin{array}{rl}
+
+\multicolumn{2}{l}{\mbox{\inblue 15.2.2.1 {\tt new Object([value])}}}\\
+\hf{NewObj} :& () \rightarrow \Obj \\
+\hf{NewObj}() =&
+{\tt \{[[Class]]: ``Object"}, \\%''
+& \phantom{\{}
+{\tt [[Extensible]]:} \true,\\
+& \phantom{\{}{\tt [[Prototype]]: \#ObjProto}, \\
+& \phantom{\{}{\tt @property: \{\}}\}\\
+% & \phantom{\{}{\tt @property: \{``constructor"\mapsto}\{{\tt [[Value]]:}l,
+%  {\tt [[Writable]]:} \true,\\%''
+% & \phantom{\{{\tt @property: \{``constructor"\mapsto}\{}%''
+%  {\tt [[Enumerable]]:} \false,
+%  {\tt [[Configurable]]:} \true\}\}\\
+\\[2em]
+
+
+\multicolumn{2}{l}{\mbox{\inblue 10.6 {\tt Arguments Object}}}\\
+\hf{NewArgObject} :& \Loc \times \Num \times \Obj \times \strict \rightarrow \Obj \\
+\hf{NewArgObject}(l_f, n_p, o, b) =&
+\left\{\begin{array}{ll}
+\hf{NewArgObj}(l_f, n_p, o).{\tt @property}[{\tt``callee"}\mapsto\{{\tt [[Value]]:}l_f,%''
+{\tt [[Writable]]:} \true, &\ifc{b}\\%''
+\phantom{\hf{NewArgObj}(l_f, n_p, o).{\tt @property}[{\tt``callee"}\mapsto\{}%''
+{\tt [[Enumerable]]:} \false,
+&\\
+\phantom{\hf{NewArgObj}(l_f, n_p, o).{\tt @property}[{\tt``callee"}\mapsto\{}%''
+{\tt [[Configurable]]:} \true
+\}]&\\
+\hf{NewArgObj}(l_f, n_p, o) &\ifc{\neg b}\\
+\end{array}\right.
+\\\\
+
+\hf{NewArgObj} :& \Loc \times \Num \times \Obj \rightarrow \Obj \\
+\hf{NewArgObj}(l_f, n_p, o) =&
+{\tt \{[[Class]]: ``Arguments"}, \\%''
+& \phantom{\{}
+{\tt [[Extensible]]:} \true,\\
+& \phantom{\{}{\tt [[Prototype]]: \#ObjProto}, \\
+& \phantom{\{}{\tt @property:} \{\\
+& \phantom{\{\qquad}
+{\tt``0"} \mapsto\{{\tt [[Value]]:}v_0,%''
+{\tt [[Writable]]:} \true,
+{\tt [[Enumerable]]:} \true,
+{\tt [[Configurable]]:} \true\},\\ %''''
+& \phantom{\{\qquad}
+\ldots
+\\
+& \phantom{\{\qquad}
+{``n-1"} \mapsto\{{\tt [[Value]]:}v_{n-1},%''
+{\tt [[Writable]]:} \true,
+{\tt [[Enumerable]]:} \true,
+{\tt [[Configurable]]:} \true\},\\ %''''
+& \phantom{\{\qquad}
+{\tt``length"}\mapsto  %''''
+\{{\tt [[Value]]:}n_a,%''
+{\tt [[Writable]]:} \true,
+{\tt [[Enumerable]]:} \false,
+{\tt [[Configurable]]:} \true\}
+%{\tt``length"}\mapsto o.{\tt@property(``length")} %''''
+\}\}
+\\[.5em]
+\mbox{where} &
+n_a = o.{\tt@property(``length")} %''''
+\rulesep
+n = \hf{Max}(n_a, n_p)
+\rulesep
+v_i = \hf{GetArg}(o, i, n_a, n_p)
+\\[1em]
+
+\hf{Max} :& \Num \times \Num \rightarrow \Num\\
+\hf{Max}(n_1, n_2) =&
+\left\{\begin{array}{ll}
+n_1 &\ifc{n_1 \ge n_2}\\
+n_2 &\ifc{n_1 < n_2}\\
+\end{array}\right.
+\\[1em]
+
+\hf{GetArg} :& \Obj \times \Num \times \Num \times \Num \rightarrow \Val\\
+\hf{GetArg}(o, i, n_a, n_p) =&
+\left\{\begin{array}{ll}
+o.{\tt@property(``}i{\tt")} %''''
+ &\ifc{n_a \ge n_p}\\
+o.{\tt@property(``}i{\tt")} %''''
+ &\ifc{n_a < n_p ~\wedge~ 0 \le i < n_a}\\
+\undef &\ifc{n_a < n_p ~\wedge~ n_a \le i < n_p}\\
+\end{array}\right.
+\\[2em]
+\end{array}
+\]
+
+
+% \[
+% \begin{array}{l@{}c@{}l}
+% \emph{UndefDP} &=& \{{\tt [[Value]]:} \undef,
+% {\tt [[Writable]]:}\true,
+% {\tt [[Enumerable]]:}\true,
+% {\tt [[Configurable]]:}\true\}\\
+% \emph{UndefSV} &=& \{{\tt [[Value]]:}\undef, {\tt [[Mutable]]:}\true\}\\
+% \\
+% \end{array}
+% \]
+
+%GetValue(H, v, getBase(H,A,v), strict)
+
+\newpage
+\section{Evaluation Rules}
+
+\subsection{Program}
+
+\[
+\begin{array}{l@{~~}l@{~~}ll}
+\fbox{$\ir{p} \rightarrow_{\ir{p}} \res,\ct$}\\[2em]
+\mtt{\normalsize\inred IRRoot(List<IRFunDecl> fds, List<IRVarStmt> vds, List<IRStmt> irs)}\\
+\mbox{\inblue 14 Program}\\
+\mbox{\inblue 10.4.1.1 Initial Global Execution Context}\\
+\frac{\begin{matrix}
+(\emph{InitHeap}, \lg, \lg), \ir{p} \rightarrow_{\ir{\stmt}} \res,\ct
+\end{matrix}}{\begin{matrix}
+\ir{p} \rightarrow_{\ir{p}} \res,\ct
+\end{matrix}}
+\\[1em]
+\end{array}
+\]
+
+\subsection{Statements}
+\[
+\begin{array}{l@{~~}l@{~~}ll}
+\fbox{$\state,\ir{\stmt} \rightarrow_{\ir{\stmt}} \res,\ct$}\\[1em]
+\mtt{\normalsize\inred IRExprStmt(IRId lhs, IRExpr right, boolean ref = false)}\\
+
+\mbox{\inblue 12.4 Expression Statement}\\
+\mbox{\inblue 11.13 Assignment Operators: {\tt PutValue(lref, rval)}}\\[.5em]
+
+\frac{\begin{matrix}
+\evale, \ir\expr \rightarrow_{\ir\expr} \err
+\end{matrix}}{\begin{matrix}
+\state, \irid \ {\tt =} \ \ir\expr \rightarrow_{\ir\stmt}
+\res, \error
+\end{matrix}}
+\\[2em]
+
+\frac{\begin{matrix}
+\evale, \ir\expr \rightarrow_{\ir\expr} v
+\rulesep
+\hf{PutValue}(H,A,\irid,v,\strict) = (H',A',\err)
+\end{matrix}}{\begin{matrix}
+\state, \irid \ {\tt =} \ \ir\expr \rightarrow_{\ir\stmt}
+\resp, \error
+\end{matrix}}
+\\[2em]
+
+\frac{\begin{matrix}
+\evale, \ir\expr \rightarrow_{\ir\expr} v
+\rulesep
+\hf{PutValue}(H,A,\irid,v,\strict) = (H',A',v')
+\end{matrix}}{\begin{matrix}
+\state, \irid \ {\tt =} \ \ir\expr \rightarrow_{\ir\stmt}
+\resp, {\tt Normal}(v')
+\end{matrix}}
+\\[2em]
+
+
+\mbox{\inblue 11.4.1 The {\tt delete} Operator}\\
+\mtt{\normalsize\inred IRDelete(IRId lhs, IRId id)}\\[.5em]
+% delete 1
+\frac{\begin{matrix}
+\evale, \ir{y} \rightarrow_{\ir\expr} \err
+\end{matrix}}{\begin{matrix}
+\state, \irdel \rightarrow_{\ir\stmt} \res, \error
+\end{matrix}}
+\\[2em]
+
+% delete 2
+\frac{\begin{matrix}
+\evale, \ir{y} \rightarrow_{\ir\expr} v
+\rulesep
+\hf{DeleteBinding}(H,A,\hf{ToString}(H,y),\strict) = (H', A', \err)
+\end{matrix}}{\begin{matrix}
+\state, \irdel \rightarrow_{\ir\stmt} \resp, \error
+\end{matrix}}
+\\[2em]
+
+% delete 3
+\frac{\begin{matrix}
+\evale, \ir{y} \rightarrow_{\ir\expr} v
+\rulesep
+\hf{DeleteBinding}(H,A,\hf{ToString}(H,y),\strict) = (H', A', b)
+\rulesep
+(H',A',\tb), \irid \ {\tt =} \ b \rightarrow_{\ir\stmt} \respp, \ct
+\end{matrix}}{\begin{matrix}
+\state, \irdel \rightarrow_{\ir\stmt} \respp, \ct
+\end{matrix}}
+\\[2em]
+
+
+\mtt{\normalsize\inred IRDeleteProp(IRId lhs, IRId obj, IRId index)}\\[.5em]
+% delete prop 1
+\frac{\begin{matrix}
+\evale, \ir{y} \rightarrow_{\ir\expr} \err
+\end{matrix}}{\begin{matrix}
+\state, \irdelprop \rightarrow_{\ir\stmt} \res, \error
+\end{matrix}}
+\\[2em]
+
+% delete prop 2
+\frac{\begin{matrix}
+\evale, \ir{y} \rightarrow_{\ir\expr} v
+\rulesep
+\evale, \ir{z} \rightarrow_{\ir\expr} \err
+\end{matrix}}{\begin{matrix}
+\state, \irdelprop \rightarrow_{\ir\stmt} \res, \error
+\end{matrix}}
+\\[2em]
+
+% delete prop 3
+\frac{\begin{matrix}
+\evale, \ir{y} \rightarrow_{\ir\expr} v_1
+\rulesep
+\evale, \ir{z} \rightarrow_{\ir\expr} v_2
+\rulesep
+\hf{CheckObjectCoercible}(v_1) = \err
+\end{matrix}}{\begin{matrix}
+\state, \irdelprop \rightarrow_{\ir\stmt} \res, \error
+\end{matrix}}
+\\[2em]
+
+% delete prop 4
+\frac{\begin{matrix}
+\evale, \ir{y} \rightarrow_{\ir\expr} v_1
+\rulesep
+\evale, \ir{z} \rightarrow_{\ir\expr} v_2
+\rulesep
+\hf{CheckObjectCoercible}(v_1) \not= \err
+\rulesep
+\hf{ToObject}(H, v_1) = (H',l)
+\\
+\hf{Delete}(H', A, l, \hf{ToString}(H',v_2), \strict) = (H'', A', \err)
+\end{matrix}}{\begin{matrix}
+\state, \irdelprop \rightarrow_{\ir\stmt} (H'',A'), \error
+\end{matrix}}
+\\\\
+
+% delete prop 5
+\frac{\begin{matrix}
+\evale, \ir{y} \rightarrow_{\ir\expr} v_1
+\rulesep
+\evale, \ir{z} \rightarrow_{\ir\expr} v_2
+\rulesep
+\hf{CheckObjectCoercible}(v_1) \not= \err
+\rulesep
+\hf{ToObject}(H, v_1) = (H',l)
+\\
+\hf{Delete}(H', A, l, \hf{ToString}(H',v_2), \strict) = (H'', A', b)
+\rulesep
+(H'',A',\tb), \irid \ {\tt =} \ b \rightarrow_{\ir\stmt} (H''',A''), \ct
+\end{matrix}}{\begin{matrix}
+\state, \irdelprop \rightarrow_{\ir\stmt} (H''',A''), \ct
+\end{matrix}}
+
+\\[2em]
+
+
+
+\end{array}
+\]
+
+
+\[
+\begin{array}{l@{~~}l@{~~}ll}
+\mtt{\normalsize\inred IRStore(IRId obj, IRId index, IRExpr rhs)}\\[.5em]
+\mbox{\inblue 11.2.1 Property Accessors: {\tt IRStore}}\\
+\mbox{\inblue 11.13 Assignment Operators}\\
+\mbox{\inblue 8.7.2 {\tt PutValue(V, W)}}\\
+\mbox{\inblue 8.7.2 {\tt [[Put]](P, V, Throw)}}\\[1em]
+
+%%store 1
+\frac{\begin{matrix}
+\evale, \irid \rightarrow_{\ir\expr} \err
+\end{matrix}}{\begin{matrix}
+\state, \irid{\tt[}\ir{y}{\tt] =} \ \irexpr \rightarrow_{\ir\stmt}
+\res, \error
+\end{matrix}}
+\\[2em]
+
+%%store 2
+\frac{\begin{matrix}
+\evale, \irid \rightarrow_{\ir\expr} v
+\rulesep
+\evale, \ir{y} \rightarrow_{\ir\expr} \err
+\end{matrix}}{\begin{matrix}
+\state, \irid{\tt[}\ir{y}{\tt] =} \ \irexpr \rightarrow_{\ir\stmt}
+\res, \error
+\end{matrix}}
+\\[2em]
+
+%%store 3
+\frac{\begin{matrix}
+\evale, \irid \rightarrow_{\ir\expr} v_1
+\rulesep
+\evale, \ir{y} \rightarrow_{\ir\expr} v_2
+\rulesep
+\hf{CheckObjectCoercible}(v_1) = \err
+\end{matrix}}{\begin{matrix}
+\state, \irid{\tt[}\ir{y}{\tt] =} \ \irexpr \rightarrow_{\ir\stmt}
+\res, \error
+\end{matrix}}
+\\[2em]
+
+%%store 4
+\frac{\begin{matrix}
+\evale, \irid \rightarrow_{\ir\expr} v_1
+\rulesep
+\evale, \ir{y} \rightarrow_{\ir\expr} v_2
+\rulesep
+\hf{CheckObjectCoercible}(v_1) \not= \err
+\rulesep
+\hf{ToObject}(H, v_1) = (H',l)
+\\
+(H', A, \tb), \irexpr \rightarrow_{\ir\expr} \err
+\end{matrix}}{\begin{matrix}
+\state, \irid{\tt[}\ir{y}{\tt] =} \ \irexpr \rightarrow_{\ir\stmt}
+(H',A), \error
+\end{matrix}}
+\\[2em]
+
+%%store 5 : 4-a-(HasPrimitiveBase = true) : Put Internal-2
+{\inblue {\tt[[Put]]}\ 2.}\\
+\frac{\begin{matrix}
+\evale, \irid \rightarrow_{\ir\expr} v_1
+\rulesep
+\evale, \ir{y} \rightarrow_{\ir\expr} v_2
+\rulesep
+\hf{CheckObjectCoercible}(v_1) \not= \err
+\rulesep
+\hf{ToObject}(H, v_1) = (H',l)
+\\
+(H', A, \tb), \irexpr \rightarrow_{\ir\expr} v_3
+\rulesep
+v_1 \in \{{\tt Boolean, String, Number}\}
+\rulesep
+\hf{CanPut}(H', l, \hf{ToString}(H', v_2)) = \false
+\end{matrix}}{\begin{matrix}
+\state, \irid{\tt[}\ir{y}{\tt] =} \ \irexpr \rightarrow_{\ir\stmt}
+(H',A), \reject
+\end{matrix}}
+\\[2em]
+
+
+%%store 6 : 4-a-(HasPrimitiveBase = true) : Put Internal-4
+{\inblue {\tt[[Put]]}\ 4.}\\
+\frac{\begin{matrix}
+\evale, \irid \rightarrow_{\ir\expr} v_1
+\rulesep
+\evale, \ir{y} \rightarrow_{\ir\expr} v_2
+\rulesep
+\hf{CheckObjectCoercible}(v_1) \not= \err
+\rulesep
+\hf{ToObject}(H, v_1) = (H',l)
+\\
+(H', A, \tb), \irexpr \rightarrow_{\ir\expr} v_3
+\rulesep
+v_1 \in \{{\tt Boolean, String, Number}\}
+\rulesep
+\hf{CanPut}(H', l, \hf{ToString}(H', v_2)) = \true
+\\
+\hf{GetOwnPropety}(H', l, \hf{ToString}(H', v_2)) = (dp, \_)
+\end{matrix}}{\begin{matrix}
+\state, \irid{\tt[}\ir{y}{\tt] =} \ \irexpr \rightarrow_{\ir\stmt}
+(H',A), \reject
+\end{matrix}}
+\\[2em]
+
+
+
+%%store 7 : 4-a-(HasPrimitiveBase = true) : Put Internal-6
+{\inblue {\tt[[Put]]}\ 6.}\\
+\frac{\begin{matrix}
+\evale, \irid \rightarrow_{\ir\expr} v_1
+\rulesep
+\evale, \ir{y} \rightarrow_{\ir\expr} v_2
+\rulesep
+\hf{CheckObjectCoercible}(v_1) \not= \err
+\rulesep
+\hf{ToObject}(H, v_1) = (H',l)
+\\
+(H', A, \tb), \irexpr \rightarrow_{\ir\expr} v_3
+\rulesep
+v_1 \in \{{\tt Boolean, String, Number}\}
+\rulesep
+\hf{CanPut}(H', l, \hf{ToString}(H', v_2)) = \true
+\\
+\hf{GetOwnPropety}(H', l, \hf{ToString}(H', v_2)) \not= (dp, \_)
+\rulesep
+\hf{GetPropety}(H', l, \hf{ToString}(H', v_2)) = (ap, \_)
+\\
+%(H', A, \tb), \ir{x} = ap.{\tt[[Set]]}.{\tt[[Call]]}(v_1, [v_3]) \rightarrow_{\ir\stmt} (H'', A'), \err
+ap.{\tt[[Set]]}.{\tt[[Call]]}(v_1, [v_3]) = (H'', A', \err)
+\end{matrix}}{\begin{matrix}
+\state, \irid{\tt[}\ir{y}{\tt] =} \ \irexpr \rightarrow_{\ir\stmt}
+(H'',A'), {\tt Throw}(\err)
+\end{matrix}}
+\\[2em]
+
+
+%%store 8 : 4-a-(HasPrimitiveBase = true) : Put Internal-6
+{\inblue {\tt[[Put]]}\ 6.}\\
+\frac{\begin{matrix}
+\evale, \irid \rightarrow_{\ir\expr} v_1
+\rulesep
+\evale, \ir{y} \rightarrow_{\ir\expr} v_2
+\rulesep
+\hf{CheckObjectCoercible}(v_1) \not= \err
+\rulesep
+\hf{ToObject}(H, v_1) = (H',l)
+\\
+(H', A, \tb), \irexpr \rightarrow_{\ir\expr} v_3
+\rulesep
+v_1 \in \{{\tt Boolean, String, Number}\}
+\rulesep
+\hf{CanPut}(H', l, \hf{ToString}(H', v_2)) = \true
+\\
+\hf{GetOwnPropety}(H', l, \hf{ToString}(H', v_2)) \not= (dp, \_)
+\rulesep
+\hf{GetPropety}(H', l, \hf{ToString}(H', v_2)) = (ap, \_)
+\\
+%(H', A, \tb), \ir{x} = ap.{\tt[[Set]]}.{\tt[[Call]]}(v_1, [v_3]) \rightarrow_{\ir\stmt} (H'', A'), v
+ap.{\tt[[Set]]}.{\tt[[Call]]}(v_1, [v_3]) = (H'', A', v)
+\end{matrix}}{\begin{matrix}
+\state, \irid{\tt[}\ir{y}{\tt] =} \ \irexpr \rightarrow_{\ir\stmt}
+(H'',A'), {\tt Normal}(v_3)
+\end{matrix}}
+\\[2em]
+
+
+%%%store 9 : 4-a-(HasPrimitiveBase = true) : Put Internal-7
+%{\inblue {\tt[[Put]]}\ 7.}\\
+%\frac{\begin{matrix}
+%\evale, \irid \rightarrow_{\ir\expr} v_1
+%\rulesep
+%\evale, \ir{y} \rightarrow_{\ir\expr} v_2
+%\rulesep
+%\hf{CheckObjectCoercible}(v_1) \not= \err
+%\rulesep
+%\hf{ToObject}(H, v_1) = (H',l)
+%\rulesep
+%(H', A, \tb), \ir{z} \rightarrow_{\ir\expr} v_3
+%\\
+%v_1 \in \{{\tt Boolean, String, Number}\}
+%\rulesep
+%\hf{CanPut}(H', l, \hf{ToString}(H', v_2)) = \true
+%\rulesep
+%\hf{GetOwnPropety}(H', l, \hf{ToString}(H', v_2)) \not= (dp, \_)
+%\\
+%\hf{GetPropety}(H', l, \hf{ToString}(H', v_2)) \not= (ap, \_)
+%\rulesep
+%\hf{Put}(H', A, l, \hf{ToString}(H', v_2), \strict) = (H'', A', \err)
+%\end{matrix}}{\begin{matrix}
+%\state, \irid{\tt[}\ir{y}{\tt] =} \ \ir{z} \rightarrow_{\ir\stmt}
+%(H'',A'), {\tt Throw}(\err)
+%\end{matrix}}
+%\\[2em]
+
+
+%%store 10 : 4-a-(HasPrimitiveBase = true) : Put Internal-7
+{\inblue {\tt[[Put]]}\ 7.}\\
+\frac{\begin{matrix}
+\evale, \irid \rightarrow_{\ir\expr} v_1
+\rulesep
+\evale, \ir{y} \rightarrow_{\ir\expr} v_2
+\rulesep
+\hf{CheckObjectCoercible}(v_1) \not= \err
+\rulesep
+\hf{ToObject}(H, v_1) = (H',l)
+\\
+(H', A, \tb), \irexpr \rightarrow_{\ir\expr} v_3
+\rulesep
+v_1 \in \{{\tt Boolean, String, Number}\}
+\rulesep
+\hf{CanPut}(H', l, \hf{ToString}(H', v_2)) = \true
+\\
+\hf{GetOwnPropety}(H', l, \hf{ToString}(H', v_2)) \not= (dp, \_)
+\rulesep
+\hf{GetPropety}(H', l, \hf{ToString}(H', v_2)) \not= (ap, \_)
+\end{matrix}}{\begin{matrix}
+\state, \irid{\tt[}\ir{y}{\tt] =} \ \irexpr \rightarrow_{\ir\stmt}
+(H',A), \reject
+\end{matrix}}
+\\[4em]
+
+\end{array}
+\]
+
+
+
+\[
+\begin{array}{l@{~~}l@{~~}ll}
+
+
+%%store 11 : 4-a-(HasPrimitiveBase = false) : not array
+\frac{\begin{matrix}
+\evale, \irid \rightarrow_{\ir\expr} v_1
+\rulesep
+\evale, \ir{y} \rightarrow_{\ir\expr} v_2
+\rulesep
+\hf{CheckObjectCoercible}(v_1) \not= \err
+\rulesep
+\hf{ToObject}(H, v_1) = (H',l)
+\\
+(H', A, \tb), \irexpr \rightarrow_{\ir\expr} v_3
+\rulesep
+v_1 \notin \{{\tt Boolean, String, Number}\}
+\rulesep
+H'(l).[[{\tt Class}]] \not= {\tt``Array"} 
+\\
+\hf{Put}(H', A, l, \hf{ToString}(H', v_2), v_3, \strict) = (H'', A', \err)
+\end{matrix}}{\begin{matrix}
+\state, \irid{\tt[}\ir{y}{\tt] =} \ \irexpr \rightarrow_{\ir\stmt}
+(H'',A'), {\tt Throw}(\err)
+\end{matrix}}
+\\[2em]
+
+
+%%store 12 : 4-a-(HasPrimitiveBase = false) : not array
+\frac{\begin{matrix}
+\evale, \irid \rightarrow_{\ir\expr} v_1
+\rulesep
+\evale, \ir{y} \rightarrow_{\ir\expr} v_2
+\rulesep
+\hf{CheckObjectCoercible}(v_1) \not= \err
+\rulesep
+\hf{ToObject}(H, v_1) = (H',l)
+\\
+(H', A, \tb), \irexpr \rightarrow_{\ir\expr} v_3
+\rulesep
+v_1 \notin \{{\tt Boolean, String, Number}\}
+\rulesep
+H'(l).[[{\tt Class}]] \not= {\tt``Array"} 
+\\
+\hf{Put}(H', A, l, \hf{ToString}(H', v_2), v_3, \strict) = (H'', A', v)
+\end{matrix}}{\begin{matrix}
+\state, \irid{\tt[}\ir{y}{\tt] =} \ \irexpr \rightarrow_{\ir\stmt}
+(H'',A'), {\tt Normal}(v_3)
+\end{matrix}}
+\\[2em]
+
+
+%%store 13 : 4-a-(HasPrimitiveBase = false) : array & Put - 1
+\frac{\begin{matrix}
+\evale, \irid \rightarrow_{\ir\expr} v_1
+\rulesep
+\evale, \ir{y} \rightarrow_{\ir\expr} v_2
+\rulesep
+\hf{CheckObjectCoercible}(v_1) \not= \err
+\rulesep
+\hf{ToObject}(H, v_1) = (H',l)
+\\
+(H', A, \tb), \irexpr \rightarrow_{\ir\expr} v_3
+\rulesep
+v_1 \notin \{{\tt Boolean, String, Number}\}
+\rulesep
+H'(l).[[{\tt Class}]] = {\tt``Array"}%''
+\\
+\hf{CanPut}(H', l, \hf{ToString}(H', v_2)) = \false
+\end{matrix}}{\begin{matrix}
+\state, \irid{\tt[}\ir{y}{\tt] =} \ \irexpr \rightarrow_{\ir\stmt}
+(H',A), \reject
+\end{matrix}}
+\\[2em]
+
+
+
+
+
+
+
+%%% DefineOwnPropety for Array
+%%store 14 : 4-a-(HasPrimitiveBase = false) : array & Put - 3
+\frac{\begin{matrix}
+\evale, \irid \rightarrow_{\ir\expr} v_1
+\rulesep
+\evale, \ir{y} \rightarrow_{\ir\expr} v_2
+\rulesep
+\hf{CheckObjectCoercible}(v_1) \not= \err
+\rulesep
+\hf{ToObject}(H, v_1) = (H',l)
+\\
+(H', A, \tb), \irexpr \rightarrow_{\ir\expr}  v_3
+\rulesep
+v_1 \notin \{{\tt Boolean, String, Number}\}
+\rulesep
+H'(l).[[{\tt Class}]] = {\tt``Array"}%''
+\\
+\hf{CanPut}(H', l, \hf{ToString}(H', v_2) = \true
+\rulesep
+\hf{GetOwnPropety}(H', l, \hf{ToString}(H', v_2)) = (dp, \_)
+\rulesep
+\hf{valueDesc} = \{[[{\tt Value}]]:v_3\}
+\\
+\hf{DefineOwnPropertyArray}(H', A, l, \hf{ToString}(H', v_2), \hf{valueDesc}, \strict) = (H'', A', \err)
+\end{matrix}}{\begin{matrix}
+\state, \irid{\tt[}\ir{y}{\tt] =} \ \irexpr \rightarrow_{\ir\stmt}
+(H'',A'), {\tt Throw}(\err)
+\end{matrix}}
+\\[2em]
+
+
+%%% DefineOwnPropety for Array
+%%store 15 : 4-a-(HasPrimitiveBase = false) : array & Put - 3
+\frac{\begin{matrix}
+\evale, \irid \rightarrow_{\ir\expr} v_1
+\rulesep
+\evale, \ir{y} \rightarrow_{\ir\expr} v_2
+\rulesep
+\hf{CheckObjectCoercible}(v_1) \not= \err
+\rulesep
+\hf{ToObject}(H, v_1) = (H',l)
+\\
+(H', A, \tb), \irexpr \rightarrow_{\ir\expr} v_3
+\rulesep
+v_1 \notin \{{\tt Boolean, String, Number}\}
+\rulesep
+H'(l).[[{\tt Class}]] = {\tt``Array"}%''
+\\
+\hf{CanPut}(H', l, \hf{ToString}(H', v_2) = \true
+\rulesep
+\hf{GetOwnPropety}(H', l, \hf{ToString}(H', v_2)) = (dp, \_)
+\rulesep
+\hf{valueDesc} = \{[[{\tt Value}]]:v_3\}
+\\
+\hf{DefineOwnPropertyArray}(H', A, l, \hf{ToString}(H', v_2), \hf{valueDesc}, \strict) = (H'', A', v)
+\end{matrix}}{\begin{matrix}
+\state, \irid{\tt[}\ir{y}{\tt] =} \ \irexpr \rightarrow_{\ir\stmt}
+(H'',A'), {\tt Normal}(v_3)
+\end{matrix}}
+\\[2em]
+
+
+
+
+%%store 16 : 4-a-(HasPrimitiveBase = false) : array & Put - 5
+\frac{\begin{matrix}
+\evale, \irid \rightarrow_{\ir\expr} v_1
+\rulesep
+\evale, \ir{y} \rightarrow_{\ir\expr} v_2
+\rulesep
+\hf{CheckObjectCoercible}(v_1) \not= \err
+\rulesep
+\hf{ToObject}(H, v_1) = (H',l)
+\\
+(H', A, \tb), \irexpr \rightarrow_{\ir\expr} v_3
+\rulesep
+v_1 \notin \{{\tt Boolean, String, Number}\}
+\rulesep
+H'(l).[[{\tt Class}]] = {\tt``Array"}%''
+\\
+\hf{CanPut}(H', l, \hf{ToString}(H', v_2) = \true
+\rulesep
+\hf{GetOwnPropety}(H', l,\hf{ToString}(H', v_2)) \not= (dp, \_)
+\\
+\hf{GetPropety}(H', l,\hf{ToString}(H', v_2)) = (ap, \_)
+\rulesep
+%(H', A, \tb), \ir{x} = ap.{\tt[[Set]]}.{\tt[[Call]]}(H'(l), v_3) \rightarrow_{\ir\stmt} (H'', A'), \err
+ap.{\tt[[Set]]}.{\tt[[Call]]}(H'(l), v_3) = (H'', A', \err)
+\end{matrix}}{\begin{matrix}
+\state, \irid{\tt[}\ir{y}{\tt] =} \ \irexpr \rightarrow_{\ir\stmt}
+(H'',A'), {\tt Throw}(\err)
+\end{matrix}}
+\\[2em]
+
+
+%%store 17 : 4-a-(HasPrimitiveBase = false) : array & Put - 5
+\frac{\begin{matrix}
+\evale, \irid \rightarrow_{\ir\expr} v_1
+\rulesep
+\evale, \ir{y} \rightarrow_{\ir\expr} v_2
+\rulesep
+\hf{CheckObjectCoercible}(v_1) \not= \err
+\rulesep
+\hf{ToObject}(H, v_1) = (H',l)
+\\
+(H', A, \tb), \irexpr \rightarrow_{\ir\expr} v_3
+\rulesep
+v_1 \notin \{{\tt Boolean, String, Number}\}
+\rulesep
+H'(l).[[{\tt Class}]] = {\tt``Array"}%''
+\\
+\hf{CanPut}(H', l, \hf{ToString}(H', v_2) = \true
+\rulesep
+\hf{GetOwnPropety}(H', l,\hf{ToString}(H', v_2)) \not= (dp, \_)
+\\
+\hf{GetPropety}(H', l,\hf{ToString}(H', v_2)) = (ap, \_)
+\rulesep
+%(H', A, \tb), \ir{x} = ap.{\tt[[Set]]}.{\tt[[Call]]}(H'(l), v_3) \rightarrow_{\ir\stmt} (H'', A'), v
+ap.{\tt[[Set]]}.{\tt[[Call]]}(H'(l), v_3) = (H'', A', v)
+\end{matrix}}{\begin{matrix}
+\state, \irid{\tt[}\ir{y}{\tt] =} \ \irexpr \rightarrow_{\ir\stmt}
+(H'',A'), {\tt Normal}(v_3)
+\end{matrix}}
+\\[2em]
+
+
+%%store 18 : 4-a-(HasPrimitiveBase = false) : array & Put - 6
+\frac{\begin{matrix}
+\evale, \irid \rightarrow_{\ir\expr} v_1
+\rulesep
+\evale, \ir{y} \rightarrow_{\ir\expr} v_2
+\rulesep
+\hf{CheckObjectCoercible}(v_1) \not= \err
+\rulesep
+\hf{ToObject}(H, v_1) = (H',l)
+\\
+(H', A, \tb), \irexpr \rightarrow_{\ir\expr} v_3
+\rulesep
+v_1 \notin \{{\tt Boolean, String, Number}\}
+\rulesep
+H'(l).[[{\tt Class}]] = {\tt``Array"}%''
+\\
+\hf{CanPut}(H', l, \hf{ToString}(H', v_2) = \true
+\rulesep
+\hf{GetOwnPropety}(H', l,\hf{ToString}(H', v_2)) \not= (dp, \_)
+\\
+\hf{GetPropety}(H', l,\hf{ToString}(H', v_2)) \not= (ap, \_)
+\\
+\hf{newDesc} = \{[[{\tt Value}]]:v_3, {\tt[[Writable]]}:\true,  [[{\tt Enumerable}]]:\true,  [[{\tt Conigurable}]]:\true \}
+\\
+\hf{DefineOwnPropertyArray}(H', A, l, \hf{ToString}(H', v_2), \hf{newDesc}, \strict) = (H'', A', \err)
+\end{matrix}}{\begin{matrix}
+\state, \irid{\tt[}\ir{y}{\tt] =} \ \irexpr \rightarrow_{\ir\stmt}
+(H'',A'), {\tt Throw}(\err)
+\end{matrix}}
+\\[2em]
+
+
+%%store 19 : 4-a-(HasPrimitiveBase = false) : array & Put - 6
+\frac{\begin{matrix}
+\evale, \irid \rightarrow_{\ir\expr} v_1
+\rulesep
+\evale, \ir{y} \rightarrow_{\ir\expr} v_2
+\rulesep
+\hf{CheckObjectCoercible}(v_1) \not= \err
+\rulesep
+\hf{ToObject}(H, v_1) = (H',l)
+\\
+(H', A, \tb), \irexpr \rightarrow_{\ir\expr} v_3
+\rulesep
+v_1 \notin \{{\tt Boolean, String, Number}\}
+\rulesep
+H'(l).[[{\tt Class}]] = {\tt``Array"}%''
+\\
+\hf{CanPut}(H', l, \hf{ToString}(H', v_2) = \true
+\rulesep
+\hf{GetOwnPropety}(H', l,\hf{ToString}(H', v_2)) \not= (dp, \_)
+\\
+\hf{GetPropety}(H', l,\hf{ToString}(H', v_2)) \not= (ap, \_)
+\\
+\hf{newDesc} = \{[[{\tt Value}]]:v_3, {\tt[[Writable]]}:\true,  [[{\tt Enumerable}]]:\true,  [[{\tt Conigurable}]]:\true \}
+\\
+\hf{DefineOwnPropertyArray}(H', A, l, \hf{ToString}(H', v_2), \hf{newDesc}, \strict) = (H'', A', v)
+\end{matrix}}{\begin{matrix}
+\state, \irid{\tt[}\ir{y}{\tt] =} \ \irexpr \rightarrow_{\ir\stmt}
+(H'',A'), {\tt Normal}(v_3)
+\end{matrix}}
+\\[2em]
+
+
+
+%
+%%% DefineOwnPropety for Array
+%%%store 8 : 4-a-(HasPrimitiveBase = false) : array & Put - 3
+%%% 8.1 DefineOwnProperty 3.d
+%\frac{\begin{matrix}
+%\evale, \irid \rightarrow_{\ir\expr} v_1
+%\rulesep
+%\evale, \ir{y} \rightarrow_{\ir\expr} v_2
+%\rulesep
+%\hf{CheckObjectCoercible}(v_1) \not= \err
+%\rulesep
+%\hf{ToObject}(H, v_1) = (H',l)
+%\rulesep
+%(H', A, \tb), \ir{z} \rightarrow v_3
+%\\
+%v_1 \notin \{{\tt Boolean, String, Number}\}
+%\rulesep
+%H'(l).[[{\tt Class}]] = {\tt``Array"} 
+%\rulesep
+%CanPut(H', l, \hf{ToString}(H', v_2) = \true
+%\\
+%\hf{ToString}(H', v_2) = ``{\tt length}"
+%\rulesep
+%\hf{GetOwnPropety}(H', l,\hf{ToString}(H', v_2)) = (dp, \_)
+%\rulesep
+%valueDesc = \{[[{\tt Value}]]:v_3\}
+%\\
+%%% Omit th rule 3.a in th DefineOwnProperty of Array
+%oldLen = H'(l).{\tt @property}[{\tt ``length"}]
+%\rulesep
+%\hf{ToUint32}(v_3) \not= \hf{ToNumber}(v_3)
+%\end{matrix}}{\begin{matrix}
+%\state, \irid{\tt[}\ir{y}{\tt] =} \ \ir{z} \rightarrow_{\ir\stmt}
+%(H'',A'), {\tt Throw}({\tt RangeError})
+%\end{matrix}}
+%\\[2em]
+%
+%
+%%% DefineOwnPropety for Array
+%%%store 8 : 4-a-(HasPrimitiveBase = false) : array & Put - 3
+%%% 8.2 DefineOwnProperty 3.f -> err
+%\frac{\begin{matrix}
+%\evale, \irid \rightarrow_{\ir\expr} v_1
+%\rulesep
+%\evale, \ir{y} \rightarrow_{\ir\expr} v_2
+%\rulesep
+%\hf{CheckObjectCoercible}(v_1) \not= \err
+%\rulesep
+%\hf{ToObject}(H, v_1) = (H',l)
+%\rulesep
+%(H', A, \tb), \ir{z} \rightarrow v_3
+%\\
+%v_1 \notin \{{\tt Boolean, String, Number}\}
+%\rulesep
+%H'(l).[[{\tt Class}]] = {\tt``Array"} 
+%\rulesep
+%CanPut(H', l, \hf{ToString}(H', v_2) = \true
+%\\
+%\hf{ToString}(H', v_2) = ``{\tt length}"
+%\rulesep
+%\hf{GetOwnPropety}(H', l,\hf{ToString}(H', v_2)) = (dp, \_)
+%\rulesep
+%valueDesc = \{[[{\tt Value}]]:v_3\}
+%\\
+%%% Omit th rule 3.a in th DefineOwnProperty of Array
+%oldLen = H'(l).{\tt @property}[{\tt ``length"}].[[{\tt Value}]]
+%\rulesep
+%\hf{ToUint32}(v_3) = \hf{ToNumber}(v_3)
+%\rulesep
+%v_3 \geq oldLen
+%\\
+%\hf{DefineOwnProperty}(H', A, l, ``{\tt length}", valueDesc, \strict) = (H^r, A^r, \err)
+%\end{matrix}}{\begin{matrix}
+%\state, \irid{\tt[}\ir{y}{\tt] =} \ \ir{z} \rightarrow_{\ir\stmt}
+%(H'',A'), {\tt Throw}(\err)
+%\end{matrix}}
+%\\[2em]
+%
+%
+%%% DefineOwnPropety for Array
+%%%store 8 : 4-a-(HasPrimitiveBase = false) : array & Put - 3
+%%% 8.2 DefineOwnProperty 3.f -> value
+%\frac{\begin{matrix}
+%\evale, \irid \rightarrow_{\ir\expr} v_1
+%\rulesep
+%\evale, \ir{y} \rightarrow_{\ir\expr} v_2
+%\rulesep
+%\hf{CheckObjectCoercible}(v_1) \not= \err
+%\rulesep
+%\hf{ToObject}(H, v_1) = (H',l)
+%\rulesep
+%(H', A, \tb), \ir{z} \rightarrow v_3
+%\\
+%v_1 \notin \{{\tt Boolean, String, Number}\}
+%\rulesep
+%H'(l).[[{\tt Class}]] = {\tt``Array"} 
+%\rulesep
+%CanPut(H', l, \hf{ToString}(H', v_2) = \true
+%\\
+%\hf{ToString}(H', v_2) = ``{\tt length}"
+%\rulesep
+%\hf{GetOwnPropety}(H', l,\hf{ToString}(H', v_2)) = (dp, \_)
+%\rulesep
+%valueDesc = \{[[{\tt Value}]]:v_3\}
+%\\
+%%% Omit th rule 3.a in th DefineOwnProperty of Array
+%oldLen = H'(l).{\tt @property}[{\tt ``length"}].[[{\tt Value}]]
+%\rulesep
+%\hf{ToUint32}(v_3) = \hf{ToNumber}(v_3)
+%\rulesep
+%v_3 \geq oldLen
+%\\
+%\hf{DefineOwnProperty}(H', A, l, ``{\tt length}", valueDesc, \strict) = (H^r, A^r, v)
+%\end{matrix}}{\begin{matrix}
+%\state, \irid{\tt[}\ir{y}{\tt] =} \ \ir{z} \rightarrow_{\ir\stmt}
+%(H'',A'), {\tt Normal}(v)
+%\end{matrix}}
+%\\[2em]
+%
+%
+%%% DefineOwnPropety for Array
+%%%store 8 : 4-a-(HasPrimitiveBase = false) : array & Put - 3
+%%% 8.3 DefineOwnProperty 3.g -> not writable
+%\frac{\begin{matrix}
+%\evale, \irid \rightarrow_{\ir\expr} v_1
+%\rulesep
+%\evale, \ir{y} \rightarrow_{\ir\expr} v_2
+%\rulesep
+%\hf{CheckObjectCoercible}(v_1) \not= \err
+%\rulesep
+%\hf{ToObject}(H, v_1) = (H',l)
+%\rulesep
+%(H', A, \tb), \ir{z} \rightarrow v_3
+%\\
+%v_1 \notin \{{\tt Boolean, String, Number}\}
+%\rulesep
+%H'(l).[[{\tt Class}]] = {\tt``Array"} 
+%\rulesep
+%CanPut(H', l, \hf{ToString}(H', v_2) = \true
+%\\
+%\hf{ToString}(H', v_2) = ``{\tt length}"
+%\rulesep
+%\hf{GetOwnPropety}(H', l,\hf{ToString}(H', v_2)) = (dp, \_)
+%\rulesep
+%valueDesc = \{[[{\tt Value}]]:v_3\}
+%\\
+%%% Omit th rule 3.a in th DefineOwnProperty of Array
+%oldLen = H'(l).{\tt @property}[{\tt ``length"}].[[{\tt Value}]]
+%\rulesep
+%\hf{ToUint32}(v_3) = \hf{ToNumber}(v_3)
+%\rulesep
+%v_3 < oldLen
+%\\
+%\neg H'(l).{\tt @property}[``{\tt length}"].[[``{\tt Writable}"]]
+%\end{matrix}}{\begin{matrix}
+%\state, \irid{\tt[}\ir{y}{\tt] =} \ \ir{z} \rightarrow_{\ir\stmt}
+%(H'',A'), {\tt Throw}(\te)
+%\end{matrix}}
+%\\[2em]
+%
+%
+%%% DefineOwnPropety for Array
+%%%store 8 : 4-a-(HasPrimitiveBase = false) : array & Put - 3
+%%% 8.3 DefineOwnProperty 3.j after 3.h/i -> DefineOwnProperty error
+%\frac{\begin{matrix}
+%\evale, \irid \rightarrow_{\ir\expr} v_1
+%\rulesep
+%\evale, \ir{y} \rightarrow_{\ir\expr} v_2
+%\rulesep
+%\hf{CheckObjectCoercible}(v_1) \not= \err
+%\rulesep
+%\hf{ToObject}(H, v_1) = (H',l)
+%\rulesep
+%(H', A, \tb), \ir{z} \rightarrow v_3
+%\\
+%v_1 \notin \{{\tt Boolean, String, Number}\}
+%\rulesep
+%H'(l).[[{\tt Class}]] = {\tt``Array"} 
+%\rulesep
+%CanPut(H', l, \hf{ToString}(H', v_2) = \true
+%\\
+%\hf{ToString}(H', v_2) = ``{\tt length}"
+%\rulesep
+%\hf{GetOwnPropety}(H', l,\hf{ToString}(H', v_2)) = (dp, \_)
+%\rulesep
+%valueDesc = \{[[{\tt Value}]]:v_3\}
+%\\
+%%% Omit th rule 3.a in th DefineOwnProperty of Array
+%oldLen = H'(l).{\tt @property}[{\tt ``length"}].[[{\tt Value}]]
+%\rulesep
+%\hf{ToUint32}(v_3) = \hf{ToNumber}(v_3)
+%\rulesep
+%v_3 < oldLen
+%\\
+%H'(l).{\tt @property}[``{\tt length}"].[[``{\tt Writable}"]]
+%%% Omit th rule 3.i in th DefineOwnProperty of Array because [[Put]] never sets Writable...
+%% valueDesc' = \{[[{\tt Value}]]:v_3, [[``{\tt Writable}"]] = \true\}
+%\rulesep
+%newWritable = \true
+%\\
+%\hf{DefineOwnProperty}(H', A l, ``{\tt length}", valueDesc, \strict) = (H^r, A^r, \err)
+%\end{matrix}}{\begin{matrix}
+%\state, \irid{\tt[}\ir{y}{\tt] =} \ \ir{z} \rightarrow_{\ir\stmt}
+%(H^r,A^r), {\tt Throw}(\err)
+%\end{matrix}}
+%\\[2em]
+%
+%
+%%% DefineOwnPropety for Array
+%%%store 8 : 4-a-(HasPrimitiveBase = false) : array & Put - 3
+%%% 8.4 DefineOwnProperty 3.j after 3.h/i -> DefineOwnProperty false
+%\frac{\begin{matrix}
+%\evale, \irid \rightarrow_{\ir\expr} v_1
+%\rulesep
+%\evale, \ir{y} \rightarrow_{\ir\expr} v_2
+%\rulesep
+%\hf{CheckObjectCoercible}(v_1) \not= \err
+%\rulesep
+%\hf{ToObject}(H, v_1) = (H',l)
+%\rulesep
+%(H', A, \tb), \ir{z} \rightarrow v_3
+%\\
+%v_1 \notin \{{\tt Boolean, String, Number}\}
+%\rulesep
+%H'(l).[[{\tt Class}]] = {\tt``Array"} 
+%\rulesep
+%CanPut(H', l, \hf{ToString}(H', v_2) = \true
+%\\
+%\hf{ToString}(H', v_2) = ``{\tt length}"
+%\rulesep
+%\hf{GetOwnPropety}(H', l,\hf{ToString}(H', v_2)) = (dp, \_)
+%\rulesep
+%valueDesc = \{[[{\tt Value}]]:v_3\}
+%\\
+%%% Omit th rule 3.a in th DefineOwnProperty of Array
+%oldLen = H'(l).{\tt @property}[{\tt ``length"}].[[{\tt Value}]]
+%\rulesep
+%\hf{ToUint32}(v_3) = \hf{ToNumber}(v_3)
+%\rulesep
+%v_3 < oldLen
+%\\
+%H'(l).{\tt @property}[``{\tt length}"].[[``{\tt Writable}"]]
+%%% Omit th rule 3.i in th DefineOwnProperty of Array because [[Put]] never sets Writable...
+%% valueDesc' = \{[[{\tt Value}]]:v_3, [[``{\tt Writable}"]] = \true\}
+%\rulesep
+%newWritable = \true
+%\\
+%\hf{DefineOwnProperty}(H', A l, ``{\tt length}", valueDesc, \strict) = (H^r, A^r, \false)
+%\end{matrix}}{\begin{matrix}
+%\state, \irid{\tt[}\ir{y}{\tt] =} \ \ir{z} \rightarrow_{\ir\stmt}
+%(H^r,A^r), {\tt Normal}(\false ...?) % what should be a return value?
+%\end{matrix}}
+%\\[2em]
+%
+%
+%%% DefineOwnPropety for Array
+%%%store 8 : 4-a-(HasPrimitiveBase = false) : array & Put - 3
+%%% 8.5 DefineOwnProperty 3.l.ii -> Delete Error
+%\frac{\begin{matrix}
+%\evale, \irid \rightarrow_{\ir\expr} v_1
+%\rulesep
+%\evale, \ir{y} \rightarrow_{\ir\expr} v_2
+%\rulesep
+%\hf{CheckObjectCoercible}(v_1) \not= \err
+%\rulesep
+%\hf{ToObject}(H, v_1) = (H',l)
+%\rulesep
+%(H', A, \tb), \ir{z} \rightarrow v_3
+%\\
+%v_1 \notin \{{\tt Boolean, String, Number}\}
+%\rulesep
+%H'(l).[[{\tt Class}]] = {\tt``Array"} 
+%\rulesep
+%CanPut(H', l, \hf{ToString}(H', v_2) = \true
+%\\
+%\hf{ToString}(H', v_2) = ``{\tt length}"
+%\rulesep
+%\hf{GetOwnPropety}(H', l,\hf{ToString}(H', v_2)) = (dp, \_)
+%\rulesep
+%valueDesc = \{[[{\tt Value}]]:v_3\}
+%\\
+%%% Omit th rule 3.a in th DefineOwnProperty of Array
+%oldLen = H'(l).{\tt @property}[{\tt ``length"}].[[{\tt Value}]]
+%\rulesep
+%\hf{ToUint32}(v_3) = \hf{ToNumber}(v_3)
+%\rulesep
+%v_3 < oldLen
+%\\
+%H'(l).{\tt @property}[``{\tt length}"].[[``{\tt Writable}"]]
+%%% Omit th rule 3.i in th DefineOwnProperty of Array because [[Put]] never sets Writable...
+%% valueDesc' = \{[[{\tt Value}]]:v_3, [[``{\tt Writable}"]] = \true\}
+%\rulesep
+%newWritable = \true
+%\\
+%\hf{DefineOwnProperty}(H', A l, ``{\tt length}", valueDesc, \strict) = (H^r, A^r, \true)
+%\\
+%H^l_{oldLen} = H^r
+%\rulesep
+%A^l_{oldLen} = A^r
+%\rulesep
+%\hf{Delete}(H^l_i, A^l_i, l, \hf{ToString}(H^l_i, i-1), \strict) = (H^l_{i-1}, A^l_{i-1}, \err)
+%\rulesep
+%v_3 < i < oldLen
+%\end{matrix}}{\begin{matrix}
+%\state, \irid{\tt[}\ir{y}{\tt] =} \ \ir{z} \rightarrow_{\ir\stmt}
+%(H^r,A^r), {\tt Throw}(\err)
+%\end{matrix}}
+%\\[2em]
+%
+%
+%%% DefineOwnPropety for Array
+%%%store 8 : 4-a-(HasPrimitiveBase = false) : array & Put - 3
+%%% 8.5 DefineOwnProperty 3.l.iii -> Delete true & DefineOwnProperty = err
+%\frac{\begin{matrix}
+%\evale, \irid \rightarrow_{\ir\expr} v_1
+%\rulesep
+%\evale, \ir{y} \rightarrow_{\ir\expr} v_2
+%\rulesep
+%\hf{CheckObjectCoercible}(v_1) \not= \err
+%\rulesep
+%\hf{ToObject}(H, v_1) = (H',l)
+%\rulesep
+%(H', A, \tb), \ir{z} \rightarrow v_3
+%\\
+%v_1 \notin \{{\tt Boolean, String, Number}\}
+%\rulesep
+%H'(l).[[{\tt Class}]] = {\tt``Array"} 
+%\rulesep
+%CanPut(H', l, \hf{ToString}(H', v_2) = \true
+%\\
+%\hf{ToString}(H', v_2) = ``{\tt length}"
+%\rulesep
+%\hf{GetOwnPropety}(H', l,\hf{ToString}(H', v_2)) = (dp, \_)
+%\rulesep
+%valueDesc = \{[[{\tt Value}]]:v_3\}
+%\\
+%%% Omit th rule 3.a in th DefineOwnProperty of Array
+%oldLen = H'(l).{\tt @property}[{\tt ``length"}].[[{\tt Value}]]
+%\rulesep
+%\hf{ToUint32}(v_3) = \hf{ToNumber}(v_3)
+%\rulesep
+%v_3 < oldLen
+%\\
+%H'(l).{\tt @property}[``{\tt length}"].[[``{\tt Writable}"]]
+%%% Omit th rule 3.i in th DefineOwnProperty of Array because [[Put]] never sets Writable...
+%% valueDesc' = \{[[{\tt Value}]]:v_3, [[``{\tt Writable}"]] = \true\}
+%\rulesep
+%newWritable = \true
+%\\
+%\hf{DefineOwnProperty}(H', A l, ``{\tt length}", valueDesc, \strict) = (H^r, A^r, \true)
+%\\
+%H^l_{oldLen} = H^r
+%\rulesep
+%A^l_{oldLen} = A^r
+%\rulesep
+%\hf{Delete}(H^l_i, A^l_i, l, \hf{ToString}(H^l_i, i-1), \strict) = (H^l_{i-1}, A^l_{i-1}, \true) % isn't it false?
+%\rulesep
+%v_3 < i < oldLen
+%\\
+%%% Omit th rule 3.l.iii.2 in th DefineOwnProperty of Array because newWritable is always true...
+%valueDesc'=\{[[{\tt Value}]]:i\}
+%\rulesep
+%\hf{DefineOwnProperty}(H^l_{i-1}, A^l_{i-1}, ``{\tt length}", valueDesc', \strict) = (H^l, A^l, \err)
+%\end{matrix}}{\begin{matrix}
+%\state, \irid{\tt[}\ir{y}{\tt] =} \ \ir{z} \rightarrow_{\ir\stmt}
+%(H^r,A^r), {\tt Throw}(\err)
+%\end{matrix}}
+%\\[2em]
+%
+%
+%
+%
+%%% DefineOwnPropety for Array
+%%%store 8 : 4-a-(HasPrimitiveBase = false) : array & Put - 3
+%%% 8.5 DefineOwnProperty 3.l.iii -> Delete true & DefineOwnProperty = v
+%\frac{\begin{matrix}
+%\evale, \irid \rightarrow_{\ir\expr} v_1
+%\rulesep
+%\evale, \ir{y} \rightarrow_{\ir\expr} v_2
+%\rulesep
+%\hf{CheckObjectCoercible}(v_1) \not= \err
+%\rulesep
+%\hf{ToObject}(H, v_1) = (H',l)
+%\rulesep
+%(H', A, \tb), \ir{z} \rightarrow v_3
+%\\
+%v_1 \notin \{{\tt Boolean, String, Number}\}
+%\rulesep
+%H'(l).[[{\tt Class}]] = {\tt``Array"} 
+%\rulesep
+%CanPut(H', l, \hf{ToString}(H', v_2) = \true
+%\\
+%\hf{ToString}(H', v_2) = ``{\tt length}"
+%\rulesep
+%\hf{GetOwnPropety}(H', l,\hf{ToString}(H', v_2)) = (dp, \_)
+%\rulesep
+%valueDesc = \{[[{\tt Value}]]:v_3\}
+%\\
+%%% Omit th rule 3.a in th DefineOwnProperty of Array
+%oldLen = H'(l).{\tt @property}[{\tt ``length"}].[[{\tt Value}]]
+%\rulesep
+%\hf{ToUint32}(v_3) = \hf{ToNumber}(v_3)
+%\rulesep
+%v_3 < oldLen
+%\\
+%H'(l).{\tt @property}[``{\tt length}"].[[``{\tt Writable}"]]
+%%% Omit th rule 3.i in th DefineOwnProperty of Array because [[Put]] never sets Writable...
+%% valueDesc' = \{[[{\tt Value}]]:v_3, [[``{\tt Writable}"]] = \true\}
+%\rulesep
+%newWritable = \true
+%\\
+%\hf{DefineOwnProperty}(H', A l, ``{\tt length}", valueDesc, \strict) = (H^r, A^r, \true)
+%\\
+%H^l_{oldLen} = H^r
+%\rulesep
+%A^l_{oldLen} = A^r
+%\rulesep
+%\hf{Delete}(H^l_i, A^l_i, l, \hf{ToString}(H^l_i, i-1), \strict) = (H^l_{i-1}, A^l_{i-1}, \true) % isn't it false?
+%\rulesep
+%v_3 < i < oldLen
+%\\
+%%% Omit th rule 3.l.iii.2 in th DefineOwnProperty of Array because newWritable is always true...
+%valueDesc'=\{[[{\tt Value}]]:i\}
+%\rulesep
+%\hf{DefineOwnProperty}(H^l_{i-1}, A^l_{i-1}, ``{\tt length}", valueDesc', \strict) = (H^l, A^l, v)
+%\end{matrix}}{\begin{matrix}
+%\state, \irid{\tt[}\ir{y}{\tt] =} \ \ir{z} \rightarrow_{\ir\stmt}
+%(H^l,A^l), {\tt Normal}(v) % is the return value v or v_3?
+%\end{matrix}}
+%\\[2em]
+%
+%
+%
+%%% DefineOwnPropety for Array
+%%%store 8 : 4-a-(HasPrimitiveBase = false) : array & Put - 3
+%%% 8.5 DefineOwnProperty 3.l.iii -> Delete true & DefineOwnProperty = v
+%\frac{\begin{matrix}
+%\evale, \irid \rightarrow_{\ir\expr} v_1
+%\rulesep
+%\evale, \ir{y} \rightarrow_{\ir\expr} v_2
+%\rulesep
+%\hf{CheckObjectCoercible}(v_1) \not= \err
+%\rulesep
+%\hf{ToObject}(H, v_1) = (H',l)
+%\rulesep
+%(H', A, \tb), \ir{z} \rightarrow v_3
+%\\
+%v_1 \notin \{{\tt Boolean, String, Number}\}
+%\rulesep
+%H'(l).[[{\tt Class}]] = {\tt``Array"} 
+%\rulesep
+%CanPut(H', l, \hf{ToString}(H', v_2) = \true
+%\\
+%\hf{ToString}(H', v_2) = ``{\tt length}"
+%\rulesep
+%\hf{GetOwnPropety}(H', l,\hf{ToString}(H', v_2)) = (dp, \_)
+%\rulesep
+%valueDesc = \{[[{\tt Value}]]:v_3\}
+%\\
+%%% Omit th rule 3.a in th DefineOwnProperty of Array
+%oldLen = H'(l).{\tt @property}[{\tt ``length"}].[[{\tt Value}]]
+%\rulesep
+%\hf{ToUint32}(v_3) = \hf{ToNumber}(v_3)
+%\rulesep
+%v_3 < oldLen
+%\\
+%H'(l).{\tt @property}[``{\tt length}"].[[``{\tt Writable}"]]
+%%% Omit th rule 3.i in th DefineOwnProperty of Array because [[Put]] never sets Writableto false...
+%% valueDesc' = \{[[{\tt Value}]]:v_3, [[``{\tt Writable}"]] = \true\}
+%\rulesep
+%v_3 \geq oldLen
+%%% Omit th rule 3.m in th DefineOwnProperty of Array because [[Put]] never sets Writable to false...
+%\end{matrix}}{\begin{matrix}
+%\state, \irid{\tt[}\ir{y}{\tt] =} \ \ir{z} \rightarrow_{\ir\stmt}
+%(H^l,A^l), {\tt Normal}(v_3) 
+%\end{matrix}}
+%\\[2em]
+%
+%
+%
+%%% DefineOwnPropety for Array
+%%%store 8 : 4-a-(HasPrimitiveBase = false) : array & Put - 3
+%%% 8.6 DefineOwnProperty 4.b
+%\frac{\begin{matrix}
+%\evale, \irid \rightarrow_{\ir\expr} v_1
+%\rulesep
+%\evale, \ir{y} \rightarrow_{\ir\expr} v_2
+%\rulesep
+%\hf{CheckObjectCoercible}(v_1) \not= \err
+%\rulesep
+%\hf{ToObject}(H, v_1) = (H',l)
+%\rulesep
+%(H', A, \tb), \ir{z} \rightarrow v_3
+%\\
+%v_1 \notin \{{\tt Boolean, String, Number}\}
+%\rulesep
+%H'(l).[[{\tt Class}]] = {\tt``Array"} 
+%\rulesep
+%CanPut(H', l, \hf{ToString}(H', v_2) = \true
+%\\
+%\hf{ToString}(H', v_2) \not= ``{\tt length}"
+%\rulesep
+%\hf{isIndex}(\hf{ToString}(H', v_2))
+%\\
+%\hf{ToUint32}(v_2) \geq H'(l).{\tt @property}[{\tt ``length"}].[[{\tt Value}]]
+%\rulesep
+%\neg H'(l).{\tt @property}[{\tt ``length"}].{\tt[[Writable]]}
+%\end{matrix}}{\begin{matrix}
+%\state, \irid{\tt[}\ir{y}{\tt] =} \ \ir{z} \rightarrow_{\ir\stmt}
+%(H^l,A^l), {\tt Throw}({\tt TypeError}) 
+%\end{matrix}}
+%\\[2em]
+%
+%
+%
+%%% DefineOwnPropety for Array
+%%%store 8 : 4-a-(HasPrimitiveBase = false) : array & Put - 3
+%%% 8.6 DefineOwnProperty 4.c -> DefineOwPropery = err
+%\frac{\begin{matrix}
+%\evale, \irid \rightarrow_{\ir\expr} v_1
+%\rulesep
+%\evale, \ir{y} \rightarrow_{\ir\expr} v_2
+%\rulesep
+%\hf{CheckObjectCoercible}(v_1) \not= \err
+%\rulesep
+%\hf{ToObject}(H, v_1) = (H',l)
+%\rulesep
+%(H', A, \tb), \ir{z} \rightarrow v_3
+%\\
+%v_1 \notin \{{\tt Boolean, String, Number}\}
+%\rulesep
+%H'(l).[[{\tt Class}]] = {\tt``Array"} 
+%\rulesep
+%CanPut(H', l, \hf{ToString}(H', v_2) = \true
+%\\
+%\hf{ToString}(H', v_2) \not= ``{\tt length}"
+%\rulesep
+%\hf{isIndex}(\hf{ToString}(H', v_2))
+%\\
+%\hf{ToUint32}(v_2) < H'(l).{\tt @property}[{\tt ``length"}].[[{\tt Value}]]
+%\vee
+%H'(l).{\tt @property}[{\tt ``length"}].{\tt[[Writable]]}
+%\\
+%\hf{DefineOwnProperty}(H', A, l, \hf{ToString}(H', v_2), v_3, \strict) = (H'', A', \err)
+%\end{matrix}}{\begin{matrix}
+%\state, \irid{\tt[}\ir{y}{\tt] =} \ \ir{z} \rightarrow_{\ir\stmt}
+%(H^l,A^l), {\tt Throw}(\err) 
+%\end{matrix}}
+%\\[2em]
+%
+%
+%
+%%% DefineOwnPropety for Array
+%%%store 8 : 4-a-(HasPrimitiveBase = false) : array & Put - 3
+%%% 8.6 DefineOwnProperty 4.c -> DefineOwPropery = \false
+%\frac{\begin{matrix}
+%\evale, \irid \rightarrow_{\ir\expr} v_1
+%\rulesep
+%\evale, \ir{y} \rightarrow_{\ir\expr} v_2
+%\rulesep
+%\hf{CheckObjectCoercible}(v_1) \not= \err
+%\rulesep
+%\hf{ToObject}(H, v_1) = (H',l)
+%\rulesep
+%(H', A, \tb), \ir{z} \rightarrow v_3
+%\\
+%v_1 \notin \{{\tt Boolean, String, Number}\}
+%\rulesep
+%H'(l).[[{\tt Class}]] = {\tt``Array"} 
+%\rulesep
+%CanPut(H', l, \hf{ToString}(H', v_2) = \true
+%\\
+%\hf{ToString}(H', v_2) \not= ``{\tt length}"
+%\rulesep
+%\hf{isIndex}(\hf{ToString}(H', v_2))
+%\\
+%\hf{ToUint32}(v_2) < H'(l).{\tt @property}[{\tt ``length"}].[[{\tt Value}]]
+%\vee
+%H'(l).{\tt @property}[{\tt ``length"}].{\tt[[Writable]]}
+%\\
+%\hf{DefineOwnProperty}(H', A, l, \hf{ToString}(H', v_2), v_3, \strict) = (H'', A', \false)
+%\end{matrix}}{\begin{matrix}
+%\state, \irid{\tt[}\ir{y}{\tt] =} \ \ir{z} \rightarrow_{\ir\stmt}
+%(H^l,A^l), {\tt Throw}({\tt TypeError}) 
+%\end{matrix}}
+%\\[2em]
+%
+%
+%%% DefineOwnPropety for Array
+%%%store 8 : 4-a-(HasPrimitiveBase = false) : array & Put - 3
+%%% 8.6 DefineOwnProperty 4.e -> DefineOwnPropery = error
+%\frac{\begin{matrix}
+%\evale, \irid \rightarrow_{\ir\expr} v_1
+%\rulesep
+%\evale, \ir{y} \rightarrow_{\ir\expr} v_2
+%\rulesep
+%\hf{CheckObjectCoercible}(v_1) \not= \err
+%\rulesep
+%\hf{ToObject}(H, v_1) = (H',l)
+%\rulesep
+%(H', A, \tb), \ir{z} \rightarrow v_3
+%\\
+%v_1 \notin \{{\tt Boolean, String, Number}\}
+%\rulesep
+%H'(l).[[{\tt Class}]] = {\tt``Array"} 
+%\rulesep
+%CanPut(H', l, \hf{ToString}(H', v_2) = \true
+%\\
+%\hf{ToString}(H', v_2) \not= ``{\tt length}"
+%\rulesep
+%\hf{isIndex}(\hf{ToString}(H', v_2))
+%\\
+%\hf{ToUint32}(v_2) < H'(l).{\tt @property}[{\tt ``length"}].[[{\tt Value}]]
+%\vee
+%H'(l).{\tt @property}[{\tt ``length"}].{\tt[[Writable]]}
+%\\
+%\hf{DefineOwnProperty}(H', A, l, \hf{ToString}(H', v_2), v_3, \strict) = (H'', A', \true)
+%\rulesep
+%\hf{ToUint32}(H'', v_2) \geq H'(l).{\tt @property}[{\tt ``length"}].[[{\tt Value}]]
+%\\
+%valueDesc = \{[[{\tt Value}]]:\hf{ToUint32}(H'', v_2) + 1, others\ are\ the\ same\ with\ <H''(l).{\tt @property}[{\tt ``length"}]>\}
+%\\
+%\hf{DefineOwnProperty}(H'', A', l, ``{\tt length}", valueDesc, \strict) = (H'', A', \err)
+%\end{matrix}}{\begin{matrix}
+%\state, \irid{\tt[}\ir{y}{\tt] =} \ \ir{z} \rightarrow_{\ir\stmt}
+%(H^l,A^l), {\tt Throw}(\err) 
+%\end{matrix}}
+%\\[2em]
+%
+%
+%%% DefineOwnPropety for Array
+%%%store 8 : 4-a-(HasPrimitiveBase = false) : array & Put - 3
+%%% 8.6 DefineOwnProperty 4.e -> DefineOwnPropery = error
+%\frac{\begin{matrix}
+%\evale, \irid \rightarrow_{\ir\expr} v_1
+%\rulesep
+%\evale, \ir{y} \rightarrow_{\ir\expr} v_2
+%\rulesep
+%\hf{CheckObjectCoercible}(v_1) \not= \err
+%\rulesep
+%\hf{ToObject}(H, v_1) = (H',l)
+%\rulesep
+%(H', A, \tb), \ir{z} \rightarrow v_3
+%\\
+%v_1 \notin \{{\tt Boolean, String, Number}\}
+%\rulesep
+%H'(l).[[{\tt Class}]] = {\tt``Array"} 
+%\rulesep
+%CanPut(H', l, \hf{ToString}(H', v_2) = \true
+%\\
+%\hf{ToString}(H', v_2) \not= ``{\tt length}"
+%\rulesep
+%\hf{isIndex}(\hf{ToString}(H', v_2))
+%\\
+%\hf{ToUint32}(v_2) < H'(l).{\tt @property}[{\tt ``length"}].[[{\tt Value}]]
+%\vee
+%H'(l).{\tt @property}[{\tt ``length"}].{\tt[[Writable]]}
+%\\
+%\hf{DefineOwnProperty}(H', A, l, \hf{ToString}(H', v_2), v_3, \strict) = (H'', A', \true)
+%\rulesep
+%\hf{ToUint32}(H'', v_2) \geq H'(l).{\tt @property}[{\tt ``length"}].[[{\tt Value}]]
+%\\
+%valueDesc = \{[[{\tt Value}]]:\hf{ToUint32}(H'', v_2) + 1, others\ are\ the\ same\ with\ <H''(l).{\tt @property}[{\tt ``length"}]>\}
+%\\
+%\hf{DefineOwnProperty}(H'', A', l, ``{\tt length}", valueDesc, \strict) = (H'', A', v)
+%\end{matrix}}{\begin{matrix}
+%\state, \irid{\tt[}\ir{y}{\tt] =} \ \ir{z} \rightarrow_{\ir\stmt}
+%(H^l,A^l), {\tt Normal}(v_3) 
+%\end{matrix}}
+%\\[2em]
+%
+%\end{array}
+%\]
+%
+%\[
+%\begin{array}{l@{~~}l@{~~}ll}
+%
+%%% DefineOwnPropety for Array
+%%%store 8 : 4-a-(HasPrimitiveBase = false) : array & Put - 3
+%%% 8.6 DefineOwnProperty 4.e -> DefineOwnPropery = error
+%\frac{\begin{matrix}
+%\evale, \irid \rightarrow_{\ir\expr} v_1
+%\rulesep
+%\evale, \ir{y} \rightarrow_{\ir\expr} v_2
+%\rulesep
+%\hf{CheckObjectCoercible}(v_1) \not= \err
+%\rulesep
+%\hf{ToObject}(H, v_1) = (H',l)
+%\rulesep
+%(H', A, \tb), \ir{z} \rightarrow v_3
+%\\
+%v_1 \notin \{{\tt Boolean, String, Number}\}
+%\rulesep
+%H'(l).[[{\tt Class}]] = {\tt``Array"} 
+%\rulesep
+%CanPut(H', l, \hf{ToString}(H', v_2) = \true
+%\\
+%\hf{ToString}(H', v_2) \not= ``{\tt length}"
+%\rulesep
+%\hf{isIndex}(\hf{ToString}(H', v_2))
+%\\
+%\hf{ToUint32}(v_2) < H'(l).{\tt @property}[{\tt ``length"}].[[{\tt Value}]]
+%\vee
+%H'(l).{\tt @property}[{\tt ``length"}].{\tt[[Writable]]}
+%\\
+%\hf{DefineOwnProperty}(H', A, l, \hf{ToString}(H', v_2), v_3, \strict) = (H'', A', \true)
+%\rulesep
+%\hf{ToUint32}(H'', v_2) \geq H'(l).{\tt @property}[{\tt ``length"}].[[{\tt Value}]]
+%\\
+%valueDesc = \{[[{\tt Value}]]:\hf{ToUint32}(H'', v_2) + 1, others\ are\ the\ same\ with\ <H''(l).{\tt @property}[{\tt ``length"}]>\}
+%\\
+%\hf{DefineOwnProperty}(H'', A', l, ``{\tt length}", valueDesc, \strict) = (H'', A', v)
+%\end{matrix}}{\begin{matrix}
+%\state, \irid{\tt[}\ir{y}{\tt] =} \ \ir{z} \rightarrow_{\ir\stmt}
+%(H^l,A^l), {\tt Normal}(v_3) 
+%\end{matrix}}
+%\\[2em]
+%
+%
+%\end{array}
+%\]
+%
+%\[
+%\begin{array}{l@{~~}l@{~~}ll}
+%
+%
+%
+%%% DefineOwnPropety for Array
+%%%store 8 : 4-a-(HasPrimitiveBase = false) : array & Put - 3
+%%% 8.6 DefineOwnProperty 4.e -> DefineOwnPropery = error
+%\frac{\begin{matrix}
+%\evale, \irid \rightarrow_{\ir\expr} v_1
+%\rulesep
+%\evale, \ir{y} \rightarrow_{\ir\expr} v_2
+%\rulesep
+%\hf{CheckObjectCoercible}(v_1) \not= \err
+%\rulesep
+%\hf{ToObject}(H, v_1) = (H',l)
+%\rulesep
+%(H', A, \tb), \ir{z} \rightarrow v_3
+%\\
+%v_1 \notin \{{\tt Boolean, String, Number}\}
+%\rulesep
+%H'(l).[[{\tt Class}]] = {\tt``Array"} 
+%\rulesep
+%CanPut(H', l, \hf{ToString}(H', v_2) = \true
+%\\
+%\hf{ToString}(H', v_2) \not= ``{\tt length}"
+%\rulesep
+%\neg \hf{isIndex}(\hf{ToString}(H', v_2))
+%\\
+%\hf{DefineOwnProperty}(H', A, l, \hf{ToString}(H', v_2), v_3, \strict) = (H'', A', \err)
+%\end{matrix}}{\begin{matrix}
+%\state, \irid{\tt[}\ir{y}{\tt] =} \ \ir{z} \rightarrow_{\ir\stmt}
+%(H^l,A^l), {\tt Throw}(\err) 
+%\end{matrix}}
+%\\[2em]
+%
+%
+%%% DefineOwnPropety for Array
+%%%store 8 : 4-a-(HasPrimitiveBase = false) : array & Put - 3
+%%% 8.6 DefineOwnProperty 4.e -> DefineOwnPropery = error
+%\frac{\begin{matrix}
+%\evale, \irid \rightarrow_{\ir\expr} v_1
+%\rulesep
+%\evale, \ir{y} \rightarrow_{\ir\expr} v_2
+%\rulesep
+%\hf{CheckObjectCoercible}(v_1) \not= \err
+%\rulesep
+%\hf{ToObject}(H, v_1) = (H',l)
+%\rulesep
+%(H', A, \tb), \ir{z} \rightarrow v_3
+%\\
+%v_1 \notin \{{\tt Boolean, String, Number}\}
+%\rulesep
+%H'(l).[[{\tt Class}]] = {\tt``Array"} 
+%\rulesep
+%CanPut(H', l, \hf{ToString}(H', v_2) = \true
+%\\
+%\hf{ToString}(H', v_2) \not= ``{\tt length}"
+%\rulesep
+%\neg \hf{isIndex}(\hf{ToString}(H', v_2))
+%\\
+%\hf{DefineOwnProperty}(H', A, l, \hf{ToString}(H', v_2), v_3, \strict) = (H'', A', v)
+%\end{matrix}}{\begin{matrix}
+%\state, \irid{\tt[}\ir{y}{\tt] =} \ \ir{z} \rightarrow_{\ir\stmt}
+%(H^l,A^l), {\tt Normal}(v_3) 
+%\end{matrix}}
+%\\[2em]
+
+
+
+
+
+
+%
+%%%store 6
+%\frac{\begin{matrix}
+%\evale, \irid \rightarrow_{\ir\expr} v_1
+%\rulesep
+%\evale, \ir{y} \rightarrow_{\ir\expr} v_2
+%\rulesep
+%\hf{CheckObjectCoercible}(v_1) \not= \err
+%\rulesep
+%\hf{ToObject}(H, v_1) = (H',l)
+%\rulesep
+%(H', A, \tb), \ir{z} \rightarrow v_3
+%\\
+%\neg \hf{HasPropety}(H', l, \hf{ToString}(H', v_2))
+%\rulesep
+%\hf{CreateBinding}(H', A, \hf{ToString}(H', v_2), \eval) = (H'', A')
+%\\
+%H''(l).[[{\tt Class}]] \not= {\tt``Array"} \vee \neg \hf{isIndex}(\hf{ToString}(H'', v_2))
+%\rulesep
+%\hf{Put}(H'', A', l, \hf{ToString}(H'', v_2), v_3, \strict) = (H^r, A^r, v)
+%\end{matrix}}{\begin{matrix}
+%\state, \irid{\tt[}\ir{y}{\tt] =} \ \ir{z} \rightarrow_{\ir\stmt}
+%(H^r,A^r), {\tt Normal}(v)
+%\end{matrix}}
+%\\[2em]
+%
+%
+%
+%%%store 7
+%\frac{\begin{matrix}
+%\evale, \irid \rightarrow_{\ir\expr} v_1
+%\rulesep
+%\evale, \ir{y} \rightarrow_{\ir\expr} v_2
+%\rulesep
+%\hf{CheckObjectCoercible}(v_1) \not= \err
+%\rulesep
+%\hf{ToObject}(H, v_1) = (H',l)
+%\rulesep
+%(H', A, \tb), \ir{z} \rightarrow v_3
+%\\
+%\neg \hf{HasPropety}(H', l, \hf{ToString}(H', v_2))
+%\rulesep
+%H'(l).[[{\tt Class}]] = {\tt``Array"} \rulesep \hf{isIndex}(\hf{ToString}(H', v_2))
+%\rulesep
+%\\
+%\hf{oldLenDesc} =  H'(l).@{\tt property(``length")}
+%\rulesep
+%\hf{ToUint32}(v_2) \geq \hf{oldLenDesc}.[[{\tt Value}]]
+%\rulesep
+%\neg H'(l).{\tt[[Writable]]}
+%\end{matrix}}{\begin{matrix}
+%\state, \irid{\tt[}\ir{y}{\tt] =} \ \ir{z} \rightarrow_{\ir\stmt}
+%(H',A), {\tt Throw}({\tt TypeError})
+%\end{matrix}}
+%\\[2em]
+%
+%
+%
+%
+%
+%%%store 8
+%\frac{\begin{matrix}
+%\evale, \irid \rightarrow_{\ir\expr} v_1
+%\rulesep
+%\evale, \ir{y} \rightarrow_{\ir\expr} v_2
+%\rulesep
+%\hf{CheckObjectCoercible}(v_1) \not= \err
+%\rulesep
+%\hf{ToObject}(H, v_1) = (H',l)
+%\rulesep
+%(H', A, \tb), \ir{z} \rightarrow v_3
+%\\
+%\neg \hf{HasPropety}(H', l, \hf{ToString}(H', v_2))
+%\rulesep
+%H'(l).[[{\tt Class}]] = {\tt``Array"} \rulesep \hf{isIndex}(\hf{ToString}(H', v_2))
+%\rulesep
+%\\
+%\hf{oldLenDesc} =  H'(l).@{\tt property(``length")}
+%\rulesep
+%\hf{ToUint32}(v_2) < \hf{oldLenDesc}.[[{\tt Value}]]
+%\vee
+%H'(l).{\tt[[Writable]]}
+%\\
+%\hf{DefineOwnProperty}(H', A, l,\hf{ToString}(H', v_2), v_3, \false) = (H'', A', \err)
+%\end{matrix}}{\begin{matrix}
+%\state, \irid{\tt[}\ir{y}{\tt] =} \ \ir{z} \rightarrow_{\ir\stmt}
+%(H'',A'), {\tt Throw}(\err)
+%\end{matrix}}
+%\\[2em]
+%
+%%%store 9
+%\frac{\begin{matrix}
+%\evale, \irid \rightarrow_{\ir\expr} v_1
+%\rulesep
+%\evale, \ir{y} \rightarrow_{\ir\expr} v_2
+%\rulesep
+%\hf{CheckObjectCoercible}(v_1) \not= \err
+%\rulesep
+%\hf{ToObject}(H, v_1) = (H',l)
+%\rulesep
+%(H', A, \tb), \ir{z} \rightarrow v_3
+%\\
+%\neg \hf{HasPropety}(H', l, \hf{ToString}(H', v_2))
+%\rulesep
+%H'(l).[[{\tt Class}]] = {\tt``Array"} \rulesep \hf{isIndex}(\hf{ToString}(H', v_2))
+%\rulesep
+%\\
+%oldLenDesc =  H'(l).@{\tt property(``length")}
+%\rulesep
+%\hf{ToUint32}(v_2) < oldLenDesc.[[{\tt Value}]]
+%\vee
+%H'(l).{\tt[[Writable]]}
+%\\
+%\hf{DefineOwnProperty}(H', A, l,\hf{ToString}(H', v_2), v_3, \false) = (H'', A', \false)
+%\end{matrix}}{\begin{matrix}
+%\state, \irid{\tt[}\ir{y}{\tt] =} \ \ir{z} \rightarrow_{\ir\stmt}
+%(H'',A'), {\tt Throw}({\tt TypeError})
+%\end{matrix}}
+%\\[2em]
+%
+%
+%%%store 10
+%\frac{\begin{matrix}
+%\evale, \irid \rightarrow_{\ir\expr} v_1
+%\rulesep
+%\evale, \ir{y} \rightarrow_{\ir\expr} v_2
+%\rulesep
+%\hf{CheckObjectCoercible}(v_1) \not= \err
+%\rulesep
+%\hf{ToObject}(H, v_1) = (H',l)
+%\rulesep
+%(H', A, \tb), \ir{z} \rightarrow v_3
+%\\
+%\neg \hf{HasPropety}(H', l, \hf{ToString}(H', v_2))
+%\rulesep
+%H'(l).[[{\tt Class}]] = {\tt``Array"} \rulesep \hf{isIndex}(\hf{ToString}(H', v_2))
+%\rulesep
+%\\
+%oldLenDesc =  H'(l).@{\tt property(``length")}
+%\rulesep
+%\hf{ToUint32}(v_2) < oldLenDesc.[[{\tt Value}]]
+%\vee
+%H'(l).{\tt[[Writable]]}
+%\\
+%\hf{DefineOwnProperty}(H', A, l,\hf{ToString}(H', v_2), v_3, \false) = (H'', A', v)
+%\rulesep
+%\hf{ToUint32}(v_2) < oldLenDesc.[[{\tt Value}]]
+%\end{matrix}}{\begin{matrix}
+%\state, \irid{\tt[}\ir{y}{\tt] =} \ \ir{z} \rightarrow_{\ir\stmt}
+%(H'',A'), {\tt Normal}(v)
+%\end{matrix}}
+%\\[2em]
+%
+%%%store 11
+%\frac{\begin{matrix}
+%\evale, \irid \rightarrow_{\ir\expr} v_1
+%\rulesep
+%\evale, \ir{y} \rightarrow_{\ir\expr} v_2
+%\rulesep
+%\hf{CheckObjectCoercible}(v_1) \not= \err
+%\rulesep
+%\hf{ToObject}(H, v_1) = (H',l)
+%\rulesep
+%(H', A, \tb), \ir{z} \rightarrow v_3
+%\\
+%\neg \hf{HasPropety}(H', l, \hf{ToString}(H', v_2))
+%\rulesep
+%H'(l).[[{\tt Class}]] = {\tt``Array"} \rulesep \hf{isIndex}(\hf{ToString}(H', v_2))
+%\rulesep
+%\\
+%oldLen =  H'(l).@{\tt property(``length")}.[[Value]]
+%\rulesep
+%\hf{ToUint32}(v_2) < oldLen
+%\vee
+%H'(l).{\tt[[Writable]]}
+%\\
+%\hf{DefineOwnProperty}(H', A, l,\hf{ToString}(H', v_2), v_3, \false) = (H'', A', v)
+%\rulesep
+%\hf{ToUint32}(v_2) \geq oldLen
+%\\
+%oldLenDesc.{\tt @propety}\{[[{\tt Value}]] \mapsto oldLenDesc.[[{\tt Value}]] + 1 \}
+%\\
+%\hf{DefineOwnProperty}(H', A, l,``length", oldLenDesc, \false) = (H^r, A^r,ve) % always return true.... in spec
+%\end{matrix}}{\begin{matrix}
+%\state, \irid{\tt[}\ir{y}{\tt] =} \ \ir{z} \rightarrow_{\ir\stmt}
+%(H^r,A^r), {\tt Normal}(v)
+%\end{matrix}}
+%\\[2em]
+
+
+%
+%%%store 12
+%\frac{\begin{matrix}
+%\evale, \irid \rightarrow_{\ir\expr} v_1
+%\rulesep
+%\evale, \ir{y} \rightarrow_{\ir\expr} v_2
+%\rulesep
+%\hf{CheckObjectCoercible}(v_1) \not= \err
+%\rulesep
+%\hf{ToObject}(H, v_1) = (H',l)
+%\rulesep
+%(H', A, \tb), \ir{z} \rightarrow v_3
+%\\
+%\hf{HasPropety}(H', l, \hf{ToString}(H', v_2))
+%\rulesep
+%H'(l).[[{\tt Class}]] \not= {\tt``Array"} \vee \hf{ToString}(H', v_2) \not= ``{\tt length}"
+%\\
+%\hf{Put}(H', A', l, \hf{ToString}(H'', v_2), v_3, \strict) = (H^r, A^r, \err)
+%\end{matrix}}{\begin{matrix}
+%\state, \irid{\tt[}\ir{y}{\tt] =} \ \ir{z} \rightarrow_{\ir\stmt}
+%(H^r,A^r), \error
+%\end{matrix}}
+%\\[2em]
+%
+%
+%
+%
+%%%store 13
+%\frac{\begin{matrix}
+%\evale, \irid \rightarrow_{\ir\expr} v_1
+%\rulesep
+%\evale, \ir{y} \rightarrow_{\ir\expr} v_2
+%\rulesep
+%\hf{CheckObjectCoercible}(v_1) \not= \err
+%\rulesep
+%\hf{ToObject}(H, v_1) = (H',l)
+%\rulesep
+%(H', A, \tb), \ir{z} \rightarrow_{\ir\expr} v_3
+%\\
+%\hf{HasPropety}(H', l, \hf{ToString}(H', v_2))
+%\rulesep
+%H'(l).[[{\tt Class}]] \not= {\tt``Array"} \vee \hf{ToString}(H', v_2) \not= ``{\tt length}"
+%\\
+%\rulesep
+%[[{\tt Value}]] \notin v_3
+%\rulesep
+%\hf{DefineOwnProperty}(H', A, l, ``{\tt length}", v_3, \strict)
+%\end{matrix}}{\begin{matrix}
+%\state, \irid{\tt[}\ir{y}{\tt] =} \ \ir{z} \rightarrow_{\ir\stmt}
+%(H^r,A^r), {\tt Normal}(v)
+%\end{matrix}}
+%\\[2em]
+%
+%
+%
+%%%store 14
+%\frac{\begin{matrix}
+%\evale, \irid \rightarrow_{\ir\expr} v_1
+%\rulesep
+%\evale, \ir{y} \rightarrow_{\ir\expr} v_2
+%\rulesep
+%\hf{CheckObjectCoercible}(v_1) \not= \err
+%\rulesep
+%\hf{ToObject}(H, v_1) = (H',l)
+%\rulesep
+%(H', A, \tb), \ir{z} \rightarrow_{\ir\expr} v_3
+%\\
+%\hf{HasPropety}(H', l, \hf{ToString}(H', v_2))
+%\rulesep
+%H'(l).[[{\tt Class}]] = {\tt``Array"}
+%\rulesep
+%\hf{ToString}(H', v_2) = ``{\tt length}"
+%\\
+%\rulesep
+%newLen = v_3.[[{\tt Value}]]
+%\rulesep
+%\hf{ToUint32}(newLen) \not= \hf{ToNumber}(newLen)
+%\end{matrix}}{\begin{matrix}
+%\state, \irid{\tt[}\ir{y}{\tt] =} \ \ir{z} \rightarrow_{\ir\stmt}
+%(H^r,A^r), {\tt Throw}({\tt RangeError})
+%\end{matrix}}
+%\\[2em]
+%
+%
+%%%store 15
+%\frac{\begin{matrix}
+%\evale, \irid \rightarrow_{\ir\expr} v_1
+%\rulesep
+%\evale, \ir{y} \rightarrow_{\ir\expr} v_2
+%\rulesep
+%\hf{CheckObjectCoercible}(v_1) \not= \err
+%\rulesep
+%\hf{ToObject}(H, v_1) = (H',l)
+%\rulesep
+%(H', A, \tb), \ir{z} \rightarrow_{\ir\expr} v_3
+%\\
+%\hf{HasPropety}(H', l, \hf{ToString}(H', v_2))
+%\rulesep
+%H'(l).[[{\tt Class}]] = {\tt``Array"}
+%\rulesep
+%\hf{ToString}(H', v_2) = ``{\tt length}"
+%\\
+%\rulesep
+%newLen = v_3.[[{\tt Value}]]
+%\rulesep
+%\hf{ToUint32}(newLen) = \hf{ToNumber}(newLen)
+%\rulesep
+%oldLen = H'(l).@{\tt property}(``{\tt length}").[[{\tt Value}]]
+%\\
+%newLen \geq oldLen
+%\rulesep
+%\hf{DefineOwnProperty}(H', A, l, \hf{ToString}(H', v_2), v_3, \strict) = (H^r, A^r, \err)
+%\end{matrix}}{\begin{matrix}
+%\state, \irid{\tt[}\ir{y}{\tt] =} \ \ir{z} \rightarrow_{\ir\stmt}
+%(H^r,A^r), {\tt Throw}(\err)
+%\end{matrix}}
+%\\[2em]
+%
+%
+%
+%%%store 16
+%\frac{\begin{matrix}
+%\evale, \irid \rightarrow_{\ir\expr} v_1
+%\rulesep
+%\evale, \ir{y} \rightarrow_{\ir\expr} v_2
+%\rulesep
+%\hf{CheckObjectCoercible}(v_1) \not= \err
+%\rulesep
+%\hf{ToObject}(H, v_1) = (H',l)
+%\rulesep
+%(H', A, \tb), \ir{z} \rightarrow_{\ir\expr} v_3
+%\\
+%\hf{HasPropety}(H', l, \hf{ToString}(H', v_2))
+%\rulesep
+%H'(l).[[{\tt Class}]] = {\tt``Array"}
+%\rulesep
+%\hf{ToString}(H', v_2) = ``{\tt length}"
+%\\
+%\rulesep
+%newLen = v_3.[[{\tt Value}]]
+%\rulesep
+%\hf{ToUint32}(newLen) = \hf{ToNumber}(newLen)
+%\rulesep
+%oldLen = H'(l).@{\tt property}(``{\tt length}").[[{\tt Value}]]
+%\\
+%newLen \geq oldLen
+%\rulesep
+%\hf{DefineOwnProperty}(H', A, l, \hf{ToString}(H', v_2), v_3, \strict) = (H^r, A^r, v)
+%\end{matrix}}{\begin{matrix}
+%\state, \irid{\tt[}\ir{y}{\tt] =} \ \ir{z} \rightarrow_{\ir\stmt}
+%(H^r,A^r), {\tt Normal}(v)
+%\end{matrix}}
+%\\[2em]
+%
+%
+%%%store 17
+%\frac{\begin{matrix}
+%\evale, \irid \rightarrow_{\ir\expr} v_1
+%\rulesep
+%\evale, \ir{y} \rightarrow_{\ir\expr} v_2
+%\rulesep
+%\hf{CheckObjectCoercible}(v_1) \not= \err
+%\rulesep
+%\hf{ToObject}(H, v_1) = (H',l)
+%\rulesep
+%(H', A, \tb), \ir{z} \rightarrow_{\ir\expr} v_3
+%\\
+%\hf{HasPropety}(H', l, \hf{ToString}(H', v_2))
+%\rulesep
+%H'(l).[[{\tt Class}]] = {\tt``Array"}
+%\rulesep
+%\hf{ToString}(H', v_2) = ``{\tt length}"
+%\\
+%\rulesep
+%newLen = v_3.[[{\tt Value}]]
+%\rulesep
+%\hf{ToUint32}(newLen) = \hf{ToNumber}(newLen)
+%\rulesep
+%oldLen = H'(l).@{\tt property}(``{\tt length}").[[{\tt Value}]]
+%\\
+%newLen < oldLen
+%\rulesep
+%\neg H'(l).{\tt[[Writable]]}
+%\end{matrix}}{\begin{matrix}
+%\state, \irid{\tt[}\ir{y}{\tt] =} \ \ir{z} \rightarrow_{\ir\stmt}
+%(H^r,A^r), {\tt Throw}({\tt TypeError})
+%\end{matrix}}
+%\\[2em]
+%
+%
+%
+%%%store 18
+%\frac{\begin{matrix}
+%\evale, \irid \rightarrow_{\ir\expr} v_1
+%\rulesep
+%\evale, \ir{y} \rightarrow_{\ir\expr} v_2
+%\rulesep
+%\hf{CheckObjectCoercible}(v_1) \not= \err
+%\rulesep
+%\hf{ToObject}(H, v_1) = (H',l)
+%\rulesep
+%(H', A, \tb), \ir{z} \rightarrow_{\ir\expr} v_3
+%\\
+%\hf{HasPropety}(H', l, \hf{ToString}(H', v_2))
+%\rulesep
+%H'(l).[[{\tt Class}]] = {\tt``Array"}
+%\rulesep
+%\hf{ToString}(H', v_2) = ``{\tt length}"
+%\\
+%\rulesep
+%newLen = v_3.[[{\tt Value}]]
+%\rulesep
+%\hf{ToUint32}(newLen) = \hf{ToNumber}(newLen)
+%\rulesep
+%oldLen = H'(l).@{\tt property}(``{\tt length}").[[{\tt Value}]]
+%\\
+%newLen < oldLen
+%\rulesep
+%H'(l).{\tt[[Writable]]}
+%\rulesep
+%{\tt[[Writable]]} \notin v_3 \vee v_3.{\tt[[Writable]]} -> newWritable = \true
+%\\
+%\hf {DefineOwnProperty}(H', A, l, ``length", v_3, \strict) = (H^r, A^r, \err)
+%\end{matrix}}{\begin{matrix}
+%\state, \irid{\tt[}\ir{y}{\tt] =} \ \ir{z} \rightarrow_{\ir\stmt}
+%(H^r,A^r), {\tt Throw}(\err)
+%\end{matrix}}
+%\\[2em]
+%
+%
+%
+%%%store 19
+%\frac{\begin{matrix}
+%\evale, \irid \rightarrow_{\ir\expr} v_1
+%\rulesep
+%\evale, \ir{y} \rightarrow_{\ir\expr} v_2
+%\rulesep
+%\hf{CheckObjectCoercible}(v_1) \not= \err
+%\rulesep
+%\hf{ToObject}(H, v_1) = (H',l)
+%\rulesep
+%(H', A, \tb), \ir{z} \rightarrow_{\ir\expr} v_3
+%\\
+%\hf{HasPropety}(H', l, \hf{ToString}(H', v_2))
+%\rulesep
+%H'(l).[[{\tt Class}]] = {\tt``Array"}
+%\rulesep
+%\hf{ToString}(H', v_2) = ``{\tt length}"
+%\\
+%\rulesep
+%newLen = v_3.[[{\tt Value}]]
+%\rulesep
+%\hf{ToUint32}(newLen) = \hf{ToNumber}(newLen)
+%\rulesep
+%oldLen = H'(l).@{\tt property}(``{\tt length}").[[{\tt Value}]]
+%\\
+%newLen < oldLen
+%\rulesep
+%H'(l).{\tt[[Writable]]}
+%\rulesep
+%{\tt[[Writable]]} \notin v_3 \vee v_3.{\tt[[Writable]]}
+%\\
+%\hf {DefineOwnProperty}(H', A, l, ``length", v_3, \strict) = (H^r, A^r, \false)
+%\end{matrix}}{\begin{matrix}
+%\state, \irid{\tt[}\ir{y}{\tt] =} \ \ir{z} \rightarrow_{\ir\stmt}
+%(H^r,A^r), {\tt Normal}(\false)
+%\end{matrix}}
+%\\[2em]
+%
+%
+%%%store 20
+%\frac{\begin{matrix}
+%\evale, \irid \rightarrow_{\ir\expr} v_1
+%\rulesep
+%\evale, \ir{y} \rightarrow_{\ir\expr} v_2
+%\rulesep
+%\hf{CheckObjectCoercible}(v_1) \not= \err
+%\rulesep
+%\hf{ToObject}(H, v_1) = (H',l)
+%\rulesep
+%(H', A, \tb), \ir{z} \rightarrow_{\ir\expr} v_3
+%\\
+%\hf{HasPropety}(H', l, \hf{ToString}(H', v_2))
+%\rulesep
+%H'(l).[[{\tt Class}]] = {\tt``Array"}
+%\rulesep
+%\hf{ToString}(H', v_2) = ``{\tt length}"
+%\\
+%\rulesep
+%newLen = v_3.[[{\tt Value}]]
+%\rulesep
+%\hf{ToUint32}(newLen) = \hf{ToNumber}(newLen)
+%\rulesep
+%oldLen = H'(l).@{\tt property}(``{\tt length}").[[{\tt Value}]]
+%\\
+%newLen < oldLen
+%\rulesep
+%H'(l).{\tt[[Writable]]}
+%\rulesep
+%{\tt[[Writable]]} \notin v_3 \vee v_3.{\tt[[Writable]]}
+%\\
+%\hf {DefineOwnProperty}(H', A, l, ``length", v_3, \strict) = (H^r, A^r, v)
+%\\
+%H^l_n = H^r
+%\rulesep
+%A^l_n = A^r
+%\rulesep
+%newLen \leq i < n = oldLen
+%\rulesep
+%\hf{Delete}(H^l_i, A^l_i, l, \hf{ToString}(H^l_i, i), \strict) = (H^l_{i-1}, A^l_{i-1}, \err \vee \true)
+%\\
+%\hf{DefineOwnProperty}(H^l_{i-1}, A^l_{i-1}, l, ``length", \{[[{\tt Value}]]:i, {\tt[[Writable]]}:v_3.{\tt[[Writable]]}, ... \}, \false)
+%\end{matrix}}{\begin{matrix}
+%\state, \irid{\tt[}\ir{y}{\tt] =} \ \ir{z} \rightarrow_{\ir\stmt}
+%(H^r,A^r), {\tt Throw}({\tt TypeError})
+%\end{matrix}}
+%\\[2em]
+%
+%
+%
+%%%store 21
+%\frac{\begin{matrix}
+%\evale, \irid \rightarrow_{\ir\expr} v_1
+%\rulesep
+%\evale, \ir{y} \rightarrow_{\ir\expr} v_2
+%\rulesep
+%\hf{CheckObjectCoercible}(v_1) \not= \err
+%\rulesep
+%\hf{ToObject}(H, v_1) = (H',l)
+%\rulesep
+%(H', A, \tb), \ir{z} \rightarrow_{\ir\expr} v_3
+%\\
+%\hf{HasPropety}(H', l, \hf{ToString}(H', v_2))
+%\rulesep
+%H'(l).[[{\tt Class}]] = {\tt``Array"}
+%\rulesep
+%\hf{ToString}(H', v_2) = ``{\tt length}"
+%\\
+%\rulesep
+%newLen = v_3.[[{\tt Value}]]
+%\rulesep
+%\hf{ToUint32}(newLen) = \hf{ToNumber}(newLen)
+%\rulesep
+%oldLen = H'(l).@{\tt property}(``{\tt length}").[[{\tt Value}]]
+%\\
+%newLen < oldLen
+%\rulesep
+%H'(l).{\tt[[Writable]]}
+%\rulesep
+%{\tt[[Writable]]} \notin v_3 \vee v_3.{\tt[[Writable]]}
+%\\
+%\hf {DefineOwnProperty}(H', A, l, ``length", v_3, \strict) = (H^r, A^r, v)
+%\\
+%H^l_n = H^r
+%\rulesep
+%A^l_n = A^r
+%\rulesep
+%newLen \leq i < n = oldLen
+%\rulesep
+%\hf{Delete}(H^l_i, A^l_i, l, \hf{ToString}(H^l_i, i), \strict) = (H^l_{i-1}, A^l_{i-1}, \false)
+%\\
+%\hf{DefineOwnProperty}(H^l_{i-1}, A^l_{i-1}, l, ``length", \{[[{\tt Value}]]:i, {\tt[[Writable]]}:\false, ... \}, \false)
+%\end{matrix}}{\begin{matrix}
+%\state, \irid{\tt[}\ir{y}{\tt] =} \ \ir{z} \rightarrow_{\ir\stmt}
+%(H^r,A^r), {\tt Normal}({\tt v})
+%\end{matrix}}
+%\\[2em]
+
+%
+%%%store 22
+%\frac{\begin{matrix}
+%\evale, \irid \rightarrow_{\ir\expr} v_1
+%\rulesep
+%\evale, \ir{y} \rightarrow_{\ir\expr} v_2
+%\rulesep
+%\hf{CheckObjectCoercible}(v_1) \not= \err
+%\rulesep
+%\hf{ToObject}(H, v_1) = (H',l)
+%\rulesep
+%(H', A, \tb), \ir{z} \rightarrow_{\ir\expr} v_3
+%\\
+%\hf{HasPropety}(H', l, \hf{ToString}(H', v_2))
+%\rulesep
+%H'(l).[[{\tt Class}]] = {\tt``Array"}
+%\rulesep
+%\hf{ToString}(H', v_2) = ``{\tt length}"
+%\\
+%\rulesep
+%newLen = v_3.[[{\tt Value}]]
+%\rulesep
+%\hf{ToUint32}(newLen) = \hf{ToNumber}(newLen)
+%\rulesep
+%oldLen = H'(l).@{\tt property}(``{\tt length}").[[{\tt Value}]]
+%\\
+%newLen < oldLen
+%\rulesep
+%H'(l).{\tt[[Writable]]}
+%\rulesep
+%{\tt[[Writable]]} \notin v_3 \vee v_3.{\tt[[Writable]]}
+%\\
+%\hf {DefineOwnProperty}(H', A, l, ``length", v_3, \strict) = (H^r, A^r, v)
+%\\
+%newLen \geq oldLen
+%\rulesep
+%\hf{Delete}(H^l_i, A^l_i, l, \hf{ToString}(H^l_i, i), \strict) = (H^l_{i-1}, A^l_{i-1}, \false)
+%\\
+%\neg newWritble
+%\hf{DefineOwnProperty}(H^l_{i-1}, A^l_{i-1}, l, ``length", \{[[{\tt Value}]]:i, {\tt[[Writable]]}:\false, ... \}, \false)
+%\end{matrix}}{\begin{matrix}
+%\state, \irid{\tt[}\ir{y}{\tt] =} \ \ir{z} \rightarrow_{\ir\stmt}
+%(H^r,A^r), {\tt Normal}({\tt v})
+%\end{matrix}}
+%\\[2em]
+%
+%
+%%%store 23
+%\frac{\begin{matrix}
+%\evale, \irid \rightarrow_{\ir\expr} v_1
+%\rulesep
+%\evale, \ir{y} \rightarrow_{\ir\expr} v_2
+%\rulesep
+%\hf{CheckObjectCoercible}(v_1) \not= \err
+%\rulesep
+%\hf{ToObject}(H, v_1) = (H',l)
+%\rulesep
+%(H', A, \tb), \ir{z} \rightarrow_{\ir\expr} v_3
+%\\
+%\hf{HasPropety}(H', l, \hf{ToString}(H', v_2))
+%\rulesep
+%H'(l).[[{\tt Class}]] = {\tt``Array"}
+%\rulesep
+%\hf{ToString}(H', v_2) = ``{\tt length}"
+%\\
+%\rulesep
+%newLen = v_3.[[{\tt Value}]]
+%\rulesep
+%\hf{ToUint32}(newLen) = \hf{ToNumber}(newLen)
+%\rulesep
+%oldLen = H'(l).@{\tt property}(``{\tt length}").[[{\tt Value}]]
+%\\
+%newLen < oldLen
+%\rulesep
+%H'(l).{\tt[[Writable]]}
+%\rulesep
+%{\tt[[Writable]]} \notin v_3 \vee v_3.{\tt[[Writable]]}
+%\\
+%\hf {DefineOwnProperty}(H', A, l, ``length", v_3, \strict) = (H^r, A^r, v)
+%\\
+%newLen \geq oldLen
+%\rulesep
+%\hf{Delete}(H^l_i, A^l_i, l, \hf{ToString}(H^l_i, i), \strict) = (H^l_{i-1}, A^l_{i-1}, \false)
+%\\
+%newWritble
+%\end{matrix}}{\begin{matrix}
+%\state, \irid{\tt[}\ir{y}{\tt] =} \ \ir{z} \rightarrow_{\ir\stmt}
+%(H^r,A^r), {\tt Normal}({\tt v})
+%\end{matrix}}
+%\\[2em]
+
+
+\end{array}
+\]
+
+
+
+
+
+
+\[
+\begin{array}{l@{~~}l@{~~}ll}
+\mtt{\normalsize\inred IRObject(IRId lhs, List<IRMember> members, Option<IRId> proto)}\\[.5em]
+
+\mbox{\inblue 11.1.5 Object Initialiser}\\
+% obj 1
+\frac{\begin{matrix}
+\hf{NewLoc}() = l
+\rulesep
+H' = H[l\mapsto \hf{NewObj}()]
+\rulesep
+(H',A,\tb), \irid \ {\tt =} \ l \rightarrow_{\ir\stmt} (H'',A'), \ct
+\end{matrix}}{\begin{matrix}
+\state, \irid \ {\tt =} \ {\tt\{\}} \rightarrow_{\ir\stmt} (H'',A'), \ct
+\end{matrix}}
+\\[2em]
+
+% obj 2
+\frac{\begin{matrix}
+\hf{NewLoc}() = l
+\rulesep
+H_1 = H[l\mapsto \hf{NewObj}()]
+\rulesep
+(H_i, A, \tb), \ir{m}_i \rightarrow_{\ir{m}} (H_{i+1}, \ir{y}_i, \emph{ov}_i)
+\rulesep
+1 \le i < j \le |m^*|
+\\
+(H_j, A, \tb), \ir{m}_j \rightarrow_{\ir{m}} \err
+\end{matrix}}{\begin{matrix}
+\state, \irobj \rightarrow_{\ir\stmt} \res, \error
+\end{matrix}}
+\\[2em]
+
+% obj 3
+\frac{\begin{matrix}
+\hf{NewLoc}() = l
+\rulesep
+H_1 = H[l\mapsto \hf{NewObj}()]
+\rulesep
+A_1 = A
+\rulesep
+(H_i, A_i, \tb), \ir{m}_i \rightarrow_{\ir{m}} (H'_{i+1}, \ir{y}_i, \emph{ov}_i)
+\rulesep
+1 \le i \le |m^*| = n
+\\
+%H[l \mapsto H(l)[{\tt @property}\mapsto H(l).{\tt@property}[y_i\mapsto \emph{ov}_i]]]
+\hf{DefineOwnProperty}(H'_{i+1},A_{i},  l, ToString(H'_{i+1}, \ir{y}_i, \emph{ov}_i, \false) = (H_{i+1}, A_{i+1}, v)
+\rulesep
+(H_{n+1},A_{n+1},\tb), \irid \ {\tt =} \ l \rightarrow_{\ir\stmt} \resp, \ct
+\end{matrix}}{\begin{matrix}
+\state, \irobj \rightarrow_{\ir\stmt} \resp, \ct
+\end{matrix}}
+\\[4em]
+
+
+\mtt{\normalsize\inred IRArray(IRId lhs, List<Option<IRExpr>> elements)}\\[.5em]
+
+\mbox{\inblue 11.1.4 Array Initialiser}\\
+%array 1
+\frac{\begin{matrix}
+\hf{NewLoc}() = l
+\rulesep
+|(\irexpr)^*| = n
+\rulesep
+H' = H[l \mapsto \hf{NewArrObject}(n)]
+\rulesep
+(H',A,\tb), \ir{e_i} \rightarrow_{\ir\expr} v_i
+\rulesep
+0 \le i < j < n
+\\
+(H', A, \tb), \ir{e_j} \rightarrow_{\ir{\expr}} \err
+\end{matrix}}{\begin{matrix}
+\state, \irarr \rightarrow_{\ir\stmt} \res, {\tt Throw}(\err)
+\end{matrix}}
+\\\\
+
+%array 2
+\frac{\begin{matrix}
+\hf{NewLoc}() = l
+\rulesep
+|(\ir{y})^*| = n
+\rulesep
+H' = H[l \mapsto \hf{NewArrObject}(n)]
+\rulesep
+(H',A,\tb), \ir{y_i} \rightarrow_{\ir\expr} v_i
+\rulesep
+0 \le i < n
+\\
+\{{\tt [[Value]]:}v_i, {\tt [[Writable]]:}\true, {\tt [[Enumerable]]:}\true,
+ {\tt [[Configurable]]:\true}\} = \emph{dp}_i
+\\
+H'_0 = H'
+\rulesep
+A_0 = A
+\rulesep
+\hf{DefineOwnProperty}(H'_i,A_i,l,\hf{ToString}(i)
+, \emph{dp}_i, \false) = (H'_{i+1},A_{i+1},v)
+\rulesep
+H'' = H'_{n}
+\rulesep
+A' = A_{n}
+\\
+(H'',A',\tb), \irid \ {\tt =} \ l \rightarrow_{\ir\stmt} (H''',A''), \ct
+\end{matrix}}{\begin{matrix}
+\state, \irarr \rightarrow_{\ir\stmt} (H''',A''), \ct
+\end{matrix}}
+\\[4em]
+
+\mtt{\normalsize\inred IRArgs(IRId lhs, List<Option<IRExpr>> elements)}\\[4em]
+
+\end{array}
+\]
+
+
+\[
+\begin{array}{l@{~~}l@{~~}ll}
+\mtt{\normalsize\inred IRCall(IRId lhs, IRId fun, IRId thisB, IRId args)}\\[.5em]
+\mbox{\inblue 11.2.3 Function Calls}\\
+\mbox{\inblue 11.2.4 Argument Lists}\\
+
+%call 1
+\frac{\begin{matrix}
+\evale, \ir{y} \rightarrow_{\ir\expr} \err
+\end{matrix}}{\begin{matrix}
+\state, \ircall \rightarrow_{\ir\stmt}
+\res, \error
+\end{matrix}}
+\\[2em]
+
+%call 2
+\frac{\begin{matrix}
+\evale, \ir{y} \rightarrow_{\ir\expr} v
+\rulesep
+\evale, \ir{z_1} \rightarrow_{\ir\expr} \err
+\end{matrix}}{\begin{matrix}
+\state, \ircall \rightarrow_{\ir\stmt}
+\res, \error
+\end{matrix}}
+\\[2em]
+
+%call 3
+\frac{\begin{matrix}
+\evale, \ir{y} \rightarrow_{\ir\expr} v
+\rulesep
+\evale, \ir{z_1} \rightarrow_{\ir\expr} v_1
+\rulesep
+\evale, \ir{z_2} \rightarrow_{\ir\expr} \err
+\end{matrix}}{\begin{matrix}
+\state, \ircall \rightarrow_{\ir\stmt}
+\res, \error
+\end{matrix}}
+\\[2em]
+
+%call 4
+\frac{\begin{matrix}
+\evale, \ir{y} \rightarrow_{\ir\expr} v
+\rulesep
+\evale, \ir{z_1} \rightarrow_{\ir\expr} v_1
+\rulesep
+\evale, \ir{z_2} \rightarrow_{\ir\expr} v_2
+\rulesep
+v \not\in \Loc
+\end{matrix}}{\begin{matrix}
+\state, \ircall \rightarrow_{\ir\stmt}
+\res, \thte
+\end{matrix}}
+\\[2em]
+
+%call 5
+\frac{\begin{matrix}
+\evale, \ir{y} \rightarrow_{\ir\expr} v
+\rulesep
+\evale, \ir{z_1} \rightarrow_{\ir\expr} v_1
+\rulesep
+\evale, \ir{z_2} \rightarrow_{\ir\expr} v_2
+\rulesep
+v \in \Loc
+\rulesep
+\neg\hf{IsCallable}(H,v)
+\end{matrix}}{\begin{matrix}
+\state, \ircall \rightarrow_{\ir\stmt}
+\res, \thte
+\end{matrix}}
+\\[2em]
+
+%call 6
+\frac{\begin{matrix}
+\evale, \ir{y} \rightarrow_{\ir\expr} v
+\rulesep
+\evale, \ir{z_1} \rightarrow_{\ir\expr} v_1
+\rulesep
+\evale, \ir{z_2} \rightarrow_{\ir\expr} v_2
+\rulesep
+v \in \Loc
+\rulesep
+\hf{IsCallable}(H,v)
+\rulesep
+v_2 \not\in \Loc
+\end{matrix}}{\begin{matrix}
+\state, \ircall \rightarrow_{\ir\stmt}
+\res, \thte
+\end{matrix}}
+\\[2em]
+
+\mbox{\inblue 10.4.3 Entering Function Code}\\
+%call 7
+\frac{\begin{matrix}
+\evale, \ir{y} \rightarrow_{\ir\expr} v
+\rulesep
+\evale, \ir{z_1} \rightarrow_{\ir\expr} v_1
+\rulesep
+\evale, \ir{z_2} \rightarrow_{\ir\expr} v_2
+\rulesep
+v \in \Loc
+\rulesep
+\hf{IsCallable}(H,v)
+\rulesep
+v_2 \in \Loc
+\\
+H(v).{\tt[[Code]]} = \emph{fv}
+\rulesep
+\{\}::H(v).{\tt[[Scope]]} = A'
+\\
+\hf{NewLoc}() = l
+\rulesep
+H' = H[l\mapsto \hf{NewArgObj}(v, \hf{ParamsSize}(\emph{fv}), H(v_2))]
+\\
+\hf{CreateBinding}(H', A', \hf{arguments}, \eval) = \respp%''
+\rulesep
+\hf{SetBinding}(H'', A'', \hf{arguments}, l, \strict) = (H^f, A^f, \err)%''
+\end{matrix}}{\begin{matrix}
+\state, \ircall \rightarrow_{\ir\stmt}
+(H^f, A), \error
+\end{matrix}}
+\\[2em]
+
+%call 8
+\frac{\begin{matrix}
+\evale, \ir{y} \rightarrow_{\ir\expr} v
+\rulesep
+\evale, \ir{z_1} \rightarrow_{\ir\expr} v_1
+\rulesep
+\evale, \ir{z_2} \rightarrow_{\ir\expr} v_2
+\rulesep
+v \in \Loc
+\rulesep
+\hf{IsCallable}(H,v)
+\rulesep
+v_2 \in \Loc
+\\
+H(v).{\tt[[Code]]} = \emph{fv}
+\rulesep
+\{\}::H(v).{\tt[[Scope]]} = A'
+\\
+\hf{NewLoc}() = l
+\rulesep
+H' = H[l\mapsto \hf{NewArgObj}(v, \hf{ParamsSize}(\emph{fv}), H(v_2))]
+\\
+\hf{CreateBinding}(H', A', \hf{arguments}, \eval) = \respp%''
+\rulesep
+\hf{SetBinding}(H'', A'', \hf{arguments}, l, \strict) = (H^f, A^f, v^f)%''
+\\
+\hf{GetThis}(H^f,v_1) = (H^t,l^t)
+\rulesep
+(H^t, A^f, l^t), \hf{GetBody}(\emph{fv}) \rightarrow_{\ir\stmt} (H^b, A^b), {\tt Throw}(ve)
+\end{matrix}}{\begin{matrix}
+\state, \ircall \rightarrow_{\ir\stmt}
+(H^b, A), {\tt Throw}(ve)
+\end{matrix}}
+\\[2em]
+
+%call 9
+\frac{\begin{matrix}
+\evale, \ir{y} \rightarrow_{\ir\expr} v
+\rulesep
+\evale, \ir{z_1} \rightarrow_{\ir\expr} v_1
+\rulesep
+\evale, \ir{z_2} \rightarrow_{\ir\expr} v_2
+\rulesep
+v \in \Loc
+\rulesep
+\hf{IsCallable}(H,v)
+\rulesep
+v_2 \in \Loc
+\\
+H(v).{\tt[[Code]]} = \emph{fv}
+\rulesep
+\{\}::H(v).{\tt[[Scope]]} = A'
+\\
+\hf{NewLoc}() = l
+\rulesep
+H' = H[l\mapsto \hf{NewArgObj}(v, \hf{ParamsSize}(\emph{fv}), H(v_2))]
+\\
+\hf{CreateBinding}(H', A', \hf{arguments}, \eval) = \respp%''
+\rulesep
+\hf{SetBinding}(H'', A'', \hf{arguments}, l, \strict) = (H^f, A^f, v^f)%''
+\\
+\hf{GetThis}(H^f,v_1) = (H^t,l^t)
+\rulesep
+(H^t, A^f, l^t), \hf{GetBody}(\emph{fv}) \rightarrow_{\ir\stmt} (H^b, A^b), {\tt Return}({\tt empty})
+\\
+\rulesep
+(H^b, A, \tb), \irid\ {\tt =} \ \undef \rightarrow_{\ir\stmt} (H^r,A^r), \ct
+\end{matrix}}{\begin{matrix}
+\state, \ircall \rightarrow_{\ir\stmt}
+(H^r, A^r), \ct
+\end{matrix}}
+\\[2em]
+
+%call 10
+\frac{\begin{matrix}
+\evale, \ir{y} \rightarrow_{\ir\expr} v
+\rulesep
+\evale, \ir{z_1} \rightarrow_{\ir\expr} v_1
+\rulesep
+\evale, \ir{z_2} \rightarrow_{\ir\expr} v_2
+\rulesep
+v \in \Loc
+\rulesep
+\hf{IsCallable}(H,v)
+\rulesep
+v_2 \in \Loc
+\\
+H(v).{\tt[[Code]]} = \emph{fv}
+\rulesep
+\{\}::H(v).{\tt[[Scope]]} = A'
+\\
+\hf{NewLoc}() = l
+\rulesep
+H' = H[l\mapsto \hf{NewArgObj}(v, \hf{ParamsSize}(\emph{fv}), H(v_2))]
+\\
+\hf{CreateBinding}(H', A', \hf{arguments}, \eval) = \respp%''
+\rulesep
+\hf{SetBinding}(H'', A'', \hf{arguments}, l, \strict) = (H^f, A^f, v^f)%''
+\\
+\hf{GetThis}(H^f,v_1) = (H^t,l^t)
+\rulesep
+(H^t, A^f, l^t), \hf{GetBody}(\emph{fv}) \rightarrow_{\ir\stmt} (H^b, A^b), {\tt Return}(v^b)
+\\
+(H^b, A, \tb), \irid\ {\tt =} \ v^b \rightarrow_{\ir\stmt} (H^r,A^r), \ct
+\end{matrix}}{\begin{matrix}
+\state, \ircall \rightarrow_{\ir\stmt}
+(H^r,A^r), \ct
+\end{matrix}}
+\\[2em]
+
+%call 11
+\frac{\begin{matrix}
+\evale, \ir{y} \rightarrow_{\ir\expr} v
+\rulesep
+\evale, \ir{z_1} \rightarrow_{\ir\expr} v_1
+\rulesep
+\evale, \ir{z_2} \rightarrow_{\ir\expr} v_2
+\rulesep
+v \in \Loc
+\rulesep
+\hf{IsCallable}(H,v)
+\rulesep
+v_2 \in \Loc
+\\
+H(v).{\tt[[Code]]} = \emph{fv}
+\rulesep
+\{\}::H(v).{\tt[[Scope]]} = A'
+\\
+\hf{NewLoc}() = l
+\rulesep
+H' = H[l\mapsto \hf{NewArgObj}(v, \hf{ParamsSize}(\emph{fv}), H(v_2))]
+\\
+\hf{CreateBinding}(H', A', \hf{arguments}, \eval) = \respp%''
+\rulesep
+\hf{SetBinding}(H'', A'', \hf{arguments}, l, \strict) = (H^f, A^f, v^f)%''
+\\
+\hf{GetThis}(H^f,v_1) = (H^t,l^t)
+\rulesep
+(H^t, A^f, l^t), \hf{GetBody}(\emph{fv}) \rightarrow_{\ir\stmt} (H^b, A^b), {\tt Normal}(\_)
+\\
+(H^b, A, \tb), \irid\ {\tt =} \ \undef \rightarrow_{\ir\stmt} (H^r,A^r), \ct
+\end{matrix}}{\begin{matrix}
+\state, \ircall \rightarrow_{\ir\stmt}
+(H^r,A^r), \ct
+\end{matrix}}
+\\[2em]
+\end{array}
+\]
+
+\[
+\begin{array}{l@{~~}l@{~~}ll}
+\mtt{\normalsize\inred IRInternalCall(IRId lhs, IRId fun, IRExpr first, Option<IRId> second)}\\[.5em]
+
+% toObject 1
+\frac{\begin{matrix}
+\evale, \ir{\expr} \rightarrow_{\ir\expr} \err
+\end{matrix}}{\begin{matrix}
+\state, \irid \ {\tt = {\diamond}toObject}(e)  \rightarrow_{\ir\stmt} \res, \error
+\end{matrix}}
+\\[2em]
+
+% toObject 2
+\frac{\begin{matrix}
+\evale, \ir{\expr} \rightarrow_{\ir\expr} v
+\rulesep
+\hf{ToObject}(H,v) = (H',\err)
+\end{matrix}}{\begin{matrix}
+\state, \irid \ {\tt = {\diamond}toObject}(e)  \rightarrow_{\ir\stmt} \res, \error
+\end{matrix}}
+\\[2em]
+
+% toObject 3
+\frac{\begin{matrix}
+\evale, \ir{\expr} \rightarrow_{\ir\expr} v
+\rulesep
+\hf{ToObject}(H,v) = (H',l)
+\rulesep
+(H',A,\tb), \irid \ {\tt =} \ l \rightarrow_{\ir\stmt} (H'',A'), \ct
+\end{matrix}}{\begin{matrix}
+\state, \irid \ {\tt = {\diamond}toObject}(e)  \rightarrow_{\ir\stmt} (H'',A'), \ct
+\end{matrix}}
+\\[2em]
+
+% isObject 1
+\frac{\begin{matrix}
+\evale, \ir{\expr} \rightarrow_{\ir\expr} \err
+\end{matrix}}{\begin{matrix}
+\state, \irid \ {\tt = {\diamond}isObject}(e)  \rightarrow_{\ir\stmt} \res, \error
+\end{matrix}}
+\\[2em]
+
+% isObject 2
+\frac{\begin{matrix}
+\evale, \ir{\expr} \rightarrow_{\ir\expr} v
+\rulesep
+v\in\Loc
+\rulesep
+\state, \irid \ {\tt =} \ \true \rightarrow_{\ir\stmt} \resp, \ct
+\end{matrix}}{\begin{matrix}
+\state, \irid \ {\tt = {\diamond}isObject}(e)  \rightarrow_{\ir\stmt} \resp, \ct
+\end{matrix}}
+\\[2em]
+
+% isObject 3
+\frac{\begin{matrix}
+\evale, \ir{\expr} \rightarrow_{\ir\expr} v
+\rulesep
+v\not\in\Loc
+\rulesep
+\state, \irid \ {\tt =} \ \false \rightarrow_{\ir\stmt} \resp, \ct
+\end{matrix}}{\begin{matrix}
+\state, \irid \ {\tt = {\diamond}isObject}(e)  \rightarrow_{\ir\stmt} \resp, \ct
+\end{matrix}}
+\\[2em]
+
+% toString 1
+\frac{\begin{matrix}
+\evale, \ir{\expr} \rightarrow_{\ir\expr} \err
+\end{matrix}}{\begin{matrix}
+\state, \irid \ {\tt = {\diamond}toString}(e)  \rightarrow_{\ir\stmt} \res, \error
+\end{matrix}}
+\\[2em]
+
+% toString 2
+\frac{\begin{matrix}
+\evale, \ir{\expr} \rightarrow_{\ir\expr} v
+\rulesep
+\state, \irid \ {\tt =} \ \hf{ToString}(H,v) \rightarrow_{\ir\stmt} \resp, \ct
+\end{matrix}}{\begin{matrix}
+\state, \irid \ {\tt = {\diamond}toString}(e)  \rightarrow_{\ir\stmt} \resp, \ct
+\end{matrix}}
+\\[2em]
+
+% toNumber 1
+\frac{\begin{matrix}
+\evale, \ir{\expr} \rightarrow_{\ir\expr} \err
+\end{matrix}}{\begin{matrix}
+\state, \irid \ {\tt = {\diamond}toNumber}(e)  \rightarrow_{\ir\stmt} \res, \error
+\end{matrix}}
+\\[2em]
+
+% toNumber 2
+\frac{\begin{matrix}
+\evale, \ir{\expr} \rightarrow_{\ir\expr} v
+\rulesep
+\state, \irid \ {\tt =} \ \hf{ToNumber}(H,v) \rightarrow_{\ir\stmt} \resp, \ct
+\end{matrix}}{\begin{matrix}
+\state, \irid \ {\tt = {\diamond}toNumber}(e)  \rightarrow_{\ir\stmt} \resp, \ct
+\end{matrix}}
+\\[2em]
+
+% toBoolean 1
+\frac{\begin{matrix}
+\evale, \ir{\expr} \rightarrow_{\ir\expr} \err
+\end{matrix}}{\begin{matrix}
+\state, \irid \ {\tt = {\diamond}toBoolean}(e)  \rightarrow_{\ir\stmt} \res, \error
+\end{matrix}}
+\\[2em]
+
+% toBoolean 2
+\frac{\begin{matrix}
+\evale, \ir{\expr} \rightarrow_{\ir\expr} v
+\rulesep
+\state, \irid \ {\tt =} \ \hf{ToBoolean}(v) \rightarrow_{\ir\stmt} \resp, \ct
+\end{matrix}}{\begin{matrix}
+\state, \irid \ {\tt = {\diamond}toBoolean}(e)  \rightarrow_{\ir\stmt} \resp, \ct
+\end{matrix}}
+\\[2em]
+
+% getBase 1
+\frac{\begin{matrix}
+\hf{Lookup}(H,A,\ir{y},\strict) = l
+\rulesep
+\state, \irid \ {\tt =} \ l \rightarrow_{\ir\stmt} \resp, \ct
+\end{matrix}}{\begin{matrix}
+\state, \irid \ {\tt = {\diamond}getBase}(\ir{y})  \rightarrow_{\ir\stmt} \resp, \ct
+\end{matrix}}
+\\[2em]
+
+% getBase 2
+\frac{\begin{matrix}
+\hf{Lookup}(H,A,\ir{y},\strict) = \er
+\rulesep
+\state, \irid \ {\tt =} \ \lg \rightarrow_{\ir\stmt} \resp, \ct
+\end{matrix}}{\begin{matrix}
+\state, \irid \ {\tt = {\diamond}getBase}(\ir{y})  \rightarrow_{\ir\stmt} \resp, \ct
+\end{matrix}}
+\\[2em]
+
+% iteratorInit 1
+\frac{\begin{matrix}
+\evale, \ir{y} \rightarrow_{\ir\expr} \err
+\end{matrix}}{\begin{matrix}
+\state, \irid \ {\tt = {\diamond}iteratorInit}(\ir{y})  \rightarrow_{\ir\stmt} \res, \error
+\end{matrix}}
+\\[2em]
+
+% iteratorInit 2
+\frac{\begin{matrix}
+\evale, \ir{y} \rightarrow_{\ir\expr} v
+\rulesep
+v\not\in\Loc
+\end{matrix}}{\begin{matrix}
+\state, \irid \ {\tt = {\diamond}iteratorInit}(\ir{y})  \rightarrow_{\ir\stmt} \res, \thte
+\end{matrix}}
+\\[2em]
+
+% iteratorInit 3
+\frac{\begin{matrix}
+\evale, \ir{y} \rightarrow_{\ir\expr} v
+\rulesep
+v\in\Loc
+\rulesep
+\hf{NewLoc}() = l
+\rulesep
+H' = H[l \mapsto \hf{IteratorInit}(\hf{CollectProps}(H,v))]
+\\
+(H', A, \tb), \irid \ {\tt =} \ l \rightarrow_{\ir\stmt} (H'', A'), \ct
+\end{matrix}}{\begin{matrix}
+\state, \irid \ {\tt = {\diamond}iteratorInit}(\ir{y})  \rightarrow_{\ir\stmt} (H'', A'), \ct
+\end{matrix}}
+\\[2em]
+
+% iteratorHasNext 1
+\frac{\begin{matrix}
+\evale, \ir{y} \rightarrow_{\ir\expr} \err
+\end{matrix}}{\begin{matrix}
+\state, \irid \ {\tt = {\diamond}iteratorHasNext}(\ir{y}, \ir{z})  \rightarrow_{\ir\stmt} \res, \error
+\end{matrix}}
+\\[2em]
+
+% iteratorHasNext 2
+\frac{\begin{matrix}
+\evale, \ir{y} \rightarrow_{\ir\expr} v_1
+\rulesep
+v_1\not\in\Loc
+\end{matrix}}{\begin{matrix}
+\state, \irid \ {\tt = {\diamond}iteratorHasNext}(\ir{y}, \ir{z})  \rightarrow_{\ir\stmt} \res, \thte
+\end{matrix}}
+\\[2em]
+
+
+\end{array}
+\]
+
+
+\[
+\begin{array}{l@{~~}l@{~~}ll}
+% iteratorHasNext 3
+\frac{\begin{matrix}
+\evale, \ir{y} \rightarrow_{\ir\expr} v
+\rulesep
+v\in\Loc
+\rulesep
+\evale, \ir{z} \rightarrow_{\ir\expr} \err
+\end{matrix}}{\begin{matrix}
+\state, \irid \ {\tt = {\diamond}iteratorHasNext}(\ir{y}, \ir{z})  \rightarrow_{\ir\stmt} \res, \error
+\end{matrix}}
+\\[2em]
+
+% iteratorHasNext 4
+\frac{\begin{matrix}
+\evale, \ir{y} \rightarrow_{\ir\expr} v_1
+\rulesep
+v_1\in\Loc
+\rulesep
+\evale, \ir{z} \rightarrow_{\ir\expr} v_2
+\rulesep
+v_2\not\in\Loc
+\end{matrix}}{\begin{matrix}
+\state, \irid \ {\tt = {\diamond}iteratorHasNext}(\ir{y}, \ir{z})  \rightarrow_{\ir\stmt} \res, \thte
+\end{matrix}}
+\\[2em]
+
+% iteratorHasNext 5
+\frac{\begin{matrix}
+\evale, \ir{y} \rightarrow_{\ir\expr} v_1
+\rulesep
+\evale, \ir{z} \rightarrow_{\ir\expr} v_2
+\rulesep
+v_1\in\Loc
+\rulesep
+v_2\in\Loc
+\\
+\hf{Next}(H, H(v_2), H(v_2).{\tt@property}({\tt``@i"}),v_1)%''
+\in\hf{Dom}(H(v_2))
+\rulesep
+\state, \irid \ {\tt =} \ \true \rightarrow_{\ir\stmt} \resp, \ct
+\end{matrix}}{\begin{matrix}
+\state, \irid \ {\tt = {\diamond}iteratorHasNext}(\ir{y}, \ir{z})  \rightarrow_{\ir\stmt} \resp, \ct
+\end{matrix}}
+\\[2em]
+
+% iteratorHasNext 6
+\frac{\begin{matrix}
+\evale, \ir{y} \rightarrow_{\ir\expr} v_1
+\rulesep
+\evale, \ir{z} \rightarrow_{\ir\expr} v_2
+\rulesep
+v_1\in\Loc
+\rulesep
+v_2\in\Loc
+\\
+\hf{Next}(H, H(v_2), H(v_2).{\tt@property}({\tt``@i"}),v_1)%''
+\not\in\hf{Dom}(H(v_2))
+\rulesep
+\state, \irid \ {\tt =} \ \false \rightarrow_{\ir\stmt} \resp, \ct
+\end{matrix}}{\begin{matrix}
+\state, \irid \ {\tt = {\diamond}iteratorHasNext}(\ir{y}, \ir{z})  \rightarrow_{\ir\stmt} \resp, \ct
+\end{matrix}}
+\\[2em]
+
+% iteratorNext 1
+\frac{\begin{matrix}
+\evale, \ir{y} \rightarrow_{\ir\expr} \err
+\end{matrix}}{\begin{matrix}
+\state, \irid \ {\tt = {\diamond}iteratorNext}(\ir{y}, \ir{z})  \rightarrow_{\ir\stmt} \res, \error
+\end{matrix}}
+\\[2em]
+
+% iteratorNext 2
+\frac{\begin{matrix}
+\evale, \ir{y} \rightarrow_{\ir\expr} v_1
+\rulesep
+v_1\not\in\Loc
+\end{matrix}}{\begin{matrix}
+\state, \irid \ {\tt = {\diamond}iteratorNext}(\ir{y}, \ir{z})  \rightarrow_{\ir\stmt} \res, \thte
+\end{matrix}}
+\\[2em]
+
+% iteratorNext 3
+\frac{\begin{matrix}
+\evale, \ir{y} \rightarrow_{\ir\expr} v
+\rulesep
+v\in\Loc
+\rulesep
+\evale, \ir{z} \rightarrow_{\ir\expr} \err
+\end{matrix}}{\begin{matrix}
+\state, \irid \ {\tt = {\diamond}iteratorNext}(\ir{y}, \ir{z})  \rightarrow_{\ir\stmt} \res, \error
+\end{matrix}}
+\\[2em]
+
+% iteratorNext 4
+\frac{\begin{matrix}
+\evale, \ir{y} \rightarrow_{\ir\expr} v_1
+\rulesep
+v_1\in\Loc
+\rulesep
+\evale, \ir{z} \rightarrow_{\ir\expr} v_2
+\rulesep
+v_2\not\in\Loc
+\end{matrix}}{\begin{matrix}
+\state, \irid \ {\tt = {\diamond}iteratorNext}(\ir{y}, \ir{z})  \rightarrow_{\ir\stmt} \res, \thte
+\end{matrix}}
+\\[2em]
+
+% iteratorNext 5
+\frac{\begin{matrix}
+\evale, \ir{y} \rightarrow_{\ir\expr} v_1
+\rulesep
+\evale, \ir{z} \rightarrow_{\ir\expr} v_2
+\rulesep
+v_1\in\Loc
+\rulesep
+v_2\in\Loc
+\rulesep
+\hf{Next}(H, H(v_2), H(v_2).{\tt@property}({\tt``@i"}),v_1) = i%''
+\\
+H' = H[v_2 \mapsto H(v_2)[{\tt@property}\mapsto H(v_2).{\tt@property}[{\tt``@i"}\mapsto i+1]]]%''
+\rulesep
+(H',A,\tb), \irid \ {\tt =} \ H(v_2).{\tt@property}({\tt``i"}) \rightarrow_{\ir\stmt} (H'',A'), \ct
+\end{matrix}}{\begin{matrix}
+\state, \irid \ {\tt = {\diamond}iteratorNext}(\ir{y}, \ir{z})  \rightarrow_{\ir\stmt} (H'',A'), \ct
+\end{matrix}}
+\\[4em]
+
+
+\mtt{\normalsize\inred IRNew(IRId lhs, IRId fun, List<IRId> args)}\\[.5em]
+\mbox{\inblue 11.2.2 The {\tt new} Operator}\\
+% new 1
+\frac{\begin{matrix}
+\evale, \ir{\expr} \rightarrow_{\ir\expr} \err
+\end{matrix}}{\begin{matrix}
+\state, \irnew{\tt(}\ir{\expr_1}{\tt,}\ir{\expr_2}{\tt)} \rightarrow_{\ir\stmt} \res, \error
+\end{matrix}}
+\\\\
+
+% new 2
+\frac{\begin{matrix}
+\evale, \ir{\expr} \rightarrow_{\ir\expr} v
+\end{matrix}}{\begin{matrix}
+\state, \irnew \rightarrow_{\ir\stmt} \res, \error
+\end{matrix}}
+\\\\
+
+% new 3
+\frac{\begin{matrix}
+\evale, \ir{\expr} \rightarrow_{\ir\expr} \err
+\end{matrix}}{\begin{matrix}
+\state, \irnew \rightarrow_{\ir\stmt} \res, \error
+\end{matrix}}
+\\\\
+
+% new 4
+\frac{\begin{matrix}
+\evale, \ir{\expr} \rightarrow_{\ir\expr} v
+\end{matrix}}{\begin{matrix}
+\state, \irnew \rightarrow_{\ir\stmt} \res, \error
+\end{matrix}}
+\\\\
+
+
+\end{array}
+\]
+
+
+
+\[
+\begin{array}{l@{~~}l@{~~}ll}
+\mtt{\normalsize\inred IRFunExpr(IRId lhs, IRFunctional ftn)}\\[.5em]
+\mbox{\inblue 11.2.5 Function Expressions}\\
+%funexpr 1
+\frac{\begin{matrix}
+\hf{CreateImmutableBinding}(H, \{\}::A, \ir{f}, \eval) = \resp
+\rulesep
+\hf{NewFtnObject}(H',A',\irfv) = (H'', l)
+\\
+\hf{InitializeImmutableBinding}(H'', A', \ir{f}, l, \strict) =   (H^f, A^{f'}, \err)%''
+\rulesep
+er::A^f = A^{f'}
+\end{matrix}}{\begin{matrix}
+\state, \irfunexpr \rightarrow_{\ir\stmt} (H^f,A^f), \error
+\end{matrix}}\\\\
+
+%funexpr 2
+\frac{\begin{matrix}
+\hf{CreateImmutableBinding}(H, \{\}::A, \ir{f}, \eval) = \resp
+\rulesep
+\hf{NewFtnObject}(H',A',\irfv) = (H'', l)
+\\
+\hf{InitializeImmutableBinding}(H'', A', \ir{f}, l, \strict) = (H^f, A^{f'}, v^f)%''
+\rulesep
+er::A^f = A^{f'}
+\rulesep
+(H^f,A^f,\tb), \irid \ {\tt =} \ l \rightarrow_{\ir\stmt} (H''',A''), \ct
+\end{matrix}}{\begin{matrix}
+\state, \irfunexpr \rightarrow_{\ir\stmt} (H''',A''), \ct
+\end{matrix}}
+\\[4em]
+
+% %funexpr 1
+% \frac{\begin{matrix}
+% \hf{CreateBinding}(H, A, \ir{f}, \eval) = \resp
+% \rulesep
+% \hf{NewFtnObject}(H',\mkst{\{\}}A',\irfv) = (H'', l)
+% \\
+% \hf{SetImmutableBinding}(H'', A', \ir{f}, l, \strict) =   (H^f, A^f, \err)%''
+% \end{matrix}}{\begin{matrix}
+% \state, \irfunexpr \rightarrow_{\ir\stmt} (H'',A'), \error
+% \end{matrix}}\\\\
+
+% %funexpr 2
+% \frac{\begin{matrix}
+% \hf{CreateBinding}(H, A, \ir{f}, \eval) = \resp
+% \rulesep
+% \hf{NewFtnObject}(H',\mkst{\{\}}A',\irfv) = (H'', l)
+% \\
+% \hf{SetImmutableBinding}(H'', A', \ir{f}, l, \strict) = (H^f, A^f, v^f)%''
+% \\
+% (H^f,A,\tb), \irid \ {\tt =} \ l \rightarrow_{\ir\stmt} (H''',A''), \ct
+% \end{matrix}}{\begin{matrix}
+% \state, \irfunexpr \rightarrow_{\ir\stmt} (H''',A''), \ct
+% \end{matrix}}
+% \\\\
+
+\end{array}
+\]
+
+
+
+\[
+\begin{array}{l@{~~}l@{~~}ll}
+\mtt{\normalsize\inred IRFunDecl(IRFunctional ftn)}\\
+\mtt{\normalsize\inred IRFunctional(IRId name, List<IRId> params, List<IRStmt> args,}\\
+\mtt{\normalsize\inred \phantom{IRFunctional(}List<IRFunDecl> fds, List<IRVarStmt> vds, List<IRStmt> body)}\\[.5em]
+
+\mbox{\inblue 13 Function Definition}\\
+\mbox{\inblue 10.5 Declaration Binding Instantiation--Step 5}\\
+% fndecl 1-1
+\frac{\begin{matrix}
+\hf{NewFtnObject}(H,A,\irfndecl) = (H^f, l)
+\rulesep
+\neg\hf{HasBinding}(A, \ir{f})
+\\
+\hf{CreateBinding}(H^f, A, \ir{f}, \eval) = \resp
+\rulesep
+\hf{SetBinding}(H', A', \ir{f}, l, \strict) = (H'', A'', \err)
+\end{matrix}}{\begin{matrix}
+\state, \irfndecl \rightarrow_{\ir\stmt}
+\respp, \error
+\end{matrix}}\\[2em]
+
+% fndecl 1-2
+\frac{\begin{matrix}
+\hf{NewFtnObject}(H,A,\irfndecl) = (H^f, l)
+\rulesep
+\neg\hf{HasBinding}(A, \ir{f})
+\\
+\hf{CreateBinding}(H^f, A, \ir{f}, \eval) = \resp
+\rulesep
+\hf{SetBinding}(H', A', \ir{f}, l, \strict) = (H'', A'', v)
+\end{matrix}}{\begin{matrix}
+\state, \irfndecl \rightarrow_{\ir\stmt} \respp, \void
+\end{matrix}}\\[2em]
+
+% fndecl 2-1-1
+\frac{\begin{matrix}
+\hf{NewFtnObject}(H,A,\irfndecl) = (H^f, l)
+\rulesep
+\hf{HasBinding}(A, \ir{f})
+\rulesep A = \lg\\
+\hf{GetProperty}(H,\lg,\ir{f}) = (p, \_)
+\rulesep
+p.{\tt[[Configurable]]}
+\\
+\{{\tt [[Value]]:}\undef, {\tt [[Writable]]:}\true, {\tt [[Enumerable]]:}\true, {\tt [[Configurable]]:\eval}\} = \emph{dp}
+\\
+\hf{DefineOwnProperty}(H^f,A,\lg,\ir{f}, \emph{dp}, \true) = (H',A',\err)\\
+%\hf{SetBinding}(H^f, A, \ir{f}, l, \strict) = (H', A', \err)
+\end{matrix}}{\begin{matrix}
+\state, \irfndecl \rightarrow_{\ir\stmt} \resp,\error
+\end{matrix}}\\[2em]
+
+% fndecl 2-1-2
+\frac{\begin{matrix}
+\hf{NewFtnObject}(H,A,\irfndecl) = (H^f, l)
+\rulesep
+\hf{HasBinding}(A, \ir{f})
+\rulesep A = \lg\\
+\hf{GetProperty}(H,\lg,\ir{f}) = (p, \_)
+\rulesep
+p.{\tt[[Configurable]]}
+\\
+\{{\tt [[Value]]:}\undef, {\tt [[Writable]]:}\true, {\tt [[Enumerable]]:}\true, {\tt [[Configurable]]:\eval}\} = \emph{dp}
+\\
+\hf{DefineOwnProperty}(H^f,A,\lg,\ir{f}, \emph{dp}, \true) = (H',A',v)\\
+\hf{SetBinding}(H', A', \ir{f}, l, \strict) = (H'', A'', \err)
+\end{matrix}}{\begin{matrix}
+\state, \irfndecl \rightarrow_{\ir\stmt} \respp,\error
+\end{matrix}}\\[2em]
+
+% fndecl 2-1-3
+\frac{\begin{matrix}
+\hf{NewFtnObject}(H,A,\irfndecl) = (H^f, l)
+\rulesep
+\hf{HasBinding}(A, \ir{f})
+\rulesep A = \lg\\
+\hf{GetProperty}(H,\lg,\ir{f}) = (p, \_)
+\rulesep
+p.{\tt[[Configurable]]}
+\\
+\{{\tt [[Value]]:}\undef, {\tt [[Writable]]:}\true, {\tt [[Enumerable]]:}\true, {\tt [[Configurable]]:\eval}\} = \emph{dp}
+\\
+\hf{DefineOwnProperty}(H^f,A,\lg,\ir{f}, \emph{dp}, \true) = (H',A',v)\\
+\hf{SetBinding}(H', A', \ir{f}, l, \strict) = (H'', A'', v')
+\end{matrix}}{\begin{matrix}
+\state, \irfndecl \rightarrow_{\ir\stmt} \respp,\void
+\end{matrix}}\\[2em]
+
+% if (existingProp.isAccessorDescriptor) || (!existingProp.Writable) || (![[Enumerable]])
+%     TypeError
+% env.SetMutableBinding(f, fo, strict)
+
+% fndecl 2-2-1
+\frac{\begin{matrix}
+\hf{NewFtnObject}(H,A,\irfndecl) = (H^f, l)
+\rulesep
+\hf{HasBinding}(A, \ir{f})
+\rulesep A = \lg\\
+\hf{GetProperty}(H,\lg,\ir{f}) = (p, \_)
+\rulesep
+\neg p.{\tt[[Configurable]]}
+\wedge (p \in \emph{AccessorProp} \vee (\neg p.{\tt[[Writable]]} \vee \neg p.{\tt[[Enumerable]]}))
+\end{matrix}}{\begin{matrix}
+\state, \irfndecl \rightarrow_{\ir\stmt} (H^f,A), {\tt Throw}(\te)
+\end{matrix}}\\[2em]
+
+% fndecl 2-2-2
+\frac{\begin{matrix}
+\hf{NewFtnObject}(H,A,\irfndecl) = (H^f, l)
+\rulesep
+\hf{HasBinding}(A, \ir{f})
+\rulesep A = \lg\\
+\hf{GetProperty}(H,\lg,\ir{f}) = (p, \_)
+\rulesep
+\neg p.{\tt[[Configurable]]}
+\wedge \neg (p \in \emph{AccessorProp} \vee (\neg p.{\tt[[Writable]]} \vee \neg p.{\tt[[Enumerable]]}))
+\\
+\hf{SetBinding}(H^f, A, \ir{f}, l, \strict) = (H', A', \err)
+\end{matrix}}{\begin{matrix}
+\state, \irfndecl \rightarrow_{\ir\stmt}\resp, \error
+\end{matrix}}\\[2em]
+
+% fndecl 2-2-3
+\frac{\begin{matrix}
+\hf{NewFtnObject}(H,A,\irfndecl) = (H^f, l)
+\rulesep
+\hf{HasBinding}(A, \ir{f})
+\rulesep A = \lg\\
+\hf{GetProperty}(H,\lg,\ir{f}) = (p, \_)
+\rulesep
+\neg p.{\tt[[Configurable]]}
+\wedge \neg (p \in \emph{AccessorProp} \vee (\neg p.{\tt[[Writable]]} \vee \neg p.{\tt[[Enumerable]]}))
+\\
+\hf{SetBinding}(H^f, A, \ir{f}, l, \strict) = (H', A', v)
+\end{matrix}}{\begin{matrix}
+\state, \irfndecl \rightarrow_{\ir\stmt}\resp, \void
+\end{matrix}}\\[2em]
+
+% fndecl 3-1
+\frac{\begin{matrix}
+\hf{NewFtnObject}(H,A,\irfndecl) = (H^f, l)\\
+\rulesep
+\hf{HasBinding}(A, \ir{f})
+\rulesep
+A \not= \lg
+\rulesep
+\hf{SetBinding}(H^f, A, \ir{f}, l, \strict) = (H', A', \err)
+\end{matrix}}{\begin{matrix}
+\state, \irfndecl \rightarrow_{\ir\stmt}
+\resp, \error
+\end{matrix}}\\[2em]
+% fndecl 3-2
+\frac{\begin{matrix}
+\hf{NewFtnObject}(H,A,\irfndecl) = (H^f, l)\\
+\rulesep
+\hf{HasBinding}(A, \ir{f})
+\rulesep
+A \not= \lg
+\rulesep
+\hf{SetBinding}(H^f, A, \ir{f}, l, \strict) = (H', A', v)
+\end{matrix}}{\begin{matrix}
+\state, \irfndecl \rightarrow_{\ir\stmt} \resp, \void
+\end{matrix}}\\[2em]
+
+
+% // 13.2
+% fo=newFunctionObjecct(f)
+% funcAlreadyDeclared = env.HasBinding(f)
+% if (!funcAlreadyDeclared) env.CreateMutableBinding(f, configurableBindings)
+
+% else if #global {
+%   go = H(#global)
+%   existingProp = go.[[GetProperty]](f)
+%   if (existingProp.[[Configurable]])
+%     go.[[DefineOwnProperty]](f, {[[Value]]: undefined, [[Writable]]: true,
+%                                  [[Enumerable]]: true, [[Configurable]]: configurableBindings}, true)
+%   else if (existingProp.isAccessorDescriptor) || (!existingProp.Writable) || (![[Enumerable]])
+%     TypeError
+% }
+% env.SetMutableBinding(f, fo, strict)
+
+
+%% 5. For each FunctionDeclaration f in code, in source text order do
+%%  a. Let fn be the Identifier in FunctionDeclaration f.
+%%  b. Let fo be the result of instantiating FunctionDeclaration f as described in Clause 13.
+%%  c. Let funcAlreadyDeclared be the result of calling env's HasBinding concrete method passing fn as the argument.
+%%  d. If funcAlreadyDeclared is false, call env's CreateMutableBinding concrete method passing fn and
+%%     configurableBindings as the arguments.
+%%  e. Else if env is the environment record component of the global environment then
+%%    i. Let go be the global object.
+%%   ii. Let existingProp be the resulting of calling the [[GetProperty]] internal method of go with argument fn.
+%%  iii. If existingProp .[[Configurable]] is true, then
+     % 1. Call the [[DefineOwnProperty]] internal method of go, passing fn, Property Descriptor {[[Value]]: undefined, [[Writable]]: true, [[Enumerable]]: true , [[Configurable]]: configurableBindings }, and true as arguments.
+%%   iv. Else if IsAccessorDescriptor(existingProp) or existingProp does not have attribute values {[[Writable]]: true, [[Enumerable]]: true}, then
+%%      1. Throw a TypeError exception.
+%% f. Call env's SetMutableBinding concrete method passing fn, fo, and strict as the arguments.
+
+
+% 6. Let argumentsAlreadyDeclared be the result of calling env's HasBinding concrete method passing fn, fo, and strict as the arguments.
+% 7. If code is function code and argumentsAlreadyDeclared is false, then
+%  a. Let argsObj be the result of calling the abstract operation CreateArgumentsObject (10.6) passing func, names, args, env and strict as arguments.
+%  b. If strict is true, then
+%    i. Call env's CreateImmutableBinding concrete method passing the String ``arguments'' as the argument.
+%   ii. Call env's InitializeImmutableBinding concrete method passing the String ``arguments'' and argsObj as arguments.
+%  c. Else,
+%    i. Call env's CreateMutableBinding concrete method passing the String ``arguments'' as the argument.
+%   ii. Call env's SetMutableBinding concrete method passing the String ``arguments'', argsObj, and false as arguments.
+\end{array}
+\]
+
+\[
+\begin{array}{l@{~~}l@{~~}ll}
+\mtt{\normalsize\inred IREval(IRId lhs, IRExpr arg)}\\[4em]
+
+
+\mtt{\normalsize\inred IRBreak(IRId label)}\\[.5em]
+\mbox{\inblue 12.8 The {\tt break} Statement}\\
+\state, \irbreak \rightarrow_{\ir\stmt} \res, {\tt Break}({\tt empty}, \ir{x})
+\\[4em]
+
+
+\mtt{\normalsize\inred IRReturn(Option<IRExpr> expr)}\\[.5em]
+\mbox{\inblue 12.9 The {\tt return} Statement}\\
+%% return 1
+\state,{\sf return}\  \rightarrow_{\ir{\stmt}} \res,{\tt Return}(\tt{undefined})
+\\[2em]
+
+%% return 2
+\frac{\begin{matrix}
+\evale, \irexpr \rightarrow_{\ir\expr} \err
+\end{matrix}}
+{\begin{matrix}
+\state,{\sf return}\ \irexpr  \rightarrow_{\ir{\stmt}} \res,{\tt Throw}(\err)
+\end{matrix}}
+\\[2em]
+
+%% return 3
+\frac{\begin{matrix}
+\evale, \irexpr \rightarrow_{\ir\expr} v
+\end{matrix}}
+{\begin{matrix}
+\state,{\sf return}\ \irexpr  \rightarrow_{\ir{\stmt}} \res,{\tt Return}(v)
+\end{matrix}}
+\\[4em]
+
+\mtt{\normalsize\inred IRWith(IRId id, IRStmt stmt)}\\[.5em]
+\mbox{\inblue 12.10 The {\tt with} Statement}\\
+%% with 1
+\frac{\begin{matrix}
+\evale, \irid \rightarrow_{\ir\expr} \err
+\end{matrix}}{\begin{matrix}
+\state, \irwith \rightarrow_{\ir\stmt} \res, {\tt Throw}(\err)
+\end{matrix}}
+\\[2em]
+
+%% with 2
+\frac{\begin{matrix}
+\evale, \irid \rightarrow_{\ir\expr} v
+\rulesep
+\hf{ToObject}(H, v) = (H', \err)
+\end{matrix}}{\begin{matrix}
+\state, \irwith \rightarrow_{\ir\stmt} (H',A), {\tt Throw}(\err)
+\end{matrix}}
+\\[2em]
+
+%% with 3
+\frac{\begin{matrix}
+\evale, \irid \rightarrow_{\ir\expr} v
+\rulesep
+\hf{ToObject}(H, v) = (H', l)
+\rulesep
+(H', l::A, tb), \ir\stmt \rightarrow_{\ir\stmt} (H'', A'), \ct
+\end{matrix}}{\begin{matrix}
+\state, \irwith \rightarrow_{\ir\stmt} (H'', A), \ct
+\end{matrix}}
+\\[4em]
+
+
+% %% with 4
+% \frac{\begin{matrix}
+% \state, \ir\expr \rightarrow_{\ir\expr} v_1
+% \rulesep
+% \hf{GetValue}(H, v_1,\hf{GetBase}(H,A,v_1), \strict) = v_2
+% \rulesep
+% \hf{ToObject}(H, v_2) = (H', l)
+% \\
+% (H', l::A, L, tb), \ir\stmt \rightarrow_{\ir\stmt} (H'', A'), {\tt Throw}(\err)
+% \end{matrix}}{\begin{matrix}
+% \state, \irwith \rightarrow_{\ir\stmt} (H'', A), {\tt Throw}(\err)
+% \end{matrix}}
+% \\[2em]
+
+
+% %% with 5
+% \frac{\begin{matrix}
+% \state, \ir\expr \rightarrow_{\ir\expr} v_1
+% \rulesep
+% \hf{GetValue}(H, v_1,\hf{GetBase}(H,A,v_1), \strict) = v_2
+% \rulesep
+% \hf{ToObject}(H, v_2) = (H', l)
+% \\
+% (H', l::A, L, tb), \ir\stmt \rightarrow_{\ir\stmt} (H'', A'), \ct
+% \rulesep
+% \ct \not= {\tt Throw}(\err)
+% \end{matrix}}{\begin{matrix}
+% \state, \irwith \rightarrow_{\ir\stmt} (H'', A), \ct
+% \end{matrix}}
+% \\[2em]
+
+
+\mtt{\normalsize\inred IRLabelStmt(IRId label, IRStmt stmt)}\\[.5em]
+\mbox{\inblue 12.12 Labelled Statements}\\
+%% If the result of evaluating Statement is (break(L)) where L is equal to Identifier,
+%% the production results in (normal, V, empty).
+% label 1
+\frac{\begin{matrix}
+\state, \ir\stmt \rightarrow_{\ir\stmt} \resp, {\tt Break}(v, \ir{x})
+\end{matrix}}{\begin{matrix}
+\state, \irlab \rightarrow_{\ir\stmt} \resp, {\tt Normal}(v)
+\end{matrix}}
+\\[2em]
+
+% label 2
+\frac{\begin{matrix}
+%(H,A,L\cup\{\ir{x}\},\tb), \ir\stmt \rightarrow_{\ir\stmt} \resp, \ct
+\state, \ir\stmt \rightarrow_{\ir\stmt} \resp, \ct
+\rulesep
+\ct \not= {\tt Break}(v, \ir{x})
+% \rulesep
+% \hf{isFromSwitch}(\irlab) = \true
+\end{matrix}}{\begin{matrix}
+\state, \irlab \rightarrow_{\ir\stmt} \resp, \ct
+\end{matrix}}
+\\[4em]
+
+% % label 3
+% \frac{\begin{matrix}
+% %(H,A,L\cup\{\irid\},\tb), \ir\stmt \rightarrow_{\ir\stmt} \resp, \ct
+% \state, \ir\stmt \rightarrow_{\ir\stmt} \resp, \ct
+% \rulesep
+% \hf{isFromSwitch}(\irlab) = \false
+% \end{matrix}}{\begin{matrix}
+% \state, \irlab \rightarrow_{\ir\stmt} \resp, \ct
+% \end{matrix}}
+% \\[2em]
+
+
+
+\mtt{\normalsize\inred IRVarStmt(IRId lhs)}\\
+\mbox{\inblue 10.5 Declaration Binding Instantiation--Step 8:
+${\tt CreateMutableBinding}(N,D)$}\\
+\mbox{\inblue \phantom{10.5 Declaration Binding Instantiation--Step 8:}
+${\tt SetMutableBinding}(N,V,S)$}\\
+\mbox{\inblue 12.2 Variable Statement}\\
+
+\frac{\begin{matrix}
+\hf{CreateBinding}(H, A, \irid, \eval) = \resp
+\rulesep
+\hf{SetBinding}(H', A', \irid, \undef, \strict) = (H'', A'', \err)
+\end{matrix}}{\begin{matrix}
+\state, {\sf var} \ \irid \rightarrow_{\ir\stmt}
+\respp, \error
+\end{matrix}}\\[2em]
+
+\frac{\begin{matrix}
+\hf{CreateBinding}(H, A, \irid, \eval) = \resp
+\rulesep
+\hf{SetBinding}(H', A', \irid, \undef, \strict) = (H'', A'', v)
+\end{matrix}}{\begin{matrix}
+\state, {\sf var} \ \irid \rightarrow_{\ir\stmt}
+\respp, \void
+\end{matrix}}\\[2em]
+
+
+\end{array}
+\]
+
+
+
+\[
+\begin{array}{l@{~~}l@{~~}ll}
+\mtt{\normalsize\inred IRThrow(IRExpr expr)}\\[.5em]
+\mbox{\inblue 12.13 The {\tt throw} Statement}\\
+\frac{\begin{matrix}
+\evale, \irexpr \rightarrow_{\ir\expr} \emph{ve}
+\end{matrix}}{\begin{matrix}
+\state, {\sf throw} \ \irexpr \rightarrow_{\ir\stmt} \res, {\tt Throw}(\emph{ve})
+\end{matrix}}
+\\[4em]
+
+
+
+
+\mtt{\normalsize\inred IRSeq(List<IRStmt> stmts)}\\
+
+\mbox{\inblue 12.1 Block}\\
+
+%% block 1
+\state,\none \rightarrow_{\ir{\stmt}} \res,\void\\[1.5em]
+
+%% block 2
+\frac{\begin{matrix}
+\state,\ir\stmt \rightarrow_{\ir\stmt} \resp,\ac
+\end{matrix}}{\begin{matrix}
+\state,\ir\stmt\ \ir\stmt^* \rightarrow_{\ir{\stmt}} \resp,\ac
+\end{matrix}}\\[2em]
+
+%% block 3
+\frac{\begin{matrix}
+\state,\ir\stmt \rightarrow_{\ir\stmt} \resp,\nc
+\rulesep
+\statep,\ir{\stmt}^* \rightarrow_{\ir\stmt} \respp,{\tt Throw}(\emph{ve})
+\end{matrix}}{\begin{matrix}
+\state,\ir\stmt\ \ir\stmt^* \rightarrow_{\ir{\stmt}} \respp,{\tt Throw}(\emph{ve})
+\end{matrix}}\\[2em]
+
+%% block 4
+\frac{\begin{matrix}
+\state,\ir\stmt \rightarrow_{\ir\stmt} \resp,{\tt Normal}(\vorempty)
+\rulesep
+\statep,\ir{\stmt}^* \rightarrow_{\ir\stmt} \respp,{\tt Break}({\tt empty},x)
+\end{matrix}}{\begin{matrix}
+\state,\ir\stmt\ \ir\stmt^* \rightarrow_{\ir{\stmt}} \respp,{\tt Break}(\vorempty,x)
+\end{matrix}}\\[2em]
+
+%% block 5
+\frac{\begin{matrix}
+\state,\ir\stmt \rightarrow_{\ir\stmt} \resp,\nc
+\rulesep
+\statep,\ir{\stmt}^* \rightarrow_{\ir\stmt} \respp,{\tt Break}(v,x)
+\end{matrix}}{\begin{matrix}
+\state,\ir\stmt\ \ir\stmt^* \rightarrow_{\ir{\stmt}} \respp,{\tt Break}(v,x)
+\end{matrix}}\\[2em]
+
+%% block 6
+\frac{\begin{matrix}
+\state,\ir\stmt \rightarrow_{\ir\stmt} \resp,\nc
+\rulesep
+\statep,\ir{\stmt}^* \rightarrow_{\ir\stmt} \respp,\void
+\end{matrix}}{\begin{matrix}
+\state,\ir\stmt\ \ir\stmt^* \rightarrow_{\ir{\stmt}} \respp,\nc
+\end{matrix}}\\[2em]
+
+%% block 7
+\frac{\begin{matrix}
+\state,\ir\stmt \rightarrow_{\ir\stmt} \resp,\nc
+\rulesep
+\statep,\ir\stmt^* \rightarrow_{\ir\stmt} \respp,{\tt Normal}(v)
+\end{matrix}}{\begin{matrix}
+\state,\ir\stmt\ \ir\stmt^* \rightarrow_{\ir{\stmt}} \respp,{\tt Normal}(v)
+\end{matrix}}\\[2em]
+
+%% block 8
+\frac{\begin{matrix}
+\state,\ir\stmt \rightarrow_{\ir\stmt} \resp,{\tt Normal}(\vorempty)
+\rulesep
+\statep,\ir{\stmt}^* \rightarrow_{\ir\stmt} \respp,{\tt Return}({\tt empty})
+\end{matrix}}{\begin{matrix}
+\state,\ir\stmt\ \ir\stmt^* \rightarrow_{\ir{\stmt}} \respp,{\tt Return}(\vorempty)
+\end{matrix}}\\[2em]
+
+%% block 9
+\frac{\begin{matrix}
+\state,\ir\stmt \rightarrow_{\ir\stmt} \resp,\nc
+\rulesep
+\statep,\ir\stmt^* \rightarrow_{\ir\stmt} \respp,{\tt Return}(v)
+\end{matrix}}{\begin{matrix}
+\state,\ir\stmt\ \ir\stmt^* \rightarrow_{\ir{\stmt}} \respp,{\tt Return}(v)
+\end{matrix}}\\[4em]
+
+\mtt{\normalsize\inred IRIf(IRExpr expr, IRStmt trueB, Option<IRStmt> falseB)}\\[.5em]
+
+\mbox{\inblue 12.5 The {\tt if} Statement}\\
+%% if 1
+\frac{\begin{matrix}
+\evale, \irexpr \rightarrow_{\ir\expr} \err
+\end{matrix}}{\begin{matrix}
+\state, \irif \rightarrow_{\ir\stmt} \res, \error
+\end{matrix}}
+\\[2em]
+
+%% if 2
+\frac{\begin{matrix}
+\evale, \irexpr \rightarrow_{\ir\expr} v
+\rulesep
+\hf{ToBoolean}(v) = \true
+\rulesep
+\statel, \stmt_1 \rightarrow_{\ir\stmt} \resp, \ct
+\end{matrix}}{\begin{matrix}
+\state, \irif \rightarrow_{\ir\stmt} \resp, \ct
+\end{matrix}}
+\\[2em]
+
+%% if 3
+\frac{\begin{matrix}
+\evale, \irexpr \rightarrow_{\ir\expr} v
+\rulesep
+\hf{ToBoolean}(v) = \false
+\end{matrix}}{\begin{matrix}
+\state, {\sf if} \ {\tt(}\irexpr{\tt)}\ {\sf then} \ \ir{\stmt_1} 
+\rightarrow_{\ir\stmt} \res, \void
+\end{matrix}}
+\\[2em]
+
+%% if 4
+\frac{\begin{matrix}
+\evale, \irexpr \rightarrow_{\ir\expr} v
+\rulesep
+\hf{ToBoolean}(v) = \false
+\rulesep
+\statel, \stmt_2\rightarrow_{\ir\stmt} \resp, \ct
+\end{matrix}}{\begin{matrix}
+\state, {\sf if} \ {\tt(}\irexpr{\tt)}\ {\sf then} \ \ir{\stmt_1} \ {\sf else} \ \ir{\stmt_2}
+\rightarrow_{\ir\stmt} \resp, \ct
+\end{matrix}}
+\\[4em]
+
+
+
+\end{array}
+\]
+
+
+
+
+\[
+\begin{array}{l@{~~}l@{~~}ll}
+\mtt{\normalsize\inred IRWhile(IRExpr cond, IRStmt body)}\\[.5em]
+\mbox{\inblue 12.6.2 The {\tt while} Statement}\\
+%% while 1
+\frac{\begin{matrix}
+\evale, \irexpr \rightarrow_{\ir\expr} \emph{err} 
+\end{matrix}}
+{\begin{matrix}
+\state, \irwhile \rightarrow_{\ir{\stmt}} \res,{\tt Throw}(err)
+\end{matrix}}
+\\[2em]
+
+%% while 2
+\frac{\begin{matrix}
+\evale, \irexpr \rightarrow_{\ir\expr} \emph{v} 
+\rulesep
+\hf{ToBoolean}(v) = \false
+\end{matrix}}
+{\begin{matrix}
+\state, \irwhile \rightarrow_{\ir{\stmt}} \res, \void
+\end{matrix}}
+\\[2em]
+
+%% while 3
+\frac{\begin{matrix}
+\evale, \irexpr \rightarrow_{\ir\expr} \emph{v} 
+\rulesep
+\hf{ToBoolean}(v) = \true
+\rulesep
+\statel, \ir\stmt \rightarrow_{\ir\stmt} \resp, \ac
+% \rulesep
+% \ac \not= {\tt Break}(\ir{x})
+\end{matrix}}
+{\begin{matrix}
+\state, \irwhile \rightarrow_{\ir{\stmt}} \resp, \ac
+\end{matrix}}
+\\[2em]
+
+% %% while 4
+% \mbox{\inblue If $x\not\in L$, it should be rejected by the disambiguation phase.}\\ \\
+% \frac{\begin{matrix}
+% \evale, \irexpr \rightarrow_{\ir\expr} \emph{v} 
+% \rulesep
+% \hf{ToBoolean}(v) = \true
+% \rulesep
+% \statel, \ir\stmt \rightarrow_{\ir\stmt} \resp, {\tt Break}(\ir{x})
+% \rulesep
+% \ir{x} \in L
+% \end{matrix}}
+% {\begin{matrix}
+% \state, \irwhile \rightarrow_{\ir{\stmt}} \resp, \void
+% \end{matrix}}
+% \\[2em]
+
+%% while 5
+\frac{\begin{matrix}
+\evale, \irexpr \rightarrow_{\ir\expr} \emph{v} 
+\rulesep
+\hf{ToBoolean}(v) = \true
+\rulesep
+\statel, \ir\stmt \rightarrow_{\ir\stmt} \resp, \nc
+\\
+\statep, \irwhile \rightarrow_{\ir{\stmt}} \respp, \ac
+\end{matrix}}
+{\begin{matrix}
+\state, \irwhile \rightarrow_{\ir{\stmt}} \respp, \ac
+\end{matrix}}
+\\[2em]
+
+%% while 6
+\frac{\begin{matrix}
+\evale, \irexpr \rightarrow_{\ir\expr} \emph{v} 
+\rulesep
+\hf{ToBoolean}(v) = \true
+\rulesep
+\statel, \ir\stmt \rightarrow_{\ir\stmt} \resp, \nc
+\\
+\statep, \irwhile \rightarrow_{\ir{\stmt}} \respp, \void
+\end{matrix}}
+{\begin{matrix}
+\state, \irwhile \rightarrow_{\ir{\stmt}} \respp, \nc
+\end{matrix}}
+\\[2em]
+
+%% while 7
+\frac{\begin{matrix}
+\evale, \irexpr \rightarrow_{\ir\expr} v
+\rulesep
+\hf{ToBoolean}(v) = \true
+\rulesep
+\statel, \ir\stmt \rightarrow_{\ir\stmt} \resp, \nc
+\\
+\statep, \irwhile \rightarrow_{\ir{\stmt}} \respp, {\tt Normal}(v)
+\end{matrix}}
+{\begin{matrix}
+\state, \irwhile \rightarrow_{\ir{\stmt}} \respp, {\tt Normal}(v)
+\end{matrix}}
+\\[4em]
+
+
+\mtt{\normalsize\inred IRTry(IRStmt body, Option<IRId> name, Option<IRStmt> catchB,}\\
+\mtt{\normalsize\inred \phantom{IRTry(}Option<IRStmt> finallyB)}\\[.5em]
+\mbox{\inblue 12.14 The {\tt try} Statement}\\
+%% try 1
+\frac{\begin{matrix}
+\statel, \ir{\stmt_1} \rightarrow_{\ir\stmt} \resp, {\tt Throw}(\emph{ve})
+\rulesep
+\hf{CreateBinding}(H', \{\}::A',x,\eval)=\respp
+\\
+\hf{SetBinding}(H'', A'', x, \hf{ExnLoc}(\emph{ve}), \false) = (H^x, A^x, \err')
+\rulesep
+A^x = er::A^f
+\end{matrix}}{\begin{matrix}
+\state, \irtrycat \rightarrow_{\ir\stmt} (H^x, A^f), {\tt Throw}(\err')
+\end{matrix}}
+\\[2em]
+
+%% try 2
+\frac{\begin{matrix}
+\statel, \ir{\stmt_1} \rightarrow_{\ir\stmt} \resp, {\tt Throw}(\emph{ve})
+\rulesep
+\hf{CreateBinding}(H',\{\}::A',x,\eval)=\respp
+\\
+\hf{SetBinding}(H'', A'', x, \hf{ExnLoc}(\emph{ve}), \false) = (H^x, A^x, v)
+\rulesep
+(H^x, A^x, \tb), \ir{\stmt_2} \rightarrow_{\ir\stmt} (H^c, A^c), \ct
+\rulesep
+A^c = er::A^f
+\end{matrix}}{\begin{matrix}
+\state, \irtrycat \rightarrow_{\ir\stmt} (H^c, A^f), \ct
+\end{matrix}}
+\\[2em]
+
+%% try 3
+\frac{\begin{matrix}
+\statel, \ir{\stmt_1} \rightarrow_{\ir\stmt} \resp, \ct
+\rulesep
+\ct \not= {\tt Throw}(\emph{ve})
+\end{matrix}}{\begin{matrix}
+\state, \irtrycat \rightarrow_{\ir\stmt} \resp, \ct
+\end{matrix}}
+\\[2em]
+
+
+%% try 4
+\frac{\begin{matrix}
+\statel, \ir{\stmt_1} \rightarrow_{\ir\stmt} \resp, \ct
+\rulesep
+\statepl, \ir{\stmt_2} \rightarrow_{\ir\stmt} \respp, \nc
+\end{matrix}}{\begin{matrix}
+\state, \irtryfin \rightarrow_{\ir\stmt}  \respp, \ct
+\end{matrix}}
+\\[2em]
+
+%% try 5
+\frac{\begin{matrix}
+\statel, \ir{\stmt_1} \rightarrow_{\ir\stmt} \resp, \ct
+\rulesep
+\statepl, \ir{\stmt_2} \rightarrow_{\ir\stmt} \respp, \ac
+\end{matrix}}{\begin{matrix}
+\state, \irtryfin \rightarrow_{\ir\stmt} \respp, \ac
+\end{matrix}}
+\\[2em]
+
+%% try 6
+\frac{\begin{matrix}
+\statel, \ir{\stmt_1} \rightarrow_{\ir\stmt} \resp, {\tt Throw}(\emph{ve})
+\rulesep
+\hf{CreateBinding}(H',\{\}::A',x,\eval)=\respp
+\\
+\hf{SetBinding}(H'', A'', x, \hf{ExnLoc}(\emph{ve}), \false) = (H^x, A^x, \err')
+\rulesep
+A^x = er::A^f
+\end{matrix}}{\begin{matrix}
+\state, \irtrycatfin \rightarrow_{\ir\stmt} (H^x,A^f), {\tt Throw}(\err')
+\end{matrix}}
+\\[2em]
+
+%% try 7
+\frac{\begin{matrix}
+\statel, \ir{\stmt_1} \rightarrow_{\ir\stmt} \resp, {\tt Throw}(\emph{ve})
+\rulesep
+\hf{CreateBinding}(H',\{\}::A',x,\eval)=\respp
+\\
+\hf{SetBinding}(H'', A'', x, \hf{ExnLoc}(\emph{ve}), \false) = (H^x, A^x, v)
+\rulesep
+(H^x,A^x,\tb), \ir{\stmt_2} \rightarrow_{\ir\stmt} (H^c,A^c), \ct
+\\
+A^c = er::A^{c'}
+\rulesep
+(H^c, A^{c'}, tb), \ir{\stmt_3} \rightarrow_{\ir\stmt} (H^f, A^f), \nc
+\end{matrix}}{\begin{matrix}
+\state, \irtrycatfin \rightarrow_{\ir\stmt} (H^f,A^f), \ct
+\end{matrix}}
+\\[2em]
+
+%% try 8
+\frac{\begin{matrix}
+\statel, \ir{\stmt_1} \rightarrow_{\ir\stmt} \resp, {\tt Throw}(\emph{ve})
+\rulesep
+\hf{CreateBinding}(H',\{\}::A',x,\eval)=\respp
+\\
+\hf{SetBinding}(H'', A'', x, \hf{ExnLoc}(\emph{ve}), \false) = (H^x, A^x, v)
+\rulesep
+(H^x,A^x,\tb), \ir{\stmt_2} \rightarrow_{\ir\stmt} (H^c,A^c), \ct
+\\
+A^c = er::A^{c'}
+\rulesep
+(H^c, A^{c'}, tb), \ir{\stmt_3} \rightarrow_{\ir\stmt} (H^f, A^f), \ac
+\end{matrix}}{\begin{matrix}
+\state, \irtrycatfin \rightarrow_{\ir\stmt} (H^f,A^f), \ac
+\end{matrix}}
+\\[2em]
+
+\end{array}
+\]
+
+
+
+
+\[
+\begin{array}{l@{~~}l@{~~}ll}
+%% try 9
+\frac{\begin{matrix}
+\statel, \ir{\stmt_1} \rightarrow_{\ir\stmt} \resp, \ct
+\rulesep
+\ct \not= {\tt Throw}(\emph{ve})
+\rulesep
+\statepl, \ir{\stmt_3} \rightarrow_{\ir\stmt} \respp, \nc
+\end{matrix}}{\begin{matrix}
+\state, \irtrycatfin \rightarrow_{\ir\stmt} \respp, \ct
+\end{matrix}}
+\\[2em]
+
+%% try 10
+\frac{\begin{matrix}
+\statel, \ir{\stmt_1} \rightarrow_{\ir\stmt} \resp, \ct
+\rulesep
+\ct \not= {\tt Throw}(\emph{ve})
+\rulesep
+\statepl, \ir{\stmt_3} \rightarrow_{\ir\stmt} \respp, \ac
+\end{matrix}}{\begin{matrix}
+\state, \irtrycatfin \rightarrow_{\ir\stmt} \respp, \ac
+\end{matrix}}
+\\[4em]
+
+\mtt{\normalsize\inred IRStmtUnit(List<IRStmt> stmts)}\\[4em]
+
+\end{array}
+\]
+
+
+\subsection{Expressions}
+\[
+\begin{array}{l@{~~}l@{~~}ll}
+\fbox{$\evale,\ir{\expr} \rightarrow_{\ir{\expr}} \emph{ve}$}\\[2em]
+\mtt{\normalsize\inred IRBin(IRExpr first, IROp op, IRExpr second)}\\[.5em]
+\mbox{\inblue 11.8.6 The {\tt instanceof} operator}\\
+
+% instanceof 1
+\frac{\begin{matrix}
+\evale, \ir{e_1} \rightarrow_{\ir\expr} \err
+\end{matrix}}{\begin{matrix}
+\state, \ir{e_1} \ {\tt instanceof}\ \ir{e_2}
+\rightarrow_{\ir\expr}
+\err
+\end{matrix}}
+\\[2em]
+
+% instanceof 2
+\frac{\begin{matrix}
+\evale, \ir{e_1} \rightarrow_{\ir\expr} v
+\rulesep
+\evale, \ir{e_2} \rightarrow_{\ir\expr} \err
+\end{matrix}}{\begin{matrix}
+\state, \ir{e_1} \ {\tt instanceof}\ \ir{e_2}
+\rightarrow_{\ir\expr}
+\err
+\end{matrix}}
+\\[2em]
+
+% instanceof 3
+\frac{\begin{matrix}
+\evale, \ir{e_1} \rightarrow_{\ir\expr} v_1
+\rulesep
+\evale, \ir{e_2} \rightarrow_{\ir\expr} v_2
+\rulesep
+v_2 \not\in \Loc
+\end{matrix}}{\begin{matrix}
+\state, \ir{e_1} \ {\tt instanceof}\ \ir{e_2}
+\rightarrow_{\ir\expr}
+\te
+\end{matrix}}
+\\[2em]
+
+\mbox{\inblue 15.3.5.3 {\tt [[HasInstance]](V)}}\\
+\mbox{\inblue Instead of checking whether $v_2$ has a {\tt [[HasInstance]]} internal method,
+we check whether $v_2$ is a function object.}\\
+% instanceof 4
+\frac{\begin{matrix}
+\evale, \ir{e_1} \rightarrow_{\ir\expr} v_1
+\rulesep
+\evale, \ir{e_2} \rightarrow_{\ir\expr} v_2
+\rulesep
+v_2 \in \Loc
+\rulesep
+\neg\hf{IsCallable}(H,v_2)
+\end{matrix}}{\begin{matrix}
+\state, \ir{e_1} \ {\tt instanceof}\ \ir{e_2}
+\rightarrow_{\ir\expr}
+\te
+\end{matrix}}
+\\[2em]
+
+
+% instanceof 5
+\frac{\begin{matrix}
+\evale, \ir{e_1} \rightarrow_{\ir\expr} v_1
+\rulesep
+\evale, \ir{e_2} \rightarrow_{\ir\expr} v_2
+\rulesep
+v_2 \in \Loc
+\rulesep
+\hf{IsCallable}(H,v_2)
+\rulesep
+v_1 \not\in \Loc
+\end{matrix}}{\begin{matrix}
+\state, \ir{e_1} \ {\tt instanceof}\ \ir{e_2}
+\rightarrow_{\ir\expr}
+\false
+\end{matrix}}
+\\[2em]
+
+% instanceof 6
+\frac{\begin{matrix}
+\evale, \ir{e_1} \rightarrow_{\ir\expr} v_1
+\rulesep
+\evale, \ir{e_2} \rightarrow_{\ir\expr} v_2
+\rulesep
+v_2 \in \Loc
+\rulesep
+\hf{IsCallable}(H,v_2)
+\rulesep
+v_1 \in \Loc
+\end{matrix}}{\begin{matrix}
+\state, \ir{e_1} \ {\tt instanceof}\ \ir{e_2}
+\rightarrow_{\ir\expr}
+\hf{Inherit}(H,v_1,v_2)
+\end{matrix}}
+\\[4em]
+
+
+\mbox{\inblue 11.8.7 The {\tt in} operator}\\
+
+% in 1
+\frac{\begin{matrix}
+\evale, \ir{e_1} \rightarrow_{\ir\expr} \err
+\end{matrix}}{\begin{matrix}
+\state, \ir{e_1} \ {\tt in}\ \ir{e_2}
+\rightarrow_{\ir\expr}
+\err
+\end{matrix}}
+\\[2em]
+
+% in 2
+\frac{\begin{matrix}
+\evale, \ir{e_1} \rightarrow_{\ir\expr} v
+\rulesep
+\evale, \ir{e_2} \rightarrow_{\ir\expr} \err
+\end{matrix}}{\begin{matrix}
+\state, \ir{e_1} \ {\tt in}\ \ir{e_2}
+\rightarrow_{\ir\expr}
+\err
+\end{matrix}}
+\\[2em]
+
+% in 3
+\frac{\begin{matrix}
+\evale, \ir{e_1} \rightarrow_{\ir\expr} v_1
+\rulesep
+\evale, \ir{e_2} \rightarrow_{\ir\expr} v_2
+\rulesep
+v_2 \not\in \Loc
+\end{matrix}}{\begin{matrix}
+\state, \ir{e_1} \ {\tt in}\ \ir{e_2}
+\rightarrow_{\ir\expr}
+\te
+\end{matrix}}
+\\[2em]
+
+% in 4
+\frac{\begin{matrix}
+\evale, \ir{e_1} \rightarrow_{\ir\expr} v_1
+\rulesep
+\evale, \ir{e_2} \rightarrow_{\ir\expr} v_2
+\rulesep
+v_2 \in \Loc
+\end{matrix}}{\begin{matrix}
+\state, \ir{e_1} \ {\tt in}\ \ir{e_2}
+\rightarrow_{\ir\expr}
+\hf{HasProperty}(H,v_2,\hf{ToString}(H,v_1))
+\end{matrix}}
+\\[2em]
+\end{array}
+\]
+
+
+
+\[
+\begin{array}{l@{~~}l@{~~}ll}
+\mtt{\normalsize\inred IRUn(IROp op, IRExpr expr)}\\[.5em]
+\mbox{\inblue 11.4.2 The {\tt void} Operator}\\
+
+% void 1
+\frac{\begin{matrix}
+\evale, \irexpr \rightarrow_{\ir\expr} \err
+\end{matrix}}{\begin{matrix}
+\state, {\tt void}\ \irexpr
+\rightarrow_{\ir\expr}
+\err
+\end{matrix}}
+\\[2em]
+
+% void 2
+\frac{\begin{matrix}
+\evale, \irexpr \rightarrow_{\ir\expr} v
+\end{matrix}}{\begin{matrix}
+\state, {\tt void}\ \irexpr
+\rightarrow_{\ir\expr}
+\undef
+\end{matrix}}
+\\[2em]
+
+
+\mbox{\inblue 11.4.3 The {\tt typeof} Operator}\\
+
+% typeof 1
+\frac{\begin{matrix}
+\evale, \irexpr \rightarrow_{\ir\expr} \err
+\end{matrix}}{\begin{matrix}
+\state, {\tt typeof}\ \irexpr
+\rightarrow_{\ir\expr}
+\undef
+\end{matrix}}
+\\[2em]
+
+% typeof 2
+\frac{\begin{matrix}
+\evale, \irexpr \rightarrow_{\ir\expr} v
+\end{matrix}}{\begin{matrix}
+\state, {\tt typeof}\ \irexpr
+\rightarrow_{\ir\expr}
+\hf{TypeTag}(H,v)
+\end{matrix}}
+\\[2em]
+
+\mbox{\inblue 11.4.6 Unary {\tt +} Operator}\\
+% + 1
+\frac{\begin{matrix}
+\evale, \irexpr \rightarrow_{\ir\expr} \err
+\end{matrix}}{\begin{matrix}
+\state, \ {\tt +}\ \irexpr
+\rightarrow_{\ir\expr}
+\err
+\end{matrix}}
+\\[2em]
+
+% + 2
+\frac{\begin{matrix}
+\evale, \irexpr \rightarrow_{\ir\expr} v
+\end{matrix}}{\begin{matrix}
+\state, \ {\tt +}\ \irexpr
+\rightarrow_{\ir\expr}
+\hf{ToNumber}(H,v)
+\end{matrix}}
+\\[2em]
+
+\mbox{\inblue 11.4.7 Unary {\tt -} Operator}\\
+% - 1
+\frac{\begin{matrix}
+\evale, \irexpr \rightarrow_{\ir\expr} \err
+\end{matrix}}{\begin{matrix}
+\state, \ {\tt -}\ \irexpr
+\rightarrow_{\ir\expr}
+\err
+\end{matrix}}
+\\[2em]
+
+% - 2
+\frac{\begin{matrix}
+\evale, \irexpr \rightarrow_{\ir\expr} v
+\end{matrix}}{\begin{matrix}
+\state, \ {\tt -}\ \irexpr
+\rightarrow_{\ir\expr}
+\hf{Negate}(\hf{ToNumber}(H,v))
+\end{matrix}}
+\\[2em]
+
+\mbox{\inblue 11.4.8 Bitwise NOT Operator ($\sim$)}\\
+% ~ 1
+\frac{\begin{matrix}
+\evale, \irexpr \rightarrow_{\ir\expr} \err
+\end{matrix}}{\begin{matrix}
+\state, \ \sim \irexpr
+\rightarrow_{\ir\expr}
+\err
+\end{matrix}}
+\\[2em]
+
+% ~ 2
+\frac{\begin{matrix}
+\evale, \irexpr \rightarrow_{\ir\expr} v
+\end{matrix}}{\begin{matrix}
+\state, \ \sim \irexpr
+\rightarrow_{\ir\expr}
+\ \sim(\hf{ToInt32}(H,v))
+\end{matrix}}
+\\[2em]
+
+\mbox{\inblue 11.4.9 Logical NOT Operator ($!$)}\\
+% ! 1
+\frac{\begin{matrix}
+\evale, \irexpr \rightarrow_{\ir\expr} \err
+\end{matrix}}{\begin{matrix}
+\state, \ {\tt !}\ \irexpr
+\rightarrow_{\ir\expr}
+\err
+\end{matrix}}
+\\[2em]
+
+% ! 2
+\frac{\begin{matrix}
+\evale, \irexpr \rightarrow_{\ir\expr} v
+\end{matrix}}{\begin{matrix}
+\state, \ {\tt !}\ \irexpr
+\rightarrow_{\ir\expr}
+\ \hf{Negate}(\hf{ToBoolean}(v))
+\end{matrix}}
+\\[2em]
+\end{array}
+\]
+
+
+\[
+\begin{array}{l@{~~}l@{~~}ll}
+\mtt{\normalsize\inred IRLoad(IRId obj, IRExpr index)}\\[.5em]
+\mbox{\inblue 11.2.1 Property Accessors: {\tt IRLoad}}\\
+
+%%load 1
+\frac{\begin{matrix}
+\evale, \irid \rightarrow_{\ir\expr} \err
+\end{matrix}}{\begin{matrix}
+\state, \ \irid{\tt[}\ir\expr{\tt]} \rightarrow_{\ir\expr}
+\err
+\end{matrix}}
+\\[2em]
+
+%%load 2
+\frac{\begin{matrix}
+\evale, \irid \rightarrow_{\ir\expr} v
+\rulesep
+\evale, \ir\expr \rightarrow_{\ir\expr} \err
+\end{matrix}}{\begin{matrix}
+\state, \ \irid{\tt[}\ir\expr{\tt]} \rightarrow_{\ir\expr}
+\err
+\end{matrix}}
+\\[2em]
+
+%%load 3
+\frac{\begin{matrix}
+\evale, \irid \rightarrow_{\ir\expr} v_1
+\rulesep
+\evale, \ir\expr \rightarrow_{\ir\expr} v_2
+\rulesep
+\hf{CheckObjectCoercible}(v_1) = \err
+\end{matrix}}{\begin{matrix}
+\state, \ \irid{\tt[}\ir\expr{\tt]} \rightarrow_{\ir\expr}
+\err
+\end{matrix}}
+\\[2em]
+
+%%load 4
+\frac{\begin{matrix}
+\evale, \irid \rightarrow_{\ir\expr} v_1
+\rulesep
+\evale, \ir\expr \rightarrow_{\ir\expr} v_2
+\rulesep
+\hf{CheckObjectCoercible}(v_1) \not= \err
+\rulesep
+\hf{ToObject}(H, v_1) = (H',l)
+\end{matrix}}{\begin{matrix}
+\state, \ \irid{\tt[}\ir\expr{\tt]} \rightarrow_{\ir\expr}
+\hf{Get}(H', l, \hf{ToString}(H', v_2))
+\end{matrix}}
+\\[2em]
+
+%%load 5
+%\frac{\begin{matrix}
+%\evale, \irid \rightarrow_{\ir\expr} v_1
+%\rulesep
+%\evale, \ir\expr \rightarrow_{\ir\expr} v_2
+%\rulesep
+%\hf{CheckObjectCoercible}(v_1) \not= \err
+%\rulesep
+%\hf{ToObject}(H, v_1) = (H',l)
+%\\
+%\hf{Get}(H', l, \hf{ToString}(H', v_2)) = v
+%%\hf{GetValue}(H',\hf{GetProperty}(H', l, \hf{ToString}(H',v_2)), \strict) = v
+%\rulesep
+%\hf{PutValue}(H',A,\irid,v,\strict) = (H'',A',v')
+%\end{matrix}}{\begin{matrix}
+%\state, \ \irid{\tt[}\ir\expr{\tt]} \rightarrow_{\ir\expr}
+%(H'',A'), {\tt Normal}(v')
+%\end{matrix}}
+%\\[4em]
+
+\mtt{\normalsize\inred IRUserId(String text)}\\
+\mtt{\normalsize\inred IRTmpId(String text)}\\[.5em]
+\mbox{\inblue 11.1.2 Identifier Reference}\\
+\mbox{\inblue 10.3.1 Identifier Resolution}\\
+\mbox{\inblue 10.2.2.1 {\tt GetIdentifierReference(lex,name,strict)}}\\
+
+%\evale, \irid \rightarrow_{\ir\expr} \hf{GetValue}(H,\hf{Lookup}(H,A,\irid,\strict), \strict)
+
+\evale, \irid \rightarrow_{\ir\expr} \hf{GetBindingValue}(H,\hf{Lookup}(H,A,\irid,\strict), \irid, \strict)
+\\[4em]
+
+
+\mtt{\normalsize\inred IRNumber(ignoreForEquals String text, Double num)}\\[.5em]
+\mbox{\inblue 11.1.3 Literal Reference}\\
+\mbox{\inblue 7.8 Literals}\\
+\evale, n \rightarrow_{\ir\expr} n\\[2em]
+
+\mtt{\normalsize\inred IRString(String str)}\\[.5em]
+\evale, s \rightarrow_{\ir\expr} s\\[2em]
+
+\mtt{\normalsize\inred IRBool(boolean bool)}\\[.5em]
+\evale, {\sf true} \rightarrow_{\ir\expr} \true\\
+\evale, {\sf false} \rightarrow_{\ir\expr} \false\\[2em]
+
+\mtt{\normalsize\inred IRUndef()}\\[.5em]
+\evale, {\sf undefined} \rightarrow_{\ir\expr} \undef\\[2em]
+
+\mtt{\normalsize\inred IRNull()}\\[.5em]
+\evale, {\sf null} \rightarrow_{\ir\expr} \nullK\\[2em]
+
+\mtt{\normalsize\inred IRThis()}\\[.5em]
+\mbox{\inblue 11.1.1 The {\tt this} Keyword}\\
+\evale, {\sf this} \rightarrow_{\ir\expr} \tb\\[1em]
+\end{array}
+\]
+
+\subsection{Members}
+
+
+% 4. Repeat
+%   a. Let V be the value of the [[Prototype]] internal property of V.
+%   b. If V is null, return false.
+%   c. If O and V refer to the same object, return true.
+
+
+
+\[
+\begin{array}{l@{~~}l@{~~}ll}
+\fbox{$\evale,\ir{m} \rightarrow_{\ir{m}} (H, \irid, \emph{ov})$ or $\err$}\\[2em]
+\mtt{\normalsize\inred IRField(IRId prop, IRExpr expr)}\\[.5em]
+\mbox{\inblue 11.1.5 Object Initialiser}\\
+%member 1
+\frac{\begin{matrix}
+\evale, \ir{y} \rightarrow_{\ir\expr} \err
+\end{matrix}}{\begin{matrix}
+\evale, \irfield \rightarrow_{\ir{m}} \err
+\end{matrix}}
+\\\\
+
+%member 2
+\frac{\begin{matrix}
+\evale, \ir{y} \rightarrow_{\ir\expr} v
+\rulesep
+\{{\tt [[Value]]:} v,
+{\tt [[Writable]]:} \true,
+{\tt [[Enumerable]]:} \true,
+{\tt [[Configurable]]:} \true\} = \emph{dp}
+\end{matrix}}{\begin{matrix}
+\evale, \irfield \rightarrow_{\ir{m}} (H, \irid, \emph{dp})
+\end{matrix}}
+\\[1em]
+
+\mtt{\normalsize\inred IRGetProp(IRFunctional ftn)}\\[.5em]
+%member 3
+\frac{\begin{matrix}
+\hf{NewFtnObject}(H,A,\irget) = (H', l)
+\rulesep
+\{{\tt [[Get]]:} l,
+{\tt [[Enumerable]]:} \true,
+{\tt [[Configurable]]:} \true\} = \emph{ap}
+\end{matrix}}{\begin{matrix}
+\evale, \irget \rightarrow_{\ir{m}} (H', \ir{f}, \emph{ap})
+\end{matrix}}
+\\\\
+
+\mtt{\normalsize\inred IRSetProp(IRFunctional ftn)}\\[.5em]
+%member 4
+\frac{\begin{matrix}
+\hf{NewFtnObject}(H,A,\irset) = (H', l)
+\rulesep
+\{{\tt [[Set]]:} l,
+{\tt [[Enumerable]]:} \true,
+{\tt [[Configurable]]:} \true\} = \emph{ap}
+\end{matrix}}{\begin{matrix}
+\evale, \irset \rightarrow_{\ir{m}} (H', \ir{f}, \emph{ap})
+\end{matrix}}
+\\\\
+
+
+\end{array}
+\]

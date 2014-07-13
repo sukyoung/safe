@@ -1,0 +1,54 @@
+################################################################################
+#    Copyright (c) 2013, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=RangeError1
+BUGDETECTOR_TESTS_DIR=${JS_HOME}/tests/bug_detector_tests
+bug-detector
+bug-detector_out_WCIequals=\
+ \n\
+* Bug Detector * \n\
+RangeError1.js:2:1~2:9: [RangeError] Array's new length 0 is not equal to its size NaN. \n\
+ \n\
+============== Total Count ============== \n\
+|  RangeErrors       :      1 (100.00%) | \n\
+|  ReferenceErrors   :      0 (  0.00%) | \n\
+|  SyntaxErrors      :      0 (  0.00%) | \n\
+|  TypeErrors        :      0 (  0.00%) | \n\
+|  URIErrors         :      0 (  0.00%) | \n\
+|  Warnings          :      0 (  0.00%) | \n\
+========================================= \n\
+============ Statistics ============= \n\
+|  AbsentRead              :      0 | \n\
+|  BinaryOperator          :      0 | \n\
+|  BuiltinTypeError        :      0 | \n\
+|  BuiltinWrongArgType     :      0 | \n\
+|  CallConstFunc           :      0 | \n\
+|  CallNonConstructor      :      0 | \n\
+|  CallNonFunction         :      0 | \n\
+|  ConditionalBranch       :      0 | \n\
+|  ConvertToNumber         :      0 | \n\
+|  DefaultValue            :      0 | \n\
+|  Deprecated              :      0 | \n\
+|  FunctionArgSize         :      0 | \n\
+|  GlobalThis              :      0 | \n\
+|  ImplicitTypeConversion  :      0 | \n\
+|  AccessingNullOrUndef    :      0 | \n\
+|  PrimitiveToObject       :      0 | \n\
+|  RangeError              :      1 | \n\
+|  Shadowing               :      0 | \n\
+|  StrictMode              :      0 | \n\
+|  UncalledFunction        :      0 | \n\
+|  UnreachableCode         :      0 | \n\
+|  ValueNeverRead          :      0 | \n\
+|  VaryingTypeArguments    :      0 | \n\
+|  WrongThisType           :      0 | \n\
+|  RegularExpression       :      0 | \n\
+|  WrongArgument           :      0 | \n\
+===================================== \n\
+\n
+bug-detector_err_equals=

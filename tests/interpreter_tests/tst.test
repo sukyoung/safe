@@ -1,0 +1,16 @@
+################################################################################
+#    Copyright (c) 2012, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=tst
+INTERPRETER_TESTS_DIR=${JS_HOME}/tests/interpreter_tests
+interpret
+interpret_out_WCIequals=\
+${INTERPRETER_TESTS_DIR}/tst.js:7:10-39:\n\
+    Warning: the use of FunctionDeclaration as a Statement is not allowed in ECMAScript.\n\
+Normal(4)\n
+interpret_err_equals=

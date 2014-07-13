@@ -1,0 +1,14 @@
+################################################################################
+#    Copyright (c) 2012, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=crypto-md5
+INTERPRETER_TESTS_DIR=${JS_HOME}/tests/interpreter_nightly_tests
+interpret
+interpret_out_WCIequals=\n\
+Normal(a831e91e0f70eddcb70dc61c6f82f6cd)
+interpret_err_equals=

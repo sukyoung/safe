@@ -1,0 +1,55 @@
+################################################################################
+#    Copyright (c) 2014, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=loc4
+BUGDETECTOR_TESTS_DIR=${JS_HOME}/tests/bug_detector_tests
+bug-detector-loc
+bug-detector-loc_out_WCIequals=\
+noStop mode enabled. \n\
+ \n\
+* Bug Detector * \n\
+loc4.js:1:10~1:27: [TypeError] Property is trying to access an object, whose value is undefined. \n\
+ \n\
+============== Total Count ============== \n\
+|  RangeErrors       :      0 (  0.00%) | \n\
+|  ReferenceErrors   :      0 (  0.00%) | \n\
+|  SyntaxErrors      :      0 (  0.00%) | \n\
+|  TypeErrors        :      1 (100.00%) | \n\
+|  URIErrors         :      0 (  0.00%) | \n\
+|  Warnings          :      0 (  0.00%) | \n\
+========================================= \n\
+============ Statistics ============= \n\
+|  AbsentRead              :      0 | \n\
+|  BinaryOperator          :      0 | \n\
+|  BuiltinTypeError        :      0 | \n\
+|  BuiltinWrongArgType     :      0 | \n\
+|  CallConstFunc           :      0 | \n\
+|  CallNonConstructor      :      0 | \n\
+|  CallNonFunction         :      0 | \n\
+|  ConditionalBranch       :      0 | \n\
+|  ConvertToNumber         :      0 | \n\
+|  DefaultValue            :      0 | \n\
+|  Deprecated              :      0 | \n\
+|  FunctionArgSize         :      0 | \n\
+|  GlobalThis              :      0 | \n\
+|  ImplicitTypeConversion  :      0 | \n\
+|  AccessingNullOrUndef    :      1 | \n\
+|  PrimitiveToObject       :      0 | \n\
+|  RangeError              :      0 | \n\
+|  Shadowing               :      0 | \n\
+|  StrictMode              :      0 | \n\
+|  UncalledFunction        :      0 | \n\
+|  UnreachableCode         :      0 | \n\
+|  ValueNeverRead          :      0 | \n\
+|  VaryingTypeArguments    :      0 | \n\
+|  WrongThisType           :      0 | \n\
+|  RegularExpression       :      0 | \n\
+|  WrongArgument           :      0 | \n\
+===================================== \n\
+\n
+bug-detector-loc_err_equals=

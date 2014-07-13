@@ -1,0 +1,13 @@
+/* The overloads for both f and g are disallowed: */
+interface A {
+  void f();
+};
+
+partial interface A {
+  void f(float x);
+  void g();
+};
+
+partial interface A {
+  void g(DOMString x);
+};

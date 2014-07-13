@@ -1,0 +1,32 @@
+################################################################################
+#    Copyright (c) 2012, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=15.4.2.2-1
+INTERPRETER_TESTS_DIR=${JS_HOME}/tests/interpreter_mozilla_tests/ecma/Array
+interpret_mozilla
+interpret_mozilla_out_WCIequals=\
+15.4.2.2-1 The Array Constructor:  new Array( len )\n\
+ PASSED! new Array(0) =  expected: \n\
+ PASSED! typeof new Array(0) = object expected: object\n\
+ PASSED! (new Array(0)).length = 0 expected: 0\n\
+ PASSED! (new Array(0)).toString = [object Function] expected: [object Function]\n\
+ PASSED! new Array(1) =  expected: \n\
+ PASSED! new Array(1).length = 1 expected: 1\n\
+ PASSED! (new Array(1)).toString = [object Function] expected: [object Function]\n\
+ PASSED! (new Array(-0)).length = 0 expected: 0\n\
+ PASSED! (new Array(0)).length = 0 expected: 0\n\
+ PASSED! (new Array(10)).length = 10 expected: 10\n\
+ PASSED! (new Array('1')).length = 1 expected: 1\n\
+ PASSED! (new Array(1000)).length = 1000 expected: 1000\n\
+ PASSED! (new Array('1000')).length = 1 expected: 1\n\
+ PASSED! (new Array(4294967295)).length = 4294967295 expected: 4294967295\n\
+ PASSED! (new Array('8589934592')).length = 1 expected: 1\n\
+ PASSED! (new Array('4294967296')).length = 1 expected: 1\n\
+ PASSED! (new Array(1073741824)).length = 1073741824 expected: 1073741824\n\
+\n
+interpret_err_equals=

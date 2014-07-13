@@ -1,0 +1,10 @@
+/* equivalent to fragment17.widl */
+interface Dictionary {
+  readonly attribute unsigned long propertyCount;
+
+  float getProperty(DOMString propertyName);
+  void setProperty(DOMString propertyName, float propertyValue);
+
+  getter float (DOMString propertyName);
+  setter void (DOMString propertyName, float propertyValue);
+};

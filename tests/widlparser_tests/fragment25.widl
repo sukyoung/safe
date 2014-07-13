@@ -1,0 +1,68 @@
+/* An object map implementing OrderedMap supports indexed properties with
+ * indices in the range 0 ≤ index < map.size.
+ *
+ * Such objects also support a named property for every name that, if
+ * passed to get(), would return a non-null value.
+ */
+
+interface OrderedMap {
+  readonly attribute unsigned long size;
+
+  getter any getByIndex(unsigned long index);
+  setter void setByIndex(unsigned long index, any value);
+  deleter void removeByIndex(unsigned long index);
+
+  getter any get(DOMString name);
+  setter creator void set(DOMString name, any value);
+  deleter void remove(DOMString name);
+};
+
+/* As described in section 4.6, an ECMAScript implementation would
+ * create properties on a platform object implementing OrderedMap that
+ * correspond to entries in both the named and indexed property
+ * sets. These properties can then be used to interact with the object in
+ * the same way as invoking the object’s methods, as demonstrated below: 
+
+// Assume map is a platform object implementing the OrderedMap interface.
+var map = getOrderedMap();
+var x, y;
+
+x = map[0];       // If map.length > 0, then this is equivalent to:
+                  //
+                  //   x = map.getByIndex(0)
+                  //
+                  // since a property named "0" will have been placed on map.
+                  // Otherwise, x will be set to undefined, since there will be
+                  // no property named "0" on map.
+
+map[1] = false;   // If map.length > 1, then this will set the property named
+                  // "1" on map to false, and then will do the equivalent of:
+                  //
+                  //   map.setByIndex(1, false)
+                  //
+                  // Otherwise, if map.length ≤ 1, then it will set the
+                  // property but have no other effect (since an indexed property creator
+                  // was not specified).
+
+y = map.apple;    // If there exists a named property named "apple", then this
+                  // will be equivalent to:
+                  //
+                  //   y = map.get('apple')
+                  //
+                  // since a property named "apple" will have been placed on
+                  // map.  Otherwise, y will be set to undefined, since there
+                  // will be no property named "apple" on map.
+
+map.berry = 123;  // Regardless of whether there exists a named property named
+                  // "berry", this will set the "berry" property to 123, and
+                  // then do the equivalent of:
+                  //
+                  //   map.set('berry', 123)
+
+delete map.cake;  // If a named property named "cake" exists, then the "cake"
+                  // property will be deleted, and then the equivalent to the
+                  // following will be performed:
+                  //
+                  //   map.remove("cake")
+*/
+

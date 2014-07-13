@@ -1,0 +1,69 @@
+################################################################################
+#    Copyright (c) 2012, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=15.9.3.1-3
+INTERPRETER_TESTS_DIR=${JS_HOME}/tests/interpreter_mozilla_tests/ecma/Date
+interpret_mozilla
+interpret_mozilla_out_WCIequals=\
+15.9.3.1 new Date( year, month, date, hours, minutes, seconds, ms )\n\
+ PASSED! new Date(2000,1,28,16,0,0,0).getTime() = 951721200000 expected: 951721200000\n\
+ PASSED! new Date(2000,1,28,16,0,0,0).valueOf() = 951721200000 expected: 951721200000\n\
+ PASSED! new Date(2000,1,28,16,0,0,0).getUTCFullYear() = 2000 expected: 2000\n\
+ PASSED! new Date(2000,1,28,16,0,0,0).getUTCMonth() = 1 expected: 1\n\
+ PASSED! new Date(2000,1,28,16,0,0,0).getUTCDate() = 28 expected: 28\n\
+ PASSED! new Date(2000,1,28,16,0,0,0).getUTCDay() = 1 expected: 1\n\
+ PASSED! new Date(2000,1,28,16,0,0,0).getUTCHours() = 7 expected: 7\n\
+ PASSED! new Date(2000,1,28,16,0,0,0).getUTCMinutes() = 0 expected: 0\n\
+ PASSED! new Date(2000,1,28,16,0,0,0).getUTCSeconds() = 0 expected: 0\n\
+ PASSED! new Date(2000,1,28,16,0,0,0).getUTCMilliseconds() = 0 expected: 0\n\
+ PASSED! new Date(2000,1,28,16,0,0,0).getFullYear() = 2000 expected: 2000\n\
+ PASSED! new Date(2000,1,28,16,0,0,0).getMonth() = 1 expected: 1\n\
+ PASSED! new Date(2000,1,28,16,0,0,0).getDate() = 28 expected: 28\n\
+ PASSED! new Date(2000,1,28,16,0,0,0).getDay() = 1 expected: 1\n\
+ PASSED! new Date(2000,1,28,16,0,0,0).getHours() = 16 expected: 16\n\
+ PASSED! new Date(2000,1,28,16,0,0,0).getMinutes() = 0 expected: 0\n\
+ PASSED! new Date(2000,1,28,16,0,0,0).getSeconds() = 0 expected: 0\n\
+ PASSED! new Date(2000,1,28,16,0,0,0).getMilliseconds() = 0 expected: 0\n\
+ PASSED! new Date(2000,1,29,0,0,0,0).getTime() = 951750000000 expected: 951750000000\n\
+ PASSED! new Date(2000,1,29,0,0,0,0).valueOf() = 951750000000 expected: 951750000000\n\
+ PASSED! new Date(2000,1,29,0,0,0,0).getUTCFullYear() = 2000 expected: 2000\n\
+ PASSED! new Date(2000,1,29,0,0,0,0).getUTCMonth() = 1 expected: 1\n\
+ PASSED! new Date(2000,1,29,0,0,0,0).getUTCDate() = 28 expected: 28\n\
+ PASSED! new Date(2000,1,29,0,0,0,0).getUTCDay() = 1 expected: 1\n\
+ PASSED! new Date(2000,1,29,0,0,0,0).getUTCHours() = 15 expected: 15\n\
+ PASSED! new Date(2000,1,29,0,0,0,0).getUTCMinutes() = 0 expected: 0\n\
+ PASSED! new Date(2000,1,29,0,0,0,0).getUTCSeconds() = 0 expected: 0\n\
+ PASSED! new Date(2000,1,29,0,0,0,0).getUTCMilliseconds() = 0 expected: 0\n\
+ PASSED! new Date(2000,1,29,0,0,0,0).getFullYear() = 2000 expected: 2000\n\
+ PASSED! new Date(2000,1,29,0,0,0,0).getMonth() = 1 expected: 1\n\
+ PASSED! new Date(2000,1,29,0,0,0,0).getDate() = 29 expected: 29\n\
+ PASSED! new Date(2000,1,29,0,0,0,0).getDay() = 2 expected: 2\n\
+ PASSED! new Date(2000,1,29,0,0,0,0).getHours() = 0 expected: 0\n\
+ PASSED! new Date(2000,1,29,0,0,0,0).getMinutes() = 0 expected: 0\n\
+ PASSED! new Date(2000,1,29,0,0,0,0).getSeconds() = 0 expected: 0\n\
+ PASSED! new Date(2000,1,29,0,0,0,0).getMilliseconds() = 0 expected: 0\n\
+ PASSED! new Date(2000,1,28,24,0,0,0).getTime() = 951750000000 expected: 951750000000\n\
+ PASSED! new Date(2000,1,28,24,0,0,0).valueOf() = 951750000000 expected: 951750000000\n\
+ PASSED! new Date(2000,1,28,24,0,0,0).getUTCFullYear() = 2000 expected: 2000\n\
+ PASSED! new Date(2000,1,28,24,0,0,0).getUTCMonth() = 1 expected: 1\n\
+ PASSED! new Date(2000,1,28,24,0,0,0).getUTCDate() = 28 expected: 28\n\
+ PASSED! new Date(2000,1,28,24,0,0,0).getUTCDay() = 1 expected: 1\n\
+ PASSED! new Date(2000,1,28,24,0,0,0).getUTCHours() = 15 expected: 15\n\
+ PASSED! new Date(2000,1,28,24,0,0,0).getUTCMinutes() = 0 expected: 0\n\
+ PASSED! new Date(2000,1,28,24,0,0,0).getUTCSeconds() = 0 expected: 0\n\
+ PASSED! new Date(2000,1,28,24,0,0,0).getUTCMilliseconds() = 0 expected: 0\n\
+ PASSED! new Date(2000,1,28,24,0,0,0).getFullYear() = 2000 expected: 2000\n\
+ PASSED! new Date(2000,1,28,24,0,0,0).getMonth() = 1 expected: 1\n\
+ PASSED! new Date(2000,1,28,24,0,0,0).getDate() = 29 expected: 29\n\
+ PASSED! new Date(2000,1,28,24,0,0,0).getDay() = 2 expected: 2\n\
+ PASSED! new Date(2000,1,28,24,0,0,0).getHours() = 0 expected: 0\n\
+ PASSED! new Date(2000,1,28,24,0,0,0).getMinutes() = 0 expected: 0\n\
+ PASSED! new Date(2000,1,28,24,0,0,0).getSeconds() = 0 expected: 0\n\
+ PASSED! new Date(2000,1,28,24,0,0,0).getMilliseconds() = 0 expected: 0\n\
+\n
+interpret_err_equals=

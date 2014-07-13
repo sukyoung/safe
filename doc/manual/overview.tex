@@ -1,0 +1,29 @@
+\chapter{Overview}
+
+The prevalent uses of JavaScript in web programming have revealed
+security vulnerability issues of JavaScript applications,
+which emphasizes the need for JavaScript analyzers to detect such issues.
+Recently, researchers have proposed several analyzers of JavaScript programs
+and some web service companies have developed various JavaScript engines.
+However, unfortunately, most of the tools are not documented well,
+thus it is very hard to understand and modify them.
+Or, such tools are often not open to the public.
+
+
+In this specification, we present formal specification and implementation
+of \safe, a scalable analysis framework for ECMAScript, developed for the JavaScript research community.
+This is the very first attempt to provide both formal specification and
+its open-source implementation for JavaScript,
+compared to the existing approaches focused on only one of them.
+To make it more amenable for other researchers to use our framework,
+we formally define three kinds of intermediate representations for JavaScript
+used in the framework,
+and we provide formal specifications of translations between them.
+To be adaptable for adventurous future research including modifications
+in the original JavaScript syntax,
+we actively use open-source tools to automatically generate parsers and some intermediate
+representations.
+To support a variety of program analyses in various compilation phases,
+we design the framework to be as flexible, scalable, and pluggable as possible.
+Finally, our framework is publicly available,
+and some collaborative research using the framework are in progress.

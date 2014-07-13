@@ -1,0 +1,14 @@
+/* how constants of the above types can be defined */
+interface Util {
+  const boolean DEBUG = false;
+  const octet LF = 10;
+  const unsigned long BIT_MASK = 0x0000fc00;
+  const float AVOGADRO = 6.022e23;
+};
+
+exception Problem {
+  const short ERR_UNKNOWN = 0;
+  const short ERR_OUT_OF_MEMORY = 1;
+
+  short errorCode;
+};

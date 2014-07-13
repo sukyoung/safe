@@ -1,0 +1,54 @@
+
+
+* Bug Detector *
+Month.js:356:30~356:35: [Warning] Parameter 'sides' is shadowed by a variable at '357:13-36'.
+StatusProxy.js:35:26~35:43: [Warning] Reading absent property 'baseCSSPrefix' of object 'Ext'.
+StatusProxy.js:37:46~37:63: [Warning] Reading absent property 'baseCSSPrefix' of object 'Ext'.
+StatusProxy.js:38:48~38:65: [Warning] Reading absent property 'baseCSSPrefix' of object 'Ext'.
+include-ext.js:41:25~41:52: [TypeError] Property is trying to access 'scriptEls[<>obj<>2695["length"] - 1]', whose value is undefined.
+include-ext.js:41:25~41:52: [Warning] Reading absent property '-1' of object 'scriptEls'.
+options-toolbar.js:40:29~40:51: [Warning] Too few arguments to function 'getQueryParam'.
+options-toolbar.js:42:11~42:31: [Warning] Too few arguments to function 'getQueryParam'.
+options-toolbar.js:44:9~44:12: [Warning] Trying to convert primitive value(boolean) to object.
+options-toolbar.js:44:9~44:34: [Warning] Conditional expression 'rtl.toString() === 'true'' is always false.
+
+============== Total Count ==============
+|  RangeErrors       :      0 (  0.00%) |
+|  ReferenceErrors   :      0 (  0.00%) |
+|  SyntaxErrors      :      0 (  0.00%) |
+|  TypeErrors        :      1 ( 10.00%) |
+|  URIErrors         :      0 (  0.00%) |
+|  Warnings          :      9 ( 90.00%) |
+|  TSErrors          :      0 (  0.00%) |
+|  TSWarnings        :      0 (  0.00%) |
+=========================================
+============ Statistics =============
+|  AbsentRead              :      4 |
+|  BinaryOperator          :      0 |
+|  BuiltinTypeError        :      0 |
+|  BuiltinWrongArgType     :      0 |
+|  CallConstFunc           :      0 |
+|  CallNonConstructor      :      0 |
+|  CallNonFunction         :      0 |
+|  ConditionalBranch       :      1 |
+|  ConvertToNumber         :      0 |
+|  DefaultValue            :      0 |
+|  Deprecated              :      0 |
+|  FunctionArgSize         :      2 |
+|  GlobalThis              :      0 |
+|  ImplicitTypeConversion  :      0 |
+|  AccessingNullOrUndef    :      1 |
+|  PrimitiveToObject       :      1 |
+|  RangeError              :      0 |
+|  Shadowing               :      1 |
+|  StrictMode              :      0 |
+|  UncalledFunction        :      0 |
+|  UnreachableCode         :      0 |
+|  ValueNeverRead          :      0 |
+|  VaryingTypeArguments    :      0 |
+|  WrongThisType           :      0 |
+|  RegularExpression       :      0 |
+|  WrongArgument           :      0 |
+|  TSWrongArgs             :      0 |
+|  TSWrongArgType          :      0 |
+=====================================

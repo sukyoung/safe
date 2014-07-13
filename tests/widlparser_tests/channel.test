@@ -1,0 +1,81 @@
+################################################################################
+#    Copyright (c) 2013, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=channel.widl
+WIDLPARSER_TESTS_DIR=${JS_HOME}/tests/widl_tests
+widlparse
+widlparse_out_WCIequals=\
+module channel {typedef sequence <ChannelInfo> ChannelInfoArray;, typedef sequence <ProgramInfo> ProgramInfoArray;, \n\
+[NoInterfaceObject] interface WebAPIsTVChannelManager {\n\
+  [readonly] attribute TVChannelManager channel;\n\
+};, \n\
+TV implements TVChannelManager;, \n\
+[Callback , NoInterfaceObject] interface TuneCallback {\n\
+  void onsuccess();\n\
+  void onnosignal();\n\
+};, \n\
+callback ProgramListSuccessCallback = void(ProgramArray programList);, \n\
+callback FindChannelSuccessCallback = void(ChannelInfoArray channelInfoArray);, \n\
+dictionary TuneOption {\n\
+  long? ptc;\n\
+  long? major;\n\
+  long? minor;\n\
+  long? sourceID;\n\
+  long? programNumber;\n\
+  long? transportStreamID;\n\
+  long? originalNetworkID;\n\
+  TuneCallback tunecallback;\n\
+};, \n\
+[NoInterfaceObject] interface ChannelInfo {\n\
+  attribute long ptc;\n\
+  attribute long major;\n\
+  attribute long minor;\n\
+  [readonly] attribute long lcn;\n\
+  [readonly] attribute long sourceID;\n\
+  [readonly] attribute long programNumber;\n\
+  [readonly] attribute long transportStreamID;\n\
+  [readonly] attribute long originalNetworkID;\n\
+  [readonly] attribute DOMString servicelName;\n\
+  [readonly] attribute DOMString channelName;\n\
+};, \n\
+[NoInterfaceObject] interface ProgramInfo {\n\
+  [readonly] attribute DOMString title;\n\
+  [readonly] attribute long startTime;\n\
+  [readonly] attribute long duration;\n\
+  [readonly] attribute DOMString? detailedDescription;\n\
+  [readonly] attribute DOMString? language;\n\
+  [readonly] attribute DOMString? rating;\n\
+};, \n\
+[NoInterfaceObject] interface TVChannelManager {\n\
+  const unsigned short NAVIGATOR_MODE_ALL = 0;\n\
+  const unsigned short NAVIGATOR_MODE_DIGITAL = 1;\n\
+  const unsigned short NAVIGATOR_MODE_ANALOG = 2;\n\
+  const unsigned short NAVIGATOR_MODE_FAVORITE = 3;\n\
+  void tune(TuneOption tuneOption, SuccessCallback successCallback, \n\
+  ErrorCallback? errorCallback, \n\
+  [optional] unsigned short windowID) raises (WebAPIException);\n\
+  void tuneUp(SuccessCallback successCallback, ErrorCallback? errorCallback, \n\
+  [optional] unsigned short tuneMode, \n\
+  [optional] unsigned short windowID) raises (WebAPIException);\n\
+  void tuneDown(SuccessCallback successCallback, ErrorCallback? errorCallback, \n\
+  [optional] unsigned short tuneMode, \n\
+  [optional] unsigned short windowID) raises (WebAPIException);\n\
+  void getChannelList(FindChannelSuccessCallback successCallback, ErrorCallback? errorCallback, \n\
+  [optional] unsigned short mode, \n\
+  [optional] unsigned long nStart, \n\
+  [optional] unsigned long number) raises (WebAPIException);\n\
+  ChannelInfo getCurrentChannel([optional] unsigned short windowID) raises (WebAPIException);\n\
+  void findChannel(short major, short minor, FindChannelSuccessCallback successCallback, \n\
+  ErrorCallback? errorCallback) raises (WebAPIException);\n\
+  ProgramInfo getCurrentProgram([optional] unsigned short windowID) raises (WebAPIException);\n\
+  void getProgramList(ChannelInfo channelInfo, unsigned long startTime, ProgramListSuccessCallback successCallback, \n\
+  ErrorCallback? errorCallback, \n\
+  [optional] unsigned long duration) raises (WebAPIException);\n\
+  unsigned long getNumOfAvailableTuner() raises (WebAPIException);\n\
+};}\n
+widlparse_err_equals=

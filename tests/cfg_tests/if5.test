@@ -1,0 +1,70 @@
+################################################################################
+#    Copyright (c) 2012, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=if5
+CFG_TESTS_DIR=${JS_HOME}/tests/cfg_tests
+cfg
+cfg_out_WCIequals=\
+(0,LBlock(9))\n\
+\n\
+\n\
+(0,LBlock(8))\n\
+    [13] assert(! truck)\n\
+    [19] <>old<>7 := truck\n\
+    [20] <>old<>8 := x\n\
+    [21] <>new<>9 := <>Global<>toNumber(<>old<>8)\n\
+    [22] x := <>new<>9 - 1\n\
+    [23] truck := <>old<>7 - <>new<>9\n\
+\n\
+\n\
+(0,LBlock(7))\n\
+    [12] assert(truck)\n\
+    [14] <>old<>4 := truck\n\
+    [15] <>old<>5 := x\n\
+    [16] <>new<>6 := <>Global<>toNumber(<>old<>5)\n\
+    [17] x := <>new<>6 - 1\n\
+    [18] truck := <>old<>4 - <>new<>6\n\
+\n\
+\n\
+(0,LBlock(6))\n\
+    [24] <>Global<>ignore7 := truck\n\
+    [25] noop(EndOfFile)\n\
+\n\
+\n\
+(0,LBlock(5))\n\
+    [11] assert(! truck)\n\
+\n\
+\n\
+(0,LBlock(4))\n\
+    [10] assert(truck)\n\
+\n\
+\n\
+(0,LBlock(3))\n\
+\n\
+\n\
+(0,LBlock(2))\n\
+    [4] assert(! truck)\n\
+\n\
+\n\
+(0,LBlock(1))\n\
+    [3] assert(truck)\n\
+    [5] <>old<>1 := truck\n\
+    [6] <>old<>2 := x\n\
+    [7] <>new<>3 := <>Global<>toNumber(<>old<>2)\n\
+    [8] x := <>new<>3 - 1\n\
+    [9] truck := <>old<>1 - <>new<>3\n\
+\n\
+\n\
+(0,LBlock(0))\n\
+    [0] noop(StartOfFile)\n\
+    [1] truck := 10\n\
+    [2] x := 3\n\
+\n\
+\n\
+\n
+cfg_err_equals=

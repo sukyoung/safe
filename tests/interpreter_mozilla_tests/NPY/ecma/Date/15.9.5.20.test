@@ -1,0 +1,94 @@
+################################################################################
+#    Copyright (c) 2012, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=15.9.5.20
+INTERPRETER_TESTS_DIR=${JS_HOME}/tests/interpreter_mozilla_tests/ecma/Date
+interpret_mozilla
+interpret_mozilla_out_WCIequals=\
+15.9.5.20 Date.prototype.getMilliseconds()\n\
+ PASSED! (new Date(1355759127747)).getMilliseconds() = 747 expected: 747\n\
+ PASSED! (new Date(1355759127748)).getMilliseconds() = 748 expected: 748\n\
+ PASSED! (new Date(1355759127749)).getMilliseconds() = 749 expected: 749\n\
+ PASSED! (new Date(1355759127750)).getMilliseconds() = 750 expected: 750\n\
+ PASSED! (new Date(1355759127751)).getMilliseconds() = 751 expected: 751\n\
+ PASSED! (new Date(1355759127752)).getMilliseconds() = 752 expected: 752\n\
+ PASSED! (new Date(1355759127753)).getMilliseconds() = 753 expected: 753\n\
+ PASSED! (new Date(1355759127754)).getMilliseconds() = 754 expected: 754\n\
+ PASSED! (new Date(1355759127755)).getMilliseconds() = 755 expected: 755\n\
+ PASSED! (new Date(1355759127756)).getMilliseconds() = 756 expected: 756\n\
+ PASSED! (new Date(1355759127757)).getMilliseconds() = 757 expected: 757\n\
+ PASSED! (new Date(-62167219199999)).getMilliseconds() = 1 expected: 1\n\
+ PASSED! (new Date(-62167219199998)).getMilliseconds() = 2 expected: 2\n\
+ PASSED! (new Date(-62167219199997)).getMilliseconds() = 3 expected: 3\n\
+ PASSED! (new Date(-62167219199996)).getMilliseconds() = 4 expected: 4\n\
+ PASSED! (new Date(-62167219199995)).getMilliseconds() = 5 expected: 5\n\
+ PASSED! (new Date(-62167219199994)).getMilliseconds() = 6 expected: 6\n\
+ PASSED! (new Date(-62167219199993)).getMilliseconds() = 7 expected: 7\n\
+ PASSED! (new Date(-62167219199992)).getMilliseconds() = 8 expected: 8\n\
+ PASSED! (new Date(-62167219199991)).getMilliseconds() = 9 expected: 9\n\
+ PASSED! (new Date(-62167219199990)).getMilliseconds() = 10 expected: 10\n\
+ PASSED! (new Date(-62167219199989)).getMilliseconds() = 11 expected: 11\n\
+ PASSED! (new Date(1)).getMilliseconds() = 1 expected: 1\n\
+ PASSED! (new Date(2)).getMilliseconds() = 2 expected: 2\n\
+ PASSED! (new Date(3)).getMilliseconds() = 3 expected: 3\n\
+ PASSED! (new Date(4)).getMilliseconds() = 4 expected: 4\n\
+ PASSED! (new Date(5)).getMilliseconds() = 5 expected: 5\n\
+ PASSED! (new Date(6)).getMilliseconds() = 6 expected: 6\n\
+ PASSED! (new Date(7)).getMilliseconds() = 7 expected: 7\n\
+ PASSED! (new Date(8)).getMilliseconds() = 8 expected: 8\n\
+ PASSED! (new Date(9)).getMilliseconds() = 9 expected: 9\n\
+ PASSED! (new Date(10)).getMilliseconds() = 10 expected: 10\n\
+ PASSED! (new Date(11)).getMilliseconds() = 11 expected: 11\n\
+ PASSED! (new Date(-2208988799999)).getMilliseconds() = 1 expected: 1\n\
+ PASSED! (new Date(-2208988799998)).getMilliseconds() = 2 expected: 2\n\
+ PASSED! (new Date(-2208988799997)).getMilliseconds() = 3 expected: 3\n\
+ PASSED! (new Date(-2208988799996)).getMilliseconds() = 4 expected: 4\n\
+ PASSED! (new Date(-2208988799995)).getMilliseconds() = 5 expected: 5\n\
+ PASSED! (new Date(-2208988799994)).getMilliseconds() = 6 expected: 6\n\
+ PASSED! (new Date(-2208988799993)).getMilliseconds() = 7 expected: 7\n\
+ PASSED! (new Date(-2208988799992)).getMilliseconds() = 8 expected: 8\n\
+ PASSED! (new Date(-2208988799991)).getMilliseconds() = 9 expected: 9\n\
+ PASSED! (new Date(-2208988799990)).getMilliseconds() = 10 expected: 10\n\
+ PASSED! (new Date(-2208988799989)).getMilliseconds() = 11 expected: 11\n\
+ PASSED! (new Date(946684800001)).getMilliseconds() = 1 expected: 1\n\
+ PASSED! (new Date(946684800002)).getMilliseconds() = 2 expected: 2\n\
+ PASSED! (new Date(946684800003)).getMilliseconds() = 3 expected: 3\n\
+ PASSED! (new Date(946684800004)).getMilliseconds() = 4 expected: 4\n\
+ PASSED! (new Date(946684800005)).getMilliseconds() = 5 expected: 5\n\
+ PASSED! (new Date(946684800006)).getMilliseconds() = 6 expected: 6\n\
+ PASSED! (new Date(946684800007)).getMilliseconds() = 7 expected: 7\n\
+ PASSED! (new Date(946684800008)).getMilliseconds() = 8 expected: 8\n\
+ PASSED! (new Date(946684800009)).getMilliseconds() = 9 expected: 9\n\
+ PASSED! (new Date(946684800010)).getMilliseconds() = 10 expected: 10\n\
+ PASSED! (new Date(946684800011)).getMilliseconds() = 11 expected: 11\n\
+ PASSED! (new Date(951782400001)).getMilliseconds() = 1 expected: 1\n\
+ PASSED! (new Date(951782400002)).getMilliseconds() = 2 expected: 2\n\
+ PASSED! (new Date(951782400003)).getMilliseconds() = 3 expected: 3\n\
+ PASSED! (new Date(951782400004)).getMilliseconds() = 4 expected: 4\n\
+ PASSED! (new Date(951782400005)).getMilliseconds() = 5 expected: 5\n\
+ PASSED! (new Date(951782400006)).getMilliseconds() = 6 expected: 6\n\
+ PASSED! (new Date(951782400007)).getMilliseconds() = 7 expected: 7\n\
+ PASSED! (new Date(951782400008)).getMilliseconds() = 8 expected: 8\n\
+ PASSED! (new Date(951782400009)).getMilliseconds() = 9 expected: 9\n\
+ PASSED! (new Date(951782400010)).getMilliseconds() = 10 expected: 10\n\
+ PASSED! (new Date(951782400011)).getMilliseconds() = 11 expected: 11\n\
+ PASSED! (new Date(1104537600001)).getMilliseconds() = 1 expected: 1\n\
+ PASSED! (new Date(1104537600002)).getMilliseconds() = 2 expected: 2\n\
+ PASSED! (new Date(1104537600003)).getMilliseconds() = 3 expected: 3\n\
+ PASSED! (new Date(1104537600004)).getMilliseconds() = 4 expected: 4\n\
+ PASSED! (new Date(1104537600005)).getMilliseconds() = 5 expected: 5\n\
+ PASSED! (new Date(1104537600006)).getMilliseconds() = 6 expected: 6\n\
+ PASSED! (new Date(1104537600007)).getMilliseconds() = 7 expected: 7\n\
+ PASSED! (new Date(1104537600008)).getMilliseconds() = 8 expected: 8\n\
+ PASSED! (new Date(1104537600009)).getMilliseconds() = 9 expected: 9\n\
+ PASSED! (new Date(1104537600010)).getMilliseconds() = 10 expected: 10\n\
+ PASSED! (new Date(1104537600011)).getMilliseconds() = 11 expected: 11\n\
+ PASSED! (new Date(NaN)).getMilliseconds() = NaN expected: NaN\n\
+ PASSED! Date.prototype.getMilliseconds.length = 0 expected: 0\n\
+\n
+interpret_err_equals=

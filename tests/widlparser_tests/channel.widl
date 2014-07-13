@@ -1,0 +1,137 @@
+module channel {
+
+    typedef sequence<ChannelInfo> ChannelInfoArray;
+
+    typedef sequence<ProgramInfo> ProgramInfoArray;
+    
+    [NoInterfaceObject] interface WebAPIsTVChannelManager {
+        readonly attribute TVChannelManager channel;
+    };
+    TV implements TVChannelManager;
+
+    [Callback, NoInterfaceObject] interface TuneCallback
+    {
+       void onsuccess();
+
+        void onnosignal();
+    };
+    
+    [Callback=FunctionOnly, NoInterfaceObject] interface ProgramListSuccessCallback 
+    {
+        void onsuccess(in  ProgramArray programList);
+    };  
+    
+    [Callback=FunctionOnly, NoInterfaceObject] interface FindChannelSuccessCallback 
+    {
+        void onsuccess(in ChannelInfoArray channelInfoArray);
+    }; 
+
+    dictionary TuneOption {
+        long? ptc;
+
+        long? major;
+
+        long? minor;
+
+        long? sourceID;
+
+        long? programNumber;
+
+        long? transportStreamID;
+
+        long? originalNetworkID;
+
+        TuneCallback tunecallback;
+    };
+    
+    [NoInterfaceObject] interface ChannelInfo {
+
+        attribute long ptc;
+
+        attribute long major;
+
+        attribute long minor;
+
+        readonly attribute long lcn;
+
+        readonly  attribute long sourceID;
+
+        readonly  attribute long programNumber;
+
+        readonly attribute long transportStreamID;
+
+        readonly  attribute long originalNetworkID;
+
+        readonly attribute DOMString servicelName;
+
+        readonly attribute DOMString channelName;
+    };
+  
+    [NoInterfaceObject] interface ProgramInfo {
+        readonly attribute DOMString title;
+
+        readonly attribute long startTime;
+
+        readonly attribute long duration;
+
+        readonly attribute DOMString? detailedDescription;
+
+        readonly attribute DOMString? language;
+
+        readonly attribute DOMString? rating;
+    };
+    
+    [NoInterfaceObject] interface TVChannelManager {    
+    
+        const unsigned short NAVIGATOR_MODE_ALL = 0;
+
+        const unsigned short NAVIGATOR_MODE_DIGITAL = 1;
+
+        const unsigned short NAVIGATOR_MODE_ANALOG = 2;
+
+        const unsigned short NAVIGATOR_MODE_FAVORITE = 3;
+
+        void tune(in TuneOption tuneOption,
+                    in SuccessCallback successCallback, 
+                    in ErrorCallback? errorCallback, 
+                    in optional unsigned short windowID)
+                    raises (WebAPIException);
+                              
+        void tuneUp(in SuccessCallback successCallback, 
+                        in ErrorCallback? errorCallback,
+                        in optional unsigned short tuneMode,
+                        in optional unsigned short windowID)
+                        raises (WebAPIException);
+
+        void tuneDown(in SuccessCallback successCallback, 
+                           in ErrorCallback? errorCallback, 
+                           in optional unsigned short tuneMode, 
+                           in optional unsigned short windowID)
+                           raises(WebAPIException);
+
+        void getChannelList(in FindChannelSuccessCallback successCallback,
+                                                 in ErrorCallback? errorCallback,  
+                                                 in optional unsigned short mode,
+                                                 in optional unsigned long nStart, 
+                                                 in optional unsigned long number)
+                                                 raises (WebAPIException);
+
+        ChannelInfo getCurrentChannel(in optional unsigned short windowID) raises(WebAPIException);
+
+        void findChannel(in short major,
+                             in short minor, 
+                             in FindChannelSuccessCallback successCallback, 
+                             in ErrorCallback? errorCallback)
+                             raises(WebAPIException);
+
+        ProgramInfo getCurrentProgram(in optional unsigned short windowID) raises(WebAPIException);    
+        
+        void getProgramList(in ChannelInfo channelInfo, 
+                                 in unsigned long startTime, 
+                                 in ProgramListSuccessCallback successCallback, 
+                                 in ErrorCallback? errorCallback, 
+                                 in optional unsigned long duration) raises (WebAPIException);
+
+        unsigned long getNumOfAvailableTuner() raises (WebAPIException);
+    };
+};

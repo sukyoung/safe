@@ -1,0 +1,19 @@
+################################################################################
+#    Copyright (c) 2012, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=string-charCodeAt
+INTERPRETER_TESTS_DIR=${JS_HOME}/tests/interpreter_tests
+interpret
+interpret_out_WCIequals=\
+NaN\n\
+97\n\
+98\n\
+99\n\
+NaN\n\
+Normal(PASS)\n
+interpret_err_equals=

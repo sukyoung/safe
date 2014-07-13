@@ -1,0 +1,17 @@
+################################################################################
+#    Copyright (c) 2013, KAIST.
+#    All rights reserved.\n#
+#    Use is subject to license terms.\n#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=return
+DISAMB_TESTS_DIR=${JS_HOME}/tests/disambiguator_tests
+disambiguate
+disambiguate_out_WCIequals=\
+${DISAMB_TESTS_DIR}/return.js:1:1-7: \n\
+    Return occurs outside of a function body. \n\
+${DISAMB_TESTS_DIR}/return.js:2:1-9: \n\
+    Return occurs outside of a function body. \n\
+File ${DISAMB_TESTS_DIR}/return.js has 2 errors. \n\
+\n
+disambiguate_err_equals=

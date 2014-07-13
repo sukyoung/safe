@@ -1,0 +1,13 @@
+_<>_print(Date.parse("1989-12-12T09:30:01.234"))
+_<>_print(Date.parse("1989-12-12T09:30:01"))
+_<>_print(Date.parse("1989-12-12T09:30"))
+_<>_print(Date.parse("1989-12-12"))
+_<>_print(Date.parse("1989-12T09:30:01.234"))
+_<>_print(Date.parse("1989-12T09:30:01"))
+_<>_print(Date.parse("1989-12T09:30"))
+_<>_print(Date.parse("1989-12"))
+_<>_print(Date.parse("1989T09:30:01.234"))
+_<>_print(Date.parse("1989T09:30:01"))
+_<>_print(Date.parse("1989T09:30"))
+_<>_print(Date.parse("1989"))
+"PASS"

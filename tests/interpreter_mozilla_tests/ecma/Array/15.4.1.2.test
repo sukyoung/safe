@@ -1,0 +1,31 @@
+################################################################################
+#    Copyright (c) 2012, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=15.4.1.2
+INTERPRETER_TESTS_DIR=${JS_HOME}/tests/interpreter_mozilla_tests/ecma/Array
+interpret_mozilla
+interpret_mozilla_out_WCIequals=\
+15.4.1.2 Array Constructor Called as a Function:  Array(len)\n\
+ PASSED! (Array()).length = 0 expected: 0\n\
+ PASSED! (Array(0)).length = 0 expected: 0\n\
+ PASSED! (Array(1)).length = 1 expected: 1\n\
+ PASSED! (Array(10)).length = 10 expected: 10\n\
+ PASSED! (Array('1')).length = 1 expected: 1\n\
+ PASSED! (Array(1000)).length = 1000 expected: 1000\n\
+ PASSED! (Array('1000')).length = 1 expected: 1\n\
+ PASSED! (Array(4294967295)).length = 4294967295 expected: 4294967295\n\
+ PASSED! (Array(Math.pow(2,31)-1)).length = 2147483647 expected: 2147483647\n\
+ PASSED! (Array(Math.pow(2,31))).length = 2147483648 expected: 2147483648\n\
+ PASSED! (Array(Math.pow(2,31)+1)).length = 2147483649 expected: 2147483649\n\
+ PASSED! (Array('8589934592')).length = 1 expected: 1\n\
+ PASSED! (Array('4294967296')).length = 1 expected: 1\n\
+ PASSED! (Array(1073741823)).length = 1073741823 expected: 1073741823\n\
+ PASSED! (Array(1073741824)).length = 1073741824 expected: 1073741824\n\
+ PASSED! (Array('a string')).length = 1 expected: 1\n\
+\n
+interpret_err_equals=

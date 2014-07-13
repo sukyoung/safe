@@ -1,0 +1,39 @@
+################################################################################
+#    Copyright (c) 2012, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=_internal_test
+INTERPRETER_TESTS_DIR=${JS_HOME}/tests/interpreter_tests
+interpret
+interpret_out_WCIequals=\
+1\n\
+2\n\
+3.4\n\
+5\n\
+6\n\
+7\n\
+undefined\n\
+Infinity\n\
+-Infinity\n\
+-Infinity\n\
+Infinity\n\
+NaN\n\
+1.0999999999999996\n\
+-1.0999999999999996\n\
+1.0999999999999996\n\
+-1.0999999999999996\n\
+-Infinity\n\
+Infinity\n\
+NaN\n\
+Infinity\n\
+-Infinity\n\
+NaN\n\
+-Infinity\n\
+NaN\n\
+NaN\n\
+Normal(PASS)
+interpret_err_equals=

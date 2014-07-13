@@ -1,0 +1,26 @@
+################################################################################
+#    Copyright (c) 2012, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=15.4.5.2-2
+INTERPRETER_TESTS_DIR=${JS_HOME}/tests/interpreter_mozilla_tests/ecma/Array
+interpret_mozilla
+interpret_mozilla_out_WCIequals=\
+15.4.5.2-2 Array.length\n\
+ PASSED! array = new Array(0); array.length = 16384; array.length = 16384 expected: 16384\n\
+ PASSED! array = new Array(0); array.length = 1; array.length = 1 expected: 1\n\
+ PASSED! array = new Array(4096); array.length = 0; array.length = 0 expected: 0\n\
+ PASSED! array = new Array(8192); array.length = 4096; array.length = 4096 expected: 4096\n\
+ PASSED! array = new Array(4096); array.length = 4096; array.length = 4096 expected: 4096\n\
+ PASSED! array = new Array(16384); array.length = 4096; array.length = 4096 expected: 4096\n\
+ PASSED! array = new Array(4096); array.length = 4096; array.length = 4096 expected: 4096\n\
+ PASSED! array = new Array(4096); array.length = 8193; array.length = 8193 expected: 8193\n\
+ PASSED! verify that new items are undefined = true expected: true\n\
+ PASSED! array = new Array(4101); array.length = 0; array.length = 0 expected: 0\n\
+ PASSED! verify that array items have been deleted = true expected: true\n\
+\n
+interpret_err_equals=

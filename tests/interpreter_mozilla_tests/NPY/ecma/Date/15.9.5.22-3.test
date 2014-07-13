@@ -1,0 +1,26 @@
+################################################################################
+#    Copyright (c) 2012, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=15.9.5.22-3
+INTERPRETER_TESTS_DIR=${JS_HOME}/tests/interpreter_mozilla_tests/ecma/Date
+interpret_mozilla
+interpret_mozilla_out_WCIequals=\
+15.9.5.22 Date.prototype.getTimezoneOffset()\n\
+ PASSED! (new Date(1)).getTimezoneOffset() = -540 expected: -540\n\
+ PASSED! (new Date(2)).getTimezoneOffset() = -540 expected: -540\n\
+ PASSED! (new Date(3)).getTimezoneOffset() = -540 expected: -540\n\
+ PASSED! (new Date(4)).getTimezoneOffset() = -540 expected: -540\n\
+ PASSED! (new Date(5)).getTimezoneOffset() = -540 expected: -540\n\
+ PASSED! (new Date(6)).getTimezoneOffset() = -540 expected: -540\n\
+ PASSED! (new Date(7)).getTimezoneOffset() = -540 expected: -540\n\
+ PASSED! (new Date(8)).getTimezoneOffset() = -540 expected: -540\n\
+ PASSED! (new Date(9)).getTimezoneOffset() = -540 expected: -540\n\
+ PASSED! (new Date(10)).getTimezoneOffset() = -540 expected: -540\n\
+ PASSED! (new Date(11)).getTimezoneOffset() = -540 expected: -540\n\
+\n
+interpret_err_equals=

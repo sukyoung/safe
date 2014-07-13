@@ -1,0 +1,13 @@
+enum MealType { "black", "white", "yellow" };
+
+dictionary PaintOptions {
+  [Clamp] DOMString? fillPattern = "black";
+  DOMString? strokePattern = null;
+  Point position;
+};
+dictionary C : B {
+  long e;
+  long f;
+};
+
+enum OMG { "O", "M", "G" };

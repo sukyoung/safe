@@ -1,0 +1,21 @@
+################################################################################
+#    Copyright (c) 2012, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=forin3
+INTERPRETER_TESTS_DIR=${JS_HOME}/tests/interpreter_tests
+interpret
+interpret_out_WCIequals=\
+a\n\
+b\n\
+c\n\
+a\n\
+b\n\
+c\n\
+d\n\
+Normal(PASS)
+interpret_err_equals=

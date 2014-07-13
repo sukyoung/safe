@@ -1,0 +1,12 @@
+a = new Array()
+_<>_print(Array.isArray(a))
+a = new Array(42)
+_<>_print(Array.isArray(a))
+a = new Array("42")
+_<>_print(Array.isArray(a))
+a = new Array(1,2)
+_<>_print(Array.isArray(a))
+a = new Array(1,2,3)
+_<>_print(Array.isArray(a))
+a = {}
+_<>_print(Array.isArray(a))

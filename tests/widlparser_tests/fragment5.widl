@@ -1,0 +1,22 @@
+/* Specification authors wanting to define APIs that take ECMAScript
+ * objects as “property bag” like function arguments are suggested to use
+ * dictionary types rather than callback interfaces.
+ * For example, instead of this, use fragment6.widl.
+ */
+
+callback interface Options {
+  attribute DOMString? option1;
+  attribute DOMString? option2;
+  attribute long? option3;
+};
+
+interface A {
+  void doTask(DOMString type, Options options);
+};
+
+/* In JavaScript
+var a = getA();  // Get an instance of A.
+
+a.doTask("something", { option1: "banana", option3: 100 });
+*/
+

@@ -1,0 +1,33 @@
+################################################################################
+#    Copyright (c) 2012, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=date-3
+INTERPRETER_TESTS_DIR=${JS_HOME}/tests/interpreter_tests
+interpret
+interpret_out_WCIequals=\
+1989-12-12T09:30:01.234Z\n\
+629458201234\n\
+629458201234\n\
+1989\n\
+1989\n\
+11\n\
+11\n\
+12\n\
+12\n\
+2\n\
+2\n\
+9\n\
+9\n\
+30\n\
+30\n\
+1\n\
+1\n\
+234\n\
+234\n\
+Normal(PASS)\n
+interpret_err_equals=

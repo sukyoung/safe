@@ -1,0 +1,47 @@
+################################################################################
+#    Copyright (c) 2012, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=array2
+CFG_TESTS_DIR=${JS_HOME}/tests/cfg_tests
+cfg
+cfg_out_WCIequals=\
+(0,LBlock(0))\n\
+    [0] noop(StartOfFile)\n\
+    [1] <>Global<>ignore1 := allocArray(1) @ #1\n\
+    [2] a := <>Global<>ignore1\n\
+    [3] <>Global<>ignore2 := allocArray(3) @ #2\n\
+    [4] b := <>Global<>ignore2\n\
+    [5] <>temp<>1 := 1\n\
+    [6] <>Global<>ignore3 := allocArray(1) @ #3\n\
+    [7] <>Global<>ignore3["0"] := <>temp<>1\n\
+    [8] c := <>Global<>ignore3\n\
+    [9] <>temp<>2 := 1\n\
+    [10] <>Global<>ignore4 := allocArray(3) @ #4\n\
+    [11] <>Global<>ignore4["0"] := <>temp<>2\n\
+    [12] d := <>Global<>ignore4\n\
+    [13] <>temp<>3 := 2\n\
+    [14] <>Global<>ignore5 := allocArray(2) @ #5\n\
+    [15] <>Global<>ignore5["1"] := <>temp<>3\n\
+    [16] e := <>Global<>ignore5\n\
+    [17] <>temp<>4 := 4\n\
+    [18] <>Global<>ignore6 := allocArray(4) @ #6\n\
+    [19] <>Global<>ignore6["3"] := <>temp<>4\n\
+    [20] f := <>Global<>ignore6\n\
+    [21] <>temp<>5 := 1\n\
+    [22] <>temp<>6 := 3\n\
+    [23] <>temp<>7 := 5\n\
+    [24] <>Global<>ignore7 := allocArray(5) @ #7\n\
+    [25] <>Global<>ignore7["0"] := <>temp<>5\n\
+    [26] <>Global<>ignore7["2"] := <>temp<>6\n\
+    [27] <>Global<>ignore7["4"] := <>temp<>7\n\
+    [28] g := <>Global<>ignore7\n\
+    [29] noop(EndOfFile)\n\
+\n\
+\n\
+\n
+cfg_err_equals=

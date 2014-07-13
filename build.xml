@@ -1,0 +1,832 @@
+<?xml version="1.0" ?>
+
+<!--
+Copyright 2012-2014, KAIST.
+All rights reserved.
+
+Use is subject to license terms.
+
+This distribution may include materials developed by third parties.
+-->
+
+<!--
+This is the main Ant build file.
+-->
+
+<project name="JSAF" default="help" basedir=".">
+  <description>
+    An analysis framework for the JavaScript programming language.
+  </description>
+
+  <!--
+       Properties
+  -->
+  <property name="JS" value="."/>
+  <property name="src" location="${JS}/src/main"/>
+  <property name="lib" location="${JS}/lib"/>
+  <property name="bin" location="${JS}/bin"/>
+  <property name="javaPackagePrefix" value="${src}/java/kr/ac/kaist/jsaf"/>
+  <property name="scalaPackagePrefix" value="${src}/scala/kr/ac/kaist/jsaf"/>
+  <property name="usefulPackage" value="${javaPackagePrefix}/useful"/>
+  <property name="scalaNodes" location="${scalaPackagePrefix}/scala_src/nodes"/>
+  <property name="nodes" value="${javaPackagePrefix}/nodes"/>
+  <property name="parser" location="${javaPackagePrefix}/parser"/>
+  <property name="scala-version" value="scala-2.9.2"/>
+  <property name="javaSourceVersion" value="1.6"/>
+  <property name="junitMem" value="768m"/>
+  <property name="junit.dir" value="junit-results"/>
+  <property name="bigStack" value="-Xss32m"/>
+  <property name="astgen.src" location="${JS}/astgen"/>
+  <property name="astgen.generators.src"
+            location="${javaPackagePrefix}/astgen"/>
+  <property name="build" location="target/${scala-version}/classes"/>
+  <property name="generate-JS" value="${astgen.src}/JS.ast" />
+  <property name="generate-IR" value="${astgen.src}/IR.ast" />
+  <property name="generate-RegExp" value="${astgen.src}/RegExp.ast" />
+  <property name="generate-WIDL" value="${astgen.src}/WIDL.ast" />
+  <property name="scala.nodes"  location="${scalaNodes}"/>
+  <property name="astgen.third" location="${JS}/third_party/astgen"/>
+  <property name="test.results" location="${JS}/TEST-RESULTS"/>
+  <property name="junit" location="${lib}"/>
+  <property name="junit.dir" value="junit-results"/>
+
+  <path id="astgen.classpath">
+    <pathelement location="${build}"/>
+    <pathelement location="${lib}/astgen.jar"/>
+  </path>
+
+  <path id="compile.classpath">
+    <pathelement location="${build}"/>
+    <pathelement location="${lib}/ant-junit.jar"/>
+    <pathelement location="${lib}/ant.jar"/>
+    <pathelement location="${lib}/astgen-src.jar"/>
+    <pathelement location="${lib}/astgen.jar"/>
+    <pathelement location="${lib}/com.microsoft.z3.jar"/>
+    <pathelement location="${lib}/commons-io-2.3.jar"/>
+    <pathelement location="${lib}/commons-lang3-3.1.jar"/>
+    <pathelement location="${lib}/jericho-html-3.3.jar"/>
+    <pathelement location="${lib}/jline-2.12.jar"/>
+    <pathelement location="${lib}/js.jar"/>
+    <pathelement location="${lib}/junit.jar"/>
+    <pathelement location="${lib}/junit_src.jar"/>
+    <pathelement location="${lib}/lift-json_2.9.1-2.4.jar"/>
+    <pathelement location="${lib}/nekohtml.jar"/>
+    <pathelement location="${lib}/plt.jar"/>
+    <pathelement location="${lib}/rats-runtime.jar"/>
+    <pathelement location="${lib}/scala-compiler-2.9.2.jar"/>
+    <pathelement location="${lib}/scala-library-2.9.2.jar"/>
+    <pathelement location="${lib}/wala.cast.jar"/>
+    <pathelement location="${lib}/wala.cast.js.jar"/>
+    <pathelement location="${lib}/wala.classloader.jar"/>
+    <pathelement location="${lib}/wala.util.jar"/>
+    <pathelement location="${lib}/xercesImpl.jar"/>
+    <pathelement location="${lib}/xml-apis.jar"/>
+    <pathelement location="${bin}/xtc.jar"/>
+  </path>
+
+  <!--
+       Taskdefs
+  -->
+
+  <taskdef name="astgen" classpath="${lib}/astgen.jar;${build}"
+           classname="edu.rice.cs.astgen.AntTask"/>
+
+  <taskdef name="junit" classpath="${lib}/junit.jar;${lib}/ant-junit.jar;${build}"
+           classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask"/>
+
+  <!--
+       Targets
+  -->
+  <target name="help">
+    <echo message="ant astGenerators, checkAstgen, checkNodesUptodate, checkParserUptodate, clean, cleanNodes, cleanScala, compile, compileAll, compileCommon, compileJava, generated, help, makeNodes, systemProperties, test, testOnly -DtestPattern='some pattern', testParser"/>
+    <echo message="If you are building JSAF, you want ant compile."/>
+  </target>
+
+  <target name="debug">
+    <echo message="${junit.dir}"/>
+    <echo message="${astgen.classpath}"/>
+  </target>
+
+  <target name="init">
+    <echo message="basedir: ${JS}"/>
+    <!-- Create the time stamp. -->
+    <tstamp/>
+    <!-- Create the build directory structure used by compile. -->
+    <mkdir dir="${build}"/>
+    <mkdir dir="${junit.dir}"/>
+  </target>
+
+  <target name="cleanNodes"
+          description="Delete the ${nodes} directory tree.">
+    <delete dir="${nodes}"/>
+  </target>
+
+  <target name="clean" depends="cleanNodes"
+          description="Delete the ${build} directory tree and generated files.">
+    <delete dir="${build}"/>
+    <delete dir="${nodes}"/>
+    <delete dir="${junit.dir}"/>
+    <delete file="${scalaNodes}/JSAst.scala" />
+    <delete file="${scalaNodes}/JSIR.scala" />
+    <delete file="${scalaNodes}/JSRegExp.scala" />
+    <delete file="${scalaNodes}/JSWIDL.scala" />
+    <delete file="${parser}/JS.java"/>
+    <delete file="${parser}/IR.java"/>
+    <delete file="${parser}/RegExp.java"/>
+    <delete file="${parser}/WIDL.java"/>
+    <delete file="${parser}/Json.java"/>
+    <delete file="${parser}/TS.java"/>
+    <delete>
+      <fileset dir="${JS}/src" includes="**/*.class" />
+    </delete>
+  </target>
+
+  <target name="checkAstgen">
+    <condition property="astgenerators.uptodate">
+      <and>
+        <uptodate targetfile="${build}/kr/ac/kaist/jsaf/astgen/ScalaAstGenerator.class">
+          <srcfiles dir="${javaPackagePrefix}/astgen/" includes="*.java"/>
+        </uptodate>
+        <uptodate targetfile="${build}/kr/ac/kaist/jsaf/astgen/ScalaIRGenerator.class">
+          <srcfiles dir="${javaPackagePrefix}/astgen/" includes="*.java"/>
+        </uptodate>
+        <uptodate targetfile="${build}/kr/ac/kaist/jsaf/astgen/ScalaRegExpGenerator.class">
+          <srcfiles dir="${javaPackagePrefix}/astgen/" includes="*.java"/>
+        </uptodate>
+        <uptodate targetfile="${build}/kr/ac/kaist/jsaf/astgen/ScalaWIDLGenerator.class">
+          <srcfiles dir="${javaPackagePrefix}/astgen/" includes="*.java"/>
+        </uptodate>
+      </and>
+    </condition>
+    <echo message="astgenerators.uptodate: ${astgenerators.uptodate}"/>
+  </target>
+
+  <target name="astGenerators"
+          unless="astgenerators.uptodate"
+          depends="init,checkAstgen"
+          description="Compile all ASTGen custom generators.">
+    <depend srcdir="${astgen.generators.src}"
+            destdir="${build}"
+            closure="yes"
+            cache="${JS}/.dependencies"/>
+    <javac
+        srcdir="${astgen.generators.src}"
+        destdir="${build}"
+        source="${javaSourceVersion}"
+        encoding="UTF-8"
+        debug="true"
+        includeantruntime="false"
+        fork="true"
+        memorymaximumsize="${junitMem}">
+      <!-- <compilerarg value="-Xlint:unchecked"/> -->
+      <classpath refid="astgen.classpath"/>
+      <include name="**/*.java"/>
+      <exclude name="${usefulPackage}/*.java"/>
+    </javac>
+  </target>
+
+  <target name="checkNodesUptodate" depends="astGenerators">
+    <condition property="nodes.uptodate">
+      <and>
+        <available file="${nodes}/AbstractNode.java"/>
+        <uptodate srcfile="${astgen.src}/JS.ast"
+                  targetfile="${nodes}/AbstractNode.java"/>
+        <uptodate srcfile="${astgen.src}/IR.ast"
+                  targetfile="${nodes}/AbstractNode.java"/>
+        <uptodate srcfile="${astgen.src}/RegExp.ast"
+                  targetfile="${nodes}/AbstractNode.java"/>
+        <uptodate srcfile="${astgen.src}/WIDL.ast"
+                  targetfile="${nodes}/AbstractNode.java"/>
+      </and>
+    </condition>
+    <echo message="Nodes up to date? ${nodes.uptodate}"/>
+  </target>
+
+  <target name="makeNodes" depends="makeJS, makeIR, makeRegExp, makeWIDL"
+          description="Create all automatically generated nodes">
+  </target>
+
+  <target name="makeJS" unless="nodes.uptodate" depends="checkNodesUptodate"
+          description="Automatically generate JS AST nodes.">
+    <echo message="Processing ${generate-JS}" />
+    <astgen file="${generate-JS}" />
+    <move todir="${nodes}">
+      <fileset dir="${astgen.src}">
+        <include name="**/*.java"/>
+        <exclude name="**/JS.ast"/>
+      </fileset>
+    </move>
+    <replace dir="${nodes}"
+             token="java.lang.Object"
+             value="Object" />
+    <move todir="${scala.nodes}">
+      <fileset dir="${astgen.src}">
+        <include name="JSAst.scala" />
+      </fileset>
+    </move>
+  </target>
+
+  <target name="makeIR" unless="nodes.uptodate" depends="checkNodesUptodate"
+          description="Automatically generate IR nodes.">
+    <echo message="Processing ${generate-IR}" />
+    <astgen file="${generate-IR}" />
+    <move todir="${nodes}">
+      <fileset dir="${astgen.src}">
+        <include name="**/*.java"/>
+        <exclude name="**/IR.ast"/>
+      </fileset>
+    </move>
+    <replace dir="${nodes}"
+             token="java.lang.Object"
+             value="Object" />
+    <move todir="${scala.nodes}">
+      <fileset dir="${astgen.src}">
+        <include name="JSIR.scala" />
+      </fileset>
+    </move>
+  </target>
+
+  <target name="makeRegExp" unless="nodes.uptodate" depends="checkNodesUptodate"
+          description="Automatically generate RegExp nodes.">
+    <echo message="Processing ${generate-RegExp}" />
+    <astgen file="${generate-RegExp}" />
+    <move todir="${nodes}">
+      <fileset dir="${astgen.src}">
+        <include name="**/*.java"/>
+        <exclude name="**/RegExp.ast"/>
+      </fileset>
+    </move>
+    <replace dir="${nodes}"
+             token="java.lang.Object"
+             value="Object" />
+    <move todir="${scala.nodes}">
+      <fileset dir="${astgen.src}">
+        <include name="JSRegExp.scala" />
+      </fileset>
+    </move>
+  </target>
+
+  <target name="makeWIDL" unless="nodes.uptodate" depends="checkNodesUptodate"
+          description="Automatically generate WIDL nodes.">
+    <echo message="Processing ${generate-WIDL}" />
+    <astgen file="${generate-WIDL}" />
+    <move todir="${nodes}">
+      <fileset dir="${astgen.src}">
+        <include name="**/*.java"/>
+        <exclude name="**/WIDL.ast"/>
+      </fileset>
+    </move>
+    <replace dir="${nodes}"
+             token="java.lang.Object"
+             value="Object" />
+    <move todir="${scala.nodes}">
+      <fileset dir="${astgen.src}">
+        <include name="JSWIDL.scala" />
+      </fileset>
+    </move>
+  </target>
+
+  <!-- If the generated file JS.java is no older than all the rats files
+       in the parser directory, then the parser must be up to date.
+       This is a conservative test; a more precise test would perform a
+       dependency analysis over Rats! code.-->
+  <target name="checkParserUptodate">
+    <condition property="parser.uptodate">
+      <and>
+        <uptodate targetfile="${parser}/JS.java">
+          <srcfiles dir="${parser}" includes="**/*.rats"/>
+        </uptodate>
+        <uptodate targetfile="${parser}/RegExp.java">
+          <srcfiles dir="${parser}" includes="**/RegExp.rats"/>
+        </uptodate>
+        <uptodate targetfile="${parser}/WIDL.java">
+          <srcfiles dir="${parser}" includes="**/WIDL.rats"/>
+        </uptodate>
+        <uptodate targetfile="${parser}/TS.java">
+          <srcfiles dir="${parser}" includes="**/TS.rats"/>
+        </uptodate>
+        <uptodate targetfile="${parser}/Json.java">
+          <srcfiles dir="${parser}" includes="**/Json.rats"/>
+        </uptodate>
+      </and>
+    </condition>
+    <echo>Parser up to date? ${parser.uptodate}</echo>
+  </target>
+
+  <target name="checkJSParserUptodate">
+    <condition property="jsparser.uptodate">
+      <uptodate targetfile="${parser}/JS.java" >
+        <srcfiles dir= "${parser}" includes="**/*.rats" excludes="**/RegExp.rats"/>
+        <srcfiles dir= "${parser}" includes="**/*.rats" excludes="**/WIDL.rats"/>
+        <srcfiles dir= "${parser}" includes="**/*.rats" excludes="**/TS.rats"/>
+        <srcfiles dir= "${parser}" includes="**/*.rats" excludes="**/Json.rats"/>
+      </uptodate>
+    </condition>
+    <echo>JavaScript parser up to date? ${jsparser.uptodate}</echo>
+  </target>
+
+  <target name="checkRegExpParserUptodate">
+    <uptodate property="reparser.uptodate" targetfile="${parser}/RegExp.java" >
+      <srcfiles dir= "${parser}" includes="RegExp.rats"/>
+    </uptodate>
+    <echo>JavaScript RegExp parser up to date? ${reparser.uptodate}</echo>
+  </target>
+
+  <target name="checkWIDLParserUptodate">
+    <uptodate property="widlparser.uptodate" targetfile="${parser}/WIDL.java" >
+      <srcfiles dir= "${parser}" includes="WIDL.rats"/>
+    </uptodate>
+    <echo>JavaScript WIDL parser up to date? ${widlparser.uptodate}</echo>
+  </target>
+
+  <target name="checkTSParserUptodate">
+    <uptodate property="tsparser.uptodate" targetfile="${parser}/TS.java" >
+      <srcfiles dir= "${parser}" includes="TS.rats"/>
+    </uptodate>
+    <echo>TypeScript parser up to date? ${tsparser.uptodate}</echo>
+  </target>
+
+  <target name="checkJsonParserUptodate">
+    <uptodate property="reparser.uptodate" targetfile="${parser}/Json.java" >
+      <srcfiles dir= "${parser}" includes="Json.rats"/>
+    </uptodate>
+    <echo>JavaScript Json parser up to date? ${reparser.uptodate}</echo>
+  </target>
+
+  <macrodef name="buildparser">
+    <attribute name="name" />
+    <attribute name="file" />
+    <attribute name="dir" />
+    <sequential>
+      <echo message="Rebuilding @{name}... dir=@{dir}"/>
+      <java fork="yes"
+            failonerror="yes"
+            dir="@{dir}"
+            classname="xtc.parser.Rats"
+            classpath="${bin}/xtc.jar">
+        <arg value="-in"/>
+        <arg value="${src}/java"/>
+        <arg value="-enc-out"/>
+        <arg value="UTF-8"/>
+        <arg value="@{file}"/>
+      </java>
+    </sequential>
+  </macrodef>
+
+  <target name="jsparser" unless="jsparser.uptodate"
+          depends="checkJSParserUptodate"
+          description="JS Parser">
+    <buildparser name="JS" dir="${parser}" file="JS.rats" />
+  </target>
+
+  <target name="reparser" unless="reparser.uptodate"
+          depends="checkRegExpParserUptodate"
+          description="RegExp Parser">
+    <buildparser name="RegExp" dir="${parser}" file="RegExp.rats" />
+  </target>
+
+  <target name="widlparser" unless="widlparser.uptodate"
+          depends="checkWIDLParserUptodate"
+          description="WIDL Parser">
+    <buildparser name="WIDL" dir="${parser}" file="WIDL.rats" />
+  </target>
+
+  <target name="tsparser" unless="tsparser.uptodate"
+          depends="checkTSParserUptodate"
+          description="TypeScript Parser">
+    <buildparser name="TS" dir="${parser}" file="TS.rats" />
+  </target>
+
+  <target name="jsonparser" unless="jsonparser.uptodate"
+          depends="checkJsonParserUptodate"
+          description="Json Parser">
+    <buildparser name="Json" dir="${parser}" file="Json.rats" />
+  </target>
+
+  <target name="parser" unless="parser.uptodate"
+          depends="checkParserUptodate"
+          description="JavaScript Parser">
+    <ant target="jsparser" />
+    <ant target="reparser" />
+    <ant target="widlparser" />
+    <ant target="tsparser" />
+    <ant target="jsonparser" />
+  </target>
+
+  <target name="compile" depends="init, makeNodes, parser"
+          description="Compile all JSAF code.">
+  </target>
+
+  <target name="cron"
+          description="Configure user crontab to run all unit and system tests expected to pass.">
+    <echo file="${JS}/crontab">
+    SHELL=/bin/bash
+    PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+    MAILTO=js-test@plrg.kaist.ac.kr
+    JS_HOME=${env.JS_HOME}
+    30 3 * * * source $JS_HOME/bin/nightly
+    </echo>
+    <exec executable="crontab">
+      <arg value="${JS}/crontab" />
+    </exec>
+    <delete file="${JS}/crontab" />
+  </target>
+
+  <target name="test" depends="testParser, testUnparser,
+                               testDisambiguator, testCompiler, testInterpreter,
+                               testCFG, testTyping, testAssert, testBugDetector,
+                               testWIDLParser, testTSParser"
+          description="Clean, compile everything, and run all unit and system tests.">
+  </target>
+
+  <target name="testParser"
+          description="Run the parser tests">
+    <mkdir dir="${test.results}"/>
+    <mkdir dir="${JS}/test-tmp" />
+    <junit printsummary="on"
+           haltonerror="off"
+           haltonfailure="off"
+           showoutput="yes"
+           fork="true"
+           maxmemory="${junitMem}"
+           errorProperty="tests.failed"
+           failureProperty="tests.failed">
+      <classpath refid="compile.classpath"/>
+      <jvmarg value="-Djava.io.tmpdir=${JS}/test-tmp" />
+      <jvmarg value="${bigStack}" />
+      <formatter type="plain" usefile="true"/>
+      <batchtest fork="true" todir="${junit.dir}">
+        <formatter type="brief" usefile="false" />
+        <formatter type="xml" />
+        <fileset dir="${build}">
+          <include name="**/ParserJUTest.class"/>
+          <exclude name="**/*$*.class"/>
+        </fileset>
+      </batchtest>
+    </junit>
+    <delete dir="${JS}/test-tmp" />
+    <fail message="Tests expected to pass are failing!" if="tests.failed"/>
+  </target>
+
+  <target name="testUnparser"
+          description="Run the unparser tests">
+    <mkdir dir="${test.results}"/>
+    <mkdir dir="${JS}/test-tmp" />
+    <junit printsummary="on"
+           haltonerror="off"
+           haltonfailure="off"
+           showoutput="yes"
+           fork="true"
+           maxmemory="${junitMem}"
+           errorProperty="tests.failed"
+           failureProperty="tests.failed">
+      <classpath refid="compile.classpath"/>
+      <jvmarg value="-Djava.io.tmpdir=${JS}/test-tmp" />
+      <jvmarg value="${bigStack}" />
+      <formatter type="plain" usefile="true"/>
+      <batchtest fork="true" todir="${junit.dir}">
+        <formatter type="brief" usefile="false" />
+        <formatter type="xml" />
+        <fileset dir="${build}">
+          <include name="**/UnparserJUTest.class"/>
+          <exclude name="**/*$*.class"/>
+        </fileset>
+      </batchtest>
+    </junit>
+    <delete dir="${JS}/test-tmp" />
+    <fail message="Tests expected to pass are failing!" if="tests.failed"/>
+  </target>
+
+  <target name="testDisambiguator"
+          description="Run the disambiguator tests">
+    <mkdir dir="${test.results}"/>
+    <mkdir dir="${JS}/test-tmp" />
+    <junit printsummary="on"
+           haltonerror="off"
+           haltonfailure="off"
+           showoutput="yes"
+           fork="true"
+           maxmemory="${junitMem}"
+           errorProperty="tests.failed"
+           failureProperty="tests.failed">
+      <classpath refid="compile.classpath"/>
+      <jvmarg value="-Djava.io.tmpdir=${JS}/test-tmp" />
+      <jvmarg value="${bigStack}" />
+      <formatter type="plain" usefile="true"/>
+      <batchtest fork="true" todir="${junit.dir}">
+        <formatter type="brief" usefile="false" />
+        <formatter type="xml" />
+        <fileset dir="${build}">
+          <include name="**/DisambiguatorJUTest.class"/>
+          <exclude name="**/*$*.class"/>
+        </fileset>
+      </batchtest>
+    </junit>
+    <delete dir="${JS}/test-tmp" />
+    <fail message="Tests expected to pass are failing!" if="tests.failed"/>
+  </target>
+
+  <target name="testCompiler"
+          description="Run the AST2IR-checker tests">
+    <mkdir dir="${test.results}"/>
+    <mkdir dir="${JS}/test-tmp" />
+    <junit printsummary="on"
+           haltonerror="off"
+           haltonfailure="off"
+           showoutput="yes"
+           fork="true"
+           maxmemory="${junitMem}"
+           errorProperty="tests.failed"
+           failureProperty="tests.failed">
+      <classpath refid="compile.classpath"/>
+      <jvmarg value="-Djava.io.tmpdir=${JS}/test-tmp" />
+      <jvmarg value="${bigStack}" />
+      <formatter type="plain" usefile="true"/>
+      <batchtest fork="true" todir="${junit.dir}">
+        <formatter type="brief" usefile="false" />
+        <formatter type="xml" />
+        <fileset dir="${build}">
+          <include name="**/CompilerJUTest.class"/>
+          <exclude name="**/*$*.class"/>
+        </fileset>
+      </batchtest>
+    </junit>
+    <delete dir="${JS}/test-tmp" />
+    <fail message="Tests expected to pass are failing!" if="tests.failed"/>
+  </target>
+
+  <target name="testInterpreter"
+          description="Run the Interpreter tests">
+    <mkdir dir="${test.results}"/>
+    <mkdir dir="${JS}/test-tmp" />
+    <junit printsummary="on"
+           haltonerror="off"
+           haltonfailure="off"
+           showoutput="yes"
+           fork="true"
+           maxmemory="${junitMem}"
+           errorProperty="tests.failed"
+           failureProperty="tests.failed">
+      <classpath refid="compile.classpath"/>
+      <jvmarg value="-Djava.io.tmpdir=${JS}/test-tmp" />
+      <jvmarg value="${bigStack}" />
+      <formatter type="plain" usefile="true"/>
+      <batchtest fork="true" todir="${junit.dir}">
+        <formatter type="brief" usefile="false" />
+        <formatter type="xml" />
+        <fileset dir="${build}">
+          <include name="**/InterpreterJUTest.class"/>
+          <exclude name="**/*$*.class"/>
+        </fileset>
+      </batchtest>
+    </junit>
+    <delete dir="${JS}/test-tmp" />
+    <fail message="Tests expected to pass are failing!" if="tests.failed"/>
+  </target>
+
+  <target name="testCFG"
+          description="Run the CFGBuilder tests">
+    <mkdir dir="${test.results}"/>
+    <mkdir dir="${JS}/test-tmp" />
+    <junit printsummary="on"
+           haltonerror="off"
+           haltonfailure="off"
+           showoutput="yes"
+           fork="true"
+           maxmemory="${junitMem}"
+           errorProperty="tests.failed"
+           failureProperty="tests.failed">
+      <classpath refid="compile.classpath"/>
+      <jvmarg value="-Djava.io.tmpdir=${JS}/test-tmp" />
+      <jvmarg value="${bigStack}" />
+      <formatter type="plain" usefile="true"/>
+      <batchtest fork="true" todir="${junit.dir}">
+        <formatter type="brief" usefile="false" />
+        <formatter type="xml" />
+        <fileset dir="${build}">
+          <include name="**/CFGJUTest.class"/>
+          <exclude name="**/*$*.class"/>
+        </fileset>
+      </batchtest>
+    </junit>
+    <delete dir="${JS}/test-tmp" />
+    <fail message="Tests expected to pass are failing!" if="tests.failed"/>
+  </target>
+
+  <target name="testTyping"
+          description="Run the Typing tests">
+    <mkdir dir="${test.results}"/>
+    <mkdir dir="${JS}/test-tmp" />
+    <junit printsummary="on"
+           haltonerror="off"
+           haltonfailure="off"
+           showoutput="yes"
+           fork="true"
+           maxmemory="${junitMem}"
+           errorProperty="tests.failed"
+           failureProperty="tests.failed">
+      <classpath refid="compile.classpath"/>
+      <jvmarg value="-Djava.io.tmpdir=${JS}/test-tmp" />
+      <jvmarg value="${bigStack}" />
+      <formatter type="plain" usefile="true"/>
+      <batchtest fork="true" todir="${junit.dir}">
+        <formatter type="brief" usefile="false" />
+        <formatter type="xml" />
+        <fileset dir="${build}">
+          <include name="**/TypingJUTest.class"/>
+          <exclude name="**/*$*.class"/>
+        </fileset>
+      </batchtest>
+    </junit>
+    <delete dir="${JS}/test-tmp" />
+    <fail message="Tests expected to pass are failing!" if="tests.failed"/>
+  </target>
+
+  <target name="testAssert"
+          description="Run the Assert tests">
+    <mkdir dir="${test.results}"/>
+    <mkdir dir="${JS}/test-tmp" />
+    <junit printsummary="on"
+           haltonerror="off"
+           haltonfailure="off"
+           showoutput="yes"
+           fork="true"
+           maxmemory="${junitMem}"
+           errorProperty="tests.failed"
+           failureProperty="tests.failed">
+      <classpath refid="compile.classpath"/>
+      <jvmarg value="-Djava.io.tmpdir=${JS}/test-tmp" />
+      <jvmarg value="${bigStack}" />
+      <formatter type="plain" usefile="true"/>
+      <batchtest fork="true" todir="${junit.dir}">
+        <formatter type="brief" usefile="false" />
+        <formatter type="xml" />
+        <fileset dir="${build}">
+          <include name="**/AssertJUTest.class"/>
+          <exclude name="**/*$*.class"/>
+        </fileset>
+      </batchtest>
+    </junit>
+    <delete dir="${JS}/test-tmp" />
+    <fail message="Tests expected to pass are failing!" if="tests.failed"/>
+  </target>
+
+  <target name="testBugDetector"
+          description="Run the bug detector tests">
+    <mkdir dir="${test.results}"/>
+    <mkdir dir="${JS}/test-tmp" />
+    <junit printsummary="on"
+           haltonerror="off"
+           haltonfailure="off"
+           showoutput="yes"
+           fork="true"
+           maxmemory="${junitMem}"
+           errorProperty="tests.failed"
+           failureProperty="tests.failed">
+      <classpath refid="compile.classpath"/>
+      <jvmarg value="-Djava.io.tmpdir=${JS}/test-tmp" />
+      <jvmarg value="${bigStack}" />
+      <formatter type="plain" usefile="true"/>
+      <batchtest fork="true" todir="${junit.dir}">
+        <formatter type="brief" usefile="false" />
+        <formatter type="xml" />
+        <fileset dir="${build}">
+          <include name="**/BugDetectorJUTest.class"/>
+          <exclude name="**/*$*.class"/>
+        </fileset>
+      </batchtest>
+    </junit>
+    <delete dir="${JS}/test-tmp" />
+    <fail message="Tests expected to pass are failing!" if="tests.failed"/>
+  </target>
+
+  <target name="testWIDLParser"
+          description="Run the WIDL parser tests">
+    <mkdir dir="${test.results}"/>
+    <mkdir dir="${JS}/test-tmp" />
+    <junit printsummary="on"
+           haltonerror="off"
+           haltonfailure="off"
+           showoutput="yes"
+           fork="true"
+           maxmemory="${junitMem}"
+           errorProperty="tests.failed"
+           failureProperty="tests.failed">
+      <classpath refid="compile.classpath"/>
+      <jvmarg value="-Djava.io.tmpdir=${JS}/test-tmp" />
+      <jvmarg value="${bigStack}" />
+      <formatter type="plain" usefile="true"/>
+      <batchtest fork="true" todir="${junit.dir}">
+        <formatter type="brief" usefile="false" />
+        <formatter type="xml" />
+        <fileset dir="${build}">
+          <include name="**/WIDLParserJUTest.class"/>
+          <exclude name="**/*$*.class"/>
+        </fileset>
+      </batchtest>
+    </junit>
+    <delete dir="${JS}/test-tmp" />
+    <fail message="Tests expected to pass are failing!" if="tests.failed"/>
+  </target>
+
+  <target name="testTSParser"
+          description="Run the TypeScript parser tests">
+    <mkdir dir="${test.results}"/>
+    <mkdir dir="${JS}/test-tmp" />
+    <junit printsummary="on"
+           haltonerror="off"
+           haltonfailure="off"
+           showoutput="yes"
+           fork="true"
+           maxmemory="${junitMem}"
+           errorProperty="tests.failed"
+           failureProperty="tests.failed">
+      <classpath refid="compile.classpath"/>
+      <jvmarg value="-Djava.io.tmpdir=${JS}/test-tmp" />
+      <jvmarg value="${bigStack}" />
+      <formatter type="plain" usefile="true"/>
+      <batchtest fork="true" todir="${junit.dir}">
+        <formatter type="brief" usefile="false" />
+        <formatter type="xml" />
+        <fileset dir="${build}">
+          <include name="**/TSJUTest.class"/>
+          <exclude name="**/*$*.class"/>
+        </fileset>
+      </batchtest>
+    </junit>
+    <delete dir="${JS}/test-tmp" />
+    <fail message="Tests expected to pass are failing!" if="tests.failed"/>
+  </target>
+
+  <target name="testConcolic"
+          description="Run the concolic tests">
+    <mkdir dir="${test.results}"/>
+    <mkdir dir="${JS}/test-tmp" />
+    <junit printsummary="on"
+           haltonerror="off"
+           haltonfailure="off"
+           showoutput="yes"
+           fork="true"
+           maxmemory="${junitMem}"
+           errorProperty="tests.failed"
+           failureProperty="tests.failed">
+      <classpath refid="compile.classpath"/>
+      <jvmarg value="-Djava.io.tmpdir=${JS}/test-tmp" />
+      <jvmarg value="${bigStack}" />
+      <formatter type="plain" usefile="true"/>
+      <batchtest fork="true" todir="${junit.dir}">
+        <formatter type="brief" usefile="false" />
+        <formatter type="xml" />
+        <fileset dir="${build}">
+          <include name="**/ConcolicJUTest.class"/>
+          <exclude name="**/*$*.class"/>
+        </fileset>
+      </batchtest>
+    </junit>
+    <delete dir="${JS}/test-tmp" />
+    <fail message="Tests expected to pass are failing!" if="tests.failed"/>
+  </target>
+
+  <target name="testNightly" depends="compile"
+          description="Run all the unit and system tests expected to pass.">
+    <mkdir dir="${test.results}"/>
+    <mkdir dir="${JS}/test-tmp" />
+    <junit printsummary="on"
+           haltonerror="off"
+           haltonfailure="off"
+           showoutput="yes"
+           fork="true"
+           maxmemory="${junitMem}"
+           errorProperty="tests.failed"
+           failureProperty="tests.failed">
+      <classpath refid="compile.classpath"/>
+      <jvmarg value="-Djava.io.tmpdir=${JS}/test-tmp" />
+      <jvmarg value="${bigStack}" />
+      <formatter type="plain" usefile="true"/>
+      <batchtest fork="true" todir="${junit.dir}">
+        <formatter type="brief" usefile="false" />
+        <formatter type="xml" />
+        <fileset dir="${build}">
+          <include name="**/NightlyParserJUTest.class"/>
+          <include name="**/UnparserJUTest.class"/>
+          <include name="**/DisambiguatorJUTest.class"/>
+          <include name="**/TranslatorJUTest.class"/>
+          <include name="**/InterpreterJUTest.class"/>
+          <include name="**/NightlyInterpreterJUTest.class"/>
+          <include name="**/MozillaInterpreterJUTest.class"/>
+          <include name="**/CFGJUTest.class"/>
+          <include name="**/AssertJUTest.class"/>
+          <include name="**/TypingJUTest.class"/>
+          <include name="**/BugDetectorJUTest.class"/>
+          <include name="**/WIDLParserJUTest.class"/>
+          <include name="**/TSJUTest.class"/>
+          <include name="**/TypingTizenTest.class"/>
+          <include name="**/ConcolicJUTest.class"/>
+          <exclude name="**/*$*.class"/>
+        </fileset>
+      </batchtest>
+    </junit>
+    <delete dir="${JS}/test-tmp" />
+    <fail message="Tests expected to pass are failing!" if="tests.failed"/>
+  </target>
+</project>

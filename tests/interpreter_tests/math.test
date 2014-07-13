@@ -1,0 +1,19 @@
+################################################################################
+#    Copyright (c) 2012, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=math
+INTERPRETER_TESTS_DIR=${JS_HOME}/tests/interpreter_tests
+interpret
+interpret_out_WCIequals=\
+0.8660254037844386\n\
+0.5000000000000001\n\
+148\n\
+5\n\
+2.23606797749979\n\
+Normal(empty)\n
+interpret_err_equals=

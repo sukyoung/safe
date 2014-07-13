@@ -1,0 +1,52 @@
+################################################################################
+#    Copyright (c) 2012, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=throw4
+CFG_TESTS_DIR=${JS_HOME}/tests/cfg_tests
+cfg
+cfg_out_WCIequals=\
+(0,LBlock(8))\n\
+\n\
+\n\
+(0,LBlock(7))\n\
+    [7] assert(x != "B")\n\
+\n\
+\n\
+(0,LBlock(6))\n\
+    [6] assert(x == "B")\n\
+    [8] throw(3)\n\
+\n\
+\n\
+(0,LBlock(5))\n\
+\n\
+\n\
+(0,LBlock(4))\n\
+    [3] assert(! true)\n\
+\n\
+\n\
+(0,LBlock(3))\n\
+    [2] assert(true)\n\
+    [4] x := "B"\n\
+    [5] throw("C")\n\
+\n\
+\n\
+(0,LBlock(2))\n\
+\n\
+\n\
+(0,LBlock(1))\n\
+    [9] x := "E"\n\
+    [10] noop(EndOfFile)\n\
+\n\
+\n\
+(0,LBlock(0))\n\
+    [0] noop(StartOfFile)\n\
+    [1] x := "A"\n\
+\n\
+\n\
+\n
+cfg_err_equals=

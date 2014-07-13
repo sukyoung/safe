@@ -1,0 +1,888 @@
+(Program @"modernizr.d.ts":1:1~118:1
+ _body=(TopLevel
+  _stmts=[
+   (SourceElements
+    _info=(ASTSpanInfo())
+    _body=[
+     (IntfDecl @7:1~12:1
+      _id=(Id @7:11~23 _info=(ASTSpanInfo()) _text="Audioboolean")
+      _info=(ASTSpanInfo())
+      _typ=(ObjectType @7:24~12:1
+       _info=(ASTSpanInfo())
+       _members=[
+        (PropertySig @8:5~17
+         _info=(ASTSpanInfo())
+         _prop=(PropId @8:5~8
+          _id=(Id _info=(ASTSpanInfo()) _text="ogg")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(BoolT @8:10~17
+           _info=(ASTSpanInfo()))))
+        (PropertySig @9:5~17
+         _info=(ASTSpanInfo())
+         _prop=(PropId @9:5~8
+          _id=(Id _info=(ASTSpanInfo()) _text="mp3")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(BoolT @9:10~17
+           _info=(ASTSpanInfo()))))
+        (PropertySig @10:5~17
+         _info=(ASTSpanInfo())
+         _prop=(PropId @10:5~8
+          _id=(Id _info=(ASTSpanInfo()) _text="wav")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(BoolT @10:10~17
+           _info=(ASTSpanInfo()))))
+        (PropertySig @11:5~17
+         _info=(ASTSpanInfo())
+         _prop=(PropId @11:5~8
+          _id=(Id _info=(ASTSpanInfo()) _text="m4a")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(BoolT @11:10~17
+           _info=(ASTSpanInfo()))))]))
+     (IntfDecl @14:1~18:1
+      _id=(Id @14:11~23 _info=(ASTSpanInfo()) _text="Videoboolean")
+      _info=(ASTSpanInfo())
+      _typ=(ObjectType @14:24~18:1
+       _info=(ASTSpanInfo())
+       _members=[
+        (PropertySig @15:5~17
+         _info=(ASTSpanInfo())
+         _prop=(PropId @15:5~8
+          _id=(Id _info=(ASTSpanInfo()) _text="ogg")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(BoolT @15:10~17
+           _info=(ASTSpanInfo()))))
+        (PropertySig @16:5~18
+         _info=(ASTSpanInfo())
+         _prop=(PropId @16:5~9
+          _id=(Id _info=(ASTSpanInfo()) _text="h264")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(BoolT @16:11~18
+           _info=(ASTSpanInfo()))))
+        (PropertySig @17:5~18
+         _info=(ASTSpanInfo())
+         _prop=(PropId @17:5~9
+          _id=(Id _info=(ASTSpanInfo()) _text="webm")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(BoolT @17:11~18
+           _info=(ASTSpanInfo()))))]))
+     (IntfDecl @20:1~31:1
+      _id=(Id @20:11~23 _info=(ASTSpanInfo()) _text="Inputboolean")
+      _info=(ASTSpanInfo())
+      _typ=(ObjectType @20:24~31:1
+       _info=(ASTSpanInfo())
+       _members=[
+        (PropertySig @21:5~26
+         _info=(ASTSpanInfo())
+         _prop=(PropId @21:5~17
+          _id=(Id _info=(ASTSpanInfo()) _text="autocomplete")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(BoolT @21:19~26
+           _info=(ASTSpanInfo()))))
+        (PropertySig @22:5~23
+         _info=(ASTSpanInfo())
+         _prop=(PropId @22:5~14
+          _id=(Id _info=(ASTSpanInfo()) _text="autofocus")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(BoolT @22:16~23
+           _info=(ASTSpanInfo()))))
+        (PropertySig @23:5~18
+         _info=(ASTSpanInfo())
+         _prop=(PropId @23:5~9
+          _id=(Id _info=(ASTSpanInfo()) _text="list")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(BoolT @23:11~18
+           _info=(ASTSpanInfo()))))
+        (PropertySig @24:5~25
+         _info=(ASTSpanInfo())
+         _prop=(PropId @24:5~16
+          _id=(Id _info=(ASTSpanInfo()) _text="placeholder")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(BoolT @24:18~25
+           _info=(ASTSpanInfo()))))
+        (PropertySig @25:5~17
+         _info=(ASTSpanInfo())
+         _prop=(PropId @25:5~8
+          _id=(Id _info=(ASTSpanInfo()) _text="max")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(BoolT @25:10~17
+           _info=(ASTSpanInfo()))))
+        (PropertySig @26:5~17
+         _info=(ASTSpanInfo())
+         _prop=(PropId @26:5~8
+          _id=(Id _info=(ASTSpanInfo()) _text="min")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(BoolT @26:10~17
+           _info=(ASTSpanInfo()))))
+        (PropertySig @27:5~22
+         _info=(ASTSpanInfo())
+         _prop=(PropId @27:5~13
+          _id=(Id _info=(ASTSpanInfo()) _text="multiple")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(BoolT @27:15~22
+           _info=(ASTSpanInfo()))))
+        (PropertySig @28:5~21
+         _info=(ASTSpanInfo())
+         _prop=(PropId @28:5~12
+          _id=(Id _info=(ASTSpanInfo()) _text="pattern")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(BoolT @28:14~21
+           _info=(ASTSpanInfo()))))
+        (PropertySig @29:5~22
+         _info=(ASTSpanInfo())
+         _prop=(PropId @29:5~13
+          _id=(Id _info=(ASTSpanInfo()) _text="required")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(BoolT @29:15~22
+           _info=(ASTSpanInfo()))))
+        (PropertySig @30:5~18
+         _info=(ASTSpanInfo())
+         _prop=(PropId @30:5~9
+          _id=(Id _info=(ASTSpanInfo()) _text="step")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(BoolT @30:11~18
+           _info=(ASTSpanInfo()))))]))
+     (IntfDecl @33:1~47:1
+      _id=(Id @33:11~28 _info=(ASTSpanInfo()) _text="InputTypesboolean")
+      _info=(ASTSpanInfo())
+      _typ=(ObjectType @33:29~47:1
+       _info=(ASTSpanInfo())
+       _members=[
+        (PropertySig @34:5~20
+         _info=(ASTSpanInfo())
+         _prop=(PropId @34:5~11
+          _id=(Id _info=(ASTSpanInfo()) _text="search")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(BoolT @34:13~20
+           _info=(ASTSpanInfo()))))
+        (PropertySig @35:5~17
+         _info=(ASTSpanInfo())
+         _prop=(PropId @35:5~8
+          _id=(Id _info=(ASTSpanInfo()) _text="tel")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(BoolT @35:10~17
+           _info=(ASTSpanInfo()))))
+        (PropertySig @36:5~17
+         _info=(ASTSpanInfo())
+         _prop=(PropId @36:5~8
+          _id=(Id _info=(ASTSpanInfo()) _text="url")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(BoolT @36:10~17
+           _info=(ASTSpanInfo()))))
+        (PropertySig @37:5~19
+         _info=(ASTSpanInfo())
+         _prop=(PropId @37:5~10
+          _id=(Id _info=(ASTSpanInfo()) _text="email")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(BoolT @37:12~19
+           _info=(ASTSpanInfo()))))
+        (PropertySig @38:5~22
+         _info=(ASTSpanInfo())
+         _prop=(PropId @38:5~13
+          _id=(Id _info=(ASTSpanInfo()) _text="datetime")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(BoolT @38:15~22
+           _info=(ASTSpanInfo()))))
+        (PropertySig @39:5~18
+         _info=(ASTSpanInfo())
+         _prop=(PropId @39:5~9
+          _id=(Id _info=(ASTSpanInfo()) _text="date")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(BoolT @39:11~18
+           _info=(ASTSpanInfo()))))
+        (PropertySig @40:5~19
+         _info=(ASTSpanInfo())
+         _prop=(PropId @40:5~10
+          _id=(Id _info=(ASTSpanInfo()) _text="month")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(BoolT @40:12~19
+           _info=(ASTSpanInfo()))))
+        (PropertySig @41:5~18
+         _info=(ASTSpanInfo())
+         _prop=(PropId @41:5~9
+          _id=(Id _info=(ASTSpanInfo()) _text="week")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(BoolT @41:11~18
+           _info=(ASTSpanInfo()))))
+        (PropertySig @42:5~18
+         _info=(ASTSpanInfo())
+         _prop=(PropId @42:5~9
+          _id=(Id _info=(ASTSpanInfo()) _text="time")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(BoolT @42:11~18
+           _info=(ASTSpanInfo()))))
+        (PropertySig @43:5~27
+         _info=(ASTSpanInfo())
+         _prop=(PropId @43:5~18
+          _id=(Id _info=(ASTSpanInfo()) _text="datetimelocal")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(BoolT @43:20~27
+           _info=(ASTSpanInfo()))))
+        (PropertySig @44:5~20
+         _info=(ASTSpanInfo())
+         _prop=(PropId @44:5~11
+          _id=(Id _info=(ASTSpanInfo()) _text="number")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(BoolT @44:13~20
+           _info=(ASTSpanInfo()))))
+        (PropertySig @45:5~19
+         _info=(ASTSpanInfo())
+         _prop=(PropId @45:5~10
+          _id=(Id _info=(ASTSpanInfo()) _text="range")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(BoolT @45:12~19
+           _info=(ASTSpanInfo()))))
+        (PropertySig @46:5~19
+         _info=(ASTSpanInfo())
+         _prop=(PropId @46:5~10
+          _id=(Id _info=(ASTSpanInfo()) _text="color")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(BoolT @46:12~19
+           _info=(ASTSpanInfo()))))]))
+     (IntfDecl @49:1~115:1
+      _id=(Id @49:11~26 _info=(ASTSpanInfo()) _text="ModernizrStatic")
+      _info=(ASTSpanInfo())
+      _typ=(ObjectType @49:27~115:1
+       _info=(ASTSpanInfo())
+       _members=[
+        (PropertySig @50:5~23
+         _info=(ASTSpanInfo())
+         _prop=(PropId @50:5~14
+          _id=(Id _info=(ASTSpanInfo()) _text="autofocus")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(BoolT @50:16~23
+           _info=(ASTSpanInfo()))))
+        (PropertySig @51:5~22
+         _info=(ASTSpanInfo())
+         _prop=(PropId @51:5~13
+          _id=(Id _info=(ASTSpanInfo()) _text="fontface")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(BoolT @51:15~22
+           _info=(ASTSpanInfo()))))
+        (PropertySig @52:5~28
+         _info=(ASTSpanInfo())
+         _prop=(PropId @52:5~19
+          _id=(Id _info=(ASTSpanInfo()) _text="backgroundsize")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(BoolT @52:21~28
+           _info=(ASTSpanInfo()))))
+        (PropertySig @53:5~25
+         _info=(ASTSpanInfo())
+         _prop=(PropId @53:5~16
+          _id=(Id _info=(ASTSpanInfo()) _text="borderimage")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(BoolT @53:18~25
+           _info=(ASTSpanInfo()))))
+        (PropertySig @54:5~26
+         _info=(ASTSpanInfo())
+         _prop=(PropId @54:5~17
+          _id=(Id _info=(ASTSpanInfo()) _text="borderradius")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(BoolT @54:19~26
+           _info=(ASTSpanInfo()))))
+        (PropertySig @55:5~23
+         _info=(ASTSpanInfo())
+         _prop=(PropId @55:5~14
+          _id=(Id _info=(ASTSpanInfo()) _text="boxshadow")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(BoolT @55:16~23
+           _info=(ASTSpanInfo()))))
+        (PropertySig @56:5~21
+         _info=(ASTSpanInfo())
+         _prop=(PropId @56:5~12
+          _id=(Id _info=(ASTSpanInfo()) _text="flexbox")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(BoolT @56:14~21
+           _info=(ASTSpanInfo()))))
+        (PropertySig @57:5~18
+         _info=(ASTSpanInfo())
+         _prop=(PropId @57:5~9
+          _id=(Id _info=(ASTSpanInfo()) _text="hsla")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(BoolT @57:11~18
+           _info=(ASTSpanInfo()))))
+        (PropertySig @58:5~25
+         _info=(ASTSpanInfo())
+         _prop=(PropId @58:5~16
+          _id=(Id _info=(ASTSpanInfo()) _text="multiplebgs")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(BoolT @58:18~25
+           _info=(ASTSpanInfo()))))
+        (PropertySig @59:5~21
+         _info=(ASTSpanInfo())
+         _prop=(PropId @59:5~12
+          _id=(Id _info=(ASTSpanInfo()) _text="opacity")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(BoolT @59:14~21
+           _info=(ASTSpanInfo()))))
+        (PropertySig @60:5~18
+         _info=(ASTSpanInfo())
+         _prop=(PropId @60:5~9
+          _id=(Id _info=(ASTSpanInfo()) _text="rgba")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(BoolT @60:11~18
+           _info=(ASTSpanInfo()))))
+        (PropertySig @61:5~24
+         _info=(ASTSpanInfo())
+         _prop=(PropId @61:5~15
+          _id=(Id _info=(ASTSpanInfo()) _text="textshadow")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(BoolT @61:17~24
+           _info=(ASTSpanInfo()))))
+        (PropertySig @62:5~27
+         _info=(ASTSpanInfo())
+         _prop=(PropId @62:5~18
+          _id=(Id _info=(ASTSpanInfo()) _text="cssanimations")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(BoolT @62:20~27
+           _info=(ASTSpanInfo()))))
+        (PropertySig @63:5~24
+         _info=(ASTSpanInfo())
+         _prop=(PropId @63:5~15
+          _id=(Id _info=(ASTSpanInfo()) _text="csscolumns")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(BoolT @63:17~24
+           _info=(ASTSpanInfo()))))
+        (PropertySig @64:5~30
+         _info=(ASTSpanInfo())
+         _prop=(PropId @64:5~21
+          _id=(Id _info=(ASTSpanInfo()) _text="generatedcontent")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(BoolT @64:23~30
+           _info=(ASTSpanInfo()))))
+        (PropertySig @65:5~26
+         _info=(ASTSpanInfo())
+         _prop=(PropId @65:5~17
+          _id=(Id _info=(ASTSpanInfo()) _text="cssgradients")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(BoolT @65:19~26
+           _info=(ASTSpanInfo()))))
+        (PropertySig @66:5~28
+         _info=(ASTSpanInfo())
+         _prop=(PropId @66:5~19
+          _id=(Id _info=(ASTSpanInfo()) _text="cssreflections")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(BoolT @66:21~28
+           _info=(ASTSpanInfo()))))
+        (PropertySig @67:5~27
+         _info=(ASTSpanInfo())
+         _prop=(PropId @67:5~18
+          _id=(Id _info=(ASTSpanInfo()) _text="csstransforms")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(BoolT @67:20~27
+           _info=(ASTSpanInfo()))))
+        (PropertySig @68:5~29
+         _info=(ASTSpanInfo())
+         _prop=(PropId @68:5~20
+          _id=(Id _info=(ASTSpanInfo()) _text="csstransforms3d")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(BoolT @68:22~29
+           _info=(ASTSpanInfo()))))
+        (PropertySig @69:5~28
+         _info=(ASTSpanInfo())
+         _prop=(PropId @69:5~19
+          _id=(Id _info=(ASTSpanInfo()) _text="csstransitions")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(BoolT @69:21~28
+           _info=(ASTSpanInfo()))))
+        (PropertySig @70:5~30
+         _info=(ASTSpanInfo())
+         _prop=(PropId @70:5~21
+          _id=(Id _info=(ASTSpanInfo()) _text="applicationcache")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(BoolT @70:23~30
+           _info=(ASTSpanInfo()))))
+        (PropertySig @71:5~20
+         _info=(ASTSpanInfo())
+         _prop=(PropId @71:5~11
+          _id=(Id _info=(ASTSpanInfo()) _text="canvas")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(BoolT @71:13~20
+           _info=(ASTSpanInfo()))))
+        (PropertySig @72:5~24
+         _info=(ASTSpanInfo())
+         _prop=(PropId @72:5~15
+          _id=(Id _info=(ASTSpanInfo()) _text="canvastext")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(BoolT @72:17~24
+           _info=(ASTSpanInfo()))))
+        (PropertySig @73:5~25
+         _info=(ASTSpanInfo())
+         _prop=(PropId @73:5~16
+          _id=(Id _info=(ASTSpanInfo()) _text="draganddrop")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(BoolT @73:18~25
+           _info=(ASTSpanInfo()))))
+        (PropertySig @74:5~24
+         _info=(ASTSpanInfo())
+         _prop=(PropId @74:5~15
+          _id=(Id _info=(ASTSpanInfo()) _text="hashchange")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(BoolT @74:17~24
+           _info=(ASTSpanInfo()))))
+        (PropertySig @75:5~21
+         _info=(ASTSpanInfo())
+         _prop=(PropId @75:5~12
+          _id=(Id _info=(ASTSpanInfo()) _text="history")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(BoolT @75:14~21
+           _info=(ASTSpanInfo()))))
+        (PropertySig @76:5~24
+         _info=(ASTSpanInfo())
+         _prop=(PropId @76:5~10
+          _id=(Id _info=(ASTSpanInfo()) _text="audio")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(TypeRef @76:12~24
+           _info=(ASTSpanInfo())
+           _name=(TypeName
+            _info=(ASTSpanInfo())
+            _text="Audioboolean"
+            _names=[
+             (Id _info=(ASTSpanInfo()) _text="Audioboolean")]))))
+        (PropertySig @77:5~24
+         _info=(ASTSpanInfo())
+         _prop=(PropId @77:5~10
+          _id=(Id _info=(ASTSpanInfo()) _text="video")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(TypeRef @77:12~24
+           _info=(ASTSpanInfo())
+           _name=(TypeName
+            _info=(ASTSpanInfo())
+            _text="Videoboolean"
+            _names=[
+             (Id _info=(ASTSpanInfo()) _text="Videoboolean")]))))
+        (PropertySig @78:5~23
+         _info=(ASTSpanInfo())
+         _prop=(PropId @78:5~14
+          _id=(Id _info=(ASTSpanInfo()) _text="indexeddb")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(BoolT @78:16~23
+           _info=(ASTSpanInfo()))))
+        (PropertySig @79:5~24
+         _info=(ASTSpanInfo())
+         _prop=(PropId @79:5~10
+          _id=(Id _info=(ASTSpanInfo()) _text="input")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(TypeRef @79:12~24
+           _info=(ASTSpanInfo())
+           _name=(TypeName
+            _info=(ASTSpanInfo())
+            _text="Inputboolean"
+            _names=[
+             (Id _info=(ASTSpanInfo()) _text="Inputboolean")]))))
+        (PropertySig @80:5~34
+         _info=(ASTSpanInfo())
+         _prop=(PropId @80:5~15
+          _id=(Id _info=(ASTSpanInfo()) _text="inputtypes")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(TypeRef @80:17~34
+           _info=(ASTSpanInfo())
+           _name=(TypeName
+            _info=(ASTSpanInfo())
+            _text="InputTypesboolean"
+            _names=[
+             (Id _info=(ASTSpanInfo()) _text="InputTypesboolean")]))))
+        (PropertySig @81:5~26
+         _info=(ASTSpanInfo())
+         _prop=(PropId @81:5~17
+          _id=(Id _info=(ASTSpanInfo()) _text="localstorage")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(BoolT @81:19~26
+           _info=(ASTSpanInfo()))))
+        (PropertySig @82:5~25
+         _info=(ASTSpanInfo())
+         _prop=(PropId @82:5~16
+          _id=(Id _info=(ASTSpanInfo()) _text="postmessage")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(BoolT @82:18~25
+           _info=(ASTSpanInfo()))))
+        (PropertySig @83:5~28
+         _info=(ASTSpanInfo())
+         _prop=(PropId @83:5~19
+          _id=(Id _info=(ASTSpanInfo()) _text="sessionstorage")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(BoolT @83:21~28
+           _info=(ASTSpanInfo()))))
+        (PropertySig @84:5~24
+         _info=(ASTSpanInfo())
+         _prop=(PropId @84:5~15
+          _id=(Id _info=(ASTSpanInfo()) _text="websockets")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(BoolT @84:17~24
+           _info=(ASTSpanInfo()))))
+        (PropertySig @85:5~28
+         _info=(ASTSpanInfo())
+         _prop=(PropId @85:5~19
+          _id=(Id _info=(ASTSpanInfo()) _text="websqldatabase")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(BoolT @85:21~28
+           _info=(ASTSpanInfo()))))
+        (PropertySig @86:5~24
+         _info=(ASTSpanInfo())
+         _prop=(PropId @86:5~15
+          _id=(Id _info=(ASTSpanInfo()) _text="webworkers")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(BoolT @86:17~24
+           _info=(ASTSpanInfo()))))
+        (PropertySig @87:5~25
+         _info=(ASTSpanInfo())
+         _prop=(PropId @87:5~16
+          _id=(Id _info=(ASTSpanInfo()) _text="geolocation")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(BoolT @87:18~25
+           _info=(ASTSpanInfo()))))
+        (PropertySig @88:5~23
+         _info=(ASTSpanInfo())
+         _prop=(PropId @88:5~14
+          _id=(Id _info=(ASTSpanInfo()) _text="inlinesvg")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(BoolT @88:16~23
+           _info=(ASTSpanInfo()))))
+        (PropertySig @89:5~18
+         _info=(ASTSpanInfo())
+         _prop=(PropId @89:5~9
+          _id=(Id _info=(ASTSpanInfo()) _text="smil")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(BoolT @89:11~18
+           _info=(ASTSpanInfo()))))
+        (PropertySig @90:5~17
+         _info=(ASTSpanInfo())
+         _prop=(PropId @90:5~8
+          _id=(Id _info=(ASTSpanInfo()) _text="svg")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(BoolT @90:10~17
+           _info=(ASTSpanInfo()))))
+        (PropertySig @91:5~26
+         _info=(ASTSpanInfo())
+         _prop=(PropId @91:5~17
+          _id=(Id _info=(ASTSpanInfo()) _text="svgclippaths")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(BoolT @91:19~26
+           _info=(ASTSpanInfo()))))
+        (PropertySig @92:5~19
+         _info=(ASTSpanInfo())
+         _prop=(PropId @92:5~10
+          _id=(Id _info=(ASTSpanInfo()) _text="touch")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(BoolT @92:12~19
+           _info=(ASTSpanInfo()))))
+        (PropertySig @93:5~19
+         _info=(ASTSpanInfo())
+         _prop=(PropId @93:5~10
+          _id=(Id _info=(ASTSpanInfo()) _text="webgl")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(BoolT @93:12~19
+           _info=(ASTSpanInfo()))))
+        (MethodSig @95:5~33
+         _info=(ASTSpanInfo())
+         _prop=(PropId @95:5~9
+          _id=(Id _info=(ASTSpanInfo()) _text="load")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @95:9~33
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(VoidT @95:29~33
+            _info=(ASTSpanInfo())))
+          _params=[
+           (Param @95:10~26
+            _info=(ASTSpanInfo())
+            _name=(Id @95:10~19 _info=(ASTSpanInfo()) _text="resources")
+            _typ=(Some _value=(ArrayType @95:24~27
+              _info=(ASTSpanInfo())
+              _typ=(AnyT @95:21~26
+               _info=(ASTSpanInfo())))))]))
+        (MethodSig @96:5~36
+         _info=(ASTSpanInfo())
+         _prop=(PropId @96:5~9
+          _id=(Id _info=(ASTSpanInfo()) _text="load")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @96:9~36
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(VoidT @96:32~36
+            _info=(ASTSpanInfo())))
+          _params=[
+           (Param @96:10~29
+            _info=(ASTSpanInfo())
+            _name=(Id @96:10~24 _info=(ASTSpanInfo()) _text="resourceObject")
+            _typ=(Some _value=(AnyT @96:26~29
+              _info=(ASTSpanInfo()))))]))
+        (MethodSig @97:5~39
+         _info=(ASTSpanInfo())
+         _prop=(PropId @97:5~9
+          _id=(Id _info=(ASTSpanInfo()) _text="load")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @97:9~39
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(VoidT @97:35~39
+            _info=(ASTSpanInfo())))
+          _params=[
+           (Param @97:10~32
+            _info=(ASTSpanInfo())
+            _name=(Id @97:10~24 _info=(ASTSpanInfo()) _text="resourceString")
+            _typ=(Some _value=(StringT @97:26~32
+              _info=(ASTSpanInfo()))))]))
+        (MethodSig @99:5~24
+         _info=(ASTSpanInfo())
+         _prop=(PropId @99:5~13
+          _id=(Id _info=(ASTSpanInfo()) _text="prefixed")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @99:13~24
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(BoolT @99:17~24
+            _info=(ASTSpanInfo())))))
+        (MethodSig @100:5~40
+         _info=(ASTSpanInfo())
+         _prop=(PropId @100:5~13
+          _id=(Id _info=(ASTSpanInfo()) _text="prefixed")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @100:13~40
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(BoolT @100:33~40
+            _info=(ASTSpanInfo())))
+          _params=[
+           (Param @100:14~30
+            _info=(ASTSpanInfo())
+            _name=(Id @100:14~22 _info=(ASTSpanInfo()) _text="property")
+            _typ=(Some _value=(StringT @100:24~30
+              _info=(ASTSpanInfo()))))]))
+        (MethodSig @101:5~65
+         _info=(ASTSpanInfo())
+         _prop=(PropId @101:5~13
+          _id=(Id _info=(ASTSpanInfo()) _text="prefixed")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @101:13~65
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(BoolT @101:58~65
+            _info=(ASTSpanInfo())))
+          _params=[
+           (Param @101:14~30
+            _info=(ASTSpanInfo())
+            _name=(Id @101:14~22 _info=(ASTSpanInfo()) _text="property")
+            _typ=(Some _value=(StringT @101:24~30
+              _info=(ASTSpanInfo()))))
+           (Param @101:32~40
+            _info=(ASTSpanInfo())
+            _name=(Id @101:32~35 _info=(ASTSpanInfo()) _text="obj")
+            _typ=(Some _value=(AnyT @101:37~40
+              _info=(ASTSpanInfo()))))
+           (Param @101:42~55
+            _info=(ASTSpanInfo())
+            _name=(Id @101:42~49 _info=(ASTSpanInfo()) _text="element")
+            _optional=true
+            _typ=(Some _value=(AnyT @101:52~55
+              _info=(ASTSpanInfo()))))]))
+        (MethodSig @103:5~36
+         _info=(ASTSpanInfo())
+         _prop=(PropId @103:5~7
+          _id=(Id _info=(ASTSpanInfo()) _text="mq")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @103:7~36
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(BoolT @103:29~36
+            _info=(ASTSpanInfo())))
+          _params=[
+           (Param @103:8~26
+            _info=(ASTSpanInfo())
+            _name=(Id @103:8~18 _info=(ASTSpanInfo()) _text="mediaQuery")
+            _typ=(Some _value=(StringT @103:20~26
+              _info=(ASTSpanInfo()))))]))
+        (MethodSig @105:5~52
+         _info=(ASTSpanInfo())
+         _prop=(PropId @105:5~12
+          _id=(Id _info=(ASTSpanInfo()) _text="addTest")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @105:12~52
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(VoidT @105:48~52
+            _info=(ASTSpanInfo())))
+          _params=[
+           (Param @105:13~28
+            _info=(ASTSpanInfo())
+            _name=(Id @105:13~20 _info=(ASTSpanInfo()) _text="feature")
+            _typ=(Some _value=(StringT @105:22~28
+              _info=(ASTSpanInfo()))))
+           (Param @105:30~45
+            _info=(ASTSpanInfo())
+            _name=(Id @105:30~34 _info=(ASTSpanInfo()) _text="test")
+            _typ=(Some _value=(FunctionType @105:36~45
+              _info=(ASTSpanInfo())
+              _typ=(AnyT @105:42~45
+               _info=(ASTSpanInfo())))))]))
+        (MethodSig @106:5~50
+         _info=(ASTSpanInfo())
+         _prop=(PropId @106:5~12
+          _id=(Id _info=(ASTSpanInfo()) _text="addTest")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @106:12~50
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(VoidT @106:46~50
+            _info=(ASTSpanInfo())))
+          _params=[
+           (Param @106:13~28
+            _info=(ASTSpanInfo())
+            _name=(Id @106:13~20 _info=(ASTSpanInfo()) _text="feature")
+            _typ=(Some _value=(StringT @106:22~28
+              _info=(ASTSpanInfo()))))
+           (Param @106:30~43
+            _info=(ASTSpanInfo())
+            _name=(Id @106:30~34 _info=(ASTSpanInfo()) _text="test")
+            _typ=(Some _value=(BoolT @106:36~43
+              _info=(ASTSpanInfo()))))]))
+        (MethodSig @107:5~32
+         _info=(ASTSpanInfo())
+         _prop=(PropId @107:5~12
+          _id=(Id _info=(ASTSpanInfo()) _text="addTest")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @107:12~32
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(VoidT @107:28~32
+            _info=(ASTSpanInfo())))
+          _params=[
+           (Param @107:13~25
+            _info=(ASTSpanInfo())
+            _name=(Id @107:13~20 _info=(ASTSpanInfo()) _text="feature")
+            _typ=(Some _value=(AnyT @107:22~25
+              _info=(ASTSpanInfo()))))]))
+        (MethodSig @109:5~135
+         _info=(ASTSpanInfo())
+         _prop=(PropId @109:5~15
+          _id=(Id _info=(ASTSpanInfo()) _text="testStyles")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @109:15~135
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(BoolT @109:128~135
+            _info=(ASTSpanInfo())))
+          _params=[
+           (Param @109:16~28
+            _info=(ASTSpanInfo())
+            _name=(Id @109:16~20 _info=(ASTSpanInfo()) _text="rule")
+            _typ=(Some _value=(StringT @109:22~28
+              _info=(ASTSpanInfo()))))
+           (Param @109:30~87
+            _info=(ASTSpanInfo())
+            _name=(Id @109:30~38 _info=(ASTSpanInfo()) _text="callback")
+            _typ=(Some _value=(FunctionType @109:40~87
+              _info=(ASTSpanInfo())
+              _typ=(VoidT @109:83~87
+               _info=(ASTSpanInfo()))
+              _params=[
+               (Param @109:41~87
+                _info=(ASTSpanInfo())
+                _name=(Id @109:41~48 _info=(ASTSpanInfo()) _text="element")
+                _typ=(Some _value=(TypeRef @109:50~87
+                  _info=(ASTSpanInfo())
+                  _name=(TypeName
+                   _info=(ASTSpanInfo())
+                   _text="HTMLDivElement"
+                   _names=[
+                    (Id @109:50~64 _info=(ASTSpanInfo()) _text="HTMLDivElement")]))))
+               (Param @109:66~87
+                _info=(ASTSpanInfo())
+                _name=(Id @109:66~70 _info=(ASTSpanInfo()) _text="rule")
+                _typ=(Some _value=(StringT @109:72~87
+                  _info=(ASTSpanInfo()))))])))
+           (Param @109:89~103
+            _info=(ASTSpanInfo())
+            _name=(Id @109:89~94 _info=(ASTSpanInfo()) _text="nodes")
+            _optional=true
+            _typ=(Some _value=(NumberT @109:97~103
+              _info=(ASTSpanInfo()))))
+           (Param @109:105~125
+            _info=(ASTSpanInfo())
+            _name=(Id @109:105~114 _info=(ASTSpanInfo()) _text="testnames")
+            _optional=true
+            _typ=(Some _value=(ArrayType @109:123~126
+              _info=(ASTSpanInfo())
+              _typ=(StringT @109:117~123
+               _info=(ASTSpanInfo())))))]))
+        (MethodSig @110:5~40
+         _info=(ASTSpanInfo())
+         _prop=(PropId @110:5~13
+          _id=(Id _info=(ASTSpanInfo()) _text="testProp")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @110:13~40
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(BoolT @110:33~40
+            _info=(ASTSpanInfo())))
+          _params=[
+           (Param @110:14~30
+            _info=(ASTSpanInfo())
+            _name=(Id @110:14~22 _info=(ASTSpanInfo()) _text="property")
+            _typ=(Some _value=(StringT @110:24~30
+              _info=(ASTSpanInfo()))))]))
+        (MethodSig @111:5~61
+         _info=(ASTSpanInfo())
+         _prop=(PropId @111:5~17
+          _id=(Id _info=(ASTSpanInfo()) _text="testAllProps")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @111:17~61
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(BoolT @111:54~61
+            _info=(ASTSpanInfo())))
+          _params=[
+           (Param @111:18~34
+            _info=(ASTSpanInfo())
+            _name=(Id @111:18~26 _info=(ASTSpanInfo()) _text="property")
+            _typ=(Some _value=(StringT @111:28~34
+              _info=(ASTSpanInfo()))))
+           (Param @111:36~51
+            _info=(ASTSpanInfo())
+            _name=(Id @111:36~42 _info=(ASTSpanInfo()) _text="prefix")
+            _optional=true
+            _typ=(Some _value=(StringT @111:45~51
+              _info=(ASTSpanInfo()))))]))
+        (MethodSig @112:5~68
+         _info=(ASTSpanInfo())
+         _prop=(PropId @112:5~17
+          _id=(Id _info=(ASTSpanInfo()) _text="testAllProps")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @112:17~68
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(BoolT @112:61~68
+            _info=(ASTSpanInfo())))
+          _params=[
+           (Param @112:18~34
+            _info=(ASTSpanInfo())
+            _name=(Id @112:18~26 _info=(ASTSpanInfo()) _text="property")
+            _typ=(Some _value=(StringT @112:28~34
+              _info=(ASTSpanInfo()))))
+           (Param @112:36~44
+            _info=(ASTSpanInfo())
+            _name=(Id @112:36~39 _info=(ASTSpanInfo()) _text="obj")
+            _typ=(Some _value=(AnyT @112:41~44
+              _info=(ASTSpanInfo()))))
+           (Param @112:46~58
+            _info=(ASTSpanInfo())
+            _name=(Id @112:46~53 _info=(ASTSpanInfo()) _text="element")
+            _typ=(Some _value=(AnyT @112:55~58
+              _info=(ASTSpanInfo()))))]))
+        (MethodSig @114:5~56
+         _info=(ASTSpanInfo())
+         _prop=(PropId @114:5~13
+          _id=(Id _info=(ASTSpanInfo()) _text="hasEvent")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @114:13~56
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(BoolT @114:49~56
+            _info=(ASTSpanInfo())))
+          _params=[
+           (Param @114:14~31
+            _info=(ASTSpanInfo())
+            _name=(Id @114:14~23 _info=(ASTSpanInfo()) _text="eventName")
+            _typ=(Some _value=(StringT @114:25~31
+              _info=(ASTSpanInfo()))))
+           (Param @114:33~46
+            _info=(ASTSpanInfo())
+            _name=(Id @114:33~40 _info=(ASTSpanInfo()) _text="element")
+            _optional=true
+            _typ=(Some _value=(AnyT @114:43~46
+              _info=(ASTSpanInfo()))))]))]))
+     (AmbVarDecl @117:9~39
+      _id=(Id @117:13~22 _info=(ASTSpanInfo()) _text="Modernizr")
+      _info=(ASTSpanInfo())
+      _ty=(Some _value=(TypeRef @117:24~39
+        _info=(ASTSpanInfo())
+        _name=(TypeName
+         _info=(ASTSpanInfo())
+         _text="ModernizrStatic"
+         _names=[
+          (Id _info=(ASTSpanInfo()) _text="ModernizrStatic")]))))])])
+ _info=(ASTSpanInfo()))

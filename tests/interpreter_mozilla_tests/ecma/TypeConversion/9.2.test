@@ -1,0 +1,56 @@
+################################################################################
+#    Copyright (c) 2012, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=9.2
+INTERPRETER_TESTS_DIR=${JS_HOME}/tests/interpreter_mozilla_tests/ecma/TypeConversion
+interpret_mozilla
+interpret_mozilla_out_WCIequals=\
+9.2 ToBoolean\n\
+ PASSED! Boolean() = false expected: false\n\
+ PASSED! Boolean(var x) = false expected: false\n\
+ PASSED! Boolean(void 0) = false expected: false\n\
+ PASSED! Boolean(null) = false expected: false\n\
+ PASSED! Boolean(false) = false expected: false\n\
+ PASSED! Boolean(true) = true expected: true\n\
+ PASSED! Boolean(0) = false expected: false\n\
+ PASSED! Boolean(-0) = false expected: false\n\
+ PASSED! Boolean(NaN) = false expected: false\n\
+ PASSED! Boolean('') = false expected: false\n\
+ PASSED! Boolean(Infinity) = true expected: true\n\
+ PASSED! Boolean(-Infinity) = true expected: true\n\
+ PASSED! Boolean(Math.PI) = true expected: true\n\
+ PASSED! Boolean(1) = true expected: true\n\
+ PASSED! Boolean(-1) = true expected: true\n\
+ PASSED! Boolean([tab]) = true expected: true\n\
+ PASSED! Boolean('0') = true expected: true\n\
+ PASSED! Boolean('string') = true expected: true\n\
+ PASSED! Boolean(new String() ) = true expected: true\n\
+ PASSED! Boolean(new String('') ) = true expected: true\n\
+ PASSED! Boolean(new Boolean(true)) = true expected: true\n\
+ PASSED! Boolean(new Boolean(false)) = true expected: true\n\
+ PASSED! Boolean(new Boolean() ) = true expected: true\n\
+ PASSED! Boolean(new Array()) = true expected: true\n\
+ PASSED! Boolean(new Number()) = true expected: true\n\
+ PASSED! Boolean(new Number(-0)) = true expected: true\n\
+ PASSED! Boolean(new Number(0)) = true expected: true\n\
+ PASSED! Boolean(new Number(NaN)) = true expected: true\n\
+ PASSED! Boolean(new Number(-1)) = true expected: true\n\
+ PASSED! Boolean(new Number(Infinity)) = true expected: true\n\
+ PASSED! Boolean(new Number(-Infinity)) = true expected: true\n\
+ PASSED! Boolean(new Object()) = true expected: true\n\
+ PASSED! Boolean(new Function()) = true expected: true\n\
+ PASSED! Boolean(new Date()) = true expected: true\n\
+ PASSED! Boolean(new Date(0)) = true expected: true\n\
+ PASSED! Boolean(Math) = true expected: true\n\
+ PASSED! NaN ? true : false = false expected: false\n\
+ PASSED! 1000 % 0 ? true : false = false expected: false\n\
+ PASSED! (function(a,b){ return a % b ? true : false })(1000, 0) = false expected: false\n\
+ PASSED! (function(x) { return !(x) })(0/0) = true expected: true\n\
+ PASSED! !(0/0) = true expected: true\n\
+\n
+interpret_err_equals=

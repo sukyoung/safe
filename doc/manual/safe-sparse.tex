@@ -1,0 +1,1161 @@
+\chapter{Sparse Analysis(Incomplete)}
+\section{Access Analysis}
+\begin{itemize}
+  \item New location and property name pairs $\langle\avarloc{Context},1\rangle, \langle\avarloc{Context},2\rangle$ are introduced to stand for each of $\abs{Context}$ values.
+
+\end{itemize}
+\subsection{Helper functions for definition set}
+\[
+\begin{array}{ll}
+  \ahf{CreateMutableBinding}_{\it def} & : \aHeap \times \powerset{\aLoc} \times \SF{Prop} \rightarrow \powerset{\aLoc \times \SF{Prop}}\\
+  & \ahf{CreateMutableBinding}_{\it def}(\hat{H},\hat{L}, x) = \set{\langle\avarloc{PureLocal}_R,x\rangle}\quad\ifc{\ahf{getVarKind}_P(x) = \SF{PureLocalVar}}\\
+  & \ahf{CreateMutableBinding}_{\it def}(\hat{H},\hat{L}, x) = \set{\langle\hat{l},x\rangle~|~\hat{l}\in\hat{L}}\quad\ifc{\ahf{getVarKind}_P(x) = \SF{CapturedVar}}\\
+  & \ahf{CreateMutableBinding}_{\it def}(\hat{H},\hat{L}, x) = \set{\langle\avarloc{Collapsed}_O,x\rangle}\quad\ifc{\ahf{getVarKind}_P(x) = \SF{CapturedCatchVar}}\\
+  & \ahf{CreateMutableBinding}_{\it def}(\hat{H},\hat{L}, x) = \set{\langle\avarloc{Global}_R,x\rangle}\quad\ifc{\ahf{getVarKind}_P(x) = \SF{GlobalVar}}\\
+\\\\
+  \ahf{Oldify}_{\it def} & : \aHeap \times \abs{Context} \times \abs{Address} \rightarrow \powerset{\aLoc \times \SF{Prop}}\\
+  & \ahf{Oldify}_{\it def}(\hat{H},\hat{C},\hat{a}) = LP_1 \cup LP_2 \cup LP_3\cup LP_4 \cup LP_5\\
+  & \quad\wherec{
+    \hat{l}_R = (\hat{a}, \hat{Recent})\ \land\ \hat{l}_O = (\hat{a}, \hat{Old})\\
+    LP_1 = \left\{
+      \begin{array}{l}
+      \set{ \langle\hat{l}_O,s\rangle, \langle\hat{l}_R,s\rangle ~|~ s\in dom(\hat{H}(\hat{l}_R))} \quad\ifc{\hat{l}_R \in dom(\hat{H})} \\
+      \set{} \quad\owc
+      \end{array}
+    \right.\\
+    LP_2 = \left\{
+      \begin{array}{l}
+      \set{ \langle\hat{l}_O,s\rangle, \langle\hat{l}_R,s\rangle ~|~ s\in dom(\hat{H}(\hat{l}_O))} \quad\ifc{\hat{l}_O \in dom(\hat{H})} \\
+      \set{} \quad\owc
+      \end{array}
+    \right.\\
+    LP_3 = \set{ \langle\avarloc{Context}, 1\rangle } \quad\ifc{\hat{l}_R\in\hat{C}.1} \\
+    LP_4 = \set{ \langle\avarloc{Context}, 2\rangle } \quad\ifc{\hat{l}_R\in\hat{C}.2} \\
+    LP_5 = \set{\langle \hat{l}, s\rangle ~|~ \hat{l}\in dom(\hat{H}),~s\in dom(\hat{H})(\hat{l}),~ \hat{l}_R\in\hat{H}(l)(s).1.1.1.2\lor \hat{l}_R\in\hat{H}(s).1.2.2}
+  }
+\\\\
+\ahf{NewObject}_{\it def} & : \SF{Unit} \rightarrow \powerset{\SF{Prop}} \\
+& \ahf{NewObject}_{\it def}() = \set{\avarprop{class},\avarprop{proto}, \avarprop{extensible}, \avarprop{\emph{default\_UInt}}, \avarprop{\emph{default\_NUInt}}}
+\\\\
+\ahf{NewArrayObject}_{\it def} & : \SF{Unit} \rightarrow \powerset{\SF{Prop}} \\
+& \ahf{NewArrayObject}_{\it def}() = \set{\avarprop{class},\avarprop{proto}, ``length", \avarprop{extensible}, \avarprop{\emph{default\_UInt}}, \avarprop{\emph{default\_NUInt}}}
+\\\\
+\ahf{NewArgObject}_{\it def} & : \SF{Unit} \rightarrow \powerset{\SF{Prop}} \\
+& \ahf{NewArgObject}_{\it def}() = \set{\avarprop{class},\avarprop{proto}, ``length", \avarprop{extensible}, \avarprop{\emph{default\_UInt}}, \avarprop{\emph{default\_NUInt}}}
+\\\\
+\ahf{NewFunctionObject}_{\it def} & : \SF{Unit} \rightarrow \powerset{\SF{Prop}} \\
+& \ahf{NewFunctionObject}_{\it def}() = \set{\avarprop{class},\avarprop{proto}, \avarprop{extensible}, \avarprop{function}, \avarprop{construct}, \avarprop{scope},\\ \avarprop{\emph{default\_UInt}}, \avarprop{\emph{default\_NUInt}}, ``prototype", ``length"}
+\\\\
+\ahf{NewDeclEnvRecord}_{\it def} & : \SF{Unit} \rightarrow \powerset{\SF{Prop}} \\
+& \ahf{NewDeclEnvRecord}_{\it def}() = \set{\avarprop{outer}, \avarprop{\emph{default\_UInt}}, \avarprop{\emph{default\_NUInt}}}
+\\\\
+\ahf{NewBoolean}_{\it def} & : \SF{Unit} \rightarrow \powerset{\SF{Prop}} \\
+& \ahf{NewBoolean}_{\it def}() = \set{\avarprop{class},\avarprop{proto}, \avarprop{extensible}, \avarprop{primitive}, \avarprop{\emph{default\_UInt}}, \avarprop{\emph{default\_NUInt}}}
+\\\\
+\ahf{NewNumber}_{\it def} & : \SF{Unit} \rightarrow \powerset{\SF{Prop}} \\
+& \ahf{NewNumber}_{\it def}() = \set{\avarprop{class},\avarprop{proto}, \avarprop{extensible}, \avarprop{primitive}, \avarprop{\emph{default\_UInt}}, \avarprop{\emph{default\_NUInt}}}
+\\\\
+\ahf{NewDate}_{\it def} & : \SF{Unit} \rightarrow \powerset{\SF{Prop}} \\
+& \ahf{NewDate}_{\it def}() = \set{\avarprop{class},\avarprop{proto}, \avarprop{extensible}, \avarprop{primitive}, \avarprop{\emph{default\_UInt}}, \avarprop{\emph{default\_NUInt}}}
+\\\\
+\ahf{NewString}_{\it def} & : \aValue \rightarrow \powerset{\SF{Prop}} \\
+& \ahf{NewString}_{\it def}(\hat{v}) = LP_1\cup LP_2\\
+& \quad\wherec{
+  \hat{v}_{len} = length(\hat{v}.1.5)\\
+  LP_1 = \set{\avarprop{class},\avarprop{proto}, \avarprop{extensible}, \avarprop{primitive}, \avarprop{\emph{default\_UInt}}, \avarprop{\emph{default\_NUInt}}}\\
+  LP_2 = \set{``i" ~|~ 0 \leq i \land \exists l\in\gamma(\hat{v}_{len}).i<l}
+}
+\\\\
+\ahf{NewPureLocal}_{\it def} & : \SF{Unit} \rightarrow \powerset{\SF{Prop}} \\
+& \ahf{NewPureLocal}_{\it def}() = \set{\avarprop{exception}, \avarprop{exception\_all}, \avarprop{return}, \avarprop{\emph{default\_UInt}}, \avarprop{\emph{default\_NUInt}}}
+\end{array}
+\]
+\[
+\begin{array}{ll}
+\ahf{VarStore}_{\it def} & : \aHeap \times \powerset{\aLoc}\times \SF{Prop} \rightarrow \powerset{\aLoc \times \SF{Prop}}\\
+& \ahf{VarStore}_{\it def}(\hat{H}, \hat{L}, x)
+= \set{\langle\avarloc{PureLocal}_R, x\rangle} \quad\ifc{\chf{getVarKind}_P(x) = \SF{PureLocalVar}}\\
+& \ahf{VarStore}_{\it def}(\hat{H}, \hat{L}, x)
+= \bigcup_{\hat{l}\in\hat{L}}\ahf{VarStoreL}_{\it def}(\hat{H},\hat{l},x) \quad\ifc{\chf{getVarKind}_P(x) = \SF{CapturedVar}}\\
+& \ahf{VarStore}_{\it def}(\hat{H}, \hat{L}, x)
+= \set{\langle\avarloc{Collapsed}_O,x\rangle}\quad\ifc{\chf{getVarKind}_P(x) = \SF{CapturedCatchVar}}\\
+& \ahf{VarStore}_{\it def}(\hat{H}, \hat{L}, x)
+= \ahf{VarStoreG}_{\it def}(\hat{H}, x)
+\\\\
+\ahf{VarStoreL}_{\it def} & : \aHeap \times \aLoc \times \SF{Prop} \rightarrow \powerset{\aLoc \times \SF{Prop}}\\
+& \ahf{VarStoreL}_{\it def}(\hat{H},\hat{l},x) = LP_1 \cup LP_2\\
+& \quad\wherec{
+  LP_1 = 
+    \left\{
+    \begin{array}{ll}
+      \set{\langle\hat{l},x\rangle}
+        & \quad\ifc{\atrue \sqsubseteq (x \dot{\in} dom(\hat{H}(\hat{l}))) ~\land~ \hat{H}(\hat{l})(x).1.1.2 = \atrue} \\
+      \set{} & \quad\owc
+    \end{array}
+    \right.\\
+  \hat{L}_{outer} = \hat{H}(\hat{l})(\avarprop{outer}).1.2.2\\
+  LP_2 = 
+    \left\{
+    \begin{array}{ll}
+      \bigcup_{\hat{l}_{outer}\in\hat{L}_{outer}}\ahf{VarStoreL}_{\it def}(\hat{H},\hat{l}_{outer},x)
+        & \quad\ifc{\afalse \sqsubseteq (x \dot{\in} dom(\hat{H}(\hat{l})))} \\
+      \set{} & \quad\owc
+    \end{array}
+    \right.\\
+}
+\\\\
+\ahf{VarStoreG}_{\it def} & : \aHeap \times \SF{Prop} \rightarrow \powerset{\aLoc \times \SF{Prop}}\\
+& \ahf{VarStoreG}_{\it def}(\hat{H},x) = LP_1 \cup LP_2\\
+& \quad\wherec{
+  \hat{l}_g = \avarloc{Global}_R\\
+  LP_1 = \left\{
+    \begin{array}{ll}
+      \ahf{PropStore}_{\it def}(\hat{H},\hat{l}_g,\alpha(x)) & \quad\ifc{\afalse\sqsubseteq(x \dot{\in} dom(\hat{H}(\hat{l}_g)))} \\
+      \set{} & \quad\owc
+    \end{array}
+  \right.\\
+  LP_2 = \left\{
+    \begin{array}{ll}
+      \set{\langle\hat{l}_g,x\rangle} & \quad\ifc{\atrue\sqsubseteq (x \dot{\in} dom(\hat{H}(\hat{l}_g)))} \\
+      \set{} & \quad\owc
+    \end{array}
+  \right.\\
+}
+\end{array}
+\]
+\[
+\begin{array}{ll}
+\ahf{PropStore}_{\it def} & : \aHeap \times \aLoc \times \abs{String} \rightarrow \powerset{\aLoc \times \SF{Prop}}\\
+& \ahf{PropStore}_{\it def}(\hat{H},\hat{l},\hat{s}) = \set{\langle \hat{l},\hat{s}\rangle}\\
+\\\\
+\ahf{ReturnStore}_{\it def} & : \SF{Unit} \rightarrow \powerset{\aLoc \times \SF{Prop}}\\
+& \ahf{ReturnStore}_{\it def}() = \set{\langle \avarloc{PureLocal}_R,\varprop{return}\rangle}\\
+\\\\
+\ahf{Delete}_{\it def} & : \aHeap \times \aLoc \times \abs{String} \rightarrow \powerset{\aLoc \times \SF{Prop}}\\
+& \ahf{Delete}_{\it def}(\hat{H},\hat{l},\hat{s}) = LP\\
+& \quad\wherec{
+  LP = \set{\langle \hat{l},\hat{s}\rangle} \quad\ifc{
+    \left(
+      \atrue \sqsubseteq \ahf{HasOwnProperty}(\hat{H},\hat{l},\hat{s})
+      \land\ \atrue \sqsubseteq \hat{H}(\hat{l})(\hat{s}).1.1.4
+    \right)\\
+    \lor\ (\afalse \sqsubseteq \ahf{hasOwnProperty}(\hat{H},\hat{l},\hat{s}))
+  }\\
+}
+\\\\
+\ahf{toObject}_{\it def} & : \aHeap \times \abs{Context} \times \aValue \times \abs{Address} \rightarrow \powerset{\aLoc \times \SF{Prop}}\\
+& \ahf{toObject}_{\it def}(\hat{H}, \hat{C}, \hat{v}, \hat{a}) = LP \\
+& \quad\wherec{
+  O_1 = \left\{
+  \begin{array}{ll}
+    \ahf{NewString}_{\it def}(\hat{v}.1.5) &\quad\ifc{\hat{v}.1.5\not\sqsubseteq \bot_{string}}\\
+    \set{}&\quad\owc
+  \end{array}
+  \right.\\
+  O_2 = \left\{
+  \begin{array}{ll}
+    \ahf{NewBoolean}_{\it def}() &\quad\ifc{\hat{v}.1.3\not\sqsubseteq \bot_{boolean}}\\
+    \set{}&\quad\owc
+  \end{array}
+  \right.\\
+  O_3 = \left\{
+  \begin{array}{ll}
+    \ahf{NewNumber}_{\it def}() &\quad\ifc{\hat{v}.1.4\not\sqsubseteq \bot_{number}}\\
+    \set{}&\quad\owc
+  \end{array}
+  \right.\\
+  O = O_1\cup O_2\cup O_3\\
+  LP = \left\{
+  \begin{array}{ll}
+    \ahf{Oldify}_{\it def}(\hat{H}, \hat{C}, \hat{a})\cup \set{\langle \hat{l}_R, s\rangle~|~ s\in O}&\quad\ifc{O \not= \emptyset}\\
+    \set{}&\quad\owc
+  \end{array}
+  \right.
+}
+\\\\
+\ahf{RaiseException}_{\it def} & : \powerset{\abs{Exception}} \powerset{\aLoc \times \SF{Prop}}\\
+& \ahf{RaiseException}_{\it def}(\hat{es}) = LP\\
+& \quad\wherec{
+  LP =
+  \left\{
+    \begin{array}{ll}
+      \set{\langle \avarloc{PureLocal}_R, \varprop{exception\_all} \rangle,\\
+        \langle \avarloc{PureLocal}_R, \varprop{exception} \rangle
+      } & \quad\ifc{\hat{es}\not=\set{}} \\
+      \set{} & \quad\owc\\
+    \end{array}
+  \right.
+}
+\end{array}
+\]
+\subsection{Helper functions for use set}
+\[
+\begin{array}{ll}
+  \ahf{Oldify}_{\it use} & : \aHeap \times \abs{Context} \times \abs{Address} \rightarrow \powerset{\aLoc \times \SF{Prop}}\\
+  & \ahf{Oldify}_{\it use}(\hat{H},\hat{C},\hat{a}) = LP_1 \cup LP_2 \cup LP_3 \cup LP_4\\
+  & \quad\wherec{
+    \hat{l}_R = (\hat{a}, \hat{Recent})\ \land\ \hat{l}_O = (\hat{a}, \hat{Old})\\
+    LP_1 = \left\{
+      \begin{array}{l}
+      \set{ \langle\hat{l}_O,s\rangle, \langle\hat{l}_R,s\rangle ~|~ s\in dom(\hat{H}(\hat{l}_R))} \quad\ifc{\hat{l}_R \in dom(\hat{H})} \\
+      \set{} \quad\owc
+      \end{array}
+    \right.\\
+    LP_2 = \left\{
+      \begin{array}{l}
+      \set{ \langle\hat{l}_O,s\rangle, \langle\hat{l}_R,s\rangle ~|~ s\in dom(\hat{H}(\hat{l}_O))} \quad\ifc{\hat{l}_O \in dom(\hat{H})} \\
+      \set{} \quad\owc
+      \end{array}
+    \right.\\
+    LP_3 = \set{ \langle\avarloc{Context}, 1\rangle, \langle\avarloc{Context}, 2\rangle } \\
+    LP_4 = \set{\langle \hat{l}, s\rangle ~|~ \hat{l}\in dom(\hat{H}),~s\in dom(\hat{H})(\hat{l}),~ \hat{l}_R\in\hat{H}(l)(s).1.1.1.2\lor \hat{l}_R\in\hat{H}(s).1.2.2}
+  }
+\\\\
+\ahf{VarStore}_{\it use} & : \aHeap \times \powerset{\aLoc}\times \SF{Prop} \rightarrow \powerset{\aLoc \times \SF{Prop}}\\
+& \ahf{VarStore}_{\it use}(\hat{H}, \hat{L}, x)
+= \set{} \quad\ifc{\chf{getVarKind}_P(x) = \SF{PureLocalVar}}\\
+& \ahf{VarStore}_{\it use}(\hat{H}, \hat{L}, x)
+= \bigcup_{\hat{l}\in\hat{L}}\ahf{VarStoreL}_{\it use}(\hat{H},\hat{l},x) \quad\ifc{\chf{getVarKind}_P(x) = \SF{CapturedVar}}\\
+& \ahf{VarStore}_{\it use}(\hat{H}, \hat{L}, x)
+= \set{\langle\avarloc{Collapsed}_O,x\rangle}\quad\ifc{\chf{getVarKind}_P(x) = \SF{CapturedCatchVar}}\\
+& \ahf{VarStore}_{\it use}(\hat{H}, \hat{L}, x)
+= \ahf{VarStoreG}_{\it use}(\hat{H}, x) \cup \ahf{CanPutVar}_{\it use}(\hat{H},x)
+\\\\
+\ahf{VarStoreL}_{\it use} & : \aHeap \times \aLoc \times \abs{String} \rightarrow \powerset{\aLoc \times \SF{Prop}}\\
+& \ahf{VarStoreL}_{\it use}(\hat{H}, \hat{l}, x) = \set{\langle\hat{l},x\rangle} \cup LP\\
+&\quad\wherec{
+  \hat{L}_{outer} = \hat{H}(\hat{l})(\varprop{outer}).1.2.2\\
+  LP=\left\{
+    \begin{array}{ll}
+      \set{\langle \hat{l},\varprop{outer}\rangle} \cup \bigcup_{\hat{l}_{outer}\in\hat{L}_{outer}}\ahf{VarStoreL}_{\it use}(\hat{H},\hat{l}_{outer},x) 
+        & \quad\ifc{\afalse\sqsubseteq (x\dot{\in}dom(\hat{H}(\hat{l})))} \\
+      \set{}&\quad\owc
+    \end{array}
+  \right.\\
+}
+\\\\
+\ahf{VarStoreG}_{\it use} & : \aHeap \times \SF{Prop} \rightarrow \powerset{\aLoc \times \SF{Prop}}\\
+& \ahf{VarStoreG}_{\it use}(\hat{H},x) = \set{\langle \hat{l}_g, x\rangle} \cup LP\\
+& \quad\wherec{
+  \hat{l}_g = \avarloc{Global}_R\\
+  LP = \left\{
+    \begin{array}{ll}
+      \ahf{PropStore}_{\it use}(\hat{H},\hat{l}_g,\alpha(x)) & \quad\ifc{\afalse\sqsubseteq(x \dot{\in} dom(\hat{H}(\hat{l}_g)))} \\
+      \set{} & \quad\owc
+    \end{array}
+  \right.
+}
+\\\\
+\ahf{PropStore}_{\it use} & : \aHeap \times \aLoc \times \abs{String} \rightarrow \powerset{\aLoc \times \SF{Prop}}\\
+& \ahf{PropStore}_{\it use}(\hat{H},\hat{l},\hat{s}) = \set{\langle \hat{l},\hat{s}\rangle}\\
+\\\\
+\ahf{CanPutVar}_{\it use} & : \aHeap \times \abs{String} \rightarrow \powerset{\aLoc \times \SF{Prop}}\\
+& \ahf{CanPutVar}_{\it use}(\hat{H},\hat{s})
+= \set{\langle \avarloc{Global}_R,x\rangle}\cup LP\\
+& \quad\wherec{
+  LP=\left\{
+    \begin{array}{ll}
+      \ahf{CanPut}_{\it use}(\hat{H},\avarloc{Global}_R,\alpha(x))&\quad\ifc{\afalse\sqsubseteq(x \dot{\in} dom(\hat{H}(\avarloc{Global}_R)))}\\
+      \set{} &\quad\owc
+    \end{array}
+  \right.
+}
+\\\\
+\ahf{CanPut}_{\it use} & : \aHeap \times \aLoc \times \abs{String} \rightarrow \powerset{\aLoc \times \SF{Prop}}\\
+& \ahf{CanPut}_{\it use}(\hat{H},\hat{l},\hat{s})
+= \ahf{CanPutHelp}_{\it use}(\hat{H},\hat{l},\hat{s},\hat{l})
+\\\\
+\ahf{CanPutHelp}_{\it use} & : \aHeap \times \aLoc \times \abs{String} \times \aLoc \rightarrow \powerset{\aLoc \times \SF{Prop}}\\
+& \ahf{CanPutHelp}_{\it use}(\hat{H},\hat{l}_1,\hat{s},\hat{l}_2)
+= \set{\langle \hat{l}_1,\hat{s}\rangle, \langle \hat{l}_1,\varprop{proto}\rangle} \cup LP_1 \cup LP_2\\
+&\quad\wherec{
+  \hat{L}_{proto} = \hat{H}(\hat{l}_1)(\varprop{proto}).1.1.1.2\\
+  LP_1 = \left\{
+    \begin{array}{ll}
+      \bigcup_{\hat{l}_{proto}\in\hat{L}_{proto}}\ahf{CanPutHelp}_{\it use}(\hat{H},\hat{l}_{proto},\hat{s},\hat{l}_2)& \quad\ifc{\afalse\sqsubseteq(\hat{s} \dot{\in} dom(\hat{H}(\hat{l}_1)))}\\
+      \set{} &\quad\owc
+    \end{array}
+  \right.\\
+  LP_2 = \left\{
+    \begin{array}{ll}
+      \set{\langle \hat{l}_2, ``@extensible" \rangle} & \quad\ifc{\hat{H}(\hat{l}_1)(\varprop{proto}).1.1.1.1.2 \not\sqsubseteq \bot_{Null}}\\
+      \set{} &\quad\owc
+    \end{array}
+  \right.\\
+}
+\\\\
+\ahf{Delete}_{\it use} & : \aHeap \times \aLoc \times \abs{String} \rightarrow \powerset{\aLoc \times \SF{Prop}}\\
+& \ahf{Delete}_{\it use}(\hat{H},\hat{l},\hat{s}) = \set{\langle \hat{l},\hat{s}\rangle}\\
+\\\\
+\ahf{IsArray}_{\it use} & : \aHeap \times \aLoc \rightarrow \powerset{\aLoc \times \SF{Prop}}\\
+& \ahf{IsArray}_{\it use}(\hat{H},\hat{l}) = \set{\langle \hat{l},\hat{\varprop{class}}\rangle}\\
+\end{array}
+\]
+\[
+\begin{array}{ll}
+\ahf{LookupBase}_{\it use} & : \aHeap \times \powerset{\aLoc} \times \SF{Prop} \rightarrow \powerset{\aLoc \times \SF{Prop}}\\
+& 
+\begin{array}{ll}
+  \ahf{LookupBase}_{\it use}(\hat{H},\hat{L},x) = \set{}&\quad\ifc{\chf{getVarKind}_P(x)=\SF{PureLocalVar}}\\
+  \ahf{LookupBase}_{\it use}(\hat{H},\hat{L},x) = \bigcup_{\hat{l}\in\hat{L}}\ahf{LookupBaseL}_{\it use}(\hat{H},\hat{l},x)&\quad\ifc{\chf{getVarKind}_P(x)=\SF{CapturedVar}}\\
+  \ahf{LookupBase}_{\it use}(\hat{H},\hat{L},x) = \set{}&\quad\ifc{\chf{getVarKind}_P(x)=\SF{CapturedCatchVar}}\\
+  \ahf{LookupBase}_{\it use}(\hat{H},\hat{L},x) = \ahf{LookupBaseG}_{\it use}(\hat{H},x)&\quad\ifc{\chf{getVarKind}_P(x)=\SF{GlobalVar}}
+\end{array}
+\\\\
+\ahf{LookupBaseL}_{\it use} & : \aHeap \times \aLoc \times \SF{Prop} \rightarrow \powerset{\aLoc \times \SF{Prop}}\\
+& \ahf{LookupBaseL}_{\it use}(\hat{H},\hat{l},x) = \set{\langle\hat{l}, x\rangle} \cup LP\\
+& \quad\wherec{
+  \hat{L}_{outer} = \hat{H}(\hat{l})(\varprop{outer}).1.2.2\\
+  LP = \left\{
+    \begin{array}{ll}
+      \set{\langle \hat{l},\varprop{outer}\rangle} \cup \bigcup_{\hat{l}_{outer}\in\hat{L}_{outer}}\ahf{LookupBaseL}_{\it use}(\hat{H},\hat{l}_{outer},x)
+        & \quad\ifc{\afalse\sqsubseteq (x\dot{\in}dom(\hat{H}(\hat{l})))}\\
+      \set{} & \quad\owc
+    \end{array}
+  \right.\\
+}
+\\\\
+\ahf{LookupBaseG}_{\it use} & : \aHeap \times \SF{Prop} \rightarrow \powerset{\aLoc \times \SF{Prop}}\\
+& \ahf{LookupBaseG}_{\it use}(\hat{H},x) = \set{\langle\avarloc{Global}_R, x\rangle,\langle\hat{l}, \varprop{outer}\rangle}\cup LP_1 \cup LP_2\\
+& \quad\wherec{
+  \hat{L}_{proto} = \hat{H}(\avarloc{Global}_R)(\varprop{proto}).1.1.1.2\\
+  LP_1 = \set{\langle \hat{l}_{proto},x\rangle ~|~ \hat{l}_{proto}\in\hat{L}_{proto}}\\
+  LP_2 = \bigcup_{\hat{l}_{proto}\in\hat{L}_{proto}}\left\{
+    \begin{array}{ll}
+      \ahf{Proto}_{\it use}(\hat{H},\hat{l}_{proto},\alpha(x))&\quad\ifc{\atrue\sqsubseteq\ahf{HasProperty}(\hat{H},\hat{l}_{proto},\alpha(x))}\\
+      \set{} &\quad\owc
+    \end{array}
+  \right.
+}
+\\\\
+\ahf{Proto}_{\it use} & : \aHeap \times \aLoc \times \abs{String} \rightarrow \powerset{\aLoc \times \SF{Prop}}\\
+& \ahf{Proto}_{\it use}(\hat{H},\hat{l},\hat{s}) = \set{\langle\hat{l},\hat{s}\rangle,\langle\hat{l},\varprop{proto}\rangle}\cup LP\\
+&\quad\wherec{
+  \hat{L}_{proto} = \hat{H}(\hat{l})(\varprop{proto}).1.1.1.2\\
+  LP=\left\{
+    \begin{array}{ll}
+      \bigcup_{\hat{l}_{proto}\in\hat{L}_{proto}}\ahf{Proto}_{\it use}(\hat{H},\hat{l}_{proto},\hat{s})&\quad\ifc{\afalse\sqsubseteq (\hat{s}\dot{\in}dom(\hat{H}(\hat{l})))}\\
+      \set{}&\quad\owc
+    \end{array}
+  \right.\\
+}
+\\\\
+\ahf{HasConstruct}_{\it use} & : \aHeap \times \aLoc \rightarrow \powerset{\aLoc \times \SF{Prop}}\\
+& \ahf{HasConstruct}_{\it use}(\hat{H},\hat{l}) = \set{\langle\hat{l},\varprop{construct}\rangle}\\
+\\\\
+\ahf{IsCallable}_{\it use} & : \aHeap \times \aLoc \rightarrow \powerset{\aLoc \times \SF{Prop}}\\
+& \ahf{IsCallable}_{\it use}(\hat{H},\hat{l}) = \set{\langle\hat{l},\varprop{function}\rangle}\\
+\\\\
+\ahf{getThis}_{\it use} & : \aHeap \times \aValue \rightarrow \powerset{\aLoc \times \SF{Prop}}\\
+& \ahf{getThis}_{\it use}(\hat{H},\hat{v}) = LP\\
+& \quad\wherec{
+  LP = \set{\langle \hat{l}, \varprop{class}\rangle ~|~ \hat{l} \in \hat{v}.2}\\
+}
+\\\\
+\ahf{CreateMutableBinding}_{\it use} & : \aHeap \times \powerset{\aLoc} \times \SF{Prop} \rightarrow \powerset{\aLoc \times \SF{Prop}}\\
+  & \ahf{CreateMutableBinding}_{\it use}(\hat{H},\hat{L}, x) = \set{}\quad\ifc{\ahf{getVarKind}_P(x) = \SF{PureLocalVar}}\\
+  & \ahf{CreateMutableBinding}_{\it use}(\hat{H},\hat{L}, x) = \set{\langle\hat{l},x\rangle~|~\hat{l}\in\hat{L}}\quad\ifc{\ahf{getVarKind}_P(x) = \SF{CapturedVar}}\\
+  & \ahf{CreateMutableBinding}_{\it use}(\hat{H},\hat{L}, x) = \set{\langle\avarloc{Collapsed}_O,x\rangle}\quad\ifc{\ahf{getVarKind}_P(x) = \SF{CapturedCatchVar}}\\
+  & \ahf{CreateMutableBinding}_{\it use}(\hat{H},\hat{L}, x) = \set{}\quad\ifc{\ahf{getVarKind}_P(x) = \SF{GlobalVar}}\\
+\\\\
+\ahf{inherit}_{\it use} & : \aHeap \times \aLoc \times \aLoc \rightarrow \powerset{\aLoc \times \SF{Prop}}\\
+& \ahf{inherit}_{\it use}(\hat{H},\hat{l}_1,\hat{l}_2) = \set{\langle\hat{l}_1,\varprop{proto}\rangle}\cup LP\\
+&\quad\wherec{
+  LP = \left\{
+    \begin{array}{ll}
+      \bigcup_{\hat{l}\in\hat{H}(\hat{l}_1)(\varprop{proto}).1.1.1.2}\ahf{inherit}_{\it use}(\hat{H},\hat{l},\hat{l}_2)&\quad\ifc{\hat{l}_1\not=\hat{l}_2}\\
+      \set{}&\quad\owc
+    \end{array}
+  \right.
+}
+\\\\
+\ahf{TypeTag}_{\it use} & : \aHeap \times \aValue \rightarrow \powerset{\aLoc \times \SF{Prop}}\\
+& \ahf{TypeTag}_{\it use}(\hat{H},\hat{v}) = \bigcup_{\hat{l}\in\hat{v}.2}\ahf{IsCallable}_{\it use}(\hat{H},\hat{l})
+\end{array}
+\]
+\[
+\begin{array}{ll}
+\ahf{Lookup}_{\it use} & : \aHeap \times \powerset{\aLoc} \times \SF{Prop} \rightarrow \powerset{\aLoc \times \SF{Prop}}\\
+& \begin{array}{ll}
+  \ahf{Lookup}_{\it use}(\hat{H},\hat{L},x) = \set{\langle \avarloc{PureLocal}_R, x\rangle}&\quad\ifc{\ahf{getVarKind}_P(x) = \SF{PureLocalVar}}\\
+  \ahf{Lookup}_{\it use}(\hat{H},\hat{L},x) = \bigcup_{\hat{l}\in\hat{L}}\ahf{LookupL}_{\it use}(\hat{H},\hat{l},x)&\quad\ifc{\ahf{getVarKind}_P(x) = \SF{CapturedVar}}\\
+  \ahf{Lookup}_{\it use}(\hat{H},\hat{L},x) = \set{\langle \avarloc{Collapsed}_O, x\rangle}&\quad\ifc{\ahf{getVarKind}_P(x) = \SF{CapturedCatchVar}}\\
+  \ahf{Lookup}_{\it use}(\hat{H},\hat{L},x) = \ahf{LookupG}_{\it use}(\hat{H},x)&\quad\ifc{\ahf{getVarKind}_P(x) = \SF{GlobalVar}}\\
+  \end{array}
+\\\\
+
+\ahf{LookupL}_{\it use} & : \aHeap \times \aLoc \times \abs{String} \rightarrow \powerset{\aLoc \times \SF{Prop}}\\
+& \ahf{LookupL}_{\it use}(\hat{H}, \hat{l}, x) = \set{\langle\hat{l},x\rangle} \cup LP\\
+&\quad\wherec{
+  \hat{L}_{outer} = \hat{H}(\hat{l})(\varprop{outer}).1.2.2\\
+  LP=\left\{
+    \begin{array}{ll}
+      \set{\langle \hat{l},\varprop{outer}\rangle} \cup \bigcup_{\hat{l}_{outer}\in\hat{L}_{outer}}\ahf{LookupL}_{\it use}(\hat{H},\hat{l}_{outer},x) 
+        & \quad\ifc{\afalse\sqsubseteq (x\dot{\in}dom(\hat{H}(\hat{l})))} \\
+      \set{}&\quad\owc
+    \end{array}
+  \right.\\
+}
+\\\\
+
+\ahf{LookupG}_{\it use} & : \aHeap \times \SF{Prop} \rightarrow \powerset{\aLoc \times \SF{Prop}}\\
+& \ahf{LookupG}_{\it use}(\hat{H},x) = LP_1 \cup LP_2 \cup LP_3\\
+& \quad\wherec{
+  \hat{L}_{proto} = \hat{H}(\avarloc{Global}_R)(\hat{\varprop{proto}}).1.1.1.2\\
+  LP_1 = \set{\langle\avarloc{Global},x\rangle, \langle\avarloc{Global},\varprop{proto}\rangle}\\
+  LP_2 = \set{\langle\hat{l}_{proto},x\rangle ~|~ \hat{l}_{proto}\in\hat{L}_{proto}}\\
+  LP_3 = \bigcup_{\hat{l}_{proto}\in\hat{L}_{proto}}\left\{
+    \begin{array}{ll}
+      \ahf{Proto}_{\it use}(\hat{H},\hat{l}_{proto},\alpha(x))&\quad\ifc{\atrue \sqsubseteq \ahf{HasProperty}(\hat{H},\hat{l}_{proto},\alpha(x))}\\
+      \set{} &\quad\owc
+    \end{array}
+  \right.\\
+}
+\\\\
+\ahf{toObject}_{\it use} & : \aHeap \times \abs{Context} \times \aValue \times \abs{Address} \rightarrow \powerset{\aLoc \times \SF{Prop}}\\
+& \ahf{toObject}_{\it use}(\hat{H}, \hat{C}, \hat{v}, \hat{a}) = LP\\
+& \quad\wherec{
+  LP =
+  \left\{
+    \begin{array}{ll}
+      \ahf{Oldify}_{\it use}(\hat{H}, \hat{C}, \hat{a})& \quad\ifc{\hat{v}.1.5\not\sqsubseteq\bot_{string}
+        \lor \hat{v}.1.3\not\sqsubseteq\bot_{boolean}
+        \lor \hat{v}.1.4\not\sqsubseteq\bot_{number}}\\
+      \set{} & \quad\owc
+    \end{array}
+  \right.
+}
+\\\\
+\ahf{HasOwnProperty}_{\it use} & : \aHeap \times \aLoc \times \abs{String} \rightarrow \powerset{\aLoc \times \SF{Prop}}\\
+& \ahf{HasOwnProperty}_{\it use}(\hat{H},\hat{l},\hat{s}) = \set{\langle \hat{l},\hat{s}\rangle}\\
+\\\\
+\ahf{RaiseException}_{\it use} & : \powerset{\abs{Exception}} \powerset{\aLoc \times \SF{Prop}}\\
+& \ahf{RaiseException}_{\it use}(\hat{es}) = LP\\
+& \quad\wherec{
+  LP =
+  \left\{
+    \begin{array}{ll}
+      \set{\langle \avarloc{PureLocal}_R, \varprop{exception\_all} \rangle} & \quad\ifc{\hat{es}\not=\set{}} \\
+      \set{} & \quad\owc\\
+    \end{array}
+  \right.
+}
+\\\\
+\ahf{HasProperty}_{\it use} & : \aHeap \times \aLoc \times \abs{String} \rightarrow \powerset{\aLoc \times \SF{Prop}}\\
+& \ahf{HasProperty}_{\it use}(\hat{H},\hat{l},\hat{s}) = LP_1 \cup LP_2 \cup LP_3\\
+& \quad\wherec{
+  \hat{L}_{proto} = \hat{H}(\hat{l})(\varprop{proto}).1.1.1.2 \\
+  LP_1 = \ahf{HasOwnProperty}_{\it use}(\hat{H},\hat{l},\hat{s}) \\
+  LP_2 = \set{\langle \hat{l}, \varprop{proto} \rangle} \\
+  LP_3 = \left\{
+    \begin{array}{ll}
+      \bigcup_{\hat{l}_{proto}\in\hat{L}_{proto}}\ahf{HasProperty}_{\it use}(\hat{H},\hat{l}_{proto},\hat{s})
+      & \quad\ifc{\afalse \sqsubseteq \ahf{HasOwnProperty}(\hat{H},\hat{l},\hat{s})}\\
+      \set{} &\quad\owc
+    \end{array}
+  \right.
+}
+\\\\
+
+\end{array}
+\]
+\newpage
+\subsection{Semantic functions}
+\[
+\begin{array}{l}
+	\aN_{\it def} \in \Command \rightarrow \aState \rightarrow \powerset{\aLoc\times \SF{Prop}}\\
+	\aN_{\it use} \in \Command \rightarrow \aState \rightarrow \powerset{\aLoc\times \SF{Prop}}\\
+	\aI_{\it def} \in \SF{Instruction} \rightarrow \aState \rightarrow \powerset{\aLoc\times \SF{Prop}}\\
+	\aI_{\it use} \in \SF{Instruction} \rightarrow \aState \rightarrow \powerset{\aLoc\times \SF{Prop}}\\
+	\aV_{\it use} \in \SF{Expression} \rightarrow \aState \rightarrow \powerset{\aLoc\times \SF{Prop}}\\
+\end{array}
+\]
+\\
+\[
+\begin{array}{l}
+  \aE_{\it def}\lbr\hat{cp}\cfgnext_{\hat{C},\hat{o}}((fid,\SF{ENTRY}),\hat{cc})\rbr(\hat{H},\hat{C}_1) = LP_1 \cup LP_2\\
+  \quad\wherec{
+    \hat{o}_2=\hat{o}-\varprop{scope}\\
+    LP_1 = \set{\langle \avarloc{PureLocal}_R, x \rangle~|~ x\in dom(\hat{o}_2)}\\
+    LP_2 = \set{\langle \hat{l}_{env}, x\rangle ~|~ \hat{l}_{env}\in\hat{C}.1,\ x\in\ahf{NewDeclEnvRecord}_{\it def}()}\\
+  }
+  \\\\
+  \aE_{\it use}\lbr\hat{cp}\cfgnext_{\hat{C},\hat{o}}((fid,\SF{ENTRY}),\hat{cc})\rbr(\hat{H},\hat{C}_1) = LP\\
+  \quad\wherec{
+    \hat{o}_2=\hat{o}-\varprop{scope}\\
+    LP = \set{\langle \hat{l}_{env}, x\rangle ~|~ \hat{l}_{env}\in\hat{C}.1,\ x\in\ahf{NewDeclEnvRecord}_{\it def}()}\\
+  }
+  \\\\
+  \aN_{\it def}\lbr\SF{entry}\rbr(\hat{H},\hat{C}) = LP_1 \cup LP_2\\
+  \quad\wherec{
+    (({fid_{this}},\SF{ENTRY}),\hat{cc}) = \acp \\
+    \land\ x_1 \cdots x_n = \chf{getArgVars}_P(fid_{this})\ 
+    \land\ x_{n+1} \cdots x_m = \chf{getLocalVars}_P(fid_{this}) \\
+    LP_1 = \bigcup_{1\leq i\leq n}\ahf{CreateMutableBinding}_{\it def}(\hat{H},\hat{C}.1,x_i)\\
+    LP_2 = \bigcup_{n+1\leq j\neq m}\ahf{CreateMutableBinding}_{\it def}(\hat{H},\hat{C}.1,x_j)\\
+  }
+  \\\\
+  \aN_{\it use}\lbr\SF{entry}\rbr(\hat{H},\hat{C}) = \set{\langle\varloc{Context},1\rangle}\cup LP_1\cup LP_2\\
+  \quad\wherec{
+    (({fid_{this}},\SF{ENTRY}),\hat{cc}) = \acp \\
+    \hat{L}_{arg} = \hat{H}(\avarloc{PureLocal}_R)(\chf{getArgumentsName}(fid_{this})).1.1.1.2 \\
+    \land\ x_1 \cdots x_n = \chf{getArgVars}_P(fid_{this})\ 
+    \land\ x_{n+1} \cdots x_m = \chf{getLocalVars}_P(fid_{this}) \\
+    LP_1 = \set{\langle \avarloc{PureLocal}_R, \chf{getArgumentsName}(fid_{this})\rangle}\\
+    LP_2 = \bigcup_{\hat{l}\in\hat{L}_{arg}}\ahf{Proto}_{\it use}(\hat{H},\hat{l},``\hat{i-1}")\\
+    LP_3 = \bigcup_{1\leq i\leq n}\ahf{CreateMutableBinding}_{\it use}(\hat{H},\hat{C}.1,x_i)\\
+    LP_4 = \bigcup_{n+1\leq j\neq m}\ahf{CreateMutableBinding}_{\it use}(\hat{H},\hat{C}.1,x_j)\\
+  }
+  \\\\
+  \aN_{\it def}\lbr\SF{exit}\rbr(\hat{H},\hat{C}) = \set{}
+  \\\\
+  \aN_{\it use}\lbr\SF{exit}\rbr(\hat{H},\hat{C}) = \set{}
+  \\\\
+  \aN_{\it def}\lbr\SF{exit-exc}\rbr(\hat{H},\hat{C}) = \set{}
+  \\\\
+  \aN_{\it use}\lbr\SF{exit-exc}\rbr(\hat{H},\hat{C}) = \set{}
+  \\\\
+  % \aN_{\it use}\lbr\SF{exit-exc}\rbr(\hat{H},\hat{C}) = \bigcup_{LP_{\it def}\in this\_function}LP_{\it def}\\
+  \aN_{\it def}\lbr i^{+}\rbr(\hat{H},\hat{C}) = \bigcup_{i\in i^{+}} \aI_{\it def}\lbr i\rbr(\hat{H},\hat{C})
+  \\\\
+  \aN_{\it use}\lbr i^{+}\rbr(\hat{H},\hat{C}) = \bigcup_{i\in i^{+}} \aI_{\it use}\lbr i\rbr(\hat{H},\hat{C})
+  \\\\
+  \aI_{\it def}\lbr x\TT{:=}\TT{alloc(}e^{?}\TT{)}_{\hat{a}_{new}}\rbr(\hat{H},\hat{C})
+  = LP_1 \cup LP_2 \cup LP_3 \cup LP_4\\
+  \quad\wherec{
+    \hat{l}_R = (\hat{a}_{new},Recent)\\
+    (\hat{v},\hat{es}) = \aV\lbr e\rbr(\hat{H}, \hat{C})\\
+    LP_1 = \ahf{Oldify}_{\it def}(\hat{H}, \hat{C}, \hat{a}_{new}) \\
+    LP_2 = \set{\langle \hat{l}_R, s \rangle ~|~ s \in \ahf{NewObject}_{\it def}() } \\
+    LP_3 = \ahf{VarStore}_{\it def}(\hat{H}, \hat{C}.1, x)\\
+    LP_4 = \ahf{RaiseException}_{\it def}(\hat{es})
+  }
+  \\\\
+  \aI_{\it use}\lbr x\TT{:=}\TT{alloc(}e^{?}\TT{)}_{\hat{a}_{new}}\rbr(\hat{H},\hat{C})
+  = \set{\langle \avarloc{Context}, 1\rangle} \cup LP_1 \cup LP_2 \cup LP_3\cup LP_4\\
+  \quad\wherec{
+    (\hat{v},\hat{es}) = \aV\lbr e\rbr(\hat{H}, \hat{C})\\
+    LP_1 = \ahf{Oldify}_{\it use}(\hat{H}, \hat{C}, \hat{a}_{new}) \\
+    LP_2 = \aV_{\it use}\lbr e\rbr(\hat{H},\hat{C}) \quad\comment{\inblue // if $e$ is None, $LP_2$ is an empty set.}\\
+    LP_3 = \ahf{VarStore}_{\it use}(\hat{H}, \hat{C}.1, x)\\
+    LP_4 = \ahf{RaiseException}_{\it use}(\hat{es})
+  }
+\end{array}
+\]
+\[
+\begin{array}{l}
+  \aI_{\it def}\lbr x\TT{:=}\TT{allocArray(n)}_{\hat{a}_{new}}\rbr(\hat{H},\hat{C})
+  = LP_1 \cup LP_2 \cup LP_3\\
+  \quad\wherec{
+    \hat{l}_R = (\hat{a}_{new},Recent)\\
+    LP_1 = \ahf{Oldify}_{\it def}(\hat{H}, \hat{C}, \hat{a}_{new}) \\
+    LP_2 = \set{\langle \hat{l}_R, s \rangle ~|~ s \in \ahf{NewArrayObject}_{\it def}() } \\
+    LP_3 = \ahf{VarStore}_{\it def}(\hat{H}, \hat{C}.1, x)\\
+  }
+  \\\\
+  \aI_{\it use}\lbr x\TT{:=}\TT{allocArray(n)}_{\hat{a}_{new}}\rbr(\hat{H},\hat{C})
+  = \set{\langle \avarloc{Context}, 1\rangle} \cup LP_1 \cup LP_2\\
+  \quad\wherec{
+    LP_1 = \ahf{Oldify}_{\it use}(\hat{H}, \hat{C}, \hat{a}_{new}) \\
+    LP_2 = \ahf{VarStore}_{\it use}(\hat{H}, \hat{C}.1, x)
+  }
+  \\\\
+  \aI_{\it def}\lbr x\TT{:=}\TT{allocArg(n)}_{\hat{a}_{new}}\rbr(\hat{H},\hat{C})
+  = LP_1 \cup LP_2 \cup LP_3 \\
+  \quad\wherec{
+    \hat{l}_R = (\hat{a}_{new},Recent)\\
+    LP_1 = \ahf{Oldify}_{\it def}(\hat{H}, \hat{C}, \hat{a}_{new}) \\
+    LP_2 = \set{\langle \hat{l}_R, s \rangle ~|~ s \in \ahf{NewArgObject}_{\it def}() } \\
+    LP_3 = \ahf{VarStore}_{\it def}(\hat{H}, \hat{C}.1, x)
+  }
+  \\\\
+  \aI_{\it use}\lbr x\TT{:=}\TT{allocArg(n)}_{\hat{a}_{new}}\rbr(\hat{H},\hat{C})
+  = \set{\langle \avarloc{Context}, 1\rangle} \cup LP_1 \cup LP_2\\
+  \quad\wherec{
+    LP_1 = \ahf{Oldify}_{\it use}(\hat{H}, \hat{C}, \hat{a}_{new}) \\
+    LP_2 = \ahf{VarStore}_{\it use}(\hat{H}, \hat{C}.1, x)
+  }
+  \\\\
+  \aI_{\it def}\lbr x\TT{:=}e\rbr(\hat{H},\hat{C})
+  = LP_1 \cup LP_2\\
+  \quad\wherec{
+    (\hat{v},\hat{es}) = \aV\lbr e\rbr(\hat{H},\hat{C})\\
+    LP_1 = \ahf{VarStore}_{\it def}(\hat{H}, \hat{H}(\avarloc{PureLocal}_R)(\varprop{env}).1.2.2, x)\\
+    LP_2 = \ahf{RaiseException}_{\it def}(\hat{es})
+  }
+  \\\\
+  \aI_{\it use}\lbr x\TT{:=}e\rbr(\hat{H},\hat{C})
+  = \set{\langle \avarloc{PureLocal}_R, \varprop{env}\rangle} \cup LP_1 \cup LP_2 \cup LP_3\\
+  \quad\wherec{
+    (\hat{v},\hat{es}) = \aV\lbr e\rbr(\hat{H},\hat{C})\\
+    LP_1 = \ahf{VarStore}_{\it use}(\hat{H}, \hat{H}(\avarloc{PureLocal}_R)(\varprop{env}).1.2.2, x)\\
+    LP_2 = \aV_{\it use}\lbr e\rbr(\hat{H},\hat{C})\\
+    LP_3 = \ahf{RaiseException}_{\it use}(\hat{es})
+  }
+\end{array}
+\]
+\[
+\begin{array}{l}
+  \\\\
+  \aI_{\it def}\lbr x_1 \TT{:=} \SF{delete}\TT{(}x_2\TT{)} \rbr(\hat{H},\hat{C})
+  = LP_1\cup LP_2\\
+  \quad\wherec{
+    \hat{L}_{base}=\ahf{LookupBase}(\hat{H},\hat{C}.1,x_2)\\
+    LP_1 = \ahf{VarStore}_{\it def}(\hat{H}, \hat{C}.1, x_1)\\
+    LP_2 = \bigcup_{\hat{l}_{base}\in\hat{L}_{base}}\ahf{Delete}_{\it def}(\hat{H},\hat{l}_{base},\hat{x}_2)\\
+  }
+  \\\\
+  \aI_{\it use}\lbr x_1 \TT{:=} \SF{delete}\TT{(}x_2\TT{)} \rbr(\hat{H},\hat{C})
+  = \set{\langle \avarloc{Context}, 1\rangle} \cup LP_1 \cup LP_2\cup LP_3\\
+  \quad\wherec{
+    \hat{L}_{base}=\ahf{LookupBase}(\hat{H},\hat{C}.1,x_2)\\
+    LP_1 = \ahf{VarStore}_{\it use}(\hat{H}, \hat{C}.1, x_1)\\
+    LP_2 = \ahf{LookupBase}_{\it use}(\hat{H}, \hat{C}.1, x_2)\\
+    LP_3 = \bigcup_{\hat{l}_{base}\in\hat{L}_{base}}\ahf{Delete}_{\it use}(\hat{H},\hat{l}_{base},\hat{x}_2)\\
+  }
+  \\\\
+  \aI_{\it def}\lbr x \TT{:=} \SF{delete}\TT{(}e\TT{)} \rbr(\hat{H},\hat{C})
+  = LP_1 \cup LP_2\\
+  \quad\wherec{
+    (\hat{v},\hat{es}) = \aV\lbr e\rbr(\hat{H},\hat{C})\\
+    LP_1 = \ahf{VarStore}_{\it def}(\hat{H}, \hat{C}.1, x)\\
+    LP_2 = \ahf{RaiseException}_{\it def}(\hat{es})
+  }
+  \\\\
+  \aI_{\it use}\lbr x \TT{:=} \SF{delete}\TT{(}e\TT{)} \rbr(\hat{H},\hat{C})
+  = \set{\langle \avarloc{Context}, 1\rangle} \cup LP_1 \cup LP_2 \cup LP_3\\
+  \quad\wherec{
+    (\hat{v},\hat{es}) = \aV\lbr e\rbr(\hat{H},\hat{C})\\
+    LP_1 = \ahf{VarStore}_{\it use}(\hat{H}, \hat{C}.1, x)\\
+    LP_2 = \aV_{\it use}\lbr e\rbr(\hat{H},\hat{C})\\
+    LP_3 = \ahf{RaiseException}_{\it use}(\hat{es})
+  }
+  \\\\
+  \aI_{\it def}\lbr x \TT{:=} \SF{delete}\TT{(}e_1,e_2\TT{)} \rbr(\hat{H},\hat{C})
+  = LP_1\cup LP_2 \cup LP_3 \\
+  \quad\wherec{
+    \hat{L}=(\aV\lbr e_1\rbr(\hat{H},\hat{C})).1.2
+    \land\ (\hat{v}, \hat{es}) = \aV\lbr e_2\rbr(\hat{H},\hat{C}) \\
+    \hat{ss} = \ahf{toStringSet}(\ahf{toPrimitive}(\hat{v})) \\
+    LP_1 = \ahf{VarStore}_{\it def}(\hat{H}, \hat{C}.1, x)\\
+    LP_2 = \bigcup_{\hat{l}\in\hat{L}} \bigcup_{\hat{s}\in\hat{ss}} \ahf{Delete}_{\it def}(\hat{H},\hat{l},\hat{s}) \\
+    LP_3 = \ahf{RaiseException}_{\it def}(\hat{es})
+  }
+  \\\\
+  \aI_{\it use}\lbr x \TT{:=} \SF{delete}\TT{(}e_1,e_2\TT{)} \rbr(\hat{H},\hat{C})
+  = \set{\langle \avarloc{Context}, 1\rangle} \cup LP_1 \cup LP_2\cup LP_3 \cup LP_4 \cup LP_5 \\
+  \quad\wherec{
+    \hat{L}=(\aV\lbr e_1\rbr(\hat{H},\hat{C})).1.2
+    \land\ (\hat{v}, \hat{es}) = \aV\lbr e_2\rbr(\hat{H},\hat{C}) \\
+    \hat{ss} = \ahf{toStringSet}(\ahf{toPrimitive}(\hat{v})) \\
+    LP_1 = \ahf{VarStore}_{\it use}(\hat{H}, \hat{C}.1, x)\\
+    LP_2 = \aV_{\it use}\lbr e_1\rbr(\hat{H},\hat{C})\\
+    LP_3 = \aV_{\it use}\lbr e_2\rbr(\hat{H},\hat{C})\\
+    LP_4 = \bigcup_{\hat{l}\in\hat{L}} \bigcup_{\hat{s}\in\hat{ss}} \ahf{Delete}_{\it use}(\hat{H},\hat{l},\hat{s}) \\
+    LP_5 = \ahf{RaiseException}_{\it use}(\hat{es})
+  }
+  \\\\
+
+  \aI_{\it use}\lbr x \TT{:=} \SF{delete}\TT{(}e_1,e_2\TT{)} \rbr(\hat{H},\hat{C})
+  = \set{\langle \avarloc{Context}, 1\rangle} \cup LP_1 \cup LP_2\cup LP_3 \cup LP_4\\
+  \quad\wherec{
+    \hat{L}=(\aV\lbr e_1\rbr(\hat{H},\hat{C})).1.2
+    \land\ \hat{s}=(\aV\lbr e_2\rbr(\hat{H},\hat{C})).1.1.5\\
+    LP_1 = \ahf{VarStore}_{\it use}(\hat{H}, \hat{C}.1, x)\\
+    LP_2 = \aV_{\it use}\lbr e_1\rbr(\hat{H},\hat{C})\\
+    LP_3 = \aV_{\it use}\lbr e_2\rbr(\hat{H},\hat{C})\\
+    LP_4 = \bigcup_{\hat{l}\in\hat{L}}\ahf{Delete}_{\it use}(\hat{H},\hat{l},\hat{s})
+  }
+  \\\\
+\end{array}
+\]
+\[
+\begin{array}{l}
+
+  \aI_{\it def}\lbr e_1\TT{[}e_2\TT{]}\TT{=}e_3 \rbr(\hat{H},\hat{C})
+  = LP_1 \cup LP_{ex}\\
+  \quad\wherec{
+    \hat{L} =(\aV\lbr e_1\rbr(\hat{H},\hat{C})).1.2\\
+    (\hat{v}_{index}, \hat{es}_{index})=(\aV\lbr e_2\rbr(\hat{H},\hat{C}))\\
+    (\hat{v}_{rhs},\hat{es}_{rhs})=\aV\lbr e_3\rbr(\hat{H},\hat{C}) \\
+    LP_{ex} = \ahf{RaiseException}_{\it def}(\hat{es}_1)\\
+    (LP_1, \hat{es}_1) = \left\{\begin{array}{ll}
+        (\{\}, \hat{es}_{index})& \ifc{\hat{v}_{index} \sqsubseteq \bot_{Value}}\\
+        (LP_2, \hat{es}_2) & \owc
+      \end{array}\right.\\
+    (LP_2, \hat{es}_2) = \left\{\begin{array}{ll}
+        (\{\}, \hat{es}_{index} \cup \hat{es}_{rhs})& \ifc{\hat{v}_{rhs} \sqsubseteq \bot_{Value}}\\
+        (LP_3, \hat{es}_3 \cup \hat{es}_{index} \cup \hat{es}_{rhs}) & \owc
+      \end{array}\right.\\
+    \hat{S} = \ahf{toStringSet}(\ahf{toPrimitive}(\hat{v}_{index}))\\
+    (LP_3, \hat{es}_3) = \bigcup_{\hat{s}\in\hat{S}} (LP_{NArr} \cup LP_{Arr}, \hat{es}_{Arr})\\
+    \hat{L}_{NArr} = \set{\hat{l}~\mid~\hat{l}\in\hat{L}
+      \land \afalse \sqsubseteq \ahf{IsArray}(\hat{H}, \hat{l})
+      \land \atrue\sqsubseteq\ahf{CanPut}(\hat{H},\hat{l},\hat{s})
+    } \\
+    \hat{L}_{Arr} = \set{\hat{l}~\mid~\hat{l}\in\hat{L}
+      \land \atrue \sqsubseteq \ahf{IsArray}(\hat{H}, \hat{l})
+      \land \atrue\sqsubseteq\ahf{CanPut}(\hat{H},\hat{l},\hat{s})
+    } \\
+    LP_{NArr} = \bigcup_{\hat{l}\in\hat{L}_{NArr}} \ahf{PropStore}_{\it def}(\hat{H},\hat{l},\hat{s})\\
+    (LP_{Arr}, \hat{es}_{Arr}) = \bigcup_{\hat{l} \in \hat{L}} (LP_{length} \cup LP_{index} \cup LP_{normal}, \hat{es}_{len})\\
+    (LP_{length}, \hat{es}_{len}) = \left\{\begin{array}{ll}
+        (LP_{length_2}, \hat{es}_{len_2})
+        & \ifc{\hat{``length"} \sqsubseteq \hat{s}}\\
+        (\{ \}, \{ \}) & \owc
+      \end{array}\right.\\
+    LP_{len_2} = \left\{\begin{array}{ll}
+        LP_{len_3} \cup LP_{len_4}
+        & \ifc{\atrue \sqsubseteq \hat{v}_{value} \hat{=} \hat{v}_{newLen}.1.4} \\
+        \{ \} & \owc\\
+      \end{array}\right.\\
+    \hat{es}_{len_2} = \left\{\begin{array}{ll}
+        \{ \hat{\SF{RangeError}}\}
+        & \ifc{\afalse \sqsubseteq \hat{v}_{value} \hat{=} \hat{v}_{newLen}.1.4} \\
+        \{ \} & \owc\\
+      \end{array}\right.\\
+    LP_{len_3} = \left\{\begin{array}{ll}
+        \ahf{PropStore}_{\it def}(\hat{H},\hat{l},\hat{``length"})
+        & \ifc{\atrue \sqsubseteq \hat{v}_{value} \hat{\leq} \hat{v}_{newLen}.1.4
+         \land \atrue \sqsubseteq \ahf{CanPut}(\hat{H}, \hat{l}, \hat{``length"})} \\
+        \{ \} & \owc\\
+      \end{array}\right.\\
+    LP_{len_4} = \left\{\begin{array}{ll}
+        \ahf{PropStore}_{\it def}(\hat{H}, \hat{l}, \hat{``length"}) \cup
+        \bigcup_{x=\hat{v}_{oldLen}-1\textrm{ to }\hat{v}_{newLen}}\ahf{Delete}(\hat{H},\hat{l},x)
+        & \ifc{\afalse \sqsubseteq \hat{v}_{value} \hat{=} \hat{v}_{newLen}.1.4
+         \land \atrue \sqsubseteq \ahf{CanPut}(\hat{H}, \hat{l}, \hat{``length"})} \\
+        \ahf{PropStore}_{\it def}(\hat{H}, \hat{l}, \hat{``length"}, \hat{v}) & \owc\\
+      \end{array}\right.\\
+    LP_{index} = \left\{\begin{array}{ll}
+        LP_{index_1} \cup LP_{index_2} 
+        & \ifc{\atrue \sqsubseteq \ahf{IsArrayIndex}(\hat{s})}\\
+        \{ \} & \owc
+      \end{array}\right.\\
+    LP_{index_1} = \left\{\begin{array}{ll}
+        \ahf{PropStore}_{\it def}(\hat{H},\hat{l},\hat{s})
+        & \ifc{\atrue \sqsubseteq (\hat{n}_{index} \hat{<} \hat{n}_{oldLen})}\\
+        \{ \} & \owc
+      \end{array}\right.\\
+    LP_{index_2} = \left\{\begin{array}{ll}
+        \ahf{PropStore}_{\it def}(\hat{H},\hat{l},\hat{s}) \cup \ahf{PropStore}_{\it def}(\hat{H},\hat{l},\hat{``length"})
+        & \ifc{\atrue \sqsubseteq (\hat{n}_{oldLen} \hat{\leq} \hat{n}_{index}) \land 
+          \atrue \sqsubseteq \ahf{CanPut}(\hat{H}, \hat{l}, \hat{``length"})}\\
+        \{ \} & \owc
+      \end{array}\right.\\
+    LP_{normal} = \left\{\begin{array}{ll}
+        \ahf{PropStore}_{\it def}(\hat{H},\hat{l},\hat{s})
+        & \ifc{\hat{s} \neq \hat{``length"} \land \afalse \sqsubseteq \ahf{IsArrayIndex}(\hat{s})}\\
+        \{ \} & \owc
+      \end{array}\right.\\
+  }
+  \\\\
+  
+  
+  \aI_{\it use}\lbr e_1\TT{[}e_2\TT{]}\TT{=}e_3 \rbr(\hat{H},\hat{C})
+  = \set{\langle \avarloc{Context}, 1\rangle, \langle \avarloc{Context}, 2\rangle} \cup LP_1 \cup LP_2\cup LP_3 \cup LP_4 \cup LP_5 \cup LP_6 \cup LP_7\\
+  \quad\wherec{
+    \hat{L}=(\aV\lbr e_1\rbr(\hat{H},\hat{C})).1.2
+    \land (\hat{v}_{index},\hat{es}_{index})=\aV\lbr e_2\rbr(\hat{H},\hat{C})
+    \land (\hat{v}_{rhs},\hat{es}_{rhs})=\aV\lbr e_3\rbr(\hat{H},\hat{C}) \\
+    \land\ \hat{S} = \ahf{toStringSet}(\ahf{toPrimitive}(\hat{v}_{index}))
+    \land \hat{T}=\set{\hat{l}~\mid~\hat{l}\in\hat{L}
+      \land \exists \hat{s} \in \hat{S}: 
+      \atrue\sqsubseteq\ahf{CanPut}(\hat{H},\hat{l},\hat{s})
+    } \\
+    
+    LP_1 = \bigcup_{\hat{l}\in\hat{T}} \bigcup_{\hat{s}\in\hat{S}} \ahf{PropStore}_{\it use}(\hat{H},\hat{l},\hat{s})\\
+    LP_2 = \aV_{\it use}\lbr e_1\rbr(\hat{H},\hat{C})\\
+    LP_3 = \aV_{\it use}\lbr e_2\rbr(\hat{H},\hat{C})\\
+    LP_4 = \aV_{\it use}\lbr e_3\rbr(\hat{H},\hat{C})\\
+    LP_5 = \bigcup_{\hat{l}\in\hat{L}} \bigcup_{\hat{s}\in\hat{S}} \ahf{CanPut}_{\it use}(\hat{H},\hat{l},\hat{s})\\
+    \hat{n}_{value} = \ahf{ToNumber}(\ahf{ToPrimitive}(\hat{v}_{rhs}))\\
+    \hat{v}_{newLen} = \ahf{ToUInt32}(\hat{v}_{rhs}))\\
+    \hat{es}_{len} = \left\{\begin{array}{ll}
+        \{ \hat{\SF{RangeError}}\}
+        & \ifc{\afalse \sqsubseteq \hat{v}_{value} \hat{=} \hat{v}_{newLen}.1.4} \\
+        \{ \} & \owc\\
+      \end{array}\right.\\
+    LP_6 = \ahf{RaiseException}_{\it use}(\hat{es}_{index} \sqcup \hat{es}_{rhs} \sqcup \hat{es}_{len})\\
+    \hat{L}_{NArr} = \set{\hat{l}~\mid~\hat{l}\in\hat{L}
+      \land \afalse \sqsubseteq \ahf{IsArray}(\hat{H}, \hat{l})
+      \land \exists \hat{s} \in \hat{S}: 
+      \atrue\sqsubseteq\ahf{CanPut}(\hat{H},\hat{l},\hat{s})
+    } \\
+    LP_{NArr} = \bigcup_{\hat{l}\in\hat{L}_{NArr}} \bigcup_{\hat{s}\in\hat{S}} \ahf{PropStore}_{\it use}(\hat{H},\hat{l},\hat{s})\\
+    \hat{L}_{Arr} = \set{\hat{l}~\mid~\hat{l}\in\hat{L}
+      \land \atrue \sqsubseteq \ahf{IsArray}(\hat{H}, \hat{l})
+      \land \exists \hat{s} \in \hat{S}: 
+      \atrue\sqsubseteq\ahf{CanPut}(\hat{H},\hat{l},\hat{s})
+    } \\
+    LP_{Arr} = \bigcup_{\hat{l}\in\hat{L}_{NArr}} \left(\begin{array}{l}
+      \ahf{PropStore}_{\it use}(\hat{H},\hat{l},\hat{``length"})
+      \cup \ahf{CanPut}_{\it use}(\hat{H},\hat{l},\hat{``length"})\\
+      \cup\ \ahf{Delete}_{use}(\hat{H}, \hat{l}, \hat{SF{NumStr}})
+      \cup \{ \langle \hat{l}, \hat{``length"} \rangle \}\\
+      \cup\ \bigcup_{\hat{s}\in\hat{S}} \ahf{PropStore}_{\it use}(\hat{H},\hat{l},\hat{s})\\
+    \end{array}\right)\\
+    LP_7 = LP_{NArr} \cup LP_{Arr}
+  }
+  \\\\
+  
+  
+\end{array}
+\]
+\[
+\begin{array}{l}
+  \aI_{\it def}\lbr x_1\TT{:=}\SF{function}\TT{(}fid\TT{)}_{\hat{a}_{new1},\hat{a}_{new2}} \rbr(\hat{H},\hat{C})
+  = LP_1 \cup LP_2 \cup LP_3 \cup LP_4 \cup LP_5 \cup LP_6\\
+  \quad\wherec{
+    \hat{l}_{R1} = (\hat{a}_{new1}, \hat{Recent})\ 
+    \land\ \hat{l}_{R2} = (\hat{a}_{new2}, \hat{Recent}) \\
+    LP_1 = \ahf{Oldify}_{\it def}(\hat{H}, \hat{C}, \hat{a}_{new1}) \\
+    LP_2 = \ahf{Oldify}_{\it def}(\hat{H}, \hat{C}, \hat{a}_{new2}) \\
+    LP_3 = \set{\langle \hat{l}_{R1}, s \rangle ~|~ s \in \ahf{NewFunctionObject}_{\it def}() } \\
+    LP_4 = \set{\langle \hat{l}_{R2}, s \rangle ~|~ s \in \ahf{NewObject}_{\it def}() } \\
+    LP_5 = \set{\langle \hat{l}_{R2}, ``constructor" \rangle} \\
+    LP_6 = \ahf{VarStore}_{\it def}(\hat{H},\hat{C}.1,x_1)
+  }
+  \\\\
+  \aI_{\it use}\lbr x_1\TT{:=}\SF{function}\TT{(}fid\TT{)}_{\hat{a}_{new1},\hat{a}_{new2}} \rbr(\hat{H},\hat{C})
+  = \set{\langle \avarloc{Context}, 1\rangle} \cup LP_1 \cup LP_2\cup LP_3\\
+  \quad\wherec{
+    LP_1 = \ahf{Oldify}_{\it use}(\hat{H}, \hat{C}, \hat{a}_{new1}) \\
+    LP_2 = \ahf{Oldify}_{\it use}(\hat{H}, \hat{C}, \hat{a}_{new2}) \\
+    LP_3 = \ahf{VarStore}_{\it use}(\hat{H},\hat{C}.1,x_1)
+  }
+  \\\\
+  \aI_{\it def}\lbr x_1\TT{:=}\SF{function}~x_2\TT{(}fid\TT{)}_{\hat{a}_{new1},\hat{a}_{new2},\hat{a}_{new3}} \rbr(\hat{H},\hat{C})
+  = LP_1 \cup LP_2 \cup LP_3 \cup LP_4 \cup LP_5 \cup LP_6 \cup LP_7 \cup LP_8 \cup LP_9 \\
+  \quad\wherec{
+    \hat{l}_{R1} = (\hat{a}_{new1}, \hat{Recent})\ 
+    \land\ \hat{l}_{R2} = (\hat{a}_{new2}, \hat{Recent}) \\
+    LP_1 = \ahf{Oldify}_{\it def}(\hat{H}, \hat{C}, \hat{a}_{new1}) \\
+    LP_2 = \ahf{Oldify}_{\it def}(\hat{H}, \hat{C}, \hat{a}_{new2}) \\
+    LP_3 = \ahf{Oldify}_{\it def}(\hat{H}, \hat{C}, \hat{a}_{new3}) \\
+    LP_4 = \set{\langle \hat{l}_{R1}, s \rangle ~|~ s \in \ahf{NewFunctionObject}_{\it def}() } \\
+    LP_5 = \set{\langle \hat{l}_{R2}, s \rangle ~|~ s \in \ahf{NewObject}_{\it def}() } \\
+    LP_6 = \set{\langle \hat{l}_{R2}, ``constructor" \rangle} \\
+    LP_7 = \set{\langle \hat{l}_{R3}, s \rangle ~|~ s \in \ahf{NewDeclEnvRecord}_{\it def}() } \\
+    LP_8 = \set{\langle \hat{l}_{R3}, x_2 \rangle} \\
+    LP_9 = \ahf{VarStore}_{\it def}(\hat{H},\hat{C}.1,x_1)
+  }
+  \\\\
+  \aI_{\it use}\lbr x_1\TT{:=}\SF{function}~x_2\TT{(}fid\TT{)}_{\hat{a}_{new1},\hat{a}_{new2},\hat{a}_{new3}} \rbr(\hat{H},\hat{C})
+  = \set{\langle \avarloc{Context}, 1\rangle} \cup LP_1 \cup LP_2\cup LP_3 \cup LP_4\\
+  \quad\wherec{
+    LP_1 = \ahf{Oldify}_{\it use}(\hat{H}, \hat{C}, \hat{a}_{new1}) \\
+    LP_2 = \ahf{Oldify}_{\it use}(\hat{H}, \hat{C}, \hat{a}_{new2}) \\
+    LP_3 = \ahf{Oldify}_{\it use}(\hat{H}, \hat{C}, \hat{a}_{new3}) \\
+    LP_4 = \ahf{VarStore}_{\it use}(\hat{H},\hat{C}.1,x_1)
+  }
+  \\\\
+  \aI_{\it def}\lbr \SF{construct}\TT{(}e_1,e_2,e_3\TT{)}_{\hat{a}_{new}} \rbr(\hat{H},\hat{C})
+  = LP_1 \cup LP_2 \cup LP_3\\
+  \quad\wherec{
+    (\hat{v}_1,\hat{es}_1) = \aV\lbr e_1\rbr(\hat{H},\hat{C}) \\
+    \hat{v}_{arg} = \aV\lbr e_3\rbr(\hat{H},\hat{C}).1 \\
+    \hat{es}_2 = \{\hat{\exc{TypeError}}\} \quad\ifc{\exists \hat{l}\in\hat{v}_1.2:\afalse\sqsubseteq\ahf{HasConstruct}(\hat{H},\hat{l})}\\
+    \hat{es}_3 = \{\hat{\exc{TypeError}}\} \quad\ifc{\hat{v}_1.1\not\sqsubseteq\bot_{PValue}}\\
+    \hat{es} = \hat{es}_1\sqcup\hat{es}_2\sqcup\hat{es}_3\\
+    LP_1 = \ahf{Oldify}_{\it def}(\hat{H}, \hat{C}, \hat{a}_{new}) \\
+    LP_2 = \set{\langle \hat{l}, ``callee"\rangle ~|~ \hat{l}\in \hat{v}_{arg}.2} \\
+    LP_3 = \ahf{RaiseException}_{\it def}(\hat{es})
+  }
+  \\\\
+  \aI_{\it use}\lbr \SF{construct}\TT{(}e_1,e_2,e_3\TT{)}_{\hat{a}_{new}} \rbr(\hat{H},\hat{C})
+  = LP_1 \cup LP_2 \cup LP_3 \cup LP_4 \cup LP_5 \cup LP_6 \cup LP_7 \cup LP_8 \cup LP_9 \cup LP_{10}\\
+  \quad\wherec{
+    (\hat{v}_1,\hat{es}_1) = \aV\lbr e_1\rbr(\hat{H},\hat{C}) \\
+    \hat{v}_{arg} = \aV\lbr e_3\rbr(\hat{H},\hat{C}).1 \\
+    \hat{L}_f = \set{ \hat{l} ~|~ \hat{l}\in \hat{v}_1.2 \land \atrue\sqsubseteq\ahf{HasConstruct}(\hat{H}_1,\hat{l})} \\
+    \hat{es}_2 = \{\hat{\exc{TypeError}}\} \quad\ifc{\exists \hat{l}\in\hat{v}_1.2:\afalse\sqsubseteq\ahf{HasConstruct}(\hat{H},\hat{l})}\\
+    \hat{es}_3 = \{\hat{\exc{TypeError}}\} \quad\ifc{\hat{v}_1.1\not\sqsubseteq\bot_{PValue}}\\
+    \hat{es} = \hat{es}_1\sqcup\hat{es}_2\sqcup\hat{es}_3\\
+    LP_1 = \ahf{Oldify}_{\it use}(\hat{H}, \hat{C}, \hat{a}_{new}) \\
+    LP_2 = \aV_{\it use}\lbr e_1\rbr(\hat{H},\hat{C})\\
+    LP_3 = \aV_{\it use}\lbr e_2\rbr(\hat{H},\hat{C})\\
+    LP_4 = \aV_{\it use}\lbr e_3\rbr(\hat{H},\hat{C})\\
+    LP_5 = \bigcup_{\hat{l}\in\hat{v}_1.2}\ahf{HasConstruct}_{\it use}(\hat{H},\hat{l})\\
+    LP_6 = \ahf{getThis}_{\it use}(\hat{H}, \aV\lbr e_2\rbr(\hat{H},\hat{C}).1) \\
+    LP_7 = \set{\langle \hat{l}_f, \varprop{construct}\rangle ~|~ \hat{l}_f\in\hat{L}_f}\\
+    LP_8 = \set{\langle \hat{l}, ``callee"\rangle ~|~ \hat{l}\in \hat{v}_{arg}.2} \\
+    LP_9 = \ahf{RaiseException}_{\it use}(\hat{es}) \\
+    LP_{10} = \set{\langle \avarloc{PureLocal}_R, x \rangle ~|~ \atrue \sqsubseteq x \dot{\in} dom(\hat{H}(\avarloc{PureLocal}_R)) }
+  }
+  \\\\
+\end{array}
+\]
+\[
+\begin{array}{l}
+  \aI_{\it def}\lbr \SF{call}\TT{(}e_1,e_2,e_3\TT{)}_{\hat{a}_{new}} \rbr(\hat{H},\hat{C})
+  = LP_1 \cup LP_2\\
+  \quad\wherec{
+    (\hat{v}_1,\hat{es}_1) = \aV\lbr e_1\rbr(\hat{H}_1,\hat{C}_1) \\
+    \hat{v}_{arg} = \aV\lbr e_3\rbr(\hat{H},\hat{C}).1 \\
+    \hat{es}_2 = \{\hat{\exc{TypeError}}\} \quad\ifc{\exists \hat{l}\in\hat{v}_1.2:\afalse\sqsubseteq\ahf{IsCallable}(\hat{H},\hat{l})}\\
+    \hat{es}_3 = \{\hat{\exc{TypeError}}\} \quad\ifc{\hat{v}_1.1\not\sqsubseteq\bot_{PValue}}\\
+    \hat{es} = \hat{es}_1\sqcup\hat{es}_2\sqcup\hat{es}_3\\
+    LP_1 = \ahf{Oldify}_{\it def}(\hat{H}, \hat{C}, \hat{a}_{new}) \\
+    LP_2 = \set{\langle \hat{l}, ``callee"\rangle ~|~ \hat{l}\in \hat{v}_{arg}.2} \\
+    LP_3 = \ahf{RaiseException}_{\it def}(\hat{es})
+  }
+  \\\\
+  \aI_{\it use}\lbr \SF{call}\TT{(}e_1,e_2,e_3\TT{)}_{\hat{a}_{new}} \rbr(\hat{H},\hat{C})
+  = LP_1 \cup LP_2 \cup LP_3 \cup LP_4 \cup LP_5 \cup LP_6 \cup LP_7 \cup LP_8 \cup LP_9\cup LP_{10}\\
+  \quad\wherec{
+    (\hat{v}_1,\hat{es}_1) = \aV\lbr e_1\rbr(\hat{H}_1,\hat{C}_1) \\
+    \hat{v}_{arg} = \aV\lbr e_3\rbr(\hat{H},\hat{C}).1 \\
+    \hat{L}_f = \set{ \hat{l} ~|~ \hat{l}\in \hat{v}_1.2 \land \atrue\sqsubseteq\ahf{IsCallable}(\hat{H}_1,\hat{l})} \\
+    \hat{es}_2 = \{\hat{\exc{TypeError}}\} \quad\ifc{\exists \hat{l}\in\hat{v}_1.2:\afalse\sqsubseteq\ahf{IsCallable}(\hat{H},\hat{l})}\\
+    \hat{es}_3 = \{\hat{\exc{TypeError}}\} \quad\ifc{\hat{v}_1.1\not\sqsubseteq\bot_{PValue}}\\
+    \hat{es} = \hat{es}_1\sqcup\hat{es}_2\sqcup\hat{es}_3\\
+    LP_1 = \ahf{Oldify}_{\it use}(\hat{H}, \hat{C}, \hat{a}_{new}) \\
+    LP_2 = \aV_{\it use}\lbr e_1\rbr(\hat{H},\hat{C})\\
+    LP_3 = \aV_{\it use}\lbr e_2\rbr(\hat{H},\hat{C})\\
+    LP_4 = \aV_{\it use}\lbr e_3\rbr(\hat{H},\hat{C})\\
+    LP_5 = \bigcup_{\hat{l}\in\hat{v}_1.2}\ahf{IsCallable}_{\it use}(\hat{H},\hat{l})\\
+    LP_6 = \ahf{getThis}_{\it use}(\hat{H}, \aV\lbr e_2\rbr(\hat{H},\hat{C}).1) \\
+    LP_7 = \set{\langle \hat{l}_f, \varprop{function}\rangle ~|~ \hat{l}_f\in\hat{L}_f}\\
+    LP_8 = \set{\langle \hat{l}, ``callee"\rangle ~|~ \hat{l}\in \hat{v}_{arg}.2} \\
+    LP_9 = \ahf{RaiseException}_{\it use}(\hat{es})\\
+    LP_{10} = \set{\langle \avarloc{PureLocal}_R, x \rangle ~|~ \atrue \sqsubseteq x \dot{\in} dom(\hat{H}(\avarloc{PureLocal}_R)) }
+  }
+  \\\\
+  \aI_{\it def}\lbr \SF{assert}\TT{(}e_1\inop e_2\TT{)} \rbr(\hat{H},\hat{C})
+  = \aV_{\it use}\lbr e_1\rbr(\hat{H},\hat{C}) \cup \aV_{\it use}\lbr e_2\rbr(\hat{H},\hat{C})
+  \\\\
+  \aI_{\it use}\lbr \SF{assert}\TT{(}e_1\inop e_2\TT{)} \rbr(\hat{H},\hat{C})
+  = \aV_{\it use}\lbr e_1\rbr(\hat{H},\hat{C}) \cup \aV_{\it use}\lbr e_2\rbr(\hat{H},\hat{C})
+  \\\\
+  \aI_{\it def}\lbr \SF{catch}\TT{(}x\TT{)} \rbr(\hat{H},\hat{C})
+  = \set{\langle\avarloc{PureLocal}_R,\varprop{exception}\rangle}\cup LP\\
+  \quad\wherec{
+    LP = \ahf{CreateMutableBinding}_{\it def}(\hat{H},\hat{C}.1,x)
+  }
+  \\\\
+  \aI_{\it use}\lbr \SF{catch}\TT{(}x\TT{)} \rbr(\hat{H},\hat{C})
+  = \set{\langle\avarloc{Context},1\rangle} \cup LP_1 \cup LP_2\\
+  \quad\wherec{
+    LP_1 = \ahf{CreateMutableBinding}_{\it use}(\hat{H},\hat{C}.1,x)\\
+    LP_2 = \set{\langle\avarloc{PureLocal}_R,\varprop{exception\_all}\rangle,
+      \langle\avarloc{PureLocal}_R,\varprop{exception}\rangle}
+  }
+  \\\\
+  \aI_{\it def}\lbr \SF{return}\TT{(}e\TT{)} \rbr(\hat{H},\hat{C})
+  = LP_1 \cup LP_2\\
+  \quad\wherec{
+    (\hat{v},\hat{es})=\aV\lbr e\rbr(\hat{H},\hat{C})\\
+    LP_1 = \set{\langle\avarloc{PureLocal}_R,\varprop{return}\rangle}\\
+    LP_2 = \ahf{RaiseException}_{\it def}(\hat{es})
+  }
+  \\\\
+  \aI_{\it use}\lbr \SF{return}\TT{(}e\TT{)} \rbr(\hat{H},\hat{C})
+  = LP_1 \cup LP_2\\
+  \quad\wherec{
+    (\hat{v},\hat{es})=\aV\lbr e\rbr(\hat{H},\hat{C})\\
+    LP_1 = \aV_{\it use}\lbr e\rbr(\hat{H},\hat{C})\\
+    LP_2 = \ahf{RaiseException}_{\it use}(\hat{es})\\
+  }
+  \\\\
+  \aI_{\it def}\lbr \SF{return}\TT{()} \rbr(\hat{H},\hat{C})
+  = LP\\
+  \quad\wherec{
+    LP = \set{\langle\avarloc{PureLocal}_R,\varprop{return}\rangle}
+  }
+  \\\\
+  \aI_{\it use}\lbr \SF{return}\TT{()} \rbr(\hat{H},\hat{C})
+  = \set{}
+  \\\\
+  \aI_{\it def}\lbr \SF{throw}\TT{(}e\TT{)} \rbr(\hat{H},\hat{C})
+  = LP_1 \cup LP_2\\
+  \quad\wherec{
+    (\hat{v},\hat{es})=\aV\lbr e\rbr(\hat{H},\hat{C})\\
+    LP_1 = \set{\langle\avarloc{PureLocal}_R,\varprop{exception}\rangle,
+      \langle\avarloc{PureLocal}_R,\varprop{exception\_all}\rangle}\\
+    LP_2 = \ahf{RaiseException}_{\it def}(\hat{es})\\
+  }
+  \\\\
+  \aI_{\it use}\lbr \SF{throw}\TT{(}e\TT{)} \rbr(\hat{H},\hat{C})
+  = LP_1\cup LP_2 \cup LP_3\\
+  \quad\wherec{
+    (\hat{v},\hat{es})=\aV\lbr e\rbr(\hat{H},\hat{C})\\
+    LP_1 = \aV_{\it use}\lbr e\rbr(\hat{H},\hat{C})\\
+    LP_2 = \set{\langle\avarloc{PureLocal}_R,\varprop{exception\_all}\rangle}\\
+    LP_3 = \ahf{RaiseException}_{\it use}(\hat{es})\\
+  }
+  \\\\
+\end{array}
+\]
+\[
+\begin{array}{l}
+  \\\\
+  \aI_{\it def}\lbr x \TT{:=} \ahfi{toObject}\TT{(}e\TT{)}_{a_{new}} \rbr(\hat{H},\hat{C})
+  = LP_1 \cup LP_2\cup LP_3\\
+  \quad\wherec{
+    (\hat{v},\hat{es}) = \aV\lbr e\rbr(\hat{H},\hat{C})\\
+    LP_1 = \ahf{VarStore}_{\it def}(\hat{H},\hat{C}.1,x)\\
+    LP_2 = \ahf{toObject}_{\it def}(\hat{H},\hat{C},\hat{v},\hat{a}_{new})\\
+    LP_3 = \ahf{RaiseException}_{\it def}(\hat{es})
+  }
+  \\\\
+  \aI_{\it use}\lbr x \TT{:=} \ahfi{toObject}\TT{(}e\TT{)}_{a_{new}} \rbr(\hat{H},\hat{C})
+  = \set{\langle \avarloc{Context}, 1\rangle} \cup LP_1 \cup LP_2 \cup LP_3 \cup LP_4\\
+  \quad\wherec{
+    (\hat{v},\hat{es}) = \aV\lbr e\rbr(\hat{H},\hat{C})\\
+    LP_1 = \aV_{\it use}\lbr e\rbr(\hat{H},\hat{C})\\
+    LP_2 = \ahf{VarStore}_{\it use}(\hat{H},\hat{C}.1,x)\\
+    LP_3 = \ahf{toObject}_{\it use}(\hat{H},\hat{C},\hat{v}, \hat{a}_{new})\\
+    LP_4 = \ahf{RaiseException}_{\it use}(\hat{es})\\
+  }
+  \\\\
+  \aI_{\it def}\lbr x \TT{:=} \ahfi{isObject}\TT{(}e\TT{)} \rbr(\hat{H},\hat{C})
+  = LP_1 \cup LP_2\\
+  \quad\wherec{
+    (\hat{v},\hat{es}) = \aV\lbr e\rbr(\hat{H},\hat{C})\\
+    LP_1 = \ahf{VarStore}_{\it def}(\hat{H},\hat{C}.1,x)\\
+    LP_2 = \ahf{RaiseException}_{\it def}(\hat{es})
+  }
+  \\\\
+  \aI_{\it use}\lbr x \TT{:=} \ahfi{isObject}\TT{(}e\TT{)} \rbr(\hat{H},\hat{C})
+  = \set{\langle \avarloc{Context}, 1\rangle} \cup LP_1 \cup LP_2 \cup LP_3\\
+  \quad\wherec{
+    (\hat{v},\hat{es}) = \aV\lbr e\rbr(\hat{H},\hat{C})\\
+    LP_1 = \aV_{\it use}\lbr e\rbr(\hat{H},\hat{C})\\
+    LP_2 = \ahf{VarStore}_{\it use}(\hat{H},\hat{C}.1,x)\\
+    LP_3 = \ahf{RaiseException}_{\it use}(\hat{es})\\
+  }
+  \\\\
+  \aI_{\it def}\lbr x \TT{:=} \ahfi{toString}\TT{(}e\TT{)} \rbr(\hat{H},\hat{C})
+  = LP_1 \cup LP_2\\
+  \quad\wherec{
+    (\hat{v},\hat{es}) = \aV\lbr e\rbr(\hat{H},\hat{C})\\
+    LP_1 = \ahf{VarStore}_{\it def}(\hat{H},\hat{C}.1,x)\\
+    LP_2 = \ahf{RaiseException}_{\it def}(\hat{es})
+  }
+  \\\\
+  \aI_{\it use}\lbr x \TT{:=} \ahfi{toString}\TT{(}e\TT{)} \rbr(\hat{H},\hat{C})
+  = \set{\langle \avarloc{Context}, 1\rangle} \cup LP_1 \cup LP_2\cup LP_3\\
+  \quad\wherec{
+    (\hat{v},\hat{es}) = \aV\lbr e\rbr(\hat{H},\hat{C})\\
+    LP_1 = \aV_{\it use}\lbr e\rbr(\hat{H},\hat{C})\\
+    LP_2 = \ahf{VarStore}_{\it use}(\hat{H},\hat{C}.1,x)\\
+    LP_3 = \ahf{RaiseException}_{\it use}(\hat{es})\\
+  }
+  \\\\
+  \aI_{\it def}\lbr x \TT{:=} \ahfi{toNumber}\TT{(}e\TT{)} \rbr(\hat{H},\hat{C})
+  = LP_1 \cup LP_2\\
+  \quad\wherec{
+    LP_1 = \ahf{VarStore}_{\it def}(\hat{H},\hat{C}.1,x)\\
+    LP_2 = \ahf{RaiseException}_{\it def}(\hat{es})
+  }
+  \\\\
+  \aI_{\it use}\lbr x \TT{:=} \ahfi{toNumber}\TT{(}e\TT{)} \rbr(\hat{H},\hat{C})
+  = \set{\langle \avarloc{Context}, 1\rangle} \cup LP_1 \cup LP_2 \cup LP_3\\
+  \quad\wherec{
+    (\hat{v},\hat{es}) = \aV\lbr e\rbr(\hat{H},\hat{C})\\
+    LP_1 = \aV_{\it use}\lbr e\rbr(\hat{H},\hat{C})\\
+    LP_2 = \ahf{VarStore}_{\it use}(\hat{H},\hat{C}.1,x)\\
+    LP_3 = \ahf{RaiseException}_{\it use}(\hat{es})\\
+  }
+  \\\\
+  \aI_{\it def}\lbr x_1 \TT{:=} \ahfi{getBase}\TT{(}x_2\TT{)} \rbr(\hat{H},\hat{C})
+  = LP\\
+  \quad\wherec{
+    LP = \ahf{VarStore}_{\it def}(\hat{H},\hat{C}.1,x_1)
+  }
+  \\\\
+  \aI_{\it use}\lbr x_1 \TT{:=} \ahfi{getBase}\TT{(}x_2\TT{)} \rbr(\hat{H},\hat{C})
+  = \set{\langle \avarloc{Context}, 1\rangle} \cup LP_1 \cup LP_2\\
+  \quad\wherec{
+    LP_1 = \ahf{VarStore}_{\it use}(\hat{H},\hat{C}.1,x_1)\\
+    LP_2 = \ahf{LookupBase}_{\it use}(\hat{H},\hat{C}.1,x_2)
+  }
+  \\\\
+  \aI_{\it def}\lbr x \TT{:=} \ahfi{iteratorInit}\TT{(}e\TT{)} \rbr(\hat{H},\hat{C})
+  = \set{}
+  \\\\
+  \aI_{\it use}\lbr x \TT{:=} \ahfi{iteratorInit}\TT{(}e\TT{)} \rbr(\hat{H},\hat{C})
+  = \set{}
+\end{array}
+\]
+\[
+\begin{array}{l}
+  \aI_{\it def}\lbr x \TT{:=} \ahfi{iteratorHasNext}\TT{(}e_1,e_2\TT{)} \rbr(\hat{H},\hat{C})
+  = LP\\
+  \quad\wherec{
+    LP = \ahf{VarStore}_{\it def}(\hat{H},\hat{C}.1,x)
+  }
+  \\\\
+  \aI_{\it use}\lbr x \TT{:=} \ahfi{iteratorHasNext}\TT{(}e_1,e_2\TT{)} \rbr(\hat{H},\hat{C})
+  = \set{\langle \avarloc{Context}, 1\rangle} \cup LP\\
+  \quad\wherec{
+    LP = \ahf{VarStore}_{\it use}(\hat{H},\hat{C}.1,x)
+  }
+  \\\\
+  \aI_{\it def}\lbr x \TT{:=} \ahfi{iteratorNext}\TT{(}e_1,e_2\TT{)} \rbr(\hat{H},\hat{C})
+  = LP\\
+  \quad\wherec{
+    LP = \ahf{VarStore}_{\it def}(\hat{H},\hat{C}.1,x)
+  }
+  \\\\
+  \aI_{\it use}\lbr x \TT{:=} \ahfi{iteratorNext}\TT{(}e_1,e_2\TT{)} \rbr(\hat{H},\hat{C})
+  = \set{\langle \avarloc{Context}, 1\rangle} \cup LP\\
+  \quad\wherec{
+    LP = \ahf{VarStore}_{\it use}(\hat{H},\hat{C}.1,x)
+  }
+  \\\\
+  
+  \aV_{\it use}\lbr x\rbr(\hat{H},\hat{C})
+  = \set{\langle\avarloc{Context},1\rangle} \cup \ahf{Lookup}_{\it use}(\hat{H},\hat{C}.1,x)
+  \\\\
+  \aV_{\it use}\lbr e_1 \inop e_2\rbr(\hat{H},\hat{C})
+  = \aV_{\it use}\lbr e_1\rbr(\hat{H},\hat{C}) \cup \aV_{\it use}\lbr e_2\rbr(\hat{H},\hat{C})
+  \\\\
+  \aV_{\it use}\lbr \preop e\rbr(\hat{H},\hat{C})
+  = \aV_{\it use}\lbr e\rbr(\hat{H},\hat{C})
+  \\\\
+  \aV_{\it use}\lbr e_1\TT{[}e_2\TT{]}\rbr(\hat{H},\hat{C})
+  = \aV_{\it use}\lbr e_1\rbr(\hat{H},\hat{C}) \cup \aV_{\it use}\lbr e_2\rbr(\hat{H},\hat{C}) \cup LP\\
+  \quad\wherec{
+     \hat{L} = (\aV\lbr e_1\rbr(\hat{H},\hat{C})).1.2\ 
+     \land\ (\hat{v}, \hat{es}) = \aV\lbr e_2\rbr(\hat{H},\hat{C}) \\
+     \hat{ss} = \ahf{toStringSet}(\ahf{toPrimitive}(\hat{v})) \\
+     LP = \bigcup_{\hat{l}\in\hat{L}} \bigcup_{\hat{s}\in\hat{ss}} \ahf{Proto}_{\it use}(\hat{H},\hat{l},\hat{s})
+  }
+  \\\\
+  \aV_{\it use}\lbr e_1\,\TT{instanceof}\,e_2\rbr (\hat{H},\hat{C})
+  = \aV_{\it use}\lbr e_1\rbr(\hat{H},\hat{C}) \cup \aV_{\it use}\lbr e_2\rbr(\hat{H},\hat{C}) \cup LP_1\cup LP_2\cup LP_3\\
+  \quad\wherec{
+    (\hat{v}_1,\hat{es}_1) = \aV\lbr e_1\rbr(\hat{H},\hat{C})
+    \land\ (\hat{v}_2,\hat{es}_2) = \aV\lbr e_2\rbr(\hat{H},\hat{C})\\
+    \hat{L}_1 = \hat{v}_1.2 \land\ \hat{L}_2 = \hat{v}_2.2\\
+    \hat{L}_3 = \set{ \hat{l} \,\mid\ \hat{l}\in\hat{L}_2\land\ \atrue\sqsubseteq\ahf{HasConstruct}(\hat{H},\hat{l}) } \\
+    \hat{L}_4 = \hat{v}_{proto}.2 \\
+    \hat{v}_{proto} = \bigsqcup_{\hat{l}\in\hat{L}_3} \ahf{Proto}(\hat{H},\hat{l},\hat{``prototype"}) \\
+   
+    LP_1 = \bigcup_{\hat{l}\in\hat{L}_2}\set{\hat{l},\varprop{construct}}\\
+    LP_2 = \bigcup_{\hat{l}\in\hat{L}_3}\ahf{Proto}_{\it use}(\hat{H},\hat{l},\hat{``prototype"})\\
+    LP_3 = \bigcup_{\hat{l}_1\in\hat{L}_1}\bigcup_{\hat{l}_2\in\hat{L}_4}\ahf{inherit}_{\it use}(\hat{H},\hat{l}_1,\hat{l}_2)\\
+  }
+  \\\\
+  \aV_{\it use}\lbr e_1\,\TT{in}\,e_2\rbr (\hat{H},\hat{C})
+  = \aV_{\it use}\lbr e_1\rbr(\hat{H},\hat{C}) \cup \aV_{\it use}\lbr e_2\rbr(\hat{H},\hat{C}) \cup LP\\
+  \quad\wherec{
+    (\hat{v}_1,\hat{es}_1)=\aV\lbr e_1\rbr(\hat{H},\hat{C})\\
+    (\hat{v}_2,\hat{es}_2)=\aV\lbr e_2\rbr(\hat{H},\hat{C})\\
+    \hat{s}=\ahf{toString}(\ahf{toPrimitive}(\hat{v}_1)) \\
+    LP = \bigcup_{\hat{l}\in\hat{v}_2.2}\ahf{HasProperty}_{\it use}(\hat{H},\hat{l},\hat{s})\\
+  }
+  \\\\
+  \aV_{\it use}\lbr \TT{typeof}\,e\rbr (\hat{H},\hat{C})
+  = \aV_{\it use}\lbr e\rbr(\hat{H},\hat{C}) \cup LP\\
+  \quad\wherec{
+    (\hat{v},\hat{es}) = \aV\lbr e\rbr(\hat{H},\hat{C})\\
+    LP = \ahf{TypeTag}_{\it_use}(\hat{H},\hat{v})
+  }
+  \\\\
+\end{array}
+\]
+
+

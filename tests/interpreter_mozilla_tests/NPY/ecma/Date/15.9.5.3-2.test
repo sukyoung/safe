@@ -1,0 +1,45 @@
+################################################################################
+#    Copyright (c) 2012, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=15.9.5.3-2
+INTERPRETER_TESTS_DIR=${JS_HOME}/tests/interpreter_mozilla_tests/ecma/Date
+interpret_mozilla
+interpret_mozilla_out_WCIequals=\
+15.9.5.3-2 Date.prototype.valueOf\n\
+ PASSED! (new Date(1355759115185).valueOf() = 1355759115185 expected: 1355759115185\n\
+ PASSED! (new Date(1355759115186).valueOf() = 1355759115186 expected: 1355759115186\n\
+ PASSED! (new Date(1355759115184).valueOf() = 1355759115184 expected: 1355759115184\n\
+ PASSED! (new Date(1355726715185).valueOf() = 1355726715185 expected: 1355726715185\n\
+ PASSED! (new Date(1355791515185).valueOf() = 1355791515185 expected: 1355791515185\n\
+ PASSED! (new Date(0).valueOf() = 0 expected: 0\n\
+ PASSED! (new Date(1).valueOf() = 1 expected: 1\n\
+ PASSED! (new Date(-1).valueOf() = -1 expected: -1\n\
+ PASSED! (new Date(-32400000).valueOf() = -32400000 expected: -32400000\n\
+ PASSED! (new Date(32400000).valueOf() = 32400000 expected: 32400000\n\
+ PASSED! (new Date(-2208988800000).valueOf() = -2208988800000 expected: -2208988800000\n\
+ PASSED! (new Date(-2208988799999).valueOf() = -2208988799999 expected: -2208988799999\n\
+ PASSED! (new Date(-2208988800001).valueOf() = -2208988800001 expected: -2208988800001\n\
+ PASSED! (new Date(-2209021200000).valueOf() = -2209021200000 expected: -2209021200000\n\
+ PASSED! (new Date(-2208956400000).valueOf() = -2208956400000 expected: -2208956400000\n\
+ PASSED! (new Date(946684800000).valueOf() = 946684800000 expected: 946684800000\n\
+ PASSED! (new Date(946684800001).valueOf() = 946684800001 expected: 946684800001\n\
+ PASSED! (new Date(946684799999).valueOf() = 946684799999 expected: 946684799999\n\
+ PASSED! (new Date(946652400000).valueOf() = 946652400000 expected: 946652400000\n\
+ PASSED! (new Date(946717200000).valueOf() = 946717200000 expected: 946717200000\n\
+ PASSED! (new Date(951782400000).valueOf() = 951782400000 expected: 951782400000\n\
+ PASSED! (new Date(951782400001).valueOf() = 951782400001 expected: 951782400001\n\
+ PASSED! (new Date(951782399999).valueOf() = 951782399999 expected: 951782399999\n\
+ PASSED! (new Date(951750000000).valueOf() = 951750000000 expected: 951750000000\n\
+ PASSED! (new Date(951814800000).valueOf() = 951814800000 expected: 951814800000\n\
+ PASSED! (new Date(1104537600000).valueOf() = 1104537600000 expected: 1104537600000\n\
+ PASSED! (new Date(1104537600001).valueOf() = 1104537600001 expected: 1104537600001\n\
+ PASSED! (new Date(1104537599999).valueOf() = 1104537599999 expected: 1104537599999\n\
+ PASSED! (new Date(1104505200000).valueOf() = 1104505200000 expected: 1104505200000\n\
+ PASSED! (new Date(1104570000000).valueOf() = 1104570000000 expected: 1104570000000\n\
+\n
+interpret_err_equals=

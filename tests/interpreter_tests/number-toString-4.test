@@ -1,0 +1,23 @@
+################################################################################
+#    Copyright (c) 2012, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=number-toString-4
+INTERPRETER_TESTS_DIR=${JS_HOME}/tests/interpreter_tests
+interpret
+interpret_out_WCIequals=\
+-42\n\
+-1.5\n\
+-1\n\
+0\n\
+0\n\
+0\n\
+1\n\
+1.5\n\
+42\n\
+Normal(PASS)\n
+interpret_err_equals=

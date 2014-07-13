@@ -1,0 +1,18 @@
+################################################################################
+#    Copyright (c) 2012, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=15.9.1.13-1
+INTERPRETER_TESTS_DIR=${JS_HOME}/tests/interpreter_mozilla_tests/ecma/Date
+interpret_mozilla
+interpret_mozilla_out_WCIequals=\
+ PASSED! MakeDate(Number.POSITIVE_INFINITY, 0) = NaN expected: NaN\n\
+ PASSED! MakeDate(Number.NEGATIVE_INFINITY, 0) = NaN expected: NaN\n\
+ PASSED! MakeDate(0, Number.POSITIVE_INFINITY) = NaN expected: NaN\n\
+ PASSED! MakeDate(0, Number.NEGATIVE_INFINITY) = NaN expected: NaN\n\
+\n
+interpret_err_equals=

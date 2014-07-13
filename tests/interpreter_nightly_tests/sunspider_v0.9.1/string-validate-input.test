@@ -1,0 +1,134 @@
+################################################################################
+#    Copyright (c) 2012, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=string-validate-input
+INTERPRETER_TESTS_DIR=${JS_HOME}/tests/interpreter_nightly_tests
+interpret
+interpret_out_WCIequals=\n\
+Normal(\n\
+arhqzr(at)mac.com does NOT appear to be a valid email address.\n\
+rewsvt@mac.com appears to be a valid email address.\n\
+iuepgf(at)mac.com does NOT appear to be a valid email address.\n\
+uwvcmt@mac.com appears to be a valid email address.\n\
+jhjxwk(at)mac.com does NOT appear to be a valid email address.\n\
+lveeij@mac.com appears to be a valid email address.\n\
+nzmtfl(at)mac.com does NOT appear to be a valid email address.\n\
+wvinws@mac.com appears to be a valid email address.\n\
+cpcrks(at)mac.com does NOT appear to be a valid email address.\n\
+gjkkyl@mac.com appears to be a valid email address.\n\
+agdrah(at)mac.com does NOT appear to be a valid email address.\n\
+hkfumn@mac.com appears to be a valid email address.\n\
+wpsaol(at)mac.com does NOT appear to be a valid email address.\n\
+nrhmyf@mac.com appears to be a valid email address.\n\
+nxpaqq(at)mac.com does NOT appear to be a valid email address.\n\
+kurhuz@mac.com appears to be a valid email address.\n\
+meorwo(at)mac.com does NOT appear to be a valid email address.\n\
+scycgl@mac.com appears to be a valid email address.\n\
+uiwguk(at)mac.com does NOT appear to be a valid email address.\n\
+laisvu@mac.com appears to be a valid email address.\n\
+zpwhag(at)mac.com does NOT appear to be a valid email address.\n\
+nqrrmr@mac.com appears to be a valid email address.\n\
+xrdofr(at)mac.com does NOT appear to be a valid email address.\n\
+lirjjg@mac.com appears to be a valid email address.\n\
+idozsn(at)mac.com does NOT appear to be a valid email address.\n\
+vuimmd@mac.com appears to be a valid email address.\n\
+xiapkc(at)mac.com does NOT appear to be a valid email address.\n\
+ddduss@mac.com appears to be a valid email address.\n\
+jfmyic(at)mac.com does NOT appear to be a valid email address.\n\
+xjzfgp@mac.com appears to be a valid email address.\n\
+zgthvh(at)mac.com does NOT appear to be a valid email address.\n\
+nsnsrh@mac.com appears to be a valid email address.\n\
+duadmm(at)mac.com does NOT appear to be a valid email address.\n\
+jsqpil@mac.com appears to be a valid email address.\n\
+lpiyyp(at)mac.com does NOT appear to be a valid email address.\n\
+kxhbkk@mac.com appears to be a valid email address.\n\
+yzakje(at)mac.com does NOT appear to be a valid email address.\n\
+xhyszu@mac.com appears to be a valid email address.\n\
+mrxhup(at)mac.com does NOT appear to be a valid email address.\n\
+qocxta@mac.com appears to be a valid email address.\n\
+52767 appears to be a valid ZIP code.\n\
+8471xyz contains letters.\n\
+8471xyz contains letters.\n\
+8471xyz contains letters.\n\
+12877 appears to be a valid ZIP code.\n\
+2276xyz contains letters.\n\
+2276xyz contains letters.\n\
+2276xyz contains letters.\n\
+66177 appears to be a valid ZIP code.\n\
+7621xyz contains letters.\n\
+7621xyz contains letters.\n\
+7621xyz contains letters.\n\
+02347 appears to be a valid ZIP code.\n\
+4025xyz contains letters.\n\
+4025xyz contains letters.\n\
+4025xyz contains letters.\n\
+81027 appears to be a valid ZIP code.\n\
+7455xyz contains letters.\n\
+7455xyz contains letters.\n\
+7455xyz contains letters.\n\
+17357 appears to be a valid ZIP code.\n\
+5215xyz contains letters.\n\
+5215xyz contains letters.\n\
+5215xyz contains letters.\n\
+46307 appears to be a valid ZIP code.\n\
+8772xyz contains letters.\n\
+8772xyz contains letters.\n\
+8772xyz contains letters.\n\
+16837 appears to be a valid ZIP code.\n\
+4864xyz contains letters.\n\
+4864xyz contains letters.\n\
+4864xyz contains letters.\n\
+64467 appears to be a valid ZIP code.\n\
+6220xyz contains letters.\n\
+6220xyz contains letters.\n\
+6220xyz contains letters.\n\
+17427 appears to be a valid ZIP code.\n\
+0087xyz contains letters.\n\
+0087xyz contains letters.\n\
+0087xyz contains letters.\n\
+58767 appears to be a valid ZIP code.\n\
+7856xyz contains letters.\n\
+7856xyz contains letters.\n\
+7856xyz contains letters.\n\
+17367 appears to be a valid ZIP code.\n\
+4840xyz contains letters.\n\
+4840xyz contains letters.\n\
+4840xyz contains letters.\n\
+61187 appears to be a valid ZIP code.\n\
+3408xyz contains letters.\n\
+3408xyz contains letters.\n\
+3408xyz contains letters.\n\
+35877 appears to be a valid ZIP code.\n\
+6316xyz contains letters.\n\
+6316xyz contains letters.\n\
+6316xyz contains letters.\n\
+00737 appears to be a valid ZIP code.\n\
+7521xyz contains letters.\n\
+7521xyz contains letters.\n\
+7521xyz contains letters.\n\
+05557 appears to be a valid ZIP code.\n\
+0220xyz contains letters.\n\
+0220xyz contains letters.\n\
+0220xyz contains letters.\n\
+10277 appears to be a valid ZIP code.\n\
+0480xyz contains letters.\n\
+0480xyz contains letters.\n\
+0480xyz contains letters.\n\
+66307 appears to be a valid ZIP code.\n\
+1167xyz contains letters.\n\
+1167xyz contains letters.\n\
+1167xyz contains letters.\n\
+51427 appears to be a valid ZIP code.\n\
+6022xyz contains letters.\n\
+6022xyz contains letters.\n\
+6022xyz contains letters.\n\
+33307 appears to be a valid ZIP code.\n\
+0804xyz contains letters.\n\
+0804xyz contains letters.\n\
+0804xyz contains letters.)
+interpret_err_equals=

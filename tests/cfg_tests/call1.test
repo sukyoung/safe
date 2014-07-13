@@ -1,0 +1,62 @@
+################################################################################
+#    Copyright (c) 2012, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=call1
+CFG_TESTS_DIR=${JS_HOME}/tests/cfg_tests
+cfg
+cfg_out_WCIequals=\
+(0,LBlock(6))\n\
+\n\
+\n\
+(0,LBlock(5))\n\
+    [EDGE] after-call(<>Global<>ignore3)\n\
+    [23] x := <>Global<>ignore3\n\
+    [24] noop(EndOfFile)\n\
+\n\
+\n\
+(1,LBlock(4))\n\
+\n\
+\n\
+(1,LBlock(3))\n\
+    [EDGE] after-call(<>new1<>13)\n\
+    [10] return(<>new1<>13)\n\
+\n\
+\n\
+(2,LBlock(2))\n\
+    [0] <>test<>7 := <>test<>7 + 6\n\
+    [1] return(<>test<>7 - <>x<>1)\n\
+\n\
+\n\
+(1,LBlock(1))\n\
+    [2] <>g<>4 := function (2) @ #1, #2\n\
+    [3] <>temp<>5 := <>y<>2 + <>z<>3\n\
+    [4] <>obj<>9 := <>Global<>toObject(<>g<>4) @ #3\n\
+    [5] <>temp<>10 := <>temp<>5\n\
+    [6] <>arguments<>11 := allocArg(1) @ #4\n\
+    [7] <>arguments<>11["0"] := <>temp<>10\n\
+    [8] <>fun<>12 := <>Global<>getBase(<>g<>4)\n\
+    [9] call(<>obj<>9, <>fun<>12, <>arguments<>11) @ #5\n\
+\n\
+\n\
+(0,LBlock(0))\n\
+    [11] f := function (1) @ #7, #8\n\
+    [12] noop(StartOfFile)\n\
+    [13] <>obj<>14 := <>Global<>toObject(f) @ #9\n\
+    [14] <>temp<>15 := 1\n\
+    [15] <>temp<>16 := 2\n\
+    [16] <>temp<>17 := 3\n\
+    [17] <>arguments<>18 := allocArg(3) @ #10\n\
+    [18] <>arguments<>18["0"] := <>temp<>15\n\
+    [19] <>arguments<>18["1"] := <>temp<>16\n\
+    [20] <>arguments<>18["2"] := <>temp<>17\n\
+    [21] <>fun<>19 := <>Global<>getBase(f)\n\
+    [22] call(<>obj<>14, <>fun<>19, <>arguments<>18) @ #11\n\
+\n\
+\n\
+\n
+cfg_err_equals=

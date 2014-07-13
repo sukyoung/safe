@@ -1,0 +1,4375 @@
+(Program @"express.d.ts":1:1~1806:1
+ _body=(TopLevel
+  _stmts=[
+   (SourceElements
+    _info=(ASTSpanInfo())
+    _body=[
+     (AmbExtModDecl @15:9~1804:1
+      _info=(ASTSpanInfo())
+      _name="express"
+      _mem=[
+       (AmbExtModElt @16:5~34
+        _decl=(ExtImpDecl
+         _id=(Id @16:12~16 _info=(ASTSpanInfo()) _text="http")
+         _info=(ASTSpanInfo())
+         _module="http")
+        _info=(ASTSpanInfo()))
+       (AmbExtModElt @19:5~28
+        _decl=(AmbFunDecl
+         _id=(Id @19:14~15 _info=(ASTSpanInfo()) _text="e")
+         _info=(ASTSpanInfo())
+         _sig=(CallSig @19:15~28
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(TypeRef @19:19~28
+            _info=(ASTSpanInfo())
+            _name=(TypeName
+             _info=(ASTSpanInfo())
+             _text="e.Express"
+             _names=[
+              (Id @19:19~20 _info=(ASTSpanInfo()) _text="e")
+              (Id @19:21~28 _info=(ASTSpanInfo()) _text="Express")])))))
+        _info=(ASTSpanInfo()))
+       (AmbExtModElt @21:5~1801:5
+        _decl=(AmbModDecl
+         _info=(ASTSpanInfo())
+         _path=(Path @21:12~13
+          _info=(ASTSpanInfo())
+          _names=[
+           (Id _info=(ASTSpanInfo()) _text="e")])
+         _mem=[
+          (AmbModElt @22:9~36:9
+           _decl=(IntfDecl
+            _id=(Id @22:19~25 _info=(ASTSpanInfo()) _text="IRoute")
+            _info=(ASTSpanInfo())
+            _typ=(ObjectType @22:26~36:9
+             _info=(ASTSpanInfo())
+             _members=[
+              (PropertySig @23:13~25
+               _info=(ASTSpanInfo())
+               _prop=(PropId @23:13~17
+                _id=(Id _info=(ASTSpanInfo()) _text="path")
+                _info=(ASTSpanInfo()))
+               _typ=(Some _value=(StringT @23:19~25
+                 _info=(ASTSpanInfo()))))
+              (PropertySig @25:13~27
+               _info=(ASTSpanInfo())
+               _prop=(PropId @25:13~19
+                _id=(Id _info=(ASTSpanInfo()) _text="method")
+                _info=(ASTSpanInfo()))
+               _typ=(Some _value=(StringT @25:21~27
+                 _info=(ASTSpanInfo()))))
+              (PropertySig @27:13~34
+               _info=(ASTSpanInfo())
+               _prop=(PropId @27:13~22
+                _id=(Id _info=(ASTSpanInfo()) _text="callbacks")
+                _info=(ASTSpanInfo()))
+               _typ=(Some _value=(ArrayType @27:32~35
+                 _info=(ASTSpanInfo())
+                 _typ=(TypeRef @27:24~32
+                  _info=(ASTSpanInfo())
+                  _name=(TypeName
+                   _info=(ASTSpanInfo())
+                   _text="Function"
+                   _names=[
+                    (Id _info=(ASTSpanInfo()) _text="Function")])))))
+              (PropertySig @29:13~24
+               _info=(ASTSpanInfo())
+               _prop=(PropId @29:13~19
+                _id=(Id _info=(ASTSpanInfo()) _text="regexp")
+                _info=(ASTSpanInfo()))
+               _typ=(Some _value=(AnyT @29:21~24
+                 _info=(ASTSpanInfo()))))
+              (MethodSig @35:13~41
+               _info=(ASTSpanInfo())
+               _prop=(PropId @35:13~18
+                _id=(Id _info=(ASTSpanInfo()) _text="match")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @35:18~41
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(BoolT @35:34~41
+                  _info=(ASTSpanInfo())))
+                _params=[
+                 (Param @35:19~31
+                  _info=(ASTSpanInfo())
+                  _name=(Id @35:19~23 _info=(ASTSpanInfo()) _text="path")
+                  _typ=(Some _value=(StringT @35:25~31
+                    _info=(ASTSpanInfo()))))]))]))
+           _info=(ASTSpanInfo()))
+          (AmbModElt @38:9~63:9
+           _decl=(AmbClsDecl
+            _id=(Id @38:15~20 _info=(ASTSpanInfo()) _text="Route")
+            _info=(ASTSpanInfo())
+            _elts=[
+             (AmbMemDecl @39:13~25
+              _info=(ASTSpanInfo())
+              _prop=(PropId @39:13~17
+               _id=(Id _info=(ASTSpanInfo()) _text="path")
+               _info=(ASTSpanInfo()))
+              _typ=(Some _value=(StringT @39:19~25
+                _info=(ASTSpanInfo()))))
+             (AmbMemDecl @41:13~27
+              _info=(ASTSpanInfo())
+              _prop=(PropId @41:13~19
+               _id=(Id _info=(ASTSpanInfo()) _text="method")
+               _info=(ASTSpanInfo()))
+              _typ=(Some _value=(StringT @41:21~27
+                _info=(ASTSpanInfo()))))
+             (AmbMemDecl @43:13~34
+              _info=(ASTSpanInfo())
+              _prop=(PropId @43:13~22
+               _id=(Id _info=(ASTSpanInfo()) _text="callbacks")
+               _info=(ASTSpanInfo()))
+              _typ=(Some _value=(ArrayType @43:32~35
+                _info=(ASTSpanInfo())
+                _typ=(TypeRef @43:24~32
+                 _info=(ASTSpanInfo())
+                 _name=(TypeName
+                  _info=(ASTSpanInfo())
+                  _text="Function"
+                  _names=[
+                   (Id _info=(ASTSpanInfo()) _text="Function")])))))
+             (AmbMemDecl @45:13~24
+              _info=(ASTSpanInfo())
+              _prop=(PropId @45:13~19
+               _id=(Id _info=(ASTSpanInfo()) _text="regexp")
+               _info=(ASTSpanInfo()))
+              _typ=(Some _value=(AnyT @45:21~24
+                _info=(ASTSpanInfo()))))
+             (AmbMemDecl @46:13~41
+              _info=(ASTSpanInfo())
+              _prop=(PropId @46:13~18
+               _id=(Id _info=(ASTSpanInfo()) _text="match")
+               _info=(ASTSpanInfo()))
+              _typ=(Some _value=(CallSig @46:18~41
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(BoolT @46:34~41
+                  _info=(ASTSpanInfo())))
+                _params=[
+                 (Param @46:19~31
+                  _info=(ASTSpanInfo())
+                  _name=(Id @46:19~23 _info=(ASTSpanInfo()) _text="path")
+                  _typ=(Some _value=(StringT @46:25~31
+                    _info=(ASTSpanInfo()))))])))
+             (AmbMemDecl @62:13~91
+              _info=(ASTSpanInfo())
+              _prop=(PropId @62:13~16
+               _id=(Id _info=(ASTSpanInfo()) _text="new")
+               _info=(ASTSpanInfo()))
+              _typ=(Some _value=(CallSig @62:17~91
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(TypeRef @62:86~91
+                  _info=(ASTSpanInfo())
+                  _name=(TypeName
+                   _info=(ASTSpanInfo())
+                   _text="Route"
+                   _names=[
+                    (Id _info=(ASTSpanInfo()) _text="Route")])))
+                _params=[
+                 (Param @62:18~32
+                  _info=(ASTSpanInfo())
+                  _name=(Id @62:18~24 _info=(ASTSpanInfo()) _text="method")
+                  _typ=(Some _value=(StringT @62:26~32
+                    _info=(ASTSpanInfo()))))
+                 (Param @62:34~46
+                  _info=(ASTSpanInfo())
+                  _name=(Id @62:34~38 _info=(ASTSpanInfo()) _text="path")
+                  _typ=(Some _value=(StringT @62:40~46
+                    _info=(ASTSpanInfo()))))
+                 (Param @62:48~69
+                  _info=(ASTSpanInfo())
+                  _name=(Id @62:48~57 _info=(ASTSpanInfo()) _text="callbacks")
+                  _typ=(Some _value=(ArrayType @62:67~70
+                    _info=(ASTSpanInfo())
+                    _typ=(TypeRef @62:59~69
+                     _info=(ASTSpanInfo())
+                     _name=(TypeName
+                      _info=(ASTSpanInfo())
+                      _text="Function"
+                      _names=[
+                       (Id @62:59~67 _info=(ASTSpanInfo()) _text="Function")])))))
+                 (Param @62:71~83
+                  _info=(ASTSpanInfo())
+                  _name=(Id @62:71~78 _info=(ASTSpanInfo()) _text="options")
+                  _typ=(Some _value=(AnyT @62:80~83
+                    _info=(ASTSpanInfo()))))])))]
+            _imp=[
+             (TypeRef @38:32~39
+              _info=(ASTSpanInfo())
+              _name=(TypeName @38:32~38
+               _info=(ASTSpanInfo())
+               _text="IRoute"
+               _names=[
+                (Id _info=(ASTSpanInfo()) _text="IRoute")]))])
+           _info=(ASTSpanInfo()))
+          (AmbModElt @65:9~125:9
+           _decl=(IntfDecl
+            _id=(Id @65:19~26 _info=(ASTSpanInfo()) _text="IRouter")
+            _info=(ASTSpanInfo())
+            _typ=(ObjectType @65:30~125:9
+             _info=(ASTSpanInfo())
+             _members=[
+              (MethodSig @95:13~49
+               _info=(ASTSpanInfo())
+               _prop=(PropId @95:13~18
+                _id=(Id _info=(ASTSpanInfo()) _text="param")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @95:18~49
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(TypeRef @95:48~49
+                  _info=(ASTSpanInfo())
+                  _name=(TypeName
+                   _info=(ASTSpanInfo())
+                   _text="T"
+                   _names=[
+                    (Id _info=(ASTSpanInfo()) _text="T")])))
+                _params=[
+                 (Param @95:19~31
+                  _info=(ASTSpanInfo())
+                  _name=(Id @95:19~23 _info=(ASTSpanInfo()) _text="name")
+                  _typ=(Some _value=(StringT @95:25~31
+                    _info=(ASTSpanInfo()))))
+                 (Param @95:33~45
+                  _info=(ASTSpanInfo())
+                  _name=(Id @95:33~35 _info=(ASTSpanInfo()) _text="fn")
+                  _typ=(Some _value=(TypeRef @95:37~45
+                    _info=(ASTSpanInfo())
+                    _name=(TypeName
+                     _info=(ASTSpanInfo())
+                     _text="Function"
+                     _names=[
+                      (Id _info=(ASTSpanInfo()) _text="Function")]))))]))
+              (MethodSig @97:13~51
+               _info=(ASTSpanInfo())
+               _prop=(PropId @97:13~18
+                _id=(Id _info=(ASTSpanInfo()) _text="param")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @97:18~51
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(TypeRef @97:50~51
+                  _info=(ASTSpanInfo())
+                  _name=(TypeName
+                   _info=(ASTSpanInfo())
+                   _text="T"
+                   _names=[
+                    (Id _info=(ASTSpanInfo()) _text="T")])))
+                _params=[
+                 (Param @97:19~33
+                  _info=(ASTSpanInfo())
+                  _name=(Id @97:19~23 _info=(ASTSpanInfo()) _text="name")
+                  _typ=(Some _value=(ArrayType @97:31~34
+                    _info=(ASTSpanInfo())
+                    _typ=(StringT @97:25~33
+                     _info=(ASTSpanInfo())))))
+                 (Param @97:35~47
+                  _info=(ASTSpanInfo())
+                  _name=(Id @97:35~37 _info=(ASTSpanInfo()) _text="fn")
+                  _typ=(Some _value=(TypeRef @97:39~47
+                    _info=(ASTSpanInfo())
+                    _name=(TypeName
+                     _info=(ASTSpanInfo())
+                     _text="Function"
+                     _names=[
+                      (Id _info=(ASTSpanInfo()) _text="Function")]))))]))
+              (MethodSig @106:13~92
+               _info=(ASTSpanInfo())
+               _prop=(PropId @106:13~16
+                _id=(Id _info=(ASTSpanInfo()) _text="all")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @106:16~92
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(TypeRef @106:91~92
+                  _info=(ASTSpanInfo())
+                  _name=(TypeName
+                   _info=(ASTSpanInfo())
+                   _text="T"
+                   _names=[
+                    (Id _info=(ASTSpanInfo()) _text="T")])))
+                _params=[
+                 (Param @106:17~29
+                  _info=(ASTSpanInfo())
+                  _name=(Id @106:17~21 _info=(ASTSpanInfo()) _text="path")
+                  _typ=(Some _value=(StringT @106:23~29
+                    _info=(ASTSpanInfo()))))
+                 (Param @106:31~88
+                  _info=(ASTSpanInfo())
+                  _name=(Id @106:31~33 _info=(ASTSpanInfo()) _text="fn")
+                  _optional=true
+                  _typ=(Some _value=(FunctionType @106:36~88
+                    _info=(ASTSpanInfo())
+                    _typ=(AnyT @106:85~88
+                     _info=(ASTSpanInfo()))
+                    _params=[
+                     (Param @106:37~49
+                      _info=(ASTSpanInfo())
+                      _name=(Id @106:37~40 _info=(ASTSpanInfo()) _text="req")
+                      _typ=(Some _value=(TypeRef @106:42~49
+                        _info=(ASTSpanInfo())
+                        _name=(TypeName
+                         _info=(ASTSpanInfo())
+                         _text="Request"
+                         _names=[
+                          (Id _info=(ASTSpanInfo()) _text="Request")]))))
+                     (Param @106:51~64
+                      _info=(ASTSpanInfo())
+                      _name=(Id @106:51~54 _info=(ASTSpanInfo()) _text="res")
+                      _typ=(Some _value=(TypeRef @106:56~64
+                        _info=(ASTSpanInfo())
+                        _name=(TypeName
+                         _info=(ASTSpanInfo())
+                         _text="Response"
+                         _names=[
+                          (Id _info=(ASTSpanInfo()) _text="Response")]))))
+                     (Param @106:66~80
+                      _info=(ASTSpanInfo())
+                      _name=(Id @106:66~70 _info=(ASTSpanInfo()) _text="next")
+                      _typ=(Some _value=(TypeRef @106:72~80
+                        _info=(ASTSpanInfo())
+                        _name=(TypeName
+                         _info=(ASTSpanInfo())
+                         _text="Function"
+                         _names=[
+                          (Id _info=(ASTSpanInfo()) _text="Function")]))))])))]))
+              (MethodSig @108:13~62
+               _info=(ASTSpanInfo())
+               _prop=(PropId @108:13~16
+                _id=(Id _info=(ASTSpanInfo()) _text="all")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @108:16~62
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(VoidT @108:58~62
+                  _info=(ASTSpanInfo())))
+                _params=[
+                 (Param @108:17~29
+                  _info=(ASTSpanInfo())
+                  _name=(Id @108:17~21 _info=(ASTSpanInfo()) _text="path")
+                  _typ=(Some _value=(StringT @108:23~29
+                    _info=(ASTSpanInfo()))))
+                 (Param @108:31~55
+                  _info=(ASTSpanInfo())
+                  _name=(Id @108:34~43 _info=(ASTSpanInfo()) _text="callbacks")
+                  _rest=true
+                  _typ=(Some _value=(ArrayType @108:53~56
+                    _info=(ASTSpanInfo())
+                    _typ=(TypeRef @108:45~53
+                     _info=(ASTSpanInfo())
+                     _name=(TypeName
+                      _info=(ASTSpanInfo())
+                      _text="Function"
+                      _names=[
+                       (Id _info=(ASTSpanInfo()) _text="Function")])))))]))
+              (MethodSig @110:13~65
+               _info=(ASTSpanInfo())
+               _prop=(PropId @110:13~16
+                _id=(Id _info=(ASTSpanInfo()) _text="get")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @110:16~65
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(TypeRef @110:64~65
+                  _info=(ASTSpanInfo())
+                  _name=(TypeName
+                   _info=(ASTSpanInfo())
+                   _text="T"
+                   _names=[
+                    (Id _info=(ASTSpanInfo()) _text="T")])))
+                _params=[
+                 (Param @110:17~29
+                  _info=(ASTSpanInfo())
+                  _name=(Id @110:17~21 _info=(ASTSpanInfo()) _text="name")
+                  _typ=(Some _value=(StringT @110:23~29
+                    _info=(ASTSpanInfo()))))
+                 (Param @110:31~61
+                  _info=(ASTSpanInfo())
+                  _name=(Id @110:34~42 _info=(ASTSpanInfo()) _text="handlers")
+                  _rest=true
+                  _typ=(Some _value=(ArrayType @110:59~62
+                    _info=(ASTSpanInfo())
+                    _typ=(TypeRef @110:44~59
+                     _info=(ASTSpanInfo())
+                     _name=(TypeName
+                      _info=(ASTSpanInfo())
+                      _text="RequestFunction"
+                      _names=[
+                       (Id _info=(ASTSpanInfo()) _text="RequestFunction")])))))]))
+              (MethodSig @112:13~65
+               _info=(ASTSpanInfo())
+               _prop=(PropId @112:13~16
+                _id=(Id _info=(ASTSpanInfo()) _text="get")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @112:16~65
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(TypeRef @112:64~65
+                  _info=(ASTSpanInfo())
+                  _name=(TypeName
+                   _info=(ASTSpanInfo())
+                   _text="T"
+                   _names=[
+                    (Id _info=(ASTSpanInfo()) _text="T")])))
+                _params=[
+                 (Param @112:17~29
+                  _info=(ASTSpanInfo())
+                  _name=(Id @112:17~21 _info=(ASTSpanInfo()) _text="name")
+                  _typ=(Some _value=(TypeRef @112:23~29
+                    _info=(ASTSpanInfo())
+                    _name=(TypeName
+                     _info=(ASTSpanInfo())
+                     _text="RegExp"
+                     _names=[
+                      (Id _info=(ASTSpanInfo()) _text="RegExp")]))))
+                 (Param @112:31~61
+                  _info=(ASTSpanInfo())
+                  _name=(Id @112:34~42 _info=(ASTSpanInfo()) _text="handlers")
+                  _rest=true
+                  _typ=(Some _value=(ArrayType @112:59~62
+                    _info=(ASTSpanInfo())
+                    _typ=(TypeRef @112:44~59
+                     _info=(ASTSpanInfo())
+                     _name=(TypeName
+                      _info=(ASTSpanInfo())
+                      _text="RequestFunction"
+                      _names=[
+                       (Id _info=(ASTSpanInfo()) _text="RequestFunction")])))))]))
+              (MethodSig @114:13~66
+               _info=(ASTSpanInfo())
+               _prop=(PropId @114:13~17
+                _id=(Id _info=(ASTSpanInfo()) _text="post")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @114:17~66
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(TypeRef @114:65~66
+                  _info=(ASTSpanInfo())
+                  _name=(TypeName
+                   _info=(ASTSpanInfo())
+                   _text="T"
+                   _names=[
+                    (Id _info=(ASTSpanInfo()) _text="T")])))
+                _params=[
+                 (Param @114:18~30
+                  _info=(ASTSpanInfo())
+                  _name=(Id @114:18~22 _info=(ASTSpanInfo()) _text="name")
+                  _typ=(Some _value=(StringT @114:24~30
+                    _info=(ASTSpanInfo()))))
+                 (Param @114:32~62
+                  _info=(ASTSpanInfo())
+                  _name=(Id @114:35~43 _info=(ASTSpanInfo()) _text="handlers")
+                  _rest=true
+                  _typ=(Some _value=(ArrayType @114:60~63
+                    _info=(ASTSpanInfo())
+                    _typ=(TypeRef @114:45~60
+                     _info=(ASTSpanInfo())
+                     _name=(TypeName
+                      _info=(ASTSpanInfo())
+                      _text="RequestFunction"
+                      _names=[
+                       (Id _info=(ASTSpanInfo()) _text="RequestFunction")])))))]))
+              (MethodSig @116:13~66
+               _info=(ASTSpanInfo())
+               _prop=(PropId @116:13~17
+                _id=(Id _info=(ASTSpanInfo()) _text="post")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @116:17~66
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(TypeRef @116:65~66
+                  _info=(ASTSpanInfo())
+                  _name=(TypeName
+                   _info=(ASTSpanInfo())
+                   _text="T"
+                   _names=[
+                    (Id _info=(ASTSpanInfo()) _text="T")])))
+                _params=[
+                 (Param @116:18~30
+                  _info=(ASTSpanInfo())
+                  _name=(Id @116:18~22 _info=(ASTSpanInfo()) _text="name")
+                  _typ=(Some _value=(TypeRef @116:24~30
+                    _info=(ASTSpanInfo())
+                    _name=(TypeName
+                     _info=(ASTSpanInfo())
+                     _text="RegExp"
+                     _names=[
+                      (Id _info=(ASTSpanInfo()) _text="RegExp")]))))
+                 (Param @116:32~62
+                  _info=(ASTSpanInfo())
+                  _name=(Id @116:35~43 _info=(ASTSpanInfo()) _text="handlers")
+                  _rest=true
+                  _typ=(Some _value=(ArrayType @116:60~63
+                    _info=(ASTSpanInfo())
+                    _typ=(TypeRef @116:45~60
+                     _info=(ASTSpanInfo())
+                     _name=(TypeName
+                      _info=(ASTSpanInfo())
+                      _text="RequestFunction"
+                      _names=[
+                       (Id _info=(ASTSpanInfo()) _text="RequestFunction")])))))]))
+              (MethodSig @118:13~65
+               _info=(ASTSpanInfo())
+               _prop=(PropId @118:13~16
+                _id=(Id _info=(ASTSpanInfo()) _text="put")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @118:16~65
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(TypeRef @118:64~65
+                  _info=(ASTSpanInfo())
+                  _name=(TypeName
+                   _info=(ASTSpanInfo())
+                   _text="T"
+                   _names=[
+                    (Id _info=(ASTSpanInfo()) _text="T")])))
+                _params=[
+                 (Param @118:17~29
+                  _info=(ASTSpanInfo())
+                  _name=(Id @118:17~21 _info=(ASTSpanInfo()) _text="name")
+                  _typ=(Some _value=(StringT @118:23~29
+                    _info=(ASTSpanInfo()))))
+                 (Param @118:31~61
+                  _info=(ASTSpanInfo())
+                  _name=(Id @118:34~42 _info=(ASTSpanInfo()) _text="handlers")
+                  _rest=true
+                  _typ=(Some _value=(ArrayType @118:59~62
+                    _info=(ASTSpanInfo())
+                    _typ=(TypeRef @118:44~59
+                     _info=(ASTSpanInfo())
+                     _name=(TypeName
+                      _info=(ASTSpanInfo())
+                      _text="RequestFunction"
+                      _names=[
+                       (Id _info=(ASTSpanInfo()) _text="RequestFunction")])))))]))
+              (MethodSig @120:13~65
+               _info=(ASTSpanInfo())
+               _prop=(PropId @120:13~16
+                _id=(Id _info=(ASTSpanInfo()) _text="put")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @120:16~65
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(TypeRef @120:64~65
+                  _info=(ASTSpanInfo())
+                  _name=(TypeName
+                   _info=(ASTSpanInfo())
+                   _text="T"
+                   _names=[
+                    (Id _info=(ASTSpanInfo()) _text="T")])))
+                _params=[
+                 (Param @120:17~29
+                  _info=(ASTSpanInfo())
+                  _name=(Id @120:17~21 _info=(ASTSpanInfo()) _text="name")
+                  _typ=(Some _value=(TypeRef @120:23~29
+                    _info=(ASTSpanInfo())
+                    _name=(TypeName
+                     _info=(ASTSpanInfo())
+                     _text="RegExp"
+                     _names=[
+                      (Id _info=(ASTSpanInfo()) _text="RegExp")]))))
+                 (Param @120:31~61
+                  _info=(ASTSpanInfo())
+                  _name=(Id @120:34~42 _info=(ASTSpanInfo()) _text="handlers")
+                  _rest=true
+                  _typ=(Some _value=(ArrayType @120:59~62
+                    _info=(ASTSpanInfo())
+                    _typ=(TypeRef @120:44~59
+                     _info=(ASTSpanInfo())
+                     _name=(TypeName
+                      _info=(ASTSpanInfo())
+                      _text="RequestFunction"
+                      _names=[
+                       (Id _info=(ASTSpanInfo()) _text="RequestFunction")])))))]))
+              (MethodSig @122:13~65
+               _info=(ASTSpanInfo())
+               _prop=(PropId @122:13~16
+                _id=(Id _info=(ASTSpanInfo()) _text="del")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @122:16~65
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(TypeRef @122:64~65
+                  _info=(ASTSpanInfo())
+                  _name=(TypeName
+                   _info=(ASTSpanInfo())
+                   _text="T"
+                   _names=[
+                    (Id _info=(ASTSpanInfo()) _text="T")])))
+                _params=[
+                 (Param @122:17~29
+                  _info=(ASTSpanInfo())
+                  _name=(Id @122:17~21 _info=(ASTSpanInfo()) _text="name")
+                  _typ=(Some _value=(StringT @122:23~29
+                    _info=(ASTSpanInfo()))))
+                 (Param @122:31~61
+                  _info=(ASTSpanInfo())
+                  _name=(Id @122:34~42 _info=(ASTSpanInfo()) _text="handlers")
+                  _rest=true
+                  _typ=(Some _value=(ArrayType @122:59~62
+                    _info=(ASTSpanInfo())
+                    _typ=(TypeRef @122:44~59
+                     _info=(ASTSpanInfo())
+                     _name=(TypeName
+                      _info=(ASTSpanInfo())
+                      _text="RequestFunction"
+                      _names=[
+                       (Id _info=(ASTSpanInfo()) _text="RequestFunction")])))))]))
+              (MethodSig @124:13~65
+               _info=(ASTSpanInfo())
+               _prop=(PropId @124:13~16
+                _id=(Id _info=(ASTSpanInfo()) _text="del")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @124:16~65
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(TypeRef @124:64~65
+                  _info=(ASTSpanInfo())
+                  _name=(TypeName
+                   _info=(ASTSpanInfo())
+                   _text="T"
+                   _names=[
+                    (Id _info=(ASTSpanInfo()) _text="T")])))
+                _params=[
+                 (Param @124:17~29
+                  _info=(ASTSpanInfo())
+                  _name=(Id @124:17~21 _info=(ASTSpanInfo()) _text="name")
+                  _typ=(Some _value=(TypeRef @124:23~29
+                    _info=(ASTSpanInfo())
+                    _name=(TypeName
+                     _info=(ASTSpanInfo())
+                     _text="RegExp"
+                     _names=[
+                      (Id _info=(ASTSpanInfo()) _text="RegExp")]))))
+                 (Param @124:31~61
+                  _info=(ASTSpanInfo())
+                  _name=(Id @124:34~42 _info=(ASTSpanInfo()) _text="handlers")
+                  _rest=true
+                  _typ=(Some _value=(ArrayType @124:59~62
+                    _info=(ASTSpanInfo())
+                    _typ=(TypeRef @124:44~59
+                     _info=(ASTSpanInfo())
+                     _name=(TypeName
+                      _info=(ASTSpanInfo())
+                      _text="RequestFunction"
+                      _names=[
+                       (Id _info=(ASTSpanInfo()) _text="RequestFunction")])))))]))])
+            _tps=[
+             (TypeParam @65:27~28
+              _info=(ASTSpanInfo())
+              _name=(Id _info=(ASTSpanInfo()) _text="T"))])
+           _info=(ASTSpanInfo()))
+          (AmbModElt @127:9~155:9
+           _decl=(AmbClsDecl @127:16~155:9
+            _id=(Id @127:22~28 _info=(ASTSpanInfo()) _text="Router")
+            _info=(ASTSpanInfo())
+            _elts=[
+             (AmbMemDecl @128:11~38
+              _info=(ASTSpanInfo())
+              _prop=(PropId @128:11~14
+               _id=(Id _info=(ASTSpanInfo()) _text="new")
+               _info=(ASTSpanInfo()))
+              _typ=(Some _value=(CallSig @128:15~38
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(TypeRef @128:32~38
+                  _info=(ASTSpanInfo())
+                  _name=(TypeName
+                   _info=(ASTSpanInfo())
+                   _text="Router"
+                   _names=[
+                    (Id _info=(ASTSpanInfo()) _text="Router")])))
+                _params=[
+                 (Param @128:16~29
+                  _info=(ASTSpanInfo())
+                  _name=(Id @128:16~23 _info=(ASTSpanInfo()) _text="options")
+                  _optional=true
+                  _typ=(Some _value=(AnyT @128:26~29
+                    _info=(ASTSpanInfo()))))])))
+             (AmbMemDecl @130:11~29
+              _info=(ASTSpanInfo())
+              _prop=(PropId @130:11~21
+               _id=(Id _info=(ASTSpanInfo()) _text="middleware")
+               _info=(ASTSpanInfo()))
+              _typ=(Some _value=(CallSig @130:22~29
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(AnyT @130:26~29
+                  _info=(ASTSpanInfo()))))))
+             (AmbMemDecl @132:11~52
+              _info=(ASTSpanInfo())
+              _prop=(PropId @132:11~16
+               _id=(Id _info=(ASTSpanInfo()) _text="param")
+               _info=(ASTSpanInfo()))
+              _typ=(Some _value=(CallSig @132:16~52
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(TypeRef @132:46~52
+                  _info=(ASTSpanInfo())
+                  _name=(TypeName
+                   _info=(ASTSpanInfo())
+                   _text="Router"
+                   _names=[
+                    (Id _info=(ASTSpanInfo()) _text="Router")])))
+                _params=[
+                 (Param @132:17~29
+                  _info=(ASTSpanInfo())
+                  _name=(Id @132:17~21 _info=(ASTSpanInfo()) _text="name")
+                  _typ=(Some _value=(StringT @132:23~29
+                    _info=(ASTSpanInfo()))))
+                 (Param @132:31~43
+                  _info=(ASTSpanInfo())
+                  _name=(Id @132:31~33 _info=(ASTSpanInfo()) _text="fn")
+                  _typ=(Some _value=(TypeRef @132:35~43
+                    _info=(ASTSpanInfo())
+                    _name=(TypeName
+                     _info=(ASTSpanInfo())
+                     _text="Function"
+                     _names=[
+                      (Id _info=(ASTSpanInfo()) _text="Function")]))))])))
+             (AmbMemDecl @134:11~51
+              _info=(ASTSpanInfo())
+              _prop=(PropId @134:11~16
+               _id=(Id _info=(ASTSpanInfo()) _text="param")
+               _info=(ASTSpanInfo()))
+              _typ=(Some _value=(CallSig @134:16~51
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(TypeRef @134:45~51
+                  _info=(ASTSpanInfo())
+                  _name=(TypeName
+                   _info=(ASTSpanInfo())
+                   _text="Router"
+                   _names=[
+                    (Id _info=(ASTSpanInfo()) _text="Router")])))
+                _params=[
+                 (Param @134:17~28
+                  _info=(ASTSpanInfo())
+                  _name=(Id @134:17~21 _info=(ASTSpanInfo()) _text="name")
+                  _typ=(Some _value=(ArrayType @134:26~29
+                    _info=(ASTSpanInfo())
+                    _typ=(AnyT @134:23~28
+                     _info=(ASTSpanInfo())))))
+                 (Param @134:30~42
+                  _info=(ASTSpanInfo())
+                  _name=(Id @134:30~32 _info=(ASTSpanInfo()) _text="fn")
+                  _typ=(Some _value=(TypeRef @134:34~42
+                    _info=(ASTSpanInfo())
+                    _name=(TypeName
+                     _info=(ASTSpanInfo())
+                     _text="Function"
+                     _names=[
+                      (Id _info=(ASTSpanInfo()) _text="Function")]))))])))
+             (AmbMemDecl @136:11~95
+              _info=(ASTSpanInfo())
+              _prop=(PropId @136:11~14
+               _id=(Id _info=(ASTSpanInfo()) _text="all")
+               _info=(ASTSpanInfo()))
+              _typ=(Some _value=(CallSig @136:14~95
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(TypeRef @136:89~95
+                  _info=(ASTSpanInfo())
+                  _name=(TypeName
+                   _info=(ASTSpanInfo())
+                   _text="Router"
+                   _names=[
+                    (Id _info=(ASTSpanInfo()) _text="Router")])))
+                _params=[
+                 (Param @136:15~27
+                  _info=(ASTSpanInfo())
+                  _name=(Id @136:15~19 _info=(ASTSpanInfo()) _text="path")
+                  _typ=(Some _value=(StringT @136:21~27
+                    _info=(ASTSpanInfo()))))
+                 (Param @136:29~86
+                  _info=(ASTSpanInfo())
+                  _name=(Id @136:29~31 _info=(ASTSpanInfo()) _text="fn")
+                  _optional=true
+                  _typ=(Some _value=(FunctionType @136:34~86
+                    _info=(ASTSpanInfo())
+                    _typ=(AnyT @136:83~86
+                     _info=(ASTSpanInfo()))
+                    _params=[
+                     (Param @136:35~47
+                      _info=(ASTSpanInfo())
+                      _name=(Id @136:35~38 _info=(ASTSpanInfo()) _text="req")
+                      _typ=(Some _value=(TypeRef @136:40~47
+                        _info=(ASTSpanInfo())
+                        _name=(TypeName
+                         _info=(ASTSpanInfo())
+                         _text="Request"
+                         _names=[
+                          (Id _info=(ASTSpanInfo()) _text="Request")]))))
+                     (Param @136:49~62
+                      _info=(ASTSpanInfo())
+                      _name=(Id @136:49~52 _info=(ASTSpanInfo()) _text="res")
+                      _typ=(Some _value=(TypeRef @136:54~62
+                        _info=(ASTSpanInfo())
+                        _name=(TypeName
+                         _info=(ASTSpanInfo())
+                         _text="Response"
+                         _names=[
+                          (Id _info=(ASTSpanInfo()) _text="Response")]))))
+                     (Param @136:64~78
+                      _info=(ASTSpanInfo())
+                      _name=(Id @136:64~68 _info=(ASTSpanInfo()) _text="next")
+                      _typ=(Some _value=(TypeRef @136:70~78
+                        _info=(ASTSpanInfo())
+                        _name=(TypeName
+                         _info=(ASTSpanInfo())
+                         _text="Function"
+                         _names=[
+                          (Id _info=(ASTSpanInfo()) _text="Function")]))))])))])))
+             (AmbMemDecl @138:11~60
+              _info=(ASTSpanInfo())
+              _prop=(PropId @138:11~14
+               _id=(Id _info=(ASTSpanInfo()) _text="all")
+               _info=(ASTSpanInfo()))
+              _typ=(Some _value=(CallSig @138:14~60
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(VoidT @138:56~60
+                  _info=(ASTSpanInfo())))
+                _params=[
+                 (Param @138:15~27
+                  _info=(ASTSpanInfo())
+                  _name=(Id @138:15~19 _info=(ASTSpanInfo()) _text="path")
+                  _typ=(Some _value=(StringT @138:21~27
+                    _info=(ASTSpanInfo()))))
+                 (Param @138:29~53
+                  _info=(ASTSpanInfo())
+                  _name=(Id @138:32~41 _info=(ASTSpanInfo()) _text="callbacks")
+                  _rest=true
+                  _typ=(Some _value=(ArrayType @138:51~54
+                    _info=(ASTSpanInfo())
+                    _typ=(TypeRef @138:43~51
+                     _info=(ASTSpanInfo())
+                     _name=(TypeName
+                      _info=(ASTSpanInfo())
+                      _text="Function"
+                      _names=[
+                       (Id _info=(ASTSpanInfo()) _text="Function")])))))])))
+             (AmbMemDecl @140:11~68
+              _info=(ASTSpanInfo())
+              _prop=(PropId @140:11~14
+               _id=(Id _info=(ASTSpanInfo()) _text="get")
+               _info=(ASTSpanInfo()))
+              _typ=(Some _value=(CallSig @140:14~68
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(TypeRef @140:62~68
+                  _info=(ASTSpanInfo())
+                  _name=(TypeName
+                   _info=(ASTSpanInfo())
+                   _text="Router"
+                   _names=[
+                    (Id _info=(ASTSpanInfo()) _text="Router")])))
+                _params=[
+                 (Param @140:15~27
+                  _info=(ASTSpanInfo())
+                  _name=(Id @140:15~19 _info=(ASTSpanInfo()) _text="name")
+                  _typ=(Some _value=(StringT @140:21~27
+                    _info=(ASTSpanInfo()))))
+                 (Param @140:29~59
+                  _info=(ASTSpanInfo())
+                  _name=(Id @140:32~40 _info=(ASTSpanInfo()) _text="handlers")
+                  _rest=true
+                  _typ=(Some _value=(ArrayType @140:57~60
+                    _info=(ASTSpanInfo())
+                    _typ=(TypeRef @140:42~57
+                     _info=(ASTSpanInfo())
+                     _name=(TypeName
+                      _info=(ASTSpanInfo())
+                      _text="RequestFunction"
+                      _names=[
+                       (Id _info=(ASTSpanInfo()) _text="RequestFunction")])))))])))
+             (AmbMemDecl @142:11~68
+              _info=(ASTSpanInfo())
+              _prop=(PropId @142:11~14
+               _id=(Id _info=(ASTSpanInfo()) _text="get")
+               _info=(ASTSpanInfo()))
+              _typ=(Some _value=(CallSig @142:14~68
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(TypeRef @142:62~68
+                  _info=(ASTSpanInfo())
+                  _name=(TypeName
+                   _info=(ASTSpanInfo())
+                   _text="Router"
+                   _names=[
+                    (Id _info=(ASTSpanInfo()) _text="Router")])))
+                _params=[
+                 (Param @142:15~27
+                  _info=(ASTSpanInfo())
+                  _name=(Id @142:15~19 _info=(ASTSpanInfo()) _text="name")
+                  _typ=(Some _value=(TypeRef @142:21~27
+                    _info=(ASTSpanInfo())
+                    _name=(TypeName
+                     _info=(ASTSpanInfo())
+                     _text="RegExp"
+                     _names=[
+                      (Id _info=(ASTSpanInfo()) _text="RegExp")]))))
+                 (Param @142:29~59
+                  _info=(ASTSpanInfo())
+                  _name=(Id @142:32~40 _info=(ASTSpanInfo()) _text="handlers")
+                  _rest=true
+                  _typ=(Some _value=(ArrayType @142:57~60
+                    _info=(ASTSpanInfo())
+                    _typ=(TypeRef @142:42~57
+                     _info=(ASTSpanInfo())
+                     _name=(TypeName
+                      _info=(ASTSpanInfo())
+                      _text="RequestFunction"
+                      _names=[
+                       (Id _info=(ASTSpanInfo()) _text="RequestFunction")])))))])))
+             (AmbMemDecl @144:11~69
+              _info=(ASTSpanInfo())
+              _prop=(PropId @144:11~15
+               _id=(Id _info=(ASTSpanInfo()) _text="post")
+               _info=(ASTSpanInfo()))
+              _typ=(Some _value=(CallSig @144:15~69
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(TypeRef @144:63~69
+                  _info=(ASTSpanInfo())
+                  _name=(TypeName
+                   _info=(ASTSpanInfo())
+                   _text="Router"
+                   _names=[
+                    (Id _info=(ASTSpanInfo()) _text="Router")])))
+                _params=[
+                 (Param @144:16~28
+                  _info=(ASTSpanInfo())
+                  _name=(Id @144:16~20 _info=(ASTSpanInfo()) _text="name")
+                  _typ=(Some _value=(StringT @144:22~28
+                    _info=(ASTSpanInfo()))))
+                 (Param @144:30~60
+                  _info=(ASTSpanInfo())
+                  _name=(Id @144:33~41 _info=(ASTSpanInfo()) _text="handlers")
+                  _rest=true
+                  _typ=(Some _value=(ArrayType @144:58~61
+                    _info=(ASTSpanInfo())
+                    _typ=(TypeRef @144:43~58
+                     _info=(ASTSpanInfo())
+                     _name=(TypeName
+                      _info=(ASTSpanInfo())
+                      _text="RequestFunction"
+                      _names=[
+                       (Id _info=(ASTSpanInfo()) _text="RequestFunction")])))))])))
+             (AmbMemDecl @146:11~69
+              _info=(ASTSpanInfo())
+              _prop=(PropId @146:11~15
+               _id=(Id _info=(ASTSpanInfo()) _text="post")
+               _info=(ASTSpanInfo()))
+              _typ=(Some _value=(CallSig @146:15~69
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(TypeRef @146:63~69
+                  _info=(ASTSpanInfo())
+                  _name=(TypeName
+                   _info=(ASTSpanInfo())
+                   _text="Router"
+                   _names=[
+                    (Id _info=(ASTSpanInfo()) _text="Router")])))
+                _params=[
+                 (Param @146:16~28
+                  _info=(ASTSpanInfo())
+                  _name=(Id @146:16~20 _info=(ASTSpanInfo()) _text="name")
+                  _typ=(Some _value=(TypeRef @146:22~28
+                    _info=(ASTSpanInfo())
+                    _name=(TypeName
+                     _info=(ASTSpanInfo())
+                     _text="RegExp"
+                     _names=[
+                      (Id _info=(ASTSpanInfo()) _text="RegExp")]))))
+                 (Param @146:30~60
+                  _info=(ASTSpanInfo())
+                  _name=(Id @146:33~41 _info=(ASTSpanInfo()) _text="handlers")
+                  _rest=true
+                  _typ=(Some _value=(ArrayType @146:58~61
+                    _info=(ASTSpanInfo())
+                    _typ=(TypeRef @146:43~58
+                     _info=(ASTSpanInfo())
+                     _name=(TypeName
+                      _info=(ASTSpanInfo())
+                      _text="RequestFunction"
+                      _names=[
+                       (Id _info=(ASTSpanInfo()) _text="RequestFunction")])))))])))
+             (AmbMemDecl @148:11~68
+              _info=(ASTSpanInfo())
+              _prop=(PropId @148:11~14
+               _id=(Id _info=(ASTSpanInfo()) _text="put")
+               _info=(ASTSpanInfo()))
+              _typ=(Some _value=(CallSig @148:14~68
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(TypeRef @148:62~68
+                  _info=(ASTSpanInfo())
+                  _name=(TypeName
+                   _info=(ASTSpanInfo())
+                   _text="Router"
+                   _names=[
+                    (Id _info=(ASTSpanInfo()) _text="Router")])))
+                _params=[
+                 (Param @148:15~27
+                  _info=(ASTSpanInfo())
+                  _name=(Id @148:15~19 _info=(ASTSpanInfo()) _text="name")
+                  _typ=(Some _value=(StringT @148:21~27
+                    _info=(ASTSpanInfo()))))
+                 (Param @148:29~59
+                  _info=(ASTSpanInfo())
+                  _name=(Id @148:32~40 _info=(ASTSpanInfo()) _text="handlers")
+                  _rest=true
+                  _typ=(Some _value=(ArrayType @148:57~60
+                    _info=(ASTSpanInfo())
+                    _typ=(TypeRef @148:42~57
+                     _info=(ASTSpanInfo())
+                     _name=(TypeName
+                      _info=(ASTSpanInfo())
+                      _text="RequestFunction"
+                      _names=[
+                       (Id _info=(ASTSpanInfo()) _text="RequestFunction")])))))])))
+             (AmbMemDecl @150:11~68
+              _info=(ASTSpanInfo())
+              _prop=(PropId @150:11~14
+               _id=(Id _info=(ASTSpanInfo()) _text="put")
+               _info=(ASTSpanInfo()))
+              _typ=(Some _value=(CallSig @150:14~68
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(TypeRef @150:62~68
+                  _info=(ASTSpanInfo())
+                  _name=(TypeName
+                   _info=(ASTSpanInfo())
+                   _text="Router"
+                   _names=[
+                    (Id _info=(ASTSpanInfo()) _text="Router")])))
+                _params=[
+                 (Param @150:15~27
+                  _info=(ASTSpanInfo())
+                  _name=(Id @150:15~19 _info=(ASTSpanInfo()) _text="name")
+                  _typ=(Some _value=(TypeRef @150:21~27
+                    _info=(ASTSpanInfo())
+                    _name=(TypeName
+                     _info=(ASTSpanInfo())
+                     _text="RegExp"
+                     _names=[
+                      (Id _info=(ASTSpanInfo()) _text="RegExp")]))))
+                 (Param @150:29~59
+                  _info=(ASTSpanInfo())
+                  _name=(Id @150:32~40 _info=(ASTSpanInfo()) _text="handlers")
+                  _rest=true
+                  _typ=(Some _value=(ArrayType @150:57~60
+                    _info=(ASTSpanInfo())
+                    _typ=(TypeRef @150:42~57
+                     _info=(ASTSpanInfo())
+                     _name=(TypeName
+                      _info=(ASTSpanInfo())
+                      _text="RequestFunction"
+                      _names=[
+                       (Id _info=(ASTSpanInfo()) _text="RequestFunction")])))))])))
+             (AmbMemDecl @152:11~68
+              _info=(ASTSpanInfo())
+              _prop=(PropId @152:11~14
+               _id=(Id _info=(ASTSpanInfo()) _text="del")
+               _info=(ASTSpanInfo()))
+              _typ=(Some _value=(CallSig @152:14~68
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(TypeRef @152:62~68
+                  _info=(ASTSpanInfo())
+                  _name=(TypeName
+                   _info=(ASTSpanInfo())
+                   _text="Router"
+                   _names=[
+                    (Id _info=(ASTSpanInfo()) _text="Router")])))
+                _params=[
+                 (Param @152:15~27
+                  _info=(ASTSpanInfo())
+                  _name=(Id @152:15~19 _info=(ASTSpanInfo()) _text="name")
+                  _typ=(Some _value=(StringT @152:21~27
+                    _info=(ASTSpanInfo()))))
+                 (Param @152:29~59
+                  _info=(ASTSpanInfo())
+                  _name=(Id @152:32~40 _info=(ASTSpanInfo()) _text="handlers")
+                  _rest=true
+                  _typ=(Some _value=(ArrayType @152:57~60
+                    _info=(ASTSpanInfo())
+                    _typ=(TypeRef @152:42~57
+                     _info=(ASTSpanInfo())
+                     _name=(TypeName
+                      _info=(ASTSpanInfo())
+                      _text="RequestFunction"
+                      _names=[
+                       (Id _info=(ASTSpanInfo()) _text="RequestFunction")])))))])))
+             (AmbMemDecl @154:11~68
+              _info=(ASTSpanInfo())
+              _prop=(PropId @154:11~14
+               _id=(Id _info=(ASTSpanInfo()) _text="del")
+               _info=(ASTSpanInfo()))
+              _typ=(Some _value=(CallSig @154:14~68
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(TypeRef @154:62~68
+                  _info=(ASTSpanInfo())
+                  _name=(TypeName
+                   _info=(ASTSpanInfo())
+                   _text="Router"
+                   _names=[
+                    (Id _info=(ASTSpanInfo()) _text="Router")])))
+                _params=[
+                 (Param @154:15~27
+                  _info=(ASTSpanInfo())
+                  _name=(Id @154:15~19 _info=(ASTSpanInfo()) _text="name")
+                  _typ=(Some _value=(TypeRef @154:21~27
+                    _info=(ASTSpanInfo())
+                    _name=(TypeName
+                     _info=(ASTSpanInfo())
+                     _text="RegExp"
+                     _names=[
+                      (Id _info=(ASTSpanInfo()) _text="RegExp")]))))
+                 (Param @154:29~59
+                  _info=(ASTSpanInfo())
+                  _name=(Id @154:32~40 _info=(ASTSpanInfo()) _text="handlers")
+                  _rest=true
+                  _typ=(Some _value=(ArrayType @154:57~60
+                    _info=(ASTSpanInfo())
+                    _typ=(TypeRef @154:42~57
+                     _info=(ASTSpanInfo())
+                     _name=(TypeName
+                      _info=(ASTSpanInfo())
+                      _text="RequestFunction"
+                      _names=[
+                       (Id _info=(ASTSpanInfo()) _text="RequestFunction")])))))])))]
+            _imp=[
+             (TypeRef @127:40~54
+              _info=(ASTSpanInfo())
+              _name=(TypeName @127:40~47
+               _info=(ASTSpanInfo())
+               _text="IRouter"
+               _names=[
+                (Id _info=(ASTSpanInfo()) _text="IRouter")])
+              _args=[
+               (TypeRef @127:48~54
+                _info=(ASTSpanInfo())
+                _name=(TypeName
+                 _info=(ASTSpanInfo())
+                 _text="Router"
+                 _names=[
+                  (Id _info=(ASTSpanInfo()) _text="Router")]))])])
+           _info=(ASTSpanInfo()))
+          (AmbModElt @157:9~159:9
+           _decl=(IntfDecl
+            _id=(Id @157:19~26 _info=(ASTSpanInfo()) _text="Handler")
+            _info=(ASTSpanInfo())
+            _typ=(ObjectType @157:27~159:9
+             _info=(ASTSpanInfo())
+             _members=[
+              (CallSig @158:13~65
+               _info=(ASTSpanInfo())
+               _typ=(Some _value=(VoidT @158:61~65
+                 _info=(ASTSpanInfo())))
+               _params=[
+                (Param @158:14~26
+                 _info=(ASTSpanInfo())
+                 _name=(Id @158:14~17 _info=(ASTSpanInfo()) _text="req")
+                 _typ=(Some _value=(TypeRef @158:19~26
+                   _info=(ASTSpanInfo())
+                   _name=(TypeName
+                    _info=(ASTSpanInfo())
+                    _text="Request"
+                    _names=[
+                     (Id _info=(ASTSpanInfo()) _text="Request")]))))
+                (Param @158:28~41
+                 _info=(ASTSpanInfo())
+                 _name=(Id @158:28~31 _info=(ASTSpanInfo()) _text="res")
+                 _typ=(Some _value=(TypeRef @158:33~41
+                   _info=(ASTSpanInfo())
+                   _name=(TypeName
+                    _info=(ASTSpanInfo())
+                    _text="Response"
+                    _names=[
+                     (Id _info=(ASTSpanInfo()) _text="Response")]))))
+                (Param @158:43~58
+                 _info=(ASTSpanInfo())
+                 _name=(Id @158:43~47 _info=(ASTSpanInfo()) _text="next")
+                 _optional=true
+                 _typ=(Some _value=(TypeRef @158:50~58
+                   _info=(ASTSpanInfo())
+                   _name=(TypeName
+                    _info=(ASTSpanInfo())
+                    _text="Function"
+                    _names=[
+                     (Id _info=(ASTSpanInfo()) _text="Function")]))))])]))
+           _info=(ASTSpanInfo()))
+          (AmbModElt @161:9~169:9
+           _decl=(IntfDecl
+            _id=(Id @161:19~32 _info=(ASTSpanInfo()) _text="CookieOptions")
+            _info=(ASTSpanInfo())
+            _typ=(ObjectType @161:33~169:9
+             _info=(ASTSpanInfo())
+             _members=[
+              (PropertySig @162:13~28
+               _info=(ASTSpanInfo())
+               _optional=true
+               _prop=(PropId @162:13~20
+                _id=(Id @162:13~19 _info=(ASTSpanInfo()) _text="maxAge")
+                _info=(ASTSpanInfo()))
+               _typ=(Some _value=(NumberT @162:22~28
+                 _info=(ASTSpanInfo()))))
+              (PropertySig @163:13~29
+               _info=(ASTSpanInfo())
+               _optional=true
+               _prop=(PropId @163:13~20
+                _id=(Id @163:13~19 _info=(ASTSpanInfo()) _text="signed")
+                _info=(ASTSpanInfo()))
+               _typ=(Some _value=(BoolT @163:22~29
+                 _info=(ASTSpanInfo()))))
+              (PropertySig @164:13~27
+               _info=(ASTSpanInfo())
+               _optional=true
+               _prop=(PropId @164:13~21
+                _id=(Id @164:13~20 _info=(ASTSpanInfo()) _text="expires")
+                _info=(ASTSpanInfo()))
+               _typ=(Some _value=(TypeRef @164:23~27
+                 _info=(ASTSpanInfo())
+                 _name=(TypeName
+                  _info=(ASTSpanInfo())
+                  _text="Date"
+                  _names=[
+                   (Id _info=(ASTSpanInfo()) _text="Date")]))))
+              (PropertySig @165:13~31
+               _info=(ASTSpanInfo())
+               _optional=true
+               _prop=(PropId @165:13~22
+                _id=(Id @165:13~21 _info=(ASTSpanInfo()) _text="httpOnly")
+                _info=(ASTSpanInfo()))
+               _typ=(Some _value=(BoolT @165:24~31
+                 _info=(ASTSpanInfo()))))
+              (PropertySig @166:13~26
+               _info=(ASTSpanInfo())
+               _optional=true
+               _prop=(PropId @166:13~18
+                _id=(Id @166:13~17 _info=(ASTSpanInfo()) _text="path")
+                _info=(ASTSpanInfo()))
+               _typ=(Some _value=(StringT @166:20~26
+                 _info=(ASTSpanInfo()))))
+              (PropertySig @167:13~28
+               _info=(ASTSpanInfo())
+               _optional=true
+               _prop=(PropId @167:13~20
+                _id=(Id @167:13~19 _info=(ASTSpanInfo()) _text="domain")
+                _info=(ASTSpanInfo()))
+               _typ=(Some _value=(StringT @167:22~28
+                 _info=(ASTSpanInfo()))))
+              (PropertySig @168:13~29
+               _info=(ASTSpanInfo())
+               _optional=true
+               _prop=(PropId @168:13~20
+                _id=(Id @168:13~19 _info=(ASTSpanInfo()) _text="secure")
+                _info=(ASTSpanInfo()))
+               _typ=(Some _value=(BoolT @168:22~29
+                 _info=(ASTSpanInfo()))))]))
+           _info=(ASTSpanInfo()))
+          (AmbModElt @171:9~49
+           _decl=(IntfDecl
+            _id=(Id @171:19~26 _info=(ASTSpanInfo()) _text="Errback")
+            _info=(ASTSpanInfo())
+            _typ=(ObjectType @171:27~49
+             _info=(ASTSpanInfo())
+             _members=[
+              (CallSig @171:29~47
+               _info=(ASTSpanInfo())
+               _typ=(Some _value=(VoidT @171:43~47
+                 _info=(ASTSpanInfo())))
+               _params=[
+                (Param @171:30~40
+                 _info=(ASTSpanInfo())
+                 _name=(Id @171:30~33 _info=(ASTSpanInfo()) _text="err")
+                 _typ=(Some _value=(TypeRef @171:35~40
+                   _info=(ASTSpanInfo())
+                   _name=(TypeName
+                    _info=(ASTSpanInfo())
+                    _text="Error"
+                    _names=[
+                     (Id _info=(ASTSpanInfo()) _text="Error")]))))])]))
+           _info=(ASTSpanInfo()))
+          (AmbModElt @173:9~222:9
+           _decl=(IntfDecl
+            _id=(Id @173:19~26 _info=(ASTSpanInfo()) _text="Session")
+            _info=(ASTSpanInfo())
+            _typ=(ObjectType @173:27~222:9
+             _info=(ASTSpanInfo())
+             _members=[
+              (MethodSig @182:13~29
+               _info=(ASTSpanInfo())
+               _prop=(PropId @182:13~18
+                _id=(Id _info=(ASTSpanInfo()) _text="touch")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @182:18~29
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(TypeRef @182:22~29
+                  _info=(ASTSpanInfo())
+                  _name=(TypeName
+                   _info=(ASTSpanInfo())
+                   _text="Session"
+                   _names=[
+                    (Id _info=(ASTSpanInfo()) _text="Session")])))))
+              (MethodSig @187:13~35
+               _info=(ASTSpanInfo())
+               _prop=(PropId @187:13~24
+                _id=(Id _info=(ASTSpanInfo()) _text="resetMaxAge")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @187:24~35
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(TypeRef @187:28~35
+                  _info=(ASTSpanInfo())
+                  _name=(TypeName
+                   _info=(ASTSpanInfo())
+                   _text="Session"
+                   _names=[
+                    (Id _info=(ASTSpanInfo()) _text="Session")])))))
+              (MethodSig @192:13~40
+               _info=(ASTSpanInfo())
+               _prop=(PropId @192:13~17
+                _id=(Id _info=(ASTSpanInfo()) _text="save")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @192:17~40
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(TypeRef @192:33~40
+                  _info=(ASTSpanInfo())
+                  _name=(TypeName
+                   _info=(ASTSpanInfo())
+                   _text="Session"
+                   _names=[
+                    (Id _info=(ASTSpanInfo()) _text="Session")])))
+                _params=[
+                 (Param @192:18~30
+                  _info=(ASTSpanInfo())
+                  _name=(Id @192:18~20 _info=(ASTSpanInfo()) _text="fn")
+                  _typ=(Some _value=(TypeRef @192:22~30
+                    _info=(ASTSpanInfo())
+                    _name=(TypeName
+                     _info=(ASTSpanInfo())
+                     _text="Function"
+                     _names=[
+                      (Id _info=(ASTSpanInfo()) _text="Function")]))))]))
+              (MethodSig @201:13~42
+               _info=(ASTSpanInfo())
+               _prop=(PropId @201:13~19
+                _id=(Id _info=(ASTSpanInfo()) _text="reload")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @201:19~42
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(TypeRef @201:35~42
+                  _info=(ASTSpanInfo())
+                  _name=(TypeName
+                   _info=(ASTSpanInfo())
+                   _text="Session"
+                   _names=[
+                    (Id _info=(ASTSpanInfo()) _text="Session")])))
+                _params=[
+                 (Param @201:20~32
+                  _info=(ASTSpanInfo())
+                  _name=(Id @201:20~22 _info=(ASTSpanInfo()) _text="fn")
+                  _typ=(Some _value=(TypeRef @201:24~32
+                    _info=(ASTSpanInfo())
+                    _name=(TypeName
+                     _info=(ASTSpanInfo())
+                     _text="Function"
+                     _names=[
+                      (Id _info=(ASTSpanInfo()) _text="Function")]))))]))
+              (MethodSig @206:13~43
+               _info=(ASTSpanInfo())
+               _prop=(PropId @206:13~20
+                _id=(Id _info=(ASTSpanInfo()) _text="destroy")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @206:20~43
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(TypeRef @206:36~43
+                  _info=(ASTSpanInfo())
+                  _name=(TypeName
+                   _info=(ASTSpanInfo())
+                   _text="Session"
+                   _names=[
+                    (Id _info=(ASTSpanInfo()) _text="Session")])))
+                _params=[
+                 (Param @206:21~33
+                  _info=(ASTSpanInfo())
+                  _name=(Id @206:21~23 _info=(ASTSpanInfo()) _text="fn")
+                  _typ=(Some _value=(TypeRef @206:25~33
+                    _info=(ASTSpanInfo())
+                    _name=(TypeName
+                     _info=(ASTSpanInfo())
+                     _text="Function"
+                     _names=[
+                      (Id _info=(ASTSpanInfo()) _text="Function")]))))]))
+              (MethodSig @211:13~46
+               _info=(ASTSpanInfo())
+               _prop=(PropId @211:13~23
+                _id=(Id _info=(ASTSpanInfo()) _text="regenerate")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @211:23~46
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(TypeRef @211:39~46
+                  _info=(ASTSpanInfo())
+                  _name=(TypeName
+                   _info=(ASTSpanInfo())
+                   _text="Session"
+                   _names=[
+                    (Id _info=(ASTSpanInfo()) _text="Session")])))
+                _params=[
+                 (Param @211:24~36
+                  _info=(ASTSpanInfo())
+                  _name=(Id @211:24~26 _info=(ASTSpanInfo()) _text="fn")
+                  _typ=(Some _value=(TypeRef @211:28~36
+                    _info=(ASTSpanInfo())
+                    _name=(TypeName
+                     _info=(ASTSpanInfo())
+                     _text="Function"
+                     _names=[
+                      (Id _info=(ASTSpanInfo()) _text="Function")]))))]))
+              (PropertySig @213:13~22
+               _info=(ASTSpanInfo())
+               _prop=(PropId @213:13~17
+                _id=(Id _info=(ASTSpanInfo()) _text="user")
+                _info=(ASTSpanInfo()))
+               _typ=(Some _value=(AnyT @213:19~22
+                 _info=(ASTSpanInfo()))))
+              (PropertySig @215:13~26
+               _info=(ASTSpanInfo())
+               _prop=(PropId @215:13~18
+                _id=(Id _info=(ASTSpanInfo()) _text="error")
+                _info=(ASTSpanInfo()))
+               _typ=(Some _value=(StringT @215:20~26
+                 _info=(ASTSpanInfo()))))
+              (PropertySig @217:13~28
+               _info=(ASTSpanInfo())
+               _prop=(PropId @217:13~20
+                _id=(Id _info=(ASTSpanInfo()) _text="success")
+                _info=(ASTSpanInfo()))
+               _typ=(Some _value=(StringT @217:22~28
+                 _info=(ASTSpanInfo()))))
+              (PropertySig @219:13~23
+               _info=(ASTSpanInfo())
+               _prop=(PropId @219:13~18
+                _id=(Id _info=(ASTSpanInfo()) _text="views")
+                _info=(ASTSpanInfo()))
+               _typ=(Some _value=(AnyT @219:20~23
+                 _info=(ASTSpanInfo()))))
+              (PropertySig @221:13~26
+               _info=(ASTSpanInfo())
+               _prop=(PropId @221:13~18
+                _id=(Id _info=(ASTSpanInfo()) _text="count")
+                _info=(ASTSpanInfo()))
+               _typ=(Some _value=(NumberT @221:20~26
+                 _info=(ASTSpanInfo()))))]))
+           _info=(ASTSpanInfo()))
+          (AmbModElt @224:9~526:9
+           _decl=(IntfDecl
+            _id=(Id @224:19~26 _info=(ASTSpanInfo()) _text="Request")
+            _info=(ASTSpanInfo())
+            _typ=(ObjectType @224:27~526:9
+             _info=(ASTSpanInfo())
+             _members=[
+              (PropertySig @226:13~29
+               _info=(ASTSpanInfo())
+               _prop=(PropId @226:13~20
+                _id=(Id _info=(ASTSpanInfo()) _text="session")
+                _info=(ASTSpanInfo()))
+               _typ=(Some _value=(TypeRef @226:22~29
+                 _info=(ASTSpanInfo())
+                 _name=(TypeName
+                  _info=(ASTSpanInfo())
+                  _text="Session"
+                  _names=[
+                   (Id _info=(ASTSpanInfo()) _text="Session")]))))
+              (MethodSig @249:13~39
+               _info=(ASTSpanInfo())
+               _prop=(PropId @249:13~16
+                _id=(Id _info=(ASTSpanInfo()) _text="get")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @249:17~39
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(StringT @249:33~39
+                  _info=(ASTSpanInfo())))
+                _params=[
+                 (Param @249:18~30
+                  _info=(ASTSpanInfo())
+                  _name=(Id @249:18~22 _info=(ASTSpanInfo()) _text="name")
+                  _typ=(Some _value=(StringT @249:24~30
+                    _info=(ASTSpanInfo()))))]))
+              (MethodSig @251:13~41
+               _info=(ASTSpanInfo())
+               _prop=(PropId @251:13~19
+                _id=(Id _info=(ASTSpanInfo()) _text="header")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @251:19~41
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(StringT @251:35~41
+                  _info=(ASTSpanInfo())))
+                _params=[
+                 (Param @251:20~32
+                  _info=(ASTSpanInfo())
+                  _name=(Id @251:20~24 _info=(ASTSpanInfo()) _text="name")
+                  _typ=(Some _value=(StringT @251:26~32
+                    _info=(ASTSpanInfo()))))]))
+              (PropertySig @253:13~30
+               _info=(ASTSpanInfo())
+               _prop=(PropId @253:13~20
+                _id=(Id _info=(ASTSpanInfo()) _text="headers")
+                _info=(ASTSpanInfo()))
+               _typ=(Some _value=(ArrayType @253:28~31
+                 _info=(ASTSpanInfo())
+                 _typ=(StringT @253:22~28
+                  _info=(ASTSpanInfo())))))
+              (MethodSig @292:13~42
+               _info=(ASTSpanInfo())
+               _prop=(PropId @292:13~20
+                _id=(Id _info=(ASTSpanInfo()) _text="accepts")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @292:20~42
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(StringT @292:36~42
+                  _info=(ASTSpanInfo())))
+                _params=[
+                 (Param @292:21~33
+                  _info=(ASTSpanInfo())
+                  _name=(Id @292:21~25 _info=(ASTSpanInfo()) _text="type")
+                  _typ=(Some _value=(StringT @292:27~33
+                    _info=(ASTSpanInfo()))))]))
+              (MethodSig @294:13~44
+               _info=(ASTSpanInfo())
+               _prop=(PropId @294:13~20
+                _id=(Id _info=(ASTSpanInfo()) _text="accepts")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @294:20~44
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(StringT @294:38~44
+                  _info=(ASTSpanInfo())))
+                _params=[
+                 (Param @294:21~35
+                  _info=(ASTSpanInfo())
+                  _name=(Id @294:21~25 _info=(ASTSpanInfo()) _text="type")
+                  _typ=(Some _value=(ArrayType @294:33~36
+                    _info=(ASTSpanInfo())
+                    _typ=(StringT @294:27~35
+                     _info=(ASTSpanInfo())))))]))
+              (MethodSig @302:13~53
+               _info=(ASTSpanInfo())
+               _prop=(PropId @302:13~27
+                _id=(Id _info=(ASTSpanInfo()) _text="acceptsCharset")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @302:27~53
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(BoolT @302:46~53
+                  _info=(ASTSpanInfo())))
+                _params=[
+                 (Param @302:28~43
+                  _info=(ASTSpanInfo())
+                  _name=(Id @302:28~35 _info=(ASTSpanInfo()) _text="charset")
+                  _typ=(Some _value=(StringT @302:37~43
+                    _info=(ASTSpanInfo()))))]))
+              (MethodSig @310:13~51
+               _info=(ASTSpanInfo())
+               _prop=(PropId @310:13~28
+                _id=(Id _info=(ASTSpanInfo()) _text="acceptsLanguage")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @310:28~51
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(BoolT @310:44~51
+                  _info=(ASTSpanInfo())))
+                _params=[
+                 (Param @310:29~41
+                  _info=(ASTSpanInfo())
+                  _name=(Id @310:29~33 _info=(ASTSpanInfo()) _text="lang")
+                  _typ=(Some _value=(StringT @310:35~41
+                    _info=(ASTSpanInfo()))))]))
+              (MethodSig @329:13~39
+               _info=(ASTSpanInfo())
+               _prop=(PropId @329:13~18
+                _id=(Id _info=(ASTSpanInfo()) _text="range")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @329:18~39
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(ArrayType @329:37~40
+                  _info=(ASTSpanInfo())
+                  _typ=(AnyT @329:34~37
+                   _info=(ASTSpanInfo()))))
+                _params=[
+                 (Param @329:19~31
+                  _info=(ASTSpanInfo())
+                  _name=(Id @329:19~23 _info=(ASTSpanInfo()) _text="size")
+                  _typ=(Some _value=(NumberT @329:25~31
+                    _info=(ASTSpanInfo()))))]))
+              (PropertySig @335:13~34
+               _info=(ASTSpanInfo())
+               _prop=(PropId @335:13~21
+                _id=(Id _info=(ASTSpanInfo()) _text="accepted")
+                _info=(ASTSpanInfo()))
+               _typ=(Some _value=(ArrayType @335:32~35
+                 _info=(ASTSpanInfo())
+                 _typ=(TypeRef @335:23~32
+                  _info=(ASTSpanInfo())
+                  _name=(TypeName
+                   _info=(ASTSpanInfo())
+                   _text="MediaType"
+                   _names=[
+                    (Id _info=(ASTSpanInfo()) _text="MediaType")])))))
+              (PropertySig @346:13~37
+               _info=(ASTSpanInfo())
+               _prop=(PropId @346:13~30
+                _id=(Id _info=(ASTSpanInfo()) _text="acceptedLanguages")
+                _info=(ASTSpanInfo()))
+               _typ=(Some _value=(ArrayType @346:35~38
+                 _info=(ASTSpanInfo())
+                 _typ=(AnyT @346:32~35
+                  _info=(ASTSpanInfo())))))
+              (PropertySig @357:13~36
+               _info=(ASTSpanInfo())
+               _prop=(PropId @357:13~29
+                _id=(Id _info=(ASTSpanInfo()) _text="acceptedCharsets")
+                _info=(ASTSpanInfo()))
+               _typ=(Some _value=(ArrayType @357:34~37
+                 _info=(ASTSpanInfo())
+                 _typ=(AnyT @357:31~34
+                  _info=(ASTSpanInfo())))))
+              (MethodSig @373:13~60
+               _info=(ASTSpanInfo())
+               _prop=(PropId @373:13~18
+                _id=(Id _info=(ASTSpanInfo()) _text="param")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @373:18~60
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(StringT @373:54~60
+                  _info=(ASTSpanInfo())))
+                _params=[
+                 (Param @373:19~31
+                  _info=(ASTSpanInfo())
+                  _name=(Id @373:19~23 _info=(ASTSpanInfo()) _text="name")
+                  _typ=(Some _value=(StringT @373:25~31
+                    _info=(ASTSpanInfo()))))
+                 (Param @373:33~51
+                  _info=(ASTSpanInfo())
+                  _name=(Id @373:33~45 _info=(ASTSpanInfo()) _text="defaultValue")
+                  _optional=true
+                  _typ=(Some _value=(AnyT @373:48~51
+                    _info=(ASTSpanInfo()))))]))
+              (MethodSig @398:13~38
+               _info=(ASTSpanInfo())
+               _prop=(PropId @398:13~15
+                _id=(Id _info=(ASTSpanInfo()) _text="is")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @398:15~38
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(BoolT @398:31~38
+                  _info=(ASTSpanInfo())))
+                _params=[
+                 (Param @398:16~28
+                  _info=(ASTSpanInfo())
+                  _name=(Id @398:16~20 _info=(ASTSpanInfo()) _text="type")
+                  _typ=(Some _value=(StringT @398:22~28
+                    _info=(ASTSpanInfo()))))]))
+              (PropertySig @408:13~29
+               _info=(ASTSpanInfo())
+               _prop=(PropId @408:13~21
+                _id=(Id _info=(ASTSpanInfo()) _text="protocol")
+                _info=(ASTSpanInfo()))
+               _typ=(Some _value=(StringT @408:23~29
+                 _info=(ASTSpanInfo()))))
+              (PropertySig @415:13~28
+               _info=(ASTSpanInfo())
+               _prop=(PropId @415:13~19
+                _id=(Id _info=(ASTSpanInfo()) _text="secure")
+                _info=(ASTSpanInfo()))
+               _typ=(Some _value=(BoolT @415:21~28
+                 _info=(ASTSpanInfo()))))
+              (PropertySig @422:13~23
+               _info=(ASTSpanInfo())
+               _prop=(PropId @422:13~15
+                _id=(Id _info=(ASTSpanInfo()) _text="ip")
+                _info=(ASTSpanInfo()))
+               _typ=(Some _value=(StringT @422:17~23
+                 _info=(ASTSpanInfo()))))
+              (PropertySig @432:13~26
+               _info=(ASTSpanInfo())
+               _prop=(PropId @432:13~16
+                _id=(Id _info=(ASTSpanInfo()) _text="ips")
+                _info=(ASTSpanInfo()))
+               _typ=(Some _value=(ArrayType @432:24~27
+                 _info=(ASTSpanInfo())
+                 _typ=(StringT @432:18~24
+                  _info=(ASTSpanInfo())))))
+              (PropertySig @443:13~22
+               _info=(ASTSpanInfo())
+               _prop=(PropId @443:13~17
+                _id=(Id _info=(ASTSpanInfo()) _text="auth")
+                _info=(ASTSpanInfo()))
+               _typ=(Some _value=(AnyT @443:19~22
+                 _info=(ASTSpanInfo()))))
+              (PropertySig @456:13~33
+               _info=(ASTSpanInfo())
+               _prop=(PropId @456:13~23
+                _id=(Id _info=(ASTSpanInfo()) _text="subdomains")
+                _info=(ASTSpanInfo()))
+               _typ=(Some _value=(ArrayType @456:31~34
+                 _info=(ASTSpanInfo())
+                 _typ=(StringT @456:25~31
+                  _info=(ASTSpanInfo())))))
+              (PropertySig @461:13~25
+               _info=(ASTSpanInfo())
+               _prop=(PropId @461:13~17
+                _id=(Id _info=(ASTSpanInfo()) _text="path")
+                _info=(ASTSpanInfo()))
+               _typ=(Some _value=(StringT @461:19~25
+                 _info=(ASTSpanInfo()))))
+              (PropertySig @466:13~25
+               _info=(ASTSpanInfo())
+               _prop=(PropId @466:13~17
+                _id=(Id _info=(ASTSpanInfo()) _text="host")
+                _info=(ASTSpanInfo()))
+               _typ=(Some _value=(StringT @466:19~25
+                 _info=(ASTSpanInfo()))))
+              (PropertySig @473:13~27
+               _info=(ASTSpanInfo())
+               _prop=(PropId @473:13~18
+                _id=(Id _info=(ASTSpanInfo()) _text="fresh")
+                _info=(ASTSpanInfo()))
+               _typ=(Some _value=(BoolT @473:20~27
+                 _info=(ASTSpanInfo()))))
+              (PropertySig @480:13~27
+               _info=(ASTSpanInfo())
+               _prop=(PropId @480:13~18
+                _id=(Id _info=(ASTSpanInfo()) _text="stale")
+                _info=(ASTSpanInfo()))
+               _typ=(Some _value=(BoolT @480:20~27
+                 _info=(ASTSpanInfo()))))
+              (PropertySig @485:13~25
+               _info=(ASTSpanInfo())
+               _prop=(PropId @485:13~16
+                _id=(Id _info=(ASTSpanInfo()) _text="xhr")
+                _info=(ASTSpanInfo()))
+               _typ=(Some _value=(BoolT @485:18~25
+                 _info=(ASTSpanInfo()))))
+              (PropertySig @488:13~22
+               _info=(ASTSpanInfo())
+               _prop=(PropId @488:13~17
+                _id=(Id _info=(ASTSpanInfo()) _text="body")
+                _info=(ASTSpanInfo()))
+               _typ=(Some _value=(AnyT @488:19~22
+                 _info=(ASTSpanInfo()))))
+              (PropertySig @491:13~25
+               _info=(ASTSpanInfo())
+               _prop=(PropId @491:13~20
+                _id=(Id _info=(ASTSpanInfo()) _text="cookies")
+                _info=(ASTSpanInfo()))
+               _typ=(Some _value=(AnyT @491:22~25
+                 _info=(ASTSpanInfo()))))
+              (MethodSig @497:13~32
+               _info=(ASTSpanInfo())
+               _prop=(PropId @497:13~22
+                _id=(Id _info=(ASTSpanInfo()) _text="csrfToken")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @497:22~32
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(StringT @497:26~32
+                  _info=(ASTSpanInfo())))))
+              (PropertySig @499:13~27
+               _info=(ASTSpanInfo())
+               _prop=(PropId @499:13~19
+                _id=(Id _info=(ASTSpanInfo()) _text="method")
+                _info=(ASTSpanInfo()))
+               _typ=(Some _value=(StringT @499:21~27
+                 _info=(ASTSpanInfo()))))
+              (PropertySig @501:13~24
+               _info=(ASTSpanInfo())
+               _prop=(PropId @501:13~19
+                _id=(Id _info=(ASTSpanInfo()) _text="params")
+                _info=(ASTSpanInfo()))
+               _typ=(Some _value=(AnyT @501:21~24
+                 _info=(ASTSpanInfo()))))
+              (PropertySig @503:13~22
+               _info=(ASTSpanInfo())
+               _prop=(PropId @503:13~17
+                _id=(Id _info=(ASTSpanInfo()) _text="user")
+                _info=(ASTSpanInfo()))
+               _typ=(Some _value=(AnyT @503:19~22
+                 _info=(ASTSpanInfo()))))
+              (PropertySig @505:13~35
+               _info=(ASTSpanInfo())
+               _prop=(PropId @505:13~30
+                _id=(Id _info=(ASTSpanInfo()) _text="authenticatedUser")
+                _info=(ASTSpanInfo()))
+               _typ=(Some _value=(AnyT @505:32~35
+                 _info=(ASTSpanInfo()))))
+              (PropertySig @507:13~23
+               _info=(ASTSpanInfo())
+               _prop=(PropId @507:13~18
+                _id=(Id _info=(ASTSpanInfo()) _text="files")
+                _info=(ASTSpanInfo()))
+               _typ=(Some _value=(AnyT @507:20~23
+                 _info=(ASTSpanInfo()))))
+              (MethodSig @515:13~63
+               _info=(ASTSpanInfo())
+               _prop=(PropId @515:13~24
+                _id=(Id _info=(ASTSpanInfo()) _text="clearCookie")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @515:24~63
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(TypeRef @515:55~63
+                  _info=(ASTSpanInfo())
+                  _name=(TypeName
+                   _info=(ASTSpanInfo())
+                   _text="Response"
+                   _names=[
+                    (Id _info=(ASTSpanInfo()) _text="Response")])))
+                _params=[
+                 (Param @515:25~37
+                  _info=(ASTSpanInfo())
+                  _name=(Id @515:25~29 _info=(ASTSpanInfo()) _text="name")
+                  _typ=(Some _value=(StringT @515:31~37
+                    _info=(ASTSpanInfo()))))
+                 (Param @515:39~52
+                  _info=(ASTSpanInfo())
+                  _name=(Id @515:39~46 _info=(ASTSpanInfo()) _text="options")
+                  _optional=true
+                  _typ=(Some _value=(AnyT @515:49~52
+                    _info=(ASTSpanInfo()))))]))
+              (PropertySig @517:13~23
+               _info=(ASTSpanInfo())
+               _prop=(PropId @517:13~18
+                _id=(Id _info=(ASTSpanInfo()) _text="query")
+                _info=(ASTSpanInfo()))
+               _typ=(Some _value=(AnyT @517:20~23
+                 _info=(ASTSpanInfo()))))
+              (PropertySig @519:13~23
+               _info=(ASTSpanInfo())
+               _prop=(PropId @519:13~18
+                _id=(Id _info=(ASTSpanInfo()) _text="route")
+                _info=(ASTSpanInfo()))
+               _typ=(Some _value=(AnyT @519:20~23
+                 _info=(ASTSpanInfo()))))
+              (PropertySig @521:13~31
+               _info=(ASTSpanInfo())
+               _prop=(PropId @521:13~26
+                _id=(Id _info=(ASTSpanInfo()) _text="signedCookies")
+                _info=(ASTSpanInfo()))
+               _typ=(Some _value=(AnyT @521:28~31
+                 _info=(ASTSpanInfo()))))
+              (PropertySig @523:13~32
+               _info=(ASTSpanInfo())
+               _prop=(PropId @523:13~24
+                _id=(Id _info=(ASTSpanInfo()) _text="originalUrl")
+                _info=(ASTSpanInfo()))
+               _typ=(Some _value=(StringT @523:26~32
+                 _info=(ASTSpanInfo()))))
+              (PropertySig @525:13~24
+               _info=(ASTSpanInfo())
+               _prop=(PropId @525:13~16
+                _id=(Id _info=(ASTSpanInfo()) _text="url")
+                _info=(ASTSpanInfo()))
+               _typ=(Some _value=(StringT @525:18~24
+                 _info=(ASTSpanInfo()))))]))
+           _info=(ASTSpanInfo()))
+          (AmbModElt @528:9~533:9
+           _decl=(IntfDecl
+            _id=(Id @528:19~28 _info=(ASTSpanInfo()) _text="MediaType")
+            _info=(ASTSpanInfo())
+            _typ=(ObjectType @528:29~533:9
+             _info=(ASTSpanInfo())
+             _members=[
+              (PropertySig @529:13~26
+               _info=(ASTSpanInfo())
+               _prop=(PropId @529:13~18
+                _id=(Id _info=(ASTSpanInfo()) _text="value")
+                _info=(ASTSpanInfo()))
+               _typ=(Some _value=(StringT @529:20~26
+                 _info=(ASTSpanInfo()))))
+              (PropertySig @530:13~28
+               _info=(ASTSpanInfo())
+               _prop=(PropId @530:13~20
+                _id=(Id _info=(ASTSpanInfo()) _text="quality")
+                _info=(ASTSpanInfo()))
+               _typ=(Some _value=(NumberT @530:22~28
+                 _info=(ASTSpanInfo()))))
+              (PropertySig @531:13~25
+               _info=(ASTSpanInfo())
+               _prop=(PropId @531:13~17
+                _id=(Id _info=(ASTSpanInfo()) _text="type")
+                _info=(ASTSpanInfo()))
+               _typ=(Some _value=(StringT @531:19~25
+                 _info=(ASTSpanInfo()))))
+              (PropertySig @532:13~29
+               _info=(ASTSpanInfo())
+               _prop=(PropId @532:13~20
+                _id=(Id _info=(ASTSpanInfo()) _text="subtype")
+                _info=(ASTSpanInfo()))
+               _typ=(Some _value=(StringT @532:23~29
+                 _info=(ASTSpanInfo()))))]))
+           _info=(ASTSpanInfo()))
+          (AmbModElt @535:9~538:9
+           _decl=(IntfDecl
+            _id=(Id @535:19~23 _info=(ASTSpanInfo()) _text="Send")
+            _info=(ASTSpanInfo())
+            _typ=(ObjectType @535:24~538:9
+             _info=(ASTSpanInfo())
+             _members=[
+              (CallSig @536:13~51
+               _info=(ASTSpanInfo())
+               _typ=(Some _value=(TypeRef @536:43~51
+                 _info=(ASTSpanInfo())
+                 _name=(TypeName
+                  _info=(ASTSpanInfo())
+                  _text="Response"
+                  _names=[
+                   (Id _info=(ASTSpanInfo()) _text="Response")])))
+               _params=[
+                (Param @536:14~28
+                 _info=(ASTSpanInfo())
+                 _name=(Id @536:14~20 _info=(ASTSpanInfo()) _text="status")
+                 _typ=(Some _value=(NumberT @536:22~28
+                   _info=(ASTSpanInfo()))))
+                (Param @536:30~40
+                 _info=(ASTSpanInfo())
+                 _name=(Id @536:30~34 _info=(ASTSpanInfo()) _text="body")
+                 _optional=true
+                 _typ=(Some _value=(AnyT @536:37~40
+                   _info=(ASTSpanInfo()))))])
+              (CallSig @537:13~34
+               _info=(ASTSpanInfo())
+               _typ=(Some _value=(TypeRef @537:26~34
+                 _info=(ASTSpanInfo())
+                 _name=(TypeName
+                  _info=(ASTSpanInfo())
+                  _text="Response"
+                  _names=[
+                   (Id _info=(ASTSpanInfo()) _text="Response")])))
+               _params=[
+                (Param @537:14~23
+                 _info=(ASTSpanInfo())
+                 _name=(Id @537:14~18 _info=(ASTSpanInfo()) _text="body")
+                 _typ=(Some _value=(AnyT @537:20~23
+                   _info=(ASTSpanInfo()))))])]))
+           _info=(ASTSpanInfo()))
+          (AmbModElt @540:9~882:9
+           _decl=(IntfDecl
+            _id=(Id @540:19~27 _info=(ASTSpanInfo()) _text="Response")
+            _info=(ASTSpanInfo())
+            _typ=(ObjectType @540:56~882:9
+             _info=(ASTSpanInfo())
+             _members=[
+              (MethodSig @546:13~43
+               _info=(ASTSpanInfo())
+               _prop=(PropId @546:13~19
+                _id=(Id _info=(ASTSpanInfo()) _text="status")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @546:19~43
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(TypeRef @546:35~43
+                  _info=(ASTSpanInfo())
+                  _name=(TypeName
+                   _info=(ASTSpanInfo())
+                   _text="Response"
+                   _names=[
+                    (Id _info=(ASTSpanInfo()) _text="Response")])))
+                _params=[
+                 (Param @546:20~32
+                  _info=(ASTSpanInfo())
+                  _name=(Id @546:20~24 _info=(ASTSpanInfo()) _text="code")
+                  _typ=(Some _value=(NumberT @546:26~32
+                    _info=(ASTSpanInfo()))))]))
+              (MethodSig @560:13~40
+               _info=(ASTSpanInfo())
+               _prop=(PropId @560:13~18
+                _id=(Id _info=(ASTSpanInfo()) _text="links")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @560:18~40
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(TypeRef @560:32~40
+                  _info=(ASTSpanInfo())
+                  _name=(TypeName
+                   _info=(ASTSpanInfo())
+                   _text="Response"
+                   _names=[
+                    (Id _info=(ASTSpanInfo()) _text="Response")])))
+                _params=[
+                 (Param @560:19~29
+                  _info=(ASTSpanInfo())
+                  _name=(Id @560:19~24 _info=(ASTSpanInfo()) _text="links")
+                  _typ=(Some _value=(AnyT @560:26~29
+                    _info=(ASTSpanInfo()))))]))
+              (PropertySig @573:13~23
+               _info=(ASTSpanInfo())
+               _prop=(PropId @573:13~17
+                _id=(Id _info=(ASTSpanInfo()) _text="send")
+                _info=(ASTSpanInfo()))
+               _typ=(Some _value=(TypeRef @573:19~23
+                 _info=(ASTSpanInfo())
+                 _name=(TypeName
+                  _info=(ASTSpanInfo())
+                  _text="Send"
+                  _names=[
+                   (Id _info=(ASTSpanInfo()) _text="Send")]))))
+              (PropertySig @585:13~23
+               _info=(ASTSpanInfo())
+               _prop=(PropId @585:13~17
+                _id=(Id _info=(ASTSpanInfo()) _text="json")
+                _info=(ASTSpanInfo()))
+               _typ=(Some _value=(TypeRef @585:19~23
+                 _info=(ASTSpanInfo())
+                 _name=(TypeName
+                  _info=(ASTSpanInfo())
+                  _text="Send"
+                  _names=[
+                   (Id _info=(ASTSpanInfo()) _text="Send")]))))
+              (PropertySig @597:13~24
+               _info=(ASTSpanInfo())
+               _prop=(PropId @597:13~18
+                _id=(Id _info=(ASTSpanInfo()) _text="jsonp")
+                _info=(ASTSpanInfo()))
+               _typ=(Some _value=(TypeRef @597:20~24
+                 _info=(ASTSpanInfo())
+                 _name=(TypeName
+                  _info=(ASTSpanInfo())
+                  _text="Send"
+                  _names=[
+                   (Id _info=(ASTSpanInfo()) _text="Send")]))))
+              (MethodSig @633:13~41
+               _info=(ASTSpanInfo())
+               _prop=(PropId @633:13~21
+                _id=(Id _info=(ASTSpanInfo()) _text="sendfile")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @633:21~41
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(VoidT @633:37~41
+                  _info=(ASTSpanInfo())))
+                _params=[
+                 (Param @633:22~34
+                  _info=(ASTSpanInfo())
+                  _name=(Id @633:22~26 _info=(ASTSpanInfo()) _text="path")
+                  _typ=(Some _value=(StringT @633:28~34
+                    _info=(ASTSpanInfo()))))]))
+              (MethodSig @635:13~55
+               _info=(ASTSpanInfo())
+               _prop=(PropId @635:13~21
+                _id=(Id _info=(ASTSpanInfo()) _text="sendfile")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @635:21~55
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(VoidT @635:51~55
+                  _info=(ASTSpanInfo())))
+                _params=[
+                 (Param @635:22~34
+                  _info=(ASTSpanInfo())
+                  _name=(Id @635:22~26 _info=(ASTSpanInfo()) _text="path")
+                  _typ=(Some _value=(StringT @635:28~34
+                    _info=(ASTSpanInfo()))))
+                 (Param @635:36~48
+                  _info=(ASTSpanInfo())
+                  _name=(Id @635:36~43 _info=(ASTSpanInfo()) _text="options")
+                  _typ=(Some _value=(AnyT @635:45~48
+                    _info=(ASTSpanInfo()))))]))
+              (MethodSig @637:13~54
+               _info=(ASTSpanInfo())
+               _prop=(PropId @637:13~21
+                _id=(Id _info=(ASTSpanInfo()) _text="sendfile")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @637:21~54
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(VoidT @637:50~54
+                  _info=(ASTSpanInfo())))
+                _params=[
+                 (Param @637:22~34
+                  _info=(ASTSpanInfo())
+                  _name=(Id @637:22~26 _info=(ASTSpanInfo()) _text="path")
+                  _typ=(Some _value=(StringT @637:28~34
+                    _info=(ASTSpanInfo()))))
+                 (Param @637:36~47
+                  _info=(ASTSpanInfo())
+                  _name=(Id @637:36~38 _info=(ASTSpanInfo()) _text="fn")
+                  _typ=(Some _value=(TypeRef @637:40~47
+                    _info=(ASTSpanInfo())
+                    _name=(TypeName
+                     _info=(ASTSpanInfo())
+                     _text="Errback"
+                     _names=[
+                      (Id _info=(ASTSpanInfo()) _text="Errback")]))))]))
+              (MethodSig @639:13~68
+               _info=(ASTSpanInfo())
+               _prop=(PropId @639:13~21
+                _id=(Id _info=(ASTSpanInfo()) _text="sendfile")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @639:21~68
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(VoidT @639:64~68
+                  _info=(ASTSpanInfo())))
+                _params=[
+                 (Param @639:22~34
+                  _info=(ASTSpanInfo())
+                  _name=(Id @639:22~26 _info=(ASTSpanInfo()) _text="path")
+                  _typ=(Some _value=(StringT @639:28~34
+                    _info=(ASTSpanInfo()))))
+                 (Param @639:36~48
+                  _info=(ASTSpanInfo())
+                  _name=(Id @639:36~43 _info=(ASTSpanInfo()) _text="options")
+                  _typ=(Some _value=(AnyT @639:45~48
+                    _info=(ASTSpanInfo()))))
+                 (Param @639:50~61
+                  _info=(ASTSpanInfo())
+                  _name=(Id @639:50~52 _info=(ASTSpanInfo()) _text="fn")
+                  _typ=(Some _value=(TypeRef @639:54~61
+                    _info=(ASTSpanInfo())
+                    _name=(TypeName
+                     _info=(ASTSpanInfo())
+                     _text="Errback"
+                     _names=[
+                      (Id _info=(ASTSpanInfo()) _text="Errback")]))))]))
+              (MethodSig @651:13~41
+               _info=(ASTSpanInfo())
+               _prop=(PropId @651:13~21
+                _id=(Id _info=(ASTSpanInfo()) _text="download")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @651:21~41
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(VoidT @651:37~41
+                  _info=(ASTSpanInfo())))
+                _params=[
+                 (Param @651:22~34
+                  _info=(ASTSpanInfo())
+                  _name=(Id @651:22~26 _info=(ASTSpanInfo()) _text="path")
+                  _typ=(Some _value=(StringT @651:28~34
+                    _info=(ASTSpanInfo()))))]))
+              (MethodSig @653:13~59
+               _info=(ASTSpanInfo())
+               _prop=(PropId @653:13~21
+                _id=(Id _info=(ASTSpanInfo()) _text="download")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @653:21~59
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(VoidT @653:55~59
+                  _info=(ASTSpanInfo())))
+                _params=[
+                 (Param @653:22~34
+                  _info=(ASTSpanInfo())
+                  _name=(Id @653:22~26 _info=(ASTSpanInfo()) _text="path")
+                  _typ=(Some _value=(StringT @653:28~34
+                    _info=(ASTSpanInfo()))))
+                 (Param @653:36~52
+                  _info=(ASTSpanInfo())
+                  _name=(Id @653:36~44 _info=(ASTSpanInfo()) _text="filename")
+                  _typ=(Some _value=(StringT @653:46~52
+                    _info=(ASTSpanInfo()))))]))
+              (MethodSig @655:13~54
+               _info=(ASTSpanInfo())
+               _prop=(PropId @655:13~21
+                _id=(Id _info=(ASTSpanInfo()) _text="download")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @655:21~54
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(VoidT @655:50~54
+                  _info=(ASTSpanInfo())))
+                _params=[
+                 (Param @655:22~34
+                  _info=(ASTSpanInfo())
+                  _name=(Id @655:22~26 _info=(ASTSpanInfo()) _text="path")
+                  _typ=(Some _value=(StringT @655:28~34
+                    _info=(ASTSpanInfo()))))
+                 (Param @655:36~47
+                  _info=(ASTSpanInfo())
+                  _name=(Id @655:36~38 _info=(ASTSpanInfo()) _text="fn")
+                  _typ=(Some _value=(TypeRef @655:40~47
+                    _info=(ASTSpanInfo())
+                    _name=(TypeName
+                     _info=(ASTSpanInfo())
+                     _text="Errback"
+                     _names=[
+                      (Id _info=(ASTSpanInfo()) _text="Errback")]))))]))
+              (MethodSig @657:13~72
+               _info=(ASTSpanInfo())
+               _prop=(PropId @657:13~21
+                _id=(Id _info=(ASTSpanInfo()) _text="download")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @657:21~72
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(VoidT @657:68~72
+                  _info=(ASTSpanInfo())))
+                _params=[
+                 (Param @657:22~34
+                  _info=(ASTSpanInfo())
+                  _name=(Id @657:22~26 _info=(ASTSpanInfo()) _text="path")
+                  _typ=(Some _value=(StringT @657:28~34
+                    _info=(ASTSpanInfo()))))
+                 (Param @657:36~52
+                  _info=(ASTSpanInfo())
+                  _name=(Id @657:36~44 _info=(ASTSpanInfo()) _text="filename")
+                  _typ=(Some _value=(StringT @657:46~52
+                    _info=(ASTSpanInfo()))))
+                 (Param @657:54~65
+                  _info=(ASTSpanInfo())
+                  _name=(Id @657:54~56 _info=(ASTSpanInfo()) _text="fn")
+                  _typ=(Some _value=(TypeRef @657:58~65
+                    _info=(ASTSpanInfo())
+                    _name=(TypeName
+                     _info=(ASTSpanInfo())
+                     _text="Errback"
+                     _names=[
+                      (Id _info=(ASTSpanInfo()) _text="Errback")]))))]))
+              (MethodSig @673:13~48
+               _info=(ASTSpanInfo())
+               _prop=(PropId @673:13~24
+                _id=(Id _info=(ASTSpanInfo()) _text="contentType")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @673:24~48
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(TypeRef @673:40~48
+                  _info=(ASTSpanInfo())
+                  _name=(TypeName
+                   _info=(ASTSpanInfo())
+                   _text="Response"
+                   _names=[
+                    (Id _info=(ASTSpanInfo()) _text="Response")])))
+                _params=[
+                 (Param @673:25~37
+                  _info=(ASTSpanInfo())
+                  _name=(Id @673:25~29 _info=(ASTSpanInfo()) _text="type")
+                  _typ=(Some _value=(StringT @673:31~37
+                    _info=(ASTSpanInfo()))))]))
+              (MethodSig @689:13~41
+               _info=(ASTSpanInfo())
+               _prop=(PropId @689:13~17
+                _id=(Id _info=(ASTSpanInfo()) _text="type")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @689:17~41
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(TypeRef @689:33~41
+                  _info=(ASTSpanInfo())
+                  _name=(TypeName
+                   _info=(ASTSpanInfo())
+                   _text="Response"
+                   _names=[
+                    (Id _info=(ASTSpanInfo()) _text="Response")])))
+                _params=[
+                 (Param @689:18~30
+                  _info=(ASTSpanInfo())
+                  _name=(Id @689:18~22 _info=(ASTSpanInfo()) _text="type")
+                  _typ=(Some _value=(StringT @689:24~30
+                    _info=(ASTSpanInfo()))))]))
+              (MethodSig @745:13~39
+               _info=(ASTSpanInfo())
+               _prop=(PropId @745:13~19
+                _id=(Id _info=(ASTSpanInfo()) _text="format")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @745:19~39
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(TypeRef @745:31~39
+                  _info=(ASTSpanInfo())
+                  _name=(TypeName
+                   _info=(ASTSpanInfo())
+                   _text="Response"
+                   _names=[
+                    (Id _info=(ASTSpanInfo()) _text="Response")])))
+                _params=[
+                 (Param @745:20~28
+                  _info=(ASTSpanInfo())
+                  _name=(Id @745:20~23 _info=(ASTSpanInfo()) _text="obj")
+                  _typ=(Some _value=(AnyT @745:25~28
+                    _info=(ASTSpanInfo()))))]))
+              (MethodSig @752:13~52
+               _info=(ASTSpanInfo())
+               _prop=(PropId @752:13~23
+                _id=(Id _info=(ASTSpanInfo()) _text="attachment")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @752:23~52
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(TypeRef @752:44~52
+                  _info=(ASTSpanInfo())
+                  _name=(TypeName
+                   _info=(ASTSpanInfo())
+                   _text="Response"
+                   _names=[
+                    (Id _info=(ASTSpanInfo()) _text="Response")])))
+                _params=[
+                 (Param @752:24~41
+                  _info=(ASTSpanInfo())
+                  _name=(Id @752:24~32 _info=(ASTSpanInfo()) _text="filename")
+                  _optional=true
+                  _typ=(Some _value=(StringT @752:35~41
+                    _info=(ASTSpanInfo()))))]))
+              (MethodSig @766:13~39
+               _info=(ASTSpanInfo())
+               _prop=(PropId @766:13~16
+                _id=(Id _info=(ASTSpanInfo()) _text="set")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @766:17~39
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(TypeRef @766:31~39
+                  _info=(ASTSpanInfo())
+                  _name=(TypeName
+                   _info=(ASTSpanInfo())
+                   _text="Response"
+                   _names=[
+                    (Id _info=(ASTSpanInfo()) _text="Response")])))
+                _params=[
+                 (Param @766:18~28
+                  _info=(ASTSpanInfo())
+                  _name=(Id @766:18~23 _info=(ASTSpanInfo()) _text="field")
+                  _typ=(Some _value=(AnyT @766:25~28
+                    _info=(ASTSpanInfo()))))]))
+              (MethodSig @768:13~58
+               _info=(ASTSpanInfo())
+               _prop=(PropId @768:13~16
+                _id=(Id _info=(ASTSpanInfo()) _text="set")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @768:17~58
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(TypeRef @768:50~58
+                  _info=(ASTSpanInfo())
+                  _name=(TypeName
+                   _info=(ASTSpanInfo())
+                   _text="Response"
+                   _names=[
+                    (Id _info=(ASTSpanInfo()) _text="Response")])))
+                _params=[
+                 (Param @768:18~31
+                  _info=(ASTSpanInfo())
+                  _name=(Id @768:18~23 _info=(ASTSpanInfo()) _text="field")
+                  _typ=(Some _value=(StringT @768:25~31
+                    _info=(ASTSpanInfo()))))
+                 (Param @768:33~47
+                  _info=(ASTSpanInfo())
+                  _name=(Id @768:33~38 _info=(ASTSpanInfo()) _text="value")
+                  _optional=true
+                  _typ=(Some _value=(StringT @768:41~47
+                    _info=(ASTSpanInfo()))))]))
+              (MethodSig @770:13~41
+               _info=(ASTSpanInfo())
+               _prop=(PropId @770:13~19
+                _id=(Id _info=(ASTSpanInfo()) _text="header")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @770:19~41
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(TypeRef @770:33~41
+                  _info=(ASTSpanInfo())
+                  _name=(TypeName
+                   _info=(ASTSpanInfo())
+                   _text="Response"
+                   _names=[
+                    (Id _info=(ASTSpanInfo()) _text="Response")])))
+                _params=[
+                 (Param @770:20~30
+                  _info=(ASTSpanInfo())
+                  _name=(Id @770:20~25 _info=(ASTSpanInfo()) _text="field")
+                  _typ=(Some _value=(AnyT @770:27~30
+                    _info=(ASTSpanInfo()))))]))
+              (MethodSig @772:13~60
+               _info=(ASTSpanInfo())
+               _prop=(PropId @772:13~19
+                _id=(Id _info=(ASTSpanInfo()) _text="header")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @772:19~60
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(TypeRef @772:52~60
+                  _info=(ASTSpanInfo())
+                  _name=(TypeName
+                   _info=(ASTSpanInfo())
+                   _text="Response"
+                   _names=[
+                    (Id _info=(ASTSpanInfo()) _text="Response")])))
+                _params=[
+                 (Param @772:20~33
+                  _info=(ASTSpanInfo())
+                  _name=(Id @772:20~25 _info=(ASTSpanInfo()) _text="field")
+                  _typ=(Some _value=(StringT @772:27~33
+                    _info=(ASTSpanInfo()))))
+                 (Param @772:35~49
+                  _info=(ASTSpanInfo())
+                  _name=(Id @772:35~40 _info=(ASTSpanInfo()) _text="value")
+                  _optional=true
+                  _typ=(Some _value=(StringT @772:43~49
+                    _info=(ASTSpanInfo()))))]))
+              (MethodSig @779:13~40
+               _info=(ASTSpanInfo())
+               _prop=(PropId @779:13~16
+                _id=(Id _info=(ASTSpanInfo()) _text="get")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @779:17~40
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(StringT @779:34~40
+                  _info=(ASTSpanInfo())))
+                _params=[
+                 (Param @779:18~31
+                  _info=(ASTSpanInfo())
+                  _name=(Id @779:18~23 _info=(ASTSpanInfo()) _text="field")
+                  _typ=(Some _value=(StringT @779:25~31
+                    _info=(ASTSpanInfo()))))]))
+              (MethodSig @787:13~63
+               _info=(ASTSpanInfo())
+               _prop=(PropId @787:13~24
+                _id=(Id _info=(ASTSpanInfo()) _text="clearCookie")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @787:24~63
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(TypeRef @787:55~63
+                  _info=(ASTSpanInfo())
+                  _name=(TypeName
+                   _info=(ASTSpanInfo())
+                   _text="Response"
+                   _names=[
+                    (Id _info=(ASTSpanInfo()) _text="Response")])))
+                _params=[
+                 (Param @787:25~37
+                  _info=(ASTSpanInfo())
+                  _name=(Id @787:25~29 _info=(ASTSpanInfo()) _text="name")
+                  _typ=(Some _value=(StringT @787:31~37
+                    _info=(ASTSpanInfo()))))
+                 (Param @787:39~52
+                  _info=(ASTSpanInfo())
+                  _name=(Id @787:39~46 _info=(ASTSpanInfo()) _text="options")
+                  _optional=true
+                  _typ=(Some _value=(AnyT @787:49~52
+                    _info=(ASTSpanInfo()))))]))
+              (MethodSig @806:13~80
+               _info=(ASTSpanInfo())
+               _prop=(PropId @806:13~19
+                _id=(Id _info=(ASTSpanInfo()) _text="cookie")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @806:19~80
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(TypeRef @806:72~80
+                  _info=(ASTSpanInfo())
+                  _name=(TypeName
+                   _info=(ASTSpanInfo())
+                   _text="Response"
+                   _names=[
+                    (Id _info=(ASTSpanInfo()) _text="Response")])))
+                _params=[
+                 (Param @806:20~32
+                  _info=(ASTSpanInfo())
+                  _name=(Id @806:20~24 _info=(ASTSpanInfo()) _text="name")
+                  _typ=(Some _value=(StringT @806:26~32
+                    _info=(ASTSpanInfo()))))
+                 (Param @806:34~45
+                  _info=(ASTSpanInfo())
+                  _name=(Id @806:34~37 _info=(ASTSpanInfo()) _text="val")
+                  _typ=(Some _value=(StringT @806:39~45
+                    _info=(ASTSpanInfo()))))
+                 (Param @806:47~69
+                  _info=(ASTSpanInfo())
+                  _name=(Id @806:47~54 _info=(ASTSpanInfo()) _text="options")
+                  _typ=(Some _value=(TypeRef @806:56~69
+                    _info=(ASTSpanInfo())
+                    _name=(TypeName
+                     _info=(ASTSpanInfo())
+                     _text="CookieOptions"
+                     _names=[
+                      (Id _info=(ASTSpanInfo()) _text="CookieOptions")]))))]))
+              (MethodSig @808:13~77
+               _info=(ASTSpanInfo())
+               _prop=(PropId @808:13~19
+                _id=(Id _info=(ASTSpanInfo()) _text="cookie")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @808:19~77
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(TypeRef @808:69~77
+                  _info=(ASTSpanInfo())
+                  _name=(TypeName
+                   _info=(ASTSpanInfo())
+                   _text="Response"
+                   _names=[
+                    (Id _info=(ASTSpanInfo()) _text="Response")])))
+                _params=[
+                 (Param @808:20~32
+                  _info=(ASTSpanInfo())
+                  _name=(Id @808:20~24 _info=(ASTSpanInfo()) _text="name")
+                  _typ=(Some _value=(StringT @808:26~32
+                    _info=(ASTSpanInfo()))))
+                 (Param @808:34~42
+                  _info=(ASTSpanInfo())
+                  _name=(Id @808:34~37 _info=(ASTSpanInfo()) _text="val")
+                  _typ=(Some _value=(AnyT @808:39~42
+                    _info=(ASTSpanInfo()))))
+                 (Param @808:44~66
+                  _info=(ASTSpanInfo())
+                  _name=(Id @808:44~51 _info=(ASTSpanInfo()) _text="options")
+                  _typ=(Some _value=(TypeRef @808:53~66
+                    _info=(ASTSpanInfo())
+                    _name=(TypeName
+                     _info=(ASTSpanInfo())
+                     _text="CookieOptions"
+                     _names=[
+                      (Id _info=(ASTSpanInfo()) _text="CookieOptions")]))))]))
+              (MethodSig @810:13~53
+               _info=(ASTSpanInfo())
+               _prop=(PropId @810:13~19
+                _id=(Id _info=(ASTSpanInfo()) _text="cookie")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @810:19~53
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(TypeRef @810:45~53
+                  _info=(ASTSpanInfo())
+                  _name=(TypeName
+                   _info=(ASTSpanInfo())
+                   _text="Response"
+                   _names=[
+                    (Id _info=(ASTSpanInfo()) _text="Response")])))
+                _params=[
+                 (Param @810:20~32
+                  _info=(ASTSpanInfo())
+                  _name=(Id @810:20~24 _info=(ASTSpanInfo()) _text="name")
+                  _typ=(Some _value=(StringT @810:26~32
+                    _info=(ASTSpanInfo()))))
+                 (Param @810:34~42
+                  _info=(ASTSpanInfo())
+                  _name=(Id @810:34~37 _info=(ASTSpanInfo()) _text="val")
+                  _typ=(Some _value=(AnyT @810:39~42
+                    _info=(ASTSpanInfo()))))]))
+              (MethodSig @840:13~44
+               _info=(ASTSpanInfo())
+               _prop=(PropId @840:13~21
+                _id=(Id _info=(ASTSpanInfo()) _text="location")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @840:21~44
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(TypeRef @840:36~44
+                  _info=(ASTSpanInfo())
+                  _name=(TypeName
+                   _info=(ASTSpanInfo())
+                   _text="Response"
+                   _names=[
+                    (Id _info=(ASTSpanInfo()) _text="Response")])))
+                _params=[
+                 (Param @840:22~33
+                  _info=(ASTSpanInfo())
+                  _name=(Id @840:22~25 _info=(ASTSpanInfo()) _text="url")
+                  _typ=(Some _value=(StringT @840:27~33
+                    _info=(ASTSpanInfo()))))]))
+              (MethodSig @858:13~40
+               _info=(ASTSpanInfo())
+               _prop=(PropId @858:13~21
+                _id=(Id _info=(ASTSpanInfo()) _text="redirect")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @858:21~40
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(VoidT @858:36~40
+                  _info=(ASTSpanInfo())))
+                _params=[
+                 (Param @858:22~33
+                  _info=(ASTSpanInfo())
+                  _name=(Id @858:22~25 _info=(ASTSpanInfo()) _text="url")
+                  _typ=(Some _value=(StringT @858:27~33
+                    _info=(ASTSpanInfo()))))]))
+              (MethodSig @860:13~56
+               _info=(ASTSpanInfo())
+               _prop=(PropId @860:13~21
+                _id=(Id _info=(ASTSpanInfo()) _text="redirect")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @860:21~56
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(VoidT @860:52~56
+                  _info=(ASTSpanInfo())))
+                _params=[
+                 (Param @860:22~36
+                  _info=(ASTSpanInfo())
+                  _name=(Id @860:22~28 _info=(ASTSpanInfo()) _text="status")
+                  _typ=(Some _value=(NumberT @860:30~36
+                    _info=(ASTSpanInfo()))))
+                 (Param @860:38~49
+                  _info=(ASTSpanInfo())
+                  _name=(Id @860:38~41 _info=(ASTSpanInfo()) _text="url")
+                  _typ=(Some _value=(StringT @860:43~49
+                    _info=(ASTSpanInfo()))))]))
+              (MethodSig @862:13~56
+               _info=(ASTSpanInfo())
+               _prop=(PropId @862:13~21
+                _id=(Id _info=(ASTSpanInfo()) _text="redirect")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @862:21~56
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(VoidT @862:52~56
+                  _info=(ASTSpanInfo())))
+                _params=[
+                 (Param @862:22~33
+                  _info=(ASTSpanInfo())
+                  _name=(Id @862:22~25 _info=(ASTSpanInfo()) _text="url")
+                  _typ=(Some _value=(StringT @862:27~33
+                    _info=(ASTSpanInfo()))))
+                 (Param @862:35~49
+                  _info=(ASTSpanInfo())
+                  _name=(Id @862:35~41 _info=(ASTSpanInfo()) _text="status")
+                  _typ=(Some _value=(NumberT @862:43~49
+                    _info=(ASTSpanInfo()))))]))
+              (MethodSig @875:13~105
+               _info=(ASTSpanInfo())
+               _prop=(PropId @875:13~19
+                _id=(Id _info=(ASTSpanInfo()) _text="render")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @875:19~105
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(VoidT @875:101~105
+                  _info=(ASTSpanInfo())))
+                _params=[
+                 (Param @875:20~32
+                  _info=(ASTSpanInfo())
+                  _name=(Id @875:20~24 _info=(ASTSpanInfo()) _text="view")
+                  _typ=(Some _value=(StringT @875:26~32
+                    _info=(ASTSpanInfo()))))
+                 (Param @875:34~50
+                  _info=(ASTSpanInfo())
+                  _name=(Id @875:34~41 _info=(ASTSpanInfo()) _text="options")
+                  _optional=true
+                  _typ=(Some _value=(TypeRef @875:44~50
+                    _info=(ASTSpanInfo())
+                    _name=(TypeName
+                     _info=(ASTSpanInfo())
+                     _text="Object"
+                     _names=[
+                      (Id _info=(ASTSpanInfo()) _text="Object")]))))
+                 (Param @875:52~98
+                  _info=(ASTSpanInfo())
+                  _name=(Id @875:52~60 _info=(ASTSpanInfo()) _text="callback")
+                  _optional=true
+                  _typ=(Some _value=(FunctionType @875:63~98
+                    _info=(ASTSpanInfo())
+                    _typ=(VoidT @875:93~97
+                     _info=(ASTSpanInfo()))
+                    _params=[
+                     (Param @875:64~74
+                      _info=(ASTSpanInfo())
+                      _name=(Id @875:64~67 _info=(ASTSpanInfo()) _text="err")
+                      _typ=(Some _value=(TypeRef @875:69~74
+                        _info=(ASTSpanInfo())
+                        _name=(TypeName
+                         _info=(ASTSpanInfo())
+                         _text="Error"
+                         _names=[
+                          (Id _info=(ASTSpanInfo()) _text="Error")]))))
+                     (Param @875:76~88
+                      _info=(ASTSpanInfo())
+                      _name=(Id @875:76~80 _info=(ASTSpanInfo()) _text="html")
+                      _typ=(Some _value=(StringT @875:82~88
+                        _info=(ASTSpanInfo()))))])))]))
+              (MethodSig @877:13~87
+               _info=(ASTSpanInfo())
+               _prop=(PropId @877:13~19
+                _id=(Id _info=(ASTSpanInfo()) _text="render")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @877:19~87
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(VoidT @877:83~87
+                  _info=(ASTSpanInfo())))
+                _params=[
+                 (Param @877:20~32
+                  _info=(ASTSpanInfo())
+                  _name=(Id @877:20~24 _info=(ASTSpanInfo()) _text="view")
+                  _typ=(Some _value=(StringT @877:26~32
+                    _info=(ASTSpanInfo()))))
+                 (Param @877:34~80
+                  _info=(ASTSpanInfo())
+                  _name=(Id @877:34~42 _info=(ASTSpanInfo()) _text="callback")
+                  _optional=true
+                  _typ=(Some _value=(FunctionType @877:45~80
+                    _info=(ASTSpanInfo())
+                    _typ=(VoidT @877:75~79
+                     _info=(ASTSpanInfo()))
+                    _params=[
+                     (Param @877:46~56
+                      _info=(ASTSpanInfo())
+                      _name=(Id @877:46~49 _info=(ASTSpanInfo()) _text="err")
+                      _typ=(Some _value=(TypeRef @877:51~56
+                        _info=(ASTSpanInfo())
+                        _name=(TypeName
+                         _info=(ASTSpanInfo())
+                         _text="Error"
+                         _names=[
+                          (Id _info=(ASTSpanInfo()) _text="Error")]))))
+                     (Param @877:58~70
+                      _info=(ASTSpanInfo())
+                      _name=(Id @877:58~62 _info=(ASTSpanInfo()) _text="html")
+                      _typ=(Some _value=(StringT @877:64~70
+                        _info=(ASTSpanInfo()))))])))]))
+              (PropertySig @879:13~24
+               _info=(ASTSpanInfo())
+               _prop=(PropId @879:13~19
+                _id=(Id _info=(ASTSpanInfo()) _text="locals")
+                _info=(ASTSpanInfo()))
+               _typ=(Some _value=(AnyT @879:21~24
+                 _info=(ASTSpanInfo()))))
+              (PropertySig @881:13~28
+               _info=(ASTSpanInfo())
+               _prop=(PropId @881:13~20
+                _id=(Id _info=(ASTSpanInfo()) _text="charset")
+                _info=(ASTSpanInfo()))
+               _typ=(Some _value=(StringT @881:22~28
+                 _info=(ASTSpanInfo()))))])
+            _ext=[
+             (TypeRef @540:36~56
+              _info=(ASTSpanInfo())
+              _name=(TypeName @540:36~55
+               _info=(ASTSpanInfo())
+               _text="http.ServerResponse"
+               _names=[
+                (Id @540:36~40 _info=(ASTSpanInfo()) _text="http")
+                (Id @540:41~55 _info=(ASTSpanInfo()) _text="ServerResponse")]))])
+           _info=(ASTSpanInfo()))
+          (AmbModElt @884:9~886:9
+           _decl=(IntfDecl
+            _id=(Id @884:19~34 _info=(ASTSpanInfo()) _text="RequestFunction")
+            _info=(ASTSpanInfo())
+            _typ=(ObjectType @884:35~886:9
+             _info=(ASTSpanInfo())
+             _members=[
+              (CallSig @885:13~63
+               _info=(ASTSpanInfo())
+               _typ=(Some _value=(AnyT @885:60~63
+                 _info=(ASTSpanInfo())))
+               _params=[
+                (Param @885:14~26
+                 _info=(ASTSpanInfo())
+                 _name=(Id @885:14~17 _info=(ASTSpanInfo()) _text="req")
+                 _typ=(Some _value=(TypeRef @885:19~26
+                   _info=(ASTSpanInfo())
+                   _name=(TypeName
+                    _info=(ASTSpanInfo())
+                    _text="Request"
+                    _names=[
+                     (Id _info=(ASTSpanInfo()) _text="Request")]))))
+                (Param @885:28~41
+                 _info=(ASTSpanInfo())
+                 _name=(Id @885:28~31 _info=(ASTSpanInfo()) _text="res")
+                 _typ=(Some _value=(TypeRef @885:33~41
+                   _info=(ASTSpanInfo())
+                   _name=(TypeName
+                    _info=(ASTSpanInfo())
+                    _text="Response"
+                    _names=[
+                     (Id _info=(ASTSpanInfo()) _text="Response")]))))
+                (Param @885:43~57
+                 _info=(ASTSpanInfo())
+                 _name=(Id @885:43~47 _info=(ASTSpanInfo()) _text="next")
+                 _typ=(Some _value=(TypeRef @885:49~57
+                   _info=(ASTSpanInfo())
+                   _name=(TypeName
+                    _info=(ASTSpanInfo())
+                    _text="Function"
+                    _names=[
+                     (Id _info=(ASTSpanInfo()) _text="Function")]))))])]))
+           _info=(ASTSpanInfo()))
+          (AmbModElt @888:9~1138:9
+           _decl=(IntfDecl
+            _id=(Id @888:19~30 _info=(ASTSpanInfo()) _text="Application")
+            _info=(ASTSpanInfo())
+            _typ=(ObjectType @888:60~1138:9
+             _info=(ASTSpanInfo())
+             _members=[
+              (MethodSig @896:13~25
+               _info=(ASTSpanInfo())
+               _prop=(PropId @896:13~17
+                _id=(Id _info=(ASTSpanInfo()) _text="init")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @896:17~25
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(VoidT @896:21~25
+                  _info=(ASTSpanInfo())))))
+              (MethodSig @901:13~41
+               _info=(ASTSpanInfo())
+               _prop=(PropId @901:13~33
+                _id=(Id _info=(ASTSpanInfo()) _text="defaultConfiguration")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @901:33~41
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(VoidT @901:37~41
+                  _info=(ASTSpanInfo())))))
+              (MethodSig @907:13~65
+               _info=(ASTSpanInfo())
+               _prop=(PropId @907:13~16
+                _id=(Id _info=(ASTSpanInfo()) _text="use")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @907:16~65
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(TypeRef @907:54~65
+                  _info=(ASTSpanInfo())
+                  _name=(TypeName
+                   _info=(ASTSpanInfo())
+                   _text="Application"
+                   _names=[
+                    (Id _info=(ASTSpanInfo()) _text="Application")])))
+                _params=[
+                 (Param @907:17~30
+                  _info=(ASTSpanInfo())
+                  _name=(Id @907:17~22 _info=(ASTSpanInfo()) _text="route")
+                  _typ=(Some _value=(StringT @907:24~30
+                    _info=(ASTSpanInfo()))))
+                 (Param @907:32~51
+                  _info=(ASTSpanInfo())
+                  _name=(Id @907:32~40 _info=(ASTSpanInfo()) _text="callback")
+                  _optional=true
+                  _typ=(Some _value=(TypeRef @907:43~51
+                    _info=(ASTSpanInfo())
+                    _name=(TypeName
+                     _info=(ASTSpanInfo())
+                     _text="Function"
+                     _names=[
+                      (Id _info=(ASTSpanInfo()) _text="Function")]))))]))
+              (MethodSig @909:13~65
+               _info=(ASTSpanInfo())
+               _prop=(PropId @909:13~16
+                _id=(Id _info=(ASTSpanInfo()) _text="use")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @909:16~65
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(TypeRef @909:54~65
+                  _info=(ASTSpanInfo())
+                  _name=(TypeName
+                   _info=(ASTSpanInfo())
+                   _text="Application"
+                   _names=[
+                    (Id _info=(ASTSpanInfo()) _text="Application")])))
+                _params=[
+                 (Param @909:17~30
+                  _info=(ASTSpanInfo())
+                  _name=(Id @909:17~22 _info=(ASTSpanInfo()) _text="route")
+                  _typ=(Some _value=(StringT @909:24~30
+                    _info=(ASTSpanInfo()))))
+                 (Param @909:32~51
+                  _info=(ASTSpanInfo())
+                  _name=(Id @909:32~38 _info=(ASTSpanInfo()) _text="server")
+                  _typ=(Some _value=(TypeRef @909:40~51
+                    _info=(ASTSpanInfo())
+                    _name=(TypeName
+                     _info=(ASTSpanInfo())
+                     _text="Application"
+                     _names=[
+                      (Id _info=(ASTSpanInfo()) _text="Application")]))))]))
+              (MethodSig @911:13~49
+               _info=(ASTSpanInfo())
+               _prop=(PropId @911:13~16
+                _id=(Id _info=(ASTSpanInfo()) _text="use")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @911:16~49
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(TypeRef @911:38~49
+                  _info=(ASTSpanInfo())
+                  _name=(TypeName
+                   _info=(ASTSpanInfo())
+                   _text="Application"
+                   _names=[
+                    (Id _info=(ASTSpanInfo()) _text="Application")])))
+                _params=[
+                 (Param @911:17~35
+                  _info=(ASTSpanInfo())
+                  _name=(Id @911:17~25 _info=(ASTSpanInfo()) _text="callback")
+                  _typ=(Some _value=(TypeRef @911:27~35
+                    _info=(ASTSpanInfo())
+                    _name=(TypeName
+                     _info=(ASTSpanInfo())
+                     _text="Function"
+                     _names=[
+                      (Id _info=(ASTSpanInfo()) _text="Function")]))))]))
+              (MethodSig @913:13~50
+               _info=(ASTSpanInfo())
+               _prop=(PropId @913:13~16
+                _id=(Id _info=(ASTSpanInfo()) _text="use")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @913:16~50
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(TypeRef @913:39~50
+                  _info=(ASTSpanInfo())
+                  _name=(TypeName
+                   _info=(ASTSpanInfo())
+                   _text="Application"
+                   _names=[
+                    (Id _info=(ASTSpanInfo()) _text="Application")])))
+                _params=[
+                 (Param @913:17~36
+                  _info=(ASTSpanInfo())
+                  _name=(Id @913:17~23 _info=(ASTSpanInfo()) _text="server")
+                  _typ=(Some _value=(TypeRef @913:25~36
+                    _info=(ASTSpanInfo())
+                    _name=(TypeName
+                     _info=(ASTSpanInfo())
+                     _text="Application"
+                     _names=[
+                      (Id _info=(ASTSpanInfo()) _text="Application")]))))]))
+              (MethodSig @943:13~59
+               _info=(ASTSpanInfo())
+               _prop=(PropId @943:13~19
+                _id=(Id _info=(ASTSpanInfo()) _text="engine")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @943:19~59
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(TypeRef @943:48~59
+                  _info=(ASTSpanInfo())
+                  _name=(TypeName
+                   _info=(ASTSpanInfo())
+                   _text="Application"
+                   _names=[
+                    (Id _info=(ASTSpanInfo()) _text="Application")])))
+                _params=[
+                 (Param @943:20~31
+                  _info=(ASTSpanInfo())
+                  _name=(Id @943:20~23 _info=(ASTSpanInfo()) _text="ext")
+                  _typ=(Some _value=(StringT @943:25~31
+                    _info=(ASTSpanInfo()))))
+                 (Param @943:33~45
+                  _info=(ASTSpanInfo())
+                  _name=(Id @943:33~35 _info=(ASTSpanInfo()) _text="fn")
+                  _typ=(Some _value=(TypeRef @943:37~45
+                    _info=(ASTSpanInfo())
+                    _name=(TypeName
+                     _info=(ASTSpanInfo())
+                     _text="Function"
+                     _names=[
+                      (Id _info=(ASTSpanInfo()) _text="Function")]))))]))
+              (MethodSig @945:13~59
+               _info=(ASTSpanInfo())
+               _prop=(PropId @945:13~18
+                _id=(Id _info=(ASTSpanInfo()) _text="param")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @945:18~59
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(TypeRef @945:48~59
+                  _info=(ASTSpanInfo())
+                  _name=(TypeName
+                   _info=(ASTSpanInfo())
+                   _text="Application"
+                   _names=[
+                    (Id _info=(ASTSpanInfo()) _text="Application")])))
+                _params=[
+                 (Param @945:19~31
+                  _info=(ASTSpanInfo())
+                  _name=(Id @945:19~23 _info=(ASTSpanInfo()) _text="name")
+                  _typ=(Some _value=(StringT @945:25~31
+                    _info=(ASTSpanInfo()))))
+                 (Param @945:33~45
+                  _info=(ASTSpanInfo())
+                  _name=(Id @945:33~35 _info=(ASTSpanInfo()) _text="fn")
+                  _typ=(Some _value=(TypeRef @945:37~45
+                    _info=(ASTSpanInfo())
+                    _name=(TypeName
+                     _info=(ASTSpanInfo())
+                     _text="Function"
+                     _names=[
+                      (Id _info=(ASTSpanInfo()) _text="Function")]))))]))
+              (MethodSig @947:13~61
+               _info=(ASTSpanInfo())
+               _prop=(PropId @947:13~18
+                _id=(Id _info=(ASTSpanInfo()) _text="param")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @947:18~61
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(TypeRef @947:50~61
+                  _info=(ASTSpanInfo())
+                  _name=(TypeName
+                   _info=(ASTSpanInfo())
+                   _text="Application"
+                   _names=[
+                    (Id _info=(ASTSpanInfo()) _text="Application")])))
+                _params=[
+                 (Param @947:19~33
+                  _info=(ASTSpanInfo())
+                  _name=(Id @947:19~23 _info=(ASTSpanInfo()) _text="name")
+                  _typ=(Some _value=(ArrayType @947:31~34
+                    _info=(ASTSpanInfo())
+                    _typ=(StringT @947:25~33
+                     _info=(ASTSpanInfo())))))
+                 (Param @947:35~47
+                  _info=(ASTSpanInfo())
+                  _name=(Id @947:35~37 _info=(ASTSpanInfo()) _text="fn")
+                  _typ=(Some _value=(TypeRef @947:39~47
+                    _info=(ASTSpanInfo())
+                    _name=(TypeName
+                     _info=(ASTSpanInfo())
+                     _text="Function"
+                     _names=[
+                      (Id _info=(ASTSpanInfo()) _text="Function")]))))]))
+              (MethodSig @961:13~60
+               _info=(ASTSpanInfo())
+               _prop=(PropId @961:13~16
+                _id=(Id _info=(ASTSpanInfo()) _text="set")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @961:17~60
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(TypeRef @961:49~60
+                  _info=(ASTSpanInfo())
+                  _name=(TypeName
+                   _info=(ASTSpanInfo())
+                   _text="Application"
+                   _names=[
+                    (Id _info=(ASTSpanInfo()) _text="Application")])))
+                _params=[
+                 (Param @961:18~33
+                  _info=(ASTSpanInfo())
+                  _name=(Id @961:18~25 _info=(ASTSpanInfo()) _text="setting")
+                  _typ=(Some _value=(StringT @961:27~33
+                    _info=(ASTSpanInfo()))))
+                 (Param @961:35~46
+                  _info=(ASTSpanInfo())
+                  _name=(Id @961:35~38 _info=(ASTSpanInfo()) _text="val")
+                  _typ=(Some _value=(StringT @961:40~46
+                    _info=(ASTSpanInfo()))))]))
+              (MethodSig @973:13~27
+               _info=(ASTSpanInfo())
+               _prop=(PropId @973:13~17
+                _id=(Id _info=(ASTSpanInfo()) _text="path")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @973:17~27
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(StringT @973:21~27
+                  _info=(ASTSpanInfo())))))
+              (MethodSig @985:13~46
+               _info=(ASTSpanInfo())
+               _prop=(PropId @985:13~20
+                _id=(Id _info=(ASTSpanInfo()) _text="enabled")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @985:20~46
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(BoolT @985:39~46
+                  _info=(ASTSpanInfo())))
+                _params=[
+                 (Param @985:21~36
+                  _info=(ASTSpanInfo())
+                  _name=(Id @985:21~28 _info=(ASTSpanInfo()) _text="setting")
+                  _typ=(Some _value=(StringT @985:30~36
+                    _info=(ASTSpanInfo()))))]))
+              (MethodSig @999:13~47
+               _info=(ASTSpanInfo())
+               _prop=(PropId @999:13~21
+                _id=(Id _info=(ASTSpanInfo()) _text="disabled")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @999:21~47
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(BoolT @999:40~47
+                  _info=(ASTSpanInfo())))
+                _params=[
+                 (Param @999:22~37
+                  _info=(ASTSpanInfo())
+                  _name=(Id @999:22~29 _info=(ASTSpanInfo()) _text="setting")
+                  _typ=(Some _value=(StringT @999:31~37
+                    _info=(ASTSpanInfo()))))]))
+              (MethodSig @1006:13~49
+               _info=(ASTSpanInfo())
+               _prop=(PropId @1006:13~19
+                _id=(Id _info=(ASTSpanInfo()) _text="enable")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @1006:19~49
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(TypeRef @1006:38~49
+                  _info=(ASTSpanInfo())
+                  _name=(TypeName
+                   _info=(ASTSpanInfo())
+                   _text="Application"
+                   _names=[
+                    (Id _info=(ASTSpanInfo()) _text="Application")])))
+                _params=[
+                 (Param @1006:20~35
+                  _info=(ASTSpanInfo())
+                  _name=(Id @1006:20~27 _info=(ASTSpanInfo()) _text="setting")
+                  _typ=(Some _value=(StringT @1006:29~35
+                    _info=(ASTSpanInfo()))))]))
+              (MethodSig @1013:13~50
+               _info=(ASTSpanInfo())
+               _prop=(PropId @1013:13~20
+                _id=(Id _info=(ASTSpanInfo()) _text="disable")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @1013:20~50
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(TypeRef @1013:39~50
+                  _info=(ASTSpanInfo())
+                  _name=(TypeName
+                   _info=(ASTSpanInfo())
+                   _text="Application"
+                   _names=[
+                    (Id _info=(ASTSpanInfo()) _text="Application")])))
+                _params=[
+                 (Param @1013:21~36
+                  _info=(ASTSpanInfo())
+                  _name=(Id @1013:21~28 _info=(ASTSpanInfo()) _text="setting")
+                  _typ=(Some _value=(StringT @1013:30~36
+                    _info=(ASTSpanInfo()))))]))
+              (MethodSig @1057:13~62
+               _info=(ASTSpanInfo())
+               _prop=(PropId @1057:13~22
+                _id=(Id _info=(ASTSpanInfo()) _text="configure")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @1057:22~62
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(TypeRef @1057:51~62
+                  _info=(ASTSpanInfo())
+                  _name=(TypeName
+                   _info=(ASTSpanInfo())
+                   _text="Application"
+                   _names=[
+                    (Id _info=(ASTSpanInfo()) _text="Application")])))
+                _params=[
+                 (Param @1057:23~34
+                  _info=(ASTSpanInfo())
+                  _name=(Id @1057:23~26 _info=(ASTSpanInfo()) _text="env")
+                  _typ=(Some _value=(StringT @1057:28~34
+                    _info=(ASTSpanInfo()))))
+                 (Param @1057:36~48
+                  _info=(ASTSpanInfo())
+                  _name=(Id @1057:36~38 _info=(ASTSpanInfo()) _text="fn")
+                  _typ=(Some _value=(TypeRef @1057:40~48
+                    _info=(ASTSpanInfo())
+                    _name=(TypeName
+                     _info=(ASTSpanInfo())
+                     _text="Function"
+                     _names=[
+                      (Id _info=(ASTSpanInfo()) _text="Function")]))))]))
+              (MethodSig @1059:13~77
+               _info=(ASTSpanInfo())
+               _prop=(PropId @1059:13~22
+                _id=(Id _info=(ASTSpanInfo()) _text="configure")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @1059:22~77
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(TypeRef @1059:66~77
+                  _info=(ASTSpanInfo())
+                  _name=(TypeName
+                   _info=(ASTSpanInfo())
+                   _text="Application"
+                   _names=[
+                    (Id _info=(ASTSpanInfo()) _text="Application")])))
+                _params=[
+                 (Param @1059:23~35
+                  _info=(ASTSpanInfo())
+                  _name=(Id @1059:23~27 _info=(ASTSpanInfo()) _text="env0")
+                  _typ=(Some _value=(StringT @1059:29~35
+                    _info=(ASTSpanInfo()))))
+                 (Param @1059:37~49
+                  _info=(ASTSpanInfo())
+                  _name=(Id @1059:37~41 _info=(ASTSpanInfo()) _text="env1")
+                  _typ=(Some _value=(StringT @1059:43~49
+                    _info=(ASTSpanInfo()))))
+                 (Param @1059:51~63
+                  _info=(ASTSpanInfo())
+                  _name=(Id @1059:51~53 _info=(ASTSpanInfo()) _text="fn")
+                  _typ=(Some _value=(TypeRef @1059:55~63
+                    _info=(ASTSpanInfo())
+                    _name=(TypeName
+                     _info=(ASTSpanInfo())
+                     _text="Function"
+                     _names=[
+                      (Id _info=(ASTSpanInfo()) _text="Function")]))))]))
+              (MethodSig @1061:13~91
+               _info=(ASTSpanInfo())
+               _prop=(PropId @1061:13~22
+                _id=(Id _info=(ASTSpanInfo()) _text="configure")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @1061:22~91
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(TypeRef @1061:80~91
+                  _info=(ASTSpanInfo())
+                  _name=(TypeName
+                   _info=(ASTSpanInfo())
+                   _text="Application"
+                   _names=[
+                    (Id _info=(ASTSpanInfo()) _text="Application")])))
+                _params=[
+                 (Param @1061:23~35
+                  _info=(ASTSpanInfo())
+                  _name=(Id @1061:23~27 _info=(ASTSpanInfo()) _text="env0")
+                  _typ=(Some _value=(StringT @1061:29~35
+                    _info=(ASTSpanInfo()))))
+                 (Param @1061:37~49
+                  _info=(ASTSpanInfo())
+                  _name=(Id @1061:37~41 _info=(ASTSpanInfo()) _text="env1")
+                  _typ=(Some _value=(StringT @1061:43~49
+                    _info=(ASTSpanInfo()))))
+                 (Param @1061:51~63
+                  _info=(ASTSpanInfo())
+                  _name=(Id @1061:51~55 _info=(ASTSpanInfo()) _text="env2")
+                  _typ=(Some _value=(StringT @1061:57~63
+                    _info=(ASTSpanInfo()))))
+                 (Param @1061:65~77
+                  _info=(ASTSpanInfo())
+                  _name=(Id @1061:65~67 _info=(ASTSpanInfo()) _text="fn")
+                  _typ=(Some _value=(TypeRef @1061:69~77
+                    _info=(ASTSpanInfo())
+                    _name=(TypeName
+                     _info=(ASTSpanInfo())
+                     _text="Function"
+                     _names=[
+                      (Id _info=(ASTSpanInfo()) _text="Function")]))))]))
+              (MethodSig @1063:13~105
+               _info=(ASTSpanInfo())
+               _prop=(PropId @1063:13~22
+                _id=(Id _info=(ASTSpanInfo()) _text="configure")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @1063:22~105
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(TypeRef @1063:94~105
+                  _info=(ASTSpanInfo())
+                  _name=(TypeName
+                   _info=(ASTSpanInfo())
+                   _text="Application"
+                   _names=[
+                    (Id _info=(ASTSpanInfo()) _text="Application")])))
+                _params=[
+                 (Param @1063:23~35
+                  _info=(ASTSpanInfo())
+                  _name=(Id @1063:23~27 _info=(ASTSpanInfo()) _text="env0")
+                  _typ=(Some _value=(StringT @1063:29~35
+                    _info=(ASTSpanInfo()))))
+                 (Param @1063:37~49
+                  _info=(ASTSpanInfo())
+                  _name=(Id @1063:37~41 _info=(ASTSpanInfo()) _text="env1")
+                  _typ=(Some _value=(StringT @1063:43~49
+                    _info=(ASTSpanInfo()))))
+                 (Param @1063:51~63
+                  _info=(ASTSpanInfo())
+                  _name=(Id @1063:51~55 _info=(ASTSpanInfo()) _text="env2")
+                  _typ=(Some _value=(StringT @1063:57~63
+                    _info=(ASTSpanInfo()))))
+                 (Param @1063:65~77
+                  _info=(ASTSpanInfo())
+                  _name=(Id @1063:65~69 _info=(ASTSpanInfo()) _text="env3")
+                  _typ=(Some _value=(StringT @1063:71~77
+                    _info=(ASTSpanInfo()))))
+                 (Param @1063:79~91
+                  _info=(ASTSpanInfo())
+                  _name=(Id @1063:79~81 _info=(ASTSpanInfo()) _text="fn")
+                  _typ=(Some _value=(TypeRef @1063:83~91
+                    _info=(ASTSpanInfo())
+                    _name=(TypeName
+                     _info=(ASTSpanInfo())
+                     _text="Function"
+                     _names=[
+                      (Id _info=(ASTSpanInfo()) _text="Function")]))))]))
+              (MethodSig @1065:13~119
+               _info=(ASTSpanInfo())
+               _prop=(PropId @1065:13~22
+                _id=(Id _info=(ASTSpanInfo()) _text="configure")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @1065:22~119
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(TypeRef @1065:108~119
+                  _info=(ASTSpanInfo())
+                  _name=(TypeName
+                   _info=(ASTSpanInfo())
+                   _text="Application"
+                   _names=[
+                    (Id _info=(ASTSpanInfo()) _text="Application")])))
+                _params=[
+                 (Param @1065:23~35
+                  _info=(ASTSpanInfo())
+                  _name=(Id @1065:23~27 _info=(ASTSpanInfo()) _text="env0")
+                  _typ=(Some _value=(StringT @1065:29~35
+                    _info=(ASTSpanInfo()))))
+                 (Param @1065:37~49
+                  _info=(ASTSpanInfo())
+                  _name=(Id @1065:37~41 _info=(ASTSpanInfo()) _text="env1")
+                  _typ=(Some _value=(StringT @1065:43~49
+                    _info=(ASTSpanInfo()))))
+                 (Param @1065:51~63
+                  _info=(ASTSpanInfo())
+                  _name=(Id @1065:51~55 _info=(ASTSpanInfo()) _text="env2")
+                  _typ=(Some _value=(StringT @1065:57~63
+                    _info=(ASTSpanInfo()))))
+                 (Param @1065:65~77
+                  _info=(ASTSpanInfo())
+                  _name=(Id @1065:65~69 _info=(ASTSpanInfo()) _text="env3")
+                  _typ=(Some _value=(StringT @1065:71~77
+                    _info=(ASTSpanInfo()))))
+                 (Param @1065:79~91
+                  _info=(ASTSpanInfo())
+                  _name=(Id @1065:79~83 _info=(ASTSpanInfo()) _text="env4")
+                  _typ=(Some _value=(StringT @1065:85~91
+                    _info=(ASTSpanInfo()))))
+                 (Param @1065:93~105
+                  _info=(ASTSpanInfo())
+                  _name=(Id @1065:93~95 _info=(ASTSpanInfo()) _text="fn")
+                  _typ=(Some _value=(TypeRef @1065:97~105
+                    _info=(ASTSpanInfo())
+                    _name=(TypeName
+                     _info=(ASTSpanInfo())
+                     _text="Function"
+                     _names=[
+                      (Id _info=(ASTSpanInfo()) _text="Function")]))))]))
+              (MethodSig @1067:13~49
+               _info=(ASTSpanInfo())
+               _prop=(PropId @1067:13~22
+                _id=(Id _info=(ASTSpanInfo()) _text="configure")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @1067:22~49
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(TypeRef @1067:38~49
+                  _info=(ASTSpanInfo())
+                  _name=(TypeName
+                   _info=(ASTSpanInfo())
+                   _text="Application"
+                   _names=[
+                    (Id _info=(ASTSpanInfo()) _text="Application")])))
+                _params=[
+                 (Param @1067:23~35
+                  _info=(ASTSpanInfo())
+                  _name=(Id @1067:23~25 _info=(ASTSpanInfo()) _text="fn")
+                  _typ=(Some _value=(TypeRef @1067:27~35
+                    _info=(ASTSpanInfo())
+                    _name=(TypeName
+                     _info=(ASTSpanInfo())
+                     _text="Function"
+                     _names=[
+                      (Id _info=(ASTSpanInfo()) _text="Function")]))))]))
+              (MethodSig @1085:13~104
+               _info=(ASTSpanInfo())
+               _prop=(PropId @1085:13~19
+                _id=(Id _info=(ASTSpanInfo()) _text="render")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @1085:19~104
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(VoidT @1085:100~104
+                  _info=(ASTSpanInfo())))
+                _params=[
+                 (Param @1085:20~32
+                  _info=(ASTSpanInfo())
+                  _name=(Id @1085:20~24 _info=(ASTSpanInfo()) _text="name")
+                  _typ=(Some _value=(StringT @1085:26~32
+                    _info=(ASTSpanInfo()))))
+                 (Param @1085:34~50
+                  _info=(ASTSpanInfo())
+                  _name=(Id @1085:34~41 _info=(ASTSpanInfo()) _text="options")
+                  _optional=true
+                  _typ=(Some _value=(TypeRef @1085:44~50
+                    _info=(ASTSpanInfo())
+                    _name=(TypeName
+                     _info=(ASTSpanInfo())
+                     _text="Object"
+                     _names=[
+                      (Id _info=(ASTSpanInfo()) _text="Object")]))))
+                 (Param @1085:52~97
+                  _info=(ASTSpanInfo())
+                  _name=(Id @1085:52~60 _info=(ASTSpanInfo()) _text="callback")
+                  _optional=true
+                  _typ=(Some _value=(FunctionType @1085:63~97
+                    _info=(ASTSpanInfo())
+                    _typ=(VoidT @1085:93~97
+                     _info=(ASTSpanInfo()))
+                    _params=[
+                     (Param @1085:64~74
+                      _info=(ASTSpanInfo())
+                      _name=(Id @1085:64~67 _info=(ASTSpanInfo()) _text="err")
+                      _typ=(Some _value=(TypeRef @1085:69~74
+                        _info=(ASTSpanInfo())
+                        _name=(TypeName
+                         _info=(ASTSpanInfo())
+                         _text="Error"
+                         _names=[
+                          (Id _info=(ASTSpanInfo()) _text="Error")]))))
+                     (Param @1085:76~88
+                      _info=(ASTSpanInfo())
+                      _name=(Id @1085:76~80 _info=(ASTSpanInfo()) _text="html")
+                      _typ=(Some _value=(StringT @1085:82~88
+                        _info=(ASTSpanInfo()))))])))]))
+              (MethodSig @1087:13~85
+               _info=(ASTSpanInfo())
+               _prop=(PropId @1087:13~19
+                _id=(Id _info=(ASTSpanInfo()) _text="render")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @1087:19~85
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(VoidT @1087:81~85
+                  _info=(ASTSpanInfo())))
+                _params=[
+                 (Param @1087:20~32
+                  _info=(ASTSpanInfo())
+                  _name=(Id @1087:20~24 _info=(ASTSpanInfo()) _text="name")
+                  _typ=(Some _value=(StringT @1087:26~32
+                    _info=(ASTSpanInfo()))))
+                 (Param @1087:34~78
+                  _info=(ASTSpanInfo())
+                  _name=(Id @1087:34~42 _info=(ASTSpanInfo()) _text="callback")
+                  _typ=(Some _value=(FunctionType @1087:44~78
+                    _info=(ASTSpanInfo())
+                    _typ=(VoidT @1087:74~78
+                     _info=(ASTSpanInfo()))
+                    _params=[
+                     (Param @1087:45~78
+                      _info=(ASTSpanInfo())
+                      _name=(Id @1087:45~48 _info=(ASTSpanInfo()) _text="err")
+                      _typ=(Some _value=(TypeRef @1087:50~78
+                        _info=(ASTSpanInfo())
+                        _name=(TypeName
+                         _info=(ASTSpanInfo())
+                         _text="Error"
+                         _names=[
+                          (Id @1087:50~55 _info=(ASTSpanInfo()) _text="Error")]))))
+                     (Param @1087:57~78
+                      _info=(ASTSpanInfo())
+                      _name=(Id @1087:57~61 _info=(ASTSpanInfo()) _text="html")
+                      _typ=(Some _value=(StringT @1087:63~78
+                        _info=(ASTSpanInfo()))))])))]))
+              (MethodSig @1107:13~95
+               _info=(ASTSpanInfo())
+               _prop=(PropId @1107:13~19
+                _id=(Id _info=(ASTSpanInfo()) _text="listen")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @1107:19~95
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(VoidT @1107:91~95
+                  _info=(ASTSpanInfo())))
+                _params=[
+                 (Param @1107:20~32
+                  _info=(ASTSpanInfo())
+                  _name=(Id @1107:20~24 _info=(ASTSpanInfo()) _text="port")
+                  _typ=(Some _value=(NumberT @1107:26~32
+                    _info=(ASTSpanInfo()))))
+                 (Param @1107:34~50
+                  _info=(ASTSpanInfo())
+                  _name=(Id @1107:34~42 _info=(ASTSpanInfo()) _text="hostname")
+                  _typ=(Some _value=(StringT @1107:44~50
+                    _info=(ASTSpanInfo()))))
+                 (Param @1107:52~67
+                  _info=(ASTSpanInfo())
+                  _name=(Id @1107:52~59 _info=(ASTSpanInfo()) _text="backlog")
+                  _typ=(Some _value=(NumberT @1107:61~67
+                    _info=(ASTSpanInfo()))))
+                 (Param @1107:69~88
+                  _info=(ASTSpanInfo())
+                  _name=(Id @1107:69~77 _info=(ASTSpanInfo()) _text="callback")
+                  _optional=true
+                  _typ=(Some _value=(TypeRef @1107:80~88
+                    _info=(ASTSpanInfo())
+                    _name=(TypeName
+                     _info=(ASTSpanInfo())
+                     _text="Function"
+                     _names=[
+                      (Id _info=(ASTSpanInfo()) _text="Function")]))))]))
+              (MethodSig @1109:13~78
+               _info=(ASTSpanInfo())
+               _prop=(PropId @1109:13~19
+                _id=(Id _info=(ASTSpanInfo()) _text="listen")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @1109:19~78
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(VoidT @1109:74~78
+                  _info=(ASTSpanInfo())))
+                _params=[
+                 (Param @1109:20~32
+                  _info=(ASTSpanInfo())
+                  _name=(Id @1109:20~24 _info=(ASTSpanInfo()) _text="port")
+                  _typ=(Some _value=(NumberT @1109:26~32
+                    _info=(ASTSpanInfo()))))
+                 (Param @1109:34~50
+                  _info=(ASTSpanInfo())
+                  _name=(Id @1109:34~42 _info=(ASTSpanInfo()) _text="hostname")
+                  _typ=(Some _value=(StringT @1109:44~50
+                    _info=(ASTSpanInfo()))))
+                 (Param @1109:52~71
+                  _info=(ASTSpanInfo())
+                  _name=(Id @1109:52~60 _info=(ASTSpanInfo()) _text="callback")
+                  _optional=true
+                  _typ=(Some _value=(TypeRef @1109:63~71
+                    _info=(ASTSpanInfo())
+                    _name=(TypeName
+                     _info=(ASTSpanInfo())
+                     _text="Function"
+                     _names=[
+                      (Id _info=(ASTSpanInfo()) _text="Function")]))))]))
+              (MethodSig @1111:13~60
+               _info=(ASTSpanInfo())
+               _prop=(PropId @1111:13~19
+                _id=(Id _info=(ASTSpanInfo()) _text="listen")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @1111:19~60
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(VoidT @1111:56~60
+                  _info=(ASTSpanInfo())))
+                _params=[
+                 (Param @1111:20~32
+                  _info=(ASTSpanInfo())
+                  _name=(Id @1111:20~24 _info=(ASTSpanInfo()) _text="port")
+                  _typ=(Some _value=(NumberT @1111:26~32
+                    _info=(ASTSpanInfo()))))
+                 (Param @1111:34~53
+                  _info=(ASTSpanInfo())
+                  _name=(Id @1111:34~42 _info=(ASTSpanInfo()) _text="callback")
+                  _optional=true
+                  _typ=(Some _value=(TypeRef @1111:45~53
+                    _info=(ASTSpanInfo())
+                    _name=(TypeName
+                     _info=(ASTSpanInfo())
+                     _text="Function"
+                     _names=[
+                      (Id _info=(ASTSpanInfo()) _text="Function")]))))]))
+              (MethodSig @1113:13~60
+               _info=(ASTSpanInfo())
+               _prop=(PropId @1113:13~19
+                _id=(Id _info=(ASTSpanInfo()) _text="listen")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @1113:19~60
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(VoidT @1113:56~60
+                  _info=(ASTSpanInfo())))
+                _params=[
+                 (Param @1113:20~32
+                  _info=(ASTSpanInfo())
+                  _name=(Id @1113:20~24 _info=(ASTSpanInfo()) _text="path")
+                  _typ=(Some _value=(StringT @1113:26~32
+                    _info=(ASTSpanInfo()))))
+                 (Param @1113:34~53
+                  _info=(ASTSpanInfo())
+                  _name=(Id @1113:34~42 _info=(ASTSpanInfo()) _text="callback")
+                  _optional=true
+                  _typ=(Some _value=(TypeRef @1113:45~53
+                    _info=(ASTSpanInfo())
+                    _name=(TypeName
+                     _info=(ASTSpanInfo())
+                     _text="Function"
+                     _names=[
+                      (Id _info=(ASTSpanInfo()) _text="Function")]))))]))
+              (MethodSig @1115:13~68
+               _info=(ASTSpanInfo())
+               _prop=(PropId @1115:13~19
+                _id=(Id _info=(ASTSpanInfo()) _text="listen")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @1115:19~68
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(VoidT @1115:64~68
+                  _info=(ASTSpanInfo())))
+                _params=[
+                 (Param @1115:20~31
+                  _info=(ASTSpanInfo())
+                  _name=(Id @1115:20~26 _info=(ASTSpanInfo()) _text="handle")
+                  _typ=(Some _value=(AnyT @1115:28~31
+                    _info=(ASTSpanInfo()))))
+                 (Param @1115:33~61
+                  _info=(ASTSpanInfo())
+                  _name=(Id @1115:33~50 _info=(ASTSpanInfo()) _text="listeningListener")
+                  _optional=true
+                  _typ=(Some _value=(TypeRef @1115:53~61
+                    _info=(ASTSpanInfo())
+                    _name=(TypeName
+                     _info=(ASTSpanInfo())
+                     _text="Function"
+                     _names=[
+                      (Id _info=(ASTSpanInfo()) _text="Function")]))))]))
+              (PropertySig @1117:13~26
+               _info=(ASTSpanInfo())
+               _prop=(PropId @1117:13~18
+                _id=(Id _info=(ASTSpanInfo()) _text="route")
+                _info=(ASTSpanInfo()))
+               _typ=(Some _value=(TypeRef @1117:20~26
+                 _info=(ASTSpanInfo())
+                 _name=(TypeName
+                  _info=(ASTSpanInfo())
+                  _text="IRoute"
+                  _names=[
+                   (Id _info=(ASTSpanInfo()) _text="IRoute")]))))
+              (PropertySig @1119:13~27
+               _info=(ASTSpanInfo())
+               _prop=(PropId @1119:13~19
+                _id=(Id _info=(ASTSpanInfo()) _text="router")
+                _info=(ASTSpanInfo()))
+               _typ=(Some _value=(StringT @1119:21~27
+                 _info=(ASTSpanInfo()))))
+              (PropertySig @1121:13~26
+               _info=(ASTSpanInfo())
+               _prop=(PropId @1121:13~21
+                _id=(Id _info=(ASTSpanInfo()) _text="settings")
+                _info=(ASTSpanInfo()))
+               _typ=(Some _value=(AnyT @1121:23~26
+                 _info=(ASTSpanInfo()))))
+              (PropertySig @1123:13~26
+               _info=(ASTSpanInfo())
+               _prop=(PropId @1123:13~21
+                _id=(Id _info=(ASTSpanInfo()) _text="resource")
+                _info=(ASTSpanInfo()))
+               _typ=(Some _value=(AnyT @1123:23~26
+                 _info=(ASTSpanInfo()))))
+              (PropertySig @1125:13~21
+               _info=(ASTSpanInfo())
+               _prop=(PropId @1125:13~16
+                _id=(Id _info=(ASTSpanInfo()) _text="map")
+                _info=(ASTSpanInfo()))
+               _typ=(Some _value=(AnyT @1125:18~21
+                 _info=(ASTSpanInfo()))))
+              (PropertySig @1127:13~24
+               _info=(ASTSpanInfo())
+               _prop=(PropId @1127:13~19
+                _id=(Id _info=(ASTSpanInfo()) _text="locals")
+                _info=(ASTSpanInfo()))
+               _typ=(Some _value=(AnyT @1127:21~24
+                 _info=(ASTSpanInfo()))))
+              (PropertySig @1137:13~24
+               _info=(ASTSpanInfo())
+               _prop=(PropId @1137:13~19
+                _id=(Id _info=(ASTSpanInfo()) _text="routes")
+                _info=(ASTSpanInfo()))
+               _typ=(Some _value=(AnyT @1137:21~24
+                 _info=(ASTSpanInfo()))))])
+            _ext=[
+             (TypeRef @888:39~58
+              _info=(ASTSpanInfo())
+              _name=(TypeName @888:39~46
+               _info=(ASTSpanInfo())
+               _text="IRouter"
+               _names=[
+                (Id _info=(ASTSpanInfo()) _text="IRouter")])
+              _args=[
+               (TypeRef @888:47~58
+                _info=(ASTSpanInfo())
+                _name=(TypeName
+                 _info=(ASTSpanInfo())
+                 _text="Application"
+                 _names=[
+                  (Id _info=(ASTSpanInfo()) _text="Application")]))])])
+           _info=(ASTSpanInfo()))
+          (AmbModElt @1140:9~1165:9
+           _decl=(IntfDecl
+            _id=(Id @1140:19~26 _info=(ASTSpanInfo()) _text="Express")
+            _info=(ASTSpanInfo())
+            _typ=(ObjectType @1140:47~1165:9
+             _info=(ASTSpanInfo())
+             _members=[
+              (PropertySig @1144:13~28
+               _info=(ASTSpanInfo())
+               _prop=(PropId @1144:13~20
+                _id=(Id _info=(ASTSpanInfo()) _text="version")
+                _info=(ASTSpanInfo()))
+               _typ=(Some _value=(StringT @1144:22~28
+                 _info=(ASTSpanInfo()))))
+              (PropertySig @1149:13~25
+               _info=(ASTSpanInfo())
+               _prop=(PropId @1149:13~17
+                _id=(Id _info=(ASTSpanInfo()) _text="mime")
+                _info=(ASTSpanInfo()))
+               _typ=(Some _value=(StringT @1149:19~25
+                 _info=(ASTSpanInfo()))))
+              (CallSig @1151:13~28
+               _info=(ASTSpanInfo())
+               _typ=(Some _value=(TypeRef @1151:17~28
+                 _info=(ASTSpanInfo())
+                 _name=(TypeName
+                  _info=(ASTSpanInfo())
+                  _text="Application"
+                  _names=[
+                   (Id _info=(ASTSpanInfo()) _text="Application")]))))
+              (MethodSig @1156:13~45
+               _info=(ASTSpanInfo())
+               _prop=(PropId @1156:13~30
+                _id=(Id _info=(ASTSpanInfo()) _text="createApplication")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @1156:30~45
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(TypeRef @1156:34~45
+                  _info=(ASTSpanInfo())
+                  _name=(TypeName
+                   _info=(ASTSpanInfo())
+                   _text="Application"
+                   _names=[
+                    (Id _info=(ASTSpanInfo()) _text="Application")])))))
+              (MethodSig @1158:13~40
+               _info=(ASTSpanInfo())
+               _prop=(PropId @1158:13~25
+                _id=(Id _info=(ASTSpanInfo()) _text="createServer")
+                _info=(ASTSpanInfo()))
+               _sig=(CallSig @1158:25~40
+                _info=(ASTSpanInfo())
+                _typ=(Some _value=(TypeRef @1158:29~40
+                  _info=(ASTSpanInfo())
+                  _name=(TypeName
+                   _info=(ASTSpanInfo())
+                   _text="Application"
+                   _names=[
+                    (Id _info=(ASTSpanInfo()) _text="Application")])))))
+              (PropertySig @1160:13~29
+               _info=(ASTSpanInfo())
+               _prop=(PropId @1160:13~24
+                _id=(Id _info=(ASTSpanInfo()) _text="application")
+                _info=(ASTSpanInfo()))
+               _typ=(Some _value=(AnyT @1160:26~29
+                 _info=(ASTSpanInfo()))))
+              (PropertySig @1162:13~29
+               _info=(ASTSpanInfo())
+               _prop=(PropId @1162:13~20
+                _id=(Id _info=(ASTSpanInfo()) _text="request")
+                _info=(ASTSpanInfo()))
+               _typ=(Some _value=(TypeRef @1162:22~29
+                 _info=(ASTSpanInfo())
+                 _name=(TypeName
+                  _info=(ASTSpanInfo())
+                  _text="Request"
+                  _names=[
+                   (Id _info=(ASTSpanInfo()) _text="Request")]))))
+              (PropertySig @1164:13~31
+               _info=(ASTSpanInfo())
+               _prop=(PropId @1164:13~21
+                _id=(Id _info=(ASTSpanInfo()) _text="response")
+                _info=(ASTSpanInfo()))
+               _typ=(Some _value=(TypeRef @1164:23~31
+                 _info=(ASTSpanInfo())
+                 _name=(TypeName
+                  _info=(ASTSpanInfo())
+                  _text="Response"
+                  _names=[
+                   (Id _info=(ASTSpanInfo()) _text="Response")]))))])
+            _ext=[
+             (TypeRef @1140:35~47
+              _info=(ASTSpanInfo())
+              _name=(TypeName @1140:35~46
+               _info=(ASTSpanInfo())
+               _text="Application"
+               _names=[
+                (Id _info=(ASTSpanInfo()) _text="Application")]))])
+           _info=(ASTSpanInfo()))
+          (AmbModElt @1194:9~52
+           _decl=(AmbFunDecl
+            _id=(Id @1194:18~28 _info=(ASTSpanInfo()) _text="bodyParser")
+            _info=(ASTSpanInfo())
+            _sig=(CallSig @1194:28~52
+             _info=(ASTSpanInfo())
+             _typ=(Some _value=(TypeRef @1194:45~52
+               _info=(ASTSpanInfo())
+               _name=(TypeName
+                _info=(ASTSpanInfo())
+                _text="Handler"
+                _names=[
+                 (Id _info=(ASTSpanInfo()) _text="Handler")])))
+             _params=[
+              (Param @1194:29~42
+               _info=(ASTSpanInfo())
+               _name=(Id @1194:29~36 _info=(ASTSpanInfo()) _text="options")
+               _optional=true
+               _typ=(Some _value=(AnyT @1194:39~42
+                 _info=(ASTSpanInfo()))))]))
+           _info=(ASTSpanInfo()))
+          (AmbModElt @1217:9~51
+           _decl=(AmbFunDecl
+            _id=(Id @1217:18~30 _info=(ASTSpanInfo()) _text="errorHandler")
+            _info=(ASTSpanInfo())
+            _sig=(CallSig @1217:30~51
+             _info=(ASTSpanInfo())
+             _typ=(Some _value=(TypeRef @1217:44~51
+               _info=(ASTSpanInfo())
+               _name=(TypeName
+                _info=(ASTSpanInfo())
+                _text="Handler"
+                _names=[
+                 (Id _info=(ASTSpanInfo()) _text="Handler")])))
+             _params=[
+              (Param @1217:31~41
+               _info=(ASTSpanInfo())
+               _name=(Id @1217:31~35 _info=(ASTSpanInfo()) _text="opts")
+               _optional=true
+               _typ=(Some _value=(AnyT @1217:38~41
+                 _info=(ASTSpanInfo()))))]))
+           _info=(ASTSpanInfo()))
+          (AmbModElt @1230:9~55
+           _decl=(AmbFunDecl
+            _id=(Id @1230:18~32 _info=(ASTSpanInfo()) _text="methodOverride")
+            _info=(ASTSpanInfo())
+            _sig=(CallSig @1230:32~55
+             _info=(ASTSpanInfo())
+             _typ=(Some _value=(TypeRef @1230:48~55
+               _info=(ASTSpanInfo())
+               _name=(TypeName
+                _info=(ASTSpanInfo())
+                _text="Handler"
+                _names=[
+                 (Id _info=(ASTSpanInfo()) _text="Handler")])))
+             _params=[
+              (Param @1230:33~45
+               _info=(ASTSpanInfo())
+               _name=(Id @1230:33~36 _info=(ASTSpanInfo()) _text="key")
+               _optional=true
+               _typ=(Some _value=(StringT @1230:39~45
+                 _info=(ASTSpanInfo()))))]))
+           _info=(ASTSpanInfo()))
+          (AmbModElt @1251:9~56
+           _decl=(AmbFunDecl
+            _id=(Id @1251:18~30 _info=(ASTSpanInfo()) _text="cookieParser")
+            _info=(ASTSpanInfo())
+            _sig=(CallSig @1251:30~56
+             _info=(ASTSpanInfo())
+             _typ=(Some _value=(TypeRef @1251:49~56
+               _info=(ASTSpanInfo())
+               _name=(TypeName
+                _info=(ASTSpanInfo())
+                _text="Handler"
+                _names=[
+                 (Id _info=(ASTSpanInfo()) _text="Handler")])))
+             _params=[
+              (Param @1251:31~46
+               _info=(ASTSpanInfo())
+               _name=(Id @1251:31~37 _info=(ASTSpanInfo()) _text="secret")
+               _optional=true
+               _typ=(Some _value=(StringT @1251:40~46
+                 _info=(ASTSpanInfo()))))]))
+           _info=(ASTSpanInfo()))
+          (AmbModElt @1388:9~49
+           _decl=(AmbFunDecl
+            _id=(Id @1388:18~25 _info=(ASTSpanInfo()) _text="session")
+            _info=(ASTSpanInfo())
+            _sig=(CallSig @1388:25~49
+             _info=(ASTSpanInfo())
+             _typ=(Some _value=(TypeRef @1388:42~49
+               _info=(ASTSpanInfo())
+               _name=(TypeName
+                _info=(ASTSpanInfo())
+                _text="Handler"
+                _names=[
+                 (Id _info=(ASTSpanInfo()) _text="Handler")])))
+             _params=[
+              (Param @1388:26~39
+               _info=(ASTSpanInfo())
+               _name=(Id @1388:26~33 _info=(ASTSpanInfo()) _text="options")
+               _optional=true
+               _typ=(Some _value=(AnyT @1388:36~39
+                 _info=(ASTSpanInfo()))))]))
+           _info=(ASTSpanInfo()))
+          (AmbModElt @1396:9~44
+           _decl=(AmbFunDecl
+            _id=(Id @1396:18~22 _info=(ASTSpanInfo()) _text="hash")
+            _info=(ASTSpanInfo())
+            _sig=(CallSig @1396:22~44
+             _info=(ASTSpanInfo())
+             _typ=(Some _value=(StringT @1396:38~44
+               _info=(ASTSpanInfo())))
+             _params=[
+              (Param @1396:23~35
+               _info=(ASTSpanInfo())
+               _name=(Id @1396:23~27 _info=(ASTSpanInfo()) _text="sess")
+               _typ=(Some _value=(StringT @1396:29~35
+                 _info=(ASTSpanInfo()))))]))
+           _info=(ASTSpanInfo()))
+          (AmbModElt @1422:9~62
+           _decl=(AmbFunDecl
+            _id=(Id @1422:18~24 _info=(ASTSpanInfo()) _text="static")
+            _info=(ASTSpanInfo())
+            _sig=(CallSig @1422:24~62
+             _info=(ASTSpanInfo())
+             _typ=(Some _value=(TypeRef @1422:55~62
+               _info=(ASTSpanInfo())
+               _name=(TypeName
+                _info=(ASTSpanInfo())
+                _text="Handler"
+                _names=[
+                 (Id _info=(ASTSpanInfo()) _text="Handler")])))
+             _params=[
+              (Param @1422:25~37
+               _info=(ASTSpanInfo())
+               _name=(Id @1422:25~29 _info=(ASTSpanInfo()) _text="root")
+               _typ=(Some _value=(StringT @1422:31~37
+                 _info=(ASTSpanInfo()))))
+              (Param @1422:39~52
+               _info=(ASTSpanInfo())
+               _name=(Id @1422:39~46 _info=(ASTSpanInfo()) _text="options")
+               _optional=true
+               _typ=(Some _value=(AnyT @1422:49~52
+                 _info=(ASTSpanInfo()))))]))
+           _info=(ASTSpanInfo()))
+          (AmbModElt @1454:9~110
+           _decl=(AmbFunDecl @1454:16~110
+            _id=(Id @1454:25~34 _info=(ASTSpanInfo()) _text="basicAuth")
+            _info=(ASTSpanInfo())
+            _sig=(CallSig @1454:34~110
+             _info=(ASTSpanInfo())
+             _typ=(Some _value=(TypeRef @1454:103~110
+               _info=(ASTSpanInfo())
+               _name=(TypeName
+                _info=(ASTSpanInfo())
+                _text="Handler"
+                _names=[
+                 (Id _info=(ASTSpanInfo()) _text="Handler")])))
+             _params=[
+              (Param @1454:35~84
+               _info=(ASTSpanInfo())
+               _name=(Id @1454:35~43 _info=(ASTSpanInfo()) _text="callback")
+               _typ=(Some _value=(FunctionType @1454:45~84
+                 _info=(ASTSpanInfo())
+                 _typ=(BoolT @1454:77~84
+                  _info=(ASTSpanInfo()))
+                 _params=[
+                  (Param @1454:46~84
+                   _info=(ASTSpanInfo())
+                   _name=(Id @1454:46~50 _info=(ASTSpanInfo()) _text="user")
+                   _typ=(Some _value=(StringT @1454:52~84
+                     _info=(ASTSpanInfo()))))
+                  (Param @1454:60~84
+                   _info=(ASTSpanInfo())
+                   _name=(Id @1454:60~64 _info=(ASTSpanInfo()) _text="pass")
+                   _typ=(Some _value=(StringT @1454:66~84
+                     _info=(ASTSpanInfo()))))])))
+              (Param @1454:86~100
+               _info=(ASTSpanInfo())
+               _name=(Id @1454:86~91 _info=(ASTSpanInfo()) _text="realm")
+               _optional=true
+               _typ=(Some _value=(StringT @1454:94~100
+                 _info=(ASTSpanInfo()))))]))
+           _info=(ASTSpanInfo()))
+          (AmbModElt @1456:9~87
+           _decl=(AmbFunDecl @1456:16~87
+            _id=(Id @1456:25~34 _info=(ASTSpanInfo()) _text="basicAuth")
+            _info=(ASTSpanInfo())
+            _sig=(CallSig @1456:34~87
+             _info=(ASTSpanInfo())
+             _typ=(Some _value=(TypeRef @1456:80~87
+               _info=(ASTSpanInfo())
+               _name=(TypeName
+                _info=(ASTSpanInfo())
+                _text="Handler"
+                _names=[
+                 (Id _info=(ASTSpanInfo()) _text="Handler")])))
+             _params=[
+              (Param @1456:35~47
+               _info=(ASTSpanInfo())
+               _name=(Id @1456:35~39 _info=(ASTSpanInfo()) _text="user")
+               _typ=(Some _value=(StringT @1456:41~47
+                 _info=(ASTSpanInfo()))))
+              (Param @1456:49~61
+               _info=(ASTSpanInfo())
+               _name=(Id @1456:49~53 _info=(ASTSpanInfo()) _text="pass")
+               _typ=(Some _value=(StringT @1456:55~61
+                 _info=(ASTSpanInfo()))))
+              (Param @1456:63~77
+               _info=(ASTSpanInfo())
+               _name=(Id @1456:63~68 _info=(ASTSpanInfo()) _text="realm")
+               _optional=true
+               _typ=(Some _value=(StringT @1456:71~77
+                 _info=(ASTSpanInfo()))))]))
+           _info=(ASTSpanInfo()))
+          (AmbModElt @1485:9~50
+           _decl=(AmbFunDecl
+            _id=(Id @1485:18~26 _info=(ASTSpanInfo()) _text="compress")
+            _info=(ASTSpanInfo())
+            _sig=(CallSig @1485:26~50
+             _info=(ASTSpanInfo())
+             _typ=(Some _value=(TypeRef @1485:43~50
+               _info=(ASTSpanInfo())
+               _name=(TypeName
+                _info=(ASTSpanInfo())
+                _text="Handler"
+                _names=[
+                 (Id _info=(ASTSpanInfo()) _text="Handler")])))
+             _params=[
+              (Param @1485:27~40
+               _info=(ASTSpanInfo())
+               _name=(Id @1485:27~34 _info=(ASTSpanInfo()) _text="options")
+               _optional=true
+               _typ=(Some _value=(AnyT @1485:37~40
+                 _info=(ASTSpanInfo()))))]))
+           _info=(ASTSpanInfo()))
+          (AmbModElt @1512:9~55
+           _decl=(AmbFunDecl
+            _id=(Id @1512:18~31 _info=(ASTSpanInfo()) _text="cookieSession")
+            _info=(ASTSpanInfo())
+            _sig=(CallSig @1512:31~55
+             _info=(ASTSpanInfo())
+             _typ=(Some _value=(TypeRef @1512:48~55
+               _info=(ASTSpanInfo())
+               _name=(TypeName
+                _info=(ASTSpanInfo())
+                _text="Handler"
+                _names=[
+                 (Id _info=(ASTSpanInfo()) _text="Handler")])))
+             _params=[
+              (Param @1512:32~45
+               _info=(ASTSpanInfo())
+               _name=(Id @1512:32~39 _info=(ASTSpanInfo()) _text="options")
+               _optional=true
+               _typ=(Some _value=(AnyT @1512:42~45
+                 _info=(ASTSpanInfo()))))]))
+           _info=(ASTSpanInfo()))
+          (AmbModElt @1537:9~68
+           _decl=(AmbFunDecl @1537:16~68
+            _id=(Id @1537:25~29 _info=(ASTSpanInfo()) _text="csrf")
+            _info=(ASTSpanInfo())
+            _sig=(CallSig @1537:29~68
+             _info=(ASTSpanInfo())
+             _typ=(Some _value=(TypeRef @1537:61~68
+               _info=(ASTSpanInfo())
+               _name=(TypeName
+                _info=(ASTSpanInfo())
+                _text="Handler"
+                _names=[
+                 (Id _info=(ASTSpanInfo()) _text="Handler")])))
+             _params=[
+              (Param @1537:30~58
+               _info=(ASTSpanInfo())
+               _name=(Id @1537:30~37 _info=(ASTSpanInfo()) _text="options")
+               _optional=true
+               _typ=(Some _value=(ObjectType @1537:40~57
+                 _info=(ASTSpanInfo())
+                 _members=[
+                  (PropertySig @1537:41~57
+                   _info=(ASTSpanInfo())
+                   _optional=true
+                   _prop=(PropId @1537:41~47
+                    _id=(Id @1537:41~46 _info=(ASTSpanInfo()) _text="value")
+                    _info=(ASTSpanInfo()))
+                   _typ=(Some _value=(TypeRef @1537:49~57
+                     _info=(ASTSpanInfo())
+                     _name=(TypeName
+                      _info=(ASTSpanInfo())
+                      _text="Function"
+                      _names=[
+                       (Id _info=(ASTSpanInfo()) _text="Function")]))))])))]))
+           _info=(ASTSpanInfo()))
+          (AmbModElt @1553:9~65
+           _decl=(AmbFunDecl
+            _id=(Id @1553:18~27 _info=(ASTSpanInfo()) _text="directory")
+            _info=(ASTSpanInfo())
+            _sig=(CallSig @1553:27~65
+             _info=(ASTSpanInfo())
+             _typ=(Some _value=(TypeRef @1553:58~65
+               _info=(ASTSpanInfo())
+               _name=(TypeName
+                _info=(ASTSpanInfo())
+                _text="Handler"
+                _names=[
+                 (Id _info=(ASTSpanInfo()) _text="Handler")])))
+             _params=[
+              (Param @1553:28~40
+               _info=(ASTSpanInfo())
+               _name=(Id @1553:28~32 _info=(ASTSpanInfo()) _text="root")
+               _typ=(Some _value=(StringT @1553:34~40
+                 _info=(ASTSpanInfo()))))
+              (Param @1553:42~55
+               _info=(ASTSpanInfo())
+               _name=(Id @1553:42~49 _info=(ASTSpanInfo()) _text="options")
+               _optional=true
+               _typ=(Some _value=(AnyT @1553:52~55
+                 _info=(ASTSpanInfo()))))]))
+           _info=(ASTSpanInfo()))
+          (AmbModElt @1586:9~71
+           _decl=(AmbFunDecl @1586:16~71
+            _id=(Id @1586:25~32 _info=(ASTSpanInfo()) _text="favicon")
+            _info=(ASTSpanInfo())
+            _sig=(CallSig @1586:32~71
+             _info=(ASTSpanInfo())
+             _typ=(Some _value=(TypeRef @1586:64~71
+               _info=(ASTSpanInfo())
+               _name=(TypeName
+                _info=(ASTSpanInfo())
+                _text="Handler"
+                _names=[
+                 (Id _info=(ASTSpanInfo()) _text="Handler")])))
+             _params=[
+              (Param @1586:33~46
+               _info=(ASTSpanInfo())
+               _name=(Id @1586:33~37 _info=(ASTSpanInfo()) _text="path")
+               _optional=true
+               _typ=(Some _value=(StringT @1586:40~46
+                 _info=(ASTSpanInfo()))))
+              (Param @1586:48~61
+               _info=(ASTSpanInfo())
+               _name=(Id @1586:48~55 _info=(ASTSpanInfo()) _text="options")
+               _optional=true
+               _typ=(Some _value=(AnyT @1586:58~61
+                 _info=(ASTSpanInfo()))))]))
+           _info=(ASTSpanInfo()))
+          (AmbModElt @1602:9~46
+           _decl=(AmbFunDecl
+            _id=(Id @1602:18~22 _info=(ASTSpanInfo()) _text="json")
+            _info=(ASTSpanInfo())
+            _sig=(CallSig @1602:22~46
+             _info=(ASTSpanInfo())
+             _typ=(Some _value=(TypeRef @1602:39~46
+               _info=(ASTSpanInfo())
+               _name=(TypeName
+                _info=(ASTSpanInfo())
+                _text="Handler"
+                _names=[
+                 (Id _info=(ASTSpanInfo()) _text="Handler")])))
+             _params=[
+              (Param @1602:23~36
+               _info=(ASTSpanInfo())
+               _name=(Id @1602:23~30 _info=(ASTSpanInfo()) _text="options")
+               _optional=true
+               _typ=(Some _value=(AnyT @1602:33~36
+                 _info=(ASTSpanInfo()))))]))
+           _info=(ASTSpanInfo()))
+          (AmbModElt @1616:9~47
+           _decl=(AmbFunDecl
+            _id=(Id @1616:18~23 _info=(ASTSpanInfo()) _text="limit")
+            _info=(ASTSpanInfo())
+            _sig=(CallSig @1616:23~47
+             _info=(ASTSpanInfo())
+             _typ=(Some _value=(TypeRef @1616:40~47
+               _info=(ASTSpanInfo())
+               _name=(TypeName
+                _info=(ASTSpanInfo())
+                _text="Handler"
+                _names=[
+                 (Id _info=(ASTSpanInfo()) _text="Handler")])))
+             _params=[
+              (Param @1616:24~37
+               _info=(ASTSpanInfo())
+               _name=(Id @1616:24~29 _info=(ASTSpanInfo()) _text="bytes")
+               _typ=(Some _value=(NumberT @1616:31~37
+                 _info=(ASTSpanInfo()))))]))
+           _info=(ASTSpanInfo()))
+          (AmbModElt @1618:9~47
+           _decl=(AmbFunDecl
+            _id=(Id @1618:18~23 _info=(ASTSpanInfo()) _text="limit")
+            _info=(ASTSpanInfo())
+            _sig=(CallSig @1618:23~47
+             _info=(ASTSpanInfo())
+             _typ=(Some _value=(TypeRef @1618:40~47
+               _info=(ASTSpanInfo())
+               _name=(TypeName
+                _info=(ASTSpanInfo())
+                _text="Handler"
+                _names=[
+                 (Id _info=(ASTSpanInfo()) _text="Handler")])))
+             _params=[
+              (Param @1618:24~37
+               _info=(ASTSpanInfo())
+               _name=(Id @1618:24~29 _info=(ASTSpanInfo()) _text="bytes")
+               _typ=(Some _value=(StringT @1618:31~37
+                 _info=(ASTSpanInfo()))))]))
+           _info=(ASTSpanInfo()))
+          (AmbModElt @1679:9~50
+           _decl=(AmbFunDecl
+            _id=(Id @1679:18~24 _info=(ASTSpanInfo()) _text="logger")
+            _info=(ASTSpanInfo())
+            _sig=(CallSig @1679:24~50
+             _info=(ASTSpanInfo())
+             _typ=(Some _value=(TypeRef @1679:43~50
+               _info=(ASTSpanInfo())
+               _name=(TypeName
+                _info=(ASTSpanInfo())
+                _text="Handler"
+                _names=[
+                 (Id _info=(ASTSpanInfo()) _text="Handler")])))
+             _params=[
+              (Param @1679:25~40
+               _info=(ASTSpanInfo())
+               _name=(Id @1679:25~32 _info=(ASTSpanInfo()) _text="options")
+               _typ=(Some _value=(StringT @1679:34~40
+                 _info=(ASTSpanInfo()))))]))
+           _info=(ASTSpanInfo()))
+          (AmbModElt @1681:9~52
+           _decl=(AmbFunDecl
+            _id=(Id @1681:18~24 _info=(ASTSpanInfo()) _text="logger")
+            _info=(ASTSpanInfo())
+            _sig=(CallSig @1681:24~52
+             _info=(ASTSpanInfo())
+             _typ=(Some _value=(TypeRef @1681:45~52
+               _info=(ASTSpanInfo())
+               _name=(TypeName
+                _info=(ASTSpanInfo())
+                _text="Handler"
+                _names=[
+                 (Id _info=(ASTSpanInfo()) _text="Handler")])))
+             _params=[
+              (Param @1681:25~42
+               _info=(ASTSpanInfo())
+               _name=(Id @1681:25~32 _info=(ASTSpanInfo()) _text="options")
+               _typ=(Some _value=(TypeRef @1681:34~42
+                 _info=(ASTSpanInfo())
+                 _name=(TypeName
+                  _info=(ASTSpanInfo())
+                  _text="Function"
+                  _names=[
+                   (Id _info=(ASTSpanInfo()) _text="Function")]))))]))
+           _info=(ASTSpanInfo()))
+          (AmbModElt @1683:9~48
+           _decl=(AmbFunDecl
+            _id=(Id @1683:18~24 _info=(ASTSpanInfo()) _text="logger")
+            _info=(ASTSpanInfo())
+            _sig=(CallSig @1683:24~48
+             _info=(ASTSpanInfo())
+             _typ=(Some _value=(TypeRef @1683:41~48
+               _info=(ASTSpanInfo())
+               _name=(TypeName
+                _info=(ASTSpanInfo())
+                _text="Handler"
+                _names=[
+                 (Id _info=(ASTSpanInfo()) _text="Handler")])))
+             _params=[
+              (Param @1683:25~38
+               _info=(ASTSpanInfo())
+               _name=(Id @1683:25~32 _info=(ASTSpanInfo()) _text="options")
+               _optional=true
+               _typ=(Some _value=(AnyT @1683:35~38
+                 _info=(ASTSpanInfo()))))]))
+           _info=(ASTSpanInfo()))
+          (AmbModElt @1690:9~47
+           _decl=(AmbFunDecl
+            _id=(Id @1690:18~25 _info=(ASTSpanInfo()) _text="compile")
+            _info=(ASTSpanInfo())
+            _sig=(CallSig @1690:25~47
+             _info=(ASTSpanInfo())
+             _typ=(Some _value=(TypeRef @1690:40~47
+               _info=(ASTSpanInfo())
+               _name=(TypeName
+                _info=(ASTSpanInfo())
+                _text="Handler"
+                _names=[
+                 (Id _info=(ASTSpanInfo()) _text="Handler")])))
+             _params=[
+              (Param @1690:26~37
+               _info=(ASTSpanInfo())
+               _name=(Id @1690:26~29 _info=(ASTSpanInfo()) _text="fmt")
+               _typ=(Some _value=(StringT @1690:31~37
+                 _info=(ASTSpanInfo()))))]))
+           _info=(ASTSpanInfo()))
+          (AmbModElt @1699:9~56
+           _decl=(AmbFunDecl
+            _id=(Id @1699:18~23 _info=(ASTSpanInfo()) _text="token")
+            _info=(ASTSpanInfo())
+            _sig=(CallSig @1699:23~56
+             _info=(ASTSpanInfo())
+             _typ=(Some _value=(AnyT @1699:53~56
+               _info=(ASTSpanInfo())))
+             _params=[
+              (Param @1699:24~36
+               _info=(ASTSpanInfo())
+               _name=(Id @1699:24~28 _info=(ASTSpanInfo()) _text="name")
+               _typ=(Some _value=(StringT @1699:30~36
+                 _info=(ASTSpanInfo()))))
+              (Param @1699:38~50
+               _info=(ASTSpanInfo())
+               _name=(Id @1699:38~40 _info=(ASTSpanInfo()) _text="fn")
+               _typ=(Some _value=(TypeRef @1699:42~50
+                 _info=(ASTSpanInfo())
+                 _name=(TypeName
+                  _info=(ASTSpanInfo())
+                  _text="Function"
+                  _names=[
+                   (Id _info=(ASTSpanInfo()) _text="Function")]))))]))
+           _info=(ASTSpanInfo()))
+          (AmbModElt @1704:9~56
+           _decl=(AmbFunDecl
+            _id=(Id @1704:18~24 _info=(ASTSpanInfo()) _text="format")
+            _info=(ASTSpanInfo())
+            _sig=(CallSig @1704:24~56
+             _info=(ASTSpanInfo())
+             _typ=(Some _value=(AnyT @1704:53~56
+               _info=(ASTSpanInfo())))
+             _params=[
+              (Param @1704:25~37
+               _info=(ASTSpanInfo())
+               _name=(Id @1704:25~29 _info=(ASTSpanInfo()) _text="name")
+               _typ=(Some _value=(StringT @1704:31~37
+                 _info=(ASTSpanInfo()))))
+              (Param @1704:39~50
+               _info=(ASTSpanInfo())
+               _name=(Id @1704:39~42 _info=(ASTSpanInfo()) _text="str")
+               _typ=(Some _value=(StringT @1704:44~50
+                 _info=(ASTSpanInfo()))))]))
+           _info=(ASTSpanInfo()))
+          (AmbModElt @1706:9~58
+           _decl=(AmbFunDecl
+            _id=(Id @1706:18~24 _info=(ASTSpanInfo()) _text="format")
+            _info=(ASTSpanInfo())
+            _sig=(CallSig @1706:24~58
+             _info=(ASTSpanInfo())
+             _typ=(Some _value=(AnyT @1706:55~58
+               _info=(ASTSpanInfo())))
+             _params=[
+              (Param @1706:25~37
+               _info=(ASTSpanInfo())
+               _name=(Id @1706:25~29 _info=(ASTSpanInfo()) _text="name")
+               _typ=(Some _value=(StringT @1706:31~37
+                 _info=(ASTSpanInfo()))))
+              (Param @1706:39~52
+               _info=(ASTSpanInfo())
+               _name=(Id @1706:39~42 _info=(ASTSpanInfo()) _text="str")
+               _typ=(Some _value=(TypeRef @1706:44~52
+                 _info=(ASTSpanInfo())
+                 _name=(TypeName
+                  _info=(ASTSpanInfo())
+                  _text="Function"
+                  _names=[
+                   (Id _info=(ASTSpanInfo()) _text="Function")]))))]))
+           _info=(ASTSpanInfo()))
+          (AmbModElt @1724:9~46
+           _decl=(AmbFunDecl
+            _id=(Id @1724:18~23 _info=(ASTSpanInfo()) _text="query")
+            _info=(ASTSpanInfo())
+            _sig=(CallSig @1724:23~46
+             _info=(ASTSpanInfo())
+             _typ=(Some _value=(TypeRef @1724:39~46
+               _info=(ASTSpanInfo())
+               _name=(TypeName
+                _info=(ASTSpanInfo())
+                _text="Handler"
+                _names=[
+                 (Id _info=(ASTSpanInfo()) _text="Handler")])))
+             _params=[
+              (Param @1724:24~36
+               _info=(ASTSpanInfo())
+               _name=(Id @1724:24~31 _info=(ASTSpanInfo()) _text="options")
+               _typ=(Some _value=(AnyT @1724:33~36
+                 _info=(ASTSpanInfo()))))]))
+           _info=(ASTSpanInfo()))
+          (AmbModElt @1732:9~41
+           _decl=(AmbFunDecl
+            _id=(Id @1732:18~30 _info=(ASTSpanInfo()) _text="responseTime")
+            _info=(ASTSpanInfo())
+            _sig=(CallSig @1732:30~41
+             _info=(ASTSpanInfo())
+             _typ=(Some _value=(TypeRef @1732:34~41
+               _info=(ASTSpanInfo())
+               _name=(TypeName
+                _info=(ASTSpanInfo())
+                _text="Handler"
+                _names=[
+                 (Id _info=(ASTSpanInfo()) _text="Handler")])))))
+           _info=(ASTSpanInfo()))
+          (AmbModElt @1764:9~52
+           _decl=(AmbFunDecl
+            _id=(Id @1764:18~29 _info=(ASTSpanInfo()) _text="staticCache")
+            _info=(ASTSpanInfo())
+            _sig=(CallSig @1764:29~52
+             _info=(ASTSpanInfo())
+             _typ=(Some _value=(TypeRef @1764:45~52
+               _info=(ASTSpanInfo())
+               _name=(TypeName
+                _info=(ASTSpanInfo())
+                _text="Handler"
+                _names=[
+                 (Id _info=(ASTSpanInfo()) _text="Handler")])))
+             _params=[
+              (Param @1764:30~42
+               _info=(ASTSpanInfo())
+               _name=(Id @1764:30~37 _info=(ASTSpanInfo()) _text="options")
+               _typ=(Some _value=(AnyT @1764:39~42
+                 _info=(ASTSpanInfo()))))]))
+           _info=(ASTSpanInfo()))
+          (AmbModElt @1777:9~46
+           _decl=(AmbFunDecl
+            _id=(Id @1777:18~25 _info=(ASTSpanInfo()) _text="timeout")
+            _info=(ASTSpanInfo())
+            _sig=(CallSig @1777:25~46
+             _info=(ASTSpanInfo())
+             _typ=(Some _value=(TypeRef @1777:39~46
+               _info=(ASTSpanInfo())
+               _name=(TypeName
+                _info=(ASTSpanInfo())
+                _text="Handler"
+                _names=[
+                 (Id _info=(ASTSpanInfo()) _text="Handler")])))
+             _params=[
+              (Param @1777:26~36
+               _info=(ASTSpanInfo())
+               _name=(Id @1777:26~28 _info=(ASTSpanInfo()) _text="ms")
+               _typ=(Some _value=(NumberT @1777:30~36
+                 _info=(ASTSpanInfo()))))]))
+           _info=(ASTSpanInfo()))
+          (AmbModElt @1795:9~63
+           _decl=(AmbFunDecl
+            _id=(Id @1795:18~23 _info=(ASTSpanInfo()) _text="vhost")
+            _info=(ASTSpanInfo())
+            _sig=(CallSig @1795:23~63
+             _info=(ASTSpanInfo())
+             _typ=(Some _value=(TypeRef @1795:56~63
+               _info=(ASTSpanInfo())
+               _name=(TypeName
+                _info=(ASTSpanInfo())
+                _text="Handler"
+                _names=[
+                 (Id _info=(ASTSpanInfo()) _text="Handler")])))
+             _params=[
+              (Param @1795:24~40
+               _info=(ASTSpanInfo())
+               _name=(Id @1795:24~32 _info=(ASTSpanInfo()) _text="hostname")
+               _typ=(Some _value=(StringT @1795:34~40
+                 _info=(ASTSpanInfo()))))
+              (Param @1795:42~53
+               _info=(ASTSpanInfo())
+               _name=(Id @1795:42~48 _info=(ASTSpanInfo()) _text="server")
+               _typ=(Some _value=(AnyT @1795:50~53
+                 _info=(ASTSpanInfo()))))]))
+           _info=(ASTSpanInfo()))
+          (AmbModElt @1797:9~35
+           _decl=(AmbFunDecl
+            _id=(Id @1797:18~28 _info=(ASTSpanInfo()) _text="urlencoded")
+            _info=(ASTSpanInfo())
+            _sig=(CallSig @1797:28~35
+             _info=(ASTSpanInfo())
+             _typ=(Some _value=(AnyT @1797:32~35
+               _info=(ASTSpanInfo())))))
+           _info=(ASTSpanInfo()))
+          (AmbModElt @1799:9~34
+           _decl=(AmbFunDecl
+            _id=(Id @1799:18~27 _info=(ASTSpanInfo()) _text="multipart")
+            _info=(ASTSpanInfo())
+            _sig=(CallSig @1799:27~34
+             _info=(ASTSpanInfo())
+             _typ=(Some _value=(AnyT @1799:31~34
+               _info=(ASTSpanInfo())))))
+           _info=(ASTSpanInfo()))])
+        _info=(ASTSpanInfo()))
+       (AmbExtModElt @1803:5~15
+        _decl=(ModExpAssignment
+         _id=(Id @1803:14~15 _info=(ASTSpanInfo()) _text="e")
+         _info=(ASTSpanInfo()))
+        _info=(ASTSpanInfo()))])])])
+ _info=(ASTSpanInfo()))

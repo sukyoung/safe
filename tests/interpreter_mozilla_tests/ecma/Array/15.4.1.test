@@ -1,0 +1,29 @@
+################################################################################
+#    Copyright (c) 2012, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=15.4.1
+INTERPRETER_TESTS_DIR=${JS_HOME}/tests/interpreter_mozilla_tests/ecma/Array
+interpret_mozilla
+interpret_mozilla_out_WCIequals=\
+15.4.1 The Array Constructor Called as a Function\n\
+ PASSED! Array() +'' =  expected: \n\
+ PASSED! typeof Array() = object expected: object\n\
+ PASSED! var arr = Array(); arr.getClass = Object.prototype.toString; arr.getClass() = [object Array] expected: [object Array]\n\
+ PASSED! var arr = Array(); arr.toString == Array.prototype.toString = true expected: true\n\
+ PASSED! Array().length = 0 expected: 0\n\
+ PASSED! Array(1,2,3) +'' = 1,2,3 expected: 1,2,3\n\
+ PASSED! typeof Array(1,2,3) = object expected: object\n\
+ PASSED! var arr = Array(1,2,3); arr.getClass = Object.prototype.toString; arr.getClass() = [object Array] expected: [object Array]\n\
+ PASSED! var arr = Array(1,2,3); arr.toString == Array.prototype.toString = true expected: true\n\
+ PASSED! Array(1,2,3).length = 3 expected: 3\n\
+ PASSED! typeof Array(12345) = object expected: object\n\
+ PASSED! var arr = Array(12345); arr.getClass = Object.prototype.toString; arr.getClass() = [object Array] expected: [object Array]\n\
+ PASSED! var arr = Array(1,2,3,4,5); arr.toString == Array.prototype.toString = true expected: true\n\
+ PASSED! Array(12345).length = 12345 expected: 12345\n\
+\n
+interpret_err_equals=

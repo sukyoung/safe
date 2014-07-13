@@ -1,0 +1,54 @@
+################################################################################
+#    Copyright (c) 2012, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=15.9.4.3
+INTERPRETER_TESTS_DIR=${JS_HOME}/tests/interpreter_mozilla_tests/ecma/Date
+interpret_mozilla
+interpret_mozilla_out_WCIequals=\
+ PASSED! Date.UTC( 1970,0,1,0,0,0,0) = 0 expected: 0\n\
+ PASSED! Date.UTC( 1970,0,1,0,0,0,0) = 0 expected: 0\n\
+ PASSED! Date.UTC( 1969,11,31,23,59,59,999) = -1 expected: -1\n\
+ PASSED! Date.UTC( 1969,11,31,23,59,59,999) = -1 expected: -1\n\
+ PASSED! Date.UTC( 1972,1,29,23,59,59,999) = 68255999999 expected: 68255999999\n\
+ PASSED! Date.UTC( 1972,1,29,23,59,59,999) = 68255999999 expected: 68255999999\n\
+ PASSED! Date.UTC( 1972,2,1,23,59,59,999) = 68342399999 expected: 68342399999\n\
+ PASSED! Date.UTC( 1972,2,1,23,59,59,999) = 68342399999 expected: 68342399999\n\
+ PASSED! Date.UTC( 1968,1,29,23,59,59,999) = -57974400001 expected: -57974400001\n\
+ PASSED! Date.UTC( 1968,1,29,23,59,59,999) = -57974400001 expected: -57974400001\n\
+ PASSED! Date.UTC( 1968,2,1,23,59,59,999) = -57888000001 expected: -57888000001\n\
+ PASSED! Date.UTC( 1968,2,1,23,59,59,999) = -57888000001 expected: -57888000001\n\
+ PASSED! Date.UTC( 1969,0,1,0,0,0,0) = -31536000000 expected: -31536000000\n\
+ PASSED! Date.UTC( 1969,0,1,0,0,0,0) = -31536000000 expected: -31536000000\n\
+ PASSED! Date.UTC( 1969,11,31,23,59,59,1000) = 0 expected: 0\n\
+ PASSED! Date.UTC( 1969,11,31,23,59,59,1000) = 0 expected: 0\n\
+ PASSED! Date.UTC( 1969,Number.NaN,31,23,59,59,999) = NaN expected: NaN\n\
+ PASSED! Date.UTC( 1969,Number.NaN,31,23,59,59,999) = NaN expected: NaN\n\
+ PASSED! Date.UTC( 1999,11,31,23,59,59,999) = 946684799999 expected: 946684799999\n\
+ PASSED! Date.UTC( 1999,11,31,23,59,59,999) = 946684799999 expected: 946684799999\n\
+ PASSED! Date.UTC( 2000,0,1,0,0,0,0) = 946684800000 expected: 946684800000\n\
+ PASSED! Date.UTC( 2000,0,1,0,0,0,0) = 946684800000 expected: 946684800000\n\
+ PASSED! Date.UTC( 1899,11,31,23,59,59,999) = -2208988800001 expected: -2208988800001\n\
+ PASSED! Date.UTC( 1899,11,31,23,59,59,999) = -2208988800001 expected: -2208988800001\n\
+ PASSED! Date.UTC( 1900,0,1,0,0,0,0) = -2208988800000 expected: -2208988800000\n\
+ PASSED! Date.UTC( 1900,0,1,0,0,0,0) = -2208988800000 expected: -2208988800000\n\
+ PASSED! Date.UTC( 1973,0,1,0,0,0,0) = 94694400000 expected: 94694400000\n\
+ PASSED! Date.UTC( 1973,0,1,0,0,0,0) = 94694400000 expected: 94694400000\n\
+ PASSED! Date.UTC( 1776,6,4,12,36,13,111) = -6106015426889 expected: -6106015426889\n\
+ PASSED! Date.UTC( 1776,6,4,12,36,13,111) = -6106015426889 expected: -6106015426889\n\
+ PASSED! Date.UTC( 2525,9,18,15,30,1,123) = 17539255801123 expected: 17539255801123\n\
+ PASSED! Date.UTC( 2525,9,18,15,30,1,123) = 17539255801123 expected: 17539255801123\n\
+ PASSED! Date.UTC( 2000,1,29,0,0,0,0 ) = 951782400000 expected: 951782400000\n\
+ PASSED! Date.UTC( 2000,1,29,0,0,0,0 ) = 951782400000 expected: 951782400000\n\
+ PASSED! Date.UTC( 2000,1,29,8,0,0,0 ) = 951811200000 expected: 951811200000\n\
+ PASSED! Date.UTC( 2000,1,29,8,0,0,0 ) = 951811200000 expected: 951811200000\n\
+ PASSED! Date.UTC( 2005,0,1,0,0,0,0 ) = 1104537600000 expected: 1104537600000\n\
+ PASSED! Date.UTC( 2005,0,1,0,0,0,0 ) = 1104537600000 expected: 1104537600000\n\
+ PASSED! Date.UTC( 2004,11,31,16,0,0,0 ) = 1104508800000 expected: 1104508800000\n\
+ PASSED! Date.UTC( 2004,11,31,16,0,0,0 ) = 1104508800000 expected: 1104508800000\n\
+\n
+interpret_err_equals=

@@ -1,0 +1,17 @@
+################################################################################
+#    Copyright (c) 2012, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=array-length-set-on-nonarray
+INTERPRETER_TESTS_DIR=${JS_HOME}/tests/interpreter_mozilla_tests/ecma/Array
+interpret_mozilla
+interpret_mozilla_out_WCIequals=\
+548671: Don't use a shared-permanent inherited property to implement [].length or (function(){}).length\n\
+ PASSED! \n\
+All tests passed!\n\
+\n
+interpret_err_equals=

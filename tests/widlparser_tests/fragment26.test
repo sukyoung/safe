@@ -1,0 +1,22 @@
+################################################################################
+#    Copyright (c) 2013, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=fragment26.widl
+WIDLPARSER_TESTS_DIR=${JS_HOME}/tests/widl_tests
+widlparse
+widlparse_out_WCIequals=\
+interface Point {\n\
+  \n\
+};\n\
+interface Circle {\n\
+  attribute float cx;\n\
+  attribute float cy;\n\
+  attribute float radius;\n\
+  static Point triangulate(Circle c1, Circle c2, Circle c3);\n\
+};\n
+widlparse_err_equals=

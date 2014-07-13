@@ -1,0 +1,68 @@
+################################################################################
+#    Copyright (c) 2012, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=15.6.2
+INTERPRETER_TESTS_DIR=${JS_HOME}/tests/interpreter_mozilla_tests/ecma/Boolean
+interpret_mozilla
+interpret_mozilla_out_WCIequals=\
+15.6.2 15.6.2 The Boolean Constructor; 15.6.2.1 new Boolean( value ); 15.6.2.2 new Boolean()\n\
+ PASSED! typeof (new Boolean(1)) = object expected: object\n\
+ PASSED! (new Boolean(1)).constructor = [object Function] expected: [object Function]\n\
+ PASSED! TESTBOOL=new Boolean(1);TESTBOOL.toString=Object.prototype.toString;TESTBOOL.toString() = [object Boolean] expected: [object Boolean]\n\
+ PASSED! (new Boolean(1)).valueOf() = true expected: true\n\
+ PASSED! typeof new Boolean(1) = object expected: object\n\
+ PASSED! (new Boolean(0)).constructor = [object Function] expected: [object Function]\n\
+ PASSED! TESTBOOL=new Boolean(0);TESTBOOL.toString=Object.prototype.toString;TESTBOOL.toString() = [object Boolean] expected: [object Boolean]\n\
+ PASSED! (new Boolean(0)).valueOf() = false expected: false\n\
+ PASSED! typeof new Boolean(0) = object expected: object\n\
+ PASSED! (new Boolean(-1)).constructor = [object Function] expected: [object Function]\n\
+ PASSED! TESTBOOL=new Boolean(-1);TESTBOOL.toString=Object.prototype.toString;TESTBOOL.toString() = [object Boolean] expected: [object Boolean]\n\
+ PASSED! (new Boolean(-1)).valueOf() = true expected: true\n\
+ PASSED! typeof new Boolean(-1) = object expected: object\n\
+ PASSED! (new Boolean('1')).constructor = [object Function] expected: [object Function]\n\
+ PASSED! TESTBOOL=new Boolean('1');TESTBOOL.toString=Object.prototype.toString;TESTBOOL.toString() = [object Boolean] expected: [object Boolean]\n\
+ PASSED! (new Boolean('1')).valueOf() = true expected: true\n\
+ PASSED! typeof new Boolean('1') = object expected: object\n\
+ PASSED! (new Boolean('0')).constructor = [object Function] expected: [object Function]\n\
+ PASSED! TESTBOOL=new Boolean('0');TESTBOOL.toString=Object.prototype.toString;TESTBOOL.toString() = [object Boolean] expected: [object Boolean]\n\
+ PASSED! (new Boolean('0')).valueOf() = true expected: true\n\
+ PASSED! typeof new Boolean('0') = object expected: object\n\
+ PASSED! (new Boolean('-1')).constructor = [object Function] expected: [object Function]\n\
+ PASSED! TESTBOOL=new Boolean('-1');TESTBOOL.toString=Object.prototype.toString;TESTBOOL.toString() = [object Boolean] expected: [object Boolean]\n\
+ PASSED! (new Boolean('-1')).valueOf() = true expected: true\n\
+ PASSED! typeof new Boolean('-1') = object expected: object\n\
+ PASSED! (new Boolean(new Boolean(true))).constructor = [object Function] expected: [object Function]\n\
+ PASSED! TESTBOOL=new Boolean(new Boolean(true));TESTBOOL.toString=Object.prototype.toString;TESTBOOL.toString() = [object Boolean] expected: [object Boolean]\n\
+ PASSED! (new Boolean(new Boolean(true))).valueOf() = true expected: true\n\
+ PASSED! typeof new Boolean(new Boolean(true)) = object expected: object\n\
+ PASSED! (new Boolean(Number.NaN)).constructor = [object Function] expected: [object Function]\n\
+ PASSED! TESTBOOL=new Boolean(Number.NaN);TESTBOOL.toString=Object.prototype.toString;TESTBOOL.toString() = [object Boolean] expected: [object Boolean]\n\
+ PASSED! (new Boolean(Number.NaN)).valueOf() = false expected: false\n\
+ PASSED! typeof new Boolean(Number.NaN) = object expected: object\n\
+ PASSED! (new Boolean(null)).constructor = [object Function] expected: [object Function]\n\
+ PASSED! TESTBOOL=new Boolean(null);TESTBOOL.toString=Object.prototype.toString;TESTBOOL.toString() = [object Boolean] expected: [object Boolean]\n\
+ PASSED! (new Boolean(null)).valueOf() = false expected: false\n\
+ PASSED! typeof new Boolean(null) = object expected: object\n\
+ PASSED! (new Boolean(void 0)).constructor = [object Function] expected: [object Function]\n\
+ PASSED! TESTBOOL=new Boolean(void 0);TESTBOOL.toString=Object.prototype.toString;TESTBOOL.toString() = [object Boolean] expected: [object Boolean]\n\
+ PASSED! (new Boolean(void 0)).valueOf() = false expected: false\n\
+ PASSED! typeof new Boolean(void 0) = object expected: object\n\
+ PASSED! (new Boolean(Number.POSITIVE_INFINITY)).constructor = [object Function] expected: [object Function]\n\
+ PASSED! TESTBOOL=new Boolean(Number.POSITIVE_INFINITY);TESTBOOL.toString=Object.prototype.toString;TESTBOOL.toString() = [object Boolean] expected: [object Boolean]\n\
+ PASSED! (new Boolean(Number.POSITIVE_INFINITY)).valueOf() = true expected: true\n\
+ PASSED! typeof new Boolean(Number.POSITIVE_INFINITY) = object expected: object\n\
+ PASSED! (new Boolean(Number.NEGATIVE_INFINITY)).constructor = [object Function] expected: [object Function]\n\
+ PASSED! TESTBOOL=new Boolean(Number.NEGATIVE_INFINITY);TESTBOOL.toString=Object.prototype.toString;TESTBOOL.toString() = [object Boolean] expected: [object Boolean]\n\
+ PASSED! (new Boolean(Number.NEGATIVE_INFINITY)).valueOf() = true expected: true\n\
+ PASSED! typeof new Boolean(Number.NEGATIVE_INFINITY) = object expected: object\n\
+ PASSED! (new Boolean(Number.NEGATIVE_INFINITY)).constructor = [object Function] expected: [object Function]\n\
+ PASSED! TESTBOOL=new Boolean();TESTBOOL.toString=Object.prototype.toString;TESTBOOL.toString() = [object Boolean] expected: [object Boolean]\n\
+ PASSED! (new Boolean()).valueOf() = false expected: false\n\
+ PASSED! typeof new Boolean() = object expected: object\n\
+\n
+interpret_err_equals=

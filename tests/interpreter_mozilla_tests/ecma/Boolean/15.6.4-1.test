@@ -1,0 +1,19 @@
+################################################################################
+#    Copyright (c) 2012, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=15.6.4-1
+INTERPRETER_TESTS_DIR=${JS_HOME}/tests/interpreter_mozilla_tests/ecma/Boolean
+interpret_mozilla
+interpret_mozilla_out_WCIequals=\
+15.6.4-1 Properties of the Boolean Prototype Object\n\
+ PASSED! typeof Boolean.prototype == typeof( new Boolean ) = true expected: true\n\
+ PASSED! typeof( Boolean.prototype ) = object expected: object\n\
+ PASSED! Boolean.prototype.toString = Object.prototype.toString; Boolean.prototype.toString() = [object Boolean] expected: [object Boolean]\n\
+ PASSED! Boolean.prototype.valueOf() = false expected: false\n\
+\n
+interpret_err_equals=

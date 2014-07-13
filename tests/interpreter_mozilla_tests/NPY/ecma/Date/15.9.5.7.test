@@ -1,0 +1,52 @@
+################################################################################
+#    Copyright (c) 2012, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=15.9.5.7
+INTERPRETER_TESTS_DIR=${JS_HOME}/tests/interpreter_mozilla_tests/ecma/Date
+interpret_mozilla
+interpret_mozilla_out_WCIequals=\
+15.9.5.7 Date.prototype.getUTCFullYear()\n\
+ PASSED! (new Date(1355759134476)).getUTCFullYear() = 2012 expected: 2012\n\
+ PASSED! (new Date(1355759134477)).getUTCFullYear() = 2012 expected: 2012\n\
+ PASSED! (new Date(1355759134475)).getUTCFullYear() = 2012 expected: 2012\n\
+ PASSED! (new Date(1355726734476)).getUTCFullYear() = 2012 expected: 2012\n\
+ PASSED! (new Date(1355791534476)).getUTCFullYear() = 2012 expected: 2012\n\
+ PASSED! (new Date(-62167219200000)).getUTCFullYear() = 0 expected: 0\n\
+ PASSED! (new Date(-62167219199999)).getUTCFullYear() = 0 expected: 0\n\
+ PASSED! (new Date(-62167219200001)).getUTCFullYear() = -1 expected: -1\n\
+ PASSED! (new Date(-62167251600000)).getUTCFullYear() = -1 expected: -1\n\
+ PASSED! (new Date(-62167186800000)).getUTCFullYear() = 0 expected: 0\n\
+ PASSED! (new Date(0)).getUTCFullYear() = 1970 expected: 1970\n\
+ PASSED! (new Date(1)).getUTCFullYear() = 1970 expected: 1970\n\
+ PASSED! (new Date(-1)).getUTCFullYear() = 1969 expected: 1969\n\
+ PASSED! (new Date(-32400000)).getUTCFullYear() = 1969 expected: 1969\n\
+ PASSED! (new Date(32400000)).getUTCFullYear() = 1970 expected: 1970\n\
+ PASSED! (new Date(-2208988800000)).getUTCFullYear() = 1900 expected: 1900\n\
+ PASSED! (new Date(-2208988799999)).getUTCFullYear() = 1900 expected: 1900\n\
+ PASSED! (new Date(-2208988800001)).getUTCFullYear() = 1899 expected: 1899\n\
+ PASSED! (new Date(-2209021200000)).getUTCFullYear() = 1899 expected: 1899\n\
+ PASSED! (new Date(-2208956400000)).getUTCFullYear() = 1900 expected: 1900\n\
+ PASSED! (new Date(946684800000)).getUTCFullYear() = 2000 expected: 2000\n\
+ PASSED! (new Date(946684800001)).getUTCFullYear() = 2000 expected: 2000\n\
+ PASSED! (new Date(946684799999)).getUTCFullYear() = 1999 expected: 1999\n\
+ PASSED! (new Date(946652400000)).getUTCFullYear() = 1999 expected: 1999\n\
+ PASSED! (new Date(946717200000)).getUTCFullYear() = 2000 expected: 2000\n\
+ PASSED! (new Date(951782400000)).getUTCFullYear() = 2000 expected: 2000\n\
+ PASSED! (new Date(951782400001)).getUTCFullYear() = 2000 expected: 2000\n\
+ PASSED! (new Date(951782399999)).getUTCFullYear() = 2000 expected: 2000\n\
+ PASSED! (new Date(951750000000)).getUTCFullYear() = 2000 expected: 2000\n\
+ PASSED! (new Date(951814800000)).getUTCFullYear() = 2000 expected: 2000\n\
+ PASSED! (new Date(1104537600000)).getUTCFullYear() = 2005 expected: 2005\n\
+ PASSED! (new Date(1104537600001)).getUTCFullYear() = 2005 expected: 2005\n\
+ PASSED! (new Date(1104537599999)).getUTCFullYear() = 2004 expected: 2004\n\
+ PASSED! (new Date(1104505200000)).getUTCFullYear() = 2004 expected: 2004\n\
+ PASSED! (new Date(1104570000000)).getUTCFullYear() = 2005 expected: 2005\n\
+ PASSED! (new Date(NaN)).getUTCFullYear() = NaN expected: NaN\n\
+ PASSED! Date.prototype.getUTCFullYear.length = 0 expected: 0\n\
+\n
+interpret_err_equals=

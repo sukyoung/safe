@@ -1,0 +1,18 @@
+################################################################################
+#    Copyright (c) 2012, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=15.4.4
+INTERPRETER_TESTS_DIR=${JS_HOME}/tests/interpreter_mozilla_tests/ecma/Array
+interpret_mozilla
+interpret_mozilla_out_WCIequals=\
+15.4.4 Properties of the Array Prototype Object\n\
+ PASSED! Array.prototype.length = 0 expected: 0\n\
+ PASSED! typeof Array.prototype = object expected: object\n\
+ PASSED! Array.prototype.toString = Object.prototype.toString; Array.prototype.toString() = [object Array] expected: [object Array]\n\
+\n
+interpret_err_equals=

@@ -1,0 +1,10 @@
+a = new RegExp("^a")
+_<>_print(a.test("ab"))
+_<>_print(a.test("ba"))
+a = new RegExp("a$")
+_<>_print(a.test("ab"))
+_<>_print(a.test("ba"))
+a = new RegExp("^a$")
+_<>_print(a.test("a"))
+_<>_print(a.test("ab"))
+"PASS"

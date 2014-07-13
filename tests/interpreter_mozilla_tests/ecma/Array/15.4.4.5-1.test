@@ -1,0 +1,25 @@
+################################################################################
+#    Copyright (c) 2012, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=15.4.4.5-1
+INTERPRETER_TESTS_DIR=${JS_HOME}/tests/interpreter_mozilla_tests/ecma/Array
+interpret_mozilla
+interpret_mozilla_out_WCIequals=\
+15.4.4.5-1 Array.prototype.sort(comparefn)\n\
+ PASSED! var A = new Array();  A.sort(); A.length = 0 expected: 0\n\
+ PASSED! var A = new Array( true );  A.sort(); A.length = 1 expected: 1\n\
+ PASSED! A[0].toString() = true expected: true\n\
+ PASSED! var A = new Array( true, false, new Boolean(true), new Boolean(false), 'true', 'false' );  A.sort(); A.length = 6 expected: 6\n\
+ PASSED! A[0].toString() = false expected: false\n\
+ PASSED! A[1].toString() = false expected: false\n\
+ PASSED! A[2].toString() = false expected: false\n\
+ PASSED! A[3].toString() = true expected: true\n\
+ PASSED! A[4].toString() = true expected: true\n\
+ PASSED! A[5].toString() = true expected: true\n\
+\n
+interpret_err_equals=

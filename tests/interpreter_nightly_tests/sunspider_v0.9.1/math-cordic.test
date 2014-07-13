@@ -1,0 +1,15 @@
+################################################################################
+#    Copyright (c) 2012, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=math-cordic
+INTERPRETER_TESTS_DIR=${JS_HOME}/tests/interpreter_nightly_tests
+interpret
+interpret_out_WCIequals=\n\
+57866.92834816,30765,1834995.3515519998\n\
+Normal(undefined)
+interpret_err_equals=

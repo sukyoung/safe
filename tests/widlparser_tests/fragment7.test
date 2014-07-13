@@ -1,0 +1,22 @@
+################################################################################
+#    Copyright (c) 2013, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=fragment7.widl
+WIDLPARSER_TESTS_DIR=${JS_HOME}/tests/widl_tests
+widlparse
+widlparse_out_WCIequals=\
+interface Animal {\n\
+  attribute DOMString name;\n\
+};\n\
+interface Human : Animal {\n\
+  attribute Dog? pet;\n\
+};\n\
+interface Dog : Animal {\n\
+  attribute Human? owner;\n\
+};\n
+widlparse_err_equals=

@@ -1,0 +1,47 @@
+################################################################################
+#    Copyright (c) 2013, KAIST.
+#    All rights reserved.\n#
+#    Use is subject to license terms.\n#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=exprstmt
+COMPILER_TESTS_DIR=${JS_HOME}/tests/compiler_tests
+compile
+compile_out_WCIequals=\
+${COMPILER_TESTS_DIR}/exprstmt.js:3:1-7:1:\n\
+    Warning: the use of FunctionDeclaration as a Statement is not allowed in ECMAScript.\n\
+function f(this, <>arguments<>1) \n\
+{\n\
+  function <>g<>2(this, <>arguments<>3) \n\
+  {\n\
+    var <>c<>4\n\
+    <>c<>4 = <>arguments<>3["0"]\n\
+    <>Global<>ignore2 = false\n\
+    <>Global<>ignore4 = this\n\
+    <>Global<>ignore6 = <>c<>4\n\
+  }\n\
+  var <>a<>5\n\
+  var <>b<>6\n\
+  var <>z<>7\n\
+  <>a<>5 = <>arguments<>1["0"]\n\
+  <>b<>6 = <>arguments<>1["1"]\n\
+  {\n\
+    \n\
+  }\n\
+  {\n\
+    <>obj<>8 = <>Global<>toObject(<>a<>5)\n\
+    <>Global<>ignore8 = <>obj<>8[<>b<>6]\n\
+  }\n\
+}\n\
+var x\n\
+var y\n\
+{\n\
+  {\n\
+    <>temp<>9 = true\n\
+    <>Global<>ignore10 = false\n\
+  }\n\
+  <>Global<>ignore12 = false\n\
+}\n\
+\n\
+\n
+compile_err_equals=

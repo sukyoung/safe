@@ -1,0 +1,23 @@
+################################################################################
+#    Copyright (c) 2012, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=typeof
+INTERPRETER_TESTS_DIR=${JS_HOME}/tests/interpreter_tests
+interpret
+interpret_out_WCIequals=\
+_undef type is undefined\n\
+_null type is object\n\
+_bool type is boolean\n\
+_num1 type is number\n\
+_num2 type is number\n\
+_str type is string\n\
+_obj1 type is object\n\
+_obj2 type is object\n\
+_obj3 type is function\n\
+Normal(PASS)
+interpret_err_equals=

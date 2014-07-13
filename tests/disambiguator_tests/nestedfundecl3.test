@@ -1,0 +1,15 @@
+################################################################################
+#    Copyright (c) 2013, KAIST.
+#    All rights reserved.\n#
+#    Use is subject to license terms.\n#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=nestedfundecl3
+DISAMB_TESTS_DIR=${JS_HOME}/tests/disambiguator_tests
+disambiguate
+disambiguate_out_WCIequals=\
+${DISAMB_TESTS_DIR}/nestedfundecl3.js:4:1-2: \n\
+    Identifier y is not bound. \n\
+File ${DISAMB_TESTS_DIR}/nestedfundecl3.js has 1 error. \n\
+\n
+disambiguate_err_equals=

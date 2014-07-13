@@ -1,0 +1,1013 @@
+(Program @"accounting.d.ts":1:1~79:2
+ _body=(TopLevel
+  _stmts=[
+   (SourceElements
+    _info=(ASTSpanInfo())
+    _body=[
+     (IntfDecl @6:1~10:1
+      _id=(Id @6:11~36 _info=(ASTSpanInfo()) _text="IAccountingCurrencyFormat")
+      _info=(ASTSpanInfo())
+      _typ=(ObjectType @6:37~10:1
+       _info=(ASTSpanInfo())
+       _members=[
+        (PropertySig @7:5~16
+         _info=(ASTSpanInfo())
+         _prop=(PropId @7:5~8
+          _id=(Id _info=(ASTSpanInfo()) _text="pos")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(StringT @7:10~16
+           _info=(ASTSpanInfo()))))
+        (PropertySig @8:8~20
+         _info=(ASTSpanInfo())
+         _optional=true
+         _prop=(PropId @8:8~12
+          _id=(Id @8:8~11 _info=(ASTSpanInfo()) _text="neg")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(StringT @8:14~20
+           _info=(ASTSpanInfo()))))
+        (PropertySig @9:8~21
+         _info=(ASTSpanInfo())
+         _optional=true
+         _prop=(PropId @9:8~13
+          _id=(Id @9:8~12 _info=(ASTSpanInfo()) _text="zero")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(StringT @9:15~21
+           _info=(ASTSpanInfo()))))]))
+     (IntfDecl @12:1~18:1
+      _id=(Id @12:11~38 _info=(ASTSpanInfo()) _text="IAccountingCurrencySettings")
+      _info=(ASTSpanInfo())
+      _typ=(ObjectType @12:48~18:1
+       _info=(ASTSpanInfo())
+       _members=[
+        (PropertySig @13:5~20
+         _info=(ASTSpanInfo())
+         _optional=true
+         _prop=(PropId @13:5~12
+          _id=(Id @13:5~11 _info=(ASTSpanInfo()) _text="symbol")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(StringT @13:14~20
+           _info=(ASTSpanInfo()))))
+        (PropertySig @14:5~21
+         _info=(ASTSpanInfo())
+         _optional=true
+         _prop=(PropId @14:5~12
+          _id=(Id @14:5~11 _info=(ASTSpanInfo()) _text="format")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(TypeRef @14:14~21
+           _info=(ASTSpanInfo())
+           _name=(TypeName
+            _info=(ASTSpanInfo())
+            _text="TFormat"
+            _names=[
+             (Id _info=(ASTSpanInfo()) _text="TFormat")]))))
+        (PropertySig @15:5~21
+         _info=(ASTSpanInfo())
+         _optional=true
+         _prop=(PropId @15:5~13
+          _id=(Id @15:5~12 _info=(ASTSpanInfo()) _text="decimal")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(StringT @15:15~21
+           _info=(ASTSpanInfo()))))
+        (PropertySig @16:5~22
+         _info=(ASTSpanInfo())
+         _optional=true
+         _prop=(PropId @16:5~14
+          _id=(Id @16:5~13 _info=(ASTSpanInfo()) _text="thousand")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(StringT @16:16~22
+           _info=(ASTSpanInfo()))))
+        (PropertySig @17:5~18:1
+         _info=(ASTSpanInfo())
+         _optional=true
+         _prop=(PropId @17:5~15
+          _id=(Id @17:5~14 _info=(ASTSpanInfo()) _text="precision")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(NumberT @17:17~23
+           _info=(ASTSpanInfo()))))])
+      _tps=[
+       (TypeParam @12:39~46
+        _info=(ASTSpanInfo())
+        _name=(Id _info=(ASTSpanInfo()) _text="TFormat"))])
+     (IntfDecl @20:1~24:1
+      _id=(Id @20:11~36 _info=(ASTSpanInfo()) _text="IAccountingNumberSettings")
+      _info=(ASTSpanInfo())
+      _typ=(ObjectType @20:37~24:1
+       _info=(ASTSpanInfo())
+       _members=[
+        (PropertySig @21:5~23
+         _info=(ASTSpanInfo())
+         _optional=true
+         _prop=(PropId @21:5~15
+          _id=(Id @21:5~14 _info=(ASTSpanInfo()) _text="precision")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(NumberT @21:17~23
+           _info=(ASTSpanInfo()))))
+        (PropertySig @22:5~22
+         _info=(ASTSpanInfo())
+         _optional=true
+         _prop=(PropId @22:5~14
+          _id=(Id @22:5~13 _info=(ASTSpanInfo()) _text="thousand")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(StringT @22:16~22
+           _info=(ASTSpanInfo()))))
+        (PropertySig @23:5~21
+         _info=(ASTSpanInfo())
+         _optional=true
+         _prop=(PropId @23:5~13
+          _id=(Id @23:5~12 _info=(ASTSpanInfo()) _text="decimal")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(StringT @23:15~21
+           _info=(ASTSpanInfo()))))]))
+     (IntfDecl @26:1~29:1
+      _id=(Id @26:11~30 _info=(ASTSpanInfo()) _text="IAccountingSettings")
+      _info=(ASTSpanInfo())
+      _typ=(ObjectType @26:31~29:1
+       _info=(ASTSpanInfo())
+       _members=[
+        (PropertySig @27:5~47
+         _info=(ASTSpanInfo())
+         _prop=(PropId @27:5~13
+          _id=(Id _info=(ASTSpanInfo()) _text="currency")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(TypeRef @27:15~46
+           _info=(ASTSpanInfo())
+           _name=(TypeName @27:15~42
+            _info=(ASTSpanInfo())
+            _text="IAccountingCurrencySettings"
+            _names=[
+             (Id _info=(ASTSpanInfo()) _text="IAccountingCurrencySettings")])
+           _args=[
+            (AnyT @27:43~46
+             _info=(ASTSpanInfo()))])))
+        (PropertySig @28:5~38
+         _info=(ASTSpanInfo())
+         _prop=(PropId @28:5~11
+          _id=(Id _info=(ASTSpanInfo()) _text="number")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(TypeRef @28:13~38
+           _info=(ASTSpanInfo())
+           _name=(TypeName
+            _info=(ASTSpanInfo())
+            _text="IAccountingNumberSettings"
+            _names=[
+             (Id _info=(ASTSpanInfo()) _text="IAccountingNumberSettings")]))))]))
+     (IntfDecl @31:1~73:1
+      _id=(Id @31:11~28 _info=(ASTSpanInfo()) _text="IAccountingStatic")
+      _info=(ASTSpanInfo())
+      _typ=(ObjectType @31:29~73:1
+       _info=(ASTSpanInfo())
+       _members=[
+        (MethodSig @33:5~131
+         _info=(ASTSpanInfo())
+         _prop=(PropId @33:5~16
+          _id=(Id _info=(ASTSpanInfo()) _text="formatMoney")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @33:16~131
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(StringT @33:125~131
+            _info=(ASTSpanInfo())))
+          _params=[
+           (Param @33:17~31
+            _info=(ASTSpanInfo())
+            _name=(Id @33:17~23 _info=(ASTSpanInfo()) _text="number")
+            _typ=(Some _value=(NumberT @33:25~31
+              _info=(ASTSpanInfo()))))
+           (Param @33:33~48
+            _info=(ASTSpanInfo())
+            _name=(Id @33:33~39 _info=(ASTSpanInfo()) _text="symbol")
+            _optional=true
+            _typ=(Some _value=(StringT @33:42~48
+              _info=(ASTSpanInfo()))))
+           (Param @33:50~68
+            _info=(ASTSpanInfo())
+            _name=(Id @33:50~59 _info=(ASTSpanInfo()) _text="precision")
+            _optional=true
+            _typ=(Some _value=(NumberT @33:62~68
+              _info=(ASTSpanInfo()))))
+           (Param @33:70~87
+            _info=(ASTSpanInfo())
+            _name=(Id @33:70~78 _info=(ASTSpanInfo()) _text="thousand")
+            _optional=true
+            _typ=(Some _value=(StringT @33:81~87
+              _info=(ASTSpanInfo()))))
+           (Param @33:89~105
+            _info=(ASTSpanInfo())
+            _name=(Id @33:89~96 _info=(ASTSpanInfo()) _text="decimal")
+            _optional=true
+            _typ=(Some _value=(StringT @33:99~105
+              _info=(ASTSpanInfo()))))
+           (Param @33:107~122
+            _info=(ASTSpanInfo())
+            _name=(Id @33:107~113 _info=(ASTSpanInfo()) _text="format")
+            _optional=true
+            _typ=(Some _value=(StringT @33:116~122
+              _info=(ASTSpanInfo()))))]))
+        (MethodSig @34:5~86
+         _info=(ASTSpanInfo())
+         _prop=(PropId @34:5~16
+          _id=(Id _info=(ASTSpanInfo()) _text="formatMoney")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @34:16~86
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(StringT @34:80~86
+            _info=(ASTSpanInfo())))
+          _params=[
+           (Param @34:17~31
+            _info=(ASTSpanInfo())
+            _name=(Id @34:17~23 _info=(ASTSpanInfo()) _text="number")
+            _typ=(Some _value=(NumberT @34:25~31
+              _info=(ASTSpanInfo()))))
+           (Param @34:33~77
+            _info=(ASTSpanInfo())
+            _name=(Id @34:33~40 _info=(ASTSpanInfo()) _text="options")
+            _typ=(Some _value=(TypeRef @34:42~77
+              _info=(ASTSpanInfo())
+              _name=(TypeName
+               _info=(ASTSpanInfo())
+               _text="IAccountingCurrencySettings"
+               _names=[
+                (Id @34:42~69 _info=(ASTSpanInfo()) _text="IAccountingCurrencySettings")])
+              _args=[
+               (StringT @34:70~77
+                _info=(ASTSpanInfo()))])))]))
+        (MethodSig @35:5~105
+         _info=(ASTSpanInfo())
+         _prop=(PropId @35:5~16
+          _id=(Id _info=(ASTSpanInfo()) _text="formatMoney")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @35:16~105
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(StringT @35:99~105
+            _info=(ASTSpanInfo())))
+          _params=[
+           (Param @35:17~31
+            _info=(ASTSpanInfo())
+            _name=(Id @35:17~23 _info=(ASTSpanInfo()) _text="number")
+            _typ=(Some _value=(NumberT @35:25~31
+              _info=(ASTSpanInfo()))))
+           (Param @35:33~96
+            _info=(ASTSpanInfo())
+            _name=(Id @35:33~40 _info=(ASTSpanInfo()) _text="options")
+            _typ=(Some _value=(TypeRef @35:42~96
+              _info=(ASTSpanInfo())
+              _name=(TypeName
+               _info=(ASTSpanInfo())
+               _text="IAccountingCurrencySettings"
+               _names=[
+                (Id @35:42~69 _info=(ASTSpanInfo()) _text="IAccountingCurrencySettings")])
+              _args=[
+               (TypeRef @35:70~96
+                _info=(ASTSpanInfo())
+                _name=(TypeName
+                 _info=(ASTSpanInfo())
+                 _text="IAccountingCurrencyFormat"
+                 _names=[
+                  (Id @35:70~95 _info=(ASTSpanInfo()) _text="IAccountingCurrencyFormat")]))])))]))
+        (MethodSig @37:5~136
+         _info=(ASTSpanInfo())
+         _prop=(PropId @37:5~16
+          _id=(Id _info=(ASTSpanInfo()) _text="formatMoney")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @37:16~136
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(ArrayType @37:134~137
+            _info=(ASTSpanInfo())
+            _typ=(StringT @37:128~134
+             _info=(ASTSpanInfo()))))
+          _params=[
+           (Param @37:17~34
+            _info=(ASTSpanInfo())
+            _name=(Id @37:17~24 _info=(ASTSpanInfo()) _text="numbers")
+            _typ=(Some _value=(ArrayType @37:32~35
+              _info=(ASTSpanInfo())
+              _typ=(NumberT @37:26~34
+               _info=(ASTSpanInfo())))))
+           (Param @37:36~51
+            _info=(ASTSpanInfo())
+            _name=(Id @37:36~42 _info=(ASTSpanInfo()) _text="symbol")
+            _optional=true
+            _typ=(Some _value=(StringT @37:45~51
+              _info=(ASTSpanInfo()))))
+           (Param @37:53~71
+            _info=(ASTSpanInfo())
+            _name=(Id @37:53~62 _info=(ASTSpanInfo()) _text="precision")
+            _optional=true
+            _typ=(Some _value=(NumberT @37:65~71
+              _info=(ASTSpanInfo()))))
+           (Param @37:73~90
+            _info=(ASTSpanInfo())
+            _name=(Id @37:73~81 _info=(ASTSpanInfo()) _text="thousand")
+            _optional=true
+            _typ=(Some _value=(StringT @37:84~90
+              _info=(ASTSpanInfo()))))
+           (Param @37:92~108
+            _info=(ASTSpanInfo())
+            _name=(Id @37:92~99 _info=(ASTSpanInfo()) _text="decimal")
+            _optional=true
+            _typ=(Some _value=(StringT @37:102~108
+              _info=(ASTSpanInfo()))))
+           (Param @37:110~125
+            _info=(ASTSpanInfo())
+            _name=(Id @37:110~116 _info=(ASTSpanInfo()) _text="format")
+            _optional=true
+            _typ=(Some _value=(StringT @37:119~125
+              _info=(ASTSpanInfo()))))]))
+        (MethodSig @38:5~91
+         _info=(ASTSpanInfo())
+         _prop=(PropId @38:5~16
+          _id=(Id _info=(ASTSpanInfo()) _text="formatMoney")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @38:16~91
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(ArrayType @38:89~92
+            _info=(ASTSpanInfo())
+            _typ=(StringT @38:83~89
+             _info=(ASTSpanInfo()))))
+          _params=[
+           (Param @38:17~34
+            _info=(ASTSpanInfo())
+            _name=(Id @38:17~24 _info=(ASTSpanInfo()) _text="numbers")
+            _typ=(Some _value=(ArrayType @38:32~35
+              _info=(ASTSpanInfo())
+              _typ=(NumberT @38:26~34
+               _info=(ASTSpanInfo())))))
+           (Param @38:36~80
+            _info=(ASTSpanInfo())
+            _name=(Id @38:36~43 _info=(ASTSpanInfo()) _text="options")
+            _typ=(Some _value=(TypeRef @38:45~80
+              _info=(ASTSpanInfo())
+              _name=(TypeName
+               _info=(ASTSpanInfo())
+               _text="IAccountingCurrencySettings"
+               _names=[
+                (Id @38:45~72 _info=(ASTSpanInfo()) _text="IAccountingCurrencySettings")])
+              _args=[
+               (StringT @38:73~80
+                _info=(ASTSpanInfo()))])))]))
+        (MethodSig @39:5~110
+         _info=(ASTSpanInfo())
+         _prop=(PropId @39:5~16
+          _id=(Id _info=(ASTSpanInfo()) _text="formatMoney")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @39:16~110
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(ArrayType @39:108~111
+            _info=(ASTSpanInfo())
+            _typ=(StringT @39:102~108
+             _info=(ASTSpanInfo()))))
+          _params=[
+           (Param @39:17~34
+            _info=(ASTSpanInfo())
+            _name=(Id @39:17~24 _info=(ASTSpanInfo()) _text="numbers")
+            _typ=(Some _value=(ArrayType @39:32~35
+              _info=(ASTSpanInfo())
+              _typ=(NumberT @39:26~34
+               _info=(ASTSpanInfo())))))
+           (Param @39:36~99
+            _info=(ASTSpanInfo())
+            _name=(Id @39:36~43 _info=(ASTSpanInfo()) _text="options")
+            _typ=(Some _value=(TypeRef @39:45~99
+              _info=(ASTSpanInfo())
+              _name=(TypeName
+               _info=(ASTSpanInfo())
+               _text="IAccountingCurrencySettings"
+               _names=[
+                (Id @39:45~72 _info=(ASTSpanInfo()) _text="IAccountingCurrencySettings")])
+              _args=[
+               (TypeRef @39:73~99
+                _info=(ASTSpanInfo())
+                _name=(TypeName
+                 _info=(ASTSpanInfo())
+                 _text="IAccountingCurrencyFormat"
+                 _names=[
+                  (Id @39:73~98 _info=(ASTSpanInfo()) _text="IAccountingCurrencyFormat")]))])))]))
+        (MethodSig @42:5~130
+         _info=(ASTSpanInfo())
+         _prop=(PropId @42:5~16
+          _id=(Id _info=(ASTSpanInfo()) _text="formatMoney")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @42:16~130
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(ArrayType @42:128~131
+            _info=(ASTSpanInfo())
+            _typ=(AnyT @42:125~128
+             _info=(ASTSpanInfo()))))
+          _params=[
+           (Param @42:17~31
+            _info=(ASTSpanInfo())
+            _name=(Id @42:17~24 _info=(ASTSpanInfo()) _text="numbers")
+            _typ=(Some _value=(ArrayType @42:29~32
+              _info=(ASTSpanInfo())
+              _typ=(AnyT @42:26~31
+               _info=(ASTSpanInfo())))))
+           (Param @42:33~48
+            _info=(ASTSpanInfo())
+            _name=(Id @42:33~39 _info=(ASTSpanInfo()) _text="symbol")
+            _optional=true
+            _typ=(Some _value=(StringT @42:42~48
+              _info=(ASTSpanInfo()))))
+           (Param @42:50~68
+            _info=(ASTSpanInfo())
+            _name=(Id @42:50~59 _info=(ASTSpanInfo()) _text="precision")
+            _optional=true
+            _typ=(Some _value=(NumberT @42:62~68
+              _info=(ASTSpanInfo()))))
+           (Param @42:70~87
+            _info=(ASTSpanInfo())
+            _name=(Id @42:70~78 _info=(ASTSpanInfo()) _text="thousand")
+            _optional=true
+            _typ=(Some _value=(StringT @42:81~87
+              _info=(ASTSpanInfo()))))
+           (Param @42:89~105
+            _info=(ASTSpanInfo())
+            _name=(Id @42:89~96 _info=(ASTSpanInfo()) _text="decimal")
+            _optional=true
+            _typ=(Some _value=(StringT @42:99~105
+              _info=(ASTSpanInfo()))))
+           (Param @42:107~122
+            _info=(ASTSpanInfo())
+            _name=(Id @42:107~113 _info=(ASTSpanInfo()) _text="format")
+            _optional=true
+            _typ=(Some _value=(StringT @42:116~122
+              _info=(ASTSpanInfo()))))]))
+        (MethodSig @43:5~85
+         _info=(ASTSpanInfo())
+         _prop=(PropId @43:5~16
+          _id=(Id _info=(ASTSpanInfo()) _text="formatMoney")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @43:16~85
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(ArrayType @43:83~86
+            _info=(ASTSpanInfo())
+            _typ=(AnyT @43:80~83
+             _info=(ASTSpanInfo()))))
+          _params=[
+           (Param @43:17~31
+            _info=(ASTSpanInfo())
+            _name=(Id @43:17~24 _info=(ASTSpanInfo()) _text="numbers")
+            _typ=(Some _value=(ArrayType @43:29~32
+              _info=(ASTSpanInfo())
+              _typ=(AnyT @43:26~31
+               _info=(ASTSpanInfo())))))
+           (Param @43:33~77
+            _info=(ASTSpanInfo())
+            _name=(Id @43:33~40 _info=(ASTSpanInfo()) _text="options")
+            _typ=(Some _value=(TypeRef @43:42~77
+              _info=(ASTSpanInfo())
+              _name=(TypeName
+               _info=(ASTSpanInfo())
+               _text="IAccountingCurrencySettings"
+               _names=[
+                (Id @43:42~69 _info=(ASTSpanInfo()) _text="IAccountingCurrencySettings")])
+              _args=[
+               (StringT @43:70~77
+                _info=(ASTSpanInfo()))])))]))
+        (MethodSig @44:5~104
+         _info=(ASTSpanInfo())
+         _prop=(PropId @44:5~16
+          _id=(Id _info=(ASTSpanInfo()) _text="formatMoney")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @44:16~104
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(ArrayType @44:102~105
+            _info=(ASTSpanInfo())
+            _typ=(AnyT @44:99~102
+             _info=(ASTSpanInfo()))))
+          _params=[
+           (Param @44:17~31
+            _info=(ASTSpanInfo())
+            _name=(Id @44:17~24 _info=(ASTSpanInfo()) _text="numbers")
+            _typ=(Some _value=(ArrayType @44:29~32
+              _info=(ASTSpanInfo())
+              _typ=(AnyT @44:26~31
+               _info=(ASTSpanInfo())))))
+           (Param @44:33~96
+            _info=(ASTSpanInfo())
+            _name=(Id @44:33~40 _info=(ASTSpanInfo()) _text="options")
+            _typ=(Some _value=(TypeRef @44:42~96
+              _info=(ASTSpanInfo())
+              _name=(TypeName
+               _info=(ASTSpanInfo())
+               _text="IAccountingCurrencySettings"
+               _names=[
+                (Id @44:42~69 _info=(ASTSpanInfo()) _text="IAccountingCurrencySettings")])
+              _args=[
+               (TypeRef @44:70~96
+                _info=(ASTSpanInfo())
+                _name=(TypeName
+                 _info=(ASTSpanInfo())
+                 _text="IAccountingCurrencyFormat"
+                 _names=[
+                  (Id @44:70~95 _info=(ASTSpanInfo()) _text="IAccountingCurrencyFormat")]))])))]))
+        (MethodSig @47:5~137
+         _info=(ASTSpanInfo())
+         _prop=(PropId @47:5~17
+          _id=(Id _info=(ASTSpanInfo()) _text="formatColumn")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @47:17~137
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(ArrayType @47:135~138
+            _info=(ASTSpanInfo())
+            _typ=(StringT @47:129~135
+             _info=(ASTSpanInfo()))))
+          _params=[
+           (Param @47:18~35
+            _info=(ASTSpanInfo())
+            _name=(Id @47:18~25 _info=(ASTSpanInfo()) _text="numbers")
+            _typ=(Some _value=(ArrayType @47:33~36
+              _info=(ASTSpanInfo())
+              _typ=(NumberT @47:27~35
+               _info=(ASTSpanInfo())))))
+           (Param @47:37~52
+            _info=(ASTSpanInfo())
+            _name=(Id @47:37~43 _info=(ASTSpanInfo()) _text="symbol")
+            _optional=true
+            _typ=(Some _value=(StringT @47:46~52
+              _info=(ASTSpanInfo()))))
+           (Param @47:54~72
+            _info=(ASTSpanInfo())
+            _name=(Id @47:54~63 _info=(ASTSpanInfo()) _text="precision")
+            _optional=true
+            _typ=(Some _value=(NumberT @47:66~72
+              _info=(ASTSpanInfo()))))
+           (Param @47:74~91
+            _info=(ASTSpanInfo())
+            _name=(Id @47:74~82 _info=(ASTSpanInfo()) _text="thousand")
+            _optional=true
+            _typ=(Some _value=(StringT @47:85~91
+              _info=(ASTSpanInfo()))))
+           (Param @47:93~109
+            _info=(ASTSpanInfo())
+            _name=(Id @47:93~100 _info=(ASTSpanInfo()) _text="decimal")
+            _optional=true
+            _typ=(Some _value=(StringT @47:103~109
+              _info=(ASTSpanInfo()))))
+           (Param @47:111~126
+            _info=(ASTSpanInfo())
+            _name=(Id @47:111~117 _info=(ASTSpanInfo()) _text="format")
+            _optional=true
+            _typ=(Some _value=(StringT @47:120~126
+              _info=(ASTSpanInfo()))))]))
+        (MethodSig @48:5~92
+         _info=(ASTSpanInfo())
+         _prop=(PropId @48:5~17
+          _id=(Id _info=(ASTSpanInfo()) _text="formatColumn")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @48:17~92
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(ArrayType @48:90~93
+            _info=(ASTSpanInfo())
+            _typ=(StringT @48:84~90
+             _info=(ASTSpanInfo()))))
+          _params=[
+           (Param @48:18~35
+            _info=(ASTSpanInfo())
+            _name=(Id @48:18~25 _info=(ASTSpanInfo()) _text="numbers")
+            _typ=(Some _value=(ArrayType @48:33~36
+              _info=(ASTSpanInfo())
+              _typ=(NumberT @48:27~35
+               _info=(ASTSpanInfo())))))
+           (Param @48:37~81
+            _info=(ASTSpanInfo())
+            _name=(Id @48:37~44 _info=(ASTSpanInfo()) _text="options")
+            _typ=(Some _value=(TypeRef @48:46~81
+              _info=(ASTSpanInfo())
+              _name=(TypeName
+               _info=(ASTSpanInfo())
+               _text="IAccountingCurrencySettings"
+               _names=[
+                (Id @48:46~73 _info=(ASTSpanInfo()) _text="IAccountingCurrencySettings")])
+              _args=[
+               (StringT @48:74~81
+                _info=(ASTSpanInfo()))])))]))
+        (MethodSig @49:5~111
+         _info=(ASTSpanInfo())
+         _prop=(PropId @49:5~17
+          _id=(Id _info=(ASTSpanInfo()) _text="formatColumn")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @49:17~111
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(ArrayType @49:109~112
+            _info=(ASTSpanInfo())
+            _typ=(StringT @49:103~109
+             _info=(ASTSpanInfo()))))
+          _params=[
+           (Param @49:18~35
+            _info=(ASTSpanInfo())
+            _name=(Id @49:18~25 _info=(ASTSpanInfo()) _text="numbers")
+            _typ=(Some _value=(ArrayType @49:33~36
+              _info=(ASTSpanInfo())
+              _typ=(NumberT @49:27~35
+               _info=(ASTSpanInfo())))))
+           (Param @49:37~100
+            _info=(ASTSpanInfo())
+            _name=(Id @49:37~44 _info=(ASTSpanInfo()) _text="options")
+            _typ=(Some _value=(TypeRef @49:46~100
+              _info=(ASTSpanInfo())
+              _name=(TypeName
+               _info=(ASTSpanInfo())
+               _text="IAccountingCurrencySettings"
+               _names=[
+                (Id @49:46~73 _info=(ASTSpanInfo()) _text="IAccountingCurrencySettings")])
+              _args=[
+               (TypeRef @49:74~100
+                _info=(ASTSpanInfo())
+                _name=(TypeName
+                 _info=(ASTSpanInfo())
+                 _text="IAccountingCurrencyFormat"
+                 _names=[
+                  (Id @49:74~99 _info=(ASTSpanInfo()) _text="IAccountingCurrencyFormat")]))])))]))
+        (MethodSig @51:5~141
+         _info=(ASTSpanInfo())
+         _prop=(PropId @51:5~17
+          _id=(Id _info=(ASTSpanInfo()) _text="formatColumn")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @51:17~141
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(ArrayType @51:139~142
+            _info=(ASTSpanInfo())
+            _typ=(ArrayType @51:137~142
+             _info=(ASTSpanInfo())
+             _typ=(StringT @51:131~137
+              _info=(ASTSpanInfo())))))
+          _params=[
+           (Param @51:18~37
+            _info=(ASTSpanInfo())
+            _name=(Id @51:18~25 _info=(ASTSpanInfo()) _text="numbers")
+            _typ=(Some _value=(ArrayType @51:35~38
+              _info=(ASTSpanInfo())
+              _typ=(ArrayType @51:33~38
+               _info=(ASTSpanInfo())
+               _typ=(NumberT @51:27~37
+                _info=(ASTSpanInfo()))))))
+           (Param @51:39~54
+            _info=(ASTSpanInfo())
+            _name=(Id @51:39~45 _info=(ASTSpanInfo()) _text="symbol")
+            _optional=true
+            _typ=(Some _value=(StringT @51:48~54
+              _info=(ASTSpanInfo()))))
+           (Param @51:56~74
+            _info=(ASTSpanInfo())
+            _name=(Id @51:56~65 _info=(ASTSpanInfo()) _text="precision")
+            _optional=true
+            _typ=(Some _value=(NumberT @51:68~74
+              _info=(ASTSpanInfo()))))
+           (Param @51:76~93
+            _info=(ASTSpanInfo())
+            _name=(Id @51:76~84 _info=(ASTSpanInfo()) _text="thousand")
+            _optional=true
+            _typ=(Some _value=(StringT @51:87~93
+              _info=(ASTSpanInfo()))))
+           (Param @51:95~111
+            _info=(ASTSpanInfo())
+            _name=(Id @51:95~102 _info=(ASTSpanInfo()) _text="decimal")
+            _optional=true
+            _typ=(Some _value=(StringT @51:105~111
+              _info=(ASTSpanInfo()))))
+           (Param @51:113~128
+            _info=(ASTSpanInfo())
+            _name=(Id @51:113~119 _info=(ASTSpanInfo()) _text="format")
+            _optional=true
+            _typ=(Some _value=(StringT @51:122~128
+              _info=(ASTSpanInfo()))))]))
+        (MethodSig @52:5~96
+         _info=(ASTSpanInfo())
+         _prop=(PropId @52:5~17
+          _id=(Id _info=(ASTSpanInfo()) _text="formatColumn")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @52:17~96
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(ArrayType @52:94~97
+            _info=(ASTSpanInfo())
+            _typ=(ArrayType @52:92~97
+             _info=(ASTSpanInfo())
+             _typ=(StringT @52:86~92
+              _info=(ASTSpanInfo())))))
+          _params=[
+           (Param @52:18~37
+            _info=(ASTSpanInfo())
+            _name=(Id @52:18~25 _info=(ASTSpanInfo()) _text="numbers")
+            _typ=(Some _value=(ArrayType @52:35~38
+              _info=(ASTSpanInfo())
+              _typ=(ArrayType @52:33~38
+               _info=(ASTSpanInfo())
+               _typ=(NumberT @52:27~37
+                _info=(ASTSpanInfo()))))))
+           (Param @52:39~83
+            _info=(ASTSpanInfo())
+            _name=(Id @52:39~46 _info=(ASTSpanInfo()) _text="options")
+            _typ=(Some _value=(TypeRef @52:48~83
+              _info=(ASTSpanInfo())
+              _name=(TypeName
+               _info=(ASTSpanInfo())
+               _text="IAccountingCurrencySettings"
+               _names=[
+                (Id @52:48~75 _info=(ASTSpanInfo()) _text="IAccountingCurrencySettings")])
+              _args=[
+               (StringT @52:76~83
+                _info=(ASTSpanInfo()))])))]))
+        (MethodSig @53:5~115
+         _info=(ASTSpanInfo())
+         _prop=(PropId @53:5~17
+          _id=(Id _info=(ASTSpanInfo()) _text="formatColumn")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @53:17~115
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(ArrayType @53:113~116
+            _info=(ASTSpanInfo())
+            _typ=(ArrayType @53:111~116
+             _info=(ASTSpanInfo())
+             _typ=(StringT @53:105~111
+              _info=(ASTSpanInfo())))))
+          _params=[
+           (Param @53:18~37
+            _info=(ASTSpanInfo())
+            _name=(Id @53:18~25 _info=(ASTSpanInfo()) _text="numbers")
+            _typ=(Some _value=(ArrayType @53:35~38
+              _info=(ASTSpanInfo())
+              _typ=(ArrayType @53:33~38
+               _info=(ASTSpanInfo())
+               _typ=(NumberT @53:27~37
+                _info=(ASTSpanInfo()))))))
+           (Param @53:39~102
+            _info=(ASTSpanInfo())
+            _name=(Id @53:39~46 _info=(ASTSpanInfo()) _text="options")
+            _typ=(Some _value=(TypeRef @53:48~102
+              _info=(ASTSpanInfo())
+              _name=(TypeName
+               _info=(ASTSpanInfo())
+               _text="IAccountingCurrencySettings"
+               _names=[
+                (Id @53:48~75 _info=(ASTSpanInfo()) _text="IAccountingCurrencySettings")])
+              _args=[
+               (TypeRef @53:76~102
+                _info=(ASTSpanInfo())
+                _name=(TypeName
+                 _info=(ASTSpanInfo())
+                 _text="IAccountingCurrencyFormat"
+                 _names=[
+                  (Id @53:76~101 _info=(ASTSpanInfo()) _text="IAccountingCurrencyFormat")]))])))]))
+        (MethodSig @56:5~98
+         _info=(ASTSpanInfo())
+         _prop=(PropId @56:5~17
+          _id=(Id _info=(ASTSpanInfo()) _text="formatNumber")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @56:17~98
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(StringT @56:92~98
+            _info=(ASTSpanInfo())))
+          _params=[
+           (Param @56:18~32
+            _info=(ASTSpanInfo())
+            _name=(Id @56:18~24 _info=(ASTSpanInfo()) _text="number")
+            _typ=(Some _value=(NumberT @56:26~32
+              _info=(ASTSpanInfo()))))
+           (Param @56:34~52
+            _info=(ASTSpanInfo())
+            _name=(Id @56:34~43 _info=(ASTSpanInfo()) _text="precision")
+            _optional=true
+            _typ=(Some _value=(NumberT @56:46~52
+              _info=(ASTSpanInfo()))))
+           (Param @56:54~71
+            _info=(ASTSpanInfo())
+            _name=(Id @56:54~62 _info=(ASTSpanInfo()) _text="thousand")
+            _optional=true
+            _typ=(Some _value=(StringT @56:65~71
+              _info=(ASTSpanInfo()))))
+           (Param @56:73~89
+            _info=(ASTSpanInfo())
+            _name=(Id @56:73~80 _info=(ASTSpanInfo()) _text="decimal")
+            _optional=true
+            _typ=(Some _value=(StringT @56:83~89
+              _info=(ASTSpanInfo()))))]))
+        (MethodSig @57:5~77
+         _info=(ASTSpanInfo())
+         _prop=(PropId @57:5~17
+          _id=(Id _info=(ASTSpanInfo()) _text="formatNumber")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @57:17~77
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(StringT @57:71~77
+            _info=(ASTSpanInfo())))
+          _params=[
+           (Param @57:18~32
+            _info=(ASTSpanInfo())
+            _name=(Id @57:18~24 _info=(ASTSpanInfo()) _text="number")
+            _typ=(Some _value=(NumberT @57:26~32
+              _info=(ASTSpanInfo()))))
+           (Param @57:34~68
+            _info=(ASTSpanInfo())
+            _name=(Id @57:34~41 _info=(ASTSpanInfo()) _text="options")
+            _typ=(Some _value=(TypeRef @57:43~68
+              _info=(ASTSpanInfo())
+              _name=(TypeName
+               _info=(ASTSpanInfo())
+               _text="IAccountingNumberSettings"
+               _names=[
+                (Id _info=(ASTSpanInfo()) _text="IAccountingNumberSettings")]))))]))
+        (MethodSig @59:5~102
+         _info=(ASTSpanInfo())
+         _prop=(PropId @59:5~17
+          _id=(Id _info=(ASTSpanInfo()) _text="formatNumber")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @59:17~102
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(ArrayType @59:100~103
+            _info=(ASTSpanInfo())
+            _typ=(StringT @59:94~100
+             _info=(ASTSpanInfo()))))
+          _params=[
+           (Param @59:18~34
+            _info=(ASTSpanInfo())
+            _name=(Id @59:18~24 _info=(ASTSpanInfo()) _text="number")
+            _typ=(Some _value=(ArrayType @59:32~35
+              _info=(ASTSpanInfo())
+              _typ=(NumberT @59:26~34
+               _info=(ASTSpanInfo())))))
+           (Param @59:36~54
+            _info=(ASTSpanInfo())
+            _name=(Id @59:36~45 _info=(ASTSpanInfo()) _text="precision")
+            _optional=true
+            _typ=(Some _value=(NumberT @59:48~54
+              _info=(ASTSpanInfo()))))
+           (Param @59:56~73
+            _info=(ASTSpanInfo())
+            _name=(Id @59:56~64 _info=(ASTSpanInfo()) _text="thousand")
+            _optional=true
+            _typ=(Some _value=(StringT @59:67~73
+              _info=(ASTSpanInfo()))))
+           (Param @59:75~91
+            _info=(ASTSpanInfo())
+            _name=(Id @59:75~82 _info=(ASTSpanInfo()) _text="decimal")
+            _optional=true
+            _typ=(Some _value=(StringT @59:85~91
+              _info=(ASTSpanInfo()))))]))
+        (MethodSig @60:5~81
+         _info=(ASTSpanInfo())
+         _prop=(PropId @60:5~17
+          _id=(Id _info=(ASTSpanInfo()) _text="formatNumber")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @60:17~81
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(ArrayType @60:79~82
+            _info=(ASTSpanInfo())
+            _typ=(StringT @60:73~79
+             _info=(ASTSpanInfo()))))
+          _params=[
+           (Param @60:18~34
+            _info=(ASTSpanInfo())
+            _name=(Id @60:18~24 _info=(ASTSpanInfo()) _text="number")
+            _typ=(Some _value=(ArrayType @60:32~35
+              _info=(ASTSpanInfo())
+              _typ=(NumberT @60:26~34
+               _info=(ASTSpanInfo())))))
+           (Param @60:36~70
+            _info=(ASTSpanInfo())
+            _name=(Id @60:36~43 _info=(ASTSpanInfo()) _text="options")
+            _typ=(Some _value=(TypeRef @60:45~70
+              _info=(ASTSpanInfo())
+              _name=(TypeName
+               _info=(ASTSpanInfo())
+               _text="IAccountingNumberSettings"
+               _names=[
+                (Id _info=(ASTSpanInfo()) _text="IAccountingNumberSettings")]))))]))
+        (MethodSig @62:5~96
+         _info=(ASTSpanInfo())
+         _prop=(PropId @62:5~17
+          _id=(Id _info=(ASTSpanInfo()) _text="formatNumber")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @62:17~96
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(ArrayType @62:94~97
+            _info=(ASTSpanInfo())
+            _typ=(AnyT @62:91~94
+             _info=(ASTSpanInfo()))))
+          _params=[
+           (Param @62:18~31
+            _info=(ASTSpanInfo())
+            _name=(Id @62:18~24 _info=(ASTSpanInfo()) _text="number")
+            _typ=(Some _value=(ArrayType @62:29~32
+              _info=(ASTSpanInfo())
+              _typ=(AnyT @62:26~31
+               _info=(ASTSpanInfo())))))
+           (Param @62:33~51
+            _info=(ASTSpanInfo())
+            _name=(Id @62:33~42 _info=(ASTSpanInfo()) _text="precision")
+            _optional=true
+            _typ=(Some _value=(NumberT @62:45~51
+              _info=(ASTSpanInfo()))))
+           (Param @62:53~70
+            _info=(ASTSpanInfo())
+            _name=(Id @62:53~61 _info=(ASTSpanInfo()) _text="thousand")
+            _optional=true
+            _typ=(Some _value=(StringT @62:64~70
+              _info=(ASTSpanInfo()))))
+           (Param @62:72~88
+            _info=(ASTSpanInfo())
+            _name=(Id @62:72~79 _info=(ASTSpanInfo()) _text="decimal")
+            _optional=true
+            _typ=(Some _value=(StringT @62:82~88
+              _info=(ASTSpanInfo()))))]))
+        (MethodSig @63:5~75
+         _info=(ASTSpanInfo())
+         _prop=(PropId @63:5~17
+          _id=(Id _info=(ASTSpanInfo()) _text="formatNumber")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @63:17~75
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(ArrayType @63:73~76
+            _info=(ASTSpanInfo())
+            _typ=(AnyT @63:70~73
+             _info=(ASTSpanInfo()))))
+          _params=[
+           (Param @63:18~31
+            _info=(ASTSpanInfo())
+            _name=(Id @63:18~24 _info=(ASTSpanInfo()) _text="number")
+            _typ=(Some _value=(ArrayType @63:29~32
+              _info=(ASTSpanInfo())
+              _typ=(AnyT @63:26~31
+               _info=(ASTSpanInfo())))))
+           (Param @63:33~67
+            _info=(ASTSpanInfo())
+            _name=(Id @63:33~40 _info=(ASTSpanInfo()) _text="options")
+            _typ=(Some _value=(TypeRef @63:42~67
+              _info=(ASTSpanInfo())
+              _name=(TypeName
+               _info=(ASTSpanInfo())
+               _text="IAccountingNumberSettings"
+               _names=[
+                (Id _info=(ASTSpanInfo()) _text="IAccountingNumberSettings")]))))]))
+        (MethodSig @66:5~56
+         _info=(ASTSpanInfo())
+         _prop=(PropId @66:5~12
+          _id=(Id _info=(ASTSpanInfo()) _text="toFixed")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @66:12~56
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(StringT @66:50~56
+            _info=(ASTSpanInfo())))
+          _params=[
+           (Param @66:13~27
+            _info=(ASTSpanInfo())
+            _name=(Id @66:13~19 _info=(ASTSpanInfo()) _text="number")
+            _typ=(Some _value=(NumberT @66:21~27
+              _info=(ASTSpanInfo()))))
+           (Param @66:29~47
+            _info=(ASTSpanInfo())
+            _name=(Id @66:29~38 _info=(ASTSpanInfo()) _text="precision")
+            _optional=true
+            _typ=(Some _value=(NumberT @66:41~47
+              _info=(ASTSpanInfo()))))]))
+        (MethodSig @69:5~55
+         _info=(ASTSpanInfo())
+         _prop=(PropId @69:5~13
+          _id=(Id _info=(ASTSpanInfo()) _text="unformat")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @69:13~55
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(NumberT @69:49~55
+            _info=(ASTSpanInfo())))
+          _params=[
+           (Param @69:14~28
+            _info=(ASTSpanInfo())
+            _name=(Id @69:14~20 _info=(ASTSpanInfo()) _text="string")
+            _typ=(Some _value=(StringT @69:22~28
+              _info=(ASTSpanInfo()))))
+           (Param @69:30~46
+            _info=(ASTSpanInfo())
+            _name=(Id @69:30~37 _info=(ASTSpanInfo()) _text="decimal")
+            _optional=true
+            _typ=(Some _value=(StringT @69:40~46
+              _info=(ASTSpanInfo()))))]))
+        (PropertySig @72:5~34
+         _info=(ASTSpanInfo())
+         _prop=(PropId @72:5~13
+          _id=(Id _info=(ASTSpanInfo()) _text="settings")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(TypeRef @72:15~34
+           _info=(ASTSpanInfo())
+           _name=(TypeName
+            _info=(ASTSpanInfo())
+            _text="IAccountingSettings"
+            _names=[
+             (Id _info=(ASTSpanInfo()) _text="IAccountingSettings")]))))]))
+     (AmbVarDecl @75:9~42
+      _id=(Id @75:13~23 _info=(ASTSpanInfo()) _text="accounting")
+      _info=(ASTSpanInfo())
+      _ty=(Some _value=(TypeRef @75:25~42
+        _info=(ASTSpanInfo())
+        _name=(TypeName
+         _info=(ASTSpanInfo())
+         _text="IAccountingStatic"
+         _names=[
+          (Id _info=(ASTSpanInfo()) _text="IAccountingStatic")]))))
+     (AmbExtModDecl @77:9~79:1
+      _info=(ASTSpanInfo())
+      _name="accounting"
+      _mem=[
+       (AmbExtModElt @78:5~24
+        _decl=(ModExpAssignment
+         _id=(Id @78:14~24 _info=(ASTSpanInfo()) _text="accounting")
+         _info=(ASTSpanInfo()))
+        _info=(ASTSpanInfo()))])])])
+ _info=(ASTSpanInfo()))

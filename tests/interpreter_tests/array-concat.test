@@ -1,0 +1,20 @@
+################################################################################
+#    Copyright (c) 2012, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=array-concat
+INTERPRETER_TESTS_DIR=${JS_HOME}/tests/interpreter_tests
+interpret
+interpret_out_WCIequals=\
+4\n\
+1,a,b,2\n\
+4\n\
+1,a,b,2\n\
+0\n\
+\n\
+Normal()\n
+interpret_err_equals=

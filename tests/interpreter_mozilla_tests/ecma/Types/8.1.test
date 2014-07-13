@@ -1,0 +1,18 @@
+################################################################################
+#    Copyright (c) 2012, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=8.1
+INTERPRETER_TESTS_DIR=${JS_HOME}/tests/interpreter_mozilla_tests/ecma/Types
+interpret_mozilla
+interpret_mozilla_out_WCIequals=\
+8.1 The undefined type\n\
+ PASSED! var x; typeof x = undefined expected: undefined\n\
+ PASSED! var x; typeof x == 'undefined = true expected: true\n\
+ PASSED! var x; x == void 0 = true expected: true\n\
+\n
+interpret_err_equals=

@@ -1,0 +1,23 @@
+################################################################################
+#    Copyright (c) 2012, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=15.4.4.4-2
+INTERPRETER_TESTS_DIR=${JS_HOME}/tests/interpreter_mozilla_tests/ecma/Array
+interpret_mozilla
+interpret_mozilla_out_WCIequals=\
+15.4.4.4-1 Array.prototype.reverse()\n\
+ PASSED! Array.prototype.reverse.length = 0 expected: 0\n\
+ PASSED! delete Array.prototype.reverse.length = false expected: false\n\
+ PASSED! delete Array.prototype.reverse.length; Array.prototype.reverse.length = 0 expected: 0\n\
+ PASSED! var A = new Array();   A.reverse(); A.length = 0 expected: 0\n\
+ PASSED! Array.prototype.reverse.length = 0 expected: 0\n\
+ PASSED! delete Array.prototype.reverse.length = false expected: false\n\
+ PASSED! delete Array.prototype.reverse.length; Array.prototype.reverse.length = 0 expected: 0\n\
+ PASSED! var A = new Array();   A.reverse(); A.length = 0 expected: 0\n\
+\n
+interpret_err_equals=

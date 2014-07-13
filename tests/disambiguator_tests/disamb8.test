@@ -1,0 +1,33 @@
+################################################################################
+#    Copyright (c) 2013, KAIST.
+#    All rights reserved.\n#
+#    Use is subject to license terms.\n#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=disamb8
+DISAMB_TESTS_DIR=${JS_HOME}/tests/disambiguator_tests
+disambiguate
+disambiguate_out_WCIequals=\
+  function f()  \n\
+  { \n\
+    function g()  \n\
+    { \n\
+      var arguments; \n\
+       \n\
+          { \n\
+         \n\
+      } \n\
+      arguments; \n\
+      this; \n\
+    } \n\
+    function h(arguments)  \n\
+    { \n\
+      arguments; \n\
+      this; \n\
+    } \n\
+      arguments[1]; \n\
+    this; \n\
+  } \n\
+   \n\
+\n
+disambiguate_err_equals=

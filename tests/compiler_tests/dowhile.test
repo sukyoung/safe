@@ -1,0 +1,48 @@
+################################################################################
+#    Copyright (c) 2013, KAIST.
+#    All rights reserved.\n#
+#    Use is subject to license terms.\n#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=dowhile
+COMPILER_TESTS_DIR=${JS_HOME}/tests/compiler_tests
+compile
+compile_out_WCIequals=\
+${COMPILER_TESTS_DIR}/dowhile.js:7:3-9:3:\n\
+    Warning: the use of FunctionDeclaration as a Statement is not allowed in ECMAScript.\n\
+function f(this, <>arguments<>1) \n\
+{\n\
+  var <>a<>2\n\
+  var <>b<>3\n\
+  <>a<>2 = <>arguments<>1["0"]\n\
+  <>b<>3 = <>arguments<>1["1"]\n\
+  {\n\
+    <>obj<>4 = <>Global<>toObject(<>a<>2)\n\
+    <>Global<>ignore2 = <>obj<>4[<>b<>3]\n\
+  }\n\
+}\n\
+\n\
+<>break<>5 : {\n\
+  {\n\
+    <>continue<>6 : {\n\
+      done : break done\n\
+      break <>continue<>6\n\
+    }\n\
+    {\n\
+      \n\
+    }\n\
+  }\n\
+  while(true)\n\
+    {\n\
+      <>continue<>6 : {\n\
+        done : break done\n\
+        break <>continue<>6\n\
+      }\n\
+      {\n\
+        \n\
+      }\n\
+    }\n\
+}\n\
+\n\
+\n
+compile_err_equals=

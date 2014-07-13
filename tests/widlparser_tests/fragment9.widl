@@ -1,0 +1,4 @@
+/* constant value in an interface */
+interface A {
+  const short rambaldi = 47;
+};

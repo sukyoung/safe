@@ -1,0 +1,681 @@
+/*******************************************************************************
+    Copyright (c) 2012-2014, KAIST.
+    All rights reserved.
+
+    Use is subject to license terms.
+
+    This distribution may include materials developed by third parties.
+ ******************************************************************************/
+
+/***************************
+    JavaScript AST
+    ECMAScript 5
+ ***************************/
+
+// REMINDER: If you modify this file, you probably ought to be
+// changing factory methods as well.
+
+generateEmptyConstructor yes;   // for reflective object creation
+visitMethod accept;
+visitorMethodPrefix for;
+addGetterPrefixes yes;
+usePLT yes;
+tabSize 4;
+allowNulls no;
+generateToString no;
+generateEquals yes;
+generateSerializers yes;
+generateRecursiveVisitors no;
+customClassPath ../build;
+
+/* order matters here */
+customGenerator kr.ac.kaist.jsaf.astgen.ScalaAstGenerator;
+customGenerator kr.ac.kaist.jsaf.astgen.DepthFirstVisitorGenerator;
+customGenerator kr.ac.kaist.jsaf.astgen.DepthFirstVoidVisitorGenerator;
+customGenerator kr.ac.kaist.jsaf.astgen.UpdateVisitorGenerator;
+
+package kr.ac.kaist.jsaf.nodes;
+import java.lang.Double;
+import java.lang.String;
+import java.math.BigInteger;
+import java.io.Writer;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import kr.ac.kaist.jsaf.nodes_util.*;
+import kr.ac.kaist.jsaf.useful.*;
+import edu.rice.cs.plt.tuple.Option;
+
+begin ast;
+
+interface Node() extends HasAt;
+    interface ASTNode(ASTSpanInfo info);
+        root abstract AbstractNode(ASTSpanInfo info) extends UIDObject;
+            /**
+             * Program ::= SourceElement*
+             */
+            Program(TopLevel body);
+            abstract SourceElement();
+                /**
+                 * SourceElement ::= ModuleDeclaration
+                 */
+                abstract Module();
+                    /**
+                     * ModuleDeclaration ::= module w Id w { (w ModuleElements)? w }
+                     */
+                    ModDecl(Id name, TopLevel body);
+                    /**
+                     * ModuleElement ::= ExportDeclaration
+                     */
+                    abstract ModExport();
+                        /*
+                         * ModuleExport ::= export w var w VariableDeclarationList w ;
+                         */
+                        ModExpVarStmt(List<VarDecl> vds);
+                        /*
+                         * ModuleExport ::= export w FunctionDeclaration
+                         */
+                        ModExpFunDecl(FunDecl fd);
+                        /*
+                         * ModuleExport ::= export w get w Id w ( w ) w FunctionBody
+                         */
+                        ModExpGetter(GetProp fd);
+                        /*
+                         * ModuleExport ::= export w set w Id w ( w Id w ) w FunctionBody
+                         */
+                        ModExpSetter(SetProp fd);
+                        /*
+                         * ModuleExport ::= export w ExportSpecifierSetList w ;
+                         * ExportSpecifierSetList ::= ExportSpecifierSet (w , w ExportSpecifierSet)*
+                         */
+                        ModExpSpecifiers(List<ModExpSpecifier> names);
+                        /*
+                         * for TypeScript
+                         * ExportAssignment ::= export w = w Identifier w ;
+                         */
+                        ModExpAssignment(Id id);
+                /**
+                 * SourceElement ::= ImportDeclaration
+                 * ImportDeclaration ::= import ImportClauseList w ;
+                 * ImportClauseList ::= ImportClause (w , w ImportClause)*
+                 */
+                ModImpDecl(List<ModImport> imports);
+                /**
+                 * for TypeScript
+                 * ExternalImportDeclaration ::= import w Identifier w = w ExternalModuleReference w ;
+                 * ExternalModuleReference ::= require w ( w StringLiteral w )
+                 */
+                ExtImpDecl(Id id, String module);
+                /**
+                 * for TypeScript
+                 * ImportDeclaration ::= import w Identifier w = w EntityName w ;
+                 * EntityName ::=
+                 *   Identifier
+                 * | ModuleName . Identifier
+                 */
+                TSImpDecl(Id id, Path path);
+                /**
+                 * for TypeScript
+                 * InterfaceDeclaration ::= 
+                 *   interface w Identifier (w TypeParameters)? (w InterfaceExtends)? w ObjectType
+                 * InterfaceExtends ::= extends w ClassOrInterfaceTypeList
+                 */
+                IntfDecl(Id id, List<TypeParam> tps, List<TypeRef> ext, ObjectType typ);
+                /*
+                 * for TypeScript
+                 * AmbientDeclaration ::=
+                 *   declare w AmbientVariableDeclaration
+                 * | declare w AmbientFunctionDeclaration
+                 * | declare w AmbientClassDeclaration
+                 * | declare w AmbientEnumDeclaration
+                 * | declare w AmbientModuleDeclaration
+                 * | declare w AmbientExternalModuleDeclaration
+                 */
+                abstract AmbDecl();
+                    /*
+                     * AmbientVariableDeclaration ::= var w Identifier (w TypeAnnotation)? w ;
+                     */
+                    AmbVarDecl(Id id, Option<Type> ty);
+                    /*
+                     * AmbientFunctionDeclaration ::= function w Identifier w CallSignature w ;
+                     */
+                    AmbFunDecl(Id id, CallSig sig);
+                    /*
+                     * AmbientClassDeclaration ::=
+                     *   class w Identifier (w TypeParameters)? w ClassHeritage w { w AmbientClassBody w }
+                     * ClassHeritage ::= ClassExtendsClause? (w ImplementsClause)?
+                     * ClassExtendsClause ::= extends w ClassType
+                     * ClassType ::= TypeReference
+                     * ImplementsClause ::= implements w ClassOrInterfaceTypeList
+                     * AmbientClassBody ::= AmbientClassBodyElements?
+                     */
+                    AmbClsDecl(Id id, List<TypeParam> tps, Option<TypeRef> ext,
+                               List<TypeRef> imp, List<AmbClsElt> elts);
+                    /*
+                     * AmbientEnumDeclaration ::= enum w Identifier w { (w AmbientEnumBody)? w }
+                     * AmbientEnumBody ::= AmbientEnumMemberList (w ,)?
+                     * AmbientEnumMemberList ::=
+                     *   AmbientEnumMember
+                     * | AmbientEnumMemberList w , w AmbientEnumMember
+                     */
+                    AmbEnumDecl(Id id, List<AmbEnumMem> mem);
+                    /*
+                     * AmbientModuleDeclaration ::=
+                     *   module w IdentifierPath w { w AmbientModuleBody w }
+                     * AmbientModuleBody ::= AmbientModuleElements?
+                     */
+                    AmbModDecl(Path path, List<AmbModElt> mem);
+                    /*
+                     * AmbientExternalModuleDeclaration ::=
+                     *   module w StringLiteral w { w AmbientExternalModuleBody w }
+                     * AmbientExternalModuleBody ::= AmbientExternalModuleElements?
+                     */
+                    AmbExtModDecl(String name, List<AmbExtModElt> mem);
+                /**
+                 * SourceElement ::= Stmt
+                 */
+                abstract Stmt();
+                    /**
+                     * Internally generated NoOperation
+                     * currently to denote the end of a file by Shell
+                     * Do not appear in the JavaScript source text
+                     */
+                    NoOp(String desc);
+                    /**
+                     * Internally generated statement unit by Hoister
+                     * Do not appear in the JavaScript source text
+                     */
+                    StmtUnit(List<Stmt> stmts);
+                    /**
+                     * SourceElement ::= function Id ( (Id,)* ) { SourceElement* }
+                     */
+                    FunDecl(Functional ftn, boolean strict = false);
+                    /**
+                     * Stmt ::= { Stmt* }
+                     */
+                    Block(List<Stmt> stmts, boolean internal = false);
+                    /**
+                     * Stmt ::= var VarDecl(, VarDecl)* ;
+                     */
+                    VarStmt(List<VarDecl> vds);
+                    /**
+                     * Stmt ::= ;
+                     */
+                    EmptyStmt();
+                    /**
+                     * Stmt ::= Expr ;
+                     */
+                    ExprStmt(Expr expr, boolean internal = false);
+                    /**
+                     * Stmt ::= if ( Expr ) Stmt (else Stmt)?
+                     */
+                    If(Expr cond, Stmt trueBranch, Option<Stmt> falseBranch);
+                    /**
+                     * Stmt ::= do Stmt while ( Expr ) ;
+                     */
+                    DoWhile(Stmt body, Expr cond);
+                    /**
+                     * Stmt ::= while ( Expr ) Stmt
+                     */
+                    While(Expr cond, Stmt body);
+                    /**
+                     * Stmt ::= for ( Expr? ; Expr? ; Expr? ) Stmt
+                     */
+                    For(Option<Expr> init, Option<Expr> cond, Option<Expr> action, Stmt body);
+                    /**
+                     * Stmt ::= for ( lhs in Expr ) Stmt
+                     */
+                    ForIn(LHS lhs, Expr expr, Stmt body);
+                    /**
+                     * Stmt ::= for ( var VarDecl(, VarDecl)* ; Expr? ; Expr? ) Stmt
+                     */
+                    ForVar(List<VarDecl> vars, Option<Expr> cond, Option<Expr> action, Stmt body);
+                    /**
+                     * Stmt ::= for ( var VarDecl in Expr ) Stmt
+                     */
+                    ForVarIn(VarDecl var, Expr expr, Stmt body);
+                    /**
+                     * Stmt ::= continue Label? ;
+                     */
+                    Continue(Option<Label> target);
+                    /**
+                     * Stmt ::= break Label? ;
+                     */
+                    Break(Option<Label> target);
+                    /**
+                     * Stmt ::= return Expr? ;
+                     */
+                    Return(Option<Expr> expr);
+                    /**
+                     * Stmt ::= with ( Expr ) Stmt
+                     */
+                    With(Expr expr, Stmt stmt);
+                    /**
+                     * Stmt ::= switch ( Expr ) { CaseClause* (default : Stmt*)? CaseClause* }
+                     */
+                    Switch(Expr cond, List<Case> frontCases, Option<List<Stmt>> def, List<Case> backCases);
+                    /**
+                     * Stmt ::= Label : Stmt
+                     */
+                    LabelStmt(Label label, Stmt stmt);
+                    /**
+                     * Stmt ::= throw Expr ;
+                     */
+                    Throw(Expr expr);
+                    /**
+                     * Stmt ::= try { Stmt* } (catch ( Id ) { Stmt* })? (finally { Stmt* })?
+                     */
+                    Try(List<Stmt> body, Option<Catch> catchBlock, Option<List<Stmt>> fin);
+                    /**
+                     * Stmt ::= debugger ;
+                     */
+                    Debugger(); /* ES5 */
+            /**
+             * Program ::= SourceElement*
+             */
+            SourceElements(List<SourceElement> body, boolean strict);
+            /**
+             * Stmt ::= Id (= Expr)?
+             */
+            VarDecl(Id name, Option<Expr> expr, boolean strict = false);
+            /**
+             * CaseClause ::= case Expr : Stmt*
+             */
+            Case(Expr cond, List<Stmt> body);
+            /**
+             * Catch ::= catch ( Id ) { Stmt* }
+             */
+            Catch(Id id, List<Stmt> body);
+            /**
+             * ImportClause
+             */
+            abstract ModImport();
+                /**
+                 * ImportClause ::= ImportSpecifierSet w from w Id
+                 */
+                ModImpSpecifierSet(List<ModImpSpecifier> imports, Path module);
+                /**
+                 * ImportClause ::= Path w as w Id
+                 */
+                ModImpAliasClause(Path name, Id alias);
+            /*
+             * for TypeScript
+             * AmbientClassBodyElement ::=
+             *   AmbientConstructorDeclaration
+             * | AmbientMemberDeclaration
+             * | IndexSignature
+             */
+            abstract AmbClsElt();
+                /*
+                 * AmbientConstructorDeclaration ::= constructor w ( (w ParameterList)? w ) w ;
+                 */
+                AmbCnstDecl(List<Param> ps);
+                /*
+                 * AmbientMemberDeclaration ::=
+                 *   (PublicOrPrivate w)? (static w)? PropertyName (w TypeAnnotation)? w ;
+                 * | (PublicOrPrivate w)? (static w)? PropertyName w CallSignature w ;
+                 */
+                AmbMemDecl(List<Modifier> mods, Property prop, Option<Type> typ);
+                /*
+                 * AmbientClassBodyElement ::= IndexSignature
+                 */
+                AmbIndDecl(IndexSig ind);
+            /*
+             * for TypeScript
+             * AmbientEnumMember ::=
+             *   PropertyName
+             * | Propertyname w = w IntegerLiteral
+             */
+            AmbEnumMem(Property prop, Option<NumberLiteral> num);
+            /*
+             * for TypeScript
+             * AmbientModuleElement ::=
+             *   (export w)? AmbientVariableDeclaration
+             * | (export w)? AmbientFunctionDeclaration
+             * | (export w)? AmbientClassDeclaration
+             * | (export w)? InterfaceDeclaration
+             * | (export w)? AmbientEnumDeclaration
+             * | (export w)? AmbientModuleDeclaration
+             * | (export w)? ImportDeclaration
+             */
+            AmbModElt(SourceElement decl);
+            /*
+             * for TypeScript
+             * AmbientExternalModuleElement ::=
+             *   AmbientModuleElement
+             * | ExportAssignment
+             * | (export w)? ExternalImportDeclaration
+             */
+            AmbExtModElt(SourceElement decl);
+            abstract Expr();
+                /**
+                 * Expr ::= Expr, Expr
+                 */
+                ExprList(List<Expr> exprs);
+                /**
+                 * Expr ::= Expr ? Expr : Expr
+                 */
+                Cond(Expr cond, Expr trueBranch, Expr falseBranch);
+                /**
+                 * Expr ::= Expr Op Expr
+                 */
+                InfixOpApp(Expr left, Op op, Expr right);
+                /**
+                 * Expr ::= Op Expr
+                 */
+                PrefixOpApp(Op op, Expr right);
+                /**
+                 * Expr ::= Lhs Op
+                 */
+                UnaryAssignOpApp(LHS lhs, Op op);
+                /**
+                 * Expr ::= Lhs Op Expr
+                 */
+                AssignOpApp(LHS lhs, Op op, Expr right);
+                /**
+                 * Expr ::= Lhs
+                 */
+                abstract LHS();
+                    /**
+                     * Lhs ::= Literal
+                     */
+                    abstract Literal();
+                        /**
+                         * Literal ::= this
+                         */
+                        This();
+                        /**
+                         * Literal ::= null
+                         */
+                        Null();
+                        /**
+                         * Literal ::= true | false
+                         */
+                        Bool(boolean bool);
+                        /**
+                         * number literal
+                         */
+                        abstract NumberLiteral();
+                            /**
+                             * float literal
+                             * e.g.) 3.5
+                             */
+                            DoubleLiteral(ignoreForEquals String text, Double num);
+                            /**
+                             * int literal
+                             * e.g.) 7
+                             */
+                            IntLiteral(BigInteger intVal, int radix);
+                        /**
+                         * Literal ::= String
+                         */
+                        StringLiteral(String quote, String escaped);
+                        /**
+                         * Literal ::= RegularExpression
+                         */
+                        RegularExpression(String body, String flag);
+                    /**
+                     * PrimaryExpr ::= Id
+                     */
+                    VarRef(Id id);
+                    /**
+                     * PrimaryExpr ::= [ (Expr,)* ]
+                     */
+                    ArrayExpr(List<Option<Expr>> elements);
+                    /**
+                     * PrimaryExpr ::= [ (Number,)* ]
+                     */
+                    ArrayNumberExpr(List<Double> elements);
+                    /**
+                     * PrimaryExpr ::= { (Member,)* }
+                     */
+                    ObjectExpr(List<Member> members);
+                    /**
+                     * PrimaryExpr ::= ( Expr )
+                     */
+                    Parenthesized(Expr expr);
+                    /**
+                     * LHS ::= function Id? ( (Id,)* ) { SourceElement }
+                     */
+                    FunExpr(Functional ftn);
+                     /**
+                      * LHS ::= Lhs [ Expr ]
+                      */
+                    Bracket(LHS obj, Expr index);
+                    /**
+                     * LHS ::= Lhs . Id
+                     */
+                    Dot(LHS obj, Id member);
+                    /**
+                     * LHS ::= new Lhs
+                     */
+                    New(LHS lhs);
+                    /**
+                     * LHS ::= Lhs ( (Expr,)* )
+                     */
+                    FunApp(LHS fun, List<Expr> args);
+            abstract Property();
+                /**
+                 * Property ::= Id
+                 */
+                PropId(Id id);
+                /**
+                 * Property ::= String
+                 */
+                PropStr(String str);
+                /**
+                 * Property ::= Number
+                 */
+                PropNum(NumberLiteral num);
+            abstract Member(Property prop);
+                /**
+                 * Member ::= Property : Expr
+                 */
+                Field(Expr expr);
+                /**
+                 * Member ::= get Property () { FunctionBody }
+                 */
+                GetProp(Functional ftn); /* ES5 */
+                /**
+                 * Member ::= set Property ( Id ) { SourceElement* }
+                 */
+                SetProp(Functional ftn); /* ES5 */
+            abstract Name();
+                abstract IdOrOpOrAnonymousName();
+                    abstract IdOrOp(String text);
+                        /**
+                         * Named identifier
+                         */
+                        Id(Option<String> uniqueName = Option.<String>none(), boolean with);
+                        /**
+                         * Infix/prefix/postfix operator
+                         */
+                        Op();
+                        /**
+                         * for TypeScript
+                         * Type name
+                         */
+                        TypeName(List<Id> names);
+                    /**
+                     * Unnamed identifier
+                     */
+                    AnonymousFnName();
+                /**
+                 * Path ::= ( Id. )* Id
+                 */
+                Path(List<Id> names);
+                /**
+                 * ExportSpecifier
+                 */
+                abstract ModExpSpecifier();
+                    /**
+                     * ExportSpecifierSet ::= * w from w Path
+                     */
+                    ModExpStarFromPath(Path module);
+                    /**
+                     * ExportSpecifierSet ::= *
+                     */
+                    ModExpStar();
+                    /**
+                     * ExportSpecifier ::= Id w : w Path
+                     */
+                    ModExpAlias(Id name, Path alias);
+                    /**
+                     * ExportSpecifier ::= Id (w from w Path)?
+                     */
+                    ModExpName(Path name);
+                /**
+                 * ImportSpecifier
+                 */
+                abstract ModImpSpecifier();
+                    /**
+                     * ImportSpecifier ::= Id w : w Id
+                     */
+                    ModImpAlias(Id name, Id alias);
+                    /**
+                     * ImportSpecifier ::= Id
+                     */
+                    ModImpName(Id name);
+            /**
+             * label
+             */
+            Label(Id id);
+            /**
+             * comment
+             */
+            Comment(ignoreForEquals noIntern String comment);
+            /**
+             * for TypeScript
+             * Parameter
+             * ParameterList ::=
+             *   RequiredParameterList
+             * | OptionalParameterList
+             * | RestParameter
+             * | RequiredParameterList w "," w OptionalParameterList
+             * | RequiredParameterList w "," w RestParameter
+             * | OptionalParameterList w "," w RestParameter
+             * | RequiredParameterList w "," w OptionalParameterList w "," w RestParameter
+             * RequiredParameterList ::=
+             *   RequiredParameter
+             * | RequiredParameterList w "," w RequiredParameter
+             * OptionalParameterList ::=
+             *   OptionalParameter
+             * | OptionalParameterList w "," w OptionalParameter
+             * RequiredParameter ::=
+             *   (PublicOrPrivate w)? Identifier (w TypeAnnotation)?
+             * | Identifier w ":" w StringLiteral
+             * OptionalParameter ::=
+             *   (PublicOrPrivate w)? Identifier w "?" (w TypeAnnotation)?
+             * | (PublicOrPrivate w)? Identifier (w TypeAnnotation)? w Initialiser
+             * RestParameter ::= "..." w Identifier (w TypeAnnotation)?
+             */
+            Param(Id name, Option<Modifier> mod, Option<Type> typ,
+                  Option<Expr> defaultExpr, boolean optional, boolean rest);
+            /**
+             * for TypeScript
+             * Type
+             */
+            abstract Type();
+                /*
+                 * PredefinedType ::=
+                 *   "any"
+                 * | "number"
+                 * | "boolean"
+                 * | "string"
+                 * | "void"
+                 */
+                abstract PredefType();
+                    AnyT();
+                    NumberT();
+                    BoolT();
+                    StringT();
+                    VoidT();
+                /*
+                 * TypeReference ::= TypeName (w TypeArguments)?
+                 */
+                TypeRef(TypeName name, List<Type> args);
+                /*
+                 * TypeQuery ::= typeof w TypeQueryExpression
+                 * TypeQueryExpression ::=
+                 *   Identifier
+                 * | TypeQueryExpression . IdentifierName
+                 */
+                TypeQuery(Path path);
+                abstract TypeLiteral();
+                    /*
+                     * ObjectType ::= "{" (w TypeBody)? w "}"
+                     */
+                    ObjectType(List<TypeMember> members);
+                    /*
+                     * ArrayType ::= Type w "[" w "]"
+                     */
+                    ArrayType(Type typ);
+                    /*
+                     * FunctionType ::= (TypeParameters w)? "(" (w ParameterList)? w ")" w "=>" w Type
+                     */
+                    FunctionType(List<TypeParam> tparams, List<Param> params, Type typ);
+                    /*
+                     * ConstructorType ::= "new" w (TypeParameters w)? "(" (w ParameterList)? w ")" w "=>" w Type
+                     */
+                    ConstructorType(List<TypeParam> tparams, List<Param> params, Type typ);
+                ExprType(String name);
+                /**
+                 * Type members
+                 */
+                abstract TypeMember();
+                    /*
+                     * PropertySignature ::= PropertyName (w "?")? (w TypeAnnotation)?
+                     */
+                    PropertySig(Property prop, boolean optional, Option<Type> typ);
+                    /*
+                     * CallSignature ::= (TypeParameters w)? "(" (w ParameterList)? w ")" (w TypeAnnotation)?
+                     */
+                    CallSig(List<TypeParam> tparams, List<Param> params, Option<Type> typ);
+                    /*
+                     * ConstructSignature ::= "new" w (TypeParameters w)? "(" (w ParameterList)? w ")" (w TypeAnnotation)?
+                     */
+                    ConstructSig(List<TypeParam> tparams, List<Param> params, Option<Type> typ);
+                    /*
+                     * IndexSignature ::=
+                     *   "[" w Identifier w ":" w "string" w "]" w TypeAnnotation
+                     * | "[" w Identifier w ":" w "number" w "]" w TypeAnnotation
+                     */
+                    IndexSig(Id id, Type annot, boolean num);
+                    /*
+                     * MethodSignature ::= PropertyName (w "?")? w CallSignature
+                     */
+                    MethodSig(Property prop, boolean optional, CallSig sig);
+            /**
+             * for TypeScript
+             * Type parameter
+             * TypeParameter ::= Identifier (w Constraint)?
+             * Constraint ::= "extends" w TypeReference
+             */
+            TypeParam(Id name, Option<Type> ext);
+    /**
+     * Common body for program and functions
+     */
+    abstract ScopeBody(List<FunDecl> fds, List<VarDecl> vds) extends UIDObject;
+        /**
+         * Program top level
+         */
+        TopLevel(List<SourceElements> stmts);
+        /**
+         * Common shape for functions
+         */
+        Functional(SourceElements stmts, Id name, List<Id> params);
+    /**
+     * Source location
+     */
+    ASTSpanInfo(ignoreForEquals Span span, Option<Comment> comment = Option.<Comment>none()) extends UIDObject;
+    /**
+     * for TypeScript
+     * Modifiers
+     */
+    abstract Modifier() extends UIDObject;
+        PublicMod();
+        PrivateMod();
+        StaticMod();
+end;

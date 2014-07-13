@@ -1,0 +1,73 @@
+################################################################################
+#    Copyright (c) 2012, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=15.9.5.15
+INTERPRETER_TESTS_DIR=${JS_HOME}/tests/interpreter_mozilla_tests/ecma/Date
+interpret_mozilla
+interpret_mozilla_out_WCIequals=\
+15.9.5.15 Date.prototype.getUTCHours()\n\
+ PASSED! (new Date(1355762706149)).getUTCHours() = 16 expected: 16\n\
+ PASSED! (new Date(1355766306149)).getUTCHours() = 17 expected: 17\n\
+ PASSED! (new Date(1355769906149)).getUTCHours() = 18 expected: 18\n\
+ PASSED! (new Date(1355773506149)).getUTCHours() = 19 expected: 19\n\
+ PASSED! (new Date(1355777106149)).getUTCHours() = 20 expected: 20\n\
+ PASSED! (new Date(1355780706149)).getUTCHours() = 21 expected: 21\n\
+ PASSED! (new Date(1355784306149)).getUTCHours() = 22 expected: 22\n\
+ PASSED! (new Date(1355787906149)).getUTCHours() = 23 expected: 23\n\
+ PASSED! (new Date(-62167215600000)).getUTCHours() = 1 expected: 1\n\
+ PASSED! (new Date(-62167212000000)).getUTCHours() = 2 expected: 2\n\
+ PASSED! (new Date(-62167208400000)).getUTCHours() = 3 expected: 3\n\
+ PASSED! (new Date(-62167204800000)).getUTCHours() = 4 expected: 4\n\
+ PASSED! (new Date(-62167201200000)).getUTCHours() = 5 expected: 5\n\
+ PASSED! (new Date(-62167197600000)).getUTCHours() = 6 expected: 6\n\
+ PASSED! (new Date(-62167194000000)).getUTCHours() = 7 expected: 7\n\
+ PASSED! (new Date(-62167190400000)).getUTCHours() = 8 expected: 8\n\
+ PASSED! (new Date(3600000)).getUTCHours() = 1 expected: 1\n\
+ PASSED! (new Date(7200000)).getUTCHours() = 2 expected: 2\n\
+ PASSED! (new Date(10800000)).getUTCHours() = 3 expected: 3\n\
+ PASSED! (new Date(14400000)).getUTCHours() = 4 expected: 4\n\
+ PASSED! (new Date(18000000)).getUTCHours() = 5 expected: 5\n\
+ PASSED! (new Date(21600000)).getUTCHours() = 6 expected: 6\n\
+ PASSED! (new Date(25200000)).getUTCHours() = 7 expected: 7\n\
+ PASSED! (new Date(28800000)).getUTCHours() = 8 expected: 8\n\
+ PASSED! (new Date(-2208985200000)).getUTCHours() = 1 expected: 1\n\
+ PASSED! (new Date(-2208981600000)).getUTCHours() = 2 expected: 2\n\
+ PASSED! (new Date(-2208978000000)).getUTCHours() = 3 expected: 3\n\
+ PASSED! (new Date(-2208974400000)).getUTCHours() = 4 expected: 4\n\
+ PASSED! (new Date(-2208970800000)).getUTCHours() = 5 expected: 5\n\
+ PASSED! (new Date(-2208967200000)).getUTCHours() = 6 expected: 6\n\
+ PASSED! (new Date(-2208963600000)).getUTCHours() = 7 expected: 7\n\
+ PASSED! (new Date(-2208960000000)).getUTCHours() = 8 expected: 8\n\
+ PASSED! (new Date(946688400000)).getUTCHours() = 1 expected: 1\n\
+ PASSED! (new Date(946692000000)).getUTCHours() = 2 expected: 2\n\
+ PASSED! (new Date(946695600000)).getUTCHours() = 3 expected: 3\n\
+ PASSED! (new Date(946699200000)).getUTCHours() = 4 expected: 4\n\
+ PASSED! (new Date(946702800000)).getUTCHours() = 5 expected: 5\n\
+ PASSED! (new Date(946706400000)).getUTCHours() = 6 expected: 6\n\
+ PASSED! (new Date(946710000000)).getUTCHours() = 7 expected: 7\n\
+ PASSED! (new Date(946713600000)).getUTCHours() = 8 expected: 8\n\
+ PASSED! (new Date(951786000000)).getUTCHours() = 1 expected: 1\n\
+ PASSED! (new Date(951789600000)).getUTCHours() = 2 expected: 2\n\
+ PASSED! (new Date(951793200000)).getUTCHours() = 3 expected: 3\n\
+ PASSED! (new Date(951796800000)).getUTCHours() = 4 expected: 4\n\
+ PASSED! (new Date(951800400000)).getUTCHours() = 5 expected: 5\n\
+ PASSED! (new Date(951804000000)).getUTCHours() = 6 expected: 6\n\
+ PASSED! (new Date(951807600000)).getUTCHours() = 7 expected: 7\n\
+ PASSED! (new Date(951811200000)).getUTCHours() = 8 expected: 8\n\
+ PASSED! (new Date(1104541200000)).getUTCHours() = 1 expected: 1\n\
+ PASSED! (new Date(1104544800000)).getUTCHours() = 2 expected: 2\n\
+ PASSED! (new Date(1104548400000)).getUTCHours() = 3 expected: 3\n\
+ PASSED! (new Date(1104552000000)).getUTCHours() = 4 expected: 4\n\
+ PASSED! (new Date(1104555600000)).getUTCHours() = 5 expected: 5\n\
+ PASSED! (new Date(1104559200000)).getUTCHours() = 6 expected: 6\n\
+ PASSED! (new Date(1104562800000)).getUTCHours() = 7 expected: 7\n\
+ PASSED! (new Date(1104566400000)).getUTCHours() = 8 expected: 8\n\
+ PASSED! (new Date(NaN)).getUTCHours() = NaN expected: NaN\n\
+ PASSED! Date.prototype.getUTCHours.length = 0 expected: 0\n\
+\n
+interpret_err_equals=

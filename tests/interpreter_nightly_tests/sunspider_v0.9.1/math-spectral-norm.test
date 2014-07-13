@@ -1,0 +1,18 @@
+################################################################################
+#    Copyright (c) 2012, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=math-spectral-norm
+INTERPRETER_TESTS_DIR=${JS_HOME}/tests/interpreter_nightly_tests
+interpret
+interpret_out_WCIequals=\n\
+1.2657786149754053\n\
+1.2727355112619148\n\
+1.273989979775574\n\
+1.274190125290389\n\
+Normal(PASS)
+interpret_err_equals=

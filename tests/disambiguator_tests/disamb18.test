@@ -1,0 +1,24 @@
+################################################################################
+#    Copyright (c) 2013, KAIST.
+#    All rights reserved.\n#
+#    Use is subject to license terms.\n#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=disamb18
+DISAMB_TESTS_DIR=${JS_HOME}/tests/disambiguator_tests
+disambiguate
+disambiguate_out_WCIequals=\
+  var foo; \n\
+  var __expect1; \n\
+  var __result1; \n\
+   \n\
+  foo = (function foo()  \n\
+  { \n\
+    foo = null; \n\
+  }); \n\
+  __expect1 = foo; \n\
+  foo(); \n\
+  __result1 = foo; \n\
+   \n\
+\n
+disambiguate_err_equals=

@@ -1,0 +1,18 @@
+interface A {
+  getter DOMString toWord(unsigned long index);
+};
+
+/* Assume that an object implementing A has supported property indices
+in the range 0 ≤ index < 2. Also assume that toWord is defined to
+return its argument converted into an English word. The behavior when
+invoking the operation with an out of range index is different from
+indexing the object directly:
+
+var a = getA();
+
+a.toWord(0);  // Evalutes to "zero".
+a[0];         // Also evaluates to "zero".
+
+a.toWord(5);  // Evaluates to "five".
+a[5];         // Evaluates to undefined, since there is no property "5".
+*/

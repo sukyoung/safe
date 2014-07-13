@@ -1,0 +1,53 @@
+################################################################################
+#    Copyright (c) 2012, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=9.7
+INTERPRETER_TESTS_DIR=${JS_HOME}/tests/interpreter_mozilla_tests/ecma/TypeConversion
+interpret_mozilla
+interpret_mozilla_out_WCIequals=\
+9.7 Type Conversion:  ToInt16\n\
+ PASSED! String.fromCharCode(0).charCodeAt(0) = 0 expected: 0\n\
+ PASSED! String.fromCharCode(-0).charCodeAt(0) = 0 expected: 0\n\
+ PASSED! String.fromCharCode(1).charCodeAt(0) = 1 expected: 1\n\
+ PASSED! String.fromCharCode(64).charCodeAt(0) = 64 expected: 64\n\
+ PASSED! String.fromCharCode(126).charCodeAt(0) = 126 expected: 126\n\
+ PASSED! String.fromCharCode(127).charCodeAt(0) = 127 expected: 127\n\
+ PASSED! String.fromCharCode(128).charCodeAt(0) = 128 expected: 128\n\
+ PASSED! String.fromCharCode(130).charCodeAt(0) = 130 expected: 130\n\
+ PASSED! String.fromCharCode(255).charCodeAt(0) = 255 expected: 255\n\
+ PASSED! String.fromCharCode(256).charCodeAt(0) = 256 expected: 256\n\
+ PASSED! String.fromCharCode(Math.pow(2,16)-1).charCodeAt(0) = 65535 expected: 65535\n\
+ PASSED! String.fromCharCode(Math.pow(2,16)).charCodeAt(0) = 0 expected: 0\n\
+ PASSED! String.fromCharCode(65535).charCodeAt(0) = 65535 expected: 65535\n\
+ PASSED! String.fromCharCode(65536).charCodeAt(0) = 0 expected: 0\n\
+ PASSED! String.fromCharCode(65537).charCodeAt(0) = 1 expected: 1\n\
+ PASSED! String.fromCharCode(131071).charCodeAt(0) = 65535 expected: 65535\n\
+ PASSED! String.fromCharCode(131072).charCodeAt(0) = 0 expected: 0\n\
+ PASSED! String.fromCharCode(131073).charCodeAt(0) = 1 expected: 1\n\
+ PASSED! String.fromCharCode('65535').charCodeAt(0) = 65535 expected: 65535\n\
+ PASSED! String.fromCharCode('65536').charCodeAt(0) = 0 expected: 0\n\
+ PASSED! String.fromCharCode(-1).charCodeAt(0) = 65535 expected: 65535\n\
+ PASSED! String.fromCharCode(-64).charCodeAt(0) = 65472 expected: 65472\n\
+ PASSED! String.fromCharCode(-126).charCodeAt(0) = 65410 expected: 65410\n\
+ PASSED! String.fromCharCode(-127).charCodeAt(0) = 65409 expected: 65409\n\
+ PASSED! String.fromCharCode(-128).charCodeAt(0) = 65408 expected: 65408\n\
+ PASSED! String.fromCharCode(-130).charCodeAt(0) = 65406 expected: 65406\n\
+ PASSED! String.fromCharCode(-255).charCodeAt(0) = 65281 expected: 65281\n\
+ PASSED! String.fromCharCode(-256).charCodeAt(0) = 65280 expected: 65280\n\
+ PASSED! String.fromCharCode(-Math.pow(2,16)-1).charCodeAt(0) = 65535 expected: 65535\n\
+ PASSED! String.fromCharCode(-Math.pow(2,16)).charCodeAt(0) = 0 expected: 0\n\
+ PASSED! String.fromCharCode(-65535).charCodeAt(0) = 1 expected: 1\n\
+ PASSED! String.fromCharCode(-65536).charCodeAt(0) = 0 expected: 0\n\
+ PASSED! String.fromCharCode(-65537).charCodeAt(0) = 65535 expected: 65535\n\
+ PASSED! String.fromCharCode(-131071).charCodeAt(0) = 1 expected: 1\n\
+ PASSED! String.fromCharCode(-131072).charCodeAt(0) = 0 expected: 0\n\
+ PASSED! String.fromCharCode(-131073).charCodeAt(0) = 65535 expected: 65535\n\
+ PASSED! String.fromCharCode('-65535').charCodeAt(0) = 1 expected: 1\n\
+ PASSED! String.fromCharCode('-65536').charCodeAt(0) = 0 expected: 0\n\
+\n
+interpret_err_equals=

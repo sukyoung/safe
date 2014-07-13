@@ -1,0 +1,1014 @@
+################################################################################
+#    Copyright (c) 2012, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=date-format-tofte
+INTERPRETER_TESTS_DIR=${JS_HOME}/tests/interpreter_nightly_tests
+interpret
+interpret_out_WCIequals=\n\
+2007-01-01\n\
+Monday, January 01, 2007 1:11:11 AM\n\
+2007-01-02\n\
+Tuesday, January 02, 2007 0:35:37 AM\n\
+2007-01-03\n\
+Wednesday, January 03, 2007 0:00:04 AM\n\
+2007-01-03\n\
+Wednesday, January 03, 2007 11:24:31 PM\n\
+2007-01-04\n\
+Thursday, January 04, 2007 10:48:58 PM\n\
+2007-01-05\n\
+Friday, January 05, 2007 10:13:25 PM\n\
+2007-01-06\n\
+Saturday, January 06, 2007 9:37:52 PM\n\
+2007-01-07\n\
+Sunday, January 07, 2007 9:02:19 PM\n\
+2007-01-08\n\
+Monday, January 08, 2007 8:26:46 PM\n\
+2007-01-09\n\
+Tuesday, January 09, 2007 7:51:13 PM\n\
+2007-01-10\n\
+Wednesday, January 10, 2007 7:15:40 PM\n\
+2007-01-11\n\
+Thursday, January 11, 2007 6:40:07 PM\n\
+2007-01-12\n\
+Friday, January 12, 2007 6:04:34 PM\n\
+2007-01-13\n\
+Saturday, January 13, 2007 5:29:01 PM\n\
+2007-01-14\n\
+Sunday, January 14, 2007 4:53:28 PM\n\
+2007-01-15\n\
+Monday, January 15, 2007 4:17:55 PM\n\
+2007-01-16\n\
+Tuesday, January 16, 2007 3:42:22 PM\n\
+2007-01-17\n\
+Wednesday, January 17, 2007 3:06:49 PM\n\
+2007-01-18\n\
+Thursday, January 18, 2007 2:31:16 PM\n\
+2007-01-19\n\
+Friday, January 19, 2007 1:55:43 PM\n\
+2007-01-20\n\
+Saturday, January 20, 2007 1:20:10 PM\n\
+2007-01-21\n\
+Sunday, January 21, 2007 12:44:37 PM\n\
+2007-01-22\n\
+Monday, January 22, 2007 12:09:04 PM\n\
+2007-01-23\n\
+Tuesday, January 23, 2007 11:33:30 AM\n\
+2007-01-24\n\
+Wednesday, January 24, 2007 10:57:57 AM\n\
+2007-01-25\n\
+Thursday, January 25, 2007 10:22:24 AM\n\
+2007-01-26\n\
+Friday, January 26, 2007 9:46:51 AM\n\
+2007-01-27\n\
+Saturday, January 27, 2007 9:11:18 AM\n\
+2007-01-28\n\
+Sunday, January 28, 2007 8:35:45 AM\n\
+2007-01-29\n\
+Monday, January 29, 2007 8:00:12 AM\n\
+2007-01-30\n\
+Tuesday, January 30, 2007 7:24:39 AM\n\
+2007-01-31\n\
+Wednesday, January 31, 2007 6:49:06 AM\n\
+2007-02-01\n\
+Thursday, February 01, 2007 6:13:33 AM\n\
+2007-02-02\n\
+Friday, February 02, 2007 5:38:00 AM\n\
+2007-02-03\n\
+Saturday, February 03, 2007 5:02:27 AM\n\
+2007-02-04\n\
+Sunday, February 04, 2007 4:26:54 AM\n\
+2007-02-05\n\
+Monday, February 05, 2007 3:51:21 AM\n\
+2007-02-06\n\
+Tuesday, February 06, 2007 3:15:48 AM\n\
+2007-02-07\n\
+Wednesday, February 07, 2007 2:40:15 AM\n\
+2007-02-08\n\
+Thursday, February 08, 2007 2:04:42 AM\n\
+2007-02-09\n\
+Friday, February 09, 2007 1:29:09 AM\n\
+2007-02-10\n\
+Saturday, February 10, 2007 0:53:36 AM\n\
+2007-02-11\n\
+Sunday, February 11, 2007 0:18:03 AM\n\
+2007-02-11\n\
+Sunday, February 11, 2007 11:42:30 PM\n\
+2007-02-12\n\
+Monday, February 12, 2007 11:06:57 PM\n\
+2007-02-13\n\
+Tuesday, February 13, 2007 10:31:24 PM\n\
+2007-02-14\n\
+Wednesday, February 14, 2007 9:55:50 PM\n\
+2007-02-15\n\
+Thursday, February 15, 2007 9:20:17 PM\n\
+2007-02-16\n\
+Friday, February 16, 2007 8:44:44 PM\n\
+2007-02-17\n\
+Saturday, February 17, 2007 8:09:11 PM\n\
+2007-02-18\n\
+Sunday, February 18, 2007 7:33:38 PM\n\
+2007-02-19\n\
+Monday, February 19, 2007 6:58:05 PM\n\
+2007-02-20\n\
+Tuesday, February 20, 2007 6:22:32 PM\n\
+2007-02-21\n\
+Wednesday, February 21, 2007 5:46:59 PM\n\
+2007-02-22\n\
+Thursday, February 22, 2007 5:11:26 PM\n\
+2007-02-23\n\
+Friday, February 23, 2007 4:35:53 PM\n\
+2007-02-24\n\
+Saturday, February 24, 2007 4:00:20 PM\n\
+2007-02-25\n\
+Sunday, February 25, 2007 3:24:47 PM\n\
+2007-02-26\n\
+Monday, February 26, 2007 2:49:14 PM\n\
+2007-02-27\n\
+Tuesday, February 27, 2007 2:13:41 PM\n\
+2007-02-28\n\
+Wednesday, February 28, 2007 1:38:08 PM\n\
+2007-03-01\n\
+Thursday, March 01, 2007 1:02:35 PM\n\
+2007-03-02\n\
+Friday, March 02, 2007 12:27:02 PM\n\
+2007-03-03\n\
+Saturday, March 03, 2007 11:51:29 AM\n\
+2007-03-04\n\
+Sunday, March 04, 2007 11:15:56 AM\n\
+2007-03-05\n\
+Monday, March 05, 2007 10:40:23 AM\n\
+2007-03-06\n\
+Tuesday, March 06, 2007 10:04:50 AM\n\
+2007-03-07\n\
+Wednesday, March 07, 2007 9:29:17 AM\n\
+2007-03-08\n\
+Thursday, March 08, 2007 8:53:44 AM\n\
+2007-03-09\n\
+Friday, March 09, 2007 8:18:10 AM\n\
+2007-03-10\n\
+Saturday, March 10, 2007 7:42:37 AM\n\
+2007-03-11\n\
+Sunday, March 11, 2007 7:07:04 AM\n\
+2007-03-12\n\
+Monday, March 12, 2007 6:31:31 AM\n\
+2007-03-13\n\
+Tuesday, March 13, 2007 5:55:58 AM\n\
+2007-03-14\n\
+Wednesday, March 14, 2007 5:20:25 AM\n\
+2007-03-15\n\
+Thursday, March 15, 2007 4:44:52 AM\n\
+2007-03-16\n\
+Friday, March 16, 2007 4:09:19 AM\n\
+2007-03-17\n\
+Saturday, March 17, 2007 3:33:46 AM\n\
+2007-03-18\n\
+Sunday, March 18, 2007 2:58:13 AM\n\
+2007-03-19\n\
+Monday, March 19, 2007 2:22:40 AM\n\
+2007-03-20\n\
+Tuesday, March 20, 2007 1:47:07 AM\n\
+2007-03-21\n\
+Wednesday, March 21, 2007 1:11:34 AM\n\
+2007-03-22\n\
+Thursday, March 22, 2007 0:36:01 AM\n\
+2007-03-23\n\
+Friday, March 23, 2007 0:00:28 AM\n\
+2007-03-23\n\
+Friday, March 23, 2007 11:24:55 PM\n\
+2007-03-24\n\
+Saturday, March 24, 2007 10:49:22 PM\n\
+2007-03-25\n\
+Sunday, March 25, 2007 10:13:49 PM\n\
+2007-03-26\n\
+Monday, March 26, 2007 9:38:16 PM\n\
+2007-03-27\n\
+Tuesday, March 27, 2007 9:02:43 PM\n\
+2007-03-28\n\
+Wednesday, March 28, 2007 8:27:10 PM\n\
+2007-03-29\n\
+Thursday, March 29, 2007 7:51:37 PM\n\
+2007-03-30\n\
+Friday, March 30, 2007 7:16:03 PM\n\
+2007-03-31\n\
+Saturday, March 31, 2007 6:40:30 PM\n\
+2007-04-01\n\
+Sunday, April 01, 2007 6:04:57 PM\n\
+2007-04-02\n\
+Monday, April 02, 2007 5:29:24 PM\n\
+2007-04-03\n\
+Tuesday, April 03, 2007 4:53:51 PM\n\
+2007-04-04\n\
+Wednesday, April 04, 2007 4:18:18 PM\n\
+2007-04-05\n\
+Thursday, April 05, 2007 3:42:45 PM\n\
+2007-04-06\n\
+Friday, April 06, 2007 3:07:12 PM\n\
+2007-04-07\n\
+Saturday, April 07, 2007 2:31:39 PM\n\
+2007-04-08\n\
+Sunday, April 08, 2007 1:56:06 PM\n\
+2007-04-09\n\
+Monday, April 09, 2007 1:20:33 PM\n\
+2007-04-10\n\
+Tuesday, April 10, 2007 12:45:00 PM\n\
+2007-04-11\n\
+Wednesday, April 11, 2007 12:09:27 PM\n\
+2007-04-12\n\
+Thursday, April 12, 2007 11:33:54 AM\n\
+2007-04-13\n\
+Friday, April 13, 2007 10:58:21 AM\n\
+2007-04-14\n\
+Saturday, April 14, 2007 10:22:48 AM\n\
+2007-04-15\n\
+Sunday, April 15, 2007 9:47:15 AM\n\
+2007-04-16\n\
+Monday, April 16, 2007 9:11:42 AM\n\
+2007-04-17\n\
+Tuesday, April 17, 2007 8:36:09 AM\n\
+2007-04-18\n\
+Wednesday, April 18, 2007 8:00:36 AM\n\
+2007-04-19\n\
+Thursday, April 19, 2007 7:25:03 AM\n\
+2007-04-20\n\
+Friday, April 20, 2007 6:49:30 AM\n\
+2007-04-21\n\
+Saturday, April 21, 2007 6:13:57 AM\n\
+2007-04-22\n\
+Sunday, April 22, 2007 5:38:23 AM\n\
+2007-04-23\n\
+Monday, April 23, 2007 5:02:50 AM\n\
+2007-04-24\n\
+Tuesday, April 24, 2007 4:27:17 AM\n\
+2007-04-25\n\
+Wednesday, April 25, 2007 3:51:44 AM\n\
+2007-04-26\n\
+Thursday, April 26, 2007 3:16:11 AM\n\
+2007-04-27\n\
+Friday, April 27, 2007 2:40:38 AM\n\
+2007-04-28\n\
+Saturday, April 28, 2007 2:05:05 AM\n\
+2007-04-29\n\
+Sunday, April 29, 2007 1:29:32 AM\n\
+2007-04-30\n\
+Monday, April 30, 2007 0:53:59 AM\n\
+2007-05-01\n\
+Tuesday, May 01, 2007 0:18:26 AM\n\
+2007-05-01\n\
+Tuesday, May 01, 2007 11:42:53 PM\n\
+2007-05-02\n\
+Wednesday, May 02, 2007 11:07:20 PM\n\
+2007-05-03\n\
+Thursday, May 03, 2007 10:31:47 PM\n\
+2007-05-04\n\
+Friday, May 04, 2007 9:56:14 PM\n\
+2007-05-05\n\
+Saturday, May 05, 2007 9:20:41 PM\n\
+2007-05-06\n\
+Sunday, May 06, 2007 8:45:08 PM\n\
+2007-05-07\n\
+Monday, May 07, 2007 8:09:35 PM\n\
+2007-05-08\n\
+Tuesday, May 08, 2007 7:34:02 PM\n\
+2007-05-09\n\
+Wednesday, May 09, 2007 6:58:29 PM\n\
+2007-05-10\n\
+Thursday, May 10, 2007 6:22:56 PM\n\
+2007-05-11\n\
+Friday, May 11, 2007 5:47:23 PM\n\
+2007-05-12\n\
+Saturday, May 12, 2007 5:11:50 PM\n\
+2007-05-13\n\
+Sunday, May 13, 2007 4:36:17 PM\n\
+2007-05-14\n\
+Monday, May 14, 2007 4:00:43 PM\n\
+2007-05-15\n\
+Tuesday, May 15, 2007 3:25:10 PM\n\
+2007-05-16\n\
+Wednesday, May 16, 2007 2:49:37 PM\n\
+2007-05-17\n\
+Thursday, May 17, 2007 2:14:04 PM\n\
+2007-05-18\n\
+Friday, May 18, 2007 1:38:31 PM\n\
+2007-05-19\n\
+Saturday, May 19, 2007 1:02:58 PM\n\
+2007-05-20\n\
+Sunday, May 20, 2007 12:27:25 PM\n\
+2007-05-21\n\
+Monday, May 21, 2007 11:51:52 AM\n\
+2007-05-22\n\
+Tuesday, May 22, 2007 11:16:19 AM\n\
+2007-05-23\n\
+Wednesday, May 23, 2007 10:40:46 AM\n\
+2007-05-24\n\
+Thursday, May 24, 2007 10:05:13 AM\n\
+2007-05-25\n\
+Friday, May 25, 2007 9:29:40 AM\n\
+2007-05-26\n\
+Saturday, May 26, 2007 8:54:07 AM\n\
+2007-05-27\n\
+Sunday, May 27, 2007 8:18:34 AM\n\
+2007-05-28\n\
+Monday, May 28, 2007 7:43:01 AM\n\
+2007-05-29\n\
+Tuesday, May 29, 2007 7:07:28 AM\n\
+2007-05-30\n\
+Wednesday, May 30, 2007 6:31:55 AM\n\
+2007-05-31\n\
+Thursday, May 31, 2007 5:56:22 AM\n\
+2007-06-01\n\
+Friday, June 01, 2007 5:20:49 AM\n\
+2007-06-02\n\
+Saturday, June 02, 2007 4:45:16 AM\n\
+2007-06-03\n\
+Sunday, June 03, 2007 4:09:43 AM\n\
+2007-06-04\n\
+Monday, June 04, 2007 3:34:10 AM\n\
+2007-06-05\n\
+Tuesday, June 05, 2007 2:58:37 AM\n\
+2007-06-06\n\
+Wednesday, June 06, 2007 2:23:03 AM\n\
+2007-06-07\n\
+Thursday, June 07, 2007 1:47:30 AM\n\
+2007-06-08\n\
+Friday, June 08, 2007 1:11:57 AM\n\
+2007-06-09\n\
+Saturday, June 09, 2007 0:36:24 AM\n\
+2007-06-10\n\
+Sunday, June 10, 2007 0:00:51 AM\n\
+2007-06-10\n\
+Sunday, June 10, 2007 11:25:18 PM\n\
+2007-06-11\n\
+Monday, June 11, 2007 10:49:45 PM\n\
+2007-06-12\n\
+Tuesday, June 12, 2007 10:14:12 PM\n\
+2007-06-13\n\
+Wednesday, June 13, 2007 9:38:39 PM\n\
+2007-06-14\n\
+Thursday, June 14, 2007 9:03:06 PM\n\
+2007-06-15\n\
+Friday, June 15, 2007 8:27:33 PM\n\
+2007-06-16\n\
+Saturday, June 16, 2007 7:52:00 PM\n\
+2007-06-17\n\
+Sunday, June 17, 2007 7:16:27 PM\n\
+2007-06-18\n\
+Monday, June 18, 2007 6:40:54 PM\n\
+2007-06-19\n\
+Tuesday, June 19, 2007 6:05:21 PM\n\
+2007-06-20\n\
+Wednesday, June 20, 2007 5:29:48 PM\n\
+2007-06-21\n\
+Thursday, June 21, 2007 4:54:15 PM\n\
+2007-06-22\n\
+Friday, June 22, 2007 4:18:42 PM\n\
+2007-06-23\n\
+Saturday, June 23, 2007 3:43:09 PM\n\
+2007-06-24\n\
+Sunday, June 24, 2007 3:07:36 PM\n\
+2007-06-25\n\
+Monday, June 25, 2007 2:32:03 PM\n\
+2007-06-26\n\
+Tuesday, June 26, 2007 1:56:30 PM\n\
+2007-06-27\n\
+Wednesday, June 27, 2007 1:20:56 PM\n\
+2007-06-28\n\
+Thursday, June 28, 2007 12:45:23 PM\n\
+2007-06-29\n\
+Friday, June 29, 2007 12:09:50 PM\n\
+2007-06-30\n\
+Saturday, June 30, 2007 11:34:17 AM\n\
+2007-07-01\n\
+Sunday, July 01, 2007 10:58:44 AM\n\
+2007-07-02\n\
+Monday, July 02, 2007 10:23:11 AM\n\
+2007-07-03\n\
+Tuesday, July 03, 2007 9:47:38 AM\n\
+2007-07-04\n\
+Wednesday, July 04, 2007 9:12:05 AM\n\
+2007-07-05\n\
+Thursday, July 05, 2007 8:36:32 AM\n\
+2007-07-06\n\
+Friday, July 06, 2007 8:00:59 AM\n\
+2007-07-07\n\
+Saturday, July 07, 2007 7:25:26 AM\n\
+2007-07-08\n\
+Sunday, July 08, 2007 6:49:53 AM\n\
+2007-07-09\n\
+Monday, July 09, 2007 6:14:20 AM\n\
+2007-07-10\n\
+Tuesday, July 10, 2007 5:38:47 AM\n\
+2007-07-11\n\
+Wednesday, July 11, 2007 5:03:14 AM\n\
+2007-07-12\n\
+Thursday, July 12, 2007 4:27:41 AM\n\
+2007-07-13\n\
+Friday, July 13, 2007 3:52:08 AM\n\
+2007-07-14\n\
+Saturday, July 14, 2007 3:16:35 AM\n\
+2007-07-15\n\
+Sunday, July 15, 2007 2:41:02 AM\n\
+2007-07-16\n\
+Monday, July 16, 2007 2:05:29 AM\n\
+2007-07-17\n\
+Tuesday, July 17, 2007 1:29:56 AM\n\
+2007-07-18\n\
+Wednesday, July 18, 2007 0:54:23 AM\n\
+2007-07-19\n\
+Thursday, July 19, 2007 0:18:50 AM\n\
+2007-07-19\n\
+Thursday, July 19, 2007 11:43:16 PM\n\
+2007-07-20\n\
+Friday, July 20, 2007 11:07:43 PM\n\
+2007-07-21\n\
+Saturday, July 21, 2007 10:32:10 PM\n\
+2007-07-22\n\
+Sunday, July 22, 2007 9:56:37 PM\n\
+2007-07-23\n\
+Monday, July 23, 2007 9:21:04 PM\n\
+2007-07-24\n\
+Tuesday, July 24, 2007 8:45:31 PM\n\
+2007-07-25\n\
+Wednesday, July 25, 2007 8:09:58 PM\n\
+2007-07-26\n\
+Thursday, July 26, 2007 7:34:25 PM\n\
+2007-07-27\n\
+Friday, July 27, 2007 6:58:52 PM\n\
+2007-07-28\n\
+Saturday, July 28, 2007 6:23:19 PM\n\
+2007-07-29\n\
+Sunday, July 29, 2007 5:47:46 PM\n\
+2007-07-30\n\
+Monday, July 30, 2007 5:12:13 PM\n\
+2007-07-31\n\
+Tuesday, July 31, 2007 4:36:40 PM\n\
+2007-08-01\n\
+Wednesday, August 01, 2007 4:01:07 PM\n\
+2007-08-02\n\
+Thursday, August 02, 2007 3:25:34 PM\n\
+2007-08-03\n\
+Friday, August 03, 2007 2:50:01 PM\n\
+2007-08-04\n\
+Saturday, August 04, 2007 2:14:28 PM\n\
+2007-08-05\n\
+Sunday, August 05, 2007 1:38:55 PM\n\
+2007-08-06\n\
+Monday, August 06, 2007 1:03:22 PM\n\
+2007-08-07\n\
+Tuesday, August 07, 2007 12:27:49 PM\n\
+2007-08-08\n\
+Wednesday, August 08, 2007 11:52:16 AM\n\
+2007-08-09\n\
+Thursday, August 09, 2007 11:16:43 AM\n\
+2007-08-10\n\
+Friday, August 10, 2007 10:41:10 AM\n\
+2007-08-11\n\
+Saturday, August 11, 2007 10:05:36 AM\n\
+2007-08-12\n\
+Sunday, August 12, 2007 9:30:03 AM\n\
+2007-08-13\n\
+Monday, August 13, 2007 8:54:30 AM\n\
+2007-08-14\n\
+Tuesday, August 14, 2007 8:18:57 AM\n\
+2007-08-15\n\
+Wednesday, August 15, 2007 7:43:24 AM\n\
+2007-08-16\n\
+Thursday, August 16, 2007 7:07:51 AM\n\
+2007-08-17\n\
+Friday, August 17, 2007 6:32:18 AM\n\
+2007-08-18\n\
+Saturday, August 18, 2007 5:56:45 AM\n\
+2007-08-19\n\
+Sunday, August 19, 2007 5:21:12 AM\n\
+2007-08-20\n\
+Monday, August 20, 2007 4:45:39 AM\n\
+2007-08-21\n\
+Tuesday, August 21, 2007 4:10:06 AM\n\
+2007-08-22\n\
+Wednesday, August 22, 2007 3:34:33 AM\n\
+2007-08-23\n\
+Thursday, August 23, 2007 2:59:00 AM\n\
+2007-08-24\n\
+Friday, August 24, 2007 2:23:27 AM\n\
+2007-08-25\n\
+Saturday, August 25, 2007 1:47:54 AM\n\
+2007-08-26\n\
+Sunday, August 26, 2007 1:12:21 AM\n\
+2007-08-27\n\
+Monday, August 27, 2007 0:36:48 AM\n\
+2007-08-28\n\
+Tuesday, August 28, 2007 0:01:15 AM\n\
+2007-08-28\n\
+Tuesday, August 28, 2007 11:25:42 PM\n\
+2007-08-29\n\
+Wednesday, August 29, 2007 10:50:09 PM\n\
+2007-08-30\n\
+Thursday, August 30, 2007 10:14:36 PM\n\
+2007-08-31\n\
+Friday, August 31, 2007 9:39:03 PM\n\
+2007-09-01\n\
+Saturday, September 01, 2007 9:03:30 PM\n\
+2007-09-02\n\
+Sunday, September 02, 2007 8:27:56 PM\n\
+2007-09-03\n\
+Monday, September 03, 2007 7:52:23 PM\n\
+2007-09-04\n\
+Tuesday, September 04, 2007 7:16:50 PM\n\
+2007-09-05\n\
+Wednesday, September 05, 2007 6:41:17 PM\n\
+2007-09-06\n\
+Thursday, September 06, 2007 6:05:44 PM\n\
+2007-09-07\n\
+Friday, September 07, 2007 5:30:11 PM\n\
+2007-09-08\n\
+Saturday, September 08, 2007 4:54:38 PM\n\
+2007-09-09\n\
+Sunday, September 09, 2007 4:19:05 PM\n\
+2007-09-10\n\
+Monday, September 10, 2007 3:43:32 PM\n\
+2007-09-11\n\
+Tuesday, September 11, 2007 3:07:59 PM\n\
+2007-09-12\n\
+Wednesday, September 12, 2007 2:32:26 PM\n\
+2007-09-13\n\
+Thursday, September 13, 2007 1:56:53 PM\n\
+2007-09-14\n\
+Friday, September 14, 2007 1:21:20 PM\n\
+2007-09-15\n\
+Saturday, September 15, 2007 12:45:47 PM\n\
+2007-09-16\n\
+Sunday, September 16, 2007 12:10:14 PM\n\
+2007-09-17\n\
+Monday, September 17, 2007 11:34:41 AM\n\
+2007-09-18\n\
+Tuesday, September 18, 2007 10:59:08 AM\n\
+2007-09-19\n\
+Wednesday, September 19, 2007 10:23:35 AM\n\
+2007-09-20\n\
+Thursday, September 20, 2007 9:48:02 AM\n\
+2007-09-21\n\
+Friday, September 21, 2007 9:12:29 AM\n\
+2007-09-22\n\
+Saturday, September 22, 2007 8:36:56 AM\n\
+2007-09-23\n\
+Sunday, September 23, 2007 8:01:23 AM\n\
+2007-09-24\n\
+Monday, September 24, 2007 7:25:49 AM\n\
+2007-09-25\n\
+Tuesday, September 25, 2007 6:50:16 AM\n\
+2007-09-26\n\
+Wednesday, September 26, 2007 6:14:43 AM\n\
+2007-09-27\n\
+Thursday, September 27, 2007 5:39:10 AM\n\
+2007-09-28\n\
+Friday, September 28, 2007 5:03:37 AM\n\
+2007-09-29\n\
+Saturday, September 29, 2007 4:28:04 AM\n\
+2007-09-30\n\
+Sunday, September 30, 2007 3:52:31 AM\n\
+2007-10-01\n\
+Monday, October 01, 2007 3:16:58 AM\n\
+2007-10-02\n\
+Tuesday, October 02, 2007 2:41:25 AM\n\
+2007-10-03\n\
+Wednesday, October 03, 2007 2:05:52 AM\n\
+2007-10-04\n\
+Thursday, October 04, 2007 1:30:19 AM\n\
+2007-10-05\n\
+Friday, October 05, 2007 0:54:46 AM\n\
+2007-10-06\n\
+Saturday, October 06, 2007 0:19:13 AM\n\
+2007-10-06\n\
+Saturday, October 06, 2007 11:43:40 PM\n\
+2007-10-07\n\
+Sunday, October 07, 2007 11:08:07 PM\n\
+2007-10-08\n\
+Monday, October 08, 2007 10:32:34 PM\n\
+2007-10-09\n\
+Tuesday, October 09, 2007 9:57:01 PM\n\
+2007-10-10\n\
+Wednesday, October 10, 2007 9:21:28 PM\n\
+2007-10-11\n\
+Thursday, October 11, 2007 8:45:55 PM\n\
+2007-10-12\n\
+Friday, October 12, 2007 8:10:22 PM\n\
+2007-10-13\n\
+Saturday, October 13, 2007 7:34:49 PM\n\
+2007-10-14\n\
+Sunday, October 14, 2007 6:59:16 PM\n\
+2007-10-15\n\
+Monday, October 15, 2007 6:23:43 PM\n\
+2007-10-16\n\
+Tuesday, October 16, 2007 5:48:09 PM\n\
+2007-10-17\n\
+Wednesday, October 17, 2007 5:12:36 PM\n\
+2007-10-18\n\
+Thursday, October 18, 2007 4:37:03 PM\n\
+2007-10-19\n\
+Friday, October 19, 2007 4:01:30 PM\n\
+2007-10-20\n\
+Saturday, October 20, 2007 3:25:57 PM\n\
+2007-10-21\n\
+Sunday, October 21, 2007 2:50:24 PM\n\
+2007-10-22\n\
+Monday, October 22, 2007 2:14:51 PM\n\
+2007-10-23\n\
+Tuesday, October 23, 2007 1:39:18 PM\n\
+2007-10-24\n\
+Wednesday, October 24, 2007 1:03:45 PM\n\
+2007-10-25\n\
+Thursday, October 25, 2007 12:28:12 PM\n\
+2007-10-26\n\
+Friday, October 26, 2007 11:52:39 AM\n\
+2007-10-27\n\
+Saturday, October 27, 2007 11:17:06 AM\n\
+2007-10-28\n\
+Sunday, October 28, 2007 10:41:33 AM\n\
+2007-10-29\n\
+Monday, October 29, 2007 10:06:00 AM\n\
+2007-10-30\n\
+Tuesday, October 30, 2007 9:30:27 AM\n\
+2007-10-31\n\
+Wednesday, October 31, 2007 8:54:54 AM\n\
+2007-11-01\n\
+Thursday, November 01, 2007 8:19:21 AM\n\
+2007-11-02\n\
+Friday, November 02, 2007 7:43:48 AM\n\
+2007-11-03\n\
+Saturday, November 03, 2007 7:08:15 AM\n\
+2007-11-04\n\
+Sunday, November 04, 2007 6:32:42 AM\n\
+2007-11-05\n\
+Monday, November 05, 2007 5:57:09 AM\n\
+2007-11-06\n\
+Tuesday, November 06, 2007 5:21:36 AM\n\
+2007-11-07\n\
+Wednesday, November 07, 2007 4:46:03 AM\n\
+2007-11-08\n\
+Thursday, November 08, 2007 4:10:29 AM\n\
+2007-11-09\n\
+Friday, November 09, 2007 3:34:56 AM\n\
+2007-11-10\n\
+Saturday, November 10, 2007 2:59:23 AM\n\
+2007-11-11\n\
+Sunday, November 11, 2007 2:23:50 AM\n\
+2007-11-12\n\
+Monday, November 12, 2007 1:48:17 AM\n\
+2007-11-13\n\
+Tuesday, November 13, 2007 1:12:44 AM\n\
+2007-11-14\n\
+Wednesday, November 14, 2007 0:37:11 AM\n\
+2007-11-15\n\
+Thursday, November 15, 2007 0:01:38 AM\n\
+2007-11-15\n\
+Thursday, November 15, 2007 11:26:05 PM\n\
+2007-11-16\n\
+Friday, November 16, 2007 10:50:32 PM\n\
+2007-11-17\n\
+Saturday, November 17, 2007 10:14:59 PM\n\
+2007-11-18\n\
+Sunday, November 18, 2007 9:39:26 PM\n\
+2007-11-19\n\
+Monday, November 19, 2007 9:03:53 PM\n\
+2007-11-20\n\
+Tuesday, November 20, 2007 8:28:20 PM\n\
+2007-11-21\n\
+Wednesday, November 21, 2007 7:52:47 PM\n\
+2007-11-22\n\
+Thursday, November 22, 2007 7:17:14 PM\n\
+2007-11-23\n\
+Friday, November 23, 2007 6:41:41 PM\n\
+2007-11-24\n\
+Saturday, November 24, 2007 6:06:08 PM\n\
+2007-11-25\n\
+Sunday, November 25, 2007 5:30:35 PM\n\
+2007-11-26\n\
+Monday, November 26, 2007 4:55:02 PM\n\
+2007-11-27\n\
+Tuesday, November 27, 2007 4:19:29 PM\n\
+2007-11-28\n\
+Wednesday, November 28, 2007 3:43:56 PM\n\
+2007-11-29\n\
+Thursday, November 29, 2007 3:08:22 PM\n\
+2007-11-30\n\
+Friday, November 30, 2007 2:32:49 PM\n\
+2007-12-01\n\
+Saturday, December 01, 2007 1:57:16 PM\n\
+2007-12-02\n\
+Sunday, December 02, 2007 1:21:43 PM\n\
+2007-12-03\n\
+Monday, December 03, 2007 12:46:10 PM\n\
+2007-12-04\n\
+Tuesday, December 04, 2007 12:10:37 PM\n\
+2007-12-05\n\
+Wednesday, December 05, 2007 11:35:04 AM\n\
+2007-12-06\n\
+Thursday, December 06, 2007 10:59:31 AM\n\
+2007-12-07\n\
+Friday, December 07, 2007 10:23:58 AM\n\
+2007-12-08\n\
+Saturday, December 08, 2007 9:48:25 AM\n\
+2007-12-09\n\
+Sunday, December 09, 2007 9:12:52 AM\n\
+2007-12-10\n\
+Monday, December 10, 2007 8:37:19 AM\n\
+2007-12-11\n\
+Tuesday, December 11, 2007 8:01:46 AM\n\
+2007-12-12\n\
+Wednesday, December 12, 2007 7:26:13 AM\n\
+2007-12-13\n\
+Thursday, December 13, 2007 6:50:40 AM\n\
+2007-12-14\n\
+Friday, December 14, 2007 6:15:07 AM\n\
+2007-12-15\n\
+Saturday, December 15, 2007 5:39:34 AM\n\
+2007-12-16\n\
+Sunday, December 16, 2007 5:04:01 AM\n\
+2007-12-17\n\
+Monday, December 17, 2007 4:28:28 AM\n\
+2007-12-18\n\
+Tuesday, December 18, 2007 3:52:55 AM\n\
+2007-12-19\n\
+Wednesday, December 19, 2007 3:17:22 AM\n\
+2007-12-20\n\
+Thursday, December 20, 2007 2:41:49 AM\n\
+2007-12-21\n\
+Friday, December 21, 2007 2:06:16 AM\n\
+2007-12-22\n\
+Saturday, December 22, 2007 1:30:42 AM\n\
+2007-12-23\n\
+Sunday, December 23, 2007 0:55:09 AM\n\
+2007-12-24\n\
+Monday, December 24, 2007 0:19:36 AM\n\
+2007-12-24\n\
+Monday, December 24, 2007 11:44:03 PM\n\
+2007-12-25\n\
+Tuesday, December 25, 2007 11:08:30 PM\n\
+2007-12-26\n\
+Wednesday, December 26, 2007 10:32:57 PM\n\
+2007-12-27\n\
+Thursday, December 27, 2007 9:57:24 PM\n\
+2007-12-28\n\
+Friday, December 28, 2007 9:21:51 PM\n\
+2007-12-29\n\
+Saturday, December 29, 2007 8:46:18 PM\n\
+2007-12-30\n\
+Sunday, December 30, 2007 8:10:45 PM\n\
+2007-12-31\n\
+Monday, December 31, 2007 7:35:12 PM\n\
+2008-01-01\n\
+Tuesday, January 01, 2008 6:59:39 PM\n\
+2008-01-02\n\
+Wednesday, January 02, 2008 6:24:06 PM\n\
+2008-01-03\n\
+Thursday, January 03, 2008 5:48:33 PM\n\
+2008-01-04\n\
+Friday, January 04, 2008 5:13:00 PM\n\
+2008-01-05\n\
+Saturday, January 05, 2008 4:37:27 PM\n\
+2008-01-06\n\
+Sunday, January 06, 2008 4:01:54 PM\n\
+2008-01-07\n\
+Monday, January 07, 2008 3:26:21 PM\n\
+2008-01-08\n\
+Tuesday, January 08, 2008 2:50:48 PM\n\
+2008-01-09\n\
+Wednesday, January 09, 2008 2:15:15 PM\n\
+2008-01-10\n\
+Thursday, January 10, 2008 1:39:42 PM\n\
+2008-01-11\n\
+Friday, January 11, 2008 1:04:09 PM\n\
+2008-01-12\n\
+Saturday, January 12, 2008 12:28:36 PM\n\
+2008-01-13\n\
+Sunday, January 13, 2008 11:53:02 AM\n\
+2008-01-14\n\
+Monday, January 14, 2008 11:17:29 AM\n\
+2008-01-15\n\
+Tuesday, January 15, 2008 10:41:56 AM\n\
+2008-01-16\n\
+Wednesday, January 16, 2008 10:06:23 AM\n\
+2008-01-17\n\
+Thursday, January 17, 2008 9:30:50 AM\n\
+2008-01-18\n\
+Friday, January 18, 2008 8:55:17 AM\n\
+2008-01-19\n\
+Saturday, January 19, 2008 8:19:44 AM\n\
+2008-01-20\n\
+Sunday, January 20, 2008 7:44:11 AM\n\
+2008-01-21\n\
+Monday, January 21, 2008 7:08:38 AM\n\
+2008-01-22\n\
+Tuesday, January 22, 2008 6:33:05 AM\n\
+2008-01-23\n\
+Wednesday, January 23, 2008 5:57:32 AM\n\
+2008-01-24\n\
+Thursday, January 24, 2008 5:21:59 AM\n\
+2008-01-25\n\
+Friday, January 25, 2008 4:46:26 AM\n\
+2008-01-26\n\
+Saturday, January 26, 2008 4:10:53 AM\n\
+2008-01-27\n\
+Sunday, January 27, 2008 3:35:20 AM\n\
+2008-01-28\n\
+Monday, January 28, 2008 2:59:47 AM\n\
+2008-01-29\n\
+Tuesday, January 29, 2008 2:24:14 AM\n\
+2008-01-30\n\
+Wednesday, January 30, 2008 1:48:41 AM\n\
+2008-01-31\n\
+Thursday, January 31, 2008 1:13:08 AM\n\
+2008-02-01\n\
+Friday, February 01, 2008 0:37:35 AM\n\
+2008-02-02\n\
+Saturday, February 02, 2008 0:02:02 AM\n\
+2008-02-02\n\
+Saturday, February 02, 2008 11:26:29 PM\n\
+2008-02-03\n\
+Sunday, February 03, 2008 10:50:56 PM\n\
+2008-02-04\n\
+Monday, February 04, 2008 10:15:22 PM\n\
+2008-02-05\n\
+Tuesday, February 05, 2008 9:39:49 PM\n\
+2008-02-06\n\
+Wednesday, February 06, 2008 9:04:16 PM\n\
+2008-02-07\n\
+Thursday, February 07, 2008 8:28:43 PM\n\
+2008-02-08\n\
+Friday, February 08, 2008 7:53:10 PM\n\
+2008-02-09\n\
+Saturday, February 09, 2008 7:17:37 PM\n\
+2008-02-10\n\
+Sunday, February 10, 2008 6:42:04 PM\n\
+2008-02-11\n\
+Monday, February 11, 2008 6:06:31 PM\n\
+2008-02-12\n\
+Tuesday, February 12, 2008 5:30:58 PM\n\
+2008-02-13\n\
+Wednesday, February 13, 2008 4:55:25 PM\n\
+2008-02-14\n\
+Thursday, February 14, 2008 4:19:52 PM\n\
+2008-02-15\n\
+Friday, February 15, 2008 3:44:19 PM\n\
+2008-02-16\n\
+Saturday, February 16, 2008 3:08:46 PM\n\
+2008-02-17\n\
+Sunday, February 17, 2008 2:33:13 PM\n\
+2008-02-18\n\
+Monday, February 18, 2008 1:57:40 PM\n\
+2008-02-19\n\
+Tuesday, February 19, 2008 1:22:07 PM\n\
+2008-02-20\n\
+Wednesday, February 20, 2008 12:46:34 PM\n\
+2008-02-21\n\
+Thursday, February 21, 2008 12:11:01 PM\n\
+2008-02-22\n\
+Friday, February 22, 2008 11:35:28 AM\n\
+2008-02-23\n\
+Saturday, February 23, 2008 10:59:55 AM\n\
+2008-02-24\n\
+Sunday, February 24, 2008 10:24:22 AM\n\
+2008-02-25\n\
+Monday, February 25, 2008 9:48:49 AM\n\
+2008-02-26\n\
+Tuesday, February 26, 2008 9:13:15 AM\n\
+2008-02-27\n\
+Wednesday, February 27, 2008 8:37:42 AM\n\
+2008-02-28\n\
+Thursday, February 28, 2008 8:02:09 AM\n\
+2008-02-29\n\
+Friday, February 29, 2008 7:26:36 AM\n\
+2008-03-01\n\
+Saturday, March 01, 2008 6:51:03 AM\n\
+2008-03-02\n\
+Sunday, March 02, 2008 6:15:30 AM\n\
+2008-03-03\n\
+Monday, March 03, 2008 5:39:57 AM\n\
+2008-03-04\n\
+Tuesday, March 04, 2008 5:04:24 AM\n\
+2008-03-05\n\
+Wednesday, March 05, 2008 4:28:51 AM\n\
+2008-03-06\n\
+Thursday, March 06, 2008 3:53:18 AM\n\
+2008-03-07\n\
+Friday, March 07, 2008 3:17:45 AM\n\
+2008-03-08\n\
+Saturday, March 08, 2008 2:42:12 AM\n\
+2008-03-09\n\
+Sunday, March 09, 2008 2:06:39 AM\n\
+2008-03-10\n\
+Monday, March 10, 2008 1:31:06 AM\n\
+2008-03-11\n\
+Tuesday, March 11, 2008 0:55:33 AM\n\
+2008-03-12\n\
+Wednesday, March 12, 2008 0:20:00 AM\n\
+2008-03-12\n\
+Wednesday, March 12, 2008 11:44:27 PM\n\
+2008-03-13\n\
+Thursday, March 13, 2008 11:08:54 PM\n\
+2008-03-14\n\
+Friday, March 14, 2008 10:33:21 PM\n\
+2008-03-15\n\
+Saturday, March 15, 2008 9:57:48 PM\n\
+2008-03-16\n\
+Sunday, March 16, 2008 9:22:15 PM\n\
+2008-03-17\n\
+Monday, March 17, 2008 8:46:42 PM\n\
+2008-03-18\n\
+Tuesday, March 18, 2008 8:11:09 PM\n\
+2008-03-19\n\
+Wednesday, March 19, 2008 7:35:35 PM\n\
+2008-03-20\n\
+Thursday, March 20, 2008 7:00:02 PM\n\
+2008-03-21\n\
+Friday, March 21, 2008 6:24:29 PM\n\
+2008-03-22\n\
+Saturday, March 22, 2008 5:48:56 PM\n\
+2008-03-23\n\
+Sunday, March 23, 2008 5:13:23 PM\n\
+2008-03-24\n\
+Monday, March 24, 2008 4:37:50 PM\n\
+2008-03-25\n\
+Tuesday, March 25, 2008 4:02:17 PM\n\
+2008-03-26\n\
+Wednesday, March 26, 2008 3:26:44 PM\n\
+2008-03-27\n\
+Thursday, March 27, 2008 2:51:11 PM\n\
+2008-03-28\n\
+Friday, March 28, 2008 2:15:38 PM\n\
+2008-03-29\n\
+Saturday, March 29, 2008 1:40:05 PM\n\
+2008-03-30\n\
+Sunday, March 30, 2008 1:04:32 PM\n\
+2008-03-31\n\
+Monday, March 31, 2008 12:28:59 PM\n\
+2008-04-01\n\
+Tuesday, April 01, 2008 11:53:26 AM\n\
+2008-04-02\n\
+Wednesday, April 02, 2008 11:17:53 AM\n\
+2008-04-03\n\
+Thursday, April 03, 2008 10:42:20 AM\n\
+2008-04-04\n\
+Friday, April 04, 2008 10:06:47 AM\n\
+2008-04-05\n\
+Saturday, April 05, 2008 9:31:14 AM\n\
+2008-04-06\n\
+Sunday, April 06, 2008 8:55:41 AM\n\
+2008-04-07\n\
+Monday, April 07, 2008 8:20:08 AM\n\
+2008-04-08\n\
+Tuesday, April 08, 2008 7:44:35 AM\n\
+2008-04-09\n\
+Wednesday, April 09, 2008 7:09:02 AM\n\
+2008-04-10\n\
+Thursday, April 10, 2008 6:33:29 AM\n\
+2008-04-11\n\
+Friday, April 11, 2008 5:57:55 AM\n\
+2008-04-12\n\
+Saturday, April 12, 2008 5:22:22 AM\n\
+2008-04-13\n\
+Sunday, April 13, 2008 4:46:49 AM\n\
+2008-04-14\n\
+Monday, April 14, 2008 4:11:16 AM\n\
+2008-04-15\n\
+Tuesday, April 15, 2008 3:35:43 AM\n\
+2008-04-16\n\
+Wednesday, April 16, 2008 3:00:10 AM\n\
+2008-04-17\n\
+Thursday, April 17, 2008 2:24:37 AM\n\
+2008-04-18\n\
+Friday, April 18, 2008 1:49:04 AM\n\
+2008-04-19\n\
+Saturday, April 19, 2008 1:13:31 AM\n\
+2008-04-20\n\
+Sunday, April 20, 2008 0:37:58 AM\n\
+2008-04-21\n\
+Monday, April 21, 2008 0:02:25 AM\n\
+2008-04-21\n\
+Monday, April 21, 2008 11:26:52 PM\n\
+2008-04-22\n\
+Tuesday, April 22, 2008 10:51:19 PM\n\
+2008-04-23\n\
+Wednesday, April 23, 2008 10:15:46 PM\n\
+2008-04-24\n\
+Thursday, April 24, 2008 9:40:13 PM\n\
+2008-04-25\n\
+Friday, April 25, 2008 9:04:40 PM\n\
+2008-04-26\n\
+Saturday, April 26, 2008 8:29:07 PM\n\
+2008-04-27\n\
+Sunday, April 27, 2008 7:53:34 PM\n\
+2008-04-28\n\
+Monday, April 28, 2008 7:18:01 PM\n\
+2008-04-29\n\
+Tuesday, April 29, 2008 6:42:28 PM\n\
+2008-04-30\n\
+Wednesday, April 30, 2008 6:06:55 PM\n\
+2008-05-01\n\
+Thursday, May 01, 2008 5:31:22 PM\n\
+Normal(PASS)
+interpret_err_equals=

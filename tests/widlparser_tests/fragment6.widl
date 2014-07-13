@@ -1,0 +1,19 @@
+/* Specification authors wanting to define APIs that take ECMAScript
+ * objects as “property bag” like function arguments are suggested to use
+ * dictionary types rather than callback interfaces.
+ */
+dictionary Options {
+  DOMString? option1;
+  DOMString? option2;
+  long? option3;
+};
+
+interface A {
+  void doTask(DOMString type, Options options);
+};
+
+/* In JavaScript
+var a = getA();  // Get an instance of A.
+
+a.doTask("something", { option1: "banana", option3: 100 });
+*/

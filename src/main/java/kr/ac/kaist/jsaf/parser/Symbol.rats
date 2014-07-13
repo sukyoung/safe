@@ -1,0 +1,112 @@
+/*******************************************************************************
+    Copyright (c) 2012-2013, KAIST, S-Core.
+    All rights reserved.
+
+    Use is subject to license terms.
+
+    This distribution may include materials developed by third parties.
+ ******************************************************************************/
+
+/*
+ * Definition of JavaScript symbols and operators.
+ */
+module kr.ac.kaist.jsaf.parser.Symbol(Identifier, Spacing, Keyword);
+
+import Identifier;
+import Spacing;
+import Keyword;
+
+option setOfString(JAVASCRIPT_RESERVED);
+
+transient void commaOrNot = "," / w ;
+transient void semicolon = ";";
+transient void colon = ":";
+transient void underscore = "_";
+
+transient void openparen = "(";
+transient void closeparen = ")";
+transient void opencurly = "{";
+transient void closecurly = "}";
+transient void opensquare = "[";
+transient void closesquare = "]";
+transient void openangle = "<";
+transient void closeangle = ">";
+
+transient String dot   = ".";
+transient String comma = ",";
+transient String star = "*";
+transient String question = "?";
+
+Op and = "&" !("&" / "=")
+     { yyValue = NodeFactory.makeOp(createSpan(yyStart, yyCount), "&"); };
+Op ands = "&&"
+     { yyValue = NodeFactory.makeOp(createSpan(yyStart, yyCount), "&&"); };
+Op bar = "|" !("|" / "=")
+     { yyValue = NodeFactory.makeOp(createSpan(yyStart, yyCount), "|"); };
+Op bars = "||"
+     { yyValue = NodeFactory.makeOp(createSpan(yyStart, yyCount), "||"); };
+Op caret = "^" !("=")
+     { yyValue = NodeFactory.makeOp(createSpan(yyStart, yyCount), "^"); };
+
+Op equals = "=" !("=")
+     { yyValue = NodeFactory.makeOp(createSpan(yyStart, yyCount), "="); };
+Op doubleplus = "++"
+     { yyValue = NodeFactory.makeOp(createSpan(yyStart, yyCount), "++"); };
+Op doubleminus = "--"
+     { yyValue = NodeFactory.makeOp(createSpan(yyStart, yyCount), "--"); };
+Op plus = "+" !("+" / "=")
+     { yyValue = NodeFactory.makeOp(createSpan(yyStart, yyCount), "+"); };
+Op minus = "-" !("-" / "=")
+     { yyValue = NodeFactory.makeOp(createSpan(yyStart, yyCount), "-"); };
+Op tilde = "~"
+     { yyValue = NodeFactory.makeOp(createSpan(yyStart, yyCount), "~"); };
+Op bang = "!"
+     { yyValue = NodeFactory.makeOp(createSpan(yyStart, yyCount), "!"); };
+
+/*
+ * AssignmentOp ::= *= | /= | %= | += | -= | <<= | >>= | >>>= | &= | ^= | |=
+ */
+Op AssignmentOp =
+     a1:("*" / "/" / "%" / "+" / "-" / "<<" / ">>>" / ">>" / "&" / "^" / "|") equals
+     { yyValue = NodeFactory.makeOp(createSpan(yyStart, yyCount), a1+"="); };
+
+/*
+ * EqualityOp ::= == | != | === | !==
+ */
+Op EqualityOp =
+     a1:("===" / "!==" / "==" / "!=")
+     { yyValue = NodeFactory.makeOp(createSpan(yyStart, yyCount), a1); };
+
+/*
+ * RelationalOp ::= < | > | <= | >= | instanceof | in
+ */
+Op RelationalOp =
+     a1:("<=" / ">=" / "<" / ">" / instanceof / in)
+     { yyValue = NodeFactory.makeOp(createSpan(yyStart, yyCount), a1); };
+
+/*
+ * RelationalOpNoIn ::= < | > | <= | >= | instanceof
+ */
+Op RelationalOpNoIn =
+     a1:("<=" / ">=" / "<" / ">" / instanceof)
+     { yyValue = NodeFactory.makeOp(createSpan(yyStart, yyCount), a1); };
+
+/*
+ * ShiftOp ::= << | >> | >>>
+ */
+Op ShiftOp =
+     a1:("<<" / ">>>" / ">>") !("=")
+     { yyValue = NodeFactory.makeOp(createSpan(yyStart, yyCount), a1); };
+
+/*
+ * AdditiveOp ::= + | -
+ */
+Op AdditiveOp =
+     yyValue:(plus / minus);
+
+/*
+ * MultiplicativeOp ::= * | / | %
+ */
+Op MultiplicativeOp =
+     a1:("*" / "/" / "%") !("=")
+     { yyValue = NodeFactory.makeOp(createSpan(yyStart, yyCount), a1); };

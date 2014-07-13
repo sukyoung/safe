@@ -1,0 +1,4 @@
+/* equivalent to fragment20.widl */
+interface A {
+  stringifier;
+};

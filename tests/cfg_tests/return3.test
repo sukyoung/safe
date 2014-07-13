@@ -1,0 +1,85 @@
+################################################################################
+#    Copyright (c) 2012, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=return3
+CFG_TESTS_DIR=${JS_HOME}/tests/cfg_tests
+cfg
+cfg_out_WCIequals=\
+(0,LBlock(12))\n\
+\n\
+\n\
+(0,LBlock(11))\n\
+    [EDGE] after-call(<>Global<>ignore7)\n\
+    [28] noop(EndOfFile)\n\
+\n\
+\n\
+(2,LBlock(10))\n\
+\n\
+\n\
+(2,LBlock(9))\n\
+    [EDGE] after-call(<>Global<>ignore6)\n\
+\n\
+\n\
+(3,LBlock(8))\n\
+    [11] return(<>temp<>4)\n\
+\n\
+\n\
+(2,LBlock(7))\n\
+\n\
+\n\
+(2,LBlock(6))\n\
+    [EDGE] after-call(<>Global<>ignore4)\n\
+    [12] <>Global<>ignore5 := function (3) @ #5, #6\n\
+    [13] <>w<>6 := <>Global<>ignore5\n\
+    [14] <>obj<>15 := <>Global<>toObject(<>w<>6) @ #7\n\
+    [15] <>temp<>16 := 3\n\
+    [16] <>arguments<>17 := allocArg(1) @ #8\n\
+    [17] <>arguments<>17["0"] := <>temp<>16\n\
+    [18] <>fun<>18 := <>Global<>getBase(<>w<>6)\n\
+    [19] call(<>obj<>15, <>fun<>18, <>arguments<>17) @ #9\n\
+\n\
+\n\
+(2,LBlock(5))\n\
+\n\
+\n\
+(2,LBlock(4))\n\
+    [2] assert(! <>y<>1)\n\
+    [4] <>z<>5 := 678\n\
+    [5] <>obj<>8 := <>Global<>toObject(print) @ #1\n\
+    [6] <>temp<>9 := "in"\n\
+    [7] <>arguments<>10 := allocArg(1) @ #2\n\
+    [8] <>arguments<>10["0"] := <>temp<>9\n\
+    [9] <>fun<>11 := <>Global<>getBase(print)\n\
+    [10] call(<>obj<>8, <>fun<>11, <>arguments<>10) @ #3\n\
+\n\
+\n\
+(2,LBlock(3))\n\
+    [1] assert(<>y<>1)\n\
+    [3] return()\n\
+\n\
+\n\
+(2,LBlock(2))\n\
+    [0] <>temp<>4 := 1\n\
+\n\
+\n\
+(1,LBlock(1))\n\
+    [20] <>Global<>ignore1 := function (2) @ #11, #12\n\
+    [21] <>y<>1 := <>Global<>ignore1\n\
+\n\
+\n\
+(0,LBlock(0))\n\
+    [22] f := function (1) @ #13, #14\n\
+    [23] noop(StartOfFile)\n\
+    [24] <>obj<>20 := <>Global<>toObject(f) @ #15\n\
+    [25] <>arguments<>21 := allocArg(0) @ #16\n\
+    [26] <>fun<>22 := <>Global<>getBase(f)\n\
+    [27] call(<>obj<>20, <>fun<>22, <>arguments<>21) @ #17\n\
+\n\
+\n\
+\n
+cfg_err_equals=

@@ -1,0 +1,19 @@
+################################################################################
+#    Copyright (c) 2013, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=fragment28.widl
+WIDLPARSER_TESTS_DIR=${JS_HOME}/tests/widl_tests
+widlparse
+widlparse_out_WCIequals=\
+enum MealType {rice, noodles, other};\n\
+interface Meal {\n\
+  attribute MealType type;\n\
+  attribute float size;\n\
+  void initialize(MealType type, float size);\n\
+};\n
+widlparse_err_equals=

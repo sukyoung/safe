@@ -1,0 +1,26 @@
+################################################################################
+#    Copyright (c) 2012, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=array-splice
+INTERPRETER_TESTS_DIR=${JS_HOME}/tests/interpreter_tests
+interpret
+interpret_out_WCIequals=\
+1,2,3,4,5,6,7,8,9,10\n\
+3,4,5,6,7\n\
+1,2,8,9,10\n\
+1,2,3,4,5,6,7,8,9,10\n\
+3,4,5,6,7\n\
+1,2,a,b,8,9,10\n\
+1,2,3,4,5,6,7,8,9,10\n\
+3,4,5,6,7\n\
+1,2,a,b,c,d,e,8,9,10\n\
+1,2,3,4,5,6,7,8,9,10\n\
+3,4,5,6,7\n\
+1,2,a,b,c,d,e,f,8,9,10\n\
+Normal(1,2,a,b,c,d,e,f,8,9,10)\n
+interpret_err_equals=

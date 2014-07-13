@@ -1,0 +1,24 @@
+################################################################################
+#    Copyright (c) 2012, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=object-preventExtensions
+INTERPRETER_TESTS_DIR=${JS_HOME}/tests/interpreter_tests
+interpret
+interpret_out_WCIequals=\
+0\n\
+undefined\n\
+1\n\
+2\n\
+1\n\
+undefined\n\
+3\n\
+undefined\n\
+undefined\n\
+undefined\n\
+Normal(PASS)\n
+interpret_err_WCIequals=

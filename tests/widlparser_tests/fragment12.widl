@@ -1,0 +1,17 @@
+/* how regular operations can be declared on an interface */
+interface Dimensions {
+  attribute unsigned long width;
+  attribute unsigned long height;
+};
+
+exception NoPointerDevice { };
+
+interface Button {
+
+  // An operation that takes no arguments and returns a boolean.
+  boolean isMouseOver();
+
+  // Overloaded operations.
+  void setDimensions(Dimensions size);
+  void setDimensions(unsigned long width, unsigned long height);
+};

@@ -1,0 +1,97 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   Copyright 2012, KAIST.
+%   All rights reserved.
+%
+%   Use is subject to license terms.
+%
+%   This distribution may include materials developed by third parties.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[oneside,openany]{book}
+\usepackage{url, amssymb, amsmath, amsthm, stmaryrd, xspace}
+\usepackage{amsfonts, graphicx, fullpage, times, wrapfig}
+\usepackage{hyperref, array, color,anysize,ifpdf,tikz}
+
+%\RequirePackage[nonfrench]{kotex}
+
+\newif\ifrelease
+\ifx\release\undefined
+  \releasefalse
+\else
+  \releasetrue
+\fi
+
+% Please uncomment the following line for a release version.
+% -- Sukyoung
+%\releasetrue
+
+\parskip = 7pt plus 2pt minus 1pt
+\makeatletter
+\setlength\partopsep{4\p@ \@plus 1\p@}
+\def\@listi{\leftmargin\leftmargini
+            \parsep\parskip
+            \topsep 0\p@
+            \itemsep\topsep}
+\let\@listI\@listi
+\@listi
+\def\@listii {\leftmargin\leftmarginii
+              \labelwidth\leftmarginii
+              \advance\labelwidth-\labelsep}
+\def\@listiii{\leftmargin\leftmarginiii
+              \labelwidth\leftmarginiii
+              \advance\labelwidth-\labelsep}
+\makeatother
+\parindent = 0pt
+
+\setcounter{tocdepth}{1}
+
+\ifpdf
+  \usepackage{epic,eepicemu}
+\else
+  \usepackage{epic,eepic}
+\fi
+
+\input{macros}
+
+\title{{\huge The SAFE Specification}
+\\[1em] {\fbox{\LARGE\it Working Draft}}
+\\ {\large Version 0.1}
+}
+\author
+{
+\begin{tabular}{c}
+Junhee Cho\\
+Jaejun Choi\\
+Woongsik Choi\\
+Junho Jin\\
+Sujin Kim\\
+Yoonseok Ko\\
+Hongki Lee\\
+Sukyoung Ryu\\
+Sooncheol Won\\ \\ \\
+% {Additional contributors}: \\
+% Sora Bae\\
+% SungGyeong Bae\\
+% Changhee Park\\
+\end{tabular} \\
+\\
+\begin{tabular}{c}
+                        \copyright\ KAIST and S-Core
+\end{tabular}
+}
+
+\begin{document}
+\maketitle
+
+\tableofcontents
+\input{overview}
+\input{safe-ast2ir}
+\input{safe-ir}
+\input{safe-cfg}
+\input{safe-sparse}
+\input{safe-cfg-builtin}
+
+%\bibliographystyle{plain}
+%\bibliography{ref}
+
+\end{document}

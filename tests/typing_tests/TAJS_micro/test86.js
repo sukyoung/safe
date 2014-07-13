@@ -1,0 +1,12 @@
+function f(x) {
+	if (x <= 1)
+		return 1;
+	else
+		return f(x-1) + f(x-1);
+}
+
+var q = f(3);
+//assert(q === 4);
+//dumpValue(q);
+var __result1 = q;  // for SAFE
+var __expect1 = 4;  // for SAFE

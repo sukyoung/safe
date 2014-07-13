@@ -1,0 +1,17 @@
+################################################################################
+#    Copyright (c) 2012, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=object-isSealed
+INTERPRETER_TESTS_DIR=${JS_HOME}/tests/interpreter_tests
+interpret
+interpret_out_WCIequals=\
+false\n\
+[object Object]\n\
+true\n\
+Normal(PASS)\n
+interpret_err_WCIequals=

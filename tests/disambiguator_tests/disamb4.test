@@ -1,0 +1,19 @@
+################################################################################
+#    Copyright (c) 2013, KAIST.
+#    All rights reserved.\n#
+#    Use is subject to license terms.\n#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=disamb4
+DISAMB_TESTS_DIR=${JS_HOME}/tests/disambiguator_tests
+disambiguate
+disambiguate_out_WCIequals=\
+${DISAMB_TESTS_DIR}/disamb4.js:9:7-45: \n\
+    Warning: the use of FunctionDeclaration as a Statement is not allowed in ECMAScript. \n\
+${DISAMB_TESTS_DIR}/disamb4.js:7:3-11:3: \n\
+    Warning: the use of FunctionDeclaration as a Statement is not allowed in ECMAScript. \n\
+${DISAMB_TESTS_DIR}/disamb4.js:2:3-4:3: \n\
+    Multiple declarations of the label: done. \n\
+File ${DISAMB_TESTS_DIR}/disamb4.js has 1 error. \n\
+\n
+disambiguate_err_equals=

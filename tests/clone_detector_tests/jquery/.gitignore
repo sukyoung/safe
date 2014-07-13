@@ -1,0 +1,11 @@
+src/selector.js
+dist
+.project
+.settings
+*~
+*.diff
+*.patch
+/*.html
+.DS_Store
+build/.sizecache.json
+node_modules

@@ -1,0 +1,34 @@
+################################################################################
+#    Copyright (c) 2013, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=fragment1.widl
+WIDLPARSER_TESTS_DIR=${JS_HOME}/tests/widl_tests
+widlparse
+widlparse_out_WCIequals=\
+exception GraphicsException {\n\
+  DOMString reason;\n\
+};\n\
+interface Paint {\n\
+  \n\
+};\n\
+interface SolidColor : Paint {\n\
+  attribute float red;\n\
+  attribute float green;\n\
+  attribute float blue;\n\
+};\n\
+interface Pattern : Paint {\n\
+  attribute DOMString imageURL;\n\
+};\n\
+[Constructor()] interface GraphicalWindow {\n\
+  [readonly] attribute unsigned long width;\n\
+  [readonly] attribute unsigned long height;\n\
+  attribute Paint currentPaint;\n\
+  void  drawRectangle(float x, float y, float width, float height);\n\
+  void  drawText(float x, float y, DOMString text);\n\
+};\n
+widlparse_err_equals=

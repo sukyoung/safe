@@ -1,0 +1,22 @@
+################################################################################
+#    Copyright (c) 2012, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=label2
+CFG_TESTS_DIR=${JS_HOME}/tests/cfg_tests
+cfg
+cfg_out_WCIequals=\
+(0,LBlock(1))\n\
+    [1] noop(EndOfFile)\n\
+\n\
+\n\
+(0,LBlock(0))\n\
+    [0] noop(StartOfFile)\n\
+\n\
+\n\
+\n
+cfg_err_equals=

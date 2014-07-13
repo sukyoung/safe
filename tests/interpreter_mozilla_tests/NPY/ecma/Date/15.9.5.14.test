@@ -1,0 +1,59 @@
+################################################################################
+#    Copyright (c) 2012, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=15.9.5.14
+INTERPRETER_TESTS_DIR=${JS_HOME}/tests/interpreter_mozilla_tests/ecma/Date
+interpret_mozilla
+interpret_mozilla_out_WCIequals=\
+15.9.5.14 Date.prototype.getHours()\n\
+ PASSED! (new Date(1355762726547)).getHours() = 1 expected: 1\n\
+ PASSED! (new Date(1355766326547)).getHours() = 2 expected: 2\n\
+ PASSED! (new Date(1355769926547)).getHours() = 3 expected: 3\n\
+ PASSED! (new Date(1355773526547)).getHours() = 4 expected: 4\n\
+ PASSED! (new Date(1355777126547)).getHours() = 5 expected: 5\n\
+ PASSED! (new Date(1355780726547)).getHours() = 6 expected: 6\n\
+ PASSED! (new Date(-62167215600000)).getHours() = 10 expected: 10\n\
+ PASSED! (new Date(-62167212000000)).getHours() = 11 expected: 11\n\
+ PASSED! (new Date(-62167208400000)).getHours() = 12 expected: 12\n\
+ PASSED! (new Date(-62167204800000)).getHours() = 13 expected: 13\n\
+ PASSED! (new Date(-62167201200000)).getHours() = 14 expected: 14\n\
+ PASSED! (new Date(-62167197600000)).getHours() = 15 expected: 15\n\
+ PASSED! (new Date(3600000)).getHours() = 10 expected: 10\n\
+ PASSED! (new Date(7200000)).getHours() = 11 expected: 11\n\
+ PASSED! (new Date(10800000)).getHours() = 12 expected: 12\n\
+ PASSED! (new Date(14400000)).getHours() = 13 expected: 13\n\
+ PASSED! (new Date(18000000)).getHours() = 14 expected: 14\n\
+ PASSED! (new Date(21600000)).getHours() = 15 expected: 15\n\
+ PASSED! (new Date(-2208985200000)).getHours() = 10 expected: 10\n\
+ PASSED! (new Date(-2208981600000)).getHours() = 11 expected: 11\n\
+ PASSED! (new Date(-2208978000000)).getHours() = 12 expected: 12\n\
+ PASSED! (new Date(-2208974400000)).getHours() = 13 expected: 13\n\
+ PASSED! (new Date(-2208970800000)).getHours() = 14 expected: 14\n\
+ PASSED! (new Date(-2208967200000)).getHours() = 15 expected: 15\n\
+ PASSED! (new Date(946688400000)).getHours() = 10 expected: 10\n\
+ PASSED! (new Date(946692000000)).getHours() = 11 expected: 11\n\
+ PASSED! (new Date(946695600000)).getHours() = 12 expected: 12\n\
+ PASSED! (new Date(946699200000)).getHours() = 13 expected: 13\n\
+ PASSED! (new Date(946702800000)).getHours() = 14 expected: 14\n\
+ PASSED! (new Date(946706400000)).getHours() = 15 expected: 15\n\
+ PASSED! (new Date(951786000000)).getHours() = 10 expected: 10\n\
+ PASSED! (new Date(951789600000)).getHours() = 11 expected: 11\n\
+ PASSED! (new Date(951793200000)).getHours() = 12 expected: 12\n\
+ PASSED! (new Date(951796800000)).getHours() = 13 expected: 13\n\
+ PASSED! (new Date(951800400000)).getHours() = 14 expected: 14\n\
+ PASSED! (new Date(951804000000)).getHours() = 15 expected: 15\n\
+ PASSED! (new Date(1104541200000)).getHours() = 10 expected: 10\n\
+ PASSED! (new Date(1104544800000)).getHours() = 11 expected: 11\n\
+ PASSED! (new Date(1104548400000)).getHours() = 12 expected: 12\n\
+ PASSED! (new Date(1104552000000)).getHours() = 13 expected: 13\n\
+ PASSED! (new Date(1104555600000)).getHours() = 14 expected: 14\n\
+ PASSED! (new Date(1104559200000)).getHours() = 15 expected: 15\n\
+ PASSED! (new Date(NaN)).getHours() = NaN expected: NaN\n\
+ PASSED! Date.prototype.getHours.length = 0 expected: 0\n\
+\n
+interpret_err_equals=

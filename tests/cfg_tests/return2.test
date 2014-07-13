@@ -1,0 +1,47 @@
+################################################################################
+#    Copyright (c) 2012, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=return2
+CFG_TESTS_DIR=${JS_HOME}/tests/cfg_tests
+cfg
+cfg_out_WCIequals=\
+(0,LBlock(6))\n\
+\n\
+\n\
+(0,LBlock(5))\n\
+    [EDGE] after-call(<>Global<>ignore2)\n\
+    [10] noop(EndOfFile)\n\
+\n\
+\n\
+(1,LBlock(4))\n\
+    [3] x := "B"\n\
+\n\
+\n\
+(1,LBlock(3))\n\
+    [1] assert(! true)\n\
+\n\
+\n\
+(1,LBlock(2))\n\
+    [0] assert(true)\n\
+    [2] return("A")\n\
+\n\
+\n\
+(1,LBlock(1))\n\
+\n\
+\n\
+(0,LBlock(0))\n\
+    [4] f := function (1) @ #1, #2\n\
+    [5] noop(StartOfFile)\n\
+    [6] <>obj<>2 := <>Global<>toObject(f) @ #3\n\
+    [7] <>arguments<>3 := allocArg(0) @ #4\n\
+    [8] <>fun<>4 := <>Global<>getBase(f)\n\
+    [9] call(<>obj<>2, <>fun<>4, <>arguments<>3) @ #5\n\
+\n\
+\n\
+\n
+cfg_err_equals=

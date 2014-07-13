@@ -1,0 +1,30 @@
+################################################################################
+#    Copyright (c) 2013, KAIST.
+#    All rights reserved.\n#
+#    Use is subject to license terms.\n#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=nestedfundecl1
+DISAMB_TESTS_DIR=${JS_HOME}/tests/disambiguator_tests
+disambiguate
+disambiguate_out_WCIequals=\
+${DISAMB_TESTS_DIR}/nestedfundecl1.js:4:3-6:3: \n\
+    Warning: the use of FunctionDeclaration as a Statement is not allowed in ECMAScript. \n\
+  function f()  \n\
+  { \n\
+    return y; \n\
+  } \n\
+  y = 1; \n\
+  obj = { \n\
+    y : 10 \n\
+  }; \n\
+  with(obj) \n\
+  { \n\
+    ; \n\
+  } \n\
+  alert(f()); \n\
+  f(); \n\
+  y; \n\
+   \n\
+\n
+disambiguate_err_equals=

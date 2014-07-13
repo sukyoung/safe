@@ -1,0 +1,26 @@
+################################################################################
+#    Copyright (c) 2012, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=15.9.5.22-4
+INTERPRETER_TESTS_DIR=${JS_HOME}/tests/interpreter_mozilla_tests/ecma/Date
+interpret_mozilla
+interpret_mozilla_out_WCIequals=\
+15.9.5.22 Date.prototype.getTimezoneOffset()\n\
+ PASSED! (new Date(-2208988799999)).getTimezoneOffset() = -540 expected: -540\n\
+ PASSED! (new Date(-2208988799998)).getTimezoneOffset() = -540 expected: -540\n\
+ PASSED! (new Date(-2208988799997)).getTimezoneOffset() = -540 expected: -540\n\
+ PASSED! (new Date(-2208988799996)).getTimezoneOffset() = -540 expected: -540\n\
+ PASSED! (new Date(-2208988799995)).getTimezoneOffset() = -540 expected: -540\n\
+ PASSED! (new Date(-2208988799994)).getTimezoneOffset() = -540 expected: -540\n\
+ PASSED! (new Date(-2208988799993)).getTimezoneOffset() = -540 expected: -540\n\
+ PASSED! (new Date(-2208988799992)).getTimezoneOffset() = -540 expected: -540\n\
+ PASSED! (new Date(-2208988799991)).getTimezoneOffset() = -540 expected: -540\n\
+ PASSED! (new Date(-2208988799990)).getTimezoneOffset() = -540 expected: -540\n\
+ PASSED! (new Date(-2208988799989)).getTimezoneOffset() = -540 expected: -540\n\
+\n
+interpret_err_equals=

@@ -1,0 +1,2268 @@
+* {
+	margin: 0px; padding: 0px; -ms-word-break: break-all; -ms-word-wrap: break-word;
+}
+body {
+	_position: relative;
+}
+body {
+	font: 12px/1.5em SimSun; color: rgb(51, 51, 51); font-size-adjust: none; font-stretch: normal;
+}
+th {
+	font: 12px/1.5em SimSun; color: rgb(51, 51, 51); font-size-adjust: none; font-stretch: normal;
+}
+td {
+	font: 12px/1.5em SimSun; color: rgb(51, 51, 51); font-size-adjust: none; font-stretch: normal;
+}
+input {
+	font: 12px/1.5em SimSun; color: rgb(51, 51, 51); font-size-adjust: none; font-stretch: normal;
+}
+select {
+	font: 12px/1.5em SimSun; color: rgb(51, 51, 51); font-size-adjust: none; font-stretch: normal;
+}
+textarea {
+	font: 12px/1.5em SimSun; color: rgb(51, 51, 51); font-size-adjust: none; font-stretch: normal;
+}
+button {
+	font: 12px/1.5em SimSun; color: rgb(51, 51, 51); font-size-adjust: none; font-stretch: normal;
+}
+body {
+	margin: 0px; padding: 0px;
+}
+h1 {
+	margin: 0px; padding: 0px;
+}
+h2 {
+	margin: 0px; padding: 0px;
+}
+h3 {
+	margin: 0px; padding: 0px;
+}
+h4 {
+	margin: 0px; padding: 0px;
+}
+h5 {
+	margin: 0px; padding: 0px;
+}
+h6 {
+	margin: 0px; padding: 0px;
+}
+form {
+	margin: 0px; padding: 0px;
+}
+fieldset {
+	margin: 0px; padding: 0px;
+}
+div {
+	margin: 0px; padding: 0px;
+}
+dl {
+	margin: 0px; padding: 0px;
+}
+dt {
+	margin: 0px; padding: 0px;
+}
+dd {
+	margin: 0px; padding: 0px;
+}
+ul {
+	margin: 0px; padding: 0px;
+}
+ol {
+	margin: 0px; padding: 0px;
+}
+li {
+	margin: 0px; padding: 0px;
+}
+input {
+	margin: 0px; padding: 0px;
+}
+button {
+	margin: 0px; padding: 0px;
+}
+textarea {
+	margin: 0px; padding: 0px;
+}
+p {
+	margin: 0px; padding: 0px;
+}
+th {
+	margin: 0px; padding: 0px;
+}
+td {
+	margin: 0px; padding: 0px;
+}
+a {
+	margin: 0px; padding: 0px;
+}
+img {
+	margin: 0px; padding: 0px;
+}
+strong {
+	margin: 0px; padding: 0px;
+}
+.ckl_page {
+	margin: 0px; padding: 0px; overflow: hidden;
+}
+div {
+	margin: 0px; padding: 0px; border: 0px currentColor;
+}
+form {
+	margin: 0px; padding: 0px; border: 0px currentColor;
+}
+img {
+	margin: 0px; padding: 0px; border: 0px currentColor;
+}
+ul {
+	margin: 0px; padding: 0px; border: 0px currentColor;
+}
+ol {
+	margin: 0px; padding: 0px; border: 0px currentColor;
+}
+li {
+	margin: 0px; padding: 0px; border: 0px currentColor;
+}
+dl {
+	margin: 0px; padding: 0px; border: 0px currentColor;
+}
+dt {
+	margin: 0px; padding: 0px; border: 0px currentColor;
+}
+dd {
+	margin: 0px; padding: 0px; border: 0px currentColor;
+}
+p {
+	margin: 0px; padding: 0px; border: 0px currentColor;
+}
+h1 {
+	margin: 0px; padding: 0px; line-height: 150%; font-size: 12px;
+}
+h2 {
+	margin: 0px; padding: 0px; line-height: 150%; font-size: 12px;
+}
+h3 {
+	margin: 0px; padding: 0px; line-height: 150%; font-size: 12px;
+}
+h4 {
+	margin: 0px; padding: 0px; line-height: 150%; font-size: 12px;
+}
+h5 {
+	margin: 0px; padding: 0px; line-height: 150%; font-size: 12px;
+}
+h6 {
+	margin: 0px; padding: 0px; line-height: 150%; font-size: 12px;
+}
+li {
+	list-style-type: none;
+}
+img {
+	vertical-align: middle;
+}
+input {
+	vertical-align: middle;
+}
+cite {
+	font-style: normal;
+}
+em {
+	font-style: normal;
+}
+i {
+	font-style: normal;
+}
+a {
+	outline: 0px; color: rgb(51, 51, 51); text-decoration: none;
+}
+a:hover {
+	color: rgb(51, 153, 0); text-decoration: underline;
+}
+a img {
+	border: 0px currentColor;
+}
+.clear {
+	font: 0px/0px sans-serif; clear: both; display: block; font-size-adjust: none; font-stretch: normal;
+}
+.cfix::after {
+	height: 0px; clear: both; display: block; visibility: hidden; content: ".";
+}
+.cfix {
+	-ms-zoom: 1;
+}
+.hand {
+	cursor: pointer;
+}
+.area {
+	margin: 0px auto; width: 1000px;
+}
+.abs {
+	position: absolute;
+}
+.rel {
+	position: relative;
+}
+.fl {
+	float: left;
+}
+.fr {
+	float: right;
+}
+.areaSpace {
+	height: 10px; line-height: 10px; overflow: hidden; clear: both; display: block;
+}
+.ckl_heatopmain {
+	margin: 0px auto; width: 1000px;
+}
+.ckl_logomain {
+	margin: 0px auto; width: 1000px;
+}
+.ckl_navlist {
+	margin: 0px auto; width: 1000px;
+}
+.ckl_footmai {
+	margin: 0px auto; width: 1000px;
+}
+.ckl_bannerimg {
+	margin: 0px auto; width: 1000px;
+}
+.ckl_banner {
+	height: 60px; overflow: hidden; position: relative;
+}
+.ckl_bannerimg {
+	text-align: center; display: block; position: relative; cursor: pointer;
+}
+.ckl_bannerimg em {
+	background: url("ckl_colsoe.jpg") no-repeat; top: 7px; width: 20px; height: 20px; right: 6px; display: block; position: absolute; cursor: pointer;
+}
+.ckl_btin .ckl_but {
+	background: url("ckl_ku6icon.png") no-repeat;
+}
+.ckl_lis .ckl_entire a {
+	background: url("ckl_ku6icon.png") no-repeat;
+}
+.ckl_lis li .ckl_xy {
+	background: url("ckl_ku6icon.png") no-repeat;
+}
+.ckl_lis .ckl_px a {
+	background: url("ckl_ku6icon.png") no-repeat;
+}
+.ckl_list li .ckl_play {
+	background: url("ckl_ku6icon.png") no-repeat;
+}
+.ckl_list li span.ckl_on {
+	background: url("ckl_ku6icon.png") no-repeat;
+}
+.ckl_list li .ckl_ect {
+	background: url("ckl_ku6icon.png") no-repeat;
+}
+.ckl_list li .ckl_ect1 {
+	background: url("ckl_ku6icon.png") no-repeat;
+}
+.ckl_list li .ckl_zt {
+	background: url("ckl_ku6icon.png") no-repeat;
+}
+.ckl_list li .ckl_zt1 {
+	background: url("ckl_ku6icon.png") no-repeat;
+}
+.ckl_list li .ckl_zt2 {
+	background: url("ckl_ku6icon.png") no-repeat;
+}
+.ckl_list li .ckl_te .ckl_pc1 em {
+	background: url("ckl_ku6icon.png") no-repeat;
+}
+.ckl_list li .ckl_te .ckl_pc2 em {
+	background: url("ckl_ku6icon.png") no-repeat;
+}
+.ckl_list li .ckl_te .ckl_pc3 em {
+	background: url("ckl_ku6icon.png") no-repeat;
+}
+.ckl_side .ckl_histop .ckl_closed {
+	background: url("ckl_ku6icon.png") no-repeat;
+}
+.ckl_evt li a em {
+	background: url("ckl_ku6icon.png") no-repeat;
+}
+.ckl_landed a em {
+	background: url("ckl_ku6icon.png") no-repeat;
+}
+.ckl_list li .ckl_te .lw_pc1 em {
+	background: url("ckl_ku6icon.png") no-repeat;
+}
+.ckl_landed .ckl_onkey .ckl_onkeya a em {
+	background: url("ckl_ku6icon.png") no-repeat;
+}
+.ckl_landed .ckl_onkey .ckl_onkeymore .ckl_uploa {
+	background: url("ckl_ku6icon.png") no-repeat;
+}
+.ckl_picbottom .ckl_picborde .ckl_picbojiao {
+	background: url("ckl_ku6icon.png") no-repeat;
+}
+.ckl_pictutop .ckl_grade .ckl_green {
+	background: url("ckl_ku6icon.png") no-repeat;
+}
+.ckl_smailbanner ul li p em {
+	background: url("ckl_ku6icon.png") no-repeat;
+}
+.tab_containt li.ckl_Choice p span.ckl_cho1 em {
+	background: url("ckl_ku6icon.png") no-repeat;
+}
+.tab_containt li.part01 .v_wap .slider .item a em {
+	background: url("ckl_ku6icon.png") no-repeat;
+}
+.ckl_btin .ckl_but {
+	_background: url(ckl_ku6icon1.png) no-repeat;
+}
+.ckl_lis .ckl_entire a {
+	_background: url(ckl_ku6icon1.png) no-repeat;
+}
+.ckl_lis li .ckl_xy {
+	_background: url(ckl_ku6icon1.png) no-repeat;
+}
+.ckl_lis .ckl_px a {
+	_background: url(ckl_ku6icon1.png) no-repeat;
+}
+.ckl_list li .ckl_play {
+	_background: url(ckl_ku6icon1.png) no-repeat;
+}
+.ckl_list li span.ckl_on {
+	_background: url(ckl_ku6icon1.png) no-repeat;
+}
+.ckl_list li .ckl_ect {
+	_background: url(ckl_ku6icon1.png) no-repeat;
+}
+.ckl_list li .ckl_ect1 {
+	_background: url(ckl_ku6icon1.png) no-repeat;
+}
+.ckl_list li .ckl_zt {
+	_background: url(ckl_ku6icon1.png) no-repeat;
+}
+.ckl_list li .ckl_zt1 {
+	_background: url(ckl_ku6icon1.png) no-repeat;
+}
+.ckl_list li .ckl_zt2 {
+	_background: url(ckl_ku6icon1.png) no-repeat;
+}
+.ckl_list li .ckl_te .ckl_pc1 em {
+	_background: url(ckl_ku6icon1.png) no-repeat;
+}
+.ckl_list li .ckl_te .ckl_pc2 em {
+	_background: url(ckl_ku6icon1.png) no-repeat;
+}
+.ckl_list li .ckl_te .ckl_pc3 em {
+	_background: url(ckl_ku6icon1.png) no-repeat;
+}
+.ckl_side .ckl_histop .ckl_closed {
+	_background: url(ckl_ku6icon1.png) no-repeat;
+}
+.ckl_evt li a em {
+	_background: url(ckl_ku6icon1.png) no-repeat;
+}
+.ckl_landed a em {
+	_background: url(ckl_ku6icon1.png) no-repeat;
+}
+.ckl_list li .ckl_te .lw_pc1 em {
+	_background: url(ckl_ku6icon1.png) no-repeat;
+}
+.ckl_landed .ckl_onkey .ckl_onkeya a em {
+	_background: url(ckl_ku6icon1.png) no-repeat;
+}
+.ckl_landed .ckl_onkey .ckl_onkeymore .ckl_uploa {
+	_background: url(ckl_ku6icon1.png) no-repeat;
+}
+.ckl_picbottom .ckl_picborde .ckl_picbojiao {
+	_background: url(ckl_ku6icon1.png) no-repeat;
+}
+.ckl_pictutop .ckl_grade .ckl_green {
+	_background: url(ckl_ku6icon1.png) no-repeat;
+}
+.ckl_smailbanner ul li p em {
+	_background: url(ckl_ku6icon1.png) no-repeat;
+}
+.tab_containt li.ckl_Choice p span.ckl_cho1 em {
+	_background: url(ckl_ku6icon1.png) no-repeat;
+}
+.tab_containt li.part01 .v_wap .slider .item a em {
+	_background: url(ckl_ku6icon1.png) no-repeat;
+}
+.ckl_pictutop .ckl_grade .ckl_green {
+	background: url("LV1-10.png") no-repeat;
+}
+.ckl_maltop .ckl_green {
+	background: url("LV1-10.png") no-repeat;
+}
+.ckl_pictutop .ckl_grade .ckl_green {
+	_background: url(LV1-101.png) no-repeat;
+}
+.ckl_maltop .ckl_green {
+	_background: url(LV1-101.png) no-repeat;
+}
+.ckl_pictutop .ckl_grade .ckl_green {
+	background-position: 0px -279px; width: 38px; height: 14px; float: left; display: block;
+}
+.ckl_maltop .ckl_green {
+	background-position: 0px -279px; width: 38px; height: 14px; float: left; display: block;
+}
+.ckl_pictutop .ckl_grade .ckl_green1 {
+	
+}
+.ckl_maltop .ckl_green1 {
+	
+}
+.ckl_pictutop .ckl_grade .ckl_green2 {
+	background-position: 0px -29px;
+}
+.ckl_maltop .ckl_green2 {
+	background-position: 0px -29px;
+}
+.ckl_pictutop .ckl_grade .ckl_green3 {
+	background-position: 0px -55px;
+}
+.ckl_maltop .ckl_green3 {
+	background-position: 0px -55px;
+}
+.ckl_pictutop .ckl_grade .ckl_green4 {
+	background-position: 0px -84px;
+}
+.ckl_maltop .ckl_green4 {
+	background-position: 0px -84px;
+}
+.ckl_pictutop .ckl_grade .ckl_green5 {
+	background-position: 0px -113px;
+}
+.ckl_maltop .ckl_green5 {
+	background-position: 0px -113px;
+}
+.ckl_pictutop .ckl_grade .ckl_green6 {
+	background-position: 0px -142px;
+}
+.ckl_maltop .ckl_green6 {
+	background-position: 0px -142px;
+}
+.ckl_pictutop .ckl_grade .ckl_green7 {
+	background-position: 0px -168px;
+}
+.ckl_maltop .ckl_green7 {
+	background-position: 0px -168px;
+}
+.ckl_pictutop .ckl_grade .ckl_green8 {
+	background-position: 0px -197px;
+}
+.ckl_maltop .ckl_green8 {
+	background-position: 0px -197px;
+}
+.ckl_pictutop .ckl_grade .ckl_green9 {
+	background-position: 0px -223px;
+}
+.ckl_maltop .ckl_green9 {
+	background-position: 0px -223px;
+}
+.ckl_pictutop .ckl_grade .ckl_green10 {
+	background-position: 0px -250px;
+}
+.ckl_maltop .ckl_green10 {
+	background-position: 0px -250px;
+}
+.ckl_pictutop .ckl_grade .ckl_blank0 {
+	background-position: -58px -279px;
+}
+.ckl_maltop .ckl_blank0 {
+	background-position: -58px -279px;
+}
+.ckl_pictutop .ckl_grade .ckl_blank1 {
+	background-position: -58px 0px;
+}
+.ckl_maltop .ckl_blank1 {
+	background-position: -58px 0px;
+}
+.ckl_pictutop .ckl_grade .ckl_blank2 {
+	background-position: -58px -29px;
+}
+.ckl_maltop .ckl_blank2 {
+	background-position: -58px -29px;
+}
+.ckl_pictutop .ckl_grade .ckl_blank3 {
+	background-position: -58px -55px;
+}
+.ckl_maltop .ckl_blank3 {
+	background-position: -58px -55px;
+}
+.ckl_pictutop .ckl_grade .ckl_blank4 {
+	background-position: -58px -84px;
+}
+.ckl_maltop .ckl_blank4 {
+	background-position: -58px -84px;
+}
+.ckl_pictutop .ckl_grade .ckl_blank5 {
+	background-position: -58px -113px;
+}
+.ckl_maltop .ckl_blank5 {
+	background-position: -58px -113px;
+}
+.ckl_pictutop .ckl_grade .ckl_blank6 {
+	background-position: -58px -142px;
+}
+.ckl_maltop .ckl_blank6 {
+	background-position: -58px -142px;
+}
+.ckl_pictutop .ckl_grade .ckl_blank7 {
+	background-position: -58px -168px;
+}
+.ckl_maltop .ckl_blank7 {
+	background-position: -58px -168px;
+}
+.ckl_pictutop .ckl_grade .ckl_blank8 {
+	background-position: -58px -197px;
+}
+.ckl_maltop .ckl_blank8 {
+	background-position: -58px -197px;
+}
+.ckl_pictutop .ckl_grade .ckl_blank9 {
+	background-position: -58px -223px;
+}
+.ckl_maltop .ckl_blank9 {
+	background-position: -58px -223px;
+}
+.ckl_pictutop .ckl_grade .ckl_blank10 {
+	background-position: -58px -250px;
+}
+.ckl_maltop .ckl_blank10 {
+	background-position: -58px -250px;
+}
+.ckl_logomain .ckl_form label {
+	transition:0.5s; -webkit-transition: all .5s; -moz-transition: all .5s; -o-transition: all .5s;
+}
+.ckl_logomain .ckl_form .ckl_btin {
+	transition:0.5s; -webkit-transition: all .5s; -moz-transition: all .5s; -o-transition: all .5s;
+}
+.ckl_footer .ckl_form .ckl_btin {
+	transition:0.5s; -webkit-transition: all .5s; -moz-transition: all .5s; -o-transition: all .5s;
+}
+.ckl_footer .ckl_form label {
+	transition:0.5s; -webkit-transition: all .5s; -moz-transition: all .5s; -o-transition: all .5s;
+}
+.ckl_ulx .ac_menu_ctn table .mouseover td {
+	transition:0.5s; -webkit-transition: all .5s; -moz-transition: all .5s; -o-transition: all .5s;
+}
+.ckl_side .ckl_histop a {
+	transition:0.5s; -webkit-transition: all .5s; -moz-transition: all .5s; -o-transition: all .5s;
+}
+.ckl_ulx ul li a.eon {
+	transition:0.5s; -webkit-transition: all .5s; -moz-transition: all .5s; -o-transition: all .5s;
+}
+.ckl_ulx ul li a {
+	transition:0.5s; -webkit-transition: all .5s; -moz-transition: all .5s; -o-transition: all .5s;
+}
+.ckl_header {
+	margin: 0px auto; min-width: 1000px;
+}
+.ckl_headetop {
+	background: rgb(225, 225, 225); height: 30px; overflow: hidden;
+}
+.ckl_logo {
+	background: rgb(255, 255, 255); height: 74px; padding-top: 26px; margin-bottom: 6px;
+}
+.ckl_heatopmain {
+	color: rgb(117, 117, 117); line-height: 30px;
+}
+.ckl_heatopmain a {
+	color: rgb(117, 117, 117); line-height: 30px;
+}
+.ckl_logomain h1 {
+	margin: 0px 102px 0px 0px;
+}
+.ckl_logomain h1 a {
+	background: url("ckl_logo.jpg") no-repeat; width: 214px; height: 43px; display: inline-block;
+}
+.ckl_logomain .ckl_form {
+	margin-right: 15px; position: relative; z-index: 10;
+}
+.ckl_logomain .ckl_form label {
+	background: 0px; padding: 0px 6px; border-radius: 5px 0px 0px 5px; border: 1px solid rgb(207, 207, 207); width: 314px; height: 37px; float: left; display: block;
+}
+.ckl_logomain .ckl_form label.ckl_on {
+	border-color: rgb(156, 199, 21);
+}
+.ckl_logomain .ckl_form .ckl_on.ckl_btin {
+	border-color: rgb(156, 199, 21);
+}
+.ckl_logomain .ckl_form label input {
+	background: 0px; margin: 8px 0px; outline: 0px; border: 0px currentColor; width: 100%; height: 21px; color: rgb(153, 153, 153); line-height: 21px; font-size: 14px; -webkit-appearance: textfield;
+}
+.ckl_btin {
+	background: rgb(245, 245, 245); border-width: 1px 1px 1px 0px; border-style: solid solid solid none; border-color: rgb(207, 207, 207) rgb(207, 207, 207) rgb(207, 207, 207) currentColor; border-radius: 0px 5px 5px 0px; width: 42px; height: 37px; display: inline-block; position: relative; _height: 39px;
+}
+.ckl_btin .ckl_but {
+	background-position: -65px 10px; border: 0px currentColor; width: 42px; height: 37px; cursor: pointer;
+}
+.ckl_up {
+	background: rgb(136, 136, 136); padding: 0px 16px; height: 39px; color: rgb(255, 255, 255); line-height: 39px; font-family: "Microsoft YaHei"; font-size: 18px; float: left; display: inline-block;
+}
+.ckl_up:hover {
+	color: rgb(255, 255, 255);
+}
+.ckl_user {
+	
+}
+.ckl_user a {
+	color: rgb(66, 66, 66); line-height: 39px; font-family: "Microsoft YaHei"; font-size: 18px;
+}
+.ckl_user a.ckl_registration {
+	background: rgb(245, 130, 32); padding: 0px 20px; height: 39px; color: rgb(255, 255, 255); margin-left: 16px; display: inline-block;
+}
+.ckl_user a.ckl_registration:hover {
+	color: rgb(255, 255, 255);
+}
+.ckl_logomain .ckl_keyword {
+	width: 368px; height: 18px; overflow: hidden; margin-left: 316px;
+}
+.ckl_logomain .ckl_keyword a {
+	color: rgb(153, 153, 153); margin-right: 7px;
+}
+.ckl_logomain .ckl_keyword a:hover {
+	color: rgb(153, 153, 153);
+}
+.ckl_ulx {
+	background: rgb(255, 255, 255); border: 1px solid rgb(212, 212, 212); left: 0px; top: 39px; width: 370px; position: absolute; z-index: 7;
+}
+.ckl_ulx .ac_menu_ctn {
+	width: 100%; padding-top: 5px;
+}
+.ckl_ulx .ac_menu_ctn table {
+	width: 100%;
+}
+.ckl_ulx .ac_menu_ctn table tr td {
+	height: 25px; color: rgb(51, 51, 51); line-height: 25px; padding-left: 6px; font-weight: 700; display: block; cursor: pointer;
+}
+.ckl_ulx .ac_menu_ctn table .mouseover td {
+	background: rgb(156, 199, 21); height: 25px; color: rgb(255, 255, 255); line-height: 25px; padding-left: 6px; font-weight: 700; display: block; cursor: pointer;
+}
+.ckl_ulx div {
+	cursor: pointer;
+}
+.ckl_ulx ul {
+	padding-top: 5px;
+}
+.ckl_ulx ul li a {
+	height: 25px; color: rgb(51, 51, 51); line-height: 25px; padding-left: 6px; display: block;
+}
+.ckl_ulx ul li a:hover {
+	background: rgb(156, 199, 21); color: rgb(255, 255, 255); font-weight: 700;
+}
+.ckl_ulx ul li.eon a {
+	background: rgb(156, 199, 21); color: rgb(255, 255, 255); font-weight: 700;
+}
+.ckl_ulx div {
+	padding-left: 6px;
+}
+.ckl_nav {
+	background: rgb(156, 199, 21); height: 50px;
+}
+.ckl_navlist {
+	
+}
+.ckl_lis {
+	
+}
+.ckl_lis li {
+	float: left;
+}
+.ckl_lis li.ckl_fr {
+	font-size: 14px; float: right;
+}
+.ckl_lis li.ckl_fr a {
+	background: 0px; padding: 0px 5px; font-size: 14px;
+}
+.ckl_lis li a {
+	color: rgb(255, 255, 255); font-family: "Microsoft YaHei"; font-size: 16px; font-weight: 700; float: left; display: inline-block;
+}
+.ckl_lis .ckl_nal {
+	
+}
+.ckl_navlist .ckl_lis .ckl_none a {
+	background: 0px;
+}
+.ckl_lis .ckl_za a {
+	background: url("ckl_lined.jpg") no-repeat right; padding: 0px 20px; outline: 0px; line-height: 50px;
+}
+.ckl_lis .ckl_nal a {
+	background: url("ckl_lined.jpg") no-repeat right; padding: 0px 20px; outline: 0px; line-height: 50px;
+}
+.ckl_lis .ckl_za a:hover {
+	background: rgb(120, 155, 0); color: rgb(255, 255, 255); text-decoration: none;
+}
+.ckl_lis .ckl_za a.ckl_on {
+	background: rgb(120, 155, 0); color: rgb(255, 255, 255); text-decoration: none;
+}
+.ckl_lis .ckl_nal a:hover {
+	background: rgb(120, 155, 0); color: rgb(255, 255, 255); text-decoration: none;
+}
+.ckl_lis .ckl_nal a.ckl_on {
+	background: rgb(120, 155, 0); color: rgb(255, 255, 255); text-decoration: none;
+}
+.ckl_lis .ckl_entire {
+	width: 164px; position: relative; z-index: 20;
+}
+.ckl_lis .ckl_px {
+	width: 164px; position: relative; z-index: 20;
+}
+.ckl_lis .ckl_entire {
+	background: rgb(72, 72, 72);
+}
+.ckl_lis .ckl_entire a {
+	background-position: -107px 20px; outline: 0px; color: rgb(255, 255, 255); line-height: 50px; padding-left: 20px; margin-left: 10px;
+}
+.ckl_lis .ckl_px a {
+	background-position: -107px 20px; outline: 0px; color: rgb(255, 255, 255); line-height: 50px; padding-left: 20px; margin-left: 10px;
+}
+.ckl_lis .ckl_entire a:hover {
+	color: rgb(255, 255, 255); text-decoration: none;
+}
+.ckl_lis li .ckl_xy {
+	background-position: 0px -77px; width: 59px; height: 35px;
+}
+.ckl_ls {
+	background: rgb(255, 255, 255); border-width: 0px 1px 1px; border-style: none solid solid; border-color: currentColor rgb(207, 207, 207) rgb(207, 207, 207); padding: 22px 0px 10px; border-radius: 0px 0px 3px 3px; left: 0px; top: 50px; width: 162px; color: rgb(100, 100, 100); line-height: 30px; overflow: hidden; font-size: 14px; position: absolute; z-index: 4;
+}
+.ckl_lis .ckl_entire .ckl_ls a {
+	background: 0px; color: rgb(100, 100, 100); line-height: 30px; padding-left: 0px; font-size: 14px; font-weight: 400; margin-left: 0px; float: none;
+}
+.ckl_lis .ckl_entire .ckl_ls a:hover {
+	color: rgb(51, 153, 0);
+}
+.ckl_ls p {
+	width: 130px; height: 30px; overflow: hidden; margin-left: 20px;
+}
+.l_vlist .ckl_list li .ckl_te .ckl_pc1 {
+	width: 162px; float: none;
+}
+.ckl_list {
+	
+}
+.ckl_list li {
+	width: 122px;
+}
+.ckl_list li .ckl_tex {
+	width: 122px; display: block; position: relative; cursor: pointer;
+}
+.ckl_list li .ckl_tex:hover {
+	text-decoration: none;
+}
+.ckl_list li .ckl_img {
+	width: 122px; overflow: hidden;
+}
+.ckl_list li .ckl_tim {
+	background: rgb(0, 0, 0); padding: 0px 4px; left: 0px; bottom: 0px; color: rgb(255, 255, 255); position: absolute; z-index: 1; opacity: 0.7;
+}
+.ckl_list li .ckl_play {
+	background-position: -108px -77px; width: 16px; height: 16px; right: 0px; bottom: 0px; display: none; position: absolute; z-index: 2; cursor: pointer;
+}
+.ckl_list li span.ckl_on {
+	background-position: -108px -96px;
+}
+.ckl_list li .ckl_ect {
+	background-position: -66px -77px; left: 0px; top: 0px; width: 32px; height: 17px; display: block; position: absolute; z-index: 3;
+}
+.ckl_list li .ckl_ect1 {
+	background-position: -66px -77px; left: 0px; top: 0px; width: 32px; height: 17px; display: block; position: absolute; z-index: 3;
+}
+.ckl_list li .ckl_ect1 {
+	background-position: -66px -95px;
+}
+.ckl_list li .ckl_zt {
+	left: 0px; top: 0px; width: 39px; height: 39px; display: block; position: absolute; z-index: 4;
+}
+.ckl_list li .ckl_zt1 {
+	left: 0px; top: 0px; width: 39px; height: 39px; display: block; position: absolute; z-index: 4;
+}
+.ckl_list li .ckl_zt2 {
+	left: 0px; top: 0px; width: 39px; height: 39px; display: block; position: absolute; z-index: 4;
+}
+.ckl_list li .ckl_zt {
+	background-position: -245px 0px;
+}
+.ckl_list li .ckl_zt1 {
+	background-position: -245px -39px;
+}
+.ckl_list li .ckl_zt2 {
+	background-position: -245px -78px;
+}
+.ckl_list li .ckl_a {
+	outline: 0px; height: 32px; color: rgb(51, 51, 51); line-height: 16px; overflow: hidden; padding-top: 6px; display: block;
+}
+.ckl_list li .ckl_a:hover {
+	color: rgb(51, 153, 0); text-decoration: underline;
+}
+.ckl_list li .ckl_te {
+	position: relative;
+}
+.ckl_list li .ckl_te .ckl_pc1 {
+	height: 16px; color: rgb(153, 153, 153); line-height: 14px; overflow: hidden; margin-top: 6px; display: block; _height: 12px; _line-height: 14px;
+}
+.ckl_list li .ckl_te .ckl_pc2 {
+	height: 16px; color: rgb(153, 153, 153); line-height: 14px; overflow: hidden; margin-top: 6px; display: block; _height: 12px; _line-height: 14px;
+}
+.ckl_list li .ckl_te .ckl_pc3 {
+	height: 16px; color: rgb(153, 153, 153); line-height: 14px; overflow: hidden; margin-top: 6px; display: block; _height: 12px; _line-height: 14px;
+}
+.ckl_list li .ckl_te .lw_pc1 {
+	height: 16px; color: rgb(153, 153, 153); line-height: 14px; overflow: hidden; margin-top: 6px; display: block; _height: 12px; _line-height: 14px;
+}
+.ckl_list li .ckl_te .ckl_pc1:hover {
+	color: rgb(51, 153, 0); text-decoration: underline;
+}
+.ckl_list li .ckl_te .ckl_pc1 {
+	width: 117px; line-height: 14px; float: left; cursor: pointer;
+}
+.slide_tab .ckl_list li .ckl_te .ckl_pc1 {
+	width: 162px; float: none;
+}
+.ckl_list li .ckl_te .ckl_pc2 {
+	margin-right: 14px; display: inline;
+}
+.ckl_list li .ckl_te .ckl_pc1 em {
+	width: 12px; height: 12px; overflow: hidden; margin-right: 4px; float: left; display: block;
+}
+.ckl_list li .ckl_te .ckl_pc2 em {
+	width: 12px; height: 12px; overflow: hidden; margin-right: 4px; float: left; display: block;
+}
+.ckl_list li .ckl_te .ckl_pc3 em {
+	width: 12px; height: 12px; overflow: hidden; margin-right: 4px; float: left; display: block;
+}
+.ckl_list li .ckl_te .lw_pc1 em {
+	width: 12px; height: 12px; overflow: hidden; margin-right: 4px; float: left; display: block;
+}
+.ckl_list li .ckl_te .ckl_pc1 em {
+	
+}
+.ckl_list li .ckl_te .ckl_pc2 em {
+	background-position: -22px 0px;
+}
+.ckl_list li .ckl_te .ckl_pc3 em {
+	background-position: -44px 0px;
+}
+.ckl_list li .ckl_te .lw_pc1 em {
+	background-position: 0px -12px;
+}
+.ckl_list li .ckl_te .ckl_pc1 span {
+	_line-height: 14px;
+}
+.l_u1_ad .ckl_te .ckl_pc2 {
+	_line-height: 14px;
+}
+.ckl_popup {
+	background: rgb(255, 255, 255); border-radius: 2px; left: 0px; top: -226px; width: 294px; height: 200px; display: none; position: absolute; z-index: 6; box-shadow: 0px 0px 10px #e6e6e6; _border: 1px solid #e8e8e8;
+}
+.ckl_side .ckl_histop {
+	background: rgb(244, 244, 244); width: 276px; height: 38px; line-height: 35px; overflow: hidden;
+}
+.ckl_footer {
+	background: rgb(129, 129, 129); height: 420px; padding-top: 38px;
+}
+.ckl_logo {
+	background: rgb(255, 255, 255); height: 74px; padding-top: 26px;
+}
+.ckl_heatopmain {
+	color: rgb(117, 117, 117); line-height: 30px;
+}
+.ckl_heatopmain a {
+	color: rgb(117, 117, 117); line-height: 30px;
+}
+.ckl_footer h1 {
+	margin: 8px 10px 0px 210px; display: inline;
+}
+.ckl_footer h1 a {
+	background: url("ckl_logo1.jpg") no-repeat; width: 180px; height: 35px; display: inline-block;
+}
+.ckl_footer .ckl_form {
+	margin-top: 10px; margin-right: 15px; position: relative;
+}
+.ckl_footer .ckl_form label {
+	background: rgb(255, 255, 255); padding: 0px 6px; border-radius: 5px 0px 0px 5px; border: 1px solid rgb(207, 207, 207); width: 292px; height: 27px; float: left; display: block;
+}
+.ckl_footer .ckl_form label.ckl_on {
+	border-color: rgb(156, 199, 21);
+}
+.ckl_footer .ckl_form .ckl_on.ckl_btin {
+	border-color: rgb(156, 199, 21);
+}
+.ckl_footer .ckl_form label input {
+	background: 0px; outline: 0px; border: 0px currentColor; width: 100%; height: 27px; color: rgb(153, 153, 153); line-height: 27px; font-size: 14px; -webkit-appearance: textfield;
+}
+.ckl_footer .ckl_keyword {
+	width: 343px; height: 18px; overflow: hidden; margin-left: 400px;
+}
+.ckl_footer .ckl_keyword a {
+	color: rgb(212, 212, 212); margin-right: 7px;
+}
+.ckl_footer .ckl_keyword a:hover {
+	color: rgb(212, 212, 212);
+}
+.ckl_footer .ckl_btin {
+	background: rgb(245, 245, 245); border-width: 1px 1px 1px 0px; border-style: solid solid solid none; border-color: rgb(207, 207, 207) rgb(207, 207, 207) rgb(207, 207, 207) currentColor; border-radius: 0px 5px 5px 0px; width: 35px; height: 27px; display: inline-block; position: relative; _height: 29px;
+}
+.ckl_footer .ckl_btin .ckl_but {
+	background-position: -65px 5px; border: 0px currentColor; width: 35px; height: 27px; cursor: pointer; _height: 29px;
+}
+.ckl_footer .ckl_copy {
+	text-align: center; color: rgb(255, 255, 255); line-height: 23px; margin-top: 34px;
+}
+.ckl_footer .ckl_copy a {
+	text-align: center; color: rgb(255, 255, 255); line-height: 23px; margin-top: 34px;
+}
+.ckl_footer .ckl_copy a:hover {
+	color: rgb(255, 255, 255);
+}
+.ckl_footer .ckl_plocas {
+	text-align: center; margin-top: 12px;
+}
+.ckl_footer .ckl_plocas a {
+	background: url("ckl_copyright.jpg") no-repeat; width: 120px; height: 50px; margin-right: 6px; display: inline-block;
+}
+.ckl_footer .ckl_plocas a.ckl_i1 {
+	
+}
+.ckl_footer .ckl_plocas a.ckl_i2 {
+	background-position: 0px -50px;
+}
+.ckl_footer .ckl_plocas a.ckl_i3 {
+	background-position: 0px -100px;
+}
+.ckl_footer .ckl_plocas a.ckl_i4 {
+	background-position: 0px -150px; width: 135px;
+}
+.ckl_footer .ckl_plocas a.ckl_i5 {
+	background-position: 0px -200px; width: 116px;
+}
+.ckl_footer .ckl_lib {
+	margin-top: 40px;
+}
+.ckl_footer .ckl_lib1 {
+	height: 150px; color: rgb(255, 255, 255); line-height: 27px; border-right-color: rgb(221, 221, 221); border-right-width: 1px; border-right-style: solid; display: inline;
+}
+.ckl_footer .ckl_lib2 {
+	height: 150px; color: rgb(255, 255, 255); line-height: 27px; border-right-color: rgb(221, 221, 221); border-right-width: 1px; border-right-style: solid; display: inline;
+}
+.ckl_footer .ckl_lib3 {
+	height: 150px; color: rgb(255, 255, 255); line-height: 27px; border-right-color: rgb(221, 221, 221); border-right-width: 1px; border-right-style: solid; display: inline;
+}
+.ckl_footer .ckl_lib2 {
+	margin: 0px 0px 0px 19px; width: 200px; padding-right: 0px;
+}
+.ckl_footer .ckl_lib1 h3 {
+	font-size: 14px; font-weight: 700;
+}
+.ckl_footer .ckl_lib2 h3 {
+	font-size: 14px; font-weight: 700;
+}
+.ckl_footer .ckl_lib3 h3 {
+	font-size: 14px; font-weight: 700;
+}
+.ckl_footer .ckl_lib1 {
+	width: 200px; padding-right: 10px; margin-left: 130px;
+}
+.ckl_footer .ckl_lib1 a {
+	color: rgb(255, 255, 255); display: block;
+}
+.ckl_footer .ckl_lib2 li a {
+	color: rgb(255, 255, 255); display: block;
+}
+.ckl_footer .ckl_lib1 a:hover {
+	color: rgb(255, 255, 255);
+}
+.ckl_footer .ckl_lib2 li a:hover {
+	color: rgb(255, 255, 255);
+}
+.ckl_footer .ckl_lib1 a {
+	width: 75px; margin-right: 20px; float: left; display: inline-block;
+}
+.ckl_footer .ckl_lib2 li {
+	width: 45px; margin-right: 20px; float: left;
+}
+.ckl_footer .ckl_lib3 {
+	padding: 0px; width: 100px; margin-left: 44px;
+}
+.ckl_footer .ckl_lib4 {
+	border-right-color: currentColor; border-right-width: 0px; border-right-style: none;
+}
+.ckl_footer .ckl_lib4 li {
+	width: 75px;
+}
+.ckl_side {
+	width: 81px; height: 281px; right: 0px; bottom: 120px; position: fixed; z-index: 30; _position: absolute;
+}
+.ckl_tan {
+	background: url("ckl_socll.png") no-repeat; width: 81px; height: 68px; display: block; cursor: pointer;
+}
+.ckl_side .ckl_pen {
+	background: url("ckl_socll.png") no-repeat; width: 81px; height: 68px; display: block; cursor: pointer;
+}
+.ckl_side .ckl_wewi {
+	background: url("ckl_socll.png") no-repeat; width: 81px; height: 68px; display: block; cursor: pointer;
+}
+.ckl_side .ckl_on {
+	background: url("ckl_socll.png") no-repeat; width: 81px; height: 68px; display: block; cursor: pointer;
+}
+.ckl_side .ckl_wewi {
+	background-position: 0px -98px; height: 98px;
+}
+.ckl_side .ckl_wewi a {
+	background: rgb(255, 255, 255); margin: 0px auto; padding: 4px; width: 66px; height: 66px; overflow: hidden; display: block;
+}
+.ckl_side .ckl_wewi a.mobilecode {
+	background: 0px; height: 15px;
+}
+.ckl_tan {
+	background-position: 0px -30px; position: relative;
+}
+.ckl_tan:hover {
+	background-position: -129px -30px;
+}
+.ckl_side .ckl_on {
+	background-position: -129px -30px;
+}
+.ckl_side .ckl_pen {
+	background-position: 0px -196px; height: 60px; display: none;
+}
+.ckl_side .ckl_pen:hover {
+	background-position: -129px -196px;
+}
+.ckl_side .ckl_history {
+	border: 2px solid rgb(230, 230, 230); top: 0px; width: 276px; right: 100px; position: absolute;
+}
+.ckl_side .ckl_tan .ckl_history .ckl_histop {
+	background: rgb(244, 244, 244); width: 276px; height: 38px; line-height: 35px; overflow: hidden;
+}
+.ckl_side .ckl_histop a {
+	width: 137px; height: 35px; text-align: center; color: rgb(150, 150, 150); font-family: "Microsoft YaHei"; font-size: 18px; border-right-color: rgb(230, 230, 230); border-right-width: 1px; border-right-style: solid; float: left; display: inline-block;
+}
+.ckl_side .ckl_histop a.ckl_bodre {
+	border-right-color: currentColor; border-right-width: 0px; border-right-style: none;
+}
+.ckl_side .ckl_histop a.ckl_tab:hover {
+	background: rgb(255, 255, 255); color: rgb(137, 178, 10); text-decoration: none; border-bottom-color: rgb(156, 199, 21); border-bottom-width: 3px; border-bottom-style: solid;
+}
+.ckl_side .ckl_histop a.ckl_on {
+	background: rgb(255, 255, 255); color: rgb(137, 178, 10); text-decoration: none; border-bottom-color: rgb(156, 199, 21); border-bottom-width: 3px; border-bottom-style: solid;
+}
+.ckl_side .ckl_histop .ckl_closed {
+	background-position: -348px 0px; width: 32px;
+}
+.ckl_evt {
+	width: 276px; height: 320px;
+}
+.ckl_side .ckl_ul {
+	background: rgb(255, 255, 255); width: 276px; border-top-color: rgb(230, 230, 230); border-top-width: 1px; border-top-style: solid;
+}
+.ckl_evt li {
+	padding: 3px 12px 0px 15px; height: 28px; border-bottom-color: rgb(230, 230, 230); border-bottom-width: 1px; border-bottom-style: solid;
+}
+.ckl_evt li a {
+	height: 28px; color: rgb(174, 171, 171); line-height: 28px; overflow: hidden; font-size: 12px; display: block;
+}
+.ckl_evt li a em {
+	background-position: -158px -96px; width: 12px; height: 12px; margin-top: 6px; float: right; display: block;
+}
+.ckl_landed {
+	background: rgb(244, 244, 244); padding-bottom: 10px;
+}
+.ckl_landed .ckl_onkey {
+	margin: 0px auto; width: 250px; padding-top: 10px;
+}
+.ckl_landed .ckl_onkey .ckl_onkeya {
+	margin-bottom: 10px; border-bottom-color: rgb(217, 217, 217); border-bottom-width: 1px; border-bottom-style: solid;
+}
+.ckl_landed .ckl_onkey .ckl_onkeymore {
+	padding-top: 10px; padding-bottom: 10px; border-top-color: rgb(217, 217, 217); border-top-width: 1px; border-top-style: solid;
+}
+.ckl_landed .ckl_onkey .ckl_onkeya a {
+	background: rgb(248, 248, 248); border: 1px solid rgb(214, 214, 214); width: 248px; height: 32px; color: rgb(156, 199, 21); line-height: 32px; font-size: 14px; display: block; box-shadow: inset 0px 3px 0px #fff;
+}
+.ckl_landed .ckl_onkey .ckl_onkeya a:hover {
+	background: rgb(255, 255, 255); border-color: rgb(173, 217, 34); text-decoration: none;
+}
+.ckl_landed .ckl_onkey .ckl_onkeya a em {
+	background-position: -134px -96px; margin: 8px 7px 0px 85px; width: 15px; height: 15px; float: left; display: inline-block;
+}
+.ckl_landed .ckl_onkey .ckl_onkeyb a em {
+	background-position: -158px -77px;
+}
+.ckl_landed .ckl_onkey .ckl_onkeymore .ckl_delh {
+	color: rgb(0, 0, 0); line-height: 24px;
+}
+.ckl_landed .ckl_onkey .ckl_onkeymore .ckl_delh:hover {
+	color: rgb(108, 171, 0);
+}
+.ckl_landed .ckl_onkey .ckl_onkeymore .ckl_uploa {
+	background-position: 0px -122px; width: 60px; height: 24px; line-height: 24px; padding-left: 28px; display: inline-block;
+}
+.ckl_side .ckl_ent {
+	width: 276px; height: 320px;
+}
+.ckl_side .ckl_ent li {
+	padding: 13px 12px 10px 15px; height: auto; line-height: 0; font-size: 0px; cursor: pointer; _overflow: hidden;
+}
+.ckl_side .ckl_ent li:hover {
+	background: rgb(244, 244, 244);
+}
+.ckl_side .ckl_ent li.ckl_clon {
+	background: rgb(244, 244, 244);
+}
+.ckl_side .ckl_ent li:hover a {
+	color: rgb(0, 0, 0);
+}
+.ckl_side .ckl_ent li.ckl_clon a {
+	color: rgb(0, 0, 0);
+}
+.ckl_side .ckl_ent li.ckl_clon .ckl_later a {
+	color: rgb(95, 155, 2);
+}
+.ckl_side .ckl_ent li .ckl_later {
+	text-align: right;
+}
+.ckl_side .ckl_ent li .ckl_later a {
+	height: 15px; color: rgb(156, 199, 21); line-height: 15px; float: right; display: inline-block;
+}
+.ckl_side .ckl_ent li .ckl_later span {
+	color: rgb(203, 203, 203); line-height: 15px;
+}
+div.jquery-gdakram-tooltip {
+	background: rgb(255, 255, 255); padding: 0px; border: 1px solid rgb(221, 221, 221); left: 0px; top: 0px; color: rgb(255, 255, 255); font-size: 12px; position: absolute; z-index: 19;
+}
+div.jquery-gdakram-tooltip div.content {
+	background: rgb(255, 255, 255); position: relative;
+}
+div.jquery-gdakram-tooltip div.content h1 {
+	
+}
+div.jquery-gdakram-tooltip div.up_arrow {
+	background: url("ckl_ku6icon.png") no-repeat -358px 0px; left: 30px; top: -8px; width: 12px; height: 9px; display: block; position: absolute; _background: url(ckl_ku6icon1.png) no-repeat;
+}
+div.jquery-gdakram-tooltip div.down_arrow {
+	background: url("ckl_ku6icon.png") no-repeat -358px -18px; left: 30px; width: 10px; height: 8px; bottom: -8px; display: block; position: absolute; _background: url(ckl_ku6icon1.png) no-repeat;
+}
+div.jquery-gdakram-tooltip div.right_arrow {
+	background: url("ckl_ku6icon.png") no-repeat -378px 0px; top: 30px; width: 9px; height: 12px; right: -8px; display: block; position: absolute; _background: url(ckl_ku6icon1.png) no-repeat;
+}
+div.jquery-gdakram-tooltip div.left_arrow {
+	background: url("ckl_ku6icon.png") no-repeat -378px -18px; left: -8px; top: 40px; width: 9px; height: 12px; display: block; position: absolute; _background: url(ckl_ku6icon1.png) no-repeat;
+}
+.ckl_picture {
+	background: rgb(255, 255, 255); width: 270px; position: absolute; z-index: 22;
+}
+.ckl_pictumain {
+	padding: 8px 0px 0px; width: 270px; position: relative;
+}
+.ckl_pictutop {
+	padding: 0px 0px 0px 15px;
+}
+.ckl_pictutop .ckl_avatar {
+	width: 54px; height: 54px; margin-right: 10px; display: block; position: relative;
+}
+.ckl_pictutop .ckl_avatar img {
+	width: 54px; height: 54px;
+}
+.ckl_pictutop .ckl_avatname {
+	width: 170px; display: block; position: relative;
+}
+.ckl_pictutop .ckl_avatname a {
+	height: 20px; color: rgb(112, 161, 0); line-height: 20px; font-size: 14px; font-weight: 700;
+}
+.ckl_pictutop .ckl_avatname a:hover {
+	text-decoration: underline;
+}
+.ckl_pictutop .ckl_grade {
+	width: 175px;
+}
+.ckl_pictutop .ckl_grade span cite {
+	color: rgb(102, 102, 102); margin-right: 2px; float: left; display: inline-block;
+}
+.ckl_pictutop .ckl_grade .ckl_pixel {
+	margin-left: 5px;
+}
+.ckl_pictutop .ckl_fanvedio {
+	width: 165px; color: rgb(153, 153, 153); overflow: hidden; display: block;
+}
+.ckl_pictutop .ckl_fanvedio cite {
+	color: rgb(112, 161, 0);
+}
+.ckl_pictutop .ckl_fanvedio cite a {
+	color: rgb(112, 161, 0);
+}
+.ckl_pictutop .ckl_fanvedio cite a:hover {
+	text-decoration: underline;
+}
+.ckl_pictutop .ckl_zyweb {
+	color: rgb(102, 102, 102); line-height: 20px; margin-top: 5px; display: block;
+}
+.ckl_picbottom {
+	background: rgb(246, 246, 246); padding: 6px 8px;
+}
+.ckl_picbottom .ckl_cancel {
+	
+}
+.ckl_picbottom .ckl_cancel .ckl_issue {
+	background: url("ckl_icon1.png") no-repeat; width: 48px; height: 20px; display: block;
+}
+.ckl_picbottom .ckl_cancel .ckl_issue {
+	background-position: 0px -63px;
+}
+.ckl_picbottom .ckl_cancel .ckl_issue:hover {
+	background-position: 0px -33px;
+}
+.ckl_picbottom .ckl_cancel .ckl_on.ckl_issue {
+	background-position: 0px -93px;
+}
+.ckl_picbottom .ckl_cancel .ckl_on.ckl_issue:hover {
+	background-position: 0px -93px;
+}
+.ckl_picbottom .ckl_cancel .ckl_caniss {
+	background: rgb(255, 185, 0); width: 64px; height: 20px; text-align: center; color: rgb(255, 255, 255); line-height: 20px; margin-right: 10px; display: block;
+}
+.ckl_picbottom .ckl_cancel .ckl_caniss:hover {
+	text-decoration: none;
+}
+.ckl_picbottom .ckl_cancel .ckl_canred {
+	background: rgb(250, 87, 87);
+}
+.ckl_picbottom .ckl_picborde {
+	background: rgb(255, 255, 255); border-radius: 3px; border: 1px solid rgb(233, 233, 233); width: 242px; padding-left: 10px; margin-top: 12px; position: relative;
+}
+.ckl_picbottom .ckl_picborde textarea {
+	border: 0px currentColor; width: 232px; color: rgb(102, 102, 102); line-height: 20px; overflow: auto; font-size: 12px; -ms-overflow-x: hidden;
+}
+.ckl_picbottom .ckl_picborde .ckl_picbojiao {
+	background-position: -180px -96px; left: 152px; top: -7px; width: 8px; height: 7px; display: block; position: absolute;
+}
+.ckl_words {
+	margin-top: 5px;
+}
+.ckl_words cite {
+	color: rgb(153, 153, 153); line-height: 21px; font-family: Arial,Helvetica,sans-serif; font-weight: 700; float: right;
+}
+.ckl_words a {
+	background: rgb(255, 185, 0); width: 39px; height: 21px; text-align: center; color: rgb(255, 255, 255); line-height: 21px; margin-left: 5px; float: right; display: block;
+}
+.scroller {
+	background: rgb(250, 250, 250); overflow: hidden; position: relative; -ms-overflow-x: hidden; -ms-overflow-y: hidden;
+}
+.scroller-content {
+	width: 110%; height: 100%; overflow: auto; position: relative; z-index: 1; -ms-overflow-x: hidden; -ms-overflow-y: auto;
+}
+.scroller-bar {
+	top: 0px; width: 20px; height: 100%; right: -3px; border-left-color: currentColor; border-left-width: 0px; border-left-style: none; display: none; position: absolute; z-index: 2;
+}
+.scroller-track {
+	width: 100%; height: 100%; overflow: hidden; position: relative;
+}
+.scroller-handle {
+	background: rgb(204, 204, 204); border-radius: 5px; border: 0px currentColor; transition:right 0.1s linear, width 0.1s linear; top: 0px; width: 6px; height: 20px; right: 5px; overflow: hidden; position: absolute; z-index: 2; cursor: pointer; -webkit-transition: right .1s linear, width .1s linear; -moz-transition: right .1s linear, width .1s linear; -o-transition: right .1s linear, width .1s linear;
+}
+.scroller-active .scroller-content {
+	padding: 0px; overflow: scroll; -ms-overflow-x: hidden;
+}
+.scroller-active .scroller-bar {
+	display: block;
+}
+.scroller-active .scroller-content {
+	padding: 0px;
+}
+.scroller-active .scroller-bar {
+	display: block;
+}
+.scroller-horizontal .scroller-content {
+	padding: 0px 0px 10px; overflow: auto; -ms-overflow-x: auto; -ms-overflow-y: hidden;
+}
+.scroller-horizontal .scroller-bar {
+	top: auto; width: 100%; height: 20px; bottom: 0px; border-top-color: rgb(238, 238, 238); border-left-color: currentColor; border-top-width: 1px; border-left-width: 0px; border-top-style: solid; border-left-style: none;
+}
+.scroller-horizontal .scroller-handle {
+	top: auto; width: 20px; height: 10px; right: auto; bottom: 5px;
+}
+.login_mask {
+	left: 0px; top: 0px; width: 100%; height: 100%; position: absolute; z-index: 1999; opacity: 0.7; background-color: gray;
+}
+.login_Box {
+	background: rgb(255, 255, 255); border-radius: 8px; left: -100%; top: 0px; width: 433px; color: rgb(102, 102, 102); overflow: hidden; margin-left: -275px; position: fixed; z-index: 2000; box-shadow: 0px 0px 3px rgba(0,0,0,0.25); _position: absolute;
+}
+.login_Til {
+	background: rgb(235, 235, 235); padding: 0px 20px; border-radius: 8px 8px 0px 0px; height: 0px; color: rgb(102, 102, 102); position: relative;
+}
+.login_Til h1 {
+	padding: 12px 0px 5px; width: 150px; font-size: 20px; font-weight: 400; float: left;
+}
+.login_Til p {
+	width: 350px; color: rgb(153, 153, 153); padding-top: 18px; font-size: 12px; float: left; display: block;
+}
+.login_Til span {
+	background: url("tc_loginImg.png") no-repeat -98px -1px; top: 10px; width: 15px; height: 15px; right: 10px; text-indent: -99px; overflow: hidden; display: block; position: absolute; cursor: pointer;
+}
+.login_Con1 {
+	overflow: hidden;
+}
+.tipsError {
+	background: url("icon.gif") no-repeat 5px -41px rgb(255, 225, 225); padding: 5px; border: 1px solid rgb(232, 253, 217); color: rgb(229, 57, 46); text-indent: 15px; font-size: 12px; margin-top: 2px; margin-bottom: 10px; display: none;
+}
+.lc_left {
+	width: 270px; text-align: center; margin-left: -1px; border-right-color: rgb(204, 204, 204); border-right-width: 1px; border-right-style: dotted; float: left;
+}
+.lc_left p.tx1 {
+	font-size: 12px; display: block; background-color: rgb(255, 255, 255);
+}
+.lc_left p.tx1 a {
+	color: rgb(0, 28, 204);
+}
+.lc_right {
+	width: 265px; overflow: hidden; float: right;
+}
+.lc_right p {
+	background: url("login260x204.jpg") no-repeat 0px 0px; width: 260px; height: 204px; overflow: hidden; display: block;
+}
+.login_fot {
+	background: rgb(235, 235, 235); padding: 0px 5px; border-radius: 0px 0px 8px 8px; height: 90px; clear: both;
+}
+.login_fot h3 {
+	width: 85px; line-height: 55px; font-size: 12px; font-weight: 100; float: left; _float: left;
+}
+.icon_list {
+	padding-top: 10px; font-size: 12px;
+}
+.icon_list li {
+	background: url("//css.ku6cdn.com/comm/passport/201207261448/ico0802.png") no-repeat 0px 0px; width: 52px; height: 30px; line-height: 38px; overflow: hidden; padding-bottom: 0px; padding-left: 25px; margin-right: 5px; float: left; _margin-right: 0;
+}
+.icon_list .one1 {
+	background-position: 0px 7px;
+}
+.icon_list .one2 {
+	background-position: 0px -68px;
+}
+.icon_list .one3 {
+	background-position: 0px -28px;
+}
+.icon_list .one4 {
+	background-position: -158px -29px;
+}
+.icon_list .one5 {
+	background-position: -158px 7px;
+}
+.icon_list .one6 {
+	background-position: -158px -68px;
+}
+.icon_list .one7 {
+	background: url("//css.ku6cdn.com/comm/passport/201304021411/ico-sina.png") no-repeat 0px 10px; padding-left: 19px; margin-left: 4px; _padding-left: 15px;
+}
+.icon_list .one2 {
+	
+}
+.icon_list .one3 {
+	
+}
+.icon_list .one5 {
+	
+}
+#login_links {
+	overflow: hidden; _width: 336px;
+}
+#p_clear {
+	margin: 0px; padding: 0px; width: 0px; height: 0px; clear: both;
+}
+.ckl_smailbanner ul li p em {
+	background-position: 0px -48px; left: 0px; top: 0px; width: 54px; height: 54px; display: block; position: absolute; z-index: 2;
+}
+.tab_containt li.ckl_Choice p span.ckl_cho1 em {
+	background-position: 0px -48px; left: 0px; top: 0px; width: 54px; height: 54px; display: block; position: absolute; z-index: 2;
+}
+.tab_containt li.part01 .v_wap .slider .item a em {
+	background-position: 0px -48px; left: 0px; top: 0px; width: 54px; height: 54px; display: block; position: absolute; z-index: 2;
+}
+.king3 {
+	background: url("ckl_king.png") no-repeat; width: 16px; height: 15px; margin-left: 5px; vertical-align: text-bottom; display: inline-block; _background: url(ckl_king1.png) no-repeat;
+}
+.king4 {
+	background: url("ckl_king.png") no-repeat; width: 16px; height: 15px; margin-left: 5px; vertical-align: text-bottom; display: inline-block; _background: url(ckl_king1.png) no-repeat;
+}
+.king3 {
+	background-position: 0px -37px;
+}
+.king4 {
+	
+}
+.fx_AAad {
+	text-align: center;
+}
+.ckl_logomain {
+	position: relative;
+}
+.qixi {
+	background: url("ckl_qixi.jpg") no-repeat; left: 232px; width: 63px; height: 53px; display: block; position: absolute; cursor: pointer;
+}
+.ckl_banner {
+	background: rgb(238, 143, 165);
+}
+.ckl_qixlog {
+	margin: 0px auto; width: 1000px; position: relative;
+}
+body {
+	margin: 0px; padding: 0px;
+}
+div {
+	margin: 0px; padding: 0px;
+}
+dl {
+	margin: 0px; padding: 0px;
+}
+dt {
+	margin: 0px; padding: 0px;
+}
+dd {
+	margin: 0px; padding: 0px;
+}
+ul {
+	margin: 0px; padding: 0px;
+}
+ol {
+	margin: 0px; padding: 0px;
+}
+li {
+	margin: 0px; padding: 0px;
+}
+h1 {
+	margin: 0px; padding: 0px;
+}
+h2 {
+	margin: 0px; padding: 0px;
+}
+h3 {
+	margin: 0px; padding: 0px;
+}
+h4 {
+	margin: 0px; padding: 0px;
+}
+h5 {
+	margin: 0px; padding: 0px;
+}
+h6 {
+	margin: 0px; padding: 0px;
+}
+pre {
+	margin: 0px; padding: 0px;
+}
+form {
+	margin: 0px; padding: 0px;
+}
+fieldset {
+	margin: 0px; padding: 0px;
+}
+input {
+	margin: 0px; padding: 0px;
+}
+textarea {
+	margin: 0px; padding: 0px;
+}
+p {
+	margin: 0px; padding: 0px;
+}
+blockquote {
+	margin: 0px; padding: 0px;
+}
+th {
+	margin: 0px; padding: 0px;
+}
+td {
+	margin: 0px; padding: 0px;
+}
+h1 {
+	font-weight: 400;
+}
+h2 {
+	font-weight: 400;
+}
+h3 {
+	font-weight: 400;
+}
+h4 {
+	font-weight: 400;
+}
+h5 {
+	font-weight: 400;
+}
+h6 {
+	font-weight: 400;
+}
+a {
+	color: rgb(51, 51, 51); text-decoration: none;
+}
+a:hover {
+	color: rgb(51, 153, 0); text-decoration: underline;
+}
+a:hover {
+	color: rgb(51, 153, 0); text-decoration: underline;
+}
+h3 {
+	width: 100%; overflow: hidden; font-size: 14px;
+}
+h4 {
+	width: 100%; overflow: hidden; font-size: 14px;
+}
+.l_box {
+	margin: 0px auto; width: 1000px; height: auto; overflow: hidden; clear: both; background-color: rgb(255, 255, 255);
+}
+.l_box_left {
+	width: 710px; border-right-color: rgb(207, 207, 207); border-right-width: 1px; border-right-style: solid; float: left;
+}
+.l_u1 {
+	width: 100%; height: auto; overflow: hidden; border-bottom-color: rgb(207, 207, 207); border-bottom-width: 1px; border-bottom-style: solid;
+}
+.l_u2 {
+	width: 100%; height: auto; overflow: hidden; border-bottom-color: rgb(207, 207, 207); border-bottom-width: 1px; border-bottom-style: solid;
+}
+.l_u4 {
+	width: 100%; height: auto; overflow: hidden; border-bottom-color: rgb(207, 207, 207); border-bottom-width: 1px; border-bottom-style: solid;
+}
+.l_u5 {
+	width: 100%; height: auto; overflow: hidden; border-bottom-color: rgb(207, 207, 207); border-bottom-width: 1px; border-bottom-style: solid;
+}
+.l_u6 {
+	width: 100%; height: auto; overflow: hidden; border-bottom-color: rgb(207, 207, 207); border-bottom-width: 1px; border-bottom-style: solid;
+}
+.l_u1 {
+	height: 407px; padding-top: 0px;
+}
+.l_u1_cet {
+	width: 164px; font-family: "microsoft yahei"; float: left;
+}
+.l_u1_cet .lw_ls {
+	background: rgb(255, 255, 255); border-width: 0px 1px 1px; border-style: none solid solid; border-color: currentColor rgb(207, 207, 207) rgb(207, 207, 207); padding: 12px 0px 10px; border-radius: 0px 0px 3px 3px; width: 162px; color: rgb(100, 100, 100); line-height: 30px; overflow: hidden; font-size: 14px;
+}
+.l_u1_cet .lw_lis a {
+	background: 0px; color: rgb(100, 100, 100); line-height: 28px; padding-left: 0px; font-size: 14px; margin-left: 0px; float: none;
+}
+.l_u1_cet .lw_lis a:hover {
+	color: rgb(51, 153, 0);
+}
+.l_u1_cet .lw_ls p {
+	width: 130px; height: 28px; overflow: hidden; margin-left: 25px;
+}
+.l_u1_ad {
+	padding: 20px 20px 10px; width: 506px; float: right;
+}
+.flashNews {
+	width: 506px; text-align: left; overflow: hidden; position: relative;
+}
+.flashNews {
+	height: 375px;
+}
+.flashNews .item {
+	width: 506px; height: 375px; overflow: hidden; position: relative;
+}
+.flashNews .item img {
+	width: 506px; height: 310px;
+}
+.flashNews .bg {
+	background: rgb(0, 0, 0); left: 0px; width: 506px; height: 45px; bottom: 65px; position: absolute; z-index: 1; opacity: 0.39; -moz-opacity: .39;
+}
+.flashNews h3 {
+	padding: 0px 10px; left: 0px; width: 486px; height: 45px; bottom: 65px; color: rgb(255, 255, 255); line-height: 45px; overflow: hidden; position: absolute; z-index: 2;
+}
+.flashNews h3 a {
+	color: rgb(255, 255, 255); font-family: "microsoft yahei",heiti,Arial,Helvetica,sans-serif; font-size: 14px; font-weight: 400;
+}
+.flashNews h3 a:hover {
+	color: rgb(255, 255, 255); text-decoration: none;
+}
+.flashNews p {
+	width: 506px; height: 40px; line-height: 40px; overflow: hidden; font-size: 14px; display: block;
+}
+.flashNews .ckl_connection a {
+	background: url("ckl_icon1.png"); width: 10px; height: 10px; overflow: hidden; display: inline-block; _background: url(ckl_icon2.png);
+}
+.flashNews .ckl_connection a.ckl_on {
+	background: url("ckl_icon1.png"); width: 10px; height: 10px; overflow: hidden; display: inline-block; _background: url(ckl_icon2.png);
+}
+.l_u2 .ckl_connection a {
+	background: url("ckl_icon1.png"); width: 10px; height: 10px; overflow: hidden; display: inline-block; _background: url(ckl_icon2.png);
+}
+.l_u2 .ckl_connection a.ckl_on {
+	background: url("ckl_icon1.png"); width: 10px; height: 10px; overflow: hidden; display: inline-block; _background: url(ckl_icon2.png);
+}
+.l_u2 .ckl_connection {
+	height: 22px; right: 5px; bottom: 0px; position: absolute; z-index: 2; _bottom: -3px;
+}
+.flashNews .ckl_connection {
+	height: 22px; right: 5px; bottom: 70px; position: absolute; z-index: 2;
+}
+.flashNews .ckl_connection a {
+	background-position: -79px 0px; width: 10px; height: 10px; text-align: right; margin-right: 5px; display: inline-block;
+}
+.l_u2 .ckl_connection a {
+	background-position: -79px 0px; width: 10px; height: 10px; text-align: right; margin-right: 5px; display: inline-block;
+}
+.flashNews .ckl_connection a:hover {
+	background-position: -94px 0px;
+}
+.flashNews .ckl_connection a.ckl_on {
+	background-position: -94px 0px;
+}
+.l_u2 .ckl_connection a:hover {
+	background-position: -94px 0px;
+}
+.l_u2 .ckl_connection a.ckl_on {
+	background-position: -94px 0px;
+}
+.l_u1_ad p {
+	height: 30px;
+}
+.l_u2 ul.tab {
+	width: 692px; height: 37px; margin-right: 20px; border-bottom-color: rgb(142, 197, 53); border-bottom-width: 1px; border-bottom-style: solid;
+}
+.l_u2 ul.tab li {
+	height: 37px; float: left;
+}
+.l_u2 ul.tab li a {
+	padding: 0px 25px; width: auto; color: rgb(168, 168, 168); line-height: 37px; font-family: "microsoft yahei",heiti,Arial,Helvetica,sans-serif; font-size: 20px; text-decoration: none; float: left; display: block;
+}
+.l_u2 ul.tab li a:hover {
+	color: rgb(255, 255, 255); background-color: rgb(142, 197, 53);
+}
+.l_u2 ul.tab li a.press {
+	padding: 0px 25px; color: rgb(255, 255, 255); background-color: rgb(142, 197, 53);
+}
+.tab_containt li.part01 {
+	width: 327px; float: left;
+}
+.tab_containt li h3 {
+	color: rgb(66, 66, 66); line-height: 25px; clear: both;
+}
+.tab_containt li.part01 .v_wap {
+	margin: 30px 0px 24px; border: 1px solid rgb(222, 222, 222); width: 325px; height: 195px;
+}
+.tab_containt li.part01 .v_wap .slider .item {
+	left: 5px; top: 5px; width: 320px; height: 187px;
+}
+.tab_containt li.part01 .v_wap .slider .item a {
+	width: 320px; height: 187px; display: block; position: relative;
+}
+.tab_containt li.ckl_Choice {
+	margin: 30px 0px 24px 9px; border: 1px solid rgb(222, 222, 222); width: 170px; height: 195px; float: left; position: relative;
+}
+.tab_containt li.ckl_Choice p {
+	margin: 0px auto; width: 162px; height: 160px; padding-top: 4px; z-index: 2;
+}
+.tab_containt li.ckl_Choice a {
+	background: rgb(255, 255, 255); left: 4px; top: 4px; width: 162px; height: 187px; display: block; position: absolute; z-index: 3; opacity: 0; -moz-opacity: 0;
+}
+.tab_containt li.ckl_Choice span {
+	display: block;
+}
+.tab_containt li.ckl_Choice span.ckl_cho1 {
+	height: 104px; margin-bottom: 4px; position: relative;
+}
+.tab_containt li.ckl_Choice span.ckl_cho2 {
+	width: 79px; height: 50px; margin-right: 4px; float: left;
+}
+.tab_containt li.ckl_Choice span.ckl_cho3 {
+	width: 79px; height: 50px; margin-right: 4px; float: left;
+}
+.tab_containt li.ckl_Choice span.ckl_cho3 {
+	margin-right: 0px;
+}
+.tab_containt li.ckl_Choice span.ckl_cho4 {
+	background: rgb(76, 76, 76); width: 154px; height: 25px; color: rgb(255, 255, 255); line-height: 25px; overflow: hidden; padding-left: 8px; font-size: 14px; margin-top: 4px; margin-left: 4px;
+}
+.lw_pro_ad {
+	width: 320px; text-align: left; overflow: hidden; position: relative;
+}
+.lw_pro_ad {
+	height: 187px;
+}
+.lw_pro_ad .bg {
+	background: rgb(0, 0, 0); left: 0px; width: 320px; height: 30px; bottom: 0px; position: absolute; z-index: 1; opacity: 0.39; -moz-opacity: .39;
+}
+.lw_pro_ad h3 {
+	padding: 0px 10px; left: 0px; width: 280px; height: 30px; bottom: 0px; color: rgb(255, 255, 255); line-height: 30px; overflow: hidden; position: absolute; z-index: 2;
+}
+.lw_pro_ad h3 a {
+	color: rgb(255, 255, 255); font-family: "microsoft yahei",heiti,Arial,Helvetica,sans-serif; font-size: 14px; font-weight: 400;
+}
+.lw_pro_ad h3 a:hover {
+	color: rgb(255, 255, 255); text-decoration: none;
+}
+.lw_pro_ad p {
+	left: 10px; top: 190px; width: 480px; height: 20px; line-height: 20px; position: absolute; z-index: 2;
+}
+.lw_pro_ad p a {
+	color: rgb(189, 189, 189);
+}
+.lw_pro_ad p a:hover {
+	color: rgb(255, 84, 0);
+}
+.lw_pro_ad ul {
+	padding: 8px 10px; height: 10px; right: 0px; bottom: 0px; position: absolute; z-index: 3; _background: 0;
+}
+.lw_pro_ad ul li {
+	width: 10px; height: 10px; margin-right: 5px; float: left;
+}
+.lw_pro_ad ul li a {
+	background: url("transp.png"); width: 10px; height: 10px; display: block; _background: url(transp1.png);
+}
+.lw_pro_ad ul li a.on {
+	background: url("transp.png"); width: 10px; height: 10px; display: block; _background: url(transp1.png);
+}
+.lw_pro_ad ul li a.on {
+	background: url("transp.png") -115px 0px;
+}
+.lw_pro_ad ul li a:hover {
+	background-position: -115px 0px;
+}
+.tab_containt li.part01 p.v_wap span {
+	padding: 0px 15px; width: 250px; height: 30px; color: rgb(255, 255, 255); line-height: 30px; overflow: hidden; font-size: 14px; display: block; background-color: rgb(76, 76, 76);
+}
+.tab_containt ul.pro {
+	
+}
+.tab_containt ul.pro li {
+	padding: 0px 10px; width: 260px; height: 30px; color: rgb(149, 149, 149); line-height: 30px; overflow: hidden; background-color: rgb(239, 239, 239);
+}
+.tab_containt ul.pro li b {
+	padding-right: 5px; font-size: 14px; font-weight: 700; vertical-align: middle;
+}
+.tab_containt ul.pro li a {
+	color: rgb(102, 102, 102);
+}
+.tab_containt ul.pro li a:hover {
+	color: rgb(51, 153, 0);
+}
+.tab_containt ul.pro li.deep {
+	background-color: rgb(228, 228, 228);
+}
+.tab_containt li.part02 {
+	width: 402px; padding-right: 8px; float: right;
+}
+li.part02 .ckl_list {
+	width: 402px; height: auto; overflow: hidden; padding-top: 20px;
+}
+li.part02 .ckl_list li {
+	margin: 0px 12px 0px 0px; width: 122px; height: 165px; padding-top: 10px; float: left;
+}
+li.part02 .ckl_list li .ckl_tex {
+	width: 122px; display: block; position: relative; cursor: pointer;
+}
+li.part02 .ckl_list li .ckl_img {
+	width: 122px; height: 69px; overflow: hidden;
+}
+li.part02 .ckl_list li .ckl_img img {
+	width: 122px; height: 69px;
+}
+.tab_containt li.part03 {
+	width: 710px;
+}
+li.part03 .ckl_list {
+	width: 710px; height: auto; overflow: hidden; padding-top: 20px;
+}
+li.part03 .ckl_list li {
+	margin: 0px 10px 0px 0px; width: 162px; height: 194px; padding-top: 10px; float: left;
+}
+li.part03 .ckl_list li .ckl_tex {
+	width: 162px; display: block; position: relative; cursor: pointer;
+}
+li.part03 .ckl_list li .ckl_img {
+	width: 162px; height: 103px; overflow: hidden;
+}
+li.part03 .ckl_list li .ckl_img img {
+	width: 162px; height: 103px;
+}
+.slide_tab {
+	height: 290px;
+}
+.l_u3 {
+	width: 100%; height: auto; overflow: hidden;
+}
+.l_u3_left {
+	width: 163px; float: left;
+}
+.l_u3_left .l_ad {
+	width: 163px;
+}
+.l_u3_left .l_boke {
+	padding: 15px 0px; background-color: rgb(250, 250, 250);
+}
+.l_u3_left .l_boke h3 {
+	background: url("main.png") no-repeat -140px -60px; width: 100px; height: 27px; margin-left: 10px;
+}
+.l_u3_left .l_boke a.more {
+	width: 163px; height: 40px; clear: both; display: block;
+}
+.l_boke ul {
+	margin: 0px 10px; width: 144px; clear: both;
+}
+.l_boke ul li {
+	padding: 10px 0px 0px; height: 120px;
+}
+.l_boke ul li img {
+	width: 59px; height: 59px; float: left;
+}
+.l_boke ul li p.ri {
+	width: 75px; float: right;
+}
+.l_boke ul li p.ri span.name {
+	width: 75px; height: 36px; overflow: hidden; font-size: 14px; margin-bottom: 5px; vertical-align: top; display: block;
+}
+.l_boke ul li p.ri span.name a {
+	color: rgb(51, 51, 51);
+}
+.l_boke ul li p.ri span.name a:hover {
+	color: rgb(51, 153, 0); text-decoration: underline;
+}
+.l_boke ul li p.ri a.focus {
+	background: url("main.png") no-repeat -140px 0px; width: 50px; height: 20px; display: block;
+}
+ul.title_list {
+	
+}
+ul.title_list li {
+	margin: 0px; padding: 0px; width: 144px; height: 22px; color: rgb(102, 102, 102); line-height: 22px; overflow: hidden;
+}
+ul.title_list li b {
+	padding-right: 3px;
+}
+ul.title_list li a {
+	color: rgb(102, 102, 102);
+}
+ul.title_list li a:hover {
+	color: rgb(51, 153, 0); text-decoration: underline;
+}
+.l_boke ul li ul.title_list {
+	margin: 0px; width: 144px; overflow: hidden; padding-top: 5px; clear: both;
+}
+.l_u3_right {
+	padding: 10px 20px; width: 505px; border-left-color: rgb(207, 207, 207); border-left-width: 1px; border-left-style: solid; float: left; background-color: rgb(255, 255, 255); _padding: 10px 15px;
+}
+.l_row {
+	
+}
+.l_row_top {
+	margin: 0px 0px 12px; height: 40px; clear: both;
+}
+.l_row_top a.row_tit01 {
+	background: url("main.png") no-repeat; width: 135px; height: 40px; float: left; display: block;
+}
+.l_row_top a.row_tit02 {
+	background: url("main.png") no-repeat; width: 135px; height: 40px; float: left; display: block;
+}
+.l_row_top a.row_tit03 {
+	background: url("main.png") no-repeat; width: 135px; height: 40px; float: left; display: block;
+}
+.l_row_top a.row_tit04 {
+	background: url("main.png") no-repeat; width: 135px; height: 40px; float: left; display: block;
+}
+.l_row_top a.row_tit05 {
+	background: url("main.png") no-repeat; width: 135px; height: 40px; float: left; display: block;
+}
+.l_row_top a.row_tit06 {
+	background: url("main.png") no-repeat; width: 135px; height: 40px; float: left; display: block;
+}
+.l_row_top a.row_tit07 {
+	background: url("main.png") no-repeat; width: 135px; height: 40px; float: left; display: block;
+}
+.l_row_top a.row_tit08 {
+	background: url("main.png") no-repeat; width: 135px; height: 40px; float: left; display: block;
+}
+.l_row_top a.row_tit09 {
+	background: url("main.png") no-repeat; width: 135px; height: 40px; float: left; display: block;
+}
+.l_row_top a.row_tit10 {
+	background: url("main.png") no-repeat; width: 135px; height: 40px; float: left; display: block;
+}
+.l_row_top a.row_tit11 {
+	background: url("main.png") no-repeat; width: 135px; height: 40px; float: left; display: block;
+}
+.l_row_top a.row_tit12 {
+	background: url("main.png") no-repeat; width: 135px; height: 40px; float: left; display: block;
+}
+.l_row_top a.row_tit13 {
+	background: url("main.png") no-repeat; width: 135px; height: 40px; float: left; display: block;
+}
+.l_row_top a.row_tit14 {
+	background: url("main.png") no-repeat; width: 135px; height: 40px; float: left; display: block;
+}
+.l_row_top a.row_tit01 {
+	background-position: 0px -4px;
+}
+.l_row_top a.row_tit02 {
+	background-position: 0px -48px;
+}
+.l_row_top a.row_tit03 {
+	background-position: 0px -88px;
+}
+.l_row_top a.row_tit04 {
+	background-position: 0px -127px;
+}
+.l_row_top a.row_tit05 {
+	background-position: 0px -287px;
+}
+.l_row_top a.row_tit06 {
+	background-position: 0px -328px;
+}
+.l_row_top a.row_tit07 {
+	background-position: 0px -207px;
+}
+.l_row_top a.row_tit08 {
+	background-position: 0px -168px;
+}
+.l_row_top a.row_tit09 {
+	background-position: 0px -369px;
+}
+.l_row_top a.row_tit10 {
+	background-position: 0px -528px;
+}
+.l_row_top a.row_tit11 {
+	background-position: 0px -486px;
+}
+.l_row_top a.row_tit12 {
+	background-position: 0px -406px;
+}
+.l_row_top a.row_tit13 {
+	background-position: 0px -447px;
+}
+.l_row_top a.row_tit14 {
+	background-position: 0px -246px;
+}
+.l_row_top p.row_hot {
+	padding: 5px 0px 0px; width: 350px; text-align: right; color: rgb(167, 167, 167); line-height: 20px; overflow: hidden; float: right; display: block;
+}
+p.row_hot a {
+	margin: 0px 3px; padding: 0px; height: 20px; text-align: right; color: rgb(167, 167, 167); line-height: 29px; overflow: hidden;
+}
+p.row_hot a:hover {
+	color: rgb(126, 203, 0); text-decoration: underline;
+}
+p.row_hot a.l_line {
+	background: url("main.png") no-repeat -140px -100px; padding: 0px; width: 16px;
+}
+.l_vlist {
+	width: 506px; height: 190px; overflow: hidden; padding-top: 6px; position: relative;
+}
+.l_vlist .bar_left {
+	background: url("transp.png") no-repeat; top: 0px; width: 30px; height: 200px; display: block; position: absolute; _background: #fff;
+}
+.l_vlist .bar_right {
+	background: url("transp.png") no-repeat; top: 0px; width: 30px; height: 200px; display: block; position: absolute; _background: #fff;
+}
+.l_vlist .bar_left {
+	left: 0px; float: left;
+}
+.l_vlist .bar_right {
+	background-position: -45px 0px; right: 0px; float: right;
+}
+.l_vlist .bar_left a {
+	background: url("main.png") no-repeat; outline: 0px; width: 15px; height: 20px; overflow: hidden; margin-top: 90px; vertical-align: middle; display: block;
+}
+.l_vlist .bar_right a {
+	background: url("main.png") no-repeat; outline: 0px; width: 15px; height: 20px; overflow: hidden; margin-top: 90px; vertical-align: middle; display: block;
+}
+.l_vlist .bar_left a {
+	background-position: -260px 0px;
+}
+.l_vlist .bar_right a {
+	background-position: -273px 0px; margin-left: 15px;
+}
+.l_vlist .bar_left a:hover {
+	background-position: -290px 0px;
+}
+.l_vlist .bar_right a:hover {
+	background-position: -303px 0px;
+}
+.l_row_under {
+	height: auto; overflow: hidden; margin-bottom: 10px;
+}
+.l_vlist .ckl_list {
+	background: rgb(255, 255, 255); width: 2064px; height: 250px;
+}
+.l_vlist .ckl_list li {
+	margin: 0px 10px 0px 0px; width: 162px; height: 194px; float: left;
+}
+.l_vlist .ckl_list li .ckl_tex {
+	width: 162px; display: block; position: relative; cursor: pointer;
+}
+.l_vlist .ckl_list li .ckl_tex:hover {
+	text-decoration: none;
+}
+.l_vlist .ckl_list li .ckl_img {
+	width: 162px; height: 103px; overflow: hidden;
+}
+.l_vlist .ckl_list li .ckl_img img {
+	width: 162px; height: 103px;
+}
+.l_box_right {
+	width: 289px; overflow: hidden; float: right; background-color: rgb(250, 250, 250);
+}
+.l_u4 {
+	padding: 20px 0px 0px; height: 387px;
+}
+.l_u4 .ckl_list {
+	padding: 0px 0px 0px 15px; width: 271px; height: 390px;
+}
+.l_u4 .ckl_list li {
+	margin: 0px 0px 5px; width: 271px; height: 90px;
+}
+.l_u4 .ckl_list li .ckl_tex {
+	width: 148px; margin-right: 5px; float: left; display: block; position: relative; cursor: pointer;
+}
+.l_u4 .ckl_list li .ckl_img {
+	width: 148px; height: 83px; overflow: hidden;
+}
+.l_u4 .ckl_list li .ckl_img img {
+	width: 148px; height: 83px;
+}
+.l_u1_ad .ckl_te {
+	height: 12px; padding-top: 13px; position: relative;
+}
+.l_u1_ad .ckl_te .ckl_pc1 {
+	color: rgb(153, 153, 153); line-height: 12px; margin-top: 0px; display: block; _line-height: 14px;
+}
+.l_u1_ad .ckl_te .ckl_pc2 {
+	color: rgb(153, 153, 153); line-height: 12px; margin-top: 0px; display: block; _line-height: 14px;
+}
+.l_u1_ad .ckl_te .ckl_pc3 {
+	color: rgb(153, 153, 153); line-height: 12px; margin-top: 0px; display: block; _line-height: 14px;
+}
+.l_u1_ad .ckl_te .ckl_pc1:hover {
+	color: rgb(51, 153, 0);
+}
+.l_u1_ad .ckl_te .ckl_pc1 {
+	width: auto; padding-right: 15px; float: left; cursor: pointer;
+}
+.l_u1_ad .ckl_te .ckl_pc1 span {
+	_line-height: 14px;
+}
+.l_u1_ad .ckl_te .ckl_pc2 {
+	overflow: hidden; margin-right: 14px; display: block; _height: 12px;
+}
+.l_u1_ad .ckl_te .ckl_pc1 em {
+	width: 12px; height: 12px; margin-right: 4px; float: left; display: inline;
+}
+.l_u1_ad .ckl_te .ckl_pc2 em {
+	width: 12px; height: 12px; margin-right: 4px; float: left; display: inline;
+}
+.l_u1_ad .ckl_te .ckl_pc3 em {
+	width: 12px; height: 12px; margin-right: 4px; float: left; display: inline;
+}
+.l_u1_ad .ckl_te .ckl_pc1 em {
+	background: url("ckl_ku6icon.png") no-repeat 0px 0px;
+}
+.l_u1_ad .ckl_te .ckl_pc2 em {
+	background: url("ckl_ku6icon.png") no-repeat; _background: url(ckl_ku6icon1.png) no-repeat;
+}
+.l_u1_ad .ckl_te .ckl_pc2 em {
+	background-position: -22px 0px;
+}
+.l_u1_ad .ckl_te .ckl_pc3 em {
+	background: url("ckl_ku6icon.png") no-repeat; _background: url(ckl_ku6icon1.png) no-repeat;
+}
+.l_u1_ad .ckl_te .ckl_pc3 em {
+	background-position: -44px 0px;
+}
+.ckl_popup {
+	background: rgb(255, 255, 255); border-radius: 2px; border: 1px solid rgb(230, 230, 230); left: 0px; top: -226px; width: 294px; height: 200px; display: block; position: absolute; z-index: 6; box-shadow: 0px 0px 5px #e6e6e6;
+}
+.l_u5 {
+	padding: 20px 0px 0px 18px; width: 270px; height: 408px; border-bottom-color: currentColor; border-bottom-width: 0px; border-bottom-style: none;
+}
+.l_u5 ul.tab {
+	padding: 11px 0px 0px; width: 265px; height: 26px; border-bottom-color: rgb(142, 197, 53); border-bottom-width: 1px; border-bottom-style: solid;
+}
+.l_u5 ul.tab li {
+	height: 26px; float: left;
+}
+.l_u5 ul.tab li a {
+	padding: 0px 10px; width: auto; color: rgb(168, 168, 168); line-height: 26px; font-family: "microsoft yahei",heiti,Arial,Helvetica,sans-serif; font-size: 14px; text-decoration: none; float: left; display: block;
+}
+.l_u5 ul.tab li a:hover {
+	color: rgb(255, 255, 255); background-color: rgb(142, 197, 53);
+}
+.l_u5 ul.tab li a.press {
+	color: rgb(255, 255, 255); background-color: rgb(142, 197, 53);
+}
+.l_u5 .tab_containt {
+	margin: 30px 10px 11px 0px; width: 260px;
+}
+.l_u5 .tab_containt li {
+	width: 260px; overflow: hidden; clear: both;
+}
+.l_u5 .tab_containt li a {
+	color: rgb(51, 51, 51);
+}
+.l_u5 .tab_containt li a:hover {
+	color: rgb(51, 153, 0); text-decoration: underline;
+}
+.l_u5 .tab_containt li {
+	height: 28px; line-height: 28px; position: relative; _line-height: 24px;
+}
+.l_u5 .tab_containt li a.r_video {
+	display: none;
+}
+.l_u5 .tab_containt li .green_on {
+	margin: 5px 5px 0px 0px; width: 14px; height: 14px; text-align: center; color: rgb(255, 255, 255); line-height: 14px; font-family: Arial,Helvetica,sans-serif; float: left; display: block; background-color: rgb(208, 208, 208);
+}
+.l_u5 li .r_infor {
+	width: 230px; float: left;
+}
+.l_u5 li .r_infor h3 {
+	width: 230px; height: 28px; line-height: 28px; overflow: hidden; font-size: 12px; display: block;
+}
+.l_u5 li .r_infor .number {
+	display: none;
+}
+.l_u5 li .r_infor .number em {
+	overflow: hidden; _height: 12px;
+}
+.l_u5 ul.tab_containt li .or {
+	margin: 5px 5px 0px 0px; width: 14px; height: 14px; text-align: center; color: rgb(255, 255, 255); line-height: 14px; font-family: Arial,Helvetica,sans-serif; float: left; display: block; background-color: rgb(228, 130, 50);
+}
+.l_u5 .tab_containt li.on {
+	height: 69px; padding-bottom: 8px; position: relative;
+}
+.l_u5 .tab_containt li.on a.r_video {
+	width: 122px; height: 69px; float: left; display: block;
+}
+.l_u5 .tab_containt li.on a.r_video img {
+	width: 122px; height: 69px;
+}
+.l_u5 .tab_containt li a img {
+	display: inline;
+}
+.l_u5 ul.ckl_noxp {
+	
+}
+.l_box_right .l_u5 ul.ckl_noxp li.on .fx_noNu {
+	display: block;
+}
+.l_box_right .l_u5 ul.ckl_noxp li .fx_noNu {
+	display: none;
+}
+.l_u5 .tab_containt li.on .green_on {
+	background: url("green_on.png") no-repeat; margin: 0px; left: 0px; top: 0px; width: 39px; height: 39px; text-align: left; color: rgb(255, 255, 255); line-height: 22px; padding-left: 5px; display: block; position: absolute; _background: url(green_on2.png) no-repeat;
+}
+.l_u5 ul.ckl_noxp li.on .fx_noNum {
+	background: url("green_on.png") no-repeat; margin: 0px; left: 0px; top: 0px; width: 39px; height: 39px; text-align: left; color: rgb(255, 255, 255); line-height: 22px; padding-left: 5px; display: block; position: absolute; _background: url(green_on2.png) no-repeat;
+}
+.l_u5 ul.ckl_noxp li.on .fx_noNum {
+	background: url("green_on1.png") no-repeat; _background: url(green_on3.png) no-repeat;
+}
+.l_u5 ul.ckl_noxp li .r_infor h3 {
+	line-height: 24px;
+}
+.l_u5 .tab_containt li.on .r_infor {
+	width: 128px; float: right;
+}
+.l_u5 .tab_containt li.on .r_infor h3 {
+	width: 128px; height: 36px; line-height: 18px; overflow: hidden; font-size: 12px; display: block;
+}
+.l_u5 .tab_containt li.on .r_infor .number {
+	height: 30px; color: rgb(66, 66, 66); line-height: 30px; overflow: hidden; display: block;
+}
+.l_u5 .tab_containt li.on .r_infor .number em {
+	background: url("ckl_ku6icon.png") no-repeat -22px 0px; width: 12px; height: 12px; margin-top: 9px; margin-right: 5px; float: left; display: block;
+}
+.l_u6 {
+	margin: 0px auto; width: 265px; overflow: hidden; border-bottom-color: currentColor; border-bottom-width: 0px; border-bottom-style: none;
+}
+.l_tit {
+	height: 34px; color: rgb(66, 66, 66); line-height: 34px; padding-left: 12px; font-family: "microsoft yahei",Arial,Helvetica,sans-serif; font-size: 16px;
+}
+.l_u6 .l_tit {
+	background: url("ckl_see1.jpg") no-repeat bottom; padding-left: 3px;
+}
+a.user_sbar {
+	background: url("main.png") no-repeat -260px -30px; width: 10px; height: 65px; right: 0px; float: right; display: block; position: absolute;
+}
+ul.user_list {
+	margin: 0px 0px 0px 5px; width: 260px; position: relative; -ms-overflow-x: hidden;
+}
+ul.user_list li {
+	height: 42px; margin-bottom: 10px;
+}
+ul.user_list li img {
+	width: 42px; height: 42px; float: left;
+}
+ul.user_list li p {
+	width: 190px; line-height: 21px; padding-left: 10px; float: left;
+}
+ul.user_list li p a.name {
+	color: rgb(102, 102, 102); clear: both; display: inline-block;
+}
+ul.user_list li p a.title {
+	width: 190px; height: 21px; color: rgb(176, 176, 176); overflow: hidden; display: block;
+}
+ul.user_list li p a {
+	color: rgb(0, 0, 0);
+}
+ul.user_list li p a:hover {
+	color: rgb(51, 153, 0); text-decoration: underline;
+}
+.l_u6 .scroller {
+	padding: 20px 0px; _overflow: hidden; _width: 265px;
+}
+.l_u6 .scroller-bar {
+	top: 10px;
+}
+.l_u7 {
+	background: rgb(250, 250, 250); padding-bottom: 9px; _padding-bottom: 0;
+}
+.l_u7 .bg_blue {
+	background: url("ckl_see1.jpg") no-repeat bottom;
+}
+.l_u7 .deep_blue {
+	background: url("ckl_see1.jpg") no-repeat bottom;
+}
+.l_u7 .bg_green {
+	background: url("ckl_see.jpg") no-repeat bottom;
+}
+.l_u7 .ckl_list {
+	margin: 12px 0px 0px 18px; width: 260px; _margin: 12px 0 6px 18px;
+}
+.l_u7 .ckl_list li {
+	margin: 0px 0px 22px; width: 260px; height: 90px; padding-top: 10px; _margin: 0 0 17px;
+}
+.l_u7 .ckl_list li .ckl_te {
+	width: 130px; overflow: hidden; float: left; -ms-zoom: 1;
+}
+.l_u7 .ckl_list li .ckl_te .ckl_pc1 {
+	width: 130px; height: 16px; overflow: hidden;
+}
+.l_u7 .ckl_list li .ckl_tex {
+	width: 118px; margin-right: 10px; float: left; position: relative; cursor: pointer;
+}
+.l_u7 .ckl_list li .ckl_img {
+	width: 118px; height: 88px; overflow: hidden;
+}
+.l_u7 .ckl_list li .ckl_img img {
+	width: 118px; height: 88px;
+}
+.slider {
+	position: relative;
+}
+.slider .item {
+	left: 0px; top: 0px; display: none; position: absolute; z-index: 1;
+}
+.l_vlist .ckl_list {
+	left: 0px; top: 0px; position: absolute; z-index: 1;
+}
+.bar_left {
+	display: none;
+}
+.bar_right {
+	display: none;
+}
+.eon a {
+	background: green;
+}
+.ckl_side .ckl_history {
+	overflow: hidden;
+}
+.loading {
+	margin: 2px 0px 17px; padding: 20px 0px 10px; text-align: center;
+}
+.loading span {
+	background: url("http://v.ku6.com/resources/images/loading.gif") no-repeat 0px 1px; padding: 0px 0px 0px 20px; height: 18px; color: rgb(0, 0, 0); line-height: 18px; display: inline-block;
+}
+.moreclass {
+	border: 1px solid rgb(221, 221, 221); width: 158px; height: 101px; text-align: center; line-height: 100px; font-weight: 700; display: block;
+}

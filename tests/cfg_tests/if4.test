@@ -1,0 +1,108 @@
+################################################################################
+#    Copyright (c) 2012, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=if4
+CFG_TESTS_DIR=${JS_HOME}/tests/cfg_tests
+cfg
+cfg_out_WCIequals=\
+(0,LBlock(24))\n\
+    [18] noop(EndOfFile)\n\
+\n\
+\n\
+(0,LBlock(23))\n\
+    [17] assert(alphabet != "X")\n\
+\n\
+\n\
+(0,LBlock(22))\n\
+    [16] assert(alphabet == "X")\n\
+\n\
+\n\
+(0,LBlock(21))\n\
+\n\
+\n\
+(0,LBlock(20))\n\
+\n\
+\n\
+(0,LBlock(19))\n\
+\n\
+\n\
+(0,LBlock(18))\n\
+\n\
+\n\
+(0,LBlock(17))\n\
+    [15] assert(alphabet != "W")\n\
+\n\
+\n\
+(0,LBlock(16))\n\
+    [14] assert(alphabet == "W")\n\
+\n\
+\n\
+(0,LBlock(15))\n\
+    [13] assert(alphabet != "V")\n\
+\n\
+\n\
+(0,LBlock(14))\n\
+    [12] assert(alphabet == "V")\n\
+\n\
+\n\
+(0,LBlock(13))\n\
+    [11] assert(alphabet != "U")\n\
+\n\
+\n\
+(0,LBlock(12))\n\
+    [10] assert(alphabet == "U")\n\
+\n\
+\n\
+(0,LBlock(11))\n\
+    [9] assert(alphabet != "D")\n\
+\n\
+\n\
+(0,LBlock(10))\n\
+    [8] assert(alphabet == "D")\n\
+\n\
+\n\
+(0,LBlock(9))\n\
+\n\
+\n\
+(0,LBlock(8))\n\
+\n\
+\n\
+(0,LBlock(7))\n\
+    [7] assert(alphabet != "C")\n\
+\n\
+\n\
+(0,LBlock(6))\n\
+    [6] assert(alphabet == "C")\n\
+\n\
+\n\
+(0,LBlock(5))\n\
+    [5] assert(alphabet != "B")\n\
+\n\
+\n\
+(0,LBlock(4))\n\
+    [4] assert(alphabet == "B")\n\
+\n\
+\n\
+(0,LBlock(3))\n\
+\n\
+\n\
+(0,LBlock(2))\n\
+    [3] assert(alphabet != "A")\n\
+\n\
+\n\
+(0,LBlock(1))\n\
+    [2] assert(alphabet == "A")\n\
+\n\
+\n\
+(0,LBlock(0))\n\
+    [0] noop(StartOfFile)\n\
+    [1] alphabet := "U"\n\
+\n\
+\n\
+\n
+cfg_err_equals=

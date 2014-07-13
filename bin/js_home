@@ -1,0 +1,64 @@
+#!/bin/bash
+
+################################################################################
+#    Copyright (c) 2012, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+
+# The following code implements auto-homing, if no home is explicitly set
+
+# if JS home is not set
+if [ -z "$JS_HOME" ]; then
+  cmd=$0
+  emptyifslash=${cmd##*/*}
+  # if the command contains any slashes at all
+  if [ -z "$emptyifslash" ]; then
+    # slash occurs in name, use as is
+    true;
+  else
+    # no slash
+    cmd="`which $cmd`"
+  fi
+  # if the command that we found resolves to a symbolic link, try to follow
+  if [ -L $cmd ]; then
+     READLINK=""
+     if [ -e /bin/readlink ]; then
+        # Linux
+        READLINK=/bin/readlink
+     elif [ -e /usr/bin/readlink ]; then
+        # MacOS
+        READLINK=/usr/bin/readlink
+     else
+       echo "You need to set JS_HOME to the directory containing SAFE"
+       echo "The target of the symbolic link could not be followed."
+       exit 1
+     fi
+     # Follow the link, figure out if it is absolute or relative.
+     target="`$READLINK $cmd`"
+     emptyifslash=${target##/*}
+     # if absolute (begins with /)
+     if [ -z "$emptyifslash" ]; then
+       cmd=$target
+     else
+       cmd=${cmd%/*}/$target
+     fi
+     # echo Symlink resolves to $cmd
+  fi
+  JS_HOME="${cmd%/*}/.."
+  JS_HOME="`cd "$JS_HOME"; pwd`"
+  echo "Guessing JS_HOME=$JS_HOME" 1>&2
+fi
+
+if [ -e "${JS_HOME}/bin/jsaf" ]; then
+  true
+else
+  echo "JS_HOME should be the name of the directory including bin/jsaf"
+  echo "instead of '$JS_HOME'"
+  exit 1
+fi
+
+echo "$JS_HOME"

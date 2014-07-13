@@ -1,0 +1,13 @@
+/* the definition of two mutually referential interfaces */
+interface Animal {
+  attribute DOMString name;
+};
+
+interface Human : Animal {
+  attribute Dog? pet;
+};
+
+interface Dog : Animal {
+  attribute Human? owner;
+};
+

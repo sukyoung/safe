@@ -1,0 +1,41 @@
+################################################################################
+#    Copyright (c) 2012, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=15.9.5.23-2
+INTERPRETER_TESTS_DIR=${JS_HOME}/tests/interpreter_mozilla_tests/ecma/Date
+interpret_mozilla
+interpret_mozilla_out_WCIequals=\
+15.9.5.23-2 Date.prototype.setTime()\n\
+ PASSED! ( 2012-12-17T15:45:46.524Z ).setTime(1355759146524) = 1355759146524 expected: 1355759146524\n\
+ PASSED! ( 2012-12-17T15:45:46.524Z ).setTime(1355759146525.1) = 1355759146525 expected: 1355759146525\n\
+ PASSED! ( 2012-12-17T15:45:46.525Z ).setTime(1355759146525) = 1355759146525 expected: 1355759146525\n\
+ PASSED! ( 2012-12-17T15:45:46.525Z ).setTime(1355759146523) = 1355759146523 expected: 1355759146523\n\
+ PASSED! ( 2012-12-17T15:45:46.523Z ).setTime(1355726746524) = 1355726746524 expected: 1355726746524\n\
+ PASSED! ( 2012-12-17T06:45:46.524Z ).setTime(1355791546524) = 1355791546524 expected: 1355791546524\n\
+ PASSED! ( 2012-12-17T15:45:46.524Z ).setTime(0) = 0 expected: 0\n\
+ PASSED! ( 1970-01-01T00:00:00.000Z ).setTime(1.1) = 1 expected: 1\n\
+ PASSED! ( 1970-01-01T00:00:00.001Z ).setTime(1) = 1 expected: 1\n\
+ PASSED! ( 1970-01-01T00:00:00.001Z ).setTime(-1) = -1 expected: -1\n\
+ PASSED! ( 1969-12-31T23:59:59.999Z ).setTime(-32400000) = -32400000 expected: -32400000\n\
+ PASSED! ( 1969-12-31T15:00:00.000Z ).setTime(32400000) = 32400000 expected: 32400000\n\
+ PASSED! ( 2012-12-17T15:45:46.524Z ).setTime(-2208988800000) = -2208988800000 expected: -2208988800000\n\
+ PASSED! ( 1900-01-01T00:00:00.000Z ).setTime(-2208988799998.9) = -2208988799998 expected: -2208988799998\n\
+ PASSED! ( 1900-01-01T00:00:00.002Z ).setTime(-2208988799999) = -2208988799999 expected: -2208988799999\n\
+ PASSED! ( 1900-01-01T00:00:00.001Z ).setTime(-2208988800001) = -2208988800001 expected: -2208988800001\n\
+ PASSED! ( 1899-12-31T23:59:59.999Z ).setTime(-2209021200000) = -2209021200000 expected: -2209021200000\n\
+ PASSED! ( 1899-12-31T15:00:00.000Z ).setTime(-2208956400000) = -2208956400000 expected: -2208956400000\n\
+ PASSED! ( 2012-12-17T15:45:46.524Z ).setTime(946684800000) = 946684800000 expected: 946684800000\n\
+ PASSED! ( 2000-01-01T00:00:00.000Z ).setTime(946684800001.1) = 946684800001 expected: 946684800001\n\
+ PASSED! ( 2000-01-01T00:00:00.001Z ).setTime(946684800001) = 946684800001 expected: 946684800001\n\
+ PASSED! ( 2000-01-01T00:00:00.001Z ).setTime(946684799999) = 946684799999 expected: 946684799999\n\
+ PASSED! ( 1999-12-31T23:59:59.999Z ).setTime(946652400000) = 946652400000 expected: 946652400000\n\
+ PASSED! ( 1999-12-31T15:00:00.000Z ).setTime(946717200000) = 946717200000 expected: 946717200000\n\
+ PASSED! (new Date(NaN)).setTime() = NaN expected: NaN\n\
+ PASSED! Date.prototype.setTime.length = 1 expected: 1\n\
+\n
+interpret_err_equals=

@@ -1,0 +1,14 @@
+################################################################################
+#    Copyright (c) 2012-2014, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=array-2
+INTERPRETER_TESTS_DIR=${JS_HOME}/tests/interpreter_tests
+interpret
+interpret_out_WCIequals=\
+Throw(RangeError) @ ${JS_HOME}/tests/interpreter_tests/array-2.js:1:5-30\n
+interpret_err_equals=

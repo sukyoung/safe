@@ -1,0 +1,34 @@
+################################################################################
+#    Copyright (c) 2012, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=built_in_construct
+INTERPRETER_TESTS_DIR=${JS_HOME}/tests/interpreter_tests
+interpret
+interpret_out_WCIequals=\
+[object Object]\n\
+123\n\
+abc\n\
+true\n\
+[object Object]\n\
+123\n\
+abc\n\
+true\n\
+[object Object]\n\
+[object Function]\n\
+[object Function]\n\
+[object Function]\n\
+[object Object]\n\
+undefined\n\
+[object Function]\n\
+3\n\
+[object Function]\n\
+[object Function]\n\
+0\n\
+[object Function]\n\
+Normal(PASS)\n
+interpret_err_equals=

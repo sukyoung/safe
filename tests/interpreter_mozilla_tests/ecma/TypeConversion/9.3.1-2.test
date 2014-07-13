@@ -1,0 +1,27 @@
+################################################################################
+#    Copyright (c) 2012, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=9.3.1-2
+INTERPRETER_TESTS_DIR=${JS_HOME}/tests/interpreter_mozilla_tests/ecma/TypeConversion
+interpret_mozilla
+interpret_mozilla_out_WCIequals=\
+9.3.1-2 ToNumber applied to the String type\n\
+ PASSED! Number(00) = 0 expected: 0\n\
+ PASSED! Number(01) = 1 expected: 1\n\
+ PASSED! Number(02) = 2 expected: 2\n\
+ PASSED! Number(03) = 3 expected: 3\n\
+ PASSED! Number(04) = 4 expected: 4\n\
+ PASSED! Number(05) = 5 expected: 5\n\
+ PASSED! Number(06) = 6 expected: 6\n\
+ PASSED! Number(07) = 7 expected: 7\n\
+ PASSED! Number(010) = 10 expected: 10\n\
+ PASSED! Number(011) = 11 expected: 11\n\
+ PASSED! Number(001) = 1 expected: 1\n\
+ PASSED! Number(0001) = 1 expected: 1\n\
+\n
+interpret_err_equals=

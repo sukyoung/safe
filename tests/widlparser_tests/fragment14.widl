@@ -1,0 +1,4 @@
+/* an interface with a single operation that can be invoked with two different argument list lengths */
+interface ColorCreator {
+  object createColor(float v1, float v2, float v3, optional float alpha);
+};

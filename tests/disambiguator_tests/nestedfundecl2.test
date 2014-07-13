@@ -1,0 +1,22 @@
+################################################################################
+#    Copyright (c) 2013, KAIST.
+#    All rights reserved.\n#
+#    Use is subject to license terms.\n#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=nestedfundecl2
+DISAMB_TESTS_DIR=${JS_HOME}/tests/disambiguator_tests
+disambiguate
+disambiguate_out_WCIequals=\
+  y = 1; \n\
+  obj = { \n\
+    y : 10 \n\
+  }; \n\
+  with(obj) \n\
+  { \n\
+    y; \n\
+  } \n\
+  y; \n\
+   \n\
+\n
+disambiguate_err_equals=

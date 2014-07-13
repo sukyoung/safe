@@ -1,0 +1,66 @@
+################################################################################
+#    Copyright (c) 2012, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=15.9.5.17
+INTERPRETER_TESTS_DIR=${JS_HOME}/tests/interpreter_mozilla_tests/ecma/Date
+interpret_mozilla
+interpret_mozilla_out_WCIequals=\
+15.9.5.17 Date.prototype.getUTCMinutes()\n\
+ PASSED! (new Date(1355759192150)).getUTCMinutes() = 46 expected: 46\n\
+ PASSED! (new Date(1355759252150)).getUTCMinutes() = 47 expected: 47\n\
+ PASSED! (new Date(1355759312150)).getUTCMinutes() = 48 expected: 48\n\
+ PASSED! (new Date(1355759372150)).getUTCMinutes() = 49 expected: 49\n\
+ PASSED! (new Date(1355759432150)).getUTCMinutes() = 50 expected: 50\n\
+ PASSED! (new Date(1355759492150)).getUTCMinutes() = 51 expected: 51\n\
+ PASSED! (new Date(1355759552150)).getUTCMinutes() = 52 expected: 52\n\
+ PASSED! (new Date(-62167219140000)).getUTCMinutes() = 1 expected: 1\n\
+ PASSED! (new Date(-62167219080000)).getUTCMinutes() = 2 expected: 2\n\
+ PASSED! (new Date(-62167219020000)).getUTCMinutes() = 3 expected: 3\n\
+ PASSED! (new Date(-62167218960000)).getUTCMinutes() = 4 expected: 4\n\
+ PASSED! (new Date(-62167218900000)).getUTCMinutes() = 5 expected: 5\n\
+ PASSED! (new Date(-62167218840000)).getUTCMinutes() = 6 expected: 6\n\
+ PASSED! (new Date(-62167218780000)).getUTCMinutes() = 7 expected: 7\n\
+ PASSED! (new Date(60000)).getUTCMinutes() = 1 expected: 1\n\
+ PASSED! (new Date(120000)).getUTCMinutes() = 2 expected: 2\n\
+ PASSED! (new Date(180000)).getUTCMinutes() = 3 expected: 3\n\
+ PASSED! (new Date(240000)).getUTCMinutes() = 4 expected: 4\n\
+ PASSED! (new Date(300000)).getUTCMinutes() = 5 expected: 5\n\
+ PASSED! (new Date(360000)).getUTCMinutes() = 6 expected: 6\n\
+ PASSED! (new Date(420000)).getUTCMinutes() = 7 expected: 7\n\
+ PASSED! (new Date(-2208988740000)).getUTCMinutes() = 1 expected: 1\n\
+ PASSED! (new Date(-2208988680000)).getUTCMinutes() = 2 expected: 2\n\
+ PASSED! (new Date(-2208988620000)).getUTCMinutes() = 3 expected: 3\n\
+ PASSED! (new Date(-2208988560000)).getUTCMinutes() = 4 expected: 4\n\
+ PASSED! (new Date(-2208988500000)).getUTCMinutes() = 5 expected: 5\n\
+ PASSED! (new Date(-2208988440000)).getUTCMinutes() = 6 expected: 6\n\
+ PASSED! (new Date(-2208988380000)).getUTCMinutes() = 7 expected: 7\n\
+ PASSED! (new Date(946684860000)).getUTCMinutes() = 1 expected: 1\n\
+ PASSED! (new Date(946684920000)).getUTCMinutes() = 2 expected: 2\n\
+ PASSED! (new Date(946684980000)).getUTCMinutes() = 3 expected: 3\n\
+ PASSED! (new Date(946685040000)).getUTCMinutes() = 4 expected: 4\n\
+ PASSED! (new Date(946685100000)).getUTCMinutes() = 5 expected: 5\n\
+ PASSED! (new Date(946685160000)).getUTCMinutes() = 6 expected: 6\n\
+ PASSED! (new Date(946685220000)).getUTCMinutes() = 7 expected: 7\n\
+ PASSED! (new Date(951782460000)).getUTCMinutes() = 1 expected: 1\n\
+ PASSED! (new Date(951782520000)).getUTCMinutes() = 2 expected: 2\n\
+ PASSED! (new Date(951782580000)).getUTCMinutes() = 3 expected: 3\n\
+ PASSED! (new Date(951782640000)).getUTCMinutes() = 4 expected: 4\n\
+ PASSED! (new Date(951782700000)).getUTCMinutes() = 5 expected: 5\n\
+ PASSED! (new Date(951782760000)).getUTCMinutes() = 6 expected: 6\n\
+ PASSED! (new Date(951782820000)).getUTCMinutes() = 7 expected: 7\n\
+ PASSED! (new Date(1104537660000)).getUTCMinutes() = 1 expected: 1\n\
+ PASSED! (new Date(1104537720000)).getUTCMinutes() = 2 expected: 2\n\
+ PASSED! (new Date(1104537780000)).getUTCMinutes() = 3 expected: 3\n\
+ PASSED! (new Date(1104537840000)).getUTCMinutes() = 4 expected: 4\n\
+ PASSED! (new Date(1104537900000)).getUTCMinutes() = 5 expected: 5\n\
+ PASSED! (new Date(1104537960000)).getUTCMinutes() = 6 expected: 6\n\
+ PASSED! (new Date(1104538020000)).getUTCMinutes() = 7 expected: 7\n\
+ PASSED! (new Date(NaN)).getUTCMinutes() = NaN expected: NaN\n\
+ PASSED! Date.prototype.getUTCMinutes.length = 0 expected: 0\n\
+\n
+interpret_err_equals=

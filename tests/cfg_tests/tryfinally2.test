@@ -1,0 +1,153 @@
+################################################################################
+#    Copyright (c) 2012, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=tryfinally2
+CFG_TESTS_DIR=${JS_HOME}/tests/cfg_tests
+cfg
+cfg_out_WCIequals=\
+(0,LBlock(29))\n\
+    [42] x := 9\n\
+\n\
+\n\
+(0,LBlock(28))\n\
+\n\
+\n\
+(0,LBlock(27))\n\
+    [EDGE] after-call(<>Global<>ignore7)\n\
+\n\
+\n\
+(0,LBlock(26))\n\
+    [41] x := 9\n\
+\n\
+\n\
+(0,LBlock(25))\n\
+    [35] <>obj<>1 := <>Global<>toObject(print) @ #13\n\
+    [36] <>temp<>2 := x\n\
+    [37] <>arguments<>3 := allocArg(1) @ #14\n\
+    [38] <>arguments<>3["0"] := <>temp<>2\n\
+    [39] <>fun<>4 := <>Global<>getBase(print)\n\
+    [40] call(<>obj<>1, <>fun<>4, <>arguments<>3) @ #15\n\
+\n\
+\n\
+(0,LBlock(24))\n\
+    [34] x := 10\n\
+\n\
+\n\
+(0,LBlock(23))\n\
+    [33] x := 9\n\
+\n\
+\n\
+(0,LBlock(22))\n\
+\n\
+\n\
+(0,LBlock(21))\n\
+    [EDGE] after-call(<>Global<>ignore7)\n\
+\n\
+\n\
+(0,LBlock(20))\n\
+    [32] x := 9\n\
+\n\
+\n\
+(0,LBlock(19))\n\
+    [26] <>obj<>1 := <>Global<>toObject(print) @ #9\n\
+    [27] <>temp<>2 := x\n\
+    [28] <>arguments<>3 := allocArg(1) @ #10\n\
+    [29] <>arguments<>3["0"] := <>temp<>2\n\
+    [30] <>fun<>4 := <>Global<>getBase(print)\n\
+    [31] call(<>obj<>1, <>fun<>4, <>arguments<>3) @ #11\n\
+\n\
+\n\
+(0,LBlock(18))\n\
+    [25] x := 10\n\
+\n\
+\n\
+(0,LBlock(17))\n\
+    [24] x := 2\n\
+\n\
+\n\
+(0,LBlock(16))\n\
+    [23] x := 7\n\
+\n\
+\n\
+(0,LBlock(15))\n\
+    [22] x := 9\n\
+\n\
+\n\
+(0,LBlock(14))\n\
+\n\
+\n\
+(0,LBlock(13))\n\
+    [EDGE] after-call(<>Global<>ignore7)\n\
+\n\
+\n\
+(0,LBlock(12))\n\
+    [21] x := 9\n\
+\n\
+\n\
+(0,LBlock(11))\n\
+    [15] <>obj<>1 := <>Global<>toObject(print) @ #5\n\
+    [16] <>temp<>2 := x\n\
+    [17] <>arguments<>3 := allocArg(1) @ #6\n\
+    [18] <>arguments<>3["0"] := <>temp<>2\n\
+    [19] <>fun<>4 := <>Global<>getBase(print)\n\
+    [20] call(<>obj<>1, <>fun<>4, <>arguments<>3) @ #7\n\
+\n\
+\n\
+(0,LBlock(10))\n\
+    [14] x := 10\n\
+\n\
+\n\
+(0,LBlock(9))\n\
+    [13] x := 9\n\
+\n\
+\n\
+(0,LBlock(8))\n\
+\n\
+\n\
+(0,LBlock(7))\n\
+    [EDGE] after-call(<>Global<>ignore7)\n\
+\n\
+\n\
+(0,LBlock(6))\n\
+    [12] x := 9\n\
+    [43] x := 12\n\
+    [44] noop(EndOfFile)\n\
+\n\
+\n\
+(0,LBlock(5))\n\
+    [6] <>obj<>1 := <>Global<>toObject(print) @ #1\n\
+    [7] <>temp<>2 := x\n\
+    [8] <>arguments<>3 := allocArg(1) @ #2\n\
+    [9] <>arguments<>3["0"] := <>temp<>2\n\
+    [10] <>fun<>4 := <>Global<>getBase(print)\n\
+    [11] call(<>obj<>1, <>fun<>4, <>arguments<>3) @ #3\n\
+\n\
+\n\
+(0,LBlock(4))\n\
+    [5] x := 10\n\
+\n\
+\n\
+(0,LBlock(3))\n\
+    [4] x := 2\n\
+\n\
+\n\
+(0,LBlock(2))\n\
+    [3] x := 7\n\
+\n\
+\n\
+(0,LBlock(1))\n\
+    [2] <>Global<>ignore3 := x\n\
+\n\
+\n\
+(0,LBlock(0))\n\
+    [0] noop(StartOfFile)\n\
+    [1] x := 5\n\
+\n\
+\n\
+\n
+cfg_err_equals=

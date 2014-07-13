@@ -1,0 +1,27 @@
+################################################################################
+#    Copyright (c) 2013, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=fragment3.widl
+WIDLPARSER_TESTS_DIR=${JS_HOME}/tests/widl_tests
+widlparse
+widlparse_out_WCIequals=\
+typedef float number;\n\
+exception FrameworkException {\n\
+  const long ERR_NOT_FOUND = 1;\n\
+  long code;\n\
+};\n\
+interface System {\n\
+  object createObject(DOMString _interface);\n\
+  object[] createObjectArray(DOMString interface);\n\
+  getter DOMString (DOMString keyName);\n\
+};\n\
+interface TextField {\n\
+  attribute boolean _const;\n\
+  attribute DOMString? _value;\n\
+};\n
+widlparse_err_equals=

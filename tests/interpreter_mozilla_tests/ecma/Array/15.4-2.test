@@ -1,0 +1,24 @@
+################################################################################
+#    Copyright (c) 2012, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=15.4-2
+INTERPRETER_TESTS_DIR=${JS_HOME}/tests/interpreter_mozilla_tests/ecma/Array
+interpret_mozilla
+interpret_mozilla_out_WCIequals=\
+15.4-2 Array Objects\n\
+ PASSED! var arr=new Array();  arr[Math.pow(2,16)] = 'hi'; arr.length = 65537 expected: 65537\n\
+ PASSED! var arr=new Array();  arr[Math.pow(2,30)-2] = 'hi'; arr.length = 1073741823 expected: 1073741823\n\
+ PASSED! var arr=new Array();  arr[Math.pow(2,30)-1] = 'hi'; arr.length = 1073741824 expected: 1073741824\n\
+ PASSED! var arr=new Array();  arr[Math.pow(2,30)] = 'hi'; arr.length = 1073741825 expected: 1073741825\n\
+ PASSED! var arr=new Array();  arr[Math.pow(2,31)-2] = 'hi'; arr.length = 2147483647 expected: 2147483647\n\
+ PASSED! var arr=new Array();  arr[Math.pow(2,31)-1] = 'hi'; arr.length = 2147483648 expected: 2147483648\n\
+ PASSED! var arr=new Array();  arr[Math.pow(2,31)] = 'hi'; arr.length = 2147483649 expected: 2147483649\n\
+ PASSED! var arr = new Array(0,1,2,3,4,5); arr.length = 2; String(arr) = 0,1 expected: 0,1\n\
+ PASSED! var arr = new Array(0,1); arr.length = 3; String(arr) = 0,1, expected: 0,1,\n\
+\n
+interpret_err_equals=

@@ -1,0 +1,16 @@
+################################################################################
+#    Copyright (c) 2012, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=15.6.4.3-3
+INTERPRETER_TESTS_DIR=${JS_HOME}/tests/interpreter_mozilla_tests/ecma/Boolean
+interpret_mozilla
+interpret_mozilla_out_WCIequals=\
+15.6.4.3-3 Boolean.prototype.valueOf()\n\
+ PASSED! x=true; x.valueOf=Boolean.prototype.valueOf;x.valueOf() = true expected: true\n\
+\n
+interpret_err_equals=

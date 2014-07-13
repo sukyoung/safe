@@ -1,0 +1,23 @@
+################################################################################
+#    Copyright (c) 2013, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=fragment27.widl
+WIDLPARSER_TESTS_DIR=${JS_HOME}/tests/widl_tests
+widlparse
+widlparse_out_WCIequals=\
+interface A {\n\
+  void f();\n\
+};\n\
+[partial] interface A {\n\
+  void f(float x);\n\
+  void g();\n\
+};\n\
+[partial] interface A {\n\
+  void g(DOMString x);\n\
+};\n
+widlparse_err_equals=

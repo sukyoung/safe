@@ -1,0 +1,1009 @@
+(Program @"youtube.d.ts":1:1~153:1
+ _body=(TopLevel
+  _stmts=[
+   (SourceElements
+    _info=(ASTSpanInfo())
+    _body=[
+     (AmbModDecl @7:9~152:1
+      _info=(ASTSpanInfo())
+      _path=(Path @7:16~18
+       _info=(ASTSpanInfo())
+       _names=[
+        (Id _info=(ASTSpanInfo()) _text="YT")])
+      _mem=[
+       (AmbModElt @8:5~11:5
+        _decl=(IntfDecl
+         _id=(Id @8:15~24 _info=(ASTSpanInfo()) _text="EventArgs")
+         _info=(ASTSpanInfo())
+         _typ=(ObjectType @8:25~11:5
+          _info=(ASTSpanInfo())
+          _members=[
+           (PropertySig @9:9~23
+            _info=(ASTSpanInfo())
+            _prop=(PropId @9:9~15
+             _id=(Id _info=(ASTSpanInfo()) _text="target")
+             _info=(ASTSpanInfo()))
+            _typ=(Some _value=(TypeRef @9:17~23
+              _info=(ASTSpanInfo())
+              _name=(TypeName
+               _info=(ASTSpanInfo())
+               _text="Player"
+               _names=[
+                (Id _info=(ASTSpanInfo()) _text="Player")]))))
+           (PropertySig @10:9~18
+            _info=(ASTSpanInfo())
+            _prop=(PropId @10:9~13
+             _id=(Id _info=(ASTSpanInfo()) _text="data")
+             _info=(ASTSpanInfo()))
+            _typ=(Some _value=(AnyT @10:15~18
+              _info=(ASTSpanInfo()))))]))
+        _info=(ASTSpanInfo()))
+       (AmbModElt @13:5~15:5
+        _decl=(IntfDecl
+         _id=(Id @13:15~27 _info=(ASTSpanInfo()) _text="EventHandler")
+         _info=(ASTSpanInfo())
+         _typ=(ObjectType @13:28~15:5
+          _info=(ASTSpanInfo())
+          _members=[
+           (CallSig @14:9~33
+            _info=(ASTSpanInfo())
+            _typ=(Some _value=(VoidT @14:29~33
+              _info=(ASTSpanInfo())))
+            _params=[
+             (Param @14:10~26
+              _info=(ASTSpanInfo())
+              _name=(Id @14:10~15 _info=(ASTSpanInfo()) _text="event")
+              _typ=(Some _value=(TypeRef @14:17~26
+                _info=(ASTSpanInfo())
+                _name=(TypeName
+                 _info=(ASTSpanInfo())
+                 _text="EventArgs"
+                 _names=[
+                  (Id _info=(ASTSpanInfo()) _text="EventArgs")]))))])]))
+        _info=(ASTSpanInfo()))
+       (AmbModElt @17:5~21:5
+        _decl=(IntfDecl @17:12~21:5
+         _id=(Id @17:22~28 _info=(ASTSpanInfo()) _text="Events")
+         _info=(ASTSpanInfo())
+         _typ=(ObjectType @17:29~21:5
+          _info=(ASTSpanInfo())
+          _members=[
+           (PropertySig @18:9~31
+            _info=(ASTSpanInfo())
+            _optional=true
+            _prop=(PropId @18:9~17
+             _id=(Id @18:9~16 _info=(ASTSpanInfo()) _text="onReady")
+             _info=(ASTSpanInfo()))
+            _typ=(Some _value=(TypeRef @18:19~31
+              _info=(ASTSpanInfo())
+              _name=(TypeName
+               _info=(ASTSpanInfo())
+               _text="EventHandler"
+               _names=[
+                (Id _info=(ASTSpanInfo()) _text="EventHandler")]))))
+           (PropertySig @19:9~34
+            _info=(ASTSpanInfo())
+            _optional=true
+            _prop=(PropId @19:9~20
+             _id=(Id @19:9~19 _info=(ASTSpanInfo()) _text="onPlayback")
+             _info=(ASTSpanInfo()))
+            _typ=(Some _value=(TypeRef @19:22~34
+              _info=(ASTSpanInfo())
+              _name=(TypeName
+               _info=(ASTSpanInfo())
+               _text="EventHandler"
+               _names=[
+                (Id _info=(ASTSpanInfo()) _text="EventHandler")]))))
+           (PropertySig @20:9~37
+            _info=(ASTSpanInfo())
+            _optional=true
+            _prop=(PropId @20:9~23
+             _id=(Id @20:9~22 _info=(ASTSpanInfo()) _text="onStateChange")
+             _info=(ASTSpanInfo()))
+            _typ=(Some _value=(TypeRef @20:25~37
+              _info=(ASTSpanInfo())
+              _name=(TypeName
+               _info=(ASTSpanInfo())
+               _text="EventHandler"
+               _names=[
+                (Id _info=(ASTSpanInfo()) _text="EventHandler")]))))]))
+        _info=(ASTSpanInfo()))
+       (AmbModElt @23:5~27:5
+        _decl=(AmbEnumDecl @23:12~27:5
+         _id=(Id @23:17~25 _info=(ASTSpanInfo()) _text="ListType")
+         _info=(ASTSpanInfo())
+         _mem=[
+          (AmbEnumMem @24:9~15
+           _info=(ASTSpanInfo())
+           _prop=(PropId
+            _id=(Id _info=(ASTSpanInfo()) _text="search")
+            _info=(ASTSpanInfo())))
+          (AmbEnumMem @25:9~21
+           _info=(ASTSpanInfo())
+           _prop=(PropId
+            _id=(Id _info=(ASTSpanInfo()) _text="user_uploads")
+            _info=(ASTSpanInfo())))
+          (AmbEnumMem @26:9~17
+           _info=(ASTSpanInfo())
+           _prop=(PropId
+            _id=(Id _info=(ASTSpanInfo()) _text="playlist")
+            _info=(ASTSpanInfo())))])
+        _info=(ASTSpanInfo()))
+       (AmbModElt @29:5~51:5
+        _decl=(IntfDecl @29:12~51:5
+         _id=(Id @29:22~32 _info=(ASTSpanInfo()) _text="PlayerVars")
+         _info=(ASTSpanInfo())
+         _typ=(ObjectType @29:33~51:5
+          _info=(ASTSpanInfo())
+          _members=[
+           (PropertySig @30:9~26
+            _info=(ASTSpanInfo())
+            _optional=true
+            _prop=(PropId @30:9~18
+             _id=(Id @30:9~17 _info=(ASTSpanInfo()) _text="autohide")
+             _info=(ASTSpanInfo()))
+            _typ=(Some _value=(NumberT @30:20~26
+              _info=(ASTSpanInfo()))))
+           (PropertySig @31:9~26
+            _info=(ASTSpanInfo())
+            _optional=true
+            _prop=(PropId @31:9~18
+             _id=(Id @31:9~17 _info=(ASTSpanInfo()) _text="autoplay")
+             _info=(ASTSpanInfo()))
+            _typ=(Some _value=(NumberT @31:20~26
+              _info=(ASTSpanInfo()))))
+           (PropertySig @32:9~29
+            _info=(ASTSpanInfo())
+            _optional=true
+            _prop=(PropId @32:9~24
+             _id=(Id @32:9~23 _info=(ASTSpanInfo()) _text="cc_load_policy")
+             _info=(ASTSpanInfo()))
+            _typ=(Some _value=(AnyT @32:26~29
+              _info=(ASTSpanInfo()))))
+           (PropertySig @33:9~23
+            _info=(ASTSpanInfo())
+            _optional=true
+            _prop=(PropId @33:9~15
+             _id=(Id @33:9~14 _info=(ASTSpanInfo()) _text="color")
+             _info=(ASTSpanInfo()))
+            _typ=(Some _value=(StringT @33:17~23
+              _info=(ASTSpanInfo()))))
+           (PropertySig @34:9~26
+            _info=(ASTSpanInfo())
+            _optional=true
+            _prop=(PropId @34:9~18
+             _id=(Id @34:9~17 _info=(ASTSpanInfo()) _text="controls")
+             _info=(ASTSpanInfo()))
+            _typ=(Some _value=(NumberT @34:20~26
+              _info=(ASTSpanInfo()))))
+           (PropertySig @35:9~27
+            _info=(ASTSpanInfo())
+            _optional=true
+            _prop=(PropId @35:9~19
+             _id=(Id @35:9~18 _info=(ASTSpanInfo()) _text="disablekb")
+             _info=(ASTSpanInfo()))
+            _typ=(Some _value=(NumberT @35:21~27
+              _info=(ASTSpanInfo()))))
+           (PropertySig @36:9~29
+            _info=(ASTSpanInfo())
+            _optional=true
+            _prop=(PropId @36:9~21
+             _id=(Id @36:9~20 _info=(ASTSpanInfo()) _text="enablejsapi")
+             _info=(ASTSpanInfo()))
+            _typ=(Some _value=(NumberT @36:23~29
+              _info=(ASTSpanInfo()))))
+           (PropertySig @37:9~21
+            _info=(ASTSpanInfo())
+            _optional=true
+            _prop=(PropId @37:9~13
+             _id=(Id @37:9~12 _info=(ASTSpanInfo()) _text="end")
+             _info=(ASTSpanInfo()))
+            _typ=(Some _value=(NumberT @37:15~21
+              _info=(ASTSpanInfo()))))
+           (PropertySig @38:9~20
+            _info=(ASTSpanInfo())
+            _optional=true
+            _prop=(PropId @38:9~12
+             _id=(Id @38:9~11 _info=(ASTSpanInfo()) _text="fs")
+             _info=(ASTSpanInfo()))
+            _typ=(Some _value=(NumberT @38:14~20
+              _info=(ASTSpanInfo()))))
+           (PropertySig @39:9~32
+            _info=(ASTSpanInfo())
+            _optional=true
+            _prop=(PropId @39:9~24
+             _id=(Id @39:9~23 _info=(ASTSpanInfo()) _text="iv_load_policy")
+             _info=(ASTSpanInfo()))
+            _typ=(Some _value=(NumberT @39:26~32
+              _info=(ASTSpanInfo()))))
+           (PropertySig @40:9~22
+            _info=(ASTSpanInfo())
+            _optional=true
+            _prop=(PropId @40:9~14
+             _id=(Id @40:9~13 _info=(ASTSpanInfo()) _text="list")
+             _info=(ASTSpanInfo()))
+            _typ=(Some _value=(StringT @40:16~22
+              _info=(ASTSpanInfo()))))
+           (PropertySig @41:9~28
+            _info=(ASTSpanInfo())
+            _optional=true
+            _prop=(PropId @41:9~18
+             _id=(Id @41:9~17 _info=(ASTSpanInfo()) _text="listType")
+             _info=(ASTSpanInfo()))
+            _typ=(Some _value=(TypeRef @41:20~28
+              _info=(ASTSpanInfo())
+              _name=(TypeName
+               _info=(ASTSpanInfo())
+               _text="ListType"
+               _names=[
+                (Id _info=(ASTSpanInfo()) _text="ListType")]))))
+           (PropertySig @42:9~14
+            _info=(ASTSpanInfo())
+            _optional=true
+            _prop=(PropId
+             _id=(Id @42:9~13 _info=(ASTSpanInfo()) _text="loop")
+             _info=(ASTSpanInfo())))
+           (PropertySig @43:9~32
+            _info=(ASTSpanInfo())
+            _optional=true
+            _prop=(PropId @43:9~24
+             _id=(Id @43:9~23 _info=(ASTSpanInfo()) _text="modestbranding")
+             _info=(ASTSpanInfo()))
+            _typ=(Some _value=(NumberT @43:26~32
+              _info=(ASTSpanInfo()))))
+           (PropertySig @44:9~16
+            _info=(ASTSpanInfo())
+            _optional=true
+            _prop=(PropId
+             _id=(Id @44:9~15 _info=(ASTSpanInfo()) _text="origin")
+             _info=(ASTSpanInfo())))
+           (PropertySig @45:9~28
+            _info=(ASTSpanInfo())
+            _optional=true
+            _prop=(PropId @45:9~20
+             _id=(Id @45:9~19 _info=(ASTSpanInfo()) _text="playerpiid")
+             _info=(ASTSpanInfo()))
+            _typ=(Some _value=(StringT @45:22~28
+              _info=(ASTSpanInfo()))))
+           (PropertySig @46:9~18
+            _info=(ASTSpanInfo())
+            _optional=true
+            _prop=(PropId
+             _id=(Id @46:9~17 _info=(ASTSpanInfo()) _text="playlist")
+             _info=(ASTSpanInfo())))
+           (PropertySig @47:9~21
+            _info=(ASTSpanInfo())
+            _optional=true
+            _prop=(PropId @47:9~13
+             _id=(Id @47:9~12 _info=(ASTSpanInfo()) _text="rel")
+             _info=(ASTSpanInfo()))
+            _typ=(Some _value=(NumberT @47:15~21
+              _info=(ASTSpanInfo()))))
+           (PropertySig @48:9~26
+            _info=(ASTSpanInfo())
+            _optional=true
+            _prop=(PropId @48:9~18
+             _id=(Id @48:9~17 _info=(ASTSpanInfo()) _text="showinfo")
+             _info=(ASTSpanInfo()))
+            _typ=(Some _value=(NumberT @48:20~26
+              _info=(ASTSpanInfo()))))
+           (PropertySig @49:9~23
+            _info=(ASTSpanInfo())
+            _optional=true
+            _prop=(PropId @49:9~15
+             _id=(Id @49:9~14 _info=(ASTSpanInfo()) _text="start")
+             _info=(ASTSpanInfo()))
+            _typ=(Some _value=(NumberT @49:17~23
+              _info=(ASTSpanInfo()))))
+           (PropertySig @50:9~23
+            _info=(ASTSpanInfo())
+            _optional=true
+            _prop=(PropId @50:9~15
+             _id=(Id @50:9~14 _info=(ASTSpanInfo()) _text="theme")
+             _info=(ASTSpanInfo()))
+            _typ=(Some _value=(StringT @50:17~23
+              _info=(ASTSpanInfo()))))]))
+        _info=(ASTSpanInfo()))
+       (AmbModElt @53:5~59:5
+        _decl=(IntfDecl @53:12~59:5
+         _id=(Id @53:22~35 _info=(ASTSpanInfo()) _text="PlayerOptions")
+         _info=(ASTSpanInfo())
+         _typ=(ObjectType @53:36~59:5
+          _info=(ASTSpanInfo())
+          _members=[
+           (PropertySig @54:9~23
+            _info=(ASTSpanInfo())
+            _optional=true
+            _prop=(PropId @54:9~15
+             _id=(Id @54:9~14 _info=(ASTSpanInfo()) _text="width")
+             _info=(ASTSpanInfo()))
+            _typ=(Some _value=(NumberT @54:17~23
+              _info=(ASTSpanInfo()))))
+           (PropertySig @55:9~24
+            _info=(ASTSpanInfo())
+            _optional=true
+            _prop=(PropId @55:9~16
+             _id=(Id @55:9~15 _info=(ASTSpanInfo()) _text="height")
+             _info=(ASTSpanInfo()))
+            _typ=(Some _value=(NumberT @55:18~24
+              _info=(ASTSpanInfo()))))
+           (PropertySig @56:9~25
+            _info=(ASTSpanInfo())
+            _optional=true
+            _prop=(PropId @56:9~17
+             _id=(Id @56:9~16 _info=(ASTSpanInfo()) _text="videoId")
+             _info=(ASTSpanInfo()))
+            _typ=(Some _value=(StringT @56:19~25
+              _info=(ASTSpanInfo()))))
+           (PropertySig @57:9~32
+            _info=(ASTSpanInfo())
+            _optional=true
+            _prop=(PropId @57:9~20
+             _id=(Id @57:9~19 _info=(ASTSpanInfo()) _text="playerVars")
+             _info=(ASTSpanInfo()))
+            _typ=(Some _value=(TypeRef @57:22~32
+              _info=(ASTSpanInfo())
+              _name=(TypeName
+               _info=(ASTSpanInfo())
+               _text="PlayerVars"
+               _names=[
+                (Id _info=(ASTSpanInfo()) _text="PlayerVars")]))))
+           (PropertySig @58:9~24
+            _info=(ASTSpanInfo())
+            _optional=true
+            _prop=(PropId @58:9~16
+             _id=(Id @58:9~15 _info=(ASTSpanInfo()) _text="events")
+             _info=(ASTSpanInfo()))
+            _typ=(Some _value=(TypeRef @58:18~24
+              _info=(ASTSpanInfo())
+              _name=(TypeName
+               _info=(ASTSpanInfo())
+               _text="Events"
+               _names=[
+                (Id _info=(ASTSpanInfo()) _text="Events")]))))]))
+        _info=(ASTSpanInfo()))
+       (AmbModElt @61:5~66:5
+        _decl=(IntfDecl
+         _id=(Id @61:15~30 _info=(ASTSpanInfo()) _text="VideoByIdParams")
+         _info=(ASTSpanInfo())
+         _typ=(ObjectType @61:31~66:5
+          _info=(ASTSpanInfo())
+          _members=[
+           (PropertySig @62:9~24
+            _info=(ASTSpanInfo())
+            _prop=(PropId @62:9~16
+             _id=(Id _info=(ASTSpanInfo()) _text="videoId")
+             _info=(ASTSpanInfo()))
+            _typ=(Some _value=(StringT @62:18~24
+              _info=(ASTSpanInfo()))))
+           (PropertySig @63:9~30
+            _info=(ASTSpanInfo())
+            _optional=true
+            _prop=(PropId @63:9~22
+             _id=(Id @63:9~21 _info=(ASTSpanInfo()) _text="startSeconds")
+             _info=(ASTSpanInfo()))
+            _typ=(Some _value=(NumberT @63:24~30
+              _info=(ASTSpanInfo()))))
+           (PropertySig @64:9~28
+            _info=(ASTSpanInfo())
+            _optional=true
+            _prop=(PropId @64:9~20
+             _id=(Id @64:9~19 _info=(ASTSpanInfo()) _text="endSeconds")
+             _info=(ASTSpanInfo()))
+            _typ=(Some _value=(NumberT @64:22~28
+              _info=(ASTSpanInfo()))))
+           (PropertySig @65:9~34
+            _info=(ASTSpanInfo())
+            _optional=true
+            _prop=(PropId @65:9~26
+             _id=(Id @65:9~25 _info=(ASTSpanInfo()) _text="suggestedQuality")
+             _info=(ASTSpanInfo()))
+            _typ=(Some _value=(StringT @65:28~34
+              _info=(ASTSpanInfo()))))]))
+        _info=(ASTSpanInfo()))
+       (AmbModElt @68:5~73:5
+        _decl=(IntfDecl
+         _id=(Id @68:15~31 _info=(ASTSpanInfo()) _text="VideoByUrlParams")
+         _info=(ASTSpanInfo())
+         _typ=(ObjectType @68:32~73:5
+          _info=(ASTSpanInfo())
+          _members=[
+           (PropertySig @69:9~32
+            _info=(ASTSpanInfo())
+            _prop=(PropId @69:9~24
+             _id=(Id _info=(ASTSpanInfo()) _text="mediaContentUrl")
+             _info=(ASTSpanInfo()))
+            _typ=(Some _value=(StringT @69:26~32
+              _info=(ASTSpanInfo()))))
+           (PropertySig @70:9~30
+            _info=(ASTSpanInfo())
+            _optional=true
+            _prop=(PropId @70:9~22
+             _id=(Id @70:9~21 _info=(ASTSpanInfo()) _text="startSeconds")
+             _info=(ASTSpanInfo()))
+            _typ=(Some _value=(NumberT @70:24~30
+              _info=(ASTSpanInfo()))))
+           (PropertySig @71:9~28
+            _info=(ASTSpanInfo())
+            _optional=true
+            _prop=(PropId @71:9~20
+             _id=(Id @71:9~19 _info=(ASTSpanInfo()) _text="endSeconds")
+             _info=(ASTSpanInfo()))
+            _typ=(Some _value=(NumberT @71:22~28
+              _info=(ASTSpanInfo()))))
+           (PropertySig @72:9~34
+            _info=(ASTSpanInfo())
+            _optional=true
+            _prop=(PropId @72:9~26
+             _id=(Id @72:9~25 _info=(ASTSpanInfo()) _text="suggestedQuality")
+             _info=(ASTSpanInfo()))
+            _typ=(Some _value=(StringT @72:28~34
+              _info=(ASTSpanInfo()))))]))
+        _info=(ASTSpanInfo()))
+       (AmbModElt @75:5~143:5
+        _decl=(AmbClsDecl @75:12~143:5
+         _id=(Id @75:18~24 _info=(ASTSpanInfo()) _text="Player")
+         _info=(ASTSpanInfo())
+         _elts=[
+          (AmbCnstDecl @77:9~62
+           _info=(ASTSpanInfo())
+           _ps=[
+            (Param @77:21~31
+             _info=(ASTSpanInfo())
+             _name=(Id @77:21~23 _info=(ASTSpanInfo()) _text="id")
+             _typ=(Some _value=(StringT @77:25~31
+               _info=(ASTSpanInfo()))))
+            (Param @77:33~61
+             _info=(ASTSpanInfo())
+             _name=(Id @77:33~46 _info=(ASTSpanInfo()) _text="playerOptions")
+             _typ=(Some _value=(TypeRef @77:48~61
+               _info=(ASTSpanInfo())
+               _name=(TypeName
+                _info=(ASTSpanInfo())
+                _text="PlayerOptions"
+                _names=[
+                 (Id _info=(ASTSpanInfo()) _text="PlayerOptions")]))))])
+          (AmbMemDecl @80:9~95
+           _info=(ASTSpanInfo())
+           _prop=(PropId @80:9~22
+            _id=(Id _info=(ASTSpanInfo()) _text="loadVideoById")
+            _info=(ASTSpanInfo()))
+           _typ=(Some _value=(CallSig @80:22~95
+             _info=(ASTSpanInfo())
+             _typ=(Some _value=(VoidT @80:91~95
+               _info=(ASTSpanInfo())))
+             _params=[
+              (Param @80:23~38
+               _info=(ASTSpanInfo())
+               _name=(Id @80:23~30 _info=(ASTSpanInfo()) _text="videoId")
+               _typ=(Some _value=(StringT @80:32~38
+                 _info=(ASTSpanInfo()))))
+              (Param @80:40~61
+               _info=(ASTSpanInfo())
+               _name=(Id @80:40~52 _info=(ASTSpanInfo()) _text="startSeconds")
+               _optional=true
+               _typ=(Some _value=(NumberT @80:55~61
+                 _info=(ASTSpanInfo()))))
+              (Param @80:63~88
+               _info=(ASTSpanInfo())
+               _name=(Id @80:63~79 _info=(ASTSpanInfo()) _text="suggestedQuality")
+               _optional=true
+               _typ=(Some _value=(StringT @80:82~88
+                 _info=(ASTSpanInfo()))))])))
+          (AmbMemDecl @81:9~45
+           _info=(ASTSpanInfo())
+           _prop=(PropId @81:9~22
+            _id=(Id _info=(ASTSpanInfo()) _text="loadVideoById")
+            _info=(ASTSpanInfo()))
+           _typ=(Some _value=(CallSig @81:22~45
+             _info=(ASTSpanInfo())
+             _typ=(Some _value=(VoidT @81:41~45
+               _info=(ASTSpanInfo())))
+             _params=[
+              (Param @81:23~38
+               _info=(ASTSpanInfo())
+               _name=(Id _info=(ASTSpanInfo()) _text="VideoByIdParams"))])))
+          (AmbMemDecl @82:9~94
+           _info=(ASTSpanInfo())
+           _prop=(PropId @82:9~21
+            _id=(Id _info=(ASTSpanInfo()) _text="cueVideoById")
+            _info=(ASTSpanInfo()))
+           _typ=(Some _value=(CallSig @82:21~94
+             _info=(ASTSpanInfo())
+             _typ=(Some _value=(VoidT @82:90~94
+               _info=(ASTSpanInfo())))
+             _params=[
+              (Param @82:22~37
+               _info=(ASTSpanInfo())
+               _name=(Id @82:22~29 _info=(ASTSpanInfo()) _text="videoId")
+               _typ=(Some _value=(StringT @82:31~37
+                 _info=(ASTSpanInfo()))))
+              (Param @82:39~60
+               _info=(ASTSpanInfo())
+               _name=(Id @82:39~51 _info=(ASTSpanInfo()) _text="startSeconds")
+               _optional=true
+               _typ=(Some _value=(NumberT @82:54~60
+                 _info=(ASTSpanInfo()))))
+              (Param @82:62~87
+               _info=(ASTSpanInfo())
+               _name=(Id @82:62~78 _info=(ASTSpanInfo()) _text="suggestedQuality")
+               _optional=true
+               _typ=(Some _value=(StringT @82:81~87
+                 _info=(ASTSpanInfo()))))])))
+          (AmbMemDecl @83:9~44
+           _info=(ASTSpanInfo())
+           _prop=(PropId @83:9~21
+            _id=(Id _info=(ASTSpanInfo()) _text="cueVideoById")
+            _info=(ASTSpanInfo()))
+           _typ=(Some _value=(CallSig @83:21~44
+             _info=(ASTSpanInfo())
+             _typ=(Some _value=(VoidT @83:40~44
+               _info=(ASTSpanInfo())))
+             _params=[
+              (Param @83:22~37
+               _info=(ASTSpanInfo())
+               _name=(Id _info=(ASTSpanInfo()) _text="VideoByIdParams"))])))
+          (AmbMemDecl @85:9~104
+           _info=(ASTSpanInfo())
+           _prop=(PropId @85:9~23
+            _id=(Id _info=(ASTSpanInfo()) _text="loadVideoByUrl")
+            _info=(ASTSpanInfo()))
+           _typ=(Some _value=(CallSig @85:23~104
+             _info=(ASTSpanInfo())
+             _typ=(Some _value=(VoidT @85:100~104
+               _info=(ASTSpanInfo())))
+             _params=[
+              (Param @85:24~47
+               _info=(ASTSpanInfo())
+               _name=(Id @85:24~39 _info=(ASTSpanInfo()) _text="mediaContentUrl")
+               _typ=(Some _value=(StringT @85:41~47
+                 _info=(ASTSpanInfo()))))
+              (Param @85:49~70
+               _info=(ASTSpanInfo())
+               _name=(Id @85:49~61 _info=(ASTSpanInfo()) _text="startSeconds")
+               _optional=true
+               _typ=(Some _value=(NumberT @85:64~70
+                 _info=(ASTSpanInfo()))))
+              (Param @85:72~97
+               _info=(ASTSpanInfo())
+               _name=(Id @85:72~88 _info=(ASTSpanInfo()) _text="suggestedQuality")
+               _optional=true
+               _typ=(Some _value=(StringT @85:91~97
+                 _info=(ASTSpanInfo()))))])))
+          (AmbMemDecl @86:9~47
+           _info=(ASTSpanInfo())
+           _prop=(PropId @86:9~23
+            _id=(Id _info=(ASTSpanInfo()) _text="loadVideoByUrl")
+            _info=(ASTSpanInfo()))
+           _typ=(Some _value=(CallSig @86:23~47
+             _info=(ASTSpanInfo())
+             _typ=(Some _value=(VoidT @86:43~47
+               _info=(ASTSpanInfo())))
+             _params=[
+              (Param @86:24~40
+               _info=(ASTSpanInfo())
+               _name=(Id _info=(ASTSpanInfo()) _text="VideoByUrlParams"))])))
+          (AmbMemDecl @87:9~103
+           _info=(ASTSpanInfo())
+           _prop=(PropId @87:9~22
+            _id=(Id _info=(ASTSpanInfo()) _text="cueVideoByUrl")
+            _info=(ASTSpanInfo()))
+           _typ=(Some _value=(CallSig @87:22~103
+             _info=(ASTSpanInfo())
+             _typ=(Some _value=(VoidT @87:99~103
+               _info=(ASTSpanInfo())))
+             _params=[
+              (Param @87:23~46
+               _info=(ASTSpanInfo())
+               _name=(Id @87:23~38 _info=(ASTSpanInfo()) _text="mediaContentUrl")
+               _typ=(Some _value=(StringT @87:40~46
+                 _info=(ASTSpanInfo()))))
+              (Param @87:48~69
+               _info=(ASTSpanInfo())
+               _name=(Id @87:48~60 _info=(ASTSpanInfo()) _text="startSeconds")
+               _optional=true
+               _typ=(Some _value=(NumberT @87:63~69
+                 _info=(ASTSpanInfo()))))
+              (Param @87:71~96
+               _info=(ASTSpanInfo())
+               _name=(Id @87:71~87 _info=(ASTSpanInfo()) _text="suggestedQuality")
+               _optional=true
+               _typ=(Some _value=(StringT @87:90~96
+                 _info=(ASTSpanInfo()))))])))
+          (AmbMemDecl @88:9~46
+           _info=(ASTSpanInfo())
+           _prop=(PropId @88:9~22
+            _id=(Id _info=(ASTSpanInfo()) _text="cueVideoByUrl")
+            _info=(ASTSpanInfo()))
+           _typ=(Some _value=(CallSig @88:22~46
+             _info=(ASTSpanInfo())
+             _typ=(Some _value=(VoidT @88:42~46
+               _info=(ASTSpanInfo())))
+             _params=[
+              (Param @88:23~39
+               _info=(ASTSpanInfo())
+               _name=(Id _info=(ASTSpanInfo()) _text="VideoByUrlParams"))])))
+          (AmbMemDecl @91:9~13
+           _info=(ASTSpanInfo())
+           _prop=(PropId
+            _id=(Id _info=(ASTSpanInfo()) _text="size")
+            _info=(ASTSpanInfo())))
+          (AmbMemDecl @94:9~26
+           _info=(ASTSpanInfo())
+           _prop=(PropId @94:9~18
+            _id=(Id _info=(ASTSpanInfo()) _text="playVideo")
+            _info=(ASTSpanInfo()))
+           _typ=(Some _value=(CallSig @94:18~26
+             _info=(ASTSpanInfo())
+             _typ=(Some _value=(VoidT @94:22~26
+               _info=(ASTSpanInfo()))))))
+          (AmbMemDecl @95:9~27
+           _info=(ASTSpanInfo())
+           _prop=(PropId @95:9~19
+            _id=(Id _info=(ASTSpanInfo()) _text="pauseVideo")
+            _info=(ASTSpanInfo()))
+           _typ=(Some _value=(CallSig @95:19~27
+             _info=(ASTSpanInfo())
+             _typ=(Some _value=(VoidT @95:23~27
+               _info=(ASTSpanInfo()))))))
+          (AmbMemDecl @96:9~26
+           _info=(ASTSpanInfo())
+           _prop=(PropId @96:9~18
+            _id=(Id _info=(ASTSpanInfo()) _text="stopVideo")
+            _info=(ASTSpanInfo()))
+           _typ=(Some _value=(CallSig @96:18~26
+             _info=(ASTSpanInfo())
+             _typ=(Some _value=(VoidT @96:22~26
+               _info=(ASTSpanInfo()))))))
+          (AmbMemDecl @97:9~61
+           _info=(ASTSpanInfo())
+           _prop=(PropId @97:9~15
+            _id=(Id _info=(ASTSpanInfo()) _text="seekTo")
+            _info=(ASTSpanInfo()))
+           _typ=(Some _value=(CallSig @97:15~61
+             _info=(ASTSpanInfo())
+             _typ=(Some _value=(VoidT @97:57~61
+               _info=(ASTSpanInfo())))
+             _params=[
+              (Param @97:16~30
+               _info=(ASTSpanInfo())
+               _name=(Id @97:16~23 _info=(ASTSpanInfo()) _text="seconds")
+               _typ=(Some _value=(NumberT @97:24~30
+                 _info=(ASTSpanInfo()))))
+              (Param @97:32~54
+               _info=(ASTSpanInfo())
+               _name=(Id @97:32~46 _info=(ASTSpanInfo()) _text="allowSeekAhead")
+               _typ=(Some _value=(BoolT @97:47~54
+                 _info=(ASTSpanInfo()))))])))
+          (AmbMemDecl @98:9~27
+           _info=(ASTSpanInfo())
+           _prop=(PropId @98:9~19
+            _id=(Id _info=(ASTSpanInfo()) _text="clearVideo")
+            _info=(ASTSpanInfo()))
+           _typ=(Some _value=(CallSig @98:19~27
+             _info=(ASTSpanInfo())
+             _typ=(Some _value=(VoidT @98:23~27
+               _info=(ASTSpanInfo()))))))
+          (AmbMemDecl @101:9~26
+           _info=(ASTSpanInfo())
+           _prop=(PropId @101:9~18
+            _id=(Id _info=(ASTSpanInfo()) _text="nextVideo")
+            _info=(ASTSpanInfo()))
+           _typ=(Some _value=(CallSig @101:18~26
+             _info=(ASTSpanInfo())
+             _typ=(Some _value=(VoidT @101:22~26
+               _info=(ASTSpanInfo()))))))
+          (AmbMemDecl @102:9~30
+           _info=(ASTSpanInfo())
+           _prop=(PropId @102:9~22
+            _id=(Id _info=(ASTSpanInfo()) _text="previousVideo")
+            _info=(ASTSpanInfo()))
+           _typ=(Some _value=(CallSig @102:22~30
+             _info=(ASTSpanInfo())
+             _typ=(Some _value=(VoidT @102:26~30
+               _info=(ASTSpanInfo()))))))
+          (AmbMemDecl @103:9~41
+           _info=(ASTSpanInfo())
+           _prop=(PropId @103:9~20
+            _id=(Id _info=(ASTSpanInfo()) _text="playVideoAt")
+            _info=(ASTSpanInfo()))
+           _typ=(Some _value=(CallSig @103:20~41
+             _info=(ASTSpanInfo())
+             _typ=(Some _value=(VoidT @103:37~41
+               _info=(ASTSpanInfo())))
+             _params=[
+              (Param @103:21~34
+               _info=(ASTSpanInfo())
+               _name=(Id @103:21~26 _info=(ASTSpanInfo()) _text="index")
+               _typ=(Some _value=(NumberT @103:28~34
+                 _info=(ASTSpanInfo()))))])))
+          (AmbMemDecl @106:9~21
+           _info=(ASTSpanInfo())
+           _prop=(PropId @106:9~13
+            _id=(Id _info=(ASTSpanInfo()) _text="mute")
+            _info=(ASTSpanInfo()))
+           _typ=(Some _value=(CallSig @106:13~21
+             _info=(ASTSpanInfo())
+             _typ=(Some _value=(VoidT @106:17~21
+               _info=(ASTSpanInfo()))))))
+          (AmbMemDecl @107:9~23
+           _info=(ASTSpanInfo())
+           _prop=(PropId @107:9~15
+            _id=(Id _info=(ASTSpanInfo()) _text="unMute")
+            _info=(ASTSpanInfo()))
+           _typ=(Some _value=(CallSig @107:15~23
+             _info=(ASTSpanInfo())
+             _typ=(Some _value=(VoidT @107:19~23
+               _info=(ASTSpanInfo()))))))
+          (AmbMemDecl @108:9~27
+           _info=(ASTSpanInfo())
+           _prop=(PropId @108:9~16
+            _id=(Id _info=(ASTSpanInfo()) _text="isMuted")
+            _info=(ASTSpanInfo()))
+           _typ=(Some _value=(CallSig @108:16~27
+             _info=(ASTSpanInfo())
+             _typ=(Some _value=(BoolT @108:20~27
+               _info=(ASTSpanInfo()))))))
+          (AmbMemDecl @109:9~40
+           _info=(ASTSpanInfo())
+           _prop=(PropId @109:9~18
+            _id=(Id _info=(ASTSpanInfo()) _text="setVolume")
+            _info=(ASTSpanInfo()))
+           _typ=(Some _value=(CallSig @109:18~40
+             _info=(ASTSpanInfo())
+             _typ=(Some _value=(VoidT @109:36~40
+               _info=(ASTSpanInfo())))
+             _params=[
+              (Param @109:19~33
+               _info=(ASTSpanInfo())
+               _name=(Id @109:19~25 _info=(ASTSpanInfo()) _text="volume")
+               _typ=(Some _value=(NumberT @109:27~33
+                 _info=(ASTSpanInfo()))))])))
+          (AmbMemDecl @110:9~28
+           _info=(ASTSpanInfo())
+           _prop=(PropId @110:9~18
+            _id=(Id _info=(ASTSpanInfo()) _text="getVolume")
+            _info=(ASTSpanInfo()))
+           _typ=(Some _value=(CallSig @110:18~28
+             _info=(ASTSpanInfo())
+             _typ=(Some _value=(NumberT @110:22~28
+               _info=(ASTSpanInfo()))))))
+          (AmbMemDecl @113:9~52
+           _info=(ASTSpanInfo())
+           _prop=(PropId @113:9~16
+            _id=(Id _info=(ASTSpanInfo()) _text="setSize")
+            _info=(ASTSpanInfo()))
+           _typ=(Some _value=(CallSig @113:16~52
+             _info=(ASTSpanInfo())
+             _typ=(Some _value=(AnyT @113:49~52
+               _info=(ASTSpanInfo())))
+             _params=[
+              (Param @113:17~30
+               _info=(ASTSpanInfo())
+               _name=(Id @113:17~22 _info=(ASTSpanInfo()) _text="width")
+               _typ=(Some _value=(NumberT @113:24~30
+                 _info=(ASTSpanInfo()))))
+              (Param @113:32~46
+               _info=(ASTSpanInfo())
+               _name=(Id @113:32~38 _info=(ASTSpanInfo()) _text="height")
+               _typ=(Some _value=(NumberT @113:40~46
+                 _info=(ASTSpanInfo()))))])))
+          (AmbMemDecl @116:9~34
+           _info=(ASTSpanInfo())
+           _prop=(PropId @116:9~24
+            _id=(Id _info=(ASTSpanInfo()) _text="getPlaybackRate")
+            _info=(ASTSpanInfo()))
+           _typ=(Some _value=(CallSig @116:24~34
+             _info=(ASTSpanInfo())
+             _typ=(Some _value=(NumberT @116:28~34
+               _info=(ASTSpanInfo()))))))
+          (AmbMemDecl @117:9~52
+           _info=(ASTSpanInfo())
+           _prop=(PropId @117:9~24
+            _id=(Id _info=(ASTSpanInfo()) _text="setPlaybackRate")
+            _info=(ASTSpanInfo()))
+           _typ=(Some _value=(CallSig @117:24~52
+             _info=(ASTSpanInfo())
+             _typ=(Some _value=(VoidT @117:48~52
+               _info=(ASTSpanInfo())))
+             _params=[
+              (Param @117:25~45
+               _info=(ASTSpanInfo())
+               _name=(Id @117:25~38 _info=(ASTSpanInfo()) _text="suggestedRate")
+               _typ=(Some _value=(NumberT @117:39~45
+                 _info=(ASTSpanInfo()))))])))
+          (AmbMemDecl @118:9~46
+           _info=(ASTSpanInfo())
+           _prop=(PropId @118:9~34
+            _id=(Id _info=(ASTSpanInfo()) _text="getAvailablePlaybackRates")
+            _info=(ASTSpanInfo()))
+           _typ=(Some _value=(CallSig @118:34~46
+             _info=(ASTSpanInfo())
+             _typ=(Some _value=(ArrayType @118:44~47
+               _info=(ASTSpanInfo())
+               _typ=(NumberT @118:38~44
+                _info=(ASTSpanInfo())))))))
+          (AmbMemDecl @121:9~46
+           _info=(ASTSpanInfo())
+           _prop=(PropId @121:9~16
+            _id=(Id _info=(ASTSpanInfo()) _text="setLoop")
+            _info=(ASTSpanInfo()))
+           _typ=(Some _value=(CallSig @121:16~46
+             _info=(ASTSpanInfo())
+             _typ=(Some _value=(VoidT @121:42~46
+               _info=(ASTSpanInfo())))
+             _params=[
+              (Param @121:17~39
+               _info=(ASTSpanInfo())
+               _name=(Id @121:17~30 _info=(ASTSpanInfo()) _text="loopPlaylists")
+               _typ=(Some _value=(BoolT @121:32~39
+                 _info=(ASTSpanInfo()))))])))
+          (AmbMemDecl @122:9~51
+           _info=(ASTSpanInfo())
+           _prop=(PropId @122:9~19
+            _id=(Id _info=(ASTSpanInfo()) _text="setShuffle")
+            _info=(ASTSpanInfo()))
+           _typ=(Some _value=(CallSig @122:19~51
+             _info=(ASTSpanInfo())
+             _typ=(Some _value=(VoidT @122:47~51
+               _info=(ASTSpanInfo())))
+             _params=[
+              (Param @122:20~44
+               _info=(ASTSpanInfo())
+               _name=(Id @122:20~35 _info=(ASTSpanInfo()) _text="shufflePlaylist")
+               _typ=(Some _value=(BoolT @122:37~44
+                 _info=(ASTSpanInfo()))))])))
+          (AmbMemDecl @125:9~41
+           _info=(ASTSpanInfo())
+           _prop=(PropId @125:9~31
+            _id=(Id _info=(ASTSpanInfo()) _text="getVideoLoadedFraction")
+            _info=(ASTSpanInfo()))
+           _typ=(Some _value=(CallSig @125:31~41
+             _info=(ASTSpanInfo())
+             _typ=(Some _value=(NumberT @125:35~41
+               _info=(ASTSpanInfo()))))))
+          (AmbMemDecl @126:9~33
+           _info=(ASTSpanInfo())
+           _prop=(PropId @126:9~23
+            _id=(Id _info=(ASTSpanInfo()) _text="getPlayerState")
+            _info=(ASTSpanInfo()))
+           _typ=(Some _value=(CallSig @126:23~33
+             _info=(ASTSpanInfo())
+             _typ=(Some _value=(NumberT @126:27~33
+               _info=(ASTSpanInfo()))))))
+          (AmbMemDecl @127:9~33
+           _info=(ASTSpanInfo())
+           _prop=(PropId @127:9~23
+            _id=(Id _info=(ASTSpanInfo()) _text="getCurrentTime")
+            _info=(ASTSpanInfo()))
+           _typ=(Some _value=(CallSig @127:23~33
+             _info=(ASTSpanInfo())
+             _typ=(Some _value=(NumberT @127:27~33
+               _info=(ASTSpanInfo()))))))
+          (AmbMemDecl @128:9~37
+           _info=(ASTSpanInfo())
+           _prop=(PropId @128:9~27
+            _id=(Id _info=(ASTSpanInfo()) _text="getVideoStartBytes")
+            _info=(ASTSpanInfo()))
+           _typ=(Some _value=(CallSig @128:27~37
+             _info=(ASTSpanInfo())
+             _typ=(Some _value=(NumberT @128:31~37
+               _info=(ASTSpanInfo()))))))
+          (AmbMemDecl @129:9~38
+           _info=(ASTSpanInfo())
+           _prop=(PropId @129:9~28
+            _id=(Id _info=(ASTSpanInfo()) _text="getVideoBytesLoaded")
+            _info=(ASTSpanInfo()))
+           _typ=(Some _value=(CallSig @129:28~38
+             _info=(ASTSpanInfo())
+             _typ=(Some _value=(NumberT @129:32~38
+               _info=(ASTSpanInfo()))))))
+          (AmbMemDecl @130:9~37
+           _info=(ASTSpanInfo())
+           _prop=(PropId @130:9~27
+            _id=(Id _info=(ASTSpanInfo()) _text="getVideoBytesTotal")
+            _info=(ASTSpanInfo()))
+           _typ=(Some _value=(CallSig @130:27~37
+             _info=(ASTSpanInfo())
+             _typ=(Some _value=(NumberT @130:31~37
+               _info=(ASTSpanInfo()))))))
+          (AmbMemDecl @133:9~30
+           _info=(ASTSpanInfo())
+           _prop=(PropId @133:9~20
+            _id=(Id _info=(ASTSpanInfo()) _text="getDuration")
+            _info=(ASTSpanInfo()))
+           _typ=(Some _value=(CallSig @133:20~30
+             _info=(ASTSpanInfo())
+             _typ=(Some _value=(NumberT @133:24~30
+               _info=(ASTSpanInfo()))))))
+          (AmbMemDecl @134:9~30
+           _info=(ASTSpanInfo())
+           _prop=(PropId @134:9~20
+            _id=(Id _info=(ASTSpanInfo()) _text="getVideoUrl")
+            _info=(ASTSpanInfo()))
+           _typ=(Some _value=(CallSig @134:20~30
+             _info=(ASTSpanInfo())
+             _typ=(Some _value=(StringT @134:24~30
+               _info=(ASTSpanInfo()))))))
+          (AmbMemDecl @135:9~36
+           _info=(ASTSpanInfo())
+           _prop=(PropId @135:9~26
+            _id=(Id _info=(ASTSpanInfo()) _text="getVideoEmbedCode")
+            _info=(ASTSpanInfo()))
+           _typ=(Some _value=(CallSig @135:26~36
+             _info=(ASTSpanInfo())
+             _typ=(Some _value=(StringT @135:30~36
+               _info=(ASTSpanInfo()))))))
+          (AmbMemDecl @138:9~29
+           _info=(ASTSpanInfo())
+           _prop=(PropId @138:9~20
+            _id=(Id _info=(ASTSpanInfo()) _text="getPlaylist")
+            _info=(ASTSpanInfo()))
+           _typ=(Some _value=(CallSig @138:20~29
+             _info=(ASTSpanInfo())
+             _typ=(Some _value=(ArrayType @138:27~30
+               _info=(ASTSpanInfo())
+               _typ=(AnyT @138:24~27
+                _info=(ASTSpanInfo())))))))
+          (AmbMemDecl @139:9~35
+           _info=(ASTSpanInfo())
+           _prop=(PropId @139:9~25
+            _id=(Id _info=(ASTSpanInfo()) _text="getPlaylistIndex")
+            _info=(ASTSpanInfo()))
+           _typ=(Some _value=(CallSig @139:25~35
+             _info=(ASTSpanInfo())
+             _typ=(Some _value=(NumberT @139:29~35
+               _info=(ASTSpanInfo()))))))
+          (AmbMemDecl @142:9~64
+           _info=(ASTSpanInfo())
+           _prop=(PropId @142:9~25
+            _id=(Id _info=(ASTSpanInfo()) _text="addEventListener")
+            _info=(ASTSpanInfo()))
+           _typ=(Some _value=(CallSig @142:25~64
+             _info=(ASTSpanInfo())
+             _typ=(Some _value=(VoidT @142:60~64
+               _info=(ASTSpanInfo())))
+             _params=[
+              (Param @142:26~39
+               _info=(ASTSpanInfo())
+               _name=(Id @142:26~31 _info=(ASTSpanInfo()) _text="event")
+               _typ=(Some _value=(StringT @142:33~39
+                 _info=(ASTSpanInfo()))))
+              (Param @142:41~57
+               _info=(ASTSpanInfo())
+               _name=(Id @142:41~49 _info=(ASTSpanInfo()) _text="listener")
+               _typ=(Some _value=(StringT @142:51~57
+                 _info=(ASTSpanInfo()))))])))])
+        _info=(ASTSpanInfo()))
+       (AmbModElt @145:5~151:5
+        _decl=(AmbEnumDecl @145:12~151:5
+         _id=(Id @145:17~28 _info=(ASTSpanInfo()) _text="PlayerState")
+         _info=(ASTSpanInfo())
+         _mem=[
+          (AmbEnumMem @146:9~18
+           _info=(ASTSpanInfo())
+           _prop=(PropId
+            _id=(Id _info=(ASTSpanInfo()) _text="BUFFERING")
+            _info=(ASTSpanInfo())))
+          (AmbEnumMem @147:9~13
+           _info=(ASTSpanInfo())
+           _prop=(PropId
+            _id=(Id _info=(ASTSpanInfo()) _text="CUED")
+            _info=(ASTSpanInfo())))
+          (AmbEnumMem @148:9~14
+           _info=(ASTSpanInfo())
+           _prop=(PropId
+            _id=(Id _info=(ASTSpanInfo()) _text="ENDED")
+            _info=(ASTSpanInfo())))
+          (AmbEnumMem @149:9~15
+           _info=(ASTSpanInfo())
+           _prop=(PropId
+            _id=(Id _info=(ASTSpanInfo()) _text="PAUSED")
+            _info=(ASTSpanInfo())))
+          (AmbEnumMem @150:9~151:5
+           _info=(ASTSpanInfo())
+           _prop=(PropId @150:9~16
+            _id=(Id _info=(ASTSpanInfo()) _text="PLAYING")
+            _info=(ASTSpanInfo())))])
+        _info=(ASTSpanInfo()))])])])
+ _info=(ASTSpanInfo()))

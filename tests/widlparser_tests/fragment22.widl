@@ -1,0 +1,14 @@
+/* an interface that will stringify to the value of its name attribute */
+[Constructor]
+interface Student {
+  attribute unsigned long id;
+  stringifier attribute DOMString name;
+};
+
+/* ECMAScript binding
+var s = new Student();
+s.id = 12345678;
+s.name = '周杰倫';
+
+var greeting = 'Hello, ' + s + '!';  // Now greeting == 'Hello, 周杰倫!'.
+*/

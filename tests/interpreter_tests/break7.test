@@ -1,0 +1,16 @@
+################################################################################
+#    Copyright (c) 2012, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=break7
+INTERPRETER_TESTS_DIR=${JS_HOME}/tests/interpreter_tests
+interpret
+interpret_out_WCIequals=\
+${INTERPRETER_TESTS_DIR}/break7.js:1:1-6:\n\
+\ Break occurs outside of an iterator or a switch.\n\
+File ${INTERPRETER_TESTS_DIR}/break7.js has 1 error.\n
+interpret_err_equals=

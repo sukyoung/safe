@@ -1,0 +1,79 @@
+################################################################################
+#    Copyright (c) 2012, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=trycatchfinally2
+CFG_TESTS_DIR=${JS_HOME}/tests/cfg_tests
+cfg
+cfg_out_WCIequals=\
+(0,LBlock(15))\n\
+    [15] x := 16\n\
+    [16] noop(EndOfFile)\n\
+\n\
+\n\
+(0,LBlock(14))\n\
+    [13] catch(<>x<>2)\n\
+    [14] <>Global<>ignore7 := <>x<>2\n\
+\n\
+\n\
+(0,LBlock(13))\n\
+\n\
+\n\
+(0,LBlock(12))\n\
+    [12] x := 8\n\
+\n\
+\n\
+(0,LBlock(11))\n\
+    [10] catch(<>x<>2)\n\
+    [11] <>Global<>ignore7 := <>x<>2\n\
+\n\
+\n\
+(0,LBlock(10))\n\
+\n\
+\n\
+(0,LBlock(9))\n\
+    [9] x := 8\n\
+\n\
+\n\
+(0,LBlock(8))\n\
+    [7] catch(<>x<>2)\n\
+    [8] <>Global<>ignore7 := <>x<>2\n\
+\n\
+\n\
+(0,LBlock(7))\n\
+\n\
+\n\
+(0,LBlock(6))\n\
+\n\
+\n\
+(0,LBlock(5))\n\
+\n\
+\n\
+(0,LBlock(4))\n\
+    [5] temp := "hi"\n\
+\n\
+\n\
+(0,LBlock(3))\n\
+    [6] x := 8\n\
+\n\
+\n\
+(0,LBlock(2))\n\
+    [2] catch(<>x<>1)\n\
+    [4] <>x<>1 := 4\n\
+\n\
+\n\
+(0,LBlock(1))\n\
+    [3] x := 2\n\
+\n\
+\n\
+(0,LBlock(0))\n\
+    [0] noop(StartOfFile)\n\
+    [1] x := 1\n\
+\n\
+\n\
+\n
+cfg_err_equals=

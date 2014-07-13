@@ -1,0 +1,20 @@
+<script>
+
+var xx = [];
+function f(i){
+  g(i);
+}
+
+function g(i){
+  for(var j=0; j<2; j++)
+    xx[i]=i;
+}
+
+for(var i=0; i < 2; i++){
+  if(Math.random())
+    f(i);
+}
+
+// xx[0] = @ 0
+// xx[1] = @ 1
+</script>

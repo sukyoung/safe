@@ -1,0 +1,30 @@
+################################################################################
+#    Copyright (c) 2012, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=9.3
+INTERPRETER_TESTS_DIR=${JS_HOME}/tests/interpreter_mozilla_tests/ecma/TypeConversion
+interpret_mozilla
+interpret_mozilla_out_WCIequals=\
+9.3 ToNumber\n\
+ PASSED! Number() = 0 expected: 0\n\
+ PASSED! Number(eval('var x')) = NaN expected: NaN\n\
+ PASSED! Number(void 0) = NaN expected: NaN\n\
+ PASSED! Number(null) = 0 expected: 0\n\
+ PASSED! Number(true) = 1 expected: 1\n\
+ PASSED! Number(false) = 0 expected: 0\n\
+ PASSED! Number(0) = 0 expected: 0\n\
+ PASSED! Number(-0) = 0 expected: 0\n\
+ PASSED! Number(1) = 1 expected: 1\n\
+ PASSED! Number(-1) = -1 expected: -1\n\
+ PASSED! Number(Number.MAX_VALUE) = 1.7976931348623157e+308 expected: 1.7976931348623157e+308\n\
+ PASSED! Number(Number.MIN_VALUE) = 5e-324 expected: 5e-324\n\
+ PASSED! Number(Number.NaN) = NaN expected: NaN\n\
+ PASSED! Number(Number.POSITIVE_INFINITY) = Infinity expected: Infinity\n\
+ PASSED! Number(Number.NEGATIVE_INFINITY) = -Infinity expected: -Infinity\n\
+\n
+interpret_err_equals=

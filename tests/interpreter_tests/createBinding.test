@@ -1,0 +1,24 @@
+################################################################################
+#    Copyright (c) 2013, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=createBinding
+INTERPRETER_TESTS_DIR=${JS_HOME}/tests/interpreter_tests
+interpret
+interpret_out_WCIequals=\
+(delete arguments) = false\n\
+\n\
+(delete x) = false\n\
+\n\
+(delete w) = false\n\
+\n\
+(delete y) = false\n\
+\n\
+(delete z) = true\n\
+\n\
+Normal(undefined)
+interpret_err_equals=

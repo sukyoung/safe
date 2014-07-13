@@ -1,0 +1,105 @@
+################################################################################
+#    Copyright (c) 2012, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=15.9.3.8-1
+INTERPRETER_TESTS_DIR=${JS_HOME}/tests/interpreter_mozilla_tests/ecma/Date
+interpret_mozilla
+interpret_mozilla_out_WCIequals=\
+15.9.3.8 Date constructor:  new Date( value )\n\
+ PASSED! new Date(0).getTime() = 0 expected: 0\n\
+ PASSED! new Date(0).valueOf() = 0 expected: 0\n\
+ PASSED! new Date(0).getUTCFullYear() = 1970 expected: 1970\n\
+ PASSED! new Date(0).getUTCMonth() = 0 expected: 0\n\
+ PASSED! new Date(0).getUTCDate() = 1 expected: 1\n\
+ PASSED! new Date(0).getUTCDay() = 4 expected: 4\n\
+ PASSED! new Date(0).getUTCHours() = 0 expected: 0\n\
+ PASSED! new Date(0).getUTCMinutes() = 0 expected: 0\n\
+ PASSED! new Date(0).getUTCSeconds() = 0 expected: 0\n\
+ PASSED! new Date(0).getUTCMilliseconds() = 0 expected: 0\n\
+ PASSED! new Date(0).getFullYear() = 1970 expected: 1970\n\
+ PASSED! new Date(0).getMonth() = 0 expected: 0\n\
+ PASSED! new Date(0).getDate() = 1 expected: 1\n\
+ PASSED! new Date(0).getDay() = 4 expected: 4\n\
+ PASSED! new Date(0).getHours() = 9 expected: 9\n\
+ PASSED! new Date(0).getMinutes() = 0 expected: 0\n\
+ PASSED! new Date(0).getSeconds() = 0 expected: 0\n\
+ PASSED! new Date(0).getMilliseconds() = 0 expected: 0\n\
+ PASSED! new Date(1).getTime() = 1 expected: 1\n\
+ PASSED! new Date(1).valueOf() = 1 expected: 1\n\
+ PASSED! new Date(1).getUTCFullYear() = 1970 expected: 1970\n\
+ PASSED! new Date(1).getUTCMonth() = 0 expected: 0\n\
+ PASSED! new Date(1).getUTCDate() = 1 expected: 1\n\
+ PASSED! new Date(1).getUTCDay() = 4 expected: 4\n\
+ PASSED! new Date(1).getUTCHours() = 0 expected: 0\n\
+ PASSED! new Date(1).getUTCMinutes() = 0 expected: 0\n\
+ PASSED! new Date(1).getUTCSeconds() = 0 expected: 0\n\
+ PASSED! new Date(1).getUTCMilliseconds() = 1 expected: 1\n\
+ PASSED! new Date(1).getFullYear() = 1970 expected: 1970\n\
+ PASSED! new Date(1).getMonth() = 0 expected: 0\n\
+ PASSED! new Date(1).getDate() = 1 expected: 1\n\
+ PASSED! new Date(1).getDay() = 4 expected: 4\n\
+ PASSED! new Date(1).getHours() = 9 expected: 9\n\
+ PASSED! new Date(1).getMinutes() = 0 expected: 0\n\
+ PASSED! new Date(1).getSeconds() = 0 expected: 0\n\
+ PASSED! new Date(1).getMilliseconds() = 1 expected: 1\n\
+ PASSED! new Date(true).getTime() = 1 expected: 1\n\
+ PASSED! new Date(true).valueOf() = 1 expected: 1\n\
+ PASSED! new Date(true).getUTCFullYear() = 1970 expected: 1970\n\
+ PASSED! new Date(true).getUTCMonth() = 0 expected: 0\n\
+ PASSED! new Date(true).getUTCDate() = 1 expected: 1\n\
+ PASSED! new Date(true).getUTCDay() = 4 expected: 4\n\
+ PASSED! new Date(true).getUTCHours() = 0 expected: 0\n\
+ PASSED! new Date(true).getUTCMinutes() = 0 expected: 0\n\
+ PASSED! new Date(true).getUTCSeconds() = 0 expected: 0\n\
+ PASSED! new Date(true).getUTCMilliseconds() = 1 expected: 1\n\
+ PASSED! new Date(true).getFullYear() = 1970 expected: 1970\n\
+ PASSED! new Date(true).getMonth() = 0 expected: 0\n\
+ PASSED! new Date(true).getDate() = 1 expected: 1\n\
+ PASSED! new Date(true).getDay() = 4 expected: 4\n\
+ PASSED! new Date(true).getHours() = 9 expected: 9\n\
+ PASSED! new Date(true).getMinutes() = 0 expected: 0\n\
+ PASSED! new Date(true).getSeconds() = 0 expected: 0\n\
+ PASSED! new Date(true).getMilliseconds() = 1 expected: 1\n\
+ PASSED! new Date(false).getTime() = 0 expected: 0\n\
+ PASSED! new Date(false).valueOf() = 0 expected: 0\n\
+ PASSED! new Date(false).getUTCFullYear() = 1970 expected: 1970\n\
+ PASSED! new Date(false).getUTCMonth() = 0 expected: 0\n\
+ PASSED! new Date(false).getUTCDate() = 1 expected: 1\n\
+ PASSED! new Date(false).getUTCDay() = 4 expected: 4\n\
+ PASSED! new Date(false).getUTCHours() = 0 expected: 0\n\
+ PASSED! new Date(false).getUTCMinutes() = 0 expected: 0\n\
+ PASSED! new Date(false).getUTCSeconds() = 0 expected: 0\n\
+ PASSED! new Date(false).getUTCMilliseconds() = 0 expected: 0\n\
+ PASSED! new Date(false).getFullYear() = 1970 expected: 1970\n\
+ PASSED! new Date(false).getMonth() = 0 expected: 0\n\
+ PASSED! new Date(false).getDate() = 1 expected: 1\n\
+ PASSED! new Date(false).getDay() = 4 expected: 4\n\
+ PASSED! new Date(false).getHours() = 9 expected: 9\n\
+ PASSED! new Date(false).getMinutes() = 0 expected: 0\n\
+ PASSED! new Date(false).getSeconds() = 0 expected: 0\n\
+ PASSED! new Date(false).getMilliseconds() = 0 expected: 0\n\
+ PASSED! new Date("1970-01-01T00:00:00.000Z" ).getTime() = 0 expected: 0\n\
+ PASSED! new Date("1970-01-01T00:00:00.000Z" ).valueOf() = 0 expected: 0\n\
+ PASSED! new Date("1970-01-01T00:00:00.000Z" ).getUTCFullYear() = 1970 expected: 1970\n\
+ PASSED! new Date("1970-01-01T00:00:00.000Z" ).getUTCMonth() = 0 expected: 0\n\
+ PASSED! new Date("1970-01-01T00:00:00.000Z" ).getUTCDate() = 1 expected: 1\n\
+ PASSED! new Date("1970-01-01T00:00:00.000Z" ).getUTCDay() = 4 expected: 4\n\
+ PASSED! new Date("1970-01-01T00:00:00.000Z" ).getUTCHours() = 0 expected: 0\n\
+ PASSED! new Date("1970-01-01T00:00:00.000Z" ).getUTCMinutes() = 0 expected: 0\n\
+ PASSED! new Date("1970-01-01T00:00:00.000Z" ).getUTCSeconds() = 0 expected: 0\n\
+ PASSED! new Date("1970-01-01T00:00:00.000Z" ).getUTCMilliseconds() = 0 expected: 0\n\
+ PASSED! new Date("1970-01-01T00:00:00.000Z" ).getFullYear() = 1970 expected: 1970\n\
+ PASSED! new Date("1970-01-01T00:00:00.000Z" ).getMonth() = 0 expected: 0\n\
+ PASSED! new Date("1970-01-01T00:00:00.000Z" ).getDate() = 1 expected: 1\n\
+ PASSED! new Date("1970-01-01T00:00:00.000Z" ).getDay() = 4 expected: 4\n\
+ PASSED! new Date("1970-01-01T00:00:00.000Z" ).getHours() = 9 expected: 9\n\
+ PASSED! new Date("1970-01-01T00:00:00.000Z" ).getMinutes() = 0 expected: 0\n\
+ PASSED! new Date("1970-01-01T00:00:00.000Z" ).getSeconds() = 0 expected: 0\n\
+ PASSED! new Date("1970-01-01T00:00:00.000Z" ).getMilliseconds() = 0 expected: 0\n\
+\n
+interpret_err_equals=

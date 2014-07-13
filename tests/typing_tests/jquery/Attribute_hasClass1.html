@@ -1,0 +1,27 @@
+<!------------------------------------------------------------------------------
+    Copyright (c) 2013, S-Core.
+    All rights reserved.
+
+    Use is subject to license terms.
+
+    This distribution may include materials developed by third parties.
+------------------------------------------------------------------------------->
+
+<html>
+<head>
+    <script src="jquery.js"></script>
+    <script>
+        var x = $("#test");
+        var __result1 = x.hasClass("aaa");
+        var __expect1 = true
+        var __result2 = x.hasClass("bbb");
+        var __expect2 = true
+        var __result3 = x.hasClass("ccc");
+        var __expect3 = false
+    </script>
+</head>
+<body>
+    <div id="test" class="aaa bbb">
+    </div>
+</body>
+</html>

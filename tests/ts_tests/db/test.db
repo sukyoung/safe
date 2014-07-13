@@ -1,0 +1,635 @@
+(Program @"test.d.ts":1:1~65:1
+ _body=(TopLevel
+  _stmts=[
+   (SourceElements
+    _info=(ASTSpanInfo())
+    _body=[
+     (IntfDecl @1:1~4:1
+      _id=(Id @1:11~22 _info=(ASTSpanInfo()) _text="VimeoParams")
+      _info=(ASTSpanInfo())
+      _typ=(ObjectType @1:23~4:1
+       _info=(ASTSpanInfo())
+       _members=[
+        (PropertySig @2:5~16
+         _info=(ASTSpanInfo())
+         _prop=(PropId @2:5~9
+          _id=(Id _info=(ASTSpanInfo()) _text="name")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(StringT @2:10~16
+           _info=(ASTSpanInfo()))))
+        (PropertySig @3:5~14
+         _info=(ASTSpanInfo())
+         _prop=(PropId @3:5~10
+          _id=(Id _info=(ASTSpanInfo()) _text="value")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(AnyT @3:11~14
+           _info=(ASTSpanInfo()))))]))
+     (IntfDecl @6:1~8:1
+      _id=(Id @6:11~25 _info=(ASTSpanInfo()) _text="VimeoPlayerAPI")
+      _info=(ASTSpanInfo())
+      _typ=(ObjectType @6:26~8:1
+       _info=(ASTSpanInfo())
+       _members=[
+        (CallSig @7:5~26
+         _info=(ASTSpanInfo())
+         _typ=(Some _value=(AnyT @7:23~26
+           _info=(ASTSpanInfo())))
+         _params=[
+          (Param @7:6~20
+           _info=(ASTSpanInfo())
+           _name=(Id @7:6~12 _info=(ASTSpanInfo()) _text="method")
+           _typ=(Some _value=(StringT @7:14~20
+             _info=(ASTSpanInfo()))))])]))
+     (IntfDecl @10:1~24:1
+      _id=(Id @10:11~22 _info=(ASTSpanInfo()) _text="VimeoPlayer")
+      _info=(ASTSpanInfo())
+      _typ=(ObjectType @10:23~24:1
+       _info=(ASTSpanInfo())
+       _members=[
+        (PropertySig @11:5~14
+         _info=(ASTSpanInfo())
+         _prop=(PropId @11:5~6
+          _id=(Id _info=(ASTSpanInfo()) _text="k")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(StringT @11:8~14
+           _info=(ASTSpanInfo()))))
+        (IndexSig @12:5~29
+         _annot=(TypeRef @12:18~29
+          _info=(ASTSpanInfo())
+          _name=(TypeName
+           _info=(ASTSpanInfo())
+           _text="VimeoParams"
+           _names=[
+            (Id _info=(ASTSpanInfo()) _text="VimeoParams")]))
+         _id=(Id @12:6~7 _info=(ASTSpanInfo()) _text="x")
+         _info=(ASTSpanInfo())
+         _num=true)
+        (PropertySig @13:5~24
+         _info=(ASTSpanInfo())
+         _prop=(PropId @13:5~8
+          _id=(Id _info=(ASTSpanInfo()) _text="api")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(TypeRef @13:10~24
+           _info=(ASTSpanInfo())
+           _name=(TypeName
+            _info=(ASTSpanInfo())
+            _text="VimeoPlayerAPI"
+            _names=[
+             (Id _info=(ASTSpanInfo()) _text="VimeoPlayerAPI")]))))
+        (PropertySig @14:5~18
+         _info=(ASTSpanInfo())
+         _prop=(PropId @14:5~9
+          _id=(Id _info=(ASTSpanInfo()) _text="test")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(ArrayType @14:16~19
+           _info=(ASTSpanInfo())
+           _typ=(StringT @14:10~16
+            _info=(ASTSpanInfo())))))
+        (MethodSig @15:5~65
+         _info=(ASTSpanInfo())
+         _prop=(PropId @15:5~13
+          _id=(Id _info=(ASTSpanInfo()) _text="addEvent")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @15:13~65
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(AnyT @15:62~65
+            _info=(ASTSpanInfo())))
+          _params=[
+           (Param @15:14~31
+            _info=(ASTSpanInfo())
+            _name=(Id @15:14~23 _info=(ASTSpanInfo()) _text="eventName")
+            _typ=(Some _value=(StringT @15:25~31
+              _info=(ASTSpanInfo()))))
+           (Param @15:33~59
+            _info=(ASTSpanInfo())
+            _name=(Id @15:33~41 _info=(ASTSpanInfo()) _text="callback")
+            _typ=(Some _value=(FunctionType @15:43~59
+              _info=(ASTSpanInfo())
+              _typ=(VoidT @15:54~59
+               _info=(ASTSpanInfo()))
+              _params=[
+               (Param @15:44~59
+                _info=(ASTSpanInfo())
+                _name=(Id @15:44~45 _info=(ASTSpanInfo()) _text="e")
+                _typ=(Some _value=(AnyT @15:47~59
+                  _info=(ASTSpanInfo()))))])))]))
+        (MethodSig @16:5~41
+         _info=(ASTSpanInfo())
+         _prop=(PropId @16:5~16
+          _id=(Id _info=(ASTSpanInfo()) _text="removeEvent")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @16:16~41
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(VoidT @16:37~41
+            _info=(ASTSpanInfo())))
+          _params=[
+           (Param @16:17~34
+            _info=(ASTSpanInfo())
+            _name=(Id @16:17~26 _info=(ASTSpanInfo()) _text="eventName")
+            _typ=(Some _value=(StringT @16:28~34
+              _info=(ASTSpanInfo()))))]))
+        (PropertySig @17:5~30
+         _info=(ASTSpanInfo())
+         _prop=(PropId @17:5~9
+          _id=(Id _info=(ASTSpanInfo()) _text="func")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(FunctionType @17:10~30
+           _info=(ASTSpanInfo())
+           _typ=(StringT @17:24~30
+            _info=(ASTSpanInfo()))
+           _params=[
+            (Param @17:11~19
+             _info=(ASTSpanInfo())
+             _name=(Id @17:11~12 _info=(ASTSpanInfo()) _text="a")
+             _typ=(Some _value=(StringT @17:13~19
+               _info=(ASTSpanInfo()))))])))
+        (MethodSig @18:5~68
+         _info=(ASTSpanInfo())
+         _prop=(PropId @18:5~16
+          _id=(Id _info=(ASTSpanInfo()) _text="postMessage")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @18:16~68
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(VoidT @18:64~68
+            _info=(ASTSpanInfo())))
+          _params=[
+           (Param @18:17~31
+            _info=(ASTSpanInfo())
+            _name=(Id @18:17~23 _info=(ASTSpanInfo()) _text="method")
+            _typ=(Some _value=(StringT @18:25~31
+              _info=(ASTSpanInfo()))))
+           (Param @18:33~53
+            _info=(ASTSpanInfo())
+            _name=(Id @18:33~39 _info=(ASTSpanInfo()) _text="params")
+            _typ=(Some _value=(ArrayType @18:51~54
+              _info=(ASTSpanInfo())
+              _typ=(TypeRef @18:40~53
+               _info=(ASTSpanInfo())
+               _name=(TypeName
+                _info=(ASTSpanInfo())
+                _text="VimeoParams"
+                _names=[
+                 (Id @18:40~51 _info=(ASTSpanInfo()) _text="VimeoParams")])))))
+           (Param @18:55~61
+            _info=(ASTSpanInfo())
+            _name=(Id _info=(ASTSpanInfo()) _text="target"))]))
+        (MethodSig @19:5~28
+         _info=(ASTSpanInfo())
+         _prop=(PropId @19:5~21
+          _id=(Id _info=(ASTSpanInfo()) _text="onMessagReceived")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @19:21~28
+          _info=(ASTSpanInfo())
+          _params=[
+           (Param @19:22~27
+            _info=(ASTSpanInfo())
+            _name=(Id _info=(ASTSpanInfo()) _text="event"))]))
+        (MethodSig @20:5~66
+         _info=(ASTSpanInfo())
+         _prop=(PropId @20:5~18
+          _id=(Id _info=(ASTSpanInfo()) _text="storeCallback")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @20:18~66
+          _info=(ASTSpanInfo())
+          _params=[
+           (Param @20:19~36
+            _info=(ASTSpanInfo())
+            _name=(Id @20:19~28 _info=(ASTSpanInfo()) _text="eventName")
+            _typ=(Some _value=(StringT @20:30~36
+              _info=(ASTSpanInfo()))))
+           (Param @20:38~46
+            _info=(ASTSpanInfo())
+            _name=(Id _info=(ASTSpanInfo()) _text="callback"))
+           (Param @20:48~65
+            _info=(ASTSpanInfo())
+            _name=(Id @20:48~57 _info=(ASTSpanInfo()) _text="target_id")
+            _typ=(Some _value=(StringT @20:59~65
+              _info=(ASTSpanInfo()))))]))
+        (MethodSig @21:5~54
+         _info=(ASTSpanInfo())
+         _prop=(PropId @21:5~16
+          _id=(Id _info=(ASTSpanInfo()) _text="getCallback")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @21:16~54
+          _info=(ASTSpanInfo())
+          _params=[
+           (Param @21:17~34
+            _info=(ASTSpanInfo())
+            _name=(Id @21:17~26 _info=(ASTSpanInfo()) _text="eventName")
+            _typ=(Some _value=(StringT @21:28~34
+              _info=(ASTSpanInfo()))))
+           (Param @21:36~53
+            _info=(ASTSpanInfo())
+            _name=(Id @21:36~45 _info=(ASTSpanInfo()) _text="target_id")
+            _typ=(Some _value=(StringT @21:47~53
+              _info=(ASTSpanInfo()))))]))
+        (MethodSig @22:5~57
+         _info=(ASTSpanInfo())
+         _prop=(PropId @22:5~19
+          _id=(Id _info=(ASTSpanInfo()) _text="removeCallback")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @22:19~57
+          _info=(ASTSpanInfo())
+          _params=[
+           (Param @22:20~37
+            _info=(ASTSpanInfo())
+            _name=(Id @22:20~29 _info=(ASTSpanInfo()) _text="eventName")
+            _typ=(Some _value=(StringT @22:31~37
+              _info=(ASTSpanInfo()))))
+           (Param @22:39~56
+            _info=(ASTSpanInfo())
+            _name=(Id @22:39~48 _info=(ASTSpanInfo()) _text="target_id")
+            _typ=(Some _value=(StringT @22:50~56
+              _info=(ASTSpanInfo()))))]))
+        (MethodSig @23:5~42
+         _info=(ASTSpanInfo())
+         _prop=(PropId @23:5~21
+          _id=(Id _info=(ASTSpanInfo()) _text="getDomainFromUrl")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @23:21~42
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(StringT @23:36~42
+            _info=(ASTSpanInfo())))
+          _params=[
+           (Param @23:22~33
+            _info=(ASTSpanInfo())
+            _name=(Id @23:22~25 _info=(ASTSpanInfo()) _text="url")
+            _typ=(Some _value=(StringT @23:27~33
+              _info=(ASTSpanInfo()))))]))]))
+     (IntfDecl @26:1~28:1
+      _id=(Id @26:11~15 _info=(ASTSpanInfo()) _text="Test")
+      _info=(ASTSpanInfo())
+      _typ=(ObjectType @26:49~28:1
+       _info=(ASTSpanInfo())
+       _members=[
+        (PropertySig @27:5~16
+         _info=(ASTSpanInfo())
+         _prop=(PropId @27:5~8
+          _id=(Id _info=(ASTSpanInfo()) _text="str")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(StringT @27:10~16
+           _info=(ASTSpanInfo()))))])
+      _ext=[
+       (TypeRef @26:24~35
+        _info=(ASTSpanInfo())
+        _name=(TypeName
+         _info=(ASTSpanInfo())
+         _text="VimeoPlayer"
+         _names=[
+          (Id _info=(ASTSpanInfo()) _text="VimeoPlayer")]))
+       (TypeRef @26:37~49
+        _info=(ASTSpanInfo())
+        _name=(TypeName @26:37~48
+         _info=(ASTSpanInfo())
+         _text="VimeoParams"
+         _names=[
+          (Id _info=(ASTSpanInfo()) _text="VimeoParams")]))])
+     (AmbVarDecl @30:9~23
+      _id=(Id @30:13~17 _info=(ASTSpanInfo()) _text="test")
+      _info=(ASTSpanInfo())
+      _ty=(Some _value=(TypeRef @30:19~23
+        _info=(ASTSpanInfo())
+        _name=(TypeName
+         _info=(ASTSpanInfo())
+         _text="Test"
+         _names=[
+          (Id _info=(ASTSpanInfo()) _text="Test")]))))
+     (AmbVarDecl @32:9~36:1
+      _id=(Id @32:13~24 _info=(ASTSpanInfo()) _text="VimeoPlayer")
+      _info=(ASTSpanInfo())
+      _ty=(Some _value=(ObjectType @32:26~34:1
+        _info=(ASTSpanInfo())
+        _members=[
+         (ConstructSig @33:5~24
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(TypeRef @33:13~24
+            _info=(ASTSpanInfo())
+            _name=(TypeName
+             _info=(ASTSpanInfo())
+             _text="VimeoPlayer"
+             _names=[
+              (Id _info=(ASTSpanInfo()) _text="VimeoPlayer")]))))])))
+     (AmbVarDecl @36:9~28
+      _id=(Id @36:13~15 _info=(ASTSpanInfo()) _text="$f")
+      _info=(ASTSpanInfo())
+      _ty=(Some _value=(TypeRef @36:17~28
+        _info=(ASTSpanInfo())
+        _name=(TypeName
+         _info=(ASTSpanInfo())
+         _text="VimeoPlayer"
+         _names=[
+          (Id _info=(ASTSpanInfo()) _text="VimeoPlayer")]))))
+     (AmbVarDecl @37:9~36
+      _id=(Id @37:13~15 _info=(ASTSpanInfo()) _text="ft")
+      _info=(ASTSpanInfo())
+      _ty=(Some _value=(FunctionType @37:17~36
+        _info=(ASTSpanInfo())
+        _typ=(StringT @37:30~36
+         _info=(ASTSpanInfo()))
+        _params=[
+         (Param @37:18~25
+          _info=(ASTSpanInfo())
+          _name=(Id @37:18~19 _info=(ASTSpanInfo()) _text="a")
+          _typ=(Some _value=(ArrayType @37:23~26
+            _info=(ASTSpanInfo())
+            _typ=(AnyT @37:20~25
+             _info=(ASTSpanInfo())))))])))
+     (AmbFunDecl @38:9~66
+      _id=(Id @38:18~20 _info=(ASTSpanInfo()) _text="mt")
+      _info=(ASTSpanInfo())
+      _sig=(CallSig @38:21~66
+       _info=(ASTSpanInfo())
+       _typ=(Some _value=(StringT @38:60~66
+         _info=(ASTSpanInfo())))
+       _params=[
+        (Param @38:22~30
+         _info=(ASTSpanInfo())
+         _name=(Id @38:22~23 _info=(ASTSpanInfo()) _text="a")
+         _typ=(Some _value=(StringT @38:24~30
+           _info=(ASTSpanInfo()))))
+        (Param @38:32~41
+         _info=(ASTSpanInfo())
+         _name=(Id @38:32~33 _info=(ASTSpanInfo()) _text="b")
+         _optional=true
+         _typ=(Some _value=(StringT @38:35~41
+           _info=(ASTSpanInfo()))))
+        (Param @38:43~56
+         _info=(ASTSpanInfo())
+         _name=(Id @38:46~47 _info=(ASTSpanInfo()) _text="c")
+         _rest=true
+         _typ=(Some _value=(ArrayType @38:54~57
+           _info=(ASTSpanInfo())
+           _typ=(NumberT @38:48~54
+            _info=(ASTSpanInfo())))))]))
+     (AmbFunDecl @39:9~40:1
+      _id=(Id @39:18~24 _info=(ASTSpanInfo()) _text="sample")
+      _info=(ASTSpanInfo())
+      _sig=(CallSig @39:25~40:1
+       _info=(ASTSpanInfo())
+       _params=[
+        (Param @39:26~46
+         _info=(ASTSpanInfo())
+         _name=(Id @39:26~27 _info=(ASTSpanInfo()) _text="a")
+         _typ=(Some _value=(FunctionType @39:28~46
+           _info=(ASTSpanInfo())
+           _typ=(StringT @39:40~46
+            _info=(ASTSpanInfo()))
+           _params=[
+            (Param @39:29~46
+             _info=(ASTSpanInfo())
+             _name=(Id @39:29~30 _info=(ASTSpanInfo()) _text="a")
+             _typ=(Some _value=(StringT @39:31~46
+               _info=(ASTSpanInfo()))))])))
+        (Param @39:47~144
+         _info=(ASTSpanInfo())
+         _name=(Id @39:47~48 _info=(ASTSpanInfo()) _text="b")
+         _typ=(Some _value=(ObjectType @39:49~144
+           _info=(ASTSpanInfo())
+           _members=[
+            (MethodSig @39:50~144
+             _info=(ASTSpanInfo())
+             _prop=(PropId
+              _id=(Id @39:50~51 _info=(ASTSpanInfo()) _text="m")
+              _info=(ASTSpanInfo()))
+             _sig=(CallSig @39:51~144
+              _info=(ASTSpanInfo())
+              _typ=(Some _value=(StringT @39:62~144
+                _info=(ASTSpanInfo())))
+              _params=[
+               (Param @39:52~144
+                _info=(ASTSpanInfo())
+                _name=(Id @39:52~53 _info=(ASTSpanInfo()) _text="a")
+                _typ=(Some _value=(StringT @39:54~144
+                  _info=(ASTSpanInfo()))))]))
+            (PropertySig @39:70~144
+             _info=(ASTSpanInfo())
+             _prop=(PropId
+              _id=(Id @39:70~71 _info=(ASTSpanInfo()) _text="a")
+              _info=(ASTSpanInfo()))
+             _typ=(Some _value=(StringT @39:72~144
+               _info=(ASTSpanInfo()))))
+            (PropertySig @39:80~144
+             _info=(ASTSpanInfo())
+             _prop=(PropId
+              _id=(Id @39:80~83 _info=(ASTSpanInfo()) _text="arr")
+              _info=(ASTSpanInfo()))
+             _typ=(Some _value=(ArrayType @39:91~145
+               _info=(ASTSpanInfo())
+               _typ=(StringT @39:85~144
+                _info=(ASTSpanInfo())))))
+            (PropertySig @39:95~144
+             _info=(ASTSpanInfo())
+             _prop=(PropId
+              _id=(Id @39:95~98 _info=(ASTSpanInfo()) _text="obj")
+              _info=(ASTSpanInfo()))
+             _typ=(Some _value=(ObjectType @39:100~144
+               _info=(ASTSpanInfo())
+               _members=[
+                (PropertySig @39:101~144
+                 _info=(ASTSpanInfo())
+                 _prop=(PropId
+                  _id=(Id @39:101~104 _info=(ASTSpanInfo()) _text="str")
+                  _info=(ASTSpanInfo()))
+                 _typ=(Some _value=(StringT @39:106~144
+                   _info=(ASTSpanInfo()))))
+                (PropertySig @39:113~144
+                 _info=(ASTSpanInfo())
+                 _prop=(PropId
+                  _id=(Id @39:113~116 _info=(ASTSpanInfo()) _text="num")
+                  _info=(ASTSpanInfo()))
+                 _typ=(Some _value=(NumberT @39:118~144
+                   _info=(ASTSpanInfo()))))])))
+            (PropertySig @39:128~144
+             _info=(ASTSpanInfo())
+             _prop=(PropId
+              _id=(Id @39:128~130 _info=(ASTSpanInfo()) _text="vp")
+              _info=(ASTSpanInfo()))
+             _typ=(Some _value=(TypeRef @39:131~144
+               _info=(ASTSpanInfo())
+               _name=(TypeName
+                _info=(ASTSpanInfo())
+                _text="VimeoPlayer"
+                _names=[
+                 (Id @39:131~142 _info=(ASTSpanInfo()) _text="VimeoPlayer")]))))])))]))
+     (AmbVarDecl @40:9~21
+      _id=(Id @40:13~14 _info=(ASTSpanInfo()) _text="a")
+      _info=(ASTSpanInfo())
+      _ty=(Some _value=(StringT @40:15~21
+        _info=(ASTSpanInfo()))))
+     (AmbVarDecl @41:9~21
+      _id=(Id @41:13~14 _info=(ASTSpanInfo()) _text="b")
+      _info=(ASTSpanInfo())
+      _ty=(Some _value=(NumberT @41:15~21
+        _info=(ASTSpanInfo()))))
+     (AmbVarDecl @42:9~28
+      _id=(Id @42:13~14 _info=(ASTSpanInfo()) _text="c")
+      _info=(ASTSpanInfo())
+      _ty=(Some _value=(ArrayType @42:26~29
+        _info=(ASTSpanInfo())
+        _typ=(TypeRef @42:15~26
+         _info=(ASTSpanInfo())
+         _name=(TypeName
+          _info=(ASTSpanInfo())
+          _text="VimeoPlayer"
+          _names=[
+           (Id _info=(ASTSpanInfo()) _text="VimeoPlayer")])))))
+     (AmbVarDecl @44:9~60:1
+      _id=(Id @44:13~14 _info=(ASTSpanInfo()) _text="x")
+      _info=(ASTSpanInfo())
+      _ty=(Some _value=(ObjectType @44:16~58:1
+        _info=(ASTSpanInfo())
+        _members=[
+         (CallSig @45:5~31
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(StringT @45:25~31
+            _info=(ASTSpanInfo())))
+          _params=[
+           (Param @45:6~22
+            _info=(ASTSpanInfo())
+            _name=(Id @45:6~13 _info=(ASTSpanInfo()) _text="message")
+            _optional=true
+            _typ=(Some _value=(StringT @45:16~22
+              _info=(ASTSpanInfo()))))])
+         (PropertySig @46:5~19
+          _info=(ASTSpanInfo())
+          _prop=(PropId @46:5~11
+           _id=(Id _info=(ASTSpanInfo()) _text="length")
+           _info=(ASTSpanInfo()))
+          _typ=(Some _value=(NumberT @46:13~19
+            _info=(ASTSpanInfo()))))
+         (PropertySig @47:5~20
+          _info=(ASTSpanInfo())
+          _prop=(PropId @47:5~7
+           _id=(Id _info=(ASTSpanInfo()) _text="vp")
+           _info=(ASTSpanInfo()))
+          _typ=(Some _value=(TypeRef @47:9~20
+            _info=(ASTSpanInfo())
+            _name=(TypeName
+             _info=(ASTSpanInfo())
+             _text="VimeoPlayer"
+             _names=[
+              (Id _info=(ASTSpanInfo()) _text="VimeoPlayer")]))))
+         (PropertySig @48:5~24
+          _info=(ASTSpanInfo())
+          _prop=(PropId @48:5~8
+           _id=(Id _info=(ASTSpanInfo()) _text="vpa")
+           _info=(ASTSpanInfo()))
+          _typ=(Some _value=(TypeRef @48:10~24
+            _info=(ASTSpanInfo())
+            _name=(TypeName
+             _info=(ASTSpanInfo())
+             _text="VimeoPlayerAPI"
+             _names=[
+              (Id _info=(ASTSpanInfo()) _text="VimeoPlayerAPI")]))))
+         (PropertySig @49:5~21
+          _info=(ASTSpanInfo())
+          _prop=(PropId @49:5~8
+           _id=(Id _info=(ASTSpanInfo()) _text="vps")
+           _info=(ASTSpanInfo()))
+          _typ=(Some _value=(TypeRef @49:10~21
+            _info=(ASTSpanInfo())
+            _name=(TypeName
+             _info=(ASTSpanInfo())
+             _text="VimeoParams"
+             _names=[
+              (Id _info=(ASTSpanInfo()) _text="VimeoParams")]))))
+         (PropertySig @50:5~18
+          _info=(ASTSpanInfo())
+          _prop=(PropId @50:5~8
+           _id=(Id _info=(ASTSpanInfo()) _text="arr")
+           _info=(ASTSpanInfo()))
+          _typ=(Some _value=(ArrayType @50:16~19
+            _info=(ASTSpanInfo())
+            _typ=(StringT @50:10~16
+             _info=(ASTSpanInfo())))))
+         (PropertySig @51:5~19
+          _info=(ASTSpanInfo())
+          _prop=(PropId @51:5~14
+           _id=(Id _info=(ASTSpanInfo()) _text="prototype")
+           _info=(ASTSpanInfo()))
+          _typ=(Some _value=(AnyT @51:16~19
+            _info=(ASTSpanInfo()))))
+         (MethodSig @52:5~38
+          _info=(ASTSpanInfo())
+          _prop=(PropId @52:5~11
+           _id=(Id _info=(ASTSpanInfo()) _text="method")
+           _info=(ASTSpanInfo()))
+          _sig=(CallSig @52:11~38
+           _info=(ASTSpanInfo())
+           _typ=(Some _value=(StringT @52:32~38
+             _info=(ASTSpanInfo())))
+           _params=[
+            (Param @52:12~29
+             _info=(ASTSpanInfo())
+             _name=(Id @52:12~21 _info=(ASTSpanInfo()) _text="eventName")
+             _typ=(Some _value=(StringT @52:23~29
+               _info=(ASTSpanInfo()))))]))
+         (PropertySig @53:5~30
+          _info=(ASTSpanInfo())
+          _prop=(PropId @53:5~9
+           _id=(Id _info=(ASTSpanInfo()) _text="func")
+           _info=(ASTSpanInfo()))
+          _typ=(Some _value=(FunctionType @53:10~30
+            _info=(ASTSpanInfo())
+            _typ=(StringT @53:24~30
+             _info=(ASTSpanInfo()))
+            _params=[
+             (Param @53:11~19
+              _info=(ASTSpanInfo())
+              _name=(Id @53:11~12 _info=(ASTSpanInfo()) _text="a")
+              _typ=(Some _value=(StringT @53:13~19
+                _info=(ASTSpanInfo()))))])))
+         (PropertySig @54:5~58:1
+          _info=(ASTSpanInfo())
+          _prop=(PropId @54:5~8
+           _id=(Id _info=(ASTSpanInfo()) _text="obj")
+           _info=(ASTSpanInfo()))
+          _typ=(Some _value=(ObjectType @54:10~57:5
+            _info=(ASTSpanInfo())
+            _members=[
+             (PropertySig @55:7~18
+              _info=(ASTSpanInfo())
+              _prop=(PropId @55:7~10
+               _id=(Id _info=(ASTSpanInfo()) _text="str")
+               _info=(ASTSpanInfo()))
+              _typ=(Some _value=(StringT @55:12~18
+                _info=(ASTSpanInfo()))))
+             (PropertySig @56:7~18
+              _info=(ASTSpanInfo())
+              _prop=(PropId @56:7~10
+               _id=(Id _info=(ASTSpanInfo()) _text="num")
+               _info=(ASTSpanInfo()))
+              _typ=(Some _value=(NumberT @56:12~18
+                _info=(ASTSpanInfo()))))])))])))
+     (AmbVarDecl @60:9~65:1
+      _id=(Id @60:13~14 _info=(ASTSpanInfo()) _text="y")
+      _info=(ASTSpanInfo())
+      _ty=(Some _value=(ObjectType @60:16~64:1
+        _info=(ASTSpanInfo())
+        _members=[
+         (IndexSig @61:5~29
+          _annot=(TypeRef @61:18~29
+           _info=(ASTSpanInfo())
+           _name=(TypeName
+            _info=(ASTSpanInfo())
+            _text="VimeoPlayer"
+            _names=[
+             (Id _info=(ASTSpanInfo()) _text="VimeoPlayer")]))
+          _id=(Id @61:6~7 _info=(ASTSpanInfo()) _text="n")
+          _info=(ASTSpanInfo())
+          _num=true)
+         (PropertySig @62:5~19
+          _info=(ASTSpanInfo())
+          _prop=(PropId @62:5~11
+           _id=(Id _info=(ASTSpanInfo()) _text="length")
+           _info=(ASTSpanInfo()))
+          _typ=(Some _value=(NumberT @62:13~19
+            _info=(ASTSpanInfo()))))
+         (PropertySig @63:5~16
+          _info=(ASTSpanInfo())
+          _prop=(PropId @63:5~8
+           _id=(Id _info=(ASTSpanInfo()) _text="str")
+           _info=(ASTSpanInfo()))
+          _typ=(Some _value=(StringT @63:10~16
+            _info=(ASTSpanInfo()))))])))])])
+ _info=(ASTSpanInfo()))

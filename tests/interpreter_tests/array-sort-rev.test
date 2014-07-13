@@ -1,0 +1,21 @@
+################################################################################
+#    Copyright (c) 2012, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=array-sort-rev
+INTERPRETER_TESTS_DIR=${JS_HOME}/tests/interpreter_tests
+interpret
+interpret_out_WCIequals=\
+3,1,2\n\
+3,2,1\n\
+3,,2\n\
+3,2,\n\
+3,2,0\n\
+3,1,0\n\
+3,1,0\n\
+Normal(3,1,0)\n
+interpret_err_equals=

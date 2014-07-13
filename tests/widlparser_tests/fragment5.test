@@ -1,0 +1,21 @@
+################################################################################
+#    Copyright (c) 2013, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=fragment5.widl
+WIDLPARSER_TESTS_DIR=${JS_HOME}/tests/widl_tests
+widlparse
+widlparse_out_WCIequals=\
+[callback] interface Options {\n\
+  attribute DOMString? option1;\n\
+  attribute DOMString? option2;\n\
+  attribute long? option3;\n\
+};\n\
+interface A {\n\
+  void doTask(DOMString type, Options options);\n\
+};\n
+widlparse_err_equals=

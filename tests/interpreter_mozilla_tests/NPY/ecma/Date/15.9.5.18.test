@@ -1,0 +1,66 @@
+################################################################################
+#    Copyright (c) 2012, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=15.9.5.18
+INTERPRETER_TESTS_DIR=${JS_HOME}/tests/interpreter_mozilla_tests/ecma/Date
+interpret_mozilla
+interpret_mozilla_out_WCIequals=\
+15.9.5.18 Date.prototype.getSeconds()\n\
+ PASSED! (new Date(1355759121347)).getSeconds() = 21 expected: 21\n\
+ PASSED! (new Date(1355759122347)).getSeconds() = 22 expected: 22\n\
+ PASSED! (new Date(1355759123347)).getSeconds() = 23 expected: 23\n\
+ PASSED! (new Date(1355759124347)).getSeconds() = 24 expected: 24\n\
+ PASSED! (new Date(1355759125347)).getSeconds() = 25 expected: 25\n\
+ PASSED! (new Date(1355759126347)).getSeconds() = 26 expected: 26\n\
+ PASSED! (new Date(1355759127347)).getSeconds() = 27 expected: 27\n\
+ PASSED! (new Date(-62167219199000)).getSeconds() = 1 expected: 1\n\
+ PASSED! (new Date(-62167219198000)).getSeconds() = 2 expected: 2\n\
+ PASSED! (new Date(-62167219197000)).getSeconds() = 3 expected: 3\n\
+ PASSED! (new Date(-62167219196000)).getSeconds() = 4 expected: 4\n\
+ PASSED! (new Date(-62167219195000)).getSeconds() = 5 expected: 5\n\
+ PASSED! (new Date(-62167219194000)).getSeconds() = 6 expected: 6\n\
+ PASSED! (new Date(-62167219193000)).getSeconds() = 7 expected: 7\n\
+ PASSED! (new Date(1000)).getSeconds() = 1 expected: 1\n\
+ PASSED! (new Date(2000)).getSeconds() = 2 expected: 2\n\
+ PASSED! (new Date(3000)).getSeconds() = 3 expected: 3\n\
+ PASSED! (new Date(4000)).getSeconds() = 4 expected: 4\n\
+ PASSED! (new Date(5000)).getSeconds() = 5 expected: 5\n\
+ PASSED! (new Date(6000)).getSeconds() = 6 expected: 6\n\
+ PASSED! (new Date(7000)).getSeconds() = 7 expected: 7\n\
+ PASSED! (new Date(-2208988799000)).getSeconds() = 1 expected: 1\n\
+ PASSED! (new Date(-2208988798000)).getSeconds() = 2 expected: 2\n\
+ PASSED! (new Date(-2208988797000)).getSeconds() = 3 expected: 3\n\
+ PASSED! (new Date(-2208988796000)).getSeconds() = 4 expected: 4\n\
+ PASSED! (new Date(-2208988795000)).getSeconds() = 5 expected: 5\n\
+ PASSED! (new Date(-2208988794000)).getSeconds() = 6 expected: 6\n\
+ PASSED! (new Date(-2208988793000)).getSeconds() = 7 expected: 7\n\
+ PASSED! (new Date(946684801000)).getSeconds() = 1 expected: 1\n\
+ PASSED! (new Date(946684802000)).getSeconds() = 2 expected: 2\n\
+ PASSED! (new Date(946684803000)).getSeconds() = 3 expected: 3\n\
+ PASSED! (new Date(946684804000)).getSeconds() = 4 expected: 4\n\
+ PASSED! (new Date(946684805000)).getSeconds() = 5 expected: 5\n\
+ PASSED! (new Date(946684806000)).getSeconds() = 6 expected: 6\n\
+ PASSED! (new Date(946684807000)).getSeconds() = 7 expected: 7\n\
+ PASSED! (new Date(951782401000)).getSeconds() = 1 expected: 1\n\
+ PASSED! (new Date(951782402000)).getSeconds() = 2 expected: 2\n\
+ PASSED! (new Date(951782403000)).getSeconds() = 3 expected: 3\n\
+ PASSED! (new Date(951782404000)).getSeconds() = 4 expected: 4\n\
+ PASSED! (new Date(951782405000)).getSeconds() = 5 expected: 5\n\
+ PASSED! (new Date(951782406000)).getSeconds() = 6 expected: 6\n\
+ PASSED! (new Date(951782407000)).getSeconds() = 7 expected: 7\n\
+ PASSED! (new Date(1104537601000)).getSeconds() = 1 expected: 1\n\
+ PASSED! (new Date(1104537602000)).getSeconds() = 2 expected: 2\n\
+ PASSED! (new Date(1104537603000)).getSeconds() = 3 expected: 3\n\
+ PASSED! (new Date(1104537604000)).getSeconds() = 4 expected: 4\n\
+ PASSED! (new Date(1104537605000)).getSeconds() = 5 expected: 5\n\
+ PASSED! (new Date(1104537606000)).getSeconds() = 6 expected: 6\n\
+ PASSED! (new Date(1104537607000)).getSeconds() = 7 expected: 7\n\
+ PASSED! (new Date(NaN)).getSeconds() = NaN expected: NaN\n\
+ PASSED! Date.prototype.getSeconds.length = 0 expected: 0\n\
+\n
+interpret_err_equals=

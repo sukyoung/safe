@@ -1,0 +1,71 @@
+################################################################################
+#    Copyright (c) 2012, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=9.5-2
+INTERPRETER_TESTS_DIR=${JS_HOME}/tests/interpreter_mozilla_tests/ecma/TypeConversion
+interpret_mozilla
+interpret_mozilla_out_WCIequals=\
+9.5-2 ToInt32\n\
+ PASSED! 0 << 0 = 0 expected: 0\n\
+ PASSED! -0 << 0 = 0 expected: 0\n\
+ PASSED! Infinity << 0 = 0 expected: 0\n\
+ PASSED! -Infinity << 0 = 0 expected: 0\n\
+ PASSED! Number.POSITIVE_INFINITY << 0 = 0 expected: 0\n\
+ PASSED! Number.NEGATIVE_INFINITY << 0 = 0 expected: 0\n\
+ PASSED! Number.NaN << 0 = 0 expected: 0\n\
+ PASSED! Number.MIN_VALUE << 0 = 0 expected: 0\n\
+ PASSED! -Number.MIN_VALUE << 0 = 0 expected: 0\n\
+ PASSED! 0.1 << 0 = 0 expected: 0\n\
+ PASSED! -0.1 << 0 = 0 expected: 0\n\
+ PASSED! 1 << 0 = 1 expected: 1\n\
+ PASSED! 1.1 << 0 = 1 expected: 1\n\
+ PASSED! -1 << 0 = -1 expected: -1\n\
+ PASSED! 2147483647 << 0 = 2147483647 expected: 2147483647\n\
+ PASSED! 2147483648 << 0 = -2147483648 expected: -2147483648\n\
+ PASSED! 2147483649 << 0 = -2147483647 expected: -2147483647\n\
+ PASSED! (Math.pow(2,31)-1) << 0 = 2147483647 expected: 2147483647\n\
+ PASSED! Math.pow(2,31) << 0 = -2147483648 expected: -2147483648\n\
+ PASSED! (Math.pow(2,31)+1) << 0 = -2147483647 expected: -2147483647\n\
+ PASSED! (Math.pow(2,32)-1) << 0 = -1 expected: -1\n\
+ PASSED! (Math.pow(2,32)) << 0 = 0 expected: 0\n\
+ PASSED! (Math.pow(2,32)+1) << 0 = 1 expected: 1\n\
+ PASSED! 4294967295 << 0 = -1 expected: -1\n\
+ PASSED! 4294967296 << 0 = 0 expected: 0\n\
+ PASSED! 4294967297 << 0 = 1 expected: 1\n\
+ PASSED! '2147483647' << 0 = 2147483647 expected: 2147483647\n\
+ PASSED! '2147483648' << 0 = -2147483648 expected: -2147483648\n\
+ PASSED! '2147483649' << 0 = -2147483647 expected: -2147483647\n\
+ PASSED! '4294967295' << 0 = -1 expected: -1\n\
+ PASSED! '4294967296' << 0 = 0 expected: 0\n\
+ PASSED! '4294967297' << 0 = 1 expected: 1\n\
+ PASSED! -2147483647 << 0 = -2147483647 expected: -2147483647\n\
+ PASSED! -2147483648 << 0 = -2147483648 expected: -2147483648\n\
+ PASSED! -2147483649 << 0 = 2147483647 expected: 2147483647\n\
+ PASSED! -4294967295 << 0 = 1 expected: 1\n\
+ PASSED! -4294967296 << 0 = 0 expected: 0\n\
+ PASSED! -4294967297 << 0 = -1 expected: -1\n\
+ PASSED! 2147483648.25 << 0 = -2147483648 expected: -2147483648\n\
+ PASSED! 2147483648.5 << 0 = -2147483648 expected: -2147483648\n\
+ PASSED! 2147483648.75 << 0 = -2147483648 expected: -2147483648\n\
+ PASSED! 4294967295.25 << 0 = -1 expected: -1\n\
+ PASSED! 4294967295.5 << 0 = -1 expected: -1\n\
+ PASSED! 4294967295.75 << 0 = -1 expected: -1\n\
+ PASSED! 3000000000.25 << 0 = -1294967296 expected: -1294967296\n\
+ PASSED! 3000000000.5 << 0 = -1294967296 expected: -1294967296\n\
+ PASSED! 3000000000.75 << 0 = -1294967296 expected: -1294967296\n\
+ PASSED! -2147483648.25 << 0 = -2147483648 expected: -2147483648\n\
+ PASSED! -2147483648.5 << 0 = -2147483648 expected: -2147483648\n\
+ PASSED! -2147483648.75 << 0 = -2147483648 expected: -2147483648\n\
+ PASSED! -4294967295.25 << 0 = 1 expected: 1\n\
+ PASSED! -4294967295.5 << 0 = 1 expected: 1\n\
+ PASSED! -4294967295.75 << 0 = 1 expected: 1\n\
+ PASSED! -3000000000.25 << 0 = 1294967296 expected: 1294967296\n\
+ PASSED! -3000000000.5 << 0 = 1294967296 expected: 1294967296\n\
+ PASSED! -3000000000.75 << 0 = 1294967296 expected: 1294967296\n\
+\n
+interpret_err_equals=

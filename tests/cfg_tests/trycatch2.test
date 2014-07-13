@@ -1,0 +1,53 @@
+################################################################################
+#    Copyright (c) 2012, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=trycatch2
+CFG_TESTS_DIR=${JS_HOME}/tests/cfg_tests
+cfg
+cfg_out_WCIequals=\
+(0,LBlock(8))\n\
+    [11] noop(EndOfFile)\n\
+\n\
+\n\
+(0,LBlock(7))\n\
+\n\
+\n\
+(0,LBlock(6))\n\
+    [7] assert(! y > x * 10)\n\
+\n\
+\n\
+(0,LBlock(5))\n\
+    [6] assert(y > x * 10)\n\
+    [8] <>old<>3 := y\n\
+    [9] y := <>old<>3 / 2\n\
+\n\
+\n\
+(0,LBlock(4))\n\
+    [4] catch(<>y<>2)\n\
+\n\
+\n\
+(0,LBlock(3))\n\
+    [5] y := 103\n\
+\n\
+\n\
+(0,LBlock(2))\n\
+    [2] catch(<>x<>1)\n\
+    [10] <>x<>1 := 2\n\
+\n\
+\n\
+(0,LBlock(1))\n\
+    [3] x := 3\n\
+\n\
+\n\
+(0,LBlock(0))\n\
+    [0] noop(StartOfFile)\n\
+    [1] x := 5\n\
+\n\
+\n\
+\n
+cfg_err_equals=

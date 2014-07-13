@@ -1,0 +1,25 @@
+################################################################################
+#    Copyright (c) 2013, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=fragment12.widl
+WIDLPARSER_TESTS_DIR=${JS_HOME}/tests/widl_tests
+widlparse
+widlparse_out_WCIequals=\
+interface Dimensions {\n\
+  attribute unsigned long width;\n\
+  attribute unsigned long height;\n\
+};\n\
+exception NoPointerDevice {\n\
+  \n\
+};\n\
+interface Button {\n\
+  boolean isMouseOver();\n\
+  void setDimensions(Dimensions size);\n\
+  void setDimensions(unsigned long width, unsigned long height);\n\
+};\n
+widlparse_err_equals=

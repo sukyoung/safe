@@ -1,0 +1,18 @@
+<script>
+var xx = [1, 2];
+var x = ["aa", "bb"];
+var j=Math.random();
+for(var i=0; i <2; i++){
+  if(i<j)
+    for(var k=0; k<2; k++) {
+      xx[k] = x[k];
+    }
+  else 
+    for(var k=0; k<2; k++) {
+      xx[k] = 0;
+    }     
+
+}
+// xx[0] -> 0, "aa"
+// xx[1] -> 0, "bb"
+</script>

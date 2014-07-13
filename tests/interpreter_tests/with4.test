@@ -1,0 +1,19 @@
+################################################################################
+#    Copyright (c) 2012, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=with4
+INTERPRETER_TESTS_DIR=${JS_HOME}/tests/interpreter_tests
+interpret
+interpret_out_WCIequals=\
+1\n\
+2\n\
+undefined\n\
+[object Object]\n\
+1\n\
+Normal(true)\n
+interpret_err_equals=

@@ -1,0 +1,8 @@
+interface B : A {
+  void f(ArrayOfLongs x);
+};
+
+interface A {
+};
+
+typedef long[] ArrayOfLongs;

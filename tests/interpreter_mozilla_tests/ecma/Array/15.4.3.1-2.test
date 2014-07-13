@@ -1,0 +1,19 @@
+################################################################################
+#    Copyright (c) 2012, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=15.4.3.1-2
+INTERPRETER_TESTS_DIR=${JS_HOME}/tests/interpreter_mozilla_tests/ecma/Array
+interpret_mozilla
+interpret_mozilla_out_WCIequals=\
+15.4.3.1-1 Array.prototype\n\
+ PASSED! var props = ''; for ( p in Array  ) { props += p } props =  expected: \n\
+ PASSED! Array.prototype = null; Array.prototype =  expected: \n\
+ PASSED! delete Array.prototype = false expected: false\n\
+ PASSED! delete Array.prototype; Array.prototype =  expected: \n\
+\n
+interpret_err_equals=

@@ -1,0 +1,28 @@
+################################################################################
+#    Copyright (c) 2012, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=15.4.5.1-2
+INTERPRETER_TESTS_DIR=${JS_HOME}/tests/interpreter_mozilla_tests/ecma/Array
+interpret_mozilla
+interpret_mozilla_out_WCIequals=\
+15.4.5.1-2 Array [[Put]] (P,V)\n\
+ PASSED! a["3.00"] =  three; a.length = 0 expected: 0\n\
+ PASSED! a["00010"] =  eight; a.length = 0 expected: 0\n\
+ PASSED! a["37xyz"] =  thirty-five; a.length = 0 expected: 0\n\
+ PASSED! a["5000000000"] =  5; a.length = 0 expected: 0\n\
+ PASSED! a["-2"] =  -3; a.length = 0 expected: 0\n\
+ PASSED! a[10] = undefined expected: undefined\n\
+ PASSED! a[3] = undefined expected: undefined\n\
+ PASSED! a[4] = "four"; a[4] = four expected: four\n\
+ PASSED! a["4"] = four expected: four\n\
+ PASSED! a["4.00"] = undefined expected: undefined\n\
+ PASSED! a.length = 5 expected: 5\n\
+ PASSED! a["5000000000"] = 5; a.length = 5 expected: 5\n\
+ PASSED! a["-2"] = -3; a.length = 5 expected: 5\n\
+\n
+interpret_err_equals=

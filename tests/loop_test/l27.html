@@ -1,0 +1,22 @@
+<script>
+var xx = [];
+function f(i){
+  var j = 0;
+  var k;
+  while(j < i) {
+    k=0;
+    while(k < 2){
+      xx[k] = f(k-1);
+      k++;
+    }
+    j++;
+  }
+  return j;
+}
+
+var x=f(4);
+// recursive call : termination check,
+// xx[0] = 0
+// xx[1] = 0
+
+</script>

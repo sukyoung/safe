@@ -1,0 +1,4 @@
+This directory contains testcases from TAJS (Type Analysis for JavaScript) project.
+See https://github.com/cs-au-dk/TAJS
+
+* Modifications were made to fit into SAFE unit testing framework.

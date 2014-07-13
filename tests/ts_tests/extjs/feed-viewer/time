@@ -1,0 +1,5 @@
+Guessing JS_HOME=/home/naldo/safe-private
+* Warning: following IR statement is ignored: kr.ac.kaist.jsaf.nodes.IREval@e3b4b7fb
+* Warning: following IR statement is ignored: kr.ac.kaist.jsaf.nodes.IREval@e3b4b7fb
+13.09user 0.23system 0:06.96elapsed 191%CPU (0avgtext+0avgdata 2391600maxresident)k
+0inputs+80outputs (0major+163277minor)pagefaults 0swaps

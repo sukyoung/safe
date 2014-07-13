@@ -1,0 +1,13 @@
+var x;
+_<>_print([].reverse().toString())
+_<>_print([1].reverse().toString())
+_<>_print([1,2].reverse().toString())
+_<>_print([1,2,3].reverse().toString())
+_<>_print([1,2,3,4].reverse().toString())
+_<>_print([x].reverse().toString())
+_<>_print([1,x].reverse().toString())
+_<>_print([x,2].reverse().toString())
+_<>_print([1,x,3].reverse().toString())
+_<>_print([x,2,x].reverse().toString())
+_<>_print([1,x,3,x].reverse().toString())
+_<>_print([x,2,x,4].reverse().toString())

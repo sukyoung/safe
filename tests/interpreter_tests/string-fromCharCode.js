@@ -1,0 +1,1 @@
+String.fromCharCode(0xC774, 0xD64D, 0xAE30) == "이홍기"

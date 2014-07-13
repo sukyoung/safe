@@ -1,0 +1,21 @@
+################################################################################
+#    Copyright (c) 2012, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=15.4.5.2-1
+INTERPRETER_TESTS_DIR=${JS_HOME}/tests/interpreter_mozilla_tests/ecma/Array
+interpret_mozilla
+interpret_mozilla_out_WCIequals=\
+15.4.5.2-1 Array.length\n\
+ PASSED! var A = new Array(); A.length = 0 expected: 0\n\
+ PASSED! var A = new Array(); A[Math.pow(2,32)-2] = 'hi'; A.length = 4294967295 expected: 4294967295\n\
+ PASSED! var A = new Array(); A.length = 123; A.length = 123 expected: 123\n\
+ PASSED! var A = new Array(); A.length = 123; var PROPS = ''; for ( var p in A ) { PROPS += ( p == 'length' ? p : ''); } PROPS =  expected: \n\
+ PASSED! var A = new Array(); A.length = 123; delete A.length = false expected: false\n\
+ PASSED! var A = new Array(); A.length = 123; delete A.length; A.length = 123 expected: 123\n\
+\n
+interpret_err_equals=

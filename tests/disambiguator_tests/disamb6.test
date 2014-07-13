@@ -1,0 +1,29 @@
+################################################################################
+#    Copyright (c) 2013, KAIST.
+#    All rights reserved.\n#
+#    Use is subject to license terms.\n#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=disamb6
+DISAMB_TESTS_DIR=${JS_HOME}/tests/disambiguator_tests
+disambiguate
+disambiguate_out_WCIequals=\
+${DISAMB_TESTS_DIR}/disamb6.js:1:14-23: \n\
+    ObjectLiteral may not have a data property and an accessor property with the same name. "p1" \n\
+${DISAMB_TESTS_DIR}/disamb6.js:1:25-44: \n\
+    ObjectLiteral may not have a data property and an accessor property with the same name. "p1" \n\
+${DISAMB_TESTS_DIR}/disamb6.js:2:14-33: \n\
+    ObjectLiteral may not have a data property and an accessor property with the same name. "p2" \n\
+${DISAMB_TESTS_DIR}/disamb6.js:2:36-41: \n\
+    ObjectLiteral may not have a data property and an accessor property with the same name. "p2" \n\
+${DISAMB_TESTS_DIR}/disamb6.js:3:14-33: \n\
+    ObjectLiteral may not have multiple getter properties with the same name. "p3" \n\
+${DISAMB_TESTS_DIR}/disamb6.js:3:36-55: \n\
+    ObjectLiteral may not have multiple getter properties with the same name. "p3" \n\
+${DISAMB_TESTS_DIR}/disamb6.js:4:14-34: \n\
+    ObjectLiteral may not have multiple setter properties with the same name. "p4" \n\
+${DISAMB_TESTS_DIR}/disamb6.js:4:37-57: \n\
+    ObjectLiteral may not have multiple setter properties with the same name. "p4" \n\
+File ${DISAMB_TESTS_DIR}/disamb6.js has 8 errors. \n\
+\n
+disambiguate_err_equals=

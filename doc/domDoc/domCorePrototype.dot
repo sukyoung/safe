@@ -1,0 +1,68 @@
+digraph DOMProto {
+  ObjProto [shape=box, label = "Object.prototype"];
+  edge [dir=back];
+  node [shape=record];
+  /* First row : object name, 
+     second row : list of APIs, 
+     third row : list of properties */
+  DOMImplementationRegistry [label="{DOMImplementationRegistry.prototype|getDOMImplementation(features)\ngetDOMImplementationList(features)}"];
+  ObjProto -> DOMImplementationRegistry;
+
+  DOMException [label="{DOMException.prototype|}"];
+  ObjProto -> DOMException;
+  DOMStringList [label="{DOMStringList.prototype|item(index)\ncontains(str)}"];
+  ObjProto -> DOMStringList;
+  NameList [label="{NameList.prototype|getName(index)\ngetNamespaceURI(index)\ncontains(str)\ncontainsNS(namespaceURI, name)}"];
+  ObjProto -> NameList;
+  
+  DOMImplementationList [label="{DOMImplementationList.prototype|item(index)}"];
+  ObjProto -> DOMImplementationList;
+
+  DOMImplementationSource [label="{DOMImplementationSource.prototype|getDOMImplementation(features)\ngetDOMImplementationList(features)}"];
+  ObjProto -> DOMImplementationSource;
+  
+  DOMImplementation [label="{DOMImplementation.prototype|hasFeature(feature, version))\ncreateDocumentType(qualifiedName, publicId, systemId)\ncreateDocument(namespaceURI, qualifiedName, doctype)\ngetFeature(feature, version)}"];
+  ObjProto -> DOMImplementation;
+  DocumentFragment [label="{DocumentFragment.prototype|}"];
+  DOMNode -> DocumentFragment;
+  Document [label="{Document.prototype|createElement(tagName))\ncreateDocumentFragment(qualifiedN))\ncreateDocument()\ncreateTextNode(data)\ncreateComment(data)\ncreateCDATASection(data)\ncreateProcessingInstruction(target, data)\ncreateAttribute(name)\ncreateEntityReference(name)\ngetElementsByTagName(tagname)\nimportNode(importedNode, deep)\ncreateElementNS(namespaceURI, qualifiedName)\ncreateAttributeNS(namespaceURI, qualifiedName)\ngetElementsByTagNameNS(namespaceURI, localName)\ngetElementById(elementId)\nadoptNode(source)\nnormalizeDocument()\nrenameNode(n, namespaceURI, qualifiedName)}"];
+  DOMNode -> Document;
+  DOMNode [label="{Node.prototype|insertBefore(newChild, refChild)\nreplaceChild(newChild, oldChild)\nremoveChild(oldChild)\nappendChild(newChild)\nhasChildNodes()\ncloneNode(deep)\nnormalize()\nisSupported(feature, version)\nhasAttributes()\ncompareDocumentPosition(other)\nisSameNode(other)\nlookupPrefix(namespaceURI)\nisDefaultNamespace(namespaceURI)\nlookupNamespaceURI(prefix)\nisEqualNode(arg)\ngetFeature(feature, version)\nsetUserData(key, data, handler)\ngetUserData(key)}"];
+  ObjProto -> DOMNode;
+  NodeList [label="{NodeList.prototype|item(index)}"]
+  ObjProto -> NodeList;
+  NamedNodeMap [label="{NamedNodeMap.prototype|getNamedItem(name)\nsetNamedItem(arg)\nremoveNamedItem(name)\nitem(index)\ngetNamedItemNS(namespaceURI,localName)\nsetNamedItemNS(arg)\nremoveNamedItemNS(namespaceURI, localName)}"]
+  ObjProto -> NamedNodeMap;
+  CharacterData [label="{CharacterData.prototype|substringData(offset, count)\nappendData(arg)\ninsertData(offset, arg)\ndeleteData(offset, count)\nreplaceData(offset, count, arg)}"]
+  DOMNode -> CharacterData;
+  Attr [label="{Attr.prototype|}"]
+  DOMNode -> Attr;
+  Element [label="{Element.prototype|getAttribute(name)\nsetAttribute(name, value)\nremoveAttribute(name)\ngetAttributeNode(name)\nsetAttributeNode(newAttr)\nremoveAttributeNode(oldAttr)\ngetElementsByTagName(name\ngetAttributeNS(namespaceURI, localName)\nsetAttributeNS(namesapceURI, qualifiedName, value)\nremoveAttributeNS(namesapceURI, localName)\ngetAttributeNodeNS(namespaceURI, localName)\nsetAttributeNodeNS(newAttr)\ngetElementsByTagNameNS(namespaceURI, localName)\nhasAttribute(name)\nhasAttributeNS(namespaceURI, localName)\nsetIdAttribute(name, isId)\nsetIdAttributeNS(namespaceURI, localName, isId)\nsetIdAttributeNode(idAttr, isId))}"]
+  DOMNode -> Element;
+  Text [label="{Text.prototype|splitText(offset)\nreplaceWholeText(content)}"]
+  CharacterData -> Text;
+  Comment [label="{Comment.prototype|}"]
+  CharacterData -> Comment;
+  TypeInfo [label="{TypeInfo.prototype|isDerivedForm(typeNamespaceArg, typeNameArg, derivationMethod)}"]
+  ObjProto -> TypeInfo;
+  UserDataHandler [label="{UserDataHandler.prototype|}"]
+  ObjProto -> UserDataHandler;
+  DOMError [label="{DOMError.prototype|}"]
+  ObjProto -> DOMError;
+  DOMLocator [label="{DOMLocator.prototype|}"]
+  ObjProto -> DOMLocator;
+  DOMConfiguration [label="{DOMConfiguration.prototype|setParameter(name, value)\ngetParameter(name)\ncanSetParameter(name, value)}"]
+  ObjProto -> DOMConfiguration;
+  CDATASection [label="{CDATASection.prototype|}"]
+  Text -> CDATASection;
+  DocumentType [label="{DocumentType.prototype|}"]
+  DOMNode -> DocumentType;
+  Notation [label="{Notation.prototype|}"]
+  DOMNode -> Notation;
+  Entity [label="{Entity.prototype|}"]
+  DOMNode -> Entity;
+  EntityReference [label="{EntityReference.prototype|}"]
+  DOMNode -> EntityReference;
+  ProcessingInstruction [label="{ProcessingInstruction.prototype|}"]
+  DOMNode -> ProcessingInstruction;
+}

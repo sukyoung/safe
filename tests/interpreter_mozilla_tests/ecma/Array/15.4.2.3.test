@@ -1,0 +1,23 @@
+################################################################################
+#    Copyright (c) 2012, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=15.4.2.3
+INTERPRETER_TESTS_DIR=${JS_HOME}/tests/interpreter_mozilla_tests/ecma/Array
+interpret_mozilla
+interpret_mozilla_out_WCIequals=\
+15.4.2.3 The Array Constructor:  new Array()\n\
+ PASSED! new   Array() +'' =  expected: \n\
+ PASSED! typeof new Array() = object expected: object\n\
+ PASSED! var arr = new Array(); arr.getClass = Object.prototype.toString; arr.getClass() = [object Array] expected: [object Array]\n\
+ PASSED! (new Array()).length = 0 expected: 0\n\
+ PASSED! (new Array()).toString == Array.prototype.toString = true expected: true\n\
+ PASSED! (new Array()).join  == Array.prototype.join = true expected: true\n\
+ PASSED! (new Array()).reverse == Array.prototype.reverse = true expected: true\n\
+ PASSED! (new Array()).sort  == Array.prototype.sort = true expected: true\n\
+\n
+interpret_err_equals=

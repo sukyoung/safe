@@ -1,0 +1,14 @@
+/* an interface that has two variadic operations */
+interface IntegerSet {
+  readonly attribute unsigned long cardinality;
+
+  void union(long... ints);
+  void intersection(long... ints);
+};
+
+/* ECMAScript binding
+var s = getIntegerSet();  // Obtain an instance of IntegerSet.
+
+s.union();                // Passing no arguments corresponding to 'ints'.
+s.union(1, 4, 7);         // Passing three arguments corresponding to 'ints'.
+*/

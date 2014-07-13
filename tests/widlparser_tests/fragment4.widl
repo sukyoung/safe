@@ -1,0 +1,28 @@
+interface A {
+  void f();
+  void g();
+};
+
+interface B : A {
+  void f();
+  void g(DOMString x);
+};
+
+/*
+3.2 Interfaces
+
+In the ECMAScript language binding, an instance of B will have a prototype chain that looks like the following:
+
+  [Object.prototype: the Object prototype object]
+       /\
+        |
+  [A.prototype: interface prototype object for A]
+       /\
+        |
+  [B.prototype: interface prototype object for B]
+       /\
+        |
+  [instanceOfB]
+
+Calling instanceOfB.f() in ECMAScript will invoke the f defined on B. However, the f from A can still be invoked on an object that implements B by calling A.prototype.f.call(instanceOfB).
+*/

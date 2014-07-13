@@ -1,0 +1,12 @@
+.DS_Store
+Frameworks
+Build
+Demos
+./Aristo
+WebSite
+.push-package
+*.xcodeproj/*.pbxuser
+*.xcodeproj/*.perspectivev3
+xcuserdata/
+!*.xcodeproj/project.pbxproj
+*.xCodeSupport/

@@ -1,0 +1,46 @@
+################################################################################
+#    Copyright (c) 2013, KAIST.
+#    All rights reserved.\n#
+#    Use is subject to license terms.\n#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=hoist2
+DISAMB_TESTS_DIR=${JS_HOME}/tests/disambiguator_tests
+disambiguate
+disambiguate_out_WCIequals=\
+  function g(x)  \n\
+  { \n\
+    var w; \n\
+     \n\
+      { \n\
+      w = gen; \n\
+      for(;e1;) \n\
+      { \n\
+         \n\
+      } \n\
+    } \n\
+    return x; \n\
+  } \n\
+  var x; \n\
+  var v; \n\
+   \n\
+  3; \n\
+  { \n\
+     \n\
+  } \n\
+  z = 4; \n\
+  x = 5; \n\
+  for(v in y) \n\
+  { \n\
+     \n\
+  } \n\
+  h = (function ()  \n\
+  { \n\
+    var t; \n\
+     \n\
+      true; \n\
+    t = false; \n\
+  }); \n\
+   \n\
+\n
+disambiguate_err_equals=

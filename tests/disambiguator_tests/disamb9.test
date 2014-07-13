@@ -1,0 +1,21 @@
+################################################################################
+#    Copyright (c) 2013, KAIST.
+#    All rights reserved.\n#
+#    Use is subject to license terms.\n#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=disamb9
+DISAMB_TESTS_DIR=${JS_HOME}/tests/disambiguator_tests
+disambiguate
+disambiguate_out_WCIequals=\
+  function f()  \n\
+  { \n\
+    return 1; \n\
+  } \n\
+  function g()  \n\
+  { \n\
+    return f(); \n\
+  } \n\
+   \n\
+\n
+disambiguate_err_equals=

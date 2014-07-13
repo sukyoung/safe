@@ -1,0 +1,38 @@
+/* how identifiers are given to definitions, interface members and exception members */
+// Typedef identifier: "number"
+typedef float number;
+
+// Exception identifier: "FrameworkException"
+exception FrameworkException {
+
+  // Constant identifier: "ERR_NOT_FOUND"
+  const long ERR_NOT_FOUND = 1;
+
+  // Exception field identifier: "code"
+  long code;
+};
+
+// Interface identifier: "System"
+interface System {
+
+  // Operation identifier:          "createObject"
+  // Operation argument identifier: "interface"
+  object createObject(DOMString _interface);
+
+  // Operation argument identifier: "interface"
+  object[] createObjectArray(DOMString interface);
+
+  // Operation has no identifier; it declares a getter.
+  getter DOMString (DOMString keyName);
+};
+
+// Interface identifier: "TextField"
+interface TextField {
+
+  // Attribute identifier: "const"
+  attribute boolean _const;
+
+  // Attribute identifier: "value"
+  attribute DOMString? _value;
+};
+

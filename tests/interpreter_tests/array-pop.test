@@ -1,0 +1,28 @@
+################################################################################
+#    Copyright (c) 2012, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=array-pop
+INTERPRETER_TESTS_DIR=${JS_HOME}/tests/interpreter_tests
+interpret
+interpret_out_WCIequals=\
+3\n\
+a,b,c\n\
+c\n\
+2\n\
+a,b\n\
+b\n\
+1\n\
+a\n\
+a\n\
+0\n\
+\n\
+undefined\n\
+0\n\
+\n\
+Normal()\n
+interpret_err_equals=

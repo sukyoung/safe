@@ -1,0 +1,22 @@
+/* an interface Circle that has a static operation declared on it */
+interface Point { /* ... */ };
+
+interface Circle {
+  attribute float cx;
+  attribute float cy;
+  attribute float radius;
+
+  static Point triangulate(Circle c1, Circle c2, Circle c3);
+};
+
+/* In the ECMAScript language binding,
+ the Function object for triangulate will exist on the interface object for Circle:
+var circles = getCircles();    // an Array of Circle objects
+
+typeof Circle.triangulate;     // Evaluates to "function"
+Circle.prototype.triangulate;  // Evaluates to undefined
+circles[0].triangulate;        // Also evaluates to undefined
+
+// Call the static operation
+var triangulationPoint = Circle.triangulate(circles[0], circles[1], circles[2]);
+*/

@@ -1,0 +1,5 @@
+/* equivalent to fragment21.widl */
+interface A {
+  stringifier DOMString ();
+};
+

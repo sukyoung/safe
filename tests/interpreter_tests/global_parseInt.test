@@ -1,0 +1,24 @@
+################################################################################
+#    Copyright (c) 2012, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=global_parseInt
+INTERPRETER_TESTS_DIR=${JS_HOME}/tests/interpreter_tests
+interpret
+interpret_out_WCIequals=\
+123\n\
+3\n\
+4769\n\
+255\n\
+543\n\
+543\n\
+10\n\
+10\n\
+40\n\
+NaN\n\
+Normal(empty)\n
+interpret_err_equals=

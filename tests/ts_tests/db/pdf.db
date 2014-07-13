@@ -1,0 +1,1568 @@
+(Program @"pdf.d.ts":1:1~333:1
+ _body=(TopLevel
+  _stmts=[
+   (SourceElements
+    _info=(ASTSpanInfo())
+    _body=[
+     (IntfDecl @30:1~36:1
+      _id=(Id @30:11~21 _info=(ASTSpanInfo()) _text="PDFPromise")
+      _info=(ASTSpanInfo())
+      _typ=(ObjectType @30:25~36:1
+       _info=(ASTSpanInfo())
+       _members=[
+        (MethodSig @31:8~29
+         _info=(ASTSpanInfo())
+         _prop=(PropId @31:8~18
+          _id=(Id _info=(ASTSpanInfo()) _text="isResolved")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @31:18~29
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(BoolT @31:22~29
+            _info=(ASTSpanInfo())))))
+        (MethodSig @32:8~29
+         _info=(ASTSpanInfo())
+         _prop=(PropId @32:8~18
+          _id=(Id _info=(ASTSpanInfo()) _text="isRejected")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @32:18~29
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(BoolT @32:22~29
+            _info=(ASTSpanInfo())))))
+        (MethodSig @33:8~31
+         _info=(ASTSpanInfo())
+         _prop=(PropId @33:8~15
+          _id=(Id _info=(ASTSpanInfo()) _text="resolve")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @33:15~31
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(VoidT @33:27~31
+            _info=(ASTSpanInfo())))
+          _params=[
+           (Param @33:16~24
+            _info=(ASTSpanInfo())
+            _name=(Id @33:16~21 _info=(ASTSpanInfo()) _text="value")
+            _typ=(Some _value=(TypeRef @33:23~24
+              _info=(ASTSpanInfo())
+              _name=(TypeName
+               _info=(ASTSpanInfo())
+               _text="T"
+               _names=[
+                (Id _info=(ASTSpanInfo()) _text="T")]))))]))
+        (MethodSig @34:8~36
+         _info=(ASTSpanInfo())
+         _prop=(PropId @34:8~14
+          _id=(Id _info=(ASTSpanInfo()) _text="reject")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @34:14~36
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(VoidT @34:32~36
+            _info=(ASTSpanInfo())))
+          _params=[
+           (Param @34:15~29
+            _info=(ASTSpanInfo())
+            _name=(Id @34:15~21 _info=(ASTSpanInfo()) _text="reason")
+            _typ=(Some _value=(StringT @34:23~29
+              _info=(ASTSpanInfo()))))]))
+        (MethodSig @35:8~97
+         _info=(ASTSpanInfo())
+         _prop=(PropId @35:8~12
+          _id=(Id _info=(ASTSpanInfo()) _text="then")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @35:12~97
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(TypeRef @35:84~96
+            _info=(ASTSpanInfo())
+            _name=(TypeName @35:84~94
+             _info=(ASTSpanInfo())
+             _text="PDFPromise"
+             _names=[
+              (Id _info=(ASTSpanInfo()) _text="PDFPromise")])
+            _args=[
+             (TypeRef @35:95~96
+              _info=(ASTSpanInfo())
+              _name=(TypeName
+               _info=(ASTSpanInfo())
+               _text="T"
+               _names=[
+                (Id _info=(ASTSpanInfo()) _text="T")]))]))
+          _params=[
+           (Param @35:13~44
+            _info=(ASTSpanInfo())
+            _name=(Id @35:13~22 _info=(ASTSpanInfo()) _text="onResolve")
+            _typ=(Some _value=(FunctionType @35:24~44
+              _info=(ASTSpanInfo())
+              _typ=(VoidT @35:40~44
+               _info=(ASTSpanInfo()))
+              _params=[
+               (Param @35:25~44
+                _info=(ASTSpanInfo())
+                _name=(Id @35:25~32 _info=(ASTSpanInfo()) _text="promise")
+                _typ=(Some _value=(TypeRef @35:34~44
+                  _info=(ASTSpanInfo())
+                  _name=(TypeName
+                   _info=(ASTSpanInfo())
+                   _text="T"
+                   _names=[
+                    (Id @35:34~35 _info=(ASTSpanInfo()) _text="T")]))))])))
+           (Param @35:46~81
+            _info=(ASTSpanInfo())
+            _name=(Id @35:46~54 _info=(ASTSpanInfo()) _text="onReject")
+            _optional=true
+            _typ=(Some _value=(FunctionType @35:57~81
+              _info=(ASTSpanInfo())
+              _typ=(VoidT @35:77~81
+               _info=(ASTSpanInfo()))
+              _params=[
+               (Param @35:58~72
+                _info=(ASTSpanInfo())
+                _name=(Id @35:58~64 _info=(ASTSpanInfo()) _text="reason")
+                _typ=(Some _value=(StringT @35:66~72
+                  _info=(ASTSpanInfo()))))])))]))])
+      _tps=[
+       (TypeParam @30:22~23
+        _info=(ASTSpanInfo())
+        _name=(Id _info=(ASTSpanInfo()) _text="T"))])
+     (IntfDecl @38:1~45:1
+      _id=(Id @38:11~22 _info=(ASTSpanInfo()) _text="PDFTreeNode")
+      _info=(ASTSpanInfo())
+      _typ=(ObjectType @38:23~45:1
+       _info=(ASTSpanInfo())
+       _members=[
+        (PropertySig @39:8~21
+         _info=(ASTSpanInfo())
+         _prop=(PropId @39:8~13
+          _id=(Id _info=(ASTSpanInfo()) _text="title")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(StringT @39:15~21
+           _info=(ASTSpanInfo()))))
+        (PropertySig @40:8~21
+         _info=(ASTSpanInfo())
+         _prop=(PropId @40:8~12
+          _id=(Id _info=(ASTSpanInfo()) _text="bold")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(BoolT @40:14~21
+           _info=(ASTSpanInfo()))))
+        (PropertySig @41:8~23
+         _info=(ASTSpanInfo())
+         _prop=(PropId @41:8~14
+          _id=(Id _info=(ASTSpanInfo()) _text="italic")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(BoolT @41:16~23
+           _info=(ASTSpanInfo()))))
+        (PropertySig @42:8~23
+         _info=(ASTSpanInfo())
+         _prop=(PropId @42:8~13
+          _id=(Id _info=(ASTSpanInfo()) _text="color")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(ArrayType @42:21~24
+           _info=(ASTSpanInfo())
+           _typ=(NumberT @42:15~21
+            _info=(ASTSpanInfo())))))
+        (PropertySig @43:8~17
+         _info=(ASTSpanInfo())
+         _prop=(PropId @43:8~12
+          _id=(Id _info=(ASTSpanInfo()) _text="dest")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(AnyT @43:14~17
+           _info=(ASTSpanInfo()))))
+        (PropertySig @44:8~28
+         _info=(ASTSpanInfo())
+         _prop=(PropId @44:8~13
+          _id=(Id _info=(ASTSpanInfo()) _text="items")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(ArrayType @44:26~29
+           _info=(ASTSpanInfo())
+           _typ=(TypeRef @44:15~26
+            _info=(ASTSpanInfo())
+            _name=(TypeName
+             _info=(ASTSpanInfo())
+             _text="PDFTreeNode"
+             _names=[
+              (Id _info=(ASTSpanInfo()) _text="PDFTreeNode")])))))]))
+     (IntfDecl @47:1~52:1
+      _id=(Id @47:11~18 _info=(ASTSpanInfo()) _text="PDFInfo")
+      _info=(ASTSpanInfo())
+      _typ=(ObjectType @47:19~52:1
+       _info=(ASTSpanInfo())
+       _members=[
+        (PropertySig @48:8~32
+         _info=(ASTSpanInfo())
+         _prop=(PropId @48:8~24
+          _id=(Id _info=(ASTSpanInfo()) _text="PDFFormatVersion")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(StringT @48:26~32
+           _info=(ASTSpanInfo()))))
+        (PropertySig @49:8~34
+         _info=(ASTSpanInfo())
+         _prop=(PropId @49:8~25
+          _id=(Id _info=(ASTSpanInfo()) _text="IsAcroFormPresent")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(BoolT @49:27~34
+           _info=(ASTSpanInfo()))))
+        (PropertySig @50:8~29
+         _info=(ASTSpanInfo())
+         _prop=(PropId @50:8~20
+          _id=(Id _info=(ASTSpanInfo()) _text="IsXFAPresent")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(BoolT @50:22~29
+           _info=(ASTSpanInfo()))))
+        (IndexSig @51:8~26
+         _annot=(AnyT @51:23~26
+          _info=(ASTSpanInfo()))
+         _id=(Id @51:9~12 _info=(ASTSpanInfo()) _text="key")
+         _info=(ASTSpanInfo()))]))
+     (IntfDecl @54:1~58:1
+      _id=(Id @54:11~22 _info=(ASTSpanInfo()) _text="PDFMetadata")
+      _info=(ASTSpanInfo())
+      _typ=(ObjectType @54:23~58:1
+       _info=(ASTSpanInfo())
+       _members=[
+        (MethodSig @55:8~21
+         _info=(ASTSpanInfo())
+         _prop=(PropId @55:8~13
+          _id=(Id _info=(ASTSpanInfo()) _text="parse")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @55:13~21
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(VoidT @55:17~21
+            _info=(ASTSpanInfo())))))
+        (MethodSig @56:8~33
+         _info=(ASTSpanInfo())
+         _prop=(PropId @56:8~11
+          _id=(Id _info=(ASTSpanInfo()) _text="get")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @56:11~33
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(StringT @56:27~33
+            _info=(ASTSpanInfo())))
+          _params=[
+           (Param @56:12~24
+            _info=(ASTSpanInfo())
+            _name=(Id @56:12~16 _info=(ASTSpanInfo()) _text="name")
+            _typ=(Some _value=(StringT @56:18~24
+              _info=(ASTSpanInfo()))))]))
+        (MethodSig @57:8~34
+         _info=(ASTSpanInfo())
+         _prop=(PropId @57:8~11
+          _id=(Id _info=(ASTSpanInfo()) _text="has")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @57:11~34
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(BoolT @57:27~34
+            _info=(ASTSpanInfo())))
+          _params=[
+           (Param @57:12~24
+            _info=(ASTSpanInfo())
+            _name=(Id @57:12~16 _info=(ASTSpanInfo()) _text="name")
+            _typ=(Some _value=(StringT @57:18~24
+              _info=(ASTSpanInfo()))))]))]))
+     (IntfDecl @60:1~65:1
+      _id=(Id @60:11~20 _info=(ASTSpanInfo()) _text="PDFSource")
+      _info=(ASTSpanInfo())
+      _typ=(ObjectType @60:21~65:1
+       _info=(ASTSpanInfo())
+       _members=[
+        (PropertySig @61:8~20
+         _info=(ASTSpanInfo())
+         _optional=true
+         _prop=(PropId @61:8~12
+          _id=(Id @61:8~11 _info=(ASTSpanInfo()) _text="url")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(StringT @61:14~20
+           _info=(ASTSpanInfo()))))
+        (PropertySig @62:8~25
+         _info=(ASTSpanInfo())
+         _optional=true
+         _prop=(PropId @62:8~13
+          _id=(Id @62:8~12 _info=(ASTSpanInfo()) _text="data")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(TypeRef @62:15~25
+           _info=(ASTSpanInfo())
+           _name=(TypeName
+            _info=(ASTSpanInfo())
+            _text="Uint8Array"
+            _names=[
+             (Id _info=(ASTSpanInfo()) _text="Uint8Array")]))))
+        (PropertySig @63:8~25
+         _info=(ASTSpanInfo())
+         _optional=true
+         _prop=(PropId @63:8~20
+          _id=(Id @63:8~19 _info=(ASTSpanInfo()) _text="httpHeaders")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(AnyT @63:22~25
+           _info=(ASTSpanInfo()))))
+        (PropertySig @64:8~25
+         _info=(ASTSpanInfo())
+         _optional=true
+         _prop=(PropId @64:8~17
+          _id=(Id @64:8~16 _info=(ASTSpanInfo()) _text="password")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(StringT @64:19~25
+           _info=(ASTSpanInfo()))))]))
+     (IntfDecl @67:1~70:1
+      _id=(Id @67:11~26 _info=(ASTSpanInfo()) _text="PDFProgressData")
+      _info=(ASTSpanInfo())
+      _typ=(ObjectType @67:27~70:1
+       _info=(ASTSpanInfo())
+       _members=[
+        (PropertySig @68:8~22
+         _info=(ASTSpanInfo())
+         _prop=(PropId @68:8~14
+          _id=(Id _info=(ASTSpanInfo()) _text="loaded")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(NumberT @68:16~22
+           _info=(ASTSpanInfo()))))
+        (PropertySig @69:8~21
+         _info=(ASTSpanInfo())
+         _prop=(PropId @69:8~13
+          _id=(Id _info=(ASTSpanInfo()) _text="total")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(NumberT @69:15~21
+           _info=(ASTSpanInfo()))))]))
+     (IntfDecl @72:1~136:1
+      _id=(Id @72:11~27 _info=(ASTSpanInfo()) _text="PDFDocumentProxy")
+      _info=(ASTSpanInfo())
+      _typ=(ObjectType @72:28~136:1
+       _info=(ASTSpanInfo())
+       _members=[
+        (MethodSig @77:8~26
+         _info=(ASTSpanInfo())
+         _prop=(PropId @77:8~16
+          _id=(Id _info=(ASTSpanInfo()) _text="numPages")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @77:16~26
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(NumberT @77:20~26
+            _info=(ASTSpanInfo())))))
+        (MethodSig @82:8~29
+         _info=(ASTSpanInfo())
+         _prop=(PropId @82:8~19
+          _id=(Id _info=(ASTSpanInfo()) _text="fingerprint")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @82:19~29
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(StringT @82:23~29
+            _info=(ASTSpanInfo())))))
+        (MethodSig @87:8~36
+         _info=(ASTSpanInfo())
+         _prop=(PropId @87:8~25
+          _id=(Id _info=(ASTSpanInfo()) _text="embeddedFontsUsed")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @87:25~36
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(BoolT @87:29~36
+            _info=(ASTSpanInfo())))))
+        (MethodSig @93:8~57
+         _info=(ASTSpanInfo())
+         _prop=(PropId @93:8~15
+          _id=(Id _info=(ASTSpanInfo()) _text="getPage")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @93:15~57
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(TypeRef @93:33~56
+            _info=(ASTSpanInfo())
+            _name=(TypeName @93:33~43
+             _info=(ASTSpanInfo())
+             _text="PDFPromise"
+             _names=[
+              (Id _info=(ASTSpanInfo()) _text="PDFPromise")])
+            _args=[
+             (TypeRef @93:44~56
+              _info=(ASTSpanInfo())
+              _name=(TypeName
+               _info=(ASTSpanInfo())
+               _text="PDFPageProxy"
+               _names=[
+                (Id _info=(ASTSpanInfo()) _text="PDFPageProxy")]))]))
+          _params=[
+           (Param @93:16~30
+            _info=(ASTSpanInfo())
+            _name=(Id @93:16~22 _info=(ASTSpanInfo()) _text="number")
+            _typ=(Some _value=(NumberT @93:24~30
+              _info=(ASTSpanInfo()))))]))
+        (MethodSig @99:8~44
+         _info=(ASTSpanInfo())
+         _prop=(PropId @99:8~23
+          _id=(Id _info=(ASTSpanInfo()) _text="getDestinations")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @99:23~44
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(TypeRef @99:27~43
+            _info=(ASTSpanInfo())
+            _name=(TypeName @99:27~37
+             _info=(ASTSpanInfo())
+             _text="PDFPromise"
+             _names=[
+              (Id _info=(ASTSpanInfo()) _text="PDFPromise")])
+            _args=[
+             (ArrayType @99:41~44
+              _info=(ASTSpanInfo())
+              _typ=(AnyT @99:38~41
+               _info=(ASTSpanInfo())))]))))
+        (MethodSig @104:8~45
+         _info=(ASTSpanInfo())
+         _prop=(PropId @104:8~21
+          _id=(Id _info=(ASTSpanInfo()) _text="getJavaScript")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @104:21~45
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(TypeRef @104:25~44
+            _info=(ASTSpanInfo())
+            _name=(TypeName @104:25~35
+             _info=(ASTSpanInfo())
+             _text="PDFPromise"
+             _names=[
+              (Id _info=(ASTSpanInfo()) _text="PDFPromise")])
+            _args=[
+             (ArrayType @104:42~45
+              _info=(ASTSpanInfo())
+              _typ=(StringT @104:36~42
+               _info=(ASTSpanInfo())))]))))
+        (MethodSig @109:8~47
+         _info=(ASTSpanInfo())
+         _prop=(PropId @109:8~18
+          _id=(Id _info=(ASTSpanInfo()) _text="getOutline")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @109:18~47
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(TypeRef @109:22~46
+            _info=(ASTSpanInfo())
+            _name=(TypeName @109:22~32
+             _info=(ASTSpanInfo())
+             _text="PDFPromise"
+             _names=[
+              (Id _info=(ASTSpanInfo()) _text="PDFPromise")])
+            _args=[
+             (ArrayType @109:44~47
+              _info=(ASTSpanInfo())
+              _typ=(TypeRef @109:33~44
+               _info=(ASTSpanInfo())
+               _name=(TypeName
+                _info=(ASTSpanInfo())
+                _text="PDFTreeNode"
+                _names=[
+                 (Id _info=(ASTSpanInfo()) _text="PDFTreeNode")])))]))))
+        (MethodSig @114:8~75
+         _info=(ASTSpanInfo())
+         _prop=(PropId @114:8~19
+          _id=(Id _info=(ASTSpanInfo()) _text="getMetadata")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @114:19~75
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(TypeRef @114:23~74
+            _info=(ASTSpanInfo())
+            _name=(TypeName @114:23~33
+             _info=(ASTSpanInfo())
+             _text="PDFPromise"
+             _names=[
+              (Id _info=(ASTSpanInfo()) _text="PDFPromise")])
+            _args=[
+             (ObjectType @114:34~73
+              _info=(ASTSpanInfo())
+              _members=[
+               (PropertySig @114:36~49
+                _info=(ASTSpanInfo())
+                _prop=(PropId @114:36~40
+                 _id=(Id _info=(ASTSpanInfo()) _text="info")
+                 _info=(ASTSpanInfo()))
+                _typ=(Some _value=(TypeRef @114:42~49
+                  _info=(ASTSpanInfo())
+                  _name=(TypeName
+                   _info=(ASTSpanInfo())
+                   _text="PDFInfo"
+                   _names=[
+                    (Id _info=(ASTSpanInfo()) _text="PDFInfo")]))))
+               (PropertySig @114:51~73
+                _info=(ASTSpanInfo())
+                _prop=(PropId @114:51~59
+                 _id=(Id _info=(ASTSpanInfo()) _text="metadata")
+                 _info=(ASTSpanInfo()))
+                _typ=(Some _value=(TypeRef @114:61~73
+                  _info=(ASTSpanInfo())
+                  _name=(TypeName @114:61~72
+                   _info=(ASTSpanInfo())
+                   _text="PDFMetadata"
+                   _names=[
+                    (Id _info=(ASTSpanInfo()) _text="PDFMetadata")]))))])]))))
+        (MethodSig @119:8~42
+         _info=(ASTSpanInfo())
+         _prop=(PropId @119:8~19
+          _id=(Id _info=(ASTSpanInfo()) _text="isEncrypted")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @119:19~42
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(TypeRef @119:23~41
+            _info=(ASTSpanInfo())
+            _name=(TypeName @119:23~33
+             _info=(ASTSpanInfo())
+             _text="PDFPromise"
+             _names=[
+              (Id _info=(ASTSpanInfo()) _text="PDFPromise")])
+            _args=[
+             (BoolT @119:34~41
+              _info=(ASTSpanInfo()))]))))
+        (MethodSig @124:8~41
+         _info=(ASTSpanInfo())
+         _prop=(PropId @124:8~15
+          _id=(Id _info=(ASTSpanInfo()) _text="getData")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @124:15~41
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(TypeRef @124:19~40
+            _info=(ASTSpanInfo())
+            _name=(TypeName @124:19~29
+             _info=(ASTSpanInfo())
+             _text="PDFPromise"
+             _names=[
+              (Id _info=(ASTSpanInfo()) _text="PDFPromise")])
+            _args=[
+             (TypeRef @124:30~40
+              _info=(ASTSpanInfo())
+              _name=(TypeName
+               _info=(ASTSpanInfo())
+               _text="Uint8Array"
+               _names=[
+                (Id _info=(ASTSpanInfo()) _text="Uint8Array")]))]))))
+        (MethodSig @130:8~39
+         _info=(ASTSpanInfo())
+         _prop=(PropId @130:8~18
+          _id=(Id _info=(ASTSpanInfo()) _text="dataLoaded")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @130:18~39
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(TypeRef @130:22~38
+            _info=(ASTSpanInfo())
+            _name=(TypeName @130:22~32
+             _info=(ASTSpanInfo())
+             _text="PDFPromise"
+             _names=[
+              (Id _info=(ASTSpanInfo()) _text="PDFPromise")])
+            _args=[
+             (ArrayType @130:36~39
+              _info=(ASTSpanInfo())
+              _typ=(AnyT @130:33~36
+               _info=(ASTSpanInfo())))]))))
+        (MethodSig @135:8~23
+         _info=(ASTSpanInfo())
+         _prop=(PropId @135:8~15
+          _id=(Id _info=(ASTSpanInfo()) _text="destroy")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @135:15~23
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(VoidT @135:19~23
+            _info=(ASTSpanInfo())))))]))
+     (IntfDecl @138:1~141:1
+      _id=(Id @138:11~17 _info=(ASTSpanInfo()) _text="PDFRef")
+      _info=(ASTSpanInfo())
+      _typ=(ObjectType @138:18~141:1
+       _info=(ASTSpanInfo())
+       _members=[
+        (PropertySig @139:8~19
+         _info=(ASTSpanInfo())
+         _prop=(PropId @139:8~11
+          _id=(Id _info=(ASTSpanInfo()) _text="num")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(NumberT @139:13~19
+           _info=(ASTSpanInfo()))))
+        (PropertySig @140:8~16
+         _info=(ASTSpanInfo())
+         _prop=(PropId @140:8~11
+          _id=(Id _info=(ASTSpanInfo()) _text="gen")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(AnyT @140:13~16
+           _info=(ASTSpanInfo()))))]))
+     (IntfDecl @143:1~150:1
+      _id=(Id @143:11~33 _info=(ASTSpanInfo()) _text="PDFPageViewportOptions")
+      _info=(ASTSpanInfo())
+      _typ=(ObjectType @143:34~150:1
+       _info=(ASTSpanInfo())
+       _members=[
+        (PropertySig @144:8~20
+         _info=(ASTSpanInfo())
+         _prop=(PropId @144:8~15
+          _id=(Id _info=(ASTSpanInfo()) _text="viewBox")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(AnyT @144:17~20
+           _info=(ASTSpanInfo()))))
+        (PropertySig @145:8~21
+         _info=(ASTSpanInfo())
+         _prop=(PropId @145:8~13
+          _id=(Id _info=(ASTSpanInfo()) _text="scale")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(NumberT @145:15~21
+           _info=(ASTSpanInfo()))))
+        (PropertySig @146:8~24
+         _info=(ASTSpanInfo())
+         _prop=(PropId @146:8~16
+          _id=(Id _info=(ASTSpanInfo()) _text="rotation")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(NumberT @146:18~24
+           _info=(ASTSpanInfo()))))
+        (PropertySig @147:8~23
+         _info=(ASTSpanInfo())
+         _prop=(PropId @147:8~15
+          _id=(Id _info=(ASTSpanInfo()) _text="offsetX")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(NumberT @147:17~23
+           _info=(ASTSpanInfo()))))
+        (PropertySig @148:8~23
+         _info=(ASTSpanInfo())
+         _prop=(PropId @148:8~15
+          _id=(Id _info=(ASTSpanInfo()) _text="offsetY")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(NumberT @148:17~23
+           _info=(ASTSpanInfo()))))
+        (PropertySig @149:8~25
+         _info=(ASTSpanInfo())
+         _prop=(PropId @149:8~16
+          _id=(Id _info=(ASTSpanInfo()) _text="dontFlip")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(BoolT @149:18~25
+           _info=(ASTSpanInfo()))))]))
+     (IntfDecl @152:1~162:1
+      _id=(Id @152:11~26 _info=(ASTSpanInfo()) _text="PDFPageViewport")
+      _info=(ASTSpanInfo())
+      _typ=(ObjectType @152:27~162:1
+       _info=(ASTSpanInfo())
+       _members=[
+        (PropertySig @153:8~21
+         _info=(ASTSpanInfo())
+         _prop=(PropId @153:8~13
+          _id=(Id _info=(ASTSpanInfo()) _text="width")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(NumberT @153:15~21
+           _info=(ASTSpanInfo()))))
+        (PropertySig @154:8~22
+         _info=(ASTSpanInfo())
+         _prop=(PropId @154:8~14
+          _id=(Id _info=(ASTSpanInfo()) _text="height")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(NumberT @154:16~22
+           _info=(ASTSpanInfo()))))
+        (PropertySig @155:8~25
+         _info=(ASTSpanInfo())
+         _prop=(PropId @155:8~17
+          _id=(Id _info=(ASTSpanInfo()) _text="fontScale")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(NumberT @155:19~25
+           _info=(ASTSpanInfo()))))
+        (PropertySig @156:8~28
+         _info=(ASTSpanInfo())
+         _prop=(PropId @156:8~18
+          _id=(Id _info=(ASTSpanInfo()) _text="transforms")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(ArrayType @156:26~29
+           _info=(ASTSpanInfo())
+           _typ=(NumberT @156:20~26
+            _info=(ASTSpanInfo())))))
+        (MethodSig @158:8~63
+         _info=(ASTSpanInfo())
+         _prop=(PropId @158:8~13
+          _id=(Id _info=(ASTSpanInfo()) _text="clone")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @158:13~63
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(TypeRef @158:48~63
+            _info=(ASTSpanInfo())
+            _name=(TypeName
+             _info=(ASTSpanInfo())
+             _text="PDFPageViewport"
+             _names=[
+              (Id _info=(ASTSpanInfo()) _text="PDFPageViewport")])))
+          _params=[
+           (Param @158:14~45
+            _info=(ASTSpanInfo())
+            _name=(Id @158:14~21 _info=(ASTSpanInfo()) _text="options")
+            _typ=(Some _value=(TypeRef @158:23~45
+              _info=(ASTSpanInfo())
+              _name=(TypeName
+               _info=(ASTSpanInfo())
+               _text="PDFPageViewportOptions"
+               _names=[
+                (Id _info=(ASTSpanInfo()) _text="PDFPageViewportOptions")]))))]))
+        (MethodSig @159:8~42
+         _info=(ASTSpanInfo())
+         _prop=(PropId @159:8~30
+          _id=(Id _info=(ASTSpanInfo()) _text="convertToViewportPoint")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @159:30~42
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(ArrayType @159:40~43
+            _info=(ASTSpanInfo())
+            _typ=(NumberT @159:34~40
+             _info=(ASTSpanInfo()))))))
+        (MethodSig @160:8~46
+         _info=(ASTSpanInfo())
+         _prop=(PropId @160:8~34
+          _id=(Id _info=(ASTSpanInfo()) _text="convertToViewportRectangle")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @160:34~46
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(ArrayType @160:44~47
+            _info=(ASTSpanInfo())
+            _typ=(NumberT @160:38~44
+             _info=(ASTSpanInfo()))))))
+        (MethodSig @161:8~37
+         _info=(ASTSpanInfo())
+         _prop=(PropId @161:8~25
+          _id=(Id _info=(ASTSpanInfo()) _text="convertToPdfPoint")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @161:25~37
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(ArrayType @161:35~38
+            _info=(ASTSpanInfo())
+            _typ=(NumberT @161:29~35
+             _info=(ASTSpanInfo()))))))]))
+     (IntfDecl @164:1~171:1
+      _id=(Id @164:11~28 _info=(ASTSpanInfo()) _text="PDFAnnotationData")
+      _info=(ASTSpanInfo())
+      _typ=(ObjectType @164:29~171:1
+       _info=(ASTSpanInfo())
+       _members=[
+        (PropertySig @165:8~23
+         _info=(ASTSpanInfo())
+         _prop=(PropId @165:8~15
+          _id=(Id _info=(ASTSpanInfo()) _text="subtype")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(StringT @165:17~23
+           _info=(ASTSpanInfo()))))
+        (PropertySig @166:8~22
+         _info=(ASTSpanInfo())
+         _prop=(PropId @166:8~12
+          _id=(Id _info=(ASTSpanInfo()) _text="rect")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(ArrayType @166:20~23
+           _info=(ASTSpanInfo())
+           _typ=(NumberT @166:14~20
+            _info=(ASTSpanInfo())))))
+        (PropertySig @167:8~28
+         _info=(ASTSpanInfo())
+         _prop=(PropId @167:8~23
+          _id=(Id _info=(ASTSpanInfo()) _text="annotationFlags")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(AnyT @167:25~28
+           _info=(ASTSpanInfo()))))
+        (PropertySig @168:8~23
+         _info=(ASTSpanInfo())
+         _prop=(PropId @168:8~13
+          _id=(Id _info=(ASTSpanInfo()) _text="color")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(ArrayType @168:21~24
+           _info=(ASTSpanInfo())
+           _typ=(NumberT @168:15~21
+            _info=(ASTSpanInfo())))))
+        (PropertySig @169:8~27
+         _info=(ASTSpanInfo())
+         _prop=(PropId @169:8~19
+          _id=(Id _info=(ASTSpanInfo()) _text="borderWidth")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(NumberT @169:21~27
+           _info=(ASTSpanInfo()))))
+        (PropertySig @170:8~30
+         _info=(ASTSpanInfo())
+         _prop=(PropId @170:8~21
+          _id=(Id _info=(ASTSpanInfo()) _text="hasAppearance")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(BoolT @170:23~30
+           _info=(ASTSpanInfo()))))]))
+     (IntfDecl @173:1~182:1
+      _id=(Id @173:11~25 _info=(ASTSpanInfo()) _text="PDFAnnotations")
+      _info=(ASTSpanInfo())
+      _typ=(ObjectType @173:26~182:1
+       _info=(ASTSpanInfo())
+       _members=[
+        (MethodSig @174:8~36
+         _info=(ASTSpanInfo())
+         _prop=(PropId @174:8~15
+          _id=(Id _info=(ASTSpanInfo()) _text="getData")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @174:15~36
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(TypeRef @174:19~36
+            _info=(ASTSpanInfo())
+            _name=(TypeName
+             _info=(ASTSpanInfo())
+             _text="PDFAnnotationData"
+             _names=[
+              (Id _info=(ASTSpanInfo()) _text="PDFAnnotationData")])))))
+        (MethodSig @175:8~26
+         _info=(ASTSpanInfo())
+         _prop=(PropId @175:8~15
+          _id=(Id _info=(ASTSpanInfo()) _text="hasHtml")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @175:15~26
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(BoolT @175:19~26
+            _info=(ASTSpanInfo())))))
+        (MethodSig @176:8~47
+         _info=(ASTSpanInfo())
+         _prop=(PropId @176:8~22
+          _id=(Id _info=(ASTSpanInfo()) _text="getHtmlElement")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @176:22~47
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(TypeRef @176:36~47
+            _info=(ASTSpanInfo())
+            _name=(TypeName
+             _info=(ASTSpanInfo())
+             _text="HTMLElement"
+             _names=[
+              (Id _info=(ASTSpanInfo()) _text="HTMLElement")])))
+          _params=[
+           (Param @176:23~33
+            _info=(ASTSpanInfo())
+            _name=(Id _info=(ASTSpanInfo()) _text="commonOjbs"))]))
+        (MethodSig @177:8~71
+         _info=(ASTSpanInfo())
+         _prop=(PropId @177:8~25
+          _id=(Id _info=(ASTSpanInfo()) _text="getEmptyContainer")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @177:25~71
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(TypeRef @177:60~71
+            _info=(ASTSpanInfo())
+            _name=(TypeName
+             _info=(ASTSpanInfo())
+             _text="HTMLElement"
+             _names=[
+              (Id _info=(ASTSpanInfo()) _text="HTMLElement")])))
+          _params=[
+           (Param @177:26~41
+            _info=(ASTSpanInfo())
+            _name=(Id @177:26~33 _info=(ASTSpanInfo()) _text="tagName")
+            _typ=(Some _value=(StringT @177:35~41
+              _info=(ASTSpanInfo()))))
+           (Param @177:43~57
+            _info=(ASTSpanInfo())
+            _name=(Id @177:43~47 _info=(ASTSpanInfo()) _text="rect")
+            _typ=(Some _value=(ArrayType @177:55~58
+              _info=(ASTSpanInfo())
+              _typ=(NumberT @177:49~57
+               _info=(ASTSpanInfo())))))]))
+        (MethodSig @178:8~29
+         _info=(ASTSpanInfo())
+         _prop=(PropId @178:8~18
+          _id=(Id _info=(ASTSpanInfo()) _text="isViewable")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @178:18~29
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(BoolT @178:22~29
+            _info=(ASTSpanInfo())))))
+        (MethodSig @179:8~44
+         _info=(ASTSpanInfo())
+         _prop=(PropId @179:8~21
+          _id=(Id _info=(ASTSpanInfo()) _text="loadResources")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @179:21~44
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(TypeRef @179:29~43
+            _info=(ASTSpanInfo())
+            _name=(TypeName @179:29~39
+             _info=(ASTSpanInfo())
+             _text="PDFPromise"
+             _names=[
+              (Id _info=(ASTSpanInfo()) _text="PDFPromise")])
+            _args=[
+             (AnyT @179:40~43
+              _info=(ASTSpanInfo()))]))
+          _params=[
+           (Param @179:22~26
+            _info=(ASTSpanInfo())
+            _name=(Id _info=(ASTSpanInfo()) _text="keys"))]))
+        (MethodSig @180:8~51
+         _info=(ASTSpanInfo())
+         _prop=(PropId @180:8~23
+          _id=(Id _info=(ASTSpanInfo()) _text="getOperatorList")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @180:23~51
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(TypeRef @180:36~50
+            _info=(ASTSpanInfo())
+            _name=(TypeName @180:36~46
+             _info=(ASTSpanInfo())
+             _text="PDFPromise"
+             _names=[
+              (Id _info=(ASTSpanInfo()) _text="PDFPromise")])
+            _args=[
+             (AnyT @180:47~50
+              _info=(ASTSpanInfo()))]))
+          _params=[
+           (Param @180:24~33
+            _info=(ASTSpanInfo())
+            _name=(Id _info=(ASTSpanInfo()) _text="evaluator"))]))]))
+     (IntfDecl @184:1~188:1
+      _id=(Id @184:11~29 _info=(ASTSpanInfo()) _text="PDFRenderTextLayer")
+      _info=(ASTSpanInfo())
+      _typ=(ObjectType @184:30~188:1
+       _info=(ASTSpanInfo())
+       _members=[
+        (MethodSig @185:8~27
+         _info=(ASTSpanInfo())
+         _prop=(PropId @185:8~19
+          _id=(Id _info=(ASTSpanInfo()) _text="beginLayout")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @185:19~27
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(VoidT @185:23~27
+            _info=(ASTSpanInfo())))))
+        (MethodSig @186:8~25
+         _info=(ASTSpanInfo())
+         _prop=(PropId @186:8~17
+          _id=(Id _info=(ASTSpanInfo()) _text="endLayout")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @186:17~25
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(VoidT @186:21~25
+            _info=(ASTSpanInfo())))))
+        (MethodSig @187:8~26
+         _info=(ASTSpanInfo())
+         _prop=(PropId @187:8~18
+          _id=(Id _info=(ASTSpanInfo()) _text="appendText")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @187:18~26
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(VoidT @187:22~26
+            _info=(ASTSpanInfo())))))]))
+     (IntfDecl @190:1~194:1
+      _id=(Id @190:11~30 _info=(ASTSpanInfo()) _text="PDFRenderImageLayer")
+      _info=(ASTSpanInfo())
+      _typ=(ObjectType @190:31~194:1
+       _info=(ASTSpanInfo())
+       _members=[
+        (MethodSig @191:8~27
+         _info=(ASTSpanInfo())
+         _prop=(PropId @191:8~19
+          _id=(Id _info=(ASTSpanInfo()) _text="beginLayout")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @191:19~27
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(VoidT @191:23~27
+            _info=(ASTSpanInfo())))))
+        (MethodSig @192:8~25
+         _info=(ASTSpanInfo())
+         _prop=(PropId @192:8~17
+          _id=(Id _info=(ASTSpanInfo()) _text="endLayout")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @192:17~25
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(VoidT @192:21~25
+            _info=(ASTSpanInfo())))))
+        (MethodSig @193:8~27
+         _info=(ASTSpanInfo())
+         _prop=(PropId @193:8~19
+          _id=(Id _info=(ASTSpanInfo()) _text="appendImage")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @193:19~27
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(VoidT @193:23~27
+            _info=(ASTSpanInfo())))))]))
+     (IntfDecl @196:1~201:1
+      _id=(Id @196:11~26 _info=(ASTSpanInfo()) _text="PDFRenderParams")
+      _info=(ASTSpanInfo())
+      _typ=(ObjectType @196:27~201:1
+       _info=(ASTSpanInfo())
+       _members=[
+        (PropertySig @197:8~47
+         _info=(ASTSpanInfo())
+         _prop=(PropId @197:8~21
+          _id=(Id _info=(ASTSpanInfo()) _text="canvasContext")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(TypeRef @197:23~47
+           _info=(ASTSpanInfo())
+           _name=(TypeName
+            _info=(ASTSpanInfo())
+            _text="CanvasRenderingContext2D"
+            _names=[
+             (Id _info=(ASTSpanInfo()) _text="CanvasRenderingContext2D")]))))
+        (PropertySig @198:8~38
+         _info=(ASTSpanInfo())
+         _optional=true
+         _prop=(PropId @198:8~18
+          _id=(Id @198:8~17 _info=(ASTSpanInfo()) _text="textLayer")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(TypeRef @198:20~38
+           _info=(ASTSpanInfo())
+           _name=(TypeName
+            _info=(ASTSpanInfo())
+            _text="PDFRenderTextLayer"
+            _names=[
+             (Id _info=(ASTSpanInfo()) _text="PDFRenderTextLayer")]))))
+        (PropertySig @199:8~40
+         _info=(ASTSpanInfo())
+         _optional=true
+         _prop=(PropId @199:8~19
+          _id=(Id @199:8~18 _info=(ASTSpanInfo()) _text="imageLayer")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(TypeRef @199:21~40
+           _info=(ASTSpanInfo())
+           _name=(TypeName
+            _info=(ASTSpanInfo())
+            _text="PDFRenderImageLayer"
+            _names=[
+             (Id _info=(ASTSpanInfo()) _text="PDFRenderImageLayer")]))))
+        (PropertySig @200:8~58
+         _info=(ASTSpanInfo())
+         _optional=true
+         _prop=(PropId @200:8~25
+          _id=(Id @200:8~24 _info=(ASTSpanInfo()) _text="continueCallback")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(FunctionType @200:27~58
+           _info=(ASTSpanInfo())
+           _typ=(VoidT @200:54~58
+            _info=(ASTSpanInfo()))
+           _params=[
+            (Param @200:28~49
+             _info=(ASTSpanInfo())
+             _name=(Id @200:28~37 _info=(ASTSpanInfo()) _text="_continue")
+             _typ=(Some _value=(FunctionType @200:39~49
+               _info=(ASTSpanInfo())
+               _typ=(VoidT @200:45~49
+                _info=(ASTSpanInfo())))))])))]))
+     (IntfDecl @206:1~212:1
+      _id=(Id @206:11~24 _info=(ASTSpanInfo()) _text="PDFRenderTask")
+      _info=(ASTSpanInfo())
+      _typ=(ObjectType @206:58~212:1
+       _info=(ASTSpanInfo())
+       _members=[
+        (MethodSig @211:8~22
+         _info=(ASTSpanInfo())
+         _prop=(PropId @211:8~14
+          _id=(Id _info=(ASTSpanInfo()) _text="cancel")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @211:14~22
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(VoidT @211:18~22
+            _info=(ASTSpanInfo())))))])
+      _ext=[
+       (TypeRef @206:33~56
+        _info=(ASTSpanInfo())
+        _name=(TypeName @206:33~43
+         _info=(ASTSpanInfo())
+         _text="PDFPromise"
+         _names=[
+          (Id _info=(ASTSpanInfo()) _text="PDFPromise")])
+        _args=[
+         (TypeRef @206:44~56
+          _info=(ASTSpanInfo())
+          _name=(TypeName
+           _info=(ASTSpanInfo())
+           _text="PDFPageProxy"
+           _names=[
+            (Id _info=(ASTSpanInfo()) _text="PDFPageProxy")]))])])
+     (IntfDecl @214:1~269:1
+      _id=(Id @214:11~23 _info=(ASTSpanInfo()) _text="PDFPageProxy")
+      _info=(ASTSpanInfo())
+      _typ=(ObjectType @214:24~269:1
+       _info=(ASTSpanInfo())
+       _members=[
+        (MethodSig @219:8~28
+         _info=(ASTSpanInfo())
+         _prop=(PropId @219:8~18
+          _id=(Id _info=(ASTSpanInfo()) _text="pageNumber")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @219:18~28
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(NumberT @219:22~28
+            _info=(ASTSpanInfo())))))
+        (MethodSig @224:8~24
+         _info=(ASTSpanInfo())
+         _prop=(PropId @224:8~14
+          _id=(Id _info=(ASTSpanInfo()) _text="rotate")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @224:14~24
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(NumberT @224:18~24
+            _info=(ASTSpanInfo())))))
+        (MethodSig @229:8~21
+         _info=(ASTSpanInfo())
+         _prop=(PropId @229:8~11
+          _id=(Id _info=(ASTSpanInfo()) _text="ref")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @229:11~21
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(TypeRef @229:15~21
+            _info=(ASTSpanInfo())
+            _name=(TypeName
+             _info=(ASTSpanInfo())
+             _text="PDFRef"
+             _names=[
+              (Id _info=(ASTSpanInfo()) _text="PDFRef")])))))
+        (MethodSig @234:8~24
+         _info=(ASTSpanInfo())
+         _prop=(PropId @234:8~12
+          _id=(Id _info=(ASTSpanInfo()) _text="view")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @234:12~24
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(ArrayType @234:22~25
+            _info=(ASTSpanInfo())
+            _typ=(NumberT @234:16~22
+             _info=(ASTSpanInfo()))))))
+        (MethodSig @241:8~68
+         _info=(ASTSpanInfo())
+         _prop=(PropId @241:8~19
+          _id=(Id _info=(ASTSpanInfo()) _text="getViewport")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @241:19~68
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(TypeRef @241:53~68
+            _info=(ASTSpanInfo())
+            _name=(TypeName
+             _info=(ASTSpanInfo())
+             _text="PDFPageViewport"
+             _names=[
+              (Id _info=(ASTSpanInfo()) _text="PDFPageViewport")])))
+          _params=[
+           (Param @241:20~33
+            _info=(ASTSpanInfo())
+            _name=(Id @241:20~25 _info=(ASTSpanInfo()) _text="scale")
+            _typ=(Some _value=(NumberT @241:27~33
+              _info=(ASTSpanInfo()))))
+           (Param @241:35~50
+            _info=(ASTSpanInfo())
+            _name=(Id @241:35~41 _info=(ASTSpanInfo()) _text="rotate")
+            _optional=true
+            _typ=(Some _value=(NumberT @241:44~50
+              _info=(ASTSpanInfo()))))]))
+        (MethodSig @246:8~52
+         _info=(ASTSpanInfo())
+         _prop=(PropId @246:8~22
+          _id=(Id _info=(ASTSpanInfo()) _text="getAnnotations")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @246:22~52
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(TypeRef @246:26~51
+            _info=(ASTSpanInfo())
+            _name=(TypeName @246:26~36
+             _info=(ASTSpanInfo())
+             _text="PDFPromise"
+             _names=[
+              (Id _info=(ASTSpanInfo()) _text="PDFPromise")])
+            _args=[
+             (TypeRef @246:37~51
+              _info=(ASTSpanInfo())
+              _name=(TypeName
+               _info=(ASTSpanInfo())
+               _text="PDFAnnotations"
+               _names=[
+                (Id _info=(ASTSpanInfo()) _text="PDFAnnotations")]))]))))
+        (MethodSig @253:8~54
+         _info=(ASTSpanInfo())
+         _prop=(PropId @253:8~14
+          _id=(Id _info=(ASTSpanInfo()) _text="render")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @253:14~54
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(TypeRef @253:41~54
+            _info=(ASTSpanInfo())
+            _name=(TypeName
+             _info=(ASTSpanInfo())
+             _text="PDFRenderTask"
+             _names=[
+              (Id _info=(ASTSpanInfo()) _text="PDFRenderTask")])))
+          _params=[
+           (Param @253:15~38
+            _info=(ASTSpanInfo())
+            _name=(Id @253:15~21 _info=(ASTSpanInfo()) _text="params")
+            _typ=(Some _value=(TypeRef @253:23~38
+              _info=(ASTSpanInfo())
+              _name=(TypeName
+               _info=(ASTSpanInfo())
+               _text="PDFRenderParams"
+               _names=[
+                (Id _info=(ASTSpanInfo()) _text="PDFRenderParams")]))))]))
+        (MethodSig @258:8~44
+         _info=(ASTSpanInfo())
+         _prop=(PropId @258:8~22
+          _id=(Id _info=(ASTSpanInfo()) _text="getTextContext")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @258:22~44
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(TypeRef @258:26~43
+            _info=(ASTSpanInfo())
+            _name=(TypeName @258:26~36
+             _info=(ASTSpanInfo())
+             _text="PDFPromise"
+             _names=[
+              (Id _info=(ASTSpanInfo()) _text="PDFPromise")])
+            _args=[
+             (StringT @258:37~43
+              _info=(ASTSpanInfo()))]))))
+        (MethodSig @268:8~23
+         _info=(ASTSpanInfo())
+         _prop=(PropId @268:8~15
+          _id=(Id _info=(ASTSpanInfo()) _text="destroy")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @268:15~23
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(VoidT @268:19~23
+            _info=(ASTSpanInfo())))))]))
+     (IntfDecl @274:1~281:1
+      _id=(Id @274:11~21 _info=(ASTSpanInfo()) _text="PDFObjects")
+      _info=(ASTSpanInfo())
+      _typ=(ObjectType @274:22~281:1
+       _info=(ASTSpanInfo())
+       _members=[
+        (MethodSig @275:8~34
+         _info=(ASTSpanInfo())
+         _prop=(PropId @275:8~11
+          _id=(Id _info=(ASTSpanInfo()) _text="get")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @275:11~34
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(AnyT @275:31~34
+            _info=(ASTSpanInfo())))
+          _params=[
+           (Param @275:12~17
+            _info=(ASTSpanInfo())
+            _name=(Id _info=(ASTSpanInfo()) _text="objId"))
+           (Param @275:19~28
+            _info=(ASTSpanInfo())
+            _name=(Id @275:19~27 _info=(ASTSpanInfo()) _text="callback")
+            _optional=true)]))
+        (MethodSig @276:8~28
+         _info=(ASTSpanInfo())
+         _prop=(PropId @276:8~15
+          _id=(Id _info=(ASTSpanInfo()) _text="resolve")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @276:15~28
+          _info=(ASTSpanInfo())
+          _params=[
+           (Param @276:16~21
+            _info=(ASTSpanInfo())
+            _name=(Id _info=(ASTSpanInfo()) _text="objId"))
+           (Param @276:23~27
+            _info=(ASTSpanInfo())
+            _name=(Id _info=(ASTSpanInfo()) _text="data"))]))
+        (MethodSig @277:8~34
+         _info=(ASTSpanInfo())
+         _prop=(PropId @277:8~18
+          _id=(Id _info=(ASTSpanInfo()) _text="isResolved")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @277:18~34
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(BoolT @277:27~34
+            _info=(ASTSpanInfo())))
+          _params=[
+           (Param @277:19~24
+            _info=(ASTSpanInfo())
+            _name=(Id _info=(ASTSpanInfo()) _text="objId"))]))
+        (MethodSig @278:8~31
+         _info=(ASTSpanInfo())
+         _prop=(PropId @278:8~15
+          _id=(Id _info=(ASTSpanInfo()) _text="hasData")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @278:15~31
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(BoolT @278:24~31
+            _info=(ASTSpanInfo())))
+          _params=[
+           (Param @278:16~21
+            _info=(ASTSpanInfo())
+            _name=(Id _info=(ASTSpanInfo()) _text="objId"))]))
+        (MethodSig @279:8~27
+         _info=(ASTSpanInfo())
+         _prop=(PropId @279:8~15
+          _id=(Id _info=(ASTSpanInfo()) _text="getData")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @279:15~27
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(AnyT @279:24~27
+            _info=(ASTSpanInfo())))
+          _params=[
+           (Param @279:16~21
+            _info=(ASTSpanInfo())
+            _name=(Id _info=(ASTSpanInfo()) _text="objId"))]))
+        (MethodSig @280:8~21
+         _info=(ASTSpanInfo())
+         _prop=(PropId @280:8~13
+          _id=(Id _info=(ASTSpanInfo()) _text="clear")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @280:13~21
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(VoidT @280:17~21
+            _info=(ASTSpanInfo())))))]))
+     (IntfDecl @283:1~326:1
+      _id=(Id @283:11~22 _info=(ASTSpanInfo()) _text="PDFJSStatic")
+      _info=(ASTSpanInfo())
+      _typ=(ObjectType @283:23~326:1
+       _info=(ASTSpanInfo())
+       _members=[
+        (PropertySig @288:8~28
+         _info=(ASTSpanInfo())
+         _prop=(PropId @288:8~20
+          _id=(Id _info=(ASTSpanInfo()) _text="maxImageSize")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(NumberT @288:22~28
+           _info=(ASTSpanInfo()))))
+        (PropertySig @293:8~32
+         _info=(ASTSpanInfo())
+         _prop=(PropId @293:8~23
+          _id=(Id _info=(ASTSpanInfo()) _text="disableFontFace")
+          _info=(ASTSpanInfo()))
+         _typ=(Some _value=(BoolT @293:25~32
+           _info=(ASTSpanInfo()))))
+        (MethodSig @306:8~311:46
+         _info=(ASTSpanInfo())
+         _prop=(PropId @306:8~19
+          _id=(Id _info=(ASTSpanInfo()) _text="getDocument")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @306:19~311:46
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(TypeRef @311:18~45
+            _info=(ASTSpanInfo())
+            _name=(TypeName @311:18~28
+             _info=(ASTSpanInfo())
+             _text="PDFPromise"
+             _names=[
+              (Id _info=(ASTSpanInfo()) _text="PDFPromise")])
+            _args=[
+             (TypeRef @311:29~45
+              _info=(ASTSpanInfo())
+              _name=(TypeName
+               _info=(ASTSpanInfo())
+               _text="PDFDocumentProxy"
+               _names=[
+                (Id _info=(ASTSpanInfo()) _text="PDFDocumentProxy")]))]))
+          _params=[
+           (Param @307:16~30
+            _info=(ASTSpanInfo())
+            _name=(Id @307:16~22 _info=(ASTSpanInfo()) _text="source")
+            _typ=(Some _value=(StringT @307:24~30
+              _info=(ASTSpanInfo()))))
+           (Param @308:16~38
+            _info=(ASTSpanInfo())
+            _name=(Id @308:16~37 _info=(ASTSpanInfo()) _text="pdfDataRangeTransport")
+            _optional=true)
+           (Param @309:16~93
+            _info=(ASTSpanInfo())
+            _name=(Id @309:16~32 _info=(ASTSpanInfo()) _text="passwordCallback")
+            _optional=true
+            _typ=(Some _value=(FunctionType @309:35~93
+              _info=(ASTSpanInfo())
+              _typ=(StringT @309:87~93
+               _info=(ASTSpanInfo()))
+              _params=[
+               (Param @309:36~66
+                _info=(ASTSpanInfo())
+                _name=(Id @309:36~38 _info=(ASTSpanInfo()) _text="fn")
+                _typ=(Some _value=(FunctionType @309:40~66
+                  _info=(ASTSpanInfo())
+                  _typ=(VoidT @309:62~66
+                   _info=(ASTSpanInfo()))
+                  _params=[
+                   (Param @309:41~66
+                    _info=(ASTSpanInfo())
+                    _name=(Id @309:41~49 _info=(ASTSpanInfo()) _text="password")
+                    _typ=(Some _value=(StringT @309:51~66
+                      _info=(ASTSpanInfo()))))])))
+               (Param @309:68~82
+                _info=(ASTSpanInfo())
+                _name=(Id @309:68~74 _info=(ASTSpanInfo()) _text="reason")
+                _typ=(Some _value=(StringT @309:76~82
+                  _info=(ASTSpanInfo()))))])))
+           (Param @310:16~74
+            _info=(ASTSpanInfo())
+            _name=(Id @310:16~32 _info=(ASTSpanInfo()) _text="progressCallback")
+            _optional=true
+            _typ=(Some _value=(FunctionType @310:35~74
+              _info=(ASTSpanInfo())
+              _typ=(VoidT @310:70~74
+               _info=(ASTSpanInfo()))
+              _params=[
+               (Param @310:36~65
+                _info=(ASTSpanInfo())
+                _name=(Id @310:36~48 _info=(ASTSpanInfo()) _text="progressData")
+                _typ=(Some _value=(TypeRef @310:50~65
+                  _info=(ASTSpanInfo())
+                  _name=(TypeName
+                   _info=(ASTSpanInfo())
+                   _text="PDFProgressData"
+                   _names=[
+                    (Id _info=(ASTSpanInfo()) _text="PDFProgressData")]))))])))]))
+        (MethodSig @313:8~318:46
+         _info=(ASTSpanInfo())
+         _prop=(PropId @313:8~19
+          _id=(Id _info=(ASTSpanInfo()) _text="getDocument")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @313:19~318:46
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(TypeRef @318:18~45
+            _info=(ASTSpanInfo())
+            _name=(TypeName @318:18~28
+             _info=(ASTSpanInfo())
+             _text="PDFPromise"
+             _names=[
+              (Id _info=(ASTSpanInfo()) _text="PDFPromise")])
+            _args=[
+             (TypeRef @318:29~45
+              _info=(ASTSpanInfo())
+              _name=(TypeName
+               _info=(ASTSpanInfo())
+               _text="PDFDocumentProxy"
+               _names=[
+                (Id _info=(ASTSpanInfo()) _text="PDFDocumentProxy")]))]))
+          _params=[
+           (Param @314:16~34
+            _info=(ASTSpanInfo())
+            _name=(Id @314:16~22 _info=(ASTSpanInfo()) _text="source")
+            _typ=(Some _value=(TypeRef @314:24~34
+              _info=(ASTSpanInfo())
+              _name=(TypeName
+               _info=(ASTSpanInfo())
+               _text="Uint8Array"
+               _names=[
+                (Id _info=(ASTSpanInfo()) _text="Uint8Array")]))))
+           (Param @315:16~38
+            _info=(ASTSpanInfo())
+            _name=(Id @315:16~37 _info=(ASTSpanInfo()) _text="pdfDataRangeTransport")
+            _optional=true)
+           (Param @316:16~93
+            _info=(ASTSpanInfo())
+            _name=(Id @316:16~32 _info=(ASTSpanInfo()) _text="passwordCallback")
+            _optional=true
+            _typ=(Some _value=(FunctionType @316:35~93
+              _info=(ASTSpanInfo())
+              _typ=(StringT @316:87~93
+               _info=(ASTSpanInfo()))
+              _params=[
+               (Param @316:36~66
+                _info=(ASTSpanInfo())
+                _name=(Id @316:36~38 _info=(ASTSpanInfo()) _text="fn")
+                _typ=(Some _value=(FunctionType @316:40~66
+                  _info=(ASTSpanInfo())
+                  _typ=(VoidT @316:62~66
+                   _info=(ASTSpanInfo()))
+                  _params=[
+                   (Param @316:41~66
+                    _info=(ASTSpanInfo())
+                    _name=(Id @316:41~49 _info=(ASTSpanInfo()) _text="password")
+                    _typ=(Some _value=(StringT @316:51~66
+                      _info=(ASTSpanInfo()))))])))
+               (Param @316:68~82
+                _info=(ASTSpanInfo())
+                _name=(Id @316:68~74 _info=(ASTSpanInfo()) _text="reason")
+                _typ=(Some _value=(StringT @316:76~82
+                  _info=(ASTSpanInfo()))))])))
+           (Param @317:16~74
+            _info=(ASTSpanInfo())
+            _name=(Id @317:16~32 _info=(ASTSpanInfo()) _text="progressCallback")
+            _optional=true
+            _typ=(Some _value=(FunctionType @317:35~74
+              _info=(ASTSpanInfo())
+              _typ=(VoidT @317:70~74
+               _info=(ASTSpanInfo()))
+              _params=[
+               (Param @317:36~65
+                _info=(ASTSpanInfo())
+                _name=(Id @317:36~48 _info=(ASTSpanInfo()) _text="progressData")
+                _typ=(Some _value=(TypeRef @317:50~65
+                  _info=(ASTSpanInfo())
+                  _name=(TypeName
+                   _info=(ASTSpanInfo())
+                   _text="PDFProgressData"
+                   _names=[
+                    (Id _info=(ASTSpanInfo()) _text="PDFProgressData")]))))])))]))
+        (MethodSig @320:8~325:46
+         _info=(ASTSpanInfo())
+         _prop=(PropId @320:8~19
+          _id=(Id _info=(ASTSpanInfo()) _text="getDocument")
+          _info=(ASTSpanInfo()))
+         _sig=(CallSig @320:19~325:46
+          _info=(ASTSpanInfo())
+          _typ=(Some _value=(TypeRef @325:18~45
+            _info=(ASTSpanInfo())
+            _name=(TypeName @325:18~28
+             _info=(ASTSpanInfo())
+             _text="PDFPromise"
+             _names=[
+              (Id _info=(ASTSpanInfo()) _text="PDFPromise")])
+            _args=[
+             (TypeRef @325:29~45
+              _info=(ASTSpanInfo())
+              _name=(TypeName
+               _info=(ASTSpanInfo())
+               _text="PDFDocumentProxy"
+               _names=[
+                (Id _info=(ASTSpanInfo()) _text="PDFDocumentProxy")]))]))
+          _params=[
+           (Param @321:16~33
+            _info=(ASTSpanInfo())
+            _name=(Id @321:16~22 _info=(ASTSpanInfo()) _text="source")
+            _typ=(Some _value=(TypeRef @321:24~33
+              _info=(ASTSpanInfo())
+              _name=(TypeName
+               _info=(ASTSpanInfo())
+               _text="PDFSource"
+               _names=[
+                (Id _info=(ASTSpanInfo()) _text="PDFSource")]))))
+           (Param @322:16~38
+            _info=(ASTSpanInfo())
+            _name=(Id @322:16~37 _info=(ASTSpanInfo()) _text="pdfDataRangeTransport")
+            _optional=true)
+           (Param @323:16~93
+            _info=(ASTSpanInfo())
+            _name=(Id @323:16~32 _info=(ASTSpanInfo()) _text="passwordCallback")
+            _optional=true
+            _typ=(Some _value=(FunctionType @323:35~93
+              _info=(ASTSpanInfo())
+              _typ=(StringT @323:87~93
+               _info=(ASTSpanInfo()))
+              _params=[
+               (Param @323:36~66
+                _info=(ASTSpanInfo())
+                _name=(Id @323:36~38 _info=(ASTSpanInfo()) _text="fn")
+                _typ=(Some _value=(FunctionType @323:40~66
+                  _info=(ASTSpanInfo())
+                  _typ=(VoidT @323:62~66
+                   _info=(ASTSpanInfo()))
+                  _params=[
+                   (Param @323:41~66
+                    _info=(ASTSpanInfo())
+                    _name=(Id @323:41~49 _info=(ASTSpanInfo()) _text="password")
+                    _typ=(Some _value=(StringT @323:51~66
+                      _info=(ASTSpanInfo()))))])))
+               (Param @323:68~82
+                _info=(ASTSpanInfo())
+                _name=(Id @323:68~74 _info=(ASTSpanInfo()) _text="reason")
+                _typ=(Some _value=(StringT @323:76~82
+                  _info=(ASTSpanInfo()))))])))
+           (Param @324:16~74
+            _info=(ASTSpanInfo())
+            _name=(Id @324:16~32 _info=(ASTSpanInfo()) _text="progressCallback")
+            _optional=true
+            _typ=(Some _value=(FunctionType @324:35~74
+              _info=(ASTSpanInfo())
+              _typ=(VoidT @324:70~74
+               _info=(ASTSpanInfo()))
+              _params=[
+               (Param @324:36~65
+                _info=(ASTSpanInfo())
+                _name=(Id @324:36~48 _info=(ASTSpanInfo()) _text="progressData")
+                _typ=(Some _value=(TypeRef @324:50~65
+                  _info=(ASTSpanInfo())
+                  _name=(TypeName
+                   _info=(ASTSpanInfo())
+                   _text="PDFProgressData"
+                   _names=[
+                    (Id _info=(ASTSpanInfo()) _text="PDFProgressData")]))))])))]))]))
+     (AmbVarDecl @328:9~31
+      _id=(Id @328:13~18 _info=(ASTSpanInfo()) _text="PDFJS")
+      _info=(ASTSpanInfo())
+      _ty=(Some _value=(TypeRef @328:20~31
+        _info=(ASTSpanInfo())
+        _name=(TypeName
+         _info=(ASTSpanInfo())
+         _text="PDFJSStatic"
+         _names=[
+          (Id _info=(ASTSpanInfo()) _text="PDFJSStatic")]))))
+     (AmbExtModDecl @330:9~332:1
+      _info=(ASTSpanInfo())
+      _name="PDFJS"
+      _mem=[
+       (AmbExtModElt @331:8~22
+        _decl=(ModExpAssignment
+         _id=(Id @331:17~22 _info=(ASTSpanInfo()) _text="PDFJS")
+         _info=(ASTSpanInfo()))
+        _info=(ASTSpanInfo()))])])])
+ _info=(ASTSpanInfo()))

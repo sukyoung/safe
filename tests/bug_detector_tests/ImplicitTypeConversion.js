@@ -1,0 +1,23 @@
+var o = {};
+
+undefined == undefined;
+null == undefined;
+null == null;
+100 == undefined;
+100 == null;
+100 == 100;
+"str" == undefined;
+"str" == null;
+"str" == 100;
+"str" == "str";
+true == undefined;
+true == null;
+true == 100;
+true == "str";
+true == true;
+o == undefined;
+o == null;
+o == 100;
+o == true;
+o == o;
+o == "str";

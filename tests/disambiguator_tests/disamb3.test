@@ -1,0 +1,49 @@
+################################################################################
+#    Copyright (c) 2013, KAIST.
+#    All rights reserved.\n#
+#    Use is subject to license terms.\n#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=disamb3
+DISAMB_TESTS_DIR=${JS_HOME}/tests/disambiguator_tests
+disambiguate
+disambiguate_out_WCIequals=\
+  var collection; \n\
+  var x; \n\
+  var y; \n\
+  var z; \n\
+  var v; \n\
+   \n\
+  { \n\
+     \n\
+  } \n\
+  for(x in collection) \n\
+  { \n\
+     \n\
+  } \n\
+  { \n\
+    y = undefined; \n\
+    for(y in collection) \n\
+    { \n\
+       \n\
+    } \n\
+  } \n\
+  { \n\
+    { \n\
+       \n\
+    } \n\
+    for(;z < 5;z ++) \n\
+    { \n\
+       \n\
+    } \n\
+  } \n\
+  { \n\
+    v = 0; \n\
+    for(;v < 3;v ++) \n\
+    { \n\
+       \n\
+    } \n\
+  } \n\
+   \n\
+\n
+disambiguate_err_equals=

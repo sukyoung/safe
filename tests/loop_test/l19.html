@@ -1,0 +1,27 @@
+<script>
+var xx = [1, 2];
+var x = ["aa", "bb"];
+var kkk;
+function g(i) {
+  for(var t=0; t<2; t++) {
+    if(i==t)
+      xx[t] = x[t];
+  }
+
+}
+function f(i) {
+  kkk=i;
+  for(var k=0; k<2; k++) {
+    g(i)
+  }
+}
+for(var i=0; i <2; i++){
+    f(i);
+}
+
+x = [1, 2];
+
+f(1);
+// xx[0] = "aa"
+// xx[1] = 2
+</script>

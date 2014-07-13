@@ -1,0 +1,26 @@
+################################################################################
+#    Copyright (c) 2012, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=array-reverse
+INTERPRETER_TESTS_DIR=${JS_HOME}/tests/interpreter_tests
+interpret
+interpret_out_WCIequals=\
+\n\
+1\n\
+2,1\n\
+3,2,1\n\
+4,3,2,1\n\
+\n\
+,1\n\
+2,\n\
+3,,1\n\
+,2,\n\
+,3,,1\n\
+4,,2,\n\
+Normal(empty)\n
+interpret_err_equals=

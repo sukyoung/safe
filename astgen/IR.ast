@@ -1,0 +1,293 @@
+/*******************************************************************************
+    Copyright (c) 2012, KAIST.
+    All rights reserved.
+
+    Use is subject to license terms.
+
+    This distribution may include materials developed by third parties.
+ ******************************************************************************/
+
+/***************************
+    JavaScript IR
+    ECMAScript 5
+ ***************************/
+
+// REMINDER: If you modify this file, you probably ought to be
+// changing factory methods as well.
+
+generateEmptyConstructor yes;   // for reflective object creation
+visitMethod accept;
+visitorMethodPrefix for;
+addGetterPrefixes yes;
+usePLT yes;
+tabSize 4;
+allowNulls no;
+generateToString no;
+generateEquals yes;
+generateSerializers yes;
+generateRecursiveVisitors no;
+customClassPath ../build;
+
+/* order matters here */
+customGenerator kr.ac.kaist.jsaf.astgen.ScalaIRGenerator;
+
+package kr.ac.kaist.jsaf.nodes;
+import java.lang.Double;
+import java.lang.String;
+import java.math.BigInteger;
+import java.io.Writer;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import kr.ac.kaist.jsaf.nodes_util.*;
+import kr.ac.kaist.jsaf.useful.*;
+import edu.rice.cs.plt.tuple.Option;
+
+begin ast;
+
+interface IRNode() extends HasAt;
+    root abstract IRAbstractNode(IRSpanInfo info) extends UIDObject;
+        IRRoot(List<IRFunDecl> fds, List<IRVarStmt> vds, List<IRStmt> irs);
+        /**
+         * Statement
+         */
+        abstract IRStmt();
+            /**
+             * Assignment statment
+             */
+            abstract IRAssign(IRId lhs);
+                /**
+                 * Expression
+                 * Stmt ::= x = e
+                 */
+                IRExprStmt(IRExpr right, boolean ref = false);
+                /**
+                 * Delete expression
+                 * Stmt ::= x = delete y
+                 */
+                IRDelete(IRId id);
+                /**
+                 * Delete property expression
+                 * Stmt ::= x = delete y[e]
+                 */
+                IRDeleteProp(IRId obj, IRExpr index);
+                /**
+                 * Object literal
+                 * Stmt ::= x = { member, ... }
+                 */
+                IRObject(List<IRMember> members, Option<IRId> proto);
+                /**
+                 * Array literal
+                 * Stmt ::= x = [ e, ... ]
+                 */
+                IRArray(List<Option<IRExpr>> elements);
+                /**
+                 * Array literal with numbers
+                 * Stmt ::= x = [ n, ... ]
+                 */
+                IRArrayNumber(List<Double> elements);
+                /**
+                 * Arguments
+                 * Stmt ::= x = [ e, ... ]
+                 */
+                IRArgs(List<Option<IRExpr>> elements);
+                /**
+                 * Call
+                 * Stmt ::= x = f(this, arguments)
+                 */
+                IRCall(IRId fun, IRId thisB, IRId args);
+                /**
+                 * Internal function call
+                 * toObject, toString, toNumber, isObject, getBase,
+                 * iteratorInit, iteratorHasNext, iteratorKey
+                 */
+                IRInternalCall(IRId fun, IRExpr first, Option<IRId> second);
+                /**
+                 * New
+                 * Stmt ::= x = new f(x, ...)
+                 */
+                IRNew(IRId fun, List<IRId> args);
+                /**
+                 * Function expression
+                 * Stmt ::= x = function f (this, arguments) { s }
+                 */
+                IRFunExpr(IRFunctional ftn);
+                /**
+                 * Eval
+                 * Stmt ::= x = eval(e)
+                 */
+                IREval(IRExpr arg);
+            /**
+             * AST statement unit
+             * Stmt ::= s
+             */
+            IRStmtUnit(List<IRStmt> stmts);
+            /**
+             * Store
+             * Stmt ::= x[e] = e
+             */
+            IRStore(IRId obj, IRExpr index, IRExpr rhs);
+            /**
+             * Function declaration
+             * Stmt ::= function f (this, arguments) { s }
+             */
+            IRFunDecl(IRFunctional ftn);
+            /**
+             * Break
+             * Stmt ::= break label
+             */
+            IRBreak(IRId label);
+            /**
+             * Return
+             * Stmt ::= return e?
+             */
+            IRReturn(Option<IRExpr> expr);
+            /**
+             * With
+             * Stmt ::= with ( x ) s
+             */
+            IRWith(IRId id, IRStmt stmt);
+            /**
+             * Label
+             * Stmt ::= l : { s }
+             */
+            IRLabelStmt(IRId label, IRStmt stmt);
+            /**
+             * Var
+             * Stmt ::= var x
+             */
+            IRVarStmt(IRId lhs, boolean fromParam);
+            /**
+             * Throw
+             * Stmt ::= throw e
+             */
+            IRThrow(IRExpr expr);
+            /**
+             * Sequence
+             * Stmt ::= s; ...
+             */
+            IRSeq(List<IRStmt> stmts);
+            /**
+             * If
+             * Stmt ::= if (e) then s (else s)?
+             */
+            IRIf(IRExpr expr, IRStmt trueB, Option<IRStmt> falseB);
+            /**
+             * While
+             * Stmt ::= while (e) s
+             */
+            IRWhile(IRExpr cond, IRStmt body);
+            /**
+             * Try
+             * Stmt ::= try { s } (catch (x) { s })? (finally { s })?
+             */
+            IRTry(IRStmt body, Option<IRId> name, Option<IRStmt> catchB, Option<IRStmt> finallyB);
+            /**
+             * No operation
+             */
+            IRNoOp(String desc);
+        /**
+         * Member
+         */
+        abstract IRMember();
+            /**
+             * Member ::= x : e
+             */
+            IRField(IRId prop, IRExpr expr);
+            /**
+             * Member ::= get x () { s }
+             */
+            IRGetProp(IRFunctional ftn);
+            /**
+             * Member ::= set x ( y ) { s }
+             */
+            IRSetProp(IRFunctional ftn);
+    /**
+     * Expression
+     */
+    abstract IRExpr(IRSpanInfo info) extends UIDObject;
+        /**
+         * Side-effect free expressions
+         */
+        abstract IROpApp();
+            /**
+             * Binary expression
+             * Expr ::= e binop e
+             */
+            IRBin(IRExpr first, IROp op, IRExpr second);
+            /**
+             * Unary expression
+             * Expr ::= unop e
+             */
+            IRUn(IROp op, IRExpr expr);
+            /**
+             * Load
+             * Expr ::= x[e]
+             */
+            IRLoad(IRId obj, IRExpr index);
+        /**
+         * Variable
+         */
+        abstract IRId(String originalName, String uniqueName, boolean global);
+            /**
+             * Variable
+             * Expr ::= x
+             */
+            IRUserId(boolean with);
+            /**
+             * Internally generated identifiers by Translator
+             * Do not appear in the JavaScript source text.
+             */
+            IRTmpId();
+        /**
+         * this
+         */
+        IRThis();
+        /**
+         * Value
+         */
+        abstract IRVal();
+            /**
+             * Primitive value
+             */
+            abstract IRPVal();
+                /**
+                 * PVal ::= number literal
+                 */
+                IRNumber(ignoreForEquals noIntern String text, Double num);
+                /**
+                 * PVal ::= String
+                 */
+                IRString(noIntern String str);
+                /**
+                 * PVal ::= true | false
+                 */
+                IRBool(boolean bool);
+                /**
+                 * PVal ::= undefined
+                 */
+                IRUndef();
+                /**
+                 * PVal ::= null
+                 */
+                IRNull();
+    /**
+     * Operator
+     */
+    IROp(String text, int kind) extends UIDObject;
+    /**
+     * top-level information interface
+     */
+    abstract IRInfoNode(boolean fromSource) extends UIDObject;
+        /**
+         * Common shape for functions
+         */
+        IRFunctional(IRId name, List<IRId> params, List<IRStmt> args,
+                     List<IRFunDecl> fds, List<IRVarStmt> vds, List<IRStmt> body);
+        /**
+         * Source location
+         */
+        IRSpanInfo(ignoreForEquals Span span);
+end;

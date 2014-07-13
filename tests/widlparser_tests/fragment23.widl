@@ -1,0 +1,23 @@
+/* an interface that has custom stringification behavior that is not specified in the IDL itself */
+[Constructor]
+interface Student {
+  attribute unsigned long id;
+  attribute DOMString? familyName;
+  attribute DOMString givenName;
+
+  stringifier DOMString ();
+};
+
+/* Thus, prose is required to explain the stringification behavior, such as the following paragraph:
+
+Objects that implement the Student interface must stringify as follows. If the value of the familyName attribute is null, the stringification of the object is the value of the givenName attribute. Otherwise, if the value of the familyName attribute is not null, the stringification of the object is the concatenation of the value of the givenName attribute, a single space character, and the value of the familyName attribute.
+*/
+
+/* ECMAScript binding
+var s = new Student();
+s.id = 12345679;
+s.familyName = 'Smithee';
+s.givenName = 'Alan';
+
+var greeting = 'Hi ' + s;  // Now greeting == 'Hi Alan Smithee'.
+*/

@@ -1,0 +1,66 @@
+################################################################################
+#    Copyright (c) 2012, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=15.9.5.19
+INTERPRETER_TESTS_DIR=${JS_HOME}/tests/interpreter_mozilla_tests/ecma/Date
+interpret_mozilla
+interpret_mozilla_out_WCIequals=\
+15.9.5.19 Date.prototype.getUTCSeconds()\n\
+ PASSED! (new Date(1355759131727)).getUTCSeconds() = 31 expected: 31\n\
+ PASSED! (new Date(1355759132727)).getUTCSeconds() = 32 expected: 32\n\
+ PASSED! (new Date(1355759133727)).getUTCSeconds() = 33 expected: 33\n\
+ PASSED! (new Date(1355759134727)).getUTCSeconds() = 34 expected: 34\n\
+ PASSED! (new Date(1355759135727)).getUTCSeconds() = 35 expected: 35\n\
+ PASSED! (new Date(1355759136727)).getUTCSeconds() = 36 expected: 36\n\
+ PASSED! (new Date(1355759137727)).getUTCSeconds() = 37 expected: 37\n\
+ PASSED! (new Date(-62167219199000)).getUTCSeconds() = 1 expected: 1\n\
+ PASSED! (new Date(-62167219198000)).getUTCSeconds() = 2 expected: 2\n\
+ PASSED! (new Date(-62167219197000)).getUTCSeconds() = 3 expected: 3\n\
+ PASSED! (new Date(-62167219196000)).getUTCSeconds() = 4 expected: 4\n\
+ PASSED! (new Date(-62167219195000)).getUTCSeconds() = 5 expected: 5\n\
+ PASSED! (new Date(-62167219194000)).getUTCSeconds() = 6 expected: 6\n\
+ PASSED! (new Date(-62167219193000)).getUTCSeconds() = 7 expected: 7\n\
+ PASSED! (new Date(1000)).getUTCSeconds() = 1 expected: 1\n\
+ PASSED! (new Date(2000)).getUTCSeconds() = 2 expected: 2\n\
+ PASSED! (new Date(3000)).getUTCSeconds() = 3 expected: 3\n\
+ PASSED! (new Date(4000)).getUTCSeconds() = 4 expected: 4\n\
+ PASSED! (new Date(5000)).getUTCSeconds() = 5 expected: 5\n\
+ PASSED! (new Date(6000)).getUTCSeconds() = 6 expected: 6\n\
+ PASSED! (new Date(7000)).getUTCSeconds() = 7 expected: 7\n\
+ PASSED! (new Date(-2208988799000)).getUTCSeconds() = 1 expected: 1\n\
+ PASSED! (new Date(-2208988798000)).getUTCSeconds() = 2 expected: 2\n\
+ PASSED! (new Date(-2208988797000)).getUTCSeconds() = 3 expected: 3\n\
+ PASSED! (new Date(-2208988796000)).getUTCSeconds() = 4 expected: 4\n\
+ PASSED! (new Date(-2208988795000)).getUTCSeconds() = 5 expected: 5\n\
+ PASSED! (new Date(-2208988794000)).getUTCSeconds() = 6 expected: 6\n\
+ PASSED! (new Date(-2208988793000)).getUTCSeconds() = 7 expected: 7\n\
+ PASSED! (new Date(946684801000)).getUTCSeconds() = 1 expected: 1\n\
+ PASSED! (new Date(946684802000)).getUTCSeconds() = 2 expected: 2\n\
+ PASSED! (new Date(946684803000)).getUTCSeconds() = 3 expected: 3\n\
+ PASSED! (new Date(946684804000)).getUTCSeconds() = 4 expected: 4\n\
+ PASSED! (new Date(946684805000)).getUTCSeconds() = 5 expected: 5\n\
+ PASSED! (new Date(946684806000)).getUTCSeconds() = 6 expected: 6\n\
+ PASSED! (new Date(946684807000)).getUTCSeconds() = 7 expected: 7\n\
+ PASSED! (new Date(951782401000)).getUTCSeconds() = 1 expected: 1\n\
+ PASSED! (new Date(951782402000)).getUTCSeconds() = 2 expected: 2\n\
+ PASSED! (new Date(951782403000)).getUTCSeconds() = 3 expected: 3\n\
+ PASSED! (new Date(951782404000)).getUTCSeconds() = 4 expected: 4\n\
+ PASSED! (new Date(951782405000)).getUTCSeconds() = 5 expected: 5\n\
+ PASSED! (new Date(951782406000)).getUTCSeconds() = 6 expected: 6\n\
+ PASSED! (new Date(951782407000)).getUTCSeconds() = 7 expected: 7\n\
+ PASSED! (new Date(1104537601000)).getUTCSeconds() = 1 expected: 1\n\
+ PASSED! (new Date(1104537602000)).getUTCSeconds() = 2 expected: 2\n\
+ PASSED! (new Date(1104537603000)).getUTCSeconds() = 3 expected: 3\n\
+ PASSED! (new Date(1104537604000)).getUTCSeconds() = 4 expected: 4\n\
+ PASSED! (new Date(1104537605000)).getUTCSeconds() = 5 expected: 5\n\
+ PASSED! (new Date(1104537606000)).getUTCSeconds() = 6 expected: 6\n\
+ PASSED! (new Date(1104537607000)).getUTCSeconds() = 7 expected: 7\n\
+ PASSED! (new Date(NaN)).getUTCSeconds() = NaN expected: NaN\n\
+ PASSED! Date.prototype.getUTCSeconds.length = 0 expected: 0\n\
+\n
+interpret_err_equals=

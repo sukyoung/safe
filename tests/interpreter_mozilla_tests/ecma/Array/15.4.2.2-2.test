@@ -1,0 +1,23 @@
+################################################################################
+#    Copyright (c) 2012, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=15.4.2.2-2
+INTERPRETER_TESTS_DIR=${JS_HOME}/tests/interpreter_mozilla_tests/ecma/Array
+interpret_mozilla
+interpret_mozilla_out_WCIequals=\
+15.4.2.2-2 The Array Constructor:  new Array( len )\n\
+ PASSED! (new Array(new Number(1073741823))).length = 1 expected: 1\n\
+ PASSED! (new Array(new Number(0))).length = 1 expected: 1\n\
+ PASSED! (new Array(new Number(1000))).length = 1 expected: 1\n\
+ PASSED! (new Array('mozilla, larryzilla, curlyzilla')).length = 1 expected: 1\n\
+ PASSED! (new Array(true)).length = 1 expected: 1\n\
+ PASSED! (new Array(false)).length = 1 expected: 1\n\
+ PASSED! (new Array(new Boolean(true)).length = 1 expected: 1\n\
+ PASSED! (new Array(new Boolean(false)).length = 1 expected: 1\n\
+\n
+interpret_err_equals=

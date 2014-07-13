@@ -1,0 +1,30 @@
+<!------------------------------------------------------------------------------
+    Copyright (c) 2013, S-Core.
+    All rights reserved.
+
+    Use is subject to license terms.
+
+    This distribution may include materials developed by third parties.
+------------------------------------------------------------------------------->
+
+<html>
+<head>
+    <script src="jquery.js"></script>
+    <script>
+        var x = $("#test1");
+        var y = $("#test1_1");
+        var div = document.createElement("DIV");
+        y.after(div)
+        var x_child = x.children()
+        var __result1 = x_child[0].tagName;
+        var __expect1 = "SPAN";
+        var __result2 = x_child[1].tagName;
+        var __expect2 = "DIV";
+    </script>
+</head>
+<body>
+<div id="test1" class="parent1">
+    <span id="test1_1"></span>
+</div>
+</body>
+</html>

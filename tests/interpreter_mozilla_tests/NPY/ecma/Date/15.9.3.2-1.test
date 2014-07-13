@@ -1,0 +1,105 @@
+################################################################################
+#    Copyright (c) 2012, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+tests=15.9.3.2-1
+INTERPRETER_TESTS_DIR=${JS_HOME}/tests/interpreter_mozilla_tests/ecma/Date
+interpret_mozilla
+interpret_mozilla_out_WCIequals=\
+15.9.3.1 Date( year, month, date, hours, minutes, seconds )\n\
+ PASSED! new Date( 1969,11,31,15,59,59).getTime() = -61201000 expected: -61201000\n\
+ PASSED! new Date( 1969,11,31,15,59,59).valueOf() = -61201000 expected: -61201000\n\
+ PASSED! new Date( 1969,11,31,15,59,59).getUTCFullYear() = 1969 expected: 1969\n\
+ PASSED! new Date( 1969,11,31,15,59,59).getUTCMonth() = 11 expected: 11\n\
+ PASSED! new Date( 1969,11,31,15,59,59).getUTCDate() = 31 expected: 31\n\
+ PASSED! new Date( 1969,11,31,15,59,59).getUTCDay() = 3 expected: 3\n\
+ PASSED! new Date( 1969,11,31,15,59,59).getUTCHours() = 6 expected: 6\n\
+ PASSED! new Date( 1969,11,31,15,59,59).getUTCMinutes() = 59 expected: 59\n\
+ PASSED! new Date( 1969,11,31,15,59,59).getUTCSeconds() = 59 expected: 59\n\
+ PASSED! new Date( 1969,11,31,15,59,59).getUTCMilliseconds() = 0 expected: 0\n\
+ PASSED! new Date( 1969,11,31,15,59,59).getFullYear() = 1969 expected: 1969\n\
+ PASSED! new Date( 1969,11,31,15,59,59).getMonth() = 11 expected: 11\n\
+ PASSED! new Date( 1969,11,31,15,59,59).getDate() = 31 expected: 31\n\
+ PASSED! new Date( 1969,11,31,15,59,59).getDay() = 3 expected: 3\n\
+ PASSED! new Date( 1969,11,31,15,59,59).getHours() = 15 expected: 15\n\
+ PASSED! new Date( 1969,11,31,15,59,59).getMinutes() = 59 expected: 59\n\
+ PASSED! new Date( 1969,11,31,15,59,59).getSeconds() = 59 expected: 59\n\
+ PASSED! new Date( 1969,11,31,15,59,59).getMilliseconds() = 0 expected: 0\n\
+ PASSED! new Date( 1969,11,31,16,0,0).getTime() = -61200000 expected: -61200000\n\
+ PASSED! new Date( 1969,11,31,16,0,0).valueOf() = -61200000 expected: -61200000\n\
+ PASSED! new Date( 1969,11,31,16,0,0).getUTCFullYear() = 1969 expected: 1969\n\
+ PASSED! new Date( 1969,11,31,16,0,0).getUTCMonth() = 11 expected: 11\n\
+ PASSED! new Date( 1969,11,31,16,0,0).getUTCDate() = 31 expected: 31\n\
+ PASSED! new Date( 1969,11,31,16,0,0).getUTCDay() = 3 expected: 3\n\
+ PASSED! new Date( 1969,11,31,16,0,0).getUTCHours() = 7 expected: 7\n\
+ PASSED! new Date( 1969,11,31,16,0,0).getUTCMinutes() = 0 expected: 0\n\
+ PASSED! new Date( 1969,11,31,16,0,0).getUTCSeconds() = 0 expected: 0\n\
+ PASSED! new Date( 1969,11,31,16,0,0).getUTCMilliseconds() = 0 expected: 0\n\
+ PASSED! new Date( 1969,11,31,16,0,0).getFullYear() = 1969 expected: 1969\n\
+ PASSED! new Date( 1969,11,31,16,0,0).getMonth() = 11 expected: 11\n\
+ PASSED! new Date( 1969,11,31,16,0,0).getDate() = 31 expected: 31\n\
+ PASSED! new Date( 1969,11,31,16,0,0).getDay() = 3 expected: 3\n\
+ PASSED! new Date( 1969,11,31,16,0,0).getHours() = 16 expected: 16\n\
+ PASSED! new Date( 1969,11,31,16,0,0).getMinutes() = 0 expected: 0\n\
+ PASSED! new Date( 1969,11,31,16,0,0).getSeconds() = 0 expected: 0\n\
+ PASSED! new Date( 1969,11,31,16,0,0).getMilliseconds() = 0 expected: 0\n\
+ PASSED! new Date( 1969,11,31,23,59,59).getTime() = -32401000 expected: -32401000\n\
+ PASSED! new Date( 1969,11,31,23,59,59).valueOf() = -32401000 expected: -32401000\n\
+ PASSED! new Date( 1969,11,31,23,59,59).getUTCFullYear() = 1969 expected: 1969\n\
+ PASSED! new Date( 1969,11,31,23,59,59).getUTCMonth() = 11 expected: 11\n\
+ PASSED! new Date( 1969,11,31,23,59,59).getUTCDate() = 31 expected: 31\n\
+ PASSED! new Date( 1969,11,31,23,59,59).getUTCDay() = 3 expected: 3\n\
+ PASSED! new Date( 1969,11,31,23,59,59).getUTCHours() = 14 expected: 14\n\
+ PASSED! new Date( 1969,11,31,23,59,59).getUTCMinutes() = 59 expected: 59\n\
+ PASSED! new Date( 1969,11,31,23,59,59).getUTCSeconds() = 59 expected: 59\n\
+ PASSED! new Date( 1969,11,31,23,59,59).getUTCMilliseconds() = 0 expected: 0\n\
+ PASSED! new Date( 1969,11,31,23,59,59).getFullYear() = 1969 expected: 1969\n\
+ PASSED! new Date( 1969,11,31,23,59,59).getMonth() = 11 expected: 11\n\
+ PASSED! new Date( 1969,11,31,23,59,59).getDate() = 31 expected: 31\n\
+ PASSED! new Date( 1969,11,31,23,59,59).getDay() = 3 expected: 3\n\
+ PASSED! new Date( 1969,11,31,23,59,59).getHours() = 23 expected: 23\n\
+ PASSED! new Date( 1969,11,31,23,59,59).getMinutes() = 59 expected: 59\n\
+ PASSED! new Date( 1969,11,31,23,59,59).getSeconds() = 59 expected: 59\n\
+ PASSED! new Date( 1969,11,31,23,59,59).getMilliseconds() = 0 expected: 0\n\
+ PASSED! new Date( 1970, 0, 1, 0, 0, 0).getTime() = -32400000 expected: -32400000\n\
+ PASSED! new Date( 1970, 0, 1, 0, 0, 0).valueOf() = -32400000 expected: -32400000\n\
+ PASSED! new Date( 1970, 0, 1, 0, 0, 0).getUTCFullYear() = 1969 expected: 1969\n\
+ PASSED! new Date( 1970, 0, 1, 0, 0, 0).getUTCMonth() = 11 expected: 11\n\
+ PASSED! new Date( 1970, 0, 1, 0, 0, 0).getUTCDate() = 31 expected: 31\n\
+ PASSED! new Date( 1970, 0, 1, 0, 0, 0).getUTCDay() = 3 expected: 3\n\
+ PASSED! new Date( 1970, 0, 1, 0, 0, 0).getUTCHours() = 15 expected: 15\n\
+ PASSED! new Date( 1970, 0, 1, 0, 0, 0).getUTCMinutes() = 0 expected: 0\n\
+ PASSED! new Date( 1970, 0, 1, 0, 0, 0).getUTCSeconds() = 0 expected: 0\n\
+ PASSED! new Date( 1970, 0, 1, 0, 0, 0).getUTCMilliseconds() = 0 expected: 0\n\
+ PASSED! new Date( 1970, 0, 1, 0, 0, 0).getFullYear() = 1970 expected: 1970\n\
+ PASSED! new Date( 1970, 0, 1, 0, 0, 0).getMonth() = 0 expected: 0\n\
+ PASSED! new Date( 1970, 0, 1, 0, 0, 0).getDate() = 1 expected: 1\n\
+ PASSED! new Date( 1970, 0, 1, 0, 0, 0).getDay() = 4 expected: 4\n\
+ PASSED! new Date( 1970, 0, 1, 0, 0, 0).getHours() = 0 expected: 0\n\
+ PASSED! new Date( 1970, 0, 1, 0, 0, 0).getMinutes() = 0 expected: 0\n\
+ PASSED! new Date( 1970, 0, 1, 0, 0, 0).getSeconds() = 0 expected: 0\n\
+ PASSED! new Date( 1970, 0, 1, 0, 0, 0).getMilliseconds() = 0 expected: 0\n\
+ PASSED! new Date( 1969,11,31,16,0,0).getTime() = -61200000 expected: -61200000\n\
+ PASSED! new Date( 1969,11,31,16,0,0).valueOf() = -61200000 expected: -61200000\n\
+ PASSED! new Date( 1969,11,31,16,0,0).getUTCFullYear() = 1969 expected: 1969\n\
+ PASSED! new Date( 1969,11,31,16,0,0).getUTCMonth() = 11 expected: 11\n\
+ PASSED! new Date( 1969,11,31,16,0,0).getUTCDate() = 31 expected: 31\n\
+ PASSED! new Date( 1969,11,31,16,0,0).getUTCDay() = 3 expected: 3\n\
+ PASSED! new Date( 1969,11,31,16,0,0).getUTCHours() = 7 expected: 7\n\
+ PASSED! new Date( 1969,11,31,16,0,0).getUTCMinutes() = 0 expected: 0\n\
+ PASSED! new Date( 1969,11,31,16,0,0).getUTCSeconds() = 0 expected: 0\n\
+ PASSED! new Date( 1969,11,31,16,0,0).getUTCMilliseconds() = 0 expected: 0\n\
+ PASSED! new Date( 1969,11,31,16,0,0).getFullYear() = 1969 expected: 1969\n\
+ PASSED! new Date( 1969,11,31,16,0,0).getMonth() = 11 expected: 11\n\
+ PASSED! new Date( 1969,11,31,16,0,0).getDate() = 31 expected: 31\n\
+ PASSED! new Date( 1969,11,31,16,0,0).getDay() = 3 expected: 3\n\
+ PASSED! new Date( 1969,11,31,16,0,0).getHours() = 16 expected: 16\n\
+ PASSED! new Date( 1969,11,31,16,0,0).getMinutes() = 0 expected: 0\n\
+ PASSED! new Date( 1969,11,31,16,0,0).getSeconds() = 0 expected: 0\n\
+ PASSED! new Date( 1969,11,31,16,0,0).getMilliseconds() = 0 expected: 0\n\
+\n
+interpret_err_equals=

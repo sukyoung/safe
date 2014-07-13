@@ -1,0 +1,34 @@
+/* simplified versions of a few DOM interfaces, one of which is a callback interface */
+interface Node {
+  readonly attribute DOMString nodeName;
+  readonly attribute Node? parentNode;
+  Node appendChild(Node newChild);
+  void addEventListener(DOMString type, EventListener listener);
+};
+
+callback interface EventListener {
+  void handleEvent(Event event);
+};
+
+/* In JavaScript
+// Since the EventListener interface is annotated callback interface,
+// user objects can implement it:
+var node = getNode();                                // Obtain an instance of Node.
+
+var listener = {
+  handleEvent: function(event) {
+  }
+};
+node.addEventListener("click", listener);            // This works.
+node.addEventListener("click", function() { });  // As does this.
+
+var newNode = {
+  nodeName: "span",
+  parentNode: null,
+  appendChild: function(newchild) {
+  },
+  addEventListener: function(type, listener) {
+  }
+};
+node.appendChild(newNode);  // This will throw a TypeError exception.
+*/
