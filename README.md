@@ -1,5 +1,5 @@
-SAFE: Scalable Analysis Framework for ECMAScript
-================================================
+SAFE
+====
 
 ### News
 
