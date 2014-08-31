@@ -39,6 +39,9 @@ This directory includes the following third_party software:
 * Unicode 5.0.0 (The Unicode License)
   See http://unicode.org/versions/Unicode5.0.0/
 
+* URIHandler(The Mozilla Public License Version 2.0)
+  See https://github.com/mir597/urihandler
+
 * WALA (The Eclipse Public License)
   See http://wala.sourceforge.net/wiki/index.php/Main_Page
 
