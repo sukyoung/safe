@@ -45,7 +45,7 @@ This directory includes the following third_party software:
 * WALA (The Eclipse Public License)
   See http://wala.sourceforge.net/wiki/index.php/Main_Page
 
-* XTC (The GNU General Public License (GPL) Version 2.0)
+* XTC (The GNU LESSER GENERAL PUBLIC LICENSE License)
   See http://cs.nyu.edu/rgrimm/xtc/
   
 * Z3 (The Microsoft Research License Agreement)
