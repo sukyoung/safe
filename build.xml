@@ -99,7 +99,7 @@ This is the main Ant build file.
        Targets
   -->
   <target name="help">
-    <echo message="ant astGenerators, checkAstgen, checkNodesUptodate, checkParserUptodate, clean, cleanNodes, cleanScala, compile, compileAll, compileCommon, compileJava, generated, help, makeNodes, systemProperties, test, testOnly -DtestPattern='some pattern', testParser"/>
+    <echo message="ant astGenerators, checkAstgen, checkJSParserUptodate, checkJsonParserUptodate, checkNodesUptodate, checkParserUptodate, checkRegExpParserUptodate, checkTSParserUptodate, checkWIDLParserUptodate, clean, cleanNodes, compile, cron, debug, help, init, jsonparser, jsparser, makeIR, makeJS, makeNodes, makeRegExp, makeWIDL, parser, reparser, test, testAssert, testBugDetector, testCFG, testCompiler, testConcolic, testDisambiguator, testInterpreter, testNightly, testParser, testTSParser, testTyping, testUnparser, testWIDLParser, tsparser, widlparser"/>
     <echo message="If you are building JSAF, you want ant compile."/>
   </target>
 
@@ -291,7 +291,7 @@ This is the main Ant build file.
        in the parser directory, then the parser must be up to date.
        This is a conservative test; a more precise test would perform a
        dependency analysis over Rats! code.-->
-  <target name="checkParserUptodate">
+  <target name="checkParserUptodate" depends="init">
     <condition property="parser.uptodate">
       <and>
         <uptodate targetfile="${parser}/JS.java">
@@ -314,7 +314,7 @@ This is the main Ant build file.
     <echo>Parser up to date? ${parser.uptodate}</echo>
   </target>
 
-  <target name="checkJSParserUptodate">
+  <target name="checkJSParserUptodate" depends="init">
     <condition property="jsparser.uptodate">
       <uptodate targetfile="${parser}/JS.java" >
         <srcfiles dir= "${parser}" includes="**/*.rats" excludes="**/RegExp.rats"/>
@@ -326,28 +326,28 @@ This is the main Ant build file.
     <echo>JavaScript parser up to date? ${jsparser.uptodate}</echo>
   </target>
 
-  <target name="checkRegExpParserUptodate">
+  <target name="checkRegExpParserUptodate" depends="init">
     <uptodate property="reparser.uptodate" targetfile="${parser}/RegExp.java" >
       <srcfiles dir= "${parser}" includes="RegExp.rats"/>
     </uptodate>
     <echo>JavaScript RegExp parser up to date? ${reparser.uptodate}</echo>
   </target>
 
-  <target name="checkWIDLParserUptodate">
+  <target name="checkWIDLParserUptodate" depends="init">
     <uptodate property="widlparser.uptodate" targetfile="${parser}/WIDL.java" >
       <srcfiles dir= "${parser}" includes="WIDL.rats"/>
     </uptodate>
     <echo>JavaScript WIDL parser up to date? ${widlparser.uptodate}</echo>
   </target>
 
-  <target name="checkTSParserUptodate">
+  <target name="checkTSParserUptodate" depends="init">
     <uptodate property="tsparser.uptodate" targetfile="${parser}/TS.java" >
       <srcfiles dir= "${parser}" includes="TS.rats"/>
     </uptodate>
     <echo>TypeScript parser up to date? ${tsparser.uptodate}</echo>
   </target>
 
-  <target name="checkJsonParserUptodate">
+  <target name="checkJsonParserUptodate" depends="init">
     <uptodate property="reparser.uptodate" targetfile="${parser}/Json.java" >
       <srcfiles dir= "${parser}" includes="Json.rats"/>
     </uptodate>
