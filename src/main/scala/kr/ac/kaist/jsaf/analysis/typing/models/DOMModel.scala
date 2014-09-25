@@ -23,6 +23,7 @@ import kr.ac.kaist.jsaf.analysis.typing.models.DOMObject._
 import kr.ac.kaist.jsaf.nodes_util.{NodeUtil => NU, IRFactory}
 import kr.ac.kaist.jsaf.analysis.typing.models.jquery.JQueryHelper
 import kr.ac.kaist.jsaf.analysis.typing.AddressManager._
+import kr.ac.kaist.jsaf.Shell
 
 object DOMModel {
   val async_calls : List[String] = List("#LOAD", "#UNLOAD", "#KEYBOARD", "#MOUSE", "#OTHER", "#READY", "#MESSAGE", "#TIME")
@@ -40,7 +41,7 @@ class DOMModel(cfg: CFG) extends Model(cfg) {
     DOMNotation, DOMProcessingInstruction, DOMStringList, DOMText, DOMTypeInfo, DOMUserDataHandler,
     // DOM Event
     DocumentEvent, Event, EventException, EventListener, EventTarget, MouseEvent, MutationEvent, UIEvent,
-    KeyboardEvent, MessageEvent,
+    KeyboardEvent, MessageEvent, TouchEvent,
     // DOM Html
     HTMLAnchorElement, HTMLAppletElement, HTMLAreaElement, HTMLBaseElement, HTMLBaseFontElement, HTMLBodyElement,
     HTMLBRElement, HTMLButtonElement, HTMLCollection, HTMLDirectoryElement, HTMLDivElement, HTMLDListElement,
@@ -105,7 +106,7 @@ class DOMModel(cfg: CFG) extends Model(cfg) {
           case Some(o) =>
             list_props.foldLeft(o)((oo, pv) => oo.update(pv._1, pv._2))
           case None =>
-            list_props.foldLeft(ObjEmpty)((o, pvo) => o.update(pvo._1, pvo._2))
+            list_props.foldLeft(Obj.empty)((o, pvo) => o.update(pvo._1, pvo._2))
         }
         /* added function object to heap if any */
         val heap = list_props.foldLeft(h2)((h3, pvo) => pvo._3 match {
@@ -118,18 +119,23 @@ class DOMModel(cfg: CFG) extends Model(cfg) {
       })
     )
 
+    val _h =if(Shell.params.opt_Dommodel2) {
+      Helper.PropStore(h_1, DOMNodeList.loc_ins2, NumStr, Value(HTMLTopElement.loc_ins_set))
+    } else h_1
+
+
     // style object
-    val StyleObj = Obj(ObjMapBot.
-      updated("@default_number", (PropValue(StrTop), AbsentTop)).
-      updated("@default_other", (PropValue(StrTop), AbsentTop))).
+    val StyleObj = Obj.empty.
+      update(NumStr, PropValue(StrTop)).
+      update(OtherStr, PropValue(StrTop)).
       update("@class", PropValue(AbsString.alpha("Object"))).
       update("@proto", PropValue(ObjectValue(Value(ObjProtoLoc), BoolFalse, BoolFalse, BoolFalse))).
       update("@extensible", PropValue(BoolTrue))
 
     /* initialize lookup table & event table */
-    Heap(h_1.map + (IdTableLoc -> ObjEmpty) + (NameTableLoc -> ObjEmpty) + (TagTableLoc -> ObjEmpty) +
-      (EventTargetTableLoc -> ObjEmpty) + (EventFunctionTableLoc -> ObjEmpty) +
-      (ClassTableLoc -> ObjEmpty) + (TempStyleLoc -> StyleObj) +
+    Heap(_h.map + (IdTableLoc -> Obj.empty) + (NameTableLoc -> Obj.empty) + (TagTableLoc -> Obj.empty) +
+      (EventTargetTableLoc -> Obj.empty) + (EventFunctionTableLoc -> Obj.empty) +
+      (ClassTableLoc -> Obj.empty) + (TempStyleLoc -> StyleObj) +
       (DOMEventTimeLoc -> Helper.NewDate(Value(UInt))))
   }
 
@@ -171,30 +177,31 @@ class DOMModel(cfg: CFG) extends Model(cfg) {
     val all_event_name = DOMModel.async_fun_names
     val fun_table = h(EventFunctionTableLoc)
     val target_table = h(EventTargetTableLoc)
-
     // lset_fun: function to dispatch
     // lset_target: current target, 'this' in function body
     val (lset_fun, lset_target) = name match {
 
       case "#ALL" =>
         val (f, t) = all_event.foldLeft((LocSetBot, LocSetBot))((llset, e) =>
-          (llset._1 ++ fun_table(e)._1._2._2, llset._2 ++ target_table(e)._1._2._2)
+          (llset._1 ++ fun_table(e)._2._2, llset._2 ++ target_table(e)._2._2)
         )
-        val lset_static = h(GlobalLoc).map.foldLeft(LocSetBot)((lset, kv) =>
-          if (all_event_name.exists((e) => kv._1.startsWith(e)))
-            lset ++ kv._2._1._1._1._2
+        val global_o = h(GlobalLoc)
+        val lset_static = global_o.getProps.foldLeft(LocSetBot)((lset, kv) =>
+          if (all_event_name.exists((e) => kv.startsWith(e)))
+            lset ++ global_o(kv)._1._1._2
           else
             lset
         )
         (f ++ lset_static, t)
       case "#NOT_LOAD_UNLOAD" =>
         val (f, t) = all_event.filterNot(_ == "#LOAD").filterNot(_ == "#UNLOAD").foldLeft((LocSetBot, LocSetBot))((llset, e) =>
-          (llset._1 ++ fun_table(e)._1._2._2, llset._2 ++ target_table(e)._1._2._2)
+          (llset._1 ++ fun_table(e)._2._2, llset._2 ++ target_table(e)._2._2)
         )
         val event_names = all_event_name.filterNot(_ == "__LOADEvent__").filterNot(_ == "__UNLOADEvent__")
-        val lset_static = h(GlobalLoc).map.foldLeft(LocSetBot)((lset, kv) =>
-          if (event_names.exists((e) => kv._1.startsWith(e)))
-            lset ++ kv._2._1._1._1._2
+        val global_o = h(GlobalLoc)
+        val lset_static = global_o.getProps.foldLeft(LocSetBot)((lset, kv) =>
+          if (event_names.exists((e) => kv.startsWith(e)))
+            lset ++ global_o(kv)._1._1._2
           else
             lset
         )
@@ -205,20 +212,20 @@ class DOMModel(cfg: CFG) extends Model(cfg) {
           if (Config.jqMode) {
             // delegate
             val selector_table = h(EventSelectorTableLoc)
-            val s_selector = selector_table(name)._1._2._1._5
-            val lset_target = DOMHelper.querySelectorAll(h, s_selector) ++ target_table(name)._1._2._2 
-            (fun_table(name)._1._2._2 , lset_target)
+            val s_selector = selector_table(name)._2._1._5
+            val lset_target = DOMHelper.querySelectorAll(h, s_selector) ++ target_table(name)._2._2
+            (fun_table(name)._2._2 , lset_target)
           }
           else
-            (fun_table(name)._1._2._2 , target_table(name)._1._2._2)
+            (fun_table(name)._2._2 , target_table(name)._2._2)
 
         val lset_static =
           if (name == "#TIME")
             LocSetBot
           else {
             val event_name = all_event_name(all_event.indexOf(name))
-            h(GlobalLoc).map.foldLeft(LocSetBot)((lset, kv) =>
-              if (kv._1.startsWith(event_name)) lset ++ kv._2._1._1._1._2
+            h(GlobalLoc).getProps.foldLeft(LocSetBot)((lset, kv) =>
+              if (kv.startsWith(event_name)) lset ++ h(GlobalLoc)(kv)._1._1._2
               else lset
             )
           }
@@ -250,8 +257,8 @@ class DOMModel(cfg: CFG) extends Model(cfg) {
       case "#ALL" =>
         // Event object
         val proplist = MouseEvent.getInstList(lset_target, HTMLTopElement.getInsLoc(h_3)) ++ KeyboardEvent.getInstList(lset_target, HTMLTopElement.getInsLoc(h_3)) ++ 
-                       MessageEvent.getInstList(lset_target, HTMLTopElement.getInsLoc(h_3))
-        proplist.foldLeft(Helper.NewObject(LocSet(MouseEvent.loc_proto) + KeyboardEvent.loc_proto + MessageEvent.loc_proto))((o, pv) =>
+                       MessageEvent.getInstList(lset_target, HTMLTopElement.getInsLoc(h_3)) ++ TouchEvent.getInstList(lset_target, HTMLTopElement.getInsLoc(h_3))
+        proplist.foldLeft(Helper.NewObject(LocSet(MouseEvent.loc_proto) + KeyboardEvent.loc_proto + MessageEvent.loc_proto + TouchEvent.loc_proto))((o, pv) =>
           o.update(pv._1, pv._2)
         )
       case "#MOUSE" =>
@@ -270,6 +277,13 @@ class DOMModel(cfg: CFG) extends Model(cfg) {
         // MessageEvent object
         val proplist = MessageEvent.getInstList(lset_target, HTMLTopElement.getInsLoc(h_3))
         proplist.foldLeft(Helper.NewObject(MessageEvent.loc_proto))((o, pv) =>
+          o.update(pv._1, pv._2)
+        )
+
+      case "#TOUCH" =>
+        // TouchEvent object
+        val proplist = TouchEvent.getInstList(lset_target, HTMLTopElement.getInsLoc(h_3))
+        proplist.foldLeft(Helper.NewObject(TouchEvent.loc_proto))((o, pv) =>
           o.update(pv._1, pv._2)
         )
 
@@ -293,7 +307,7 @@ class DOMModel(cfg: CFG) extends Model(cfg) {
     val cp_aftercatch = (n_aftercatch, cc_caller)
     lset_fun.foreach {l_f:Loc => {
       val o_f = h_5(l_f)
-      val fids = o_f("@function")._1._3
+      val fids = o_f("@function")._3
       fids.foreach {fid => {
         val ccset = cc_caller.NewCallContext(h, cfg, fid, l_r, lset_this)
         ccset.foreach {case (cc_new, o_new) => {
@@ -301,7 +315,7 @@ class DOMModel(cfg: CFG) extends Model(cfg) {
           val o_new2 =
             o_new.
               update(cfg.getArgumentsName(fid), value).
-              update("@scope", o_f("@scope")._1)
+              update("@scope", o_f("@scope"))
           sem.addCallEdge(cp, ((fid,LEntry), cc_new), ContextEmpty, o_new2)
           sem.addReturnEdge(((fid,LExit), cc_new), cp_aftercall, ctx_3, o_old)
           sem.addReturnEdge(((fid, LExitExc), cc_new), cp_aftercatch, ctx_3, o_old)
@@ -330,37 +344,37 @@ class DOMModel(cfg: CFG) extends Model(cfg) {
 
       case "#ALL" =>
         val (f, t) = all_event.foldLeft((LocSetBot, LocSetBot))((llset, e) =>
-          (llset._1 ++ fun_table(e)._1._2._2, llset._2 ++ target_table(e)._1._2._2)
+          (llset._1 ++ fun_table(e)._2._2, llset._2 ++ target_table(e)._2._2)
         )
-        val lset_static = h(GlobalLoc).map.foldLeft(LocSetBot)((lset, kv) =>
-          if (all_event_name.exists((e) => kv._1.startsWith(e)))
-            lset ++ kv._2._1._1._1._2
+        val lset_static = h(GlobalLoc).getProps.foldLeft(LocSetBot)((lset, kv) =>
+          if (all_event_name.exists((e) => kv.startsWith(e)))
+            lset ++ h(GlobalLoc)(kv)._1._1._2
           else
             lset
         )
         (f ++ lset_static, t)
       case "#NOT_LOAD_UNLOAD" =>
         val (f, t) = all_event.filterNot(_ == "#LOAD").filterNot(_ == "#UNLOAD").foldLeft((LocSetBot, LocSetBot))((llset, e) =>
-          (llset._1 ++ fun_table(e)._1._2._2, llset._2 ++ target_table(e)._1._2._2)
+          (llset._1 ++ fun_table(e)._2._2, llset._2 ++ target_table(e)._2._2)
         )
         val event_names = all_event_name.filterNot(_ == "__LOADEvent__").filterNot(_ == "__UNLOADEvent__")
-        val lset_static = h(GlobalLoc).map.foldLeft(LocSetBot)((lset, kv) =>
-          if (event_names.exists((e) => kv._1.startsWith(e)))
-            lset ++ kv._2._1._1._1._2
+        val lset_static = h(GlobalLoc).getProps.foldLeft(LocSetBot)((lset, kv) =>
+          if (event_names.exists((e) => kv.startsWith(e)))
+            lset ++ h(GlobalLoc)(kv)._1._1._2
           else
             lset
         )
         (f ++ lset_static, t)
 
       case _ =>
-        val (f,t) = (fun_table(name)._1._2._2 , target_table(name)._1._2._2)
+        val (f,t) = (fun_table(name)._2._2 , target_table(name)._2._2)
         val lset_static =
           if (name == "#TIME")
             LocSetBot
           else {
             val event_name = all_event_name(all_event.indexOf(name))
-            h(GlobalLoc).map.foldLeft(LocSetBot)((lset, kv) =>
-              if (kv._1.startsWith(event_name)) lset ++ kv._2._1._1._1._2
+            h(GlobalLoc).getProps.foldLeft(LocSetBot)((lset, kv) =>
+              if (kv.startsWith(event_name)) lset ++ h(GlobalLoc)(kv)._1._1._2
               else lset
             )
           }
@@ -398,6 +412,13 @@ class DOMModel(cfg: CFG) extends Model(cfg) {
         proplist.foldLeft(PreHelper.NewObject(ObjProtoLoc))((o, pv) =>
           o.update(pv._1, pv._2)
         )
+      case "#TOUCH" =>
+        // KeyboardEvent object
+        val proplist = TouchEvent.getInstList(lset_target, HTMLTopElement.getInsLoc(h_3))
+        proplist.foldLeft(PreHelper.NewObject(ObjProtoLoc))((o, pv) =>
+          o.update(pv._1, pv._2)
+        )
+
       case _ =>
         // Event object
         Event.getInstList(lset_target, HTMLTopElement.getInsLoc(h_3)).foldLeft(PreHelper.NewObject(ObjProtoLoc))((o, pv) =>
@@ -417,7 +438,7 @@ class DOMModel(cfg: CFG) extends Model(cfg) {
     val cp_aftercatch = (n_aftercatch, cc_caller)
     lset_fun.foreach {l_f:Loc => {
       val o_f = h_5(l_f)
-      val fids = o_f("@function")._1._3
+      val fids = o_f("@function")._3
       fids.foreach {fid => {
         val ccset = cc_caller.NewCallContext(h, cfg, fid, l_r, lset_this)
         ccset.foreach {case (cc_new, o_new) => {
@@ -425,7 +446,7 @@ class DOMModel(cfg: CFG) extends Model(cfg) {
           val o_new2 =
             o_new.
               update(cfg.getArgumentsName(fid), value).
-              update("@scope", o_f("@scope")._1)
+              update("@scope", o_f("@scope"))
           sem.addCallEdge(cp, ((fid,LEntry), cc_new), ContextEmpty, o_new2)
           sem.addReturnEdge(((fid,LExit), cc_new), cp_aftercall, ctx_3, o_old)
           sem.addReturnEdge(((fid, LExitExc), cc_new), cp_aftercatch, ctx_3, o_old)
@@ -449,7 +470,7 @@ class DOMModel(cfg: CFG) extends Model(cfg) {
     val lpset_2 = AH.Oldify_def(h, ctx, addr2)
     val lpset_3 = AH.Oldify_def(h, ctx, addr3)
     // event object
-    val lpset_4 = (AH.NewObject_def ++ MouseEvent.instProps ++ KeyboardEvent.instProps).foldLeft(LPBot)((lpset, p) => lpset + ((l_event, p)))
+    val lpset_4 = (AH.NewObject_def ++ MouseEvent.instProps ++ KeyboardEvent.instProps ++ TouchEvent.instProps).foldLeft(LPBot)((lpset, p) => lpset + ((l_event, p)))
     // arguments object
     val lpset_5 = AH.NewArrayObject_def.foldLeft(LPBot)((lpset, p) => lpset + ((l_arg, p)))
     // arguments[0] = event
@@ -473,41 +494,41 @@ class DOMModel(cfg: CFG) extends Model(cfg) {
 
       case "#ALL" =>
         val (f, t, lpset_1) = all_event.foldLeft((LocSetBot, LocSetBot, LPBot))((llpset, e) =>
-          (llpset._1 ++ fun_table(e)._1._2._2, llpset._2 ++ target_table(e)._1._2._2,
+          (llpset._1 ++ fun_table(e)._2._2, llpset._2 ++ target_table(e)._2._2,
             llpset._3 + (EventFunctionTableLoc, e) + (EventTargetTableLoc, e))
         )
-        val (lset_static, lpset_2) = h(GlobalLoc).map.foldLeft((LocSetBot, LPBot))((set, kv) =>
-          if (all_event_name.exists((e) => kv._1.startsWith(e)))
-            (set._1 ++ kv._2._1._1._1._2, set._2 + (GlobalLoc, kv._1))
+        val (lset_static, lpset_2) = h(GlobalLoc).getProps.foldLeft((LocSetBot, LPBot))((set, kv) =>
+          if (all_event_name.exists((e) => kv.startsWith(e)))
+            (set._1 ++ h(GlobalLoc)(kv)._1._1._2, set._2 + (GlobalLoc, kv))
           else
             set
         )
         (f ++ lset_static, t, lpset_1 ++ lpset_2)
       case "#NOT_LOAD_UNLOAD" =>
         val (f, t, lpset_1) = all_event.filterNot(_ == "#LOAD").filterNot(_ == "#UNLOAD").foldLeft((LocSetBot, LocSetBot, LPBot))((llpset, e) =>
-          (llpset._1 ++ fun_table(e)._1._2._2, llpset._2 ++ target_table(e)._1._2._2,
+          (llpset._1 ++ fun_table(e)._2._2, llpset._2 ++ target_table(e)._2._2,
             llpset._3 + (EventFunctionTableLoc, e) + (EventTargetTableLoc, e))
         )
         val event_names = all_event_name.filterNot(_ == "__LOADEvent__").filterNot(_ == "__UNLOADEvent__")
-        val (lset_static, lpset_2) = h(GlobalLoc).map.foldLeft((LocSetBot, LPBot))((set, kv) =>
-          if (event_names.exists((e) => kv._1.startsWith(e)))
-            (set._1 ++ kv._2._1._1._1._2, set._2 + (GlobalLoc, kv._1))
+        val (lset_static, lpset_2) = h(GlobalLoc).getProps.foldLeft((LocSetBot, LPBot))((set, kv) =>
+          if (event_names.exists((e) => kv.startsWith(e)))
+            (set._1 ++ h(GlobalLoc)(kv)._1._1._2, set._2 + (GlobalLoc, kv))
           else
             set
         )
         (f ++ lset_static, t, lpset_1 ++ lpset_2)
 
       case _ =>
-        val (f,t) = (fun_table(name)._1._2._2 , target_table(name)._1._2._2)
+        val (f,t) = (fun_table(name)._2._2 , target_table(name)._2._2)
         val lpset_1 =  LPBot + (EventFunctionTableLoc, name) + (EventTargetTableLoc, name)
         val (lset_static, lpset_2) =
           if (name == "#TIME")
             (LocSetBot, LPBot)
           else {
             val event_name = all_event_name(all_event.indexOf(name))
-            h(GlobalLoc).map.foldLeft((LocSetBot, LPBot))((set, kv) =>
-              if (kv._1.startsWith(event_name))
-                (set._1 ++ kv._2._1._1._1._2, set._2 + (GlobalLoc, kv._1))
+            h(GlobalLoc).getProps.foldLeft((LocSetBot, LPBot))((set, kv) =>
+              if (kv.startsWith(event_name))
+                (set._1 ++ h(GlobalLoc)(kv)._1._1._2, set._2 + (GlobalLoc, kv))
               else
                 set
             )
@@ -525,7 +546,7 @@ class DOMModel(cfg: CFG) extends Model(cfg) {
     val LP_5 = AH.getThis_use(h, Value(lset_target))
 
     // event object
-    val LP_6 = (AH.NewObject_def ++ MouseEvent.instProps ++ KeyboardEvent.instProps).foldLeft(LPBot)((lpset, p) => lpset + ((l_event, p)))
+    val LP_6 = (AH.NewObject_def ++ MouseEvent.instProps ++ KeyboardEvent.instProps ++ TouchEvent.instProps).foldLeft(LPBot)((lpset, p) => lpset + ((l_event, p)))
     // arguments object
     val LP_7 = AH.NewArrayObject_def.foldLeft(LPBot)((lpset, p) => lpset + ((l_arg, p)))
     // arguments[0] = event
@@ -536,7 +557,7 @@ class DOMModel(cfg: CFG) extends Model(cfg) {
     // callee
     val LP_10 = LPSet((l_arg, "callee"))
     // because of PureLocal object is weak updated in edges, all the element are needed
-    val LP_11 = h(SinglePureLocalLoc).map.foldLeft(LPBot)((S, kv) => S + ((SinglePureLocalLoc, kv._1)))
+    val LP_11 = h(SinglePureLocalLoc).getProps.foldLeft(LPBot)((S, kv) => S + ((SinglePureLocalLoc, kv)))
     val LP_12 = LPSet(Set((ContextLoc, "3"), (ContextLoc, "4")))
     lpset_1 ++ LP_2 ++ LP_3 ++ LP_4 ++ LP_5 ++ LP_6 ++ LP_7 ++ LP_8 ++ LP_9 ++ LP_10 ++ LP_11 ++ LP_12
   }
@@ -552,36 +573,36 @@ class DOMModel(cfg: CFG) extends Model(cfg) {
     val lset_fun = name match {
       case "#ALL" =>
         val f = all_event.foldLeft(LocSetBot)((llset, e) =>
-          llset ++ fun_table(e)._1._2._2
+          llset ++ fun_table(e)._2._2
         )
-        val lset_static = h(GlobalLoc).map.foldLeft(LocSetBot)((lset, kv) =>
-          if (all_event_name.exists((e) => kv._1.startsWith(e)))
-            lset ++ kv._2._1._1._1._2
+        val lset_static = h(GlobalLoc).getProps.foldLeft(LocSetBot)((lset, kv) =>
+          if (all_event_name.exists((e) => kv.startsWith(e)))
+            lset ++ h(GlobalLoc)(kv)._1._1._2
           else
             lset
         )
         f ++ lset_static
       case "#NOT_LOAD_UNLOAD" =>
         val f = all_event.filterNot(_ == "#LOAD").filterNot(_ == "#UNLOAD").foldLeft(LocSetBot)((llset, e) =>
-          llset ++ fun_table(e)._1._2._2
+          llset ++ fun_table(e)._2._2
         )
         val event_names = all_event_name.filterNot(_ == "__LOADEvent__").filterNot(_ == "__UNLOADEvent__")
-        val lset_static = h(GlobalLoc).map.foldLeft(LocSetBot)((lset, kv) =>
-          if (event_names.exists((e) => kv._1.startsWith(e)))
-            lset ++ kv._2._1._1._1._2
+        val lset_static = h(GlobalLoc).getProps.foldLeft(LocSetBot)((lset, kv) =>
+          if (event_names.exists((e) => kv.startsWith(e)))
+            lset ++ h(GlobalLoc)(kv)._1._1._2
           else
             lset
         )
         f ++ lset_static
       case _ =>
-        val f = fun_table(name)._1._2._2
+        val f = fun_table(name)._2._2
         val lset_static =
           if (name == "#TIME")
             LocSetBot
           else {
             val event_name = all_event_name(all_event.indexOf(name))
-            h(GlobalLoc).map.foldLeft(LocSetBot)((lset, kv) =>
-              if (kv._1.startsWith(event_name)) lset ++ kv._2._1._1._1._2
+            h(GlobalLoc).getProps.foldLeft(LocSetBot)((lset, kv) =>
+              if (kv.startsWith(event_name)) lset ++ h(GlobalLoc)(kv)._1._1._2
               else lset
             )
           }
@@ -590,8 +611,8 @@ class DOMModel(cfg: CFG) extends Model(cfg) {
     lset_fun.foldLeft(map)((_m, l) => {
       if (BoolTrue <= PreHelper.IsCallable(h,l)) {
         _m.get(inst) match {
-          case None => _m + (inst -> h(l)("@function")._1._3.toSet)
-          case Some(set) => _m + (inst -> (set ++ h(l)("@function")._1._3.toSet))
+          case None => _m + (inst -> h(l)("@function")._3.toSet)
+          case Some(set) => _m + (inst -> (set ++ h(l)("@function")._3.toSet))
         }
       } else {
         _m

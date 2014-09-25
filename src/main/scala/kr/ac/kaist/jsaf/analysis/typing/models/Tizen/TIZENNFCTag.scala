@@ -43,7 +43,7 @@ object TIZENNFCTag extends Tizen {
     Map(
       ("tizen.NFCTag.readNDEF" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -84,7 +84,7 @@ object TIZENNFCTag extends Tizen {
         )),
       ("tizen.NFCTag.writeNDEF" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -134,7 +134,7 @@ object TIZENNFCTag extends Tizen {
         )),
       ("tizen.NFCTag.transceive" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -165,7 +165,7 @@ object TIZENNFCTag extends Tizen {
                   es__
                 }
                 case _ => {
-                  val vi = Helper.Proto(h_2, ll, AbsString.alpha("@default_number"))
+                  val vi = Helper.Proto(h_2, ll, AbsString.alpha(Str_default_number))
                   val esi =
                     if (vi._1._4 </ NumTop) Set[WebAPIException](TypeMismatchError)
                     else TizenHelper.TizenExceptionBot

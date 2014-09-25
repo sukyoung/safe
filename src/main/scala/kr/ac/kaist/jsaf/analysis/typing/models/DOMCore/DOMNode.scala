@@ -13,11 +13,13 @@ import scala.collection.mutable.{Map=>MMap, HashMap=>MHashMap}
 import kr.ac.kaist.jsaf.analysis.typing.domain._
 import kr.ac.kaist.jsaf.analysis.typing.domain.{BoolFalse => F, BoolTrue => T}
 import kr.ac.kaist.jsaf.analysis.typing.models._
+import kr.ac.kaist.jsaf.analysis.typing.models.DOMHtml.{HTMLDocument, HTMLTopElement}
 import org.w3c.dom.Node
 import kr.ac.kaist.jsaf.analysis.cfg.{CFG, CFGExpr, InternalError, FunctionId}
 import kr.ac.kaist.jsaf.analysis.typing._
 import scala.Some
 import kr.ac.kaist.jsaf.analysis.typing.AddressManager._
+import kr.ac.kaist.jsaf.Shell
 
 object DOMNode extends DOM {
   private val name = "Node"
@@ -38,6 +40,7 @@ object DOMNode extends DOM {
   /* predefined locatoins */
   val loc_cons = newSystemRecentLoc(name + "Cons")
   val loc_proto = newSystemRecentLoc(name + "Proto")
+  val loc_ins = newSystemRecentLoc(name + "Ins")
 
   /* constructor or object*/
   private val prop_cons: List[(String, AbsProperty)] = List(
@@ -94,12 +97,47 @@ object DOMNode extends DOM {
     ("contains",                AbsBuiltinFunc("DOMNode.contains", 1))
   )
 
+  /* prorotype */
+  private val prop_proto2: List[(String, AbsProperty)] = List(
+    ("@class", AbsConstValue(PropValue(AbsString.alpha("Object")))),
+    ("@proto", AbsConstValue(PropValue(ObjectValue(Value(ObjProtoLoc), F, F, F)))),
+    ("@extensible", AbsConstValue(PropValue(BoolTrue))),
+    ("insertBefore",            AbsBuiltinFunc("DOMNode.insertBefore", 2)),
+    ("replaceChild",            AbsBuiltinFunc("DOMNode.replaceChild", 2)),
+    ("removeChild",             AbsBuiltinFunc("DOMNode.removeChild", 1)),
+    ("appendChild",             AbsBuiltinFunc("DOMNode.appendChild", 1)),
+    ("hasChildNodes",           AbsBuiltinFunc("DOMNode.hasChildNodes", 0)),
+    ("cloneNode",               AbsBuiltinFunc("DOMNode.cloneNode", 1)),
+    ("normalize",               AbsBuiltinFunc("DOMNode.normalize", 0)),
+    ("isSupported",             AbsBuiltinFunc("DOMNode.isSupported", 2)),
+    ("hasAttributes",           AbsBuiltinFunc("DOMNode.hasAttributes", 0)),
+    ("compareDocumentPosition", AbsBuiltinFunc("DOMNode.compareDocumentPosition", 1)),
+    ("isSameNode",              AbsBuiltinFunc("DOMNode.isSameNode", 1)),
+    ("lookupPrefix",            AbsBuiltinFunc("DOMNode.lookupPrefix", 1)),
+    ("isDefaultNamespace",      AbsBuiltinFunc("DOMNode.isDefaultNamespace", 1)),
+    ("lookupNamespaceURI",      AbsBuiltinFunc("DOMNode.lookupNamespaceURI", 1)),
+    ("isEqualNode",             AbsBuiltinFunc("DOMNode.isEqualNode", 1)),
+    ("getFeature",              AbsBuiltinFunc("DOMNode.getFeature", 2)),
+    ("setUserData",             AbsBuiltinFunc("DOMNode.setUserData", 3)),
+    ("getUserData",             AbsBuiltinFunc("DOMNode.getUserData", 1)),
+    // WHATWG DOM
+    ("contains",                AbsBuiltinFunc("DOMNode.contains", 1)),
+    ("firstChild", AbsConstValue(PropValue(ObjectValue(Value(HTMLTopElement.loc_ins_set) + Value(NullTop), F, T, T)))),
+    ("parentNode", AbsConstValue(PropValue(ObjectValue(Value(HTMLTopElement.loc_ins_set) + Value(NullTop), F, T, T)))),
+    ("lastChild", AbsConstValue(PropValue(ObjectValue(Value(HTMLTopElement.loc_ins_set) + Value(NullTop), F, T, T)))),
+    ("previousSibling", AbsConstValue(PropValue(ObjectValue(Value(HTMLTopElement.loc_ins_set) + Value(NullTop), F, T, T)))),
+    ("nextSibling", AbsConstValue(PropValue(ObjectValue(Value(HTMLTopElement.loc_ins_set) + Value(NullTop), F, T, T))))
+  )
+
+ 
   /* global */
   private val prop_global: List[(String, AbsProperty)] = List(
     (name, AbsConstValue(PropValue(ObjectValue(loc_cons, T, F, T))))
   )
 
-  def getInitList(): List[(Loc, List[(String, AbsProperty)])] = List(
+  def getInitList(): List[(Loc, List[(String, AbsProperty)])] = if(Shell.params.opt_Dommodel2) List(
+    (loc_cons, prop_cons), (loc_proto, prop_proto2), (GlobalLoc, prop_global)
+  ) else List(
     (loc_cons, prop_cons), (loc_proto, prop_proto), (GlobalLoc, prop_global)
   )
 
@@ -108,7 +146,10 @@ object DOMNode extends DOM {
       //TODO: not yet implemented
       ("DOMNode.insertBefore" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          if(Shell.params.opt_Dommodel2) 
+            ((Helper.ReturnStore(h, Value(HTMLTopElement.loc_ins_set)), ctx), (he, ctxe))
+          else {
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           /* arguments */
           val lset_new = getArgValue(h, ctx, args, "0")._2
           val ref = getArgValue(h, ctx, args, "1")
@@ -125,10 +166,14 @@ object DOMNode extends DOM {
             ((nullh, ctx), (he, ctxe))
           else 
             ((HeapBot, ContextBot), (he, ctxe))
+          }
         })),
       ("DOMNode.replaceChild" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          if(Shell.params.opt_Dommodel2) 
+            ((Helper.ReturnStore(h, Value(HTMLTopElement.loc_ins_set)), ctx), (he, ctxe))
+          else {
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           /* arguments */
           val lset_new = getArgValue(h, ctx, args, "0")._2
           val lset_old = getArgValue(h, ctx, args, "1")._2
@@ -196,10 +241,14 @@ object DOMNode extends DOM {
           }
           else
             ((HeapBot, ContextBot), (he, ctxe))
+          }
         })),
       ("DOMNode.removeChild" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          if(Shell.params.opt_Dommodel2) 
+            ((Helper.ReturnStore(h, Value(HTMLTopElement.loc_ins_set)), ctx), (he, ctxe))
+          else {
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           /* arguments */
           val lset_child = getArgValue(h, ctx, args, "0")._2
           if (!lset_this.isEmpty && !lset_child.isEmpty) {
@@ -208,20 +257,28 @@ object DOMNode extends DOM {
           }
           else
             ((HeapBot, ContextBot), (he, ctxe))
+          }
         })),
       ("DOMNode.appendChild" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           val lset_child = getArgValue(h, ctx, args, "0")._2
+          if(Shell.params.opt_Dommodel2) 
+            ((Helper.ReturnStore(h, Value(lset_child)), ctx), (he, ctxe))
+         else {
           val h_1 = DOMTree.appendChild(h, lset_this, lset_child)
           if (!lset_child.isEmpty && !lset_child.isEmpty)
             ((Helper.ReturnStore(h_1, Value(lset_child)), ctx), (he, ctxe))
           else
             ((HeapBot, ContextBot), (he, ctxe))
+          }
         })),
       ("DOMNode.hasChildNodes" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          if(Shell.params.opt_Dommodel2) 
+            ((Helper.ReturnStore(h, Value(BoolTop)), ctx), (he, ctxe))
+          else {
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           val b_return = lset_this.foldLeft[AbsBool](BoolBot)((b, l) => {
             val lset_child = Helper.Proto(h, l, AbsString.alpha("childNodes"))._2
             lset_child.foldLeft(b)((bb, ll) => {
@@ -239,28 +296,33 @@ object DOMNode extends DOM {
             ((Helper.ReturnStore(h, Value(b_return)), ctx), (he, ctxe))
           else
             ((HeapBot, ContextBot), (he, ctxe))
+          }
         })),
       ("DOMNode.cloneNode" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
           val addr1 = cfg.getAPIAddress(addr_env, 0)
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           /* arguments */
           val b_deep = Helper.toBoolean(getArgValue(h, ctx, args, "0"))
           if (b_deep </ BoolBot) {
+            if(Shell.params.opt_Dommodel2) 
+              ((Helper.ReturnStore(h, Value(HTMLTopElement.loc_ins_set)), ctx), (he, ctxe))
+            else {
             /* unsound, 'deep' arugment is ingnored */
             /* location for clone node */
             val l_r = addrToLoc(addr1, Recent)
             val (h_1, ctx_1)  = Helper.Oldify(h, ctx, addr1)
             /* this node only */
-            val o_node = lset_this.foldLeft(ObjBot)((o, l) => o + h_1(l))
+            val o_node = lset_this.foldLeft(Obj.bottom)((o, l) => o + h_1(l))
             val h_2 = h_1.update(l_r, o_node)
             /* The duplicate node has no parent; (parentNode is null.). */
             val h_3 = Helper.PropStore(h_2, l_r, AbsString.alpha("parentNode"), Value(NullTop))
             ((Helper.ReturnStore(h_3, Value(l_r)), ctx_1), (he, ctxe))
+            }
           }
           else
             ((HeapBot, ContextBot), (he, ctxe))
@@ -276,7 +338,10 @@ object DOMNode extends DOM {
           val s_feature = Helper.toString(Helper.toPrimitive_better(h, getArgValue(h, ctx, args, "0")))
           val s_version = Helper.toString(Helper.toPrimitive_better(h, getArgValue(h, ctx, args, "1")))
           if (s_feature </ StrBot || s_version </ StrBot)
-          /* imprecise semantic */
+
+          if(Shell.params.opt_Dommodel2) 
+            ((Helper.ReturnStore(h, Value(BoolTop)), ctx), (he, ctxe))
+          else /* imprecise semantic */
             ((Helper.ReturnStore(h, Value(BoolTop)), ctx), (he, ctxe))
           else
             ((HeapBot, ContextBot), (he, ctxe))
@@ -299,7 +364,7 @@ object DOMNode extends DOM {
         })),
       ("DOMNode.isSameNode" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           /* arguments */
           val v_other = getArgValue(h, ctx, args, "0")
           if (v_other </ ValueBot) {
@@ -384,7 +449,10 @@ object DOMNode extends DOM {
         })),
       ("DOMNode.contains" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          if(Shell.params.opt_Dommodel2) 
+            ((Helper.ReturnStore(h, Value(BoolTop)), ctx), (he, ctxe))
+          else {
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           /* arguments */
           val other = getArgValue(h, ctx, args, "0") 
           val nullargcheck = if(other._1._2 </ NullBot) Value(BoolFalse) else ValueBot
@@ -405,6 +473,7 @@ object DOMNode extends DOM {
             ((Helper.ReturnStore(h, nullargcheck), ctx), (he, ctxe))
           else
             ((HeapBot, ContextBot), (he, ctxe))
+          }
         }))
     )
   }
@@ -414,7 +483,7 @@ object DOMNode extends DOM {
       ("DOMNode.insertBefore" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
           val PureLocalLoc = cfg.getPureLocal(cp)
-          val lset_this = h(PureLocalLoc)("@this")._1._2._2
+          val lset_this = h(PureLocalLoc)("@this")._2._2
           /* arguments */
           val lset_new = getArgValue_pre(h, ctx, args, "0", PureLocalLoc)._2
           val lset_ref = getArgValue_pre(h, ctx, args, "1", PureLocalLoc)._2
@@ -463,7 +532,7 @@ object DOMNode extends DOM {
       ("DOMNode.replaceChild" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
           val PureLocalLoc = cfg.getPureLocal(cp)
-          val lset_this = h(PureLocalLoc)("@this")._1._2._2
+          val lset_this = h(PureLocalLoc)("@this")._2._2
           /* arguments */
           val lset_new = getArgValue_pre(h, ctx, args, "0", PureLocalLoc)._2
           val lset_old = getArgValue_pre(h, ctx, args, "1", PureLocalLoc)._2
@@ -508,7 +577,7 @@ object DOMNode extends DOM {
       ("DOMNode.removeChild" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
           val PureLocalLoc = cfg.getPureLocal(cp)
-          val lset_this = h(PureLocalLoc)("@this")._1._2._2
+          val lset_this = h(PureLocalLoc)("@this")._2._2
           /* arguments */
           val lset_child = getArgValue_pre(h, ctx, args, "0", PureLocalLoc)._2
           if (!lset_child.isEmpty) {
@@ -556,7 +625,7 @@ object DOMNode extends DOM {
       ("DOMNode.appendChild" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
           val PureLocalLoc = cfg.getPureLocal(cp)
-          val lset_this = h(PureLocalLoc)("@this")._1._2._2
+          val lset_this = h(PureLocalLoc)("@this")._2._2
           /* arguments */
           val lset_child = getArgValue_pre(h, ctx, args, "0", PureLocalLoc)._2
           if (!lset_child.isEmpty) {
@@ -583,7 +652,7 @@ object DOMNode extends DOM {
       ("DOMNode.hasChildNodes" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
           val PureLocalLoc = cfg.getPureLocal(cp)
-          val lset_this = h(PureLocalLoc)("@this")._1._2._2
+          val lset_this = h(PureLocalLoc)("@this")._2._2
           val b_return = lset_this.foldLeft[AbsBool](BoolBot)((b, l) => {
             val lset_child = PreHelper.Proto(h, l, AbsString.alpha("childNodes"))._2
             lset_child.foldLeft(b)((bb, ll) => {
@@ -605,12 +674,12 @@ object DOMNode extends DOM {
       ("DOMNode.cloneNode" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
           val PureLocalLoc = cfg.getPureLocal(cp)
-          val lset_env = h(PureLocalLoc)("@env")._1._2._2
+          val lset_env = h(PureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
           val addr1 = cfg.getAPIAddress(addr_env, 0)
-          val lset_this = h(PureLocalLoc)("@this")._1._2._2
+          val lset_this = h(PureLocalLoc)("@this")._2._2
           /* arguments */
           val b_deep = PreHelper.toBoolean(getArgValue_pre(h, ctx, args, "0", PureLocalLoc))
           if (b_deep </ BoolBot) {
@@ -619,7 +688,7 @@ object DOMNode extends DOM {
             val l_r = addrToLoc(addr1, Recent)
             val (h_1, ctx_1)  = PreHelper.Oldify(h, ctx, addr1)
             /* this node only */
-            val o_node = lset_this.foldLeft(ObjBot)((o, l) => o + h_1(l))
+            val o_node = lset_this.foldLeft(Obj.bottom)((o, l) => o + h_1(l))
             val h_2 = h_1.update(l_r, o_node)
             ((PreHelper.ReturnStore(h_2, PureLocalLoc, Value(l_r)), ctx_1), (he, ctxe))
           }
@@ -665,7 +734,7 @@ object DOMNode extends DOM {
       ("DOMNode.isSameNode" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
           val PureLocalLoc = cfg.getPureLocal(cp)
-          val lset_this = h(PureLocalLoc)("@this")._1._2._2
+          val lset_this = h(PureLocalLoc)("@this")._2._2
           /* arguments */
           val v_other = getArgValue_pre(h, ctx, args, "0", PureLocalLoc)
           if (v_other </ ValueBot) {
@@ -763,7 +832,7 @@ object DOMNode extends DOM {
       //TODO: not yet implemented
       ("DOMNode.insertBefore" -> (
         (h: Heap, ctx: Context, cfg: CFG, fun: String, args: CFGExpr, fid: FunctionId) => {
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           /* arguments */
           val lset_new = getArgValue(h, ctx, args, "0")._2
           val lset_ref = getArgValue(h, ctx, args, "1")._2
@@ -811,7 +880,7 @@ object DOMNode extends DOM {
         })),
       ("DOMNode.replaceChild" -> (
         (h: Heap, ctx: Context, cfg: CFG, fun: String, args: CFGExpr, fid: FunctionId) => {
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           /* arguments */
           val lset_new = getArgValue(h, ctx, args, "0")._2
           val lset_old = getArgValue(h, ctx, args, "1")._2
@@ -852,7 +921,7 @@ object DOMNode extends DOM {
         })),
       ("DOMNode.removeChild" -> (
         (h: Heap, ctx: Context, cfg: CFG, fun: String, args: CFGExpr, fid: FunctionId) => {
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           /* arguments */
           val lset_child = getArgValue(h, ctx, args, "0")._2
           if (!lset_child.isEmpty) {
@@ -894,7 +963,7 @@ object DOMNode extends DOM {
         })),
       ("DOMNode.appendChild" -> (
         (h: Heap, ctx: Context, cfg: CFG, fun: String, args: CFGExpr, fid: FunctionId) => {
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           /* arguments */
           val lset_child = getArgValue(h, ctx, args, "0")._2
           if (!lset_child.isEmpty) {
@@ -923,15 +992,15 @@ object DOMNode extends DOM {
         })),
       ("DOMNode.cloneNode" -> (
         (h: Heap, ctx: Context, cfg: CFG, fun: String, args: CFGExpr, fid: FunctionId) => {
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           //val l_r = addrToLoc(addr1, Recent)
           //val LP1 = AccessHelper.Oldify_def(h, ctx, addr1)
           val LP1 = set_addr.foldLeft(LPBot)((lp, a) =>
             lp ++ AccessHelper.Oldify_def(h, ctx, cfg.getAPIAddress((fid, a), 0)))
           val LP2 = lset_this.foldLeft(LPBot)((lpset, l) => {
-            val prop_set = h(l).map.keySet
+            val prop_set = h(l).getProps
             prop_set.foldLeft(lpset)((lpset1, prop) =>
               lpset1  ++ set_addr.foldLeft(LPBot)((lp, a) => lp + (addrToLoc(cfg.getAPIAddress((fid, a), 0),Recent), prop)))
           })
@@ -993,7 +1062,7 @@ object DOMNode extends DOM {
       //TODO: not yet implemented
       ("DOMNode.insertBefore" -> (
         (h: Heap, ctx: Context, cfg: CFG, fun: String, args: CFGExpr, fid: FunctionId) => {
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           /* arguments */
           val lset_new = getArgValue(h, ctx, args, "0")._2
           val lset_ref = getArgValue(h, ctx, args, "1")._2
@@ -1048,7 +1117,7 @@ object DOMNode extends DOM {
         })),
       ("DOMNode.replaceChild" -> (
         (h: Heap, ctx: Context, cfg: CFG, fun: String, args: CFGExpr, fid: FunctionId) => {
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           /* arguments */
           val lset_new = getArgValue(h, ctx, args, "0")._2
           val lset_old = getArgValue(h, ctx, args, "1")._2
@@ -1096,7 +1165,7 @@ object DOMNode extends DOM {
         })),
       ("DOMNode.removeChild" -> (
         (h: Heap, ctx: Context, cfg: CFG, fun: String, args: CFGExpr, fid: FunctionId) => {
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           /* arguments */
           val lset_child = getArgValue(h, ctx, args, "0")._2
           val LP1 = getArgValue_use(h, ctx, args, "0")
@@ -1145,7 +1214,7 @@ object DOMNode extends DOM {
         })),
       ("DOMNode.appendChild" -> (
         (h: Heap, ctx: Context, cfg: CFG, fun: String, args: CFGExpr, fid: FunctionId) => {
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           /* arguments */
           val lset_child = getArgValue(h, ctx, args, "0")._2
           val LP1 = getArgValue_use(h, ctx, args, "0")
@@ -1174,7 +1243,7 @@ object DOMNode extends DOM {
         })),
       ("DOMNode.hasChildNodes" -> (
         (h: Heap, ctx: Context, cfg: CFG, fun: String, args: CFGExpr, fid: FunctionId) => {
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           val LP1 = lset_this.foldLeft(LPBot)((lpset, l) => {
             val lset_child = Helper.Proto(h, l, AbsString.alpha("childNodes"))._2
             val LP1_1 = AccessHelper.Proto_use(h, l, AbsString.alpha("childNodes"))
@@ -1186,15 +1255,15 @@ object DOMNode extends DOM {
         })),
       ("DOMNode.cloneNode" -> (
         (h: Heap, ctx: Context, cfg: CFG, fun: String, args: CFGExpr, fid: FunctionId) => {
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           //val l_r = addrToLoc(addr1, Recent)
           //val LP1 = AccessHelper.Oldify_def(h, ctx, addr1)
           val LP1 = set_addr.foldLeft(LPBot)((lp, a) =>
             lp ++ AccessHelper.Oldify_use(h, ctx, cfg.getAPIAddress((fid, a), 0)))
           val LP2 = lset_this.foldLeft(LPBot)((lpset, l) => {
-            val prop_set = h(l).map.keySet
+            val prop_set = h(l).getProps
             prop_set.foldLeft(lpset)((lpset1, prop) => lpset1 + (l, prop))
           })
           LP1 ++ LP2 ++ getArgValue_use(h, ctx, args, "0") +
@@ -1274,9 +1343,24 @@ object DOMNode extends DOM {
       ("localName",   PropValue(ObjectValue(AbsString.alpha(if(localName != null) localName else ""), F, T, T))),
       // Introduced in DOM Level 3
       //    ("baseURI",   PropValue(ObjectValue(AbsString.alpha(if(baseURI!=null) baseURI else ""), F, T, T))),
-      ("textContent",   PropValue(ObjectValue(AbsString.alpha(if(textContent!=null) textContent else ""), T, T, T))))
-    // TODO: 'OwnerDocument' in DOM Level 2, 'baseURI' in DOM Level 3
+      ("textContent",   PropValue(ObjectValue(AbsString.alpha(if(textContent!=null) textContent else ""), T, T, T))),
+      ("ownerDocument",   PropValue(ObjectValue(Value(HTMLDocument.GlobalDocumentLoc), F, T, T)))
+      )
+    // 'baseURI' in DOM Level 3
   }
+  
+  def getInsList2(): List[(String, AbsProperty)] = List(
+    ("nodeName", AbsConstValue(PropValue(ObjectValue(Value(StrTop), F, T, T)))),
+    ("nodeValue", AbsConstValue(PropValue(ObjectValue(Value(StrTop), F, T, T)))),
+    ("nodeType", AbsConstValue(PropValue(ObjectValue(Value(NumTop), F, T, T)))),
+    ("namespaceURI", AbsConstValue(PropValue(ObjectValue(Value(StrTop), F, T, T)))),
+    ("childNodes", AbsConstValue(PropValue(ObjectValue(Value(DOMNodeList.loc_ins2), F, T, T)))),
+    ("attributes", AbsConstValue(PropValue(ObjectValue(Value(DOMNamedNodeMap.loc_ins2), F, T, T)))),
+    ("ownerDocument", AbsConstValue(PropValue(ObjectValue(Value(HTMLDocument.loc_ins), F, T, T)))),
+    ("prefix", AbsConstValue(PropValue(ObjectValue(Value(StrTop), T, T, T)))),
+    ("localName", AbsConstValue(PropValue(ObjectValue(Value(StrTop), F, T, T)))),
+    ("textContext", AbsConstValue(PropValue(ObjectValue(Value(StrTop), T, T, T))))
+  )
 
   def getInsList(node: Node, ownerDocument: PropValue): List[(String, PropValue)] = getInsList(node) :+
     ("ownerDocument", ownerDocument)
@@ -1299,6 +1383,7 @@ object DOMNode extends DOM {
     ("localName", localName),
     ("textContent", textContent))
   // TODO: 'baseURI' in DOM Level 3
+  
 
 
   def getInsList(nodeName: PropValue, nodeValue: PropValue, nodeType: PropValue, parentNode: PropValue, childNodes: PropValue,

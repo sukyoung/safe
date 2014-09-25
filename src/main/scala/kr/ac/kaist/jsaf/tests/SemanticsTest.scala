@@ -1,5 +1,5 @@
 /*******************************************************************************
-    Copyright (c) 2012-2013, S-Core, KAIST.
+    Copyright (c) 2012-2014, S-Core, KAIST.
     All rights reserved.
 
     Use is subject to license terms.
@@ -12,11 +12,13 @@ import java.io.File
 import java.io.OutputStream
 import java.io.PrintStream
 import scala.collection.immutable.HashMap
+import scala.collection.immutable.HashSet
 import junit.framework.Assert.fail
 import junit.framework.TestCase
 import kr.ac.kaist.jsaf.analysis.cfg.CFG
 import kr.ac.kaist.jsaf.analysis.cfg.CFGBuilder
 import kr.ac.kaist.jsaf.analysis.cfg.LExit
+import kr.ac.kaist.jsaf.analysis.cfg._
 import kr.ac.kaist.jsaf.analysis.typing._
 import kr.ac.kaist.jsaf.analysis.typing.domain._
 import kr.ac.kaist.jsaf.analysis.typing.models.{ModelManager, BuiltinModel}
@@ -150,30 +152,32 @@ object SemanticsTest {
       else
         typing.readTable(((typing.cfg.getGlobalFId, LExit), CallContext.globalCallContext))
     val heap = state._1
-    val map: Map[String, (PropValue, Absent)] =
+    val obj = heap(GlobalLoc)
+    val map: Set[String] =
       try {
-        heap(GlobalLoc).asInstanceOf[Obj].map.toMap
+        obj.getProps
       } catch {
-        case _ =>
+        case _: Throwable =>
           fail("Global object is not found at program exit node")
-          HashMap()
+          HashSet()
       }
 
     // collect result/expect values
     var resultMap: Map[Int, Value] = HashMap()
     var expectMap: Map[Int, Value] = HashMap()
 
-    for ((prop, pvalue) <- map) {
+    for (prop <- map) {
       try {
+        val pvalue = obj(prop)
         if (prop.startsWith(RESULT)) {
           val index = prop.substring(RESULT.length).toInt
-          resultMap += (index -> pvalue._1._1._1)
+          resultMap += (index -> pvalue._1._1)
         } else if (prop.startsWith(EXPECT)) {
           val index = prop.substring(EXPECT.length).toInt
-          expectMap += (index -> pvalue._1._1._1)
+          expectMap += (index -> pvalue._1._1)
         }
       } catch {
-        case _ => fail("Invalid result/expect variable found: " + prop.toString)
+        case _: Throwable => fail("Invalid result/expect variable found: " + prop.toString)
       }
     }
 

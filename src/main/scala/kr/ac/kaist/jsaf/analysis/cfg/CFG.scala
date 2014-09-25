@@ -16,7 +16,7 @@ import kr.ac.kaist.jsaf.analysis.typing._
 import kr.ac.kaist.jsaf.analysis.typing.domain._
 import kr.ac.kaist.jsaf.analysis.typing.domain.State
 import kr.ac.kaist.jsaf.analysis.typing.AddressManager._
-
+import kr.ac.kaist.jsaf.nodes.IRId
 
 // Node Label definition
 abstract class Label
@@ -71,6 +71,16 @@ class CFG {
   def getFuncInfo(fid: FunctionId) = funcMap(fid)._6
   def getFunctionIds = funcMap.keySet
 
+// map from fids to captured variables
+  private var fid2captMap: Map[FunctionId, List[IRId]] = HashMap()
+  def addCaptured(fid: FunctionId, captured: IRId) = fid2captMap.get(fid) match {
+    case Some(ids) => fid2captMap += (fid -> (ids :+ captured))
+    case _ => fid2captMap += (fid -> List(captured))
+  }
+  def getCaptFromFid(fid: FunctionId): List[IRId] = fid2captMap.get(fid) match {
+    case Some(captured) => captured
+    case _ => List()
+  }
 
   // #PureLocal location for each function.
   // It is 1-callsite context-sensitive only for built-in calls.
@@ -303,6 +313,27 @@ class CFG {
     preds_exc_ac_ac
   }
 
+  // normal predecessor + exception predecessor + aftercallFromCall predecessor + aftercatchFromCall predecessor
+  // + loop node predessor
+  def getAllPred_loop(node: Node): Set[Node] = {
+    val preds = getSet(predMap, node) ++ getSet(loopPredMap, node) ++ getSet(loopIterPredMap, node)++getSet(loopBreakPredMap, node)++
+                getSet(loopReturnPredMap, node)++getSet(loopOutPredMap, node)++getSet(loopCondPredMap, node)
+
+    val preds_exc = excPredMap.get(node) match {
+      case Some(n) => preds ++ n
+      case None => preds
+    }
+    val preds_exc_ac = callFromAftercallMap.get(node) match {
+      case Some(n) => preds_exc + n
+      case None => preds_exc
+    }
+    val preds_exc_ac_ac = callFromAftercatchMap.get(node) match {
+      case Some(n) => preds_exc_ac + n
+      case None => preds_exc_ac
+    }
+    preds_exc_ac_ac
+  }
+
   private var callBlock: Set[Node] = HashSet()
   private var aftercallBlock: Set[Node] = HashSet()
   private var aftercatchBlock: Set[Node] = HashSet()
@@ -385,6 +416,8 @@ class CFG {
 
   def getAPIAddress(key: (FunctionId, Address), index: Int): Address = AddressManager.getAPIAddress(key, 0, index)
   def getAPIAddress(key: (FunctionId, Address), instId: Int, index: Int): Address = AddressManager.getAPIAddress(key, instId, index)
+  // locclone
+  def getAPIAddress(key: ControlPoint, instId: Int, index: Int, dummy: Int = 0): Address = AddressManager.getAPIAddress(key, instId, index, dummy)
 
   def getFuncCount = funcCount
 
@@ -466,7 +499,12 @@ class CFG {
 
   def setUserFuncCount(): Unit = userFuncCount = funcCount
   def getUserFuncCount = userFuncCount
-  def isUserFunction(fid: FunctionId): Boolean = (fid < userFuncCount) && (fid != FIdTop)
+  // def isUserFunction(fid: FunctionId): Boolean = (fid < userFuncCount) && (fid != FIdTop)
+  def isUserFunction(fid: FunctionId): Boolean = {
+    val filename = getFuncInfo(fid).getSpan().begin.getFileName()
+    if(filename.endsWith("__builtin__.js") || filename.endsWith("__dom__.js") || filename.endsWith("__input__.js")) { false }
+    else { (fid < userFuncCount) && (fid != FIdTop) }
+  }
 
   def newFunction(argsName: ArgumentsName, args: ArgVars, locals: LocalVars, name: String, info: Info): FunctionId = {
     // set-up function information

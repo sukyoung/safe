@@ -81,7 +81,7 @@ object TIZENdatasync extends Tizen {
     ("@proto", AbsConstValue(PropValue(ObjectValue(BuiltinArray.ProtoLoc, F, F, F)))),
     ("@extensible", AbsConstValue(PropValue(T))),
     ("length", AbsConstValue(PropValue(ObjectValue(UInt, T, F, F)))),
-    ("@default_number", AbsConstValue(PropValue(ObjectValue(Value(loc_syncservinfo), T, T, T))))
+    (Str_default_number, AbsConstValue(PropValue(ObjectValue(Value(loc_syncservinfo), T, T, T))))
   )
 
   private val prop_syncservinfo_ins: List[(String, AbsProperty)] = List(
@@ -125,9 +125,11 @@ object TIZENdatasync extends Tizen {
           val v = getArgValue(h, ctx, args, "0")
           val n_arglen = Operator.ToUInt32(getArgValue(h, ctx, args, "length"))
           val es =
-            if (n_arglen == 0)
-              Set[WebAPIException](TypeMismatchError)
-            else TizenHelper.TizenExceptionBot
+            AbsNumber.getUIntSingle(n_arglen) match {
+	      case Some(n) if n == 0 =>
+                Set[WebAPIException](TypeMismatchError)
+              case _ => TizenHelper.TizenExceptionBot
+            }
           val (b_1, es_1) = TizenHelper.instanceOf(h, v, Value(TIZENSyncProfileInfo.loc_proto))
           val es_2 =
             if (b_1._1._3 <= F)
@@ -146,9 +148,11 @@ object TIZENdatasync extends Tizen {
           val v = getArgValue(h, ctx, args, "0")
           val n_arglen = Operator.ToUInt32(getArgValue(h, ctx, args, "length"))
           val es =
-            if (n_arglen == 0)
-              Set[WebAPIException](TypeMismatchError)
-            else TizenHelper.TizenExceptionBot
+            AbsNumber.getUIntSingle(n_arglen) match {
+	      case Some(n) if n == 0 =>
+                Set[WebAPIException](TypeMismatchError)
+              case _ => TizenHelper.TizenExceptionBot
+            }
           val (b_1, es_1) = TizenHelper.instanceOf(h, v, Value(TIZENSyncProfileInfo.loc_proto))
           val es_2 =
             if (b_1._1._3 <= F)
@@ -164,9 +168,11 @@ object TIZENdatasync extends Tizen {
           val v = getArgValue(h, ctx, args, "0")
           val n_arglen = Operator.ToUInt32(getArgValue(h, ctx, args, "length"))
           val es =
-            if (n_arglen == 0)
-              Set[WebAPIException](TypeMismatchError)
-            else TizenHelper.TizenExceptionBot
+            AbsNumber.getUIntSingle(n_arglen) match {
+	      case Some(n) if n == 0 =>
+                Set[WebAPIException](TypeMismatchError)
+              case _ => TizenHelper.TizenExceptionBot
+            }
           val es_1 =
             if (v._1._5 </ StrTop)
               Set[WebAPIException](TypeMismatchError)
@@ -192,7 +198,7 @@ object TIZENdatasync extends Tizen {
         )),
       ("tizen.datasync.get" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -202,14 +208,16 @@ object TIZENdatasync extends Tizen {
           val v = getArgValue(h_1, ctx_1, args, "0")
           val n_arglen = Operator.ToUInt32(getArgValue(h_1, ctx_1, args, "length"))
           val es =
-            if (n_arglen == 0)
-              Set[WebAPIException](TypeMismatchError)
-            else TizenHelper.TizenExceptionBot
+            AbsNumber.getUIntSingle(n_arglen) match {
+	      case Some(n) if n == 0 =>
+                Set[WebAPIException](TypeMismatchError)
+              case _ => TizenHelper.TizenExceptionBot
+            }
           val es_1 =
             if (v._1._5 </ StrTop)
               Set[WebAPIException](TypeMismatchError)
             else TizenHelper.TizenExceptionBot
-          val o_new = ObjEmpty.
+          val o_new = Obj.empty.
             update("@class", PropValue(AbsString.alpha("Object"))).
             update("@proto", PropValue(ObjectValue(Value(TIZENSyncProfileInfo.loc_proto), F, F, F))).
             update("@extensible", PropValue(T)).
@@ -225,7 +233,7 @@ object TIZENdatasync extends Tizen {
         )),
       ("tizen.datasync.getAll" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -236,7 +244,7 @@ object TIZENdatasync extends Tizen {
           val (h_1, ctx_1) = Helper.Oldify(h, ctx, addr1)
           val (h_2, ctx_2) = Helper.Oldify(h_1, ctx_1, addr2)
 
-          val o_new = ObjEmpty.
+          val o_new = Obj.empty.
             update("@class", PropValue(AbsString.alpha("Object"))).
             update("@proto", PropValue(ObjectValue(Value(TIZENSyncProfileInfo.loc_proto), F, F, F))).
             update("@extensible", PropValue(T)).
@@ -246,7 +254,7 @@ object TIZENdatasync extends Tizen {
             update("serviceInfo", PropValue(ObjectValue(Value(TIZENdatasync.loc_syncservinfoarr), F, T, T)))
           val h_3 = h_2.update(l_r1, o_new)
           val o_arr = Helper.NewArrayObject(UInt)
-          val o_arr2 = o_arr.update("@default_number", PropValue(ObjectValue(Value(l_r1), T, T, T)))
+          val o_arr2 = o_arr.update(Str_default_number, PropValue(ObjectValue(Value(l_r1), T, T, T)))
           val h_4 = h_3.update(l_r2, o_arr2)
           val est = Set[WebAPIException](SecurityError, UnknownError, NotSupportedError)
           val (h_e, ctx_e) = TizenHelper.TizenRaiseException(h, ctx, est)
@@ -255,7 +263,7 @@ object TIZENdatasync extends Tizen {
         )),
       ("tizen.datasync.startSync" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -340,9 +348,11 @@ object TIZENdatasync extends Tizen {
           val v = getArgValue(h, ctx, args, "0")
           val n_arglen = Operator.ToUInt32(getArgValue(h, ctx, args, "length"))
           val es =
-            if (n_arglen == 0)
-              Set[WebAPIException](TypeMismatchError)
-            else TizenHelper.TizenExceptionBot
+            AbsNumber.getUIntSingle(n_arglen) match {
+	      case Some(n) if n == 0 =>
+                Set[WebAPIException](TypeMismatchError)
+              case _ => TizenHelper.TizenExceptionBot
+            }
           val es_1 =
             if (v._1._5 </ StrTop)
               Set[WebAPIException](TypeMismatchError)
@@ -354,7 +364,7 @@ object TIZENdatasync extends Tizen {
         )),
       ("tizen.datasync.getLastSyncStatistics" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -364,15 +374,17 @@ object TIZENdatasync extends Tizen {
           val v = getArgValue(h_1, ctx_1, args, "0")
           val n_arglen = Operator.ToUInt32(getArgValue(h_1, ctx_1, args, "length"))
           val es =
-            if (n_arglen == 0)
-              Set[WebAPIException](TypeMismatchError)
-            else TizenHelper.TizenExceptionBot
+            AbsNumber.getUIntSingle(n_arglen) match {
+	      case Some(n) if n == 0 =>
+                Set[WebAPIException](TypeMismatchError)
+              case _ => TizenHelper.TizenExceptionBot
+            }
           val es_1 =
             if (v._1._5 </ StrTop)
               Set[WebAPIException](TypeMismatchError)
             else TizenHelper.TizenExceptionBot
           val o_arr = Helper.NewArrayObject(UInt)
-          val o_arr2 = o_arr.update("@default_number", PropValue(ObjectValue(Value(TIZENdatasync.loc_syncstats), T, T, T)))
+          val o_arr2 = o_arr.update(Str_default_number, PropValue(ObjectValue(Value(TIZENdatasync.loc_syncstats), T, T, T)))
           val h_2 = h_1.update(l_r1, o_arr2)
           val est = Set[WebAPIException](SecurityError, UnknownError, NotSupportedError, NotFoundError)
           val (h_e, ctx_e) = TizenHelper.TizenRaiseException(h, ctx, es ++ es_1 ++ est)

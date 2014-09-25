@@ -20,6 +20,10 @@ Current target function: IdleTask\n\
 DONE\n\
 \n\
 \n\
+Current target function: Scheduler\n\
+DONE\n\
+\n\
+\n\
 Current target function: Scheduler.prototype.addIdleTask<>funexpr\n\
 DONE\n\
 \n\
@@ -36,4 +40,8 @@ Current target function: TaskControlBlock\n\
 \n\
 \n\
 Current target function: TaskControlBlock\n\
+DONE\n\
+\n\
+\n\
+Current target function: TaskControlBlock.prototype.setRunning<>funexpr\n\
 DONE\n\

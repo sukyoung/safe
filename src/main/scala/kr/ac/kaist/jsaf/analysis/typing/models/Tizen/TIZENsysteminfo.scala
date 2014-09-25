@@ -106,7 +106,7 @@ object TIZENsysteminfo extends Tizen {
     ("@proto", AbsConstValue(PropValue(ObjectValue(BuiltinArray.ProtoLoc, F, F, F)))),
     ("@extensible", AbsConstValue(PropValue(T))),
     ("length", AbsConstValue(PropValue(ObjectValue(UInt, T, F, F)))),
-    ("@default_number", AbsConstValue(PropValue(ObjectValue(Value(loc_sysinfostorunit), T, T, T))))
+    (Str_default_number, AbsConstValue(PropValue(ObjectValue(Value(loc_sysinfostorunit), T, T, T))))
   )
 
   private val prop_sysinfodisplay_ins: List[(String, AbsProperty)] = List(
@@ -290,7 +290,7 @@ object TIZENsysteminfo extends Tizen {
         )),
       ("tizen.systeminfo.getPropertyValue" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -317,8 +317,8 @@ object TIZENsysteminfo extends Tizen {
               Set[WebAPIException](TypeMismatchError)
             else TizenHelper.TizenExceptionBot
           val o_arr = v_1.pvalue.strval.getAbsCase match {
-            case AbsBot => ObjBot
-            case _ if v_1.pvalue.strval.isAllNums => ObjBot
+            case AbsBot => Obj.bottom
+            case _ if v_1.pvalue.strval.isAllNums => Obj.bottom
             case _ => v_1.pvalue.strval.gamma match {
               case None =>
                 Helper.NewArrayObject(AbsNumber.alpha(1)).
@@ -330,7 +330,7 @@ object TIZENsysteminfo extends Tizen {
                   LocSet(TIZENsysteminfo.loc_sysinfocellnetwork) ++ LocSet(TIZENsysteminfo.loc_sysinfosim) ++
                   LocSet(TIZENsysteminfo.loc_sysinfoperipheral)), T, T, T)))
               case Some(vs) =>
-                vs.foldLeft[Obj](ObjBot)((r, v) => {
+                vs.foldLeft[Obj](Obj.bottom)((r, v) => {
                   r + (v match {
                     case "BATTERY" =>
                       Helper.NewArrayObject(AbsNumber.alpha(1)).
@@ -406,7 +406,7 @@ object TIZENsysteminfo extends Tizen {
         )),
       ("tizen.systeminfo.addPropertyValueChangeListener" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -430,8 +430,8 @@ object TIZENsysteminfo extends Tizen {
               Set[WebAPIException](TypeMismatchError)
             else TizenHelper.TizenExceptionBot
           val o_arr = v_1.pvalue.strval.getAbsCase match {
-            case AbsBot => ObjBot
-            case _ if v_1.pvalue.strval.isAllNums => ObjBot
+            case AbsBot => Obj.bottom
+            case _ if v_1.pvalue.strval.isAllNums => Obj.bottom
             case _ => v_1.pvalue.strval.gamma match {
               case None =>
                 Helper.NewArrayObject(AbsNumber.alpha(1)).
@@ -443,7 +443,7 @@ object TIZENsysteminfo extends Tizen {
                   LocSet(TIZENsysteminfo.loc_sysinfocellnetwork) ++ LocSet(TIZENsysteminfo.loc_sysinfosim) ++
                   LocSet(TIZENsysteminfo.loc_sysinfoperipheral)), T, T, T)))
               case Some(vs) =>
-                vs.foldLeft[Obj](ObjBot)((r, v) => {
+                vs.foldLeft[Obj](Obj.bottom)((r, v) => {
                   r + (v match {
                     case "BATTERY" =>
                       Helper.NewArrayObject(AbsNumber.alpha(1)).

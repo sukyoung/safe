@@ -1,5 +1,5 @@
 /*******************************************************************************
-    Copyright (c) 2012-2013, S-Core, KAIST.
+    Copyright (c) 2012-2014, S-Core, KAIST.
     All rights reserved.
 
     Use is subject to license terms.
@@ -32,7 +32,7 @@ class DSparseFixpoint(cfg: CFG, env: DSparseEnv, worklist: Worklist, inTable: Ta
     startTime = System.nanoTime()
 
     duset = du
-    worklist.add(((cfg.getGlobalFId, LEntry), CallContext.globalCallContext), None, false)
+    worklist.add(((cfg.getGlobalFId, LEntry), CallContext.globalCallContext))
 
     if (Config.debugger)
       DebugConsoleDSparse.initialize(cfg, worklist, sem, inTable, env)
@@ -49,9 +49,7 @@ class DSparseFixpoint(cfg: CFG, env: DSparseEnv, worklist: Worklist, inTable: Ta
 
   private var cache = HashMap[Int, (ControlPoint, State, State, State)]()
 
-  private def makeKey(cp: ControlPoint, s: State): Int = {
-    ((cp.hashCode() % 128) << 7 + (s.hashCode() % 128))
-  }
+  private def makeKey(cp: ControlPoint, s: State): Int = ((cp.hashCode() % 128) << 7 + (s.hashCode() % 128))
 
   private def cmdsize(cmd: Cmd) = {
     cmd match {
@@ -73,7 +71,7 @@ class DSparseFixpoint(cfg: CFG, env: DSparseEnv, worklist: Worklist, inTable: Ta
 
       count = count+1
 
-      val (cp, callerCPSetOpt) = worklist.getHead()
+      val cp = worklist.getHead()
       val (fg, ddg) = env.getFlowGraph(cp._1._1, cp._2)
 
       // Analysis timeout check
@@ -120,7 +118,7 @@ class DSparseFixpoint(cfg: CFG, env: DSparseEnv, worklist: Worklist, inTable: Ta
 
       if (!edges.isEmpty || !excEdges.isEmpty) {
         val recovered = env.recover_intra_dugraph(fg, ddg, edges, excEdges) - cp._1
-        recovered.foreach(node => worklist.add((node, cp._2), None, false))
+        recovered.foreach(node => worklist.add((node, cp._2)))
       }
       val recover_time = (System.nanoTime() - recover_start) / 1000000000.0
       time += recover_time
@@ -134,24 +132,11 @@ class DSparseFixpoint(cfg: CFG, env: DSparseEnv, worklist: Worklist, inTable: Ta
           val oldS = readTable(cp_succ)
           val succ_set = ddg.getDUSet(cp._1, node)
           val outS2 = outS.restrict(succ_set)
-          /*
-          if(cp._1._1 == debug_fid) {
-          System.out.println("Propagates a heap from "+cp + " -> ("+node)
-          System.out.println("Old State for "+cp_succ+"==")
-          System.out.println(DomainPrinter.printHeap(4, oldS.restrict(debug_loc)._1, cfg))
-          System.out.println("Merge State== ")// + DomainPrinter.printLocSet(succ_set))
-          System.out.println(DomainPrinter.printHeap(4, (outS2.restrict(debug_loc))._1, cfg))
-          }
-          */
+
           if (!(outS2 <= oldS)) {
             val newS = oldS + outS2
-          /*
-          if(cp._1._1 == debug_fid) {
-            System.out.println("Merged State by propagation "+cp_succ+"== ")// + DomainPrinter.printLocSet(succ_set))
-            System.out.println(DomainPrinter.printHeap(4, newS.restrict(debug_loc)._1, cfg))
-          }
-          */
-            worklist.add(cp._1, cp_succ, None, false)
+
+            worklist.add(cp._1, cp_succ)
             updateTable(cp_succ, newS)
           }
         })
@@ -163,24 +148,9 @@ class DSparseFixpoint(cfg: CFG, env: DSparseEnv, worklist: Worklist, inTable: Ta
             val cp_succ = (cfg.getAftercallFromCall(cp._1), cp._2)
             val oldS = readTable(cp_succ)
             val outS2 = outS.restrict(bypass_set)
-          /*
-          if(cp._1._1 == debug_fid) {
-          System.out.println("Propagates a heap from "+cp + " -> "+cp_succ._1)
-          System.out.println("Old State for "+cp_succ+"==")
-          System.out.println(DomainPrinter.printHeap(4, oldS.restrict(debug_loc)._1, cfg))
-          System.out.println("Merge State== ")// + DomainPrinter.printLocSet(bypass_set))
-          System.out.println(DomainPrinter.printHeap(4, (outS2.restrict(debug_loc))._1, cfg))
-          }
-          */
             if (!(outS2 <= oldS)) {
               val newS = oldS + outS2
-          /*
-          if(cp._1._1 == debug_fid) {
-            System.out.println("Merged State== ")// + DomainPrinter.printLocSet(bypass_set))
-            System.out.println(DomainPrinter.printHeap(4, newS.restrict(debug_loc)._1, cfg))
-          }
-          */
-              worklist.add(cp._1, cp_succ, None, false)
+              worklist.add(cp._1, cp_succ)
               updateTable(cp_succ, newS)
             }
           }
@@ -211,7 +181,7 @@ class DSparseFixpoint(cfg: CFG, env: DSparseEnv, worklist: Worklist, inTable: Ta
             System.out.println(DomainPrinter.printHeap(4, newS.restrict(debug_loc)._1, cfg))
           }
           */
-              worklist.add(cp._1, cp_exc, None, false)
+              worklist.add(cp._1, cp_exc)
               updateTable(cp_exc, newS)
             }
           }
@@ -241,7 +211,7 @@ class DSparseFixpoint(cfg: CFG, env: DSparseEnv, worklist: Worklist, inTable: Ta
 */
             if (!(outES2 <= oldS)) {
               val newES = oldS + outES2
-              worklist.add(cp._1, cp_succ, None, false)
+              worklist.add(cp._1, cp_succ)
               updateTable(cp_succ, newES)
             }
           }
@@ -285,13 +255,13 @@ class DSparseFixpoint(cfg: CFG, env: DSparseEnv, worklist: Worklist, inTable: Ta
                   val call = (n_call, cp_succ._2)
                   // System.out.println("try to recover normal: "+call)
                   if (env.updateBypassing(call, cp._1._1)) {
-                    worklist.add(cp._1, call, None, false)
+                    worklist.add(cp._1, call)
                   }
                   val (fg, ddg) = env.getFlowGraph(call._1._1, call._2)
                   val edges = env.recoverOutAftercall(fg, call._1)
                   if (!edges.isEmpty) {
                     val recovered = env.recover_intra_dugraph(fg, ddg, edges, Set())
-                    recovered.foreach(node => worklist.add((node, call._2), None, false))
+                    recovered.foreach(node => worklist.add((node, call._2)))
                   }
                   val recover_time = (System.nanoTime() - recover_start) / 1000000000.0
                   time += recover_time
@@ -305,7 +275,7 @@ class DSparseFixpoint(cfg: CFG, env: DSparseEnv, worklist: Worklist, inTable: Ta
                   val call = (n_call, cp_succ._2)
                   // System.out.println("try to recover exception: "+call)
                   if (env.updateBypassingExc(call, cp._1._1)) {
-                    worklist.add(cp._1, call, None, false)
+                    worklist.add(cp._1, call)
                   }
                   val (fg, ddg) = env.getFlowGraph(call._1._1, call._2)
 /*
@@ -344,7 +314,7 @@ class DSparseFixpoint(cfg: CFG, env: DSparseEnv, worklist: Worklist, inTable: Ta
                   val edges = env.recoverOutAftercatch(fg, call._1)
                   if (!edges.isEmpty) {
                     val recovered = env.recover_intra_dugraph(fg, ddg, edges, Set())
-                    recovered.foreach(node => worklist.add((node, call._2), None, false))
+                    recovered.foreach(node => worklist.add((node, call._2)))
                   }
 
                   val recover_time = (System.nanoTime() - recover_start) / 1000000000.0
@@ -379,7 +349,7 @@ class DSparseFixpoint(cfg: CFG, env: DSparseEnv, worklist: Worklist, inTable: Ta
           System.out.println(DomainPrinter.printHeap(4, newS.restrict(debug_loc)._1, cfg))
           }
 */
-              worklist.add(cp._1, cp_succ, None, false)
+              worklist.add(cp._1, cp_succ)
               updateTable(cp_succ, newS)
             }
           })

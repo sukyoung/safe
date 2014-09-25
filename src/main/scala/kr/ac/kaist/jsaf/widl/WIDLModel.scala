@@ -73,7 +73,7 @@ class WIDLModel(cfg: CFG) extends Model(cfg) {
       /* api object */
       val obj = newHeap.map.get(loc) match {
         case Some(old) => prepareList.foldLeft(old)((o, prepare) => o.update(prepare._1, prepare._2))
-        case None => prepareList.foldLeft(ObjEmpty)((o, prepare) => o.update(prepare._1, prepare._2))
+        case None => prepareList.foldLeft(Obj.empty)((o, prepare) => o.update(prepare._1, prepare._2))
       }
       /* added api object to heap */
       newHeap = Heap(newHeap.map.updated(loc, obj))
@@ -150,7 +150,7 @@ class WIDLModel(cfg: CFG) extends Model(cfg) {
   // Helper
   ////////////////////////////////////////////////////////////////////////////////
   def getNewLoc(h: Heap, ctx: Context, cfg: CFG, cp: ControlPoint, alloc: () => Int): (Heap, Context, Loc) = {
-    val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+    val lset_env = h(SinglePureLocalLoc)("@env")._2._2
     val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
     if (set_addr.size > 1) throw new IError("API heap allocation: Size of env address is " + set_addr.size)
     val addr_env = (cp._1._1, set_addr.head)
@@ -161,7 +161,7 @@ class WIDLModel(cfg: CFG) extends Model(cfg) {
   }
 
   def mkDateObj: Obj = {
-    ObjEmpty.
+    Obj.empty.
       update("@class",      PropValue(AbsString.alpha("Date"))).
       update("@proto",      PropValue(ObjectValue(Value(BuiltinDate.ProtoLoc), F, F, F))).
       update("@extensible", PropValue(T)).
@@ -217,13 +217,13 @@ class WIDLModel(cfg: CFG) extends Model(cfg) {
   def mkDictionaryObj(dic: WDictionary): Obj = {
     val initObj: Obj = Helper.NewObject(ObjProtoLoc)
     toList(dic.getMembers).foldLeft(initObj)((obj, mem) => {
-      obj.update(mem.getName, PropValue(ObjectValue(WType2Mockup(mem.getTyp), T, T, T)), AbsentTop)
+      obj.update(mem.getName, PropValue(ObjectValue(WType2Mockup(mem.getTyp), T, T, T))).absentTop(mem.getName)
     })
   }
 
   def mkArrayObj(typ: WType): Obj = {
     Helper.NewArrayObject(UInt).
-      update("@default_number", PropValue(ObjectValue(WType2Mockup(typ), T, T, T)))
+      update(NumStr, PropValue(ObjectValue(WType2Mockup(typ), T, T, T)))
   }
 
   def mkFunctionProps(name: String, argSize: Int): PropMap = {
@@ -281,7 +281,7 @@ class WIDLModel(cfg: CFG) extends Model(cfg) {
           val argLocSet = SemanticsExpr.V(args, heap, context)._1.locset
           for(argLoc <- argLocSet) {
             if(isCorrectArgument) {
-              val absnum = heap(argLoc)("length")._1.objval.value.pvalue.numval
+              val absnum = heap(argLoc)("length").objval.value.pvalue.numval
               absnum.getSingle match {
                 case Some(n) if AbsNumber.isNum(absnum) =>
                   isCorrectArgument = constructorArgSizeSet.exists(size => n >= size._1 && n <= size._2)
@@ -330,7 +330,6 @@ class WIDLModel(cfg: CFG) extends Model(cfg) {
               val pv: PropValue = PropValue(ObjectValue(v_j, T, T, T))
               argObj = argObj.update(j.toString, pv)
             }
-            case _ =>
           }
           argObj = argObj.update("callee", PropValue(ObjectValue(Value(lset_f), T, F, T)))
           val nl = getNewLoc(heap, context, cfg, cp, alloc)
@@ -357,15 +356,15 @@ class WIDLModel(cfg: CFG) extends Model(cfg) {
                           try {
                             for (j <- 0 until mems.size()) {
                               val op: WOperation = mems.get(j).asInstanceOf[WOperation]
-                              if (!(heap(l)(op.getName.unwrap())._1 </ PropValueBot)) throw new UnknownError()
+                              if (!(heap(l)(op.getName.unwrap()) </ PropValueBot)) throw new UnknownError()
                             }
                             for (j <- 0 until mems.size()) {
                               val op: WOperation = mems.get(j).asInstanceOf[WOperation]
                               val callbackPropV = heap(l)(op.getName.unwrap())
-                              aux(op.getArgs, callbackPropV._1._1._1)
+                              aux(op.getArgs, callbackPropV._1._1)
                             }
                           } catch {
-                            case _ =>
+                            case _: Throwable =>
                           }
                         })
                       case _ => // FunctionOnly
@@ -377,7 +376,6 @@ class WIDLModel(cfg: CFG) extends Model(cfg) {
               case _ =>
             }
           }
-          case _ =>
         }
         // 2. add call edges to cfg for invoking callback function
         if (containsCallback) {
@@ -401,13 +399,13 @@ class WIDLModel(cfg: CFG) extends Model(cfg) {
             val l_f = pair._1
             val l_arg = pair._2
             val o_f = heap(l_f)
-            o_f("@function")._1._3.foreach((fid) => {
+            o_f("@function")._3.foreach((fid) => {
               cc_caller.NewCallContext(heap, cfg, fid, l_r, v_this._2).foreach((pair) => {
                 val (cc_new, o_new) = pair
                 val o_new2 = o_new.
                   update(cfg.getArgumentsName(fid),
                   PropValue(ObjectValue(Value(LocSet(l_arg)), T, F, F))).
-                  update("@scope", o_f("@scope")._1)
+                  update("@scope", o_f("@scope"))
                 sem.addCallEdge(cp, ((fid,LEntry), cc_new), ContextEmpty, o_new2)
                 sem.addReturnEdge(((fid,LExit), cc_new), cp_aftercall, context, o_old)
                 sem.addReturnEdge(((fid, LExitExc), cc_new), cp_aftercatch, context, o_old)
@@ -475,7 +473,7 @@ class WIDLModel(cfg: CFG) extends Model(cfg) {
     props.put("@class", AbsConstValue(PropValue(AbsString.alpha("Array"))))
     props.put("@proto", AbsConstValue(PropValue(ObjectValue(Value(BuiltinArray.ProtoLoc), F, F, F))))
     props.put("@extensible", AbsConstValue(PropValue(T)))
-    props.put("@default_number", AbsConstValue(PropValue(ObjectValue(defaultNumber, T, T, T))))
+    props.put(Str_default_number, AbsConstValue(PropValue(ObjectValue(defaultNumber, T, T, T))))
     props.put("length", AbsConstValue(PropValue(ObjectValue(Value(UInt), T, F, F))))
 
     val locProps: LocPropMap = (loc, props)
@@ -606,7 +604,6 @@ class WIDLModel(cfg: CFG) extends Model(cfg) {
                     case _ => false
                   }
                 }
-                case _ => false
               })
               if (containsCallback) // if the interface has callback argument
                 locPropsSel._2.put(name, AbsBuiltinFuncAftercallOptional(funcName, args.length)) // T, T, T ?
@@ -726,7 +723,6 @@ class WIDLModel(cfg: CFG) extends Model(cfg) {
                     case _ => false
                   }
                 }
-                case _ => false
               })
               if (containsCallback) // if the interface has callback argument
                 locprop._2.put("@function", AbsInternalFuncAftercallOptional(name)) // T, T, T ?

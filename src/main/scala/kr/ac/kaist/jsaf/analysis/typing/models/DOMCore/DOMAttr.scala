@@ -18,12 +18,14 @@ import org.w3c.dom.Attr
 import kr.ac.kaist.jsaf.analysis.cfg.CFG
 import kr.ac.kaist.jsaf.analysis.typing.models.DOMHtml.HTMLDocument
 import kr.ac.kaist.jsaf.analysis.typing.AddressManager._
+import kr.ac.kaist.jsaf.Shell
 
 object DOMAttr extends DOM {
   private val name = "Attr"
   /* predefined locatoins */
   val loc_cons = newSystemRecentLoc(name + "Cons")
   val loc_proto = newSystemRecentLoc(name + "Proto")
+  val loc_ins = newSystemRecentLoc(name + "Ins")
 
   /* constructor or object*/
   private val prop_cons: List[(String, AbsProperty)] = List(
@@ -35,6 +37,16 @@ object DOMAttr extends DOM {
     ("prototype", AbsConstValue(PropValue(ObjectValue(Value(loc_proto), F, F, F))))
   )
 
+  private val prop_ins: List[(String, AbsProperty)] = 
+       DOMNode.getInsList2() ++ List(
+      ("@class",    AbsConstValue(PropValue(AbsString.alpha("Object")))),
+      ("@proto",    AbsConstValue(PropValue(ObjectValue(loc_proto, F, F, F)))),
+      ("@extensible", AbsConstValue(PropValue(BoolTrue))),
+      ("name", AbsConstValue(PropValue(ObjectValue(Value(StrTop), F, T, T)))),
+      ("specified", AbsConstValue(PropValue(ObjectValue(Value(StrTop), F, T, T)))),
+      ("value", AbsConstValue(PropValue(ObjectValue(Value(StrTop), F, T, T)))),
+      ("isId", AbsConstValue(PropValue(ObjectValue(Value(BoolTop), F, T, T))))
+     )
   /* prorotype */
   private val prop_proto: List[(String, AbsProperty)] = List(
     ("@class", AbsConstValue(PropValue(AbsString.alpha("Object")))),
@@ -47,9 +59,11 @@ object DOMAttr extends DOM {
     (name, AbsConstValue(PropValue(ObjectValue(loc_cons, T, F, T))))
   )
 
-  def getInitList(): List[(Loc, List[(String, AbsProperty)])] = List(
-    (loc_cons, prop_cons), (loc_proto, prop_proto), (GlobalLoc, prop_global)
-  )
+  def getInitList(): List[(Loc, List[(String, AbsProperty)])] = if(Shell.params.opt_Dommodel2) List(
+    (loc_cons, prop_cons), (loc_proto, prop_proto), (GlobalLoc, prop_global), (loc_ins, prop_ins)
+
+  ) else List(
+    (loc_cons, prop_cons), (loc_proto, prop_proto), (GlobalLoc, prop_global)  ) 
 
   def getSemanticMap(): Map[String, SemanticFun] = {
     Map()

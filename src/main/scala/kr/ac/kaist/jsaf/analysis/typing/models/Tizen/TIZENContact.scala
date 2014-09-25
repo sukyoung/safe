@@ -52,8 +52,8 @@ object TIZENContact extends Tizen {
     Map(
       ("tizen.Contact.constructor" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -80,7 +80,7 @@ object TIZENContact extends Tizen {
           val (h_8, ctx_8) = Helper.Oldify(h_6, ctx_6, addr7)
           val n_arglen = Operator.ToUInt32(getArgValue(h_8, ctx_8, args, "length"))
 
-          val o_new = ObjEmpty.
+          val o_new = Obj.empty.
            update("@class", PropValue(AbsString.alpha("Object"))).
            update("@proto", PropValue(ObjectValue(Value(TIZENContact.loc_proto), F, F, F))).
            update("@extensible", PropValue(T))
@@ -180,7 +180,7 @@ object TIZENContact extends Tizen {
                            es__
                          }
                          case _ => {
-                           val vi = Helper.Proto(h_9, ll, AbsString.alpha("@default_number"))
+                           val vi = Helper.Proto(h_9, ll, AbsString.alpha(Str_default_number))
                            val (bi, esi) = TizenHelper.instanceOf(h_9, vi, Value(TIZENContactAddress.loc_proto))
                            val esii =
                              if (bi._1._3 <= F) Set[WebAPIException](TypeMismatchError)
@@ -221,7 +221,7 @@ object TIZENContact extends Tizen {
                            es__
                          }
                          case _ => {
-                           val vi = Helper.Proto(h_9, ll, AbsString.alpha("@default_number"))
+                           val vi = Helper.Proto(h_9, ll, AbsString.alpha(Str_default_number))
                            val (bi, esi) = TizenHelper.instanceOf(h_9, vi, Value(TIZENContactPhoneNumber.loc_proto))
                            val esii =
                              if (bi._1._3 <= F) Set[WebAPIException](TypeMismatchError)
@@ -254,7 +254,7 @@ object TIZENContact extends Tizen {
                            es__
                          }
                          case _ => {
-                           val vi = Helper.Proto(h_9, ll, AbsString.alpha("@default_number"))
+                           val vi = Helper.Proto(h_9, ll, AbsString.alpha(Str_default_number))
                            val (bi, esi) = TizenHelper.instanceOf(h_9, vi, Value(TIZENContactEmailAddress.loc_proto))
                            val esii =
                              if (bi._1._3 <= F) Set[WebAPIException](TypeMismatchError)
@@ -296,7 +296,7 @@ object TIZENContact extends Tizen {
                            es__
                          }
                          case _ => {
-                           val vi = Helper.Proto(h_9, ll, AbsString.alpha("@default_number"))
+                           val vi = Helper.Proto(h_9, ll, AbsString.alpha(Str_default_number))
                            val (bi, esi) = TizenHelper.instanceOf(h_9, vi, Value(TIZENContactAnniversary.loc_proto))
                            val esii =
                              if (bi._1._3 <= F) Set[WebAPIException](TypeMismatchError)
@@ -329,7 +329,7 @@ object TIZENContact extends Tizen {
                            es__
                          }
                          case _ => {
-                           val vi = Helper.Proto(h_9, ll, AbsString.alpha("@default_number"))
+                           val vi = Helper.Proto(h_9, ll, AbsString.alpha(Str_default_number))
                            val (bi, esi) = TizenHelper.instanceOf(h_9, vi, Value(TIZENContactOrganization.loc_proto))
                            val esii =
                              if (bi._1._3 <= F) Set[WebAPIException](TypeMismatchError)
@@ -361,7 +361,7 @@ object TIZENContact extends Tizen {
                            es__
                          }
                          case _ => {
-                           val vi = Helper.Proto(h_9, ll, AbsString.alpha("@default_number"))
+                           val vi = Helper.Proto(h_9, ll, AbsString.alpha(Str_default_number))
                            val esi =
                              if (vi._1._5 </ StrTop) Set[WebAPIException](TypeMismatchError)
                              else TizenHelper.TizenExceptionBot
@@ -393,7 +393,7 @@ object TIZENContact extends Tizen {
                            es__
                          }
                          case _ => {
-                           val vi = Helper.Proto(h_9, ll, AbsString.alpha("@default_number"))
+                           val vi = Helper.Proto(h_9, ll, AbsString.alpha(Str_default_number))
                            val (bi, esi) = TizenHelper.instanceOf(h_9, vi, Value(TIZENContactWebSite.loc_proto))
                            val esii =
                              if (bi._1._3 <= F) Set[WebAPIException](TypeMismatchError)
@@ -433,7 +433,7 @@ object TIZENContact extends Tizen {
                            es__
                          }
                          case _ => {
-                           val vi = Helper.Proto(h_9, ll, AbsString.alpha("@default_number"))
+                           val vi = Helper.Proto(h_9, ll, AbsString.alpha(Str_default_number))
                            val esi =
                              if (vi._1._5 </ StrTop) Set[WebAPIException](TypeMismatchError)
                              else TizenHelper.TizenExceptionBot
@@ -480,16 +480,16 @@ object TIZENContact extends Tizen {
         )),
       ("tizen.Contact.clone" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
           val addr1 = cfg.getAPIAddress(addr_env, 0)
           val l_r1 = addrToLoc(addr1, Recent)
           val (h_1, ctx_1) = Helper.Oldify(h, ctx, addr1)
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
 
-          val o_new = lset_this.foldLeft(ObjEmpty)((o, l) => o + h_1(l))
+          val o_new = lset_this.foldLeft(Obj.empty)((o, l) => o + h_1(l))
           val h_2 = h_1.update(l_r1, o_new)
 
           val h_3 = h_2.update(l_r1, h_2(l_r1).update(AbsString.alpha("id"), PropValue(ObjectValue(Value(NullTop), F, T, T))))

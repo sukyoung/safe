@@ -138,14 +138,14 @@ class WIDLChecker(bugDetector: BugDetector) extends Walker {
           case "Function" => // TODO: get function body as string if possible
           case "Array" => {
             /* commented out because absent property cannot be handled well.
-            argState.heap(loc)("length")._1.objval.value.pvalue.numval match {
+            argState.heap(loc)("length").objval.value.pvalue.numval match {
               case UIntSingle(v) => { // array to string
                 var arr: String = ""
                 var comma: Boolean = false
                 for (i <- 0 until v.toInt){
                   if (comma) arr += ","
                   argState.heap(loc)(i.toString) match {
-                    case ObjBot => // absent property
+                    case Obj.bottom => // absent property
                     case obj =>
                       obj._2 match {
                         case AbsentTop => result = None // property can be absent
@@ -197,15 +197,10 @@ class WIDLChecker(bugDetector: BugDetector) extends Walker {
     val maxarg: Int = _S.foldLeft(0)((res, arg) =>
       if (arg.size > res) arg.size else res)
     // 2. Initialize argcount to be min(maxarg, n).
-    val n: Int = argObj.map.get("length") match {
-      case Some(len) => len._1._1._1._1._4.getSingle match {
-        case Some(len) => len.toInt
-        case _ =>
-          System.out.println("* WARNING: the length of argument is not single number *")
-          maxarg // TODO: is it possible?
-      }
+    val n: Int = argObj("length")._1._1._1._4.getSingle match {
+      case Some(len) => len.toInt
       case _ =>
-        System.out.println("* WARNING: the argument object doen't have a length? *")
+        System.out.println("* WARNING: the length of argument is not single number *")
         maxarg // TODO: is it possible?
     }
     val argcount: Int = if (maxarg < n) maxarg else n
@@ -262,16 +257,12 @@ class WIDLChecker(bugDetector: BugDetector) extends Walker {
     // 12. While i < d:
     while (i < d) {
       // 12. 1. Let V be argi.
-      val V = argObj.map.get(i.toString) match {
-        case Some(objTuple) => objTuple._1
-        case _ => PropValueBot
-      }
+      val V = argObj(i.toString)
       // 12. 2. Let type be the type at index i in the type list of any entry in S.
       paramss.head.get(i) match {
         case SWArgument(_, attrs, t, _, _) =>
       // 12. 3. Append to values the result of converting V to IDL type type.
           checkType(V, t) // TODO: 에러 내야 댐
-        case _ =>
       }
       // 12. 4. Set i to i + 1.
       i = i + 1
@@ -279,10 +270,8 @@ class WIDLChecker(bugDetector: BugDetector) extends Walker {
     var resS: Set[JList[WArgument]] = Set()
     // 13. If i = d, then:
       // 13. 1. Let V be argi.
-    val V = argObj.map.get(i.toString) match {
-      case Some(objTuple) => objTuple._1
-      case _ => PropValueBot
-    }
+    val V = argObj(i.toString)
+
     val undefval = V.objval.value.pvalue.undefval
     val nullval  = V.objval.value.pvalue.nullval
     val boolval  = V.objval.value.pvalue.boolval
@@ -383,7 +372,7 @@ class WIDLChecker(bugDetector: BugDetector) extends Walker {
       for (loc <- locset) {
         val locres: Boolean = (BoolTrue <= Helper.IsArray(h, loc)) match {
           case true => {
-            val _arrSize = h(loc)("length")._1.objval.value.pvalue.numval
+            val _arrSize = h(loc)("length").objval.value.pvalue.numval
             var locres = true
             if (_arrSize.isBottom) {
               // not an array
@@ -391,23 +380,24 @@ class WIDLChecker(bugDetector: BugDetector) extends Walker {
             } else {
               try {
                 val arrSize = _arrSize.getConcreteValueAsString("0").toString.toInt
-                if (AbsentTop </ h(loc)("@default_number")._2) {
-                  locres = locres && checkType(h(loc)("@default_number")._1, elty)._1
-                }
+
+                // TODO Need to be check.
+                locres = locres && checkType(h(loc)(Str_default_number), elty)._1
                 for (idx <- (0 until arrSize)) {
-                  if (AbsentTop </ h(loc)(idx.toString)._2) {
-                    locres = locres && checkType(h(loc)(idx.toString)._1, elty)._1
-                  }
+//                  if (AbsentTop </ h(loc).lookup(idx.toString)._2) {
+                    locres = locres && checkType(h(loc)(idx.toString), elty)._1
+//                  }
                 }
               } catch {
-                case e: Exception => {
-                  if (AbsentTop </ h(loc)("@default_number")._2) locres = locres && checkType(h(loc)("@default_number")._1, elty)._1
+                case e: Throwable => {
+//                  if (AbsentTop </ h(loc).lookup(Str_default_number)._2)
+                    locres = locres && checkType(h(loc)(Str_default_number), elty)._1
                   for (prop <- argState.heap(loc).getProps) {
                     try {
                       prop.toInt // check if prop is integer or not
-                      locres = locres && checkType(h(loc)(prop)._1, elty)._1
+                      locres = locres && checkType(h(loc)(prop), elty)._1
                     } catch {
-                      case e: Exception =>
+                      case e: Throwable =>
                     }
                   }
                 }
@@ -442,7 +432,7 @@ class WIDLChecker(bugDetector: BugDetector) extends Walker {
         case "Date" => {
           var result: Boolean = true
           for (loc <- locset) {
-            if (AbsString.alpha("Date") </ argState.heap(loc)("@class")._1._2._1._5) {
+            if (AbsString.alpha("Date") </ argState.heap(loc)("@class")._2._1._5) {
               result = false
             }
           }
@@ -471,7 +461,7 @@ class WIDLChecker(bugDetector: BugDetector) extends Walker {
                 case None => // no property named "[prop]" in the [dic]tionary
                   locres = false
                 case Some(mem) => // check if the type of the [mem]ber fits with the specification
-                  locres = locres && checkType(argState.heap(loc)(prop)._1, mem.getTyp)._1
+                  locres = locres && checkType(argState.heap(loc)(prop), mem.getTyp)._1
               }
             }
             result = result && locres // we report errors only if there are errors in all possible locations
@@ -507,13 +497,13 @@ class WIDLChecker(bugDetector: BugDetector) extends Walker {
                   interfaceMemberTypeMap.get(prop) match {
                     case Some(typ) => typ match {
                       case Some(typ) =>
-                        typecorrect && checkType(argState.heap(loc).map(prop)._1, typ)._1
+                        typecorrect && checkType(argState.heap(loc)(prop), typ)._1
                       case None =>
                         typecorrect // TODO? check function type
                     } // type check for properties that the current location has
                     case None => typecorrect
                   }) match { // if the current object has no problem, check the prototype objects
-                  case true => res || checkWithProto(argState.heap(loc)("@proto")._1.objval.value.locset, props ++ argState.heap(loc).getProps)
+                  case true => res || checkWithProto(argState.heap(loc)("@proto").objval.value.locset, props ++ argState.heap(loc).getProps)
                   case false => false
                 })
             }
@@ -632,11 +622,8 @@ class WIDLChecker(bugDetector: BugDetector) extends Walker {
     var msgs: List[() => Unit] = List()
     var numOfOptional: Int = 0
     val numOfParameter: Int = params.size
-    val numOfArgument: Int = argEnvs.foldLeft(-1)((base, env) => env._1.map.get("length") match {
-      case Some(v) => v._1.objval.value.pvalue.numval.getSingle match {
-        case Some(d) => d.toInt
-        case _ => base
-      }
+    val numOfArgument: Int = argEnvs.foldLeft(-1)((base, env) => env._1("length")._1._1._1._4.getSingle match {
+      case Some(d) => d.toInt
       case _ => base
     })
     for (i <- 0 until numOfParameter) params.get(i) match {
@@ -650,11 +637,10 @@ class WIDLChecker(bugDetector: BugDetector) extends Walker {
             argObj = env._1
             argState = env._2
             var local_result = (false, "?")
-            if (argObj != null && argObj.map != null) {
-              argObj.map.get(i.toString) match {
-                case Some(objTuple) => local_result = checkType(objTuple._1, t)
-                case _ => local_result = (false, getType(t).get)
-              }
+            if (argObj != null) {
+              val objTuple = argObj(i.toString)
+              if (objTuple </ PropValueBot) local_result = checkType(objTuple, t)
+              else local_result = (false, getType(t).get)
             }
             if (soundness && !local_result._1) {
               // if soundness==true, reports error if a locset has error
@@ -687,7 +673,6 @@ class WIDLChecker(bugDetector: BugDetector) extends Walker {
             msgs :+= (() => { bugStorage.addMessage(span, WebAPIMissingErrorCB, null, null, name) })
           }
         }
-      case _ =>
     }
     if (numOfArgument != -1 && (numOfParameter - numOfOptional > numOfArgument || numOfArgument > numOfParameter)){
       errors = true

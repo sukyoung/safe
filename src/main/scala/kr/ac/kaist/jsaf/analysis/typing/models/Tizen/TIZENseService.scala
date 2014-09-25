@@ -66,7 +66,7 @@ object TIZENseService extends Tizen {
     ("@proto", AbsConstValue(PropValue(ObjectValue(BuiltinArray.ProtoLoc, F, F, F)))),
     ("@extensible", AbsConstValue(PropValue(T))),
     ("length", AbsConstValue(PropValue(ObjectValue(UInt, T, F, F)))),
-    ("@default_number", AbsConstValue(PropValue(ObjectValue(Value(loc_reader), T, T, T))))
+    (Str_default_number, AbsConstValue(PropValue(ObjectValue(Value(loc_reader), T, T, T))))
   )
 
   private val prop_session_ins: List[(String, AbsProperty)] = List(
@@ -87,7 +87,7 @@ object TIZENseService extends Tizen {
     Map(
       ("tizen.seService.getReaders" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -132,7 +132,7 @@ object TIZENseService extends Tizen {
         )),
       ("tizen.seService.registerSEListener" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -225,7 +225,7 @@ object TIZENReader extends Tizen {
         )),
       ("tizen.Reader.openSession" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -308,7 +308,7 @@ object TIZENSession extends Tizen {
     Map(
         ("tizen.Session.openBasicChannel" -> (
           (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-            val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+            val lset_env = h(SinglePureLocalLoc)("@env")._2._2
             val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
             if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
             val addr_env = (cp._1._1, set_addr.head)
@@ -342,7 +342,7 @@ object TIZENSession extends Tizen {
                     es__
                   }
                   case _ => {
-                    val vi = Helper.Proto(h_2, ll, AbsString.alpha("@default_number"))
+                    val vi = Helper.Proto(h_2, ll, AbsString.alpha(Str_default_number))
                     val esi =
                       if (vi._1._4 </ NumTop) Set[WebAPIException](TypeMismatchError)
                       else TizenHelper.TizenExceptionBot
@@ -384,7 +384,7 @@ object TIZENSession extends Tizen {
           )),
         ("tizen.Session.openLogicalChannel" -> (
           (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-            val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+            val lset_env = h(SinglePureLocalLoc)("@env")._2._2
             val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
             if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
             val addr_env = (cp._1._1, set_addr.head)
@@ -418,7 +418,7 @@ object TIZENSession extends Tizen {
                     es__
                   }
                   case _ => {
-                    val vi = Helper.Proto(h_2, ll, AbsString.alpha("@default_number"))
+                    val vi = Helper.Proto(h_2, ll, AbsString.alpha(Str_default_number))
                     val esi =
                       if (vi._1._4 </ NumTop) Set[WebAPIException](TypeMismatchError)
                       else TizenHelper.TizenExceptionBot
@@ -460,7 +460,7 @@ object TIZENSession extends Tizen {
           )),
         ("tizen.Session.getATR" -> (
           (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-            val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+            val lset_env = h(SinglePureLocalLoc)("@env")._2._2
             val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
             if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
             val addr_env = (cp._1._1, set_addr.head)
@@ -468,7 +468,7 @@ object TIZENSession extends Tizen {
             val l_r1 = addrToLoc(addr1, Recent)
             val (h_1, ctx_1) = Helper.Oldify(h, ctx, addr1)
             val o_arr = Helper.NewArrayObject(UInt).
-              update("@default_number", PropValue(ObjectValue(Value(NumTop), T, T, T)))
+              update(Str_default_number, PropValue(ObjectValue(Value(NumTop), T, T, T)))
             val h_2 = h_1.update(l_r1, o_arr)
             val est = Set[WebAPIException](SecurityError, UnknownError)
             val (h_e, ctx_e) = TizenHelper.TizenRaiseException(h, ctx, est)
@@ -526,7 +526,7 @@ object TIZENChannel extends Tizen {
           )),
         ("tizen.Channel.transmit" -> (
           (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-            val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+            val lset_env = h(SinglePureLocalLoc)("@env")._2._2
             val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
             if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
             val addr_env = (cp._1._1, set_addr.head)
@@ -563,7 +563,7 @@ object TIZENChannel extends Tizen {
                     es__
                   }
                   case _ => {
-                    val vi = Helper.Proto(h_3, ll, AbsString.alpha("@default_number"))
+                    val vi = Helper.Proto(h_3, ll, AbsString.alpha(Str_default_number))
                     val esi =
                       if (vi._1._4 </ NumTop) Set[WebAPIException](TypeMismatchError)
                       else TizenHelper.TizenExceptionBot
@@ -579,7 +579,7 @@ object TIZENChannel extends Tizen {
                 Set[WebAPIException](TypeMismatchError)
               else TizenHelper.TizenExceptionBot
             val o_arr = Helper.NewArrayObject(UInt).
-              update("@default_number", PropValue(ObjectValue(Value(UInt), T, T, T)))
+              update(Str_default_number, PropValue(ObjectValue(Value(UInt), T, T, T)))
             val h_4 = h_3.update(l_r1, o_arr)
             val o_arr1 = Helper.NewArrayObject(AbsNumber.alpha(1)).
               update("0", PropValue(ObjectValue(Value(l_r1), T, T, T)))

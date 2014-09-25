@@ -91,7 +91,7 @@ object TIZENapplicationObj extends Tizen {
     ("@proto", AbsConstValue(PropValue(ObjectValue(BuiltinArray.ProtoLoc, F, F, F)))),
     ("@extensible", AbsConstValue(PropValue(T))),
     ("length", AbsConstValue(PropValue(ObjectValue(UInt, T, F, F)))),
-    ("@default_number", AbsConstValue(PropValue(ObjectValue(Value(loc_appinfo), T, T, T))))
+    (Str_default_number, AbsConstValue(PropValue(ObjectValue(Value(loc_appinfo), T, T, T))))
   )
 
   private val prop_app_ins: List[(String, AbsProperty)] = List(
@@ -126,7 +126,7 @@ object TIZENapplicationObj extends Tizen {
     ("@proto", AbsConstValue(PropValue(ObjectValue(BuiltinArray.ProtoLoc, F, F, F)))),
     ("@extensible", AbsConstValue(PropValue(T))),
     ("length", AbsConstValue(PropValue(ObjectValue(UInt, T, F, F)))),
-    ("@default_number", AbsConstValue(PropValue(ObjectValue(Value(loc_appctrldata), T, T, T))))
+    (Str_default_number, AbsConstValue(PropValue(ObjectValue(Value(loc_appctrldata), T, T, T))))
   )
 
   private val prop_appctxt_ins: List[(String, AbsProperty)] = List(
@@ -142,7 +142,7 @@ object TIZENapplicationObj extends Tizen {
     ("@proto", AbsConstValue(PropValue(ObjectValue(BuiltinArray.ProtoLoc, F, F, F)))),
     ("@extensible", AbsConstValue(PropValue(T))),
     ("length", AbsConstValue(PropValue(ObjectValue(UInt, T, F, F)))),
-    ("@default_number", AbsConstValue(PropValue(ObjectValue(Value(loc_appctxt), T, T, T))))
+    (Str_default_number, AbsConstValue(PropValue(ObjectValue(Value(loc_appctxt), T, T, T))))
   )
 
   private val prop_appcert_ins: List[(String, AbsProperty)] = List(
@@ -166,7 +166,7 @@ object TIZENapplicationObj extends Tizen {
     ("@proto", AbsConstValue(PropValue(ObjectValue(BuiltinArray.ProtoLoc, F, F, F)))),
     ("@extensible", AbsConstValue(PropValue(T))),
     ("length", AbsConstValue(PropValue(ObjectValue(UInt, T, F, F)))),
-    ("@default_number", AbsConstValue(PropValue(ObjectValue(Value(loc_appcert), T, T, T))))
+    (Str_default_number, AbsConstValue(PropValue(ObjectValue(Value(loc_appcert), T, T, T))))
   )
 
   private val prop_reqappctrl_ins: List[(String, AbsProperty)] = List(
@@ -182,7 +182,7 @@ object TIZENapplicationObj extends Tizen {
     ("@proto", AbsConstValue(PropValue(ObjectValue(BuiltinArray.ProtoLoc, F, F, F)))),
     ("@extensible", AbsConstValue(PropValue(T))),
     ("length", AbsConstValue(PropValue(ObjectValue(UInt, T, F, F)))),
-    ("@default_number", AbsConstValue(PropValue(ObjectValue(Value(StrTop), T, T, T))))
+    (Str_default_number, AbsConstValue(PropValue(ObjectValue(Value(StrTop), T, T, T))))
   )
 
   override def getSemanticMap(): Map[String, SemanticFun] = {
@@ -196,7 +196,7 @@ object TIZENapplicationObj extends Tizen {
         )),
       ("tizen.applicationObj.kill" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -249,7 +249,7 @@ object TIZENapplicationObj extends Tizen {
         )),
       ("tizen.applicationObj.launch" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -303,7 +303,7 @@ object TIZENapplicationObj extends Tizen {
         )),
       ("tizen.applicationObj.launchAppControl" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -420,7 +420,7 @@ object TIZENapplicationObj extends Tizen {
         )),
       ("tizen.applicationObj.findAppControl" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -472,7 +472,7 @@ object TIZENapplicationObj extends Tizen {
         )),
       ("tizen.applicationObj.getAppsContext" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -516,7 +516,7 @@ object TIZENapplicationObj extends Tizen {
         )),
       ("tizen.applicationObj.getAppContext" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -524,7 +524,7 @@ object TIZENapplicationObj extends Tizen {
           val l_r = addrToLoc(addr1, Recent)
           val (h_1, ctx_1)  = Helper.Oldify(h, ctx, addr1)
           val ctxid = getArgValue(h_1, ctx_1, args, "0")
-          val o_new = ObjEmpty.update("@class", PropValue(AbsString.alpha("Object"))).
+          val o_new = Obj.empty.update("@class", PropValue(AbsString.alpha("Object"))).
             update("@proto", PropValue(ObjectValue(Value(TIZENApplicationContext.loc_proto), F, F, F))).
             update("@extensible", PropValue(T)).
             update("appId", PropValue(ObjectValue(Value(StrTop), F, T, T)))
@@ -541,7 +541,7 @@ object TIZENapplicationObj extends Tizen {
         )),
       ("tizen.applicationObj.getAppsInfo" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -585,7 +585,7 @@ object TIZENapplicationObj extends Tizen {
         )),
       ("tizen.applicationObj.getAppInfo" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -593,7 +593,7 @@ object TIZENapplicationObj extends Tizen {
           val l_r = addrToLoc(addr1, Recent)
           val (h_1, ctx_1)  = Helper.Oldify(h, ctx, addr1)
           val appid = getArgValue(h_1, ctx_1, args, "0")
-          val o_new = ObjEmpty.update("@class", PropValue(AbsString.alpha("Object"))).
+          val o_new = Obj.empty.update("@class", PropValue(AbsString.alpha("Object"))).
             update("@proto", PropValue(ObjectValue(Value(TIZENApplicationInformation.loc_proto), F, F, F))).
             update("@extensible", PropValue(T)).
             update("name", PropValue(ObjectValue(Value(StrTop), F, T, T))).
@@ -633,7 +633,7 @@ object TIZENapplicationObj extends Tizen {
         )),
       ("tizen.applicationObj.addAppInfoEventListener" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)

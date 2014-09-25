@@ -278,15 +278,14 @@ object BuiltinMath extends ModelData {
                       NaN
                     else
                       NumBot
-                  n_3 + (0 to n.toInt -1).foldLeft[AbsNumber](NumBot)(
+                  n_3 + (0 to n.toInt -1).foldLeft[AbsNumber](n_arg(0))(
                     (an, i)=> {
-                      (0 to n.toInt -1).foldLeft(an)(
-                        (ann, j) => {
-                          if (Value(BoolTrue) <= Operator.bopGreaterEq(Value(n_arg(i)), Value(n_arg(j))))
-                            ann + n_arg(i)
+                          if (Value(BoolTop) <= Operator.bopGreaterEq(Value(n_arg(i)), Value(an)))
+                            an + n_arg(i)
+                          else if (Value(BoolTrue) == Operator.bopGreaterEq(Value(n_arg(i)), Value(an)))
+                            n_arg(i)
                           else
-                            ann
-                        })
+                            an
                     })
                 }
               case NUIntSinglePattern(_)|NaNPattern|NegInfPattern|PosInfPattern|InfinityPattern|UIntPattern|NUIntPattern|NumTopPattern => NumTop
@@ -309,15 +308,14 @@ object BuiltinMath extends ModelData {
                       NaN
                     else
                       NumBot
-                  n_3 + (0 to n.toInt -1).foldLeft[AbsNumber](NumBot)(
+                  n_3 + (0 to n.toInt -1).foldLeft[AbsNumber](n_arg(0))(
                     (an, i)=> {
-                      (0 to n.toInt -1).foldLeft(an)(
-                        (ann, j) => {
-                          if (Value(BoolTrue) <= Operator.bopLessEq(Value(n_arg(i)), Value(n_arg(j))))
-                            ann + n_arg(i)
+                          if (Value(BoolTop) <= Operator.bopLessEq(Value(n_arg(i)), Value(an)))
+                            an + n_arg(i)
+                          else if (Value(BoolTrue) == Operator.bopLessEq(Value(n_arg(i)), Value(an)))
+                            n_arg(i)
                           else
-                            ann
-                        })
+                            an
                     })
                 }
               case NUIntSinglePattern(_)|NaNPattern|NegInfPattern|PosInfPattern|InfinityPattern|UIntPattern|NUIntPattern|NumTopPattern => NumTop

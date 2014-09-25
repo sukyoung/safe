@@ -1,5 +1,5 @@
 /*******************************************************************************
-    Copyright (c) 2013, KAIST, S-Core.
+    Copyright (c) 2013-2014, KAIST, S-Core.
     All rights reserved.
 
     Use is subject to license terms.
@@ -23,6 +23,7 @@ object HTMLTopElement extends DOM {
   /* predefined locations */
   val loc_proto = ObjProtoLoc  // dummy
   val TopElementLoc = newSystemRecentLoc(name + "Ins")
+  val loc_ins = newSystemRecentLoc(name + "Ins2")
   // val loc_child = newPredefLoc("childNodesTop")
   
   private val elementList = List(
@@ -38,6 +39,23 @@ object HTMLTopElement extends DOM {
     HTMLTableSectionElement, HTMLTextAreaElement, HTMLTitleElement, HTMLUListElement,
     // HTML 5
     HTMLCanvasElement, HTMLDataListElement, HTMLUnknownElement)
+
+  private val elementList2 = List(
+    // DOM Html
+    HTMLAnchorElement, HTMLAppletElement, HTMLAreaElement, HTMLBaseElement, HTMLBaseFontElement, HTMLBodyElement,
+    HTMLBRElement, HTMLButtonElement, HTMLDirectoryElement, HTMLDivElement, HTMLDListElement, HTMLFieldSetElement, 
+    HTMLFontElement, HTMLFormElement, HTMLFrameElement, HTMLFrameSetElement, HTMLHeadElement, HTMLHeadingElement, 
+    HTMLHRElement, HTMLHtmlElement, HTMLIFrameElement, HTMLImageElement, HTMLInputElement, HTMLIsIndexElement, 
+    HTMLLabelElement, HTMLLegendElement, HTMLLIElement, HTMLLinkElement, HTMLMapElement, HTMLMenuElement, 
+    HTMLMetaElement, HTMLModElement, HTMLObjectElement, HTMLOListElement, HTMLOptGroupElement, HTMLOptionElement, 
+    HTMLParagraphElement, HTMLParamElement, HTMLPreElement, HTMLQuoteElement, HTMLScriptElement, HTMLSelectElement, 
+    HTMLStyleElement, HTMLTableCaptionElement, HTMLTableCellElement, HTMLTableColElement, HTMLTableElement, HTMLTableRowElement,
+    HTMLTableSectionElement, HTMLTextAreaElement, HTMLTitleElement, HTMLUListElement,
+    // HTML 5
+    HTMLCanvasElement)
+
+  val loc_ins_set = elementList2.foldLeft(LocSetBot)((lset, e) => lset + e.loc_ins)
+
 
 
   val proto_locset = elementList.foldLeft(LocSetBot)((lset, e) => lset + e.loc_proto)
@@ -92,8 +110,10 @@ object HTMLTopElement extends DOM {
     val innerHTML = PropValue(ObjectValue(Value(StrTop), T, T, T))
     val outerHTML = PropValue(ObjectValue(Value(StrTop), T, T, T))
     
+    val xpath = PropValue(ObjectValue(AbsString.alpha(""), F, F, F))
+    
     // This instance object has all properties of the HTMLElement interface
-    val htmlelementlist = HTMLElement.getInsList(id, title, lang, dir, className, innerHTML, outerHTML) 
+    val htmlelementlist = HTMLElement.getInsList(id, title, lang, dir, className, innerHTML, outerHTML, xpath) 
     nodelist ++ elementlist ++ htmlelementlist ++ List(
       ("@class", PropValue(AbsString.alpha("Object"))),
       ("@proto", PropValue(ObjectValue(Value(proto_locset), F, F, F))),
@@ -131,7 +151,7 @@ object HTMLTopElement extends DOM {
     Map()
   }
 
-  def getInsLoc(h: Heap): LocSet = h(TopElementLoc)(AbsString.alpha("elements"))._1._1._1._2
+  def getInsLoc(h: Heap): LocSet = h(TopElementLoc)(AbsString.alpha("elements"))._1._1._2
   def setInsLoc(h: Heap, l: Loc): Heap = {
     val l_set = getInsLoc(h) 
     Helper.PropStore(h, TopElementLoc, AbsString.alpha("elements"), Value(l_set + l))

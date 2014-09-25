@@ -13,11 +13,11 @@ import scala.collection.mutable.{HashMap => MHashMap, HashSet => MHashSet, ListB
 import kr.ac.kaist.jsaf.analysis.cfg._
 import kr.ac.kaist.jsaf.analysis.typing.domain._
 import kr.ac.kaist.jsaf.analysis.typing.models.ModelManager
-import kr.ac.kaist.jsaf.nodes.{ASTNode, FunDecl}
+import kr.ac.kaist.jsaf.nodes.{ASTNode, FunDecl, VarRef, Dot, Bracket, Expr}
 import kr.ac.kaist.jsaf.nodes_util.{NodeRelation, JSAstToConcrete, Span}
 import kr.ac.kaist.jsaf.scala_src.nodes._
 import kr.ac.kaist.jsaf.scala_src.useful.Lists._
-import kr.ac.kaist.jsaf.Shell
+import kr.ac.kaist.jsaf.{Shell, ShellParameters}
 
 class FinalDetect(bugDetector: BugDetector) {
   val cfg           = bugDetector.cfg
@@ -41,16 +41,23 @@ class FinalDetect(bugDetector: BugDetector) {
   ////////////////////////////////////////////////////////////////
 
   def check(cfg: CFG): Unit = {
-    callConstFuncCheck
-    conditionalBranchCheck(cfg)
-    fromHoisterCheck
-    strictModeCheck
-    unreachableCodeCheck
-    unusedVarPropCheck
-    varyingTypeArgumentsCheck
-    otherCheck
-    unusedFunctionCheck // Must be last
-  }
+    if(Shell.params.command == ShellParameters.CMD_WEBAPP_BUG_DETECTOR) {
+      conditionalBranchCheck(cfg)
+      fromHoisterCheck
+      otherCheck
+    }
+    else {
+      callConstFuncCheck
+      conditionalBranchCheck(cfg)
+      fromHoisterCheck
+      strictModeCheck
+      unreachableCodeCheck
+      unusedVarPropCheck
+      varyingTypeArgumentsCheck
+      otherCheck
+      unusedFunctionCheck // Must be last
+    }
+ }
 
 
 
@@ -59,27 +66,41 @@ class FinalDetect(bugDetector: BugDetector) {
   ////////////////////////////////////////////////////////////////
 
   private def callConstFuncCheck(): Unit = {
-    if(!bugOption.CallConstFunc_Check) return
+    if(!(Shell.params.command == ShellParameters.CMD_WEBAPP_BUG_DETECTOR)){
+      if(!bugOption.CallConstFunc_Check) return
 
-    // callMap   : set of fids used as a function
-    // constMap  : set of fids used as a constructor
-    val callMap = new MHashMap[FunctionId, CFGExpr]
-    val constMap = new MHashMap[FunctionId, CFGExpr]
-    for ((inst, fidSet) <- callGraph) {
-      inst match {
-        case CFGCall(_, _, constExpr, _, _, _, _) => fidSet.foreach(fid => callMap.put(fid, constExpr))
-        case CFGConstruct(_, _, funExpr, _, _, _, _) => fidSet.foreach(fid => constMap.put(fid, funExpr))
+      // callMap   : set of fids used as a function
+      // constMap  : set of fids used as a constructor
+      val callMap = new MHashMap[FunctionId, CFGExpr]
+      val constMap = new MHashMap[FunctionId, CFGExpr]
+      for ((inst, fidSet) <- callGraph.asInstanceOf[Map[CFGInst, Set[FunctionId]]]) {
+        inst match {
+          case CFGCall(_, _, constExpr, _, _, _, _) => fidSet.foreach(fid => callMap.put(fid, constExpr))
+          case CFGConstruct(_, _, funExpr, _, _, _, _) => fidSet.foreach(fid => constMap.put(fid, funExpr))
+        }
       }
+      val commonFidSet = callMap.keySet & constMap.keySet
+      commonFidSet.foreach((fid) => bugStorage.addMessage(cfg.getFuncInfo(fid).getSpan, CallConstFunc, null, null, BugHelper.getFuncName(cfg.getFuncName(fid), varManager, callMap(fid))))
     }
-    val commonFidSet = callMap.keySet & constMap.keySet
-    commonFidSet.foreach((fid) => bugStorage.addMessage(cfg.getFuncInfo(fid).getSpan, CallConstFunc, null, null, BugHelper.getFuncName(cfg.getFuncName(fid), varManager, callMap(fid))))
   }
-
+ 
 
 
   ////////////////////////////////////////////////////////////////
   //  ConditionalBranch Check
   ////////////////////////////////////////////////////////////////
+
+  private def checkCondExpr(expr: Expr): Boolean = expr match {
+    case SParenthesized(_, e) => checkCondExpr(e)
+    case _:VarRef => false
+    case _:Dot => false
+    case _:Bracket => false
+    case SPrefixOpApp(_, SOp(_, op), SVarRef(_, _)) => !op.equals("!")
+    case SPrefixOpApp(_, SOp(_, op), SDot(_, _, _)) => !op.equals("!")
+    case SPrefixOpApp(_, SOp(_, op), SBracket(_, _, _)) => !op.equals("!")
+    case SInfixOpApp(_, _, op, _) => op.getText.equals("&&") || op.getText.equals("||")
+    case _ => true
+  }
 
   def conditionalBranchCheck(cfg: CFG): Unit = {
     if(!bugOption.CondBranch_Check) return
@@ -98,7 +119,12 @@ class FinalDetect(bugDetector: BugDetector) {
     for ((astStmt, resultSet) <- bugStorage.conditionMap) {
       val condExpr = astStmt match {
         case SCond(_, condExpr, _, _) if bugOption.CondBranch_CheckTernary => condExpr
-        case SIf (_, condExpr, _, _) if bugOption.CondBranch_CheckIf => condExpr
+        case SIf (_, condExpr, _, _) if bugOption.CondBranch_CheckIf => 
+          if(Shell.params.command == ShellParameters.CMD_WEBAPP_BUG_DETECTOR) 
+            if(checkCondExpr(condExpr))
+              condExpr
+            else null
+          else condExpr
         case SFor(_, _, Some(condExpr), _, _) if bugOption.CondBranch_CheckLoop => condExpr
         case SForVar(_, _, Some(condExpr), _, _) if bugOption.CondBranch_CheckLoop => condExpr
         case SDoWhile(_, _, condExpr) if bugOption.CondBranch_CheckLoop => condExpr
@@ -492,7 +518,7 @@ class FinalDetect(bugDetector: BugDetector) {
       var maxArgObjLength = 0
       val argObjLengthMap = new MHashMap[Obj, Int]()
       for (argObj <- argObjSet) {
-        val (propValue, _) = argObj("length")
+        val propValue = argObj("length")
         propValue.objval.value.pvalue.numval.getSingle match {
           case Some(lengthPropDouble) =>
             val lengthPropInt = lengthPropDouble.toInt
@@ -511,7 +537,7 @@ class FinalDetect(bugDetector: BugDetector) {
         var joinedValue: Value = ValueBot
         for ((argObj, argObjLength) <- argObjLengthMap) {
           if (argObjLength <= maxArgObjLength) {
-            val (propValue, _) = argObj(i.toString)
+            val propValue = argObj(i.toString)
             joinedValue+= propValue.objval.value
             //println("  argObj[" + i + "] = " + propValue.objval.value)
           }

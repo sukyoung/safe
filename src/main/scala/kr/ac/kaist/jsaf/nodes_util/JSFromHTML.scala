@@ -35,9 +35,11 @@ import kr.ac.kaist.jsaf.analysis.typing.models.DOMHelper
 import org.xml.sax.InputSource
 import kr.ac.kaist.jsaf.Shell
 import java.util.ArrayList
-import  org.w3c.dom.bootstrap.DOMImplementationRegistry;
-import  org.w3c.dom.ls.DOMImplementationLS;
-import  org.w3c.dom.ls.LSSerializer
+import org.w3c.dom.bootstrap.DOMImplementationRegistry
+import org.w3c.dom.ls.DOMImplementationLS
+import org.w3c.dom.ls.LSSerializer
+import org.apache.commons.io.FileUtils
+import kr.ac.kaist.jsaf.ShellParameters
 
 class JSFromHTML(filename: String) {
   val file = new File(filename)
@@ -98,7 +100,7 @@ class JSFromHTML(filename: String) {
           li :+ (new Triple(filename, new JInteger(s.getRowColumnVector().getRow()), s.toString()))
         } // code from external source
         else {
-          if (Shell.params.opt_ScriptDump || Shell.params.opt_skipExternal) {
+          if (Shell.params.opt_ScriptDump || Shell.params.opt_skipExternal || Shell.params.command == ShellParameters.CMD_CLONE_DETECTOR) {
             li
           } else {
             // extract a JavaScript file name from a string such as "main.js?135895164373817"
@@ -141,9 +143,53 @@ class JSFromHTML(filename: String) {
                 source.close
                 li :+ result
               } else {
+                val external = new File("downloads/" + srcname.substring(srcname.lastIndexOf('/')+1))
+                if (srcname.endsWith(".js") || srcname.containsSlice(".js")) {
+                  try {
+                    val domain = if (Shell.params.url != null && !Shell.params.url.isEmpty) Shell.params.url else ""
+                    val url = srcname match {
+                      case srcname if (srcname.startsWith("//")) => "http:" + srcname
+                      case srcname if (srcname.startsWith("/")) => domain + srcname
+                      case srcname if (srcname.startsWith("file://")) => srcname
+                      case srcname if (srcname.startsWith("http")) => srcname
+                      case _ => if (domain.startsWith("http")) domain + "/" + srcname else domain.substring(0, domain.lastIndexOf('/')+1) + srcname
+                    }
+                    FileUtils.copyURLToFile(new URL(url), external)
+                  } catch {
+                    case e: Exception =>
+                      li
+                  }
+                }
+                
+                if (external.exists()) {
+                  val source = scala.io.Source.fromFile(external)
+                  val result = 
+                  // jQuery modeling 
+                  if (Config.jqMode && NodeUtil.isModeledLibrary(srcname)) {
+                    // JavaScript stub model for jQuery
+                    val SEP = File.separator
+                    val base = ProjectProperties.BASEDIR + SEP
+                    val newpath = base + "bin/models/jquery/__jquery__.js"
+                    val newfile = new File(newpath)
+                    val newsource = scala.io.Source.fromFile(newpath)
+                    if(file.exists) {
+                      Config.setModeledFiles(Config.getModeledFiles ++ List(newpath))
+                      new Triple(newpath, new JInteger(1), newsource.mkString)
+                      
+                    }
+                    else
+                      new Triple(external.toString, new JInteger(1), "")
+                  }
+                  else 
+                    new Triple(external.toString, new JInteger(1), source.mkString)
+                  source.close
+                  // external.delete
+                  li :+ result
+                } else {                
                 //if (!Shell.params.opt_ScriptDump)
-                System.out.println("WARNING: Cannot find " + srcname)
-                li
+                  System.out.println("WARNING: Cannot find " + srcname)
+                  li
+                }
               }
             }
             else li

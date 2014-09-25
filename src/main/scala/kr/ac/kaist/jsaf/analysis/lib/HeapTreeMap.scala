@@ -1,5 +1,5 @@
 /*******************************************************************************
-    Copyright (c) 2012-2013, S-Core, KAIST.
+    Copyright (c) 2012-2014, S-Core, KAIST.
     All rights reserved.
 
     Use is subject to license terms.
@@ -20,14 +20,7 @@ class HeapTreeMap private(private val k: HeapTreeMap.Key,
                           val count: Int,
                           private val l: HeapTreeMap,
                           private val r: HeapTreeMap) {
-  def + (kv: (HeapTreeMap.Key, HeapTreeMap.Data)): HeapTreeMap = {
-    this.updated(kv._1, kv._2)
-  }
-  
-  def + (kv1: (HeapTreeMap.Key, HeapTreeMap.Data),
-         kv2: (HeapTreeMap.Key, HeapTreeMap.Data)): HeapTreeMap = {
-    this + kv1 + kv2
-  }
+  def + (kv: (HeapTreeMap.Key, HeapTreeMap.Data)): HeapTreeMap = this.updated(kv._1, kv._2)
 
   def updated(k: HeapTreeMap.Key, v: HeapTreeMap.Data): HeapTreeMap = {
     if (this eq HeapTreeMap.Empty) new HeapTreeMap(k, v, 1, HeapTreeMap.Empty, HeapTreeMap.Empty)
@@ -39,7 +32,7 @@ class HeapTreeMap private(private val k: HeapTreeMap.Key,
         else HeapTreeMap.rebalance(this.k, this.v, l_updated, this.r)
       }
       else if (c == 0) {
-        if (v.map eq this.v.map) this
+        if (this.v.equals(v)) this
         else new HeapTreeMap(this.k, v, this.count, this.l, this.r)
       }
       else {
@@ -60,19 +53,10 @@ class HeapTreeMap private(private val k: HeapTreeMap.Key,
         else HeapTreeMap.rebalance(this.k, this.v, l_result, this.r)
       }
       else if (c == 0) {
-        if (v.map eq this.v.map) this
-        else if (v.map.size == this.v.map.size) {
-          if (v <= this.v) this
-          else if (this.v <= v) {
-            new HeapTreeMap(this.k, v, this.count, this.l, this.r)
-          }
-          else {
-            new HeapTreeMap(this.k, this.v + v, this.count, this.l, this.r)
-          }
-        } 
-        else { 
-          new HeapTreeMap(this.k, this.v + v, this.count, this.l, this.r)
-        }
+        if (this.v.equals(v)) this
+        else if (v <= this.v) this
+        else if (this.v <= v) new HeapTreeMap(this.k, v, this.count, this.l, this.r)
+        else new HeapTreeMap(this.k, this.v + v, this.count, this.l, this.r)
       }
       else {
         val r_result = this.r.weakUpdated(k, v)
@@ -89,7 +73,7 @@ class HeapTreeMap private(private val k: HeapTreeMap.Key,
       val v = this.v.subsLoc(l_r, l_o)
       val r = this.r.subsLoc(l_r, l_o)
 
-      if ((l eq this.l) && (v.map eq this.v.map) && (r eq this.r)) {
+      if ((l eq this.l) && this.v.equals(v) && (r eq this.r)) {
         this
       } else {
         new HeapTreeMap(this.k, v, this.count, l, r)
@@ -158,10 +142,10 @@ class HeapTreeMap private(private val k: HeapTreeMap.Key,
         this.r._submapOf(that.r) && 
         this.v <= that.v
       } else if (c < 0) {
-        (new HeapTreeMap(this.k, this.v, 0, this.l, HeapTreeMap.Empty))._submapOf(that.l) &&
+        new HeapTreeMap(this.k, this.v, 0, this.l, HeapTreeMap.Empty)._submapOf(that.l) &&
         this.r._submapOf(that)
       } else {
-        (new HeapTreeMap(this.k, this.v, 0, HeapTreeMap.Empty, this.r))._submapOf(that.r) &&
+        new HeapTreeMap(this.k, this.v, 0, HeapTreeMap.Empty, this.r)._submapOf(that.r) &&
         this.l._submapOf(that)
       }
     }
@@ -234,7 +218,7 @@ class HeapTreeMap private(private val k: HeapTreeMap.Key,
       sb.append(x._2.toString)
     })
     sb.append(")")
-    sb.toString
+    sb.toString()
   }
 }
 
@@ -296,16 +280,16 @@ object HeapTreeMap {
     } else {
       // l != Empty, r != Empty
       if (r.count >= l.count*3) {
-        val rln = r.l.count;
-        val rrn = r.r.count;
+        val rln = r.l.count
+        val rrn = r.r.count
         if (rln < rrn) {
           singleL(k, v, l, r)
         } else {
           doubleL(k, v, l, r)
         }
       } else if (l.count >= r.count*3) {
-        val lln = l.l.count;
-        val lrn = l.r.count;
+        val lln = l.l.count
+        val lrn = l.r.count
         if (lrn < lln) {
           singleR(k, v, l, r)
         } else {
@@ -405,7 +389,7 @@ object HeapTreeMap {
     else {
       if (l.count*3 < r.count) rebalance(r.k, r.v, concat3(l, k, v, r.l), r.r)
       else if (r.count*3 < l.count) rebalance(l.k, l.v, l.l, concat3(l.r, k, v, r))
-      else new HeapTreeMap(k, v, l.count + r.count + 1, l, r);
+      else new HeapTreeMap(k, v, l.count + r.count + 1, l, r)
     }
   }
 }

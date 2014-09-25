@@ -67,8 +67,8 @@ class Access(cfg: CFG, cg: Map[CFGInst, Set[FunctionId]], state_org: State) {
           val ctx = state._2
           val x_argvars = cfg.getArgVars(fid)
           val x_localvars = cfg.getLocalVars(fid)
-          val lset_arg = h(SinglePureLocalLoc)(cfg.getArgumentsName(fid))._1._1._1._2
-          val env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_arg = h(SinglePureLocalLoc)(cfg.getArgumentsName(fid))._1._1._2
+          val env = h(SinglePureLocalLoc)("@env")._2._2
           var i = 0
           // def
           val LPd_1 = x_argvars.foldLeft(LPBot)((lp, x) => {
@@ -128,7 +128,7 @@ class Access(cfg: CFG, cg: Map[CFGInst, Set[FunctionId]], state_org: State) {
           val du = insts.foldLeft((LPBot, LPBot))((S, i) => {
             val returnVar =
               cfg.getReturnVar(node) match {
-                case Some(id) => AH.VarStore_def(state._1, state._1(SinglePureLocalLoc)("@env")._1._2._2, id)
+                case Some(id) => AH.VarStore_def(state._1, state._1(SinglePureLocalLoc)("@env")._2._2, id)
                 case None => LPBot
               }
 
@@ -178,7 +178,7 @@ object Access {
           }
         val LP_1 = AH.Oldify_def(h,ctx,a_new)
         val LP_2 = AH.NewObject_def.foldLeft(LPBot)((S,p) => S + ((l_r, p)))
-        val LP_3 = AH.VarStore_def(h,h(SinglePureLocalLoc)("@env")._1._2._2,x)
+        val LP_3 = AH.VarStore_def(h,h(SinglePureLocalLoc)("@env")._2._2,x)
         val LP_4 = AH.RaiseException_def(es)
         LP_1 ++ LP_2 ++ LP_3 ++ LP_4
       }
@@ -186,19 +186,19 @@ object Access {
         val l_r = addrToLoc(a_new, Recent)
         val LP_1 = AH.Oldify_def(h,ctx,a_new)
         val LP_2 = AH.NewArrayObject_def.foldLeft(LPBot)((S,p) => S + ((l_r, p)))
-        val LP_3 = AH.VarStore_def(h,h(SinglePureLocalLoc)("@env")._1._2._2,x)
+        val LP_3 = AH.VarStore_def(h,h(SinglePureLocalLoc)("@env")._2._2,x)
         LP_1 ++ LP_2 ++ LP_3
       }
       case CFGAllocArg(_, _, x, n, a_new) => {
         val l_r = addrToLoc(a_new, Recent)
         val LP_1 = AH.Oldify_def(h,ctx,a_new)
         val LP_2 = AH.NewArgObject_def.foldLeft(LPBot)((S,p) => S + ((l_r, p)))
-        val LP_3 = AH.VarStore_def(h,h(SinglePureLocalLoc)("@env")._1._2._2,x)
+        val LP_3 = AH.VarStore_def(h,h(SinglePureLocalLoc)("@env")._2._2,x)
         LP_1 ++ LP_2 ++ LP_3
       }
       case CFGExprStmt(_, _, x, e) => {
         val (v,es) = SE.V(e, h, ctx)
-        val LP_1 = AH.VarStore_def(h,h(SinglePureLocalLoc)("@env")._1._2._2,x)
+        val LP_1 = AH.VarStore_def(h,h(SinglePureLocalLoc)("@env")._2._2,x)
         val LP_2 = AH.RaiseException_def(es)
         LP_1 ++ LP_2
       }
@@ -207,14 +207,14 @@ object Access {
           case CFGVarRef(_, x_2) => {
             val lset_base = Helper.LookupBase(h, x_2)
             val ax_2 = AbsString.alpha(x_2)
-            val LP_1 = AH.VarStore_def(h,h(SinglePureLocalLoc)("@env")._1._2._2,x_1)
+            val LP_1 = AH.VarStore_def(h,h(SinglePureLocalLoc)("@env")._2._2,x_1)
             val LP_2 = lset_base.foldLeft(LPBot)((S,l_base) =>
               S ++ AH.Delete_def(h,l_base, ax_2))
             LP_1 ++ LP_2
           }
           case _ => {
             val (v, es) = SE.V(expr, h, ctx)
-            val LP_1 = AH.VarStore_def(h,h(SinglePureLocalLoc)("@env")._1._2._2,x_1)
+            val LP_1 = AH.VarStore_def(h,h(SinglePureLocalLoc)("@env")._2._2,x_1)
             val LP_2 = AH.RaiseException_def(es)
             LP_1 ++ LP_2
           }
@@ -225,7 +225,7 @@ object Access {
         val (v, es) = SE.V(e_2, h, ctx)
         val sset = Helper.toStringSet(Helper.toPrimitive_better(h, v))
 
-        val LP_1 = AH.VarStore_def(h,h(SinglePureLocalLoc)("@env")._1._2._2,x)
+        val LP_1 = AH.VarStore_def(h,h(SinglePureLocalLoc)("@env")._2._2,x)
         val LP_2 =
           lset.foldLeft(LPBot)((S_1, l) => {
             sset.foldLeft(S_1)((S_2, s) => {
@@ -263,7 +263,7 @@ object Access {
                   val (lpset_length, ex_len) =
                     if (AbsString.alpha("length") <= s) {
                       val v_newLen = Value(Operator.ToUInt32(v_rhs))
-                      val n_oldLen = h(l)("length")._1._1._1._1._4 // number
+                      val n_oldLen = h(l)("length")._1._1._1._4 // number
                       val b_g = (n_oldLen < v_newLen._1._4)
                       val b_eq = (n_oldLen === v_newLen._1._4)
                       val b_canputLen = Helper.CanPut(h, l, AbsString.alpha("length"))
@@ -304,7 +304,7 @@ object Access {
                   // 4. s is array index
                   val lpset_index =
                     if (BoolTrue <= Helper.IsArrayIndex(s)) {
-                      val n_oldLen = h(l)("length")._1._1._1._1._4 // number
+                      val n_oldLen = h(l)("length")._1._1._1._4 // number
                       val n_index = Operator.ToUInt32(Value(Helper.toNumber(PValue(s))))
                       val b_g = (n_oldLen < n_index)
                       val b_eq = (n_oldLen === n_index)
@@ -345,7 +345,7 @@ object Access {
         val LP_3 = AH.NewFunctionObject_def.foldLeft(LPBot)((S,p) => S + ((l_r1, p)))
         val LP_4 = AH.NewObject_def.foldLeft(LPBot)((S,p) => S + ((l_r2, p)))
         val LP_5 = LPSet((l_r2, "constructor"))
-        val LP_6 = AH.VarStore_def(h,h(SinglePureLocalLoc)("@env")._1._2._2,x_1)
+        val LP_6 = AH.VarStore_def(h,h(SinglePureLocalLoc)("@env")._2._2,x_1)
         LP_1 ++ LP_2 ++ LP_3 ++ LP_4 ++ LP_5 ++ LP_6
       }
       case CFGFunExpr(_, _, x_1, Some(name), fid, a_new1, a_new2, Some(a_new3)) => {
@@ -361,7 +361,7 @@ object Access {
         val LP_6 = LPSet((l_r2, "constructor"))
         val LP_7 = AH.NewDeclEnvRecord_def.foldLeft(LPBot)((S,p) => S + ((l_r3, p)))
         val LP_8 = LPSet((l_r3, x_2))
-        val LP_9 = AH.VarStore_def(h,h(SinglePureLocalLoc)("@env")._1._2._2,x_1)
+        val LP_9 = AH.VarStore_def(h,h(SinglePureLocalLoc)("@env")._2._2,x_1)
         LP_1 ++ LP_2 ++ LP_3 ++ LP_4 ++ LP_5 ++ LP_6 ++ LP_7 ++ LP_8 ++ LP_9
       }
       case CFGConstruct(_, _, e_1, e_2, e_3, a_new, b_new) => {
@@ -414,7 +414,7 @@ object Access {
         V_use(expr, h, ctx)
       }
       case CFGCatch(_, _, name) => {
-        val LP_1 = AH.CreateMutableBinding_def(h,h(SinglePureLocalLoc)("@env")._1._2._2, name)
+        val LP_1 = AH.CreateMutableBinding_def(h,h(SinglePureLocalLoc)("@env")._2._2, name)
         val LP_2 = LPSet((SinglePureLocalLoc, "@exception"))
         LP_1 ++ LP_2
       }
@@ -441,25 +441,25 @@ object Access {
         (fun.toString, arguments, loc)  match {
           case ("<>Global<>toObject", List(expr), Some(a_new)) => {
             val (v,es) = SE.V(expr, h, ctx)
-            val LP_1 = AH.VarStore_def(h,h(SinglePureLocalLoc)("@env")._1._2._2,lhs)
+            val LP_1 = AH.VarStore_def(h,h(SinglePureLocalLoc)("@env")._2._2,lhs)
             val LP_2 = AH.toObject_def(h,ctx,v,a_new)
             val LP_3 = AH.RaiseException_def(es)
             LP_1 ++ LP_2 ++ LP_3
           }
           case ("<>Global<>isObject", List(expr), None) => {
             val (v,es) = SE.V(expr, h, ctx)
-            val LP_1 = AH.VarStore_def(h,h(SinglePureLocalLoc)("@env")._1._2._2,lhs)
+            val LP_1 = AH.VarStore_def(h,h(SinglePureLocalLoc)("@env")._2._2,lhs)
             val LP_2 = AH.RaiseException_def(es)
             LP_1 ++ LP_2
           }
           case ("<>Global<>toNumber", List(expr), None) => {
             val (v,es) = SE.V(expr, h, ctx)
-            val LP_1 = AH.VarStore_def(h,h(SinglePureLocalLoc)("@env")._1._2._2,lhs)
+            val LP_1 = AH.VarStore_def(h,h(SinglePureLocalLoc)("@env")._2._2,lhs)
             val LP_2 = AH.RaiseException_def(es)
             LP_1 ++ LP_2
           }
           case ("<>Global<>getBase", List(expr_2), None) => {
-            AH.VarStore_def(h,h(SinglePureLocalLoc)("@env")._1._2._2,lhs)
+            AH.VarStore_def(h,h(SinglePureLocalLoc)("@env")._2._2,lhs)
           }
           case ("<>Global<>iteratorInit", List(expr), Some(a_new)) => {
             if (Config.defaultForinUnrollingCount == 0) {
@@ -468,25 +468,25 @@ object Access {
               val l_new = addrToLoc(a_new, Recent)
               val LP_1 = LPSet(Set((l_new, "index"), (l_new, "length")))
               val LP_2 = AH.absPair(h, l_new, AbsString.NumTop)
-              val LP_3 = AH.VarStore_def(h, h(SinglePureLocalLoc)("@env")._1._2._2, lhs)
+              val LP_3 = AH.VarStore_def(h, h(SinglePureLocalLoc)("@env")._2._2, lhs)
               LP_1 ++ LP_2 ++ LP_3
             }
           }
           case ("<>Global<>iteratorHasNext", List(expr_2, expr_3), None) => {
             if (Config.defaultForinUnrollingCount == 0) {
-              AH.VarStore_def(h,h(SinglePureLocalLoc)("@env")._1._2._2,lhs)
+              AH.VarStore_def(h,h(SinglePureLocalLoc)("@env")._2._2,lhs)
             } else {
-              AH.VarStore_def(h,h(SinglePureLocalLoc)("@env")._1._2._2,lhs)
+              AH.VarStore_def(h,h(SinglePureLocalLoc)("@env")._2._2,lhs)
             }
           }
           case ("<>Global<>iteratorNext", List(expr_2, expr_3), None) => {
             if (Config.defaultForinUnrollingCount == 0) {
-              AH.VarStore_def(h,h(SinglePureLocalLoc)("@env")._1._2._2,lhs)
+              AH.VarStore_def(h,h(SinglePureLocalLoc)("@env")._2._2,lhs)
             } else {
               val (v_iter, _) = SE.V(expr_3, h, ctx)
               val lset = v_iter._2
               val LP_1 = lset.foldLeft(LPBot)((lp, l) => lp + ((l, "index")))
-              val LP_2 = AH.VarStore_def(h, h(SinglePureLocalLoc)("@env")._1._2._2, lhs)
+              val LP_2 = AH.VarStore_def(h, h(SinglePureLocalLoc)("@env")._2._2, lhs)
               LP_1 ++ LP_2
             }
           }
@@ -532,23 +532,23 @@ object Access {
             case None => LPBot
             case Some(e) => V_use(e, h, ctx)
           }
-        val LP_3 = AH.VarStore_use(h,h(SinglePureLocalLoc)("@env")._1._2._2,x)
+        val LP_3 = AH.VarStore_use(h,h(SinglePureLocalLoc)("@env")._2._2,x)
         val LP_4 = AH.RaiseException_use(es)
         LP_1 ++ LP_2 ++ LP_3 ++ LP_4 + ((SinglePureLocalLoc, "@env"))
       }
       case CFGAllocArray(_, _, x, n, a_new) => {
         val LP_1 = AH.Oldify_use(h,ctx,a_new)
-        val LP_2 = AH.VarStore_use(h,h(SinglePureLocalLoc)("@env")._1._2._2,x)
+        val LP_2 = AH.VarStore_use(h,h(SinglePureLocalLoc)("@env")._2._2,x)
         LP_1 ++ LP_2 + ((SinglePureLocalLoc, "@env"))
       }
       case CFGAllocArg(_, _, x, n, a_new) => {
         val LP_1 = AH.Oldify_use(h,ctx,a_new)
-        val LP_2 = AH.VarStore_use(h,h(SinglePureLocalLoc)("@env")._1._2._2,x)
+        val LP_2 = AH.VarStore_use(h,h(SinglePureLocalLoc)("@env")._2._2,x)
         LP_1 ++ LP_2 + ((SinglePureLocalLoc, "@env"))
       }
       case CFGExprStmt(_, _, x, e) => {
         val (v,es) = SE.V(e, h, ctx)
-        val LP_1 = AH.VarStore_use(h,h(SinglePureLocalLoc)("@env")._1._2._2,x)
+        val LP_1 = AH.VarStore_use(h,h(SinglePureLocalLoc)("@env")._2._2,x)
         val LP_2 = V_use(e,h,ctx)
         val LP_3 = AH.RaiseException_use(es)
         LP_1 ++ LP_2 ++ LP_3 + ((SinglePureLocalLoc, "@env"))
@@ -558,15 +558,15 @@ object Access {
           case CFGVarRef(_, x_2) => {
             val lset_base = Helper.LookupBase(h, x_2)
             val ax_2 = AbsString.alpha(x_2)
-            val LP_1 = AH.VarStore_use(h,h(SinglePureLocalLoc)("@env")._1._2._2,x_1)
-            val LP_2 = AH.LookupBase_use(h,h(SinglePureLocalLoc)("@env")._1._2._2,x_2)
+            val LP_1 = AH.VarStore_use(h,h(SinglePureLocalLoc)("@env")._2._2,x_1)
+            val LP_2 = AH.LookupBase_use(h,h(SinglePureLocalLoc)("@env")._2._2,x_2)
             val LP_3 = lset_base.foldLeft(LPBot)((S,l_base) =>
               S ++ AH.Delete_use(h,l_base, ax_2))
             LP_1 ++ LP_2 ++ LP_3 + ((SinglePureLocalLoc, "@env"))
           }
           case _ => {
             val (v, es) = SE.V(expr, h, ctx)
-            val LP_1 = AH.VarStore_use(h,h(SinglePureLocalLoc)("@env")._1._2._2,x_1)
+            val LP_1 = AH.VarStore_use(h,h(SinglePureLocalLoc)("@env")._2._2,x_1)
             val LP_2 = V_use(expr,h,ctx)
             val LP_3 = AH.RaiseException_use(es)
             LP_1 ++ LP_2 ++ LP_3 + ((SinglePureLocalLoc, "@env"))
@@ -579,7 +579,7 @@ object Access {
         val (v, es) = SE.V(e_2, h, ctx)
         val sset = Helper.toStringSet(Helper.toPrimitive_better(h, v))
 
-        val LP_1 = AH.VarStore_use(h,h(SinglePureLocalLoc)("@env")._1._2._2,x)
+        val LP_1 = AH.VarStore_use(h,h(SinglePureLocalLoc)("@env")._2._2,x)
         val LP_2 = V_use(e_1, h, ctx)
         val LP_3 = V_use(e_2, h, ctx)
         val LP_4 =
@@ -671,7 +671,7 @@ object Access {
       case CFGFunExpr(_, _, x_1, None, fid, a_new1, a_new2, None) => {
         val LP_1 = AH.Oldify_use(h,ctx,a_new1)
         val LP_2 = AH.Oldify_use(h,ctx,a_new2)
-        val LP_3 = AH.VarStore_use(h, h(SinglePureLocalLoc)("@env")._1._2._2, x_1)
+        val LP_3 = AH.VarStore_use(h, h(SinglePureLocalLoc)("@env")._2._2, x_1)
 
         LP_1 ++ LP_2 ++ LP_3 + ((SinglePureLocalLoc, "@env"))
       }
@@ -679,7 +679,7 @@ object Access {
         val LP_1 = AH.Oldify_use(h,ctx,a_new1)
         val LP_2 = AH.Oldify_use(h,ctx,a_new2)
         val LP_3 = AH.Oldify_use(h,ctx,a_new3)
-        val LP_4 = AH.VarStore_use(h, h(SinglePureLocalLoc)("@env")._1._2._2, x_1)
+        val LP_4 = AH.VarStore_use(h, h(SinglePureLocalLoc)("@env")._2._2, x_1)
 
         LP_1 ++ LP_2 ++ LP_3 ++ LP_4 + ((SinglePureLocalLoc, "@env"))
       }
@@ -715,7 +715,7 @@ object Access {
         val LP_9 = AH.RaiseException_use(es)
 
         // because of PureLocal object is weak updated in edges, all the element are needed
-        val LP_10 = h(SinglePureLocalLoc).map.foldLeft(LPBot)((S, kv) => S + ((SinglePureLocalLoc, kv._1)))
+        val LP_10 = h(SinglePureLocalLoc).getAllProps.foldLeft(LPBot)((S, kv) => S + ((SinglePureLocalLoc, kv)))
         val LP_11 = LPSet(Set((ContextLoc, "3"), (ContextLoc, "4")))
 
         LP_1 ++ LP_2 ++ LP_3 ++ LP_4 ++ LP_5 ++ LP_6 ++ LP_7 ++ LP_8 ++ LP_9 ++ LP_10 ++ LP_11
@@ -752,7 +752,7 @@ object Access {
         val LP_9 = AH.RaiseException_use(es)
 
         // because of PureLocal object is weak updated in edges, all the element are needed
-        val LP_10 = h(SinglePureLocalLoc).map.foldLeft(LPBot)((S, kv) => S + ((SinglePureLocalLoc, kv._1)))
+        val LP_10 = h(SinglePureLocalLoc).getAllProps.foldLeft(LPBot)((S, kv) => S + ((SinglePureLocalLoc, kv)))
         val LP_11 = LPSet(Set((ContextLoc, "3"), (ContextLoc, "4")))
 
         LP_1 ++ LP_2 ++ LP_3 ++ LP_4 ++ LP_5 ++ LP_6 ++ LP_7 ++ LP_8 ++ LP_9 ++ LP_10 ++ LP_11
@@ -761,7 +761,7 @@ object Access {
         V_use(expr, h, ctx) + ((GlobalLoc, "@class"))
       }
       case CFGCatch(_, _, name) => {
-        val LP_1 = AH.CreateMutableBinding_use(h,h(SinglePureLocalLoc)("@env")._1._2._2, name)
+        val LP_1 = AH.CreateMutableBinding_use(h,h(SinglePureLocalLoc)("@env")._2._2, name)
         val LP_2 = LPSet(Set((SinglePureLocalLoc, "@exception_all"), (SinglePureLocalLoc, "@exception")))
 
         LP_1 ++ LP_2 + ((SinglePureLocalLoc, "@env"))
@@ -790,7 +790,7 @@ object Access {
           case ("<>Global<>toObject", List(expr), Some(a_new)) => {
             val (v,es) = SE.V(expr, h, ctx)
             val LP_1 = V_use(expr, h, ctx)
-            val LP_2 = AH.VarStore_use(h, h(SinglePureLocalLoc)("@env")._1._2._2, lhs)
+            val LP_2 = AH.VarStore_use(h, h(SinglePureLocalLoc)("@env")._2._2, lhs)
             val LP_3 = AH.toObject_use(h, ctx, v, a_new)
             val LP_4 = AH.RaiseException_use(es)
 
@@ -799,7 +799,7 @@ object Access {
           case ("<>Global<>isObject", List(expr), None) => {
             val (v,es) = SE.V(expr, h, ctx)
             val LP_1 = V_use(expr, h, ctx)
-            val LP_2 = AH.VarStore_use(h, h(SinglePureLocalLoc)("@env")._1._2._2, lhs)
+            val LP_2 = AH.VarStore_use(h, h(SinglePureLocalLoc)("@env")._2._2, lhs)
             val LP_3 = AH.RaiseException_use(es)
 
             LP_1 ++ LP_2 ++ LP_3 + ((SinglePureLocalLoc, "@env"))
@@ -807,7 +807,7 @@ object Access {
           case ("<>Global<>toNumber", List(expr), None) => {
             val (v,es) = SE.V(expr, h, ctx)
             val LP_1 = V_use(expr, h, ctx)
-            val LP_2 = AH.VarStore_use(h, h(SinglePureLocalLoc)("@env")._1._2._2, lhs)
+            val LP_2 = AH.VarStore_use(h, h(SinglePureLocalLoc)("@env")._2._2, lhs)
             val LP_3 = AH.RaiseException_use(es)
             val LP_4 = AH.toPrimitive_use(h, v)
 
@@ -816,8 +816,8 @@ object Access {
           case ("<>Global<>getBase", List(expr_2), None) => {
             val x_2 = expr_2.asInstanceOf[CFGVarRef].id
 
-            val LP_1 = AH.VarStore_use(h, h(SinglePureLocalLoc)("@env")._1._2._2, lhs)
-            val LP_2 = AH.LookupBase_use(h, h(SinglePureLocalLoc)("@env")._1._2._2, x_2)
+            val LP_1 = AH.VarStore_use(h, h(SinglePureLocalLoc)("@env")._2._2, lhs)
+            val LP_2 = AH.LookupBase_use(h, h(SinglePureLocalLoc)("@env")._2._2, x_2)
 
             LP_1 ++ LP_2 + ((SinglePureLocalLoc, "@env"))
           }
@@ -833,35 +833,35 @@ object Access {
               val LP_1 = V_use(expr, h, ctx)
               val LP_2 = AH.toObject_use(h, ctx, v_obj, a_new)
               val LP_3 = AH.CollectProps_use(h_1, lset)
-              val LP_4 = AH.VarStore_use(h, h(SinglePureLocalLoc)("@env")._1._2._2, lhs)
+              val LP_4 = AH.VarStore_use(h, h(SinglePureLocalLoc)("@env")._2._2, lhs)
 
               LP_1 ++ LP_2 ++ LP_3 ++ LP_4
             }
           }
           case ("<>Global<>iteratorHasNext", List(expr_2, expr_3), None) => {
             if (Config.defaultForinUnrollingCount == 0) {
-              AH.VarStore_use(h, h(SinglePureLocalLoc)("@env")._1._2._2, lhs) + ((SinglePureLocalLoc, "@env"))
+              AH.VarStore_use(h, h(SinglePureLocalLoc)("@env")._2._2, lhs) + ((SinglePureLocalLoc, "@env"))
             } else {
               val (v,_) = SE.V(expr_3, h, ctx)
               val lset = v._2
 
               val LP_1 = V_use(expr_3, h, ctx)
               val LP_2 = lset.foldLeft(LPBot)((lp, l) => lp ++ AH.absPair(h, l, AbsString.NumTop) + ((l, "index")))
-              val LP_3 = AH.VarStore_use(h, h(SinglePureLocalLoc)("@env")._1._2._2, lhs)
+              val LP_3 = AH.VarStore_use(h, h(SinglePureLocalLoc)("@env")._2._2, lhs)
 
               LP_1 ++ LP_2 ++ LP_3
             }
           }
           case ("<>Global<>iteratorNext", List(expr_2, expr_3), None) => {
             if (Config.defaultForinUnrollingCount == 0) {
-              AH.VarStore_use(h, h(SinglePureLocalLoc)("@env")._1._2._2, lhs) + ((SinglePureLocalLoc, "@env"))
+              AH.VarStore_use(h, h(SinglePureLocalLoc)("@env")._2._2, lhs) + ((SinglePureLocalLoc, "@env"))
             } else {
               val (v,_) = SE.V(expr_3, h, ctx)
               val lset = v._2
 
               val LP_1 = V_use(expr_3, h, ctx)
               val LP_2 = lset.foldLeft(LPBot)((lp, l) => lp ++ AH.absPair(h, l, AbsString.NumTop) + ((l, "index")))
-              val LP_3 = AH.VarStore_use(h, h(SinglePureLocalLoc)("@env")._1._2._2, lhs)
+              val LP_3 = AH.VarStore_use(h, h(SinglePureLocalLoc)("@env")._2._2, lhs)
               LP_1 ++ LP_2 ++ LP_3
             }
           }
@@ -893,7 +893,7 @@ object Access {
   def V_use(e: CFGExpr, h: Heap, ctx: Context): LPSet = {
     e match {
       case CFGVarRef(info, id) => {
-        LPSet((SinglePureLocalLoc, "@env")) ++ AH.Lookup_use(h,h(SinglePureLocalLoc)("@env")._1._2._2,id)
+        LPSet((SinglePureLocalLoc, "@env")) ++ AH.Lookup_use(h,h(SinglePureLocalLoc)("@env")._2._2,id)
       }
       case CFGBin(info, e_1, op, e_2) => {
         op.getText match {
@@ -958,8 +958,8 @@ object Access {
     keys.foldLeft(LPBot)((S, key) => {
       val S2 = (h1.map.contains(key), h2.map.contains(key)) match {
         case (true,true) => S ++ obj_diff(key, h1(key), h2(key))
-        case (true, false) => S ++ h1(key).map.foldLeft(LPBot)((S, v) => S + ((key, v._1)))
-        case (false, true) => S ++ h2(key).map.foldLeft(LPBot)((S, v) => S + ((key, v._1)))
+        case (true, false) => S ++ h1(key).getAllProps.foldLeft(LPBot)((S, v) => S + ((key, v)))
+        case (false, true) => S ++ h2(key).getAllProps.foldLeft(LPBot)((S, v) => S + ((key, v)))
         case _ => LPBot
       }
       S ++ S2
@@ -967,10 +967,13 @@ object Access {
   }
 
   def obj_diff(l: Loc, o1: Obj, o2: Obj): LPSet = {
-    val keys = o1.map.keySet ++ o2.map.keySet
+    val keys = o1.getAllProps ++ o2.getAllProps
     keys.foldLeft(LPBot)((S, key) => {
-      val (pv1, as1) = o1(key)
-      val (pv2, as2) = o2(key)
+      val pv1 = o1(key)
+      val pv2 = o2(key)
+      val as1 = o1.domIn(key)
+      val as2 = o2.domIn(key)
+
       if ((pv1 </ pv2 || pv2 </ pv1) || (as1 </ as2 || as2 </ as1))
         S + ((l,key))
       else S

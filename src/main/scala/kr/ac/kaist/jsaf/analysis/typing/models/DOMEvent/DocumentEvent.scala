@@ -13,16 +13,18 @@ import kr.ac.kaist.jsaf.analysis.typing.domain._
 import kr.ac.kaist.jsaf.analysis.typing.models.DOMCore.DOMDocument
 import kr.ac.kaist.jsaf.analysis.typing.models._
 import kr.ac.kaist.jsaf.analysis.typing.models.AbsBuiltinFunc
+import kr.ac.kaist.jsaf.analysis.typing.AddressManager._
 
 object DocumentEvent extends DOM {
   
   /* predefined locatoins */
   val loc_proto = ObjProtoLoc
+  val loc_ins = ObjProtoLoc // dummy
   // no locations
 
   /* prorotype */
   private val prop_document_proto: List[(String, AbsProperty)] = List(
-    ("createEvent", AbsBuiltinFunc("DocumentEvent.createEvent", 1))
+    //("createEvent", AbsBuiltinFunc("DocumentEvent.createEvent", 1))
   )
 
   /* initial property list */

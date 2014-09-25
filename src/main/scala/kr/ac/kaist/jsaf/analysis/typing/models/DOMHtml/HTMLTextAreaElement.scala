@@ -21,6 +21,7 @@ import kr.ac.kaist.jsaf.analysis.typing.domain.Heap
 import kr.ac.kaist.jsaf.analysis.typing.domain.Context
 import kr.ac.kaist.jsaf.analysis.typing.models.AbsBuiltinFunc
 import kr.ac.kaist.jsaf.analysis.typing.AddressManager._
+import kr.ac.kaist.jsaf.Shell
 
 object HTMLTextAreaElement extends DOM {
   private val name = "HTMLTextAreaElement"
@@ -28,6 +29,7 @@ object HTMLTextAreaElement extends DOM {
   /* predefined locatoins */
   val loc_cons = newSystemRecentLoc(name + "Cons")
   val loc_proto = newSystemRecentLoc(name + "Proto")
+  val loc_ins = newSystemRecentLoc(name + "Ins")
 
   /* constructor */
   private val prop_cons: List[(String, AbsProperty)] = List(
@@ -38,6 +40,26 @@ object HTMLTextAreaElement extends DOM {
     ("length", AbsConstValue(PropValue(ObjectValue(Value(AbsNumber.alpha(0)), F, F, F)))),
     ("prototype", AbsConstValue(PropValue(ObjectValue(Value(loc_proto), F, F, F))))
   )
+private val prop_ins: List[(String, AbsProperty)] = 
+       HTMLElement.getInsList2() ++ List(
+      ("@class",    AbsConstValue(PropValue(AbsString.alpha("Object")))),
+      ("@proto",    AbsConstValue(PropValue(ObjectValue(loc_proto, F, F, F)))),
+      ("@extensible", AbsConstValue(PropValue(BoolTrue))),
+      // DOM Level 1
+      ("defaultValue", AbsConstValue(PropValue(ObjectValue(StrTop, T, T, T)))),
+      ("defaultChecked", AbsConstValue(PropValue(ObjectValue(BoolTop, T, T, T)))),
+      ("form", AbsConstValue(PropValue(ObjectValue(Value(HTMLFormElement.loc_ins), F, T, T)))),
+      ("accessKey", AbsConstValue(PropValue(ObjectValue(StrTop, T, T, T)))),
+      ("cols", AbsConstValue(PropValue(ObjectValue(NumTop, T, T, T)))),
+      ("disabled", AbsConstValue(PropValue(ObjectValue(BoolTop, T, T, T)))),
+      ("name", AbsConstValue(PropValue(ObjectValue(StrTop, T, T, T)))),
+      ("readOnly", AbsConstValue(PropValue(ObjectValue(BoolTop, T, T, T)))),
+      ("rows", AbsConstValue(PropValue(ObjectValue(NumTop, T, T, T)))),
+      ("tabIndex", AbsConstValue(PropValue(ObjectValue(NumTop, T, T, T)))),
+      ("type", AbsConstValue(PropValue(ObjectValue(StrTop, F, T, T)))),
+      ("value", AbsConstValue(PropValue(ObjectValue(StrTop, T, T, T)))),
+      ("defaultValue", AbsConstValue(PropValue(ObjectValue(StrTop, T, T, T))))
+    )
 
   /* prorotype */
   private val prop_proto: List[(String, AbsProperty)] = List(
@@ -54,9 +76,11 @@ object HTMLTextAreaElement extends DOM {
     (name, AbsConstValue(PropValue(ObjectValue(loc_cons, T, F, T))))
   )
 
-  def getInitList(): List[(Loc, List[(String, AbsProperty)])] = List(
-    (loc_cons, prop_cons), (loc_proto, prop_proto), (GlobalLoc, prop_global)
-  )
+  def getInitList(): List[(Loc, List[(String, AbsProperty)])] = if(Shell.params.opt_Dommodel2) List(
+    (loc_cons, prop_cons), (loc_proto, prop_proto), (GlobalLoc, prop_global), (loc_ins, prop_ins)
+
+  ) else List(
+    (loc_cons, prop_cons), (loc_proto, prop_proto), (GlobalLoc, prop_global)  ) 
 
   def getSemanticMap(): Map[String, SemanticFun] = {
     Map(
@@ -164,7 +188,7 @@ object HTMLTextAreaElement extends DOM {
 
   def getInsList(accessKey: PropValue, cols: PropValue, disabled: PropValue, name: PropValue, readOnly: PropValue,
                  rows: PropValue, tabIndex: PropValue, ttype: PropValue, value: PropValue, 
-                 form: PropValue, defaultValue: PropValue, placeholder: PropValue): List[(String, PropValue)] = List(
+                 form: PropValue, defaultValue: PropValue, placeholder: PropValue, xpath: PropValue): List[(String, PropValue)] = List(
     ("@class",    PropValue(AbsString.alpha("Object"))),
     ("@proto",    PropValue(ObjectValue(loc_proto, F, F, F))),
     ("@extensible", PropValue(BoolTrue)),
@@ -182,7 +206,8 @@ object HTMLTextAreaElement extends DOM {
     // Modified in DOM Level 2
     ("defaultValue", defaultValue),
     // HTML5
-    ("placeholder", placeholder)
+    ("placeholder", placeholder),
+    ("xpath", xpath)
   )
 
   override def default_getInsList(): List[(String, PropValue)] = {
@@ -198,9 +223,10 @@ object HTMLTextAreaElement extends DOM {
     val form = PropValue(ObjectValue(NullTop, F, T, T))
     val defaultValue = PropValue(ObjectValue(AbsString.alpha(""), T, T, T))
     val placeholder = PropValue(ObjectValue(AbsString.alpha(""), T, T, T))
+    val xpath = PropValue(ObjectValue(AbsString.alpha(""), F, F, F))
     // This object has all properties of the HTMLElement object 
     HTMLElement.default_getInsList :::
-      getInsList(accessKey, cols, disabled, name, readOnly, rows, tabIndex, ttype, value, form, defaultValue, placeholder)
+      getInsList(accessKey, cols, disabled, name, readOnly, rows, tabIndex, ttype, value, form, defaultValue, placeholder, xpath)
   }
 
 }

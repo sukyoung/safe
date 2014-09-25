@@ -63,7 +63,7 @@ object TIZENdatacontrol extends Tizen {
     ("@proto", AbsConstValue(PropValue(ObjectValue(BuiltinArray.ProtoLoc, F, F, F)))),
     ("@extensible", AbsConstValue(PropValue(T))),
     ("length", AbsConstValue(PropValue(ObjectValue(UInt, T, F, F)))),
-    ("@default_number", AbsConstValue(PropValue(ObjectValue(Value(loc_rowdata), T, T, T))))
+    (Str_default_number, AbsConstValue(PropValue(ObjectValue(Value(loc_rowdata), T, T, T))))
   )
 
   private val prop_stringarr_ins: List[(String, AbsProperty)] = List(
@@ -71,14 +71,14 @@ object TIZENdatacontrol extends Tizen {
     ("@proto", AbsConstValue(PropValue(ObjectValue(BuiltinArray.ProtoLoc, F, F, F)))),
     ("@extensible", AbsConstValue(PropValue(T))),
     ("length", AbsConstValue(PropValue(ObjectValue(UInt, T, F, F)))),
-    ("@default_number", AbsConstValue(PropValue(ObjectValue(Value(StrTop), T, T, T))))
+    (Str_default_number, AbsConstValue(PropValue(ObjectValue(Value(StrTop), T, T, T))))
   )
 
   override def getSemanticMap(): Map[String, SemanticFun] = {
     Map(
       ("tizen.datacontrol.getDataControlConsumer" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -90,8 +90,10 @@ object TIZENdatacontrol extends Tizen {
           val v_3 = getArgValue(h_1, ctx_1, args, "2")
           val n_arglen = Operator.ToUInt32(getArgValue(h_1, ctx_1, args, "length"))
           val es =
-            if (n_arglen == 0) Set[WebAPIException](TypeMismatchError)
-            else TizenHelper.TizenExceptionBot
+            AbsNumber.getUIntSingle(n_arglen) match {
+	      case Some(n) if n == 0 => Set[WebAPIException](TypeMismatchError)
+              case _ => TizenHelper.TizenExceptionBot
+            }
           val es_1 =
             if (v_1._1._5 </ StrTop || v_2._1._5 </ StrTop) Set[WebAPIException](TypeMismatchError)
             else TizenHelper.TizenExceptionBot
@@ -100,7 +102,7 @@ object TIZENdatacontrol extends Tizen {
               Set[WebAPIException](TypeMismatchError)
             else TizenHelper.TizenExceptionBot
           val o_new =
-            ObjEmpty.
+            Obj.empty.
               update("@class", PropValue(AbsString.alpha("Object"))).
               update("@extensible", PropValue(T)).
               update("providerId", PropValue(ObjectValue(Value(v_1._1._5), T, T, T))).
@@ -172,7 +174,7 @@ object TIZENSQLDataControlConsumer extends Tizen {
     Map(
       ("tizen.SQLDataControlConsumer.insert" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -249,7 +251,7 @@ object TIZENSQLDataControlConsumer extends Tizen {
         )),
       ("tizen.SQLDataControlConsumer.update" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -327,7 +329,7 @@ object TIZENSQLDataControlConsumer extends Tizen {
         )),
       ("tizen.SQLDataControlConsumer.remove" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -393,7 +395,7 @@ object TIZENSQLDataControlConsumer extends Tizen {
         )),
       ("tizen.SQLDataControlConsumer.select" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -551,7 +553,7 @@ object TIZENMappedDataControlConsumer extends Tizen {
     Map(
       ("tizen.MappedDataControlConsumer.addValue" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -620,7 +622,7 @@ object TIZENMappedDataControlConsumer extends Tizen {
         )),
       ("tizen.MappedDataControlConsumer.removeValue" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -689,7 +691,7 @@ object TIZENMappedDataControlConsumer extends Tizen {
         )),
       ("tizen.MappedDataControlConsumer.getValue" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -723,7 +725,7 @@ object TIZENMappedDataControlConsumer extends Tizen {
                   Set[WebAPIException](TypeMismatchError)
                 else TizenHelper.TizenExceptionBot
               val o_arr = Helper.NewArrayObject(UInt).
-                update("@default_number", PropValue(ObjectValue(Value(StrTop), T, T, T)))
+                update(Str_default_number, PropValue(ObjectValue(Value(StrTop), T, T, T)))
               val h_4 = h_3.update(l_r1, o_arr)
               val o_arr1 = Helper.NewArrayObject(AbsNumber.alpha(2)).
                 update("0", PropValue(ObjectValue(Value(l_r1), T, T, T))).
@@ -743,7 +745,7 @@ object TIZENMappedDataControlConsumer extends Tizen {
                   Set[WebAPIException](TypeMismatchError)
                 else TizenHelper.TizenExceptionBot
               val o_arr = Helper.NewArrayObject(UInt).
-                update("@default_number", PropValue(ObjectValue(Value(StrTop), T, T, T)))
+                update(Str_default_number, PropValue(ObjectValue(Value(StrTop), T, T, T)))
               val h_4 = h_3.update(l_r1, o_arr)
               val o_arr1 = Helper.NewArrayObject(AbsNumber.alpha(2)).
                 update("0", PropValue(ObjectValue(Value(l_r1), T, T, T))).
@@ -764,7 +766,7 @@ object TIZENMappedDataControlConsumer extends Tizen {
         )),
       ("tizen.MappedDataControlConsumer.updateValue" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)

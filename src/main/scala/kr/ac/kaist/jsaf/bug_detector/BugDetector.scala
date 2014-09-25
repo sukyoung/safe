@@ -11,18 +11,24 @@ package kr.ac.kaist.jsaf.bug_detector
 
 import java.util.{HashMap=>JHashMap}
 import java.util.{List => JList}
-import kr.ac.kaist.jsaf.Shell
+import kr.ac.kaist.jsaf.{Shell, ShellParameters}
 import kr.ac.kaist.jsaf.analysis.cfg._
 import kr.ac.kaist.jsaf.analysis.typing._
+import kr.ac.kaist.jsaf.analysis.typing.domain._
 import kr.ac.kaist.jsaf.scala_src.useful.Lists._
 import kr.ac.kaist.jsaf.nodes.Program
 
 class BugDetector(_ast: Program, _cfg: CFG, _typing: TypingInterface, quiet: Boolean, _fromHoister: JList[BugInfo]) {
+  var startBugDetect : Long = System.nanoTime
   val params        = Shell.params
   val ast           = _ast
   val cfg           = _cfg
   val typing        = _typing
-  val callGraph     = typing.computeCallGraph
+  val callGraph     = 
+    if(Shell.params.command == ShellParameters.CMD_WEBAPP_BUG_DETECTOR)
+      Unit
+    else
+      typing.computeCallGraph
   val fromHoister   = toList(_fromHoister)
   val env           = typing.env
 
@@ -35,35 +41,68 @@ class BugDetector(_ast: Program, _cfg: CFG, _typing: TypingInterface, quiet: Boo
   val devMode       = params.opt_DeveloperMode
    
   val semantics     = new Semantics(cfg, Worklist.computes(cfg, quiet), locclone)
+  // for debug
+  // System.out.println("newSemantics took "+((System.nanoTime - startBugDetect) / 1000000000.0))
+  startBugDetect = System.nanoTime
   val varManager    = new VarManager(this)
+  // System.out.println("varManager took "+((System.nanoTime - startBugDetect) / 1000000000.0))
+  startBugDetect = System.nanoTime
   val stateManager  = new StateManager(cfg, typing, semantics, varManager)
+  //System.out.println("stateManager took "+((System.nanoTime - startBugDetect) / 1000000000.0))
+  startBugDetect = System.nanoTime
   val bugStorage    = new BugStorage(this)
+  // System.out.println("bugStorage took "+((System.nanoTime - startBugDetect) / 1000000000.0))
+  startBugDetect = System.nanoTime
   val bugOption     = new BugOption(!devMode)
   //val bugOption     = new BugOption(devMode)
 
-  val TSChecker     = new TSChecker(this)
+  val TSChecker     = 
+    if(Shell.params.command == ShellParameters.CMD_WEBAPP_BUG_DETECTOR)
+      Unit
+    else new TSChecker(this)
 
-  val ASTDetect     = new ASTDetect(this)
+  val ASTDetect     =     
+    if(Shell.params.command == ShellParameters.CMD_WEBAPP_BUG_DETECTOR)
+      Unit
+    else 
+      new ASTDetect(this)
+
   val CommonDetect  = new CommonDetect(this)
   val ExprDetect    = new ExprDetect(this)
   val InstDetect    = new InstDetect(this)
   val FinalDetect   = new FinalDetect(this)
+  // System.out.println("creating Stuff took "+((System.nanoTime - startBugDetect) / 1000000000.0))
 
   def detectBug(): Unit = {
-    bugStorage.recordStartTime(System.nanoTime)
-    ASTDetect.check()
-    traverseCFG; FinalDetect.check(cfg)
+    var startBugDetect : Long = System.nanoTime
+    bugStorage.recordStartTime(startBugDetect)
+    if(!(Shell.params.command == ShellParameters.CMD_WEBAPP_BUG_DETECTOR))
+      ASTDetect.asInstanceOf[ASTDetect].check()
+    traverseCFG;
+    // System.out.println("traverseCFG took "+((System.nanoTime - startBugDetect) / 1000000000.0))
+    startBugDetect = System.nanoTime
+    FinalDetect.check(cfg)
+    //System.out.println("FinalDetect took "+((System.nanoTime - startBugDetect) / 1000000000.0))
     bugStorage.recordEndTime(System.nanoTime)
     bugStorage.reportDetectedBugs(params.opt_ErrorOnly, quiet)
   }
 
+  def isUserNode(node: Node) = cfg.getCmd(node) match {
+    case Block(i::_) if !i.getInfo.isDefined => false
+    case Block(i::_) if i.getInfo.get.getSpan.getFileName.containsSlice("jquery") => false
+    case _ => true
+  }
+
   /* Traverse all nodes in CFG */
   def traverseCFG(): Unit = {
-    for(node <- cfg.getNodes) { 
+    for(node <- cfg.getNodes if isUserNode(node)) { 
       C(node, cfg.getCmd(node))
     }
 
     def C(node: Node, cmd: Cmd): Unit = {
+      val s = typing.mergeState(typing.getStateBeforeNode(node))
+      if(s._1<=HeapBot) Unit
+      else 
       cmd match {
         case Block(insts) =>
           for (inst <- insts) {
@@ -167,7 +206,7 @@ class BugDetector(_ast: Program, _cfg: CFG, _typing: TypingInterface, quiet: Boo
   }
 
   def traverseInsts(f: (Node, CFGInst) => Unit): Unit = {
-    for (node <- cfg.getNodes) {
+    for (node <- cfg.getNodes if isUserNode(node)) {
       cfg.getCmd(node) match {
         case Block(insts) => for (inst <- insts) f(node, inst)
         case _ =>

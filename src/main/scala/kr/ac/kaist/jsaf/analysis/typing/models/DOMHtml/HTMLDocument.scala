@@ -27,13 +27,18 @@ import kr.ac.kaist.jsaf.analysis.typing.domain.Heap
 import kr.ac.kaist.jsaf.analysis.typing.domain.Context
 import kr.ac.kaist.jsaf.analysis.typing.models.AbsBuiltinFunc
 
+import kr.ac.kaist.jsaf.Shell
+
 object HTMLDocument extends DOM {
   private val name = "HTMLDocument"
 
   /* predefined locations */
   val loc_cons = newSystemRecentLoc(name + "Cons")
   val loc_proto = newSystemRecentLoc(name + "Proto")
-  val GlobalDocumentLoc = newSystemRecentLoc(name + "Global")
+  val loc_ins = newSystemRecentLoc(name + "Ins")
+  val loc_ins2 = newSystemRecentLoc(name + "2Ins")
+  val GlobalDocumentLoc = if(Shell.params.opt_Dommodel2) loc_ins
+                          else newSystemRecentLoc(name + "Global")
 
   /* constructor */
   private val prop_cons: List[(String, AbsProperty)] = List(
@@ -56,26 +61,59 @@ object HTMLDocument extends DOM {
     ("writeln",           AbsBuiltinFunc("HTMLDocument.writeln", 1)),
     ("getElementsByName", AbsBuiltinFunc("HTMLDocument.getElementsByName", 1))
   )
+ 
+  /* instance */
+  private val prop_ins: List[(String, AbsProperty)] = 
+       DOMDocument.getInsList2() ++ List(
+      ("@class",    AbsConstValue(PropValue(AbsString.alpha("Object")))),
+      ("@proto",    AbsConstValue(PropValue(ObjectValue(loc_proto, F, F, F)))),
+      ("@extensible", AbsConstValue(PropValue(BoolTrue))),
+      // DOM Level 1
+      ("title", AbsConstValue(PropValue(ObjectValue(StrTop, T, T, T)))),
+      ("referer", AbsConstValue(PropValue(ObjectValue(StrTop, F, T, T)))),
+      ("domain", AbsConstValue(PropValue(ObjectValue(StrTop, F, T, T)))),
+      ("images", AbsConstValue(PropValue(ObjectValue(Value(HTMLCollection.loc_ins), F, T, T)))),
+      ("applets", AbsConstValue(PropValue(ObjectValue(Value(HTMLCollection.loc_ins), F, T, T)))),
+      ("links", AbsConstValue(PropValue(ObjectValue(Value(HTMLCollection.loc_ins), F, T, T)))),
+      ("forms", AbsConstValue(PropValue(ObjectValue(Value(HTMLCollection.loc_ins), F, T, T)))),
+      ("anchors", AbsConstValue(PropValue(ObjectValue(Value(HTMLCollection.loc_ins), F, T, T)))),
+      ("documentElement", AbsConstValue(PropValue(ObjectValue(Value(HTMLHtmlElement.loc_ins), F, T, T)))),
+      ("body", AbsConstValue(PropValue(ObjectValue(Value(HTMLBodyElement.loc_ins), F, T, T)))),
+      ("cookie", AbsConstValue(PropValue(ObjectValue(Value(StrTop), T, T, T)))),
+      ("width", AbsConstValue(PropValue(ObjectValue(UInt, T, T, T)))),
+      ("height", AbsConstValue(PropValue(ObjectValue(UInt, T, T, T))))
+    )
+  /* list of instance properties */
+  private val prop_ins2: List[(String, AbsProperty)] = 
+    List(
+      ("@class",    AbsConstValue(PropValue(AbsString.alpha("Object")))),
+      ("@proto",    AbsConstValue(PropValue(ObjectValue(loc_proto, F, F, F)))),
+      ("@extensible", AbsConstValue(PropValue(BoolTrue)))
+    )
+  
 
   /* global */
   private val prop_global: List[(String, AbsProperty)] = List(
     (name, AbsConstValue(PropValue(ObjectValue(loc_cons, T, F, T))))
   )
 
-  def getInitList(): List[(Loc, List[(String, AbsProperty)])] = List(
-    (loc_cons, prop_cons), (loc_proto, prop_proto), (GlobalLoc, prop_global)
-  )
+  def getInitList(): List[(Loc, List[(String, AbsProperty)])] = if(Shell.params.opt_Dommodel2) List(
+    (loc_cons, prop_cons), (loc_proto, prop_proto), (GlobalLoc, prop_global), (loc_ins, prop_ins), (loc_ins2, prop_ins2)
 
-  def getSemanticMap(): Map[String, SemanticFun] = {
+
+  ) else List(
+    (loc_cons, prop_cons), (loc_proto, prop_proto), (GlobalLoc, prop_global)  ) 
+   
+  def  getSemanticMap(): Map[String, SemanticFun] = {
     Map(
       //TODO: not yet implemented
       //case "HTMLDocument.open" => ((h,ctx),(he,ctxe))
       //case "HTMLDocument.close" => ((h,ctx),(he,ctxe))
       //case "HTMLDocument.write" => ((h,ctx),(he,ctxe))
       //case "HTMLDocument.writeln" => ((h,ctx),(he,ctxe))
-      ("HTMLDocument.getElementsByName" -> (
+      "HTMLDocument.getElementsByName" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -83,24 +121,42 @@ object HTMLDocument extends DOM {
           /* arguments */
           val s_name = Helper.toString(Helper.toPrimitive_better(h, getArgValue(h, ctx, args, "0")))
           if (s_name </ StrBot) {
-            val obj_table = h(NameTableLoc)
-            val propv_element = obj_table(s_name)
-            val (h_1, ctx_1, v_empty) =
-              if (propv_element._2 </ AbsentBot) {
-                val l_r = addrToLoc(addr1, Recent)
-                val (_h, _ctx)  = Helper.Oldify(h, ctx, addr1)
-                /* empty NodeList */
-                val o_empty = Obj(DOMNodeList.getInsList(0).foldLeft(ObjEmpty.map)((o,pv) =>
-                  o.updated(pv._1, (pv._2, AbsentBot))))
-                val _h1 = _h.update(l_r, o_empty)
-                (_h1, _ctx, Value(l_r))
-              } else (h, ctx, ValueBot)
-            /* imprecise semantic */
-            ((Helper.ReturnStore(h_1, propv_element._1._1._1 + v_empty), ctx_1), (he, ctxe))
+ 
+            if(Shell.params.opt_Dommodel2){
+              val lset_env = h(SinglePureLocalLoc)("@env")._2._2
+              val l_r = addrToLoc(addr1, Recent)
+              val (h_1, ctx_1)  = Helper.Oldify(h, ctx, addr1)
+              val lset = Helper.Proto(h, NameTableLoc, s_name)._2
+              val proplist = HTMLCollection.getInsList(0) 
+              val obj = proplist.foldLeft(Obj.empty)((o, p) => o.update(p._1, p._2))
+              val new_obj = if(lset.size > 0) 
+                                    obj.update("length", PropValue(ObjectValue(Value(UInt), F, T, T))).update(
+                                                NumStr, PropValue(ObjectValue(Value(lset), T, T, T)))
+                            else obj
+              val h_2 = h_1.update(l_r, new_obj)
+              ((Helper.ReturnStore(h_2,  Value(l_r)), ctx_1), (he, ctxe))
+            }
+            else {
+              val obj_table = h(NameTableLoc)
+              val propv_element = obj_table(s_name)
+              val abs_element = obj_table.domIn(s_name)
+              val (h_1, ctx_1, v_empty) =
+                if (BoolFalse <= abs_element) {
+                  val l_r = addrToLoc(addr1, Recent)
+                  val (_h, _ctx) = Helper.Oldify(h, ctx, addr1)
+                  /* empty NodeList */
+                  val o_empty = DOMNodeList.getInsList(0).foldLeft(Obj.empty)((o, pv) =>
+                    o.update(pv._1, pv._2))
+                  val _h1 = _h.update(l_r, o_empty)
+                  (_h1, _ctx, Value(l_r))
+                } else (h, ctx, ValueBot)
+              /* imprecise semantic */
+              ((Helper.ReturnStore(h_1, propv_element._1._1 + v_empty), ctx_1), (he, ctxe))
+            }
           }
           else
             ((HeapBot, ContextBot), (he, ctxe))
-        }))
+        })
     )
   }
 
@@ -164,11 +220,11 @@ object HTMLDocument extends DOM {
       ("referrer",   PropValue(ObjectValue(AbsString.alpha(if(referrer!=null) referrer else ""), F, T, T))),
       ("domain",   PropValue(ObjectValue(AbsString.alpha(if(domain!=null) domain else ""), F, T, T))),
       ("URL",   PropValue(ObjectValue(AbsString.alpha(if(URL!=null) URL else ""), F, T, T))),
-      ("cookie",   PropValue(ObjectValue(StrTop, T, T, T))),
-      ("body",   PropValue(ObjectValue(HTMLBodyElement.getInstance.get, T, T, T))),
+      ("cookie",   PropValue(ObjectValue(AbsString.alpha(""), T, T, T))),
+      ("body",   PropValue(ObjectValue(Value(NullTop), T, T, T))),
       // 'compatMode' in WHATWG DOM Living Standard 
       ("compatMode",   PropValue(ObjectValue(OtherStr, T, T, T)))
-      // 'all', 'forms' , 'images'  property is updated in DOMBuilder 
+      // 'all', 'forms' , 'images', 'body'  property is updated in DOMBuilder 
      )
       // TODO: 'applets', 'links', 'anchors' in DOM Level 1
     case _ => {
@@ -176,4 +232,14 @@ object HTMLDocument extends DOM {
       List()
     }
   }
+
+  /* list of instance properties */
+  def getInsList(): List[(String, PropValue)] = {
+    List(
+      ("@class",    PropValue(AbsString.alpha("Object"))),
+      ("@proto",    PropValue(ObjectValue(loc_proto, F, F, F))),
+      ("@extensible", PropValue(BoolTrue))
+    )
+  }
+
 }

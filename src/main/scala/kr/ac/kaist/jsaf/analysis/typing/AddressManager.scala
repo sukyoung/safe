@@ -14,6 +14,7 @@ import scala.collection.mutable.{HashMap => MHashMap}
 import kr.ac.kaist.jsaf.analysis.typing.domain._
 import scala.util.matching.Regex
 import kr.ac.kaist.jsaf.analysis.cfg.{InstId, FunctionId}
+import kr.ac.kaist.jsaf.Shell
 
 object AddressManager {
   private class AddressManager {
@@ -28,6 +29,9 @@ object AddressManager {
     val reverseAddrTable: MMap[String, Address] = MHashMap()
 
     val allocTable: MMap[((FunctionId, Address), InstId, Int), Address] = MHashMap()
+    
+    // locclone
+    val allocTable_locclone: MMap[(CallContext, InstId, Int), Address] = MHashMap()
 
     def registerAddress(addr: Address, name: String): Unit = {
       reverseAddrTable(name) = addr
@@ -51,6 +55,19 @@ object AddressManager {
         }
       }
     }
+
+    def getAPIAddress(k1: CallContext, k2: InstId, k3: Int): Address = {
+      val key = (k1, k2, k3)
+      allocTable_locclone.get(key) match {
+        case Some(addr) => addr
+        case None => {
+          val addr = newProgramAddr()
+          allocTable_locclone(key) = addr
+          addr
+        }
+      }
+    }
+
   }
 
   private var manager: AddressManager = null
@@ -169,9 +186,14 @@ object AddressManager {
       }
     }
   }
+
   
   def getAPIAddress(k1: (FunctionId, Address), k2: InstId, k3: Int): Address = manager.getAPIAddress(k1, k2, k3)
 
+  def getAPIAddress(k1: ControlPoint, k2: InstId, k3: Int, k4: Int=0): Address =
+    if(Shell.params.opt_LocClone) manager.getAPIAddress(k1._2, k2, k3)
+    else manager.getAPIAddress((k1._1._1, k2), k2, k3)
+    
   def getRegisteredRecentLoc(name: String): Option[Loc] = {
     manager.reverseAddrTable.get(name) match {
       case Some(addr) => Some(addrToLoc(addr, Recent))

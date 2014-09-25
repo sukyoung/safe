@@ -1,5 +1,5 @@
 /*******************************************************************************
-    Copyright (c) 2013, S-Core, KAIST.
+    Copyright (c) 2013-2014, S-Core, KAIST.
     All rights reserved.
 
     Use is subject to license terms.
@@ -52,7 +52,7 @@ object TIZENContactRef extends Tizen {
     Map(
       ("tizen.ContactRef.constructor" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           val n_arglen = Operator.ToUInt32(getArgValue(h, ctx, args, "length"))
 
           val (h_2, es) = AbsNumber.getUIntSingle(n_arglen) match {
@@ -65,7 +65,7 @@ object TIZENContactRef extends Tizen {
                 if (v_1._1._5 </ StrTop || v_2._1._5 </ StrTop)
                   Set[WebAPIException](TypeMismatchError)
                 else TizenHelper.TizenExceptionBot
-              val o_new = ObjEmpty.
+              val o_new = Obj.empty.
                 update("@class", PropValue(AbsString.alpha("Object"))).
                 update("@proto", PropValue(ObjectValue(Value(TIZENContactRef.loc_proto), F, F, F))).
                 update("@extensible", PropValue(T)).

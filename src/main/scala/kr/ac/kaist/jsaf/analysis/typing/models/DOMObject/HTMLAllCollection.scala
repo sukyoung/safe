@@ -26,6 +26,7 @@ object HTMLAllCollection extends DOM {
 
   /* predefined locations */
   val loc_proto = newSystemRecentLoc(name + "Proto")
+  val loc_ins = newSystemRecentLoc(name + "Ins")
 
   /* constructor */
   /* prorotype */
@@ -51,7 +52,7 @@ object HTMLAllCollection extends DOM {
           /* arguments */
           val n_index = Helper.toNumber(Helper.toPrimitive_better(h, getArgValue(h, ctx, args, "0")))
           if (n_index </ NumBot) {
-            val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+            val lset_this = h(SinglePureLocalLoc)("@this")._2._2
             val n_length = lset_this.foldLeft[AbsNumber](NumBot)((n, l) =>
               n + Helper.toNumber(Helper.toPrimitive_better(h, Helper.Proto(h, l, AbsString.alpha("length")))))
             val s_index = Helper.toString(PValue(n_index))
@@ -67,7 +68,7 @@ object HTMLAllCollection extends DOM {
       ("HTMLAllCollection.tags" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
           /* imprecise modeling */
-         val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+         val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -80,7 +81,7 @@ object HTMLAllCollection extends DOM {
           if (tagname </ StrBot) {
             val lset = DOMHelper.findByTag(h_1, tagname)
             val proplist = getInsList(0) 
-            val obj = proplist.foldLeft(ObjEmpty)((o, p) => o.update(p._1, p._2))
+            val obj = proplist.foldLeft(Obj.empty)((o, p) => o.update(p._1, p._2))
             val newobj = if(lset.size==0) obj
                          else if(lset.size==1) {
                            obj.update("length", PropValue(ObjectValue(Value(AbsNumber.alpha(1)), F, T, T))).update(
@@ -110,7 +111,7 @@ object HTMLAllCollection extends DOM {
           /* arguments */
           val n_index = PreHelper.toNumber(PreHelper.toPrimitive(getArgValue_pre(h, ctx, args, "0", PureLocalLoc)))
           if (n_index </ NumBot) {
-            val lset_this = h(PureLocalLoc)("@this")._1._2._2
+            val lset_this = h(PureLocalLoc)("@this")._2._2
             val n_length = lset_this.foldLeft[AbsNumber](NumBot)((n, l) =>
               n + PreHelper.toNumber(PreHelper.toPrimitive(PreHelper.Proto(h, l, AbsString.alpha("length")))))
             val s_index = PreHelper.toString(PValue(n_index))
@@ -147,7 +148,7 @@ object HTMLAllCollection extends DOM {
           val n_index = Helper.toNumber(Helper.toPrimitive_better(h, getArgValue(h, ctx, args, "0")))
           val LP1 = getArgValue_use(h, ctx, args, "0")
           if (n_index </ NumBot) {
-            val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+            val lset_this = h(SinglePureLocalLoc)("@this")._2._2
             val LP2 = lset_this.foldLeft(LPBot)((lpset, l) =>
               lpset ++ AccessHelper.Proto_use(h, l, AbsString.alpha("length")))
             val s_index = Helper.toString(PValue(n_index))

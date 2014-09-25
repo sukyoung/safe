@@ -112,21 +112,26 @@ class AbsStringSet(_kind: AbsString.AbsStringCase) extends AbsString(_kind) {
 
   /* meet */
   override def <> (that: AbsString) = (this, that) match {
-    case (a: AbsStringSet.StrSetCase, b: AbsStringSet.StrSetCase) =>
-      val intersected = a.values.intersect(b.values)
+    case (a, b) if a.kind.isInstanceOf[AbsStringSet.StrSetCase] &&
+                   b.kind.isInstanceOf[AbsStringSet.StrSetCase] =>
+      val intersected = a.kind.asInstanceOf[AbsStringSet.StrSetCase].values.intersect(b.kind.asInstanceOf[AbsStringSet.StrSetCase].values)
       if(intersected.size == 0) StrBot
       else AbsStringSet.StrSet(intersected)
-    case (a: AbsStringSet.StrSetCase, NumStr) =>
-      if(a.hasNum) AbsStringSet.StrSet(a.values.filter(s => AbsString.isNum(s)))
+    case (a, NumStr) if a.kind.isInstanceOf[AbsStringSet.StrSetCase] =>
+      val kind = a.kind.asInstanceOf[AbsStringSet.StrSetCase]
+      if(kind.hasNum) AbsStringSet.StrSet(kind.values.filter(s => AbsString.isNum(s)))
       else StrBot
-    case (a: AbsStringSet.StrSetCase, OtherStr) =>
-      if(a.hasOther) AbsStringSet.StrSet(a.values.filter(s => !AbsString.isNum(s)))
+    case (a, OtherStr) if a.kind.isInstanceOf[AbsStringSet.StrSetCase] =>
+      val kind = a.kind.asInstanceOf[AbsStringSet.StrSetCase]
+      if(kind.hasOther) AbsStringSet.StrSet(kind.values.filter(s => !AbsString.isNum(s)))
       else StrBot
-    case (NumStr, b: AbsStringSet.StrSetCase) =>
-      if(b.hasNum) AbsStringSet.StrSet(b.values.filter(s => AbsString.isNum(s)))
+    case (NumStr, b) if b.kind.isInstanceOf[AbsStringSet.StrSetCase] =>
+      val kind = b.kind.asInstanceOf[AbsStringSet.StrSetCase]
+      if(kind.hasNum) AbsStringSet.StrSet(kind.values.filter(s => AbsString.isNum(s)))
       else StrBot
-    case (OtherStr, b: AbsStringSet.StrSetCase) =>
-      if(b.hasOther) AbsStringSet.StrSet(b.values.filter(s => !AbsString.isNum(s)))
+    case (OtherStr, b) if b.kind.isInstanceOf[AbsStringSet.StrSetCase] =>
+      val kind = b.kind.asInstanceOf[AbsStringSet.StrSetCase]
+      if(kind.hasOther) AbsStringSet.StrSet(kind.values.filter(s => !AbsString.isNum(s)))
       else StrBot
     case (NumStr, NumStr) => NumStr
     case (NumStr, OtherStr) => StrBot
@@ -187,6 +192,7 @@ class AbsStringSet(_kind: AbsString.AbsStringCase) extends AbsString(_kind) {
             case (true, true) => StrTop
             case (true, false) => NumStr
             case (false, true) => OtherStr
+            case (false, false) => StrBot
           }
         }
       case _ => super.concat(that)

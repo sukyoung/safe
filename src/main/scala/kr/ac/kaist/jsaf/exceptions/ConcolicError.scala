@@ -12,3 +12,4 @@ package kr.ac.kaist.jsaf.exceptions
 class ConcolicError(msg: String) extends Exception(msg) {
   override def toString = msg
 }
+

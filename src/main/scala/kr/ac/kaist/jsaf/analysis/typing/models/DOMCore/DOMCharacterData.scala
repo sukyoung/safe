@@ -28,6 +28,7 @@ object DOMCharacterData extends DOM {
   /* predefined locatoins */
   val loc_cons = newSystemRecentLoc(name + "Cons")
   val loc_proto = newSystemRecentLoc(name + "Proto")
+  val loc_ins = newSystemRecentLoc(name + "Ins")
 
   /* constructor */
   private val prop_cons: List[(String, AbsProperty)] = List(
@@ -75,7 +76,7 @@ object DOMCharacterData extends DOM {
         })),
       ("DOMCharacterData.appendData" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           /* arguments */
           val s_arg = Helper.toString(Helper.toPrimitive_better(h, getArgValue(h, ctx, args, "0")))
           if (s_arg </ StrBot) {
@@ -91,7 +92,7 @@ object DOMCharacterData extends DOM {
         })),
       ("DOMCharacterData.insertData" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           /* arguments */
           val n_offset = Helper.toNumber(Helper.toPrimitive_better(h, getArgValue(h, ctx, args, "0")))
           val s_arg    = Helper.toString(Helper.toPrimitive_better(h, getArgValue(h, ctx, args, "1")))
@@ -108,7 +109,7 @@ object DOMCharacterData extends DOM {
         })),
       ("DOMCharacterData.deleteData" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           /* arguments */
           val n_offset = Helper.toNumber(Helper.toPrimitive_better(h, getArgValue(h, ctx, args, "0")))
           val n_count  = Helper.toNumber(Helper.toPrimitive_better(h, getArgValue(h, ctx, args, "1")))
@@ -125,7 +126,7 @@ object DOMCharacterData extends DOM {
         })),
       ("DOMCharacterData.replaceData" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           /* arguments */
           val n_offset = Helper.toNumber(Helper.toPrimitive_better(h, getArgValue(h, ctx, args, "0")))
           val n_count  = Helper.toNumber(Helper.toPrimitive_better(h, getArgValue(h, ctx, args, "1")))
@@ -161,7 +162,7 @@ object DOMCharacterData extends DOM {
       ("DOMCharacterData.appendData" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
           val PureLocalLoc = cfg.getPureLocal(cp)
-          val lset_this = h(PureLocalLoc)("@this")._1._2._2
+          val lset_this = h(PureLocalLoc)("@this")._2._2
           /* arguments */
           val s_arg = PreHelper.toString(PreHelper.toPrimitive(getArgValue_pre(h, ctx, args, "0", PureLocalLoc)))
           if (s_arg </ StrBot) {
@@ -178,7 +179,7 @@ object DOMCharacterData extends DOM {
       ("DOMCharacterData.insertData" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
           val PureLocalLoc = cfg.getPureLocal(cp)
-          val lset_this = h(PureLocalLoc)("@this")._1._2._2
+          val lset_this = h(PureLocalLoc)("@this")._2._2
           /* arguments */
           val n_offset = PreHelper.toNumber(PreHelper.toPrimitive(getArgValue_pre(h, ctx, args, "0", PureLocalLoc)))
           val s_arg    = PreHelper.toString(PreHelper.toPrimitive(getArgValue_pre(h, ctx, args, "1", PureLocalLoc)))
@@ -196,7 +197,7 @@ object DOMCharacterData extends DOM {
       ("DOMCharacterData.deleteData" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
           val PureLocalLoc = cfg.getPureLocal(cp)
-          val lset_this = h(PureLocalLoc)("@this")._1._2._2
+          val lset_this = h(PureLocalLoc)("@this")._2._2
           /* arguments */
           val n_offset = PreHelper.toNumber(PreHelper.toPrimitive(getArgValue_pre(h, ctx, args, "0", PureLocalLoc)))
           val n_count  = PreHelper.toNumber(PreHelper.toPrimitive(getArgValue_pre(h, ctx, args, "1", PureLocalLoc)))
@@ -214,7 +215,7 @@ object DOMCharacterData extends DOM {
       ("DOMCharacterData.replaceData" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
           val PureLocalLoc = cfg.getPureLocal(cp)
-          val lset_this = h(PureLocalLoc)("@this")._1._2._2
+          val lset_this = h(PureLocalLoc)("@this")._2._2
           /* arguments */
           val n_offset = PreHelper.toNumber(PreHelper.toPrimitive(getArgValue_pre(h, ctx, args, "0", PureLocalLoc)))
           val n_count  = PreHelper.toNumber(PreHelper.toPrimitive(getArgValue_pre(h, ctx, args, "1", PureLocalLoc)))
@@ -241,7 +242,7 @@ object DOMCharacterData extends DOM {
         })),
       ("DOMCharacterData.appendData" -> (
         (h: Heap, ctx: Context, cfg: CFG, fun: String, args: CFGExpr, fid: FunctionId) => {
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           val LP1 = lset_this.foldLeft(LPBot)((lpset, l) => {
             lpset + (l, "data") + (l, "length")
           })
@@ -249,7 +250,7 @@ object DOMCharacterData extends DOM {
         })),
       ("DOMCharacterData.insertData" -> (
         (h: Heap, ctx: Context, cfg: CFG, fun: String, args: CFGExpr, fid: FunctionId) => {
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           val LP1 = lset_this.foldLeft(LPBot)((lpset, l) => {
             lpset + (l, "data") + (l, "length")
           })
@@ -257,7 +258,7 @@ object DOMCharacterData extends DOM {
         })),
       ("DOMCharacterData.deleteData" -> (
         (h: Heap, ctx: Context, cfg: CFG, fun: String, args: CFGExpr, fid: FunctionId) => {
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           val LP1 = lset_this.foldLeft(LPBot)((lpset, l) => {
             lpset + (l, "data") + (l, "length")
           })
@@ -265,7 +266,7 @@ object DOMCharacterData extends DOM {
         })),
       ("DOMCharacterData.replaceData" -> (
         (h: Heap, ctx: Context, cfg: CFG, fun: String, args: CFGExpr, fid: FunctionId) => {
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           val LP1 = lset_this.foldLeft(LPBot)((lpset, l) => {
             lpset + (l, "data") + (l, "length")
           })
@@ -284,7 +285,7 @@ object DOMCharacterData extends DOM {
         })),
       ("DOMCharacterData.appendData" -> (
         (h: Heap, ctx: Context, cfg: CFG, fun: String, args: CFGExpr, fid: FunctionId) => {
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           val LP1 = getArgValue_use(h, ctx, args, "0")
           val LP2 = lset_this.foldLeft(LPBot)((lpset, l) => {
             lpset + (l, "data") + (l, "length")
@@ -293,7 +294,7 @@ object DOMCharacterData extends DOM {
         })),
       ("DOMCharacterData.insertData" -> (
         (h: Heap, ctx: Context, cfg: CFG, fun: String, args: CFGExpr, fid: FunctionId) => {
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           val LP1 = getArgValue_use(h, ctx, args, "0") ++ getArgValue_use(h, ctx, args, "1")
           val LP2 = lset_this.foldLeft(LPBot)((lpset, l) => {
             lpset + (l, "data") + (l, "length")
@@ -302,7 +303,7 @@ object DOMCharacterData extends DOM {
         })),
       ("DOMCharacterData.deleteData" -> (
         (h: Heap, ctx: Context, cfg: CFG, fun: String, args: CFGExpr, fid: FunctionId) => {
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           val LP1 = getArgValue_use(h, ctx, args, "0") ++ getArgValue_use(h, ctx, args, "1")
           val LP2 = lset_this.foldLeft(LPBot)((lpset, l) => {
             lpset + (l, "data") + (l, "length")
@@ -311,7 +312,7 @@ object DOMCharacterData extends DOM {
         })),
       ("DOMCharacterData.replaceData" -> (
         (h: Heap, ctx: Context, cfg: CFG, fun: String, args: CFGExpr, fid: FunctionId) => {
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           val LP1 = getArgValue_use(h, ctx, args, "0") ++ getArgValue_use(h, ctx, args, "1") ++ getArgValue_use(h, ctx, args, "2")
           val LP2 = lset_this.foldLeft(LPBot)((lpset, l) => {
             lpset + (l, "data") + (l, "length")
@@ -336,6 +337,13 @@ object DOMCharacterData extends DOM {
       List()
     }
   }
+
+  def getInsList2(): List[(String, AbsProperty)] =
+      DOMNode.getInsList2() ++ List(
+      // DOM Level 1
+      ("data", AbsConstValue(PropValue(ObjectValue(Value(StrTop), T, T, T)))),
+      ("length", AbsConstValue(PropValue(ObjectValue(Value(UInt), T, T, T))))
+    )
 
   def getInsList(data: PropValue): List[(String, PropValue)] = List(("data", data))
 }

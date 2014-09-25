@@ -50,8 +50,8 @@ object TIZENDownloadRequest extends Tizen {
     Map(
       ("tizen.DownloadRequest.constructor" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -61,7 +61,7 @@ object TIZENDownloadRequest extends Tizen {
           val v_1 = getArgValue(h_2, ctx_2, args, "0")
           val n_arglen = Operator.ToUInt32(getArgValue(h_2, ctx_2, args, "length"))
 
-          val o_new = ObjEmpty.
+          val o_new = Obj.empty.
             update("@class", PropValue(AbsString.alpha("Object"))).
             update("@proto", PropValue(ObjectValue(Value(TIZENDownloadRequest.loc_proto), F, F, F))).
             update("@extensible", PropValue(T))
@@ -70,7 +70,7 @@ object TIZENDownloadRequest extends Tizen {
             case Some(n) if n == 0 =>
               (h_2, Set[WebAPIException](TypeMismatchError))
             case Some(n) if n == 1 =>
-              val h_3 = h_2.update(l_r1, ObjEmpty)
+              val h_3 = h_2.update(l_r1, Obj.empty)
               val o_new2 = o_new.
                 update("url", PropValue(ObjectValue(Value(Helper.toString(v_1._1)), T, T, T))).
                 update("destination", PropValue(ObjectValue(Value(AbsString.alpha("")), T, T, T))).
@@ -81,7 +81,7 @@ object TIZENDownloadRequest extends Tizen {
               (h_4, TizenHelper.TizenExceptionBot)
             case Some(n) if n == 2 =>
               val v_2 = getArgValue(h_2, ctx_2, args, "1")
-              val h_3 = h_2.update(l_r1, ObjEmpty)
+              val h_3 = h_2.update(l_r1, Obj.empty)
               val o_new2 = o_new.
                 update("url", PropValue(ObjectValue(Value(Helper.toString(v_1._1)), T, T, T))).
                 update("destination", PropValue(ObjectValue(Value(Helper.toString(v_2._1)), T, T, T))).
@@ -93,7 +93,7 @@ object TIZENDownloadRequest extends Tizen {
             case Some(n) if n == 3 =>
               val v_2 = getArgValue(h_2, ctx_2, args, "1")
               val v_3 = getArgValue(h_2, ctx_2, args, "2")
-              val h_3 = h_2.update(l_r1, ObjEmpty)
+              val h_3 = h_2.update(l_r1, Obj.empty)
               val o_new2 = o_new.
                 update("url", PropValue(ObjectValue(Value(Helper.toString(v_1._1)), T, T, T))).
                 update("destination", PropValue(ObjectValue(Value(Helper.toString(v_2._1)), T, T, T))).
@@ -106,7 +106,7 @@ object TIZENDownloadRequest extends Tizen {
               val v_2 = getArgValue(h_2, ctx_2, args, "1")
               val v_3 = getArgValue(h_2, ctx_2, args, "2")
               val v_4 = getArgValue(h_2, ctx_2, args, "3")
-              val h_3 = h_2.update(l_r1, ObjEmpty)
+              val h_3 = h_2.update(l_r1, Obj.empty)
               val o_new2 =
                 if (v_4._1._5 </ AbsString.alpha("CELLULAR") && v_4._1._5 </ AbsString.alpha("WIFI") &&
                   v_4._1._5 </ AbsString.alpha("ALL"))

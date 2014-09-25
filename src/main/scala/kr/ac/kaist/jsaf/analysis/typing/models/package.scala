@@ -21,7 +21,7 @@ package object models {
 
   def notGenericMethod(h: Heap, lset: LocSet, clsName: String): HashSet[Exception] = {
     val exist = lset.exists(l => {
-      val v = h(l)("@class")._1._2._1._5
+      val v = h(l)("@class")._2._1._5
       v != AbsString.alpha(clsName) && v </ StrBot
     })
 

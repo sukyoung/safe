@@ -10,6 +10,7 @@
 package kr.ac.kaist.jsaf.bug_detector
 
 import kr.ac.kaist.jsaf.analysis.typing.CallContext
+import kr.ac.kaist.jsaf.{Shell, ShellParameters}
 
 class BugOption(defaultForUser: Boolean = true) {
   ////////////////////////////////////////////////////////////////////////////////
@@ -17,12 +18,18 @@ class BugOption(defaultForUser: Boolean = true) {
   ////////////////////////////////////////////////////////////////////////////////
   val contextSensitive: Array[CallContext.SensitivityFlagType] = new Array(BugKindCounter + 1)
 
-  var ArrayConstructor_Check                                    = true
+  var ArrayConstructor_Check                                    = 
+    if(Shell.params.command == ShellParameters.CMD_WEBAPP_BUG_DETECTOR)
+      false
+    else true
   var ArrayConstructor_ArgumentMustBeUIntInEveryState           = false
   var ArrayConstructor_ArgumentMustBeUIntInEveryLocation        = false
   var ArrayConstructor_ArgumentMustBeUIntDefinitely             = false
+  var AbsentReadProperty_Check                                  = 
+    if(Shell.params.command == ShellParameters.CMD_WEBAPP_BUG_DETECTOR)
+      false
+    else true
 
-  var AbsentReadProperty_Check                                  = true
   var AbsentReadProperty_PropertyMustExistInEveryState          = false
   var AbsentReadProperty_PropertyMustExistInEveryLocation       = false
   var AbsentReadProperty_PropertyMustExistForAllValue           = false
@@ -50,8 +57,14 @@ class BugOption(defaultForUser: Boolean = true) {
   var BuiltinWrongArgType_Check                                 = true
   var BuiltinWrongArgType_TypeMustBeCorrectInEveryState         = false
   var BuiltinWrongArgType_TypeMustBeCorrectForAllValue          = false
-  var BuiltinWrongArgType_CheckObjectType                       = true
-  var BuiltinWrongArgType_CheckFunctionType                     = true
+  var BuiltinWrongArgType_CheckObjectType                       = 
+    if(Shell.params.command == ShellParameters.CMD_WEBAPP_BUG_DETECTOR)
+      false
+    else true
+  var BuiltinWrongArgType_CheckFunctionType                     = 
+    if(Shell.params.command == ShellParameters.CMD_WEBAPP_BUG_DETECTOR)
+      false
+    else true
 
   var CallConstFunc_Check                                       = true
 
@@ -70,37 +83,82 @@ class BugOption(defaultForUser: Boolean = true) {
   var CondBranch_ConditionMustBeTrueOrFalseForAllValue          = false
   var CondBranch_CheckIf                                        = true
   var CondBranch_CheckLoop                                      = false
-  var CondBranch_CheckTernary                                   = true
+  var CondBranch_CheckTernary                                   = 
+    if(Shell.params.command == ShellParameters.CMD_WEBAPP_BUG_DETECTOR)
+      false
+    else true
 
   var ConvertUndefToNum_Check                                   = true
   var ConvertUndefToNum_UndefMustBeConvertedInEveryState        = false
   var ConvertUndefToNum_VariableMustHaveUndefinedOnly           = true
   var ConvertUndefToNum_ToNumberMustBeCalledForExactValue       = true
 
-  var DefaultValue_Check                                        = true
+  var DefaultValue_Check                                        = 
+    if(Shell.params.command == ShellParameters.CMD_WEBAPP_BUG_DETECTOR)
+      false
+    else true
   var DefaultValue_MustBeCallableInEveryState                   = false
   var DefaultValue_MustBeCallableForEveryLocation               = false
   var DefaultValue_MustBeCallableDefinitely                     = false
 
-  var FunctionArgSize_Check                                     = true
-  var FunctionArgSize_CheckNativeFunction                       = true
-  var FunctionArgSize_CheckUserFunction                         = true
-  var FunctionArgSize_CheckTooFew                               = true
-  var FunctionArgSize_CheckTooMany                              = true
+  var FunctionArgSize_Check                                     = 
+    if(Shell.params.command == ShellParameters.CMD_WEBAPP_BUG_DETECTOR)
+      false
+    else true
+  var FunctionArgSize_CheckNativeFunction                       = 
+    if(Shell.params.command == ShellParameters.CMD_WEBAPP_BUG_DETECTOR)
+      false
+    else true
+  var FunctionArgSize_CheckUserFunction                         = 
+    if(Shell.params.command == ShellParameters.CMD_WEBAPP_BUG_DETECTOR)
+      false
+    else true
+  var FunctionArgSize_CheckTooFew                               = 
+    if(Shell.params.command == ShellParameters.CMD_WEBAPP_BUG_DETECTOR)
+      false
+    else true
+  var FunctionArgSize_CheckTooMany                              = 
+    if(Shell.params.command == ShellParameters.CMD_WEBAPP_BUG_DETECTOR)
+      false
+    else true
 
-  var GlobalThis_Check                                          = true
+  var GlobalThis_Check                                          = 
+    if(Shell.params.command == ShellParameters.CMD_WEBAPP_BUG_DETECTOR)
+      false
+    else true
   var GlobalThis_MustReferInEveryState                          = false
   var GlobalThis_MustReferExactly                               = true
 
-  var ImplicitTypeConvert_Check                                 = true
+  var ImplicitTypeConvert_Check                                 = 
+    if(Shell.params.command == ShellParameters.CMD_WEBAPP_BUG_DETECTOR)
+      false
+    else true
   var ImplicitTypeConvert_MustBeConvertedInEveryState           = false
-  var ImplicitTypeConvert_MustBeConvertedForAllValue            = true
-  var ImplicitTypeConvert_CheckNullAndUndefined                 = true
+  var ImplicitTypeConvert_MustBeConvertedForAllValue            = 
+    if(Shell.params.command == ShellParameters.CMD_WEBAPP_BUG_DETECTOR)
+      false
+    else true
+  var ImplicitTypeConvert_CheckNullAndUndefined                 = 
+    if(Shell.params.command == ShellParameters.CMD_WEBAPP_BUG_DETECTOR)
+      false
+    else true
   var ImplicitTypeConvert_CheckStringAndNumber                  = false
-  var ImplicitTypeConvert_CheckBooleanAndUndefined              = true
-  var ImplicitTypeConvert_CheckBooleanAndNull                   = true
-  var ImplicitTypeConvert_CheckBooleanAndNumber                 = true
-  var ImplicitTypeConvert_CheckBooleanAndString                 = true
+  var ImplicitTypeConvert_CheckBooleanAndUndefined              = 
+    if(Shell.params.command == ShellParameters.CMD_WEBAPP_BUG_DETECTOR)
+      false
+    else true
+  var ImplicitTypeConvert_CheckBooleanAndNull                   = 
+    if(Shell.params.command == ShellParameters.CMD_WEBAPP_BUG_DETECTOR)
+      false
+    else true
+  var ImplicitTypeConvert_CheckBooleanAndNumber                 = 
+    if(Shell.params.command == ShellParameters.CMD_WEBAPP_BUG_DETECTOR)
+      false
+    else true
+  var ImplicitTypeConvert_CheckBooleanAndString                 = 
+    if(Shell.params.command == ShellParameters.CMD_WEBAPP_BUG_DETECTOR)
+      false
+    else true
   var ImplicitTypeConvert_CheckObjectAndNumber                  = false
   var ImplicitTypeConvert_CheckObjectAndString                  = false
   var ImplicitTypeConvert_CheckObjectAndBoolean                 = false
@@ -117,7 +175,10 @@ class BugOption(defaultForUser: Boolean = true) {
 
   var Shadowing_Check                                           = true
 
-  var StrictMode_Check                                          = true
+  var StrictMode_Check                                          = 
+    if(Shell.params.command == ShellParameters.CMD_WEBAPP_BUG_DETECTOR)
+      false
+    else true
 
   var UnreachableCode_Check                                     = false
 
@@ -130,7 +191,10 @@ class BugOption(defaultForUser: Boolean = true) {
   var VaryingTypeArguments_Check                                = false
   var VaryingTypeArguments_CheckUndefined                       = false
 
-  var WrongThisType_Check                                       = true
+  var WrongThisType_Check                                       = 
+    if(Shell.params.command == ShellParameters.CMD_WEBAPP_BUG_DETECTOR)
+      false
+    else true
   var WrongThisType_TypeMustBeWrongInEveryState                 = false
   var WrongThisType_TypeMustBeWrongInEveryFunctionId            = false
   var WrongThisType_TypeMustBeWrongInEveryFunctionLocation      = false

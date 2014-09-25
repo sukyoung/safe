@@ -88,7 +88,7 @@ class TizenModel(cfg: CFG) extends Model(cfg) {
           case Some(o) =>
             list_props.foldLeft(o)((oo, pv) => oo.update(pv._1, pv._2))
           case None =>
-            list_props.foldLeft(ObjEmpty)((o, pvo) => o.update(pvo._1, pvo._2))
+            list_props.foldLeft(Obj.empty)((o, pvo) => o.update(pvo._1, pvo._2))
         }
         /* added function object to heap if any*/
         val heap = list_props.foldLeft(h2)((h3, pvo) => pvo._3 match {
@@ -101,7 +101,7 @@ class TizenModel(cfg: CFG) extends Model(cfg) {
       })
     )
 
-    Heap(h_1.map + (TizenCallbackTableLoc -> ObjEmpty) + (TizenCallbackArgTableLoc -> ObjEmpty))
+    Heap(h_1.map + (TizenCallbackTableLoc -> Obj.empty) + (TizenCallbackArgTableLoc -> Obj.empty))
   }
 
   def addAsyncCall(cfg: CFG, loop_head: Node): (List[Node],List[Node]) = {
@@ -140,8 +140,8 @@ class TizenModel(cfg: CFG) extends Model(cfg) {
     val callback_table = h(TizenCallbackTableLoc)
     val callbackarg_table = h(TizenCallbackArgTableLoc)
 
-    val lset_fun = callback_table(name)._1._2._2
-    val lset_args = callbackarg_table(name)._1._2._2
+    val lset_fun = callback_table(name)._2._2
+    val lset_args = callbackarg_table(name)._2._2
 
     val l_r = addrToLoc(addr1, Recent)
     val l_arg = addrToLoc(addr2, Recent)
@@ -161,13 +161,13 @@ class TizenModel(cfg: CFG) extends Model(cfg) {
         val cp_aftercatch = (n_aftercatch, cc_caller)
         lset_fun.foreach {l_f:Loc => {
           val o_f = h_2(l_f)
-          val fids = o_f("@function")._1._3
+          val fids = o_f("@function")._3
           fids.foreach {fid => {
             val ccset = cc_caller.NewCallContext(h, cfg, fid, l_r, lset_this)
             ccset.foreach {case (cc_new, o_new) => {
               val o_new2 =
                 o_new.
-                  update("@scope", o_f("@scope")._1)
+                  update("@scope", o_f("@scope"))
               sem.addCallEdge(cp, ((fid,LEntry), cc_new), ContextEmpty, o_new2)
               sem.addReturnEdge(((fid,LExit), cc_new), cp_aftercall, ctx_2, o_old)
               sem.addReturnEdge(((fid, LExitExc), cc_new), cp_aftercatch, ctx_2, o_old)
@@ -186,7 +186,7 @@ class TizenModel(cfg: CFG) extends Model(cfg) {
         val cp_aftercall = (n_aftercall, cc_caller)
         lset_fun.foreach {l_f:Loc => {
           val o_f = h_3(l_f)
-          val fids = o_f("@function")._1._3
+          val fids = o_f("@function")._3
           fids.foreach {fid => {
             val ccset = cc_caller.NewCallContext(h, cfg, fid, l_r, lset_this)
             ccset.foreach {case (cc_new, o_new) => {
@@ -194,7 +194,7 @@ class TizenModel(cfg: CFG) extends Model(cfg) {
               val o_new2 =
                 o_new.
                   update(cfg.getArgumentsName(fid), value).
-                  update("@scope", o_f("@scope")._1)
+                  update("@scope", o_f("@scope"))
               sem.addCallEdge(cp, ((fid,LEntry), cc_new), ContextEmpty, o_new2)
               sem.addReturnEdge(((fid,LExit), cc_new), cp_aftercall, ctx_2, o_old)
               sem.addReturnEdge(((fid, LExitExc), cc_new), cp_aftercall, ctx_2, o_old)

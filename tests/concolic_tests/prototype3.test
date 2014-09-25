@@ -24,6 +24,10 @@ Current target function: Packet\n\
 DONE\n\
 \n\
 \n\
+Current target function: Scheduler\n\
+DONE\n\
+\n\
+\n\
 Current target function: TaskControlBlock\n\
 \n\
 \n\
@@ -35,4 +39,8 @@ Current target function: TaskControlBlock.prototype.checkPriorityAdd<>funexpr\n\
 \n\
 \n\
 Current target function: TaskControlBlock.prototype.checkPriorityAdd<>funexpr\n\
+DONE\n\
+\n\
+\n\
+Current target function: TaskControlBlock.prototype.markAsRunnable<>funexpr\n\
 DONE\n\

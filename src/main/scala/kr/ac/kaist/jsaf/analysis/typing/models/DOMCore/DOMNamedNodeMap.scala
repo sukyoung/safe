@@ -16,6 +16,7 @@ import kr.ac.kaist.jsaf.analysis.cfg.CFG
 import kr.ac.kaist.jsaf.analysis.typing.models.AbsBuiltinFunc
 import kr.ac.kaist.jsaf.analysis.typing.models.AbsConstValue
 import kr.ac.kaist.jsaf.analysis.typing.AddressManager._
+import kr.ac.kaist.jsaf.Shell
 
 object DOMNamedNodeMap extends DOM {
   private val name = "NamedNodeMap"
@@ -23,6 +24,8 @@ object DOMNamedNodeMap extends DOM {
   /* predefined locatoins */
   val loc_cons = newSystemRecentLoc(name + "Cons")
   val loc_proto = newSystemRecentLoc(name + "Proto")
+  val loc_ins = newSystemRecentLoc(name + "Ins")
+  val loc_ins2 = newSystemRecentLoc(name + "AttrIns")
 
   /* constructor or object*/
   private val prop_cons: List[(String, AbsProperty)] = List(
@@ -33,6 +36,23 @@ object DOMNamedNodeMap extends DOM {
     ("length", AbsConstValue(PropValue(ObjectValue(Value(AbsNumber.alpha(0)), F, F, F)))),
     ("prototype", AbsConstValue(PropValue(ObjectValue(Value(loc_proto), F, F, F))))
   )
+/* instance */
+  private val prop_ins: List[(String, AbsProperty)] = List(
+    ("@class", AbsConstValue(PropValue(AbsString.alpha("Object")))),
+    ("@proto", AbsConstValue(PropValue(ObjectValue(Value(loc_proto), F, F, F)))),
+    ("@extensible", AbsConstValue(PropValue(BoolTrue))),
+    ("length", AbsConstValue(PropValue(ObjectValue(Value(UInt), F, F, F))))
+  )
+/* instance */
+  private val prop_ins2: List[(String, AbsProperty)] = List(
+    ("@class", AbsConstValue(PropValue(AbsString.alpha("Object")))),
+    ("@proto", AbsConstValue(PropValue(ObjectValue(Value(loc_proto), F, F, F)))),
+    ("@extensible", AbsConstValue(PropValue(BoolTrue))),
+    ("@default_number", AbsConstValue(PropValue(ObjectValue(Value(DOMAttr.loc_ins), F, F, F)))),
+    ("@default_other", AbsConstValue(PropValue(ObjectValue(Value(DOMAttr.loc_ins), F, F, F)))),
+    ("length", AbsConstValue(PropValue(ObjectValue(Value(UInt), F, F, F))))
+  )
+
 
   /* prorotype */
   private val prop_proto: List[(String, AbsProperty)] = List(
@@ -52,7 +72,10 @@ object DOMNamedNodeMap extends DOM {
     (name, AbsConstValue(PropValue(ObjectValue(loc_cons, T, F, T))))
   )
 
-  def getInitList(): List[(Loc, List[(String, AbsProperty)])] = List(
+  def getInitList(): List[(Loc, List[(String, AbsProperty)])] = if(Shell.params.opt_Dommodel2) List(
+    (loc_cons, prop_cons), (loc_proto, prop_proto), (GlobalLoc, prop_global), (loc_ins, prop_ins),  (loc_ins2, prop_ins2)
+
+  ) else List(
     (loc_cons, prop_cons), (loc_proto, prop_proto), (GlobalLoc, prop_global)
   )
 

@@ -51,7 +51,7 @@ object SemanticsExpr {
             case "*" => (bopMul(v_1,v_2), es_1 ++ es_2)
             case "/" => (bopDiv(v_1,v_2), es_1 ++ es_2)
             case "%" => (bopMod(v_1,v_2), es_1 ++ es_2)
-            case "==" => (bopEq(v_1,v_2), es_1 ++ es_2)
+            case "==" => (bopEq_better(h, v_1,v_2), es_1 ++ es_2)
             case "!=" => (bopNeq(v_1,v_2), es_1 ++ es_2)
             case "===" => (bopSEq(v_1,v_2), es_1 ++ es_2)
             case "!==" => (bopSNeq(v_1,v_2), es_1 ++ es_2)
@@ -109,7 +109,7 @@ object SemanticsExpr {
               (Value(Helper.TypeTag(h, v)), es)
           }
           case "+" => (uopPlus(v),es)
-          case "-" => (uopMinus(v),es)
+          case "-" => (uopMinus_better(h, v),es)
           case "~" => (uopBitNeg(v),es)
           case "!" => (uopNeg(v),es)
         }
@@ -146,7 +146,7 @@ object SemanticsExpr {
       case CFGString(str) => (Value(PValue(AbsString.alpha(str))),ExceptionBot)
       case CFGBool(bool) => (Value(PValue(AbsBool.alpha(bool))),ExceptionBot)
       case CFGNull() => (Value(PValue(AbsNull.alpha)),ExceptionBot)
-      case CFGThis(info) => (Value(PValueBot, h(SinglePureLocalLoc)("@this")._1._2._2), ExceptionBot)
+      case CFGThis(info) => (Value(PValueBot, h(SinglePureLocalLoc)("@this")._2._2), ExceptionBot)
     }
   }
 }

@@ -60,9 +60,11 @@ object TIZENpower extends Tizen {
           val v_2 = getArgValue(h, ctx, args, "1")
           val n_arglen = Operator.ToUInt32(getArgValue(h, ctx, args, "length"))
           val es =
-            if (n_arglen == 0)
-              Set[WebAPIException](TypeMismatchError)
-            else TizenHelper.TizenExceptionBot
+            AbsNumber.getUIntSingle(n_arglen) match {
+	      case Some(n) if n == 0 =>
+                Set[WebAPIException](TypeMismatchError)
+              case _ => TizenHelper.TizenExceptionBot
+            }
           val es_1 =
             if (v_1._1._5 != AbsString.alpha("SCREEN") && v_1._1._5 != AbsString.alpha("CPU"))
               Set[WebAPIException](TypeMismatchError)
@@ -83,9 +85,11 @@ object TIZENpower extends Tizen {
           val v = getArgValue(h, ctx, args, "0")
           val n_arglen = Operator.ToUInt32(getArgValue(h, ctx, args, "length"))
           val es =
-            if (n_arglen == 0)
-              Set[WebAPIException](TypeMismatchError)
-            else TizenHelper.TizenExceptionBot
+            AbsNumber.getUIntSingle(n_arglen) match {
+	      case Some(n) if n == 0 =>
+                Set[WebAPIException](TypeMismatchError)
+              case _ => TizenHelper.TizenExceptionBot
+            }
           val es_1 =
             if (v._1._5 != AbsString.alpha("SCREEN") && v._1._5 != AbsString.alpha("CPU"))
               Set[WebAPIException](TypeMismatchError)
@@ -97,7 +101,7 @@ object TIZENpower extends Tizen {
         )),
       ("tizen.power.setScreenStateChangeListener" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -107,14 +111,16 @@ object TIZENpower extends Tizen {
           val v = getArgValue(h_1, ctx_1, args, "0")
           val n_arglen = Operator.ToUInt32(getArgValue(h_1, ctx_1, args, "length"))
           val es =
-            if (n_arglen == 0)
-              Set[WebAPIException](TypeMismatchError)
-            else TizenHelper.TizenExceptionBot
+            AbsNumber.getUIntSingle(n_arglen) match {
+	      case Some(n) if n == 0 =>
+                Set[WebAPIException](TypeMismatchError)
+              case _ => TizenHelper.TizenExceptionBot
+            }
           val es_1 =
             if (v._2.exists((l) => Helper.IsCallable(h_1, l) <= F))
               Set[WebAPIException](TypeMismatchError)
             else TizenHelper.TizenExceptionBot
-          val o_arr = ObjEmpty.
+          val o_arr = Obj.empty.
             update("0", PropValue(ObjectValue(Value(StrTop), T, T, T))).
             update("1", PropValue(ObjectValue(Value(StrTop), T, T, T)))
           val h_2 = h_1.update(l_r1, o_arr)
@@ -143,9 +149,11 @@ object TIZENpower extends Tizen {
           val v = getArgValue(h, ctx, args, "0")
           val n_arglen = Operator.ToUInt32(getArgValue(h, ctx, args, "length"))
           val es =
-            if (n_arglen == 0)
-              Set[WebAPIException](TypeMismatchError)
-            else TizenHelper.TizenExceptionBot
+            AbsNumber.getUIntSingle(n_arglen) match {
+	      case Some(n) if n == 0 =>
+                Set[WebAPIException](TypeMismatchError)
+              case _ => TizenHelper.TizenExceptionBot
+            }
           val es_1 =
             if (v._1._4 </ NumTop)
               Set[WebAPIException](TypeMismatchError)

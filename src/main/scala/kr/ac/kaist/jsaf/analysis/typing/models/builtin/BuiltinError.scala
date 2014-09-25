@@ -254,11 +254,12 @@ object BuiltinError extends ModelData {
       ("Error.constructor" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
           val v_arg = getArgValue(h, ctx, args, "0")
-          val l_e = ErrLoc
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
+
           val h_1 =
             if (Value(PValue(UndefBot, v_arg._1._2, v_arg._1._3, v_arg._1._4, v_arg._1._5), v_arg._2) </ ValueBot) {
               val s = Helper.toString(Helper.toPrimitive_better(h, v_arg))
-              h.update(l_e, h(l_e).update("message", PropValue(ObjectValue(s,BoolTrue,BoolFalse,BoolTrue))))
+              lset_this.foldLeft(h)((_h, l) => _h.update(l, h(l).update("message", PropValue(ObjectValue(s,BoolTrue,BoolFalse,BoolTrue)))))
             }
             else
               HeapBot
@@ -267,11 +268,11 @@ object BuiltinError extends ModelData {
               h
             else
               HeapBot
-          ((Helper.ReturnStore(h_1 + h_2, Value(l_e)), ctx), (he, ctxe))
+          ((Helper.ReturnStore(h_1 + h_2, Value(lset_this)), ctx), (he, ctxe))
         })),
       ("Error.prototype.toString" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           val s_empty = AbsString.alpha("")
           val v_name = lset_this.foldLeft(ValueBot)((v, l) => v + Helper.Proto(h, l, AbsString.alpha("name")))
           val v_msg = lset_this.foldLeft(ValueBot)((v, l) => v + Helper.Proto(h, l, AbsString.alpha("message")))
@@ -545,7 +546,7 @@ object BuiltinError extends ModelData {
       ("Error.prototype.toString" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
           val PureLocalLoc = cfg.getPureLocal(cp)
-          val lset_this = h(PureLocalLoc)("@this")._1._2._2
+          val lset_this = h(PureLocalLoc)("@this")._2._2
           val s_empty = AbsString.alpha("")
           val v_name = lset_this.foldLeft(ValueBot)((v, l) => v + PreHelper.Proto(h, l, AbsString.alpha("name")))
           val v_msg = lset_this.foldLeft(ValueBot)((v, l) => v + PreHelper.Proto(h, l, AbsString.alpha("message")))
@@ -795,7 +796,7 @@ object BuiltinError extends ModelData {
         })),
       ("Error.prototype.toString" -> (
         (h: Heap, ctx: Context, cfg: CFG, fun: String, args: CFGExpr, fid: FunctionId) => {
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           val LP1 = lset_this.foldLeft(LPBot)((lpset, l) => lpset ++ AH.Proto_use(h, l, AbsString.alpha("name")))
           val LP2 = lset_this.foldLeft(LPBot)((lpset, l) => lpset ++ AH.Proto_use(h, l, AbsString.alpha("message")))
           val LP3 = LPSet((SinglePureLocalLoc, "@return"))

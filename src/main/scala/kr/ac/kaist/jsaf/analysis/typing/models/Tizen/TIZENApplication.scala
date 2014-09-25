@@ -41,7 +41,7 @@ object TIZENApplication extends Tizen {
     Map(
         ("tizen.Application.exit" -> (
           (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-            val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+            val lset_this = h(SinglePureLocalLoc)("@this")._2._2
             val h_1 = lset_this.foldLeft(h)((h_, l) => Helper.PropStore(h, l, AbsString.alpha("contextId"), Value(UndefTop)))
             val est = Set[WebAPIException](UnknownError)
             val (h_e, ctx_e) = TizenHelper.TizenRaiseException(h, ctx, est)

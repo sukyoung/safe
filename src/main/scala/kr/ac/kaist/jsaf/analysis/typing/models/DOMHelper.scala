@@ -5,7 +5,7 @@
     Use is subject to license terms.
 
     This distribution may include materials developed by third parties.
-  ******************************************************************************/
+ ******************************************************************************/
 
 package kr.ac.kaist.jsaf.analysis.typing.models
 
@@ -20,7 +20,7 @@ import kr.ac.kaist.jsaf.analysis.typing.models.DOMHtml._
 import kr.ac.kaist.jsaf.analysis.typing.models.DOMHtml5._
 import kr.ac.kaist.jsaf.analysis.typing.models.DOMObject._
 import kr.ac.kaist.jsaf.analysis.typing.models.DOMSvg._
-import kr.ac.kaist.jsaf.analysis.typing.{Operator, Helper}
+import kr.ac.kaist.jsaf.analysis.typing._
 import kr.ac.kaist.jsaf.analysis.cfg.{CFG, FunctionId}
 import kr.ac.kaist.jsaf.{ShellParameters, Shell}
 import org.apache.html.dom.HTMLDocumentImpl
@@ -30,6 +30,11 @@ import org.w3c.dom.{Element, Node, Document, DocumentFragment}
 import org.w3c.dom.{Attr, DocumentType, Text, Comment, NodeList}
 
 object DOMHelper {
+  val quiet = 
+    if(Shell.params.command == ShellParameters.CMD_WEBAPP_BUG_DETECTOR)
+      true
+    else 
+      false
   private val validHtmlTags: Set[String] = Set(
    // HTML 4.01
    "HTML", "HEAD", "LINK", "TITLE", "META", "BASE", "ISINDEX", "STYLE", "BODY", "FORM",
@@ -46,15 +51,17 @@ object DOMHelper {
   )
 
   var temp_eventMap: HashMap[String, FunSet] = HashMap(
-    ("#LOAD", FunSetBot), ("#UNLOAD", FunSetBot), ("#KEYBOARD", FunSetBot), ("#MOUSE", FunSetBot), ("#OTHER", FunSetBot))
+    ("#LOAD", FunSetBot), ("#UNLOAD", FunSetBot), ("#KEYBOARD", FunSetBot), ("#MOUSE", FunSetBot), ("#TOUCH", FunSetBot), ("#OTHER", FunSetBot))
 
   val InterfaceObject =
-    ObjEmpty.
+    Obj.empty.
       update("@class", PropValue(AbsString.alpha("Function"))).
       update("@proto", PropValue(ObjectValue(ObjProtoLoc, BoolFalse, BoolFalse, BoolFalse))).
       update("@extensible", PropValue(BoolTrue)).
       update("@hasinstance", PropValueNullTop)
 
+  // Map an event target to an event function
+  var eventBindingMap: Map[Loc,Loc] = Map[Loc,Loc]()   
 
   private val predef = if(Shell.pred != null) Shell.pred.all.toSet
                        else (new Predefined(new ShellParameters())).all.toSet
@@ -157,7 +164,7 @@ object DOMHelper {
     case "AREA" => HTMLAreaElement.default_getInsList
     case "SCRIPT" =>
       // Warning message 
-      println("* Warning : document.createElement('script') has beed called: analysis results may be unsound since JavaScript code may be loaded at run time")
+      if (!quiet) println("* Warning : document.createElement('script') has beed called: analysis results may be unsound since JavaScript code may be loaded at run time")
       HTMLScriptElement.default_getInsList
     case "TABLE" => HTMLTableElement.default_getInsList
     case "CAPTION" => HTMLTableCaptionElement.default_getInsList
@@ -217,7 +224,7 @@ object DOMHelper {
     if (es.isEmpty)
       (HeapBot, ContextBot)
     else {
-      val v_old = h(SinglePureLocalLoc)("@exception_all")._1._2
+      val v_old = h(SinglePureLocalLoc)("@exception_all")._2
       val v_e = Value(PValueBot,
         es.foldLeft(LocSetBot)((lset,exc)=> lset + DOMExceptionLoc(exc)))
       val h_1 = h.update(SinglePureLocalLoc,
@@ -231,7 +238,7 @@ object DOMHelper {
     if (es.isEmpty)
       (h, ctx)
     else {
-      val v_old = h(PureLocalLoc)("@exception_all")._1._2
+      val v_old = h(PureLocalLoc)("@exception_all")._2
       val v_e = Value(PValueBot,
         es.foldLeft(LocSetBot)((lset,exc)=> lset + DOMExceptionLoc(exc)))
       val h_1 = h.update(PureLocalLoc,
@@ -295,7 +302,10 @@ object DOMHelper {
             else if (isKeyboardEventAttribute(s_ev) || isKeyboardEventProperty(s_ev)) "#KEYBOARD" :: list
             else if (isMouseEventAttribute(s_ev) || isMouseEventProperty(s_ev)) "#MOUSE" :: list
             else if (isMessageEventAttribute(s_ev) || isMessageEventProperty(s_ev)) "#MESSAGE" :: list
-            else if (isOtherEventAttribute(s_ev) || isOtherEventProperty(s_ev)) "#OTHER" :: list
+            else if (isTouchEventAttribute(s_ev) || isTouchEventProperty(s_ev)) "#TOUCH" :: list
+            else if (isOtherEventAttribute(s_ev) || isOtherEventProperty(s_ev)) {
+              "#OTHER" :: list
+            }
             else {
               //if(!isMobileEventProperty(s_ev)) {
               //  System.err.println("* Warning: the event type, " + s_ev + ", is not modeled but added to the OTHER type.")
@@ -305,16 +315,17 @@ object DOMHelper {
             }
           })
         case None => // StrTop | OtherStr =>
-          List("#LOAD", "#UNLOAD", "#KEYBOARD", "#MOUSE", "#MESSAGE", "#OTHER")
+          List("#LOAD", "#UNLOAD", "#KEYBOARD", "#MOUSE", "#MESSAGE", "#TOUCH", "#OTHER")
       }
     }
     val o_fun = event_list.foldLeft(fun_table)((o, s_ev) =>
-      o.update(s_ev, o(s_ev)._1 + propv_fun)
+      o.update(s_ev, o(s_ev) + propv_fun)
     )
     val o_target = event_list.foldLeft(target_table)((o, s_ev) =>
-      o.update(s_ev, o(s_ev)._1 + propv_target)
+      o.update(s_ev, o(s_ev) + propv_target)
     )
-    h.update(EventFunctionTableLoc, o_fun).update(EventTargetTableLoc, o_target)
+    eventBindingMap += v_target._2.head -> v_fun._2.head 
+    h.update(EventFunctionTableLoc, o_fun).update(EventTargetTableLoc, o_target)    
   }
 
   def addEventHandler_def(h: Heap, s: AbsString): LPSet = {
@@ -329,11 +340,12 @@ object DOMHelper {
             else if (isKeyboardEventAttribute(s_ev) || isKeyboardEventProperty(s_ev)) "#KEYBOARD" :: list
             else if (isMouseEventAttribute(s_ev) || isMouseEventProperty(s_ev)) "#MOUSE" :: list
             else if (isMessageEventAttribute(s_ev) || isMessageEventProperty(s_ev)) "#MESSAGE" :: list
+            else if (isTouchEventAttribute(s_ev) || isTouchEventProperty(s_ev)) "#TOUCH" :: list
             else if (isOtherEventAttribute(s_ev) || isOtherEventProperty(s_ev)) "#OTHER" :: list
             else list
           })
         case None => // StrTop | OtherStr =>
-          List("#LOAD", "#UNLOAD", "#KEYBOARD", "#MOUSE", "#MESSAGE", "#OTHER")
+          List("#LOAD", "#UNLOAD", "#KEYBOARD", "#MOUSE", "#MESSAGE", "#TOUCH", "#OTHER")
       }
     }
     val LP1 = event_list.foldLeft(LPBot)((lpset, s_ev) =>
@@ -357,11 +369,12 @@ object DOMHelper {
             else if (isKeyboardEventAttribute(s_ev) || isKeyboardEventProperty(s_ev)) "#KEYBOARD" :: list
             else if (isMouseEventAttribute(s_ev) || isMouseEventProperty(s_ev)) "#MOUSE" :: list
             else if (isMessageEventAttribute(s_ev) || isMessageEventProperty(s_ev)) "#MESSAGE" :: list
+            else if (isTouchEventAttribute(s_ev) || isTouchEventProperty(s_ev)) "#TOUCH" :: list
             else if (isOtherEventAttribute(s_ev) || isOtherEventProperty(s_ev)) "#OTHER" :: list
             else list
           })
         case None => // StrTop | OtherStr =>
-          List("#LOAD", "#UNLOAD", "#KEYBOARD", "#MOUSE", "#MESSAGE", "#OTHER")
+          List("#LOAD", "#UNLOAD", "#KEYBOARD", "#MOUSE", "#MESSAGE", "#TOUCH", "#OTHER")
       }
     }
     val LP1 = event_list.foldLeft(LPBot)((lpset, s_ev) =>
@@ -432,6 +445,16 @@ object DOMHelper {
     attr=="input" ||
     // for jQuery
     attr=="error" || attr == "focusin" || attr =="focusout" || attr == "ajax"
+  }
+
+  def isTouchEventAttribute(attr: String): Boolean = {
+    attr=="ontouchstart" || attr=="ontouchend" || attr=="ontouchmove" || attr=="ontouchcancel" ||
+    attr=="ontouchenter" || attr=="ontouchleave"
+  }
+
+  def isTouchEventProperty(attr: String): Boolean = {
+    attr=="touchstart" || attr=="touchend" || attr=="touchmove" || attr=="touchcancel" ||
+    attr=="touchenter" || attr=="touchleave"
   }
 
   def isMobileEventProperty(attr: String): Boolean = {
@@ -548,6 +571,44 @@ object DOMHelper {
   def findByClass(h: Heap, s_class : AbsString): LocSet = {
     findByAttr(h, HTMLDocument.GlobalDocumentLoc, "class", s_class, true)
   }
+  
+  val reg_no = """[^(^\s*)].*[^($\s*)]|.""".r
+  private def classNameMatch (a: AbsString, b: AbsString) : AbsBool = {
+    (a.gamma, b.gamma) match {
+      case (Some (v1), Some (v2)) if v1.size==1 && v2.size==1 =>
+        val vs1 = v1.head
+        val vs2 = v2.head
+        val className_n = (reg_no.findAllIn(vs2).toList)(0)
+        val new_match = ("""(\s|^)""" + className_n + """(\s|$)""").r
+        if(new_match.findAllIn(vs1).toList.size != 0)
+          BoolTrue
+        else BoolFalse
+      case _ => if(a<>b <= StrBot) BoolBot
+                else BoolTop
+    }
+  }
+  // used in getElementsByClassName
+  def findByClassName(h: Heap, l_root: Loc, s: AbsString): LocSet = {
+    val ab_attr_name = AbsString.alpha("class")
+    val ab_childNodes = AbsString.alpha("childNodes")
+    def search(lset_visited: LocSet, l_this: Loc): LocSet = {
+      if (!lset_visited.contains(l_this)) {
+        // get attribute value
+        val v_attr = DOMHelper.getAttribute(h, LocSet(l_this), ab_attr_name)
+        // next elements
+        val lset_children = Helper.Proto(h, l_this, ab_childNodes)._2.foldLeft(LocSetBot)((lset, l_n) =>
+          lset ++ Helper.Proto(h, l_n, NumStr)._2)
+        if (BoolTrue <= classNameMatch(v_attr._1._5, s))
+          lset_children.foldLeft(LocSet(l_this))((lset, l_child) => lset ++ search(lset_visited + l_this, l_child))
+        else
+          lset_children.foldLeft(LocSetBot)((lset, l_child) => lset ++ search(lset_visited + l_this, l_child))
+      }
+      else
+        LocSetBot
+    }
+    search(LocSetBot, l_root)
+  }
+
 
   def findByTag(h: Heap, l_root: Loc, s_tag : AbsString): LocSet = {
     /* The HTML DOM returns the tagName of an HTML element in the canonical uppercase form */
@@ -768,7 +829,7 @@ object DOMHelper {
                 else if(name == "disabled")
                   findByProp(h, l_root, "disabled", Value(BoolTrue))
                 else {
-                  println("* Warning : the option selector ': " + name + "' not supported in 'querySelectorAll'")
+                  if (!quiet) println("* Warning : the option selector ': " + name + "' not supported in 'querySelectorAll'")
                   findByTag(h, l_root, AbsString.alpha("*"))
                 }
                 iter(tail, lset_all, Some(token))
@@ -869,24 +930,26 @@ object DOMHelper {
     querySelectorAll(h, HTMLDocument.GlobalDocumentLoc, s_selector)
   }
 
-  def addTag(h: Heap, tag_name : String, l_tag: Loc, l_child: Loc): Heap = {
+  def addTag(h: Heap, tag_name : String, l_tag: Loc, l_child: Loc, l_attributes: Loc): Heap = {
     val s_uppper = tag_name.toUpperCase
     val element_proplist = DOMElement.getInsList(PropValue(ObjectValue(AbsString.alpha(s_uppper), F, T, T))):::DOMHelper.getInsList(s_uppper)
-    val o_tag = element_proplist.foldLeft(ObjEmpty)((x, y) => x.update(y._1, y._2))
+    val o_tag = element_proplist.foldLeft(Obj.empty)((x, y) => x.update(y._1, y._2))
       .update("childNodes", PropValue(ObjectValue(l_child, F, T, T)))
-    val o_child = DOMNodeList.getInsList(0).foldLeft(ObjEmpty)((x, y) => x.update(y._1, y._2))
-    h.update(l_tag, o_tag).update(l_child, o_child)
+      .update("attributes", PropValue(ObjectValue(l_attributes, F, T, T)))
+    val o_child = DOMNodeList.getInsList(0).foldLeft(Obj.empty)((x, y) => x.update(y._1, y._2))
+    val o_attributes = DOMNodeList.getInsList(0).foldLeft(Obj.empty)((x, y) => x.update(y._1, y._2))
+    h.update(l_tag, o_tag).update(l_child, o_child).update(l_attributes, o_attributes)
   }
   def addTagTop(h: Heap, l_tag: Loc, l_child: Loc): Heap = {
-    val o_tag = HTMLTopElement.default_getInsList().foldLeft(ObjEmpty)((x, y) => x.update(y._1, y._2, AbsentTop)).
+    val o_tag = HTMLTopElement.default_getInsList().foldLeft(Obj.empty)((x, y) => x.update(y._1, y._2).absentTop(y._1)).
       update("childNodes", PropValue(ObjectValue(l_child, F, T, T)))
-    val o_child =  DOMNodeList.getInsList(0).foldLeft(ObjEmpty)((x, y) => x.update(y._1, y._2))
+    val o_child =  DOMNodeList.getInsList(0).foldLeft(Obj.empty)((x, y) => x.update(y._1, y._2))
     h.update(l_tag, o_tag).update(l_child, o_child)
   }
 
   // check the HIERARCHY_REQUEST_ERR exception in the DOM tree 
   def checkHierarchyException(funname: String, h: Heap, lset_target: LocSet, lset_child: LocSet): Unit = {
-    println(funname + " - CHECK: HIERARCHY_REQUEST_ERR exception")
+    if (!quiet) println(funname + " - CHECK: HIERARCHY_REQUEST_ERR exception")
     /*
     checkHRE(h, lset_target, lset_child).getPair match {
       case (AbsTop, _) =>
@@ -923,7 +986,7 @@ object DOMHelper {
             case _ if AbsNumber.isUIntAll(n_len) => BoolTop
             // cannot fall into this case
             case _ =>
-              println("INTERNAL ERROR : childnodes.length is not either of UIntSingle, NumTop, and UInt") 
+              if (!quiet) println("INTERNAL ERROR : childnodes.length is not either of UIntSingle, NumTop, and UInt")
               bb
           }
         })
@@ -935,18 +998,18 @@ object DOMHelper {
 
   // check the NOT_FOUND_ERR exception in the DOM tree 
   def checkNotFoundException(funname: String, h: Heap, lset_target: LocSet, lset_child: LocSet): Unit = {
-    println(funname + " - CHECK: NOT_FOUND_ERR exception")
+    if(!quiet) println(funname + " - CHECK: NOT_FOUND_ERR exception")
     checkNFE(h, lset_target, lset_child).getPair match {
       case (AbsTop, _) =>
-        println(funname + " - WARNING: NOT_FOUND_ERR exception: the argument node is not a child of a target node")
+        if(!quiet) println(funname + " - WARNING: NOT_FOUND_ERR exception: the argument node is not a child of a target node")
       case (AbsSingle, Some(b)) if b =>
-        println(funname + " - ERROR: NOT_FOUND_ERR exception: the argument node is not a child of a target node")
+        if(!quiet) println(funname + " - ERROR: NOT_FOUND_ERR exception: the argument node is not a child of a target node")
       case _ => ()
     }
   }
   def NewChildNodeListObj(length: Double): Obj = {
     val childNodes_list = DOMNodeList.getInsList(0)
-    childNodes_list.foldLeft(ObjEmpty)((x, y) => x.update(y._1, y._2))
+    childNodes_list.foldLeft(Obj.empty)((x, y) => x.update(y._1, y._2))
   }
 
   def getAttribute(h: Heap, l_elem: Loc, s_attr: AbsString): Value = {
@@ -997,7 +1060,7 @@ object DOMHelper {
       lset_attrs.foldLeft(_h)((__h, l_attr) => {
         var h_1 = Helper.Delete(__h, l_attr, s_attr)._1
         val attributes_obj = h_1(l_attr)
-        val length_pval = attributes_obj("length")._1._1._1._1
+        val length_pval = attributes_obj("length")._1._1._1
         // decrease 'length' of 'attributes' by 1
         val length_val = AbsNumber.getUIntSingle(Helper.toNumber(length_pval)) match {
           case Some(v) => AbsNumber.alpha(v-1)
@@ -1011,23 +1074,23 @@ object DOMHelper {
 
   def setAttribute(h: Heap, l_elem: Loc ,l_attr: Loc, l_text: Loc, l_child1: Loc, l_child2: Loc, attr_name: AbsString, attr_val: AbsString): Heap = {
     /* imprecise semantics : no exception handling */
-    if(attr_name </ StrBot || attr_val </StrBot) {
+    if(attr_name </ StrBot && attr_val </StrBot) {
       val name = PropValue(ObjectValue(attr_name, F, T, T))
       val value = PropValue(ObjectValue(attr_val, T, T, T))
       // create a new Attr node object
       val attr_obj_list = DOMAttr.default_getInsList(name, value, PropValue(ObjectValue(l_child1, F, T, T)), PropValue(ObjectValue(l_text, F, T, T)))
-      val attr_obj = attr_obj_list.foldLeft(ObjEmpty) ((obj, v) => obj.update(AbsString.alpha(v._1), v._2))
+      val attr_obj = attr_obj_list.foldLeft(Obj.empty) ((obj, v) => obj.update(AbsString.alpha(v._1), v._2))
       // create a new text node object
       val text_obj_list = DOMText.default_getInsList(value, PropValue(ObjectValue(l_attr, F, T, T)), PropValue(ObjectValue(l_child2, F, T, T)))
-      val text_obj = text_obj_list.foldLeft(ObjEmpty) ((obj, v) => obj.update(AbsString.alpha(v._1), v._2))
+      val text_obj = text_obj_list.foldLeft(Obj.empty) ((obj, v) => obj.update(AbsString.alpha(v._1), v._2))
 
       // objects for 'childNodes' of the Attr node
       val child_obj_list1 = DOMNamedNodeMap.getInsList(1)
-      val child_obj1 = child_obj_list1.foldLeft(ObjEmpty.update(AbsString.alpha("0"), PropValue(ObjectValue(l_text, T, T, T))))((obj, v) =>
+      val child_obj1 = child_obj_list1.foldLeft(Obj.empty.update(AbsString.alpha("0"), PropValue(ObjectValue(l_text, T, T, T))))((obj, v) =>
         obj.update(AbsString.alpha(v._1), v._2))
       // objects for 'childNodes' of the Text node
       val child_obj_list2 = DOMNamedNodeMap.getInsList(0)
-      val child_obj2 = child_obj_list2.foldLeft(ObjEmpty)((obj, v) => obj.update(AbsString.alpha(v._1), v._2))
+      val child_obj2 = child_obj_list2.foldLeft(Obj.empty)((obj, v) => obj.update(AbsString.alpha(v._1), v._2))
 
       // update 'className' property if the value of the 'class' attribute would be changed
       val thisobj = h(l_elem)
@@ -1065,7 +1128,7 @@ object DOMHelper {
       val attributes_lset = Helper.Proto(h_in1, l_elem, AbsString.alpha("attributes"))._2
       val h_ret = attributes_lset.foldLeft(h_in1)((h_in2, l_attributes) => {
         val attributes_obj = h_in2(l_attributes)
-        val length_pval = attributes_obj("length")._1._1._1._1
+        val length_pval = attributes_obj("length")._1._1._1
         // increate 'length' of 'attributes' by 1
         val length_val = AbsNumber.getUIntSingle(Helper.toNumber(length_pval)) match {
           case Some(v) => AbsNumber.alpha(v+1)
@@ -1086,22 +1149,22 @@ object DOMHelper {
 
   def setAttribute(h: Heap, lset_elem: LocSet ,l_attr: Loc, l_text: Loc, l_child1: Loc, l_child2: Loc, l_classentry: Loc, attr_name:AbsString, attr_val: AbsString): Heap = {
     /* imprecise semantics : no exception handling */
-    if(attr_name </ StrBot || attr_val </StrBot) {
+    if(attr_name </ StrBot && attr_val </StrBot) {
       val name = PropValue(ObjectValue(attr_name, F, T, T))
       val value = PropValue(ObjectValue(attr_val, T, T, T))
       // create a new Attr node object
       val attr_obj_list = DOMAttr.default_getInsList(name, value, PropValue(ObjectValue(l_child1, F, T, T)), PropValue(ObjectValue(l_text, F, T, T)))
-      val attr_obj = attr_obj_list.foldLeft(ObjEmpty) ((obj, v) => obj.update(AbsString.alpha(v._1), v._2))
+      val attr_obj = attr_obj_list.foldLeft(Obj.empty) ((obj, v) => obj.update(AbsString.alpha(v._1), v._2))
       // create a new text node object
       val text_obj_list = DOMText.default_getInsList(value, PropValue(ObjectValue(l_attr, F, T, T)), PropValue(ObjectValue(l_child2, F, T, T)))
-      val text_obj = text_obj_list.foldLeft(ObjEmpty) ((obj, v) => obj.update(AbsString.alpha(v._1), v._2))
+      val text_obj = text_obj_list.foldLeft(Obj.empty) ((obj, v) => obj.update(AbsString.alpha(v._1), v._2))
 
       // objects for 'childNodes' of the Attr node
       val child_obj_list1 = DOMNamedNodeMap.getInsList(1)
-      val child_obj1 = child_obj_list1.foldLeft(ObjEmpty.update(AbsString.alpha("0"), PropValue(ObjectValue(l_text, T, T, T))))((attr_nameobj, v) => attr_nameobj.update(AbsString.alpha(v._1), v._2))
+      val child_obj1 = child_obj_list1.foldLeft(Obj.empty.update(AbsString.alpha("0"), PropValue(ObjectValue(l_text, T, T, T))))((attr_nameobj, v) => attr_nameobj.update(AbsString.alpha(v._1), v._2))
       // objects for 'childNodes' of the Text node
       val child_obj_list2 = DOMNamedNodeMap.getInsList(0)
-      val child_obj2 = child_obj_list2.foldLeft(ObjEmpty)((obj, v) => obj.update(AbsString.alpha(v._1), v._2))
+      val child_obj2 = child_obj_list2.foldLeft(Obj.empty)((obj, v) => obj.update(AbsString.alpha(v._1), v._2))
 
       val h_5 = lset_elem.foldLeft(h)((h_in, l_this) => {
         // update 'className' property if the value of the 'class' attribute would be changed
@@ -1138,20 +1201,46 @@ object DOMHelper {
 
         // read the list of attributes in the current node
         val attributes_lset = Helper.Proto(h_in1, l_this, AbsString.alpha("attributes"))._2
-        attributes_lset.foldLeft(h_in1)((h_in2, l_attributes) => {
-          val attributes_obj = h_in2(l_attributes)
-          val length_pval = attributes_obj("length")._1._1._1._1
-          // increate 'length' of 'attributes' by 1
-          val length_val = AbsNumber.getUIntSingle(Helper.toNumber(length_pval)) match {
-            case Some(v) => AbsNumber.alpha(v+1)
-            case _ => Helper.toNumber(length_pval)
+        attributes_lset.foldLeft(HeapBot)((h_in2, l_attributes) => {
+          val hasAttr = Helper.HasOwnProperty(h_in1, l_attributes, attr_name) 
+          val h_f = if(BoolFalse <= hasAttr) {          
+            val attributes_obj = h_in1(l_attributes)
+            val length_pval = attributes_obj("length")._1._1._1
+            // increate 'length' of 'attributes' by 1
+            val length_val = AbsNumber.getUIntSingle(Helper.toNumber(length_pval)) match {
+              case Some(v) => AbsNumber.alpha(v+1)
+              case _ => Helper.toNumber(length_pval)
+            }
+            val attributes_obj_new =
+              attributes_obj.update(attr_name, PropValue(ObjectValue(l_attr, T, T, T))).
+                update(Helper.toString(length_pval), PropValue(ObjectValue(l_attr, T, T, T))).
+                update(AbsString.alpha("length"), PropValue(ObjectValue(length_val, F, F, F)))
+            // update heap
+            h_in1.update(l_attr, attr_obj).update(l_text, text_obj).update(l_attributes, attributes_obj_new).update(l_child1, child_obj1).update(l_child2, child_obj2)
           }
-          val attributes_obj_new =
-            attributes_obj.update(attr_name, PropValue(ObjectValue(l_attr, T, T, T))).
-              update(Helper.toString(length_pval), PropValue(ObjectValue(l_attr, T, T, T))).
-              update(AbsString.alpha("length"), PropValue(ObjectValue(length_val, F, F, F)))
-          // update heap
-          h_in2.update(l_attr, attr_obj).update(l_text, text_obj).update(l_attributes, attributes_obj_new).update(l_child1, child_obj1).update(l_child2, child_obj2)
+            else
+              HeapBot
+          val h_t = if(BoolTrue <= hasAttr){
+            val attr_lset = Helper.Proto(h_in1, l_attributes, attr_name)._2
+            attr_lset.foldLeft(HeapBot)((_h, l_attr) =>{
+              val child_lset = Helper.Proto(h_in1, l_attr, AbsString.alpha("firstChild"))._2
+              val _h0 = child_lset.foldLeft(HeapBot)((__h, l_child) => {
+                  val __h1 =Helper.PropStore(h_in1, l_child, AbsString.alpha("nodeValue"), Value(attr_val))
+                  val __h2 =Helper.PropStore(__h1, l_child, AbsString.alpha("data"), Value(attr_val))
+                  val __h3 =Helper.PropStore(__h2, l_child, AbsString.alpha("textContent"), Value(attr_val))
+                  val __h4 =Helper.PropStore(__h3, l_child, AbsString.alpha("wholeText"), Value(attr_val))
+                  __h + __h4
+                })
+              val _h1 =Helper.PropStore(_h0, l_attr, AbsString.alpha("nodeValue"), Value(attr_val))
+              val _h2 =Helper.PropStore(_h1, l_attr, AbsString.alpha("value"), Value(attr_val))
+              val _h3 =Helper.PropStore(_h2, l_attr, AbsString.alpha("textContent"), Value(attr_val))
+
+              _h + _h3             
+            })
+
+          }
+            else HeapBot
+          h_in2 + h_f + h_t
         })
       })
       // ClassTable update
@@ -1201,7 +1290,7 @@ object DOMHelper {
          if(BoolFalse <= hasName) {
            val nodelist_proplist = DOMNodeList.getInsList(1) ++ List(
              ("0", PropValue(ObjectValue(Value(target), T, T, T))))
-           val nodelist_obj = nodelist_proplist.foldLeft(ObjEmpty)((o, p) => o.update(p._1, p._2))
+           val nodelist_obj = nodelist_proplist.foldLeft(Obj.empty)((o, p) => o.update(p._1, p._2))
            val new_class_table = class_table.update(className, PropValue(ObjectValue(newNode_loc, T, T, T)))
            h.update(newNode_loc, nodelist_obj).update(ClassTableLoc, new_class_table)
          }
@@ -1210,10 +1299,10 @@ object DOMHelper {
        // in case that the mapping already exists
        val h_t = 
          if(BoolTrue <= hasName) {
-           val loc_nodelist = mapped_node._1._1._1._2
+           val loc_nodelist = mapped_node._1._1._2
            val new_h = loc_nodelist.foldLeft(HeapBot)((_h, l) => {
              val obj_nodelist = h(l)
-             val new_nodelist = obj_nodelist("length")._1._1._1._1._4.getSingle match {
+             val new_nodelist = obj_nodelist("length")._1._1._1._4.getSingle match {
                case Some(n) => 
                  val len = n.toInt
                  obj_nodelist.update(
@@ -1279,7 +1368,7 @@ object DOMHelper {
     h_4
   }
 
-  def updateDOMTree(h: Heap, ctx: Context, l_root: Loc, source: Value, cfg: CFG, addresskey: (FunctionId, Int, Int)): (Heap, Context) = {
+  def updateDOMTree(h: Heap, ctx: Context, l_root: Loc, source: Value, cfg: CFG, addresskey: (ControlPoint, Int, Int)): (Heap, Context) = {
     val s_str = Helper.toString(Helper.toPrimitive_better(h, source))
     if(s_str </ StrBot) {
       s_str.getSingle match {
@@ -1301,7 +1390,7 @@ object DOMHelper {
           val childNodes_lset = Helper.Proto(h_7, l_root, AbsString.alpha("childNodes"))._2
           val h_8 = childNodes_lset.foldLeft(h_7)((_h, l) => {
             Helper.PropStoreWeak(_h, l, AbsString.alpha("length"), Value(UInt))
-            Helper.PropStoreWeak(_h, l, AbsString.alpha("@default_number"), Value(l_topnode))
+            Helper.PropStoreWeak(_h, l, AbsString.alpha(Str_default_number), Value(l_topnode))
           })
 
           val h_9 = if(BoolTrue <= Helper.HasOwnProperty(h_8, l_root, AbsString.alpha("children"))){ 
@@ -1310,13 +1399,13 @@ object DOMHelper {
             val children_lset = Helper.Proto(h_8_2, l_root, AbsString.alpha("children"))._2
             val h_8_3 = children_lset.foldLeft(h_8_2)((_h, l) => {
               Helper.PropStoreWeak(_h, l, AbsString.alpha("length"), Value(UInt))
-              Helper.PropStoreWeak(_h, l, AbsString.alpha("@default_number"), Value(l_topnode))
+              Helper.PropStoreWeak(_h, l, AbsString.alpha(Str_default_number), Value(l_topnode))
             })
             h_8_3
           } else h_8
           /* weak update of 'parentNode' of the new HTMLTopElement */
           val h_10 = Helper.PropStoreWeak(h_9, l_topnode, AbsString.alpha("parentNode"), Value(l_root))
-          System.err.println("* Warning: The value to be assigned to 'innerHTML' is not concrete; analysis results may be unsound.") 
+          if (!quiet) System.err.println("* Warning: The value to be assigned to 'innerHTML' is not concrete; analysis results may be unsound.")
           (h_10, ctx_2)
         case Some(t) => 
           val _h = clearAllChildNodes(h, l_root)
@@ -1343,23 +1432,35 @@ object DOMHelper {
 
   // Handle side effects caused by DOM property update
   // Property update is performed in Helper.PropStore, not in this function
-  def updateDOMProp(h: Heap, ctx: Context, l: Loc, s: AbsString, v: Value, cfg: CFG, addresskey: (FunctionId, Int, Int)): (Heap, Context) = {
+  def updateDOMProp(h: Heap, ctx: Context, l: Loc, s: AbsString, v: Value, cfg: CFG, addresskey: (ControlPoint, Int, Int)): (Heap, Context) = {
     s.gamma match {
       case Some(strSet) =>
-        var (h1, ctx1) = (h, ctx)
         /* innerHTML : update the DOM tree */
         if(strSet.contains("innerHTML")) {
           //System.out.println("* Warning: Assigning a value to 'innerHTML'.")
           //cfg.initStoreAddressIndex(addresskey)
           init_addrindex
-          val (h2, ctx2) = updateDOMTree(h1, ctx1, l, v, cfg, addresskey)
-          h1 = h2; ctx1 = ctx2
+          updateDOMTree(h, ctx, l, v, cfg, addresskey)
         }
+        /* className : update the 'class' attribute */
+        else if(strSet.contains("className")){
+          val attr_val = Helper.toString(Helper.toPrimitive_better(h, v))
+          init_addrindex
+          val (h_1, ctx_1, l_attr) = cfgAddrToLoc(h, ctx, addresskey, cfg)
+          val (h_2, ctx_2, l_text) = cfgAddrToLoc(h_1, ctx_1, addresskey, cfg)
+          val (h_3, ctx_3, l_child1) = cfgAddrToLoc(h_2, ctx_2, addresskey, cfg)
+          val (h_4, ctx_4, l_child2) = cfgAddrToLoc(h_3, ctx_3, addresskey, cfg)
+          val (h_5, ctx_5, l_classentry) = cfgAddrToLoc(h_4, ctx_4, addresskey, cfg)
+          val h_6 = setAttribute(h_5, LocSet(l), l_attr, l_text, l_child1, l_child2, l_classentry, AbsString.alpha("class"), attr_val)
+          (h_6, ctx_5)
+          
+        }
+        else
+          (h, ctx)
         //if(vs.contains("id")) {}
         //if(vs.contains("onclick")) {}
-        (h1, ctx1)
       case None if OtherStr <= s =>
-        System.err.println("* Warning: 'innerHTML' of an HTML element might be updated but the DOM tree is not updated.") 
+        if (!quiet) System.err.println("* Warning: 'innerHTML' of an HTML element might be updated but the DOM tree is not updated.")
         (h, ctx)
       case _ => (h, ctx)
     }
@@ -1386,13 +1487,13 @@ object DOMHelper {
   // Add the instance object in the heap 
   private def addInstance(h: Heap, loc_ins: Loc, list_ins: List[(String, PropValue)]): Heap = {
     // create the instance object and update properties
-    val obj_ins = list_ins.foldLeft(ObjEmpty) ((obj, v) => obj.update(AbsString.alpha(v._1), v._2))
+    val obj_ins = list_ins.foldLeft(Obj.empty) ((obj, v) => obj.update(AbsString.alpha(v._1), v._2))
     h.update(loc_ins, obj_ins)
   }
 
   // Initialize named properties in the 'window' object
   // WHATWG HTML Living Standard - Section 6.2.4 Named access on the Window object
-  private def updateWindowNamedProps(h: Heap, ctx: Context, node: Node, cfg: CFG, ins_loc: Loc, addresskey: (FunctionId, Int, Int), init: Boolean) : (Heap, Context) = {
+  private def updateWindowNamedProps(h: Heap, ctx: Context, node: Node, cfg: CFG, ins_loc: Loc, addresskey: (ControlPoint, Int, Int), init: Boolean) : (Heap, Context) = {
     val nodeName = node.getNodeName
     // 'name' attribute of 'a', 'applet', 'area', 'embed', 'form', 'frameset', 'img', and 'object' elements
     val (h_1, ctx_1) = node match {
@@ -1417,7 +1518,7 @@ object DOMHelper {
               val (h_t, ctx_t) =
                 // in case that the 'name' property already exists
                 if(BoolTrue <= hasName) {
-                   val loc_existing = propval._1._1._1._2
+                   val loc_existing = propval._1._1._2
                    val (h1, ctx1, val_locset) = loc_existing.foldLeft((HeapBot, ContextBot, LocSetBot))((hcl, ll) => {
                      val obj_existing = h(ll)
                      val hasTagName = Helper.HasOwnProperty(h, ll, AbsString.alpha("tagName"))
@@ -1437,7 +1538,7 @@ object DOMHelper {
                      // in case that the 'length' exists: HTMLCollection
                      val (h1_f, ctx1_f, loc_collection2) =
                        if(BoolTrue <= hasNamedItem) {
-                         val n_len = Operator.ToUInt32(len._1._1._1)
+                         val n_len = Operator.ToUInt32(len._1._1)
                          AbsNumber.getUIntSingle(n_len) match {
                            case Some(n) =>
                              val new_collection = obj_existing.update(
@@ -1489,7 +1590,7 @@ object DOMHelper {
           val (h_t, ctx_t) = 
             // in case that the 'id' property already exists          
             if(BoolTrue <= hasId) {
-               val loc_existing = propval._1._1._1._2
+               val loc_existing = propval._1._1._2
                val (h1, ctx1, val_locset) = loc_existing.foldLeft((HeapBot, ContextBot, LocSetBot))((hcl, ll) => {
                  val obj_existing = h_1(ll)
                  val hasTagName = Helper.HasOwnProperty(h_1, ll, AbsString.alpha("tagName"))
@@ -1509,7 +1610,7 @@ object DOMHelper {
                  // in case that 'length' exists: HTMLCollection
                  val (h1_f, ctx1_f, loc_collection2) =
                    if(BoolTrue <= hasNamedItem) {
-                     val n_len = Operator.ToUInt32(len._1._1._1)
+                     val n_len = Operator.ToUInt32(len._1._1)
                      AbsNumber.getUIntSingle(n_len) match {
                        case Some(n) =>
                          val new_collection = obj_existing.update(
@@ -1541,7 +1642,7 @@ object DOMHelper {
 
   // Initialize named properties in Document
   // WHATWG HTML Living Standard - Section 3.1.4 DOM tree accessors
-  private def updateDocumentNamedProps(h: Heap, ctx: Context, node: Node, cfg: CFG, ins_loc: Loc, addresskey: (FunctionId, Int, Int), init: Boolean) : (Heap, Context) = {
+  private def updateDocumentNamedProps(h: Heap, ctx: Context, node: Node, cfg: CFG, ins_loc: Loc, addresskey: (ControlPoint, Int, Int), init: Boolean) : (Heap, Context) = {
     val nodeName = node.getNodeName
     node match {
       // Element node
@@ -1565,14 +1666,14 @@ object DOMHelper {
             val (h_t, ctx_t) =
               // in case that the 'id' property already exists
               if(BoolTrue <= hasId) {
-                 val loc_existing = propval._1._1._1._2
+                 val loc_existing = propval._1._1._2
                  val (h1, ctx1, val_locset) = loc_existing.foldLeft((HeapBot, ContextBot, LocSetBot))((hcl, ll) => {
                    val obj_existing = h(ll)
                    val hasTagName = Helper.HasOwnProperty(h, ll, AbsString.alpha("tagName"))
                    val len = obj_existing("length")
                    val hasNamedItem = Helper.HasProperty(h, ll, AbsString.alpha("namedItem"))
-                   println(DomainPrinter.printObj(4, obj_existing))
-                   println(DomainPrinter.printLoc(ll))
+                   //println(DomainPrinter.printObj(4, obj_existing))
+                   //println(DomainPrinter.printLoc(ll))
                    // in case that the 'tagName' property exists: DOM element
                    val (h1_t, ctx1_t, loc_collection1) =
                      if(BoolTrue <= hasTagName) {
@@ -1588,7 +1689,7 @@ object DOMHelper {
                    // 'namedItem' exists: HTMLCollection
                    val (h1_f, ctx1_f, loc_collection2) =
                      if(BoolTrue <= hasNamedItem) {
-                       val n_len = Operator.ToUInt32(len._1._1._1)
+                       val n_len = Operator.ToUInt32(len._1._1)
                        AbsNumber.getUIntSingle(n_len) match {
                          case Some(n) =>
                            val new_collection = obj_existing.update(
@@ -1624,7 +1725,7 @@ object DOMHelper {
             val (h_t, ctx_t) =
               // in case that the 'name' property already exists
               if(BoolTrue <= hasName) {
-                 val loc_existing = propval._1._1._1._2
+                 val loc_existing = propval._1._1._2
                  val (h1, ctx1, val_locset) = loc_existing.foldLeft((HeapBot, ContextBot, LocSetBot))((hcl, ll) => {
                    val obj_existing = h(ll)
                    val hasTagName = Helper.HasOwnProperty(h, ll, AbsString.alpha("tagName"))
@@ -1645,7 +1746,7 @@ object DOMHelper {
                    // 'length' exists: HTMLCollection
                    val (h1_f, ctx1_f, loc_collection2) =
                      if(BoolTrue <= hasNamedItem) {
-                       val n_len = Operator.ToUInt32(len._1._1._1)
+                       val n_len = Operator.ToUInt32(len._1._1)
                        AbsNumber.getUIntSingle(n_len) match {
                          case Some(n) =>
                            val new_collection = obj_existing.update(
@@ -1681,7 +1782,7 @@ object DOMHelper {
   // Update the id lookup table, name lookup table, tag lookup table, and class lookup table 
   // for getElementById, getElementsByName, getElementsByTagName,
   // also initialize the event target table
-  private def updateLookupTables(h: Heap, ctx: Context, node: Node, cfg: CFG, ins_loc: Loc, addresskey: (FunctionId, Int, Int), init: Boolean) : (Heap, Context) = node match {
+  private def updateLookupTables(h: Heap, ctx: Context, node: Node, cfg: CFG, ins_loc: Loc, addresskey: (ControlPoint, Int, Int), init: Boolean) : (Heap, Context) = node match {
     // Element node
     case e: Element => 
       /* id look-up table update */
@@ -1730,7 +1831,7 @@ object DOMHelper {
            // in case that the mapping already exists
            val (h_t, ctx_t) =
              if(BoolTrue <= hasName) {
-               val nodelist_locset = mapped_node._1._1._1._2
+               val nodelist_locset = mapped_node._1._1._2
                val newheap2 = nodelist_locset.foldLeft(HeapBot)((h, l) => {
                  val nodelist_obj = h_1(l)
                  val n_len = Operator.ToUInt32(Helper.Proto(h_1, l, AbsString.alpha("length")))
@@ -1778,7 +1879,7 @@ object DOMHelper {
            val (h_t, ctx_t) =
            // in case that the mapping already exists
              if(BoolTrue <= hasTag) {
-               val nodelist_locset = mapped_node._1._1._1._2
+               val nodelist_locset = mapped_node._1._1._2
                val newheap2 = nodelist_locset.foldLeft(HeapBot)((h, l) => {
                  val nodelist_obj = h_2(l)
                  val n_len = Operator.ToUInt32(Helper.Proto(h_2, l, AbsString.alpha("length")))
@@ -1826,7 +1927,7 @@ object DOMHelper {
            val (h_t, ctx_t) =
              // in case that the mapping already exists
              if(BoolTrue <= hasClass) {
-               val nodelist_locset = mapped_node._1._1._1._2
+               val nodelist_locset = mapped_node._1._1._2
                val newheap2 = nodelist_locset.foldLeft(HeapBot)((h, l) => {
                  val nodelist_obj = h_3(l)
                  val n_len = Operator.ToUInt32(Helper.Proto(h_3, l, AbsString.alpha("length")))
@@ -1854,11 +1955,12 @@ object DOMHelper {
 
        /* event target table update */
        val event_target_table = h_4(EventTargetTableLoc)
-       val load_targets: LocSet = event_target_table("#LOAD")._1._2._2
-       val unload_targets: LocSet = event_target_table("#UNLOAD")._1._2._2
-       val keyboard_targets: LocSet = event_target_table("#KEYBOARD")._1._2._2
-       val mouse_targets: LocSet = event_target_table("#MOUSE")._1._2._2
-       val other_targets: LocSet = event_target_table("#OTHER")._1._2._2
+       val load_targets: LocSet = event_target_table("#LOAD")._2._2
+       val unload_targets: LocSet = event_target_table("#UNLOAD")._2._2
+       val keyboard_targets: LocSet = event_target_table("#KEYBOARD")._2._2
+       val mouse_targets: LocSet = event_target_table("#MOUSE")._2._2
+       val touch_targets: LocSet = event_target_table("#TOUCH")._2._2
+       val other_targets: LocSet = event_target_table("#OTHER")._2._2
 
        val hasLoadEvent: Boolean = e.getAttribute("load")!="" || e.getAttribute("onload")!=""
        val hasUnloadEvent: Boolean = e.getAttribute("unload")!="" || e.getAttribute("onunload")!=""
@@ -1866,6 +1968,9 @@ object DOMHelper {
        val hasMouseEvent: Boolean = e.getAttribute("onclick")!="" || e.getAttribute("ondbclick")!="" || e.getAttribute("onmousedown")!="" || 
                                     e.getAttribute("onmouseup")!="" || e.getAttribute("onmouseover")!="" || e.getAttribute("onmousemove")!="" ||
                                     e.getAttribute("onmouseout")!=""
+       val hasTouchEvent: Boolean = e.getAttribute("ontouchstart")!="" || e.getAttribute("ontouchend")!="" ||
+                                    e.getAttribute("ontouchmove")!="" || e.getAttribute("ontouchcancel")!="" ||
+                                    e.getAttribute("ontouchenter")!="" || e.getAttribute("ontouchleave")!=""
        val hasOtherEvent: Boolean = e.getAttribute("onfocus")!="" || e.getAttribute("onblur")!="" || e.getAttribute("onsubmit")!="" ||
                                     e.getAttribute("onreset")!="" || e.getAttribute("onselect")!="" || e.getAttribute("onchange")!="" ||
                                     e.getAttribute("onresize")!="" || e.getAttribute("onselectstart")!=""
@@ -1881,11 +1986,14 @@ object DOMHelper {
        val event_target_table_4 = 
          if(hasMouseEvent) event_target_table_3.update(AbsString.alpha("#MOUSE"), PropValue(Value(mouse_targets + ins_loc)))
          else event_target_table_3
-       val event_target_table_5 = 
-         if(hasOtherEvent) event_target_table_4.update(AbsString.alpha("#OTHER"), PropValue(Value(other_targets + ins_loc)))
+       val event_target_table_5 =
+         if(hasTouchEvent) event_target_table_4.update(AbsString.alpha("#TOUCH"), PropValue(Value(touch_targets + ins_loc)))
          else event_target_table_4
+       val event_target_table_6 =
+         if(hasOtherEvent) event_target_table_5.update(AbsString.alpha("#OTHER"), PropValue(Value(other_targets + ins_loc)))
+         else event_target_table_5
       
-       (h_4.update(EventTargetTableLoc, event_target_table_5), ctx_4)
+       (h_4.update(EventTargetTableLoc, event_target_table_6), ctx_4)
 
   // non-Element node
     case _ => (h, ctx)
@@ -1901,7 +2009,7 @@ object DOMHelper {
         // HTMLFormElement object
         val form_obj = h(l)
         val new_form_obj = form_obj.update(AbsString.alpha(name), PropValue(ObjectValue(targetloc, T, T, T)))
-        val elements_locset = form_obj("elements")._1._1._1._2
+        val elements_locset = form_obj("elements")._1._1._2
         val newheap2 = elements_locset.foldLeft(h)((h, ll) => {
           val elements_obj = h(ll)
           val n_len = Operator.ToUInt32(Helper.Proto(h, ll, AbsString.alpha("length")))
@@ -1989,7 +2097,7 @@ object DOMHelper {
   }
   
   // Model a node in a dom tree
-  def modelNode(h: Heap, ctx: Context, node : Node, cfg: CFG, form : Option[Loc], tr: Option[Loc], select: Option[Loc], addresskey: (FunctionId, Int, Int), init: Boolean) : ((Heap, Context), Loc) = {
+  def modelNode(h: Heap, ctx: Context, node : Node, cfg: CFG, form : Option[Loc], tr: Option[Loc], select: Option[Loc], addresskey: (ControlPoint, Int, Int), init: Boolean) : ((Heap, Context), Loc) = {
     val nodeName = node.getNodeName
     val (_h, _ctx, loc) = if(init) (h, ctx, DOMNode.getInstance(cfg).get)
                           else cfgAddrToLoc(h, ctx, addresskey, cfg)
@@ -2067,6 +2175,8 @@ object DOMHelper {
                                 PropValue(ObjectValue(PValue(NullTop), F, T, T))).
                         update(AbsString.alpha("offsetParent"),
                                 PropValue(ObjectValue(PValue(NullTop), F, T, T))).
+                        update(AbsString.alpha("ownerDocument"),
+                                PropValue(ObjectValue(PValue(NullTop), F, T, T))).
                         update(AbsString.alpha("forms"),
                                 PropValue(ObjectValue(Value(loc_forms), F, T, T))).
                         update(AbsString.alpha("images"),
@@ -2114,14 +2224,18 @@ object DOMHelper {
           case "BODY" =>
             val loc = HTMLBodyElement.getInstance(cfg).get
             val newheap=addInstance(_h, loc, HTMLBodyElement.getInsList(node))
-            (newheap, _ctx, loc)
+            /* 'document.body' update */
+            // 'document' object
+            val docobj = newheap(HTMLDocument.GlobalDocumentLoc)
+            val newdocobj = docobj.update(AbsString.alpha("body"), PropValue(ObjectValue(Value(loc), T, T, T))) 
+            (newheap.update(HTMLDocument.GlobalDocumentLoc, newdocobj), _ctx, loc)
           case "FORM" =>
             val newheap=addInstance(_h, loc, HTMLFormElement.getInsList(node))
             /* 'document.forms' update */
             // 'document' object
             val docobj = newheap(HTMLDocument.GlobalDocumentLoc)
 
-            val forms_locset = docobj("forms")._1._1._1._2
+            val forms_locset = docobj("forms")._1._1._2
             val newheap2 = forms_locset.foldLeft(newheap)((h, l) => {
               val forms_obj = h(l)
               val n_len = Operator.ToUInt32(Helper.Proto(h, l, AbsString.alpha("length")))
@@ -2256,7 +2370,7 @@ object DOMHelper {
             /* 'document.images' update */
             // 'document' object
             val docobj = newheap(HTMLDocument.GlobalDocumentLoc)
-            val images_locset = docobj("images")._1._1._1._2
+            val images_locset = docobj("images")._1._1._2
             val newheap2 = images_locset.foldLeft(newheap)((h, l) => {
               val images_obj = h(l)
               val n_len = Operator.ToUInt32(Helper.Proto(h, l, AbsString.alpha("length")))
@@ -2303,7 +2417,7 @@ object DOMHelper {
             // 'document' object
             val docobj = newheap(HTMLDocument.GlobalDocumentLoc)
 
-            val scripts_locset = docobj("scripts")._1._1._1._2
+            val scripts_locset = docobj("scripts")._1._1._2
             val newheap2 = scripts_locset.foldLeft(newheap)((h, l) => {
               val scripts_obj = h(l)
               val n_len = Operator.ToUInt32(Helper.Proto(h, l, AbsString.alpha("length")))
@@ -2348,7 +2462,7 @@ object DOMHelper {
             val proplist = HTMLTableRowElement.getInsList(node) ++ List(
               ("cells", PropValue(ObjectValue(Value(loc_cells), F, T, T))))
             val newheap3=addInstance(newheap2, loc, proplist)
-            (newheap3, _ctx, loc)
+            (newheap3, ctx_1, loc)
           case "TH" | "TD"  =>
             val newheap=addInstance(_h, loc, HTMLTableCellElement.getInsList(node))
             // update 'cells' property in HTMLTableRowElement)
@@ -2361,8 +2475,18 @@ object DOMHelper {
             val newheap=addInstance(_h, loc, HTMLFrameElement.getInsList(node))
             (newheap, _ctx, loc)
           case "IFRAME"  =>
-            val newheap=addInstance(_h, loc, HTMLIFrameElement.getInsList(node))
-            (newheap, _ctx, loc)
+            // 'contentDocument'
+            val (newheap, ctx_1, loc_doc) = if(init) (_h, _ctx, newSystemRecentLoc("IFrameDocument"))
+                                                else cfgAddrToLoc(_h, _ctx, addresskey, cfg)
+            // 'contentWindow'
+            val (newheap2, ctx_2, loc_win) = if(init) (newheap, ctx_1, newSystemRecentLoc("IFrameWindow"))
+                                                else cfgAddrToLoc(newheap, ctx_1, addresskey, cfg)
+            val newheap3 = addInstance(newheap2, loc_doc, HTMLDocument.getInsList)
+            val newheap4 = addInstance(newheap3, loc_win, DOMWindow.getInsList(PropValue(ObjectValue(Value(loc_doc), F, T, T))))
+            val proplist = HTMLIFrameElement.getInsList(node) ++ List(
+              ("contentWindow", PropValue(ObjectValue(Value(loc_win), F, T, T))))
+            val newheap5=addInstance(newheap4, loc, proplist)
+            (newheap5, ctx_2, loc)
           // Special tags
           case "SUB" | "SUP" | "SPAN" | "BDO" | "BDI" =>
             val prop_list = HTMLElement.getInsList(node)++List(
@@ -2419,7 +2543,7 @@ object DOMHelper {
             (newheap, _ctx, loc)    
 
           case _ =>
-            System.err.println("* Warning: " + node.getNodeName + " - not modeled yet.")
+            if (!quiet) System.err.println("* Warning: " + node.getNodeName + " - not modeled yet.")
             val prop_list = HTMLElement.getInsList(node)++List(
               ("@class",   PropValue(AbsString.alpha("Object"))),
               ("@proto",   PropValue(ObjectValue(HTMLElement.getProto.get, F, F, F))),
@@ -2433,12 +2557,12 @@ object DOMHelper {
 
         val _newheap2 = addInstance(_newheap1, styleloc, CSSStyleDeclaration.getInsList)
         val newelem = _newheap2(_insloc).update("style", PropValue(ObjectValue(Value(styleloc), T, T, T))).
-                                         update("innerText", _newheap2(_insloc)("textContent")._1)
+                                         update("innerText", _newheap2(_insloc)("textContent"))
         /* 'document.all' update */
         // 'document' object
         val docobj = _newheap2(HTMLDocument.GlobalDocumentLoc)
         
-        val all_locset = docobj("all")._1._1._1._2
+        val all_locset = docobj("all")._1._1._2
         val _newheap3 = all_locset.foldLeft(_newheap2)((h, l) => {
           val all_obj = h(l)
           val n_len = Operator.ToUInt32(Helper.Proto(h, l, AbsString.alpha("length")))
@@ -2466,7 +2590,7 @@ object DOMHelper {
       case _ =>
         // the node, not modeled yet, gets a dummy location for the 'Element' node 
         val newheap=addInstance(_h, loc, List())
-        System.err.println("* Warning: " + node.getNodeName + " - not modeled yet.")
+        if (!quiet) System.err.println("* Warning: " + node.getNodeName + " - not modeled yet.")
         (newheap, _ctx, loc)
 
     }
@@ -2502,8 +2626,8 @@ object DOMHelper {
   }
   
   private var addrindex = 0 
-  private def cfgAddrToLoc(h: Heap, ctx: Context, key: (FunctionId, Int, Int), cfg: CFG): (Heap, Context, Loc) = {
-    val addr1 = cfg.getAPIAddress((key._1, key._2), key._3, addrindex)
+  private def cfgAddrToLoc(h: Heap, ctx: Context, key: (ControlPoint, Int, Int), cfg: CFG): (Heap, Context, Loc) = {
+    val addr1 = cfg.getAPIAddress(key._1, key._3, addrindex)
     val l = addrToLoc(addr1, Recent)
     val (h1, ctx1) = Helper.Oldify(h, ctx, addr1)
     addrindex +=1
@@ -2512,15 +2636,213 @@ object DOMHelper {
 
   private def init_addrindex = addrindex = 0 
 
+  def getInsLoc(name: String) : Loc = {
+     name match {
+          case "HTML" =>
+            HTMLHtmlElement.loc_ins
+          case "HEAD" =>
+            HTMLHeadElement.loc_ins
+          case "LINK" =>
+            HTMLLinkElement.loc_ins
+          case "TITLE" =>
+            HTMLTitleElement.loc_ins
+          case "META" =>
+            HTMLMetaElement.loc_ins
+          case "BASE" =>
+            HTMLBaseElement.loc_ins
+          case "ISINDEX" =>
+            HTMLIsIndexElement.loc_ins
+          case "STYLE" =>
+            HTMLStyleElement.loc_ins
+          case "BODY" =>
+            HTMLBaseElement.loc_ins
+          case "FORM" =>
+            HTMLFormElement.loc_ins
+          case "SELECT" =>
+            HTMLSelectElement.loc_ins
+          case "OPTGROUP" =>
+            HTMLOptGroupElement.loc_ins
+          case "OPTION" =>
+            HTMLOptionElement.loc_ins
+          case "INPUT" =>
+            HTMLInputElement.loc_ins
+          case "TEXTAREA" =>
+            HTMLTextAreaElement.loc_ins
+          case "BUTTON" =>
+            HTMLButtonElement.loc_ins
+          case "LABEL" =>
+            HTMLLabelElement.loc_ins
+          case "FIELDSET" =>
+            HTMLFieldSetElement.loc_ins
+          case "LEGEND" =>
+            HTMLLegendElement.loc_ins
+          case "UL" =>
+            HTMLUListElement.loc_ins
+          case "OL" =>
+            HTMLOListElement.loc_ins
+          case "DL" =>
+            HTMLDListElement.loc_ins
+          case "DIR" =>
+            HTMLDirectoryElement.loc_ins
+          case "MENU" =>
+            HTMLMenuElement.loc_ins
+          case "LI" =>
+            HTMLLIElement.loc_ins
+          case "DIV" =>
+            HTMLDivElement.loc_ins
+          case "P" =>
+            HTMLParagraphElement.loc_ins
+          // Heading element
+          case "H1" | "H2" | "H3" | "H4" | "H5" | "H6"  =>
+            HTMLHeadingElement.loc_ins
+          // Quote element
+          case "BLACKQUOTE" | "Q" =>
+            HTMLQuoteElement.loc_ins
+          case "PRE" =>
+            HTMLPreElement.loc_ins
+          case "BR" =>
+            HTMLBRElement.loc_ins
+          // BASEFONT Element : deprecated
+          case "BASEFONT" =>
+            HTMLBaseFontElement.loc_ins
+          // FONT Element : deprecated
+          case "FONT" =>
+            HTMLFontElement.loc_ins
+          case "HR" =>
+            HTMLHRElement.loc_ins
+          case "INS" | "DEL" =>
+            HTMLModElement.loc_ins
+          case "A" =>
+            HTMLAnchorElement.loc_ins
+          case "IMG" =>
+            HTMLImageElement.loc_ins
+          case "OBJECT" =>
+            HTMLObjectElement.loc_ins
+          case "PARAM" =>
+            HTMLParamElement.loc_ins
+          // APPLET element : deprecated
+          case "APPLET" =>
+            HTMLAppletElement.loc_ins
+          case "MAP" =>
+            HTMLMapElement.loc_ins
+          case "AREA" =>
+            HTMLAreaElement.loc_ins
+          case "SCRIPT" =>
+            HTMLScriptElement.loc_ins
+          case "TABLE" =>
+            HTMLTableElement.loc_ins
+          case "CAPTION" =>
+            HTMLTableCaptionElement.loc_ins
+          case "COL" =>
+            HTMLTableColElement.loc_ins
+          case "THEAD" | "TFOOT" | "TBODY" =>
+            HTMLTableSectionElement.loc_ins
+          case "TR"  =>
+            HTMLTableRowElement.loc_ins
+          case "TH" | "TD"  =>
+            HTMLTableCellElement.loc_ins
+          case "FRAMESET"  =>
+            HTMLFrameSetElement.loc_ins
+          case "FRAME"  =>
+            HTMLFrameElement.loc_ins
+          case "IFRAME"  =>
+            HTMLIFrameElement.loc_ins
+          // Special tags
+          case "SUB" | "SUP" | "SPAN" | "BDO" | "BDI" =>
+            HTMLElement.loc_ins
+          // Font tags
+          case "TT" | "I" | "B" | "U" | "S" | "STRIKE" | "BIG" | "SMALL" =>
+            HTMLElement.loc_ins
+          // Phrase tags
+          case "EM" | "STRONG" | "DFN" | "CODE" | "SAMP" | "KBD" | "VAR" | "CITE" | "ACRONYM" | "ABBR" =>
+            HTMLElement.loc_ins
+          // List tags
+          case "DD" | "DT" =>
+            HTMLElement.loc_ins
+          // etc
+          case "NOFRAMES" | "NOSCRIPT" | "ADDRESS" | "CENTER"  =>
+            HTMLElement.loc_ins
+          /* HTML 5 */
+          case "CANVAS"  =>
+            HTMLCanvasElement.loc_ins
+          case "DATALIST"  =>
+            HTMLElement.loc_ins
+          case "HEADER" | "FOOTER" | "ARTICLE" | "SECTION" | "NAV" | "HGROUP" =>
+            HTMLElement.loc_ins
+
+          case _ =>
+            if (!quiet) System.err.println("* Warning: " + name + " - not modeled yet.")
+            HTMLElement.loc_ins
+        }
+
+  }
+
+ def buildDOMTable(h: Heap, node : Node) : Heap = {
+    val children : NodeList = node.getChildNodes
+    val num_children = children.getLength
+    val h_1 = node match {
+      case e: Element =>
+       val ins_loc = getInsLoc(e.getNodeName)     
+       /* id look-up table update */
+      val id_table = h(IdTableLoc)
+      val id = e.getAttribute("id")
+      val h1 = 
+      // if the element has an id,
+        if(id!="") 
+          Helper.PropStoreWeak(h, IdTableLoc, AbsString.alpha(id), Value(ins_loc))
+        else h
+
+       /* name look-up table update */
+       val name_table = h1(NameTableLoc)
+       val name = e.getAttribute("name")
+       val h2  =
+       // if the element has a name,
+         if(name!="")
+            Helper.PropStoreWeak(h1, NameTableLoc, AbsString.alpha(name), Value(ins_loc))
+         else h1  
+       
+       /* tag look-up table update */
+       val tag_table = h2(TagTableLoc)
+       val tag = e.getTagName
+       val h3  =
+       // if the element has a tag name,
+         if(tag!=null)
+            Helper.PropStoreWeak(h2, TagTableLoc, AbsString.alpha(tag), Value(ins_loc))
+         else h2
+
+       /* class look-up table update */
+       val class_table = h3(ClassTableLoc)
+       val classname = e.getAttribute("class")
+       val h4  =
+       // if the element has a class name,
+         if(classname!="")
+            Helper.PropStoreWeak(h3, ClassTableLoc, AbsString.alpha(classname), Value(ins_loc))
+         else h3
+       h4
+
+      case _ => h
+    }
+       
+    if(num_children == 0) {
+      h_1
+    }
+
+    else {
+      (0 until num_children).foldLeft(h_1)((hcl, i) => {
+        val nextchild = children.item(i)
+        buildDOMTable(hcl, nextchild)
+      })
+    }
+
+  }
 
   // Construct a DOM tree for the html source
   // 'form' : keeps a location of HTMLFormElement if any.
   // 'tr' : keeps a location of HTMLTableRowElement if any.
   // 'init' : indicates whether this function is called before analysis or not
-  def buildDOMTree(h: Heap, ctx: Context, node : Node, cfg: CFG, form : Option[Loc], tr: Option[Loc], select: Option[Loc], addresskey: (FunctionId, Int, Int), init: Boolean) : ((Heap, Context), Loc) = {
+  def buildDOMTree(h: Heap, ctx: Context, node : Node, cfg: CFG, form : Option[Loc], tr: Option[Loc], select: Option[Loc], addresskey: (ControlPoint, Int, Int), init: Boolean) : ((Heap, Context), Loc) = {
     val children : NodeList = node.getChildNodes
     val num_children = children.getLength
-        
     val ((h_1, _ctx), absloc1) = modelNode(h, ctx, node, cfg, form, tr, select, addresskey, init)     
 
     if(num_children == 0) {

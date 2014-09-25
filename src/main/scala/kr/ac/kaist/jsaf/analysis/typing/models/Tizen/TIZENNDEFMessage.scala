@@ -51,8 +51,8 @@ object TIZENNDEFMessage extends Tizen {
     Map(
       ("tizen.NDEFMessage.constructor" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -61,7 +61,7 @@ object TIZENNDEFMessage extends Tizen {
           val (h_2, ctx_2) = Helper.Oldify(h, ctx, addr1)
           val n_arglen = Operator.ToUInt32(getArgValue(h_2, ctx_2, args, "length"))
 
-          val o_new = ObjEmpty.
+          val o_new = Obj.empty.
             update("@class", PropValue(AbsString.alpha("Object"))).
             update("@proto", PropValue(ObjectValue(Value(TIZENNDEFMessage.loc_proto), F, F, F))).
             update("@extensible", PropValue(T))
@@ -104,7 +104,7 @@ object TIZENNDEFMessage extends Tizen {
                       (o__, es__)
                     }
                     case _ => {
-                      val vi = Helper.Proto(h_2, ll, AbsString.alpha("@default_number"))
+                      val vi = Helper.Proto(h_2, ll, AbsString.alpha(Str_default_number))
                       val (b_1, esj) = TizenHelper.instanceOf(h_2, vi, Value(TIZENNDEFRecord.loc_proto))
                       val esi =
                         if (b_1._1._3 <= F && vi._1._4 </ NumTop)
@@ -129,7 +129,7 @@ object TIZENNDEFMessage extends Tizen {
         )),
       ("tizen.NDEFMessage.toByte" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -137,7 +137,7 @@ object TIZENNDEFMessage extends Tizen {
           val l_r1 = addrToLoc(addr1, Recent)
           val (h_1, ctx_1) = Helper.Oldify(h, ctx, addr1)
           val o_arr = Helper.NewArrayObject(UInt).
-            update("@default_number", PropValue(ObjectValue(Value(NumTop), T, T, T)))
+            update(Str_default_number, PropValue(ObjectValue(Value(NumTop), T, T, T)))
           val h_2 = h_1.update(l_r1, o_arr)
           val est = Set[WebAPIException](UnknownError)
           val (h_e, ctx_e) = TizenHelper.TizenRaiseException(h, ctx, est)

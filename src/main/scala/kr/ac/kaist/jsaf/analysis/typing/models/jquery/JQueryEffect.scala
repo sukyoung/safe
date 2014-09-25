@@ -47,7 +47,7 @@ object JQueryEffect extends ModelData {
       _m + ("jQuery.prototype." + name -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
           // do nothing
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           ((Helper.ReturnStore(h, Value(lset_this)), ctx), (he, ctxe))
         }))
     )
@@ -60,7 +60,7 @@ object JQueryEffect extends ModelData {
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
           // do nothing
           val PureLocalLoc = cfg.getPureLocal(cp)
-          val lset_this = h(PureLocalLoc)("@this")._1._2._2
+          val lset_this = h(PureLocalLoc)("@this")._2._2
           ((PreHelper.ReturnStore(h, PureLocalLoc, Value(lset_this)), ctx), (he, ctxe))
         }))
     )

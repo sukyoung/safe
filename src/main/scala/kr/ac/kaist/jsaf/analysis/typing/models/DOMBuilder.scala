@@ -26,6 +26,7 @@ import kr.ac.kaist.jsaf.analysis.typing.models.DOMCore._
 import kr.ac.kaist.jsaf.analysis.typing.models.DOMHtml._
 import kr.ac.kaist.jsaf.analysis.typing.models.DOMHtml5._
 import kr.ac.kaist.jsaf.analysis.typing.models.DOMObject._
+import kr.ac.kaist.jsaf.{ShellParameters, Shell}
 
 class DOMBuilder(cfg: CFG, init: InitHeap, document: Node) {
   val F = BoolFalse
@@ -52,11 +53,11 @@ class DOMBuilder(cfg: CFG, init: InitHeap, document: Node) {
   private def initEventTables(h: Heap) : Heap =  {
     val eventTTable = h(EventTargetTableLoc)
     val eventTTable_update = eventTTable.update(
-      AbsString.alpha("#LOAD"), PropValue(ObjectValueBot, ValueBot, FunSetBot)).update(
-      AbsString.alpha("#UNLOAD"), PropValue(ObjectValueBot, ValueBot, FunSetBot)).update(
-      AbsString.alpha("#KEYBOARD"), PropValue(ObjectValueBot, ValueBot, FunSetBot)).update(
-      AbsString.alpha("#MOUSE"), PropValue(ObjectValueBot, ValueBot, FunSetBot)).update(
-      AbsString.alpha("#OTHER"), PropValue(ObjectValueBot, ValueBot, FunSetBot))
+      AbsString.alpha("#LOAD"), PropValue(ObjectValueBot, FunSetBot)).update(
+      AbsString.alpha("#UNLOAD"), PropValue(ObjectValueBot, FunSetBot)).update(
+      AbsString.alpha("#KEYBOARD"), PropValue(ObjectValueBot, FunSetBot)).update(
+      AbsString.alpha("#MOUSE"), PropValue(ObjectValueBot, FunSetBot)).update(
+      AbsString.alpha("#OTHER"), PropValue(ObjectValueBot, FunSetBot))
 
 /*
     val eventFTable = heap(EventFunctionTableLoc)
@@ -76,9 +77,13 @@ class DOMBuilder(cfg: CFG, init: InitHeap, document: Node) {
     val h_1 = initEventTables(h)
     // dummy arguments
     val dummycontext = ContextBot
-    val dummykey = (0, 0, 0)
-    val ((h_2, ctx), absloc) = DOMHelper.buildDOMTree(h_1, dummycontext, document, cfg, None, None, None, dummykey, true)
-    h_2
+    val dummykey = (((0, LEntry), CallContext.globalCallContext), 0, 0)
+    if(Shell.params.opt_Dommodel2)
+      DOMHelper.buildDOMTable(h_1, document)
+    else {
+      val ((h_2, ctx), absloc) = DOMHelper.buildDOMTree(h_1, dummycontext, document, cfg, None, None, None, dummykey, true)
+      h_2
+    }
   }
 
   // Print the DOM tree

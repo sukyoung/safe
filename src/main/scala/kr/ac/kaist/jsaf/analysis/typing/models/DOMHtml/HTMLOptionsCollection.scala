@@ -19,6 +19,7 @@ import kr.ac.kaist.jsaf.analysis.typing.domain.Heap
 import kr.ac.kaist.jsaf.analysis.typing.domain.Context
 import kr.ac.kaist.jsaf.analysis.typing.models.AbsBuiltinFunc
 import kr.ac.kaist.jsaf.analysis.typing.AddressManager._
+import kr.ac.kaist.jsaf.Shell
 
 // Modeling based on the WHATWG Living Standard
 // Section 2.7.2.3 HTMLOptionsCollection
@@ -28,6 +29,7 @@ object HTMLOptionsCollection extends DOM {
   /* predefined locations */
   val loc_cons = newSystemRecentLoc(name + "Cons")
   val loc_proto = newSystemRecentLoc(name + "Proto")
+  val loc_ins = newSystemRecentLoc(name + "Ins")
 
   /* constructor */
   private val prop_cons: List[(String, AbsProperty)] = List(
@@ -40,6 +42,17 @@ object HTMLOptionsCollection extends DOM {
     ("add",      AbsBuiltinFunc("HTMLOptionsCollection.add", 2)),
     ("remove",      AbsBuiltinFunc("HTMLOptionsCollection.remove", 1))
   )
+ 
+  /* instance */
+  private val prop_ins: List[(String, AbsProperty)] = 
+     List(
+      ("@class",    AbsConstValue(PropValue(AbsString.alpha("Object")))),
+      ("@proto",    AbsConstValue(PropValue(ObjectValue(loc_proto, F, F, F)))),
+      ("@extensible", AbsConstValue(PropValue(BoolTrue))),
+      // DOM Level 1
+      ("length", AbsConstValue(PropValue(ObjectValue(UInt, F, F, F))))
+    )
+
 
   /* prototype */
   private val prop_proto: List[(String, AbsProperty)] = List(
@@ -53,9 +66,11 @@ object HTMLOptionsCollection extends DOM {
     (name, AbsConstValue(PropValue(ObjectValue(loc_cons, T, F, T))))
   )
 
-  def getInitList(): List[(Loc, List[(String, AbsProperty)])] = List(
-    (loc_cons, prop_cons), (loc_proto, prop_proto), (GlobalLoc, prop_global)
-  )
+  def getInitList(): List[(Loc, List[(String, AbsProperty)])] = if(Shell.params.opt_Dommodel2) List(
+    (loc_cons, prop_cons), (loc_proto, prop_proto), (GlobalLoc, prop_global), (loc_ins, prop_ins)
+
+  ) else List(
+    (loc_cons, prop_cons), (loc_proto, prop_proto), (GlobalLoc, prop_global)  ) 
 
   def getSemanticMap(): Map[String, SemanticFun] = {
     Map(

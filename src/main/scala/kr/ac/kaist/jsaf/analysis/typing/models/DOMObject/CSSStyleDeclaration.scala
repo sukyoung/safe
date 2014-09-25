@@ -21,6 +21,7 @@ import kr.ac.kaist.jsaf.analysis.typing.domain.Context
 import kr.ac.kaist.jsaf.analysis.typing.models.AbsBuiltinFunc
 import kr.ac.kaist.jsaf.analysis.typing.models.AbsConstValue
 import kr.ac.kaist.jsaf.analysis.typing.AddressManager._
+import kr.ac.kaist.jsaf.Shell
 
 // Modeled based on W3C DOM Level 2 Style Specification
 // www.w3.org/TR/2000/REC-DOM-Level-2-Style-20001113/  
@@ -28,8 +29,9 @@ import kr.ac.kaist.jsaf.analysis.typing.AddressManager._
 object CSSStyleDeclaration extends DOM {
   private val name = "CSSStyleDeclaration"
 
-  /* predefined locations */
   val loc_ins = newSystemRecentLoc(name + "Ins")
+  /* predefined locations */
+  val loc_ins2 = newSystemRecentLoc(name + "Ins")
   val loc_proto = newSystemRecentLoc(name + "Proto")
 
   /* instant object */
@@ -39,7 +41,7 @@ object CSSStyleDeclaration extends DOM {
     ("@extensible", AbsConstValue(PropValue(BoolTrue))),
     ("length", AbsConstValue(PropValue(ObjectValue(UInt, F, F, F)))),
     ("cssText", AbsConstValue(PropValue(ObjectValue(StrTop, T, T, T)))),
-    ("@default_number", AbsConstValue(PropValue(ObjectValue(StrTop, T, T, T))))
+    (Str_default_number, AbsConstValue(PropValue(ObjectValue(StrTop, T, T, T))))
     // TODO : "parentRule"
   )
 
@@ -60,9 +62,9 @@ object CSSStyleDeclaration extends DOM {
   /* global */
   /* no constructor */
   /* initial property list */
-  def getInitList(): List[(Loc, List[(String, AbsProperty)])] = List(
-    (loc_ins, prop_ins), (loc_proto, prop_proto)
-  )
+  def getInitList(): List[(Loc, List[(String, AbsProperty)])] = if(Shell.params.opt_Dommodel2) List(
+    (loc_proto, prop_proto), (loc_ins, prop_ins))
+  else List((loc_proto, prop_proto), (loc_ins2, prop_ins))
 
   def getSemanticMap(): Map[String, SemanticFun] = {
     Map(
@@ -114,7 +116,7 @@ object CSSStyleDeclaration extends DOM {
           /* arguments */
           val n_index = Helper.toNumber(Helper.toPrimitive_better(h, getArgValue(h, ctx, args, "0")))
           if (n_index </ NumBot) {
-            val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+            val lset_this = h(SinglePureLocalLoc)("@this")._2._2
             val n_length = lset_this.foldLeft[AbsNumber](NumBot)((n, l) =>
               n + Helper.toNumber(Helper.toPrimitive_better(h, Helper.Proto(h, l, AbsString.alpha("length")))))
             val s_index = Helper.toString(PValue(n_index))
@@ -153,7 +155,7 @@ object CSSStyleDeclaration extends DOM {
     ("@extensible", PropValue(BoolTrue)),
     ("length", PropValue(ObjectValue(UInt, F, F, F))),
     ("cssText", PropValue(ObjectValue(StrTop, T, T, T))),
-    ("@default_number", PropValue(ObjectValue(StrTop, T, T, T)))
+    (Str_default_number, PropValue(ObjectValue(StrTop, T, T, T)))
     // TODO : "parentRule"
   )
 }

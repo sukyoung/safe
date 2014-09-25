@@ -1,5 +1,5 @@
 /*******************************************************************************
-    Copyright (c) 2013, S-Core.
+    Copyright (c) 2013-2014, S-Core, KAIST.
     All rights reserved.
 
     Use is subject to license terms.
@@ -91,7 +91,7 @@ object TIZENbluetooth extends Tizen {
     ("@proto", AbsConstValue(PropValue(ObjectValue(BuiltinArray.ProtoLoc, F, F, F)))),
     ("@extensible", AbsConstValue(PropValue(T))),
     ("length", AbsConstValue(PropValue(ObjectValue(UInt, T, F, F)))),
-    ("@default_number", AbsConstValue(PropValue(ObjectValue(Value(loc_btdevice), T, T, T))))
+    (Str_default_number, AbsConstValue(PropValue(ObjectValue(Value(loc_btdevice), T, T, T))))
   )
 
   private val prop_btclass_ins: List[(String, AbsProperty)] = List(
@@ -130,14 +130,14 @@ object TIZENbluetooth extends Tizen {
     ("@proto", AbsConstValue(PropValue(ObjectValue(BuiltinArray.ProtoLoc, F, F, F)))),
     ("@extensible", AbsConstValue(PropValue(T))),
     ("length", AbsConstValue(PropValue(ObjectValue(UInt, T, F, F)))),
-    ("@default_number", AbsConstValue(PropValue(ObjectValue(Value(StrTop), T, T, T))))
+    (Str_default_number, AbsConstValue(PropValue(ObjectValue(Value(StrTop), T, T, T))))
   )
   private val prop_shortarr_ins: List[(String, AbsProperty)] = List(
     ("@class", AbsConstValue(PropValue(AbsString.alpha("Array")))),
     ("@proto", AbsConstValue(PropValue(ObjectValue(BuiltinArray.ProtoLoc, F, F, F)))),
     ("@extensible", AbsConstValue(PropValue(T))),
     ("length", AbsConstValue(PropValue(ObjectValue(UInt, T, F, F)))),
-    ("@default_number", AbsConstValue(PropValue(ObjectValue(Value(NumTop), T, T, T))))
+    (Str_default_number, AbsConstValue(PropValue(ObjectValue(Value(NumTop), T, T, T))))
   )
 
   override def getSemanticMap(): Map[String, SemanticFun] = {

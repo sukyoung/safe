@@ -1,5 +1,5 @@
 /*******************************************************************************
-    Copyright (c) 2012-2013, KAIST, S-Core.
+    Copyright (c) 2012-2014, KAIST, S-Core.
     All rights reserved.
 
     Use is subject to license terms.
@@ -108,7 +108,7 @@ class JSGlobal(_I: Interpreter, _proto: JSObject)
           val translator = new Translator(program, Option.none[Coverage])
           translator.doit.asInstanceOf[IRRoot]
         } catch {
-          case _ =>
+          case _: Throwable =>
             return I.IS.comp.setThrow(IP.syntaxError, I.IS.span)
         }
         /*
@@ -219,7 +219,7 @@ class JSGlobal(_I: Interpreter, _proto: JSObject)
       I.IS.comp.setReturn(PVal(I.IH.mkIRNum(trimmedString.toDouble)))
     }
     catch {
-      case _ => I.IS.comp.setReturn(PVal(IP.NaN))
+      case _: Throwable => I.IS.comp.setReturn(PVal(IP.NaN))
     }
   }
 

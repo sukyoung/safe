@@ -127,5 +127,40 @@ Array.prototype.map = function(callbackfn, thisArg) {
       n = newn;
     } while(n!=0)
     return a
-  }
+  };
+
+  // ECMAScript 5.1 Section 15.4.4.20
+  Array.prototype.filter = function (callbackfn, thisArg) {
+    // 1. Let O be the result of calling ToObject passing the this value as the argument.
+    var O = this;
+    // 2. Let lenValue be the result of calling the [[Get]] internal method of O with the argument "length".
+    var lenValue = O.length;
+    // 5. If thisArg was supplied, let T be thisArg; else let T be undefined.
+    var T;
+    if(thisArg)
+      T=thisArg;
+    // 6. Let A be a new array created as if by the expression new Array() where Array is the standard built-in
+    // constructor with that name.
+    var A = new Array();
+    // 7. Let k be 0.
+    // 8. Let to be 0.
+    var k = 0;
+    var to = 0;
+    // 9. Repeat, while k < len
+    while (k < lenValue) {
+       var kPresent = (k in O);
+       if(kPresent) {
+         var kValue = O[k];
+         var selected = callbackfn.call(T, kValue, k, O);
+         if(selected) {
+            A[to] = kValue;
+            to = to+1;
+         }
+       }
+       k = k+1;
+    }
+    return A;
+  };
+
 })();
+

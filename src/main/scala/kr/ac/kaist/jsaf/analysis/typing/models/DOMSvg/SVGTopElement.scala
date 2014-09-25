@@ -16,12 +16,14 @@ import kr.ac.kaist.jsaf.analysis.typing.domain.{BoolFalse => F, BoolTrue => T}
 import kr.ac.kaist.jsaf.analysis.typing.models._
 import kr.ac.kaist.jsaf.analysis.cfg.CFG
 import kr.ac.kaist.jsaf.analysis.typing.models.DOMCore.{DOMElement, DOMNode, DOMNodeList}
+import kr.ac.kaist.jsaf.analysis.typing.AddressManager._
 
 object SVGTopElement extends DOM {
   private val name = "SVGTopElement"
   
   /* predefined locations */
   val loc_proto = ObjProtoLoc  // dummy
+  val loc_ins = newSystemRecentLoc(name + "Ins")
   
   private val elementList = List(
     SVGSVGElement

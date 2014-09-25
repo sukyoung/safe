@@ -76,6 +76,27 @@ object Operator {
       case _ =>  Value(oldValue)
     }
   }
+
+  /* - */
+  def uopMinus_better(h: Heap, value:Value): Value = {
+    val oldValue = Helper.toNumber(value.pvalue) + Helper.toNumber(Helper.objToPrimitive_better(h, value.locset, "Number"))
+    forMatch(oldValue) match {
+      case NaNPattern =>  Value(NaN)
+      case UIntSinglePattern(0) =>  Value(oldValue)
+      case UIntSinglePattern(n) =>  Value(AbsNumber.alpha(-n))
+      case NUIntSinglePattern(n)=>
+        val neg = -n
+        val intnum = neg.toInt
+        val diff:Double = neg - intnum.toDouble
+        if ((diff == 0) && neg >= 0) Value(AbsNumber.alpha(neg))
+        else Value(AbsNumber.alpha(neg))
+      case UIntPattern =>  Value(NUInt)
+      case NUIntPattern =>  Value(NumTop)
+      case PosInfPattern =>  Value(NegInf)
+      case NegInfPattern =>  Value(PosInf)
+      case _ =>  Value(oldValue)
+    }
+  }
   /* ~ */
   def uopBitNeg(value:Value): Value = {
     val oldValue =	ToInt32(value) 
@@ -591,6 +612,148 @@ object Operator {
       case _ =>  Value(NumTop)
     }
   }
+  /* == */
+  def bopEq_better(h: Heap, left: Value, right: Value): Value = {
+    // 1
+    val b1 =
+      // a 
+      (left._1._1 === right._1._1) +
+      // b
+      (left._1._2 === right._1._2) +
+      // c
+      (left._1._4 === right._1._4) +
+      // d
+      (left._1._5 === right._1._5) +
+      // e
+      (left._1._3 === right._1._3) +
+      // f
+      (if (!left._2.isEmpty && !right._2.isEmpty) {
+        val intersect = left._2.intersect(right._2) 
+        if (intersect.isEmpty) BoolFalse
+        else if (left._2.size == 1 && right._2.size == 1 && isRecentLoc(intersect.head)) BoolTrue
+        else BoolTop}
+      else BoolBot)
+    // 2
+    val b2 = 
+      if (NullTop <= left._1._2 && UndefTop <= right._1._1) BoolTrue
+      else BoolBot
+    // 3
+    val b3 = 
+      if (UndefTop <= left._1._1 && NullTop <= right._1._2) BoolTrue
+      else BoolBot
+    // 4
+    val b4 = 
+      if (left._1._4 </ NumBot && right._1._5 </ StrBot)
+        left._1._4 === Helper.toNumber(PValue(right._1._5))
+      else BoolBot
+    // 5
+    val b5 = 
+      if (left._1._5 </ StrBot && right._1._4 </ NumBot)
+        Helper.toNumber(PValue(left._1._5)) === right._1._4
+      else BoolBot
+    // 6
+    val b6 = 
+      if (left._1._3 </ BoolBot) {
+        val num = Helper.toNumber(PValue(left._1._3))
+        val b6_1 =
+          if (right._1._4 </ NumBot)
+            num === right._1._4
+          else
+            BoolBot
+        val b6_4 =
+          if (right._1._5 </ StrBot)
+            num === Helper.toNumber(PValue(right._1._5))
+          else
+            BoolBot
+        val b6_8 =
+          if (!right._2.isEmpty)
+            num === Helper.objToPrimitive_better(h, right._2, "Number")._4
+          else
+            BoolBot
+        val b6_10 =
+          if (right._1._1 </ UndefBot || right._1._2 </ NullBot)
+            BoolFalse
+          else
+            BoolBot
+        b6_1 + b6_4 + b6_8 + b6_10
+      }
+      else
+        BoolBot
+    // 7
+    val b7 = 
+      if (right._1._3 </ BoolBot) {
+        val num = Helper.toNumber(PValue(right._1._3))
+        val b7_1 =
+          if (left._1._4 </ NumBot)
+            left._1._4 === num
+          else
+            BoolBot
+        val b7_4 =
+          if (left._1._5 </ StrBot)
+            Helper.toNumber(PValue(left._1._5)) === num
+          else
+            BoolBot
+        val b7_8 =
+          if (!left._2.isEmpty)
+            Helper.objToPrimitive_better(h, left._2, "Number")._4 === num
+          else
+            BoolBot
+        val b7_10 =
+          if (left._1._1 </ UndefBot || left._1._2 </ NullBot)
+            BoolFalse
+          else
+            BoolBot
+        b7_1 + b7_4 + b7_8 + b7_10
+      }
+      else
+        BoolBot
+    // 8
+    val b8 =
+      if (!right._2.isEmpty) {
+        val b8_num =
+          if (left._1._4 </ NumBot)
+            left._1._4 === Helper.objToPrimitive_better(h, right._2, "Number")._4
+          else
+            BoolBot
+        val b8_str =
+          if (left._1._5 </ StrBot)
+            left._1._5 === Helper.objToPrimitive_better(h, right._2, "String")._5
+          else
+            BoolBot
+        b8_num + b8_str
+      }
+      else
+        BoolBot
+    // 9
+    val b9 =
+      if (!left._2.isEmpty) {
+        val b9_num =
+          if (right._1._4 </ NumBot)
+            right._1._4 === Helper.objToPrimitive_better(h, left._2, "Number")._4
+          else
+            BoolBot
+        val b9_str =
+          if (right._1._5 </ StrBot)
+            right._1._5 === Helper.objToPrimitive_better(h, left._2, "String")._5
+          else
+            BoolBot
+        b9_num + b9_str
+      }
+      else
+        BoolBot
+    // 10
+    val b10 =
+      if (   (   (left._1._1 </ UndefBot || left._1._2 </ NullBot) 
+              && (right._1._4 </ NumBot || right._1._5 </ StrBot || !right._2.isEmpty))
+          || (   (right._1._1 </ UndefBot || right._1._2 </ NullBot) 
+              && (left._1._4 </ NumBot || left._1._5 </ StrBot || !left._2.isEmpty)))
+        BoolFalse
+      else
+        BoolBot
+    Value(b1 + b2 + b3 + b4 + b5 + b6 + b7 + b8 + b9 + b10)
+  }
+  
+
   /* == */
   def bopEq(left: Value, right: Value): Value = {
     // 1

@@ -126,13 +126,13 @@ class CommonDetect(bugDetector: BugDetector) {
 
       // To check ImplicitTypeConversion in built-in functions
       for(loc <- exprLoc) {
-        if(!isBuiltin) isBuiltin = heap(loc)("@function")._1.funid.exists(fid => typing.builtinFset contains fid)
+        if(!isBuiltin) isBuiltin = heap(loc)("@function").funid.exists(fid => typing.builtinFset contains fid)
       }
 
       // Bug Detect
       if(exprLoc.exists(loc => {
         checkOrder.exists(funName => {
-          val funValue = heap(loc)(funName)._1.objval.value
+          val funValue = heap(loc)(funName).objval.value
           //println("Loc = " + loc + ", funName = " + funName + ", funValue = " + funValue)
           if(funValue.locset.isEmpty) false
           else {
@@ -150,7 +150,7 @@ class CommonDetect(bugDetector: BugDetector) {
       def defaultValueTypeErrorCheck(value: Value): Boolean = {
         /*for(loc <- value.locset) {
           println("    loc = " + loc + ", ObjectName = " + kr.ac.kaist.jsaf.analysis.typing.domain.DomainPrinter.printLoc(loc) + ", isCallable = " + Helper.IsCallable(heap, loc))
-          for(fid <- heap(loc)("@function")._1.funid) {
+          for(fid <- heap(loc)("@function").funid) {
             println("        fid = " + fid + ", function name = " + ModelManager.getFuncName(fid))
           }
         }*/
@@ -168,7 +168,7 @@ class CommonDetect(bugDetector: BugDetector) {
 
       def implicitTypeConversionCheck(value: Value, hint: String): Boolean = {
         value.locset.exists(loc =>
-          heap(loc)("@function")._1.funid.exists(fid =>
+          heap(loc)("@function").funid.exists(fid =>
             typing.builtinFset.get(fid) match {
               case Some(builtinName) => !internalMethodMap(hint).contains(builtinName) && infoCheck(ImplicitCallToString)
               case None => infoCheck(ImplicitCallValueOf)

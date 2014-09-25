@@ -1,5 +1,5 @@
 /*******************************************************************************
-    Copyright (c) 2012-2013, S-Core, KAIST.
+    Copyright (c) 2012-2014, S-Core, KAIST.
     All rights reserved.
 
     Use is subject to license terms.
@@ -75,11 +75,12 @@ private class DomainPrinter(verbose_lv: Int) {
   
 
   def toJObj(obj: Obj, verbose: Boolean): JValue = {
-    val map = obj.map
     //var objMap:MHashMap[String, JValue] = MHashMap()
     var propList:List[JValue] = List()
     
-    for ((prop, (pv,abs)) <- map.toSeq.sortBy(_._1)) {
+    for (prop <- obj.getProps.toSeq.sortBy(f => f)) {
+      val pv = obj(prop)
+      val abs = obj.domIn(prop)
       val show = verbose match {
         case true => true
         case false => Config.testMode match {
@@ -94,7 +95,7 @@ private class DomainPrinter(verbose_lv: Int) {
       if (show) {
         var propValueMap:MHashMap[String, JValue] = MHashMap()
         propValueMap.update("propValue", toJPropValue(pv))
-        propValueMap.update("absent", !abs.isBot)
+        propValueMap.update("absent", BoolFalse <= abs)
         propList ::= ("name"->prop) ~ ("value"->propValueMap.toSeq.sortBy(_._1))
       }
     }

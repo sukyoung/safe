@@ -66,7 +66,7 @@ object JQueryTraversing extends ModelData {
       "jQuery.prototype.children" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
           /* new addr */
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -76,7 +76,7 @@ object JQueryTraversing extends ModelData {
           val (h_1, ctx_1) = Helper.Oldify(h, ctx, addr1)
 
           /* jQuery object */
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
 
           // ignore filtering, val v_arg = getArgValue(h, ctx, args, "0")
 
@@ -122,7 +122,7 @@ object JQueryTraversing extends ModelData {
       ("jQuery.prototype.find" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
           /* new addr */
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -132,7 +132,7 @@ object JQueryTraversing extends ModelData {
           val (h_1, ctx_1) = Helper.Oldify(h, ctx, addr1)
 
           /* jQuery object */
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
 
           // ignore HTMLelement, jQuery obejct
           val s_selector = getArgValue(h, ctx, args, "0")._1._5
@@ -158,7 +158,7 @@ object JQueryTraversing extends ModelData {
       ("jQuery.prototype.first" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
           /* new addr */
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -168,7 +168,7 @@ object JQueryTraversing extends ModelData {
           val (h_1, ctx_1) = Helper.Oldify(h, ctx, addr1)
 
           /* jQuery object */
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
 
           val lset_elems = lset_this.foldLeft(LocSetBot)((ls, l) => ls ++ Helper.Proto(h, l, AbsString.alpha("0"))._2)
 
@@ -190,7 +190,7 @@ object JQueryTraversing extends ModelData {
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
           // imprecise semantic
           /* jQuery object */
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           /* argument */
           val v_arg = getArgValue(h, ctx, args, "0")
           if (v_arg </ ValueBot)
@@ -201,7 +201,7 @@ object JQueryTraversing extends ModelData {
       "jQuery.prototype.next" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
           /* new addr */
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -211,7 +211,7 @@ object JQueryTraversing extends ModelData {
           val (h_1, ctx_1) = Helper.Oldify(h, ctx, addr1)
 
           /* jQuery object */
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
 
           // ignore filtering, val v_arg = getArgValue(h, ctx, args, "0")
 
@@ -251,7 +251,7 @@ object JQueryTraversing extends ModelData {
       "jQuery.prototype.parent" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
           /* new addr */
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -261,7 +261,7 @@ object JQueryTraversing extends ModelData {
           val (h_1, ctx_1) = Helper.Oldify(h, ctx, addr1)
 
           /* jQuery object */
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
 
           // ignore filtering, val v_arg = getArgValue(h, ctx, args, "0")
 
@@ -301,7 +301,7 @@ object JQueryTraversing extends ModelData {
       "jQuery.prototype.parents" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
           /* new addr */
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -311,7 +311,7 @@ object JQueryTraversing extends ModelData {
           val (h_1, ctx_1) = Helper.Oldify(h, ctx, addr1)
 
           /* jQuery object */
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
 
           // ignore filtering, val v_arg = getArgValue(h, ctx, args, "0")
 
@@ -355,7 +355,7 @@ object JQueryTraversing extends ModelData {
       "jQuery.prototype.siblings" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
           /* new addr */
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -365,7 +365,7 @@ object JQueryTraversing extends ModelData {
           val (h_1, ctx_1) = Helper.Oldify(h, ctx, addr1)
 
           /* jQuery object */
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
 
           // ignore filtering, val v_arg = getArgValue(h, ctx, args, "0")
 

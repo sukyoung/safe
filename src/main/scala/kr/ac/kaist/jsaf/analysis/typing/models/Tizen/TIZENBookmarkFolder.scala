@@ -1,5 +1,5 @@
 /*******************************************************************************
-    Copyright (c) 2013, S-Core.
+    Copyright (c) 2013-2014, S-Core, KAIST.
     All rights reserved.
 
     Use is subject to license terms.
@@ -54,10 +54,10 @@ object TIZENBookmarkFolder extends Tizen {
     Map(
       ("tizen.BookmarkFolder.constructor" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           val title = getArgValue(h, ctx, args, "0")
 
-          val o_new = ObjEmpty.
+          val o_new = Obj.empty.
             update("@class", PropValue(AbsString.alpha("Object"))).
             update("@proto", PropValue(ObjectValue(Value(TIZENBookmarkFolder.loc_proto), F, F, F))).
             update("@extensible", PropValue(T)).

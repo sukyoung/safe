@@ -57,7 +57,7 @@ object TIZENFile extends Tizen {
         )),
       ("tizen.File.listFiles" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -89,7 +89,7 @@ object TIZENFile extends Tizen {
               val o_arr1 = Helper.NewArrayObject(AbsNumber.alpha(1)).
                 update("0", PropValue(ObjectValue(Value(TIZENfilesystem.loc_filearr), T, T, T)))
               val h_3 = h_2.update(l_r1, o_arr1)
-              val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+              val lset_this = h(SinglePureLocalLoc)("@this")._2._2
               val o_arr2 = Helper.NewArrayObject(AbsNumber.alpha(1))
               // for IOError
               val h_4 =
@@ -122,7 +122,7 @@ object TIZENFile extends Tizen {
               val o_arr1 = Helper.NewArrayObject(AbsNumber.alpha(1)).
                 update("0", PropValue(ObjectValue(Value(TIZENfilesystem.loc_filearr), T, T, T)))
               val h_3 = h_2.update(l_r1, o_arr1)
-              val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+              val lset_this = h(SinglePureLocalLoc)("@this")._2._2
               val o_arr2 = Helper.NewArrayObject(AbsNumber.alpha(1))
               // for IOError
               val h_4 =
@@ -150,7 +150,7 @@ object TIZENFile extends Tizen {
         )),
       ("tizen.File.openStream" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -188,7 +188,7 @@ object TIZENFile extends Tizen {
               val o_arr1 = Helper.NewArrayObject(AbsNumber.alpha(1)).
                 update("0", PropValue(ObjectValue(Value(TIZENfilesystem.loc_filestream), T, T, T)))
               val h_3 = h_2.update(l_r1, o_arr1)
-              val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+              val lset_this = h(SinglePureLocalLoc)("@this")._2._2
               val o_arr2 = Helper.NewArrayObject(AbsNumber.alpha(1))
               // for IOError
               val h_4 =
@@ -220,7 +220,7 @@ object TIZENFile extends Tizen {
               val o_arr1 = Helper.NewArrayObject(AbsNumber.alpha(1)).
                 update("0", PropValue(ObjectValue(Value(TIZENfilesystem.loc_filestream), T, T, T)))
               val h_3 = h_2.update(l_r1, o_arr1)
-              val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+              val lset_this = h(SinglePureLocalLoc)("@this")._2._2
               val o_arr2 = Helper.NewArrayObject(AbsNumber.alpha(1))
               // for IOError
               val h_4 =
@@ -248,7 +248,7 @@ object TIZENFile extends Tizen {
         )),
       ("tizen.File.readAsText" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -280,7 +280,7 @@ object TIZENFile extends Tizen {
               val o_arr1 = Helper.NewArrayObject(AbsNumber.alpha(1)).
                 update("0", PropValue(ObjectValue(Value(StrTop), T, T, T)))
               val h_3 = h_2.update(l_r1, o_arr1)
-              val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+              val lset_this = h(SinglePureLocalLoc)("@this")._2._2
               val o_arr2 = Helper.NewArrayObject(AbsNumber.alpha(1))
               // for IOError
               val h_4 =
@@ -312,7 +312,7 @@ object TIZENFile extends Tizen {
               val o_arr1 = Helper.NewArrayObject(AbsNumber.alpha(1)).
                 update("0", PropValue(ObjectValue(Value(StrTop), T, T, T)))
               val h_3 = h_2.update(l_r1, o_arr1)
-              val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+              val lset_this = h(SinglePureLocalLoc)("@this")._2._2
               val o_arr2 = Helper.NewArrayObject(AbsNumber.alpha(1))
               // for IOError
               val h_4 =
@@ -340,7 +340,7 @@ object TIZENFile extends Tizen {
         )),
       ("tizen.File.copyTo" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -402,7 +402,7 @@ object TIZENFile extends Tizen {
         )),
       ("tizen.File.moveTo" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -464,7 +464,7 @@ object TIZENFile extends Tizen {
         )),
       ("tizen.File.createDirectory" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -477,7 +477,7 @@ object TIZENFile extends Tizen {
               Set[WebAPIException](TypeMismatchError)
             else
               TizenHelper.TizenExceptionBot
-          val o_new = ObjEmpty.
+          val o_new = Obj.empty.
             update("@class", PropValue(AbsString.alpha("Object"))).
             update("@proto", PropValue(ObjectValue(Value(TIZENFile.loc_proto), F, F, F))).
             update("@extensible", PropValue(T)).
@@ -500,7 +500,7 @@ object TIZENFile extends Tizen {
         )),
       ("tizen.File.createFile" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -513,7 +513,7 @@ object TIZENFile extends Tizen {
               Set[WebAPIException](TypeMismatchError)
             else
               TizenHelper.TizenExceptionBot
-          val o_new = ObjEmpty.
+          val o_new = Obj.empty.
             update("@class", PropValue(AbsString.alpha("Object"))).
             update("@proto", PropValue(ObjectValue(Value(TIZENFile.loc_proto), F, F, F))).
             update("@extensible", PropValue(T)).
@@ -548,7 +548,7 @@ object TIZENFile extends Tizen {
         )),
       ("tizen.File.deleteDirectory" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -592,7 +592,7 @@ object TIZENFile extends Tizen {
                 update("0", PropValue(ObjectValue(Value(LocSet(TIZENtizen.loc_notFounderr) ++ LocSet(TIZENtizen.loc_invalidValueserr) ++ LocSet(TIZENtizen.loc_unknownerr)), T, T, T)))
               val h_2 = h_1.update(l_r1, o_arr1)
               val h_3 = TizenHelper.addCallbackHandler(h_2, AbsString.alpha("successCB"), Value(v_3._2), Value(UndefTop))
-              val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+              val lset_this = h(SinglePureLocalLoc)("@this")._2._2
               val o_arr2 = Helper.NewArrayObject(AbsNumber.alpha(1))
               // for IOError
               val h_4 =
@@ -619,7 +619,7 @@ object TIZENFile extends Tizen {
         )),
       ("tizen.File.deleteFile" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -658,7 +658,7 @@ object TIZENFile extends Tizen {
                 update("0", PropValue(ObjectValue(Value(LocSet(TIZENtizen.loc_notFounderr) ++ LocSet(TIZENtizen.loc_invalidValueserr) ++ LocSet(TIZENtizen.loc_unknownerr)), T, T, T)))
               val h_2 = h_1.update(l_r1, o_arr1)
               val h_3 = TizenHelper.addCallbackHandler(h_2, AbsString.alpha("successCB"), Value(v_2._2), Value(UndefTop))
-              val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+              val lset_this = h(SinglePureLocalLoc)("@this")._2._2
               val o_arr2 = Helper.NewArrayObject(AbsNumber.alpha(1))
               // for IOError
               val h_4 =
@@ -787,7 +787,7 @@ object TIZENFileStream extends Tizen {
         )),
       ("tizen.FileStream.readBytes" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -800,7 +800,7 @@ object TIZENFileStream extends Tizen {
               Set[WebAPIException](TypeMismatchError)
             else TizenHelper.TizenExceptionBot
           val o_arr = Helper.NewArrayObject(UInt).
-            update("@default_number", PropValue(ObjectValue(Value(NumTop), T, T, T)))
+            update(Str_default_number, PropValue(ObjectValue(Value(NumTop), T, T, T)))
           val h_2 = h_1.update(l_r1, o_arr)
           val est = Set[WebAPIException](SecurityError, NotSupportedError, IOError, InvalidValuesError)
           val (h_e, ctx_e) = TizenHelper.TizenRaiseException(h, ctx, es ++ est)
@@ -856,7 +856,7 @@ object TIZENFileStream extends Tizen {
                   es__
                 }
                 case _ => {
-                  val vi = Helper.Proto(h, ll, AbsString.alpha("@default_number"))
+                  val vi = Helper.Proto(h, ll, AbsString.alpha(Str_default_number))
                   val esi =
                     if (vi._1._4 </ NumTop) Set[WebAPIException](TypeMismatchError)
                     else TizenHelper.TizenExceptionBot

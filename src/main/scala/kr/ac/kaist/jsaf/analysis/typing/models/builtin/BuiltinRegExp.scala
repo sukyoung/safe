@@ -65,9 +65,9 @@ object BuiltinRegExp extends ModelData {
   // argVal: argument string
   // l_r: location of the return object
   def exec(h: Heap, ctx: Context, he: Heap, ctxe: Context, lset_this: LocSet, argVal: AbsString, l_r: Loc, addr1: Address): ((Heap, Context), (Heap, Context)) = {
-    val lset_1 = lset_this.filter(l => AbsString.alpha("RegExp") <= h(l)("@class")._1._2._1._5)
+    val lset_1 = lset_this.filter(l => AbsString.alpha("RegExp") <= h(l)("@class")._2._1._5)
     val lset_2 = lset_this.filter(l => {
-      val s = h(l)("@class")._1._2._1._5
+      val s = h(l)("@class")._2._1._5
       AbsString.alpha("RegExp") != s && s </ StrBot
     })
 
@@ -75,11 +75,11 @@ object BuiltinRegExp extends ModelData {
     val (h_4, ctx_4) =
       if (!lset_1.isEmpty) {
         val l = lset_1.head
-        val src = h(l)("source")._1._1._1._1._5.getSingle
-        val b_g = h(l)("global")._1._1._1._1._3.getSingle
-        val b_i = h(l)("ignoreCase")._1._1._1._1._3.getSingle
-        val b_m = h(l)("multiline")._1._1._1._1._3.getSingle
-        val idx = Operator.ToInteger(h(l)("lastIndex")._1._1._1).getSingle
+        val src = h(l)("source")._1._1._1._5.getSingle
+        val b_g = h(l)("global")._1._1._1._3.getSingle
+        val b_i = h(l)("ignoreCase")._1._1._1._3.getSingle
+        val b_m = h(l)("multiline")._1._1._1._3.getSingle
+        val idx = Operator.ToInteger(h(l)("lastIndex")._1._1).getSingle
         val s_1 = argVal.gamma
 
         val (h_3, ctx_3) = (lset_1.size, src, b_g, b_i, b_m, idx, s_1) match {
@@ -133,7 +133,7 @@ object BuiltinRegExp extends ModelData {
               val newobj = Helper.NewArrayObject(UInt)
                 .update("index", PropValue(ObjectValue(UInt, T, T, T)))
                 .update("input", PropValue(ObjectValue(argVal, T, T, T)))
-                .update("@default_number", PropValue(ObjectValue(Value(StrTop) + Value(UndefTop), T, T, T)))
+                .update(Str_default_number, PropValue(ObjectValue(Value(StrTop) + Value(UndefTop), T, T, T)))
 
               val h_2 = lset_1.foldLeft(h_1)((h_1_, l) => Helper.PropStore(h_1_, l, AbsString.alpha("lastIndex"), Value(UInt)))
               val h_3 = h_2.update(l_r, newobj)
@@ -168,7 +168,7 @@ object BuiltinRegExp extends ModelData {
           val lset_callee = getArgValue(h, ctx, args, "callee")._2
           val abstraction = lset_callee.size > 1
           
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -188,10 +188,10 @@ object BuiltinRegExp extends ModelData {
             else StrBot
 
           // case for pattern is an object whose [[class]] is RegExp.
-          val lset_1 = v_1._2.filter(l => AbsString.alpha("RegExp") <= h(l)("@class")._1._2._1._5)
+          val lset_1 = v_1._2.filter(l => AbsString.alpha("RegExp") <= h(l)("@class")._2._1._5)
           // case for pattern is an object whose [[class]] is not a RegExp.
           val lset_2 = v_1._2.filter(l => {
-            val s = h(l)("@class")._1._2._1._5
+            val s = h(l)("@class")._2._1._5
             AbsString.alpha("RegExp") != s && s </ StrBot
           })
 
@@ -217,7 +217,7 @@ object BuiltinRegExp extends ModelData {
 
           val (oo, es_2) = (p.gamma, f.gamma) match {
             case (Some(patternSet), Some(flagsSet)) =>
-              var obj: Obj = ObjBot
+              var obj: Obj = Obj.bottom
               var exc = ExceptionBot
               for(pattern <- patternSet) for(flags <- flagsSet) {
                 val s =
@@ -280,7 +280,7 @@ object BuiltinRegExp extends ModelData {
       (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
         val lset_callee = getArgValue(h, ctx, args, "callee")._2
         val abstraction = lset_callee.size > 1
-        val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+        val lset_this = h(SinglePureLocalLoc)("@this")._2._2
         val v_1 = getArgValue(h, ctx, args, "0")
         val v_2 = getArgValue(h, ctx, args, "1")
 
@@ -294,12 +294,12 @@ object BuiltinRegExp extends ModelData {
           else StrBot
 
         // case for pattern is an object whose [[class]] is RegExp.
-        val lset_1 = v_1._2.filter(l => AbsString.alpha("RegExp") <= h(l)("@class")._1._2._1._5)
-        val p_2 = lset_1.foldLeft[AbsString](StrBot)((s, l) => s + h(l)("source")._1._1._1._1._5)
+        val lset_1 = v_1._2.filter(l => AbsString.alpha("RegExp") <= h(l)("@class")._2._1._5)
+        val p_2 = lset_1.foldLeft[AbsString](StrBot)((s, l) => s + h(l)("source")._1._1._1._5)
 
         // case for pattern is an object whose [[class]] is not a RegExp.
         val lset_2 = v_1._2.filter(l => {
-          val s = h(l)("@class")._1._2._1._5
+          val s = h(l)("@class")._2._1._5
           AbsString.alpha("RegExp") != s && s </ StrBot
         })
 
@@ -326,7 +326,7 @@ object BuiltinRegExp extends ModelData {
         val (oo, es_2) = (p.gamma, f.gamma) match {
           case (Some(patternSet), Some(flagsSet)) =>
             try {
-              var obj: Obj = ObjBot
+              var obj: Obj = Obj.bottom
               for(pattern <- patternSet) for(flags <- flagsSet) {
                 val s =
                   if (pattern == "") "(?:)"
@@ -348,7 +348,7 @@ object BuiltinRegExp extends ModelData {
                       case ERegExp2_15_2 => Config.typingInterface.signal(null, RegExp2_15_2, e.getMsg1, e.getMsg2)
                     }
                 (None, HashSet[Exception](SyntaxError))
-              case _ => (None, HashSet[Exception](SyntaxError))
+              case _: Throwable => (None, HashSet[Exception](SyntaxError))
             }
           case _ if p </ StrBot && f </ StrBot => (Some(Helper.NewRegExp(p, BoolTop, BoolTop, BoolTop)), HashSet[Exception](SyntaxError))
           case _ => (None, ExceptionBot)
@@ -372,8 +372,8 @@ object BuiltinRegExp extends ModelData {
           // allocate new location
           val v_1 = getArgValue(h, ctx, args, "0")
           val argVal = Helper.toString(Helper.toPrimitive_better(h, v_1))
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -382,9 +382,9 @@ object BuiltinRegExp extends ModelData {
           
           exec(h, ctx, he, ctxe, lset_this, argVal, l_r, addr1)
           /*
-          val lset_1 = lset_this.filter(l => AbsString.alpha("RegExp") <= h(l)("@class")._1._2._1._5)
+          val lset_1 = lset_this.filter(l => AbsString.alpha("RegExp") <= h(l)("@class")._2._1._5)
           val lset_2 = lset_this.filter(l => {
-            val s = h(l)("@class")._1._2._1._5
+            val s = h(l)("@class")._2._1._5
             AbsString.alpha("RegExp") != s && s </ StrBot
           })
 
@@ -392,10 +392,10 @@ object BuiltinRegExp extends ModelData {
           val (h_4, ctx_4) =
             if (!lset_1.isEmpty) {
               val l = lset_1.head
-              val src = h(l)("source")._1._1._1._1._5.getSingle
-              val b_g = h(l)("global")._1._1._1._1._3.getSingle
-              val b_i = h(l)("ignoreCase")._1._1._1._1._3.getSingle
-              val b_m = h(l)("multiline")._1._1._1._1._3.getSingle
+              val src = h(l)("source")._1._1._1._5.getSingle
+              val b_g = h(l)("global")._1._1._1._3.getSingle
+              val b_i = h(l)("ignoreCase")._1._1._1._3.getSingle
+              val b_m = h(l)("multiline")._1._1._1._3.getSingle
               val idx = Operator.ToInteger(h(l)("lastIndex")._1._1._1).getSingle
               val s_1 = argVal.getSingle
 
@@ -446,7 +446,7 @@ object BuiltinRegExp extends ModelData {
                     val newobj = Helper.NewArrayObject(UInt)
                       .update("index", PropValue(ObjectValue(UInt, T, T, T)))
                       .update("input", PropValue(ObjectValue(argVal, T, T, T)))
-                      .update("@default_number", PropValue(ObjectValue(Value(StrTop) + Value(UndefTop), T, T, T)))
+                      .update(Str_default_number, PropValue(ObjectValue(Value(StrTop) + Value(UndefTop), T, T, T)))
 
                     val h_2 = lset_1.foldLeft(h_1)((h_1_, l) => Helper.PropStore(h_1_, l, AbsString.alpha("lastIndex"), Value(UInt)))
                     val h_3 = h_2.update(l_r, newobj)
@@ -474,10 +474,10 @@ object BuiltinRegExp extends ModelData {
        (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
          val v_1 = getArgValue(h, ctx, args, "0")
          val argVal = Helper.toString(Helper.toPrimitive_better(h, v_1))
-         val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
-         val lset_1 = lset_this.filter(l => AbsString.alpha("RegExp") <= h(l)("@class")._1._2._1._5)
+         val lset_this = h(SinglePureLocalLoc)("@this")._2._2
+         val lset_1 = lset_this.filter(l => AbsString.alpha("RegExp") <= h(l)("@class")._2._1._5)
          val lset_2 = lset_this.filter(l => {
-           val cls = h(l)("@class")._1._2._1._5
+           val cls = h(l)("@class")._2._1._5
            AbsString.alpha("RegExp") != cls && cls </ StrBot
          })
 
@@ -485,11 +485,11 @@ object BuiltinRegExp extends ModelData {
          val (h_4, ctx_4) =
            if (!lset_1.isEmpty) {
              val l = lset_1.head
-             val a_src = h(l)("source")._1._1._1._1._5
-             val a_g = h(l)("global")._1._1._1._1._3
-             val a_i = h(l)("ignoreCase")._1._1._1._1._3
-             val a_m = h(l)("multiline")._1._1._1._1._3
-             val a_idx = h(l)("lastIndex")._1._1._1
+             val a_src = h(l)("source")._1._1._1._5
+             val a_g = h(l)("global")._1._1._1._3
+             val a_i = h(l)("ignoreCase")._1._1._1._3
+             val a_m = h(l)("multiline")._1._1._1._3
+             val a_idx = h(l)("lastIndex")._1._1
              val src = a_src.getSingle
              val b_g = a_g.getSingle
              val b_i = a_i.getSingle
@@ -521,7 +521,7 @@ object BuiltinRegExp extends ModelData {
                case _ => (NumBot, BoolBot)
              }
 
-             val a_g_ = lset_1.foldLeft(AbsBool.bot)((b, l) => b + h(l)("global")._1._1._1._1._3)
+             val a_g_ = lset_1.foldLeft(AbsBool.bot)((b, l) => b + h(l)("global")._1._1._1._3)
 
              // XXX: Need to check the semantics of [[Put]] internal method.
              val h_2 =
@@ -549,10 +549,10 @@ object BuiltinRegExp extends ModelData {
        }),
       "RegExp.prototype.toString" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
 
-          val lset_1 = lset_this.filter(l => AbsString.alpha("RegExp") <= h(l)("@class")._1._2._1._5)
-          val lset_2 = lset_this.filter(l => AbsString.alpha("RegExp") </ h(l)("@class")._1._2._1._5)
+          val lset_1 = lset_this.filter(l => AbsString.alpha("RegExp") <= h(l)("@class")._2._1._5)
+          val lset_2 = lset_this.filter(l => AbsString.alpha("RegExp") </ h(l)("@class")._2._1._5)
 
           val s_rtn = Helper.defaultToString(h, lset_1)
 
@@ -576,7 +576,7 @@ object BuiltinRegExp extends ModelData {
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
           val PureLocalLoc = cfg.getPureLocal(cp)
           // API address allocation
-          val lset_env = h(PureLocalLoc)("@env")._1._2._2
+          val lset_env = h(PureLocalLoc)("@env")._2._2
           val lset_callee = getArgValue_pre(h, ctx, args, "callee", PureLocalLoc)._2
           val abstraction = lset_callee.size > 1
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
@@ -598,10 +598,10 @@ object BuiltinRegExp extends ModelData {
             else StrBot
 
           // case for pattern is an object whose [[class]] is RegExp.
-          val lset_1 = v_1._2.filter(l => AbsString.alpha("RegExp") <= h(l)("@class")._1._2._1._5)
+          val lset_1 = v_1._2.filter(l => AbsString.alpha("RegExp") <= h(l)("@class")._2._1._5)
           // case for pattern is an object whose [[class]] is not a RegExp.
           val lset_2 = v_1._2.filter(l => {
-            val s = h(l)("@class")._1._2._1._5
+            val s = h(l)("@class")._2._1._5
             AbsString.alpha("RegExp") != s && s </ StrBot
           })
 
@@ -628,7 +628,7 @@ object BuiltinRegExp extends ModelData {
           val (oo, es_2) = (p.gamma, f.gamma) match {
             case (Some(patternSet), Some(flagsSet)) => {
               try {
-                var obj: Obj = ObjBot
+                var obj: Obj = Obj.bottom
                 for(pattern <- patternSet) for(flags <- flagsSet) {
                   val s =
                     if (pattern == "") "(?:)"
@@ -650,7 +650,7 @@ object BuiltinRegExp extends ModelData {
                         case ERegExp2_15_2 => Config.typingInterface.signal(null, RegExp2_15_2, e.getMsg1, e.getMsg2)
                       }
                   (None, HashSet[Exception](SyntaxError))
-                case _ => (None, HashSet[Exception](SyntaxError))
+                case _: Throwable => (None, HashSet[Exception](SyntaxError))
               }
             }
             case _ if p </ StrBot && f </ StrBot => (Some(Helper.NewRegExp(p, BoolTop, BoolTop, BoolTop)), HashSet[Exception](SyntaxError))
@@ -687,7 +687,7 @@ object BuiltinRegExp extends ModelData {
       "RegExp.constructor" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
           val PureLocalLoc = cfg.getPureLocal(cp)
-          val lset_this = h(PureLocalLoc)("@this")._1._2._2
+          val lset_this = h(PureLocalLoc)("@this")._2._2
           val lset_callee = getArgValue_pre(h, ctx, args, "callee", PureLocalLoc)._2
           val abstraction = lset_callee.size > 1
           val v_1 = getArgValue_pre(h, ctx, args, "0", PureLocalLoc)
@@ -703,12 +703,12 @@ object BuiltinRegExp extends ModelData {
             else StrBot
 
           // case for pattern is an object whose [[class]] is RegExp.
-          val lset_1 = v_1._2.filter(l => AbsString.alpha("RegExp") <= h(l)("@class")._1._2._1._5)
-          val p_2 = lset_1.foldLeft[AbsString](StrBot)((s, l) => s + h(l)("source")._1._1._1._1._5)
+          val lset_1 = v_1._2.filter(l => AbsString.alpha("RegExp") <= h(l)("@class")._2._1._5)
+          val p_2 = lset_1.foldLeft[AbsString](StrBot)((s, l) => s + h(l)("source")._1._1._1._5)
 
           // case for pattern is an object whose [[class]] is not a RegExp.
           val lset_2 = v_1._2.filter(l => {
-            val s = h(l)("@class")._1._2._1._5
+            val s = h(l)("@class")._2._1._5
             AbsString.alpha("RegExp") != s && s </ StrBot
           })
 
@@ -735,7 +735,7 @@ object BuiltinRegExp extends ModelData {
           val (oo, es_2) = (p.gamma, f.gamma) match {
             case (Some(patternSet), Some(flagsSet)) => {
               try {
-                var obj: Obj = ObjBot
+                var obj: Obj = Obj.bottom
                 for(pattern <- patternSet) for(flags <- flagsSet) {
                   val s =
                     if (pattern == "") "(?:)"
@@ -757,7 +757,7 @@ object BuiltinRegExp extends ModelData {
                         case ERegExp2_15_2 => Config.typingInterface.signal(null, RegExp2_15_2, e.getMsg1, e.getMsg2)
                       }
                   (None, HashSet[Exception](SyntaxError))
-                case _ => (None, HashSet[Exception](SyntaxError))
+                case _: Throwable => (None, HashSet[Exception](SyntaxError))
               }
             }
             case _ if p </ StrBot && f </ StrBot => (Some(Helper.NewRegExp(p, BoolTop, BoolTop, BoolTop)), HashSet[Exception](SyntaxError))
@@ -783,17 +783,17 @@ object BuiltinRegExp extends ModelData {
           // allocate new location
           val v_1 = getArgValue_pre(h, ctx, args, "0", PureLocalLoc)
           val argVal = PreHelper.toString(PreHelper.toPrimitive(v_1))
-          val lset_env = h(PureLocalLoc)("@env")._1._2._2
-          val lset_this = h(PureLocalLoc)("@this")._1._2._2
+          val lset_env = h(PureLocalLoc)("@env")._2._2
+          val lset_this = h(PureLocalLoc)("@this")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
           val addr1 = cfg.getAPIAddress(addr_env, 0)
           val l_r = addrToLoc(addr1, Recent)
 
-          val lset_1 = lset_this.filter(l => AbsString.alpha("RegExp") <= h(l)("@class")._1._2._1._5)
+          val lset_1 = lset_this.filter(l => AbsString.alpha("RegExp") <= h(l)("@class")._2._1._5)
           val lset_2 = lset_this.filter(l => {
-            val s = h(l)("@class")._1._2._1._5
+            val s = h(l)("@class")._2._1._5
             AbsString.alpha("RegExp") != s && s </ StrBot
           })
 
@@ -801,11 +801,11 @@ object BuiltinRegExp extends ModelData {
           val (h_4, ctx_4) =
             if (!lset_1.isEmpty) {
               val l = lset_1.head
-              val src = h(l)("source")._1._1._1._1._5.getSingle
-              val b_g = h(l)("global")._1._1._1._1._3.getSingle
-              val b_i = h(l)("ignoreCase")._1._1._1._1._3.getSingle
-              val b_m = h(l)("multiline")._1._1._1._1._3.getSingle
-              val idx = Operator.ToInteger(h(l)("lastIndex")._1._1._1).getSingle
+              val src = h(l)("source")._1._1._1._5.getSingle
+              val b_g = h(l)("global")._1._1._1._3.getSingle
+              val b_i = h(l)("ignoreCase")._1._1._1._3.getSingle
+              val b_m = h(l)("multiline")._1._1._1._3.getSingle
+              val idx = Operator.ToInteger(h(l)("lastIndex")._1._1).getSingle
               val s_1 = argVal.getSingle
 
               val (h_3, ctx_3) = (lset_1.size, src, b_g, b_i, b_m, idx, s_1) match {
@@ -855,7 +855,7 @@ object BuiltinRegExp extends ModelData {
                     val newobj = PreHelper.NewArrayObject(UInt)
                       .update("index", PropValue(ObjectValue(UInt, T, T, T)))
                       .update("input", PropValue(ObjectValue(argVal, T, T, T)))
-                      .update("@default_number", PropValue(ObjectValue(Value(StrTop) + Value(UndefTop), T, T, T)))
+                      .update(Str_default_number, PropValue(ObjectValue(Value(StrTop) + Value(UndefTop), T, T, T)))
 
                     val h_2 = PreHelper.PropStore(h_1, l, AbsString.alpha("lastIndex"), Value(UInt))
                     val h_3 = h_2.update(l_r, newobj)
@@ -884,10 +884,10 @@ object BuiltinRegExp extends ModelData {
           val PureLocalLoc = cfg.getPureLocal(cp)
           val v_1 = getArgValue(h, ctx, args, "0")
           val argVal = PreHelper.toString(PreHelper.toPrimitive(v_1))
-          val lset_this = h(PureLocalLoc)("@this")._1._2._2
-          val lset_1 = lset_this.filter(l => AbsString.alpha("RegExp") <= h(l)("@class")._1._2._1._5)
+          val lset_this = h(PureLocalLoc)("@this")._2._2
+          val lset_1 = lset_this.filter(l => AbsString.alpha("RegExp") <= h(l)("@class")._2._1._5)
           val lset_2 = lset_this.filter(l => {
-            val cls = h(l)("@class")._1._2._1._5
+            val cls = h(l)("@class")._2._1._5
             AbsString.alpha("RegExp") != cls && cls </ StrBot
           })
 
@@ -895,11 +895,11 @@ object BuiltinRegExp extends ModelData {
           val (h_4, ctx_4) =
             if (!lset_1.isEmpty) {
               val l = lset_1.head
-              val a_src = h(l)("source")._1._1._1._1._5
-              val a_g = h(l)("global")._1._1._1._1._3
-              val a_i = h(l)("ignoreCase")._1._1._1._1._3
-              val a_m = h(l)("multiline")._1._1._1._1._3
-              val a_idx = h(l)("lastIndex")._1._1._1
+              val a_src = h(l)("source")._1._1._1._5
+              val a_g = h(l)("global")._1._1._1._3
+              val a_i = h(l)("ignoreCase")._1._1._1._3
+              val a_m = h(l)("multiline")._1._1._1._3
+              val a_idx = h(l)("lastIndex")._1._1
               val src = a_src.getSingle
               val b_g = a_g.getSingle
               val b_i = a_i.getSingle
@@ -958,10 +958,10 @@ object BuiltinRegExp extends ModelData {
       "RegExp.prototype.toString" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
           val PureLocalLoc = cfg.getPureLocal(cp)
-          val lset_this = h(PureLocalLoc)("@this")._1._2._2
+          val lset_this = h(PureLocalLoc)("@this")._2._2
 
-          val lset_1 = lset_this.filter(l => AbsString.alpha("RegExp") <= h(l)("@class")._1._2._1._5)
-          val lset_2 = lset_this.filter(l => AbsString.alpha("RegExp") </ h(l)("@class")._1._2._1._5)
+          val lset_1 = lset_this.filter(l => AbsString.alpha("RegExp") <= h(l)("@class")._2._1._5)
+          val lset_2 = lset_this.filter(l => AbsString.alpha("RegExp") </ h(l)("@class")._2._1._5)
 
           val s_rtn = Helper.defaultToString(h, lset_1)
 
@@ -984,7 +984,7 @@ object BuiltinRegExp extends ModelData {
       "RegExp" -> (
         (h: Heap, ctx: Context, cfg: CFG, fun: String, args: CFGExpr, fid: FunctionId) => {
           // API address allocation
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + cfg.getAPIAddress((fid, locToAddr(l)), 0))
 
           val es_1 = HashSet[Exception](TypeError)
@@ -1003,7 +1003,7 @@ object BuiltinRegExp extends ModelData {
         }),
       "RegExp.constructor" -> (
         (h: Heap, ctx: Context, cfg: CFG, fun: String, args: CFGExpr, fid: FunctionId) => {
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
 
           val es_1 = HashSet[Exception](TypeError)
           val es_2 = HashSet[Exception](SyntaxError)
@@ -1021,11 +1021,11 @@ object BuiltinRegExp extends ModelData {
       "RegExp.prototype.exec" -> (
         (h: Heap, ctx: Context, cfg: CFG, fun: String, args: CFGExpr, fid: FunctionId) => {
           // allocate new location
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + cfg.getAPIAddress((fid, locToAddr(l)), 0))
 
-          val lset_1 = lset_this.filter(l => AbsString.alpha("RegExp") <= h(l)("@class")._1._2._1._5)
+          val lset_1 = lset_this.filter(l => AbsString.alpha("RegExp") <= h(l)("@class")._2._1._5)
 
           val props = AH.NewArrayObject_def ++ Set("index", "input")
           val es = HashSet[Exception](TypeError)
@@ -1043,8 +1043,8 @@ object BuiltinRegExp extends ModelData {
         }),
       "RegExp.prototype.test" -> (
         (h: Heap, ctx: Context, cfg: CFG, fun: String, args: CFGExpr, fid: FunctionId) => {
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
-          val lset_1 = lset_this.filter(l => AbsString.alpha("RegExp") <= h(l)("@class")._1._2._1._5)
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
+          val lset_1 = lset_this.filter(l => AbsString.alpha("RegExp") <= h(l)("@class")._2._1._5)
 
           val es = HashSet[Exception](TypeError)
 
@@ -1071,7 +1071,7 @@ object BuiltinRegExp extends ModelData {
       "RegExp" -> (
         (h: Heap, ctx: Context, cfg: CFG, fun: String, args: CFGExpr, fid: FunctionId) => {
           // API address allocation
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + cfg.getAPIAddress((fid, locToAddr(l)), 0))
 
           val v_1 = getArgValue(h, ctx, args, "0")
@@ -1094,7 +1094,7 @@ object BuiltinRegExp extends ModelData {
           val v_1 = getArgValue(h, ctx, args, "0")
 
           // case for pattern is an object whose [[class]] is RegExp.
-          val lset_1 = v_1._2.filter(l => AbsString.alpha("RegExp") <= h(l)("@class")._1._2._1._5)
+          val lset_1 = v_1._2.filter(l => AbsString.alpha("RegExp") <= h(l)("@class")._2._1._5)
 
           val es_1 = HashSet[Exception](TypeError)
           val es_2 = HashSet[Exception](SyntaxError)
@@ -1112,11 +1112,11 @@ object BuiltinRegExp extends ModelData {
         (h: Heap, ctx: Context, cfg: CFG, fun: String, args: CFGExpr, fid: FunctionId) => {
           // allocate new location
           val v_1 = getArgValue(h, ctx, args, "0")
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + cfg.getAPIAddress((fid, locToAddr(l)), 0))
 
-          val lset_1 = lset_this.filter(l => AbsString.alpha("RegExp") <= h(l)("@class")._1._2._1._5)
+          val lset_1 = lset_this.filter(l => AbsString.alpha("RegExp") <= h(l)("@class")._2._1._5)
 
           val es = HashSet[Exception](TypeError)
 
@@ -1138,8 +1138,8 @@ object BuiltinRegExp extends ModelData {
       "RegExp.prototype.test" -> (
         (h: Heap, ctx: Context, cfg: CFG, fun: String, args: CFGExpr, fid: FunctionId) => {
           val v_1 = getArgValue(h, ctx, args, "0")
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
-          val lset_1 = lset_this.filter(l => AbsString.alpha("RegExp") <= h(l)("@class")._1._2._1._5)
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
+          val lset_1 = lset_this.filter(l => AbsString.alpha("RegExp") <= h(l)("@class")._2._1._5)
           val es = HashSet[Exception](TypeError)
 
           val LP_1 = getArgValue_use(h, ctx, args, "0")
@@ -1158,8 +1158,8 @@ object BuiltinRegExp extends ModelData {
         }),
       "RegExp.prototype.toString" -> (
         (h: Heap, ctx: Context, cfg: CFG, fun: String, args: CFGExpr, fid: FunctionId) => {
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
-          val lset_1 = lset_this.filter(l => AbsString.alpha("RegExp") <= h(l)("@class")._1._2._1._5)
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
+          val lset_1 = lset_this.filter(l => AbsString.alpha("RegExp") <= h(l)("@class")._2._1._5)
           val es = HashSet[Exception](TypeError)
 
           val LP_1 = LPSet(SinglePureLocalLoc, "@this")

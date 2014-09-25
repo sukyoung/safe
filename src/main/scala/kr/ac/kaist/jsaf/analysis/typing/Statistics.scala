@@ -63,13 +63,13 @@ class Statistics(cfg: CFG, builtins:Map[FunctionId, String], inTable: Table, loc
             
             // compute next normal states and exception state using semantics
             val (cs, es) = stateMap.foldLeft[(CState,State)]((HashMap(),StateBot))((ms, kv) => {
-              val ((h, ctx), (he, ctxe)) = sem.I((node, kv._1), inst, kv._2.heap, kv._2.context, HeapBot, ContextBot, None, inTable)
+              val ((h, ctx), (he, ctxe)) = sem.I((node, kv._1), inst, kv._2.heap, kv._2.context, HeapBot, ContextBot, inTable)
               (ms._1 + (kv._1 -> State(h, ctx)), ms._2 + State(he, ctxe))
             })
             
             // count exception
             if (!(es._1 <= HeapBot)) {
-              globalStat.countException(es._1(SinglePureLocalLoc)("@exception")._1._2)
+              globalStat.countException(es._1(SinglePureLocalLoc)("@exception")._2)
             }
             
             // normal CState for next instruction
@@ -960,6 +960,6 @@ class Stat(sem: Semantics) {
   private def chooseMax(x: Int, y: Int) = if (x > y) x else y
   
   private def locSize(h: Heap, locs: LocSet): Int = {
-    locs.filter((l: Loc) => h(l) </ ObjBot).size
+    locs.filter((l: Loc) => h(l) </ Obj.bottom).size
   }
 }

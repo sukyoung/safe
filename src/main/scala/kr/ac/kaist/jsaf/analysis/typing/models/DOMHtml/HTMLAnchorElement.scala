@@ -17,6 +17,7 @@ import org.w3c.dom.Element
 import kr.ac.kaist.jsaf.analysis.cfg.{CFG, CFGExpr, FunctionId}
 import kr.ac.kaist.jsaf.analysis.typing.{Semantics, ControlPoint, Helper, PreHelper}
 import kr.ac.kaist.jsaf.analysis.typing.AddressManager._
+import kr.ac.kaist.jsaf.Shell
 
 object HTMLAnchorElement extends DOM {
   private val name = "HTMLAnchorElement"
@@ -24,6 +25,7 @@ object HTMLAnchorElement extends DOM {
   /* predefined locatoins */
   val loc_cons = newSystemRecentLoc(name + "Cons")
   val loc_proto = newSystemRecentLoc(name + "Proto")
+  val loc_ins = newSystemRecentLoc(name + "Ins")
 
 
   /* constructor or object*/
@@ -35,6 +37,27 @@ object HTMLAnchorElement extends DOM {
     ("length", AbsConstValue(PropValue(ObjectValue(Value(AbsNumber.alpha(0)), F, F, F)))),
     ("prototype", AbsConstValue(PropValue(ObjectValue(Value(loc_proto), F, F, F))))
   )
+
+  /* instance */
+  private val prop_ins: List[(String, AbsProperty)] = 
+       HTMLElement.getInsList2() ++ List(
+      ("@class",    AbsConstValue(PropValue(AbsString.alpha("Object")))),
+      ("@proto",    AbsConstValue(PropValue(ObjectValue(loc_proto, F, F, F)))),
+      ("@extensible", AbsConstValue(PropValue(BoolTrue))),
+      // DOM Level 1
+      ("accessKey", AbsConstValue(PropValue(ObjectValue(StrTop, T, T, T)))),
+      ("charset", AbsConstValue(PropValue(ObjectValue(StrTop, T, T, T)))),
+      ("coords", AbsConstValue(PropValue(ObjectValue(StrTop, T, T, T)))),
+      ("href", AbsConstValue(PropValue(ObjectValue(StrTop, T, T, T)))),
+      ("hreflang", AbsConstValue(PropValue(ObjectValue(StrTop, T, T, T)))),
+      ("name", AbsConstValue(PropValue(ObjectValue(StrTop, T, T, T)))),
+      ("rel", AbsConstValue(PropValue(ObjectValue(StrTop, T, T, T)))),
+      ("rev", AbsConstValue(PropValue(ObjectValue(StrTop, T, T, T)))),
+      ("shape", AbsConstValue(PropValue(ObjectValue(StrTop, T, T, T)))),
+      ("tabIndex", AbsConstValue(PropValue(ObjectValue(NumTop, T, T, T)))),
+      ("target", AbsConstValue(PropValue(ObjectValue(StrTop, T, T, T)))),
+      ("type", AbsConstValue(PropValue(ObjectValue(StrTop, T, T, T))))
+    )
 
   /* prorotype */
   private val prop_proto: List[(String, AbsProperty)] = List(
@@ -50,9 +73,11 @@ object HTMLAnchorElement extends DOM {
     (name, AbsConstValue(PropValue(ObjectValue(loc_cons, T, F, T))))
   )
 
-  def getInitList(): List[(Loc, List[(String, AbsProperty)])] = List(
-    (loc_cons, prop_cons), (loc_proto, prop_proto), (GlobalLoc, prop_global)
-  )
+  def getInitList(): List[(Loc, List[(String, AbsProperty)])] = if(Shell.params.opt_Dommodel2) List(
+    (loc_cons, prop_cons), (loc_proto, prop_proto), (GlobalLoc, prop_global), (loc_ins, prop_ins)
+
+  ) else List(
+    (loc_cons, prop_cons), (loc_proto, prop_proto), (GlobalLoc, prop_global)  ) 
 
   def getSemanticMap(): Map[String, SemanticFun] = {
     Map(
@@ -152,7 +177,7 @@ object HTMLAnchorElement extends DOM {
 
   def getInsList(accessKey: PropValue, charset: PropValue, coords: PropValue, href: PropValue, hreflang: PropValue,
                  name: PropValue, rel: PropValue, rev: PropValue, shape: PropValue, tabIndex: PropValue,
-                 target: PropValue, ttype: PropValue): List[(String, PropValue)] = List(
+                 target: PropValue, ttype: PropValue, xpath: PropValue): List[(String, PropValue)] = List(
     ("@class",    PropValue(AbsString.alpha("Object"))),
     ("@proto",    PropValue(ObjectValue(loc_proto, F, F, F))),
     ("@extensible", PropValue(BoolTrue)),
@@ -168,7 +193,8 @@ object HTMLAnchorElement extends DOM {
     ("shape", shape),
     ("tabIndex", tabIndex),
     ("target", target),
-    ("type", ttype)
+    ("type", ttype),
+    ("xpath", xpath)
   )
 
   override def default_getInsList(): List[(String, PropValue)] = {
@@ -184,9 +210,10 @@ object HTMLAnchorElement extends DOM {
     val tabIndex = PropValue(ObjectValue(NumTop, T, T, T))
     val target = PropValue(ObjectValue(AbsString.alpha(""), T, T, T))
     val ttype = PropValue(ObjectValue(AbsString.alpha(""), T, T, T))
+    val xpath = PropValue(ObjectValue(AbsString.alpha(""), F, F, F))
     // This object has all properties of the HTMLElement object
     HTMLElement.default_getInsList :::
-      getInsList(accessKey, charset, coords, href, hreflang,  name, rel, rev, shape, tabIndex, target, ttype)
+      getInsList(accessKey, charset, coords, href, hreflang,  name, rel, rev, shape, tabIndex, target, ttype, xpath)
   }
 
 }

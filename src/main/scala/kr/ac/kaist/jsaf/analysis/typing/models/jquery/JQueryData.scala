@@ -55,7 +55,7 @@ object JQueryData extends ModelData {
     ("@proto",      AbsConstValue(PropValue(ObjectValue(Value(ObjProtoLoc), F, F, F)))),
     ("@extensible", AbsConstValue(PropValue(T))),
     // weak update
-    ("@default_number", AbsConstValue(PropValue(ObjectValue(CacheDataLoc, T, T, T))))
+    (Str_default_number, AbsConstValue(PropValue(ObjectValue(CacheDataLoc, T, T, T))))
   )
 
   private val prop_cache_data: List[(String, AbsProperty)] = List(
@@ -74,7 +74,7 @@ object JQueryData extends ModelData {
       "jQuery.prototype.data" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
           /* new addr */
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -83,7 +83,7 @@ object JQueryData extends ModelData {
           val l_ret = addrToLoc(addr1, Recent)
 
           /* jQuery object */
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           /* arguments */
           var v_key = getArgValue(h, ctx, args, "0")
           var v_value = getArgValue(h, ctx, args, "1")
@@ -115,12 +115,12 @@ object JQueryData extends ModelData {
             if (!v_key._2.isEmpty) {
               val _h = v_key._2.foldLeft(h)((_h, l) => {
                 val _h1 = _h(l).getProps.foldLeft(_h)((hh, prop) =>
-                  Helper.PropStore(hh, CacheDataLoc, AbsString.alpha(prop), hh(l)(prop)._1._1._1))
+                  Helper.PropStore(hh, CacheDataLoc, AbsString.alpha(prop), hh(l)(prop)._1._1))
                 val o_data = _h1(CacheDataLoc)
-                val v_def_num = _h1(l)("@default_number")._1
-                val v_def_oth = _h1(l)("@default_other")._1
-                val o_data1 = o_data.update("@default_number", v_def_num + o_data("@default_number")._1, AbsentTop)
-                  .update("@default_other", v_def_oth + o_data("@default_other")._1, AbsentTop)
+                val v_def_num = _h1(l)(Str_default_number)
+                val v_def_oth = _h1(l)(Str_default_other)
+                val o_data1 = o_data.update(NumStr, v_def_num + o_data(NumStr))
+                  .update(OtherStr, v_def_oth + o_data(OtherStr))
                 _h1.update(CacheDataLoc, o_data1)
               })
               (_h, Value(lset_this))
@@ -153,7 +153,7 @@ object JQueryData extends ModelData {
       ("jQuery.prototype.removeData" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
           /* jQuery object */
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           // do nothing
           ((Helper.ReturnStore(h, Value(lset_this)), ctx), (he, ctxe))
         }))

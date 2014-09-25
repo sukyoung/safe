@@ -56,6 +56,8 @@ public class ShellParameters
     public int                                     command;
     public String                                  opt_OutFileName;
     public String                                  opt_PrettyFileName;
+    public String                                  opt_Domstat_in;
+    public String                                  opt_Domstat_out;
     public String                                  opt_Dir;
     public String                                  opt_HTML;
     public List<String>                            opt_JS;
@@ -111,14 +113,14 @@ public class ShellParameters
     public boolean                                 opt_Unsound;
     public boolean                                 opt_Dom;
     public boolean                                 opt_Domprop;
+    public boolean                                 opt_Dommodel2;
+    public boolean                                 opt_Domstat;
     public boolean                                 opt_disEvent;
     public boolean                                 opt_loop;
     public boolean                                 opt_Tizen;
     public boolean                                 opt_jQuery;
     public boolean                                 opt_SingleThread;
     public boolean                                 opt_MultiThread;
-    public boolean                                 opt_ReturnStateOn;
-    public boolean                                 opt_ReturnStateOff;
     public boolean                                 opt_noStop;
     public boolean                                 opt_skipExternal;
     public int                                     opt_Timeout;
@@ -133,6 +135,7 @@ public class ShellParameters
     public String                                  opt_DDG0FileName;
     public String                                  opt_FGFileName;
     public String[]                                FileNames;
+    public String                                  url;
 
     ////////////////////////////////////////////////////////////////////////////////
     // Constructor and Initialize
@@ -150,6 +153,8 @@ public class ShellParameters
         command = CMD_USAGE;
         opt_OutFileName = null;
         opt_PrettyFileName = null;
+        opt_Domstat_in = null;
+        opt_Domstat_out = null;
         opt_Dir = null;
         opt_HTML = null;
         opt_JS = new ArrayList<String>();
@@ -199,12 +204,12 @@ public class ShellParameters
         opt_Unsound = false;
         opt_Dom = false;
         opt_Domprop = false;
+        opt_Dommodel2 = false;
+        opt_Domstat = false;
         opt_Tizen = false;
         opt_jQuery = false;
         opt_SingleThread = false;
         opt_MultiThread = false;
-        opt_ReturnStateOn = false;
-        opt_ReturnStateOff = false;
         opt_noStop = false;
         opt_skipExternal = false;
         opt_Timeout = 0;
@@ -219,6 +224,7 @@ public class ShellParameters
         opt_DDG0FileName = null;
         opt_FGFileName = null;
         FileNames = new String[0];
+        url = "";
     }
 
     /**
@@ -443,6 +449,8 @@ public class ShellParameters
             feasibleOptions.add("-jq");
             feasibleOptions.add("-console");
             feasibleOptions.add("-domprop");
+            feasibleOptions.add("-dommodel2");
+            feasibleOptions.add("-domstatistics");
             feasibleOptions.add("-out");
             feasibleOptions.add("-disableEvent");
             feasibleOptions.add("-loop");
@@ -491,6 +499,7 @@ public class ShellParameters
             feasibleOptions.add("-disableEvent");
             feasibleOptions.add("-timeout");
             feasibleOptions.add("-nostop");
+            feasibleOptions.add("-console");
         }
         else if(cmd.compareTo("help") == 0)
         {
@@ -543,7 +552,8 @@ public class ShellParameters
            opt.compareTo("-forin-unroll") == 0 ||
            opt.compareTo("-ddgout") == 0 ||
            opt.compareTo("-ddg0out") == 0 ||
-           opt.compareTo("-fgout") == 0)
+           opt.compareTo("-fgout") == 0 ||
+           opt.compareTo("-domstatistics") == 0)
         {
             if(index + 1 >= args.length)
             {
@@ -559,7 +569,14 @@ public class ShellParameters
                 else if(opt.compareTo("-ddgout") == 0) opt_DDGFileName = args[index + 1];
                 else if(opt.compareTo("-ddg0out") == 0) opt_DDG0FileName = args[index + 1];
                 else if(opt.compareTo("-fgout") == 0) opt_FGFileName = args[index + 1];
-                ConsumedParameterCount = 1;
+
+                if(opt.compareTo("-domstatistics") == 0) {
+                  opt_Domstat = true;
+                  opt_Domstat_in = args[index + 1]; opt_Domstat_out = args[index+2];
+                  ConsumedParameterCount = 2;
+                }
+                else
+                  ConsumedParameterCount = 1;
             }
         }
         else if(opt.compareTo("-dir") == 0)
@@ -663,14 +680,14 @@ public class ShellParameters
         else if(opt.compareTo("-skipexternal") == 0) opt_skipExternal = true;
         else if(opt.compareTo("-dom") == 0) opt_Dom = true;
         else if(opt.compareTo("-domprop") == 0) opt_Domprop = true;
+        else if(opt.compareTo("-dommodel2") == 0) opt_Dommodel2 = true;
+        else if(opt.compareTo("-domstatistics") == 0) opt_Domprop = true;
         else if(opt.compareTo("-disableEvent") == 0) opt_disEvent = true;
         else if(opt.compareTo("-loop") == 0) opt_loop = true;
         else if(opt.compareTo("-tizen") == 0) opt_Tizen = true;
         else if(opt.compareTo("-jq") == 0) opt_jQuery = true;
         else if(opt.compareTo("-single-thread") == 0) opt_SingleThread = true;
         else if(opt.compareTo("-multi-thread") == 0) opt_MultiThread = true;
-        else if(opt.compareTo("-return-state-on") == 0) opt_ReturnStateOn = true;
-        else if(opt.compareTo("-return-state-off") == 0) opt_ReturnStateOff = true;
         else if(opt.compareTo("-fcov") == 0) opt_FunctionCoverage = true;
         else if(opt.compareTo("-worklist-order-default") == 0) opt_WorklistOrder = Worklist.WORKLIST_ORDER_DEFAULT();
         else if(opt.compareTo("-worklist-order-fifo") == 0) opt_WorklistOrder = Worklist.WORKLIST_ORDER_FIFO();

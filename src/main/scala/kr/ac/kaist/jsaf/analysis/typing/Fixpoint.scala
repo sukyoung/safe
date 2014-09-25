@@ -43,7 +43,7 @@ class Fixpoint(cfg: CFG, worklist: Worklist, inTable: Table, quiet: Boolean, loc
       if (Config.debugger) DebugConsole.initialize(cfg, worklist, sem, inTable)
 
       // Add entry node
-      worklist.add(((cfg.getGlobalFId, LEntry), CallContext.globalCallContext), None, false)
+      worklist.add(((cfg.getGlobalFId, LEntry), CallContext.globalCallContext))
 
       // Loop
       loop()
@@ -65,7 +65,7 @@ class Fixpoint(cfg: CFG, worklist: Worklist, inTable: Table, quiet: Boolean, loc
 
       // Add entry node
       worklist.setUseWorkManager(true, new FixpointWork)
-      worklist.add(((cfg.getGlobalFId, LEntry), CallContext.globalCallContext), None, false)
+      worklist.add(((cfg.getGlobalFId, LEntry), CallContext.globalCallContext))
 
       // Wait until all works are finished.
       Shell.workManager.waitFinishEvent()
@@ -103,29 +103,24 @@ class Fixpoint(cfg: CFG, worklist: Worklist, inTable: Table, quiet: Boolean, loc
   var timeSum: Long = 0
   class FixpointWork extends WorkTrait {
     override def doit(): Unit = {
-      var cp: ControlPoint = null
-      var callerCPSetOpt: Option[CPStackSet] = null
-      worklist.synchronized {
-        // Worklist check
-        if(worklist.isEmpty) return
+      // Worklist check
+      if(worklist.isEmpty) return
 
-        // Worklist.head print
-        if(!quiet) {
-          System.out.print("\n  Dense Iteration: " + count + "(" + worklist.getSize + ")   ")
-          worklist.dump()
-        }
-
-        // Debugger is used for only single-thread mode
-        if (Config.debugger)
-          DebugConsole.runFixpoint(count)
-
-        // Iteration count
-        count+= 1
-
-        // Get a work
-        val (_cp, _callerCPSetOpt) = worklist.getHead()
-        cp = _cp; callerCPSetOpt = _callerCPSetOpt
+      // Worklist.head print
+      if(!quiet) {
+        System.out.print("\n  Dense Iteration: " + count + "(" + worklist.getSize + ")   ")
+        worklist.dump()
       }
+
+      // Debugger is used for only single-thread mode
+      if (Config.debugger)
+        DebugConsole.runFixpoint(count)
+
+      // Iteration count
+      count+= 1
+
+      // Get a work
+      val cp = worklist.getHead()
 
       // Analysis termination check
       if(isLocCountExceeded || isTimeout) return
@@ -138,7 +133,7 @@ class Fixpoint(cfg: CFG, worklist: Worklist, inTable: Table, quiet: Boolean, loc
 
       // Execute
       val (outS, outES) = try {
-        sem.C(cp, cfg.getCmd(cp._1), inS, callerCPSetOpt) // TODO: Multi-thread safety check
+        sem.C(cp, cfg.getCmd(cp._1), inS)
       }
       catch {
         case e: MaxLocCountError =>
@@ -169,7 +164,7 @@ class Fixpoint(cfg: CFG, worklist: Worklist, inTable: Table, quiet: Boolean, loc
             if (!(outS2 <= oldS)) {
               val newS = oldS + outS2
               updateTable(cp_succ, newS)
-              worklist.add(cp_succ, callerCPSetOpt, false)
+              worklist.add(cp_succ)
             }
           case _ =>
         }
@@ -177,7 +172,7 @@ class Fixpoint(cfg: CFG, worklist: Worklist, inTable: Table, quiet: Boolean, loc
 
       // Propagate normal output state (outS) along normal edges.
       val succs = cfg.getSucc_Lock(cp._1)
-      succs.foreach(node => { // TODO: Multi-thread safety check
+      succs.foreach(node => {
         val cp_succ = (node, cp._2)
         val oldS = readTable(cp_succ)
         if(!(outS <= oldS)) {
@@ -189,7 +184,7 @@ class Fixpoint(cfg: CFG, worklist: Worklist, inTable: Table, quiet: Boolean, loc
           }
           val newS = if(cfg.getAllPred(cp_succ._1).size <= 1) outS else oldS + outS
           updateTable(cp_succ, newS)
-          worklist.add(cp_succ, callerCPSetOpt, false)
+          worklist.add(cp_succ)
         }
       })
       
@@ -202,7 +197,7 @@ class Fixpoint(cfg: CFG, worklist: Worklist, inTable: Table, quiet: Boolean, loc
         }
         lsuccs.foreach(node => { 
           val cp_succ = (node, cp._2)
-          val loop_cond = sem.L(cp_succ, cfg.getCmd(cp_succ._1), outS, callerCPSetOpt, inTable)
+          val loop_cond = sem.L(cp_succ, cfg.getCmd(cp_succ._1), outS, inTable)
           val (newcontext, abstraction) = cp._2.newLoopContext(node, true, loop_cond)
           val new_cpsucc: ControlPoint = (node, newcontext)
           val oldS2 = readTable(new_cpsucc)
@@ -214,7 +209,7 @@ class Fixpoint(cfg: CFG, worklist: Worklist, inTable: Table, quiet: Boolean, loc
             val newS = if(abstraction == true) outS + oldS2
                        else outS            
             updateTable(new_cpsucc, newS)
-            worklist.add(new_cpsucc, callerCPSetOpt, false)            
+            worklist.add(new_cpsucc)
           }
           if(!(outS <= oldS3)) {
             updateLoopInTable(new_cpsucc, outS + oldS2)
@@ -230,8 +225,8 @@ class Fixpoint(cfg: CFG, worklist: Worklist, inTable: Table, quiet: Boolean, loc
           val cp_succ = (node, cp._2)
           val cmd = cfg.getCmd(cp_succ._1) 
           val oldS = readTable(cp_succ)
-          val old_loopcond = sem.L(cp_succ, cmd, oldS, callerCPSetOpt, inTable)
-          val new_loopcond = sem.L(cp_succ, cmd, outS, callerCPSetOpt, inTable)
+          val old_loopcond = sem.L(cp_succ, cmd, oldS, inTable)
+          val new_loopcond = sem.L(cp_succ, cmd, outS, inTable)
           val (newcontext, abstraction) = cp._2.newLoopContext(node, false, new_loopcond, old_loopcond)
           val new_cpsucc: ControlPoint = (node, newcontext)          
           val oldS2 = readTable(new_cpsucc)
@@ -245,7 +240,7 @@ class Fixpoint(cfg: CFG, worklist: Worklist, inTable: Table, quiet: Boolean, loc
             updateTable(new_cpsucc, newS)
             //loopIterTable = loopIterTable + (node -> (cp_succ, callerCPSetOpt, false))
             //println("updating loop iter table : " + node)
-            worklist.add(new_cpsucc, callerCPSetOpt, false)            
+            worklist.add(new_cpsucc)
           }
       
           if(!(outS <= oldS3)){
@@ -258,7 +253,7 @@ class Fixpoint(cfg: CFG, worklist: Worklist, inTable: Table, quiet: Boolean, loc
           case Some(e) => e
           case None => Map()
         }
-        lrsuccs.foreach(node => { // TODO: Multi-thread safety check
+        lrsuccs.foreach(node => {
           val cp_succ = (node, cp._2)
           val loophead = cfg.getLoopCondPred(cp._1)
           // normal return statement
@@ -269,9 +264,9 @@ class Fixpoint(cfg: CFG, worklist: Worklist, inTable: Table, quiet: Boolean, loc
               if(prednodes.size !=0 &&prednodes.forall(n => !cfg.getInfeasibility((n,cp._2)).isEmpty)){
                 cfg.updateInfeasibleNodeMap(cp_succ, true)
               }
-              val newS = if(cfg.getAllPred(cp_succ._1).size <= 1) outS else oldS + outS
+              val newS = if(cfg.getAllPred_loop(cp_succ._1).size <= 1) outS else oldS + outS
               updateTable(cp_succ, newS)
-              worklist.add(cp_succ, callerCPSetOpt, false)
+              worklist.add(cp_succ)
             }
           }
           else {
@@ -279,7 +274,7 @@ class Fixpoint(cfg: CFG, worklist: Worklist, inTable: Table, quiet: Boolean, loc
               val loop_cp_succ = (n, cp._2)
               val cmd = cfg.getCmd(n) 
               val oldS = readTable(loop_cp_succ)
-              val loopcond = sem.L(loop_cp_succ, cmd, oldS, callerCPSetOpt, inTable)
+              val loopcond = sem.L(loop_cp_succ, cmd, oldS, inTable)
               val (newcontext, abstraction) = cp._2.newLoopContext(n, false, loopcond, BoolBot, false, false, true)
               val new_cpsucc: ControlPoint = (node, newcontext)          
               val oldS2 = readTable(new_cpsucc)
@@ -293,7 +288,7 @@ class Fixpoint(cfg: CFG, worklist: Worklist, inTable: Table, quiet: Boolean, loc
                 updateTable(new_cpsucc, newS)
                 //loopIterTable = loopIterTable + (node -> (cp_succ, callerCPSetOpt, false))
                 //println("updating loop iter table : " + node)
-                worklist.add(new_cpsucc, callerCPSetOpt, false)            
+                worklist.add(new_cpsucc)
               }
             })
           }
@@ -312,7 +307,7 @@ class Fixpoint(cfg: CFG, worklist: Worklist, inTable: Table, quiet: Boolean, loc
             val loop_cp_succ = (n, cp._2)
             val cmd = cfg.getCmd(n) 
             val oldS = readTable(loop_cp_succ)
-            val loopcond = sem.L(loop_cp_succ, cmd, oldS, callerCPSetOpt, inTable)
+            val loopcond = sem.L(loop_cp_succ, cmd, oldS, inTable)
             val (newcontext, abstraction) = cp._2.newLoopContext(n, false, loopcond, BoolBot, true)
             val new_cpsucc: ControlPoint = (node, newcontext)          
             val oldS2 = readTable(new_cpsucc)
@@ -327,7 +322,7 @@ class Fixpoint(cfg: CFG, worklist: Worklist, inTable: Table, quiet: Boolean, loc
               updateTable(new_cpsucc, newS)
               //loopIterTable = loopIterTable + (node -> (cp_succ, callerCPSetOpt, false))
               //println("updating loop iter table : " + node)
-              worklist.add(new_cpsucc, callerCPSetOpt, false)            
+              worklist.add(new_cpsucc)
             }
           })
         })
@@ -340,7 +335,7 @@ class Fixpoint(cfg: CFG, worklist: Worklist, inTable: Table, quiet: Boolean, loc
         losuccs.foreach(node => { // TODO: Multi-thread safety check
           val cmd = cfg.getCmd(cp._1) 
           val oldS = readTable(cp)
-          val loopcond = sem.L(cp, cmd, oldS, callerCPSetOpt, inTable)
+          val loopcond = sem.L(cp, cmd, oldS, inTable)
           val (newcontext, abstraction) = cp._2.newLoopContext(cp._1, false, loopcond, BoolBot, false, true)
           val new_cpsucc: ControlPoint = (node, newcontext)          
           val oldS2 = readTable(new_cpsucc)
@@ -354,7 +349,7 @@ class Fixpoint(cfg: CFG, worklist: Worklist, inTable: Table, quiet: Boolean, loc
               updateTable(new_cpsucc, outS)
               //loopIterTable = loopIterTable + (node -> (cp_succ, callerCPSetOpt, false))
               //println("updating loop iter table : " + node)
-              worklist.add(new_cpsucc, callerCPSetOpt, false)            
+              worklist.add(new_cpsucc)
             }
         })
 
@@ -369,14 +364,14 @@ class Fixpoint(cfg: CFG, worklist: Worklist, inTable: Table, quiet: Boolean, loc
       // 2) If successor is finally, current exception value is propagated further along
       //    finally block's "normal" edges.
       val esucc = cfg.getExcSucc_Lock(cp._1)
-      esucc match { // TODO: Multi-thread safety check
+      esucc match {
         case Some(node) =>
           val cp_succ = (node, cp._2)
           val oldES = readTable(cp_succ)
           if(!(outES <= oldES)) {
             val newES = oldES + outES
             updateTable(cp_succ, newES)
-            worklist.add(cp_succ, callerCPSetOpt, false)
+            worklist.add(cp_succ)
           }
         case None => ()
       }
@@ -387,42 +382,22 @@ class Fixpoint(cfg: CFG, worklist: Worklist, inTable: Table, quiet: Boolean, loc
       sem.getIPSucc(cp) match {
         case None => ()
         case Some(succMap) =>
-          succMap.synchronized {
-            succMap.foreach(kv => {
+          succMap.foreach(kv => {
             // bypassing if IP edge is exception flow.
             val cp_succ = kv._1
-              /*
-                cp._1._2 match {
-                  case LExitExc => {
-                    val n_aftercall = kv._1._1
-                    cfg.getExcSucc.get(n_aftercall) match {
-                      case None => throw new InternalError("After-call node must have exception successor")
-                      case Some(node) => (node, kv._1._2)
-                    }
-                  }
-                  case _ => kv._1
-                }
-              */
-              val oldS = readTable(cp_succ)
-              val outS2 = sem.E(cp, cp_succ, kv._2._1, kv._2._2, outS) // TODO: Multi-thread safety check
-              if(!(outS2 <= oldS)) {
-                val predNodes = sem.getIPPred(cp_succ)
-                if(!predNodes.isEmpty && predNodes.get.size != 0 && predNodes.get.forall(ccp => !cfg.getInfeasibility(ccp).isEmpty)){
-                //if(cfg.getAllPred(cp_succ._1).size == 1 && !cfg.getInfeasibility(cp).isEmpty && cfg.getInfeasibility(cp).get){
-                   cfg.updateInfeasibleNodeMap(cp_succ, true)
-                }
-                val newS = oldS + outS2
-                // no-return-state option has a priority
-                if(Shell.params.opt_ReturnStateOff || !Shell.params.opt_ReturnStateOn) {
-                  updateTable(cp_succ, newS)
-                  worklist.add(cp_succ, None, false)
-                }
-                else {
-                  worklist.add(cp, cp_succ, cfg, callerCPSetOpt, false, Unit => updateTable(cp_succ, newS))
-                }
+            val oldS = readTable(cp_succ)
+            val outS2 = sem.E(cp, cp_succ, kv._2._1, kv._2._2, outS)
+            if(!(outS2 <= oldS)) {
+              val predNodes = sem.getIPPred(cp_succ)
+              if(!predNodes.isEmpty && predNodes.get.size != 0 && predNodes.get.forall(ccp => !cfg.getInfeasibility(ccp).isEmpty)){
+                 cfg.updateInfeasibleNodeMap(cp_succ, true)
               }
-            })
-          }
+              val newS = oldS + outS2
+
+              updateTable(cp_succ, newS)
+              worklist.add(cp_succ)
+            }
+          })
       }
     }
   }
@@ -430,10 +405,10 @@ class Fixpoint(cfg: CFG, worklist: Worklist, inTable: Table, quiet: Boolean, loc
   private def loop(): Unit = {
     val work = new FixpointWork
     while(!worklist.isEmpty) work.doit()
-    if(Config.loopSensitive){
-      println()
-      println("Total time for loop : " + timeSum/1000000000.0 + "(s)")
-    }
+    //if(Config.loopSensitive){
+    //  println()
+    //  println("Total time for loop : " + timeSum/1000000000.0 + "(s)")
+    //}
   }
 
   private def libraryLoop(): Unit = {
@@ -450,45 +425,38 @@ class Fixpoint(cfg: CFG, worklist: Worklist, inTable: Table, quiet: Boolean, loc
     val lset_this = LocSet(LibModeObjTopLoc)
     exitHeap.map.foreach((kv) => {
       val obj = kv._2
-      obj("@class")._1._2._1._5.getSingle match {
+      obj("@class")._2._1._5.getSingle match {
         case Some(s) if s == "Function" =>
-          obj("@function")._1._3.foreach((fid) => {
+          obj("@function")._3.foreach((fid) => {
             if (cfg.isUserFunction(fid)) {
               val l_r = newRecentLoc()
               val ccset = globalCC.NewCallContext(HeapBot, cfg, fid, l_r, lset_this)
           ccset.foreach {case (cc_new, o_new) => {
-              val o_arg = Obj(ObjMapBot.
-              updated("@default_number", (PropValue(ObjectValue(LibModeValueTop,BoolTrue,BoolTrue,BoolTrue)), AbsentTop)).
-              updated("@default_other", (PropValueBot, AbsentTop)).
-              updated("@class", (PropValue(AbsString.alpha("Arguments")), AbsentBot)).
-              updated("@proto", (PropValue(ObjectValue(ObjProtoLoc, BoolFalse, BoolFalse, BoolFalse)), AbsentBot)).
-              updated("@extensible", (PropValue(BoolTrue), AbsentBot)).
-              updated("length", (PropValue(ObjectValue(UInt, BoolTrue, BoolFalse, BoolTrue)), AbsentBot)))
+              val o_arg = Obj.empty.
+              update(NumStr, PropValue(ObjectValue(LibModeValueTop,BoolTrue,BoolTrue,BoolTrue))).
+              update(OtherStr, PropValueBot).
+              update("@class", PropValue(AbsString.alpha("Arguments"))).
+              update("@proto", PropValue(ObjectValue(ObjProtoLoc, BoolFalse, BoolFalse, BoolFalse))).
+              update("@extensible", PropValue(BoolTrue)).
+              update("length", PropValue(ObjectValue(UInt, BoolTrue, BoolFalse, BoolTrue)))
               val l_arg = newRecentLoc()
               val v_arg = Value(l_arg)
               val value = PropValue(ObjectValue(v_arg, BoolTrue, BoolFalse, BoolFalse))
               val o_new2 = o_new.update(cfg.getArgumentsName(fid), value).
-                update("@scope", obj("@scope")._1)
+                update("@scope", obj("@scope"))
 
-              val env_obj = Helper.NewDeclEnvRecord(o_new2("@scope")._1._2)
+              val env_obj = Helper.NewDeclEnvRecord(o_new2("@scope")._2)
 
               val obj2 = o_new2 - "@scope"
               val h1 = exitState._1.update(l_arg, o_arg) // arguments object update
               val h2 = h1.remove(SinglePureLocalLoc)
               val h3 = h2.update(SinglePureLocalLoc, obj2)
-              val h4 = obj2("@env")._1._2._2.foldLeft(HeapBot)((hh, l_env) => {
+              val h4 = obj2("@env")._2._2.foldLeft(HeapBot)((hh, l_env) => {
                 hh + h3.update(l_env, env_obj) })
-                // Localization, ignore
-                /*val h5 =
-                  if (cfg.optionLocalization) {
-                    val useset = cfg.getLocalizationSet(cp2._1._1)
-                    h4.restrict(useset)
-                  } else
-                    h4 */
                 // state set up
                 updateTable(((fid, LEntry), cc_new), State(h4, ContextEmpty))
                 // add to worklist
-                worklist.add(((fid, LEntry), cc_new), None, false)
+                worklist.add(((fid, LEntry), cc_new))
               }}
             }
           })

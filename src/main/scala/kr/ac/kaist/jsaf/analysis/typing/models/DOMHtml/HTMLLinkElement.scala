@@ -1,5 +1,5 @@
 /*******************************************************************************
-    Copyright (c) 2012-2013, KAIST, S-Core.
+    Copyright (c) 2012-2014, KAIST, S-Core.
     All rights reserved.
 
     Use is subject to license terms.
@@ -18,7 +18,7 @@ import org.w3c.dom.Element
 import kr.ac.kaist.jsaf.analysis.cfg.CFG
 import kr.ac.kaist.jsaf.analysis.typing.models.AbsConstValue
 import kr.ac.kaist.jsaf.analysis.typing.AddressManager._
-
+import kr.ac.kaist.jsaf.Shell
 
 object HTMLLinkElement extends DOM {
   private val name = "HTMLLinkElement"
@@ -26,6 +26,7 @@ object HTMLLinkElement extends DOM {
   /* predefined locatoins */
   val loc_cons = newSystemRecentLoc(name + "Cons")
   val loc_proto = newSystemRecentLoc(name + "Proto")
+  val loc_ins = newSystemRecentLoc(name + "Ins")
 
   /* constructor */
   private val prop_cons: List[(String, AbsProperty)] = List(
@@ -37,6 +38,23 @@ object HTMLLinkElement extends DOM {
     ("prototype", AbsConstValue(PropValue(ObjectValue(Value(loc_proto), F, F, F))))
   )
   
+  /* instance */
+  private val prop_ins: List[(String, AbsProperty)] = 
+       HTMLElement.getInsList2() ++ List(
+      ("@class",    AbsConstValue(PropValue(AbsString.alpha("Object")))),
+      ("@proto",    AbsConstValue(PropValue(ObjectValue(loc_proto, F, F, F)))),
+      ("@extensible", AbsConstValue(PropValue(BoolTrue))),
+      // DOM Level 1
+      ("disabled", AbsConstValue(PropValue(ObjectValue(BoolTop, T, T, T)))),
+      ("charset", AbsConstValue(PropValue(ObjectValue(StrTop, T, T, T)))),
+      ("href", AbsConstValue(PropValue(ObjectValue(StrTop, T, T, T)))),
+      ("hreflang", AbsConstValue(PropValue(ObjectValue(StrTop, T, T, T)))),
+      ("media", AbsConstValue(PropValue(ObjectValue(StrTop, T, T, T)))),
+      ("rel", AbsConstValue(PropValue(ObjectValue(StrTop, T, T, T)))),
+      ("rev", AbsConstValue(PropValue(ObjectValue(StrTop, T, T, T)))),
+      ("target", AbsConstValue(PropValue(ObjectValue(StrTop, T, T, T)))),
+      ("type", AbsConstValue(PropValue(ObjectValue(StrTop, T, T, T))))
+    )
   /* prorotype */
   private val prop_proto: List[(String, AbsProperty)] = List(
     ("@class", AbsConstValue(PropValue(AbsString.alpha("Object")))),
@@ -49,9 +67,11 @@ object HTMLLinkElement extends DOM {
     (name, AbsConstValue(PropValue(ObjectValue(loc_cons, T, F, T))))
   )
 
-  def getInitList(): List[(Loc, List[(String, AbsProperty)])] = List(
-    (loc_cons, prop_cons), (loc_proto, prop_proto), (GlobalLoc, prop_global)
-  )
+  def getInitList(): List[(Loc, List[(String, AbsProperty)])] = if(Shell.params.opt_Dommodel2) List(
+    (loc_cons, prop_cons), (loc_proto, prop_proto), (GlobalLoc, prop_global), (loc_ins, prop_ins)
+
+  ) else List(
+    (loc_cons, prop_cons), (loc_proto, prop_proto), (GlobalLoc, prop_global)  ) 
 
   def getSemanticMap(): Map[String, SemanticFun] = {
     Map()
@@ -99,7 +119,7 @@ object HTMLLinkElement extends DOM {
   }
    
   def getInsList(disabled: PropValue, charset: PropValue, href: PropValue, hreflang: PropValue,
-                 media: PropValue, rel: PropValue, rev: PropValue, target: PropValue, ttype: PropValue): List[(String, PropValue)] = List(
+                 media: PropValue, rel: PropValue, rev: PropValue, target: PropValue, ttype: PropValue, xpath: PropValue): List[(String, PropValue)] = List(
     ("@class",    PropValue(AbsString.alpha("Object"))),
     ("@proto",    PropValue(ObjectValue(loc_proto, F, F, F))),
     ("@extensible", PropValue(BoolTrue)),
@@ -112,7 +132,8 @@ object HTMLLinkElement extends DOM {
     ("rel",   rel),
     ("rev",   rev),
     ("target",  target),
-    ("type",   ttype)
+    ("type",   ttype),
+    ("xpath", xpath)
    )
   
   override def default_getInsList(): List[(String, PropValue)] = { 
@@ -125,8 +146,9 @@ object HTMLLinkElement extends DOM {
     val rev = PropValue(ObjectValue(AbsString.alpha(""), T, T, T))
     val target = PropValue(ObjectValue(AbsString.alpha(""), T, T, T))
     val ttype = PropValue(ObjectValue(AbsString.alpha(""), T, T, T))
+    val xpath = PropValue(ObjectValue(AbsString.alpha(""), F, F, F))
     // This object has all properties of the HTMLElement object 
     HTMLElement.default_getInsList ::: 
-      getInsList(disabled, charset, href, hreflang, media, rel, rev, target, ttype)
+      getInsList(disabled, charset, href, hreflang, media, rel, rev, target, ttype, xpath)
   }
 }

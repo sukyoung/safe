@@ -98,7 +98,7 @@ object TIZENcalendarObj extends Tizen {
     ("@proto", AbsConstValue(PropValue(ObjectValue(BuiltinArray.ProtoLoc, F, F, F)))),
     ("@extensible", AbsConstValue(PropValue(T))),
     ("length", AbsConstValue(PropValue(ObjectValue(UInt, T, F, F)))),
-    ("@default_number", AbsConstValue(PropValue(ObjectValue(Value(loc_cal), T, T, T))))
+    (Str_default_number, AbsConstValue(PropValue(ObjectValue(Value(loc_cal), T, T, T))))
   )
 
   private val prop_calitem_ins: List[(String, AbsProperty)] = List(
@@ -194,7 +194,7 @@ object TIZENcalendarObj extends Tizen {
     ("@proto", AbsConstValue(PropValue(ObjectValue(BuiltinArray.ProtoLoc, F, F, F)))),
     ("@extensible", AbsConstValue(PropValue(T))),
     ("length", AbsConstValue(PropValue(ObjectValue(UInt, T, F, F)))),
-    ("@default_number", AbsConstValue(PropValue(ObjectValue(Value(loc_calevent), T, T, T))))
+    (Str_default_number, AbsConstValue(PropValue(ObjectValue(Value(loc_calevent), T, T, T))))
   )
 
   private val prop_calitemarr_ins: List[(String, AbsProperty)] = List(
@@ -202,7 +202,7 @@ object TIZENcalendarObj extends Tizen {
     ("@proto", AbsConstValue(PropValue(ObjectValue(BuiltinArray.ProtoLoc, F, F, F)))),
     ("@extensible", AbsConstValue(PropValue(T))),
     ("length", AbsConstValue(PropValue(ObjectValue(UInt, T, F, F)))),
-    ("@default_number", AbsConstValue(PropValue(ObjectValue(Value(loc_calitem), T, T, T))))
+    (Str_default_number, AbsConstValue(PropValue(ObjectValue(Value(loc_calitem), T, T, T))))
   )
 
   private val prop_calalarm_ins: List[(String, AbsProperty)] = List(
@@ -220,7 +220,7 @@ object TIZENcalendarObj extends Tizen {
     ("@proto", AbsConstValue(PropValue(ObjectValue(BuiltinArray.ProtoLoc, F, F, F)))),
     ("@extensible", AbsConstValue(PropValue(T))),
     ("length", AbsConstValue(PropValue(ObjectValue(UInt, T, F, F)))),
-    ("@default_number", AbsConstValue(PropValue(ObjectValue(Value(loc_calalarm), T, T, T))))
+    (Str_default_number, AbsConstValue(PropValue(ObjectValue(Value(loc_calalarm), T, T, T))))
   )
 
   private val prop_calattend_ins: List[(String, AbsProperty)] = List(
@@ -250,7 +250,7 @@ object TIZENcalendarObj extends Tizen {
     ("@proto", AbsConstValue(PropValue(ObjectValue(BuiltinArray.ProtoLoc, F, F, F)))),
     ("@extensible", AbsConstValue(PropValue(T))),
     ("length", AbsConstValue(PropValue(ObjectValue(UInt, T, F, F)))),
-    ("@default_number", AbsConstValue(PropValue(ObjectValue(Value(loc_calattend), T, T, T))))
+    (Str_default_number, AbsConstValue(PropValue(ObjectValue(Value(loc_calattend), T, T, T))))
   )
 
   private val prop_calrecur_ins: List[(String, AbsProperty)] = List(
@@ -278,7 +278,7 @@ object TIZENcalendarObj extends Tizen {
     ("@proto", AbsConstValue(PropValue(ObjectValue(BuiltinArray.ProtoLoc, F, F, F)))),
     ("@extensible", AbsConstValue(PropValue(T))),
     ("length", AbsConstValue(PropValue(ObjectValue(UInt, T, F, F)))),
-    ("@default_number", AbsConstValue(PropValue(ObjectValue(Value(AbsString.alpha("MO") + AbsString.alpha("TU") +
+    (Str_default_number, AbsConstValue(PropValue(ObjectValue(Value(AbsString.alpha("MO") + AbsString.alpha("TU") +
                                                                   AbsString.alpha("WE") + AbsString.alpha("TH") +
                                                                   AbsString.alpha("FR") + AbsString.alpha("SA") +
                                                                   AbsString.alpha("SU")), T, T, T))))
@@ -297,7 +297,7 @@ object TIZENcalendarObj extends Tizen {
     ("@proto", AbsConstValue(PropValue(ObjectValue(BuiltinArray.ProtoLoc, F, F, F)))),
     ("@extensible", AbsConstValue(PropValue(T))),
     ("length", AbsConstValue(PropValue(ObjectValue(UInt, T, F, F)))),
-    ("@default_number", AbsConstValue(PropValue(ObjectValue(Value(PValue(StrTop), LocSet(loc_caleventid)), T, T, T))))
+    (Str_default_number, AbsConstValue(PropValue(ObjectValue(Value(PValue(StrTop), LocSet(loc_caleventid)), T, T, T))))
   )
 
   private val prop_shortarr_ins: List[(String, AbsProperty)] = List(
@@ -305,14 +305,14 @@ object TIZENcalendarObj extends Tizen {
     ("@proto", AbsConstValue(PropValue(ObjectValue(BuiltinArray.ProtoLoc, F, F, F)))),
     ("@extensible", AbsConstValue(PropValue(T))),
     ("length", AbsConstValue(PropValue(ObjectValue(UInt, T, F, F)))),
-    ("@default_number", AbsConstValue(PropValue(ObjectValue(Value(NumTop), T, T, T))))
+    (Str_default_number, AbsConstValue(PropValue(ObjectValue(Value(NumTop), T, T, T))))
   )
   private val prop_stringarr_ins: List[(String, AbsProperty)] = List(
     ("@class", AbsConstValue(PropValue(AbsString.alpha("Array")))),
     ("@proto", AbsConstValue(PropValue(ObjectValue(BuiltinArray.ProtoLoc, F, F, F)))),
     ("@extensible", AbsConstValue(PropValue(T))),
     ("length", AbsConstValue(PropValue(ObjectValue(UInt, T, F, F)))),
-    ("@default_number", AbsConstValue(PropValue(ObjectValue(Value(StrTop), T, T, T))))
+    (Str_default_number, AbsConstValue(PropValue(ObjectValue(Value(StrTop), T, T, T))))
   )
 
   private val prop_tzdatearr_ins: List[(String, AbsProperty)] = List(
@@ -320,7 +320,7 @@ object TIZENcalendarObj extends Tizen {
     ("@proto", AbsConstValue(PropValue(ObjectValue(BuiltinArray.ProtoLoc, F, F, F)))),
     ("@extensible", AbsConstValue(PropValue(T))),
     ("length", AbsConstValue(PropValue(ObjectValue(UInt, T, F, F)))),
-    ("@default_number", AbsConstValue(PropValue(ObjectValue(Value(TIZENtime.loc_tzdate), T, T, T))))
+    (Str_default_number, AbsConstValue(PropValue(ObjectValue(Value(TIZENtime.loc_tzdate), T, T, T))))
   )
   override def getInitList(): List[(Loc, List[(String, AbsProperty)])] = List(
     (loc_obj, prop_obj), (loc_proto, prop_proto), (loc_timedur, prop_timedur_ins),
@@ -337,7 +337,7 @@ object TIZENcalendarObj extends Tizen {
     Map(
       ("tizen.calendar.getCalendars" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -385,7 +385,7 @@ object TIZENcalendarObj extends Tizen {
         )),
       ("tizen.calendar.getUnifiedCalendar" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -398,7 +398,7 @@ object TIZENcalendarObj extends Tizen {
               Set[WebAPIException](TypeMismatchError)
             else TizenHelper.TizenExceptionBot
 
-          val o_new = ObjEmpty.
+          val o_new = Obj.empty.
             update("@class", PropValue(AbsString.alpha("Object"))).
             update("@proto", PropValue(ObjectValue(Value(TIZENCalendar.loc_proto), F, F, F))).
             update("@extensible", PropValue(T)).
@@ -412,7 +412,7 @@ object TIZENcalendarObj extends Tizen {
         )),
       ("tizen.calendar.getDefaultCalendar" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -425,7 +425,7 @@ object TIZENcalendarObj extends Tizen {
               Set[WebAPIException](TypeMismatchError)
             else TizenHelper.TizenExceptionBot
 
-          val o_new = ObjEmpty.
+          val o_new = Obj.empty.
             update("@class", PropValue(AbsString.alpha("Object"))).
             update("@proto", PropValue(ObjectValue(Value(TIZENCalendar.loc_proto), F, F, F))).
             update("@extensible", PropValue(T)).
@@ -439,7 +439,7 @@ object TIZENcalendarObj extends Tizen {
         )),
       ("tizen.calendar.getCalendar" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -453,7 +453,7 @@ object TIZENcalendarObj extends Tizen {
               Set[WebAPIException](TypeMismatchError)
             else TizenHelper.TizenExceptionBot
 
-          val o_new = ObjEmpty.
+          val o_new = Obj.empty.
             update("@class", PropValue(AbsString.alpha("Object"))).
             update("@proto", PropValue(ObjectValue(Value(TIZENCalendar.loc_proto), F, F, F))).
             update("@extensible", PropValue(T)).

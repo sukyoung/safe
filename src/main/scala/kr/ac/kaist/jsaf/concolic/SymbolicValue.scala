@@ -55,35 +55,14 @@ class SymbolicValue {
     else
       instance.equals("Null")
   }
-  override def toString: String = value
-}
-/*abstract class SymbolicValue {
-  var _value: String = null 
-  var _type: String = null
-  def getValue: String = _value
-  def getType: String = _type
-}
-case class SymbolicUndef() extends SymbolicValue {
-  _type = "Undefined"
-}
-case class SymbolicNull() extends SymbolicValue {
-  _type = "Null"
-} 
-case class SymbolicBool(n: String) extends SymbolicValue {
-  _type = "Boolean" 
-  _value = n
-}
-case class SybmolicNumber(n: String) extends SymbolicValue {
-  _type = "Number"
-  _value = n
-}
-case class SybmolicString(n: String) extends SymbolicValue {
-  _type = "String"
-  _value = n
-}
-case class SybmolicObject(n: String) extends SymbolicValue {
-  _type = "Object"
-  _value = n
-}*/
 
+  def isInput(): Boolean = {
+    if (value == null)
+      return false 
+    value.contains("i") || value.contains("this")
+  }
+
+  override def toString: String = value
+  override def equals(another: Any) = this.toString == another.asInstanceOf[SymbolicValue].toString
+}
 

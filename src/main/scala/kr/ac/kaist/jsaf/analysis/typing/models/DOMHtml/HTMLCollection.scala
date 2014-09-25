@@ -17,6 +17,7 @@ import kr.ac.kaist.jsaf.analysis.cfg.{CFG, CFGExpr, FunctionId}
 import kr.ac.kaist.jsaf.analysis.typing._
 import kr.ac.kaist.jsaf.analysis.typing.models.AbsConstValue
 import kr.ac.kaist.jsaf.analysis.typing.AddressManager._
+import kr.ac.kaist.jsaf.Shell
 
 
 object HTMLCollection extends DOM {
@@ -25,6 +26,7 @@ object HTMLCollection extends DOM {
   /* predefined locatoins */
   val loc_cons = newSystemRecentLoc(name + "Cons")
   val loc_proto = newSystemRecentLoc(name + "Proto")
+  val loc_ins = newSystemRecentLoc(name + "Ins")
 
   /* constructor */
   private val prop_cons: List[(String, AbsProperty)] = List(
@@ -35,6 +37,16 @@ object HTMLCollection extends DOM {
     ("length", AbsConstValue(PropValue(ObjectValue(Value(AbsNumber.alpha(0)), F, F, F)))),
     ("prototype", AbsConstValue(PropValue(ObjectValue(Value(loc_proto), F, F, F))))
   )
+ 
+  /* instance */
+  private val prop_ins: List[(String, AbsProperty)] = 
+     List(
+      ("@class",    AbsConstValue(PropValue(AbsString.alpha("Object")))),
+      ("@proto",    AbsConstValue(PropValue(ObjectValue(loc_proto, F, F, F)))),
+      ("@extensible", AbsConstValue(PropValue(BoolTrue))),
+      // DOM Level 1
+      ("length", AbsConstValue(PropValue(ObjectValue(UInt, F, F, F))))
+    )
 
   /* prorotype */
   private val prop_proto: List[(String, AbsProperty)] = List(
@@ -50,9 +62,11 @@ object HTMLCollection extends DOM {
     (name, AbsConstValue(PropValue(ObjectValue(loc_cons, T, F, T))))
   )
 
-  def getInitList(): List[(Loc, List[(String, AbsProperty)])] = List(
-    (loc_cons, prop_cons), (loc_proto, prop_proto), (GlobalLoc, prop_global)
-  )
+  def getInitList(): List[(Loc, List[(String, AbsProperty)])] = if(Shell.params.opt_Dommodel2) List(
+    (loc_cons, prop_cons), (loc_proto, prop_proto), (GlobalLoc, prop_global), (loc_ins, prop_ins)
+
+  ) else List(
+    (loc_cons, prop_cons), (loc_proto, prop_proto), (GlobalLoc, prop_global)  ) 
 
   def getSemanticMap(): Map[String, SemanticFun] = {
     Map(
@@ -62,7 +76,7 @@ object HTMLCollection extends DOM {
           /* arguments */
           val n_index = Helper.toNumber(Helper.toPrimitive_better(h, getArgValue(h, ctx, args, "0")))
           if (n_index </ NumBot) {
-            val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+            val lset_this = h(SinglePureLocalLoc)("@this")._2._2
             val n_length = lset_this.foldLeft[AbsNumber](NumBot)((n, l) =>
               n + Helper.toNumber(Helper.toPrimitive_better(h, Helper.Proto(h, l, AbsString.alpha("length")))))
             val s_index = Helper.toString(PValue(n_index))
@@ -88,7 +102,7 @@ object HTMLCollection extends DOM {
           /* arguments */
           val n_index = PreHelper.toNumber(PreHelper.toPrimitive(getArgValue_pre(h, ctx, args, "0", PureLocalLoc)))
           if (n_index </ NumBot) {
-            val lset_this = h(PureLocalLoc)("@this")._1._2._2
+            val lset_this = h(PureLocalLoc)("@this")._2._2
             val n_length = lset_this.foldLeft[AbsNumber](NumBot)((n, l) =>
               n + PreHelper.toNumber(PreHelper.toPrimitive(PreHelper.Proto(h, l, AbsString.alpha("length")))))
             val s_index = PreHelper.toString(PValue(n_index))
@@ -125,7 +139,7 @@ object HTMLCollection extends DOM {
           val n_index = Helper.toNumber(Helper.toPrimitive_better(h, getArgValue(h, ctx, args, "0")))
           val LP1 = getArgValue_use(h, ctx, args, "0")
           if (n_index </ NumBot) {
-            val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+            val lset_this = h(SinglePureLocalLoc)("@this")._2._2
             val LP2 = lset_this.foldLeft(LPBot)((lpset, l) =>
               lpset ++ AccessHelper.Proto_use(h, l, AbsString.alpha("length")))
             val s_index = Helper.toString(PValue(n_index))

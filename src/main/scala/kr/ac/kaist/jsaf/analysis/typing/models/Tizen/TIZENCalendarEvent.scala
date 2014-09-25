@@ -51,8 +51,8 @@ object TIZENCalendarEvent extends Tizen {
     Map(
       ("tizen.CalendarEvent.constructor" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -67,7 +67,7 @@ object TIZENCalendarEvent extends Tizen {
           val (h_3, ctx_3) = Helper.Oldify(h_2, ctx_2, addr3)
           val n_arglen = Operator.ToUInt32(getArgValue(h_3, ctx_3, args, "length"))
 
-          val o_new = ObjEmpty.
+          val o_new = Obj.empty.
             update("@class", PropValue(AbsString.alpha("Object"))).
             update("@proto", PropValue(ObjectValue(Value(TIZENCalendarEvent.loc_proto), F, F, F))).
             update("@extensible", PropValue(T))
@@ -270,7 +270,7 @@ object TIZENCalendarEvent extends Tizen {
                             es__
                           }
                           case _ => {
-                            val vi = Helper.Proto(h_4, ll, AbsString.alpha("@default_number"))
+                            val vi = Helper.Proto(h_4, ll, AbsString.alpha(Str_default_number))
                             val (bi, esi) = TizenHelper.instanceOf(h_4, vi, Value(TIZENCalendarAlarm.loc_proto))
                             val esii =
                               if (bi._1._3 <= F) Set[WebAPIException](TypeMismatchError)
@@ -302,7 +302,7 @@ object TIZENCalendarEvent extends Tizen {
                             es__
                           }
                           case _ => {
-                            val vi = Helper.Proto(h_4, ll, AbsString.alpha("@default_number"))
+                            val vi = Helper.Proto(h_4, ll, AbsString.alpha(Str_default_number))
                             val esi =
                               if (vi._1._5 </ StrTop) Set[WebAPIException](TypeMismatchError)
                               else TizenHelper.TizenExceptionBot
@@ -334,7 +334,7 @@ object TIZENCalendarEvent extends Tizen {
                             es__
                           }
                           case _ => {
-                            val vi = Helper.Proto(h_4, ll, AbsString.alpha("@default_number"))
+                            val vi = Helper.Proto(h_4, ll, AbsString.alpha(Str_default_number))
                             val (bi, esi) = TizenHelper.instanceOf(h_4, vi, Value(TIZENCalendarAttendee.loc_proto))
                             val esii =
                               if (bi._1._3 <= F) Set[WebAPIException](TypeMismatchError)
@@ -400,7 +400,7 @@ object TIZENCalendarEvent extends Tizen {
         )),
       ("tizen.CalendarEvent.expandRecurrence" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)

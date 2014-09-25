@@ -22,6 +22,7 @@ import kr.ac.kaist.jsaf.bug_detector.BugInfo
 import kr.ac.kaist.jsaf.nodes_util.Span
 import kr.ac.kaist.jsaf.scala_src.useful.Lists._
 import kr.ac.kaist.jsaf.analysis.typing.AddressManager._
+import kr.ac.kaist.jsaf.{Shell, ShellParameters}
 
 class Typing(_cfg: CFG, quiet: Boolean, locclone: Boolean) extends TypingInterface {
   override def env: Environment = null
@@ -94,9 +95,12 @@ class Typing(_cfg: CFG, quiet: Boolean, locclone: Boolean) extends TypingInterfa
     fixpoint.compute()
     sem = Some(fixpoint.getSemantics)
     numIter = fixpoint.count
-    if (!quiet) System.out.println("# Fixpoint iteration(#): "+numIter)
-    elapsedTime = (System.nanoTime - s) / 1000000000.0;
-    if (!quiet) System.out.format("# Time for analysis(s): %.2f\n", new java.lang.Double(elapsedTime))
+
+    if(!quiet || Shell.params.command == ShellParameters.CMD_WEBAPP_BUG_DETECTOR) {
+      System.out.println("# Fixpoint iteration(#): "+numIter)
+      elapsedTime = (System.nanoTime - s) / 1000000000.0;
+      System.out.format("# Time for analysis(s): %.2f\n", new java.lang.Double(elapsedTime))
+    }
     
   }
   
@@ -343,7 +347,7 @@ class Typing(_cfg: CFG, quiet: Boolean, locclone: Boolean) extends TypingInterfa
         val is = insts.take(insts.indexOf(inst))
         is.foldLeft[CState](getStateBeforeNode(node))((cs, i) =>
           cs.foldLeft[CState](Map())((_cs, kv) => {
-            val (s,_) = getSem.I((node, kv._1), i, kv._2._1, kv._2._2, HeapBot, ContextBot, None, inTable)
+            val (s,_) = getSem.I((node, kv._1), i, kv._2._1, kv._2._2, HeapBot, ContextBot, inTable)
             if (s._1 <= HeapBot)
               _cs
             else
@@ -535,7 +539,7 @@ class Typing(_cfg: CFG, quiet: Boolean, locclone: Boolean) extends TypingInterfa
     if (state._1 <= HeapBot)
       ValueBot
     else
-      state._1(SinglePureLocalLoc)("@exception")._1._2
+      state._1(SinglePureLocalLoc)("@exception")._2
   }
 
   // High-level information computation methods -------------------------------
@@ -557,23 +561,23 @@ class Typing(_cfg: CFG, quiet: Boolean, locclone: Boolean) extends TypingInterfa
    * @returns the option of the computed list
    */
   def computePropertyList(state: State, lset: Set[Loc]): 
-      Option[(List[(String, Absent)], Boolean, Boolean)] = {
+      Option[(List[(String, AbsBool)], Boolean, Boolean)] = {
     if (state <= StateBot)
       None
     else {
       val h = state._1
       val obj = 
         if (lset.size == 0)
-          ObjBot
+          Obj.bottom
         else if (lset.size == 1)
           h(lset.head)
         else
           lset.tail.foldLeft(h(lset.head))((o, l) => o + h(l))
-      val props = obj.getProps.foldLeft[List[(String, Absent)]](List())(
-        (list, p) => (p, obj(p)._2)::list)
+      val props = obj.getProps.foldLeft[List[(String, AbsBool)]](List())(
+        (list, p) => (p, obj.domIn(p))::list)
       Some((props,
-        !(obj("@default_number")._1 <= PropValueBot),
-        !(obj("@default_other")._1 <= PropValueBot)))
+        !(obj(Str_default_number) <= PropValueBot),
+        !(obj(Str_default_other) <= PropValueBot)))
     }
   }
 
@@ -610,8 +614,8 @@ class Typing(_cfg: CFG, quiet: Boolean, locclone: Boolean) extends TypingInterfa
                         (_m, l) =>
                           if (BoolTrue <= Helper.IsCallable(h,l)) {
                             _m.get(i) match {
-                              case None => _m + (i -> h(l)("@function")._1._3.toSet)
-                              case Some(set) => _m + (i -> (set ++ h(l)("@function")._1._3.toSet))
+                              case None => _m + (i -> h(l)("@function")._3.toSet)
+                              case Some(set) => _m + (i -> (set ++ h(l)("@function")._3.toSet))
                             }
                           }
                           else
@@ -627,8 +631,8 @@ class Typing(_cfg: CFG, quiet: Boolean, locclone: Boolean) extends TypingInterfa
                         (_m, l) =>
                           if (BoolTrue <= Helper.HasConstruct(h,l)) {
                             _m.get(i) match {
-                              case None => _m + (i -> h(l)("@construct")._1._3.toSet)
-                              case Some(set) => _m + (i -> (set ++ h(l)("@construct")._1._3.toSet))
+                              case None => _m + (i -> h(l)("@construct")._3.toSet)
+                              case Some(set) => _m + (i -> (set ++ h(l)("@construct")._3.toSet))
                             }
                           }
                           else
@@ -652,8 +656,8 @@ class Typing(_cfg: CFG, quiet: Boolean, locclone: Boolean) extends TypingInterfa
   override def computePrototypeHierarchy(state: State): Map[Loc, Set[Loc]] = {
     state._1.map.foldLeft[Map[Loc, Set[Loc]]](Map())(
       (map, kv) =>
-        if (kv._2.map.contains("@proto"))
-          map + (kv._1 -> kv._2("@proto")._1._1._1._2.toSet)
+        if (BoolTrue <= kv._2.domIn("@proto"))
+          map + (kv._1 -> kv._2("@proto")._1._1._2.toSet)
         else
           map)
             
@@ -669,10 +673,10 @@ class Typing(_cfg: CFG, quiet: Boolean, locclone: Boolean) extends TypingInterfa
    */
   override def getFuncNameByLoc(state:State, loc: Loc): Set[String] = {
     val h = state._1
-    h(loc)("@class")._1._2._1._5.getSingle match {
+    h(loc)("@class")._2._1._5.getSingle match {
       case Some(str) if str =="Function" =>
-        if (h(loc).map.contains("@function")) {
-	      val fset = h(loc)("@function")._1._3
+        if (BoolTrue <= h(loc).domIn("@function")) {
+	      val fset = h(loc)("@function")._3
 	      fset.toSet.map((fid) => cfg.getFuncName(fid))
 	    }
 	    else

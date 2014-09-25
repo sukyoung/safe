@@ -1,5 +1,5 @@
 /*******************************************************************************
-    Copyright (c) 2012-2013, S-Core, KAIST.
+    Copyright (c) 2012-2014, S-Core, KAIST.
     All rights reserved.
 
     Use is subject to license terms.
@@ -174,8 +174,8 @@ class PreTyping(_cfg: CFG, quiet: Boolean, standAlone: Boolean) extends TypingIn
 //                    lset.foldLeft(map)((_m, l) => {
 //                      if (BoolTrue <= PreHelper.IsCallable(h,l)) {
 //                        _m.get(i) match {
-//                          case None => _m + (i -> h(l)("@function")._1._3.toSet)
-//                          case Some(set) => _m + (i -> (set ++ h(l)("@function")._1._3.toSet))
+//                          case None => _m + (i -> h(l)("@function")._3.toSet)
+//                          case Some(set) => _m + (i -> (set ++ h(l)("@function")._3.toSet))
 //                        }
 //                      } else {
 //                        _m
@@ -193,8 +193,8 @@ class PreTyping(_cfg: CFG, quiet: Boolean, standAlone: Boolean) extends TypingIn
 //                    lset.foldLeft(map)((_m, l) => {
 //                      if (BoolTrue <= PreHelper.HasConstruct(h,l)) {
 //                        _m.get(i) match {
-//                          case None => _m + (i -> h(l)("@construct")._1._3.toSet)
-//                          case Some(set) => _m + (i -> (set ++ h(l)("@construct")._1._3.toSet))
+//                          case None => _m + (i -> h(l)("@construct")._3.toSet)
+//                          case Some(set) => _m + (i -> (set ++ h(l)("@construct")._3.toSet))
 //                        }
 //                      } else {
 //                        _m
@@ -212,12 +212,12 @@ class PreTyping(_cfg: CFG, quiet: Boolean, standAlone: Boolean) extends TypingIn
 //                    //val (h_2, ctx_2) = PreHelper.Oldify(h_1, ctx_1, addr2)
 //                    //val (h_3, ctx_3) = PreHelper.Oldify(h_2, ctx_2, addr3)
 //                    val h_3 = h
-//                    val lset_this = h_3(PureLocalLoc)("@this")._1._2._2
+//                    val lset_this = h_3(PureLocalLoc)("@this")._2._2
 //                    lset_this.foldLeft(map)((_m, l) => {
 //                      if (BoolTrue <= PreHelper.IsCallable(h_3,l)) {
 //                        _m.get(i) match {
-//                          case None => _m + (i -> h_3(l)("@function")._1._3.toSet)
-//                          case Some(set) => _m + (i -> (set ++ h_3(l)("@function")._1._3.toSet))
+//                          case None => _m + (i -> h_3(l)("@function")._3.toSet)
+//                          case Some(set) => _m + (i -> (set ++ h_3(l)("@function")._3.toSet))
 //                        }
 //                      } else {
 //                        _m
@@ -234,12 +234,12 @@ class PreTyping(_cfg: CFG, quiet: Boolean, standAlone: Boolean) extends TypingIn
 //                    //val (h_1, ctx_1) = PreHelper.Oldify(h, ctx, addr1)
 //                    //val (h_2, ctx_2) = PreHelper.Oldify(h_1, ctx_1, addr2)
 //                    val h_2 = h
-//                    val lset_this = h_2(PureLocalLoc)("@this")._1._2._2
+//                    val lset_this = h_2(PureLocalLoc)("@this")._2._2
 //                    lset_this.foldLeft(map)((_m, l) => {
 //                      if (BoolTrue <= PreHelper.IsCallable(h_2,l)) {
 //                        _m.get(i) match {
-//                          case None => _m + (i -> h_2(l)("@function")._1._3.toSet)
-//                          case Some(set) => _m + (i -> (set ++ h_2(l)("@function")._1._3.toSet))
+//                          case None => _m + (i -> h_2(l)("@function")._3.toSet)
+//                          case Some(set) => _m + (i -> (set ++ h_2(l)("@function")._3.toSet))
 //                        }
 //                      } else {
 //                        _m

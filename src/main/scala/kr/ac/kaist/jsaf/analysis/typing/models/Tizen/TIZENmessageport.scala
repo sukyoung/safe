@@ -51,7 +51,7 @@ object TIZENmessageport extends Tizen {
     Map(
       ("tizen.messageport.requestLocalMessagePort" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -61,14 +61,16 @@ object TIZENmessageport extends Tizen {
           val v = getArgValue(h_1, ctx_1, args, "0")
           val n_arglen = Operator.ToUInt32(getArgValue(h_1, ctx_1, args, "length"))
           val es =
-            if (n_arglen == 0)
-              Set[WebAPIException](TypeMismatchError)
-            else TizenHelper.TizenExceptionBot
+            AbsNumber.getUIntSingle(n_arglen) match {
+	      case Some(n) if n == 0 =>
+                Set[WebAPIException](TypeMismatchError)
+              case _ => TizenHelper.TizenExceptionBot
+            }
           val es_1 =
             if (v._1._5 </ StrTop)
               Set[WebAPIException](TypeMismatchError)
             else TizenHelper.TizenExceptionBot
-          val o_new = ObjEmpty.
+          val o_new = Obj.empty.
             update("@class", PropValue(AbsString.alpha("Object"))).
             update("@proto", PropValue(ObjectValue(Value(TIZENLocalMessagePort.loc_proto), F, F, F))).
             update("@extensible", PropValue(T)).
@@ -82,7 +84,7 @@ object TIZENmessageport extends Tizen {
         )),
       ("tizen.messageport.requestTrustedLocalMessagePort" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -92,14 +94,16 @@ object TIZENmessageport extends Tizen {
           val v = getArgValue(h_1, ctx_1, args, "0")
           val n_arglen = Operator.ToUInt32(getArgValue(h_1, ctx_1, args, "length"))
           val es =
-            if (n_arglen == 0)
-              Set[WebAPIException](TypeMismatchError)
-            else TizenHelper.TizenExceptionBot
+            AbsNumber.getUIntSingle(n_arglen) match {
+	      case Some(n) if n == 0 =>
+                Set[WebAPIException](TypeMismatchError)
+              case _ => TizenHelper.TizenExceptionBot
+            }
           val es_1 =
             if (v._1._5 </ StrTop)
               Set[WebAPIException](TypeMismatchError)
             else TizenHelper.TizenExceptionBot
-          val o_new = ObjEmpty.
+          val o_new = Obj.empty.
             update("@class", PropValue(AbsString.alpha("Object"))).
             update("@proto", PropValue(ObjectValue(Value(TIZENLocalMessagePort.loc_proto), F, F, F))).
             update("@extensible", PropValue(T)).
@@ -113,7 +117,7 @@ object TIZENmessageport extends Tizen {
         )),
       ("tizen.messageport.requestRemoteMessagePort" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -124,9 +128,11 @@ object TIZENmessageport extends Tizen {
           val v_2 = getArgValue(h_1, ctx_1, args, "1")
           val n_arglen = Operator.ToUInt32(getArgValue(h_1, ctx_1, args, "length"))
           val es =
-            if (n_arglen == 0)
-              Set[WebAPIException](TypeMismatchError)
-            else TizenHelper.TizenExceptionBot
+            AbsNumber.getUIntSingle(n_arglen) match {
+	      case Some(n) if n == 0 =>
+                Set[WebAPIException](TypeMismatchError)
+              case _ => TizenHelper.TizenExceptionBot
+            }
           val es_1 =
             if (v_1._1._5 </ StrTop)
               Set[WebAPIException](TypeMismatchError)
@@ -135,7 +141,7 @@ object TIZENmessageport extends Tizen {
             if (v_2._1._5 </ StrTop)
               Set[WebAPIException](TypeMismatchError)
             else TizenHelper.TizenExceptionBot
-          val o_new = ObjEmpty.
+          val o_new = Obj.empty.
             update("@class", PropValue(AbsString.alpha("Object"))).
             update("@proto", PropValue(ObjectValue(Value(TIZENRemoteMessagePort.loc_proto), F, F, F))).
             update("@extensible", PropValue(T)).
@@ -150,7 +156,7 @@ object TIZENmessageport extends Tizen {
         )),
       ("tizen.messageport.requestTrustedRemoteMessagePort" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -161,9 +167,11 @@ object TIZENmessageport extends Tizen {
           val v_2 = getArgValue(h_1, ctx_1, args, "1")
           val n_arglen = Operator.ToUInt32(getArgValue(h_1, ctx_1, args, "length"))
           val es =
-            if (n_arglen == 0)
-              Set[WebAPIException](TypeMismatchError)
-            else TizenHelper.TizenExceptionBot
+            AbsNumber.getUIntSingle(n_arglen) match {
+	      case Some(n) if n == 0 =>
+                Set[WebAPIException](TypeMismatchError)
+              case _ => TizenHelper.TizenExceptionBot
+            }
           val es_1 =
             if (v_1._1._5 </ StrTop)
               Set[WebAPIException](TypeMismatchError)
@@ -172,7 +180,7 @@ object TIZENmessageport extends Tizen {
             if (v_2._1._5 </ StrTop)
               Set[WebAPIException](TypeMismatchError)
             else TizenHelper.TizenExceptionBot
-          val o_new = ObjEmpty.
+          val o_new = Obj.empty.
             update("@class", PropValue(AbsString.alpha("Object"))).
             update("@proto", PropValue(ObjectValue(Value(TIZENRemoteMessagePort.loc_proto), F, F, F))).
             update("@extensible", PropValue(T)).
@@ -214,7 +222,7 @@ object TIZENLocalMessagePort extends Tizen {
     Map(
       ("tizen.LocalMessagePort.addMessagePortListener" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -239,8 +247,8 @@ object TIZENLocalMessagePort extends Tizen {
             update("key", PropValue(ObjectValue(Value(StrTop), T, T, T))).
             update("value", PropValue(ObjectValue(Value(StrTop), T, T, T)))
           val h_5 = h_4.update(l_r1, o_new)
-          val o_arr = Helper.NewArrayObject(UInt).update("@default_number", PropValue(ObjectValue(Value(l_r1), T, T, T)))
-          val o_new2 = ObjEmpty.
+          val o_arr = Helper.NewArrayObject(UInt).update(Str_default_number, PropValue(ObjectValue(Value(l_r1), T, T, T)))
+          val o_new2 = Obj.empty.
             update("@class", PropValue(AbsString.alpha("Object"))).
             update("@proto", PropValue(ObjectValue(Value(TIZENRemoteMessagePort.loc_proto), F, F, F))).
             update("@extensible", PropValue(T)).
@@ -301,9 +309,11 @@ object TIZENRemoteMessagePort extends Tizen {
           val v_1 = getArgValue(h, ctx, args, "0")
           val n_arglen = Operator.ToUInt32(getArgValue(h, ctx, args, "length"))
           val es =
-            if (n_arglen == 0)
-              Set[WebAPIException](TypeMismatchError)
-            else TizenHelper.TizenExceptionBot
+            AbsNumber.getUIntSingle(n_arglen) match {
+	      case Some(n) if n == 0 =>
+                Set[WebAPIException](TypeMismatchError)
+              case _ => TizenHelper.TizenExceptionBot
+            }
           val es_1 =
             if (v_1._2.exists((l) => Helper.IsArray(h,l) <= F))
               Set[WebAPIException](TypeMismatchError)
@@ -326,7 +336,7 @@ object TIZENRemoteMessagePort extends Tizen {
                   es__
                 }
                 case _ => {
-                  val vi = Helper.Proto(h, ll, AbsString.alpha("@default_number"))
+                  val vi = Helper.Proto(h, ll, AbsString.alpha(Str_default_number))
                   val esi =
                     if (vi._1._5 </ StrTop) Set[WebAPIException](TypeMismatchError)
                     else TizenHelper.TizenExceptionBot

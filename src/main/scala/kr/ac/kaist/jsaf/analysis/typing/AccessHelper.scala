@@ -14,26 +14,26 @@ import kr.ac.kaist.jsaf.analysis.typing.domain._
 import kr.ac.kaist.jsaf.analysis.typing.AddressManager._
 
 object AccessHelper {
-  var NewObject_def = Set("@class", "@proto", "@extensible", "@default_number", "@default_other")
-  var NewArrayObject_def = Set("@class", "@proto", "length", "@extensible", "@default_number", "@default_other")
-  var NewArgObject_def = Set("@class", "@proto", "length", "@extensible", "@default_number", "@default_other")
+  var NewObject_def = Set("@class", "@proto", "@extensible", Str_default_number, Str_default_other)
+  var NewArrayObject_def = Set("@class", "@proto", "length", "@extensible", Str_default_number, Str_default_other)
+  var NewArgObject_def = Set("@class", "@proto", "length", "@extensible", Str_default_number, Str_default_other)
   var NewFunctionObject_def = Set(
     "@class", "@proto", "@extensible", "@function", "@construct", "@hasinstance",
-    "@scope", "@default_number", "@default_other", "prototype", "length")
-  var NewDeclEnvRecord_def = Set("@outer", "@default_number", "@default_other")
-  var NewBoolean_def = Set("@class", "@proto", "@extensible", "@primitive", "@default_number", "@default_other")
-  var NewNumber_def = Set("@class", "@proto", "@extensible", "@primitive", "@default_number", "@default_other")
-  var NewDate_def = Set("@class", "@proto", "@extensible", "@primitive", "@default_number", "@default_other")
+    "@scope", Str_default_number, Str_default_other, "prototype", "length")
+  var NewDeclEnvRecord_def = Set("@outer", Str_default_number, Str_default_other)
+  var NewBoolean_def = Set("@class", "@proto", "@extensible", "@primitive", Str_default_number, Str_default_other)
+  var NewNumber_def = Set("@class", "@proto", "@extensible", "@primitive", Str_default_number, Str_default_other)
+  var NewDate_def = Set("@class", "@proto", "@extensible", "@primitive", Str_default_number, Str_default_other)
   val NewRegExp_def =
     Set("@class", "@proto", "@extensible", "source", "global",
-      "ignoreCase", "multiline", "lastIndex", "@default_number", "@default_other"
+      "ignoreCase", "multiline", "lastIndex", Str_default_number, Str_default_other
     )
 
   def NewString_def(v: AbsString): Set[String] = {
     val s = v
     val v_len = s.length
 
-    val P_1 = Set("@class", "@proto", "@extensible", "@primitive", "@default_number", "@default_other")
+    val P_1 = Set("@class", "@proto", "@extensible", "@primitive", Str_default_number, Str_default_other)
     val P_2 = AbsNumber.getUIntSingle(v_len) match {
       case Some(length) => {
         (0 until length.toInt).foldLeft[Set[String]](Set())((s, i) => s + (i.toString))
@@ -48,13 +48,13 @@ object AccessHelper {
     val l_o: Loc = addrToLoc(a, Old)
     val LP_1 =
       if (h.domIn(l_r))
-        h(l_r).map.foldLeft(LPBot)((S,v) => S + ((l_o, v._1)) + ((l_r, v._1)))
+        h(l_r).getAllProps.foldLeft(LPBot)((S,v) => S + ((l_o, v)) + ((l_r, v)))
       else
         LPBot
     val LP_3 = LPSet(Set((ContextLoc, "3"), (ContextLoc, "4")))
     val LP_4 = h.map.keySet.foldLeft(LPBot)((S, l) => {
-      S ++ h(l).map.keySet.foldLeft(LPBot)((Sp, x) =>
-        if (h(l)(x)._1._1._1._2.contains(l_r) || h(l)(x)._1._2._2.contains(l_r))
+      S ++ h(l).getAllProps.foldLeft(LPBot)((Sp, x) =>
+        if (h(l)(x)._1._1._2.contains(l_r) || h(l)(x)._2._2.contains(l_r))
           Sp + ((l,x))
         else Sp)
     })
@@ -87,7 +87,7 @@ object AccessHelper {
         val has_x = env.domIn(x)
         val LP_1 = 
           if (BoolTrue <= has_x) {
-            env(x)._1._1._2.getPair match {
+            env(x)._1._2.getPair match {
               case (AbsSingle, Some(b)) => if (b) LPSet((l, x)) else LPBot
               case _ => 
                 throw new InternalError("Writable attribute must be exact for variables in local env.") 
@@ -97,7 +97,7 @@ object AccessHelper {
           }
         val LP_2 = 
           if (BoolFalse <= has_x) {
-            val lset_outer = env("@outer")._1._2._2
+            val lset_outer = env("@outer")._2._2
             lset_outer.foldLeft(LPBot)((S, l_outer) => S ++ visit(l_outer))
           } else {
             LPBot
@@ -129,7 +129,7 @@ object AccessHelper {
   }
 
   def Delete_def(h: Heap, l: Loc, s: AbsString): LPSet = {
-    if (((BoolTrue <= Helper.HasOwnProperty(h, l, s)) && (BoolFalse <= h(l)(s)._1._1._4)) ||
+    if (((BoolTrue <= Helper.HasOwnProperty(h, l, s)) && (BoolFalse <= h(l)(s)._1._4)) ||
         (BoolFalse <= Helper.HasOwnProperty(h, l, s)))
       absPair(h, l, s)
     else LPBot
@@ -177,7 +177,7 @@ object AccessHelper {
   }
   /* built-in helper */
   def DefineProperties_def(h: Heap, l_1: Loc, l_2: Loc): LPSet = {
-    val props = h(l_2).getProps
+    val props = h(l_2).getAllProps
     props.foldLeft(LPBot)((lpset, p) => {
       val prop = AbsString.alpha(p)
       val v_1 = Helper.Proto(h, l_2, prop)
@@ -192,8 +192,8 @@ object AccessHelper {
   
   
   def lookup(h: Heap, l: Loc, x: String): LPSet = {
-    val LP_1 = if (AbsString.isNum(x)) LPSet((l, "@default_number"))
-               else LPSet((l, "@default_other"))
+    val LP_1 = if (AbsString.isNum(x)) LPSet((l, Str_default_number))
+               else LPSet((l, Str_default_other))
 
     val LP_2 = LPSet((l, x))
 
@@ -201,8 +201,8 @@ object AccessHelper {
   }
 
   def lookup(o: Obj, l: Loc, x: String): LPSet = {
-    val LP_1 = if (AbsString.isNum(x)) LPSet((l, "@default_number"))
-               else LPSet((l, "@default_other"))
+    val LP_1 = if (AbsString.isNum(x)) LPSet((l, Str_default_number))
+               else LPSet((l, Str_default_other))
 
     val LP_2 = LPSet((l, x))
 
@@ -214,24 +214,24 @@ object AccessHelper {
     else {
       s.getAbsCase match {
         case AbsTop =>
-          val pset = h(l).map.keySet.filter(x => !x.take(1).equals("@"))
-          val is = LPSet(Set((l,"@default_number"),(l,"@default_other")))
+          val pset = h(l).getAllProps.filter(x => !(x.take(1) == "@"))
+          val is = LPSet(Set((l,Str_default_number),(l,Str_default_other)))
           pset.foldLeft(is)((S,x) => S + ((l,x)))
         case AbsBot => LPBot
         case AbsMulti =>
           if (s.isAllNums) {
-            val pset = h(l).map.keySet.filter(x => !x.take(1).equals("@") && AbsString.alpha(x) <= NumStr)
-            val is = LPSet((l,"@default_number"))
+            val pset = h(l).getAllProps.filter(x => !(x.take(1) == "@") && AbsString.alpha(x) <= NumStr)
+            val is = LPSet((l,Str_default_number))
             pset.foldLeft(is)((S,x) => S + ((l,x)))
           } else {
-            val pset = h(l).map.keySet.filter(x => !x.take(1).equals("@") && AbsString.alpha(x) <= OtherStr)
-            val is = LPSet((l,"@default_other"))
+            val pset = h(l).getAllProps.filter(x => !(x.take(1) == "@") && AbsString.alpha(x) <= OtherStr)
+            val is = LPSet((l,Str_default_other))
             pset.foldLeft(is)((S,x) => S + ((l,x)))
           }
         case AbsSingle => s.getSingle match {
           case Some(v) =>
-            if (s.isAllNums) lookup(h,l,v) + ((l,"@default_number"))
-            else lookup(h,l,v) + ((l,"@default_other"))
+            if (s.isAllNums) lookup(h,l,v) + ((l,Str_default_number))
+            else lookup(h,l,v) + ((l,Str_default_other))
           case _ => throw new InternalError("impossible case.")
         }
       }
@@ -241,24 +241,24 @@ object AccessHelper {
   def absPair(o: Obj, l: Loc, s: AbsString): LPSet = {
     s.getAbsCase match {
       case AbsTop =>
-        val pset = o.map.keySet.filter(x => !x.take(1).equals("@"))
-        val is = LPSet(Set((l,"@default_number"),(l,"@default_other")))
+        val pset = o.getAllProps.filter(x => !(x.take(1) == "@"))
+        val is = LPSet(Set((l,Str_default_number),(l,Str_default_other)))
         pset.foldLeft(is)((S,x) => S + ((l,x)))
       case AbsBot => LPBot
       case AbsMulti =>
         if (s.isAllNums) {
-          val pset = o.map.keySet.filter(x => !x.take(1).equals("@") && AbsString.alpha(x) <= NumStr)
-          val is = LPSet((l,"@default_number"))
+          val pset = o.getAllProps.filter(x => !(x.take(1) == "@") && AbsString.alpha(x) <= NumStr)
+          val is = LPSet((l,Str_default_number))
           pset.foldLeft(is)((S,x) => S + ((l,x)))
         } else {
-          val pset = o.map.keySet.filter(x => !x.take(1).equals("@") && AbsString.alpha(x) <= OtherStr)
-          val is = LPSet((l,"@default_other"))
+          val pset = o.getAllProps.filter(x => !(x.take(1) == "@") && AbsString.alpha(x) <= OtherStr)
+          val is = LPSet((l,Str_default_other))
           pset.foldLeft(is)((S,x) => S + ((l,x)))
         }
       case AbsSingle => s.getSingle match {
         case Some(v) =>
-          if (s.isAllNums) lookup(o,l,v) + ((l,"@default_number"))
-          else lookup(o,l,v) + ((l,"@default_other"))
+          if (s.isAllNums) lookup(o,l,v) + ((l,Str_default_number))
+          else lookup(o,l,v) + ((l,Str_default_other))
         case _ => throw new InternalError("impossible case.")
       }
     }
@@ -272,7 +272,7 @@ object AccessHelper {
         visited += l
         val LP =
           if (BoolFalse <= h(l).domIn(s)) {
-            val lset_proto = h(l)("@proto")._1._1._1._2
+            val lset_proto = h(l)("@proto")._1._1._2
             lset_proto.foldLeft(LPBot)((S,l_proto) => S ++ iter(h,l_proto,s))
           } else LPBot
 
@@ -314,7 +314,7 @@ object AccessHelper {
         val has_x = env.domIn(x)
         val LP = 
           if (BoolFalse <= has_x) {
-            val lset_outer = env("@outer")._1._2._2
+            val lset_outer = env("@outer")._2._2
             LPSet((l, "@outer")) ++
             lset_outer.foldLeft(LPBot)((S, l_outer) => S ++ visit(l_outer))
           } else {
@@ -328,7 +328,7 @@ object AccessHelper {
   }
 
   def LookupG_use(h: Heap, x: String): LPSet = {
-    val lset_proto = h(GlobalLoc)("@proto")._1._1._1._2
+    val lset_proto = h(GlobalLoc)("@proto")._1._1._2
     val ax = AbsString.alpha(x)
     val LP_1 = lookup(h, GlobalLoc, x) ++ LPSet((GlobalLoc, "@proto"))
     val LP_2 = lset_proto.foldLeft(LPBot)((S, l_proto) => S + ((l_proto, x)))
@@ -371,7 +371,7 @@ object AccessHelper {
         val v_eq = Operator.bopSEq(Value(l_1), Value(l_2))
         val LP =
           if (BoolFalse <= v_eq._1._3) {
-            val lset_proto = h(l_1)("@proto")._1._1._1._2
+            val lset_proto = h(l_1)("@proto")._1._1._2
             lset_proto.foldLeft(LPBot)((S, l) => S ++ iter(h,l,l_2))
           }
           else
@@ -390,12 +390,12 @@ object AccessHelper {
     val l_o: Loc = addrToLoc(a, Old)
     val LP_1 =
       if (h.domIn(l_r))
-        h(l_r).map.foldLeft(LPBot)((S,v) => S ++ lookup(h, l_r, v._1))// ++ lookup(h, l_o, v._1))
+        h(l_r).getAllProps.foldLeft(LPBot)((S,v) => S ++ lookup(h, l_r, v))// ++ lookup(h, l_o, v._1))
       else
         LPBot
     val LP_3 = h.map.keySet.foldLeft(LPBot)((S, l) => {
-      S ++ h(l).map.keySet.foldLeft(LPBot)((Sp, x) =>
-        if (h(l)(x)._1._1._1._2.contains(l_r) || h(l)(x)._1._2._2.contains(l_r))
+      S ++ h(l).getAllProps.foldLeft(LPBot)((Sp, x) =>
+        if (h(l)(x)._1._1._2.contains(l_r) || h(l)(x)._2._2.contains(l_r))
           Sp ++ lookup(h,l,x)
         else Sp)
     })
@@ -430,7 +430,7 @@ object AccessHelper {
         val has_x = env.domIn(x)
         val LP = 
           if (BoolFalse <= has_x) {
-            val lset_outer = env("@outer")._1._2._2
+            val lset_outer = env("@outer")._2._2
             LPSet((l, "@outer")) ++
             lset_outer.foldLeft(LPBot)((S, l_outer) => S ++ visit(l_outer))
           } else {
@@ -484,7 +484,7 @@ object AccessHelper {
     def iter(h: Heap, l_1: Loc, s: AbsString, l_2: Loc): LPSet = {
       if (!visited.contains(l_1)) {
         visited += l_1
-        val v_proto = h(l_1)("@proto")._1._1._1
+        val v_proto = h(l_1)("@proto")._1._1
         val lset_proto = v_proto._2
         val LP_1 =
           if (BoolFalse <= h(l_1).domIn(s))
@@ -531,7 +531,7 @@ object AccessHelper {
         val has_x = env.domIn(x)
         val LP = 
           if (BoolFalse <= has_x) {
-            val lset_outer = env("@outer")._1._2._2
+            val lset_outer = env("@outer")._2._2
             LPSet((l, "@outer")) ++
             lset_outer.foldLeft(LPBot)((S, l_outer) => S ++ visit(l_outer))
           } else {
@@ -545,7 +545,7 @@ object AccessHelper {
   }
 
   def LookupBaseG_use(h: Heap, x: String): LPSet = {
-    val lset_proto = h(GlobalLoc)("@proto")._1._1._1._2
+    val lset_proto = h(GlobalLoc)("@proto")._1._1._2
     val ax = AbsString.alpha(x)
     val LP_1 = lset_proto.foldLeft(LPBot)((S, l_proto) => S + ((l_proto, x)))
     val LP_2 =
@@ -605,7 +605,7 @@ object AccessHelper {
     val LP_2 = LPSet((l, "@proto"))
     val LP_3 =
       if (BoolFalse <= Helper.HasOwnProperty(h, l, s)) {
-        val lset_proto = h(l)("@proto")._1._1._1._2
+        val lset_proto = h(l)("@proto")._1._1._2
         lset_proto.foldLeft(LPBot)((S, l_proto) => S ++ HasProperty_use(h, l_proto, s))
       } else {
         LPBot
@@ -615,7 +615,7 @@ object AccessHelper {
   
   /* built-in helper */
   def DefineProperties_use(h: Heap, l_1: Loc, l_2: Loc): LPSet = {
-    val props = h(l_2).getProps
+    val props = h(l_2).getAllProps
     props.foldLeft(LPBot)((lpset, p) => {
       val prop = AbsString.alpha(p)
       val v_1 = Helper.Proto(h, l_2, prop)
@@ -638,7 +638,7 @@ object AccessHelper {
   }
 
   def CollectProps_use(h: Heap, lset: LocSet) : LPSet = {
-    val lset_proto = lset.foldLeft(LocSetBot)((lset_proto_, l) => lset_proto_ ++ h(l)("@proto")._1._1._1._2)
+    val lset_proto = lset.foldLeft(LocSetBot)((lset_proto_, l) => lset_proto_ ++ h(l)("@proto")._1._1._2)
 
     val LP_1 = lset.foldLeft(LPBot)((lp, l) => lp ++ absPair(h, l, StrTop))
     val LP_2 = lset.foldLeft(LPBot)((lp, l) => lp ++ LPSet((l, "@proto")))
@@ -657,12 +657,12 @@ object AccessHelper {
     def detectCycle_(l: Loc, visited: LocSet): Unit = {
       val o = h(l)
 
-      val s_set = o.getProps.filter(s => {
+      val s_set = o.getAllProps.filter(s => {
         LP += (l, s)
-        BoolTrue <= o(s)._1._1._3
+        BoolTrue <= o(s)._1._3
       })
       s_set.foreach(s => {
-        val lset = o(s)._1._1._1._2
+        val lset = o(s)._1._1._2
         val lset_2 = lset -- visited
         lset_2.foreach(l => detectCycle_(l, visited + l))
       })

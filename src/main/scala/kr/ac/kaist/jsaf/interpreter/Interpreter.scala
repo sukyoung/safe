@@ -45,7 +45,6 @@ class Interpreter extends IRWalker {
   val IH: InterpreterHelper = new InterpreterHelper(this)
   val IS: InterpreterState = new InterpreterState(this)
   val SH: SymbolicHelper = new SymbolicHelper(this)
-  val CE: ConstraintExtractor = new ConstraintExtractor(this)
   IS.init
 
   ////////////////////////////////////////////////////////////////////////////////
@@ -65,10 +64,10 @@ class Interpreter extends IRWalker {
     IS.coverage = toOption(coverage)
 
     var SIRRoot(_, vds, fds, irs) = program
+
     if (IS.coverage.isDefined) {
       val coverage = IS.coverage.get
-      if (coverage.isFirst)
-        CE.initialize
+
       SH.initialize(coverage)
 
       val inputIR = coverage.inputIR  match { case Some(ir) => List(ir); case None => List() }
@@ -78,16 +77,11 @@ class Interpreter extends IRWalker {
       System.out.println*/
       
       walkIRs(vds ++ fds ++ irs.filterNot(_.isInstanceOf[IRNoOp]) ++ inputIR)
-      if (coverage.debug)
-        CE.debug = true 
-      CE.extract(SH.report)
-      coverage.constraints = CE.constraints
 
-      if (coverage.debug) {
-        SH.print
-        CE.print
-      }
-      coverage.setUnprocessing(coverage.target)
+      coverage.report = SH.report
+
+      //if (coverage.debug) 
+        //SH.print
     }
     else 
       walkIRs(vds ++ fds ++ irs.filterNot(_.isInstanceOf[IRNoOp]))
@@ -100,7 +94,7 @@ class Interpreter extends IRWalker {
       case CT.BREAK =>
         System.out.println("Break(" + tsLab(IS.lastComp.label) + ")")
       case CT.RETURN =>
-        if (!IS.coverage.isDefined)
+        //if (!IS.coverage.isDefined)
         System.out.println("Return(" + IH.toString(IS.lastComp.value) + ")")
       case CT.THROW =>
         IS.lastComp.error match {
@@ -577,7 +571,7 @@ class Interpreter extends IRWalker {
                         // * IRStore 17
                         case err: JSError => IS.comp.setThrow(err, info.getSpan); return
                         // * IRStore 18
-                        case _ => IS.comp.setNormal(v3); return
+                        case _ => IS.comp.setNormal(v3)
                       }
                   }
                   // * IRStore 4
@@ -623,6 +617,11 @@ class Interpreter extends IRWalker {
         IS.span = info.getSpan
         var cont: Boolean = false
         do {
+          // evaluate SH.checkLoop before evaluating the body
+          if (IS.coverage.isDefined && cont) {  
+            cont = SH.checkLoop(info.getSpan.toString)
+            if (!cont) return
+          }
           walkExpr(cond) match {
             case v: Val =>
               cont = IH.toBoolean(v)
@@ -630,11 +629,6 @@ class Interpreter extends IRWalker {
             case err: JSError =>
               IS.comp.setThrow(err, info.getSpan)
               return
-          }
-          // evaluate SH.checkLoop before evaluating the body
-          if (IS.coverage.isDefined) {  
-            cont = SH.checkLoop
-            if (!cont) return
           }
           walk(body)
           if(CT.isAbrupt(IS.comp.Type)) return
@@ -742,8 +736,7 @@ class Interpreter extends IRWalker {
               walk(finallyB)
               if(IS.comp.Type == CT.NORMAL) IS.comp = oldComp
             }
-        // Unreachable
-        case (None, None, None) => IS.comp.setNormal()
+          case _ => IS.comp.setNormal()
       }
 
       /*
@@ -1024,6 +1017,8 @@ class Interpreter extends IRWalker {
               case _ => SH.executeCondition(arg1, None, None, None, arg2.get)
             }
           }
+          case "<>Concolic<>EndCondition" => 
+            SH.endCondition(arg2.get)
           case "<>Concolic<>WalkVarStmt" =>
             SH.walkVarStmt(lhs, arg1.asInstanceOf[IRNumber].getNum.toInt, arg2.get)
           case "<>Concolic<>StoreThis" =>
@@ -1037,7 +1032,6 @@ class Interpreter extends IRWalker {
                 case _ =>
               }
             }
-            //println(new kr.ac.kaist.jsaf.nodes_util.JSIRUnparser(arg1).doit);
             walkExpr(arg1) match {
               case v: Val => IH.toObject(v) match {
                 // (H', A, tb), x = l
@@ -1122,6 +1116,15 @@ class Interpreter extends IRWalker {
       }
 
       case SIRCall(info, lhs: IRId, fun: IRId, thisB, args) =>
+        if (IS.coverage.isDefined) {
+          walkId(fun) match {
+            case v: Val => v match {
+              case f: JSFunction => 
+                if (!SH.checkRecursiveCall(f.code.getName.getUniqueName, args)) return
+            }
+            case err: JSError =>
+          }
+        }
         IS.span = info.getSpan
         val oldEnv = IS.env
         val oldTb = IS.tb
@@ -1139,8 +1142,7 @@ class Interpreter extends IRWalker {
                     /*
                      * 10.4.3 Entering Function Code
                      */
-                    //if (!IS.coverage.isDefined || !SH.ignoreCall(lhs)) 
-                      IH.call(info, v1, o2, f)
+                    IH.call(info, v1, o2, f)
                     if(IS.comp.Type == CT.NORMAL) valueToAssign = IP.undefV
                     else if(IS.comp.Type == CT.RETURN) valueToAssign = IS.comp.value
                   case _ =>
@@ -1219,6 +1221,7 @@ class Interpreter extends IRWalker {
         IH.valError2NormalCompletion(IH.putValue(lhs, arr, IS.strict))
 
       case SIRArgs(info, lhs, elements) =>
+        if (IS.coverage.isDefined) SH.storeArguments(lhs, elements)
         IS.span = info.getSpan
         // TODO:
         // IS.heap.put(l, IH.newArrObject(l, elements.size))

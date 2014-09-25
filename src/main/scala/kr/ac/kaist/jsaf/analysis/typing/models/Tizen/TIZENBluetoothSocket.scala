@@ -1,5 +1,5 @@
 /*******************************************************************************
-    Copyright (c) 2013, S-Core, KAIST.
+    Copyright (c) 2013-2014, S-Core, KAIST.
     All rights reserved.
 
     Use is subject to license terms.
@@ -59,7 +59,7 @@ object TIZENBluetoothSocket extends Tizen {
                   es__
                 }
                 case _ => {
-                  val vi = Helper.Proto(h, ll, AbsString.alpha("@default_number"))
+                  val vi = Helper.Proto(h, ll, AbsString.alpha(Str_default_number))
                   val esi =
                     if (vi._1._4 </ NumTop) Set[WebAPIException](TypeMismatchError)
                     else TizenHelper.TizenExceptionBot
@@ -83,7 +83,7 @@ object TIZENBluetoothSocket extends Tizen {
         )),
       ("tizen.BluetoothSocket.close" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           val h_1 = lset_this.foldLeft(h)((_h, l) => {
             Helper.PropStore(_h, l, AbsString.alpha("state"), Value(AbsString.alpha("CLOSED")))
           })

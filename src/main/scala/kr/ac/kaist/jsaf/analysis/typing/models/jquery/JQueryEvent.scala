@@ -105,17 +105,17 @@ object JQueryEvent extends ModelData {
       ("jQuery.prototype.live" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
           /* live(types, data, fn) == on(types, this.selector, data, fn) */
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           val v_selector = lset_this.foldLeft(ValueBot)((v, l) => v + Helper.Proto(h, l, AbsString.alpha("selector")))
           on(h, ctx, he, ctxe, getArgValue(h, ctx, args, "0"),
             v_selector, getArgValue(h, ctx, args, "1"), getArgValue(h, ctx, args, "2"))
         })),
       ("jQuery.prototype.ready" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           val lset_handler = getArgValue(h, ctx, args, "0")._2.filter(l => BoolTrue <= Helper.IsCallable(h,l))
           val lset_target = lset_this.foldLeft(LocSetBot)((lset, l) =>
-            lset ++ h(l)(NumStr)._1._1._1._2
+            lset ++ h(l)(NumStr)._1._1._2
           )
           if (!lset_handler.isEmpty) {
             val h1 = if(!lset_target.isEmpty) JQueryHelper.addJQueryEvent(h, Value(lset_target), AbsString.alpha("DOMContentLoaded"), Value(lset_handler), ValueBot, ValueBot)
@@ -127,10 +127,10 @@ object JQueryEvent extends ModelData {
         })),
       ("jQuery.prototype.hover" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           val lset_handler = (getArgValue(h, ctx, args, "0") + getArgValue(h, ctx, args, "1"))._2.filter(l => BoolTrue <= Helper.IsCallable(h,l))
           val lset_target = lset_this.foldLeft(LocSetBot)((lset, l) =>
-            lset ++ h(l)(NumStr)._1._1._1._2
+            lset ++ h(l)(NumStr)._1._1._2
           )
           if (!lset_target.isEmpty && !lset_target.isEmpty) {
             val h1 = JQueryHelper.addJQueryEvent(h, Value(lset_target), AbsString.alpha("mousemove"), Value(lset_handler), ValueBot, ValueBot)
@@ -141,13 +141,13 @@ object JQueryEvent extends ModelData {
         })),
       ("jQuery.prototype.toggle" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           val v_arg1 = getArgValue(h, ctx, args, "0")
           val v_arg2 = getArgValue(h, ctx, args, "1")
           val v_arg3 = getArgValue(h, ctx, args, "2")
           val lset_handler = (v_arg1 + v_arg2 + v_arg3)._2.filter(l => BoolTrue <= Helper.IsCallable(h,l))
           val lset_target = lset_this.foldLeft(LocSetBot)((lset, l) =>
-            lset ++ h(l)(NumStr)._1._1._1._2
+            lset ++ h(l)(NumStr)._1._1._2
           )
           val h1 =
             if (!lset_target.isEmpty && !lset_target.isEmpty)
@@ -170,7 +170,7 @@ object JQueryEvent extends ModelData {
       ("jQuery.prototype.trigger" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
           /* do nothing */
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           val arg1 = getArgValue(h, ctx, args, "0")
           if (arg1 </ ValueBot)
             ((Helper.ReturnStore(h, Value(lset_this)), ctx), (he, ctxe))
@@ -180,7 +180,7 @@ object JQueryEvent extends ModelData {
       ("jQuery.prototype.triggerHandler" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
           /* do nothing */
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           val arg1 = getArgValue(h, ctx, args, "0")
           if (arg1 </ ValueBot)
             ((Helper.ReturnStore(h, Value(lset_this)), ctx), (he, ctxe))
@@ -190,7 +190,7 @@ object JQueryEvent extends ModelData {
       ("jQuery.prototype.off" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
           /* do nothing */
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           val arg1 = getArgValue(h, ctx, args, "0")
           if (arg1 </ ValueBot)
             ((Helper.ReturnStore(h, Value(lset_this)), ctx), (he, ctxe))
@@ -200,19 +200,19 @@ object JQueryEvent extends ModelData {
       ("jQuery.prototype.unbind" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
           /* do nothing */
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           ((Helper.ReturnStore(h, Value(lset_this)), ctx), (he, ctxe))
         })),
       ("jQuery.prototype.undelegate" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
           /* do nothing */
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           ((Helper.ReturnStore(h, Value(lset_this)), ctx), (he, ctxe))
         })),
       ("jQuery.prototype.die" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
           /* do nothing */
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           ((Helper.ReturnStore(h, Value(lset_this)), ctx), (he, ctxe))
        }))
     )
@@ -239,7 +239,7 @@ object JQueryEvent extends ModelData {
   }
   private def on( h: Heap, ctx: Context, he: Heap, ctxe: Context,
                   v_types: Value, v_selector: Value, v_data: Value, v_fn: Value): ((Heap, Context), (Heap, Context)) = {
-    val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+    val lset_this = h(SinglePureLocalLoc)("@this")._2._2
     /* arguments */
     val v_events = v_types
     val s_type = v_events._1._5
@@ -270,7 +270,7 @@ object JQueryEvent extends ModelData {
         val v_fun = v_fun1 + v_fun2 + v_fun3
         val v_dat = v_data1 + v_data2 + v_data3
         val lset_target = lset_this.foldLeft(LocSetBot)((lset, l) =>
-          lset ++ h(l)(NumStr)._1._1._1._2
+          lset ++ h(l)(NumStr)._1._1._2
         )
         if (v_fun </ ValueBot) {
           JQueryHelper.addJQueryEvent(h, Value(lset_target), s_type, v_fun, v_dat, v_sel)
@@ -286,11 +286,11 @@ object JQueryEvent extends ModelData {
           } else
             (ValueBot,  ValueBot)
         val lset_target = lset_this.foldLeft(LocSetBot)((lset, l) =>
-          lset ++ h(l)(NumStr)._1._1._1._2
+          lset ++ h(l)(NumStr)._1._1._2
         )
         lset_events.foldLeft(HeapBot)((_h, l) => {
           h(l).getProps.foldLeft(_h)((__h, prop) =>
-            __h + JQueryHelper.addJQueryEvent(h, Value(lset_target), s_type, h(l)(prop)._1._1._1, v_dat, v_sel)
+            __h + JQueryHelper.addJQueryEvent(h, Value(lset_target), s_type, h(l)(prop)._1._1, v_dat, v_sel)
           )
         })
         HeapBot

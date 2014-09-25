@@ -78,7 +78,7 @@ class TSModel(cfg: CFG) extends Model(cfg) {
       // api object
       val obj = newHeap.map.get(loc) match {
         case Some(old) => prepareList.foldLeft(old)((o, prepare) => o.update(prepare._1, prepare._2))
-        case None => prepareList.foldLeft(ObjEmpty)((o, prepare) => o.update(prepare._1, prepare._2))
+        case None => prepareList.foldLeft(Obj.empty)((o, prepare) => o.update(prepare._1, prepare._2))
       }
       // added api object to heap
       newHeap = Heap(newHeap.map.updated(loc, obj))
@@ -104,13 +104,7 @@ class TSModel(cfg: CFG) extends Model(cfg) {
   }
 
   def weakProtoUpdate(obj:Obj, propv: PropValue): Obj = {
-    var map = obj.map
-    val x = "@proto"
-    val abs: Absent = AbsentBot
-    map.get(x) match {
-      case None => Obj(map.updated(x, (propv, abs)))
-      case Some(pva) => Obj(map.updated(x, (pva._1 + propv, pva._2 + abs)))
-    }
+    obj + obj.update(Prop_proto, propv)
   }
 
   def TSType2Mockup(path:String, name:String, typ: Type): Value = typ match {
@@ -165,9 +159,8 @@ class TSModel(cfg: CFG) extends Model(cfg) {
       case Some(sig) => sig match {
         case SIndexSig(info, id, annot, num) =>{
           initObj = Helper.NewArrayObject(NumTop)
-            .update("@default_number", PropValue(ObjectValue(TSType2Mockup(path, "", annot), T, T, T)))
+            .update(Str_default_number, PropValue(ObjectValue(TSType2Mockup(path, "", annot), T, T, T)))
         }
-        case _ =>
       }
       case None =>
     }
@@ -195,7 +188,6 @@ class TSModel(cfg: CFG) extends Model(cfg) {
         val temp = weakProtoUpdate(obj, PropValue(ObjectValue(TSType2Mockup("","",typRef), F, F, F)))
         temp
       }
-      case _ => obj
     })
     obj_1
   }
@@ -204,14 +196,13 @@ class TSModel(cfg: CFG) extends Model(cfg) {
     val obj: Obj = Helper.NewArrayObject(NumTop)
     arr match{
       case SArrayType(info, typ) => {
-        obj.update("@default_number", PropValue(ObjectValue(TSType2Mockup(path, "", typ), T, T, T)))
+        obj.update(Str_default_number, PropValue(ObjectValue(TSType2Mockup(path, "", typ), T, T, T)))
       }
-      case _ => obj
     }
   }
 
   def mkObj(path:String, node:ObjectType, h:Heap, l:Loc): Heap = {
-    var obj: Obj = ObjBot
+    var obj: Obj = Obj.bottom
     toList(node.getMembers).foreach (mem => {
       mem match{
         case mem@SCallSig(info, tparams, params, typ) => {
@@ -225,12 +216,12 @@ class TSModel(cfg: CFG) extends Model(cfg) {
         }
         case mem@SIndexSig(info, id, annot, num) => {
           obj = Helper.NewArrayObject(NumTop)
-            .update("@default_number", PropValue(ObjectValue(TSType2Mockup(path, "", annot), T, T, T)))
+            .update(Str_default_number, PropValue(ObjectValue(TSType2Mockup(path, "", annot), T, T, T)))
         }
         case _ =>
       }
     })
-    if (obj == ObjBot){
+    if (obj == Obj.bottom){
       obj = Helper.NewObject(ObjProtoLoc)
     }
     val (newObj, h_0): (Obj, Heap) = toList(node.getMembers).foldLeft((obj, h))((_kv, mem) => {
@@ -284,7 +275,6 @@ class TSModel(cfg: CFG) extends Model(cfg) {
               (_obj.update(name, PropValue(ObjectValue(Value(loc), F, F, F))),
                 _h.update(loc, mkFunctionObject(path+"."+name)))
             }
-            case _ => (_obj, _h)
           }
         }
         case mem@SConstructSig (info, tparams, params, typ) => {
@@ -414,12 +404,12 @@ class TSModel(cfg: CFG) extends Model(cfg) {
 
   def mkFunctionObject(name: String): Obj = {
     val fid = makeAPICFG("TS", name)
-    val obj = ObjEmpty.
+    val obj = Obj.empty.
       update("@class",        PropValue(AbsString.alpha("Function"))).
       update("@proto",        PropValue(ObjectValue(Value(FunctionProtoLoc), F, F, F))).
       update("@extensible",   PropValue(T)).
       update("@scope",        PropValue(Value(NullTop))).
-      update("@function",     PropValue(ObjectValueBot, ValueBot, FunSet(fid))).
+      update("@function",     PropValue(ObjectValueBot, FunSet(fid))).
       update("@hasinstance",  PropValue(Value(NullTop)))
       map_fid = map_fid + (fid -> name)
     obj
@@ -446,7 +436,7 @@ class TSModel(cfg: CFG) extends Model(cfg) {
     case SArrayType(info, typ) => {
       val (v_1, h_1, ctx_1) = TSType2Value(typ, h, ctx, alloc)
       val obj: Obj = Helper.NewArrayObject(NumTop).
-        update("@default_number", PropValue(ObjectValue(v_1, T, T, T)))
+        update(Str_default_number, PropValue(ObjectValue(v_1, T, T, T)))
       val l = newRecentLoc()
       val h_2 = h.update(l, obj)
       (Value(l), h_2, ctx_1)
@@ -514,9 +504,9 @@ class TSModel(cfg: CFG) extends Model(cfg) {
       case SVoidT(info) => !undefval.isBottom
       case SFunctionType(info, tparams, params, typ) => {
         for (funLoc <- locset) {
-          for (fid <- heap(funLoc)("@function")._1.funid) {
+          for (fid <- heap(funLoc)("@function").funid) {
             val plen = params.length
-            val alen = heap(funLoc)("length")._1.objval.value.pvalue.numval.getSingle match {
+            val alen = heap(funLoc)("length").objval.value.pvalue.numval.getSingle match {
               case Some(v) => v
               case None => -1
             }
@@ -533,12 +523,12 @@ class TSModel(cfg: CFG) extends Model(cfg) {
             case Some(b) => {
               if (b) {
                 val arr = heap(arrLoc)
-                val length = arr("length")._1.objval.value.pvalue.numval.getSingle match {
+                val length = arr("length").objval.value.pvalue.numval.getSingle match {
                   case Some(v) => v.toInt
                   case None => -1
                 }
                 for (i <- 0 until length) {
-                  if(!checkType(arr(i.toString)._1.objval.value, typ, heap)) {
+                  if(!checkType(arr(i.toString).objval.value, typ, heap)) {
                     return false
                   }
                 }
@@ -561,12 +551,12 @@ class TSModel(cfg: CFG) extends Model(cfg) {
                     val name: String = prop match {
                       case SPropId(info,id) => id.getText
                     }
-                    if(isAbsent(obj(name)._1.objval.value)) {
+                    if(isAbsent(obj(name).objval.value)) {
                       if(!opt) {
                         return false
                       }
                     } else {
-                      if(!checkType(obj(name)._1.objval.value, t, heap)) {
+                      if(!checkType(obj(name).objval.value, t, heap)) {
                         return false
                       }
                     }
@@ -575,12 +565,12 @@ class TSModel(cfg: CFG) extends Model(cfg) {
                     val name: String = prop match {
                       case SPropId(info,id) => id.getText
                     }
-                    if(isAbsent(obj(name)._1.objval.value)){
+                    if(isAbsent(obj(name).objval.value)){
                       if(!opt) {
                         return false
                       }
                     } else {
-                      if(!checkType(obj(name)._1.objval.value, sig, heap)) {
+                      if(!checkType(obj(name).objval.value, sig, heap)) {
                         return false
                       }
                     }
@@ -599,9 +589,9 @@ class TSModel(cfg: CFG) extends Model(cfg) {
       }
       case SCallSig(info, tparams, params, typ) => {
         for (funLoc <- locset) {
-          for (fid <- heap(funLoc)("@function")._1.funid) {
+          for (fid <- heap(funLoc)("@function").funid) {
             val plen = params.length
-            val alen = heap(funLoc)("length")._1.objval.value.pvalue.numval.getSingle match {
+            val alen = heap(funLoc)("length").objval.value.pvalue.numval.getSingle match {
               case Some(v) => v
               case None => -1
             }
@@ -628,12 +618,12 @@ class TSModel(cfg: CFG) extends Model(cfg) {
                         val name: String = prop match {
                           case SPropId(info,id) => id.getText
                         }
-                        if(isAbsent(obj(name)._1.objval.value)) {
+                        if(isAbsent(obj(name).objval.value)) {
                           if(!opt) {
                             return false
                           }
                         } else {
-                          if(!checkType(obj(name)._1.objval.value, t, heap)) {
+                          if(!checkType(obj(name).objval.value, t, heap)) {
                             return false
                           }
                         }
@@ -642,12 +632,12 @@ class TSModel(cfg: CFG) extends Model(cfg) {
                         val name: String = prop match {
                           case SPropId(info,id) => id.getText
                         }
-                        if(isAbsent(obj(name)._1.objval.value)) {
+                        if(isAbsent(obj(name).objval.value)) {
                           if(!opt) {
                             return false
                           }
                         } else {
-                          if(!checkType(obj(name)._1.objval.value, sig, heap)) {
+                          if(!checkType(obj(name).objval.value, sig, heap)) {
                             return false
                           }
                         }
@@ -680,6 +670,7 @@ class TSModel(cfg: CFG) extends Model(cfg) {
       case _ => false
     }
   }
+
   def semantic(sem: Semantics, _heap: Heap, _context: Context, heapExc: Heap, contextExc: Context, cp: ControlPoint, cfg: CFG, funcName: String, _args: CFGExpr): ((Heap, Context),(Heap, Context)) = {
     var heap: Heap = _heap
     var context: Context = _context
@@ -692,12 +683,12 @@ class TSModel(cfg: CFG) extends Model(cfg) {
     for(argLoc <- argLocSet) {
       argsObj = heap(argLoc)
     }
-    val numOfArg:Int = AbsNumber.getUIntSingle(argsObj("length")._1.objval.value.pvalue.numval) match {
+    val numOfArg:Int = AbsNumber.getUIntSingle(argsObj("length").objval.value.pvalue.numval) match {
       case Some(n) => n.toInt
       case None => -1
     }
     val args:List[Value] = Range(0,numOfArg).foldLeft(List[Value]())((_args, k) => {
-      val obj = argsObj(k.toString)._1.objval.value
+      val obj = argsObj(k.toString).objval.value
       _args:+obj
     })
 
@@ -738,7 +729,7 @@ class TSModel(cfg: CFG) extends Model(cfg) {
 
             var argSize: (Int, Int) = (-1, -1)
 
-              for (i <- 0 until params.size()) params.get(i) match {
+              for (i <- 0 until params.size) params.get(i) match {
               case SParam(_, _, _, typ, _, opt, rest) => {
                 if (rest) {
                   hasRest = true
@@ -777,7 +768,6 @@ class TSModel(cfg: CFG) extends Model(cfg) {
                   numOfOptional+=1
                 }
               }
-              case _ =>
             }
 
             if (!hasRest) {

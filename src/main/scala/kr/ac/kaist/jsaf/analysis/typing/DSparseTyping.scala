@@ -30,23 +30,7 @@ import kr.ac.kaist.jsaf.analysis.cfg.LEntry
 import kr.ac.kaist.jsaf.analysis.cfg.LExit
 import kr.ac.kaist.jsaf.analysis.cfg.LExitExc
 import kr.ac.kaist.jsaf.analysis.cfg.InternalError
-import kr.ac.kaist.jsaf.analysis.typing.domain.ContextBot
-import kr.ac.kaist.jsaf.analysis.typing.domain.ContextEmpty
-import kr.ac.kaist.jsaf.analysis.typing.domain.GlobalLoc
-import kr.ac.kaist.jsaf.analysis.typing.domain.HeapBot
-import kr.ac.kaist.jsaf.analysis.typing.domain.Loc
-import kr.ac.kaist.jsaf.analysis.typing.domain.ObjBot
-import kr.ac.kaist.jsaf.analysis.typing.domain.PropValueBot
-import kr.ac.kaist.jsaf.analysis.typing.domain.Recent
-import kr.ac.kaist.jsaf.analysis.typing.domain.SinglePureLocalLoc
-import kr.ac.kaist.jsaf.analysis.typing.domain.StateBot
-import kr.ac.kaist.jsaf.analysis.typing.domain.ValueBot
-import kr.ac.kaist.jsaf.analysis.typing.domain.AbsString
-import kr.ac.kaist.jsaf.analysis.typing.domain.Absent
-import kr.ac.kaist.jsaf.analysis.typing.domain.BoolTrue
-import kr.ac.kaist.jsaf.analysis.typing.domain.DomainPrinter
-import kr.ac.kaist.jsaf.analysis.typing.domain.State
-import kr.ac.kaist.jsaf.analysis.typing.domain.Value
+import kr.ac.kaist.jsaf.analysis.typing.domain._
 import kr.ac.kaist.jsaf.analysis.typing.models.ModelManager
 import kr.ac.kaist.jsaf.analysis.typing.{SemanticsExpr => SE}
 import kr.ac.kaist.jsaf.bug_detector.BugInfo
@@ -112,7 +96,7 @@ class DSparseTyping(_cfg: CFG, quiet: Boolean, locclone: Boolean) extends Typing
           val o1 = heap_sparse(l)
           heap_dense.map.get(l) match {
             case Some(o2) => {
-              val props = o1.map.keySet ++ o2.map.keySet
+              val props = o1.getAllProps++ o2.getAllProps
               props.foreach((prop) => {
                 val pv_1 = o1(prop)
                 val pv_2 = o2(prop)
@@ -153,7 +137,7 @@ class DSparseTyping(_cfg: CFG, quiet: Boolean, locclone: Boolean) extends Typing
 
         val g = exit_heap(GlobalLoc)
         val g_d = exit_heap_d(GlobalLoc)
-        val props = g.map.keySet
+        val props = g.getProps
         (0 to 20).foreach((i) => {
           val result = "__result"+i
           if (props.contains(result)) {
@@ -720,7 +704,7 @@ class DSparseTyping(_cfg: CFG, quiet: Boolean, locclone: Boolean) extends Typing
     if (state._1 <= HeapBot)
       ValueBot
     else
-      state._1(SinglePureLocalLoc)("@exception")._1._2
+      state._1(SinglePureLocalLoc)("@exception")._2
   }
 
   // High-level information computation methods -------------------------------
@@ -742,28 +726,28 @@ class DSparseTyping(_cfg: CFG, quiet: Boolean, locclone: Boolean) extends Typing
    * @return the option of the computed list
    */
   def computePropertyList(state: State, lset: Set[Loc]):
-      Option[(List[(String, Absent)], Boolean, Boolean)] = {
+      Option[(List[(String, AbsBool)], Boolean, Boolean)] = {
     if (state <= StateBot)
       None
     else {
       val h = state._1
       val obj =
         if (lset.size == 0)
-          ObjBot
+          Obj.bottom
         else if (lset.size == 1)
           h(lset.head)
         else
           lset.tail.foldLeft(h(lset.head))((o, l) => o + h(l))
-      val props = obj.getProps.foldLeft[List[(String, Absent)]](List())(
-        (list, p) => (p, obj(p)._2)::list)
+      val props = obj.getProps.foldLeft[List[(String, AbsBool)]](List())(
+        (list, p) => (p, obj.domIn(p))::list)
       System.out.println(obj)
       Some((props,
-        !(obj("@default_number")._1 <= PropValueBot),
-        !(obj("@default_other")._1 <= PropValueBot)))
+        !(obj(Str_default_number) <= PropValueBot),
+        !(obj(Str_default_other) <= PropValueBot)))
     }
   }
 
-  /**
+  /**``
    * Computes the call graph of the analyzed program.
    * The returned graph format is successor edge map from
    * caller instruction (CFGCall or CFGConstruct) to set of callee functions.
@@ -796,8 +780,8 @@ class DSparseTyping(_cfg: CFG, quiet: Boolean, locclone: Boolean) extends Typing
                         (_m, l) =>
                           if (BoolTrue <= Helper.IsCallable(h,l)) {
                             _m.get(i) match {
-                              case None => _m + (i -> h(l)("@function")._1._3.toSet)
-                              case Some(set) => _m + (i -> (set ++ h(l)("@function")._1._3.toSet))
+                              case None => _m + (i -> h(l)("@function")._3.toSet)
+                              case Some(set) => _m + (i -> (set ++ h(l)("@function")._3.toSet))
                             }
                           }
                           else
@@ -813,8 +797,8 @@ class DSparseTyping(_cfg: CFG, quiet: Boolean, locclone: Boolean) extends Typing
                         (_m, l) =>
                           if (BoolTrue <= Helper.HasConstruct(h,l)) {
                             _m.get(i) match {
-                              case None => _m + (i -> h(l)("@construct")._1._3.toSet)
-                              case Some(set) => _m + (i -> (set ++ h(l)("@construct")._1._3.toSet))
+                              case None => _m + (i -> h(l)("@construct")._3.toSet)
+                              case Some(set) => _m + (i -> (set ++ h(l)("@construct")._3.toSet))
                             }
                           }
                           else
@@ -838,8 +822,8 @@ class DSparseTyping(_cfg: CFG, quiet: Boolean, locclone: Boolean) extends Typing
   override def computePrototypeHierarchy(state: State): Map[Loc, Set[Loc]] = {
     state._1.map.foldLeft[Map[Loc, Set[Loc]]](Map())(
       (map, kv) =>
-        if (kv._2.map.contains("@proto"))
-          map + (kv._1 -> kv._2("@proto")._1._1._1._2.toSet)
+        if (BoolTrue <= kv._2.domIn("@proto"))
+          map + (kv._1 -> kv._2("@proto")._1._1._2.toSet)
         else
           map)
 
@@ -855,10 +839,10 @@ class DSparseTyping(_cfg: CFG, quiet: Boolean, locclone: Boolean) extends Typing
    */
   override def getFuncNameByLoc(state:State, loc: Loc): Set[String] = {
     val h = state._1
-    h(loc)("@class")._1._2._1._5.getSingle match {
+    h(loc)("@class")._2._1._5.getSingle match {
       case Some(str) if str =="Function" =>
-        if (h(loc).map.contains("@function")) {
-        val fset = h(loc)("@function")._1._3
+        if (BoolTrue <= h(loc).domIn("@function")) {
+        val fset = h(loc)("@function")._3
         fset.toSet.map((fid) => cfg.getFuncName(fid))
       }
       else

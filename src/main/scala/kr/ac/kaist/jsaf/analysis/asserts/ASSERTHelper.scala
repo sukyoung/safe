@@ -1,5 +1,5 @@
 /*******************************************************************************
-    Copyright (c) 2012-2013, KAIST, S-Core.
+    Copyright (c) 2012-2014, KAIST, S-Core.
     All rights reserved.
 
     Use is subject to license terms.
@@ -91,13 +91,14 @@ object ASSERTHelper {
     }
   }
 
-  def K(op:IROp, v: Value, top_loc: LocSet): (Value, Absent) = {
-    val (pv, loc) = (v._1, v._2)
-    val absUndef = if(UndefTop <= pv._1) AbsentTop else AbsentBot
-    val absNull = if(NullTop <= pv._2) AbsentTop else AbsentBot
-    op.getKind match {
-      case EJSOp.BIN_COMP_EQ_SEQUAL => (v, absUndef)
-      case EJSOp.BIN_COMP_EQ_SNEQUAL => (Value(PValueTop, loc ++ top_loc), AbsentTop)
+  def K(op:IROp, o: Obj, x: AbsString, rv: Value, top_loc: LocSet): Obj = {
+    val (pv, loc) = (rv._1, rv._2)
+    val absUndef = if(UndefTop <= pv._1) true else false
+    val absNull = if(NullTop <= pv._2) true else false
+    val (v, b) =
+      op.getKind match {
+      case EJSOp.BIN_COMP_EQ_SEQUAL => (rv, absUndef)
+      case EJSOp.BIN_COMP_EQ_SNEQUAL => (Value(PValueTop, top_loc), true)
       case EJSOp.BIN_COMP_EQ_EQUAL =>
         val pv1 = if(NullTop <= pv._2) UndefTop else UndefBot + pv._1
         val pv2 = if(UndefTop <= pv._1) NullTop else NullBot + pv._2
@@ -110,10 +111,16 @@ object ASSERTHelper {
         val pv4_3 = str2Num(pv._5)
         val pv4_4 = if(pv._4 <= NaN) NumBot else pv._4
         val pv4 = if(loc.isEmpty) pv4_1 + pv4_2 + pv4_3 + pv4_4 else NumTop
-        (Value(pv1) + Value(pv2) + Value(pv3) + Value(pv4) + Value(StrTop) + Value(loc ++ top_loc), absUndef + absNull)
-      case EJSOp.BIN_COMP_EQ_NEQUAL => (Value(PValueTop, loc ++ top_loc), AbsentTop)
-      case _ => (Value(PValueTop, loc ++ top_loc), AbsentTop)
+        val pv0 = PValue(pv1, pv2, pv3, pv4, StrTop)
+
+        (Value(pv0, top_loc), absUndef || absNull)
+      case EJSOp.BIN_COMP_EQ_NEQUAL => (Value(PValueTop, top_loc), true)
+      case _ => throw new InternalError("impossible case")
     }
+
+    val no = o.update(x, PropValue(ObjectValue(v, BoolTop, BoolTop, BoolTop), FunSetBot))
+    if (b) no.absentTop(x)
+    else no
   }
 
   def str2Num(s: AbsString): AbsNumber = {
@@ -121,8 +128,8 @@ object ASSERTHelper {
   }
 
   def PruneInstanceof(l_obj: Loc, l_fun: Loc, b: AbsBool, h: Heap): Heap = {
-    val L_prototype = h(l_fun)("prototype")._1._1._1._2
-    val L_proto = h(l_obj)("@proto")._1._1._1._2
+    val L_prototype = h(l_fun)("prototype")._1._1._2
+    val L_proto = h(l_obj)(Prop_proto)._1._1._2
     // inheritProto using filter
     /*
     val L1 = L_prototype.filter(l2 => PValue(b) <= Helper.inherit(h, L_proto.head, l2)._1)
@@ -135,14 +142,14 @@ object ASSERTHelper {
     val L2 = L_proto.filter(l1 => PValue(b) <=
                          L_prototype.foldLeft(PValueBot)((_b, l) => _b + Helper.inherit(h, l1, l)._1))
 //    val L2 = L_proto.filter(l1 => PValue(b) <= Helper.inherit(h, l1, L_prototype.head)._1)
-    val H1 = h.update(l_obj, h(l_obj).update("@proto", PropValue(ObjectValue(Value(PValueBot, L2), BoolFalse, BoolFalse, BoolFalse))))
-    val H2 = h.update(l_fun, h(l_fun).update("prototype", PropValue(ObjectValue(Value(PValueBot, L1), BoolFalse, BoolFalse, BoolFalse))))
+    val H1 = h.update(l_obj, h(l_obj).update(Prop_proto, PropValue(ObjectValue(Value(PValueBot, L2), BoolFalse, BoolFalse, BoolFalse))))
+    val H2 = h.update(l_fun, h(l_fun).update(SProp_prototype, PropValue(ObjectValue(Value(PValueBot, L1), BoolFalse, BoolFalse, BoolFalse))))
     H1 <> H2
   }
 
   def DeleteAll(h: Heap, l: Loc, s: AbsString): Heap = {
     val h2 = Helper.Delete(h, l, s)._1
-    val v = h(l)("@proto")._1._1._1
+    val v = h(l)(Prop_proto)._1._1
     if (v._2.size == 1 && v._1._2 <= NullBot) {
       DeleteAll(h2, v._2.head, s)
     }

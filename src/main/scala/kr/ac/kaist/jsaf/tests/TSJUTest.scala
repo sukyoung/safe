@@ -1,5 +1,5 @@
 /******************************************************************************
-    Copyright (c) 2013, KAIST.
+    Copyright (c) 2013-2014, KAIST.
     All rights reserved.
 
     Use is subject to license terms.
@@ -93,6 +93,7 @@ object TSJUTest extends TestCaseWrapper {
             System.out.println("Failed testing parse/unparse: " + fileName)
 
           // test printing & unprinting
+          /*
           ASTIO.writeJavaAst(orgPgm, fileName+".tts")
           val result = ASTIO.readJavaAst(fileName+".tts")
           if (result.isSome) {
@@ -100,6 +101,7 @@ object TSJUTest extends TestCaseWrapper {
             if (!orgStr.equals(readStr))
               System.out.println("Failed testing print/unprint: " + fileName)
           } else System.out.println("Error! Reading the " + fileName + ".tts file failed!")
+	  */
         } finally {
           try {
             Files.rm(fileName+".log")

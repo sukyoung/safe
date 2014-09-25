@@ -17,6 +17,7 @@ import kr.ac.kaist.jsaf.analysis.typing._
 import kr.ac.kaist.jsaf.analysis.typing.{PreSemanticsExpr => PSE, AccessHelper=>AH}
 import kr.ac.kaist.jsaf.analysis.typing.AddressManager._
 import kr.ac.kaist.jsaf.Shell
+import kr.ac.kaist.jsaf.ShellParameters
 
 object BuiltinFunction extends ModelData {
 
@@ -40,7 +41,7 @@ object BuiltinFunction extends ModelData {
     ("@proto",               AbsConstValue(PropValue(ObjectValue(ObjProtoLoc, F, F, F)))),
     ("@extensible",          AbsConstValue(PropValue(BoolTrue))),
     ("@function",            AbsInternalFunc("Function.prototype")),
-    ("constructor",          AbsConstValue(PropValue(ObjectValue(FunctionProtoLoc, T, F, T)))),
+    ("constructor",          AbsConstValue(PropValue(ObjectValue(ConstLoc, T, F, T)))),
     ("length",               AbsConstValue(PropValue(ObjectValue(AbsNumber.alpha(0), F, F, F)))),
     ("toString",             AbsBuiltinFunc("Function.prototype.toString", 0)),
     ("apply",                AbsBuiltinFuncAftercall("Function.prototype.apply", 2)),
@@ -59,7 +60,7 @@ object BuiltinFunction extends ModelData {
     Map(
       ("Function.constructor"-> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           // update "length" property to this object.
           val h_1 = lset_this.foldLeft(HeapBot)((_h,l) =>
             _h + Helper.PropStore(h, l, AbsString.alpha("length"), Value(NumTop)))
@@ -71,18 +72,42 @@ object BuiltinFunction extends ModelData {
         })),
       ("Function.prototype.toString"-> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           val es =
-            if (lset_this.exists((l) => h(l)("@class")._1._2._1._5 != AbsString.alpha("Function")))
+            if (lset_this.exists((l) => h(l)("@class")._2._1._5 != AbsString.alpha("Function")))
               Set[Exception](TypeError)
             else
               ExceptionBot
           val (h_e, ctx_e) = Helper.RaiseException(h, ctx, es)
-          ((Helper.ReturnStore(h, Value(StrTop)), ctx), (he + h_e, ctxe + ctx_e))
+          
+          // web bug-detector
+          if(Shell.params.command == ShellParameters.CMD_WEBAPP_BUG_DETECTOR && es == ExceptionBot){
+            val strval = lset_this.foldLeft(StrBot)((s, l_f) => {
+              val o_f = h(l_f)
+              o_f("@function")._3.foldLeft(s)((_s, fid) => {
+                if(cfg.isUserFunction(fid)){ 
+                  val ss = "function " + cfg.getFuncName(fid) + "() { }"
+                  _s + AbsString.alpha(ss)
+                }
+                else {
+                  val fullfunname = cfg.getFuncName(fid)
+                  val funnames = fullfunname.split('.')
+                  val funname = if(funnames.size == 0) fullfunname
+                                else funnames(funnames.size -1)
+                  val ss = "function " + funname + "() {\n    [native code]\n}"
+                  _s + AbsString.alpha(ss)
+                }
+              
+              })
+            })
+            ((Helper.ReturnStore(h, Value(strval)), ctx), (he + h_e, ctxe + ctx_e))
+          }
+          else
+            ((Helper.ReturnStore(h, Value(StrTop)), ctx), (he + h_e, ctxe + ctx_e))
         })),
       ("Function.prototype.apply"-> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -96,7 +121,7 @@ object BuiltinFunction extends ModelData {
           val (h_1, ctx_1) = (h, ctx) // Helper.Oldify(h, ctx, addr1)
           val (h_2, ctx_2) = Helper.Oldify(h_1, ctx_1, addr2)
           val (h_3, ctx_3) = Helper.Oldify(h_2, ctx_2, addr3)
-          val lset_this = h_3(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h_3(SinglePureLocalLoc)("@this")._2._2
 
           // 1.
 //          val cond = lset_this.exists((l) => BoolFalse <= Helper.IsCallable(h_3,l))
@@ -114,7 +139,7 @@ object BuiltinFunction extends ModelData {
           val v_arg = getArgValue(h_3, ctx_3, args, "1")
           val o_arg1 =
             if (v_arg._1._1 </ UndefBot || v_arg._1._2 </ NullBot)  Helper.NewArgObject(AbsNumber.alpha(0))
-            else  ObjBot
+            else  Obj.bottom
 
           // 3.
           val v_arg1 = Value(PValue(UndefBot, NullBot, v_arg._1._3, v_arg._1._4, v_arg._1._5), v_arg._2)
@@ -126,10 +151,10 @@ object BuiltinFunction extends ModelData {
 
           // 4. ~ 8. create Arguments object with argArray
           val o_arg2 =
-            v_arg2._2.foldLeft(ObjBot)((_o, l) => {
+            v_arg2._2.foldLeft(Obj.bottom)((_o, l) => {
               val n_arglen = Operator.ToUInt32(Helper.Proto(h_3, l, AbsString.alpha("length")))
               _o + (n_arglen.getAbsCase match {
-                case AbsBot => ObjBot
+                case AbsBot => Obj.bottom
                 case _ => AbsNumber.getUIntSingle(n_arglen) match {
                   case Some(n_len) =>
                     val o = Helper.NewArgObject(AbsNumber.alpha(n_len))
@@ -154,9 +179,9 @@ object BuiltinFunction extends ModelData {
               o_arg3_
             } else {
               val lset_target_args = lset_tarf.foldLeft(LBot)((lset, l_tf) => {
-                h_3(l_tf)("@bound_args")._1._2._2 ++ lset
+                h_3(l_tf)("@bound_args")._2._2 ++ lset
               })
-              val target_args = lset_target_args.foldLeft(ObjBot)((obj, l_ta) => obj + h_3(l_ta))
+              val target_args = lset_target_args.foldLeft(Obj.bottom)((obj, l_ta) => obj + h_3(l_ta))
               Helper.concat(target_args, o_arg3_)
             }
           //////////////////////////////////////////////////
@@ -184,8 +209,8 @@ object BuiltinFunction extends ModelData {
             // check whether there is a bound function or not
             lset_tarf.foreach((l_f) => {
               val o_f = h_5(l_f)
-              val l_this = o_f("@bound_this")._1._2._2
-              val (fids, scope_locs) = o_f("@target_function")._1._2._2.foldLeft((FunSetBot, LocSetBot))((fidslocs, l) => ((fidslocs._1 ++ h_5(l)("@function")._1._3, fidslocs._2 ++ h_5(l)("@scope")._1._2._2)))
+              val l_this = o_f("@bound_this")._2._2
+              val (fids, scope_locs) = o_f("@target_function")._2._2.foldLeft((FunSetBot, LocSetBot))((fidslocs, l) => ((fidslocs._1 ++ h_5(l)("@function")._3, fidslocs._2 ++ h_5(l)("@scope")._2._2)))
 //              o_f("@target_function")._1._3.foreach((fid) => {
               fids.foreach((fid) => {
                 cc_caller.NewCallContext(h, cfg, fid, l_r2, l_this).foreach((pair) => {
@@ -193,8 +218,8 @@ object BuiltinFunction extends ModelData {
                   val o_new2 = o_new.
                     update(cfg.getArgumentsName(fid),
                     PropValue(ObjectValue(v_arg3, BoolTrue, BoolFalse, BoolFalse))).
-                    update("@scope", PropValue(ObjectValueBot, Value(scope_locs), FunSetBot))
-//                    update("@scope", o_f("@scope")._1)
+                    update("@scope", PropValue(ObjectValue(Value(scope_locs), BoolBot, BoolBot, BoolBot), FunSetBot))
+//                    update("@scope", o_f("@scope"))
                   sem.addCallEdge(cp, ((fid,LEntry), cc_new), ContextEmpty, o_new2)
                   sem.addReturnEdge(((fid,LExit), cc_new), cp_aftercall, ctx_5, o_old)
                   sem.addReturnEdge(((fid, LExitExc), cc_new), cp_aftercatch, ctx_5, o_old)
@@ -205,13 +230,13 @@ object BuiltinFunction extends ModelData {
             
             lset_f.foreach((l_f) => {
               val o_f = h_5(l_f)
-              o_f("@function")._1._3.foreach((fid) => {
+              o_f("@function")._3.foreach((fid) => {
                 cc_caller.NewCallContext(h, cfg, fid, l_r2, callee_this._2).foreach((pair) => {
                   val (cc_new, o_new) = pair
                   val o_new2 = o_new.
                     update(cfg.getArgumentsName(fid),
                     PropValue(ObjectValue(v_arg3, BoolTrue, BoolFalse, BoolFalse))).
-                    update("@scope", o_f("@scope")._1)
+                    update("@scope", o_f("@scope"))
                   sem.addCallEdge(cp, ((fid,LEntry), cc_new), ContextEmpty, o_new2)
                   sem.addReturnEdge(((fid,LExit), cc_new), cp_aftercall, ctx_5, o_old)
                   sem.addReturnEdge(((fid, LExitExc), cc_new), cp_aftercatch, ctx_5, o_old)
@@ -231,7 +256,7 @@ object BuiltinFunction extends ModelData {
           }})),
       ("Function.prototype.call"-> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -244,7 +269,7 @@ object BuiltinFunction extends ModelData {
           val l_r2 = addrToLoc(addr2_1, Recent) // new purelocal
           val (h_1, ctx_1) = Helper.Oldify(h, ctx, addr1)
           val (h_2, ctx_2) = Helper.Oldify(h_1, ctx_1, addr2_1)
-          val lset_this = h_2(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h_2(SinglePureLocalLoc)("@this")._2._2
 
           // 1.
 //          val cond = lset_this.exists((l) => BoolFalse <= Helper.IsCallable(h_2,l))
@@ -269,7 +294,7 @@ object BuiltinFunction extends ModelData {
                 _o.update(AbsString.alpha(i.toString), PropValue(ObjectValue(getArgValue(h_2, ctx_2, args, (i+1).toString), BoolTrue, BoolTrue, BoolTrue))))
               case None =>
                 if (np <= NumBot)
-                  ObjBot
+                  Obj.bottom
                 else
                   o_arg.update(NumStr, PropValue(ObjectValue(getArgValueAbs(h_2, ctx_2, args, NumStr), BoolTrue, BoolTrue, BoolTrue)))
             }
@@ -280,9 +305,9 @@ object BuiltinFunction extends ModelData {
               o_arg_1_
             } else {
               val lset_target_args = lset_tarf.foldLeft(LBot)((lset, l_tf) => {
-                h_2(l_tf)("@bound_args")._1._2._2 ++ lset
+                h_2(l_tf)("@bound_args")._2._2 ++ lset
               })
-              val target_args = lset_target_args.foldLeft(ObjBot)((obj, l_ta) => obj + h_2(l_ta))
+              val target_args = lset_target_args.foldLeft(Obj.bottom)((obj, l_ta) => obj + h_2(l_ta))
               Helper.concat(target_args, o_arg_1_)
             }
           //////////////////////////////////////////////////
@@ -306,8 +331,8 @@ object BuiltinFunction extends ModelData {
           // check whether there is a bound function or not
           lset_tarf.foreach((l_f) => {
             val o_f = h_4(l_f)
-            val l_this = o_f("@bound_this")._1._2._2
-            val (fids, scope_locs) = o_f("@target_function")._1._2._2.foldLeft((FunSetBot, LocSetBot))((fidslocs, l) => ((fidslocs._1 ++ h_4(l)("@function")._1._3, fidslocs._2 ++ h_4(l)("@scope")._1._2._2)))
+            val l_this = o_f("@bound_this")._2._2
+            val (fids, scope_locs) = o_f("@target_function")._2._2.foldLeft((FunSetBot, LocSetBot))((fidslocs, l) => ((fidslocs._1 ++ h_4(l)("@function")._3, fidslocs._2 ++ h_4(l)("@scope")._2._2)))
 //            o_f("@target_function")._1._3.foreach((fid) => {
             fids.foreach((fid) => {
               cc_caller.NewCallContext(h, cfg, fid, l_r2, l_this, Some(addr2)).foreach((pair) => {
@@ -315,8 +340,8 @@ object BuiltinFunction extends ModelData {
                 val o_new2 = o_new.
                   update(cfg.getArgumentsName(fid),
                   PropValue(ObjectValue(v_arg, BoolTrue, BoolFalse, BoolFalse))).
-//                  update("@scope", o_f("@scope")._1)
-                    update("@scope", PropValue(ObjectValueBot, Value(scope_locs), FunSetBot))
+//                  update("@scope", o_f("@scope"))
+                    update("@scope", PropValue(ObjectValue(Value(scope_locs), BoolBot, BoolBot, BoolBot), FunSetBot))
                 sem.addCallEdge(cp, ((fid,LEntry), cc_new), ContextEmpty, o_new2)
                 sem.addReturnEdge(((fid,LExit), cc_new), cp_aftercall, ctx_4, o_old)
                 sem.addReturnEdge(((fid, LExitExc), cc_new), cp_aftercatch, ctx_4, o_old)
@@ -326,13 +351,13 @@ object BuiltinFunction extends ModelData {
           //////////////////////////////////////////////////
           lset_f.foreach((l_f) => {
             val o_f = h_4(l_f)
-            o_f("@function")._1._3.foreach((fid) => {
+            o_f("@function")._3.foreach((fid) => {
               cc_caller.NewCallContext(h, cfg, fid, l_r2, callee_this._2, Some(addr2)).foreach((pair) => {
                 val (cc_new, o_new) = pair
                 val o_new2 = o_new.
                   update(cfg.getArgumentsName(fid),
                   PropValue(ObjectValue(v_arg, BoolTrue, BoolFalse, BoolFalse))).
-                  update("@scope", o_f("@scope")._1)
+                  update("@scope", o_f("@scope"))
                 sem.addCallEdge(cp, ((fid,LEntry), cc_new), ContextEmpty, o_new2)
                 sem.addReturnEdge(((fid,LExit), cc_new), cp_aftercall, ctx_4, o_old)
                 sem.addReturnEdge(((fid, LExitExc), cc_new), cp_aftercatch, ctx_4, o_old)
@@ -348,7 +373,7 @@ object BuiltinFunction extends ModelData {
         })),
       ("Function.prototype.bind"-> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -359,7 +384,7 @@ object BuiltinFunction extends ModelData {
           val (h_1, ctx_1) = Helper.Oldify(h, ctx, addr1)
           val (h_2, ctx_2) = Helper.Oldify(h_1, ctx_1, addr2)
 
-          val lset_this = h_2(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h_2(SinglePureLocalLoc)("@this")._2._2
 
           // 1. && 2.
           val cond = lset_this.exists((l) => !((BoolFalse <= (Helper.IsCallable(h_2,l))) || (BoolFalse <=  Helper.IsBound(h_2, l))))
@@ -370,16 +395,16 @@ object BuiltinFunction extends ModelData {
           val lset_f = lset_this.filter((l) => BoolTrue <= Helper.IsCallable(h_2,l))
           val lset_tarf = lset_this.filter((l) => BoolTrue <= Helper.IsBound(h_2,l))
           // compute target function fids
-//          val target_fids = (lset_f++lset_tarf).foldLeft(FunSetBot)((fidset, l_f) => h_2(l_f)("@function")._1._3 ++ h_2(l_f)("@target_function")._1._3 ++ fidset)
+//          val target_fids = (lset_f++lset_tarf).foldLeft(FunSetBot)((fidset, l_f) => h_2(l_f)("@function")._3 ++ h_2(l_f)("@target_function")._1._3 ++ fidset)
           // compute target locations which is function object
           val target_functions_locs = lset_f++lset_tarf.foldLeft(LocSetBot)((locs, l_f) => {
-            h_2(l_f)("@target_function")._1._2._2 ++
+            h_2(l_f)("@target_function")._2._2 ++
             locs
           })
           
           // 3. new internal list of all of the argument values
           // remove this binding property('0') from length
-          val origin_len = (lset_f ++ lset_tarf).foldLeft(ValueBot)((v_len, l_f) => h_2(l_f)("length")._1._1._1 + v_len)
+          val origin_len = (lset_f ++ lset_tarf).foldLeft(ValueBot)((v_len, l_f) => h_2(l_f)("length")._1._1 + v_len)
           val len = 
               Operator.bopMinus(getArgValue(h_2, ctx_2, args, "length"), Value(AbsNumber.alpha(1)))
           val np = len._1._4
@@ -388,8 +413,8 @@ object BuiltinFunction extends ModelData {
           // compute previously bounded "@bound_args" by bind function
           val prev_bound_arg =
             if(!lset_tarf.isEmpty) {
-              lset_tarf.foldLeft(ObjBot)((obj, l_f) => {
-                h_2(l_f)("@bound_args")._1._2._2.foldLeft(obj)((obj_, l_arg) => obj_ + h_2(l_arg))
+              lset_tarf.foldLeft(Obj.bottom)((obj, l_f) => {
+                h_2(l_f)("@bound_args")._2._2.foldLeft(obj)((obj_, l_arg) => obj_ + h_2(l_arg))
               })
             }
             else {
@@ -403,7 +428,7 @@ object BuiltinFunction extends ModelData {
                 _o.update(AbsString.alpha(i.toString), PropValue(ObjectValue(getArgValue(h_2, ctx_2, args, (i+1).toString), BoolTrue, BoolTrue, BoolTrue))))
               case None =>
                 if (np <= NumBot)
-                  ObjBot
+                  Obj.bottom
                 else
                   o_arg.update(NumStr, PropValue(ObjectValue(getArgValueAbs(h_2, ctx_2, args, NumStr), BoolTrue, BoolTrue, BoolTrue)))
             }
@@ -419,9 +444,9 @@ object BuiltinFunction extends ModelData {
 
           // 4. F be a new native ECAMScript object
           // make bound function object 7~15
-          val o_f = ObjEmpty.
+          val o_f = Obj.empty.
 //                        update("@target_function", PropValue(ObjectValueBot, ValueBot, target_fids)). // 7. [[TargetFunction]]
-                        update("@target_function", PropValue(ObjectValueBot, Value(PValueBot, target_functions_locs), FunSetBot)). // 7. [[TargetFunction]]
+                        update("@target_function", PropValue(ObjectValue(Value(PValueBot, target_functions_locs), BoolBot, BoolBot, BoolBot), FunSetBot)). // 7. [[TargetFunction]]
                         update("@bound_this", PropValue(v_this)). // 8. [[BoundThis]]
                         update("@bound_args", PropValue(v_arg)). // 9. [[BoundArgs]]
                         update("@class", PropValue(AbsString.alpha("Function"))). // 10. [[Class]]
@@ -445,7 +470,7 @@ object BuiltinFunction extends ModelData {
       ("Function.constructor" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
           val PureLocalLoc = cfg.getPureLocal(cp)
-          val lset_this = h(PureLocalLoc)("@this")._1._2._2
+          val lset_this = h(PureLocalLoc)("@this")._2._2
           // update "length" property to this object.
           val h_1 = lset_this.foldLeft(HeapBot)((_h,l) =>
             _h + PreHelper.PropStore(h, l, AbsString.alpha("length"), Value(NumTop)))
@@ -459,9 +484,9 @@ object BuiltinFunction extends ModelData {
       ("Function.prototype.toString"-> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
           val PureLocalLoc = cfg.getPureLocal(cp)
-          val lset_this = h(PureLocalLoc)("@this")._1._2._2
+          val lset_this = h(PureLocalLoc)("@this")._2._2
           val es =
-            if (lset_this.exists((l) => h(l)("@class")._1._2._1._5 != AbsString.alpha("Function")))
+            if (lset_this.exists((l) => h(l)("@class")._2._1._5 != AbsString.alpha("Function")))
               Set[Exception](TypeError)
             else
               ExceptionBot
@@ -471,7 +496,7 @@ object BuiltinFunction extends ModelData {
       ("Function.prototype.apply" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
           val PureLocalLoc = cfg.getPureLocal(cp)
-          val lset_env = h(PureLocalLoc)("@env")._1._2._2
+          val lset_env = h(PureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -485,7 +510,7 @@ object BuiltinFunction extends ModelData {
           val (h_1, ctx_1) = PreHelper.Oldify(h, ctx, addr1)
           val (h_2, ctx_2) = PreHelper.Oldify(h_1, ctx_1, addr2)
           val (h_3, ctx_3) = PreHelper.Oldify(h_2, ctx_2, addr3)
-          val lset_this = h_3(PureLocalLoc)("@this")._1._2._2
+          val lset_this = h_3(PureLocalLoc)("@this")._2._2
 
           // 1.
           val cond = lset_this.exists((l) => BoolFalse <= PreHelper.IsCallable(h_3,l))
@@ -498,7 +523,7 @@ object BuiltinFunction extends ModelData {
           val v_arg = getArgValue_pre(h_3, ctx_3, args, "1", PureLocalLoc)
           val o_arg1 =
             if (v_arg._1._1 </ UndefBot || v_arg._1._2 </ NullBot)  PreHelper.NewArgObject(AbsNumber.alpha(0))
-            else  ObjBot
+            else  Obj.bottom
 
           // 3.
           val v_arg1 = Value(PValue(UndefBot, NullBot, v_arg._1._3, v_arg._1._4, v_arg._1._5), v_arg._2)
@@ -510,10 +535,10 @@ object BuiltinFunction extends ModelData {
 
           // 4. ~ 8. create Arguments object with argArray
           val o_arg2 =
-            v_arg2._2.foldLeft(ObjBot)((_o, l) => {
+            v_arg2._2.foldLeft(Obj.bottom)((_o, l) => {
               val n_arglen = Operator.ToUInt32(PreHelper.Proto(h_3, l, AbsString.alpha("length")))
               _o + (n_arglen.getAbsCase match {
-                case AbsBot => ObjBot
+                case AbsBot => Obj.bottom
                 case _ => AbsNumber.getUIntSingle(n_arglen) match {
                   case Some(n_len) =>
                     val o = PreHelper.NewArgObject(AbsNumber.alpha(n_len))
@@ -548,13 +573,13 @@ object BuiltinFunction extends ModelData {
           val cp_aftercatch = (n_aftercatch, cc_caller)
           lset_f.foreach((l_f) => {
             val o_f = h_5(l_f)
-            o_f("@function")._1._3.foreach((fid) => {
+            o_f("@function")._3.foreach((fid) => {
               cc_caller.NewCallContext(h, cfg, fid, l_r2, callee_this._2).foreach((pair) => {
                 val (cc_new, o_new) = pair
                 val o_new2 = o_new.
                   update(cfg.getArgumentsName(fid),
                   PropValue(ObjectValue(v_arg3, BoolTrue, BoolFalse, BoolFalse))).
-                  update("@scope", o_f("@scope")._1)
+                  update("@scope", o_f("@scope"))
                 sem.addCallEdge(cp, ((fid,LEntry), cc_new), ContextEmpty, o_new2)
                 sem.addReturnEdge(((fid,LExit), cc_new), cp_aftercall, ctx_5, o_old)
                 sem.addReturnEdge(((fid, LExitExc), cc_new), cp_aftercatch, ctx_5, o_old)
@@ -573,7 +598,7 @@ object BuiltinFunction extends ModelData {
       ("Function.prototype.call" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
           val PureLocalLoc = cfg.getPureLocal(cp)
-          val lset_env = h(PureLocalLoc)("@env")._1._2._2
+          val lset_env = h(PureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -585,7 +610,7 @@ object BuiltinFunction extends ModelData {
           val l_r2 = addrToLoc(addr2, Recent)
           val (h_1, ctx_1) = PreHelper.Oldify(h, ctx, addr1)
           val (h_2, ctx_2) = PreHelper.Oldify(h_1, ctx_1, addr2)
-          val lset_this = h_2(PureLocalLoc)("@this")._1._2._2
+          val lset_this = h_2(PureLocalLoc)("@this")._2._2
 
           // 1.
           val cond = lset_this.exists((l) => BoolFalse <= PreHelper.IsCallable(h_2,l))
@@ -606,7 +631,7 @@ object BuiltinFunction extends ModelData {
                 _o.update(AbsString.alpha(i.toString), PropValue(ObjectValue(getArgValue_pre(h_2, ctx_2, args, (i+1).toString, PureLocalLoc), BoolTrue, BoolTrue, BoolTrue))))
               case None =>
                 val argLocSet = PSE.V(args, h, ctx, PureLocalLoc)._1._2
-                argLocSet.foldLeft(o_arg)((_o, l) => _o.update(NumStr, h_2(l)(NumStr)._1))
+                argLocSet.foldLeft(o_arg)((_o, l) => _o.update(NumStr, h_2(l)(NumStr)))
             }
           val h_3 = h_2.update(l_r1, o_arg_1)
           val v_arg = Value(l_r1)
@@ -626,13 +651,13 @@ object BuiltinFunction extends ModelData {
           val cp_aftercatch = (n_aftercatch, cc_caller)
           lset_f.foreach((l_f) => {
             val o_f = h_4(l_f)
-            o_f("@function")._1._3.foreach((fid) => {
+            o_f("@function")._3.foreach((fid) => {
               cc_caller.NewCallContext(h, cfg, fid, l_r2, callee_this._2).foreach((pair) => {
                 val (cc_new, o_new) = pair
                 val o_new2 = o_new.
                   update(cfg.getArgumentsName(fid),
                   PropValue(ObjectValue(v_arg, BoolTrue, BoolFalse, BoolFalse))).
-                  update("@scope", o_f("@scope")._1)
+                  update("@scope", o_f("@scope"))
                 sem.addCallEdge(cp, ((fid,LEntry), cc_new), ContextEmpty, o_new2)
                 sem.addReturnEdge(((fid,LExit), cc_new), cp_aftercall, ctx_4, o_old)
                 sem.addReturnEdge(((fid, LExitExc), cc_new), cp_aftercatch, ctx_4, o_old)
@@ -655,7 +680,7 @@ object BuiltinFunction extends ModelData {
     Map(
       ("Function.constructor" -> (
         (h: Heap, ctx: Context, cfg: CFG, fun: String, args: CFGExpr, fid: FunctionId) => {
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           lset_this.foldLeft(LPBot)((lpset, l) =>
             lpset ++ AH.PropStore_def(h, l, AbsString.alpha("length")))
         })),
@@ -665,9 +690,9 @@ object BuiltinFunction extends ModelData {
         })),
       ("Function.prototype.toString" -> (
         (h: Heap, ctx: Context, cfg: CFG, fun: String, args: CFGExpr, fid: FunctionId) => {
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           val es =
-            if (lset_this.exists((l) => h(l)("@class")._1._2._1._5 != AbsString.alpha("Function")))
+            if (lset_this.exists((l) => h(l)("@class")._2._1._5 != AbsString.alpha("Function")))
               Set[Exception](TypeError)
             else
               ExceptionBot
@@ -675,8 +700,8 @@ object BuiltinFunction extends ModelData {
         })),
       ("Function.prototype.apply" -> (
         (h: Heap, ctx: Context, cfg: CFG, fun: String, args: CFGExpr, fid: FunctionId) => {
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           //if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           //val addr1 = cfg.getAPIAddress(addr_env, 0)
@@ -736,8 +761,8 @@ object BuiltinFunction extends ModelData {
         })),
       ("Function.prototype.call" -> (
         (h: Heap, ctx: Context, cfg: CFG, fun: String, args: CFGExpr, fid: FunctionId) => {
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           //if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           //val addr_env = set_addr.head
@@ -788,7 +813,7 @@ object BuiltinFunction extends ModelData {
     Map(
       ("Function.constructor" -> (
         (h: Heap, ctx: Context, cfg: CFG, fun: String, args: CFGExpr, fid: FunctionId) => {
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           lset_this.foldLeft(LPBot)((lpset, l) =>
             lpset ++ AH.PropStore_use(h, l, AbsString.alpha("length"))) + (SinglePureLocalLoc, "@this")
         })),
@@ -798,9 +823,9 @@ object BuiltinFunction extends ModelData {
         })),
       ("Function.prototype.toString" -> (
         (h: Heap, ctx: Context, cfg: CFG, fun: String, args: CFGExpr, fid: FunctionId) => {
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           val es =
-            if (lset_this.exists((l) => h(l)("@class")._1._2._1._5 != AbsString.alpha("Function")))
+            if (lset_this.exists((l) => h(l)("@class")._2._1._5 != AbsString.alpha("Function")))
               Set[Exception](TypeError)
             else
               ExceptionBot
@@ -810,8 +835,8 @@ object BuiltinFunction extends ModelData {
         })),
       ("Function.prototype.apply" -> (
         (h: Heap, ctx: Context, cfg: CFG, fun: String, args: CFGExpr, fid: FunctionId) => {
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           //if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           //val addr1 = cfg.getAPIAddress(addr_env, 0)
@@ -881,8 +906,8 @@ object BuiltinFunction extends ModelData {
         })),
       ("Function.prototype.call" -> (
         (h: Heap, ctx: Context, cfg: CFG, fun: String, args: CFGExpr, fid: FunctionId) => {
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           //if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           //val addr1 = cfg.getAPIAddress(addr_env, 0)

@@ -29,6 +29,7 @@ object XMLHttpRequest extends DOM {
   /* predefined locations */
   val loc_cons = newSystemRecentLoc(name + "Cons")
   val loc_proto = newSystemRecentLoc(name + "Proto")
+  val loc_ins = newSystemRecentLoc(name + "Ins")
 
   /* constructor */
   private val prop_cons: List[(String, AbsProperty)] = List(
@@ -77,7 +78,7 @@ object XMLHttpRequest extends DOM {
       // constructor
       ("XMLHttpRequest.constructor" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {           
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
          
           // create a new XMLHttpRequest Object
           val h_1 = lset_this.foldLeft(h)((_h, l) => {
@@ -115,7 +116,7 @@ object XMLHttpRequest extends DOM {
           val method = Helper.toString(Helper.toPrimitive_better(h, getArgValue(h, ctx, args, "0")))
           val url = Helper.toString(Helper.toPrimitive_better(h, getArgValue(h, ctx, args, "1")))
           if(method </ StrBot && method </ StrBot) {
-            val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+            val lset_this = h(SinglePureLocalLoc)("@this")._2._2
             val h_1 = lset_this.foldLeft(h)((_h, l) => {
               val newobj = _h(l).update(
                  "readyState", PropValue(ObjectValue(AbsNumber.alpha(1), T, T, T))).update(
@@ -149,7 +150,7 @@ object XMLHttpRequest extends DOM {
           val method = Helper.toString(Helper.toPrimitive_better(h, getArgValue(h, ctx, args, "0")))
           val url = Helper.toString(Helper.toPrimitive_better(h, getArgValue(h, ctx, args, "1")))
           if(method </ StrBot && method </ StrBot) {
-            val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+            val lset_this = h(SinglePureLocalLoc)("@this")._2._2
             val h_1 = lset_this.foldLeft(h)((_h, l) => {
               val newobj = _h(l).update(
                  "readyState", PropValue(ObjectValue(UInt, T, T, T))).update(

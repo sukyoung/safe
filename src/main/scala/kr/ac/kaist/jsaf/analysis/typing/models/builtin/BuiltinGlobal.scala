@@ -8,7 +8,7 @@
   ******************************************************************************/
 package kr.ac.kaist.jsaf.analysis.typing.models.builtin
 
-import kr.ac.kaist.jsaf.Shell
+import kr.ac.kaist.jsaf.{Shell, ShellParameters}
 import kr.ac.kaist.jsaf.analysis.cfg.{CFGExpr, CFG, FunctionId}
 import kr.ac.kaist.jsaf.analysis.typing.domain._
 import kr.ac.kaist.jsaf.analysis.typing.domain.{BoolFalse => F, BoolTrue => T}
@@ -22,6 +22,10 @@ import kr.ac.kaist.jsaf.nodes_util.NodeUtil
 import kr.ac.kaist.jsaf.utils.uri.URIHandling
 
 object BuiltinGlobal extends ModelData {
+  val quiet =
+    if(Shell.params.command == ShellParameters.CMD_WEBAPP_BUG_DETECTOR)
+      true
+    else false
 
   //val GlobalLoc = newPreDefLoc("Global", Recent)
 
@@ -69,12 +73,12 @@ object BuiltinGlobal extends ModelData {
   )
 
   def getInitList(): List[(Loc, List[(String, AbsProperty)])] = List((GlobalLoc, prop_global))
-
+  
   def getSemanticMap(): Map[String, SemanticFun] = {
     Map(
       ("Global.eval" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          System.out.println("* Warning: the 'Global.eval' call is detected during analysis, analysis results may not be sound.")
+          if (!quiet) System.out.println("* Warning: the 'Global.eval' call is detected during analysis, analysis results may not be sound.")
           // arguments
           val argv = getArgValue(h, ctx, args, "0")
           if(argv._1._5</StrBot){
@@ -88,14 +92,14 @@ object BuiltinGlobal extends ModelData {
                 case _ => "OtherStr"
               }
             }
-            System.out.println("* Warning: the argument of 'Global.eval' is in the below ...")           
-            System.out.println(message)
+            if (!quiet) System.out.println("* Warning : the argument of 'Global.eval' is in the below ...")           
+            if (!quiet) System.out.println(message)
             // unsound
             ((h, ctx), (he, ctxe))
           }
           else {
-            System.out.println("* Warning: the argument of 'Global.eval' is a non-string")           
-            System.out.println("* The argument is " + DomainPrinter.printValue(argv))           
+            if (!quiet) System.out.println("* Warning: the argument of 'Global.eval' is a non-string")           
+            if (!quiet) System.out.println("* The argument is " + DomainPrinter.printValue(argv))           
             ((Helper.ReturnStore(h, argv), ctx), (he, ctxe))
           }
         })

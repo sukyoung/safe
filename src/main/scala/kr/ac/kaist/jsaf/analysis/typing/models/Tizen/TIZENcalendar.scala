@@ -68,7 +68,7 @@ object TIZENCalendar extends Tizen {
         )),
       ("tizen.Calendar.add" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -80,7 +80,7 @@ object TIZENCalendar extends Tizen {
           val es_1 =
             if (b_1._1._3 <= F) Set[WebAPIException](TypeMismatchError)
             else TizenHelper.TizenExceptionBot
-          val o_new = ObjEmpty.
+          val o_new = Obj.empty.
             update("@class", PropValue(AbsString.alpha("Object"))).
             update("@proto", PropValue(ObjectValue(Value(TIZENCalendarEventId.loc_proto), F, F, F))).
             update("@extensible", PropValue(T)).
@@ -97,7 +97,7 @@ object TIZENCalendar extends Tizen {
         )),
       ("tizen.Calendar.addBatch" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -112,7 +112,7 @@ object TIZENCalendar extends Tizen {
           val (h_3, ctx_3) = Helper.Oldify(h_2, ctx_2, addr3)
           val v_1 = getArgValue(h_3, ctx_3, args, "0")
           val n_arglen = Operator.ToUInt32(getArgValue(h_3, ctx_3, args, "length"))
-          val o_new = ObjEmpty.
+          val o_new = Obj.empty.
             update("@class", PropValue(AbsString.alpha("Object"))).
             update("@proto", PropValue(ObjectValue(Value(TIZENCalendarEventId.loc_proto), F, F, F))).
             update("@extensible", PropValue(T)).
@@ -142,7 +142,7 @@ object TIZENCalendar extends Tizen {
                   (h__, es__)
                 }
                 case _ => {
-                  val vi = Helper.Proto(_hs._1, ll, AbsString.alpha("@default_number"))
+                  val vi = Helper.Proto(_hs._1, ll, AbsString.alpha(Str_default_number))
                   val (b_1, esj) = TizenHelper.instanceOf(_hs._1, vi, Value(TIZENCalendarItem.loc_proto))
                   val esi =
                     if (b_1._1._3 <= F) Set[WebAPIException](TypeMismatchError)
@@ -224,7 +224,7 @@ object TIZENCalendar extends Tizen {
         )),
       ("tizen.Calendar.updateBatch" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -252,7 +252,7 @@ object TIZENCalendar extends Tizen {
                   es__
                 }
                 case _ => {
-                  val vi = Helper.Proto(h_1, ll, AbsString.alpha("@default_number"))
+                  val vi = Helper.Proto(h_1, ll, AbsString.alpha(Str_default_number))
                   val (b_1, esj) = TizenHelper.instanceOf(h_1, vi, Value(TIZENCalendarItem.loc_proto))
                   val esi =
                     if (b_1._1._3 <= F) Set[WebAPIException](TypeMismatchError)
@@ -336,7 +336,7 @@ object TIZENCalendar extends Tizen {
         )),
       ("tizen.Calendar.removeBatch" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -365,7 +365,7 @@ object TIZENCalendar extends Tizen {
                   es__
                 }
                 case _ => {
-                  val vi = Helper.Proto(h_1, ll, AbsString.alpha("@default_number"))
+                  val vi = Helper.Proto(h_1, ll, AbsString.alpha(Str_default_number))
                   val (b_1, esj) = TizenHelper.instanceOf(h_1, vi, Value(TIZENCalendarEventId.loc_proto))
                   val esi =
                     if (b_1._1._3 <= F && vi._1._5 </ StrTop)
@@ -415,7 +415,7 @@ object TIZENCalendar extends Tizen {
         )),
       ("tizen.Calendar.find" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -504,7 +504,7 @@ object TIZENCalendar extends Tizen {
         )),
       ("tizen.Calendar.addChangeListener" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)

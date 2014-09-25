@@ -1,5 +1,5 @@
 /*******************************************************************************
-    Copyright (c) 2012-2013, S-Core, KAIST.
+    Copyright (c) 2012-2014, S-Core, KAIST.
     All rights reserved.
 
     Use is subject to license terms.
@@ -20,6 +20,27 @@ class ObjTreeMap private(private val k: ObjTreeMap.Key,
                           private val count: Int,
                           private val l: ObjTreeMap,
                           private val r: ObjTreeMap) {
+  def absentTop(k: ObjTreeMap.Key): ObjTreeMap = {
+    if (this eq ObjTreeMap.Empty) this
+    else {
+      val c = k.compareTo(this.k)
+      if (c < 0) {
+        val l_updated = this.l.absentTop(k)
+        if (l_updated eq this.l) this
+        else ObjTreeMap.rebalance(this.k, this.v, l_updated, this.r)
+      }
+      else if (c == 0) {
+        if (this.v._2 == AbsentTop) this
+        else new ObjTreeMap(this.k, (this.v._1, AbsentTop), this.count, this.l, this.r)
+      }
+      else {
+        val r_updated = this.r.absentTop(k)
+        if (r_updated eq this.r) this
+        else ObjTreeMap.rebalance(this.k, this.v, this.l, r_updated)
+      }
+    }
+  }
+
   def + (kv: (ObjTreeMap.Key, ObjTreeMap.Data)): ObjTreeMap = {
     this.updated(kv._1, kv._2)
   }
@@ -73,7 +94,7 @@ class ObjTreeMap private(private val k: ObjTreeMap.Key,
 
       val propv_new =
         if ((ov eq ov_new) && (v2 eq v2_new)) propv
-        else PropValue(ov_new, v2_new, propv._3)
+        else PropValue(ov_new, propv._3)
       
       if ((l eq this.l) && (r eq this.r) && (propv eq propv_new)) this
       else {
@@ -102,7 +123,7 @@ class ObjTreeMap private(private val k: ObjTreeMap.Key,
 
       val propv_new =
         if ((ov eq ov_new) && (v2 eq v2_new)) propv
-        else PropValue(ov_new, v2_new, propv._3)
+        else PropValue(ov_new, propv._3)
       
       if ((l eq this.l) && (r eq this.r) && (propv eq propv_new)) this
       else {
@@ -158,8 +179,8 @@ class ObjTreeMap private(private val k: ObjTreeMap.Key,
   def submapOf(that: ObjTreeMap): Boolean = {
     if (this eq that) true
     else {
-      val that_number = that("@default_number")
-      val that_other = that("@default_other")
+      val that_number = that(Str_default_number)
+      val that_other = that(Str_default_other)
         
       def submap(x: ObjTreeMap, y: ObjTreeMap): Boolean = {
         if (x eq y) true
@@ -168,7 +189,7 @@ class ObjTreeMap private(private val k: ObjTreeMap.Key,
           !x.exists(kv => {
             val xk = kv._1
             val xv = kv._2
-            if (xk.length > 0 && xk.charAt(0) == '@') true
+            if (xk.take(1) == "@") true
             else if (AbsString.alpha(xk) <= NumStr) {
               xv._1 </ that_number._1 || xv._2 </ that_number._2 
             }
@@ -208,7 +229,7 @@ class ObjTreeMap private(private val k: ObjTreeMap.Key,
     else if (this eq ObjTreeMap.Empty) this
     else if (that eq ObjTreeMap.Empty) this
     else {
-      val that_k = that.k;
+      val that_k = that.k
       val l2 = ObjTreeMap.splitLT(this, that_k)
       val r2 = ObjTreeMap.splitGT(this, that_k)
       ObjTreeMap.concat(l2.entryDiff(that.l), r2.entryDiff(that.r))
@@ -296,7 +317,7 @@ object ObjTreeMap {
   def fromMap(map: Map[ObjTreeMap.Key, ObjTreeMap.Data]): ObjTreeMap = {
     map.foldLeft[ObjTreeMap](ObjTreeMap.Empty)((objmap, kv) => objmap + kv)
   }
-  
+
   private def rebalance(k: Key, v: Data, l: ObjTreeMap, r: ObjTreeMap): ObjTreeMap = {
     if (l eq Empty) {
       if (r eq Empty) {

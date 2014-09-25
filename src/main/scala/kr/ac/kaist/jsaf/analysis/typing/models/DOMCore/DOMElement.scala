@@ -16,10 +16,11 @@ import kr.ac.kaist.jsaf.analysis.typing.models._
 import org.w3c.dom.Node
 import org.w3c.dom.Element
 import kr.ac.kaist.jsaf.analysis.cfg.{CFG, CFGExpr, InternalError, FunctionId}
-import kr.ac.kaist.jsaf.analysis.typing.models.DOMHtml.{HTMLDocument, HTMLCollection}
+import kr.ac.kaist.jsaf.analysis.typing.models.DOMHtml.{HTMLDocument, HTMLCollection, HTMLTopElement}
 import kr.ac.kaist.jsaf.analysis.typing.models.DOMObject.{ClientRect, ClientRectList}
 import kr.ac.kaist.jsaf.analysis.typing._
 import kr.ac.kaist.jsaf.analysis.typing.AddressManager._
+import kr.ac.kaist.jsaf.Shell
 
 object DOMElement extends DOM {
   private val name = "Element"
@@ -27,6 +28,7 @@ object DOMElement extends DOM {
   /* predefined locatoins */
   val loc_cons = newSystemRecentLoc(name + "Cons")
   val loc_proto = newSystemRecentLoc(name + "Proto")
+  val loc_ins = newSystemRecentLoc(name + "Ins")
 
   /* constructor or object*/
   private val prop_cons: List[(String, AbsProperty)] = List(
@@ -87,18 +89,27 @@ object DOMElement extends DOM {
       //TODO: not yet implemented
       ("DOMElement.getAttribute" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           val attr_name = Helper.toString(Helper.toPrimitive_better(h, getArgValue(h, ctx, args, "0"))).toLowerCase
+          if(Shell.params.opt_Dommodel2){
+            if(attr_name </ StrBot){
+              ((Helper.ReturnStore(h, Value(StrTop)), ctx), (he, ctxe))
+            }
+            else 
+            ((HeapBot, ContextBot), (he, ctxe))
+          }
+          else {
           // get attribute
           val v_ret = DOMHelper.getAttribute(h, lset_this, attr_name)
           if(v_ret </ ValueBot)
             ((Helper.ReturnStore(h, v_ret), ctx), (he, ctxe))
           else
             ((HeapBot, ContextBot), (he, ctxe))
+          }
         })),
       ("DOMElement.setAttribute" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -107,7 +118,7 @@ object DOMElement extends DOM {
           val addr3 = cfg.getAPIAddress(addr_env, 2)
           val addr4 = cfg.getAPIAddress(addr_env, 3)
           val addr5 = cfg.getAPIAddress(addr_env, 4)
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           // For 'Attr' node
           val l_attr = addrToLoc(addr1, Recent)
           // For 'Text' node
@@ -128,21 +139,32 @@ object DOMElement extends DOM {
 
           /* imprecise semantics : no exception handling */
           if(attr_name </ StrBot || attr_val </StrBot) {
+
+            if(Shell.params.opt_Dommodel2){
+              ((Helper.ReturnStore(h, Value(UndefTop)), ctx), (he, ctxe))
+            }
+            else {
             val h_6 = DOMHelper.setAttribute(h_5, lset_this, l_attr, l_text, l_child1, l_child2, l_classentry, attr_name, attr_val)
             ((h_6, ctx_5), (he, ctxe))
+            }
           }
           else
             ((HeapBot, ContextBot), (he, ctxe))
         })),
       ("DOMElement.removeAttribute" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           /* arguments */
           val attr_name = Helper.toString(Helper.toPrimitive_better(h, getArgValue(h, ctx, args, "0"))).toLowerCase
           if(attr_name </ StrBot){
+            if(Shell.params.opt_Dommodel2){
+              ((Helper.ReturnStore(h, Value(UndefTop)), ctx), (he, ctxe))
+            }
+            else {
             // remove attribute
             val h1 = DOMHelper.removeAttribute(h, lset_this, attr_name)
             ((Helper.ReturnStore(h1, Value(UndefTop)), ctx), (he, ctxe))
+            }
           }
           else
             ((HeapBot, ContextBot), (he, ctxe))
@@ -154,9 +176,9 @@ object DOMElement extends DOM {
       ("DOMElement.getElementsByTagName" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
          /* imprecise modeling */
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -167,20 +189,74 @@ object DOMElement extends DOM {
           /* arguments */
           val tagname = Helper.toString(Helper.toPrimitive_better(h, getArgValue(h, ctx, args, "0")))
           if (tagname </ StrBot) {
-            val lset = lset_this.foldLeft(LocSetBot)((lset, l) => lset ++ DOMHelper.findByTag(h_1, l, tagname))
-            val proplist = HTMLCollection.getInsList(0) 
-            val obj = proplist.foldLeft(ObjEmpty)((o, p) => o.update(p._1, p._2))
-            val newobj = if(lset.size==0) obj
-                         else if(lset.size==1) {
-                           obj.update("length", PropValue(ObjectValue(Value(AbsNumber.alpha(1)), F, T, T))).update(
-                                       "0", PropValue(ObjectValue(Value(lset), T, T, T)))
-                         }
-                         else {
-                           obj.update("length", PropValue(ObjectValue(Value(UInt), F, T, T))).update(
-                                       NumStr, PropValue(ObjectValue(Value(lset), T, T, T)))
-                         }
-            val h_2 = h_1.update(l_r, newobj)
-            ((Helper.ReturnStore(h_2, Value(l_r)), ctx_1), (he, ctxe))
+            if(Shell.params.opt_Dommodel2){
+              val lset = Helper.Proto(h, TagTableLoc, tagname.toUpperCase)._2
+              val proplist = HTMLCollection.getInsList(0) 
+              val obj = proplist.foldLeft(Obj.empty)((o, p) => o.update(p._1, p._2))
+              val new_obj = if(lset.size > 0) 
+                                    obj.update("length", PropValue(ObjectValue(Value(UInt), F, T, T))).update(
+                                                NumStr, PropValue(ObjectValue(Value(lset), T, T, T)))
+                            else obj
+              val h_2 = h_1.update(l_r, new_obj)
+              ((Helper.ReturnStore(h_2,  Value(l_r)), ctx_1), (he, ctxe))
+            }
+            else {
+            (tagname.getSingle,  lset_this.size) match {
+               case (Some(v), 1) =>
+                 DOMTree.toConcreteDOMTree(h, lset_this.head, DOMTree.new_concrete_Document) match {
+
+                   case Some((node, map)) =>
+                     node match {
+                       case e: Element =>
+                          val nodelist = e.getElementsByTagName(v)
+                          val len = nodelist.getLength
+                          val proplist = HTMLCollection.getInsList(len) 
+                          val obj = proplist.foldLeft(Obj.empty)((o, p) => o.update(p._1, p._2))
+                          val newobj = (0 until len).foldLeft(obj)((o, i) => {
+                              o.update(i.toInt.toString, PropValue(ObjectValue(Value(map(nodelist.item(i))), T, T, T)))
+                            })
+                          val h_2 = h_1.update(l_r, newobj)
+                          ((Helper.ReturnStore(h_2, Value(l_r)), ctx_1), (he, ctxe))
+                       case _ => 
+                         throw new InternalError("Error in DOMTree.toConcreteDOMTree")
+                     }
+                   case _ =>
+
+                    val lset = lset_this.foldLeft(LocSetBot)((lset, l) => lset ++ DOMHelper.findByTag(h_1, l, tagname))
+                    val proplist = HTMLCollection.getInsList(0) 
+                    val obj = proplist.foldLeft(Obj.empty)((o, p) => o.update(p._1, p._2))
+                    val newobj = if(lset.size==0) obj
+                                 else if(lset.size==1) {
+                                   obj.update("length", PropValue(ObjectValue(Value(AbsNumber.alpha(1)), F, T, T))).update(
+                                               "0", PropValue(ObjectValue(Value(lset), T, T, T)))
+                                 }
+                                 else {
+                                   obj.update("length", PropValue(ObjectValue(Value(UInt), F, T, T))).update(
+                                               NumStr, PropValue(ObjectValue(Value(lset), T, T, T)))
+                                 }
+                    val h_2 = h_1.update(l_r, newobj)
+                    ((Helper.ReturnStore(h_2, Value(l_r)), ctx_1), (he, ctxe))
+
+               }
+
+               case _  =>
+
+                val lset = lset_this.foldLeft(LocSetBot)((lset, l) => lset ++ DOMHelper.findByTag(h_1, l, tagname))
+                val proplist = HTMLCollection.getInsList(0) 
+                val obj = proplist.foldLeft(Obj.empty)((o, p) => o.update(p._1, p._2))
+                val newobj = if(lset.size==0) obj
+                             else if(lset.size==1) {
+                               obj.update("length", PropValue(ObjectValue(Value(AbsNumber.alpha(1)), F, T, T))).update(
+                                           "0", PropValue(ObjectValue(Value(lset), T, T, T)))
+                             }
+                             else {
+                               obj.update("length", PropValue(ObjectValue(Value(UInt), F, T, T))).update(
+                                           NumStr, PropValue(ObjectValue(Value(lset), T, T, T)))
+                             }
+                val h_2 = h_1.update(l_r, newobj)
+                ((Helper.ReturnStore(h_2, Value(l_r)), ctx_1), (he, ctxe))
+              }
+              }
           }
           else
             ((HeapBot, ContextBot), (he, ctxe))
@@ -190,9 +266,9 @@ object DOMElement extends DOM {
       //case "DOMElement.removeAttributeNS" => ((h, ctx), (he, ctxe))
       //case "DOMElement.getAttributeNodeNS" => ((h, ctx), (he, ctxe))
       //case "DOMElement.setAttributeNodeNS" => ((h, ctx), (he, ctxe))
-      ("DOMElement.getElementsByTagNameNS" -> (
+      "DOMElement.getElementsByTagNameNS" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -203,53 +279,60 @@ object DOMElement extends DOM {
           if (s_ns </ StrBot && s_name </ StrBot) {
             val obj_table = h(TagTableLoc)
             val propv_element = obj_table(s_name.toUpperCase)
+            val abs_element = obj_table.domIn(s_name.toUpperCase)
             val (h_1, ctx_1, v_empty) =
-              if (propv_element._2 </ AbsentBot) {
+              if (BoolFalse <= abs_element) {
                 val l_r = addrToLoc(addr1, Recent)
-                val (_h, _ctx)  = Helper.Oldify(h, ctx, addr1)
+                val (_h, _ctx) = Helper.Oldify(h, ctx, addr1)
                 /* empty NodeList */
-                val o_empty = Obj(DOMNodeList.getInsList(0).foldLeft(ObjEmpty.map)((o,pv) =>
-                  o.updated(pv._1, (pv._2, AbsentBot))))
+                val o_empty = DOMNodeList.getInsList(0).foldLeft(Obj.empty)((o, pv) =>
+                  o.update(pv._1, pv._2))
                 val _h1 = _h.update(l_r, o_empty)
                 (_h1, _ctx, Value(l_r))
               } else (h, ctx, ValueBot)
             /* imprecise semantic */
-            ((Helper.ReturnStore(h_1, propv_element._1._1._1 + v_empty), ctx_1), (he, ctxe))
+            ((Helper.ReturnStore(h_1, propv_element._1._1 + v_empty), ctx_1), (he, ctxe))
           }
           else
             ((HeapBot, ContextBot), (he, ctxe))
-        })),
-      ("DOMElement.hasAttribute" -> (
+        }),
+      "DOMElement.hasAttribute" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           /* arguments */
           val attr_name = Helper.toString(Helper.toPrimitive_better(h, getArgValue(h, ctx, args, "0"))).toLowerCase
           if(attr_name </ StrBot) {
+            if(Shell.params.opt_Dommodel2){
+              ((Helper.ReturnStore(h, Value(BoolTop)), ctx), (he, ctxe))
+            }
+            else {
             val attr_val = lset_this.foldLeft(ValueBot)((v, l_this) => {
               // read the list of attributes in the current node
               val attributes_lset = Helper.Proto(h, l_this, AbsString.alpha("attributes"))._2
-              val attr_val_1= attributes_lset.foldLeft(ValueBot)((v, l_attributes) => {
-                v + Value(Helper.HasOwnProperty(h, l_attributes, attr_name))})
+              val attr_val_1 = attributes_lset.foldLeft(ValueBot)((v, l_attributes) => {
+                v + Value(Helper.HasOwnProperty(h, l_attributes, attr_name))
+              })
               v + attr_val_1
             })
             ((Helper.ReturnStore(h, attr_val), ctx), (he, ctxe))
+            }
           }
           else
             ((HeapBot, ContextBot), (he, ctxe))
-        })),
+        }),
       //case "DOMElement.hasAttributeNS" => ((h, ctx), (he, ctxe))
       //case "DOMElement.setIdAttribute" => ((h, ctx), (he, ctxe))
       //case "DOMElement.setIdAttributeNS" => ((h, ctx), (he, ctxe))
       //case "DOMElement.setIdAttributeNode" => ((h, ctx), (he, ctxe))
       "DOMElement.querySelector" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
           val addr1 = cfg.getAPIAddress(addr_env, 0)
 
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           /* arguments */
           val s_selector = getArgValue(h, ctx, args, "0")._1._5
           if (s_selector </ StrBot) {
@@ -274,19 +357,26 @@ object DOMElement extends DOM {
         }),
       "DOMElement.querySelectorAll" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
           val addr1 = cfg.getAPIAddress(addr_env, 0)
 
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           /* arguments */
           val s_selector = getArgValue(h, ctx, args, "0")._1._5
           if (s_selector </ StrBot) {
             val (h_1, ctx_1) = Helper.Oldify(h, ctx, addr1)
-            // start here
             val l_result = addrToLoc(addr1, Recent)
+            if(Shell.params.opt_Dommodel2){
+                val o_result = Helper.NewObject(ObjProtoLoc)
+                  .update(NumStr, PropValue(ObjectValue(Value(HTMLTopElement.loc_ins_set), T, T, T)))
+                  .update("length", PropValue(ObjectValue(Value(UInt), F, F, F)))
+                val h_2 = h_1.update(l_result, o_result)
+              ((Helper.ReturnStore(h_2, Value(l_result)), ctx), (he, ctxe))
+            }
+            // start here
             val lset_find = lset_this.foldLeft(LocSetBot)((ls, l) => ls ++ DOMHelper.querySelectorAll(h_1, l, s_selector))
             val (h_ret, v_ret) =
               if (lset_find.isEmpty) {
@@ -316,33 +406,83 @@ object DOMElement extends DOM {
           else
             ((HeapBot, ContextBot), (he, ctxe))
         }),
-      ("DOMElement.getElementsByClassName" -> (
+      "DOMElement.getElementsByClassName" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
           val addr1 = cfg.getAPIAddress(addr_env, 0)
+          val l_r = addrToLoc(addr1, Recent)
+          val (h_1, ctx_1)  = Helper.Oldify(h, ctx, addr1)
           /* arguments */
           val s_class = Helper.toString(Helper.toPrimitive_better(h, getArgValue(h, ctx, args, "0")))
+
           if (s_class </ StrBot) {
-            val propv_element = h(ClassTableLoc)(s_class)
-            val (h_1, ctx_1, v_empty) =
-              if (propv_element._2 </ AbsentBot) {
-                val l_r = addrToLoc(addr1, Recent)
-                val (_h, _ctx)  = Helper.Oldify(h, ctx, addr1)
-                /* empty NodeList */
-                val o_empty = Obj(DOMNodeList.getInsList(0).foldLeft(ObjEmpty.map)((o,pv) =>
-                  o.updated(pv._1, (pv._2, AbsentBot))))
-                val _h1 = _h.update(l_r, o_empty)
-                (_h1, _ctx, Value(l_r))
-              } else (h, ctx, ValueBot)
-            /* imprecise semantic */
-            ((Helper.ReturnStore(h_1, propv_element._1._1._1 + v_empty), ctx_1), (he, ctxe))
+            if(Shell.params.opt_Dommodel2){
+              val lset = Helper.Proto(h, ClassTableLoc, s_class)._2
+              val proplist = HTMLCollection.getInsList(0) 
+              val obj = proplist.foldLeft(Obj.empty)((o, p) => o.update(p._1, p._2))
+              val new_obj = if(lset.size > 0) 
+                                    obj.update("length", PropValue(ObjectValue(Value(UInt), F, T, T))).update(
+                                                NumStr, PropValue(ObjectValue(Value(lset), T, T, T)))
+                            else obj
+              val h_2 = h_1.update(l_r, new_obj)
+              ((Helper.ReturnStore(h_2,  Value(l_r)), ctx_1), (he, ctxe))
+            }
+            else {
+            (s_class.getSingle,  lset_this.size) match {
+               case (Some(v), 1) =>
+                 DOMTree.toConcreteDOMTree(h, lset_this.head, DOMTree.new_concrete_Document) match {
+                   case Some((node, map)) =>
+                     val nodelist = DOMTree.getElementsByClassName_concrete(node, v)
+                     val len = nodelist.size
+                     val proplist = HTMLCollection.getInsList(len) 
+                     val obj = proplist.foldLeft(Obj.empty)((o, p) => o.update(p._1, p._2))
+                     val newobj = (0 until len).foldLeft(obj)((o, i) => {
+                        o.update(i.toInt.toString, PropValue(ObjectValue(Value(map(nodelist(i))), T, T, T)))
+                       })
+                     val h_2 = h_1.update(l_r, newobj)
+                     ((Helper.ReturnStore(h_2, Value(l_r)), ctx_1), (he, ctxe))
+                   case _ =>
+                     val lset = lset_this.foldLeft(LocSetBot)((lset, l) => lset ++ DOMHelper.findByClassName(h_1, l, s_class))
+                     val proplist = HTMLCollection.getInsList(0) 
+                     val obj = proplist.foldLeft(Obj.empty)((o, p) => o.update(p._1, p._2))
+                     val newobj = if(lset.size==0) obj
+                                  else if(lset.size==1) {
+                                    obj.update("length", PropValue(ObjectValue(Value(AbsNumber.alpha(1)), F, T, T))).update(
+                                               "0", PropValue(ObjectValue(Value(lset), T, T, T)))
+                                  }
+                                  else {
+                                    obj.update("length", PropValue(ObjectValue(Value(UInt), F, T, T))).update(
+                                                NumStr, PropValue(ObjectValue(Value(lset), T, T, T)))
+                                  }
+                     val h_2 = h_1.update(l_r, newobj)
+                     ((Helper.ReturnStore(h_2, Value(l_r)), ctx_1), (he, ctxe))
+               }
+
+               case _  =>
+                 val lset = lset_this.foldLeft(LocSetBot)((lset, l) => lset ++ DOMHelper.findByClassName(h_1, l, s_class))
+                 val proplist = HTMLCollection.getInsList(0) 
+                 val obj = proplist.foldLeft(Obj.empty)((o, p) => o.update(p._1, p._2))
+                 val newobj = if(lset.size==0) obj
+                              else if(lset.size==1) {
+                                obj.update("length", PropValue(ObjectValue(Value(AbsNumber.alpha(1)), F, T, T))).update(
+                                           "0", PropValue(ObjectValue(Value(lset), T, T, T)))
+                              }
+                              else {
+                                obj.update("length", PropValue(ObjectValue(Value(UInt), F, T, T))).update(
+                                            NumStr, PropValue(ObjectValue(Value(lset), T, T, T)))
+                              }
+                 val h_2 = h_1.update(l_r, newobj)
+                 ((Helper.ReturnStore(h_2, Value(l_r)), ctx_1), (he, ctxe))
+              }
+              }
           }
           else
             ((HeapBot, ContextBot), (he, ctxe))
-        })),
+        }),
       ("DOMElement.getClientRects" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
            ((Helper.ReturnStore(h, Value(ClientRectList.loc_ins)), ctx), (he, ctxe))
@@ -372,7 +512,7 @@ object DOMElement extends DOM {
       ("DOMElement.getAttribute" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
           val PureLocalLoc = cfg.getPureLocal(cp)
-          val lset_this = h(PureLocalLoc)("@this")._1._2._2
+          val lset_this = h(PureLocalLoc)("@this")._2._2
           /* arguments */
           val attr_name = PreHelper.toString(PreHelper.toPrimitive(getArgValue_pre(h, ctx, args, "0", PureLocalLoc))).toLowerCase
           if(attr_name </ StrBot) {
@@ -402,7 +542,7 @@ object DOMElement extends DOM {
       ("DOMElement.setAttribute" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
           val PureLocalLoc = cfg.getPureLocal(cp)
-          val lset_env = h(PureLocalLoc)("@env")._1._2._2
+          val lset_env = h(PureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -410,7 +550,7 @@ object DOMElement extends DOM {
           val addr2 = cfg.getAPIAddress(addr_env, 1)
           val addr3 = cfg.getAPIAddress(addr_env, 2)
           val addr4 = cfg.getAPIAddress(addr_env, 3)
-          val lset_this = h(PureLocalLoc)("@this")._1._2._2
+          val lset_this = h(PureLocalLoc)("@this")._2._2
           // For 'Attr' node
           val l_attr = addrToLoc(addr1, Recent)
           // For 'Text' node
@@ -432,18 +572,18 @@ object DOMElement extends DOM {
             val value = PropValue(ObjectValue(attr_val, T, T, T))
             // create a new Attr node object
             val attr_obj_list = DOMAttr.default_getInsList(name, value, PropValue(ObjectValue(l_child1, F, T, T)), PropValue(ObjectValue(l_text, F, T, T)))
-            val attr_obj = attr_obj_list.foldLeft(ObjEmpty) ((obj, v) => obj.update(AbsString.alpha(v._1), v._2))
+            val attr_obj = attr_obj_list.foldLeft(Obj.empty) ((obj, v) => obj.update(AbsString.alpha(v._1), v._2))
             // create a new text node object
             val text_obj_list = DOMText.default_getInsList(value, PropValue(ObjectValue(l_attr, F, T, T)), PropValue(ObjectValue(l_child2, F, T, T)))
-            val text_obj = text_obj_list.foldLeft(ObjEmpty) ((obj, v) => obj.update(AbsString.alpha(v._1), v._2))
+            val text_obj = text_obj_list.foldLeft(Obj.empty) ((obj, v) => obj.update(AbsString.alpha(v._1), v._2))
 
             // objects for 'childNodes' of the Attr node
             val child_obj_list1 = DOMNamedNodeMap.getInsList(1)
-            val child_obj1 = child_obj_list1.foldLeft(ObjEmpty.update(AbsString.alpha("0"), PropValue(ObjectValue(l_text, T, T, T))))((obj, v) =>
+            val child_obj1 = child_obj_list1.foldLeft(Obj.empty.update(AbsString.alpha("0"), PropValue(ObjectValue(l_text, T, T, T))))((obj, v) =>
               obj.update(AbsString.alpha(v._1), v._2))
             // objects for 'childNodes' of the Text node
             val child_obj_list2 = DOMNamedNodeMap.getInsList(0)
-            val child_obj2 = child_obj_list2.foldLeft(ObjEmpty)((obj, v) => obj.update(AbsString.alpha(v._1), v._2))
+            val child_obj2 = child_obj_list2.foldLeft(Obj.empty)((obj, v) => obj.update(AbsString.alpha(v._1), v._2))
 
             val h_5 = lset_this.foldLeft(h_4)((h_in, l_this) => {
               // update 'className' property if the value of the 'class' attribute would be changed
@@ -482,7 +622,7 @@ object DOMElement extends DOM {
               val attributes_lset = PreHelper.Proto(h_in1, l_this, AbsString.alpha("attributes"))._2
               attributes_lset.foldLeft(h_in1)((h_in2, l_attributes) => {
                 val attributes_obj = h_in2(l_attributes)
-                val length_pval = attributes_obj("length")._1._1._1._1
+                val length_pval = attributes_obj("length")._1._1._1
                 // increate 'length' of 'attributes' by 1
                 val length_val = AbsNumber.getUIntSingle(PreHelper.toNumber(length_pval)) match {
                   case Some(v) => AbsNumber.alpha(v+1)
@@ -505,10 +645,10 @@ object DOMElement extends DOM {
       //case "DOMElement.getAttributeNode" => ((h, ctx), (he, ctxe))
       //case "DOMElement.setAttributeNode" => ((h, ctx), (he, ctxe))
       //case "DOMElement.removeAttributeNode" => ((h, ctx), (he, ctxe))
-      ("DOMElement.getElementsByTagName" -> (
+      "DOMElement.getElementsByTagName" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
           val PureLocalLoc = cfg.getPureLocal(cp)
-          val lset_env = h(PureLocalLoc)("@env")._1._2._2
+          val lset_env = h(PureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -518,31 +658,32 @@ object DOMElement extends DOM {
           if (s_name </ StrBot) {
             val obj_table = h(TagTableLoc)
             val propv_element = obj_table(s_name.toUpperCase)
+            val abs_element = obj_table.domIn(s_name.toUpperCase)
             val (h_1, ctx_1, v_empty) =
-              if (propv_element._2 </ AbsentBot) {
+              if (BoolFalse <= abs_element) {
                 val l_r = addrToLoc(addr1, Recent)
-                val (_h, _ctx)  = PreHelper.Oldify(h, ctx, addr1)
+                val (_h, _ctx) = PreHelper.Oldify(h, ctx, addr1)
                 /* empty NodeList */
-                val o_empty = Obj(DOMNodeList.getInsList(0).foldLeft(ObjEmpty.map)((o,pv) =>
-                  o.updated(pv._1, (pv._2, AbsentBot))))
+                val o_empty = DOMNodeList.getInsList(0).foldLeft(Obj.empty)((o, pv) =>
+                  o.update(pv._1, pv._2))
                 val _h1 = _h.update(l_r, o_empty)
                 (_h1, _ctx, Value(l_r))
               } else (h, ctx, ValueBot)
             /* imprecise semantic */
-            ((PreHelper.ReturnStore(h_1, PureLocalLoc, propv_element._1._1._1 + v_empty), ctx_1), (he, ctxe))
+            ((PreHelper.ReturnStore(h_1, PureLocalLoc, propv_element._1._1 + v_empty), ctx_1), (he, ctxe))
           }
           else
             ((h, ctx), (he, ctxe))
-        })),
+        }),
       //case "DOMElement.getAttributeNS" => ((h, ctx), (he, ctxe))
       //case "DOMElement.setAttributeNS" => ((h, ctx), (he, ctxe))
       //case "DOMElement.removeAttributeNS" => ((h, ctx), (he, ctxe))
       //case "DOMElement.getAttributeNodeNS" => ((h, ctx), (he, ctxe))
       //case "DOMElement.setAttributeNodeNS" => ((h, ctx), (he, ctxe))
-      ("DOMElement.getElementsByTagNameNS" -> (
+      "DOMElement.getElementsByTagNameNS" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
           val PureLocalLoc = cfg.getPureLocal(cp)
-          val lset_env = h(PureLocalLoc)("@env")._1._2._2
+          val lset_env = h(PureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -553,26 +694,27 @@ object DOMElement extends DOM {
           if (s_ns </ StrBot && s_name </ StrBot) {
             val obj_table = h(TagTableLoc)
             val propv_element = obj_table(s_name.toUpperCase)
+            val abs_element = obj_table.domIn(s_name.toUpperCase)
             val (h_1, ctx_1, v_empty) =
-              if (propv_element._2 </ AbsentBot) {
+              if (BoolFalse <= abs_element) {
                 val l_r = addrToLoc(addr1, Recent)
                 val (_h, _ctx)  = PreHelper.Oldify(h, ctx, addr1)
                 /* empty NodeList */
-                val o_empty = Obj(DOMNodeList.getInsList(0).foldLeft(ObjEmpty.map)((o,pv) =>
-                  o.updated(pv._1, (pv._2, AbsentBot))))
+                val o_empty = DOMNodeList.getInsList(0).foldLeft(Obj.empty)((o, pv) =>
+                  o.update(pv._1, pv._2))
                 val _h1 = _h.update(l_r, o_empty)
                 (_h1, _ctx, Value(l_r))
               } else (h, ctx, ValueBot)
             /* imprecise semantic */
-            ((PreHelper.ReturnStore(h_1, PureLocalLoc, propv_element._1._1._1 + v_empty), ctx_1), (he, ctxe))
+            ((PreHelper.ReturnStore(h_1, PureLocalLoc, propv_element._1._1 + v_empty), ctx_1), (he, ctxe))
           }
           else
             ((h, ctx), (he, ctxe))
-        })),
+        }),
       ("DOMElement.hasAttribute" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
           val PureLocalLoc = cfg.getPureLocal(cp)
-          val lset_this = h(PureLocalLoc)("@this")._1._2._2
+          val lset_this = h(PureLocalLoc)("@this")._2._2
           /* arguments */
           val attr_name = PreHelper.toString(PreHelper.toPrimitive(getArgValue_pre(h, ctx, args, "0", PureLocalLoc))).toLowerCase
           if(attr_name </ StrBot) {
@@ -604,8 +746,8 @@ object DOMElement extends DOM {
         })),
       ("DOMElement.setAttribute" -> (
         (h: Heap, ctx: Context, cfg: CFG, fun: String, args: CFGExpr, fid: FunctionId) => {
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           val addr_env = (fid, set_addr.head)
           val addr1 = cfg.getAPIAddress(addr_env, 0)
@@ -667,7 +809,7 @@ object DOMElement extends DOM {
               val attributes_lset = Helper.Proto(h, l_this, AbsString.alpha("attributes"))._2
               attributes_lset.foldLeft(lpset + (l_this, "className"))((lpset2, l_attributes) => {
                 val attributes_obj = h(l_attributes)
-                val length_pval = attributes_obj("length")._1._1._1._1
+                val length_pval = attributes_obj("length")._1._1._1
                 lpset2 ++ AccessHelper.absPair(h, l_attributes, attr_name) ++ AccessHelper.absPair(h, l_attributes, Helper.toString(length_pval)) + (l_attributes, "length")
               })
             })
@@ -680,63 +822,64 @@ object DOMElement extends DOM {
       //case "DOMElement.getAttributeNode" => ((h, ctx), (he, ctxe))
       //case "DOMElement.setAttributeNode" => ((h, ctx), (he, ctxe))
       //case "DOMElement.removeAttributeNode" => ((h, ctx), (he, ctxe))
-      ("DOMElement.getElementsByTagName" -> (
+      "DOMElement.getElementsByTagName" -> (
         (h: Heap, ctx: Context, cfg: CFG, fun: String, args: CFGExpr, fid: FunctionId) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           /* arguments */
           val s_name = Helper.toString(Helper.toPrimitive_better(h, getArgValue(h, ctx, args, "0")))
           if (s_name </ StrBot) {
             val obj_table = h(TagTableLoc)
             val propv_element = obj_table(s_name.toUpperCase)
+            val abs_element = obj_table.domIn(s_name.toUpperCase)
             val LP1 =
-              if (propv_element._2 </ AbsentBot) {
+              if (BoolFalse <= abs_element) {
                 //val l_r = addrToLoc(addr1, Recent)
                 //val LP1_1  = AccessHelper.Oldify_def(h, ctx, addr1)
                 val LP1_1 = set_addr.foldLeft(LPBot)((lp, a) =>
                   lp ++ AccessHelper.Oldify_def(h, ctx, cfg.getAPIAddress((fid, a), 0)))
                 /* empty NodeList */
                 val LP1_2 = DOMNodeList.getInsList(0).foldLeft(LPBot)((lpset, pv) =>
-                //lpset + (l_r, pv._1))
-                  lpset ++ set_addr.foldLeft(LPBot)((lp, a) => lp + (addrToLoc(cfg.getAPIAddress((fid, a), 0),Recent), pv._1)))
+                  //lpset + (l_r, pv._1))
+                  lpset ++ set_addr.foldLeft(LPBot)((lp, a) => lp +(addrToLoc(cfg.getAPIAddress((fid, a), 0), Recent), pv._1)))
                 LP1_1 ++ LP1_2
               } else LPBot
-            LP1 + (SinglePureLocalLoc, "@return")
+            LP1 +(SinglePureLocalLoc, "@return")
           }
           else
             LPBot
-        })),
+        }),
       //case "DOMElement.getAttributeNS" => ((h, ctx), (he, ctxe))
       //case "DOMElement.setAttributeNS" => ((h, ctx), (he, ctxe))
       //case "DOMElement.removeAttributeNS" => ((h, ctx), (he, ctxe))
       //case "DOMElement.getAttributeNodeNS" => ((h, ctx), (he, ctxe))
       //case "DOMElement.setAttributeNodeNS" => ((h, ctx), (he, ctxe))
-      ("DOMElement.getElementsByTagNameNS" -> (
+      "DOMElement.getElementsByTagNameNS" -> (
         (h: Heap, ctx: Context, cfg: CFG, fun: String, args: CFGExpr, fid: FunctionId) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           /* arguments */
           val s_name = Helper.toString(Helper.toPrimitive_better(h, getArgValue(h, ctx, args, "0")))
           if (s_name </ StrBot) {
             val obj_table = h(TagTableLoc)
-            val propv_element = obj_table(s_name.toUpperCase)
+            val abs_element = obj_table.domIn(s_name.toUpperCase)
             val LP1 =
-              if (propv_element._2 </ AbsentBot) {
+              if (BoolFalse <= abs_element) {
                 //val l_r = addrToLoc(addr1, Recent)
                 //val LP1_1  = AccessHelper.Oldify_def(h, ctx, addr1)
                 val LP1_1 = set_addr.foldLeft(LPBot)((lp, a) =>
                   lp ++ AccessHelper.Oldify_def(h, ctx, cfg.getAPIAddress((fid, a), 0)))
                 /* empty NodeList */
                 val LP1_2 = DOMNodeList.getInsList(0).foldLeft(LPBot)((lpset, pv) =>
-                //lpset + (l_r, pv._1))
-                  lpset ++ set_addr.foldLeft(LPBot)((lp, a) => lp + (addrToLoc(cfg.getAPIAddress((fid, a), 0),Recent), pv._1)))
+                  //lpset + (l_r, pv._1))
+                  lpset ++ set_addr.foldLeft(LPBot)((lp, a) => lp +(addrToLoc(cfg.getAPIAddress((fid, a), 0), Recent), pv._1)))
                 LP1_1 ++ LP1_2
               } else LPBot
-            LP1 + (SinglePureLocalLoc, "@return")
+            LP1 +(SinglePureLocalLoc, "@return")
           }
           else
             LPBot
-        })),
+        }),
       ("DOMElement.hasAttribute" -> (
         (h: Heap, ctx: Context, cfg: CFG, fun: String, args: CFGExpr, fid: FunctionId) => {
           LPSet((SinglePureLocalLoc, "@return"))
@@ -753,7 +896,7 @@ object DOMElement extends DOM {
       //TODO: not yet implemented
       ("DOMElement.getAttribute" -> (
         (h: Heap, ctx: Context, cfg: CFG, fun: String, args: CFGExpr, fid: FunctionId) => {
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           /* arguments */
           val attr_name = Helper.toString(Helper.toPrimitive_better(h, getArgValue(h, ctx, args, "0")))
           val LP1 = getArgValue_use(h, ctx, args, "0")
@@ -787,8 +930,8 @@ object DOMElement extends DOM {
         })),
       ("DOMElement.setAttribute" -> (
         (h: Heap, ctx: Context, cfg: CFG, fun: String, args: CFGExpr, fid: FunctionId) => {
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           // For 'Attr' node
           //val l_attr = addrToLoc(addr1, Recent)
@@ -834,60 +977,60 @@ object DOMElement extends DOM {
       //case "DOMElement.getAttributeNode" => ((h, ctx), (he, ctxe))
       //case "DOMElement.setAttributeNode" => ((h, ctx), (he, ctxe))
       //case "DOMElement.removeAttributeNode" => ((h, ctx), (he, ctxe))
-      ("DOMElement.getElementsByTagName" -> (
+      "DOMElement.getElementsByTagName" -> (
         (h: Heap, ctx: Context, cfg: CFG, fun: String, args: CFGExpr, fid: FunctionId) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           /* arguments */
           val s_name = Helper.toString(Helper.toPrimitive_better(h, getArgValue(h, ctx, args, "0")))
           val LP1 = getArgValue_use(h, ctx, args, "0")
           if (s_name </ StrBot) {
             val obj_table = h(TagTableLoc)
-            val propv_element = obj_table(s_name.toUpperCase)
+            val abs_element = obj_table.domIn(s_name.toUpperCase)
             val LP2 = AccessHelper.absPair(h, TagTableLoc, s_name.toUpperCase)
             val LP3 =
-              if (propv_element._2 </ AbsentBot) {
+              if (BoolFalse <= abs_element) {
                 //val l_r = addrToLoc(addr1, Recent)
                 //AccessHelper.Oldify_use(h, ctx, addr1)
                 set_addr.foldLeft(LPBot)((lp, a) =>
                   lp ++ AccessHelper.Oldify_use(h, ctx, cfg.getAPIAddress((fid, a), 0)))
               } else LPBot
-            LP1 ++ LP2 ++ LP3 + (SinglePureLocalLoc, "@return")
+            LP1 ++ LP2 ++ LP3 +(SinglePureLocalLoc, "@return")
           }
           else
             LP1
-        })),
+        }),
       //case "DOMElement.getAttributeNS" => ((h, ctx), (he, ctxe))
       //case "DOMElement.setAttributeNS" => ((h, ctx), (he, ctxe))
       //case "DOMElement.removeAttributeNS" => ((h, ctx), (he, ctxe))
       //case "DOMElement.getAttributeNodeNS" => ((h, ctx), (he, ctxe))
       //case "DOMElement.setAttributeNodeNS" => ((h, ctx), (he, ctxe))
-      ("DOMElement.getElementsByTagNameNS" -> (
+      "DOMElement.getElementsByTagNameNS" -> (
         (h: Heap, ctx: Context, cfg: CFG, fun: String, args: CFGExpr, fid: FunctionId) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           /* arguments */
           val s_name = Helper.toString(Helper.toPrimitive_better(h, getArgValue(h, ctx, args, "0")))
           val LP1 = getArgValue_use(h, ctx, args, "0") ++ getArgValue_use(h, ctx, args, "1")
           if (s_name </ StrBot) {
             val obj_table = h(TagTableLoc)
-            val propv_element = obj_table(s_name.toUpperCase)
+            val abs_element = obj_table.domIn(s_name.toUpperCase)
             val LP2 = AccessHelper.absPair(h, TagTableLoc, s_name.toUpperCase)
             val LP3 =
-              if (propv_element._2 </ AbsentBot) {
+              if (BoolFalse <= abs_element) {
                 //val l_r = addrToLoc(addr1, Recent)
                 //AccessHelper.Oldify_use(h, ctx, addr1)
                 set_addr.foldLeft(LPBot)((lp, a) =>
                   lp ++ AccessHelper.Oldify_use(h, ctx, cfg.getAPIAddress((fid, a), 0)))
               } else LPBot
-            LP1 ++ LP2 ++ LP3 + (SinglePureLocalLoc, "@return")
+            LP1 ++ LP2 ++ LP3 +(SinglePureLocalLoc, "@return")
           }
           else
             LP1
-        })),
+        }),
       ("DOMElement.hasAttribute" -> (
         (h: Heap, ctx: Context, cfg: CFG, fun: String, args: CFGExpr, fid: FunctionId) => {
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           /* arguments */
           val attr_name = Helper.toString(Helper.toPrimitive_better(h, getArgValue(h, ctx, args, "0"))).toLowerCase
           val LP1 = getArgValue_use(h, ctx, args, "0")
@@ -944,6 +1087,22 @@ object DOMElement extends DOM {
       List()
     }
   }
+
+  def getInsList2():List[(String, AbsProperty)] = DOMNode.getInsList2() ++ List(
+    ("tagName", AbsConstValue(PropValue(ObjectValue(Value(StrTop), F, T, F)))),
+    ("scrollTop", AbsConstValue(PropValue(ObjectValue(Value(UInt), T, T, T)))),
+    ("scrollLeft", AbsConstValue(PropValue(ObjectValue(Value(UInt), T, T, T)))),
+    ("scrollWidth", AbsConstValue(PropValue(ObjectValue(Value(UInt), T, T, T)))),
+    ("scrollHeight", AbsConstValue(PropValue(ObjectValue(Value(UInt), T, T, T)))),
+    ("offsetTop", AbsConstValue(PropValue(ObjectValue(Value(UInt), F, T, T)))),
+    ("offsetLeft", AbsConstValue(PropValue(ObjectValue(Value(UInt), F, T, T)))),
+    ("offsetWidth", AbsConstValue(PropValue(ObjectValue(Value(UInt), F, T, T)))),
+    ("offsetHeight", AbsConstValue(PropValue(ObjectValue(Value(UInt), F, T, T)))),
+    ("clientTop", AbsConstValue(PropValue(ObjectValue(Value(UInt), F, T, T)))),
+    ("clientWidth", AbsConstValue(PropValue(ObjectValue(Value(UInt), F, T, T)))),
+    ("offs", AbsConstValue(PropValue(ObjectValue(Value(UInt), F, T, T))))
+  )
+
   def getInsList(tagName: PropValue, scrollTop: PropValue, scrollLeft: PropValue, scrollWidth: PropValue, scrollHeight: PropValue,
                  offsetParent: PropValue, offsetTop: PropValue, offsetLeft: PropValue, offsetWidth: PropValue, offsetHeight: PropValue,
                  clientTop: PropValue, clientLeft: PropValue, clientWidth: PropValue, clientHeight: PropValue, onclick: PropValue,

@@ -32,6 +32,7 @@ object ModelManager {
     /* dom model */
     if (Config.domMode ||
         Shell.params.command == ShellParameters.CMD_HTML ||
+        Shell.params.command == ShellParameters.CMD_HTML_PRE ||
         Shell.params.command == ShellParameters.CMD_HTML_SPARSE) {
       model_map = model_map + ("DOM" -> new DOMModel(cfg))
     }
@@ -105,12 +106,12 @@ object ModelManager {
       })
       if (!ns_calls._1.isEmpty) {
         // last node -> loop head
-        if(Config.loopSensitive) {
-          ns_last.toList.foreach(n => cfg.addLoopEdge(n, n_head))
-          val dummyInfo = IRFactory.makeInfo(IRFactory.dummySpan("Loop"))
-          cfg.addInst(n_head, CFGCond(cfg.newInstId, dummyInfo, CFGVarRef(dummyInfo, CFGTempId("scrollMaxY", GlobalVar)), true))
-        }
-        else
+ //       if(Config.loopSensitive) {
+ //         ns_last.toList.foreach(n => cfg.addLoopEdge(n, n_head))
+//          val dummyInfo = IRFactory.makeInfo(IRFactory.dummySpan("Loop"))
+//          cfg.addInst(n_head, CFGCond(cfg.newInstId, dummyInfo, CFGVarRef(dummyInfo, CFGTempId("scrollMaxY", GlobalVar)), true))
+//        }
+ //       else
           cfg.addEdge(ns_last.toList, n_head)
         // loop head -> n_end
         cfg.addEdge(n_head, n_end)

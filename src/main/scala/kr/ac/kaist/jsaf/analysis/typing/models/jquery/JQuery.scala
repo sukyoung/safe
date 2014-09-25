@@ -88,31 +88,34 @@ object JQuery extends ModelData {
     Map(
       "jQuery" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
           val addr1 = cfg.getAPIAddress(addr_env, 0)
           val addr2 = cfg.getAPIAddress(addr_env, 1)
           val addr3 = cfg.getAPIAddress(addr_env, 2)
+          val addr4 = cfg.getAPIAddress(addr_env, 3)
 
           val (h_1, ctx_1) = Helper.Oldify(h, ctx, addr1)
           val (h_2, ctx_2) = Helper.Oldify(h_1, ctx_1, addr2)
           val (h_3, ctx_3) = Helper.Oldify(h_2, ctx_2, addr3)
+          val (h_4, ctx_4) = Helper.Oldify(h_3, ctx_3, addr4)
 
           // start here
           val l_jq = addrToLoc(addr1, Recent)
           val l_tag = addrToLoc(addr2, Recent)
           val l_child = addrToLoc(addr3, Recent)
+          val l_attributes = addrToLoc(addr4, Recent)
 
           /* arguments :  selector, context */
-          val v_selector = getArgValue(h_3, ctx_3, args, "0")
-          val v_context = getArgValue(h_3, ctx_3, args, "1")
+          val v_selector = getArgValue(h_4, ctx_4, args, "0")
+          val v_context = getArgValue(h_4, ctx_4, args, "1")
 
-          val (h_ret, v_ret) = JQueryHelper.init(h_3, v_selector, v_context, l_jq, l_tag, l_child)
+          val (h_ret, v_ret) = JQueryHelper.init(h_4, v_selector, v_context, l_jq, l_tag, l_child, l_attributes)
 
           if (v_ret </ ValueBot)
-            ((Helper.ReturnStore(h_ret, v_ret), ctx_3), (he, ctxe))
+            ((Helper.ReturnStore(h_ret, v_ret), ctx_4), (he, ctxe))
           else
             ((HeapBot, ContextBot), (he, ctxe))
         }),

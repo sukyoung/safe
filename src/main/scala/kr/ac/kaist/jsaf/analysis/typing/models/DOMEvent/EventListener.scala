@@ -22,6 +22,7 @@ object EventListener extends DOM {
 
   /* predefined locatoins */
   val loc_proto = newSystemRecentLoc(name + "Proto")
+  val loc_ins = newSystemRecentLoc(name + "Ins")
 
   /* prorotype */
   private val prop_proto: List[(String, AbsProperty)] = List(

@@ -36,11 +36,11 @@ object JQueryCore extends ModelData {
           /* arguments :  deep */
           val v_deep = Helper.toBoolean(getArgValue(h, ctx, args, "0"))
 
-          val v_$ = h(GlobalLoc)("$")._1._1._1
-          val v_jQuery = h(GlobalLoc)("jQuery")._1._1._1
+          val v_$ = h(GlobalLoc)("$")._1._1
+          val v_jQuery = h(GlobalLoc)("jQuery")._1._1
           
-          val oldv_$ = h(JQuery.EnvLoc)("_$")._1
-          val oldv_jQuery = h(JQuery.EnvLoc)("_jQuery")._1
+          val oldv_$ = h(JQuery.EnvLoc)("_$")
+          val oldv_jQuery = h(JQuery.EnvLoc)("_jQuery")
           val v_j = Value(JQuery.ConstLoc)
           // if( window.$ === jQuery)
           val h_1 = if(v_$ <= v_jQuery && v_jQuery <= v_$) { 

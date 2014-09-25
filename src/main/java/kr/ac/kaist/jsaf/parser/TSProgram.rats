@@ -1,5 +1,5 @@
 /*******************************************************************************
-    Copyright (c) 2013, KAIST.
+    Copyright (c) 2013-2014, KAIST.
     All rights reserved.
 
     Use is subject to license terms.
@@ -101,10 +101,14 @@ private transient String ExternalModuleReference =
      { yyValue = a1.getEscaped(); };
 
 /*
+ * Original syntax:
  * ExportAssignment ::= export w = w Identifier w ;
+ *
+ * Relaxed to accept sloppy declarations:
+ * ExportAssignment ::= export w = w Identifier (w ;)?
  */
 private transient ModExpAssignment ExportAssignment =
-     export w equals w a1:Id w semicolon
+     export w equals w a1:Id (w semicolon)?
      { yyValue = TSFactory.makeModExpAssignment(createSpan(yyStart,yyCount), a1); };
 
 /*
@@ -261,15 +265,22 @@ transient List<AmbClsElt> AmbientClassBodyElements =
      { yyValue = Useful.cons(a1, a2s.list()); } ;
 
 /*
+ * Original syntax:
  * AmbientClassBodyElement ::=
  *   AmbientConstructorDeclaration
  * | AmbientPropertyMemberDeclaration
  * | IndexSignature
+ *
+ * Relaxed to accept sloppy declarations:
+ * AmbientClassBodyElement ::=
+ *   AmbientConstructorDeclaration
+ * | AmbientPropertyMemberDeclaration
+ * | IndexSignature (w ;)?
  */
 transient AmbClsElt AmbientClassBodyElement =
      AmbientConstructorDeclaration
    / AmbientPropertyMemberDeclaration
-   / a1:IndexSig
+   / a1:IndexSig (w semicolon)?
      { yyValue = TSFactory.makeAmbIndDecl(createSpan(yyStart,yyCount), a1); }
    ;
 
@@ -294,7 +305,34 @@ transient AmbCnstDecl AmbientConstructorDeclaration =
  *       but programmers often omit it.
  */
 transient AmbMemDecl AmbientPropertyMemberDeclaration =
-     a1:(PublicOrPrivate w)? a2:(static w)? a3:PropName w a4:CallSig (w semicolon)?
+     a1:(PublicOrPrivate w)? static w a2:CallSig (w semicolon)?
+     { List<Modifier> mods;
+       if (a1 == null) mods = Collections.<Modifier>emptyList();
+       else {
+         mods = new ArrayList<Modifier>();
+         if (a1 != null) mods.add(a1);
+       }
+       Span span = createSpan(yyStart, yyCount);
+       yyValue = TSFactory.makeAmbMemDecl(span, mods,
+                                          NodeFactory.makePropId(span, NodeFactory.makeId(span, "static")),
+                                          Option.<Type>some(a2));
+     }
+   / a1:(PublicOrPrivate w)? static w a2:(w TypeAnnot)? (w semicolon)?
+     { List<Modifier> mods;
+       if (a1 == null) mods = Collections.<Modifier>emptyList();
+       else {
+         mods = new ArrayList<Modifier>();
+         if (a1 != null) mods.add(a1);
+       }
+       Option<Type> ty;
+       if (a2 == null) ty = Option.<Type>none();
+       else ty = Option.<Type>some(a2);
+       Span span = createSpan(yyStart, yyCount);
+       yyValue = TSFactory.makeAmbMemDecl(span, mods,
+                                          NodeFactory.makePropId(span, NodeFactory.makeId(span, "static")),
+                                          ty);
+     }
+   / a1:(PublicOrPrivate w)? a2:(static w)? a3:PropName w a4:CallSig (w semicolon)?
      { List<Modifier> mods;
        if (a1 == null && a2 == null) mods = Collections.<Modifier>emptyList();
        else {

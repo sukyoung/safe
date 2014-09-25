@@ -60,7 +60,7 @@ object JQueryManipulation extends ModelData {
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
 
           /* jQuery object */
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           /* 1st argument */
           val v_arg1 = getArgValue(h, ctx, args, "0")
           val lset_arg = v_arg1._2
@@ -174,7 +174,7 @@ object JQueryManipulation extends ModelData {
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
 
           /* jQuery object */
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           /* 1st argument */
           val v_arg1 = getArgValue(h, ctx, args, "0")
           val lset_arg = v_arg1._2
@@ -286,7 +286,7 @@ object JQueryManipulation extends ModelData {
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
 
           /* jQuery object */
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           /* 1st argument */
           val v_arg1 = getArgValue(h, ctx, args, "0")
           val lset_arg = v_arg1._2
@@ -392,7 +392,7 @@ object JQueryManipulation extends ModelData {
      ("jQuery.prototype.empty" -> (
       (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
         /* jQuery object */
-        val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+        val lset_this = h(SinglePureLocalLoc)("@this")._2._2
 
         val h_ret = lset_this.foldLeft(h)((h1, l1) => {
           val lset_parent = Helper.Proto(h1, l1, NumStr)._2
@@ -407,7 +407,7 @@ object JQueryManipulation extends ModelData {
       ("jQuery.prototype.prepend" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
           /* jQuery object */
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           /* 1st argument */
           val v_arg1 = getArgValue(h, ctx, args, "0")
           val lset_arg = v_arg1._2
@@ -506,7 +506,7 @@ object JQueryManipulation extends ModelData {
       ("jQuery.prototype.remove" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
           /* jQuery object */
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
 
           if (!lset_this.isEmpty) {
             val h_ret = lset_this.foldLeft(h)((h1, l1) => {
@@ -539,7 +539,7 @@ object JQueryManipulation extends ModelData {
       ("jQuery.prototype.text" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
           /* jQuery object */
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           /* 1st argument */
           val v_arg1 = getArgValue(h, ctx, args, "0")
 

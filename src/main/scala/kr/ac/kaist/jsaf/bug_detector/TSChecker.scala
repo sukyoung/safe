@@ -98,7 +98,7 @@ class TSChecker(bugDetector: BugDetector)  extends Walker {
 
     var argSize: (Int, Int) = (-1, -1)
 
-    for (i <- 0 until params.size()) params.get(i) match {
+    for (i <- 0 until params.size) params.get(i) match {
       case SParam(_, _, _, typ, _, opt, rest) => {
         if (rest) {
           hasRest = true
@@ -137,7 +137,6 @@ class TSChecker(bugDetector: BugDetector)  extends Walker {
           numOfOptional+=1
         }
       }
-      case _ =>
     }
 
     if (!hasRest) {
@@ -184,9 +183,9 @@ class TSChecker(bugDetector: BugDetector)  extends Walker {
         for (funLoc <- locset) {
           val propertyName: String = BugHelper.getFuncOrConstPropName(state.heap, funLoc, true)
           if (propertyName != null) {
-            for (fid <- state.heap(funLoc)(propertyName)._1.funid) {
+            for (fid <- state.heap(funLoc)(propertyName).funid) {
               val plen = params.length
-              val alen = state.heap(funLoc)("length")._1.objval.value.pvalue.numval.getSingle match {
+              val alen = state.heap(funLoc)("length").objval.value.pvalue.numval.getSingle match {
                 case Some(v) => v
                 case None => -1
               }
@@ -204,12 +203,12 @@ class TSChecker(bugDetector: BugDetector)  extends Walker {
             case Some(b) => {
               if (b) {
                 val arr = state.heap(arrLoc)
-                val length = arr("length")._1.objval.value.pvalue.numval.getSingle match {
+                val length = arr("length").objval.value.pvalue.numval.getSingle match {
                   case Some(v) => v.toInt
                   case None => -1
                 }
                 for (i <- 0 until length) {
-                  if(!checkType(arr(i.toString)._1.objval.value, typ)) {
+                  if(!checkType(arr(i.toString).objval.value, typ)) {
                     return false
                   }
                 }
@@ -232,12 +231,12 @@ class TSChecker(bugDetector: BugDetector)  extends Walker {
                     val name: String = prop match {
                       case SPropId(info,id) => id.getText
                     }
-                    if(isAbsent(obj(name)._1.objval.value)) {
+                    if(isAbsent(obj(name).objval.value)) {
                       if(!opt) {
                         return false
                       }
                     } else {
-                      if(!checkType(obj(name)._1.objval.value, t)) {
+                      if(!checkType(obj(name).objval.value, t)) {
                         return false
                       }
                     }
@@ -246,12 +245,12 @@ class TSChecker(bugDetector: BugDetector)  extends Walker {
                     val name: String = prop match {
                       case SPropId(info,id) => id.getText
                     }
-                    if(isAbsent(obj(name)._1.objval.value)){
+                    if(isAbsent(obj(name).objval.value)){
                       if(!opt) {
                         return false
                       }
                     } else {
-                      if(!checkType(obj(name)._1.objval.value, sig)) {
+                      if(!checkType(obj(name).objval.value, sig)) {
                         return false
                       }
                     }
@@ -272,9 +271,9 @@ class TSChecker(bugDetector: BugDetector)  extends Walker {
         for (funLoc <- locset) {
           val propertyName: String = BugHelper.getFuncOrConstPropName(state.heap, funLoc, true)
           if (propertyName != null) {
-            for (fid <- state.heap(funLoc)(propertyName)._1.funid) {
+            for (fid <- state.heap(funLoc)(propertyName).funid) {
               val plen = params.length
-              val alen = state.heap(funLoc)("length")._1.objval.value.pvalue.numval.getSingle match {
+              val alen = state.heap(funLoc)("length").objval.value.pvalue.numval.getSingle match {
                 case Some(v) => v
                 case None => -1
               }
@@ -302,12 +301,12 @@ class TSChecker(bugDetector: BugDetector)  extends Walker {
                         val name: String = prop match {
                           case SPropId(info,id) => id.getText
                         }
-                        if(isAbsent(obj(name)._1.objval.value)) {
+                        if(isAbsent(obj(name).objval.value)) {
                           if(!opt) {
                             return false
                           }
                         } else {
-                          if(!checkType(obj(name)._1.objval.value, t)) {
+                          if(!checkType(obj(name).objval.value, t)) {
                             return false
                           }
                         }
@@ -316,12 +315,12 @@ class TSChecker(bugDetector: BugDetector)  extends Walker {
                         val name: String = prop match {
                           case SPropId(info,id) => id.getText
                         }
-                        if(isAbsent(obj(name)._1.objval.value)) {
+                        if(isAbsent(obj(name).objval.value)) {
                           if(!opt) {
                             return false
                           }
                         } else {
-                          if(!checkType(obj(name)._1.objval.value, sig)) {
+                          if(!checkType(obj(name).objval.value, sig)) {
                             return false
                           }
                         }

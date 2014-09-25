@@ -1,5 +1,5 @@
 /*******************************************************************************
-    Copyright (c) 2012-2013, KAIST, S-Core.
+    Copyright (c) 2012-2014, KAIST, S-Core.
     All rights reserved.
 
     Use is subject to license terms.
@@ -18,7 +18,7 @@ import org.w3c.dom.Element
 import kr.ac.kaist.jsaf.analysis.cfg.CFG
 import kr.ac.kaist.jsaf.analysis.typing.models.AbsConstValue
 import kr.ac.kaist.jsaf.analysis.typing.AddressManager._
-
+import kr.ac.kaist.jsaf.Shell
 
 object HTMLHeadingElement extends DOM {
   private val name = "HTMLHeadingElement"
@@ -26,6 +26,7 @@ object HTMLHeadingElement extends DOM {
   /* predefined locatoins */
   val loc_cons = newSystemRecentLoc(name + "Cons")
   val loc_proto = newSystemRecentLoc(name + "Proto")
+  val loc_ins = newSystemRecentLoc(name + "Ins")
 
   /* constructor */
   private val prop_cons: List[(String, AbsProperty)] = List(
@@ -37,6 +38,16 @@ object HTMLHeadingElement extends DOM {
     ("prototype", AbsConstValue(PropValue(ObjectValue(Value(loc_proto), F, F, F))))
   )
   
+  /* instance */
+  private val prop_ins: List[(String, AbsProperty)] = 
+       HTMLElement.getInsList2() ++ List(
+      ("@class",    AbsConstValue(PropValue(AbsString.alpha("Object")))),
+      ("@proto",    AbsConstValue(PropValue(ObjectValue(loc_proto, F, F, F)))),
+      ("@extensible", AbsConstValue(PropValue(BoolTrue))),
+      // DOM Level 1
+      ("align", AbsConstValue(PropValue(ObjectValue(StrTop, T, T, T))))
+   )
+
   /* prorotype */
   private val prop_proto: List[(String, AbsProperty)] = List(
     ("@class", AbsConstValue(PropValue(AbsString.alpha("Object")))),
@@ -49,9 +60,11 @@ object HTMLHeadingElement extends DOM {
     (name, AbsConstValue(PropValue(ObjectValue(loc_cons, T, F, T))))
   )
 
-  def getInitList(): List[(Loc, List[(String, AbsProperty)])] = List(
-    (loc_cons, prop_cons), (loc_proto, prop_proto), (GlobalLoc, prop_global)
-  )
+  def getInitList(): List[(Loc, List[(String, AbsProperty)])] = if(Shell.params.opt_Dommodel2) List(
+    (loc_cons, prop_cons), (loc_proto, prop_proto), (GlobalLoc, prop_global), (loc_ins, prop_ins)
+
+  ) else List(
+    (loc_cons, prop_cons), (loc_proto, prop_proto), (GlobalLoc, prop_global)  ) 
 
   def getSemanticMap(): Map[String, SemanticFun] = {
     Map()
@@ -90,18 +103,20 @@ object HTMLHeadingElement extends DOM {
     }
   }
  
-  def getInsList(align: PropValue): List[(String, PropValue)] = List(
+  def getInsList(align: PropValue, xpath: PropValue): List[(String, PropValue)] = List(
     ("@class",    PropValue(AbsString.alpha("Object"))),
     ("@proto",    PropValue(ObjectValue(loc_proto, F, F, F))),
     ("@extensible", PropValue(BoolTrue)),
     // DOM Level 1
-    ("align", align)
+    ("align", align),
+    ("xpath", xpath)
    )
   
   override def default_getInsList(): List[(String, PropValue)] = { 
     val align = PropValue(ObjectValue(AbsString.alpha(""), T, T, T))
+    val xpath = PropValue(ObjectValue(AbsString.alpha(""), F, F, F))
     // This object has all properties of the HTMLElement object 
-    HTMLElement.default_getInsList ::: getInsList(align)
+    HTMLElement.default_getInsList ::: getInsList(align, xpath)
   }
 
 }

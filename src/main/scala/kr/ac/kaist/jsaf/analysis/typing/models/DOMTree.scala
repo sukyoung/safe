@@ -18,6 +18,7 @@ import org.w3c.dom.ls.LSSerializer
 import org.w3c.dom.DOMConfiguration
 import org.w3c.dom.Document
 import org.w3c.dom.Node
+import org.w3c.dom.Element
 import org.w3c.dom.Attr
 import org.w3c.dom.html._
 import org.apache.html.dom._
@@ -28,8 +29,15 @@ import java.io.StringWriter
 import kr.ac.kaist.jsaf.analysis.cfg.InternalError
 import kr.ac.kaist.jsaf.analysis.typing.models.DOMCore.DOMNode
 import kr.ac.kaist.jsaf.analysis.typing.AddressManager
+import scala.collection.immutable.HashMap
+import kr.ac.kaist.jsaf.{ShellParameters, Shell}
 
 object DOMTree {
+  val quiet = 
+    if(Shell.params.command == ShellParameters.CMD_WEBAPP_BUG_DETECTOR)
+      true
+    else
+      false
   
   // Insert a node represented by 'lset_new' before the node represented by 'lset_ref'
   def insertBefore(h: Heap, lset_this: LocSet, lset_new: LocSet, lset_ref: LocSet): Heap = {
@@ -48,7 +56,7 @@ object DOMTree {
                 h
               else {
                 val _hhh = (n_index until n_length.toInt).foldLeft(h)((_h, i) => {
-                  val i_rev: Int = n_length.toInt - i - 1 
+                  val i_rev: Int = n_index + (n_length.toInt - i) - 1 
                   val v_move = Helper.Proto(_h, l_ns,  AbsString.alpha(i_rev.toString))
                   val _h1 = Helper.Delete(_h, l_ns, AbsString.alpha(i_rev.toString))._1
                   Helper.PropStore(_h1, l_ns, AbsString.alpha((i_rev+1).toString), v_move)
@@ -423,12 +431,14 @@ object DOMTree {
   private val t = TransformerFactory.newInstance().newTransformer()
   t.setOutputProperty(OutputKeys.METHOD, "html");
 
+  def new_concrete_Document : HTMLDocumentImpl = new HTMLDocumentImpl
+
   /* Serialize an abstract DOM tree to an abstract string */
   def serializeToStr(h: Heap, l: Loc): AbsString = {
     doc = new HTMLDocumentImpl
-    val root_op = toConcreteDOMTree(h, l)
+    val root_op = toConcreteDOMTree(h, l, doc)
     root_op match {
-      case Some(n) =>
+      case Some((n, m)) =>
         val docfrag = doc.createDocumentFragment()
         for( i <- (0 until n.getChildNodes.getLength)) {
           docfrag.appendChild(n.getFirstChild)
@@ -441,43 +451,49 @@ object DOMTree {
   }
   
   /* Translate an abstract DOM tree to a concrete DOM tree */
-  def toConcreteDOMTree(h: Heap, l: Loc): Option[Node] = {
-    val node_op = toConcreteNode(h, l)
+  def toConcreteDOMTree(h: Heap, l: Loc, doc: HTMLDocumentImpl): Option[(Node, HashMap[Node, Loc])] = {
+    var newmap = HashMap[Node, Loc]()
+    val node_op = toConcreteNode(h, l, doc)
     
     if(!node_op.isEmpty) {
       val node = node_op.get
+      newmap += (node -> l)
       val children_set: LocSet = Helper.Proto(h, l, AbsString.alpha("childNodes"))._2
       if(children_set.size == 1) {
         val children_loc = children_set.head
         val a_num_children = Helper.toNumber(Helper.toPrimitive(Helper.Proto(h, children_loc, AbsString.alpha("length"))))
         val (num_children_isconcrete, num_children): (Boolean, Int) = a_num_children.gamma match {
           case Some(n) if n.size ==1 => (true, n.head.toInt)
-          case _ => (false, 0)
+          case _ => 
+            if (!quiet) println("Imprecise DOM : multiple children : " + DomainPrinter.printLoc(l))
+            (false, 0)
         }
         if(num_children_isconcrete) {
           // leaf node
           if(num_children == 0) 
-            Some(node)
+            Some(node, newmap)
           else {
             val (children_loc_list, isconcrete) = (0 until num_children).foldLeft[(List[Loc], Boolean)]((List(), true))((ll, i) => {
                 val lset = Helper.Proto(h, children_loc, AbsString.alpha(i.toString))._2
-                if(lset.size != 1)
+                if(lset.size != 1) {
+                  if (!quiet) println("Imprecise DOM : multiple( " + lset.size + " ) children : " + DomainPrinter.printLoc(l))
                   (ll._1, false)
+                }
                 else {
                   ((ll._1 :+ lset.head), ll._2)
                 }
               })
             if(isconcrete) {
-              val (children, children_isconcrete) = children_loc_list.foldLeft[(List[Node], Boolean)](List(), true)((nn, l) => {
-                val n_op = toConcreteDOMTree(h, l)
-                n_op match {
-                  case Some(n) => (nn._1 :+ n, nn._2)
-                  case None => (nn._1, false)
+              val (children, children_isconcrete, finalmap) = children_loc_list.foldLeft[(List[Node], Boolean, HashMap[Node, Loc])]((List(), true, newmap))((nn, l) => {
+                val n_op = toConcreteDOMTree(h, l, doc)
+                (n_op) match {
+                  case Some((n, map)) => (nn._1 :+ n, nn._2, nn._3 ++ map)
+                  case None => (nn._1, false, nn._3)
                 }
               })
               if(children_isconcrete) {
                 children.foreach(n => node.appendChild(n))
-                Some(node)
+                Some(node, finalmap)
               }
               // children : not concrete
               else
@@ -499,12 +515,15 @@ object DOMTree {
     }
     
     // root node: not concrete value
-    else 
+    else {
+      if (!quiet) println("Imprecise DOM : imprecise node " + DomainPrinter.printLoc(l))
       None
+    }
+
   }
 
   /* Translate an abstract DOM node to a concrete DOM node */
-  def toConcreteNode(h: Heap, l: Loc): Option[Node] = {
+  def toConcreteNode(h: Heap, l: Loc, doc: HTMLDocumentImpl): Option[Node] = {
     if(AddressManager.isOldLoc(l)) None
     else {
       val a_nodetype = Helper.toNumber(Helper.toPrimitive_better(h, Helper.Proto(h, l, AbsString.alpha("nodeType"))))
@@ -512,18 +531,25 @@ object DOMTree {
       val a_attributes = Helper.Proto(h, l, AbsString.alpha("attributes"))._2
       val (nodetype_isconcrete, nodetype): (Boolean, Int) = a_nodetype.gamma match {
         case Some(n) if n.size == 1 => (true, n.head.toInt)
-        case _ => (false, 0)
+        case _ => 
+          if (!quiet) println("Imprecise DOM : multiple nodetype : " + DomainPrinter.printLoc(l))
+          (false, 0)
       }
 
       val (nodename_isconcrete, nodename) = a_nodename.gamma match {
         case Some(ss) if ss.size == 1 => (true, ss.head)
-        case _ => (false, "")
+        case _ => 
+          if (!quiet) println("Imprecise DOM : multiple nodename : " + DomainPrinter.printLoc(l))
+          (false, "")
       }
 
       val (attributes_isconcrete, attributes) = 
         if(a_attributes.size == 1) (true, a_attributes.head)
         else if(a_attributes.size == 0) (true, -1)
-        else (false, -1)
+        else {
+          if (!quiet) println("Imprecise DOM : multiple attributes : " + DomainPrinter.printLoc(l))
+         (false, -1)
+       }
 
       if(nodetype_isconcrete && nodename_isconcrete && attributes_isconcrete) {
         nodetype match {
@@ -713,14 +739,16 @@ object DOMTree {
                 val element = new HTMLBaseElementImpl(doc, nodename)
                 Some(element) 
               case _ => 
-                System.err.println("* Warning: " + nodename + " - not modeled yet.")
+                if (!quiet) System.err.println("* Warning: " + nodename + " - not modeled yet.")
                 val element = new HTMLBaseElementImpl(doc, nodename)
                 Some(element)
             }
             val a_id = Helper.toString(Helper.toPrimitive_better(h, Helper.Proto(h, l, AbsString.alpha("id"))))
             val (id_isconcrete, id) = a_id.gamma match {
               case Some(ss) if ss.size == 1 => (true, ss.head)
-               case _ => (false, "")
+               case _ => 
+                if (!quiet) println("Imprecise DOM : multiple ids : " + DomainPrinter.printLoc(l))
+               (false, "")
             }
             if(!node_op.isEmpty && id_isconcrete) {
               val node = node_op.get
@@ -729,16 +757,18 @@ object DOMTree {
                 val a_len = Helper.toNumber(Helper.toPrimitive(Helper.Proto(h, attributes, AbsString.alpha("length"))))
                 val (len_isconcrete, len) = a_len.gamma match {
                   case Some(l) if l.size == 1 => (true, l.head.toInt)
-                  case _ => (false, 0)
+                  case _ => 
+                    if (!quiet) println("Imprecise DOM : imprecise length of attributes : " + DomainPrinter.printLoc(l))
+                    (false, 0)
                 }
                 if(len_isconcrete){
                   val (attr_list, attr_isconcrete) = (0 until len).foldLeft[(List[Attr], Boolean)]((List(), true))((aa, i) => {
                     val attr_lset = Helper.Proto(h, attributes, AbsString.alpha(i.toString))._2
                     if(attr_lset.size == 1) {
                       val attr_l = attr_lset.head
-                      val attr_op = toConcreteDOMTree(h, attr_l)
+                      val attr_op = toConcreteDOMTree(h, attr_l, doc)
                       if(!attr_op.isEmpty)
-                        attr_op.get match {
+                        attr_op.get._1 match {
                           case a: Attr => 
                             (aa._1 :+ a, aa._2)
                           case _ =>
@@ -756,12 +786,16 @@ object DOMTree {
                       node.setId(id)
                     Some(node)
                   } 
-                  else
+                  else{
+                    if (!quiet) println("Imprecise DOM : imprecise attr node " + DomainPrinter.printLoc(l))
                     None
+                  }
                 }
                 // attributes: not concrete
-                else
+                else {
+                  if (!quiet) println("Imprecise DOM : imprecise attributes node " + DomainPrinter.printLoc(l))
                   None
+                }
               }
               else
                 Some(node)
@@ -776,7 +810,9 @@ object DOMTree {
             val a_data = Helper.toString(Helper.toPrimitive(Helper.Proto(h, l, AbsString.alpha("data"))))
             val (data_isconcrete, data) = a_data.gamma match {
               case Some(ss) if ss.size == 1 => (true, ss.head)
-              case _ => (false, "")
+              case _ => 
+                if (!quiet) println("Imprecise DOM : imprecise text data : " + DomainPrinter.printLoc(l))
+                (false, "")
             }
             if(data_isconcrete){
               val text = doc.createTextNode(data)
@@ -796,7 +832,9 @@ object DOMTree {
             val a_data = Helper.toString(Helper.toPrimitive(Helper.Proto(h, l, AbsString.alpha("data"))))
             val (data_isconcrete, data) = a_data.gamma match {
               case Some(ss) if ss.size == 1 => (true, ss.head)
-              case _ => (false, "")
+              case _ => 
+                if (!quiet) println("Imprecise DOM : imprecise comment data : " + DomainPrinter.printLoc(l))
+                (false, "")
             }
             if(data_isconcrete){
               val comment = doc.createComment(data)
@@ -808,7 +846,8 @@ object DOMTree {
           case DOMNode.DOCUMENT_NODE =>
             Some(doc)
           case DOMNode.DOCUMENT_TYPE_NODE =>
-            Some(doc.getDoctype)
+            val doctype = doc.createDocumentType("xml", null, null)
+            Some(doctype)
           case DOMNode.DOCUMENT_FRAGMENT_NODE =>
             val docfrag = doc.createDocumentFragment
             Some(docfrag)
@@ -823,6 +862,27 @@ object DOMTree {
       else
         None
     }
+  }
+  
+  val reg_no = """[^(^\s*)].*[^($\s*)]|.""".r
+  // implementation of getElementsByClassName on a concrete tree
+  def getElementsByClassName_concrete(root : Node, className: String) : List[Node] = {
+    // remove white spaces at front and back
+    val className_n = (reg_no.findAllIn(className).toList)(0)
+    val list = root match {
+      case e: Element => 
+         val value = e.getAttribute("class")
+         val new_match = ("""(\s|^)""" + className_n + """(\s|$)""").r
+         if(new_match.findAllIn(value).toList.size != 0)
+            List(root)
+         else
+            List()
+      case _ => List()  
+    }
+    val childNodes = root.getChildNodes
+    (0 until childNodes.getLength).foldLeft(list)((ll, i) => {
+      ll ++ getElementsByClassName_concrete(childNodes.item(i), className)
+    })
   }
 
 }

@@ -9,307 +9,357 @@
 
 package kr.ac.kaist.jsaf.concolic
 
-import _root_.java.util.BitSet
-import _root_.java.util.{List => JList}
 import kr.ac.kaist.jsaf.exceptions.ConcolicError
 import kr.ac.kaist.jsaf.interpreter.Interpreter
-import kr.ac.kaist.jsaf.nodes._
-import kr.ac.kaist.jsaf.nodes_util.EJSOp
-import kr.ac.kaist.jsaf.nodes_util.{ IRFactory => IF }
-import kr.ac.kaist.jsaf.nodes_util.{ NodeUtil => NU }
-import kr.ac.kaist.jsaf.scala_src.nodes._
-import kr.ac.kaist.jsaf.scala_src.useful.Lists._
 import kr.ac.kaist.jsaf.scala_src.useful.Options._
-import kr.ac.kaist.jsaf.scala_src.useful.Sets._
-
+import scala.collection.mutable.Stack
 import scala.collection.mutable.Queue
 
-class ConstraintExtractor(I: Interpreter) {
+class ConstraintExtractor {
   abstract class SymbolicTree 
-  //case class Node(v: Boolean, e: Option[Tuple2[String, String]], pc: Option[ConstraintForm], vector: BitSet) extends SymbolicTree {
-  case class Node(_visited: Boolean, _constraint: Option[ConstraintForm], _bitvector: BitSet) extends SymbolicTree {
-      var visited = _visited
-      //var expr = e
-      var constraint = _constraint 
-      var bitvector = _bitvector
+  case class Node(visited: Boolean, content: Option[ConstraintForm], left: Option[SymbolicTree], right: Option[SymbolicTree], dep: Int) extends SymbolicTree {
+    var isVisit = visited
+    val constraint = content
+    var parents: Option[List[Node]] = None
+    var leftChild = left
+    var rightChild = right
+    
+    var branchEnd: Node = null
+
+    var depth = dep
+
+    def setParents(p: List[Node]) = parents = Some(p)
+    def getParent = {
+      val temp = parents.unwrap
+      temp(0)
+    }
+    def changeParent(from: Node, to: Node) = {
+      var temp = parents.unwrap
+      for (i <- 0 until temp.length) { 
+        if (from.constraint == temp(i).constraint) 
+          temp = temp.updated(i, to)
+      }
+      parents = Some(temp)
+    }
+
+    def setBranchEnd(end: Node) = branchEnd = end
+
+    override def toString = "Node with a constraint: "+constraint+", and with visited flag: "+isVisit
   }
-  case class Statement(node: Node, children: SymbolicTree) extends SymbolicTree
-  case class Condition(node: Node, left: SymbolicTree, right: SymbolicTree) extends SymbolicTree
+
+  // Initially expanded node would be root.
+  var root: SymbolicTree = Node(true, None, None, None, 0)  
+  var expanded: Node = null 
+
+  var leaves: Stack[Node] = null
+  var unvisited: Queue[Node] = null
+
+  // To distinquish the newly generated information from the exisiting information.
+  var previous: List[Node] = null
+  var branches: Stack[Node] = null
+
+  var constraints: List[ConstraintForm] = null
   
+  var necessaries: List[SymbolicValue] = null
+
   var debug = false 
 
-  // store where node locates in the symbolic execution tree 
-  var bitset: BitSet = null
-  var tree: SymbolicTree = null
-  var unvisited: Queue[Node] = null
-  // indicate expanded node in the symbolic execution tree
-  var target: Node = null
-  // target's bitset
-  var expanded: BitSet = null 
-  var constraints: List[ConstraintForm] = null
-
   def initialize() = {
-    bitset = new BitSet()
-    bitset.set(0)
-    //tree = new Node(true, None, None, bitset)
-    tree = new Node(true, None, bitset)
-    unvisited = new Queue[Node]
-    target = null
-    expanded = new BitSet()
-    expanded.set(0)
-    constraints = List[ConstraintForm]()
+    unvisited = new Queue
+    root = Node(true, None, None, None, 0)  
   }
-  
-  def extract(report: List[Info]) = {
-    val previousConstraints = constraints
-    constraints = List[ConstraintForm]()
-    /* Construct the symbolic execution tree */
-    var subtree:SymbolicTree = Node(true, None, expanded)
-    var r:List[Info] = report.drop(expanded.length-1)
-    // FOR DUBUGGING
+
+  def modify(report: List[SymbolicInfo]) = {
     if (debug) {
-      System.out.println("Report: " + report.map(_.toString))
-      System.out.println("Affected Report: " + r.map(_.toString))
-      System.out.println("Expanded Node: " + expanded)
+      System.out.println("====================== Report ========================")
+      System.out.println(report.map(_.toString))
+      System.out.println("======================================================")
     }
-    
-    // TODO: Check the explored path is what we wanted.
-    /*if (target != null) {
-      var tmp = report(expanded.length-2)
-      var tmpConstraint = negate(tmp.branchTaken, tmp) 
-      if (tmpConstraint.isSome) {
-        if (!tmp.toString.equals(target.constraint.toString)) {
-          System.out.println("One more try")
-          constraints = previousConstraints
+    var affected = List[SymbolicInfo]()
+    constraints = List[ConstraintForm]()
+
+    leaves = Stack(root.asInstanceOf[Node])
+    branches = Stack()
+    setPrevious(root.asInstanceOf[Node])
+    var newlyEnd = 0
+    for (info <- report) {
+      // Existing information just update the original tree.
+      if (matchPrevious(info) && newlyEnd == 0)  
+        update(info)
+      // New information should be built as a subtree of the original tree.
+      else {
+        // Newly added branch information should be ended before updating exisiting information.
+        if (info.getType == 2) newlyEnd += 1
+        if (info.getType == 3) newlyEnd -= 1
+        affected = affected :+ info
+        insert(info)
+      }
+    }
+
+    //Remove a node from unvisited queue because it is visited by chance.
+    unvisited = unvisited.filterNot(_.isVisit).toQueue
+
+    if (debug) {
+      System.out.println("================== Affected Report ===================")
+      System.out.println(affected.map(_.toString))
+      System.out.println("======================================================")
+      System.out.println("============== Symbolic Exeuction Tree ===============")
+      printTree(root)
+      System.out.println("======================================================")
+    }
+
+    extract
+
+  }
+
+  def extract() = {
+    if (unvisited.isEmpty) System.out.println("DONE")
+    else {
+      expanded = unvisited.dequeue
+      collect(expanded)
+
+      // Extract only symbolic values that is necessary to explore a chosen branch.
+      var targetValues = constraints.filter(_.isBranchConstraint).foldLeft[List[SymbolicValue]](List())((list, constraint) => {
+        val temp = list:::constraint.getSymbolicValues 
+        temp.distinct
+      })
+      necessaries = List()
+      val assignConstraints = constraints.filterNot(_.isBranchConstraint)
+      while (targetValues.nonEmpty) {
+        var sv = targetValues.head
+        necessaries = necessaries:+sv 
+
+        targetValues = targetValues.tail
+        assignConstraints.find(_.getLhs == sv) match {
+          case Some(x) => 
+            if (x.getRhs.isSome) { 
+              val temp = x.getRhs.unwrap.getSymbolicValues:::targetValues
+              targetValues = temp.distinct  
+            }
+          case None =>
         }
       }
-    }*/
-
-    for (info <- r) 
-      subtree = insert(subtree, info)
-    tree = combine(tree, expanded.length-1, subtree)
-    
-    if (unvisited.isEmpty) 
-      System.out.println("DONE")
-    else {
-      target = unvisited.dequeue
-      expanded = target.bitvector
-      collect(tree, target.bitvector, target.bitvector.length-2)
-    }
-  }
-
-  def combine(origin: SymbolicTree, index: Int, additional: SymbolicTree):SymbolicTree = {
-    if (index > 0) {
-      origin match {
-        case Condition(node, left, right) =>
-            if (expanded.get(index-1))
-              Condition(node, combine(left, index-1, additional), right)
-            else
-              Condition(node, left, combine(right, index-1, additional))
-        case Statement(node, child) => 
-            Statement(node, combine(child, index-1, additional))
-        //case Node(v, e, pc, vector) =>
-        case Node(visited, constraint, bitvector) =>
-            System.out.println("WRONG COMBINATION 1")
-            //Node(v, e, pc, vector)
-            Node(visited, constraint, bitvector)
-      }
-    }
-    else {
-      origin match {
-        case Condition(node, left, right) =>
-            System.out.println("WRONG COMBINATION 2")
-            Condition(node, left, right)
-        case Statement(node, child) =>  
-            System.out.println("WRONG COMBINATION 3")
-            Statement(node, child)
-        //case Node(v, e, pc, vector) =>
-        case Node(visited, constraint, bitvector) =>
-            additional match {
-              case Condition(node, left, right) => //Condition(Node(!v, e, pc, vector), left, right)
-                Condition(Node(!visited, constraint, bitvector), left, right)
-              case Statement(node, child) => //Statement(Node(!v, e, pc, vector), child)
-                Statement(Node(!visited, constraint, bitvector), child)
-              //case Node(v2, e2, pc2, vector2) =>  Node(!v, e, pc, vector)
-              case Node(_, _, _) =>  Node(!visited, constraint, bitvector)
-            }
-      }
-    }  
-  }
-
-  def insert(t: SymbolicTree, info: Info):SymbolicTree = t match {
-    //case Node(v, e, pc, vector) => 
-    case Node(visited, constraint, bitvector) => 
-      if (info.isCond) {
-        var b1 = bitShift(bitvector)
-        b1.set(0, info.branchTaken)
-        var n1 = Node(true, negate(info.branchTaken, info), b1)
-        
-        var b2 = bitShift(bitvector)
-        b2.set(0, !info.branchTaken)
-        var n2 = Node(false, negate(!info.branchTaken, info), b2)
-        
-        unvisited += n2
-        // Left for true branch and right for false branch
-        if (info.branchTaken)
-          Condition(Node(visited, constraint, bitvector), n1, n2)
+      /*constraints = constraints.foldLeft[List[ConstraintForm]](List())((list, cons) => {
+        if (necessaries.find(_ == cons.getLhs).isSome)
+          list:+cons
         else
-          Condition(Node(visited, constraint, bitvector), n2, n1)
-      }
-      else {
-        var b = bitShift(bitvector)
-        b.set(0)
-        var cond = new ConstraintForm
+          list
+      })*/
+      necessaries = necessaries.filter(_.isInput)
+    }
+
+    if (debug) {
+      System.out.println("=================== Expanded Node ====================")
+      System.out.println(expanded)
+      System.out.println("======================================================")
+      System.out.println("==================== Constraints =====================")
+      System.out.println(constraints)
+      System.out.println("======================================================")
+    }
+  }
+
+  def collect(node: Node): Unit = {
+    if (node.constraint.isSome)
+      constraints = node.constraint.unwrap::constraints 
+    if (node.parents.isNone)
+      return
+    else {
+      val parents = node.parents.unwrap
+      var target = if (parents.length > 1 && !parents(1).isVisit) parents(1) else parents(0)
+      collect(target)
+    }
+  }
+
+  def update(info: SymbolicInfo) = {
+    val target = leaves.pop
+    var left: Node = null
+    var right: Node = null
+    info.getType match {
+      case 1 => // Statement
+        left = target.leftChild.unwrap.asInstanceOf[Node]
+        left.depth = target.depth+1
+        leaves.push(left)
+
+        setPrevious(left)
+      case 2 => // Branch 
+        left = target.leftChild.unwrap.asInstanceOf[Node]
+        right = target.rightChild.unwrap.asInstanceOf[Node]
+        left.depth = target.depth+1
+        right.depth = target.depth+1
+
+        var child = if (!info.branchTaken) right else left 
+        var previousChild = if (!info.branchTaken) left else right 
+
+        child.isVisit = true 
+
+        leaves.push(child)
+        setPrevious(child)
+        if (previous.isEmpty) {
+          //setPrevious(previousChild)
+          findProperPrevious(previousChild)
+        }
+      case 3 => // End of branch
+        var child: Node = null
+        if (target.leftChild.isNone && target.rightChild.isNone) {
+          child = previous(0) 
+
+          var previousParent = child.getParent
+
+          var depth = previousParent.depth
+          if (target.depth > depth) depth = target.depth
+          child.depth = depth+1
+
+          if (previousParent.leftChild.isSome) target.rightChild = Some(child)
+          else target.leftChild = Some(child)
+
+          if (previousParent.leftChild.isSome) child.setParents(List(previousParent, target))
+          else child.setParents(List(target, previousParent))
+        }
+        else {
+          child = 
+            if (target.leftChild.isSome) target.leftChild.unwrap.asInstanceOf[Node]
+            else target.rightChild.unwrap.asInstanceOf[Node]
+        }
+        child.depth = target.depth+1
+        leaves.push(child)
+        setPrevious(child)
+    }
+  }
+
+  def insert(info: SymbolicInfo): Unit = {
+    var cand1 = leaves.pop
+    var target = cand1
+    if (!target.isVisit)
+      throw new ConcolicError("All of adjacent leaves are not visited.")
+
+    var left: Node = null
+    var right: Node = null
+    info.getType match {
+      case 1 => // Statement
+        val cond = new ConstraintForm
         cond.makeConstraint(info._id, info._lhs, info._op, info._rhs)
-        //var rhs = new ConstraintForm
-        //rhs = parsing(info.expr._2)
+        left = Node(true, Some(cond), None, None, target.depth+1)
+        target.leftChild = Some(left)
+        left.setParents(List(target))
 
-        //cond.makeConstraint(info.expr._1, "=", rhs)
-        //Statement(Node(v, e, pc, vector), Node(true, Some(info.expr), Some(cond), b))
-        Statement(Node(visited, constraint, bitvector), Node(true, Some(cond), b))
-      }
-    case Statement(node, child) => Statement(node, insert(child, info))
-    case Condition(node, left, right) =>
-      if(isVisit(left))
-        Condition(node, insert(left, info), right)
-      else 
-        Condition(node, left, insert(right, info))
+        leaves.push(left)
+      case 2 => // Branch 
+        val depth = target.depth+1
+        // Put a true branch on the left side, and a false branch on the right side. 
+        val visitNode = Node(true, negate(info.branchTaken, info), None, None, depth) 
+        val notvisitNode = Node(false, negate(!info.branchTaken, info), None, None, depth)
+        left = if (info.branchTaken) visitNode else notvisitNode
+        right = if (info.branchTaken) notvisitNode else visitNode
+
+        target.leftChild = Some(left)
+        target.rightChild = Some(right)
+
+        left.setParents(List(target))
+        right.setParents(List(target))
+
+        leaves.push(visitNode)
+        branches.push(visitNode)
+
+        unvisited += notvisitNode
+      case 3 => // End of branch
+        var depth = cand1.depth
+        // cand2 could be null because SymbolicHelper records only if-statements under certain conditions, however records every end-if-statements.
+        left = Node(true, None, None, None, depth+1)
+        cand1.leftChild = Some(left)
+        left.setParents(List(cand1))
+        
+        if (branches.nonEmpty) {
+          var branch = branches.pop
+          branch.setBranchEnd(left)
+        }
+
+        leaves.push(left)
+    }
   }
 
-  def collect(t: SymbolicTree, bitset: BitSet, index: Int):List[ConstraintForm] = t match {
-    //TODO: combine disffused symbolic expression to one single constraint 
-    //according to the supporting form of z3 solver.
-    //case Node(v, e, pc, vector) => 
-    case Node(visited, constraint, bitvector) => 
-      if (!bitset.equals(bitvector)) 
-        System.out.println(bitset.toString + ", " + bitvector.toString)
-      constraint match { case Some(c) => constraints = constraints:+c; case None => }
-      return constraints
-    case Statement(node, child) => 
-      if (!bitset.get(index))
-        System.out.println(index.toString)
-      node.constraint match { case Some(c) => constraints = constraints:+c; case None => }
-      collect(child, bitset, index-1)
-    case Condition(node, left, right) =>
-      node.constraint match { case Some(c) => constraints = constraints:+c; case None => }
-      if (bitset.get(index))
-        collect(left, bitset, index-1)
-      else
-        collect(right, bitset, index-1)
-  }
-
-  /* Helper functions */
-  def bitShift(v: BitSet):BitSet = {
-    var res = new BitSet()
-    var i = 0
-    for (i <- 0 to v.length)
-      res.set(i+1, v.get(i))
-    return res
-  }
-
-  def isVisit(t: SymbolicTree):Boolean = t match {
-    //case Node(v, e, pc, vector) => v
-    case Node(visited, constraint, bitvector) => visited
-    case Statement(node, child) => node.visited
-    case Condition(node, right, left) =>  node.visited
-  }
-    
-  def negate(trueBranch: Boolean, info: Info):Option[ConstraintForm] = info._op match {
-    case Some(op) => 
-      var operator = 
-        if (!trueBranch)
-          op match {
-            case "<" => Some(">=")
-            case "<=" => Some(">")
-            case ">" => Some("<=")
-            case ">=" => Some("<")
-            case "==" => Some("!=")
-            case "!=" => Some("==")
-            case "===" => Some("!==")
-            case "!==" => Some("===")
-          }
-        else
-          Some(op)
-      var cond = new ConstraintForm
+  def negate(trueBranch: Boolean, info: SymbolicInfo): Option[ConstraintForm] = info._op match {
+    case Some(op) =>
+      val operator = 
+        if (!trueBranch) op match {
+          case "<" => Some(">=")
+          case "<=" => Some(">")
+          case ">" => Some("<=")
+          case ">=" => Some("<")
+          case "==" => Some("!=")
+          case "!=" => Some("==")
+          case "===" => Some("!==")
+          case "!==" => Some("===")
+        }
+        else Some(op)
+      val cond = new ConstraintForm
       cond.makeConstraint(None, info._lhs, operator, info._rhs) 
-      return Some(cond)
+      cond.setBranchConstraint
+      Some(cond)
     case None => info._lhs match {
       case Some(lhs) =>
-        var operator = 
-          if (trueBranch) Some("!=")
-          else Some("==")
+        val operator = if (trueBranch) Some("!=") else Some("==")
         // TODO: It should be "true" and "Boolean" instead of "0" and "Number"
-        var tmp = new SymbolicValue
+        val tmp = new SymbolicValue
         tmp.makeSymbolicValue("0", "Number")
-        var cond = new ConstraintForm
+        val cond = new ConstraintForm
         cond.makeConstraint(None, Some(lhs), operator, Some(tmp)) 
+        cond.setBranchConstraint
         return Some(cond)
       case None =>
-        throw new ConcolicError("The 'lhs' part in the information should be completed.")
+        throw new ConcolicError("The 'lhs' part in the information should be filled in.")
     }
-      /*var cond = new ConstraintForm
-      cond.lhs = info.expr._2
-      var rhs = new ConstraintForm
-      // TODO: It should be "true" instead of "0"
-      rhs.makeConstraint("0")
-      cond.rhs = Some(rhs)
-      cond.op = Some("==")
-      if (!trueBranch) 
-        cond.op = Some("!=") 
-      return Some(cond)*/
-  }
-  
-  def height(t: SymbolicTree):Int = t match {
-    //case Node(v, e, pc, vector) => 0
-    case Node(visited, condition, bitvector) => 0
-    case Statement(node, child) => 1 + height(child)
-    case Condition(node, left, right) =>
-      if(isVisit(left)) 
-        1 + height(left)
-      else 
-        1 + height(right)
   }
 
-  /*def parsing(expr: String):ConstraintForm = {
-    var res = new ConstraintForm()
-    var operations = Array('+', '-', '*', '/', '%')
-    var isop = false
-    for (op <- operations) {
-      if (expr.contains(op)) {
-        isop = true
-        var parse = expr.split(op)    
-        var rhs = new ConstraintForm()
-        rhs.makeConstraint(parse(1))
-        res.makeConstraint(parse(0), op.toString, rhs)
+  def setPrevious(node: Node) = {
+    previous = List()
+    if (node.leftChild.isSome)
+      previous = previous :+ node.leftChild.unwrap.asInstanceOf[Node]
+    if (node.rightChild.isSome)
+      previous = previous :+ node.rightChild.unwrap.asInstanceOf[Node]
+  }
+
+  def findProperPrevious(node: Node) = {
+    if (node.branchEnd != null)
+      previous = List(node.branchEnd) 
+  }
+
+  def matchPrevious(info: SymbolicInfo) = {
+    // Transform the information to check equality. 
+    val cond = info.getType match {
+      case 1 => 
+        val temp = new ConstraintForm
+        temp.makeConstraint(info._id, info._lhs, info._op, info._rhs)
+        temp.toString
+      case 2 => 
+        negate(info.branchTaken, info).unwrap.toString
+      case 3 => 
+        "" 
+    }
+    var result = false
+    if (previous != null) {
+      for (node <- previous) { 
+        val temp = 
+          if (node.constraint.isSome) node.constraint.unwrap.toString 
+          else ""
+        if (temp == cond)
+          result = true
       }
     }
-    if (!isop)
-      res.makeConstraint(expr)
-    return res
-  }*/
-
-  def toString(t: SymbolicTree):String = t match {
-    //case Node(v, e, pc, vector) =>
-    case Node(visited, constraint, bitvector) =>
-      val const = constraint match { case Some(c) => c.toString; case None => "root" }
-      //"(" + v.toString + "/ " + expr + "/ " + cond + "/ " + vector.toString + ") "
-      "(" + visited.toString + "/ " + const + "/ " + bitvector.toString + ") "
-    case Statement(node, child) => 
-      toString(node) + "(" + toString(child) + ")"
-    case Condition(node, left, right) =>
-      toString(node) + "(" + toString(left) + "," + toString(right) + ") "
+    result 
   }
 
-  def print() = {
-    System.out.println("============== Symbolic Execution Tree ===============")
-    System.out.println(toString(tree))
-    System.out.println("======================================================")
-    System.out.println("================ Selected Constraint =================")
-    for (elem <- constraints)
-        System.out.println(elem.toString)
-    System.out.println("======================================================")
+  def printTree(tree: SymbolicTree): Unit = {
+    val node = tree.asInstanceOf[Node]
+    System.out.println(node)
+    if (node.leftChild.isSome) {
+      for (i <- 0 until node.depth)
+        System.out.print("\t")
+      printTree(node.leftChild.unwrap) 
+    }
+    if (node.rightChild.isSome) {
+      for (i <- 0 until node.depth)
+        System.out.print("\t")
+      printTree(node.rightChild.unwrap) 
+    }
   }
 }
-      
-        
-  

@@ -54,7 +54,7 @@ case class Heap(map: HeapMap) {
   /* lookup */
   def apply(loc: Loc): Obj = map.get(loc) match {
     case Some(obj) => obj
-    case None => ObjBot
+    case None => Obj.bottom
   }
 
   /* heap update */

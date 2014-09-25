@@ -22,6 +22,7 @@ import kr.ac.kaist.jsaf.analysis.typing.AddressManager._
 import kr.ac.kaist.jsaf.analysis.typing.{Semantics, ControlPoint, Helper, PreHelper}
 import kr.ac.kaist.jsaf.analysis.typing.models.DOMCore.{DOMElement, DOMException, DOMNodeList, DOMNamedNodeMap}
 import kr.ac.kaist.jsaf.analysis.typing.models.DOMObject.CSSStyleDeclaration
+import kr.ac.kaist.jsaf.Shell
 
 object HTMLTableRowElement extends DOM {
   private val name = "HTMLTableRowElement"
@@ -29,6 +30,7 @@ object HTMLTableRowElement extends DOM {
   /* predefined locatoins */
   val loc_cons = newSystemRecentLoc(name + "Cons")
   val loc_proto = newSystemRecentLoc(name + "Proto")
+  val loc_ins = newSystemRecentLoc(name + "Ins")
 
   /* constructor */
   private val prop_cons: List[(String, AbsProperty)] = List(
@@ -39,7 +41,25 @@ object HTMLTableRowElement extends DOM {
     ("length", AbsConstValue(PropValue(ObjectValue(Value(AbsNumber.alpha(0)), F, F, F)))),
     ("prototype", AbsConstValue(PropValue(ObjectValue(Value(loc_proto), F, F, F))))
   )
-  
+     /* instance */
+  private val prop_ins: List[(String, AbsProperty)] = 
+       HTMLElement.getInsList2() ++ List(
+      ("@class",    AbsConstValue(PropValue(AbsString.alpha("Object")))),
+      ("@proto",    AbsConstValue(PropValue(ObjectValue(loc_proto, F, F, F)))),
+      ("@extensible", AbsConstValue(PropValue(BoolTrue))),
+      // DOM Level 1
+      ("align", AbsConstValue(PropValue(ObjectValue(StrTop, F, T, T)))),
+      ("bgColor", AbsConstValue(PropValue(ObjectValue(StrTop, F, T, T)))),
+      ("ch", AbsConstValue(PropValue(ObjectValue(StrTop, F, T, T)))),
+      ("chOff", AbsConstValue(PropValue(ObjectValue(StrTop, F, T, T)))),
+      ("vAlign", AbsConstValue(PropValue(ObjectValue(StrTop, T, T, T)))),
+      ("vAlign", AbsConstValue(PropValue(ObjectValue(StrTop, T, T, T)))),
+      ("rowIndex", AbsConstValue(PropValue(ObjectValue(NumTop, F, T, T)))),
+      ("sectionRowIndex", AbsConstValue(PropValue(ObjectValue(NumTop, F, T, T)))),
+      ("cells", AbsConstValue(PropValue(ObjectValue(Value(HTMLCollection.loc_ins), T, T, T))))
+    )
+
+
   /* prorotype */
   private val prop_proto: List[(String, AbsProperty)] = List(
     ("@class", AbsConstValue(PropValue(AbsString.alpha("Object")))),
@@ -54,10 +74,12 @@ object HTMLTableRowElement extends DOM {
     (name, AbsConstValue(PropValue(ObjectValue(loc_cons, T, F, T))))
   )
 
-  def getInitList(): List[(Loc, List[(String, AbsProperty)])] = List(
-    (loc_cons, prop_cons), (loc_proto, prop_proto), (GlobalLoc, prop_global)
-  )
 
+  def getInitList(): List[(Loc, List[(String, AbsProperty)])] = if(Shell.params.opt_Dommodel2) List(
+    (loc_cons, prop_cons), (loc_proto, prop_proto), (GlobalLoc, prop_global), (loc_ins, prop_ins)
+
+  ) else List(
+    (loc_cons, prop_cons), (loc_proto, prop_proto), (GlobalLoc, prop_global)  ) 
   def getSemanticMap(): Map[String, SemanticFun] = {
     Map(
       // Modeling Based on WHATWG Living Standard 
@@ -65,7 +87,7 @@ object HTMLTableRowElement extends DOM {
       // HTMLElement insertCell(optional long index = -1)
       ("HTMLTableRowElement.insertCell" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-        val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+        val lset_env = h(SinglePureLocalLoc)("@env")._2._2
         val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
         if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
         val addr_env = (cp._1._1, set_addr.head)
@@ -78,7 +100,7 @@ object HTMLTableRowElement extends DOM {
         val l_attributes = addrToLoc(addr3, Recent)
         val l_style = addrToLoc(addr4, Recent)
 
-        val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+        val lset_this = h(SinglePureLocalLoc)("@this")._2._2
         
         // DOMException object with the IndexSizeError exception
         val es = Set(DOMException.INDEX_SIZE_ERR)
@@ -92,15 +114,15 @@ object HTMLTableRowElement extends DOM {
         
         // object for 'childNodes' property
         val childNodes_list = DOMNodeList.getInsList(0)
-        val childNodes = childNodes_list.foldLeft(ObjEmpty)((x, y) => x.update(y._1, y._2))
+        val childNodes = childNodes_list.foldLeft(Obj.empty)((x, y) => x.update(y._1, y._2))
         
         // object for 'attributes' property
         val attributes_list = DOMNamedNodeMap.getInsList(0)
-        val attributes = attributes_list.foldLeft(ObjEmpty)((x, y) => x.update(y._1, y._2))
+        val attributes = attributes_list.foldLeft(Obj.empty)((x, y) => x.update(y._1, y._2))
 
         // object for 'style' property
         val style_list = CSSStyleDeclaration.getInsList()
-        val style = style_list.foldLeft(ObjEmpty)((x, y) => x.update(y._1, y._2))
+        val style = style_list.foldLeft(Obj.empty)((x, y) => x.update(y._1, y._2))
 
         // object for HTMLTableCellElement
         val td_obj_proplist = DOMElement.getInsList(PropValue(ObjectValue(AbsString.alpha("TD"),F, T, T))):::
@@ -108,7 +130,7 @@ object HTMLTableRowElement extends DOM {
               ("childNodes", PropValue(ObjectValue(l_nodes, F, T, T))),
               ("attributes", PropValue(ObjectValue(l_attributes, F, T, T))),
               ("style", PropValue(ObjectValue(l_style, T, T, T))))
-        val td_obj = td_obj_proplist.foldLeft(ObjEmpty)((x, y) => x.update(y._1, y._2))
+        val td_obj = td_obj_proplist.foldLeft(Obj.empty)((x, y) => x.update(y._1, y._2))
         val h_5 = h_4.update(l_nodes, childNodes).update(l_attributes, attributes).update(l_style, style).update(l_r, td_obj)
 
         /* argument */
@@ -289,7 +311,7 @@ object HTMLTableRowElement extends DOM {
   }
    
   def getInsList(align: PropValue, bgColor: PropValue, ch: PropValue, chOff: PropValue, vAlign: PropValue,
-                 rowIndex: PropValue, sectionRowIndex: PropValue): List[(String, PropValue)] = List(
+                 rowIndex: PropValue, sectionRowIndex: PropValue, xpath: PropValue): List[(String, PropValue)] = List(
     ("@class",    PropValue(AbsString.alpha("Object"))),
     ("@proto",    PropValue(ObjectValue(loc_proto, F, F, F))),
     ("@extensible", PropValue(BoolTrue)),
@@ -300,7 +322,8 @@ object HTMLTableRowElement extends DOM {
     ("chOff", chOff),
     ("vAlign", vAlign),
     ("rowIndex", rowIndex),
-    ("sectionRowIndex", sectionRowIndex)
+    ("sectionRowIndex", sectionRowIndex),
+    ("xpath", xpath)
   )
   
   override def default_getInsList(): List[(String, PropValue)] = {    
@@ -311,9 +334,10 @@ object HTMLTableRowElement extends DOM {
     val vAlign = PropValue(ObjectValue(AbsString.alpha(""), T, T, T))
     val rowIndex = PropValue(ObjectValue(NumTop, T, T, T))
     val sectionRowIndex = PropValue(ObjectValue(NumTop, T, T, T))
+    val xpath = PropValue(ObjectValue(AbsString.alpha(""), F, F, F))
     // This object has all properties of the HTMLElement object 
     HTMLElement.default_getInsList ::: 
-      getInsList(align, bgColor, ch, chOff, vAlign, rowIndex, sectionRowIndex)
+      getInsList(align, bgColor, ch, chOff, vAlign, rowIndex, sectionRowIndex, xpath)
   }
 
 

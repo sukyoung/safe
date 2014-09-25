@@ -35,7 +35,7 @@ object JQueryMiscsllaneous extends ModelData {
       ("jQuery.prototype.get" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
           /* jQuery object */
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           /* first argument */
           val arg1 = getArgValue(h, ctx, args, "0")
           /* toArray() == get(null) == get(undefined) */
@@ -82,7 +82,7 @@ object JQueryMiscsllaneous extends ModelData {
         })),
       ("jQuery.prototype.size" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           val v_size = lset_this.foldLeft(ValueBot)((v, l) =>
             v + Helper.Proto(h, l, AbsString.alpha("length"))
           )
@@ -107,7 +107,7 @@ object JQueryMiscsllaneous extends ModelData {
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
           val PureLocalLoc = cfg.getPureLocal(cp)
           /* jQuery object */
-          val lset_this = h(PureLocalLoc)("@this")._1._2._2
+          val lset_this = h(PureLocalLoc)("@this")._2._2
           /* first argument */
           val arg1 = getArgValue_pre(h, ctx, args, "0", PureLocalLoc)
 
@@ -157,7 +157,7 @@ object JQueryMiscsllaneous extends ModelData {
       ("jQuery.prototype.size" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
           val PureLocalLoc = cfg.getPureLocal(cp)
-          val lset_this = h(PureLocalLoc)("@this")._1._2._2
+          val lset_this = h(PureLocalLoc)("@this")._2._2
           val v_size = lset_this.foldLeft(ValueBot)((v, l) =>
             v + PreHelper.Proto(h, l, AbsString.alpha("length"))
           )
@@ -228,7 +228,7 @@ object JQueryMiscsllaneous extends ModelData {
   private def toArray(h: Heap, ctx: Context, cfg: CFG, fid: FunctionId):(Heap, Context, Value) = {
     //  this.toArray() == Array.protootype.slice.call( this )
     /* new addr */
-    val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+    val lset_env = h(SinglePureLocalLoc)("@env")._2._2
     val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
     if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
     val addr_env = (fid, set_addr.head)
@@ -238,9 +238,9 @@ object JQueryMiscsllaneous extends ModelData {
     val (h_1, ctx_1) = Helper.Oldify(h, ctx, addr1)
 
     /* jQuery obejct */
-    val lset_this = h_1(SinglePureLocalLoc)("@this")._1._2._2
+    val lset_this = h_1(SinglePureLocalLoc)("@this")._2._2
 
-    val o_arr = lset_this.foldLeft(ObjBot)((o, l) => {
+    val o_arr = lset_this.foldLeft(Obj.bottom)((o, l) => {
       val n_len = Operator.ToInteger(Helper.Proto(h_1, l, AbsString.alpha("length")))
       val o_new = Helper.NewArgObject(n_len)
       n_len.getSingle match {
@@ -260,7 +260,7 @@ object JQueryMiscsllaneous extends ModelData {
       }
     })
 
-    if (o_arr </ ObjBot)
+    if (o_arr </ Obj.bottom)
       (h_1.update(l_arr, o_arr), ctx_1, Value(l_arr))
     else
       (HeapBot, ContextBot, ValueBot)
@@ -269,7 +269,7 @@ object JQueryMiscsllaneous extends ModelData {
   private def toArray_pre(h: Heap, ctx: Context, cfg: CFG, PureLocalLoc: Loc, fid: FunctionId):(Heap, Context, Value) = {
     //  this.toArray() == Array.protootype.slice.call( this )
     /* new addr */
-    val lset_env = h(PureLocalLoc)("@env")._1._2._2
+    val lset_env = h(PureLocalLoc)("@env")._2._2
     val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
     if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
     val addr_env = (fid, set_addr.head)
@@ -279,9 +279,9 @@ object JQueryMiscsllaneous extends ModelData {
     val (h_1, ctx_1) = PreHelper.Oldify(h, ctx, addr1)
 
     /* jQuery obejct */
-    val lset_this = h_1(PureLocalLoc)("@this")._1._2._2
+    val lset_this = h_1(PureLocalLoc)("@this")._2._2
 
-    val o_arr = lset_this.foldLeft(ObjBot)((o, l) => {
+    val o_arr = lset_this.foldLeft(Obj.bottom)((o, l) => {
       val n_len = Operator.ToInteger(PreHelper.Proto(h_1, l, AbsString.alpha("length")))
       val o_new = PreHelper.NewArgObject(n_len)
       n_len.getSingle match {
@@ -301,7 +301,7 @@ object JQueryMiscsllaneous extends ModelData {
       }
     })
 
-    if (o_arr </ ObjBot)
+    if (o_arr </ Obj.bottom)
       (h_1.update(l_arr, o_arr), ctx_1, Value(l_arr))
     else
       (HeapBot, ContextBot, ValueBot)
@@ -310,7 +310,7 @@ object JQueryMiscsllaneous extends ModelData {
   private def toArray_def(h: Heap, ctx: Context, cfg: CFG, fun: String, args: CFGExpr, fid: FunctionId): LPSet = {
     //  this.toArray() == Array.protootype.slice.call( this )
     /* new addr */
-    val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+    val lset_env = h(SinglePureLocalLoc)("@env")._2._2
     val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
     if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
     val addr1 = cfg.getAPIAddress((fid, set_addr.head), 0)
@@ -320,7 +320,7 @@ object JQueryMiscsllaneous extends ModelData {
     val LP1 = AH.Oldify_def(h, ctx, addr1)
 
     /* jQuery obejct */
-    val lset_this = h_1(SinglePureLocalLoc)("@this")._1._2._2
+    val lset_this = h_1(SinglePureLocalLoc)("@this")._2._2
 
     val LP2 = lset_this.foldLeft(LPBot)((lpset, l) => {
       val n_len = Operator.ToInteger(Helper.Proto(h_1, l, AbsString.alpha("length")))
@@ -346,7 +346,7 @@ object JQueryMiscsllaneous extends ModelData {
   private def toArray_use(h: Heap, ctx: Context, cfg: CFG, fun: String, args: CFGExpr, fid: FunctionId): LPSet = {
     //  this.toArray() == Array.protootype.slice.call( this )
     /* new addr */
-    val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+    val lset_env = h(SinglePureLocalLoc)("@env")._2._2
     val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
     if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
     val addr1 = cfg.getAPIAddress((fid, set_addr.head), 0)
@@ -357,7 +357,7 @@ object JQueryMiscsllaneous extends ModelData {
     val LP2 = AH.Oldify_use(h, ctx, addr1)
 
     /* jQuery obejct */
-    val lset_this = h_1(SinglePureLocalLoc)("@this")._1._2._2
+    val lset_this = h_1(SinglePureLocalLoc)("@this")._2._2
     val LP3 = LPSet(SinglePureLocalLoc, "@this")
 
     val LP4 = lset_this.foldLeft(LPBot)((lpset, l) => {

@@ -21,7 +21,7 @@ fi
 SV="2.9.2"
 TP="${JS_HOME}/lib"
 BUILD="${JS_HOME}/target/scala-${SV}/classes"
-CP="${BUILD}${SEP}${TP}/junit.jar${SEP}${TP}/commons-lang3-3.1.jar${SEP}${TP}/wala.util.jar${SEP}${TP}/wala.cast.jar${SEP}${TP}/wala.cast.js.jar${SEP}${TP}/jericho-html-3.3.jar${SEP}${JS_HOME}/bin/xtc.jar${SEP}${TP}/plt.jar${SEP}${TP}/astgen.jar${SEP}${TP}/scala-compiler-${SV}.jar${SEP}${TP}/scala-library-${SV}.jar${SEP}${TP}/lift-json_2.9.1-2.4.jar${SEP}${TP}/nekohtml.jar${SEP}${TP}/xercesImpl.jar${SEP}${TP}/xml-apis.jar${SEP}${TP}/com.microsoft.z3.jar${SEP}${TP}/jline-2.12.jar${SEP}$CLASSPATH"
+CP="${BUILD}${SEP}${TP}/urihandler.jar${SEP}${TP}/junit.jar${SEP}${TP}/commons-lang3-3.1.jar${SEP}${TP}/wala.util.jar${SEP}${TP}/wala.cast.jar${SEP}${TP}/wala.cast.js.jar${SEP}${TP}/jericho-html-3.3.jar${SEP}${JS_HOME}/bin/xtc.jar${SEP}${TP}/plt.jar${SEP}${TP}/astgen.jar${SEP}${TP}/scala-compiler-${SV}.jar${SEP}${TP}/scala-library-${SV}.jar${SEP}${TP}/lift-json_2.9.1-2.4.jar${SEP}${TP}/nekohtml.jar${SEP}${TP}/xercesImpl.jar${SEP}${TP}/xml-apis.jar${SEP}${TP}/com.microsoft.z3.jar${SEP}${TP}/jline-2.12.jar${SEP}$CLASSPATH"
 
 if (uname | egrep Darwin > /dev/null) ; then
   export DYLD_LIBRARY_PATH="${TP}"

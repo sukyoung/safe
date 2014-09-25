@@ -79,7 +79,7 @@ object TIZENcontactObj extends Tizen {
     ("@proto", AbsConstValue(PropValue(ObjectValue(BuiltinArray.ProtoLoc, F, F, F)))),
     ("@extensible", AbsConstValue(PropValue(T))),
     ("length", AbsConstValue(PropValue(ObjectValue(UInt, T, F, F)))),
-    ("@default_number", AbsConstValue(PropValue(ObjectValue(Value(StrTop), T, T, T))))
+    (Str_default_number, AbsConstValue(PropValue(ObjectValue(Value(StrTop), T, T, T))))
   )
 
   private val prop_cont_ins: List[(String, AbsProperty)] = List(
@@ -109,7 +109,7 @@ object TIZENcontactObj extends Tizen {
     ("@proto", AbsConstValue(PropValue(ObjectValue(BuiltinArray.ProtoLoc, F, F, F)))),
     ("@extensible", AbsConstValue(PropValue(T))),
     ("length", AbsConstValue(PropValue(ObjectValue(UInt, T, F, F)))),
-    ("@default_number", AbsConstValue(PropValue(ObjectValue(Value(loc_cont), T, T, T))))
+    (Str_default_number, AbsConstValue(PropValue(ObjectValue(Value(loc_cont), T, T, T))))
   )
 
   private val prop_contname_ins: List[(String, AbsProperty)] = List(
@@ -145,7 +145,7 @@ object TIZENcontactObj extends Tizen {
     ("@proto", AbsConstValue(PropValue(ObjectValue(BuiltinArray.ProtoLoc, F, F, F)))),
     ("@extensible", AbsConstValue(PropValue(T))),
     ("length", AbsConstValue(PropValue(ObjectValue(UInt, T, F, F)))),
-    ("@default_number", AbsConstValue(PropValue(ObjectValue(Value(loc_contaddr), T, T, T))))
+    (Str_default_number, AbsConstValue(PropValue(ObjectValue(Value(loc_contaddr), T, T, T))))
   )
   private val prop_contphonenum_ins: List[(String, AbsProperty)] = List(
     ("@class",               AbsConstValue(PropValue(AbsString.alpha("Object")))),
@@ -160,7 +160,7 @@ object TIZENcontactObj extends Tizen {
     ("@proto", AbsConstValue(PropValue(ObjectValue(BuiltinArray.ProtoLoc, F, F, F)))),
     ("@extensible", AbsConstValue(PropValue(T))),
     ("length", AbsConstValue(PropValue(ObjectValue(UInt, T, F, F)))),
-    ("@default_number", AbsConstValue(PropValue(ObjectValue(Value(loc_contphonenum), T, T, T))))
+    (Str_default_number, AbsConstValue(PropValue(ObjectValue(Value(loc_contphonenum), T, T, T))))
   )
   private val prop_contemailaddr_ins: List[(String, AbsProperty)] = List(
     ("@class",               AbsConstValue(PropValue(AbsString.alpha("Object")))),
@@ -175,7 +175,7 @@ object TIZENcontactObj extends Tizen {
     ("@proto", AbsConstValue(PropValue(ObjectValue(BuiltinArray.ProtoLoc, F, F, F)))),
     ("@extensible", AbsConstValue(PropValue(T))),
     ("length", AbsConstValue(PropValue(ObjectValue(UInt, T, F, F)))),
-    ("@default_number", AbsConstValue(PropValue(ObjectValue(Value(loc_contemailaddr), T, T, T))))
+    (Str_default_number, AbsConstValue(PropValue(ObjectValue(Value(loc_contemailaddr), T, T, T))))
   )
   private val prop_contanniv_ins: List[(String, AbsProperty)] = List(
     ("@class",               AbsConstValue(PropValue(AbsString.alpha("Object")))),
@@ -189,7 +189,7 @@ object TIZENcontactObj extends Tizen {
     ("@proto", AbsConstValue(PropValue(ObjectValue(BuiltinArray.ProtoLoc, F, F, F)))),
     ("@extensible", AbsConstValue(PropValue(T))),
     ("length", AbsConstValue(PropValue(ObjectValue(UInt, T, F, F)))),
-    ("@default_number", AbsConstValue(PropValue(ObjectValue(Value(loc_contanniv), T, T, T))))
+    (Str_default_number, AbsConstValue(PropValue(ObjectValue(Value(loc_contanniv), T, T, T))))
   )
   private val prop_contorgan_ins: List[(String, AbsProperty)] = List(
     ("@class",               AbsConstValue(PropValue(AbsString.alpha("Object")))),
@@ -203,7 +203,7 @@ object TIZENcontactObj extends Tizen {
     ("@proto", AbsConstValue(PropValue(ObjectValue(BuiltinArray.ProtoLoc, F, F, F)))),
     ("@extensible", AbsConstValue(PropValue(T))),
     ("length", AbsConstValue(PropValue(ObjectValue(UInt, T, F, F)))),
-    ("@default_number", AbsConstValue(PropValue(ObjectValue(Value(loc_contorgan), T, T, T))))
+    (Str_default_number, AbsConstValue(PropValue(ObjectValue(Value(loc_contorgan), T, T, T))))
   )
   private val prop_contweb_ins: List[(String, AbsProperty)] = List(
     ("@class",               AbsConstValue(PropValue(AbsString.alpha("Object")))),
@@ -217,7 +217,7 @@ object TIZENcontactObj extends Tizen {
     ("@proto", AbsConstValue(PropValue(ObjectValue(BuiltinArray.ProtoLoc, F, F, F)))),
     ("@extensible", AbsConstValue(PropValue(T))),
     ("length", AbsConstValue(PropValue(ObjectValue(UInt, T, F, F)))),
-    ("@default_number", AbsConstValue(PropValue(ObjectValue(Value(loc_contweb), T, T, T))))
+    (Str_default_number, AbsConstValue(PropValue(ObjectValue(Value(loc_contweb), T, T, T))))
   )
 
   private val prop_person_ins: List[(String, AbsProperty)] = List(
@@ -239,7 +239,7 @@ object TIZENcontactObj extends Tizen {
     ("@proto", AbsConstValue(PropValue(ObjectValue(BuiltinArray.ProtoLoc, F, F, F)))),
     ("@extensible", AbsConstValue(PropValue(T))),
     ("length", AbsConstValue(PropValue(ObjectValue(UInt, T, F, F)))),
-    ("@default_number", AbsConstValue(PropValue(ObjectValue(Value(loc_person), T, T, T))))
+    (Str_default_number, AbsConstValue(PropValue(ObjectValue(Value(loc_person), T, T, T))))
   )
 
   private val prop_addrbook_ins: List[(String, AbsProperty)] = List(
@@ -255,7 +255,7 @@ object TIZENcontactObj extends Tizen {
     ("@proto", AbsConstValue(PropValue(ObjectValue(BuiltinArray.ProtoLoc, F, F, F)))),
     ("@extensible", AbsConstValue(PropValue(T))),
     ("length", AbsConstValue(PropValue(ObjectValue(UInt, T, F, F)))),
-    ("@default_number", AbsConstValue(PropValue(ObjectValue(Value(loc_addrbook), T, T, T))))
+    (Str_default_number, AbsConstValue(PropValue(ObjectValue(Value(loc_addrbook), T, T, T))))
   )
 
 
@@ -274,7 +274,7 @@ object TIZENcontactObj extends Tizen {
     Map(
       ("tizen.contact.getAddressBooks" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -319,7 +319,7 @@ object TIZENcontactObj extends Tizen {
         )),
       ("tizen.contact.getUnifiedAddressBook" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -327,7 +327,7 @@ object TIZENcontactObj extends Tizen {
           val l_r1 = addrToLoc(addr1, Recent)
           val (h_1, ctx_1)  = Helper.Oldify(h, ctx, addr1)
 
-          val o_new = ObjEmpty.
+          val o_new = Obj.empty.
             update("@class", PropValue(AbsString.alpha("Object"))).
             update("@proto", PropValue(ObjectValue(Value(TIZENAddressBook.loc_proto), F, F, F))).
             update("@extensible", PropValue(T)).
@@ -342,7 +342,7 @@ object TIZENcontactObj extends Tizen {
         )),
       ("tizen.contact.getDefaultAddressBook" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -350,7 +350,7 @@ object TIZENcontactObj extends Tizen {
           val l_r1 = addrToLoc(addr1, Recent)
           val (h_1, ctx_1)  = Helper.Oldify(h, ctx, addr1)
 
-          val o_new = ObjEmpty.
+          val o_new = Obj.empty.
             update("@class", PropValue(AbsString.alpha("Object"))).
             update("@proto", PropValue(ObjectValue(Value(TIZENAddressBook.loc_proto), F, F, F))).
             update("@extensible", PropValue(T)).
@@ -365,7 +365,7 @@ object TIZENcontactObj extends Tizen {
         )),
       ("tizen.contact.getAddressBook" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -374,7 +374,7 @@ object TIZENcontactObj extends Tizen {
           val (h_1, ctx_1)  = Helper.Oldify(h, ctx, addr1)
           val v_1 = getArgValue(h_1, ctx_1, args, "0")
 
-          val o_new = ObjEmpty.
+          val o_new = Obj.empty.
             update("@class", PropValue(AbsString.alpha("Object"))).
             update("@proto", PropValue(ObjectValue(Value(TIZENAddressBook.loc_proto), F, F, F))).
             update("@extensible", PropValue(T)).
@@ -389,7 +389,7 @@ object TIZENcontactObj extends Tizen {
         )),
       ("tizen.contact.get" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -398,7 +398,7 @@ object TIZENcontactObj extends Tizen {
           val (h_1, ctx_1)  = Helper.Oldify(h, ctx, addr1)
           val v_1 = getArgValue(h_1, ctx_1, args, "0")
 
-          val o_new = ObjEmpty.
+          val o_new = Obj.empty.
             update("@class", PropValue(AbsString.alpha("Object"))).
             update("@proto", PropValue(ObjectValue(Value(TIZENPerson.loc_proto), F, F, F))).
             update("@extensible", PropValue(T)).
@@ -432,7 +432,7 @@ object TIZENcontactObj extends Tizen {
         )),
       ("tizen.contact.updateBatch" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -460,7 +460,7 @@ object TIZENcontactObj extends Tizen {
                   es__
                 }
                 case _ => {
-                  val vi = Helper.Proto(h_1, ll, AbsString.alpha("@default_number"))
+                  val vi = Helper.Proto(h_1, ll, AbsString.alpha(Str_default_number))
                   val (b_1, esj) = TizenHelper.instanceOf(h_1, vi, Value(TIZENPerson.loc_proto))
                   val esi =
                     if (b_1._1._3 <= F) Set[WebAPIException](TypeMismatchError)
@@ -521,7 +521,7 @@ object TIZENcontactObj extends Tizen {
         )),
       ("tizen.contact.removeBatch" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -549,7 +549,7 @@ object TIZENcontactObj extends Tizen {
                   es__
                 }
                 case _ => {
-                  val vi = Helper.Proto(h_1, ll, AbsString.alpha("@default_number"))
+                  val vi = Helper.Proto(h_1, ll, AbsString.alpha(Str_default_number))
                   val esi =
                     if (vi._1._5 </ StrTop)
                       Set[WebAPIException](TypeMismatchError)
@@ -598,7 +598,7 @@ object TIZENcontactObj extends Tizen {
         )),
       ("tizen.contact.find" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -687,7 +687,7 @@ object TIZENcontactObj extends Tizen {
         )),
       ("tizen.contact.addChangeListener" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -794,7 +794,7 @@ object TIZENAddressBook extends Tizen {
     Map(
       ("tizen.AddressBook.get" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -810,11 +810,11 @@ object TIZENAddressBook extends Tizen {
           val v_1 = getArgValue(h_3, ctx_3, args, "0")
 
           val o_arr1 = Helper.NewArrayObject(UInt)
-          val o_arr2 = o_arr1.update("@default_number", PropValue(ObjectValue(Value(StrTop), T, T, T)))
+          val o_arr2 = o_arr1.update(Str_default_number, PropValue(ObjectValue(Value(StrTop), T, T, T)))
           val o_arr3 = Helper.NewArrayObject(UInt)
-          val o_arr4 = o_arr3.update("@default_number", PropValue(ObjectValue(Value(StrTop), T, T, T)))
+          val o_arr4 = o_arr3.update(Str_default_number, PropValue(ObjectValue(Value(StrTop), T, T, T)))
           val h_4 = h_3.update(l_r1, o_arr2).update(l_r2, o_arr4)
-          val o_new = ObjEmpty.
+          val o_new = Obj.empty.
             update("@class", PropValue(AbsString.alpha("Object"))).
             update("@proto", PropValue(ObjectValue(Value(TIZENContact.loc_proto), F, F, F))).
             update("@extensible", PropValue(T)).
@@ -859,7 +859,7 @@ object TIZENAddressBook extends Tizen {
         )),
       ("tizen.AddressBook.addBatch" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -893,7 +893,7 @@ object TIZENAddressBook extends Tizen {
                   (h__, es__)
                 }
                 case _ => {
-                  val vi = Helper.Proto(_hs._1, ll, AbsString.alpha("@default_number"))
+                  val vi = Helper.Proto(_hs._1, ll, AbsString.alpha(Str_default_number))
                   val (b_1, esj) = TizenHelper.instanceOf(_hs._1, vi, Value(TIZENContact.loc_proto))
                   val esi =
                     if (b_1._1._3 <= F) Set[WebAPIException](TypeMismatchError)
@@ -963,7 +963,7 @@ object TIZENAddressBook extends Tizen {
         )),
       ("tizen.AddressBook.updateBatch" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -991,7 +991,7 @@ object TIZENAddressBook extends Tizen {
                   es__
                 }
                 case _ => {
-                  val vi = Helper.Proto(h_1, ll, AbsString.alpha("@default_number"))
+                  val vi = Helper.Proto(h_1, ll, AbsString.alpha(Str_default_number))
                   val (b_1, esj) = TizenHelper.instanceOf(h_1, vi, Value(TIZENContact.loc_proto))
                   val esi =
                     if (b_1._1._3 <= F) Set[WebAPIException](TypeMismatchError)
@@ -1052,7 +1052,7 @@ object TIZENAddressBook extends Tizen {
         )),
       ("tizen.AddressBook.removeBatch" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -1080,7 +1080,7 @@ object TIZENAddressBook extends Tizen {
                   es__
                 }
                 case _ => {
-                  val vi = Helper.Proto(h_1, ll, AbsString.alpha("@default_number"))
+                  val vi = Helper.Proto(h_1, ll, AbsString.alpha(Str_default_number))
                   val esi =
                     if (vi._1._5 </ StrTop)
                       Set[WebAPIException](TypeMismatchError)
@@ -1129,7 +1129,7 @@ object TIZENAddressBook extends Tizen {
         )),
       ("tizen.AddressBook.find" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -1217,7 +1217,7 @@ object TIZENAddressBook extends Tizen {
         )),
       ("tizen.AddressBook.addChangeListener" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -1303,7 +1303,7 @@ object TIZENAddressBook extends Tizen {
         )),
       ("tizen.AddressBook.getGroup" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -1312,7 +1312,7 @@ object TIZENAddressBook extends Tizen {
           val (h_1, ctx_1)  = Helper.Oldify(h, ctx, addr1)
           val v_1 = getArgValue(h_1, ctx_1, args, "0")
 
-          val o_new = ObjEmpty.
+          val o_new = Obj.empty.
             update("@class", PropValue(AbsString.alpha("Object"))).
             update("@proto", PropValue(ObjectValue(Value(TIZENContactGroup.loc_proto), F, F, F))).
             update("@extensible", PropValue(T)).
@@ -1371,7 +1371,7 @@ object TIZENAddressBook extends Tizen {
         )),
       ("tizen.AddressBook.getGroups" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -1382,7 +1382,7 @@ object TIZENAddressBook extends Tizen {
           val (h_1, ctx_1)  = Helper.Oldify(h, ctx, addr1)
           val (h_2, ctx_2)  = Helper.Oldify(h_1, ctx_1, addr2)
 
-          val o_new = ObjEmpty.
+          val o_new = Obj.empty.
             update("@class", PropValue(AbsString.alpha("Object"))).
             update("@proto", PropValue(ObjectValue(Value(TIZENContactGroup.loc_proto), F, F, F))).
             update("@extensible", PropValue(T)).
@@ -1396,7 +1396,7 @@ object TIZENAddressBook extends Tizen {
             update("readOnly", PropValue(ObjectValue(Value(StrTop), F, T, T)))
           val h_3 = h_2.update(l_r1, o_new)
           val o_arr = Helper.NewArrayObject(UInt)
-          val o_arr2 = o_arr.update("@default_number", PropValue(ObjectValue(Value(l_r1), T, T, T)))
+          val o_arr2 = o_arr.update(Str_default_number, PropValue(ObjectValue(Value(l_r1), T, T, T)))
           val h_4 = h_3.update(l_r2, o_arr2)
           val est = Set[WebAPIException](SecurityError, NotSupportedError, InvalidValuesError, UnknownError, NotFoundError)
           val (h_e, ctx_e) = TizenHelper.TizenRaiseException(h, ctx, est)
@@ -1450,7 +1450,7 @@ object TIZENPerson extends Tizen {
         )),
       ("tizen.Person.unlink" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -1462,7 +1462,7 @@ object TIZENPerson extends Tizen {
             if (v._1._5 </ StrTop)
               Set[WebAPIException](TypeMismatchError)
             else TizenHelper.TizenExceptionBot
-          val o_new = ObjEmpty.
+          val o_new = Obj.empty.
             update("@class", PropValue(AbsString.alpha("Object"))).
             update("@proto", PropValue(ObjectValue(Value(TIZENPerson.loc_proto), F, F, F))).
             update("@extensible", PropValue(T)).

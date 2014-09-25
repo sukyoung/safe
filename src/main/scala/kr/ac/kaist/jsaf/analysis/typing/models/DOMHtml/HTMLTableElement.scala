@@ -1,5 +1,5 @@
 /*******************************************************************************
-    Copyright (c) 2012-2013, KAIST, S-Core.
+    Copyright (c) 2012-2014, KAIST, S-Core.
     All rights reserved.
 
     Use is subject to license terms.
@@ -18,6 +18,7 @@ import kr.ac.kaist.jsaf.analysis.cfg.CFG
 import kr.ac.kaist.jsaf.analysis.typing.models.AbsConstValue
 import kr.ac.kaist.jsaf.analysis.typing.models.AbsBuiltinFunc
 import kr.ac.kaist.jsaf.analysis.typing.AddressManager._
+import kr.ac.kaist.jsaf.Shell
 
 object HTMLTableElement extends DOM {
   private val name = "HTMLTableElement"
@@ -25,6 +26,7 @@ object HTMLTableElement extends DOM {
   /* predefined locatoins */
   val loc_cons = newSystemRecentLoc(name + "Cons")
   val loc_proto = newSystemRecentLoc(name + "Proto")
+  val loc_ins = newSystemRecentLoc(name + "Ins")
 
   /* constructor */
   private val prop_cons: List[(String, AbsProperty)] = List(
@@ -35,7 +37,30 @@ object HTMLTableElement extends DOM {
     ("length", AbsConstValue(PropValue(ObjectValue(Value(AbsNumber.alpha(0)), F, F, F)))),
     ("prototype", AbsConstValue(PropValue(ObjectValue(Value(loc_proto), F, F, F))))
   )
-  
+    /* instance */
+  private val prop_ins: List[(String, AbsProperty)] = 
+       HTMLElement.getInsList2() ++ List(
+      ("@class",    AbsConstValue(PropValue(AbsString.alpha("Object")))),
+      ("@proto",    AbsConstValue(PropValue(ObjectValue(loc_proto, F, F, F)))),
+      ("@extensible", AbsConstValue(PropValue(BoolTrue))),
+      // DOM Level 1
+      ("rows", AbsConstValue(PropValue(ObjectValue(Value(HTMLCollection.loc_ins), F, T, T)))),
+      ("tBodies", AbsConstValue(PropValue(ObjectValue(Value(HTMLCollection.loc_ins), F, T, T)))),
+      ("align", AbsConstValue(PropValue(ObjectValue(StrTop, F, T, T)))),
+      ("bgColor", AbsConstValue(PropValue(ObjectValue(StrTop, F, T, T)))),
+      ("border", AbsConstValue(PropValue(ObjectValue(StrTop, F, T, T)))),
+      ("cellPadding", AbsConstValue(PropValue(ObjectValue(StrTop, F, T, T)))),
+      ("cellSpacing", AbsConstValue(PropValue(ObjectValue(StrTop, F, T, T)))),
+      ("frame", AbsConstValue(PropValue(ObjectValue(StrTop, T, T, T)))),
+      ("rules", AbsConstValue(PropValue(ObjectValue(StrTop, T, T, T)))),
+      ("summary", AbsConstValue(PropValue(ObjectValue(StrTop, T, T, T)))),
+      ("width", AbsConstValue(PropValue(ObjectValue(StrTop, T, T, T)))),
+      ("caption", AbsConstValue(PropValue(ObjectValue(Value(HTMLTableCaptionElement.loc_ins), T, T, T)))),
+      ("tHead", AbsConstValue(PropValue(ObjectValue(Value(HTMLTableSectionElement.loc_ins), T, T, T)))),
+      ("tFoot", AbsConstValue(PropValue(ObjectValue(Value(HTMLTableSectionElement.loc_ins), T, T, T))))
+    )
+
+
   /* prorotype */
   private val prop_proto: List[(String, AbsProperty)] = List(
     ("@class", AbsConstValue(PropValue(AbsString.alpha("Object")))),
@@ -56,9 +81,11 @@ object HTMLTableElement extends DOM {
     (name, AbsConstValue(PropValue(ObjectValue(loc_cons, T, F, T))))
   )
 
-  def getInitList(): List[(Loc, List[(String, AbsProperty)])] = List(
-    (loc_cons, prop_cons), (loc_proto, prop_proto), (GlobalLoc, prop_global)
-  )
+  def getInitList(): List[(Loc, List[(String, AbsProperty)])] = if(Shell.params.opt_Dommodel2) List(
+    (loc_cons, prop_cons), (loc_proto, prop_proto), (GlobalLoc, prop_global), (loc_ins, prop_ins)
+
+  ) else List(
+    (loc_cons, prop_cons), (loc_proto, prop_proto), (GlobalLoc, prop_global)  ) 
 
   def getSemanticMap(): Map[String, SemanticFun] = {
     Map(
@@ -144,7 +171,7 @@ object HTMLTableElement extends DOM {
   }
    
   def getInsList(align: PropValue, bgColor: PropValue, border: PropValue, cellPadding: PropValue, cellSpacing: PropValue,
-                 frame: PropValue, rules: PropValue, summary: PropValue, width: PropValue): List[(String, PropValue)] = List(
+                 frame: PropValue, rules: PropValue, summary: PropValue, width: PropValue, xpath: PropValue): List[(String, PropValue)] = List(
     ("@class",    PropValue(AbsString.alpha("Object"))),
     ("@proto",    PropValue(ObjectValue(loc_proto, F, F, F))),
     ("@extensible", PropValue(BoolTrue)),
@@ -157,7 +184,8 @@ object HTMLTableElement extends DOM {
     ("frame", frame),
     ("rules", rules),
     ("summary", summary),
-    ("width", width)
+    ("width", width),
+    ("xpath", xpath)
   )
   
   override def default_getInsList(): List[(String, PropValue)] = {    
@@ -170,9 +198,10 @@ object HTMLTableElement extends DOM {
     val rules = PropValue(ObjectValue(AbsString.alpha(""), T, T, T))
     val summary = PropValue(ObjectValue(AbsString.alpha(""), T, T, T))
     val width = PropValue(ObjectValue(AbsString.alpha(""), T, T, T))
+    val xpath = PropValue(ObjectValue(AbsString.alpha(""), F, F, F))
     // This object has all properties of the HTMLElement object 
     HTMLElement.default_getInsList ::: 
-      getInsList(align, bgColor, border, cellPadding, cellSpacing, frame, rules, summary, width)
+      getInsList(align, bgColor, border, cellPadding, cellSpacing, frame, rules, summary, width, xpath)
   }
 
 }

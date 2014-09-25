@@ -308,6 +308,13 @@ class Translator(program: Program, coverage: JOption[Coverage]) extends Walker {
     case _ => Nil
   }
 
+  def getAndArgs(expr: Expr): List[Expr] = expr match {
+    case SParenthesized(_, e) => getAndArgs(e)
+    case SInfixOpApp(_, l, op, r) if op.getText.equals("&&") => getAndArgs(l) ++ getAndArgs(r)
+    case _:Expr => List(expr)
+    case _ => Nil
+  }
+
   def containsLhs(res: IRExpr, lhs: Expr, env: Env): Boolean = {
     def getLhs(l: Expr): Option[Expr] = l match {
       case SParenthesized(_, expr) => getLhs(expr)
@@ -836,6 +843,30 @@ class Translator(program: Program, coverage: JOption[Coverage]) extends Walker {
 
     case SInfixOpApp(info, left, op, right) if op.getText.equals("&&") =>
       val span = getSpan(info)
+      val args = getAndArgs(left):+right
+      val news = args.zipWithIndex.map(a => freshId(a._1, getSpan(a._1), "new"+a._2))
+      // list of (ss_i, r_i)
+      val ress = args.zip(news).map(p => walkExpr(p._1, env, p._2))
+      val (arg1: Expr, arg2: Expr, argsRest) =
+          args.reverse match { case a1::a2::ar => (a2, a1, ar.reverse) case _ => signal("Internal error", e) }
+      val (res1: (_, _), res2: (_, _), ressRest) =
+          ress.reverse match { case a1::a2::ar => (a2, a1, ar.reverse) case _ => signal("Internal error", e) }
+      val body = IF.makeSeq(e, span,
+                            res1._1.asInstanceOf[List[IRStmt]]:+
+                            IF.makeIf(true, e, span, res1._2.asInstanceOf[IRExpr],
+				                      IF.makeSeq(e, span, res2._1.asInstanceOf[List[IRStmt]]++
+						                                  List(mkExprS(arg2, res, res2._2.asInstanceOf[IRExpr]))),
+				                      Some(mkExprS(arg1, res, res1._2.asInstanceOf[IRExpr]))))
+      (List(argsRest.asInstanceOf[List[Expr]].
+                     zip(ressRest.asInstanceOf[List[(List[IRStmt], IRExpr)]]).
+                     foldRight(body)((p, r) => IF.makeSeq(p._1, getSpan(p._1),
+                                                          p._2._1:+
+                                                          IF.makeIf(true, p._1, getSpan(p._1), p._2._2, r,
+                                                                    Some(mkExprS(p._1, res, p._2._2)))))),
+       res)
+
+    case SInfixOpApp(info, left, op, right) if op.getText.equals("&&") =>
+      val span = getSpan(info)
       val y = freshId(left, getSpan(left), "y")
       val z = freshId(right, getSpan(right), "z")
       val (ss1, r1) = walkExpr(left, env, y)
@@ -1073,7 +1104,7 @@ class Translator(program: Program, coverage: JOption[Coverage]) extends Walker {
 
   def prop2ir(prop: Property) = prop match {
     case SPropId(info, id) => IF.makeNGId(id.getText, prop, getSpan(info))
-    case SPropStr(info, str) => IF.makeTId(true, prop, getSpan(info), str)
+    case SPropStr(info, str) => IF.makeTId(true, prop, getSpan(info), NU.unescapeJava(str))
     case SPropNum(info, SDoubleLiteral(_,t,_)) => IF.makeTId(true, prop, getSpan(info), t)
     case SPropNum(info, SIntLiteral(_,i,_)) => IF.makeTId(true, prop, getSpan(info), i.toString)
   }

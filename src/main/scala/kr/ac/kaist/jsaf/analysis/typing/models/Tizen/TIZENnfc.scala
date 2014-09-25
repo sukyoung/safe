@@ -1,5 +1,5 @@
 /*******************************************************************************
-    Copyright (c) 2013, S-Core.
+    Copyright (c) 2013-2014, S-Core, KAIST.
     All rights reserved.
 
     Use is subject to license terms.
@@ -116,7 +116,7 @@ object TIZENnfc extends Tizen {
     ("@proto", AbsConstValue(PropValue(ObjectValue(BuiltinArray.ProtoLoc, F, F, F)))),
     ("@extensible", AbsConstValue(PropValue(T))),
     ("length", AbsConstValue(PropValue(ObjectValue(UInt, T, F, F)))),
-    ("@default_number", AbsConstValue(PropValue(ObjectValue(Value(loc_ndefrecord), T, T, T))))
+    (Str_default_number, AbsConstValue(PropValue(ObjectValue(Value(loc_ndefrecord), T, T, T))))
   )
 
   private val prop_bytearr_ins: List[(String, AbsProperty)] = List(
@@ -124,7 +124,7 @@ object TIZENnfc extends Tizen {
     ("@proto", AbsConstValue(PropValue(ObjectValue(BuiltinArray.ProtoLoc, F, F, F)))),
     ("@extensible", AbsConstValue(PropValue(T))),
     ("length", AbsConstValue(PropValue(ObjectValue(UInt, T, F, F)))),
-    ("@default_number", AbsConstValue(PropValue(ObjectValue(Value(UInt), T, T, T))))
+    (Str_default_number, AbsConstValue(PropValue(ObjectValue(Value(UInt), T, T, T))))
   )
 
 

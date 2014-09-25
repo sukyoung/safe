@@ -72,7 +72,7 @@ private val prop_const: List[(String, AbsProperty)] = List(
     ("@extensible", AbsConstValue(PropValue(BoolTrue))),
     // TODO: '::', 'attrHandle', 'filter', 'filters', 'find', 'match', 'preFilter', 'pseudos', 'preFilters', 'relative', 'setFilters'
     ("createPseudo",        AbsBuiltinFunc("jQuery.expr.createPseudo", 1)),
-    ("@default_other",       AbsConstValue(PropValue(ObjectValue(ExprDefaultLoc, BoolTop, BoolTop, BoolTop))))
+    (Str_default_other,       AbsConstValue(PropValue(ObjectValue(ExprDefaultLoc, BoolTop, BoolTop, BoolTop))))
   )
   private val prop_expr_default: List[(String, AbsProperty)] = List(
     ("@class",      AbsConstValue(PropValue(AbsString.alpha("Object")))),
@@ -92,7 +92,7 @@ private val prop_const: List[(String, AbsProperty)] = List(
     ("@class",      AbsConstValue(PropValue(AbsString.alpha("Object")))),
     ("@proto",      AbsConstValue(PropValue(ObjectValue(ObjProtoLoc, F, F, F)))),
     ("@extensible", AbsConstValue(PropValue(BoolTrue))),
-    ("@default_other",       AbsConstValue(PropValue(ObjectValue(EventSpecialDefaultLoc, BoolTop, BoolTop, BoolTop))))
+    (Str_default_other,       AbsConstValue(PropValue(ObjectValue(EventSpecialDefaultLoc, BoolTop, BoolTop, BoolTop))))
   )
   private val prop_event_special_default: List[(String, AbsProperty)] = List(
     ("@class",      AbsConstValue(PropValue(AbsString.alpha("Object")))),
@@ -104,7 +104,7 @@ private val prop_const: List[(String, AbsProperty)] = List(
     ("@class",       AbsConstValue(PropValue(AbsString.alpha("Object")))),
     ("@proto",       AbsConstValue(PropValue(ObjectValue(ObjProtoLoc, F, F, F)))),
     ("@extensible",  AbsConstValue(PropValue(BoolTrue))),
-    ("@default_other",       AbsConstValue(PropValue(ObjectValue(Value(BoolTop)+Value(StrTop), BoolTop, BoolTop, BoolTop))))
+    (Str_default_other,       AbsConstValue(PropValue(ObjectValue(Value(BoolTop)+Value(StrTop), BoolTop, BoolTop, BoolTop))))
   )
 ////////////////////////////////////////////////////////
 
@@ -124,7 +124,7 @@ private val prop_const: List[(String, AbsProperty)] = List(
       "jQuery.each" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
           /* new addr */
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -176,13 +176,13 @@ private val prop_const: List[(String, AbsProperty)] = List(
           val cp_aftercatch = (n_aftercatch, cc_caller)
           lset_fun.foreach((l_f) => {
             val o_f = h_5(l_f)
-            o_f("@function")._1._3.foreach((fid) => {
+            o_f("@function")._3.foreach((fid) => {
               cc_caller.NewCallContext(h, cfg, fid, l_cc, callee_this._2).foreach((pair) => {
                 val (cc_new, o_new) = pair
                 val o_new2 = o_new.
                   update(cfg.getArgumentsName(fid),
                   PropValue(ObjectValue(v_arg, BoolTrue, BoolFalse, BoolFalse))).
-                  update("@scope", o_f("@scope")._1)
+                  update("@scope", o_f("@scope"))
                 sem.addCallEdge(cp, ((fid, LEntry), cc_new), ContextEmpty, o_new2)
                 sem.addReturnEdge(((fid, LExit), cc_new), cp_aftercall, ctx_5, o_old)
                 sem.addReturnEdge(((fid, LExitExc), cc_new), cp_aftercatch, ctx_5, o_old)
@@ -207,10 +207,10 @@ private val prop_const: List[(String, AbsProperty)] = List(
             if (!h.domIn(l)) BoolBot
             else  {
               val _b1 =
-                if (AbsString.alpha("Array") <= h(l)("@class")._1._2._1._5) BoolTrue
+                if (AbsString.alpha("Array") <= h(l)("@class")._2._1._5) BoolTrue
                 else BoolBot
               val _b2 =
-                if (AbsString.alpha("Array") </ h(l)("@class")._1._2._1._5) BoolFalse
+                if (AbsString.alpha("Array") </ h(l)("@class")._2._1._5) BoolFalse
                 else BoolBot
               _b + _b1 + _b2}})
           val b = b_1 + b_2
@@ -222,7 +222,7 @@ private val prop_const: List[(String, AbsProperty)] = List(
       ("jQuery.map.init" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
           
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -258,9 +258,9 @@ private val prop_const: List[(String, AbsProperty)] = List(
         })),
       ("jQuery.map.call" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val v_this = h(SinglePureLocalLoc)("@this")._1._2
+          val v_this = h(SinglePureLocalLoc)("@this")._2
 
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -269,7 +269,7 @@ private val prop_const: List[(String, AbsProperty)] = List(
           val v_callbackfn = getArgValue(h, ctx, args, "1")
           val v_args = getArgValue(h, ctx, args, "2")
 
-          val b_isArray = h(SinglePureLocalLoc)("isArray")._1._1._1._1._3
+          val b_isArray = h(SinglePureLocalLoc)("isArray")._1._1._1._3
 
           val addr1 = cfg.getAPIAddress(addr_env, 1)
           val addr2 = cfg.getAPIAddress(addr_env, 2)
@@ -317,13 +317,13 @@ private val prop_const: List[(String, AbsProperty)] = List(
             val cp_aftercatch = (n_aftercatch, cc_caller)
             lset_f.foreach((l_f) => {
               val o_f = h_3(l_f)
-              o_f("@function")._1._3.foreach((fid) => {
+              o_f("@function")._3.foreach((fid) => {
                 cc_caller.NewCallContext(h, cfg, fid, l_r2, callee_this._2).foreach((pair) => {
                   val (cc_new, o_new) = pair
                   val o_new2 = o_new.
                     update(cfg.getArgumentsName(fid),
                     PropValue(ObjectValue(v_arg, BoolTrue, BoolFalse, BoolFalse))).
-                    update("@scope", o_f("@scope")._1)
+                    update("@scope", o_f("@scope"))
                   sem.addCallEdge(cp, ((fid, LEntry), cc_new), ContextEmpty, o_new2)
                   sem.addReturnEdge(((fid, LExit), cc_new), cp_aftercall, ctx_2, o_old)
                   sem.addReturnEdge(((fid, LExitExc), cc_new), cp_aftercatch, ctx_2, o_old)
@@ -344,7 +344,7 @@ private val prop_const: List[(String, AbsProperty)] = List(
 
       ("jQuery.map.ret" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val b_isArray = h(SinglePureLocalLoc)("isArray")._1._1._1._1._3
+          val b_isArray = h(SinglePureLocalLoc)("isArray")._1._1._1._3
           val index = b_isArray.getAbsCase match {
             case AbsBot => StrBot
             case AbsSingle if BoolTrue <= b_isArray =>
@@ -381,7 +381,7 @@ private val prop_const: List[(String, AbsProperty)] = List(
               case None =>
                 if (n_len </ NumBot)
                 // giveup, unsound
-                  (h, Value(h(SinglePureLocalLoc)("@this")._1._2._2))
+                  (h, Value(h(SinglePureLocalLoc)("@this")._2._2))
                 else
                   (HeapBot, ValueBot)
             }
@@ -401,7 +401,7 @@ private val prop_const: List[(String, AbsProperty)] = List(
               case None =>
                 if (n_len </ NumBot)
                 // giveup, unsound
-                  (h, Value(h(SinglePureLocalLoc)("@this")._1._2._2))
+                  (h, Value(h(SinglePureLocalLoc)("@this")._2._2))
                 else
                   (HeapBot, ValueBot)
             }
@@ -458,7 +458,7 @@ private val prop_const: List[(String, AbsProperty)] = List(
               StrBot
           // [[class]] ?
           val s_6 = v_arg._2.foldLeft[AbsString](StrBot)((s, l) => {
-            val s_class = h(l)("@class")._1._2._1._5
+            val s_class = h(l)("@class")._2._1._5
             s_class.getSingle match {
               case Some(name) =>
                 if (name.contains("Error"))
@@ -490,8 +490,8 @@ private val prop_const: List[(String, AbsProperty)] = List(
           //val b4 = if(v_arg._1._4 </ NumBot) F else T
           //val b5 = if(v_arg._1._5 </ StrBot) F else T
           val b2 = v_arg._2.foldLeft(BoolBot:AbsBool)((b,l) => {
-            if(AbsString.alpha("Function") <= h(l)(AbsString.alpha("@class"))._1._2._1._5 && 
-               T <= h(l).domIn("@function") && h(l)("@function")._1._1._1._2.isEmpty) b + T
+            if(AbsString.alpha("Function") <= h(l)(AbsString.alpha("@class"))._2._1._5 &&
+               T <= h(l).domIn("@function") && h(l)("@function")._1._1._2.isEmpty) b + T
                else b + F
           })
             ((Helper.ReturnStore(h, Value(b1+b2)), ctx), (he, ctxe))

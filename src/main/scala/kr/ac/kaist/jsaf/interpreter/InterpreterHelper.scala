@@ -1,5 +1,5 @@
 /*******************************************************************************
-    Copyright (c) 2012-2013, KAIST, S-Core.
+    Copyright (c) 2012-2014, KAIST, S-Core.
     All rights reserved.
 
     Use is subject to license terms.
@@ -696,7 +696,7 @@ class InterpreterHelper(I: Interpreter) {
             try {
               mkIRNum(java.lang.Integer.parseInt(n, 16))
             } catch {
-              case e => mkIRNum((new java.math.BigInteger(n, 16)).doubleValue)
+              case e: Throwable => mkIRNum((new java.math.BigInteger(n, 16)).doubleValue)
             }
           else mkIRNum(java.lang.Double.parseDouble(n))
         case _ => IP.NaN

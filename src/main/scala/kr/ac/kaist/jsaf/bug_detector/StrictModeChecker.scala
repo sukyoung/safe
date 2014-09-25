@@ -1,5 +1,5 @@
 /*******************************************************************************
-    Copyright (c) 2013, KAIST.
+    Copyright (c) 2013-2014, KAIST.
     All rights reserved.
 
     Use is subject to license terms.
@@ -295,7 +295,7 @@ object StrictModeChecker {
 
                       // [R4-4]
                       if(Helper.HasProperty(state.heap, objLoc, absValue.toAbsString) == BoolFalse)
-                        extensible+= state.heap(objLoc)("@extensible")._1.value.pvalue.boolval
+                        extensible+= state.heap(objLoc)("@extensible").objval.value.pvalue.boolval
                     }
                   }
                 }
@@ -401,13 +401,12 @@ object StrictModeChecker {
                   val x = id.getText
                   id.getVarKind match {
                     case GlobalVar if (h.domIn(GlobalLoc)) =>
+                        /* Dead path, we believe...
                       h(GlobalLoc)("@proto")._1._1._1._2.foreach(l_proto =>
                                   if (!(BoolTrue <= Helper.HasProperty(h, l_proto, AbsString.alpha(x))) &&
-                                      !(BoolTrue <= h(GlobalLoc).domIn(x) &&
-                                        (h(GlobalLoc)(x)._1._1._1._1._1 <= UndefBot))) {
-                                    insertBug(info.getSpan, StrictMode10_2_1_2_4, x)
-                                  })
-
+                                      !(BoolTrue <= h(GlobalLoc).domIn(x))) {
+                            insertBug(info.getSpan, StrictMode10_2_1_2_4, x)
+                        */
                     case k =>
                   }
                 }

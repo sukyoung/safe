@@ -19,6 +19,7 @@ import kr.ac.kaist.jsaf.scala_src.nodes._
 import kr.ac.kaist.jsaf.scala_src.useful.ErrorLog
 import kr.ac.kaist.jsaf.scala_src.useful.Lists._
 import kr.ac.kaist.jsaf.scala_src.useful.Options._
+import kr.ac.kaist.jsaf.interpreter.{InterpreterPredefine => IP}
 import kr.ac.kaist.jsaf.useful.HasAt
 
 object IRGenerator {
@@ -126,6 +127,12 @@ object IRGenerator {
           isObject(e, span, cond, newObj),
           IF.makeIf(false, e, span, cond, mkExprS(e, res, newObj), Some(mkExprS(e, res, obj)))), res)
 
+    case SAssignOpApp(info, lhs, SOp(_, text), right:FunExpr)
+         if text.equals("=") && NU.isName(lhs) =>
+      val name = NU.getName(lhs)
+      val (ss, r) = funexpr2ir(right, env, res, Some(name), null)
+      (lval2ir(e, lhs, env, ss, r)._1, r)
+
     case SAssignOpApp(info, lhs, op, right) if op.getText.equals("=") =>
       val span = getSpan(info)
       val (ss, r) = expr2ir(right, env, res)
@@ -174,20 +181,24 @@ object IRGenerator {
   def funexpr2ir(e: Expr, env: Env, res: IRId, lhs: Option[String], target: String):(List[IRStmt], IRExpr) = e match {
     case SFunExpr(info, SFunctional(fds, vds, body, name, params)) =>
       val span = getSpan(info)
-      /*val id = if (name.getText.equals("")) funexprId(span, lhs) else name
-      val new_name = IF.makeUId(id.getText, id.getUniqueName.get, false,
-                                e, getSpan(id.getInfo), false)
-      */
-      for (k <- NR.ir2astMap.keySet) {
-        k match {
-          case SIRFunctional(info, name, params, args, fds, vds, body) =>
-            if (target == name.getUniqueName) 
-              return (List(IF.makeFunExpr(true, e, span, res, name, params, args, fds, vds, body)), res)
-          case _ =>
-        }
+      if (name.getText.equals("")) {
+        dummyFtn(0) match {
+          case SIRFunctional(info, name, params, args, fds, vds, body) => 
+            return (List(IF.makeFunExpr(true, e, span, res, name, params, args, fds, vds, body)), res)
+          }
       }
+      else {
+        for (k <- NR.ir2astMap.keySet) {
+          k match {
+            case SIRFunctional(info, name, params, args, fds, vds, body) =>
+              if (target == name.getUniqueName) 
+                return (List(IF.makeFunExpr(true, e, span, res, name, params, args, fds, vds, body)), res)
+            case _ =>
+          }
+        }
 
-      return (List(IF.dummyIRStmt(e, span)), res)
+        return (List(IF.dummyIRStmt(e, span)), res)
+      }
   }
   
   def funapp2ir(e: FunApp, env: Env, res: IRId, target: String): IRStmt = e match {
@@ -252,4 +263,9 @@ object IRGenerator {
       val (ss, _) = expr2ir(expr, env, varIgn(expr, expr.getInfo.getSpan))
       IF.makeStmtUnit(stmt, info.getSpan, ss)
   }
+
+  def dummyFtn(length: Int): IRFunctional =
+    IF.makeFunctional(false, IF.dummyAst, IP.defId,
+                      toJavaList(List(IP.thisTId, IP.argumentsTId).asInstanceOf[List[IRId]]),
+                      toJavaList(for (i <- 1 to length) yield IF.dummyIRStmt(IF.dummyAst, IP.defSpan).asInstanceOf[IRStmt]))
 }

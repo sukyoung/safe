@@ -20,12 +20,14 @@ import kr.ac.kaist.jsaf.analysis.typing.{ControlPoint, Helper, PreHelper}
 import kr.ac.kaist.jsaf.analysis.typing.domain.Heap
 import kr.ac.kaist.jsaf.analysis.typing.domain.Context
 import kr.ac.kaist.jsaf.analysis.typing.models.AbsBuiltinFunc
+import kr.ac.kaist.jsaf.analysis.typing.AddressManager._
 
 object EventTarget extends DOM {
   private val name = "EventTarget"
 
   /* predefined locatoins */
   val loc_proto = ObjProtoLoc
+  val loc_ins = newSystemRecentLoc(name + "Ins")
   // no locations
 
   /* initial property list */
@@ -61,7 +63,7 @@ object EventTarget extends DOM {
     Map(
       ("EventTarget.addEventListener" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           /* arguments */
           val s_type = Helper.toString(Helper.toPrimitive_better(h, getArgValue(h, ctx, args, "0")))
           val v_fun = getArgValue(h, ctx, args, "1")
@@ -77,7 +79,7 @@ object EventTarget extends DOM {
       // do nothing : could be more precise
       ("EventTarget.removeEventListener" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           /* arguments */
           val s_type = Helper.toString(Helper.toPrimitive_better(h, getArgValue(h, ctx, args, "0")))
           val v_fun = getArgValue(h, ctx, args, "1")
@@ -94,7 +96,7 @@ object EventTarget extends DOM {
 
         ("window.EventTarget.addEventListener" -> (
           (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-            val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+            val lset_this = h(SinglePureLocalLoc)("@this")._2._2
             /* arguments */
             val s_type = Helper.toString(Helper.toPrimitive_better(h, getArgValue(h, ctx, args, "0")))
             val v_fun = getArgValue(h, ctx, args, "1")
@@ -110,7 +112,7 @@ object EventTarget extends DOM {
       // do nothing : could be more precise
       ("window.EventTarget.removeEventListener" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           /* arguments */
           val s_type = Helper.toString(Helper.toPrimitive_better(h, getArgValue(h, ctx, args, "0")))
           val v_fun = getArgValue(h, ctx, args, "1")
@@ -130,7 +132,7 @@ object EventTarget extends DOM {
       ("EventTarget.addEventListener" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
           val PureLocalLoc = cfg.getPureLocal(cp)
-          val lset_this = h(PureLocalLoc)("@this")._1._2._2
+          val lset_this = h(PureLocalLoc)("@this")._2._2
           /* arguments */
           val s_type = PreHelper.toString(PreHelper.toPrimitive(getArgValue_pre(h, ctx, args, "0", PureLocalLoc)))
           val v_fun = getArgValue_pre(h, ctx, args, "1", PureLocalLoc)
@@ -150,7 +152,7 @@ object EventTarget extends DOM {
         ("window.EventTarget.addEventListener" -> (
           (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
             val PureLocalLoc = cfg.getPureLocal(cp)
-            val lset_this = h(PureLocalLoc)("@this")._1._2._2
+            val lset_this = h(PureLocalLoc)("@this")._2._2
             /* arguments */
             val s_type = PreHelper.toString(PreHelper.toPrimitive(getArgValue_pre(h, ctx, args, "0", PureLocalLoc)))
             val v_fun = getArgValue_pre(h, ctx, args, "1", PureLocalLoc)

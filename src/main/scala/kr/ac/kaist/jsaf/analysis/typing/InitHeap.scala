@@ -1,5 +1,5 @@
 /*******************************************************************************
-    Copyright (c) 2013, S-Core.
+    Copyright (c) 2013-2014, S-Core, KAIST.
     All rights reserved.
 
     Use is subject to license terms.
@@ -34,9 +34,9 @@ class InitHeap(cfg: CFG) {
   def initialize(): Unit = {
     // predefined global values for test mode
     val global0 = Config.testMode match {
-      case false => ObjEmpty
+      case false => Obj.empty
       case true =>
-        Config.testModeProp.foldLeft(ObjEmpty)((obj, kv) =>
+        Config.testModeProp.foldLeft(Obj.empty)((obj, kv) =>
           obj.update(AbsString.alpha(kv._1), PropValue(ObjectValue(kv._2, F, F, F))))
     }
     // predefined global values for library mode
@@ -55,7 +55,7 @@ class InitHeap(cfg: CFG) {
     val map1 = HeapMapBot.
       updated(GlobalLoc, global1).
       updated(SinglePureLocalLoc, globalPureLocal).
-      updated(CollapsedLoc, ObjEmpty).
+      updated(CollapsedLoc, Obj.empty).
       updated(JSONObjTopLoc, JSONObjTop)
 
     // top object for library mode

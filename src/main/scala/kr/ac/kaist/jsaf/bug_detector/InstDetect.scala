@@ -18,7 +18,7 @@ import kr.ac.kaist.jsaf.nodes_util.{IRFactory, NodeRelation, Span, EJSType}
 import kr.ac.kaist.jsaf.scala_src.nodes._
 import kr.ac.kaist.jsaf.nodes.{Param, Type}
 import kr.ac.kaist.jsaf.ts.TSTypeMap
-import kr.ac.kaist.jsaf.ShellParameters
+import kr.ac.kaist.jsaf.{Shell, ShellParameters}
 
 class InstDetect(bugDetector: BugDetector) {
   val cfg           = bugDetector.cfg
@@ -51,7 +51,8 @@ class InstDetect(bugDetector: BugDetector) {
     if (cstate.size == 0) return
 
     // DefaultValue check
-    defaultValueCheck(node, inst)
+    if(!(Shell.params.command == ShellParameters.CMD_WEBAPP_BUG_DETECTOR)) 
+      defaultValueCheck(node, inst)
 
     //println("NODE: " + node + "\tINSTRUNCTION := " + inst)
     inst match {
@@ -207,11 +208,11 @@ class InstDetect(bugDetector: BugDetector) {
         // Check for each function location set
         for(funLoc <- funLocSet) {
           // Check for each function id set
-          for(fid <- state.heap(funLoc)("@construct")._1.funid) {
+          for(fid <- state.heap(funLoc)("@construct").funid) {
             ModelManager.getFIdMap("Builtin").get(fid) match {
               case Some(funName) if funName == "Array.constructor" =>
                 for(argLoc <- argLocSet) {
-                  val arg = state.heap(argLoc)("0")._1.objval.value.pvalue.numval
+                  val arg = state.heap(argLoc)("0").objval.value.pvalue.numval
                   val isBug = arg.getAbsCase match {
                     case AbsTop => bugOption.ArrayConstructor_ArgumentMustBeUIntDefinitely
                     case AbsBot => false
@@ -265,7 +266,7 @@ class InstDetect(bugDetector: BugDetector) {
           val propertyName: String = BugHelper.getFuncOrConstPropName(state.heap, funLoc, isCall)
           if(propertyName != null) {
             // Check for each function id set
-            for(fid <- state.heap(funLoc)(propertyName)._1.funid) {
+            for(fid <- state.heap(funLoc)(propertyName).funid) {
               ModelManager.getFuncName(fid) match {
                 // Model function
                 case funcName: String =>
@@ -300,10 +301,10 @@ class InstDetect(bugDetector: BugDetector) {
                         bugCheckInstance1.insertWithStrings(isBug, span, callContext, state, objName, funcName)
                       case "RegExp.constructor" =>
                         for(argLoc <- argLocSet) {
-                          val patternLocSet = state.heap(argLoc)("0")._1.objval.value.locset
-                          val flags = state.heap(argLoc)("1")._1.objval.value
+                          val patternLocSet = state.heap(argLoc)("0").objval.value.locset
+                          val flags = state.heap(argLoc)("1").objval.value
                           for(patternLoc <- patternLocSet) {
-                            if(state.heap(patternLoc)("@class")._1.value.pvalue.strval.toString() == "\"RegExp\"") {
+                            if(state.heap(patternLoc)("@class").objval.value.pvalue.strval.toString() == "\"RegExp\"") {
                               val isBug = bugOption.BuiltinThrow_MustBeThrownDefinitely match {
                                 case true => flags == ValueBot || flags.pvalue.undefval == UndefTop
                                 case false => !(flags == ValueBot || flags.locset.size == 0 && flags.pvalue.typeCount == 1 && flags.pvalue.undefval == UndefTop)
@@ -321,7 +322,7 @@ class InstDetect(bugDetector: BugDetector) {
                     argRangeMap.get(funcName) match {
                       case Some((min, max)) =>
                         for(argLoc <- argLocSet) {
-                          val arg = state.heap(argLoc)("0")._1.objval.value.pvalue.numval
+                          val arg = state.heap(argLoc)("0").objval.value.pvalue.numval
                           val isBug = arg.getAbsCase match {
                             case AbsTop => bugOption.BuiltinRange_ArgumentMustBeCorrectDefinitely
                             case AbsBot => false
@@ -379,7 +380,7 @@ class InstDetect(bugDetector: BugDetector) {
             val bugCheckInstance = new BugCheckInstance()
             val mergedCState = stateManager.getInputCState(node, inst.getInstId, CallContext._MOST_SENSITIVE)
             for((callContext, state) <- mergedCState) {
-              val thisValue = state.heap(SinglePureLocalLoc)("@this")._1.value
+              val thisValue = state.heap(SinglePureLocalLoc)("@this").objval.value
               val isBug = thisValue.locset.size == 0
               bugCheckInstance.insert(isBug, span, callContext, state)
             }
@@ -492,7 +493,7 @@ class InstDetect(bugDetector: BugDetector) {
       // Previous code
       /*val originalLocSet = SE.V(const, heap, context)._1._2
       val filteredLocSet = originalLocSet.filter((loc) => BoolTrue <= Helper.HasConstruct(heap, loc))
-      originalLocSet.foreach((loc) => heap(loc)("@function")._1._3.foreach((fid) =>
+      originalLocSet.foreach((loc) => heap(loc)("@function")._3.foreach((fid) =>
           typing.builtinFset.get(fid) match {
             case Some(builtinName) =>
               if ((nonConsSet contains builtinName) || (filteredLocSet.size < originalLocSet.size))
@@ -634,7 +635,7 @@ class InstDetect(bugDetector: BugDetector) {
         val propertyName: String = BugHelper.getFuncOrConstPropName(state.heap, funLoc, isCall)
         if(propertyName != null) {
           // For each function id
-          for(fid <- heap(funLoc)(propertyName)._1.funid) {
+          for(fid <- heap(funLoc)(propertyName).funid) {
             typing.builtinFset.get(fid) match {
               case Some(builtinName) =>
                 if (isCall) {
@@ -747,29 +748,31 @@ class InstDetect(bugDetector: BugDetector) {
           val propertyName: String = BugHelper.getFuncOrConstPropName(state.heap, funLoc, isCall)
           if (propertyName != null) {
             // Check for each function id set
-            for (fid <- state.heap(funLoc)(propertyName)._1.funid) {
 
-              // Check TS argument
-              if(ts) { // TODO only when tscheck
-                ModelManager.getFIdMap("TS").get(fid) match {
-                  case Some(funName) => {
-                    for (argLoc <- argLocSet) {
-                      val argsObj:Obj = state.heap(argLoc)
-                      val argLen:Int = AbsNumber.getUIntSingle(argsObj("length")._1.objval.value.pvalue.numval) match {
-                        case Some(n) => n.toInt
-                        case None => -1
+            for (fid <- state.heap(funLoc)(propertyName).funid) {
+            
+              if(!(Shell.params.command == ShellParameters.CMD_WEBAPP_BUG_DETECTOR)){
+                // Check TS argument
+                if(ts) { // TODO only when tscheck
+                  ModelManager.getFIdMap("TS").get(fid) match {
+                    case Some(funName) => {
+                      for (argLoc <- argLocSet) {
+                        val argsObj:Obj = state.heap(argLoc)
+                        val argLen:Int = AbsNumber.getUIntSingle(argsObj("length").objval.value.pvalue.numval) match {
+                          case Some(n) => n.toInt
+                          case None => -1
+                        }
+                        val args:List[Value] = Range(0,argLen).foldLeft(List[Value]())((_args, k) => {
+                          val obj = argsObj(k.toString).objval.value
+                          _args:+obj
+                        })
+                        TSChecker.asInstanceOf[TSChecker].checkArgsWithFuncs(cstate, span, funName, args)
                       }
-                      val args:List[Value] = Range(0,argLen).foldLeft(List[Value]())((_args, k) => {
-                        val obj = argsObj(k.toString)._1.objval.value
-                        _args:+obj
-                      })
-                      TSChecker.checkArgsWithFuncs(cstate, span, funName, args)
                     }
+                    case None =>
                   }
-                  case None =>
                 }
               }
-
               // BuiltinWrongArgType
               if(bugOption.BuiltinWrongArgType_Check) {
                 ModelManager.getFIdMap("Builtin").get(fid) match {
@@ -785,7 +788,7 @@ class InstDetect(bugDetector: BugDetector) {
                           // Check for each argument location set
                           for (argLoc <- argLocSet) {
                             val arg = state.heap(argLoc)
-                            val obj = arg(argIndex.toString)._1.objval.value
+                            val obj = arg(argIndex.toString).objval.value
                             val isBug = jsType match {
                               case EJSType.OBJECT =>
                                 bugOption.BuiltinWrongArgType_TypeMustBeCorrectForAllValue match {
@@ -818,7 +821,7 @@ class InstDetect(bugDetector: BugDetector) {
               if(bugOption.FunctionArgSize_Check) {
                 // Check for each argument location set
                 for (argLoc <- argLocSet) {
-                  AbsNumber.getUIntSingle(state.heap(argLoc)("length")._1.objval.value.pvalue.numval) match {
+                  AbsNumber.getUIntSingle(state.heap(argLoc)("length").objval.value.pvalue.numval) match {
                     case Some(n) =>
                       // Get argument size range
                       var argSize: (Int, Int) = (-1, -1)
@@ -966,11 +969,11 @@ class InstDetect(bugDetector: BugDetector) {
       if(!bugOption.UnreferencedFunction_Check) return
 
       val argLocSet = SE.V(args, heap, context)._1._2
-      val argObj = argLocSet.foldLeft(ObjBot)((obj, loc) => obj + heap(loc))
-      val argLen = argObj("length")._1._1._1._1._4
+      val argObj = argLocSet.foldLeft(Obj.bottom)((obj, loc) => obj + heap(loc))
+      val argLen = argObj("length")._1._1._1._4
       AbsNumber.getUIntSingle(argLen) match {
-        case Some(n) => (0 to (n.toInt - 1)).foreach((i) => argObj(i.toString)._1._1._1._2.foreach((l) => 
-          heap(l)("@function")._1._3.foreach((fid) => bugStorage.appendUsedFunction(fid))))
+        case Some(n) => (0 to (n.toInt - 1)).foreach((i) => argObj(i.toString)._1._1._2.foreach((l) =>
+          heap(l)("@function")._3.foreach((fid) => bugStorage.appendUsedFunction(fid))))
         case _ => Unit 
       }
     }
@@ -985,7 +988,7 @@ class InstDetect(bugDetector: BugDetector) {
       if(!bugOption.UncalledFunction_Check) return
 
       val fval = SE.V(fun, heap, context)._1
-      fval._2.foreach((loc) => heap(loc)("@function")._1._3.foreach((fid) => bugStorage.appendUsedFunction(fid)))
+      fval._2.foreach((loc) => heap(loc)("@function")._3.foreach((fid) => bugStorage.appendUsedFunction(fid)))
     }
 
 
@@ -999,8 +1002,8 @@ class InstDetect(bugDetector: BugDetector) {
       expr match {
         case CFGVarRef(info, id) => id match {
           case CFGTempId(text,_) => 
-            Helper.LookupBase(heap, id).foreach((l1) => heap(l1)(text)._1._1._1._2.foreach((l2) => 
-              if (BoolTrue == heap(l2).domIn("@function")) heap(l1)("@this")._1._2._2.foreach((loc) => bugStorage.updateFuncSet(loc, name))))
+            Helper.LookupBase(heap, id).foreach((l1) => heap(l1)(text)._1._1._2.foreach((l2) =>
+              if (BoolTrue == heap(l2).domIn("@function")) heap(l1)("@this")._2._2.foreach((loc) => bugStorage.updateFuncSet(loc, name))))
           case _ => // pass 
         } case _ => // pass
       }
@@ -1087,7 +1090,7 @@ class InstDetect(bugDetector: BugDetector) {
           // Function must have [[Function]] or [[Construct]] property
           val propertyName: String = BugHelper.getFuncOrConstPropName(state.heap, funLoc, isCall)
           if (propertyName != null) {
-            val fidSet = state.heap(funLoc)(propertyName)._1.funid
+            val fidSet = state.heap(funLoc)(propertyName).funid
             for (fid <- fidSet) {
               for (argLoc <- argLocSet) {
                 val argObj = state.heap(argLoc)
@@ -1117,7 +1120,7 @@ class InstDetect(bugDetector: BugDetector) {
         // For each function loc
         for(funLoc <- SE.V(fun, state.heap, state.context)._1.locset) {
           // For each function id
-          for(fid <- state.heap(funLoc)("@function")._1.funid) {
+          for(fid <- state.heap(funLoc)("@function").funid) {
             // Is this a native function?
             ModelManager.getFuncName(fid) match {
               case funName: String =>
@@ -1127,7 +1130,7 @@ class InstDetect(bugDetector: BugDetector) {
                     // For each this loc
                     val thisLocSet = Helper.getThis(state.heap, SE.V(thisArg, state.heap, state.context)._1)
                     for(thisLoc <- thisLocSet) {
-                      state.heap(thisLoc)("@class")._1.value.pvalue.strval.gamma match {
+                      state.heap(thisLoc)("@class").objval.value.pvalue.strval.gamma match {
                         case Some(thisClassNameSet) =>
                           // Debug
                           //println("Native function name = " + funName + ", thisLoc = " + thisLoc + ", this.@class = " + thisClassName + ", expected @class = " + expectedClassName)
@@ -1168,12 +1171,12 @@ class InstDetect(bugDetector: BugDetector) {
 
       /* Previous code
       val objLocSet = SE.V(fun, heap, context)._1._2
-      objLocSet.foreach((loc) => heap(loc)("@function")._1._3.foreach((fid) =>
+      objLocSet.foreach((loc) => heap(loc)("@function")._3.foreach((fid) =>
         typing.builtinFset.get(fid) match {
           case Some(builtinName) =>
             if (thisTypeMap contains builtinName) {
               val thisLocs = Helper.getThis(heap, SE.V(thisArg, heap, context)._1)
-              thisLocs.foreach((loc) => if (heap(loc)("@class")._1._2._1._5 != thisTypeMap(builtinName)) 
+              thisLocs.foreach((loc) => if (heap(loc)("@class")._2._1._5 != thisTypeMap(builtinName))
                 bugStorage.addMessage(span, WrongThisType, inst, null, builtinName))
             }
           case None => Unit

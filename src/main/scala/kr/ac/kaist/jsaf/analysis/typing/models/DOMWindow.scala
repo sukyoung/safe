@@ -16,13 +16,20 @@ import kr.ac.kaist.jsaf.analysis.cfg.{CFG, CFGExpr, FunctionId}
 import kr.ac.kaist.jsaf.analysis.typing._
 import kr.ac.kaist.jsaf.analysis.typing.models.DOMHtml5.{Navigator, DOMLocation, History, Storage}
 import kr.ac.kaist.jsaf.analysis.typing.models.DOMHtml.HTMLDocument
+import kr.ac.kaist.jsaf.analysis.typing.AddressManager._
+import kr.ac.kaist.jsaf.{Shell, ShellParameters}
 
 // Modeled based on WHATWG Living Standard
 // Section 6.2 The Window object 
 object DOMWindow extends DOM {
-
+  val name = "Window"
   val loc_proto = ObjProtoLoc
   val WindowLoc = GlobalLoc
+  val loc_ins = newSystemRecentLoc(name + "Ins")
+  val quiet = 
+    if(Shell.params.command == ShellParameters.CMD_WEBAPP_BUG_DETECTOR)
+      true
+    else false
 
   private val prop_window: List[(String, AbsProperty)] = List(
     ("window",        AbsConstValue(PropValue(ObjectValue(GlobalLoc, F, T, T)))),
@@ -61,7 +68,7 @@ object DOMWindow extends DOM {
     ("sessionStorage",      AbsConstValue(PropValue(ObjectValue(Storage.loc_ins2, F, T, T)))),
     // WHATWG Living Standard Section 11.2.3 The localStorage attribute
     // Window implements WindowLocalStorage
-    ("localStorage",      AbsConstValue(PropValue(ObjectValue(Storage.getInstance.get, F, T, T)))),
+    ("localStorage",      AbsConstValue(PropValue(ObjectValue(Storage.getInstance.get, T, T, T)))),
     // Window implements GlobalEventHandlers
     ("onerror",      AbsConstValue(PropValue(ObjectValue(NullTop, T, T, T)))),
     ("onload",      AbsConstValue(PropValue(ObjectValue(NullTop, T, T, T)))),
@@ -103,10 +110,22 @@ object DOMWindow extends DOM {
     // DOM Level 2 Style
     ("getComputedStyle",      AbsBuiltinFunc("DOMWindow.getComputedStyle", 2))
   )
-
-  def getInitList(): List[(Loc, List[(String, AbsProperty)])] = List(
+  /* instance */
+  private val prop_ins: List[(String, AbsProperty)] = 
+    List(
+      ("@class",    AbsConstValue(PropValue(AbsString.alpha("Object")))),
+      ("@proto",    AbsConstValue(PropValue(ObjectValue(ObjProtoLoc, F, F, F)))),
+      ("@extensible", AbsConstValue(PropValue(BoolTrue))),
+      ("document",     AbsConstValue(PropValue(ObjectValue(HTMLDocument.loc_ins2, F, T, T))))
+   )
+ 
+  def getInitList(): List[(Loc, List[(String, AbsProperty)])] = if(Shell.params.opt_Dommodel2) List(
+    (WindowLoc, prop_window), (loc_ins, prop_ins)
+  )
+  else List(
     (WindowLoc, prop_window)
   )
+
   def getSemanticMap(): Map[String, SemanticFun] = {
     Map(
       ("Date" -> (
@@ -171,15 +190,55 @@ object DOMWindow extends DOM {
             ((h,ctx), (he, ctxe))
           })),
       */
+        // ECMAScript B.2.1 escape (string) 
         ("DOMWindow.escape" -> (
           (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
             /* arguments */
+            // 1. CallToString(string)
             val str = Helper.toString(Helper.toPrimitive_better(h, getArgValue(h, ctx, args, "0")))
             if (str </ StrBot){
               val encodedStr = str.getSingle match {
                 case Some(v) =>
-                  // encoding
-                  StrTop
+                  val chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@*_+-./"
+                  var S = "" 
+                  // 2. Compute the number of characters in Result(1)
+                  val len = v.size
+                  // 3. Let R be the empty string.
+                  var R = ""
+                  // 4, Let k be 0
+                  var k = 0
+                  // 5, if k equals Result(2), return R
+                  while (k != len) {
+                    // 6, Get the caracter at position k within Result(1)
+                    val r6 = v.charAt(k)
+                    // 7, If Result(6) is one of the 69 nonblack characters, then go to step 13
+                    S = if(!chars.contains(r6)) {
+                      // 8, If Resut (6) is less tan 256, go to step 11.
+                      if(r6.toInt < 256) {
+                         // 11, Let S be a String containing three characters "%xy" where sy are ...
+                         val hex2 = r6.toInt.toHexString.take(2)
+                         "%" + (if (hex2.size == 1) "0" + hex2 else hex2)
+                         // 12, Go to step 14
+                      }
+                      else {
+                        // 9, Let S be a String containing six characters “%uwxyz” where wxyz are four hexadecimal digits encoding the
+                        // value of Result(6).
+                        var hex4 = r6.toInt.toHexString.take(4)
+                        while(hex4.size!=4)
+                          hex4 = "0" + hex4
+                        "%u" + hex4
+                      }
+
+                    }
+                    else {
+                    // 13, Let S be a String containing the single character Result(6)
+                       "" + r6
+                    }
+                    // 14, Let R be a new String value computed by concatenating the previous value of R and S
+                    R = R ++ S
+                    k = k + 1
+                  }
+                  AbsString.alpha(R)
                 case None => StrTop
               }
               ((Helper.ReturnStore(h, Value(encodedStr)), ctx), (he, ctxe))
@@ -295,7 +354,8 @@ object DOMWindow extends DOM {
           val lset_fun = argv._2
           val n_time = Helper.toNumber(Helper.toPrimitive_better(h, getArgValue(h, ctx, args, "1")))
           if(argv._1._5</StrBot){
-            System.out.println("* Warning: the 'setInterval(string, ...)' call is detected during analysis, analysis results may not be sound.")
+            if (!quiet)
+              System.out.println("* Warning: the 'setInterval(string, ...)' call is detected during analysis, analysis results may not be sound.")
             val s = Helper.toString(Helper.toPrimitive_better(h, argv))
             val message = s.gamma match {
               case Some(_) => s.toString
@@ -306,8 +366,10 @@ object DOMWindow extends DOM {
                 case _ => "OtherStr"
               }
             }
-            System.out.println("* Warning: the string argument of 'setInterval' is in the below ...")           
-            System.out.println(message)
+            if (!quiet) {
+              System.out.println("* Warning: the string argument of 'setInterval' is in the below ...")
+              System.out.println(message)
+            }
             // unsound
             ((h, ctx), (he, ctxe))
           }
@@ -318,8 +380,8 @@ object DOMWindow extends DOM {
             val lset_f = lset_fun.filter((l) => BoolTrue <= Helper.IsCallable(h, l))
             val h1 =
               if (!lset_f.isEmpty) {
-                val o_fun1 = o_fun.update("#TIME", o_fun("#TIME")._1 + PropValue(Value(lset_f)))
-                val o_target1 = o_target.update("#TIME", o_target("#TIME")._1 + PropValue(Value(GlobalLoc)))
+                val o_fun1 = o_fun.update("#TIME", o_fun("#TIME") + PropValue(Value(lset_f)))
+                val o_target1 = o_target.update("#TIME", o_target("#TIME") + PropValue(Value(GlobalLoc)))
                 h.update(EventFunctionTableLoc, o_fun1).update(EventTargetTableLoc, o_target1)
               }
               else
@@ -339,7 +401,8 @@ object DOMWindow extends DOM {
           val lset_fun = getArgValue(h, ctx, args, "0")._2
           val n_time = Helper.toNumber(Helper.toPrimitive_better(h, getArgValue(h, ctx, args, "1")))
           if(argv._1._5</StrBot){
-            System.out.println("* Warning: the 'setTimeout(string, ...)' call is detected during analysis, analysis results may not be sound.")
+            if (!quiet)
+              System.out.println("* Warning: the 'setTimeout(string, ...)' call is detected during analysis, analysis results may not be sound.")
             val s = Helper.toString(Helper.toPrimitive_better(h, argv))
             val message = s.gamma match {
               case Some(_) => s.toString
@@ -350,8 +413,10 @@ object DOMWindow extends DOM {
                 case _ => "OtherStr"
               }
             }
-            System.out.println("* Warning: the string argument of 'setTimeout' is in the below ...")           
-            System.out.println(message)
+            if (!quiet) {
+              System.out.println("* Warning: the string argument of 'setTimeout' is in the below ...")
+              System.out.println(message)
+            }
             // unsound
             ((h, ctx), (he, ctxe))
           }
@@ -362,8 +427,8 @@ object DOMWindow extends DOM {
             val lset_f = lset_fun.filter((l) => BoolTrue <= Helper.IsCallable(h, l))
             val h1 =
               if (!lset_f.isEmpty) {
-                val o_fun1 = o_fun.update("#TIME", o_fun("#TIME")._1 + PropValue(Value(lset_f)))
-                val o_target1 = o_target.update("#TIME", o_target("#TIME")._1 + PropValue(Value(GlobalLoc)))
+                val o_fun1 = o_fun.update("#TIME", o_fun("#TIME") + PropValue(Value(lset_f)))
+                val o_target1 = o_target.update("#TIME", o_target("#TIME") + PropValue(Value(GlobalLoc)))
                 h.update(EventFunctionTableLoc, o_fun1).update(EventTargetTableLoc, o_target1)
               }
               else
@@ -583,8 +648,8 @@ object DOMWindow extends DOM {
             val lset_f = lset_fun.filter((l) => BoolTrue <= PreHelper.IsCallable(h, l))
             val h1 =
               if (!lset_f.isEmpty) {
-                val o_fun1 = o_fun.update("#TIME", o_fun("#TIME")._1 + PropValue(Value(lset_f)))
-                val o_target1 = o_target.update("#TIME", o_target("#TIME")._1 + PropValue(Value(GlobalLoc)))
+                val o_fun1 = o_fun.update("#TIME", o_fun("#TIME") + PropValue(Value(lset_f)))
+                val o_target1 = o_target.update("#TIME", o_target("#TIME") + PropValue(Value(GlobalLoc)))
                 h.update(EventFunctionTableLoc, o_fun1).update(EventTargetTableLoc, o_target1)
               }
               else
@@ -609,8 +674,8 @@ object DOMWindow extends DOM {
             val lset_f = lset_fun.filter((l) => BoolTrue <= PreHelper.IsCallable(h, l))
             val h1 =
               if (!lset_f.isEmpty) {
-                val o_fun1 = o_fun.update("#TIME", o_fun("#TIME")._1 + PropValue(Value(lset_f)))
-                val o_target1 = o_target.update("#TIME", o_target("#TIME")._1 + PropValue(Value(GlobalLoc)))
+                val o_fun1 = o_fun.update("#TIME", o_fun("#TIME") + PropValue(Value(lset_f)))
+                val o_target1 = o_target.update("#TIME", o_target("#TIME") + PropValue(Value(GlobalLoc)))
                 h.update(EventFunctionTableLoc, o_fun1).update(EventTargetTableLoc, o_target1)
               }
               else
@@ -803,4 +868,15 @@ object DOMWindow extends DOM {
     ("stop",            AbsBuiltinFunc("DOMWindow.stop", 0)),
     ("unescape",            AbsBuiltinFunc("DOMWindow.unescape", 1))
   )
+
+  /* instance property list */
+  def getInsList(document: PropValue) : List[(String, PropValue)] = List(
+    ("@class",    PropValue(AbsString.alpha("Object"))),
+    ("@proto",    PropValue(ObjectValue(ObjProtoLoc, F, F, F))),
+    ("@extensible", PropValue(BoolTrue)),
+    ("document", document)
+    // TODO : other props
+   )
+  
+
 }

@@ -40,6 +40,7 @@ object DOMException extends DOM {
   /* predefined locatoins */
   val loc_cons = newSystemRecentLoc(name + "Cons")
   val loc_proto = newSystemRecentLoc(name + "Proto")
+  val loc_ins = newSystemRecentLoc(name + "Ins")
 
   /* DOM error instance */
   val DOMErrIndexSize             = newSystemLoc("DOMErrIndexSize", Old)

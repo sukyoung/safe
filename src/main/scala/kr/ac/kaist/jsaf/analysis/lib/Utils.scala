@@ -1,5 +1,5 @@
 /*******************************************************************************
-    Copyright (c) 2012-2013, S-Core, KAIST.
+    Copyright (c) 2012-2014, S-Core, KAIST.
     All rights reserved.
 
     Use is subject to license terms.
@@ -31,7 +31,7 @@ object Utils {
 
     def dfs(n: T): Unit = {
       visited += (n)
-      val children = try succs(n) catch { case e => Set() }
+      val children = try succs(n) catch { case e: Throwable => Set() }
 
       children.foreach((c) => {
         if (!visited.contains(c))

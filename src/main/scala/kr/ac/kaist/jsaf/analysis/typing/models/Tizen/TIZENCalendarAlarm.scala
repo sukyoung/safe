@@ -1,5 +1,5 @@
 /*******************************************************************************
-    Copyright (c) 2013, S-Core, KAIST.
+    Copyright (c) 2013-2014, S-Core, KAIST.
     All rights reserved.
 
     Use is subject to license terms.
@@ -52,14 +52,16 @@ object TIZENCalendarAlarm extends Tizen {
     Map(
       ("tizen.CalendarAlarm.constructor" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           val v_1 = getArgValue(h, ctx, args, "0")
           val v_2 = getArgValue(h, ctx, args, "1")
           val n_arglen = Operator.ToUInt32(getArgValue(h, ctx, args, "length"))
           val es =
-            if (n_arglen == 0)
-              Set[WebAPIException](TypeMismatchError)
-            else TizenHelper.TizenExceptionBot
+            AbsNumber.getUIntSingle(n_arglen) match {
+	      case Some(n) if n == 0 =>
+                Set[WebAPIException](TypeMismatchError)
+              case _ => TizenHelper.TizenExceptionBot
+            }
           val (b_1, es_1) = TizenHelper.instanceOf(h, v_1, Value(TIZENTZDate.loc_proto))
           val (b_2, es_2) = TizenHelper.instanceOf(h, v_1, Value(TIZENTimeDuration.loc_proto))
           val es_3 =
@@ -67,7 +69,7 @@ object TIZENCalendarAlarm extends Tizen {
               Set[WebAPIException](TypeMismatchError)
             else TizenHelper.TizenExceptionBot
 
-          val o_new = ObjEmpty.
+          val o_new = Obj.empty.
             update("@class", PropValue(AbsString.alpha("Object"))).
             update("@proto", PropValue(ObjectValue(Value(TIZENBookmarkFolder.loc_proto), F, F, F))).
             update("@extensible", PropValue(T))
@@ -103,8 +105,10 @@ object TIZENCalendarAlarm extends Tizen {
             }
           }
           val h_3 =
-            if (n_arglen == 0) HeapBot
-            else Helper.ReturnStore(h_2, Value(lset_this))
+            AbsNumber.getUIntSingle(n_arglen) match {
+	      case Some(n) if n == 0 => HeapBot
+	      case _ => Helper.ReturnStore(h_2, Value(lset_this))
+          }
           val (h_e, ctx_e) = TizenHelper.TizenRaiseException(h, ctx, es ++ es_1 ++ es_2 ++ es_3 ++ es_4)
           ((h_3, ctx), (he + h_e, ctxe + ctx_e))
         }

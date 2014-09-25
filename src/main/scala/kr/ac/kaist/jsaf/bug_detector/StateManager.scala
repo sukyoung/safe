@@ -50,6 +50,12 @@ class StateManager(bugDetector: BugDetector) {
   val outCache =                                new cacheType // with SynchronizedMap[cacheKeyType, CState]
   val cstateBot =                               new IHashMap[CallContext, State]
 
+  def isUserNode(node: Node) = cfg.getCmd(node) match {
+    case Block(i::_) if !i.getInfo.isDefined => false
+    case Block(i::_) if i.getInfo.get.getSpan.getFileName.containsSlice("jquery") => false
+    case _ => true
+  }
+
   private def getCState(inOut: Int, node: CNode, instId: InstId, sensitivityFlag: SensitivityFlagType): CState = {
     // Select cache
     val cache = inOut match {
@@ -88,7 +94,10 @@ class StateManager(bugDetector: BugDetector) {
     // Return the result.
     result
   }
+
+
   def getInputCState(node: CNode, instId: InstId = -1, sensitivityFlag: SensitivityFlagType = _MOST_SENSITIVE): CState = getCState(0, node, instId, sensitivityFlag)
+  
   def getOutputCState(node: CNode, instId: InstId = -1, sensitivityFlag: SensitivityFlagType = _MOST_SENSITIVE): CState = getCState(1, node, instId, sensitivityFlag)
 
   private def getCState(inOut: Int, anode: ANode, sensitivityFlag: SensitivityFlagType): CState = {
@@ -158,7 +167,7 @@ class StateManager(bugDetector: BugDetector) {
   {
     // Initialize cache
     // For each node
-    for(node <- cfg.getNodes) {
+    for(node <- cfg.getNodes if isUserNode(node)) {
       typing.readTable(node) match {
         case Some(cstate) =>
           // Insert the input CState of the node into the cache

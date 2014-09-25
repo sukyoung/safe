@@ -562,7 +562,7 @@ object WIDLToDB extends _WIDLWalker {
       result
     } catch {
       case Done => result
-      case e => throw e
+      case e: Throwable => throw e
     } finally {
       bs.close
     }

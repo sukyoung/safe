@@ -338,7 +338,7 @@ class Disambiguator(program: Program, disambiguateOnly: Boolean) extends Walker 
      */
     case c@SContinue(info, target) =>
       if (!inIterator) {
-        signal("Continue occurs outside of an iterator.", c); c
+        signal("Continue occurs outside of an iterator.", c);
         return SEmptyStmt(info)
       } else {
         val new_target = target match {

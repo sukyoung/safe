@@ -29,6 +29,7 @@ object CanvasRenderingContext2D extends DOM {
   /* predefined locatoins */
   val loc_cons = newSystemRecentLoc(name + "Ins")
   val loc_proto = newSystemRecentLoc(name + "Proto")
+  val loc_ins = newSystemRecentLoc(name + "Ins")
 
 
 

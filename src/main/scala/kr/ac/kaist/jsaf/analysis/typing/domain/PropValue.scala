@@ -1,5 +1,5 @@
 /*******************************************************************************
-    Copyright (c) 2012-2013, S-Core, KAIST.
+    Copyright (c) 2012-2014, S-Core, KAIST.
     All rights reserved.
 
     Use is subject to license terms.
@@ -13,19 +13,18 @@ import kr.ac.kaist.jsaf.analysis.cfg.FunctionId
 
 object PropValue {
   /* convenience constructors */
-  def apply(v: ObjectValue): PropValue = PropValue(v, ValueBot, FunSetBot)
-  def apply(v: Value): PropValue = PropValue(ObjectValueBot, v, FunSetBot)
-  def apply(v: AbsString): PropValue = PropValue(ObjectValueBot, Value(PValue(v), LocSetBot), FunSetBot)
-  def apply(v: AbsNumber): PropValue = PropValue(ObjectValueBot, Value(PValue(v), LocSetBot), FunSetBot)
-  def apply(v: AbsBool): PropValue = PropValue(ObjectValueBot, Value(PValue(v), LocSetBot), FunSetBot)
+  def apply(v: ObjectValue): PropValue = PropValue(v, FunSetBot)
+  def apply(v: Value): PropValue = PropValue(ObjectValue(v, BoolBot, BoolBot, BoolBot), FunSetBot)
+  def apply(v: AbsString): PropValue = PropValue(ObjectValue(v, BoolBot, BoolBot, BoolBot), FunSetBot)
+  def apply(v: AbsNumber): PropValue = PropValue(ObjectValue(v, BoolBot, BoolBot, BoolBot), FunSetBot)
+  def apply(v: AbsBool): PropValue = PropValue(ObjectValue(v, BoolBot, BoolBot, BoolBot), FunSetBot)
 }
 
 case class PropValue(objval: ObjectValue,
-                     value: Value,
                      funid: FunSet) {
   /* tuple-like accessor */
   val _1 = objval
-  val _2 = value
+  val _2 = objval.value
   val _3 = funid
 
   /* partial order */
@@ -33,7 +32,6 @@ case class PropValue(objval: ObjectValue,
     if (this eq that) true
     else {
       this.objval <= that.objval &&
-      this.value  <= that.value &&
       this.funid.subsetOf(that.funid)
     }
   }
@@ -43,7 +41,6 @@ case class PropValue(objval: ObjectValue,
     if (this eq that) false
     else {
       this.objval </ that.objval ||
-      this.value  </ that.value ||
       !this.funid.subsetOf(that.funid)
     }
   }
@@ -54,7 +51,6 @@ case class PropValue(objval: ObjectValue,
     else { 
       PropValue(
           this.objval + that.objval,
-          this.value + that.value,
           this.funid ++ that.funid)
     }
   }
@@ -63,7 +59,6 @@ case class PropValue(objval: ObjectValue,
   def <> (that: PropValue): PropValue = {
     PropValue(
         this.objval <> that.objval,
-        this.value <> that.value,
         this.funid.intersect(that.funid))
   }
 }

@@ -97,7 +97,7 @@ object JQueryAttribute extends ModelData {
       "jQuery.prototype.addClass" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
           /* new addr */
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -117,7 +117,7 @@ object JQueryAttribute extends ModelData {
           val (h_4, ctx_4) = Helper.Oldify(h_3, ctx_3, addr4)
 
           /* jQuery object */
-          val lset_this = h_4(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h_4(SinglePureLocalLoc)("@this")._2._2
           /* 1st argument */
           val v_arg = getArgValue(h_4, ctx, args, "0")
           val s_arg = v_arg._1._5
@@ -172,7 +172,7 @@ object JQueryAttribute extends ModelData {
       "jQuery.prototype.attr" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
           /* new addr */
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -189,7 +189,7 @@ object JQueryAttribute extends ModelData {
           val l_tableentry = addrToLoc(addr5, Recent)
 
           /* jQuery object */
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           /* 1st argument */
           val v_arg1 = getArgValue(h, ctx, args, "0")
           val v_arg2 = getArgValue(h, ctx, args, "1")
@@ -236,14 +236,14 @@ object JQueryAttribute extends ModelData {
       ("jQuery.prototype.hasClass" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
           /* jQuery object */
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           /* 1st argument */
           val s_arg = getArgValue(h, ctx, args, "0")._1._5
 
           val b_ret = s_arg.gamma match {
             case Some(_) =>
               lset_this.foldLeft[AbsBool](BoolBot)((b, l) => {
-                val lset_elem = h(l)(NumStr)._1._1._1._2
+                val lset_elem = h(l)(NumStr)._1._1._2
                 val b1 =
                   lset_elem.foldLeft[AbsBool](BoolBot)((r, ll) => {
                     val s_prop = DOMHelper.getAttribute(h, ll, AbsString.alpha("class"))._1._5
@@ -286,7 +286,7 @@ object JQueryAttribute extends ModelData {
       ("jQuery.prototype.html" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
           /* jQuery object */
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           /* 1st argument */
           val v_arg = getArgValue(h, ctx, args, "0")
 
@@ -317,7 +317,7 @@ object JQueryAttribute extends ModelData {
       ("jQuery.prototype.prop" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
           /* jQuery object */
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           /* 1st argument */
           val v_arg1 = getArgValue(h, ctx, args, "0")
           val v_arg2 = getArgValue(h, ctx, args, "1")
@@ -361,7 +361,7 @@ object JQueryAttribute extends ModelData {
       "jQuery.prototype.removeClass" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
           /* new addr */
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -380,7 +380,7 @@ object JQueryAttribute extends ModelData {
           val (h_4, ctx_4) = Helper.Oldify(h_3, ctx_3, addr4)
 
           /* jQuery object */
-          val lset_this = h_4(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h_4(SinglePureLocalLoc)("@this")._2._2
           /* 1st argument */
           val v_arg = getArgValue(h_4, ctx, args, "0")
           val s_arg = v_arg._1._5
@@ -448,7 +448,7 @@ object JQueryAttribute extends ModelData {
       ("jQuery.prototype.removeProp" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
           /* jQuery object */
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           /* 1st argument */
           val v_arg1 = getArgValue(h, ctx, args, "0")
 
@@ -464,7 +464,7 @@ object JQueryAttribute extends ModelData {
       "jQuery.prototype.toggleClass" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
           /* new addr */
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -483,7 +483,7 @@ object JQueryAttribute extends ModelData {
           val (h_4, ctx_4) = Helper.Oldify(h_3, ctx_3, addr4)
 
           /* jQuery object */
-          val lset_this = h_4(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h_4(SinglePureLocalLoc)("@this")._2._2
           /* 1st argument */
           val v_arg = getArgValue(h_4, ctx, args, "0")
           val s_arg = v_arg._1._5
@@ -558,7 +558,7 @@ object JQueryAttribute extends ModelData {
         ("jQuery.prototype.val" -> (
           (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
             /* jQuery object */
-            val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+            val lset_this = h(SinglePureLocalLoc)("@this")._2._2
             /* 1st argument */
             val v_arg1 = getArgValue(h, ctx, args, "0")
 

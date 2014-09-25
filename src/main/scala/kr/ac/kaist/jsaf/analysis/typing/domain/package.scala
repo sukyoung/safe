@@ -1,5 +1,5 @@
 /*******************************************************************************
-    Copyright (c) 2012-2013, S-Core, KAIST.
+    Copyright (c) 2012-2014, S-Core, KAIST.
     All rights reserved.
 
     Use is subject to license terms.
@@ -12,8 +12,6 @@ package kr.ac.kaist.jsaf.analysis.typing
 import kr.ac.kaist.jsaf.analysis.cfg.FunctionId
 import scala.collection.immutable.HashSet
 import scala.collection.immutable.HashMap
-import scala.collection.mutable.{Map => MMap}
-import scala.collection.mutable.{HashMap => MHashMap}
 import kr.ac.kaist.jsaf.analysis.cfg.InternalError
 import kr.ac.kaist.jsaf.analysis.lib.{HeapTreeMap, ObjTreeMap, LocTreeSet, IntTreeSet}
 import kr.ac.kaist.jsaf.analysis.typing.AddressManager._
@@ -137,7 +135,6 @@ package object domain {
 
   /* Map type for Obj */
   type ObjMap = ObjTreeMap
-  val ObjMapBot: ObjMap = ObjTreeMap.Empty
 
   /* Address set type */
   type AddrSet = IntTreeSet
@@ -174,7 +171,7 @@ package object domain {
   val ContextBot = Context(LocSetBot, LocSetBot, AddrSetBot, null)
   val ContextEmpty = Context(LocSetBot, LocSetBot, AddrSetBot, AddrSetBot)
 
-  val PropValueBot = PropValue(ObjectValueBot, ValueBot, FunSetBot)
+  val PropValueBot = PropValue(ObjectValueBot, FunSetBot)
   val PropValueStrTop = PropValue(Value(StrTop))
   val PropValueNumTop = PropValue(Value(NumTop))
   val PropValueBoolTop = PropValue(Value(BoolTop))
@@ -182,15 +179,39 @@ package object domain {
   val PropValueUndefTop = PropValue(Value(UndefTop))
 
   val HeapBot = Heap(HeapMapBot)
-  
-  val ObjBot: Obj = Obj(ObjMapBot.
-    updated("@default_number", (PropValueBot, AbsentBot)).
-    updated("@default_other", (PropValueBot, AbsentBot)))
-  
-  val ObjEmpty: Obj = Obj(ObjMapBot.
-    updated("@default_number", (PropValueBot, AbsentTop)).
-    updated("@default_other", (PropValueBot, AbsentTop)))
-  
+
+  val Str_default_other = "@default_other"
+  val Str_default_number = "@default_number"
+  val Prop_class = AbsString.alpha("@class")
+  val Prop_primitive = AbsString.alpha("@primitive")
+  val Prop_extensible = AbsString.alpha("@extensible")
+  val Prop_proto = AbsString.alpha("@proto")
+  val Prop_function = AbsString.alpha("@function")
+  val Prop_construct = AbsString.alpha("@construct")
+  val Prop_hasinstance = AbsString.alpha("@hasinstance")
+  val Prop_scope = AbsString.alpha("@scope")
+  val Prop_env = AbsString.alpha("@env")
+  val Prop_this = AbsString.alpha("@this")
+  val Prop_exception = AbsString.alpha("@exception")
+  val Prop_exception_all = AbsString.alpha("@exception_all")
+  val Prop_return = AbsString.alpha("@return")
+  val Prop_bound_args = AbsString.alpha("@bound_args")
+  val Prop_bound_this = AbsString.alpha("@bound_this")
+  val Prop_target_function = AbsString.alpha("@target_function")
+  val Prop_outer = AbsString.alpha("@outer")
+
+  val SProp_length = AbsString.alpha("length")
+  val SProp_arguments = AbsString.alpha("Arguments")
+  val SProp_prototype = AbsString.alpha("prototype")
+  val SProp_constructor = AbsString.alpha("constructor")
+  val SProp_callee = AbsString.alpha("callee")
+  val SProp_index = AbsString.alpha("index")
+  val SProp_source = AbsString.alpha("source")
+  val SProp_global = AbsString.alpha("global")
+  val SProp_ignoreCase = AbsString.alpha("ignoreCase")
+  val SProp_multiline = AbsString.alpha("multiline")
+  val SProp_lastIndex = AbsString.alpha("lastIndex")
+
   val StateBot = State(HeapBot, ContextBot)
 
   val ExceptionBot = HashSet[Exception]()
@@ -201,27 +222,28 @@ package object domain {
   // Pseudo top value for JSON parsing results.
   val JSONValueTop = Value(PValueTop, LocSet(JSONObjTopLoc))
   val JSONObjectValueTop = ObjectValue(JSONValueTop, BoolTop,BoolTop,BoolTop)
-  val JSONObjTop = Obj(ObjMapBot.
-    updated("@class", (PropValueStrTop, AbsentTop)).
-    updated("@extensible", (PropValueBoolTop, AbsentTop)).
-    updated("@proto", (PropValueNullTop, AbsentTop)).
-    updated("@default_number", (PropValue(JSONObjectValueTop), AbsentTop)).
-    updated("@default_other", (PropValue(JSONObjectValueTop), AbsentTop)))
+  val JSONObjTop =
+    Obj.empty.
+      update(Prop_class, PropValueStrTop).
+      update(Prop_extensible, PropValueBoolTop).
+      update(Prop_proto, PropValueNullTop).
+      update(NumStr, PropValue(JSONObjectValueTop)).
+      update(OtherStr, PropValue(JSONObjectValueTop))
 
   // Pseudo top value for unknown values in library mode.
   // Should be used only when Config.libMode is turned on.
   val FIdTop = -2
   val LibModeValueTop = Value(PValueTop, LocSet(LibModeObjTopLoc))
   val LibModeObjectValueTop = ObjectValue(LibModeValueTop, BoolTop,BoolTop,BoolTop)
-  val LibModeObjTop = Obj(ObjMapBot.
-    updated("@class", (PropValueStrTop, AbsentTop)).
-    updated("@extensible", (PropValueBoolTop, AbsentTop)).
-    updated("@proto", (PropValueNullTop, AbsentTop)).
-    updated("@function",  (PropValue(ObjectValueBot, ValueBot, FunSet(FIdTop)), AbsentTop)).
-    updated("@construct", (PropValue(ObjectValueBot, ValueBot, FunSet(FIdTop)), AbsentTop)).
-    updated("@hasinstance", (PropValueNullTop, AbsentTop)).
-    updated("@default_number", (PropValue(LibModeObjectValueTop), AbsentTop)).
-    updated("@default_other", (PropValue(LibModeObjectValueTop), AbsentTop)))
+  val LibModeObjTop =
+    Obj.empty.
+      update(Prop_class, PropValueStrTop).
+      update(Prop_extensible, PropValueBoolTop).
+      update(Prop_proto, PropValueNullTop).
+      update(Prop_function, PropValue(ObjectValueBot, FunSet(FIdTop))).
+      update(Prop_construct, PropValue(ObjectValueBot, FunSet(FIdTop))).
+      update(NumStr, PropValue(LibModeObjectValueTop)).
+      update(OtherStr, PropValue(LibModeObjectValueTop))
 
   val LPBot = LPSet(HashMap[Loc,Set[String]]())
   val LBot = LocSetBot

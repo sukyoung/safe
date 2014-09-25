@@ -51,36 +51,56 @@ class SymbolicHelper(I: Interpreter) {
   var index, input_index = 0
 
   // Mapping between object declaration and object reference
-  var objectMemory = new HashMap[String, List[String]] 
-  //val symbolic_memory = new HashMap[String, String]
+  var objectMemory = new HashMap[String, String]
+  // Mapping between arguments and symbolic value 
+  var argumentsMemory = new HashMap[String, List[Option[SymbolicValue]]] 
   val symbolic_memory = new HashMap[String, SymbolicValue]
+
+  var recursive: List[Option[SymbolicValue]] = null
   
   // Mapping symbolic helper function to environment in which the function is defined
   var environments = new HashMap[String, IRId]
   def storeEnvironment(v: IRId, env: IRId) = environments(v.getUniqueName) = env
   def getEnvironment(v: IRId) = environments(v.getUniqueName)
-  def ignoreCall(f: IRId) = {println("ignoreCall "+f.getUniqueName);environments.get(f.getUniqueName) match { 
-    case Some(e) => println(" environment "+e.getUniqueName); e.getUniqueName == "<>Concolic<>Main"  
-    case None => println(" no env");false//true 
-  }
+  def ignoreCall(f: IRId) = environments.get(f.getUniqueName) match { 
+    case Some(e) => e.getUniqueName == "<>Concolic<>Main"  
+    case None => false//true 
   }
   
-  var report = List[Info]()
+  var report = List[SymbolicInfo]()
+  // Type of information
+  val STATEMENT = 1
+  val BRANCH = 2 
+  val ENDBRANCH = 3 
+
   var coverage: Coverage = null
   
-  var max_depth = 3
-  var depth = 0
+  val maxDepth = 3
+  var loopDepth = new HashMap[String, Int] 
 
   // Flag for concolic testing
   var doConcolic = false
 
+  // Estimate time
+  var startTime:Long = 0
+
   def initialize(cov: Coverage) = {
+    coverage = cov
+
     index = 0
     input_index = 0
-    symbolic_memory.clear()
-    report = List[Info]()
 
-    coverage = cov
+    symbolic_memory.clear()
+    objectMemory.clear()
+
+    argumentsMemory.clear()
+    recursive = List()
+    coverage.functions.map(_._2.initDepth)
+
+    loopDepth.clear()
+
+    report = List[SymbolicInfo]()
+
     System.out.println
     var target = coverage.target
     if (target != null && target.contains("@"))
@@ -88,104 +108,98 @@ class SymbolicHelper(I: Interpreter) {
     System.out.println("Current target function: "+ target)
   }
 
-  def storeThis(env: IRId) = {
+  // Initialize the symbolic memorys
+  def walkVarStmt(id: IRId, n: Int, env: IRId): Unit = {
     if (checkFocus(env)) {
-      if (env.getUniqueName.contains("prototype")) {
-        // tokenize target name to generate each object and function.
-        val target = env.getUniqueName
-        val token = target.substring(0, target.indexOf("<")).split("prototype")
-        if (token.length > 2) throw new ConcolicError("Only a.prototype.x function form is supported") 
-        val first = token(0).substring(0, token(0).length-1)
-        val second = token(1).substring(1, token(1).length) 
-
+      if (recursive.nonEmpty) {
+        recursive(n) match {
+          // Only when an argument of a recursive call is not concrete value.
+          case Some(sv) =>
+            symbolic_memory(id.getUniqueName) = sv 
+            coverage.functions(env.getUniqueName).getObjectProperties(n) match {
+              case Some(props) =>
+                val constructors = coverage.functions(env.getUniqueName).getObjectConstructors(n)
+                if (constructors(0) == "Array") {
+                  val length = props(0).toInt
+                  for (p <- 0 until length) {
+                    var propValue = new SymbolicValue
+                    propValue.makeSymbolicValue(obj2str(sv.getValue, p.toString), "Number")
+                    symbolic_memory(obj2str(id.getUniqueName, p.toString)) = propValue 
+                  }
+                }
+                else {
+                  for (prop <- props) { 
+                    var propValue = new SymbolicValue
+                    // Suppose types of properties could be only 'Number'
+                    propValue.makeSymbolicValue(obj2str(sv.getValue, prop), "Number")
+                    symbolic_memory(obj2str(id.getUniqueName, prop)) = propValue 
+                  }
+                }
+              case None =>
+            }
+          case None =>
+            symbolic_memory -= id.getUniqueName
+        }
+      }
+      else {
+        //TODO: Handle multiple types
+        val ptype = coverage.functions(env.getUniqueName).getType(n)(0)
         var value = new SymbolicValue
-        value.makeSymbolicValue(symbol+index, "Object")
-        symbolic_memory("this") = value 
+        value.makeSymbolicValue(symbol+index, ptype)
+        symbolic_memory(id.getUniqueName) = value 
 
         var inputValue = new SymbolicValue
-        inputValue.makeSymbolicValue(this_symbol, "Object")
-
-        var info = new Info(false, Some(value), None, Some(inputValue), None, None)
-      
+        inputValue.makeSymbolicValue(input_symbol+input_index, ptype)
+        var info = new SymbolicInfo(false, Some(value), None, Some(inputValue), None, None)
+        info.setType(STATEMENT)
+        
         report = report:+info
 
-      // When parameter is object
-        val thisProps = coverage.functions(env.getUniqueName).thisObject
-        for (prop <- thisProps) { 
-          var propValue = new SymbolicValue
-          propValue.makeSymbolicValue(obj2str(symbol+index, prop._1), prop._2)
-          symbolic_memory(obj2str("this", prop._1)) = propValue 
+        // When parameter is object
+        coverage.functions(env.getUniqueName).getObjectProperties(n) match {
+          case Some(props) =>
+            val constructors = coverage.functions(env.getUniqueName).getObjectConstructors(n)
+            // Consider when an argument is an empty object.
+            if (constructors.nonEmpty) {
+              if (constructors(0) == "Array") {
+                val length = props(0).toInt
+                for (p <- 0 until length) {
+                  var propValue = new SymbolicValue
+                  propValue.makeSymbolicValue(obj2str(symbol+index, p.toString), "Number")
+                  symbolic_memory(obj2str(id.getUniqueName, p.toString)) = propValue 
 
-          var propInputValue = new SymbolicValue
-          propInputValue.makeSymbolicValue(obj2str(this_symbol, prop._1), prop._2)
+                  var propInputValue = new SymbolicValue
+                  propInputValue.makeSymbolicValue(obj2str(input_symbol+input_index, p.toString), "Number")
+                  var info = new SymbolicInfo(false, Some(propValue), None, Some(propInputValue), None, None)
+                  info.setType(STATEMENT)
 
-          var info = new Info(false, Some(propValue), None, Some(propInputValue), None, None)
+                  report = report:+info
+                }
+              }
+              else {
+                for (prop <- props) { 
+                  // Suppose types of properties could be only 'Number'
+                  var propValue = new SymbolicValue
+                  propValue.makeSymbolicValue(obj2str(symbol+index, prop), "Number")
+                  symbolic_memory(obj2str(id.getUniqueName, prop)) = propValue 
 
-          report = report:+info
+                  var propInputValue = new SymbolicValue
+                  propInputValue.makeSymbolicValue(obj2str(input_symbol+input_index, prop), "Number")
+                  var info = new SymbolicInfo(false, Some(propValue), None, Some(propInputValue), None, None)
+                  info.setType(STATEMENT)
+
+                  report = report:+info
+                }
+              }
+            }
+          case None =>
         }
         index += 1
+        input_index += 1
       }
     }
   }
 
-  // Initialize the symbolic memorys
-  def walkVarStmt(id: IRId, n: Int, env: IRId) = {
-    if (checkFocus(env)) {
-      var params = coverage.functions(env.getUniqueName).params
-      var value = new SymbolicValue
-      value.makeSymbolicValue(symbol+index, params(n))
-      symbolic_memory(id.getUniqueName) = value 
-
-      var inputValue = new SymbolicValue
-      inputValue.makeSymbolicValue(input_symbol+input_index, params(n))
-      var info = new Info(false, Some(value), None, Some(inputValue), None, None)
-      
-      report = report:+info
-
-      // When parameter is object
-      val objs = coverage.functions(env.getUniqueName).objects
-      if (objs.contains(n)) {
-        if (objs(n)._1 == "Array") {
-          val elemType = objs(n)._2(0)._2
-          val length = objs(n)._2(0)._1.toInt
-          for (p <- 0 until length) {
-            var propValue = new SymbolicValue
-            propValue.makeSymbolicValue(obj2str(symbol+index, p.toString), elemType)
-            symbolic_memory(obj2str(id.getUniqueName, p.toString)) = propValue 
-
-            var propInputValue = new SymbolicValue
-            propInputValue.makeSymbolicValue(obj2str(input_symbol+input_index, p.toString), elemType)
-            var info = new Info(false, Some(propValue), None, Some(propInputValue), None, None)
-
-            report = report:+info
-          }
-        }
-        else {
-          for (prop <- objs(n)._2) { 
-            var propValue = new SymbolicValue
-            propValue.makeSymbolicValue(obj2str(symbol+index, prop._1), prop._2)
-            symbolic_memory(obj2str(id.getUniqueName, prop._1)) = propValue 
-
-            var propInputValue = new SymbolicValue
-            propInputValue.makeSymbolicValue(obj2str(input_symbol+input_index, prop._1), prop._2)
-            var info = new Info(false, Some(propValue), None, Some(propInputValue), None, None)
-
-            report = report:+info
-          }
-        }
-      }   
-
-      index += 1
-      input_index += 1
-    }
-  }
-
-  /* Store new varaible when Global<>toNumber internally is called */
-  def storeVariable(v: IRId, old: IRId) = {
-    if (symbolic_memory.contains(old.getUniqueName))
-      symbolic_memory(v.getUniqueName) = symbolic_memory(old.getUniqueName)
-  }
-    
   /* If its environment, that is the function in which the 'executeAssignment' statement is instrumented is targeted, 
    * the symbolic execution proceeds and its change is reported to build symbolic execution tree. 
    * Otherwise, just report symbolic variables which don't represent local variables. 
@@ -193,7 +207,6 @@ class SymbolicHelper(I: Interpreter) {
    */
   def executeAssignment(loc: String, id: IRId, expr: IRExpr, c: Option[SymbolicValue], c1: Option[SymbolicValue], c2: Option[SymbolicValue], env: IRId) = { 
     if (checkFocus(env)) { 
-      //System.out.println("Symbolic Helper, assignment: "+new kr.ac.kaist.jsaf.nodes_util.JSIRUnparser(expr).doit);
       expr match {
         /* variable op varialbe */
         //TODO: extend the range to cover all expressions, first and second
@@ -230,7 +243,7 @@ class SymbolicHelper(I: Interpreter) {
               case v1: IRId => second match {
                 case v2: IRId => 
                   if (symbolic_memory.contains(v1.getUniqueName) || symbolic_memory.contains(v2.getUniqueName))
-                    context = makeContext(v1.getUniqueName, v2.getUniqueName, op, c1, c2) 
+                    context = makeContext(v1.getUniqueName, v2.getUniqueName, op, c1, c2, STATEMENT) 
                   else
                     symbolic_memory -= id.getUniqueName
                 case _ =>
@@ -244,14 +257,14 @@ class SymbolicHelper(I: Interpreter) {
                   second match {
                     case v2: IRId =>
                       if (symbolic_memory.contains(id1) || symbolic_memory.contains(v2.getUniqueName))
-                        context = makeContext(id1, v2.getUniqueName, op, c1, c2) 
+                        context = makeContext(id1, v2.getUniqueName, op, c1, c2, STATEMENT) 
                       else
                         symbolic_memory -= id.getUniqueName
                     case v2: IRLoad => findObjectName(v2.getObj) match {
                       case Some(o2) => 
                         val id2 = o2 + "." + v2.getIndex.asInstanceOf[IRString].getStr
                         if (symbolic_memory.contains(id1) || symbolic_memory.contains(id2))
-                          context = makeContext(id1, id2, op, c1, c2) 
+                          context = makeContext(id1, id2, op, c1, c2, STATEMENT) 
                         else
                           symbolic_memory -= id.getUniqueName
                       case None =>
@@ -276,6 +289,7 @@ class SymbolicHelper(I: Interpreter) {
                 case v2: IRId =>
                   if (symbolic_memory.contains(v2.getUniqueName)) 
                     context = (c1, setInstanceType(symbolic_memory(v2.getUniqueName), c2))
+                case _ =>
               }
             }
             if (context != null) {
@@ -285,7 +299,8 @@ class SymbolicHelper(I: Interpreter) {
                   sid.makeSymbolicValue(symbol+index, value.getTypes)
                   symbolic_memory(id.getUniqueName) = sid
                   index += 1
-                  val info = new Info(false, Some(sid), Some(op.getText), context._1, context._2, None) 
+                  val info = new SymbolicInfo(false, Some(sid), Some(op.getText), context._1, context._2, None) 
+                  info.setType(STATEMENT)
                   report = report:+info
                 case None => throw new ConcolicError("Symbolic value doesn't match with concrete value.")
               }
@@ -307,7 +322,8 @@ class SymbolicHelper(I: Interpreter) {
                   sid.makeSymbolicValue(symbol+index, value.getTypes)
                   symbolic_memory(id.getUniqueName) = sid
                   index += 1
-                  val info = new Info(false, Some(sid), None, Some(symbolic_memory(v)), None, None)
+                  val info = new SymbolicInfo(false, Some(sid), None, Some(symbolic_memory(v)), None, None)
+                  info.setType(STATEMENT)
                   report = report:+info
                 case None => throw new ConcolicError("Symbolic value doesn't match with concrete value.")
               }
@@ -334,7 +350,6 @@ class SymbolicHelper(I: Interpreter) {
   def executeCondition(expr: IRExpr, branchTaken: Option[Boolean], c1: Option[SymbolicValue], c2: Option[SymbolicValue], env: IRId) = {
   //TODO: need rewriter to modify the expressions syntatically accepted to the expressions supported by symbolic helper
     if (checkFocus(env)) {
-      //System.out.println("Symbolic Helper, condition: "+new kr.ac.kaist.jsaf.nodes_util.JSIRUnparser(expr).doit);
       expr match {
         case SIRBin(_, first, op, second) => op.getKind match {
           //TODO: find simple way to distinguish operation type 
@@ -360,27 +375,27 @@ class SymbolicHelper(I: Interpreter) {
                 case v2: IRId => 
                   if (symbolic_memory.contains(v1.getUniqueName) || symbolic_memory.contains(v2.getUniqueName)) {
                     //context = createContext(v1.getUniqueName, v2.getUniqueName, op, res1, res2)
-                    context = makeContext(v1.getUniqueName, v2.getUniqueName, op, c1, c2) 
+                    context = makeContext(v1.getUniqueName, v2.getUniqueName, op, c1, c2, BRANCH) 
                   }
                 case _ =>
                   if (symbolic_memory.contains(v1.getUniqueName))
                     //context = symbolic_memory(v1.getUniqueName) + op.getText + res2
                     context = (setInstanceType(symbolic_memory(v1.getUniqueName), c1), c2)
               }
-              case SIRLoad(_, obj, index) => System.out.println("hi");findObjectName(obj) match {
+              case SIRLoad(_, obj, index) => findObjectName(obj) match {
                 case Some(o) =>
                   val id1 = o + "." + index.asInstanceOf[IRString].getStr
                   second match {
                     case v2: IRId =>
                       if (symbolic_memory.contains(id1) || symbolic_memory.contains(v2.getUniqueName))
                         //context = createContext(id1, v2.getUniqueName, op, res1, res2)
-                        context = makeContext(id1, v2.getUniqueName, op, c1, c2) 
+                        context = makeContext(id1, v2.getUniqueName, op, c1, c2, BRANCH) 
                     case SIRLoad(_, obj, index) => findObjectName(obj) match {
                       case Some(o) =>
                         val id2 = o + "." + index.asInstanceOf[IRString].getStr
                         if (symbolic_memory.contains(id1) || symbolic_memory.contains(id2))
                           //context = createContext(id1, id2, op, res1, res2)
-                          context = makeContext(id1, id2, op, c1, c2) 
+                          context = makeContext(id1, id2, op, c1, c2, BRANCH) 
                           
                       case None =>
                         System.out.println("5 The object should be in object memory.")
@@ -409,10 +424,9 @@ class SymbolicHelper(I: Interpreter) {
                     context = (c1, setInstanceType(symbolic_memory(v2.getUniqueName), c2))
               }
             }
-            //if (!context.isEmpty) {
             if (context != null) {
-              //val info = new Info(true, "", Some(op.getText), context, branchTaken)
-              val info = new Info(true, None, Some(op.getText), context._1, context._2, branchTaken)
+              val info = new SymbolicInfo(true, None, Some(op.getText), context._1, context._2, branchTaken)
+              info.setType(BRANCH)
               report = report:+info
             }
         }
@@ -427,32 +441,41 @@ class SymbolicHelper(I: Interpreter) {
             if (operation.isSome) {
               val c = new SymbolicValue
               c.makeSymbolicValue("0","Number")
-              val info = new Info(true, None, operation, Some(symbolic_memory(v.getUniqueName)), Some(c), branchTaken)
+              val info = new SymbolicInfo(true, None, operation, Some(symbolic_memory(v.getUniqueName)), Some(c), branchTaken)
+              info.setType(BRANCH)
               report = report:+info
             }
           }
         }
         case v: IRId =>
           if (symbolic_memory.contains(v.getUniqueName)) {
-            //val info = new Info(true, "", None, symbolic_memory(v.getUniqueName), branchTaken)
             val c = new SymbolicValue
             c.makeSymbolicValue("0","Number")
-            val info = new Info(true, None, Some("!="), Some(symbolic_memory(v.getUniqueName)), Some(c), branchTaken)
-            //val info = new Info(true, None, None, Some(symbolic_memory(v.getUniqueName)), None, branchTaken)
+            val info = new SymbolicInfo(true, None, Some("!="), Some(symbolic_memory(v.getUniqueName)), Some(c), branchTaken)
+            info.setType(BRANCH)
             report = report:+info
           }
         case SIRLoad(info, obj, index) => findObjectName(obj) match {
           case Some(o) =>
             val id = o+"."+index.asInstanceOf[IRString].getStr
             if (symbolic_memory.contains(id)) {
-              //val info = new Info(true, "", None, symbolic_memory(id), branchTaken)
-              val info = new Info(true, None, None, Some(symbolic_memory(id)), None, branchTaken)
+              val info = new SymbolicInfo(true, None, None, Some(symbolic_memory(id)), None, branchTaken)
+              info.setType(BRANCH)
               report = report:+info
             }
           case None =>
             System.out.println("8 The object should be in object memory.")
         }
+        case SIRBool(_, bool) =>   
       }
+    }
+  }
+
+  def endCondition(env: IRId) = {
+    if (checkFocus(env)) {
+      val info = new SymbolicInfo(true, None, None, None, None, None)
+      info.setType(ENDBRANCH)
+      report = report:+info
     }
   }
 
@@ -494,8 +517,7 @@ class SymbolicHelper(I: Interpreter) {
                   case v1: IRId => second match {
                     case v2: IRId =>
                       if (symbolic_memory.contains(v1.getUniqueName) || symbolic_memory.contains(v2.getUniqueName))
-                        //context = createContext(v1.getUniqueName, v2.getUniqueName, op, res1, res2)
-                        context = makeContext(v1.getUniqueName, v2.getUniqueName, op, c1, c2) 
+                        context = makeContext(v1.getUniqueName, v2.getUniqueName, op, c1, c2, STATEMENT) 
                       else
                         symbolic_memory -= id
                     case _ => 
@@ -510,7 +532,7 @@ class SymbolicHelper(I: Interpreter) {
                         case v2: IRId =>
                           if (symbolic_memory.contains(id1) || symbolic_memory.contains(v2.getUniqueName))
                             //context = createContext(id1, v2.getUniqueName, op, res1, res2)
-                            context = makeContext(id1, v2.getUniqueName, op, c1, c2) 
+                            context = makeContext(id1, v2.getUniqueName, op, c1, c2, STATEMENT) 
                           else
                             symbolic_memory -= id
                         case v2: IRLoad => findObjectName(v2.getObj) match {
@@ -518,7 +540,7 @@ class SymbolicHelper(I: Interpreter) {
                             val id2 = o2 + "." + v2.getIndex.asInstanceOf[IRString].getStr
                             if (symbolic_memory.contains(id1) || symbolic_memory.contains(id2))
                               //context = createContext(id1, id2, op, res1, res2)
-                              context = makeContext(id1, id2, op, c1, c2) 
+                              context = makeContext(id1, id2, op, c1, c2, STATEMENT) 
                             else
                               symbolic_memory -= id
                           case None => 
@@ -557,8 +579,8 @@ class SymbolicHelper(I: Interpreter) {
                       sid.makeSymbolicValue(symbol+index, value.getTypes)
                       symbolic_memory(id) = sid
                       index += 1
-                      //val info = new Info(false, sid, Some(op.getText), context, None)
-                      val info = new Info(false, Some(sid), Some(op.getText), context._1, context._2, None) 
+                      val info = new SymbolicInfo(false, Some(sid), Some(op.getText), context._1, context._2, None) 
+                      info.setType(STATEMENT)
                       report = report:+info
                     case None => throw new ConcolicError("Symbolic value doesn't match with concrete value.")
                   }
@@ -587,14 +609,98 @@ class SymbolicHelper(I: Interpreter) {
     }
   }
 
-  /* HELPER FUNCTIONS */
-  def storeObject(obj: String, ref: String) = objectMemory.get(obj) match {
-    case Some(list) => objectMemory.put(obj, list:+ref)
-    case None => objectMemory.put(obj, List(ref))
+  def storeArguments(args: IRId, elems: List[Option[IRExpr]]) = {
+    var arguments = List[Option[SymbolicValue]]() 
+    for (elem <- elems) 
+      if (elem.isSome)
+      {
+        val sv = symbolic_memory.get(elem.unwrap.asInstanceOf[IRId].getUniqueName)
+        arguments = arguments:+sv
+      }
+    if (arguments.nonEmpty) 
+      argumentsMemory(args.getUniqueName) = arguments
   }
+
+  def storeThis(env: IRId) = {
+    if (checkFocus(env)) {
+      if (env.getUniqueName.contains("prototype")) {
+        // tokenize target name to generate each object and function.
+        val target = env.getUniqueName
+        val token = target.substring(0, target.indexOf("<")).split("prototype")
+        if (token.length > 2) throw new ConcolicError("Only a.prototype.x function form is supported") 
+        val first = token(0).substring(0, token(0).length-1)
+        val second = token(1).substring(1, token(1).length) 
+
+        var value = new SymbolicValue
+        value.makeSymbolicValue(symbol+index, "Object")
+        symbolic_memory("this") = value 
+
+        var inputValue = new SymbolicValue
+        inputValue.makeSymbolicValue(this_symbol, "Object")
+
+        var info = new SymbolicInfo(false, Some(value), None, Some(inputValue), None, None)
+        info.setType(STATEMENT)
+      
+        report = report:+info
+
+      // When parameter is object
+        val thisProps = coverage.functions(env.getUniqueName).getThisProperties
+        for (prop <- thisProps) { 
+          var propValue = new SymbolicValue
+          // Suppose types of properties could be only 'Number'
+          propValue.makeSymbolicValue(obj2str(symbol+index, prop), "Number")
+          symbolic_memory(obj2str("this", prop)) = propValue 
+
+          var propInputValue = new SymbolicValue
+          propInputValue.makeSymbolicValue(obj2str(this_symbol, prop), "Number")
+
+          var info = new SymbolicInfo(false, Some(propValue), None, Some(propInputValue), None, None)
+          info.setType(STATEMENT)
+
+          report = report:+info
+        }
+        index += 1
+      }
+    }
+  }
+  
+  /* Store new varaible when Global<>toNumber internally is called */
+  def storeVariable(v: IRId, old: IRId) = {
+    if (symbolic_memory.contains(old.getUniqueName))
+      symbolic_memory(v.getUniqueName) = symbolic_memory(old.getUniqueName)
+  }
+  
+  def checkRecursiveCall(f: String, args: IRId):Boolean = coverage.functions.get(f) match {
+      case Some(fun) =>
+        val res = fun.checkRecursive(maxDepth)
+        if (isRecursiveCall(f)) {  
+          recursive = argumentsMemory.get(args.getUniqueName) match {
+            case Some(sv) => sv
+            case None => List() 
+          }
+        }
+        res
+      case None => true
+  }
+
+  def checkLoop(loop: String):Boolean = {
+    var res = true
+    var depth = 0
+    loopDepth.get(loop) match {
+      case Some(n) => 
+        if (n < maxDepth) depth = n+1 
+        else res = false
+      case None => 
+    }
+    loopDepth.put(loop, depth)
+    res
+  }
+
+  /* HELPER FUNCTIONS */
+  def storeObject(obj: String, ref: String) = objectMemory.put(obj, ref)
   def findObjectName(obj: IRId):Option[String] = {
     for (o <- objectMemory.keySet)
-      if (objectMemory(o).contains(obj.getUniqueName))
+      if (objectMemory(o) == obj.getUniqueName)
         return Some(o)
     return None
   }
@@ -615,7 +721,7 @@ class SymbolicHelper(I: Interpreter) {
     else 
       return symbolic_memory(v2) + op.getText + res1 
   }
-  def makeContext(v1: String, v2: String, op: IROp, c1: Option[SymbolicValue], c2: Option[SymbolicValue]): (Option[SymbolicValue], Option[SymbolicValue]) = {
+  def makeContext(v1: String, v2: String, op: IROp, c1: Option[SymbolicValue], c2: Option[SymbolicValue], contextType: Int): (Option[SymbolicValue], Option[SymbolicValue]) = {
     if (symbolic_memory.contains(v1) && symbolic_memory.contains(v2)) {
       // only if linear constraints supported
       if (op.getKind == EJSOp.BIN_ARITH_MUL_MULTIPLICATION ||
@@ -623,7 +729,8 @@ class SymbolicHelper(I: Interpreter) {
           op.getKind == EJSOp.BIN_ARITH_MUL_REMINDER) { 
         c2 match {
           case Some(concreteValue) => 
-            val info = new Info(false, Some(symbolic_memory(v2)), None, c2, None, None)
+            val info = new SymbolicInfo(false, Some(symbolic_memory(v2)), None, c2, None, None)
+            info.setType(contextType)
             report = report:+info
           case None => throw new ConcolicError("Concrete value should exist.")
         }
@@ -651,20 +758,15 @@ class SymbolicHelper(I: Interpreter) {
     return result
   }
 
-  def checkFocus(f: IRId) = coverage.checkTarget(f.getUniqueName) && doConcolic
-  def startConcolic() = doConcolic = true
-  def endConcolic() = doConcolic = false 
+  def isRecursiveCall(f: String) = coverage.checkTarget(f) && coverage.functions(f).isRecursive
 
-  
-  def checkLoop():Boolean = {
-    if (depth < max_depth) {
-      depth = depth + 1
-      return true
-    }
-    else {
-      depth = 0
-      return false
-    }
+  def checkFocus(f: IRId) = coverage.checkTarget(f.getUniqueName) && doConcolic
+  // Flag for symbolic exeuction
+  def startConcolic() = {
+    doConcolic = true
+  }  
+  def endConcolic() = {
+    doConcolic = false 
   }
 
   def toStr(expr: IRExpr): String = expr match {
@@ -690,8 +792,5 @@ class SymbolicHelper(I: Interpreter) {
     for (info <- report) 
       System.out.println(info.toString) 
     System.out.println("======================================================")
-    //System.out.println("Symbolic memory = " + symbolic_memory map {case (key, value) => (key, value.toString)})
-    //System.out.println("Symbolic report = " + report.map(_.toString))
-    //System.out.println("Input = " + input.toString)
   }
 }

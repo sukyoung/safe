@@ -9,13 +9,46 @@
 
 package kr.ac.kaist.jsaf.analysis.typing.models
 
-import kr.ac.kaist.jsaf.analysis.cfg._
-import kr.ac.kaist.jsaf.analysis.typing._
-import kr.ac.kaist.jsaf.analysis.typing.domain._
-import kr.ac.kaist.jsaf.analysis.typing.domain.{BoolTrue => T, BoolFalse => F}
-import kr.ac.kaist.jsaf.nodes_util.IRFactory
+import kr.ac.kaist.jsaf.analysis.cfg.CFG
+import kr.ac.kaist.jsaf.analysis.cfg.CFGAPICall
+import kr.ac.kaist.jsaf.analysis.cfg.CFGAssert
+import kr.ac.kaist.jsaf.analysis.cfg.CFGBin
+import kr.ac.kaist.jsaf.analysis.cfg.CFGId
+import kr.ac.kaist.jsaf.analysis.cfg.CFGInst
+import kr.ac.kaist.jsaf.analysis.cfg.CFGLoad
+import kr.ac.kaist.jsaf.analysis.cfg.CFGNumber
+import kr.ac.kaist.jsaf.analysis.cfg.CFGReturn
+import kr.ac.kaist.jsaf.analysis.cfg.CFGString
+import kr.ac.kaist.jsaf.analysis.cfg.CFGTempId
+import kr.ac.kaist.jsaf.analysis.cfg.CFGThis
+import kr.ac.kaist.jsaf.analysis.cfg.CFGUn
+import kr.ac.kaist.jsaf.analysis.cfg.CFGVarRef
+import kr.ac.kaist.jsaf.analysis.cfg.FunctionId
+import kr.ac.kaist.jsaf.analysis.cfg.LEntry
+import kr.ac.kaist.jsaf.analysis.cfg.LExit
+import kr.ac.kaist.jsaf.analysis.cfg.LExitExc
+import kr.ac.kaist.jsaf.analysis.cfg.Node
+import kr.ac.kaist.jsaf.analysis.cfg.PureLocalVar
+import kr.ac.kaist.jsaf.analysis.typing.AddressManager.newSystemRecentLoc
+import kr.ac.kaist.jsaf.analysis.typing.ControlPoint
+import kr.ac.kaist.jsaf.analysis.typing.Helper
+import kr.ac.kaist.jsaf.analysis.typing.Semantics
+import kr.ac.kaist.jsaf.analysis.typing.domain.AbsNumber
+import kr.ac.kaist.jsaf.analysis.typing.domain.Address
+import kr.ac.kaist.jsaf.analysis.typing.domain.{BoolFalse => F}
+import kr.ac.kaist.jsaf.analysis.typing.domain.{BoolTrue => T}
 import kr.ac.kaist.jsaf.analysis.typing.domain.Context
-import kr.ac.kaist.jsaf.analysis.typing.AddressManager._
+import kr.ac.kaist.jsaf.analysis.typing.domain.FunSet
+import kr.ac.kaist.jsaf.analysis.typing.domain.Heap
+import kr.ac.kaist.jsaf.analysis.typing.domain.LPSet
+import kr.ac.kaist.jsaf.analysis.typing.domain.Loc
+import kr.ac.kaist.jsaf.analysis.typing.domain.NullTop
+import kr.ac.kaist.jsaf.analysis.typing.domain.Obj
+import kr.ac.kaist.jsaf.analysis.typing.domain.ObjectValue
+import kr.ac.kaist.jsaf.analysis.typing.domain.ObjectValueBot
+import kr.ac.kaist.jsaf.analysis.typing.domain.PropValue
+import kr.ac.kaist.jsaf.analysis.typing.domain.Value
+import kr.ac.kaist.jsaf.nodes_util.IRFactory
 
 abstract class Model(cfg: CFG) {
   def initialize(h: Heap): Heap
@@ -153,6 +186,50 @@ abstract class Model(cfg: CFG) {
     (fid)
   }
 
+  def makeAftercallOptionalAPICFG(modelName: String, funName: String) : FunctionId = {
+    val nameArg = freshName("arguments")
+    val rtn = freshName("temp")
+    val fid = cfg.newFunction(nameArg, List[CFGId](), List[CFGId](), funName, dummyInfo)
+    val call_node = cfg.newBlock(fid)
+    val return_node = cfg.newAfterCallBlock(fid, CFGTempId(rtn, PureLocalVar))
+    val return_exc_node = cfg.newAfterCatchBlock(fid)
+    val normal_node = cfg.newBlock(fid)
+
+    // for Call flow
+    cfg.addEdge((fid, LEntry), call_node)
+    cfg.addEdge(return_node, (fid,LExit))
+    cfg.addCall(call_node, return_node, return_exc_node)
+    cfg.addExcEdge(call_node, (fid,LExitExc))
+    cfg.addEdge(return_exc_node, (fid,LExitExc))
+    
+    // []built-in-call
+    cfg.addInst(call_node,
+      CFGAPICall(cfg.newInstId,
+        modelName, funName,
+        CFGVarRef(dummyInfo, CFGTempId(nameArg, PureLocalVar))))
+    
+    // bypass call-node to exit node
+//    cfg.addEdge(call_node, (fid, LExit))
+        
+    // for Normal flow
+    cfg.addEdge((fid, LEntry), normal_node)
+    cfg.addEdge(normal_node, (fid,LExit))
+    cfg.addExcEdge(normal_node, (fid,LExitExc))
+
+    cfg.addInst(normal_node,
+      CFGAPICall(cfg.newInstId,
+        modelName, funName,
+        CFGVarRef(dummyInfo, CFGTempId(nameArg, PureLocalVar))))
+
+    // after-call(x)
+    // return x;
+    cfg.addInst(return_node,
+      CFGReturn(cfg.newInstId, dummyInfo,
+        Some(CFGVarRef(dummyInfo, CFGTempId(rtn, PureLocalVar)))))
+        
+    (fid)
+  }
+  
   /**
    * Preparing the given AbsProperty to be updated.
    * If a property is a built-in function, create a new function object and pass it to name, value and object pair.
@@ -176,8 +253,9 @@ abstract class Model(cfg: CFG) {
         (name, PropValue(ObjectValue(loc, T, F, T)), Some(loc, obj), Some(fid, id))
       }
       case AbsBuiltinFuncAftercallOptional(id, length) => {
-        val fid = makeAftercallAPICFG(model, id)
-        cfg.addEdge((fid, LEntry), (fid, LExit)) // there is a possibility not to invoke functions
+//        val fid = makeAftercallAPICFG(model, id)
+        val fid = makeAftercallOptionalAPICFG(model, id)
+//        cfg.addEdge((fid, LEntry), (fid, LExit)) // there is a possibility not to invoke functions
         val loc = newSystemRecentLoc(id)
         val obj = Helper.NewFunctionObject(Some(fid), None, Value(NullTop), None, AbsNumber.alpha(length))
         (name, PropValue(ObjectValue(loc, T, F, T)), Some(loc, obj), Some(fid, id))
@@ -190,12 +268,12 @@ abstract class Model(cfg: CFG) {
       }
       case AbsInternalFunc(id) => {
         val fid = makeAPICFG(model, id)
-        (name, PropValue(ObjectValueBot, ValueBot, FunSet(fid)), None, Some(fid, id))
+        (name, PropValue(ObjectValueBot, FunSet(fid)), None, Some(fid, id))
       }
       case AbsInternalFuncAftercallOptional(id) => {
         val fid = makeAftercallAPICFG(model, id)
         cfg.addEdge((fid, LEntry), (fid, LExit)) // there is a possibility not to invoke functions
-        (name, PropValue(ObjectValueBot, ValueBot, FunSet(fid)), None, Some(fid, id))
+        (name, PropValue(ObjectValueBot, FunSet(fid)), None, Some(fid, id))
       }
       case AbsConstValue(value) => (name, value, None, None)
     }

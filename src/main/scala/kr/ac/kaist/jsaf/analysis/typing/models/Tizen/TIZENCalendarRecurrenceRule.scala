@@ -49,8 +49,8 @@ object TIZENCalendarRecurrenceRule extends Tizen {
     Map(
        ("tizen.CalendarRecurrenceRule.constructor" -> (
          (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-           val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
-           val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+           val lset_this = h(SinglePureLocalLoc)("@this")._2._2
+           val lset_env = h(SinglePureLocalLoc)("@env")._2._2
            val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
            if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
            val addr_env = (cp._1._1, set_addr.head)
@@ -65,7 +65,7 @@ object TIZENCalendarRecurrenceRule extends Tizen {
            val (h_4, ctx_4) = Helper.Oldify(h_2, ctx_2, addr3)
            val n_arglen = Operator.ToUInt32(getArgValue(h_4, ctx_4, args, "length"))
 
-           val o_new = ObjEmpty.
+           val o_new = Obj.empty.
              update("@class", PropValue(AbsString.alpha("Object"))).
              update("@proto", PropValue(ObjectValue(Value(TIZENCalendarRecurrenceRule.loc_proto), F, F, F))).
              update("@extensible", PropValue(T))
@@ -100,43 +100,43 @@ object TIZENCalendarRecurrenceRule extends Tizen {
                    v_1._1._5 </ AbsString.alpha("MONTHLY") && v_1._1._5 </ AbsString.alpha("YEARLY"))
                    Set[WebAPIException](TypeMismatchError)
                  else TizenHelper.TizenExceptionBot
-               val (obj, es_1) = v_2._2.foldLeft((ObjEmpty, TizenHelper.TizenExceptionBot))((_o, l) => {
+               val (obj, es_1) = v_2._2.foldLeft((Obj.empty, TizenHelper.TizenExceptionBot))((_o, l) => {
                  val v_3 = Helper.LookupL(h_4, l, "interval")
                  val o_new2 =
                    if (v_3 </ ValueBot && v_3._1._4 <= NumTop)
-                     ObjEmpty.update("interval", PropValue(ObjectValue(Value(v_3._1._4), F, T, T)))
+                     Obj.empty.update("interval", PropValue(ObjectValue(Value(v_3._1._4), F, T, T)))
                    else if (v_3 </ ValueBot && v_3._1._4 </ NumTop)
-                     ObjEmpty.update("interval", PropValue(ObjectValue(Value(AbsNumber.alpha(0)), F, T, T)))
-                   else ObjEmpty.update("interval", PropValue(ObjectValue(Value(AbsNumber.alpha(1)), F, T, T)))
+                     Obj.empty.update("interval", PropValue(ObjectValue(Value(AbsNumber.alpha(0)), F, T, T)))
+                   else Obj.empty.update("interval", PropValue(ObjectValue(Value(AbsNumber.alpha(1)), F, T, T)))
                  val v_4 = Helper.LookupL(h_4, l, "untilDate")
                  val (b_1, es_2) = TizenHelper.instanceOf(h_4, v_4, Value(TIZENTZDate.loc_cons))
                  val es_3 =
                    if (v_4 </ ValueBot && b_1._1._3 <= F)
                      Set[WebAPIException](TypeMismatchError)
                    else TizenHelper.TizenExceptionBot
-                 val o_new3 = ObjEmpty.update("untilDate", PropValue(ObjectValue(Value(v_4._2), F, T, T)))
+                 val o_new3 = Obj.empty.update("untilDate", PropValue(ObjectValue(Value(v_4._2), F, T, T)))
                  val v_5 = Helper.LookupL(h_4, l, "occurrenceCount")
                  val o_new4 =
                    if (v_5 </ ValueBot & v_5._1._4 <= NumTop)
-                     ObjEmpty.update("occurrenceCount", PropValue(ObjectValue(Value(v_5._1._4), F, T, T)))
+                     Obj.empty.update("occurrenceCount", PropValue(ObjectValue(Value(v_5._1._4), F, T, T)))
                    else if (v_5 </ ValueBot && v_5._1._4 </ NumTop)
-                     ObjEmpty.update("occurrenceCount", PropValue(ObjectValue(Value(AbsNumber.alpha(0)), F, T, T)))
-                   else ObjEmpty
+                     Obj.empty.update("occurrenceCount", PropValue(ObjectValue(Value(AbsNumber.alpha(0)), F, T, T)))
+                   else Obj.empty
                  val v_6 = Helper.LookupL(h_4, l, "daysOfTheWeek")
                  val o_new5 =
                    if (v_6 </ ValueBot)
-                     ObjEmpty.update("daysOfTheWeek", PropValue(ObjectValue(Value(v_6._2), F, T, T)))
-                   else ObjEmpty
+                     Obj.empty.update("daysOfTheWeek", PropValue(ObjectValue(Value(v_6._2), F, T, T)))
+                   else Obj.empty
                  val v_7 = Helper.LookupL(h_4, l, "setPositions")
                  val o_new6 =
                    if (v_7 </ ValueBot)
-                     ObjEmpty.update("setPositions", PropValue(ObjectValue(Value(v_7._2), F, T, T)))
-                   else ObjEmpty
+                     Obj.empty.update("setPositions", PropValue(ObjectValue(Value(v_7._2), F, T, T)))
+                   else Obj.empty
                  val v_8 = Helper.LookupL(h_4, l, "exceptions")
                  val o_new7 =
                    if (v_8 </ ValueBot)
-                     ObjEmpty.update("exceptions", PropValue(ObjectValue(Value(v_8._2), F, T, T)))
-                   else ObjEmpty
+                     Obj.empty.update("exceptions", PropValue(ObjectValue(Value(v_8._2), F, T, T)))
+                   else Obj.empty
                  (_o._1 + o_new2 + o_new3 + o_new4 + o_new5 + o_new6 + o_new7, _o._2 ++ es_2 ++ es_3)
                })
                val o_arr1 = Helper.NewArrayObject(AbsNumber.alpha(0))

@@ -1,5 +1,5 @@
 /*******************************************************************************
-    Copyright (c) 2013, KAIST, S-Core.
+    Copyright (c) 2013-2014, KAIST, S-Core.
     All rights reserved.
 
     Use is subject to license terms.
@@ -17,6 +17,7 @@ import org.w3c.dom.Element
 import kr.ac.kaist.jsaf.analysis.cfg.CFG
 import kr.ac.kaist.jsaf.analysis.typing.models.AbsConstValue
 import kr.ac.kaist.jsaf.analysis.typing.AddressManager._
+import kr.ac.kaist.jsaf.Shell
 
 object HTMLParamElement extends DOM {
   private val name = "HTMLParamElement"
@@ -24,6 +25,7 @@ object HTMLParamElement extends DOM {
   /* predefined locatoins */
   val loc_cons = newSystemRecentLoc(name + "Cons")
   val loc_proto = newSystemRecentLoc(name + "Proto")
+  val loc_ins = newSystemRecentLoc(name + "Ins")
 
   /* constructor */
   private val prop_cons: List[(String, AbsProperty)] = List(
@@ -35,6 +37,18 @@ object HTMLParamElement extends DOM {
     ("prototype", AbsConstValue(PropValue(ObjectValue(Value(loc_proto), F, F, F))))
   )
   
+  /* instance */
+  private val prop_ins: List[(String, AbsProperty)] = 
+       HTMLElement.getInsList2() ++ List(
+      ("@class",    AbsConstValue(PropValue(AbsString.alpha("Object")))),
+      ("@proto",    AbsConstValue(PropValue(ObjectValue(loc_proto, F, F, F)))),
+      ("@extensible", AbsConstValue(PropValue(BoolTrue))),
+      // DOM Level 1
+      ("name", AbsConstValue(PropValue(ObjectValue(StrTop, T, T, T)))),
+      ("type", AbsConstValue(PropValue(ObjectValue(StrTop, T, T, T)))),
+      ("value", AbsConstValue(PropValue(ObjectValue(StrTop, T, T, T)))),
+      ("valueType", AbsConstValue(PropValue(ObjectValue(StrTop, T, T, T))))
+    )
   /* prorotype */
   private val prop_proto: List[(String, AbsProperty)] = List(
     ("@class", AbsConstValue(PropValue(AbsString.alpha("Object")))),
@@ -47,9 +61,11 @@ object HTMLParamElement extends DOM {
     (name, AbsConstValue(PropValue(ObjectValue(loc_cons, T, F, T))))
   )
 
-  def getInitList(): List[(Loc, List[(String, AbsProperty)])] = List(
-    (loc_cons, prop_cons), (loc_proto, prop_proto), (GlobalLoc, prop_global)
-  )
+  def getInitList(): List[(Loc, List[(String, AbsProperty)])] = if(Shell.params.opt_Dommodel2) List(
+    (loc_cons, prop_cons), (loc_proto, prop_proto), (GlobalLoc, prop_global), (loc_ins, prop_ins)
+
+  ) else List(
+    (loc_cons, prop_cons), (loc_proto, prop_proto), (GlobalLoc, prop_global)  ) 
 
   def getSemanticMap(): Map[String, SemanticFun] = {
     Map()
@@ -91,7 +107,7 @@ object HTMLParamElement extends DOM {
     }
   }
    
-  def getInsList(name: PropValue, ttype: PropValue, value: PropValue, valueType: PropValue): List[(String, PropValue)] = List(
+  def getInsList(name: PropValue, ttype: PropValue, value: PropValue, valueType: PropValue, xpath: PropValue): List[(String, PropValue)] = List(
     ("@class",    PropValue(AbsString.alpha("Object"))),
     ("@proto",    PropValue(ObjectValue(loc_proto, F, F, F))),
     ("@extensible", PropValue(BoolTrue)),
@@ -99,7 +115,8 @@ object HTMLParamElement extends DOM {
     ("name", name),
     ("type",  ttype), 
     ("value",   value),
-    ("valueType", valueType)
+    ("valueType", valueType),
+    ("xpath", xpath)
    )
   
   override def default_getInsList(): List[(String, PropValue)] = { 
@@ -107,9 +124,10 @@ object HTMLParamElement extends DOM {
     val ttype = PropValue(ObjectValue(AbsString.alpha(""), T, T, T))
     val value = PropValue(ObjectValue(AbsString.alpha(""), T, T, T))
     val valueType = PropValue(ObjectValue(AbsString.alpha(""), T, T, T))
+    val xpath = PropValue(ObjectValue(AbsString.alpha(""), F, F, F))
     // This object has all properties of the HTMLElement object 
     HTMLElement.default_getInsList ::: 
-      getInsList(name, ttype, value, valueType)
+      getInsList(name, ttype, value, valueType, xpath)
   }
 
 }

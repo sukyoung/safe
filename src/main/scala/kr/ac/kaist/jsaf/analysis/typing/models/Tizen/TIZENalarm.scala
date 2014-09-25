@@ -78,7 +78,7 @@ object TIZENalarm extends Tizen {
     ("@proto", AbsConstValue(PropValue(ObjectValue(BuiltinArray.ProtoLoc, F, F, F)))),
     ("@extensible", AbsConstValue(PropValue(T))),
     ("length", AbsConstValue(PropValue(ObjectValue(UInt, T, F, F)))),
-    ("@default_number", AbsConstValue(PropValue(ObjectValue(Value(AbsString.alpha("MO") + AbsString.alpha("TU") +
+    (Str_default_number, AbsConstValue(PropValue(ObjectValue(Value(AbsString.alpha("MO") + AbsString.alpha("TU") +
       AbsString.alpha("WE") + AbsString.alpha("TH") + AbsString.alpha("FR") + AbsString.alpha("SA") + AbsString.alpha("SU")), T, T, T))))
   )
 
@@ -137,7 +137,7 @@ object TIZENalarm extends Tizen {
         )),
       ("tizen.alarm.get" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -154,7 +154,7 @@ object TIZENalarm extends Tizen {
             else TizenHelper.TizenExceptionBot
 
           /* New TIZENAlarmAbsolute */
-          val o_1 = ObjEmpty.update("@class", PropValue(AbsString.alpha("Object"))).
+          val o_1 = Obj.empty.update("@class", PropValue(AbsString.alpha("Object"))).
             update("@proto", PropValue(ObjectValue(Value(TIZENAlarmAbsolute.loc_proto), F, F, F))).
             update("@extensible", PropValue(T)).
             update("id", PropValue(ObjectValue(Value(alarmId._1._5), F, T, T))).
@@ -163,7 +163,7 @@ object TIZENalarm extends Tizen {
             update("daysOfTheWeek", PropValue(ObjectValue(Value(loc_bydayvalarr), F, T, T)))
 
           /* New TIZENAlarmRelative */
-          val o_2 = ObjEmpty.update("@class", PropValue(AbsString.alpha("Function"))).
+          val o_2 = Obj.empty.update("@class", PropValue(AbsString.alpha("Function"))).
             update("@proto", PropValue(ObjectValue(Value(TIZENAlarmRelative.loc_proto), F, F, F))).
             update("@extensible", PropValue(T)).
             update("id", PropValue(ObjectValue(Value(alarmId._1._5), F, T, T))).
@@ -177,7 +177,7 @@ object TIZENalarm extends Tizen {
         )),
       ("tizen.alarm.getAll" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -186,7 +186,7 @@ object TIZENalarm extends Tizen {
           val (h_1, ctx_1) = Helper.Oldify(h, ctx, addr1)
 
           val o_arr = Helper.NewArrayObject(UInt).
-            update("@default_number", PropValue(ObjectValue(Value(LocSet(loc_alarmabs) ++ LocSet(loc_alarmrel)), T, T, T)))
+            update(Str_default_number, PropValue(ObjectValue(Value(LocSet(loc_alarmabs) ++ LocSet(loc_alarmrel)), T, T, T)))
           val h_2 = h_1.update(l_r1, o_arr)
           val est = Set[WebAPIException](UnknownError)
           val (h_e, ctx_e) = TizenHelper.TizenRaiseException(h, ctx, est)

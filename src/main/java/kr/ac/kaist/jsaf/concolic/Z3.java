@@ -28,7 +28,7 @@ public final class Z3 {
 	
 	boolean debug = false;
 	
-	public HashMap<String, Integer> ConstraintSolver(Context ctx, List<ConstraintForm> conslist, Integer inum, Map<Integer, Pair<String, List<Pair<String, String>>>> objects, List<Pair<String, String>> thisObject) throws Z3Exception, TestFailedException 
+	public HashMap<String, Integer> ConstraintSolver(Context ctx, List<ConstraintForm> conslist, Integer inum, Map<Integer, TypeInfo> objects, List<String> thisProperties) throws Z3Exception, TestFailedException 
 	{
 		if (debug) 
 			System.out.println("ConstraintSolver");
@@ -79,11 +79,13 @@ public final class Z3 {
 											case '/':
 												solver.assert_(ctx.mkEq(exprMap.get(lhs), ctx.mkDiv((ArithExpr) exprMap.get(rhs), (ArithExpr) exprMap.get(v))));
 												break;
+											case '%':
+												solver.assert_(ctx.mkEq(exprMap.get(lhs), ctx.mkMod((IntExpr) exprMap.get(rhs), (IntExpr) exprMap.get(v))));
+												break;
 											case '&':
 												BitVecExpr x = ctx.mkInt2BV(1, exprMap.get(rhs));
 												BitVecExpr y = ctx.mkInt2BV(1, exprMap.get(v));
 												solver.assert_(ctx.mkEq(exprMap.get(lhs), ctx.mkBV2Int(ctx.mkBVAND(x, y), false)));
-												//solver.assert_(ctx.mkEq(exprMap.get(lhs), ctx.mkBV2Int(ctx.mkBVAND(ctx.mkInt2BV(32, exprMap.get(rhs)), ctx.mkInt2BV(32, exprMap.get(v))), true)));
 										
 												break;
 											/* Boolean Expression */
@@ -168,52 +170,53 @@ public final class Z3 {
 			HashMap<String, Integer> result = new HashMap<String, Integer>(); 
 			if (exprMap.containsKey("this")) 
 				result.put("this", Integer.parseInt(model.getConstInterp(exprMap.get("this")).toString()));
-			for (int j=0; j<thisObject.size(); j++) 
-				result.put("this."+thisObject.get(j).first(), Integer.parseInt(model.getConstInterp(exprMap.get("this."+thisObject.get(j).first())).toString()));
+			for (int j=0; j<thisProperties.size(); j++) 
+				result.put("this."+thisProperties.get(j), Integer.parseInt(model.getConstInterp(exprMap.get("this."+thisProperties.get(j))).toString()));
 
 			for (int i=0; i<inum; i++) {
 				if (exprMap.containsKey("i"+i)) 
 					result.put("i"+i, Integer.parseInt(model.getConstInterp(exprMap.get("i"+i)).toString()));
 				if (objects.containsKey(i)) {
-					if (objects.get(i).first() == "Array") {
-						String length = objects.get(i).second().get(0).first();
+					if (objects.get(i).getJavaConstructor() == "Array") {
+						String length = objects.get(i).getJavaProperties().get(0);
 						for (int j=0; j<Integer.parseInt(length); j++)
 							result.put("i"+i+"."+Integer.toString(j), Integer.parseInt(model.getConstInterp(exprMap.get("i"+i+"."+Integer.toString(j))).toString()));
 					}
 					else {
-						List<Pair<String, String>> properties = objects.get(i).second();
+						List<String> properties = objects.get(i).getJavaProperties();
 						for (int j=0; j<properties.size(); j++) 
-							result.put("i"+i+"."+properties.get(j).first(), Integer.parseInt(model.getConstInterp(exprMap.get("i"+i+"."+properties.get(j).first())).toString()));
+							result.put("i"+i+"."+properties.get(j), Integer.parseInt(model.getConstInterp(exprMap.get("i"+i+"."+properties.get(j))).toString()));
 					}
 				}
 			}
 			return result;			
 		}
 		else {
-			System.out.println("BUG, the constraints are satisfiable.");
+			System.out.println(solver.check());
+			System.out.println("BUG, the constraints are not satisfiable.");
 			throw new TestFailedException();
 		}
 	}	
 
-	public Option<HashMap<String, Integer>> solve(List<ConstraintForm> constraints, Integer inum, Option<Map<Integer, Pair<String, List<Pair<String, String>>>>> objects, List<Pair<String, String>> thisObject) {
+	public Option<HashMap<String, Integer>> solve(List<ConstraintForm> constraints, Integer inum, Option<Map<Integer, TypeInfo>> objects, List<String> thisProperties) {
 		try {
 			HashMap<String, String> cfg = new HashMap<String, String>();
 			cfg.put("model", "true");
 			Context ctx = new Context(cfg);
 			if (!constraints.isEmpty())
-				return Option.<HashMap<String, Integer>>some(this.ConstraintSolver(ctx, constraints, inum, objects.unwrap(), thisObject));
+				return Option.<HashMap<String, Integer>>some(this.ConstraintSolver(ctx, constraints, inum, objects.unwrap(), thisProperties));
 			else
 				return Option.<HashMap<String, Integer>>none();
 		} catch (Z3Exception ex) {
-            System.out.println("TEST CASE FAILED: " + ex.getMessage());
-            System.out.println("Stack trace: ");
-            ex.printStackTrace(System.out);
+			System.out.println("TEST CASE FAILED: " + ex.getMessage());
+      System.out.println("Stack trace: ");
+      ex.printStackTrace(System.out);
 			return Option.<HashMap<String, Integer>>none();
-        } catch (Exception ex) {
-            System.out.println("Unknown Exception: " + ex.getMessage());
-            System.out.println("Stack trace: ");
-            ex.printStackTrace(System.out);
+    } catch (Exception ex) {
+      System.out.println("Unknown Exception: " + ex.getMessage());
+      System.out.println("Stack trace: ");
+      ex.printStackTrace(System.out);
 			return Option.<HashMap<String, Integer>>none();
-        }
+    }
 	}
 }

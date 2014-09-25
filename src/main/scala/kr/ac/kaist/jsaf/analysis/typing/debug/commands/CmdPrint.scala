@@ -15,6 +15,9 @@ import kr.ac.kaist.jsaf.analysis.cfg.{CFGInst, LEntry, Block}
 import kr.ac.kaist.jsaf.analysis.typing.AddressManager._
 import kr.ac.kaist.jsaf.analysis.typing.ControlPoint
 import scala.collection.mutable.{HashMap => MHashMap, HashSet => MHashSet, Stack => MStack}
+import kr.ac.kaist.jsaf.analysis.cfg.FunctionId
+import kr.ac.kaist.jsaf.analysis.typing.Worklist
+import kr.ac.kaist.jsaf.analysis.cfg.DotWriter
 
 class CmdPrint extends Command {
   override val name = "print"
@@ -200,6 +203,46 @@ class CmdPrint extends Command {
           } catch {
             case e: NumberFormatException => System.out.println("fid must be integer.")
             case e: NoSuchElementException => System.out.println("unknown fid: "+arg1)
+          }
+        }
+        case "cfg" => {
+          try {
+            // computes reachable fid_set
+            val reachableFIdSet = c.getSemantics.ipSuccMap.foldLeft(Set[FunctionId]())((set, kv) => {
+              val (caller, calleeset) = kv
+              val reachable_fids = calleeset.map(callee => callee._1._1._1).toSet
+              set ++ reachable_fids
+            }) + c.getCFG.getGlobalFId
+            // dump each function node
+            
+            val cfg = c.getCFG
+		    val wo = Worklist.computes(cfg)
+		    val o = wo.getOrder()
+		    val nodes = cfg.getNodes.reverse
+		    val sb = new StringBuilder
+		    sb.append("digraph \"DirectedGraph\" {\n")
+		    sb.append("\tfontsize=12;node [fontsize=12];edge [fontsize=12];\n\t")
+		    for(node <-nodes) {
+		      if(reachableFIdSet.contains(node._1)) {
+		    	  sb.append(DotWriter.drawNode(cfg, node, o)).append(DotWriter.drawEdge(cfg, node, o))
+		      }
+		    }
+		    sb.append("\n}\n").toString()
+		    println(sb)
+            
+          } catch {
+            case e => System.out.println("CFG Dump Error. : " + e)
+          }
+        }
+        case "succ" => {
+          try {
+            val current = c.current
+            println("* Successor node")
+            c.getCFG.getSucc(current._1).foreach(succ => {
+              println("\t" + succ)
+            })
+          } catch {
+            case e => System.out.println("Get Successor node set error. : " + e)
           }
         }
         case _ => {

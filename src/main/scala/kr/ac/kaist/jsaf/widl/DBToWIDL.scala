@@ -351,7 +351,7 @@ object DBToWIDL extends _WIDLWalker {
     } catch {
       case Done =>
         wellFormed(result)
-      case e => throw e
+      case e: Throwable => throw e
     } finally {
       bs.close
     }

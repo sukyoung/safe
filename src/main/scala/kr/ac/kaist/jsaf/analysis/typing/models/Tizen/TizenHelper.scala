@@ -1,5 +1,5 @@
 /*******************************************************************************
-    Copyright (c) 2012-2013, S-Core, KAIST.
+    Copyright (c) 2012-2014, S-Core, KAIST.
     All rights reserved.
 
     Use is subject to license terms.
@@ -129,7 +129,7 @@ object TizenHelper {
       }
     }
     val (o_fun, o_args) = callback_list.foldLeft((callback_table, callbackarg_table))((o, s_ev) =>
-      (o._1.update(s_ev, o._1(s_ev)._1 + propv_fun), o._2.update(s_ev, o._2(s_ev)._1 + propv_args))
+      (o._1.update(s_ev, o._1(s_ev) + propv_fun), o._2.update(s_ev, o._2(s_ev) + propv_args))
     )
     h.update(TizenCallbackTableLoc, o_fun).update(TizenCallbackArgTableLoc, o_args)
   }
@@ -137,7 +137,7 @@ object TizenHelper {
     if (es.isEmpty)
       (HeapBot, ContextBot)
     else {
-      val v_old = h(SinglePureLocalLoc)("@exception_all")._1._2
+      val v_old = h(SinglePureLocalLoc)("@exception_all")._2
       val v_e = Value(PValueBot,
         es.foldLeft(LocSetBot)((lset,exc)=> lset + TizenNewExceptionLoc(exc)))
       val h_1 = h.update(SinglePureLocalLoc,

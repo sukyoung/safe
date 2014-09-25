@@ -24,7 +24,7 @@ object PreHelper {
         h.update(PureLocalLoc, h(PureLocalLoc).update(x,
           PropValue(ObjectValue(v, BoolBot, BoolBot, BoolFalse))))
       case CapturedVar =>
-        h(PureLocalLoc)("@env")._1._2._2.foldLeft(h)((hh, l) => {
+        h(PureLocalLoc)("@env")._2._2.foldLeft(h)((hh, l) => {
           VarStoreL(hh, l, x, v)
         })
       case CapturedCatchVar =>
@@ -51,7 +51,7 @@ object PreHelper {
         val has_x = env.domIn(x)
         val h_1 =
           if (BoolTrue <= has_x) {
-            env(x)._1._1._2.getPair match {
+            env(x)._1._2.getPair match {
               case (AbsSingle, Some(b)) => 
                 if (b) {
                   val pv = PropValue(ObjectValue(v, BoolTrue, BoolBot, BoolFalse))
@@ -65,7 +65,7 @@ object PreHelper {
           }
         val h_2 =
           if (BoolFalse <= has_x) {
-            val lset_outer = env("@outer")._1._2._2
+            val lset_outer = env("@outer")._2._2
             lset_outer.foldLeft(h_1)((hh, l_outer) => visit(hh, l_outer))
           } else {
             h_1
@@ -86,7 +86,7 @@ object PreHelper {
 
     // case 2
     val h_2 = if (BoolTrue <= h_1(l_g).domIn(x)) {
-      val ov_old = h_1(l_g)(x)._1._1
+      val ov_old = h_1(l_g)(x)._1
       val ov_new = ObjectValue(ov_old._1 + v, ov_old._2, ov_old._3, ov_old._4)
       val o = h_1(l_g).update(x, PropValue(ov_new))
       h_1.update(l_g, o)
@@ -104,7 +104,7 @@ object PreHelper {
         h
     val h_2 =
       if (BoolTrue <= test) {
-        val ov_old = h_1(l)(s)._1._1
+        val ov_old = h_1(l)(s)._1
         h_1.update(l, h_1(l).update(s, PropValue(ObjectValue(v, ov_old._2, ov_old._3, ov_old._4))))
       }
       else
@@ -118,12 +118,12 @@ object PreHelper {
 
   def Delete(h: Heap, l: Loc, s: AbsString): (Heap, AbsBool) = {
     val (h_1, b_1) =
-      if ((BoolTrue <= HasOwnProperty(h, l, s)) && (BoolFalse <= h(l)(s)._1._1._4))
+      if ((BoolTrue <= HasOwnProperty(h, l, s)) && (BoolFalse <= h(l)(s)._1._4))
         (h, BoolFalse)
       else
         (h, BoolBot)
     val (h_2, b_2) =
-      if (  (BoolTrue <= HasOwnProperty(h_1, l, s) && BoolFalse != h_1(l)(s)._1._1._4)// BoolBot should be included because @exception property also could be deleted.
+      if (  (BoolTrue <= HasOwnProperty(h_1, l, s) && BoolFalse != h_1(l)(s)._1._4)// BoolBot should be included because @exception property also could be deleted.
           || BoolFalse <= HasOwnProperty(h_1, l, s)) {
         (h_1.update(l, h_1(l) - s), BoolTrue)
 //        (PropStore(_h, l,  AbsString.alpha("length"), Value(UInt)), BoolTrue)
@@ -139,13 +139,13 @@ object PreHelper {
 
     val o_1 =
       if (!(v._1._5 <= StrBot)) NewString(v._1._5)
-      else ObjBot
+      else Obj.bottom
     val o_2 =
       if (!(v._1._3 <= BoolBot)) NewBoolean(v._1._3)
-      else ObjBot
+      else Obj.bottom
     val o_3 =
       if (!(v._1._4 <= NumBot)) NewNumber(v._1._4)
-      else ObjBot
+      else Obj.bottom
     val es =
       if (!(v._1._1 <= UndefBot) || !(v._1._2 <= NullBot)) Set[Exception](TypeError)
       else Set[Exception]()
@@ -153,7 +153,7 @@ object PreHelper {
 
     val (h_1, _ctx_1) = Oldify(h, ctx, a_new)
     val (h_2, lset_2, ctx_1) =
-      if (o </ ObjBot) {
+      if (o </ Obj.bottom) {
         val l_r = addrToLoc(a_new, Recent)
         (h_1.update(l_r, o), lset + l_r, _ctx_1)
       } else {
@@ -163,25 +163,25 @@ object PreHelper {
   }
 
   def allocObject(h: Heap, ls_v: LocSet, l_r: Loc) = {
-    val o_new = ls_v.foldLeft[Obj](ObjBot)((obj,l_p) => obj + NewObject(l_p))
+    val o_new = ls_v.foldLeft[Obj](Obj.bottom)((obj,l_p) => obj + NewObject(l_p))
     val h_2 = h.update(l_r, o_new)
       h_2
   }
 
   def NewFunctionObject(fid: Option[FunctionId], cid: Option[FunctionId], env: Value,
                         l: Option[Loc], w: AbsBool, e: AbsBool, c: AbsBool, n: AbsNumber): Obj = {
-    val o_1 = ObjEmpty.
+    val o_1 = Obj.empty.
       update("@class", PropValue(AbsString.alpha("Function"))).
       update("@proto", PropValue(ObjectValue(Value(FunctionProtoLoc), BoolFalse, BoolFalse, BoolFalse))).
       update("@extensible", PropValue(BoolTrue)).
       update("@scope", PropValue(env)).
-      update("length", PropValue(ObjectValue(n, BoolFalse, BoolFalse, BoolFalse)))
+      update("length", PropValue(ObjectValue(n, BoolFalse, BoolFalse, BoolFalse)), exist = true)
     val o_2 = fid match {
-      case Some(id) => o_1.update("@function", PropValue(ObjectValueBot, ValueBot, FunSet(id)))
+      case Some(id) => o_1.update("@function", PropValue(ObjectValueBot, FunSet(id)))
       case None => o_1
     }
     val o_3 = cid match {
-      case Some(id) => o_2.update("@construct", PropValue(ObjectValueBot, ValueBot, FunSet(id)))
+      case Some(id) => o_2.update("@construct", PropValue(ObjectValueBot, FunSet(id)))
       case None => o_2
     }
     val o_4 = l match {
@@ -190,7 +190,7 @@ object PreHelper {
     }
 
     val o_5 = l match {
-      case Some(loc) => o_4.update("prototype", PropValue(ObjectValue(Value(loc), w, e, c)))
+      case Some(loc) => o_4.update("prototype", PropValue(ObjectValue(Value(loc), w, e, c)), exist = true)
       case None => o_4
     }
     o_5
@@ -205,14 +205,14 @@ object PreHelper {
         val test = h(l).domIn(s)
         val v_1 =
           if (BoolTrue <= test) {
-            val v= h(l)(s)._1._1._1
+            val v= h(l)(s)._1._1
             v
           }
           else
             ValueBot
         val v_2 =
           if (BoolFalse <= test) {
-            val v_proto = h(l)("@proto")._1._1._1
+            val v_proto = h(l)("@proto")._1._1
             val v_3 =
               if (v_proto._1._2 </ NullBot)
                 Value(PValue(UndefTop))
@@ -240,14 +240,14 @@ object PreHelper {
         val test = h(l).domIn(s)
         val v_1 =
           if (BoolTrue <= test) {
-            val v= h(l)(s)._1._1._1
+            val v= h(l)(s)._1._1
             v
           }
           else
             ValueBot
         val v_2 =
           if (BoolFalse <= test) {
-            val v_proto = h(l)("@proto")._1._1._1
+            val v_proto = h(l)("@proto")._1._1
             val v_3 =
               if (v_proto._1._2 </ NullBot)
                 Value(PValue(UndefTop))
@@ -274,10 +274,10 @@ object PreHelper {
         visited = visited + l_1
         val b_1 =
           if (BoolFalse <= h(l_1).domIn(s)) {
-            val v_proto = h(l_1)("@proto")._1._1._1
+            val v_proto = h(l_1)("@proto")._1._1
             val b_3 =
               if (v_proto._1._2 </ NullBot)
-                h(l_2)("@extensible")._1._2._1._3
+                h(l_2)("@extensible")._2._1._3
               else
                 BoolBot
             b_3 + (v_proto._2.foldLeft(BoolBot: AbsBool)((b, l) => b + _CanPutHelp(h,l,s,l_2)))
@@ -286,7 +286,7 @@ object PreHelper {
             BoolBot
         val b_2 =
           if (BoolTrue <= h(l_1).domIn(s))
-            h(l_1)(s)._1._1._2
+            h(l_1)(s)._1._2
           else
             BoolBot
         b_1 + b_2
@@ -309,7 +309,7 @@ object PreHelper {
             BoolBot
         val b_2 =
           if (BoolFalse <= test) {
-            val v_proto = h(l)("@proto")._1._1._1
+            val v_proto = h(l)("@proto")._1._1
             val b_3 =
               if (v_proto._1._2 </ NullBot)
                 BoolFalse
@@ -339,7 +339,7 @@ object PreHelper {
             Value(BoolBot)
         val v_2 =
           if (BoolFalse <= v_eq._1._3) {
-            val v_proto = h(l_1)("@proto")._1._1._1
+            val v_proto = h(l_1)("@proto")._1._1
             val v_1 =
               if (v_proto._1._2 </ NullBot)
                 Value(BoolFalse)
@@ -369,7 +369,7 @@ object PreHelper {
             Value(BoolBot)
         val v_2 =
           if (BoolFalse <= v_eq._1._3) {
-            val v_proto = h(l_1)("@proto")._1._1._1
+            val v_proto = h(l_1)("@proto")._1._1
             val v_1 =
               if (v_proto._1._2 </ NullBot)
                 Value(BoolFalse)
@@ -417,12 +417,12 @@ object PreHelper {
   
   def IsArray(h: Heap, l: Loc): AbsBool = {
     val b1 = 
-      if (AbsString.alpha("Array") <= h(l)("@class")._1._2._1._5)
+      if (AbsString.alpha("Array") <= h(l)("@class")._2._1._5)
         BoolTrue
       else
         BoolBot
     val b2 = 
-      if (AbsString.alpha("Array") != h(l)("@class")._1._2._1._5)
+      if (AbsString.alpha("Array") != h(l)("@class")._2._1._5)
         BoolFalse
       else
         BoolBot
@@ -454,7 +454,7 @@ object PreHelper {
     if (h.domIn(GlobalLoc)) {
       val b_1 =
         if (BoolTrue <= h(GlobalLoc).domIn(x))
-          h(GlobalLoc)(x)._1._1._2
+          h(GlobalLoc)(x)._1._2
         else BoolBot
 
       val b_2 =
@@ -479,7 +479,7 @@ object PreHelper {
         h.update(PureLocalLoc, h(PureLocalLoc).update(x,
           PropValue(ObjectValue(v, BoolBot, BoolBot, BoolFalse))))
       case CapturedVar =>
-        h(PureLocalLoc)("@env")._1._2._2.foldLeft(h)((hh, l) => {
+        h(PureLocalLoc)("@env")._2._2.foldLeft(h)((hh, l) => {
           hh.update(l, hh(l).update(x,
             PropValue(ObjectValue(v, BoolTrue, BoolBot, BoolFalse))))
         })
@@ -495,13 +495,13 @@ object PreHelper {
   def Lookup(h: Heap, PureLocalLoc: Loc, id: CFGId): (Value,Set[Exception]) = {
     val x = id.getText
     id.getVarKind match {
-      case PureLocalVar => (h(PureLocalLoc)(x)._1._1._1, ExceptionBot)
+      case PureLocalVar => (h(PureLocalLoc)(x)._1._1, ExceptionBot)
       case CapturedVar =>
-        val v = h(PureLocalLoc)("@env")._1._2._2.foldLeft(ValueBot)((vv, l) => {
+        val v = h(PureLocalLoc)("@env")._2._2.foldLeft(ValueBot)((vv, l) => {
           vv + Helper.LookupL(h, l, x)
         })
         (v, ExceptionBot)
-      case CapturedCatchVar => (h(CollapsedLoc)(x)._1._1._1, ExceptionBot)
+      case CapturedCatchVar => (h(CollapsedLoc)(x)._1._1, ExceptionBot)
       case GlobalVar => LookupG(h, x)
     }
   }
@@ -510,10 +510,10 @@ object PreHelper {
     if (h.domIn(GlobalLoc)) {
       val v_1 =
         if (BoolTrue <= h(GlobalLoc).domIn(x))
-          h(GlobalLoc)(x)._1._1._1
+          h(GlobalLoc)(x)._1._1
         else
           ValueBot
-      val lset_proto = h(GlobalLoc)("@proto")._1._1._1._2
+      val lset_proto = h(GlobalLoc)("@proto")._1._1._2
       val (v_2, es) =
         if (BoolFalse <= h(GlobalLoc).domIn(x)) {
           val exc = lset_proto.foldLeft(ExceptionBot)(
@@ -547,7 +547,7 @@ object PreHelper {
     id.getVarKind match {
       case PureLocalVar => LocSet(PureLocalLoc)
       case CapturedVar =>
-        h(PureLocalLoc)("@env")._1._2._2.foldLeft(LocSetBot)((ll, l) => {
+        h(PureLocalLoc)("@env")._2._2.foldLeft(LocSetBot)((ll, l) => {
           ll ++ Helper.LookupBaseL(h, l, x)
         })
       case CapturedCatchVar => CollapsedSingleton
@@ -563,7 +563,7 @@ object PreHelper {
         LocSetBot
     val lset_2 =
       if (BoolFalse <= h(GlobalLoc).domIn(x)) {
-        val lset_proto = h(GlobalLoc)("@proto")._1._1._1._2
+        val lset_proto = h(GlobalLoc)("@proto")._1._1._2
         lset_proto.foldLeft(LocSetBot)(
           (lset_3, l_proto) => {
             lset_3 ++ ProtoBase(h, l_proto, AbsString.alpha(x))
@@ -587,7 +587,7 @@ object PreHelper {
             LocSetBot
         val lset_2 =
           if (BoolFalse <= h(l).domIn(s)) {
-            val lset_proto = h(l)("@proto")._1._1._1._2
+            val lset_proto = h(l)("@proto")._1._1._2
             lset_proto.foldLeft[LocSet](LocSetBot){case(lset_3,l_proto) =>
               val lset_4 = _ProtoBase(h,l_proto,s)
                 lset_3 ++ lset_4}
@@ -643,16 +643,16 @@ object PreHelper {
     h(l).domIn(s)
   }
 
-  def NewObject(): Obj = ObjEmpty.
+  def NewObject(): Obj = Obj.empty.
     update("@class", PropValue(AbsString.alpha("Object"))).
     update("@extensible", PropValue(BoolTrue))
 
-  def NewObject(l: Loc): Obj = ObjEmpty.
+  def NewObject(l: Loc): Obj = Obj.empty.
     update("@class", PropValue(AbsString.alpha("Object"))).
     update("@proto", PropValue(ObjectValue(Value(l), BoolFalse, BoolFalse, BoolFalse))).
     update("@extensible", PropValue(BoolTrue))
 
-  def NewObject(lset: LocSet): Obj = ObjEmpty.
+  def NewObject(lset: LocSet): Obj = Obj.empty.
     update("@class", PropValue(AbsString.alpha("Object"))).
     update("@proto", PropValue(ObjectValue(Value(lset), BoolFalse, BoolFalse, BoolFalse))).
     update("@extensible", PropValue(BoolTrue))
@@ -666,17 +666,17 @@ object PreHelper {
     NewFunctionObject(fid, cid, env, l, BoolTrue, BoolFalse, BoolFalse, n)
   }
 
-  def NewArrayObject(n: AbsNumber): Obj = ObjEmpty.
+  def NewArrayObject(n: AbsNumber): Obj = Obj.empty.
     update("@class", PropValue(AbsString.alpha("Array"))).
     update("@proto", PropValue(ObjectValue(BuiltinArray.ProtoLoc, BoolFalse, BoolFalse, BoolFalse))).
     update("@extensible", PropValue(BoolTrue)).
-    update("length", PropValue(ObjectValue(n, BoolTrue, BoolFalse, BoolFalse)))
+    update("length", PropValue(ObjectValue(n, BoolTrue, BoolFalse, BoolFalse)), exist = true)
 
-  def NewArgObject(n: AbsNumber): Obj = ObjEmpty.
+  def NewArgObject(n: AbsNumber): Obj = Obj.empty.
     update("@class", PropValue(AbsString.alpha("Arguments"))).
     update("@proto", PropValue(ObjectValue(ObjProtoLoc, BoolFalse, BoolFalse, BoolFalse))).
     update("@extensible", PropValue(BoolTrue)).
-    update("length", PropValue(ObjectValue(n, BoolTrue, BoolFalse, BoolTrue)))
+    update("length", PropValue(ObjectValue(n, BoolTrue, BoolFalse, BoolTrue)), exist = true)
 
   def IsCallable(h: Heap, l: Loc): AbsBool = {
     val b_1 =
@@ -693,7 +693,7 @@ object PreHelper {
   }
 
   // v_env is either LocSet or NullTop
-  def NewPureLocal(v_env: Value, lset_this: LocSet): Obj = ObjEmpty.
+  def NewPureLocal(v_env: Value, lset_this: LocSet): Obj = Obj.empty.
     update("@env", PropValue(v_env)).
     update("@this", PropValue(Value(lset_this))).
     update("@exception", PropValueBot).
@@ -701,7 +701,7 @@ object PreHelper {
     update("@return", PropValueUndefTop)
 
   def NewDeclEnvRecord(outer_env: Value): Obj = {
-    ObjEmpty.update("@outer", PropValue(outer_env))
+    Obj.empty.update("@outer", PropValue(outer_env))
   }
 
   def HasConstruct(h: Heap, l: Loc): AbsBool = {
@@ -760,7 +760,7 @@ object PreHelper {
     AbsNumber.getUIntSingle(v_len) match {
       case Some(length) => {
         (0 until length.toInt).foldLeft(o_new_1)((_o, _i) =>
-          _o.update(_i.toString(), PropValue(ObjectValue(s.charAt(AbsNumber.alpha(_i)), BF, BT, BF))))
+          _o.update(_i.toString(), PropValue(ObjectValue(s.charAt(AbsNumber.alpha(_i)), BF, BT, BF)), exist = true))
       }
       case _ => o_new_1.update(NumStr, PropValue(ObjectValue(StrTop, BF, BT, BF)))
     }
@@ -841,6 +841,7 @@ object PreHelper {
         set = set.filter(s => s.gamma match {
           case Some(vs) =>
             (s.isAllNums, s.isAllOthers) match {
+              case (true, true) => !hasNumStr && !hasNumStr
               case (true, false) => !hasNumStr
               case (false, true) => !hasOtherStr
               case (false, false) => true
@@ -928,7 +929,7 @@ object PreHelper {
     if (es.isEmpty)
       (h, ctx)
     else {
-      val v_old = h(PureLocalLoc)("@exception_all")._1._2
+      val v_old = h(PureLocalLoc)("@exception_all")._2
       val v_e = Value(PValueBot,
                       es.foldLeft(LocSetBot)((lset,exc)=> lset + NewExceptionLoc(exc)))
       val h_1 = h.update(PureLocalLoc,

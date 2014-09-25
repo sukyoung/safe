@@ -49,7 +49,7 @@ object TIZENbookmark extends Tizen {
     Map(
       ("tizen.bookmark.get" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -88,7 +88,7 @@ object TIZENbookmark extends Tizen {
             }
           }
           /* BookmarkItem */
-          val o_bmitem = ObjEmpty.
+          val o_bmitem = Obj.empty.
             update("@class", PropValue(AbsString.alpha("Object"))).
             update("@proto", PropValue(ObjectValue(Value(TIZENBookmarkItem.loc_proto), F, F, F))).
             update("@extensible", PropValue(T)).
@@ -96,7 +96,7 @@ object TIZENbookmark extends Tizen {
             update("title", PropValue(ObjectValue(Value(StrTop), F, T, T))).
             update("url", PropValue(ObjectValue(Value(StrTop), F, T, T)))
           /* BookmarkFolder */
-          val o_bmfolder = ObjEmpty.
+          val o_bmfolder = Obj.empty.
             update("@class", PropValue(AbsString.alpha("Object"))).
             update("@proto", PropValue(ObjectValue(Value(TIZENBookmarkFolder.loc_proto), F, F, F))).
             update("@extensible", PropValue(T)).
@@ -105,7 +105,7 @@ object TIZENbookmark extends Tizen {
 
           val h_4 = h_3.update(l_r1, o_bmitem + o_bmfolder)
           val o_arr = Helper.NewArrayObject(UInt)
-          val o_arr2 = o_arr.update("@default_number", PropValue(ObjectValue(l_r1, T, T, T)))
+          val o_arr2 = o_arr.update(Str_default_number, PropValue(ObjectValue(l_r1, T, T, T)))
           val h_5 = h_4.update(l_r2, o_arr2)
           val est = Set[WebAPIException](NotFoundError, SecurityError, UnknownError)
           val (h_e, ctx_e) = TizenHelper.TizenRaiseException(h, ctx, es_1 ++ est)

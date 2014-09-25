@@ -138,11 +138,11 @@ object BugHelper {
         case Some(s) => s
         case _ => absString.getAbsCase match {
           // ignore @default
-          case AbsTop => heap(loc).map.keySet.filter(s => !s.take(1).equals("@"))
+          case AbsTop => heap(loc).getProps
           case AbsBot => Set()
           case _ if absString.isAllNums =>
-            heap(loc).map.keySet.filter(s => !s.take(1).equals("@") && AbsString.alpha(s) <= NumStr)
-          case _ => heap(loc).map.keySet.filter(s => !s.take(1).equals("@") && AbsString.alpha(s) <= OtherStr)
+            heap(loc).getProps.filter(s => !(s.take(1) == "@") && AbsString.alpha(s) <= NumStr)
+          case _ => heap(loc).getProps.filter(s => !(s.take(1) == "@") && AbsString.alpha(s) <= OtherStr)
         }
       }
     }

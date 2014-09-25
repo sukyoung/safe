@@ -61,18 +61,16 @@ class Instrumentor(program: IRRoot, coverage: Coverage) extends IRWalker {
   var debug = false
 
   def doit() = walk(program, IF.dummyIRId(NU.freshConcolicName("Main"))).asInstanceOf[IRRoot]
-  def walkInput(node: Any, env: IRId): IRStmt = walk(node, env).asInstanceOf[IRStmt] match {
-    case input@SIRStmt(info) => SIRSeq(info, List(startConcolic(info), input, endConcolic(info))) 
-  }
  
   val dummyId = IF.dummyIRId(NU.freshConcolicName("Instrumentor"))
-  def startConcolic(info: IRSpanInfo) = 
-    SIRInternalCall(info, dummyId, IF.makeTId(info.getSpan, NU.freshConcolicName("StartConcolic")), dummyId, None)  
-  def endConcolic(info: IRSpanInfo) = 
-    SIRInternalCall(info, dummyId, IF.makeTId(info.getSpan, NU.freshConcolicName("EndConcolic")), dummyId, None)  
+
   def storeEnvironment(info: IRSpanInfo, v: IRId, env: IRId) = 
     SIRInternalCall(info, dummyId, 
                     IF.makeTId(info.getSpan, NU.freshConcolicName("StoreEnvironment")), v, Some(env))
+
+  def storeThis(info: IRSpanInfo, env: IRId) = 
+    SIRInternalCall(info, dummyId,
+                    IF.makeTId(info.getSpan, NU.freshConcolicName("StoreThis")), dummyId, Some(env))
 
   def storeVariable(info: IRSpanInfo, lhs: IRId, rhs: IRId) = 
     SIRInternalCall(info, dummyId, 
@@ -82,18 +80,22 @@ class Instrumentor(program: IRRoot, coverage: Coverage) extends IRWalker {
     SIRSeq(info, List(storeEnvironment(info, v, env), 
         SIRInternalCall(info, dummyId,
                     IF.makeTId(info.getSpan, NU.freshConcolicName("ExecuteAssignment")), e, Some(v))))
+
   def executeStore(info: IRSpanInfo, obj: IRId, index: IRId, rhs: IRExpr, env: IRId) =
     SIRSeq(info, List(storeEnvironment(info, obj, env), 
       SIRInternalCall(info, obj, IF.makeTId(info.getSpan, NU.freshConcolicName("ExecuteStore")), rhs, Some(index))))
+
   def executeCondition(info: IRSpanInfo, e: IRExpr, env: IRId) =
     SIRInternalCall(info, dummyId,
                     IF.makeTId(info.getSpan, NU.freshConcolicName("ExecuteCondition")), e, Some(env))
+  def endCondition(info: IRSpanInfo, env: IRId) =
+    SIRInternalCall(info, dummyId,
+                    IF.makeTId(info.getSpan, NU.freshConcolicName("EndCondition")), dummyId, Some(env))
+
   def walkVarStmt(info: IRSpanInfo, v: IRId, n: IRNumber, env: IRId) = 
     SIRInternalCall(info, v,
                     IF.makeTId(info.getSpan, NU.freshConcolicName("WalkVarStmt")), n, Some(env))
-  def storeThis(info: IRSpanInfo, env: IRId) = 
-    SIRInternalCall(info, dummyId,
-                    IF.makeTId(info.getSpan, NU.freshConcolicName("StoreThis")), dummyId, Some(env))
+
   def walkFunctional(info: IRSpanInfo, node: IRFunctional): IRFunctional = node match {
     case SIRFunctional(i, name, params, args, fds, vds, body) =>
       var n = 0
@@ -140,7 +142,6 @@ class Instrumentor(program: IRRoot, coverage: Coverage) extends IRWalker {
       SIRRoot(info, fds.map(walk(_, env).asInstanceOf[IRFunDecl]),
               vds, 
               irs.map(walk(_, env).asInstanceOf[IRStmt]))
-              //vds.map(walkVarStmt(_, env))++irs.map(walk(_, env).asInstanceOf[IRStmt]))
 
     /* x = e
      * ==>
@@ -157,11 +158,11 @@ class Instrumentor(program: IRRoot, coverage: Coverage) extends IRWalker {
      * ==>
      * if (CHECK_FOCUS(env))
      *   x = x(x, x)
+     * EXECUTE_RECURSIVE(x);
      *
      */
     case SIRCall(info, lhs, fun, thisB, args) =>
       SIRSeq(info, List(storeEnvironment(info, lhs, env), node.asInstanceOf[IRStmt]))
-      //node
 
     /* x = function f (x, x) {s*}
      * ==>
@@ -203,22 +204,21 @@ class Instrumentor(program: IRRoot, coverage: Coverage) extends IRWalker {
     
     /* if (e) then s (else s)?
      * ==>
-     * if (e) 
-     * then {EXECUTE_CONDITION(e); s;} 
-     * else {EXECUTE_CONDITIOIN(e); s;?}
+     * EXECUTE_CONDITION(e);
+     * if (e) then s (else s)?
+     * END_CONDITION(e);
      *
-     * if (e) 
-     * then {SIRInternalCall(info, "<>Concolic<>Instrumentor", "<>Concolic<>ExecuteCondition", e, None) s} 
-     * else {SIRInternalCall(info, "<>Concolic<>Instrumentor", "<>Concolic<>ExecuteCondition", e, None) s?}
+     * SIRInternalCall(info, "<>Concolic<>Instrumentor", "<>Concolic<>ExecuteCondition", e, None)
+     * if (e) then s (else s?)
+     * SIRInternalCall(info, "<>Concolic<>Instrumentor", "<>Concolic<>EndCondition", e, None)
      */
     case SIRIf(info, expr, trueB, falseB) =>
-      SIRSeq(info, List(executeCondition(info, expr, env), 
-        SIRIf(info, expr, walk(trueB, env).asInstanceOf[IRStmt],
-          falseB match { case Some(s) => Some(walk(s, env).asInstanceOf[IRStmt]); case None => None})))
-      /*SIRIf(info, expr, 
-        SIRSeq(info, List(executeCondition(info, expr, env), walk(trueB, env).asInstanceOf[IRStmt])),
-        falseB match { case Some(s) => Some(SIRSeq(info, List(executeCondition(info, expr, env), walk(s, env).asInstanceOf[IRStmt])))
-                       case None => Some(executeCondition(info, expr, env))})*/
+      if (info.isFromSource)
+        SIRSeq(info, List(executeCondition(info, expr, env), 
+          SIRIf(info, expr, walk(trueB, env).asInstanceOf[IRStmt],
+            falseB match { case Some(s) => Some(walk(s, env).asInstanceOf[IRStmt]); case None => None}), endCondition(info, env)))
+      else
+        SIRIf(info, expr, trueB, falseB)
 
     /* while (e) s
      * ==>

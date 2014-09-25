@@ -74,7 +74,7 @@ object JQueryAjax extends ModelData {
       "jQuery.ajax" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
           // rough modeling : simply returns an ajax instance object
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -87,8 +87,8 @@ object JQueryAjax extends ModelData {
           val ajax_obj = h_1(AjaxInsLoc)
           // create a new ajax object
           val (h_2, new_ajax_obj) = ajax_obj.getProps.zipWithIndex.foldLeft((h_1, Helper.NewObject(ObjProtoLoc)))((ho, si) => {
-            val fun_loc = ajax_obj(si._1)._1._1._1._2
-            val fun_obj = fun_loc.foldLeft(ObjBot)((o, l) => o + ho._1(l))
+            val fun_loc = ajax_obj(si._1)._1._1._2
+            val fun_obj = fun_loc.foldLeft(Obj.bottom)((o, l) => o + ho._1(l))
             val _h1 = ho._1.update(loc(si._2 + 1), fun_obj)
             (_h1, ho._2.update(si._1, PropValue(ObjectValue(Value(loc(si._2+1)), T, T, T))))
           })
@@ -108,11 +108,11 @@ object JQueryAjax extends ModelData {
           // warning message
           println("* Warning : 'jQuery.getScript' has been called, but the argument script file is not loaded. The analysis results may be unsound.")
           
-          val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+          val lset_this = h(SinglePureLocalLoc)("@this")._2._2
           val lset_handler = getArgValue(h, ctx, args, "1")._2.filter(l => BoolTrue <= Helper.IsCallable(h,l))
 
           
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -125,8 +125,8 @@ object JQueryAjax extends ModelData {
           val ajax_obj = h_1(AjaxInsLoc)
           // create a new ajax object
           val (h_2, new_ajax_obj) = ajax_obj.getProps.zipWithIndex.foldLeft((h_1, Helper.NewObject(ObjProtoLoc)))((ho, si) => {
-            val fun_loc = ajax_obj(si._1)._1._1._1._2
-            val fun_obj = fun_loc.foldLeft(ObjBot)((o, l) => o + ho._1(l))
+            val fun_loc = ajax_obj(si._1)._1._1._2
+            val fun_obj = fun_loc.foldLeft(Obj.bottom)((o, l) => o + ho._1(l))
             val _h1 = ho._1.update(loc(si._2 + 1), fun_obj)
             (_h1, ho._2.update(si._1, PropValue(ObjectValue(Value(loc(si._2+1)), T, T, T))))
           })

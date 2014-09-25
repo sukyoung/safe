@@ -18,7 +18,7 @@ import kr.ac.kaist.jsaf.analysis.typing._
 import kr.ac.kaist.jsaf.bug_detector.StateManager
 import kr.ac.kaist.jsaf.compiler.Parser
 import kr.ac.kaist.jsaf.compiler.IRSimplifier
-import kr.ac.kaist.jsaf.concolic.{ConcolicSolver, Instrumentor, IRGenerator} //, Z3}
+import kr.ac.kaist.jsaf.concolic.{ConcolicSolver, ConstraintExtractor, Instrumentor, IRGenerator, IRFilter}
 import kr.ac.kaist.jsaf.exceptions.UserError
 import kr.ac.kaist.jsaf.interpreter.Interpreter
 import kr.ac.kaist.jsaf.nodes.{IRRoot, IRStmt, Program, SourceElement, SourceElements}
@@ -56,7 +56,7 @@ object ConcolicMain {
       // Initialize AddressManager
       AddressManager.reset()
 
-      var ir: IRRoot = irOpt.unwrap
+      val ir: IRRoot = irOpt.unwrap
 
       val builder = new CFGBuilder(ir)
       val cfg = builder.build
@@ -77,23 +77,32 @@ object ConcolicMain {
       // Store function information using the result of the analysis  
       coverage.updateFunction
       
-      ir = IRSimplifier.doit(irOpt.unwrap)
-      //System.out.println(new JSIRUnparser(ir).doit)
-      val instrumentor = new Instrumentor(ir, coverage)
+      // Filtering to ignore original body
+      var fir = IRFilter.doit(ir) 
+
+      fir = IRSimplifier.doit(fir)
+      //System.out.println(new JSIRUnparser(fir).doit)
+
+      val instrumentor = new Instrumentor(fir, coverage)
+      fir = instrumentor.doit
       //instrumentor.debugOn
-      ir = instrumentor.doit
-
-
+      
       //coverage.debug = true;
+      //coverage.timing = true;
 
-      val solver = new ConcolicSolver
-      if (coverage.debug)
-        solver.debug = true;
       val interpreter = new Interpreter
+      val extractor = new ConstraintExtractor
+      val solver = new ConcolicSolver(coverage)
+      if (coverage.debug) {
+        solver.debug = true
+        extractor.debug = true
+      }
+
       do {
         var inputNumber = 0
         do {
           System.out.println
+          var startTime = System.nanoTime
           val result = coverage.functions.get(coverage.target) match {
             case Some(f) => 
               val temp = solver.solve(coverage.getConstraints, coverage.inum, f)
@@ -103,10 +112,12 @@ object ConcolicMain {
                 None
             case None => None
           }
+          //solveConstraints
+
           coverage.setInput(result)
-          coverage.inputIR = coverage.setupCall match { 
+          coverage.setupCall match { 
             case Some(ir) => 
-              val inputIR = instrumentor.walkInput(ir, IRFactory.dummyIRId(coverage.target)).asInstanceOf[IRStmt]
+              val inputIR = instrumentor.walk(ir, IRFactory.dummyIRId(coverage.target)).asInstanceOf[IRStmt]
               /*System.out.println("Input IR!!!!!!!!")
               System.out.println(new JSIRUnparser(ir).doit)
               System.out.println*/
@@ -128,10 +139,28 @@ object ConcolicMain {
                 }
               }*/
               inputNumber = inputNumber + 1
-              Some(inputIR) 
-            case None => None
+              coverage.inputIR = Some(inputIR) 
+
+              if (coverage.timing)
+                System.out.println("Generating test input takes "+(System.nanoTime - startTime)/1000000 + " times.") 
+              startTime = System.nanoTime
+
+              interpreter.doit(fir, JOption.some[Coverage](coverage), true)
+
+              if (coverage.timing)
+                System.out.println("Interpreting the input takes "+(System.nanoTime - startTime)/1000000 + " times.") 
+
+            case None => 
+              coverage.inputIR = None
+              interpreter.doit(ir, JOption.some[Coverage](coverage), true)
           }
-          interpreter.doit(ir, JOption.some[Coverage](coverage), true)
+
+          if (coverage.isFirst)
+            extractor.initialize
+          extractor.modify(coverage.report)
+          coverage.constraints = extractor.constraints
+          coverage.necessaries = extractor.necessaries
+
         } while (coverage.continue)
         coverage.removeTarget
         //System.out.println("Total number of inputs: " + inputNumber)
@@ -143,4 +172,17 @@ object ConcolicMain {
 
     return_code
   }
+
+  /*def solveConstraints(): Option[Map[String, (Id, List[Stmt])]] = {
+    try {
+      val temp = solver.solve(coverage.getConstraints, coverage.inum, f)
+      if (temp.nonEmpty) Some(temp)
+      else None
+    } catch {
+      case e: SolverError => 
+        extractor.extract 
+        coverage.constraints = extractor.constraints
+        solve
+    }
+  }*/
 }

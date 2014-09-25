@@ -1,5 +1,5 @@
 /*******************************************************************************
-    Copyright (c) 2012-2013, KAIST, S-Core.
+    Copyright (c) 2012-2014, KAIST, S-Core.
     All rights reserved.
 
     Use is subject to license terms.
@@ -22,6 +22,7 @@ import kr.ac.kaist.jsaf.exceptions.UserError
 import kr.ac.kaist.jsaf.nodes._
 import kr.ac.kaist.jsaf.nodes_util.Span
 import java.util.regex.Pattern
+import kr.ac.kaist.jsaf.nodes_util.JSFromHTML
 
 class VectorGenerator(file: String, minT: Int, sliding_stride: Int, vec_dir: String, isJS: Boolean) {
   def this(file: String, minT: Int, sliding_stride: Int, vec_dir: String) = this(file, minT, sliding_stride, vec_dir, true)
@@ -31,13 +32,13 @@ class VectorGenerator(file: String, minT: Int, sliding_stride: Int, vec_dir: Str
   var vector_dir = vec_dir
   
   // Generate vectors from a file
-  val pgm = Parser.parseFileConvertExn(new File(file), true)
+  val pgm = if (file.endsWith(".js")) Parser.parseFileConvertExn(new File(file), true) else new JSFromHTML(file).parseScripts
   /* for debugging
    *
   System.out.println(file)
   System.out.println("Ok")
   System.out.println(pgm.serialize())
-   */
+   */ 
   new JSAstVectorGenerator(pgm, minTokens).doit
   //System.out.println(pgm.getInfo.getSpan.getCharVector.toString + "Characteristic Vector")
 

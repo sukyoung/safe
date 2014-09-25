@@ -81,7 +81,7 @@ class SparseTyping(_cfg: CFG, quiet: Boolean, locclone: Boolean) extends TypingI
           val o1 = heap_sparse(l)
           heap_dense.map.get(l) match {
             case Some(o2) => {
-              val props = o1.map.keySet ++ o2.map.keySet
+              val props = o1.getAllProps ++ o2.getAllProps
               props.foreach((prop) => {
                 val pv_1 = o1(prop)
                 val pv_2 = o2(prop)
@@ -93,7 +93,7 @@ class SparseTyping(_cfg: CFG, quiet: Boolean, locclone: Boolean) extends TypingI
                     val o1_ = o1.restrict_(Set(prop))
                     val o2_ = o2.restrict_(Set(prop))
 
-                    if (o1_.map.size > 0) {
+                    if (o1_.size > 0) {
                       System.err.println("at ("+node+", "+callcontext+"), more precise result for ("+DomainPrinter.printLoc(l)+","+prop+")")
                       System.err.println("sparse: "+ DomainPrinter.printObj(0, o1_))
                       System.err.println("dense : "+ DomainPrinter.printObj(0, o2_))
@@ -134,7 +134,7 @@ class SparseTyping(_cfg: CFG, quiet: Boolean, locclone: Boolean) extends TypingI
 
         val g = exit_heap(GlobalLoc)
         val g_d = exit_heap_d(GlobalLoc)
-        val props = g.map.keySet
+        val props = g.getProps
         (0 to 20).foreach((i) => {
           val result = "__result"+i
           if (props.contains(result)) {
@@ -298,15 +298,15 @@ class SparseTyping(_cfg: CFG, quiet: Boolean, locclone: Boolean) extends TypingI
         System.out.println("* Exit heap is bottom!")
       } else {
         val g = exit_heap(GlobalLoc)
-        val props = g.map.keySet
+        val props = g.getProps
         (0 to 20).foreach((i) => {
           val result = "__result"+i
           val expect = "__expect"+i
           if (props.contains(result)) {
             val v_result = g(result)
             val v_expect = g(expect)
-            if (!(v_expect._1._1._1 <= v_result._1._1._1)) {
-              System.out.println("* wrong result for "+result+": "+DomainPrinter.printValue(v_expect._1._1._1)+" </ "+DomainPrinter.printValue(v_result._1._1._1))
+            if (!(v_expect._1._1 <= v_result._1._1)) {
+              System.out.println("* wrong result for "+result+": "+DomainPrinter.printValue(v_expect._1._1)+" </ "+DomainPrinter.printValue(v_result._1._1))
             }
           }
         })
@@ -734,7 +734,7 @@ class SparseTyping(_cfg: CFG, quiet: Boolean, locclone: Boolean) extends TypingI
     if (state._1 <= HeapBot)
       ValueBot
     else
-      state._1(SinglePureLocalLoc)("@exception")._1._2
+      state._1(SinglePureLocalLoc)("@exception")._2
   }
 
   // High-level information computation methods -------------------------------
@@ -756,24 +756,24 @@ class SparseTyping(_cfg: CFG, quiet: Boolean, locclone: Boolean) extends TypingI
    * @return the option of the computed list
    */
   def computePropertyList(state: State, lset: Set[Loc]): 
-      Option[(List[(String, Absent)], Boolean, Boolean)] = {
+      Option[(List[(String, AbsBool)], Boolean, Boolean)] = {
     if (state <= StateBot)
       None
     else {
       val h = state._1
       val obj = 
         if (lset.size == 0)
-          ObjBot
+          Obj.bottom
         else if (lset.size == 1)
           h(lset.head)
         else
           lset.tail.foldLeft(h(lset.head))((o, l) => o + h(l))
-      val props = obj.getProps.foldLeft[List[(String, Absent)]](List())(
-        (list, p) => (p, obj(p)._2)::list)
+      val props = obj.getProps.foldLeft[List[(String, AbsBool)]](List())(
+        (list, p) => (p, obj.domIn(p))::list)
       System.out.println(obj)
       Some((props,
-        !(obj("@default_number")._1 <= PropValueBot),
-        !(obj("@default_other")._1 <= PropValueBot)))
+        !(obj(Str_default_number) <= PropValueBot),
+        !(obj(Str_default_other) <= PropValueBot)))
     }
   }
 
@@ -810,8 +810,8 @@ class SparseTyping(_cfg: CFG, quiet: Boolean, locclone: Boolean) extends TypingI
                         (_m, l) =>
                           if (BoolTrue <= Helper.IsCallable(h,l)) {
                             _m.get(i) match {
-                              case None => _m + (i -> h(l)("@function")._1._3.toSet)
-                              case Some(set) => _m + (i -> (set ++ h(l)("@function")._1._3.toSet))
+                              case None => _m + (i -> h(l)("@function")._3.toSet)
+                              case Some(set) => _m + (i -> (set ++ h(l)("@function")._3.toSet))
                             }
                           }
                           else
@@ -827,8 +827,8 @@ class SparseTyping(_cfg: CFG, quiet: Boolean, locclone: Boolean) extends TypingI
                         (_m, l) =>
                           if (BoolTrue <= Helper.HasConstruct(h,l)) {
                             _m.get(i) match {
-                              case None => _m + (i -> h(l)("@construct")._1._3.toSet)
-                              case Some(set) => _m + (i -> (set ++ h(l)("@construct")._1._3.toSet))
+                              case None => _m + (i -> h(l)("@construct")._3.toSet)
+                              case Some(set) => _m + (i -> (set ++ h(l)("@construct")._3.toSet))
                             }
                           }
                           else
@@ -852,8 +852,8 @@ class SparseTyping(_cfg: CFG, quiet: Boolean, locclone: Boolean) extends TypingI
   override def computePrototypeHierarchy(state: State): Map[Loc, Set[Loc]] = {
     state._1.map.foldLeft[Map[Loc, Set[Loc]]](Map())(
       (map, kv) =>
-        if (kv._2.map.contains("@proto"))
-          map + (kv._1 -> kv._2("@proto")._1._1._1._2.toSet)
+        if (BoolTrue <= kv._2.domIn("@proto"))
+          map + (kv._1 -> kv._2("@proto")._1._1._2.toSet)
         else
           map)
             
@@ -869,10 +869,10 @@ class SparseTyping(_cfg: CFG, quiet: Boolean, locclone: Boolean) extends TypingI
    */
   override def getFuncNameByLoc(state:State, loc: Loc): Set[String] = {
     val h = state._1
-    h(loc)("@class")._1._2._1._5.getSingle match {
+    h(loc)("@class")._2._1._5.getSingle match {
       case Some(str) if str =="Function" =>
-        if (h(loc).map.contains("@function")) {
-	      val fset = h(loc)("@function")._1._3
+        if (BoolTrue <= h(loc).domIn("@function")) {
+	      val fset = h(loc)("@function")._3
 	      fset.toSet.map((fid) => cfg.getFuncName(fid))
 	    }
 	    else

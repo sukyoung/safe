@@ -43,7 +43,7 @@ object MimeTypeArray extends DOM {
     ("@proto", AbsConstValue(PropValue(ObjectValue(Value(loc_proto), F, F, F)))),
     ("@extensible", AbsConstValue(PropValue(BoolTrue))),
     ("length", AbsConstValue(PropValue(ObjectValue(UInt, F, F, F)))),
-    ("@default_number", AbsConstValue(PropValue(ObjectValue(Value(MimeType.loc_ins), T, T, T))))
+    (Str_default_number, AbsConstValue(PropValue(ObjectValue(Value(MimeType.loc_ins), T, T, T))))
   )
 
 
@@ -58,7 +58,7 @@ object MimeTypeArray extends DOM {
           /* arguments */
           val n_index = Helper.toNumber(Helper.toPrimitive_better(h, getArgValue(h, ctx, args, "0")))
           if (n_index </ NumBot) {
-            val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+            val lset_this = h(SinglePureLocalLoc)("@this")._2._2
             val n_length = lset_this.foldLeft[AbsNumber](NumBot)((n, l) =>
               n + Helper.toNumber(Helper.toPrimitive_better(h, Helper.Proto(h, l, AbsString.alpha("length")))))
             val s_index = Helper.toString(PValue(n_index))
@@ -82,7 +82,7 @@ object MimeTypeArray extends DOM {
           /* arguments */
           val n_index = PreHelper.toNumber(PreHelper.toPrimitive(getArgValue_pre(h, ctx, args, "0", PureLocalLoc)))
           if (n_index </ NumBot) {
-            val lset_this = h(PureLocalLoc)("@this")._1._2._2
+            val lset_this = h(PureLocalLoc)("@this")._2._2
             val n_length = lset_this.foldLeft[AbsNumber](NumBot)((n, l) =>
               n + PreHelper.toNumber(PreHelper.toPrimitive(Helper.Proto(h, l, AbsString.alpha("length")))))
             val s_index = PreHelper.toString(PValue(n_index))
@@ -117,7 +117,7 @@ object MimeTypeArray extends DOM {
           val n_index = Helper.toNumber(Helper.toPrimitive_better(h, getArgValue(h, ctx, args, "0")))
           val LP1 = getArgValue_use(h, ctx, args, "0")
           if (n_index </ NumBot) {
-            val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+            val lset_this = h(SinglePureLocalLoc)("@this")._2._2
             val LP2 = lset_this.foldLeft(LPBot)((lpset, l) =>
               lpset ++ AccessHelper.Proto_use(h, l, AbsString.alpha("length")))
             val s_index = Helper.toString(PValue(n_index))

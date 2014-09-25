@@ -1,5 +1,5 @@
 /*******************************************************************************
-    Copyright (c) 2012-2013, KAIST, S-Core.
+    Copyright (c) 2012-2014, KAIST, S-Core.
     All rights reserved.
 
     Use is subject to license terms.
@@ -66,30 +66,10 @@ object CloneDetector {
               val extension = filename.substring(filename.lastIndexOf("."), filename.length)
               
               if (!disallow_pattern(1).matcher(filename).find()) {
-	            if (extension.equals(".js"))
-	            	new VectorGenerator(filename, config.getMinimumTokens.elementAt(i),
-	                                  config.getStride.elementAt(j), vector_dir)
-	            else if (html_pattern.matcher(filename).find() && !disallow_pattern(0).matcher(filename).find()) {
-	              new JSFromFile(file).doit()
-	                
-	              val extracted_js: Collection[File] = FileUtils.listFiles(new File(filename.substring(0, filename.lastIndexOf("/"))), extensions, true)
-	              Collections.sort(extracted_js.asInstanceOf[JList[File]])
-	              
-	              for (js <- extracted_js.asScala) {
-	                if (disallow_pattern(1).matcher(js.toString).find) {
-	                  try {
-	                    new VectorGenerator(js.toString, config.getMinimumTokens.elementAt(i), config.getStride.elementAt(j), vector_dir, false)
-	                  } catch {
-	                    case e:Throwable =>
-              	          val sw = new StringWriter
-            	          e.printStackTrace(new PrintWriter(sw))
-                          out.write(sw.toString)
-                          out.newLine
-	                  }
-	                  js.delete
-	                }
-	              }
-	            }
+                if (extension.equals(".js"))
+                  new VectorGenerator(filename, config.getMinimumTokens.elementAt(i), config.getStride.elementAt(j), vector_dir)
+                else if (html_pattern.matcher(filename).find && !disallow_pattern(0).matcher(filename).find)
+                  new VectorGenerator(filename, config.getMinimumTokens.elementAt(i), config.getStride.elementAt(j), vector_dir, false)
               }
             } catch {
               case e:Throwable =>

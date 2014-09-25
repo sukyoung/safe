@@ -21,6 +21,7 @@ import kr.ac.kaist.jsaf.analysis.typing.domain.Heap
 import kr.ac.kaist.jsaf.analysis.typing.domain.Context
 import kr.ac.kaist.jsaf.analysis.typing.models.AbsBuiltinFunc
 import kr.ac.kaist.jsaf.analysis.typing.AddressManager._
+import kr.ac.kaist.jsaf.Shell
 
 object HTMLSelectElement extends DOM {
   private val name = "HTMLSelectElement"
@@ -28,6 +29,7 @@ object HTMLSelectElement extends DOM {
   /* predefined locatoins */
   val loc_cons = newSystemRecentLoc(name + "Cons")
   val loc_proto = newSystemRecentLoc(name + "Proto")
+  val loc_ins = newSystemRecentLoc(name + "Ins")
 
   /* constructor */
   private val prop_cons: List[(String, AbsProperty)] = List(
@@ -39,6 +41,25 @@ object HTMLSelectElement extends DOM {
     ("prototype", AbsConstValue(PropValue(ObjectValue(Value(loc_proto), F, F, F))))
   )
 
+  /* instance */
+  private val prop_ins: List[(String, AbsProperty)] = 
+       HTMLElement.getInsList2() ++ List(
+      ("@class",    AbsConstValue(PropValue(AbsString.alpha("Object")))),
+      ("@proto",    AbsConstValue(PropValue(ObjectValue(loc_proto, F, F, F)))),
+      ("@extensible", AbsConstValue(PropValue(BoolTrue))),
+      // DOM Level 1
+      ("type", AbsConstValue(PropValue(ObjectValue(StrTop, F, T, T)))),
+      ("selectedIndex", AbsConstValue(PropValue(ObjectValue(NumTop, T, T, T)))),
+      ("value", AbsConstValue(PropValue(ObjectValue(StrTop, T, T, T)))),
+      ("form", AbsConstValue(PropValue(ObjectValue(Value(HTMLFormElement.loc_ins), F, T, T)))),
+      ("disabled", AbsConstValue(PropValue(ObjectValue(BoolTop, T, T, T)))),
+      ("multiple", AbsConstValue(PropValue(ObjectValue(BoolTop, T, T, T)))),
+      ("name", AbsConstValue(PropValue(ObjectValue(StrTop, T, T, T)))),
+      ("size", AbsConstValue(PropValue(ObjectValue(NumTop, T, T, T)))),
+      ("tabIndex", AbsConstValue(PropValue(ObjectValue(NumTop, T, T, T)))),
+      ("length", AbsConstValue(PropValue(ObjectValue(NumTop, T, T, T)))),
+      ("options", AbsConstValue(PropValue(ObjectValue(Value(HTMLOptionsCollection.loc_ins), F, T, T))))
+    )
   /* prorotype */
   private val prop_proto: List[(String, AbsProperty)] = List(
     ("@class", AbsConstValue(PropValue(AbsString.alpha("Object")))),
@@ -55,9 +76,11 @@ object HTMLSelectElement extends DOM {
     (name, AbsConstValue(PropValue(ObjectValue(loc_cons, T, F, T))))
   )
 
-  def getInitList(): List[(Loc, List[(String, AbsProperty)])] = List(
-    (loc_cons, prop_cons), (loc_proto, prop_proto), (GlobalLoc, prop_global)
-  )
+  def getInitList(): List[(Loc, List[(String, AbsProperty)])] = if(Shell.params.opt_Dommodel2) List(
+    (loc_cons, prop_cons), (loc_proto, prop_proto), (GlobalLoc, prop_global), (loc_ins, prop_ins)
+
+  ) else List(
+    (loc_cons, prop_cons), (loc_proto, prop_proto), (GlobalLoc, prop_global)  ) 
 
   def getSemanticMap(): Map[String, SemanticFun] = {
     Map(
@@ -156,7 +179,7 @@ object HTMLSelectElement extends DOM {
 
   def getInsList(ttype: PropValue, selectedIndex: PropValue, value: PropValue, disabled: PropValue,
                  multiple: PropValue, name: PropValue, size: PropValue, tabIndex: PropValue, 
-                 form: PropValue, length: PropValue): List[(String, PropValue)] = List(
+                 form: PropValue, length: PropValue, xpath: PropValue): List[(String, PropValue)] = List(
     ("@class",    PropValue(AbsString.alpha("Object"))),
     ("@proto",    PropValue(ObjectValue(loc_proto, F, F, F))),
     ("@extensible", PropValue(BoolTrue)),
@@ -171,7 +194,8 @@ object HTMLSelectElement extends DOM {
     ("tabIndex",   tabIndex),
     ("form",   form),
     // DOM Level 2
-    ("length",  length)
+    ("length",  length),
+    ("xpath", xpath)
   )
 
   override def default_getInsList(): List[(String, PropValue)] = {
@@ -185,9 +209,10 @@ object HTMLSelectElement extends DOM {
     val tabIndex = PropValue(ObjectValue(NumTop, T, T, T))
     val form = PropValue(ObjectValue(NullTop, F, T, T))
     val length = PropValue(ObjectValue(NumTop, T, T, T))
+    val xpath = PropValue(ObjectValue(AbsString.alpha(""), F, F, F))
     // This object has all properties of the HTMLElement object 
     HTMLElement.default_getInsList :::
-      getInsList(ttype, selectedIndex, value, disabled, multiple, name, size, tabIndex, form, length)
+      getInsList(ttype, selectedIndex, value, disabled, multiple, name, size, tabIndex, form, length, xpath)
   }
 
 }

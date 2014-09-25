@@ -1,5 +1,5 @@
 /*******************************************************************************
-    Copyright (c) 2012-2013, S-Core, KAIST.
+    Copyright (c) 2012-2014, S-Core, KAIST.
     All rights reserved.
 
     Use is subject to license terms.
@@ -55,7 +55,7 @@ class BuiltinModel(cfg: CFG) extends Model(cfg)  {
           case Some(o) =>
             list_props.foldLeft(o)((oo, pv) => oo.update(pv._1, pv._2))
           case None =>
-            list_props.foldLeft(ObjEmpty)((o, pvo) => o.update(pvo._1, pvo._2))
+            list_props.foldLeft(Obj.empty)((o, pvo) => o.update(pvo._1, pvo._2))
         }
         /* added function object to heap if any*/
         val heap = list_props.foldLeft(h2)((h3, pvo) => pvo._3 match {
@@ -71,7 +71,7 @@ class BuiltinModel(cfg: CFG) extends Model(cfg)  {
     // Date.prototype.toGMTString : ECMAScript 5 Appendix B.2.6
     // Date.prototype.toGMTString has the same function object as the one of Date.prototype.toUTCString
     val date_protoobj = h_1(BuiltinDate.ProtoLoc)
-    val new_protoobj = date_protoobj.update(AbsString.alpha("toGMTString"), date_protoobj("toUTCString")._1)
+    val new_protoobj = date_protoobj.update(AbsString.alpha("toGMTString"), date_protoobj("toUTCString"))
     val h_2 = h_1.update(BuiltinDate.ProtoLoc, new_protoobj)
 
     h_2

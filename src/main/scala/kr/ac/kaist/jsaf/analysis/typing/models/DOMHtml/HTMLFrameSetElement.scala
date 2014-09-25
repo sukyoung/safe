@@ -1,5 +1,5 @@
 /*******************************************************************************
-    Copyright (c) 2013, KAIST, S-Core.
+    Copyright (c) 2013-2014, KAIST, S-Core.
     All rights reserved.
 
     Use is subject to license terms.
@@ -24,6 +24,7 @@ object HTMLFrameSetElement extends DOM {
   /* predefined locatoins */
   val loc_cons = newSystemRecentLoc(name + "Cons")
   val loc_proto = newSystemRecentLoc(name + "Proto")
+  val loc_ins = newSystemRecentLoc(name + "Ins")
 
   /* constructor */
   private val prop_cons: List[(String, AbsProperty)] = List(
@@ -89,21 +90,23 @@ object HTMLFrameSetElement extends DOM {
     }
   }
    
-  def getInsList(cols: PropValue, rows: PropValue): List[(String, PropValue)] = List(
+  def getInsList(cols: PropValue, rows: PropValue, xpath: PropValue): List[(String, PropValue)] = List(
     ("@class",    PropValue(AbsString.alpha("Object"))),
     ("@proto",    PropValue(ObjectValue(loc_proto, F, F, F))),
     ("@extensible", PropValue(BoolTrue)),
     // DOM Level 1
     ("cols", cols),
-    ("rows",  rows)
+    ("rows",  rows),
+    ("xpath", xpath)
    )
   
   override def default_getInsList(): List[(String, PropValue)] = { 
     val cols = PropValue(ObjectValue(AbsString.alpha(""), T, T, T))
     val rows = PropValue(ObjectValue(AbsString.alpha(""), T, T, T))
+    val xpath = PropValue(ObjectValue(AbsString.alpha(""), F, F, F))
     // This object has all properties of the HTMLElement object 
     HTMLElement.default_getInsList ::: 
-      getInsList(cols, rows)
+      getInsList(cols, rows, xpath)
   }
 
 }

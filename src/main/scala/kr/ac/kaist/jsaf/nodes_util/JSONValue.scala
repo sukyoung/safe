@@ -66,7 +66,7 @@ class JSONValue(_kind: JSONValue.JSONCase) {
   }
 
   def toStr(a: Any) = a match {
-    case pair:(String, JSONValue) => "\""+pair._1+"\":"+pair._2.toString
+    case pair: (_, _) => "\""+pair._1.asInstanceOf[String]+"\":"+pair._2.asInstanceOf[JSONValue].toString
     case _ => a.toString
   }
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
-    Copyright (c) 2012-2013, S-Core, KAIST.
+    Copyright (c) 2012-2014, S-Core, KAIST.
     All rights reserved.
 
     Use is subject to license terms.
@@ -109,7 +109,7 @@ object PreSemanticsExpr {
               (Value(PreHelper.TypeTag(h, v)), es)
           }
           case "+" => (uopPlus(v),es)
-          case "-" => (uopMinus(v),es)
+          case "-" => (uopMinus_better(h, v),es)
           case "~" => (uopBitNeg(v),es)
           case "!" => (uopNeg(v),es)
         }
@@ -140,7 +140,7 @@ object PreSemanticsExpr {
       case CFGString(str) => (Value(PValue(AbsString.alpha(str))),ExceptionBot)
       case CFGBool(bool) => (Value(PValue(AbsBool.alpha(bool))),ExceptionBot)
       case CFGNull() => (Value(PValue(AbsNull.alpha)),ExceptionBot)
-      case CFGThis(info) => (Value(PValueBot, h(PureLocalLoc)("@this")._1._2._2), ExceptionBot)
+      case CFGThis(info) => (Value(PValueBot, h(PureLocalLoc)("@this")._2._2), ExceptionBot)
     }
   }
 }

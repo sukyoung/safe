@@ -1,5 +1,5 @@
 /*******************************************************************************
-    Copyright (c) 2012-2013, S-Core, KAIST.
+    Copyright (c) 2012-2014, S-Core, KAIST.
     All rights reserved.
 
     Use is subject to license terms.
@@ -128,8 +128,10 @@ private class DomainPrinter(verbose_lv: Int) {
   
   def ppObj(ind: Int, obj: Obj, verbose: Boolean): Unit = {
     var first = true
-    val map = obj.map
-    for ((prop, (pv,abs)) <- map.toSeq.sortBy(_._1)) {
+    val map = obj.getAllProps
+    for ((prop) <- map.toSeq.sortBy(f => f)) {
+      val pv = obj(prop)
+      val abs = obj.domIn(prop)
       val show = verbose match {
         case true => true
         case false => Config.testMode match {
@@ -144,10 +146,9 @@ private class DomainPrinter(verbose_lv: Int) {
       if (show) { 
         first = newline(ind, first)
         val len = ppProp(prop)
-        val arrow = abs match {
-          case AbsentBot => "  -> "
-          case AbsentTop => "  @-> "
-        }
+        val arrow =
+          if (!(BoolFalse <= abs) || prop.take(1) == "@") "  -> "
+          else "  @-> "
         sb.append(arrow)
         ppPropValue(ind+len+arrow.length, pv)
       }
@@ -161,19 +162,16 @@ private class DomainPrinter(verbose_lv: Int) {
     val ov = pv._1
     if (ov != ObjectValueBot) {
       first = newline(ind, first)
-      sb.append("[")
-      ppBool(ov._2)
-      ppBool(ov._3)
-      ppBool(ov._4)
-      sb.append("] ")
+      (ov._2, ov._3, ov._4) match {
+        case (BoolBot, BoolBot, BoolBot) => sb.append("[VAL] ")
+        case _ =>
+          sb.append("[")
+          ppBool(ov._2)
+          ppBool(ov._3)
+          ppBool(ov._4)
+          sb.append("] ")
+      }
       ppValue(ov._1)
-    }
-    
-    val v = pv._2
-    if (v != ValueBot) {
-      first = newline(ind, first)
-      sb.append("[VAL] ")
-      ppValue(v)
     }
     
     val fun = pv._3

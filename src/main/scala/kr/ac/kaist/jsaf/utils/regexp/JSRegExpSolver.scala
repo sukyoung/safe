@@ -636,7 +636,7 @@ object JSRegExpSolver {
         // then throw a **SyntaxError** exception."
         throw new SyntaxErrorException(ERegExp4_1_1, pattern, null)
       }
-      case e =>
+      case e: Throwable =>
         throw new InternalError(e.getMessage)
     }
 

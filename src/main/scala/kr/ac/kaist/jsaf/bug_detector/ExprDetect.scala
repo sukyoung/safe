@@ -1,5 +1,5 @@
 /******************************************************************************
-    Copyright (c) 2012-2013, KAIST, S-Core.
+    Copyright (c) 2012-2014, KAIST, S-Core.
     All rights reserved.
 
     Use is subject to license terms.
@@ -18,6 +18,7 @@ import kr.ac.kaist.jsaf.nodes_util.Span
 import kr.ac.kaist.jsaf.nodes_util.EJSOp
 import kr.ac.kaist.jsaf.analysis.typing.CState
 import kr.ac.kaist.jsaf.analysis.typing.{SemanticsExpr => SE}
+import kr.ac.kaist.jsaf.{Shell, ShellParameters}
 
 class ExprDetect(bugDetector: BugDetector) {
   val cfg           = bugDetector.cfg
@@ -36,12 +37,12 @@ class ExprDetect(bugDetector: BugDetector) {
 
   def check(inst: CFGInst, expr: CFGExpr, cstate: CState, typeof: Boolean): Unit = {
     val node    = cfg.findEnclosingNode(inst)
-    val state   = typing.mergeState(cstate)
-    val heap    = state._1
-    val context = state._2
+    //val state   = typing.mergeState(cstate)
+    //val heap    = state._1
+    //val context = state._2
 
-    if (heap <= HeapBot) Unit
-    else {
+    //if (heap <= HeapBot) Unit
+    //else {
       expr match {
         case CFGBin(info, first, op, second) => 
           val opStr = op.getText
@@ -68,7 +69,8 @@ class ExprDetect(bugDetector: BugDetector) {
             case _ => Unit
           }
         case CFGLoad(info, obj, index) => 
-          absentReadPropertyCheck(info.getSpan, obj, index)
+          if(!(Shell.params.command == ShellParameters.CMD_WEBAPP_BUG_DETECTOR))
+            absentReadPropertyCheck(info.getSpan, obj, index)
         case CFGThis(info) => 
           globalThisCheck(info.getSpan, node._1) 
         case CFGUn(info, op, expr) =>
@@ -90,7 +92,8 @@ class ExprDetect(bugDetector: BugDetector) {
           if (!typeof) absentReadVariableCheck(info.getSpan, id)
         case _ => Unit
       }
-    }
+    //}
+
 
 
 
@@ -128,7 +131,7 @@ class ExprDetect(bugDetector: BugDetector) {
           for (absValue <- propValue) {
 
             objLocSet.foreach((loc) => {
-              for (fid <- state.heap(loc)("@construct")._1.funid) {
+              for (fid <- state.heap(loc)("@construct").funid) {
                 ModelManager.getFIdMap("Builtin").get(fid) match {
                   case Some(funName) if funName == "RegExp.constructor" =>
                     val propValue = SE.V(index, state.heap, state.context)._1.pvalue
@@ -412,7 +415,7 @@ class ExprDetect(bugDetector: BugDetector) {
       val bugCheckInstance = new BugCheckInstance()
       val mergedCState = stateManager.getInputCState(node, inst.getInstId, bugOption.contextSensitive(GlobalThis))
       for((callContext, state) <- mergedCState) {
-        val thisLocSet = state.heap(SinglePureLocalLoc)("@this")._1.value.locset
+        val thisLocSet = state.heap(SinglePureLocalLoc)("@this").objval.value.locset
 
         val isGlobalCode = (fid == cfg.getGlobalFId) // Is current instruction in the global code?
         val referGlobal = bugOption.GlobalThis_MustReferExactly match { // Does 'this' refer global object?
@@ -433,7 +436,7 @@ class ExprDetect(bugDetector: BugDetector) {
       for(b <- bugCheckInstance.bugList) bugStorage.addMessage(b.span, GlobalThis, inst, b.callContext)
 
       /* Previous code
-      val lset_this = heap(SinglePureLocalLoc)("@this")._1._2._2
+      val lset_this = heap(SinglePureLocalLoc)("@this")._2._2
       val notGlobal = (fid != cfg.getGlobalFId)     // true: current function is not the global object.
       val mayGlobal = lset_this.contains(GlobalLoc) // true: "MAYBE" this refers the global object.
       val defGlobal = lset_this.size == 1           // true: "DEFINITELY" this refers the global object.

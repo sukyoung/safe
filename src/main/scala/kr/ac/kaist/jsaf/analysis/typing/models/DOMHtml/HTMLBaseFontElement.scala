@@ -1,5 +1,5 @@
 /*******************************************************************************
-    Copyright (c) 2013, KAIST, S-Core.
+    Copyright (c) 2013-2014, KAIST, S-Core.
     All rights reserved.
 
     Use is subject to license terms.
@@ -19,7 +19,7 @@ import kr.ac.kaist.jsaf.analysis.typing.Helper
 import kr.ac.kaist.jsaf.analysis.cfg.CFG
 import kr.ac.kaist.jsaf.analysis.typing.models.AbsConstValue
 import kr.ac.kaist.jsaf.analysis.typing.AddressManager._
-
+import kr.ac.kaist.jsaf.Shell
 
 object HTMLBaseFontElement extends DOM {
   private val name = "HTMLBaseFontElement"
@@ -27,6 +27,7 @@ object HTMLBaseFontElement extends DOM {
   /* predefined locatoins */
   val loc_cons = newSystemRecentLoc(name + "Cons")
   val loc_proto = newSystemRecentLoc(name + "Proto")
+  val loc_ins = newSystemRecentLoc(name + "Ins")
 
   /* constructor */
   private val prop_cons: List[(String, AbsProperty)] = List(
@@ -44,16 +45,31 @@ object HTMLBaseFontElement extends DOM {
     ("@proto", AbsConstValue(PropValue(ObjectValue(Value(HTMLElement.loc_proto), F, F, F)))),
     ("@extensible", AbsConstValue(PropValue(BoolTrue)))
   )
+ 
+  /* instance */
+  private val prop_ins: List[(String, AbsProperty)] = 
+       HTMLElement.getInsList2() ++ List(
+      ("@class",    AbsConstValue(PropValue(AbsString.alpha("Object")))),
+      ("@proto",    AbsConstValue(PropValue(ObjectValue(loc_proto, F, F, F)))),
+      ("@extensible", AbsConstValue(PropValue(BoolTrue))),
+      // DOM Level 1
+      ("color", AbsConstValue(PropValue(ObjectValue(StrTop, T, T, T)))),
+      ("face", AbsConstValue(PropValue(ObjectValue(StrTop, T, T, T)))),
+      ("size", AbsConstValue(PropValue(ObjectValue(NumTop, T, T, T))))
+    )
+
 
   /* global */
   private val prop_global: List[(String, AbsProperty)] = List(
     (name, AbsConstValue(PropValue(ObjectValue(loc_cons, T, F, T))))
   )
 
-  def getInitList(): List[(Loc, List[(String, AbsProperty)])] = List(
-    (loc_cons, prop_cons), (loc_proto, prop_proto), (GlobalLoc, prop_global)
-  )
 
+  def getInitList(): List[(Loc, List[(String, AbsProperty)])] = if(Shell.params.opt_Dommodel2) List(
+    (loc_cons, prop_cons), (loc_proto, prop_proto), (GlobalLoc, prop_global), (loc_ins, prop_ins)
+
+  ) else List(
+    (loc_cons, prop_cons), (loc_proto, prop_proto), (GlobalLoc, prop_global)  ) 
   def getSemanticMap(): Map[String, SemanticFun] = {
     Map()
   }
@@ -94,7 +110,7 @@ object HTMLBaseFontElement extends DOM {
     }
   }
  
-  def getInsList(color: PropValue, face: PropValue, size: PropValue): List[(String, PropValue)] = List(
+  def getInsList(color: PropValue, face: PropValue, size: PropValue, xpath: PropValue): List[(String, PropValue)] = List(
     ("@class",    PropValue(AbsString.alpha("Object"))),
     ("@proto",    PropValue(ObjectValue(loc_proto, F, F, F))),
     ("@extensible", PropValue(BoolTrue)),
@@ -102,16 +118,18 @@ object HTMLBaseFontElement extends DOM {
     ("color", color),
     ("face",  face), 
     // DOM Level 2
-    ("size",  size) 
+    ("size",  size),
+    ("xpath", xpath)
    )
   
   override def default_getInsList(): List[(String, PropValue)] = { 
     val color = PropValue(ObjectValue(AbsString.alpha(""), T, T, T))
     val face = PropValue(ObjectValue(AbsString.alpha(""), T, T, T))
     val size = PropValue(ObjectValue(NumTop, T, T, T))
+    val xpath = PropValue(ObjectValue(AbsString.alpha(""), F, F, F))
     // This object has all properties of the HTMLElement object 
     HTMLElement.default_getInsList ::: 
-      getInsList(color, face, size)
+      getInsList(color, face, size, xpath)
   }
 
 }

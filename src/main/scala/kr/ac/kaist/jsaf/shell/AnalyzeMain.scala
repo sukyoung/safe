@@ -5,7 +5,7 @@
     Use is subject to license terms.
 
     This distribution may include materials developed by third parties.
-  ******************************************************************************/
+ ******************************************************************************/
 
 package kr.ac.kaist.jsaf.shell
 
@@ -41,7 +41,8 @@ object AnalyzeMain {
    * Analyze a JavaScript file. (Work in progress)
    */
   def analyze: Int = {
-    val quiet = (Shell.params.command == ShellParameters.CMD_BUG_DETECTOR) || (Shell.params.command ==ShellParameters.CMD_WEBAPP_BUG_DETECTOR)
+    val quiet = (Shell.params.command == ShellParameters.CMD_BUG_DETECTOR) ||
+                (Shell.params.command ==ShellParameters.CMD_WEBAPP_BUG_DETECTOR)
     if (quiet) Config.setQuietMode
     var locclone = Shell.params.opt_LocClone
 
@@ -184,20 +185,17 @@ object AnalyzeMain {
       Config.setDefaultForinUnrollingCount(1)
       // loop sensitivity
       Config.setLoopSensitiveMode(true)
-      // call context depth : 11
+      // call context depth : 10
       Config.setContextSensitivityMode(Config.Context_Loop)
-      Config.setContextSensitivityDepth(11)
+      Config.setContextSensitivityDepth(10)
       // location cloning
       Shell.params.opt_LocClone = true
       locclone = true
-      // use the jQuery modeling
-      Shell.params.opt_jQuery = true
-      Config.setJQueryMode
       // dom property like 'innerHTML' update mode
       Shell.params.opt_Domprop
       Config.setDOMPropMode
-      // use set domain with 10 size
-      Shell.params.opt_MaxStrSetSize = 10
+      // use set domain with 32 size
+      Shell.params.opt_MaxStrSetSize = 32
       if(Shell.params.opt_disEvent) {
         Config.setDisableEventMode 
       }
@@ -226,6 +224,12 @@ object AnalyzeMain {
         Shell.params.command == ShellParameters.CMD_HTML_PRE ||
         Shell.params.command == ShellParameters.CMD_HTML_SPARSE ||
         Shell.params.command == ShellParameters.CMD_WEBAPP_BUG_DETECTOR) {
+        // DOMAPI statistics
+        if(Shell.params.opt_Domstat){
+           DOMStatistics.setInputFile(Shell.params.opt_Domstat_in) 
+           DOMStatistics.setOutputFile(Shell.params.opt_Domstat_out) 
+              
+        }
       jshtml = new JSFromHTML(fileName)
       // Parse JavaScript code in the target html file
       program = jshtml.parseScripts
@@ -261,8 +265,17 @@ object AnalyzeMain {
         val file = new File(f)
         file.exists()
       })
-    Config.setModeledFiles(Config.getModeledFiles ++ modeledFiles)
-    val modeledASTs: Program = Parser.fileToAST(toJavaList(modeledFiles))
+    // input files for webapp bugdetector
+    val inputFiles: List[String] =
+      if(Shell.params.command == ShellParameters.CMD_WEBAPP_BUG_DETECTOR) {
+        (List[String](base + "bin/inputs/__input__.js")).filter(f => {
+          val file =new File(f);
+          file.exists();
+        })
+      }
+      else List()
+    Config.setModeledFiles(Config.getModeledFiles ++ modeledFiles ++ inputFiles)
+    val modeledASTs: Program = Parser.fileToAST(toJavaList(modeledFiles++inputFiles))
     program = (modeledASTs, program) match {
       case (SProgram(info0, STopLevel(fds0, vds0, body0)), SProgram(info1, STopLevel(fds1, vds1, body1))) =>
         SProgram(info1, STopLevel(fds0 ++ fds1, vds0 ++ vds1, body0 ++ body1))
@@ -317,7 +330,7 @@ object AnalyzeMain {
     }
 
     // Set the initial state with DOM objects
-    if (Config.domMode && jshtml != null) new DOMBuilder(cfg, init, jshtml.getDocument).initialize(false)
+    if (Config.domMode && jshtml != null) new DOMBuilder(cfg, init, jshtml.getDocument).initialize(quiet)
 
     if (Shell.params.command == ShellParameters.CMD_PREANALYZE ||
         Shell.params.command == ShellParameters.CMD_SPARSE ||
@@ -387,6 +400,12 @@ object AnalyzeMain {
       typingInterface.analyze(init, duanalysis.result)
     }
 
+    if(!quiet || Shell.params.command == ShellParameters.CMD_WEBAPP_BUG_DETECTOR) 
+      printf("\nAnalysis took %.2fs\n", (System.nanoTime - analyzeStartTime) / 1000000000.0)
+
+    if(Shell.params.opt_Domstat){
+       DOMStatistics.printResult()   
+    }
     // Turn off '-max-loc-count' option
     Shell.params.opt_MaxLocCount = 0
 
@@ -406,11 +425,11 @@ object AnalyzeMain {
       vs.run(true)
     }
 
-    if (!quiet) {
-      System.out.println("\n* Statistics *")
-      System.out.println("# Total state count: " + typingInterface.getStateCount)
-      typingInterface.statistics(Shell.params.opt_StatDump)
-    }
+//    if (!quiet) {
+//      System.out.println("\n* Statistics *")
+//      System.out.println("# Total state count: " + typingInterface.getStateCount)
+//      typingInterface.statistics(Shell.params.opt_StatDump)
+//    }
     if (Shell.params.opt_CheckResult) {
       SemanticsTest.checkResult(typingInterface)
       System.out.println("Test pass")
@@ -438,12 +457,10 @@ object AnalyzeMain {
       // Execute Bug Detector
       System.out.println("\n* Bug Detector *")
       val detector = new BugDetector(program2, cfg, typingInterface, quiet, irErrors.second)
-      StrictModeChecker.checkAdvanced(program2, cfg, detector.varManager, detector.stateManager)
+      if(!(Shell.params.command == ShellParameters.CMD_WEBAPP_BUG_DETECTOR))
+        StrictModeChecker.checkAdvanced(program2, cfg, detector.varManager, detector.stateManager)
       detector.detectBug
     }
-
-    if (!quiet || Shell.params.command == ShellParameters.CMD_WEBAPP_BUG_DETECTOR) 
-      printf("\nAnalysis took %.2fs\n", (System.nanoTime - analyzeStartTime) / 1000000000.0)
 
     val isGlobalSparse = false
     if (Shell.params.opt_DDGFileName != null) {

@@ -61,14 +61,14 @@ class JQueryModel(cfg: CFG) extends Model(cfg) {
         val obj = h2.map.get(lp._1) match {
           case Some(o) =>
             list_props.foldLeft(o)((oo, pv) =>
-              if (pv._1 == "@default_number" || pv._1 == "@default_other")
-                oo.update(pv._1, oo(pv._1)._1 + pv._2, AbsentTop)
+              if (pv._1 == Str_default_number || pv._1 == Str_default_other)
+                oo.update(pv._1, oo(pv._1) + pv._2).absentTop(pv._1)
               else
                 oo.update(pv._1, pv._2))
           case None =>
-            list_props.foldLeft(ObjEmpty)((o, pvo) =>
-              if (pvo._1 == "@default_number" || pvo._1 == "@default_other")
-                o.update(pvo._1, o(pvo._1)._1 + pvo._2, AbsentTop)
+            list_props.foldLeft(Obj.empty)((o, pvo) =>
+              if (pvo._1 == Str_default_number || pvo._1 == Str_default_other)
+                o.update(pvo._1, o(pvo._1) + pvo._2).absentTop(pvo._1)
               else
                 o.update(pvo._1, pvo._2))
         }
@@ -84,7 +84,7 @@ class JQueryModel(cfg: CFG) extends Model(cfg) {
     )
 
     /* initialize event selector table */
-    Heap(h_1.map + (EventSelectorTableLoc -> ObjEmpty))
+    Heap(h_1.map + (EventSelectorTableLoc -> Obj.empty))
   }
 
   def addAsyncCall(cfg: CFG, loop_head: Node): (List[Node],List[Node]) = {

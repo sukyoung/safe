@@ -82,7 +82,7 @@ object TIZENcontentObj extends Tizen {
     ("@proto", AbsConstValue(PropValue(ObjectValue(BuiltinArray.ProtoLoc, F, F, F)))),
     ("@extensible", AbsConstValue(PropValue(T))),
     ("length", AbsConstValue(PropValue(ObjectValue(UInt, T, F, F)))),
-    ("@default_number", AbsConstValue(PropValue(ObjectValue(Value(loc_contentdir), T, T, T))))
+    (Str_default_number, AbsConstValue(PropValue(ObjectValue(Value(loc_contentdir), T, T, T))))
   )
 
   private val prop_content_ins: List[(String, AbsProperty)] = List(
@@ -109,7 +109,7 @@ object TIZENcontentObj extends Tizen {
     ("@proto", AbsConstValue(PropValue(ObjectValue(BuiltinArray.ProtoLoc, F, F, F)))),
     ("@extensible", AbsConstValue(PropValue(T))),
     ("length", AbsConstValue(PropValue(ObjectValue(UInt, T, F, F)))),
-    ("@default_number", AbsConstValue(PropValue(ObjectValue(Value(LocSet(loc_content) ++ LocSet(loc_vidcontent) ++ LocSet(loc_audcontent) ++ LocSet(loc_imgcontent)), T, T, T))))
+    (Str_default_number, AbsConstValue(PropValue(ObjectValue(Value(LocSet(loc_content) ++ LocSet(loc_vidcontent) ++ LocSet(loc_audcontent) ++ LocSet(loc_imgcontent)), T, T, T))))
   )
 
   private val prop_strarr_ins: List[(String, AbsProperty)] = List(
@@ -117,7 +117,7 @@ object TIZENcontentObj extends Tizen {
     ("@proto", AbsConstValue(PropValue(ObjectValue(BuiltinArray.ProtoLoc, F, F, F)))),
     ("@extensible", AbsConstValue(PropValue(T))),
     ("length", AbsConstValue(PropValue(ObjectValue(UInt, T, F, F)))),
-    ("@default_number", AbsConstValue(PropValue(ObjectValue(Value(StrTop), T, T, T))))
+    (Str_default_number, AbsConstValue(PropValue(ObjectValue(Value(StrTop), T, T, T))))
   )
 
   private val prop_uintarr_ins: List[(String, AbsProperty)] = List(
@@ -125,7 +125,7 @@ object TIZENcontentObj extends Tizen {
     ("@proto", AbsConstValue(PropValue(ObjectValue(BuiltinArray.ProtoLoc, F, F, F)))),
     ("@extensible", AbsConstValue(PropValue(T))),
     ("length", AbsConstValue(PropValue(ObjectValue(UInt, T, F, F)))),
-    ("@default_number", AbsConstValue(PropValue(ObjectValue(Value(UInt), T, T, T))))
+    (Str_default_number, AbsConstValue(PropValue(ObjectValue(Value(UInt), T, T, T))))
   )
 
   private val prop_vidcontent_ins: List[(String, AbsProperty)] = List(
@@ -242,7 +242,7 @@ object TIZENcontentObj extends Tizen {
         )),
       ("tizen.content.updateBatch" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -270,7 +270,7 @@ object TIZENcontentObj extends Tizen {
                   es__
                 }
                 case _ => {
-                  val vi = Helper.Proto(h_1, ll, AbsString.alpha("@default_number"))
+                  val vi = Helper.Proto(h_1, ll, AbsString.alpha(Str_default_number))
                   val (b_1, esj) = TizenHelper.instanceOf(h_1, vi, Value(TIZENContent.loc_proto))
                   val esi =
                     if (b_1._1._3 <= F) Set[WebAPIException](TypeMismatchError)
@@ -319,7 +319,7 @@ object TIZENcontentObj extends Tizen {
         )),
       ("tizen.content.getDirectories" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -361,7 +361,7 @@ object TIZENcontentObj extends Tizen {
         )),
       ("tizen.content.find" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -551,7 +551,7 @@ object TIZENcontentObj extends Tizen {
         )),
       ("tizen.content.scanFile" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)
@@ -610,7 +610,7 @@ object TIZENcontentObj extends Tizen {
         )),
       ("tizen.content.setChangeListener" -> (
         (sem: Semantics, h: Heap, ctx: Context, he: Heap, ctxe: Context, cp: ControlPoint, cfg: CFG, fun: String, args: CFGExpr) => {
-          val lset_env = h(SinglePureLocalLoc)("@env")._1._2._2
+          val lset_env = h(SinglePureLocalLoc)("@env")._2._2
           val set_addr = lset_env.foldLeft[Set[Address]](Set())((a, l) => a + locToAddr(l))
           if (set_addr.size > 1) throw new InternalError("API heap allocation: Size of env address is " + set_addr.size)
           val addr_env = (cp._1._1, set_addr.head)

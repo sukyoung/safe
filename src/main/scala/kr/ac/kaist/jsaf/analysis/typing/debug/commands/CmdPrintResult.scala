@@ -37,7 +37,7 @@ class CmdPrintResult extends Command {
           val inS = c.readTable(c.current)
           val cmd = c.getCFG.getCmd(c.current._1)
 
-          val (outS, _) = sem.C(c.current, cmd, inS, None)
+          val (outS, _) = sem.C(c.current, cmd, inS)
           System.out.println(DomainPrinter.printHeap(0, outS._1, c.getCFG, 3))
           System.out.println(DomainPrinter.printContext(0, outS._2))
         }
@@ -45,7 +45,7 @@ class CmdPrintResult extends Command {
           val inS = c.readTable(c.current)
           val cmd = c.getCFG.getCmd(c.current._1)
 
-          val (_, outES) = sem.C(c.current, cmd, inS, None)
+          val (_, outES) = sem.C(c.current, cmd, inS)
           System.out.println(DomainPrinter.printHeap(0, outES._1, c.getCFG, 3))
           System.out.println(DomainPrinter.printContext(0, outES._2))
         }
@@ -53,7 +53,7 @@ class CmdPrintResult extends Command {
           val inS = c.readTable(c.current)
           val cmd = c.getCFG.getCmd(c.current._1)
 
-          val (outS, _) = sem.C(c.current, cmd, inS, None)
+          val (outS, _) = sem.C(c.current, cmd, inS)
           System.out.println(DomainPrinter.printHeap(0, outS._1, c.getCFG))
           System.out.println(DomainPrinter.printContext(0, outS._2))
         }
@@ -61,7 +61,7 @@ class CmdPrintResult extends Command {
           val inS = c.readTable(c.current)
           val cmd = c.getCFG.getCmd(c.current._1)
 
-          val (_, outES) = sem.C(c.current, cmd, inS, None)
+          val (_, outES) = sem.C(c.current, cmd, inS)
 
           System.out.println(DomainPrinter.printHeap(0, outES._1, c.getCFG))
           System.out.println(DomainPrinter.printContext(0, outES._2))
@@ -74,7 +74,7 @@ class CmdPrintResult extends Command {
               val inS = c.readTable(c.current)
               val cmd = c.getCFG.getCmd(c.current._1)
 
-              val (outS, _) = sem.C(c.current, cmd, inS, None)
+              val (outS, _) = sem.C(c.current, cmd, inS)
               val o = outS._1(loc)
               val name = DomainPrinter.printLoc(loc)
               System.out.println(name + " -> ")
@@ -93,7 +93,7 @@ class CmdPrintResult extends Command {
               val inS = c.readTable(c.current)
               val cmd = c.getCFG.getCmd(c.current._1)
 
-              val (_, outES) = sem.C(c.current, cmd, inS, None)
+              val (_, outES) = sem.C(c.current, cmd, inS)
               val o = outES._1(loc)
               val name = DomainPrinter.printLoc(loc)
               System.out.println(name + " -> ")

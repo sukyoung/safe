@@ -21,7 +21,7 @@ import kr.ac.kaist.jsaf.analysis.asserts.{ASSERTHelper => AH}
 import kr.ac.kaist.jsaf.analysis.cfg._
 import kr.ac.kaist.jsaf.analysis.typing.domain._
 import kr.ac.kaist.jsaf.bug_detector.Range15_4_5_1
-import kr.ac.kaist.jsaf.nodes_util.{EJSOp, IRFactory, NodeUtil => NU}
+import kr.ac.kaist.jsaf.nodes_util.{EJSOp, IRFactory, NodeUtil => NU, DOMStatistics}
 import kr.ac.kaist.jsaf.nodes.IROp
 import kr.ac.kaist.jsaf.analysis.typing.{SemanticsExpr => SE}
 import kr.ac.kaist.jsaf.analysis.typing.{PreSemanticsExpr => PSE}
@@ -37,15 +37,17 @@ class Semantics(cfg: CFG, worklist: Worklist, locclone: Boolean) {
   // These edges are added while processing call instruction.
   val ipSuccMap: MMap[ControlPoint, MMap[ControlPoint, (Context,Obj)]] = MHashMap()
   val ipPredMap: MMap[ControlPoint, MHashSet[ControlPoint]] = MHashMap()
-  def getIPSucc(cp: ControlPoint): Option[MMap[ControlPoint, (Context,Obj)]] = ipSuccMap.synchronized { ipSuccMap.get(cp) }
-  def getIPPred(cp: ControlPoint): Option[MHashSet[ControlPoint]] = ipPredMap.synchronized { ipPredMap.get(cp) }
+  def getIPSucc(cp: ControlPoint): Option[MMap[ControlPoint, (Context,Obj)]] = ipSuccMap.get(cp)
+  def getIPPred(cp: ControlPoint): Option[MHashSet[ControlPoint]] = ipPredMap.get(cp)
 
   // Heap bottoms
-  val heapBotMap: MMap[(ControlPoint, CFGInst), CPStackSet] = MHashMap()
-  def getHeapBotMap(cp: ControlPoint, inst: CFGInst): Option[CPStackSet] = heapBotMap.synchronized { heapBotMap.get((cp, inst)) }
+  val heapBotMap: MHashSet[(ControlPoint, CFGInst)] = MHashSet()
 
   val dummyInfo = IRFactory.makeInfo(IRFactory.dummySpan("CFGSemantics"))
 
+  def getArgValue(h : Heap, ctx: Context, args: CFGExpr, x : String):Value = {
+    SE.V(CFGLoad(dummyInfo, args, CFGString(x)), h, ctx)._1
+  }
   // for debugging implementation using heap testing
   var preState: State = null
   var preCFG: CFG = null
@@ -70,12 +72,12 @@ class Semantics(cfg: CFG, worklist: Worklist, locclone: Boolean) {
         if (s._1 == HeapBot) {
           StateBot
         } else {
-          val env_obj = Helper.NewDeclEnvRecord(obj("@scope")._1._2)
+          val env_obj = Helper.NewDeclEnvRecord(obj("@scope")._2)
           val obj2 = obj - "@scope"
           val h1 = s._1
           val h2 = h1.remove(SinglePureLocalLoc)
           val h3 = h2.update(SinglePureLocalLoc, obj2)
-          val h4 = obj2("@env")._1._2._2.foldLeft(HeapBot)((hh, l_env) => {
+          val h4 = obj2("@env")._2._2.foldLeft(HeapBot)((hh, l_env) => {
             hh + h3.update(l_env, env_obj)
           })
           State(h4, ctx)
@@ -101,7 +103,7 @@ class Semantics(cfg: CFG, worklist: Worklist, locclone: Boolean) {
             val (ctx2, obj1) = Helper.FixOldify(ctx, obj, ctx1._3, ctx1._4)
             if (ctx2.isBottom) StateBot
             else {
-              val v = h1(SinglePureLocalLoc)("@return")._1._2
+              val v = h1(SinglePureLocalLoc)("@return")._2
               val h2 = h1.update(SinglePureLocalLoc, obj1)
               val h3 = Helper.VarStore(h2, returnVar, v)
               State(h3, ctx2)
@@ -118,8 +120,8 @@ class Semantics(cfg: CFG, worklist: Worklist, locclone: Boolean) {
             val (ctx2, obj1) = Helper.FixOldify(ctx, obj, ctx1._3, ctx1._4)
             if (ctx2.isBottom) StateBot
             else {
-              val v = h1(SinglePureLocalLoc)("@exception")._1._2
-              val v_old = obj1("@exception_all")._1._2
+              val v = h1(SinglePureLocalLoc)("@exception")._2
+              val v_old = obj1("@exception_all")._2
               val h2 = h1.update(SinglePureLocalLoc,
                                  obj1.update("@exception", PropValue(v)).
                                       update("@exception_all", PropValue(v + v_old)))
@@ -132,7 +134,7 @@ class Semantics(cfg: CFG, worklist: Worklist, locclone: Boolean) {
     }
   }
 
-  def M(cp: ControlPoint, i: CFGInst, h: Heap, ctx: Context, he: Heap, ctxe: Context, cps: Option[CPStackSet] = None, inTable: Table = MHashMap()) = {
+  def M(cp: ControlPoint, i: CFGInst, h: Heap, ctx: Context, he: Heap, ctxe: Context, inTable: Table = MHashMap()) = {
     if (h == HeapBot) {
       (((h, ctx), (he, ctxe)), BoolBot)
     } else {
@@ -162,7 +164,7 @@ class Semantics(cfg: CFG, worklist: Worklist, locclone: Boolean) {
     }
   }
 
-  def L(cp: ControlPoint, c: Cmd, s: State, cps: Option[CPStackSet] = None, inTable: Table = MHashMap()): AbsBool = {
+  def L(cp: ControlPoint, c: Cmd, s: State, inTable: Table = MHashMap()): AbsBool = {
     val h = s._1
     val ctx = s._2
     var tt: AbsBool =BoolBot
@@ -177,7 +179,7 @@ class Semantics(cfg: CFG, worklist: Worklist, locclone: Boolean) {
         case Block(insts) => {
           insts.foldLeft(((h, ctx), (HeapBot, ContextBot)))(
             (states, inst) => {
-              val r = M(cp, inst, states._1._1, states._1._2, states._2._1, states._2._2, cps, inTable)
+              val r = M(cp, inst, states._1._1, states._1._2, states._2._1, states._2._2, inTable)
               tt = tt + r._2
               r._1
                          })
@@ -187,7 +189,7 @@ class Semantics(cfg: CFG, worklist: Worklist, locclone: Boolean) {
     }
   }
 
-  def C(cp: ControlPoint, c: Cmd, s: State, cps: Option[CPStackSet] = None, inTable: Table = MHashMap()): (State, State) = {
+  def C(cp: ControlPoint, c: Cmd, s: State, inTable: Table = MHashMap()): (State, State) = {
     val h = s._1
     val ctx = s._2
 
@@ -199,7 +201,7 @@ class Semantics(cfg: CFG, worklist: Worklist, locclone: Boolean) {
           val (fid, _) = cp._1
           val x_argvars = cfg.getArgVars(fid)
           val x_localvars = cfg.getLocalVars(fid)
-          val lset_arg = h(SinglePureLocalLoc)(cfg.getArgumentsName(fid))._1._1._1._2
+          val lset_arg = h(SinglePureLocalLoc)(cfg.getArgumentsName(fid))._1._1._2
           var i = 0
           val h_n = x_argvars.foldLeft(h)((hh, x) => {
             val v_i = lset_arg.foldLeft(ValueBot)((vv, l_arg) => {
@@ -218,7 +220,7 @@ class Semantics(cfg: CFG, worklist: Worklist, locclone: Boolean) {
             // restore the 'arguments' property of the function object
             if(Config.domMode) {
               val (fid, _) = cp._1
-              val arguments_loc = h(SinglePureLocalLoc)(cfg.getArgumentsName(fid))._1._1._1._2
+              val arguments_loc = h(SinglePureLocalLoc)(cfg.getArgumentsName(fid))._1._1._2
               val fun_loc = arguments_loc.foldLeft(LocSetBot)((lset, l) =>
                 lset ++ Helper.Proto(h, l, AbsString.alpha("callee"))._2
               )
@@ -235,7 +237,7 @@ class Semantics(cfg: CFG, worklist: Worklist, locclone: Boolean) {
             // restore the 'arguments' property of the function object
             if(Config.domMode) {
               val (fid, _) = cp._1
-              val arguments_loc = h(SinglePureLocalLoc)(cfg.getArgumentsName(fid))._1._1._1._2
+              val arguments_loc = h(SinglePureLocalLoc)(cfg.getArgumentsName(fid))._1._1._2
               val fun_loc = arguments_loc.foldLeft(LocSetBot)((lset, l) =>
                 lset ++ Helper.Proto(h, l, AbsString.alpha("callee"))._2
               )
@@ -251,10 +253,10 @@ class Semantics(cfg: CFG, worklist: Worklist, locclone: Boolean) {
         case Block(insts) => {
           insts.foldLeft(((h, ctx), (HeapBot, ContextBot)))(
             (states, inst) => {
-              val ((h_new, ctx_new), (he_new, ctxe_new)) = I(cp, inst, states._1._1, states._1._2, states._2._1, states._2._2, cps, inTable)
+              val ((h_new, ctx_new), (he_new, ctxe_new)) = I(cp, inst, states._1._1, states._1._2, states._2._1, states._2._2, inTable)
               // System.out.println("##### Instruction : " + inst)
               // System.out.println("in heap#####\n" + DomainPrinter.printHeap(4, states._1._1, cfg))
-              // System.out.println("out heap#####\n" + DomainPrinter.printHeap(4, h_new, cfg))
+              //System.out.println("out heap#####\n" + DomainPrinter.printHeap(4, h_new, cfg))
               // System.out.println("outexc heap#####\n" + DomainPrinter.printHeap(4, he_new, cfg))
               // System.out.println("out context#####\n" + DomainPrinter.printContext(4, ctx_new))
               if(compareOption) {  
@@ -279,7 +281,7 @@ class Semantics(cfg: CFG, worklist: Worklist, locclone: Boolean) {
                   preHeap.map.get(l) match {
                     case Some(o2) => {
                       // for each property
-                      val props = o1.map.keySet ++ o2.map.keySet
+                      val props = o1.getAllProps ++ o2.getAllProps
                   props.foreach((prop) => {
                     val pv_1 = o1(prop)
                     val pv_2 = o2(prop)
@@ -390,7 +392,7 @@ class Semantics(cfg: CFG, worklist: Worklist, locclone: Boolean) {
     }
   }
 
-  private def readTable(cp: ControlPoint, inTable: Table): State = inTable.synchronized {
+  private def readTable(cp: ControlPoint, inTable: Table): State = {
     inTable.get(cp._1) match {
       case None => StateBot
       case Some(map) => map.get(cp._2) match {
@@ -400,7 +402,7 @@ class Semantics(cfg: CFG, worklist: Worklist, locclone: Boolean) {
     }   
   }
   
-  private def updateTable(cp: ControlPoint, state: State, inTable: Table): Unit = inTable.synchronized {
+  private def updateTable(cp: ControlPoint, state: State, inTable: Table): Unit = {
     inTable.get(cp._1) match {
       case None =>
         inTable.update(cp._1, HashMap((cp._2, state)))
@@ -410,7 +412,7 @@ class Semantics(cfg: CFG, worklist: Worklist, locclone: Boolean) {
   }
 
 
-  def I(cp: ControlPoint, i: CFGInst, h: Heap, ctx: Context, he: Heap, ctxe: Context, cps: Option[CPStackSet] = None, inTable: Table = MHashMap()) = {
+  def I(cp: ControlPoint, i: CFGInst, h: Heap, ctx: Context, he: Heap, ctxe: Context, inTable: Table = MHashMap()) = {
     def noStop(oh: Heap, octx: Context): (Heap, Context) = {
       if (Config.noStopMode) {
         val ohp = if (oh <= HeapBot) h else oh
@@ -529,7 +531,7 @@ class Semantics(cfg: CFG, worklist: Worklist, locclone: Boolean) {
         }
         case CFGStore(id, info, obj, index, rhs) => {
           // unique key
-          val key = (cp._1._1, id, id) // (FunctionId, InstructionId, InstructionId)  
+          val key = (cp, id, id) // (FunctionId, InstructionId, InstructionId)  
           
           // TODO: toStringSet should be used in more optimized way
           val (h_1, ctx_1, es_1) = {
@@ -545,6 +547,9 @@ class Semantics(cfg: CFG, worklist: Worklist, locclone: Boolean) {
                 // iterate over set of strings for index
                 val sset = Helper.toStringSet(Helper.toPrimitive_better(h, v_index))
                 val (h_2, ctx_2, es_2) = sset.foldLeft((HeapBot, ctx, es_index ++ es_rhs))((res, s) => {
+                //if(s.gamma.isEmpty) {
+                //  println("StrTopCase : " + s)
+               // }
                   // non-array objects
                   val lset_narr = lset.filter(l => (BFalse <= Helper.IsArray(h, l)) && BTrue <= Helper.CanPut(h, l, s))
                   // array objects
@@ -584,7 +589,7 @@ class Semantics(cfg: CFG, worklist: Worklist, locclone: Boolean) {
                     val (h_length, ex_len) =
                       if (AbsString.alpha("length") <= s) {
                         val v_newLen = Value(Operator.ToUInt32(v_rhs))
-                        val n_oldLen = h(l)("length")._1._1._1._1._4 // number
+                        val n_oldLen = h(l)("length")._1._1._1._4 // number
                         val b_g = n_oldLen < v_newLen._1._4
                         val b_eq = n_oldLen === v_newLen._1._4
                         val b_canputLen = Helper.CanPut(h, l, AbsString.alpha("length"))
@@ -637,7 +642,7 @@ class Semantics(cfg: CFG, worklist: Worklist, locclone: Boolean) {
                     // 4. s is array index
                     val h_index =
                       if (BTrue <= Helper.IsArrayIndex(s)) {
-                      val n_oldLen = h(l)("length")._1._1._1._1._4 // number
+                      val n_oldLen = h(l)("length")._1._1._1._4 // number
                       val n_index = Operator.ToUInt32(Value(Helper.toNumber(PValue(s))))
                       val b_g = n_oldLen < n_index
                       val b_eq = n_oldLen === n_index
@@ -688,11 +693,11 @@ class Semantics(cfg: CFG, worklist: Worklist, locclone: Boolean) {
           val o_new = Helper.NewObject(ObjProtoLoc)
           val n = AbsNumber.alpha(cfg.getArgVars(fid).length)
           val fvalue = Value(PValueBot, LocSet(l_r1))
-          val scope = h_2(SinglePureLocalLoc)("@env")._1._2
+          val scope = h_2(SinglePureLocalLoc)("@env")._2
           val h_3 = h_2.update(l_r1, Helper.NewFunctionObject(fid, scope, l_r2, n))
 
           val pv = PropValue(ObjectValue(fvalue, BTrue, BFalse, BTrue))
-          val h_4 = h_3.update(l_r2, o_new.update("constructor", pv))
+          val h_4 = h_3.update(l_r2, o_new.update("constructor", pv, exist = true))
 
           val h_5 = Helper.VarStore(h_4, lhs, fvalue)
           (noStop(h_5, ctx_2), (he, ctxe))
@@ -709,11 +714,11 @@ class Semantics(cfg: CFG, worklist: Worklist, locclone: Boolean) {
           val (h_3, ctx_3) = Helper.Oldify(h_2, ctx_2, a_new6)
           val o_new = Helper.NewObject(ObjProtoLoc)
           val n = AbsNumber.alpha(cfg.getArgVars(fid).length)
-          val scope = h_3(SinglePureLocalLoc)("@env")._1._2
+          val scope = h_3(SinglePureLocalLoc)("@env")._2
           val o_env = Helper.NewDeclEnvRecord(scope)
           val fvalue = Value(PValueBot, LocSet(l_r1))
           val h_4 = h_3.update(l_r1, Helper.NewFunctionObject(fid, Value(l_r3), l_r2, n))
-          val h_5 = h_4.update(l_r2, o_new.update("constructor", PropValue(ObjectValue(fvalue, BTrue, BFalse, BTrue))))
+          val h_5 = h_4.update(l_r2, o_new.update("constructor", PropValue(ObjectValue(fvalue, BTrue, BFalse, BTrue)), exist = true))
           val h_6 = h_5.update(l_r3, o_env.update(name, PropValue(ObjectValue(fvalue, BFalse, BoolBot, BFalse))))
           val h_7 = Helper.VarStore(h_6, lhs, fvalue)
           (noStop(h_7, ctx_3), (he, ctxe))
@@ -748,11 +753,11 @@ class Semantics(cfg: CFG, worklist: Worklist, locclone: Boolean) {
             } else {
               val (h_, ctx_) = Helper.Oldify(h_1_, ctx_1_, b_new)
               // merge all arguments in lset_target_function
-              val origin_args = v_arg._2.foldLeft(ObjBot)((obj, o_l) => obj + h_(o_l))
+              val origin_args = v_arg._2.foldLeft(Obj.bottom)((obj, o_l) => obj + h_(o_l))
               val lset_target_args = lset_tarf.foldLeft(LBot)((lset, l_tf) => {
-                h_(l_tf)("@bound_args")._1._2._2 ++ lset
+                h_(l_tf)("@bound_args")._2._2 ++ lset
               })
-              val target_args = lset_target_args.foldLeft(ObjBot)((obj, l_ta) => obj + h_(l_ta))
+              val target_args = lset_target_args.foldLeft(Obj.bottom)((obj, l_ta) => obj + h_(l_ta))
               val new_args = Helper.concat(target_args, origin_args)
               (h_.update(l_r_arg, new_args), ctx_)
             }
@@ -760,7 +765,7 @@ class Semantics(cfg: CFG, worklist: Worklist, locclone: Boolean) {
           lset_tarf.foreach {l_f => {
             val o_f = h_1(l_f)
 //            val fids = o_f("@target_function")._1._3
-            val (fids, scope_locs) = o_f("@target_function")._1._2._2.foldLeft((FunSetBot, LocSetBot))((fidslocs, l) => ((fidslocs._1 ++ h_1(l)("@function")._1._3, fidslocs._2 ++ h_1(l)("@scope")._1._2._2)))
+            val (fids, scope_locs) = o_f("@target_function")._2._2.foldLeft((FunSetBot, LocSetBot))((fidslocs, l) => ((fidslocs._1 ++ h_1(l)("@function")._3, fidslocs._2 ++ h_1(l)("@scope")._2._2)))
             fids.foreach {fid => {
               if (Config.typingInterface != null && !cfg.isUserFunction(fid))
                 Config.typingInterface.setSpan(info.getSpan)
@@ -769,12 +774,12 @@ class Semantics(cfg: CFG, worklist: Worklist, locclone: Boolean) {
                 val value = PropValue(ObjectValue(Value(l_r_arg), BTrue, BFalse, BFalse))
                 val o_new2 =
                   o_new.
-                    update(cfg.getArgumentsName(fid), value).
-//                    update("@scope", o_f("@scope")._1)
-                    update("@scope", PropValue(ObjectValueBot, Value(scope_locs), FunSetBot))
+                    update(cfg.getArgumentsName(fid), value, exist = true).
+//                    update("@scope", o_f("@scope"))
+                    update("@scope", PropValue(ObjectValue(Value(scope_locs), BoolBot, BoolBot, BoolBot), FunSetBot))
                 addCallEdge(cp, ((fid,LEntry), cc_new), ContextEmpty, o_new2)
-                addReturnEdge(((fid,LExit), cc_new), cp_aftercall, cp, ctx_1, o_old, cps)
-                addReturnEdge(((fid, LExitExc), cc_new), cp_aftercatch, cp, ctx_1, o_old, cps)
+                addReturnEdge(((fid,LExit), cc_new), cp_aftercall, ctx_1, o_old)
+                addReturnEdge(((fid, LExitExc), cc_new), cp_aftercatch, ctx_1, o_old)
               }}
             }}
           }}
@@ -783,7 +788,7 @@ class Semantics(cfg: CFG, worklist: Worklist, locclone: Boolean) {
           // for actual constructor
           lset_f.foreach {l_f => {
             val o_f = h_1(l_f)
-            val fids = o_f("@construct")._1._3
+            val fids = o_f("@construct")._3
             fids.foreach {fid => {
               if (Config.typingInterface != null && !cfg.isUserFunction(fid))
                 Config.typingInterface.setSpan(info.getSpan)
@@ -792,11 +797,11 @@ class Semantics(cfg: CFG, worklist: Worklist, locclone: Boolean) {
                 val value = PropValue(ObjectValue(v_arg, BTrue, BFalse, BFalse))
                 val o_new2 =
                   o_new.
-                    update(cfg.getArgumentsName(fid), value).
-                    update("@scope", o_f("@scope")._1)
+                    update(cfg.getArgumentsName(fid), value, exist = true).
+                    update("@scope", o_f("@scope"))
                 addCallEdge(cp, ((fid,LEntry), cc_new), ContextEmpty, o_new2)
-                addReturnEdge(((fid,LExit), cc_new), cp_aftercall, cp, ctx_1, o_old, cps)
-                addReturnEdge(((fid, LExitExc), cc_new), cp_aftercatch, cp, ctx_1, o_old, cps)
+                addReturnEdge(((fid,LExit), cc_new), cp_aftercall, ctx_1, o_old)
+                addReturnEdge(((fid, LExitExc), cc_new), cp_aftercatch, ctx_1, o_old)
               }}
             }}
           }}
@@ -865,46 +870,46 @@ class Semantics(cfg: CFG, worklist: Worklist, locclone: Boolean) {
             } else {
               val (h_, ctx_) = Helper.Oldify(h_1_, ctx_1_, b_new)
               // merge all arguments in lset_target_function
-              val origin_args = v_arg._2.foldLeft(ObjBot)((obj, o_l) => obj + h_(o_l))
+              val origin_args = v_arg._2.foldLeft(Obj.bottom)((obj, o_l) => obj + h_(o_l))
               val lset_target_args = lset_tarf.foldLeft(LBot)((lset, l_tf) => {
-                h_(l_tf)("@bound_args")._1._2._2 ++ lset
+                h_(l_tf)("@bound_args")._2._2 ++ lset
               })
-              val target_args = lset_target_args.foldLeft(ObjBot)((obj, l_ta) => obj + h_(l_ta))
+              val target_args = lset_target_args.foldLeft(Obj.bottom)((obj, l_ta) => obj + h_(l_ta))
               val new_args = Helper.concat(target_args, origin_args)
               (h_.update(l_r_arg, new_args), ctx_)
             }
 
           lset_tarf.foreach {l_f => {
             val o_f = h_1(l_f)
-            val (fids, scope_locs) = o_f("@target_function")._1._2._2.foldLeft((FunSetBot, LocSetBot))((fidslocs, l) => ((fidslocs._1 ++ h_1(l)("@function")._1._3, fidslocs._2 ++ h_1(l)("@scope")._1._2._2)))
-            val l_this = o_f("@bound_this")._1._2._2
+            val (fids, scope_locs) = o_f("@target_function")._2._2.foldLeft((FunSetBot, LocSetBot))((fidslocs, l) => ((fidslocs._1 ++ h_1(l)("@function")._3, fidslocs._2 ++ h_1(l)("@scope")._2._2)))
+            val l_this = o_f("@bound_this")._2._2
             fids.foreach {fid => {
               if (Config.typingInterface != null && !cfg.isUserFunction(fid))
                 Config.typingInterface.setSpan(info.getSpan)
               val ccset = cc_caller.NewCallContext(h, cfg, fid, l_r, l_this, Some(a_new))
               ccset.foreach {case (cc_new, o_new) => {
                 val value = PropValue(ObjectValue(Value(l_r_arg), BTrue, BFalse, BFalse))
-          /*
-          if(lset_f.size > 10) {
-            println("lset_size " + lset_f.size + " more than 10!! at node : " + cfg.findEnclosingNode(i))
-            throw new RuntimeException("*** lset_size!!!")
-          }
-          */
+                   
                 val o_new2 =
                   o_new.
-                    update(cfg.getArgumentsName(fid), value).
-                    update("@scope", PropValue(ObjectValueBot, Value(scope_locs), FunSetBot))
+                    update(cfg.getArgumentsName(fid), value, exist = true).
+                    update("@scope", PropValue(ObjectValue(Value(scope_locs), BoolBot, BoolBot, BoolBot), FunSetBot))
                 addCallEdge(cp, ((fid,LEntry), cc_new), ContextEmpty, o_new2)
-                addReturnEdge(((fid,LExit), cc_new), cp_aftercall, cp, ctx_1, o_old, cps)
-                addReturnEdge(((fid, LExitExc), cc_new), cp_aftercatch, cp, ctx_1, o_old, cps)
+                addReturnEdge(((fid,LExit), cc_new), cp_aftercall, ctx_1, o_old)
+                addReturnEdge(((fid, LExitExc), cc_new), cp_aftercatch, ctx_1, o_old)
               }}
             }}
           }}
-          
+           
+          //if(lset_f.size > 20) {
+          //  println("lset_size " + lset_f.size + " more than 20!! at node : " + cfg.findEnclosingNode(i))
+          //  throw new RuntimeException("*** lset_size!!!")
+          //}
+
           // for actual call
           lset_f.foreach {l_f => {
             val o_f = h_1(l_f)
-            val fids = o_f("@function")._1._3
+            val fids = o_f("@function")._3
             fids.foreach {fid => {
               if (Config.typingInterface != null && !cfg.isUserFunction(fid))
                 Config.typingInterface.setSpan(info.getSpan)
@@ -913,11 +918,11 @@ class Semantics(cfg: CFG, worklist: Worklist, locclone: Boolean) {
                 val value = PropValue(ObjectValue(v_arg, BTrue, BFalse, BFalse))
                 val o_new2 =
                   o_new.
-                    update(cfg.getArgumentsName(fid), value).
-                    update("@scope", o_f("@scope")._1)
+                    update(cfg.getArgumentsName(fid), value, exist = true).
+                    update("@scope", o_f("@scope"))
                 addCallEdge(cp, ((fid,LEntry), cc_new), ContextEmpty, o_new2)
-                addReturnEdge(((fid,LExit), cc_new), cp_aftercall, cp, ctx_1, o_old, cps)
-                addReturnEdge(((fid, LExitExc), cc_new), cp_aftercatch, cp, ctx_1, o_old, cps)
+                addReturnEdge(((fid,LExit), cc_new), cp_aftercall, ctx_1, o_old)
+                addReturnEdge(((fid, LExitExc), cc_new), cp_aftercatch, ctx_1, o_old)
               }}
             }}
           }}
@@ -1065,8 +1070,8 @@ class Semantics(cfg: CFG, worklist: Worklist, locclone: Boolean) {
         }
 
         case CFGCatch(_, _, name) => {
-          val v_old = h(SinglePureLocalLoc)("@exception_all")._1._2
-          val h_1 = Helper.CreateMutableBinding(h, name, h(SinglePureLocalLoc)("@exception")._1._2)
+          val v_old = h(SinglePureLocalLoc)("@exception_all")._2
+          val h_1 = Helper.CreateMutableBinding(h, name, h(SinglePureLocalLoc)("@exception")._2)
           val new_obj = h_1(SinglePureLocalLoc).update("@exception", PropValue(v_old))
           val h_2 = h_1.update(SinglePureLocalLoc, new_obj)
           (noStop(h_2, ctx), (HeapBot, ContextBot))
@@ -1088,7 +1093,7 @@ class Semantics(cfg: CFG, worklist: Worklist, locclone: Boolean) {
         }
         case CFGThrow(_, _, expr) => {
           val (v,es) = SE.V(expr,h,ctx)
-          val v_old = h(SinglePureLocalLoc)("@exception_all")._1._2
+          val v_old = h(SinglePureLocalLoc)("@exception_all")._2
           val (h_e, ctx_e) = Helper.RaiseException(h, ctx, es)
           val new_obj =
             h(SinglePureLocalLoc).
@@ -1176,7 +1181,7 @@ class Semantics(cfg: CFG, worklist: Worklist, locclone: Boolean) {
                 val (v_1, h_1, ctx_1, _) = Helper.toObject(h, ctx, v_obj, a_new2)
                 if (!(h_1 <= HeapBot)) {
                   val lset = v_1._2
-                  val init_obj = ObjEmpty.update("index", PropValue(AbsNumber.alpha(0)))
+                  val init_obj = Obj.empty.update("index", PropValue(AbsNumber.alpha(0)))
 
                   val list_obj: Obj =
                     if (lset.size > 0) {
@@ -1201,7 +1206,7 @@ class Semantics(cfg: CFG, worklist: Worklist, locclone: Boolean) {
                   val list_obj_2 = if (v._1._1 </ UndefBot || v._1._2 </ NullBot) {
                     // if a given object is nullable, the first iteration can be canceled.
                     val ov = list_obj("0")
-                    list_obj.update("0", ov._1, AbsentTop)
+                    list_obj.update("0", ov).absentTop("0")
                   } else {
                     list_obj
                   }
@@ -1212,7 +1217,7 @@ class Semantics(cfg: CFG, worklist: Worklist, locclone: Boolean) {
                   val h_3 = Helper.VarStore(h_2, lhs, Value(l_new))
                   ((h_3, ctx), (he, ctxe))
                 } else if (v._1._1 </ UndefBot || v._1._2 </ NullBot) {
-                  val init_obj = ObjEmpty.update("index", PropValue(AbsNumber.alpha(0)))
+                  val init_obj = Obj.empty.update("index", PropValue(AbsNumber.alpha(0)))
 
                   val l_new = addrToLoc(a_new, Recent)
                   val h_2 = h.update(l_new, init_obj)
@@ -1241,17 +1246,17 @@ class Semantics(cfg: CFG, worklist: Worklist, locclone: Boolean) {
                   val l_obj = lset.head
                   val o = h(l_obj)
 
-                  val idx = o("index")._1._2._1._4
+                  val idx = o("index")._2._1._4
                   val s_idx: AbsString = Helper.toString(PValue(idx))
                   val pv = o(s_idx)
-                  val name = pv._1._2._1._5
-                  val absent = pv._2
+                  val name = pv._2._1._5
+                  val absent = o.domIn(s_idx)
 
                   val b_1 =
                     if (!(name <= StrBot)) AbsBool.alpha(true)
                     else BoolBot
                   val b_2 =
-                    if (!(absent <= AbsentBot)) AbsBool.alpha(false)
+                    if (BoolFalse <= absent) AbsBool.alpha(false)
                     else BoolBot
                   val b = b_1 + b_2
 
@@ -1286,7 +1291,7 @@ class Semantics(cfg: CFG, worklist: Worklist, locclone: Boolean) {
                   val o = h(l_obj)
 
                   // increasing iterator index
-                  val idx = o("index")._1._2._1._4
+                  val idx = o("index")._2._1._4
                   val s_idx: AbsString = Helper.toString(PValue(idx))
                   val next_idx = idx.getSingle match {
                     case Some(n) => AbsNumber.alpha(n + 1)
@@ -1295,7 +1300,7 @@ class Semantics(cfg: CFG, worklist: Worklist, locclone: Boolean) {
                   // index strong update
                   val h_1 = h.update(l_obj, h(l_obj).update("index", PropValue(next_idx)))
 
-                  val name = o(s_idx)._1._2._1._5
+                  val name = o(s_idx)._2._1._5
                   val h_2 = Helper.VarStore(h_1, lhs, Value(name))
 
                   (noStop(h_2, ctx), (he, ctxe))
@@ -1316,7 +1321,7 @@ class Semantics(cfg: CFG, worklist: Worklist, locclone: Boolean) {
           // jQuery modeling : add an heap information for jQuery
           if(Config.jqMode && NU.isModeledLibrary(filename)){
             val globalObj = h(GlobalLoc)
-            val env_obj = ObjEmpty.update("_$", globalObj("$")._1).update("_jQuery", globalObj("jQuery")._1) 
+            val env_obj = Obj.empty.update("_$", globalObj("$")).update("_jQuery", globalObj("jQuery"))
             val newGlobalObj = globalObj.update("$", PropValue(ObjectValue(Value(JQuery.ConstLoc), BFalse, BFalse, BFalse))).update(
                                                 "jQuery", PropValue(ObjectValue(Value(JQuery.ConstLoc), BFalse, BFalse, BFalse)))
             val newheap = h.update(GlobalLoc, newGlobalObj).update(JQuery.EnvLoc, env_obj)
@@ -1327,6 +1332,12 @@ class Semantics(cfg: CFG, worklist: Worklist, locclone: Boolean) {
         }
         case CFGAPICall(info, model, fun, args) => {
           val semantics = ModelManager.getModel(model).getSemanticMap()
+          if(Shell.params.opt_Domstat && model == "DOM") { 
+            val lset_callee = getArgValue(h, ctx, args, "callee")._2
+            val abstraction = lset_callee.size > 1
+            if(!abstraction)
+              DOMStatistics.addAPI(fun)
+          }
           semantics.get(fun) match {
             case Some(f) =>
               val ((h2, ctx2), (he2, ctxe2)) = f(this, h, ctx, he, ctxe, cp, cfg, fun, args)
@@ -1345,7 +1356,7 @@ class Semantics(cfg: CFG, worklist: Worklist, locclone: Boolean) {
       // System.out.println("out heap#####\n" + DomainPrinter.printHeap(4, s._1._1, cfg))
 
       // Collect bottom heaps
-      if(Shell.params.opt_BottomDump && s._1._1 == HeapBot && !i.isInstanceOf[CFGAssert]) insertHeapBottom(cp, i, cps)
+      if(Shell.params.opt_BottomDump && s._1._1 == HeapBot && !i.isInstanceOf[CFGAssert]) insertHeapBottom(cp, i)
 
       s
     }
@@ -1355,55 +1366,41 @@ class Semantics(cfg: CFG, worklist: Worklist, locclone: Boolean) {
   // Adds inter-procedural call edge from call-node cp1 to entry-node cp2.
   // Edge label ctx records callee context, which is joined if the edge existed already.
   def addCallEdge(cp1: ControlPoint, cp2: ControlPoint, ctx: Context, obj: Obj) = {
-    ipSuccMap.synchronized {
-      ipSuccMap.get(cp1) match {
-        case None =>
-          ipSuccMap.update(cp1, MHashMap((cp2, (ctx, obj))))
-        case Some(map2) =>
-          map2.synchronized {
-            map2.get(cp2) match {
-              case None =>
-                map2.update(cp2, (ctx, obj))
-              case Some((old_ctx, old_obj)) =>
-                map2.update(cp2, (old_ctx + ctx, old_obj + obj))
-            }
+    ipSuccMap.get(cp1) match {
+      case None =>
+        ipSuccMap.update(cp1, MHashMap((cp2, (ctx, obj))))
+      case Some(map2) =>
+        map2.synchronized {
+          map2.get(cp2) match {
+            case None =>
+              map2.update(cp2, (ctx, obj))
+            case Some((old_ctx, old_obj)) =>
+              map2.update(cp2, (old_ctx + ctx, old_obj + obj))
           }
-      }
+        }
     }
 
-    ipPredMap.synchronized {
-      ipPredMap.get(cp2) match {
-        case None => ipPredMap.update(cp2, MHashSet(cp1))
-        case Some(set) => set.synchronized { set.add(cp1) }
-      }
+    ipPredMap.get(cp2) match {
+      case None => ipPredMap.update(cp2, MHashSet(cp1))
+      case Some(set) => set.synchronized { set.add(cp1) }
     }
   }
 
   // Adds inter-procedural return edge from exit or exit-exc node cp1 to after-call node cp2.
   // Edge label ctx records caller context, which is joined if the edge existed already.
   // If change occurs, cp1 is added to worklist as side-effect.
-  def addReturnEdge(cp1: ControlPoint, cp2: ControlPoint, cp3: ControlPoint, ctx: Context, obj: Obj, cps: Option[CPStackSet]): Unit = {
-    cps match {
-      case Some(cps) =>
-        val newCPSet = new CPStackSet
-        for(cpStack <- cps) newCPSet.add(cpStack.push(cp3))
-        addReturnEdge(cp1, cp2, ctx, obj, Some(newCPSet))
-        //addReturnEdge(cp1, cp2, ctx, obj, None)
-      case None => addReturnEdge(cp1, cp2, ctx, obj, None)
-    }
-  }
-  def addReturnEdge(cp1: ControlPoint, cp2: ControlPoint, ctx: Context, obj: Obj, cps: Option[CPStackSet] = None): Unit = {
+  def addReturnEdge(cp1: ControlPoint, cp2: ControlPoint, ctx: Context, obj: Obj): Unit = {
     ipSuccMap.synchronized {
       ipSuccMap.get(cp1) match {
         case None =>
           ipSuccMap.update(cp1, MHashMap((cp2, (ctx, obj))))
-          worklist.add(cp1, cps, true)
+          worklist.add(cp1)
         case Some(map2) =>
           map2.synchronized {
             map2.get(cp2) match {
               case None =>
                 map2.update(cp2, (ctx, obj))
-                worklist.add(cp1, cps, true)
+                worklist.add(cp1)
               case Some((old_ctx, old_obj)) =>
                 var changed = false
                 val new_ctx =
@@ -1420,7 +1417,7 @@ class Semantics(cfg: CFG, worklist: Worklist, locclone: Boolean) {
                   }
                 if (changed) {
                   map2.update(cp2, (new_ctx, new_obj))
-                  worklist.add(cp1, cps, true)
+                  worklist.add(cp1)
                 }
             }
           }
@@ -1465,6 +1462,7 @@ class Semantics(cfg: CFG, worklist: Worklist, locclone: Boolean) {
 
     val (h_e, ctx_e) = Helper.RaiseException(h, ctx, es)
     if(BoolTrue <= Helper.toBoolean(v)) {
+        /*
       if(!Shell.params.opt_DeveloperMode && BoolTop <= Helper.toBoolean(v)){
         cfg.getCondEndNodeMap.get(cp._1) match {
           case Some(n) =>
@@ -1473,6 +1471,7 @@ class Semantics(cfg: CFG, worklist: Worklist, locclone: Boolean) {
           case None => ()
         }
       }
+        */
       (relSet.foldLeft((h, ctx))((s12, re) => {
         val ((h_b, ctx_b)) = s12
         val ((h_a, ctx_a)) = X(re, h, ctx)
@@ -1510,41 +1509,46 @@ class Semantics(cfg: CFG, worklist: Worklist, locclone: Boolean) {
   }
 
   def PruningConst(pe: PrunExpr, v1: Value, op: IROp, const: CFGExpr, h: Heap, ctx: Context):(Heap, Context) = {
-    val (l_loc, s) = pe match {
+    val (lset_base, s) = pe match {
       case Id(id: CFGVarRef) =>
-        (LocSetBot, AbsString.alpha(id.toString))
-      case Prop(CFGLoad(info: Info, obj: CFGExpr, index: CFGExpr)) =>
-        (SE.V(obj, h, ctx)._1._2, Helper.toString(Helper.toPrimitive_better(h, SE.V(index, h, ctx)._1)))
-    }
-    val L_base = pe match {
-      case Id(CFGVarRef(_, id)) => Helper.LookupBase(h, id)
-      case Prop(_) => l_loc.foldLeft(LocSetBot)((lset, l) => lset ++ Helper.ProtoBase(h, l, s))
+        val s_ = AbsString.alpha(id.toString)
+        val lset = Helper.LookupBase(h, id.id)
+        (lset, s_)
+      case Prop(CFGLoad(_, obj: CFGExpr, index: CFGExpr)) =>
+        val l_loc = SE.V(obj, h, ctx)._1._2
+        val s_ = Helper.toString(Helper.toPrimitive_better(h, SE.V(index, h, ctx)._1))
+        // optimization.
+//        val lset = l_loc.foldLeft(LocSetBot)((lset, l) => lset ++ Helper.ProtoBase(h, l, s))
+        val lset =
+          if (l_loc.size > 1) l_loc // here, l_loc is incorrect. However, if lset_base.size > 1, lset value will be ignored.
+          else if (l_loc.size == 1) Helper.ProtoBase(h, l_loc.head, s_)
+          else LocSetBot
+        (lset, s_)
     }
 
-    L_base.size match {
-      case 1 =>
-        s.gamma match {
-          case Some(vs) =>
-            val ov = h(L_base.head)(s)._1._1
-            val pv = op.getKind match {
-              // in constant null and undefined for != operator, undefined and null are bottom for the lvalue
-              case EJSOp.BIN_COMP_EQ_NEQUAL => 
-                val pv = ov._1._1
-                PValue(pv._3) + PValue(pv._4) + PValue(pv._5)
-              case EJSOp.BIN_COMP_EQ_SNEQUAL =>
-                val pv = ov._1._1
-                const match {
-                  // for null, null is bottom
-                  case CFGNull() => PValue(pv._1) + PValue(pv._3) + PValue(pv._4) + PValue(pv._5)
-                  // otherwise undefined, undefined is bottom
-                  case _ => PValue(pv._2) + PValue(pv._3) + PValue(pv._4) + PValue(pv._5)
-                } 
-              case _ => throw new InternalError("It is not possible constant pruning.")
+    (lset_base.size, s.getSingle) match {
+      case (1, Some(v)) =>
+        val l = lset_base.head
+        val pva = h(l)(s)
+        val ov = pva._1
+        val pv = op.getKind match {
+          // in constant null and undefined for != operator, undefined and null are bottom for the lvalue
+          case EJSOp.BIN_COMP_EQ_NEQUAL =>
+            val pv = ov._1._1
+            PValue(pv._3) + PValue(pv._4) + PValue(pv._5)
+          case EJSOp.BIN_COMP_EQ_SNEQUAL =>
+            val pv = ov._1._1
+            const match {
+              // for null, null is bottom
+              case CFGNull() => PValue(pv._1) + PValue(pv._3) + PValue(pv._4) + PValue(pv._5)
+              // otherwise undefined, undefined is bottom
+              case _ => PValue(pv._2) + PValue(pv._3) + PValue(pv._4) + PValue(pv._5)
             }
-            val propv = PropValue(ObjectValue(Value(pv, ov._1._2), ov._2, ov._3, ov._4), h(L_base.head)(s)._1._2, h(L_base.head)(s)._1._3)
-            (h.update(L_base.head, h(L_base.head).update(vs, propv, h(L_base.head)(s)._2)), ctx)
-          case _ => (h, ctx)
+          case _ => throw new InternalError("It is not possible constant pruning.")
         }
+        val propv = PropValue(ObjectValue(Value(pv, ov._1._2), ov._2, ov._3, ov._4), pva._3)
+        val h_new = h.update(l, h(l).update(v, propv))
+        (h_new, ctx)
       case _ => (h, ctx)
     }
   }  
@@ -1557,7 +1561,11 @@ class Semantics(cfg: CFG, worklist: Worklist, locclone: Boolean) {
     val s = Helper.toString(Helper.toPrimitive_better(h, v1))
     val L_base = op.getKind match {
       case EJSOp.BIN_COMP_REL_IN =>
-        v2._2.foldLeft(LocSetBot)((l_set, l) => l_set ++ Helper.ProtoBase(h, l, s))
+        // optimization
+        // v2._2.foldLeft(LocSetBot)((l_set, l) => l_set ++ Helper.ProtoBase(h, l, s))
+        if (v2._2.size > 1) v2._2
+        else if (v2._2.size == 1) Helper.ProtoBase(h, v2._2.head, s)
+        else LocSetBot
       case EJSOp.BIN_COMP_REL_NOTIN =>
         v2._2
       case EJSOp.BIN_COMP_REL_INSTANCEOF =>
@@ -1572,7 +1580,8 @@ class Semantics(cfg: CFG, worklist: Worklist, locclone: Boolean) {
         case EJSOp.BIN_COMP_REL_IN => s.getSingle match {
           case Some(_) =>
               // make property definitely exist
-              h.update(L_base.head, h(L_base.head).update(s, h(L_base.head)(s)._1))
+              // TODO Need to be check: h.update(L_base.head, h(L_base.head).update(s, h(L_base.head)(s)._1))
+              h.update(L_base.head, h(L_base.head).update(s, h(L_base.head)(s)))
           case _ => h
         }
         case EJSOp.BIN_COMP_REL_NOTIN => s.getSingle match {
@@ -1591,51 +1600,24 @@ class Semantics(cfg: CFG, worklist: Worklist, locclone: Boolean) {
     }
   }
 
-
-
-/*
-  def X(relSet: Set[RelExpr], h: Heap, ctx: Context):(Heap, Context) = {
-    relSet.foldLeft((h, ctx))((s12, re) => {
-      val ((h_f, ctx_f)) = s12
-      re match {
-        case RelExpr(first: PrunExpr, op: IROp, second: CFGExpr) =>
-          val (v1, es1) = SE.V(first.get, h, ctx)
-          val (v2, es2) = SE.V(second, h, ctx)
-          val (h_e1, ctx_e1) = Helper.RaiseException(h, ctx, es1)
-          val (h_e2, ctx_e2) = Helper.RaiseException(h, ctx, es2)
-          val (h_e, ctx_e) = (h_e1 + h_e2, ctx_e1 + ctx_e2)
-          val (h1, ctx1) = Pruning(first, v1, op, v2, h, ctx)
-          (h_f <> h1, ctx_f <> ctx1)
-      }
-    })
-  }
-*/
-
   def Pruning(pe: PrunExpr, v1: Value, op: IROp, v2: Value, h: Heap, ctx: Context):(Heap, Context) = {
-    val (l_loc, s) = pe match {
+    val (lset_base, s) = pe match {
       case Id(id: CFGVarRef) =>
-        (LocSetBot, AbsString.alpha(id.toString))
-      case Prop(CFGLoad(info: Info, obj: CFGExpr, index: CFGExpr)) =>
-        (SE.V(obj, h, ctx)._1._2, Helper.toString(Helper.toPrimitive_better(h, SE.V(index, h, ctx)._1)))
-    }
-    val L_base = pe match {
-      case Id(CFGVarRef(_, id)) => Helper.LookupBase(h, id)
-      case Prop(_) => l_loc.foldLeft(LocSetBot)((lset, l) => lset ++ Helper.ProtoBase(h, l, s))
+        val s = AbsString.alpha(id.toString)
+        val lset = Helper.LookupBase(h, id.id)
+        (lset, s)
+      case Prop(CFGLoad(_, obj: CFGExpr, index: CFGExpr)) =>
+        val s = Helper.toString(Helper.toPrimitive_better(h, SE.V(index, h, ctx)._1))
+        val l_loc = SE.V(obj, h, ctx)._1._2
+        val lset = l_loc.foldLeft(LocSetBot)((lset, l) => lset ++ Helper.ProtoBase(h, l, s))
+        (lset, s)
     }
 
-//    System.out.println("L_BASE : start from " + l_loc.toString + " with String : " + s.toString +" size = " + L_base.size)
-//    L_base.foldLeft(())((x, l) => System.out.println(l))
-
-    L_base.size match {
-      case 1 =>
-        s.getSingle match {
-          case Some(x) =>
-            val ov = h(L_base.head)(s)._1._1
-            val (v, abs) = AH.K(op, v2, v1._2)
-//            val propv = PropValue(ObjectValue(v <> v1, ov._2, ov._3, ov._4), h(L_base.head)(s)._1._2, h(L_base.head)(s)._1._3)
-            (h.update(L_base.head, h(L_base.head).update(x, PropValue(ObjectValue(v,ov._2,ov._3,ov._4)), abs <> h(L_base.head)(s)._2)), ctx)
-          case _ => (h, ctx)
-        }
+    (lset_base.size, s.getSingle) match {
+      case (1, Some(x)) =>
+        val l = lset_base.head
+        val o = AH.K(op, h(l), s, v2, v1._2)
+        (h.update(l, o), ctx)
       case _ => (h, ctx)
     }
   }
@@ -1705,14 +1687,14 @@ class Semantics(cfg: CFG, worklist: Worklist, locclone: Boolean) {
         if (s._1 == HeapBot) StateBot
         else {
           // make new decl env
-          val env_obj = PreHelper.NewDeclEnvRecord(obj("@scope")._1._2)
+          val env_obj = PreHelper.NewDeclEnvRecord(obj("@scope")._2)
           // obj2 is new PureLocal
           val obj2 = obj // - "@scope"
           val h1 = s._1
           // weak update PureLocal
           val h2 = h1.update(cfg.getPureLocal(cp2), obj2)
           // add new env rec to direct l_env to env_obj
-          val h3 = obj2("@env")._1._2._2.foldLeft(h2)((hh, l_env) => {
+          val h3 = obj2("@env")._2._2.foldLeft(h2)((hh, l_env) => {
             hh.update(l_env, env_obj)
           })
           State(h3, ctx + s._2)
@@ -1733,7 +1715,7 @@ class Semantics(cfg: CFG, worklist: Worklist, locclone: Boolean) {
             }
             val h1 = s._1
             val ctx1 = s._2
-            val v = h1(cfg.getPureLocal(cp1))("@return")._1._2
+            val v = h1(cfg.getPureLocal(cp1))("@return")._2
             val (ctx2, obj1) = PreHelper.FixOldify(ctx + ctx1, obj, ctx1._3, ctx1._4)
             val h2 = h1.update(cfg.getPureLocal(cp2), obj1)
             val h3 = PreHelper.VarStore(h2, cfg.getPureLocal(cp2), returnVar, v)
@@ -1749,9 +1731,9 @@ class Semantics(cfg: CFG, worklist: Worklist, locclone: Boolean) {
           else {
             val h1 = s._1
             val ctx1 = s._2
-            val v = h1(cfg.getPureLocal(cp1))("@exception")._1._2
+            val v = h1(cfg.getPureLocal(cp1))("@exception")._2
             val (ctx2, obj1) = PreHelper.FixOldify(ctx + ctx1, obj, ctx1._3, ctx1._4)
-            val v_old = obj1("@exception_all")._1._2
+            val v_old = obj1("@exception_all")._2
             val h2 = h1.update(cfg.getPureLocal(cp2),
                                obj1.update("@exception", PropValue(v)).
                                     update("@exception_all", PropValue(v + v_old)))
@@ -1778,7 +1760,7 @@ class Semantics(cfg: CFG, worklist: Worklist, locclone: Boolean) {
           val (fid, _) = cp._1
           val x_argvars = cfg.getArgVars(fid)
           val x_localvars = cfg.getLocalVars(fid)
-          val lset_arg = h(PureLocalLoc)(cfg.getArgumentsName(fid))._1._1._1._2
+          val lset_arg = h(PureLocalLoc)(cfg.getArgumentsName(fid))._1._1._2
           var i = 0
           val h_n = x_argvars.foldLeft(h)((hh, x) => {
             val v_i = lset_arg.foldLeft(ValueBot)((vv, l_arg) => {
@@ -1796,6 +1778,7 @@ class Semantics(cfg: CFG, worklist: Worklist, locclone: Boolean) {
         case ExitExc => (h, ctx)
 
         case Block(insts) =>
+          System.out.println("instruction#: "+insts.length)
           insts.foldLeft((h, ctx))(
             (states, inst) => {
               // for debug
@@ -1968,7 +1951,7 @@ class Semantics(cfg: CFG, worklist: Worklist, locclone: Boolean) {
                   val (h_length, ex_len) =
                     if (AbsString.alpha("length") <= s) {
                       val v_newLen = Value(Operator.ToUInt32(v_rhs))
-                      val n_oldLen = h(l)("length")._1._1._1._1._4 // number
+                      val n_oldLen = h(l)("length")._1._1._1._4 // number
                       val b_g = n_oldLen < v_newLen._1._4
                       val b_eq = n_oldLen === v_newLen._1._4
                       val b_canputLen = PreHelper.CanPut(h, l, AbsString.alpha("length"))
@@ -2015,7 +1998,7 @@ class Semantics(cfg: CFG, worklist: Worklist, locclone: Boolean) {
                   // 4. s is array index
                   val h_index =
                     if (BTrue <= PreHelper.IsArrayIndex(s)) {
-                    val n_oldLen = h(l)("length")._1._1._1._1._4 // number
+                    val n_oldLen = h(l)("length")._1._1._1._4 // number
                     val n_index = Operator.ToUInt32(Value(PreHelper.toNumber(PValue(s))))
                     val b_g = n_oldLen < n_index
                     val b_eq = n_oldLen === n_index
@@ -2066,10 +2049,10 @@ class Semantics(cfg: CFG, worklist: Worklist, locclone: Boolean) {
         val o_new = PreHelper.NewObject(ObjProtoLoc)
         val n = AbsNumber.alpha(cfg.getArgVars(fid).length)
         val fvalue = Value(PValueBot, LocSet(l_r1))
-        val scope = h_2(PureLocalLoc)("@env")._1._2
+        val scope = h_2(PureLocalLoc)("@env")._2
         val h_3 = h_2.update(l_r1, PreHelper.NewFunctionObject(fid, scope, l_r2, n))
         val h_4 = h_3.update(l_r2, o_new.update("constructor",
-          PropValue(ObjectValue(fvalue, BoolTrue, BoolFalse, BoolTrue))))
+          PropValue(ObjectValue(fvalue, BoolTrue, BoolFalse, BoolTrue)), exist = true))
         val h_5 = PreHelper.VarStore(h_4, PureLocalLoc, lhs, fvalue)
         (h_5, ctx_2)
       }
@@ -2085,12 +2068,12 @@ class Semantics(cfg: CFG, worklist: Worklist, locclone: Boolean) {
         val (h_3, ctx_3) = PreHelper.Oldify(h_2, ctx_2, a_new3)
         val o_new = PreHelper.NewObject(ObjProtoLoc)
         val n = AbsNumber.alpha(cfg.getArgVars(fid).length)
-        val scope = h_3(PureLocalLoc)("@env")._1._2
+        val scope = h_3(PureLocalLoc)("@env")._2
         val o_env = PreHelper.NewDeclEnvRecord(scope)
         val fvalue = Value(PValueBot, LocSet(l_r1))
         val h_4 = h_3.update(l_r1, PreHelper.NewFunctionObject(fid, Value(l_r3), l_r2, n))
         val h_5 = h_4.update(l_r2, o_new.update("constructor",
-          PropValue(ObjectValue(fvalue, BoolTrue, BoolFalse, BoolTrue))))
+          PropValue(ObjectValue(fvalue, BoolTrue, BoolFalse, BoolTrue)), exist = true))
         val h_6 = h_5.update(l_r3, o_env.update(name,
           PropValue(ObjectValue(fvalue, BoolFalse, BoolBot, BoolFalse))))
         val h_7 = PreHelper.VarStore(h_6, PureLocalLoc, lhs, fvalue)
@@ -2105,7 +2088,7 @@ class Semantics(cfg: CFG, worklist: Worklist, locclone: Boolean) {
         val lset_f = lset.filter((l) => BoolTrue <= PreHelper.HasConstruct(h_1,l))
         val lset_this = PreHelper.getThis(h_1, PSE.V(thisArg, h_1, ctx_1, PureLocalLoc)._1)
         // val lset_this = PreHelper.getThis(h_1, SE.V(thisArg, h_1, ctx_1, PureLocalLoc)._1) ++
-        //                 h(PureLocalLoc)("@this")._1._2._2 // set this value with current this value
+        //                 h(PureLocalLoc)("@this")._2._2 // set this value with current this value
         val v_arg = PSE.V(arguments, h_1, ctx_1, PureLocalLoc)._1
         val o_old = h_1(PureLocalLoc)
         val cc_caller = cp._2
@@ -2115,13 +2098,13 @@ class Semantics(cfg: CFG, worklist: Worklist, locclone: Boolean) {
         val cp_aftercatch = (n_aftercatch, cc_caller)
         lset_f.foreach((l_f) => {
           val o_f = h_1(l_f)
-          o_f("@construct")._1._3.foreach((fid) => {
+          o_f("@construct")._3.foreach((fid) => {
             cc_caller.NewCallContext(h, cfg, fid, l_r, lset_this).foreach((pair) => {
               val (cc_new, o_new) = pair
               val o_new2 = o_new.
                 update(cfg.getArgumentsName(fid),
-                       PropValue(ObjectValue(v_arg, BoolTrue, BoolFalse, BoolFalse))).
-                update("@scope", o_f("@scope")._1)
+                       PropValue(ObjectValue(v_arg, BoolTrue, BoolFalse, BoolFalse)), exist = true).
+                update("@scope", o_f("@scope"))
 
               addCallEdge(cp, ((fid,LEntry), cc_new), ContextEmpty, o_new2)
               addReturnEdge(((fid,LExit), cc_new), cp_aftercall, ctx_1, o_old)
@@ -2161,7 +2144,7 @@ class Semantics(cfg: CFG, worklist: Worklist, locclone: Boolean) {
         val lset_f = lset.filter((l) => BoolTrue <= PreHelper.IsCallable(h_1,l))
         val lset_this = PreHelper.getThis(h_1, PSE.V(thisArg, h_1, ctx_1, PureLocalLoc)._1)
         // val lset_this = PreHelper.getThis(h_1, SE.V(thisArg, h_1, ctx_1, PureLocalLoc)._1) ++
-        //                 h(PureLocalLoc)("@this")._1._2._2 // set this value with current this value
+        //                 h(PureLocalLoc)("@this")._2._2 // set this value with current this value
         val v_arg = PSE.V(arguments, h_1, ctx_1, PureLocalLoc)._1
         val o_old = h_1(PureLocalLoc)
         val cc_caller = cp._2
@@ -2172,12 +2155,12 @@ class Semantics(cfg: CFG, worklist: Worklist, locclone: Boolean) {
         val propv_arg = PropValue(ObjectValue(v_arg, BoolTrue, BoolFalse, BoolFalse))
         lset_f foreach (l_f => {
           val o_f = h_1(l_f)
-          val fids = o_f("@function")._1._3
+          val fids = o_f("@function")._3
           fids foreach (fid => {
             val ccset = cc_caller.NewCallContext(h, cfg, fid, l_r, lset_this)
             ccset.foreach {case (cc_new, o_new) => {
-              val o_new2 = o_new.update(cfg.getArgumentsName(fid), propv_arg).
-              update("@scope", o_f("@scope")._1)
+              val o_new2 = o_new.update(cfg.getArgumentsName(fid), propv_arg, exist = true).
+              update("@scope", o_f("@scope"))
               addCallEdge(cp, ((fid,LEntry), cc_new), ContextEmpty, o_new2)
               addReturnEdge(((fid,LExit), cc_new), cp_aftercall, ctx_1, o_old)
               addReturnEdge(((fid, LExitExc), cc_new), cp_aftercatch, ctx_1, o_old)
@@ -2213,8 +2196,8 @@ class Semantics(cfg: CFG, worklist: Worklist, locclone: Boolean) {
         (h_e, ctx_e)
       }
       case CFGCatch(_, _, name) => {
-        val v_old = h(PureLocalLoc)("@exception_all")._1._2
-        val h_1 = PreHelper.CreateMutableBinding(h, PureLocalLoc, name, h(PureLocalLoc)("@exception")._1._2)
+        val v_old = h(PureLocalLoc)("@exception_all")._2
+        val h_1 = PreHelper.CreateMutableBinding(h, PureLocalLoc, name, h(PureLocalLoc)("@exception")._2)
         val h_2 = h_1.update(PureLocalLoc,
                              h_1(PureLocalLoc).update("@exception", PropValue(v_old)))
         (h_2, ctx)
@@ -2235,7 +2218,7 @@ class Semantics(cfg: CFG, worklist: Worklist, locclone: Boolean) {
       }
       case CFGThrow(_, _, expr) => {
         val (v,es) = PSE.V(expr,h,ctx, PureLocalLoc)
-        val v_old = h(PureLocalLoc)("@exception_all")._1._2
+        val v_old = h(PureLocalLoc)("@exception_all")._2
         val (h_e, ctx_e) = PreHelper.RaiseException(h, ctx, PureLocalLoc, es)
         val h_1 = h_e.update(PureLocalLoc,
                            h_e(PureLocalLoc).update("@exception", PropValue(v + v_old)).
@@ -2314,7 +2297,7 @@ class Semantics(cfg: CFG, worklist: Worklist, locclone: Boolean) {
               val (v_1, h_1, _, _) = PreHelper.toObject(h, ctx, v_obj, a_new)
               if (!(h_1 <= HeapBot)) {
                 val lset = v_1._2
-                val init_obj = ObjEmpty.update("index", PropValue(AbsNumber.alpha(0)))
+                val init_obj = Obj.empty.update("index", PropValue(AbsNumber.alpha(0)))
 
                 val list_obj: Obj =
                   if (lset.size > 0) {
@@ -2339,7 +2322,7 @@ class Semantics(cfg: CFG, worklist: Worklist, locclone: Boolean) {
                 val list_obj_2 = if (v._1._1 </ UndefBot || v._1._2 </ NullBot) {
                   // if a given object is nullable, the first iteration can be canceled.
                   val ov = list_obj("0")
-                  list_obj.update("0", ov._1, AbsentTop)
+                  list_obj.update("0", ov).absentTop("0")
                 } else {
                   list_obj
                 }
@@ -2368,17 +2351,17 @@ class Semantics(cfg: CFG, worklist: Worklist, locclone: Boolean) {
                 val l_obj = lset.head
                 val o = h(l_obj)
 
-                val idx = o("index")._1._2._1._4
+                val idx = o("index")._2._1._4
                 val s_idx: AbsString = PreHelper.toString(PValue(idx))
                 val pv = o(s_idx)
-                val name = pv._1._2._1._5
-                val absent = pv._2
+                val name = pv._2._1._5
+                val absent = o.domIn(s_idx)
 
                 val b_1 =
                   if (!(name <= StrBot)) AbsBool.alpha(true)
                   else BoolBot
                 val b_2 =
-                  if (!(absent <= AbsentBot)) AbsBool.alpha(false)
+                  if (BoolFalse <= absent) AbsBool.alpha(false)
                   else BoolBot
                 val b = b_1 + b_2
 
@@ -2409,7 +2392,7 @@ class Semantics(cfg: CFG, worklist: Worklist, locclone: Boolean) {
                 val o = h(l_obj)
 
                 // increasing iterator index
-                val idx = o("index")._1._2._1._4
+                val idx = o("index")._2._1._4
                 val s_idx: AbsString = PreHelper.toString(PValue(idx))
                 val next_idx = idx.getSingle match {
                   case Some(n) => AbsNumber.alpha(n + 1)
@@ -2418,7 +2401,7 @@ class Semantics(cfg: CFG, worklist: Worklist, locclone: Boolean) {
                 // index strong update
                 val h_1 = h.update(l_obj, h(l_obj).update("index", PropValue(next_idx)))
 
-                val name = o(s_idx)._1._2._1._5
+                val name = o(s_idx)._2._1._5
                 val h_2 = PreHelper.VarStore(h_1, PureLocalLoc, lhs, Value(name))
 
                 (h_2, ctx)
@@ -2465,48 +2448,13 @@ class Semantics(cfg: CFG, worklist: Worklist, locclone: Boolean) {
     }
   }
 
-  def insertHeapBottom(cp: ControlPoint, i: CFGInst, cps: Option[CPStackSet]): Unit = {
-    val cpStackSet = cps match {
-      case Some(cps) =>
-        // use control-point stack (more precise way)
-        cps
-      case None =>
-        // use ip predecessor (alternative way)
-        var cps1: CPStackSet = new CPStackSet
-        var cps2: CPStackSet = null
-        var isChanged = false
-        val maxSize = 4
-        var depth = 0
+  def insertHeapBottom(cp: ControlPoint, i: CFGInst): Unit = {
+    // use ip predecessor (alternative way)
+    var isChanged = false
+    val maxSize = 4
+    var depth = 0
 
-        cps1.add((new CPStack).push(cp))
-        do {
-          cps2 = cps1
-          cps1 = new CPStackSet
-          isChanged = false
-          depth+= 1
-          ipPredMap.synchronized {
-            for(cps <- cps2) {
-              ipPredMap.get(((cps.top._1._1, LEntry), cps.top._2)) match {
-                case Some(cs) =>
-                  for(c <- cs) if(depth > 1) cps1.add(cps.push(c)) else cps1.add((new CPStack).push(c))
-                  isChanged = true
-                case None => if(depth > 1) cps1.add(cps)
-              }
-            }
-          }
-        } while(depth == 1 || isChanged && cps1.size < maxSize)
-
-        cps1 = new CPStackSet
-        for(cps <- cps2) cps1.add(cps.reverse)
-
-        cps1
-    }
-    heapBotMap.synchronized {
-      heapBotMap.get((cp, i)) match {
-        case Some(prevCPStackSet) => prevCPStackSet++= cpStackSet
-        case None => heapBotMap.put((cp, i), cpStackSet)
-      }
-    }
+    heapBotMap += ((cp, i))
   }
 
   def dumpHeapBottoms(): Unit = {
@@ -2544,24 +2492,11 @@ class Semantics(cfg: CFG, worklist: Worklist, locclone: Boolean) {
 
     println("** Heap Bottom List **")
     println("=========================================================================")
-    if((Shell.params.opt_ReturnStateOff || !Shell.params.opt_ReturnStateOn) && heapBotMap.size > 0)
-      println("'-return-state-on' option will show more precise results.")
     for(kv <- heapBotMap) {
-      val ((cp, inst), cpStackSet) = kv
+      val (cp, inst) = kv
       println("- HeapBot at " + cp)
-      if(cpStackSet.size == 0) {
-        // in global code
-        indent = 0
-        printStack(cp, inst)
-      }
-      else {
-        // in function codes
-        for(cpStack <- cpStackSet) {
-          indent = 0
-          printStack(cp, inst)
-          for(cp <- cpStack) printStack(cp, cfg.getLastInst(cp._1))
-        }
-      }
+      indent = 0
+      printStack(cp, inst)
     }
     println("=========================================================================")
   }

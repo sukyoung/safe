@@ -47,7 +47,6 @@ class ConstraintForm() {
           case None => None
         }
       case None =>
-        throw new ConcolicError("The 'lhs' part in the information should be completed.")
     }
   }
 
@@ -58,11 +57,25 @@ class ConstraintForm() {
   def getJavaRhs: JavaOption[ConstraintForm] = toJavaOption(rhs)
   
   def objectRelated: Boolean = {
+    if (lhs == null) return false
     var left = lhs.isObject || lhs.isNull
     var right = false
-    if (rhs.isSome)
+    if (rhs.isSome) {
       right = rhs.unwrap.objectRelated
+    }
     left || right
+  }
+
+  var branchConstraint: Boolean = false
+  def setBranchConstraint() = branchConstraint = true
+  def isBranchConstraint() = branchConstraint
+
+  def getSymbolicValues(): List[SymbolicValue] = {
+    var result = List(getLhs)
+    getRhs match {
+      case Some(x) => result:::x.getSymbolicValues
+      case None => result
+    }
   }
 
   override def toString: String = {

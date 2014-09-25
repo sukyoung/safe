@@ -45,16 +45,16 @@ object Navigator extends DOM {
     ("appVersion", AbsConstValue(PropValue(ObjectValue(StrTop, F, T, T)))),
     ("platform", AbsConstValue(PropValue(ObjectValue(StrTop, F, T, T)))),
     ("product", AbsConstValue(PropValue(ObjectValue(AbsString.alpha("Gecko"), F, T, T)))),
-    ("userAgent", AbsConstValue(PropValue(ObjectValue(StrTop, F, T, T)))),
+    ("userAgent", AbsConstValue(PropValue(ObjectValue(StrTop, T, T, T)))),
     //("userAgent", AbsConstValue(PropValue(ObjectValue(AbsString.alpha("Gecko"), F, T, T)))),
     // Navigator implements NavigatorLanguage (Section 7.5.1.2)
     ("language", AbsConstValue(PropValue(ObjectValue(StrTop, F, T, T)))),
     // Navigator implements NavigatorOnLine (Section 6.7.10)
     ("onLine", AbsConstValue(PropValue(ObjectValue(BoolTop, F, T, T)))),
     // Navigator implements NavigatorStorageUtils (Section 7.5.1.4)
-    ("cookieEnabled", AbsConstValue(PropValue(ObjectValue(BoolTop, F, T, T)))),
+    ("cookieEnabled", AbsConstValue(PropValue(ObjectValue(BoolTop, T, T, T)))),
     // Navigator implements NavigatorPlugins (Section 7.5.1.5)
-    ("plugins", AbsConstValue(PropValue(ObjectValue(PluginArray.loc_ins, F, T, T)))),
+    ("plugins", AbsConstValue(PropValue(ObjectValue(PluginArray.loc_ins, T, T, T)))),
     ("mimeTypes", AbsConstValue(PropValue(ObjectValue(MimeTypeArray.loc_ins, F, T, T)))),
     // Non-standard
     ("vendor", AbsConstValue(PropValue(ObjectValue(StrTop, F, T, T))))

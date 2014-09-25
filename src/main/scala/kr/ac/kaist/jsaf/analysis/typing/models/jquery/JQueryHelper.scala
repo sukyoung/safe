@@ -33,7 +33,7 @@ object JQueryHelper {
   }
 
   def MakeArray(h: Heap, v_arr: Value, o_results: Obj): Obj = {
-    val n_len = o_results("length")._1._1._1._1._4 // number
+    val n_len = o_results("length")._1._1._1._4 // number
     n_len.getSingle match {
       case Some(n) =>
         val o_1 =
@@ -42,10 +42,10 @@ object JQueryHelper {
               update(n.toString, PropValue(ObjectValue(v_arr._1, T, T, T))).
               update("length", PropValue(ObjectValue(AbsNumber.alpha(n+1), T, T, T)))
           else
-            ObjBot
+            Obj.bottom
         val o_2 =
           if (!v_arr._2.isEmpty) {
-            v_arr._2.foldLeft(ObjBot)((_o, l) => {
+            v_arr._2.foldLeft(Obj.bottom)((_o, l) => {
               // window object
               if(l == GlobalLoc) { 
                 val obj1 = o_results.update(n.toInt.toString, PropValue(ObjectValue(Value(l), T, T, T))).update(
@@ -70,20 +70,20 @@ object JQueryHelper {
               }
             })
           }
-          else ObjBot
+          else Obj.bottom
         o_1 + o_2
       case None =>
         if (n_len <= NumBot)
-          ObjBot
+          Obj.bottom
         else {
           val o_1 =
             if (v_arr._2.isEmpty)
               o_results.update(Helper.toString(PValue(n_len)), PropValue(ObjectValue(v_arr._1, T, T, T)))
             else
-              ObjBot
+              Obj.bottom
           val o_2 =
             if (!v_arr._2.isEmpty) {
-              v_arr._2.foldLeft(ObjBot)((_o, l) => {
+              v_arr._2.foldLeft(Obj.bottom)((_o, l) => {
                 // window object
                 if(l == GlobalLoc) {
                   val newo = o_results.update(NumStr, PropValue(ObjectValue(Value(l), T, T, T)))
@@ -94,14 +94,14 @@ object JQueryHelper {
                 }
               })
             }
-            else ObjBot
+            else Obj.bottom
           o_1 + o_2
         }
     }
   }
   def addEvent(h: Heap, ctx: Context, he: Heap, ctxe: Context,
                        v_data: Value, v_fn: Value, event_type: String): ((Heap, Context), (Heap, Context)) = {
-    val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+    val lset_this = h(SinglePureLocalLoc)("@this")._2._2
     val (v_fun1, v_dat1) =
       if (v_fn._1._1 </ UndefBot || v_fn._1._2 </ NullBot)
         (Value(v_data._2), ValueBot)
@@ -115,7 +115,7 @@ object JQueryHelper {
     val v_fun = v_fun1 + v_fun2
     val v_dat = v_dat1 + v_dat2
     val lset_target = lset_this.foldLeft(LocSetBot)((lset, l) =>
-      lset ++ h(l)(NumStr)._1._1._1._2
+      lset ++ h(l)(NumStr)._1._1._2
     )
     if (v_fun </ ValueBot && !lset_target.isEmpty) {
       val h1 = JQueryHelper.addJQueryEvent(h, Value(lset_target), AbsString.alpha(event_type), v_fun, v_dat, ValueBot)
@@ -163,13 +163,13 @@ object JQueryHelper {
       }
     }
     val o_fun = event_list.foldLeft(fun_table)((o, s_ev) =>
-      o.update(s_ev, o(s_ev)._1 + propv_fun)
+      o.update(s_ev, o(s_ev) + propv_fun)
     )
     val o_target = event_list.foldLeft(target_table)((o, s_ev) =>
-      o.update(s_ev, o(s_ev)._1 + propv_target)
+      o.update(s_ev, o(s_ev) + propv_target)
     )
     val o_selector = event_list.foldLeft(selector_table)((o, s_ev) =>
-      o.update(s_ev, o(s_ev)._1 + propv_selector)
+      o.update(s_ev, o(s_ev) + propv_selector)
     )
     h.update(EventFunctionTableLoc, o_fun).update(EventTargetTableLoc, o_target).update(EventSelectorTableLoc, o_selector)
   }
@@ -179,11 +179,11 @@ object JQueryHelper {
   private val reg_id = """([\w]+)""".r
 
   def init(h: Heap, v_selector: Value, v_context: Value,
-           l_jq: Loc, l_tag: Loc, l_child: Loc): (Heap, Value) = {
+           l_jq: Loc, l_tag: Loc, l_child: Loc, l_attributes: Loc): (Heap, Value) = {
     //val h_start = h
     //val ctx_start = ctx_3
 
-    val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+    val lset_this = h(SinglePureLocalLoc)("@this")._2._2
 
     // 1) Handle $(""), $(null), $(undefined), $(false)
     val (h_ret1, v_ret1) =
@@ -253,7 +253,7 @@ object JQueryHelper {
                       .update("selector",   PropValue(ObjectValue(v_selector, T, T, T)))
                       .update("prevObject", PropValue(ObjectValue(Value(JQuery.RootJQLoc), T, T, T)))
                       .update("0",          PropValue(ObjectValue(Value(l_tag), T, T, T)))
-                    val _h1 = DOMHelper.addTag(h, s_tag, l_tag, l_child).update(l_jq, o_jq)
+                    val _h1 = DOMHelper.addTag(h, s_tag, l_tag, l_child, l_attributes).update(l_jq, o_jq)
                     (_h1, Value(l_jq))
                   }
                   // HANDLE: $(#id)
@@ -313,7 +313,7 @@ object JQueryHelper {
                   val (h2, v2) =
                     if (UndefTop <= v_context._1._1 && v_jquery._1._1 </ UndefBot) {
                       // prev = context
-                      val lset_context = v_context._2.foldLeft(LocSetBot)((lset, l) => lset ++ h(l)(NumStr)._1._1._1._2)
+                      val lset_context = v_context._2.foldLeft(LocSetBot)((lset, l) => lset ++ h(l)(NumStr)._1._1._2)
                       val lset_find = lset_context.foldLeft(LocSetBot)((lset, l) => lset ++ DOMHelper.querySelectorAll(h, s))
                       // jQuery object
                       val o_jq = NewJQueryObject(lset_find.size)
@@ -391,7 +391,7 @@ object JQueryHelper {
     }
     else if (len == 1) {
       // target = this
-      val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+      val lset_this = h(SinglePureLocalLoc)("@this")._2._2
       val lset_arg1 = args(0)._2
       val h_ret = lset_this.foldLeft(h)((h1, l1) =>
         lset_arg1.foldLeft(h1)((h2, l2) => {
@@ -402,8 +402,8 @@ object JQueryHelper {
           val o_arg1 = h2_1(l2)
           val o_target = h2_1(l1)
           val o_target_new = o_target
-            .update("@default_number", o_arg1("@default_number")._1 + o_target("@default_number")._1, AbsentTop)
-            .update("@default_other", o_arg1("@default_other")._1 + o_target("@default_other")._1, AbsentTop)
+            .update(NumStr, o_arg1(NumStr) + o_target(NumStr))
+            .update(OtherStr, o_arg1(OtherStr) + o_target(OtherStr))
           h2_1.update(l1, o_target_new)
         })
       )
@@ -427,8 +427,8 @@ object JQueryHelper {
           val o_arg1 = h2_1(l2)
           val o_target = h2_1(l1)
           val o_target_new = o_target
-            .update("@default_number", o_arg1("@default_number")._1 + o_target("@default_number")._1, AbsentTop)
-            .update("@default_other", o_arg1("@default_other")._1 + o_target("@default_other")._1, AbsentTop)
+            .update(NumStr, o_arg1(NumStr) + o_target(NumStr))
+            .update(OtherStr, o_arg1(OtherStr) + o_target(OtherStr))
           h2_1.update(l1, o_target_new)
         })
       )
@@ -446,7 +446,7 @@ object JQueryHelper {
 
   def isArraylike(h: Heap, l: Loc): AbsBool = {
     val n_len = Helper.Proto(h, l, AbsString.alpha("length"))._1._4
-    val s_class = h(l)("@class")._1._2._1._5
+    val s_class = h(l)("@class")._2._1._5
     val n_nodeType = Helper.Proto(h, l, AbsString.alpha("nodeType"))._1._4
     val b1 =
       if (n_len </ NumBot && AbsString.alpha("Function") </ s_class)

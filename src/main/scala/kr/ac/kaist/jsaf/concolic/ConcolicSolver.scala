@@ -12,14 +12,15 @@ package kr.ac.kaist.jsaf.concolic
 import _root_.java.math.BigInteger
 import kr.ac.kaist.jsaf.exceptions.ConcolicError
 import kr.ac.kaist.jsaf.nodes._
-import kr.ac.kaist.jsaf.nodes_util.{IRFactory => IF, NodeFactory => NF}
-import kr.ac.kaist.jsaf.nodes_util.NodeUtil
+import kr.ac.kaist.jsaf.nodes_util.{IRFactory => IF, NodeFactory => NF, NodeRelation => NR, NodeUtil => NU}
+import kr.ac.kaist.jsaf.nodes_util.Coverage
+import kr.ac.kaist.jsaf.scala_src.nodes._
 import kr.ac.kaist.jsaf.scala_src.useful.Lists._
 import kr.ac.kaist.jsaf.scala_src.useful.Maps._
 import kr.ac.kaist.jsaf.scala_src.useful.Options._
 import scala.util.Random
 
-class ConcolicSolver {
+class ConcolicSolver(coverage: Coverage) {
   var debug = false
 
   val z3 = new Z3
@@ -27,13 +28,12 @@ class ConcolicSolver {
     z3.debug = true
  
   var result: Map[String, (Id, List[Stmt])] = null 
-  //var result: Map[String, LHS] = null 
   var primitiveResult: Map[String, Int] = null 
   var objectResult: Map[String, String] = null 
   
   val dummySpan = IF.dummySpan("forConcolicSolver")
 
-  def solve(constraints: List[ConstraintForm], num: Int, function: FunctionInfo): Map[String, (Id, List[Stmt])] = { //Map[String, LHS] = {
+  def solve(constraints: List[ConstraintForm], num: Int, function: FunctionInfo): Map[String, (Id, List[Stmt])] = { 
     var primitiveConstraints: List[ConstraintForm] = List[ConstraintForm]()
     var objectTracking: Map[String, List[String]] = Map[String, List[String]]()
     // Filter out constraints on entire object 
@@ -49,7 +49,7 @@ class ConcolicSolver {
       return result
     
     // Filter out initialization
-    var init = function.thisObject.length
+    var init = function.getThisProperties.length
     for (i <- 0 until num by 1) {
       init += 1
       function.getObjectProperties(i) match {
@@ -127,19 +127,20 @@ class ConcolicSolver {
       }
     }
     // Make a primitive result. 
-    var tmp = z3.solve(toJavaList(primitiveConstraints), num, toJavaOption(Some(function.toJavaObjects)), function.toJavaThisObject) 
+    var tmp = z3.solve(toJavaList(primitiveConstraints), num, toJavaOption(Some(function.getJavaObjects)), function.getJavaThisProperties) 
     if (tmp.isSome) 
       primitiveResult = toMap(tmp.unwrap).map(x => (x._1, x._2.intValue))
     
     // Build actual result combined object related result and primitive realted one.
-    if (function.thisObject.nonEmpty) {
-      val fresh = NodeUtil.freshName("this")
+    if (function.hasThisObject) {
+      val fresh = NU.freshName("this")
       val arg = NF.makeId(dummySpan, fresh, fresh) 
-      result += "this" -> Pair(arg, assignObject(true, 0, arg, function.thisName, function.thisObject, primitiveResult)) 
+      //TODO: Handle multiple type
+      val thisNames = function.getThisConstructors 
+      result += "this" -> Pair(arg, assignObject(true, 0, arg, thisNames(0), function.getThisProperties, primitiveResult, true)) 
     }
-
     for (i <- 0 until num by 1) {
-      val fresh = NodeUtil.freshName("a")
+      val fresh = NU.freshName("a")
       val arg = NF.makeId(dummySpan, fresh, fresh) 
       function.getObjectProperties(i) match {
         case Some(props) =>
@@ -151,7 +152,13 @@ class ConcolicSolver {
              * var x = new f()
              * x.y = 3
              */
-            result += "i"+i -> Pair(arg, assignObject(false, i, arg, function.getObjectConstruct(i), props, primitiveResult)) 
+            var stmts: List[Stmt] = assignEmptyObject(arg)
+            //TODO: Handle multiple type
+            var constructors = function.getObjectConstructors(i)
+            if (constructors.nonEmpty)
+              stmts = assignObject(false, i, arg, constructors(0), props, primitiveResult, true)
+              
+            result += "i"+i -> Pair(arg, stmts) 
           }
         case None =>
           var value = NF.makeIntLiteral(dummySpan, new BigInteger(new Random().nextInt(10).toString))
@@ -173,20 +180,28 @@ class ConcolicSolver {
     NF.makeExprStmt(dummySpan, assign)
   }
 
-  def assignObject(isThis: Boolean, argnum: Int, arg: Id, constructor: String, props: List[(String, String)], res: Map[String, Int]): List[Stmt] =  {
+  def assignObject(isThis: Boolean, argnum: Int, arg: Id, constructor: String, props: List[String], res: Map[String, Int], hasArguments: Boolean): List[Stmt] =  {
     var stmts = List[Stmt]()
+    // Generate appropriate arguments for object constructor.
+    var args = List[Expr]()
+    if (hasArguments) {
+      val (temp, additional) = assignArgs(constructor) 
+      if (temp.isSome) args = temp.unwrap 
+      stmts = stmts:::additional
+    }
+
     val fun = NF.makeVarRef(dummySpan, NF.makeId(dummySpan, constructor, constructor))
-    val obj = NF.makeNew(dummySpan, NF.makeFunApp(dummySpan, fun, List[Expr]()))
+    val obj = NF.makeNew(dummySpan, NF.makeFunApp(dummySpan, fun, args))
     stmts = stmts:+assignValue(arg, obj)
 
     if (constructor == "Array") {
       val ref = NF.makeVarRef(dummySpan, NF.makeId(dummySpan, arg.getText, arg.getText))
       var lhs = NF.makeDot(dummySpan, ref, NF.makeId(dummySpan, "length", "length"))
-      var rhs = NF.makeIntLiteral(dummySpan, new BigInteger(props(0)._1))
+      var rhs = NF.makeIntLiteral(dummySpan, new BigInteger(props(0)))
       stmts = stmts:+NF.makeExprStmt(dummySpan, NF.makeAssignOpApp(dummySpan, lhs, 
                                                             NF.makeOp(dummySpan, "="),
                                                             rhs))
-      for (p <- 0 until props(0)._1.toInt) {
+      for (p <- 0 until props(0).toInt) {
         val elem = NF.makeBracket(dummySpan, ref, NF.makeIntLiteral(dummySpan, new BigInteger(p.toString)))
         rhs = NF.makeIntLiteral(dummySpan, new BigInteger(new Random().nextInt(10).toString))
         if (res.contains("i"+argnum+"."+p))
@@ -199,24 +214,71 @@ class ConcolicSolver {
     else {
       stmts = props.foldLeft[List[Stmt]](stmts)((list, p) => {
         val ref = NF.makeVarRef(dummySpan, NF.makeId(dummySpan, arg.getText, arg.getText))
-        val lhs = NF.makeDot(dummySpan, ref, NF.makeId(dummySpan, p._1, p._1))
-        var rhs = NF.makeIntLiteral(dummySpan, new BigInteger(new Random().nextInt(10).toString))
+        val lhs = NF.makeDot(dummySpan, ref, NF.makeId(dummySpan, p, p))
         var key = "i"+argnum+"."
         if (isThis)
           key = "this."
-        if (res.contains(key+p._1))
-          rhs = NF.makeIntLiteral(dummySpan, new BigInteger(res(key+p._1).toString)) 
+        if (res.contains(key+p) && coverage.isNecessary(key+p)) {
+          var rhs = NF.makeIntLiteral(dummySpan, new BigInteger(res(key+p).toString)) 
+          list:+NF.makeExprStmt(dummySpan, 
+                                NF.makeAssignOpApp(dummySpan, 
+                                                  lhs, 
+                                                  NF.makeOp(dummySpan, "="),
+                                                  rhs))
+        }
+        else
+          list
   //      NF.makeAssignOpApp(dummySpan, lhs, NF.makeOp(dummySpan, "="), rhs)
-        list:+NF.makeExprStmt(dummySpan, 
-                              NF.makeAssignOpApp(dummySpan, 
-                                                lhs, 
-                                                NF.makeOp(dummySpan, "="),
-                                                rhs))
       })
     }
     stmts
   }
 
+  def assignEmptyObject(arg: Id):List[Stmt] = {
+    val name = NF.makeId(dummySpan, "", "")
+    val obj = NF.makeFunExpr(dummySpan, name, List(), List(), false) 
+    List(assignValue(arg, obj))
+  }
+
+  def assignArgs(constructor: String):(Option[List[Expr]], List[Stmt]) = {
+    var additional = List[Stmt]()
+    for (k <- NR.ir2astMap.keySet) {
+      k match { 
+        case SIRFunctional(_, name, params, args, fds, vds, body) =>
+          if (name.getUniqueName == constructor) { 
+            val constructorFunction = coverage.functions(constructor)
+            val psize = constructorFunction.params.size
+            var args = List[Expr]()
+            for (n <- 0 until psize)
+              constructorFunction.getObjectProperties(n) match {
+                case Some(props) => 
+                  val fresh = NU.freshName("a")
+                  val arg = NF.makeId(dummySpan, fresh, fresh) 
+
+                  var addstmt: List[Stmt] = assignEmptyObject(arg) 
+                  val temp = constructorFunction.getObjectConstructors(n)
+                  if (temp.nonEmpty) {
+                    val argumentConstructor = temp(0) 
+                    // To prevent recursive generation, put a limit.
+                    val hasArguments = 
+                      if (argumentConstructor == constructor) false
+                      else true
+                    
+                    addstmt = assignObject(false, n, arg, argumentConstructor, props, Map[String, Int](), hasArguments) 
+                  }
+                  additional = additional:::addstmt
+                  args = args:+NF.makeVarRef(dummySpan, arg)
+                  
+                case None =>
+                  args = args:+NF.makeIntLiteral(dummySpan, new BigInteger(new Random().nextInt(5).toString)) 
+              }
+            return (Some(args), additional)
+          }
+        case _ =>
+      }
+    }
+    return (None, additional)
+  }
 
   def printResult(function: FunctionInfo, num: Int) = {
     System.out.println("======================= Result =======================")
@@ -227,13 +289,14 @@ class ConcolicSolver {
             System.out.println("%6s => %6s".format("i"+i, "null")) 
           else {
             if (i < primitiveResult.size) {
-              if (function.getObjectConstruct(i) == "Array") {
-                for (p <- 0 until props(0)._1.toInt)
+              var constructors = function.getObjectConstructors(i)
+              if (constructors(0) == "Array") {
+                for (p <- 0 until props(0).toInt)
                   System.out.println("%6s => %6s".format("i"+i+"."+p, primitiveResult("i"+i+"."+p).toString)) 
               }
               else {
                 for (p <- props) 
-                  System.out.println("%6s => %6s".format("i"+i+"."+p._1, primitiveResult("i"+i+"."+p._1).toString)) 
+                  System.out.println("%6s => %6s".format("i"+i+"."+p, primitiveResult("i"+i+"."+p).toString)) 
               }
             }
           }

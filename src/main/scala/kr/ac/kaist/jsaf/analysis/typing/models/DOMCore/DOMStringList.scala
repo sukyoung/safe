@@ -26,6 +26,7 @@ object DOMStringList extends DOM {
   /* predefined locatoins */
   val loc_cons = newSystemRecentLoc(name + "Cons")
   val loc_proto = newSystemRecentLoc(name + "Proto")
+  val loc_ins = newSystemRecentLoc(name + "Ins")
 
   /* constructor or object*/
   private val prop_cons: List[(String, AbsProperty)] = List(
@@ -62,7 +63,7 @@ object DOMStringList extends DOM {
           /* arguments */
           val n_index = Helper.toNumber(Helper.toPrimitive_better(h, getArgValue(h, ctx, args, "0")))
           if (n_index </ NumBot) {
-            val lset_this = h(SinglePureLocalLoc)("@this")._1._2._2
+            val lset_this = h(SinglePureLocalLoc)("@this")._2._2
             val n_length = lset_this.foldLeft[AbsNumber](NumBot)((n, l) =>
               n + Helper.toNumber(Helper.toPrimitive_better(h, Helper.Proto(h, l, AbsString.alpha("length")))))
             val s_index = Helper.toString(PValue(n_index))
@@ -96,7 +97,7 @@ object DOMStringList extends DOM {
           /* arguments */
           val n_index = PreHelper.toNumber(PreHelper.toPrimitive(getArgValue_pre(h, ctx, args, "0", PureLocalLoc)))
           if (n_index </ NumBot) {
-            val lset_this = h(PureLocalLoc)("@this")._1._2._2
+            val lset_this = h(PureLocalLoc)("@this")._2._2
             val n_length = lset_this.foldLeft[AbsNumber](NumBot)((n, l) =>
               n + PreHelper.toNumber(PreHelper.toPrimitive(PreHelper.Proto(h, l, AbsString.alpha("length")))))
             val s_index = PreHelper.toString(PValue(n_index))

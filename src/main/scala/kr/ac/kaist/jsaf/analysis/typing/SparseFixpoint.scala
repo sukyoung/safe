@@ -1,5 +1,5 @@
 /*******************************************************************************
-    Copyright (c) 2012-2013, S-Core, KAIST.
+    Copyright (c) 2012-2014, S-Core, KAIST.
     All rights reserved.
 
     Use is subject to license terms.
@@ -29,7 +29,7 @@ class SparseFixpoint(cfg: CFG, env: SparseEnv, worklist: Worklist, inTable: Tabl
     startTime = System.nanoTime()
 
     duset = du
-    worklist.add(((cfg.getGlobalFId, LEntry), CallContext.globalCallContext), None, false)
+    worklist.add(((cfg.getGlobalFId, LEntry), CallContext.globalCallContext))
     System.out.println()
     loop()
     System.out.println()
@@ -58,7 +58,7 @@ class SparseFixpoint(cfg: CFG, env: SparseEnv, worklist: Worklist, inTable: Tabl
       worklist.dump()
       count = count+1
 
-      val (cp, callerCPSetOpt) = worklist.getHead()
+      val cp = worklist.getHead()
       val (fg, ddg) = env.getFlowGraph(cp._1._1, cp._2)
 
       // Analysis timeout check
@@ -110,7 +110,7 @@ class SparseFixpoint(cfg: CFG, env: SparseEnv, worklist: Worklist, inTable: Tabl
 
       if (!edges.isEmpty || !excEdges.isEmpty) {
         val recovered = env.draw_intra_dugraph_incremental(fg, ddg, edges, excEdges) - cp._1
-        recovered.foreach(node => worklist.add((node, cp._2), None, false))
+        recovered.foreach(node => worklist.add((node, cp._2)))
       }
       val recover_time = (System.nanoTime() - recover_start) / 1000000000.0
       time += recover_time
@@ -138,7 +138,7 @@ class SparseFixpoint(cfg: CFG, env: SparseEnv, worklist: Worklist, inTable: Tabl
             System.out.println("Merged State by propagation "+cp_succ+"== " + DomainPrinter.printLocSet(succ_set))
             System.out.println(DomainPrinter.printHeap(4, newS._1, cfg))
 */
-            worklist.add(cp._1, cp_succ, None, false)
+            worklist.add(cp._1, cp_succ)
             updateTable(cp_succ, newS)
           }
         })
@@ -166,7 +166,7 @@ class SparseFixpoint(cfg: CFG, env: SparseEnv, worklist: Worklist, inTable: Tabl
             System.out.println("Merged State== " + DomainPrinter.printLocSet(bypass_set))
             System.out.println(DomainPrinter.printHeap(4, newS._1, cfg))
 */
-              worklist.add(cp._1, cp_succ, None, false)
+              worklist.add(cp._1, cp_succ)
               updateTable(cp_succ, newS)
             }
           }
@@ -194,7 +194,7 @@ class SparseFixpoint(cfg: CFG, env: SparseEnv, worklist: Worklist, inTable: Tabl
             System.out.println("Merged State== " + DomainPrinter.printLocSet(bypass_set))
             System.out.println(DomainPrinter.printHeap(4, newS._1, cfg))
 */
-              worklist.add(cp._1, cp_exc, None, false)
+              worklist.add(cp._1, cp_exc)
               updateTable(cp_exc, newS)
             }
           }
@@ -224,7 +224,7 @@ class SparseFixpoint(cfg: CFG, env: SparseEnv, worklist: Worklist, inTable: Tabl
 */
             if (!(outES2 <= oldS)) {
               val newES = oldS + outES2
-              worklist.add(cp._1, cp_succ, None, false)
+              worklist.add(cp._1, cp_succ)
               updateTable(cp_succ, newES)
             }
           }
@@ -268,13 +268,13 @@ class SparseFixpoint(cfg: CFG, env: SparseEnv, worklist: Worklist, inTable: Tabl
                   val call = (n_call, cp_succ._2)
                   // System.out.println("try to recover normal: "+call)
                   if (env.updateBypassing(call, cp._1._1)) {
-                    worklist.add(cp._1, call, None, false)
+                    worklist.add(cp._1, call)
                   }
                   val (fg, ddg) = env.getFlowGraph(call._1._1, call._2)
                   val edges = env.recoverOutAftercall(fg, call._1)
                   if (!edges.isEmpty) {
                     val recovered = env.draw_intra_dugraph_incremental(fg, ddg, edges, Set())
-                    recovered.foreach(node => worklist.add((node, call._2), None, false))
+                    recovered.foreach(node => worklist.add((node, call._2)))
                   }
                   val recover_time = (System.nanoTime() - recover_start) / 1000000000.0
                   time += recover_time
@@ -288,7 +288,7 @@ class SparseFixpoint(cfg: CFG, env: SparseEnv, worklist: Worklist, inTable: Tabl
                   val call = (n_call, cp_succ._2)
                   // System.out.println("try to recover exception: "+call)
                   if (env.updateBypassingExc(call, cp._1._1)) {
-                    worklist.add(cp._1, call, None, false)
+                    worklist.add(cp._1, call)
                   }
                   val (fg, ddg) = env.getFlowGraph(call._1._1, call._2)
 
@@ -298,7 +298,7 @@ class SparseFixpoint(cfg: CFG, env: SparseEnv, worklist: Worklist, inTable: Tabl
                   val edges = env.recoverOutAftercatch(fg, call._1)
                   if (!edges.isEmpty) {
                     val recovered = env.draw_intra_dugraph_incremental(fg, ddg, edges, Set())
-                    recovered.foreach(node => worklist.add((node, call._2), None, false))
+                    recovered.foreach(node => worklist.add((node, call._2)))
                   }
 
                   // recover EFG edge of aftercall.
@@ -337,7 +337,7 @@ class SparseFixpoint(cfg: CFG, env: SparseEnv, worklist: Worklist, inTable: Tabl
 */
             if (!(outS_E2 <= oldS)) {
               val newS = oldS + outS_E2
-              worklist.add(cp._1, cp_succ, None, false)
+              worklist.add(cp._1, cp_succ)
               updateTable(cp_succ, newS)
             }
           })

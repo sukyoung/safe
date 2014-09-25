@@ -484,9 +484,9 @@ private case class Loop(loopList : List[(List[Address], Node, Int)], callsiteLis
         Config.contextSensitivityDepth + 1
       }
     val newCallsiteList = this.loopList match {
-      case i::li if i._3 == 0 && k == Config.contextSensitivityDepth => this.callsiteList 
-      case i::li if i._3 == 0 && k == Config.contextSensitivityDepth + 1 => 
-        (locToAddr(l):: this.callsiteList).take(k)
+      //case i::li if i._3 == 0 && k == Config.contextSensitivityDepth => this.callsiteList 
+      //case i::li if i._3 == 0 && k == Config.contextSensitivityDepth + 1 => 
+      //  (locToAddr(l):: this.callsiteList).take(k)
       case _ => (locToAddr(l):: this.callsiteList).take(k)
     }
     
@@ -513,8 +513,8 @@ private case class Loop(loopList : List[(List[Address], Node, Int)], callsiteLis
     HashSet((Loop(this.loopList, newCallsiteList), newPureLocal))  
   }
 
-  val max_loopcontext = 10;
-  val max_iter = 500;
+  val max_loopcontext = 30;
+  val max_iter = 1000;
   override def newLoopContext(n: Node, init: Boolean, cond: AbsBool, old_cond: AbsBool = BoolBot, isbreak: Boolean = false, isout: Boolean = false, isreturn: Boolean = false): (CallContext, Boolean) = {
     if(isout) {
       cond match {
@@ -692,7 +692,7 @@ private case class Loop(loopList : List[(List[Address], Node, Int)], callsiteLis
   }
 
   // TODO: apply appropriate filtering if necessary
-  def filterSensitivity(flag: CallContext.SensitivityFlagType): CallContext = this
+  def filterSensitivity(flag: CallContext.SensitivityFlagType): CallContext = new KCallsite(this.callsiteList)
 
   override def toString = "Loop : " + loopList.toString + ", Call: " + callsiteList.toString
 }
@@ -851,7 +851,7 @@ private object Identity {
     val newProps = currentProps -- visitedProps
     val newVisitedProps = visitedProps ++ currentProps.filter(p => BoolTrue == o.domIn(p))
 
-    val lset_proto = h(loc)("@proto")._1._1._1._2
+    val lset_proto = h(loc)("@proto")._1._1._2
 
     val restSets = lset_proto.foldLeft(sets)((sset, l_proto) => {
       visibleProps(h, l_proto, cons("@", prefix), newVisitedProps, sset)

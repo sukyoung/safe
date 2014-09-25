@@ -30,8 +30,11 @@ class Hoister(program: Program) extends Walker {
    * we should return a dummy value after signaling an error.
    */
   var errors = List[BugInfo]()
+  private def isUserCode(span: Span): Boolean =
+    !span.getFileName.containsSlice("jquery")
   def signal(span: Span, bugKind: Int, arg1: String, arg2: String): Unit =
-    errors ++= List(new BugInfo(span, bugKind, arg1, arg2))
+    if (isUserCode(span))
+      errors ++= List(new BugInfo(span, bugKind, arg1, arg2))
   def getErrors(): JList[BugInfo] = toJavaList(errors)
 
   // getters
@@ -443,7 +446,7 @@ class Hoister(program: Program) extends Walker {
       }
       super.walkUnit(node)
 
-    case _: Comment => node
+    case _: Comment =>
     case _ => super.walkUnit(node)
   }
 

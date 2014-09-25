@@ -19,6 +19,7 @@ import kr.ac.kaist.jsaf.nodes._
 import kr.ac.kaist.jsaf.nodes_util.{NodeFactory => NF}
 import kr.ac.kaist.jsaf.scala_src.nodes._
 import kr.ac.kaist.jsaf.scala_src.useful.Lists._
+import kr.ac.kaist.jsaf.{Shell, ShellParameters}
 
 object NodeUtil {
 
@@ -109,8 +110,6 @@ object NodeUtil {
         case SBlock(info, sts, b) =>
           repeat = true;
           List(SBlock(info, simplify(sts), b))++simplify(rest)
-        case xs:List[_] =>
-          simplify(xs.asInstanceOf[List[Stmt]])++simplify(rest)
         case _ => List(stmt)++simplify(rest)
       }
     }
@@ -262,7 +261,10 @@ object NodeUtil {
   }
 
   def isEval(n: Expr) = n match {
-    case SVarRef(info, SId(_, text, _, _)) => text.equals("eval")
+    case SVarRef(info, SId(_, text, _, _)) => 
+      if(Shell.params.command == ShellParameters.CMD_WEBAPP_BUG_DETECTOR) 
+        false 
+      else text.equals("eval")
     case _ => false
   }
 

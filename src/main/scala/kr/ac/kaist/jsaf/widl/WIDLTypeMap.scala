@@ -205,13 +205,13 @@ object WIDLTypeMap extends Walker {
       try {
         Some(typedbs(("WindowWebAPIs", "webapis")))
       } catch {
-        case e => None
+        case e: Throwable => None
       }
     case SVarRef(_, SId(_, x, _, _)) if x.equals("tizen") =>
       try {
         Some(typedbs(("TizenObject", "tizen")))
       } catch {
-        case e => None
+        case e: Throwable => None
       }
     case _ => None
   }
