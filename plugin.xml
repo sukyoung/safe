@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+    <extension
+         point="org.eclipse.ui.commands">
+         <category
+            name="Clone Category"
+            id="kr.ac.kaist.jsaf.clone_refactor.commands.category"></category>         
+         <command
+            name="Clone Analysis"
+            categoryId="kr.ac.kaist.jsaf.clone_refactor.commands.category"
+            id="kr.ac.kaist.jsaf.clone_refactor.commands.analysisCommand"></command>
+         <command
+            name="Pull Up Method"
+            categoryId="kr.ac.kaist.jsaf.clone_refactor.commands.category"
+            id="kr.ac.kaist.jsaf.clone_refactor.commands.pullupCommand"></command>     
+    </extension>
+    <extension
+         point="org.eclipse.ui.handlers">
+        <handler
+            commandId="kr.ac.kaist.jsaf.clone_refactor.commands.analysisCommand"
+            class="kr.ac.kaist.jsaf.clone_refactor.eclipse.AnalysisHandler"></handler>
+        <handler
+            commandId="kr.ac.kaist.jsaf.clone_refactor.commands.pullupCommand"
+            class="kr.ac.kaist.jsaf.clone_refactor.eclipse.PullUpMethodHandler"></handler>    
+    </extension>
+    <extension
+         point="org.eclipse.ui.bindings">
+        <key
+              commandId="kr.ac.kaist.jsaf.clone_refactor.commands.analysisCommand"
+              contextId="org.eclipse.ui.contexts.window"
+              schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+              sequence="M1+6"></key>
+    </extension>
+    <extension
+         point="org.eclipse.ui.menus">
+        <menuContribution
+            locationURI="menu:org.eclipse.ui.main.menu?after=additions">
+            <menu
+                  id="kr.ac.kaist.jsaf.clone_refactor.menus.refactorMenu"
+                  label="Clone Refactor"
+                  mnemonic="R">
+                <command
+                      commandId="kr.ac.kaist.jsaf.clone_refactor.commands.analysisCommand"
+                      id="kr.ac.kaist.jsaf.clone_refactor.menus.analysisCommand"
+                      mnemonic="A"></command>
+            </menu>
+        </menuContribution>
+        <menuContribution
+            locationURI="toolbar:org.eclipse.ui.main.toolbar?after=additions">
+            <toolbar
+               id="kr.ac.kaist.jsaf.clone_refactor.toolbars.sampleToolbar">
+                <command
+                  commandId="kr.ac.kaist.jsaf.clone_refactor.commands.analysisCommand"
+                  icon="icons/clone.gif"
+                  tooltip="Analyze code clones in the current application"
+                  id="kr.ac.kaist.jsaf.clone_refactor.toolbars.analysisCommand"></command>
+            </toolbar>
+        </menuContribution>
+    </extension>
+    <extension point="org.eclipse.core.resources.markers" id="kr.ac.kaist.jsaf.clonemarker"
+	  name="Clone Marker">
+        <super type="org.eclipse.core.resources.textmarker"/>
+        <super type="org.eclipse.core.resources.marker"/>
+        <super type="org.eclipse.core.resources.problemmarker"/>
+        <persistent value="false"/>
+        <attribute name="description"/>
+    </extension>
+    <extension point="org.eclipse.ui.editors.markerUpdaters">
+        <updater
+          id="kr.ac.kaist.jsaf.clone_refactor.marker.MarkerUpdater"
+          class="kr.ac.kaist.jsaf.clone_refactor.marker.MarkerUpdater"
+          markerType="kr.ac.kaist.jsaf.clonemarker"></updater>
+    </extension>:
+    <extension point="org.eclipse.ui.decorators">
+        <decorator 
+        	id="kr.ac.kaist.jsaf.clone_refactor.marker.FileDecorator"   
+			label="MyMarker Decorator"   
+			state="true"   
+			class= "kr.ac.kaist.jsaf.clone_refactor.marker.FileDecorator"   
+			adaptable="true"   
+			lightweight="true">
+            <enablement>
+                <objectClass name="org.eclipse.core.resources.IResource"/>
+            </enablement>
+        </decorator>
+    </extension>
+    <extension point="org.eclipse.ui.views">
+        <view id="kr.ac.kaist.jsaf.clone_refactor.views.cloneview"
+			name="Clone View"
+			class="kr.ac.kaist.jsaf.clone_refactor.views.CloneView"
+			icon="icons/clone.gif"/>
+	</extension>
+	<extension point="org.eclipse.ui.perspectiveExtensions">
+		<perspectiveExtension
+			targetID="org.eclipse.jdt.ui.JavaPerspective">
+			<view
+         id="kr.ac.kaist.jsaf.clone_refactor.views.cloneview"
+         ratio="0.5"
+         relationship="bottom"
+         relative="org.eclipse.ui.views.ContentOutline"
+         showTitle="true"
+         visible="true">
+			</view>
+		</perspectiveExtension>	
+	</extension>
+</plugin>
