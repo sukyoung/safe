@@ -1,5 +1,5 @@
 /*******************************************************************************
-    Copyright (c) 2012-2013, KAIST, S-Core.
+    Copyright (c) 2012-2015, KAIST, S-Core.
     All rights reserved.
 
     Use is subject to license terms.
@@ -9,13 +9,15 @@
 
 package kr.ac.kaist.jsaf.clone_detector.util
 
+import kr.ac.kaist.jsaf.Shell
 import kr.ac.kaist.jsaf.nodes._
-import kr.ac.kaist.jsaf.nodes_util.SpanInfo
 import kr.ac.kaist.jsaf.nodes_util.{NodeUtil => NU}
+import kr.ac.kaist.jsaf.nodes_util.SpanInfo
 import kr.ac.kaist.jsaf.scala_src.nodes._
 
 object Util {
   var bDebugPrint: Boolean = false
+  val funClones = Shell.params.opt_Function
   def DebugPrint(string: String) = if(bDebugPrint) System.out.println(string)
 
   def name2id(node:Any):Int = node match {
@@ -404,7 +406,7 @@ object Util {
       false
     case _:Block =>
       DebugPrint("SBlock")
-      true
+      !funClones
     case _:Bool =>
       DebugPrint("SBool")
       false
@@ -416,7 +418,7 @@ object Util {
       false
     case _:Case =>
       DebugPrint("SCase")
-      true
+      !funClones
     case _:Catch =>
       DebugPrint("SCatch")
       false
@@ -431,7 +433,7 @@ object Util {
       false
     case _:DoWhile =>
       DebugPrint("SDoWhile")
-      true
+      !funClones
     case _:Dot =>
       DebugPrint("SDot")
       false
@@ -452,16 +454,16 @@ object Util {
       false
     case _:For =>
       DebugPrint("SFor")
-      true
+      !funClones
     case _:ForIn =>
       DebugPrint("SForIn")
-      true
+      !funClones
     case _:ForVar =>
       DebugPrint("SForVar")
-      true
+      !funClones
     case _:ForVarIn =>
       DebugPrint("SForVarIn")
-      true
+      !funClones
     case _:FunApp =>
       DebugPrint("SFunApp")
       false
@@ -479,7 +481,7 @@ object Util {
       false
     case _:If =>
       DebugPrint("SIf")
-      true
+      !funClones
     case _:InfixOpApp =>
       DebugPrint("SInfixOpApp")
       false
@@ -540,7 +542,7 @@ object Util {
       false
     case _:Switch =>
       DebugPrint("SSwitch")
-      true
+      !funClones
     case _:This =>
       DebugPrint("SThis")
       false
@@ -552,7 +554,7 @@ object Util {
       false
     case _:Try =>
       DebugPrint("STry")
-      true
+      !funClones
     case _:UnaryAssignOpApp =>
       DebugPrint("SUnaryAssignOpApp")
       false
@@ -567,7 +569,7 @@ object Util {
       false
     case _:While =>
       DebugPrint("SWhile")
-      true
+      !funClones
     case _:With =>
       DebugPrint("SWith")
       false

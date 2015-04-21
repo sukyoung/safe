@@ -123,6 +123,9 @@ public class ShellParameters
     public boolean                                 opt_MultiThread;
     public boolean                                 opt_noStop;
     public boolean                                 opt_skipExternal;
+    public boolean                                 opt_XML;
+    public boolean                                 opt_Function;
+
     public int                                     opt_Timeout;
     public int                                     opt_MaxStrSetSize;
     public int                                     opt_MaxLocCount;
@@ -212,6 +215,8 @@ public class ShellParameters
         opt_MultiThread = false;
         opt_noStop = false;
         opt_skipExternal = false;
+        opt_XML = false;
+        opt_Function = false;
         opt_Timeout = 0;
         opt_MaxStrSetSize = 1;
         opt_MaxLocCount = 0;
@@ -298,6 +303,8 @@ public class ShellParameters
         else if(cmd.compareTo("clone-detector") == 0)
         {
             command = CMD_CLONE_DETECTOR;
+            feasibleOptions.add("-xml");
+            feasibleOptions.add("-function");
         }
         else if(cmd.compareTo("coverage") == 0)
         {
@@ -694,6 +701,8 @@ public class ShellParameters
         else if(opt.compareTo("-worklist-order-lifo") == 0) opt_WorklistOrder = Worklist.WORKLIST_ORDER_LIFO();
         else if(opt.compareTo("-worklist-order-count") == 0) opt_WorklistOrder = Worklist.WORKLIST_ORDER_COUNT();
         else if(opt.compareTo("-console") == 0) opt_debugger = true;
+        else if(opt.compareTo("-xml") == 0) opt_XML = true;
+        else if(opt.compareTo("-function") == 0) opt_Function = true;
         else
         {
             ErrorMessage = "`" + opt + "` is no match for option parameter.";

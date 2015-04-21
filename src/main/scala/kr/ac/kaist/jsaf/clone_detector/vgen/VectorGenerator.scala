@@ -1,5 +1,5 @@
 /*******************************************************************************
-    Copyright (c) 2012-2014, KAIST, S-Core.
+    Copyright (c) 2012-2015, KAIST, S-Core.
     All rights reserved.
 
     Use is subject to license terms.
@@ -12,24 +12,21 @@ package kr.ac.kaist.jsaf.clone_detector.vgen
 import java.io.BufferedWriter
 import java.io.File
 import java.io.FileWriter
-import java.io.IOException
-import java.util.Collection
-import java.util.Iterator
-import java.util.List
 import java.util.Vector
-import kr.ac.kaist.jsaf.compiler.Parser
-import kr.ac.kaist.jsaf.exceptions.UserError
-import kr.ac.kaist.jsaf.nodes._
-import kr.ac.kaist.jsaf.nodes_util.Span
 import java.util.regex.Pattern
+
+import kr.ac.kaist.jsaf.compiler.Parser
+import kr.ac.kaist.jsaf.nodes.ASTNode
 import kr.ac.kaist.jsaf.nodes_util.JSFromHTML
+import kr.ac.kaist.jsaf.nodes_util.Span
 
 class VectorGenerator(file: String, minT: Int, sliding_stride: Int, vec_dir: String, isJS: Boolean) {
   def this(file: String, minT: Int, sliding_stride: Int, vec_dir: String) = this(file, minT, sliding_stride, vec_dir, true)
   
-  var minTokens = minT
-  var stride = sliding_stride
-  var vector_dir = vec_dir
+  val SEP = File.separator
+  val minTokens = minT
+  val stride = sliding_stride
+  val vector_dir = vec_dir
   
   // Generate vectors from a file
   val pgm = if (file.endsWith(".js")) Parser.parseFileConvertExn(new File(file), true) else new JSFromHTML(file).parseScripts
@@ -98,17 +95,19 @@ class VectorGenerator(file: String, minT: Int, sliding_stride: Int, vec_dir: Str
 
   // Remove smaller vectors of the same location
   var mv_itr = mergedVectors.iterator
-  var cur = mv_itr.next
-  while (mv_itr.hasNext) {
-    val node = mv_itr.next
-    if (cur.getFileName.equals(node.getFileName) && 
-        cur.getBegin.getLine == node.getBegin.getLine && 
-        cur.getEnd.getLine == node.getEnd.getLine) mv_itr.remove
-    else cur = node
+  if (mv_itr.hasNext()) {
+    var cur = mv_itr.next
+    while (mv_itr.hasNext) {
+      val node = mv_itr.next
+      if (cur.getFileName.equals(node.getFileName) && 
+          cur.getBegin.getLine == node.getBegin.getLine && 
+          cur.getEnd.getLine == node.getEnd.getLine) mv_itr.remove
+      else cur = node
+    }
   }
   
   // Write vectors to a file
-  val filename = vector_dir + "/vdb_" + minTokens + "_" + stride
+  val filename = vector_dir + SEP + "vdb_" + minTokens + "_" + stride
   val fstream = new FileWriter(filename, true)
   val out = new BufferedWriter(fstream)
   val js_pattern = Pattern.compile(".[p|s|x]{0,1}htm[l]{0,1}(.[0-9]+_[0-9]+.js)")

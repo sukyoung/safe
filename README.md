@@ -55,7 +55,7 @@ In your shell startup script, add $JS_HOME/bin to your path.  The shell scripts 
 
 ### Installation
 
-After launching sbt, type **antRun compile** and then **compile**.
+After launching sbt, type **antRun clean compile** and then **compile**.
 
 Once you have built the framework, you can call it from any directory, on any JavaScript file, simply by typing one of available commands at a command line.  You can see the available commands by typing:
 
@@ -65,4 +65,33 @@ Once you have built the framework, you can call it from any directory, on any Ja
 ### Run Tests
 
 Still inside sbt, type **antRun test**.
+
+### CRES: Clone Refactor for ECMAScript
+
+====
+
+CRES is an open-source clone refactoring plugin for Eclipse.
+
+### Installation
+
+1. Install the following using Eclipse's update manager:
+ * Eclipse 4 Core Tools. [Update Site] [e4]
+ * JavaScript Development Tools. [Update Site] [JSDT]
+2. Copy the file **kr.ac.kaist.jsaf.clone\_refactor\_[osx|linux].jar**
+in the [dist] [disturl] directory to the **plugins** directory of Eclipse
+3. Restart Eclipse
+
+[e4]:
+http://download.eclipse.org/e4/downloads/drops/S-0.17-201501051100/repository/
+[JSDT]: http://download.eclipse.org/webtools/repository/luna/
+[disturl]: https://github.com/sukyoung/safe/tree/master/dist
+
+### Usage
+
+1. Launch the plugin from the menu or toolbar of Eclipse.
+2. From the **Configuration Dialog**, select a project from the workspace to be analyzed and configure the minimum size of clones.
+3. From the **Clone View**,
+ * Double click any fragments to view the duplicated portion in the text editor.
+ * Select two duplicated fragments from the same group and compare their differences using **Compare** from the toolbar.
+ * Select at least two duplicated fragments from the same group and view the refactoring suggestions using **Pull Up Method** from the toolbar.
 
