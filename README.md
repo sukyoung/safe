@@ -46,7 +46,7 @@ and our project has been supported by:
 
 We assume you are using an operating system with a Unix-style shell (for example, Mac OS X, Linux, or Cygwin on Windows).  Assuming **JS_HOME** points to the SAFE directory, you will need to have access to the following:
 
-  * J2SDK 1.7 or later.  See http://java.sun.com/javase/downloads/index.jsp
+  * J2SDK 1.7.  See http://java.sun.com/javase/downloads/index.jsp
   * sbt version 0.13 or later.  See http://www.scala-sbt.org
   * Bash version 2.5 or later, installed at /bin/bash.  See http://www.gnu.org/software/bash/
   * xtc, copied as $JS_HOME/bin/xtc.jar.  See http://cs.nyu.edu/rgrimm/xtc/
