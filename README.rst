@@ -26,12 +26,12 @@ and our papers on SAFE are available:
 .. _Battles with False Positives in Static Analysis of JavaScript Web Applications in the Wild: http://plrg.kaist.ac.kr/lib/exe/fetch.php?media=research:publications:icse-seip16.pdf
 .. _Static Analysis of JavaScript Web Applications in the Wild via Practical DOM Modeling: http://plrg.kaist.ac.kr/lib/exe/fetch.php?media=research:publications:ase15dom.pdf
 .. _Practically Tunable Static Analysis Framework for Large-Scale JavaScript Applications: http://plrg.kaist.ac.kr/lib/exe/fetch.php?media=research:publications:ase15sparse.pdf
-.. _Development Nature Matters: An Empirical Study of Code Clones in JavaScript Applications: http://plrg.kaist.ac.kr/lib/exe/fetch.php?media=research:publications:emse15.pdf
+.. _Development Nature Matters; An Empirical Study of Code Clones in JavaScript Applications: http://plrg.kaist.ac.kr/lib/exe/fetch.php?media=research:publications:emse15.pdf
 .. _Scalable and Precise Static Analysis of JavaScript Applications via Loop-Sensitivity: http://plrg.kaist.ac.kr/lib/exe/fetch.php?media=research:publications:ecoop15.pdf
-.. _SAFE_WAPI: Web API Misuse Detector for Web Applications: http://plrg.kaist.ac.kr/lib/exe/fetch.php?media=research:publications:fse14final.pdf
-.. _All about the ''with'' Statement in JavaScript: Removing ''with'' Statements in JavaScript Applications: http://plrg.kaist.ac.kr/lib/exe/fetch.php?media=research:publications:dls13.pdf
+.. _SAFE_WAPI; Web API Misuse Detector for Web Applications: http://plrg.kaist.ac.kr/lib/exe/fetch.php?media=research:publications:fse14final.pdf
+.. _All about the ''with'' Statement in JavaScript; Removing ''with'' Statements in JavaScript Applications: http://plrg.kaist.ac.kr/lib/exe/fetch.php?media=research:publications:dls13.pdf
 .. _Formal Specification of a JavaScript Module System: http://plrg.kaist.ac.kr/lib/exe/fetch.php?media=research:publications:oopsla12.pdf
-.. _SAFE: Formal Specification and Implementation of a Scalable Analysis Framework for ECMAScript: http://plrg.kaist.ac.kr/lib/exe/fetch.php?media=research:publications:fool2012.pdf
+.. _SAFE; Formal Specification and Implementation of a Scalable Analysis Framework for ECMAScript: http://plrg.kaist.ac.kr/lib/exe/fetch.php?media=research:publications:fool2012.pdf
 
 Projects and colleagues using SAFE include:
 
