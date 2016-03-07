@@ -16,12 +16,12 @@ and our papers on SAFE are available:
 * `Battles with False Positives in Static Analysis of JavaScript Web Applications in the Wild`_ (ICSE SEIP 2016)
 * `Static Analysis of JavaScript Web Applications in the Wild via Practical DOM Modeling`_ (ASE 2015)
 * `Practically Tunable Static Analysis Framework for Large-Scale JavaScript Applications`_ (ASE 2015)
-* `Development Nature Matters: An Empirical Study of Code Clones in JavaScript Applications`_ (EMSE 2015)
+* `Development Nature Matters; An Empirical Study of Code Clones in JavaScript Applications`_ (EMSE 2015)
 * `Scalable and Precise Static Analysis of JavaScript Applications via Loop-Sensitivity`_ (ECOOP 2015)
-* `SAFE_WAPI: Web API Misuse Detector for Web Applications`_ (FSE 2014)
-* `All about the ''with'' Statement in JavaScript: Removing ''with'' Statements in JavaScript Applications`_ (DLS 2013)
+* `SAFE_WAPI; Web API Misuse Detector for Web Applications`_ (FSE 2014)
+* `All about the ''with'' Statement in JavaScript; Removing ''with'' Statements in JavaScript Applications`_ (DLS 2013)
 * `Formal Specification of a JavaScript Module System`_ (OOPSLA 2012)
-* `SAFE: Formal Specification and Implementation of a Scalable Analysis Framework for ECMAScript`_ (FOOL 2012)
+* `SAFE; Formal Specification and Implementation of a Scalable Analysis Framework for ECMAScript`_ (FOOL 2012)
 
 .. _Battles with False Positives in Static Analysis of JavaScript Web Applications in the Wild: http://plrg.kaist.ac.kr/lib/exe/fetch.php?media=research:publications:icse-seip16.pdf
 .. _Static Analysis of JavaScript Web Applications in the Wild via Practical DOM Modeling: http://plrg.kaist.ac.kr/lib/exe/fetch.php?media=research:publications:ase15dom.pdf
