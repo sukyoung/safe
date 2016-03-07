@@ -1,0 +1,146 @@
+/**
+ * *****************************************************************************
+ * Copyright (c) 2016, KAIST.
+ * All rights reserved.
+ *
+ * Use is subject to license terms.
+ *
+ * This distribution may include materials developed by third parties.
+ * ****************************************************************************
+ */
+
+/*
+ * Definition of JavaScript spacing including comments.
+ *
+ * Whitespace Convention in grammar productions:
+ * Every production which can be empty "owns" its leading whitespace.
+ */
+module kr.ac.kaist.safe.parser.Spacing(Symbol, Identifier);
+
+import Symbol;
+import Identifier;
+
+transient void EndOfFile  = "\u001a"? w !_ ;
+
+// End of statement
+transient void EOS =
+     w semicolon
+   / s LineTerminatorSequence
+   / &(s "}") s
+   / w EndOfFile
+   ;
+
+// End of statement in a "no linebreak here" context
+transient void EOSnoLB =
+     s semicolon
+   / s LineTerminatorSequence
+   / &(s "}") s
+   / s EndOfFile
+   ;
+
+transient void Comment =
+     MultiLineComment
+   / SingleLineComment ;
+
+transient void MultiLineComment =
+     "/*" a1s:MultiLineCommentChar* "*/"
+     { StringBuilder buf = new StringBuilder();
+       buf.append("/*");
+       for (String s : a1s.list()) buf.append(s);
+       buf.append("*/");
+       NodeFactory.commentLog(createSpan(yyStart,yyCount+1), buf.toString());
+     };
+
+transient private String MultiLineCommentChar =
+     !("*/") a1:_ { yyValue = a1+""; } ;
+
+transient String MultiLineCommentWLB =
+     "/*" a1s:MultiLineCommentCharNoLB* a2:LineTerminator a3s:MultiLineCommentCharWLB* "*/"
+     { StringBuilder buf = new StringBuilder();
+       buf.append("/*");
+       for (String s : a1s.list()) buf.append(s);
+       buf.append(a2);
+       for (String s : a3s.list()) buf.append(s);
+       buf.append("*/");
+       yyValue = buf.toString();
+       NodeFactory.commentLog(createSpan(yyStart,yyCount+1), yyValue);
+     };
+
+transient private String MultiLineCommentCharWLB =
+     !("*/") _ ;
+
+transient String MultiLineCommentNoLB =
+     "/*" a1s:MultiLineCommentCharNoLB* "*/"
+     { StringBuilder buf = new StringBuilder();
+       buf.append("/*");
+       for (String s : a1s.list()) buf.append(s);
+       buf.append("*/");
+       yyValue = buf.toString();
+       NodeFactory.commentLog(createSpan(yyStart,yyCount+1), yyValue);
+     };
+
+transient private String MultiLineCommentCharNoLB =
+     !("*/" / LineTerminator) a1:_ { yyValue = a1+""; } ;
+
+transient void SingleLineComment =
+     a1:("//" / "<!--") a2s:SingleLineCommentChar*
+     { StringBuilder buf = new StringBuilder();
+       buf.append(a1);
+       for (String s : a2s.list()) buf.append(s);
+       NodeFactory.commentLog(createSpan(yyStart,yyCount), buf.toString());
+     };
+
+transient private String SingleLineCommentChar =
+     !(LineTerminatorChar) a1:_ { yyValue = a1+""; } ;
+
+/* If a MultiLineComment contains one or more line terminators,
+ * then it is replaced by a single line terminator */
+/* LineTerminator ::= <LF> | <CR> | <LS> | <PS> */
+transient String LineTerminator =
+     LineTerminatorChar
+   ;
+
+transient String LineTerminatorChar =
+     a1:([\u000a] / [\u000d] / [\u2028] / [\u2029])
+     { yyValue = ""+a1; };
+
+transient String LineTerminatorNoMC =
+     a1:([\u000a] / [\u000d] / [\u2028] / [\u2029])
+     { yyValue = ""+a1; };
+
+/* LineTerminatorSequence ::=
+     <LF> | <CR>[lookahead \not\in <LF>] | <LS> | <PS> | <CR><LF>
+ */
+transient String LineTerminatorSequence =
+     a1:([\u000a] / [\u2028] / [\u2029])
+     { yyValue = ""+a1; }
+   / a1:[\u000d] a2:[\u000a]
+     { yyValue = ""+a1+a2; }
+   / a1:[\u000d] !([\u000a])
+     { yyValue = ""+a1; }
+   / MultiLineCommentWLB
+   ;
+
+/* WhiteSpace ::= <TAB> | <VT> | <FF> | <SP> | <NBSP> | <BOM> | <USP> */
+transient private void Space =
+     void:"\t"
+   / [\u000B]
+   / [\u3000] // relaxed the syntax to accept IDEOGRAPHIC SPACE
+   / void:"\f"
+   / void:" "
+   / [\u00A0]
+   / [\uFEFF]
+   / "-->" !(idstart / [0-9])
+   / SingleLineComment
+   / MultiLineCommentNoLB ;
+
+transient private void Whitespace =
+     Space
+   / void:LineTerminatorSequence
+   / MultiLineComment ;
+
+transient void w  = Whitespace*; // whitespace optional
+transient void wr = Whitespace+; // whitespace required
+
+transient void s  = Space*;      // space optional
+transient void sr = Space+;      // space required

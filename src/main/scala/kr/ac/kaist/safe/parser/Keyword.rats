@@ -1,0 +1,105 @@
+/**
+ * *****************************************************************************
+ * Copyright (c) 2016, KAIST.
+ * All rights reserved.
+ *
+ * Use is subject to license terms.
+ *
+ * This distribution may include materials developed by third parties.
+ * ****************************************************************************
+ */
+
+/*
+ * Definition of JavaScript keywords.
+ */
+module kr.ac.kaist.safe.parser.Keyword(Identifier);
+
+import Identifier;
+
+body {
+  static {
+    add(JAVASCRIPT_RESERVED, new String[] {
+        "break",        "case",         "catch",        "continue",
+        "debugger",     "default",      "delete",       "do",
+        "else",         "finally",      "for",          "function",
+        "if",           "in",           "instanceof",   "new",
+        "return",       "switch",       "this",         "throw",
+        "try",          "typeof",       "var",          "void",
+        "while",        "with",
+
+        /*
+        "class",        "const",        "enum",         "export",
+        "extends",      "import",       "super",
+
+        "null",         "true",         "false"
+
+        "module",       "from",         "as"
+        */
+    });
+  }
+}
+
+option setOfString(JAVASCRIPT_RESERVED);
+
+Op delete = "delete" !(idrest)
+     { yyValue = NodeFactory.makeOp(createSpan(yyStart, yyCount), "delete"); };
+Op typeof = "typeof" !(idrest)
+     { yyValue = NodeFactory.makeOp(createSpan(yyStart, yyCount), "typeof"); };
+Op void = "void" !(idrest)
+     { yyValue = NodeFactory.makeOp(createSpan(yyStart, yyCount), "void"); };
+
+transient void break = "break" !(idrest);
+transient void case = "case" !(idrest);
+transient void catch = "catch" !(idrest);
+transient void continue = "continue" !(idrest);
+transient void debugger = "debugger" !(idrest);
+transient void default = "default" !(idrest);
+transient void do = "do" !(idrest);
+transient void else = "else" !(idrest);
+transient void finally = "finally" !(idrest);
+transient void for = "for" !(idrest);
+transient void function = "function" !(idrest);
+transient void get = "get" !(idrest);
+transient void if = "if" !(idrest);
+transient void new = "new" !(idrest);
+transient void return = "return" !(idrest);
+transient void set = "set" !(idrest);
+transient void switch = "switch" !(idrest);
+transient void this = "this" !(idrest);
+transient void throw = "throw" !(idrest);
+transient void try = "try" !(idrest);
+transient void var = "var" !(idrest);
+transient void while = "while" !(idrest);
+transient void with = "with" !(idrest);
+
+transient void class = "class" !(idrest);
+transient void const = "const" !(idrest);
+transient void constructor = "constructor" !(idrest);
+transient void declare = "declare" !(idrest);
+transient void enum = "enum" !(idrest);
+transient void export = "export" !(idrest);
+transient void extends = "extends" !(idrest);
+transient void implements = "implements" !(idrest);
+transient void import = "import" !(idrest);
+transient void interface = "interface" !(idrest);
+transient void require = "require" !(idrest);
+transient String static = "static" !(idrest);
+transient void super = "super" !(idrest);
+
+transient void nullL = "null" !(idrest);
+transient void true = "true" !(idrest);
+transient void false = "false" !(idrest);
+
+transient String in = "in" !(idrest);
+transient String instanceof = "instanceof" !(idrest);
+
+transient void module = "module" !(idrest);
+transient void from = "from" !(idrest);
+transient void as = "as" !(idrest);
+
+transient void any = "any" !(idrest);
+transient void number = "number" !(idrest);
+transient void boolean = "boolean" !(idrest);
+transient void string = "string" !(idrest);
+transient void private = "private" !(idrest);
+transient void public = "public" !(idrest);

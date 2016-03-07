@@ -1,0 +1,215 @@
+/**
+ * *****************************************************************************
+ * Copyright (c) 2016, KAIST.
+ * All rights reserved.
+ *
+ * Use is subject to license terms.
+ *
+ * This distribution may include materials developed by third parties.
+ * ****************************************************************************
+ */
+
+/*
+ * A.3 Expressions
+ * Definition of JavaScript expressions
+ */
+module kr.ac.kaist.safe.parser.ExpressionNoIn(Declaration, Expression, Literal,
+                                              Symbol, Identifier, Keyword, Spacing);
+
+import Declaration;
+import Expression;
+import Literal;
+import Symbol;
+import Identifier;
+import Keyword;
+import Spacing;
+
+/*
+ * ExpressionNoIn ::= AssignmentNoIn (w , w AssignmentNoIn)*
+ */
+public Expr ExpressionNoIn =
+     a1:AssignmentNoIn a2s:(w void:comma w AssignmentNoIn)*
+     { if (a2s.list().isEmpty()) yyValue = a1;
+       else yyValue = NodeFactory.makeExprList(createSpan(yyStart,yyCount),
+                                               JUseful.cons(a1, a2s.list()));
+     };
+
+/*
+ * AssignmentNoIn ::=
+ *   ConditionalNoIn
+ * | LeftHandSide w = w AssignmentNoIn
+ * | LeftHandSide w AssignmentOp w AssignmentNoIn
+ */
+Expr AssignmentNoIn =
+     a1:LeftHandSide w a2:equals w a3:AssignmentNoIn
+     { Span span = createSpan(yyStart,yyCount);
+       yyValue = NodeFactory.makeAssignOpApp(span, a1, a2, a3);
+     }
+   / a1:LeftHandSide w a2:AssignmentOp w a3:AssignmentNoIn
+     { Span span = createSpan(yyStart,yyCount);
+       yyValue = NodeFactory.makeAssignOpApp(span, a1, a2, a3);
+     }
+   / ConditionalNoIn;
+
+/*
+ * ConditionalNoIn ::=
+ *   LogicalORNoIn
+ * | LogicalORNoIn w ? w Assignment w : w AssignmentNoIn
+ */
+private transient Expr ConditionalNoIn =
+     a1:LogicalORNoIn w question w a2:Assignment w colon w a3:AssignmentNoIn
+     { Span span = createSpan(yyStart,yyCount);
+       yyValue = NodeFactory.makeCond(span, a1, a2, a3);
+     }
+   / LogicalORNoIn ;
+
+/*
+ * LogicalORNoIn ::=
+ *   LogicalANDNoIn
+ * | LogicalORNoIn w || w LogicalANDNoIn
+ */
+private transient Expr LogicalORNoIn =
+     a1:LogicalANDNoIn a2s:LogicalANDNoInR*
+     { Span span = NodeUtil.span(a1);
+       yyValue = a1;
+       for (edu.rice.cs.plt.tuple.Pair<Op, Expr> pair: a2s.list()) {
+           Op op = pair.first();
+           Expr right = pair.second();
+           yyValue = NodeFactory.makeInfixOpApp(NodeUtil.makeSpan(span, NodeUtil.span(right)),
+                                                yyValue, op, right);
+       }
+     };
+
+private transient edu.rice.cs.plt.tuple.Pair<Op, Expr> LogicalANDNoInR =
+     w a1:bars w a2:LogicalANDNoIn
+     { yyValue = new edu.rice.cs.plt.tuple.Pair<Op, Expr>(a1, a2); };
+
+/*
+ * LogicalANDNoIn ::=
+ *   BitwiseORNoIn
+ * | LogicalANDNoIn w && w BitwiseORNoIn
+ */
+private transient Expr LogicalANDNoIn =
+     a1:BitwiseORNoIn a2s:BitwiseORNoInR*
+     { Span span = NodeUtil.span(a1);
+       yyValue = a1;
+       for (edu.rice.cs.plt.tuple.Pair<Op, Expr> pair: a2s.list()) {
+           Op op = pair.first();
+           Expr right = pair.second();
+           yyValue = NodeFactory.makeInfixOpApp(NodeUtil.makeSpan(span, NodeUtil.span(right)),
+                                                yyValue, op, right);
+       }
+     };
+
+private transient edu.rice.cs.plt.tuple.Pair<Op, Expr> BitwiseORNoInR =
+     w a1:ands w a2:BitwiseORNoIn
+     { yyValue = new edu.rice.cs.plt.tuple.Pair<Op, Expr>(a1, a2); };
+
+/*
+ * BitwiseORNoIn ::=
+ *   BitwiseXORNoIn
+ * | BitwiseORNoIn w | w BitwiseXORNoIn
+ */
+private transient Expr BitwiseORNoIn =
+     a1:BitwiseXORNoIn a2s:BitwiseXORNoInR*
+     { Span span = NodeUtil.span(a1);
+       yyValue = a1;
+       for (edu.rice.cs.plt.tuple.Pair<Op, Expr> pair: a2s.list()) {
+           Op op = pair.first();
+           Expr right = pair.second();
+           yyValue = NodeFactory.makeInfixOpApp(NodeUtil.makeSpan(span, NodeUtil.span(right)),
+                                                yyValue, op, right);
+       }
+     };
+
+private transient edu.rice.cs.plt.tuple.Pair<Op, Expr> BitwiseXORNoInR =
+     w a1:bar w a2:BitwiseXORNoIn
+     { yyValue = new edu.rice.cs.plt.tuple.Pair<Op, Expr>(a1, a2); };
+
+/*
+ * BitwiseXORNoIn ::=
+ *   BitwiseANDNoIn
+ * | BitwiseXORNoIn w ^ w BitwiseANDNoIn
+ */
+private transient Expr BitwiseXORNoIn =
+     a1:BitwiseANDNoIn a2s:BitwiseANDNoInR*
+     { Span span = NodeUtil.span(a1);
+       yyValue = a1;
+       for (edu.rice.cs.plt.tuple.Pair<Op, Expr> pair: a2s.list()) {
+           Op op = pair.first();
+           Expr right = pair.second();
+           yyValue = NodeFactory.makeInfixOpApp(NodeUtil.makeSpan(span, NodeUtil.span(right)),
+                                                yyValue, op, right);
+       }
+     };
+
+private transient edu.rice.cs.plt.tuple.Pair<Op, Expr> BitwiseANDNoInR =
+     w a1:caret w a2:BitwiseANDNoIn
+     { yyValue = new edu.rice.cs.plt.tuple.Pair<Op, Expr>(a1, a2); };
+
+/*
+ * BitwiseANDNoIn ::=
+ *   EqualityNoIn
+ * | BitwiseANDNoIn w & w EqualityNoIn
+ */
+private transient Expr BitwiseANDNoIn =
+     a1:EqualityNoIn a2s:EqualityNoInR*
+     { Span span = NodeUtil.span(a1);
+       yyValue = a1;
+       for (edu.rice.cs.plt.tuple.Pair<Op, Expr> pair: a2s.list()) {
+           Op op = pair.first();
+           Expr right = pair.second();
+           yyValue = NodeFactory.makeInfixOpApp(NodeUtil.makeSpan(span, NodeUtil.span(right)),
+                                                yyValue, op, right);
+       }
+     };
+
+private transient edu.rice.cs.plt.tuple.Pair<Op, Expr> EqualityNoInR =
+     w a1:and w a2:EqualityNoIn
+     { yyValue = new edu.rice.cs.plt.tuple.Pair<Op, Expr>(a1, a2); };
+
+/*
+ * EqualityNoIn ::=
+ *   RelationalNoIn
+ * | EqualityNoIn w == w RelationalNoIn
+ * | EqualityNoIn w != w RelationalNoIn
+ * | EqualityNoIn w === w RelationalNoIn
+ * | EqualityNoIn w !== w RelationalNoIn
+ */
+private transient Expr EqualityNoIn =
+     a1s:RelationalLNoIn+ a2:RelationalNoIn
+     { Span span = createSpan(yyStart,yyCount);
+       yyValue = a2;
+       List<edu.rice.cs.plt.tuple.Pair<Expr, Op>> ps = a1s.list();
+       Collections.reverse(ps);
+       for (edu.rice.cs.plt.tuple.Pair<Expr, Op> pair: ps)
+           yyValue = NodeFactory.makeInfixOpApp(span, pair.first(), pair.second(), yyValue);
+     }
+   / RelationalNoIn ;
+
+private transient edu.rice.cs.plt.tuple.Pair<Expr, Op> RelationalLNoIn =
+     a1:RelationalNoIn w a2:EqualityOp w
+     { yyValue = new edu.rice.cs.plt.tuple.Pair<Expr, Op>(a1, a2); };
+
+/*
+ * RelationalNoIn ::=
+ *   Shift
+ * | RelationalNoIn w < w Shift
+ * | RelationalNoIn w > w Shift
+ * | RelationalNoIn w <= w Shift
+ * | RelationalNoIn w >= w Shift
+ * | RelationalNoIn w instanceof w Shift
+ */
+private transient Expr RelationalNoIn =
+     a1s:ShiftLNoIn* a2:Shift
+     { Span span = createSpan(yyStart,yyCount);
+       yyValue = a2;
+       List<edu.rice.cs.plt.tuple.Pair<Expr, Op>> ps = a1s.list();
+       Collections.reverse(ps);
+       for (edu.rice.cs.plt.tuple.Pair<Expr, Op> pair: ps)
+           yyValue = NodeFactory.makeInfixOpApp(span, pair.first(), pair.second(), yyValue);
+     };
+
+private transient edu.rice.cs.plt.tuple.Pair<Expr, Op> ShiftLNoIn =
+     a1:Shift w a2:RelationalOpNoIn w
+     { yyValue = new edu.rice.cs.plt.tuple.Pair<Expr, Op>(a1, a2); };

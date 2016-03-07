@@ -1,0 +1,132 @@
+/**
+ * *****************************************************************************
+ * Copyright (c) 2016, KAIST.
+ * All rights reserved.
+ *
+ * Use is subject to license terms.
+ *
+ * This distribution may include materials developed by third parties.
+ * ****************************************************************************
+ */
+
+/*
+ * A complete JavaScript grammar.
+ */
+module kr.ac.kaist.safe.parser.JS;
+modify kr.ac.kaist.safe.parser.Declaration(Statement, Symbol, Identifier,
+                                           Keyword, Spacing)
+            as Declaration;
+instantiate kr.ac.kaist.safe.parser.Statement(Declaration, Expression,
+                                              ExpressionNoIn, Symbol, Identifier,
+                                              Keyword, Spacing)
+            as Statement;
+instantiate kr.ac.kaist.safe.parser.Expression(Declaration, ExpressionNoIn,
+                                               Literal, Symbol, Identifier,
+                                               Keyword, Spacing)
+            as Expression;
+instantiate kr.ac.kaist.safe.parser.ExpressionNoIn(Declaration, Expression,
+                                                   Literal, Symbol,
+                                                   Identifier, Keyword, Spacing)
+            as ExpressionNoIn;
+instantiate kr.ac.kaist.safe.parser.Literal(Symbol, Identifier, Keyword, Spacing)
+            as Literal;
+instantiate kr.ac.kaist.safe.parser.Identifier(Symbol, Keyword, Unicode)
+            as Identifier;
+instantiate kr.ac.kaist.safe.parser.Symbol(Identifier, Keyword, Spacing)
+            as Symbol;
+instantiate kr.ac.kaist.safe.parser.Spacing(Symbol, Identifier)
+            as Spacing;
+instantiate kr.ac.kaist.safe.parser.Keyword(Identifier)
+            as Keyword;
+instantiate kr.ac.kaist.safe.parser.Unicode
+            as Unicode;
+
+header {
+import java.util.HashMap;
+import kr.ac.kaist.safe.Safe;
+import kr.ac.kaist.safe.nodes.*;
+import kr.ac.kaist.safe.safe_util.*;
+import kr.ac.kaist.safe.useful.Useful;
+import kr.ac.kaist.safe.useful.JUseful;
+import edu.rice.cs.plt.tuple.Option;
+import edu.rice.cs.plt.tuple.Triple;
+import edu.rice.cs.plt.iter.IterUtil;
+import edu.rice.cs.plt.collect.CollectUtil;
+import xtc.util.Action;
+import java.io.*;
+import java.util.Collections;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import static kr.ac.kaist.safe.exceptions.SAFEError.error;
+}
+
+body {
+    Span createSpan(int start, int end) {
+        int i = end;
+        while ( i >= 0 && yyData.length > i && yyData[i] == ' ' ) { i--; }
+        if ( i-1 >= start )
+            end = i-1;
+        else
+            end = start;
+        Column s = column(start);
+        Column e = column(end);
+        SourceLoc slStart = new SourceLoc(s.file, s.line, s.column, start);
+        SourceLoc slEnd   = new SourceLoc(e.file, e.line, e.column, end);
+        return new Span(slStart, slEnd);
+    }
+
+    private FileWriter fw;
+    private BufferedWriter writer;
+    private BufferedReader reader;
+    private String logFile = column(0).file + ".log";
+    private boolean keepComments = NodeUtil.getKeepComments();
+    public Result JSmain(final int yyStart) throws IOException {
+        NodeFactory.initComment();
+        Result result = this.pJS$File(yyStart);
+        if (result.hasValue()) return result;
+        else {
+            writer.close();
+            fw.close();
+            return result;
+        }
+    }
+
+    void initParser() {
+        fw = Useful.filenameToFileWriter(logFile);
+        writer = new BufferedWriter(fw);
+    }
+
+    private void log(String message) {
+        NodeUtil.log(writer, message);
+    }
+
+    private VarStmt makeArrayNumberLiteral(Span span1, Id name, Span span2) {
+        try {
+            List<Double> result = new ArrayList<Double>();
+            writer.close();
+            fw.close();
+            FileReader fr = new FileReader(logFile);
+            BufferedReader reader = new BufferedReader(fr);
+            String line = reader.readLine();
+            while (line != null) {
+                Double number = NodeFactory.makeNumberLiteral(writer, span2, line);
+                result.add(number);
+                line = reader.readLine();
+            }
+            reader.close();
+            fr.close();
+            Expr expr = NodeFactory.makeArrayNumberExpr(span2, result);
+            VarDecl vd = NodeFactory.makeVarDecl(span1, name, Option.<Expr>some(expr));
+            initParser();
+            return NodeFactory.makeVarStmt(span1, JUseful.list(vd));
+        } catch (IOException error) {
+            error("Closing a log file for the parser failed!");
+            return NodeFactory.makeVarStmt(span1, new ArrayList<VarDecl>());
+        }
+    }
+}
+
+option parser(kr.ac.kaist.safe.parser.JS);
