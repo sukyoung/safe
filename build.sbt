@@ -11,8 +11,10 @@ lazy val root = (project in file(".")).
     organization := "kr.ac.kaist.safe",
     scalaVersion := "2.11.7",
     buildParsers in Compile := {
+      val xtcFile = new File("./lib/xtc.jar")
+      if(!xtcFile.exists) IO.download(new URL("http://cs.nyu.edu/rgrimm/xtc/xtc.jar"), xtcFile);
       val options = ForkOptions(
-        bootJars = Seq(new File("./lib/xtc.jar"))
+        bootJars = Seq(xtcFile)
       )
       val srcDir = baseDirectory.value + "/src/main"
       val inDir = srcDir + "/scala/kr/ac/kaist/safe/parser/"
@@ -32,16 +34,12 @@ lazy val root = (project in file(".")).
       }
       cache(file(inDir).asFile.listFiles.toSet)
     },
-    deleteParserDir := {
-      val srcDir = baseDirectory.value + "/src/main"
-      val outDir = srcDir + "/java/kr/ac/kaist/safe/parser/"
-      IO.delete(file(outDir))
-    },
     compile <<= (compile in Compile) dependsOn (buildParsers in Compile),
-    clean <<= deleteParserDir
+    test <<= (test in Test) dependsOn compile
   )
 
 unmanagedJars in Compile ++= Seq(file("lib/plt.jar"), file("lib/xtc.jar"))
+cleanFiles ++= Seq(file("src/main/java/kr/ac/kaist/safe/parser/"))
 
 libraryDependencies ++= Seq(
   "org.scalatest" % "scalatest_2.11" % "2.2.0" % "test" withSources,
