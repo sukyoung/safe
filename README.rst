@@ -4,7 +4,7 @@ Scalable Analysis Framework for ECMAScript (SAFE) Version 2.0
 Introduction
 ============
 
-SAFE 2.0 is a scalable and pluggable analysis frameowkr for JavaScript web applications developed by the Programming Language Research Group at KAIST:
+SAFE 2.0 is a scalable and pluggable analysis Framework for JavaScript web applications developed by the Programming Language Research Group at KAIST:
 
     http://plrg.kaist.ac.kr
 
@@ -67,7 +67,6 @@ Assuming **SAFE_HOME** points to the SAFE directory, you will need to have acces
 * J2SDK 1.7.  See http://java.sun.com/javase/downloads/index.jsp
 * sbt version 0.13 or later.  See http://www.scala-sbt.org
 * Bash version 2.5 or later, installed at /bin/bash.  See http://www.gnu.org/software/bash/
-* xtc, copied as $SAFE_HOME/lib/xtc.jar.  See http://cs.nyu.edu/rgrimm/xtc/
 
 In your shell startup script, add $SAFE_HOME/bin to your path.  The shell scripts in this directory are Bash scripts.  To run them, you must have Bash accessible in /bin/bash.
 
