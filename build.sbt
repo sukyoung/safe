@@ -2,6 +2,7 @@ import scalariform.formatter.preferences._
 import java.io.File
 
 lazy val buildParsers = taskKey[Unit]("Builds parsers")
+lazy val deleteParserDir = taskKey[Unit]("Delete java parser directory")
 
 lazy val root = (project in file(".")).
   settings(
@@ -16,10 +17,12 @@ lazy val root = (project in file(".")).
       val srcDir = baseDirectory.value + "/src/main"
       val inDir = srcDir + "/scala/kr/ac/kaist/safe/parser/"
       val outDir = srcDir + "/java/kr/ac/kaist/safe/parser/"
+      val outFile = file(outDir)
+      if(!outFile.exists) IO.createDirectory(outFile)
       val arguments = Seq("-in", srcDir + "/scala", "-enc-out", "UTF-8",
                           "-out", outDir, inDir + "JS.rats")
       val mainClass = "xtc.parser.Rats"
-      val cache = FileFunction.cached(file(outDir),
+      val cache = FileFunction.cached(outFile,
                                       FilesInfo.lastModified,
                                       FilesInfo.exists) {
         in: Set[File] => {
@@ -29,7 +32,13 @@ lazy val root = (project in file(".")).
       }
       cache(file(inDir).asFile.listFiles.toSet)
     },
-    compile <<= (compile in Compile) dependsOn (buildParsers in Compile)
+    deleteParserDir := {
+      val srcDir = baseDirectory.value + "/src/main"
+      val outDir = srcDir + "/java/kr/ac/kaist/safe/parser/"
+      IO.delete(file(outDir))
+    },
+    compile <<= (compile in Compile) dependsOn (buildParsers in Compile),
+    clean <<= deleteParserDir
   )
 
 unmanagedJars in Compile ++= Seq(file("lib/plt.jar"), file("lib/xtc.jar"))
