@@ -20,7 +20,7 @@ import kr.ac.kaist.safe.scala_useful.Options._
 import edu.rice.cs.plt.iter.IterUtil
 import edu.rice.cs.plt.tuple.Option
 
-object JSAstToConcrete extends Walker {
+object JSAstToConcrete extends ASTWalker {
 
   val width = 50
   var internal = false

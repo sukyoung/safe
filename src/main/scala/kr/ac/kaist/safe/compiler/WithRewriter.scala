@@ -20,7 +20,7 @@ import kr.ac.kaist.safe.useful.ErrorLog
 /* Rewrites a JavaScript source code using the with statement
  * to another one without using the with statement.
  */
-class WithRewriter(program: Program, forTest: Boolean) extends Walker {
+class WithRewriter(program: Program, forTest: Boolean) extends ASTWalker {
   /* Error handling
    * The signal function collects errors during the AST->IR translation.
    * To collect multiple errors,

@@ -17,6 +17,8 @@ import kr.ac.kaist.safe.safe_util.UIDObject
 abstract class Node(val info: NodeInfo) extends UIDObject
 
 abstract class NodeInfo(val span: Span)
+
 case class ASTNodeInfo(override val span: Span, comment: Option[Comment] = None)
   extends NodeInfo(span)
-
+case class IRNodeInfo(override val span: Span, fromSource: Boolean = true)
+  extends NodeInfo(span)

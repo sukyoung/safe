@@ -205,9 +205,8 @@ public class Printer extends NodeReflection {
                 dump(x.comment().get().txt(), w);
                 w.append("))");
             }
-            /*
-        } else if (o instanceof IRASTNode) {
-            IRASTNode x = (IRASTNode) o;
+        } else if (o instanceof IRNode) {
+            IRNode x = (IRNode) o;
             Class cl = x.getClass();
             String clname = cl.getSimpleName();
             int oneLinerNestingInc = (o instanceof IRId) ? 1 : 0;
@@ -283,8 +282,8 @@ public class Printer extends NodeReflection {
             dumpFields(w, indent, x, oneLiner, fields, true);
             w.append(")");
             oneLinerNesting -= oneLinerNestingInc;
-        } else if (o instanceof IRSpanInfo) {
-            IRSpanInfo x = (IRSpanInfo) o;
+        } else if (o instanceof IRNodeInfo) {
+            IRNodeInfo x = (IRNodeInfo) o;
             Class cl = x.getClass();
             String clname = cl.getSimpleName();
             int oneLinerNestingInc = (o instanceof VarRef || o instanceof Op) ? 1 : 0;
@@ -295,10 +294,9 @@ public class Printer extends NodeReflection {
             Field[] fields = getCachedPrintableFields(cl, clname);
             w.append("(");
             w.append(clname);
-            dumpSpan(x.getSpan(), w);
+            dumpSpan(x.span(), w);
             w.append(")");
             oneLinerNesting -= oneLinerNestingInc;
-*/
         } else if (o instanceof ScopeBody) {
             ScopeBody x = (ScopeBody) o;
             Class cl = x.getClass();

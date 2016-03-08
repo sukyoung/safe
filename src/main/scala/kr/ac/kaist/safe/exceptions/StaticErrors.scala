@@ -30,7 +30,7 @@ object StaticErrors {
       err_string = "File " + file_name + " has " + num_errors + " error" + (if (num_errors == 1) "." else "s.");
       return_code = -2;
     } else
-      err_string = "File " + file_name + " compiled successfully."
+      err_string = ""
     System.out.println(err_string)
     return return_code
   }

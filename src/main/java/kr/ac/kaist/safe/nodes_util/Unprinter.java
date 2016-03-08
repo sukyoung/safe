@@ -269,7 +269,8 @@ public class Unprinter extends NodeReflection {
                 } else if (ASTNodeInfo.class.isAssignableFrom(f.getType())) {
                     f.set(node, readASTNodeInfo(NodeUtil.getSpan((ASTNode)node)));
                 } else if (ASTNode.class.isAssignableFrom(f.getType())
-                           || ScopeBody.class.isAssignableFrom(f.getType())) {
+                           || ScopeBody.class.isAssignableFrom(f.getType())
+                           || IRNodeInfo.class.isAssignableFrom(f.getType())) {
                     expectPrefix("(");
                     f.set(node, readNode(l.name()));
                 }

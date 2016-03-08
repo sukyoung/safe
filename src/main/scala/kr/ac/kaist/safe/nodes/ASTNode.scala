@@ -394,7 +394,7 @@ case class TopLevel(override val info: ASTNodeInfo, fds: List[FunDecl], vds: Lis
 case class Functional(override val info: ASTNodeInfo, fds: List[FunDecl], vds: List[VarDecl], stmts: SourceElements, name: Id, params: List[Id], body: String)
   extends ScopeBody(info: ASTNodeInfo, fds: List[FunDecl], vds: List[VarDecl])
 
-trait Walker {
+trait ASTWalker {
   def walk(node: Any): Any = {
     node match {
       case ASTNodeInfo(span, comment) =>

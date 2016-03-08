@@ -18,7 +18,7 @@ import kr.ac.kaist.safe.safe_util.{ NodeUtil => NU }
 import kr.ac.kaist.safe.safe_util.{ BugInfo, Span }
 import kr.ac.kaist.safe.safe_util.BugDefinition._
 
-class Hoister(program: Program) extends Walker {
+class Hoister(program: Program) extends ASTWalker {
   /* Error handling
    * The signal function collects errors during the Hoister phase.
    * To collect multiple errors,
@@ -63,7 +63,7 @@ class Hoister(program: Program) extends Walker {
   }
   // Get the declared variable and function names and the names on lhs of assignments
   // in the current lexical scope
-  class hoistWalker(node: Any, isTopLevel: Boolean) extends Walker {
+  class hoistWalker(node: Any, isTopLevel: Boolean) extends ASTWalker {
     var varDecls = List[VarDecl]()
     var funDecls = List[FunDecl]()
     var varNames = List[(Span, String)]()
@@ -105,7 +105,7 @@ class Hoister(program: Program) extends Walker {
   }
 
   // Remove function declarations in the current lexical scope
-  object rmFunDeclWalker extends Walker {
+  object rmFunDeclWalker extends ASTWalker {
     override def walk(node: Any): Any = node match {
       case fd: FunDecl => EmptyStmt(fd.info)
       case fe: FunExpr => fe

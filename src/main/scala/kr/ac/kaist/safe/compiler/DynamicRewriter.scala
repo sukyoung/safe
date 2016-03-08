@@ -22,7 +22,7 @@ import kr.ac.kaist.safe.useful.ErrorLog
  * using dynamic code generation with string constants
  * to another one without using it.
  */
-object DynamicRewriter extends Walker {
+object DynamicRewriter extends ASTWalker {
 
   /* Error handling
    * The signal function collects errors during the AST->IR translation.

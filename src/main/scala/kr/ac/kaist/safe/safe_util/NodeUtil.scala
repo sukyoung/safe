@@ -38,6 +38,7 @@ object NodeUtil {
   def freshGlobalName(n: String): String = globalPrefix + n
   val varTrue = freshGlobalName("true")
   val varOne = freshGlobalName("one")
+  def funexprName(span: Span): String = freshName("funexpr@" + span.toStringWithoutFiles)
   val significantBits = 13
   // unique name generation
   def freshName(n: String): String =
@@ -45,6 +46,11 @@ object NodeUtil {
   def isInternal(s: String): Boolean = s.containsSlice(internalSymbol)
   def isGlobalName(s: String): Boolean = s.startsWith(globalPrefix)
   def isFunExprName(name: String): Boolean = name.containsSlice("<>funexpr")
+  def isName(lhs: LHS): Boolean = lhs match {
+    case _: VarRef => true
+    case _: Dot => true
+    case _ => false
+  }
   def isEval(n: Expr): Boolean = n match {
     case VarRef(info, Id(_, text, _, _)) => text.equals("eval")
     case _ => false
@@ -110,6 +116,7 @@ object NodeUtil {
     */
 
   def getSpan(n: ASTNode): Span = n.info.span
+  def getSpan(n: IRNode): Span = n.info.span
   def getFileName(n: ASTNode): String = getSpan(n).fileName
   def getBegin(n: ASTNode): SourceLoc = getSpan(n).begin
   def getEnd(n: ASTNode): SourceLoc = getSpan(n).end
@@ -117,6 +124,11 @@ object NodeUtil {
   def getOffset(n: ASTNode): Int = getSpan(n).begin.offset
 
   def spanInfoAll(nodes: List[ASTNode]): ASTNodeInfo = new ASTNodeInfo(spanAll(nodes))
+
+  def spanAll(nodes: List[ASTNode], span: Span): Span = nodes match {
+    case Nil => span
+    case _ => spanAll(nodes)
+  }
 
   def spanAll(span1: Span, span2: Span): Span =
     new Span(span1.begin, span2.end)
@@ -146,6 +158,13 @@ object NodeUtil {
   // after hoisting
   def toStmts(sources: List[SourceElements]): List[Stmt] =
     sources.foldLeft(List[Stmt]())((l, s) => l ++ s.body.asInstanceOf[List[Stmt]])
+
+  def getName(lhs: LHS): String = lhs match {
+    case VarRef(_, id) => id.text
+    case Dot(_, front, id) => getName(front) + "." + id.text
+    case _: This => "this"
+    case _ => ""
+  }
 
   def prop2Id(prop: Property): Id = prop match {
     case PropId(info, id) => id
@@ -225,7 +244,7 @@ object NodeUtil {
   def lineTerminating(c: Char): Boolean =
     List('\u000a', '\u2028', '\u2029', '\u000d').contains(c)
 
-  object addLinesProgram extends Walker {
+  object addLinesProgram extends ASTWalker {
     var line = 0
     var offset = 0
     def addLines(node: Node, l: Int, o: Int): Node = {
@@ -310,7 +329,7 @@ object NodeUtil {
   }
 
   // Assumes that the filename remains the same.
-  object addLinesWalker extends Walker {
+  object addLinesWalker extends ASTWalker {
     var line = 0
     var offset = 0
     def addLines(node: Node, l: Int, o: Int): Node = {
@@ -335,7 +354,7 @@ object NodeUtil {
   }
 
   // AST: Remove empty blocks, empty statements, debugger statements, ...
-  object simplifyWalker extends Walker {
+  object simplifyWalker extends ASTWalker {
     var repeat = false
     def simplify(stmts: List[Stmt]): List[Stmt] = {
       repeat = false
@@ -395,6 +414,70 @@ object NodeUtil {
           ), name, params, bodyS)
       case _: Comment => node
       case _ => super.walk(node)
+    }
+  }
+
+  // IR: Remove empty blocks, empty statements, ...
+  // Do not remove IRSeq aggressively.
+  // They denote internal IRStmts whose values do not contribute to the result.
+  object simplifyIRWalker extends IRWalker {
+    override def walk(node: Any): Any = node match {
+      case IRRoot(info, fds, vds, irs) =>
+        IRRoot(info, super.walk(fds).asInstanceOf[List[IRFunDecl]], vds,
+          simplify(irs.map(walk).asInstanceOf[List[IRStmt]]))
+
+      case IRFunctional(i, f, n, params, args, fds, vds, body) =>
+        IRFunctional(i, f, n, params, args.map(walk).asInstanceOf[List[IRStmt]],
+          super.walk(fds).asInstanceOf[List[IRFunDecl]], vds,
+          simplify(body.map(walk).asInstanceOf[List[IRStmt]]))
+
+      case IRStmtUnit(info, stmts) =>
+        IRStmtUnit(info, simplify(stmts.map(walk).asInstanceOf[List[IRStmt]]))
+
+      case IRSeq(info, stmts) =>
+        IRSeq(info, simplify(stmts.map(walk).asInstanceOf[List[IRStmt]]))
+
+      case _ => super.walk(node)
+    }
+
+    // Simplify a list of IRStmts recursively until no change
+    var repeat = false
+    def simplify(stmts: List[IRStmt]): List[IRStmt] = {
+      repeat = false
+      val simplified = simpl(stmts)
+      val result = if (repeat) simplify(simplified) else simplified
+      result
+    }
+
+    def simpl(stmts: List[IRStmt]): List[IRStmt] = stmts match {
+      case Nil => Nil
+      case stmt :: rest => stmt match {
+        // Remove an empty internal IRStmt list
+        case IRSeq(_, Nil) =>
+          repeat = true; simpl(rest)
+
+        // Remove a self assignment IRStmt
+        case IRExprStmt(_, lhs, rhs: IRId, ref) if lhs.uniqueName.equals(rhs.uniqueName) =>
+          repeat = true; simpl(rest)
+
+        // Simplify the following case:
+        //     <>ignore<>1 = expr
+        //     <>temp = <>ignore<>1
+        // to the following:
+        //     <>temp = expr
+        /*
+        case first:IRAssign => rest match {
+          case (second@SIRExprStmt(_, _, _, right:IRId, _))::others =>
+            if (first.getLhs.getUniqueName.equals(right.getUniqueName) &&
+                right.getUniqueName.equals(ignoreName)) {
+              (walk(replaceLhs(first, second.getLhs)).asInstanceOf[IRStmt])::simpl(others)
+            } else walk(first).asInstanceOf[IRStmt]::simpl(rest)
+          case _ => walk(first).asInstanceOf[IRStmt]::simpl(rest)
+        }
+        */
+
+        case _ => walk(stmt).asInstanceOf[IRStmt] :: simpl(rest)
+      }
     }
   }
 }

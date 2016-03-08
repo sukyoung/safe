@@ -4,7 +4,7 @@ Scalable Analysis Framework for ECMAScript (SAFE) Version 2.0
 Introduction
 ============
 
-SAFE 2.0 is a scalable and pluggable analysis Framework for JavaScript web applications developed by the Programming Language Research Group at KAIST:
+SAFE 2.0 is a scalable and pluggable analysis framework for JavaScript web applications developed by the Programming Language Research Group at KAIST:
 
     http://plrg.kaist.ac.kr
 

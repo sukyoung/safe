@@ -25,7 +25,7 @@ import kr.ac.kaist.safe.Safe
  *  - All name references that are undefined or used incorrectly are
  *    treated as static errors.
  */
-class Disambiguator(program: Program) extends Walker {
+class Disambiguator(program: Program) extends ASTWalker {
   /* Error handling
    * The signal function collects errors during the disambiguation phase.
    * To collect multiple errors,

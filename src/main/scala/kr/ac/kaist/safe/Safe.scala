@@ -16,6 +16,7 @@ import kr.ac.kaist.safe.exceptions.UserError
 import kr.ac.kaist.safe.shell.ParseMain
 import kr.ac.kaist.safe.shell.UnparseMain
 import kr.ac.kaist.safe.shell.ASTRewriteMain
+import kr.ac.kaist.safe.shell.CompileMain
 
 object Safe {
   ////////////////////////////////////////////////////////////////////////////////
@@ -75,6 +76,8 @@ object Safe {
         return_code = UnparseMain.unparse
       } else if (config.command.equals("astRewrite")) {
         return_code = ASTRewriteMain.doit
+      } else if (config.command.equals("compile")) {
+        return_code = CompileMain.doit
       } else if (config.command.equals("help")) printHelpMessage
     } catch {
       case e: ParserError => System.err.println(e)
@@ -100,6 +103,7 @@ object Safe {
         " parse [-out=outfile] [-time] infile.js ...\n" +
         " unparse [-out=outfile] infile.tjs\n" +
         " astRewrite [-out=outfile] infile.js ...\n" +
+        " compile [-out=outfile] [-time] infile.js ...\n" +
         " help\n"
     )
 
@@ -124,6 +128,12 @@ object Safe {
         "  The files are concatenated in the given order before being parsed.\n" +
         "  If -out file is given, the disambiguated AST will be written to the file.\n" +
         "\n" +
+        "safe compile [-out=outfile] [-time] infile.js ...\n" +
+        "  Translates JavaScript source files to IR.\n" +
+        "  If the compilation succeeds the message \"Ok\" will be printed.\n" +
+        "  The files are concatenated in the given order before being parsed.\n" +
+        "  If -out file is given, the resulting IR will be written to the file.\n" +
+        "  If -time is given, the time it takes will be printed.\n" +
         "\n"
     )
   }
