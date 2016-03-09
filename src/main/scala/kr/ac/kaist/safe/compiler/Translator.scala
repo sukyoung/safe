@@ -361,10 +361,10 @@ class Translator(program: Program) extends ASTWalker {
    * AST2IR_S : Stmt -> Env -> IRStmt
    */
   def walkStmt(s: Stmt, env: Env): IRStmt = s match {
-    case Block(info, stmts, true) =>
+    case ABlock(info, stmts, true) =>
       IF.makeSeq(s, info.span, stmts.map(walkStmt(_, env)))
 
-    case Block(info, stmts, false) =>
+    case ABlock(info, stmts, false) =>
       makeStmtUnit(s, info.span, stmts.map(walkStmt(_, env)))
 
     case StmtUnit(info, stmts) =>

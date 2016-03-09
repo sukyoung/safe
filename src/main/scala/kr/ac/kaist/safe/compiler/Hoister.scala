@@ -337,7 +337,7 @@ class Hoister(program: Program) extends ASTWalker {
         case _ =>
       }
 
-    case Block(_, stmts, _) => newBlock(stmts)
+    case ABlock(_, stmts, _) => newBlock(stmts)
 
     case fd @ FunDecl(info, ftn, strict) =>
       val name = fd2Str(fd)
@@ -551,7 +551,7 @@ class Hoister(program: Program) extends ASTWalker {
     case VarStmt(info, vds) => stmtUnit(info, hoistVds(vds))
     case ForVar(info, vars, cond, action, body) =>
       val new_info = NU.spanInfoAll(vars)
-      Block(
+      ABlock(
         new_info,
         List(
           stmtUnit(new_info, hoistVds(vars)),
@@ -562,7 +562,7 @@ class Hoister(program: Program) extends ASTWalker {
     case ForVarIn(info, VarDecl(i, n, None, _), expr, body) =>
       walk(ForIn(info, VarRef(i, n), expr, body))
     case ForVarIn(info, VarDecl(i, n, Some(e), _), expr, body) =>
-      Block(
+      ABlock(
         info,
         List(
           stmtUnit(info, List(walk(assignS(i, n, e)).asInstanceOf[Stmt])),
@@ -572,7 +572,7 @@ class Hoister(program: Program) extends ASTWalker {
       )
     case LabelStmt(info, label, ForVar(i, vars, cond, action, body)) =>
       val new_info = NU.spanInfoAll(vars)
-      Block(
+      ABlock(
         new_info,
         List(
           stmtUnit(info, hoistVds(vars)),
@@ -582,7 +582,7 @@ class Hoister(program: Program) extends ASTWalker {
         false
       )
     case LabelStmt(info, label, ForVarIn(finfo, VarDecl(i, n, Some(e), _), expr, body)) =>
-      Block(info, List(
+      ABlock(info, List(
         stmtUnit(info, List(walk(assignS(i, n, e)).asInstanceOf[Stmt])),
         LabelStmt(info, label,
           walk(ForIn(info, VarRef(i, n), expr, body)).asInstanceOf[Stmt])

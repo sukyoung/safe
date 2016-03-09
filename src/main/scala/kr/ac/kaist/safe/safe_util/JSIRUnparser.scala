@@ -31,11 +31,6 @@ class JSIRUnparser(program: IRNode) extends IRWalker {
     for (i <- 0 to indent - 1) s.append(tab)
     s.toString
   }
-  def isOneline(node: Any): Boolean = node match {
-    case Block => false
-    case Some(in) => isOneline(in)
-    case _ => !(node.isInstanceOf[Block])
-  }
 
   /* utility methods ********************************************************/
 
@@ -198,17 +193,11 @@ class JSIRUnparser(program: IRNode) extends IRWalker {
     case id: IRId => id2str(id.uniqueName)
     case IRIf(_, expr, trueBranch, falseBranch) =>
       val s: StringBuilder = new StringBuilder
-      var oneline: Boolean = isOneline(trueBranch)
       s.append("if(").append(walk(expr)).append(")\n")
-      if (oneline) increaseIndent
       s.append(getIndent).append(walk(trueBranch))
-      if (oneline) decreaseIndent
       if (falseBranch.isDefined) {
-        oneline = isOneline(falseBranch)
         s.append("\n").append(getIndent).append("else\n")
-        if (oneline) increaseIndent
         s.append(getIndent).append(walk(falseBranch))
-        if (oneline) decreaseIndent
       }
       s.toString
     case IRLabelStmt(_, label, stmt) =>
@@ -277,18 +266,12 @@ class JSIRUnparser(program: IRNode) extends IRWalker {
       s.append("try\n").append(getIndent).append(walk(body))
       if (catchBlock.isDefined) {
         s.append("\n").append(getIndent)
-        var oneline: Boolean = isOneline(body)
         s.append("catch(").append(walk(name.get)).append(")\n")
-        if (oneline) increaseIndent
         s.append(getIndent).append(walk(catchBlock.get))
-        if (oneline) decreaseIndent
       }
       if (fin.isDefined) {
-        var oneline: Boolean = isOneline(fin)
         s.append("\n").append(getIndent).append("finally\n")
-        if (oneline) increaseIndent
         s.append(getIndent).append(walk(fin))
-        if (oneline) decreaseIndent
       }
       s.toString
     case IRUn(_, op, expr) =>
@@ -312,21 +295,15 @@ class JSIRUnparser(program: IRNode) extends IRWalker {
       s.toString
     case IRWhile(_, cond, body) =>
       val s: StringBuilder = new StringBuilder
-      var oneline: Boolean = isOneline(body)
       s.append("while(")
       s.append(walk(cond)).append(")\n")
-      if (oneline) increaseIndent
       s.append(getIndent).append(walk(body))
-      if (oneline) decreaseIndent
       s.toString
     case IRWith(_, expr, stmt) =>
       val s: StringBuilder = new StringBuilder
-      var oneline: Boolean = isOneline(stmt)
       s.append("with(")
       s.append(walk(expr)).append(")\n")
-      if (oneline) increaseIndent
       s.append(getIndent).append(walk(stmt))
-      if (oneline) decreaseIndent
       s.toString
     case Some(in) => walk(in)
     case xs: List[_] =>

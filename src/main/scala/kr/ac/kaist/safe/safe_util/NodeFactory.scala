@@ -106,8 +106,8 @@ object NodeFactory {
     )
   }
 
-  def makeBlock(span: Span, stmts: JList[Stmt]): Block =
-    new Block(makeASTNodeInfo(span), toList(stmts))
+  def makeABlock(span: Span, stmts: JList[Stmt]): ABlock =
+    new ABlock(makeASTNodeInfo(span), toList(stmts))
 
   def makeVarStmt(span: Span, vds: JList[VarDecl]): VarStmt =
     new VarStmt(makeASTNodeInfo(span), toList(vds))

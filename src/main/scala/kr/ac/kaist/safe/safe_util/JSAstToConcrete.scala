@@ -52,9 +52,9 @@ object JSAstToConcrete extends ASTWalker {
     s.toString
   }
   def isOneline(node: Any): Boolean = node match {
-    case Block => false
+    case ABlock => false
     case Some(in) => isOneline(in)
-    case _ => !(node.isInstanceOf[Block])
+    case _ => !(node.isInstanceOf[ABlock])
   }
 
   /* utility methods ********************************************************/
@@ -171,7 +171,7 @@ object JSAstToConcrete extends ASTWalker {
    *    Each <SourceElement> has indentation at the front
    *    and newline at the end to keep the principle.
    *
-   * Branch case(Stmt or ListofStmt): Block, FunDecl, VarStmt, ExprStmt...
+   * Branch case(Stmt or ListofStmt): ABlock, FunDecl, VarStmt, ExprStmt...
    *    Add indentation and newline to keep the principle in inner cases.
    *    When its type is [Stmt], add ";" at the end.
    *
@@ -203,7 +203,7 @@ object JSAstToConcrete extends ASTWalker {
       s.append(walk(op)).append(" ")
       s.append(walk(right))
       s.toString
-    case Block(info, stmts, _) =>
+    case ABlock(info, stmts, _) =>
       val s: StringBuilder = new StringBuilder
       s.append(walk(info))
       s.append("{\n")

@@ -370,31 +370,31 @@ object NodeUtil {
           repeat = true; simplify(rest)
         case _: EmptyStmt =>
           repeat = true; simplify(rest)
-        case Block(_, Nil, _) =>
+        case ABlock(_, Nil, _) =>
           repeat = true; simplify(rest)
-        case Block(_, Block(_, Nil, _) :: stmts, _) =>
+        case ABlock(_, ABlock(_, Nil, _) :: stmts, _) =>
           repeat = true;
           simplify(stmts) ++ simplify(rest)
-        case Block(_, Block(_, ss, _) :: stmts, _) =>
+        case ABlock(_, ABlock(_, ss, _) :: stmts, _) =>
           repeat = true;
           simplify(ss) ++ simplify(stmts) ++ simplify(rest)
-        case Block(_, s @ List(stmt), _) =>
+        case ABlock(_, s @ List(stmt), _) =>
           repeat = true;
           simplify(s) ++ simplify(rest)
-        case Block(info, sts, b) =>
+        case ABlock(info, sts, b) =>
           repeat = true;
-          List(Block(info, simplify(sts), b)) ++ simplify(rest)
+          List(ABlock(info, simplify(sts), b)) ++ simplify(rest)
         case _ => List(stmt) ++ simplify(rest)
       }
     }
 
     override def walk(node: Any): Any = node match {
-      case Block(info, List(stmt), b) =>
-        Block(info, List(walk(stmt).asInstanceOf[Stmt]), b)
-      case Block(info, Block(_, Nil, _) :: stmts, b) => walk(Block(info, stmts, b))
-      case Block(info, Block(_, ss, _) :: stmts, b) => walk(Block(info, ss ++ stmts, b))
-      case Block(info, stmts, b) =>
-        Block(info, simplify(stmts.map(walk).asInstanceOf[List[Stmt]]), b)
+      case ABlock(info, List(stmt), b) =>
+        ABlock(info, List(walk(stmt).asInstanceOf[Stmt]), b)
+      case ABlock(info, ABlock(_, Nil, _) :: stmts, b) => walk(ABlock(info, stmts, b))
+      case ABlock(info, ABlock(_, ss, _) :: stmts, b) => walk(ABlock(info, ss ++ stmts, b))
+      case ABlock(info, stmts, b) =>
+        ABlock(info, simplify(stmts.map(walk).asInstanceOf[List[Stmt]]), b)
       case Switch(info, cond, frontCases, Some(stmts), backCases) =>
         Switch(info, cond, super.walk(frontCases).asInstanceOf[List[Case]],
           Some(simplify(stmts.map(walk).asInstanceOf[List[Stmt]])),

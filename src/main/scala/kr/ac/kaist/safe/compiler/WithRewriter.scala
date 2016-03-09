@@ -168,8 +168,8 @@ class WithRewriter(program: Program, forTest: Boolean) extends ASTWalker {
     // For WithRewriter test...
     case StmtUnit(info, stmts) =>
       StmtUnit(info, walk(stmts, env).asInstanceOf[List[Stmt]])
-    case Block(info, stmts, b) =>
-      Block(info, walk(stmts, env).asInstanceOf[List[Stmt]], b)
+    case ABlock(info, stmts, b) =>
+      ABlock(info, walk(stmts, env).asInstanceOf[List[Stmt]], b)
     case Bracket(info, obj, index) =>
       Bracket(info, walk(obj, env).asInstanceOf[LHS],
         walk(index, env).asInstanceOf[Expr])
@@ -478,7 +478,7 @@ class WithRewriter(program: Program, forTest: Boolean) extends ASTWalker {
         case ConsEnv(withs, names, isNested) =>
           walk(stmt, new ConsEnv(fresh :: withs, List() :: names, isNested))
       }
-      Block(info, List(vs, body.asInstanceOf[Stmt]), false)
+      ABlock(info, List(vs, body.asInstanceOf[Stmt]), false)
     case xs: List[_] => xs.map(x => walk(x, env))
     case xs: Option[_] => xs.map(x => walk(x, env))
     case _ => node

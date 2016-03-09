@@ -58,7 +58,7 @@ case class FunDecl(override val info: ASTNodeInfo, ftn: Functional, strict: Bool
 /**
  * Stmt ::= { Stmt* }
  */
-case class Block(override val info: ASTNodeInfo, stmts: List[Stmt], internal: Boolean = false)
+case class ABlock(override val info: ASTNodeInfo, stmts: List[Stmt], internal: Boolean = false)
   extends Stmt(info: ASTNodeInfo)
 /**
  * Stmt ::= var VarDecl(, VarDecl)* ;
@@ -407,8 +407,8 @@ trait ASTWalker {
         ArrayNumberExpr(walk(info).asInstanceOf[ASTNodeInfo], walk(elements).asInstanceOf[List[Double]])
       case AssignOpApp(info, lhs, op, right) =>
         AssignOpApp(walk(info).asInstanceOf[ASTNodeInfo], walk(lhs).asInstanceOf[LHS], walk(op).asInstanceOf[Op], walk(right).asInstanceOf[Expr])
-      case Block(info, stmts, isInternal) =>
-        Block(walk(info).asInstanceOf[ASTNodeInfo], walk(stmts).asInstanceOf[List[Stmt]], walk(isInternal).asInstanceOf[Boolean])
+      case ABlock(info, stmts, isInternal) =>
+        ABlock(walk(info).asInstanceOf[ASTNodeInfo], walk(stmts).asInstanceOf[List[Stmt]], walk(isInternal).asInstanceOf[Boolean])
       case Bool(info, isBool) =>
         Bool(walk(info).asInstanceOf[ASTNodeInfo], walk(isBool).asInstanceOf[Boolean])
       case Bracket(info, obj, index) =>
@@ -544,7 +544,7 @@ trait ASTWalker {
         walkUnit(info); walkUnit(elements)
       case AssignOpApp(info, lhs, op, right) =>
         walkUnit(info); walkUnit(lhs); walkUnit(op); walkUnit(right)
-      case Block(info, stmts, isInternal) =>
+      case ABlock(info, stmts, isInternal) =>
         walkUnit(info); walkUnit(stmts); walkUnit(isInternal)
       case Bool(info, isBool) =>
         walkUnit(info); walkUnit(isBool)

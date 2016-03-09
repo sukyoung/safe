@@ -26,7 +26,7 @@ import Spacing;
 
 /*
  * Statement ::=
- *   Block
+ *   ABlock
  * | var w VariableDeclarationList w ;
  * | ;
  * | [lookahead \not\in {{, function}] Expression w ;
@@ -44,9 +44,9 @@ import Spacing;
  * | switch w ( w Expression w ) w CaseBlock
  * | Id w : w Statement
  * | throw s Expression w ;
- * | try w Block w Catch
- * | try w Block w Finally
- * | try w Block w Catch w Finally
+ * | try w ABlock w Catch
+ * | try w ABlock w Finally
+ * | try w ABlock w Catch w Finally
  * | debugger w ;
  */
 private transient void NumericLiteral =
@@ -56,9 +56,9 @@ private transient void NumericLiterals =
      NumericLiteral w (void:comma w NumericLiteral w)+ ;
 
 public Stmt Statement =
-     a1:Block
+     a1:ABlock
      { Span span = createSpan(yyStart,yyCount+1);
-       yyValue = NodeFactory.makeBlock(span, a1);
+       yyValue = NodeFactory.makeABlock(span, a1);
      }
    / ExtendedFunctionDeclaration
    / var w a1:Id w equals w
@@ -181,15 +181,15 @@ public Stmt Statement =
      { Span span = createSpan(yyStart,yyCount);
        yyValue = NodeFactory.makeThrow(span, a1);
      }
-   / try w a1:Block w a2:Catch w a3:Finally
+   / try w a1:ABlock w a2:Catch w a3:Finally
      { Span span = createSpan(yyStart,yyCount);
        yyValue = NodeFactory.makeTry(span, a1, a2, a3);
      }
-   / try w a1:Block w a2:Catch
+   / try w a1:ABlock w a2:Catch
      { Span span = createSpan(yyStart,yyCount);
        yyValue = NodeFactory.makeTry(span, a1, a2);
      }
-   / try w a1:Block w a2:Finally
+   / try w a1:ABlock w a2:Finally
      { Span span = createSpan(yyStart,yyCount);
        yyValue = NodeFactory.makeTry(span, a1, a2);
      }
@@ -206,9 +206,9 @@ private transient Stmt ExtendedFunctionDeclaration =
      };
 
 /*
- * Block ::= { (w Statement)* w }
+ * ABlock ::= { (w Statement)* w }
  */
-transient List<Stmt> Block =
+transient List<Stmt> ABlock =
      opencurly w closecurly
      { yyValue = JUseful.<Stmt>list(); }
    / opencurly w a1:Statement a2s:(w Statement)* w closecurly
@@ -276,16 +276,16 @@ private transient Case CaseClause =
      };
 
 /*
- * Catch ::= catch w ( w Id w ) w Block
+ * Catch ::= catch w ( w Id w ) w ABlock
  */
 private transient Catch Catch =
-     catch w openparen w a1:Id w closeparen w a2:Block
+     catch w openparen w a1:Id w closeparen w a2:ABlock
      { Span span = createSpan(yyStart,yyCount);
        yyValue = NodeFactory.makeCatch(span, a1, a2);
      };
 
 /*
- * Finally ::= finally w Block
+ * Finally ::= finally w ABlock
  */
 private transient List<Stmt> Finally =
-     finally w yyValue:Block ;
+     finally w yyValue:ABlock ;
