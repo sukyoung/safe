@@ -38,12 +38,18 @@ case class CFGFunction(cfg: CFG, argumentsName: String, argVars: List[CFGId], lo
   def addCaptured(captId: CFGId): Unit = captured ::= captId
   def getCaptured: List[CFGId] = captured
 
-  // #PureLocal location for each function
-  private var pureLocal: Option[Loc] = None
-  def getPureLocal: Loc = {
-    pureLocal.getOrElse({
+  // #PureLocal location for each control point
+  private var pureLocalMap: MMap[ControlPoint, Loc] = MHashMap()
+  def getPureLocal(cp: ControlPoint): Loc = {
+    pureLocalMap.getOrElseUpdate(cp, AddressManager.newRecentLoc("PureLocal#" + id + "#" + cp))
+  }
+
+  // merged #PureLocal location
+  private var mergedPureLocal: Option[Loc] = None
+  def getMergedPureLocal: Loc = {
+    mergedPureLocal.getOrElse({
       val loc = AddressManager.newRecentLoc("PureLocal#" + id)
-      pureLocal = Some(loc)
+      mergedPureLocal = Some(loc)
       loc
     })
   }
