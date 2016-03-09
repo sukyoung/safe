@@ -20,5 +20,5 @@ abstract class NodeInfo(val span: Span)
 
 case class ASTNodeInfo(override val span: Span, comment: Option[Comment] = None)
   extends NodeInfo(span)
-case class IRNodeInfo(override val span: Span, fromSource: Boolean = true)
+case class IRNodeInfo(override val span: Span, fromSource: Boolean = true, ast: ASTNode = null)
   extends NodeInfo(span)

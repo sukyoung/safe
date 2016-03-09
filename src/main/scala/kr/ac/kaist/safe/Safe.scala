@@ -17,6 +17,7 @@ import kr.ac.kaist.safe.shell.ParseMain
 import kr.ac.kaist.safe.shell.UnparseMain
 import kr.ac.kaist.safe.shell.ASTRewriteMain
 import kr.ac.kaist.safe.shell.CompileMain
+import kr.ac.kaist.safe.shell.CFGMain
 
 object Safe {
   ////////////////////////////////////////////////////////////////////////////////
@@ -78,6 +79,8 @@ object Safe {
         return_code = ASTRewriteMain.doit
       } else if (config.command.equals("compile")) {
         return_code = CompileMain.doit
+      } else if (config.command.equals("cfg")) {
+        return_code = CFGMain.cfgBuilder
       } else if (config.command.equals("help")) printHelpMessage
     } catch {
       case e: ParserError => System.err.println(e)
@@ -104,6 +107,7 @@ object Safe {
         " unparse [-out=outfile] infile.tjs\n" +
         " astRewrite [-out=outfile] infile.js ...\n" +
         " compile [-out=outfile] [-time] infile.js ...\n" +
+        " cfg [-out=outfile] infile.js ...\n" +
         " help\n"
     )
 
@@ -117,23 +121,30 @@ object Safe {
         "safe parse [-out=outfile] [-time] infile.js ...\n" +
         "  Parses files. If parsing succeeds the message \"Ok\" will be printed.\n" +
         "  The files are concatenated in the given order before being parsed.\n" +
-        "  If -out file is given, the parsed AST will be written to the file.\n" +
+        "  If -out=outfile is given, the parsed AST will be written to the outfile.\n" +
         "  If -time is given, the time it takes will be printed.\n" +
         "\n" +
         "safe unparse [-out=outfile] infile.tjs\n" +
         "  Converts a parsed file back to JavaScript source code. The output will be dumped to stdout if -out is not given.\n" +
-        "  If -out file is given, the unparsed source code will be written to the file.\n" +
-        "safe astRewrite [-out=file] infile.js ...\n" +
+        "  If -out=outfile is given, the unparsed source code will be written to the outfile.\n" +
+        "\n" +
+        "safe astRewrite [-out=outfile] infile.js ...\n" +
         "  Rewrites AST in JavaScript source files (hoister, disambiguater, withRewriter).\n" +
         "  The files are concatenated in the given order before being parsed.\n" +
-        "  If -out file is given, the disambiguated AST will be written to the file.\n" +
+        "  If -out=outfile is given, the disambiguated AST will be written to the outfile.\n" +
         "\n" +
         "safe compile [-out=outfile] [-time] infile.js ...\n" +
         "  Translates JavaScript source files to IR.\n" +
         "  If the compilation succeeds the message \"Ok\" will be printed.\n" +
         "  The files are concatenated in the given order before being parsed.\n" +
-        "  If -out file is given, the resulting IR will be written to the file.\n" +
+        "  If -out=outfile is given, the resulting IR will be written to the outfile.\n" +
         "  If -time is given, the time it takes will be printed.\n" +
+        "\n" +
+        "safe cfg [-out=outfile] [-unroll=number] somefile.js ...\n" +
+        "  Builds a control flow graph for JavaScript source files.\n" +
+        "  The files are concatenated in the given order before being parsed.\n" +
+        "  If -out=outfile is given, the resulting CFG will be written to the outfile.\n" +
+        "  If -unroll=number is given, the resulting CFG will unroll loops number times.\n" +
         "\n"
     )
   }

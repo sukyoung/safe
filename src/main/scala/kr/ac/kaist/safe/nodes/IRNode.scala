@@ -380,8 +380,8 @@ trait IRWalker {
         IRSeq(walk(info).asInstanceOf[IRNodeInfo], walk(stmts).asInstanceOf[List[IRStmt]])
       case IRSetProp(info, ftn) =>
         IRSetProp(walk(info).asInstanceOf[IRNodeInfo], walk(ftn).asInstanceOf[IRFunctional])
-      case IRNodeInfo(span, fromSource) =>
-        IRNodeInfo(walk(span).asInstanceOf[Span], walk(fromSource).asInstanceOf[Boolean])
+      case IRNodeInfo(span, fromSource, ast) =>
+        IRNodeInfo(walk(span).asInstanceOf[Span], walk(fromSource).asInstanceOf[Boolean], ast)
       case IRStmtUnit(info, stmts) =>
         IRStmtUnit(walk(info).asInstanceOf[IRNodeInfo], walk(stmts).asInstanceOf[List[IRStmt]])
       case IRStore(info, obj, index, rhs) =>
@@ -475,7 +475,7 @@ trait IRWalker {
         walkUnit(info); walkUnit(stmts)
       case IRSetProp(info, ftn) =>
         walkUnit(info); walkUnit(ftn)
-      case IRNodeInfo(span, fromSource) =>
+      case IRNodeInfo(span, fromSource, ast) =>
         walkUnit(span); walkUnit(fromSource)
       case IRStmtUnit(info, stmts) =>
         walkUnit(info); walkUnit(stmts)

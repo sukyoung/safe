@@ -11,51 +11,56 @@
 
 package kr.ac.kaist.safe.shell
 
-import kr.ac.kaist.safe.Config
-import kr.ac.kaist.safe.Safe
-import kr.ac.kaist.safe.compiler.Parser
-import kr.ac.kaist.safe.compiler.Hoister
-import kr.ac.kaist.safe.compiler.Disambiguator
-import kr.ac.kaist.safe.compiler.WithRewriter
-import kr.ac.kaist.safe.compiler.Compiler
-import kr.ac.kaist.safe.exceptions.StaticError
-import kr.ac.kaist.safe.exceptions.StaticErrors
-import kr.ac.kaist.safe.exceptions.UserError
-import kr.ac.kaist.safe.nodes.Program
-import kr.ac.kaist.safe.nodes_util.ASTIO
-import kr.ac.kaist.safe.safe_util.{ JSAstToConcrete, JSIRUnparser, NodeUtil }
-import kr.ac.kaist.safe.useful.Useful
 import java.io.BufferedWriter
 import java.io.FileWriter
 import java.io.IOException
+import kr.ac.kaist.safe.Config
+import kr.ac.kaist.safe.Safe
+import kr.ac.kaist.safe.compiler.{ Compiler, CFGBuilder }
+import kr.ac.kaist.safe.exceptions.{ StaticError, StaticErrors, UserError }
+import kr.ac.kaist.safe.nodes.CFG
+import kr.ac.kaist.safe.safe_util.{ AddressManager, NodeUtil }
+import kr.ac.kaist.safe.useful.Useful
 
 ////////////////////////////////////////////////////////////////////////////////
-// Compiler
+// CFG Builder
 ////////////////////////////////////////////////////////////////////////////////
-object CompileMain {
+object CFGMain {
   /**
-   * Compile files. If they compile ok, it will say "Ok".
+   * Build a controfl flow graph.
    * If you want a dump then give -out=outfile.
    */
-  def doit: Int = {
+  def cfgBuilder: Int = {
     if (Safe.config.FileNames.length == 0)
-      throw new UserError("The astRewrite command needs a file to disambiguate.")
-    val (ir, return_code, _) = Compiler.compile(Safe.config.FileNames)
-    val ircode = new JSIRUnparser(ir).doit
+      throw new UserError("Need a file to build a control flow graph.")
+    val fileNames = Safe.config.FileNames
+    val fileName: String = Safe.config.FileNames(0)
+
+    // Initialize AddressManager
+    AddressManager.reset
+    val (ir, rc, _) = Compiler.compile(Safe.config.FileNames)
+    val (cfg: CFG, errors: List[StaticError]) = CFGBuilder.build(ir)
+    var return_code = rc
+
+    if (!errors.isEmpty) {
+      StaticErrors.reportErrors(NodeUtil.getFileName(ir), errors)
+    } else return_code = -2
+
     if (Safe.config.opt_OutFileName != null) {
       val outFileName = Safe.config.opt_OutFileName
       try {
         val (fw, writer): (FileWriter, BufferedWriter) = Useful.filenameToWriters(outFileName)
-        ASTIO.writeJavaAst(ir, outFileName)
+        // ToDo: cfg.toString
+        writer.write(cfg.toString)
         writer.close
         fw.close
-        System.out.println("Dumped IR to " + outFileName)
+        System.out.println("Dumped CFG to " + outFileName)
       } catch {
         case e: IOException =>
           throw new IOException("IOException " + e + "while writing to " + outFileName)
       }
-    } else System.out.println(ircode)
-    if (Safe.config.opt_Time) Safe.printTimeTitle = "Compilation"
+    } else cfg.dump
+
     return_code
   }
 }

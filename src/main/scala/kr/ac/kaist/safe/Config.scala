@@ -23,6 +23,7 @@ class Config(
     val command: String,
     val opt_OutFileName: String,
     val opt_Time: Boolean,
+    val opt_unrollingCount: Int,
     val FileNames: List[String]
 ) {
   val predVars = List(
@@ -111,6 +112,7 @@ object Config {
     var possibleOptions: List[String] = Nil
     var opt_OutFileName: String = null
     var opt_Time: Boolean = false
+    var opt_unrollingCount: Int = 0
     var FileNames: List[String] = Nil
 
     val commandMap = Map(
@@ -119,7 +121,7 @@ object Config {
       "unparse" -> List("out"),
       "astRewrite" -> List("out"),
       "compile" -> List("out", "time"),
-      "cfg" -> List("out"),
+      "cfg" -> List("out", "unroll"),
       "help" -> Nil
     )
 
@@ -135,11 +137,13 @@ object Config {
       lazy val fileName = (".*").r ^^ { (s) => FileNames = s :: FileNames }
       lazy val out = ("-" ~> "out" <~ "=") ~ (".*").r ^^ { case o ~ fn => opt_OutFileName = fn }
       lazy val time = ("-" ~> "time") ^^ { (s) => opt_Time = true }
+      lazy val unroll = ("-" ~> "unroll" <~ "=") ~ number ^^ { case s ~ n => opt_unrollingCount = n }
       lazy val optErr = "-".r ~> ".*".r ^^ { (s) => System.err.println("Error: The option '" + s.toString + "' is not available for the command '" + command + "'."); System.exit(1) }
 
       lazy val optionMap = Map(
         "out" -> out,
         "time" -> time,
+        "unroll" -> unroll,
         "filename" -> fileName
       )
 
@@ -156,6 +160,6 @@ object Config {
 
     CommandLineArgumentParser.getArgument(args)
 
-    new Config(command, opt_OutFileName, opt_Time, FileNames)
+    new Config(command, opt_OutFileName, opt_Time, opt_unrollingCount, FileNames)
   }
 }

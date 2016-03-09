@@ -12,12 +12,17 @@
 package kr.ac.kaist.safe.safe_util
 
 import kr.ac.kaist.safe.nodes._
+import kr.ac.kaist.safe.safe_util.{ IRFactory => IF }
 import kr.ac.kaist.safe.scala_useful.Lists._
 import java.io.BufferedWriter
 import java.io.IOException
 import scala.collection.immutable.HashMap
 
 object NodeUtil {
+  ////////////////////////////////////////////////////////////////
+  // AST
+  ////////////////////////////////////////////////////////////////
+
   def unwrapParen(expr: Expr): Expr = expr match {
     case Parenthesized(info, body) => body
     case _ => expr
@@ -55,6 +60,7 @@ object NodeUtil {
     case VarRef(info, Id(_, text, _, _)) => text.equals("eval")
     case _ => false
   }
+
   val toObjectName = freshGlobalName("toObject")
   val ignoreName = freshGlobalName("ignore")
 
@@ -72,51 +78,12 @@ object NodeUtil {
     new Span(sl, sl)
   }
 
-  /*
-  def makeSpan(node: ASTNode): Span = NU.getSpan(node)
-
-  def makeSpan(file: String, line: Int, startC: Int, endC: Int): Span =
-    new Span(new SourceLocRats(file, line, startC, 0),
-             new SourceLocRats(file, line, endC, 0))
-
-  def makeSpan(file: String, line: Int, startC: Int, endC: Int, startOffset: Int, endOffset: Int): Span =
-    new Span(new SourceLocRats(file, line, startC, startOffset),
-             new SourceLocRats(file, line, endC, endOffset))
-
-  def makeSpan(start: ASTNode, finish: ASTNode): Span =
-    makeSpan(NU.getSpan(start), NU.getSpan(finish))
-
-  def makeSpan(start: ASTNode, l: JList[ASTNode]): Span = {
-    val s = l.size
-    if (s==0) makeSpan(start, start) else makeSpan(start, l.get(s-1))
-  }
-
-  def makeSpan(l: JList[ASTNode], finish: ASTNode): Span = {
-    val s = l.size
-    if (s==0) makeSpan(finish, finish) else makeSpan(l.get(0), finish)
-  }
-
-  def makeSpan(ifEmpty: String, l: JList[ASTNode]): Span = {
-    val s = l.size
-    if (s==0) makeSpan(ifEmpty) else makeSpan(l.get(0), l.get(s-1))
-  }
-    */
-
   /**
    * In some situations, a begin-to-end span is not really right, and something
    * more like a set of spans ought to be used.  Even though this is not yet
    * implemented, the name is provided to allow expression of intent.
    */
-  /*
-  def makeSetSpan(start: ASTNode, l: JList[ASTNode]): Span = makeSpan(start, l)
-
-  def makeSetSpan(a: ASTNode, b: ASTNode): Span = makeSpan(a,b)
-
-  def makeSetSpan(ifEmpty: String, l: JList[ASTNode]): Span = makeSpan(ifEmpty, l)
-    */
-
   def getSpan(n: ASTNode): Span = n.info.span
-  def getSpan(n: IRNode): Span = n.info.span
   def getFileName(n: ASTNode): String = getSpan(n).fileName
   def getBegin(n: ASTNode): SourceLoc = getSpan(n).begin
   def getEnd(n: ASTNode): SourceLoc = getSpan(n).end
@@ -417,6 +384,35 @@ object NodeUtil {
     }
   }
 
+  ////////////////////////////////////////////////////////////////
+  // IR
+  ////////////////////////////////////////////////////////////////
+  def getSpan(n: IRNode): Span = n.info.span
+  def getFileName(n: IRNode): String = n.info.span.fileName
+
+  def isAssertOperator(op: IROp): Boolean = {
+    EJSOp.isEquality(op.kind)
+  }
+
+  // Transposition rules for each relational IR Operator
+  def transIROp(op: IROp): IROp = {
+    op.kind match {
+      case EJSOp.BIN_COMP_REL_LESS => IF.makeOp(">=") // < --> >=
+      case EJSOp.BIN_COMP_REL_GREATER => IF.makeOp("<=") // > --> <=
+      case EJSOp.BIN_COMP_REL_LESSEQUAL => IF.makeOp(">") // <= --> >
+      case EJSOp.BIN_COMP_REL_GREATEREQUAL => IF.makeOp("<") // >= --> <
+      case EJSOp.BIN_COMP_EQ_EQUAL => IF.makeOp("!=") // == --> !=
+      case EJSOp.BIN_COMP_EQ_NEQUAL => IF.makeOp("==") // != --> ==
+      case EJSOp.BIN_COMP_EQ_SEQUAL => IF.makeOp("!==") // === --> !==
+      case EJSOp.BIN_COMP_EQ_SNEQUAL => IF.makeOp("===") // !== --> ===
+      case EJSOp.BIN_COMP_REL_IN => IF.makeOp("notIn") // in --> notIn
+      case EJSOp.BIN_COMP_REL_INSTANCEOF => IF.makeOp("notInstanceof") // instanceof --> notInstanceof
+      case EJSOp.BIN_COMP_REL_NOTIN => IF.makeOp("in") // notIn --> in
+      case EJSOp.BIN_COMP_REL_NOTINSTANCEOF => IF.makeOp("instanceof") // notInstanceof --> instanceof
+      case _ => op
+    }
+  }
+
   // IR: Remove empty blocks, empty statements, ...
   // Do not remove IRSeq aggressively.
   // They denote internal IRStmts whose values do not contribute to the result.
@@ -480,4 +476,9 @@ object NodeUtil {
       }
     }
   }
+
+  ////////////////////////////////////////////////////////////////
+  // CFG
+  ////////////////////////////////////////////////////////////////
+
 }

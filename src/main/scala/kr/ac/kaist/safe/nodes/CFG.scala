@@ -15,10 +15,6 @@ import kr.ac.kaist.safe.nodes.EdgeType._
 import scala.collection.mutable.{ Map => MMap, HashMap => MHashMap }
 
 class CFG(globalVars: List[CFGId], info: Info) {
-  // global function
-  val glboalFId: FunctionId = 0
-  val globalFunc: CFGFunction = createFunction("", Nil, globalVars, "top-level", info, "", true)
-
   // access methods -----------------------------------------------------------
   val funMap: MMap[FunctionId, CFGFunction] = MHashMap(0 -> globalFunc)
   val blockMap: MMap[BlockId, Block] = MHashMap()
@@ -64,6 +60,10 @@ class CFG(globalVars: List[CFGId], info: Info) {
   CFGFunction.resetId
   Block.resetId
   CFGInst.resetId
+
+  // global function
+  val glboalFId: FunctionId = 0
+  val globalFunc: CFGFunction = createFunction("", Nil, globalVars, "top-level", info, "", true)
 }
 
 class InternalError(msg: String) extends RuntimeException(msg)
