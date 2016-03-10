@@ -78,17 +78,19 @@ case class Block(func: CFGFunction) extends CFGNode {
   }
 
   // toString
-  override def toString: String = "(%s,LBlock(%s))".format(func.id, id)
+  override def toString: String = s"(${func.id},LBlock($id))"
 
   // dump node
-  def dump: Unit = {
-    System.out.println(this)
-    afterCallOpt match {
-      case Some(AfterCall(retVar, _)) => System.out.println("    [EDGE] after-call(%s)".format(retVar))
-      case None =>
+  def dump: String = {
+    var str: String = s"$this\n"
+    str += (afterCallOpt match {
+      case Some(AfterCall(retVar, _)) => s"    [EDGE] after-call($retVar)\n"
+      case None => ""
+    })
+    str = insts.reverseIterator.foldLeft(str) {
+      case (s, inst) => s + s"    [${inst.id}] $inst\n"
     }
-    insts.reverseIterator.foreach((inst) => System.out.println("    [%s] %s".format(inst.id, inst)))
-    System.out.println("\n")
+    str + "\n\n"
   }
 }
 object Block {

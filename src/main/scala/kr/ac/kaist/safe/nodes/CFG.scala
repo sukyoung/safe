@@ -15,10 +15,6 @@ import kr.ac.kaist.safe.nodes.EdgeType._
 import scala.collection.mutable.{ Map => MMap, HashMap => MHashMap }
 
 class CFG(globalVars: List[CFGId], info: Info) {
-  // access methods -----------------------------------------------------------
-  val funMap: MMap[FunctionId, CFGFunction] = MHashMap(0 -> globalFunc)
-  val blockMap: MMap[BlockId, Block] = MHashMap()
-
   // all functions in this cfg
   private var userFuncs: List[CFGFunction] = Nil
   private var modelFuncs: List[CFGFunction] = Nil
@@ -52,8 +48,10 @@ class CFG(globalVars: List[CFGId], info: Info) {
   }
 
   // dump cfg
-  def dump(): Unit = {
-    for (block <- blocks) block.dump
+  def dump: String = {
+    var str: String = ""
+    for (block <- blocks) str += block.dump
+    str
   }
 
   // init id counter
@@ -61,8 +59,11 @@ class CFG(globalVars: List[CFGId], info: Info) {
   Block.resetId
   CFGInst.resetId
 
+  // function / block map from id
+  val funMap: MMap[FunctionId, CFGFunction] = MHashMap()
+  val blockMap: MMap[BlockId, Block] = MHashMap()
+
   // global function
-  val glboalFId: FunctionId = 0
   val globalFunc: CFGFunction = createFunction("", Nil, globalVars, "top-level", info, "", true)
 }
 

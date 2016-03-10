@@ -15,16 +15,16 @@ sealed abstract class CFGExpr
 
 // with Info
 case class CFGVarRef(info: Info, id: CFGId) extends CFGExpr with CFGInfo {
-  override def toString: String = "%s".format(id)
+  override def toString: String = s"$id"
 }
 case class CFGBin(info: Info, first: CFGExpr, op: IROp, second: CFGExpr) extends CFGExpr with CFGInfo {
-  override def toString: String = "%s %s %s".format(first, op.text, second)
+  override def toString: String = { val text = op.text; s"$first $text $second" }
 }
 case class CFGUn(info: Info, op: IROp, expr: CFGExpr) extends CFGExpr with CFGInfo {
-  override def toString: String = "%s %s".format(op.text, expr)
+  override def toString: String = { val text = op.text; s"$text $expr" }
 }
 case class CFGLoad(info: Info, obj: CFGExpr, index: CFGExpr) extends CFGExpr with CFGInfo {
-  override def toString: String = "%s[%s]".format(obj, index)
+  override def toString: String = s"$obj[$index]"
 }
 case class CFGThis(info: Info) extends CFGExpr with CFGInfo {
   override def toString: String = "this"

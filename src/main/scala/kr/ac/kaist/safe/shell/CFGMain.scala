@@ -41,6 +41,7 @@ object CFGMain {
     addrManager.reset
     val (ir, rc, _) = Compiler.compile(Safe.config.FileNames)
     val (cfg: CFG, errors: List[StaticError]) = BasicCFGBuilder.build(ir)
+    val dump: String = cfg.dump
     var return_code = rc
 
     if (!errors.isEmpty) {
@@ -51,8 +52,7 @@ object CFGMain {
       val outFileName = Safe.config.opt_OutFileName
       try {
         val (fw, writer): (FileWriter, BufferedWriter) = Useful.filenameToWriters(outFileName)
-        // ToDo: cfg.toString
-        writer.write(cfg.toString)
+        writer.write(dump)
         writer.close
         fw.close
         System.out.println("Dumped CFG to " + outFileName)
@@ -60,7 +60,7 @@ object CFGMain {
         case e: IOException =>
           throw new IOException("IOException " + e + "while writing to " + outFileName)
       }
-    } else cfg.dump
+    } else System.out.print(dump)
 
     return_code
   }

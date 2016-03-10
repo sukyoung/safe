@@ -23,88 +23,89 @@ object CFGInst {
 }
 
 case class CFGAlloc(node: CFGNode, info: Info, lhs: CFGId, protoOpt: Option[CFGExpr], addr: Address) extends CFGInst {
-  override def toString: String = "%s := alloc(%s) @ #%s".format(lhs, protoOpt.getOrElse(""), addr)
+  override def toString: String = { val proto = protoOpt.getOrElse(""); s"$lhs := alloc($proto) @ #$addr" }
 }
 
 case class CFGAllocArray(node: CFGNode, info: Info, lhs: CFGId, length: Int, addr: Address) extends CFGInst {
-  override def toString: String = "%s := allocArray(%s) @ #%s".format(lhs, length, addr)
+  override def toString: String = s"$lhs := allocArray($length) @ #$addr"
 }
 
 case class CFGAllocArg(node: CFGNode, info: Info, lhs: CFGId, length: Int, addr: Address) extends CFGInst {
-  override def toString: String = "%s := allocArg(%s) @ #%s".format(lhs, length, addr)
+  override def toString: String = s"$lhs := allocArg($length) @ #$addr"
 }
 
 case class CFGExprStmt(node: CFGNode, info: Info, lhs: CFGId, right: CFGExpr) extends CFGInst {
-  override def toString: String = "%s := %s".format(lhs, right)
+  override def toString: String = s"$lhs := $right"
 }
 
 case class CFGDelete(node: CFGNode, info: Info, lhs: CFGId, expr: CFGExpr) extends CFGInst {
-  override def toString: String = "%s := delete(%s)".format(lhs, expr)
+  override def toString: String = s"$lhs := delete($expr)"
 }
 
 case class CFGDeleteProp(node: CFGNode, info: Info, lhs: CFGId, obj: CFGExpr, index: CFGExpr) extends CFGInst {
-  override def toString: String = "%s := delete(%s, %s)".format(lhs, obj, index)
+  override def toString: String = s"$lhs := delete($obj, $index)"
 }
 
 case class CFGStore(node: CFGNode, info: Info, obj: CFGExpr, index: CFGExpr, rhs: CFGExpr) extends CFGInst {
-  override def toString: String = "%s[%s] := %s".format(obj, index, rhs)
+  override def toString: String = s"$obj[$index] := $rhs"
 }
 
 case class CFGFunExpr(node: CFGNode, info: Info, lhs: CFGId, nameOpt: Option[CFGId], fid: FunctionId, addr1: Address, addr2: Address, addr3Opt: Option[Address]) extends CFGInst {
   override def toString: String = {
-    "%s := function %s(%s) @ #%s, #%s".format(lhs, nameOpt.getOrElse(""), fid, addr1, addr2) + (addr3Opt match {
-      case Some(addr) => ", #%s".format(addr)
+    val name = nameOpt.getOrElse("")
+    s"$lhs := function $name($fid) @ #$addr1, #$addr2" + (addr3Opt match {
+      case Some(addr) => s", #$addr"
       case None => ""
     })
   }
 }
 
 case class CFGAssert(node: CFGNode, info: Info, expr: CFGExpr, flag: Boolean) extends CFGInst {
-  override def toString: String = "assert(%s)".format(expr)
+  override def toString: String = s"assert($expr)"
 }
 
 case class CFGCond(node: CFGNode, info: Info, expr: CFGExpr, isEvent: Boolean = false) extends CFGInst {
-  override def toString: String = "cond(%s)".format(expr)
+  override def toString: String = s"cond($expr)"
 }
 
 case class CFGCatch(node: CFGNode, info: Info, name: CFGId) extends CFGInst {
-  override def toString: String = "catch(%s)".format(name)
+  override def toString: String = s"catch($name)"
 }
 
 case class CFGReturn(node: CFGNode, info: Info, exprOpt: Option[CFGExpr]) extends CFGInst {
-  override def toString: String = "return(%s)".format(exprOpt.getOrElse(""))
+  override def toString: String = { val expr = exprOpt.getOrElse(""); s"return($expr)" }
 }
 
 case class CFGThrow(node: CFGNode, info: Info, expr: CFGExpr) extends CFGInst {
-  override def toString: String = "throw(%s)".format(expr)
+  override def toString: String = s"throw($expr)"
 }
 
 case class CFGNoOp(node: CFGNode, info: Info, desc: String) extends CFGInst {
-  override def toString: String = "noop(%s)".format(desc)
+  override def toString: String = s"noop($desc)"
 }
 
 // call type inst
 trait CFGCallInst extends CFGInst
 
 case class CFGCall(node: CFGNode, info: Info, fun: CFGExpr, thisArg: CFGExpr, arguments: CFGExpr, addr1: Address, addr2: Address) extends CFGCallInst {
-  override def toString: String = "call(%s, %s, %s) @ #%s".format(fun, thisArg, arguments, addr1)
+  override def toString: String = s"call($fun, $thisArg, $arguments) @ #$addr1"
 }
 
 case class CFGInternalCall(node: CFGNode, info: Info, lhs: CFGId, fun: CFGId, arguments: List[CFGExpr], addrOpt: Option[Address]) extends CFGCallInst {
-  override def toString: String = "%s := %s(%s)".format(lhs, fun, arguments.mkString(", ")) + (addrOpt match {
-    case Some(addr) => " @ #%s".format(addr)
+  override def toString: String = { val arg = arguments.mkString(", "); s"$lhs := $fun($arg)" } + (addrOpt match {
+    case Some(addr) => s" @ #$addr"
     case None => ""
   })
 }
 
 case class CFGConstruct(node: CFGNode, info: Info, cons: CFGExpr, thisArg: CFGExpr, arguments: CFGExpr, addr1: Address, addr2: Address) extends CFGCallInst {
-  override def toString: String = "construct(%s, %s, %s) @ #%s, #%s".format(cons, thisArg, arguments, addr1, addr2)
+  override def toString: String = s"construct($cons, $thisArg, $arguments) @ #$addr1, #$addr2"
 }
 
 case class CFGAPICall(node: CFGNode, info: Info, model: String, fun: String, arguments: CFGExpr) extends CFGInst {
-  override def toString: String = "[]%s.%s(%s)".format(model, fun, arguments)
+  override def toString: String = s"[]$model.$fun($arguments)"
 }
 
 case class CFGAsyncCall(node: CFGNode, info: Info, modelType: String, callType: String, addr1: Address, addr2: Address, addr3: Address) extends CFGCallInst {
-  override def toString: String = "async(%s, %s) @ #%s, #%s, #%s".format(modelType, callType, addr1, addr2, addr3)
+  override def toString: String = s"async($modelType, $callType) @ #$addr1, #$addr2, #$addr3"
 }

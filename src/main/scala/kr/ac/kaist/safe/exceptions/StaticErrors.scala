@@ -21,17 +21,13 @@ object StaticErrors {
   def reportErrors(file_name: String, errs: Iterable[_ <: StaticError]): Int = {
     val errors = flattenErrors(errs)
     var return_code: Int = 0
-    var err_string: String = null
     if (!errs.isEmpty) {
       for (error: StaticError <- errors.sortWith(_.compareTo(_) < 0))
         System.out.println(error.getMessage)
-      var err_string: String = null
       val num_errors = errors.length
-      err_string = "File " + file_name + " has " + num_errors + " error" + (if (num_errors == 1) "." else "s.");
-      return_code = -2;
-    } else
-      err_string = ""
-    System.out.println(err_string)
+      System.out.println(s"File $file_name has $num_errors error" + (if (num_errors == 1) "." else "s."))
+      return_code = -2
+    }
     return return_code
   }
 }
