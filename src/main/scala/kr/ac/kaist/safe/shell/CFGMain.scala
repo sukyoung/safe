@@ -16,7 +16,7 @@ import java.io.FileWriter
 import java.io.IOException
 import kr.ac.kaist.safe.Config
 import kr.ac.kaist.safe.Safe
-import kr.ac.kaist.safe.compiler.{ Compiler, BasicCFGBuilder }
+import kr.ac.kaist.safe.compiler.{ Compiler, DefaultCFGBuilder }
 import kr.ac.kaist.safe.exceptions.{ StaticError, StaticErrors, UserError }
 import kr.ac.kaist.safe.nodes.CFG
 import kr.ac.kaist.safe.safe_util.{ AddressManager, NodeUtil }
@@ -40,7 +40,7 @@ object CFGMain {
     // Initialize AddressManager
     addrManager.reset
     val (ir, rc, _) = Compiler.compile(Safe.config.FileNames)
-    val (cfg: CFG, errors: List[StaticError]) = BasicCFGBuilder.build(ir)
+    val (cfg: CFG, errors: List[StaticError]) = DefaultCFGBuilder.build(ir)
     val dump: String = cfg.dump
     var return_code = rc
 

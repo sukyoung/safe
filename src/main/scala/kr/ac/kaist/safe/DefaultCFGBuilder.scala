@@ -22,8 +22,8 @@ import kr.ac.kaist.safe.nodes.EdgeType._
 import kr.ac.kaist.safe.safe_util.{ NodeUtil => NU, NodeFactory => NF, IRFactory => IF, CapturedVariableCollector, AddressManager }
 import kr.ac.kaist.safe.useful.ErrorLog
 
-// basic cfg builder
-object BasicCFGBuilder extends CFGBuilder {
+// default cfg builder
+object DefaultCFGBuilder extends CFGBuilder {
   // collect error logs
   private val errLog: ErrorLog = new ErrorLog
 
