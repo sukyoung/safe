@@ -15,7 +15,7 @@ import java.io.File
 import java.io.FileNotFoundException
 import java.io.IOException
 import scala.util.parsing.combinator._
-import kr.ac.kaist.safe.safe_util.{ NodeUtil => NU }
+import kr.ac.kaist.safe.safe_util.{ NodeUtil => NU, AddressManager, DefaultAddressManager }
 import kr.ac.kaist.safe.useful.Useful
 import kr.ac.kaist.safe.useful.Path
 
@@ -24,7 +24,8 @@ class Config(
     val opt_OutFileName: String,
     val opt_Time: Boolean,
     val opt_unrollingCount: Int,
-    val FileNames: List[String]
+    val FileNames: List[String],
+    val addrManager: AddressManager
 ) {
   val predVars = List(
     // 4.2 Language Overview
@@ -160,6 +161,6 @@ object Config {
 
     CommandLineArgumentParser.getArgument(args)
 
-    new Config(command, opt_OutFileName, opt_Time, opt_unrollingCount, FileNames)
+    new Config(command, opt_OutFileName, opt_Time, opt_unrollingCount, FileNames, DefaultAddressManager)
   }
 }

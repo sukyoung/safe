@@ -19,14 +19,16 @@ import kr.ac.kaist.safe.exceptions.StaticError
 import kr.ac.kaist.safe.exceptions.UserError
 import kr.ac.kaist.safe.nodes._
 import kr.ac.kaist.safe.nodes.EdgeType._
-import kr.ac.kaist.safe.safe_util.{ NodeUtil => NU, NodeFactory => NF, IRFactory => IF, CapturedVariableCollector }
-import kr.ac.kaist.safe.safe_util.AddressManager._
+import kr.ac.kaist.safe.safe_util.{ NodeUtil => NU, NodeFactory => NF, IRFactory => IF, CapturedVariableCollector, AddressManager }
 import kr.ac.kaist.safe.useful.ErrorLog
 
 // basic cfg builder
 object BasicCFGBuilder extends CFGBuilder {
   // collect error logs
   private val errLog: ErrorLog = new ErrorLog
+
+  // address manager
+  private val addrManager: AddressManager = Safe.config.addrManager
 
   // unique name helper
   private val cfgIdMap: MMap[String, CFGId] = MHashMap()
@@ -184,7 +186,7 @@ object BasicCFGBuilder extends CFGBuilder {
     fd match {
       case IRFunDecl(info, functional) =>
         val func: CFGFunction = translateFunctional(fd, functional)
-        block.createInst(CFGFunExpr(_, info, id2cfgId(functional.name), None, func.id, newProgramAddr, newProgramAddr, None))
+        block.createInst(CFGFunExpr(_, info, id2cfgId(functional.name), None, func.id, addrManager.newProgramAddr, addrManager.newProgramAddr, None))
         List(block)
     }
   }
@@ -224,9 +226,9 @@ object BasicCFGBuilder extends CFGBuilder {
       case IRFunExpr(info, lhs, functional) =>
         val func: CFGFunction = translateFunctional(stmt, functional)
         val tailBlock: Block = getTail(blocks, func)
-        val (addr1, addr2) = (newProgramAddr, newProgramAddr)
+        val (addr1, addr2) = (addrManager.newProgramAddr, addrManager.newProgramAddr)
         val (nameOpt: Option[CFGId], addrOpt: Option[Address]) = id2cfgId(functional.name) match {
-          case id if id.kind == CapturedVar => (Some(id), Some(newProgramAddr))
+          case id if id.kind == CapturedVar => (Some(id), Some(addrManager.newProgramAddr))
           case _ => (None, None)
         }
         tailBlock.createInst(CFGFunExpr(_, info, id2cfgId(lhs), nameOpt, func.id, addr1, addr2, addrOpt))
@@ -235,7 +237,7 @@ object BasicCFGBuilder extends CFGBuilder {
       case IRObject(info, lhs, members, proto) =>
         val tailBlock: Block = getTail(blocks, func)
         var protoIdOpt: Option[CFGExpr] = proto.map(p => id2cfgExpr(p))
-        tailBlock.createInst(CFGAlloc(_, info, id2cfgId(lhs), protoIdOpt, newProgramAddr))
+        tailBlock.createInst(CFGAlloc(_, info, id2cfgId(lhs), protoIdOpt, addrManager.newProgramAddr))
         members.foreach(translateMember(_, tailBlock, lhs))
         (List(tailBlock), lmap.updated(ThrowLabel, (ThrowLabel of lmap) + tailBlock))
       case IRTry(info, body, name, catchIR, finIR) =>
@@ -365,7 +367,7 @@ object BasicCFGBuilder extends CFGBuilder {
       /* PEI : element assign */
       case IRArgs(info, lhs, elements) =>
         val tailBlock: Block = getTail(blocks, func)
-        tailBlock.createInst(CFGAllocArg(_, info, id2cfgId(lhs), elements.length, newProgramAddr))
+        tailBlock.createInst(CFGAllocArg(_, info, id2cfgId(lhs), elements.length, addrManager.newProgramAddr))
         elements.zipWithIndex.foreach {
           case (Some(elem), idx) => translateElement(info, elem, tailBlock, lhs, idx)
           case _ =>
@@ -374,7 +376,7 @@ object BasicCFGBuilder extends CFGBuilder {
       /* PEI : element assign */
       case IRArray(info, lhs, elements) =>
         val tailBlock: Block = getTail(blocks, func)
-        tailBlock.createInst(CFGAllocArray(_, info, id2cfgId(lhs), elements.length, newProgramAddr))
+        tailBlock.createInst(CFGAllocArray(_, info, id2cfgId(lhs), elements.length, addrManager.newProgramAddr))
         elements.zipWithIndex.foreach {
           case (Some(elem), idx) => translateElement(info, elem, tailBlock, lhs, idx)
           case _ =>
@@ -383,7 +385,7 @@ object BasicCFGBuilder extends CFGBuilder {
       /* PEI : element assign */
       case IRArrayNumber(info, lhs, elements) =>
         val tailBlock: Block = getTail(blocks, func)
-        tailBlock.createInst(CFGAllocArray(_, info, id2cfgId(lhs), elements.length, newProgramAddr))
+        tailBlock.createInst(CFGAllocArray(_, info, id2cfgId(lhs), elements.length, addrManager.newProgramAddr))
         elements.zipWithIndex.foreach {
           case (elem, idx) => translateDoubleElement(info, elem, tailBlock, lhs, idx)
         }
@@ -400,7 +402,7 @@ object BasicCFGBuilder extends CFGBuilder {
       case IRInternalCall(info, lhs, fun @ (IRTmpId(_, originalName, uniqueName, _)), arg1, arg2) =>
         val tailBlock: Block = getTail(blocks, func)
         val (addr: Option[Address], lm: LabelMap) = uniqueName match {
-          case "<>Global<>toObject" | "<>Global<>iteratorInit" => (Some(newProgramAddr), lmap.updated(ThrowLabel, (ThrowLabel of lmap) + tailBlock))
+          case "<>Global<>toObject" | "<>Global<>iteratorInit" => (Some(addrManager.newProgramAddr), lmap.updated(ThrowLabel, (ThrowLabel of lmap) + tailBlock))
           case _ => (None, lmap)
         }
         val argList: List[CFGExpr] = arg2 match {
@@ -412,7 +414,7 @@ object BasicCFGBuilder extends CFGBuilder {
       /* PEI : call, after-call */
       case IRCall(info, lhs, fun, thisB, args) =>
         val tailBlock: Block = getTail(blocks, func)
-        val call: Call = tailBlock.createCall(CFGCall(_, info, id2cfgExpr(fun), id2cfgExpr(thisB), id2cfgExpr(args), newProgramAddr, newProgramAddr), id2cfgId(lhs))
+        val call: Call = tailBlock.createCall(CFGCall(_, info, id2cfgExpr(fun), id2cfgExpr(thisB), id2cfgExpr(args), addrManager.newProgramAddr, addrManager.newProgramAddr), id2cfgId(lhs))
         loopBlock match {
           case Some(l) =>
             cfg.addEdge(l, tailBlock, EdgeLoopCond)
@@ -423,7 +425,7 @@ object BasicCFGBuilder extends CFGBuilder {
       /* PEI : construct, after-call */
       case IRNew(info, lhs, cons, args) if (args.length == 2) =>
         val tailBlock: Block = getTail(blocks, func)
-        val call = tailBlock.createCall(CFGConstruct(_, info, id2cfgExpr(cons), id2cfgExpr(args(0)), id2cfgExpr(args(1)), newProgramAddr, newProgramAddr), id2cfgId(lhs))
+        val call = tailBlock.createCall(CFGConstruct(_, info, id2cfgExpr(cons), id2cfgExpr(args(0)), id2cfgExpr(args(1)), addrManager.newProgramAddr, addrManager.newProgramAddr), id2cfgId(lhs))
         (List(call.afterCall), lmap.updated(ThrowLabel, (ThrowLabel of lmap) + tailBlock).updated(AfterCatchLabel, (AfterCatchLabel of lmap) + call.afterCatch))
       case c @ IRNew(_, _, _, _) =>
         errLog.signal("IRNew should have two elements in args.", c)

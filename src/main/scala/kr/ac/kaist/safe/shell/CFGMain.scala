@@ -35,9 +35,10 @@ object CFGMain {
       throw new UserError("Need a file to build a control flow graph.")
     val fileNames = Safe.config.FileNames
     val fileName: String = Safe.config.FileNames(0)
+    val addrManager: AddressManager = Safe.config.addrManager
 
     // Initialize AddressManager
-    AddressManager.reset
+    addrManager.reset
     val (ir, rc, _) = Compiler.compile(Safe.config.FileNames)
     val (cfg: CFG, errors: List[StaticError]) = BasicCFGBuilder.build(ir)
     var return_code = rc

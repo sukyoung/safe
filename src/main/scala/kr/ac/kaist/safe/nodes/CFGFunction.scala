@@ -11,7 +11,6 @@
 
 package kr.ac.kaist.safe.nodes
 
-import kr.ac.kaist.safe.safe_util.AddressManager
 import scala.collection.mutable.{ Map => MMap, HashMap => MHashMap }
 
 case class CFGFunction(cfg: CFG, argumentsName: String, argVars: List[CFGId], localVars: List[CFGId], name: String, info: Info, body: String, isUser: Boolean) {
@@ -39,6 +38,7 @@ case class CFGFunction(cfg: CFG, argumentsName: String, argVars: List[CFGId], lo
   def getCaptured: List[CFGId] = captured
 
   // #PureLocal location for each control point
+  /*
   private var pureLocalMap: MMap[ControlPoint, Loc] = MHashMap()
   def getPureLocal(cp: ControlPoint): Loc = {
     pureLocalMap.getOrElseUpdate(cp, AddressManager.newRecentLoc("PureLocal#" + id + "#" + cp))
@@ -53,6 +53,7 @@ case class CFGFunction(cfg: CFG, argumentsName: String, argVars: List[CFGId], lo
       loc
     })
   }
+  */
 
   // equals
   override def equals(other: Any): Boolean = other match {
