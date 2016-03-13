@@ -1,0 +1,30 @@
+(0,LBlock(6))
+    [7] noop(EndOfFile)
+
+
+(0,LBlock(5))
+    [6] throw(33)
+
+
+(0,LBlock(4))
+    [3] assert(! true)
+
+
+(0,LBlock(3))
+    [2] assert(true)
+    [4] throw(11)
+
+
+(0,LBlock(2))
+    [1] catch(<>e<>1)
+    [5] throw(22)
+
+
+(0,LBlock(1))
+
+
+(0,LBlock(0))
+    [0] noop(StartOfFile)
+
+
+

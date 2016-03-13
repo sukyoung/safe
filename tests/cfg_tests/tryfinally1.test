@@ -1,0 +1,19 @@
+(0,LBlock(3))
+    [4] x := 5
+
+
+(0,LBlock(2))
+    [3] x := 5
+    [5] noop(EndOfFile)
+
+
+(0,LBlock(1))
+    [2] <>Global<>ignore3 := x
+
+
+(0,LBlock(0))
+    [0] noop(StartOfFile)
+    [1] x := 5
+
+
+

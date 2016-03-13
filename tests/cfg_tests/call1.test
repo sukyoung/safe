@@ -1,0 +1,49 @@
+(0,LBlock(6))
+
+
+(0,LBlock(5))
+    [EDGE] after-call(<>Global<>ignore3)
+    [23] x := <>Global<>ignore3
+    [24] noop(EndOfFile)
+
+
+(1,LBlock(4))
+
+
+(1,LBlock(3))
+    [EDGE] after-call(<>new1<>13)
+    [10] return(<>new1<>13)
+
+
+(2,LBlock(2))
+    [0] <>test<>7 := <>test<>7 + 6
+    [1] return(<>test<>7 - <>x<>1)
+
+
+(1,LBlock(1))
+    [2] <>g<>4 := function (2) @ #1, #2
+    [3] <>temp<>5 := <>y<>2 + <>z<>3
+    [4] <>obj<>9 := <>Global<>toObject(<>g<>4) @ #3
+    [5] <>temp<>10 := <>temp<>5
+    [6] <>arguments<>11 := allocArg(1) @ #4
+    [7] <>arguments<>11["0"] := <>temp<>10
+    [8] <>fun<>12 := <>Global<>getBase(<>g<>4)
+    [9] call(<>obj<>9, <>fun<>12, <>arguments<>11) @ #5
+
+
+(0,LBlock(0))
+    [11] f := function (1) @ #7, #8
+    [12] noop(StartOfFile)
+    [13] <>obj<>14 := <>Global<>toObject(f) @ #9
+    [14] <>temp<>15 := 1
+    [15] <>temp<>16 := 2
+    [16] <>temp<>17 := 3
+    [17] <>arguments<>18 := allocArg(3) @ #10
+    [18] <>arguments<>18["0"] := <>temp<>15
+    [19] <>arguments<>18["1"] := <>temp<>16
+    [20] <>arguments<>18["2"] := <>temp<>17
+    [21] <>fun<>19 := <>Global<>getBase(f)
+    [22] call(<>obj<>14, <>fun<>19, <>arguments<>18) @ #11
+
+
+

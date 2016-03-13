@@ -1,0 +1,40 @@
+(0,LBlock(8))
+    [11] noop(EndOfFile)
+
+
+(0,LBlock(7))
+
+
+(0,LBlock(6))
+    [7] assert(! y > x * 10)
+
+
+(0,LBlock(5))
+    [6] assert(y > x * 10)
+    [8] <>old<>3 := y
+    [9] y := <>old<>3 / 2
+
+
+(0,LBlock(4))
+    [4] catch(<>y<>2)
+
+
+(0,LBlock(3))
+    [5] y := 103
+
+
+(0,LBlock(2))
+    [2] catch(<>x<>1)
+    [10] <>x<>1 := 2
+
+
+(0,LBlock(1))
+    [3] x := 3
+
+
+(0,LBlock(0))
+    [0] noop(StartOfFile)
+    [1] x := 5
+
+
+

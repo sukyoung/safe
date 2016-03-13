@@ -1,0 +1,7 @@
+(0,LBlock(0))
+    [0] noop(StartOfFile)
+    [1] x := undefined
+    [2] noop(EndOfFile)
+
+
+

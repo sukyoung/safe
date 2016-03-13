@@ -1,0 +1,70 @@
+(0,LBlock(15))
+
+
+(0,LBlock(14))
+    [17] assert(grade != "F")
+
+
+(0,LBlock(13))
+    [16] assert(grade == "F")
+    [18] money := 0
+    [19] parents := ""
+
+
+(0,LBlock(12))
+
+
+(0,LBlock(11))
+    [14] assert(grade != "D")
+
+
+(0,LBlock(10))
+    [13] assert(grade == "D")
+    [15] <>Global<>ignore8 := "sigh"
+
+
+(0,LBlock(9))
+
+
+(0,LBlock(8))
+    [11] assert(grade != "C")
+
+
+(0,LBlock(7))
+    [10] assert(grade == "C")
+    [12] money := money / 5
+
+
+(0,LBlock(6))
+
+
+(0,LBlock(5))
+    [8] assert(grade != "B")
+
+
+(0,LBlock(4))
+    [7] assert(grade == "B")
+    [9] parents := "ok"
+
+
+(0,LBlock(3))
+    [20] noop(EndOfFile)
+
+
+(0,LBlock(2))
+    [5] assert(grade != "A")
+
+
+(0,LBlock(1))
+    [4] assert(grade == "A")
+    [6] parents := "laugh"
+
+
+(0,LBlock(0))
+    [0] noop(StartOfFile)
+    [1] parents := "smiling"
+    [2] money := 300000
+    [3] grade := "F"
+
+
+

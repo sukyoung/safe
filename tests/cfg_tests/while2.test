@@ -1,0 +1,54 @@
+(0,LBlock(13))
+
+
+(0,LBlock(12))
+    [8] assert(! x)
+
+
+(0,LBlock(11))
+    [7] assert(x)
+
+
+(0,LBlock(10))
+
+
+(0,LBlock(9))
+    [6] assert(! x)
+
+
+(0,LBlock(8))
+    [5] assert(x)
+
+
+(0,LBlock(7))
+
+
+(0,LBlock(6))
+
+
+(0,LBlock(5))
+
+
+(0,LBlock(4))
+    [3] assert(! true)
+
+
+(0,LBlock(3))
+    [2] assert(true)
+    [4] x := 1
+
+
+(0,LBlock(2))
+
+
+(0,LBlock(1))
+    [9] x := 2
+    [10] noop(EndOfFile)
+
+
+(0,LBlock(0))
+    [0] noop(StartOfFile)
+    [1] x := 0
+
+
+

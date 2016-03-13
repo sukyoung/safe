@@ -1,0 +1,8 @@
+(0,LBlock(0))
+    [0] noop(StartOfFile)
+    [1] x := 12.34
+    [2] y := 0.123235323
+    [3] noop(EndOfFile)
+
+
+

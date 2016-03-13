@@ -1,0 +1,33 @@
+(0,LBlock(5))
+    [12] <>cond1<>3 := <>Global<>iteratorHasNext(<>obj<>1, <>iterator<>2)
+
+
+(0,LBlock(4))
+    [7] assert(! <>cond1<>3)
+
+
+(0,LBlock(3))
+    [6] assert(<>cond1<>3)
+    [8] <>key<>4 := <>Global<>iteratorNext(<>obj<>1, <>iterator<>2)
+    [9] x := <>key<>4
+    [10] <>obj<>5 := <>Global<>toObject(obj) @ #3
+    [11] <>obj<>5[x] := 1
+
+
+(0,LBlock(2))
+
+
+(0,LBlock(1))
+    [13] noop(EndOfFile)
+
+
+(0,LBlock(0))
+    [0] noop(StartOfFile)
+    [1] <>Global<>ignore1 := alloc() @ #1
+    [2] obj := <>Global<>ignore1
+    [3] <>obj<>1 := obj
+    [4] <>iterator<>2 := <>Global<>iteratorInit(<>obj<>1) @ #2
+    [5] <>cond1<>3 := <>Global<>iteratorHasNext(<>obj<>1, <>iterator<>2)
+
+
+

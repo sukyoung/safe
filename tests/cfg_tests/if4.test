@@ -1,0 +1,95 @@
+(0,LBlock(24))
+    [18] noop(EndOfFile)
+
+
+(0,LBlock(23))
+    [17] assert(alphabet != "X")
+
+
+(0,LBlock(22))
+    [16] assert(alphabet == "X")
+
+
+(0,LBlock(21))
+
+
+(0,LBlock(20))
+
+
+(0,LBlock(19))
+
+
+(0,LBlock(18))
+
+
+(0,LBlock(17))
+    [15] assert(alphabet != "W")
+
+
+(0,LBlock(16))
+    [14] assert(alphabet == "W")
+
+
+(0,LBlock(15))
+    [13] assert(alphabet != "V")
+
+
+(0,LBlock(14))
+    [12] assert(alphabet == "V")
+
+
+(0,LBlock(13))
+    [11] assert(alphabet != "U")
+
+
+(0,LBlock(12))
+    [10] assert(alphabet == "U")
+
+
+(0,LBlock(11))
+    [9] assert(alphabet != "D")
+
+
+(0,LBlock(10))
+    [8] assert(alphabet == "D")
+
+
+(0,LBlock(9))
+
+
+(0,LBlock(8))
+
+
+(0,LBlock(7))
+    [7] assert(alphabet != "C")
+
+
+(0,LBlock(6))
+    [6] assert(alphabet == "C")
+
+
+(0,LBlock(5))
+    [5] assert(alphabet != "B")
+
+
+(0,LBlock(4))
+    [4] assert(alphabet == "B")
+
+
+(0,LBlock(3))
+
+
+(0,LBlock(2))
+    [3] assert(alphabet != "A")
+
+
+(0,LBlock(1))
+    [2] assert(alphabet == "A")
+
+
+(0,LBlock(0))
+    [0] noop(StartOfFile)
+    [1] alphabet := "U"
+
+
+

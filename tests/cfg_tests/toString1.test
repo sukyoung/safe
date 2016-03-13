@@ -1,0 +1,8 @@
+(0,LBlock(0))
+    [0] noop(StartOfFile)
+    [1] <>obj<>1 := <>Global<>toObject(x) @ #1
+    [2] <>Global<>ignore2 := <>obj<>1[y]
+    [3] noop(EndOfFile)
+
+
+

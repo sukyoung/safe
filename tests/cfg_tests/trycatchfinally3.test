@@ -1,0 +1,219 @@
+(0,LBlock(48))
+    [69] noop(EndOfFile)
+
+
+(0,LBlock(47))
+    [67] catch(<>e<>18)
+    [68] <>Global<>ignore10 := <>e<>18
+
+
+(0,LBlock(46))
+
+
+(0,LBlock(45))
+
+
+(0,LBlock(44))
+    [66] assert(<>new<>17 != 0)
+
+
+(0,LBlock(43))
+    [65] assert(<>new<>17 == 0)
+
+
+(0,LBlock(42))
+
+
+(0,LBlock(41))
+    [61] assert(! true)
+
+
+(0,LBlock(40))
+    [60] assert(true)
+    [62] <>old<>16 := x
+    [63] <>new<>17 := <>Global<>toNumber(<>old<>16)
+    [64] x := <>new<>17 - 1
+
+
+(0,LBlock(39))
+
+
+(0,LBlock(38))
+
+
+(0,LBlock(37))
+
+
+(0,LBlock(36))
+    [58] catch(<>e<>18)
+    [59] <>Global<>ignore10 := <>e<>18
+
+
+(0,LBlock(35))
+
+
+(0,LBlock(34))
+
+
+(0,LBlock(33))
+    [57] assert(<>new<>17 != 0)
+
+
+(0,LBlock(32))
+    [56] assert(<>new<>17 == 0)
+
+
+(0,LBlock(31))
+
+
+(0,LBlock(30))
+    [52] assert(! true)
+
+
+(0,LBlock(29))
+    [51] assert(true)
+    [53] <>old<>16 := x
+    [54] <>new<>17 := <>Global<>toNumber(<>old<>16)
+    [55] x := <>new<>17 - 1
+
+
+(0,LBlock(28))
+
+
+(0,LBlock(27))
+
+
+(0,LBlock(26))
+
+
+(0,LBlock(25))
+    [49] catch(<>e<>18)
+    [50] <>Global<>ignore10 := <>e<>18
+
+
+(0,LBlock(24))
+
+
+(0,LBlock(23))
+
+
+(0,LBlock(22))
+    [48] assert(<>new<>17 != 0)
+
+
+(0,LBlock(21))
+    [47] assert(<>new<>17 == 0)
+
+
+(0,LBlock(20))
+
+
+(0,LBlock(19))
+    [43] assert(! true)
+
+
+(0,LBlock(18))
+    [42] assert(true)
+    [44] <>old<>16 := x
+    [45] <>new<>17 := <>Global<>toNumber(<>old<>16)
+    [46] x := <>new<>17 - 1
+
+
+(0,LBlock(17))
+
+
+(0,LBlock(16))
+
+
+(0,LBlock(15))
+    [38] <>obj<>15 := <>Global<>toObject(y) @ #13
+    [39] <>Global<>ignore6 := alloc() @ #14
+    [40] <>Global<>ignore6["test"] := - 23.8
+    [41] <>obj<>15["d"] := <>Global<>ignore6
+
+
+(0,LBlock(14))
+
+
+(0,LBlock(13))
+    [EDGE] after-call(<>Global<>ignore5)
+
+
+(1,LBlock(12))
+    [16] <>obj<>5 := <>Global<>toObject(<>arg<>3) @ #3
+    [17] return(<>obj<>5[0])
+
+
+(0,LBlock(11))
+    [34] <>obj<>15 := <>Global<>toObject(y) @ #11
+    [35] <>Global<>ignore6 := alloc() @ #12
+    [36] <>Global<>ignore6["test"] := - 23.8
+    [37] <>obj<>15["d"] := <>Global<>ignore6
+
+
+(0,LBlock(10))
+    [18] <>Global<>ignore4 := function (1) @ #4, #5
+    [19] x := <>Global<>ignore4
+    [20] <>obj<>7 := <>Global<>toObject(x) @ #6
+    [21] <>temp<>8 := 9
+    [22] <>temp<>9 := 6
+    [23] <>temp<>10 := 4
+    [24] <>temp<>11 := 2
+    [25] <>temp<>12 := allocArray(4) @ #7
+    [26] <>temp<>12["0"] := <>temp<>8
+    [27] <>temp<>12["1"] := <>temp<>9
+    [28] <>temp<>12["2"] := <>temp<>10
+    [29] <>temp<>12["3"] := <>temp<>11
+    [30] <>arguments<>13 := allocArg(1) @ #8
+    [31] <>arguments<>13["0"] := <>temp<>12
+    [32] <>fun<>14 := <>Global<>getBase(x)
+    [33] call(<>obj<>7, <>fun<>14, <>arguments<>13) @ #9
+
+
+(0,LBlock(9))
+
+
+(0,LBlock(8))
+    [14] assert(<>e<>1 != "A")
+
+
+(0,LBlock(7))
+    [13] assert(<>e<>1 == "A")
+    [15] <>Global<>ignore3 := undefined
+
+
+(0,LBlock(6))
+    [6] <>Global<>ignore8 := alloc() @ #1
+    [7] <>Global<>ignore8["a"] := "A"
+    [8] <>Global<>ignore8["b"] := "B"
+    [9] <>Global<>ignore8["c"] := "C"
+    [10] y := <>Global<>ignore8
+    [11] <>obj<>2 := <>Global<>toObject(y) @ #2
+    [12] throw(<>obj<>2["a"])
+
+
+(0,LBlock(5))
+    [4] assert(! true)
+
+
+(0,LBlock(4))
+    [3] assert(true)
+    [5] x := 2
+
+
+(0,LBlock(3))
+
+
+(0,LBlock(2))
+    [2] catch(<>e<>1)
+
+
+(0,LBlock(1))
+
+
+(0,LBlock(0))
+    [0] noop(StartOfFile)
+    [1] z := 1
+
+
+
