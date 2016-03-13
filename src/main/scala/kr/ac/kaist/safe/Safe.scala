@@ -24,7 +24,6 @@ object Safe {
   // Settings and Environment variables
   ////////////////////////////////////////////////////////////////////////////////
   var debug: Boolean = false
-  var config: Config = null
   var printTimeTitle: String = null
   private var startTime: Long = _
 
@@ -68,19 +67,21 @@ object Safe {
     var return_code = 0
     try {
       // Parse parameters
-      config = Config(tokens.toList)
+      val config = Config(tokens.toList)
       // Set the start time.
       startTime = System.currentTimeMillis
       if (config.command.equals("parse")) {
-        return_code = ParseMain.parse
+        return_code = ParseMain.parse(config)
+        if (config.opt_Time) printTimeTitle = "Parsing"
       } else if (config.command.equals("unparse")) {
-        return_code = UnparseMain.unparse
+        return_code = UnparseMain.unparse(config)
       } else if (config.command.equals("astRewrite")) {
-        return_code = ASTRewriteMain.doit
+        return_code = ASTRewriteMain.doit(config)
       } else if (config.command.equals("compile")) {
-        return_code = CompileMain.doit
+        return_code = CompileMain.doit(config)
+        if (config.opt_Time) printTimeTitle = "Compilation"
       } else if (config.command.equals("cfg")) {
-        return_code = CFGMain.cfgBuilder
+        return_code = CFGMain.cfgBuilder(config)
       } else if (config.command.equals("help")) printHelpMessage
     } catch {
       case e: ParserError => System.err.println(e)

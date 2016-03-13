@@ -12,7 +12,6 @@
 package kr.ac.kaist.safe.shell
 
 import kr.ac.kaist.safe.Config
-import kr.ac.kaist.safe.Safe
 import kr.ac.kaist.safe.compiler.Compiler
 import kr.ac.kaist.safe.exceptions.UserError
 import kr.ac.kaist.safe.safe_util.JSAstToConcrete
@@ -29,12 +28,12 @@ object ASTRewriteMain {
    * Rewrite files. If they rewrite ok, it will say "Ok".
    * If you want a dump then give -out=outfile.
    */
-  def doit: Int = {
-    if (Safe.config.FileNames.length == 0)
+  def doit(config: Config): Int = {
+    if (config.FileNames.length == 0)
       throw new UserError("The astRewrite command needs a file to disambiguate.")
-    val (program, return_code, _) = Compiler.astRewrite(Safe.config.FileNames)
-    if (Safe.config.opt_OutFileName != null) {
-      val outFileName = Safe.config.opt_OutFileName
+    val (program, return_code, _) = Compiler.astRewrite(config)
+    if (config.opt_OutFileName != null) {
+      val outFileName = config.opt_OutFileName
       try {
         val (fw, writer): (FileWriter, BufferedWriter) = Useful.filenameToWriters(outFileName)
         writer.write(JSAstToConcrete.doitInternal(program))

@@ -15,7 +15,6 @@ import java.io.BufferedWriter
 import java.io.FileWriter
 import java.io.IOException
 import kr.ac.kaist.safe.Config
-import kr.ac.kaist.safe.Safe
 import kr.ac.kaist.safe.compiler.{ Compiler, DefaultCFGBuilder }
 import kr.ac.kaist.safe.exceptions.{ StaticError, StaticErrors, UserError }
 import kr.ac.kaist.safe.nodes.CFG
@@ -30,17 +29,17 @@ object CFGMain {
    * Build a controfl flow graph.
    * If you want a dump then give -out=outfile.
    */
-  def cfgBuilder: Int = {
-    if (Safe.config.FileNames.length == 0)
+  def cfgBuilder(config: Config): Int = {
+    if (config.FileNames.length == 0)
       throw new UserError("Need a file to build a control flow graph.")
-    val fileNames = Safe.config.FileNames
-    val fileName: String = Safe.config.FileNames(0)
-    val addrManager: AddressManager = Safe.config.addrManager
+    val fileNames = config.FileNames
+    val fileName: String = config.FileNames(0)
+    val addrManager: AddressManager = config.addrManager
 
     // Initialize AddressManager
     addrManager.reset
-    val (ir, rc, _) = Compiler.compile(Safe.config.FileNames)
-    val (cfg: CFG, errors: List[StaticError]) = DefaultCFGBuilder.build(ir)
+    val (ir, rc, _) = Compiler.compile(config)
+    val (cfg: CFG, errors: List[StaticError]) = DefaultCFGBuilder.build(ir, config)
     val dump: String = cfg.dump
     var return_code = rc
 
@@ -48,8 +47,8 @@ object CFGMain {
       StaticErrors.reportErrors(NodeUtil.getFileName(ir), errors)
     } else return_code = -2
 
-    if (Safe.config.opt_OutFileName != null) {
-      val outFileName = Safe.config.opt_OutFileName
+    if (config.opt_OutFileName != null) {
+      val outFileName = config.opt_OutFileName
       try {
         val (fw, writer): (FileWriter, BufferedWriter) = Useful.filenameToWriters(outFileName)
         writer.write(dump)

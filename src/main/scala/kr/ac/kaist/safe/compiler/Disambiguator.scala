@@ -15,7 +15,7 @@ import kr.ac.kaist.safe.exceptions.StaticError
 import kr.ac.kaist.safe.nodes._
 import kr.ac.kaist.safe.safe_util.{ NodeFactory => NF, NodeUtil => NU, Span }
 import kr.ac.kaist.safe.useful.ErrorLog
-import kr.ac.kaist.safe.Safe
+import kr.ac.kaist.safe.Config
 
 /**
  * Eliminates ambiguities in an AST that can be resolved solely by knowing what
@@ -25,7 +25,7 @@ import kr.ac.kaist.safe.Safe
  *  - All name references that are undefined or used incorrectly are
  *    treated as static errors.
  */
-class Disambiguator(program: Program) extends ASTWalker {
+class Disambiguator(program: Program, config: Config) extends ASTWalker {
   /* Error handling
    * The signal function collects errors during the disambiguation phase.
    * To collect multiple errors,
@@ -43,8 +43,8 @@ class Disambiguator(program: Program) extends ASTWalker {
   /* Environment for renaming identifiers. */
   type Env = List[(String, String)]
   val emptyLabel = ("empty", "empty")
-  var env: Env = Safe.config.predVars.map(v => (v, v)) ++
-    Safe.config.predFuns.map(f => (f, f)) ++ List(
+  var env: Env = config.predVars.map(v => (v, v)) ++
+    config.predFuns.map(f => (f, f)) ++ List(
       ("alert", "alert"),
       (NU.internalPrint, NU.internalPrint)
     )

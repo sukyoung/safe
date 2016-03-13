@@ -18,7 +18,7 @@ import java.io.File
 import java.io.FilenameFilter
 import kr.ac.kaist.safe.compiler.{ Compiler, Parser, DefaultCFGBuilder }
 import kr.ac.kaist.safe.exceptions.StaticError
-import kr.ac.kaist.safe.nodes.{ CFG }
+import kr.ac.kaist.safe.nodes.CFG
 import kr.ac.kaist.safe.safe_util.AddressManager
 import kr.ac.kaist.safe.useful.Useful
 
@@ -33,12 +33,12 @@ class CFGSpec extends FlatSpec {
     val jsName: String = filename + ".js"
     val testName: String = filename + ".test"
 
-    Safe.config = Config(List("cfg", jsName))
-    val addrManager: AddressManager = Safe.config.addrManager
+    val config = Config(List("cfg", jsName))
+    val addrManager: AddressManager = config.addrManager
 
     addrManager.reset
-    val (ir, rc, _) = Compiler.compile(Safe.config.FileNames)
-    val (cfg: CFG, errors: List[StaticError]) = DefaultCFGBuilder.build(ir)
+    val (ir, rc, _) = Compiler.compile(config)
+    val (cfg: CFG, errors: List[StaticError]) = DefaultCFGBuilder.build(ir, config)
     val dump: String = cfg.dump
 
     assert(errors.isEmpty)

@@ -11,10 +11,11 @@
 
 package kr.ac.kaist.safe.compiler
 
+import kr.ac.kaist.safe.Config
 import kr.ac.kaist.safe.exceptions.StaticError
 import kr.ac.kaist.safe.nodes.{ IRRoot, CFG }
 
 // cfg builder
 trait CFGBuilder {
-  def build(ir: IRRoot): (CFG, List[StaticError])
+  def build(ir: IRRoot, config: Config): (CFG, List[StaticError])
 }

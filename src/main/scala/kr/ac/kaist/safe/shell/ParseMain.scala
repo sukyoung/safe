@@ -12,7 +12,6 @@
 package kr.ac.kaist.safe.shell
 
 import java.io.{ FileNotFoundException, IOException, BufferedWriter, FileWriter }
-import kr.ac.kaist.safe.Safe
 import kr.ac.kaist.safe.Config
 import kr.ac.kaist.safe.compiler.Parser
 import kr.ac.kaist.safe.exceptions.UserError
@@ -30,25 +29,24 @@ object ParseMain {
    * Parses files. If they parse ok, it will say "Ok".
    * If you want a dump then give -out=outfile.
    */
-  def parse(): Int = {
-    if (Safe.config.FileNames.length == 0) throw new UserError("Need a file to parse")
+  def parse(config: Config): Int = {
+    if (config.FileNames.length == 0) throw new UserError("Need a file to parse")
     try {
-      val pgm: Program = Parser.fileToAST(Safe.config.FileNames)
+      val pgm: Program = Parser.fileToAST(config.FileNames)
       System.out.println("Ok")
-      if (Safe.config.opt_OutFileName != null) {
+      if (config.opt_OutFileName != null) {
         try {
-          ASTIO.writeJavaAst(pgm, Safe.config.opt_OutFileName)
-          System.out.println("Dumped parse tree to " + Safe.config.opt_OutFileName)
+          ASTIO.writeJavaAst(pgm, config.opt_OutFileName)
+          System.out.println("Dumped parse tree to " + config.opt_OutFileName)
         } catch {
           case e: IOException =>
-            throw new IOException("IOException " + e + "while writing to " + Safe.config.opt_OutFileName)
+            throw new IOException("IOException " + e + "while writing to " + config.opt_OutFileName)
         }
       }
     } catch {
       case f: FileNotFoundException => throw new UserError(f + " not found")
       case e: Exception => println(e.getCause)
     }
-    if (Safe.config.opt_Time) Safe.printTimeTitle = "Parsing"
     return_code
   }
 }

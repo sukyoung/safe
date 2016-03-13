@@ -11,7 +11,7 @@
 
 package kr.ac.kaist.safe.compiler
 
-import kr.ac.kaist.safe.Safe
+import kr.ac.kaist.safe.Config
 import kr.ac.kaist.safe.exceptions.StaticError
 import kr.ac.kaist.safe.exceptions.StaticErrors
 import kr.ac.kaist.safe.nodes.IRRoot
@@ -19,8 +19,8 @@ import kr.ac.kaist.safe.nodes.Program
 import kr.ac.kaist.safe.safe_util.NodeUtil
 
 object Compiler {
-  def compile(fs: List[String]): (IRRoot, Int, List[StaticError]) = {
-    val (program, return_code, errors) = astRewrite(fs)
+  def compile(config: Config): (IRRoot, Int, List[StaticError]) = {
+    val (program, return_code, errors) = astRewrite(config)
     val translator = new Translator(program)
     val ir = translator.doit.asInstanceOf[IRRoot]
     val errs = errors ::: translator.getErrors
@@ -31,10 +31,10 @@ object Compiler {
     )
   }
 
-  def astRewrite(fs: List[String]): (Program, Int, List[StaticError]) = {
-    var program: Program = Parser.fileToAST(Safe.config.FileNames)
+  def astRewrite(config: Config): (Program, Int, List[StaticError]) = {
+    var program: Program = Parser.fileToAST(config.FileNames)
     program = (new Hoister(program).doit).asInstanceOf[Program]
-    val disambiguator = new Disambiguator(program)
+    val disambiguator = new Disambiguator(program, config)
     program = (disambiguator.doit).asInstanceOf[Program]
     var errors: List[StaticError] = disambiguator.getErrors
     val withRewriter: WithRewriter = new WithRewriter(program, false)

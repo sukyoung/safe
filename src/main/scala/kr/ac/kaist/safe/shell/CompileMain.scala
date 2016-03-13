@@ -12,7 +12,6 @@
 package kr.ac.kaist.safe.shell
 
 import kr.ac.kaist.safe.Config
-import kr.ac.kaist.safe.Safe
 import kr.ac.kaist.safe.compiler.Parser
 import kr.ac.kaist.safe.compiler.Hoister
 import kr.ac.kaist.safe.compiler.Disambiguator
@@ -37,13 +36,13 @@ object CompileMain {
    * Compile files. If they compile ok, it will say "Ok".
    * If you want a dump then give -out=outfile.
    */
-  def doit: Int = {
-    if (Safe.config.FileNames.length == 0)
+  def doit(config: Config): Int = {
+    if (config.FileNames.length == 0)
       throw new UserError("The astRewrite command needs a file to disambiguate.")
-    val (ir, return_code, _) = Compiler.compile(Safe.config.FileNames)
+    val (ir, return_code, _) = Compiler.compile(config)
     val ircode = new JSIRUnparser(ir).doit
-    if (Safe.config.opt_OutFileName != null) {
-      val outFileName = Safe.config.opt_OutFileName
+    if (config.opt_OutFileName != null) {
+      val outFileName = config.opt_OutFileName
       try {
         val (fw, writer): (FileWriter, BufferedWriter) = Useful.filenameToWriters(outFileName)
         ASTIO.writeJavaAst(ir, outFileName)
@@ -55,7 +54,6 @@ object CompileMain {
           throw new IOException("IOException " + e + "while writing to " + outFileName)
       }
     } else System.out.println(ircode)
-    if (Safe.config.opt_Time) Safe.printTimeTitle = "Compilation"
     return_code
   }
 }
