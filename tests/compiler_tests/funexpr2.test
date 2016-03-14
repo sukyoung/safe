@@ -1,0 +1,16 @@
+
+var functionName
+{
+  <>Global<>ignore1 = function functionName<>funexpr@1:20-44<>1(this, <>arguments<>2) 
+  {
+    return 0
+  }
+  functionName = <>Global<>ignore1
+}
+{
+  <>obj<>3 = <>Global<>toObject(functionName)
+  <>arguments<>4 = []
+  <>fun<>5 = <>Global<>getBase(functionName)
+  <>Global<>ignore2 = <>obj<>3(<>fun<>5, <>arguments<>4)
+}
+

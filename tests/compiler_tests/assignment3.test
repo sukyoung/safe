@@ -1,0 +1,11 @@
+
+
+{
+  <>obj<>1 = <>Global<>toObject(f)
+  <>arguments<>2 = []
+  <>fun<>3 = <>Global<>getBase(f)
+  <>Global<>ignore1 = <>obj<>1(<>fun<>3, <>arguments<>2)
+  y = <>Global<>ignore1
+  x = <>Global<>ignore1
+}
+

@@ -1,0 +1,6 @@
+function f000(this, <>arguments<>1) 
+{
+  <>arguments<>1 = 3
+}
+
+

@@ -1,0 +1,4 @@
+
+var x
+<>Global<>ignore1 = delete x
+

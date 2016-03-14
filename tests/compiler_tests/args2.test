@@ -1,0 +1,8 @@
+function f001(this, <>arguments<>1) 
+{
+  var <>x<>2
+  <>x<>2 = <>arguments<>1["0"]
+  <>arguments<>1 = 3
+}
+
+

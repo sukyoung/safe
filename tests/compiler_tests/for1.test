@@ -1,0 +1,84 @@
+
+var a
+var b
+var c
+var d
+{
+  {
+    a = 1
+  }
+  {
+    b = 2
+  }
+  {
+    c = 3
+  }
+}
+<>break<>1 : {
+  {
+    <>Global<>ignore5 = a
+  }
+  while("test")
+  {
+    <>continue<>2 : {
+      <>obj<>3 = <>Global<>toObject(print)
+      <>temp<>4 = 7
+      <>arguments<>5 = [<>temp<>4, ]
+      <>fun<>6 = <>Global<>getBase(print)
+      <>Global<>ignore6 = <>obj<>3(<>fun<>6, <>arguments<>5)
+    }
+  }
+}
+<>break<>7 : {
+  while(null)
+  {
+    <>continue<>8 : <>Global<>ignore10 = c
+    {
+      <>old<>9 = c
+      <>new<>10 = <>Global<>toNumber(<>old<>9)
+      c = <>new<>10 + 1
+      <>Global<>ignore8 = <>new<>10
+    }
+  }
+}
+<>break<>11 : {
+  while(true)
+  {
+    <>continue<>12 : {
+      <>old<>13 = b
+      <>new<>14 = <>Global<>toNumber(<>old<>13)
+      b = <>new<>14 + 1
+      <>Global<>ignore14 = <>new<>14
+    }
+    {
+      <>old<>15 = b
+      <>new<>16 = <>Global<>toNumber(<>old<>15)
+      b = <>new<>16 - 1
+      <>Global<>ignore12 = <>new<>16
+    }
+  }
+}
+<>break<>17 : {
+  {
+    <>Global<>ignore16 = "for"
+  }
+  while(12)
+  {
+    <>continue<>18 : break <>break<>17
+    {
+      <>Global<>ignore18 = false
+    }
+  }
+}
+<>break<>19 : {
+  while(true)
+  {
+    <>continue<>20 : {
+      {
+        d = 9
+      }
+      <>Global<>ignore21 = d
+    }
+  }
+}
+

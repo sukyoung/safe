@@ -1,0 +1,54 @@
+
+
+try
+  throw "1"
+catch(<>e<>1)
+  <>Global<>ignore2 = "1"
+finally
+  <>Global<>ignore4 = "2"
+try
+{
+  
+}
+catch(<>e<>2)
+{
+  
+}
+try
+{
+  
+}
+finally
+{
+  
+}
+try
+{
+  
+}
+catch(<>e<>3)
+{
+  
+}
+finally
+{
+  
+}
+try
+  try
+  {
+    
+  }
+  catch(<>e<>4)
+  {
+    
+  }
+catch(<>e<>5)
+{
+  
+}
+finally
+{
+  
+}
+

@@ -1,0 +1,32 @@
+
+var collection
+var x
+var y
+var z
+<>break<>1 : {
+  {
+    <>obj<>2 = collection
+    <>iterator<>3 = <>Global<>iteratorInit(<>obj<>2)
+    <>cond1<>4 = <>Global<>iteratorHasNext(<>obj<>2, <>iterator<>3)
+  }
+  while(<>cond1<>4)
+  {
+    <>key<>5 = <>Global<>iteratorNext(<>obj<>2, <>iterator<>3)
+    x = <>key<>5
+    <>continue<>6 : {
+      
+    }
+    {
+      <>cond1<>4 = <>Global<>iteratorHasNext(<>obj<>2, <>iterator<>3)
+    }
+  }
+}
+<>break<>7 : {
+  while(true)
+  {
+    <>continue<>8 : {
+      
+    }
+  }
+}
+

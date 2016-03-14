@@ -1,0 +1,12 @@
+function f100(this, <>arguments<>1) 
+{
+  var <>x<>2
+  var <>arguments<>3
+  var <>y<>4
+  <>x<>2 = <>arguments<>1["0"]
+  <>arguments<>3 = <>arguments<>1["1"]
+  <>y<>4 = <>arguments<>1["2"]
+  <>arguments<>3 = 2
+}
+
+

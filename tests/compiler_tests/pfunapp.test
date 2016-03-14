@@ -1,0 +1,42 @@
+
+
+o = 3
+{
+  <>obj<>1 = <>Global<>toObject(f)
+  <>arguments<>2 = []
+  <>fun<>3 = <>Global<>getBase(f)
+  <>Global<>ignore2 = <>obj<>1(<>fun<>3, <>arguments<>2)
+}
+{
+  <>obj<>4 = <>Global<>toObject(f)
+  <>temp<>5 = 3
+  <>temp<>6 = true
+  <>arguments<>7 = [<>temp<>5, <>temp<>6, ]
+  <>fun<>8 = <>Global<>getBase(f)
+  <>Global<>ignore3 = <>obj<>4(<>fun<>8, <>arguments<>7)
+}
+{
+  <>obj<>9 = <>Global<>toObject(o)
+  <>arguments<>10 = []
+  <>fun<>11 = <>Global<>toObject(<>obj<>9[f])
+  <>Global<>ignore4 = <>fun<>11(<>obj<>9, <>arguments<>10)
+}
+{
+  <>obj<>12 = <>Global<>toObject(o)
+  <>arguments<>13 = []
+  <>fun<>14 = <>Global<>toObject(<>obj<>12[f])
+  <>Global<>ignore5 = <>fun<>14(<>obj<>12, <>arguments<>13)
+}
+{
+  <>obj<>15 = <>Global<>toObject(o)
+  <>arguments<>16 = []
+  <>fun<>17 = <>Global<>toObject(<>obj<>15["g"])
+  <>Global<>ignore6 = <>fun<>17(<>obj<>15, <>arguments<>16)
+}
+{
+  <>obj<>18 = <>Global<>toObject(o)
+  <>arguments<>19 = []
+  <>fun<>20 = <>Global<>toObject(<>obj<>18["h"])
+  <>Global<>ignore7 = <>fun<>20(<>obj<>18, <>arguments<>19)
+}
+

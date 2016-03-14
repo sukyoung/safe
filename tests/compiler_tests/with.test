@@ -1,0 +1,21 @@
+
+
+{
+  {
+    <>Global<>ignore1 = <>Global<>toObject(1)
+    <>alpha<>1 = <>Global<>ignore1
+  }
+  {
+    <>Global<>ignore3 = 2
+    <>Global<>ignore5 = "jsaf"
+  }
+}
+{
+  <>Global<>ignore6 = <>Global<>toObject(true)
+  <>alpha<>2 = <>Global<>ignore6
+}
+{
+  <>Global<>ignore7 = <>Global<>toObject("jsaf")
+  <>alpha<>3 = <>Global<>ignore7
+}
+

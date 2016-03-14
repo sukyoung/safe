@@ -1,0 +1,28 @@
+function f(this, <>arguments<>1) 
+{
+  var <>a<>2
+  var <>b<>3
+  <>a<>2 = <>arguments<>1["0"]
+  <>b<>3 = <>arguments<>1["1"]
+  {
+    <>obj<>4 = <>Global<>toObject(<>a<>2)
+    <>Global<>ignore2 = <>obj<>4[<>b<>3]
+  }
+}
+
+<>break<>5 : {
+  {
+    <>continue<>6 : {
+      done : break done
+      break <>continue<>6
+    }
+  }
+  while(true)
+  {
+    <>continue<>6 : {
+      done : break done
+      break <>continue<>6
+    }
+  }
+}
+

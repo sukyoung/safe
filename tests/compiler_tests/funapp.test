@@ -1,0 +1,22 @@
+function f(this, <>arguments<>1) 
+{
+  var <>x<>2
+  var <>y<>3
+  <>x<>2 = <>arguments<>1["0"]
+  <>y<>3 = <>arguments<>1["1"]
+}
+
+<>Global<>ignore2 = "test"
+<>Global<>ignore4 = 3
+<>Global<>ignore6 = 9.0
+<>Global<>ignore8 = null
+<>Global<>ignore9 = eval("3")
+{
+  <>obj<>4 = <>Global<>toObject(f)
+  <>temp<>5 = 3
+  <>temp<>6 = true
+  <>arguments<>7 = [<>temp<>5, <>temp<>6, ]
+  <>fun<>8 = <>Global<>getBase(f)
+  <>Global<>ignore10 = <>obj<>4(<>fun<>8, <>arguments<>7)
+}
+

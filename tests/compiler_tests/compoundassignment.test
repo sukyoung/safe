@@ -1,0 +1,12 @@
+
+
+{
+  <>old<>1 = a
+  a = <>old<>1 + 1
+}
+{
+  <>obj<>2 = <>Global<>toObject(b)
+  <>old<>3 = <>obj<>2[c]
+  <>obj<>2[c] = <>old<>3 / 1
+}
+
