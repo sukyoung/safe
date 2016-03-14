@@ -1,0 +1,21 @@
+  function f() 
+  {
+    function g() 
+    {
+      var arguments;
+      
+          {
+        
+      }
+      arguments;
+      this;
+    }
+    function h(arguments) 
+    {
+      arguments;
+      this;
+    }
+      arguments[1];
+    this;
+  }
+  

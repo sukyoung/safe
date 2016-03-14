@@ -1,0 +1,37 @@
+  var collection;
+  var x;
+  var y;
+  var z;
+  var v;
+  
+  {
+    
+  }
+  for (x in collection)
+  {
+    
+  }
+  {
+    y = undefined;
+    for (y in collection)
+    {
+      
+    }
+  }
+  {
+    {
+      
+    }
+    for (;z < 5;z++)
+    {
+      
+    }
+  }
+  {
+    v = 0;
+    for (;v < 3;v++)
+    {
+      
+    }
+  }
+  

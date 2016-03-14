@@ -18,16 +18,25 @@ object StaticErrors {
     return result
   }
 
-  def reportErrors(file_name: String, errs: Iterable[_ <: StaticError]): Int = {
+  def getReportErrors(file_name: String, errs: Iterable[_ <: StaticError]): Option[String] = {
     val errors = flattenErrors(errs)
-    var return_code: Int = 0
-    if (!errs.isEmpty) {
+    if (!errors.isEmpty) {
+      var str: String = ""
       for (error: StaticError <- errors.sortWith(_.compareTo(_) < 0))
-        System.out.println(error.getMessage)
+        str += error.getMessage + "\n"
       val num_errors = errors.length
-      System.out.println(s"File $file_name has $num_errors error" + (if (num_errors == 1) "." else "s."))
-      return_code = -2
+      str += s"File $file_name has $num_errors error" + (if (num_errors == 1) "." else "s.")
+      Some(str)
+    } else {
+      None
     }
-    return return_code
+  }
+
+  def reportErrors(file_name: String, errs: Iterable[_ <: StaticError]): Int = {
+    getReportErrors(file_name, errs) match {
+      case Some(str) =>
+        System.out.println(str); -2
+      case None => 0
+    }
   }
 }

@@ -1,0 +1,10 @@
+  y = 1;
+  obj = {
+    y : 10
+  };
+  {
+    <>alpha<>1 = <>Global<>toObject(obj);
+    ("y" in <>alpha<>1 ? <>alpha<>1.y : y);
+  }
+  y;
+  

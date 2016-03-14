@@ -1,0 +1,3 @@
+${DISAMB_TESTS_DIR}/disamb7.js:1:1-10:
+    Identifier arguments is not bound.
+File ${DISAMB_TESTS_DIR}/disamb7.js has 1 error.

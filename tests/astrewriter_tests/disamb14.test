@@ -1,0 +1,3 @@
+${DISAMB_TESTS_DIR}/disamb14.js:1:20-32:
+    Continue occurs outside of a label.
+File ${DISAMB_TESTS_DIR}/disamb14.js has 1 error.
