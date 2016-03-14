@@ -104,6 +104,19 @@ class JSIRUnparser(program: IRNode) extends IRWalker {
     else n
   }
 
+  def inlineIndent(stmt: IRStmt, s: StringBuilder): Unit = {
+    stmt match {
+      case IRStmtUnit(_, stmts) if stmts.length != 1 =>
+        s.append(getIndent).append(walk(stmt))
+      case IRSeq(_, _) =>
+        s.append(getIndent).append(walk(stmt))
+      case _ =>
+        increaseIndent
+        s.append(getIndent).append(walk(stmt))
+        decreaseIndent
+    }
+  }
+
   /* The rule of separators(indentation, semicolon and newline) in unparsing pattern matchings.
    * This rule is applied recursively
    * Principle: All case already has indentation at the front and newline at the end.
@@ -194,10 +207,12 @@ class JSIRUnparser(program: IRNode) extends IRWalker {
     case IRIf(_, expr, trueBranch, falseBranch) =>
       val s: StringBuilder = new StringBuilder
       s.append("if(").append(walk(expr)).append(")\n")
-      s.append(getIndent).append(walk(trueBranch))
-      if (falseBranch.isDefined) {
-        s.append("\n").append(getIndent).append("else\n")
-        s.append(getIndent).append(walk(falseBranch))
+      inlineIndent(trueBranch, s)
+      falseBranch match {
+        case Some(f) =>
+          s.append("\n").append(getIndent).append("else\n")
+          inlineIndent(f, s)
+        case None =>
       }
       s.toString
     case IRLabelStmt(_, label, stmt) =>
@@ -263,15 +278,20 @@ class JSIRUnparser(program: IRNode) extends IRWalker {
       s.toString
     case IRTry(_, body, name, catchBlock, fin) =>
       val s: StringBuilder = new StringBuilder
-      s.append("try\n").append(getIndent).append(walk(body))
-      if (catchBlock.isDefined) {
-        s.append("\n").append(getIndent)
-        s.append("catch(").append(walk(name.get)).append(")\n")
-        s.append(getIndent).append(walk(catchBlock.get))
+      s.append("try\n")
+      inlineIndent(body, s)
+      catchBlock match {
+        case Some(cb) =>
+          s.append("\n").append(getIndent)
+          s.append("catch(").append(walk(name.get)).append(")\n")
+          inlineIndent(cb, s)
+        case None =>
       }
-      if (fin.isDefined) {
-        s.append("\n").append(getIndent).append("finally\n")
-        s.append(getIndent).append(walk(fin))
+      fin match {
+        case Some(f) =>
+          s.append("\n").append(getIndent).append("finally\n")
+          inlineIndent(f, s)
+        case None =>
       }
       s.toString
     case IRUn(_, op, expr) =>
