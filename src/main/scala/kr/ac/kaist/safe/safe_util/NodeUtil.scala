@@ -419,42 +419,29 @@ object NodeUtil {
   object simplifyIRWalker extends IRWalker {
     override def walk(node: Any): Any = node match {
       case IRRoot(info, fds, vds, irs) =>
-        IRRoot(info, super.walk(fds).asInstanceOf[List[IRFunDecl]], vds,
-          simplify(irs.map(walk).asInstanceOf[List[IRStmt]]))
+        IRRoot(info, walk(fds).asInstanceOf[List[IRFunDecl]], vds, simplify(irs))
 
       case IRFunctional(i, f, n, params, args, fds, vds, body) =>
-        IRFunctional(i, f, n, params, args.map(walk).asInstanceOf[List[IRStmt]],
-          super.walk(fds).asInstanceOf[List[IRFunDecl]], vds,
-          simplify(body.map(walk).asInstanceOf[List[IRStmt]]))
+        IRFunctional(i, f, n, params, simplify(args), walk(fds).asInstanceOf[List[IRFunDecl]], vds, simplify(body))
 
       case IRStmtUnit(info, stmts) =>
-        IRStmtUnit(info, simplify(stmts.map(walk).asInstanceOf[List[IRStmt]]))
+        IRStmtUnit(info, simplify(stmts))
 
       case IRSeq(info, stmts) =>
-        IRSeq(info, simplify(stmts.map(walk).asInstanceOf[List[IRStmt]]))
+        IRSeq(info, simplify(stmts))
 
       case _ => super.walk(node)
     }
 
-    // Simplify a list of IRStmts recursively until no change
-    var repeat = false
-    def simplify(stmts: List[IRStmt]): List[IRStmt] = {
-      repeat = false
-      val simplified = simpl(stmts)
-      val result = if (repeat) simplify(simplified) else simplified
-      result
-    }
-
-    def simpl(stmts: List[IRStmt]): List[IRStmt] = stmts match {
+    // Simplify a list of IRStmts
+    def simplify(stmts: List[IRStmt]): List[IRStmt] = stmts match {
       case Nil => Nil
       case stmt :: rest => stmt match {
         // Remove an empty internal IRStmt list
-        case IRSeq(_, Nil) =>
-          repeat = true; simpl(rest)
+        case IRSeq(_, Nil) => simplify(rest)
 
         // Remove a self assignment IRStmt
-        case IRExprStmt(_, lhs, rhs: IRId, ref) if lhs.uniqueName.equals(rhs.uniqueName) =>
-          repeat = true; simpl(rest)
+        case IRExprStmt(_, lhs, rhs: IRId, ref) if lhs.uniqueName.equals(rhs.uniqueName) => simplify(rest)
 
         // Simplify the following case:
         //     <>ignore<>1 = expr
@@ -472,7 +459,7 @@ object NodeUtil {
         }
         */
 
-        case _ => walk(stmt).asInstanceOf[IRStmt] :: simpl(rest)
+        case _ => walk(stmt).asInstanceOf[IRStmt] :: simplify(rest)
       }
     }
   }
