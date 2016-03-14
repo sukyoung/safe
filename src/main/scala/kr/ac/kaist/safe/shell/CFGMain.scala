@@ -36,8 +36,6 @@ object CFGMain {
     val fileName: String = config.FileNames(0)
     val addrManager: AddressManager = config.addrManager
 
-    // Initialize AddressManager
-    addrManager.reset
     val (ir, rc, _) = Compiler.compile(config)
     val (cfg: CFG, errors: List[StaticError]) = DefaultCFGBuilder.build(ir, config)
     val dump: String = cfg.dump

@@ -16,8 +16,8 @@ import scala.collection.mutable.{ HashMap => MHashMap }
 import scala.util.matching.Regex
 import kr.ac.kaist.safe.nodes._
 
-object DefaultAddressManager extends AddressManager {
-  private class AddressManager {
+class DefaultAddressManager extends AddressManager {
+  private object AMObj {
     // Address 0 is pre-allocated for Global Callsite.
     /* address counter for user loation */
     var programAddrCount = 1
@@ -70,8 +70,6 @@ object DefaultAddressManager extends AddressManager {
 
   }
 
-  private var manager: AddressManager = null
-
   /* start address for PureLocal/builtin function addresses */
   var systemStartAddr = -1
   val systemAddrTable: MMap[Address, String] = MHashMap()
@@ -83,9 +81,6 @@ object DefaultAddressManager extends AddressManager {
     addr
   }
 
-  def reset(): Unit = {
-    manager = new AddressManager()
-  }
   def addrToLoc(addr: Address, recency: RecencyTag): Loc = (addr << 1) | recency
 
   def locToAddr(loc: Loc): Address = loc >> 1
@@ -105,7 +100,7 @@ object DefaultAddressManager extends AddressManager {
       if (addr < 0)
         systemAddrTable
       else
-        manager.addrTable
+        AMObj.addrTable
     tbl.get(addr) match {
       case Some(name) => name
       case None => addr.toString
@@ -115,7 +110,7 @@ object DefaultAddressManager extends AddressManager {
   def parseLocName(s: String): Option[Loc] = {
     val pattern = new Regex("""(#|##)([0-9a-zA-Z.]+)""", "prefix", "locname")
     def find(addrName: String): Option[Address] = {
-      val f = manager.reverseAddrTable.get(addrName)
+      val f = AMObj.reverseAddrTable.get(addrName)
       f match {
         case Some(_) => f
         case None => revSystemAddrTable.get(addrName)
@@ -149,10 +144,10 @@ object DefaultAddressManager extends AddressManager {
   }
 
   /* newProgramAddr : Unit -> Address */
-  def newProgramAddr(): Address = manager.newProgramAddr()
+  def newProgramAddr(): Address = AMObj.newProgramAddr()
   def newProgramAddr(name: String): Address = {
-    val addr = manager.newProgramAddr()
-    manager.registerAddress(addr, name)
+    val addr = AMObj.newProgramAddr()
+    AMObj.registerAddress(addr, name)
     addr
   }
   /* newProgramLoc : String -> Loc */
@@ -161,7 +156,7 @@ object DefaultAddressManager extends AddressManager {
     addrToLoc(addr, Recent)
   }
   def newRecentLoc(): Loc = {
-    val addr = manager.newProgramAddr()
+    val addr = AMObj.newProgramAddr()
     addrToLoc(addr, Recent)
   }
 

@@ -161,6 +161,6 @@ object Config {
 
     CommandLineArgumentParser.getArgument(args)
 
-    new Config(command, opt_OutFileName, opt_Time, opt_unrollingCount, FileNames, DefaultAddressManager)
+    new Config(command, opt_OutFileName, opt_Time, opt_unrollingCount, FileNames, new DefaultAddressManager)
   }
 }

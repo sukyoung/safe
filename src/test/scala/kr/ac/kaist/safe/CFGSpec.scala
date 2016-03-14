@@ -36,7 +36,6 @@ class CFGSpec extends FlatSpec {
     val config = Config(List("cfg", jsName))
     val addrManager: AddressManager = config.addrManager
 
-    addrManager.reset
     val (ir, rc, _) = Compiler.compile(config)
     val (cfg: CFG, errors: List[StaticError]) = DefaultCFGBuilder.build(ir, config)
     val dump: String = cfg.dump

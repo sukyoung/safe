@@ -13,7 +13,6 @@ package kr.ac.kaist.safe.safe_util
 import kr.ac.kaist.safe.nodes.{ Address, Loc, RecencyTag }
 
 trait AddressManager {
-  def reset(): Unit
   def addrToLoc(addr: Address, recency: RecencyTag): Loc
   def locToAddr(loc: Loc): Address
   def oldifyLoc(loc: Loc): Loc
