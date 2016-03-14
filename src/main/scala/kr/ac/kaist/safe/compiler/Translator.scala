@@ -223,12 +223,12 @@ class Translator(program: Program) extends ASTWalker {
   }
 
   def makeList(ast: ASTNode, ss: List[IRStmt], expr: IRExpr, id: IRId): List[IRStmt] = expr match {
-    case id: IRId if id.uniqueName.equals(id.uniqueName) => ss
+    case irid: IRId if irid.uniqueName.equals(id.uniqueName) => ss
     case _ => ss :+ mkExprS(ast, id, expr)
   }
 
   def makeSeq(ast: ASTNode, info: ASTNodeInfo, ss: List[IRStmt], expr: IRExpr, id: IRId): IRSeq = expr match {
-    case id: IRId if id.uniqueName.equals(id.uniqueName) => IF.makeSeq(ast, getSpan(info), ss)
+    case irid: IRId if irid.uniqueName.equals(id.uniqueName) => IF.makeSeq(ast, getSpan(info), ss)
     case _ => IF.makeSeq(ast, getSpan(info), ss :+ mkExprS(ast, id, expr))
   }
 
