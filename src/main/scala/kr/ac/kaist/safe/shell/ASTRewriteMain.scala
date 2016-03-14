@@ -36,7 +36,7 @@ object ASTRewriteMain {
       val outFileName = config.opt_OutFileName
       try {
         val (fw, writer): (FileWriter, BufferedWriter) = Useful.filenameToWriters(outFileName)
-        writer.write(JSAstToConcrete.doitInternal(program))
+        writer.write((new JSAstToConcrete).doitInternal(program))
         writer.close
         fw.close
         System.out.println("Dumped rewritten AST to " + outFileName)
@@ -44,7 +44,7 @@ object ASTRewriteMain {
         case e: IOException =>
           throw new IOException("IOException " + e + "while writing to " + outFileName)
       }
-    } else System.out.println(JSAstToConcrete.doit(program))
+    } else System.out.println((new JSAstToConcrete).doit(program))
     return return_code
   }
 }

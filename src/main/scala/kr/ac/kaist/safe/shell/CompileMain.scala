@@ -22,7 +22,7 @@ import kr.ac.kaist.safe.exceptions.StaticErrors
 import kr.ac.kaist.safe.exceptions.UserError
 import kr.ac.kaist.safe.nodes.Program
 import kr.ac.kaist.safe.nodes_util.ASTIO
-import kr.ac.kaist.safe.safe_util.{ JSAstToConcrete, JSIRUnparser, NodeUtil }
+import kr.ac.kaist.safe.safe_util.{ JSIRUnparser, NodeUtil }
 import kr.ac.kaist.safe.useful.Useful
 import java.io.BufferedWriter
 import java.io.FileWriter

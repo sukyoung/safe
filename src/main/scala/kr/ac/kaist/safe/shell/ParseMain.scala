@@ -17,7 +17,7 @@ import kr.ac.kaist.safe.compiler.Parser
 import kr.ac.kaist.safe.exceptions.UserError
 import kr.ac.kaist.safe.nodes.Program
 import kr.ac.kaist.safe.nodes_util.ASTIO
-import kr.ac.kaist.safe.safe_util.{ JSAstToConcrete, NodeFactory }
+import kr.ac.kaist.safe.safe_util.NodeFactory
 import kr.ac.kaist.safe.useful.Useful
 
 ////////////////////////////////////////////////////////////////////////////////

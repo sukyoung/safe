@@ -122,7 +122,7 @@ public Triple<List<SourceElement>, String, Boolean> FunctionBody =
                        Boolean.valueOf(true));
      }
    / opencurly w a1:UseStrictDirectives? w a2:SourceElements w closecurly
-     { String str = JSAstToConcrete.prBody(a2);
+     { String str = (new JSAstToConcrete()).prBody(a2);
        if (a1 == null)
          yyValue = new Triple<List<SourceElement>, String, Boolean>(a2, "{ " + str + " }", Boolean.valueOf(false));
        else

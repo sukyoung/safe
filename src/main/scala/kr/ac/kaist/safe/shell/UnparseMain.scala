@@ -34,7 +34,7 @@ object UnparseMain {
 
     val result = ASTIO.readJavaAst(fileName)
     if (result.isSome) {
-      val code = JSAstToConcrete.doit(result.unwrap)
+      val code = (new JSAstToConcrete).doit(result.unwrap)
       if (config.opt_OutFileName != null) {
         try {
           val (fw, writer) = Useful.filenameToWriters(config.opt_OutFileName)

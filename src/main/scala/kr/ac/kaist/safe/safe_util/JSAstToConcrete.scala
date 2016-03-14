@@ -20,7 +20,7 @@ import kr.ac.kaist.safe.scala_useful.Options._
 import edu.rice.cs.plt.iter.IterUtil
 import edu.rice.cs.plt.tuple.Option
 
-object JSAstToConcrete extends ASTWalker {
+class JSAstToConcrete extends ASTWalker {
 
   val width = 50
   var internal = false
@@ -395,6 +395,8 @@ object JSAstToConcrete extends ASTWalker {
       prFtn(s, fds, vds, body.body)
       s.append("\n").append(getIndent).append("}")
       s.toString
+    case Id(info, text, Some(uniq), true) =>
+      walk(info) + uniq.dropRight(significantBits) + getE(uniq.takeRight(significantBits))
     case Id(info, text, Some(uniq), _) =>
       walk(info) + (if (internal && NU.isInternal(uniq))
         uniq.dropRight(significantBits) + getE(uniq.takeRight(significantBits))
