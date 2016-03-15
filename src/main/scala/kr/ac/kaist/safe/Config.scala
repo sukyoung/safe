@@ -17,7 +17,6 @@ import java.io.IOException
 import scala.util.parsing.combinator._
 import kr.ac.kaist.safe.safe_util.{ NodeUtil => NU, AddressManager, DefaultAddressManager }
 import kr.ac.kaist.safe.useful.Useful
-import kr.ac.kaist.safe.useful.Path
 
 class Config(
     val command: String,
@@ -83,19 +82,7 @@ object Config {
     var s = ""
     s = System.getenv("SAFE_HOME")
     if (s == null || s.equals("")) {
-      try {
-        val p = new Path(System.getProperty("java.class.path"))
-        val f = p.findDir("../src")
-        try {
-          s = (new File(f, "..")).getCanonicalPath
-        } catch {
-          case ex: IOException =>
-            throw new Error("Failure to evaluate relative path .. from " + f)
-        }
-      } catch {
-        case ex1: FileNotFoundException =>
-          throw new Error("Could not find SAFE_HOME or probing classpath.")
-      }
+      throw new Error("Could not find SAFE_HOME.")
     }
     Useful.windowPathToUnixPath(s)
   }
