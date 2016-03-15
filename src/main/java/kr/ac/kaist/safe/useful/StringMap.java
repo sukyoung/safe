@@ -174,9 +174,9 @@ public interface StringMap {
                 FileInputStream fs = new FileInputStream(filename);
                 InputStreamReader ir = new InputStreamReader(fs, Charset.forName("UTF-8"));
                 BufferedReader bis = new BufferedReader(ir);
-                Properties tmp_p = new Properties();
-                tmp_p.load(bis);
-                p = tmp_p; // Assign if no exception.
+                Properties tmpP = new Properties();
+                tmpP.load(bis);
+                p = tmpP; // Assign if no exception.
                 bis.close(); ir.close(); fs.close();
             }
             catch (IOException ex) {
@@ -201,9 +201,9 @@ public interface StringMap {
             optionalPrefix = null;
         }
 
-        public FromReflection(Class cl, String optional_prefix) {
+        public FromReflection(Class cl, String optPrefix) {
             mapClass = cl;
-            optionalPrefix = optional_prefix;
+            optionalPrefix = optPrefix;
         }
 
         public String get(String s) {

@@ -599,22 +599,22 @@ public class JUseful {
         return c3.compare(a, b);
     }
 
-    public static int countMatches(String input, String to_match) {
+    public static int countMatches(String input, String toMatch) {
         int j = 0;
-        int l = to_match.length();
+        int l = toMatch.length();
         if (l == 0) return input.length() == 0 ? 1 : 0;
 
-        int i = input.indexOf(to_match);
+        int i = input.indexOf(toMatch);
 
         while (i != -1) {
             j++;
-            i = input.indexOf(to_match, i + l);
+            i = input.indexOf(toMatch, i + l);
         }
         return j;
     }
 
-    public static String extractBeforeMatchOrAll(String input, String to_match) {
-        int i = input.indexOf(to_match);
+    public static String extractBeforeMatchOrAll(String input, String toMatch) {
+        int i = input.indexOf(toMatch);
         if (i == -1) return input;
         return input.substring(0, i);
     }
@@ -744,10 +744,10 @@ public class JUseful {
         } catch (IOException ex) {
             // Probably the directory did not exist, therefore, make it so.
             // ONLY DEAL IN SLASHES.  THAT WORKS WITH WINDOWS.
-            int last_slash = filename.lastIndexOf('/');
-            if (last_slash == -1)
+            int lastSlash = filename.lastIndexOf('/');
+            if (lastSlash == -1)
                 throw ex;
-            String dir = filename.substring(0, last_slash);
+            String dir = filename.substring(0, lastSlash);
             ensureDirectoryExists(dir);
             fw = new FileWriter(filename);
         }
@@ -820,28 +820,28 @@ public class JUseful {
         return substituteVarsCompletely(e, map, limit, envVar, INTRO_LEN, OUTRO_LEN);
     }
         
-    public static String substituteVarsCompletely(String e, StringMap map, int limit, Pattern vpat, int v_intro, int v_outro) {
-        String initial_e = e;
-        String old_e = e;
-        e = substituteVars(e, vpat, v_intro, v_outro, map);
-        while (old_e != e && limit-- > 0) {
-            old_e = e;
-            e = substituteVars(e, vpat, v_intro, v_outro, map);
+    public static String substituteVarsCompletely(String e, StringMap map, int limit, Pattern vpat, int vIntro, int vOutro) {
+        String initialE = e;
+        String oldE = e;
+        e = substituteVars(e, vpat, vIntro, vOutro, map);
+        while (oldE != e && limit-- > 0) {
+            oldE = e;
+            e = substituteVars(e, vpat, vIntro, vOutro, map);
         }
         if (limit <= 0) {
             throw new Error(
-                    "String substitution failed to terminate, input=" + initial_e + ", " + " non-final result=" + e);
+                    "String substitution failed to terminate, input=" + initialE + ", " + " non-final result=" + e);
         }
         return e;
     }
 
     public static final StringMap sysMap = new StringMap.ComposedMaps(new StringMap.FromSysProps(), new StringMap.FromEnv());
 
-    public static String substituteVars(String e, Pattern varPat, int intro_len, int outro_len) {
-        return substituteVars(e, varPat, intro_len, outro_len, sysMap);
+    public static String substituteVars(String e, Pattern varPat, int introLen, int outroLen) {
+        return substituteVars(e, varPat, introLen, outroLen, sysMap);
     }
 
-    public static String substituteVars(String e, Pattern varPat, int intro_len, int outro_len, StringMap map) {
+    public static String substituteVars(String e, Pattern varPat, int introLen, int outroLen, StringMap map) {
         Matcher m = varPat.matcher(e);
 
         int lastMatchEnd = 0;
@@ -851,7 +851,7 @@ public class JUseful {
             MatchResult mr = m.toMatchResult();
             newE.append(e.substring(lastMatchEnd, mr.start()));
             lastMatchEnd = mr.end();
-            String toReplace = e.substring(mr.start() + intro_len, mr.end() - outro_len);
+            String toReplace = e.substring(mr.start() + introLen, mr.end() - outroLen);
             String candidate = map.get(toReplace);
             if (candidate == null) candidate = "";
             newE.append(candidate);
