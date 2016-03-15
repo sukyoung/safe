@@ -11,7 +11,6 @@
 
 package kr.ac.kaist.safe.safe_util
 
-import kr.ac.kaist.safe.nodes_util.Unprinter
 import kr.ac.kaist.safe.useful.MagicNumbers
 import kr.ac.kaist.safe.exceptions.SAFEError
 import java.io.File
@@ -71,14 +70,14 @@ class Span(b: SourceLoc, e: SourceLoc) extends UIDObject with Serializable {
 
   override def toString: String =
     try {
-      appendToStr(new StringBuilder, true, false).toString
+      appendToStr(new StringBuilder, true).toString
     } catch {
       case e: IOException => SAFEError.np.asInstanceOf[String]
     }
 
   def toStringWithoutFiles: String =
     try {
-      appendToStr(new StringBuilder, false, false).toString
+      appendToStr(new StringBuilder, false).toString
     } catch {
       case e: IOException => SAFEError.np.asInstanceOf[String]
     }
@@ -87,42 +86,27 @@ class Span(b: SourceLoc, e: SourceLoc) extends UIDObject with Serializable {
 
   def stringName: String = ""
 
-  def appendTo(w: Appendable, do_files: Boolean): Appendable =
-    appendTo(w, do_files, false)
-
-  def appendTo(w: Appendable, do_files: Boolean, printer: Boolean): Appendable = {
-    w.append(appendToStr(new StringBuilder, do_files, printer).toString)
-    w
-  }
-
-  def appendToStr(w: StringBuilder, do_files: Boolean, printer: Boolean): StringBuilder = {
+  def appendToStr(w: StringBuilder, do_files: Boolean): StringBuilder = {
     val left_col = begin.column
     val right_col = end.column
     val file_names_differ = !(begin.fileName.equals(end.fileName))
-    if (printer) w.append(" @")
     if (do_files | file_names_differ) {
-      if (printer) w.append("\"")
       // Need to add escapes to the file name
       var beginFileName: String = ""
-      if (printer) beginFileName = convertNameSeparatorToSlash(Unprinter.enQuote(begin.fileName))
-      else beginFileName = convertNameSeparatorToSlash(begin.fileName)
+      beginFileName = convertNameSeparatorToSlash(begin.fileName)
       w.append(beginFileName)
-      if (printer) w.append("\"")
       w.append(":")
     }
     w.append(String.valueOf(begin.line))
     w.append(":")
     w.append(String.valueOf(left_col))
     if (file_names_differ || begin.line != end.line || left_col != right_col) {
-      w.append(if (printer) "~" else "-")
+      w.append("-")
       if (file_names_differ) {
-        if (printer) w.append("\"")
         // Need to add escapes to the file name
         var endFileName: String = ""
-        if (printer) endFileName = convertNameSeparatorToSlash(Unprinter.enQuote(end.fileName))
-        else endFileName = convertNameSeparatorToSlash(end.fileName)
+        endFileName = convertNameSeparatorToSlash(end.fileName)
         w.append(endFileName)
-        if (printer) w.append("\"")
         w.append(":")
       }
       if (file_names_differ || begin.line != end.line) {

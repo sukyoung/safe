@@ -16,7 +16,6 @@ import kr.ac.kaist.safe.Config
 import kr.ac.kaist.safe.compiler.Parser
 import kr.ac.kaist.safe.exceptions.UserError
 import kr.ac.kaist.safe.nodes.Program
-import kr.ac.kaist.safe.nodes_util.ASTIO
 import kr.ac.kaist.safe.safe_util.NodeFactory
 import kr.ac.kaist.safe.useful.Useful
 
@@ -33,14 +32,6 @@ object ParseMain {
     if (config.FileNames.length == 0) throw new UserError("Need a file to parse")
     try {
       val pgm: Program = Parser.fileToAST(config.FileNames)
-      if (config.opt_OutFileName != null) {
-        try {
-          ASTIO.writeJavaAst(pgm, config.opt_OutFileName)
-        } catch {
-          case e: IOException =>
-            throw new IOException("IOException " + e + "while writing to " + config.opt_OutFileName)
-        }
-      }
     } catch {
       case f: FileNotFoundException => throw new UserError(f + " not found")
       case e: Exception => println(e.getCause)

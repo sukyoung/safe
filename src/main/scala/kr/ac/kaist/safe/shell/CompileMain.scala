@@ -21,7 +21,6 @@ import kr.ac.kaist.safe.exceptions.StaticError
 import kr.ac.kaist.safe.exceptions.StaticErrors
 import kr.ac.kaist.safe.exceptions.UserError
 import kr.ac.kaist.safe.nodes.Program
-import kr.ac.kaist.safe.nodes_util.ASTIO
 import kr.ac.kaist.safe.safe_util.{ JSIRUnparser, NodeUtil }
 import kr.ac.kaist.safe.useful.Useful
 import java.io.BufferedWriter
@@ -45,7 +44,7 @@ object CompileMain {
       val outFileName = config.opt_OutFileName
       try {
         val (fw, writer): (FileWriter, BufferedWriter) = Useful.filenameToWriters(outFileName)
-        ASTIO.writeJavaAst(ir, outFileName)
+        writer.write(ircode)
         writer.close
         fw.close
         System.out.println("Dumped IR to " + outFileName)

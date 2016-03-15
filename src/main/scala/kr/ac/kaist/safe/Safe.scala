@@ -14,7 +14,6 @@ package kr.ac.kaist.safe
 import kr.ac.kaist.safe.exceptions.ParserError
 import kr.ac.kaist.safe.exceptions.UserError
 import kr.ac.kaist.safe.shell.ParseMain
-import kr.ac.kaist.safe.shell.UnparseMain
 import kr.ac.kaist.safe.shell.ASTRewriteMain
 import kr.ac.kaist.safe.shell.CompileMain
 import kr.ac.kaist.safe.shell.CFGMain
@@ -73,8 +72,6 @@ object Safe {
       if (config.command.equals("parse")) {
         return_code = ParseMain.parse(config)
         if (config.opt_Time) printTimeTitle = "Parsing"
-      } else if (config.command.equals("unparse")) {
-        return_code = UnparseMain.unparse(config)
       } else if (config.command.equals("astRewrite")) {
         return_code = ASTRewriteMain.doit(config)
       } else if (config.command.equals("compile")) {
@@ -105,7 +102,6 @@ object Safe {
     System.err.print(
       "Usage:\n" +
         " parse [-out=outfile] [-time] infile.js ...\n" +
-        " unparse [-out=outfile] infile.tjs\n" +
         " astRewrite [-out=outfile] infile.js ...\n" +
         " compile [-out=outfile] [-time] infile.js ...\n" +
         " cfg [-out=outfile] infile.js ...\n" +
@@ -124,10 +120,6 @@ object Safe {
         "  The files are concatenated in the given order before being parsed.\n" +
         "  If -out=outfile is given, the parsed AST will be written to the outfile.\n" +
         "  If -time is given, the time it takes will be printed.\n" +
-        "\n" +
-        "safe unparse [-out=outfile] infile.tjs\n" +
-        "  Converts a parsed file back to JavaScript source code. The output will be dumped to stdout if -out is not given.\n" +
-        "  If -out=outfile is given, the unparsed source code will be written to the outfile.\n" +
         "\n" +
         "safe astRewrite [-out=outfile] infile.js ...\n" +
         "  Rewrites AST in JavaScript source files (hoister, disambiguater, withRewriter).\n" +
