@@ -124,7 +124,7 @@ public class Unprinter extends NodeReflection {
         next = l.name(false);
 
         SourceLoc ending = beginning;
-        if (Printer.tilde.equals(next)) {
+        if (next.equals("~")) {
             next = l.name(false);
             boolean sawFile = false;
             if (next.startsWith("\"") && next.endsWith("\"")) {
@@ -233,22 +233,12 @@ public class Unprinter extends NodeReflection {
                 // There is some, not too much, consistency checking
                 // between Field type and input syntax.
                 if (f.getType() == List.class || f.getType() == scala.collection.immutable.List.class) {
-                    expectPrefix("[");
+                    //expectPrefix("[");
+                    String s = l.name();
                     // This is an actual hole. Might want to add a
                     // structure-verification
                     // frob to any methods containing List or Pair.
-                    f.set(node, readList());
-                } else if (f.getType() == Map.class){
-                    expectPrefix("(Map");
-                    f.set(node, readMap());
-                    /*
-                } else if (f.getType() == Pair.class) {
-                    expectPrefix("(Pair");
-                    // This is an actual hole. Might want to add a
-                    // structure-verification
-                    // frob to any methods containing List or Pair.
-                    f.set(node, readPair());
-                    */
+                    f.set(node, readList(s));
                 } else if (f.getType() == String.class) {
                     f.set(node, deQuote(l.name()).intern()); // Lexer returns an
                                                      // escape-containing
@@ -462,6 +452,17 @@ public class Unprinter extends NodeReflection {
         return sb.toString();
     }
 
+    private static boolean isNumber(String s) {
+        for (int i = 0; i < s.length(); i++) {
+            if (!isNumberOrDot(s.charAt(i))) return false;
+        }
+        return true;
+    }
+
+    private static boolean isNumberOrDot(char c) {
+        return c == '.' || (c >= '0' && c <= '9');
+    }
+
     private static boolean needsUnicoding(char c) {
         return c < ' ' || c > '~';
     }
@@ -497,30 +498,6 @@ public class Unprinter extends NodeReflection {
         }
     }
 
-    /*
-    private Pair<Object, Object> readPair() throws IOException {
-        Object x, y;
-//        if ("(".equals(a)) {
-//            x = readThing();
-//            expectPrefix("(");
-//            y = readThing();
-//        } else if ("[".equals(a)) {
-//            x = readList();
-//            expectPrefix("[");
-//            y = readList();
-//        } else if (a.startsWith("\"")) {
-//            x = deQuote(a).intern(); // Internal form is quoted
-//            y = deQuote(l.name()).intern(); // Internal form is quoted
-//        } else {
-//            return error("Pair of unknown stuff beginning " + a);
-//        }
-        x = readElement();
-        y = readElement();
-        expectPrefix(")");
-        return new Pair<Object, Object>(x, y);
-    }
-    */
-
     public ASTNodeInfo readASTNodeInfo(Span span) throws IOException {
         expectPrefix("(");
         String s = l.name();
@@ -540,36 +517,6 @@ public class Unprinter extends NodeReflection {
             info = NodeFactory.makeASTNodeInfo(span);
         }
         return info;
-    }
-
-    public Map<String,Object> readMap() throws IOException {
-        Map<String,Object> map = new HashMap<String,Object>();
-        String s = l.name();
-        while (true) {
-            if ("!".equals(s)) {
-                String name = readIdentifier();
-                expectPrefix("=");
-                Object obj = readElement();
-                map.put( name, obj );
-            } else if ( ")".equals(s) ){
-                return map;
-            }
-            s = l.name();
-        }
-    }
-
-    private Object readElement() throws IOException {
-        String a = l.name();
-         if ("(".equals(a)) {
-            return readThing();
-        } else if ("[".equals(a)) {
-            return readList();
-        } else if (a.startsWith("\"")) {
-            return deQuote(a).intern(); // Internal form is quoted
-        } else {
-            error("Pair of unknown stuff beginning " + a);
-            return null;
-        }
     }
 
     Integer readInt(String s) throws IOException {
@@ -596,19 +543,22 @@ public class Unprinter extends NodeReflection {
         return new BigInteger(s);
     }
 
-    public scala.collection.immutable.List<Object> readList() throws IOException {
-        String s = l.name();
+    public scala.collection.immutable.List<Object> readList(String s) throws IOException {
+        s = l.string();
+        if (s.startsWith("<")) return readDoubleList();
         ArrayList<Object> a = new ArrayList<Object>();
         Object x;
         while (true) {
             if ("(".equals(s)) {
                 x = readThing();
             } else if ("[".equals(s)) {
-                x = readList();
+                x = readList(s);
             } else if (s.startsWith("\"")) {
                 x = deQuote(s).intern(); // Intermediate form is quoted.
             } else if (s.startsWith("]")) {
                 return scala.collection.JavaConversions.asScalaBuffer(JUseful.immutableTrimmedList(a)).toList();
+            } else if (isNumber(s)) {
+                x = readDouble(s);
             } else {
                 error("List of unknown element beginning " + s);
                 return emptyList;
@@ -618,17 +568,29 @@ public class Unprinter extends NodeReflection {
         }
     }
 
+    public scala.collection.immutable.List<Object> readDoubleList() throws IOException {
+        String s = l.string();
+        ArrayList<Object> a = new ArrayList<Object>();
+        Object x;
+        while (true) {
+            if (s.startsWith(">]")) {
+                return scala.collection.JavaConversions.asScalaBuffer(JUseful.immutableTrimmedList(a)).toList();
+            } else if (isNumber(s)) {
+                x = readDouble(s);
+            } else {
+                error("List of unknown element beginning " + s);
+                return emptyList;
+            }
+            a.add(x);
+            s = l.string();
+        }
+    }
+
     private Object readThing() throws IOException {
         Object x;
         String s2 = l.name();
-        /*
-        if ("Pair".equals(s2)) {
-            x = readPair();
-        */
         if ("Some".equals(s2)) {
             x = readOptionTail();
-        } else if ("Map".equals(s2)) {
-            x = readMap();
         } else {
             x = readNode(s2);
         }
@@ -657,7 +619,7 @@ public class Unprinter extends NodeReflection {
         if ("(".equals(s)) {
             x = readThing();
         } else if ("[".equals(s)) {
-            x = readList();
+            x = readList(s);
         } else if (s.startsWith("\"")) {
             x = deQuote(s).intern(); // Internal form is quoted. deQuoteQuoted(s);
         } else {

@@ -193,7 +193,7 @@ class JSAstToConcrete extends ASTWalker {
       val s: StringBuilder = new StringBuilder
       s.append(walk(info))
       s.append("[")
-      s.append("A LOT!!! " + elements.size + " elements are not printed here.")
+      s.append("\"A LOT!!! " + elements.size + " elements are not printed here.\", ")
       s.append("]")
       s.toString
     case AssignOpApp(info, lhs, op, right) =>

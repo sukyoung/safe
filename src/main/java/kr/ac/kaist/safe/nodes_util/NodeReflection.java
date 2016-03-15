@@ -141,8 +141,10 @@ abstract public class NodeReflection {
         return shortClassNameToFieldArray.get(class_name);
     }
 
-    abstract protected Constructor defaultConstructorFor(Class cl)
-    throws NoSuchMethodException;
+    protected Constructor defaultConstructorFor(Class cl)
+        throws NoSuchMethodException {
+        return null;
+    }
 
     static Class[] zeroArg = {  };
     protected Constructor defaultConstructorZeroFor(Class cl) {

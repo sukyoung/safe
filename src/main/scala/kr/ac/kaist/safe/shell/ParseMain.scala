@@ -33,11 +33,9 @@ object ParseMain {
     if (config.FileNames.length == 0) throw new UserError("Need a file to parse")
     try {
       val pgm: Program = Parser.fileToAST(config.FileNames)
-      System.out.println("Ok")
       if (config.opt_OutFileName != null) {
         try {
           ASTIO.writeJavaAst(pgm, config.opt_OutFileName)
-          System.out.println("Dumped parse tree to " + config.opt_OutFileName)
         } catch {
           case e: IOException =>
             throw new IOException("IOException " + e + "while writing to " + config.opt_OutFileName)
