@@ -46,8 +46,10 @@ object NodeUtil {
   def funexprName(span: Span): String = freshName("funexpr@" + span.toStringWithoutFiles)
   val significantBits = 13
   // unique name generation
+  var uid = 0
+  def getUId: Int = { uid += 1; uid }
   def freshName(n: String): String =
-    internalSymbol + n + internalSymbol + System.nanoTime.toString.takeRight(significantBits)
+    internalSymbol + n + internalSymbol + "%013d".format(getUId)
   def isInternal(s: String): Boolean = s.containsSlice(internalSymbol)
   def isGlobalName(s: String): Boolean = s.startsWith(globalPrefix)
   def isFunExprName(name: String): Boolean = name.containsSlice("<>funexpr")
