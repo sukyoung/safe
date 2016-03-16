@@ -203,7 +203,7 @@ object CapturedVariableCollector {
       checkStmt(body, locals)
 
     case _ => {
-      System.err.println("* Warning: following IR statement is ignored: " + stmt)
+      Console.err.println("* Warning: following IR statement is ignored: " + stmt)
     }
   }
 

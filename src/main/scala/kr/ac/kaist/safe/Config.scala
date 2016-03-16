@@ -120,14 +120,14 @@ object Config {
 
       lazy val cmdParser: Parser[Unit] = phrase(cmd) | phrase(cmdErr)
       lazy val cmd = (regexCommand) ^^ { (s) => command = s; possibleOptions = commandMap(s) }
-      lazy val cmdErr = "([a-z0-9])+".r ^^ { (s) => System.err.println("Error: The command '" + s.toString + "' is not available."); System.exit(1) }
+      lazy val cmdErr = "([a-z0-9])+".r ^^ { (s) => Console.err.println("Error: The command '" + s.toString + "' is not available."); System.exit(1) }
 
       lazy val number = "[0-9]+".r ^^ { _.toInt }
       lazy val fileName = (".*").r ^^ { (s) => FileNames = s :: FileNames }
       lazy val out = ("-" ~> "out" <~ "=") ~ (".*").r ^^ { case o ~ fn => opt_OutFileName = fn }
       lazy val time = ("-" ~> "time") ^^ { (s) => opt_Time = true }
       lazy val unroll = ("-" ~> "unroll" <~ "=") ~ number ^^ { case s ~ n => opt_unrollingCount = n }
-      lazy val optErr = "-".r ~> ".*".r ^^ { (s) => System.err.println("Error: The option '" + s.toString + "' is not available for the command '" + command + "'."); System.exit(1) }
+      lazy val optErr = "-".r ~> ".*".r ^^ { (s) => Console.err.println("Error: The option '" + s.toString + "' is not available for the command '" + command + "'."); System.exit(1) }
 
       lazy val optionMap = Map(
         "out" -> out,

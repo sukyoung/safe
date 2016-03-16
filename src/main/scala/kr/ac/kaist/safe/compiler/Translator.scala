@@ -132,7 +132,7 @@ class Translator(program: Program) extends ASTWalker {
       signal("Identifiers should have a unique name after the disambiguation phase:" + id.text, id)
       IF.dummyIRId(id)
     case Some(n) if id.text.equals(argName) && isLocal =>
-      if (debug) System.out.println("before getE:id2ir-" + id.text + " " + id.uniqueName)
+      if (debug) println("before getE:id2ir-" + id.text + " " + id.uniqueName)
       env.find(p => p._1.equals(argName)) match {
         case None => IF.makeUId(argName, argName, isLocal, id, getSpan(id), false)
         case Some((_, id)) => id
@@ -166,15 +166,15 @@ class Translator(program: Program) extends ASTWalker {
     isLocal = true
     val paramsspan = NU.spanAll(params, getSpan(name))
     var new_arg = freshId(name, paramsspan, argName)
-    if (debug) System.out.println(" arg=" + new_arg.uniqueName)
+    if (debug) println(" arg=" + new_arg.uniqueName)
     var new_env = addE(env, argName, new_arg)
     if (debug) {
-      System.out.println("params.. ")
-      params.foreach(p => System.out.print(" " + p.text))
+      println("params.. ")
+      params.foreach(p => print(" " + p.text))
     }
     if (params.find(_.text.equals(argName)).isDefined) {
       new_arg = freshId(name, paramsspan, argName)
-      if (debug) System.out.println(" arg=" + new_arg.uniqueName)
+      if (debug) println(" arg=" + new_arg.uniqueName)
     }
     val fd_names = fds.map(_.ftn.name.text)
     // nested functions shadow parameters with the same names
@@ -1203,9 +1203,9 @@ class Translator(program: Program) extends ASTWalker {
     case Parenthesized(_, expr) =>
       walkLval(ast, expr, env, stmts, e, keepOld)
     case VarRef(info, id) =>
-      if (debug) System.out.println("  id=" + id.text + " " + id.uniqueName)
+      if (debug) println("  id=" + id.text + " " + id.uniqueName)
       val irid = id2ir(env, id)
-      if (debug) System.out.println("VarRef: irid=" + irid.uniqueName)
+      if (debug) println("VarRef: irid=" + irid.uniqueName)
       if (keepOld)
         (List(mkExprS(ast, getE(env, oldName), irid)) ++ stmts :+ mkExprS(ast, irid, e), irid)
       else

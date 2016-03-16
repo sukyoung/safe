@@ -81,9 +81,9 @@ object Safe {
         return_code = CFGMain.cfgBuilder(config)
       } else if (config.command.equals("help")) printHelpMessage
     } catch {
-      case e: ParserError => System.err.println(e)
+      case e: ParserError => Console.err.println(e)
       case e: UserError =>
-        System.err.println(e)
+        Console.err.println(e)
         return_code = -1
     }
     // Print elapsed time.
@@ -99,7 +99,7 @@ object Safe {
    * Helper method to print usage message.
    */
   private def printUsageMessage: Unit =
-    System.err.print(
+    Console.err.print(
       "Usage:\n" +
         " parse [-out=outfile] [-time] infile.js ...\n" +
         " astRewrite [-out=outfile] infile.js ...\n" +
@@ -112,7 +112,7 @@ object Safe {
    * Helper method to print help message.
    */
   private def printHelpMessage: Unit = {
-    System.err.print(
+    Console.err.print(
       "Invoked as script: safe args\n" +
         "Invoked by java: java ... kr.ac.kaist.safe.Safe args\n" +
         "safe parse [-out=outfile] [-time] infile.js ...\n" +

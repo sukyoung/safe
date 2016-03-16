@@ -35,7 +35,7 @@ object StaticErrors {
   def reportErrors(file_name: String, errs: Iterable[_ <: StaticError]): Int = {
     getReportErrors(file_name, errs) match {
       case Some(str) =>
-        System.out.println(str); -2
+        println(str); -2
       case None => 0
     }
   }

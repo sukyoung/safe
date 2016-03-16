@@ -52,12 +52,12 @@ object CFGMain {
         writer.write(dump)
         writer.close
         fw.close
-        System.out.println("Dumped CFG to " + outFileName)
+        println("Dumped CFG to " + outFileName)
       } catch {
         case e: IOException =>
           throw new IOException("IOException " + e + "while writing to " + outFileName)
       }
-    } else System.out.println(dump)
+    } else println(dump)
 
     return_code
   }

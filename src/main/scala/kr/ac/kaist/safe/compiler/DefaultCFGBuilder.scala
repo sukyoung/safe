@@ -612,7 +612,7 @@ object DefaultCFGBuilder extends CFGBuilder {
           (List(lastOutBlock), updatedlmap)
         }
       case _ => {
-        System.err.println("* Warning: following IR statement is ignored: " + stmt)
+        Console.err.println("* Warning: following IR statement is ignored: " + stmt)
         (blocks, lmap)
       }
     }

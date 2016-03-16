@@ -47,12 +47,12 @@ object CompileMain {
         writer.write(ircode)
         writer.close
         fw.close
-        System.out.println("Dumped IR to " + outFileName)
+        println("Dumped IR to " + outFileName)
       } catch {
         case e: IOException =>
           throw new IOException("IOException " + e + "while writing to " + outFileName)
       }
-    } else System.out.println(ircode)
+    } else println(ircode)
     return_code
   }
 }

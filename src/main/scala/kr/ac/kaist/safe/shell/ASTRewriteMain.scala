@@ -39,12 +39,12 @@ object ASTRewriteMain {
         writer.write((new JSAstToConcrete).doitInternal(program))
         writer.close
         fw.close
-        System.out.println("Dumped rewritten AST to " + outFileName)
+        println("Dumped rewritten AST to " + outFileName)
       } catch {
         case e: IOException =>
           throw new IOException("IOException " + e + "while writing to " + outFileName)
       }
-    } else System.out.println((new JSAstToConcrete).doit(program))
+    } else println((new JSAstToConcrete).doit(program))
     return return_code
   }
 }
