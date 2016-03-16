@@ -67,7 +67,7 @@ private List<SourceElement> TopLevelSourceElements =
      a1:SourceElement a2s:(w SourceElement)*
      { // Disable recording comments for now for the end of file
        NodeUtil.setKeepComments(false);
-       yyValue = JUseful.cons(a1, a2s.list());
+       yyValue = cons(a1, a2s.list());
      };
 
 /*
@@ -75,7 +75,7 @@ private List<SourceElement> TopLevelSourceElements =
  */
 private List<SourceElement> SourceElements =
      a1:SourceElement a2s:(w SourceElement)*
-     { yyValue = JUseful.cons(a1, a2s.list()); };
+     { yyValue = cons(a1, a2s.list()); };
 
 /*
  * SourceElement ::=
@@ -101,9 +101,9 @@ FunDecl FunctionDeclaration =
  */
 public List<Id> Params =
      a1:Id a2s:(w void:comma w Id)+
-     { yyValue = JUseful.cons(a1, a2s.list()); }
+     { yyValue = cons(a1, a2s.list()); }
    / a1:Id
-     { yyValue = JUseful.list(a1); };
+     { yyValue = list(a1); };
 
 /*
  * FunctionBody ::= { w SourceElement* w }

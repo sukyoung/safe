@@ -13,9 +13,7 @@ lazy val root = (project in file(".")).
     buildParsers in Compile := {
       val xtcFile = new File("./lib/xtc.jar")
       if(!xtcFile.exists) IO.download(new URL("http://cs.nyu.edu/rgrimm/xtc/xtc.jar"), xtcFile);
-      val options = ForkOptions(
-        bootJars = Seq(xtcFile)
-      )
+      val options = ForkOptions(bootJars = Seq(xtcFile))
       val srcDir = baseDirectory.value + "/src/main"
       val inDir = srcDir + "/scala/kr/ac/kaist/safe/parser/"
       val outDir = srcDir + "/java/kr/ac/kaist/safe/parser/"
@@ -37,6 +35,10 @@ lazy val root = (project in file(".")).
     compile <<= (compile in Compile) dependsOn (buildParsers in Compile),
     test <<= (test in Test) dependsOn compile
   )
+
+scalacOptions in ThisBuild ++= Seq("-deprecation", "-feature",
+                                   "-language:postfixOps",
+                                   "-language:implicitConversions")
 
 unmanagedJars in Compile ++= Seq(file("lib/plt.jar"), file("lib/xtc.jar"))
 cleanFiles ++= Seq(file("src/main/java/kr/ac/kaist/safe/parser/"))

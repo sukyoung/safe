@@ -31,7 +31,7 @@ public Expr ExpressionNoIn =
      a1:AssignmentNoIn a2s:(w void:comma w AssignmentNoIn)*
      { if (a2s.list().isEmpty()) yyValue = a1;
        else yyValue = NodeFactory.makeExprList(createSpan(yyStart,yyCount),
-                                               JUseful.cons(a1, a2s.list()));
+                                               cons(a1, a2s.list()));
      };
 
 /*

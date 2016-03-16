@@ -162,15 +162,15 @@ public Stmt Statement =
    / switch w openparen w a1:Expression w closeparen w
      opencurly a2:(w CaseClauses)? w closecurly
      { Span span = createSpan(yyStart,yyCount+1);
-       if (a2 == null) a2 = JUseful.list();
+       if (a2 == null) a2 = list();
        yyValue = NodeFactory.makeSwitch(span, a1, a2);
      }
    / switch w openparen w a1:Expression w closeparen w
      opencurly a2:(w CaseClauses)? w default w colon a3s:(w Statement)*
      a4:(w CaseClauses)? w closecurly
      { Span span = createSpan(yyStart,yyCount+1);
-       if (a2 == null) a2 = JUseful.list();
-       if (a4 == null) a4 = JUseful.list();
+       if (a2 == null) a2 = list();
+       if (a4 == null) a4 = list();
        yyValue = NodeFactory.makeSwitch(span, a1, a2, a3s.list(), a4);
      }
    / a1:Id w colon w a2:Statement
@@ -210,10 +210,10 @@ private transient Stmt ExtendedFunctionDeclaration =
  */
 transient List<Stmt> ABlock =
      opencurly w closecurly
-     { yyValue = JUseful.<Stmt>list(); }
+     { yyValue = list(); }
    / opencurly w a1:Statement a2s:(w Statement)* w closecurly
      { Span span = createSpan(yyStart,yyCount+1);
-       yyValue = JUseful.cons(a1, a2s.list());
+       yyValue = cons(a1, a2s.list());
      };
 
 /*
@@ -222,7 +222,7 @@ transient List<Stmt> ABlock =
  */
 transient List<VarDecl> VariableDeclarationList =
      a1:VariableDeclaration a2s:(w void:comma w VariableDeclaration)*
-     { yyValue = JUseful.cons(a1, a2s.list()); };
+     { yyValue = cons(a1, a2s.list()); };
 
 /*
  * VariableDeclarationListNoIn ::=
@@ -230,7 +230,7 @@ transient List<VarDecl> VariableDeclarationList =
  */
 private transient List<VarDecl> VariableDeclarationListNoIn =
      a1:VariableDeclarationNoIn a2s:(w void:comma w VariableDeclarationNoIn)*
-     { yyValue = JUseful.cons(a1, a2s.list()); };
+     { yyValue = cons(a1, a2s.list()); };
 
 /*
  * VariableDeclaration ::=
@@ -264,7 +264,7 @@ transient VarDecl VariableDeclarationNoIn =
  */
 private List<Case> CaseClauses =
      a1:CaseClause a2s:(w CaseClause)*
-     { yyValue = JUseful.cons(a1, a2s.list()); };
+     { yyValue = cons(a1, a2s.list()); };
 
 /*
  * CaseClause ::= case w Expression w : (w Statement)*
