@@ -1,0 +1,16 @@
+
+var x
+x = "A"
+<>break<>1 : {
+  while(true)
+  {
+    <>continue<>2 : {
+      x = "B"
+      throw "C"
+      if(x == "B")
+        throw 3
+    }
+  }
+}
+x = "E"
+

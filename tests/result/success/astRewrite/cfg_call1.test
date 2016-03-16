@@ -1,0 +1,19 @@
+  function f(x, y, z) 
+  {
+    function g(test) 
+    {
+      test = test + 6;
+      return test - x;
+    }
+      var temp;
+    
+      temp = y + z;
+    return g(temp);
+  }
+  var x;
+  
+  {
+    
+  }
+  x = f(1, 2, 3);
+  

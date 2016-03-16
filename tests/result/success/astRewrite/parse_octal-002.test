@@ -1,0 +1,94 @@
+  function addThis() 
+  {
+    statusmessages[i] = status;
+    patterns[i] = pattern;
+    strings[i] = string;
+    actualmatches[i] = actualmatch;
+    expectedmatches[i] = expectedmatch;
+    i++;
+  }
+  function test() 
+  {
+    enterFunc('test');
+    printBugNumber(bug);
+    printStatus(summary);
+    testRegExp(statusmessages, patterns, strings, actualmatches, expectedmatches);
+    exitFunc('test');
+  }
+  var i;
+  var bug;
+  var summary;
+  var status;
+  var statusmessages;
+  var pattern;
+  var patterns;
+  var string;
+  var strings;
+  var actualmatch;
+  var actualmatches;
+  var expectedmatch;
+  var expectedmatches;
+  
+  i = 0;
+  bug = 141078;
+  summary = 'Testing regexps containing octal escape sequences';
+  status = '';
+  statusmessages = new Array();
+  pattern = '';
+  patterns = new Array();
+  string = '';
+  strings = new Array();
+  actualmatch = '';
+  actualmatches = new Array();
+  expectedmatch = '';
+  expectedmatches = new Array();
+  status = inSection(1);
+  pattern = new RegExp(".\011", "");
+  string = 'a' + String.fromCharCode(0) + '11';
+  actualmatch = string.match(pattern);
+  expectedmatch = null;
+  addThis();
+  status = inSection(2);
+  pattern = new RegExp(".\0xx", "");
+  string = 'a' + String.fromCharCode(0) + 'xx';
+  actualmatch = string.match(pattern);
+  expectedmatch = Array(string);
+  addThis();
+  status = inSection(3);
+  pattern = new RegExp(".\0xx", "");
+  string = 'a0xx';
+  actualmatch = string.match(pattern);
+  expectedmatch = Array(string);
+  addThis();
+  status = inSection(4);
+  pattern = new RegExp(".\011", "");
+  string = 'a011';
+  actualmatch = string.match(pattern);
+  expectedmatch = Array(string);
+  addThis();
+  status = inSection(5);
+  pattern = new RegExp(".\011", "");
+  string = 'a\t';
+  actualmatch = string.match(pattern);
+  expectedmatch = Array(string);
+  addThis();
+  status = inSection(6);
+  pattern = new RegExp(".\011", "");
+  string = 'a\t';
+  actualmatch = string.match(pattern);
+  expectedmatch = Array(string);
+  addThis();
+  status = inSection(7);
+  pattern = new RegExp(".\011", "");
+  string = 'a\t';
+  actualmatch = string.match(pattern);
+  expectedmatch = Array(string);
+  addThis();
+  status = inSection(8);
+  string = 'a' + String.fromCharCode(0) + '11';
+  pattern = RegExp(string);
+  actualmatch = string.match(pattern);
+  expectedmatch = Array(string);
+  addThis();
+  test();
+  

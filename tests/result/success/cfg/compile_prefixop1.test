@@ -1,0 +1,13 @@
+(0,LBlock(0))
+    [0] noop(StartOfFile)
+    [1] <>Global<>ignore1 := delete(a)
+    [2] a := ~ a
+    [3] a := ! a
+    [4] a := + a
+    [5] a := - a
+    [6] a := typeof a
+    [7] a := void a
+    [8] noop(EndOfFile)
+
+
+

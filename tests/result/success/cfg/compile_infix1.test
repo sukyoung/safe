@@ -1,0 +1,60 @@
+(0,LBlock(11))
+
+
+(0,LBlock(10))
+    [EDGE] after-call(<>y<>4)
+    [18] a := <>y<>4 | b
+    [19] <>obj<>5 := <>Global<>toObject(a) @ #5
+    [20] a := <>obj<>5["b"] + b
+    [21] noop(EndOfFile)
+
+
+(0,LBlock(9))
+    [13] b := <>Global<>ignore2
+    [14] <>obj<>1 := <>Global<>toObject(a) @ #1
+    [15] <>arguments<>2 := allocArg(0) @ #2
+    [16] <>fun<>3 := <>Global<>getBase(a)
+    [17] call(<>obj<>1, <>fun<>3, <>arguments<>2) @ #3
+
+
+(0,LBlock(8))
+    [10] assert(! a)
+    [12] <>Global<>ignore2 := 3456
+
+
+(0,LBlock(7))
+    [9] assert(a)
+    [11] <>Global<>ignore2 := a
+
+
+(0,LBlock(6))
+
+
+(0,LBlock(5))
+    [5] assert(typeof "asdf" != "boolean")
+    [7] <>Global<>ignore1 := "asdf"
+
+
+(0,LBlock(4))
+    [4] assert(typeof "asdf" == "boolean")
+    [6] <>Global<>ignore1 := false
+
+
+(0,LBlock(3))
+    [8] a := <>Global<>ignore1
+
+
+(0,LBlock(2))
+    [2] assert(! "asdf")
+
+
+(0,LBlock(1))
+    [1] assert("asdf")
+    [3] <>Global<>ignore1 := 1234
+
+
+(0,LBlock(0))
+    [0] noop(StartOfFile)
+
+
+

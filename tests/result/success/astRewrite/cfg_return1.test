@@ -1,0 +1,8 @@
+  function f() 
+  {
+    return "A";
+  }
+  var x;
+  
+  x = f();
+  

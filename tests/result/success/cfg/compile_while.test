@@ -1,0 +1,48 @@
+(0,LBlock(8))
+
+
+(0,LBlock(7))
+    [14] assert(<>new<>4 != x)
+
+
+(0,LBlock(6))
+    [13] assert(<>new<>4 == x)
+    [15] <>old<>5 := z
+    [16] <>new<>6 := <>Global<>toNumber(<>old<>5)
+    [17] z := <>new<>6 - 1
+    [18] <>Global<>ignore7 := <>new<>6
+
+
+(0,LBlock(5))
+
+
+(0,LBlock(4))
+    [5] assert(! x > 0)
+
+
+(0,LBlock(3))
+    [4] assert(x > 0)
+    [6] <>old<>1 := x
+    [7] <>new<>2 := <>Global<>toNumber(<>old<>1)
+    [8] x := <>new<>2 - 1
+    [9] <>Global<>ignore5 := <>new<>2
+    [10] <>old<>3 := y
+    [11] <>new<>4 := <>Global<>toNumber(<>old<>3)
+    [12] y := <>new<>4 + 1
+
+
+(0,LBlock(2))
+
+
+(0,LBlock(1))
+    [19] noop(EndOfFile)
+
+
+(0,LBlock(0))
+    [0] noop(StartOfFile)
+    [1] x := 10
+    [2] y := 3
+    [3] z := 7
+
+
+

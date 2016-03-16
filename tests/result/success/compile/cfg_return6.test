@@ -1,0 +1,18 @@
+function f(this, <>arguments<>1) 
+{
+  return
+  <>break<>2 : {
+    while(true)
+    {
+      <>continue<>3 : x = "A"
+    }
+  }
+}
+var x
+{
+  <>obj<>4 = <>Global<>toObject(f)
+  <>arguments<>5 = []
+  <>fun<>6 = <>Global<>getBase(f)
+  <>Global<>ignore2 = <>obj<>4(<>fun<>6, <>arguments<>5)
+}
+

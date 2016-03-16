@@ -1,0 +1,37 @@
+(0,LBlock(5))
+    [15] patt := <>Global<>ignore1
+    [16] noop(EndOfFile)
+
+
+(0,LBlock(4))
+    [12] assert(! <>cond<>8)
+    [14] <>Global<>ignore1 := <>obj<>6
+
+
+(0,LBlock(3))
+    [11] assert(<>cond<>8)
+    [13] <>Global<>ignore1 := <>newObj<>7
+
+
+(0,LBlock(2))
+
+
+(0,LBlock(1))
+    [EDGE] after-call(<>newObj<>7)
+    [10] <>cond<>8 := <>Global<>isObject(<>newObj<>7)
+
+
+(0,LBlock(0))
+    [0] noop(StartOfFile)
+    [1] <>fun<>1 := <>Global<>toObject(RegExp) @ #1
+    [2] <>temp<>2 := "pattern"
+    [3] <>temp<>3 := ""
+    [4] <>arguments<>4 := allocArg(2) @ #2
+    [5] <>arguments<>4["0"] := <>temp<>2
+    [6] <>arguments<>4["1"] := <>temp<>3
+    [7] <>proto<>5 := <>fun<>1["prototype"]
+    [8] <>obj<>6 := alloc(<>proto<>5) @ #3
+    [9] construct(<>fun<>1, <>obj<>6, <>arguments<>4) @ #4, #5
+
+
+

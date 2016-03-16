@@ -1,0 +1,20 @@
+
+var x
+x = 0
+<>break<>1 : {
+  while(true)
+  {
+    <>continue<>2 : {
+      x = 1
+      <>break<>3 : {
+        while(x)
+        {
+          <>continue<>4 : if(x)
+            break <>break<>3
+        }
+      }
+    }
+  }
+}
+x = 2
+

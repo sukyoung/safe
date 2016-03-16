@@ -1,0 +1,62 @@
+
+var x
+var obj
+var value
+var arr
+{
+  x = 1
+}
+{
+  <>Global<>ignore2 = {
+    a : "A",
+    b : "B"
+  }
+  obj = <>Global<>ignore2
+}
+try
+{
+  {
+    <>obj<>1 = <>Global<>toObject(obj)
+    if(<>obj<>1["a"] == x)
+    {
+      <>obj<>2 = <>Global<>toObject(obj)
+      <>Global<>ignore7 = delete <>obj<>2["b"]
+    }
+    else
+      <>break<>3 : {
+        while(true)
+        {
+          <>continue<>4 : {
+            <>old<>5 = x
+            <>new<>6 = <>Global<>toNumber(<>old<>5)
+            x = <>new<>6 - 1
+            if(<>new<>6)
+              break <>break<>3
+          }
+        }
+      }
+  }
+  throw x
+}
+catch(<>e<>7)
+{
+  {
+    <>Global<>ignore3 = function value<>funexpr@20:15-22:4<>8(this, <>arguments<>9) 
+    {
+      return <>e<>7
+    }
+    value = <>Global<>ignore3
+  }
+  {
+    <>temp<>10 = 4
+    <>temp<>11 = 2
+    <>obj<>12 = <>Global<>toObject(test)
+    <>arguments<>13 = []
+    <>fun<>14 = <>Global<>getBase(test)
+    <>temp<>15 = <>obj<>12(<>fun<>14, <>arguments<>13)
+    <>Global<>ignore4 = [<>temp<>10, <>temp<>11, <>temp<>15, ]
+    arr = <>Global<>ignore4
+  }
+  <>Global<>ignore6 = undefined
+}
+

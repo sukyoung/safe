@@ -1,2 +1,0 @@
-var x;
-delete x;

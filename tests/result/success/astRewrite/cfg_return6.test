@@ -1,0 +1,15 @@
+  function f() 
+  {
+    return;
+    while (true)
+    {
+      x = "A";
+    }
+  }
+  var x;
+  
+  {
+    
+  }
+  f();
+  

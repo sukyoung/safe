@@ -1,3 +1,0 @@
-${DISAMB_TESTS_DIR}/disamb4.js:2:3-4:3:
-    Multiple declarations of the label: done.
-File ${DISAMB_TESTS_DIR}/disamb4.js has 1 error.

@@ -1,0 +1,23 @@
+(0,LBlock(3))
+
+
+(0,LBlock(2))
+    [EDGE] after-call(<>Global<>ignore3)
+    [8] noop(EndOfFile)
+
+
+(1,LBlock(1))
+    [0] __result1 := <>NaN<>1
+
+
+(0,LBlock(0))
+    [1] f := function (1) @ #1, #2
+    [2] noop(StartOfFile)
+    [3] __expect1 := undefined
+    [4] <>obj<>3 := <>Global<>toObject(f) @ #3
+    [5] <>arguments<>4 := allocArg(0) @ #4
+    [6] <>fun<>5 := <>Global<>getBase(f)
+    [7] call(<>obj<>3, <>fun<>5, <>arguments<>4) @ #5
+
+
+

@@ -1,5 +1,0 @@
-${DISAMB_TESTS_DIR}/return.js:1:1-7:
-    Return occurs outside of a function body.
-${DISAMB_TESTS_DIR}/return.js:2:1-9:
-    Return occurs outside of a function body.
-File ${DISAMB_TESTS_DIR}/return.js has 2 errors.

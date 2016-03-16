@@ -1,0 +1,71 @@
+(0,LBlock(12))
+    [19] <>obj<>8 := <>Global<>toObject(node) @ #10
+    [20] node := <>obj<>8["parent"]
+    [21] <>Global<>ignore11 := <>obj<>8["parent"]
+    [22] <>obj<>7 := <>Global<>toObject(node) @ #11
+
+
+(0,LBlock(11))
+    [18] assert(! <>obj<>7["parent"])
+
+
+(0,LBlock(10))
+    [17] assert(<>obj<>7["parent"])
+
+
+(0,LBlock(9))
+
+
+(0,LBlock(8))
+
+
+(0,LBlock(7))
+    [EDGE] after-call(<>Global<>ignore8)
+    [14] node := <>Global<>ignore8
+    [15] <>Global<>ignore9 := <>Global<>ignore8
+    [16] <>obj<>7 := <>Global<>toObject(node) @ #9
+
+
+(0,LBlock(6))
+    [23] <>Global<>ignore13 := i
+    [24] <>old<>9 := j
+    [25] <>new<>10 := <>Global<>toNumber(<>old<>9)
+    [26] j := <>new<>10 + 1
+    [27] <>Global<>ignore15 := <>new<>10 + 1
+    [28] noop(EndOfFile)
+
+
+(0,LBlock(5))
+    [10] <>obj<>4 := <>Global<>toObject(getNode) @ #5
+    [11] <>arguments<>5 := allocArg(0) @ #6
+    [12] <>fun<>6 := <>Global<>getBase(getNode)
+    [13] call(<>obj<>4, <>fun<>6, <>arguments<>5) @ #7
+
+
+(0,LBlock(4))
+
+
+(0,LBlock(3))
+    [EDGE] after-call(<>Global<>ignore7)
+
+
+(0,LBlock(2))
+    [5] assert(! x)
+
+
+(0,LBlock(1))
+    [4] assert(x)
+    [6] <>obj<>1 := <>Global<>toObject(y) @ #1
+    [7] <>arguments<>2 := allocArg(0) @ #2
+    [8] <>fun<>3 := <>Global<>getBase(y)
+    [9] call(<>obj<>1, <>fun<>3, <>arguments<>2) @ #3
+
+
+(0,LBlock(0))
+    [0] noop(StartOfFile)
+    [1] <>Global<>ignore2 := 42
+    [2] <>Global<>ignore4 := "hello!"
+    [3] <>Global<>ignore6 := "there!"
+
+
+

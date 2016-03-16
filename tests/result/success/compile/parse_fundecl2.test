@@ -1,0 +1,13 @@
+function f(this, <>arguments<>1) 
+{
+  var <>x<>2
+  <>x<>2 = <>arguments<>1["0"]
+}
+function g(this, <>arguments<>3) 
+{
+  var <>y<>4
+  <>y<>4 = <>arguments<>3["0"]
+}
+
+<>Global<>ignore2 = 3
+

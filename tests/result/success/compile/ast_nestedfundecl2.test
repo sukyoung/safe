@@ -1,0 +1,26 @@
+
+
+y = 1
+{
+  <>Global<>ignore2 = {
+    y : 10
+  }
+  obj = <>Global<>ignore2
+}
+{
+  {
+    <>Global<>ignore3 = <>Global<>toObject(obj)
+    <>alpha<>1 = <>Global<>ignore3
+  }
+  if("y" in <>alpha<>1)
+  {
+    <>obj<>2 = <>Global<>toObject(<>alpha<>1)
+    <>Global<>ignore4 = <>obj<>2["y"]
+  }
+  else
+  {
+    <>Global<>ignore4 = y
+  }
+}
+<>Global<>ignore6 = y
+

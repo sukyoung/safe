@@ -1,0 +1,24 @@
+
+var x
+var temp
+{
+  x = 1
+}
+try
+  x = 2
+catch(<>x<>1)
+{
+  <>x<>1 = 4
+  try
+    {
+      temp = "hi"
+    }
+  finally
+  {
+    
+  }
+}
+finally
+  x = 8
+x = 16
+

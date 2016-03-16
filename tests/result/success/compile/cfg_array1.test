@@ -1,0 +1,33 @@
+
+var n1
+var n2
+var n3
+var n4
+{
+  <>Global<>ignore1 = []
+  n1 = <>Global<>ignore1
+}
+{
+  <>temp<>1 = 1
+  <>temp<>2 = 2
+  <>temp<>3 = 3
+  <>Global<>ignore2 = [<>temp<>1, <>temp<>2, <>temp<>3, ]
+  n2 = <>Global<>ignore2
+}
+{
+  <>temp<>4 = "x"
+  <>temp<>5 = 3.0
+  <>temp<>6 = - 1
+  <>temp<>7 = n2
+  <>Global<>ignore3 = [<>temp<>4, <>temp<>5, <>temp<>6, <>temp<>7, ]
+  n3 = <>Global<>ignore3
+}
+{
+  <>temp<>8 = n1
+  <>temp<>9 = n2
+  <>temp<>10 = n3
+  <>temp<>11 = [<>temp<>9, <>temp<>10, ]
+  <>Global<>ignore4 = [<>temp<>8, <>temp<>11, ]
+  n4 = <>Global<>ignore4
+}
+

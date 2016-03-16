@@ -1,0 +1,68 @@
+  var squidImageData;
+  var width;
+  var height;
+  var _sunSpiderStartDate;
+  var Pixastic;
+  var params;
+  var pixcounter;
+  
+  squidImageData = ["A LOT!!! 427200 elements are not printed here.", ];
+  {
+    width = 400;
+    height = 267;
+  }
+  _sunSpiderStartDate = new Date();
+  Pixastic = {
+    
+  };
+  Pixastic.Actions = {
+    
+  };
+  Pixastic.Actions.desaturate = {
+    process : (function (params) 
+    {
+      var useAverage;
+      var data;
+      var rect;
+      var w;
+      var h;
+      var p;
+      var pix;
+      var pix1;
+      var pix2;
+      
+          useAverage = ! ! (params.options.average && params.options.average != "false");
+      data = params.data;
+      rect = params.options.rect;
+      w = rect.width;
+      h = rect.height;
+      p = w * h;
+      pix = p * 4;
+      if (useAverage)
+      {
+        while (p--)
+          data[pix -= 4] = data[pix1 = pix + 1] = data[pix2 = pix + 2] = (data[pix] + data[pix1] + data[pix2]) / 3;
+      }
+      else
+      {
+        while (p--)
+          data[pix -= 4] = data[pix1 = pix + 1] = data[pix2 = pix + 2] = (data[pix] * 0.3 + data[pix1] * 0.59 + data[pix2] * 0.11);
+      }
+      return true;
+    })
+  };
+  params = {
+    options : {
+      rect : {
+        width : width,
+        height : height
+      }
+    },
+    data : squidImageData
+  };
+  {
+    pixcounter = 0;
+    for (;pixcounter < 200;pixcounter++)
+      Pixastic.Actions.desaturate.process(params);
+  }
+  

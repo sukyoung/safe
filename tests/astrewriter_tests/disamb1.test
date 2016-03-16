@@ -1,9 +1,0 @@
-${DISAMB_TESTS_DIR}/disamb1.js:2:3-22:
-    Multiple declarations of the label: done.
-${DISAMB_TESTS_DIR}/disamb1.js:3:3-16:
-    Continue occurs outside of a label.
-${DISAMB_TESTS_DIR}/disamb1.js:6:1-6:
-    Break occurs outside of an iterator or a switch.
-${DISAMB_TESTS_DIR}/disamb1.js:7:7-17:
-    Break occurs outside of a label.
-File ${DISAMB_TESTS_DIR}/disamb1.js has 4 errors.

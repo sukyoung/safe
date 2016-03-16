@@ -1,0 +1,10 @@
+(0,LBlock(0))
+    [0] noop(StartOfFile)
+    [1] <>Global<>ignore1 := alloc() @ #1
+    [2] <>Global<>ignore1["x"] := - 42
+    [3] <>Global<>ignore1["y"] := 42
+    [4] x := <>Global<>ignore1
+    [5] noop(EndOfFile)
+
+
+

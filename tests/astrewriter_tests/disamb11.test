@@ -1,3 +1,0 @@
-${DISAMB_TESTS_DIR}/disamb11.js:2:27-39:
-    Continue occurs outside of an iterator.
-File ${DISAMB_TESTS_DIR}/disamb11.js has 1 error.

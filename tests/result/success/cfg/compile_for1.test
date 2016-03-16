@@ -1,0 +1,125 @@
+(0,LBlock(27))
+
+
+(0,LBlock(26))
+    [35] assert(! true)
+
+
+(0,LBlock(25))
+    [34] assert(true)
+    [36] d := 9
+    [37] <>Global<>ignore21 := d
+
+
+(0,LBlock(24))
+
+
+(0,LBlock(23))
+    [38] noop(EndOfFile)
+
+
+(0,LBlock(22))
+    [33] <>Global<>ignore18 := false
+
+
+(0,LBlock(21))
+    [32] assert(! 12)
+
+
+(0,LBlock(20))
+    [31] assert(12)
+
+
+(0,LBlock(19))
+
+
+(0,LBlock(18))
+
+
+(0,LBlock(17))
+    [26] <>old<>9 := b
+    [27] <>new<>10 := <>Global<>toNumber(<>old<>9)
+    [28] b := <>new<>10 - 1
+    [29] <>Global<>ignore12 := <>new<>10
+
+
+(0,LBlock(16))
+    [21] assert(! true)
+
+
+(0,LBlock(15))
+    [20] assert(true)
+    [22] <>old<>7 := b
+    [23] <>new<>8 := <>Global<>toNumber(<>old<>7)
+    [24] b := <>new<>8 + 1
+    [25] <>Global<>ignore14 := <>new<>8
+
+
+(0,LBlock(14))
+
+
+(0,LBlock(13))
+    [30] <>Global<>ignore16 := "for"
+
+
+(0,LBlock(12))
+    [16] <>old<>5 := c
+    [17] <>new<>6 := <>Global<>toNumber(<>old<>5)
+    [18] c := <>new<>6 + 1
+    [19] <>Global<>ignore8 := <>new<>6
+
+
+(0,LBlock(11))
+    [14] assert(! null)
+
+
+(0,LBlock(10))
+    [13] assert(null)
+    [15] <>Global<>ignore10 := c
+
+
+(0,LBlock(9))
+
+
+(0,LBlock(8))
+
+
+(0,LBlock(7))
+
+
+(0,LBlock(6))
+    [EDGE] after-call(<>Global<>ignore6)
+
+
+(0,LBlock(5))
+
+
+(0,LBlock(4))
+    [6] assert(! "test")
+
+
+(0,LBlock(3))
+    [5] assert("test")
+    [7] <>obj<>1 := <>Global<>toObject(print) @ #1
+    [8] <>temp<>2 := 7
+    [9] <>arguments<>3 := allocArg(1) @ #2
+    [10] <>arguments<>3["0"] := <>temp<>2
+    [11] <>fun<>4 := <>Global<>getBase(print)
+    [12] call(<>obj<>1, <>fun<>4, <>arguments<>3) @ #3
+
+
+(0,LBlock(2))
+
+
+(0,LBlock(1))
+
+
+(0,LBlock(0))
+    [0] noop(StartOfFile)
+    [1] a := 1
+    [2] b := 2
+    [3] c := 3
+    [4] <>Global<>ignore5 := a
+
+
+

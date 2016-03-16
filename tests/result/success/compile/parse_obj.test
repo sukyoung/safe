@@ -1,0 +1,10 @@
+
+var x
+{
+  <>Global<>ignore1 = {
+    x : - 42,
+    y : 42
+  }
+  x = <>Global<>ignore1
+}
+

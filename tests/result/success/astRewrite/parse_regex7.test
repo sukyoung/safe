@@ -1,0 +1,4 @@
+  var patt;
+  
+  patt = new RegExp("[]", "");
+  

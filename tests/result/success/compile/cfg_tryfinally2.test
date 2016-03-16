@@ -1,0 +1,29 @@
+
+var x
+{
+  x = 5
+}
+try
+  <>Global<>ignore3 = x
+finally
+{
+  x = 7
+  try
+    x = 2
+  finally
+  {
+    x = 10
+    try
+      {
+        <>obj<>1 = <>Global<>toObject(print)
+        <>temp<>2 = x
+        <>arguments<>3 = [<>temp<>2, ]
+        <>fun<>4 = <>Global<>getBase(print)
+        <>Global<>ignore7 = <>obj<>1(<>fun<>4, <>arguments<>3)
+      }
+    finally
+      x = 9
+  }
+}
+x = 12
+

@@ -1,0 +1,16 @@
+  var obj1;
+  var obj2;
+  
+  obj1 = {
+    x : "A",
+    y : "B"
+  };
+  obj2 = {
+    a : "C",
+    b : "D",
+    c : 3,
+    d : obj1
+  };
+  delete obj2.b;
+  delete obj2.d.x;
+  

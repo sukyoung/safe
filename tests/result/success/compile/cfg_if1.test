@@ -1,0 +1,49 @@
+function say(this, <>arguments<>1) 
+{
+  var <>gender<>2
+  <>gender<>2 = <>arguments<>1["0"]
+  if(<>gender<>2 == "girl")
+    {
+      <>obj<>3 = <>Global<>toObject(human)
+      return <>obj<>3["girl"]
+    }
+  else
+    {
+      <>obj<>4 = <>Global<>toObject(human)
+      return <>obj<>4["boy"]
+    }
+}
+var human
+{
+  <>Global<>ignore1 = {
+    girl : "Hoo",
+    boy : "Ha"
+  }
+  human = <>Global<>ignore1
+}
+{
+  <>obj<>5 = <>Global<>toObject(print)
+  <>y<>6 = "Girls say "
+  <>obj<>7 = <>Global<>toObject(say)
+  <>temp<>8 = "girl"
+  <>arguments<>9 = [<>temp<>8, ]
+  <>fun<>10 = <>Global<>getBase(say)
+  <>z<>11 = <>obj<>7(<>fun<>10, <>arguments<>9)
+  <>y<>12 = <>y<>6 + <>z<>11 + "! Boys say "
+  <>obj<>13 = <>Global<>toObject(say)
+  <>temp<>14 = "boy"
+  <>arguments<>15 = [<>temp<>14, ]
+  <>fun<>16 = <>Global<>getBase(say)
+  <>z<>17 = <>obj<>13(<>fun<>16, <>arguments<>15)
+  <>y<>18 = <>y<>12 + <>z<>17 + "! and I say "
+  <>obj<>19 = <>Global<>toObject(say)
+  <>temp<>20 = "me"
+  <>arguments<>21 = [<>temp<>20, ]
+  <>fun<>22 = <>Global<>getBase(say)
+  <>z<>23 = <>obj<>19(<>fun<>22, <>arguments<>21)
+  <>temp<>24 = <>y<>18 + <>z<>23 + "!"
+  <>arguments<>25 = [<>temp<>24, ]
+  <>fun<>26 = <>Global<>getBase(print)
+  <>Global<>ignore2 = <>obj<>5(<>fun<>26, <>arguments<>25)
+}
+

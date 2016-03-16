@@ -1,0 +1,7 @@
+(0,LBlock(0))
+    [0] noop(StartOfFile)
+    [1] str := "foo             bar"
+    [2] noop(EndOfFile)
+
+
+

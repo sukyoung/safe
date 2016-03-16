@@ -1,0 +1,17 @@
+
+
+{
+  <>y<>1 = b / hi
+  <>obj<>2 = <>Global<>toObject(g)
+  <>temp<>3 = c
+  <>arguments<>4 = [<>temp<>3, ]
+  <>fun<>5 = <>Global<>toObject(<>obj<>2["exec"])
+  <>obj1<>6 = <>fun<>5(<>obj<>2, <>arguments<>4)
+  <>obj<>7 = <>Global<>toObject(<>obj1<>6)
+  <>temp<>8 = d
+  <>arguments<>9 = [<>temp<>8, ]
+  <>fun<>10 = <>Global<>toObject(<>obj<>7["map"])
+  <>z<>11 = <>fun<>10(<>obj<>7, <>arguments<>9)
+  a = <>y<>1 / <>z<>11
+}
+

@@ -1,0 +1,19 @@
+  function say(gender) 
+  {
+    if (gender == "girl")
+    {
+      return human.girl;
+    }
+    else
+    {
+      return human.boy;
+    }
+  }
+  var human;
+  
+  human = {
+    girl : "Hoo",
+    boy : "Ha"
+  };
+  print("Girls say " + say("girl") + "! Boys say " + say("boy") + "! and I say " + say("me") + "!");
+  

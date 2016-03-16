@@ -1,0 +1,11 @@
+(1,LBlock(1))
+    [0] <>arguments<>2 := 3
+
+
+(0,LBlock(0))
+    [1] f001 := function (1) @ #1, #2
+    [2] noop(StartOfFile)
+    [3] noop(EndOfFile)
+
+
+

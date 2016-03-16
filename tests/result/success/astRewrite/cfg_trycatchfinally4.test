@@ -1,0 +1,31 @@
+  var x;
+  var obj;
+  var value;
+  var arr;
+  
+  x = 1;
+  obj = {
+    a : "A",
+    b : "B"
+  };
+  try
+{    if (obj.a == x)
+      delete obj.b;
+    else
+    {
+      while (true)
+      {
+        if (x--)
+          break;
+      }
+    }
+    throw x;}
+  catch (e)
+{    value = (function () 
+    {
+      return e;
+    });
+    arr = [4, 2, test(), ];
+    undefined;}
+
+  

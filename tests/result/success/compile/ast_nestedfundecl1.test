@@ -1,0 +1,34 @@
+function f(this, <>arguments<>1) 
+{
+  return y
+}
+
+y = 1
+{
+  <>Global<>ignore2 = {
+    y : 10
+  }
+  obj = <>Global<>ignore2
+}
+{
+  <>Global<>ignore3 = <>Global<>toObject(obj)
+  <>alpha<>2 = <>Global<>ignore3
+}
+{
+  <>obj<>3 = <>Global<>toObject(alert)
+  <>obj<>4 = <>Global<>toObject(f)
+  <>arguments<>5 = []
+  <>fun<>6 = <>Global<>getBase(f)
+  <>temp<>7 = <>obj<>4(<>fun<>6, <>arguments<>5)
+  <>arguments<>8 = [<>temp<>7, ]
+  <>fun<>9 = <>Global<>getBase(alert)
+  <>Global<>ignore4 = <>obj<>3(<>fun<>9, <>arguments<>8)
+}
+{
+  <>obj<>10 = <>Global<>toObject(f)
+  <>arguments<>11 = []
+  <>fun<>12 = <>Global<>getBase(f)
+  <>Global<>ignore5 = <>obj<>10(<>fun<>12, <>arguments<>11)
+}
+<>Global<>ignore7 = y
+

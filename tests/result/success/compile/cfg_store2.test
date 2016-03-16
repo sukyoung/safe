@@ -1,0 +1,32 @@
+
+var obj
+var obj2
+{
+  <>Global<>ignore1 = {
+    
+  }
+  obj = <>Global<>ignore1
+}
+{
+  <>Global<>ignore2 = {
+    x : 1,
+    y : 2,
+    z : 3
+  }
+  obj2 = <>Global<>ignore2
+}
+{
+  <>obj<>1 = <>Global<>toObject(obj)
+  <>obj<>1["x"] = 1
+}
+{
+  <>obj<>2 = <>Global<>toObject(obj)
+  <>obj<>3 = <>Global<>toObject(obj2)
+  <>obj<>2["y"] = <>obj<>3["z"]
+}
+{
+  <>obj<>4 = <>Global<>toObject(obj2)
+  <>obj<>5 = <>Global<>toObject(obj)
+  <>obj<>4["y"] = <>obj<>5["y"]
+}
+

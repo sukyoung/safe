@@ -1,3 +1,0 @@
-${DISAMB_TESTS_DIR}/disamb10.js:2:27-36:
-    Break occurs outside of a label.
-File ${DISAMB_TESTS_DIR}/disamb10.js has 1 error.

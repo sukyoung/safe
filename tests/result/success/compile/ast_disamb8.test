@@ -1,0 +1,22 @@
+function f(this, <>arguments<>1) 
+{
+  function <>g<>2(this, <>arguments<>3) 
+  {
+    <>Global<>ignore2 = <>arguments<>3
+    <>Global<>ignore4 = this
+  }
+  function <>h<>4(this, <>arguments<>5) 
+  {
+    var <>arguments<>6
+    <>arguments<>6 = <>arguments<>5["0"]
+    <>Global<>ignore6 = <>arguments<>6
+    <>Global<>ignore8 = this
+  }
+  {
+    <>obj<>7 = <>Global<>toObject(<>arguments<>1)
+    <>Global<>ignore10 = <>obj<>7[1]
+  }
+  <>Global<>ignore12 = this
+}
+
+

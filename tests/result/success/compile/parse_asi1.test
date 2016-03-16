@@ -1,0 +1,43 @@
+
+
+<>Global<>ignore2 = 42
+<>Global<>ignore4 = "hello!"
+<>Global<>ignore6 = "there!"
+if(x)
+  {
+    <>obj<>1 = <>Global<>toObject(y)
+    <>arguments<>2 = []
+    <>fun<>3 = <>Global<>getBase(y)
+    <>Global<>ignore7 = <>obj<>1(<>fun<>3, <>arguments<>2)
+  }
+<>break<>4 : {
+  {
+    <>obj<>5 = <>Global<>toObject(getNode)
+    <>arguments<>6 = []
+    <>fun<>7 = <>Global<>getBase(getNode)
+    <>Global<>ignore8 = <>obj<>5(<>fun<>7, <>arguments<>6)
+    node = <>Global<>ignore8
+    <>Global<>ignore9 = <>Global<>ignore8
+    <>obj<>8 = <>Global<>toObject(node)
+  }
+  while(<>obj<>8["parent"])
+  {
+    <>continue<>9 : {
+      
+    }
+    {
+      <>obj<>10 = <>Global<>toObject(node)
+      node = <>obj<>10["parent"]
+      <>Global<>ignore11 = <>obj<>10["parent"]
+      <>obj<>8 = <>Global<>toObject(node)
+    }
+  }
+}
+<>Global<>ignore13 = i
+{
+  <>old<>11 = j
+  <>new<>12 = <>Global<>toNumber(<>old<>11)
+  j = <>new<>12 + 1
+  <>Global<>ignore15 = <>new<>12 + 1
+}
+

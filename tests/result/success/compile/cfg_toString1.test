@@ -1,0 +1,8 @@
+
+var x
+var y
+{
+  <>obj<>1 = <>Global<>toObject(x)
+  <>Global<>ignore2 = <>obj<>1[y]
+}
+

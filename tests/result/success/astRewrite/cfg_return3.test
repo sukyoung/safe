@@ -1,0 +1,32 @@
+  function f() 
+  {
+    var y;
+    
+      y = (function g(x) 
+    {
+      var temp;
+      var z;
+      var w;
+      
+          temp = 1;
+      if (y)
+        return;
+      else
+      {
+        z = 678;
+        print("in");
+        w = (function h(t) 
+        {
+          return temp;
+        });
+        w(3);
+      }
+    });
+  }
+  var x;
+  
+  {
+    
+  }
+  f();
+  

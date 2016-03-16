@@ -1,0 +1,10 @@
+(0,LBlock(0))
+    [0] noop(StartOfFile)
+    [1] a := 1
+    [2] <>Global<>ignore3 := 3
+    [3] <>Global<>ignore4 := 1
+    [4] <>Global<>ignore5 := <>Global<>referenceError
+    [5] noop(EndOfFile)
+
+
+

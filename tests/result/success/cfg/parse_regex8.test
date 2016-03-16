@@ -1,0 +1,34 @@
+(0,LBlock(4))
+
+
+(0,LBlock(3))
+    [EDGE] after-call(<>z<>11)
+    [14] a := <>y<>1 / <>z<>11
+    [15] noop(EndOfFile)
+
+
+(0,LBlock(2))
+
+
+(0,LBlock(1))
+    [EDGE] after-call(<>obj1<>6)
+    [8] <>obj<>7 := <>Global<>toObject(<>obj1<>6) @ #6
+    [9] <>temp<>8 := d
+    [10] <>arguments<>9 := allocArg(1) @ #7
+    [11] <>arguments<>9["0"] := <>temp<>8
+    [12] <>fun<>10 := <>Global<>toObject(<>obj<>7["map"]) @ #8
+    [13] call(<>fun<>10, <>obj<>7, <>arguments<>9) @ #9
+
+
+(0,LBlock(0))
+    [0] noop(StartOfFile)
+    [1] <>y<>1 := b / hi
+    [2] <>obj<>2 := <>Global<>toObject(g) @ #1
+    [3] <>temp<>3 := c
+    [4] <>arguments<>4 := allocArg(1) @ #2
+    [5] <>arguments<>4["0"] := <>temp<>3
+    [6] <>fun<>5 := <>Global<>toObject(<>obj<>2["exec"]) @ #3
+    [7] call(<>fun<>5, <>obj<>2, <>arguments<>4) @ #4
+
+
+

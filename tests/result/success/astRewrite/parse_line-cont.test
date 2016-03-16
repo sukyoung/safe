@@ -1,0 +1,4 @@
+  var str;
+  
+  str = "foo             bar";
+  

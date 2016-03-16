@@ -1,0 +1,38 @@
+(0,LBlock(9))
+
+
+(0,LBlock(8))
+
+
+(0,LBlock(7))
+    [5] assert(! true)
+
+
+(0,LBlock(6))
+    [4] assert(true)
+
+
+(0,LBlock(5))
+
+
+(0,LBlock(4))
+
+
+(0,LBlock(3))
+
+
+(0,LBlock(2))
+    [6] noop(EndOfFile)
+
+
+(1,LBlock(1))
+    [0] <>obj<>4 := <>Global<>toObject(<>a<>1) @ #1
+    [1] <>Global<>ignore2 := <>obj<>4[<>b<>2]
+
+
+(0,LBlock(0))
+    [2] f := function (1) @ #2, #3
+    [3] noop(StartOfFile)
+
+
+

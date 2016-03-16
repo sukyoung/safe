@@ -1,0 +1,19 @@
+
+
+{
+  <>obj<>1 = <>Global<>toObject(testcases)
+  <>obj<>2 = <>Global<>toObject(<>obj<>1[tc])
+  <>old<>3 = <>obj<>2["reason"]
+  <>obj<>4 = <>Global<>toObject(testcases)
+  <>obj<>5 = <>Global<>toObject(<>obj<>4[tc])
+  if(<>obj<>5["passed"])
+  {
+    <>y<>6 = ""
+  }
+  else
+  {
+    <>y<>6 = "wrong value "
+  }
+  <>obj<>2["reason"] = <>old<>3 + <>y<>6
+}
+

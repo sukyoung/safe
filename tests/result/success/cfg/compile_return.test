@@ -1,0 +1,34 @@
+(0,LBlock(6))
+
+
+(0,LBlock(5))
+    [EDGE] after-call(<>Global<>ignore1)
+    [10] noop(EndOfFile)
+
+
+(1,LBlock(4))
+    [3] return("jsaf")
+
+
+(1,LBlock(3))
+    [2] return(1.0)
+
+
+(1,LBlock(2))
+    [1] return(0)
+
+
+(1,LBlock(1))
+    [0] return()
+
+
+(0,LBlock(0))
+    [4] f := function (1) @ #1, #2
+    [5] noop(StartOfFile)
+    [6] <>obj<>2 := <>Global<>toObject(f) @ #3
+    [7] <>arguments<>3 := allocArg(0) @ #4
+    [8] <>fun<>4 := <>Global<>getBase(f)
+    [9] call(<>obj<>2, <>fun<>4, <>arguments<>3) @ #5
+
+
+

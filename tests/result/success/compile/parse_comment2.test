@@ -1,0 +1,6 @@
+function foo(this, <>arguments<>1) 
+{
+  
+}
+
+

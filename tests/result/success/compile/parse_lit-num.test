@@ -1,0 +1,20 @@
+
+
+<>Global<>ignore2 = 42
+<>Global<>ignore4 = 4.2
+<>Global<>ignore6 = 4.2e-9
+<>Global<>ignore8 = 4.2e-9
+<>Global<>ignore10 = - 42
+<>Global<>ignore12 = - 4.2
+<>Global<>ignore14 = - 4.2e+9
+<>Global<>ignore16 = - 4.2e+9
+<>Global<>ignore18 = - 4.2e9
+<>Global<>ignore20 = - 4.2e9
+<>Global<>ignore22 = 0
+<>Global<>ignore24 = - 0
+<>Global<>ignore26 = 255
+<>Global<>ignore28 = - 255
+<>Global<>ignore30 = - 2748
+<>Global<>ignore32 = 0
+<>Global<>ignore34 = - 0
+
