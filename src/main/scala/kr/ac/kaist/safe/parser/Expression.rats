@@ -31,7 +31,7 @@ public Expr Expression =
      a1:Assignment a2s:(w void:comma w Assignment)*
      { if (a2s.list().isEmpty()) yyValue = a1;
        else yyValue = NodeFactory.makeExprList(createSpan(yyStart,yyCount),
-                                               JUseful.cons(a1, a2s.list()));
+                                               cons(a1, a2s.list()));
      };
 
 /*
@@ -455,7 +455,7 @@ constant inline Action<LHS> Dot =
  */
 transient List<Expr> Args =
      openparen w closeparen
-     { yyValue = JUseful.list(); }
+     { yyValue = list(); }
    / openparen w yyValue:ArgList w closeparen ;
 
 /*
@@ -463,7 +463,7 @@ transient List<Expr> Args =
  */
 private transient List<Expr> ArgList =
      a1:Assignment a2s:(w void:comma w Assignment)*
-     { yyValue = JUseful.cons(a1, a2s.list()); } ;
+     { yyValue = cons(a1, a2s.list()); } ;
 
 /*
  * NewExpr ::=
@@ -602,7 +602,7 @@ private transient List<Option<Expr>> ElementListHead =
        List<Option<Expr>> result = new ArrayList<Option<Expr>>(elision);
        for (int i = 0; i < elision; i++)
            result.add(Option.<Expr>none());
-       yyValue = JUseful.list(result, Option.some(a2));
+       yyValue = list(result, Option.some(a2));
      };
 
 constant inline Action<List<Option<Expr>>> ElementListTail =
@@ -615,7 +615,7 @@ constant inline Action<List<Option<Expr>>> ElementListTail =
                  result.addAll(base);
                  for (int i = 0; i < elision; i++)
                      result.add(Option.<Expr>none());
-                 return JUseful.list(result, Option.some(a2));
+                 return list(result, Option.some(a2));
              }};
      };
 
@@ -631,7 +631,7 @@ private transient Integer Elision =
 private transient LHS ObjectLiteral =
      opencurly a1:(w PropAssignList)? (w comma)? w closecurly
      { Span span = createSpan(yyStart,yyCount+1);
-       if (a1 == null) a1 = JUseful.list();
+       if (a1 == null) a1 = list();
        yyValue = NodeFactory.makeObjectExpr(span, a1);
      };
 
@@ -641,7 +641,7 @@ private transient LHS ObjectLiteral =
 private transient List<Member> PropAssignList =
      a1:PropAssign a2s:(w void:comma w PropAssign)*
      { Span span = createSpan(yyStart,yyCount);
-       yyValue = JUseful.cons(a1, a2s.list());
+       yyValue = cons(a1, a2s.list());
      };
 
 /*

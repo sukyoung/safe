@@ -103,7 +103,7 @@ object NodeUtil {
     new Span(span1.begin, span2.end)
 
   def spanAll(nodes: List[ASTNode]): Span = nodes match {
-    case Nil => error("Cannot make a span from an empty list of nodes.")
+    case Nil => sys.error("Cannot make a span from an empty list of nodes.")
     case hd :: _ =>
       new Span(getSpan(hd).begin, getSpan(nodes.last).end)
   }
@@ -120,7 +120,7 @@ object NodeUtil {
       writer.write(msg + "\n")
     } catch {
       case e: IOException =>
-        error("Writing to a log file for the parser failed!")
+        sys.error("Writing to a log file for the parser failed!")
     }
 
   // merge the statements in each SourceElements
