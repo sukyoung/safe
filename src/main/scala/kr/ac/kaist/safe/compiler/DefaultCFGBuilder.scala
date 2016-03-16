@@ -57,7 +57,7 @@ object DefaultCFGBuilder extends CFGBuilder {
     errLog.errors = Nil
     catchVarMap.clear
     config = conf
-    captured = CapturedVariableCollector.collect(ir)
+    captured = new CapturedVariableCollector(ir, config).collect
     cfgIdMap.clear
     uniqueNameCounter = 0
 
@@ -612,7 +612,7 @@ object DefaultCFGBuilder extends CFGBuilder {
           (List(lastOutBlock), updatedlmap)
         }
       case _ => {
-        Console.err.println("* Warning: following IR statement is ignored: " + stmt)
+        if (config.opt_Verbose) Console.err.println("* Warning: following IR statement is ignored: " + stmt)
         (blocks, lmap)
       }
     }

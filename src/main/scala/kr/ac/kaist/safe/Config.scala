@@ -24,6 +24,7 @@ class Config(
     val opt_Time: Boolean,
     val opt_unrollingCount: Int,
     val FileNames: List[String],
+    val opt_Verbose: Boolean,
     val addrManager: AddressManager
 ) {
   val predVars = List(
@@ -101,16 +102,17 @@ object Config {
     var possibleOptions: List[String] = Nil
     var opt_OutFileName: String = null
     var opt_Time: Boolean = false
+    var opt_Verbose: Boolean = false
     var opt_unrollingCount: Int = 0
     var FileNames: List[String] = Nil
 
     val commandMap = Map(
       "usage" -> Nil,
-      "parse" -> List("out", "time"),
-      "unparse" -> List("out"),
-      "astRewrite" -> List("out"),
-      "compile" -> List("out", "time"),
-      "cfg" -> List("out", "unroll"),
+      "parse" -> List("verbose", "out", "time"),
+      "unparse" -> List("verbose", "out"),
+      "astRewrite" -> List("verbose", "out"),
+      "compile" -> List("verbose", "out", "time"),
+      "cfg" -> List("verbose", "out", "unroll"),
       "help" -> Nil
     )
 
@@ -124,6 +126,7 @@ object Config {
 
       lazy val number = "[0-9]+".r ^^ { _.toInt }
       lazy val fileName = (".*").r ^^ { (s) => FileNames = s :: FileNames }
+      lazy val verbose = ("-" ~> "verbose") ^^ { (s) => opt_Verbose = true }
       lazy val out = ("-" ~> "out" <~ "=") ~ (".*").r ^^ { case o ~ fn => opt_OutFileName = fn }
       lazy val time = ("-" ~> "time") ^^ { (s) => opt_Time = true }
       lazy val unroll = ("-" ~> "unroll" <~ "=") ~ number ^^ { case s ~ n => opt_unrollingCount = n }
@@ -133,7 +136,8 @@ object Config {
         "out" -> out,
         "time" -> time,
         "unroll" -> unroll,
-        "filename" -> fileName
+        "filename" -> fileName,
+        "verbose" -> verbose
       )
 
       def getArgument(args: List[String]): Unit = {
@@ -149,6 +153,6 @@ object Config {
 
     CommandLineArgumentParser.getArgument(args)
 
-    new Config(command, opt_OutFileName, opt_Time, opt_unrollingCount, FileNames, new DefaultAddressManager)
+    new Config(command, opt_OutFileName, opt_Time, opt_unrollingCount, FileNames, opt_Verbose, new DefaultAddressManager)
   }
 }

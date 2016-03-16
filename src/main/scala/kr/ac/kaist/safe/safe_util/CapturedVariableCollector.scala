@@ -17,8 +17,9 @@ import scala.collection.immutable.HashSet
 import kr.ac.kaist.safe.exceptions.StaticError
 import kr.ac.kaist.safe.nodes._
 import kr.ac.kaist.safe.useful.ErrorLog
+import kr.ac.kaist.safe.Config
 
-object CapturedVariableCollector {
+class CapturedVariableCollector(ir: IRRoot, config: Config) {
   /* Error handling
    * The signal function collects errors during the disambiguation phase.
    * To collect multiple errors,
@@ -32,7 +33,7 @@ object CapturedVariableCollector {
 
   val captured: MSet[String] = MHashSet()
 
-  def collect(ir: IRRoot): Set[String] = {
+  def collect: Set[String] = {
     errors.errors = Nil
     captured.clear
     ir match {
@@ -203,7 +204,7 @@ object CapturedVariableCollector {
       checkStmt(body, locals)
 
     case _ => {
-      Console.err.println("* Warning: following IR statement is ignored: " + stmt)
+      if (config.opt_Verbose) Console.err.println("* Warning: following IR statement is ignored: " + stmt)
     }
   }
 

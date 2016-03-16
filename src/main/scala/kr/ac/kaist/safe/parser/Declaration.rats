@@ -50,7 +50,7 @@ private String UseStrictDirectives =
      yyValue:UseStrictDirective UseStrictDirective+
      { Span span = createSpan(yyStart,yyCount);
        System.out.println(span+":");
-       System.out.println("    Warning: you may not use multiple Use Strict Directives.");
+       System.out.println("* Warning: you may not use multiple Use Strict Directives.");
      }
    / yyValue:UseStrictDirective
    ;
