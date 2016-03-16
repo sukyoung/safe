@@ -11,7 +11,22 @@
 
 package kr.ac.kaist.safe.nodes
 
-sealed abstract class CFGExpr
+sealed abstract class CFGExpr {
+  def pp(str: String): String = {
+    str.foldLeft("")((res, c) => c match {
+      case '\u0008' => res + "\\b"
+      case '\t' => res + "\\t"
+      case '\n' => res + "\\n"
+      case '\f' => res + "\\f"
+      case '\r' => res + "\\r"
+      case '\u000b' => res + "\\v"
+      case '"' => res + "\\\""
+      case '\'' => res + "'"
+      case '\\' => res + "\\"
+      case c => res + c
+    })
+  }
+}
 
 // with Info
 case class CFGVarRef(info: Info, id: CFGId) extends CFGExpr with CFGInfo {
@@ -35,7 +50,7 @@ case class CFGNumber(text: String, num: Double) extends CFGExpr {
   override def toString: String = text
 }
 case class CFGString(str: String) extends CFGExpr {
-  override def toString: String = "\"" + str + "\""
+  override def toString: String = "\"" + pp(str) + "\""
 }
 case class CFGBool(bool: Boolean) extends CFGExpr {
   override def toString: String = if (bool) "true" else "false"

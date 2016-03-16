@@ -57,7 +57,7 @@ object CFGMain {
         case e: IOException =>
           throw new IOException("IOException " + e + "while writing to " + outFileName)
       }
-    } else System.out.print(dump)
+    } else System.out.println(dump)
 
     return_code
   }

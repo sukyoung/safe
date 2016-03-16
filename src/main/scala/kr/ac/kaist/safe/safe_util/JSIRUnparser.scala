@@ -53,15 +53,15 @@ class JSIRUnparser(program: IRNode) extends IRWalker {
     }
   }
 
-  var uniq_id = 0
-  def fresh(): String = { uniq_id += 1; uniq_id.toString }
-  type Env = List[(String, String)]
-  var env = Nil.asInstanceOf[Env]
+  private var uniq_id = 0
+  private def fresh(): String = { uniq_id += 1; uniq_id.toString }
+  private type Env = List[(String, String)]
+  private var env = Nil.asInstanceOf[Env]
   /*
    * The following line is to get unsimplified name.
    * Check interpret method in Shell.java to print IR program before Interpreter.
    */
-  def getE(uniq: String): String = env.find(p => p._1.equals(uniq)) match {
+  private def getE(uniq: String): String = env.find(p => p._1.equals(uniq)) match {
     case None =>
       val new_uniq = fresh
       env = (uniq, new_uniq) :: env
@@ -99,9 +99,12 @@ class JSIRUnparser(program: IRNode) extends IRWalker {
 
   def id2str(n: String): String = {
     val size = NU.significantBits
-    if (!NU.isInternal(n)) n
+    val str = if (!NU.isInternal(n)) n
     else if (!NU.isGlobalName(n)) n.dropRight(size) + getE(n.takeRight(size))
     else n
+    val builder = new StringBuilder
+    pp(builder, str)
+    builder.toString
   }
 
   def inlineIndent(stmt: IRStmt, s: StringBuilder): Unit = {
