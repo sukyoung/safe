@@ -78,6 +78,7 @@ class Config(
 }
 
 object Config {
+  val MAX_INST_PRINT_SIZE = 10000
   def safeAutoHome(): String = {
     var s = ""
     s = System.getenv("SAFE_HOME")
