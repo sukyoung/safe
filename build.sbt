@@ -32,6 +32,7 @@ lazy val root = (project in file(".")).
       }
       cache(file(inDir).asFile.listFiles.toSet)
     },
+    testOptions in Test += Tests.Argument("-fDG", baseDirectory.value + "/tests/detail"),
     compile <<= (compile in Compile) dependsOn (buildParsers in Compile),
     test <<= (test in Test) dependsOn compile
   )
