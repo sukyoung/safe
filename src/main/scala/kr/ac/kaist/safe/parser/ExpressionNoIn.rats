@@ -72,17 +72,17 @@ private transient Expr LogicalORNoIn =
      a1:LogicalANDNoIn a2s:LogicalANDNoInR*
      { Span span = NodeUtil.span(a1);
        yyValue = a1;
-       for (edu.rice.cs.plt.tuple.Pair<Op, Expr> pair: a2s.list()) {
-           Op op = pair.first();
-           Expr right = pair.second();
+       for (Tuple2<Op, Expr> pair: a2s.list()) {
+           Op op = pair._1();
+           Expr right = pair._2();
            yyValue = NodeFactory.makeInfixOpApp(NodeUtil.makeSpan(span, NodeUtil.span(right)),
                                                 yyValue, op, right);
        }
      };
 
-private transient edu.rice.cs.plt.tuple.Pair<Op, Expr> LogicalANDNoInR =
+private transient Tuple2<Op, Expr> LogicalANDNoInR =
      w a1:bars w a2:LogicalANDNoIn
-     { yyValue = new edu.rice.cs.plt.tuple.Pair<Op, Expr>(a1, a2); };
+     { yyValue = new Tuple2<Op, Expr>(a1, a2); };
 
 /*
  * LogicalANDNoIn ::=
@@ -93,17 +93,17 @@ private transient Expr LogicalANDNoIn =
      a1:BitwiseORNoIn a2s:BitwiseORNoInR*
      { Span span = NodeUtil.span(a1);
        yyValue = a1;
-       for (edu.rice.cs.plt.tuple.Pair<Op, Expr> pair: a2s.list()) {
-           Op op = pair.first();
-           Expr right = pair.second();
+       for (Tuple2<Op, Expr> pair: a2s.list()) {
+           Op op = pair._1();
+           Expr right = pair._2();
            yyValue = NodeFactory.makeInfixOpApp(NodeUtil.makeSpan(span, NodeUtil.span(right)),
                                                 yyValue, op, right);
        }
      };
 
-private transient edu.rice.cs.plt.tuple.Pair<Op, Expr> BitwiseORNoInR =
+private transient Tuple2<Op, Expr> BitwiseORNoInR =
      w a1:ands w a2:BitwiseORNoIn
-     { yyValue = new edu.rice.cs.plt.tuple.Pair<Op, Expr>(a1, a2); };
+     { yyValue = new Tuple2<Op, Expr>(a1, a2); };
 
 /*
  * BitwiseORNoIn ::=
@@ -114,17 +114,17 @@ private transient Expr BitwiseORNoIn =
      a1:BitwiseXORNoIn a2s:BitwiseXORNoInR*
      { Span span = NodeUtil.span(a1);
        yyValue = a1;
-       for (edu.rice.cs.plt.tuple.Pair<Op, Expr> pair: a2s.list()) {
-           Op op = pair.first();
-           Expr right = pair.second();
+       for (Tuple2<Op, Expr> pair: a2s.list()) {
+           Op op = pair._1();
+           Expr right = pair._2();
            yyValue = NodeFactory.makeInfixOpApp(NodeUtil.makeSpan(span, NodeUtil.span(right)),
                                                 yyValue, op, right);
        }
      };
 
-private transient edu.rice.cs.plt.tuple.Pair<Op, Expr> BitwiseXORNoInR =
+private transient Tuple2<Op, Expr> BitwiseXORNoInR =
      w a1:bar w a2:BitwiseXORNoIn
-     { yyValue = new edu.rice.cs.plt.tuple.Pair<Op, Expr>(a1, a2); };
+     { yyValue = new Tuple2<Op, Expr>(a1, a2); };
 
 /*
  * BitwiseXORNoIn ::=
@@ -135,17 +135,17 @@ private transient Expr BitwiseXORNoIn =
      a1:BitwiseANDNoIn a2s:BitwiseANDNoInR*
      { Span span = NodeUtil.span(a1);
        yyValue = a1;
-       for (edu.rice.cs.plt.tuple.Pair<Op, Expr> pair: a2s.list()) {
-           Op op = pair.first();
-           Expr right = pair.second();
+       for (Tuple2<Op, Expr> pair: a2s.list()) {
+           Op op = pair._1();
+           Expr right = pair._2();
            yyValue = NodeFactory.makeInfixOpApp(NodeUtil.makeSpan(span, NodeUtil.span(right)),
                                                 yyValue, op, right);
        }
      };
 
-private transient edu.rice.cs.plt.tuple.Pair<Op, Expr> BitwiseANDNoInR =
+private transient Tuple2<Op, Expr> BitwiseANDNoInR =
      w a1:caret w a2:BitwiseANDNoIn
-     { yyValue = new edu.rice.cs.plt.tuple.Pair<Op, Expr>(a1, a2); };
+     { yyValue = new Tuple2<Op, Expr>(a1, a2); };
 
 /*
  * BitwiseANDNoIn ::=
@@ -156,17 +156,17 @@ private transient Expr BitwiseANDNoIn =
      a1:EqualityNoIn a2s:EqualityNoInR*
      { Span span = NodeUtil.span(a1);
        yyValue = a1;
-       for (edu.rice.cs.plt.tuple.Pair<Op, Expr> pair: a2s.list()) {
-           Op op = pair.first();
-           Expr right = pair.second();
+       for (Tuple2<Op, Expr> pair: a2s.list()) {
+           Op op = pair._1();
+           Expr right = pair._2();
            yyValue = NodeFactory.makeInfixOpApp(NodeUtil.makeSpan(span, NodeUtil.span(right)),
                                                 yyValue, op, right);
        }
      };
 
-private transient edu.rice.cs.plt.tuple.Pair<Op, Expr> EqualityNoInR =
+private transient Tuple2<Op, Expr> EqualityNoInR =
      w a1:and w a2:EqualityNoIn
-     { yyValue = new edu.rice.cs.plt.tuple.Pair<Op, Expr>(a1, a2); };
+     { yyValue = new Tuple2<Op, Expr>(a1, a2); };
 
 /*
  * EqualityNoIn ::=
@@ -180,16 +180,16 @@ private transient Expr EqualityNoIn =
      a1s:RelationalLNoIn+ a2:RelationalNoIn
      { Span span = createSpan(yyStart,yyCount);
        yyValue = a2;
-       List<edu.rice.cs.plt.tuple.Pair<Expr, Op>> ps = a1s.list();
+       List<Tuple2<Expr, Op>> ps = a1s.list();
        Collections.reverse(ps);
-       for (edu.rice.cs.plt.tuple.Pair<Expr, Op> pair: ps)
-           yyValue = NodeFactory.makeInfixOpApp(span, pair.first(), pair.second(), yyValue);
+       for (Tuple2<Expr, Op> pair: ps)
+           yyValue = NodeFactory.makeInfixOpApp(span, pair._1(), pair._2(), yyValue);
      }
    / RelationalNoIn ;
 
-private transient edu.rice.cs.plt.tuple.Pair<Expr, Op> RelationalLNoIn =
+private transient Tuple2<Expr, Op> RelationalLNoIn =
      a1:RelationalNoIn w a2:EqualityOp w
-     { yyValue = new edu.rice.cs.plt.tuple.Pair<Expr, Op>(a1, a2); };
+     { yyValue = new Tuple2<Expr, Op>(a1, a2); };
 
 /*
  * RelationalNoIn ::=
@@ -204,12 +204,12 @@ private transient Expr RelationalNoIn =
      a1s:ShiftLNoIn* a2:Shift
      { Span span = createSpan(yyStart,yyCount);
        yyValue = a2;
-       List<edu.rice.cs.plt.tuple.Pair<Expr, Op>> ps = a1s.list();
+       List<Tuple2<Expr, Op>> ps = a1s.list();
        Collections.reverse(ps);
-       for (edu.rice.cs.plt.tuple.Pair<Expr, Op> pair: ps)
-           yyValue = NodeFactory.makeInfixOpApp(span, pair.first(), pair.second(), yyValue);
+       for (Tuple2<Expr, Op> pair: ps)
+           yyValue = NodeFactory.makeInfixOpApp(span, pair._1(), pair._2(), yyValue);
      };
 
-private transient edu.rice.cs.plt.tuple.Pair<Expr, Op> ShiftLNoIn =
+private transient Tuple2<Expr, Op> ShiftLNoIn =
      a1:Shift w a2:RelationalOpNoIn w
-     { yyValue = new edu.rice.cs.plt.tuple.Pair<Expr, Op>(a1, a2); };
+     { yyValue = new Tuple2<Expr, Op>(a1, a2); };

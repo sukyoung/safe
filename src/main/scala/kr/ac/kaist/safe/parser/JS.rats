@@ -45,9 +45,6 @@ header {
 import java.util.HashMap;
 import kr.ac.kaist.safe.nodes.*;
 import kr.ac.kaist.safe.util.*;
-import edu.rice.cs.plt.tuple.Triple;
-import edu.rice.cs.plt.iter.IterUtil;
-import edu.rice.cs.plt.collect.CollectUtil;
 import xtc.util.Action;
 import java.io.*;
 import java.util.Collections;
@@ -60,6 +57,8 @@ import static kr.ac.kaist.safe.errors.SAFEError.error;
 import scala.collection.JavaConversions;
 import scala.Option;
 import scala.Some;
+import scala.Tuple2;
+import scala.Tuple3;
 }
 
 body {

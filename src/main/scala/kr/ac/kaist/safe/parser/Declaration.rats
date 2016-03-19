@@ -103,8 +103,8 @@ FunDecl FunctionDeclaration =
        else ids = toList(a2);
        yyValue = new FunDecl(info,
                              new Functional(info, nilFds, nilVds,
-                                            new SourceElements(info, toList(a3.first()), a3.third()),
-                                            a1, ids, a3.second()), false);
+                                            new SourceElements(info, toList(a3._1()), a3._3()),
+                                            a1, ids, a3._2()), false);
      };
 
 /*
@@ -119,15 +119,15 @@ public List<Id> Params =
 /*
  * FunctionBody ::= { w SourceElement* w }
  */
-public Triple<List<SourceElement>, String, Boolean> FunctionBody =
+public Tuple3<List<SourceElement>, String, Boolean> FunctionBody =
      opencurly w a1:UseStrictDirectives? w closecurly
      { if (a1 == null)
-         yyValue = new Triple<List<SourceElement>, String, Boolean>(
+         yyValue = new Tuple3<List<SourceElement>, String, Boolean>(
                        nilJSes,
                        "{}",
                        Boolean.valueOf(false));
        else
-         yyValue = new Triple<List<SourceElement>, String, Boolean>(
+         yyValue = new Tuple3<List<SourceElement>, String, Boolean>(
                        nilJSes,
                        "{ 'use strict'; }",
                        Boolean.valueOf(true));
@@ -135,9 +135,9 @@ public Triple<List<SourceElement>, String, Boolean> FunctionBody =
    / opencurly w a1:UseStrictDirectives? w a2:SourceElements w closecurly
      { String str = (new JSAstToConcrete()).prBody(toList(a2));
        if (a1 == null)
-         yyValue = new Triple<List<SourceElement>, String, Boolean>(a2, "{ " + str + " }", Boolean.valueOf(false));
+         yyValue = new Tuple3<List<SourceElement>, String, Boolean>(a2, "{ " + str + " }", Boolean.valueOf(false));
        else
-         yyValue = new Triple<List<SourceElement>, String, Boolean>(a2, "{ 'use strict'; " + str + " }", Boolean.valueOf(true));
+         yyValue = new Tuple3<List<SourceElement>, String, Boolean>(a2, "{ 'use strict'; " + str + " }", Boolean.valueOf(true));
      };
 
 /*
@@ -153,6 +153,6 @@ public LHS FunctionExpr =
        else ids = toList(a2);
        yyValue = new FunExpr(info,
                              new Functional(info, nilFds, nilVds,
-                                            new SourceElements(info, toList(a3.first()), a3.third()),
-                                            f, ids, a3.second()));
+                                            new SourceElements(info, toList(a3._1()), a3._3()),
+                                            f, ids, a3._2()));
      };

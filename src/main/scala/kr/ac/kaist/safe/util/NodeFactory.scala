@@ -14,8 +14,6 @@ package kr.ac.kaist.safe.util
 import kr.ac.kaist.safe.nodes._
 import kr.ac.kaist.safe.util.{ NodeUtil => NU }
 
-import edu.rice.cs.plt.tuple.{ Option => JOption }
-
 import java.lang.{ Double => JDouble }
 import java.lang.{ Integer => JInt }
 import java.util.{ List => JList }
