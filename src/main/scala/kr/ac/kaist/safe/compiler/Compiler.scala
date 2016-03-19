@@ -12,11 +12,9 @@
 package kr.ac.kaist.safe.compiler
 
 import kr.ac.kaist.safe.Config
-import kr.ac.kaist.safe.errors.StaticError
-import kr.ac.kaist.safe.errors.StaticErrors
-import kr.ac.kaist.safe.nodes.IRRoot
-import kr.ac.kaist.safe.nodes.Program
-import kr.ac.kaist.safe.safe_util.NodeUtil
+import kr.ac.kaist.safe.errors.{ StaticError, StaticErrors }
+import kr.ac.kaist.safe.nodes.{ IRRoot, Program }
+import kr.ac.kaist.safe.util.NodeUtil
 
 object Compiler {
   def compile(config: Config): (IRRoot, Int, List[StaticError]) = {

@@ -12,7 +12,7 @@
 package kr.ac.kaist.safe.errors
 
 import kr.ac.kaist.safe.nodes.ASTNode
-import kr.ac.kaist.safe.safe_util.NodeUtil
+import kr.ac.kaist.safe.util.NodeUtil
 
 object ErrorMsgMaker {
   def makeErrorMsg(node: ASTNode): String =

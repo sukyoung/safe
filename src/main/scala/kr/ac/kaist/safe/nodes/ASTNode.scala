@@ -20,7 +20,7 @@ package kr.ac.kaist.safe.nodes
 
 import java.lang.Double
 import java.math.BigInteger
-import kr.ac.kaist.safe.safe_util.Span
+import kr.ac.kaist.safe.util.Span
 
 abstract class ASTNode(override val info: ASTNodeInfo)
   extends Node(info: NodeInfo)

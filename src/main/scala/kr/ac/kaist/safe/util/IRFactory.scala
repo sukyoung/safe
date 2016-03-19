@@ -9,10 +9,10 @@
  * ****************************************************************************
  */
 
-package kr.ac.kaist.safe.safe_util
+package kr.ac.kaist.safe.util
 
 import kr.ac.kaist.safe.nodes._
-import kr.ac.kaist.safe.safe_util.{ NodeFactory => NF, NodeUtil => NU }
+import kr.ac.kaist.safe.util.{ NodeFactory => NF, NodeUtil => NU }
 import java.lang.{ Double => JDouble }
 
 object IRFactory {

@@ -9,6 +9,6 @@
  * ****************************************************************************
  */
 
-package kr.ac.kaist.safe.safe_util
+package kr.ac.kaist.safe.util
 
 class BugInfo(val span: Span, val bugKind: Int, val arg1: String, val arg2: String) {}

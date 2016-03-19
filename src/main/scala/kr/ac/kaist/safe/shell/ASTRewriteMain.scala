@@ -14,8 +14,7 @@ package kr.ac.kaist.safe.shell
 import kr.ac.kaist.safe.Config
 import kr.ac.kaist.safe.compiler.Compiler
 import kr.ac.kaist.safe.errors.UserError
-import kr.ac.kaist.safe.safe_util.JSAstToConcrete
-import kr.ac.kaist.safe.safe_util.Useful
+import kr.ac.kaist.safe.util.{ JSAstToConcrete, Useful }
 import java.io.BufferedWriter
 import java.io.FileWriter
 import java.io.IOException

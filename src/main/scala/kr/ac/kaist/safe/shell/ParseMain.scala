@@ -16,7 +16,6 @@ import kr.ac.kaist.safe.Config
 import kr.ac.kaist.safe.compiler.Parser
 import kr.ac.kaist.safe.errors.UserError
 import kr.ac.kaist.safe.nodes.Program
-import kr.ac.kaist.safe.safe_util.NodeFactory
 
 ////////////////////////////////////////////////////////////////////////////////
 // Parse

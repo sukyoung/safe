@@ -9,10 +9,10 @@
  * ****************************************************************************
  */
 
-package kr.ac.kaist.safe.safe_util
+package kr.ac.kaist.safe.util
 
 import kr.ac.kaist.safe.nodes._
-import kr.ac.kaist.safe.safe_util.{ NodeUtil => NU }
+import kr.ac.kaist.safe.util.{ NodeUtil => NU }
 
 /* Converts an IR to a string which is the concrete version of that IR
  */

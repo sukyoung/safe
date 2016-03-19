@@ -18,7 +18,7 @@ import java.io.File
 import java.io.FilenameFilter
 import kr.ac.kaist.safe.compiler.{ Compiler, Parser, Hoister, Disambiguator, WithRewriter, DefaultCFGBuilder }
 import kr.ac.kaist.safe.errors.{ StaticError, StaticErrors }
-import kr.ac.kaist.safe.safe_util.{ AddressManager, JSAstToConcrete, JSIRUnparser }
+import kr.ac.kaist.safe.util.{ AddressManager, JSAstToConcrete, JSIRUnparser }
 import kr.ac.kaist.safe.nodes.{ Program, CFG }
 import org.scalatest.Tag
 
@@ -89,7 +89,7 @@ class CoreTest extends FlatSpec {
   }
 
   // Permute filenames for randomness
-  for (filename <- util.Random.shuffle(new File(jsDir).list(jsFilter).toSeq)) {
+  for (filename <- scala.util.Random.shuffle(new File(jsDir).list(jsFilter).toSeq)) {
     val name = filename.substring(0, filename.length - 3)
     val jsName = jsDir + SEP + filename
     registerTest("[Parse] " + filename, ParseTest) { parseTest(jsName) }

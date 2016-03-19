@@ -9,10 +9,10 @@
  * ****************************************************************************
  */
 
-package kr.ac.kaist.safe.safe_util
+package kr.ac.kaist.safe.util
 
 import kr.ac.kaist.safe.nodes._
-import kr.ac.kaist.safe.safe_util.{ IRFactory => IF }
+import kr.ac.kaist.safe.util.{ IRFactory => IF }
 import java.io.BufferedWriter
 import java.io.IOException
 import scala.collection.immutable.HashMap

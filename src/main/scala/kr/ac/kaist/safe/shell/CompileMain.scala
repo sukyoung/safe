@@ -21,7 +21,7 @@ import kr.ac.kaist.safe.errors.StaticError
 import kr.ac.kaist.safe.errors.StaticErrors
 import kr.ac.kaist.safe.errors.UserError
 import kr.ac.kaist.safe.nodes.Program
-import kr.ac.kaist.safe.safe_util.{ JSIRUnparser, NodeUtil, Useful }
+import kr.ac.kaist.safe.util.{ JSIRUnparser, NodeUtil, Useful }
 import java.io.BufferedWriter
 import java.io.FileWriter
 import java.io.IOException

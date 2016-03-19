@@ -44,7 +44,7 @@ instantiate kr.ac.kaist.safe.parser.Unicode
 header {
 import java.util.HashMap;
 import kr.ac.kaist.safe.nodes.*;
-import kr.ac.kaist.safe.safe_util.*;
+import kr.ac.kaist.safe.util.*;
 import edu.rice.cs.plt.tuple.Triple;
 import edu.rice.cs.plt.iter.IterUtil;
 import edu.rice.cs.plt.collect.CollectUtil;

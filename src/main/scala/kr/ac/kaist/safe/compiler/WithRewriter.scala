@@ -15,7 +15,7 @@ import kr.ac.kaist.safe.errors.ErrorLog
 import kr.ac.kaist.safe.errors.SAFEError.error
 import kr.ac.kaist.safe.errors.StaticError
 import kr.ac.kaist.safe.nodes._
-import kr.ac.kaist.safe.safe_util.{ NodeFactory => NF, NodeUtil => NU }
+import kr.ac.kaist.safe.util.{ NodeFactory => NF, NodeUtil => NU }
 
 /* Rewrites a JavaScript source code using the with statement
  * to another one without using the with statement.

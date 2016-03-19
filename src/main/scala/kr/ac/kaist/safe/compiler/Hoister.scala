@@ -14,9 +14,8 @@ package kr.ac.kaist.safe.compiler
 import kr.ac.kaist.safe.errors.ParserError
 import kr.ac.kaist.safe.errors.StaticError
 import kr.ac.kaist.safe.nodes._
-import kr.ac.kaist.safe.safe_util.{ NodeUtil => NU }
-import kr.ac.kaist.safe.safe_util.{ BugInfo, Span }
-import kr.ac.kaist.safe.safe_util.BugDefinition._
+import kr.ac.kaist.safe.util.{ NodeUtil => NU, BugInfo, Span }
+import kr.ac.kaist.safe.util.BugDefinition._
 
 class Hoister(program: Program) extends ASTWalker {
   /* Error handling

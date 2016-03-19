@@ -15,7 +15,7 @@ import kr.ac.kaist.safe.errors.ErrorLog
 import kr.ac.kaist.safe.errors.SAFEError.error
 import kr.ac.kaist.safe.errors.StaticError
 import kr.ac.kaist.safe.nodes._
-import kr.ac.kaist.safe.safe_util.{ NodeFactory => NF, NodeUtil => NU, IRFactory => IF, Span }
+import kr.ac.kaist.safe.util.{ NodeFactory => NF, NodeUtil => NU, IRFactory => IF, Span }
 
 /* Translates JavaScript AST to IR. */
 class Translator(program: Program) extends ASTWalker {
