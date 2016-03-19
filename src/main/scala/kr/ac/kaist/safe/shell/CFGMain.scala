@@ -16,7 +16,7 @@ import java.io.FileWriter
 import java.io.IOException
 import kr.ac.kaist.safe.Config
 import kr.ac.kaist.safe.compiler.{ Compiler, DefaultCFGBuilder }
-import kr.ac.kaist.safe.exceptions.{ StaticError, StaticErrors, UserError }
+import kr.ac.kaist.safe.errors.{ StaticError, StaticErrors, UserError }
 import kr.ac.kaist.safe.nodes.CFG
 import kr.ac.kaist.safe.safe_util.{ AddressManager, NodeUtil }
 import kr.ac.kaist.safe.useful.Useful

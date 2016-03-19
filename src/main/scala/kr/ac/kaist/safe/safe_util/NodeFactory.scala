@@ -14,7 +14,6 @@ package kr.ac.kaist.safe.safe_util
 import kr.ac.kaist.safe.nodes._
 import kr.ac.kaist.safe.safe_util.{ NodeUtil => NU }
 import kr.ac.kaist.safe.scala_useful.Lists._
-import kr.ac.kaist.safe.useful.Useful
 
 import edu.rice.cs.plt.tuple.{ Option => JOption }
 

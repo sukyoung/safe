@@ -18,10 +18,10 @@ import xtc.parser.SemanticValue
 import xtc.parser.ParseError
 import kr.ac.kaist.safe.nodes._
 import kr.ac.kaist.safe.safe_util.{ NodeFactory => NF, NodeUtil => NU, SourceLoc, Span }
-import kr.ac.kaist.safe.exceptions.SAFEError
-import kr.ac.kaist.safe.exceptions.SyntaxError
-import kr.ac.kaist.safe.exceptions.ParserError
-import kr.ac.kaist.safe.exceptions.UserError
+import kr.ac.kaist.safe.errors.SAFEError
+import kr.ac.kaist.safe.errors.SyntaxError
+import kr.ac.kaist.safe.errors.ParserError
+import kr.ac.kaist.safe.errors.UserError
 import kr.ac.kaist.safe.parser.JS
 import kr.ac.kaist.safe.scala_useful.Lists._
 import kr.ac.kaist.safe.useful.Useful

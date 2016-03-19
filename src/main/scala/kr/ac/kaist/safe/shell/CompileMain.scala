@@ -17,9 +17,9 @@ import kr.ac.kaist.safe.compiler.Hoister
 import kr.ac.kaist.safe.compiler.Disambiguator
 import kr.ac.kaist.safe.compiler.WithRewriter
 import kr.ac.kaist.safe.compiler.Compiler
-import kr.ac.kaist.safe.exceptions.StaticError
-import kr.ac.kaist.safe.exceptions.StaticErrors
-import kr.ac.kaist.safe.exceptions.UserError
+import kr.ac.kaist.safe.errors.StaticError
+import kr.ac.kaist.safe.errors.StaticErrors
+import kr.ac.kaist.safe.errors.UserError
 import kr.ac.kaist.safe.nodes.Program
 import kr.ac.kaist.safe.safe_util.{ JSIRUnparser, NodeUtil }
 import kr.ac.kaist.safe.useful.Useful

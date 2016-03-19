@@ -58,7 +58,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import static kr.ac.kaist.safe.exceptions.SAFEError.error;
+import static kr.ac.kaist.safe.errors.SAFEError.error;
 import scala.collection.JavaConversions;
 import scala.Option;
 import scala.Some;

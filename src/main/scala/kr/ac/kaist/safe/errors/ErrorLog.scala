@@ -9,12 +9,10 @@
  * ****************************************************************************
  */
 
-package kr.ac.kaist.safe.useful
+package kr.ac.kaist.safe.errors
 
 import kr.ac.kaist.safe.nodes.Node
 import kr.ac.kaist.safe.scala_useful.Lists._
-import kr.ac.kaist.safe.exceptions.SAFEError
-import kr.ac.kaist.safe.exceptions.StaticError
 
 class ErrorLog() {
   var errors = List[StaticError]()

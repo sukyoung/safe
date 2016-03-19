@@ -9,7 +9,7 @@
  * ****************************************************************************
  */
 
-package kr.ac.kaist.safe.exceptions
+package kr.ac.kaist.safe.errors
 
 object StaticErrors {
   def flattenErrors(ex: Iterable[_ <: StaticError]): List[_ <: StaticError] = {

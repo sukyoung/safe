@@ -12,6 +12,7 @@
 package kr.ac.kaist.safe.safe_util
 
 import kr.ac.kaist.safe.nodes.ASTNode
+import kr.ac.kaist.safe.errors.ErrorMsgMaker
 
 class UIDObject {
   private var uid: Long = next

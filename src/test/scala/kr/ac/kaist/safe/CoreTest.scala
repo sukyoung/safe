@@ -17,7 +17,7 @@ import scala.io.Source
 import java.io.File
 import java.io.FilenameFilter
 import kr.ac.kaist.safe.compiler.{ Compiler, Parser, Hoister, Disambiguator, WithRewriter, DefaultCFGBuilder }
-import kr.ac.kaist.safe.exceptions.{ StaticError, StaticErrors }
+import kr.ac.kaist.safe.errors.{ StaticError, StaticErrors }
 import kr.ac.kaist.safe.safe_util.{ AddressManager, JSAstToConcrete, JSIRUnparser }
 import kr.ac.kaist.safe.nodes.{ Program, CFG }
 import kr.ac.kaist.safe.useful.Useful

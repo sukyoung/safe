@@ -11,11 +11,11 @@
 
 package kr.ac.kaist.safe.compiler
 
-import kr.ac.kaist.safe.exceptions.SAFEError.error
-import kr.ac.kaist.safe.exceptions.StaticError
+import kr.ac.kaist.safe.errors.ErrorLog
+import kr.ac.kaist.safe.errors.SAFEError.error
+import kr.ac.kaist.safe.errors.StaticError
 import kr.ac.kaist.safe.nodes._
 import kr.ac.kaist.safe.safe_util.{ NodeFactory => NF, NodeUtil => NU, IRFactory => IF, Span }
-import kr.ac.kaist.safe.useful.ErrorLog
 
 /* Translates JavaScript AST to IR. */
 class Translator(program: Program) extends ASTWalker {

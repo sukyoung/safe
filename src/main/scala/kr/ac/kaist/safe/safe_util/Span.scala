@@ -11,8 +11,7 @@
 
 package kr.ac.kaist.safe.safe_util
 
-import kr.ac.kaist.safe.useful.MagicNumbers
-import kr.ac.kaist.safe.exceptions.SAFEError
+import kr.ac.kaist.safe.errors.SAFEError
 import java.io.File
 import java.io.IOException
 import java.io.Serializable

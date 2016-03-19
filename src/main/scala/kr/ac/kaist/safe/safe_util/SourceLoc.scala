@@ -12,7 +12,6 @@
 package kr.ac.kaist.safe.safe_util
 
 import java.io.Serializable
-import kr.ac.kaist.safe.useful.MagicNumbers
 import kr.ac.kaist.safe.useful.Useful
 
 // /

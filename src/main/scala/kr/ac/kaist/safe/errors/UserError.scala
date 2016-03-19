@@ -9,7 +9,7 @@
  * ****************************************************************************
  */
 
-package kr.ac.kaist.safe.exceptions
+package kr.ac.kaist.safe.errors
 
 class UserError(msg: String) extends RuntimeException {
   override def toString: String = msg
