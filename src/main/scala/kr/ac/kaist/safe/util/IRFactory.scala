@@ -12,11 +12,11 @@
 package kr.ac.kaist.safe.util
 
 import kr.ac.kaist.safe.nodes._
-import kr.ac.kaist.safe.util.{ NodeFactory => NF, NodeUtil => NU }
+import kr.ac.kaist.safe.util.{ NodeUtil => NU }
 import java.lang.{ Double => JDouble }
 
 object IRFactory {
-  val dummyAst = NU.makeNoOp(NF.makeASTNodeInfo(NU.makeSpan("dummyAST")), "dummyAST")
+  val dummyAst = NU.makeNoOp(NU.makeASTNodeInfo(NU.makeSpan("dummyAST")), "dummyAST")
   // For use only when there is no hope of attaching a true span.
   def dummySpan(villain: String): Span = {
     val name = if (villain.length != 0) villain else "dummySpan"

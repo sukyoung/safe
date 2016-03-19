@@ -16,7 +16,7 @@ import java.nio.charset.Charset
 import xtc.parser.SemanticValue
 import xtc.parser.ParseError
 import kr.ac.kaist.safe.nodes._
-import kr.ac.kaist.safe.util.{ NodeFactory => NF, NodeUtil => NU, SourceLoc, Span }
+import kr.ac.kaist.safe.util.{ NodeUtil => NU, SourceLoc, Span }
 import kr.ac.kaist.safe.errors.{ ParserError, SAFEError, SyntaxError, UserError }
 import kr.ac.kaist.safe.parser.JS
 

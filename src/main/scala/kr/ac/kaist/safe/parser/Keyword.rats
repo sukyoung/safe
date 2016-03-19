@@ -42,11 +42,11 @@ body {
 option setOfString(JAVASCRIPT_RESERVED);
 
 Op delete = "delete" !(idrest)
-     { yyValue = NodeFactory.makeOp(createSpan(yyStart, yyCount), "delete"); };
+     { yyValue = new Op(NodeUtil.makeASTNodeInfo(createSpan(yyStart, yyCount)), "delete"); };
 Op typeof = "typeof" !(idrest)
-     { yyValue = NodeFactory.makeOp(createSpan(yyStart, yyCount), "typeof"); };
+     { yyValue = new Op(NodeUtil.makeASTNodeInfo(createSpan(yyStart, yyCount)), "typeof"); };
 Op void = "void" !(idrest)
-     { yyValue = NodeFactory.makeOp(createSpan(yyStart, yyCount), "void"); };
+     { yyValue = new Op(NodeUtil.makeASTNodeInfo(createSpan(yyStart, yyCount)), "void"); };
 
 transient void break = "break" !(idrest);
 transient void case = "case" !(idrest);

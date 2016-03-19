@@ -14,7 +14,7 @@ package kr.ac.kaist.safe.compiler
 import kr.ac.kaist.safe.errors.ErrorLog
 import kr.ac.kaist.safe.errors.StaticError
 import kr.ac.kaist.safe.nodes._
-import kr.ac.kaist.safe.util.{ NodeFactory => NF, NodeUtil => NU, Span }
+import kr.ac.kaist.safe.util.{ NodeUtil => NU, Span }
 import kr.ac.kaist.safe.Config
 
 /**
@@ -120,7 +120,7 @@ class Disambiguator(program: Program, config: Config) extends ASTWalker {
     { env = envs._1; labEnv = envs._2 }
 
   def newId(span: Span, n: String): Id =
-    Id(NF.makeASTNodeInfo(span), n, Some(n), false)
+    Id(NU.makeASTNodeInfo(span), n, Some(n), false)
   def newId(id: Id): Id = id match {
     case Id(info, text, _, _) =>
       if (toplevel) Id(info, text, Some(text), false)

@@ -27,7 +27,7 @@ import Spacing;
 public Program File =
      initParser a1:UseStrictDirectives? w a2:TopLevelSourceElements? closeParser
      { Span span = createSpan(yyStart,yyCount);
-       ASTNodeInfo info = NodeFactory.makeASTNodeInfo(span);
+       ASTNodeInfo info = NodeUtil.makeASTNodeInfo(span);
        scala.collection.immutable.List<SourceElement> ses;
        if (a2 == null) ses = nilSes;
        else ses = toList(a2);
@@ -97,7 +97,7 @@ private SourceElement SourceElement =
 FunDecl FunctionDeclaration =
      function w a1:Id w openparen a2:(w Params)? w closeparen w a3:FunctionBody
      { Span span = createSpan(yyStart,yyCount);
-       ASTNodeInfo info = NodeFactory.makeASTNodeInfo(span);
+       ASTNodeInfo info = NodeUtil.makeASTNodeInfo(span);
        scala.collection.immutable.List<Id> ids;
        if (a2 == null) ids = nilIds;
        else ids = toList(a2);
@@ -146,8 +146,8 @@ public Tuple3<List<SourceElement>, String, Boolean> FunctionBody =
 public LHS FunctionExpr =
      function a1:(w Id)? w openparen a2:(w Params)? w closeparen w a3:FunctionBody
      { Span span = createSpan(yyStart,yyCount+1);
-       ASTNodeInfo info = NodeFactory.makeASTNodeInfo(span);
-       Id f = (a1 == null) ? NodeFactory.makeId(span, "", "") : a1;
+       ASTNodeInfo info = NodeUtil.makeASTNodeInfo(span);
+       Id f = (a1 == null) ? new Id(NodeUtil.makeASTNodeInfo(span), "", Some.<String>apply(null), false) : a1;
        scala.collection.immutable.List<Id> ids;
        if (a2 == null) ids = nilIds;
        else ids = toList(a2);

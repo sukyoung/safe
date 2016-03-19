@@ -47,12 +47,10 @@ import kr.ac.kaist.safe.nodes.*;
 import kr.ac.kaist.safe.util.*;
 import xtc.util.Action;
 import java.io.*;
+import java.math.BigInteger;
 import java.util.Collections;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import static kr.ac.kaist.safe.errors.SAFEError.error;
 import scala.collection.JavaConversions;
 import scala.Option;
@@ -91,7 +89,7 @@ body {
     private String logFile = column(0).file + ".log";
     private boolean keepComments = NodeUtil.getKeepComments();
     public Result JSmain(final int yyStart) throws IOException {
-        NodeFactory.initComment();
+        NodeUtil.initComment();
         Result result = this.pJS$File(yyStart);
         if (result.hasValue()) return result;
         else {
@@ -119,7 +117,11 @@ body {
             BufferedReader reader = new BufferedReader(fr);
             String line = reader.readLine();
             while (line != null) {
-                Double number = NodeFactory.makeNumberLiteral(writer, span2, line);
+                if (line.equals(""))
+                    NodeUtil.log(writer, "Syntax Error: expected a numeral but got " + line);
+                if (!line.equals("") && !line.equals("0") && line.charAt(0) == '0')
+                    NodeUtil.log(writer, "Syntax Error: a numeral begins with 0.");
+                Double number = Double.valueOf(line);
                 result.add(number);
                 line = reader.readLine();
             }
@@ -127,21 +129,28 @@ body {
             fr.close();
             Expr expr;
             if (result.size() > 1000)
-                expr = new ArrayNumberExpr(NodeFactory.makeASTNodeInfo(span2), toList(result));
+                expr = new ArrayNumberExpr(NodeUtil.makeASTNodeInfo(span2), toList(result));
             else {
                 List<Option<Expr>> elems = new ArrayList<Option<Expr>>();
-                for (Double e : result) {
-                    elems.add(Some.<Expr>apply((Expr)NodeFactory.makeNumberLiteral(span2, e.toString(), e)));
+                for (Double d : result) {
+                    String str = d.toString();
+                    Expr e;
+                    if (str.endsWith(".0"))
+                        e = new IntLiteral(NodeUtil.makeASTNodeInfo(span2),
+                                           new BigInteger(str.substring(0, str.length() - 2), 10),
+                                           10);
+                    else e = new DoubleLiteral(NodeUtil.makeASTNodeInfo(span2), str, d);
+                    elems.add(Some.<Expr>apply(e));
                 }
-                expr = new ArrayExpr(NodeFactory.makeASTNodeInfo(span2), toList(elems));
+                expr = new ArrayExpr(NodeUtil.makeASTNodeInfo(span2), toList(elems));
             }
 
-            VarDecl vd = new VarDecl(NodeFactory.makeASTNodeInfo(span1), name, Some.<Expr>apply(expr), false);
+            VarDecl vd = new VarDecl(NodeUtil.makeASTNodeInfo(span1), name, Some.<Expr>apply(expr), false);
             initParser();
-            return new VarStmt(NodeFactory.makeASTNodeInfo(span1), toList(list(vd)));
+            return new VarStmt(NodeUtil.makeASTNodeInfo(span1), toList(list(vd)));
         } catch (IOException error) {
             error("Closing a log file for the parser failed!");
-            return new VarStmt(NodeFactory.makeASTNodeInfo(span1), nilVds);
+            return new VarStmt(NodeUtil.makeASTNodeInfo(span1), nilVds);
         }
     }
     

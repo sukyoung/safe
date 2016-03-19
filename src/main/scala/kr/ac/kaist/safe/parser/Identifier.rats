@@ -33,22 +33,14 @@ private String IdTextName  = a1:idname ;
 
 Id Id =
      a1:"_<>_printIS"
-     { yyValue = NodeFactory.makeId(createSpan(yyStart,yyCount+1), a1); }
+     { yyValue = new Id(NodeUtil.makeASTNodeInfo(createSpan(yyStart,yyCount+1)), a1, Some.<String>apply(null), false); }
    / a1:"_<>_print"
-     { yyValue = NodeFactory.makeId(createSpan(yyStart,yyCount+1), a1); }
+     { yyValue = new Id(NodeUtil.makeASTNodeInfo(createSpan(yyStart,yyCount+1)), a1, Some.<String>apply(null), false); }
    / a1:"_<>_getTickCount"
-     { yyValue = NodeFactory.makeId(createSpan(yyStart,yyCount+1), a1); }
+     { yyValue = new Id(NodeUtil.makeASTNodeInfo(createSpan(yyStart,yyCount+1)), a1, Some.<String>apply(null), false); }
    / a1:IdText
-     { yyValue = NodeFactory.makeId(createSpan(yyStart,yyCount), a1); };
+     { yyValue = new Id(NodeUtil.makeASTNodeInfo(createSpan(yyStart,yyCount)), a1, Some.<String>apply(null), false); };
 
 Id IdName =
      a1:IdTextName
-     { yyValue = NodeFactory.makeId(createSpan(yyStart,yyCount), a1); };
-
-Path Path =
-     a1s:(Id void:dot)* a2:Id
-     { List<Id> ids = new ArrayList<Id>();
-       if (a1s != null) ids.addAll(a1s.list());
-       ids.add(a2);
-       yyValue = NodeFactory.makePath(createSpan(yyStart,yyCount), ids);
-     };
+     { yyValue = new Id(NodeUtil.makeASTNodeInfo(createSpan(yyStart,yyCount)), a1, Some.<String>apply(null), false); };
