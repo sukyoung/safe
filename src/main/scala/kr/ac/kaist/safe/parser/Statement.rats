@@ -83,9 +83,9 @@ public Stmt Statement =
      a3:(w else w Statement)?
      { Span span = createSpan(yyStart,yyCount);
        Option<Stmt> elseB;
-       if (a3 == null) elseB = Option.<Stmt>none();
-       else            elseB = Option.<Stmt>some(a3);
-       yyValue = NodeFactory.makeIf(span, a1, a2, elseB);
+       if (a3 == null) elseB = Some.<Stmt>apply(null);
+       else            elseB = Some.<Stmt>apply(a3);
+       yyValue = new If(NodeFactory.makeASTNodeInfo(span), a1, a2, elseB);
      }
    / do w a1:Statement w while w openparen w a2:Expression w
      closeparen EOS
@@ -102,24 +102,24 @@ public Stmt Statement =
        Option<Expr> init;
        Option<Expr> test;
        Option<Expr> update;
-       if (a1 == null) init = Option.<Expr>none();
-       else            init = Option.<Expr>some(a1);
-       if (a2 == null) test = Option.<Expr>none();
-       else            test = Option.<Expr>some(a2);
-       if (a3 == null) update = Option.<Expr>none();
-       else            update = Option.<Expr>some(a3);
-       yyValue = NodeFactory.makeFor(span, init, test, update, a4);
+       if (a1 == null) init = Some.<Expr>apply(null);
+       else            init = Some.<Expr>apply(a1);
+       if (a2 == null) test = Some.<Expr>apply(null);
+       else            test = Some.<Expr>apply(a2);
+       if (a3 == null) update = Some.<Expr>apply(null);
+       else            update = Some.<Expr>apply(a3);
+       yyValue = new For(NodeFactory.makeASTNodeInfo(span), init, test, update, a4);
      }
    / for w openparen w var w a1:VariableDeclarationListNoIn w semicolon
      a2:(w Expression)? w semicolon a3:(w Expression)? w closeparen w a4:Statement
      { Span span = createSpan(yyStart,yyCount);
-       Option<Expr> test;
-       Option<Expr> update;
-       if (a2 == null) test = Option.<Expr>none();
-       else            test = Option.<Expr>some(a2);
-       if (a3 == null) update = Option.<Expr>none();
-       else            update = Option.<Expr>some(a3);
-       yyValue = NodeFactory.makeForVar(span, a1, test, update, a4);
+       Option<Expr> cond;
+       Option<Expr> action;
+       if (a2 == null) cond = Some.<Expr>apply(null);
+       else            cond = Some.<Expr>apply(a2);
+       if (a3 == null) action = Some.<Expr>apply(null);
+       else            action = Some.<Expr>apply(a3);
+       yyValue = new ForVar(NodeFactory.makeASTNodeInfo(span), toList(a1), cond, action, a4);
      }
    / for w openparen w a1:LeftHandSide w in w a2:Expression w
      closeparen w a3:Statement
@@ -133,27 +133,29 @@ public Stmt Statement =
      }
    / continue s a1:Id EOS
      { Span span = createSpan(yyStart,yyCount);
-       yyValue = NodeFactory.makeContinue(span, Option.<Label>some(NodeFactory.makeLabel(span, a1)));
+       ASTNodeInfo info = NodeFactory.makeASTNodeInfo(span);
+       yyValue = new Continue(info, Some.<Label>apply(new Label(info, a1)));
      }
    / continue EOSnoLB
      { Span span = createSpan(yyStart,yyCount);
-       yyValue = NodeFactory.makeContinue(span, Option.<Label>none());
+       yyValue = new Continue(NodeFactory.makeASTNodeInfo(span), Some.<Label>apply(null));
      }
    / break s a1:Id EOS
      { Span span = createSpan(yyStart,yyCount);
-       yyValue = NodeFactory.makeBreak(span, Option.<Label>some(NodeFactory.makeLabel(span, a1)));
+       ASTNodeInfo info = NodeFactory.makeASTNodeInfo(span);
+       yyValue = new Break(info, Some.<Label>apply(new Label(info, a1)));
      }
    / break EOSnoLB
      { Span span = createSpan(yyStart,yyCount);
-       yyValue = NodeFactory.makeBreak(span, Option.<Label>none());
+       yyValue = new Break(NodeFactory.makeASTNodeInfo(span), Some.<Label>apply(null));
      }
    / return s a1:Expression EOS
      { Span span = createSpan(yyStart,yyCount);
-       yyValue = NodeFactory.makeReturn(span, Option.<Expr>some(a1));
+       yyValue = new Return(NodeFactory.makeASTNodeInfo(span), Some.<Expr>apply(a1));
      }
    / return EOSnoLB
      { Span span = createSpan(yyStart,yyCount);
-       yyValue = NodeFactory.makeReturn(span, Option.<Expr>none());
+       yyValue = new Return(NodeFactory.makeASTNodeInfo(span), Some.<Expr>apply(null));
      }
    / with w openparen w a1:Expression w closeparen w a2:Statement
      { Span span = createSpan(yyStart,yyCount);
@@ -175,7 +177,8 @@ public Stmt Statement =
      }
    / a1:Id w colon w a2:Statement
      { Span span = createSpan(yyStart,yyCount);
-       yyValue = NodeFactory.makeLabelStmt(span, NodeFactory.makeLabel(span, a1), a2);
+       ASTNodeInfo info = NodeFactory.makeASTNodeInfo(span);
+       yyValue = new LabelStmt(info, new Label(info, a1), a2);
      }
    / throw s a1:Expression EOS
      { Span span = createSpan(yyStart,yyCount);
@@ -240,9 +243,9 @@ transient VarDecl VariableDeclaration =
      a1:Id a2:(w void:equals w Assignment)?
      { Span span = createSpan(yyStart,yyCount);
        Option<Expr> expr;
-       if (a2 == null) expr = Option.<Expr>none();
-       else            expr = Option.<Expr>some(a2);
-       yyValue = NodeFactory.makeVarDecl(span, a1, expr);
+       if (a2 == null) expr = Some.<Expr>apply(null);
+       else            expr = Some.<Expr>apply(a2);
+       yyValue = new VarDecl(NodeFactory.makeASTNodeInfo(span), a1, expr, false);
      };
 
 /*
@@ -253,9 +256,9 @@ transient VarDecl VariableDeclarationNoIn =
      a1:Id a2:(w void:equals w AssignmentNoIn)?
      { Span span = createSpan(yyStart,yyCount);
        Option<Expr> expr;
-       if (a2 == null) expr = Option.<Expr>none();
-       else            expr = Option.<Expr>some(a2);
-       yyValue = NodeFactory.makeVarDecl(span, a1, expr);
+       if (a2 == null) expr = Some.<Expr>apply(null);
+       else            expr = Some.<Expr>apply(a2);
+       yyValue = new VarDecl(NodeFactory.makeASTNodeInfo(span), a1, expr, false);
      };
 
 /*

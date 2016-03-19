@@ -566,14 +566,16 @@ private transient LHS ArrayLiteral =
        List<Option<Expr>> result = new ArrayList<Option<Expr>>();
        result.addAll(a1);
        for (int i = 0; i < elision; i++)
-           result.add(Option.<Expr>none());
+           result.add(Some.<Expr>apply(null));
        if (writer != null) { writer.close(); initParser(); }
-       yyValue = NodeFactory.makeArrayExpr(span, result);
+       yyValue = new ArrayExpr(NodeFactory.makeASTNodeInfo(span),
+                               toList(result));
      }
    / opensquare w a1:ElementList w closesquare
      { Span span = createSpan(yyStart,yyCount+1);
        if (writer != null) { writer.close(); initParser(); }
-       yyValue = NodeFactory.makeArrayExpr(span, a1);
+       yyValue = new ArrayExpr(NodeFactory.makeASTNodeInfo(span),
+                               toList(a1));
      }
    / opensquare w a1:(Elision w)? closesquare
      { Span span = createSpan(yyStart,yyCount+1);
@@ -581,9 +583,10 @@ private transient LHS ArrayLiteral =
        if (a1 == null) elision = 0; else elision = a1.intValue();
        List<Option<Expr>> result = new ArrayList<Option<Expr>>(elision);
        for (int i = 0; i < elision; i++)
-           result.add(Option.<Expr>none());
+           result.add(Some.<Expr>apply(null));
        if (writer != null) { writer.close(); initParser(); }
-       yyValue = NodeFactory.makeArrayExpr(span, result);
+       yyValue = new ArrayExpr(NodeFactory.makeASTNodeInfo(span),
+                               toList(result));
      };
 
 /*
@@ -601,8 +604,8 @@ private transient List<Option<Expr>> ElementListHead =
        if (a1 == null) elision = 0; else elision = a1.intValue();
        List<Option<Expr>> result = new ArrayList<Option<Expr>>(elision);
        for (int i = 0; i < elision; i++)
-           result.add(Option.<Expr>none());
-       yyValue = list(result, Option.some(a2));
+           result.add(Some.<Expr>apply(null));
+       yyValue = list(result, Some.<Expr>apply(a2));
      };
 
 constant inline Action<List<Option<Expr>>> ElementListTail =
@@ -614,8 +617,8 @@ constant inline Action<List<Option<Expr>>> ElementListTail =
                  List<Option<Expr>> result = new ArrayList<Option<Expr>>();
                  result.addAll(base);
                  for (int i = 0; i < elision; i++)
-                     result.add(Option.<Expr>none());
-                 return list(result, Option.some(a2));
+                     result.add(Some.<Expr>apply(null));
+                 return list(result, Some.<Expr>apply(a2));
              }};
      };
 

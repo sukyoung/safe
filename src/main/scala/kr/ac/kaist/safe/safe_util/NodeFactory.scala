@@ -14,7 +14,6 @@ package kr.ac.kaist.safe.safe_util
 import kr.ac.kaist.safe.nodes._
 import kr.ac.kaist.safe.safe_util.{ NodeUtil => NU }
 import kr.ac.kaist.safe.scala_useful.Lists._
-import kr.ac.kaist.safe.scala_useful.Options._
 import kr.ac.kaist.safe.useful.Useful
 
 import edu.rice.cs.plt.tuple.{ Option => JOption }
@@ -36,17 +35,17 @@ import scala.collection.mutable.{ HashMap => MHashMap }
 
 object NodeFactory {
   val generatedString = "<>generated String Literal"
-  private var comment = none[Comment]
-  def initComment: Unit = { comment = none[Comment] }
+  private var comment: Option[Comment] = None
+  def initComment: Unit = { comment = None }
   def commentLog(span: Span, message: String): Unit =
     if (NU.getKeepComments) {
       if (!comment.isDefined ||
         (!comment.get.txt.startsWith("/*") && !comment.get.txt.startsWith("//")))
-        comment = some[Comment](makeComment(span, message))
+        comment = Some[Comment](makeComment(span, message))
       else {
         val com = comment.get
         if (!com.txt.equals(message))
-          comment = some[Comment](makeComment(
+          comment = Some[Comment](makeComment(
             NU.spanAll(com.info.span, span),
             com.txt + "\n" + message
           ))
@@ -118,37 +117,17 @@ object NodeFactory {
   def makeExprStmt(span: Span, expr: Expr): ExprStmt =
     new ExprStmt(makeASTNodeInfo(span), expr)
 
-  def makeIf(span: Span, cond: Expr, trueB: Stmt, falseB: JOption[Stmt]): If =
-    new If(makeASTNodeInfo(span), cond, trueB, toOption(falseB))
-
   def makeDoWhile(span: Span, body: Stmt, cond: Expr): DoWhile =
     new DoWhile(makeASTNodeInfo(span), body, cond)
 
   def makeWhile(span: Span, cond: Expr, body: Stmt): While =
     new While(makeASTNodeInfo(span), cond, body)
 
-  def makeFor(span: Span, init: JOption[Expr], cond: JOption[Expr],
-    action: JOption[Expr], body: Stmt): For =
-    new For(makeASTNodeInfo(span), toOption(init), toOption(cond), toOption(action), body)
-
-  def makeForVar(span: Span, vars: JList[VarDecl], cond: JOption[Expr],
-    action: JOption[Expr], body: Stmt): ForVar =
-    new ForVar(makeASTNodeInfo(span), toList(vars), toOption(cond), toOption(action), body)
-
   def makeForIn(span: Span, lhs: LHS, expr: Expr, body: Stmt): ForIn =
     new ForIn(makeASTNodeInfo(span), lhs, expr, body)
 
   def makeForVarIn(span: Span, vd: VarDecl, expr: Expr, body: Stmt): ForVarIn =
     new ForVarIn(makeASTNodeInfo(span), vd, expr, body)
-
-  def makeContinue(span: Span, target: JOption[Label]): Continue =
-    new Continue(makeASTNodeInfo(span), toOption(target))
-
-  def makeBreak(span: Span, target: JOption[Label]): Break =
-    new Break(makeASTNodeInfo(span), toOption(target))
-
-  def makeReturn(span: Span, expr: JOption[Expr]): Return =
-    new Return(makeASTNodeInfo(span), toOption(expr))
 
   def makeWith(span: Span, expr: Expr, stmt: Stmt): With =
     new With(makeASTNodeInfo(span), expr, stmt)
@@ -159,9 +138,6 @@ object NodeFactory {
   def makeSwitch(span: Span, expr: Expr, front: JList[Case],
     defaultC: JList[Stmt], back: JList[Case]): Switch =
     new Switch(makeASTNodeInfo(span), expr, toList(front), Some(toList(defaultC)), toList(back))
-
-  def makeLabelStmt(span: Span, label: Label, stmt: Stmt): LabelStmt =
-    new LabelStmt(makeASTNodeInfo(span), label, stmt)
 
   def makeThrow(span: Span, expr: Expr): Throw =
     new Throw(makeASTNodeInfo(span), expr)
@@ -177,9 +153,6 @@ object NodeFactory {
 
   def makeDebugger(span: Span): Debugger =
     new Debugger(makeASTNodeInfo(span))
-
-  def makeVarDecl(span: Span, name: Id, expr: JOption[Expr]): VarDecl =
-    new VarDecl(makeASTNodeInfo(span), name, toOption(expr))
 
   def makeCase(span: Span, cond: Expr, body: JList[Stmt]): Case =
     new Case(makeASTNodeInfo(span), cond, toList(body))
@@ -235,9 +208,6 @@ object NodeFactory {
     else
       new ArrayExpr(makeASTNodeInfo(span), toList(elmts).map(e => Some(makeNumberLiteral(span, e.toString, e).asInstanceOf[Expr])))
   }
-
-  def makeArrayExpr(span: Span, elmts: JList[JOption[Expr]]): ArrayExpr =
-    new ArrayExpr(makeASTNodeInfo(span), toList(elmts).map(toOption))
 
   def makeObjectExpr(span: Span, elmts: JList[Member]): ObjectExpr =
     new ObjectExpr(makeASTNodeInfo(span), toList(elmts))
@@ -350,7 +320,7 @@ object NodeFactory {
     new PropNum(makeASTNodeInfo(span), num)
 
   def makeId(span: Span, name: String, uniq: String): Id =
-    makeId(span, name, some(uniq))
+    makeId(span, name, Some(uniq))
 
   def makeId(span: Span, name: String): Id =
     makeId(span, name, None)
@@ -360,9 +330,6 @@ object NodeFactory {
 
   def makeOp(span: Span, name: String): Op =
     new Op(makeASTNodeInfo(span), name)
-
-  def makeLabel(span: Span, id: Id): Label =
-    new Label(makeASTNodeInfo(span), id)
 
   def makeComment(span: Span, comment: String): Comment =
     new Comment(makeASTNodeInfo(span), comment)

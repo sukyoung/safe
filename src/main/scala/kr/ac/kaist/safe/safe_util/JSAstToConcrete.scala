@@ -16,7 +16,6 @@ import _root_.java.util.{ List => JList }
 import kr.ac.kaist.safe.nodes._
 import kr.ac.kaist.safe.safe_util.{ NodeUtil => NU }
 import kr.ac.kaist.safe.scala_useful.Lists._
-import kr.ac.kaist.safe.scala_useful.Options._
 import edu.rice.cs.plt.iter.IterUtil
 import edu.rice.cs.plt.tuple.Option
 
@@ -232,7 +231,7 @@ class JSAstToConcrete extends ASTWalker {
       val s: StringBuilder = new StringBuilder
       s.append(walk(info))
       s.append("break")
-      if (target.isSome) s.append(" ").append(walk(target))
+      if (target.isDefined) s.append(" ").append(walk(target))
       s.append(";")
       s.toString
     case Case(info, cond, body) =>
@@ -265,7 +264,7 @@ class JSAstToConcrete extends ASTWalker {
       val s: StringBuilder = new StringBuilder
       s.append(walk(info))
       s.append("continue")
-      if (target.isSome) s.append(" ").append(walk(target))
+      if (target.isDefined) s.append(" ").append(walk(target))
       s.append(";")
       s.toString
     case Debugger(info) =>
@@ -313,11 +312,11 @@ class JSAstToConcrete extends ASTWalker {
       s.append(walk(info))
       var oneline: Boolean = isOneline(body)
       s.append("for (")
-      if (init.isSome) s.append(walk(init))
+      if (init.isDefined) s.append(walk(init))
       s.append(";")
-      if (cond.isSome) s.append(walk(cond))
+      if (cond.isDefined) s.append(walk(cond))
       s.append(";")
-      if (action.isSome) s.append(walk(action))
+      if (action.isDefined) s.append(walk(action))
       s.append(")\n")
       if (oneline) increaseIndent
       s.append(getIndent).append(walk(body))
@@ -340,9 +339,9 @@ class JSAstToConcrete extends ASTWalker {
       s.append("for(var ")
       s.append(join(vars, ", ", new StringBuilder("")))
       s.append(";")
-      if (cond.isSome) s.append(walk(cond))
+      if (cond.isDefined) s.append(walk(cond))
       s.append(";")
-      if (action.isSome) s.append(walk(action))
+      if (action.isDefined) s.append(walk(action))
       s.append(")\n")
       if (oneline) increaseIndent
       s.append(getIndent).append(walk(body))
@@ -411,7 +410,7 @@ class JSAstToConcrete extends ASTWalker {
       if (oneline) increaseIndent
       s.append(getIndent).append(walk(trueBranch))
       if (oneline) decreaseIndent
-      if (falseBranch.isSome) {
+      if (falseBranch.isDefined) {
         oneline = isOneline(falseBranch)
         s.append("\n").append(getIndent).append("else\n")
         if (oneline) increaseIndent
@@ -481,7 +480,7 @@ class JSAstToConcrete extends ASTWalker {
       val s: StringBuilder = new StringBuilder
       s.append(walk(info))
       s.append("return")
-      if (expr.isSome) s.append(" ").append(walk(expr))
+      if (expr.isDefined) s.append(" ").append(walk(expr))
       s.append(";")
       s.toString
     case SetProp(info, prop, Functional(_, fds, vds, body, _, List(id), _)) =>
@@ -507,10 +506,10 @@ class JSAstToConcrete extends ASTWalker {
       s.append("switch (").append(walk(cond)).append("){\n")
       increaseIndent
       s.append(getIndent).append(join(frontCases, "\n" + getIndent, new StringBuilder("")))
-      if (defjs.isSome) {
+      if (defjs.isDefined) {
         s.append("\n").append(getIndent).append("default:")
         increaseIndent
-        s.append("\n").append(getIndent).append(join(defjs.unwrap, "\n" + getIndent, new StringBuilder("")))
+        s.append("\n").append(getIndent).append(join(defjs.get, "\n" + getIndent, new StringBuilder("")))
         decreaseIndent
       }
       s.append("\n").append(getIndent).append(join(backCases, "\n" + getIndent, new StringBuilder("")))
@@ -532,8 +531,8 @@ class JSAstToConcrete extends ASTWalker {
       s.append(getIndent).append(join(body, "\n" + getIndent, new StringBuilder("")))
       s.append("}")
       decreaseIndent
-      if (catchBlock.isSome) s.append("\n").append(getIndent).append(walk(catchBlock))
-      if (fin.isSome) {
+      if (catchBlock.isDefined) s.append("\n").append(getIndent).append(walk(catchBlock))
+      if (fin.isDefined) {
         var oneline: Boolean = isOneline(fin)
         s.append("\n").append(getIndent).append("finally\n{")
         increaseIndent
@@ -551,7 +550,7 @@ class JSAstToConcrete extends ASTWalker {
       val s: StringBuilder = new StringBuilder
       s.append(walk(info))
       s.append(walk(name))
-      if (expr.isSome) s.append(" = ").append(walk(expr))
+      if (expr.isDefined) s.append(" = ").append(walk(expr))
       s.toString
     case VarRef(info, id) =>
       walk(info) + walk(id)
