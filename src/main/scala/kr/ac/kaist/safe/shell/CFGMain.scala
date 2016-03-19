@@ -18,8 +18,7 @@ import kr.ac.kaist.safe.Config
 import kr.ac.kaist.safe.compiler.{ Compiler, DefaultCFGBuilder }
 import kr.ac.kaist.safe.errors.{ StaticError, StaticErrors, UserError }
 import kr.ac.kaist.safe.nodes.CFG
-import kr.ac.kaist.safe.safe_util.{ AddressManager, NodeUtil }
-import kr.ac.kaist.safe.useful.Useful
+import kr.ac.kaist.safe.safe_util.{ AddressManager, NodeUtil, Useful }
 
 ////////////////////////////////////////////////////////////////////////////////
 // CFG Builder

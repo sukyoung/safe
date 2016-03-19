@@ -20,7 +20,6 @@ import kr.ac.kaist.safe.compiler.{ Compiler, Parser, Hoister, Disambiguator, Wit
 import kr.ac.kaist.safe.errors.{ StaticError, StaticErrors }
 import kr.ac.kaist.safe.safe_util.{ AddressManager, JSAstToConcrete, JSIRUnparser }
 import kr.ac.kaist.safe.nodes.{ Program, CFG }
-import kr.ac.kaist.safe.useful.Useful
 import org.scalatest.Tag
 
 object ParseTest extends Tag("ParseTest")
@@ -90,7 +89,7 @@ class CoreTest extends FlatSpec {
   }
 
   // Permute filenames for randomness
-  for (filename <- Useful.shuffle(new File(jsDir).list(jsFilter))) {
+  for (filename <- util.Random.shuffle(new File(jsDir).list(jsFilter).toSeq)) {
     val name = filename.substring(0, filename.length - 3)
     val jsName = jsDir + SEP + filename
     registerTest("[Parse] " + filename, ParseTest) { parseTest(jsName) }

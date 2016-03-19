@@ -24,7 +24,6 @@ import kr.ac.kaist.safe.errors.ParserError
 import kr.ac.kaist.safe.errors.UserError
 import kr.ac.kaist.safe.parser.JS
 import kr.ac.kaist.safe.scala_useful.Lists._
-import kr.ac.kaist.safe.useful.Useful
 
 object Parser {
   class Result(pgm: Option[Program], errors: List[SyntaxError])
@@ -166,7 +165,8 @@ object Parser {
       } else throw new ParserError(parseResult.asInstanceOf[ParseError], parser, start)
     } finally {
       try {
-        Useful.rmFile(syntaxLogFile)
+        val file = new File(syntaxLogFile)
+        if (file.exists && !file.delete) throw new IOException
       } catch { case ioe: IOException => }
       try {
         in.close

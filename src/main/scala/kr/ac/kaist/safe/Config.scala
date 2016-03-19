@@ -16,7 +16,7 @@ import java.io.FileNotFoundException
 import java.io.IOException
 import scala.util.parsing.combinator._
 import kr.ac.kaist.safe.safe_util.{ NodeUtil => NU, AddressManager, DefaultAddressManager }
-import kr.ac.kaist.safe.useful.Useful
+import kr.ac.kaist.safe.safe_util.Useful
 
 class Config(
     val command: String,
