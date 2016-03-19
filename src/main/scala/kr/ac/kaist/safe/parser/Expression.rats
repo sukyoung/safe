@@ -30,8 +30,8 @@ import Spacing;
 public Expr Expression =
      a1:Assignment a2s:(w void:comma w Assignment)*
      { if (a2s.list().isEmpty()) yyValue = a1;
-       else yyValue = NodeFactory.makeExprList(createSpan(yyStart,yyCount),
-                                               cons(a1, a2s.list()));
+       else yyValue = new ExprList(NodeFactory.makeASTNodeInfo(createSpan(yyStart,yyCount)),
+                                   toList(cons(a1, a2s.list())));
      };
 
 /*
@@ -399,7 +399,8 @@ LHS CallExpr =
 LHS CallExprFront =
      a1:MemberExpr w a2:Args
      { Span span = createSpan(yyStart,yyCount+1);
-       yyValue = NodeFactory.makeFunApp(NodeUtil.adjustCallSpan(span, a1), a1, a2);
+       yyValue = new FunApp(NodeFactory.makeASTNodeInfo(NodeUtil.adjustCallSpan(span, a1)),
+                            a1, toList(a2));
      };
 
 constant transient Action<LHS> CallExprTail =
@@ -421,7 +422,7 @@ constant inline Action<LHS> FunApp =
                                                loc.column(), last.end().column()+1,
                                                base.info().span().begin().offset(),
                                                last.end().offset()+1);
-                 return NodeFactory.makeFunApp(span, (LHS)base, a1);
+                 return new FunApp(NodeFactory.makeASTNodeInfo(span), (LHS)base, toList(a1));
              }};
      };
 
@@ -494,7 +495,8 @@ LHS MemberExprFront =
    / PrimaryExpr
    / new w a1:MemberExpr w a2:Args
      { Span span = createSpan(yyStart,yyCount+1);
-       yyValue = NodeFactory.makeNew(span, NodeFactory.makeFunApp(span, a1, a2));
+       ASTNodeInfo info = NodeFactory.makeASTNodeInfo(span);
+       yyValue = NodeFactory.makeNew(span, new FunApp(info, a1, toList(a2)));
      };
 
 constant transient Action<LHS> MemberExprTail =
@@ -635,7 +637,7 @@ private transient LHS ObjectLiteral =
      opencurly a1:(w PropAssignList)? (w comma)? w closecurly
      { Span span = createSpan(yyStart,yyCount+1);
        if (a1 == null) a1 = list();
-       yyValue = NodeFactory.makeObjectExpr(span, a1);
+       yyValue = new ObjectExpr(NodeFactory.makeASTNodeInfo(span), toList(a1));
      };
 
 /*
@@ -656,11 +658,19 @@ private transient List<Member> PropAssignList =
 transient Member PropAssign =
      <Getter> get w a1:PropName w openparen w closeparen w a2:FunctionBody
      { Span span = createSpan(yyStart,yyCount);
-       yyValue = NodeFactory.makeGetProp(span, a1, a2.first(), a2.second(), a2.third());
+       ASTNodeInfo info = NodeFactory.makeASTNodeInfo(span);
+       yyValue = new GetProp(info, a1,
+                             new Functional(info, nilFds, nilVds,
+                                            new SourceElements(info, toList(a2.first()), a2.third()),
+                                            NodeUtil.prop2Id(a1), nilIds, a2.second()));
      }
    / <Setter> set w a1:PropName w openparen w a2:Id w closeparen w a3:FunctionBody
      { Span span = createSpan(yyStart,yyCount);
-       yyValue = NodeFactory.makeSetProp(span, a1, a2, a3.first(), a3.second(), a3.third());
+       ASTNodeInfo info = NodeFactory.makeASTNodeInfo(span);
+       yyValue = new SetProp(info, a1,
+                             new Functional(info, nilFds, nilVds,
+                                            new SourceElements(info, toList(a3.first()), a3.third()),
+                                            NodeUtil.prop2Id(a1), toList(list(a2)), a3.second()));
      }
    / <Prop> a1:PropName w colon w a2:Assignment
      { Span span = createSpan(yyStart,yyCount);

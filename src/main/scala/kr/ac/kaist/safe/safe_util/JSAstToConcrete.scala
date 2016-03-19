@@ -15,7 +15,6 @@ import _root_.java.util.ArrayList
 import _root_.java.util.{ List => JList }
 import kr.ac.kaist.safe.nodes._
 import kr.ac.kaist.safe.safe_util.{ NodeUtil => NU }
-import kr.ac.kaist.safe.scala_useful.Lists._
 import edu.rice.cs.plt.iter.IterUtil
 import edu.rice.cs.plt.tuple.Option
 
@@ -116,8 +115,8 @@ class JSAstToConcrete extends ASTWalker {
     }
   }
 
-  def prBody(body: JList[SourceElement]): String =
-    join(toList(body), "\n", new StringBuilder("")).toString
+  def prBody(body: List[SourceElement]): String =
+    join(body, "\n", new StringBuilder("")).toString
 
   def prFtn(s: StringBuilder, fds: List[FunDecl], vds: List[VarDecl],
     body: List[SourceElement]): Unit = {

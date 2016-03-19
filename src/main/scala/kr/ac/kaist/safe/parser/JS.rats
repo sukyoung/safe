@@ -63,6 +63,11 @@ import scala.Some;
 }
 
 body {
+    static List<SourceElement> nilJSes = Collections.<SourceElement>emptyList();
+    static scala.collection.immutable.List<SourceElement> nilSes = toList(nilJSes);
+    static scala.collection.immutable.List<FunDecl> nilFds = toList(Collections.<FunDecl>emptyList());
+    static scala.collection.immutable.List<VarDecl> nilVds = toList(Collections.<VarDecl>emptyList());
+    static scala.collection.immutable.List<Id> nilIds = toList(Collections.<Id>emptyList());
     static <T> scala.collection.immutable.List<T> toList(List<T> jList) {
         return JavaConversions.asScalaBuffer(jList).toList();
     }
@@ -121,13 +126,23 @@ body {
             }
             reader.close();
             fr.close();
-            Expr expr = NodeFactory.makeArrayNumberExpr(span2, result);
+            Expr expr;
+            if (result.size() > 1000)
+                expr = new ArrayNumberExpr(NodeFactory.makeASTNodeInfo(span2), toList(result));
+            else {
+                List<Option<Expr>> elems = new ArrayList<Option<Expr>>();
+                for (Double e : result) {
+                    elems.add(Some.<Expr>apply((Expr)NodeFactory.makeNumberLiteral(span2, e.toString(), e)));
+                }
+                expr = new ArrayExpr(NodeFactory.makeASTNodeInfo(span2), toList(elems));
+            }
+
             VarDecl vd = new VarDecl(NodeFactory.makeASTNodeInfo(span1), name, Some.<Expr>apply(expr), false);
             initParser();
-            return NodeFactory.makeVarStmt(span1, list(vd));
+            return new VarStmt(NodeFactory.makeASTNodeInfo(span1), toList(list(vd)));
         } catch (IOException error) {
             error("Closing a log file for the parser failed!");
-            return NodeFactory.makeVarStmt(span1, new ArrayList<VarDecl>());
+            return new VarStmt(NodeFactory.makeASTNodeInfo(span1), nilVds);
         }
     }
     

@@ -58,7 +58,7 @@ private transient void NumericLiterals =
 public Stmt Statement =
      a1:ABlock
      { Span span = createSpan(yyStart,yyCount+1);
-       yyValue = NodeFactory.makeABlock(span, a1);
+       yyValue = new ABlock(NodeFactory.makeASTNodeInfo(span), toList(a1), false);
      }
    / ExtendedFunctionDeclaration
    / var w a1:Id w equals w
@@ -68,7 +68,7 @@ public Stmt Statement =
      }
    / var w a1:VariableDeclarationList EOS
      { Span span = createSpan(yyStart,yyCount);
-       yyValue = NodeFactory.makeVarStmt(span, a1);
+       yyValue = new VarStmt(NodeFactory.makeASTNodeInfo(span), toList(a1));
      }
    / semicolon
      { Span span = createSpan(yyStart,yyCount);
@@ -165,7 +165,9 @@ public Stmt Statement =
      opencurly a2:(w CaseClauses)? w closecurly
      { Span span = createSpan(yyStart,yyCount+1);
        if (a2 == null) a2 = list();
-       yyValue = NodeFactory.makeSwitch(span, a1, a2);
+       yyValue = new Switch(NodeFactory.makeASTNodeInfo(span), a1,
+                            toList(a2), Some.<scala.collection.immutable.List<Stmt>>apply(null),
+                            toList(Collections.<Case>emptyList()));
      }
    / switch w openparen w a1:Expression w closeparen w
      opencurly a2:(w CaseClauses)? w default w colon a3s:(w Statement)*
@@ -173,7 +175,10 @@ public Stmt Statement =
      { Span span = createSpan(yyStart,yyCount+1);
        if (a2 == null) a2 = list();
        if (a4 == null) a4 = list();
-       yyValue = NodeFactory.makeSwitch(span, a1, a2, a3s.list(), a4);
+       yyValue = new Switch(NodeFactory.makeASTNodeInfo(span), a1,
+                            toList(a2),
+                            Some.<scala.collection.immutable.List<Stmt>>apply(toList(a3s.list())),
+                            toList(a4));
      }
    / a1:Id w colon w a2:Statement
      { Span span = createSpan(yyStart,yyCount);
@@ -186,15 +191,18 @@ public Stmt Statement =
      }
    / try w a1:ABlock w a2:Catch w a3:Finally
      { Span span = createSpan(yyStart,yyCount);
-       yyValue = NodeFactory.makeTry(span, a1, a2, a3);
+       yyValue = new Try(NodeFactory.makeASTNodeInfo(span), toList(a1),
+                         Some.<Catch>apply(a2), Some.<scala.collection.immutable.List<Stmt>>apply(toList(a3)));
      }
    / try w a1:ABlock w a2:Catch
      { Span span = createSpan(yyStart,yyCount);
-       yyValue = NodeFactory.makeTry(span, a1, a2);
+       yyValue = new Try(NodeFactory.makeASTNodeInfo(span), toList(a1),
+                         Some.<Catch>apply(a2), Some.<scala.collection.immutable.List<Stmt>>apply(null));
      }
    / try w a1:ABlock w a2:Finally
      { Span span = createSpan(yyStart,yyCount);
-       yyValue = NodeFactory.makeTry(span, a1, a2);
+       yyValue = new Try(NodeFactory.makeASTNodeInfo(span), toList(a1),
+                         Some.<Catch>apply(null), Some.<scala.collection.immutable.List<Stmt>>apply(toList(a2)));
      }
    / debugger EOS
      { Span span = createSpan(yyStart,yyCount);
@@ -275,7 +283,7 @@ private List<Case> CaseClauses =
 private transient Case CaseClause =
      case w a1:Expression w colon a2s:(w Statement)*
      { Span span = createSpan(yyStart,yyCount);
-       yyValue = NodeFactory.makeCase(span, a1, a2s.list());
+       yyValue = new Case(NodeFactory.makeASTNodeInfo(span), a1, toList(a2s.list()));
      };
 
 /*
@@ -284,7 +292,7 @@ private transient Case CaseClause =
 private transient Catch Catch =
      catch w openparen w a1:Id w closeparen w a2:ABlock
      { Span span = createSpan(yyStart,yyCount);
-       yyValue = NodeFactory.makeCatch(span, a1, a2);
+       yyValue = new Catch(NodeFactory.makeASTNodeInfo(span), a1, toList(a2));
      };
 
 /*

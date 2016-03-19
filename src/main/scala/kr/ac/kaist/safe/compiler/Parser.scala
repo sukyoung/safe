@@ -13,7 +13,6 @@ package kr.ac.kaist.safe.compiler
 
 import java.io._
 import java.nio.charset.Charset
-import java.util.{ List => JList }
 import xtc.parser.SemanticValue
 import xtc.parser.ParseError
 import kr.ac.kaist.safe.nodes._
@@ -23,7 +22,6 @@ import kr.ac.kaist.safe.errors.SyntaxError
 import kr.ac.kaist.safe.errors.ParserError
 import kr.ac.kaist.safe.errors.UserError
 import kr.ac.kaist.safe.parser.JS
-import kr.ac.kaist.safe.scala_useful.Lists._
 
 object Parser {
   class Result(pgm: Option[Program], errors: List[SyntaxError])
@@ -42,7 +40,7 @@ object Parser {
     val info = program.info
     if (program.body.stmts.size == 1) {
       val ses = program.body.stmts.head
-      (info, SourceElements(info, (NF.makeNoOp(info, "StartOfFile")) +: ses.body :+ (NF.makeNoOp(info, "EndOfFile")), ses.strict))
+      (info, SourceElements(info, (NU.makeNoOp(info, "StartOfFile")) +: ses.body :+ (NU.makeNoOp(info, "EndOfFile")), ses.strict))
     } else
       throw new UserError("Sources are already merged!")
   }
@@ -82,25 +80,25 @@ object Parser {
   def scriptToAST(ss: List[(String, (Int, Int), String)]): Program = ss match {
     case List(script) =>
       val (info, stmts) = scriptToStmts(script)
-      NF.makeProgram(info, NF.makeTopLevel(info, List(stmts)))
+      NU.makeProgram(info, List(stmts))
     case scripts =>
       val stmts = scripts.foldLeft(List[SourceElements]())((l, s) => {
         val (_, ss) = scriptToStmts(s)
         l ++ List(ss)
       })
-      NF.makeProgram(mergedSourceInfo, NF.makeTopLevel(mergedSourceInfo, stmts))
+      NU.makeProgram(mergedSourceInfo, stmts)
   }
 
   def fileToAST(fs: List[String]): Program = fs match {
     case List(file) =>
       val (info, stmts) = fileToStmts(file)
-      NF.makeProgram(info, NF.makeTopLevel(info, List(stmts)))
+      NU.makeProgram(info, List(stmts))
     case files =>
       val stmts = files.foldLeft(List[SourceElements]())((l, f) => {
         val (_, ss) = fileToStmts(f)
         l ++ List(ss)
       })
-      NF.makeProgram(mergedSourceInfo, NF.makeTopLevel(mergedSourceInfo, stmts))
+      NU.makeProgram(mergedSourceInfo, stmts)
   }
 
   def parseScriptConvertExn(fileName: String, start: (Int, Int), script: String): Program =

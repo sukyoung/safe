@@ -13,7 +13,6 @@ package kr.ac.kaist.safe.safe_util
 
 import kr.ac.kaist.safe.nodes._
 import kr.ac.kaist.safe.safe_util.{ NodeUtil => NU }
-import kr.ac.kaist.safe.scala_useful.Lists._
 
 import edu.rice.cs.plt.tuple.{ Option => JOption }
 
@@ -61,55 +60,6 @@ object NodeFactory {
   def makeASTNodeInfo(span: Span, comment: String): ASTNodeInfo =
     new ASTNodeInfo(span, Some(makeComment(span, comment)))
 
-  def makeTopLevel(info: ASTNodeInfo, body: List[SourceElement], strict: Boolean): TopLevel =
-    makeTopLevel(info, Nil, Nil, List(new SourceElements(info, body, strict)))
-
-  def makeTopLevel(info: ASTNodeInfo, body: List[SourceElements]): TopLevel =
-    makeTopLevel(info, Nil, Nil, body)
-
-  def makeTopLevel(info: ASTNodeInfo, fds: List[FunDecl], vds: List[VarDecl],
-    body: List[SourceElements]): TopLevel =
-    new TopLevel(info, fds, vds, body)
-
-  def makeProgram(span: Span, elements: JList[SourceElement], strict: Boolean): Program = {
-    val info = makeASTNodeInfo(span)
-    makeProgram(info, makeTopLevel(info, toList(elements), strict))
-  }
-
-  def makeProgram(info: ASTNodeInfo, body: JList[SourceElement], strict: Boolean): Program =
-    makeProgram(info, makeTopLevel(info, toList(body), strict))
-
-  def makeProgram(info: ASTNodeInfo, toplevel: TopLevel): Program =
-    new Program(info, toplevel)
-
-  def makeFunctional(info: ASTNodeInfo, name: Id, fds: List[FunDecl], vds: List[VarDecl],
-    body: List[SourceElement], params: List[Id], bodyS: String, strict: Boolean): Functional =
-    new Functional(info, fds, vds, new SourceElements(info, body, strict), name, params, bodyS)
-
-  def makeFunDecl(span: Span, name: Id, params: JList[Id],
-    body: JList[SourceElement], bodyS: String, strict: Boolean): FunDecl = {
-    val info = makeASTNodeInfo(span)
-    new FunDecl(
-      info,
-      makeFunctional(info, name, Nil, Nil, toList(body), toList(params), bodyS, strict)
-    )
-  }
-
-  def makeFunExpr(span: Span, name: Id, params: JList[Id],
-    body: JList[SourceElement], bodyS: String, strict: Boolean): FunExpr = {
-    val info = makeASTNodeInfo(span)
-    new FunExpr(
-      info,
-      makeFunctional(info, name, Nil, Nil, toList(body), toList(params), bodyS, strict)
-    )
-  }
-
-  def makeABlock(span: Span, stmts: JList[Stmt]): ABlock =
-    new ABlock(makeASTNodeInfo(span), toList(stmts))
-
-  def makeVarStmt(span: Span, vds: JList[VarDecl]): VarStmt =
-    new VarStmt(makeASTNodeInfo(span), toList(vds))
-
   def makeEmptyStmt(span: Span): EmptyStmt =
     new EmptyStmt(makeASTNodeInfo(span))
 
@@ -131,36 +81,11 @@ object NodeFactory {
   def makeWith(span: Span, expr: Expr, stmt: Stmt): With =
     new With(makeASTNodeInfo(span), expr, stmt)
 
-  def makeSwitch(span: Span, expr: Expr, front: JList[Case]): Switch =
-    new Switch(makeASTNodeInfo(span), expr, toList(front), None, Nil)
-
-  def makeSwitch(span: Span, expr: Expr, front: JList[Case],
-    defaultC: JList[Stmt], back: JList[Case]): Switch =
-    new Switch(makeASTNodeInfo(span), expr, toList(front), Some(toList(defaultC)), toList(back))
-
   def makeThrow(span: Span, expr: Expr): Throw =
     new Throw(makeASTNodeInfo(span), expr)
 
-  def makeTry(span: Span, body: JList[Stmt], catchB: Catch): Try =
-    new Try(makeASTNodeInfo(span), toList(body), Some(catchB), None)
-
-  def makeTry(span: Span, body: JList[Stmt], fin: JList[Stmt]): Try =
-    new Try(makeASTNodeInfo(span), toList(body), None, Some(toList(fin)))
-
-  def makeTry(span: Span, body: JList[Stmt], catchB: Catch, fin: JList[Stmt]): Try =
-    new Try(makeASTNodeInfo(span), toList(body), Some(catchB), Some(toList(fin)))
-
   def makeDebugger(span: Span): Debugger =
     new Debugger(makeASTNodeInfo(span))
-
-  def makeCase(span: Span, cond: Expr, body: JList[Stmt]): Case =
-    new Case(makeASTNodeInfo(span), cond, toList(body))
-
-  def makeCatch(span: Span, id: Id, body: JList[Stmt]): Catch =
-    new Catch(makeASTNodeInfo(span), id, toList(body))
-
-  def makeExprList(span: Span, es: JList[Expr]): ExprList =
-    new ExprList(makeASTNodeInfo(span), toList(es))
 
   def makeCond(span: Span, cond: Expr, trueB: Expr, falseB: Expr): Cond =
     new Cond(makeASTNodeInfo(span), cond, trueB, falseB)
@@ -186,9 +111,6 @@ object NodeFactory {
   def makeNew(span: Span, lhs: LHS): New =
     new New(makeASTNodeInfo(span), lhs)
 
-  def makeFunApp(span: Span, lhs: LHS, args: JList[Expr]): FunApp =
-    new FunApp(makeASTNodeInfo(span), lhs, toList(args))
-
   def makeThis(span: Span): This =
     new This(makeASTNodeInfo(span))
 
@@ -200,16 +122,6 @@ object NodeFactory {
 
   def makeVarRef(span: Span, id: Id): VarRef =
     new VarRef(makeASTNodeInfo(span), id)
-
-  def makeArrayNumberExpr(span: Span, elmts: JList[JDouble]): Expr = {
-    if (elmts.size > 1000)
-      new ArrayNumberExpr(makeASTNodeInfo(span), toList(elmts))
-    else
-      new ArrayExpr(makeASTNodeInfo(span), toList(elmts).map(e => Some(makeNumberLiteral(span, e.toString, e).asInstanceOf[Expr])))
-  }
-
-  def makeObjectExpr(span: Span, elmts: JList[Member]): ObjectExpr =
-    new ObjectExpr(makeASTNodeInfo(span), toList(elmts))
 
   def makeParenthesized(span: Span, expr: Expr): Parenthesized =
     new Parenthesized(makeASTNodeInfo(span), expr)
@@ -296,19 +208,6 @@ object NodeFactory {
   def makeField(span: Span, prop: Property, expr: Expr): Field =
     new Field(makeASTNodeInfo(span), prop, expr)
 
-  def makeGetProp(span: Span, prop: Property, body: JList[SourceElement], bodyS: String, strict: Boolean): GetProp = {
-    val info = makeASTNodeInfo(span)
-    new GetProp(info, prop,
-      makeFunctional(info, NU.prop2Id(prop), Nil, Nil, toList(body), Nil, bodyS, strict))
-  }
-
-  def makeSetProp(span: Span, prop: Property, id: Id,
-    body: JList[SourceElement], bodyS: String, strict: Boolean): SetProp = {
-    val info = makeASTNodeInfo(span)
-    new SetProp(info, prop,
-      makeFunctional(info, NU.prop2Id(prop), Nil, Nil, toList(body), List(id), bodyS, strict))
-  }
-
   def makePropId(span: Span, id: Id): PropId =
     new PropId(makeASTNodeInfo(span), id)
 
@@ -334,8 +233,5 @@ object NodeFactory {
     new Comment(makeASTNodeInfo(span), comment)
 
   def makeNoOp(span: Span, desc: String): NoOp =
-    makeNoOp(makeASTNodeInfo(span), desc)
-
-  def makeNoOp(info: ASTNodeInfo, desc: String): NoOp =
-    new NoOp(info, desc)
+    NU.makeNoOp(makeASTNodeInfo(span), desc)
 }

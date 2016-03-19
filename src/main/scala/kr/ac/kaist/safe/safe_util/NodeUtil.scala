@@ -13,7 +13,6 @@ package kr.ac.kaist.safe.safe_util
 
 import kr.ac.kaist.safe.nodes._
 import kr.ac.kaist.safe.safe_util.{ IRFactory => IF }
-import kr.ac.kaist.safe.scala_useful.Lists._
 import java.io.BufferedWriter
 import java.io.IOException
 import scala.collection.immutable.HashMap
@@ -22,6 +21,12 @@ object NodeUtil {
   ////////////////////////////////////////////////////////////////
   // AST
   ////////////////////////////////////////////////////////////////
+
+  def makeProgram(info: ASTNodeInfo, ses: List[SourceElements]): Program =
+    new Program(info, new TopLevel(info, Nil, Nil, ses))
+
+  def makeNoOp(info: ASTNodeInfo, desc: String): NoOp =
+    new NoOp(info, desc)
 
   def unwrapParen(expr: Expr): Expr = expr match {
     case Parenthesized(info, body) => body

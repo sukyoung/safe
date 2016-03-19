@@ -12,7 +12,6 @@
 package kr.ac.kaist.safe.errors
 
 import kr.ac.kaist.safe.nodes.Node
-import kr.ac.kaist.safe.scala_useful.Lists._
 
 class ErrorLog() {
   var errors = List[StaticError]()
