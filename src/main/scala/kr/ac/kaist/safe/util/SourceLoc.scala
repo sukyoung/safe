@@ -9,11 +9,9 @@
  * ****************************************************************************
  */
 
-package kr.ac.kaist.safe.safe_util
+package kr.ac.kaist.safe.util
 
 import java.io.Serializable
-import kr.ac.kaist.safe.useful.MagicNumbers
-import kr.ac.kaist.safe.useful.Useful
 
 // /
 // / type 'a node = 'a Node.node

@@ -14,10 +14,8 @@ package kr.ac.kaist.safe.shell
 import java.io.{ FileNotFoundException, IOException, BufferedWriter, FileWriter }
 import kr.ac.kaist.safe.Config
 import kr.ac.kaist.safe.compiler.Parser
-import kr.ac.kaist.safe.exceptions.UserError
+import kr.ac.kaist.safe.errors.UserError
 import kr.ac.kaist.safe.nodes.Program
-import kr.ac.kaist.safe.safe_util.NodeFactory
-import kr.ac.kaist.safe.useful.Useful
 
 ////////////////////////////////////////////////////////////////////////////////
 // Parse

@@ -44,24 +44,31 @@ instantiate kr.ac.kaist.safe.parser.Unicode
 header {
 import java.util.HashMap;
 import kr.ac.kaist.safe.nodes.*;
-import kr.ac.kaist.safe.safe_util.*;
-import kr.ac.kaist.safe.useful.Useful;
-import edu.rice.cs.plt.tuple.Option;
-import edu.rice.cs.plt.tuple.Triple;
-import edu.rice.cs.plt.iter.IterUtil;
-import edu.rice.cs.plt.collect.CollectUtil;
+import kr.ac.kaist.safe.util.*;
 import xtc.util.Action;
 import java.io.*;
+import java.math.BigInteger;
 import java.util.Collections;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import static kr.ac.kaist.safe.exceptions.SAFEError.error;
+import static kr.ac.kaist.safe.errors.SAFEError.error;
+import scala.collection.JavaConversions;
+import scala.Option;
+import scala.Some;
+import scala.Tuple2;
+import scala.Tuple3;
 }
 
 body {
+    static List<SourceElement> nilJSes = Collections.<SourceElement>emptyList();
+    static scala.collection.immutable.List<SourceElement> nilSes = toList(nilJSes);
+    static scala.collection.immutable.List<FunDecl> nilFds = toList(Collections.<FunDecl>emptyList());
+    static scala.collection.immutable.List<VarDecl> nilVds = toList(Collections.<VarDecl>emptyList());
+    static scala.collection.immutable.List<Id> nilIds = toList(Collections.<Id>emptyList());
+    static <T> scala.collection.immutable.List<T> toList(List<T> jList) {
+        return JavaConversions.asScalaBuffer(jList).toList();
+    }
+
     Span createSpan(int start, int end) {
         int i = end;
         while ( i >= 0 && yyData.length > i && yyData[i] == ' ' ) { i--; }
@@ -82,7 +89,7 @@ body {
     private String logFile = column(0).file + ".log";
     private boolean keepComments = NodeUtil.getKeepComments();
     public Result JSmain(final int yyStart) throws IOException {
-        NodeFactory.initComment();
+        NodeUtil.initComment();
         Result result = this.pJS$File(yyStart);
         if (result.hasValue()) return result;
         else {
@@ -110,19 +117,40 @@ body {
             BufferedReader reader = new BufferedReader(fr);
             String line = reader.readLine();
             while (line != null) {
-                Double number = NodeFactory.makeNumberLiteral(writer, span2, line);
+                if (line.equals(""))
+                    NodeUtil.log(writer, "Syntax Error: expected a numeral but got " + line);
+                if (!line.equals("") && !line.equals("0") && line.charAt(0) == '0')
+                    NodeUtil.log(writer, "Syntax Error: a numeral begins with 0.");
+                Double number = Double.valueOf(line);
                 result.add(number);
                 line = reader.readLine();
             }
             reader.close();
             fr.close();
-            Expr expr = NodeFactory.makeArrayNumberExpr(span2, result);
-            VarDecl vd = NodeFactory.makeVarDecl(span1, name, Option.<Expr>some(expr));
+            Expr expr;
+            if (result.size() > 1000)
+                expr = new ArrayNumberExpr(NodeUtil.makeASTNodeInfo(span2), toList(result));
+            else {
+                List<Option<Expr>> elems = new ArrayList<Option<Expr>>();
+                for (Double d : result) {
+                    String str = d.toString();
+                    Expr e;
+                    if (str.endsWith(".0"))
+                        e = new IntLiteral(NodeUtil.makeASTNodeInfo(span2),
+                                           new BigInteger(str.substring(0, str.length() - 2), 10),
+                                           10);
+                    else e = new DoubleLiteral(NodeUtil.makeASTNodeInfo(span2), str, d);
+                    elems.add(Some.<Expr>apply(e));
+                }
+                expr = new ArrayExpr(NodeUtil.makeASTNodeInfo(span2), toList(elems));
+            }
+
+            VarDecl vd = new VarDecl(NodeUtil.makeASTNodeInfo(span1), name, Some.<Expr>apply(expr), false);
             initParser();
-            return NodeFactory.makeVarStmt(span1, list(vd));
+            return new VarStmt(NodeUtil.makeASTNodeInfo(span1), toList(list(vd)));
         } catch (IOException error) {
             error("Closing a log file for the parser failed!");
-            return NodeFactory.makeVarStmt(span1, new ArrayList<VarDecl>());
+            return new VarStmt(NodeUtil.makeASTNodeInfo(span1), nilVds);
         }
     }
     

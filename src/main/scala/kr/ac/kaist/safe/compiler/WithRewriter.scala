@@ -11,11 +11,11 @@
 
 package kr.ac.kaist.safe.compiler
 
-import kr.ac.kaist.safe.exceptions.SAFEError.error
-import kr.ac.kaist.safe.exceptions.StaticError
+import kr.ac.kaist.safe.errors.ErrorLog
+import kr.ac.kaist.safe.errors.SAFEError.error
+import kr.ac.kaist.safe.errors.StaticError
 import kr.ac.kaist.safe.nodes._
-import kr.ac.kaist.safe.safe_util.{ NodeFactory => NF, NodeUtil => NU }
-import kr.ac.kaist.safe.useful.ErrorLog
+import kr.ac.kaist.safe.util.{ NodeUtil => NU }
 
 /* Rewrites a JavaScript source code using the with statement
  * to another one without using the with statement.
@@ -40,7 +40,7 @@ class WithRewriter(program: Program, forTest: Boolean) extends ASTWalker {
 
   // For WithRewriter tests...
   def freshNameTest: String = "$f_" + System.nanoTime
-  val toObjectInfo = NF.makeASTNodeInfo(NU.makeSpan("_gen_toObject"))
+  val toObjectInfo = NU.makeASTNodeInfo(NU.makeSpan("_gen_toObject"))
   def mkId(name: String): Id = Id(toObjectInfo, name, None, false)
   def mkVarRef(id: Id): VarRef = VarRef(toObjectInfo, id)
   val toObjectFnId = mkId("toObject_" + freshNameTest)
@@ -74,7 +74,7 @@ class WithRewriter(program: Program, forTest: Boolean) extends ASTWalker {
   val toObjectFnDecl =
     FunDecl(
       toObjectInfo,
-      Functional(toObjectInfo, List(), List(), toObjectBody, toObjectFnId, List(mkId("x")), NF.generatedString),
+      Functional(toObjectInfo, List(), List(), toObjectBody, toObjectFnId, List(mkId("x")), NU.generatedString),
       false
     )
 

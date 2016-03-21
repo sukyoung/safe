@@ -9,9 +9,13 @@
  * ****************************************************************************
  */
 
-package kr.ac.kaist.safe.useful
+package kr.ac.kaist.safe.util
 
 import scala.collection.immutable
+
+/**
+ * By David Chase (from Sun Microsystems)
+ */
 
 /**
  * Magic numbers chosen to be:

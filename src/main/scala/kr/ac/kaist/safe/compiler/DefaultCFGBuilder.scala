@@ -15,12 +15,10 @@ import scala.collection.immutable.{ HashMap, HashSet }
 import scala.collection.mutable.{ Map => MMap, HashMap => MHashMap, Set => MSet, HashSet => MHashSet }
 
 import kr.ac.kaist.safe.Config
-import kr.ac.kaist.safe.exceptions.StaticError
-import kr.ac.kaist.safe.exceptions.UserError
+import kr.ac.kaist.safe.errors.{ ErrorLog, StaticError, UserError }
 import kr.ac.kaist.safe.nodes._
 import kr.ac.kaist.safe.nodes.EdgeType._
-import kr.ac.kaist.safe.safe_util.{ NodeUtil => NU, NodeFactory => NF, IRFactory => IF, CapturedVariableCollector, AddressManager }
-import kr.ac.kaist.safe.useful.ErrorLog
+import kr.ac.kaist.safe.util.{ NodeUtil => NU, IRFactory => IF, CapturedVariableCollector, AddressManager }
 
 // default CFG builder
 object DefaultCFGBuilder extends CFGBuilder {

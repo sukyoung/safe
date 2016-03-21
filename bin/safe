@@ -20,7 +20,7 @@ fi
 TP="${SAFE_HOME}/lib"
 SV=2.11.7
 
-CP="${SAFE_HOME}/target/scala-2.11/classes${SEP}${TP}/xtc.jar${SEP}${TP}/plt.jar${SEP}${TP}/scala-compiler-${SV}.jar${SEP}${TP}/scala-library-${SV}.jar${SEP}${TP}/scala-parser-combinators_2.11-1.0.4.jar${SEP}$CLASSPATH"
+CP="${SAFE_HOME}/target/scala-2.11/classes${SEP}${TP}/xtc.jar${SEP}${TP}/scala-compiler-${SV}.jar${SEP}${TP}/scala-library-${SV}.jar${SEP}${TP}/scala-parser-combinators_2.11-1.0.4.jar${SEP}$CLASSPATH"
 
 if [ -z "$JAVA_HOME" ] ; then
   JAVACMD=java

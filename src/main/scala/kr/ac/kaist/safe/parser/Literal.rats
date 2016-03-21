@@ -32,15 +32,15 @@ import Spacing;
 public Literal Literal =
      nullL
      { Span span = createSpan(yyStart,yyCount);
-       yyValue = NodeFactory.makeNull(span);
+       yyValue = new Null(NodeUtil.makeASTNodeInfo(span));
      }
    / true
      { Span span = createSpan(yyStart,yyCount);
-       yyValue = NodeFactory.makeBool(span, true);
+       yyValue = new Bool(NodeUtil.makeASTNodeInfo(span), true);
      }
    / false
      { Span span = createSpan(yyStart,yyCount);
-       yyValue = NodeFactory.makeBool(span, false);
+       yyValue = new Bool(NodeUtil.makeASTNodeInfo(span), false);
      }
    / NumericLiteral
    / StringLiteral
@@ -71,7 +71,7 @@ NumberLiteral NumericLiteral =
  * ExponentPart ::= (e | E) (+ | -)? DecimalDigit+
  */
 /*
- * More syntax checks by NodeFactory.makeNumberLiteral()
+ * More syntax checks by NodeUtil.makeNumberLiteral()
  */
 private NumberLiteral DecimalLiteral =
     a1:DecimalDigits a2:dot? a3:DecimalDigits? a4:ExponentPart?
@@ -80,14 +80,14 @@ private NumberLiteral DecimalLiteral =
        if (a2 == null) a2 = "";
        if (a3 == null) a3 = "";
        if (a4 == null) a4 = "";
-       yyValue = NodeFactory.makeNumberLiteral(writer, span, a1, a2, a3, a4);
+       yyValue = NodeUtil.makeNumberLiteral(writer, span, a1, a2, a3, a4);
      }
   / dot a1:DecimalDigits? a2:ExponentPart?
     &{ (a1 != null) && (Character.isDigit(a1.charAt(0)) || a1.charAt(0) == '.') }
      { Span span = createSpan(yyStart,yyCount);
        if (a1 == null) a1 = "";
        if (a2 == null) a2 = "";
-       yyValue = NodeFactory.makeNumberLiteral(writer, span, "", ".", a1, a2);
+       yyValue = NodeUtil.makeNumberLiteral(writer, span, "", ".", a1, a2);
      };
 transient String DecimalDigits = [0-9]+ ;
 
@@ -103,7 +103,7 @@ private transient String ExponentPart =
 NumberLiteral HexIntegerLiteral =
      [0] ([x] / [X]) a1:HexDigits
      { Span span = createSpan(yyStart,yyCount);
-       yyValue = NodeFactory.makeHexIntegerLiteral(span, a1);
+       yyValue = new IntLiteral(NodeUtil.makeASTNodeInfo(span), new BigInteger(a1, 16), 16);
      };
 
 private transient String HexDigit = [0-9a-fA-F] ;
@@ -112,7 +112,7 @@ private transient String HexDigits = HexDigit+ ;
 private NumberLiteral OctalIntegerLiteral =
      [0] a1:OctalDigits
      { Span span = createSpan(yyStart,yyCount);
-       yyValue = NodeFactory.makeOctalIntegerLiteral(span, a1);
+       yyValue = new IntLiteral(NodeUtil.makeASTNodeInfo(span), new BigInteger(a1, 8), 8);
      };
 
 private transient String OctalDigit = [0-7] ;
@@ -122,12 +122,12 @@ transient StringLiteral StringLiteral =
      ["] a1s:DoubleStringCharacter* ["]
      { String str = "";
        for (String c : (List<String>)a1s.list()) str = str.concat(c);
-       yyValue = NodeFactory.makeStringLiteral(createSpan(yyStart,yyCount+1), str, "\"");
+       yyValue = new StringLiteral(NodeUtil.makeASTNodeInfo(createSpan(yyStart,yyCount+1)), "\"", str);
      }
    / ['] a1s:SingleStringCharacter* [']
      { String str = "";
        for (String c : (List<String>)a1s.list()) str = str.concat(c);
-       yyValue = NodeFactory.makeStringLiteral(createSpan(yyStart,yyCount+1), str, "\'");
+       yyValue = new StringLiteral(NodeUtil.makeASTNodeInfo(createSpan(yyStart,yyCount+1)), "\'", str);
      };
 
 private transient String DoubleStringCharacter =
@@ -186,7 +186,7 @@ private transient String NonSingleStringChar =
 private transient RegularExpression RegularExpressionLiteral =
      "/" a1:RegularExpressionBody "/" a2:RegularExpressionFlags
      { Span span = createSpan(yyStart,yyCount);
-       yyValue = NodeFactory.makeRegularExpression(span, a1, a2);
+       yyValue = new RegularExpression(NodeUtil.makeASTNodeInfo(span), a1, a2);
      };
 
 private transient String RegularExpressionBody =

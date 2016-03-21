@@ -11,8 +11,8 @@
 
 package kr.ac.kaist.safe
 
-import kr.ac.kaist.safe.exceptions.ParserError
-import kr.ac.kaist.safe.exceptions.UserError
+import kr.ac.kaist.safe.errors.ParserError
+import kr.ac.kaist.safe.errors.UserError
 import kr.ac.kaist.safe.shell.ParseMain
 import kr.ac.kaist.safe.shell.ASTRewriteMain
 import kr.ac.kaist.safe.shell.CompileMain

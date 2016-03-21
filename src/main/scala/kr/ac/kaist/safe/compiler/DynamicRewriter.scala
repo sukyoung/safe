@@ -12,11 +12,11 @@
 package kr.ac.kaist.safe.compiler
 
 import java.lang.{ Integer => JInteger }
-import kr.ac.kaist.safe.exceptions.SAFEError.error
-import kr.ac.kaist.safe.exceptions.StaticError
+import kr.ac.kaist.safe.errors.ErrorLog
+import kr.ac.kaist.safe.errors.SAFEError.error
+import kr.ac.kaist.safe.errors.StaticError
 import kr.ac.kaist.safe.nodes._
-import kr.ac.kaist.safe.safe_util.{ NodeFactory => NF, NodeUtil => NU }
-import kr.ac.kaist.safe.useful.ErrorLog
+import kr.ac.kaist.safe.util.{ NodeUtil => NU }
 
 /* Rewrites a JavaScript source code
  * using dynamic code generation with string constants

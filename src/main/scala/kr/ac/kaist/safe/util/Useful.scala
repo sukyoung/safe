@@ -9,24 +9,14 @@
  * ****************************************************************************
  */
 
-package kr.ac.kaist.safe.useful
+package kr.ac.kaist.safe.util
 
 import java.io.BufferedWriter
 import java.io.File
 import java.io.FileWriter
 import java.io.IOException
-import java.util.Random
 
 object Useful {
-  def shuffle[T](array: Array[T]): Array[T] = {
-    val rnd = new Random
-    for (n <- Iterator.range(array.length - 1, 0, -1)) {
-      val k = rnd.nextInt(n + 1)
-      val t = array(k); array(k) = array(n); array(n) = t
-    }
-    array
-  }
-
   def windowPathToUnixPath(filename: String): String = {
     var result: String = filename.replaceAll("\\\\", "/")
     val drive = result.charAt(0)
@@ -74,10 +64,5 @@ object Useful {
       }
     }
     s
-  }
-
-  def rmFile(name: String): Unit = {
-    val file = new File(name)
-    if (file.exists && !file.delete) throw new IOException
   }
 }

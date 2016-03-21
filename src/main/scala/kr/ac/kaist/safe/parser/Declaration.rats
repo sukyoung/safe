@@ -27,12 +27,17 @@ import Spacing;
 public Program File =
      initParser a1:UseStrictDirectives? w a2:TopLevelSourceElements? closeParser
      { Span span = createSpan(yyStart,yyCount);
-       if (a2 == null) a2 = Collections.<SourceElement>emptyList();
+       ASTNodeInfo info = NodeUtil.makeASTNodeInfo(span);
+       scala.collection.immutable.List<SourceElement> ses;
+       if (a2 == null) ses = nilSes;
+       else ses = toList(a2);
        HashMap<String, Span> map = new HashMap<String, Span>();
        if (a1 == null)
-           yyValue = NodeFactory.makeProgram(span, a2, false);
+           yyValue = new Program(info, new TopLevel(info, nilFds, nilVds,
+                                                    toList(list(new SourceElements(info, ses, false)))));
        else
-           yyValue = NodeFactory.makeProgram(span, a2, true);
+           yyValue = new Program(info, new TopLevel(info, nilFds, nilVds,
+                                                    toList(list(new SourceElements(info, ses, true)))));
      };
 void initParser = w { initParser(); };
 void closeParser = w EndOfFile
@@ -92,8 +97,14 @@ private SourceElement SourceElement =
 FunDecl FunctionDeclaration =
      function w a1:Id w openparen a2:(w Params)? w closeparen w a3:FunctionBody
      { Span span = createSpan(yyStart,yyCount);
-       if (a2 == null) a2 = Collections.<Id>emptyList();
-       yyValue = NodeFactory.makeFunDecl(span, a1, a2, a3.first(), a3.second(), a3.third());
+       ASTNodeInfo info = NodeUtil.makeASTNodeInfo(span);
+       scala.collection.immutable.List<Id> ids;
+       if (a2 == null) ids = nilIds;
+       else ids = toList(a2);
+       yyValue = new FunDecl(info,
+                             new Functional(info, nilFds, nilVds,
+                                            new SourceElements(info, toList(a3._1()), a3._3()),
+                                            a1, ids, a3._2()), false);
      };
 
 /*
@@ -108,25 +119,25 @@ public List<Id> Params =
 /*
  * FunctionBody ::= { w SourceElement* w }
  */
-public Triple<List<SourceElement>, String, Boolean> FunctionBody =
+public Tuple3<List<SourceElement>, String, Boolean> FunctionBody =
      opencurly w a1:UseStrictDirectives? w closecurly
      { if (a1 == null)
-         yyValue = new Triple<List<SourceElement>, String, Boolean>(
-                       Collections.<SourceElement>emptyList(),
+         yyValue = new Tuple3<List<SourceElement>, String, Boolean>(
+                       nilJSes,
                        "{}",
                        Boolean.valueOf(false));
        else
-         yyValue = new Triple<List<SourceElement>, String, Boolean>(
-                       Collections.<SourceElement>emptyList(),
+         yyValue = new Tuple3<List<SourceElement>, String, Boolean>(
+                       nilJSes,
                        "{ 'use strict'; }",
                        Boolean.valueOf(true));
      }
    / opencurly w a1:UseStrictDirectives? w a2:SourceElements w closecurly
-     { String str = (new JSAstToConcrete()).prBody(a2);
+     { String str = (new JSAstToConcrete()).prBody(toList(a2));
        if (a1 == null)
-         yyValue = new Triple<List<SourceElement>, String, Boolean>(a2, "{ " + str + " }", Boolean.valueOf(false));
+         yyValue = new Tuple3<List<SourceElement>, String, Boolean>(a2, "{ " + str + " }", Boolean.valueOf(false));
        else
-         yyValue = new Triple<List<SourceElement>, String, Boolean>(a2, "{ 'use strict'; " + str + " }", Boolean.valueOf(true));
+         yyValue = new Tuple3<List<SourceElement>, String, Boolean>(a2, "{ 'use strict'; " + str + " }", Boolean.valueOf(true));
      };
 
 /*
@@ -135,7 +146,13 @@ public Triple<List<SourceElement>, String, Boolean> FunctionBody =
 public LHS FunctionExpr =
      function a1:(w Id)? w openparen a2:(w Params)? w closeparen w a3:FunctionBody
      { Span span = createSpan(yyStart,yyCount+1);
-       Id f = (a1 == null) ? NodeFactory.makeId(span, "", "") : a1;
-       if (a2 == null) a2 = Collections.<Id>emptyList();
-       yyValue = NodeFactory.makeFunExpr(span, f, a2, a3.first(), a3.second(), a3.third());
+       ASTNodeInfo info = NodeUtil.makeASTNodeInfo(span);
+       Id f = (a1 == null) ? new Id(NodeUtil.makeASTNodeInfo(span), "", Some.<String>apply(null), false) : a1;
+       scala.collection.immutable.List<Id> ids;
+       if (a2 == null) ids = nilIds;
+       else ids = toList(a2);
+       yyValue = new FunExpr(info,
+                             new Functional(info, nilFds, nilVds,
+                                            new SourceElements(info, toList(a3._1()), a3._3()),
+                                            f, ids, a3._2()));
      };

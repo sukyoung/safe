@@ -11,8 +11,7 @@
 
 package kr.ac.kaist.safe.nodes
 
-import kr.ac.kaist.safe.safe_util.Span
-import kr.ac.kaist.safe.safe_util.UIDObject
+import kr.ac.kaist.safe.util.{ Span, UIDObject }
 
 abstract class Node(val info: NodeInfo) extends UIDObject
 

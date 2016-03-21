@@ -9,19 +9,87 @@
  * ****************************************************************************
  */
 
-package kr.ac.kaist.safe.safe_util
+package kr.ac.kaist.safe.util
 
 import kr.ac.kaist.safe.nodes._
-import kr.ac.kaist.safe.safe_util.{ IRFactory => IF }
-import kr.ac.kaist.safe.scala_useful.Lists._
+import kr.ac.kaist.safe.util.{ IRFactory => IF }
 import java.io.BufferedWriter
 import java.io.IOException
+import java.lang.{ Double => JDouble }
+import java.lang.{ Integer => JInt }
+import java.math.BigDecimal
+import java.math.BigInteger
 import scala.collection.immutable.HashMap
 
 object NodeUtil {
   ////////////////////////////////////////////////////////////////
   // AST
   ////////////////////////////////////////////////////////////////
+
+  def makeASTNodeInfo(span: Span): ASTNodeInfo =
+    if (getKeepComments && comment.isDefined) {
+      val result = new ASTNodeInfo(span, comment)
+      comment = None
+      result
+    } else new ASTNodeInfo(span, None)
+
+  def makeProgram(info: ASTNodeInfo, ses: List[SourceElements]): Program =
+    new Program(info, new TopLevel(info, Nil, Nil, ses))
+
+  def makeNoOp(info: ASTNodeInfo, desc: String): NoOp =
+    new NoOp(info, desc)
+
+  /*
+     * DecimalLiteral ::=
+     *   DecimalIntegerLiteral . DecimalDigits? ExponentPart?
+     * | DecimalIntegerLiteral ExponentPart?
+     * | . DecimalDigits ExponentPart?
+     *
+     * DecimalIntegerLiteral ::=
+     *   0
+     * | NonZeroDigit DecimalDigits?
+     *
+     * DecimalDigit ::= 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
+     *
+     * NonZeroDigit ::= 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
+     *
+     * ExponentPart ::= (e | E) (+ | -)? DecimalDigit+
+     */
+  def makeNumberLiteral(writer: BufferedWriter, span: Span,
+    beforeDot: String, dot: String,
+    afterDot: String, exponent: String): NumberLiteral = {
+    if ((beforeDot + dot).equals("") ||
+      ((beforeDot + afterDot).equals("") && !dot.equals("")) ||
+      (!beforeDot.equals("") && dot.equals("") && !afterDot.equals("")))
+      log(writer, "Syntax Error: expected a numeral but got " +
+        beforeDot + dot + afterDot + exponent)
+    if (!beforeDot.equals("") && !beforeDot.equals("0") && beforeDot.charAt(0) == '0')
+      log(writer, "Syntax Error: a numeral begins with 0.")
+    if (dot.equals("")) {
+      if (exponent.equals("")) new IntLiteral(makeASTNodeInfo(span), new BigInteger(beforeDot), 10)
+      else {
+        var exp = 0
+        val second = exponent.charAt(1)
+        if (Character.isDigit(second))
+          exp = JInt.parseInt(exponent.substring(1))
+        else if (second.equals('-'))
+          exp = -1 * JInt.parseInt(exponent.substring(2))
+        else exp = JInt.parseInt(exponent.substring(2))
+        if (exp < 0) {
+          var str = beforeDot + dot + afterDot + exponent
+          str = new BigDecimal(str).toString
+          new DoubleLiteral(makeASTNodeInfo(span), str, JDouble.valueOf(str))
+        } else new IntLiteral(
+          makeASTNodeInfo(span),
+          new BigInteger(beforeDot).multiply(BigInteger.TEN.pow(exp)),
+          10
+        )
+      }
+    } else {
+      val str = beforeDot + dot + afterDot + exponent
+      new DoubleLiteral(makeASTNodeInfo(span), str, JDouble.valueOf(str))
+    }
+  }
 
   def unwrapParen(expr: Expr): Expr = expr match {
     case Parenthesized(info, body) => body
@@ -32,11 +100,29 @@ object NodeUtil {
   def setKeepComments(flag: Boolean): Unit = { keepComments = flag }
   def getKeepComments: Boolean = keepComments
 
+  private var comment: Option[Comment] = None
+  def initComment: Unit = { comment = None }
+  def commentLog(span: Span, message: String): Unit =
+    if (getKeepComments) {
+      if (!comment.isDefined ||
+        (!comment.get.txt.startsWith("/*") && !comment.get.txt.startsWith("//")))
+        comment = Some[Comment](new Comment(makeASTNodeInfo(span), message))
+      else {
+        val com = comment.get
+        if (!com.txt.equals(message))
+          comment = Some[Comment](new Comment(
+            makeASTNodeInfo(spanAll(com.info.span, span)),
+            com.txt + "\n" + message
+          ))
+      }
+    }
+
   val internalSymbol = "<>"
   val internalPrint = "_<>_print"
   val internalPrintIS = "_<>_printIS"
   val internalGetTickCount = "_<>_getTickCount"
   val globalPrefix = "<>Global<>"
+  val generatedString = "<>generated String Literal"
   // dummy file name for source location information
   def freshFile(f: String): String = internalSymbol + f
   // unique name generation for global names

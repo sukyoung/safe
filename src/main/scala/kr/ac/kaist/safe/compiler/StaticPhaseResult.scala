@@ -11,7 +11,7 @@
 
 package kr.ac.kaist.safe.compiler
 
-import kr.ac.kaist.safe.exceptions.StaticError
+import kr.ac.kaist.safe.errors.StaticError
 
 class StaticPhaseResult(_errors: List[StaticError]) {
   var errors = _errors

@@ -9,6 +9,8 @@
  * ****************************************************************************
  */
 
-package kr.ac.kaist.safe.safe_util
+package kr.ac.kaist.safe.errors
 
-class BugInfo(val span: Span, val bugKind: Int, val arg1: String, val arg2: String) {}
+class UserError(msg: String) extends RuntimeException {
+  override def toString: String = msg
+}

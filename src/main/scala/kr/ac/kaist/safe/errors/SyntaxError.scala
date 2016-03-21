@@ -9,10 +9,9 @@
  * ****************************************************************************
  */
 
-package kr.ac.kaist.safe.exceptions
+package kr.ac.kaist.safe.errors
 
 import kr.ac.kaist.safe.nodes.NodeInfo
-import kr.ac.kaist.safe.safe_util.ErrorMsgMaker
 import java.util.regex.Pattern
 
 class SyntaxError(description: String, location: Option[NodeInfo])

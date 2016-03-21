@@ -9,7 +9,7 @@
  * ****************************************************************************
  */
 
-package kr.ac.kaist.safe.exceptions
+package kr.ac.kaist.safe.errors
 
 import kr.ac.kaist.safe.nodes.NodeInfo
 

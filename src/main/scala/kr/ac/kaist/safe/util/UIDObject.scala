@@ -9,9 +9,10 @@
  * ****************************************************************************
  */
 
-package kr.ac.kaist.safe.safe_util
+package kr.ac.kaist.safe.util
 
 import kr.ac.kaist.safe.nodes.ASTNode
+import kr.ac.kaist.safe.errors.ErrorMsgMaker
 
 class UIDObject {
   private var uid: Long = next

@@ -12,7 +12,7 @@
 package kr.ac.kaist.safe.compiler
 
 import kr.ac.kaist.safe.Config
-import kr.ac.kaist.safe.exceptions.StaticError
+import kr.ac.kaist.safe.errors.StaticError
 import kr.ac.kaist.safe.nodes.{ IRRoot, CFG }
 
 // cfg builder

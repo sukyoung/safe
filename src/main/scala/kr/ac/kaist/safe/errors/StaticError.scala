@@ -9,11 +9,10 @@
  * ****************************************************************************
  */
 
-package kr.ac.kaist.safe.exceptions
+package kr.ac.kaist.safe.errors
 
 import java.util.regex.Pattern
 import kr.ac.kaist.safe.nodes.NodeInfo
-import kr.ac.kaist.safe.safe_util.ErrorMsgMaker
 
 class StaticError(val description: String, val location: Option[NodeInfo])
     extends RuntimeException with Ordered[StaticError] {

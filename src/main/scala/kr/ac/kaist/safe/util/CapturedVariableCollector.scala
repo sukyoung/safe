@@ -9,14 +9,14 @@
  * ****************************************************************************
  */
 
-package kr.ac.kaist.safe.safe_util
+package kr.ac.kaist.safe.util
 
 import scala.collection.mutable.{ Set => MSet }
 import scala.collection.mutable.{ HashSet => MHashSet }
 import scala.collection.immutable.HashSet
-import kr.ac.kaist.safe.exceptions.StaticError
+import kr.ac.kaist.safe.errors.StaticError
+import kr.ac.kaist.safe.errors.ErrorLog
 import kr.ac.kaist.safe.nodes._
-import kr.ac.kaist.safe.useful.ErrorLog
 import kr.ac.kaist.safe.Config
 
 class CapturedVariableCollector(ir: IRRoot, config: Config) {

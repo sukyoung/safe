@@ -11,11 +11,11 @@
 
 package kr.ac.kaist.safe.compiler
 
-import kr.ac.kaist.safe.exceptions.SAFEError.error
-import kr.ac.kaist.safe.exceptions.StaticError
+import kr.ac.kaist.safe.errors.ErrorLog
+import kr.ac.kaist.safe.errors.SAFEError.error
+import kr.ac.kaist.safe.errors.StaticError
 import kr.ac.kaist.safe.nodes._
-import kr.ac.kaist.safe.safe_util.{ NodeFactory => NF, NodeUtil => NU, IRFactory => IF, Span }
-import kr.ac.kaist.safe.useful.ErrorLog
+import kr.ac.kaist.safe.util.{ NodeUtil => NU, IRFactory => IF, Span }
 
 /* Translates JavaScript AST to IR. */
 class Translator(program: Program) extends ASTWalker {
@@ -111,7 +111,7 @@ class Translator(program: Program) extends ASTWalker {
       case None => NU.funexprName(span)
       case Some(name) => name + NU.funexprName(span)
     }
-    NF.makeId(span, uniq, Some(uniq))
+    new Id(NU.makeASTNodeInfo(span), uniq, Some(uniq), false)
   }
 
   // Whether a given name is locally declared
@@ -299,7 +299,11 @@ class Translator(program: Program) extends ASTWalker {
       case Parenthesized(_, expr) => getLhs(expr)
       case vr: VarRef => Some(vr)
       case dot @ Dot(info, obj, member) =>
-        getLhs(setUID(Bracket(info, obj, NF.makeStringLiteral(getSpan(member), member.text, "\"")), dot.getUID))
+        getLhs(setUID(Bracket(info, obj,
+          new StringLiteral(
+            NU.makeASTNodeInfo(getSpan(member)),
+            "\"", member.text
+          )), dot.getUID))
       case br: Bracket => Some(br)
       case _ => None
     }
@@ -788,7 +792,11 @@ class Translator(program: Program) extends ASTWalker {
           case VarRef(_, name) =>
             (List(IF.makeDelete(true, e, span, res, id2ir(env, name))), res)
           case dot @ Dot(sinfo, obj, member) =>
-            val tmpBracket = setUID(Bracket(sinfo, obj, NF.makeStringLiteral(getSpan(member), member.text, "\"")), dot.getUID)
+            val tmpBracket = setUID(Bracket(sinfo, obj,
+              new StringLiteral(
+                NU.makeASTNodeInfo(getSpan(member)),
+                "\"", member.text
+              )), dot.getUID)
             val tmpPrefixOpApp = setUID(PrefixOpApp(info, op, tmpBracket), e.getUID)
             walkExpr(tmpPrefixOpApp, env, res)
           case Bracket(_, lhs, e2) =>
@@ -1014,7 +1022,11 @@ class Translator(program: Program) extends ASTWalker {
         setUID(
           FunApp(
             info,
-            setUID(Bracket(i, obj, NF.makeStringLiteral(getSpan(member), member.text, "\"")), dot.getUID),
+            setUID(Bracket(i, obj,
+              new StringLiteral(
+                NU.makeASTNodeInfo(getSpan(member)),
+                "\"", member.text
+              )), dot.getUID),
             args
           ),
           e.getUID
@@ -1211,7 +1223,11 @@ class Translator(program: Program) extends ASTWalker {
       else
         (stmts :+ mkExprS(ast, irid, e), irid)
     case dot @ Dot(info, obj, member) =>
-      walkLval(ast, setUID(Bracket(info, obj, NF.makeStringLiteral(getSpan(member), member.text, "\"")), dot.getUID),
+      walkLval(ast, setUID(Bracket(info, obj,
+        new StringLiteral(
+          NU.makeASTNodeInfo(getSpan(member)),
+          "\"", member.text
+        )), dot.getUID),
         env, stmts, e, keepOld)
     case Bracket(info, first, index) =>
       val span = getSpan(info)
