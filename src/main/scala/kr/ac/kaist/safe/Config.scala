@@ -27,76 +27,9 @@ class Config(
     val opt_Verbose: Boolean,
     val addrManager: AddressManager
 ) {
-  val predVars = List(
-    // 4.2 Language Overview
-    "Object",
-    "Function",
-    "Array",
-    "String",
-    "Boolean",
-    "Number",
-    "Math",
-    "Date",
-    "RegExp",
-    "JSON",
-    "Error",
-    "EvalError",
-    "RangeError",
-    "ReferenceError",
-    "SyntaxError",
-    "TypeError",
-    "URIError",
-    // 15.1.1 Value Properties of the Global Object
-    "NaN",
-    "Infinity",
-    "undefined",
-    // predefined constant variables from IR
-    NU.varTrue,
-    NU.varOne,
-    NU.freshGlobalName("global")
-  )
-
-  val predVarsAll = predVars
-
-  val predFuns = List(
-    // 15.1.2 Function Properties of the Global Object
-    "eval",
-    "parseInt",
-    "parseFloat",
-    "isNaN",
-    "isFinite",
-    // 15.1.3 URI Handling Function Properties
-    "decodeURI",
-    "decodeURIComponent",
-    "encodeURI",
-    "encodeURIComponent"
-  )
-
-  val predAll = predVarsAll ++ predFuns
-
-  def predContains(name: String): Boolean =
-    predVarsAll.contains(name) || predFuns.contains(name)
 }
 
 object Config {
-  val MAX_INST_PRINT_SIZE = 10000
-  def safeAutoHome(): String = {
-    var s = ""
-    s = System.getenv("SAFE_HOME")
-    if (s == null || s.equals("")) {
-      throw new Error("Could not find SAFE_HOME.")
-    }
-    Useful.windowPathToUnixPath(s)
-  }
-  val SAFE_HOME = safeAutoHome
-  val basedir = searchDef("BASEDIR", "BASEDIR", SAFE_HOME)
-  def searchDef(asProp: String, asEnv: String, defaultValue: String): String = {
-    var result = System.getProperty(asProp)
-    if (result == null) result = System.getenv(asEnv)
-    if (result == null) result = defaultValue
-    result
-  }
-
   def apply(args: List[String]): Config = {
     var command: String = "usage"
     var possibleOptions: List[String] = Nil
@@ -155,4 +88,65 @@ object Config {
 
     new Config(command, opt_OutFileName, opt_Time, opt_unrollingCount, FileNames, opt_Verbose, new DefaultAddressManager)
   }
+
+  ////////////////////////////////////////////////////////////////
+  // Global Value
+  ////////////////////////////////////////////////////////////////
+
+  // Maximum length of printable instruction of CFGNode
+  val MAX_INST_PRINT_SIZE = 10000
+
+  // Base project directory root
+  val BASE_DIR = System.getenv("SAFE_HOME") match {
+    case null | "" => throw new Error("Could not find SAFE_HOME.")
+    case s => s
+  }
+
+  // Predefined variables
+  val PRED_VARS = List(
+    // 4.2 Language Overview
+    "Object",
+    "Function",
+    "Array",
+    "String",
+    "Boolean",
+    "Number",
+    "Math",
+    "Date",
+    "RegExp",
+    "JSON",
+    "Error",
+    "EvalError",
+    "RangeError",
+    "ReferenceError",
+    "SyntaxError",
+    "TypeError",
+    "URIError",
+    // 15.1.1 Value Properties of the Global Object
+    "NaN",
+    "Infinity",
+    "undefined",
+    // predefined constant variables from IR
+    NU.varTrue,
+    NU.varOne,
+    NU.freshGlobalName("global")
+  )
+
+  // Predefined functions
+  val PRED_FUNS = List(
+    // 15.1.2 Function Properties of the Global Object
+    "eval",
+    "parseInt",
+    "parseFloat",
+    "isNaN",
+    "isFinite",
+    // 15.1.3 URI Handling Function Properties
+    "decodeURI",
+    "decodeURIComponent",
+    "encodeURI",
+    "encodeURIComponent"
+  )
+
+  // All predefined variables and functions
+  val PRED_ALL = PRED_VARS ++ PRED_FUNS
 }

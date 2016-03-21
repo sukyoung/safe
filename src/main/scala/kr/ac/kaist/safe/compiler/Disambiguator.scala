@@ -43,8 +43,8 @@ class Disambiguator(program: Program, config: Config) extends ASTWalker {
   /* Environment for renaming identifiers. */
   type Env = List[(String, String)]
   val emptyLabel = ("empty", "empty")
-  var env: Env = config.predVars.map(v => (v, v)) ++
-    config.predFuns.map(f => (f, f)) ++ List(
+  var env: Env = Config.PRED_VARS.map(v => (v, v)) ++
+    Config.PRED_FUNS.map(f => (f, f)) ++ List(
       ("alert", "alert"),
       (NU.internalPrint, NU.internalPrint)
     )

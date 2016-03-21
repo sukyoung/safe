@@ -30,8 +30,8 @@ object CFGTest extends Tag("CFGTest")
 
 class CoreTest extends FlatSpec {
   val SEP = File.separator
-  val jsDir = Config.basedir + SEP + "tests/js/success"
-  val resDir = Config.basedir + SEP + "tests/result/success"
+  val jsDir = Config.BASE_DIR + SEP + "tests/js/success"
+  val resDir = Config.BASE_DIR + SEP + "tests/result/success"
   val jsFilter = new FilenameFilter() {
     def accept(dir: File, name: String): Boolean = name.endsWith(".js")
   }
