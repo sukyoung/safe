@@ -13,14 +13,14 @@ package kr.ac.kaist.safe
 
 import org.scalatest._
 import org.scalatest.Assertions._
+
+import java.io.{ File, FilenameFilter }
+
 import scala.io.Source
-import java.io.File
-import java.io.FilenameFilter
-import kr.ac.kaist.safe.compiler.{ Compiler, Parser, Hoister, Disambiguator, WithRewriter, DefaultCFGBuilder }
-import kr.ac.kaist.safe.errors.{ StaticError, StaticErrors }
-import kr.ac.kaist.safe.util.{ AddressManager, JSAstToConcrete, JSIRUnparser }
-import kr.ac.kaist.safe.nodes.{ Program, CFG }
-import org.scalatest.Tag
+
+import kr.ac.kaist.safe.util.{ JSAstToConcrete, JSIRUnparser }
+import kr.ac.kaist.safe.nodes.{ Program, IRRoot, CFG }
+import kr.ac.kaist.safe.proc.CFGBuild
 
 object ParseTest extends Tag("ParseTest")
 object ASTRewriteTest extends Tag("ASTRewriteTest")
@@ -39,68 +39,71 @@ class CoreTest extends FlatSpec {
     Source.fromFile(filename).getLines.mkString("\n")
   }
 
-  def parseTest(jsName: String): Unit = {
+  def parseTest(pgmOpt: Option[Program]): Unit = {
   }
 
-  def astRewriteTest(jsName: String, testName: String): Unit = {
-    val config = Config(List("astRewrite", jsName))
-    val addrManager: AddressManager = config.addrManager
-
-    var program: Program = Parser.fileToAST(config.FileNames)
-    program = (new Hoister(program).doit).asInstanceOf[Program]
-    val disambiguator = new Disambiguator(program, config)
-    program = (disambiguator.doit).asInstanceOf[Program]
-    var errors: List[StaticError] = disambiguator.getErrors
-    val withRewriter: WithRewriter = new WithRewriter(program, false)
-    program = withRewriter.doit.asInstanceOf[Program]
-    errors :::= withRewriter.getErrors
-
-    val result = readFile(testName)
-    // val ans = Source.fromFile(testName).getLines.mkString("\n")
-    //   .replace("${DISAMB_TESTS_DIR}", dir)
-
-    StaticErrors.getReportErrors(jsName, errors) match {
-      case Some(dump) => assert(result == dump)
-      case None => assert(result == (new JSAstToConcrete).doit(program))
+  def astRewriteTest(pgmOpt: Option[Program], testName: String): Unit = {
+    pgmOpt match {
+      case None => assert(false)
+      case Some(program) =>
+        val result = readFile(testName)
+        assert(result == (new JSAstToConcrete).doit(program))
     }
   }
 
-  def compileTest(jsName: String, testName: String): Unit = {
-    val config = Config(List("compile", jsName))
-    val (ir, rc, errors) = Compiler.compile(config)
-    val dump: String = new JSIRUnparser(ir).doit
-    val result = readFile(testName)
-
-    assert(errors.isEmpty)
-    assert(result == dump)
+  def compileTest(irOpt: Option[IRRoot], testName: String): Unit = {
+    irOpt match {
+      case None => assert(false)
+      case Some(ir) =>
+        val result = readFile(testName)
+        val dump = new JSIRUnparser(ir).doit
+        assert(result == dump)
+    }
   }
 
-  def cfgTest(jsName: String, testName: String): Unit = {
-    val config = Config(List("cfg", jsName))
-    val addrManager: AddressManager = config.addrManager
-
-    val (ir, rc, _) = Compiler.compile(config)
-    val (cfg: CFG, errors: List[StaticError]) = DefaultCFGBuilder.build(ir, config)
-    val dump: String = cfg.dump
-    val result = readFile(testName)
-
-    assert(errors.isEmpty)
-    assert(result == dump)
+  def cfgTest(cfgOpt: Option[CFG], testName: String): Unit = {
+    cfgOpt match {
+      case None => assert(false)
+      case Some(cfg) =>
+        val result = readFile(testName)
+        val dump = cfg.dump
+        assert(result == dump)
+    }
   }
 
   // Permute filenames for randomness
   for (filename <- scala.util.Random.shuffle(new File(jsDir).list(jsFilter).toSeq)) {
     val name = filename.substring(0, filename.length - 3)
     val jsName = jsDir + SEP + filename
-    registerTest("[Parse] " + filename, ParseTest) { parseTest(jsName) }
 
+    val (config, proc) = ArgParse(List("cfgBuild", jsName)).get
+    val cfgBuild = proc.asInstanceOf[CFGBuild]
+    val compile = cfgBuild.prev
+    val astRewrite = compile.prev
+    val parse = astRewrite.prev
+
+    var pgmOpt = parse.parse(config)
+    registerTest("[Parse] " + filename, ParseTest) { parseTest(pgmOpt) }
+
+    pgmOpt = pgmOpt match {
+      case Some(program) => astRewrite.rewrite(config, program)
+      case None => None
+    }
     val astName = resDir + "/astRewrite/" + name + ".test"
-    registerTest("[ASTRewrite] " + filename, ASTRewriteTest) { astRewriteTest(jsName, astName) }
+    registerTest("[ASTRewrite] " + filename, ASTRewriteTest) { astRewriteTest(pgmOpt, astName) }
 
+    val irOpt = pgmOpt match {
+      case Some(program) => compile.compile(config, program)
+      case None => None
+    }
     val compileName = resDir + "/compile/" + name + ".test"
-    registerTest("[Compile]" + filename, CompileTest) { compileTest(jsName, compileName) }
+    registerTest("[Compile]" + filename, CompileTest) { compileTest(irOpt, compileName) }
 
+    val cfgOpt = irOpt match {
+      case Some(ir) => cfgBuild.cfgBuild(config, ir)
+      case None => None
+    }
     val cfgName = resDir + "/cfg/" + name + ".test"
-    registerTest("[CFG]" + filename, CFGTest) { cfgTest(jsName, cfgName) }
+    registerTest("[CFG]" + filename, CFGTest) { cfgTest(cfgOpt, cfgName) }
   }
 }

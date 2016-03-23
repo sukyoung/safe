@@ -18,8 +18,9 @@ import kr.ac.kaist.safe.errors.StaticError
 import kr.ac.kaist.safe.errors.ErrorLog
 import kr.ac.kaist.safe.nodes._
 import kr.ac.kaist.safe.Config
+import kr.ac.kaist.safe.proc.CFGBuildConfig
 
-class CapturedVariableCollector(ir: IRRoot, config: Config) {
+class CapturedVariableCollector(ir: IRRoot, config: Config, cfgConfig: CFGBuildConfig) {
   /* Error handling
    * The signal function collects errors during the disambiguation phase.
    * To collect multiple errors,
@@ -204,7 +205,7 @@ class CapturedVariableCollector(ir: IRRoot, config: Config) {
       checkStmt(body, locals)
 
     case _ => {
-      if (config.opt_Verbose) Console.err.println("* Warning: following IR statement is ignored: " + stmt)
+      if (config.verbose || cfgConfig.verbose) Console.err.println("* Warning: following IR statement is ignored: " + stmt)
     }
   }
 

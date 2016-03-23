@@ -30,9 +30,9 @@ object Compiler {
   }
 
   def astRewrite(config: Config): (Program, Int, List[StaticError]) = {
-    var program: Program = Parser.fileToAST(config.FileNames)
+    var program: Program = Parser.fileToAST(config.fileNames)
     program = (new Hoister(program).doit).asInstanceOf[Program]
-    val disambiguator = new Disambiguator(program, config)
+    val disambiguator = new Disambiguator(program)
     program = (disambiguator.doit).asInstanceOf[Program]
     var errors: List[StaticError] = disambiguator.getErrors
     val withRewriter: WithRewriter = new WithRewriter(program, false)

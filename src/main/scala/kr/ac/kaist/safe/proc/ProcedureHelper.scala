@@ -9,14 +9,8 @@
  * ****************************************************************************
  */
 
-package kr.ac.kaist.safe.compiler
+package kr.ac.kaist.safe.proc
 
-import kr.ac.kaist.safe.Config
-import kr.ac.kaist.safe.proc.CFGBuildConfig
-import kr.ac.kaist.safe.errors.StaticError
-import kr.ac.kaist.safe.nodes.{ IRRoot, CFG }
-
-// cfg builder
-trait CFGBuilder {
-  def build(ir: IRRoot, config: Config, cfgConfig: CFGBuildConfig): (CFG, List[StaticError])
+trait ProcedureHelper {
+  def create: Procedure
 }

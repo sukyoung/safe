@@ -11,87 +11,54 @@
 
 package kr.ac.kaist.safe
 
-import java.io.File
-import java.io.FileNotFoundException
-import java.io.IOException
-import scala.util.parsing.combinator._
 import kr.ac.kaist.safe.util.{ NodeUtil => NU, AddressManager, DefaultAddressManager, Useful }
+import kr.ac.kaist.safe.proc._
+import scala.util.parsing.combinator._
 
-class Config(
-    val command: String,
-    val opt_OutFileName: String,
-    val opt_Time: Boolean,
-    val opt_unrollingCount: Int,
-    val FileNames: List[String],
-    val opt_Verbose: Boolean,
-    val addrManager: AddressManager
-) {
+////////////////////////////////////////////////////////////////
+// SAFE Command
+////////////////////////////////////////////////////////////////
+
+object Command {
+  val cmdMap: Map[String, Command] = Map(
+    "parse" -> CmdParse,
+    "astRewrite" -> CmdASTRewrite,
+    "compile" -> CmdCompile,
+    "cfgBuild" -> CmdCFGBuild,
+    "help" -> CmdHelp
+  )
+}
+sealed abstract class Command(name: String, val procHelper: ProcedureHelper) {
+  override def toString: String = name
+}
+case object CmdParse extends Command("parse", Parse)
+case object CmdASTRewrite extends Command("astRewrite", ASTRewrite)
+case object CmdCompile extends Command("compile", Compile)
+case object CmdCFGBuild extends Command("cfgBuild", CFGBuild)
+case object CmdHelp extends Command("help", Help)
+
+////////////////////////////////////////////////////////////////
+// SAFE Config
+////////////////////////////////////////////////////////////////
+
+case class Config(
+    var command: Command,
+    var fileNames: List[String] = Nil,
+    var time: Boolean = false,
+    var verbose: Boolean = false,
+    var addrManager: AddressManager = new DefaultAddressManager
+) extends ConfigOption {
+  val prefix: String = ""
+  val optMap: Map[String, OptionKind] = Map(
+    "time" -> BoolOption(() => time = true),
+    "verbose" -> BoolOption(() => verbose = true)
+  )
 }
 
+////////////////////////////////////////////////////////////////
+// Global Value
+////////////////////////////////////////////////////////////////
 object Config {
-  def apply(args: List[String]): Config = {
-    var command: String = "usage"
-    var possibleOptions: List[String] = Nil
-    var opt_OutFileName: String = null
-    var opt_Time: Boolean = false
-    var opt_Verbose: Boolean = false
-    var opt_unrollingCount: Int = 0
-    var FileNames: List[String] = Nil
-
-    val commandMap = Map(
-      "usage" -> Nil,
-      "parse" -> List("verbose", "out", "time"),
-      "unparse" -> List("verbose", "out"),
-      "astRewrite" -> List("verbose", "out"),
-      "compile" -> List("verbose", "out", "time"),
-      "cfg" -> List("verbose", "out", "unroll"),
-      "help" -> Nil
-    )
-
-    val regexCommand = commandMap.keys.foldRight("") { (a: String, b: String) => a + "|" + b }.dropRight(1).r
-
-    object CommandLineArgumentParser extends RegexParsers {
-
-      lazy val cmdParser: Parser[Unit] = phrase(cmd) | phrase(cmdErr)
-      lazy val cmd = (regexCommand) ^^ { (s) => command = s; possibleOptions = commandMap(s) }
-      lazy val cmdErr = "([a-z0-9])+".r ^^ { (s) => Console.err.println("Error: The command '" + s.toString + "' is not available."); System.exit(1) }
-
-      lazy val number = "[0-9]+".r ^^ { _.toInt }
-      lazy val fileName = (".*").r ^^ { (s) => FileNames = s :: FileNames }
-      lazy val verbose = ("-" ~> "verbose") ^^ { (s) => opt_Verbose = true }
-      lazy val out = ("-" ~> "out" <~ "=") ~ (".*").r ^^ { case o ~ fn => opt_OutFileName = fn }
-      lazy val time = ("-" ~> "time") ^^ { (s) => opt_Time = true }
-      lazy val unroll = ("-" ~> "unroll" <~ "=") ~ number ^^ { case s ~ n => opt_unrollingCount = n }
-      lazy val optErr = "-".r ~> ".*".r ^^ { (s) => Console.err.println("Error: The option '" + s.toString + "' is not available for the command '" + command + "'."); System.exit(1) }
-
-      lazy val optionMap = Map(
-        "out" -> out,
-        "time" -> time,
-        "unroll" -> unroll,
-        "filename" -> fileName,
-        "verbose" -> verbose
-      )
-
-      def getArgument(args: List[String]): Unit = {
-        parse(cmdParser, args(0)) getOrElse null
-
-        val optParser = if (!command.equals("usage"))
-          (possibleOptions.foldRight(phrase(optErr)) { (a: String, b: Parser[Unit]) => phrase(optionMap(a)) | b }) | phrase(fileName)
-        else
-          (optionMap.keys.foldRight(phrase(optErr)) { (a: String, b: Parser[Unit]) => phrase(optionMap(a)) | b }) | phrase(fileName)
-        for (optString <- args.tail) parse(optParser, optString)
-      }
-    }
-
-    CommandLineArgumentParser.getArgument(args)
-
-    new Config(command, opt_OutFileName, opt_Time, opt_unrollingCount, FileNames, opt_Verbose, new DefaultAddressManager)
-  }
-
-  ////////////////////////////////////////////////////////////////
-  // Global Value
-  ////////////////////////////////////////////////////////////////
-
   // Maximum length of printable instruction of CFGNode
   val MAX_INST_PRINT_SIZE = 10000
 

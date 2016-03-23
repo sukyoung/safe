@@ -9,14 +9,10 @@
  * ****************************************************************************
  */
 
-package kr.ac.kaist.safe.compiler
+package kr.ac.kaist.safe
 
-import kr.ac.kaist.safe.Config
-import kr.ac.kaist.safe.proc.CFGBuildConfig
-import kr.ac.kaist.safe.errors.StaticError
-import kr.ac.kaist.safe.nodes.{ IRRoot, CFG }
-
-// cfg builder
-trait CFGBuilder {
-  def build(ir: IRRoot, config: Config, cfgConfig: CFGBuildConfig): (CFG, List[StaticError])
+package object proc {
+  // Option regular expression map
+  type Regex = scala.util.matching.Regex
+  type OptRegexMap = Map[String, List[(Regex, Regex, String => Option[Unit])]]
 }

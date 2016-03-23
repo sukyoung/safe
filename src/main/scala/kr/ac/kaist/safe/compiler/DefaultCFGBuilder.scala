@@ -18,6 +18,7 @@ import kr.ac.kaist.safe.Config
 import kr.ac.kaist.safe.errors.{ ErrorLog, StaticError, UserError }
 import kr.ac.kaist.safe.nodes._
 import kr.ac.kaist.safe.nodes.EdgeType._
+import kr.ac.kaist.safe.proc.CFGBuildConfig
 import kr.ac.kaist.safe.util.{ NodeUtil => NU, IRFactory => IF, CapturedVariableCollector, AddressManager }
 
 // default CFG builder
@@ -35,6 +36,9 @@ object DefaultCFGBuilder extends CFGBuilder {
   // config
   private var config: Config = _
 
+  // cfg config
+  private var cfgConfig: CFGBuildConfig = _
+
   // captured variable set
   private var captured: Set[String] = _
 
@@ -51,11 +55,12 @@ object DefaultCFGBuilder extends CFGBuilder {
   private var currentFunc: CFGFunction = _
 
   // reset global values
-  private def resetValues(ir: IRRoot, conf: Config): (List[CFGId], CFGFunction) = {
+  private def resetValues(ir: IRRoot, conf: Config, cfgConf: CFGBuildConfig): (List[CFGId], CFGFunction) = {
     errLog.errors = Nil
     catchVarMap.clear
     config = conf
-    captured = new CapturedVariableCollector(ir, config).collect
+    cfgConfig = cfgConf
+    captured = new CapturedVariableCollector(ir, config, cfgConfig).collect
     cfgIdMap.clear
     uniqueNameCounter = 0
 
@@ -94,10 +99,10 @@ object DefaultCFGBuilder extends CFGBuilder {
   ////////////////////////////////////////////////////////////////
 
   /* root rule : IRRoot -> CFG  */
-  def build(ir: IRRoot, config: Config): (CFG, List[StaticError]) = {
+  def build(ir: IRRoot, config: Config, cfgConfig: CFGBuildConfig): (CFG, List[StaticError]) = {
     ir match {
       case IRRoot(_, fds, _, stmts) =>
-        val (globalVars, globalFunc) = resetValues(ir, config)
+        val (globalVars, globalFunc) = resetValues(ir, config, cfgConfig)
         val startBlock: Block = globalFunc.createBlock
         cfg.addEdge(globalFunc.entry, startBlock)
 
@@ -525,7 +530,7 @@ object DefaultCFGBuilder extends CFGBuilder {
         }
 
         val unrollingCount =
-          if (bForin) config.opt_unrollingCount else 0
+          if (bForin) cfgConfig.unroll else 0
 
         if (unrollingCount == 0) {
           /* tail block */
@@ -610,7 +615,7 @@ object DefaultCFGBuilder extends CFGBuilder {
           (List(lastOutBlock), updatedlmap)
         }
       case _ => {
-        if (config.opt_Verbose) Console.err.println("* Warning: following IR statement is ignored: " + stmt)
+        if (config.verbose || cfgConfig.verbose) Console.err.println("* Warning: following IR statement is ignored: " + stmt)
         (blocks, lmap)
       }
     }
