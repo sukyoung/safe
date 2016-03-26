@@ -9,12 +9,12 @@
  * ****************************************************************************
  */
 
-package kr.ac.kaist.safe.proc
+package kr.ac.kaist.safe.phase
 
-import kr.ac.kaist.safe.Config
+import kr.ac.kaist.safe.config.{ Config, ConfigOption }
 
-abstract class Procedure(
-    mayPrev: Option[Procedure],
+abstract class Phase(
+    mayPrev: Option[Phase],
     mayConfig: Option[ConfigOption]
 ) {
   def apply(config: Config): Unit = ()
@@ -22,4 +22,8 @@ abstract class Procedure(
     case Some(config) => config.getOptMap
     case None => Some(Map())
   }
+}
+
+trait PhaseHelper {
+  def create: Phase
 }

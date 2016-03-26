@@ -9,8 +9,10 @@
  * ****************************************************************************
  */
 
-package kr.ac.kaist.safe.proc
+package kr.ac.kaist.safe
 
-trait ProcedureHelper {
-  def create: Procedure
+package object phase {
+  // Option regular expression map
+  type Regex = scala.util.matching.Regex
+  type OptRegexMap = Map[String, List[(Regex, Regex, String => Option[Unit])]]
 }

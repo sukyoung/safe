@@ -20,7 +20,8 @@ import scala.io.Source
 
 import kr.ac.kaist.safe.util.{ JSAstToConcrete, JSIRUnparser }
 import kr.ac.kaist.safe.nodes.{ Program, IRRoot, CFG }
-import kr.ac.kaist.safe.proc.CFGBuild
+import kr.ac.kaist.safe.phase.CFGBuild
+import kr.ac.kaist.safe.config.{ Config, ArgParse }
 
 object ParseTest extends Tag("ParseTest")
 object ASTRewriteTest extends Tag("ASTRewriteTest")
@@ -76,8 +77,8 @@ class CoreTest extends FlatSpec {
     val name = filename.substring(0, filename.length - 3)
     val jsName = jsDir + SEP + filename
 
-    val (config, proc) = ArgParse(List("cfgBuild", jsName)).get
-    val cfgBuild = proc.asInstanceOf[CFGBuild]
+    val (config, phase) = ArgParse(List("cfgBuild", jsName)).get
+    val cfgBuild = phase.asInstanceOf[CFGBuild]
     val compile = cfgBuild.prev
     val astRewrite = compile.prev
     val parse = astRewrite.prev

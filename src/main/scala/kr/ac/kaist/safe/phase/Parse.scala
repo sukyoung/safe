@@ -9,18 +9,18 @@
  * ****************************************************************************
  */
 
-package kr.ac.kaist.safe.proc
+package kr.ac.kaist.safe.phase
 
 import java.io.FileNotFoundException
 
-import kr.ac.kaist.safe.Config
+import kr.ac.kaist.safe.config.{ Config, ConfigOption, OptionKind, BoolOption, StrOption }
 import kr.ac.kaist.safe.compiler.Parser
 import kr.ac.kaist.safe.nodes.Program
 
-// Parse procedure struct.
+// Parse phase struct.
 case class Parse(
     parseConfig: ParseConfig = ParseConfig()
-) extends Procedure(None, Some(parseConfig)) {
+) extends Phase(None, Some(parseConfig)) {
   override def apply(config: Config): Unit = parse(config)
   def parse(config: Config): Option[Program] = {
     config.fileNames match {
@@ -41,12 +41,12 @@ case class Parse(
   }
 }
 
-// Parse procedure helper.
-object Parse extends ProcedureHelper {
+// Parse phase helper.
+object Parse extends PhaseHelper {
   def create: Parse = Parse(ParseConfig())
 }
 
-// Config options for Parse procedure.
+// Config options for Parse phase.
 case class ParseConfig(
     var verbose: Boolean = false,
     var outFile: Option[String] = None

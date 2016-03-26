@@ -9,17 +9,17 @@
  * ****************************************************************************
  */
 
-package kr.ac.kaist.safe.proc
+package kr.ac.kaist.safe.phase
 
-import kr.ac.kaist.safe.Config
+import kr.ac.kaist.safe.config.Config
 
-// Help procedure struct.
-case class Help() extends Procedure(None, None) {
+// Help phase struct.
+case class Help() extends Phase(None, None) {
   override def apply(config: Config): Unit = Help.printHelpMessage
 }
 
-// Help procedure helper.
-object Help extends ProcedureHelper {
+// Help phase helper.
+object Help extends PhaseHelper {
   def create: Help = Help()
 
   // TODO auto gen

@@ -14,11 +14,10 @@ package kr.ac.kaist.safe.util
 import scala.collection.mutable.{ Set => MSet }
 import scala.collection.mutable.{ HashSet => MHashSet }
 import scala.collection.immutable.HashSet
-import kr.ac.kaist.safe.errors.StaticError
-import kr.ac.kaist.safe.errors.ErrorLog
+import kr.ac.kaist.safe.errors.{ StaticError, ErrorLog }
 import kr.ac.kaist.safe.nodes._
-import kr.ac.kaist.safe.Config
-import kr.ac.kaist.safe.proc.CFGBuildConfig
+import kr.ac.kaist.safe.config.Config
+import kr.ac.kaist.safe.phase.CFGBuildConfig
 
 class CapturedVariableCollector(ir: IRRoot, config: Config, cfgConfig: CFGBuildConfig) {
   /* Error handling

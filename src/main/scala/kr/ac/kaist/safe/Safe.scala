@@ -11,21 +11,22 @@
 
 package kr.ac.kaist.safe
 
-import kr.ac.kaist.safe.proc.Help
+import kr.ac.kaist.safe.phase.Help
+import kr.ac.kaist.safe.config.ArgParse
 
 object Safe {
   ////////////////////////////////////////////////////////////////////////////////
   // Main entry point
   ////////////////////////////////////////////////////////////////////////////////
   def main(tokens: Array[String]): Unit = {
-    // Get config and corresponding procedure from shell parameters.
+    // Get config and corresponding phase from shell parameters.
     ArgParse(tokens.toList) match {
-      case Some((config, proc)) =>
+      case Some((config, phase)) =>
         // Set the start time.
         val startTime = System.currentTimeMillis
 
-        // Execute procedure
-        proc(config)
+        // Execute phase
+        phase(config)
 
         // Print duration time if time option is switch on.
         if (config.time) {

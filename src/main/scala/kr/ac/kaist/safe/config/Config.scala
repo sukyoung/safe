@@ -9,37 +9,9 @@
  * ****************************************************************************
  */
 
-package kr.ac.kaist.safe
+package kr.ac.kaist.safe.config
 
 import kr.ac.kaist.safe.util.{ NodeUtil => NU, AddressManager, DefaultAddressManager, Useful }
-import kr.ac.kaist.safe.proc._
-import scala.util.parsing.combinator._
-
-////////////////////////////////////////////////////////////////
-// SAFE Command
-////////////////////////////////////////////////////////////////
-
-object Command {
-  val cmdMap: Map[String, Command] = Map(
-    "parse" -> CmdParse,
-    "astRewrite" -> CmdASTRewrite,
-    "compile" -> CmdCompile,
-    "cfgBuild" -> CmdCFGBuild,
-    "help" -> CmdHelp
-  )
-}
-sealed abstract class Command(name: String, val procHelper: ProcedureHelper) {
-  override def toString: String = name
-}
-case object CmdParse extends Command("parse", Parse)
-case object CmdASTRewrite extends Command("astRewrite", ASTRewrite)
-case object CmdCompile extends Command("compile", Compile)
-case object CmdCFGBuild extends Command("cfgBuild", CFGBuild)
-case object CmdHelp extends Command("help", Help)
-
-////////////////////////////////////////////////////////////////
-// SAFE Config
-////////////////////////////////////////////////////////////////
 
 case class Config(
     var command: Command,
@@ -55,9 +27,6 @@ case class Config(
   )
 }
 
-////////////////////////////////////////////////////////////////
-// Global Value
-////////////////////////////////////////////////////////////////
 object Config {
   // Maximum length of printable instruction of CFGNode
   val MAX_INST_PRINT_SIZE = 10000

@@ -11,8 +11,8 @@
 
 package kr.ac.kaist.safe.compiler
 
-import kr.ac.kaist.safe.Config
-import kr.ac.kaist.safe.proc.CFGBuildConfig
+import kr.ac.kaist.safe.config.Config
+import kr.ac.kaist.safe.phase.CFGBuildConfig
 import kr.ac.kaist.safe.errors.StaticError
 import kr.ac.kaist.safe.nodes.{ IRRoot, CFG }
 

@@ -15,7 +15,7 @@ import kr.ac.kaist.safe.errors.ErrorLog
 import kr.ac.kaist.safe.errors.StaticError
 import kr.ac.kaist.safe.nodes._
 import kr.ac.kaist.safe.util.{ NodeUtil => NU, Span }
-import kr.ac.kaist.safe.Config
+import kr.ac.kaist.safe.config.Config
 
 /**
  * Eliminates ambiguities in an AST that can be resolved solely by knowing what

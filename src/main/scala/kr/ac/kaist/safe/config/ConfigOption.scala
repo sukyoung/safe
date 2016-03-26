@@ -9,7 +9,9 @@
  * ****************************************************************************
  */
 
-package kr.ac.kaist.safe.proc
+package kr.ac.kaist.safe.config
+
+import kr.ac.kaist.safe.phase.OptRegexMap
 
 sealed abstract class OptionKind
 case class BoolOption(assign: () => Unit) extends OptionKind

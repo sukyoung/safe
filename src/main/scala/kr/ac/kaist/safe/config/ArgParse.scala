@@ -9,18 +9,18 @@
  * ****************************************************************************
  */
 
-package kr.ac.kaist.safe
+package kr.ac.kaist.safe.config
 
-import kr.ac.kaist.safe.proc.{ Procedure }
+import kr.ac.kaist.safe.phase.Phase
 import scala.util.parsing.combinator._
 
 object ArgParse {
-  def apply(args: List[String]): Option[(Config, Procedure)] = args match {
+  def apply(args: List[String]): Option[(Config, Phase)] = args match {
     case str :: args => Command.cmdMap.get(str) match {
       case Some(cmd) =>
         val config = Config(cmd)
-        val proc = cmd.procHelper.create
-        ArgParser(config, proc, args)
+        val phase = cmd.phaseHelper.create
+        ArgParser(config, phase, args)
       case None => noCmdError(str)
     }
     case _ => noInputError
@@ -28,8 +28,8 @@ object ArgParse {
 
   // Argument parser by using Scala RegexParsers.
   private object ArgParser extends RegexParsers {
-    def apply(config: Config, proc: Procedure, args: List[String]): Option[(Config, Procedure)] = {
-      (config.getOptMap, proc.getOptMap) match {
+    def apply(config: Config, phase: Phase, args: List[String]): Option[(Config, Phase)] = {
+      (config.getOptMap, phase.getOptMap) match {
         case (Some(c), Some(p)) if (c.keySet intersect p.keySet).isEmpty =>
           val success = Some(())
           val cmd = config.command
@@ -63,7 +63,7 @@ object ArgParse {
               case Some(_) => parse(parser, arg).get
               case None => None
             }
-          }.map(_ => (config, proc))
+          }.map(_ => (config, phase))
         case _ => optConflictError
       }
     }

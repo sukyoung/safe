@@ -14,11 +14,11 @@ package kr.ac.kaist.safe.compiler
 import scala.collection.immutable.{ HashMap, HashSet }
 import scala.collection.mutable.{ Map => MMap, HashMap => MHashMap, Set => MSet, HashSet => MHashSet }
 
-import kr.ac.kaist.safe.Config
+import kr.ac.kaist.safe.config.Config
 import kr.ac.kaist.safe.errors.{ ErrorLog, StaticError, UserError }
 import kr.ac.kaist.safe.nodes._
 import kr.ac.kaist.safe.nodes.EdgeType._
-import kr.ac.kaist.safe.proc.CFGBuildConfig
+import kr.ac.kaist.safe.phase.CFGBuildConfig
 import kr.ac.kaist.safe.util.{ NodeUtil => NU, IRFactory => IF, CapturedVariableCollector, AddressManager }
 
 // default CFG builder

@@ -11,7 +11,7 @@
 
 package kr.ac.kaist.safe.compiler
 
-import kr.ac.kaist.safe.Config
+import kr.ac.kaist.safe.config.Config
 import kr.ac.kaist.safe.errors.{ StaticError, StaticErrors }
 import kr.ac.kaist.safe.nodes.{ IRRoot, Program }
 import kr.ac.kaist.safe.util.NodeUtil

@@ -9,21 +9,21 @@
  * ****************************************************************************
  */
 
-package kr.ac.kaist.safe.proc
+package kr.ac.kaist.safe.phase
 
 import java.io.{ BufferedWriter, FileWriter, IOException }
 
-import kr.ac.kaist.safe.Config
+import kr.ac.kaist.safe.config.{ Config, ConfigOption, OptionKind, BoolOption, StrOption }
 import kr.ac.kaist.safe.compiler.{ Hoister, Disambiguator, WithRewriter }
 import kr.ac.kaist.safe.errors.{ StaticError, StaticErrors }
 import kr.ac.kaist.safe.nodes.Program
 import kr.ac.kaist.safe.util.{ JSAstToConcrete, NodeUtil, Useful }
 
-// ASTRewrite procedure struct.
+// ASTRewrite phase struct.
 case class ASTRewrite(
     prev: Parse = Parse(),
     astRewriteConfig: ASTRewriteConfig = ASTRewriteConfig()
-) extends Procedure(Some(prev), Some(astRewriteConfig)) {
+) extends Phase(Some(prev), Some(astRewriteConfig)) {
   override def apply(config: Config): Unit = rewrite(config)
   def rewrite(config: Config): Option[Program] = {
     prev.parse(config) match {
@@ -65,12 +65,12 @@ case class ASTRewrite(
   }
 }
 
-// ASTRewrite procedure helper.
-object ASTRewrite extends ProcedureHelper {
+// ASTRewrite phase helper.
+object ASTRewrite extends PhaseHelper {
   def create: ASTRewrite = ASTRewrite()
 }
 
-// Config options for ASTRewrite procedure.
+// Config options for ASTRewrite phase.
 case class ASTRewriteConfig(
     var verbose: Boolean = false,
     var outFile: Option[String] = None

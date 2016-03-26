@@ -13,7 +13,7 @@ package kr.ac.kaist.safe.nodes
 
 import scala.collection.mutable.{ Map => MMap, HashMap => MHashMap }
 import kr.ac.kaist.safe.nodes.EdgeType._
-import kr.ac.kaist.safe.Config.MAX_INST_PRINT_SIZE
+import kr.ac.kaist.safe.config.Config
 
 // cfg node
 sealed abstract class CFGNode {
@@ -88,7 +88,7 @@ case class Block(func: CFGFunction) extends CFGNode {
       case Some(AfterCall(retVar, _)) => s"    [EDGE] after-call($retVar)\n"
       case None => ""
     })
-    insts.length > MAX_INST_PRINT_SIZE match {
+    insts.length > Config.MAX_INST_PRINT_SIZE match {
       case true => str + "    A LOT!!! " + insts.length + " instructions are not printed here.\n\n"
       case false =>
         insts.reverseIterator.foldLeft(str) {

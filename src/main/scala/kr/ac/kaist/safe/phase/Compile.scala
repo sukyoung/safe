@@ -9,21 +9,21 @@
  * ****************************************************************************
  */
 
-package kr.ac.kaist.safe.proc
+package kr.ac.kaist.safe.phase
 
 import java.io.{ BufferedWriter, FileWriter, IOException }
 
-import kr.ac.kaist.safe.Config
+import kr.ac.kaist.safe.config.{ Config, ConfigOption, OptionKind, BoolOption, StrOption }
 import kr.ac.kaist.safe.errors.{ StaticError, StaticErrors }
 import kr.ac.kaist.safe.compiler.Translator
 import kr.ac.kaist.safe.nodes.{ Program, IRRoot }
 import kr.ac.kaist.safe.util.{ JSIRUnparser, NodeUtil, Useful }
 
-// Compile procedure struct.
+// Compile phase struct.
 case class Compile(
     prev: ASTRewrite = ASTRewrite(),
     compileConfig: CompileConfig = CompileConfig()
-) extends Procedure(Some(prev), Some(compileConfig)) {
+) extends Phase(Some(prev), Some(compileConfig)) {
   override def apply(config: Config): Unit = compile(config)
   def compile(config: Config): Option[IRRoot] = {
     prev.rewrite(config) match {
@@ -63,12 +63,12 @@ case class Compile(
   }
 }
 
-// Compile procedure helper.
-object Compile extends ProcedureHelper {
+// Compile phase helper.
+object Compile extends PhaseHelper {
   def create: Compile = Compile()
 }
 
-// Config options for Compile procedure.
+// Config options for Compile phase.
 case class CompileConfig(
     var verbose: Boolean = false,
     var outFile: Option[String] = None

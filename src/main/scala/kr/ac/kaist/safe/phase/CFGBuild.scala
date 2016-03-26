@@ -9,21 +9,21 @@
  * ****************************************************************************
  */
 
-package kr.ac.kaist.safe.proc
+package kr.ac.kaist.safe.phase
 
 import java.io.{ BufferedWriter, FileWriter, IOException }
 
-import kr.ac.kaist.safe.Config
+import kr.ac.kaist.safe.config.{ Config, ConfigOption, OptionKind, BoolOption, NumOption, StrOption }
 import kr.ac.kaist.safe.errors.{ StaticError, StaticErrors }
 import kr.ac.kaist.safe.compiler.DefaultCFGBuilder
 import kr.ac.kaist.safe.nodes.{ IRRoot, CFG }
 import kr.ac.kaist.safe.util.{ NodeUtil, Useful }
 
-// CFGBuild procedure struct.
+// CFGBuild phase struct.
 case class CFGBuild(
     prev: Compile = Compile(),
     cfgBuildConfig: CFGBuildConfig = CFGBuildConfig()
-) extends Procedure(Some(prev), Some(cfgBuildConfig)) {
+) extends Phase(Some(prev), Some(cfgBuildConfig)) {
   override def apply(config: Config): Unit = cfgBuild(config)
   def cfgBuild(config: Config): Option[CFG] = {
     prev.compile(config) match {
@@ -61,12 +61,12 @@ case class CFGBuild(
   }
 }
 
-// CFGBuild procedure helper.
-object CFGBuild extends ProcedureHelper {
+// CFGBuild phase helper.
+object CFGBuild extends PhaseHelper {
   def create: CFGBuild = CFGBuild()
 }
 
-// Config options for CFGBuild procedure.
+// Config options for CFGBuild phase.
 case class CFGBuildConfig(
     var verbose: Boolean = false,
     var outFile: Option[String] = None,
@@ -76,6 +76,6 @@ case class CFGBuildConfig(
   val optMap: Map[String, OptionKind] = Map(
     "verbose" -> BoolOption(() => verbose = true),
     "out" -> StrOption((s: String) => outFile = Some(s)),
-    "unroll" -> StrOption((s: String) => outFile = Some(s))
+    "unroll" -> NumOption((n: Int) => unroll = n)
   )
 }
