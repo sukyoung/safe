@@ -19,7 +19,7 @@ import kr.ac.kaist.safe.errors.{ ErrorLog, StaticError, UserError }
 import kr.ac.kaist.safe.nodes._
 import kr.ac.kaist.safe.nodes.EdgeType._
 import kr.ac.kaist.safe.proc.CFGBuildConfig
-import kr.ac.kaist.safe.util.{ NodeUtil => NU, IRFactory => IF, CapturedVariableCollector, AddressManager }
+import kr.ac.kaist.safe.util.{ NodeUtil => NU, CapturedVariableCollector, AddressManager }
 
 // default CFG builder
 object DefaultCFGBuilder extends CFGBuilder {
@@ -164,7 +164,7 @@ object DefaultCFGBuilder extends CFGBuilder {
       val argumentsName: String = id2cfgId(params(1)).toString
       val nameStr: String = name.originalName
       val info: Info = stmt.info
-      val bodyStr: String = IF.getBody(info.ast)
+      val bodyStr: String = NU.getBody(info.ast)
 
       val newFunc: CFGFunction = cfg.createFunction(argumentsName, argVars, localVars, nameStr, info, bodyStr, true)
       val oldFunc: CFGFunction = currentFunc
@@ -472,7 +472,7 @@ object DefaultCFGBuilder extends CFGBuilder {
           case IRBin(_, first, op, second) if NU.isAssertOperator(op) =>
             falseBlock.createInst(CFGAssert(_, condInfo, CFGBin(condInfo, ir2cfgExpr(first), NU.transIROp(op), ir2cfgExpr(second)), false))
           case _ =>
-            falseBlock.createInst(CFGAssert(_, condInfo, CFGUn(condInfo, IF.makeOp("!"), ir2cfgExpr(cond)), false))
+            falseBlock.createInst(CFGAssert(_, condInfo, CFGUn(condInfo, NU.makeIROp("!"), ir2cfgExpr(cond)), false))
         }
 
         /* true body */
@@ -548,7 +548,7 @@ object DefaultCFGBuilder extends CFGBuilder {
             case IRBin(_, first, op, second) if NU.isAssertOperator(op) =>
               loopOutBlock.createInst(CFGAssert(_, condInfo, CFGBin(condInfo, ir2cfgExpr(first), NU.transIROp(op), ir2cfgExpr(second)), false))
             case _ =>
-              loopOutBlock.createInst(CFGAssert(_, condInfo, CFGUn(condInfo, IF.makeOp("!"), ir2cfgExpr(cond)), false))
+              loopOutBlock.createInst(CFGAssert(_, condInfo, CFGUn(condInfo, NU.makeIROp("!"), ir2cfgExpr(cond)), false))
           }
           /* add edge from tail to loop head */
           cfg.addEdge(tailBlock, headBlock)
@@ -574,7 +574,7 @@ object DefaultCFGBuilder extends CFGBuilder {
               case IRBin(_, first, op, second) if NU.isAssertOperator(op) =>
                 falseBlock.createInst(CFGAssert(_, condInfo, CFGBin(condInfo, ir2cfgExpr(first), NU.transIROp(op), ir2cfgExpr(second)), false))
               case _ =>
-                falseBlock.createInst(CFGAssert(_, condInfo, CFGUn(condInfo, IF.makeOp("!"), ir2cfgExpr(cond)), false))
+                falseBlock.createInst(CFGAssert(_, condInfo, CFGUn(condInfo, NU.makeIROp("!"), ir2cfgExpr(cond)), false))
             }
 
             /* build loop body */

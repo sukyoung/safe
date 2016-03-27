@@ -12,7 +12,6 @@
 package kr.ac.kaist.safe.util
 
 import kr.ac.kaist.safe.nodes._
-import kr.ac.kaist.safe.util.{ IRFactory => IF }
 import java.io.BufferedWriter
 import java.io.IOException
 import java.lang.{ Double => JDouble }
@@ -23,8 +22,102 @@ import scala.collection.immutable.HashMap
 
 object NodeUtil {
   ////////////////////////////////////////////////////////////////
+  // For all AST, IR, and CFG
+  ////////////////////////////////////////////////////////////////
+
+  val significantBits = 13
+
+  // Spans ///////////////////////////////////////////////////////
+  def makeSpan(start: Span, finish: Span): Span =
+    new Span(start.begin, finish.end)
+
+  def makeSpan(file: String, startLine: Int, endLine: Int, startC: Int, endC: Int, startOffset: Int, endOffset: Int): Span =
+    new Span(
+      new SourceLoc(file, startLine, startC, startOffset),
+      new SourceLoc(file, endLine, endC, endOffset)
+    )
+
+  def makeSpan(villain: String): Span = {
+    val sl = new SourceLoc(villain, 0, 0, 0)
+    new Span(sl, sl)
+  }
+
+  /**
+   * In some situations, a begin-to-end span is not really right, and something
+   * more like a set of spans ought to be used.  Even though this is not yet
+   * implemented, the name is provided to allow expression of intent.
+   */
+  def getSpan(n: ASTNode): Span = n.info.span
+  def getSpan(n: ASTNodeInfo): Span = n.span
+  def getFileName(n: ASTNode): String = getSpan(n).fileName
+  def getBegin(n: ASTNode): SourceLoc = getSpan(n).begin
+  def getEnd(n: ASTNode): SourceLoc = getSpan(n).end
+  def getLine(n: ASTNode): Int = getSpan(n).begin.line
+  def getOffset(n: ASTNode): Int = getSpan(n).begin.offset
+
+  def spanAll(span1: Span, span2: Span): Span =
+    new Span(span1.begin, span2.end)
+
+  // Names ///////////////////////////////////////////////////////
+  // unique name generation
+  var uid = 0
+  def getUId: Int = { uid += 1; uid }
+  def freshName(n: String): String =
+    internalSymbol + n + internalSymbol + "%013d".format(getUId)
+  // unique name generation for global names
+  def freshGlobalName(n: String): String = globalPrefix + n
+  def funexprName(span: Span): String = freshName("funexpr@" + span.toStringWithoutFiles)
+
+  def isInternal(s: String): Boolean = s.containsSlice(internalSymbol)
+  def isGlobalName(s: String): Boolean = s.startsWith(globalPrefix)
+  def isFunExprName(name: String): Boolean = name.containsSlice("<>funexpr")
+
+  val internalSymbol = "<>"
+  val internalPrint = "_<>_print"
+  val internalPrintIS = "_<>_printIS"
+  val internalGetTickCount = "_<>_getTickCount"
+  val globalPrefix = "<>Global<>"
+  val generatedString = "<>generated String Literal"
+  val varTrue = freshGlobalName("true")
+  val varOne = freshGlobalName("one")
+  val toObjectName = freshGlobalName("toObject")
+  val ignoreName = freshGlobalName("ignore")
+  val globalName = freshGlobalName("global")
+  val referenceErrorName = freshGlobalName("referenceError")
+
+  // Defaults ////////////////////////////////////////////////////
+  // dummy file name for source location information
+  def freshFile(f: String): String = internalSymbol + f
+  // For use only when there is no hope of attaching a true span.
+  def defaultSpan(villain: String): Span =
+    if (villain.length != 0) makeSpan(villain) else defaultSpan
+  def defaultSpan: Span = makeSpan("defaultSpan")
+
+  ////////////////////////////////////////////////////////////////
   // AST
   ////////////////////////////////////////////////////////////////
+
+  // For use only when there is no hope of attaching a true span.
+  val defaultAst = makeNoOp(makeASTNodeInfo(defaultSpan("defaultAST")), "defaultAST")
+
+  def getBody(ast: ASTNode): String = ast match {
+    case FunExpr(_, Functional(_, _, _, _, _, _, bodyS)) => bodyS
+    case FunDecl(_, Functional(_, _, _, _, _, _, bodyS), _) => bodyS
+    case GetProp(_, _, Functional(_, _, _, _, _, _, bodyS)) => bodyS
+    case SetProp(_, _, Functional(_, _, _, _, _, _, bodyS)) => bodyS
+    case _ => "Not a function body"
+  }
+
+  def isName(lhs: LHS): Boolean = lhs match {
+    case _: VarRef => true
+    case _: Dot => true
+    case _ => false
+  }
+
+  def isEval(n: Expr): Boolean = n match {
+    case VarRef(info, Id(_, text, _, _)) => text.equals("eval")
+    case _ => false
+  }
 
   def makeASTNodeInfo(span: Span): ASTNodeInfo =
     if (getKeepComments && comment.isDefined) {
@@ -94,131 +187,6 @@ object NodeUtil {
   def unwrapParen(expr: Expr): Expr = expr match {
     case Parenthesized(info, body) => body
     case _ => expr
-  }
-
-  private var keepComments = false
-  def setKeepComments(flag: Boolean): Unit = { keepComments = flag }
-  def getKeepComments: Boolean = keepComments
-
-  private var comment: Option[Comment] = None
-  def initComment: Unit = { comment = None }
-  def commentLog(span: Span, message: String): Unit =
-    if (getKeepComments) {
-      if (!comment.isDefined ||
-        (!comment.get.txt.startsWith("/*") && !comment.get.txt.startsWith("//")))
-        comment = Some[Comment](new Comment(makeASTNodeInfo(span), message))
-      else {
-        val com = comment.get
-        if (!com.txt.equals(message))
-          comment = Some[Comment](new Comment(
-            makeASTNodeInfo(spanAll(com.info.span, span)),
-            com.txt + "\n" + message
-          ))
-      }
-    }
-
-  val internalSymbol = "<>"
-  val internalPrint = "_<>_print"
-  val internalPrintIS = "_<>_printIS"
-  val internalGetTickCount = "_<>_getTickCount"
-  val globalPrefix = "<>Global<>"
-  val generatedString = "<>generated String Literal"
-  // dummy file name for source location information
-  def freshFile(f: String): String = internalSymbol + f
-  // unique name generation for global names
-  def freshGlobalName(n: String): String = globalPrefix + n
-  val varTrue = freshGlobalName("true")
-  val varOne = freshGlobalName("one")
-  def funexprName(span: Span): String = freshName("funexpr@" + span.toStringWithoutFiles)
-  val significantBits = 13
-  // unique name generation
-  var uid = 0
-  def getUId: Int = { uid += 1; uid }
-  def freshName(n: String): String =
-    internalSymbol + n + internalSymbol + "%013d".format(getUId)
-  def isInternal(s: String): Boolean = s.containsSlice(internalSymbol)
-  def isGlobalName(s: String): Boolean = s.startsWith(globalPrefix)
-  def isFunExprName(name: String): Boolean = name.containsSlice("<>funexpr")
-  def isName(lhs: LHS): Boolean = lhs match {
-    case _: VarRef => true
-    case _: Dot => true
-    case _ => false
-  }
-  def isEval(n: Expr): Boolean = n match {
-    case VarRef(info, Id(_, text, _, _)) => text.equals("eval")
-    case _ => false
-  }
-
-  val toObjectName = freshGlobalName("toObject")
-  val ignoreName = freshGlobalName("ignore")
-
-  def makeSpan(start: Span, finish: Span): Span =
-    new Span(start.begin, finish.end)
-
-  def makeSpan(file: String, startLine: Int, endLine: Int, startC: Int, endC: Int, startOffset: Int, endOffset: Int): Span =
-    new Span(
-      new SourceLoc(file, startLine, startC, startOffset),
-      new SourceLoc(file, endLine, endC, endOffset)
-    )
-
-  def makeSpan(villain: String): Span = {
-    val sl = new SourceLoc(villain, 0, 0, 0)
-    new Span(sl, sl)
-  }
-
-  /**
-   * In some situations, a begin-to-end span is not really right, and something
-   * more like a set of spans ought to be used.  Even though this is not yet
-   * implemented, the name is provided to allow expression of intent.
-   */
-  def getSpan(n: ASTNode): Span = n.info.span
-  def getFileName(n: ASTNode): String = getSpan(n).fileName
-  def getBegin(n: ASTNode): SourceLoc = getSpan(n).begin
-  def getEnd(n: ASTNode): SourceLoc = getSpan(n).end
-  def getLine(n: ASTNode): Int = getSpan(n).begin.line
-  def getOffset(n: ASTNode): Int = getSpan(n).begin.offset
-
-  def spanInfoAll(nodes: List[ASTNode]): ASTNodeInfo = new ASTNodeInfo(spanAll(nodes))
-
-  def spanAll(nodes: List[ASTNode], span: Span): Span = nodes match {
-    case Nil => span
-    case _ => spanAll(nodes)
-  }
-
-  def spanAll(span1: Span, span2: Span): Span =
-    new Span(span1.begin, span2.end)
-
-  def spanAll(nodes: List[ASTNode]): Span = nodes match {
-    case Nil => sys.error("Cannot make a span from an empty list of nodes.")
-    case hd :: _ =>
-      new Span(getSpan(hd).begin, getSpan(nodes.last).end)
-  }
-
-  def span(n: ASTNode): Span = n.info.span
-
-  def adjustCallSpan(finish: Span, expr: LHS): Span = expr match {
-    case Parenthesized(info, body) => new Span(span(body).begin, finish.end)
-    case _ => finish
-  }
-
-  def log(writer: BufferedWriter, msg: String): Unit =
-    try {
-      writer.write(msg + "\n")
-    } catch {
-      case e: IOException =>
-        sys.error("Writing to a log file for the parser failed!")
-    }
-
-  // merge the statements in each SourceElements
-  // after hoisting
-  def toStmts(sources: List[SourceElements]): List[Stmt] =
-    sources.foldLeft(List[Stmt]())((l, s) => l ++ s.body.asInstanceOf[List[Stmt]])
-
-  def getName(lhs: LHS): String = lhs match {
-    case VarRef(_, id) => id.text
-    case Dot(_, front, id) => getName(front) + "." + id.text
-    case _: This => "this"
-    case _ => ""
   }
 
   def prop2Id(prop: Property): Id = prop match {
@@ -298,6 +266,55 @@ object NodeUtil {
 
   def lineTerminating(c: Char): Boolean =
     List('\u000a', '\u2028', '\u2029', '\u000d').contains(c)
+
+  private var keepComments = false
+  def setKeepComments(flag: Boolean): Unit = { keepComments = flag }
+  def getKeepComments: Boolean = keepComments
+
+  private var comment: Option[Comment] = None
+  def initComment: Unit = { comment = None }
+  def commentLog(span: Span, message: String): Unit =
+    if (getKeepComments) {
+      if (!comment.isDefined ||
+        (!comment.get.txt.startsWith("/*") && !comment.get.txt.startsWith("//")))
+        comment = Some[Comment](new Comment(makeASTNodeInfo(span), message))
+      else {
+        val com = comment.get
+        if (!com.txt.equals(message))
+          comment = Some[Comment](new Comment(
+            makeASTNodeInfo(spanAll(com.info.span, span)),
+            com.txt + "\n" + message
+          ))
+      }
+    }
+
+  def spanInfoAll(nodes: List[ASTNode]): ASTNodeInfo = new ASTNodeInfo(spanAll(nodes))
+
+  def spanAll(nodes: List[ASTNode], span: Span): Span = nodes match {
+    case Nil => span
+    case _ => spanAll(nodes)
+  }
+
+  def spanAll(nodes: List[ASTNode]): Span = nodes match {
+    case Nil => sys.error("Cannot make a span from an empty list of nodes.")
+    case hd :: _ =>
+      new Span(getSpan(hd).begin, getSpan(nodes.last).end)
+  }
+
+  def span(n: ASTNode): Span = n.info.span
+
+  def adjustCallSpan(finish: Span, expr: LHS): Span = expr match {
+    case Parenthesized(info, body) => new Span(span(body).begin, finish.end)
+    case _ => finish
+  }
+
+  def log(writer: BufferedWriter, msg: String): Unit =
+    try {
+      writer.write(msg + "\n")
+    } catch {
+      case e: IOException =>
+        sys.error("Writing to a log file for the parser failed!")
+    }
 
   object addLinesProgram extends ASTWalker {
     var line = 0
@@ -475,28 +492,32 @@ object NodeUtil {
   ////////////////////////////////////////////////////////////////
   // IR
   ////////////////////////////////////////////////////////////////
+
   def getSpan(n: IRNode): Span = n.info.span
+  def getSpan(n: IRNodeInfo): Span = n.span
   def getFileName(n: IRNode): String = n.info.span.fileName
 
-  def isAssertOperator(op: IROp): Boolean = {
-    EJSOp.isEquality(op.kind)
-  }
+  def makeIROp(name: String, kind: Int = 0): IROp =
+    new IROp(new IRNodeInfo(defaultSpan(name), false, defaultAst), name,
+      if (kind == 0) EJSOp.strToEJSOp(name) else kind)
+
+  def isAssertOperator(op: IROp): Boolean = EJSOp.isEquality(op.kind)
 
   // Transposition rules for each relational IR Operator
   def transIROp(op: IROp): IROp = {
     op.kind match {
-      case EJSOp.BIN_COMP_REL_LESS => IF.makeOp(">=") // < --> >=
-      case EJSOp.BIN_COMP_REL_GREATER => IF.makeOp("<=") // > --> <=
-      case EJSOp.BIN_COMP_REL_LESSEQUAL => IF.makeOp(">") // <= --> >
-      case EJSOp.BIN_COMP_REL_GREATEREQUAL => IF.makeOp("<") // >= --> <
-      case EJSOp.BIN_COMP_EQ_EQUAL => IF.makeOp("!=") // == --> !=
-      case EJSOp.BIN_COMP_EQ_NEQUAL => IF.makeOp("==") // != --> ==
-      case EJSOp.BIN_COMP_EQ_SEQUAL => IF.makeOp("!==") // === --> !==
-      case EJSOp.BIN_COMP_EQ_SNEQUAL => IF.makeOp("===") // !== --> ===
-      case EJSOp.BIN_COMP_REL_IN => IF.makeOp("notIn") // in --> notIn
-      case EJSOp.BIN_COMP_REL_INSTANCEOF => IF.makeOp("notInstanceof") // instanceof --> notInstanceof
-      case EJSOp.BIN_COMP_REL_NOTIN => IF.makeOp("in") // notIn --> in
-      case EJSOp.BIN_COMP_REL_NOTINSTANCEOF => IF.makeOp("instanceof") // notInstanceof --> instanceof
+      case EJSOp.BIN_COMP_REL_LESS => makeIROp(">=") // < --> >=
+      case EJSOp.BIN_COMP_REL_GREATER => makeIROp("<=") // > --> <=
+      case EJSOp.BIN_COMP_REL_LESSEQUAL => makeIROp(">") // <= --> >
+      case EJSOp.BIN_COMP_REL_GREATEREQUAL => makeIROp("<") // >= --> <
+      case EJSOp.BIN_COMP_EQ_EQUAL => makeIROp("!=") // == --> !=
+      case EJSOp.BIN_COMP_EQ_NEQUAL => makeIROp("==") // != --> ==
+      case EJSOp.BIN_COMP_EQ_SEQUAL => makeIROp("!==") // === --> !==
+      case EJSOp.BIN_COMP_EQ_SNEQUAL => makeIROp("===") // !== --> ===
+      case EJSOp.BIN_COMP_REL_IN => makeIROp("notIn") // in --> notIn
+      case EJSOp.BIN_COMP_REL_INSTANCEOF => makeIROp("notInstanceof") // instanceof --> notInstanceof
+      case EJSOp.BIN_COMP_REL_NOTIN => makeIROp("in") // notIn --> in
+      case EJSOp.BIN_COMP_REL_NOTINSTANCEOF => makeIROp("instanceof") // notInstanceof --> instanceof
       case _ => op
     }
   }
