@@ -17,7 +17,7 @@ import kr.ac.kaist.safe.Config
 import kr.ac.kaist.safe.errors.{ StaticError, StaticErrors }
 import kr.ac.kaist.safe.compiler.Translator
 import kr.ac.kaist.safe.nodes.{ Program, IRRoot }
-import kr.ac.kaist.safe.util.{ JSIRUnparser, NodeUtil, Useful }
+import kr.ac.kaist.safe.util.{ NodeUtil, Useful }
 
 // Compile procedure struct.
 case class Compile(
@@ -41,7 +41,7 @@ case class Compile(
     StaticErrors.reportErrors(NodeUtil.getFileName(program), errs)
 
     // Pretty print to file.
-    val ircode = new JSIRUnparser(ir).doit
+    val ircode = ir.toString(0)
     compileConfig.outFile match {
       case Some(out) =>
         // TODO delete try-catch.

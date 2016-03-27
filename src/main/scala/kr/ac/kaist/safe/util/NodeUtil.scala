@@ -503,6 +503,20 @@ object NodeUtil {
 
   def isAssertOperator(op: IROp): Boolean = EJSOp.isEquality(op.kind)
 
+  var irPrintId = 0
+  var irPrintIdEnv: List[(String, String)] = Nil
+  def initIRPrint: Unit = {
+    irPrintId = 0
+    irPrintIdEnv = Nil
+  }
+  def getE(uniq: String): String = irPrintIdEnv.find(p => p._1.equals(uniq)) match {
+    case None =>
+      val new_uniq = { irPrintId += 1; irPrintId.toString }
+      irPrintIdEnv = (uniq, new_uniq) :: irPrintIdEnv
+      new_uniq
+    case Some((_, new_uniq)) => new_uniq
+  }
+
   // Transposition rules for each relational IR Operator
   def transIROp(op: IROp): IROp = {
     op.kind match {
