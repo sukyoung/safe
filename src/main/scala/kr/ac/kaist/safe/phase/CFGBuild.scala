@@ -76,6 +76,6 @@ case class CFGBuildConfig(
   val optMap: Map[String, OptionKind] = Map(
     "verbose" -> BoolOption(() => verbose = true),
     "out" -> StrOption((s: String) => outFile = Some(s)),
-    "unroll" -> NumOption((n: Int) => unroll = n)
+    "unroll" -> NumOption((i: Int) => unroll = i)
   )
 }

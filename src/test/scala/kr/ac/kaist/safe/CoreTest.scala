@@ -18,7 +18,7 @@ import java.io.{ File, FilenameFilter }
 
 import scala.io.Source
 
-import kr.ac.kaist.safe.util.{ JSAstToConcrete, JSIRUnparser }
+import kr.ac.kaist.safe.util.{ JSAstToConcrete, NodeUtil }
 import kr.ac.kaist.safe.nodes.{ Program, IRRoot, CFG }
 import kr.ac.kaist.safe.phase.CFGBuild
 import kr.ac.kaist.safe.config.{ Config, ArgParse }
@@ -35,9 +35,12 @@ class CoreTest extends FlatSpec {
   val jsFilter = new FilenameFilter() {
     def accept(dir: File, name: String): Boolean = name.endsWith(".js")
   }
+
+  def normalized(s: String): String = s.replaceAll("\\s+", "").replaceAll("\\n+", "")
+
   def readFile(filename: String): String = {
     assert(new File(filename).exists)
-    Source.fromFile(filename).getLines.mkString("\n")
+    normalized(Source.fromFile(filename).getLines.mkString("\n"))
   }
 
   def parseTest(pgmOpt: Option[Program]): Unit = {
@@ -48,7 +51,7 @@ class CoreTest extends FlatSpec {
       case None => assert(false)
       case Some(program) =>
         val result = readFile(testName)
-        assert(result == (new JSAstToConcrete).doit(program))
+        assert(result == normalized((new JSAstToConcrete).doit(program)))
     }
   }
 
@@ -57,7 +60,7 @@ class CoreTest extends FlatSpec {
       case None => assert(false)
       case Some(ir) =>
         val result = readFile(testName)
-        val dump = new JSIRUnparser(ir).doit
+        val dump = normalized(ir.toString(0))
         assert(result == dump)
     }
   }
@@ -67,7 +70,7 @@ class CoreTest extends FlatSpec {
       case None => assert(false)
       case Some(cfg) =>
         val result = readFile(testName)
-        val dump = cfg.dump
+        val dump = normalized(cfg.dump)
         assert(result == dump)
     }
   }

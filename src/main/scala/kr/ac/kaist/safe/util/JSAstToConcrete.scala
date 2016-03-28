@@ -462,7 +462,8 @@ class JSAstToConcrete extends ASTWalker {
     case Program(info, TopLevel(_, fds, vds, program)) =>
       val s: StringBuilder = new StringBuilder
       prUseStrictDirective(s, fds, vds, program)
-      prFtn(s, fds, vds, NU.toStmts(program))
+      prFtn(s, fds, vds,
+        program.foldLeft(List[Stmt]())((l, s) => l ++ s.body.asInstanceOf[List[Stmt]]))
       s.append(walk(info))
       s.toString
     case PropId(info, id) =>
