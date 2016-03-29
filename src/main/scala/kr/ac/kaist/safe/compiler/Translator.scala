@@ -435,7 +435,7 @@ class Translator(program: Program) extends ASTWalker {
         getLhs(setUID(Bracket(info, obj,
           new StringLiteral(
             NU.makeASTNodeInfo(NU.getSpan(member)),
-            "\"", member.text
+            "\"", member.text, false
           )), dot.getUID))
       case br: Bracket => Some(br)
       case _ => None
@@ -941,7 +941,7 @@ class Translator(program: Program) extends ASTWalker {
             val tmpBracket = setUID(Bracket(sinfo, obj,
               new StringLiteral(
                 NU.makeASTNodeInfo(NU.getSpan(member)),
-                "\"", member.text
+                "\"", member.text, false
               )), dot.getUID)
             val tmpPrefixOpApp = setUID(PrefixOpApp(info, op, tmpBracket), e.getUID)
             walkExpr(tmpPrefixOpApp, env, res)
@@ -1084,7 +1084,7 @@ class Translator(program: Program) extends ASTWalker {
         new IRLoad(trueInfo(e), obj,
           makeString(true, e, NU.unescapeJava(str))))
 
-    case Bracket(info, first, StringLiteral(_, _, str)) =>
+    case Bracket(info, first, StringLiteral(_, _, str, _)) =>
       val objspan = NU.getSpan(first)
       val obj1 = freshId(first, objspan, "obj1")
       val obj = freshId(first, objspan, "obj")
@@ -1182,7 +1182,7 @@ class Translator(program: Program) extends ASTWalker {
             setUID(Bracket(i, obj,
               new StringLiteral(
                 NU.makeASTNodeInfo(NU.getSpan(member)),
-                "\"", member.text
+                "\"", member.text, false
               )), dot.getUID),
             args
           ),
@@ -1268,8 +1268,10 @@ class Translator(program: Program) extends ASTWalker {
     case IntLiteral(info, intVal, radix) =>
       (List(), new IRNumber(trueInfo(e), intVal.toString, intVal.doubleValue))
 
-    case StringLiteral(info, _, str) =>
-      (List(), makeString(true, e, NU.unescapeJava(str)))
+    case StringLiteral(info, _, str, isRE) =>
+      (List(),
+        if (isRE) makeString(true, e, str)
+        else makeString(true, e, NU.unescapeJava(str)))
   }
 
   def prop2ir(prop: Property): IRId = prop match {
@@ -1401,7 +1403,7 @@ class Translator(program: Program) extends ASTWalker {
       walkLval(ast, setUID(Bracket(info, obj,
         new StringLiteral(
           NU.makeASTNodeInfo(NU.getSpan(member)),
-          "\"", member.text
+          "\"", member.text, false
         )), dot.getUID),
         env, stmts, e, keepOld)
     case Bracket(info, first, index) =>

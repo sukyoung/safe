@@ -47,13 +47,7 @@ object Parse extends PhaseHelper {
 }
 
 // Config options for Parse phase.
-case class ParseConfig(
-    var verbose: Boolean = false,
-    var outFile: Option[String] = None
-) extends ConfigOption {
+case class ParseConfig() extends ConfigOption {
   val prefix: String = "parse:"
-  val optMap: Map[String, OptionKind] = Map(
-    "verbose" -> BoolOption(() => verbose = true),
-    "out" -> StrOption((s: String) => outFile = Some(s))
-  )
+  val optMap: Map[String, OptionKind] = Map()
 }

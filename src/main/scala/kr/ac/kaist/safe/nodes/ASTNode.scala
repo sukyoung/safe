@@ -53,12 +53,12 @@ case class StmtUnit(override val info: ASTNodeInfo, stmts: List[Stmt])
 /**
  * SourceElement ::= function Id ( (Id,)* ) { SourceElement* }
  */
-case class FunDecl(override val info: ASTNodeInfo, ftn: Functional, strict: Boolean = false)
+case class FunDecl(override val info: ASTNodeInfo, ftn: Functional, strict: Boolean)
   extends Stmt(info: ASTNodeInfo)
 /**
  * Stmt ::= { Stmt* }
  */
-case class ABlock(override val info: ASTNodeInfo, stmts: List[Stmt], internal: Boolean = false)
+case class ABlock(override val info: ASTNodeInfo, stmts: List[Stmt], internal: Boolean)
   extends Stmt(info: ASTNodeInfo)
 /**
  * Stmt ::= var VarDecl(, VarDecl)* ;
@@ -73,7 +73,7 @@ case class EmptyStmt(override val info: ASTNodeInfo)
 /**
  * Stmt ::= Expr ;
  */
-case class ExprStmt(override val info: ASTNodeInfo, expr: Expr, internal: Boolean = false)
+case class ExprStmt(override val info: ASTNodeInfo, expr: Expr, internal: Boolean)
   extends Stmt(info: ASTNodeInfo)
 /**
  * Stmt ::= if ( Expr ) Stmt (else Stmt)?
@@ -163,7 +163,7 @@ case class SourceElements(override val info: ASTNodeInfo, body: List[SourceEleme
 /**
  * Stmt ::= Id (= Expr)?
  */
-case class VarDecl(override val info: ASTNodeInfo, name: Id, expr: Option[Expr], strict: Boolean = false)
+case class VarDecl(override val info: ASTNodeInfo, name: Id, expr: Option[Expr], strict: Boolean)
   extends ASTNode(info: ASTNodeInfo)
 /**
  * CaseClause ::= case Expr : Stmt*
@@ -253,7 +253,7 @@ case class IntLiteral(override val info: ASTNodeInfo, intVal: BigInteger, radix:
 /**
  * Literal ::= String
  */
-case class StringLiteral(override val info: ASTNodeInfo, quote: String, escaped: String)
+case class StringLiteral(override val info: ASTNodeInfo, quote: String, escaped: String, isRE: Boolean)
   extends Literal(info: ASTNodeInfo)
 /**
  * Literal ::= RegularExpression
@@ -503,8 +503,8 @@ trait ASTWalker {
         SourceElements(walk(info).asInstanceOf[ASTNodeInfo], walk(body).asInstanceOf[List[SourceElement]], walk(isStrict).asInstanceOf[Boolean])
       case StmtUnit(info, stmts) =>
         StmtUnit(walk(info).asInstanceOf[ASTNodeInfo], walk(stmts).asInstanceOf[List[Stmt]])
-      case StringLiteral(info, quote, escaped) =>
-        StringLiteral(walk(info).asInstanceOf[ASTNodeInfo], walk(quote).asInstanceOf[String], walk(escaped).asInstanceOf[String])
+      case StringLiteral(info, quote, escaped, isRE) =>
+        StringLiteral(walk(info).asInstanceOf[ASTNodeInfo], walk(quote).asInstanceOf[String], walk(escaped).asInstanceOf[String], isRE)
       case Switch(info, cond, frontCases, defi, backCases) =>
         Switch(walk(info).asInstanceOf[ASTNodeInfo], walk(cond).asInstanceOf[Expr], walk(frontCases).asInstanceOf[List[Case]], walk(defi).asInstanceOf[Option[List[Stmt]]], walk(backCases).asInstanceOf[List[Case]])
       case This(info) =>
@@ -640,7 +640,7 @@ trait ASTWalker {
         walkUnit(info); walkUnit(body); walkUnit(isStrict)
       case StmtUnit(info, stmts) =>
         walkUnit(info); walkUnit(stmts)
-      case StringLiteral(info, quote, escaped) =>
+      case StringLiteral(info, quote, escaped, _) =>
         walkUnit(info); walkUnit(quote); walkUnit(escaped)
       case Switch(info, cond, frontCases, defi, backCases) =>
         walkUnit(info); walkUnit(cond); walkUnit(frontCases); walkUnit(defi); walkUnit(backCases)

@@ -443,7 +443,7 @@ class Hoister(program: Program) extends ASTWalker {
 
     case Catch(_, _, body) => newBlock(body)
 
-    case fa @ FunApp(info, fun, List(StringLiteral(_, _, str))) if (NU.isEval(fun)) =>
+    case fa @ FunApp(info, fun, List(StringLiteral(_, _, str, _))) if (NU.isEval(fun)) =>
       try {
         Parser.scriptToAST(List(("evalParse", (1, 1), str)))
       } catch {

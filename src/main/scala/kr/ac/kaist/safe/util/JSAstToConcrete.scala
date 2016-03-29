@@ -100,15 +100,15 @@ class JSAstToConcrete extends ASTWalker {
 
   def pp(s: StringBuilder, str: String): Unit = {
     for (c <- str) c match {
-      case '\u0008' => s.append("\\b")
-      case '\t' => s.append("\\t")
-      case '\n' => s.append("\\n")
-      case '\f' => s.append("\\f")
-      case '\r' => s.append("\\r")
-      case '\u000b' => s.append("\\v")
-      case '"' => s.append("\"")
+      case '\u0008' => s.append('\b')
+      case '\t' => s.append('\t')
+      case '\n' => s.append('\n')
+      case '\f' => s.append('\f')
+      case '\r' => s.append('\r')
+      case '\u000b' => s.append('\u000b')
+      case '"' => s.append('"')
       case '\'' => s.append("'")
-      case '\\' => s.append("\\")
+      case '\\' => s.append('\\')
       case c => s.append(c + "")
     }
   }
@@ -490,12 +490,12 @@ class JSAstToConcrete extends ASTWalker {
       prFtn(s, fds, vds, body.body)
       s.append("\n").append(getIndent).append("}")
       s.toString
-    case StringLiteral(info, quote, txt) =>
+    case StringLiteral(info, quote, txt, _) =>
       val s: StringBuilder = new StringBuilder
       s.append(walk(info))
       s.append(quote)
       if (typescript) pp(s, txt)
-      else pp(s, NU.unescapeJava(txt))
+      else pp(s, txt)
       s.append(quote)
       s.toString
     case Switch(info, cond, frontCases, defjs, backCases) =>

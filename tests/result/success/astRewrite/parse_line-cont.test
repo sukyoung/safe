@@ -1,4 +1,5 @@
   var str;
   
-  str = "foo             bar";
+  str = "foo \
+            bar";
   

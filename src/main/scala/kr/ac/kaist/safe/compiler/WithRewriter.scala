@@ -47,7 +47,7 @@ class WithRewriter(program: Program, forTest: Boolean) extends ASTWalker {
   val paramExpr = mkVarRef(mkId("x"))
   def mkEq(name: String): InfixOpApp =
     InfixOpApp(toObjectInfo, mkVarRef(mkId("type")), Op(toObjectInfo, "=="),
-      StringLiteral(toObjectInfo, "\"", name))
+      StringLiteral(toObjectInfo, "\"", name, false))
   def mkRes(name: LHS): Return =
     Return(
       toObjectInfo,
@@ -143,7 +143,7 @@ class WithRewriter(program: Program, forTest: Boolean) extends ASTWalker {
                 else {
                   val idInAlpha = InfixOpApp(
                     vinfo,
-                    StringLiteral(vinfo, "\"", id.text),
+                    StringLiteral(vinfo, "\"", id.text, false),
                     inOp(vinfo), VarRef(vinfo, alpha)
                   )
                   val alphaDotLhs = Dot(vinfo, VarRef(vinfo, alpha), id)
@@ -221,7 +221,7 @@ class WithRewriter(program: Program, forTest: Boolean) extends ASTWalker {
             else {
               val lhsInAlpha = InfixOpApp(
                 vinfo,
-                StringLiteral(vinfo, "\"", id.text),
+                StringLiteral(vinfo, "\"", id.text, false),
                 inOp(vinfo), VarRef(vinfo, alpha)
               )
               val alphaDotLhs = Dot(vinfo, VarRef(vinfo, alpha), id)
@@ -265,7 +265,7 @@ class WithRewriter(program: Program, forTest: Boolean) extends ASTWalker {
               else {
                 val lhsInAlpha = InfixOpApp(
                   vinfo,
-                  StringLiteral(vinfo, "\"", id.text),
+                  StringLiteral(vinfo, "\"", id.text, false),
                   inOp(vinfo), VarRef(vinfo, alpha)
                 )
                 val alphaDotLhs = Dot(vinfo, VarRef(vinfo, alpha), id)
@@ -304,7 +304,7 @@ class WithRewriter(program: Program, forTest: Boolean) extends ASTWalker {
           else {
             val idInAlpha = InfixOpApp(
               info,
-              StringLiteral(info, "\"", text),
+              StringLiteral(info, "\"", text, false),
               inOp(info), VarRef(info, alpha)
             )
             val alphaDotId = Dot(info, VarRef(info, alpha), id)
@@ -350,7 +350,7 @@ class WithRewriter(program: Program, forTest: Boolean) extends ASTWalker {
             else {
               val idInAlpha = InfixOpApp(
                 vinfo,
-                StringLiteral(vinfo, "\"", id.text),
+                StringLiteral(vinfo, "\"", id.text, false),
                 inOp(vinfo), VarRef(vinfo, alpha)
               )
               val opAlphaDotId = PrefixOpApp(vinfo, op, Dot(vinfo, VarRef(vinfo, alpha), id))
@@ -399,7 +399,7 @@ class WithRewriter(program: Program, forTest: Boolean) extends ASTWalker {
             else {
               val lhsInAlpha = InfixOpApp(
                 vinfo,
-                StringLiteral(vinfo, "\"", id.text),
+                StringLiteral(vinfo, "\"", id.text, false),
                 inOp(vinfo), VarRef(vinfo, alpha)
               )
               val alphaDotLhsOp = UnaryAssignOpApp(vinfo, Dot(vinfo, VarRef(vinfo, alpha), id), op)
@@ -425,7 +425,7 @@ class WithRewriter(program: Program, forTest: Boolean) extends ASTWalker {
           val (first, rest) = splitNames(names)
           if (first.contains(id.text)) vr
           else {
-            val idInAlpha = InfixOpApp(info, StringLiteral(info, "\"", id.text),
+            val idInAlpha = InfixOpApp(info, StringLiteral(info, "\"", id.text, false),
               inOp(info),
               VarRef(info, alpha))
             val alphaDotId = Dot(info, VarRef(info, alpha), id)

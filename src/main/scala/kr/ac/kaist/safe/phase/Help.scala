@@ -27,7 +27,7 @@ object Help extends PhaseHelper {
   def printUsageMessage: Unit =
     Console.err.print(
       "Usage:\n" +
-        " parse [-parse:out=outfile] [-parse:verbose] infile.js ...\n" +
+        " parse infile.js ...\n" +
         " astRewrite [-astRewrite:out=outfile] [-astRewrite:verbose] infile.js ...\n" +
         " compile [-compile:out=outfile] [-compile:verbose] infile.js ...\n" +
         " cfgBuild [-cfgBuild:out=outfile] [-cfgBuild:verbose] [-cfgBuild:unroll=number] infile.js ...\n" +
@@ -40,10 +40,8 @@ object Help extends PhaseHelper {
     Console.err.print(
       "Invoked as script: safe args\n" +
         "Invoked by java: java ... kr.ac.kaist.safe.Safe args\n" +
-        "safe parse [-parse:out=outfile] [-parse:verbose] infile.js ...\n" +
+        "safe parse infile.js ...\n" +
         "  Parses files.\n" +
-        "  If -parse:out=outfile is given, the parsed AST will be written to the outfile.\n" +
-        "  If -parse:verbose is given, messages during parsing are printed.\n" +
         "\n" +
         "safe astRewrite [-astRewrite:out=outfile] [-astRewrite:verbose] infile.js ...\n" +
         "  Rewrites AST in JavaScript source files (hoister, disambiguater, withRewriter).\n" +
