@@ -20,11 +20,18 @@ case class CFGFunction(cfg: CFG, argumentsName: String, argVars: List[CFGId], lo
   val exit = Exit(this)
   val exitExc = ExitExc(this)
 
+  // create call
+  def createCall(callInstCons: Call => CFGCallInst, retVar: CFGId): Call = {
+    val call = Call(this, callInstCons, retVar)
+    blocks ::= call
+    call
+  }
+
   // all blocks in this function
   private var blocks: List[Block] = Nil
   def getBlocks: List[Block] = blocks
-  def createBlock: Block = {
-    val block: Block = Block(this)
+  def createBlock: NormalBlock = {
+    val block = NormalBlock(this)
     blocks ::= block
     cfg.blockMap(block.id) = block
     cfg.addNode(block) // TODO delete this after refactoring dump

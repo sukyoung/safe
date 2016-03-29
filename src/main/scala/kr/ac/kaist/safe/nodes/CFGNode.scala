@@ -20,8 +20,8 @@ sealed abstract class CFGNode {
   val func: CFGFunction
 
   // edges incident with this cfg node
-  private val succs: MMap[EdgeType, List[CFGNode]] = MHashMap()
-  private val preds: MMap[EdgeType, List[CFGNode]] = MHashMap()
+  protected val succs: MMap[EdgeType, List[CFGNode]] = MHashMap()
+  protected val preds: MMap[EdgeType, List[CFGNode]] = MHashMap()
   def getSucc(edgeType: EdgeType): List[CFGNode] = succs.getOrElse(edgeType, Nil)
   def getPred(edgeType: EdgeType): List[CFGNode] = preds.getOrElse(edgeType, Nil)
 
@@ -30,40 +30,45 @@ sealed abstract class CFGNode {
   def addPred(edgeType: EdgeType, node: CFGNode): Unit = preds(edgeType) = node :: preds.getOrElse(edgeType, Nil)
 }
 object CFGNode {
-  // TODO: used to simplify addEdge of cfg; modify if there's a better way
   implicit def node2nodelist(node: CFGNode): List[CFGNode] = List(node)
 }
 
+// entry, exit, exception exit
 case class Entry(func: CFGFunction) extends CFGNode
 case class Exit(func: CFGFunction) extends CFGNode
 case class ExitExc(func: CFGFunction) extends CFGNode
 
-// TODO: consider using mutable insts
-case class Block(func: CFGFunction) extends CFGNode {
-  val id: BlockId = Block.getId
+// block trait
+trait Block extends CFGNode
+
+// call, after-call, after-catch
+case class Call(func: CFGFunction) extends Block {
+  private var iAfterCall: AfterCall = _
+  private var iAfterCatch: AfterCatch = _
+  private var iCallInst: CFGCallInst = _
+  def afterCall: AfterCall = iAfterCall
+  def afterCatch: AfterCatch = iAfterCatch
+  def callInst: CFGCallInst = iCallInst
+}
+object Call {
+  def apply(func: CFGFunction, callInstCons: Call => CFGCallInst, retVar: CFGId): Call = {
+    val call = Call(func)
+    call.iAfterCall = AfterCall(func, retVar, call)
+    call.iAfterCatch = AfterCatch(func, call)
+    call.iCallInst = callInstCons(call)
+    call
+  }
+}
+case class AfterCall(func: CFGFunction, retVar: CFGId, call: Call) extends Block
+case class AfterCatch(func: CFGFunction, call: Call) extends Block
+
+// block
+case class NormalBlock(func: CFGFunction) extends Block {
+  val id: BlockId = NormalBlock.getId
 
   // inst list
   private var insts: List[CFGInst] = Nil
   def getInsts: List[CFGInst] = insts
-
-  // call info
-  private var callOpt: Option[Call] = None
-  private var afterCallOpt: Option[AfterCall] = None
-  private var afterCatchOpt: Option[AfterCatch] = None
-  def getCall: Option[Call] = callOpt
-  def getAfterCall: Option[AfterCall] = afterCallOpt
-  def getAfterCatch: Option[AfterCatch] = afterCatchOpt
-
-  // change into call block / link with new after-call(catch) block
-  def createCall(callInstCons: CFGNode => CFGCallInst, retVar: CFGId): Call = {
-    val (aftercall, aftercatch) = (func.createBlock, func.createBlock)
-    val callInst = createInst(callInstCons).asInstanceOf[CFGCallInst]
-    val call = Call(callInst, aftercall, aftercatch)
-    callOpt = Some(call)
-    aftercall.afterCallOpt = Some(AfterCall(retVar, this))
-    aftercatch.afterCatchOpt = Some(AfterCatch(this))
-    call
-  }
 
   // create inst
   def createInst(instCons: CFGNode => CFGInst): CFGInst = {
@@ -74,7 +79,7 @@ case class Block(func: CFGFunction) extends CFGNode {
 
   // equals
   override def equals(other: Any): Boolean = other match {
-    case block: Block => (block.id == id)
+    case (block: NormalBlock) => (block.id == id)
     case _ => false
   }
 
@@ -84,25 +89,29 @@ case class Block(func: CFGFunction) extends CFGNode {
   // dump node
   def dump: String = {
     var str: String = s"$this\n"
-    str += (afterCallOpt match {
-      case Some(AfterCall(retVar, _)) => s"    [EDGE] after-call($retVar)\n"
-      case None => ""
+    str += (preds.get(EdgeNormal) match {
+      case Some(List(AfterCall(_, retVar, _))) => s"    [EDGE] after-call($retVar)\n"
+      case _ => ""
     })
     insts.length > Config.MAX_INST_PRINT_SIZE match {
-      case true => str + "    A LOT!!! " + insts.length + " instructions are not printed here.\n\n"
+      case true => str + "    A LOT!!! " + ((succs.get(EdgeNormal) match {
+        case Some(List(call: Call)) => 1
+        case _ => 0
+      }) + insts.length) + " instructions are not printed here.\n\n"
       case false =>
         insts.reverseIterator.foldLeft(str) {
           case (s, inst) => s + s"    [${inst.id}] $inst\n"
-        } + "\n\n"
+        } + (succs.get(EdgeNormal) match {
+          case Some(List(call: Call)) =>
+            val inst = call.callInst
+            s"    [${inst.id}] $inst\n"
+          case _ => ""
+        }) + "\n\n"
     }
   }
 }
-object Block {
+object NormalBlock {
   private var counter: Int = 0
   private def getId: Int = { counter += 1; counter - 1 }
   def resetId: Unit = counter = 0
 }
-
-case class Call(callInst: CFGCallInst, afterCall: Block, afterCatch: Block)
-case class AfterCall(retVar: CFGId, call: Block)
-case class AfterCatch(call: Block)

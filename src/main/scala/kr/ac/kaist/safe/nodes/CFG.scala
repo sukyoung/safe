@@ -23,8 +23,8 @@ class CFG(globalVars: List[CFGId], info: Info) {
 
   // TODO: delete this after refactoring dump
   // all blocks in this cfg
-  private var blocks: List[Block] = Nil
-  def addNode(block: Block): Unit = blocks ::= block
+  private var blocks: List[NormalBlock] = Nil
+  def addNode(block: NormalBlock): Unit = blocks ::= block
 
   // create function
   def createFunction(argumentsName: String, argVars: List[CFGId], localVars: List[CFGId],
@@ -56,7 +56,7 @@ class CFG(globalVars: List[CFGId], info: Info) {
 
   // init id counter
   CFGFunction.resetId
-  Block.resetId
+  NormalBlock.resetId
   CFGInst.resetId
 
   // function / block map from id
