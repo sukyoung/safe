@@ -718,7 +718,7 @@
           
                   {
             c = a.className;
-            d = RegExp("\s?\b" + b + "\b");
+            d = RegExp("\\s?\\b" + b + "\\b");
           }
           c && c.match(d) && (a.className = c.replace(d, ""));
         });
@@ -728,7 +728,7 @@
           var d;
           
                   {
-            c = RegExp("\b" + b + "\b");
+            c = RegExp("\\b" + b + "\\b");
             d = a.className;
           }
           return ! (! d || ! d.match(c));
@@ -2751,7 +2751,7 @@
           b = a.href;
           {
             c = window.location.href.match(new RegExp(".*?:\/\/[^\/]*", ""))[0];
-            c = RegExp("^" + c + "/search\?");
+            c = RegExp("^" + c + "/search\\?");
           }
           if ((b = c.test(b)) && ! new RegExp("(^|\\?|&)ei=", "").test(a.href))
             if ((b = window.google) && b.kEXPI)

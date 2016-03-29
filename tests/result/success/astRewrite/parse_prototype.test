@@ -119,7 +119,7 @@
         return isSupported;
       })()
     },
-    ScriptFragment : '<script[^>]*>([\S\s]*?)</script>',
+    ScriptFragment : '<script[^>]*>([\\S\\s]*?)<\/script>',
     JSONFilter : new RegExp("^\/\*-secure-([\s\S]*)\*\/\s*$", ""),
     emptyFunction : (function () 
     {
@@ -752,7 +752,7 @@
   RegExp.prototype.match = RegExp.prototype.test;
   RegExp.escape = (function (str) 
   {
-    return String(str).replace(new RegExp("([.*+?^=!:${}()|[\]\/\\])", "g"), '\$1');
+    return String(str).replace(new RegExp("([.*+?^=!:${}()|[\]\/\\])", "g"), '\\$1');
   });
   PeriodicalExecuter = Class.create({
     initialize : (function (callback, frequency) 
@@ -798,12 +798,12 @@
       return value == null ? '' : String(value);
     }),
     specialChar : {
-      "\b" : '\b',
-      "\t" : '\t',
-      "\n" : '\n',
-      "\f" : '\f',
-      "\r" : '\r',
-      "\\" : '\\'
+      "\b" : '\\b',
+      "\t" : '\\t',
+      "\n" : '\\n',
+      "\f" : '\\f',
+      "\r" : '\\r',
+      "\\" : '\\\\'
     }
   });
   Object.extend(String.prototype, (function () 
@@ -994,11 +994,11 @@
         {
           return String.specialChar[character];
         }
-        return '\u00' + character.charCodeAt().toPaddedString(2, 16);
+        return '\\u00' + character.charCodeAt().toPaddedString(2, 16);
       }));
       if (useDoubleQuotes)
-        return '"' + escapedString.replace(new RegExp(""", "g"), '\"') + '"';
-      return "'" + escapedString.replace(new RegExp("'", "g"), '\'') + "'";
+        return '"' + escapedString.replace(new RegExp(""", "g"), '\\"') + '"';
+      return "'" + escapedString.replace(new RegExp("'", "g"), '\\\'') + "'";
     }
     function unfilterJSON(filter) 
     {
@@ -1033,7 +1033,7 @@
       {
         json = json.replace(cx, (function (a) 
         {
-          return '\u' + ('0000' + a.charCodeAt(0).toString(16)).slice(- 4);
+          return '\\u' + ('0000' + a.charCodeAt(0).toString(16)).slice(- 4);
         }));
       }
       try
@@ -1135,7 +1135,7 @@
               if (object == null)
           return (match[1] + '');
         before = match[1] || '';
-        if (before == '\')
+        if (before == '\\')
           return match[2];
         {
           ctx = object;
@@ -2558,7 +2558,7 @@
           el = document.createElement("select");
           isBuggy = true;
         }
-        el.innerHTML = "<option value="test">test</option>";
+        el.innerHTML = "<option value=\"test\">test</option>";
         if (el.options && el.options[0])
         {
           isBuggy = el.options[0].nodeName.toUpperCase() !== "OPTION";
@@ -2943,7 +2943,7 @@
           if (! (element = $(element)))
         return;
       elementClassName = element.className;
-      return (elementClassName.length > 0 && (elementClassName == className || new RegExp("(^|\s)" + className + "(\s|$)").test(elementClassName)));
+      return (elementClassName.length > 0 && (elementClassName == className || new RegExp("(^|\\s)" + className + "(\\s|$)").test(elementClassName)));
     }),
     addClassName : (function (element, className) 
     {
@@ -2957,7 +2957,7 @@
     {
       if (! (element = $(element)))
         return;
-      element.className = element.className.replace(new RegExp("(^|\s+)" + className + "(\s+|$)"), ' ').strip();
+      element.className = element.className.replace(new RegExp("(^|\\s+)" + className + "(\\s+|$)"), ' ').strip();
       return element;
     }),
     toggleClassName : (function (element, className) 
@@ -5443,7 +5443,7 @@
           {
             left = match[1];
             match.splice(1, 1);
-            if (left.substr(left.length - 1) !== "\")
+            if (left.substr(left.length - 1) !== "\\")
             {
               match[1] = (match[1] || "").replace(new RegExp("\\", "g"), "");
               set = Expr.find[type](match, context, isXML);

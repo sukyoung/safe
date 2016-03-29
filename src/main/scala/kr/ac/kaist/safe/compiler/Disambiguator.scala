@@ -494,8 +494,8 @@ class Disambiguator(program: Program) extends ASTWalker {
       val regexp = "RegExp"
       New(info, FunApp(info, VarRef(info, Id(info, regexp, Some(regexp), false)),
         List(
-          StringLiteral(info, "\"", NU.escape(body)),
-          StringLiteral(info, "\"", flags)
+          StringLiteral(info, "\"", body, true),
+          StringLiteral(info, "\"", flags, false)
         )))
     }
     case _: Comment => node

@@ -122,12 +122,12 @@ transient StringLiteral StringLiteral =
      ["] a1s:DoubleStringCharacter* ["]
      { String str = "";
        for (String c : (List<String>)a1s.list()) str = str.concat(c);
-       yyValue = new StringLiteral(NodeUtil.makeASTNodeInfo(createSpan(yyStart,yyCount+1)), "\"", str);
+       yyValue = new StringLiteral(NodeUtil.makeASTNodeInfo(createSpan(yyStart,yyCount+1)), "\"", str, false);
      }
    / ['] a1s:SingleStringCharacter* [']
      { String str = "";
        for (String c : (List<String>)a1s.list()) str = str.concat(c);
-       yyValue = new StringLiteral(NodeUtil.makeASTNodeInfo(createSpan(yyStart,yyCount+1)), "\'", str);
+       yyValue = new StringLiteral(NodeUtil.makeASTNodeInfo(createSpan(yyStart,yyCount+1)), "\'", str, false);
      };
 
 private transient String DoubleStringCharacter =
