@@ -18,10 +18,10 @@ import java.io.{ File, FilenameFilter }
 
 import scala.io.Source
 
-import kr.ac.kaist.safe.util.{ JSAstToConcrete, NodeUtil }
+import kr.ac.kaist.safe.util.NodeUtil
 import kr.ac.kaist.safe.nodes.{ Program, IRRoot, CFG }
-import kr.ac.kaist.safe.phase.CFGBuild
 import kr.ac.kaist.safe.config.{ Config, ArgParse }
+import kr.ac.kaist.safe.phase.CFGBuild
 
 object ParseTest extends Tag("ParseTest")
 object ASTRewriteTest extends Tag("ASTRewriteTest")
@@ -51,7 +51,7 @@ class CoreTest extends FlatSpec {
       case None => assert(false)
       case Some(program) =>
         val result = readFile(testName)
-        assert(result == normalized((new JSAstToConcrete).doit(program)))
+        assert(result == normalized(program.toString(0)))
     }
   }
 

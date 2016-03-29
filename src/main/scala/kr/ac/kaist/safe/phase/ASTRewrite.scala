@@ -17,7 +17,7 @@ import kr.ac.kaist.safe.config.{ Config, ConfigOption, OptionKind, BoolOption, S
 import kr.ac.kaist.safe.compiler.{ Hoister, Disambiguator, WithRewriter }
 import kr.ac.kaist.safe.errors.{ StaticError, StaticErrors }
 import kr.ac.kaist.safe.nodes.Program
-import kr.ac.kaist.safe.util.{ JSAstToConcrete, NodeUtil, Useful }
+import kr.ac.kaist.safe.util.{ NodeUtil, Useful }
 
 // ASTRewrite phase struct.
 case class ASTRewrite(
@@ -49,7 +49,7 @@ case class ASTRewrite(
         // TODO delete try-catch.
         try {
           val (fw, writer): (FileWriter, BufferedWriter) = Useful.filenameToWriters(out)
-          writer.write((new JSAstToConcrete).doit(program))
+          writer.write(program.toString(0))
           writer.close
           fw.close
           println("Dumped rewritten AST to " + out)

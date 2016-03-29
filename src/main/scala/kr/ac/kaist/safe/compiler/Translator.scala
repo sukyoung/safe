@@ -1082,7 +1082,7 @@ class Translator(program: Program) extends ASTWalker {
       val str = member.text
       (ss1 :+ toObject(first, obj, r1),
         new IRLoad(trueInfo(e), obj,
-          makeString(true, e, NU.unescapeJava(str))))
+          makeString(true, e, str)))
 
     case Bracket(info, first, StringLiteral(_, _, str, _)) =>
       val objspan = NU.getSpan(first)
@@ -1091,7 +1091,7 @@ class Translator(program: Program) extends ASTWalker {
       val (ss1, r1) = walkExpr(first, env, obj1)
       (ss1 :+ toObject(first, obj, r1),
         new IRLoad(trueInfo(e), obj,
-          makeString(true, e, NU.unescapeJava(str))))
+          makeString(true, e, str)))
 
     case Bracket(info, first, index) =>
       val objspan = NU.getSpan(first)
@@ -1276,7 +1276,7 @@ class Translator(program: Program) extends ASTWalker {
 
   def prop2ir(prop: Property): IRId = prop match {
     case PropId(info, id) => makeNGId(id.text, prop)
-    case PropStr(info, str) => makeTId(true, prop, NU.unescapeJava(str))
+    case PropStr(info, str) => makeTId(true, prop, str)
     case PropNum(info, DoubleLiteral(_, t, _)) => makeTId(true, prop, t)
     case PropNum(info, IntLiteral(_, i, _)) => makeTId(true, prop, i.toString)
   }

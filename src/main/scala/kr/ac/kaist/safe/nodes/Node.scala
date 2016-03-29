@@ -13,7 +13,9 @@ package kr.ac.kaist.safe.nodes
 
 import kr.ac.kaist.safe.util.{ Span, UIDObject }
 
-abstract class Node(val info: NodeInfo) extends UIDObject
+abstract class Node(val info: NodeInfo) extends UIDObject {
+  def toString(indent: Int): String
+}
 
 abstract class NodeInfo(val span: Span)
 

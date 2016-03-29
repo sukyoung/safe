@@ -23,59 +23,7 @@ import java.math.BigInteger
 import kr.ac.kaist.safe.util.{ NodeUtil => NU, Span }
 
 abstract class IRNode(override val info: IRNodeInfo)
-    extends Node(info: NodeInfo) {
-
-  // Pretty printing IR nodes
-  val width = 50
-
-  def getIndent(indent: Int): String = {
-    val s: StringBuilder = new StringBuilder
-    for (i <- 0 to indent - 1) s.append(" ")
-    s.toString
-  }
-
-  def pp(s: StringBuilder, str: String): Unit = {
-    for (c <- str) c match {
-      case '\u0008' => s.append("\\b")
-      case '\t' => s.append("\\t")
-      case '\n' => s.append("\\n")
-      case '\f' => s.append("\\f")
-      case '\r' => s.append("\\r")
-      case '\u000b' => s.append("\\v")
-      case '"' => s.append("\\\"")
-      case '\'' => s.append("'")
-      case '\\' => s.append("\\")
-      case c => s.append(c + "")
-    }
-  }
-
-  def join(indent: Int, all: List[IRNode], sep: String, result: StringBuilder): StringBuilder = all match {
-    case Nil => result
-    case _ => result.length match {
-      case 0 => {
-        join(indent, all.tail, sep, result.append(all.head.toString(indent)))
-      }
-      case _ =>
-        if (result.length > width && sep.equals(", "))
-          join(indent, all.tail, sep, result.append(", \n" + getIndent(indent)).append(all.head.toString(indent)))
-        else
-          join(indent, all.tail, sep, result.append(sep).append(all.head.toString(indent)))
-    }
-  }
-
-  def inlineIndent(stmt: IRStmt, s: StringBuilder, indent: Int): Unit = {
-    stmt match {
-      case IRStmtUnit(_, stmts) if stmts.length != 1 =>
-        s.append(getIndent(indent)).append(stmt.toString(indent))
-      case IRSeq(_, _) =>
-        s.append(getIndent(indent)).append(stmt.toString(indent))
-      case _ =>
-        s.append(getIndent(indent + 1)).append(stmt.toString(indent + 1))
-    }
-  }
-
-  def toString(indent: Int): String
-}
+  extends Node(info: NodeInfo)
 
 /**
  * IRRoot ::= Statement*
@@ -83,14 +31,14 @@ abstract class IRNode(override val info: IRNodeInfo)
 case class IRRoot(override val info: IRNodeInfo, val fds: List[IRFunDecl], val vds: List[IRVarStmt], val irs: List[IRStmt])
     extends IRNode(info: IRNodeInfo) {
   override def toString(indent: Int): String = {
-    NU.initIRPrint
+    NU.initNodesPrint
     val s: StringBuilder = new StringBuilder
-    val indentString = getIndent(indent)
-    s.append(indentString).append(join(indent, fds, "\n" + indentString, new StringBuilder("")))
+    val indentString = NU.getIndent(indent)
+    s.append(indentString).append(NU.join(indent, fds, "\n" + indentString, new StringBuilder("")))
     s.append("\n")
-    s.append(indentString).append(join(indent, vds, "\n" + indentString, new StringBuilder("")))
+    s.append(indentString).append(NU.join(indent, vds, "\n" + indentString, new StringBuilder("")))
     s.append("\n")
-    s.append(indentString).append(join(indent, irs, "\n" + indentString, new StringBuilder("")))
+    s.append(indentString).append(NU.join(indent, irs, "\n" + indentString, new StringBuilder("")))
     s.toString
   }
 }
@@ -151,11 +99,11 @@ case class IRObject(override val info: IRNodeInfo, override val lhs: IRId, val m
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     s.append(lhs.toString(indent)).append(" = {\n")
-    s.append(getIndent(indent + 1)).append(join(indent, members, ",\n" + getIndent(indent + 1), new StringBuilder("")))
+    s.append(NU.getIndent(indent + 1)).append(NU.join(indent, members, ",\n" + NU.getIndent(indent + 1), new StringBuilder("")))
     if (proto.isDefined) {
       s.append("[[Prototype]]=").append(proto.get.toString(indent + 1))
     }
-    s.append("\n").append(getIndent(indent)).append("}")
+    s.append("\n").append(NU.getIndent(indent)).append("}")
     s.toString
   }
 }
@@ -253,7 +201,7 @@ case class IRNew(override val info: IRNodeInfo, override val lhs: IRId, val fun:
     val s: StringBuilder = new StringBuilder
     s.append(lhs.toString(indent)).append(" = new ")
     s.append(fun.toString(indent)).append("(")
-    s.append(join(indent, args, ", ", new StringBuilder("")))
+    s.append(NU.join(indent, args, ", ", new StringBuilder("")))
     s.append(")")
     s.toString
   }
@@ -297,8 +245,8 @@ case class IRStmtUnit(override val info: IRNodeInfo, val stmts: List[IRStmt])
     case _ =>
       val s: StringBuilder = new StringBuilder
       s.append("{\n")
-      s.append(getIndent(indent + 1)).append(join(indent + 1, stmts, "\n" + getIndent(indent + 1), new StringBuilder("")))
-      s.append("\n").append(getIndent(indent)).append("}")
+      s.append(NU.getIndent(indent + 1)).append(NU.join(indent + 1, stmts, "\n" + NU.getIndent(indent + 1), new StringBuilder("")))
+      s.append("\n").append(NU.getIndent(indent)).append("}")
       s.toString
   }
 }
@@ -368,7 +316,7 @@ case class IRWith(override val info: IRNodeInfo, val id: IRId, val stmt: IRStmt)
     val s: StringBuilder = new StringBuilder
     s.append("with(")
     s.append(id.toString(indent)).append(")\n")
-    s.append(getIndent(indent)).append(stmt.toString(indent))
+    s.append(NU.getIndent(indent)).append(stmt.toString(indent))
     s.toString
   }
 }
@@ -421,8 +369,8 @@ case class IRSeq(override val info: IRNodeInfo, val stmts: List[IRStmt])
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     s.append("{\n")
-    s.append(getIndent(indent + 1)).append(join(indent + 1, stmts, "\n" + getIndent(indent + 1), new StringBuilder("")))
-    s.append("\n").append(getIndent(indent)).append("}")
+    s.append(NU.getIndent(indent + 1)).append(NU.join(indent + 1, stmts, "\n" + NU.getIndent(indent + 1), new StringBuilder("")))
+    s.append("\n").append(NU.getIndent(indent)).append("}")
     s.toString
   }
 }
@@ -436,11 +384,11 @@ case class IRIf(override val info: IRNodeInfo, val expr: IRExpr, val trueB: IRSt
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     s.append("if(").append(expr.toString(indent)).append(")\n")
-    inlineIndent(trueB, s, indent)
+    NU.inlineIndent(trueB, s, indent)
     falseB match {
       case Some(f) =>
-        s.append("\n").append(getIndent(indent)).append("else\n")
-        inlineIndent(f, s, indent)
+        s.append("\n").append(NU.getIndent(indent)).append("else\n")
+        NU.inlineIndent(f, s, indent)
       case None =>
     }
     s.toString
@@ -457,7 +405,7 @@ case class IRWhile(override val info: IRNodeInfo, val cond: IRExpr, val body: IR
     val s: StringBuilder = new StringBuilder
     s.append("while(")
     s.append(cond.toString(indent)).append(")\n")
-    s.append(getIndent(indent)).append(body.toString(indent))
+    s.append(NU.getIndent(indent)).append(body.toString(indent))
     s.toString
   }
 }
@@ -471,18 +419,18 @@ case class IRTry(override val info: IRNodeInfo, val body: IRStmt, val name: Opti
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     s.append("try\n")
-    inlineIndent(body, s, indent)
+    NU.inlineIndent(body, s, indent)
     catchB match {
       case Some(cb) =>
-        s.append("\n").append(getIndent(indent))
+        s.append("\n").append(NU.getIndent(indent))
         s.append("catch(").append(name.get.toString(indent)).append(")\n")
-        inlineIndent(cb, s, indent)
+        NU.inlineIndent(cb, s, indent)
       case None =>
     }
     finallyB match {
       case Some(f) =>
-        s.append("\n").append(getIndent(indent)).append("finally\n")
-        inlineIndent(f, s, indent)
+        s.append("\n").append(NU.getIndent(indent)).append("finally\n")
+        NU.inlineIndent(f, s, indent)
       case None =>
     }
     s.toString
@@ -509,7 +457,8 @@ case class IRField(override val info: IRNodeInfo, val prop: IRId, val expr: IREx
     extends IRMember(info: IRNodeInfo) {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
-    s.append(prop.toString(indent)).append(" : ").append(expr.toString(indent))
+    s.append(if (prop.info.ast.isInstanceOf[PropStr]) prop.toPropName(indent) else prop.toString(indent))
+    s.append(" : ").append(expr.toString(indent))
     s.toString
   }
 }
@@ -597,10 +546,23 @@ abstract class IRId(override val info: IRNodeInfo, val originalName: String, val
   override def toString(indent: Int): String = {
     val size = NU.significantBits
     val str = if (!NU.isInternal(uniqueName)) uniqueName
-    else if (!NU.isGlobalName(uniqueName)) uniqueName.dropRight(size) + NU.getE(uniqueName.takeRight(size))
+    else if (!NU.isGlobalName(uniqueName)) uniqueName.dropRight(size) + NU.getNodesE(uniqueName.takeRight(size))
     else uniqueName
     val s: StringBuilder = new StringBuilder
-    pp(s, str)
+    NU.pp(s, str)
+    s.toString
+  }
+
+  // When this IRId is a property string name, use toPropName instead of toString
+  def toPropName(indent: Int): String = {
+    val size = NU.significantBits
+    val str = if (!NU.isInternal(uniqueName)) uniqueName
+    else if (!NU.isGlobalName(uniqueName)) uniqueName.dropRight(size) + NU.getNodesE(uniqueName.takeRight(size))
+    else uniqueName
+    val s: StringBuilder = new StringBuilder
+    s.append("\"")
+    NU.ppIR(s, str.replaceAll("\\\\", "\\\\\\\\"))
+    s.append("\"")
     s.toString
   }
 }
@@ -655,7 +617,7 @@ case class IRString(override val info: IRNodeInfo, val str: String)
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     s.append("\"")
-    pp(s, str.replaceAll("\\\\", "\\\\\\\\")) // TODO need to be checked.
+    NU.ppIR(s, str.replaceAll("\\\\", "\\\\\\\\"))
     s.append("\"")
     s.toString
   }
@@ -703,11 +665,11 @@ case class IRFunctional(override val info: IRNodeInfo, val fromSource: Boolean,
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     s.append(name.toString(indent)).append("(")
-    s.append(join(indent, params, ", ", new StringBuilder("")))
-    s.append(") \n").append(getIndent(indent)).append("{\n")
-    s.append(getIndent(indent + 1))
-    s.append(join(indent + 1, fds ++ vds ++ args ++ body, "\n" + getIndent(indent + 1), new StringBuilder("")))
-    s.append("\n").append(getIndent(indent)).append("}")
+    s.append(NU.join(indent, params, ", ", new StringBuilder("")))
+    s.append(") \n").append(NU.getIndent(indent)).append("{\n")
+    s.append(NU.getIndent(indent + 1))
+    s.append(NU.join(indent + 1, fds ++ vds ++ args ++ body, "\n" + NU.getIndent(indent + 1), new StringBuilder("")))
+    s.append("\n").append(NU.getIndent(indent)).append("}")
     s.toString
   }
 }

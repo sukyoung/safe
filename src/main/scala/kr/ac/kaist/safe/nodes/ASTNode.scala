@@ -20,7 +20,7 @@ package kr.ac.kaist.safe.nodes
 
 import java.lang.Double
 import java.math.BigInteger
-import kr.ac.kaist.safe.util.Span
+import kr.ac.kaist.safe.util.{ NodeUtil => NU, Span }
 
 abstract class ASTNode(override val info: ASTNodeInfo)
   extends Node(info: NodeInfo)
@@ -29,370 +29,1003 @@ abstract class ASTNode(override val info: ASTNodeInfo)
  * Program ::= SourceElement*
  */
 case class Program(override val info: ASTNodeInfo, body: TopLevel)
-  extends ASTNode(info: ASTNodeInfo)
+    extends ASTNode(info: ASTNodeInfo) {
+  override def toString(indent: Int): String = {
+    NU.initNodesPrint
+    val s: StringBuilder = new StringBuilder
+    s.append(body.toString(indent))
+    if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
+    s.toString
+  }
+}
+
 /**
  * SourceElement ::= Stmt
  */
 abstract class SourceElement(override val info: ASTNodeInfo)
   extends ASTNode(info: ASTNodeInfo)
+
 abstract class Stmt(override val info: ASTNodeInfo)
   extends SourceElement(info: ASTNodeInfo)
+
 /**
  * Internally generated NoOperation
  * currently to denote the end of a file by Shell
  * Do not appear in the JavaScript source text
  */
 case class NoOp(override val info: ASTNodeInfo, desc: String)
-  extends Stmt(info: ASTNodeInfo)
+    extends Stmt(info: ASTNodeInfo) {
+  override def toString(indent: Int): String = ""
+}
+
 /**
  * Internally generated statement unit by Hoister
  * Do not appear in the JavaScript source text
  */
 case class StmtUnit(override val info: ASTNodeInfo, stmts: List[Stmt])
-  extends Stmt(info: ASTNodeInfo)
+    extends Stmt(info: ASTNodeInfo) {
+  override def toString(indent: Int): String = {
+    val s: StringBuilder = new StringBuilder
+    if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
+    s.append("{\n")
+    s.append(NU.getIndent(indent + 1)).append(NU.join(indent + 1, stmts, "\n" + NU.getIndent(indent + 1), new StringBuilder("")))
+    s.append("\n").append(NU.getIndent(indent)).append("}")
+    s.toString
+  }
+}
+
 /**
  * SourceElement ::= function Id ( (Id,)* ) { SourceElement* }
  */
 case class FunDecl(override val info: ASTNodeInfo, ftn: Functional, strict: Boolean)
-  extends Stmt(info: ASTNodeInfo)
+    extends Stmt(info: ASTNodeInfo) {
+  override def toString(indent: Int): String = {
+    val s: StringBuilder = new StringBuilder
+    if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
+    s.append("function ").append(ftn.toString(indent))
+    s.toString
+  }
+}
+
 /**
  * Stmt ::= { Stmt* }
  */
 case class ABlock(override val info: ASTNodeInfo, stmts: List[Stmt], internal: Boolean)
-  extends Stmt(info: ASTNodeInfo)
+    extends Stmt(info: ASTNodeInfo) {
+  override def toString(indent: Int): String = {
+    val s: StringBuilder = new StringBuilder
+    if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
+    s.append("{\n")
+    s.append(NU.getIndent(indent + 1)).append(NU.join(indent + 1, stmts, "\n" + NU.getIndent(indent + 1), new StringBuilder("")))
+    s.append("\n").append(NU.getIndent(indent)).append("}")
+    s.toString
+  }
+}
+
 /**
  * Stmt ::= var VarDecl(, VarDecl)* ;
  */
 case class VarStmt(override val info: ASTNodeInfo, vds: List[VarDecl])
-  extends Stmt(info: ASTNodeInfo)
+    extends Stmt(info: ASTNodeInfo) {
+  override def toString(indent: Int): String = {
+    val s: StringBuilder = new StringBuilder
+    if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
+    vds match {
+      case Nil => s.toString
+      case _ =>
+        s.append("var ")
+        s.append(NU.join(indent, vds, ", ", new StringBuilder(""))).append(";")
+        s.toString
+    }
+  }
+}
+
 /**
  * Stmt ::= ;
  */
 case class EmptyStmt(override val info: ASTNodeInfo)
-  extends Stmt(info: ASTNodeInfo)
+    extends Stmt(info: ASTNodeInfo) {
+  override def toString(indent: Int): String = {
+    val s: StringBuilder = new StringBuilder
+    if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
+    s.append(";")
+    s.toString
+  }
+}
+
 /**
  * Stmt ::= Expr ;
  */
 case class ExprStmt(override val info: ASTNodeInfo, expr: Expr, internal: Boolean)
-  extends Stmt(info: ASTNodeInfo)
+    extends Stmt(info: ASTNodeInfo) {
+  override def toString(indent: Int): String = {
+    val s: StringBuilder = new StringBuilder
+    if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
+    s.append(expr.toString(indent) + ";")
+    s.toString
+  }
+}
+
 /**
  * Stmt ::= if ( Expr ) Stmt (else Stmt)?
  */
 case class If(override val info: ASTNodeInfo, cond: Expr, trueBranch: Stmt, falseBranch: Option[Stmt])
-  extends Stmt(info: ASTNodeInfo)
+    extends Stmt(info: ASTNodeInfo) {
+  override def toString(indent: Int): String = {
+    val s: StringBuilder = new StringBuilder
+    if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
+    var oneline: Boolean = NU.isOneline(trueBranch)
+    s.append("if (").append(cond.toString(indent)).append(")\n")
+    if (oneline) s.append(NU.getIndent(indent + 1)).append(trueBranch.toString(indent + 1))
+    else s.append(NU.getIndent(indent)).append(trueBranch.toString(indent))
+    if (falseBranch.isDefined) {
+      oneline = NU.isOneline(falseBranch.get)
+      s.append("\n").append(NU.getIndent(indent)).append("else\n")
+      if (oneline)
+        s.append(NU.getIndent(indent + 1)).append(falseBranch.get.toString(indent + 1))
+      else
+        s.append(NU.getIndent(indent)).append(falseBranch.get.toString(indent))
+    }
+    s.toString
+  }
+}
+
 /**
  * Stmt ::= do Stmt while ( Expr ) ;
  */
 case class DoWhile(override val info: ASTNodeInfo, body: Stmt, cond: Expr)
-  extends Stmt(info: ASTNodeInfo)
+    extends Stmt(info: ASTNodeInfo) {
+  override def toString(indent: Int): String = {
+    val s: StringBuilder = new StringBuilder
+    if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
+    var oneline: Boolean = NU.isOneline(body)
+    s.append("do\n")
+    if (oneline) s.append(NU.getIndent(indent + 1)).append(body.toString(indent + 1))
+    else s.append(NU.getIndent(indent)).append(body.toString(indent))
+    s.append("while (")
+    s.append(cond.toString(indent)).append(");")
+    s.toString
+  }
+}
+
 /**
  * Stmt ::= while ( Expr ) Stmt
  */
 case class While(override val info: ASTNodeInfo, cond: Expr, body: Stmt)
-  extends Stmt(info: ASTNodeInfo)
+    extends Stmt(info: ASTNodeInfo) {
+  override def toString(indent: Int): String = {
+    val s: StringBuilder = new StringBuilder
+    if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
+    var oneline: Boolean = NU.isOneline(body)
+    s.append("while (")
+    s.append(cond.toString(indent)).append(")\n")
+    if (oneline) s.append(NU.getIndent(indent + 1)).append(body.toString(indent + 1))
+    else s.append(NU.getIndent(indent)).append(body.toString(indent))
+    s.toString
+  }
+}
+
 /**
  * Stmt ::= for ( Expr? ; Expr? ; Expr? ) Stmt
  */
 case class For(override val info: ASTNodeInfo, init: Option[Expr], cond: Option[Expr], action: Option[Expr], body: Stmt)
-  extends Stmt(info: ASTNodeInfo)
+    extends Stmt(info: ASTNodeInfo) {
+  override def toString(indent: Int): String = {
+    val s: StringBuilder = new StringBuilder
+    if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
+    var oneline: Boolean = NU.isOneline(body)
+    s.append("for (")
+    if (init.isDefined) s.append(init.get.toString(indent))
+    s.append(";")
+    if (cond.isDefined) s.append(cond.get.toString(indent))
+    s.append(";")
+    if (action.isDefined) s.append(action.get.toString(indent))
+    s.append(")\n")
+    if (oneline) s.append(NU.getIndent(indent + 1)).append(body.toString(indent + 1))
+    else s.append(NU.getIndent(indent)).append(body.toString(indent))
+    s.toString
+  }
+}
+
 /**
  * Stmt ::= for ( lhs in Expr ) Stmt
  */
 case class ForIn(override val info: ASTNodeInfo, lhs: LHS, expr: Expr, body: Stmt)
-  extends Stmt(info: ASTNodeInfo)
+    extends Stmt(info: ASTNodeInfo) {
+  override def toString(indent: Int): String = {
+    val s: StringBuilder = new StringBuilder
+    if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
+    var oneline: Boolean = NU.isOneline(body)
+    s.append("for (")
+    s.append(lhs.toString(indent)).append(" in ").append(expr.toString(indent)).append(")\n")
+    if (oneline) s.append(NU.getIndent(indent + 1)).append(body.toString(indent + 1))
+    else s.append(NU.getIndent(indent)).append(body.toString(indent))
+    s.toString
+  }
+}
+
 /**
  * Stmt ::= for ( var VarDecl(, VarDecl)* ; Expr? ; Expr? ) Stmt
  */
 case class ForVar(override val info: ASTNodeInfo, vars: List[VarDecl], cond: Option[Expr], action: Option[Expr], body: Stmt)
-  extends Stmt(info: ASTNodeInfo)
+    extends Stmt(info: ASTNodeInfo) {
+  override def toString(indent: Int): String = {
+    val s: StringBuilder = new StringBuilder
+    if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
+    var oneline: Boolean = NU.isOneline(body)
+    s.append("for(var ")
+    s.append(NU.join(indent, vars, ", ", new StringBuilder("")))
+    s.append(";")
+    if (cond.isDefined) s.append(cond.get.toString(indent))
+    s.append(";")
+    if (action.isDefined) s.append(action.get.toString(indent))
+    s.append(")\n")
+    if (oneline) s.append(NU.getIndent(indent + 1)).append(body.toString(indent + 1))
+    else s.append(NU.getIndent(indent)).append(body.toString((indent)))
+    s.toString
+  }
+}
+
 /**
  * Stmt ::= for ( var VarDecl in Expr ) Stmt
  */
 case class ForVarIn(override val info: ASTNodeInfo, vd: VarDecl, expr: Expr, body: Stmt)
-  extends Stmt(info: ASTNodeInfo)
+    extends Stmt(info: ASTNodeInfo) {
+  override def toString(indent: Int): String = {
+    val s: StringBuilder = new StringBuilder
+    if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
+    var oneline: Boolean = NU.isOneline(body)
+    s.append("for(var ")
+    s.append(vd.toString(indent)).append(" in ").append(expr.toString(indent)).append(")\n")
+    if (oneline) s.append(NU.getIndent(indent + 1)).append(body.toString(indent + 1))
+    else s.append(NU.getIndent(indent)).append(body.toString(indent))
+    s.toString
+  }
+}
+
 /**
  * Stmt ::= continue Label? ;
  */
 case class Continue(override val info: ASTNodeInfo, target: Option[Label])
-  extends Stmt(info: ASTNodeInfo)
+    extends Stmt(info: ASTNodeInfo) {
+  override def toString(indent: Int): String = {
+    val s: StringBuilder = new StringBuilder
+    if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
+    s.append("continue")
+    if (target.isDefined) s.append(" ").append(target.get.toString(indent))
+    s.append(";")
+    s.toString
+  }
+}
+
 /**
  * Stmt ::= break Label? ;
  */
 case class Break(override val info: ASTNodeInfo, target: Option[Label])
-  extends Stmt(info: ASTNodeInfo)
+    extends Stmt(info: ASTNodeInfo) {
+  override def toString(indent: Int): String = {
+    val s: StringBuilder = new StringBuilder
+    if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
+    s.append("break")
+    if (target.isDefined) s.append(" ").append(target.get.toString(indent))
+    s.append(";")
+    s.toString
+  }
+}
+
 /**
  * Stmt ::= return Expr? ;
  */
 case class Return(override val info: ASTNodeInfo, expr: Option[Expr])
-  extends Stmt(info: ASTNodeInfo)
+    extends Stmt(info: ASTNodeInfo) {
+  override def toString(indent: Int): String = {
+    val s: StringBuilder = new StringBuilder
+    if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
+    s.append("return")
+    if (expr.isDefined) s.append(" ").append(expr.get.toString(indent))
+    s.append(";")
+    s.toString
+  }
+}
+
 /**
  * Stmt ::= with ( Expr ) Stmt
  */
 case class With(override val info: ASTNodeInfo, expr: Expr, stmt: Stmt)
-  extends Stmt(info: ASTNodeInfo)
+    extends Stmt(info: ASTNodeInfo) {
+  override def toString(indent: Int): String = {
+    val s: StringBuilder = new StringBuilder
+    if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
+    var oneline: Boolean = NU.isOneline(stmt)
+    s.append("with (")
+    s.append(expr.toString(indent)).append(")\n")
+    if (oneline) s.append(NU.getIndent(indent + 1)).append(stmt.toString(indent + 1))
+    else s.append(NU.getIndent(indent)).append(stmt.toString(indent))
+    s.toString
+  }
+}
+
 /**
  * Stmt ::= switch ( Expr ) { CaseClause* (default : Stmt*)? CaseClause* }
  */
 case class Switch(override val info: ASTNodeInfo, cond: Expr, frontCases: List[Case], defopt: Option[List[Stmt]], backCases: List[Case])
-  extends Stmt(info: ASTNodeInfo)
+    extends Stmt(info: ASTNodeInfo) {
+  override def toString(indent: Int): String = {
+    val s: StringBuilder = new StringBuilder
+    if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
+    s.append("switch (").append(cond.toString(indent)).append("){\n")
+
+    s.append(NU.getIndent(indent + 1)).append(NU.join(indent + 1, frontCases, "\n" + NU.getIndent(indent + 1), new StringBuilder("")))
+    if (defopt.isDefined) {
+      s.append("\n").append(NU.getIndent(indent + 1)).append("default:")
+      s.append("\n").append(NU.getIndent(indent + 2)).append(NU.join(indent + 2, defopt.get, "\n" + NU.getIndent(indent + 2), new StringBuilder("")))
+    }
+    s.append("\n").append(NU.getIndent(indent + 1)).append(NU.join(indent + 1, backCases, "\n" + NU.getIndent(indent + 1), new StringBuilder("")))
+    s.append("\n").append(NU.getIndent(indent)).append("}")
+    s.toString
+  }
+}
+
 /**
  * Stmt ::= Label : Stmt
  */
 case class LabelStmt(override val info: ASTNodeInfo, label: Label, stmt: Stmt)
-  extends Stmt(info: ASTNodeInfo)
+    extends Stmt(info: ASTNodeInfo) {
+  override def toString(indent: Int): String = {
+    val s: StringBuilder = new StringBuilder
+    if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
+    s.append(label.toString(indent)).append(" : ").append(stmt.toString(indent))
+    s.toString
+  }
+}
+
 /**
  * Stmt ::= throw Expr ;
  */
 case class Throw(override val info: ASTNodeInfo, expr: Expr)
-  extends Stmt(info: ASTNodeInfo)
+    extends Stmt(info: ASTNodeInfo) {
+  override def toString(indent: Int): String = {
+    val s: StringBuilder = new StringBuilder
+    if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
+    s.append("throw ").append(expr.toString(indent)).append(";")
+    s.toString
+  }
+}
+
 /**
  * Stmt ::= try { Stmt* } (catch ( Id ) { Stmt* })? (finally { Stmt* })?
  */
 case class Try(override val info: ASTNodeInfo, body: List[Stmt], catchBlock: Option[Catch], fin: Option[List[Stmt]])
-  extends Stmt(info: ASTNodeInfo)
+    extends Stmt(info: ASTNodeInfo) {
+  override def toString(indent: Int): String = {
+    val s: StringBuilder = new StringBuilder
+    if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
+    s.append("try\n{")
+    s.append(NU.getIndent(indent + 1)).append(NU.join(indent + 1, body, "\n" + NU.getIndent(indent + 1), new StringBuilder("")))
+    s.append("}")
+    if (catchBlock.isDefined)
+      s.append("\n").append(NU.getIndent(indent)).append(catchBlock.get.toString(indent))
+    if (fin.isDefined) {
+      var oneline: Boolean = NU.isOneline(fin)
+      s.append("\n").append(NU.getIndent(indent)).append("finally\n{")
+      s.append(NU.getIndent(indent + 1)).append(NU.join(indent + 1, fin.get, "\n" + NU.getIndent(indent + 1), new StringBuilder("")))
+      s.append("}\n")
+    }
+    s.toString
+  }
+}
+
 /**
  * Stmt ::= debugger ;
  */
 case class Debugger(override val info: ASTNodeInfo)
-  extends Stmt(info: ASTNodeInfo)
+    extends Stmt(info: ASTNodeInfo) {
+  override def toString(indent: Int): String = {
+    val s: StringBuilder = new StringBuilder
+    if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
+    s.append("debugger;")
+    s.toString
+  }
+}
+
 /**
  * Program ::= SourceElement*
  */
 case class SourceElements(override val info: ASTNodeInfo, body: List[SourceElement], strict: Boolean)
-  extends ASTNode(info: ASTNodeInfo)
+    extends ASTNode(info: ASTNodeInfo) {
+  override def toString(indent: Int): String = ""
+}
+
 /**
  * Stmt ::= Id (= Expr)?
  */
 case class VarDecl(override val info: ASTNodeInfo, name: Id, expr: Option[Expr], strict: Boolean)
-  extends ASTNode(info: ASTNodeInfo)
+    extends ASTNode(info: ASTNodeInfo) {
+  override def toString(indent: Int): String = {
+    val s: StringBuilder = new StringBuilder
+    if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
+    s.append(name.toString(indent))
+    if (expr.isDefined) s.append(" = ").append(expr.get.toString(indent))
+    s.toString
+  }
+}
+
 /**
  * CaseClause ::= case Expr : Stmt*
  */
 case class Case(override val info: ASTNodeInfo, cond: Expr, body: List[Stmt])
-  extends ASTNode(info: ASTNodeInfo)
+    extends ASTNode(info: ASTNodeInfo) {
+  override def toString(indent: Int): String = {
+    val s: StringBuilder = new StringBuilder
+    if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
+    s.append("case ").append(cond.toString(indent))
+    s.append(":\n")
+    s.append(NU.getIndent(indent + 1)).append(NU.join(indent + 1, body, "\n" + NU.getIndent(indent + 1), new StringBuilder("")))
+    s.append("\n")
+    s.toString
+  }
+}
+
 /**
  * Catch ::= catch ( Id ) { Stmt* }
  */
 case class Catch(override val info: ASTNodeInfo, id: Id, body: List[Stmt])
-  extends ASTNode(info: ASTNodeInfo)
+    extends ASTNode(info: ASTNodeInfo) {
+  override def toString(indent: Int): String = {
+    val s: StringBuilder = new StringBuilder
+    if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
+    var oneline: Boolean = NU.isOneline(body)
+    s.append("catch (").append(id.toString(indent)).append(")\n")
+    s.append("{")
+    s.append(NU.getIndent(indent + 1)).append(NU.join(indent + 1, body, "\n" + NU.getIndent(indent + 1), new StringBuilder("")))
+    s.append("}\n")
+    s.toString
+  }
+}
 
 abstract class Expr(override val info: ASTNodeInfo)
   extends ASTNode(info: ASTNodeInfo)
+
 /**
  * Expr ::= Expr, Expr
  */
 case class ExprList(override val info: ASTNodeInfo, exprs: List[Expr])
-  extends Expr(info: ASTNodeInfo)
+    extends Expr(info: ASTNodeInfo) {
+  override def toString(indent: Int): String = {
+    val s: StringBuilder = new StringBuilder
+    if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
+    NU.join(indent, exprs, ", ", s).toString
+    s.toString
+  }
+}
+
 /**
  * Expr ::= Expr ? Expr : Expr
  */
 case class Cond(override val info: ASTNodeInfo, cond: Expr, trueBranch: Expr, falseBranch: Expr)
-  extends Expr(info: ASTNodeInfo)
+    extends Expr(info: ASTNodeInfo) {
+  override def toString(indent: Int): String = {
+    val s: StringBuilder = new StringBuilder
+    if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
+    s.append(cond.toString(indent)).append(" ? ").append(trueBranch.toString(indent)).append(" : ").append(falseBranch.toString(indent))
+    s.toString
+  }
+}
+
 /**
  * Expr ::= Expr Op Expr
  */
 case class InfixOpApp(override val info: ASTNodeInfo, left: Expr, op: Op, right: Expr)
-  extends Expr(info: ASTNodeInfo)
+    extends Expr(info: ASTNodeInfo) {
+  override def toString(indent: Int): String = {
+    val s: StringBuilder = new StringBuilder
+    if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
+    s.append(left.toString(indent)).append(" ")
+    s.append(op.toString(indent)).append(" ")
+    s.append(right.toString(indent))
+    s.toString
+  }
+}
+
 /**
  * Expr ::= Op Expr
  */
 case class PrefixOpApp(override val info: ASTNodeInfo, op: Op, right: Expr)
-  extends Expr(info: ASTNodeInfo)
+    extends Expr(info: ASTNodeInfo) {
+  override def toString(indent: Int): String = {
+    val s: StringBuilder = new StringBuilder
+    if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
+    s.append(op.toString(indent)).append(" ").append(right.toString(indent))
+    s.toString
+  }
+}
+
 /**
  * Expr ::= Lhs Op
  */
 case class UnaryAssignOpApp(override val info: ASTNodeInfo, lhs: LHS, op: Op)
-  extends Expr(info: ASTNodeInfo)
+    extends Expr(info: ASTNodeInfo) {
+  override def toString(indent: Int): String = {
+    val s: StringBuilder = new StringBuilder
+    if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
+    s.append(lhs.toString(indent)).append(op.toString(indent))
+    s.toString
+  }
+}
+
 /**
  * Expr ::= Lhs Op Expr
  */
 case class AssignOpApp(override val info: ASTNodeInfo, lhs: LHS, op: Op, right: Expr)
-  extends Expr(info: ASTNodeInfo)
+    extends Expr(info: ASTNodeInfo) {
+  override def toString(indent: Int): String = {
+    val s: StringBuilder = new StringBuilder
+    if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
+    s.append(lhs.toString(indent)).append(" ")
+    s.append(op.toString(indent)).append(" ")
+    s.append(right.toString(indent))
+    s.toString
+  }
+}
+
 /**
  * Expr ::= Lhs
  */
 abstract class LHS(override val info: ASTNodeInfo)
   extends Expr(info: ASTNodeInfo)
+
 /**
  * Lhs ::= Literal
  */
 abstract class Literal(override val info: ASTNodeInfo)
   extends LHS(info: ASTNodeInfo)
+
 /**
  * Literal ::= this
  */
 case class This(override val info: ASTNodeInfo)
-  extends Literal(info: ASTNodeInfo)
+    extends Literal(info: ASTNodeInfo) {
+  override def toString(indent: Int): String = {
+    val s: StringBuilder = new StringBuilder
+    if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
+    s.append("this")
+    s.toString
+  }
+}
+
 /**
  * Literal ::= null
  */
 case class Null(override val info: ASTNodeInfo)
-  extends Literal(info: ASTNodeInfo)
+    extends Literal(info: ASTNodeInfo) {
+  override def toString(indent: Int): String = {
+    val s: StringBuilder = new StringBuilder
+    if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
+    s.append("null")
+    s.toString
+  }
+}
+
 /**
  * Literal ::= true | false
  */
 case class Bool(override val info: ASTNodeInfo, bool: Boolean)
-  extends Literal(info: ASTNodeInfo)
+    extends Literal(info: ASTNodeInfo) {
+  override def toString(indent: Int): String = {
+    val s: StringBuilder = new StringBuilder
+    if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
+    s.append(if (bool) "true" else "false")
+    s.toString
+  }
+}
+
 /**
  * number literal
  */
 abstract class NumberLiteral(override val info: ASTNodeInfo)
   extends Literal(info: ASTNodeInfo)
+
 /**
  * float literal
  * e.g.) 3.5
  */
 case class DoubleLiteral(override val info: ASTNodeInfo, text: String, num: Double)
-  extends NumberLiteral(info: ASTNodeInfo)
+    extends NumberLiteral(info: ASTNodeInfo) {
+  override def toString(indent: Int): String = {
+    val s: StringBuilder = new StringBuilder
+    if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
+    s.append(text)
+    s.toString
+  }
+}
+
 /**
  * int literal
  * e.g.) 7
  */
 case class IntLiteral(override val info: ASTNodeInfo, intVal: BigInteger, radix: Integer)
-  extends NumberLiteral(info: ASTNodeInfo)
+    extends NumberLiteral(info: ASTNodeInfo) {
+  override def toString(indent: Int): String = {
+    val s: StringBuilder = new StringBuilder
+    if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
+    s.append(if (radix == 8) "0" + intVal.toString(8)
+    else if (radix == 16) "0x" + intVal.toString(16)
+    else intVal.toString)
+    s.toString
+  }
+}
+
 /**
  * Literal ::= String
  */
 case class StringLiteral(override val info: ASTNodeInfo, quote: String, escaped: String, isRE: Boolean)
-  extends Literal(info: ASTNodeInfo)
+    extends Literal(info: ASTNodeInfo) {
+  override def toString(indent: Int): String = {
+    val s: StringBuilder = new StringBuilder
+    if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
+    s.append(quote)
+    NU.pp(s, escaped)
+    s.append(quote)
+    s.toString
+  }
+}
+
 /**
  * Literal ::= RegularExpression
  */
 case class RegularExpression(override val info: ASTNodeInfo, body: String, flag: String)
-  extends Literal(info: ASTNodeInfo)
+    extends Literal(info: ASTNodeInfo) {
+  override def toString(indent: Int): String = {
+    val s: StringBuilder = new StringBuilder
+    if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
+    s.append("/" + NU.unescapeJava(body) + "/" + NU.unescapeJava(flag))
+    s.toString
+  }
+}
+
 /**
  * PrimaryExpr ::= Id
  */
 case class VarRef(override val info: ASTNodeInfo, id: Id)
-  extends LHS(info: ASTNodeInfo)
+    extends LHS(info: ASTNodeInfo) {
+  override def toString(indent: Int): String = {
+    val s: StringBuilder = new StringBuilder
+    if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
+    s.append(id.toString(indent))
+    s.toString
+  }
+}
+
 /**
  * PrimaryExpr ::= [ (Expr,)* ]
  */
 case class ArrayExpr(override val info: ASTNodeInfo, elements: List[Option[Expr]])
-  extends LHS(info: ASTNodeInfo)
+    extends LHS(info: ASTNodeInfo) {
+  override def toString(indent: Int): String = {
+    val s: StringBuilder = new StringBuilder
+    if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
+    s.append("[")
+    elements.foreach(e => s.append(if (e.isDefined) e.get.toString(indent) else "").append(", "))
+    s.append("]")
+    s.toString
+  }
+}
+
 /**
  * PrimaryExpr ::= [ (Number,)* ]
  */
 case class ArrayNumberExpr(override val info: ASTNodeInfo, elements: List[Double])
-  extends LHS(info: ASTNodeInfo)
+    extends LHS(info: ASTNodeInfo) {
+  override def toString(indent: Int): String = {
+    val s: StringBuilder = new StringBuilder
+    if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
+    s.append("[")
+    s.append("\"A LOT!!! " + elements.size + " elements are not printed here.\", ")
+    s.append("]")
+    s.toString
+  }
+}
+
 /**
  * PrimaryExpr ::= { (Member,)* }
  */
 case class ObjectExpr(override val info: ASTNodeInfo, members: List[Member])
-  extends LHS(info: ASTNodeInfo)
+    extends LHS(info: ASTNodeInfo) {
+  override def toString(indent: Int): String = {
+    val s: StringBuilder = new StringBuilder
+    if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
+    s.append("{\n")
+    s.append(NU.getIndent(indent + 1)).append(NU.join(indent + 1, members, ",\n" + NU.getIndent(indent + 1), new StringBuilder("")))
+    s.append("\n").append(NU.getIndent(indent)).append("}")
+    s.toString
+  }
+}
+
 /**
  * PrimaryExpr ::= ( Expr )
  */
 case class Parenthesized(override val info: ASTNodeInfo, expr: Expr)
-  extends LHS(info: ASTNodeInfo)
+    extends LHS(info: ASTNodeInfo) {
+  override def toString(indent: Int): String = {
+    val s: StringBuilder = new StringBuilder
+    if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
+    s.append(NU.inParentheses(expr.toString(indent)))
+    s.toString
+  }
+}
+
 /**
  * LHS ::= function Id? ( (Id,)* ) { SourceElement }
  */
 case class FunExpr(override val info: ASTNodeInfo, ftn: Functional)
-  extends LHS(info: ASTNodeInfo)
+    extends LHS(info: ASTNodeInfo) {
+  override def toString(indent: Int): String = {
+    val s: StringBuilder = new StringBuilder
+    if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
+    s.append("(function ")
+    if (!NU.isFunExprName(ftn.name.text)) s.append(ftn.name.toString(indent))
+    s.append("(")
+    s.append(NU.join(indent, ftn.params, ", ", new StringBuilder("")))
+    s.append(") \n").append(NU.getIndent(indent)).append("{\n")
+    NU.prUseStrictDirective(s, indent, ftn.fds, ftn.vds, ftn.stmts)
+    NU.prFtn(s, indent, ftn.fds, ftn.vds, ftn.stmts.body)
+    s.append("\n").append(NU.getIndent(indent)).append("})")
+    s.toString
+  }
+}
+
 /**
  * LHS ::= Lhs [ Expr ]
  */
 case class Bracket(override val info: ASTNodeInfo, obj: LHS, index: Expr)
-  extends LHS(info: ASTNodeInfo)
+    extends LHS(info: ASTNodeInfo) {
+  override def toString(indent: Int): String = {
+    val s: StringBuilder = new StringBuilder
+    if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
+    s.append(obj.toString(indent)).append("[").append(index.toString(indent)).append("]")
+    s.toString
+  }
+}
+
 /**
  * LHS ::= Lhs . Id
  */
 case class Dot(override val info: ASTNodeInfo, obj: LHS, member: Id)
-  extends LHS(info: ASTNodeInfo)
+    extends LHS(info: ASTNodeInfo) {
+  override def toString(indent: Int): String = {
+    val s: StringBuilder = new StringBuilder
+    if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
+    s.append(obj.toString(indent)).append(".").append(member.toString(indent))
+    s.toString
+  }
+}
+
 /**
  * LHS ::= new Lhs
  */
 case class New(override val info: ASTNodeInfo, lhs: LHS)
-  extends LHS(info: ASTNodeInfo)
+    extends LHS(info: ASTNodeInfo) {
+  override def toString(indent: Int): String = {
+    val s: StringBuilder = new StringBuilder
+    if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
+    s.append("new ").append(lhs.toString(indent))
+    s.toString
+  }
+}
+
 /**
  * LHS ::= Lhs ( (Expr,)* )
  */
 case class FunApp(override val info: ASTNodeInfo, fun: LHS, args: List[Expr])
-  extends LHS(info: ASTNodeInfo)
+    extends LHS(info: ASTNodeInfo) {
+  override def toString(indent: Int): String = {
+    val s: StringBuilder = new StringBuilder
+    if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
+    s.append(fun.toString(indent)).append("(")
+    s.append(NU.join(indent, args, ", ", new StringBuilder("")))
+    s.append(")")
+    s.toString
+  }
+}
 
 abstract class Property(override val info: ASTNodeInfo)
   extends ASTNode(info: ASTNodeInfo)
+
 /**
  * Property ::= Id
  */
 case class PropId(override val info: ASTNodeInfo, id: Id)
-  extends Property(info: ASTNodeInfo)
+    extends Property(info: ASTNodeInfo) {
+  override def toString(indent: Int): String = {
+    val s: StringBuilder = new StringBuilder
+    if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
+    s.append(id.toString(indent))
+    s.toString
+  }
+}
+
 /**
  * Property ::= String
  */
 case class PropStr(override val info: ASTNodeInfo, str: String)
-  extends Property(info: ASTNodeInfo)
+    extends Property(info: ASTNodeInfo) {
+  override def toString(indent: Int): String = {
+    val s: StringBuilder = new StringBuilder
+    if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
+    s.append(if (str.equals("\"")) "'\"'" else "\"" + str + "\"")
+    s.toString
+  }
+}
+
 /**
  * Property ::= Number
  */
 case class PropNum(override val info: ASTNodeInfo, num: NumberLiteral)
-  extends Property(info: ASTNodeInfo)
+    extends Property(info: ASTNodeInfo) {
+  override def toString(indent: Int): String = {
+    val s: StringBuilder = new StringBuilder
+    if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
+    s.append(num.toString(indent))
+    s.toString
+  }
+}
 
 abstract class Member(override val info: ASTNodeInfo, prop: Property)
   extends ASTNode(info: ASTNodeInfo)
+
 /**
  * Member ::= Property : Expr
  */
 case class Field(override val info: ASTNodeInfo, prop: Property, expr: Expr)
-  extends Member(info: ASTNodeInfo, prop: Property)
+    extends Member(info: ASTNodeInfo, prop: Property) {
+  override def toString(indent: Int): String = {
+    val s: StringBuilder = new StringBuilder
+    if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
+    s.append(prop.toString(indent)).append(" : ").append(expr.toString(indent))
+    s.toString
+  }
+}
+
 /**
  * Member ::= get Property () { FunctionBody }
  */
 case class GetProp(override val info: ASTNodeInfo, prop: Property, ftn: Functional)
-  extends Member(info: ASTNodeInfo, prop: Property)
+    extends Member(info: ASTNodeInfo, prop: Property) {
+  override def toString(indent: Int): String = {
+    val s: StringBuilder = new StringBuilder
+    if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
+    s.append("get ").append(prop.toString(indent)).append("()\n").append(NU.getIndent(indent)).append("{\n")
+    NU.prUseStrictDirective(s, indent, ftn.fds, ftn.vds, ftn.stmts)
+    NU.prFtn(s, indent, ftn.fds, ftn.vds, ftn.stmts.body)
+    s.append("\n").append(NU.getIndent(indent)).append("}")
+    s.toString
+  }
+}
+
 /**
  * Member ::= set Property ( Id ) { SourceElement* }
  */
 case class SetProp(override val info: ASTNodeInfo, prop: Property, ftn: Functional)
-  extends Member(info: ASTNodeInfo, prop: Property)
+    extends Member(info: ASTNodeInfo, prop: Property) {
+  override def toString(indent: Int): String = {
+    val s: StringBuilder = new StringBuilder
+    if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
+    s.append("set ").append(prop.toString(indent)).append("(")
+    s.append(ftn.params.head.toString(indent)).append(") \n").append(NU.getIndent(indent)).append("{\n")
+    NU.prUseStrictDirective(s, indent, ftn.fds, ftn.vds, ftn.stmts)
+    NU.prFtn(s, indent, ftn.fds, ftn.vds, ftn.stmts.body)
+    s.append("\n").append(NU.getIndent(indent)).append("}")
+    s.toString
+  }
+}
 
 abstract class Name(override val info: ASTNodeInfo)
   extends ASTNode(info: ASTNodeInfo)
+
 abstract class IdOrOpOrAnonymousName(override val info: ASTNodeInfo)
   extends Name(info: ASTNodeInfo)
+
 abstract class IdOrOp(override val info: ASTNodeInfo, text: String)
   extends IdOrOpOrAnonymousName(info: ASTNodeInfo)
+
 /**
  * Named identifier
  */
 case class Id(override val info: ASTNodeInfo, text: String, uniqueName: Option[String] = None, isWith: Boolean)
-  extends IdOrOp(info: ASTNodeInfo, text: String)
+    extends IdOrOp(info: ASTNodeInfo, text: String) {
+  override def toString(indent: Int): String = {
+    val s: StringBuilder = new StringBuilder
+    if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
+    if (uniqueName.isDefined && isWith)
+      s.append(uniqueName.get.dropRight(NU.significantBits) +
+        NU.getNodesE(uniqueName.get.takeRight(NU.significantBits)))
+    else s.append(text)
+    s.toString
+  }
+}
+
 /**
  * Infix/prefix/postfix operator
  */
 case class Op(override val info: ASTNodeInfo, text: String)
-  extends IdOrOp(info: ASTNodeInfo, text: String)
+    extends IdOrOp(info: ASTNodeInfo, text: String) {
+  override def toString(indent: Int): String = {
+    val s: StringBuilder = new StringBuilder
+    if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
+    s.append(text)
+    s.toString
+  }
+}
+
 /**
  * Unnamed identifier
  */
 case class AnonymousFnName(override val info: ASTNodeInfo, text: String)
-  extends IdOrOpOrAnonymousName(info: ASTNodeInfo)
+    extends IdOrOpOrAnonymousName(info: ASTNodeInfo) {
+  override def toString(indent: Int): String = ""
+}
+
 /**
  * label
  */
 case class Label(override val info: ASTNodeInfo, id: Id)
-  extends ASTNode(info: ASTNodeInfo)
+    extends ASTNode(info: ASTNodeInfo) {
+  override def toString(indent: Int): String = {
+    val s: StringBuilder = new StringBuilder
+    if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
+    s.append(id.toString(indent))
+    s.toString
+  }
+}
+
 /**
  * comment
  */
 case class Comment(override val info: ASTNodeInfo, txt: String)
-  extends ASTNode(info: ASTNodeInfo)
+    extends ASTNode(info: ASTNodeInfo) {
+  override def toString(indent: Int): String = {
+    val s: StringBuilder = new StringBuilder
+    s.append(txt + "\n")
+    s.toString
+  }
+}
+
 /**
  * Common body for program and functions
  */
 abstract class ScopeBody(override val info: ASTNodeInfo, fds: List[FunDecl], vds: List[VarDecl])
   extends ASTNode(info: ASTNodeInfo)
+
 /**
  * Program top level
  */
 case class TopLevel(override val info: ASTNodeInfo, fds: List[FunDecl], vds: List[VarDecl], stmts: List[SourceElements])
-  extends ScopeBody(info: ASTNodeInfo, fds: List[FunDecl], vds: List[VarDecl])
+    extends ScopeBody(info: ASTNodeInfo, fds: List[FunDecl], vds: List[VarDecl]) {
+  override def toString(indent: Int): String = {
+    val s: StringBuilder = new StringBuilder
+    NU.prUseStrictDirective(s, indent, fds, vds, stmts)
+    NU.prFtn(s, indent, fds, vds,
+      stmts.foldLeft(List[Stmt]())((l, s) => l ++ s.body.asInstanceOf[List[Stmt]]))
+    s.toString
+  }
+}
+
 /**
  * Common shape for functions
  */
 case class Functional(override val info: ASTNodeInfo, fds: List[FunDecl], vds: List[VarDecl], stmts: SourceElements, name: Id, params: List[Id], body: String)
-  extends ScopeBody(info: ASTNodeInfo, fds: List[FunDecl], vds: List[VarDecl])
+    extends ScopeBody(info: ASTNodeInfo, fds: List[FunDecl], vds: List[VarDecl]) {
+  override def toString(indent: Int): String = {
+    val s: StringBuilder = new StringBuilder
+    s.append(name.toString(indent)).append("(")
+    s.append(NU.join(indent, params, ", ", new StringBuilder("")))
+    s.append(") \n").append(NU.getIndent(indent)).append("{\n")
+    NU.prUseStrictDirective(s, indent, fds, vds, stmts)
+    NU.prFtn(s, indent, fds, vds, stmts.body)
+    s.append("\n").append(NU.getIndent(indent)).append("}")
+    s.toString
+  }
+}
 
 trait ASTWalker {
   def walk(node: Any): Any = {

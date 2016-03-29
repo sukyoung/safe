@@ -93,12 +93,81 @@ object NodeUtil {
     if (villain.length != 0) makeSpan(villain) else defaultSpan
   def defaultSpan: Span = makeSpan("defaultSpan")
 
+  var nodesPrintId = 0
+  var nodesPrintIdEnv: List[(String, String)] = Nil
+  def initNodesPrint: Unit = {
+    nodesPrintId = 0
+    nodesPrintIdEnv = Nil
+  }
+  def getNodesE(uniq: String): String = nodesPrintIdEnv.find(p => p._1.equals(uniq)) match {
+    case None =>
+      val new_uniq = { nodesPrintId += 1; nodesPrintId.toString }
+      nodesPrintIdEnv = (uniq, new_uniq) :: nodesPrintIdEnv
+      new_uniq
+    case Some((_, new_uniq)) => new_uniq
+  }
+
+  def pp(s: StringBuilder, str: String): Unit = {
+    for (c <- str) c match {
+      case '\u0008' => s.append('\b')
+      case '\t' => s.append('\t')
+      case '\n' => s.append('\n')
+      case '\f' => s.append('\f')
+      case '\r' => s.append('\r')
+      case '\u000b' => s.append('\u000b')
+      case '"' => s.append('"')
+      case '\'' => s.append("'")
+      case '\\' => s.append('\\')
+      case c => s.append(c + "")
+    }
+  }
+
+  def ppIR(s: StringBuilder, str: String): Unit = {
+    for (c <- str) c match {
+      case '\u0008' => s.append("\\b")
+      case '\t' => s.append("\\t")
+      case '\n' => s.append("\\n")
+      case '\f' => s.append("\\f")
+      case '\r' => s.append("\\r")
+      case '\u000b' => s.append("\\v")
+      case '"' => s.append("\\\"")
+      case '\'' => s.append("'")
+      case '\\' => s.append("\\")
+      case c => s.append(c + "")
+    }
+  }
+
+  def getIndent(indent: Int): String = {
+    val s: StringBuilder = new StringBuilder
+    for (i <- 0 to indent - 1) s.append(" ")
+    s.toString
+  }
+
+  val printWidth = 50
+  def join(indent: Int, all: List[Node], sep: String, result: StringBuilder): StringBuilder = all match {
+    case Nil => result
+    case _ => result.length match {
+      case 0 => {
+        join(indent, all.tail, sep, result.append(all.head.toString(indent)))
+      }
+      case _ =>
+        if (result.length > printWidth && sep.equals(", "))
+          join(indent, all.tail, sep, result.append(", \n" + getIndent(indent)).append(all.head.toString(indent)))
+        else
+          join(indent, all.tail, sep, result.append(sep).append(all.head.toString(indent)))
+    }
+  }
+
   ////////////////////////////////////////////////////////////////
   // AST
   ////////////////////////////////////////////////////////////////
 
   // For use only when there is no hope of attaching a true span.
   val defaultAst = makeNoOp(makeASTNodeInfo(defaultSpan("defaultAST")), "defaultAST")
+
+  /*  make sure it is parenthesized */
+  def prBody(body: List[SourceElement]): String =
+    join(0, body, "\n", new StringBuilder("")).toString
 
   def getBody(ast: ASTNode): String = ast match {
     case FunExpr(_, Functional(_, _, _, _, _, _, bodyS)) => bodyS
@@ -209,8 +278,7 @@ object NodeUtil {
     case SetProp(_, prop, _) => prop2Str(prop)
   }
 
-  def escape(s: String): String =
-    s.replaceAll("\\\\", "\\\\\\\\")
+  def escape(s: String): String = s.replaceAll("\\\\", "\\\\\\\\")
 
   def unescapeJava(s: String): String =
     if (-1 == s.indexOf('\\')) s
@@ -314,6 +382,63 @@ object NodeUtil {
     } catch {
       case e: IOException =>
         sys.error("Writing to a log file for the parser failed!")
+    }
+
+  def isOneline(node: Any): Boolean = node match {
+    case ABlock => false
+    case Some(in) => isOneline(in)
+    case _ => !(node.isInstanceOf[ABlock])
+  }
+
+  def inParentheses(str: String): String = {
+    val charArr = str.toCharArray
+    var parenthesized = true
+    var depth = 0
+    for (
+      c <- charArr if parenthesized
+    ) {
+      if (c == '(') depth += 1
+      else if (c == ')') depth -= 1
+      else if (depth == 0) parenthesized = false
+    }
+    if (parenthesized) str
+    else new StringBuilder("(").append(str).append(")").toString
+  }
+
+  def prFtn(s: StringBuilder, indent: Int, fds: List[FunDecl], vds: List[VarDecl],
+    body: List[SourceElement]): Unit = {
+    fds match {
+      case Nil =>
+      case _ =>
+        s.append(getIndent(indent + 1)).append(join(indent + 1, fds, "\n" + getIndent(indent + 1), new StringBuilder("")))
+        s.append("\n").append(getIndent(indent))
+    }
+    vds match {
+      case Nil =>
+      case _ =>
+        s.append(getIndent(indent + 1))
+        vds.foreach(vd => vd match {
+          case VarDecl(_, n, _, _) =>
+            s.append("var " + n.text + ";\n" + getIndent(indent + 1))
+        })
+        s.append("\n").append(getIndent(indent))
+    }
+    s.append(getIndent(indent + 1)).append(join(indent + 1, body, "\n" + getIndent(indent + 1), new StringBuilder("")))
+  }
+
+  def prUseStrictDirective(s: StringBuilder, indent: Int, fds: List[FunDecl], vds: List[VarDecl], body: SourceElements): Unit =
+    prUseStrictDirective(s, indent, fds, vds, List(body))
+
+  def prUseStrictDirective(s: StringBuilder, indent: Int, fds: List[FunDecl], vds: List[VarDecl], stmts: List[SourceElements]): Unit =
+    fds.find(fd => fd.strict) match {
+      case Some(_) => s.append(getIndent(indent)).append("\"use strict\";\n")
+      case None => vds.find(vd => vd.strict) match {
+        case Some(_) => s.append(getIndent(indent)).append("\"use strict\";\n")
+        case None => stmts.find(stmts => stmts.strict) match {
+          case Some(_) => s.append(getIndent(indent)).append("\"use strict\";\n")
+          case None =>
+        }
+      }
     }
 
   object addLinesProgram extends ASTWalker {
@@ -503,20 +628,6 @@ object NodeUtil {
 
   def isAssertOperator(op: IROp): Boolean = EJSOp.isEquality(op.kind)
 
-  var irPrintId = 0
-  var irPrintIdEnv: List[(String, String)] = Nil
-  def initIRPrint: Unit = {
-    irPrintId = 0
-    irPrintIdEnv = Nil
-  }
-  def getE(uniq: String): String = irPrintIdEnv.find(p => p._1.equals(uniq)) match {
-    case None =>
-      val new_uniq = { irPrintId += 1; irPrintId.toString }
-      irPrintIdEnv = (uniq, new_uniq) :: irPrintIdEnv
-      new_uniq
-    case Some((_, new_uniq)) => new_uniq
-  }
-
   // Transposition rules for each relational IR Operator
   def transIROp(op: IROp): IROp = {
     op.kind match {
@@ -533,6 +644,17 @@ object NodeUtil {
       case EJSOp.BIN_COMP_REL_NOTIN => makeIROp("in") // notIn --> in
       case EJSOp.BIN_COMP_REL_NOTINSTANCEOF => makeIROp("instanceof") // notInstanceof --> instanceof
       case _ => op
+    }
+  }
+
+  def inlineIndent(stmt: IRStmt, s: StringBuilder, indent: Int): Unit = {
+    stmt match {
+      case IRStmtUnit(_, stmts) if stmts.length != 1 =>
+        s.append(getIndent(indent)).append(stmt.toString(indent))
+      case IRSeq(_, _) =>
+        s.append(getIndent(indent)).append(stmt.toString(indent))
+      case _ =>
+        s.append(getIndent(indent + 1)).append(stmt.toString(indent + 1))
     }
   }
 
