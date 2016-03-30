@@ -44,17 +44,11 @@ case class Compile(
     val ircode = ir.toString(0)
     compileConfig.outFile match {
       case Some(out) =>
-        // TODO delete try-catch.
-        try {
-          val (fw, writer): (FileWriter, BufferedWriter) = Useful.filenameToWriters(out)
-          writer.write(ircode)
-          writer.close
-          fw.close
-          println("Dumped IR to " + out)
-        } catch {
-          case e: IOException =>
-            throw new IOException("IOException " + e + "while writing to " + out)
-        }
+        val (fw, writer): (FileWriter, BufferedWriter) = Useful.filenameToWriters(out)
+        writer.write(ircode)
+        writer.close
+        fw.close
+        println("Dumped IR to " + out)
       case None =>
     }
 

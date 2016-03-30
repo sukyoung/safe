@@ -46,7 +46,7 @@ object Parser {
     val (fileName, (line, offset), code) = script
     val file = new File(fileName)
     fileindex += 1
-    getInfoStmts(parseScriptConvertExn(fileName, (line, offset), code))
+    getInfoStmts(parseScript(fileName, (line, offset), code))
   }
 
   def fileToStmts(f: String): (ASTNodeInfo, SourceElements) = {
@@ -57,7 +57,7 @@ object Parser {
       path = path.charAt(0).toLower + path.replace('\\', '/').substring(1)
     }
     fileindex += 1
-    getInfoStmts(parseFileConvertExn(file))
+    getInfoStmts(parseFile(file))
   }
 
   def stringToFnE(str: (String, (Int, Int), String)): Option[FunExpr] = {
@@ -98,21 +98,15 @@ object Parser {
       NU.makeProgram(mergedSourceInfo, stmts)
   }
 
-  def parseScriptConvertExn(fileName: String, start: (Int, Int), script: String): Program =
-    try {
-      val (line, offset) = start
-      val is = new ByteArrayInputStream(script.getBytes("UTF-8"))
-      val ir = new InputStreamReader(is)
-      val in = new BufferedReader(ir)
-      val program = parsePgm(in, fileName, line)
-      in.close; ir.close; is.close
-      NU.addLinesProgram.addLines(program, line - 1, offset - 1).asInstanceOf[Program]
-    } catch {
-      case fnfe: FileNotFoundException =>
-        throw convertExn(fnfe, fileName)
-      case ioe: IOException =>
-        throw convertExn(ioe)
-    }
+  def parseScript(fileName: String, start: (Int, Int), script: String): Program = {
+    val (line, offset) = start
+    val is = new ByteArrayInputStream(script.getBytes("UTF-8"))
+    val ir = new InputStreamReader(is)
+    val in = new BufferedReader(ir)
+    val program = parsePgm(in, fileName, line)
+    in.close; ir.close; is.close
+    NU.addLinesProgram.addLines(program, line - 1, offset - 1).asInstanceOf[Program]
+  }
 
   /**
    * Parses a file as a program.
@@ -121,16 +115,12 @@ object Parser {
    * Validates the parse by calling
    * parsePgm (see also description of exceptions there).
    */
-  def parseFileConvertExn(file: File): Program =
-    try {
-      val filename = file.getCanonicalPath
-      if (!filename.endsWith(".js"))
-        throw new UserError("Need a JavaScript file instead of " + filename + ".")
-      parsePgm(file, filename, 0)
-    } catch {
-      case fnfe: FileNotFoundException => throw convertExn(fnfe, file)
-      case ioe: IOException => throw convertExn(ioe)
-    }
+  def parseFile(file: File): Program = {
+    val filename = file.getCanonicalPath
+    if (!filename.endsWith(".js"))
+      throw new UserError("Need a JavaScript file instead of " + filename + ".")
+    parsePgm(file, filename, 0)
+  }
 
   def parsePgm(str: String, filename: String): Program = {
     val sr = new StringReader(str)
@@ -186,16 +176,4 @@ object Parser {
     in.close; sr.close
     parseResult.hasValue
   }
-
-  def convertExn(ioe: IOException): SyntaxError = {
-    var desc = "Unable to read file"
-    if (ioe.getMessage != null) desc += " (" + ioe.getMessage + ")"
-    SAFEError.makeSyntaxError(desc)
-  }
-
-  def convertExn(fnfe: FileNotFoundException, f: File): SyntaxError =
-    SAFEError.makeSyntaxError("Cannot find file " + f.getAbsolutePath)
-
-  def convertExn(fnfe: FileNotFoundException, s: String): SyntaxError =
-    SAFEError.makeSyntaxError("Cannot find file " + s)
 }

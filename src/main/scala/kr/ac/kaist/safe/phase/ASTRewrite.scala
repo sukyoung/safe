@@ -46,17 +46,11 @@ case class ASTRewrite(
     // Pretty print to file.
     astRewriteConfig.outFile match {
       case Some(out) =>
-        // TODO delete try-catch.
-        try {
-          val (fw, writer): (FileWriter, BufferedWriter) = Useful.filenameToWriters(out)
-          writer.write(program.toString(0))
-          writer.close
-          fw.close
-          println("Dumped rewritten AST to " + out)
-        } catch {
-          case e: IOException =>
-            throw new IOException("IOException " + e + "while writing to " + out)
-        }
+        val (fw, writer): (FileWriter, BufferedWriter) = Useful.filenameToWriters(out)
+        writer.write(program.toString(0))
+        writer.close
+        fw.close
+        println("Dumped rewritten AST to " + out)
       case None =>
     }
 

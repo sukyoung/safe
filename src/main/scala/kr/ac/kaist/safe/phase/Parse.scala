@@ -24,20 +24,10 @@ case class Parse(
   override def apply(config: Config): Unit = parse(config)
   def parse(config: Config): Option[Program] = {
     config.fileNames match {
-      case Nil => error("Need a file to parse.")
-      case _ =>
-        // TODO Delete try-catch.
-        try {
-          Some(Parser.fileToAST(config.fileNames))
-        } catch {
-          case (f: FileNotFoundException) => error(f + " not found")
-          case (e: Exception) => error(e.getCause.toString)
-        }
+      case Nil =>
+        Console.err.println("Need a file to parse."); None
+      case _ => Some(Parser.fileToAST(config.fileNames))
     }
-  }
-  private def error(msg: String): None.type = {
-    Console.err.println(msg)
-    None
   }
 }
 

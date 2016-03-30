@@ -42,17 +42,11 @@ case class CFGBuild(
     val dump: String = cfg.dump
     cfgBuildConfig.outFile match {
       case Some(out) =>
-        // TODO delete try-catch.
-        try {
-          val (fw, writer): (FileWriter, BufferedWriter) = Useful.filenameToWriters(out)
-          writer.write(dump)
-          writer.close
-          fw.close
-          println("Dumped CFG to " + out)
-        } catch {
-          case e: IOException =>
-            throw new IOException("IOException " + e + "while writing to " + out)
-        }
+        val (fw, writer): (FileWriter, BufferedWriter) = Useful.filenameToWriters(out)
+        writer.write(dump)
+        writer.close
+        fw.close
+        println("Dumped CFG to " + out)
       case None =>
     }
 
