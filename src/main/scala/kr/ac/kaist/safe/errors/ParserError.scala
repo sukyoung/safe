@@ -11,6 +11,7 @@
 
 package kr.ac.kaist.safe.errors
 
+import kr.ac.kaist.safe.config.Config
 import java.lang.{ Integer => JInteger }
 import xtc.parser.ParseError
 import xtc.parser.ParserBase
@@ -40,5 +41,5 @@ class ParserError(parseError: ParseError, parser: ParserBase, start: Int)
       val loc = parser.location(parseError.index)
       new Location(loc.file, loc.line + start, loc.column).toString
     }
-  override def toString: String = String.format("%s:\n    %s", at, desc)
+  override def toString: String = String.format("%s:%s    %s", at, Config.LINE_SEP, desc)
 }

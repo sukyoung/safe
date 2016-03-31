@@ -12,12 +12,13 @@
 package kr.ac.kaist.safe.errors
 
 import java.util.regex.Pattern
+import kr.ac.kaist.safe.config.Config
 import kr.ac.kaist.safe.nodes.NodeInfo
 
 class StaticError(val description: String, val location: Option[NodeInfo])
     extends RuntimeException with Ordered[StaticError] {
   override def getMessage: String = toString
-  override def toString: String = String.format("%s:\n    %s", at, description)
+  override def toString: String = String.format("%s:%s    %s", at, Config.LINE_SEP, description)
 
   def at: String = location match {
     case Some(info) => info.span.toString

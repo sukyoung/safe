@@ -28,6 +28,8 @@ case class Config(
 }
 
 object Config {
+  val LINE_SEP = System.getProperty("line.separator")
+
   // Maximum length of printable instruction of CFGNode
   val MAX_INST_PRINT_SIZE = 10000
 

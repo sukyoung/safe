@@ -26,40 +26,40 @@ object Help extends PhaseHelper {
   // Print usage message.
   def printUsageMessage: Unit =
     Console.err.print(
-      "Usage:\n" +
-        " parse infile.js ...\n" +
-        " astRewrite [-astRewrite:out=outfile] [-astRewrite:verbose] infile.js ...\n" +
-        " compile [-compile:out=outfile] [-compile:verbose] infile.js ...\n" +
-        " cfgBuild [-cfgBuild:out=outfile] [-cfgBuild:verbose] [-cfgBuild:unroll=number] infile.js ...\n" +
-        " help\n"
+      "Usage:" + Config.LINE_SEP +
+        " parse infile.js ..." + Config.LINE_SEP +
+        " astRewrite [-astRewrite:out=outfile] [-astRewrite:verbose] infile.js ..." + Config.LINE_SEP +
+        " compile [-compile:out=outfile] [-compile:verbose] infile.js ..." + Config.LINE_SEP +
+        " cfgBuild [-cfgBuild:out=outfile] [-cfgBuild:verbose] [-cfgBuild:unroll=number] infile.js ..." + Config.LINE_SEP +
+        " help" + Config.LINE_SEP
     )
 
   // TODO auto gen
   // Print help message.
   def printHelpMessage: Unit = {
     Console.err.print(
-      "Invoked as script: safe args\n" +
-        "Invoked by java: java ... kr.ac.kaist.safe.Safe args\n" +
-        "safe parse infile.js ...\n" +
-        "  Parses files.\n" +
-        "\n" +
-        "safe astRewrite [-astRewrite:out=outfile] [-astRewrite:verbose] infile.js ...\n" +
-        "  Rewrites AST in JavaScript source files (hoister, disambiguater, withRewriter).\n" +
-        "  If -astRewrite:out=outfile is given, the disambiguated AST will be written to the outfile.\n" +
-        "  If -astRewrite:verbose is given, messages during rewriting AST are printed.\n" +
-        "\n" +
-        "safe compile [-compile:out=outfile] [-compile:verbose] infile.js ...\n" +
-        "  Translates JavaScript source files to IR.\n" +
-        "  If -compile:out=outfile is given, the resulting IR will be written to the outfile.\n" +
-        "  If -compile:verbose is given, messages during compilation are printed.\n" +
-        "\n" +
-        "safe cfgBuild [-cfgBuild:out=outfile] [-cfgBuild:verbose] [-cfgBuild:unroll=number] infile.js ...\n" +
-        "  Builds a control flow graph for JavaScript source files.\n" +
-        "  The files are concatenated in the given order before being parsed.\n" +
-        "  If -cfgBuild:out=outfile is given, the resulting CFG will be written to the outfile.\n" +
-        "  If -cfgBuild:verbose is given, messages during compilation are printed.\n" +
-        "  If -cfgBuild:unroll=number is given, the resulting CFG will unroll loops number times.\n" +
-        "\n"
+      "Invoked as script: safe args" + Config.LINE_SEP +
+        "Invoked by java: java ... kr.ac.kaist.safe.Safe args" + Config.LINE_SEP +
+        "safe parse infile.js ..." + Config.LINE_SEP +
+        "  Parses files." + Config.LINE_SEP +
+        Config.LINE_SEP +
+        "safe astRewrite [-astRewrite:out=outfile] [-astRewrite:verbose] infile.js ..." + Config.LINE_SEP +
+        "  Rewrites AST in JavaScript source files (hoister, disambiguater, withRewriter)." + Config.LINE_SEP +
+        "  If -astRewrite:out=outfile is given, the disambiguated AST will be written to the outfile." + Config.LINE_SEP +
+        "  If -astRewrite:verbose is given, messages during rewriting AST are printed." + Config.LINE_SEP +
+        Config.LINE_SEP +
+        "safe compile [-compile:out=outfile] [-compile:verbose] infile.js ..." + Config.LINE_SEP +
+        "  Translates JavaScript source files to IR." + Config.LINE_SEP +
+        "  If -compile:out=outfile is given, the resulting IR will be written to the outfile." + Config.LINE_SEP +
+        "  If -compile:verbose is given, messages during compilation are printed." + Config.LINE_SEP +
+        Config.LINE_SEP +
+        "safe cfgBuild [-cfgBuild:out=outfile] [-cfgBuild:verbose] [-cfgBuild:unroll=number] infile.js ..." + Config.LINE_SEP +
+        "  Builds a control flow graph for JavaScript source files." + Config.LINE_SEP +
+        "  The files are concatenated in the given order before being parsed." + Config.LINE_SEP +
+        "  If -cfgBuild:out=outfile is given, the resulting CFG will be written to the outfile." + Config.LINE_SEP +
+        "  If -cfgBuild:verbose is given, messages during compilation are printed." + Config.LINE_SEP +
+        "  If -cfgBuild:unroll=number is given, the resulting CFG will unroll loops number times." + Config.LINE_SEP +
+        Config.LINE_SEP
     )
   }
 }

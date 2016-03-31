@@ -88,25 +88,25 @@ case class NormalBlock(func: CFGFunction) extends Block {
 
   // dump node
   def dump: String = {
-    var str: String = s"$this\n"
+    var str: String = s"$this" + Config.LINE_SEP
     str += (preds.get(EdgeNormal) match {
-      case Some(List(AfterCall(_, retVar, _))) => s"    [EDGE] after-call($retVar)\n"
+      case Some(List(AfterCall(_, retVar, _))) => s"    [EDGE] after-call($retVar)" + Config.LINE_SEP
       case _ => ""
     })
     insts.length > Config.MAX_INST_PRINT_SIZE match {
       case true => str + "    A LOT!!! " + ((succs.get(EdgeNormal) match {
         case Some(List(call: Call)) => 1
         case _ => 0
-      }) + insts.length) + " instructions are not printed here.\n\n"
+      }) + insts.length) + " instructions are not printed here." + Config.LINE_SEP + Config.LINE_SEP
       case false =>
         insts.reverseIterator.foldLeft(str) {
-          case (s, inst) => s + s"    [${inst.id}] $inst\n"
+          case (s, inst) => s + s"    [${inst.id}] $inst" + Config.LINE_SEP
         } + (succs.get(EdgeNormal) match {
           case Some(List(call: Call)) =>
             val inst = call.callInst
-            s"    [${inst.id}] $inst\n"
+            s"    [${inst.id}] $inst" + Config.LINE_SEP
           case _ => ""
-        }) + "\n\n"
+        }) + Config.LINE_SEP + Config.LINE_SEP
     }
   }
 }

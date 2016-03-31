@@ -21,6 +21,7 @@ package kr.ac.kaist.safe.nodes
 import java.lang.Double
 import java.math.BigInteger
 import kr.ac.kaist.safe.util.{ NodeUtil => NU, Span }
+import kr.ac.kaist.safe.config.Config
 
 abstract class ASTNode(override val info: ASTNodeInfo)
   extends Node(info: NodeInfo)
@@ -67,9 +68,9 @@ case class StmtUnit(override val info: ASTNodeInfo, stmts: List[Stmt])
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
-    s.append("{\n")
-    s.append(NU.getIndent(indent + 1)).append(NU.join(indent + 1, stmts, "\n" + NU.getIndent(indent + 1), new StringBuilder("")))
-    s.append("\n").append(NU.getIndent(indent)).append("}")
+    s.append("{").append(Config.LINE_SEP)
+    s.append(NU.getIndent(indent + 1)).append(NU.join(indent + 1, stmts, Config.LINE_SEP + NU.getIndent(indent + 1), new StringBuilder("")))
+    s.append(Config.LINE_SEP).append(NU.getIndent(indent)).append("}")
     s.toString
   }
 }
@@ -95,9 +96,9 @@ case class ABlock(override val info: ASTNodeInfo, stmts: List[Stmt], internal: B
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
-    s.append("{\n")
-    s.append(NU.getIndent(indent + 1)).append(NU.join(indent + 1, stmts, "\n" + NU.getIndent(indent + 1), new StringBuilder("")))
-    s.append("\n").append(NU.getIndent(indent)).append("}")
+    s.append("{").append(Config.LINE_SEP)
+    s.append(NU.getIndent(indent + 1)).append(NU.join(indent + 1, stmts, Config.LINE_SEP + NU.getIndent(indent + 1), new StringBuilder("")))
+    s.append(Config.LINE_SEP).append(NU.getIndent(indent)).append("}")
     s.toString
   }
 }
@@ -155,12 +156,12 @@ case class If(override val info: ASTNodeInfo, cond: Expr, trueBranch: Stmt, fals
     val s: StringBuilder = new StringBuilder
     if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
     var oneline: Boolean = NU.isOneline(trueBranch)
-    s.append("if (").append(cond.toString(indent)).append(")\n")
+    s.append("if (").append(cond.toString(indent)).append(")").append(Config.LINE_SEP)
     if (oneline) s.append(NU.getIndent(indent + 1)).append(trueBranch.toString(indent + 1))
     else s.append(NU.getIndent(indent)).append(trueBranch.toString(indent))
     if (falseBranch.isDefined) {
       oneline = NU.isOneline(falseBranch.get)
-      s.append("\n").append(NU.getIndent(indent)).append("else\n")
+      s.append(Config.LINE_SEP).append(NU.getIndent(indent)).append("else").append(Config.LINE_SEP)
       if (oneline)
         s.append(NU.getIndent(indent + 1)).append(falseBranch.get.toString(indent + 1))
       else
@@ -179,7 +180,7 @@ case class DoWhile(override val info: ASTNodeInfo, body: Stmt, cond: Expr)
     val s: StringBuilder = new StringBuilder
     if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
     var oneline: Boolean = NU.isOneline(body)
-    s.append("do\n")
+    s.append("do").append(Config.LINE_SEP)
     if (oneline) s.append(NU.getIndent(indent + 1)).append(body.toString(indent + 1))
     else s.append(NU.getIndent(indent)).append(body.toString(indent))
     s.append("while (")
@@ -198,7 +199,7 @@ case class While(override val info: ASTNodeInfo, cond: Expr, body: Stmt)
     if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
     var oneline: Boolean = NU.isOneline(body)
     s.append("while (")
-    s.append(cond.toString(indent)).append(")\n")
+    s.append(cond.toString(indent)).append(")").append(Config.LINE_SEP)
     if (oneline) s.append(NU.getIndent(indent + 1)).append(body.toString(indent + 1))
     else s.append(NU.getIndent(indent)).append(body.toString(indent))
     s.toString
@@ -220,7 +221,7 @@ case class For(override val info: ASTNodeInfo, init: Option[Expr], cond: Option[
     if (cond.isDefined) s.append(cond.get.toString(indent))
     s.append(";")
     if (action.isDefined) s.append(action.get.toString(indent))
-    s.append(")\n")
+    s.append(")").append(Config.LINE_SEP)
     if (oneline) s.append(NU.getIndent(indent + 1)).append(body.toString(indent + 1))
     else s.append(NU.getIndent(indent)).append(body.toString(indent))
     s.toString
@@ -237,7 +238,8 @@ case class ForIn(override val info: ASTNodeInfo, lhs: LHS, expr: Expr, body: Stm
     if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
     var oneline: Boolean = NU.isOneline(body)
     s.append("for (")
-    s.append(lhs.toString(indent)).append(" in ").append(expr.toString(indent)).append(")\n")
+    s.append(lhs.toString(indent)).append(" in ")
+    s.append(expr.toString(indent)).append(")").append(Config.LINE_SEP)
     if (oneline) s.append(NU.getIndent(indent + 1)).append(body.toString(indent + 1))
     else s.append(NU.getIndent(indent)).append(body.toString(indent))
     s.toString
@@ -259,7 +261,7 @@ case class ForVar(override val info: ASTNodeInfo, vars: List[VarDecl], cond: Opt
     if (cond.isDefined) s.append(cond.get.toString(indent))
     s.append(";")
     if (action.isDefined) s.append(action.get.toString(indent))
-    s.append(")\n")
+    s.append(")").append(Config.LINE_SEP)
     if (oneline) s.append(NU.getIndent(indent + 1)).append(body.toString(indent + 1))
     else s.append(NU.getIndent(indent)).append(body.toString((indent)))
     s.toString
@@ -276,7 +278,8 @@ case class ForVarIn(override val info: ASTNodeInfo, vd: VarDecl, expr: Expr, bod
     if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
     var oneline: Boolean = NU.isOneline(body)
     s.append("for(var ")
-    s.append(vd.toString(indent)).append(" in ").append(expr.toString(indent)).append(")\n")
+    s.append(vd.toString(indent)).append(" in ")
+    s.append(expr.toString(indent)).append(")").append(Config.LINE_SEP)
     if (oneline) s.append(NU.getIndent(indent + 1)).append(body.toString(indent + 1))
     else s.append(NU.getIndent(indent)).append(body.toString(indent))
     s.toString
@@ -338,7 +341,7 @@ case class With(override val info: ASTNodeInfo, expr: Expr, stmt: Stmt)
     if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
     var oneline: Boolean = NU.isOneline(stmt)
     s.append("with (")
-    s.append(expr.toString(indent)).append(")\n")
+    s.append(expr.toString(indent)).append(")").append(Config.LINE_SEP)
     if (oneline) s.append(NU.getIndent(indent + 1)).append(stmt.toString(indent + 1))
     else s.append(NU.getIndent(indent)).append(stmt.toString(indent))
     s.toString
@@ -353,15 +356,15 @@ case class Switch(override val info: ASTNodeInfo, cond: Expr, frontCases: List[C
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
-    s.append("switch (").append(cond.toString(indent)).append("){\n")
+    s.append("switch (").append(cond.toString(indent)).append("){").append(Config.LINE_SEP)
 
-    s.append(NU.getIndent(indent + 1)).append(NU.join(indent + 1, frontCases, "\n" + NU.getIndent(indent + 1), new StringBuilder("")))
+    s.append(NU.getIndent(indent + 1)).append(NU.join(indent + 1, frontCases, Config.LINE_SEP + NU.getIndent(indent + 1), new StringBuilder("")))
     if (defopt.isDefined) {
-      s.append("\n").append(NU.getIndent(indent + 1)).append("default:")
-      s.append("\n").append(NU.getIndent(indent + 2)).append(NU.join(indent + 2, defopt.get, "\n" + NU.getIndent(indent + 2), new StringBuilder("")))
+      s.append(Config.LINE_SEP).append(NU.getIndent(indent + 1)).append("default:")
+      s.append(Config.LINE_SEP).append(NU.getIndent(indent + 2)).append(NU.join(indent + 2, defopt.get, Config.LINE_SEP + NU.getIndent(indent + 2), new StringBuilder("")))
     }
-    s.append("\n").append(NU.getIndent(indent + 1)).append(NU.join(indent + 1, backCases, "\n" + NU.getIndent(indent + 1), new StringBuilder("")))
-    s.append("\n").append(NU.getIndent(indent)).append("}")
+    s.append(Config.LINE_SEP).append(NU.getIndent(indent + 1)).append(NU.join(indent + 1, backCases, Config.LINE_SEP + NU.getIndent(indent + 1), new StringBuilder("")))
+    s.append(Config.LINE_SEP).append(NU.getIndent(indent)).append("}")
     s.toString
   }
 }
@@ -400,16 +403,17 @@ case class Try(override val info: ASTNodeInfo, body: List[Stmt], catchBlock: Opt
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
-    s.append("try\n{")
-    s.append(NU.getIndent(indent + 1)).append(NU.join(indent + 1, body, "\n" + NU.getIndent(indent + 1), new StringBuilder("")))
+    s.append("try").append(Config.LINE_SEP).append("{")
+    s.append(NU.getIndent(indent + 1)).append(NU.join(indent + 1, body, Config.LINE_SEP + NU.getIndent(indent + 1), new StringBuilder("")))
     s.append("}")
     if (catchBlock.isDefined)
-      s.append("\n").append(NU.getIndent(indent)).append(catchBlock.get.toString(indent))
+      s.append(Config.LINE_SEP).append(NU.getIndent(indent)).append(catchBlock.get.toString(indent))
     if (fin.isDefined) {
       var oneline: Boolean = NU.isOneline(fin)
-      s.append("\n").append(NU.getIndent(indent)).append("finally\n{")
-      s.append(NU.getIndent(indent + 1)).append(NU.join(indent + 1, fin.get, "\n" + NU.getIndent(indent + 1), new StringBuilder("")))
-      s.append("}\n")
+      s.append(Config.LINE_SEP).append(NU.getIndent(indent))
+      s.append("finally").append(Config.LINE_SEP).append("{")
+      s.append(NU.getIndent(indent + 1)).append(NU.join(indent + 1, fin.get, Config.LINE_SEP + NU.getIndent(indent + 1), new StringBuilder("")))
+      s.append("}").append(Config.LINE_SEP)
     }
     s.toString
   }
@@ -459,9 +463,9 @@ case class Case(override val info: ASTNodeInfo, cond: Expr, body: List[Stmt])
     val s: StringBuilder = new StringBuilder
     if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
     s.append("case ").append(cond.toString(indent))
-    s.append(":\n")
-    s.append(NU.getIndent(indent + 1)).append(NU.join(indent + 1, body, "\n" + NU.getIndent(indent + 1), new StringBuilder("")))
-    s.append("\n")
+    s.append(":").append(Config.LINE_SEP)
+    s.append(NU.getIndent(indent + 1)).append(NU.join(indent + 1, body, Config.LINE_SEP + NU.getIndent(indent + 1), new StringBuilder("")))
+    s.append(Config.LINE_SEP)
     s.toString
   }
 }
@@ -475,10 +479,10 @@ case class Catch(override val info: ASTNodeInfo, id: Id, body: List[Stmt])
     val s: StringBuilder = new StringBuilder
     if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
     var oneline: Boolean = NU.isOneline(body)
-    s.append("catch (").append(id.toString(indent)).append(")\n")
+    s.append("catch (").append(id.toString(indent)).append(")").append(Config.LINE_SEP)
     s.append("{")
-    s.append(NU.getIndent(indent + 1)).append(NU.join(indent + 1, body, "\n" + NU.getIndent(indent + 1), new StringBuilder("")))
-    s.append("}\n")
+    s.append(NU.getIndent(indent + 1)).append(NU.join(indent + 1, body, Config.LINE_SEP + NU.getIndent(indent + 1), new StringBuilder("")))
+    s.append("}").append(Config.LINE_SEP)
     s.toString
   }
 }
@@ -734,9 +738,9 @@ case class ObjectExpr(override val info: ASTNodeInfo, members: List[Member])
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
-    s.append("{\n")
-    s.append(NU.getIndent(indent + 1)).append(NU.join(indent + 1, members, ",\n" + NU.getIndent(indent + 1), new StringBuilder("")))
-    s.append("\n").append(NU.getIndent(indent)).append("}")
+    s.append("{").append(Config.LINE_SEP)
+    s.append(NU.getIndent(indent + 1)).append(NU.join(indent + 1, members, "," + Config.LINE_SEP + NU.getIndent(indent + 1), new StringBuilder("")))
+    s.append(Config.LINE_SEP).append(NU.getIndent(indent)).append("}")
     s.toString
   }
 }
@@ -766,10 +770,10 @@ case class FunExpr(override val info: ASTNodeInfo, ftn: Functional)
     if (!NU.isFunExprName(ftn.name.text)) s.append(ftn.name.toString(indent))
     s.append("(")
     s.append(NU.join(indent, ftn.params, ", ", new StringBuilder("")))
-    s.append(") \n").append(NU.getIndent(indent)).append("{\n")
+    s.append(") ").append(Config.LINE_SEP).append(NU.getIndent(indent)).append("{").append(Config.LINE_SEP)
     NU.prUseStrictDirective(s, indent, ftn.fds, ftn.vds, ftn.stmts)
     NU.prFtn(s, indent, ftn.fds, ftn.vds, ftn.stmts.body)
-    s.append("\n").append(NU.getIndent(indent)).append("})")
+    s.append(Config.LINE_SEP).append(NU.getIndent(indent)).append("})")
     s.toString
   }
 }
@@ -894,10 +898,11 @@ case class GetProp(override val info: ASTNodeInfo, prop: Property, ftn: Function
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
-    s.append("get ").append(prop.toString(indent)).append("()\n").append(NU.getIndent(indent)).append("{\n")
+    s.append("get ").append(prop.toString(indent)).append("()").append(Config.LINE_SEP)
+    s.append(NU.getIndent(indent)).append("{").append(Config.LINE_SEP)
     NU.prUseStrictDirective(s, indent, ftn.fds, ftn.vds, ftn.stmts)
     NU.prFtn(s, indent, ftn.fds, ftn.vds, ftn.stmts.body)
-    s.append("\n").append(NU.getIndent(indent)).append("}")
+    s.append(Config.LINE_SEP).append(NU.getIndent(indent)).append("}")
     s.toString
   }
 }
@@ -911,10 +916,11 @@ case class SetProp(override val info: ASTNodeInfo, prop: Property, ftn: Function
     val s: StringBuilder = new StringBuilder
     if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
     s.append("set ").append(prop.toString(indent)).append("(")
-    s.append(ftn.params.head.toString(indent)).append(") \n").append(NU.getIndent(indent)).append("{\n")
+    s.append(ftn.params.head.toString(indent)).append(") ").append(Config.LINE_SEP)
+    s.append(NU.getIndent(indent)).append("{").append(Config.LINE_SEP)
     NU.prUseStrictDirective(s, indent, ftn.fds, ftn.vds, ftn.stmts)
     NU.prFtn(s, indent, ftn.fds, ftn.vds, ftn.stmts.body)
-    s.append("\n").append(NU.getIndent(indent)).append("}")
+    s.append(Config.LINE_SEP).append(NU.getIndent(indent)).append("}")
     s.toString
   }
 }
@@ -985,7 +991,7 @@ case class Comment(override val info: ASTNodeInfo, txt: String)
     extends ASTNode(info: ASTNodeInfo) {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
-    s.append(txt + "\n")
+    s.append(txt + Config.LINE_SEP)
     s.toString
   }
 }
@@ -1019,10 +1025,10 @@ case class Functional(override val info: ASTNodeInfo, fds: List[FunDecl], vds: L
     val s: StringBuilder = new StringBuilder
     s.append(name.toString(indent)).append("(")
     s.append(NU.join(indent, params, ", ", new StringBuilder("")))
-    s.append(") \n").append(NU.getIndent(indent)).append("{\n")
+    s.append(") ").append(Config.LINE_SEP).append(NU.getIndent(indent)).append("{").append(Config.LINE_SEP)
     NU.prUseStrictDirective(s, indent, fds, vds, stmts)
     NU.prFtn(s, indent, fds, vds, stmts.body)
-    s.append("\n").append(NU.getIndent(indent)).append("}")
+    s.append(Config.LINE_SEP).append(NU.getIndent(indent)).append("}")
     s.toString
   }
 }

@@ -40,7 +40,7 @@ class CoreTest extends FlatSpec {
 
   def readFile(filename: String): String = {
     assert(new File(filename).exists)
-    normalized(Source.fromFile(filename).getLines.mkString("\n"))
+    normalized(Source.fromFile(filename).getLines.mkString(Config.LINE_SEP))
   }
 
   def parseTest(pgmOpt: Option[Program]): Unit = {

@@ -11,13 +11,14 @@
 
 package kr.ac.kaist.safe.errors
 
+import kr.ac.kaist.safe.config.Config
 import kr.ac.kaist.safe.nodes.NodeInfo
 import java.util.regex.Pattern
 
 class SyntaxError(description: String, location: Option[NodeInfo])
     extends StaticError(description, location) {
   override def getMessage: String = toString
-  override def toString: String = String.format("%s:\n    %s", at, description)
+  override def toString: String = String.format("%s:$s    %s", at, Config.LINE_SEP, description)
 
   override def at: String = location match {
     case Some(info) => info.span.toString

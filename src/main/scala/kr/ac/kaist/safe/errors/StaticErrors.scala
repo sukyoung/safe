@@ -11,6 +11,8 @@
 
 package kr.ac.kaist.safe.errors
 
+import kr.ac.kaist.safe.config.Config
+
 object StaticErrors {
   def flattenErrors(ex: Iterable[_ <: StaticError]): List[_ <: StaticError] = {
     var result: List[StaticError] = Nil
@@ -23,7 +25,7 @@ object StaticErrors {
     if (!errors.isEmpty) {
       var str: String = ""
       for (error: StaticError <- errors.sortWith(_.compareTo(_) < 0))
-        str += error.getMessage + "\n"
+        str += error.getMessage + Config.LINE_SEP
       val num_errors = errors.length
       str += s"File $file_name has $num_errors error" + (if (num_errors == 1) "." else "s.")
       Some(str)
