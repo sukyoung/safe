@@ -668,7 +668,7 @@ case class StringLiteral(override val info: ASTNodeInfo, quote: String, escaped:
     val s: StringBuilder = new StringBuilder
     if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
     s.append(quote)
-    NU.pp(s, escaped)
+    NU.ppAST(s, escaped)
     s.append(quote)
     s.toString
   }

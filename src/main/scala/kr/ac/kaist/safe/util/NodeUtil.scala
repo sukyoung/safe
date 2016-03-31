@@ -108,35 +108,33 @@ object NodeUtil {
     case Some((_, new_uniq)) => new_uniq
   }
 
-  def pp(s: StringBuilder, str: String): Unit = {
-    for (c <- str) c match {
-      case '\u0008' => s.append('\b')
-      case '\t' => s.append('\t')
-      case '\n' => s.append('\n')
-      case '\f' => s.append('\f')
-      case '\r' => s.append('\r')
-      case '\u000b' => s.append('\u000b')
-      case '"' => s.append('"')
-      case '\'' => s.append("'")
-      case '\\' => s.append('\\')
-      case c => s.append(c + "")
-    }
-  }
+  def ppAST(s: StringBuilder, str: String): Unit =
+    s.append(str.foldLeft("")((res, c) => c match {
+      case '\u0008' => res + '\b'
+      case '\t' => res + '\t'
+      case '\n' => res + '\n'
+      case '\f' => res + '\f'
+      case '\r' => res + '\r'
+      case '\u000b' => res + '\u000b'
+      case '"' => res + '"'
+      case '\'' => res + "'"
+      case '\\' => res + '\\'
+      case c => res + c
+    }))
 
-  def ppIR(s: StringBuilder, str: String): Unit = {
-    for (c <- str) c match {
-      case '\u0008' => s.append("\\b")
-      case '\t' => s.append("\\t")
-      case '\n' => s.append("\\n")
-      case '\f' => s.append("\\f")
-      case '\r' => s.append("\\r")
-      case '\u000b' => s.append("\\v")
-      case '"' => s.append("\\\"")
-      case '\'' => s.append("'")
-      case '\\' => s.append("\\")
-      case c => s.append(c + "")
-    }
-  }
+  def pp(str: String): String =
+    str.foldLeft("")((res, c) => c match {
+      case '\u0008' => res + "\\b"
+      case '\t' => res + "\\t"
+      case '\n' => res + "\\n"
+      case '\f' => res + "\\f"
+      case '\r' => res + "\\r"
+      case '\u000b' => res + "\\v"
+      case '"' => res + "\\\""
+      case '\'' => res + "'"
+      case '\\' => res + "\\"
+      case c => res + c
+    })
 
   def getIndent(indent: Int): String = {
     val s: StringBuilder = new StringBuilder

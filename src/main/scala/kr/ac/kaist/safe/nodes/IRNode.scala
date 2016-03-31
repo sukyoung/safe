@@ -550,7 +550,7 @@ abstract class IRId(override val info: IRNodeInfo, val originalName: String, val
     else if (!NU.isGlobalName(uniqueName)) uniqueName.dropRight(size) + NU.getNodesE(uniqueName.takeRight(size))
     else uniqueName
     val s: StringBuilder = new StringBuilder
-    NU.pp(s, str)
+    s.append(NU.pp(str))
     s.toString
   }
 
@@ -562,7 +562,7 @@ abstract class IRId(override val info: IRNodeInfo, val originalName: String, val
     else uniqueName
     val s: StringBuilder = new StringBuilder
     s.append("\"")
-    NU.ppIR(s, str.replaceAll("\\\\", "\\\\\\\\"))
+    s.append(NU.pp(str.replaceAll("\\\\", "\\\\\\\\")))
     s.append("\"")
     s.toString
   }
@@ -618,7 +618,7 @@ case class IRString(override val info: IRNodeInfo, val str: String)
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     s.append("\"")
-    NU.ppIR(s, str.replaceAll("\\\\", "\\\\\\\\"))
+    s.append(NU.pp(str.replaceAll("\\\\", "\\\\\\\\")))
     s.append("\"")
     s.toString
   }
