@@ -409,7 +409,6 @@ case class Try(override val info: ASTNodeInfo, body: List[Stmt], catchBlock: Opt
     if (catchBlock.isDefined)
       s.append(Config.LINE_SEP).append(NU.getIndent(indent)).append(catchBlock.get.toString(indent))
     if (fin.isDefined) {
-      var oneline: Boolean = NU.isOneline(fin)
       s.append(Config.LINE_SEP).append(NU.getIndent(indent))
       s.append("finally").append(Config.LINE_SEP).append("{")
       s.append(NU.getIndent(indent + 1)).append(NU.join(indent + 1, fin.get, Config.LINE_SEP + NU.getIndent(indent + 1), new StringBuilder("")))
@@ -478,7 +477,6 @@ case class Catch(override val info: ASTNodeInfo, id: Id, body: List[Stmt])
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
-    var oneline: Boolean = NU.isOneline(body)
     s.append("catch (").append(id.toString(indent)).append(")").append(Config.LINE_SEP)
     s.append("{")
     s.append(NU.getIndent(indent + 1)).append(NU.join(indent + 1, body, Config.LINE_SEP + NU.getIndent(indent + 1), new StringBuilder("")))

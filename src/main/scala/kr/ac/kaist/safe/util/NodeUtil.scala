@@ -383,10 +383,9 @@ object NodeUtil {
         sys.error("Writing to a log file for the parser failed!")
     }
 
-  def isOneline(node: Any): Boolean = node match {
-    case ABlock => false
-    case Some(in) => isOneline(in)
-    case _ => !(node.isInstanceOf[ABlock])
+  def isOneline(s: Stmt): Boolean = s match {
+    case _: ABlock => false
+    case _ => true
   }
 
   def inParentheses(str: String): String = {
