@@ -11,8 +11,8 @@
 
 package kr.ac.kaist.safe.compiler
 
-import kr.ac.kaist.safe.errors.ErrorLog
-import kr.ac.kaist.safe.errors.StaticError
+import kr.ac.kaist.safe.errors.ExcLog
+import kr.ac.kaist.safe.errors.error._
 import kr.ac.kaist.safe.nodes._
 import kr.ac.kaist.safe.util.{ NodeUtil => NU, Span }
 import kr.ac.kaist.safe.config.Config
@@ -31,14 +31,8 @@ class Disambiguator(program: Program) extends ASTWalker {
    * To collect multiple errors,
    * we should return a dummy value after signaling an error.
    */
-  val errors: ErrorLog = new ErrorLog
-  def signal(msg: String, node: Node): Unit = errors.signal(msg, node)
-  def signal(node: Node, msg: String): Unit = errors.signal(msg, node)
-  def signal(error: StaticError): Unit = errors.signal(error)
-  val assignErrors: ErrorLog = new ErrorLog
-  def assignSignal(msg: String, node: Node): Unit = assignErrors.signal(msg, node)
-
-  def getErrors(): List[StaticError] = errors.errors
+  var excLog: ExcLog = new ExcLog
+  val assExcLog: ExcLog = new ExcLog
 
   /* Environment for renaming identifiers. */
   type Env = List[(String, String)]
@@ -62,19 +56,19 @@ class Disambiguator(program: Program) extends ASTWalker {
    * EvalError, RangeError, ReferenceError, SyntaxError, TypeError, URIError
    */
   def addEnv(name: String, newid: Id): Unit = newid.uniqueName match {
-    case None => signal("Identifier " + name + " is not bound.", newid)
+    case None => excLog.signal(IdNotBoundError(name, newid))
     case Some(uniq) => env = (name, uniq) :: env
   }
   def addEnv(id: Id, newid: Id): Unit = newid.uniqueName match {
-    case None => signal("Identifier " + id.text + " is not bound.", id)
+    case None => excLog.signal(IdNotBoundError(id.text, id))
     case Some(uniq) => env = (id.text, uniq) :: env
   }
   def addEnv(newid: Id): Unit = newid.uniqueName match {
-    case None => signal("Identifier " + newid.text + " is not bound.", newid)
+    case None => excLog.signal(IdNotBoundError(newid.text, newid))
     case Some(uniq) => env = (newid.text, uniq) :: env
   }
   def addLEnv(id: Id, newid: Id): Unit = newid.uniqueName match {
-    case None => signal("Identifier " + id.text + " is not bound.", id)
+    case None => excLog.signal(IdNotBoundError(id.text, id))
     case Some(uniq) =>
       labEnv = (labEnv._1, labEnv._2, labEnv._4 ++ labEnv._3, (id.text, uniq) :: labEnv._4)
   }
@@ -104,7 +98,7 @@ class Disambiguator(program: Program) extends ASTWalker {
       case Some((_, uniq)) => uniq
       case None =>
         if (!inWith)
-          assignSignal("Identifier " + id.text + " is not bound.", id)
+          assExcLog.signal(IdNotBoundError(id.text, id))
         name
     }
   }
@@ -140,13 +134,6 @@ class Disambiguator(program: Program) extends ASTWalker {
       PropId(info, Id(info, text, Some(text), false))
   }
 
-  def signalDataAccProp(name: String, n: Member): Unit =
-    signal("ObjectLiteral may not have a data property and an accessor property with the same name. \"" + name + "\"", n)
-  def signalGetProp(name: String, n: Member): Unit =
-    signal("ObjectLiteral may not have multiple getter properties with the same name. \"" + name + "\"", n)
-  def signalSetProp(name: String, n: Member): Unit =
-    signal("ObjectLiteral may not have multiple setter properties with the same name. \"" + name + "\"", n)
-
   def checkDuplicatedProperty(members: List[Member]): Unit = {
     var member1Str: String = ""
     var member2Str: String = ""
@@ -156,17 +143,17 @@ class Disambiguator(program: Program) extends ASTWalker {
         member2Str = NU.member2Str(member2)
         if (member1Str.equals(member2Str)) (member1, member2) match {
           case (Field(_, _, _), GetProp(_, _, _)) =>
-            signalDataAccProp(member1Str, member2)
+            excLog.signal(DataAccPropError(member1Str, member2))
           case (Field(_, _, _), SetProp(_, _, _)) =>
-            signalDataAccProp(member1Str, member2)
+            excLog.signal(DataAccPropError(member1Str, member2))
           case (GetProp(_, _, _), Field(_, _, _)) =>
-            signalDataAccProp(member1Str, member2)
+            excLog.signal(DataAccPropError(member1Str, member2))
           case (SetProp(_, _, _), Field(_, _, _)) =>
-            signalDataAccProp(member1Str, member2)
+            excLog.signal(DataAccPropError(member1Str, member2))
           case (GetProp(_, _, _), GetProp(_, _, _)) =>
-            signalGetProp(member1Str, member2)
+            excLog.signal(GetPropError(member1Str, member2))
           case (SetProp(_, _, _), SetProp(_, _, _)) =>
-            signalSetProp(member1Str, member2)
+            excLog.signal(SetPropError(member1Str, member2))
           case _ =>
         }
       }
@@ -176,7 +163,7 @@ class Disambiguator(program: Program) extends ASTWalker {
   /* The main entry function */
   def doit(): Program = {
     val result = NU.simplifyWalker.walk(walk(program).asInstanceOf[Program]).asInstanceOf[Program]
-    if (!hasAssign) for (e <- assignErrors.errors) signal(e)
+    if (!hasAssign) excLog += assExcLog
     result
   }
 
@@ -307,7 +294,7 @@ class Disambiguator(program: Program) extends ASTWalker {
         case Some(label) => labEnv._3.find(p => p._1.equals(label.id.text)) match {
           case None => labEnv._2.find(p => p._1.equals(label.id.text)) match {
             case None =>
-              signal("Break occurs outside of a label.", br)
+              excLog.signal(OutsideBreakError(br, "a label"))
               return EmptyStmt(info)
             case Some((_, uniq)) => Some(newLabel(label, uniq))
           }
@@ -315,7 +302,7 @@ class Disambiguator(program: Program) extends ASTWalker {
         }
         case None =>
           if (!inIterator && !inSwitch) {
-            signal("Break occurs outside of an iterator or a switch.", br)
+            excLog.signal(OutsideBreakError(br, "an iterator or a switch."))
             return EmptyStmt(info)
           } else None
       }
@@ -343,13 +330,13 @@ class Disambiguator(program: Program) extends ASTWalker {
      */
     case c @ Continue(info, target) =>
       if (!inIterator) {
-        signal("Continue occurs outside of an iterator.", c);
+        excLog.signal(OutsideContError(c, "an iterator."))
         return EmptyStmt(info)
       } else {
         val new_target = target match {
           case Some(label) => labEnv._1.find(p => p._1.equals(label.id.text)) match {
             case None =>
-              signal("Continue occurs outside of a label.", c)
+              excLog.signal(OutsideContError(c, "a label."))
               return EmptyStmt(info)
             case Some((_, uniq)) => Some(newLabel(label, uniq))
           }
@@ -387,13 +374,13 @@ class Disambiguator(program: Program) extends ASTWalker {
       env = newEnv
       result
     case fv: ForVar =>
-      signal("ForVar should be replaced by the hoister.", fv)
+      excLog.signal(NotReplacedByHoisterError(fv))
     case fv: ForVarIn =>
-      signal("ForVarIn should be replaced by the hoister.", fv)
+      excLog.signal(NotReplacedByHoisterError(fv))
     case ls @ LabelStmt(info, label @ Label(_, Id(_, name, _, _)), stmt) =>
       labEnv._4.find(p => p._1.equals(name)) match {
         case Some(_) =>
-          signal("Multiple declarations of the label: " + name + ".", ls)
+          excLog.signal(MultipleLabelDeclError(name, ls))
           ls
         case None =>
           val old_env = (env, labEnv)
@@ -410,7 +397,7 @@ class Disambiguator(program: Program) extends ASTWalker {
      */
     case rt @ Return(info, expr) =>
       if (!inFunctionBody)
-        signal("Return occurs outside of a function body.", rt)
+        excLog.signal(OutsideRetrunError(rt))
       val oldLEnv = setLEnv(node.asInstanceOf[ASTNode])
       val result = super.walk(rt)
       resetLEnv(oldLEnv)
@@ -425,7 +412,7 @@ class Disambiguator(program: Program) extends ASTWalker {
       setEnv(old_env)
       result
     case VarRef(info, id) => VarRef(info, newId(id, getEnvCheck(id)))
-    case vs: VarStmt => signal("VarStmt should be replaced by the hoister.", vs)
+    case (vs: VarStmt) => excLog.signal(NotReplacedByHoisterError(vs))
     case _: While =>
       val old_env = (env, labEnv)
       val oldInIterator = inIterator

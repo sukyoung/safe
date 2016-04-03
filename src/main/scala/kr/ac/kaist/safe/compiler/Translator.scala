@@ -11,9 +11,8 @@
 
 package kr.ac.kaist.safe.compiler
 
-import kr.ac.kaist.safe.errors.ErrorLog
-import kr.ac.kaist.safe.errors.SAFEError.error
-import kr.ac.kaist.safe.errors.StaticError
+import kr.ac.kaist.safe.errors.ExcLog
+import kr.ac.kaist.safe.errors.error._
 import kr.ac.kaist.safe.nodes._
 import kr.ac.kaist.safe.util.{ NodeUtil => NU, Span }
 
@@ -24,11 +23,7 @@ class Translator(program: Program) extends ASTWalker {
    * To collect multiple errors,
    * we should return a default value after signaling an error.
    */
-  val errors: ErrorLog = new ErrorLog
-  def signal(msg: String, node: Node): Unit = errors.signal(msg, node)
-  def signal(node: Node, msg: String): Unit = errors.signal(msg, node)
-  def signal(error: StaticError): Unit = errors.signal(error)
-  def getErrors: List[StaticError] = errors.errors
+  val excLog: ExcLog = new ExcLog
 
   ////////////////////////////////////////////////////////////////
   // Helpers
@@ -272,7 +267,7 @@ class Translator(program: Program) extends ASTWalker {
   def getE(env: Env, name: String): IRId = env.find(p => p._1.equals(name)) match {
     case None =>
       val id = defaultIRId(name)
-      signal("Identifier " + name + " is not bound.", id)
+      excLog.signal(IRIdNotBoundError(name, id))
       id
     case Some((_, id)) => id
   }
@@ -291,7 +286,7 @@ class Translator(program: Program) extends ASTWalker {
   // Getter and setter names to IRId, which do not check for "arguments"
   def mid2ir(env: Env, id: Id): IRId = id.uniqueName match {
     case None =>
-      signal("Identifiers should have a unique name after the disambiguation phase:" + id.text, id)
+      excLog.signal(NotUniqueIdError(id))
       defaultIRId(id)
     case Some(n) =>
       makeUId(id.text, n, !isLocal(n), id, false)
@@ -300,7 +295,7 @@ class Translator(program: Program) extends ASTWalker {
   // When we don't know whether a give id is a local variable or not
   def id2ir(env: Env, id: Id): IRId = id.uniqueName match {
     case None =>
-      signal("Identifiers should have a unique name after the disambiguation phase:" + id.text, id)
+      excLog.signal(NotUniqueIdError(id))
       defaultIRId(id)
     case Some(n) if id.text.equals(argName) && isLocal =>
       if (debug) println("before getE:id2ir-" + id.text + " " + id.uniqueName)
@@ -320,7 +315,7 @@ class Translator(program: Program) extends ASTWalker {
     val id = label.id
     id.uniqueName match {
       case None =>
-        signal("Labels should have a unique name after the disambiguation phase:" + id.text, label)
+        excLog.signal(NotUniqueLabelError(label))
         defaultIRId(label)
       case Some(n) => makeUId(id.text, n, false, label, false)
     }
@@ -495,7 +490,7 @@ class Translator(program: Program) extends ASTWalker {
       expr match {
         case None =>
         case _ =>
-          signal("Variable declarations should not have any initialization expressions after the disambiguation phase.", vd)
+          excLog.signal(VarDeclNotHaveInitExprError(vd))
       }
       new IRVarStmt(trueInfo(vd), id2ir(env, name), false)
   }
@@ -715,11 +710,11 @@ class Translator(program: Program) extends ASTWalker {
       makeStmtUnit(s, new IRLabelStmt(falseInfo(s), labelName, stmt))
 
     case _: ForVar =>
-      signal("ForVar should be replaced by Hoister.", s)
+      excLog.signal(NotReplacedByHoisterError(s))
       defaultIRStmt(s)
 
     case _: ForVarIn =>
-      signal("ForVarIn should be replaced by Hoister.", s)
+      excLog.signal(NotReplacedByHoisterError(s))
       defaultIRStmt(s)
 
     case Continue(info, target) =>
@@ -798,7 +793,7 @@ class Translator(program: Program) extends ASTWalker {
     case Debugger(info) => makeStmtUnit(s)
 
     case _: VarStmt =>
-      signal("VarStmt should be replaced by the hoister.", s)
+      excLog.signal(NotReplacedByHoisterError(s))
       defaultIRStmt(s)
 
     case NoOp(info, desc) =>
@@ -904,7 +899,7 @@ class Translator(program: Program) extends ASTWalker {
         (walkLval(e, lhs, addE(env, oldName, oldVal), ss, bin, true)._1, bin)
       }
 
-    case UnaryAssignOpApp(info, lhs, op) =>
+    case u @ UnaryAssignOpApp(info, lhs, op) =>
       if (op.text.equals("++") || op.text.equals("--")) {
         val lhsspan = NU.getSpan(lhs)
         val oldVal = freshId(lhs, lhsspan, oldName)
@@ -917,7 +912,7 @@ class Translator(program: Program) extends ASTWalker {
             newVal
         )
       } else {
-        signal("Invalid UnaryAssignOpApp operator: " + op.text, e)
+        excLog.signal(InvalidUnAssignOpError(u))
         (List(), defaultIRExpr)
       }
 
@@ -966,15 +961,15 @@ class Translator(program: Program) extends ASTWalker {
         (ss, new IRUn(trueInfo(e), NU.makeIROp(opText), r))
       }
 
-    case InfixOpApp(info, left, op, right) if op.text.equals("&&") =>
+    case infix @ InfixOpApp(info, left, op, right) if op.text.equals("&&") =>
       val args = getAndArgs(left) :+ right
       val news = args.zipWithIndex.map(a => freshId(a._1, NU.getSpan(a._1), "new" + a._2))
       // list of (ss_i, r_i)
       val ress = args.zip(news).map(p => walkExpr(p._1, env, p._2))
       val (arg1: Expr, arg2: Expr, argsRest) =
-        args.reverse match { case a1 :: a2 :: ar => (a2, a1, ar.reverse) case _ => signal("Internal error", e) }
+        args.reverse match { case a1 :: a2 :: ar => (a2, a1, ar.reverse) case _ => excLog.signal(InternalError(infix)) }
       val (res1: (_, _), res2: (_, _), ressRest) =
-        ress.reverse match { case a1 :: a2 :: ar => (a2, a1, ar.reverse) case _ => signal("Internal error", e) }
+        ress.reverse match { case a1 :: a2 :: ar => (a2, a1, ar.reverse) case _ => excLog.signal(InternalError(infix)) }
       val cond = res1._2.asInstanceOf[IRExpr]
       val body = makeSeq(
         e,
@@ -1427,7 +1422,7 @@ class Translator(program: Program) extends ASTWalker {
        *   ignore = LHS
        *   ignore = RHS
        *   ignore = ReferenceError
-      signal("ReferenceError!", lhs)
+      excLog.signal("ReferenceError!", lhs)
        */
       val lhsid = freshId(lhs, "weird_lhs")
       val (ss, r) = walkExpr(lhs, env, lhsid)

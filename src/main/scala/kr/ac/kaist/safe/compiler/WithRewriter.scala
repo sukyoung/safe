@@ -11,9 +11,8 @@
 
 package kr.ac.kaist.safe.compiler
 
-import kr.ac.kaist.safe.errors.ErrorLog
-import kr.ac.kaist.safe.errors.SAFEError.error
-import kr.ac.kaist.safe.errors.StaticError
+import kr.ac.kaist.safe.errors.ExcLog
+import kr.ac.kaist.safe.errors.error._
 import kr.ac.kaist.safe.nodes._
 import kr.ac.kaist.safe.util.{ NodeUtil => NU }
 
@@ -26,11 +25,7 @@ class WithRewriter(program: Program, forTest: Boolean) extends ASTWalker {
    * To collect multiple errors,
    * we should return a dummy value after signaling an error.
    */
-  val errors: ErrorLog = new ErrorLog
-  def signal(msg: String, node: Node): Unit = errors.signal(msg, node)
-  def signal(node: Node, msg: String): Unit = errors.signal(msg, node)
-  def signal(error: StaticError): Unit = errors.signal(error)
-  def getErrors: List[StaticError] = errors.errors
+  val excLog: ExcLog = new ExcLog
 
   abstract class Env()
   case class EmptyEnv() extends Env
@@ -133,7 +128,7 @@ class WithRewriter(program: Program, forTest: Boolean) extends ASTWalker {
         case EmptyEnv() => AssignOpApp(info, lhsWalk, op, exprWalk)
         case ConsEnv(withs, names, isNested) => withs match {
           case Nil =>
-            signal("Non-empty with-rewriting environment should have at least one with-object name.", aoa)
+            excLog.signal(NoWithObjError(aoa))
             aoa
           case alpha :: others =>
             val (first, rest) = splitNames(names)
@@ -212,7 +207,7 @@ class WithRewriter(program: Program, forTest: Boolean) extends ASTWalker {
       env match {
         case EmptyEnv() => fiWalk
         case ConsEnv(Nil, names, isNested) =>
-          signal("Non-empty with-rewriting environment should have at least one with-object name.", fi)
+          excLog.signal(NoWithObjError(fi))
           fi
         case ConsEnv(alpha :: others, names, isNested) => lhs match {
           case VarRef(vinfo, id) =>
@@ -243,10 +238,10 @@ class WithRewriter(program: Program, forTest: Boolean) extends ASTWalker {
         }
       }
     case fv: ForVar =>
-      signal("ForVar should be replaced by the hoister.", fv)
+      excLog.signal(NotReplacedByHoisterError(fv))
       fv
     case fv: ForVarIn =>
-      signal("ForVarIn should be replaced by the hoister.", fv)
+      excLog.signal(NotReplacedByHoisterError(fv))
       fv
     case fa @ FunApp(info, fun, args) =>
       val mapArgsWalk = args.map(e => walk(e, env).asInstanceOf[Expr])
@@ -255,7 +250,7 @@ class WithRewriter(program: Program, forTest: Boolean) extends ASTWalker {
         case EmptyEnv() => funAppWalk
         case ConsEnv(withs, names, isNested) => withs match {
           case Nil =>
-            signal("Non-empty with-rewriting environment should have at least one with-object name.", fa)
+            excLog.signal(NoWithObjError(fa))
             fa
           case alpha :: others => fun match {
             case VarRef(vinfo, id) =>
@@ -296,7 +291,7 @@ class WithRewriter(program: Program, forTest: Boolean) extends ASTWalker {
       case EmptyEnv() => id
       case ConsEnv(withs, names, isNested) => withs match {
         case Nil =>
-          signal("Non-empty with-rewriting environment should have at least one with-object name.", id)
+          excLog.signal(NoWithObjError(id))
           id
         case alpha :: others =>
           val (first, rest) = splitNames(names)
@@ -341,7 +336,7 @@ class WithRewriter(program: Program, forTest: Boolean) extends ASTWalker {
       case EmptyEnv() => PrefixOpApp(info, op, walk(right, env).asInstanceOf[Expr])
       case ConsEnv(withs, names, isNested) => withs match {
         case Nil =>
-          signal("Non-empty with-rewriting environment should have at least one with-object name.", poa)
+          excLog.signal(NoWithObjError(poa))
           poa
         case alpha :: others => right match {
           case VarRef(vinfo, id) =>
@@ -390,7 +385,7 @@ class WithRewriter(program: Program, forTest: Boolean) extends ASTWalker {
       case EmptyEnv() => UnaryAssignOpApp(info, walk(lhs, env).asInstanceOf[LHS], op)
       case ConsEnv(withs, names, isNested) => withs match {
         case Nil =>
-          signal("Non-empty with-rewriting environment should have at least one with-object name.", ua)
+          excLog.signal(NoWithObjError(ua))
           ua
         case alpha :: others => lhs match {
           case VarRef(vinfo, id) =>
@@ -419,7 +414,7 @@ class WithRewriter(program: Program, forTest: Boolean) extends ASTWalker {
       case EmptyEnv() => vr
       case ConsEnv(withs, names, isNested) => withs match {
         case Nil =>
-          signal("Non-empty with-rewriting environment should have at least one with-object name." + id.text, vr)
+          excLog.signal(NoWithObjError(vr))
           vr
         case alpha :: others =>
           val (first, rest) = splitNames(names)
@@ -440,7 +435,7 @@ class WithRewriter(program: Program, forTest: Boolean) extends ASTWalker {
       }
     }
     case vs: VarStmt =>
-      signal("VarStmt should be replaced by the hoister.", vs)
+      excLog.signal(NotReplacedByHoisterError(vs))
       vs
     case While(info, cond, body) =>
       While(info, walk(cond, env).asInstanceOf[Expr],

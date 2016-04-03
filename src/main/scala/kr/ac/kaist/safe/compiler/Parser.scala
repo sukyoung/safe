@@ -17,18 +17,10 @@ import xtc.parser.SemanticValue
 import xtc.parser.ParseError
 import kr.ac.kaist.safe.nodes._
 import kr.ac.kaist.safe.util.{ NodeUtil => NU, SourceLoc, Span }
-import kr.ac.kaist.safe.errors.{ ParserError, SAFEError, SyntaxError, UserError }
+import kr.ac.kaist.safe.errors.error._
 import kr.ac.kaist.safe.parser.JS
 
 object Parser {
-  class Result(pgm: Option[Program], errors: List[SyntaxError])
-      extends StaticPhaseResult(errors) {
-    var programs = pgm match {
-      case None => Set[Program]()
-      case Some(p) => Set(p)
-    }
-  }
-
   val mergedSourceLoc = new SourceLoc(NU.freshFile("Merged"), 0, 0, 0)
   val mergedSourceInfo = new ASTNodeInfo(new Span(mergedSourceLoc, mergedSourceLoc))
   var fileindex = 1
@@ -39,7 +31,7 @@ object Parser {
       val ses = program.body.stmts.head
       (info, SourceElements(info, (NU.makeNoOp(info, "StartOfFile")) +: ses.body :+ (NU.makeNoOp(info, "EndOfFile")), ses.strict))
     } else
-      throw new UserError("Sources are already merged!")
+      throw AlreadyMergedSourceError(info.span)
   }
 
   def scriptToStmts(script: (String, (Int, Int), String)): (ASTNodeInfo, SourceElements) = {
@@ -118,7 +110,7 @@ object Parser {
   def parseFile(file: File): Program = {
     val filename = file.getCanonicalPath
     if (!filename.endsWith(".js"))
-      throw new UserError("Need a JavaScript file instead of " + filename + ".")
+      throw NotJSFileError(filename)
     parsePgm(file, filename, 0)
   }
 
@@ -147,7 +139,7 @@ object Parser {
       if (parseResult.hasValue) {
         val result = parseResult.asInstanceOf[SemanticValue].value.asInstanceOf[Program]
         DynamicRewriter.doit(result)
-      } else throw new ParserError(parseResult.asInstanceOf[ParseError], parser, start)
+      } else throw ParserError(parseResult.asInstanceOf[ParseError].msg)
     } finally {
       try {
         val file = new File(syntaxLogFile)

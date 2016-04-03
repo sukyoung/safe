@@ -11,7 +11,6 @@
 
 package kr.ac.kaist.safe.util
 
-import kr.ac.kaist.safe.errors.SAFEError
 import java.io.File
 import java.io.IOException
 import java.io.Serializable
@@ -68,18 +67,10 @@ class Span(b: SourceLoc, e: SourceLoc) extends UIDObject with Serializable {
     else fileName.replace(File.separatorChar, '/')
 
   override def toString: String =
-    try {
-      appendToStr(new StringBuilder, true).toString
-    } catch {
-      case e: IOException => SAFEError.np.asInstanceOf[String]
-    }
+    appendToStr(new StringBuilder, true).toString
 
   def toStringWithoutFiles: String =
-    try {
-      appendToStr(new StringBuilder, false).toString
-    } catch {
-      case e: IOException => SAFEError.np.asInstanceOf[String]
-    }
+    appendToStr(new StringBuilder, false).toString
 
   override def at: String = toString
 

@@ -15,7 +15,7 @@ import java.io.{ BufferedWriter, FileWriter, IOException }
 
 import kr.ac.kaist.safe.config.{ Config, ConfigOption, OptionKind, BoolOption, StrOption }
 import kr.ac.kaist.safe.compiler.{ Hoister, Disambiguator, WithRewriter }
-import kr.ac.kaist.safe.errors.{ StaticError, StaticErrors }
+import kr.ac.kaist.safe.errors.ExcLog
 import kr.ac.kaist.safe.nodes.Program
 import kr.ac.kaist.safe.util.{ NodeUtil, Useful }
 
@@ -36,12 +36,15 @@ case class ASTRewrite(
     var program = (new Hoister(pgm).doit).asInstanceOf[Program]
     val disambiguator = new Disambiguator(program)
     program = (disambiguator.doit).asInstanceOf[Program]
-    var errors: List[StaticError] = disambiguator.getErrors
+    var excLog: ExcLog = disambiguator.excLog
     val withRewriter: WithRewriter = new WithRewriter(program, false)
     program = withRewriter.doit.asInstanceOf[Program]
 
     // Report errors.
-    StaticErrors.reportErrors(NodeUtil.getFileName(program), errors)
+    if (excLog.hasError) {
+      println(NodeUtil.getFileName(program) + ":")
+      println(excLog)
+    }
 
     // Pretty print to file.
     astRewriteConfig.outFile match {

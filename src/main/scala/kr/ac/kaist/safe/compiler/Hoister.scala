@@ -11,11 +11,11 @@
 
 package kr.ac.kaist.safe.compiler
 
-import kr.ac.kaist.safe.errors.ParserError
-import kr.ac.kaist.safe.errors.StaticError
+import kr.ac.kaist.safe.errors.ExcLog
+import kr.ac.kaist.safe.errors.error._
+import kr.ac.kaist.safe.errors.warning._
 import kr.ac.kaist.safe.nodes._
-import kr.ac.kaist.safe.util.{ NodeUtil => NU, BugInfo, Span }
-import kr.ac.kaist.safe.util.BugDefinition._
+import kr.ac.kaist.safe.util.{ NodeUtil => NU, Span }
 
 class Hoister(program: Program) extends ASTWalker {
   /* Error handling
@@ -23,13 +23,7 @@ class Hoister(program: Program) extends ASTWalker {
    * To collect multiple errors,
    * we should return a dummy value after signaling an error.
    */
-  var errors = List[BugInfo]()
-  private def isUserCode(span: Span): Boolean =
-    !span.fileName.containsSlice("jquery")
-  def signal(span: Span, bugKind: Int, arg1: String, arg2: String): Unit =
-    if (isUserCode(span))
-      errors ++= List(new BugInfo(span, bugKind, arg1, arg2))
-  def getErrors: List[BugInfo] = errors
+  var excLog = new ExcLog
 
   // getters
   def toSpan(node: ASTNode): Span = node.info.span
@@ -175,10 +169,10 @@ class Hoister(program: Program) extends ASTWalker {
     }
   // 3. function vs function
   //   2) a transitively enclosing function is the same name
-  def nestedF(bl: LocalBlock, name: String, span: String): Unit = bl.outer match {
+  def nestedF(bl: LocalBlock, name: String, span: Span): Unit = bl.outer match {
     case b: VarBlock => nestedF(b, name, span)
     case f: FunBlock if f.name.equals(name) =>
-      signal(f.span, ShadowedFuncByFunc, name, span)
+      excLog.signal(ShadowingWarning(f.span, ShadowingFunc, name, span, ShadowingFunc))
     case f: FunBlock => nestedF(f, name, span)
     case _ =>
   }
@@ -192,12 +186,12 @@ class Hoister(program: Program) extends ASTWalker {
   def checkLocalEnv(bl: FunBlock, name: String): Unit =
     // a reference to an enclosing function
     if (bl.name.equals(name)) {
-      nestedF(bl, name, bl.span.toStringWithoutFiles)
+      nestedF(bl, name, bl.span)
       // 4. var vs function
       //   3) multiple variable and function names in a local environment
       bl.vds.find(vd2Str(_).equals(name)) match {
         case Some(vd) =>
-          signal(bl.span, ShadowedFuncByVar, name, toSpan(vd).toStringWithoutFiles)
+          excLog.signal(ShadowingWarning(bl.span, ShadowingFunc, name, toSpan(vd), ShadowingVar))
         case _ =>
       }
     }
@@ -230,14 +224,14 @@ class Hoister(program: Program) extends ASTWalker {
         //   1) multiple names in a single var statement
         res.find(p => p._2.equals(name)) match {
           case Some((span, _)) =>
-            signal(span, ShadowedVarByVar, name, toSpan(vd).toStringWithoutFiles)
+            excLog.signal(ShadowingWarning(span, ShadowingVar, name, toSpan(vd), ShadowingVar))
           case _ =>
         }
         // 4. var vs function
         //   1) variable and function with the same name
         currentBlock.fds.find(fd2Str(_).equals(name)) match {
           case Some(fd) =>
-            signal(toSpan(vd), ShadowedVarByFunc, name, toSpan(fd).toStringWithoutFiles)
+            excLog.signal(ShadowingWarning(toSpan(vd), ShadowingVar, name, toSpan(fd), ShadowingFunc))
           case _ =>
         }
         // 5. parameter vs (var or function)
@@ -246,14 +240,14 @@ class Hoister(program: Program) extends ASTWalker {
             //   5) parameter and variable with the same name
             immediate.params.find(id2Str(_).equals(name)) match {
               case Some(param) =>
-                signal(toSpan(param), ShadowedParamByVar, name, toSpan(vd).toStringWithoutFiles)
+                excLog.signal(ShadowingWarning(toSpan(param), ShadowingParam, name, toSpan(vd), ShadowingVar))
               case _ =>
             }
             //   7) parameter and nested variable with the same name
             rest.foreach(b =>
               b.params.find(id2Str(_).equals(name)) match {
                 case Some(param) =>
-                  signal(toSpan(param), ShadowedParamByVar, name, toSpan(vd).toStringWithoutFiles)
+                  excLog.signal(ShadowingWarning(toSpan(param), ShadowingParam, name, toSpan(vd), ShadowingVar))
                 case _ =>
               })
           case _ =>
@@ -261,7 +255,7 @@ class Hoister(program: Program) extends ASTWalker {
         // 6. assignments vs var
         collectAssigns(currentBlock).find(ass => ass._2.equals(name)) match {
           case Some((span, _)) =>
-            signal(span, ShadowedVarByVar, name, toSpan(vd).toStringWithoutFiles)
+            excLog.signal(ShadowingWarning(span, ShadowingVar, name, toSpan(vd), ShadowingVar))
           case _ =>
         }
         res ++ List((toSpan(vd), name))
@@ -278,7 +272,7 @@ class Hoister(program: Program) extends ASTWalker {
             //      and the name is used in an outer block
             declareVR(bl, name) match {
               case Some(sp) =>
-                signal(span, ShadowedVarByVar, name, sp.toStringWithoutFiles)
+                excLog.signal(ShadowingWarning(span, ShadowingVar, name, sp, ShadowingVar))
               case _ =>
             }
             // 4. var vs function
@@ -286,7 +280,7 @@ class Hoister(program: Program) extends ASTWalker {
             //      and the name is used in an outer block
             declareFR(bl, name) match {
               case Some(sp) =>
-                signal(span, ShadowedVarByFunc, name, sp.toStringWithoutFiles)
+                excLog.signal(ShadowingWarning(span, ShadowingVar, name, sp, ShadowingFunc))
               case _ =>
             }
           })
@@ -300,7 +294,7 @@ class Hoister(program: Program) extends ASTWalker {
             //      and the name is used in an outer block
             declareVR(bl, name) match {
               case Some(sp) =>
-                signal(span, ShadowedFuncByVar, name, sp.toStringWithoutFiles)
+                excLog.signal(ShadowingWarning(span, ShadowingFunc, name, sp, ShadowingVar))
               case _ =>
             }
           })
@@ -316,7 +310,7 @@ class Hoister(program: Program) extends ASTWalker {
             blocks.takeRight(size - p._2 - 1).foreach(b =>
               declareV(b, name) match {
                 case Some(sp) =>
-                  signal(span, ShadowedVarByVar, name, sp.toStringWithoutFiles)
+                  excLog.signal(ShadowingWarning(span, ShadowingVar, name, sp, ShadowingVar))
                 case _ =>
               })
           case _ =>
@@ -330,7 +324,7 @@ class Hoister(program: Program) extends ASTWalker {
               // 4. var vs function
               //   4) if any transitively enclosing FunBlock has the same name
               rest.foreach(b => if (b.name.equals(name))
-                signal(b.span, ShadowedFuncByVar, name, toSpan(vd).toStringWithoutFiles))
+                excLog.signal(ShadowingWarning(b.span, ShadowingFunc, name, toSpan(vd), ShadowingVar)))
             case _ =>
           }
         case _ =>
@@ -340,12 +334,12 @@ class Hoister(program: Program) extends ASTWalker {
 
     case fd @ FunDecl(info, ftn, strict) =>
       val name = fd2Str(fd)
-      val fdSpan = toSpan(info).toStringWithoutFiles
+      val fdSpan = toSpan(info)
       // 4. var vs function
       //   1) variable and function with the same name
       currentBlock.vds.find(vd2Str(_).equals(name)) match {
         case Some(vd) =>
-          signal(toSpan(vd), ShadowedVarByFunc, name, toSpan(fd).toStringWithoutFiles)
+          excLog.signal(ShadowingWarning(toSpan(vd), ShadowingVar, name, toSpan(fd), ShadowingFunc))
         case _ =>
       }
       // 5. parameter vs (var or function)
@@ -354,14 +348,14 @@ class Hoister(program: Program) extends ASTWalker {
           //   6) parameter and function with the same name
           immediate.params.find(id2Str(_).equals(name)) match {
             case Some(param) =>
-              signal(toSpan(param), ShadowedParamByFunc, name, toSpan(fd).toStringWithoutFiles)
+              excLog.signal(ShadowingWarning(toSpan(param), ShadowingParam, name, toSpan(fd), ShadowingFunc))
             case _ =>
           }
           //   8) parameter and nested function with the same name
           rest.foreach(b =>
             b.params.find(id2Str(_).equals(name)) match {
               case Some(param) =>
-                signal(toSpan(param), ShadowedParamByFunc, name, toSpan(fd).toStringWithoutFiles)
+                excLog.signal(ShadowingWarning(toSpan(param), ShadowingParam, name, toSpan(fd), ShadowingFunc))
               case _ =>
             })
         case _ =>
@@ -371,7 +365,7 @@ class Hoister(program: Program) extends ASTWalker {
       //   1) multiple function names in the same block
       currentBlock.fds.find(f => fd2Str(f).equals(name)) match {
         case Some(f) =>
-          signal(toSpan(f), ShadowedFuncByFunc, name, fdSpan)
+          excLog.signal(ShadowingWarning(toSpan(f), ShadowingFunc, name, fdSpan, ShadowingFunc))
         case _ =>
       }
       if (currentBlock.outer != null) { // if (!toplevel)
@@ -379,7 +373,7 @@ class Hoister(program: Program) extends ASTWalker {
         //   1) multiple function names in nested blocks
         declareF(currentBlock.outer, name) match {
           case Some(span) =>
-            signal(span, ShadowedFuncByFunc, name, fdSpan)
+            excLog.signal(ShadowingWarning(span, ShadowingFunc, name, fdSpan, ShadowingFunc))
           case _ =>
         }
         // 3. function vs function
@@ -392,7 +386,7 @@ class Hoister(program: Program) extends ASTWalker {
               blocks.takeRight(size - p._2 - 1).foreach(b =>
                 declareF(b, name) match {
                   case Some(sp) =>
-                    signal(span, ShadowedFuncByFunc, name, sp.toStringWithoutFiles)
+                    excLog.signal(ShadowingWarning(span, ShadowingFunc, name, sp, ShadowingFunc))
                   case _ =>
                 })
             case _ =>
@@ -408,7 +402,7 @@ class Hoister(program: Program) extends ASTWalker {
         val name = id2Str(param)
         res.find(p => p._2.equals(name)) match {
           case Some((span, _)) =>
-            signal(span, ShadowedParamByParam, name, toSpan(param).toStringWithoutFiles)
+            excLog.signal(ShadowingWarning(span, ShadowingParam, name, toSpan(param), ShadowingParam))
           case _ =>
         }
         res ++ List((toSpan(param), name))
@@ -448,7 +442,7 @@ class Hoister(program: Program) extends ASTWalker {
         Parser.scriptToAST(List(("evalParse", (1, 1), str)))
       } catch {
         case e: ParserError =>
-          signal(toSpan(fa), EvalArgSyntax, str, null)
+          excLog.signal(EvalArgSyntaxError(toSpan(fa), str))
       }
       super.walkUnit(node)
 
@@ -505,48 +499,23 @@ class Hoister(program: Program) extends ASTWalker {
           (r._1 ++ fs, r._2 ++ vs, r._3 ++ List(SourceElements(ses.info, ss, ses.strict)))
         })
       Program(info, TopLevel(i, fds, vds, new_program))
-    case pgm: Program =>
-      throw new StaticError(
-        "Program before the hoisting phase should not have hoisted declarations.",
-        Some(pgm.info)
-      )
-      pgm
+    case (pgm: Program) => throw new BeforeHoisterError("Program", pgm.info)
     case FunDecl(info, Functional(j, Nil, Nil, SourceElements(i, body, str), name, params, bodyS), strict) =>
       val (fds, vds, new_body) = hoist(body, false, params, strict)
       FunDecl(info, Functional(j, fds, vds, SourceElements(i, new_body, str), name, params, bodyS), strict)
-    case fd: FunDecl =>
-      throw new StaticError(
-        "Function declarations before the hoisting phase should not have hoisted declarations.",
-        Some(fd.info)
-      )
-      fd
+    case (fd: FunDecl) => throw new BeforeHoisterError("Function declarations", fd.info)
     case FunExpr(info, Functional(j, Nil, Nil, SourceElements(i, body, strict), name, params, bodyS)) =>
       val (fds, vds, new_body) = hoist(body, false, params, strict)
       FunExpr(info, Functional(j, fds, vds, SourceElements(i, new_body, strict), name, params, bodyS))
-    case fe: FunExpr =>
-      throw new StaticError(
-        "Function expressions before the hoisting phase should not have hoisted declarations.",
-        Some(fe.info)
-      )
-      fe
+    case (fe: FunExpr) => throw new BeforeHoisterError("Function expressions", fe.info)
     case GetProp(info, prop, Functional(j, Nil, Nil, SourceElements(i, body, strict), name, params, bodyS)) =>
       val (fds, vds, new_body) = hoist(body, false, params, strict)
       GetProp(info, prop, Functional(j, fds, vds, SourceElements(i, new_body, strict), name, params, bodyS))
-    case gp: GetProp =>
-      throw new StaticError(
-        "Function expressions before the hoisting phase should not have hoisted declarations.",
-        Some(gp.info)
-      )
-      gp
+    case (gp: GetProp) => throw new BeforeHoisterError("Function expressions", gp.info)
     case SetProp(info, prop, Functional(j, Nil, Nil, SourceElements(i, body, strict), name, params, bodyS)) =>
       val (fds, vds, new_body) = hoist(body, false, params, strict)
       SetProp(info, prop, Functional(j, fds, vds, SourceElements(i, new_body, strict), name, params, bodyS))
-    case sp: SetProp =>
-      throw new StaticError(
-        "Function expressions before the hoisting phase should not have hoisted declarations.",
-        Some(sp.info)
-      )
-      sp
+    case (sp: SetProp) => throw new BeforeHoisterError("Function expressions", sp.info)
     case VarStmt(info, vds) => stmtUnit(info, hoistVds(vds))
     case ForVar(info, vars, cond, action, body) =>
       val new_info = NU.spanInfoAll(vars)

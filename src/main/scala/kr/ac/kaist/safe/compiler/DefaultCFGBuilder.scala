@@ -13,9 +13,11 @@ package kr.ac.kaist.safe.compiler
 
 import scala.collection.immutable.{ HashMap, HashSet }
 import scala.collection.mutable.{ Map => MMap, HashMap => MHashMap, Set => MSet, HashSet => MHashSet }
+import scala.util.Try
 
 import kr.ac.kaist.safe.config.Config
-import kr.ac.kaist.safe.errors.{ ErrorLog, StaticError, UserError }
+import kr.ac.kaist.safe.errors.ExcLog
+import kr.ac.kaist.safe.errors.error._
 import kr.ac.kaist.safe.nodes._
 import kr.ac.kaist.safe.nodes.EdgeType._
 import kr.ac.kaist.safe.phase.CFGBuildConfig
@@ -27,8 +29,8 @@ object DefaultCFGBuilder extends CFGBuilder {
   // global variables
   ////////////////////////////////////////////////////////////////
 
-  // collect error logs
-  private val errLog: ErrorLog = new ErrorLog
+  // collect exception logs
+  private var excLog: ExcLog = _
 
   // collect catch variable
   private val catchVarMap: MSet[String] = MHashSet()
@@ -56,7 +58,7 @@ object DefaultCFGBuilder extends CFGBuilder {
 
   // reset global values
   private def resetValues(ir: IRRoot, conf: Config, cfgConf: CFGBuildConfig): (List[CFGId], CFGFunction) = {
-    errLog.errors = Nil
+    excLog = new ExcLog()
     catchVarMap.clear
     config = conf
     cfgConfig = cfgConf
@@ -99,23 +101,21 @@ object DefaultCFGBuilder extends CFGBuilder {
   ////////////////////////////////////////////////////////////////
 
   /* root rule : IRRoot -> CFG  */
-  def build(ir: IRRoot, config: Config, cfgConfig: CFGBuildConfig): (CFG, List[StaticError]) = {
-    ir match {
-      case IRRoot(_, fds, _, stmts) =>
-        val (globalVars, globalFunc) = resetValues(ir, config, cfgConfig)
-        val startBlock: NormalBlock = globalFunc.createBlock
-        cfg.addEdge(globalFunc.entry, startBlock)
+  def build(ir: IRRoot, config: Config, cfgConfig: CFGBuildConfig): (CFG, ExcLog) = ir match {
+    case IRRoot(_, fds, _, stmts) =>
+      val (globalVars, globalFunc) = resetValues(ir, config, cfgConfig)
+      val startBlock: NormalBlock = globalFunc.createBlock
+      cfg.addEdge(globalFunc.entry, startBlock)
 
-        translateFunDecls(fds, globalFunc, startBlock)
-        val (blocks: List[NormalBlock], lmap: LabelMap) = translateStmts(stmts, globalFunc, List(startBlock), HashMap())
+      translateFunDecls(fds, globalFunc, startBlock)
+      val (blocks: List[NormalBlock], lmap: LabelMap) = translateStmts(stmts, globalFunc, List(startBlock), HashMap())
 
-        cfg.addEdge(blocks, globalFunc.exit)
-        cfg.addEdge(ThrowLabel of lmap toList, globalFunc.exitExc, EdgeExc)
-        cfg.addEdge(ThrowEndLabel of lmap toList, globalFunc.exitExc)
-        cfg.addEdge(AfterCatchLabel of lmap toList, globalFunc.exitExc)
+      cfg.addEdge(blocks, globalFunc.exit)
+      cfg.addEdge(ThrowLabel of lmap toList, globalFunc.exitExc, EdgeExc)
+      cfg.addEdge(ThrowEndLabel of lmap toList, globalFunc.exitExc)
+      cfg.addEdge(AfterCatchLabel of lmap toList, globalFunc.exitExc)
 
-        (cfg, errLog.asList)
-    }
+      (cfg, excLog)
   }
 
   /* fdvars rule : IRFunDecl list -> LocalVars
@@ -229,10 +229,10 @@ object DefaultCFGBuilder extends CFGBuilder {
       case IRSeq(info, stmts) =>
         translateStmts(stmts, func, blocks, lmap, loopBlock)
       case vd: IRVarStmt =>
-        errLog.signal("IRVarStmt should have been hoisted.", vd)
+        excLog.signal(NotHoistedError(vd))
         (blocks, lmap)
       case fd: IRFunDecl =>
-        errLog.signal("IRFunDecl should have been hoisted.", fd)
+        excLog.signal(NotHoistedError(fd))
         (blocks, lmap)
       case IRFunExpr(info, lhs, functional) =>
         val func: CFGFunction = translateFunctional(stmt, functional)
@@ -251,7 +251,7 @@ object DefaultCFGBuilder extends CFGBuilder {
         tailBlock.createInst(CFGAlloc(_, info, id2cfgId(lhs), protoIdOpt, newProgramAddr))
         members.foreach(translateMember(_, tailBlock, lhs))
         (List(tailBlock), lmap.updated(ThrowLabel, (ThrowLabel of lmap) + tailBlock))
-      case IRTry(info, body, name, catchIR, finIR) =>
+      case irTry @ IRTry(info, body, name, catchIR, finIR) =>
         (name, catchIR, finIR) match {
           case (Some(x), Some(catb), None) =>
             catchVarMap.add(x.uniqueName)
@@ -372,7 +372,7 @@ object DefaultCFGBuilder extends CFGBuilder {
             }
             (finbs, reslmap)
           case _ =>
-            errLog.signal("Wrong IRTryStmt.", stmt)
+            excLog.signal(WrongTryStmtError(irTry))
             (blocks, lmap)
         }
       /* PEI : element assign */
@@ -454,7 +454,7 @@ object DefaultCFGBuilder extends CFGBuilder {
         cfg.addEdge(call.afterCatch, nextAfterCatchBlock)
         (List(nextAfterCallBlock), lmap.updated(ThrowLabel, (ThrowLabel of lmap) + tailBlock).updated(AfterCatchLabel, (AfterCatchLabel of lmap) + nextAfterCatchBlock))
       case c @ IRNew(_, _, _, _) =>
-        errLog.signal("IRNew should have two elements in args.", c)
+        excLog.signal(NewArgNumError(c))
         (Nil, lmap)
       /* PEI : id lookup */
       case IRDelete(info, lhs, id) =>
@@ -649,7 +649,7 @@ object DefaultCFGBuilder extends CFGBuilder {
         val indexExpr: CFGString = CFGString(prop.uniqueName)
         block.createInst(CFGStore(_, info, lhsExpr, indexExpr, ir2cfgExpr(expr)))
       case getOrSet =>
-        errLog.signal("IRGetProp, IRSetProp is not supported.", getOrSet)
+        excLog.signal(NotSupportedIRError(getOrSet))
     }
   }
 

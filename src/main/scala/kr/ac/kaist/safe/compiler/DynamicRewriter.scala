@@ -12,9 +12,6 @@
 package kr.ac.kaist.safe.compiler
 
 import java.lang.{ Integer => JInteger }
-import kr.ac.kaist.safe.errors.ErrorLog
-import kr.ac.kaist.safe.errors.SAFEError.error
-import kr.ac.kaist.safe.errors.StaticError
 import kr.ac.kaist.safe.nodes._
 import kr.ac.kaist.safe.util.{ NodeUtil => NU }
 
@@ -23,18 +20,6 @@ import kr.ac.kaist.safe.util.{ NodeUtil => NU }
  * to another one without using it.
  */
 object DynamicRewriter extends ASTWalker {
-
-  /* Error handling
-   * The signal function collects errors during the AST->IR translation.
-   * To collect multiple errors,
-   * we should return a dummy value after signaling an error.
-   */
-  val errors: ErrorLog = new ErrorLog
-  def signal(msg: String, node: Node): Unit = errors.signal(msg, node)
-  def signal(node: Node, msg: String): Unit = errors.signal(msg, node)
-  def signal(error: StaticError): Unit = errors.signal(error)
-  def getErrors(): List[StaticError] = errors.errors
-
   def doit(program: Program): Program = walk(program).asInstanceOf[Program]
 
   def allConst(args: List[Expr]): Boolean = args.forall(_.isInstanceOf[StringLiteral])

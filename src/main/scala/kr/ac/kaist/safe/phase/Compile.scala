@@ -14,7 +14,7 @@ package kr.ac.kaist.safe.phase
 import java.io.{ BufferedWriter, FileWriter, IOException }
 
 import kr.ac.kaist.safe.config.{ Config, ConfigOption, OptionKind, BoolOption, StrOption }
-import kr.ac.kaist.safe.errors.{ StaticError, StaticErrors }
+import kr.ac.kaist.safe.errors.ExcLog
 import kr.ac.kaist.safe.compiler.Translator
 import kr.ac.kaist.safe.nodes.{ Program, IRRoot }
 import kr.ac.kaist.safe.util.{ NodeUtil, Useful }
@@ -35,10 +35,13 @@ case class Compile(
     // Translate AST -> IR.
     val translator = new Translator(program)
     val ir = translator.doit.asInstanceOf[IRRoot]
-    val errs = translator.getErrors
+    val excLog = translator.excLog
 
     // Report errors.
-    StaticErrors.reportErrors(NodeUtil.getFileName(program), errs)
+    if (excLog.hasError) {
+      println(NodeUtil.getFileName(program) + ":")
+      println(excLog)
+    }
 
     // Pretty print to file.
     val ircode = ir.toString(0)
