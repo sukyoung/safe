@@ -44,24 +44,6 @@ case class CFGFunction(cfg: CFG, argumentsName: String, argVars: List[CFGId], lo
   def addCaptured(captId: CFGId): Unit = captured ::= captId
   def getCaptured: List[CFGId] = captured
 
-  // #PureLocal location for each control point
-  /*
-  private var pureLocalMap: MMap[ControlPoint, Loc] = MHashMap()
-  def getPureLocal(cp: ControlPoint): Loc = {
-    pureLocalMap.getOrElseUpdate(cp, AddressManager.newRecentLoc("PureLocal#" + id + "#" + cp))
-  }
-
-  // merged #PureLocal location
-  private var mergedPureLocal: Option[Loc] = None
-  def getMergedPureLocal: Loc = {
-    mergedPureLocal.getOrElse({
-      val loc = AddressManager.newRecentLoc("PureLocal#" + id)
-      mergedPureLocal = Some(loc)
-      loc
-    })
-  }
-  */
-
   // equals
   override def equals(other: Any): Boolean = other match {
     case func: CFGFunction => (func.id == id)
