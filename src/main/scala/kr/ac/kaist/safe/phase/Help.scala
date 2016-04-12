@@ -30,7 +30,7 @@ object Help extends PhaseHelper {
         " parse infile.js ..." + Config.LINE_SEP +
         " astRewrite [-astRewrite:out=outfile] [-astRewrite:verbose] infile.js ..." + Config.LINE_SEP +
         " compile [-compile:out=outfile] [-compile:verbose] infile.js ..." + Config.LINE_SEP +
-        " cfgBuild [-cfgBuild:out=outfile] [-cfgBuild:verbose] [-cfgBuild:unroll=number] infile.js ..." + Config.LINE_SEP +
+        " cfgBuild [-cfgBuild:out=outfile] [-cfgBuild:verbose] infile.js ..." + Config.LINE_SEP +
         " help" + Config.LINE_SEP
     )
 
@@ -53,12 +53,11 @@ object Help extends PhaseHelper {
         "  If -compile:out=outfile is given, the resulting IR will be written to the outfile." + Config.LINE_SEP +
         "  If -compile:verbose is given, messages during compilation are printed." + Config.LINE_SEP +
         Config.LINE_SEP +
-        "safe cfgBuild [-cfgBuild:out=outfile] [-cfgBuild:verbose] [-cfgBuild:unroll=number] infile.js ..." + Config.LINE_SEP +
+        "safe cfgBuild [-cfgBuild:out=outfile] [-cfgBuild:verbose] infile.js ..." + Config.LINE_SEP +
         "  Builds a control flow graph for JavaScript source files." + Config.LINE_SEP +
         "  The files are concatenated in the given order before being parsed." + Config.LINE_SEP +
         "  If -cfgBuild:out=outfile is given, the resulting CFG will be written to the outfile." + Config.LINE_SEP +
         "  If -cfgBuild:verbose is given, messages during compilation are printed." + Config.LINE_SEP +
-        "  If -cfgBuild:unroll=number is given, the resulting CFG will unroll loops number times." + Config.LINE_SEP +
         Config.LINE_SEP
     )
   }

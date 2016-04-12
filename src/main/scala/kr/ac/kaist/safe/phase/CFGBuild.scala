@@ -66,13 +66,11 @@ object CFGBuild extends PhaseHelper {
 // Config options for CFGBuild phase.
 case class CFGBuildConfig(
     var verbose: Boolean = false,
-    var outFile: Option[String] = None,
-    var unroll: Int = 0
+    var outFile: Option[String] = None
 ) extends ConfigOption {
   val prefix: String = "cfgBuild:"
   val optMap: Map[String, OptionKind] = Map(
     "verbose" -> BoolOption(() => verbose = true),
-    "out" -> StrOption((s: String) => outFile = Some(s)),
-    "unroll" -> NumOption((i: Int) => unroll = i)
+    "out" -> StrOption((s: String) => outFile = Some(s))
   )
 }
