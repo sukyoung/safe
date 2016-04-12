@@ -26,7 +26,7 @@ import kr.ac.kaist.safe.phase.CFGBuild
 object ParseTest extends Tag("ParseTest")
 object ASTRewriteTest extends Tag("ASTRewriteTest")
 object CompileTest extends Tag("CompileTest")
-object CFGTest extends Tag("CFGTest")
+object CFGBuildTest extends Tag("CFGBuildTest")
 
 class CoreTest extends FlatSpec {
   val SEP = File.separator
@@ -65,7 +65,7 @@ class CoreTest extends FlatSpec {
     }
   }
 
-  def cfgTest(cfgOpt: Option[CFG], testName: String): Unit = {
+  def cfgBuildTest(cfgOpt: Option[CFG], testName: String): Unit = {
     cfgOpt match {
       case None => assert(false)
       case Some(cfg) =>
@@ -108,6 +108,6 @@ class CoreTest extends FlatSpec {
       case None => None
     }
     val cfgName = resDir + "/cfg/" + name + ".test"
-    registerTest("[CFG]" + filename, CFGTest) { cfgTest(cfgOpt, cfgName) }
+    registerTest("[CFG]" + filename, CFGBuildTest) { cfgBuildTest(cfgOpt, cfgName) }
   }
 }

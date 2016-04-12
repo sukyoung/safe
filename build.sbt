@@ -4,6 +4,17 @@ import java.io.File
 lazy val buildParsers = taskKey[Unit]("Builds parsers")
 lazy val deleteParserDir = taskKey[Unit]("Delete java parser directory")
 
+// phase test
+lazy val parseTest = taskKey[Unit]("Launch parse tests")
+lazy val astRewriteTest = taskKey[Unit]("Launch AST Rewrite tests")
+lazy val compileTest = taskKey[Unit]("Launch compile tests")
+lazy val cfgBuildTest = taskKey[Unit]("Launch cfg Build tests")
+
+parseTest := (testOnly in Test).toTask(s" -- -n ParseTest").value
+astRewriteTest := (testOnly in Test).toTask(s" -- -n ASTRewriteTest").value
+compileTest := (testOnly in Test).toTask(s" -- -n CompileTest").value
+cfgBuildTest := (testOnly in Test).toTask(s" -- -n CFGBuildTest").value
+
 lazy val root = (project in file(".")).
   settings(
     name := "SAFE",
