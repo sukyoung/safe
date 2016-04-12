@@ -235,14 +235,14 @@ object DefaultCFGBuilder extends CFGBuilder {
         excLog.signal(NotHoistedError(fd))
         (blocks, lmap)
       case IRFunExpr(info, lhs, functional) =>
-        val func: CFGFunction = translateFunctional(stmt, functional)
-        val tailBlock: NormalBlock = getTail(blocks, func)
+        val newFunc: CFGFunction = translateFunctional(stmt, functional)
         val (addr1, addr2) = (newProgramAddr, newProgramAddr)
         val (nameOpt: Option[CFGId], addrOpt: Option[Address]) = id2cfgId(functional.name) match {
           case id if id.kind == CapturedVar => (Some(id), Some(newProgramAddr))
           case _ => (None, None)
         }
-        tailBlock.createInst(CFGFunExpr(_, info, id2cfgId(lhs), nameOpt, func.id, addr1, addr2, addrOpt))
+        val tailBlock: NormalBlock = getTail(blocks, func)
+        tailBlock.createInst(CFGFunExpr(_, info, id2cfgId(lhs), nameOpt, newFunc.id, addr1, addr2, addrOpt))
         (List(tailBlock), lmap)
       /* PEI : when proto is not object*/
       case IRObject(info, lhs, members, proto) =>
