@@ -415,8 +415,7 @@ class Translator(program: Program) extends ASTWalker {
   def getAndArgs(expr: Expr): List[Expr] = expr match {
     case Parenthesized(_, e) => getAndArgs(e)
     case InfixOpApp(_, l, op, r) if op.text.equals("&&") => getAndArgs(l) ++ getAndArgs(r)
-    case _: Expr => List(expr)
-    case _ => Nil
+    case _ => List(expr)
   }
 
   def getName(lhs: LHS): String = lhs match {
@@ -973,9 +972,9 @@ class Translator(program: Program) extends ASTWalker {
       // list of (ssi, ri)
       val ress = args.zip(news).map { case (ssi, ri) => walkExpr(ssi, env, ri) }
       val (arg1: Expr, arg2: Expr, argsRest) =
-        args.reverse match { case a1 :: a2 :: ar => (a2, a1, ar.reverse) case _ => excLog.signal(InternalError(infix)) }
+        args.reverse match { case a1 :: a2 :: ar => (a2, a1, ar.reverse) case _ => excLog.signal(InvalidInfixOpAppError(infix)) }
       val ((res11, res12), (res21, res22), ressRest) =
-        ress.reverse match { case a1 :: a2 :: ar => (a2, a1, ar.reverse) case _ => excLog.signal(InternalError(infix)) }
+        ress.reverse match { case a1 :: a2 :: ar => (a2, a1, ar.reverse) case _ => excLog.signal(InvalidInfixOpAppError(infix)) }
       val cond = res12.asInstanceOf[IRExpr]
       val body = makeSeq(
         e,

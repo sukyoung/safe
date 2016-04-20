@@ -32,6 +32,6 @@ case class VarDeclNotHaveInitExprError(vd: VarDecl) extends CompileError({
 case class InvalidUnAssignOpError(u: UnaryAssignOpApp) extends CompileError({
   s"Invalid UnaryAssignOpApp operator: ${u.op.text}"
 }, u)
-case class InternalError(infix: InfixOpApp) extends CompileError({
-  "Internal error"
+case class InvalidInfixOpAppError(infix: InfixOpApp) extends CompileError({
+  s"Infix operator ${infix.op.text} should have at least two arguments"
 }, infix)
