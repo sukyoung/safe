@@ -660,13 +660,23 @@ object NodeUtil {
   // Do not remove IRSeq aggressively.
   // They denote internal IRStmts whose values do not contribute to the result.
   object simplifyIRWalker extends IRWalker {
-    override def walk(node: Any): Any = node match {
+    override def walk(node: IRRoot): IRRoot = node match {
       case IRRoot(info, fds, vds, irs) =>
-        IRRoot(info, walk(fds).asInstanceOf[List[IRFunDecl]], vds, simplify(irs))
+        IRRoot(info, fds.map { fd: IRFunDecl => walk(fd) }, vds, simplify(irs))
+    }
 
+    override def walk(node: IRFunctional): IRFunctional = node match {
       case IRFunctional(i, f, n, params, args, fds, vds, body) =>
-        IRFunctional(i, f, n, params, simplify(args), walk(fds).asInstanceOf[List[IRFunDecl]], vds, simplify(body))
+        IRFunctional(i, f, n, params, simplify(args),
+          fds.map { fd: IRFunDecl => walk(fd) }, vds, simplify(body))
+    }
 
+    override def walk(node: IRFunDecl): IRFunDecl = node match {
+      case IRFunDecl(info, ftn) =>
+        IRFunDecl(walk(info), walk(ftn))
+    }
+
+    override def walk(node: IRStmt): IRStmt = node match {
       case IRStmtUnit(info, stmts) =>
         IRStmtUnit(info, simplify(stmts))
 
@@ -702,7 +712,7 @@ object NodeUtil {
         }
         */
 
-        case _ => walk(stmt).asInstanceOf[IRStmt] :: simplify(rest)
+        case _ => walk(stmt) :: simplify(rest)
       }
     }
   }
