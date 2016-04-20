@@ -100,12 +100,12 @@ object NodeUtil {
     nodesPrintId = 0
     nodesPrintIdEnv = Nil
   }
-  def getNodesE(uniq: String): String = nodesPrintIdEnv.find(p => p._1.equals(uniq)) match {
+  def getNodesE(uniq: String): String = nodesPrintIdEnv.find { case (name, _) => name.equals(uniq) } match {
     case None =>
-      val new_uniq = { nodesPrintId += 1; nodesPrintId.toString }
-      nodesPrintIdEnv = (uniq, new_uniq) :: nodesPrintIdEnv
-      new_uniq
-    case Some((_, new_uniq)) => new_uniq
+      val newUniq = { nodesPrintId += 1; nodesPrintId.toString }
+      nodesPrintIdEnv = (uniq, newUniq) :: nodesPrintIdEnv
+      newUniq
+    case Some((_, newUniq)) => newUniq
   }
 
   def ppAST(s: StringBuilder, str: String): Unit =
@@ -488,11 +488,11 @@ object NodeUtil {
         case dot: Dot => {
           dot match {
             case Dot(info, lhs, id) =>
-              val (nlhs, s_offset) = getStartSourceLoc(lhs)
+              val (nlhs, sOffset) = getStartSourceLoc(lhs)
               // make new SpanInfo...
               if (lhs != nlhs) {
-                val e_offset = info.span.end
-                val newSpan = new Span(s_offset, e_offset)
+                val eOffset = info.span.end
+                val newSpan = new Span(sOffset, eOffset)
                 val newInfo = new ASTNodeInfo(newSpan)
                 val key = newSpan.at
                 if (!map.contains(key))
@@ -504,11 +504,11 @@ object NodeUtil {
         case f: FunApp => {
           f match {
             case FunApp(info, lhs, list) =>
-              val (nlhs, s_offset) = getStartSourceLoc(lhs)
+              val (nlhs, sOffset) = getStartSourceLoc(lhs)
               // make new SpanInfo...
               if (lhs != nlhs) {
-                val e_offset = info.span.end
-                val newSpan = new Span(s_offset, e_offset)
+                val eOffset = info.span.end
+                val newSpan = new Span(sOffset, eOffset)
                 val newInfo = new ASTNodeInfo(newSpan)
                 val key = newSpan.at
                 if (!map.contains(key))

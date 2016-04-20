@@ -560,10 +560,10 @@ object DefaultCFGBuilder extends CFGBuilder {
       }
     }
     /* statements */
-    //case IREval(info, lhs, _, arg) => (Nil, label_map)
-    //case IRWith(info, expr, stmt) => (Nil, label_map)
-    //case IRGetProp(info, fun) => (Nil, label_map)
-    //case IRSetProp(info, fun) => (Nil, label_map)
+    //case IREval(info, lhs, _, arg) => (Nil, labelMap)
+    //case IRWith(info, expr, stmt) => (Nil, labelMap)
+    //case IRGetProp(info, fun) => (Nil, labelMap)
+    //case IRSetProp(info, fun) => (Nil, labelMap)
   }
 
   /* mem rule : IRField x NormalBlock x IRId -> Unit */

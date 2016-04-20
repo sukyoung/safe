@@ -48,9 +48,9 @@ object DynamicRewriter extends ASTWalker {
     // function () { return this }
     case n @ FunApp(i1, VarRef(i2, Id(i3, text, a, b)), args) if allConst(args) && text.equals("Function") =>
       walk(New(i1, FunApp(i1, VarRef(i2, Id(i3, text, a, b)), args)))
-    // setTimeout("xqz_sr()", 1);
+    // setTimeout("xqzSr()", 1);
     // ==>
-    // setTimeout(function(){xqz_sr()}, 1);
+    // setTimeout(function(){xqzSr()}, 1);
     case n @ FunApp(i1, vr @ VarRef(_, Id(_, text, _, _)),
       List(StringLiteral(_, _, body, _), no)) if text.equals("setTimeout") || text.equals("setInterval") =>
       Parser.stringToFnE((NU.getFileName(n),
@@ -59,9 +59,9 @@ object DynamicRewriter extends ASTWalker {
         case Some(fe) => FunApp(i1, vr, List(fe, no))
         case _ => n
       }
-    // window.setTimeout("xqz_sr()", 1);
+    // window.setTimeout("xqzSr()", 1);
     // ==>
-    // window.setTimeout(function(){xqz_sr()}, 1);
+    // window.setTimeout(function(){xqzSr()}, 1);
     case n @ FunApp(i1, dot @ Dot(_, obj @ VarRef(_, Id(_, oname, _, _)), Id(_, mname, _, _)),
       List(StringLiteral(_, _, body, _), no)) if oname.equals("window") && (mname.equals("setTimeout") || mname.equals("setInterval")) =>
       Parser.stringToFnE((NU.getFileName(n),

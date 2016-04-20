@@ -41,9 +41,9 @@ object Useful {
       case ex: IOException =>
         // Probably the directory did not exist, therefore, make it so.
         // ONLY DEAL IN SLASHES.  THAT WORKS WITH WINDOWS.
-        val last_slash = fileName.lastIndexOf('/')
-        if (last_slash == -1) throw ex
-        val dir = fileName.substring(0, last_slash)
+        val lastSlash = fileName.lastIndexOf('/')
+        if (lastSlash == -1) throw ex
+        val dir = fileName.substring(0, lastSlash)
         ensureDirectoryExists(dir)
         new FileWriter(fileName)
     }

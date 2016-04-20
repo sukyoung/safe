@@ -115,19 +115,19 @@ class Hoister(program: Program) extends ASTWalker {
     NU.simplifyWalker.walk(walk(program).asInstanceOf[Program]).asInstanceOf[Program]
   }
 
-  class LocalBlock(_outer: LocalBlock) {
-    val outer: LocalBlock = _outer
+  class LocalBlock(inOuter: LocalBlock) {
+    val outer: LocalBlock = inOuter
     var vds: List[VarDecl] = List[VarDecl]()
     var fds: List[FunDecl] = List[FunDecl]()
     var blocks: List[LocalBlock] = List[LocalBlock]()
     var assigns: List[(Span, String)] = List[(Span, String)]()
   }
-  class VarBlock(_outer: LocalBlock) extends LocalBlock(_outer)
-  class FunBlock(_name: String, _span: Span, _params: List[Id], _outer: LocalBlock)
-      extends LocalBlock(_outer) {
-    val name: String = _name
-    val span: Span = _span
-    val params: List[Id] = _params
+  class VarBlock(inOuter: LocalBlock) extends LocalBlock(inOuter)
+  class FunBlock(inName: String, inSpan: Span, inParams: List[Id], inOuter: LocalBlock)
+      extends LocalBlock(inOuter) {
+    val name: String = inName
+    val span: Span = inSpan
+    val params: List[Id] = inParams
   }
 
   var currentBlock: LocalBlock = new VarBlock(null)
@@ -222,7 +222,7 @@ class Hoister(program: Program) extends ASTWalker {
         val name = vd2Str(vd)
         // 1. var vs var
         //   1) multiple names in a single var statement
-        res.find(p => p._2.equals(name)) match {
+        res.find { case (_, n) => n.equals(name) } match {
           case Some((span, _)) =>
             excLog.signal(ShadowingWarning(span, ShadowingVar, name, toSpan(vd), ShadowingVar))
           case _ =>
@@ -253,7 +253,7 @@ class Hoister(program: Program) extends ASTWalker {
           case _ =>
         }
         // 6. assignments vs var
-        collectAssigns(currentBlock).find(ass => ass._2.equals(name)) match {
+        collectAssigns(currentBlock).find { case (_, n) => n.equals(name) } match {
           case Some((span, _)) =>
             excLog.signal(ShadowingWarning(span, ShadowingVar, name, toSpan(vd), ShadowingVar))
           case _ =>
@@ -304,17 +304,19 @@ class Hoister(program: Program) extends ASTWalker {
       //   3) multiple variable names in parallel blocks and the name is used in an outer block
       val blocks = currentBlock.blocks.filter(_.isInstanceOf[VarBlock])
       val size = blocks.length
-      blocks.zipWithIndex.foreach(p =>
-        declareV(p._1, name) match {
-          case Some(span) =>
-            blocks.takeRight(size - p._2 - 1).foreach(b =>
-              declareV(b, name) match {
-                case Some(sp) =>
-                  excLog.signal(ShadowingWarning(span, ShadowingVar, name, sp, ShadowingVar))
-                case _ =>
-              })
-          case _ =>
-        })
+      blocks.zipWithIndex.foreach {
+        case (block, index) =>
+          declareV(block, name) match {
+            case Some(span) =>
+              blocks.takeRight(size - index - 1).foreach(b =>
+                declareV(b, name) match {
+                  case Some(sp) =>
+                    excLog.signal(ShadowingWarning(span, ShadowingVar, name, sp, ShadowingVar))
+                  case _ =>
+                })
+            case _ =>
+          }
+      }
       // multiple names in a local environment
       enclosingFuns(currentBlock) match {
         case immediate :: rest =>
@@ -380,17 +382,19 @@ class Hoister(program: Program) extends ASTWalker {
         //   1) multiple function names in parallel blocks
         val blocks = currentBlock.outer.blocks.filter(_.isInstanceOf[VarBlock])
         val size = blocks.length
-        blocks.zipWithIndex.foreach(p =>
-          declareF(p._1, name) match {
-            case Some(span) =>
-              blocks.takeRight(size - p._2 - 1).foreach(b =>
-                declareF(b, name) match {
-                  case Some(sp) =>
-                    excLog.signal(ShadowingWarning(span, ShadowingFunc, name, sp, ShadowingFunc))
-                  case _ =>
-                })
-            case _ =>
-          })
+        blocks.zipWithIndex.foreach {
+          case (block, index) =>
+            declareF(block, name) match {
+              case Some(span) =>
+                blocks.takeRight(size - index - 1).foreach(b =>
+                  declareF(b, name) match {
+                    case Some(sp) =>
+                      excLog.signal(ShadowingWarning(span, ShadowingFunc, name, sp, ShadowingFunc))
+                    case _ =>
+                  })
+              case _ =>
+            }
+        }
       }
       walkUnit(ftn)
       addFd(fd)
@@ -400,7 +404,7 @@ class Hoister(program: Program) extends ASTWalker {
       //   1) multiple names in the parameter list of a single function
       params.foldLeft(List[(Span, String)]())((res, param) => {
         val name = id2Str(param)
-        res.find(p => p._2.equals(name)) match {
+        res.find { case (_, n) => n.equals(name) } match {
           case Some((span, _)) =>
             excLog.signal(ShadowingWarning(span, ShadowingParam, name, toSpan(param), ShadowingParam))
           case _ =>
@@ -457,7 +461,6 @@ class Hoister(program: Program) extends ASTWalker {
   def isVdInFd(vd: VarDecl, ds: List[FunDecl]): Boolean =
     ds.exists(d => fd2Str(d).equals(vd2Str(vd)))
   def hoist(body: List[SourceElement], isTopLevel: Boolean, params: List[Id], strict: Boolean): (List[FunDecl], List[VarDecl], List[SourceElement]) = {
-    val param_names = params.map(id2Str)
     val (vdss, fdss, varss) = body.map(s => new hoistWalker(s, isTopLevel).doit).unzip3
     // hoisted variable declarations
     val vds = vdss.flatten.asInstanceOf[List[VarDecl]]
@@ -489,40 +492,42 @@ class Hoister(program: Program) extends ASTWalker {
 
   override def walk(node: Any): Any = node match {
     case Program(info, TopLevel(i, Nil, Nil, program)) =>
-      val (fds, vds, new_program) =
+      val (fds, vds, newProgram) =
         program.foldLeft((
           List[FunDecl](),
           List[VarDecl](),
           List[SourceElements]()
-        ))((r, ses) => {
-          val (fs, vs, ss) = hoist(ses.body, true, Nil, ses.strict)
-          (r._1 ++ fs, r._2 ++ vs, r._3 ++ List(SourceElements(ses.info, ss, ses.strict)))
-        })
-      Program(info, TopLevel(i, fds, vds, new_program))
+        )) {
+          case ((f, v, s), ses) => {
+            val (fs, vs, ss) = hoist(ses.body, true, Nil, ses.strict)
+            (f ++ fs, v ++ vs, s ++ List(SourceElements(ses.info, ss, ses.strict)))
+          }
+        }
+      Program(info, TopLevel(i, fds, vds, newProgram))
     case (pgm: Program) => throw new BeforeHoisterError("Program", pgm.info)
     case FunDecl(info, Functional(j, Nil, Nil, SourceElements(i, body, str), name, params, bodyS), strict) =>
-      val (fds, vds, new_body) = hoist(body, false, params, strict)
-      FunDecl(info, Functional(j, fds, vds, SourceElements(i, new_body, str), name, params, bodyS), strict)
+      val (fds, vds, newBody) = hoist(body, false, params, strict)
+      FunDecl(info, Functional(j, fds, vds, SourceElements(i, newBody, str), name, params, bodyS), strict)
     case (fd: FunDecl) => throw new BeforeHoisterError("Function declarations", fd.info)
     case FunExpr(info, Functional(j, Nil, Nil, SourceElements(i, body, strict), name, params, bodyS)) =>
-      val (fds, vds, new_body) = hoist(body, false, params, strict)
-      FunExpr(info, Functional(j, fds, vds, SourceElements(i, new_body, strict), name, params, bodyS))
+      val (fds, vds, newBody) = hoist(body, false, params, strict)
+      FunExpr(info, Functional(j, fds, vds, SourceElements(i, newBody, strict), name, params, bodyS))
     case (fe: FunExpr) => throw new BeforeHoisterError("Function expressions", fe.info)
     case GetProp(info, prop, Functional(j, Nil, Nil, SourceElements(i, body, strict), name, params, bodyS)) =>
-      val (fds, vds, new_body) = hoist(body, false, params, strict)
-      GetProp(info, prop, Functional(j, fds, vds, SourceElements(i, new_body, strict), name, params, bodyS))
+      val (fds, vds, newBody) = hoist(body, false, params, strict)
+      GetProp(info, prop, Functional(j, fds, vds, SourceElements(i, newBody, strict), name, params, bodyS))
     case (gp: GetProp) => throw new BeforeHoisterError("Function expressions", gp.info)
     case SetProp(info, prop, Functional(j, Nil, Nil, SourceElements(i, body, strict), name, params, bodyS)) =>
-      val (fds, vds, new_body) = hoist(body, false, params, strict)
-      SetProp(info, prop, Functional(j, fds, vds, SourceElements(i, new_body, strict), name, params, bodyS))
+      val (fds, vds, newBody) = hoist(body, false, params, strict)
+      SetProp(info, prop, Functional(j, fds, vds, SourceElements(i, newBody, strict), name, params, bodyS))
     case (sp: SetProp) => throw new BeforeHoisterError("Function expressions", sp.info)
     case VarStmt(info, vds) => stmtUnit(info, hoistVds(vds))
     case ForVar(info, vars, cond, action, body) =>
-      val new_info = NU.spanInfoAll(vars)
+      val newInfo = NU.spanInfoAll(vars)
       ABlock(
-        new_info,
+        newInfo,
         List(
-          stmtUnit(new_info, hoistVds(vars)),
+          stmtUnit(newInfo, hoistVds(vars)),
           walk(For(info, None, cond, action, body)).asInstanceOf[Stmt]
         ),
         false
@@ -539,9 +544,9 @@ class Hoister(program: Program) extends ASTWalker {
         false
       )
     case LabelStmt(info, label, ForVar(i, vars, cond, action, body)) =>
-      val new_info = NU.spanInfoAll(vars)
+      val newInfo = NU.spanInfoAll(vars)
       ABlock(
-        new_info,
+        newInfo,
         List(
           stmtUnit(info, hoistVds(vars)),
           LabelStmt(info, label,

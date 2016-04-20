@@ -264,12 +264,14 @@ class Translator(program: Program) extends ASTWalker {
    */
   type Env = List[(String, IRId)]
   def addE(env: Env, x: String, xid: IRId): Env = (x, xid) :: env
-  def getE(env: Env, name: String): IRId = env.find(p => p._1.equals(name)) match {
-    case None =>
-      val id = defaultIRId(name)
-      excLog.signal(IRIdNotBoundError(name, id))
-      id
-    case Some((_, id)) => id
+  def getE(env: Env, name: String): IRId = {
+    env.find { case (n, _) => n.equals(name) } match {
+      case None =>
+        val id = defaultIRId(name)
+        excLog.signal(IRIdNotBoundError(name, id))
+        id
+      case Some((_, id)) => id
+    }
   }
 
   def funexprId(span: Span, lhs: Option[String]): Id = {
@@ -299,7 +301,7 @@ class Translator(program: Program) extends ASTWalker {
       defaultIRId(id)
     case Some(n) if id.text.equals(argName) && isLocal =>
       if (debug) println("before getE:id2ir-" + id.text + " " + id.uniqueName)
-      env.find(p => p._1.equals(argName)) match {
+      env.find { case (n, _) => n.equals(argName) } match {
         case None => makeUId(argName, argName, isLocal, id, false)
         case Some((_, id)) => id
       }
@@ -332,38 +334,40 @@ class Translator(program: Program) extends ASTWalker {
       vds.map(_.name.uniqueName.get)
     isLocal = true
     val paramsspan = NU.spanAll(params, NU.getSpan(name))
-    var new_arg = freshId(name, paramsspan, argName)
-    if (debug) println(" arg=" + new_arg.uniqueName)
-    var new_env = addE(env, argName, new_arg)
+    var newArg = freshId(name, paramsspan, argName)
+    if (debug) println(" arg=" + newArg.uniqueName)
+    var newEnv = addE(env, argName, newArg)
     if (debug) {
       println("params.. ")
       params.foreach(p => print(" " + p.text))
     }
     if (params.find(_.text.equals(argName)).isDefined) {
-      new_arg = freshId(name, paramsspan, argName)
-      if (debug) println(" arg=" + new_arg.uniqueName)
+      newArg = freshId(name, paramsspan, argName)
+      if (debug) println(" arg=" + newArg.uniqueName)
     }
-    val fd_names = fds.map(_.ftn.name.text)
+    val fdNames = fds.map(_.ftn.name.text)
     // nested functions shadow parameters with the same names
-    val params_vds = params.filterNot(p => fd_names contains p.text).
-      map(p => new IRVarStmt(falseInfo(p), id2ir(new_env, p), true))
-    // x_i = arguments["i"]
-    val new_params = params.zipWithIndex.map(p => makeLoadStmt(false, name, NU.getSpan(p._1),
-      id2ir(new_env, p._1),
-      new_arg,
-      makeString(p._2.toString, p._1)))
-    val new_fds = fds.map(walkFd(_, new_env))
-    new_env = new_fds.foldLeft(new_env)((e, fd) => addE(e, fd.ftn.name.uniqueName, fd.ftn.name))
-    val new_vds = vds.filterNot(_.name.text.equals(argName)).map(walkVd(_, new_env))
-    new_env = new_vds.foldLeft(new_env)((e, vd) => addE(e, vd.lhs.uniqueName, vd.lhs))
-    val new_name = fe match { case Some(n) => n case None if isMember => mid2ir(env, name) case None => id2ir(env, name) }
-    val new_body = body.body.map(s => walkStmt(s.asInstanceOf[Stmt], new_env))
+    val paramsVds = params.filterNot(p => fdNames contains p.text).
+      map(p => new IRVarStmt(falseInfo(p), id2ir(newEnv, p), true))
+    // xi = arguments["i"]
+    val newParams = params.zipWithIndex.map {
+      case (param, index) => makeLoadStmt(false, name, NU.getSpan(param),
+        id2ir(newEnv, param),
+        newArg,
+        makeString(index.toString, param))
+    }
+    val newFds = fds.map(walkFd(_, newEnv))
+    newEnv = newFds.foldLeft(newEnv)((e, fd) => addE(e, fd.ftn.name.uniqueName, fd.ftn.name))
+    val newVds = vds.filterNot(_.name.text.equals(argName)).map(walkVd(_, newEnv))
+    newEnv = newVds.foldLeft(newEnv)((e, vd) => addE(e, vd.lhs.uniqueName, vd.lhs))
+    val newName = fe match { case Some(n) => n case None if isMember => mid2ir(env, name) case None => id2ir(env, name) }
+    val newBody = body.body.map(s => walkStmt(s.asInstanceOf[Stmt], newEnv))
     isLocal = oldIsLocal
     locals = oldLocals
-    (new_name, List(makeTId(name, thisName), new_arg),
+    (newName, List(makeTId(name, thisName), newArg),
       // nested functions shadow parameters with the same names
-      new_params, /*filterNot (p => fd_names contains p.lhs.originalName),*/
-      new_fds, params_vds ++ new_vds, new_body)
+      newParams, /*filterNot (p => fdNames contains p.lhs.originalName),*/
+      newFds, paramsVds ++ newVds, newBody)
   }
 
   def containsUserId(e: IRExpr): Boolean = e match {
@@ -472,13 +476,13 @@ class Translator(program: Program) extends ASTWalker {
    */
   def walkFd(fd: FunDecl, env: Env): IRFunDecl = fd match {
     case FunDecl(info, Functional(_, fds, vds, body, name, params, _), _) =>
-      val (new_name, new_params, args, new_fds, new_vds, new_body) =
+      val (newName, newParams, args, newFds, newVds, newBody) =
         functional(name, params, fds, vds, body, env, None, false)
       val info = trueInfo(fd)
       new IRFunDecl(
         info,
-        new IRFunctional(info, true, new_name, new_params, args,
-          new_fds, new_vds, new_body)
+        new IRFunctional(info, true, newName, newParams, args,
+          newFds, newVds, newBody)
       )
   }
 
@@ -525,23 +529,25 @@ class Translator(program: Program) extends ASTWalker {
 
     case If(info, InfixOpApp(_, left, op, right), trueB, falseB) if op.text.equals("&&") && allAnds(left) =>
       val args = getArgs(left) :+ right
-      val news = args.zipWithIndex.map(a => freshId(a._1, NU.getSpan(a._1), "new" + a._2))
-      // list of (ss_i, r_i)
-      val ress = args.zip(news).map(p => walkExpr(p._1, env, p._2))
+      val news = args.zipWithIndex.map { case (arg, index) => freshId(arg, NU.getSpan(arg), "new" + index) }
+      // list of (ssi, ri)
+      val ress = args.zip(news).map { case (ssi, ri) => walkExpr(ssi, env, ri) }
       val lab = freshId(s, "label")
       val trueS = makeSeq(trueB, walkStmt(trueB, env),
         new IRBreak(falseInfo(s), lab))
 
-      val ifStmt = args.zip(ress).foldRight((trueS, Nil): (IRStmt, List[IRStmt]))((p, r) => {
-        if (r._2.isEmpty)
-          (new IRIf(trueInfo(p._1), p._2._2, r._1, None), p._2._1)
-        else
-          (
-            new IRIf(trueInfo(p._1), p._2._2,
-              makeSeq(left, r._2 :+ r._1), None),
-            p._2._1
-          )
-      })._1
+      val ifStmt = args.zip(ress).foldRight((trueS, Nil): (IRStmt, List[IRStmt])) {
+        case ((arg, (ssi, ri)), (stmt, stmts)) => {
+          if (stmts.isEmpty)
+            (new IRIf(trueInfo(arg), ri, stmt, None), ssi)
+          else
+            (
+              new IRIf(trueInfo(arg), ri,
+                makeSeq(left, stmts :+ stmt), None),
+              ssi
+            )
+        }
+      } match { case (s, _) => s }
       val body = falseB match {
         case None => ifStmt
         case Some(stmt) => makeSeq(s, List(ifStmt, walkStmt(stmt, env)))
@@ -550,7 +556,7 @@ class Translator(program: Program) extends ASTWalker {
         s,
         makeSeq(
           s,
-          ress.head._1 :+ new IRLabelStmt(falseInfo(s), lab, body)
+          (ress.head match { case (s, _) => s }) :+ new IRLabelStmt(falseInfo(s), lab, body)
         )
       )
 
@@ -610,38 +616,38 @@ class Translator(program: Program) extends ASTWalker {
       val newone = freshId(cond, NU.getSpan(cond), "new1")
       val labelName = freshId(s, breakName)
       val cont = freshId(s, continueName)
-      val new_env = addE(addE(env, breakName, labelName), continueName, cont)
+      val newEnv = addE(addE(env, breakName, labelName), continueName, cont)
       val (ss, r) = walkExpr(cond, env, newone)
       isDoWhile = true
-      val new_body = makeSeq(
+      val newBody = makeSeq(
         s,
         List(
-          new IRLabelStmt(falseInfo(s), cont, walkStmt(body, new_env)),
+          new IRLabelStmt(falseInfo(s), cont, walkStmt(body, newEnv)),
           makeSeq(s, ss)
         )
       )
       isDoWhile = false
-      val stmt = makeSeq(s, List(new_body, new IRWhile(trueInfo(s), r, new_body)))
+      val stmt = makeSeq(s, List(newBody, new IRWhile(trueInfo(s), r, newBody)))
       makeStmtUnit(s, new IRLabelStmt(falseInfo(s), labelName, stmt))
 
     case While(info, cond, body) =>
       val newone = freshId(cond, NU.getSpan(cond), "new1")
       val labelName = freshId(s, breakName)
       val cont = freshId(s, continueName)
-      val new_env = addE(addE(env, breakName, labelName), continueName, cont)
+      val newEnv = addE(addE(env, breakName, labelName), continueName, cont)
       val (ss, r) = walkExpr(cond, env, newone)
       val ssList = List(makeSeq(s, ss))
-      val new_body = makeSeq(
+      val newBody = makeSeq(
         s,
-        List(new IRLabelStmt(falseInfo(s), cont, walkStmt(body, new_env))) ++ ssList
+        List(new IRLabelStmt(falseInfo(s), cont, walkStmt(body, newEnv))) ++ ssList
       )
-      val stmt = makeSeq(s, ssList :+ new IRWhile(trueInfo(s), r, new_body))
+      val stmt = makeSeq(s, ssList :+ new IRWhile(trueInfo(s), r, newBody))
       makeStmtUnit(s, new IRLabelStmt(falseInfo(s), labelName, stmt))
 
     case For(info, init, cond, action, body) =>
       val labelName = freshId(s, breakName)
       val cont = freshId(s, continueName)
-      val new_env = addE(addE(env, breakName, labelName), continueName, cont)
+      val newEnv = addE(addE(env, breakName, labelName), continueName, cont)
       val front = init match {
         case None => List()
         case Some(iexpr) =>
@@ -655,7 +661,7 @@ class Translator(program: Program) extends ASTWalker {
           makeList(s, ss3, r3, varIgn(s))
       }
       val bodyspan = NU.getSpan(body)
-      val nbody = new IRLabelStmt(falseInfo(body), cont, walkStmt(body, new_env))
+      val nbody = new IRLabelStmt(falseInfo(body), cont, walkStmt(body, newEnv))
       val stmt = cond match {
         case None =>
           makeSeq(s, List(
@@ -667,10 +673,10 @@ class Translator(program: Program) extends ASTWalker {
         case Some(cexpr) =>
           val newtwo = freshId(cexpr, NU.getSpan(cexpr), "new2")
           val (ss2, r2) = walkExpr(cexpr, env, newtwo)
-          val new_body = List(nbody, makeSeq(s, bodyspan, back ++ ss2))
+          val newBody = List(nbody, makeSeq(s, bodyspan, back ++ ss2))
           makeSeq(s, List(
             makeSeq(s, front ++ ss2),
-            new IRWhile(trueInfo(s), r2, makeSeq(s, new_body))
+            new IRWhile(trueInfo(s), r2, makeSeq(s, newBody))
           ))
       }
       makeStmtUnit(s, new IRLabelStmt(falseInfo(s), labelName, stmt))
@@ -684,18 +690,18 @@ class Translator(program: Program) extends ASTWalker {
       val condone = freshId(expr, objspan, "cond1")
       val key = freshId(expr, objspan, "key")
       val cont = freshId(expr, objspan, continueName)
-      val new_env = addE(addE(env, breakName, labelName), continueName, cont)
+      val newEnv = addE(addE(env, breakName, labelName), continueName, cont)
       val iteratorCheck = iteratorHasNext(s, condone, obj, iterator)
       val (ss, r) = walkExpr(expr, env, newone)
       val bodyspan = NU.getSpan(body)
-      val new_body = makeSeq(s, bodyspan,
+      val newBody = makeSeq(s, bodyspan,
         List(iteratorKey(s, key, obj, iterator)) ++
-          walkLval(lhs, lhs, addE(env, oldName, freshId(lhs, NU.getSpan(lhs), oldName)),
-            List(), key, false)._1 ++
-            List(
-              new IRLabelStmt(falseInfo(body), cont, walkStmt(body, new_env)),
-              makeSeq(s, bodyspan, List(iteratorCheck))
-            ))
+          (walkLval(lhs, lhs, addE(env, oldName, freshId(lhs, NU.getSpan(lhs), oldName)),
+            List(), key, false) match { case (stmts, _) => stmts }) ++
+          List(
+            new IRLabelStmt(falseInfo(body), cont, walkStmt(body, newEnv)),
+            makeSeq(s, bodyspan, List(iteratorCheck))
+          ))
       val stmt = makeSeq(
         s,
         List(
@@ -704,7 +710,7 @@ class Translator(program: Program) extends ASTWalker {
             iteratorInit(s, iterator, obj),
             iteratorCheck
           )),
-          new IRWhile(trueInfo(bodyspan, s), condone, new_body)
+          new IRWhile(trueInfo(bodyspan, s), condone, newBody)
         )
       )
       makeStmtUnit(s, new IRLabelStmt(falseInfo(s), labelName, stmt))
@@ -803,15 +809,15 @@ class Translator(program: Program) extends ASTWalker {
   def walkFunExpr(e: Expr, env: Env, res: IRId, lhs: Option[String]): (List[IRFunExpr], IRId) = e match {
     case FunExpr(info, Functional(_, fds, vds, body, name, params, _)) =>
       val id = if (name.text.equals("")) funexprId(NU.getSpan(info), lhs) else name
-      val new_name = makeUId(id.text, id.uniqueName.get, false,
+      val newName = makeUId(id.text, id.uniqueName.get, false,
         e, NU.getSpan(id.info), false)
-      val (_, new_params, args, new_fds, new_vds, new_body) =
-        functional(name, params, fds, vds, body, env, Some(new_name), false)
+      val (_, newParams, args, newFds, newVds, newBody) =
+        functional(name, params, fds, vds, body, env, Some(newName), false)
       val i = trueInfo(e)
       (
         List(new IRFunExpr(i, res,
           new IRFunctional(i, true,
-            new_name, new_params, args, new_fds, new_vds, new_body))),
+            newName, newParams, args, newFds, newVds, newBody))),
         res
       )
   }
@@ -882,7 +888,7 @@ class Translator(program: Program) extends ASTWalker {
       if (containsLhs(r, lhs, env))
         walkLval(e, lhs, env, ss, r, false)
       else
-        (walkLval(e, lhs, env, ss, r, false)._1, r)
+        (walkLval(e, lhs, env, ss, r, false) match { case (stmts, _) => stmts }, r)
 
     case AssignOpApp(info, lhs, op, right) =>
       if (op.text.equals("=")) {
@@ -890,13 +896,13 @@ class Translator(program: Program) extends ASTWalker {
         if (containsLhs(r, lhs, env))
           walkLval(e, lhs, env, ss, r, false)
         else
-          (walkLval(e, lhs, env, ss, r, false)._1, r)
+          (walkLval(e, lhs, env, ss, r, false) match { case (stmts, _) => stmts }, r)
       } else {
         val y = freshId(right, NU.getSpan(right), "y")
         val oldVal = freshId(lhs, NU.getSpan(lhs), oldName)
         val (ss, r) = walkExpr(right, env, y)
         val bin = new IRBin(trueInfo(e), oldVal, NU.makeIROp(op.text.substring(0, op.text.length - 1)), r)
-        (walkLval(e, lhs, addE(env, oldName, oldVal), ss, bin, true)._1, bin)
+        (walkLval(e, lhs, addE(env, oldName, oldVal), ss, bin, true) match { case (stmts, _) => stmts }, bin)
       }
 
     case u @ UnaryAssignOpApp(info, lhs, op) =>
@@ -908,8 +914,8 @@ class Translator(program: Program) extends ASTWalker {
           walkLval(e, lhs, addE(env, oldName, oldVal), List(toNumber(lhs, newVal, oldVal)),
             new IRBin(trueInfo(e), newVal,
               if (op.text.equals("++")) plus else minus,
-              oneV), true)._1,
-            newVal
+              oneV), true) match { case (stmts, _) => stmts },
+          newVal
         )
       } else {
         excLog.signal(InvalidUnAssignOpError(u))
@@ -927,7 +933,7 @@ class Translator(program: Program) extends ASTWalker {
           oneV)
         (walkLval(e, right, addE(env, oldName, oldVal),
           List(toNumber(right, newVal, oldVal)),
-          bin, true)._1, bin)
+          bin, true) match { case (stmts, _) => stmts }, bin)
       } else if (opText.equals("delete")) {
         NU.unwrapParen(right) match {
           case VarRef(_, name) =>
@@ -963,21 +969,21 @@ class Translator(program: Program) extends ASTWalker {
 
     case infix @ InfixOpApp(info, left, op, right) if op.text.equals("&&") =>
       val args = getAndArgs(left) :+ right
-      val news = args.zipWithIndex.map(a => freshId(a._1, NU.getSpan(a._1), "new" + a._2))
-      // list of (ss_i, r_i)
-      val ress = args.zip(news).map(p => walkExpr(p._1, env, p._2))
+      val news = args.zipWithIndex.map { case (arg, index) => freshId(arg, NU.getSpan(arg), "new" + index) }
+      // list of (ssi, ri)
+      val ress = args.zip(news).map { case (ssi, ri) => walkExpr(ssi, env, ri) }
       val (arg1: Expr, arg2: Expr, argsRest) =
         args.reverse match { case a1 :: a2 :: ar => (a2, a1, ar.reverse) case _ => excLog.signal(InternalError(infix)) }
-      val (res1: (_, _), res2: (_, _), ressRest) =
+      val ((res11, res12), (res21, res22), ressRest) =
         ress.reverse match { case a1 :: a2 :: ar => (a2, a1, ar.reverse) case _ => excLog.signal(InternalError(infix)) }
-      val cond = res1._2.asInstanceOf[IRExpr]
+      val cond = res12.asInstanceOf[IRExpr]
       val body = makeSeq(
         e,
-        res1._1.asInstanceOf[List[IRStmt]] :+
+        res11.asInstanceOf[List[IRStmt]] :+
           new IRIf(trueInfo(e), cond,
-            makeSeq(e, res2._1.asInstanceOf[List[IRStmt]] ++
+            makeSeq(e, res21.asInstanceOf[List[IRStmt]] ++
               List(mkExprS(arg2, res,
-                res2._2.asInstanceOf[IRExpr]))),
+                res22.asInstanceOf[IRExpr]))),
             Some(new IRIf(
               trueInfo(arg1),
               new IRBin(
@@ -992,24 +998,26 @@ class Translator(program: Program) extends ASTWalker {
       (
         List(argsRest.asInstanceOf[List[Expr]].
           zip(ressRest.asInstanceOf[List[(List[IRStmt], IRExpr)]]).
-          foldRight(body)((p, r) => {
-            val sp = NU.getSpan(p._1)
-            makeSeq(
-              p._1,
-              p._2._1 :+
-                new IRIf(trueInfo(p._1), p._2._2, r,
-                  Some(new IRIf(
-                    trueInfo(p._1),
-                    new IRBin(
-                      falseInfo(p._1),
-                      new IRUn(falseInfo(p._1), typeof, p._2._2),
-                      equals, makeString("boolean", p._1)
-                    ),
-                    mkExprS(p._1, res, falseV),
-                    Some(mkExprS(p._1, res, p._2._2))
-                  )))
-            )
-          })),
+          foldRight(body) {
+            case ((e, (ss, ie)), r) => {
+              val sp = NU.getSpan(e)
+              makeSeq(
+                e,
+                ss :+
+                  new IRIf(trueInfo(e), ie, r,
+                    Some(new IRIf(
+                      trueInfo(e),
+                      new IRBin(
+                        falseInfo(e),
+                        new IRUn(falseInfo(e), typeof, ie),
+                        equals, makeString("boolean", e)
+                      ),
+                      mkExprS(e, res, falseV),
+                      Some(mkExprS(e, res, ie))
+                    )))
+              )
+            }
+          }),
         res
       )
 
@@ -1055,14 +1063,14 @@ class Translator(program: Program) extends ASTWalker {
         case Some((t, (ss, r))) => l ++ ss :+ (mkExprS(e, t, r))
       })
       (stmts :+ new IRArray(trueInfo(e), res, newelems.map(elem => elem match {
-        case Some(e) => Some(e._1)
+        case Some((e, _)) => Some(e)
         case _ => None
       })), res)
 
     case ObjectExpr(info, members) =>
-      val new_members = members.map(walkMember(_, env, freshId))
-      val stmts = new_members.foldLeft(List[IRStmt]())((l, p) => l ++ p._1)
-      (stmts :+ new IRObject(trueInfo(e), res, new_members.map(p => p._2), None),
+      val newMembers = members.map(walkMember(_, env, freshId))
+      val stmts = newMembers.foldLeft(List[IRStmt]()) { case (l, (ss, _)) => l ++ ss }
+      (stmts :+ new IRObject(trueInfo(e), res, newMembers.map { case (_, m) => m }, None),
         res)
 
     case fe: FunExpr => walkFunExpr(e, env, res, None)
@@ -1113,11 +1121,13 @@ class Translator(program: Program) extends ASTWalker {
       val (ftn, args) = lhs match {
         case FunApp(_, f, as) =>
           val newargs = as.map(a => freshId(a))
-          val results = as.zipWithIndex.map(a => (
-            newargs.apply(a._2),
-            walkExpr(a._1, env, newargs.apply(a._2))
-          ))
-          (f, results.foldLeft(List[IRStmt]())((l, tp) => l ++ tp._2._1 :+ (mkExprS(e, tp._1, tp._2._2))) :+
+          val results = as.zipWithIndex.map {
+            case (arg, index) => (
+              newargs.apply(index),
+              walkExpr(arg, env, newargs.apply(index))
+            )
+          }
+          (f, results.foldLeft(List[IRStmt]()) { case (l, (arg, (stmts, expr))) => l ++ stmts :+ (mkExprS(e, arg, expr)) } :+
             new IRArgs(falseInfo(e), arg, newargs.map(p => Some(p))))
         case _ => (lhs, List(new IRArgs(falseInfo(e), arg, Nil)))
       }
@@ -1194,12 +1204,14 @@ class Translator(program: Program) extends ASTWalker {
       val fun = freshId(fid, fspan, "fun")
       val fir = id2ir(env, fid)
       val newargs = args.map(_ => freshId)
-      val results = args.zipWithIndex.map(a => (
-        newargs.apply(a._2),
-        walkExpr(a._1, env, newargs.apply(a._2))
-      ))
+      val results = args.zipWithIndex.map {
+        case (arg, index) => (
+          newargs.apply(index),
+          walkExpr(arg, env, newargs.apply(index))
+        )
+      }
       (List(toObject(v, obj, fir)) ++
-        results.foldLeft(List[IRStmt]())((l, tp) => l ++ tp._2._1 :+ (mkExprS(e, tp._1, tp._2._2))) ++
+        results.foldLeft(List[IRStmt]()) { case (l, (arg, (stmts, expr))) => l ++ stmts :+ (mkExprS(e, arg, expr)) } ++
         List(
           new IRArgs(falseInfo(e), arg, newargs.map(p => Some(p))),
           getBase(v, fun, fir),
@@ -1218,12 +1230,14 @@ class Translator(program: Program) extends ASTWalker {
       val (ssl, rl) = walkExpr(first, env, obj1)
       val (ssr, rr) = walkExpr(index, env, field1)
       val newargs = args.map(_ => freshId)
-      val results = args.zipWithIndex.map(a => (
-        newargs.apply(a._2),
-        walkExpr(a._1, env, newargs.apply(a._2))
-      ))
+      val results = args.zipWithIndex.map {
+        case (arg, index) => (
+          newargs.apply(index),
+          walkExpr(arg, env, newargs.apply(index))
+        )
+      }
       (((ssl :+ toObject(first, obj, rl)) ++ ssr) ++
-        results.foldLeft(List[IRStmt]())((l, tp) => l ++ tp._2._1 :+ (mkExprS(e, tp._1, tp._2._2))) ++
+        results.foldLeft(List[IRStmt]()) { case (l, (arg, (stmts, expr))) => l ++ stmts :+ (mkExprS(e, arg, expr)) } ++
         List(
           new IRArgs(falseInfo(e), arg, newargs.map(p => Some(p))),
           toObject(b, fun, new IRLoad(trueInfo(objspan, e), obj, rr)),
@@ -1238,12 +1252,14 @@ class Translator(program: Program) extends ASTWalker {
       val arg = freshId(e, argsspan, argName)
       val (ss, r) = walkExpr(fun, env, obj1)
       val newargs = args.map(_ => freshId)
-      val results = args.zipWithIndex.map(a => (
-        newargs.apply(a._2),
-        walkExpr(a._1, env, newargs.apply(a._2))
-      ))
+      val results = args.zipWithIndex.map {
+        case (arg, index) => (
+          newargs.apply(index),
+          walkExpr(arg, env, newargs.apply(index))
+        )
+      }
       ((ss :+ toObject(fun, obj, r)) ++
-        results.foldLeft(List[IRStmt]())((l, tp) => l ++ tp._2._1 :+ (mkExprS(e, tp._1, tp._2._2))) ++
+        results.foldLeft(List[IRStmt]()) { case (l, (arg, (stmts, expr))) => l ++ stmts :+ (mkExprS(e, arg, expr)) } ++
         List(
           new IRArgs(falseInfo(e), arg, newargs.map(p => Some(p))),
           new IRCall(trueInfo(e), res, obj, global, arg)
@@ -1284,7 +1300,7 @@ class Translator(program: Program) extends ASTWalker {
         val (ss, r) = walkExpr(expr, env, res)
         (ss, new IRField(trueInfo(m), prop2ir(prop), r))
       case GetProp(_, prop, Functional(_, fds, vds, body, name, params, _)) =>
-        val (new_name, new_params, args, new_fds, new_vds, new_body) =
+        val (newName, newParams, args, newFds, newVds, newBody) =
           functional(NU.prop2Id(prop), params, fds, vds, body, env, None, true)
         val info = trueInfo(m)
         (
@@ -1292,11 +1308,11 @@ class Translator(program: Program) extends ASTWalker {
           new IRGetProp(
             info,
             new IRFunctional(info, true,
-              new_name, new_params, args, new_fds, new_vds, new_body)
+              newName, newParams, args, newFds, newVds, newBody)
           )
         )
       case SetProp(_, prop, Functional(_, fds, vds, body, name, params, _)) =>
-        val (new_name, new_params, args, new_fds, new_vds, new_body) =
+        val (newName, newParams, args, newFds, newVds, newBody) =
           functional(NU.prop2Id(prop), params, fds, vds, body, env, None, true)
         val info = trueInfo(m)
         (
@@ -1304,7 +1320,7 @@ class Translator(program: Program) extends ASTWalker {
           new IRSetProp(
             info,
             new IRFunctional(info, true,
-              new_name, new_params, args, new_fds, new_vds, new_body)
+              newName, newParams, args, newFds, newVds, newBody)
           )
         )
     }
@@ -1424,7 +1440,7 @@ class Translator(program: Program) extends ASTWalker {
        *   ignore = ReferenceError
       excLog.signal("ReferenceError!", lhs)
        */
-      val lhsid = freshId(lhs, "weird_lhs")
+      val lhsid = freshId(lhs, "weirdLhs")
       val (ss, r) = walkExpr(lhs, env, lhsid)
       (ss ++ stmts ++ List(
         makeExprStmtIgnore(lhs, varIgn(lhs), r),

@@ -42,12 +42,13 @@ class Disambiguator(program: Program) extends ASTWalker {
       ("alert", "alert"),
       (NU.internalPrint, NU.internalPrint)
     )
-  // The first Env is the label set of an enclosing IterationStatement
-  // The second Env is the label set of an enclosing SwitchStatement
-  // The third Env is the label set of an enclosing statement
-  // The fourth Env is the label set of the current statement
-  val emptyLabEnv = (List(), List(), List(), List())
-  var labEnv: (Env, Env, Env, Env) = emptyLabEnv
+  // encIter  : the label set of an enclosing IterationStatement
+  // encSwitch: the label set of an enclosing SwitchStatement
+  // encStmt  : the label set of an enclosing statement
+  // curStmt  : the label set of the current statement
+  class LabEnv(val encIter: Env, val encSwitch: Env, val encStmt: Env, val curStmt: Env)
+  val emptyLabEnv = new LabEnv(List(), List(), List(), List())
+  var labEnv: LabEnv = emptyLabEnv
   val thisName = "this"
   val argName = "arguments"
 
@@ -70,31 +71,31 @@ class Disambiguator(program: Program) extends ASTWalker {
   def addLEnv(id: Id, newid: Id): Unit = newid.uniqueName match {
     case None => excLog.signal(IdNotBoundError(id.text, id))
     case Some(uniq) =>
-      labEnv = (labEnv._1, labEnv._2, labEnv._4 ++ labEnv._3, (id.text, uniq) :: labEnv._4)
+      labEnv = new LabEnv(labEnv.encIter, labEnv.encSwitch, labEnv.curStmt ++ labEnv.encStmt, (id.text, uniq) :: labEnv.curStmt)
   }
   def setLEnvCur(lab: (String, String)): Unit =
-    labEnv = (labEnv._1, labEnv._2, labEnv._4 ++ labEnv._3, List(lab))
-  def setLEnv(n: ASTNode): (Env, Env, Env, Env) = {
+    labEnv = new LabEnv(labEnv.encIter, labEnv.encSwitch, labEnv.curStmt ++ labEnv.encStmt, List(lab))
+  def setLEnv(n: ASTNode): LabEnv = {
     val oldLEnv = labEnv
-    labEnv = (labEnv._1, labEnv._2, labEnv._4 ++ labEnv._3, List())
+    labEnv = new LabEnv(labEnv.encIter, labEnv.encSwitch, labEnv.curStmt ++ labEnv.encStmt, List())
     oldLEnv
   }
-  def resetLEnv(lenv: (Env, Env, Env, Env)): Unit = labEnv = lenv
+  def resetLEnv(lenv: LabEnv): Unit = labEnv = lenv
 
   def getEnvNoCheck(id: Id): String = {
     val name = id.text
-    env.find(p => p._1.equals(name)) match {
+    env.find { case (n, _) => n.equals(name) } match {
       case Some((_, uniq)) => uniq
       case None =>
-        val new_name = newId(id).uniqueName.get
-        env = (name, new_name) :: env
-        new_name
+        val newName = newId(id).uniqueName.get
+        env = (name, newName) :: env
+        newName
     }
   }
 
   def getEnvCheck(id: Id): String = {
     val name = id.text
-    env.find(p => p._1.equals(name)) match {
+    env.find { case (n, _) => n.equals(name) } match {
       case Some((_, uniq)) => uniq
       case None =>
         if (!inWith)
@@ -105,13 +106,14 @@ class Disambiguator(program: Program) extends ASTWalker {
 
   def inEnv(id: Id): Boolean = {
     val name = id.text
-    env.find(p => p._1.equals(name)) match {
+    env.find { case (n, _) => n.equals(name) } match {
       case Some(_) => true
       case None => false
     }
   }
-  def setEnv(envs: (Env, (Env, Env, Env, Env))): Unit =
-    { env = envs._1; labEnv = envs._2 }
+  def setEnv(envs: (Env, LabEnv)): Unit = envs match {
+    case (e, le) => env = e; labEnv = le
+  }
 
   def newId(span: Span, n: String): Id =
     Id(NU.makeASTNodeInfo(span), n, Some(n), false)
@@ -179,58 +181,58 @@ class Disambiguator(program: Program) extends ASTWalker {
   }
   def mkInIterator(): Unit = {
     inIterator = true
-    if (labEnv._4.isEmpty) setLEnvCur(emptyLabel)
-    labEnv = (labEnv._4 ++ labEnv._1, labEnv._2, labEnv._3, labEnv._4)
+    if (labEnv.curStmt.isEmpty) setLEnvCur(emptyLabel)
+    labEnv = new LabEnv(labEnv.curStmt ++ labEnv.encIter, labEnv.encSwitch, labEnv.encStmt, labEnv.curStmt)
   }
   def mkInSwitch(): Unit = {
     inSwitch = true
-    if (labEnv._4.isEmpty) setLEnvCur(emptyLabel)
-    labEnv = (labEnv._1, labEnv._4 ++ labEnv._2, labEnv._3, labEnv._4)
+    if (labEnv.curStmt.isEmpty) setLEnvCur(emptyLabel)
+    labEnv = new LabEnv(labEnv.encIter, labEnv.curStmt ++ labEnv.encSwitch, labEnv.encStmt, labEnv.curStmt)
   }
   def functional(i: ASTNodeInfo, span: Span, name: Id, params: List[Id], fds: List[FunDecl],
     vds: List[VarDecl], body: SourceElements, bodyS: String): Functional = {
-    val old_toplevel = toplevel
+    val oldToplevel = toplevel
     toplevel = false
     labEnv = emptyLabEnv
     addEnv(argName, newId(newId(span, argName)))
-    val pairs_params = params.map(p => (p, newId(p)))
-    pairs_params.foreach(p => addEnv(p._1, p._2))
+    val pairsParams = params.map(p => (p, newId(p)))
+    pairsParams.foreach { case (p, nid) => addEnv(p, nid) }
     fds.foreach(fd => addEnv(fd.ftn.name, newId(fd.ftn.name)))
-    val new_vds = vds.foldLeft(List[VarDecl]())((vds, vd) => vd match {
+    val newVds = vds.foldLeft(List[VarDecl]())((vds, vd) => vd match {
       case VarDecl(info, id, _, strict) => params.find(p => p.text.equals(id.text)) match {
         case None =>
-          val new_id = newId(id)
-          addEnv(id, new_id)
-          vds :+ VarDecl(info, new_id, None, strict)
+          val nid = newId(id)
+          addEnv(id, nid)
+          vds :+ VarDecl(info, nid, None, strict)
         case _ => vds
       }
     })
-    val new_fds = fds.map(walk).asInstanceOf[List[FunDecl]]
+    val newFds = fds.map(walk).asInstanceOf[List[FunDecl]]
     val oldInFunctionBody = inFunctionBody
     inFunctionBody = true
-    val new_body = body match {
+    val newBody = body match {
       case SourceElements(i, stmts, strict) =>
         SourceElements(i, stmts.map(walk).asInstanceOf[List[SourceElement]], strict)
     }
     inFunctionBody = oldInFunctionBody
-    toplevel = old_toplevel
-    Functional(i, new_fds, new_vds, new_body, name, pairs_params.map(p => p._2), bodyS)
+    toplevel = oldToplevel
+    Functional(i, newFds, newVds, newBody, name, pairsParams.map { case (_, nid) => nid }, bodyS)
   }
 
   override def walk(node: Any): Any = node match {
     case Program(info, TopLevel(it, fds, vds, body)) =>
       fds.foreach(fd => addEnv(fd.ftn.name, newId(fd.info.span, fd.ftn.name.text)))
-      val new_vds = vds.map(p => p match {
+      val newVds = vds.map(p => p match {
         case VarDecl(i, id, _, strict) =>
-          val new_id = newId(i.span, id.text)
-          addEnv(id, new_id)
-          VarDecl(info, new_id, None, strict)
+          val nid = newId(i.span, id.text)
+          addEnv(id, nid)
+          VarDecl(info, nid, None, strict)
       })
-      val new_fds = fds.map(walk).asInstanceOf[List[FunDecl]]
+      val newFds = fds.map(walk).asInstanceOf[List[FunDecl]]
       toplevel = true
       Program(
         info,
-        TopLevel(it, new_fds, new_vds,
+        TopLevel(it, newFds, newVds,
           body.map(walk).asInstanceOf[List[SourceElements]])
       )
 
@@ -241,43 +243,43 @@ class Disambiguator(program: Program) extends ASTWalker {
       )
 
     case FunDecl(info, Functional(i, fds, vds, body, name, params, bodyS), strict) =>
-      val old_env = (env, labEnv)
-      val new_name = newId(name, getEnvNoCheck(name))
+      val oldEnv = (env, labEnv)
+      val newName = newId(name, getEnvNoCheck(name))
       val result = FunDecl(
         info,
-        functional(i, info.span, new_name, params, fds, vds, body, bodyS), strict
+        functional(i, info.span, newName, params, fds, vds, body, bodyS), strict
       )
-      setEnv(old_env._1, old_env._2)
+      setEnv(oldEnv)
       result
 
     case FunExpr(info, Functional(i, fds, vds, body, name, params, bodyS)) =>
-      val old_env = (env, labEnv)
-      val old_toplevel = toplevel
+      val oldEnv = (env, labEnv)
+      val oldToplevel = toplevel
       toplevel = false
-      val new_name = newId(name)
-      addEnv(name, new_name)
+      val newName = newId(name)
+      addEnv(name, newName)
       val result = FunExpr(
         info,
-        functional(i, info.span, new_name, params, fds, vds, body, bodyS)
+        functional(i, info.span, newName, params, fds, vds, body, bodyS)
       )
-      setEnv(old_env)
-      toplevel = old_toplevel
+      setEnv(oldEnv)
+      toplevel = oldToplevel
       result
     case GetProp(info, prop, Functional(i, fds, vds, body, name, params, bodyS)) =>
-      val old_env = (env, labEnv)
-      val new_prop = newPropId(name)
-      val new_name = new_prop.id
-      val result = GetProp(info, new_prop,
-        functional(i, info.span, new_name, params, fds, vds, body, bodyS))
-      setEnv(old_env)
+      val oldEnv = (env, labEnv)
+      val newProp = newPropId(name)
+      val newName = newProp.id
+      val result = GetProp(info, newProp,
+        functional(i, info.span, newName, params, fds, vds, body, bodyS))
+      setEnv(oldEnv)
       result
     case SetProp(info, prop, Functional(i, fds, vds, body, name, params, bodyS)) =>
-      val old_env = (env, labEnv)
-      val new_prop = newPropId(name)
-      val new_name = new_prop.id
-      val result = SetProp(info, new_prop,
-        functional(i, info.span, new_name, params, fds, vds, body, bodyS))
-      setEnv(old_env)
+      val oldEnv = (env, labEnv)
+      val newProp = newPropId(name)
+      val newName = newProp.id
+      val result = SetProp(info, newProp,
+        functional(i, info.span, newName, params, fds, vds, body, bodyS))
+      setEnv(oldEnv)
       result
 
     /* 12.8 The break Statement
@@ -290,9 +292,9 @@ class Disambiguator(program: Program) extends ASTWalker {
      *    (but not crossing function boundaries) Statement.
      */
     case br @ Break(info, target) =>
-      val new_target = target match {
-        case Some(label) => labEnv._3.find(p => p._1.equals(label.id.text)) match {
-          case None => labEnv._2.find(p => p._1.equals(label.id.text)) match {
+      val newTarget = target match {
+        case Some(label) => labEnv.encStmt.find { case (n, _) => n.equals(label.id.text) } match {
+          case None => labEnv.encSwitch.find { case (n, _) => n.equals(label.id.text) } match {
             case None =>
               excLog.signal(OutsideBreakError(br, "a label"))
               return EmptyStmt(info)
@@ -306,18 +308,18 @@ class Disambiguator(program: Program) extends ASTWalker {
             return EmptyStmt(info)
           } else None
       }
-      Break(info, new_target)
+      Break(info, newTarget)
 
     case Catch(info, id, body) =>
-      val old_toplevel = toplevel
+      val oldToplevel = toplevel
       toplevel = false
-      val old_env = (env, labEnv)
-      val new_id = newId(id)
-      addEnv(id, new_id)
+      val oldEnv = (env, labEnv)
+      val nid = newId(id)
+      addEnv(id, nid)
       setLEnv(node.asInstanceOf[ASTNode])
-      val result = Catch(info, new_id, walk(body).asInstanceOf[List[Stmt]])
-      setEnv(old_env)
-      toplevel = old_toplevel
+      val result = Catch(info, nid, walk(body).asInstanceOf[List[Stmt]])
+      setEnv(oldEnv)
+      toplevel = oldToplevel
       result
     /* 12.7 The continue Statement
      * A program is considered syntactically incorrect if either of the following is true:
@@ -333,8 +335,8 @@ class Disambiguator(program: Program) extends ASTWalker {
         excLog.signal(OutsideContError(c, "an iterator."))
         return EmptyStmt(info)
       } else {
-        val new_target = target match {
-          case Some(label) => labEnv._1.find(p => p._1.equals(label.id.text)) match {
+        val newTarget = target match {
+          case Some(label) => labEnv.encIter.find { case (n, _) => n.equals(label.id.text) } match {
             case None =>
               excLog.signal(OutsideContError(c, "a label."))
               return EmptyStmt(info)
@@ -342,35 +344,35 @@ class Disambiguator(program: Program) extends ASTWalker {
           }
           case None => None
         }
-        Continue(info, new_target)
+        Continue(info, newTarget)
       }
     case _: DoWhile =>
-      val old_env = (env, labEnv)
+      val oldEnv = (env, labEnv)
       val oldInIterator = inIterator
       mkInIterator
       val result = super.walk(node)
       inIterator = oldInIterator
-      setEnv(old_env)
+      setEnv(oldEnv)
       result
     case _: For =>
-      val old_env = (env, labEnv)
+      val oldEnv = (env, labEnv)
       val oldInIterator = inIterator
       mkInIterator
       val result = super.walk(node)
       inIterator = oldInIterator
       val newEnv = env
-      setEnv(old_env)
+      setEnv(oldEnv)
       env = newEnv
       result
     case _: ForIn =>
-      val old_env = (env, labEnv)
+      val oldEnv = (env, labEnv)
       hasAssign = true
       val oldInIterator = inIterator
       mkInIterator
       val result = super.walk(node)
       inIterator = oldInIterator
       val newEnv = env
-      setEnv(old_env)
+      setEnv(oldEnv)
       env = newEnv
       result
     case fv: ForVar =>
@@ -378,16 +380,16 @@ class Disambiguator(program: Program) extends ASTWalker {
     case fv: ForVarIn =>
       excLog.signal(NotReplacedByHoisterError(fv))
     case ls @ LabelStmt(info, label @ Label(_, Id(_, name, _, _)), stmt) =>
-      labEnv._4.find(p => p._1.equals(name)) match {
+      labEnv.curStmt.find { case (n, _) => n.equals(name) } match {
         case Some(_) =>
           excLog.signal(MultipleLabelDeclError(name, ls))
           ls
         case None =>
-          val old_env = (env, labEnv)
-          val new_label = newLabel(label)
-          addLEnv(label.id, new_label.id)
-          val result = LabelStmt(info, new_label, walk(stmt).asInstanceOf[Stmt])
-          setEnv(old_env)
+          val oldEnv = (env, labEnv)
+          val nlabel = newLabel(label)
+          addLEnv(label.id, nlabel.id)
+          val result = LabelStmt(info, nlabel, walk(stmt).asInstanceOf[Stmt])
+          setEnv(oldEnv)
           result
       }
 
@@ -404,22 +406,22 @@ class Disambiguator(program: Program) extends ASTWalker {
       result
 
     case _: Switch =>
-      val old_env = (env, labEnv)
+      val oldEnv = (env, labEnv)
       val oldInSwitch = inSwitch
       mkInSwitch
       val result = super.walk(node)
       inSwitch = oldInSwitch
-      setEnv(old_env)
+      setEnv(oldEnv)
       result
     case VarRef(info, id) => VarRef(info, newId(id, getEnvCheck(id)))
     case (vs: VarStmt) => excLog.signal(NotReplacedByHoisterError(vs))
     case _: While =>
-      val old_env = (env, labEnv)
+      val oldEnv = (env, labEnv)
       val oldInIterator = inIterator
       mkInIterator
       val result = super.walk(node)
       inIterator = oldInIterator
-      setEnv(old_env)
+      setEnv(oldEnv)
       result
     case ObjectExpr(info, members) =>
       checkDuplicatedProperty(members)
@@ -428,13 +430,13 @@ class Disambiguator(program: Program) extends ASTWalker {
       resetLEnv(oldLEnv)
       result
     case _: With =>
-      val old_env = (env, labEnv)
+      val oldEnv = (env, labEnv)
       val oldInWith = inWith
       inWith = true
       setLEnv(node.asInstanceOf[ASTNode])
       val result = super.walk(node)
       inWith = oldInWith
-      setEnv(old_env)
+      setEnv(oldEnv)
       result
     case AssignOpApp(info, Parenthesized(_, lhs), op, right) if lhs.isInstanceOf[LHS] =>
       val oldLEnv = setLEnv(node.asInstanceOf[ASTNode])
@@ -444,19 +446,19 @@ class Disambiguator(program: Program) extends ASTWalker {
     case AssignOpApp(info, VarRef(_, id), op, right) =>
       hasAssign = true
       val oldLEnv = setLEnv(node.asInstanceOf[ASTNode])
-      val old_toplevel = toplevel
-      val new_id = if (!inEnv(id)) {
+      val oldToplevel = toplevel
+      val nid = if (!inEnv(id)) {
         toplevel = true
         newId(id)
       } else newId(id, getEnvNoCheck(id))
-      toplevel = old_toplevel
-      val result = AssignOpApp(info, VarRef(info, new_id),
+      toplevel = oldToplevel
+      val result = AssignOpApp(info, VarRef(info, nid),
         op, walk(right).asInstanceOf[Expr])
       resetLEnv(oldLEnv)
       if (!inEnv(id)) {
         toplevel = true
         addEnv(id, newId(id))
-        toplevel = old_toplevel
+        toplevel = oldToplevel
       }
       result
     case _: AssignOpApp =>

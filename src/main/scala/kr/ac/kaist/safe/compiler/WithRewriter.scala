@@ -34,11 +34,11 @@ class WithRewriter(program: Program, forTest: Boolean) extends ASTWalker {
   def doit: Program = NU.simplifyWalker.walk(walk(program, EmptyEnv()).asInstanceOf[Program]).asInstanceOf[Program]
 
   // For WithRewriter tests...
-  def freshNameTest: String = "$f_" + System.nanoTime
-  val toObjectInfo = NU.makeASTNodeInfo(NU.makeSpan("_gen_toObject"))
+  def freshNameTest: String = "$f" + System.nanoTime
+  val toObjectInfo = NU.makeASTNodeInfo(NU.makeSpan("genToObject"))
   def mkId(name: String): Id = Id(toObjectInfo, name, None, false)
   def mkVarRef(id: Id): VarRef = VarRef(toObjectInfo, id)
-  val toObjectFnId = mkId("toObject_" + freshNameTest)
+  val toObjectFnId = mkId("toObject" + freshNameTest)
   val paramExpr = mkVarRef(mkId("x"))
   def mkEq(name: String): InfixOpApp =
     InfixOpApp(toObjectInfo, mkVarRef(mkId("type")), Op(toObjectInfo, "=="),
@@ -441,13 +441,13 @@ class WithRewriter(program: Program, forTest: Boolean) extends ASTWalker {
       While(info, walk(cond, env).asInstanceOf[Expr],
         walk(body, env).asInstanceOf[Stmt])
     /*
-     * rewrite_s[|with (e) s | Gamma|] =
+     * rewriteS[|with (e) s | Gamma|] =
      *   If Gamma = EmptyEnv
-     *   Then { alpha = toObject(rewrite_e[|e | Gamma|]);
-     *          rewrite_s[|s | <alpha, [], false>|]
+     *   Then { alpha = toObject(rewriteE[|e | Gamma|]);
+     *          rewriteS[|s | <alpha, [], false>|]
      *   Else Let Gamma = ConsEnv(phi, varphi, beta> where alpha \not\in phi
-     *        { alpha = toObject(rewrite_e[|e | Gamma|]);
-     *          rewrite_s[|s | <phi alpha, varphi, beta>|]
+     *        { alpha = toObject(rewriteE[|e | Gamma|]);
+     *          rewriteS[|s | <phi alpha, varphi, beta>|]
      */
     case With(info, expr, stmt) =>
       val fresh = if (forTest) Id(info, freshNameTest, None, true) else freshName(info)
