@@ -442,10 +442,10 @@ object NodeUtil {
   object addLinesProgram extends ASTWalker {
     var line = 0
     var offset = 0
-    def addLines(node: Node, l: Int, o: Int): Node = {
+    def addLines(node: Program, l: Int, o: Int): Program = {
       line = l; offset = o
       map = new HashMap[String, Span]
-      walk(node).asInstanceOf[Node]
+      walk(node)
     }
 
     // filter "(" for property access
@@ -460,66 +460,57 @@ object NodeUtil {
     }
 
     var map = new HashMap[String, Span]
-    override def walk(node: Any): Any = {
-      node match {
-        case f: FunDecl =>
-          f match {
-            case FunDecl(i, getFtn, isStrict) =>
-              val span = i.span
-              val key = span.at
-              val newInfo = if (map.contains(key)) new ASTNodeInfo(map.apply(key))
-              else {
-                val newSpan = span.addLines(line, offset)
-                offset = 0
-                map += (key -> newSpan)
-                new ASTNodeInfo(newSpan)
-              }
-              super.walk(new FunDecl(newInfo, getFtn, isStrict))
-          }
-        case i: ASTNodeInfo =>
-          val span = i.span
-          val key = span.at
-          if (map.contains(key)) new ASTNodeInfo(map.apply(key))
-          else {
-            val newSpan = span.addLines(line, offset)
-            map += (key -> newSpan)
-            new ASTNodeInfo(newSpan)
-          }
-        case dot: Dot => {
-          dot match {
-            case Dot(info, lhs, id) =>
-              val (nlhs, sOffset) = getStartSourceLoc(lhs)
-              // make new SpanInfo...
-              if (lhs != nlhs) {
-                val eOffset = info.span.end
-                val newSpan = new Span(sOffset, eOffset)
-                val newInfo = new ASTNodeInfo(newSpan)
-                val key = newSpan.at
-                if (!map.contains(key))
-                  map += (key -> newSpan)
-                super.walk(new Dot(newInfo, lhs, id))
-              } else super.walk(node)
-          }
-        }
-        case f: FunApp => {
-          f match {
-            case FunApp(info, lhs, list) =>
-              val (nlhs, sOffset) = getStartSourceLoc(lhs)
-              // make new SpanInfo...
-              if (lhs != nlhs) {
-                val eOffset = info.span.end
-                val newSpan = new Span(sOffset, eOffset)
-                val newInfo = new ASTNodeInfo(newSpan)
-                val key = newSpan.at
-                if (!map.contains(key))
-                  map += (key -> newSpan)
-                super.walk(new FunApp(newInfo, lhs, list))
-              } else super.walk(node)
-          }
-        }
-        case _: Comment => node
-        case _ => super.walk(node)
+    override def walk(i: ASTNodeInfo): ASTNodeInfo = {
+      val span = i.span
+      val key = span.at
+      if (map.contains(key)) new ASTNodeInfo(map.apply(key))
+      else {
+        val newSpan = span.addLines(line, offset)
+        map += (key -> newSpan)
+        new ASTNodeInfo(newSpan)
       }
+    }
+
+    override def walk(node: FunDecl): FunDecl = node match {
+      case FunDecl(i, getFtn, isStrict) =>
+        val span = i.span
+        val key = span.at
+        val newInfo = if (map.contains(key)) new ASTNodeInfo(map.apply(key))
+        else {
+          val newSpan = span.addLines(line, offset)
+          offset = 0
+          map += (key -> newSpan)
+          new ASTNodeInfo(newSpan)
+        }
+        super.walk(new FunDecl(newInfo, getFtn, isStrict))
+    }
+
+    override def walk(node: Expr): Expr = node match {
+      case dot @ Dot(info, lhs, id) =>
+        val (nlhs, sOffset) = getStartSourceLoc(lhs)
+        // make new SpanInfo...
+        if (lhs != nlhs) {
+          val eOffset = info.span.end
+          val newSpan = new Span(sOffset, eOffset)
+          val newInfo = new ASTNodeInfo(newSpan)
+          val key = newSpan.at
+          if (!map.contains(key))
+            map += (key -> newSpan)
+          super.walk(new Dot(newInfo, lhs, id))
+        } else super.walk(dot)
+      case f @ FunApp(info, lhs, list) =>
+        val (nlhs, sOffset) = getStartSourceLoc(lhs)
+        // make new SpanInfo...
+        if (lhs != nlhs) {
+          val eOffset = info.span.end
+          val newSpan = new Span(sOffset, eOffset)
+          val newInfo = new ASTNodeInfo(newSpan)
+          val key = newSpan.at
+          if (!map.contains(key))
+            map += (key -> newSpan)
+          super.walk(new FunApp(newInfo, lhs, list))
+        } else super.walk(f)
+      case _ => super.walk(node)
     }
   }
 
@@ -527,33 +518,40 @@ object NodeUtil {
   object addLinesWalker extends ASTWalker {
     var line = 0
     var offset = 0
-    def addLines(node: Node, l: Int, o: Int): Node = {
+    def addLines(node: FunExpr, l: Int, o: Int): FunExpr = {
       line = l; offset = o
       map = new HashMap[String, Span]
-      walk(node).asInstanceOf[Node]
+      walk(node)
     }
     var map = Map[String, Span]()
-    override def walk(node: Any): Any = node match {
-      case i: ASTNodeInfo =>
-        val span = i.span
-        val key = span.at
-        if (map.contains(key)) new ASTNodeInfo(map(key))
-        else {
-          val newSpan = span.addLines(line, offset)
-          map += (key -> newSpan)
-          new ASTNodeInfo(newSpan)
-        }
-      case _: Comment => node
-      case _ => super.walk(node)
+
+    def walk(e: FunExpr): FunExpr =
+      FunExpr(walk(e.info), walk(e.ftn))
+
+    override def walk(e: LHS): LHS = e match {
+      case fe: FunExpr => walk(fe)
+      case _ => super.walk(e)
+    }
+
+    override def walk(i: ASTNodeInfo): ASTNodeInfo = {
+      val span = i.span
+      val key = span.at
+      if (map.contains(key)) new ASTNodeInfo(map(key))
+      else {
+        val newSpan = span.addLines(line, offset)
+        map += (key -> newSpan)
+        new ASTNodeInfo(newSpan)
+      }
     }
   }
 
   // AST: Remove empty blocks, empty statements, debugger statements, ...
   object simplifyWalker extends ASTWalker {
     var repeat = false
-    def simplify(stmts: List[Stmt]): List[Stmt] = {
+
+    def simplify(stmts: List[SourceElement]): List[Stmt] = {
       repeat = false
-      val simplified = simpl(stmts)
+      val simplified = simpl(stmts.map(_.asInstanceOf[Stmt]))
       val result = if (repeat) simplify(simplified) else simplified
       result
     }
@@ -583,32 +581,38 @@ object NodeUtil {
       }
     }
 
-    override def walk(node: Any): Any = node match {
+    override def walk(node: FunDecl): FunDecl = node match {
+      case FunDecl(info, ftn, isStrict) =>
+        FunDecl(walk(info), walk(ftn), isStrict)
+    }
+
+    override def walk(node: Program): Program = node match {
+      case Program(info, TopLevel(i, fds, vds, program)) =>
+        Program(info, TopLevel(i, fds.map(walk), vds,
+          program.map(ss => ss match {
+            case SourceElements(i, s, f) =>
+              SourceElements(i, simplify(s.map(walk)), f)
+          })))
+    }
+
+    override def walk(node: Stmt): Stmt = node match {
       case ABlock(info, List(stmt), b) =>
-        ABlock(info, List(walk(stmt).asInstanceOf[Stmt]), b)
+        ABlock(info, List(walk(stmt)), b)
       case ABlock(info, ABlock(_, Nil, _) :: stmts, b) => walk(ABlock(info, stmts, b))
       case ABlock(info, ABlock(_, ss, _) :: stmts, b) => walk(ABlock(info, ss ++ stmts, b))
       case ABlock(info, stmts, b) =>
-        ABlock(info, simplify(stmts.map(walk).asInstanceOf[List[Stmt]]), b)
+        ABlock(info, simplify(stmts.map(walk)), b)
       case Switch(info, cond, frontCases, Some(stmts), backCases) =>
-        Switch(info, cond, super.walk(frontCases).asInstanceOf[List[Case]],
-          Some(simplify(stmts.map(walk).asInstanceOf[List[Stmt]])),
-          super.walk(backCases).asInstanceOf[List[Case]])
-      case Program(info, TopLevel(i, fds, vds, program)) =>
-        Program(info, TopLevel(i, super.walk(fds).asInstanceOf[List[FunDecl]], vds,
-          program.map(ss => ss match {
-            case SourceElements(i, s, f) =>
-              SourceElements(i, simplify(s.map(walk).asInstanceOf[List[Stmt]]), f)
-          })))
-      case Functional(i, fds, vds, SourceElements(info, body, strict), name, params, bodyS) =>
-        Functional(i, super.walk(fds).asInstanceOf[List[FunDecl]], vds,
-          SourceElements(
-            info,
-            simplify(body.map(walk).asInstanceOf[List[Stmt]]),
-            strict
-          ), name, params, bodyS)
-      case _: Comment => node
+        Switch(info, cond, frontCases.map(walk),
+          Some(simplify(stmts.map(walk))), backCases.map(walk))
       case _ => super.walk(node)
+    }
+
+    override def walk(node: Functional): Functional = node match {
+      case Functional(i, fds, vds, SourceElements(info, body, strict), name, params, bodyS) =>
+        Functional(i, fds.map(walk), vds,
+          SourceElements(info, simplify(body.map(walk)), strict),
+          name, params, bodyS)
     }
   }
 

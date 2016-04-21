@@ -17,7 +17,7 @@ import kr.ac.kaist.safe.nodes._
 import kr.ac.kaist.safe.util.{ NodeUtil => NU, Span }
 
 /* Translates JavaScript AST to IR. */
-class Translator(program: Program) extends ASTWalker {
+class Translator(program: Program) {
   /* Error handling
    * The signal function collects errors during the AST->IR translation.
    * To collect multiple errors,
@@ -458,7 +458,7 @@ class Translator(program: Program) extends ASTWalker {
   ////////////////////////////////////////////////////////////////
 
   /* The main entry function */
-  def doit: IRRoot = NU.simplifyIRWalker.walk(walkProgram(program)).asInstanceOf[IRRoot]
+  def doit: IRRoot = NU.simplifyIRWalker.walk(walkProgram(program))
 
   /*
    * AST2IR_P : Program -> IRRoot
@@ -973,16 +973,15 @@ class Translator(program: Program) extends ASTWalker {
       val ress = args.zip(news).map { case (ssi, ri) => walkExpr(ssi, env, ri) }
       val (arg1: Expr, arg2: Expr, argsRest) =
         args.reverse match { case a1 :: a2 :: ar => (a2, a1, ar.reverse) case _ => excLog.signal(InvalidInfixOpAppError(infix)) }
-      val ((res11, res12), (res21, res22), ressRest) =
+      val ((res11, cond: IRExpr), (res21, res22: IRExpr), ressRest) =
         ress.reverse match { case a1 :: a2 :: ar => (a2, a1, ar.reverse) case _ => excLog.signal(InvalidInfixOpAppError(infix)) }
-      val cond = res12.asInstanceOf[IRExpr]
       val body = makeSeq(
         e,
         res11.asInstanceOf[List[IRStmt]] :+
           new IRIf(trueInfo(e), cond,
             makeSeq(e, res21.asInstanceOf[List[IRStmt]] ++
               List(mkExprS(arg2, res,
-                res22.asInstanceOf[IRExpr]))),
+                res22))),
             Some(new IRIf(
               trueInfo(arg1),
               new IRBin(
@@ -1327,7 +1326,7 @@ class Translator(program: Program) extends ASTWalker {
 
   type CaseEnv = List[(Option[Expr], IRId)]
   def addCE(env: CaseEnv, x: Option[Expr], xid: IRId): CaseEnv = (x, xid) :: env
-  def addRightCE(env: CaseEnv, xid: IRId): CaseEnv = env ++ List((None, xid)).asInstanceOf[CaseEnv]
+  def addRightCE(env: CaseEnv, xid: IRId): CaseEnv = env ++ List((None, xid))
   /*
    * AST2IR_CC : List[Case] * Option[List[Stmt]] * List[Case] -> Env -> List[Option[Expr] * IRId] -> IRStmt
    */
@@ -1343,7 +1342,7 @@ class Translator(program: Program) extends ASTWalker {
           head,
           new IRLabelStmt(falseInfo(head), newLabel,
             walkCase(ast, switchSpan, tail, defCase, frontCases, env,
-            addCE(caseEnv, Some(condExpr), newLabel)).asInstanceOf[IRStmt]),
+              addCE(caseEnv, Some(condExpr), newLabel))),
           makeStmtUnit(head, body.map(walkStmt(_, env)))
         )
       case (Nil, Some(stmt), _) =>

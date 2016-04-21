@@ -20,7 +20,7 @@ import kr.ac.kaist.safe.util.{ NodeUtil => NU }
  * to another one without using it.
  */
 object DynamicRewriter extends ASTWalker {
-  def doit(program: Program): Program = walk(program).asInstanceOf[Program]
+  def doit(program: Program): Program = walk(program)
 
   def allConst(args: List[Expr]): Boolean = args.forall(_.isInstanceOf[StringLiteral])
   def toStr(expr: Expr): String = expr.asInstanceOf[StringLiteral].escaped
@@ -31,7 +31,7 @@ object DynamicRewriter extends ASTWalker {
     case body :: last :: front => (front.foldRight(toStr(last))((a, s) => toStr(a) + ", " + s), toStr(body))
   }
 
-  override def walk(node: Any): Any = node match {
+  override def walk(node: LHS): LHS = node match {
     // new Function("x","d",body);
     // ==>
     // function (x,d) body;
@@ -70,10 +70,6 @@ object DynamicRewriter extends ASTWalker {
         case Some(fe) => FunApp(i1, dot, List(fe, no))
         case _ => n
       }
-
-    case xs: List[_] => xs.map(walk)
-    case xs: Option[_] => xs.map(walk)
-    case xs: Comment => node
     case _ => super.walk(node)
   }
 }

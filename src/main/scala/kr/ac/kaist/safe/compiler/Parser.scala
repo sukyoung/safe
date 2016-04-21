@@ -62,7 +62,7 @@ object Parser {
     in.close; sr.close
     if (parseResult.hasValue) {
       val fe = parseResult.asInstanceOf[SemanticValue].value.asInstanceOf[FunExpr]
-      Some(NU.addLinesWalker.addLines(fe, line - 1, offset - 1).asInstanceOf[FunExpr])
+      Some(NU.addLinesWalker.addLines(fe, line - 1, offset - 1))
     } else None
   }
 
@@ -97,7 +97,7 @@ object Parser {
     val in = new BufferedReader(ir)
     val program = parsePgm(in, fileName, line)
     in.close; ir.close; is.close
-    NU.addLinesProgram.addLines(program, line - 1, offset - 1).asInstanceOf[Program]
+    NU.addLinesProgram.addLines(program, line - 1, offset - 1)
   }
 
   /**
