@@ -680,7 +680,7 @@ case class RegularExpression(override val info: ASTNodeInfo, body: String, flag:
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
-    s.append("/" + NU.unescapeJava(body) + "/" + NU.unescapeJava(flag))
+    s.append("/" + body + "/" + flag)
     s.toString
   }
 }

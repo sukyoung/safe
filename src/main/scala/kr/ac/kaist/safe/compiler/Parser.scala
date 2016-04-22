@@ -52,9 +52,20 @@ object Parser {
     getInfoStmts(parseFile(file))
   }
 
+  def stringToAST(str: String): Option[Program] = {
+    val sr = new StringReader(str)
+    val in = new BufferedReader(sr)
+    val parser = new JS(in, "stringParse")
+    val parseResult = parser.JSmain(0)
+    in.close; sr.close
+    if (parseResult.hasValue) {
+      val result = parseResult.asInstanceOf[SemanticValue].value.asInstanceOf[Program]
+      Some(DynamicRewriter.doit(result))
+    } else None
+  }
+
   def stringToFnE(str: (String, (Int, Int), String)): Option[FunExpr] = {
     val (fileName, (line, offset), code) = str
-    val file = new File(fileName)
     val sr = new StringReader(code)
     val in = new BufferedReader(sr)
     val parser = new JS(in, fileName)
