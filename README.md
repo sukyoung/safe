@@ -11,7 +11,7 @@ but note that we use **sbt** instead of **ant** to build SAFE, which required sl
 
 ### Introduction
 
-SAFE is a scalable and pluggable analysis frameowkr for JavaScript web applications developed by the Programming Language Research Group at KAIST:
+SAFE is a scalable and pluggable analysis framework for JavaScript web applications developed by the Programming Language Research Group at KAIST:
 
     http://plrg.kaist.ac.kr
 
