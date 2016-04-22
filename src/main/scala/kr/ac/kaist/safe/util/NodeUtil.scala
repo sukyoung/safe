@@ -11,6 +11,7 @@
 
 package kr.ac.kaist.safe.util
 
+import xtc.tree.Location
 import kr.ac.kaist.safe.nodes._
 import kr.ac.kaist.safe.config.Config
 import java.io.BufferedWriter
@@ -29,6 +30,11 @@ object NodeUtil {
   val significantBits = 13
 
   // Spans ///////////////////////////////////////////////////////
+  def makeSpan(loc: Location): Span = {
+    val sl = new SourceLoc(loc.file, loc.line, loc.column, 0);
+    new Span(sl, sl)
+  }
+
   def makeSpan(start: Span, finish: Span): Span =
     new Span(start.begin, finish.end)
 

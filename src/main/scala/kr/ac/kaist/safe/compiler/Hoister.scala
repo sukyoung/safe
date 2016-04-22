@@ -295,7 +295,7 @@ class Hoister(program: Program) extends ASTWalker {
           Parser.scriptToAST(List(("evalParse", (1, 1), str)))
         } catch {
           case e: ParserError =>
-            excLog.signal(EvalArgSyntaxError(toSpan(fa), str))
+            excLog.signal(EvalArgSyntaxError(str, toSpan(fa)))
         }
         super.walk(fa)
 

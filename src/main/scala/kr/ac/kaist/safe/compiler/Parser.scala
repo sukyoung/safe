@@ -16,9 +16,9 @@ import java.nio.charset.Charset
 import xtc.parser.SemanticValue
 import xtc.parser.ParseError
 import kr.ac.kaist.safe.nodes._
+import kr.ac.kaist.safe.parser.JS
 import kr.ac.kaist.safe.util.{ NodeUtil => NU, SourceLoc, Span }
 import kr.ac.kaist.safe.errors.error._
-import kr.ac.kaist.safe.parser.JS
 
 object Parser {
   val mergedSourceLoc = new SourceLoc(NU.freshFile("Merged"), 0, 0, 0)
@@ -150,7 +150,10 @@ object Parser {
       if (parseResult.hasValue) {
         val result = parseResult.asInstanceOf[SemanticValue].value.asInstanceOf[Program]
         DynamicRewriter.doit(result)
-      } else throw ParserError(parseResult.asInstanceOf[ParseError].msg)
+      } else {
+        val error = parseResult.asInstanceOf[ParseError]
+        throw ParserError(error.msg, NU.makeSpan(parser.location(error.index)))
+      }
     } finally {
       try {
         val file = new File(syntaxLogFile)
