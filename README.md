@@ -3,7 +3,7 @@ SAFE
 
 ### News
 
-SAFE is now available at GitHub.  Older versions are still available at:
+SAFE is now available at GitHub. [Older versions are still available](http://safe.kaist.ac.kr) at:
 
     http://safe.kaist.ac.kr
 
@@ -11,11 +11,11 @@ but note that we use **sbt** instead of **ant** to build SAFE, which required sl
 
 ### Introduction
 
-SAFE is a scalable and pluggable analysis frameowkr for JavaScript web applications developed by the Programming Language Research Group at KAIST:
+SAFE is a scalable and pluggable analysis framework for JavaScript web applications developed by [the Programming Language Research Group at KAIST](http://plrg.kaist.ac.kr):
 
     http://plrg.kaist.ac.kr
 
-We provide a formal specification of the SAFE framework:
+We provide [a formal specification of the SAFE framework](http://plrg.kaist.ac.kr/redmine/projects/jsf/repository/revisions/master/show/doc/manual):
 
     http://plrg.kaist.ac.kr/redmine/projects/jsf/repository/revisions/master/show/doc/manual
     
