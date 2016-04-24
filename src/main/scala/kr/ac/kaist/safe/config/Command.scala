@@ -29,8 +29,15 @@ sealed abstract class Command(val name: String, val phaseHelper: PhaseHelper) {
   def help: String = ""
 }
 case object CmdParse extends Command("parse", Parse) {
-  override def usage: String = " infile.js ..."
-  override def help: String = "  Parses files." + Config.LINE_SEP
+  override def usage: String =
+    s" [-$name:out=outfile] infile.js ..."
+  override def help: String = {
+    val s: StringBuilder = new StringBuilder
+    "  Parses files." + Config.LINE_SEP
+    s.append(s"  If -$name:out=outfile is given, the parsed AST will be written to the outfile.")
+    s.append(Config.LINE_SEP)
+    s.toString
+  }
 }
 case object CmdASTRewrite extends Command("astRewrite", ASTRewrite) {
   override def usage: String =

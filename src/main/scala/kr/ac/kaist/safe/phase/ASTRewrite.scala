@@ -19,7 +19,7 @@ import kr.ac.kaist.safe.errors.ExcLog
 import kr.ac.kaist.safe.nodes.Program
 import kr.ac.kaist.safe.util.{ NodeUtil, Useful }
 
-// ASTRewrite phase struct.
+// ASTRewrite phase
 case class ASTRewrite(
     prev: Parse = Parse(),
     astRewriteConfig: ASTRewriteConfig = ASTRewriteConfig()
@@ -33,12 +33,12 @@ case class ASTRewrite(
   }
   def rewrite(config: Config, pgm: Program): Option[Program] = {
     // Rewrite AST.
-    var program = (new Hoister(pgm).doit).asInstanceOf[Program]
+    var program = new Hoister(pgm).doit
     val disambiguator = new Disambiguator(program)
-    program = (disambiguator.doit).asInstanceOf[Program]
+    program = disambiguator.doit
     var excLog: ExcLog = disambiguator.excLog
     val withRewriter: WithRewriter = new WithRewriter(program, false)
-    program = withRewriter.doit.asInstanceOf[Program]
+    program = withRewriter.doit
 
     // Report errors.
     if (excLog.hasError) {
@@ -67,7 +67,7 @@ object ASTRewrite extends PhaseHelper {
   def create: ASTRewrite = ASTRewrite()
 }
 
-// Config options for ASTRewrite phase.
+// Config options for the ASTRewrite phase.
 case class ASTRewriteConfig(
     var verbose: Boolean = false,
     var outFile: Option[String] = None
