@@ -11,11 +11,11 @@
 
 package kr.ac.kaist.safe.util
 
-import scala.collection.mutable.{ Map => MMap }
-import scala.collection.mutable.{ HashMap => MHashMap }
+import scala.collection.mutable.{ Map => MMap, HashMap => MHashMap }
 import scala.util.matching.Regex
 import kr.ac.kaist.safe.nodes._
 
+// Set by config/Config.scala
 class DefaultAddressManager extends AddressManager {
   private object AMObj {
     // Address 0 is pre-allocated for Global Callsite.

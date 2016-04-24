@@ -33,17 +33,17 @@ trait ConfigOption {
           case BoolOption(ass) => List(
             (("-" + name).r, "".r, (_: String) => Some(ass())),
             (("-" + name + "=").r, ".*".r, (_: String) =>
-              error("The option '-" + name + "' not allowed assignment."))
+              error("The option '-" + name + "' does not need an assignment."))
           )
           case NumOption(ass) => List(
             (("-" + name + "=").r, "[0-9]+".r, (s: String) => Some(ass(s.toInt))),
-            (("-" + name + "=").r, ".*".r, (_: String) => error("The option '" + name + "' needs number assignment.")),
-            (("-" + name).r, "".r, (_: String) => error("The option '" + name + "' needs number assignment."))
+            (("-" + name + "=").r, ".*".r, (_: String) => error("The option '" + name + "' needs a number assignment.")),
+            (("-" + name).r, "".r, (_: String) => error("The option '" + name + "' needs a number assignment."))
           )
           case StrOption(ass) => List(
             (("-" + name + "=").r, ".+".r, (s: String) => Some(ass(s))),
-            (("-" + name + "=").r, ".*".r, (_: String) => error("The option '" + name + "' needs string assignment.")),
-            (("-" + name).r, "".r, (_: String) => error("The option '" + name + "' needs string assignment."))
+            (("-" + name + "=").r, ".*".r, (_: String) => error("The option '" + name + "' needs a string assignment.")),
+            (("-" + name).r, "".r, (_: String) => error("The option '" + name + "' needs a string assignment."))
           )
           // TODO List type, etc.
         })))

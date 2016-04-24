@@ -12,6 +12,7 @@
 package kr.ac.kaist.safe.util
 import kr.ac.kaist.safe.nodes.{ Address, Loc, RecencyTag }
 
+// Used by compiler/DefaultCFGBuilder.scala
 trait AddressManager {
   def addrToLoc(addr: Address, recency: RecencyTag): Loc
   def locToAddr(loc: Loc): Address

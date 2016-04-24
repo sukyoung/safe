@@ -20,6 +20,8 @@ import kr.ac.kaist.safe.nodes._
 import kr.ac.kaist.safe.config.Config
 import kr.ac.kaist.safe.phase.CFGBuildConfig
 
+// Collects captured variables in a given IR
+// Used by compiler/DefaultCFGBuilder.scala
 class CapturedVariableCollector(ir: IRRoot, config: Config, cfgConfig: CFGBuildConfig) {
   /* Error handling
    * The signal function collects errors during the disambiguation phase.

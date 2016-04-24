@@ -13,9 +13,6 @@ package kr.ac.kaist.safe.util
 
 import java.io.Serializable
 
-// /
-// / type 'a node = 'a Node.node
-// /
 class SourceLoc(f: String, val line: Int, val column: Int, val offset: Int) extends Serializable {
   val fileName = Useful.windowPathToUnixPath(f)
 

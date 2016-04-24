@@ -21,7 +21,7 @@ import kr.ac.kaist.safe.errors.error._
 import kr.ac.kaist.safe.nodes._
 import kr.ac.kaist.safe.nodes.EdgeType._
 import kr.ac.kaist.safe.phase.CFGBuildConfig
-import kr.ac.kaist.safe.util.{ NodeUtil => NU, CapturedVariableCollector, AddressManager }
+import kr.ac.kaist.safe.util.{ NodeUtil => NU, CapturedVariableCollector }
 
 // default CFG builder
 object DefaultCFGBuilder extends CFGBuilder {

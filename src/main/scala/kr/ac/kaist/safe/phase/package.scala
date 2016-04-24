@@ -12,7 +12,7 @@
 package kr.ac.kaist.safe
 
 package object phase {
-  // Option regular expression map
+  // Mapping between Config options and their regular expressions
   type Regex = scala.util.matching.Regex
   type OptRegexMap = Map[String, List[(Regex, Regex, String => Option[Unit])]]
 }

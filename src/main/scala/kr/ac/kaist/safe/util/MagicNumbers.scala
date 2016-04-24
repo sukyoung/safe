@@ -13,10 +13,8 @@ package kr.ac.kaist.safe.util
 
 import scala.collection.immutable
 
-/**
- * By David Chase (from Sun Microsystems)
- */
-
+// Magic numbers for better hashing by David Chase from Sun Microsystems.
+// Used by SourceLoc and Span.
 /**
  * Magic numbers chosen to be:
  * <ul>

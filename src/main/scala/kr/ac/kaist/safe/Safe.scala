@@ -19,21 +19,21 @@ object Safe {
   // Main entry point
   ////////////////////////////////////////////////////////////////////////////////
   def main(tokens: Array[String]): Unit = {
-    // Get config and corresponding phase from shell parameters.
+    // Get the config and its corresponding phase from the shell parameters.
     ArgParse(tokens.toList) match {
       case Some((config, phase)) =>
         // Set the start time.
         val startTime = System.currentTimeMillis
 
-        // Execute phase
+        // Execute the phase.
         phase(config)
 
-        // Print duration time if time option is switch on.
+        // Print the time spent if the time option is set.
         if (config.time) {
           val duration = System.currentTimeMillis - startTime
           println("Command " + config.command + " took " + duration + "ms.")
         }
-      // Print usage message if parsing arguments failed.
+      // Print the usage message if parsing arguments failed.
       case None => Help.printUsageMessage
     }
   }
