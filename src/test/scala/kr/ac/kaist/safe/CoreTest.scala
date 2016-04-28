@@ -13,20 +13,19 @@ package kr.ac.kaist.safe
 
 import org.scalatest._
 import org.scalatest.Assertions._
-
 import java.io.{ File, FilenameFilter }
-
 import scala.io.Source
 
 import kr.ac.kaist.safe.util.NodeUtil
 import kr.ac.kaist.safe.nodes.{ Program, IRRoot, CFG }
 import kr.ac.kaist.safe.config.{ Config, ArgParse }
+import kr.ac.kaist.safe.compiler.Parser
 import kr.ac.kaist.safe.phase.CFGBuild
 
 object ParseTest extends Tag("ParseTest")
 object ASTRewriteTest extends Tag("ASTRewriteTest")
 object CompileTest extends Tag("CompileTest")
-object CFGTest extends Tag("CFGTest")
+object CFGBuildTest extends Tag("CFGBuildTest")
 
 class CoreTest extends FlatSpec {
   val SEP = File.separator
@@ -44,10 +43,24 @@ class CoreTest extends FlatSpec {
   }
 
   def parseTest(pgmOpt: Option[Program]): Unit = {
+    pgmOpt match {
+      case None => assert(false)
+      case Some(program) =>
+        Parser.stringToAST(program.toString(0)) match {
+          case None => assert(false)
+          case Some(pgm) =>
+            val pretty = pgm.toString(0)
+            Parser.stringToAST(pretty) match {
+              case None => assert(false)
+              case Some(p) =>
+                assert(normalized(p.toString(0)) == normalized(pretty))
+            }
+        }
+    }
   }
 
-  def astRewriteTest(pgmOpt: Option[Program], testName: String): Unit = {
-    pgmOpt match {
+  def astRewriteTest(astOpt: Option[Program], testName: String): Unit = {
+    astOpt match {
       case None => assert(false)
       case Some(program) =>
         val result = readFile(testName)
@@ -65,7 +78,7 @@ class CoreTest extends FlatSpec {
     }
   }
 
-  def cfgTest(cfgOpt: Option[CFG], testName: String): Unit = {
+  def cfgBuildTest(cfgOpt: Option[CFG], testName: String): Unit = {
     cfgOpt match {
       case None => assert(false)
       case Some(cfg) =>
@@ -86,17 +99,17 @@ class CoreTest extends FlatSpec {
     val astRewrite = compile.prev
     val parse = astRewrite.prev
 
-    var pgmOpt = parse.parse(config)
+    val pgmOpt = parse.parse(config)
     registerTest("[Parse] " + filename, ParseTest) { parseTest(pgmOpt) }
 
-    pgmOpt = pgmOpt match {
+    val astOpt = pgmOpt match {
       case Some(program) => astRewrite.rewrite(config, program)
       case None => None
     }
     val astName = resDir + "/astRewrite/" + name + ".test"
-    registerTest("[ASTRewrite] " + filename, ASTRewriteTest) { astRewriteTest(pgmOpt, astName) }
+    registerTest("[ASTRewrite] " + filename, ASTRewriteTest) { astRewriteTest(astOpt, astName) }
 
-    val irOpt = pgmOpt match {
+    val irOpt = astOpt match {
       case Some(program) => compile.compile(config, program)
       case None => None
     }
@@ -108,6 +121,6 @@ class CoreTest extends FlatSpec {
       case None => None
     }
     val cfgName = resDir + "/cfg/" + name + ".test"
-    registerTest("[CFG]" + filename, CFGTest) { cfgTest(cfgOpt, cfgName) }
+    registerTest("[CFG]" + filename, CFGBuildTest) { cfgBuildTest(cfgOpt, cfgName) }
   }
 }

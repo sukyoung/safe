@@ -47,7 +47,7 @@ void closeParser = w EndOfFile
            writer.close();
            fw.close();
        } catch (IOException error) {
-           error("Closing a log file for the parser failed!");
+           throw new Error("Closing a log file for the parser failed!");
        }
      };
 

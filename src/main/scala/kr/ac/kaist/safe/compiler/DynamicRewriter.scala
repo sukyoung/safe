@@ -12,9 +12,6 @@
 package kr.ac.kaist.safe.compiler
 
 import java.lang.{ Integer => JInteger }
-import kr.ac.kaist.safe.errors.ErrorLog
-import kr.ac.kaist.safe.errors.SAFEError.error
-import kr.ac.kaist.safe.errors.StaticError
 import kr.ac.kaist.safe.nodes._
 import kr.ac.kaist.safe.util.{ NodeUtil => NU }
 
@@ -23,19 +20,7 @@ import kr.ac.kaist.safe.util.{ NodeUtil => NU }
  * to another one without using it.
  */
 object DynamicRewriter extends ASTWalker {
-
-  /* Error handling
-   * The signal function collects errors during the AST->IR translation.
-   * To collect multiple errors,
-   * we should return a dummy value after signaling an error.
-   */
-  val errors: ErrorLog = new ErrorLog
-  def signal(msg: String, node: Node): Unit = errors.signal(msg, node)
-  def signal(node: Node, msg: String): Unit = errors.signal(msg, node)
-  def signal(error: StaticError): Unit = errors.signal(error)
-  def getErrors(): List[StaticError] = errors.errors
-
-  def doit(program: Program): Program = walk(program).asInstanceOf[Program]
+  def doit(program: Program): Program = walk(program)
 
   def allConst(args: List[Expr]): Boolean = args.forall(_.isInstanceOf[StringLiteral])
   def toStr(expr: Expr): String = expr.asInstanceOf[StringLiteral].escaped
@@ -46,7 +31,7 @@ object DynamicRewriter extends ASTWalker {
     case body :: last :: front => (front.foldRight(toStr(last))((a, s) => toStr(a) + ", " + s), toStr(body))
   }
 
-  override def walk(node: Any): Any = node match {
+  override def walk(node: LHS): LHS = node match {
     // new Function("x","d",body);
     // ==>
     // function (x,d) body;
@@ -63,9 +48,9 @@ object DynamicRewriter extends ASTWalker {
     // function () { return this }
     case n @ FunApp(i1, VarRef(i2, Id(i3, text, a, b)), args) if allConst(args) && text.equals("Function") =>
       walk(New(i1, FunApp(i1, VarRef(i2, Id(i3, text, a, b)), args)))
-    // setTimeout("xqz_sr()", 1);
+    // setTimeout("xqzSr()", 1);
     // ==>
-    // setTimeout(function(){xqz_sr()}, 1);
+    // setTimeout(function(){xqzSr()}, 1);
     case n @ FunApp(i1, vr @ VarRef(_, Id(_, text, _, _)),
       List(StringLiteral(_, _, body, _), no)) if text.equals("setTimeout") || text.equals("setInterval") =>
       Parser.stringToFnE((NU.getFileName(n),
@@ -74,9 +59,9 @@ object DynamicRewriter extends ASTWalker {
         case Some(fe) => FunApp(i1, vr, List(fe, no))
         case _ => n
       }
-    // window.setTimeout("xqz_sr()", 1);
+    // window.setTimeout("xqzSr()", 1);
     // ==>
-    // window.setTimeout(function(){xqz_sr()}, 1);
+    // window.setTimeout(function(){xqzSr()}, 1);
     case n @ FunApp(i1, dot @ Dot(_, obj @ VarRef(_, Id(_, oname, _, _)), Id(_, mname, _, _)),
       List(StringLiteral(_, _, body, _), no)) if oname.equals("window") && (mname.equals("setTimeout") || mname.equals("setInterval")) =>
       Parser.stringToFnE((NU.getFileName(n),
@@ -85,10 +70,6 @@ object DynamicRewriter extends ASTWalker {
         case Some(fe) => FunApp(i1, dot, List(fe, no))
         case _ => n
       }
-
-    case xs: List[_] => xs.map(walk)
-    case xs: Option[_] => xs.map(walk)
-    case xs: Comment => node
     case _ => super.walk(node)
   }
 }

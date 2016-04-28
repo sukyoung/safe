@@ -16,19 +16,11 @@ import java.nio.charset.Charset
 import xtc.parser.SemanticValue
 import xtc.parser.ParseError
 import kr.ac.kaist.safe.nodes._
-import kr.ac.kaist.safe.util.{ NodeUtil => NU, SourceLoc, Span }
-import kr.ac.kaist.safe.errors.{ ParserError, SAFEError, SyntaxError, UserError }
 import kr.ac.kaist.safe.parser.JS
+import kr.ac.kaist.safe.util.{ NodeUtil => NU, SourceLoc, Span }
+import kr.ac.kaist.safe.errors.error._
 
 object Parser {
-  class Result(pgm: Option[Program], errors: List[SyntaxError])
-      extends StaticPhaseResult(errors) {
-    var programs = pgm match {
-      case None => Set[Program]()
-      case Some(p) => Set(p)
-    }
-  }
-
   val mergedSourceLoc = new SourceLoc(NU.freshFile("Merged"), 0, 0, 0)
   val mergedSourceInfo = new ASTNodeInfo(new Span(mergedSourceLoc, mergedSourceLoc))
   var fileindex = 1
@@ -39,7 +31,7 @@ object Parser {
       val ses = program.body.stmts.head
       (info, SourceElements(info, (NU.makeNoOp(info, "StartOfFile")) +: ses.body :+ (NU.makeNoOp(info, "EndOfFile")), ses.strict))
     } else
-      throw new UserError("Sources are already merged!")
+      throw AlreadyMergedSourceError(info.span)
   }
 
   def scriptToStmts(script: (String, (Int, Int), String)): (ASTNodeInfo, SourceElements) = {
@@ -60,9 +52,20 @@ object Parser {
     getInfoStmts(parseFile(file))
   }
 
+  def stringToAST(str: String): Option[Program] = {
+    val sr = new StringReader(str)
+    val in = new BufferedReader(sr)
+    val parser = new JS(in, "stringParse")
+    val parseResult = parser.JSmain(0)
+    in.close; sr.close
+    if (parseResult.hasValue) {
+      val result = parseResult.asInstanceOf[SemanticValue].value.asInstanceOf[Program]
+      Some(DynamicRewriter.doit(result))
+    } else None
+  }
+
   def stringToFnE(str: (String, (Int, Int), String)): Option[FunExpr] = {
     val (fileName, (line, offset), code) = str
-    val file = new File(fileName)
     val sr = new StringReader(code)
     val in = new BufferedReader(sr)
     val parser = new JS(in, fileName)
@@ -70,7 +73,7 @@ object Parser {
     in.close; sr.close
     if (parseResult.hasValue) {
       val fe = parseResult.asInstanceOf[SemanticValue].value.asInstanceOf[FunExpr]
-      Some(NU.addLinesWalker.addLines(fe, line - 1, offset - 1).asInstanceOf[FunExpr])
+      Some(NU.addLinesWalker.addLines(fe, line - 1, offset - 1))
     } else None
   }
 
@@ -105,7 +108,7 @@ object Parser {
     val in = new BufferedReader(ir)
     val program = parsePgm(in, fileName, line)
     in.close; ir.close; is.close
-    NU.addLinesProgram.addLines(program, line - 1, offset - 1).asInstanceOf[Program]
+    NU.addLinesProgram.addLines(program, line - 1, offset - 1)
   }
 
   /**
@@ -118,7 +121,7 @@ object Parser {
   def parseFile(file: File): Program = {
     val filename = file.getCanonicalPath
     if (!filename.endsWith(".js"))
-      throw new UserError("Need a JavaScript file instead of " + filename + ".")
+      throw NotJSFileError(filename)
     parsePgm(file, filename, 0)
   }
 
@@ -147,7 +150,10 @@ object Parser {
       if (parseResult.hasValue) {
         val result = parseResult.asInstanceOf[SemanticValue].value.asInstanceOf[Program]
         DynamicRewriter.doit(result)
-      } else throw new ParserError(parseResult.asInstanceOf[ParseError], parser, start)
+      } else {
+        val error = parseResult.asInstanceOf[ParseError]
+        throw ParserError(error.msg, NU.makeSpan(parser.location(error.index)))
+      }
     } finally {
       try {
         val file = new File(syntaxLogFile)

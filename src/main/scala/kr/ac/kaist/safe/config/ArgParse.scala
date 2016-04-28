@@ -35,13 +35,13 @@ object ArgParse {
           val cmd = config.command
           val optMap = c ++ p
 
-          // Basic parsing rule.
+          // Basic parsing rules.
           val str = ".*".r ^^ { s => s }
           val optError = ("-" ~> "[^=]+".r <~ "=") ~ str ^^ { case o ~ s => noOptError(o, cmd) }
           val simpleOptError = ("-" ~> str) ^^ { o => noOptError(o, cmd) }
           val fileName = str ^^ { s => config.fileNames = s :: config.fileNames; success }
 
-          // Create parser.
+          // Create a parser.
           val parser: Parser[Option[Unit]] = optMap.foldRight(
             phrase(optError) | phrase(simpleOptError) | phrase(fileName)
           ) {
@@ -69,18 +69,18 @@ object ArgParse {
     }
   }
 
-  // Print error message and return None.
+  // Print an error message and return None.
   private def error(msg: String): None.type = {
     Console.err.println(msg)
     None
   }
 
   // Errors.
-  private def noInputError: None.type = error("Please input command.")
+  private def noInputError: None.type = error("Please input a command.")
   private def noCmdError(str: String): None.type =
-    error("Command '" + str + "' does not exists.")
+    error("Command '" + str + "' does not exist.")
   private def noOptError(str: String, cmd: Command): None.type =
-    error("The option '-" + str + "' is not available in the command '" + cmd + "'.")
+    error("The option '-" + str + "' is not available for the command '" + cmd + "'.")
   private def noOptArgError(opt: String, str: String): None.type =
     error("The option '-" + opt + "' cannot have the value '" + str + "'.")
   private def optConflictError: None.type = error("Config option conflict.")

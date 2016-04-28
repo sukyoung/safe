@@ -14,27 +14,26 @@ package kr.ac.kaist.safe.util
 import scala.collection.mutable.{ Set => MSet }
 import scala.collection.mutable.{ HashSet => MHashSet }
 import scala.collection.immutable.HashSet
-import kr.ac.kaist.safe.errors.{ StaticError, ErrorLog }
+import kr.ac.kaist.safe.errors.ExcLog
+import kr.ac.kaist.safe.errors.error._
 import kr.ac.kaist.safe.nodes._
 import kr.ac.kaist.safe.config.Config
 import kr.ac.kaist.safe.phase.CFGBuildConfig
 
+// Collects captured variables in a given IR
+// Used by compiler/DefaultCFGBuilder.scala
 class CapturedVariableCollector(ir: IRRoot, config: Config, cfgConfig: CFGBuildConfig) {
   /* Error handling
    * The signal function collects errors during the disambiguation phase.
    * To collect multiple errors,
    * we should return a dummy value after signaling an error.
    */
-  val errors: ErrorLog = new ErrorLog
-  def signal(msg: String, node: Node): Unit = errors.signal(msg, node)
-  def signal(node: Node, msg: String): Unit = errors.signal(msg, node)
-  def signal(error: StaticError): Unit = errors.signal(error)
-  def getErrors(): List[StaticError] = errors.errors
+  var excLog: ExcLog = _
 
   val captured: MSet[String] = MHashSet()
 
   def collect: Set[String] = {
-    errors.errors = Nil
+    excLog = new ExcLog
     captured.clear
     ir match {
       case IRRoot(info, fds, vds, stmts) =>
@@ -107,10 +106,10 @@ class CapturedVariableCollector(ir: IRRoot, config: Config, cfgConfig: CFGBuildC
     case IRSeq(irinfo, stmts) => checkStmts(stmts, locals)
 
     case vd: IRVarStmt =>
-      signal("IRVarStmt should have been hoisted.", vd)
+      excLog.signal(NotHoistedError(vd))
 
     case fd: IRFunDecl =>
-      signal("IRFunDecl should have been hoisted.", fd)
+      excLog.signal(NotHoistedError(fd))
 
     case IRFunExpr(irinfo, lhs, func) =>
       checkId(lhs, locals)
@@ -124,12 +123,12 @@ class CapturedVariableCollector(ir: IRRoot, config: Config, cfgConfig: CFGBuildC
         case None => ()
       }
 
-    case IRTry(irinfo, body, name, catchB, finallyB) =>
+    case irTry @ IRTry(irinfo, body, name, catchB, finallyB) =>
       checkStmt(body, locals)
       (name, catchB) match {
         case (Some(x), Some(stmt)) => checkStmt(stmt, locals + x.uniqueName)
         case (None, None) => ()
-        case _ => signal("Wrong IRTryStmt.", stmt)
+        case _ => excLog.signal(WrongTryStmtError(irTry))
       }
       finallyB match {
         case Some(stmt) => checkStmt(stmt, locals)
@@ -166,7 +165,7 @@ class CapturedVariableCollector(ir: IRRoot, config: Config, cfgConfig: CFGBuildC
       checkId(args(1), locals)
 
     case c @ IRNew(irinfo, lhs, fun, args) =>
-      signal("IRNew should have two elements in args.", c)
+      excLog.signal(NewArgNumError(c))
 
     case IRDelete(irinfo, lhs, id) =>
       checkId(lhs, locals)
@@ -212,7 +211,7 @@ class CapturedVariableCollector(ir: IRRoot, config: Config, cfgConfig: CFGBuildC
     mem match {
       case IRField(irinfo, prop, expr) => checkExpr(expr, locals)
       case getOrSet =>
-        signal("IRGetProp, IRSetProp is not supported.", getOrSet)
+        excLog.signal(NotSupportedIRError(getOrSet))
         Unit
     }
   }

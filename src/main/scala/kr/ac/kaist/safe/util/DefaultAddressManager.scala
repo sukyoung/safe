@@ -11,11 +11,11 @@
 
 package kr.ac.kaist.safe.util
 
-import scala.collection.mutable.{ Map => MMap }
-import scala.collection.mutable.{ HashMap => MHashMap }
+import scala.collection.mutable.{ Map => MMap, HashMap => MHashMap }
 import scala.util.matching.Regex
 import kr.ac.kaist.safe.nodes._
 
+// Set by config/Config.scala
 class DefaultAddressManager extends AddressManager {
   private object AMObj {
     // Address 0 is pre-allocated for Global Callsite.
@@ -31,7 +31,7 @@ class DefaultAddressManager extends AddressManager {
     val allocTable: MMap[((FunctionId, Address), InstId, Int), Address] = MHashMap()
 
     // locclone
-    val allocTable_locclone: MMap[(InstId, Int), Address] = MHashMap()
+    val allocTableLocClone: MMap[(InstId, Int), Address] = MHashMap()
 
     def registerAddress(addr: Address, name: String): Unit = {
       reverseAddrTable(name) = addr
@@ -58,11 +58,11 @@ class DefaultAddressManager extends AddressManager {
 
     def getAPIAddress(k2: InstId, k3: Int): Address = {
       val key = (k2, k3)
-      allocTable_locclone.get(key) match {
+      allocTableLocClone.get(key) match {
         case Some(addr) => addr
         case None => {
           val addr = newProgramAddr()
-          allocTable_locclone(key) = addr
+          allocTableLocClone(key) = addr
           addr
         }
       }

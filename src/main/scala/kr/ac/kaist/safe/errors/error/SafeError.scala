@@ -9,6 +9,8 @@
  * ****************************************************************************
  */
 
-package kr.ac.kaist.safe.util
+package kr.ac.kaist.safe.errors.error
 
-class BugInfo(val span: Span, val bugKind: Int, val arg1: String, val arg2: String) {}
+import kr.ac.kaist.safe.errors.SafeException
+
+abstract class SafeError(msg: String) extends SafeException(msg)

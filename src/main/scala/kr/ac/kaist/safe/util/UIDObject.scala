@@ -12,16 +12,18 @@
 package kr.ac.kaist.safe.util
 
 import kr.ac.kaist.safe.nodes.ASTNode
-import kr.ac.kaist.safe.errors.ErrorMsgMaker
 
+// Object with a unique identifier.
+// Every Span, AST node, and IR node extends UIDObject.
 class UIDObject {
   private var uid: Long = next
   override def hashCode: Int = uid.asInstanceOf[Int] ^ (uid >>> 32).asInstanceOf[Int]
 
   override def toString: String =
-    if (this.isInstanceOf[ASTNode])
-      ErrorMsgMaker.makeErrorMsg(this.asInstanceOf[ASTNode])
-    else super.toString
+    if (this.isInstanceOf[ASTNode]) {
+      val node = this.asInstanceOf[ASTNode]
+      node.getClass.getSimpleName + " at " + NodeUtil.span(node).begin.at
+    } else super.toString
 
   def at: String =
     if (this.isInstanceOf[ASTNode])

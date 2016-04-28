@@ -14,7 +14,7 @@ package kr.ac.kaist.safe.phase
 import java.io.{ BufferedWriter, FileWriter, IOException }
 
 import kr.ac.kaist.safe.config.{ Config, ConfigOption, OptionKind, BoolOption, NumOption, StrOption }
-import kr.ac.kaist.safe.errors.{ StaticError, StaticErrors }
+import kr.ac.kaist.safe.errors.ExcLog
 import kr.ac.kaist.safe.compiler.DefaultCFGBuilder
 import kr.ac.kaist.safe.nodes.{ IRRoot, CFG }
 import kr.ac.kaist.safe.util.{ NodeUtil, Useful }
@@ -33,10 +33,13 @@ case class CFGBuild(
   }
   def cfgBuild(config: Config, ir: IRRoot): Option[CFG] = {
     // Build CFG from IR.
-    val (cfg: CFG, errors: List[StaticError]) = DefaultCFGBuilder.build(ir, config, cfgBuildConfig)
+    val (cfg: CFG, excLog: ExcLog) = DefaultCFGBuilder.build(ir, config, cfgBuildConfig)
 
     // Report errors.
-    StaticErrors.reportErrors(NodeUtil.getFileName(ir), errors)
+    if (excLog.hasError) {
+      println(NodeUtil.getFileName(ir) + ":")
+      println(excLog)
+    }
 
     // Pretty print to file.
     val dump: String = cfg.dump
@@ -63,13 +66,11 @@ object CFGBuild extends PhaseHelper {
 // Config options for CFGBuild phase.
 case class CFGBuildConfig(
     var verbose: Boolean = false,
-    var outFile: Option[String] = None,
-    var unroll: Int = 0
+    var outFile: Option[String] = None
 ) extends ConfigOption {
   val prefix: String = "cfgBuild:"
   val optMap: Map[String, OptionKind] = Map(
     "verbose" -> BoolOption(() => verbose = true),
-    "out" -> StrOption((s: String) => outFile = Some(s)),
-    "unroll" -> NumOption((i: Int) => unroll = i)
+    "out" -> StrOption((s: String) => outFile = Some(s))
   )
 }

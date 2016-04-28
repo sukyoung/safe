@@ -23,11 +23,64 @@ object Command {
   )
 }
 
-sealed abstract class Command(name: String, val phaseHelper: PhaseHelper) {
+sealed abstract class Command(val name: String, val phaseHelper: PhaseHelper) {
   override def toString: String = name
+  def usage: String = ""
+  def help: String = ""
 }
-case object CmdParse extends Command("parse", Parse)
-case object CmdASTRewrite extends Command("astRewrite", ASTRewrite)
-case object CmdCompile extends Command("compile", Compile)
-case object CmdCFGBuild extends Command("cfgBuild", CFGBuild)
+case object CmdParse extends Command("parse", Parse) {
+  override def usage: String =
+    s" [-$name:out=outfile] infile.js ..."
+  override def help: String = {
+    val s: StringBuilder = new StringBuilder
+    "  Parses files." + Config.LINE_SEP
+    s.append(s"  If -$name:out=outfile is given, the parsed AST will be written to the outfile.")
+    s.append(Config.LINE_SEP)
+    s.toString
+  }
+}
+case object CmdASTRewrite extends Command("astRewrite", ASTRewrite) {
+  override def usage: String =
+    s" [-$name:out=outfile] [-$name:verbose] infile.js ..."
+  override def help: String = {
+    val s: StringBuilder = new StringBuilder
+    s.append("  Rewrites AST in JavaScript source files (hoister, disambiguater, withRewriter).")
+    s.append(Config.LINE_SEP)
+    s.append(s"  If -$name:out=outfile is given, the disambiguated AST will be written to the outfile.")
+    s.append(Config.LINE_SEP)
+    s.append(s"  If -$name:verbose is given, messages during rewriting AST are printed.")
+    s.append(Config.LINE_SEP)
+    s.toString
+  }
+}
+case object CmdCompile extends Command("compile", Compile) {
+  override def usage: String =
+    s" [-$name:out=outfile] [-$name:verbose] infile.js ..."
+  override def help: String = {
+    val s: StringBuilder = new StringBuilder
+    s.append("  Translates JavaScript source files to IR.")
+    s.append(Config.LINE_SEP)
+    s.append(s"  If -$name:out=outfile is given, the resulting IR will be written to the outfile.")
+    s.append(Config.LINE_SEP)
+    s.append(s"  If -$name:verbose is given, messages during compilation are printed.")
+    s.append(Config.LINE_SEP)
+    s.toString
+  }
+}
+case object CmdCFGBuild extends Command("cfgBuild", CFGBuild) {
+  override def usage: String =
+    s" [-$name:out=outfile] [-$name:verbose] infile.js ..."
+  override def help: String = {
+    val s: StringBuilder = new StringBuilder
+    s.append("  Builds a control flow graph for JavaScript source files.")
+    s.append(Config.LINE_SEP)
+    s.append("  The files are concatenated in the given order before being parsed.")
+    s.append(Config.LINE_SEP)
+    s.append(s"  If -$name:out=outfile is given, the resulting CFG will be written to the outfile.")
+    s.append(Config.LINE_SEP)
+    s.append(s"  If -$name:verbose is given, messages during compilation are printed.")
+    s.append(Config.LINE_SEP)
+    s.toString
+  }
+}
 case object CmdHelp extends Command("help", Help)

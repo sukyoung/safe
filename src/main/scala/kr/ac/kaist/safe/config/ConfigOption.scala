@@ -17,6 +17,7 @@ sealed abstract class OptionKind
 case class BoolOption(assign: () => Unit) extends OptionKind
 case class NumOption(assign: Int => Unit) extends OptionKind
 case class StrOption(assign: String => Unit) extends OptionKind
+case class ListOption(assign: List[String] => Unit) extends OptionKind
 
 trait ConfigOption {
   val prefix: String
@@ -33,19 +34,23 @@ trait ConfigOption {
           case BoolOption(ass) => List(
             (("-" + name).r, "".r, (_: String) => Some(ass())),
             (("-" + name + "=").r, ".*".r, (_: String) =>
-              error("The option '-" + name + "' not allowed assignment."))
+              error("The option '-" + name + "' does not need an argument."))
           )
           case NumOption(ass) => List(
             (("-" + name + "=").r, "[0-9]+".r, (s: String) => Some(ass(s.toInt))),
-            (("-" + name + "=").r, ".*".r, (_: String) => error("The option '" + name + "' needs number assignment.")),
-            (("-" + name).r, "".r, (_: String) => error("The option '" + name + "' needs number assignment."))
+            (("-" + name + "=").r, ".*".r, (_: String) => error("The option '" + name + "' needs a number argument.")),
+            (("-" + name).r, "".r, (_: String) => error("The option '" + name + "' needs a number argument."))
           )
           case StrOption(ass) => List(
             (("-" + name + "=").r, ".+".r, (s: String) => Some(ass(s))),
-            (("-" + name + "=").r, ".*".r, (_: String) => error("The option '" + name + "' needs string assignment.")),
-            (("-" + name).r, "".r, (_: String) => error("The option '" + name + "' needs string assignment."))
+            (("-" + name + "=").r, ".*".r, (_: String) => error("The option '" + name + "' needs a string argument.")),
+            (("-" + name).r, "".r, (_: String) => error("The option '" + name + "' needs a string argument."))
           )
-          // TODO List type, etc.
+          case ListOption(ass) => List(
+            (("-" + name + "=").r, "[[^,]+,]+".r, (s: String) => Some(ass(s.split(",").toList))),
+            (("-" + name + "=").r, ".*".r, (_: String) => error("The option '" + name + "' needs at least one string argument.")),
+            (("-" + name).r, "".r, (_: String) => error("The option '" + name + "' needs at least one string argument."))
+          )
         })))
       case _ => None
     }

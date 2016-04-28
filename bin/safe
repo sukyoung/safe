@@ -9,8 +9,10 @@
 #    This distribution may include materials developed by third parties.
 ################################################################################
 
-# The following environment variable setup does not work for the junit command.
-export SAFE_HOME="`$(dirname $0)/safe_home`"
+if [ -z "$SAFE_HOME" ]; then
+  echo "You need to set SAFE_HOME to the directory containing SAFE"
+  exit 1
+fi
 
 if (uname | egrep CYGWIN > /dev/null) ; then
   SEP=";"

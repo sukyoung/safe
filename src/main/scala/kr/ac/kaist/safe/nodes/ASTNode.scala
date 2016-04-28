@@ -409,7 +409,6 @@ case class Try(override val info: ASTNodeInfo, body: List[Stmt], catchBlock: Opt
     if (catchBlock.isDefined)
       s.append(Config.LINE_SEP).append(NU.getIndent(indent)).append(catchBlock.get.toString(indent))
     if (fin.isDefined) {
-      var oneline: Boolean = NU.isOneline(fin)
       s.append(Config.LINE_SEP).append(NU.getIndent(indent))
       s.append("finally").append(Config.LINE_SEP).append("{")
       s.append(NU.getIndent(indent + 1)).append(NU.join(indent + 1, fin.get, Config.LINE_SEP + NU.getIndent(indent + 1), new StringBuilder("")))
@@ -478,7 +477,6 @@ case class Catch(override val info: ASTNodeInfo, id: Id, body: List[Stmt])
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
-    var oneline: Boolean = NU.isOneline(body)
     s.append("catch (").append(id.toString(indent)).append(")").append(Config.LINE_SEP)
     s.append("{")
     s.append(NU.getIndent(indent + 1)).append(NU.join(indent + 1, body, Config.LINE_SEP + NU.getIndent(indent + 1), new StringBuilder("")))
@@ -682,7 +680,7 @@ case class RegularExpression(override val info: ASTNodeInfo, body: String, flag:
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
-    s.append("/" + NU.unescapeJava(body) + "/" + NU.unescapeJava(flag))
+    s.append("/" + body + "/" + flag)
     s.toString
   }
 }
@@ -1034,279 +1032,464 @@ case class Functional(override val info: ASTNodeInfo, fds: List[FunDecl], vds: L
 }
 
 trait ASTWalker {
-  def walk(node: Any): Any = {
-    node match {
-      case ASTNodeInfo(span, comment) =>
-        ASTNodeInfo(walk(span).asInstanceOf[Span], walk(comment).asInstanceOf[Option[Comment]])
-      case AnonymousFnName(info, text) =>
-        AnonymousFnName(walk(info).asInstanceOf[ASTNodeInfo], walk(text).asInstanceOf[String])
-      case ArrayExpr(info, elements) =>
-        ArrayExpr(walk(info).asInstanceOf[ASTNodeInfo], walk(elements).asInstanceOf[List[Option[Expr]]])
-      case ArrayNumberExpr(info, elements) =>
-        ArrayNumberExpr(walk(info).asInstanceOf[ASTNodeInfo], walk(elements).asInstanceOf[List[Double]])
-      case AssignOpApp(info, lhs, op, right) =>
-        AssignOpApp(walk(info).asInstanceOf[ASTNodeInfo], walk(lhs).asInstanceOf[LHS], walk(op).asInstanceOf[Op], walk(right).asInstanceOf[Expr])
-      case ABlock(info, stmts, isInternal) =>
-        ABlock(walk(info).asInstanceOf[ASTNodeInfo], walk(stmts).asInstanceOf[List[Stmt]], walk(isInternal).asInstanceOf[Boolean])
-      case Bool(info, isBool) =>
-        Bool(walk(info).asInstanceOf[ASTNodeInfo], walk(isBool).asInstanceOf[Boolean])
-      case Bracket(info, obj, index) =>
-        Bracket(walk(info).asInstanceOf[ASTNodeInfo], walk(obj).asInstanceOf[LHS], walk(index).asInstanceOf[Expr])
-      case Break(info, target) =>
-        Break(walk(info).asInstanceOf[ASTNodeInfo], walk(target).asInstanceOf[Option[Label]])
-      case Case(info, cond, body) =>
-        Case(walk(info).asInstanceOf[ASTNodeInfo], walk(cond).asInstanceOf[Expr], walk(body).asInstanceOf[List[Stmt]])
-      case Catch(info, id, body) =>
-        Catch(walk(info).asInstanceOf[ASTNodeInfo], walk(id).asInstanceOf[Id], walk(body).asInstanceOf[List[Stmt]])
-      case Comment(info, comment) =>
-        Comment(walk(info).asInstanceOf[ASTNodeInfo], walk(comment).asInstanceOf[String])
-      case Cond(info, cond, trueB, falseB) =>
-        Cond(walk(info).asInstanceOf[ASTNodeInfo], walk(cond).asInstanceOf[Expr], walk(trueB).asInstanceOf[Expr], walk(falseB).asInstanceOf[Expr])
-      case Continue(info, target) =>
-        Continue(walk(info).asInstanceOf[ASTNodeInfo], walk(target).asInstanceOf[Option[Label]])
-      case Debugger(info) =>
-        Debugger(walk(info).asInstanceOf[ASTNodeInfo])
-      case DoWhile(info, body, cond) =>
-        DoWhile(walk(info).asInstanceOf[ASTNodeInfo], walk(body).asInstanceOf[Stmt], walk(cond).asInstanceOf[Expr])
-      case Dot(info, obj, member) =>
-        Dot(walk(info).asInstanceOf[ASTNodeInfo], walk(obj).asInstanceOf[LHS], walk(member).asInstanceOf[Id])
-      case DoubleLiteral(info, text, num) =>
-        DoubleLiteral(walk(info).asInstanceOf[ASTNodeInfo], walk(text).asInstanceOf[String], walk(num).asInstanceOf[Double])
-      case EmptyStmt(info) =>
-        EmptyStmt(walk(info).asInstanceOf[ASTNodeInfo])
-      case ExprList(info, exprs) =>
-        ExprList(walk(info).asInstanceOf[ASTNodeInfo], walk(exprs).asInstanceOf[List[Expr]])
-      case ExprStmt(info, expr, isInternal) =>
-        ExprStmt(walk(info).asInstanceOf[ASTNodeInfo], walk(expr).asInstanceOf[Expr], walk(isInternal).asInstanceOf[Boolean])
-      case Field(info, prop, expr) =>
-        Field(walk(info).asInstanceOf[ASTNodeInfo], walk(prop).asInstanceOf[Property], walk(expr).asInstanceOf[Expr])
-      case For(info, init, cond, action, body) =>
-        For(walk(info).asInstanceOf[ASTNodeInfo], walk(init).asInstanceOf[Option[Expr]], walk(cond).asInstanceOf[Option[Expr]], walk(action).asInstanceOf[Option[Expr]], walk(body).asInstanceOf[Stmt])
-      case ForIn(info, lhs, expr, body) =>
-        ForIn(walk(info).asInstanceOf[ASTNodeInfo], walk(lhs).asInstanceOf[LHS], walk(expr).asInstanceOf[Expr], walk(body).asInstanceOf[Stmt])
-      case ForVar(info, vars, cond, action, body) =>
-        ForVar(walk(info).asInstanceOf[ASTNodeInfo], walk(vars).asInstanceOf[List[VarDecl]], walk(cond).asInstanceOf[Option[Expr]], walk(action).asInstanceOf[Option[Expr]], walk(body).asInstanceOf[Stmt])
-      case ForVarIn(info, vari, expr, body) =>
-        ForVarIn(walk(info).asInstanceOf[ASTNodeInfo], walk(vari).asInstanceOf[VarDecl], walk(expr).asInstanceOf[Expr], walk(body).asInstanceOf[Stmt])
-      case FunApp(info, fun, args) =>
-        FunApp(walk(info).asInstanceOf[ASTNodeInfo], walk(fun).asInstanceOf[LHS], walk(args).asInstanceOf[List[Expr]])
-      case FunDecl(info, ftn, isStrict) =>
-        FunDecl(walk(info).asInstanceOf[ASTNodeInfo], walk(ftn).asInstanceOf[Functional], walk(isStrict).asInstanceOf[Boolean])
-      case FunExpr(info, ftn) =>
-        FunExpr(walk(info).asInstanceOf[ASTNodeInfo], walk(ftn).asInstanceOf[Functional])
-      case Functional(info, fds, vds, stmts, name, params, body) =>
-        Functional(walk(info).asInstanceOf[ASTNodeInfo], walk(fds).asInstanceOf[List[FunDecl]], walk(vds).asInstanceOf[List[VarDecl]], walk(stmts).asInstanceOf[SourceElements], walk(name).asInstanceOf[Id], walk(params).asInstanceOf[List[Id]], walk(body).asInstanceOf[String])
-      case GetProp(info, prop, ftn) =>
-        GetProp(walk(info).asInstanceOf[ASTNodeInfo], walk(prop).asInstanceOf[Property], walk(ftn).asInstanceOf[Functional])
-      case Id(info, text, uniqueName, isWith) =>
-        Id(walk(info).asInstanceOf[ASTNodeInfo], walk(text).asInstanceOf[String], walk(uniqueName).asInstanceOf[Option[String]], walk(isWith).asInstanceOf[Boolean])
-      case If(info, cond, trueB, falseB) =>
-        If(walk(info).asInstanceOf[ASTNodeInfo], walk(cond).asInstanceOf[Expr], walk(trueB).asInstanceOf[Stmt], walk(falseB).asInstanceOf[Option[Stmt]])
-      case InfixOpApp(info, left, op, right) =>
-        InfixOpApp(walk(info).asInstanceOf[ASTNodeInfo], walk(left).asInstanceOf[Expr], walk(op).asInstanceOf[Op], walk(right).asInstanceOf[Expr])
-      case IntLiteral(info, intVal, radix) =>
-        IntLiteral(walk(info).asInstanceOf[ASTNodeInfo], walk(intVal).asInstanceOf[BigInteger], walk(radix).asInstanceOf[Int])
-      case Label(info, id) =>
-        Label(walk(info).asInstanceOf[ASTNodeInfo], walk(id).asInstanceOf[Id])
-      case LabelStmt(info, label, stmt) =>
-        LabelStmt(walk(info).asInstanceOf[ASTNodeInfo], walk(label).asInstanceOf[Label], walk(stmt).asInstanceOf[Stmt])
-      case New(info, lhs) =>
-        New(walk(info).asInstanceOf[ASTNodeInfo], walk(lhs).asInstanceOf[LHS])
-      case NoOp(info, desc) =>
-        NoOp(walk(info).asInstanceOf[ASTNodeInfo], walk(desc).asInstanceOf[String])
-      case Null(info) =>
-        Null(walk(info).asInstanceOf[ASTNodeInfo])
-      case ObjectExpr(info, members) =>
-        ObjectExpr(walk(info).asInstanceOf[ASTNodeInfo], walk(members).asInstanceOf[List[Member]])
-      case Op(info, text) =>
-        Op(walk(info).asInstanceOf[ASTNodeInfo], walk(text).asInstanceOf[String])
-      case Parenthesized(info, expr) =>
-        Parenthesized(walk(info).asInstanceOf[ASTNodeInfo], walk(expr).asInstanceOf[Expr])
-      case PrefixOpApp(info, op, right) =>
-        PrefixOpApp(walk(info).asInstanceOf[ASTNodeInfo], walk(op).asInstanceOf[Op], walk(right).asInstanceOf[Expr])
-      case Program(info, body) =>
-        Program(walk(info).asInstanceOf[ASTNodeInfo], walk(body).asInstanceOf[TopLevel])
-      case PropId(info, id) =>
-        PropId(walk(info).asInstanceOf[ASTNodeInfo], walk(id).asInstanceOf[Id])
-      case PropNum(info, num) =>
-        PropNum(walk(info).asInstanceOf[ASTNodeInfo], walk(num).asInstanceOf[NumberLiteral])
-      case PropStr(info, str) =>
-        PropStr(walk(info).asInstanceOf[ASTNodeInfo], walk(str).asInstanceOf[String])
-      case RegularExpression(info, body, flag) =>
-        RegularExpression(walk(info).asInstanceOf[ASTNodeInfo], walk(body).asInstanceOf[String], walk(flag).asInstanceOf[String])
-      case Return(info, expr) =>
-        Return(walk(info).asInstanceOf[ASTNodeInfo], walk(expr).asInstanceOf[Option[Expr]])
-      case SetProp(info, prop, ftn) =>
-        SetProp(walk(info).asInstanceOf[ASTNodeInfo], walk(prop).asInstanceOf[Property], walk(ftn).asInstanceOf[Functional])
-      case SourceElements(info, body, isStrict) =>
-        SourceElements(walk(info).asInstanceOf[ASTNodeInfo], walk(body).asInstanceOf[List[SourceElement]], walk(isStrict).asInstanceOf[Boolean])
-      case StmtUnit(info, stmts) =>
-        StmtUnit(walk(info).asInstanceOf[ASTNodeInfo], walk(stmts).asInstanceOf[List[Stmt]])
-      case StringLiteral(info, quote, escaped, isRE) =>
-        StringLiteral(walk(info).asInstanceOf[ASTNodeInfo], walk(quote).asInstanceOf[String], walk(escaped).asInstanceOf[String], isRE)
-      case Switch(info, cond, frontCases, defi, backCases) =>
-        Switch(walk(info).asInstanceOf[ASTNodeInfo], walk(cond).asInstanceOf[Expr], walk(frontCases).asInstanceOf[List[Case]], walk(defi).asInstanceOf[Option[List[Stmt]]], walk(backCases).asInstanceOf[List[Case]])
-      case This(info) =>
-        This(walk(info).asInstanceOf[ASTNodeInfo])
-      case Throw(info, expr) =>
-        Throw(walk(info).asInstanceOf[ASTNodeInfo], walk(expr).asInstanceOf[Expr])
-      case TopLevel(info, fds, vds, stmts) =>
-        TopLevel(walk(info).asInstanceOf[ASTNodeInfo], walk(fds).asInstanceOf[List[FunDecl]], walk(vds).asInstanceOf[List[VarDecl]], walk(stmts).asInstanceOf[List[SourceElements]])
-      case Try(info, body, catchBlock, fin) =>
-        Try(walk(info).asInstanceOf[ASTNodeInfo], walk(body).asInstanceOf[List[Stmt]], walk(catchBlock).asInstanceOf[Option[Catch]], walk(fin).asInstanceOf[Option[List[Stmt]]])
-      case UnaryAssignOpApp(info, lhs, op) =>
-        UnaryAssignOpApp(walk(info).asInstanceOf[ASTNodeInfo], walk(lhs).asInstanceOf[LHS], walk(op).asInstanceOf[Op])
-      case VarDecl(info, name, expr, isStrict) =>
-        VarDecl(walk(info).asInstanceOf[ASTNodeInfo], walk(name).asInstanceOf[Id], walk(expr).asInstanceOf[Option[Expr]], walk(isStrict).asInstanceOf[Boolean])
-      case VarRef(info, id) =>
-        VarRef(walk(info).asInstanceOf[ASTNodeInfo], walk(id).asInstanceOf[Id])
-      case VarStmt(info, vds) =>
-        VarStmt(walk(info).asInstanceOf[ASTNodeInfo], walk(vds).asInstanceOf[List[VarDecl]])
-      case While(info, cond, body) =>
-        While(walk(info).asInstanceOf[ASTNodeInfo], walk(cond).asInstanceOf[Expr], walk(body).asInstanceOf[Stmt])
-      case With(info, expr, stmt) =>
-        With(walk(info).asInstanceOf[ASTNodeInfo], walk(expr).asInstanceOf[Expr], walk(stmt).asInstanceOf[Stmt])
-      case xs: List[_] => xs.map(walk _)
-      case xs: Option[_] => xs.map(walk _)
-      case _ => node
-    }
+  def walk(info: ASTNodeInfo): ASTNodeInfo = info match {
+    case ASTNodeInfo(span, comment) =>
+      ASTNodeInfo(span, comment.map(walk))
   }
-  def walkUnit(node: Any): Unit = {
-    node match {
-      case ASTNodeInfo(span, comment) =>
-        walkUnit(span); walkUnit(comment)
-      case AnonymousFnName(info, text) =>
-        walkUnit(info, text)
-      case ArrayExpr(info, elements) =>
-        walkUnit(info); walkUnit(elements)
-      case ArrayNumberExpr(info, elements) =>
-        walkUnit(info); walkUnit(elements)
-      case AssignOpApp(info, lhs, op, right) =>
-        walkUnit(info); walkUnit(lhs); walkUnit(op); walkUnit(right)
-      case ABlock(info, stmts, isInternal) =>
-        walkUnit(info); walkUnit(stmts); walkUnit(isInternal)
-      case Bool(info, isBool) =>
-        walkUnit(info); walkUnit(isBool)
-      case Bracket(info, obj, index) =>
-        walkUnit(info); walkUnit(obj); walkUnit(index)
-      case Break(info, target) =>
-        walkUnit(info); walkUnit(target)
-      case Case(info, cond, body) =>
-        walkUnit(info); walkUnit(cond); walkUnit(body)
-      case Catch(info, id, body) =>
-        walkUnit(info); walkUnit(id); walkUnit(body)
-      case Comment(info, comment) =>
-        walkUnit(info); walkUnit(comment)
-      case Cond(info, cond, trueB, falseB) =>
-        walkUnit(info); walkUnit(cond); walkUnit(trueB); walkUnit(falseB)
-      case Continue(info, target) =>
-        walkUnit(info); walkUnit(target)
-      case Debugger(info) =>
-        walkUnit(info)
-      case DoWhile(info, body, cond) =>
-        walkUnit(info); walkUnit(body); walkUnit(cond)
-      case Dot(info, obj, member) =>
-        walkUnit(info); walkUnit(obj); walkUnit(member)
-      case DoubleLiteral(info, text, num) =>
-        walkUnit(info); walkUnit(text); walkUnit(num)
-      case EmptyStmt(info) =>
-        walkUnit(info)
-      case ExprList(info, exprs) =>
-        walkUnit(info); walkUnit(exprs)
-      case ExprStmt(info, expr, isInternal) =>
-        walkUnit(info); walkUnit(expr); walkUnit(isInternal)
-      case Field(info, prop, expr) =>
-        walkUnit(info); walkUnit(prop); walkUnit(expr)
-      case For(info, init, cond, action, body) =>
-        walkUnit(info); walkUnit(init); walkUnit(cond); walkUnit(action); walkUnit(body)
-      case ForIn(info, lhs, expr, body) =>
-        walkUnit(info); walkUnit(lhs); walkUnit(expr); walkUnit(body)
-      case ForVar(info, vars, cond, action, body) =>
-        walkUnit(info); walkUnit(vars); walkUnit(cond); walkUnit(action); walkUnit(body)
-      case ForVarIn(info, vari, expr, body) =>
-        walkUnit(info); walkUnit(vari); walkUnit(expr); walkUnit(body)
-      case FunApp(info, fun, args) =>
-        walkUnit(info); walkUnit(fun); walkUnit(args)
-      case FunDecl(info, ftn, isStrict) =>
-        walkUnit(info); walkUnit(ftn); walkUnit(isStrict)
-      case FunExpr(info, ftn) =>
-        walkUnit(info); walkUnit(ftn)
-      case Functional(info, fds, vds, stmts, name, params, body) =>
-        walkUnit(info); walkUnit(fds); walkUnit(vds); walkUnit(stmts); walkUnit(name); walkUnit(params); walkUnit(body)
-      case GetProp(info, prop, ftn) =>
-        walkUnit(info); walkUnit(prop); walkUnit(ftn)
-      case Id(info, text, uniqueName, isWith) =>
-        walkUnit(info); walkUnit(text); walkUnit(uniqueName); walkUnit(isWith)
-      case If(info, cond, trueB, falseB) =>
-        walkUnit(info); walkUnit(cond); walkUnit(trueB); walkUnit(falseB)
-      case InfixOpApp(info, left, op, right) =>
-        walkUnit(info); walkUnit(left); walkUnit(op); walkUnit(right)
-      case IntLiteral(info, intVal, radix) =>
-        walkUnit(info); walkUnit(intVal); walkUnit(radix)
-      case Label(info, id) =>
-        walkUnit(info); walkUnit(id)
-      case LabelStmt(info, label, stmt) =>
-        walkUnit(info); walkUnit(label); walkUnit(stmt)
-      case New(info, lhs) =>
-        walkUnit(info); walkUnit(lhs)
-      case NoOp(info, desc) =>
-        walkUnit(info); walkUnit(desc)
-      case Null(info) =>
-        walkUnit(info)
-      case ObjectExpr(info, members) =>
-        walkUnit(info); walkUnit(members)
-      case Op(info, text) =>
-        walkUnit(info); walkUnit(text)
-      case Parenthesized(info, expr) =>
-        walkUnit(info); walkUnit(expr)
-      case PrefixOpApp(info, op, right) =>
-        walkUnit(info); walkUnit(op); walkUnit(right)
-      case Program(info, body) =>
-        walkUnit(info); walkUnit(body)
-      case PropId(info, id) =>
-        walkUnit(info); walkUnit(id)
-      case PropNum(info, num) =>
-        walkUnit(info); walkUnit(num)
-      case PropStr(info, str) =>
-        walkUnit(info); walkUnit(str)
-      case RegularExpression(info, body, flag) =>
-        walkUnit(info); walkUnit(body); walkUnit(flag)
-      case Return(info, expr) =>
-        walkUnit(info); walkUnit(expr)
-      case SetProp(info, prop, ftn) =>
-        walkUnit(info); walkUnit(prop); walkUnit(ftn)
-      case SourceElements(info, body, isStrict) =>
-        walkUnit(info); walkUnit(body); walkUnit(isStrict)
-      case StmtUnit(info, stmts) =>
-        walkUnit(info); walkUnit(stmts)
-      case StringLiteral(info, quote, escaped, _) =>
-        walkUnit(info); walkUnit(quote); walkUnit(escaped)
-      case Switch(info, cond, frontCases, defi, backCases) =>
-        walkUnit(info); walkUnit(cond); walkUnit(frontCases); walkUnit(defi); walkUnit(backCases)
-      case This(info) =>
-        walkUnit(info)
-      case Throw(info, expr) =>
-        walkUnit(info); walkUnit(expr)
-      case TopLevel(info, fds, vds, stmts) =>
-        walkUnit(info); walkUnit(fds); walkUnit(vds); walkUnit(stmts)
-      case Try(info, body, catchBlock, fin) =>
-        walkUnit(info); walkUnit(body); walkUnit(catchBlock); walkUnit(fin)
-      case UnaryAssignOpApp(info, lhs, op) =>
-        walkUnit(info); walkUnit(lhs); walkUnit(op)
-      case VarDecl(info, name, expr, isStrict) =>
-        walkUnit(info); walkUnit(name); walkUnit(expr); walkUnit(isStrict)
-      case VarRef(info, id) =>
-        walkUnit(info); walkUnit(id)
-      case VarStmt(info, vds) =>
-        walkUnit(info); walkUnit(vds)
-      case While(info, cond, body) =>
-        walkUnit(info); walkUnit(cond); walkUnit(body)
-      case With(info, expr, stmt) =>
-        walkUnit(info); walkUnit(expr); walkUnit(stmt)
-      case xs: List[_] => xs.foreach(walkUnit _)
-      case xs: Option[_] => xs.foreach(walkUnit _)
-      case _: Span =>
-      case _ =>
-    }
+
+  def walk(node: ASTNode): ASTNode = node match {
+    case p: Program => walk(p)
+    case s: SourceElement => walk(s)
+    case s: SourceElements => walk(s)
+    case v: VarDecl => walk(v)
+    case c: Case => walk(c)
+    case c: Catch => walk(c)
+    case e: Expr => walk(e)
+    case p: Property => walk(p)
+    case m: Member => walk(m)
+    case i: Id => walk(i)
+    case o: Op => walk(o)
+    case a: AnonymousFnName => walk(a)
+    case l: Label => walk(l)
+    case c: Comment => walk(c)
+    case t: TopLevel => walk(t)
+    case f: Functional => walk(f)
   }
+
+  def walk(node: Program): Program = node match {
+    case Program(info, body) =>
+      Program(walk(info), walk(body))
+  }
+
+  def walk(node: Stmt): Stmt = node match {
+    case NoOp(info, desc) =>
+      NoOp(walk(info), desc)
+    case StmtUnit(info, stmts) =>
+      StmtUnit(walk(info), stmts.map(walk))
+    case fd: FunDecl =>
+      walk(fd)
+    case ABlock(info, stmts, isInternal) =>
+      ABlock(walk(info), stmts.map(walk), isInternal)
+    case VarStmt(info, vds) =>
+      VarStmt(walk(info), vds.map(walk))
+    case EmptyStmt(info) =>
+      EmptyStmt(walk(info))
+    case ExprStmt(info, expr, isInternal) =>
+      ExprStmt(walk(info), walk(expr), isInternal)
+    case If(info, cond, trueB, falseB) =>
+      If(walk(info), walk(cond), walk(trueB), falseB.map(walk))
+    case DoWhile(info, body, cond) =>
+      DoWhile(walk(info), walk(body), walk(cond))
+    case While(info, cond, body) =>
+      While(walk(info), walk(cond), walk(body))
+    case For(info, init, cond, action, body) =>
+      For(walk(info), init.map(walk), cond.map(walk), action.map(walk), walk(body))
+    case ForIn(info, lhs, expr, body) =>
+      ForIn(walk(info), walk(lhs), walk(expr), walk(body))
+    case ForVar(info, vars, cond, action, body) =>
+      ForVar(walk(info), vars.map(walk), cond.map(walk), action.map(walk), walk(body))
+    case ForVarIn(info, vari, expr, body) =>
+      ForVarIn(walk(info), walk(vari), walk(expr), walk(body))
+    case Continue(info, target) =>
+      Continue(walk(info), target.map(walk))
+    case Break(info, target) =>
+      Break(walk(info), target.map(walk))
+    case Return(info, expr) =>
+      Return(walk(info), expr.map(walk))
+    case With(info, expr, stmt) =>
+      With(walk(info), walk(expr), walk(stmt))
+    case Switch(info, cond, frontCases, defi, backCases) =>
+      Switch(walk(info), walk(cond), frontCases.map(walk), defi.map(_.map(walk)), backCases.map(walk))
+    case LabelStmt(info, label, stmt) =>
+      LabelStmt(walk(info), walk(label), walk(stmt))
+    case Throw(info, expr) =>
+      Throw(walk(info), walk(expr))
+    case Try(info, body, catchBlock, fin) =>
+      Try(walk(info), body.map(walk), catchBlock.map(walk), fin.map(_.map(walk)))
+    case Debugger(info) =>
+      Debugger(walk(info))
+  }
+
+  def walk(node: Expr): Expr = node match {
+    case ExprList(info, exprs) =>
+      ExprList(walk(info), exprs.map(walk))
+    case Cond(info, cond, trueB, falseB) =>
+      Cond(walk(info), walk(cond), walk(trueB), walk(falseB))
+    case InfixOpApp(info, left, op, right) =>
+      InfixOpApp(walk(info), walk(left), walk(op), walk(right))
+    case PrefixOpApp(info, op, right) =>
+      PrefixOpApp(walk(info), walk(op), walk(right))
+    case UnaryAssignOpApp(info, lhs, op) =>
+      UnaryAssignOpApp(walk(info), walk(lhs), walk(op))
+    case AssignOpApp(info, lhs, op, right) =>
+      AssignOpApp(walk(info), walk(lhs), walk(op), walk(right))
+    case l: LHS =>
+      walk(l)
+  }
+
+  def walk(node: LHS): LHS = node match {
+    case This(info) =>
+      This(walk(info))
+    case Null(info) =>
+      Null(walk(info))
+    case Bool(info, isBool) =>
+      Bool(walk(info), isBool)
+    case n: NumberLiteral =>
+      walk(n)
+    case StringLiteral(info, quote, escaped, isRE) =>
+      StringLiteral(walk(info), quote, escaped, isRE)
+    case RegularExpression(info, body, flag) =>
+      RegularExpression(walk(info), body, flag)
+    case VarRef(info, id) =>
+      VarRef(walk(info), walk(id))
+    case ArrayExpr(info, elements) =>
+      ArrayExpr(walk(info), elements.map(_.map(walk)))
+    case ArrayNumberExpr(info, elements) =>
+      ArrayNumberExpr(walk(info), elements)
+    case ObjectExpr(info, members) =>
+      ObjectExpr(walk(info), members.map(walk))
+    case Parenthesized(info, expr) =>
+      Parenthesized(walk(info), walk(expr))
+    case FunExpr(info, ftn) =>
+      FunExpr(walk(info), walk(ftn))
+    case Bracket(info, obj, index) =>
+      Bracket(walk(info), walk(obj), walk(index))
+    case Dot(info, obj, member) =>
+      Dot(walk(info), walk(obj), walk(member))
+    case New(info, lhs) =>
+      New(walk(info), walk(lhs))
+    case FunApp(info, fun, args) =>
+      FunApp(walk(info), walk(fun), args.map(walk))
+  }
+
+  def walk(node: NumberLiteral): NumberLiteral = node match {
+    case DoubleLiteral(info, text, num) =>
+      DoubleLiteral(walk(info), text, num)
+    case IntLiteral(info, intVal, radix) =>
+      IntLiteral(walk(info), intVal, radix)
+  }
+
+  def walk(node: SourceElement): SourceElement = node match {
+    case s: Stmt =>
+      walk(s)
+  }
+
+  def walk(node: SourceElements): SourceElements = node match {
+    case SourceElements(info, body, isStrict) =>
+      SourceElements(walk(info), body.map(walk), isStrict)
+  }
+
+  def walk(node: FunDecl): FunDecl = node match {
+    case FunDecl(info, ftn, isStrict) =>
+      FunDecl(walk(info), walk(ftn), isStrict)
+  }
+
+  def walk(node: VarDecl): VarDecl = node match {
+    case VarDecl(info, name, expr, isStrict) =>
+      VarDecl(walk(info), walk(name), expr.map(walk), isStrict)
+  }
+
+  def walk(node: Case): Case = node match {
+    case Case(info, cond, body) =>
+      Case(walk(info), walk(cond), body.map(walk))
+  }
+
+  def walk(node: Catch): Catch = node match {
+    case Catch(info, id, body) =>
+      Catch(walk(info), walk(id), body.map(walk))
+  }
+
+  def walk(node: Property): Property = node match {
+    case PropId(info, id) =>
+      PropId(walk(info), walk(id))
+    case PropStr(info, str) =>
+      PropStr(walk(info), str)
+    case PropNum(info, num) =>
+      PropNum(walk(info), walk(num))
+  }
+
+  def walk(node: Member): Member = node match {
+    case Field(info, prop, expr) =>
+      Field(walk(info), walk(prop), walk(expr))
+    case GetProp(info, prop, ftn) =>
+      GetProp(walk(info), walk(prop), walk(ftn))
+    case SetProp(info, prop, ftn) =>
+      SetProp(walk(info), walk(prop), walk(ftn))
+  }
+
+  def walk(node: Id): Id = node match {
+    case Id(info, text, uniqueName, isWith) =>
+      Id(walk(info), text, uniqueName, isWith)
+  }
+
+  def walk(node: Op): Op = node match {
+    case Op(info, text) =>
+      Op(walk(info), text)
+  }
+
+  def walk(node: AnonymousFnName): AnonymousFnName = node match {
+    case AnonymousFnName(info, text) =>
+      AnonymousFnName(walk(info), text)
+  }
+
+  def walk(node: Label): Label = node match {
+    case Label(info, id) =>
+      Label(walk(info), walk(id))
+  }
+
+  def walk(node: Comment): Comment = node match {
+    case Comment(info, comment) =>
+      Comment(walk(info), comment)
+  }
+
+  def walk(node: TopLevel): TopLevel = node match {
+    case TopLevel(info, fds, vds, stmts) =>
+      TopLevel(walk(info), fds.map(walk), vds.map(walk), stmts.map(walk))
+  }
+
+  def walk(node: Functional): Functional = node match {
+    case Functional(info, fds, vds, stmts, name, params, body) =>
+      Functional(walk(info), fds.map(walk), vds.map(walk), walk(stmts), walk(name),
+        params.map(walk), body)
+  }
+}
+
+trait ASTGeneralWalker[Result] {
+  def join(args: Result*): Result
+
+  def walkOptList(opt: Option[List[ASTNode]]): List[Result] = opt match {
+    case Some(l) => l.map(walk)
+    case _ => List[Result]()
+  }
+
+  def walkOpt(opt: Option[ASTNode]): List[Result] =
+    opt.fold(List[Result]()) { n: ASTNode =>
+      List(n match {
+        case s: Stmt => walk(s)
+        case e: Expr => walk(e)
+        case c: Catch => walk(c)
+        case l: Label => walk(l)
+      })
+    }
+
+  def walk(info: ASTNodeInfo): Result = join()
+
+  def walk(node: ASTNode): Result = node match {
+    case p: Program => walk(p)
+    case s: SourceElement => walk(s)
+    case s: SourceElements => walk(s)
+    case v: VarDecl => walk(v)
+    case c: Case => walk(c)
+    case c: Catch => walk(c)
+    case e: Expr => walk(e)
+    case p: Property => walk(p)
+    case m: Member => walk(m)
+    case i: Id => walk(i)
+    case o: Op => walk(o)
+    case a: AnonymousFnName => walk(a)
+    case l: Label => walk(l)
+    case c: Comment => walk(c)
+    case t: TopLevel => walk(t)
+    case f: Functional => walk(f)
+  }
+
+  def walk(node: Program): Result = node match {
+    case Program(info, body) =>
+      join(walk(info), walk(body))
+  }
+
+  def walk(node: Stmt): Result = node match {
+    case NoOp(info, desc) =>
+      walk(info)
+    case StmtUnit(info, stmts) =>
+      join(walk(info) :: stmts.map(walk): _*)
+    case fd: FunDecl =>
+      walk(fd)
+    case ABlock(info, stmts, isInternal) =>
+      join(walk(info) :: stmts.map(walk): _*)
+    case VarStmt(info, vds) =>
+      join(walk(info) :: vds.map(walk): _*)
+    case EmptyStmt(info) =>
+      walk(info)
+    case ExprStmt(info, expr, isInternal) =>
+      join(walk(info), walk(expr))
+    case If(info, cond, trueB, falseB) =>
+      join(walk(info) :: walk(cond) :: walk(trueB) :: walkOpt(falseB): _*)
+    case DoWhile(info, body, cond) =>
+      join(walk(info), walk(body), walk(cond))
+    case While(info, cond, body) =>
+      join(walk(info), walk(cond), walk(body))
+    case For(info, init, cond, action, body) =>
+      join(walk(info) :: walkOpt(init) ++ walkOpt(cond) ++ walkOpt(action) ++ List(walk(body)): _*)
+    case ForIn(info, lhs, expr, body) =>
+      join(walk(info), walk(lhs), walk(expr), walk(body))
+    case ForVar(info, vars, cond, action, body) =>
+      join(walk(info) :: vars.map(walk) ++ walkOpt(cond) ++ walkOpt(action) ++ List(walk(body)): _*)
+    case ForVarIn(info, vari, expr, body) =>
+      join(walk(info), walk(vari), walk(expr), walk(body))
+    case Continue(info, target) =>
+      join(walk(info) :: walkOpt(target): _*)
+    case Break(info, target) =>
+      join(walk(info) :: walkOpt(target): _*)
+    case Return(info, expr) =>
+      join(walk(info) :: walkOpt(expr): _*)
+    case With(info, expr, stmt) =>
+      join(walk(info), walk(expr), walk(stmt))
+    case Switch(info, cond, frontCases, defi, backCases) =>
+      join(walk(info) :: walk(cond) :: frontCases.map(walk) ++ walkOptList(defi) ++ backCases.map(walk): _*)
+    case LabelStmt(info, label, stmt) =>
+      join(walk(info), walk(label), walk(stmt))
+    case Throw(info, expr) =>
+      join(walk(info), walk(expr))
+    case Try(info, body, catchBlock, fin) =>
+      join(walk(info) :: body.map(walk) ++ walkOpt(catchBlock) ++ walkOptList(fin): _*)
+    case Debugger(info) =>
+      walk(info)
+  }
+
+  def walk(node: Expr): Result = node match {
+    case ExprList(info, exprs) =>
+      join(walk(info) :: exprs.map(walk): _*)
+    case Cond(info, cond, trueB, falseB) =>
+      join(walk(info), walk(cond), walk(trueB), walk(falseB))
+    case InfixOpApp(info, left, op, right) =>
+      join(walk(info), walk(left), walk(op), walk(right))
+    case PrefixOpApp(info, op, right) =>
+      join(walk(info), walk(op), walk(right))
+    case UnaryAssignOpApp(info, lhs, op) =>
+      join(walk(info), walk(lhs), walk(op))
+    case AssignOpApp(info, lhs, op, right) =>
+      join(walk(info), walk(lhs), walk(op), walk(right))
+    case l: LHS =>
+      walk(l)
+  }
+
+  def walk(node: LHS): Result = node match {
+    case This(info) =>
+      walk(info)
+    case Null(info) =>
+      walk(info)
+    case Bool(info, isBool) =>
+      walk(info)
+    case n: NumberLiteral =>
+      walk(n)
+    case StringLiteral(info, quote, escaped, isRE) =>
+      walk(info)
+    case RegularExpression(info, body, flag) =>
+      walk(info)
+    case VarRef(info, id) =>
+      join(walk(info), walk(id))
+    case ArrayExpr(info, elements) =>
+      join(walk(info) :: elements.flatMap(walkOpt): _*)
+    case ArrayNumberExpr(info, elements) =>
+      walk(info)
+    case ObjectExpr(info, members) =>
+      join(walk(info) :: members.map(walk): _*)
+    case Parenthesized(info, expr) =>
+      join(walk(info), walk(expr))
+    case FunExpr(info, ftn) =>
+      join(walk(info), walk(ftn))
+    case Bracket(info, obj, index) =>
+      join(walk(info), walk(obj), walk(index))
+    case Dot(info, obj, member) =>
+      join(walk(info), walk(obj), walk(member))
+    case New(info, lhs) =>
+      join(walk(info), walk(lhs))
+    case FunApp(info, fun, args) =>
+      join(walk(info) :: walk(fun) :: args.map(walk): _*)
+  }
+
+  def walk(node: NumberLiteral): Result = node match {
+    case DoubleLiteral(info, text, num) =>
+      walk(info)
+    case IntLiteral(info, intVal, radix) =>
+      walk(info)
+  }
+
+  def walk(node: SourceElement): Result = node match {
+    case s: Stmt =>
+      walk(s)
+  }
+
+  def walk(node: SourceElements): Result = node match {
+    case SourceElements(info, body, isStrict) =>
+      join(walk(info) :: body.map(walk): _*)
+  }
+
+  def walk(node: FunDecl): Result = node match {
+    case FunDecl(info, ftn, isStrict) =>
+      join(walk(info), walk(ftn))
+  }
+
+  def walk(node: VarDecl): Result = node match {
+    case VarDecl(info, name, expr, isStrict) =>
+      join(walk(info) :: walk(name) :: walkOpt(expr): _*)
+  }
+
+  def walk(node: Case): Result = node match {
+    case Case(info, cond, body) =>
+      join(walk(info) :: walk(cond) :: body.map(walk): _*)
+  }
+
+  def walk(node: Catch): Result = node match {
+    case Catch(info, id, body) =>
+      join(walk(info) :: walk(id) :: body.map(walk): _*)
+  }
+
+  def walk(node: Property): Result = node match {
+    case PropId(info, id) =>
+      join(walk(info), walk(id))
+    case PropStr(info, str) =>
+      walk(info)
+    case PropNum(info, num) =>
+      join(walk(info), walk(num))
+  }
+
+  def walk(node: Member): Result = node match {
+    case Field(info, prop, expr) =>
+      join(walk(info), walk(prop), walk(expr))
+    case GetProp(info, prop, ftn) =>
+      join(walk(info), walk(prop), walk(ftn))
+    case SetProp(info, prop, ftn) =>
+      join(walk(info), walk(prop), walk(ftn))
+  }
+
+  def walk(node: Id): Result = node match {
+    case Id(info, text, uniqueName, isWith) =>
+      walk(info)
+  }
+
+  def walk(node: Op): Result = node match {
+    case Op(info, text) =>
+      walk(info)
+  }
+
+  def walk(node: AnonymousFnName): Result = node match {
+    case AnonymousFnName(info, text) =>
+      walk(info)
+  }
+
+  def walk(node: Label): Result = node match {
+    case Label(info, id) =>
+      join(walk(info), walk(id))
+  }
+
+  def walk(node: Comment): Result = node match {
+    case Comment(info, comment) =>
+      walk(info)
+  }
+
+  def walk(node: TopLevel): Result = node match {
+    case TopLevel(info, fds, vds, stmts) =>
+      join(walk(info) :: fds.map(walk) ++ vds.map(walk) ++ stmts.map(walk): _*)
+  }
+
+  def walk(node: Functional): Result = node match {
+    case Functional(info, fds, vds, stmts, name, params, body) =>
+      join(walk(info) :: fds.map(walk) ++ vds.map(walk) ++ List(walk(stmts), walk(name)) ++ params.map(walk): _*)
+  }
+}
+
+class ASTUnitWalker extends ASTGeneralWalker[Unit] {
+  def join(args: Unit*): Unit = {}
 }

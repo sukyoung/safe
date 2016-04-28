@@ -11,7 +11,8 @@
 
 package kr.ac.kaist.safe.util
 
-// Enumeration of JavaScript Operator
+// Utilities for JavaScript operators.
+// Used by NodeUtil to handle operators in IR nodes.
 object EJSOp {
   def isBinary(op: Int): Boolean = (op / 1000) % 10 == 1 // 1xxx
   def isUnary(op: Int): Boolean = (op / 1000) % 10 == 2 // 2xxx

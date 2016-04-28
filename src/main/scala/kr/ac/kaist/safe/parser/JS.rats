@@ -51,7 +51,6 @@ import java.math.BigInteger;
 import java.util.Collections;
 import java.util.ArrayList;
 import java.util.List;
-import static kr.ac.kaist.safe.errors.SAFEError.error;
 import scala.collection.JavaConversions;
 import scala.Option;
 import scala.Some;
@@ -149,8 +148,7 @@ body {
             initParser();
             return new VarStmt(NodeUtil.makeASTNodeInfo(span1), toList(list(vd)));
         } catch (IOException error) {
-            error("Closing a log file for the parser failed!");
-            return new VarStmt(NodeUtil.makeASTNodeInfo(span1), nilVds);
+            throw new Error("Closing a log file for the parser failed!");
         }
     }
     

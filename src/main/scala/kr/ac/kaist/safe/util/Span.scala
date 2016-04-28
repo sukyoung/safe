@@ -11,7 +11,6 @@
 
 package kr.ac.kaist.safe.util
 
-import kr.ac.kaist.safe.errors.SAFEError
 import java.io.File
 import java.io.IOException
 import java.io.Serializable
@@ -68,28 +67,20 @@ class Span(b: SourceLoc, e: SourceLoc) extends UIDObject with Serializable {
     else fileName.replace(File.separatorChar, '/')
 
   override def toString: String =
-    try {
-      appendToStr(new StringBuilder, true).toString
-    } catch {
-      case e: IOException => SAFEError.np.asInstanceOf[String]
-    }
+    appendToStr(new StringBuilder, true).toString
 
   def toStringWithoutFiles: String =
-    try {
-      appendToStr(new StringBuilder, false).toString
-    } catch {
-      case e: IOException => SAFEError.np.asInstanceOf[String]
-    }
+    appendToStr(new StringBuilder, false).toString
 
   override def at: String = toString
 
   def stringName: String = ""
 
-  def appendToStr(w: StringBuilder, do_files: Boolean): StringBuilder = {
-    val left_col = begin.column
-    val right_col = end.column
-    val file_names_differ = !(begin.fileName.equals(end.fileName))
-    if (do_files | file_names_differ) {
+  def appendToStr(w: StringBuilder, doFiles: Boolean): StringBuilder = {
+    val leftCol = begin.column
+    val rightCol = end.column
+    val fileNamesDiffer = !(begin.fileName.equals(end.fileName))
+    if (doFiles | fileNamesDiffer) {
       // Need to add escapes to the file name
       var beginFileName: String = ""
       beginFileName = convertNameSeparatorToSlash(begin.fileName)
@@ -98,21 +89,21 @@ class Span(b: SourceLoc, e: SourceLoc) extends UIDObject with Serializable {
     }
     w.append(String.valueOf(begin.line))
     w.append(":")
-    w.append(String.valueOf(left_col))
-    if (file_names_differ || begin.line != end.line || left_col != right_col) {
+    w.append(String.valueOf(leftCol))
+    if (fileNamesDiffer || begin.line != end.line || leftCol != rightCol) {
       w.append("-")
-      if (file_names_differ) {
+      if (fileNamesDiffer) {
         // Need to add escapes to the file name
         var endFileName: String = ""
         endFileName = convertNameSeparatorToSlash(end.fileName)
         w.append(endFileName)
         w.append(":")
       }
-      if (file_names_differ || begin.line != end.line) {
+      if (fileNamesDiffer || begin.line != end.line) {
         w.append(String.valueOf(end.line))
         w.append(":")
       }
-      w.append(String.valueOf(right_col))
+      w.append(String.valueOf(rightCol))
     }
     w
   }
