@@ -67,12 +67,12 @@ case class NormalBlock(func: CFGFunction) extends Block {
   val id: BlockId = NormalBlock.getId
 
   // inst list
-  private var insts: List[CFGInst] = Nil
-  def getInsts: List[CFGInst] = insts
+  private var insts: List[CFGNormalInst] = Nil
+  def getInsts: List[CFGNormalInst] = insts
 
   // create inst
-  def createInst(instCons: CFGNode => CFGInst): CFGInst = {
-    val inst: CFGInst = instCons(this)
+  def createInst(instCons: CFGNode => CFGNormalInst): CFGNormalInst = {
+    val inst: CFGNormalInst = instCons(this)
     insts ::= inst
     inst
   }
