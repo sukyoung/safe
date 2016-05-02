@@ -11,7 +11,7 @@
 
 package kr.ac.kaist.safe.config
 
-import kr.ac.kaist.safe.phase.{ PhaseHelper, Parse, ASTRewrite, Compile, CFGBuild, Help }
+import kr.ac.kaist.safe.phase.{ PhaseHelper, Parse, ASTRewrite, Compile, CFGBuild, Analyze, Help }
 
 object Command {
   val cmdMap: Map[String, Command] = Map(
@@ -79,6 +79,23 @@ case object CmdCFGBuild extends Command("cfgBuild", CFGBuild) {
     s.append(s"  If -$name:out=outfile is given, the resulting CFG will be written to the outfile.")
     s.append(Config.LINE_SEP)
     s.append(s"  If -$name:verbose is given, messages during compilation are printed.")
+    s.append(Config.LINE_SEP)
+    s.toString
+  }
+}
+
+case object CmdAnalyze extends Command("analyze", Analyze) {
+  override def usage: String =
+    s" [-$name:out=outfile] [-$name:verbose] infile.js ..."
+  override def help: String = {
+    val s: StringBuilder = new StringBuilder
+    s.append("  Analyze the JavaScript source files.")
+    s.append(Config.LINE_SEP)
+    s.append(s"  If -$name:out=outfile is given, the analysis results will be written to the outfile.")
+    s.append(Config.LINE_SEP)
+    s.append(s"  If -$name:verbose is given, messages during compilation are printed.")
+    s.append(Config.LINE_SEP)
+    s.append(s"  If -$name:maxStrSetSize=n is given, the analyzer will use the AbsString Set domain with given size limit n.")
     s.append(Config.LINE_SEP)
     s.toString
   }
