@@ -1,0 +1,52 @@
+\chapter{Overview}
+
+The prevalent uses of JavaScript in web programming have revealed
+security vulnerability issues of JavaScript applications,
+which emphasizes the need for JavaScript analyzers to detect such issues.
+Recently, researchers have proposed several analyzers of JavaScript programs
+and some web service companies have developed various JavaScript engines.
+However, unfortunately, most of the tools are not documented well,
+thus it is very hard to understand and modify them.
+Or, such tools are often not open to the public.
+
+
+In this specification, we present formal specifications and implementation
+of \safe, a scalable analysis framework for ECMAScript, developed for the JavaScript research community.
+To make it more amenable for other researchers to use our framework,
+we formally define three kinds of intermediate representations for JavaScript
+used in the framework,
+and we provide formal specifications of translation between them.
+To support a variety of program analyses in various compilation phases,
+we design the framework to be as flexible, scalable, and pluggable as possible.
+Finally, our framework is publicly available:
+\begin{center}
+\url{http://safe.kaist.ac.kr}
+\end{center}
+Our project has been supported by
+Korea Ministry of Education, Science and Technology (MEST),
+National Research Foundation of Korea (NRF),
+Samsung Electronics,
+S-Core,
+Microsoft Research Asia, and
+Google.
+
+Projects and colleagues using \safe\ include:
+\begin{itemize}
+\item K Framework @ University of Illinois at Urbana-Champaign
+\item Ken Cheung @ HKUST
+\item ROSAEC @ Seoul National University
+\item Tizen @ Linux Foundation
+\item Web-based Vulnerability Detection @ Oracle Labs
+\end{itemize}
+Publications related to \safe\ include:
+\begin{itemize}
+\item Battles with false positives in static analysis of JavaScript web applications in the wild (ICSE SEIP 2016)
+\item Static analysis of JavaScript web applications in the wild via practical DOM modeling (ASE 2015)
+\item Practically tunable static analysis framework for large-scale JavaScript applications (ASE 2015)
+\item Development nature matters: An empirical study of code clones in JavaScript applications (EMSE 2015)
+\item Scalable and precise static analysis of JavaScript applications via loop-sensitivity (ECOOP 2015)
+\item {\sf SAFE$_{\mbox{\sf\scriptsize WAPI}}$}: Web API misuse detector for web applications (FSE 2014)
+\item All about the \texttt{with} statement in JavaScript: Removing \texttt{with} statements in JavaScript applications (DLS 2013)
+\item Formal specification of a JavaScript module system (OOPSLA 2012)
+\item \safe: Formal specification and implementation of a scalable analysis framework for ECMAScript (FOOL 2012)
+\end{itemize}

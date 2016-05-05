@@ -1,0 +1,74 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   Copyright 2016, KAIST.
+%   All rights reserved.
+%
+%   Use is subject to license terms.
+%
+%   This distribution may include materials developed by third parties.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[oneside,openany]{book}
+\usepackage{url, amssymb, amsmath, amsthm, stmaryrd, xspace}
+\usepackage{amsfonts, graphicx, fullpage, times, wrapfig}
+\usepackage{hyperref, array, color,anysize,ifpdf,tikz}
+
+\newif\ifrelease
+\ifx\release\undefined
+  \releasefalse
+\else
+  \releasetrue
+\fi
+
+% Please uncomment the following line for a release version.
+% -- Sukyoung
+%\releasetrue
+
+\parskip = 7pt plus 2pt minus 1pt
+\makeatletter
+\setlength\partopsep{4\p@ \@plus 1\p@}
+\def\@listi{\leftmargin\leftmargini
+            \parsep\parskip
+            \topsep 0\p@
+            \itemsep\topsep}
+\let\@listI\@listi
+\@listi
+\def\@listii {\leftmargin\leftmarginii
+              \labelwidth\leftmarginii
+              \advance\labelwidth-\labelsep}
+\def\@listiii{\leftmargin\leftmarginiii
+              \labelwidth\leftmarginiii
+              \advance\labelwidth-\labelsep}
+\makeatother
+\parindent = 0pt
+
+\setcounter{tocdepth}{1}
+
+\ifpdf
+  \usepackage{epic,eepicemu}
+\else
+  \usepackage{epic,eepic}
+\fi
+
+\input{macros}
+
+\title{{\huge The SAFE Specification}
+\\[1em] {\fbox{\LARGE\it Working Draft}}
+\\ {\large Version 2.0}
+}
+\author
+{
+\begin{tabular}{c}
+PLRG @ KAIST
+\end{tabular}
+}
+
+\begin{document}
+\maketitle
+
+\tableofcontents
+\input{overview}
+\input{safe-ast}
+\input{safe-ir}
+\input{safe-ast2ir}
+
+\end{document}

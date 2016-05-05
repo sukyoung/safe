@@ -530,7 +530,7 @@ class Translator(program: Program) {
       val args = getArgs(left) :+ right
       val news = args.zipWithIndex.map { case (arg, index) => freshId(arg, NU.getSpan(arg), "new" + index) }
       // list of (ssi, ri)
-      val ress = args.zip(news).map { case (ssi, ri) => walkExpr(ssi, env, ri) }
+      val ress = args.zip(news).map { case (ei, newi) => walkExpr(ei, env, newi) }
       val lab = freshId(s, "label")
       val trueS = makeSeq(trueB, walkStmt(trueB, env),
         new IRBreak(falseInfo(s), lab))
