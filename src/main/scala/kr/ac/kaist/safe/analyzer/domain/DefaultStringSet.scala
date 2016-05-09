@@ -13,11 +13,11 @@ package kr.ac.kaist.safe.analyzer.domain
 
 import scala.collection.immutable.{ HashSet => IHashSet }
 
-class DStrSetUtil(maxSetSize: Int) extends AbsStringUtil {
-  val Top: AbsString = DStrTop
-  val Bot: AbsString = DStrBot
-  val NumStr: AbsString = DStrNum
-  val OtherStr: AbsString = DStrOther
+class DefaultStrSetUtil(maxSetSize: Int) extends AbsStringUtil {
+  val Top: AbsString = DefaultStrTop
+  val Bot: AbsString = DefaultStrBot
+  val NumStr: AbsString = DefaultStrNum
+  val OtherStr: AbsString = DefaultStrOther
 
   /* regexp, number string */
   private val hex = "(0[xX][0-9a-fA-F]+)".r.pattern
@@ -38,19 +38,19 @@ class DStrSetUtil(maxSetSize: Int) extends AbsStringUtil {
     num_regexp.matcher(str).matches()
 
   def alpha(str: String): AbsString =
-    if (str == null) DStrBot
-    else DStrSet(IHashSet(str))
+    if (str == null) DefaultStrBot
+    else DefaultStrSet(IHashSet(str))
 
   def alpha(values: IHashSet[String]): AbsString =
     if (values.isEmpty)
-      DStrBot
+      DefaultStrBot
     else if (maxSetSize == 0 | values.size <= maxSetSize)
-      DStrSet(values)
+      DefaultStrSet(values)
     else if (hasNum(values)) {
-      if (hasOther(values)) DStrTop
-      else DStrNum
+      if (hasOther(values)) DefaultStrTop
+      else DefaultStrNum
     } else if (hasOther(values)) OtherStr
-    else DStrTop
+    else DefaultStrTop
 
   def hasNum(values: IHashSet[String]): Boolean =
     values.foldLeft(false)((b: Boolean, v: String) => b | isNum(v))
@@ -61,103 +61,103 @@ class DStrSetUtil(maxSetSize: Int) extends AbsStringUtil {
     if (n </ absNumber.Bot) {
       n.gammaOpt match {
         case Some(vs) =>
-          vs.foldLeft[AbsString](DStrBot)((r, v) => {
+          vs.foldLeft[AbsString](DefaultStrBot)((r, v) => {
             r + alpha("%c".format(v.toInt))
           })
-        case None => DStrTop
+        case None => DefaultStrTop
       }
     } else {
-      DStrBot
+      DefaultStrBot
     }
   }
 
-  sealed abstract class DStringSet(maxSetSize: Int = 0) extends AbsString {
+  sealed abstract class DefaultStringSet(maxSetSize: Int = 0) extends AbsString {
 
     def getAbsCase: AbsCase =
       this match {
 
-        case DStrTop => AbsTop
-        case DStrBot => AbsBot
-        case DStrNum => AbsMulti
-        case DStrOther => AbsMulti
-        case DStrSet(v) => if (v.size == 1) AbsSingle else AbsMulti
+        case DefaultStrTop => AbsTop
+        case DefaultStrBot => AbsBot
+        case DefaultStrNum => AbsMulti
+        case DefaultStrOther => AbsMulti
+        case DefaultStrSet(v) => if (v.size == 1) AbsSingle else AbsMulti
       }
 
     def getSingle: Option[String] =
       this match {
-        case DStrTop => None
-        case DStrBot => None
-        case DStrNum => None
-        case DStrOther => None
-        case DStrSet(v) => if (v.size == 1) Some(v.head) else None
+        case DefaultStrTop => None
+        case DefaultStrBot => None
+        case DefaultStrNum => None
+        case DefaultStrOther => None
+        case DefaultStrSet(v) => if (v.size == 1) Some(v.head) else None
       }
 
     def gammaOpt: Option[Set[String]] =
       this match {
-        case DStrTop => None
-        case DStrBot => None
-        case DStrNum => None
-        case DStrOther => None
-        case DStrSet(v) => Some(v)
+        case DefaultStrTop => None
+        case DefaultStrBot => None
+        case DefaultStrNum => None
+        case DefaultStrOther => None
+        case DefaultStrSet(v) => Some(v)
       }
 
     /* partial order */
     def <=(that: AbsString): Boolean =
       (this, that) match {
-        case (DStrBot, _) => true
-        case (_, DStrTop) => true
-        //      case (DStrSet(v1), DStrSet(v2)) => (!a.hasNum || b.hasNum) && (!a.hasOther || b.hasOther) && a.values.subsetOf(b.values)
-        case (DStrSet(v1), DStrSet(v2)) if v1.subsetOf(v2) => true
-        case (DStrSet(v1), DStrSet(v2)) => false
-        case (DStrSet(v), DStrNum) => hasNum(v) && !hasOther(v)
-        case (DStrSet(v), DStrOther) => !hasNum(v) && hasOther(v)
-        case (DStrNum, DStrNum) => true
-        case (DStrOther, DStrOther) => true
+        case (DefaultStrBot, _) => true
+        case (_, DefaultStrTop) => true
+        //      case (DefaultStrSet(v1), DefaultStrSet(v2)) => (!a.hasNum || b.hasNum) && (!a.hasOther || b.hasOther) && a.values.subsetOf(b.values)
+        case (DefaultStrSet(v1), DefaultStrSet(v2)) if v1.subsetOf(v2) => true
+        case (DefaultStrSet(v1), DefaultStrSet(v2)) => false
+        case (DefaultStrSet(v), DefaultStrNum) => hasNum(v) && !hasOther(v)
+        case (DefaultStrSet(v), DefaultStrOther) => !hasNum(v) && hasOther(v)
+        case (DefaultStrNum, DefaultStrNum) => true
+        case (DefaultStrOther, DefaultStrOther) => true
         case _ => false
       }
 
     /* join */
     def +(that: AbsString): AbsString =
       (this, that) match {
-        case (DStrSet(v1), DStrSet(v2)) if v1 == v2 => this
-        case (a: DStrSet, b: DStrSet) => alpha(a.values ++ b.values)
+        case (DefaultStrSet(v1), DefaultStrSet(v2)) if v1 == v2 => this
+        case (a: DefaultStrSet, b: DefaultStrSet) => alpha(a.values ++ b.values)
         case _ =>
           (this <= that, that <= this) match {
             case (true, _) => that
             case (_, true) => this
-            case _ => DStrTop
+            case _ => DefaultStrTop
           }
       }
 
     /* meet */
     def <>(that: AbsString): AbsString =
       (this, that) match {
-        case (DStrSet(v1), DStrSet(v2)) => alpha(v1 intersect v2)
+        case (DefaultStrSet(v1), DefaultStrSet(v2)) => alpha(v1 intersect v2)
 
-        case (DStrSet(v), DStrNum) if hasNum(v) =>
+        case (DefaultStrSet(v), DefaultStrNum) if hasNum(v) =>
           alpha(v.filter((s: String) => isNum(s)))
-        case (DStrNum, DStrSet(v)) if hasNum(v) =>
+        case (DefaultStrNum, DefaultStrSet(v)) if hasNum(v) =>
           alpha(v.filter((s: String) => isNum(s)))
-        case (DStrSet(_), DStrNum)
-          | (DStrNum, DStrSet(_)) => DStrBot
+        case (DefaultStrSet(_), DefaultStrNum)
+          | (DefaultStrNum, DefaultStrSet(_)) => DefaultStrBot
 
-        case (DStrSet(v), DStrOther) if hasOther(v) =>
+        case (DefaultStrSet(v), DefaultStrOther) if hasOther(v) =>
           alpha(v.filter((s: String) => !isNum(s)))
-        case (DStrOther, DStrSet(v)) if hasOther(v) =>
+        case (DefaultStrOther, DefaultStrSet(v)) if hasOther(v) =>
           alpha(v.filter((s: String) => !isNum(s)))
-        case (DStrSet(_), DStrOther)
-          | (DStrOther, DStrSet(_)) => DStrBot
+        case (DefaultStrSet(_), DefaultStrOther)
+          | (DefaultStrOther, DefaultStrSet(_)) => DefaultStrBot
 
-        case (DStrNum, DStrNum) => DStrNum
-        case (DStrNum, DStrOther)
-          | (DStrOther, DStrNum) => DStrBot
-        case (DStrOther, DStrOther) => DStrOther
+        case (DefaultStrNum, DefaultStrNum) => DefaultStrNum
+        case (DefaultStrNum, DefaultStrOther)
+          | (DefaultStrOther, DefaultStrNum) => DefaultStrBot
+        case (DefaultStrOther, DefaultStrOther) => DefaultStrOther
 
         case _ =>
           (this <= that, that <= this) match {
             case (true, _) => this
             case (_, true) => that
-            case _ => DStrBot
+            case _ => DefaultStrBot
           }
       }
 
@@ -167,7 +167,7 @@ class DStrSetUtil(maxSetSize: Int) extends AbsStringUtil {
         case (Some(s1), Some(s2)) =>
           absBool.alpha(s1 == s2)
         case _ => {
-          if (this <= DStrBot || that <= DStrBot) absBool.Bot
+          if (this <= DefaultStrBot || that <= DefaultStrBot) absBool.Bot
           else {
             (this <= that, that <= this) match {
               case (false, false) => absBool.False
@@ -192,31 +192,31 @@ class DStrSetUtil(maxSetSize: Int) extends AbsStringUtil {
 
     def trim: AbsString =
       this match {
-        case DStrSet(vs) =>
-          vs.foldLeft[AbsString](DStrBot)((r: AbsString, s: String) => r + alpha(s.trim))
-        case DStrNum => DStrNum
-        case DStrOther => DStrOther + DStrNum
-        case DStrBot => DStrBot
-        case _ => DStrTop
+        case DefaultStrSet(vs) =>
+          vs.foldLeft[AbsString](DefaultStrBot)((r: AbsString, s: String) => r + alpha(s.trim))
+        case DefaultStrNum => DefaultStrNum
+        case DefaultStrOther => DefaultStrOther + DefaultStrNum
+        case DefaultStrBot => DefaultStrBot
+        case _ => DefaultStrTop
       }
 
     def concat(that: AbsString): AbsString =
       (this, that) match {
-        case (DStrSet(v1), DStrSet(v2)) if v1.size * v2.size <= maxSetSize => {
+        case (DefaultStrSet(v1), DefaultStrSet(v2)) if v1.size * v2.size <= maxSetSize => {
           val set = v1.foldLeft(IHashSet[String]())((hs1: IHashSet[String], s1: String) =>
             v2.foldLeft(hs1)((hs2: IHashSet[String], s2: String) => hs2 + (s1 + s2)))
           alpha(set)
         }
-        case (DStrSet(v1), DStrSet(v2)) =>
+        case (DefaultStrSet(v1), DefaultStrSet(v2)) =>
           (hasNum(v1) | hasNum(v2), hasOther(v1) | hasOther(v2)) match {
-            case (true, true) => DStrTop
-            case (true, false) => DStrNum
-            case (false, true) => DStrOther
-            case (false, false) => DStrBot
+            case (true, true) => DefaultStrTop
+            case (true, false) => DefaultStrNum
+            case (false, true) => DefaultStrOther
+            case (false, false) => DefaultStrBot
           }
-        case (DStrBot, _) => DStrBot
-        case (_, DStrBot) => DStrBot
-        case _ => DStrTop
+        case (DefaultStrBot, _) => DefaultStrBot
+        case (_, DefaultStrBot) => DefaultStrBot
+        case _ => DefaultStrTop
       }
 
     def charAt(pos: AbsNumber): AbsString = {
@@ -224,7 +224,7 @@ class DStrSetUtil(maxSetSize: Int) extends AbsStringUtil {
         case Some(vs) => {
           pos.getUIntSingle match {
             case Some(d) => {
-              vs.foldLeft[AbsString](DStrBot)((r, s) => {
+              vs.foldLeft[AbsString](DefaultStrBot)((r, s) => {
                 if (d >= s.length || d < 0)
                   r + alpha("")
                 else {
@@ -233,10 +233,10 @@ class DStrSetUtil(maxSetSize: Int) extends AbsStringUtil {
                 }
               })
             }
-            case _ => DStrTop
+            case _ => DefaultStrTop
           }
         }
-        case _ => DStrTop
+        case _ => DefaultStrTop
       }
     }
 
@@ -261,89 +261,89 @@ class DStrSetUtil(maxSetSize: Int) extends AbsStringUtil {
 
     def contains(that: AbsString, absBool: AbsBoolUtil): AbsBool =
       this match {
-        case DStrNum => absBool.Top
-        case DStrOther => absBool.Top
-        case DStrSet(vs) =>
+        case DefaultStrNum => absBool.Top
+        case DefaultStrOther => absBool.Top
+        case DefaultStrSet(vs) =>
           that.getSingle match {
             case Some(_s) => vs.foldLeft[AbsBool](absBool.Bot)((result, v) => result + absBool.alpha(v.contains(_s)))
             case None =>
-              if (that </ DStrBot)
+              if (that </ DefaultStrBot)
                 absBool.Top
               else
                 absBool.Bot
           }
-        case DStrTop => absBool.Top
-        case DStrBot => absBool.Bot
+        case DefaultStrTop => absBool.Top
+        case DefaultStrBot => absBool.Bot
       }
 
     def length(absNumber: AbsNumberUtil): AbsNumber =
       this match {
-        case DStrNum => absNumber.UInt
-        case DStrOther => absNumber.UInt
-        case DStrSet(vs) => vs.foldLeft[AbsNumber](absNumber.Bot)((result, v) => result + absNumber.alpha(v.length))
-        case DStrTop => absNumber.UInt
-        case DStrBot => absNumber.Bot
+        case DefaultStrNum => absNumber.UInt
+        case DefaultStrOther => absNumber.UInt
+        case DefaultStrSet(vs) => vs.foldLeft[AbsNumber](absNumber.Bot)((result, v) => result + absNumber.alpha(v.length))
+        case DefaultStrTop => absNumber.UInt
+        case DefaultStrBot => absNumber.Bot
       }
 
     def toLowerCase: AbsString =
       this match {
-        case DStrNum => DStrTop
-        case DStrOther => DStrOther
-        case DStrSet(vs) => vs.foldLeft[AbsString](DStrBot)((result, v) => result + alpha(v.toLowerCase))
-        case DStrTop => DStrTop
-        case DStrBot => DStrBot
+        case DefaultStrNum => DefaultStrTop
+        case DefaultStrOther => DefaultStrOther
+        case DefaultStrSet(vs) => vs.foldLeft[AbsString](DefaultStrBot)((result, v) => result + alpha(v.toLowerCase))
+        case DefaultStrTop => DefaultStrTop
+        case DefaultStrBot => DefaultStrBot
       }
 
     def toUpperCase: AbsString =
       this match {
-        case DStrNum => DStrTop
-        case DStrOther => DStrOther
-        case DStrSet(vs) => vs.foldLeft[AbsString](DStrBot)((result, v) => result + alpha(v.toUpperCase))
-        case DStrTop => DStrTop
-        case DStrBot => DStrBot
+        case DefaultStrNum => DefaultStrTop
+        case DefaultStrOther => DefaultStrOther
+        case DefaultStrSet(vs) => vs.foldLeft[AbsString](DefaultStrBot)((result, v) => result + alpha(v.toUpperCase))
+        case DefaultStrTop => DefaultStrTop
+        case DefaultStrBot => DefaultStrBot
       }
 
     override def toString: String =
       this match {
-        case DStrNum => "NumStr"
-        case DStrOther => "OtherStr"
-        case DStrSet(vs) => vs.foldLeft("")((result, v) => if (result.length == 0) "\"" + v + "\"" else result + ", \"" + v + "\"")
-        case DStrTop => "String"
-        case DStrBot => "Bot"
+        case DefaultStrNum => "NumStr"
+        case DefaultStrOther => "OtherStr"
+        case DefaultStrSet(vs) => vs.foldLeft("")((result, v) => if (result.length == 0) "\"" + v + "\"" else result + ", \"" + v + "\"")
+        case DefaultStrTop => "String"
+        case DefaultStrBot => "Bot"
       }
 
-    def isTop: Boolean = this == DStrTop
-    def isBottom: Boolean = this == DStrBot
+    def isTop: Boolean = this == DefaultStrTop
+    def isBottom: Boolean = this == DefaultStrBot
 
     def isConcrete: Boolean =
       this match {
-        case DStrSet(_) => true
+        case DefaultStrSet(_) => true
         case _ => false
       }
 
     def toAbsString(absString: AbsStringUtil): AbsString =
       this match {
-        case DStrSet(_) => this
-        case _ => DStrBot
+        case DefaultStrSet(_) => this
+        case _ => DefaultStrBot
       }
 
     def isAllNums: Boolean =
       this match {
-        case DStrNum => true
-        case DStrSet(v) => hasNum(v) && !hasOther(v)
+        case DefaultStrNum => true
+        case DefaultStrSet(v) => hasNum(v) && !hasOther(v)
         case _ => false
       }
 
     def isAllOthers: Boolean =
       this match {
-        case DStrOther => true
-        case DStrSet(v) => !hasNum(v) && hasOther(v)
+        case DefaultStrOther => true
+        case DefaultStrSet(v) => !hasNum(v) && hasOther(v)
         case _ => false
       }
   }
-  case object DStrTop extends DStringSet
-  case object DStrBot extends DStringSet
-  case object DStrNum extends DStringSet
-  case object DStrOther extends DStringSet
-  case class DStrSet(values: IHashSet[String]) extends DStringSet
+  case object DefaultStrTop extends DefaultStringSet
+  case object DefaultStrBot extends DefaultStringSet
+  case object DefaultStrNum extends DefaultStringSet
+  case object DefaultStrOther extends DefaultStringSet
+  case class DefaultStrSet(values: IHashSet[String]) extends DefaultStringSet
 }

@@ -13,58 +13,58 @@ package kr.ac.kaist.safe.analyzer.domain
 
 /* Default Undefined Domain */
 
-object DUndefUtil extends AbsUndefUtil {
-  val Top: AbsUndef = DUndefTop
-  val Bot: AbsUndef = DUndefBot
+object DefaultUndefUtil extends AbsUndefUtil {
+  val Top: AbsUndef = DefaultUndefTop
+  val Bot: AbsUndef = DefaultUndefBot
   def alpha: AbsUndef = Top
 
-  sealed abstract class DUndef extends AbsUndef {
+  sealed abstract class DefaultUndef extends AbsUndef {
     /* AbsUndef Interface */
     def <=(that: AbsUndef): Boolean =
       (this, that) match {
-        case (DUndefBot, _) => true
-        case (_, DUndefTop) => true
+        case (DefaultUndefBot, _) => true
+        case (_, DefaultUndefTop) => true
         case _ => false
       }
 
     def +(that: AbsUndef): AbsUndef =
       (this, that) match {
-        case (DUndefBot, _) => that
-        case (_, DUndefBot) => this
-        case (_, DUndefTop) | (DUndefTop, _) => DUndefTop
+        case (DefaultUndefBot, _) => that
+        case (_, DefaultUndefBot) => this
+        case (_, DefaultUndefTop) | (DefaultUndefTop, _) => DefaultUndefTop
       }
 
     def <>(that: AbsUndef): AbsUndef =
       (this, that) match {
-        case (DUndefTop, DUndefTop) => DUndefTop
-        case _ => DUndefBot
+        case (DefaultUndefTop, DefaultUndefTop) => DefaultUndefTop
+        case _ => DefaultUndefBot
       }
 
     def ===(that: AbsUndef, absBool: AbsBoolUtil): AbsBool =
       (this, that) match {
-        case (DUndefBot, _) | (_, DUndefBot) => absBool.Bot
+        case (DefaultUndefBot, _) | (_, DefaultUndefBot) => absBool.Bot
         case _ => absBool.True
       }
 
     override def toString: String =
       this match {
-        case DUndefTop => "undefined"
-        case DUndefBot => "Bot"
+        case DefaultUndefTop => "undefined"
+        case DefaultUndefBot => "Bot"
       }
 
     /* AbsDomain Interface */
     def getAbsCase: AbsCase =
       this match {
-        case DUndefBot => AbsBot
-        case DUndefTop => AbsTop
+        case DefaultUndefBot => AbsBot
+        case DefaultUndefTop => AbsTop
       }
-    def isTop: Boolean = this == DUndefTop
-    def isBottom: Boolean = this == DUndefBot
-    def isConcrete: Boolean = this == DUndefTop
+    def isTop: Boolean = this == DefaultUndefTop
+    def isBottom: Boolean = this == DefaultUndefBot
+    def isConcrete: Boolean = this == DefaultUndefTop
     def toAbsString(absString: AbsStringUtil): AbsString =
       if (isConcrete) absString.alpha("undefined")
       else absString.Bot
   }
-  case object DUndefTop extends DUndef
-  case object DUndefBot extends DUndef
+  case object DefaultUndefTop extends DefaultUndef
+  case object DefaultUndefBot extends DefaultUndef
 }
