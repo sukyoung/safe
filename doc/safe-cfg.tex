@@ -1,0 +1,195 @@
+\chapter{CFG}
+\[
+\begin{array}{rllll}
+cfg & \in & \SF{CFG} & = & \SF{CFGFunction} \\
+f,\ \langle \mathbb{N},\ \hookrightarrow,\ \mathbb{C} \rangle & \in & \SF{CFGFunction} & = & \powerset{\SF{CFGNode}} \times \powerset{\SF{CFGEdge}} \times \powerset{\SF{CFGCallTriple}} \\
+& & \SF{CFGNode} & = & \SF{Entry} \mid \SF{Exit} \mid \SF{ExitExc} \mid \SF{Call} \mid \SF{AfterCall} \mid \SF{AfterCatch} \mid \SF{Block} \\
+& & \SF{Block} & = & \SF{Instruction}^+ \\
+& & \SF{CFGEdge} & = & \SF{CFGNode} \times \SF{CFGNode} \\
+& & \SF{CFGCallTriple} & = & \SF{Call} \times \SF{AfterCall} \times \SF{AfterCatch}\\
+\end{array}
+\]
+
+\section{Syntax of $\SF{Instruction}$}
+
+\[
+\begin{array}{r@{~~}r@{~~}lll}
+i \in \Instruction & ::= & 
+x~\verb+:=+~\TT{alloc}\verb+(+ e^{?} \verb+)+
+& \mbox{\tt\inblue CFGAlloc}
+\\
+
+& \mid & x~\verb+:=+~\TT{allocArray}\verb+(+n\verb+)+
+ & \mbox{\tt\inblue CFGAllocArray}
+\\
+
+& \mid & x~\verb+:=+~\TT{allocArg}\verb+(+n\verb+)+
+ & \mbox{\tt\inblue CFGAllocArg}
+\\
+
+& \mid & x ~\verb+:=+~ e
+ & \mbox{\tt\inblue CFGExprStmt}
+\\
+
+& \mid & x ~\verb+:=+~ \TT{delete}\verb+(+e\verb+)+
+ & \mbox{\tt\inblue CFGDelete}
+\\
+
+& \mid & x ~\verb+:=+~ \TT{delete}\verb+(+e_1,e_2\verb+)+
+ & \mbox{\tt\inblue CFGDeleteProp}
+\\
+
+& \mid & e\verb+[+e\verb+]+ ~\verb+:=+~ e 
+ & \mbox{\tt\inblue CFGStore}
+\\
+
+& \mid & x_1 ~\verb+:=+~ \TT{function} ~x_2^{?}\verb+(+f\verb+)+
+ & \mbox{\tt\inblue CFGFunExpr}
+\\
+
+& \mid & \TT{assert}\verb+(+e\inop e\verb+)+ 
+ & \mbox{\tt\inblue CFGAssert}
+\\
+
+& \mid & \TT{cond}\verb+(+x\verb+)+
+ & \mbox{\tt\inblue CFGCond}
+\\
+
+& \mid & \TT{catch}\verb+(+x\verb+)+
+ & \mbox{\tt\inblue CFGCatch}
+\\
+
+& \mid & \TT{return}\verb+(+e^{?}\verb+)+ 
+ & \mbox{\tt\inblue CFGReturn}
+\\
+
+& \mid & \TT{throw}\verb+(+e\verb+)+
+ & \mbox{\tt\inblue CFGThrow}
+\\
+
+& \mid & \TT{noop}
+ & \mbox{\tt\inblue CFGNoOp}
+\\
+
+& \mid & x ~\verb+:=+~\ensuremath{\diamond}x\verb+(+x^{*}\verb+)+
+ & \mbox{\tt\inblue CFGInternalCall}
+\\
+
+ci \in \SF{CallInstruction}& ::= & \TT{call}\verb+(+e_1,e_2,e_3\verb+)+
+ & \mbox{\tt\inblue CFGCall}
+\\
+
+& \mid & \TT{construct}\verb+(+e_1,e_2,e_3\verb+)+
+ & \mbox{\tt\inblue CFGConstruct}
+\\
+
+e \in \Expression & ::= & x
+ & \mbox{\tt\inblue CFGVarRef}
+\\
+
+& \mid & e \inop e 
+ & \mbox{\tt\inblue CFGBin}
+\\
+
+& \mid & \preop e
+ & \mbox{\tt\inblue CFGUn}
+\\
+
+& \mid & e\verb+[+e\verb+]+
+ & \mbox{\tt\inblue CFGLoad}
+\\
+
+& \mid & \TT{this}
+ & \mbox{\tt\inblue CFGThis}
+\\
+
+& \mid & n & \mbox{\tt\inblue CFGNumber}
+&\comment{Number, double}
+\\
+
+& \mid & ``s"
+ & \mbox{\tt\inblue CFGString}
+& \comment{String}
+\\
+
+& \mid & \TT{true}, \TT{false}
+ & \mbox{\tt\inblue CFGBool}
+& \comment{Boolean}
+\\
+
+& \mid & \TT{null}
+ & \mbox{\tt\inblue CFGNull}
+\\
+
+ \preop & ::= &
+\multicolumn{3}{l}{
+ \TT{void} \mid \TT{typeof} \mid \TT{+} \mid \TT{-} \mid \TT{\~} \mid \TT{!}}
+\\
+
+ \inop & ::= &
+\multicolumn{3}{l}{
+ \TT{instanceof} \mid \TT{in} \mid \TT{|} \mid \TT{\&}
+               \mid \TT{\^} \mid \TT{<<} \mid \TT{>>} \mid \TT{>>>}
+\mid \TT{+} \mid \TT{-} \mid \TT{*} \mid \TT{/} \mid \TT{\%} \mid \TT{==} \mid \TT{!=}
+\mid \TT{===}} \\
+&\mid& \TT{!==} \mid \TT{<} \mid \TT{>} \mid \TT{<=} \mid \TT{>=}
+\\
+
+x \in \SF{CFGId} & = & \SF{String} \times \TT{VarKind}
+& \mbox{\tt\inblue CFGId}
+\\
+
+\TT{VarKind} & ::= &
+\multicolumn{3}{l}{
+\TT{GlobalVar} \mid \TT{PureLocalVar} \mid \TT{CapturedVar} \mid \TT{CapturedCatchVar}}
+\\
+
+\end{array}
+\]
+\newpage
+
+\section{Constraints}
+\begin{itemize}
+\item \SF{Entry}, \SF{Exit}, and \SF{ExitExc} nodes always uniquely exist for each \SF{CFGFunction},
+and an \SF{Entry} node has no predecessor, \SF{Exit} and \SF{ExitExc} nodes have no successor.
+\begin{itemize}
+\item $\forall \langle \mathbb{N},\ \_,\ \_ \rangle \in \SF{CFGFunction}.\ (\exists! n \in \SF{Entry} \cap \mathbb{N}), (\exists! n \in \SF{Exit} \cap \mathbb{N}), (\exists! n \in \SF{ExitExc} \cap \mathbb{N})$
+\item $\forall \langle \mathbb{N},\ \hookrightarrow,\ \_ \rangle \in \SF{CFGFunction}.\ \nexists n \in \mathbb{N}.$
+s.t. $(n \hookrightarrow entry) \vee (exit \hookrightarrow n) \vee (exitexc \hookrightarrow n)$
+where $entry \in \SF{Entry},\ exit \in \SF{Exit},\ exitexc \in \SF{ExitExc}$
+\end{itemize}
+
+\item \SF{Call}, \SF{AfterCall}, and \SF{AfterCatch} nodes must be recorded in $\mathbb{C}$ without edges between them, and the triple between them is unique.
+\begin{itemize}
+\item $\forall \langle \mathbb{N},\ \_,\ \mathbb{C} \rangle \in \SF{CFGFunction}.\ $
+$\forall call \in \SF{Call} \cap \mathbb{N}.\ $
+$\forall acall \in \SF{AfterCall} \cap \mathbb{N}.\ $
+$\forall acatch \in \SF{AfterCatch} \cap \mathbb{N}.\ $
+$(call, \_, \_),\ (\_, acall, \_),\ (\_, \_, acatch) \in \mathbb{C}$
+\item $\forall \langle \_,\ \_,\ \mathbb{C} \rangle \in \SF{CFGFunction}.\ \forall (call, acall, acatch),\ (call', acall', acatch') \in \mathbb{C}.\ call = call' \Leftrightarrow acall = acall' \Leftrightarrow acatch = acatch'$
+\end{itemize}
+
+\item There is no instruction after \TT{return} in a node. There is no instruction before \TT{catch} in a node.
+\begin{itemize}
+\item $\forall n \in \SF{Block}.\ (i_k \in n \wedge (i_k = \TT{return})) \rightarrow (\nexists i_{k'} \in n.\ k < k')$
+\item $\forall n \in \SF{Block}.\ (i_k \in n \wedge (i_k = \TT{catch}) \rightarrow (\nexists i_{k'} \in n.\ k > k')$
+\end{itemize}
+
+\end{itemize}
+
+%\section{Helper Functions}\label{sec:abs-helper}
+%
+%\[
+%\begin{array}{lcl}
+%\chf{getVarKind}_{cfg} & : & \SF{String} \rightarrow \SF{VarKind} \\
+%\chf{getCmd}_{cfg} & : & \SF{Node} \rightarrow \Command \\
+%\chf{getArgVars}_{cfg} & : & \fid \rightarrow \args \\
+%\chf{getLocalVars}_{cfg} & : & \fid \rightarrow \vars \\
+%\chf{getCallFromAftercall}_{cfg} & : & \SF{Node} \rightarrow \SF{Node} \\
+%\chf{getAftercallFromCall}_{cfg} & : & \SF{Node} \rightarrow \SF{Node} \\
+%\chf{getExcSucc}_{cfg} & : & \SF{Node} \rightarrow \SF{Node} \\
+%\chf{getArgumentsName}_{cfg} & : & \fid \rightarrow \SF{String} \\
+%\chf{getReturnVar}_{cfg} & : & \SF{Node} \rightarrow \SF{String} \\
+%\chf{isUserFunction}_{cfg} & : & \SF{FunctionId} \rightarrow \SF{Boolean} \\
+%\end{array}
+%\]

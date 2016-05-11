@@ -23,7 +23,7 @@ case class CFGFunction(cfg: CFG, argumentsName: String, argVars: List[CFGId], lo
   // create call
   def createCall(callInstCons: Call => CFGCallInst, retVar: CFGId): Call = {
     val call = Call(this, callInstCons, retVar)
-    blocks ::= call
+    blocks = call :: call.afterCall :: call.afterCatch :: blocks
     call
   }
 
