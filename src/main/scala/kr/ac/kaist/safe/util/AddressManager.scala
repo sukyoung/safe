@@ -10,7 +10,7 @@
  */
 
 package kr.ac.kaist.safe.util
-import kr.ac.kaist.safe.nodes.{ Address, Loc, RecencyTag }
+import kr.ac.kaist.safe.analyzer.domain.{ Address, Loc, RecencyTag }
 
 // Used by compiler/DefaultCFGBuilder.scala
 trait AddressManager {

@@ -11,6 +11,8 @@
 
 package kr.ac.kaist.safe.nodes
 
+import kr.ac.kaist.safe.analyzer.domain.Address
+
 sealed abstract class CFGInst extends CFGInfo {
   val id: InstId = CFGInst.getId
   val node: CFGNode

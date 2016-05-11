@@ -32,13 +32,4 @@ package object nodes {
   }
 
   type ControlPoint = CFGNode
-
-  ////////////////////////////////////////////////////////////////
-  // abstract location
-  ////////////////////////////////////////////////////////////////
-  type Loc = Int
-  type Address = Int
-  type RecencyTag = Int
-  val Recent = 0
-  val Old = 1
 }
