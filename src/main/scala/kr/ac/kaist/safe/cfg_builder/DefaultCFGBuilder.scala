@@ -22,6 +22,7 @@ import kr.ac.kaist.safe.nodes._
 import kr.ac.kaist.safe.nodes.EdgeType._
 import kr.ac.kaist.safe.phase.CFGBuildConfig
 import kr.ac.kaist.safe.util.{ NodeUtil => NU }
+import kr.ac.kaist.safe.analyzer.domain.Address
 
 // default CFG builder
 object DefaultCFGBuilder extends CFGBuilder {

@@ -13,7 +13,7 @@ package kr.ac.kaist.safe.phase
 
 import kr.ac.kaist.safe.config.{ BoolOption, Config, ConfigOption, NumOption, OptionKind, StrOption }
 import kr.ac.kaist.safe.nodes.CFG
-import kr.ac.kaist.safe.analyzer.domain.{ AbsUndefUtil, AbsNullUtil, AbsBoolUtil, AbsNumberUtil, AbsStringUtil, DUndefUtil, DNullUtil, DBoolUtil, DNumUtil, DStrSetUtil }
+import kr.ac.kaist.safe.analyzer.domain.{ AbsUndefUtil, AbsNullUtil, AbsBoolUtil, AbsNumberUtil, AbsStringUtil, DefaultUndefUtil, DefaultNullUtil, DefaultBoolUtil, DefaultNumUtil, DefaultStrSetUtil }
 
 // Analyze phase struct.
 case class Analyze(
@@ -36,16 +36,16 @@ object Analyze extends PhaseHelper {
 case class AnalyzeConfig(
     var verbose: Boolean = false,
     var outFile: Option[String] = None,
-    var AbsUndef: AbsUndefUtil = DUndefUtil,
-    var AbsNull: AbsNullUtil = DNullUtil,
-    var AbsBool: AbsBoolUtil = DBoolUtil,
-    var AbsNumber: AbsNumberUtil = DNumUtil,
-    var AbsString: AbsStringUtil = new DStrSetUtil(0)
+    var AbsUndef: AbsUndefUtil = DefaultUndefUtil,
+    var AbsNull: AbsNullUtil = DefaultNullUtil,
+    var AbsBool: AbsBoolUtil = DefaultBoolUtil,
+    var AbsNumber: AbsNumberUtil = DefaultNumUtil,
+    var AbsString: AbsStringUtil = new DefaultStrSetUtil(0)
 ) extends ConfigOption {
   val prefix: String = "analyze:"
   val optMap: Map[String, OptionKind] = Map(
     "verbose" -> BoolOption(() => verbose = true),
     "out" -> StrOption((s: String) => outFile = Some(s)),
-    "maxStrSetSize" -> NumOption((n: Int) => if (n > 0) AbsString = new DStrSetUtil(n))
+    "maxStrSetSize" -> NumOption((n: Int) => if (n > 0) AbsString = new DefaultStrSetUtil(n))
   )
 }
