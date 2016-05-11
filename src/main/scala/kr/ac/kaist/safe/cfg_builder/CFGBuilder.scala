@@ -9,7 +9,7 @@
  * ****************************************************************************
  */
 
-package kr.ac.kaist.safe.compiler
+package kr.ac.kaist.safe.cfg_builder
 
 import kr.ac.kaist.safe.config.Config
 import kr.ac.kaist.safe.phase.CFGBuildConfig

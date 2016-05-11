@@ -15,7 +15,7 @@ import java.io.{ BufferedWriter, FileWriter, IOException }
 
 import kr.ac.kaist.safe.config.{ Config, ConfigOption, OptionKind, BoolOption, NumOption, StrOption }
 import kr.ac.kaist.safe.errors.ExcLog
-import kr.ac.kaist.safe.compiler.DefaultCFGBuilder
+import kr.ac.kaist.safe.cfg_builder.DefaultCFGBuilder
 import kr.ac.kaist.safe.nodes.{ IRRoot, CFG }
 import kr.ac.kaist.safe.util.{ NodeUtil, Useful }
 
@@ -67,6 +67,7 @@ object CFGBuild extends PhaseHelper {
 case class CFGBuildConfig(
     var verbose: Boolean = false,
     var outFile: Option[String] = None
+// TODO add option for cfg builder
 ) extends ConfigOption {
   val prefix: String = "cfgBuild:"
   val optMap: Map[String, OptionKind] = Map(

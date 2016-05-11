@@ -9,7 +9,7 @@
  * ****************************************************************************
  */
 
-package kr.ac.kaist.safe.util
+package kr.ac.kaist.safe.cfg_builder
 
 import scala.collection.mutable.{ Set => MSet }
 import scala.collection.mutable.{ HashSet => MHashSet }
