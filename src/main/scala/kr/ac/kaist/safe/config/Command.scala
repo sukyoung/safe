@@ -19,6 +19,7 @@ object Command {
     "astRewrite" -> CmdASTRewrite,
     "compile" -> CmdCompile,
     "cfgBuild" -> CmdCFGBuild,
+    "analyze" -> CmdAnalyze,
     "help" -> CmdHelp
   )
 }
