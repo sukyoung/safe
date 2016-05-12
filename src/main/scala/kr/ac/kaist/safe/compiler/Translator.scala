@@ -18,19 +18,17 @@ import kr.ac.kaist.safe.util.{ NodeUtil => NU, Span }
 
 /* Translates JavaScript AST to IR. */
 class Translator(program: Program) {
-  /* Error handling
-   * The signal function collects errors during the AST->IR translation.
-   * To collect multiple errors,
-   * we should return a default value after signaling an error.
-   */
   val excLog: ExcLog = new ExcLog
 
   ////////////////////////////////////////////////////////////////
   // Helpers
   ////////////////////////////////////////////////////////////////
-  val debug = false
   var isLocal = false
   var locals: List[String] = List()
+  var ignoreId = 0
+  var isDoWhile = false
+
+  val debug = false
   val plus = NU.makeIROp("+")
   val minus = NU.makeIROp("-")
   val typeof = NU.makeIROp("typeof")
@@ -65,7 +63,6 @@ class Translator(program: Program) {
     makeTId(span, NU.freshName("temp"))
   def freshId: IRTmpId =
     makeTId(defaultSpan, NU.freshName("temp"))
-  var ignoreId = 0
   def varIgn(ast: ASTNode): IRTmpId = {
     ignoreId += 1
     makeTId(ast, NU.ignoreName + ignoreId)
@@ -497,8 +494,6 @@ class Translator(program: Program) {
       }
       new IRVarStmt(trueInfo(vd), id2ir(env, name), false)
   }
-
-  var isDoWhile = false
 
   /*
    * AST2IR_S : Stmt -> Env -> IRStmt
