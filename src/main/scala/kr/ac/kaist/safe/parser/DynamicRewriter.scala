@@ -9,7 +9,7 @@
  * ****************************************************************************
  */
 
-package kr.ac.kaist.safe.compiler
+package kr.ac.kaist.safe.parser
 
 import java.lang.{ Integer => JInteger }
 import kr.ac.kaist.safe.nodes._

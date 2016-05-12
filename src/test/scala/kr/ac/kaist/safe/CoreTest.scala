@@ -19,7 +19,7 @@ import scala.io.Source
 import kr.ac.kaist.safe.util.NodeUtil
 import kr.ac.kaist.safe.nodes.{ Program, IRRoot, CFG }
 import kr.ac.kaist.safe.config.{ Config, ArgParse }
-import kr.ac.kaist.safe.compiler.Parser
+import kr.ac.kaist.safe.parser.Parser
 import kr.ac.kaist.safe.phase.CFGBuild
 
 object ParseTest extends Tag("ParseTest")

@@ -14,7 +14,7 @@ package kr.ac.kaist.safe.phase
 import java.io.{ BufferedWriter, FileWriter, IOException }
 
 import kr.ac.kaist.safe.config.{ Config, ConfigOption, OptionKind, BoolOption, StrOption }
-import kr.ac.kaist.safe.compiler.{ Hoister, Disambiguator, WithRewriter }
+import kr.ac.kaist.safe.ast_rewriter.{ Hoister, Disambiguator, WithRewriter }
 import kr.ac.kaist.safe.errors.ExcLog
 import kr.ac.kaist.safe.nodes.Program
 import kr.ac.kaist.safe.util.{ NodeUtil, Useful }

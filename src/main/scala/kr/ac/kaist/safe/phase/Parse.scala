@@ -14,7 +14,7 @@ package kr.ac.kaist.safe.phase
 import java.io.{ BufferedWriter, FileWriter }
 
 import kr.ac.kaist.safe.config.{ Config, ConfigOption, OptionKind, BoolOption, StrOption }
-import kr.ac.kaist.safe.compiler.Parser
+import kr.ac.kaist.safe.parser.Parser
 import kr.ac.kaist.safe.nodes.Program
 import kr.ac.kaist.safe.util.Useful
 
