@@ -9,11 +9,12 @@
  * ****************************************************************************
  */
 
-package kr.ac.kaist.safe.nodes
+package kr.ac.kaist.safe.cfg_builder
 
+import kr.ac.kaist.safe.nodes.{ CFGCallInst, CFGId, CFGNodeInfo }
 import scala.collection.mutable.{ Map => MMap, HashMap => MHashMap }
 
-case class CFGFunction(cfg: CFG, argumentsName: String, argVars: List[CFGId], localVars: List[CFGId], name: String, info: Info, body: String, isUser: Boolean) {
+case class CFGFunction(cfg: CFG, argumentsName: String, argVars: List[CFGId], localVars: List[CFGId], name: String, info: CFGNodeInfo, body: String, isUser: Boolean) {
   val id: FunctionId = CFGFunction.getId
 
   val entry = Entry(this)
@@ -28,12 +29,11 @@ case class CFGFunction(cfg: CFG, argumentsName: String, argVars: List[CFGId], lo
   }
 
   // all blocks in this function
-  private var blocks: List[Block] = Nil
-  def getBlocks: List[Block] = blocks
-  def createBlock: NormalBlock = {
-    val block = NormalBlock(this)
+  private var blocks: List[CFGBlock] = List(entry, exit, exitExc)
+  def getBlocks: List[CFGBlock] = blocks
+  def createBlock: CFGNormalBlock = {
+    val block = CFGNormalBlock(this)
     blocks ::= block
-    cfg.blockMap(block.id) = block
     cfg.addNode(block) // TODO delete this after refactoring dump
     block
   }

@@ -11,7 +11,10 @@
 
 package kr.ac.kaist.safe
 
-package object nodes {
-  // inst id
-  type InstId = Int
+package object cfg_builder {
+  // function id
+  type FunctionId = Int
+
+  // block id
+  type BlockId = Int
 }

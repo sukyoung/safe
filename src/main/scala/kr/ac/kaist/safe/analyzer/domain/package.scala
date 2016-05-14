@@ -11,7 +11,7 @@
 
 package kr.ac.kaist.safe.analyzer
 
-import kr.ac.kaist.safe.nodes.FunctionId
+import kr.ac.kaist.safe.cfg_builder.FunctionId
 
 package object domain {
   ////////////////////////////////////////////////////////////////

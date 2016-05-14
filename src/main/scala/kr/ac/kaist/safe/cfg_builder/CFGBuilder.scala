@@ -14,7 +14,7 @@ package kr.ac.kaist.safe.cfg_builder
 import kr.ac.kaist.safe.config.Config
 import kr.ac.kaist.safe.phase.CFGBuildConfig
 import kr.ac.kaist.safe.errors.ExcLog
-import kr.ac.kaist.safe.nodes.{ IRRoot, CFG }
+import kr.ac.kaist.safe.nodes.IRRoot
 
 // cfg builder
 trait CFGBuilder {

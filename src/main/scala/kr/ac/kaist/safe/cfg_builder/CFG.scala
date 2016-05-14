@@ -9,12 +9,13 @@
  * ****************************************************************************
  */
 
-package kr.ac.kaist.safe.nodes
+package kr.ac.kaist.safe.cfg_builder
 
-import kr.ac.kaist.safe.nodes.EdgeType._
+import kr.ac.kaist.safe.cfg_builder.EdgeType.{ EdgeType, EdgeNormal }
+import kr.ac.kaist.safe.nodes.{ CFGInst, CFGId, CFGNodeInfo }
 import scala.collection.mutable.{ Map => MMap, HashMap => MHashMap }
 
-class CFG(globalVars: List[CFGId], info: Info) {
+class CFG(globalVars: List[CFGId], info: CFGNodeInfo) {
   // all functions in this cfg
   private var userFuncs: List[CFGFunction] = Nil
   private var modelFuncs: List[CFGFunction] = Nil
@@ -23,12 +24,12 @@ class CFG(globalVars: List[CFGId], info: Info) {
 
   // TODO: delete this after refactoring dump
   // all blocks in this cfg
-  private var blocks: List[NormalBlock] = Nil
-  def addNode(block: NormalBlock): Unit = blocks ::= block
+  private var blocks: List[CFGNormalBlock] = Nil
+  def addNode(block: CFGNormalBlock): Unit = blocks ::= block
 
   // create function
   def createFunction(argumentsName: String, argVars: List[CFGId], localVars: List[CFGId],
-    name: String, info: Info, body: String, isUser: Boolean): CFGFunction = {
+    name: String, info: CFGNodeInfo, body: String, isUser: Boolean): CFGFunction = {
     val func: CFGFunction =
       CFGFunction(this, argumentsName, argVars, localVars, name, info, body, isUser)
     funMap(func.id) = func
@@ -40,7 +41,7 @@ class CFG(globalVars: List[CFGId], info: Info) {
   }
 
   // add edge
-  def addEdge(fromList: List[CFGNode], toList: List[CFGNode], etype: EdgeType = EdgeNormal): Unit = {
+  def addEdge(fromList: List[CFGBlock], toList: List[CFGBlock], etype: EdgeType = EdgeNormal): Unit = {
     fromList.foreach((from) => toList.foreach((to) => {
       from.addSucc(etype, to)
       to.addPred(etype, from)
@@ -56,12 +57,11 @@ class CFG(globalVars: List[CFGId], info: Info) {
 
   // init id counter
   CFGFunction.resetId
-  NormalBlock.resetId
+  CFGNormalBlock.resetId
   CFGInst.resetId
 
   // function / block map from id
   val funMap: MMap[FunctionId, CFGFunction] = MHashMap()
-  val blockMap: MMap[BlockId, Block] = MHashMap()
 
   // global function
   val globalFunc: CFGFunction = createFunction("", Nil, globalVars, "top-level", info, "", true)

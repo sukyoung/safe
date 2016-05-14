@@ -14,7 +14,7 @@ package kr.ac.kaist.safe.util
 import kr.ac.kaist.safe.nodes.ASTNode
 
 // Object with a unique identifier.
-// Every Span, AST node, and IR node extends UIDObject.
+// Every Span, AST node, IR node, and CFG node extends UIDObject.
 class UIDObject {
   private var uid: Long = next
   override def hashCode: Int = uid.asInstanceOf[Int] ^ (uid >>> 32).asInstanceOf[Int]

@@ -9,7 +9,7 @@
  * ****************************************************************************
  */
 
-package kr.ac.kaist.safe.nodes
+package kr.ac.kaist.safe.cfg_builder
 
 // edge type for cfg nodes
 object EdgeType extends Enumeration {

@@ -12,7 +12,7 @@
 package kr.ac.kaist.safe.phase
 
 import kr.ac.kaist.safe.config.{ BoolOption, Config, ConfigOption, NumOption, OptionKind, StrOption }
-import kr.ac.kaist.safe.nodes.CFG
+import kr.ac.kaist.safe.cfg_builder.CFG
 import kr.ac.kaist.safe.analyzer.domain.{ AbsUndefUtil, AbsNullUtil, AbsBoolUtil, AbsNumberUtil, AbsStringUtil, DefaultUndefUtil, DefaultNullUtil, DefaultBoolUtil, DefaultNumUtil, DefaultStrSetUtil }
 
 // Analyze phase struct.

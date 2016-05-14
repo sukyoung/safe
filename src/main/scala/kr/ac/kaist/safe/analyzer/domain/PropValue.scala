@@ -11,7 +11,7 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
-import kr.ac.kaist.safe.nodes.FunctionId
+import kr.ac.kaist.safe.cfg_builder.FunctionId
 
 trait PropValue {
   val objval: ObjectValue

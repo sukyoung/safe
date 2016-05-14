@@ -15,6 +15,7 @@ import kr.ac.kaist.safe.util.{ Span, UIDObject }
 
 abstract class Node(val info: NodeInfo) extends UIDObject {
   def toString(indent: Int): String
+  override def toString: String = toString(0)
 }
 
 abstract class NodeInfo(val span: Span)
@@ -22,4 +23,6 @@ abstract class NodeInfo(val span: Span)
 case class ASTNodeInfo(override val span: Span, comment: Option[Comment] = None)
   extends NodeInfo(span)
 case class IRNodeInfo(override val span: Span, fromSource: Boolean = true, ast: ASTNode = null)
+  extends NodeInfo(span)
+case class CFGNodeInfo(override val span: Span, fromSource: Boolean = true, ir: IRNode = null)
   extends NodeInfo(span)

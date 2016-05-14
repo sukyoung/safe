@@ -30,7 +30,7 @@ case class Config(
 object Config {
   val LINE_SEP = System.getProperty("line.separator")
 
-  // Maximum length of printable instruction of CFGNode
+  // Maximum length of printable instruction of CFGBlock
   val MAX_INST_PRINT_SIZE = 10000
 
   // Base project directory root

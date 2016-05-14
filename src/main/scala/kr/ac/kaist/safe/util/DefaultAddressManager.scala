@@ -13,7 +13,8 @@ package kr.ac.kaist.safe.util
 
 import scala.collection.mutable.{ Map => MMap, HashMap => MHashMap }
 import scala.util.matching.Regex
-import kr.ac.kaist.safe.nodes.{ FunctionId, InstId }
+import kr.ac.kaist.safe.cfg_builder.FunctionId
+import kr.ac.kaist.safe.nodes.InstId
 import kr.ac.kaist.safe.analyzer.domain.{ Address, Loc, RecencyTag, Recent, Old }
 
 // Set by config/Config.scala
