@@ -22,12 +22,12 @@ class ExcLog(es: List[SafeError] = Nil, ws: List[SafeWarning] = Nil) {
     (errs.length match {
       case 0 => "No error"
       case l =>
-        l + "error" + (if (l > 1) "s" else "") + ":" + LINE_SEP +
+        l + " error" + (if (l > 1) "s" else "") + ":" + LINE_SEP +
           "    " + errs.reverse.mkString(LINE_SEP + "    ")
     }) + LINE_SEP + (warns.length match {
       case 0 => "No warning"
       case l =>
-        l + "warning" + (if (l > 1) "s" else "") + ":" + LINE_SEP +
+        l + " warning" + (if (l > 1) "s" else "") + ":" + LINE_SEP +
           "    " + warns.reverse.mkString(LINE_SEP + "    ")
     })
   }

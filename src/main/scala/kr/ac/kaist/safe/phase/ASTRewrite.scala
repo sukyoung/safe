@@ -12,7 +12,7 @@
 package kr.ac.kaist.safe.phase
 
 import java.io.{ BufferedWriter, FileWriter, IOException }
-
+import scala.util.{ Success, Failure }
 import kr.ac.kaist.safe.config.{ Config, ConfigOption, OptionKind, BoolOption, StrOption }
 import kr.ac.kaist.safe.ast_rewriter.{ Hoister, Disambiguator, WithRewriter }
 import kr.ac.kaist.safe.errors.ExcLog
@@ -27,8 +27,8 @@ case class ASTRewrite(
   override def apply(config: Config): Unit = rewrite(config)
   def rewrite(config: Config): Option[Program] = {
     prev.parse(config) match {
-      case Some(pgm) => rewrite(config, pgm)
-      case None => None
+      case Success(pgm) => rewrite(config, pgm)
+      case Failure(_) => None
     }
   }
   def rewrite(config: Config, pgm: Program): Option[Program] = {

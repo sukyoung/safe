@@ -11,6 +11,7 @@
 
 package kr.ac.kaist.safe.parser
 
+import scala.util.{ Success, Failure }
 import java.lang.{ Integer => JInteger }
 import kr.ac.kaist.safe.nodes._
 import kr.ac.kaist.safe.util.{ NodeUtil => NU }
@@ -18,6 +19,7 @@ import kr.ac.kaist.safe.util.{ NodeUtil => NU }
 /* Rewrites a JavaScript source code
  * using dynamic code generation with string constants
  * to another one without using it.
+ * Used by parser/Parser.scala
  */
 object DynamicRewriter extends ASTWalker {
   def doit(program: Program): Program = walk(program)
@@ -40,7 +42,7 @@ object DynamicRewriter extends ASTWalker {
       Parser.stringToFnE((NU.getFileName(n),
         (new JInteger(NU.getLine(n) - 1), new JInteger(NU.getOffset(n) - 1)),
         "function (" + params + ") {" + body + "};")) match {
-        case Some(result) => result
+        case Success(result) => result
         case _ => n
       }
     // Function ("return this")
@@ -56,7 +58,7 @@ object DynamicRewriter extends ASTWalker {
       Parser.stringToFnE((NU.getFileName(n),
         (new JInteger(NU.getLine(n) - 1), new JInteger(NU.getOffset(n) - 1)),
         "function () {" + body + "};")) match {
-        case Some(fe) => FunApp(i1, vr, List(fe, no))
+        case Success(fe) => FunApp(i1, vr, List(fe, no))
         case _ => n
       }
     // window.setTimeout("xqzSr()", 1);
@@ -67,7 +69,7 @@ object DynamicRewriter extends ASTWalker {
       Parser.stringToFnE((NU.getFileName(n),
         (new JInteger(NU.getLine(n) - 1), new JInteger(NU.getOffset(n) - 1)),
         "function () {" + body + "};")) match {
-        case Some(fe) => FunApp(i1, dot, List(fe, no))
+        case Success(fe) => FunApp(i1, dot, List(fe, no))
         case _ => n
       }
     case _ => super.walk(node)

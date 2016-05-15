@@ -293,7 +293,7 @@ class Hoister(program: Program) extends ASTWalker {
 
       case fa @ FunApp(info, fun, List(StringLiteral(_, _, str, _))) if (NU.isEval(fun)) =>
         try {
-          Parser.scriptToAST(List(("evalParse", (1, 1), str)))
+          Parser.scriptToAST(List(("evalParse", (1, 1), str))).get
         } catch {
           case e: ParserError =>
             excLog.signal(EvalArgSyntaxError(str, toSpan(fa)))

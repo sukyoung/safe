@@ -15,6 +15,7 @@ import org.scalatest._
 import org.scalatest.Assertions._
 import java.io.{ File, FilenameFilter }
 import scala.io.Source
+import scala.util.{ Try, Success, Failure }
 
 import kr.ac.kaist.safe.util.NodeUtil
 import kr.ac.kaist.safe.nodes.{ Program, IRRoot }
@@ -43,17 +44,17 @@ class CoreTest extends FlatSpec {
     normalized(Source.fromFile(filename).getLines.mkString(Config.LINE_SEP))
   }
 
-  def parseTest(pgmOpt: Option[Program]): Unit = {
-    pgmOpt match {
-      case None => assert(false)
-      case Some(program) =>
+  private def parseTest(pgm: Try[Program]): Unit = {
+    pgm match {
+      case Failure(_) => assert(false)
+      case Success(program) =>
         Parser.stringToAST(program.toString(0)) match {
-          case None => assert(false)
-          case Some(pgm) =>
+          case Failure(_) => assert(false)
+          case Success(pgm) =>
             val pretty = pgm.toString(0)
             Parser.stringToAST(pretty) match {
-              case None => assert(false)
-              case Some(p) =>
+              case Failure(_) => assert(false)
+              case Success(p) =>
                 assert(normalized(p.toString(0)) == normalized(pretty))
             }
         }
@@ -100,12 +101,12 @@ class CoreTest extends FlatSpec {
     val astRewrite = compile.prev
     val parse = astRewrite.prev
 
-    val pgmOpt = parse.parse(config)
-    registerTest("[Parse] " + filename, ParseTest) { parseTest(pgmOpt) }
+    val pgm = parse.parse(config)
+    registerTest("[Parse] " + filename, ParseTest) { parseTest(pgm) }
 
-    val astOpt = pgmOpt match {
-      case Some(program) => astRewrite.rewrite(config, program)
-      case None => None
+    val astOpt = pgm match {
+      case Success(program) => astRewrite.rewrite(config, program)
+      case Failure(_) => None
     }
     val astName = resDir + "/astRewrite/" + name + ".test"
     registerTest("[ASTRewrite] " + filename, ASTRewriteTest) { astRewriteTest(astOpt, astName) }

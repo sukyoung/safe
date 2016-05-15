@@ -48,6 +48,7 @@ import kr.ac.kaist.safe.util.*;
 import xtc.util.Action;
 import java.io.*;
 import java.math.BigInteger;
+import java.nio.file.Files;
 import java.util.Collections;
 import java.util.ArrayList;
 import java.util.List;
@@ -59,6 +60,9 @@ import scala.Tuple3;
 }
 
 body {
+    static final int MAIN = 0;
+    static final int FUNCTION_EXPR = 1;
+
     static List<SourceElement> nilJSes = Collections.<SourceElement>emptyList();
     static scala.collection.immutable.List<SourceElement> nilSes = toList(nilJSes);
     static scala.collection.immutable.List<FunDecl> nilFds = toList(Collections.<FunDecl>emptyList());
@@ -88,13 +92,29 @@ body {
     private String logFile = column(0).file + ".log";
     private boolean keepComments = NodeUtil.getKeepComments();
     public Result JSmain(final int yyStart) throws IOException {
-        NodeUtil.initComment();
-        Result result = this.pJS$File(yyStart);
-        if (result.hasValue()) return result;
-        else {
+        return JSparse(yyStart, MAIN);
+    }
+
+    public Result JSFunctionExpr(final int yyStart) throws IOException {
+        return JSparse(yyStart, FUNCTION_EXPR);
+    }
+
+    private Result JSparse(final int yyStart, final int nonterminal) throws IOException {
+        try {
+            NodeUtil.initComment();
+            Result result = null;
+            if (nonterminal == MAIN) {
+                result = this.pJS$File(yyStart);
+            } else if (nonterminal == FUNCTION_EXPR) {
+                result = this.pJS$FunctionExpr(yyStart);
+            }
             writer.close();
             fw.close();
+            Files.deleteIfExists((new File(logFile)).toPath());
             return result;
+        } finally {
+            writer.close();
+            fw.close();
         }
     }
 

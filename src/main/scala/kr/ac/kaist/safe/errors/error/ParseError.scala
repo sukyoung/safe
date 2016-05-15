@@ -11,7 +11,6 @@
 
 package kr.ac.kaist.safe.errors.error
 
-import kr.ac.kaist.safe.config.Command
 import kr.ac.kaist.safe.nodes.NodeInfo
 import kr.ac.kaist.safe.util.Span
 
@@ -23,7 +22,7 @@ sealed abstract class ParseError(msg: String, spanOpt: Option[Span]) extends Saf
     s"$msg"
 })
 
-case class NoFileError(cmd: Command) extends ParseError({
+case class NoFileError(cmd: String) extends ParseError({
   s"Need a file to $cmd."
 }, None)
 
