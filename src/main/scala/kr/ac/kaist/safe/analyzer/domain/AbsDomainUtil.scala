@@ -1,5 +1,7 @@
 package kr.ac.kaist.safe.analyzer.domain
 
+import kr.ac.kaist.safe.cfg_builder.FunctionId
+
 trait AbsUndefUtil {
   val Top: AbsUndef
   val Bot: AbsUndef
@@ -20,8 +22,6 @@ trait AbsStringUtil {
 
   def alpha(str: String): AbsString
 
-  def isHex(str: String): Boolean
-  def isNum(str: String): Boolean
   def fromCharCode(n: AbsNumber, absNumber: AbsNumberUtil): AbsString
 }
 
@@ -47,4 +47,24 @@ trait AbsBoolUtil {
   val False: AbsBool
 
   def alpha(b: Boolean): AbsBool
+}
+
+case class Utils(
+    absUndef: AbsUndefUtil,
+    absNull: AbsNullUtil,
+    absBool: AbsBoolUtil,
+    absNum: AbsNumberUtil,
+    absString: AbsStringUtil
+) {
+  val PValueBot: PValue = PValue(absUndef.Bot, absNull.Bot, absBool.Bot, absNum.Bot, absString.Bot)
+  val ValueBot: Value = Value(PValueBot, Set[Loc]())
+  val ObjectValueBot: ObjectValue = ObjectValue(ValueBot, absBool.Bot, absBool.Bot, absBool.Bot)
+  val PropValueBot: PropValue = PropValue(ObjectValueBot, Set[FunctionId]())
+
+  val ObjBot: Obj = Obj(Obj.ObjMapBot.
+    updated(STR_DEFAULT_NUMBER, (PropValueBot, AbsentBot)).
+    updated(STR_DEFAULT_OTHER, (PropValueBot, AbsentBot)))
+  val ObjEmpty: Obj = Obj(Obj.ObjMapBot.
+    updated(STR_DEFAULT_NUMBER, (PropValueBot, AbsentTop)).
+    updated(STR_DEFAULT_OTHER, (PropValueBot, AbsentTop)))
 }
