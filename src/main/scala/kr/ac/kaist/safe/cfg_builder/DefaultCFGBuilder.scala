@@ -486,9 +486,9 @@ object DefaultCFGBuilder extends CFGBuilder {
         trueBlock.createInst(CFGAssert(condInfo, _, ir2cfgExpr(cond), true))
         cond match {
           case IRBin(_, first, op, second) if NU.isAssertOperator(op) =>
-            falseBlock.createInst(CFGAssert(condInfo, _, CFGBin(condInfo, ir2cfgExpr(first), NU.transIROp(op), ir2cfgExpr(second)), false))
+            falseBlock.createInst(CFGAssert(condInfo, _, CFGBin(ir2cfgExpr(first), NU.transIROp(op), ir2cfgExpr(second)), false))
           case _ =>
-            falseBlock.createInst(CFGAssert(condInfo, _, CFGUn(condInfo, NU.makeIROp("!"), ir2cfgExpr(cond)), false))
+            falseBlock.createInst(CFGAssert(condInfo, _, CFGUn(NU.makeIROp("!"), ir2cfgExpr(cond)), false))
         }
 
         /* true body */
@@ -550,9 +550,9 @@ object DefaultCFGBuilder extends CFGBuilder {
         loopBodyBlock.createInst(CFGAssert(condInfo, _, ir2cfgExpr(cond), true))
         cond match {
           case IRBin(_, first, op, second) if NU.isAssertOperator(op) =>
-            loopOutBlock.createInst(CFGAssert(condInfo, _, CFGBin(condInfo, ir2cfgExpr(first), NU.transIROp(op), ir2cfgExpr(second)), false))
+            loopOutBlock.createInst(CFGAssert(condInfo, _, CFGBin(ir2cfgExpr(first), NU.transIROp(op), ir2cfgExpr(second)), false))
           case _ =>
-            loopOutBlock.createInst(CFGAssert(condInfo, _, CFGUn(condInfo, NU.makeIROp("!"), ir2cfgExpr(cond)), false))
+            loopOutBlock.createInst(CFGAssert(condInfo, _, CFGUn(NU.makeIROp("!"), ir2cfgExpr(cond)), false))
         }
         /* add edge from tail to loop head */
         cfg.addEdge(tailBlock, headBlock)
@@ -582,8 +582,8 @@ object DefaultCFGBuilder extends CFGBuilder {
     mem match {
       case IRField(_, prop, expr) =>
         val info = makeInfo(mem)
-        val lhsExpr: CFGVarRef = CFGVarRef(info, id2cfgId(lhs)) // TODO not exact info
-        val indexExpr: CFGString = CFGString(makeInfo(prop), prop.uniqueName)
+        val lhsExpr: CFGVarRef = CFGVarRef(id2cfgId(lhs))
+        val indexExpr: CFGString = CFGString(prop.uniqueName)
         block.createInst(CFGStore(info, _, lhsExpr, indexExpr, ir2cfgExpr(expr)))
       case getOrSet =>
         excLog.signal(NotSupportedIRError(getOrSet))
@@ -592,40 +592,39 @@ object DefaultCFGBuilder extends CFGBuilder {
 
   /* elem rule : CFGNodeInfo x IRExpr x CFGNormalBlock x IRId x Int -> Unit */
   private def translateElement(info: CFGNodeInfo, elem: IRExpr, block: CFGNormalBlock, lhs: IRId, index: Int): Unit = {
-    val lhsExpr: CFGExpr = CFGVarRef(info, id2cfgId(lhs))
-    val str = CFGString(info, index.toString) // TODO not exact info
+    val lhsExpr: CFGExpr = CFGVarRef(id2cfgId(lhs))
+    val str = CFGString(index.toString)
     block.createInst(CFGStore(info, _, lhsExpr, str, ir2cfgExpr(elem)))
     ()
   }
 
   /* elem rule : CFGNodeInfo x Double x CFGNormalBlock x IRId x Int -> Unit */
   private def translateDoubleElement(info: CFGNodeInfo, elem: Double, block: CFGNormalBlock, lhs: IRId, index: Int): Unit = {
-    val lhsExpr: CFGExpr = CFGVarRef(info, id2cfgId(lhs))
-    val str = CFGString(info, index.toString) // TODO not exact info
-    val num = CFGNumber(info, elem.toString, elem.doubleValue) // TODO not exact info
+    val lhsExpr: CFGExpr = CFGVarRef(id2cfgId(lhs))
+    val str = CFGString(index.toString)
+    val num = CFGNumber(elem.toString, elem.doubleValue)
     block.createInst(CFGStore(info, _, lhsExpr, str, num))
     ()
   }
 
   private def isInternalCall(fname: String): Boolean = NU.isGlobalName(fname)
   private def ir2cfgExpr(expr: IRExpr): CFGExpr = {
-    val info = makeInfo(expr)
     expr match {
       /* PEI : id lookup */
       case IRLoad(_, obj, index) =>
-        CFGLoad(info, id2cfgExpr(obj), ir2cfgExpr(index))
+        CFGLoad(id2cfgExpr(obj), ir2cfgExpr(index))
       /* PEI : op \in {instanceof, in}, id lookup */
       case IRBin(_, first, op, second) =>
-        CFGBin(info, ir2cfgExpr(first), op, ir2cfgExpr(second))
+        CFGBin(ir2cfgExpr(first), op, ir2cfgExpr(second))
       /* PEI : id lookup */
       case IRUn(_, op, expr) =>
-        CFGUn(info, op, ir2cfgExpr(expr))
-      case id: IRId => CFGVarRef(info, id2cfgId(id))
-      case IRThis(_) => CFGThis(info)
-      case IRNumber(_, text, num) => CFGNumber(info, text, num.doubleValue)
-      case IRString(_, str) => CFGString(info, str)
-      case IRBool(_, bool) => CFGBool(info, bool)
-      case IRNull(_) => CFGNull(info)
+        CFGUn(op, ir2cfgExpr(expr))
+      case id: IRId => CFGVarRef(id2cfgId(id))
+      case IRThis(_) => CFGThis()
+      case IRNumber(_, text, num) => CFGNumber(text, num.doubleValue)
+      case IRString(_, str) => CFGString(str)
+      case IRBool(_, bool) => CFGBool(bool)
+      case IRNull(_) => CFGNull()
     }
   }
 
@@ -657,7 +656,7 @@ object DefaultCFGBuilder extends CFGBuilder {
   }
 
   // IR id to CFG expr
-  private def id2cfgExpr(id: IRId): CFGExpr = CFGVarRef(makeInfo(id), id2cfgId(id))
+  private def id2cfgExpr(id: IRId): CFGExpr = CFGVarRef(id2cfgId(id))
 
   // IR id list to CFG id list
   private def idList2cfgIdList(id: List[IRId]): List[CFGId] = id.map(id2cfgId)
@@ -667,7 +666,6 @@ object DefaultCFGBuilder extends CFGBuilder {
     val text: String = id.uniqueName
     cfgIdMap.getOrElse(text, {
       val name: String = getUniqueName(text)
-      val info = makeInfo(id)
       val cfgId: CFGId = id match {
         case IRUserId(_, originName, uniqueName, isGlobal, isWith) =>
           val kind: VarKind = if (isGlobal) GlobalVar
@@ -675,14 +673,14 @@ object DefaultCFGBuilder extends CFGBuilder {
             if (catchVarMap(text)) CapturedCatchVar
             else CapturedVar
           } else PureLocalVar
-          CFGUserId(info, name, kind, originName, isWith)
+          CFGUserId(name, kind, originName, isWith)
         case IRTmpId(_, originalName, uniqueName, isGlobal) =>
-          if (isGlobal) CFGTempId(info, name, GlobalVar)
-          else if (text.startsWith("<>arguments<>")) CFGUserId(info, name, PureLocalVar, "arguments", false)
-          else CFGTempId(info, name, PureLocalVar)
+          if (isGlobal) CFGTempId(name, GlobalVar)
+          else if (text.startsWith("<>arguments<>")) CFGUserId(name, PureLocalVar, "arguments", false)
+          else CFGTempId(name, PureLocalVar)
       }
       cfgId match {
-        case CFGUserId(_, _, kind, _, _) if kind == CapturedCatchVar || kind == CapturedVar => currentFunc.addCaptured(cfgId)
+        case CFGUserId(_, kind, _, _) if kind == CapturedCatchVar || kind == CapturedVar => currentFunc.addCaptured(cfgId)
         case _ =>
       }
       cfgIdMap(text) = cfgId

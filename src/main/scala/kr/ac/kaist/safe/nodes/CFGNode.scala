@@ -279,81 +279,69 @@ case class CFGConstruct(
 // CFG Expression
 ////////////////////////////////////////////////////////////////////////////////
 
-sealed abstract class CFGExpr(override val info: CFGNodeInfo)
-  extends CFGNode(info)
+sealed abstract class CFGExpr
 
 // variable reference
 case class CFGVarRef(
-    override val info: CFGNodeInfo,
     id: CFGId
-) extends CFGExpr(info) {
+) extends CFGExpr {
   override def toString: String = s"$id"
 }
 
 // binary operation
 case class CFGBin(
-    override val info: CFGNodeInfo,
     first: CFGExpr,
     op: IROp,
     second: CFGExpr
-) extends CFGExpr(info) {
+) extends CFGExpr {
   override def toString: String = { val text = op.text; s"$first $text $second" }
 }
 
 // unary operation
 case class CFGUn(
-    override val info: CFGNodeInfo,
     op: IROp,
     expr: CFGExpr
-) extends CFGExpr(info) {
+) extends CFGExpr {
   override def toString: String = { val text = op.text; s"$text $expr" }
 }
 
 // load
 case class CFGLoad(
-    override val info: CFGNodeInfo,
     obj: CFGExpr,
     index: CFGExpr
-) extends CFGExpr(info) {
+) extends CFGExpr {
   override def toString: String = s"$obj[$index]"
 }
 
 // this
-case class CFGThis(
-    override val info: CFGNodeInfo
-) extends CFGExpr(info) {
+case class CFGThis() extends CFGExpr {
   override def toString: String = "this"
 }
 
 // number
 case class CFGNumber(
-    override val info: CFGNodeInfo,
     text: String,
     num: Double
-) extends CFGExpr(info) {
+) extends CFGExpr {
   override def toString: String = text
 }
 
 // string
 case class CFGString(
-    override val info: CFGNodeInfo,
     str: String
-) extends CFGExpr(info) {
+) extends CFGExpr {
   override def toString: String = "\"" + NodeUtil.pp(str) + "\""
 }
 
 // boolean
 case class CFGBool(
-    override val info: CFGNodeInfo,
     bool: Boolean
-) extends CFGExpr(info) {
+) extends CFGExpr {
   override def toString: String = if (bool) "true" else "false"
 }
 
 // null
-case class CFGNull(
-    override val info: CFGNodeInfo
-) extends CFGExpr(info) {
+case class CFGNull() extends CFGExpr {
   override def toString: String = "null"
 }
 
@@ -362,26 +350,23 @@ case class CFGNull(
 ////////////////////////////////////////////////////////////////////////////////
 
 sealed abstract class CFGId(
-  override val info: CFGNodeInfo,
   val text: String,
   val kind: VarKind
-) extends CFGNode(info)
+)
 
 case class CFGUserId(
-    override val info: CFGNodeInfo,
     override val text: String,
     override val kind: VarKind,
     originalName: String,
     fromWith: Boolean
-) extends CFGId(info, text, kind) {
+) extends CFGId(text, kind) {
   override def toString: String = NodeUtil.pp(text)
 }
 
 case class CFGTempId(
-    override val info: CFGNodeInfo,
     override val text: String,
     override val kind: VarKind
-) extends CFGId(info, text, kind) {
+) extends CFGId(text, kind) {
   override def toString: String = NodeUtil.pp(text)
 }
 
