@@ -13,75 +13,69 @@ package kr.ac.kaist.safe.config
 
 import kr.ac.kaist.safe.phase.Phase
 import scala.util.parsing.combinator._
+// Rename Success and Failure to avoid name conflicts with ParseResult
+import scala.util.{ Try, Success => Succ, Failure => Fail }
 
 object ArgParse {
-  def apply(args: List[String]): Option[(Config, Phase)] = args match {
+  def apply(args: List[String]): Try[(Config, Phase)] = args match {
     case str :: args => Command.cmdMap.get(str) match {
       case Some(cmd) =>
         val config = Config(cmd)
         val phase = cmd.phaseHelper.create
         ArgParser(config, phase, args)
-      case None => noCmdError(str)
+      case None => Fail(NoCmdError(str))
     }
-    case _ => noInputError
+    case _ => Fail(NoInputError())
   }
 
   // Argument parser by using Scala RegexParsers.
   private object ArgParser extends RegexParsers {
-    def apply(config: Config, phase: Phase, args: List[String]): Option[(Config, Phase)] = {
+    def apply(config: Config, phase: Phase, args: List[String]): Try[(Config, Phase)] = {
       (config.getOptMap, phase.getOptMap) match {
-        case (Some(c), Some(p)) if (c.keySet intersect p.keySet).isEmpty =>
-          val success = Some(())
-          val cmd = config.command
+        case (Succ(c), Succ(p)) if (c.keySet intersect p.keySet).isEmpty =>
+          val success = Succ(())
+          val cmd = config.command.toString
           val optMap = c ++ p
 
           // Basic parsing rules.
           val str = ".*".r ^^ { s => s }
-          val optError = ("-" ~> "[^=]+".r <~ "=") ~ str ^^ { case o ~ s => noOptError(o, cmd) }
-          val simpleOptError = ("-" ~> str) ^^ { o => noOptError(o, cmd) }
-          val fileName = str ^^ { s => config.fileNames = s :: config.fileNames; success }
+          val optError: Parser[Try[Unit]] = ("-" ~> "[^=]+".r <~ "=") ~ str ^^ { case o ~ s => Fail(NoOptError(o, cmd)) }
+          val simpleOptError: Parser[Try[Unit]] = ("-" ~> str) ^^ { o => Fail(NoOptError(o, cmd)) }
+          val fileName: Parser[Try[Unit]] = str ^^ { s => config.fileNames = s :: config.fileNames; success }
 
           // Create a parser.
-          val parser: Parser[Option[Unit]] = optMap.foldRight(
+          val parser: Parser[Try[Unit]] = optMap.foldRight(
             phrase(optError) | phrase(simpleOptError) | phrase(fileName)
           ) {
               case ((opt, list), prev) => list.foldRight(prev) {
                 case ((optRegex, argRegex, fun), prev) =>
-                  lazy val rule = optRegex ~ argRegex ^^ {
-                    case _ ~ s => fun(s) match {
-                      case Some(_) => success
-                      case None => None
-                    }
+                  lazy val rule: Parser[Try[Unit]] = optRegex ~ argRegex ^^ {
+                    case _ ~ s => Try(fun(s).getOrElse(()))
                   }
                   phrase(rule) | prev
               }
             }
 
           // Parsing arguments.
-          args.foldLeft[Option[Unit]](success) {
-            case (result, arg) => result match {
-              case Some(_) => parse(parser, arg).get
-              case None => None
-            }
+          args.foldLeft[Try[Unit]](success) {
+            case (result, arg) => result.map(_ => parse(parser, arg).get)
           }.map(_ => (config, phase))
-        case _ => optConflictError
+        case _ =>
+          Fail(OptConflictError())
       }
     }
   }
 
-  // Print an error message and return None.
-  private def error(msg: String): None.type = {
-    Console.err.println(msg)
-    None
-  }
-
-  // Errors.
-  private def noInputError: None.type = error("Please input a command.")
-  private def noCmdError(str: String): None.type =
-    error("Command '" + str + "' does not exist.")
-  private def noOptError(str: String, cmd: Command): None.type =
-    error("The option '-" + str + "' is not available for the command '" + cmd + "'.")
-  private def noOptArgError(opt: String, str: String): None.type =
-    error("The option '-" + opt + "' cannot have the value '" + str + "'.")
-  private def optConflictError: None.type = error("Config option conflict.")
+  sealed abstract class ArgParseError(msg: String) extends Error(msg)
+  case class NoCmdError(str: String) extends ArgParseError({
+    s"Command '$str' does not exist."
+  })
+  case class NoInputError() extends ArgParseError("Please input a command.")
+  case class NoOptError(str: String, cmd: String) extends ArgParseError({
+    s"The option '-$str' is not available for the command '$cmd'."
+  })
+  case class NoOptArgError(opt: String, str: String) extends ArgParseError({
+    s"The option '-$opt' cannot have the value '$str'."
+  })
+  case class OptConflictError() extends ArgParseError("Config option conflict.")
 }

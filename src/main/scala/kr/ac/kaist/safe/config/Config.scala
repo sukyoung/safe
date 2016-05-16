@@ -34,10 +34,7 @@ object Config {
   val MAX_INST_PRINT_SIZE = 10000
 
   // Base project directory root
-  val BASE_DIR = System.getenv("SAFE_HOME") match {
-    case null | "" => throw new Error("Could not find SAFE_HOME.")
-    case s => s
-  }
+  val BASE_DIR = System.getenv("SAFE_HOME")
 
   // Predefined variables
   val PRED_VARS = List(

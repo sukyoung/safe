@@ -41,14 +41,10 @@ public Program File =
      };
 void initParser = w { initParser(); };
 void closeParser = w EndOfFile
-     { try {
-           // revert to the original value for NodeUtil.keepComments
-           NodeUtil.setKeepComments(keepComments);
-           writer.close();
-           fw.close();
-       } catch (IOException error) {
-           throw new Error("Closing a log file for the parser failed!");
-       }
+     { // revert to the original value for NodeUtil.keepComments
+       NodeUtil.setKeepComments(keepComments);
+       writer.close();
+       fw.close();
      };
 
 private String UseStrictDirectives =

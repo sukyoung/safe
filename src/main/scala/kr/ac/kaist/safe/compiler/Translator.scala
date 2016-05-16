@@ -254,6 +254,58 @@ class Translator(program: Program) {
   def isObject(ast: ASTNode, lhs: IRId, id: IRId): IRInternalCall =
     new IRInternalCall(falseInfo(ast), lhs, makeTId(ast, NU.freshGlobalName("isObject"), true), id, None)
 
+  def unescapeJava(s: String): String =
+    if (-1 == s.indexOf('\\')) s
+    else {
+      val length = s.length
+      val buf = new StringBuilder(length)
+      var i = 0
+      while (i < length) {
+        var c = s.charAt(i)
+        if ('\\' != c) {
+          buf.append(c)
+          i += 1
+        } else {
+          i += 1
+          if (i >= length) {
+            throw new IllegalArgumentException("incomplete escape sequence")
+          }
+          c = s.charAt(i)
+          c match {
+            case '"' => buf.append('"')
+            case '\'' => buf.append('\'')
+            case '\\' => buf.append('\\')
+            case 'b' => buf.append('\b')
+            case 'f' => buf.append('\f')
+            case 'n' => buf.append('\n')
+            case 'r' => buf.append('\r')
+            case 't' => buf.append('\t')
+            case 'v' => buf.append('\u000b')
+            case 'x' =>
+              i += 2
+              if (i >= length) {
+                throw new IllegalArgumentException("incomplete universal character" +
+                  " name " + s.substring(i - 1))
+              }
+              val n = Integer.parseInt(s.substring(i - 1, i + 1), 16)
+              buf.append(n.asInstanceOf[Char])
+            case 'u' =>
+              i += 4
+              if (i >= length) {
+                throw new IllegalArgumentException("incomplete universal character" +
+                  " name " + s.substring(i - 3))
+              }
+              val n = Integer.parseInt(s.substring(i - 3, i + 1), 16)
+              buf.append(n.asInstanceOf[Char])
+            case c if NU.lineTerminating(c) =>
+            case _ => buf.append(c)
+          }
+          i += 1
+        }
+      }
+      buf.toString
+    }
+
   /* Environment for renaming fresh labels and variables
    * created during the AST->IR translation.
    * Only the following identifiers are bound in the environment:
@@ -1275,7 +1327,7 @@ class Translator(program: Program) {
     case StringLiteral(info, _, str, isRE) =>
       (List(),
         if (isRE) makeString(true, e, str)
-        else makeString(true, e, NU.unescapeJava(str)))
+        else makeString(true, e, unescapeJava(str)))
   }
 
   def prop2ir(prop: Property): IRId = prop match {

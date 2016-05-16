@@ -11,6 +11,7 @@
 
 package kr.ac.kaist.safe.phase
 
+import scala.util.{ Try, Success }
 import kr.ac.kaist.safe.config.{ Config, ConfigOption }
 
 abstract class Phase(
@@ -18,9 +19,9 @@ abstract class Phase(
     mayConfig: Option[ConfigOption]
 ) {
   def apply(config: Config): Unit = ()
-  def getOptMap: Option[OptRegexMap] = mayConfig match {
+  def getOptMap: Try[OptRegexMap] = mayConfig match {
     case Some(config) => config.getOptMap
-    case None => Some(Map())
+    case None => Success(Map())
   }
 }
 

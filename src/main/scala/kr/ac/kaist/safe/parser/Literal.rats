@@ -80,14 +80,14 @@ private NumberLiteral DecimalLiteral =
        if (a2 == null) a2 = "";
        if (a3 == null) a3 = "";
        if (a4 == null) a4 = "";
-       yyValue = NodeUtil.makeNumberLiteral(writer, span, a1, a2, a3, a4);
+       yyValue = makeNumberLiteral(writer, span, a1, a2, a3, a4);
      }
   / dot a1:DecimalDigits? a2:ExponentPart?
     &{ (a1 != null) && (Character.isDigit(a1.charAt(0)) || a1.charAt(0) == '.') }
      { Span span = createSpan(yyStart,yyCount);
        if (a1 == null) a1 = "";
        if (a2 == null) a2 = "";
-       yyValue = NodeUtil.makeNumberLiteral(writer, span, "", ".", a1, a2);
+       yyValue = makeNumberLiteral(writer, span, "", ".", a1, a2);
      };
 transient String DecimalDigits = [0-9]+ ;
 

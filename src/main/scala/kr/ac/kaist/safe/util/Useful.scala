@@ -11,6 +11,7 @@
 
 package kr.ac.kaist.safe.util
 
+import scala.util.Try
 import java.io.BufferedWriter
 import java.io.File
 import java.io.FileWriter
@@ -25,44 +26,9 @@ object Useful {
     result
   }
 
-  def filenameToWriters(fileName: String): (FileWriter, BufferedWriter) =
-    try {
-      val fw = filenameToFileWriter(fileName)
-      (fw, new BufferedWriter(fw))
-    } catch {
-      case ex: IOException =>
-        throw new IOException("IOException " + ex + "while writing " + fileName)
-    }
+  def fileNameToWriters(fileName: String): Try[(FileWriter, BufferedWriter)] =
+    fileNameToFileWriter(fileName).map(fw => (fw, new BufferedWriter(fw)))
 
-  def filenameToFileWriter(fileName: String): FileWriter =
-    try {
-      new FileWriter(fileName)
-    } catch {
-      case ex: IOException =>
-        // Probably the directory did not exist, therefore, make it so.
-        // ONLY DEAL IN SLASHES.  THAT WORKS WITH WINDOWS.
-        val lastSlash = fileName.lastIndexOf('/')
-        if (lastSlash == -1) throw ex
-        val dir = fileName.substring(0, lastSlash)
-        ensureDirectoryExists(dir)
-        new FileWriter(fileName)
-    }
-
-  def ensureDirectoryExists(s: String): String = {
-    val f = new File(s)
-    if (f.exists) {
-      if (f.isDirectory) {
-        // ok
-      } else {
-        throw new Error("Necessary 'directory' " + s + " is not a directory.")
-      }
-    } else {
-      if (f.mkdirs) {
-        // ok
-      } else {
-        throw new Error("Failed to create directory " + s)
-      }
-    }
-    s
-  }
+  def fileNameToFileWriter(fileName: String): Try[FileWriter] =
+    Try(new FileWriter(fileName))
 }

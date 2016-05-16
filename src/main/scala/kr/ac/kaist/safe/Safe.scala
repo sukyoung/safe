@@ -11,6 +11,7 @@
 
 package kr.ac.kaist.safe
 
+import scala.util.{ Try, Success, Failure }
 import kr.ac.kaist.safe.phase.Help
 import kr.ac.kaist.safe.config.ArgParse
 
@@ -21,7 +22,7 @@ object Safe {
   def main(tokens: Array[String]): Unit = {
     // Get the config and its corresponding phase from the shell parameters.
     ArgParse(tokens.toList) match {
-      case Some((config, phase)) =>
+      case Success((config, phase)) =>
         // Set the start time.
         val startTime = System.currentTimeMillis
 
@@ -34,7 +35,9 @@ object Safe {
           println("Command " + config.command + " took " + duration + "ms.")
         }
       // Print the usage message if parsing arguments failed.
-      case None => Help.printUsageMessage
+      case Failure(ex) =>
+        Console.err.print(ex.toString)
+        Help.printUsageMessage
     }
   }
 }

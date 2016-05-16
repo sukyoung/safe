@@ -50,7 +50,7 @@ import Spacing;
  * | debugger w ;
  */
 private transient void NumericLiteral =
-     a1:DecimalDigits !(idrest) { log(a1); } ;
+     a1:DecimalDigits !(idrest) { log(writer, a1); } ;
 private transient String DecimalDigits = [0-9]+ ;
 private transient void NumericLiterals =
      NumericLiteral w (void:comma w NumericLiteral w)+ ;

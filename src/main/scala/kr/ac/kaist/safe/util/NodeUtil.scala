@@ -16,10 +16,6 @@ import kr.ac.kaist.safe.nodes._
 import kr.ac.kaist.safe.config.Config
 import java.io.BufferedWriter
 import java.io.IOException
-import java.lang.{ Double => JDouble }
-import java.lang.{ Integer => JInt }
-import java.math.BigDecimal
-import java.math.BigInteger
 import scala.collection.immutable.HashMap
 
 object NodeUtil {
@@ -206,58 +202,6 @@ object NodeUtil {
   def makeNoOp(info: ASTNodeInfo, desc: String): NoOp =
     new NoOp(info, desc)
 
-  /*
-     * DecimalLiteral ::=
-     *   DecimalIntegerLiteral . DecimalDigits? ExponentPart?
-     * | DecimalIntegerLiteral ExponentPart?
-     * | . DecimalDigits ExponentPart?
-     *
-     * DecimalIntegerLiteral ::=
-     *   0
-     * | NonZeroDigit DecimalDigits?
-     *
-     * DecimalDigit ::= 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
-     *
-     * NonZeroDigit ::= 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
-     *
-     * ExponentPart ::= (e | E) (+ | -)? DecimalDigit+
-     */
-  def makeNumberLiteral(writer: BufferedWriter, span: Span,
-    beforeDot: String, dot: String,
-    afterDot: String, exponent: String): NumberLiteral = {
-    if ((beforeDot + dot).equals("") ||
-      ((beforeDot + afterDot).equals("") && !dot.equals("")) ||
-      (!beforeDot.equals("") && dot.equals("") && !afterDot.equals("")))
-      log(writer, "Syntax Error: expected a numeral but got " +
-        beforeDot + dot + afterDot + exponent)
-    if (!beforeDot.equals("") && !beforeDot.equals("0") && beforeDot.charAt(0) == '0')
-      log(writer, "Syntax Error: a numeral begins with 0.")
-    if (dot.equals("")) {
-      if (exponent.equals("")) new IntLiteral(makeASTNodeInfo(span), new BigInteger(beforeDot), 10)
-      else {
-        var exp = 0
-        val second = exponent.charAt(1)
-        if (Character.isDigit(second))
-          exp = JInt.parseInt(exponent.substring(1))
-        else if (second.equals('-'))
-          exp = -1 * JInt.parseInt(exponent.substring(2))
-        else exp = JInt.parseInt(exponent.substring(2))
-        if (exp < 0) {
-          var str = beforeDot + dot + afterDot + exponent
-          str = new BigDecimal(str).toString
-          new DoubleLiteral(makeASTNodeInfo(span), str, JDouble.valueOf(str))
-        } else new IntLiteral(
-          makeASTNodeInfo(span),
-          new BigInteger(beforeDot).multiply(BigInteger.TEN.pow(exp)),
-          10
-        )
-      }
-    } else {
-      val str = beforeDot + dot + afterDot + exponent
-      new DoubleLiteral(makeASTNodeInfo(span), str, JDouble.valueOf(str))
-    }
-  }
-
   def unwrapParen(expr: Expr): Expr = expr match {
     case Parenthesized(info, body) => body
     case _ => expr
@@ -284,58 +228,6 @@ object NodeUtil {
   }
 
   def escape(s: String): String = s.replaceAll("\\\\", "\\\\\\\\")
-
-  def unescapeJava(s: String): String =
-    if (-1 == s.indexOf('\\')) s
-    else {
-      val length = s.length
-      val buf = new StringBuilder(length)
-      var i = 0
-      while (i < length) {
-        var c = s.charAt(i)
-        if ('\\' != c) {
-          buf.append(c)
-          i += 1
-        } else {
-          i += 1
-          if (i >= length) {
-            throw new IllegalArgumentException("incomplete escape sequence")
-          }
-          c = s.charAt(i)
-          c match {
-            case '"' => buf.append('"')
-            case '\'' => buf.append('\'')
-            case '\\' => buf.append('\\')
-            case 'b' => buf.append('\b')
-            case 'f' => buf.append('\f')
-            case 'n' => buf.append('\n')
-            case 'r' => buf.append('\r')
-            case 't' => buf.append('\t')
-            case 'v' => buf.append('\u000b')
-            case 'x' =>
-              i += 2
-              if (i >= length) {
-                throw new IllegalArgumentException("incomplete universal character" +
-                  " name " + s.substring(i - 1))
-              }
-              val n = Integer.parseInt(s.substring(i - 1, i + 1), 16)
-              buf.append(n.asInstanceOf[Char])
-            case 'u' =>
-              i += 4
-              if (i >= length) {
-                throw new IllegalArgumentException("incomplete universal character" +
-                  " name " + s.substring(i - 3))
-              }
-              val n = Integer.parseInt(s.substring(i - 3, i + 1), 16)
-              buf.append(n.asInstanceOf[Char])
-            case c if lineTerminating(c) =>
-            case _ => buf.append(c)
-          }
-          i += 1
-        }
-      }
-      buf.toString
-    }
 
   def lineTerminating(c: Char): Boolean =
     List('\u000a', '\u2028', '\u2029', '\u000d').contains(c)
@@ -380,14 +272,6 @@ object NodeUtil {
     case Parenthesized(info, body) => new Span(span(body).begin, finish.end)
     case _ => finish
   }
-
-  def log(writer: BufferedWriter, msg: String): Unit =
-    try {
-      writer.write(msg + Config.LINE_SEP)
-    } catch {
-      case e: IOException =>
-        sys.error("Writing to a log file for the parser failed!")
-    }
 
   def isOneline(s: Stmt): Boolean = s match {
     case _: ABlock => false

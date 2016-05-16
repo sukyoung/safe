@@ -25,11 +25,6 @@ class UIDObject {
       node.getClass.getSimpleName + " at " + NodeUtil.span(node).begin.at
     } else super.toString
 
-  def at: String =
-    if (this.isInstanceOf[ASTNode])
-      NodeUtil.span(this.asInstanceOf[ASTNode]).toString
-    else throw new Error("Class " + this.getClass.toString + " needs to a case in UIDObject.at")
-
   private val seedUID = 0x7b546b0e12fd2559L
   private var prevUID = seedUID
 

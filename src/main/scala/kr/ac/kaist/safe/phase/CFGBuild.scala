@@ -12,7 +12,7 @@
 package kr.ac.kaist.safe.phase
 
 import java.io.{ BufferedWriter, FileWriter, IOException }
-
+import scala.util.{ Success, Failure }
 import kr.ac.kaist.safe.config.{ Config, ConfigOption, OptionKind, BoolOption, NumOption, StrOption }
 import kr.ac.kaist.safe.errors.ExcLog
 import kr.ac.kaist.safe.cfg_builder.{ DefaultCFGBuilder, CFG }
@@ -44,17 +44,17 @@ case class CFGBuild(
     // Pretty print to file.
     val dump: String = cfg.dump
     cfgBuildConfig.outFile match {
-      case Some(out) =>
-        val (fw, writer): (FileWriter, BufferedWriter) = Useful.filenameToWriters(out)
-        writer.write(dump)
-        writer.close
-        fw.close
-        println("Dumped CFG to " + out)
-      case None =>
+      case Some(out) => Useful.fileNameToWriters(out) match {
+        case Success((fw, writer)) =>
+          writer.write(dump)
+          writer.close; fw.close
+          println("Dumped CFG to " + out)
+          Some(cfg)
+        case Failure(_) =>
+          Some(cfg)
+      }
+      case None => Some(cfg)
     }
-
-    // Return CFG.
-    Some(cfg)
   }
 }
 

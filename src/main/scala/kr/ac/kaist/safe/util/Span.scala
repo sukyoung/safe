@@ -72,7 +72,7 @@ class Span(b: SourceLoc, e: SourceLoc) extends UIDObject with Serializable {
   def toStringWithoutFiles: String =
     appendToStr(new StringBuilder, false).toString
 
-  override def at: String = toString
+  def at: String = toString
 
   def stringName: String = ""
 
