@@ -11,7 +11,6 @@
 
 package kr.ac.kaist.safe.errors.error
 
-import kr.ac.kaist.safe.nodes.NodeInfo
 import kr.ac.kaist.safe.util.Span
 
 sealed abstract class ParseError(msg: String, spanOpt: Option[Span]) extends SafeError(spanOpt match {
@@ -36,12 +35,4 @@ case class ParserError(msg: String, span: Span) extends ParseError({
 
 case class AlreadyMergedSourceError(span: Span) extends ParseError({
   "Sources are already merged."
-}, Some(span))
-
-case class BeforeHoisterError(msg: String, info: NodeInfo) extends ParseError({
-  s"$msg before the hoisting phase should not have hoisted declarations."
-}, Some(info.span))
-
-case class EvalArgSyntaxError(msg: String, span: Span) extends ParseError({
-  s"Calling the eval function with an illegal syntax: '$msg'."
 }, Some(span))
