@@ -61,10 +61,10 @@ class CoreTest extends FlatSpec {
     }
   }
 
-  def astRewriteTest(astOpt: Option[Program], testName: String): Unit = {
-    astOpt match {
-      case None => assert(false)
-      case Some(program) =>
+  def astRewriteTest(ast: Try[Program], testName: String): Unit = {
+    ast match {
+      case Failure(_) => assert(false)
+      case Success(program) =>
         val result = readFile(testName)
         assert(result == normalized(program.toString(0)))
     }
@@ -104,16 +104,13 @@ class CoreTest extends FlatSpec {
     val pgm = parse.parse(config)
     registerTest("[Parse] " + filename, ParseTest) { parseTest(pgm) }
 
-    val astOpt = pgm match {
-      case Success(program) => astRewrite.rewrite(config, program)
-      case Failure(_) => None
-    }
+    val ast = pgm.flatMap(astRewrite.rewrite(config, _))
     val astName = resDir + "/astRewrite/" + name + ".test"
-    registerTest("[ASTRewrite] " + filename, ASTRewriteTest) { astRewriteTest(astOpt, astName) }
+    registerTest("[ASTRewrite] " + filename, ASTRewriteTest) { astRewriteTest(ast, astName) }
 
-    val irOpt = astOpt match {
-      case Some(program) => compile.compile(config, program)
-      case None => None
+    val irOpt = ast match {
+      case Success(program) => compile.compile(config, program)
+      case Failure(_) => None
     }
     val compileName = resDir + "/compile/" + name + ".test"
     registerTest("[Compile]" + filename, CompileTest) { compileTest(irOpt, compileName) }

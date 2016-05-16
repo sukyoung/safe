@@ -292,11 +292,8 @@ class Hoister(program: Program) extends ASTWalker {
         }
 
       case fa @ FunApp(info, fun, List(StringLiteral(_, _, str, _))) if (NU.isEval(fun)) =>
-        try {
-          Parser.scriptToAST(List(("evalParse", (1, 1), str))).get
-        } catch {
-          case e: ParserError =>
-            excLog.signal(EvalArgSyntaxError(str, toSpan(fa)))
+        Parser.scriptToAST(List(("evalParse", (1, 1), str))) recover {
+          case e => excLog.signal(EvalArgSyntaxError(str, fa))
         }
         super.walk(fa)
 
@@ -559,21 +556,24 @@ class Hoister(program: Program) extends ASTWalker {
           }
         }
       Program(info, TopLevel(i, fds, vds, newProgram))
-    case (pgm: Program) => throw new BeforeHoisterError("Program", pgm.info)
+    case (pgm: Program) =>
+      excLog.signal(BeforeHoisterError("Program", pgm)); pgm
   }
 
   override def walk(node: FunDecl): FunDecl = node match {
     case FunDecl(info, Functional(j, Nil, Nil, SourceElements(i, body, str), name, params, bodyS), strict) =>
       val (fds, vds, newBody) = hoist(body, false, params, strict)
       FunDecl(info, Functional(j, fds, vds, SourceElements(i, newBody, str), name, params, bodyS), strict)
-    case (fd: FunDecl) => throw new BeforeHoisterError("Function declarations", fd.info)
+    case (fd: FunDecl) =>
+      excLog.signal(BeforeHoisterError("Function declarations", fd)); fd
   }
 
   override def walk(node: LHS): LHS = node match {
     case FunExpr(info, Functional(j, Nil, Nil, SourceElements(i, body, strict), name, params, bodyS)) =>
       val (fds, vds, newBody) = hoist(body, false, params, strict)
       FunExpr(info, Functional(j, fds, vds, SourceElements(i, newBody, strict), name, params, bodyS))
-    case (fe: FunExpr) => throw new BeforeHoisterError("Function expressions", fe.info)
+    case (fe: FunExpr) =>
+      excLog.signal(BeforeHoisterError("Function expressions", fe)); fe
     case _ => super.walk(node)
   }
 
@@ -581,11 +581,13 @@ class Hoister(program: Program) extends ASTWalker {
     case GetProp(info, prop, Functional(j, Nil, Nil, SourceElements(i, body, strict), name, params, bodyS)) =>
       val (fds, vds, newBody) = hoist(body, false, params, strict)
       GetProp(info, prop, Functional(j, fds, vds, SourceElements(i, newBody, strict), name, params, bodyS))
-    case (gp: GetProp) => throw new BeforeHoisterError("Function expressions", gp.info)
+    case (gp: GetProp) =>
+      excLog.signal(BeforeHoisterError("Function expressions", gp)); gp
     case SetProp(info, prop, Functional(j, Nil, Nil, SourceElements(i, body, strict), name, params, bodyS)) =>
       val (fds, vds, newBody) = hoist(body, false, params, strict)
       SetProp(info, prop, Functional(j, fds, vds, SourceElements(i, newBody, strict), name, params, bodyS))
-    case (sp: SetProp) => throw new BeforeHoisterError("Function expressions", sp.info)
+    case (sp: SetProp) =>
+      excLog.signal(BeforeHoisterError("Function expressions", sp)); sp
     case _ => super.walk(node)
   }
 

@@ -12,7 +12,7 @@
 package kr.ac.kaist.safe.phase
 
 import java.io.{ BufferedWriter, FileWriter, IOException }
-import scala.util.{ Success, Failure }
+import scala.util.{ Try, Success, Failure }
 import kr.ac.kaist.safe.config.{ Config, ConfigOption, OptionKind, BoolOption, StrOption }
 import kr.ac.kaist.safe.ast_rewriter.{ Hoister, Disambiguator, WithRewriter }
 import kr.ac.kaist.safe.errors.ExcLog
@@ -24,21 +24,22 @@ case class ASTRewrite(
     prev: Parse = Parse(),
     astRewriteConfig: ASTRewriteConfig = ASTRewriteConfig()
 ) extends Phase(Some(prev), Some(astRewriteConfig)) {
-  override def apply(config: Config): Unit = rewrite(config)
-  def rewrite(config: Config): Option[Program] = {
-    prev.parse(config) match {
-      case Success(pgm) => rewrite(config, pgm)
-      case Failure(_) => None
-    }
+  override def apply(config: Config): Unit = rewrite(config) recover {
+    case ex => Console.err.print(ex.toString)
   }
-  def rewrite(config: Config, pgm: Program): Option[Program] = {
+  def rewrite(config: Config): Try[Program] =
+    prev.parse(config).flatMap(rewrite(config, _))
+  def rewrite(config: Config, pgm: Program): Try[Program] = {
     // Rewrite AST.
-    var program = new Hoister(pgm).doit
+    val hoister = new Hoister(pgm)
+    var program = hoister.doit
+    var excLog: ExcLog = hoister.excLog
     val disambiguator = new Disambiguator(program)
     program = disambiguator.doit
-    var excLog: ExcLog = disambiguator.excLog
+    excLog += disambiguator.excLog
     val withRewriter: WithRewriter = new WithRewriter(program, false)
     program = withRewriter.doit
+    excLog += withRewriter.excLog
 
     // Report errors.
     if (excLog.hasError) {
@@ -48,16 +49,16 @@ case class ASTRewrite(
 
     // Pretty print to file.
     astRewriteConfig.outFile match {
-      case Some(out) => Useful.fileNameToWriters(out) match {
-        case Success((fw, writer)) =>
+      case Some(out) => Useful.fileNameToWriters(out).map { pair =>
+        {
+          val ((fw, writer)) = pair
           writer.write(program.toString(0))
           writer.close; fw.close
           println("Dumped rewritten AST to " + out)
-          Some(program)
-        case Failure(_) =>
-          Some(program)
+          program
+        }
       }
-      case None => Some(program)
+      case None => Try(program)
     }
   }
 }

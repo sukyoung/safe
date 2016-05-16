@@ -11,11 +11,19 @@
 
 package kr.ac.kaist.safe.errors.error
 
-import kr.ac.kaist.safe.nodes.{ ASTNode, Id, Member, Break, Continue, Return, LabelStmt }
+import kr.ac.kaist.safe.nodes.{ ASTNode, NodeInfo, FunApp, Id, Member, Break, Continue, Return, LabelStmt }
 
 sealed abstract class ASTRewriteError(msg: String, ast: ASTNode) extends SafeError({
   s"${ast.info.span}: $msg"
 })
+
+case class EvalArgSyntaxError(msg: String, fa: FunApp) extends ASTRewriteError({
+  s"Calling the eval function with an illegal syntax: '$msg'."
+}, fa)
+
+case class BeforeHoisterError(msg: String, ast: ASTNode) extends ASTRewriteError({
+  s"$msg before the hoisting phase should not have hoisted declarations."
+}, ast)
 
 case class IdNotBoundError(name: String, id: Id) extends ASTRewriteError({
   s"Identifier $name is not bound."

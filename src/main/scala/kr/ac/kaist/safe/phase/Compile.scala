@@ -27,8 +27,8 @@ case class Compile(
   override def apply(config: Config): Unit = compile(config)
   def compile(config: Config): Option[IRRoot] = {
     prev.rewrite(config) match {
-      case Some(pgm) => compile(config, pgm)
-      case None => None
+      case Success(pgm) => compile(config, pgm)
+      case Failure(_) => None
     }
   }
   def compile(config: Config, program: Program): Option[IRRoot] = {

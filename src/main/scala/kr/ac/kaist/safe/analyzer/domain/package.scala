@@ -37,4 +37,29 @@ package object domain {
 
   def PValue(undefval: AbsUndef, nullval: AbsNull, boolval: AbsBool, numval: AbsNumber, strval: AbsString): PValue =
     DefaultPValue(undefval, nullval, boolval, numval, strval)
+
+  ////////////////////////////////////////////////////////////////
+  // constant values
+  ////////////////////////////////////////////////////////////////
+  val STR_DEFAULT_OTHER = "@default_other"
+  val STR_DEFAULT_NUMBER = "@default_number"
+  val DEFAULT_KEYSET = Set(STR_DEFAULT_NUMBER, STR_DEFAULT_OTHER)
+
+  ////////////////////////////////////////////////////////////////
+  // string value helper functions
+  ////////////////////////////////////////////////////////////////
+  /* regexp, number string */
+  private val hex = "(0[xX][0-9a-fA-F]+)".r.pattern
+  private val exp = "[eE][+-]?[0-9]+"
+  private val dec1 = "[0-9]+\\.[0-9]*(" + exp + ")?"
+  private val dec2 = "\\.[0-9]+(" + exp + ")?"
+  private val dec3 = "[0-9]+(" + exp + ")?"
+  private val dec = "([+-]?(Infinity|(" + dec1 + ")|(" + dec2 + ")|(" + dec3 + ")))"
+  private val num_regexp = ("NaN|(" + hex + ")|(" + dec + ")").r.pattern
+
+  def isHex(str: String): Boolean =
+    hex.matcher(str).matches()
+
+  def isNum(str: String): Boolean =
+    num_regexp.matcher(str).matches()
 }

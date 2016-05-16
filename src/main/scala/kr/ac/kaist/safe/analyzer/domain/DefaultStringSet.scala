@@ -19,24 +19,6 @@ class DefaultStrSetUtil(maxSetSize: Int) extends AbsStringUtil {
   val NumStr: AbsString = DefaultStrNum
   val OtherStr: AbsString = DefaultStrOther
 
-  /* regexp, number string */
-  private val hex = "(0[xX][0-9a-fA-F]+)".r.pattern
-  private val exp = "[eE][+-]?[0-9]+"
-  private val dec1 = "[0-9]+\\.[0-9]*(" + exp + ")?"
-  private val dec2 = "\\.[0-9]+(" + exp + ")?"
-  private val dec3 = "[0-9]+(" + exp + ")?"
-  private val dec = "([+-]?(Infinity|(" + dec1 + ")|(" + dec2 + ")|(" + dec3 + ")))"
-  private val num_regexp = ("NaN|(" + hex + ")|(" + dec + ")").r.pattern
-
-  // an abstract value which stands for natural numbers(0, 1, 2, ...)
-  //  val NumTop = NumStr
-
-  def isHex(str: String): Boolean =
-    hex.matcher(str).matches()
-
-  def isNum(str: String): Boolean =
-    num_regexp.matcher(str).matches()
-
   def alpha(str: String): AbsString =
     if (str == null) DefaultStrBot
     else DefaultStrSet(IHashSet(str))
