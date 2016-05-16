@@ -65,18 +65,15 @@ class CoreTest extends FlatSpec {
     ast match {
       case Failure(_) => assert(false)
       case Success(program) =>
-        val result = readFile(testName)
-        assert(result == normalized(program.toString(0)))
+        assert(readFile(testName) == normalized(program.toString(0)))
     }
   }
 
-  def compileTest(irOpt: Option[IRRoot], testName: String): Unit = {
+  def compileTest(irOpt: Try[IRRoot], testName: String): Unit = {
     irOpt match {
-      case None => assert(false)
-      case Some(ir) =>
-        val result = readFile(testName)
-        val dump = normalized(ir.toString(0))
-        assert(result == dump)
+      case Failure(_) => assert(false)
+      case Success(ir) =>
+        assert(readFile(testName) == normalized(ir.toString(0)))
     }
   }
 
@@ -108,16 +105,13 @@ class CoreTest extends FlatSpec {
     val astName = resDir + "/astRewrite/" + name + ".test"
     registerTest("[ASTRewrite] " + filename, ASTRewriteTest) { astRewriteTest(ast, astName) }
 
-    val irOpt = ast match {
-      case Success(program) => compile.compile(config, program)
-      case Failure(_) => None
-    }
+    val ir = ast.flatMap(compile.compile(config, _))
     val compileName = resDir + "/compile/" + name + ".test"
-    registerTest("[Compile]" + filename, CompileTest) { compileTest(irOpt, compileName) }
+    registerTest("[Compile]" + filename, CompileTest) { compileTest(ir, compileName) }
 
-    val cfgOpt = irOpt match {
-      case Some(ir) => cfgBuild.cfgBuild(config, ir)
-      case None => None
+    val cfgOpt = ir match {
+      case Success(ir) => cfgBuild.cfgBuild(config, ir)
+      case _ => None
     }
     val cfgName = resDir + "/cfg/" + name + ".test"
     registerTest("[CFG]" + filename, CFGBuildTest) { cfgBuildTest(cfgOpt, cfgName) }

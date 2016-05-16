@@ -27,8 +27,8 @@ case class CFGBuild(
   override def apply(config: Config): Unit = cfgBuild(config)
   def cfgBuild(config: Config): Option[CFG] = {
     prev.compile(config) match {
-      case Some(ir) => cfgBuild(config, ir)
-      case None => None
+      case Success(ir) => cfgBuild(config, ir)
+      case _ => None
     }
   }
   def cfgBuild(config: Config, ir: IRRoot): Option[CFG] = {

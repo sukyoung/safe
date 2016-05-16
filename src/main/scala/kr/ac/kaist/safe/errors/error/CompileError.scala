@@ -11,7 +11,7 @@
 
 package kr.ac.kaist.safe.errors.error
 
-import kr.ac.kaist.safe.nodes.{ ASTNode, NoOp, Id, Label, VarDecl, UnaryAssignOpApp, InfixOpApp }
+import kr.ac.kaist.safe.nodes.{ ASTNode, NoOp, Id, Label, VarDecl, UnaryAssignOpApp, InfixOpApp, StringLiteral }
 
 sealed abstract class CompileError(msg: String, ast: ASTNode) extends SafeError({
   s"${ast.info.span}: $msg"
@@ -21,17 +21,20 @@ case class IRIdNotBoundError(name: String, ast: ASTNode) extends CompileError({
   s"Identifier $name is not bound."
 }, ast)
 case class NotUniqueIdError(id: Id) extends CompileError({
-  s"Identifiers should have a unique name after the disambiguation phase: ${id.text}"
+  s"Identifiers should have a unique name after the disambiguation phase: ${id.text}."
 }, id)
 case class NotUniqueLabelError(l: Label) extends CompileError({
-  s"Labels should have a unique name after the disambiguation phase: ${l.id.text}"
+  s"Labels should have a unique name after the disambiguation phase: ${l.id.text}."
 }, l)
 case class VarDeclNotHaveInitExprError(vd: VarDecl) extends CompileError({
   "Variable declarations should not have any initialization expressions after the disambiguation phase."
 }, vd)
 case class InvalidUnAssignOpError(u: UnaryAssignOpApp) extends CompileError({
-  s"Invalid UnaryAssignOpApp operator: ${u.op.text}"
+  s"Invalid UnaryAssignOpApp operator: ${u.op.text}."
 }, u)
 case class InvalidInfixOpAppError(infix: InfixOpApp) extends CompileError({
-  s"Infix operator ${infix.op.text} should have at least two arguments"
+  s"Infix operator ${infix.op.text} should have at least two arguments."
 }, infix)
+case class InvalidStringError(str: StringLiteral) extends CompileError({
+  s"Incomplete escape sequence ${str.escaped}."
+}, str)

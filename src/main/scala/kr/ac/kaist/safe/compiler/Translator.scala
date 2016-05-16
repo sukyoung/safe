@@ -245,7 +245,7 @@ class Translator(program: Program) {
   def isObject(ast: ASTNode, lhs: IRId, id: IRId): IRInternalCall =
     new IRInternalCall(ast, lhs, makeTId(ast, NU.freshGlobalName("isObject"), true), id, None)
 
-  def unescapeJava(s: String): String =
+  def unescapeJava(s: String, e: StringLiteral): String =
     if (-1 == s.indexOf('\\')) s
     else {
       val length = s.length
@@ -259,7 +259,7 @@ class Translator(program: Program) {
         } else {
           i += 1
           if (i >= length) {
-            throw new IllegalArgumentException("incomplete escape sequence")
+            excLog.signal(InvalidStringError(e))
           }
           c = s.charAt(i)
           c match {
@@ -275,16 +275,14 @@ class Translator(program: Program) {
             case 'x' =>
               i += 2
               if (i >= length) {
-                throw new IllegalArgumentException("incomplete universal character" +
-                  " name " + s.substring(i - 1))
+                excLog.signal(InvalidStringError(e))
               }
               val n = Integer.parseInt(s.substring(i - 1, i + 1), 16)
               buf.append(n.asInstanceOf[Char])
             case 'u' =>
               i += 4
               if (i >= length) {
-                throw new IllegalArgumentException("incomplete universal character" +
-                  " name " + s.substring(i - 3))
+                excLog.signal(InvalidStringError(e))
               }
               val n = Integer.parseInt(s.substring(i - 3, i + 1), 16)
               buf.append(n.asInstanceOf[Char])
@@ -1313,10 +1311,10 @@ class Translator(program: Program) {
     case IntLiteral(_, intVal, radix) =>
       (List(), new IRNumber(e, intVal.toString, intVal.doubleValue))
 
-    case StringLiteral(_, _, str, isRE) =>
+    case s @ StringLiteral(_, _, str, isRE) =>
       (List(),
         if (isRE) makeString(true, e, str)
-        else makeString(true, e, unescapeJava(str)))
+        else makeString(true, e, unescapeJava(str, s)))
   }
 
   def prop2ir(prop: Property): IRId = prop match {

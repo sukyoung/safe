@@ -12,7 +12,7 @@
 package kr.ac.kaist.safe.phase
 
 import java.io.{ BufferedWriter, FileWriter, IOException }
-import scala.util.{ Success, Failure }
+import scala.util.{ Try, Success, Failure }
 import kr.ac.kaist.safe.config.{ Config, ConfigOption, OptionKind, BoolOption, StrOption }
 import kr.ac.kaist.safe.errors.ExcLog
 import kr.ac.kaist.safe.compiler.Translator
@@ -24,17 +24,15 @@ case class Compile(
     prev: ASTRewrite = ASTRewrite(),
     compileConfig: CompileConfig = CompileConfig()
 ) extends Phase(Some(prev), Some(compileConfig)) {
-  override def apply(config: Config): Unit = compile(config)
-  def compile(config: Config): Option[IRRoot] = {
-    prev.rewrite(config) match {
-      case Success(pgm) => compile(config, pgm)
-      case Failure(_) => None
-    }
+  override def apply(config: Config): Unit = compile(config) recover {
+    case ex => Console.err.print(ex.toString)
   }
-  def compile(config: Config, program: Program): Option[IRRoot] = {
+  def compile(config: Config): Try[IRRoot] =
+    prev.rewrite(config).flatMap(compile(config, _))
+  def compile(config: Config, program: Program): Try[IRRoot] = {
     // Translate AST -> IR.
     val translator = new Translator(program)
-    val ir = translator.doit.asInstanceOf[IRRoot]
+    val ir = translator.doit
     val excLog = translator.excLog
 
     // Report errors.
@@ -44,18 +42,17 @@ case class Compile(
     }
 
     // Pretty print to file.
-    val ircode = ir.toString(0)
     compileConfig.outFile match {
-      case Some(out) => Useful.fileNameToWriters(out) match {
-        case Success((fw, writer)) =>
-          writer.write(ircode)
+      case Some(out) => Useful.fileNameToWriters(out).map { pair =>
+        {
+          val ((fw, writer)) = pair
+          writer.write(ir.toString(0))
           writer.close; fw.close
           println("Dumped IR to " + out)
-          Some(ir)
-        case Failure(_) =>
-          Some(ir)
+          ir
+        }
       }
-      case None => Some(ir)
+      case None => Try(ir)
     }
   }
 }
