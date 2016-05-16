@@ -12,10 +12,10 @@
 package kr.ac.kaist.safe.cfg_builder
 
 import kr.ac.kaist.safe.cfg_builder.EdgeType.{ EdgeType, EdgeNormal }
-import kr.ac.kaist.safe.nodes.{ CFGInst, CFGId, CFGNodeInfo }
+import kr.ac.kaist.safe.nodes.{ CFGInst, CFGId, IRNode }
 import scala.collection.mutable.{ Map => MMap, HashMap => MHashMap }
 
-class CFG(globalVars: List[CFGId], info: CFGNodeInfo) {
+class CFG(globalVars: List[CFGId], ir: IRNode) {
   // all functions in this cfg
   private var userFuncs: List[CFGFunction] = Nil
   private var modelFuncs: List[CFGFunction] = Nil
@@ -29,9 +29,9 @@ class CFG(globalVars: List[CFGId], info: CFGNodeInfo) {
 
   // create function
   def createFunction(argumentsName: String, argVars: List[CFGId], localVars: List[CFGId],
-    name: String, info: CFGNodeInfo, body: String, isUser: Boolean): CFGFunction = {
+    name: String, ir: IRNode, body: String, isUser: Boolean): CFGFunction = {
     val func: CFGFunction =
-      CFGFunction(this, argumentsName, argVars, localVars, name, info, body, isUser)
+      CFGFunction(this, argumentsName, argVars, localVars, name, ir, body, isUser)
     funMap(func.id) = func
     isUser match {
       case true => userFuncs ::= func
@@ -64,7 +64,7 @@ class CFG(globalVars: List[CFGId], info: CFGNodeInfo) {
   val funMap: MMap[FunctionId, CFGFunction] = MHashMap()
 
   // global function
-  val globalFunc: CFGFunction = createFunction("", Nil, globalVars, "top-level", info, "", true)
+  val globalFunc: CFGFunction = createFunction("", Nil, globalVars, "top-level", ir, "", true)
 }
 
 class InternalError(msg: String) extends RuntimeException(msg)

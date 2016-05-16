@@ -15,8 +15,8 @@ import kr.ac.kaist.safe.analyzer.domain.Address
 import kr.ac.kaist.safe.cfg_builder.{ FunctionId, CFGFunction, CFGBlock, CFGNormalBlock, Call }
 import kr.ac.kaist.safe.util.NodeUtil
 
-sealed abstract class CFGNode(override val info: CFGNodeInfo)
-    extends Node(info: NodeInfo) {
+sealed abstract class CFGNode(val ir: IRNode)
+    extends Node {
   override def toString(indent: Int): String = " " * indent + this
 }
 
@@ -25,9 +25,9 @@ sealed abstract class CFGNode(override val info: CFGNodeInfo)
 ////////////////////////////////////////////////////////////////////////////////
 
 sealed abstract class CFGInst(
-    override val info: CFGNodeInfo,
+    override val ir: IRNode,
     block: CFGBlock
-) extends CFGNode(info) {
+) extends CFGNode(ir) {
   val id: InstId = CFGInst.getId
 }
 object CFGInst {
@@ -40,18 +40,18 @@ object CFGInst {
  * CFG Normal Instruction
  */
 sealed abstract class CFGNormalInst(
-  override val info: CFGNodeInfo,
+  override val ir: IRNode,
   val block: CFGNormalBlock
-) extends CFGInst(info, block)
+) extends CFGInst(ir, block)
 
 // x := alloc(e^?)
 case class CFGAlloc(
-    override val info: CFGNodeInfo,
+    override val ir: IRNode,
     override val block: CFGNormalBlock,
     lhs: CFGId,
     protoOpt: Option[CFGExpr],
     addr: Address
-) extends CFGNormalInst(info, block) {
+) extends CFGNormalInst(ir, block) {
   override def toString: String = {
     val proto = protoOpt.getOrElse("")
     s"$lhs := alloc($proto) @ #$addr"
@@ -60,70 +60,70 @@ case class CFGAlloc(
 
 // x := allocArray(n)
 case class CFGAllocArray(
-    override val info: CFGNodeInfo,
+    override val ir: IRNode,
     override val block: CFGNormalBlock,
     lhs: CFGId,
     length: Int,
     addr: Address
-) extends CFGNormalInst(info, block) {
+) extends CFGNormalInst(ir, block) {
   override def toString: String = s"$lhs := allocArray($length) @ #$addr"
 }
 
 // x := allocArg(n)
 case class CFGAllocArg(
-    override val info: CFGNodeInfo,
+    override val ir: IRNode,
     override val block: CFGNormalBlock,
     lhs: CFGId,
     length: Int,
     addr: Address
-) extends CFGNormalInst(info, block) {
+) extends CFGNormalInst(ir, block) {
   override def toString: String = s"$lhs := allocArg($length) @ #$addr"
 }
 
 // x := e
 case class CFGExprStmt(
-    override val info: CFGNodeInfo,
+    override val ir: IRNode,
     override val block: CFGNormalBlock,
     lhs: CFGId, right: CFGExpr
-) extends CFGNormalInst(info, block) {
+) extends CFGNormalInst(ir, block) {
   override def toString: String = s"$lhs := $right"
 }
 
 // x := delete(e)
 case class CFGDelete(
-    override val info: CFGNodeInfo,
+    override val ir: IRNode,
     override val block: CFGNormalBlock,
     lhs: CFGId,
     expr: CFGExpr
-) extends CFGNormalInst(info, block) {
+) extends CFGNormalInst(ir, block) {
   override def toString: String = s"$lhs := delete($expr)"
 }
 
 // x := delete(e1, e2)
 case class CFGDeleteProp(
-    override val info: CFGNodeInfo,
+    override val ir: IRNode,
     override val block: CFGNormalBlock,
     lhs: CFGId,
     obj: CFGExpr,
     index: CFGExpr
-) extends CFGNormalInst(info, block) {
+) extends CFGNormalInst(ir, block) {
   override def toString: String = s"$lhs := delete($obj, $index)"
 }
 
 // e1[e2] := e3
 case class CFGStore(
-    override val info: CFGNodeInfo,
+    override val ir: IRNode,
     override val block: CFGNormalBlock,
     obj: CFGExpr,
     index: CFGExpr,
     rhs: CFGExpr
-) extends CFGNormalInst(info, block) {
+) extends CFGNormalInst(ir, block) {
   override def toString: String = s"$obj[$index] := $rhs"
 }
 
 // x1 := function x_2^?(f)
 case class CFGFunExpr(
-    override val info: CFGNodeInfo,
+    override val ir: IRNode,
     override val block: CFGNormalBlock,
     lhs: CFGId,
     nameOpt: Option[CFGId],
@@ -131,7 +131,7 @@ case class CFGFunExpr(
     addr1: Address,
     addr2: Address,
     addr3Opt: Option[Address]
-) extends CFGNormalInst(info, block) {
+) extends CFGNormalInst(ir, block) {
   override def toString: String = {
     val name = nameOpt.getOrElse("")
     s"$lhs := function $name(${func.id}) @ #$addr1, #$addr2" + (addr3Opt match {
@@ -143,39 +143,39 @@ case class CFGFunExpr(
 
 // assert(e1 x e2)
 case class CFGAssert(
-    override val info: CFGNodeInfo,
+    override val ir: IRNode,
     override val block: CFGNormalBlock,
     expr: CFGExpr,
     flag: Boolean
-) extends CFGNormalInst(info, block) {
+) extends CFGNormalInst(ir, block) {
   override def toString: String = s"assert($expr)"
 }
 
 // cond(x)
 case class CFGCond(
-    override val info: CFGNodeInfo,
+    override val ir: IRNode,
     override val block: CFGNormalBlock,
     expr: CFGExpr,
     isEvent: Boolean = false
-) extends CFGNormalInst(info, block) {
+) extends CFGNormalInst(ir, block) {
   override def toString: String = s"cond($expr)"
 }
 
 // catch(x)
 case class CFGCatch(
-    override val info: CFGNodeInfo,
+    override val ir: IRNode,
     override val block: CFGNormalBlock,
     name: CFGId
-) extends CFGNormalInst(info, block) {
+) extends CFGNormalInst(ir, block) {
   override def toString: String = s"catch($name)"
 }
 
 // return(e^?)
 case class CFGReturn(
-    override val info: CFGNodeInfo,
+    override val ir: IRNode,
     override val block: CFGNormalBlock,
     exprOpt: Option[CFGExpr]
-) extends CFGNormalInst(info, block) {
+) extends CFGNormalInst(ir, block) {
   override def toString: String = {
     val expr = exprOpt.getOrElse("")
     s"return($expr)"
@@ -184,31 +184,31 @@ case class CFGReturn(
 
 // throw(e)
 case class CFGThrow(
-    override val info: CFGNodeInfo,
+    override val ir: IRNode,
     override val block: CFGNormalBlock,
     expr: CFGExpr
-) extends CFGNormalInst(info, block) {
+) extends CFGNormalInst(ir, block) {
   override def toString: String = s"throw($expr)"
 }
 
 // noop
 case class CFGNoOp(
-    override val info: CFGNodeInfo,
+    override val ir: IRNode,
     override val block: CFGNormalBlock,
     desc: String
-) extends CFGNormalInst(info, block) {
+) extends CFGNormalInst(ir, block) {
   override def toString: String = s"noop($desc)"
 }
 
 // x := <>x(x^*)
 case class CFGInternalCall(
-    override val info: CFGNodeInfo,
+    override val ir: IRNode,
     override val block: CFGNormalBlock,
     lhs: CFGId,
     fun: CFGId,
     arguments: List[CFGExpr],
     addrOpt: Option[Address]
-) extends CFGNormalInst(info, block) {
+) extends CFGNormalInst(ir, block) {
   override def toString: String = {
     val arg = arguments.mkString(", ")
     s"$lhs := $fun($arg)"
@@ -220,24 +220,24 @@ case class CFGInternalCall(
 
 // TODO revert after modeling
 // case class CFGAPICall(
-//   override val info: CFGNodeInfo,
+//   override val ir: IRNode,
 //   override val block: CFGNormalBlock,
 //   model: String,
 //   fun: String,
 //   arguments: CFGExpr
-// ) extends CFGNormalInst(info, block){
+// ) extends CFGNormalInst(ir, block){
 //   override def toString: String = s"[]$model.$fun($arguments)"
 // }
 // 
 // case class CFGAsyncCall(
-//   override val info: CFGNodeInfo,
+//   override val ir: IRNode,
 //   override val block: CFGNormalBlock,
 //   modelType: String,
 //   callType: String,
 //   addr1: Address,
 //   addr2: Address,
 //   addr3: Address
-// ) extends CFGNormalInst(info, block){
+// ) extends CFGNormalInst(ir, block){
 //   override def toString: String = s"async($modelType, $callType) @ #$addr1, #$addr2, #$addr3"
 // }
 
@@ -245,33 +245,33 @@ case class CFGInternalCall(
  * CFG Call Instruction
  */
 sealed abstract class CFGCallInst(
-  override val info: CFGNodeInfo,
+  override val ir: IRNode,
   val block: Call
-) extends CFGInst(info, block)
+) extends CFGInst(ir, block)
 
 // call(e1, e2, e3)
 case class CFGCall(
-    override val info: CFGNodeInfo,
+    override val ir: IRNode,
     override val block: Call,
     fun: CFGExpr,
     thisArg: CFGExpr,
     arguments: CFGExpr,
     addr1: Address,
     addr2: Address
-) extends CFGCallInst(info, block) {
+) extends CFGCallInst(ir, block) {
   override def toString: String = s"call($fun, $thisArg, $arguments) @ #$addr1"
 }
 
 // construct(e1, e2, e3)
 case class CFGConstruct(
-    override val info: CFGNodeInfo,
+    override val ir: IRNode,
     override val block: Call,
     cons: CFGExpr,
     thisArg: CFGExpr,
     arguments: CFGExpr,
     addr1: Address,
     addr2: Address
-) extends CFGCallInst(info, block) {
+) extends CFGCallInst(ir, block) {
   override def toString: String = s"construct($cons, $thisArg, $arguments) @ #$addr1, #$addr2"
 }
 

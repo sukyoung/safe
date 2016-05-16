@@ -510,12 +510,10 @@ object NodeUtil {
   // IR
   ////////////////////////////////////////////////////////////////
 
-  def getSpan(n: IRNode): Span = n.info.span
-  def getSpan(n: IRNodeInfo): Span = n.span
-  def getFileName(n: IRNode): String = n.info.span.fileName
+  def getFileName(n: IRNode): String = n.ast.info.span.fileName
 
   def makeIROp(name: String, kind: Int = 0): IROp =
-    new IROp(new IRNodeInfo(defaultSpan(name), false, defaultAst), name,
+    new IROp(defaultAst, name,
       if (kind == 0) EJSOp.strToEJSOp(name) else kind)
 
   def isAssertOperator(op: IROp): Boolean = EJSOp.isEquality(op.kind)

@@ -11,10 +11,10 @@
 
 package kr.ac.kaist.safe.cfg_builder
 
-import kr.ac.kaist.safe.nodes.{ CFGCallInst, CFGId, CFGNodeInfo }
+import kr.ac.kaist.safe.nodes.{ CFGCallInst, CFGId, IRNode }
 import scala.collection.mutable.{ Map => MMap, HashMap => MHashMap }
 
-case class CFGFunction(cfg: CFG, argumentsName: String, argVars: List[CFGId], localVars: List[CFGId], name: String, info: CFGNodeInfo, body: String, isUser: Boolean) {
+case class CFGFunction(cfg: CFG, argumentsName: String, argVars: List[CFGId], localVars: List[CFGId], name: String, ir: IRNode, body: String, isUser: Boolean) {
   val id: FunctionId = CFGFunction.getId
 
   val entry = Entry(this)

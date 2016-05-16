@@ -23,8 +23,8 @@ import java.math.BigInteger
 import kr.ac.kaist.safe.util.{ NodeUtil => NU, Span }
 import kr.ac.kaist.safe.config.Config
 
-abstract class ASTNode(override val info: ASTNodeInfo)
-  extends Node(info: NodeInfo)
+abstract class ASTNode(val info: ASTNodeInfo) extends Node
+case class ASTNodeInfo(span: Span, comment: Option[Comment] = None)
 
 /**
  * Program ::= SourceElement*

@@ -23,14 +23,13 @@ import java.lang.Double
 import java.math.BigInteger
 import kr.ac.kaist.safe.util.{ NodeUtil => NU, Span }
 
-abstract class IRNode(override val info: IRNodeInfo)
-  extends Node(info: NodeInfo)
+abstract class IRNode(val ast: ASTNode) extends Node
 
 /**
  * IRRoot ::= Statement*
  */
-case class IRRoot(override val info: IRNodeInfo, val fds: List[IRFunDecl], val vds: List[IRVarStmt], val irs: List[IRStmt])
-    extends IRNode(info: IRNodeInfo) {
+case class IRRoot(override val ast: ASTNode, val fds: List[IRFunDecl], val vds: List[IRVarStmt], val irs: List[IRStmt])
+    extends IRNode(ast) {
   override def toString(indent: Int): String = {
     NU.initNodesPrint
     val s: StringBuilder = new StringBuilder
@@ -46,17 +45,17 @@ case class IRRoot(override val info: IRNodeInfo, val fds: List[IRFunDecl], val v
 /**
  * Statement
  */
-abstract class IRStmt(override val info: IRNodeInfo)
-  extends IRNode(info: IRNodeInfo)
-abstract class IRAssign(override val info: IRNodeInfo, val lhs: IRId)
-  extends IRStmt(info: IRNodeInfo)
+abstract class IRStmt(override val ast: ASTNode)
+  extends IRNode(ast)
+abstract class IRAssign(override val ast: ASTNode, val lhs: IRId)
+  extends IRStmt(ast)
 
 /**
  * Expression
  * Stmt ::= x = e
  */
-case class IRExprStmt(override val info: IRNodeInfo, override val lhs: IRId, val right: IRExpr, val ref: Boolean = false)
-    extends IRAssign(info: IRNodeInfo, lhs: IRId) {
+case class IRExprStmt(override val ast: ASTNode, override val lhs: IRId, val right: IRExpr, val ref: Boolean = false)
+    extends IRAssign(ast, lhs: IRId) {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     s.append(lhs.toString(indent)).append(" = ").append(right.toString(indent))
@@ -68,8 +67,8 @@ case class IRExprStmt(override val info: IRNodeInfo, override val lhs: IRId, val
  * Delete expression
  * Stmt ::= x = delete y
  */
-case class IRDelete(override val info: IRNodeInfo, override val lhs: IRId, val id: IRId)
-    extends IRAssign(info: IRNodeInfo, lhs: IRId) {
+case class IRDelete(override val ast: ASTNode, override val lhs: IRId, val id: IRId)
+    extends IRAssign(ast, lhs: IRId) {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     s.append(lhs.toString(indent)).append(" = delete ").append(id.toString(indent))
@@ -81,8 +80,8 @@ case class IRDelete(override val info: IRNodeInfo, override val lhs: IRId, val i
  * Delete property expression
  * Stmt ::= x = delete y[e]
  */
-case class IRDeleteProp(override val info: IRNodeInfo, override val lhs: IRId, val obj: IRId, val index: IRExpr)
-    extends IRAssign(info: IRNodeInfo, lhs: IRId) {
+case class IRDeleteProp(override val ast: ASTNode, override val lhs: IRId, val obj: IRId, val index: IRExpr)
+    extends IRAssign(ast, lhs: IRId) {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     s.append(lhs.toString(indent)).append(" = delete ")
@@ -95,8 +94,8 @@ case class IRDeleteProp(override val info: IRNodeInfo, override val lhs: IRId, v
  * Object literal
  * Stmt ::= x = { member, ... }
  */
-case class IRObject(override val info: IRNodeInfo, override val lhs: IRId, val members: List[IRMember], val proto: Option[IRId])
-    extends IRAssign(info: IRNodeInfo, lhs: IRId) {
+case class IRObject(override val ast: ASTNode, override val lhs: IRId, val members: List[IRMember], val proto: Option[IRId])
+    extends IRAssign(ast, lhs: IRId) {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     s.append(lhs.toString(indent)).append(" = {").append(Config.LINE_SEP)
@@ -113,8 +112,8 @@ case class IRObject(override val info: IRNodeInfo, override val lhs: IRId, val m
  * Array literal
  * Stmt ::= x = [ e, ... ]
  */
-case class IRArray(override val info: IRNodeInfo, override val lhs: IRId, val elements: List[Option[IRExpr]])
-    extends IRAssign(info: IRNodeInfo, lhs: IRId) {
+case class IRArray(override val ast: ASTNode, override val lhs: IRId, val elements: List[Option[IRExpr]])
+    extends IRAssign(ast, lhs: IRId) {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     s.append(lhs.toString(indent)).append(" = ")
@@ -129,8 +128,8 @@ case class IRArray(override val info: IRNodeInfo, override val lhs: IRId, val el
  * Array literal with numbers
  * Stmt ::= x = [ n, ... ]
  */
-case class IRArrayNumber(override val info: IRNodeInfo, override val lhs: IRId, val elements: List[Double])
-    extends IRAssign(info: IRNodeInfo, lhs: IRId) {
+case class IRArrayNumber(override val ast: ASTNode, override val lhs: IRId, val elements: List[Double])
+    extends IRAssign(ast, lhs: IRId) {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     s.append(lhs.toString(indent)).append(" = ")
@@ -145,8 +144,8 @@ case class IRArrayNumber(override val info: IRNodeInfo, override val lhs: IRId, 
  * Arguments
  * Stmt ::= x = [ e, ... ]
  */
-case class IRArgs(override val info: IRNodeInfo, override val lhs: IRId, val elements: List[Option[IRExpr]])
-    extends IRAssign(info: IRNodeInfo, lhs: IRId) {
+case class IRArgs(override val ast: ASTNode, override val lhs: IRId, val elements: List[Option[IRExpr]])
+    extends IRAssign(ast, lhs: IRId) {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     s.append(lhs.toString(indent)).append(" = ")
@@ -161,8 +160,8 @@ case class IRArgs(override val info: IRNodeInfo, override val lhs: IRId, val ele
  * Call
  * Stmt ::= x = f(this, arguments)
  */
-case class IRCall(override val info: IRNodeInfo, override val lhs: IRId, val fun: IRId, val thisB: IRId, val args: IRId)
-    extends IRAssign(info: IRNodeInfo, lhs: IRId) {
+case class IRCall(override val ast: ASTNode, override val lhs: IRId, val fun: IRId, val thisB: IRId, val args: IRId)
+    extends IRAssign(ast, lhs: IRId) {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     s.append(lhs.toString(indent)).append(" = ")
@@ -179,8 +178,8 @@ case class IRCall(override val info: IRNodeInfo, override val lhs: IRId, val fun
  * toObject, toString, toNubmer, isObject, getBase,
  * iteratorInit, iteratorHasNext, iteratorKey
  */
-case class IRInternalCall(override val info: IRNodeInfo, override val lhs: IRId, val fun: IRId, val first: IRExpr, val second: Option[IRId])
-    extends IRAssign(info: IRNodeInfo, lhs: IRId) {
+case class IRInternalCall(override val ast: ASTNode, override val lhs: IRId, val fun: IRId, val first: IRExpr, val second: Option[IRId])
+    extends IRAssign(ast, lhs: IRId) {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     s.append(lhs.toString(indent)).append(" = ")
@@ -196,8 +195,8 @@ case class IRInternalCall(override val info: IRNodeInfo, override val lhs: IRId,
  * New
  * Stmt ::= x = new f(x, ...)
  */
-case class IRNew(override val info: IRNodeInfo, override val lhs: IRId, val fun: IRId, val args: List[IRId])
-    extends IRAssign(info: IRNodeInfo, lhs: IRId) {
+case class IRNew(override val ast: ASTNode, override val lhs: IRId, val fun: IRId, val args: List[IRId])
+    extends IRAssign(ast, lhs: IRId) {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     s.append(lhs.toString(indent)).append(" = new ")
@@ -212,8 +211,8 @@ case class IRNew(override val info: IRNodeInfo, override val lhs: IRId, val fun:
  * Function expression
  * Stmt ::= x = function f (this, arguments) { s }
  */
-case class IRFunExpr(override val info: IRNodeInfo, override val lhs: IRId, val fun: IRFunctional)
-    extends IRAssign(info: IRNodeInfo, lhs: IRId) {
+case class IRFunExpr(override val ast: ASTNode, override val lhs: IRId, val fun: IRFunctional)
+    extends IRAssign(ast, lhs: IRId) {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     s.append(lhs.toString(indent)).append(" = ").append("function ")
@@ -226,8 +225,8 @@ case class IRFunExpr(override val info: IRNodeInfo, override val lhs: IRId, val 
  * Eval
  * Stmt ::= x = eval(e)
  */
-case class IREval(override val info: IRNodeInfo, override val lhs: IRId, val arg: IRExpr)
-    extends IRAssign(info: IRNodeInfo, lhs: IRId) {
+case class IREval(override val ast: ASTNode, override val lhs: IRId, val arg: IRExpr)
+    extends IRAssign(ast, lhs: IRId) {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     s.append(lhs.toString(indent)).append(" = eval(").append(arg.toString(indent)).append(")")
@@ -239,8 +238,8 @@ case class IREval(override val info: IRNodeInfo, override val lhs: IRId, val arg
  * AST statement unit
  * Stmt ::= s
  */
-case class IRStmtUnit(override val info: IRNodeInfo, val stmts: List[IRStmt])
-    extends IRStmt(info: IRNodeInfo) {
+case class IRStmtUnit(override val ast: ASTNode, val stmts: List[IRStmt])
+    extends IRStmt(ast) {
   override def toString(indent: Int): String = stmts match {
     case List(stmt) => stmt.toString(indent)
     case _ =>
@@ -256,8 +255,8 @@ case class IRStmtUnit(override val info: IRNodeInfo, val stmts: List[IRStmt])
  * Store
  * Stmt ::= x[e] = e
  */
-case class IRStore(override val info: IRNodeInfo, val obj: IRId, val index: IRExpr, val rhs: IRExpr)
-    extends IRStmt(info: IRNodeInfo) {
+case class IRStore(override val ast: ASTNode, val obj: IRId, val index: IRExpr, val rhs: IRExpr)
+    extends IRStmt(ast) {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     s.append(obj.toString(indent)).append("[").append(index.toString(indent))
@@ -270,8 +269,8 @@ case class IRStore(override val info: IRNodeInfo, val obj: IRId, val index: IREx
  * Function declaration
  * Stmt ::= function f (this, arguments) { s }
  */
-case class IRFunDecl(override val info: IRNodeInfo, val ftn: IRFunctional)
-    extends IRStmt(info: IRNodeInfo) {
+case class IRFunDecl(override val ast: ASTNode, val ftn: IRFunctional)
+    extends IRStmt(ast) {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     s.append("function ")
@@ -284,8 +283,8 @@ case class IRFunDecl(override val info: IRNodeInfo, val ftn: IRFunctional)
  * Break
  * Stmt ::= break label
  */
-case class IRBreak(override val info: IRNodeInfo, val label: IRId)
-    extends IRStmt(info: IRNodeInfo) {
+case class IRBreak(override val ast: ASTNode, val label: IRId)
+    extends IRStmt(ast) {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     s.append("break ") append (label.toString(indent))
@@ -297,8 +296,8 @@ case class IRBreak(override val info: IRNodeInfo, val label: IRId)
  * Return
  * Stmt ::= return e?
  */
-case class IRReturn(override val info: IRNodeInfo, val expr: Option[IRExpr])
-    extends IRStmt(info: IRNodeInfo) {
+case class IRReturn(override val ast: ASTNode, val expr: Option[IRExpr])
+    extends IRStmt(ast) {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     s.append("return")
@@ -311,8 +310,8 @@ case class IRReturn(override val info: IRNodeInfo, val expr: Option[IRExpr])
  * With
  * Stmt ::= with ( x ) s
  */
-case class IRWith(override val info: IRNodeInfo, val id: IRId, val stmt: IRStmt)
-    extends IRStmt(info: IRNodeInfo) {
+case class IRWith(override val ast: ASTNode, val id: IRId, val stmt: IRStmt)
+    extends IRStmt(ast) {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     s.append("with(")
@@ -326,8 +325,8 @@ case class IRWith(override val info: IRNodeInfo, val id: IRId, val stmt: IRStmt)
  * Label
  * Stmt ::= l : { s }
  */
-case class IRLabelStmt(override val info: IRNodeInfo, val label: IRId, val stmt: IRStmt)
-    extends IRStmt(info: IRNodeInfo) {
+case class IRLabelStmt(override val ast: ASTNode, val label: IRId, val stmt: IRStmt)
+    extends IRStmt(ast) {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     s.append(label.toString(indent)).append(" : ").append(stmt.toString(indent))
@@ -339,8 +338,8 @@ case class IRLabelStmt(override val info: IRNodeInfo, val label: IRId, val stmt:
  * Var
  * Stmt ::= var x
  */
-case class IRVarStmt(override val info: IRNodeInfo, val lhs: IRId, val fromParam: Boolean)
-    extends IRStmt(info: IRNodeInfo) {
+case class IRVarStmt(override val ast: ASTNode, val lhs: IRId, val fromParam: Boolean)
+    extends IRStmt(ast) {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     s.append("var ").append(lhs.toString(indent))
@@ -352,8 +351,8 @@ case class IRVarStmt(override val info: IRNodeInfo, val lhs: IRId, val fromParam
  * Throw
  * Stmt ::= throw e
  */
-case class IRThrow(override val info: IRNodeInfo, val expr: IRExpr)
-    extends IRStmt(info: IRNodeInfo) {
+case class IRThrow(override val ast: ASTNode, val expr: IRExpr)
+    extends IRStmt(ast) {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     s.append("throw ").append(expr.toString(indent))
@@ -365,8 +364,8 @@ case class IRThrow(override val info: IRNodeInfo, val expr: IRExpr)
  * Sequence
  * Stmt ::= s; ...
  */
-case class IRSeq(override val info: IRNodeInfo, val stmts: List[IRStmt])
-    extends IRStmt(info: IRNodeInfo) {
+case class IRSeq(override val ast: ASTNode, val stmts: List[IRStmt])
+    extends IRStmt(ast) {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     s.append("{").append(Config.LINE_SEP)
@@ -380,8 +379,8 @@ case class IRSeq(override val info: IRNodeInfo, val stmts: List[IRStmt])
  * If
  * Stmt ::= if (e) then s (else s)?
  */
-case class IRIf(override val info: IRNodeInfo, val expr: IRExpr, val trueB: IRStmt, val falseB: Option[IRStmt])
-    extends IRStmt(info: IRNodeInfo) {
+case class IRIf(override val ast: ASTNode, val expr: IRExpr, val trueB: IRStmt, val falseB: Option[IRStmt])
+    extends IRStmt(ast) {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     s.append("if(").append(expr.toString(indent)).append(")").append(Config.LINE_SEP)
@@ -400,8 +399,8 @@ case class IRIf(override val info: IRNodeInfo, val expr: IRExpr, val trueB: IRSt
  * While
  * Stmt ::= while (e) s
  */
-case class IRWhile(override val info: IRNodeInfo, val cond: IRExpr, val body: IRStmt)
-    extends IRStmt(info: IRNodeInfo) {
+case class IRWhile(override val ast: ASTNode, val cond: IRExpr, val body: IRStmt)
+    extends IRStmt(ast) {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     s.append("while(")
@@ -415,8 +414,8 @@ case class IRWhile(override val info: IRNodeInfo, val cond: IRExpr, val body: IR
  * Try
  * Stmt ::= try { s } (catch (x) { s })? (finally { s })?
  */
-case class IRTry(override val info: IRNodeInfo, val body: IRStmt, val name: Option[IRId], val catchB: Option[IRStmt], finallyB: Option[IRStmt])
-    extends IRStmt(info: IRNodeInfo) {
+case class IRTry(override val ast: ASTNode, val body: IRStmt, val name: Option[IRId], val catchB: Option[IRStmt], finallyB: Option[IRStmt])
+    extends IRStmt(ast) {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     s.append("try").append(Config.LINE_SEP)
@@ -441,24 +440,24 @@ case class IRTry(override val info: IRNodeInfo, val body: IRStmt, val name: Opti
 /**
  * No operation
  */
-case class IRNoOp(override val info: IRNodeInfo, val desc: String)
-    extends IRStmt(info: IRNodeInfo) {
+case class IRNoOp(override val ast: ASTNode, val desc: String)
+    extends IRStmt(ast) {
   override def toString(indent: Int): String = ""
 }
 
 /**
  * Member
  */
-abstract class IRMember(override val info: IRNodeInfo)
-  extends IRNode(info: IRNodeInfo)
+abstract class IRMember(override val ast: ASTNode)
+  extends IRNode(ast)
 /**
  * Member ::= x : e
  */
-case class IRField(override val info: IRNodeInfo, val prop: IRId, val expr: IRExpr)
-    extends IRMember(info: IRNodeInfo) {
+case class IRField(override val ast: ASTNode, val prop: IRId, val expr: IRExpr)
+    extends IRMember(ast) {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
-    s.append(if (prop.info.ast.isInstanceOf[PropStr]) prop.toPropName(indent) else prop.toString(indent))
+    s.append(if (prop.ast.isInstanceOf[PropStr]) prop.toPropName(indent) else prop.toString(indent))
     s.append(" : ").append(expr.toString(indent))
     s.toString
   }
@@ -467,8 +466,8 @@ case class IRField(override val info: IRNodeInfo, val prop: IRId, val expr: IREx
 /**
  * Member ::= get x () { s }
  */
-case class IRGetProp(override val info: IRNodeInfo, val ftn: IRFunctional)
-    extends IRMember(info: IRNodeInfo) {
+case class IRGetProp(override val ast: ASTNode, val ftn: IRFunctional)
+    extends IRMember(ast) {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     s.append("get ").append(ftn)
@@ -479,8 +478,8 @@ case class IRGetProp(override val info: IRNodeInfo, val ftn: IRFunctional)
 /**
  * Member ::= set x ( y ) { s }
  */
-case class IRSetProp(override val info: IRNodeInfo, val ftn: IRFunctional)
-    extends IRMember(info: IRNodeInfo) {
+case class IRSetProp(override val ast: ASTNode, val ftn: IRFunctional)
+    extends IRMember(ast) {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     s.append("set ").append(ftn)
@@ -491,19 +490,19 @@ case class IRSetProp(override val info: IRNodeInfo, val ftn: IRFunctional)
 /**
  * Expression
  */
-abstract class IRExpr(override val info: IRNodeInfo)
-  extends IRNode(info: IRNodeInfo)
+abstract class IRExpr(override val ast: ASTNode)
+  extends IRNode(ast)
 /**
  * Side-effect free expressions
  */
-abstract class IROpApp(override val info: IRNodeInfo)
-  extends IRExpr(info: IRNodeInfo)
+abstract class IROpApp(override val ast: ASTNode)
+  extends IRExpr(ast)
 /**
  * Binary expression
  * Expr ::= e binop e
  */
-case class IRBin(override val info: IRNodeInfo, val first: IRExpr, val op: IROp, val second: IRExpr)
-    extends IROpApp(info: IRNodeInfo) {
+case class IRBin(override val ast: ASTNode, val first: IRExpr, val op: IROp, val second: IRExpr)
+    extends IROpApp(ast) {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     s.append(first.toString(indent)).append(" ")
@@ -517,8 +516,8 @@ case class IRBin(override val info: IRNodeInfo, val first: IRExpr, val op: IROp,
  * Unary expression
  * Expr ::= unop e
  */
-case class IRUn(override val info: IRNodeInfo, val op: IROp, val expr: IRExpr)
-    extends IROpApp(info: IRNodeInfo) {
+case class IRUn(override val ast: ASTNode, val op: IROp, val expr: IRExpr)
+    extends IROpApp(ast) {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     s.append(op.toString(indent)).append(" ").append(expr.toString(indent))
@@ -530,8 +529,8 @@ case class IRUn(override val info: IRNodeInfo, val op: IROp, val expr: IRExpr)
  * Load
  * Expr ::= x[e]
  */
-case class IRLoad(override val info: IRNodeInfo, val obj: IRId, val index: IRExpr)
-    extends IROpApp(info: IRNodeInfo) {
+case class IRLoad(override val ast: ASTNode, val obj: IRId, val index: IRExpr)
+    extends IROpApp(ast) {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     s.append(obj.toString(indent)).append("[").append(index.toString(indent)).append("]")
@@ -542,8 +541,8 @@ case class IRLoad(override val info: IRNodeInfo, val obj: IRId, val index: IRExp
 /**
  * Variable
  */
-abstract class IRId(override val info: IRNodeInfo, val originalName: String, val uniqueName: String, val global: Boolean)
-    extends IRExpr(info: IRNodeInfo) {
+abstract class IRId(override val ast: ASTNode, val originalName: String, val uniqueName: String, val global: Boolean)
+    extends IRExpr(ast) {
   override def toString(indent: Int): String = {
     val size = NU.significantBits
     val str = if (!NU.isInternal(uniqueName)) uniqueName
@@ -572,49 +571,49 @@ abstract class IRId(override val info: IRNodeInfo, val originalName: String, val
  * Variable
  * Expr ::= x
  */
-case class IRUserId(override val info: IRNodeInfo, override val originalName: String, override val uniqueName: String, override val global: Boolean, val isWith: Boolean)
-  extends IRId(info: IRNodeInfo, originalName, uniqueName, global)
+case class IRUserId(override val ast: ASTNode, override val originalName: String, override val uniqueName: String, override val global: Boolean, val isWith: Boolean)
+  extends IRId(ast, originalName, uniqueName, global)
 
 /**
  * Internally generated identifiers by Translator
  * Do not appear in the JavaScript source text.
  */
-case class IRTmpId(override val info: IRNodeInfo, override val originalName: String, override val uniqueName: String, override val global: Boolean)
-  extends IRId(info: IRNodeInfo, originalName, uniqueName, global)
+case class IRTmpId(override val ast: ASTNode, override val originalName: String, override val uniqueName: String, override val global: Boolean)
+  extends IRId(ast, originalName, uniqueName, global)
 
 /**
  * this
  */
-case class IRThis(override val info: IRNodeInfo)
-    extends IRExpr(info: IRNodeInfo) {
+case class IRThis(override val ast: ASTNode)
+    extends IRExpr(ast) {
   override def toString(indent: Int): String = "this"
 }
 
 /**
  * Value
  */
-abstract class IRVal(override val info: IRNodeInfo)
-  extends IRExpr(info: IRNodeInfo)
+abstract class IRVal(override val ast: ASTNode)
+  extends IRExpr(ast)
 
 /**
  * Primitive value
  */
-abstract class IRPVal(override val info: IRNodeInfo)
-  extends IRExpr(info: IRNodeInfo)
+abstract class IRPVal(override val ast: ASTNode)
+  extends IRExpr(ast)
 
 /**
  * PVal ::= number literal
  */
-case class IRNumber(override val info: IRNodeInfo, val text: String, val num: Double)
-    extends IRVal(info: IRNodeInfo) {
+case class IRNumber(override val ast: ASTNode, val text: String, val num: Double)
+    extends IRVal(ast) {
   override def toString(indent: Int): String = text
 }
 
 /**
  * PVal ::= String
  */
-case class IRString(override val info: IRNodeInfo, val str: String)
-    extends IRVal(info: IRNodeInfo) {
+case class IRString(override val ast: ASTNode, val str: String)
+    extends IRVal(ast) {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     s.append("\"")
@@ -627,42 +626,42 @@ case class IRString(override val info: IRNodeInfo, val str: String)
 /**
  * PVal ::= true | false
  */
-case class IRBool(override val info: IRNodeInfo, val bool: Boolean)
-    extends IRVal(info: IRNodeInfo) {
+case class IRBool(override val ast: ASTNode, val bool: Boolean)
+    extends IRVal(ast) {
   override def toString(indent: Int): String = if (bool) "true" else "false"
 }
 
 /**
  * PVal ::= undefined
  */
-case class IRUndef(override val info: IRNodeInfo)
-    extends IRVal(info: IRNodeInfo) {
+case class IRUndef(override val ast: ASTNode)
+    extends IRVal(ast) {
   override def toString(indent: Int): String = "undefined"
 }
 
 /**
  * PVal ::= null
  */
-case class IRNull(override val info: IRNodeInfo)
-    extends IRVal(info: IRNodeInfo) {
+case class IRNull(override val ast: ASTNode)
+    extends IRVal(ast) {
   override def toString(indent: Int): String = "null"
 }
 
 /**
  * Operator
  */
-case class IROp(override val info: IRNodeInfo, val text: String, val kind: Int)
-    extends IRNode(info: IRNodeInfo) {
+case class IROp(override val ast: ASTNode, val text: String, val kind: Int)
+    extends IRNode(ast) {
   override def toString(indent: Int): String = text
 }
 
 /**
  * Common shape for functions
  */
-case class IRFunctional(override val info: IRNodeInfo, val fromSource: Boolean,
+case class IRFunctional(override val ast: ASTNode, val fromSource: Boolean,
   val name: IRId, val params: List[IRId], val args: List[IRStmt],
   val fds: List[IRFunDecl], val vds: List[IRVarStmt], val body: List[IRStmt])
-    extends IRNode(info: IRNodeInfo) {
+    extends IRNode(ast) {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     s.append(name.toString(indent)).append("(")
@@ -676,128 +675,128 @@ case class IRFunctional(override val info: IRNodeInfo, val fromSource: Boolean,
 }
 
 trait IRWalker {
-  def walk(info: IRNodeInfo): IRNodeInfo = info
+  def walk(ast: ASTNode): ASTNode = ast
 
   def walk(node: IRRoot): IRRoot = node match {
-    case IRRoot(info, fds, vds, irs) =>
-      IRRoot(walk(info), fds.map(walk), vds.map(walk), irs.map(walk))
+    case IRRoot(ast, fds, vds, irs) =>
+      IRRoot(walk(ast), fds.map(walk), vds.map(walk), irs.map(walk))
   }
 
   def walk(node: IRStmt): IRStmt = node match {
-    case IRExprStmt(info, lhs, right, isRef) =>
-      IRExprStmt(walk(info), walk(lhs), walk(right), isRef)
-    case IRDelete(info, lhs, id) =>
-      IRDelete(walk(info), walk(lhs), walk(id))
-    case IRDeleteProp(info, lhs, obj, index) =>
-      IRDeleteProp(walk(info), walk(lhs), walk(obj), walk(index))
-    case IRObject(info, lhs, members, proto) =>
-      IRObject(walk(info), walk(lhs), members.map(walk), proto.map(walk))
-    case IRArray(info, lhs, elements) =>
-      IRArray(walk(info), walk(lhs), elements.map(_.map(walk)))
-    case IRArrayNumber(info, lhs, elements) =>
-      IRArrayNumber(walk(info), walk(lhs), elements)
-    case IRArgs(info, lhs, elements) =>
-      IRArgs(walk(info), walk(lhs), elements.map(_.map(walk)))
-    case IRCall(info, lhs, fun, thisB, args) =>
-      IRCall(walk(info), walk(lhs), walk(fun), walk(thisB), walk(args))
-    case IRInternalCall(info, lhs, fun, first, second) =>
-      IRInternalCall(walk(info), walk(lhs), walk(fun), walk(first), second.map(walk))
-    case IRNew(info, lhs, fun, args) =>
-      IRNew(walk(info), walk(lhs), walk(fun), args.map(walk))
-    case IRFunExpr(info, lhs, ftn) =>
-      IRFunExpr(walk(info), walk(lhs), walk(ftn))
-    case IREval(info, lhs, arg) =>
-      IREval(walk(info), walk(lhs), walk(arg))
-    case IRStmtUnit(info, stmts) =>
-      IRStmtUnit(walk(info), stmts.map(walk))
-    case IRStore(info, obj, index, rhs) =>
-      IRStore(walk(info), walk(obj), walk(index), walk(rhs))
+    case IRExprStmt(ast, lhs, right, isRef) =>
+      IRExprStmt(walk(ast), walk(lhs), walk(right), isRef)
+    case IRDelete(ast, lhs, id) =>
+      IRDelete(walk(ast), walk(lhs), walk(id))
+    case IRDeleteProp(ast, lhs, obj, index) =>
+      IRDeleteProp(walk(ast), walk(lhs), walk(obj), walk(index))
+    case IRObject(ast, lhs, members, proto) =>
+      IRObject(walk(ast), walk(lhs), members.map(walk), proto.map(walk))
+    case IRArray(ast, lhs, elements) =>
+      IRArray(walk(ast), walk(lhs), elements.map(_.map(walk)))
+    case IRArrayNumber(ast, lhs, elements) =>
+      IRArrayNumber(walk(ast), walk(lhs), elements)
+    case IRArgs(ast, lhs, elements) =>
+      IRArgs(walk(ast), walk(lhs), elements.map(_.map(walk)))
+    case IRCall(ast, lhs, fun, thisB, args) =>
+      IRCall(walk(ast), walk(lhs), walk(fun), walk(thisB), walk(args))
+    case IRInternalCall(ast, lhs, fun, first, second) =>
+      IRInternalCall(walk(ast), walk(lhs), walk(fun), walk(first), second.map(walk))
+    case IRNew(ast, lhs, fun, args) =>
+      IRNew(walk(ast), walk(lhs), walk(fun), args.map(walk))
+    case IRFunExpr(ast, lhs, ftn) =>
+      IRFunExpr(walk(ast), walk(lhs), walk(ftn))
+    case IREval(ast, lhs, arg) =>
+      IREval(walk(ast), walk(lhs), walk(arg))
+    case IRStmtUnit(ast, stmts) =>
+      IRStmtUnit(walk(ast), stmts.map(walk))
+    case IRStore(ast, obj, index, rhs) =>
+      IRStore(walk(ast), walk(obj), walk(index), walk(rhs))
     case fd: IRFunDecl =>
       walk(fd)
-    case IRBreak(info, label) =>
-      IRBreak(walk(info), walk(label))
-    case IRReturn(info, expr) =>
-      IRReturn(walk(info), expr.map(walk))
-    case IRWith(info, id, stmt) =>
-      IRWith(walk(info), walk(id), walk(stmt))
-    case IRLabelStmt(info, label, stmt) =>
-      IRLabelStmt(walk(info), walk(label), walk(stmt))
+    case IRBreak(ast, label) =>
+      IRBreak(walk(ast), walk(label))
+    case IRReturn(ast, expr) =>
+      IRReturn(walk(ast), expr.map(walk))
+    case IRWith(ast, id, stmt) =>
+      IRWith(walk(ast), walk(id), walk(stmt))
+    case IRLabelStmt(ast, label, stmt) =>
+      IRLabelStmt(walk(ast), walk(label), walk(stmt))
     case vs: IRVarStmt =>
       walk(vs)
-    case IRThrow(info, expr) =>
-      IRThrow(walk(info), walk(expr))
-    case IRSeq(info, stmts) =>
-      IRSeq(walk(info), stmts.map(walk))
-    case IRIf(info, expr, trueB, falseB) =>
-      IRIf(walk(info), walk(expr), walk(trueB), falseB.map(walk))
-    case IRWhile(info, cond, body) =>
-      IRWhile(walk(info), walk(cond), walk(body))
-    case IRTry(info, body, name, catchB, finallyB) =>
-      IRTry(walk(info), walk(body), name.map(walk), catchB.map(walk), finallyB.map(walk))
-    case IRNoOp(info, desc) =>
-      IRNoOp(walk(info), desc)
+    case IRThrow(ast, expr) =>
+      IRThrow(walk(ast), walk(expr))
+    case IRSeq(ast, stmts) =>
+      IRSeq(walk(ast), stmts.map(walk))
+    case IRIf(ast, expr, trueB, falseB) =>
+      IRIf(walk(ast), walk(expr), walk(trueB), falseB.map(walk))
+    case IRWhile(ast, cond, body) =>
+      IRWhile(walk(ast), walk(cond), walk(body))
+    case IRTry(ast, body, name, catchB, finallyB) =>
+      IRTry(walk(ast), walk(body), name.map(walk), catchB.map(walk), finallyB.map(walk))
+    case IRNoOp(ast, desc) =>
+      IRNoOp(walk(ast), desc)
   }
 
   def walk(node: IRExpr): IRExpr = node match {
-    case IRBin(info, first, op, second) =>
-      IRBin(walk(info), walk(first), walk(op), walk(second))
-    case IRUn(info, op, expr) =>
-      IRUn(walk(info), walk(op), walk(expr))
-    case IRLoad(info, obj, index) =>
-      IRLoad(walk(info), walk(obj), walk(index))
+    case IRBin(ast, first, op, second) =>
+      IRBin(walk(ast), walk(first), walk(op), walk(second))
+    case IRUn(ast, op, expr) =>
+      IRUn(walk(ast), walk(op), walk(expr))
+    case IRLoad(ast, obj, index) =>
+      IRLoad(walk(ast), walk(obj), walk(index))
     case id: IRUserId =>
       walk(id)
     case id: IRTmpId =>
       walk(id)
-    case IRThis(info) =>
-      IRThis(walk(info))
-    case IRNumber(info, text, num) =>
-      IRNumber(walk(info), text, num)
-    case IRString(info, str) =>
-      IRString(walk(info), str)
-    case IRBool(info, isBool) =>
-      IRBool(walk(info), isBool)
-    case IRUndef(info) =>
-      IRUndef(walk(info))
-    case IRNull(info) =>
-      IRNull(walk(info))
+    case IRThis(ast) =>
+      IRThis(walk(ast))
+    case IRNumber(ast, text, num) =>
+      IRNumber(walk(ast), text, num)
+    case IRString(ast, str) =>
+      IRString(walk(ast), str)
+    case IRBool(ast, isBool) =>
+      IRBool(walk(ast), isBool)
+    case IRUndef(ast) =>
+      IRUndef(walk(ast))
+    case IRNull(ast) =>
+      IRNull(walk(ast))
   }
 
   def walk(node: IRMember): IRMember = node match {
-    case IRField(info, prop, expr) =>
-      IRField(walk(info), walk(prop), walk(expr))
-    case IRGetProp(info, ftn) =>
-      IRGetProp(walk(info), walk(ftn))
-    case IRSetProp(info, ftn) =>
-      IRSetProp(walk(info), walk(ftn))
+    case IRField(ast, prop, expr) =>
+      IRField(walk(ast), walk(prop), walk(expr))
+    case IRGetProp(ast, ftn) =>
+      IRGetProp(walk(ast), walk(ftn))
+    case IRSetProp(ast, ftn) =>
+      IRSetProp(walk(ast), walk(ftn))
   }
 
   def walk(node: IRFunctional): IRFunctional = node match {
-    case IRFunctional(info, isFromSource, name, params, args, fds, vds, body) =>
-      IRFunctional(walk(info), isFromSource, walk(name), params.map(walk),
+    case IRFunctional(ast, isFromSource, name, params, args, fds, vds, body) =>
+      IRFunctional(walk(ast), isFromSource, walk(name), params.map(walk),
         args.map(walk), fds.map(walk), vds.map(walk), body.map(walk))
   }
 
   def walk(node: IROp): IROp = node match {
-    case IROp(info, text, kind) =>
-      IROp(walk(info), text, kind)
+    case IROp(ast, text, kind) =>
+      IROp(walk(ast), text, kind)
   }
 
   def walk(node: IRFunDecl): IRFunDecl = node match {
-    case IRFunDecl(info, ftn) =>
-      IRFunDecl(walk(info), walk(ftn))
+    case IRFunDecl(ast, ftn) =>
+      IRFunDecl(walk(ast), walk(ftn))
   }
 
   def walk(node: IRVarStmt): IRVarStmt = node match {
-    case IRVarStmt(info, lhs, isFromParam) =>
-      IRVarStmt(walk(info), walk(lhs), isFromParam)
+    case IRVarStmt(ast, lhs, isFromParam) =>
+      IRVarStmt(walk(ast), walk(lhs), isFromParam)
   }
 
   def walk(node: IRId): IRId = node match {
-    case IRUserId(info, originalName, uniqueName, isGlobal, isWith) =>
-      IRUserId(walk(info), originalName, uniqueName, isGlobal, isWith)
-    case IRTmpId(info, originalName, uniqueName, isGlobal) =>
-      IRTmpId(walk(info), originalName, uniqueName, isGlobal)
+    case IRUserId(ast, originalName, uniqueName, isGlobal, isWith) =>
+      IRUserId(walk(ast), originalName, uniqueName, isGlobal, isWith)
+    case IRTmpId(ast, originalName, uniqueName, isGlobal) =>
+      IRTmpId(walk(ast), originalName, uniqueName, isGlobal)
   }
 }
 
@@ -813,127 +812,127 @@ trait IRGeneralWalker[Result] {
       })
     }
 
-  def walk(info: IRNodeInfo): Result = join()
+  def walk(ast: ASTNode): Result = join()
 
   def walk(node: IRRoot): Result = node match {
-    case IRRoot(info, fds, vds, irs) =>
-      join(walk(info) :: fds.map(walk) ++ vds.map(walk) ++ irs.map(walk): _*)
+    case IRRoot(ast, fds, vds, irs) =>
+      join(walk(ast) :: fds.map(walk) ++ vds.map(walk) ++ irs.map(walk): _*)
   }
 
   def walk(node: IRStmt): Result = node match {
-    case IRExprStmt(info, lhs, right, isRef) =>
-      join(walk(info), walk(lhs), walk(right))
-    case IRDelete(info, lhs, id) =>
-      join(walk(info), walk(lhs), walk(id))
-    case IRDeleteProp(info, lhs, obj, index) =>
-      join(walk(info), walk(lhs), walk(obj), walk(index))
-    case IRObject(info, lhs, members, proto) =>
-      join(walk(info) :: walk(lhs) :: members.map(walk) ++ walkOpt(proto): _*)
-    case IRArray(info, lhs, elements) =>
-      join(walk(info) :: walk(lhs) :: elements.flatMap(walkOpt): _*)
-    case IRArrayNumber(info, lhs, elements) =>
-      join(walk(info), walk(lhs))
-    case IRArgs(info, lhs, elements) =>
-      join(walk(info) :: walk(lhs) :: elements.flatMap(walkOpt): _*)
-    case IRCall(info, lhs, fun, thisB, args) =>
-      join(walk(info), walk(lhs), walk(fun), walk(thisB), walk(args))
-    case IRInternalCall(info, lhs, fun, first, second) =>
-      join(walk(info) :: walk(lhs) :: walk(fun) :: walk(first) :: walkOpt(second): _*)
-    case IRNew(info, lhs, fun, args) =>
-      join(walk(info) :: walk(lhs) :: walk(fun) :: args.map(walk): _*)
-    case IRFunExpr(info, lhs, ftn) =>
-      join(walk(info), walk(lhs), walk(ftn))
-    case IREval(info, lhs, arg) =>
-      join(walk(info), walk(lhs), walk(arg))
-    case IRStmtUnit(info, stmts) =>
-      join(walk(info) :: stmts.map(walk): _*)
-    case IRStore(info, obj, index, rhs) =>
-      join(walk(info), walk(obj), walk(index), walk(rhs))
+    case IRExprStmt(ast, lhs, right, isRef) =>
+      join(walk(ast), walk(lhs), walk(right))
+    case IRDelete(ast, lhs, id) =>
+      join(walk(ast), walk(lhs), walk(id))
+    case IRDeleteProp(ast, lhs, obj, index) =>
+      join(walk(ast), walk(lhs), walk(obj), walk(index))
+    case IRObject(ast, lhs, members, proto) =>
+      join(walk(ast) :: walk(lhs) :: members.map(walk) ++ walkOpt(proto): _*)
+    case IRArray(ast, lhs, elements) =>
+      join(walk(ast) :: walk(lhs) :: elements.flatMap(walkOpt): _*)
+    case IRArrayNumber(ast, lhs, elements) =>
+      join(walk(ast), walk(lhs))
+    case IRArgs(ast, lhs, elements) =>
+      join(walk(ast) :: walk(lhs) :: elements.flatMap(walkOpt): _*)
+    case IRCall(ast, lhs, fun, thisB, args) =>
+      join(walk(ast), walk(lhs), walk(fun), walk(thisB), walk(args))
+    case IRInternalCall(ast, lhs, fun, first, second) =>
+      join(walk(ast) :: walk(lhs) :: walk(fun) :: walk(first) :: walkOpt(second): _*)
+    case IRNew(ast, lhs, fun, args) =>
+      join(walk(ast) :: walk(lhs) :: walk(fun) :: args.map(walk): _*)
+    case IRFunExpr(ast, lhs, ftn) =>
+      join(walk(ast), walk(lhs), walk(ftn))
+    case IREval(ast, lhs, arg) =>
+      join(walk(ast), walk(lhs), walk(arg))
+    case IRStmtUnit(ast, stmts) =>
+      join(walk(ast) :: stmts.map(walk): _*)
+    case IRStore(ast, obj, index, rhs) =>
+      join(walk(ast), walk(obj), walk(index), walk(rhs))
     case fd: IRFunDecl =>
       walk(fd)
-    case IRBreak(info, label) =>
-      join(walk(info), walk(label))
-    case IRReturn(info, expr) =>
-      join(walk(info) :: walkOpt(expr): _*)
-    case IRWith(info, id, stmt) =>
-      join(walk(info), walk(id), walk(stmt))
-    case IRLabelStmt(info, label, stmt) =>
-      join(walk(info), walk(label), walk(stmt))
+    case IRBreak(ast, label) =>
+      join(walk(ast), walk(label))
+    case IRReturn(ast, expr) =>
+      join(walk(ast) :: walkOpt(expr): _*)
+    case IRWith(ast, id, stmt) =>
+      join(walk(ast), walk(id), walk(stmt))
+    case IRLabelStmt(ast, label, stmt) =>
+      join(walk(ast), walk(label), walk(stmt))
     case vs: IRVarStmt =>
       walk(vs)
-    case IRThrow(info, expr) =>
-      join(walk(info), walk(expr))
-    case IRSeq(info, stmts) =>
-      join(walk(info) :: stmts.map(walk): _*)
-    case IRIf(info, expr, trueB, falseB) =>
-      join(walk(info) :: walk(expr) :: walk(trueB) :: walkOpt(falseB): _*)
-    case IRWhile(info, cond, body) =>
-      join(walk(info), walk(cond), walk(body))
-    case IRTry(info, body, name, catchB, finallyB) =>
-      join(walk(info) :: walk(body) :: walkOpt(name) ++ walkOpt(catchB) ++ walkOpt(finallyB): _*)
-    case IRNoOp(info, desc) =>
-      walk(info)
+    case IRThrow(ast, expr) =>
+      join(walk(ast), walk(expr))
+    case IRSeq(ast, stmts) =>
+      join(walk(ast) :: stmts.map(walk): _*)
+    case IRIf(ast, expr, trueB, falseB) =>
+      join(walk(ast) :: walk(expr) :: walk(trueB) :: walkOpt(falseB): _*)
+    case IRWhile(ast, cond, body) =>
+      join(walk(ast), walk(cond), walk(body))
+    case IRTry(ast, body, name, catchB, finallyB) =>
+      join(walk(ast) :: walk(body) :: walkOpt(name) ++ walkOpt(catchB) ++ walkOpt(finallyB): _*)
+    case IRNoOp(ast, desc) =>
+      walk(ast)
   }
 
   def walk(node: IRExpr): Result = node match {
-    case IRBin(info, first, op, second) =>
-      join(walk(info), walk(first), walk(op), walk(second))
-    case IRUn(info, op, expr) =>
-      join(walk(info), walk(op), walk(expr))
-    case IRLoad(info, obj, index) =>
-      join(walk(info), walk(obj), walk(index))
+    case IRBin(ast, first, op, second) =>
+      join(walk(ast), walk(first), walk(op), walk(second))
+    case IRUn(ast, op, expr) =>
+      join(walk(ast), walk(op), walk(expr))
+    case IRLoad(ast, obj, index) =>
+      join(walk(ast), walk(obj), walk(index))
     case id: IRUserId =>
       walk(id)
     case id: IRTmpId =>
       walk(id)
-    case IRThis(info) =>
-      walk(info)
-    case IRNumber(info, text, num) =>
-      walk(info)
-    case IRString(info, str) =>
-      walk(info)
-    case IRBool(info, isBool) =>
-      walk(info)
-    case IRUndef(info) =>
-      walk(info)
-    case IRNull(info) =>
-      walk(info)
+    case IRThis(ast) =>
+      walk(ast)
+    case IRNumber(ast, text, num) =>
+      walk(ast)
+    case IRString(ast, str) =>
+      walk(ast)
+    case IRBool(ast, isBool) =>
+      walk(ast)
+    case IRUndef(ast) =>
+      walk(ast)
+    case IRNull(ast) =>
+      walk(ast)
   }
 
   def walk(node: IRMember): Result = node match {
-    case IRField(info, prop, expr) =>
-      join(walk(info), walk(prop), walk(expr))
-    case IRGetProp(info, ftn) =>
-      join(walk(info), walk(ftn))
-    case IRSetProp(info, ftn) =>
-      join(walk(info), walk(ftn))
+    case IRField(ast, prop, expr) =>
+      join(walk(ast), walk(prop), walk(expr))
+    case IRGetProp(ast, ftn) =>
+      join(walk(ast), walk(ftn))
+    case IRSetProp(ast, ftn) =>
+      join(walk(ast), walk(ftn))
   }
 
   def walk(node: IRFunctional): Result = node match {
-    case IRFunctional(info, isFromSource, name, params, args, fds, vds, body) =>
-      join(walk(info) :: walk(name) ::
+    case IRFunctional(ast, isFromSource, name, params, args, fds, vds, body) =>
+      join(walk(ast) :: walk(name) ::
         (params.map(walk) ++ args.map(walk) ++ fds.map(walk) ++ vds.map(walk) ++ body.map(walk)): _*)
   }
 
   def walk(node: IROp): Result = node match {
-    case IROp(info, text, kind) =>
-      walk(info)
+    case IROp(ast, text, kind) =>
+      walk(ast)
   }
 
   def walk(node: IRFunDecl): Result = node match {
-    case IRFunDecl(info, ftn) =>
-      join(walk(info), walk(ftn))
+    case IRFunDecl(ast, ftn) =>
+      join(walk(ast), walk(ftn))
   }
 
   def walk(node: IRVarStmt): Result = node match {
-    case IRVarStmt(info, lhs, isFromParam) =>
-      join(walk(info), walk(lhs))
+    case IRVarStmt(ast, lhs, isFromParam) =>
+      join(walk(ast), walk(lhs))
   }
 
   def walk(node: IRId): Result = node match {
-    case IRUserId(info, originalName, uniqueName, isGlobal, isWith) =>
-      walk(info)
-    case IRTmpId(info, originalName, uniqueName, isGlobal) =>
-      walk(info)
+    case IRUserId(ast, originalName, uniqueName, isGlobal, isWith) =>
+      walk(ast)
+    case IRTmpId(ast, originalName, uniqueName, isGlobal) =>
+      walk(ast)
   }
 }

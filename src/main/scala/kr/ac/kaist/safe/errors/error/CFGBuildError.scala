@@ -18,7 +18,7 @@ import kr.ac.kaist.safe.nodes.{ IRNode, IRTry, IRNew }
 ////////////////////////////////////////////////////////////////////////////////
 
 sealed abstract class CFGBuildError(msg: String, irNode: IRNode) extends SafeError({
-  s"${irNode.info.span}: $msg"
+  s"${irNode.ast.info.span}: $msg"
 })
 
 case class NotHoistedError(ir: IRNode) extends CFGBuildError({

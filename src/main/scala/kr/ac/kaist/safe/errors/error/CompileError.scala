@@ -11,15 +11,15 @@
 
 package kr.ac.kaist.safe.errors.error
 
-import kr.ac.kaist.safe.nodes.{ Node, IRId, Id, Label, VarDecl, UnaryAssignOpApp, InfixOpApp }
+import kr.ac.kaist.safe.nodes.{ ASTNode, NoOp, Id, Label, VarDecl, UnaryAssignOpApp, InfixOpApp }
 
-sealed abstract class CompileError(msg: String, node: Node) extends SafeError({
-  s"${node.info.span}: $msg"
+sealed abstract class CompileError(msg: String, ast: ASTNode) extends SafeError({
+  s"${ast.info.span}: $msg"
 })
 
-case class IRIdNotBoundError(name: String, id: IRId) extends CompileError({
+case class IRIdNotBoundError(name: String, ast: ASTNode) extends CompileError({
   s"Identifier $name is not bound."
-}, id)
+}, ast)
 case class NotUniqueIdError(id: Id) extends CompileError({
   s"Identifiers should have a unique name after the disambiguation phase: ${id.text}"
 }, id)

@@ -11,7 +11,7 @@
 
 package kr.ac.kaist.safe.errors.error
 
-import kr.ac.kaist.safe.nodes.{ ASTNode, NodeInfo, FunApp, Id, Member, Break, Continue, Return, LabelStmt }
+import kr.ac.kaist.safe.nodes.{ ASTNode, FunApp, Id, Member, Break, Continue, Return, LabelStmt }
 
 sealed abstract class ASTRewriteError(msg: String, ast: ASTNode) extends SafeError({
   s"${ast.info.span}: $msg"
