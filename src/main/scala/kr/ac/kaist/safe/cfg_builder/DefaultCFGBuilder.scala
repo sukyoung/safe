@@ -63,11 +63,12 @@ object DefaultCFGBuilder extends CFGBuilder {
 
   // reset global values
   private def resetValues(ir: IRRoot, conf: Config, cfgConf: CFGBuildConfig): (List[CFGId], CFGFunction) = {
-    excLog = new ExcLog()
+    val cvResult = new CapturedVariableCollector(ir, config, cfgConfig)
+    excLog = cvResult.excLog
     catchVarMap.clear
     config = conf
     cfgConfig = cfgConf
-    captured = new CapturedVariableCollector(ir, config, cfgConfig).collect
+    captured = cvResult.captured
     cfgIdMap.clear
     uniqueNameCounter = 0
 

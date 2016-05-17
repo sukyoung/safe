@@ -11,8 +11,6 @@
 
 package kr.ac.kaist.safe.cfg_builder
 
-import scala.collection.mutable.{ Set => MSet }
-import scala.collection.mutable.{ HashSet => MHashSet }
 import scala.collection.immutable.HashSet
 import kr.ac.kaist.safe.errors.ExcLog
 import kr.ac.kaist.safe.errors.error._
@@ -21,226 +19,182 @@ import kr.ac.kaist.safe.nodes._
 import kr.ac.kaist.safe.config.Config
 import kr.ac.kaist.safe.phase.CFGBuildConfig
 
-// Collects captured variables in a given IR
+// Collects captured variables in a given IRNode
 // Used by compiler/DefaultCFGBuilder.scala
-class CapturedVariableCollector(ir: IRRoot, config: Config, cfgConfig: CFGBuildConfig) {
-  /* Error handling
-   * The signal function collects errors during the disambiguation phase.
-   * To collect multiple errors,
-   * we should return a dummy value after signaling an error.
-   */
-  var excLog: ExcLog = _
+class CapturedVariableCollector(
+    irRoot: IRRoot,
+    config: Config,
+    cfgConfig: CFGBuildConfig
+) {
+  ////////////////////////////////////////////////////////////////
+  // results
+  ////////////////////////////////////////////////////////////////
 
-  val captured: MSet[String] = MHashSet()
+  lazy val captured: CapturedNames = CollectCaptVarWalker.walk(irRoot)
+  lazy val excLog: ExcLog = new ExcLog
 
-  def collect: Set[String] = {
-    excLog = new ExcLog
-    captured.clear
-    ir match {
-      case IRRoot(info, fds, vds, stmts) =>
-        fds.foreach(checkFunDecl)
-        checkStmts(stmts, HashSet[String]())
+  ////////////////////////////////////////////////////////////////
+  // private global
+  ////////////////////////////////////////////////////////////////
+
+  private type LocalNames = Set[String]
+  private type CapturedNames = Set[String]
+  private val EMPTY: Set[String] = HashSet()
+
+  ////////////////////////////////////////////////////////////////
+  // helper function
+  ////////////////////////////////////////////////////////////////
+
+  private object CollectCaptVarWalker extends IRGeneralWalker[CapturedNames] {
+    // join definition
+    def join(args: CapturedNames*): CapturedNames = args.foldLeft(EMPTY)(_ ++ _)
+
+    // IRRoot
+    override def walk(ir: IRRoot): CapturedNames = ir match {
+      case IRRoot(_, fds, _, stmts) =>
+        walk(fds, walk(_: IRFunDecl)) ++ walk(stmts, walk(_: IRStmt, EMPTY))
     }
-    captured.toSet
-  }
 
-  private def checkId(id: IRId, locals: Set[String]): Unit = id match {
-    case IRUserId(_, _, uniqueName, false, _) =>
-      if (!locals.contains(uniqueName)) {
-        captured.add(uniqueName)
-      }
-    case IRUserId(_, _, _, true, _) => ()
-    case IRTmpId(_, _, _, _) => ()
-  }
+    // IRFunctional
+    override def walk(func: IRFunctional): CapturedNames = func match {
+      case IRFunctional(_, _, name, params, args, fds, vds, body) =>
+        // flatten IRSeq in IRStmt list
+        def flatten(stmts: List[IRStmt]): List[IRStmt] = {
+          stmts.foldRight(List[IRStmt]()) {
+            case (seq: IRSeq, l) => seq.stmts ++ l
+            case (s, l) => s :: l
+          }
+        }
 
-  private def checkFunDecl(fd: IRFunDecl): Unit = fd match {
-    case IRFunDecl(_, func) => checkFunctional(func)
-  }
+        // get names of arguments
+        def namesOfArgs(loads: List[IRStmt]): LocalNames = {
+          flatten(loads).foldLeft(EMPTY) {
+            //case (set, IRExprStmt(_, id, _, _)) => id match {
+            case (set, IRExprStmt(_, id, _, _)) => id match {
+              case IRUserId(_, _, name, _, _) => set + name
+              case IRTmpId(_, orig, name, _) if orig.startsWith("<>arguments") =>
+                set + name
+              case _ => set
+            }
+            case (set, _) => set
+          }
+        }
 
-  private def checkFunctional(func: IRFunctional): Unit = func match {
-    case IRFunctional(_, _, name, params, args, fds, vds, body) =>
-      val locals = namesOfArgs(args) ++ namesOfFunDecls(fds) ++ namesOfVars(vds)
-      fds.foreach(checkFunDecl)
-      checkStmts(body, locals)
-  }
+        // get names of function declaration
+        def namesOfFunDecls(fds: List[IRFunDecl]): LocalNames =
+          fds.map(_.ftn.name.uniqueName).toSet
 
-  private def namesOfFunDecls(fds: List[IRFunDecl]): Set[String] = {
-    fds.foldLeft(HashSet[String]())((set, fd) => set + fd.ftn.name.uniqueName)
-  }
+        // get names of variables
+        def namesOfVars(vds: List[IRVarStmt]): LocalNames =
+          vds.map(_.lhs.uniqueName).toSet
 
-  // flatten IRSeq
-  private def flatten(stmts: List[IRStmt]): List[IRStmt] =
-    stmts.foldRight(List[IRStmt]())((s, l) =>
-      if (s.isInstanceOf[IRSeq])
-        s.asInstanceOf[IRSeq].stmts ++ l
-      else List(s) ++ l)
-
-  private def namesOfArgs(loads: List[IRStmt]): Set[String] = {
-    // When arguments may not be a list of IRExprStmts
-    // because of using compiler.IRSimplifier
-    // to move IRBin, IRUn, and IRLoad out of IRExpr
-    /*
-    loads.asInstanceOf[List[IRExprStmt]].foldLeft(HashSet[String]())((set, load) => 
-      set + load.lhs.uniqueName)
-     */
-    flatten(loads).foldLeft(HashSet[String]())((set, load) =>
-      if (load.isInstanceOf[IRExprStmt]) {
-        val name = load.asInstanceOf[IRExprStmt].lhs
-        if (name.isInstanceOf[IRUserId] ||
-          name.originalName.startsWith("<>arguments"))
-          set + load.asInstanceOf[IRExprStmt].lhs.uniqueName
-        else set
-      } else set)
-  }
-
-  private def namesOfVars(vds: List[IRVarStmt]): Set[String] = {
-    vds.foldLeft(HashSet[String]())((set, vd) => set + vd.lhs.uniqueName)
-  }
-
-  private def checkStmts(stmts: List[IRStmt], locals: Set[String]): Unit = {
-    stmts.foreach(stmt => checkStmt(stmt, locals))
-  }
-
-  private def checkStmt(stmt: IRStmt, locals: Set[String]): Unit = stmt match {
-    case IRNoOp(irinfo, desc) => ()
-    case IRStmtUnit(irinfo, stmts) => checkStmts(stmts, locals)
-    case IRSeq(irinfo, stmts) => checkStmts(stmts, locals)
-
-    case vd: IRVarStmt =>
-      excLog.signal(NotHoistedError(vd))
-
-    case fd: IRFunDecl =>
-      excLog.signal(NotHoistedError(fd))
-
-    case IRFunExpr(irinfo, lhs, func) =>
-      checkId(lhs, locals)
-      checkFunctional(func)
-
-    case IRObject(irinfo, lhs, members, proto) =>
-      checkId(lhs, locals)
-      members.foreach((m) => checkMember(m, locals))
-      proto match {
-        case Some(p) => checkId(p, locals)
-        case None => ()
-      }
-
-    case irTry @ IRTry(irinfo, body, name, catchB, finallyB) =>
-      checkStmt(body, locals)
-      (name, catchB) match {
-        case (Some(x), Some(stmt)) => checkStmt(stmt, locals + x.uniqueName)
-        case (None, None) => ()
-        case _ => excLog.signal(WrongTryStmtError(irTry))
-      }
-      finallyB match {
-        case Some(stmt) => checkStmt(stmt, locals)
-        case None => ()
-      }
-
-    case IRArgs(irinfo, lhs, elements) =>
-      checkId(lhs, locals)
-      checkExprOptList(elements, locals)
-
-    case IRArray(irinfo, lhs, elements) =>
-      checkId(lhs, locals)
-      checkExprOptList(elements, locals)
-
-    case IRArrayNumber(irinfo, lhs, elements) => checkId(lhs, locals)
-    case IRBreak(irinfo, label) => ()
-
-    case IRInternalCall(irinfo, lhs, fun, arg1, arg2) =>
-      checkId(lhs, locals)
-      checkId(fun, locals)
-      checkExpr(arg1, locals)
-      checkExprOpt(arg2, locals)
-
-    case IRCall(irinfo, lhs, fun, thisB, args) =>
-      checkId(lhs, locals)
-      checkId(fun, locals)
-      checkId(thisB, locals)
-      checkId(args, locals)
-
-    case IRNew(irinfo, lhs, cons, args) if (args.length == 2) =>
-      checkId(lhs, locals)
-      checkId(cons, locals)
-      checkId(args(0), locals)
-      checkId(args(1), locals)
-
-    case c @ IRNew(irinfo, lhs, fun, args) =>
-      excLog.signal(NewArgNumError(c))
-
-    case IRDelete(irinfo, lhs, id) =>
-      checkId(lhs, locals)
-      checkId(id, locals)
-
-    case IRDeleteProp(irinfo, lhs, obj, index) =>
-      checkId(lhs, locals)
-      checkId(obj, locals)
-      checkExpr(index, locals)
-
-    case IRExprStmt(irinfo, lhs, expr, _) =>
-      checkId(lhs, locals)
-      checkExpr(expr, locals)
-
-    case IRIf(irinfo, cond, trueblock, falseblock) =>
-      checkExpr(cond, locals)
-      checkStmt(trueblock, locals)
-      falseblock match {
-        case Some(block) => checkStmt(block, locals)
-        case None => ()
-      }
-
-    case IRLabelStmt(irinfo, label, stmt) => checkStmt(stmt, locals)
-    case IRReturn(irinfo, expr) => checkExprOpt(expr, locals)
-
-    case IRStore(irinfo, obj, index, rhs) =>
-      checkId(obj, locals)
-      checkExpr(index, locals)
-      checkExpr(rhs, locals)
-
-    case IRThrow(irinfo, expr) => checkExpr(expr, locals)
-
-    case IRWhile(irinfo, cond, body) =>
-      checkExpr(cond, locals)
-      checkStmt(body, locals)
-
-    case _ => {
-      if (config.verbose || cfgConfig.verbose) excLog.signal(IRIgnored(stmt))
+        val locals = namesOfArgs(args) ++ namesOfFunDecls(fds) ++ namesOfVars(vds)
+        walk(fds, walk(_: IRFunDecl)) ++ walk(body, walk(_: IRStmt, locals))
     }
-  }
 
-  private def checkMember(mem: IRMember, locals: Set[String]): Unit = {
-    mem match {
-      case IRField(irinfo, prop, expr) => checkExpr(expr, locals)
-      case getOrSet =>
-        excLog.signal(NotSupportedIRError(getOrSet))
-        Unit
+    // IRStmt
+    def walk(stmt: IRStmt, locals: LocalNames): CapturedNames = stmt match {
+      case IRNoOp(_, _) => EMPTY
+      case IRStmtUnit(_, stmts) => walk(stmts, walk(_: IRStmt, locals))
+      case IRSeq(_, stmts) => walk(stmts, walk(_: IRStmt, locals))
+      case (vd: IRVarStmt) =>
+        excLog.signal(NotHoistedError(vd)); EMPTY
+      case (fd: IRFunDecl) =>
+        excLog.signal(NotHoistedError(fd)); EMPTY
+      case IRFunExpr(_, lhs, func) => walk(lhs, locals) ++ walk(func)
+      case IRObject(_, lhs, members, proto) =>
+        walk(lhs, locals) ++
+          walk(members, walk(_: IRMember, locals)) ++
+          walk(proto, walk(_: IRId, locals))
+      case irTry @ IRTry(_, body, name, catchB, finallyB) =>
+        walk(body, locals) ++
+          ((name, catchB) match {
+            case (Some(x), Some(stmt)) => walk(stmt, locals + x.uniqueName)
+            case (None, None) => EMPTY
+            case _ => excLog.signal(WrongTryStmtError(irTry)); EMPTY
+          }) ++
+          walk(finallyB, walk(_: IRStmt, locals))
+      case IRArgs(_, lhs, elements) =>
+        walk(lhs, locals) ++
+          walk(elements, walk(_: Option[IRExpr], walk(_: IRExpr, locals)))
+      case IRArray(_, lhs, elements) =>
+        walk(lhs, locals) ++
+          walk(elements, walk(_: Option[IRExpr], walk(_: IRExpr, locals)))
+      case IRArrayNumber(_, lhs, _) => walk(lhs, locals)
+      case IRBreak(_, label) => EMPTY
+      case IRInternalCall(_, lhs, fun, arg1, arg2) =>
+        walk(lhs, locals) ++
+          walk(fun, locals) ++
+          walk(arg1, locals) ++
+          walk(arg2, walk(_: IRId, locals))
+      case IRCall(_, lhs, fun, thisB, args) =>
+        walk(lhs, locals) ++
+          walk(fun, locals) ++
+          walk(thisB, locals) ++
+          walk(args, locals)
+      case IRNew(_, lhs, cons, args) if (args.length == 2) =>
+        walk(lhs, locals) ++
+          walk(cons, locals) ++
+          walk(args(0), locals) ++
+          walk(args(1), locals)
+      case c @ IRNew(_, lhs, fun, args) =>
+        excLog.signal(NewArgNumError(c)); EMPTY
+      case IRDelete(_, lhs, id) =>
+        walk(lhs, locals) ++ walk(id, locals)
+      case IRDeleteProp(_, lhs, obj, index) =>
+        walk(lhs, locals) ++
+          walk(obj, locals) ++
+          walk(index, locals)
+      case IRExprStmt(_, lhs, expr, _) =>
+        walk(lhs, locals) ++ walk(expr, locals)
+      case IRIf(_, cond, trueblock, falseblock) =>
+        walk(cond, locals) ++
+          walk(trueblock, locals) ++
+          walk(falseblock, walk(_: IRStmt, locals))
+      case IRLabelStmt(_, label, stmt) => walk(stmt, locals)
+      case IRReturn(_, expr) => walk(expr, walk(_: IRExpr, locals))
+      case IRStore(_, obj, index, rhs) =>
+        walk(obj, locals) ++
+          walk(index, locals) ++
+          walk(rhs, locals)
+      case IRThrow(_, expr) => walk(expr, locals)
+      case IRWhile(_, cond, body) =>
+        walk(cond, locals) ++ walk(body, locals)
+      case _ =>
+        if (config.verbose || cfgConfig.verbose) excLog.signal(IRIgnored(stmt))
+        EMPTY
     }
-  }
 
-  private def checkExprOptList(list: List[Option[IRExpr]], locals: Set[String]): Unit = {
-    list.foreach(exprOpt => checkExprOpt(exprOpt, locals))
-  }
+    // IRMember
+    def walk(mem: IRMember, locals: LocalNames): CapturedNames = mem match {
+      case IRField(_, prop, expr) => walk(expr, locals)
+      case getOrSet => excLog.signal(NotSupportedIRError(getOrSet)); EMPTY
+    }
 
-  private def checkExprOpt(exprOpt: Option[IRExpr], locals: Set[String]): Unit = exprOpt match {
-    case Some(expr) => checkExpr(expr, locals)
-    case None => ()
-  }
+    // IRExpr
+    def walk(expr: IRExpr, locals: LocalNames): CapturedNames = expr match {
+      case IRLoad(_, obj, index) =>
+        walk(obj, locals) ++ walk(index, locals)
+      case IRBin(_, first, _, second) =>
+        walk(first, locals) ++ walk(second, locals)
+      case IRUn(_, _, expr) => walk(expr, locals)
+      case (id: IRId) => walk(id, locals)
+      case _ => EMPTY
+    }
 
-  private def checkExpr(expr: IRExpr, locals: Set[String]): Unit = expr match {
-    case IRLoad(_, obj, index) =>
-      checkId(obj, locals)
-      checkExpr(index, locals)
+    // IRId
+    def walk(id: IRId, locals: LocalNames): CapturedNames = id match {
+      case IRUserId(_, _, name, false, _) if (!locals.contains(name)) =>
+        HashSet(name)
+      case _ => EMPTY
+    }
 
-    case IRBin(_, first, op, second) =>
-      checkExpr(first, locals)
-      checkExpr(second, locals)
+    // generic list type
+    def walk[T](list: List[T], walk: T => CapturedNames): CapturedNames =
+      list.foldLeft(EMPTY) { _ ++ walk(_) }
 
-    case IRUn(_, op, expr) => checkExpr(expr, locals)
-    case id: IRId => checkId(id, locals)
-    case _: IRThis => ()
-    case _: IRNumber => ()
-    case _: IRString => ()
-    case _: IRBool => ()
-    case _: IRNull => ()
+    // generic option type
+    def walk[T](opt: Option[T], walk: T => CapturedNames): CapturedNames =
+      opt.fold(EMPTY) { walk(_) }
   }
 }
