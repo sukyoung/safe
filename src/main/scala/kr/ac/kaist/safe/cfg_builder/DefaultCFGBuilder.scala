@@ -12,9 +12,6 @@
 package kr.ac.kaist.safe.cfg_builder
 
 import scala.collection.immutable.{ HashMap, HashSet }
-import scala.collection.mutable.{ Map => MMap, HashMap => MHashMap, Set => MSet, HashSet => MHashSet }
-import scala.util.Try
-
 import kr.ac.kaist.safe.config.Config
 import kr.ac.kaist.safe.errors.ExcLog
 import kr.ac.kaist.safe.errors.error._
@@ -26,90 +23,74 @@ import kr.ac.kaist.safe.util.{ NodeUtil => NU }
 import kr.ac.kaist.safe.analyzer.domain.Address
 
 // default CFG builder
-object DefaultCFGBuilder extends CFGBuilder {
+class DefaultCFGBuilder(
+    ir: IRRoot,
+    config: Config,
+    cfgConfig: CFGBuildConfig
+) extends CFGBuilder {
   ////////////////////////////////////////////////////////////////
-  // global variables
+  // results
   ////////////////////////////////////////////////////////////////
 
-  // collect exception logs
-  private var excLog: ExcLog = _
+  val (cfg: CFG, excLog: ExcLog) = init
+
+  ////////////////////////////////////////////////////////////////
+  // private global
+  ////////////////////////////////////////////////////////////////
 
   // collect catch variable
-  private val catchVarMap: MSet[String] = MHashSet()
-
-  // config
-  private var config: Config = _
-
-  // cfg config
-  private var cfgConfig: CFGBuildConfig = _
-
+  private var catchVarMap: Set[String] = _
   // captured variable set
   private var captured: Set[String] = _
-
   // unique id to CFG id
-  private val cfgIdMap: MMap[String, CFGId] = MHashMap()
-
+  private var cfgIdMap: Map[String, CFGId] = _
   // unique name counter
   private var uniqueNameCounter: Int = _
-
-  // CFG
-  private var cfg: CFG = _
-
   // current function
   private var currentFunc: CFGFunction = _
+  // JavaScript Label Map
+  private trait JSLabel {
+    def of(lmap: LabelMap): Set[CFGNormalBlock] =
+      lmap.getOrElse(this, HashSet())
+  }
+  private case object RetLabel extends JSLabel
+  private case object ThrowLabel extends JSLabel
+  private case object ThrowEndLabel extends JSLabel
+  private case object AfterCatchLabel extends JSLabel
+  private case class UserLabel(label: String) extends JSLabel
+  private type LabelMap = Map[JSLabel, Set[CFGNormalBlock]]
 
-  // default Span
-  private val defaultSpan = NU.defaultSpan("temp")
+  ////////////////////////////////////////////////////////////////
+  // main
+  ////////////////////////////////////////////////////////////////
 
-  // reset global values
-  private def resetValues(ir: IRRoot, conf: Config, cfgConf: CFGBuildConfig): (List[CFGId], CFGFunction) = {
+  build
+
+  ////////////////////////////////////////////////////////////////
+  // helper function
+  ////////////////////////////////////////////////////////////////
+
+  // initialize global variables
+  private def init: (CFG, ExcLog) = {
     val cvResult = new CapturedVariableCollector(ir, config, cfgConfig)
-    excLog = cvResult.excLog
-    catchVarMap.clear
-    config = conf
-    cfgConfig = cfgConf
+    catchVarMap = HashSet()
     captured = cvResult.captured
-    cfgIdMap.clear
+    cfgIdMap = HashMap()
     uniqueNameCounter = 0
-
     ir match {
       case IRRoot(_, fds, vds, _) =>
-
-        // create initial cfg
         val globalVars: List[CFGId] = namesOfFunDecls(fds) ++ namesOfVars(vds)
-        cfg = new CFG(globalVars, ir)
-
-        // set global function as current function
+        val cfg = new CFG(globalVars, ir)
         currentFunc = cfg.globalFunc
-
-        (globalVars, currentFunc)
+        (cfg, cvResult.excLog)
     }
   }
 
-  ////////////////////////////////////////////////////////////////
-  // JavaScript Label Map
-  ////////////////////////////////////////////////////////////////
-
-  trait JSLabel {
-    // block list for the label of given label map
-    def of(lmap: LabelMap): Set[CFGNormalBlock] = lmap.getOrElse(this, HashSet())
-  }
-  case object RetLabel extends JSLabel
-  case object ThrowLabel extends JSLabel
-  case object ThrowEndLabel extends JSLabel
-  case object AfterCatchLabel extends JSLabel
-  case class UserLabel(label: String) extends JSLabel
-
-  type LabelMap = Map[JSLabel, Set[CFGNormalBlock]]
-
-  ////////////////////////////////////////////////////////////////
-  // Rules
-  ////////////////////////////////////////////////////////////////
-
   /* root rule : IRRoot -> CFG  */
-  def build(ir: IRRoot, config: Config, cfgConfig: CFGBuildConfig): (CFG, ExcLog) = ir match {
+  def build: Unit = ir match {
     case IRRoot(_, fds, _, stmts) =>
-      val (globalVars, globalFunc) = resetValues(ir, config, cfgConfig)
+      val globalFunc = cfg.globalFunc
+      val globalVars = globalFunc.localVars
       val startBlock: CFGNormalBlock = globalFunc.createBlock
       cfg.addEdge(globalFunc.entry, startBlock)
 
@@ -120,8 +101,6 @@ object DefaultCFGBuilder extends CFGBuilder {
       cfg.addEdge(ThrowLabel of lmap toList, globalFunc.exitExc, EdgeExc)
       cfg.addEdge(ThrowEndLabel of lmap toList, globalFunc.exitExc)
       cfg.addEdge(AfterCatchLabel of lmap toList, globalFunc.exitExc)
-
-      (cfg, excLog)
   }
 
   /* fdvars rule : IRFunDecl list -> LocalVars
@@ -258,7 +237,7 @@ object DefaultCFGBuilder extends CFGBuilder {
       case irTry @ IRTry(_, body, name, catchIR, finIR) =>
         (name, catchIR, finIR) match {
           case (Some(x), Some(catb), None) =>
-            catchVarMap.add(x.uniqueName)
+            catchVarMap += x.uniqueName
 
             /* try block */
             val tryBlock: CFGNormalBlock = func.createBlock
@@ -329,7 +308,7 @@ object DefaultCFGBuilder extends CFGBuilder {
             }
             (finbs, reslmap)
           case (Some(x), Some(catb), Some(finb)) =>
-            catchVarMap.add(x.uniqueName)
+            catchVarMap += x.uniqueName
 
             /* try block */
             val tryBlock: CFGNormalBlock = func.createBlock
@@ -673,7 +652,7 @@ object DefaultCFGBuilder extends CFGBuilder {
         case CFGUserId(_, kind, _, _) if kind == CapturedCatchVar || kind == CapturedVar => currentFunc.addCaptured(cfgId)
         case _ =>
       }
-      cfgIdMap(text) = cfgId
+      cfgIdMap += (text -> cfgId)
       cfgId
     })
   }

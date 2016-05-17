@@ -32,7 +32,9 @@ case class CFGBuild(
     prev.compile(config).flatMap(cfgBuild(config, _))
   def cfgBuild(config: Config, ir: IRRoot): Try[CFG] = {
     // Build CFG from IR.
-    val (cfg: CFG, excLog: ExcLog) = DefaultCFGBuilder.build(ir, config, cfgBuildConfig)
+    val cbResult = new DefaultCFGBuilder(ir, config, cfgBuildConfig)
+    val cfg: CFG = cbResult.cfg
+    val excLog: ExcLog = cbResult.excLog
 
     // Report errors.
     if (excLog.hasError) {
