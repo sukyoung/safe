@@ -16,6 +16,8 @@ import kr.ac.kaist.safe.config.{ BoolOption, Config, ConfigOption, NumOption, Op
 import kr.ac.kaist.safe.cfg_builder.CFG
 import kr.ac.kaist.safe.analyzer.domain._
 
+import scala.util.{ Success, Failure }
+
 // Analyze phase struct.
 case class Analyze(
     prev: CFGBuild = CFGBuild(),
@@ -24,8 +26,8 @@ case class Analyze(
   override def apply(config: Config): Unit = analyze(config)
   def analyze(config: Config): Option[Int] = {
     prev.cfgBuild(config) match {
-      case Some(cfg) => analyze(config, cfg)
-      case None => None
+      case Success(cfg) => analyze(config, cfg)
+      case Failure(_) => None
     }
   }
 
