@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright (c) 2012-2013, S-Core, KAIST.
+ * Copyright (c) 2016, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -70,4 +70,9 @@ case class Context(private val env: Set[Loc], private val thisBinding: Set[Loc],
   def weakSubsLoc(locR: Loc, locO: Loc, addressManager: AddressManager): Context = {
     Context(Set[Loc](), Set[Loc](), mayOld + addressManager.locToAddr(locR), mustOld)
   }
+}
+
+object Context {
+  val Bot: Context = Context(Set[Loc](), Set[Loc](), Set[Address](), null)
+  val Empty: Context = Context(Set[Loc](), Set[Loc](), Set[Address](), Set[Address]())
 }

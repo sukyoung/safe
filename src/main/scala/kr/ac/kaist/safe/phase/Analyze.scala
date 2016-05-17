@@ -11,9 +11,10 @@
 
 package kr.ac.kaist.safe.phase
 
+import kr.ac.kaist.safe.analyzer.Semantics
 import kr.ac.kaist.safe.config.{ BoolOption, Config, ConfigOption, NumOption, OptionKind, StrOption }
 import kr.ac.kaist.safe.cfg_builder.CFG
-import kr.ac.kaist.safe.analyzer.domain.{ AbsUndefUtil, AbsNullUtil, AbsBoolUtil, AbsNumberUtil, AbsStringUtil, DefaultUndefUtil, DefaultNullUtil, DefaultBoolUtil, DefaultNumUtil, DefaultStrSetUtil }
+import kr.ac.kaist.safe.analyzer.domain._
 
 // Analyze phase struct.
 case class Analyze(
@@ -21,9 +22,18 @@ case class Analyze(
     analyzeConfig: AnalyzeConfig = AnalyzeConfig()
 ) extends Phase(Some(prev), Some(analyzeConfig)) {
   override def apply(config: Config): Unit = analyze(config)
-  def analyze(config: Config): Unit = {}
-  def analyze(config: Config, cfg: CFG): Unit = {
-    //TODO: DefaultAnalyzer.analyze(config, analyzeConfig, ...)
+  def analyze(config: Config): Option[Int] = {
+    prev.cfgBuild(config) match {
+      case Some(cfg) => analyze(config, cfg)
+      case None => None
+    }
+  }
+
+  def analyze(config: Config, cfg: CFG): Option[Int] = {
+    //TODO: Below are temporal analyzer main code
+    val utils = Utils(analyzeConfig.AbsUndef, analyzeConfig.AbsNull, analyzeConfig.AbsBool, analyzeConfig.AbsNumber, analyzeConfig.AbsString)
+    val semantics = new Semantics(cfg, utils)
+    None
   }
 }
 

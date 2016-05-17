@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright (c) 2012-2014, S-Core, KAIST.
+ * Copyright (c) 2016, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -31,4 +31,8 @@ case class State(heap: Heap, context: Context) {
   def <>(that: State): State = {
     new State(this.heap <> that.heap, this.context <> that.context)
   }
+}
+
+object State {
+  val Bot: State = State(Heap.Bot, Context.Bot)
 }
