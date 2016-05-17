@@ -11,7 +11,8 @@
 
 package kr.ac.kaist.safe.config
 
-import kr.ac.kaist.safe.util.{ NodeUtil => NU, AddressManager, DefaultAddressManager }
+import kr.ac.kaist.safe.cfg_builder.{ AddressManager, DefaultAddressManager }
+import kr.ac.kaist.safe.util.{ NodeUtil => NU }
 
 case class Config(
     var command: Command,

@@ -9,7 +9,9 @@
  * ****************************************************************************
  */
 
-package kr.ac.kaist.safe.util
+package kr.ac.kaist.safe.cfg_builder
+
+import scala.util.Try
 import kr.ac.kaist.safe.analyzer.domain.{ Address, Loc, RecencyTag }
 
 // Used by cfg_builder/DefaultCFGBuilder.scala
@@ -21,7 +23,7 @@ trait AddressManager {
   def isOldLoc(loc: Loc): Boolean
   def compareLoc(a: Loc, b: Loc): Int
   def locName(loc: Loc): String
-  def parseLocName(s: String): Option[Loc]
+  def parseLocName(s: String): Try[Loc]
   def registerSystemAddress(addr: Address, name: String): Unit
   def newProgramAddr(): Address
   def newProgramAddr(name: String): Address

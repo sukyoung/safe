@@ -9,11 +9,11 @@
  * ****************************************************************************
  */
 
-package kr.ac.kaist.safe.util
+package kr.ac.kaist.safe.cfg_builder
 
 import scala.collection.mutable.{ Map => MMap, HashMap => MHashMap }
+import scala.util.Try
 import scala.util.matching.Regex
-import kr.ac.kaist.safe.cfg_builder.FunctionId
 import kr.ac.kaist.safe.nodes.InstId
 import kr.ac.kaist.safe.analyzer.domain.{ Address, Loc, RecencyTag, Recent, Old }
 
@@ -109,7 +109,7 @@ class DefaultAddressManager extends AddressManager {
     }
   }
 
-  def parseLocName(s: String): Option[Loc] = {
+  def parseLocName(s: String): Try[Loc] = {
     val pattern = new Regex("""(#|##)([0-9a-zA-Z.]+)""", "prefix", "locname")
     def find(addrName: String): Option[Address] = {
       val f = AMObj.reverseAddrTable.get(addrName)
@@ -119,25 +119,16 @@ class DefaultAddressManager extends AddressManager {
       }
     }
 
-    try {
-      val pattern(prefix, locname) = s
-      val r = prefix match {
-        case "#" => Recent
-        case "##" => Old
-      }
-      val address = find(locname) match {
-        case Some(addr) => addr
-        case None => locname.toInt
-      }
-      Some(addrToLoc(address, r))
-    } catch {
-      case e: MatchError => {
-        None
-      }
-      case e: NumberFormatException => {
-        None
-      }
+    val pattern(prefix, locname) = s
+    val r = prefix match {
+      case "#" => Recent
+      case "##" => Old
     }
+    val address = find(locname) match {
+      case Some(addr) => addr
+      case None => locname.toInt
+    }
+    Try(addrToLoc(address, r))
   }
 
   def registerSystemAddress(addr: Address, name: String): Unit = {

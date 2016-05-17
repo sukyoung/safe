@@ -69,21 +69,19 @@ class CoreTest extends FlatSpec {
     }
   }
 
-  def compileTest(irOpt: Try[IRRoot], testName: String): Unit = {
-    irOpt match {
+  def compileTest(ir: Try[IRRoot], testName: String): Unit = {
+    ir match {
       case Failure(_) => assert(false)
       case Success(ir) =>
         assert(readFile(testName) == normalized(ir.toString(0)))
     }
   }
 
-  def cfgBuildTest(cfgOpt: Option[CFG], testName: String): Unit = {
-    cfgOpt match {
-      case None => assert(false)
-      case Some(cfg) =>
-        val result = readFile(testName)
-        val dump = normalized(cfg.dump)
-        assert(result == dump)
+  def cfgBuildTest(cfg: Try[CFG], testName: String): Unit = {
+    cfg match {
+      case Failure(_) => assert(false)
+      case Success(cfg) =>
+        assert(readFile(testName) == normalized(cfg.dump))
     }
   }
 
@@ -109,11 +107,8 @@ class CoreTest extends FlatSpec {
     val compileName = resDir + "/compile/" + name + ".test"
     registerTest("[Compile]" + filename, CompileTest) { compileTest(ir, compileName) }
 
-    val cfgOpt = ir match {
-      case Success(ir) => cfgBuild.cfgBuild(config, ir)
-      case _ => None
-    }
+    val cfg = ir.flatMap(cfgBuild.cfgBuild(config, _))
     val cfgName = resDir + "/cfg/" + name + ".test"
-    registerTest("[CFG]" + filename, CFGBuildTest) { cfgBuildTest(cfgOpt, cfgName) }
+    registerTest("[CFG]" + filename, CFGBuildTest) { cfgBuildTest(cfg, cfgName) }
   }
 }

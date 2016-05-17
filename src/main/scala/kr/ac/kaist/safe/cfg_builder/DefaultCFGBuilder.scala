@@ -18,6 +18,7 @@ import scala.util.Try
 import kr.ac.kaist.safe.config.Config
 import kr.ac.kaist.safe.errors.ExcLog
 import kr.ac.kaist.safe.errors.error._
+import kr.ac.kaist.safe.errors.warning._
 import kr.ac.kaist.safe.nodes._
 import kr.ac.kaist.safe.cfg_builder.EdgeType._
 import kr.ac.kaist.safe.phase.CFGBuildConfig
@@ -555,7 +556,7 @@ object DefaultCFGBuilder extends CFGBuilder {
         cfg.addEdge(bs, headBlock)
         (List(loopOutBlock), lm.updated(ThrowLabel, (ThrowLabel of lm) + loopBodyBlock + loopOutBlock))
       case _ => {
-        if (config.verbose || cfgConfig.verbose) Console.err.println("* Warning: following IR statement is ignored: " + stmt)
+        if (config.verbose || cfgConfig.verbose) excLog.signal(IRIgnored(stmt))
         (blocks, lmap)
       }
     }

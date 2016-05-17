@@ -16,6 +16,7 @@ import scala.collection.mutable.{ HashSet => MHashSet }
 import scala.collection.immutable.HashSet
 import kr.ac.kaist.safe.errors.ExcLog
 import kr.ac.kaist.safe.errors.error._
+import kr.ac.kaist.safe.errors.warning._
 import kr.ac.kaist.safe.nodes._
 import kr.ac.kaist.safe.config.Config
 import kr.ac.kaist.safe.phase.CFGBuildConfig
@@ -203,7 +204,7 @@ class CapturedVariableCollector(ir: IRRoot, config: Config, cfgConfig: CFGBuildC
       checkStmt(body, locals)
 
     case _ => {
-      if (config.verbose || cfgConfig.verbose) Console.err.println("* Warning: following IR statement is ignored: " + stmt)
+      if (config.verbose || cfgConfig.verbose) excLog.signal(IRIgnored(stmt))
     }
   }
 

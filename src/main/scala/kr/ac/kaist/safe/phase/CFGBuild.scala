@@ -12,7 +12,7 @@
 package kr.ac.kaist.safe.phase
 
 import java.io.{ BufferedWriter, FileWriter, IOException }
-import scala.util.{ Success, Failure }
+import scala.util.{ Try, Success, Failure }
 import kr.ac.kaist.safe.config.{ Config, ConfigOption, OptionKind, BoolOption, NumOption, StrOption }
 import kr.ac.kaist.safe.errors.ExcLog
 import kr.ac.kaist.safe.cfg_builder.{ DefaultCFGBuilder, CFG }
@@ -24,14 +24,12 @@ case class CFGBuild(
     prev: Compile = Compile(),
     cfgBuildConfig: CFGBuildConfig = CFGBuildConfig()
 ) extends Phase(Some(prev), Some(cfgBuildConfig)) {
-  override def apply(config: Config): Unit = cfgBuild(config)
-  def cfgBuild(config: Config): Option[CFG] = {
-    prev.compile(config) match {
-      case Success(ir) => cfgBuild(config, ir)
-      case _ => None
-    }
+  override def apply(config: Config): Unit = cfgBuild(config) recover {
+    case ex => Console.err.print(ex.toString)
   }
-  def cfgBuild(config: Config, ir: IRRoot): Option[CFG] = {
+  def cfgBuild(config: Config): Try[CFG] =
+    prev.compile(config).flatMap(cfgBuild(config, _))
+  def cfgBuild(config: Config, ir: IRRoot): Try[CFG] = {
     // Build CFG from IR.
     val (cfg: CFG, excLog: ExcLog) = DefaultCFGBuilder.build(ir, config, cfgBuildConfig)
 
@@ -42,18 +40,17 @@ case class CFGBuild(
     }
 
     // Pretty print to file.
-    val dump: String = cfg.dump
     cfgBuildConfig.outFile match {
-      case Some(out) => Useful.fileNameToWriters(out) match {
-        case Success((fw, writer)) =>
-          writer.write(dump)
+      case Some(out) => Useful.fileNameToWriters(out).map { pair =>
+        {
+          val ((fw, writer)) = pair
+          writer.write(cfg.dump)
           writer.close; fw.close
           println("Dumped CFG to " + out)
-          Some(cfg)
-        case Failure(_) =>
-          Some(cfg)
+          cfg
+        }
       }
-      case None => Some(cfg)
+      case None => Try(cfg)
     }
   }
 }
