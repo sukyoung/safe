@@ -94,6 +94,8 @@ Thanks to the `CodeFlower`_ source code visualization tool.
 
 .. _CodeFlower: http://www.redotheweb.com/CodeFlower
 
+.. raw:: html
+<embed>
     <style type="text/css">
 circle.node {
   cursor: pointer;
@@ -138,3 +140,4 @@ var createCodeFlower = function(json) {
 };
 d3.json('vis/data.json', createCodeFlower);
 </script>
+</embed>
