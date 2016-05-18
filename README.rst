@@ -87,7 +87,7 @@ Visualization
 ============
 .. image:: vis/flow.png
 
-.. image:: vis/full.pdf
+.. image:: vis/full.png
 
 Thanks to the `CodeFlower`_ source code visualization tool.
 
