@@ -1,16 +1,16 @@
 Visualization of SAFE Version 2.0
 ===========
-.. image:: vis/flow.png
-   :width: 150 px
+SAFE 2.0 flow:
 
-.. image:: vis/full.png
+![](flow.png =400x)
 
-Thanks to the `CodeFlower`_ source code visualization tool.
-.. _CodeFlower: http://www.redotheweb.com/CodeFlower
+SAFE 2.0 directory structure:
 
-.. raw:: html
+![](full.png =500x)
 
-    <embed>
+Using the [CodeFlower](http://www.redotheweb.com/CodeFlower) source code visualization tool:
+
+<embed>
     <style type="text/css">
 circle.node {
   cursor: pointer;
@@ -36,11 +36,11 @@ line.link {
 }
     </style>
 <div id="visualization"></div>
-<script type="text/javascript" src="vis/javascripts/d3/d3.js"></script>
-<script type="text/javascript" src="vis/javascripts/d3/d3.geom.js"></script>
-<script type="text/javascript" src="vis/javascripts/d3/d3.layout.js"></script>
-<script type="text/javascript" src="vis/javascripts/CodeFlower.js"></script>
-<script type="text/javascript" src="vis/javascripts/dataConverter.js"></script>
+<script type="text/javascript" src="javascripts/d3/d3.js"></script>
+<script type="text/javascript" src="javascripts/d3/d3.geom.js"></script>
+<script type="text/javascript" src="javascripts/d3/d3.layout.js"></script>
+<script type="text/javascript" src="javascripts/CodeFlower.js"></script>
+<script type="text/javascript" src="javascripts/dataConverter.js"></script>
 <script type="text/javascript">
 var currentCodeFlower;
 var createCodeFlower = function(json) {
@@ -53,6 +53,6 @@ var createCodeFlower = function(json) {
   // create a new CodeFlower
   currentCodeFlower = new CodeFlower("#visualization", w, h).update(json);
 };
-d3.json('vis/data.json', createCodeFlower);
+d3.json('data.json', createCodeFlower);
 </script>
-    </embed>
+</embed>

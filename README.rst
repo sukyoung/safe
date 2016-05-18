@@ -86,8 +86,6 @@ or with more explanation: ::
 Visualization
 ============
 .. image:: vis/flow.png
-   :width: 100 px
+   :height: 100px
 
-More visualization are `available`_.
-
-.. _available: https://github.com/kaist-plrg/safe/vis/vis.rst
+`More visualization <https://github.com/kaist-plrg/safe/blob/master/vis/vis.md>`_.
