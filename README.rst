@@ -87,4 +87,4 @@ Visualization
 ============
 .. image:: vis/flow.png
 
-`More visualization <http://rawgit.com/kaist-plrg/safe/master/vis/index.html>`_.
+`More visualization <https://github.com/kaist-plrg/safe/blob/master/vis/index.html>`_.
