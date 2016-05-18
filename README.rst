@@ -88,4 +88,4 @@ Visualization
 .. image:: vis/flow.png
    :height: 100px
 
-`More visualization <https://github.com/kaist-plrg/safe/blob/master/vis/vis.md>`_.
+`More visualization <https://github.com/kaist-plrg/safe/blob/master/vis/index.html>`_.
