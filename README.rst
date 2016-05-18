@@ -86,7 +86,7 @@ or with more explanation: ::
 Visualization
 ============
 .. image:: vis/flow.png
-   :width: 200 px
+   :width: 150 px
 
 .. image:: vis/full.png
 
