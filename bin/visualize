@@ -1,0 +1,18 @@
+#!/bin/bash
+
+################################################################################
+#    Copyright (c) 2016, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+
+if [ -z "$SAFE_HOME" ]; then
+  echo "You need to set SAFE_HOME to the directory containing SAFE"
+  exit 1
+fi
+
+cloc "$SAFE_HOME/src" --csv --exclude-lang=XML,XLST,javascript --by-file --report-file="$SAFE_HOME/vis/safe.cloc"
+node "$SAFE_HOME/bin/forVis" "$SAFE_HOME/vis/safe.cloc"
