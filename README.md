@@ -95,3 +95,6 @@ http://download.eclipse.org/e4/downloads/drops/S-0.17-201501051100/repository/
  * Select two duplicated fragments from the same group and compare their differences using **Compare** from the toolbar.
  * Select at least two duplicated fragments from the same group and view the refactoring suggestions using **Pull Up Method** from the toolbar.
 
+### Visualization
+
+[SAFE 2.0]: http://rawgit.com/kaist-plrg/safe/master/vis/index.html
