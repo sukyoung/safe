@@ -86,6 +86,7 @@ or with more explanation: ::
 Visualization
 ============
 .. image:: vis/flow.png
+   :scale: 70 %
 
 .. image:: vis/full.png
 
