@@ -1,40 +1,58 @@
-Visualization of SAFE Version 2.0
-===========
-SAFE 2.0 flow:
-
-![](flow.png =400x)
-
-SAFE 2.0 directory structure:
-
-![](full.png =500x)
-
-Using the [CodeFlower](http://www.redotheweb.com/CodeFlower) source code visualization tool:
-
-<embed>
+<!DOCTYPE html>
+<html>
+  <!-- Use the Source, Luke -->
+  <head>
+    <title>CodeFlower Source code visualization</title>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+    <link type="text/css" rel="stylesheet" href="stylesheets/bootstrap.min.css"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="stylesheets/bootstrap-responsive.min.css" rel="stylesheet">
+    <link href='http://fonts.googleapis.com/css?family=Rosario:400,700' rel='stylesheet' type='text/css'>
+    <link type="text/css" rel="stylesheet" href="stylesheets/style.css"/>
     <style type="text/css">
 circle.node {
   cursor: pointer;
   stroke: #000;
   stroke-width: .5px;
 }
+
 circle.node.directory {
   stroke: #9ecae1;
   stroke-width: 2px;
 }
+
 circle.node.collapsed {
   stroke: #555;
 }
+
 .nodetext {
   fill: #252929;
   font-weight: bold;
   text-shadow: 0 0 0.2em white;
 }
+
 line.link {
   fill: none;
   stroke: #9ecae1;
   stroke-width: 1.5px;
 }
     </style>
+  </head>
+  <body>
+  <div class="content">
+      <div class="container">
+        <h1>Visualization of SAFE Version 2.0</h1>
+        <h2>SAFE 2.0 Flow</h2>
+        <div>
+            <img src = "flow.png" height="250" >
+        </div>
+        <h2>SAFE 2.0 Directory Structure</h2>
+        <div>
+            <img src = "full.png" height="700"> 
+        </div>
+
+    <p>Using the <a href="http://www.redotheweb.com/CodeFlower">CodeFlower</a> source code visualization tool:</p>
+
 <div id="visualization"></div>
 <script type="text/javascript" src="javascripts/d3/d3.js"></script>
 <script type="text/javascript" src="javascripts/d3/d3.geom.js"></script>
@@ -55,4 +73,5 @@ var createCodeFlower = function(json) {
 };
 d3.json('data.json', createCodeFlower);
 </script>
-</embed>
+</body>
+</html>
