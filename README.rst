@@ -87,9 +87,12 @@ Visualization
 ============
 .. image:: vis/flow.png
 
+.. image:: vis/full.pdf
+
 Thanks to the `CodeFlower`_ source code visualization tool.
 
 .. _CodeFlower: http://www.redotheweb.com/CodeFlower
+
 <embed>
     <style type="text/css">
 circle.node {
