@@ -95,6 +95,7 @@ Thanks to the `CodeFlower`_ source code visualization tool.
 .. _CodeFlower: http://www.redotheweb.com/CodeFlower
 
 .. raw:: html
+
 <embed>
     <style type="text/css">
 circle.node {
