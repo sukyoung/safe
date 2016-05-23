@@ -30,13 +30,14 @@ class Disambiguator(program: Program) {
   // results
   ////////////////////////////////////////////////////////////////
 
-  lazy val result = NU.simplifyWalker.walk(DisambWalker.walk(program))
+  lazy val result: Program =
+    NU.simplifyWalker.walk(DisambWalker.walk(program))
   lazy val excLog: ExcLog =
     if (hasAssign) normalExcLog
     else normalExcLog + assExcLog
 
   ////////////////////////////////////////////////////////////////
-  // private global
+  // private mutable
   ////////////////////////////////////////////////////////////////
 
   // temporal exception log
