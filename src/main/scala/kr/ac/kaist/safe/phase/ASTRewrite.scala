@@ -35,7 +35,7 @@ case class ASTRewrite(
     var program = hoister.doit
     var excLog: ExcLog = hoister.excLog
     val disambiguator = new Disambiguator(program)
-    program = disambiguator.doit
+    program = disambiguator.result
     excLog += disambiguator.excLog
     val withRewriter: WithRewriter = new WithRewriter(program, false)
     program = withRewriter.doit
