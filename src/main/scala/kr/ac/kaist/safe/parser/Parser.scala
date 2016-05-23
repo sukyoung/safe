@@ -11,19 +11,18 @@
 
 package kr.ac.kaist.safe.parser
 
-import scala.util.{ Try, Success, Failure }
 import java.io._
 import java.nio.charset.Charset
+import scala.util.{ Try, Success, Failure }
 import xtc.parser.Result
 import xtc.parser.SemanticValue
-import xtc.parser.ParseError
+import kr.ac.kaist.safe.errors.error.{ NotJSFileError, AlreadyMergedSourceError }
 import kr.ac.kaist.safe.nodes._
 import kr.ac.kaist.safe.util.{ NodeUtil => NU, SourceLoc, Span }
-import kr.ac.kaist.safe.errors.error._
 
 object Parser {
-  val mergedSourceLoc = new SourceLoc(NU.freshFile("Merged"), 0, 0, 0)
-  val mergedSourceInfo = new ASTNodeInfo(new Span(mergedSourceLoc, mergedSourceLoc))
+  val MERGED_SOURCE_LOC = new SourceLoc(NU.freshFile("Merged"), 0, 0, 0)
+  val MERGED_SOURCE_INFO = new ASTNodeInfo(new Span(MERGED_SOURCE_LOC, MERGED_SOURCE_LOC))
 
   // Used by DynamicRewriter
   def stringToFnE(str: (String, (Int, Int), String)): Try[FunExpr] = {
@@ -53,7 +52,7 @@ object Parser {
       fileToStmts(file).map(s => NU.makeProgram(s.info, List(s)))
     case files =>
       Try(files.foldLeft(List[SourceElements]())((l, f) => l ++ List(fileToStmts(f).get))).
-        map(NU.makeProgram(mergedSourceInfo, _))
+        map(NU.makeProgram(MERGED_SOURCE_INFO, _))
   }
 
   // Used by ast_rewriter/Hoister.scala
@@ -62,7 +61,7 @@ object Parser {
       scriptToStmts(script).map(s => NU.makeProgram(s.info, List(s)))
     case scripts =>
       Try(scripts.foldLeft(List[SourceElements]())((l, s) => l ++ List(scriptToStmts(s).get))).
-        map(NU.makeProgram(mergedSourceInfo, _))
+        map(NU.makeProgram(MERGED_SOURCE_INFO, _))
   }
 
   private def fileToStmts(f: String): Try[SourceElements] = {
@@ -87,7 +86,7 @@ object Parser {
     rewriteDynamic(new JS(in, fileName).JSmain(0))
 
   private def rewriteDynamic(parseResult: Result): Try[Program] =
-    Try(DynamicRewriter.doit(parseResult.asInstanceOf[SemanticValue].value.asInstanceOf[Program]))
+    Try(DynamicRewriter(parseResult.asInstanceOf[SemanticValue].value.asInstanceOf[Program]))
 
   private def getInfoStmts(program: Program): Try[SourceElements] = {
     val info = program.info
