@@ -30,7 +30,7 @@ class CapturedVariableCollector(
   // results
   ////////////////////////////////////////////////////////////////
 
-  lazy val captured: CapturedNames = CollectCaptVarWalker.walk(irRoot)
+  lazy val result: CapturedNames = CollectCaptVarWalker.walk(irRoot)
   lazy val excLog: ExcLog = new ExcLog
 
   ////////////////////////////////////////////////////////////////
@@ -197,4 +197,10 @@ class CapturedVariableCollector(
     def walk[T](opt: Option[T], walk: T => CapturedNames): CapturedNames =
       opt.fold(EMPTY) { walk(_) }
   }
+
+  ////////////////////////////////////////////////////////////////
+  // calculate results
+  ////////////////////////////////////////////////////////////////
+
+  (result, excLog)
 }

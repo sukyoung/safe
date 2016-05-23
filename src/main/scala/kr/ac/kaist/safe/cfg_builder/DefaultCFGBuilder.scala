@@ -32,7 +32,7 @@ class DefaultCFGBuilder(
   // results
   ////////////////////////////////////////////////////////////////
 
-  val (cfg: CFG, excLog: ExcLog) = init
+  lazy val (cfg: CFG, excLog: ExcLog) = init
 
   ////////////////////////////////////////////////////////////////
   // private global
@@ -74,7 +74,7 @@ class DefaultCFGBuilder(
   private def init: (CFG, ExcLog) = {
     val cvResult = new CapturedVariableCollector(ir, config, cfgConfig)
     catchVarMap = HashSet()
-    captured = cvResult.captured
+    captured = cvResult.result
     cfgIdMap = HashMap()
     uniqueNameCounter = 0
     ir match {
