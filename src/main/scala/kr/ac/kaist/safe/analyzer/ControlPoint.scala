@@ -12,10 +12,10 @@
 package kr.ac.kaist.safe.analyzer
 
 import kr.ac.kaist.safe.analyzer.domain._
-import kr.ac.kaist.safe.nodes.CFGNode
+import kr.ac.kaist.safe.cfg_builder.CFGBlock
 
 trait ControlPoint {
-  val node: CFGNode
+  val node: CFGBlock
   val callContext: CallContext
   def getState: State
   def setState(s: State): Unit
@@ -23,16 +23,16 @@ trait ControlPoint {
 
 object ControlPoint {
   type CP = FlowSensitiveCP
-  def apply(node: CFGNode, callContext: CallContext): ControlPoint = new CP(node, callContext)
+  def apply(node: CFGBlock, callContext: CallContext): ControlPoint = new CP(node, callContext)
 }
 
-case class FlowSensitiveCP(node: CFGNode, callContext: CallContext) extends ControlPoint {
+case class FlowSensitiveCP(node: CFGBlock, callContext: CallContext) extends ControlPoint {
   private var state: State = State.Bot
   def getState: State = this.state
   def setState(s: State): Unit = this.state = s
 }
 
-case class FlowInsensitiveCP(node: CFGNode, callContext: CallContext) extends ControlPoint {
+case class FlowInsensitiveCP(node: CFGBlock, callContext: CallContext) extends ControlPoint {
   def getState: State = State.Bot /* Global State */
   def setState(s: State): Unit = {} /* Global State = s */
 }

@@ -34,7 +34,7 @@ case class Analyze(
   def analyze(config: Config, cfg: CFG): Option[Int] = {
     //TODO: Below are temporal analyzer main code
     val utils = Utils(analyzeConfig.AbsUndef, analyzeConfig.AbsNull, analyzeConfig.AbsBool, analyzeConfig.AbsNumber, analyzeConfig.AbsString)
-    val semantics = new Semantics(cfg, utils)
+    val semantics = new Semantics(cfg, utils, config.addrManager)
     None
   }
 }

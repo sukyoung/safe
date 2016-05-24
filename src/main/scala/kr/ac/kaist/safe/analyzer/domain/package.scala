@@ -13,6 +13,8 @@ package kr.ac.kaist.safe.analyzer
 
 import kr.ac.kaist.safe.cfg_builder.FunctionId
 
+import scala.collection.immutable.HashSet
+
 package object domain {
   ////////////////////////////////////////////////////////////////
   // abstract location
@@ -28,6 +30,8 @@ package object domain {
   ////////////////////////////////////////////////////////////////
   def PropValue(objval: ObjectValue, funid: Set[FunctionId]): PropValue =
     DefaultPropValue(objval, funid)
+
+  def PropValue(objval: ObjectValue): PropValue = PropValue(objval, HashSet[FunctionId]())
 
   def ObjectValue(value: Value, writable: AbsBool, enumerable: AbsBool, configurable: AbsBool): ObjectValue =
     DefaultObjectValue(value, writable, enumerable, configurable)
