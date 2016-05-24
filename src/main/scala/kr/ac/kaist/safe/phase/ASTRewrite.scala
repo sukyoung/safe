@@ -30,15 +30,19 @@ case class ASTRewrite(
   def rewrite(config: Config): Try[Program] =
     prev.parse(config).flatMap(rewrite(config, _))
   def rewrite(config: Config, pgm: Program): Try[Program] = {
-    // Rewrite AST.
+    // hoist
     val hoister = new Hoister(pgm)
-    var program = hoister.doit
-    var excLog: ExcLog = hoister.excLog
+    var program = hoister.result
+    var excLog = hoister.excLog
+
+    // disambiguate
     val disambiguator = new Disambiguator(program)
-    program = disambiguator.doit
+    program = disambiguator.result
     excLog += disambiguator.excLog
-    val withRewriter: WithRewriter = new WithRewriter(program, false)
-    program = withRewriter.doit
+
+    // "with" rewrite
+    val withRewriter = new WithRewriter(program, false)
+    program = withRewriter.result
     excLog += withRewriter.excLog
 
     // Report errors.

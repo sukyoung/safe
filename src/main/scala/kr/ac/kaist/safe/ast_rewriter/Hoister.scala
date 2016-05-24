@@ -18,46 +18,47 @@ import kr.ac.kaist.safe.nodes._
 import kr.ac.kaist.safe.parser.Parser
 import kr.ac.kaist.safe.util.{ NodeUtil => NU, Span }
 
-class Hoister(program: Program) extends ASTWalker {
-  /* Error handling
-   * The signal function collects errors during the Hoister phase.
-   * To collect multiple errors,
-   * we should return a dummy value after signaling an error.
-   */
-  var excLog = new ExcLog
+class Hoister(program: Program) {
+  ////////////////////////////////////////////////////////////////
+  // results
+  ////////////////////////////////////////////////////////////////
+
+  lazy val result: Program = {
+    UnitWalker.walk(program)
+    NU.simplifyWalker.walk(HoistTopWalker.walk(program))
+  }
+  lazy val excLog: ExcLog = new ExcLog
+
+  ////////////////////////////////////////////////////////////////
+  // private mutable
+  ////////////////////////////////////////////////////////////////
+
+  // variable declarations in for statements
+  private var fvds: List[VarDecl] = List()
+  private var inFor = false
+  private var currentBlock: LocalBlock = new VarBlock(null)
+
+  ////////////////////////////////////////////////////////////////
+  // helper function
+  ////////////////////////////////////////////////////////////////
 
   // getters
-  def toSpan(node: ASTNode): Span = node.info.span
-  def toSpan(info: ASTNodeInfo): Span = info.span
-  def vd2Str(vd: VarDecl): String = vd.name.text
-  def fd2Str(fd: FunDecl): String = fd.ftn.name.text
-  def id2Str(id: Id): String = id.text
+  private def toSpan(node: ASTNode): Span = node.info.span
+  private def toSpan(info: ASTNodeInfo): Span = info.span
+  private def vd2Str(vd: VarDecl): String = vd.name.text
+  private def fd2Str(fd: FunDecl): String = fd.ftn.name.text
+  private def id2Str(id: Id): String = id.text
 
-  // Variable declarations in for statements
-  var fvds = List[VarDecl]()
-  var inFor = false
-  def contains(vds: List[VarDecl], vd: VarDecl): Boolean = {
+  // check contain
+  private def contains(vds: List[VarDecl], vd: VarDecl): Boolean = {
     val name = vd2Str(vd)
     val span = toSpan(vd)
     vds.find(v => vd2Str(v).equals(name) && toSpan(v).equals(span)).isDefined
   }
 
-  // Utility functions
-  def assignOp(info: ASTNodeInfo): Op = Op(info, "=")
-  def assignS(i: ASTNodeInfo, name: Id, expr: Expr): ExprStmt =
-    ExprStmt(i, walk(AssignOpApp(i, VarRef(i, name), assignOp(i), expr)), true)
-  def hoistVds(vds: List[VarDecl]): List[Stmt] =
-    vds.foldRight(List[Stmt]())((vd, res) => vd match {
-      case VarDecl(_, _, None, _) => res
-      case VarDecl(i, n, Some(e), _) => List(assignS(i, n, e)) ++ res
-    })
-  def stmtUnit(info: ASTNodeInfo, stmtList: List[Stmt]): Stmt = {
-    if (stmtList.length == 1) stmtList.head
-    else StmtUnit(info, stmtList)
-  }
   // Get the declared variable and function names and the names on lhs of assignments
   // in the current lexical scope
-  class hoistWalker(node: ASTNode, isTopLevel: Boolean) extends ASTWalker {
+  private class HoistWalker(node: ASTNode) extends ASTWalker {
     var varDecls = List[VarDecl]()
     var funDecls = List[FunDecl]()
     var varNames = List[(Span, String)]()
@@ -113,7 +114,7 @@ class Hoister(program: Program) extends ASTWalker {
   }
 
   // Remove function declarations in the current lexical scope
-  object rmFunDeclWalker extends ASTWalker {
+  private object RmFunDeclWalker extends ASTWalker {
     override def walk(node: LHS): LHS = node match {
       case fe: FunExpr => fe
       case _ => super.walk(node)
@@ -131,7 +132,7 @@ class Hoister(program: Program) extends ASTWalker {
     }
   }
 
-  object unitWalker extends ASTUnitWalker {
+  private object UnitWalker extends ASTUnitWalker {
     override def walk(node: Program): Unit = node match {
       case Program(info, body) =>
         join(walk(info), walk(body))
@@ -403,37 +404,29 @@ class Hoister(program: Program) extends ASTWalker {
     }
   }
 
-  /* The main entry function */
-  def doit(): Program = {
-    unitWalker.walk(program)
-    NU.simplifyWalker.walk(walk(program))
-  }
-
-  class LocalBlock(inOuter: LocalBlock) {
+  private class LocalBlock(inOuter: LocalBlock) {
     val outer: LocalBlock = inOuter
     var vds: List[VarDecl] = List[VarDecl]()
     var fds: List[FunDecl] = List[FunDecl]()
     var blocks: List[LocalBlock] = List[LocalBlock]()
     var assigns: List[(Span, String)] = List[(Span, String)]()
   }
-  class VarBlock(inOuter: LocalBlock) extends LocalBlock(inOuter)
-  class FunBlock(inName: String, inSpan: Span, inParams: List[Id], inOuter: LocalBlock)
+  private class VarBlock(inOuter: LocalBlock) extends LocalBlock(inOuter)
+  private class FunBlock(inName: String, inSpan: Span, inParams: List[Id], inOuter: LocalBlock)
       extends LocalBlock(inOuter) {
     val name: String = inName
     val span: Span = inSpan
     val params: List[Id] = inParams
   }
-
-  var currentBlock: LocalBlock = new VarBlock(null)
-  def addVds(vds: List[VarDecl]): Unit = currentBlock.vds ++= vds
-  def addFd(fd: FunDecl): Unit = currentBlock.fds ++= List(fd)
-  def declareV(bl: LocalBlock, name: String): Option[Span] = {
+  private def addVds(vds: List[VarDecl]): Unit = currentBlock.vds ++= vds
+  private def addFd(fd: FunDecl): Unit = currentBlock.fds ++= List(fd)
+  private def declareV(bl: LocalBlock, name: String): Option[Span] = {
     bl.vds.find(vd => vd2Str(vd).equals(name)) match {
       case Some(vd) => Some(toSpan(vd))
       case None => None
     }
   }
-  def declareVR(bl: LocalBlock, name: String): Option[Span] =
+  private def declareVR(bl: LocalBlock, name: String): Option[Span] =
     declareV(bl, name) match {
       case None =>
         bl.blocks.filter(_.isInstanceOf[VarBlock]).foreach(bl =>
@@ -444,13 +437,13 @@ class Hoister(program: Program) extends ASTWalker {
         None
       case res => res
     }
-  def declareF(bl: LocalBlock, name: String): Option[Span] = {
+  private def declareF(bl: LocalBlock, name: String): Option[Span] = {
     bl.fds.find(fd => fd2Str(fd).equals(name)) match {
       case Some(fd) => Some(toSpan(fd))
       case None => None
     }
   }
-  def declareFR(bl: LocalBlock, name: String): Option[Span] =
+  private def declareFR(bl: LocalBlock, name: String): Option[Span] =
     declareF(bl, name) match {
       case None =>
         bl.blocks.filter(_.isInstanceOf[VarBlock]).foreach(bl =>
@@ -463,7 +456,7 @@ class Hoister(program: Program) extends ASTWalker {
     }
   // 3. function vs function
   //   2) a transitively enclosing function is the same name
-  def nestedF(bl: LocalBlock, name: String, span: Span): Unit = bl.outer match {
+  private def nestedF(bl: LocalBlock, name: String, span: Span): Unit = bl.outer match {
     case b: VarBlock => nestedF(b, name, span)
     case f: FunBlock if f.name.equals(name) =>
       excLog.signal(ShadowingWarning(f.span, ShadowingFunc, name, span, ShadowingFunc))
@@ -471,13 +464,13 @@ class Hoister(program: Program) extends ASTWalker {
     case _ =>
   }
   // find the enclosing function block
-  def enclosingFuns(bl: LocalBlock): List[FunBlock] = bl match {
+  private def enclosingFuns(bl: LocalBlock): List[FunBlock] = bl match {
     case f: FunBlock => List(f) ++ (enclosingFuns(f.outer))
     case b: VarBlock if (b.outer != null) => enclosingFuns(b.outer)
     case _ => List()
   }
 
-  def checkLocalEnv(bl: FunBlock, name: String): Unit =
+  private def checkLocalEnv(bl: FunBlock, name: String): Unit =
     // a reference to an enclosing function
     if (bl.name.equals(name)) {
       nestedF(bl, name, bl.span)
@@ -491,149 +484,172 @@ class Hoister(program: Program) extends ASTWalker {
     }
 
   // collect the assignments in the enclosing function
-  def collectAssigns(block: LocalBlock): List[(Span, String)] = block match {
+  private def collectAssigns(block: LocalBlock): List[(Span, String)] = block match {
     case f: FunBlock => f.assigns
     case v: VarBlock => v.assigns ++ collectAssigns(v.outer)
     case _ => List()
   }
 
   // introduce a new block
-  def newBlock(stmts: List[SourceElement]): Unit = {
+  private def newBlock(stmts: List[SourceElement]): Unit = {
     val oldVB = currentBlock
     currentBlock = new VarBlock(oldVB)
     oldVB.blocks ++= List[LocalBlock](currentBlock)
-    stmts.foreach(unitWalker.walk)
+    stmts.foreach(UnitWalker.walk)
     currentBlock = oldVB
   }
 
-  def isInVd(vd: VarDecl, ds: List[VarDecl], vars: List[(Span, String)]): Boolean =
-    ds.exists(d => vd2Str(d).equals(vd2Str(vd)))
-  def isInFd(fd: FunDecl, ds: List[FunDecl]): Boolean =
-    ds.exists(d => fd2Str(d).equals(fd2Str(fd)))
-  def isVdInFd(vd: VarDecl, ds: List[FunDecl]): Boolean =
-    ds.exists(d => fd2Str(d).equals(vd2Str(vd)))
-  def hoist(body: List[SourceElement], isTopLevel: Boolean, params: List[Id], strict: Boolean): (List[FunDecl], List[VarDecl], List[SourceElement]) = {
-    val (vdss, fdss, varss) = body.map(s => new hoistWalker(s, isTopLevel).doit).unzip3
-    // hoisted variable declarations
-    val vds = vdss.flatten
-    // hoisted function declarations
-    val fds = fdss.flatten.map(walk)
-    val vars = varss.flatten
-    // duplicated variable declarations removed
-    // first-come wins
-    val vdsUniq = vds.foldLeft(List[VarDecl]())((res, vd) =>
-      if (isInVd(vd, res, vars)) res
-      else res ++ List(vd))
-    // duplicated function declarations removed
-    // last-come wins
-    val fdsUniq = fds.foldRight(List[FunDecl]())((fd, res) =>
-      if (isInFd(fd, res)) res
-      else List(fd) ++ res)
-    // variables with the same names with functions removed
-    // function wins
-    val vdsUniq2 = vdsUniq.foldRight(List[VarDecl]())((vd, res) =>
-      if (isVdInFd(vd, fdsUniq)) res
-      else List(vd) ++ res)
-    // Set the strict field of function and variable declarations
-    (
-      fdsUniq.map(fd => fd match { case FunDecl(i, f, _) => FunDecl(i, f, strict) }),
-      vdsUniq2.map(vd => vd match { case VarDecl(i, n, e, _) => VarDecl(i, n, e, strict) }),
-      body.map(rmFunDeclWalker.walk).map(walk)
-    )
-  }
+  private object HoistTopWalker extends ASTWalker {
+    // utility functions
+    private def assignOp(info: ASTNodeInfo): Op = Op(info, "=")
+    private def assignS(i: ASTNodeInfo, name: Id, expr: Expr): ExprStmt =
+      ExprStmt(i, walk(AssignOpApp(i, VarRef(i, name), assignOp(i), expr)), true)
+    private def hoistVds(vds: List[VarDecl]): List[Stmt] =
+      vds.foldRight(List[Stmt]())((vd, res) => vd match {
+        case VarDecl(_, _, None, _) => res
+        case VarDecl(i, n, Some(e), _) => List(assignS(i, n, e)) ++ res
+      })
+    private def stmtUnit(info: ASTNodeInfo, stmtList: List[Stmt]): Stmt = {
+      if (stmtList.length == 1) stmtList.head
+      else StmtUnit(info, stmtList)
+    }
 
-  override def walk(node: Program): Program = node match {
-    case Program(info, TopLevel(i, Nil, Nil, program)) =>
-      val (fds, vds, newProgram) =
-        program.foldLeft((
-          List[FunDecl](),
-          List[VarDecl](),
-          List[SourceElements]()
-        )) {
-          case ((f, v, s), ses) => {
-            val (fs, vs, ss) = hoist(ses.body, true, Nil, ses.strict)
-            (f ++ fs, v ++ vs, s ++ List(SourceElements(ses.info, ss, ses.strict)))
+    // hoist
+    private def isInVd(vd: VarDecl, ds: List[VarDecl], vars: List[(Span, String)]): Boolean =
+      ds.exists(d => vd2Str(d).equals(vd2Str(vd)))
+    private def isInFd(fd: FunDecl, ds: List[FunDecl]): Boolean =
+      ds.exists(d => fd2Str(d).equals(fd2Str(fd)))
+    private def isVdInFd(vd: VarDecl, ds: List[FunDecl]): Boolean =
+      ds.exists(d => fd2Str(d).equals(vd2Str(vd)))
+    private def hoist(body: List[SourceElement], params: List[Id], strict: Boolean): (List[FunDecl], List[VarDecl], List[SourceElement]) = {
+      val (vdss, fdss, varss) = body.map(s => new HoistWalker(s).doit).unzip3
+      // hoisted variable declarations
+      val vds = vdss.flatten
+      // hoisted function declarations
+      val fds = fdss.flatten.map(walk)
+      val vars = varss.flatten
+      // duplicated variable declarations removed
+      // first-come wins
+      val vdsUniq = vds.foldLeft(List[VarDecl]())((res, vd) =>
+        if (isInVd(vd, res, vars)) res
+        else res ++ List(vd))
+      // duplicated function declarations removed
+      // last-come wins
+      val fdsUniq = fds.foldRight(List[FunDecl]())((fd, res) =>
+        if (isInFd(fd, res)) res
+        else List(fd) ++ res)
+      // variables with the same names with functions removed
+      // function wins
+      val vdsUniq2 = vdsUniq.foldRight(List[VarDecl]())((vd, res) =>
+        if (isVdInFd(vd, fdsUniq)) res
+        else List(vd) ++ res)
+      // Set the strict field of function and variable declarations
+      (
+        fdsUniq.map(fd => fd match { case FunDecl(i, f, _) => FunDecl(i, f, strict) }),
+        vdsUniq2.map(vd => vd match { case VarDecl(i, n, e, _) => VarDecl(i, n, e, strict) }),
+        body.map(RmFunDeclWalker.walk).map(walk)
+      )
+    }
+
+    override def walk(node: Program): Program = node match {
+      case Program(info, TopLevel(i, Nil, Nil, program)) =>
+        val (fds, vds, newProgram) =
+          program.foldLeft((
+            List[FunDecl](),
+            List[VarDecl](),
+            List[SourceElements]()
+          )) {
+            case ((f, v, s), ses) => {
+              val (fs, vs, ss) = hoist(ses.body, Nil, ses.strict)
+              (f ++ fs, v ++ vs, s ++ List(SourceElements(ses.info, ss, ses.strict)))
+            }
           }
-        }
-      Program(info, TopLevel(i, fds, vds, newProgram))
-    case (pgm: Program) =>
-      excLog.signal(BeforeHoisterError("Program", pgm)); pgm
-  }
+        Program(info, TopLevel(i, fds, vds, newProgram))
+      case (pgm: Program) =>
+        excLog.signal(BeforeHoisterError("Program", pgm)); pgm
+    }
 
-  override def walk(node: FunDecl): FunDecl = node match {
-    case FunDecl(info, Functional(j, Nil, Nil, SourceElements(i, body, str), name, params, bodyS), strict) =>
-      val (fds, vds, newBody) = hoist(body, false, params, strict)
-      FunDecl(info, Functional(j, fds, vds, SourceElements(i, newBody, str), name, params, bodyS), strict)
-    case (fd: FunDecl) =>
-      excLog.signal(BeforeHoisterError("Function declarations", fd)); fd
-  }
+    override def walk(node: FunDecl): FunDecl = node match {
+      case FunDecl(info, Functional(j, Nil, Nil, SourceElements(i, body, str), name, params, bodyS), strict) =>
+        val (fds, vds, newBody) = hoist(body, params, strict)
+        FunDecl(info, Functional(j, fds, vds, SourceElements(i, newBody, str), name, params, bodyS), strict)
+      case (fd: FunDecl) =>
+        excLog.signal(BeforeHoisterError("Function declarations", fd)); fd
+    }
 
-  override def walk(node: LHS): LHS = node match {
-    case FunExpr(info, Functional(j, Nil, Nil, SourceElements(i, body, strict), name, params, bodyS)) =>
-      val (fds, vds, newBody) = hoist(body, false, params, strict)
-      FunExpr(info, Functional(j, fds, vds, SourceElements(i, newBody, strict), name, params, bodyS))
-    case (fe: FunExpr) =>
-      excLog.signal(BeforeHoisterError("Function expressions", fe)); fe
-    case _ => super.walk(node)
-  }
+    override def walk(node: LHS): LHS = node match {
+      case FunExpr(info, Functional(j, Nil, Nil, SourceElements(i, body, strict), name, params, bodyS)) =>
+        val (fds, vds, newBody) = hoist(body, params, strict)
+        FunExpr(info, Functional(j, fds, vds, SourceElements(i, newBody, strict), name, params, bodyS))
+      case (fe: FunExpr) =>
+        excLog.signal(BeforeHoisterError("Function expressions", fe)); fe
+      case _ => super.walk(node)
+    }
 
-  override def walk(node: Member): Member = node match {
-    case GetProp(info, prop, Functional(j, Nil, Nil, SourceElements(i, body, strict), name, params, bodyS)) =>
-      val (fds, vds, newBody) = hoist(body, false, params, strict)
-      GetProp(info, prop, Functional(j, fds, vds, SourceElements(i, newBody, strict), name, params, bodyS))
-    case (gp: GetProp) =>
-      excLog.signal(BeforeHoisterError("Function expressions", gp)); gp
-    case SetProp(info, prop, Functional(j, Nil, Nil, SourceElements(i, body, strict), name, params, bodyS)) =>
-      val (fds, vds, newBody) = hoist(body, false, params, strict)
-      SetProp(info, prop, Functional(j, fds, vds, SourceElements(i, newBody, strict), name, params, bodyS))
-    case (sp: SetProp) =>
-      excLog.signal(BeforeHoisterError("Function expressions", sp)); sp
-    case _ => super.walk(node)
-  }
+    override def walk(node: Member): Member = node match {
+      case GetProp(info, prop, Functional(j, Nil, Nil, SourceElements(i, body, strict), name, params, bodyS)) =>
+        val (fds, vds, newBody) = hoist(body, params, strict)
+        GetProp(info, prop, Functional(j, fds, vds, SourceElements(i, newBody, strict), name, params, bodyS))
+      case (gp: GetProp) =>
+        excLog.signal(BeforeHoisterError("Function expressions", gp)); gp
+      case SetProp(info, prop, Functional(j, Nil, Nil, SourceElements(i, body, strict), name, params, bodyS)) =>
+        val (fds, vds, newBody) = hoist(body, params, strict)
+        SetProp(info, prop, Functional(j, fds, vds, SourceElements(i, newBody, strict), name, params, bodyS))
+      case (sp: SetProp) =>
+        excLog.signal(BeforeHoisterError("Function expressions", sp)); sp
+      case _ => super.walk(node)
+    }
 
-  override def walk(node: Stmt): Stmt = node match {
-    case VarStmt(info, vds) => stmtUnit(info, hoistVds(vds))
-    case ForVar(info, vars, cond, action, body) =>
-      val newInfo = NU.spanInfoAll(vars)
-      ABlock(
-        newInfo,
-        List(
-          stmtUnit(newInfo, hoistVds(vars)),
-          walk(For(info, None, cond, action, body))
-        ),
-        false
-      )
-    case ForVarIn(info, VarDecl(i, n, None, _), expr, body) =>
-      walk(ForIn(info, VarRef(i, n), expr, body))
-    case ForVarIn(info, VarDecl(i, n, Some(e), _), expr, body) =>
-      ABlock(
-        info,
-        List(
+    override def walk(node: Stmt): Stmt = node match {
+      case VarStmt(info, vds) => stmtUnit(info, hoistVds(vds))
+      case ForVar(info, vars, cond, action, body) =>
+        val newInfo = NU.spanInfoAll(vars)
+        ABlock(
+          newInfo,
+          List(
+            stmtUnit(newInfo, hoistVds(vars)),
+            walk(For(info, None, cond, action, body))
+          ),
+          false
+        )
+      case ForVarIn(info, VarDecl(i, n, None, _), expr, body) =>
+        walk(ForIn(info, VarRef(i, n), expr, body))
+      case ForVarIn(info, VarDecl(i, n, Some(e), _), expr, body) =>
+        ABlock(
+          info,
+          List(
+            stmtUnit(info, List(walk(assignS(i, n, e)))),
+            walk(ForIn(info, VarRef(i, n), expr, body))
+          ),
+          false
+        )
+      case LabelStmt(info, label, ForVar(i, vars, cond, action, body)) =>
+        val newInfo = NU.spanInfoAll(vars)
+        ABlock(
+          newInfo,
+          List(
+            stmtUnit(info, hoistVds(vars)),
+            LabelStmt(info, label,
+              walk(For(i, None, cond, action, body)))
+          ),
+          false
+        )
+      case LabelStmt(info, label, ForVarIn(finfo, VarDecl(i, n, Some(e), _), expr, body)) =>
+        ABlock(info, List(
           stmtUnit(info, List(walk(assignS(i, n, e)))),
-          walk(ForIn(info, VarRef(i, n), expr, body))
-        ),
-        false
-      )
-    case LabelStmt(info, label, ForVar(i, vars, cond, action, body)) =>
-      val newInfo = NU.spanInfoAll(vars)
-      ABlock(
-        newInfo,
-        List(
-          stmtUnit(info, hoistVds(vars)),
           LabelStmt(info, label,
-            walk(For(i, None, cond, action, body)))
+            walk(ForIn(info, VarRef(i, n), expr, body)))
         ),
-        false
-      )
-    case LabelStmt(info, label, ForVarIn(finfo, VarDecl(i, n, Some(e), _), expr, body)) =>
-      ABlock(info, List(
-        stmtUnit(info, List(walk(assignS(i, n, e)))),
-        LabelStmt(info, label,
-          walk(ForIn(info, VarRef(i, n), expr, body)))
-      ),
-        false)
-    case LabelStmt(info, label, stmt) =>
-      LabelStmt(info, label, walk(stmt))
-    case _ => super.walk(node)
+          false)
+      case LabelStmt(info, label, stmt) =>
+        LabelStmt(info, label, walk(stmt))
+      case _ => super.walk(node)
+    }
   }
+
+  ////////////////////////////////////////////////////////////////
+  // calculate results
+  ////////////////////////////////////////////////////////////////
+
+  (result, excLog)
 }
