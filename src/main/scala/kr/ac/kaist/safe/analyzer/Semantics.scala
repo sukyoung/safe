@@ -85,8 +85,42 @@ class Semantics(cfg: CFG, utils: Utils, addressManager: AddressManager) {
     }
   }
 
-  def C(cp: ControlPoint, cmd: CFGNode, s: State): (State, State) = {
-    (State.Bot, State.Bot)
+  def C(cp: ControlPoint, cmd: CFGBlock, st: State): (State, State) = {
+    (st.heap, st.context) match {
+      case (Heap.Bot, Context.Bot) => (State.Bot, State.Bot)
+      case (h: Heap, ctx: Context) =>
+        cmd match {
+          case Entry(_) => {
+            val fun = cp.node.func
+            val xArgVars = fun.argVars
+            val xLocalVars = fun.localVars
+            val localObj = h.getOrElse(addressManager.SINGLE_PURE_LOCAL_LOC, utils.ObjBot)
+            val locSetArg = localObj.getOrElse(fun.argumentsName, utils.PropValueBot).objval.value.locset
+            val (nHeap, _) = xArgVars.foldLeft((h, 0))((res, x) => {
+              val (iHeap, i) = res
+              val vi = locSetArg.foldLeft(utils.ValueBot)((vk, lArg) => {
+                vk + helper.proto(iHeap, lArg, utils.absString.alpha(i.toString))
+              })
+              (helper.createMutableBinding(iHeap, x, vi), i + 1)
+            })
+            val hm = xLocalVars.foldLeft(nHeap)((hj, x) => {
+              val undefPV = PValue(utils.absUndef.Top, utils.absNull.Bot, utils.absBool.Bot, utils.absNumber.Bot, utils.absString.Bot)
+              helper.createMutableBinding(hj, x, Value(undefPV, LocSetEmpty))
+            })
+            (State(hm, ctx), State.Bot)
+          }
+          case Exit(_) => (st, State.Bot)
+          case ExitExc(_) => (st, State.Bot)
+          case call: Call => I(cp, call.callInst, st, State.Bot)
+          case afterCall: AfterCall => (st, State.Bot)
+          case afterCatch: AfterCatch => (st, State.Bot)
+          case block: CFGNormalBlock =>
+            block.getInsts.foldLeft((st, State.Bot))((states, inst) => {
+              val (oldSt, oldExcSt) = states
+              I(cp, inst, oldSt, oldExcSt)
+            })
+        }
+    }
   }
 
   def I(cp: ControlPoint, i: CFGInst, s: State, se: State): (State, State) = {

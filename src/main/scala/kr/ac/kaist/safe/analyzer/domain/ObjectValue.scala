@@ -27,6 +27,11 @@ trait ObjectValue {
   def <>(that: ObjectValue): ObjectValue
 
   def isBottom: Boolean
+
+  def copyWith(newValue: Value): ObjectValue
+  def copyWithWritable(newWritable: AbsBool): ObjectValue
+  def copyWithEnumerable(newEnumerable: AbsBool): ObjectValue
+  def copyWithConfigurable(newConfigurable: AbsBool): ObjectValue
 }
 
 case class DefaultObjectValue(
@@ -73,4 +78,13 @@ case class DefaultObjectValue(
 
   def isBottom: Boolean =
     this.value.isBottom && this.writable.isBottom && this.enumerable.isBottom && this.configurable.isBottom
+
+  def copyWith(newValue: Value): ObjectValue =
+    DefaultObjectValue(newValue, writable, enumerable, configurable)
+  def copyWithWritable(newWritable: AbsBool): ObjectValue =
+    DefaultObjectValue(value, newWritable, enumerable, configurable)
+  def copyWithEnumerable(newEnumerable: AbsBool): ObjectValue =
+    DefaultObjectValue(value, writable, newEnumerable, configurable)
+  def copyWithConfigurable(newConfigurable: AbsBool): ObjectValue =
+    DefaultObjectValue(value, writable, enumerable, newConfigurable)
 }

@@ -34,6 +34,12 @@ trait PValue {
 
   def isTop: Boolean
   def isBottom: Boolean
+
+  def copyWith(newUndefVal: AbsUndef): PValue
+  def copyWith(newNullVal: AbsNull): PValue
+  def copyWith(newBoolVal: AbsBool): PValue
+  def copyWith(newNumberVal: AbsNumber): PValue
+  def copyWith(newStringVal: AbsString): PValue
 }
 
 case class DefaultPValue(
@@ -162,4 +168,10 @@ case class DefaultPValue(
     undefval.isTop && nullval.isTop && boolval.isTop && numval.isTop && strval.isTop
   def isBottom: Boolean =
     undefval.isBottom && nullval.isBottom && boolval.isBottom && numval.isBottom && strval.isBottom
+
+  def copyWith(newUndefVal: AbsUndef): PValue = DefaultPValue(newUndefVal, nullval, boolval, numval, strval)
+  def copyWith(newNullVal: AbsNull): PValue = DefaultPValue(undefval, newNullVal, boolval, numval, strval)
+  def copyWith(newBoolVal: AbsBool): PValue = DefaultPValue(undefval, nullval, newBoolVal, numval, strval)
+  def copyWith(newNumberVal: AbsNumber): PValue = DefaultPValue(undefval, nullval, boolval, newNumberVal, strval)
+  def copyWith(newStringVal: AbsString): PValue = DefaultPValue(undefval, nullval, boolval, numval, newStringVal)
 }

@@ -28,6 +28,8 @@ package object domain {
   ////////////////////////////////////////////////////////////////
   // value constructors
   ////////////////////////////////////////////////////////////////
+  val LocSetEmpty: Set[Loc] = HashSet[Loc]()
+
   def PropValue(objval: ObjectValue, funid: Set[FunctionId]): PropValue =
     DefaultPropValue(objval, funid)
 
