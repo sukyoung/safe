@@ -13,7 +13,7 @@ package kr.ac.kaist.safe.nodes
 
 import kr.ac.kaist.safe.analyzer.domain.Address
 import kr.ac.kaist.safe.cfg_builder.{ FunctionId, CFGFunction, CFGBlock, CFGNormalBlock, Call }
-import kr.ac.kaist.safe.util.NodeUtil
+import kr.ac.kaist.safe.util.{ NodeUtil, EJSOp }
 
 sealed abstract class CFGNode(val ir: IRNode)
     extends Node {
@@ -291,18 +291,18 @@ case class CFGVarRef(
 // binary operation
 case class CFGBin(
     first: CFGExpr,
-    op: IROp,
+    op: EJSOp,
     second: CFGExpr
 ) extends CFGExpr {
-  override def toString: String = { val text = op.text; s"$first $text $second" }
+  override def toString: String = s"$first $op $second"
 }
 
 // unary operation
 case class CFGUn(
-    op: IROp,
+    op: EJSOp,
     expr: CFGExpr
 ) extends CFGExpr {
-  override def toString: String = { val text = op.text; s"$text $expr" }
+  override def toString: String = s"$op $expr"
 }
 
 // load

@@ -25,7 +25,7 @@ class WithRewriter(program: Program, forTest: Boolean) {
   ////////////////////////////////////////////////////////////////
 
   lazy val result: Program =
-    NU.simplifyWalker.walk(WithRewriteWalker.walk(program, EmptyEnv))
+    NU.SimplifyWalker.walk(WithRewriteWalker.walk(program, EmptyEnv))
   lazy val excLog: ExcLog = new ExcLog
 
   ////////////////////////////////////////////////////////////////

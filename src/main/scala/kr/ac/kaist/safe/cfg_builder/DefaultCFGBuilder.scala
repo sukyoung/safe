@@ -19,7 +19,7 @@ import kr.ac.kaist.safe.errors.warning._
 import kr.ac.kaist.safe.nodes._
 import kr.ac.kaist.safe.cfg_builder.EdgeType._
 import kr.ac.kaist.safe.phase.CFGBuildConfig
-import kr.ac.kaist.safe.util.{ NodeUtil => NU }
+import kr.ac.kaist.safe.util.{ NodeUtil => NU, EJSLogNot }
 import kr.ac.kaist.safe.analyzer.domain.Address
 
 // default CFG builder
@@ -457,9 +457,9 @@ class DefaultCFGBuilder(
         trueBlock.createInst(CFGAssert(cond, _, ir2cfgExpr(cond), true))
         cond match {
           case IRBin(_, first, op, second) if NU.isAssertOperator(op) =>
-            falseBlock.createInst(CFGAssert(cond, _, CFGBin(ir2cfgExpr(first), NU.transIROp(op), ir2cfgExpr(second)), false))
+            falseBlock.createInst(CFGAssert(cond, _, CFGBin(ir2cfgExpr(first), op.kind.trans, ir2cfgExpr(second)), false))
           case _ =>
-            falseBlock.createInst(CFGAssert(cond, _, CFGUn(NU.makeIROp("!"), ir2cfgExpr(cond)), false))
+            falseBlock.createInst(CFGAssert(cond, _, CFGUn(EJSLogNot, ir2cfgExpr(cond)), false))
         }
 
         /* true body */
@@ -520,9 +520,9 @@ class DefaultCFGBuilder(
         loopBodyBlock.createInst(CFGAssert(cond, _, ir2cfgExpr(cond), true))
         cond match {
           case IRBin(_, first, op, second) if NU.isAssertOperator(op) =>
-            loopOutBlock.createInst(CFGAssert(cond, _, CFGBin(ir2cfgExpr(first), NU.transIROp(op), ir2cfgExpr(second)), false))
+            loopOutBlock.createInst(CFGAssert(cond, _, CFGBin(ir2cfgExpr(first), op.kind.trans, ir2cfgExpr(second)), false))
           case _ =>
-            loopOutBlock.createInst(CFGAssert(cond, _, CFGUn(NU.makeIROp("!"), ir2cfgExpr(cond)), false))
+            loopOutBlock.createInst(CFGAssert(cond, _, CFGUn(EJSLogNot, ir2cfgExpr(cond)), false))
         }
         /* add edge from tail to loop head */
         cfg.addEdge(tailBlock, headBlock)
@@ -584,10 +584,10 @@ class DefaultCFGBuilder(
         CFGLoad(id2cfgExpr(obj), ir2cfgExpr(index))
       /* PEI : op \in {instanceof, in}, id lookup */
       case IRBin(_, first, op, second) =>
-        CFGBin(ir2cfgExpr(first), op, ir2cfgExpr(second))
+        CFGBin(ir2cfgExpr(first), op.kind, ir2cfgExpr(second))
       /* PEI : id lookup */
       case IRUn(_, op, expr) =>
-        CFGUn(op, ir2cfgExpr(expr))
+        CFGUn(op.kind, ir2cfgExpr(expr))
       case id: IRId => CFGVarRef(id2cfgId(id))
       case IRThis(_) => CFGThis()
       case IRNumber(_, text, num) => CFGNumber(text, num.doubleValue)

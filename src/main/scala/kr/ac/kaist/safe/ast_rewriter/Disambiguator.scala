@@ -31,7 +31,7 @@ class Disambiguator(program: Program) {
   ////////////////////////////////////////////////////////////////
 
   lazy val result: Program =
-    NU.simplifyWalker.walk(DisambWalker.walk(program))
+    NU.SimplifyWalker.walk(DisambWalker.walk(program))
   lazy val excLog: ExcLog =
     if (hasAssign) normalExcLog
     else normalExcLog + assExcLog

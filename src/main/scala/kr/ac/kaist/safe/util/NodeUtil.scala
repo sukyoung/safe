@@ -163,9 +163,6 @@ object NodeUtil {
   // AST
   ////////////////////////////////////////////////////////////////
 
-  // For use only when there is no hope of attaching a true span.
-  val defaultAst = makeNoOp(makeASTNodeInfo(defaultSpan("defaultAST")), "defaultAST")
-
   /*  make sure it is parenthesized */
   def prBody(body: List[SourceElement]): String =
     join(0, body, Config.LINE_SEP, new StringBuilder("")).toString
@@ -436,7 +433,7 @@ object NodeUtil {
   }
 
   // AST: Remove empty blocks, empty statements, debugger statements, ...
-  object simplifyWalker extends ASTWalker {
+  object SimplifyWalker extends ASTWalker {
     var repeat = false
 
     def simplify(stmts: List[SourceElement]): List[Stmt] = {
@@ -512,30 +509,7 @@ object NodeUtil {
 
   def getFileName(n: IRNode): String = n.ast.info.span.fileName
 
-  def makeIROp(name: String, kind: Int = 0): IROp =
-    new IROp(defaultAst, name,
-      if (kind == 0) EJSOp.strToEJSOp(name) else kind)
-
-  def isAssertOperator(op: IROp): Boolean = EJSOp.isEquality(op.kind)
-
-  // Transposition rules for each relational IR Operator
-  def transIROp(op: IROp): IROp = {
-    op.kind match {
-      case EJSOp.BIN_COMP_REL_LESS => makeIROp(">=") // < --> >=
-      case EJSOp.BIN_COMP_REL_GREATER => makeIROp("<=") // > --> <=
-      case EJSOp.BIN_COMP_REL_LESSEQUAL => makeIROp(">") // <= --> >
-      case EJSOp.BIN_COMP_REL_GREATEREQUAL => makeIROp("<") // >= --> <
-      case EJSOp.BIN_COMP_EQ_EQUAL => makeIROp("!=") // == --> !=
-      case EJSOp.BIN_COMP_EQ_NEQUAL => makeIROp("==") // != --> ==
-      case EJSOp.BIN_COMP_EQ_SEQUAL => makeIROp("!==") // === --> !==
-      case EJSOp.BIN_COMP_EQ_SNEQUAL => makeIROp("===") // !== --> ===
-      case EJSOp.BIN_COMP_REL_IN => makeIROp("notIn") // in --> notIn
-      case EJSOp.BIN_COMP_REL_INSTANCEOF => makeIROp("notInstanceof") // instanceof --> notInstanceof
-      case EJSOp.BIN_COMP_REL_NOTIN => makeIROp("in") // notIn --> in
-      case EJSOp.BIN_COMP_REL_NOTINSTANCEOF => makeIROp("instanceof") // notInstanceof --> instanceof
-      case _ => op
-    }
-  }
+  def isAssertOperator(op: IROp): Boolean = op.kind.typ == EJSEqType
 
   def inlineIndent(stmt: IRStmt, s: StringBuilder, indent: Int): Unit = {
     stmt match {
@@ -551,7 +525,7 @@ object NodeUtil {
   // IR: Remove empty blocks, empty statements, ...
   // Do not remove IRSeq aggressively.
   // They denote internal IRStmts whose values do not contribute to the result.
-  object simplifyIRWalker extends IRWalker {
+  object SimplifyIRWalker extends IRWalker {
     override def walk(node: IRRoot): IRRoot = node match {
       case IRRoot(info, fds, vds, irs) =>
         IRRoot(info, fds.map { fd: IRFunDecl => walk(fd) }, vds, simplify(irs))

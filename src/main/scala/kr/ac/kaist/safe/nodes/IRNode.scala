@@ -21,7 +21,7 @@ package kr.ac.kaist.safe.nodes
 import kr.ac.kaist.safe.config.Config
 import java.lang.Double
 import java.math.BigInteger
-import kr.ac.kaist.safe.util.{ NodeUtil => NU, Span }
+import kr.ac.kaist.safe.util.{ NodeUtil => NU, Span, EJSOp }
 
 abstract class IRNode(val ast: ASTNode) extends Node
 
@@ -250,6 +250,9 @@ case class IRStmtUnit(override val ast: ASTNode, val stmts: List[IRStmt])
       s.toString
   }
 }
+object IRStmtUnit {
+  def apply(ast: ASTNode, stmts: IRStmt*): IRStmtUnit = IRStmtUnit(ast, stmts.toList)
+}
 
 /**
  * Store
@@ -373,6 +376,9 @@ case class IRSeq(override val ast: ASTNode, val stmts: List[IRStmt])
     s.append(Config.LINE_SEP).append(NU.getIndent(indent)).append("}")
     s.toString
   }
+}
+object IRSeq {
+  def apply(ast: ASTNode, stmts: IRStmt*): IRSeq = IRSeq(ast, stmts.toList)
 }
 
 /**
@@ -578,7 +584,7 @@ case class IRUserId(override val ast: ASTNode, override val originalName: String
  * Internally generated identifiers by Translator
  * Do not appear in the JavaScript source text.
  */
-case class IRTmpId(override val ast: ASTNode, override val originalName: String, override val uniqueName: String, override val global: Boolean)
+case class IRTmpId(override val ast: ASTNode, override val originalName: String, override val uniqueName: String, override val global: Boolean = false)
   extends IRId(ast, originalName, uniqueName, global)
 
 /**
@@ -650,9 +656,10 @@ case class IRNull(override val ast: ASTNode)
 /**
  * Operator
  */
-case class IROp(override val ast: ASTNode, val text: String, val kind: Int)
+case class IROp(override val ast: ASTNode, val kind: EJSOp)
     extends IRNode(ast) {
-  override def toString(indent: Int): String = text
+  override def toString(indent: Int): String = name
+  val name: String = kind.name
 }
 
 /**
@@ -778,8 +785,8 @@ trait IRWalker {
   }
 
   def walk(node: IROp): IROp = node match {
-    case IROp(ast, text, kind) =>
-      IROp(walk(ast), text, kind)
+    case IROp(ast, kind) =>
+      IROp(walk(ast), kind)
   }
 
   def walk(node: IRFunDecl): IRFunDecl = node match {
@@ -915,7 +922,7 @@ trait IRGeneralWalker[Result] {
   }
 
   def walk(node: IROp): Result = node match {
-    case IROp(ast, text, kind) =>
+    case IROp(ast, kind) =>
       walk(ast)
   }
 

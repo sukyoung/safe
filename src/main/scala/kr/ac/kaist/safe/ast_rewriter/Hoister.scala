@@ -25,7 +25,7 @@ class Hoister(program: Program) {
 
   lazy val result: Program = {
     UnitWalker.walk(program)
-    NU.simplifyWalker.walk(HoistTopWalker.walk(program))
+    NU.SimplifyWalker.walk(HoistTopWalker.walk(program))
   }
   lazy val excLog: ExcLog = new ExcLog
 
