@@ -21,7 +21,8 @@ trait Heap {
   /* meet */
   def <>(that: Heap): Heap
   /* lookup */
-  def apply(loc: Loc, utils: Utils): Obj
+  def apply(loc: Loc): Option[Obj]
+  def getOrElse(loc: Loc, default: Obj): Obj
   /* heap update */
   def update(loc: Loc, obj: Obj): Heap
   /* remove location */
@@ -34,7 +35,7 @@ trait Heap {
 }
 
 object Heap {
-  val Bot = new DHeap(Map[Loc, Obj]())
+  val Bot: Heap = new DHeap(Map[Loc, Obj]())
   def apply(map: Map[Loc, Obj]): Heap = new DHeap(map)
 }
 
@@ -98,15 +99,16 @@ class DHeap(val map: Map[Loc, Obj]) extends Heap {
   /* lookup */
   def apply(loc: Loc): Option[Obj] = map.get(loc)
 
-  def apply(loc: Loc, utils: Utils): Obj = this(loc) match {
-    case Some(obj) => obj
-    case None => utils.ObjBot
-  }
+  def getOrElse(loc: Loc, default: Obj): Obj =
+    this(loc) match {
+      case Some(obj) => obj
+      case None => default
+    }
 
   /* heap update */
-  def update(loc: Loc, obj: Obj): DHeap = {
+  def update(loc: Loc, obj: Obj): Heap = {
     // recent location
-    if ((loc & 1) == 0) {
+    if ((loc & Recent) == 0) {
       if (obj.isBottom) Heap.Bot
       else new DHeap(map.updated(loc, obj))
     } // old location
@@ -120,12 +122,12 @@ class DHeap(val map: Map[Loc, Obj]) extends Heap {
   }
 
   /* remove location */
-  def remove(loc: Loc): DHeap = {
+  def remove(loc: Loc): Heap = {
     new DHeap(map - loc)
   }
 
   /* substitute locR by locO */
-  def subsLoc(locR: Loc, locO: Loc): DHeap = {
+  def subsLoc(locR: Loc, locO: Loc): Heap = {
     if (this.map.isEmpty) this
     else {
       val newMap =

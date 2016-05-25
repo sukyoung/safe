@@ -12,10 +12,14 @@
 package kr.ac.kaist.safe.cfg_builder
 
 import scala.util.Try
-import kr.ac.kaist.safe.analyzer.domain.{ Address, Loc, RecencyTag }
+import kr.ac.kaist.safe.analyzer.domain.{ Address, Loc, RecencyTag, Recent, Old }
 
 // Used by cfg_builder/DefaultCFGBuilder.scala
 trait AddressManager {
+  lazy val GLOBAL_LOC: Loc = newSystemLoc("Global", Recent)
+  lazy val SINGLE_PURE_LOCAL_LOC: Loc = newSystemLoc("PureLocal", Recent)
+  lazy val COLLAPSED_LOC: Loc = newSystemLoc("Collapsed", Old)
+
   def addrToLoc(addr: Address, recency: RecencyTag): Loc
   def locToAddr(loc: Loc): Address
   def oldifyLoc(loc: Loc): Loc
@@ -30,5 +34,5 @@ trait AddressManager {
   def newRecentLoc(name: String): Loc
   def newRecentLoc(): Loc
   def newSystemRecentLoc(name: String): Loc
-  def newSystemLoc(name: String, tag: Int): Loc
+  def newSystemLoc(name: String, tag: RecencyTag): Loc
 }

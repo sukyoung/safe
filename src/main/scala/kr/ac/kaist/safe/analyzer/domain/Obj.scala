@@ -117,6 +117,228 @@ class Obj(val map: Map[String, (PropValue, Absent)]) {
       new Obj(newMap)
     }
   }
+
+  def weakSubsLoc(locR: Loc, locO: Loc): Obj = {
+    if (this.map.isEmpty) this
+    else {
+      val newMap = this.map.foldLeft(Obj.ObjMapBot)((m, kv) => {
+        val (key, pva) = kv
+        val (propV, absent) = pva
+        val newV = propV.objval.value.weakSubsLoc(locR, locO)
+        val newOV = ObjectValue(newV, propV.objval.writable, propV.objval.enumerable, propV.objval.configurable)
+        val newPropV = PropValue(newOV, propV.funid)
+        m + (key -> (newPropV, absent))
+      })
+      new Obj(newMap)
+    }
+  }
+
+  def apply(s: String): Option[PropValue] = {
+    this.map.get(s) match {
+      case Some(pva) =>
+        val (propV, _) = pva
+        Some(propV)
+      case None if s.take(1) == "@" => None
+      case None if DEFAULT_KEYSET contains s => None
+      case None if isNum(s) => this(STR_DEFAULT_NUMBER)
+      case None if !isNum(s) => this(STR_DEFAULT_OTHER)
+    }
+  }
+
+  def apply(absStr: AbsString): Option[PropValue] = {
+    def addPropOpt(opt1: Option[PropValue], opt2: Option[PropValue]): Option[PropValue] =
+      (opt1, opt2) match {
+        case (Some(propV1), Some(propV2)) => Some(propV1 + propV2)
+        case (Some(_), None) => opt1
+        case (None, Some(_)) => opt2
+        case (None, None) => None
+      }
+
+    absStr.gammaOpt match {
+      case Some(strSet) if strSet.size > 1 =>
+        strSet.map((x) => this.apply(x)).reduce((propVOpt1, propVOpt2) => addPropOpt(propVOpt1, propVOpt2))
+      case None if absStr.isTop =>
+        val pset = map.keySet.filter(x => !(x.take(1) == "@"))
+        val opt1 = pset.map((x) => this.apply(x)).reduce((propVOpt1, propVOpt2) => addPropOpt(propVOpt1, propVOpt2))
+        val opt2 =
+          (this.map.get(STR_DEFAULT_NUMBER), this.map.get(STR_DEFAULT_OTHER)) match {
+            case (Some((propv1, _)), Some((propv2, _))) => Some(propv1 + propv2)
+            case (Some((propv1, _)), None) => Some(propv1)
+            case (None, Some((propv2, _))) => Some(propv2)
+            case (None, None) => None
+          }
+        addPropOpt(opt1, opt2)
+      case None if absStr.isBottom => None
+      case None if absStr.isAllNums =>
+        val pset = map.keySet.filter(x => !(x.take(1) == "@") && isNum(x))
+        val opt1 = pset.map((x) => this.apply(x)).reduce((propVOpt1, propVOpt2) => addPropOpt(propVOpt1, propVOpt2))
+        this.map.get(STR_DEFAULT_NUMBER) match {
+          case Some((propv, _)) => addPropOpt(Some(propv), opt1)
+          case None => opt1
+        }
+      case None if absStr.isAllOthers =>
+        val pset = map.keySet.filter(x => !(x.take(1) == "@") && !isNum(x))
+        val opt1 = pset.map((x) => this.apply(x)).reduce((propVOpt1, propVOpt2) => addPropOpt(propVOpt1, propVOpt2))
+        this.map.get(STR_DEFAULT_OTHER) match {
+          case Some((propv, _)) => addPropOpt(Some(propv), opt1)
+          case None => opt1
+        }
+    }
+  }
+
+  def getOrElse(s: String, default: PropValue): PropValue =
+    this(s) match {
+      case Some(propV) => propV
+      case None => default
+    }
+
+  def getOrElse(absStr: AbsString, default: PropValue): PropValue =
+    this(absStr) match {
+      case Some(propV) => propV
+      case None => default
+    }
+
+  def -(s: String): Obj = {
+    if (this.isBottom) this
+    else Obj(this.map - s)
+  }
+
+  // absent value is set to AbsentBot because it is strong update.
+  def update(x: String, propv: PropValue, exist: Boolean = false): Obj = {
+    if (this.isBottom)
+      this
+    else if (x.startsWith("@default"))
+      Obj(map.updated(x, (propv, AbsentTop)))
+    else
+      Obj(map.updated(x, (propv, AbsentBot)))
+  }
+
+  def update(absStr: AbsString, propV: PropValue, utils: Utils): Obj = {
+    absStr.gammaOpt match {
+      case Some(strSet) if strSet.size == 1 => // strong update
+        Obj(map.updated(strSet.head, (propV, AbsentBot)))
+      case Some(strSet) =>
+        strSet.foldLeft(this)((r, x) => r + update(x, propV))
+      case None if absStr.isBottom => utils.ObjBot
+      case None if absStr.isTop =>
+        val newDefaultNum = this.map.get(STR_DEFAULT_NUMBER) match {
+          case Some((numPropV, _)) => numPropV + propV
+          case None => propV
+        }
+        val newDefaultOther = this.map.get(STR_DEFAULT_OTHER) match {
+          case Some((otherPropV, _)) => otherPropV + propV
+          case None => propV
+        }
+        val pset = map.keySet.filter(x => map.get(x) match {
+          case Some((xPropV, _)) => !(x.take(1) == "@") && utils.absBool.True <= xPropV.objval.writable
+          case None => false
+        })
+        val weakUpdatedMap = pset.foldLeft(this.map)((m, x) => {
+          val absX = utils.absString.alpha(x)
+          val (xPropV, xAbsent) = m.get(x) match {
+            case Some((xPropV, xAbsent)) => (propV + xPropV, xAbsent)
+            case None => (propV, AbsentBot)
+          }
+          if (AbsentTop <= xAbsent && absX.isAllNums && xPropV <= newDefaultNum) m - x
+          else if (AbsentTop <= xAbsent && absX.isAllOthers && xPropV <= newDefaultOther) m - x
+          else m + (x -> (xPropV, xAbsent))
+        })
+        Obj(weakUpdatedMap +
+          (STR_DEFAULT_NUMBER -> (newDefaultNum, AbsentTop),
+            STR_DEFAULT_OTHER -> (newDefaultOther, AbsentTop)))
+      case None if absStr.isAllNums =>
+        val newDefaultNum = this.map.get(STR_DEFAULT_NUMBER) match {
+          case Some((numPropV, _)) => numPropV + propV
+          case None => propV
+        }
+        val pset = map.keySet.filter(x => map.get(x) match {
+          case Some((xPropV, _)) => !(x.take(1) == "@") && isNum(x) && utils.absBool.True <= xPropV.objval.writable
+          case None => false
+        })
+        val weakUpdatedMap = pset.foldLeft(this.map)((m, x) => {
+          val absX = utils.absString.alpha(x)
+          val (xPropV, xAbsent) = m.get(x) match {
+            case Some((xPropV, xAbsent)) => (propV + xPropV, xAbsent)
+            case None => (propV, AbsentBot)
+          }
+          if (AbsentTop <= xAbsent && absX.isAllNums) m - x
+          else m + (x -> (xPropV, xAbsent))
+        })
+        Obj(weakUpdatedMap + (STR_DEFAULT_NUMBER -> (newDefaultNum, AbsentTop)))
+      case None if absStr.isAllOthers =>
+        val newDefaultOther = this.map.get(STR_DEFAULT_OTHER) match {
+          case Some((otherPropV, _)) => otherPropV + propV
+          case None => propV
+        }
+        val pset = map.keySet.filter(x => map.get(x) match {
+          case Some((xPropV, _)) => !(x.take(1) == "@") && !isNum(x) && utils.absBool.True <= xPropV.objval.writable
+          case None => false
+        })
+        val weakUpdatedMap = pset.foldLeft(this.map)((m, x) => {
+          val absX = utils.absString.alpha(x)
+          val (xPropV, xAbsent) = m.get(x) match {
+            case Some((xPropV, xAbsent)) => (propV + xPropV, xAbsent)
+            case None => (propV, AbsentBot)
+          }
+          if (AbsentTop <= xAbsent && absX.isAllOthers) m - x
+          else m + (x -> (xPropV, xAbsent))
+        })
+        Obj(weakUpdatedMap + (STR_DEFAULT_OTHER -> (newDefaultOther, AbsentTop)))
+      case None => utils.ObjBot
+    }
+  }
+
+  def domIn(x: String, absBool: AbsBoolUtil): AbsBool = {
+    def defaultDomIn(default: String): AbsBool = {
+      this.map.get(default) match {
+        case Some((defaultPropV, _)) if !defaultPropV.objval.value.isBottom => absBool.Top
+        case _ => absBool.False
+      }
+    }
+
+    this.map.get(x) match {
+      case Some((propV, AbsentBot)) if !propV.isBottom => absBool.True
+      case Some((propV, AbsentTop)) if !propV.isBottom & x.take(1) == "@" => absBool.True
+      case Some((propV, AbsentTop)) if !propV.isBottom => absBool.Top
+      case Some((propV, _)) if x.take(1) == "@" => absBool.False
+      case Some((propV, _)) if propV.isBottom & isNum(x) => defaultDomIn(STR_DEFAULT_NUMBER)
+      case Some((propV, _)) if propV.isBottom & !isNum(x) => defaultDomIn(STR_DEFAULT_OTHER)
+      case None if x.take(1) == "@" => absBool.False
+      case None if isNum(x) => defaultDomIn(STR_DEFAULT_NUMBER)
+      case None if !isNum(x) => defaultDomIn(STR_DEFAULT_OTHER)
+    }
+  }
+
+  def domIn(strSet: Set[String], absBool: AbsBoolUtil): AbsBool =
+    strSet.foldLeft(absBool.Bot)((absB, str) => absB + domIn(str, absBool))
+
+  def domIn(absStr: AbsString, absBool: AbsBoolUtil): AbsBool = {
+    absStr.gammaOpt match {
+      case Some(strSet) => domIn(strSet, absBool)
+      case None if this.isBottom => absBool.Bot
+      case None if absStr.isTop =>
+        (this.map.get(STR_DEFAULT_NUMBER), this.map.get(STR_DEFAULT_OTHER)) match {
+          case (Some((numPropV, _)), _) if !numPropV.objval.value.isBottom => absBool.Top
+          case (_, Some((otherPropV, _))) if !otherPropV.objval.value.isBottom => absBool.Top
+          case _ if this.map.keySet.exists(x => !(x.take(1) == "@")) => absBool.Top
+          case _ => absBool.False
+        }
+      case None if absStr.isBottom => absBool.Bot
+      case None if absStr.isAllNums =>
+        this.map.get(STR_DEFAULT_NUMBER) match {
+          case Some((numPropV, _)) if !numPropV.objval.value.isBottom => absBool.Top
+          case None if map.keySet.exists(x => !(x.take(1) == "@") && isNum(x)) => absBool.Top
+          case None => absBool.False
+        }
+      case None if absStr.isAllOthers =>
+        this.map.get(STR_DEFAULT_OTHER) match {
+          case Some((otherPropV, _)) if !otherPropV.objval.value.isBottom => absBool.Top
+          case None if map.keySet.exists(x => !(x.take(1) == "@") && !isNum(x)) => absBool.Top
+          case None => absBool.False
+        }
+      case _ => absBool.Bot
+    }
+  }
 }
 
 object Obj {

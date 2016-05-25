@@ -1,13 +1,4 @@
-/**
- * *****************************************************************************
- * Copyright (c) 2016, KAIST.
- * All rights reserved.
- *
- * Use is subject to license terms.
- *
- * This distribution may include materials developed by third parties.
- * ****************************************************************************
- */
+
 
 package kr.ac.kaist.safe.analyzer.domain
 
@@ -64,10 +55,10 @@ case class Utils(
     absUndef: AbsUndefUtil,
     absNull: AbsNullUtil,
     absBool: AbsBoolUtil,
-    absNum: AbsNumberUtil,
+    absNumber: AbsNumberUtil,
     absString: AbsStringUtil
 ) {
-  val PValueBot: PValue = PValue(absUndef.Bot, absNull.Bot, absBool.Bot, absNum.Bot, absString.Bot)
+  val PValueBot: PValue = PValue(absUndef.Bot, absNull.Bot, absBool.Bot, absNumber.Bot, absString.Bot)
   val ValueBot: Value = Value(PValueBot, Set[Loc]())
   val ObjectValueBot: ObjectValue = ObjectValue(ValueBot, absBool.Bot, absBool.Bot, absBool.Bot)
   val PropValueBot: PropValue = PropValue(ObjectValueBot, Set[FunctionId]())

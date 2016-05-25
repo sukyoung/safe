@@ -13,6 +13,8 @@ package kr.ac.kaist.safe.analyzer.domain
 
 import kr.ac.kaist.safe.cfg_builder.AddressManager
 
+import scala.collection.immutable.HashSet
+
 case class Context(private val env: Set[Loc], private val thisBinding: Set[Loc], mayOld: Set[Address], mustOld: Set[Address]) {
   /* partial order */
   def <=(that: Context): Boolean = {
@@ -44,7 +46,7 @@ case class Context(private val env: Set[Loc], private val thisBinding: Set[Loc],
         else if (that.mustOld == null) this.mustOld
         else this.mustOld.intersect(that.mustOld)
 
-      Context(Set[Loc](), Set[Loc](), this.mayOld ++ that.mayOld, newMustOld)
+      Context(HashSet[Loc](), HashSet[Loc](), this.mayOld ++ that.mayOld, newMustOld)
     }
   }
 
@@ -57,22 +59,22 @@ case class Context(private val env: Set[Loc], private val thisBinding: Set[Loc],
         else if (that.mustOld == null) null
         else this.mustOld ++ that.mustOld
 
-      Context(Set[Loc](), Set[Loc](), this.mayOld.intersect(that.mayOld), newMustOld)
+      Context(HashSet[Loc](), HashSet[Loc](), this.mayOld.intersect(that.mayOld), newMustOld)
     }
   }
 
   /* substitute locR by locO */
   def subsLoc(locR: Loc, locO: Loc, addressManager: AddressManager): Context = {
-    Context(Set[Loc](), Set[Loc](), mayOld + addressManager.locToAddr(locR), mustOld + addressManager.locToAddr(locR))
+    Context(HashSet[Loc](), HashSet[Loc](), mayOld + addressManager.locToAddr(locR), mustOld + addressManager.locToAddr(locR))
   }
 
   /* weakly substitute locR by locO, that is keep locR together */
   def weakSubsLoc(locR: Loc, locO: Loc, addressManager: AddressManager): Context = {
-    Context(Set[Loc](), Set[Loc](), mayOld + addressManager.locToAddr(locR), mustOld)
+    Context(HashSet[Loc](), HashSet[Loc](), mayOld + addressManager.locToAddr(locR), mustOld)
   }
 }
 
 object Context {
-  val Bot: Context = Context(Set[Loc](), Set[Loc](), Set[Address](), null)
-  val Empty: Context = Context(Set[Loc](), Set[Loc](), Set[Address](), Set[Address]())
+  val Bot: Context = Context(HashSet[Loc](), HashSet[Loc](), HashSet[Address](), null)
+  val Empty: Context = Context(HashSet[Loc](), HashSet[Loc](), HashSet[Address](), HashSet[Address]())
 }
