@@ -59,18 +59,6 @@ class Translator(program: Program) {
   private val SWITCH_NAME = "switch"
   private val CONTINUE_NAME = "continue"
 
-  // default numbers
-  private val ZERO_STR = IRString(defaultAst, "0")
-  private val ONE_STR = IRString(defaultAst, "1")
-  private val TWO_STR = IRString(defaultAst, "2")
-  private val THREE_STR = IRString(defaultAst, "3")
-  private val FOUR_STR = IRString(defaultAst, "4")
-  private val FIVE_STR = IRString(defaultAst, "5")
-  private val SIX_STR = IRString(defaultAst, "6")
-  private val SEVEN_STR = IRString(defaultAst, "7")
-  private val EIGHT_STR = IRString(defaultAst, "8")
-  private val NINE_STR = IRString(defaultAst, "9")
-
   // default boolean values
   private val TRUE_BOOL = IRBool(defaultAst, true)
   private val FALSE_BOOL = IRBool(defaultAst, false)
@@ -116,22 +104,6 @@ class Translator(program: Program) {
   private def varIgn(ast: ASTNode): IRTmpId = {
     ignoreId += 1
     makeTId(ast, NU.ignoreName + ignoreId)
-  }
-
-  // make string
-  private def makeString(str: String, ast: ASTNode): IRString = makeString(false, ast, str)
-  private def makeString(fromSource: Boolean, ast: ASTNode, str1: String): IRString = {
-    if (str1.equals("0")) ZERO_STR
-    else if (str1.equals("1")) ONE_STR
-    else if (str1.equals("2")) TWO_STR
-    else if (str1.equals("3")) THREE_STR
-    else if (str1.equals("4")) FOUR_STR
-    else if (str1.equals("5")) FIVE_STR
-    else if (str1.equals("6")) SIX_STR
-    else if (str1.equals("7")) SEVEN_STR
-    else if (str1.equals("8")) EIGHT_STR
-    else if (str1.equals("9")) NINE_STR
-    else IRString(ast, str1)
   }
 
   // make a user id
@@ -384,7 +356,7 @@ class Translator(program: Program) {
       case (param, index) => makeLoadStmt(false, name, NU.getSpan(param),
         id2ir(newEnv, param),
         newArg,
-        makeString(index.toString, param))
+        IRString(param, index.toString))
     }
     val newFds = fds.map(walkFd(_, newEnv))
     newEnv = newFds.foldLeft(newEnv)((e, fd) => addE(e, fd.ftn.name.uniqueName, fd.ftn.name))
@@ -1014,7 +986,7 @@ class Translator(program: Program) {
               IRBin(
                 arg1,
                 IRUn(arg1, TYPEOF, cond),
-                EQUALS, makeString("boolean", arg1)
+                EQUALS, IRString(arg1, "boolean")
               ),
               mkExprS(arg1, res, FALSE_BOOL),
               Some(mkExprS(arg1, res, cond))
@@ -1035,7 +1007,7 @@ class Translator(program: Program) {
                       IRBin(
                         e,
                         IRUn(e, TYPEOF, ie),
-                        EQUALS, makeString("boolean", e)
+                        EQUALS, IRString(e, "boolean")
                       ),
                       mkExprS(e, res, FALSE_BOOL),
                       Some(mkExprS(e, res, ie))
@@ -1110,7 +1082,7 @@ class Translator(program: Program) {
       val str = member.text
       (ss1 :+ toObject(first, obj, r1),
         IRLoad(e, obj,
-          makeString(true, e, str)))
+          IRString(e, str)))
 
     case Bracket(_, first, StringLiteral(_, _, str, _)) =>
       val objspan = NU.getSpan(first)
@@ -1119,7 +1091,7 @@ class Translator(program: Program) {
       val (ss1, r1) = walkExpr(first, env, obj1)
       (ss1 :+ toObject(first, obj, r1),
         IRLoad(e, obj,
-          makeString(true, e, str)))
+          IRString(e, str)))
 
     case Bracket(_, first, index) =>
       val objspan = NU.getSpan(first)
@@ -1167,7 +1139,7 @@ class Translator(program: Program) {
                   if (cond) then x = newObj else x = obj
                  */
           makeLoadStmt(false, e, NU.getSpan(e), proto, fun,
-            makeString("prototype", n)),
+            IRString(n, "prototype")),
           IRObject(e, obj, Nil, Some(proto)),
           IRNew(e, newObj, fun, List(obj, arg)),
           isObject(e, cond, newObj),
@@ -1305,9 +1277,7 @@ class Translator(program: Program) {
       (List(), IRNumber(e, intVal.toString, intVal.doubleValue))
 
     case s @ StringLiteral(_, _, str, isRE) =>
-      (List(),
-        if (isRE) makeString(true, e, str)
-        else makeString(true, e, unescapeJava(str, s)))
+      (List(), IRString(e, if(isRE) str else unescapeJava(str, s)))
   }
 
   private def prop2ir(prop: Property): IRId = prop match {
