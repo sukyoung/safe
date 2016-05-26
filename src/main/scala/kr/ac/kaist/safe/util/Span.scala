@@ -15,6 +15,8 @@ import java.io.File
 import java.io.IOException
 import java.io.Serializable
 import java.lang.StringBuilder
+import xtc.tree.Location
+import kr.ac.kaist.safe.nodes.Node
 
 class Span(b: SourceLoc, e: SourceLoc) extends UIDObject with Serializable {
   var begin: SourceLoc = b
@@ -106,5 +108,40 @@ class Span(b: SourceLoc, e: SourceLoc) extends UIDObject with Serializable {
       w.append(String.valueOf(rightCol))
     }
     w
+  }
+}
+
+object Span {
+  // TODO change create into constructor by using "this" after modifying Scalariform
+  def create(loc: Location): Span = {
+    val sl = new SourceLoc(loc.file, loc.line, loc.column, 0);
+    new Span(sl, sl)
+  }
+
+  def create(start: Span, finish: Span): Span =
+    new Span(start.begin, finish.end)
+
+  def create(
+    file: String,
+    startLine: Int,
+    endLine: Int,
+    startC: Int,
+    endC: Int,
+    startOffset: Int,
+    endOffset: Int
+  ): Span = new Span(
+    new SourceLoc(file, startLine, startC, startOffset),
+    new SourceLoc(file, endLine, endC, endOffset)
+  )
+
+  def create(villain: String = "defaultSpan"): Span = {
+    val sl = new SourceLoc(villain, 0, 0, 0)
+    new Span(sl, sl)
+  }
+
+  def create(nodes: List[Node], default: Span): Span = nodes match {
+    case Nil => default
+    case first :: _ =>
+      new Span(first.span.begin, nodes.last.span.end)
   }
 }

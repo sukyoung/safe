@@ -11,7 +11,6 @@
 
 package kr.ac.kaist.safe.util
 
-import xtc.tree.Location
 import kr.ac.kaist.safe.nodes._
 import kr.ac.kaist.safe.config.Config
 import java.io.BufferedWriter
@@ -22,44 +21,6 @@ object NodeUtil {
   ////////////////////////////////////////////////////////////////
   // For all AST, IR, and CFG
   ////////////////////////////////////////////////////////////////
-
-  val significantBits = 13
-
-  // Spans ///////////////////////////////////////////////////////
-  def makeSpan(loc: Location): Span = {
-    val sl = new SourceLoc(loc.file, loc.line, loc.column, 0);
-    new Span(sl, sl)
-  }
-
-  def makeSpan(start: Span, finish: Span): Span =
-    new Span(start.begin, finish.end)
-
-  def makeSpan(file: String, startLine: Int, endLine: Int, startC: Int, endC: Int, startOffset: Int, endOffset: Int): Span =
-    new Span(
-      new SourceLoc(file, startLine, startC, startOffset),
-      new SourceLoc(file, endLine, endC, endOffset)
-    )
-
-  def makeSpan(villain: String): Span = {
-    val sl = new SourceLoc(villain, 0, 0, 0)
-    new Span(sl, sl)
-  }
-
-  /**
-   * In some situations, a begin-to-end span is not really right, and something
-   * more like a set of spans ought to be used.  Even though this is not yet
-   * implemented, the name is provided to allow expression of intent.
-   */
-  def getSpan(n: ASTNode): Span = n.info.span
-  def getSpan(n: ASTNodeInfo): Span = n.span
-  def getFileName(n: ASTNode): String = getSpan(n).fileName
-  def getBegin(n: ASTNode): SourceLoc = getSpan(n).begin
-  def getEnd(n: ASTNode): SourceLoc = getSpan(n).end
-  def getLine(n: ASTNode): Int = getSpan(n).begin.line
-  def getOffset(n: ASTNode): Int = getSpan(n).begin.offset
-
-  def spanAll(span1: Span, span2: Span): Span =
-    new Span(span1.begin, span2.end)
 
   // Names ///////////////////////////////////////////////////////
   // unique name generation
@@ -91,10 +52,6 @@ object NodeUtil {
   // Defaults ////////////////////////////////////////////////////
   // dummy file name for source location information
   def freshFile(f: String): String = internalSymbol + f
-  // For use only when there is no hope of attaching a true span.
-  def defaultSpan(villain: String): Span =
-    if (villain.length != 0) makeSpan(villain) else defaultSpan
-  def defaultSpan: Span = makeSpan("defaultSpan")
 
   var nodesPrintId = 0
   var nodesPrintIdEnv: List[(String, String)] = Nil
@@ -244,29 +201,14 @@ object NodeUtil {
         val com = comment.get
         if (!com.txt.equals(message))
           comment = Some[Comment](new Comment(
-            makeASTNodeInfo(spanAll(com.info.span, span)),
+            makeASTNodeInfo(Span.create(com.info.span, span)),
             com.txt + Config.LINE_SEP + message
           ))
       }
     }
 
-  def spanInfoAll(nodes: List[ASTNode]): ASTNodeInfo = new ASTNodeInfo(spanAll(nodes))
-
-  def spanAll(nodes: List[ASTNode], span: Span): Span = nodes match {
-    case Nil => span
-    case _ => spanAll(nodes)
-  }
-
-  def spanAll(nodes: List[ASTNode]): Span = nodes match {
-    case Nil => sys.error("Cannot make a span from an empty list of nodes.")
-    case hd :: _ =>
-      new Span(getSpan(hd).begin, getSpan(nodes.last).end)
-  }
-
-  def span(n: ASTNode): Span = n.info.span
-
   def adjustCallSpan(finish: Span, expr: LHS): Span = expr match {
-    case Parenthesized(info, body) => new Span(span(body).begin, finish.end)
+    case Parenthesized(info, body) => new Span(body.span.begin, finish.end)
     case _ => finish
   }
 
@@ -506,8 +448,6 @@ object NodeUtil {
   ////////////////////////////////////////////////////////////////
   // IR
   ////////////////////////////////////////////////////////////////
-
-  def getFileName(n: IRNode): String = n.ast.info.span.fileName
 
   def isAssertOperator(op: IROp): Boolean = op.kind.typ == EJSEqType
 

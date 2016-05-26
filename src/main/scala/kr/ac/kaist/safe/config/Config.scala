@@ -29,7 +29,11 @@ case class Config(
 }
 
 object Config {
+  // Line seperator
   val LINE_SEP = System.getProperty("line.separator")
+
+  // Number of significant bits
+  val SIGNIFICANT_BITS = 13
 
   // Maximum length of printable instruction of CFGBlock
   val MAX_INST_PRINT_SIZE = 10000

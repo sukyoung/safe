@@ -14,7 +14,7 @@ package kr.ac.kaist.safe.ast_rewriter
 import kr.ac.kaist.safe.errors.ExcLog
 import kr.ac.kaist.safe.errors.error._
 import kr.ac.kaist.safe.nodes._
-import kr.ac.kaist.safe.util.{ NodeUtil => NU }
+import kr.ac.kaist.safe.util.{ NodeUtil => NU, Span }
 
 /* Rewrites a JavaScript source code using the with statement
  * to another one without using the with statement.
@@ -42,7 +42,7 @@ class WithRewriter(program: Program, forTest: Boolean) {
   ) extends Env
 
   // default values
-  private val TO_OBJ_INFO = NU.makeASTNodeInfo(NU.makeSpan("genToObject"))
+  private val TO_OBJ_INFO = NU.makeASTNodeInfo(Span.create("genToObject"))
   private lazy val TO_OBJ_FN_ID = mkId("toObject" + freshNameTest)
   private lazy val PARAM_EXPR = mkVarRef(mkId("x"))
   private lazy val FALSE = Some(mkIf("string", mkVarRef(mkId("String")),

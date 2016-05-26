@@ -39,7 +39,7 @@ class Translator(program: Program) {
   private val DEBUG = false
 
   // default ast
-  val defaultAst = NoOp(ASTNodeInfo(NU.defaultSpan("defaultAST")), "defaultAST")
+  val defaultAst = NoOp(ASTNodeInfo(Span.create()), "defaultAST")
 
   // default operators
   private val PLUS = IROp(defaultAst, EJSEtcAdd)
@@ -68,14 +68,14 @@ class Translator(program: Program) {
 
   // reference error
   private lazy val REF_ERROR =
-    makeTId(NU.defaultSpan("referenceError"), NU.referenceErrorName, true)
+    makeTId(Span.create("referenceError"), NU.referenceErrorName, true)
 
   // global temporal id
   private lazy val GLOBAL_TMP_ID =
-    makeTId(NU.defaultSpan("global"), NU.globalName, true)
+    makeTId(Span.create("global"), NU.globalName, true)
 
   // default span
-  private val DEFAULT_SPAN = NU.defaultSpan("temp")
+  private val TEMP_SPAN = Span.create("temp")
 
   ////////////////////////////////////////////////////////////////
   // helper function
@@ -98,7 +98,7 @@ class Translator(program: Program) {
   private def freshId(span: Span): IRTmpId =
     makeTId(span, NU.freshName("temp"))
   private def freshId: IRTmpId =
-    makeTId(DEFAULT_SPAN, NU.freshName("temp"))
+    makeTId(TEMP_SPAN, NU.freshName("temp"))
 
   // mkae ignore variable
   private def varIgn(ast: ASTNode): IRTmpId = {
@@ -335,7 +335,7 @@ class Translator(program: Program) {
       fds.map(_.ftn.name.uniqueName.get) ++
       vds.map(_.name.uniqueName.get)
     isLocal = true
-    val paramsspan = NU.spanAll(params, NU.getSpan(name))
+    val paramsspan = Span.create(params, name.span)
     var newArg = freshId(name, paramsspan, ARGS_NAME)
     if (DEBUG) println(" arg=" + newArg.uniqueName)
     var newEnv = addE(env, ARGS_NAME, newArg)
@@ -353,7 +353,7 @@ class Translator(program: Program) {
       map(p => IRVarStmt(p, id2ir(newEnv, p), true))
     // xi = arguments["i"]
     val newParams = params.zipWithIndex.map {
-      case (param, index) => makeLoadStmt(false, name, NU.getSpan(param),
+      case (param, index) => makeLoadStmt(false, name, param.span,
         id2ir(newEnv, param),
         newArg,
         IRString(param, index.toString))
@@ -434,7 +434,7 @@ class Translator(program: Program) {
       case dot @ Dot(info, obj, member) =>
         getLhs(setUID(Bracket(info, obj,
           StringLiteral(
-            NU.makeASTNodeInfo(NU.getSpan(member)),
+            NU.makeASTNodeInfo(member.span),
             "\"", member.text, false
           )), dot.getUID))
       case br: Bracket => Some(br)
@@ -524,7 +524,7 @@ class Translator(program: Program) {
 
     case If(_, InfixOpApp(_, left, op, right), trueB, falseB) if op.text.equals("&&") && allAnds(left) =>
       val args = getArgs(left) :+ right
-      val news = args.zipWithIndex.map { case (arg, index) => freshId(arg, NU.getSpan(arg), "new" + index) }
+      val news = args.zipWithIndex.map { case (arg, index) => freshId(arg, arg.span, "new" + index) }
       // list of (ssi, ri)
       val ress = args.zip(news).map { case (ei, newi) => walkExpr(ei, env, newi) }
       val lab = freshId(s, "label")
@@ -559,9 +559,9 @@ class Translator(program: Program) {
       )
 
     case If(_, InfixOpApp(_, left, op, right), trueB, falseB) if op.text.equals("||") =>
-      val new1 = freshId(left, NU.getSpan(left), "new1")
+      val new1 = freshId(left, left.span, "new1")
       val (ss1, r1) = walkExpr(left, env, new1)
-      val (ss2, r2) = walkExpr(right, env, freshId(right, NU.getSpan(right), "new2"))
+      val (ss2, r2) = walkExpr(right, env, freshId(right, right.span, "new2"))
       val lab1 = freshId(s, "label1")
       val lab2 = freshId(s, "label2")
       val ifStmts = ((IRIf(s, r1,
@@ -582,7 +582,7 @@ class Translator(program: Program) {
       walkStmt(setUID(If(info, expr, trueBranch, falseBranch), s.getUID), env)
 
     case If(_, cond, trueBranch, falseBranch) =>
-      val (ss, r) = walkExpr(cond, env, freshId(cond, NU.getSpan(cond), NEW_NAME))
+      val (ss, r) = walkExpr(cond, env, freshId(cond, cond.span, NEW_NAME))
       IRStmtUnit(
         s,
         ss :+ IRIf(s, r, walkStmt(trueBranch, env),
@@ -593,7 +593,7 @@ class Translator(program: Program) {
       )
 
     case Switch(info, cond, frontCases, defCase, backCases) =>
-      val condVal = freshId(cond, NU.getSpan(cond), VAL_NAME)
+      val condVal = freshId(cond, cond.span, VAL_NAME)
       val breakLabel = freshId(s, SWITCH_NAME)
       val (ss, r) = walkExpr(cond, env, condVal)
       val switchS =
@@ -611,7 +611,7 @@ class Translator(program: Program) {
       IRStmtUnit(s, switchS)
 
     case DoWhile(_, body, cond) =>
-      val newone = freshId(cond, NU.getSpan(cond), "new1")
+      val newone = freshId(cond, cond.span, "new1")
       val labelName = freshId(s, BREAK_NAME)
       val cont = freshId(s, CONTINUE_NAME)
       val newEnv = addE(addE(env, BREAK_NAME, labelName), CONTINUE_NAME, cont)
@@ -627,7 +627,7 @@ class Translator(program: Program) {
       IRStmtUnit(s, IRLabelStmt(s, labelName, stmt))
 
     case While(_, cond, body) =>
-      val newone = freshId(cond, NU.getSpan(cond), "new1")
+      val newone = freshId(cond, cond.span, "new1")
       val labelName = freshId(s, BREAK_NAME)
       val cont = freshId(s, CONTINUE_NAME)
       val newEnv = addE(addE(env, BREAK_NAME, labelName), CONTINUE_NAME, cont)
@@ -656,7 +656,7 @@ class Translator(program: Program) {
           val (ss3, r3) = walkExpr(aexpr, env, varIgn(aexpr))
           makeList(s, ss3, r3, varIgn(s))
       }
-      val bodyspan = NU.getSpan(body)
+      val bodyspan = body.span
       val nbody = IRLabelStmt(body, cont, walkStmt(body, newEnv))
       val stmt = cond match {
         case None =>
@@ -670,7 +670,7 @@ class Translator(program: Program) {
               ))
           )
         case Some(cexpr) =>
-          val newtwo = freshId(cexpr, NU.getSpan(cexpr), "new2")
+          val newtwo = freshId(cexpr, cexpr.span, "new2")
           val (ss2, r2) = walkExpr(cexpr, env, newtwo)
           val newBody = List(nbody, IRSeq(s, back ++ ss2))
           IRSeq(
@@ -683,7 +683,7 @@ class Translator(program: Program) {
 
     case ForIn(_, lhs, expr, body) =>
       val labelName = freshId(s, BREAK_NAME)
-      val objspan = NU.getSpan(expr)
+      val objspan = expr.span
       val newone = freshId(expr, objspan, "new1")
       val obj = freshId(expr, objspan, "obj")
       val iterator = freshId(expr, objspan, "iterator")
@@ -693,11 +693,11 @@ class Translator(program: Program) {
       val newEnv = addE(addE(env, BREAK_NAME, labelName), CONTINUE_NAME, cont)
       val iteratorCheck = iteratorHasNext(s, condone, obj, iterator)
       val (ss, r) = walkExpr(expr, env, newone)
-      val bodyspan = NU.getSpan(body)
+      val bodyspan = body.span
       val newBody = IRSeq(
         s,
         iteratorKey(s, key, obj, iterator) ::
-          (walkLval(lhs, lhs, addE(env, OLD_NAME, freshId(lhs, NU.getSpan(lhs), OLD_NAME)),
+          (walkLval(lhs, lhs, addE(env, OLD_NAME, freshId(lhs, lhs.span, OLD_NAME)),
             List(), key, false) match { case (stmts, _) => stmts }) ++
           List(
             IRLabelStmt(body, cont, walkStmt(body, newEnv)),
@@ -744,13 +744,13 @@ class Translator(program: Program) {
         case None =>
           IRStmtUnit(s, IRReturn(s, None))
         case Some(expr) =>
-          val new1 = freshId(expr, NU.getSpan(expr), "new1")
+          val new1 = freshId(expr, expr.span, "new1")
           val (ss, r) = walkExpr(expr, env, new1)
           IRStmtUnit(s, ss :+ IRReturn(s, Some(r)))
       }
 
     case With(_, expr, stmt) =>
-      val objspan = NU.getSpan(expr)
+      val objspan = expr.span
       val new1 = freshId(expr, objspan, "new1")
       val new2 = freshId(expr, objspan, "new2")
       val (ss, r) = walkExpr(expr, env, new1)
@@ -766,7 +766,7 @@ class Translator(program: Program) {
       IRStmtUnit(s, IRLabelStmt(s, label2ir(label), walkStmt(stmt, env)))
 
     case Throw(_, expr) =>
-      val new1 = freshId(expr, NU.getSpan(expr), "new1")
+      val new1 = freshId(expr, expr.span, "new1")
       val (ss, r) = walkExpr(expr, env, new1)
       IRStmtUnit(s, ss :+ IRThrow(s, r))
 
@@ -775,7 +775,7 @@ class Translator(program: Program) {
         case Some(Catch(_, x @ Id(i, text, Some(name), _), s)) =>
           locals = name +: locals
           val result = (
-            Some(makeUId(text, name, false, st, NU.getSpan(i), false)),
+            Some(makeUId(text, name, false, st, i.span, false)),
             Some(IRStmtUnit(st, s.map(walkStmt(_, env))))
           )
           locals = locals.tail
@@ -838,9 +838,9 @@ class Translator(program: Program) {
       (stmts ++ ss2, r2)
 
     case Cond(_, InfixOpApp(_, left, op, right), trueB, falseB) if op.text.equals("&&") =>
-      val newa = freshId(left, NU.getSpan(left), "newa")
+      val newa = freshId(left, left.span, "newa")
       val (ssa, ra) = walkExpr(left, env, newa)
-      val (ssb, rb) = walkExpr(right, env, freshId(right, NU.getSpan(right), "newb"))
+      val (ssb, rb) = walkExpr(right, env, freshId(right, right.span, "newb"))
       val (ss2, r2) = walkExpr(trueB, env, res)
       val (ss3, r3) = walkExpr(falseB, env, res)
       val lab = freshId(e, "label")
@@ -854,9 +854,9 @@ class Translator(program: Program) {
       (ssa :+ IRLabelStmt(e, lab, body), res)
 
     case Cond(_, InfixOpApp(_, left, op, right), trueB, falseB) if op.text.equals("||") =>
-      val newa = freshId(left, NU.getSpan(left), "newa")
+      val newa = freshId(left, left.span, "newa")
       val (ssa, ra) = walkExpr(left, env, newa)
-      val (ssb, rb) = walkExpr(right, env, freshId(right, NU.getSpan(right), "newb"))
+      val (ssb, rb) = walkExpr(right, env, freshId(right, right.span, "newb"))
       val (ss2, r2) = walkExpr(trueB, env, res)
       val (ss3, r3) = walkExpr(falseB, env, res)
       val lab1 = freshId(e, "label1")
@@ -873,7 +873,7 @@ class Translator(program: Program) {
       walkExpr(setUID(Cond(info, expr, trueBranch, falseBranch), e.getUID), env, res)
 
     case Cond(_, cond, trueBranch, falseBranch) =>
-      val new1 = freshId(cond, NU.getSpan(cond), "new1")
+      val new1 = freshId(cond, cond.span, "new1")
       val (ss1, r1) = walkExpr(cond, env, new1)
       val (ss2, r2) = walkExpr(trueBranch, env, res)
       val (ss3, r3) = walkExpr(falseBranch, env, res)
@@ -896,8 +896,8 @@ class Translator(program: Program) {
         else
           (walkLval(e, lhs, env, ss, r, false) match { case (stmts, _) => stmts }, r)
       } else {
-        val y = freshId(right, NU.getSpan(right), "y")
-        val oldVal = freshId(lhs, NU.getSpan(lhs), OLD_NAME)
+        val y = freshId(right, right.span, "y")
+        val oldVal = freshId(lhs, lhs.span, OLD_NAME)
         val (ss, r) = walkExpr(right, env, y)
         val bin = IRBin(e, oldVal, IROp(defaultAst, EJSOp(op.text.substring(0, op.text.length - 1))), r)
         (walkLval(e, lhs, addE(env, OLD_NAME, oldVal), ss, bin, true) match { case (stmts, _) => stmts }, bin)
@@ -905,7 +905,7 @@ class Translator(program: Program) {
 
     case u @ UnaryAssignOpApp(_, lhs, op) =>
       if (op.text.equals("++") || op.text.equals("--")) {
-        val lhsspan = NU.getSpan(lhs)
+        val lhsspan = lhs.span
         val oldVal = freshId(lhs, lhsspan, OLD_NAME)
         val newVal = freshId(lhs, lhsspan, "new")
         (
@@ -921,7 +921,7 @@ class Translator(program: Program) {
       }
 
     case PrefixOpApp(info, op, right) =>
-      val rightspan = NU.getSpan(right)
+      val rightspan = right.span
       val opText = op.text
       if (opText.equals("++") || opText.equals("--")) {
         val oldVal = freshId(right, rightspan, OLD_NAME)
@@ -939,35 +939,35 @@ class Translator(program: Program) {
           case dot @ Dot(sinfo, obj, member) =>
             val tmpBracket = setUID(Bracket(sinfo, obj,
               StringLiteral(
-                NU.makeASTNodeInfo(NU.getSpan(member)),
+                NU.makeASTNodeInfo(member.span),
                 "\"", member.text, false
               )), dot.getUID)
             val tmpPrefixOpApp = setUID(PrefixOpApp(info, op, tmpBracket), e.getUID)
             walkExpr(tmpPrefixOpApp, env, res)
           case Bracket(_, lhs, e2) =>
-            val objspan = NU.getSpan(lhs)
+            val objspan = lhs.span
             val obj1 = freshId(lhs, objspan, "obj1")
-            val field1 = freshId(e2, NU.getSpan(e2), "field1")
+            val field1 = freshId(e2, e2.span, "field1")
             val obj = freshId(lhs, objspan, "obj")
             val (ss1, r1) = walkExpr(lhs, env, obj1)
             val (ss2, r2) = walkExpr(e2, env, field1)
             ((ss1 :+ toObject(lhs, obj, r1)) ++ ss2 :+
               IRDeleteProp(e, res, obj, r2), res)
           case _ =>
-            val y = freshId(right, NU.getSpan(right), "y")
+            val y = freshId(right, right.span, "y")
             val (ss, r) = walkExpr(right, env, y)
             (ss :+ IRExprStmt(e, varIgn(e), r, false),
               makeTId(e, NU.varTrue, true))
         }
       } else {
-        val y = freshId(right, NU.getSpan(right), "y")
+        val y = freshId(right, right.span, "y")
         val (ss, r) = walkExpr(right, env, y)
         (ss, IRUn(e, IROp(defaultAst, EJSOp(opText)), r))
       }
 
     case infix @ InfixOpApp(_, left, op, right) if op.text.equals("&&") =>
       val args = getAndArgs(left) :+ right
-      val news = args.zipWithIndex.map { case (arg, index) => freshId(arg, NU.getSpan(arg), "new" + index) }
+      val news = args.zipWithIndex.map { case (arg, index) => freshId(arg, arg.span, "new" + index) }
       // list of (ssi, ri)
       val ress = args.zip(news).map { case (ssi, ri) => walkExpr(ssi, env, ri) }
       val (arg1: Expr, arg2: Expr, argsRest) =
@@ -997,7 +997,7 @@ class Translator(program: Program) {
           zip(ressRest.asInstanceOf[List[(List[IRStmt], IRExpr)]]).
           foldRight(body) {
             case ((e, (ss, ie)), r) => {
-              val sp = NU.getSpan(e)
+              val sp = e.span
               IRSeq(
                 e,
                 ss :+
@@ -1019,8 +1019,8 @@ class Translator(program: Program) {
       )
 
     case InfixOpApp(_, left, op, right) if op.text.equals("||") =>
-      val y = freshId(left, NU.getSpan(left), "y")
-      val z = freshId(right, NU.getSpan(right), "z")
+      val y = freshId(left, left.span, "y")
+      val z = freshId(right, right.span, "z")
       val (ss1, r1) = walkExpr(left, env, y)
       val (ss2, r2) = walkExpr(right, env, z)
       (ss1 :+ IRIf(e, r1, mkExprS(left, res, r1),
@@ -1031,9 +1031,9 @@ class Translator(program: Program) {
         res)
 
     case InfixOpApp(_, left, op, right) =>
-      val leftspan = NU.getSpan(left)
+      val leftspan = left.span
       val y = freshId(left, leftspan, "y")
-      val z = freshId(right, NU.getSpan(right), "z")
+      val z = freshId(right, right.span, "z")
       val (ss1, r1) = walkExpr(left, env, y)
       val (ss2, r2) = walkExpr(right, env, z)
       ss2 match {
@@ -1075,7 +1075,7 @@ class Translator(program: Program) {
     case Parenthesized(_, expr) => walkExpr(expr, env, res)
 
     case Dot(_, first, member) =>
-      val objspan = NU.getSpan(first)
+      val objspan = first.span
       val obj1 = freshId(first, objspan, "obj1")
       val obj = freshId(first, objspan, "obj")
       val (ss1, r1) = walkExpr(first, env, obj1)
@@ -1085,7 +1085,7 @@ class Translator(program: Program) {
           IRString(e, str)))
 
     case Bracket(_, first, StringLiteral(_, _, str, _)) =>
-      val objspan = NU.getSpan(first)
+      val objspan = first.span
       val obj1 = freshId(first, objspan, "obj1")
       val obj = freshId(first, objspan, "obj")
       val (ss1, r1) = walkExpr(first, env, obj1)
@@ -1094,9 +1094,9 @@ class Translator(program: Program) {
           IRString(e, str)))
 
     case Bracket(_, first, index) =>
-      val objspan = NU.getSpan(first)
+      val objspan = first.span
       val obj1 = freshId(first, objspan, "obj1")
-      val field1 = freshId(index, NU.getSpan(index), "field1")
+      val field1 = freshId(index, index.span, "field1")
       val obj = freshId(first, objspan, "obj")
       val (ss1, r1) = walkExpr(first, env, obj1)
       val (ss2, r2) = walkExpr(index, env, field1)
@@ -1107,7 +1107,7 @@ class Translator(program: Program) {
       walkExpr(setUID(New(info, e.asInstanceOf[LHS]), n.getUID), env, res)
 
     case n @ New(_, lhs) =>
-      val objspan = NU.getSpan(lhs)
+      val objspan = lhs.span
       val fun = freshId(lhs, objspan, "fun")
       val fun1 = freshId(lhs, objspan, "fun1")
       val arg = freshId(e, ARGS_NAME)
@@ -1138,7 +1138,7 @@ class Translator(program: Program) {
                   cond = isObject(newObj)
                   if (cond) then x = newObj else x = obj
                  */
-          makeLoadStmt(false, e, NU.getSpan(e), proto, fun,
+          makeLoadStmt(false, e, e.span, proto, fun,
             IRString(n, "prototype")),
           IRObject(e, obj, Nil, Some(proto)),
           IRNew(e, newObj, fun, List(obj, arg)),
@@ -1148,17 +1148,17 @@ class Translator(program: Program) {
         ), res)
 
     case FunApp(_, fun, List(arg)) if (isToObject(fun)) =>
-      val (ss, r) = walkExpr(arg, env, freshId(arg, NU.getSpan(arg), "new1"))
+      val (ss, r) = walkExpr(arg, env, freshId(arg, arg.span, "new1"))
       (ss :+ toObject(fun, res, r), res)
 
     case FunApp(_, fun, List(arg)) if (NU.isEval(fun)) =>
-      val newone = freshId(arg, NU.getSpan(arg), "new1")
+      val newone = freshId(arg, arg.span, "new1")
       val (ss, r) = walkExpr(arg, env, newone)
       (ss :+ IREval(e, res, r), res)
 
     // _<>_print()
     case FunApp(_, fun, List(arg)) if (isPrint(fun)) =>
-      val newone = freshId(arg, NU.getSpan(arg), "new1")
+      val newone = freshId(arg, arg.span, "new1")
       val (ss, r) = walkExpr(arg, env, newone)
       (ss :+ IRInternalCall(e, res,
         makeGId(e, NU.freshGlobalName("print")), r, None), res)
@@ -1183,7 +1183,7 @@ class Translator(program: Program) {
             info,
             setUID(Bracket(i, obj,
               StringLiteral(
-                NU.makeASTNodeInfo(NU.getSpan(member)),
+                NU.makeASTNodeInfo(member.span),
                 "\"", member.text, false
               )), dot.getUID),
             args
@@ -1194,9 +1194,9 @@ class Translator(program: Program) {
       )
 
     case FunApp(_, v @ VarRef(_, fid), args) =>
-      val fspan = NU.getSpan(v)
+      val fspan = v.span
       val obj = freshId(v, fspan, "obj")
-      val argsspan = NU.spanAll(args, fspan)
+      val argsspan = Span.create(args, fspan)
       val arg = freshId(e, argsspan, ARGS_NAME)
       val fun = freshId(fid, fspan, "fun")
       val fir = id2ir(env, fid)
@@ -1216,13 +1216,13 @@ class Translator(program: Program) {
         ), res)
 
     case FunApp(_, b @ Bracket(i, first, index), args) =>
-      val firstspan = NU.getSpan(first)
-      val objspan = NU.getSpan(i)
+      val firstspan = first.span
+      val objspan = i.span
       val obj1 = freshId(first, firstspan, "obj1")
-      val field1 = freshId(index, NU.getSpan(index), "field1")
+      val field1 = freshId(index, index.span, "field1")
       val obj = freshId(e, objspan, "obj")
       val fun = freshId(e, objspan, "fun")
-      val argsspan = NU.spanAll(args, NU.getSpan(b))
+      val argsspan = Span.create(args, b.span)
       val arg = freshId(e, argsspan, ARGS_NAME)
       val (ssl, rl) = walkExpr(first, env, obj1)
       val (ssr, rr) = walkExpr(index, env, field1)
@@ -1242,10 +1242,10 @@ class Translator(program: Program) {
         ), res)
 
     case FunApp(_, fun, args) =>
-      val fspan = NU.getSpan(fun)
+      val fspan = fun.span
       val obj1 = freshId(fun, fspan, "obj1")
       val obj = freshId(fun, fspan, "obj")
-      val argsspan = NU.spanAll(args, fspan)
+      val argsspan = Span.create(args, fspan)
       val arg = freshId(e, argsspan, ARGS_NAME)
       val (ss, r) = walkExpr(fun, env, obj1)
       val newargs = args.map(_ => freshId)
@@ -1277,7 +1277,7 @@ class Translator(program: Program) {
       (List(), IRNumber(e, intVal.toString, intVal.doubleValue))
 
     case s @ StringLiteral(_, _, str, isRE) =>
-      (List(), IRString(e, if(isRE) str else unescapeJava(str, s)))
+      (List(), IRString(e, if (isRE) str else unescapeJava(str, s)))
   }
 
   private def prop2ir(prop: Property): IRId = prop match {
@@ -1342,8 +1342,8 @@ class Translator(program: Program) {
         )
       case (Nil, Some(stmt), _) =>
         // span is currently set to the default cases
-        val span = if (stmt.isEmpty) switchSpan else NU.getSpan(stmt.head)
-        val newLabel = freshId(ast, NU.spanAll(stmt, span), "default")
+        val span = if (stmt.isEmpty) switchSpan else stmt.head.span
+        val newLabel = freshId(ast, Span.create(stmt, span), "default")
         IRSeq(
           ast,
           IRLabelStmt(ast, newLabel,
@@ -1356,7 +1356,7 @@ class Translator(program: Program) {
         val Case(info, condExpr, body) = head
         // span is currently set to the head statement of the default case
         val span = info.span
-        val newLabel = freshId(condExpr, NU.getSpan(head), "Case1Label")
+        val newLabel = freshId(condExpr, head.span, "Case1Label")
         IRSeq(
           head,
           IRLabelStmt(head, newLabel,
@@ -1378,8 +1378,8 @@ class Translator(program: Program) {
   private def walkScond(ast: ASTNode, switchSpan: Span, caseEnv: CaseEnv, env: Env): IRStmt =
     caseEnv match {
       case (Some(expr), label) :: tail =>
-        val span = NU.getSpan(expr) // span is a position of the expression
-        val cond = freshId(expr, NU.getSpan(expr), COND_NAME)
+        val span = expr.span // span is a position of the expression
+        val cond = freshId(expr, expr.span, COND_NAME)
         val (ss, r) = walkExpr(expr, env, cond)
         val comp = IRBin(expr, getE(env, VAL_NAME), STRICT_EQ, r)
         IRSeq(expr, ss :+ IRIf(expr, comp, IRBreak(expr, label),
@@ -1406,15 +1406,15 @@ class Translator(program: Program) {
     case dot @ Dot(info, obj, member) =>
       walkLval(ast, setUID(Bracket(info, obj,
         StringLiteral(
-          NU.makeASTNodeInfo(NU.getSpan(member)),
+          NU.makeASTNodeInfo(member.span),
           "\"", member.text, false
         )), dot.getUID),
         env, stmts, e, keepOld)
     case Bracket(info, first, index) =>
       val span = info.span
-      val firstspan = NU.getSpan(first)
+      val firstspan = first.span
       val obj1 = freshId(first, firstspan, "obj1")
-      val field1 = freshId(index, NU.getSpan(index), "field1")
+      val field1 = freshId(index, index.span, "field1")
       val obj = freshId(first, firstspan, "obj")
       val (ss1, r1) = walkExpr(first, env, obj1)
       val (ss2, r2) = walkExpr(index, env, field1)

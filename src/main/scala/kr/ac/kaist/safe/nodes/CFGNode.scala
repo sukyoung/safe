@@ -13,11 +13,17 @@ package kr.ac.kaist.safe.nodes
 
 import kr.ac.kaist.safe.analyzer.domain.Address
 import kr.ac.kaist.safe.cfg_builder.{ FunctionId, CFGFunction, CFGBlock, CFGNormalBlock, Call }
-import kr.ac.kaist.safe.util.{ NodeUtil, EJSOp }
+import kr.ac.kaist.safe.util.{ NodeUtil, EJSOp, Span, SourceLoc }
 
 sealed abstract class CFGNode(val ir: IRNode)
     extends Node {
   override def toString(indent: Int): String = " " * indent + this
+  def span: Span = ir.span
+  def fileName: String = ir.fileName
+  def begin: SourceLoc = ir.begin
+  def end: SourceLoc = ir.end
+  def line: Int = ir.line
+  def offset: Int = ir.offset
 }
 
 ////////////////////////////////////////////////////////////////////////////////

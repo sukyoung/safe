@@ -21,9 +21,16 @@ package kr.ac.kaist.safe.nodes
 import kr.ac.kaist.safe.config.Config
 import java.lang.Double
 import java.math.BigInteger
-import kr.ac.kaist.safe.util.{ NodeUtil => NU, Span, EJSOp }
+import kr.ac.kaist.safe.util.{ NodeUtil => NU, Span, EJSOp, SourceLoc }
 
-abstract class IRNode(val ast: ASTNode) extends Node
+abstract class IRNode(val ast: ASTNode) extends Node {
+  def span: Span = ast.span
+  def fileName: String = ast.fileName
+  def begin: SourceLoc = ast.begin
+  def end: SourceLoc = ast.end
+  def line: Int = ast.line
+  def offset: Int = ast.offset
+}
 
 /**
  * IRRoot ::= Statement*
@@ -550,7 +557,7 @@ case class IRLoad(override val ast: ASTNode, val obj: IRId, val index: IRExpr)
 abstract class IRId(override val ast: ASTNode, val originalName: String, val uniqueName: String, val global: Boolean)
     extends IRExpr(ast) {
   override def toString(indent: Int): String = {
-    val size = NU.significantBits
+    val size = Config.SIGNIFICANT_BITS
     val str = if (!NU.isInternal(uniqueName)) uniqueName
     else if (!NU.isGlobalName(uniqueName)) uniqueName.dropRight(size) + NU.getNodesE(uniqueName.takeRight(size))
     else uniqueName
@@ -561,7 +568,7 @@ abstract class IRId(override val ast: ASTNode, val originalName: String, val uni
 
   // When this IRId is a property string name, use toPropName instead of toString
   def toPropName(indent: Int): String = {
-    val size = NU.significantBits
+    val size = Config.SIGNIFICANT_BITS
     val str = if (!NU.isInternal(uniqueName)) uniqueName
     else if (!NU.isGlobalName(uniqueName)) uniqueName.dropRight(size) + NU.getNodesE(uniqueName.takeRight(size))
     else uniqueName

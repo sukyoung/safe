@@ -38,7 +38,7 @@ case class CFGBuild(
 
     // Report errors.
     if (excLog.hasError) {
-      println(NodeUtil.getFileName(ir) + ":")
+      println(ir.fileName + ":")
       println(excLog)
     }
 

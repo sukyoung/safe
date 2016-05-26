@@ -20,10 +20,17 @@ package kr.ac.kaist.safe.nodes
 
 import java.lang.Double
 import java.math.BigInteger
-import kr.ac.kaist.safe.util.{ NodeUtil => NU, Span }
+import kr.ac.kaist.safe.util.{ NodeUtil => NU, SourceLoc, Span }
 import kr.ac.kaist.safe.config.Config
 
-abstract class ASTNode(val info: ASTNodeInfo) extends Node
+abstract class ASTNode(val info: ASTNodeInfo) extends Node {
+  def span: Span = info.span
+  def fileName: String = span.fileName
+  def begin: SourceLoc = span.begin
+  def end: SourceLoc = span.end
+  def line: Int = begin.line
+  def offset: Int = begin.offset
+}
 case class ASTNodeInfo(span: Span, comment: Option[Comment] = None)
 
 /**
@@ -941,8 +948,8 @@ case class Id(override val info: ASTNodeInfo, text: String, uniqueName: Option[S
     val s: StringBuilder = new StringBuilder
     if (info.comment.isDefined) s.append(info.comment.get.toString(indent))
     if (uniqueName.isDefined && isWith)
-      s.append(uniqueName.get.dropRight(NU.significantBits) +
-        NU.getNodesE(uniqueName.get.takeRight(NU.significantBits)))
+      s.append(uniqueName.get.dropRight(Config.SIGNIFICANT_BITS) +
+        NU.getNodesE(uniqueName.get.takeRight(Config.SIGNIFICANT_BITS)))
     else s.append(text)
     s.toString
   }

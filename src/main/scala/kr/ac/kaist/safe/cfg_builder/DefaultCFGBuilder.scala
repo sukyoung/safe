@@ -619,7 +619,7 @@ class DefaultCFGBuilder(
       text
     } else {
       uniqueNameCounter += 1
-      text.dropRight(NU.significantBits) + uniqueNameCounter.toString
+      text.dropRight(Config.SIGNIFICANT_BITS) + uniqueNameCounter.toString
     }
     name
   }

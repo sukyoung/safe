@@ -22,7 +22,7 @@ class UIDObject {
   override def toString: String =
     if (this.isInstanceOf[ASTNode]) {
       val node = this.asInstanceOf[ASTNode]
-      node.getClass.getSimpleName + " at " + NodeUtil.span(node).begin.at
+      node.getClass.getSimpleName + " at " + node.span.begin.at
     } else super.toString
 
   private val seedUID = 0x7b546b0e12fd2559L
