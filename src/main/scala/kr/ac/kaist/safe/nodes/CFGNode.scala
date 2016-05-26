@@ -19,6 +19,7 @@ sealed abstract class CFGNode(val ir: IRNode)
     extends Node {
   override def toString(indent: Int): String = " " * indent + this
   def span: Span = ir.span
+  def comment: Option[Comment] = ir.comment
   def fileName: String = ir.fileName
   def begin: SourceLoc = ir.begin
   def end: SourceLoc = ir.end
