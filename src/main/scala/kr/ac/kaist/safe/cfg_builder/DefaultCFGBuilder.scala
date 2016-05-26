@@ -456,7 +456,7 @@ class DefaultCFGBuilder(
         /* Insert assert instructions */
         trueBlock.createInst(CFGAssert(cond, _, ir2cfgExpr(cond), true))
         cond match {
-          case IRBin(_, first, op, second) if NU.isAssertOperator(op) =>
+          case IRBin(_, first, op, second) if op.isAssertOperator =>
             falseBlock.createInst(CFGAssert(cond, _, CFGBin(ir2cfgExpr(first), op.kind.trans, ir2cfgExpr(second)), false))
           case _ =>
             falseBlock.createInst(CFGAssert(cond, _, CFGUn(EJSLogNot, ir2cfgExpr(cond)), false))
@@ -519,7 +519,7 @@ class DefaultCFGBuilder(
         /* Insert assert instruction */
         loopBodyBlock.createInst(CFGAssert(cond, _, ir2cfgExpr(cond), true))
         cond match {
-          case IRBin(_, first, op, second) if NU.isAssertOperator(op) =>
+          case IRBin(_, first, op, second) if op.isAssertOperator =>
             loopOutBlock.createInst(CFGAssert(cond, _, CFGBin(ir2cfgExpr(first), op.kind.trans, ir2cfgExpr(second)), false))
           case _ =>
             loopOutBlock.createInst(CFGAssert(cond, _, CFGUn(EJSLogNot, ir2cfgExpr(cond)), false))

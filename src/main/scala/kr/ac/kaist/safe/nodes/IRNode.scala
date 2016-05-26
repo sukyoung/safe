@@ -21,7 +21,7 @@ package kr.ac.kaist.safe.nodes
 import kr.ac.kaist.safe.config.Config
 import java.lang.Double
 import java.math.BigInteger
-import kr.ac.kaist.safe.util.{ NodeUtil => NU, Span, EJSOp, SourceLoc }
+import kr.ac.kaist.safe.util.{ NodeUtil => NU, Span, EJSOp, EJSEqType, SourceLoc }
 
 abstract class IRNode(val ast: ASTNode) extends Node {
   def span: Span = ast.span
@@ -667,6 +667,7 @@ case class IROp(override val ast: ASTNode, val kind: EJSOp)
     extends IRNode(ast) {
   override def toString(indent: Int): String = name
   val name: String = kind.name
+  def isAssertOperator: Boolean = kind.typ == EJSEqType
 }
 
 /**

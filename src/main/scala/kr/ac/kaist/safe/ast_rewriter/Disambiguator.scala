@@ -58,7 +58,7 @@ class Disambiguator(program: Program) {
   private var env: Env = Config.PRED_VARS.map(v => (v, v)) ++
     Config.PRED_FUNS.map(f => (f, f)) ++ List(
       ("alert", "alert"),
-      (NU.internalPrint, NU.internalPrint)
+      (NU.INTERNAL_PRINT, NU.INTERNAL_PRINT)
     )
 
   // label environment

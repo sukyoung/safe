@@ -19,28 +19,30 @@ import scala.collection.immutable.HashMap
 
 object NodeUtil {
   ////////////////////////////////////////////////////////////////
-  // local mutable
+  // local mutable (TODO have to handle)
   ////////////////////////////////////////////////////////////////
 
   var uid = 0
   var nodesPrintId = 0
-  var nodesPrintIdEnv: List[(String, String)] = Nil
+  var nodesPrintIdEnv: Map[String, String] = HashMap()
   var keepComments = false
-  private var comment: Option[Comment] = None // TODO mutable - have to handle
+  private var comment: Option[Comment] = None
 
-  val internalSymbol = "<>"
-  val internalPrint = "_<>_print"
-  val internalPrintIS = "_<>_printIS"
-  val internalGetTickCount = "_<>_getTickCount"
-  val globalPrefix = "<>Global<>"
-  val generatedString = "<>generated String Literal"
-  val varTrue = freshGlobalName("true")
-  val varOne = freshGlobalName("one")
-  val toObjectName = freshGlobalName("toObject")
-  val ignoreName = freshGlobalName("ignore")
-  val globalName = freshGlobalName("global")
-  val referenceErrorName = freshGlobalName("referenceError")
-  val printWidth = 50
+  val INTERNAL_SYMBOL = "<>"
+  val INTERNAL_PRINT = "_<>_print"
+  val INTERNAL_PRINT_IS = "_<>_printIS"
+  val INTERNAL_GET_TICK_COUNT = "_<>_getTickCount"
+  val GLOBAL_PREFIX = "<>Global<>"
+  val GENERATED_STR = "<>generated String Literal"
+
+  val VAR_TRUE = freshGlobalName("true")
+  val VAR_ONE = freshGlobalName("one")
+  val TO_OBJ_NAME = freshGlobalName("toObject")
+  val IGNORE_NAME = freshGlobalName("ignore")
+  val GLOBAL_NAME = freshGlobalName("global")
+  val REF_ERR_NAME = freshGlobalName("referenceError")
+
+  val PRINT_WIDTH = 50
 
   ////////////////////////////////////////////////////////////////
   // For all AST, IR, and CFG
@@ -50,29 +52,30 @@ object NodeUtil {
   // unique name generation
   def getUId: Int = { uid += 1; uid }
   def freshName(n: String): String =
-    internalSymbol + n + internalSymbol + "%013d".format(getUId)
+    INTERNAL_SYMBOL + n + INTERNAL_SYMBOL + "%013d".format(getUId)
   // unique name generation for global names
-  def freshGlobalName(n: String): String = globalPrefix + n
+  def freshGlobalName(n: String): String = GLOBAL_PREFIX + n
   def funexprName(span: Span): String = freshName("funexpr@" + span.toStringWithoutFiles)
 
-  def isInternal(s: String): Boolean = s.containsSlice(internalSymbol)
-  def isGlobalName(s: String): Boolean = s.startsWith(globalPrefix)
+  def isInternal(s: String): Boolean = s.containsSlice(INTERNAL_SYMBOL)
+  def isGlobalName(s: String): Boolean = s.startsWith(GLOBAL_PREFIX)
   def isFunExprName(name: String): Boolean = name.containsSlice("<>funexpr")
 
   // Defaults ////////////////////////////////////////////////////
   // dummy file name for source location information
-  def freshFile(f: String): String = internalSymbol + f
+  def freshFile(f: String): String = INTERNAL_SYMBOL + f
 
   def initNodesPrint: Unit = {
     nodesPrintId = 0
-    nodesPrintIdEnv = Nil
+    nodesPrintIdEnv = HashMap()
   }
-  def getNodesE(uniq: String): String = nodesPrintIdEnv.find { case (name, _) => name.equals(uniq) } match {
+
+  def getNodesE(uniq: String): String = nodesPrintIdEnv.get(uniq) match {
+    case Some(newUniq) => newUniq
     case None =>
-      val newUniq = { nodesPrintId += 1; nodesPrintId.toString }
-      nodesPrintIdEnv = (uniq, newUniq) :: nodesPrintIdEnv
+      val newUniq: String = { nodesPrintId += 1; nodesPrintId.toString }
+      nodesPrintIdEnv += (uniq -> newUniq)
       newUniq
-    case Some((_, newUniq)) => newUniq
   }
 
   def ppAST(s: StringBuilder, str: String): Unit =
@@ -115,7 +118,7 @@ object NodeUtil {
         join(indent, all.tail, sep, result.append(all.head.toString(indent)))
       }
       case _ =>
-        if (result.length > printWidth && sep.equals(", "))
+        if (result.length > PRINT_WIDTH && sep.equals(", "))
           join(indent, all.tail, sep, result.append(", " + Config.LINE_SEP + getIndent(indent)).append(all.head.toString(indent)))
         else
           join(indent, all.tail, sep, result.append(sep).append(all.head.toString(indent)))
@@ -398,8 +401,6 @@ object NodeUtil {
   // IR
   ////////////////////////////////////////////////////////////////
 
-  def isAssertOperator(op: IROp): Boolean = op.kind.typ == EJSEqType
-
   def inlineIndent(stmt: IRStmt, s: StringBuilder, indent: Int): Unit = {
     stmt match {
       case IRStmtUnit(_, stmts) if stmts.length != 1 =>
@@ -460,7 +461,7 @@ object NodeUtil {
         case first:IRAssign => rest match {
           case (second@SIRExprStmt(_, _, _, right:IRId, _))::others =>
             if (first.getLhs.getUniqueName.equals(right.getUniqueName) &&
-                right.getUniqueName.equals(ignoreName)) {
+                right.getUniqueName.equals(IGNORE_NAME)) {
               (walk(replaceLhs(first, second.getLhs)).asInstanceOf[IRStmt])::simpl(others)
             } else walk(first).asInstanceOf[IRStmt]::simpl(rest)
           case _ => walk(first).asInstanceOf[IRStmt]::simpl(rest)
@@ -471,9 +472,4 @@ object NodeUtil {
       }
     }
   }
-
-  ////////////////////////////////////////////////////////////////
-  // CFG
-  ////////////////////////////////////////////////////////////////
-
 }

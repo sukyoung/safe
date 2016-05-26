@@ -64,7 +64,7 @@ class WithRewriter(program: Program, forTest: Boolean) {
   private lazy val TO_OBJ_FN_DECL =
     FunDecl(
       TO_OBJ_INFO,
-      Functional(TO_OBJ_INFO, List(), List(), TO_OBJ_BODY, TO_OBJ_FN_ID, List(mkId("x")), NU.generatedString),
+      Functional(TO_OBJ_INFO, List(), List(), TO_OBJ_BODY, TO_OBJ_FN_ID, List(mkId("x")), NU.GENERATED_STR),
       false
     )
 
@@ -95,7 +95,7 @@ class WithRewriter(program: Program, forTest: Boolean) {
       val name = NU.freshName("alpha")
       Id(info, name, Some(name), true)
     }
-    def toObjectId(info: ASTNodeInfo): Id = Id(info, NU.toObjectName, Some(NU.toObjectName), false)
+    def toObjectId(info: ASTNodeInfo): Id = Id(info, NU.TO_OBJ_NAME, Some(NU.TO_OBJ_NAME), false)
     def assignOp(info: ASTNodeInfo): Op = Op(info, "=")
     def inOp(info: ASTNodeInfo): Op = Op(info, "in")
     def paren(expr: Expr): Parenthesized = Parenthesized(expr.info, expr)

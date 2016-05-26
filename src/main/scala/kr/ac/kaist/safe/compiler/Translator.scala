@@ -68,11 +68,11 @@ class Translator(program: Program) {
 
   // reference error
   private lazy val REF_ERROR =
-    makeTId(Span.create("referenceError"), NU.referenceErrorName, true)
+    makeTId(Span.create("referenceError"), NU.REF_ERR_NAME, true)
 
   // global temporal id
   private lazy val GLOBAL_TMP_ID =
-    makeTId(Span.create("global"), NU.globalName, true)
+    makeTId(Span.create("global"), NU.GLOBAL_NAME, true)
 
   // default span
   private val TEMP_SPAN = Span.create("temp")
@@ -103,7 +103,7 @@ class Translator(program: Program) {
   // mkae ignore variable
   private def varIgn(ast: ASTNode): IRTmpId = {
     ignoreId += 1
-    makeTId(ast, NU.ignoreName + ignoreId)
+    makeTId(ast, NU.IGNORE_NAME + ignoreId)
   }
 
   // make a user id
@@ -174,7 +174,7 @@ class Translator(program: Program) {
   }
 
   private def makeListIgnore(ast: ASTNode, ss: List[IRStmt], expr: IRExpr): List[IRStmt] = expr match {
-    case id: IRId if id.uniqueName.startsWith(NU.ignoreName) => ss
+    case id: IRId if id.uniqueName.startsWith(NU.IGNORE_NAME) => ss
     case _ => ss :+ IRExprStmt(ast, varIgn(ast), expr, false)
   }
 
@@ -184,7 +184,7 @@ class Translator(program: Program) {
   }
 
   private def toObject(ast: ASTNode, lhs: IRId, arg: IRExpr): IRInternalCall =
-    IRInternalCall(ast, lhs, makeTId(ast, NU.toObjectName, true), arg, None)
+    IRInternalCall(ast, lhs, makeTId(ast, NU.TO_OBJ_NAME, true), arg, None)
 
   private def toNumber(ast: ASTNode, lhs: IRId, id: IRId): IRInternalCall =
     IRInternalCall(ast, lhs, makeTId(ast, NU.freshGlobalName("toNumber"), true), id, None)
@@ -381,22 +381,22 @@ class Translator(program: Program) {
     case _ => false
   }
 
-  private def isIgnore(id: IRId): Boolean = id.uniqueName.startsWith(NU.ignoreName)
+  private def isIgnore(id: IRId): Boolean = id.uniqueName.startsWith(NU.IGNORE_NAME)
 
   private def isPrint(n: Expr): Boolean = n match {
-    case VarRef(_, Id(_, id, _, _)) => id.equals(NU.internalPrint)
+    case VarRef(_, Id(_, id, _, _)) => id.equals(NU.INTERNAL_PRINT)
     case _ => false
   }
   private def isPrintIS(n: Expr): Boolean = n match {
-    case VarRef(_, Id(_, id, _, _)) => id.equals(NU.internalPrintIS)
+    case VarRef(_, Id(_, id, _, _)) => id.equals(NU.INTERNAL_PRINT_IS)
     case _ => false
   }
   private def isGetTickCount(n: Expr): Boolean = n match {
-    case VarRef(_, Id(_, id, _, _)) => id.equals(NU.internalGetTickCount)
+    case VarRef(_, Id(_, id, _, _)) => id.equals(NU.INTERNAL_GET_TICK_COUNT)
     case _ => false
   }
   private def isToObject(n: Expr): Boolean = n match {
-    case VarRef(_, Id(_, id, _, _)) => id.equals(NU.toObjectName)
+    case VarRef(_, Id(_, id, _, _)) => id.equals(NU.TO_OBJ_NAME)
     case _ => false
   }
 
@@ -957,7 +957,7 @@ class Translator(program: Program) {
             val y = freshId(right, right.span, "y")
             val (ss, r) = walkExpr(right, env, y)
             (ss :+ IRExprStmt(e, varIgn(e), r, false),
-              makeTId(e, NU.varTrue, true))
+              makeTId(e, NU.VAR_TRUE, true))
         }
       } else {
         val y = freshId(right, right.span, "y")

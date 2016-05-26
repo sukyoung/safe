@@ -66,9 +66,9 @@ object Config {
     "Infinity",
     "undefined",
     // predefined constant variables from IR
-    NU.varTrue,
-    NU.varOne,
-    NU.freshGlobalName("global")
+    NU.VAR_TRUE,
+    NU.VAR_ONE,
+    NU.GLOBAL_NAME
   )
 
   // Predefined functions
