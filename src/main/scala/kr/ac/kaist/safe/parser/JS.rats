@@ -91,7 +91,7 @@ body {
     private BufferedWriter writer;
     private BufferedReader reader;
     private String logFile = column(0).file + ".log";
-    private boolean keepComments = NodeUtil.getKeepComments();
+    private boolean keepComments = NodeUtil.keepComments();
     public Result JSmain(final int yyStart) throws IOException {
         return JSparse(yyStart, MAIN);
     }

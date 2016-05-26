@@ -187,9 +187,9 @@ class Disambiguator(program: Program) {
     var member1Str: String = ""
     var member2Str: String = ""
     for (member1 <- members) {
-      member1Str = NU.member2Str(member1)
+      member1Str = member1.toString
       for (member2 <- members if member1.ne(member2)) {
-        member2Str = NU.member2Str(member2)
+        member2Str = member2.toString
         if (member1Str.equals(member2Str)) (member1, member2) match {
           case (Field(_, _, _), GetProp(_, _, _)) =>
             normalExcLog.signal(DataAccPropError(member1Str, member2))

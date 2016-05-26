@@ -19,22 +19,14 @@ import scala.collection.immutable.HashMap
 
 object NodeUtil {
   ////////////////////////////////////////////////////////////////
-  // For all AST, IR, and CFG
+  // local mutable
   ////////////////////////////////////////////////////////////////
 
-  // Names ///////////////////////////////////////////////////////
-  // unique name generation
   var uid = 0
-  def getUId: Int = { uid += 1; uid }
-  def freshName(n: String): String =
-    internalSymbol + n + internalSymbol + "%013d".format(getUId)
-  // unique name generation for global names
-  def freshGlobalName(n: String): String = globalPrefix + n
-  def funexprName(span: Span): String = freshName("funexpr@" + span.toStringWithoutFiles)
-
-  def isInternal(s: String): Boolean = s.containsSlice(internalSymbol)
-  def isGlobalName(s: String): Boolean = s.startsWith(globalPrefix)
-  def isFunExprName(name: String): Boolean = name.containsSlice("<>funexpr")
+  var nodesPrintId = 0
+  var nodesPrintIdEnv: List[(String, String)] = Nil
+  var keepComments = false
+  private var comment: Option[Comment] = None // TODO mutable - have to handle
 
   val internalSymbol = "<>"
   val internalPrint = "_<>_print"
@@ -48,13 +40,29 @@ object NodeUtil {
   val ignoreName = freshGlobalName("ignore")
   val globalName = freshGlobalName("global")
   val referenceErrorName = freshGlobalName("referenceError")
+  val printWidth = 50
+
+  ////////////////////////////////////////////////////////////////
+  // For all AST, IR, and CFG
+  ////////////////////////////////////////////////////////////////
+
+  // Names ///////////////////////////////////////////////////////
+  // unique name generation
+  def getUId: Int = { uid += 1; uid }
+  def freshName(n: String): String =
+    internalSymbol + n + internalSymbol + "%013d".format(getUId)
+  // unique name generation for global names
+  def freshGlobalName(n: String): String = globalPrefix + n
+  def funexprName(span: Span): String = freshName("funexpr@" + span.toStringWithoutFiles)
+
+  def isInternal(s: String): Boolean = s.containsSlice(internalSymbol)
+  def isGlobalName(s: String): Boolean = s.startsWith(globalPrefix)
+  def isFunExprName(name: String): Boolean = name.containsSlice("<>funexpr")
 
   // Defaults ////////////////////////////////////////////////////
   // dummy file name for source location information
   def freshFile(f: String): String = internalSymbol + f
 
-  var nodesPrintId = 0
-  var nodesPrintIdEnv: List[(String, String)] = Nil
   def initNodesPrint: Unit = {
     nodesPrintId = 0
     nodesPrintIdEnv = Nil
@@ -100,8 +108,6 @@ object NodeUtil {
     for (i <- 0 to indent - 1) s.append(" ")
     s.toString
   }
-
-  val printWidth = 50
   def join(indent: Int, all: List[Node], sep: String, result: StringBuilder): StringBuilder = all match {
     case Nil => result
     case _ => result.length match {
@@ -124,68 +130,24 @@ object NodeUtil {
   def prBody(body: List[SourceElement]): String =
     join(0, body, Config.LINE_SEP, new StringBuilder("")).toString
 
-  def isName(lhs: LHS): Boolean = lhs match {
-    case _: VarRef => true
-    case _: Dot => true
-    case _ => false
-  }
-
-  def isEval(n: Expr): Boolean = n match {
-    case VarRef(info, Id(_, text, _, _)) => text.equals("eval")
-    case _ => false
-  }
-
   def makeASTNodeInfo(span: Span): ASTNodeInfo =
-    if (getKeepComments && comment.isDefined) {
+    if (keepComments && comment.isDefined) {
       val result = new ASTNodeInfo(span, comment)
       comment = None
       result
     } else new ASTNodeInfo(span, None)
-
-  def makeProgram(info: ASTNodeInfo, ses: List[SourceElements]): Program =
-    new Program(info, new TopLevel(info, Nil, Nil, ses))
-
-  def makeNoOp(info: ASTNodeInfo, desc: String): NoOp =
-    new NoOp(info, desc)
-
-  def unwrapParen(expr: Expr): Expr = expr match {
-    case Parenthesized(info, body) => body
-    case _ => expr
-  }
-
-  def prop2Id(prop: Property): Id = prop match {
-    case PropId(info, id) => id
-    case PropStr(info, str) => Id(info, str, None, false)
-    case PropNum(info, DoubleLiteral(_, t, _)) => Id(info, t, None, false)
-    case PropNum(info, IntLiteral(_, i, _)) => Id(info, i.toString, None, false)
-  }
-
-  def prop2Str(prop: Property): String = prop match {
-    case PropId(_, id) => id.text
-    case PropStr(_, str) => str
-    case PropNum(info, DoubleLiteral(_, _, num)) => num.toString
-    case PropNum(info, IntLiteral(_, num, _)) => num.toString
-  }
-
-  def member2Str(member: Member): String = member match {
-    case Field(_, prop, _) => prop2Str(prop)
-    case GetProp(_, prop, _) => prop2Str(prop)
-    case SetProp(_, prop, _) => prop2Str(prop)
-  }
 
   def escape(s: String): String = s.replaceAll("\\\\", "\\\\\\\\")
 
   def lineTerminating(c: Char): Boolean =
     List('\u000a', '\u2028', '\u2029', '\u000d').contains(c)
 
-  private var keepComments = false
   def setKeepComments(flag: Boolean): Unit = { keepComments = flag }
-  def getKeepComments: Boolean = keepComments
 
-  private var comment: Option[Comment] = None
   def initComment: Unit = { comment = None }
+
   def commentLog(span: Span, message: String): Unit =
-    if (getKeepComments) {
+    if (keepComments) {
       if (!comment.isDefined ||
         (!comment.get.txt.startsWith("/*") && !comment.get.txt.startsWith("//")))
         comment = Some[Comment](new Comment(makeASTNodeInfo(span), message))
@@ -202,11 +164,6 @@ object NodeUtil {
   def adjustCallSpan(finish: Span, expr: LHS): Span = expr match {
     case Parenthesized(info, body) => new Span(body.span.begin, finish.end)
     case _ => finish
-  }
-
-  def isOneline(s: Stmt): Boolean = s match {
-    case _: ABlock => false
-    case _ => true
   }
 
   def inParentheses(str: String): String = {
@@ -260,7 +217,7 @@ object NodeUtil {
       }
     }
 
-  object addLinesProgram extends ASTWalker {
+  object AddLinesProgram extends ASTWalker {
     var line = 0
     var offset = 0
     def addLines(node: Program, l: Int, o: Int): Program = {
@@ -336,7 +293,7 @@ object NodeUtil {
   }
 
   // Assumes that the filename remains the same.
-  object addLinesWalker extends ASTWalker {
+  object AddLinesWalker extends ASTWalker {
     var line = 0
     var offset = 0
     def addLines(node: FunExpr, l: Int, o: Int): FunExpr = {

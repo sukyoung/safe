@@ -880,7 +880,7 @@ class Translator(program: Program) {
       (ss1 :+ IRIf(e, r1, makeSeq(trueBranch, ss2, r2, res),
         Some(makeSeq(falseBranch, ss3, r3, res))), res)
 
-    case AssignOpApp(_, lhs, Op(_, text), right: FunExpr) if text.equals("=") && NU.isName(lhs) =>
+    case AssignOpApp(_, lhs, Op(_, text), right: FunExpr) if text.equals("=") && lhs.isName =>
       val name = getName(lhs)
       val (ss, r) = walkFunExpr(right, env, res, Some(name))
       if (containsLhs(r, lhs, env))
@@ -933,7 +933,7 @@ class Translator(program: Program) {
           List(toNumber(right, newVal, oldVal)),
           bin, true) match { case (stmts, _) => stmts }, bin)
       } else if (opText.equals("delete")) {
-        NU.unwrapParen(right) match {
+        right.unwrapParen match {
           case VarRef(_, name) =>
             (List(IRDelete(e, res, id2ir(env, name))), res)
           case dot @ Dot(sinfo, obj, member) =>
@@ -1151,7 +1151,7 @@ class Translator(program: Program) {
       val (ss, r) = walkExpr(arg, env, freshId(arg, arg.span, "new1"))
       (ss :+ toObject(fun, res, r), res)
 
-    case FunApp(_, fun, List(arg)) if (NU.isEval(fun)) =>
+    case FunApp(_, fun, List(arg)) if (fun.isEval) =>
       val newone = freshId(arg, arg.span, "new1")
       val (ss, r) = walkExpr(arg, env, newone)
       (ss :+ IREval(e, res, r), res)
@@ -1296,7 +1296,7 @@ class Translator(program: Program) {
         (ss, IRField(m, prop2ir(prop), r))
       case GetProp(_, prop, f @ Functional(_, fds, vds, body, name, params, _)) =>
         val (newName, newParams, args, newFds, newVds, newBody) =
-          functional(NU.prop2Id(prop), params, fds, vds, body, env, None, true)
+          functional(prop.toId, params, fds, vds, body, env, None, true)
         (
           List(),
           IRGetProp(
@@ -1307,7 +1307,7 @@ class Translator(program: Program) {
         )
       case SetProp(_, prop, f @ Functional(_, fds, vds, body, name, params, _)) =>
         val (newName, newParams, args, newFds, newVds, newBody) =
-          functional(NU.prop2Id(prop), params, fds, vds, body, env, None, true)
+          functional(prop.toId, params, fds, vds, body, env, None, true)
         (
           List(),
           IRSetProp(

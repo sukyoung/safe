@@ -390,7 +390,7 @@ class WithRewriter(program: Program, forTest: Boolean) {
               aoa
             case alpha :: others =>
               val (first, rest) = splitNames(names)
-              NU.unwrapParen(lhs) match {
+              lhs.unwrapParen match {
                 case VarRef(vinfo, id) =>
                   if (first.contains(id.text)) AssignOpApp(vinfo, lhs, op, exprWalk)
                   else {

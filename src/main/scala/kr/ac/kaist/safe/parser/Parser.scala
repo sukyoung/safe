@@ -29,7 +29,7 @@ object Parser {
     val (fileName, (line, offset), code) = str
     val sr = new StringReader(code)
     val in = new BufferedReader(sr)
-    val result = Try(NU.addLinesWalker.addLines(
+    val result = Try(NU.AddLinesWalker.addLines(
       new JS(in, fileName).JSFunctionExpr(0).asInstanceOf[SemanticValue].value.asInstanceOf[FunExpr],
       line - 1, offset - 1
     ))
@@ -49,19 +49,19 @@ object Parser {
   // Used by phase/Parse.scala
   def fileToAST(fs: List[String]): Try[Program] = fs match {
     case List(file) =>
-      fileToStmts(file).map(s => NU.makeProgram(s.info, List(s)))
+      fileToStmts(file).map(s => Program(s.info, List(s)))
     case files =>
       Try(files.foldLeft(List[SourceElements]())((l, f) => l ++ List(fileToStmts(f).get))).
-        map(NU.makeProgram(MERGED_SOURCE_INFO, _))
+        map(Program(MERGED_SOURCE_INFO, _))
   }
 
   // Used by ast_rewriter/Hoister.scala
   def scriptToAST(ss: List[(String, (Int, Int), String)]): Try[Program] = ss match {
     case List(script) =>
-      scriptToStmts(script).map(s => NU.makeProgram(s.info, List(s)))
+      scriptToStmts(script).map(s => Program(s.info, List(s)))
     case scripts =>
       Try(scripts.foldLeft(List[SourceElements]())((l, s) => l ++ List(scriptToStmts(s).get))).
-        map(NU.makeProgram(MERGED_SOURCE_INFO, _))
+        map(Program(MERGED_SOURCE_INFO, _))
   }
 
   private def fileToStmts(f: String): Try[SourceElements] = {
@@ -92,7 +92,7 @@ object Parser {
     val info = program.info
     if (program.body.stmts.size == 1) {
       val ses = program.body.stmts.head
-      Try(SourceElements(info, (NU.makeNoOp(info, "StartOfFile")) +: ses.body :+ (NU.makeNoOp(info, "EndOfFile")), ses.strict))
+      Try(SourceElements(info, (NoOp(info, "StartOfFile")) +: ses.body :+ (NoOp(info, "EndOfFile")), ses.strict))
     } else
       Failure(AlreadyMergedSourceError(info.span))
   }
@@ -102,7 +102,7 @@ object Parser {
     val is = new ByteArrayInputStream(code.getBytes("UTF-8"))
     val ir = new InputStreamReader(is)
     val in = new BufferedReader(ir)
-    val stmts = parsePgm(in, fileName, line).flatMap(p => getInfoStmts(NU.addLinesProgram.addLines(p, line - 1, offset - 1)))
+    val stmts = parsePgm(in, fileName, line).flatMap(p => getInfoStmts(NU.AddLinesProgram.addLines(p, line - 1, offset - 1)))
     in.close; ir.close; is.close
     stmts
   }
