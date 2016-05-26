@@ -473,12 +473,12 @@ class Translator(program: Program) {
    * AST2IR_FD : FunDecl -> Env -> IRFunDecl
    */
   private def walkFd(fd: FunDecl, env: Env): IRFunDecl = fd match {
-    case FunDecl(_, Functional(_, fds, vds, body, name, params, _), _) =>
+    case FunDecl(_, f @ Functional(_, fds, vds, body, name, params, _), _) =>
       val (newName, newParams, args, newFds, newVds, newBody) =
         functional(name, params, fds, vds, body, env, None, false)
       IRFunDecl(
         fd,
-        IRFunctional(fd, true, newName, newParams, args,
+        IRFunctional(f, true, newName, newParams, args,
           newFds, newVds, newBody)
       )
   }
@@ -806,7 +806,7 @@ class Translator(program: Program) {
   }
 
   private def walkFunExpr(e: Expr, env: Env, res: IRId, lhs: Option[String]): (List[IRFunExpr], IRId) = e match {
-    case FunExpr(info, Functional(_, fds, vds, body, name, params, _)) =>
+    case FunExpr(info, f @ Functional(_, fds, vds, body, name, params, _)) =>
       val id = if (name.text.equals("")) funexprId(info.span, lhs) else name
       val NEW_NAME = makeUId(id.text, id.uniqueName.get, false,
         e, id.info.span, false)
@@ -815,7 +815,7 @@ class Translator(program: Program) {
       val i = e
       (
         List(IRFunExpr(i, res,
-          IRFunctional(i, true,
+          IRFunctional(f, true,
             NEW_NAME, newParams, args, newFds, newVds, newBody))),
         res
       )
@@ -1294,25 +1294,25 @@ class Translator(program: Program) {
       case Field(_, prop, expr) =>
         val (ss, r) = walkExpr(expr, env, res)
         (ss, IRField(m, prop2ir(prop), r))
-      case GetProp(_, prop, Functional(_, fds, vds, body, name, params, _)) =>
+      case GetProp(_, prop, f @ Functional(_, fds, vds, body, name, params, _)) =>
         val (newName, newParams, args, newFds, newVds, newBody) =
           functional(NU.prop2Id(prop), params, fds, vds, body, env, None, true)
         (
           List(),
           IRGetProp(
             m,
-            IRFunctional(m, true,
+            IRFunctional(f, true,
               newName, newParams, args, newFds, newVds, newBody)
           )
         )
-      case SetProp(_, prop, Functional(_, fds, vds, body, name, params, _)) =>
+      case SetProp(_, prop, f @ Functional(_, fds, vds, body, name, params, _)) =>
         val (newName, newParams, args, newFds, newVds, newBody) =
           functional(NU.prop2Id(prop), params, fds, vds, body, env, None, true)
         (
           List(),
           IRSetProp(
             m,
-            IRFunctional(m, true,
+            IRFunctional(f, true,
               newName, newParams, args, newFds, newVds, newBody)
           )
         )

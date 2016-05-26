@@ -124,14 +124,6 @@ object NodeUtil {
   def prBody(body: List[SourceElement]): String =
     join(0, body, Config.LINE_SEP, new StringBuilder("")).toString
 
-  def getBody(ast: ASTNode): String = ast match {
-    case FunExpr(_, Functional(_, _, _, _, _, _, bodyS)) => bodyS
-    case FunDecl(_, Functional(_, _, _, _, _, _, bodyS), _) => bodyS
-    case GetProp(_, _, Functional(_, _, _, _, _, _, bodyS)) => bodyS
-    case SetProp(_, _, Functional(_, _, _, _, _, _, bodyS)) => bodyS
-    case _ => "Not a function body"
-  }
-
   def isName(lhs: LHS): Boolean = lhs match {
     case _: VarRef => true
     case _: Dot => true
@@ -467,27 +459,27 @@ object NodeUtil {
   // They denote internal IRStmts whose values do not contribute to the result.
   object SimplifyIRWalker extends IRWalker {
     override def walk(node: IRRoot): IRRoot = node match {
-      case IRRoot(info, fds, vds, irs) =>
-        IRRoot(info, fds.map { fd: IRFunDecl => walk(fd) }, vds, simplify(irs))
+      case IRRoot(ast, fds, vds, irs) =>
+        IRRoot(ast, fds.map { fd: IRFunDecl => walk(fd) }, vds, simplify(irs))
     }
 
     override def walk(node: IRFunctional): IRFunctional = node match {
-      case IRFunctional(i, f, n, params, args, fds, vds, body) =>
-        IRFunctional(i, f, n, params, simplify(args),
+      case IRFunctional(astF, f, n, params, args, fds, vds, body) =>
+        IRFunctional(astF, f, n, params, simplify(args),
           fds.map { fd: IRFunDecl => walk(fd) }, vds, simplify(body))
     }
 
     override def walk(node: IRFunDecl): IRFunDecl = node match {
-      case IRFunDecl(info, ftn) =>
-        IRFunDecl(walk(info), walk(ftn))
+      case IRFunDecl(ast, ftn) =>
+        IRFunDecl(ast, walk(ftn))
     }
 
     override def walk(node: IRStmt): IRStmt = node match {
-      case IRStmtUnit(info, stmts) =>
-        IRStmtUnit(info, simplify(stmts))
+      case IRStmtUnit(ast, stmts) =>
+        IRStmtUnit(ast, simplify(stmts))
 
-      case IRSeq(info, stmts) =>
-        IRSeq(info, simplify(stmts))
+      case IRSeq(ast, stmts) =>
+        IRSeq(ast, simplify(stmts))
 
       case _ => super.walk(node)
     }

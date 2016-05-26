@@ -672,7 +672,7 @@ case class IROp(override val ast: ASTNode, val kind: EJSOp)
 /**
  * Common shape for functions
  */
-case class IRFunctional(override val ast: ASTNode, val fromSource: Boolean,
+case class IRFunctional(override val ast: Functional, val fromSource: Boolean,
   val name: IRId, val params: List[IRId], val args: List[IRStmt],
   val fds: List[IRFunDecl], val vds: List[IRVarStmt], val body: List[IRStmt])
     extends IRNode(ast) {
@@ -689,128 +689,126 @@ case class IRFunctional(override val ast: ASTNode, val fromSource: Boolean,
 }
 
 trait IRWalker {
-  def walk(ast: ASTNode): ASTNode = ast
-
   def walk(node: IRRoot): IRRoot = node match {
     case IRRoot(ast, fds, vds, irs) =>
-      IRRoot(walk(ast), fds.map(walk), vds.map(walk), irs.map(walk))
+      IRRoot(ast, fds.map(walk), vds.map(walk), irs.map(walk))
   }
 
   def walk(node: IRStmt): IRStmt = node match {
     case IRExprStmt(ast, lhs, right, isRef) =>
-      IRExprStmt(walk(ast), walk(lhs), walk(right), isRef)
+      IRExprStmt(ast, walk(lhs), walk(right), isRef)
     case IRDelete(ast, lhs, id) =>
-      IRDelete(walk(ast), walk(lhs), walk(id))
+      IRDelete(ast, walk(lhs), walk(id))
     case IRDeleteProp(ast, lhs, obj, index) =>
-      IRDeleteProp(walk(ast), walk(lhs), walk(obj), walk(index))
+      IRDeleteProp(ast, walk(lhs), walk(obj), walk(index))
     case IRObject(ast, lhs, members, proto) =>
-      IRObject(walk(ast), walk(lhs), members.map(walk), proto.map(walk))
+      IRObject(ast, walk(lhs), members.map(walk), proto.map(walk))
     case IRArray(ast, lhs, elements) =>
-      IRArray(walk(ast), walk(lhs), elements.map(_.map(walk)))
+      IRArray(ast, walk(lhs), elements.map(_.map(walk)))
     case IRArrayNumber(ast, lhs, elements) =>
-      IRArrayNumber(walk(ast), walk(lhs), elements)
+      IRArrayNumber(ast, walk(lhs), elements)
     case IRArgs(ast, lhs, elements) =>
-      IRArgs(walk(ast), walk(lhs), elements.map(_.map(walk)))
+      IRArgs(ast, walk(lhs), elements.map(_.map(walk)))
     case IRCall(ast, lhs, fun, thisB, args) =>
-      IRCall(walk(ast), walk(lhs), walk(fun), walk(thisB), walk(args))
+      IRCall(ast, walk(lhs), walk(fun), walk(thisB), walk(args))
     case IRInternalCall(ast, lhs, fun, first, second) =>
-      IRInternalCall(walk(ast), walk(lhs), walk(fun), walk(first), second.map(walk))
+      IRInternalCall(ast, walk(lhs), walk(fun), walk(first), second.map(walk))
     case IRNew(ast, lhs, fun, args) =>
-      IRNew(walk(ast), walk(lhs), walk(fun), args.map(walk))
+      IRNew(ast, walk(lhs), walk(fun), args.map(walk))
     case IRFunExpr(ast, lhs, ftn) =>
-      IRFunExpr(walk(ast), walk(lhs), walk(ftn))
+      IRFunExpr(ast, walk(lhs), walk(ftn))
     case IREval(ast, lhs, arg) =>
-      IREval(walk(ast), walk(lhs), walk(arg))
+      IREval(ast, walk(lhs), walk(arg))
     case IRStmtUnit(ast, stmts) =>
-      IRStmtUnit(walk(ast), stmts.map(walk))
+      IRStmtUnit(ast, stmts.map(walk))
     case IRStore(ast, obj, index, rhs) =>
-      IRStore(walk(ast), walk(obj), walk(index), walk(rhs))
+      IRStore(ast, walk(obj), walk(index), walk(rhs))
     case fd: IRFunDecl =>
       walk(fd)
     case IRBreak(ast, label) =>
-      IRBreak(walk(ast), walk(label))
+      IRBreak(ast, walk(label))
     case IRReturn(ast, expr) =>
-      IRReturn(walk(ast), expr.map(walk))
+      IRReturn(ast, expr.map(walk))
     case IRWith(ast, id, stmt) =>
-      IRWith(walk(ast), walk(id), walk(stmt))
+      IRWith(ast, walk(id), walk(stmt))
     case IRLabelStmt(ast, label, stmt) =>
-      IRLabelStmt(walk(ast), walk(label), walk(stmt))
+      IRLabelStmt(ast, walk(label), walk(stmt))
     case vs: IRVarStmt =>
       walk(vs)
     case IRThrow(ast, expr) =>
-      IRThrow(walk(ast), walk(expr))
+      IRThrow(ast, walk(expr))
     case IRSeq(ast, stmts) =>
-      IRSeq(walk(ast), stmts.map(walk))
+      IRSeq(ast, stmts.map(walk))
     case IRIf(ast, expr, trueB, falseB) =>
-      IRIf(walk(ast), walk(expr), walk(trueB), falseB.map(walk))
+      IRIf(ast, walk(expr), walk(trueB), falseB.map(walk))
     case IRWhile(ast, cond, body) =>
-      IRWhile(walk(ast), walk(cond), walk(body))
+      IRWhile(ast, walk(cond), walk(body))
     case IRTry(ast, body, name, catchB, finallyB) =>
-      IRTry(walk(ast), walk(body), name.map(walk), catchB.map(walk), finallyB.map(walk))
+      IRTry(ast, walk(body), name.map(walk), catchB.map(walk), finallyB.map(walk))
     case IRNoOp(ast, desc) =>
-      IRNoOp(walk(ast), desc)
+      IRNoOp(ast, desc)
   }
 
   def walk(node: IRExpr): IRExpr = node match {
     case IRBin(ast, first, op, second) =>
-      IRBin(walk(ast), walk(first), walk(op), walk(second))
+      IRBin(ast, walk(first), walk(op), walk(second))
     case IRUn(ast, op, expr) =>
-      IRUn(walk(ast), walk(op), walk(expr))
+      IRUn(ast, walk(op), walk(expr))
     case IRLoad(ast, obj, index) =>
-      IRLoad(walk(ast), walk(obj), walk(index))
+      IRLoad(ast, walk(obj), walk(index))
     case id: IRUserId =>
       walk(id)
     case id: IRTmpId =>
       walk(id)
     case IRThis(ast) =>
-      IRThis(walk(ast))
+      IRThis(ast)
     case IRNumber(ast, text, num) =>
-      IRNumber(walk(ast), text, num)
+      IRNumber(ast, text, num)
     case IRString(ast, str) =>
-      IRString(walk(ast), str)
+      IRString(ast, str)
     case IRBool(ast, isBool) =>
-      IRBool(walk(ast), isBool)
+      IRBool(ast, isBool)
     case IRUndef(ast) =>
-      IRUndef(walk(ast))
+      IRUndef(ast)
     case IRNull(ast) =>
-      IRNull(walk(ast))
+      IRNull(ast)
   }
 
   def walk(node: IRMember): IRMember = node match {
     case IRField(ast, prop, expr) =>
-      IRField(walk(ast), walk(prop), walk(expr))
+      IRField(ast, walk(prop), walk(expr))
     case IRGetProp(ast, ftn) =>
-      IRGetProp(walk(ast), walk(ftn))
+      IRGetProp(ast, walk(ftn))
     case IRSetProp(ast, ftn) =>
-      IRSetProp(walk(ast), walk(ftn))
+      IRSetProp(ast, walk(ftn))
   }
 
   def walk(node: IRFunctional): IRFunctional = node match {
     case IRFunctional(ast, isFromSource, name, params, args, fds, vds, body) =>
-      IRFunctional(walk(ast), isFromSource, walk(name), params.map(walk),
+      IRFunctional(ast, isFromSource, walk(name), params.map(walk),
         args.map(walk), fds.map(walk), vds.map(walk), body.map(walk))
   }
 
   def walk(node: IROp): IROp = node match {
     case IROp(ast, kind) =>
-      IROp(walk(ast), kind)
+      IROp(ast, kind)
   }
 
   def walk(node: IRFunDecl): IRFunDecl = node match {
     case IRFunDecl(ast, ftn) =>
-      IRFunDecl(walk(ast), walk(ftn))
+      IRFunDecl(ast, walk(ftn))
   }
 
   def walk(node: IRVarStmt): IRVarStmt = node match {
     case IRVarStmt(ast, lhs, isFromParam) =>
-      IRVarStmt(walk(ast), walk(lhs), isFromParam)
+      IRVarStmt(ast, walk(lhs), isFromParam)
   }
 
   def walk(node: IRId): IRId = node match {
     case IRUserId(ast, originalName, uniqueName, isGlobal, isWith) =>
-      IRUserId(walk(ast), originalName, uniqueName, isGlobal, isWith)
+      IRUserId(ast, originalName, uniqueName, isGlobal, isWith)
     case IRTmpId(ast, originalName, uniqueName, isGlobal) =>
-      IRTmpId(walk(ast), originalName, uniqueName, isGlobal)
+      IRTmpId(ast, originalName, uniqueName, isGlobal)
   }
 }
 
