@@ -11,11 +11,15 @@
 
 package kr.ac.kaist.safe.analyzer
 
+import kr.ac.kaist.safe.errors.ExcLog
+import kr.ac.kaist.safe.errors.error._
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.cfg_builder._
 import kr.ac.kaist.safe.nodes.{ CFGExpr, CFGInst, CFGNode }
 
 class Semantics(cfg: CFG, utils: Utils, addressManager: AddressManager) {
+  lazy val excLog: ExcLog = new ExcLog
+
   val helper: Helper = Helper(utils, addressManager)
 
   def E(cp1: ControlPoint, cp2: ControlPoint, ctx: Context, obj: Obj, st: State): State = {
@@ -52,11 +56,14 @@ class Semantics(cfg: CFG, utils: Utils, addressManager: AddressManager) {
           val h3 = helper.varStore(h2, retVar, returnV)
           State(h3, c2)
         }
-      case (Exit(_), _) =>
+      case (Exit(f), _) =>
         val c1 = st.context
         val (c2, obj1) = helper.fixOldify(ctx, obj, c1.mayOld, c1.mustOld)
         if (c2.isBottom) State.Bot
-        else throw new InternalError("Inter-procedural edge from Exit node must be connected with After-Call node") //TODO
+        else {
+          excLog.signal(IPFromExitToNoneError(f.ir))
+          State.Bot
+        }
       case (ExitExc(_), _) if st.heap.isBottom => State.Bot
       case (ExitExc(_), _) if st.context.isBottom => State.Bot
       case (ExitExc(_), AfterCatch(_, _)) =>
@@ -76,11 +83,14 @@ class Semantics(cfg: CFG, utils: Utils, addressManager: AddressManager) {
           )
           State(h2, c2)
         }
-      case (ExitExc(_), _) =>
+      case (ExitExc(f), _) =>
         val c1 = st.context
         val (c2, obj1) = helper.fixOldify(ctx, obj, c1.mayOld, c1.mustOld)
         if (c2.isBottom) State.Bot
-        else throw new InternalError("Inter-procedural edge from Exit node must be connected with After-Call node") //TODO
+        else {
+          excLog.signal(IPFromExitToNoneError(f.ir))
+          State.Bot
+        }
       case _ => st
     }
   }

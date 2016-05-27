@@ -211,8 +211,7 @@ public Stmt Statement =
 
 private transient Stmt ExtendedFunctionDeclaration =
      a1:FunctionDeclaration
-     { //System.out.println(a1.info().span()+":");
-       //System.out.println("* Warning: the use of FunctionDeclaration as a Statement is not allowed in ECMAScript.");
+     { //excLog.signal(new Warning(a1.info().span())); "FunctionDeclaration as a Statement is not allowed in ECMAScript."
        yyValue = a1;
      };
 
