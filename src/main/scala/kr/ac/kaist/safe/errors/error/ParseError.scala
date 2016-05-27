@@ -29,10 +29,16 @@ case class NotJSFileError(fileName: String) extends ParseError({
   s"Need a JavaScript file instead of $fileName."
 }, None)
 
-case class ParserError(msg: String, span: Span) extends ParseError({
-  s"[Parser Error] $msg"
-}, Some(span))
+case class ParserError(msg: String, span: Span) extends ParseError(msg, Some(span))
 
 case class AlreadyMergedSourceError(span: Span) extends ParseError({
   "Sources are already merged."
 }, Some(span))
+
+case class NoNumeralError(msg: String) extends ParseError({
+  s"Expected a numeral but got $msg."
+}, None)
+
+case class NumeralPrefixZeroError() extends ParseError({
+  "A numeral should not begin with 0."
+}, None)

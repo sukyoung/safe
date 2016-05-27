@@ -16,6 +16,7 @@ import java.nio.charset.Charset
 import scala.util.{ Try, Success, Failure }
 import xtc.parser.Result
 import xtc.parser.SemanticValue
+import kr.ac.kaist.safe.errors.ExcLog
 import kr.ac.kaist.safe.errors.error.{ NotJSFileError, AlreadyMergedSourceError }
 import kr.ac.kaist.safe.nodes._
 import kr.ac.kaist.safe.util.{ NodeUtil => NU, SourceLoc, Span }
@@ -38,33 +39,40 @@ object Parser {
   }
 
   // Used by CoreTest
-  def stringToAST(str: String): Try[Program] = {
+  def stringToAST(str: String): Try[(Program, ExcLog)] = {
     val sr = new StringReader(str)
     val in = new BufferedReader(sr)
-    val result = rewriteDynamic(new JS(in, "stringParse").JSmain(0))
+    val parser = new JS(in, "stringParse")
+    val result = rewriteDynamic(parser.JSmain(0)).map((_, parser.excLog))
     in.close; sr.close
     result
   }
 
   // Used by phase/Parse.scala
-  def fileToAST(fs: List[String]): Try[Program] = fs match {
+  def fileToAST(fs: List[String]): Try[(Program, ExcLog)] = fs match {
     case List(file) =>
-      fileToStmts(file).map(s => Program(s.info, List(s)))
+      fileToStmts(file).map { case (s, e) => (Program(s.info, List(s)), e) }
     case files =>
-      Try(files.foldLeft(List[SourceElements]())((l, f) => l ++ List(fileToStmts(f).get))).
-        map(Program(MERGED_SOURCE_INFO, _))
+      files.foldLeft(Try((List[SourceElements](), new ExcLog))) {
+        case (res, f) => fileToStmts(f).flatMap {
+          case (ss, ee) => res.flatMap { case (l, ex) => Try((l ++ List(ss), ex + ee)) }
+        }
+      }.map { case (s, e) => (Program(MERGED_SOURCE_INFO, s), e) }
   }
 
   // Used by ast_rewriter/Hoister.scala
-  def scriptToAST(ss: List[(String, (Int, Int), String)]): Try[Program] = ss match {
+  def scriptToAST(ss: List[(String, (Int, Int), String)]): Try[(Program, ExcLog)] = ss match {
     case List(script) =>
-      scriptToStmts(script).map(s => Program(s.info, List(s)))
+      scriptToStmts(script).map { case (s, e) => (Program(s.info, List(s)), e) }
     case scripts =>
-      Try(scripts.foldLeft(List[SourceElements]())((l, s) => l ++ List(scriptToStmts(s).get))).
-        map(Program(MERGED_SOURCE_INFO, _))
+      scripts.foldLeft(Try((List[SourceElements](), new ExcLog))) {
+        case (res, s) => scriptToStmts(s).flatMap {
+          case (ss, ee) => res.flatMap { case (l, ex) => Try((l ++ List(ss), ex + ee)) }
+        }
+      }.map { case (s, e) => (Program(MERGED_SOURCE_INFO, s), e) }
   }
 
-  private def fileToStmts(f: String): Try[SourceElements] = {
+  private def fileToStmts(f: String): Try[(SourceElements, ExcLog)] = {
     var fileName = new File(f).getCanonicalPath
     if (File.separatorChar == '\\') {
       // convert path string to linux style for windows
@@ -76,14 +84,16 @@ object Parser {
       val fs = new FileInputStream(new File(f))
       val sr = new InputStreamReader(fs, Charset.forName("UTF-8"))
       val in = new BufferedReader(sr)
-      val stmts = parsePgm(in, fileName, 0).flatMap(getInfoStmts(_))
+      val pair = parsePgm(in, fileName, 0).flatMap { case (p, e) => getInfoStmts(p).map { (_, e) } }
       in.close; sr.close; fs.close
-      stmts
+      pair
     }
   }
 
-  private def parsePgm(in: BufferedReader, fileName: String, start: Int): Try[Program] =
-    rewriteDynamic(new JS(in, fileName).JSmain(0))
+  private def parsePgm(in: BufferedReader, fileName: String, start: Int): Try[(Program, ExcLog)] = {
+    val parser = new JS(in, fileName)
+    rewriteDynamic(parser.JSmain(0)).map((_, parser.excLog))
+  }
 
   private def rewriteDynamic(parseResult: Result): Try[Program] =
     Try(DynamicRewriter(parseResult.asInstanceOf[SemanticValue].value.asInstanceOf[Program]))
@@ -97,13 +107,13 @@ object Parser {
       Failure(AlreadyMergedSourceError(info.span))
   }
 
-  private def scriptToStmts(script: (String, (Int, Int), String)): Try[SourceElements] = {
+  private def scriptToStmts(script: (String, (Int, Int), String)): Try[(SourceElements, ExcLog)] = {
     val (fileName, (line, offset), code) = script
     val is = new ByteArrayInputStream(code.getBytes("UTF-8"))
     val ir = new InputStreamReader(is)
     val in = new BufferedReader(ir)
-    val stmts = parsePgm(in, fileName, line).flatMap(p => getInfoStmts(NU.AddLinesProgram.addLines(p, line - 1, offset - 1)))
+    val pair = parsePgm(in, fileName, line).flatMap { case (p, e) => getInfoStmts(NU.AddLinesProgram.addLines(p, line - 1, offset - 1)).map { (_, e) } }
     in.close; ir.close; is.close
-    stmts
+    pair
   }
 }

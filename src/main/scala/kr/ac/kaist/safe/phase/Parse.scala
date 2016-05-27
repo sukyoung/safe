@@ -14,6 +14,7 @@ package kr.ac.kaist.safe.phase
 import scala.util.{ Try, Success, Failure }
 import java.io.{ BufferedWriter, FileWriter }
 import kr.ac.kaist.safe.config.{ Config, ConfigOption, OptionKind, BoolOption, StrOption }
+import kr.ac.kaist.safe.errors.ExcLog
 import kr.ac.kaist.safe.parser.Parser
 import kr.ac.kaist.safe.nodes.Program
 import kr.ac.kaist.safe.util.Useful
@@ -26,25 +27,32 @@ case class Parse(
   override def apply(config: Config): Unit = parse(config) recover {
     case ex => Console.err.print(ex.toString)
   }
-  def parse(config: Config): Try[Program] = {
-    config.fileNames match {
-      case Nil => Failure(NoFileError("parse"))
-      case _ => Parser.fileToAST(config.fileNames).flatMap(program => {
-        // Pretty print to file.
-        parseConfig.outFile match {
-          case Some(out) => Useful.fileNameToWriters(out).map { pair =>
-            {
-              val (fw, writer) = pair
-              writer.write(program.toString(0))
-              writer.close; fw.close
-              println("Dumped parsed AST to " + out)
-              program
-            }
+  def parse(config: Config): Try[Program] = config.fileNames match {
+    case Nil => Failure(NoFileError("parse"))
+    case _ =>
+      Parser.fileToAST(config.fileNames).flatMap {
+        case (program, excLog) => {
+          // Report errors.
+          if (excLog.hasError) {
+            println(program.fileName + ":")
+            println(excLog)
           }
-          case None => Try(program)
+
+          // Pretty print to file.
+          parseConfig.outFile match {
+            case Some(out) => Useful.fileNameToWriters(out).map { pair =>
+              {
+                val (fw, writer) = pair
+                writer.write(program.toString(0))
+                writer.close; fw.close
+                println("Dumped parsed AST to " + out)
+                program
+              }
+            }
+            case None => Try(program)
+          }
         }
-      })
-    }
+      }
   }
 }
 

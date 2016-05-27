@@ -50,11 +50,11 @@ class CoreTest extends FlatSpec {
       case Success(program) =>
         Parser.stringToAST(program.toString(0)) match {
           case Failure(_) => assert(false)
-          case Success(pgm) =>
+          case Success((pgm, _)) =>
             val pretty = pgm.toString(0)
             Parser.stringToAST(pretty) match {
               case Failure(_) => assert(false)
-              case Success(p) =>
+              case Success((p, _)) =>
                 assert(normalized(p.toString(0)) == normalized(pretty))
             }
         }
