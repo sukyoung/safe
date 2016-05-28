@@ -85,9 +85,10 @@ body {
             end = start;
         Column s = column(start);
         Column e = column(end);
-        SourceLoc slStart = new SourceLoc(s.file, s.line, s.column, start);
-        SourceLoc slEnd   = new SourceLoc(e.file, e.line, e.column, end);
-        return new Span(slStart, slEnd);
+        SourceLoc slStart = new SourceLoc(s.line, s.column, start);
+        SourceLoc slEnd   = new SourceLoc(e.line, e.column, end);
+        if (s.file == e.file) { return new Span(s.file, slStart, slEnd); }
+        else { return NodeUtil.MERGED_SPAN(); }
     }
 
     private FileWriter fw;

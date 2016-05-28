@@ -18,130 +18,89 @@ import java.lang.StringBuilder
 import xtc.tree.Location
 import kr.ac.kaist.safe.nodes.Node
 
-class Span(b: SourceLoc, e: SourceLoc) extends UIDObject with Serializable {
-  var begin: SourceLoc = b
-  var end: SourceLoc = e
-
-  override def hashCode: Int =
-    begin.hashCode * MagicNumbers.p + end.hashCode * MagicNumbers.a
-
-  override def equals(o: Any): Boolean =
-    if (o.isInstanceOf[Span]) {
-      val sp: Span = o.asInstanceOf[Span]
-      begin.equals(sp.begin) && end.equals(sp.end)
-    } else false
-
+case class Span(
+    fileName: String = "defaultSpan",
+    begin: SourceLoc = SourceLoc(),
+    end: SourceLoc = SourceLoc()
+) extends UIDObject {
   def addLines(line: Int, offset: Int): Span =
-    new Span(begin.addLines(line, offset), end.addLines(line, offset))
+    Span(fileName, begin.addLines(line, offset), end.addLines(line, offset))
 
-  def beginsEarlierThan(a: Span, b: Span): Boolean =
-    (a.begin.line < b.begin.line ||
-      (a.begin.line == b.begin.line &&
-        a.begin.column < b.begin.column))
-
-  def endsLaterThan(a: Span, b: Span): Boolean =
-    (a.end.line > b.end.line ||
-      (a.end.line == b.end.line &&
-        a.end.column > b.end.column))
-
-  /**
-   * Span which includes both the given spans.  Assumption: they're
-   * from the same file.  If this is not true, the results will be
-   * unpredictable.
-   */
-  def span(a: Span, b: Span): Unit = {
-    if (beginsEarlierThan(a, b))
-      begin = a.begin
-    else
-      begin = b.begin
-    if (endsLaterThan(a, b))
-      end = a.end
-    else
-      end = b.end
+  def fileNameOnly: String = {
+    val index = fileName.lastIndexOf(File.separatorChar)
+    fileName.substring(index + 1)
   }
 
-  def fileName: String = begin.fileName
-
-  def fileNameOnly: String = begin.fileNameOnly
-
-  def convertNameSeparatorToSlash(fileName: String): String =
-    if (File.separatorChar == '/') fileName
-    else fileName.replace(File.separatorChar, '/')
-
   override def toString: String =
-    appendToStr(new StringBuilder, true).toString
+    appendToStr(new StringBuilder).toString
 
   def toStringWithoutFiles: String =
     appendToStr(new StringBuilder, false).toString
 
-  def at: String = toString
-
-  def stringName: String = ""
-
-  def appendToStr(w: StringBuilder, doFiles: Boolean): StringBuilder = {
-    val leftCol = begin.column
-    val rightCol = end.column
-    val fileNamesDiffer = !(begin.fileName.equals(end.fileName))
-    if (doFiles | fileNamesDiffer) {
-      // Need to add escapes to the file name
-      var beginFileName: String = ""
-      beginFileName = convertNameSeparatorToSlash(begin.fileName)
-      w.append(beginFileName)
+  private def appendToStr(w: StringBuilder, doFiles: Boolean = true): String = {
+    if (doFiles) {
+      // TODO Need to add escapes to the file name
+      w.append(fileName)
       w.append(":")
     }
-    w.append(String.valueOf(begin.line))
-    w.append(":")
-    w.append(String.valueOf(leftCol))
-    if (fileNamesDiffer || begin.line != end.line || leftCol != rightCol) {
-      w.append("-")
-      if (fileNamesDiffer) {
-        // Need to add escapes to the file name
-        var endFileName: String = ""
-        endFileName = convertNameSeparatorToSlash(end.fileName)
-        w.append(endFileName)
-        w.append(":")
+    w.append(begin.toString)
+    begin.line == end.line match {
+      case true => begin.column == end.column match {
+        case true =>
+        case false => w.append("-").append(end.column)
       }
-      if (fileNamesDiffer || begin.line != end.line) {
-        w.append(String.valueOf(end.line))
-        w.append(":")
-      }
-      w.append(String.valueOf(rightCol))
+      case false => w.append("-").append(end.toString)
     }
-    w
-  }
-}
-
-object Span {
-  // TODO change create into constructor by using "this" after modifying Scalariform
-  def create(loc: Location): Span = {
-    val sl = new SourceLoc(loc.file, loc.line, loc.column, 0);
-    new Span(sl, sl)
+    w.toString
   }
 
-  def create(start: Span, finish: Span): Span =
-    new Span(start.begin, finish.end)
-
-  def create(
-    file: String,
+  // constructor
+  def this(
+    fileName: String,
     startLine: Int,
     endLine: Int,
     startC: Int,
     endC: Int,
     startOffset: Int,
     endOffset: Int
-  ): Span = new Span(
-    new SourceLoc(file, startLine, startC, startOffset),
-    new SourceLoc(file, endLine, endC, endOffset)
+  ) = this(
+    fileName,
+    SourceLoc(startLine, startC, startOffset),
+    SourceLoc(endLine, endC, endOffset)
   )
 
-  def create(villain: String = "defaultSpan"): Span = {
-    val sl = new SourceLoc(villain, 0, 0, 0)
-    new Span(sl, sl)
+  def +(o: Span): Span = fileName == o.fileName match {
+    case true => Span(fileName, begin, o.end)
+    case false => Span(NodeUtil.MERGED_FILE_NAME)
   }
 
-  def create(nodes: List[Node], default: Span): Span = nodes match {
-    case Nil => default
-    case first :: _ =>
-      new Span(first.span.begin, nodes.last.span.end)
+  // TODO is it really need?
+  // val fileName = Useful.windowPathToUnixPath(f)
+  // /**
+  //  * Span which includes both the given spans.  Assumption: they're
+  //  * from the same file.  If this is not true, the results will be
+  //  * unpredictable.
+  //  */
+  // def span(a: Span, b: Span): Unit = {
+  //   if (beginsEarlierThan(a, b))
+  //     begin = a.begin
+  //   else
+  //     begin = b.begin
+  //   if (endsLaterThan(a, b))
+  //     end = a.end
+  //   else
+  //     end = b.end
+  // }
+  // def convertNameSeparatorToSlash(fileName: String): String =
+  //   if (File.separatorChar == '/') fileName
+  //   else fileName.replace(File.separatorChar, '/')
+}
+
+object Span {
+  def merge(left: Span, right: Span): Span = left + right
+
+  def merge(nodes: List[Node], defaultSpan: Span): Span = nodes match {
+    case Nil => defaultSpan
+    case first :: _ => first.span + nodes.last.span
   }
 }

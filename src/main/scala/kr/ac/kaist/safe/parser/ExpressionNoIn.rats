@@ -75,7 +75,7 @@ private transient Expr LogicalORNoIn =
        for (Tuple2<Op, Expr> pair: a2s.list()) {
            Op op = pair._1();
            Expr right = pair._2();
-           yyValue = new InfixOpApp(NodeUtil.makeASTNodeInfo(Span.create(span, right.span())),
+           yyValue = new InfixOpApp(NodeUtil.makeASTNodeInfo(Span.merge(span, right.span())),
                                     yyValue, op, right);
        }
      };
@@ -96,7 +96,7 @@ private transient Expr LogicalANDNoIn =
        for (Tuple2<Op, Expr> pair: a2s.list()) {
            Op op = pair._1();
            Expr right = pair._2();
-           yyValue = new InfixOpApp(NodeUtil.makeASTNodeInfo(Span.create(span, right.span())),
+           yyValue = new InfixOpApp(NodeUtil.makeASTNodeInfo(Span.merge(span, right.span())),
                                     yyValue, op, right);
        }
      };
@@ -117,7 +117,7 @@ private transient Expr BitwiseORNoIn =
        for (Tuple2<Op, Expr> pair: a2s.list()) {
            Op op = pair._1();
            Expr right = pair._2();
-           yyValue = new InfixOpApp(NodeUtil.makeASTNodeInfo(Span.create(span, right.span())),
+           yyValue = new InfixOpApp(NodeUtil.makeASTNodeInfo(Span.merge(span, right.span())),
                                     yyValue, op, right);
        }
      };
@@ -138,7 +138,7 @@ private transient Expr BitwiseXORNoIn =
        for (Tuple2<Op, Expr> pair: a2s.list()) {
            Op op = pair._1();
            Expr right = pair._2();
-           yyValue = new InfixOpApp(NodeUtil.makeASTNodeInfo(Span.create(span, right.span())),
+           yyValue = new InfixOpApp(NodeUtil.makeASTNodeInfo(Span.merge(span, right.span())),
                                     yyValue, op, right);
        }
      };
@@ -159,7 +159,7 @@ private transient Expr BitwiseANDNoIn =
        for (Tuple2<Op, Expr> pair: a2s.list()) {
            Op op = pair._1();
            Expr right = pair._2();
-           yyValue = new InfixOpApp(NodeUtil.makeASTNodeInfo(Span.create(span, right.span())),
+           yyValue = new InfixOpApp(NodeUtil.makeASTNodeInfo(Span.merge(span, right.span())),
                                     yyValue, op, right);
        }
      };
@@ -183,7 +183,7 @@ private transient Expr EqualityNoIn =
        for (Tuple2<Op, Expr> pair: a2s.list()) {
            Op op = pair._1();
            Expr right = pair._2();
-           yyValue = new InfixOpApp(NodeUtil.makeASTNodeInfo(Span.create(span, right.span())),
+           yyValue = new InfixOpApp(NodeUtil.makeASTNodeInfo(Span.merge(span, right.span())),
                                     yyValue, op, right);
        }
      };
@@ -210,7 +210,7 @@ private transient Expr RelationalNoIn =
        Span span = left.span();
        for (Tuple2<Expr, Op> pair: ps) {
            Expr e = pair._1();
-           left = new InfixOpApp(NodeUtil.makeASTNodeInfo(Span.create(span, e.span())),
+           left = new InfixOpApp(NodeUtil.makeASTNodeInfo(Span.merge(span, e.span())),
                                  left, op, e);
            op = pair._2();
        }

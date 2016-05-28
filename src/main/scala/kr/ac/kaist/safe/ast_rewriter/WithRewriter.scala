@@ -42,7 +42,7 @@ class WithRewriter(program: Program, forTest: Boolean) {
   ) extends Env
 
   // default values
-  private val TO_OBJ_INFO = NU.makeASTNodeInfo(Span.create("genToObject"))
+  private val TO_OBJ_INFO = NU.makeASTNodeInfo(Span("genToObject"))
   private lazy val TO_OBJ_FN_ID = mkId("toObject" + freshNameTest)
   private lazy val PARAM_EXPR = mkVarRef(mkId("x"))
   private lazy val FALSE = Some(mkIf("string", mkVarRef(mkId("String")),

@@ -39,7 +39,7 @@ class Translator(program: Program) {
   private val DEBUG = false
 
   // default ast
-  val defaultAst = NoOp(ASTNodeInfo(Span.create()), "defaultAST")
+  val defaultAst = NoOp(ASTNodeInfo(NodeUtil.MERGED_SPAN), "defaultAST")
 
   // default operators
   private val PLUS = IROp(defaultAst, EJSEtcAdd)
@@ -68,14 +68,14 @@ class Translator(program: Program) {
 
   // reference error
   private lazy val REF_ERROR =
-    makeTId(Span.create("referenceError"), NU.REF_ERR_NAME, true)
+    makeTId(Span("referenceError"), NU.REF_ERR_NAME, true)
 
   // global temporal id
   private lazy val GLOBAL_TMP_ID =
-    makeTId(Span.create("global"), NU.GLOBAL_NAME, true)
+    makeTId(Span("global"), NU.GLOBAL_NAME, true)
 
   // default span
-  private val TEMP_SPAN = Span.create("temp")
+  private val TEMP_SPAN = Span("temp")
 
   ////////////////////////////////////////////////////////////////
   // helper function
@@ -335,7 +335,7 @@ class Translator(program: Program) {
       fds.map(_.ftn.name.uniqueName.get) ++
       vds.map(_.name.uniqueName.get)
     isLocal = true
-    val paramsspan = Span.create(params, name.span)
+    val paramsspan = Span.merge(params, name.span)
     var newArg = freshId(name, paramsspan, ARGS_NAME)
     if (DEBUG) println(" arg=" + newArg.uniqueName)
     var newEnv = addE(env, ARGS_NAME, newArg)
@@ -1196,7 +1196,7 @@ class Translator(program: Program) {
     case FunApp(_, v @ VarRef(_, fid), args) =>
       val fspan = v.span
       val obj = freshId(v, fspan, "obj")
-      val argsspan = Span.create(args, fspan)
+      val argsspan = Span.merge(args, fspan)
       val arg = freshId(e, argsspan, ARGS_NAME)
       val fun = freshId(fid, fspan, "fun")
       val fir = id2ir(env, fid)
@@ -1222,7 +1222,7 @@ class Translator(program: Program) {
       val field1 = freshId(index, index.span, "field1")
       val obj = freshId(e, objspan, "obj")
       val fun = freshId(e, objspan, "fun")
-      val argsspan = Span.create(args, b.span)
+      val argsspan = Span.merge(args, b.span)
       val arg = freshId(e, argsspan, ARGS_NAME)
       val (ssl, rl) = walkExpr(first, env, obj1)
       val (ssr, rr) = walkExpr(index, env, field1)
@@ -1245,7 +1245,7 @@ class Translator(program: Program) {
       val fspan = fun.span
       val obj1 = freshId(fun, fspan, "obj1")
       val obj = freshId(fun, fspan, "obj")
-      val argsspan = Span.create(args, fspan)
+      val argsspan = Span.merge(args, fspan)
       val arg = freshId(e, argsspan, ARGS_NAME)
       val (ss, r) = walkExpr(fun, env, obj1)
       val newargs = args.map(_ => freshId)
@@ -1343,7 +1343,7 @@ class Translator(program: Program) {
       case (Nil, Some(stmt), _) =>
         // span is currently set to the default cases
         val span = if (stmt.isEmpty) switchSpan else stmt.head.span
-        val newLabel = freshId(ast, Span.create(stmt, span), "default")
+        val newLabel = freshId(ast, Span.merge(stmt, span), "default")
         IRSeq(
           ast,
           IRLabelStmt(ast, newLabel,

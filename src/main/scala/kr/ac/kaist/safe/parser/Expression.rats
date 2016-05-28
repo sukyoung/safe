@@ -75,7 +75,7 @@ private transient Expr LogicalOR =
        for (Tuple2<Op, Expr> pair: a2s.list()) {
            Op op = pair._1();
            Expr right = pair._2();
-           yyValue = new InfixOpApp(NodeUtil.makeASTNodeInfo(Span.create(span, right.span())),
+           yyValue = new InfixOpApp(NodeUtil.makeASTNodeInfo(Span.merge(span, right.span())),
                                     yyValue, op, right);
        }
      };
@@ -96,7 +96,7 @@ private transient Expr LogicalAND =
        for (Tuple2<Op, Expr> pair: a2s.list()) {
            Op op = pair._1();
            Expr right = pair._2();
-           yyValue = new InfixOpApp(NodeUtil.makeASTNodeInfo(Span.create(span, right.span())),
+           yyValue = new InfixOpApp(NodeUtil.makeASTNodeInfo(Span.merge(span, right.span())),
                                     yyValue, op, right);
        }
      };
@@ -117,7 +117,7 @@ private transient Expr BitwiseOR =
        for (Tuple2<Op, Expr> pair: a2s.list()) {
            Op op = pair._1();
            Expr right = pair._2();
-           yyValue = new InfixOpApp(NodeUtil.makeASTNodeInfo(Span.create(span, right.span())),
+           yyValue = new InfixOpApp(NodeUtil.makeASTNodeInfo(Span.merge(span, right.span())),
                                     yyValue, op, right);
        }
      };
@@ -138,7 +138,7 @@ private transient Expr BitwiseXOR =
        for (Tuple2<Op, Expr> pair: a2s.list()) {
            Op op = pair._1();
            Expr right = pair._2();
-           yyValue = new InfixOpApp(NodeUtil.makeASTNodeInfo(Span.create(span, right.span())),
+           yyValue = new InfixOpApp(NodeUtil.makeASTNodeInfo(Span.merge(span, right.span())),
                                     yyValue, op, right);
        }
      };
@@ -159,7 +159,7 @@ private transient Expr BitwiseAND =
        for (Tuple2<Op, Expr> pair: a2s.list()) {
            Op op = pair._1();
            Expr right = pair._2();
-           yyValue = new InfixOpApp(NodeUtil.makeASTNodeInfo(Span.create(span, right.span())),
+           yyValue = new InfixOpApp(NodeUtil.makeASTNodeInfo(Span.merge(span, right.span())),
                                     yyValue, op, right);
        }
      };
@@ -183,7 +183,7 @@ private transient Expr Equality =
        for (Tuple2<Op, Expr> pair: a2s.list()) {
            Op op = pair._1();
            Expr right = pair._2();
-           yyValue = new InfixOpApp(NodeUtil.makeASTNodeInfo(Span.create(span, right.span())),
+           yyValue = new InfixOpApp(NodeUtil.makeASTNodeInfo(Span.merge(span, right.span())),
                                     yyValue, op, right);
        }
      };
@@ -211,7 +211,7 @@ private transient Expr Relational =
        Span span = left.span();
        for (Tuple2<Expr, Op> pair: ps) {
            Expr e = pair._1();
-           left = new InfixOpApp(NodeUtil.makeASTNodeInfo(Span.create(span, e.span())),
+           left = new InfixOpApp(NodeUtil.makeASTNodeInfo(Span.merge(span, e.span())),
                                  left, op, e);
            op = pair._2();
        }
@@ -239,7 +239,7 @@ transient Expr Shift =
        Span span = left.span();
        for (Tuple2<Expr, Op> pair: ps) {
            Expr e = pair._1();
-           left = new InfixOpApp(NodeUtil.makeASTNodeInfo(Span.create(span, e.span())),
+           left = new InfixOpApp(NodeUtil.makeASTNodeInfo(Span.merge(span, e.span())),
                                  left, op, e);
            op = pair._2();
        }
@@ -266,7 +266,7 @@ private transient Expr Additive =
        Span span = left.span();
        for (Tuple2<Expr, Op> pair: ps) {
            Expr e = pair._1();
-           left = new InfixOpApp(NodeUtil.makeASTNodeInfo(Span.create(span, e.span())),
+           left = new InfixOpApp(NodeUtil.makeASTNodeInfo(Span.merge(span, e.span())),
                                  left, op, e);
            op = pair._2();
        }
@@ -294,7 +294,7 @@ private transient Expr Multiplicative =
        Span span = left.span();
        for (Tuple2<Expr, Op> pair: ps) {
            Expr e = pair._1();
-           left = new InfixOpApp(NodeUtil.makeASTNodeInfo(Span.create(span, e.span())),
+           left = new InfixOpApp(NodeUtil.makeASTNodeInfo(Span.merge(span, e.span())),
                                  left, op, e);
            op = pair._2();
        }
@@ -417,7 +417,7 @@ constant inline Action<LHS> FunApp =
                  Span last;
                  if (a1.isEmpty()) last = base.span();
                  else last = a1.get(a1.size()-1).span();
-                 Span span = Span.create(loc.fileName(),
+                 Span span = new Span(base.span().fileName(),
                                                loc.line(), last.end().line(),
                                                loc.column(), last.end().column()+1,
                                                base.info().span().begin().offset(),
@@ -431,7 +431,7 @@ constant inline Action<LHS> Bracket =
      { yyValue = new Action<LHS>() {
              public LHS run(LHS base) {
                  SourceLoc loc = base.span().begin();
-                 Span span = Span.create(loc.fileName(),
+                 Span span = new Span(base.span().fileName(),
                                                loc.line(), a1.info().span().end().line(),
                                                loc.column()+1, a1.span().end().column()+1,
                                                base.info().span().begin().offset(),
@@ -444,7 +444,7 @@ constant inline Action<LHS> Dot =
      w dot w a1:IdName
      { yyValue = new Action<LHS>() {
              public LHS run(LHS base) {
-                 return new Dot(NodeUtil.makeASTNodeInfo(Span.create(base.span(),
+                 return new Dot(NodeUtil.makeASTNodeInfo(Span.merge(base.span(),
                                                                               a1.span())),
                                 (LHS)base, a1);
              }};
@@ -509,7 +509,7 @@ constant inline Action<LHS> MemberBracket =
      { yyValue = new Action<LHS>() {
              public LHS run(LHS base) {
                  SourceLoc loc = base.span().begin();
-                 Span span = Span.create(loc.fileName(), loc.line(),
+                 Span span = new Span(base.span().fileName(), loc.line(),
                                                a1.info().span().end().line(),
                                                loc.column()+1, a1.span().end().column()+1,
                                                base.info().span().begin().offset(), a1.info().span().end().offset()+1);
@@ -521,7 +521,7 @@ constant inline Action<LHS> MemberDot =
      w dot w a1:IdName
      { yyValue = new Action<LHS>() {
              public LHS run(LHS base) {
-                 return new Dot(NodeUtil.makeASTNodeInfo(Span.create(base.span(),
+                 return new Dot(NodeUtil.makeASTNodeInfo(Span.merge(base.span(),
                                                                               a1.span())),
                                 (LHS)base, a1);
              }};

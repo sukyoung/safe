@@ -196,7 +196,7 @@ class DefaultCFGBuilder(
     stmt match {
       case IRNoOp(_, desc) =>
         val tailBlock: CFGNormalBlock = getTail(blocks, func)
-        val filename: String = stmt.ast.info.span.end.fileName
+        val filename: String = stmt.ast.info.span.fileName
 
         val block = (desc, filename) match {
           case ("StartOfFile", s) if s.contains("#loading") =>

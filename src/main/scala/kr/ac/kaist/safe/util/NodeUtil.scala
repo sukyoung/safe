@@ -42,6 +42,9 @@ object NodeUtil {
   val GLOBAL_NAME = freshGlobalName("global")
   val REF_ERR_NAME = freshGlobalName("referenceError")
 
+  val MERGED_FILE_NAME = freshFile("Merged")
+  val MERGED_SPAN = Span()
+
   val PRINT_WIDTH = 50
 
   ////////////////////////////////////////////////////////////////
@@ -158,14 +161,14 @@ object NodeUtil {
         val com = comment.get
         if (!com.txt.equals(message))
           comment = Some[Comment](new Comment(
-            makeASTNodeInfo(Span.create(com.info.span, span)),
+            makeASTNodeInfo(com.info.span + span),
             com.txt + Config.LINE_SEP + message
           ))
       }
     }
 
   def adjustCallSpan(finish: Span, expr: LHS): Span = expr match {
-    case Parenthesized(info, body) => new Span(body.span.begin, finish.end)
+    case Parenthesized(info, body) => body.span + finish
     case _ => finish
   }
 
@@ -230,20 +233,20 @@ object NodeUtil {
     }
 
     // filter "(" for property access
-    def getStartSourceLoc(node: ASTNode): (ASTNode, SourceLoc) = {
+    def getStartSpan(node: ASTNode): (ASTNode, Span) = {
       if (node.isInstanceOf[Parenthesized]) {
-        getStartSourceLoc(node.asInstanceOf[Parenthesized].expr)
+        getStartSpan(node.asInstanceOf[Parenthesized].expr)
       } else if (node.isInstanceOf[Dot]) {
-        getStartSourceLoc(node.asInstanceOf[Dot].obj)
+        getStartSpan(node.asInstanceOf[Dot].obj)
       } else if (node.isInstanceOf[FunApp]) {
-        getStartSourceLoc(node.asInstanceOf[FunApp].fun)
-      } else (node, node.info.span.begin)
+        getStartSpan(node.asInstanceOf[FunApp].fun)
+      } else (node, node.info.span)
     }
 
     var map = new HashMap[String, Span]
     override def walk(i: ASTNodeInfo): ASTNodeInfo = {
       val span = i.span
-      val key = span.at
+      val key = span.toString
       if (map.contains(key)) new ASTNodeInfo(map.apply(key))
       else {
         val newSpan = span.addLines(line, offset)
@@ -255,7 +258,7 @@ object NodeUtil {
     override def walk(node: FunDecl): FunDecl = node match {
       case FunDecl(i, getFtn, isStrict) =>
         val span = i.span
-        val key = span.at
+        val key = span.toString
         val newInfo = if (map.contains(key)) new ASTNodeInfo(map.apply(key))
         else {
           val newSpan = span.addLines(line, offset)
@@ -268,25 +271,25 @@ object NodeUtil {
 
     override def walk(node: Expr): Expr = node match {
       case dot @ Dot(info, lhs, id) =>
-        val (nlhs, sOffset) = getStartSourceLoc(lhs)
+        val (nlhs, sSpan) = getStartSpan(lhs)
         // make new SpanInfo...
         if (lhs != nlhs) {
-          val eOffset = info.span.end
-          val newSpan = new Span(sOffset, eOffset)
+          val eSpan = info.span
+          val newSpan = sSpan + eSpan
           val newInfo = new ASTNodeInfo(newSpan)
-          val key = newSpan.at
+          val key = newSpan.toString
           if (!map.contains(key))
             map += (key -> newSpan)
           super.walk(new Dot(newInfo, lhs, id))
         } else super.walk(dot)
       case f @ FunApp(info, lhs, list) =>
-        val (nlhs, sOffset) = getStartSourceLoc(lhs)
+        val (nlhs, sSpan) = getStartSpan(lhs)
         // make new SpanInfo...
         if (lhs != nlhs) {
-          val eOffset = info.span.end
-          val newSpan = new Span(sOffset, eOffset)
+          val eSpan = info.span
+          val newSpan = sSpan + eSpan
           val newInfo = new ASTNodeInfo(newSpan)
-          val key = newSpan.at
+          val key = newSpan.toString
           if (!map.contains(key))
             map += (key -> newSpan)
           super.walk(new FunApp(newInfo, lhs, list))
@@ -316,7 +319,7 @@ object NodeUtil {
 
     override def walk(i: ASTNodeInfo): ASTNodeInfo = {
       val span = i.span
-      val key = span.at
+      val key = span.toString
       if (map.contains(key)) new ASTNodeInfo(map(key))
       else {
         val newSpan = span.addLines(line, offset)

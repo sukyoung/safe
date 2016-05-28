@@ -22,8 +22,7 @@ import kr.ac.kaist.safe.nodes._
 import kr.ac.kaist.safe.util.{ NodeUtil => NU, SourceLoc, Span }
 
 object Parser {
-  val MERGED_SOURCE_LOC = new SourceLoc(NU.freshFile("Merged"), 0, 0, 0)
-  val MERGED_SOURCE_INFO = new ASTNodeInfo(new Span(MERGED_SOURCE_LOC, MERGED_SOURCE_LOC))
+  val MERGED_SOURCE_INFO = new ASTNodeInfo(new Span())
 
   // Used by DynamicRewriter
   def stringToFnE(str: (String, (Int, Int), String)): Try[FunExpr] = {

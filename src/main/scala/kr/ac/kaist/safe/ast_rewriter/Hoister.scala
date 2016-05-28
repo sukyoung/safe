@@ -603,7 +603,7 @@ class Hoister(program: Program) {
     override def walk(node: Stmt): Stmt = node match {
       case VarStmt(info, vds) => stmtUnit(info, hoistVds(vds))
       case ForVar(info, vars, cond, action, body) =>
-        val newInfo = ASTNodeInfo(Span.create(vars, Span.create()))
+        val newInfo = ASTNodeInfo(Span.merge(vars, NU.MERGED_SPAN))
         ABlock(
           newInfo,
           List(
@@ -624,7 +624,7 @@ class Hoister(program: Program) {
           false
         )
       case LabelStmt(info, label, ForVar(i, vars, cond, action, body)) =>
-        val newInfo = ASTNodeInfo(Span.create(vars, Span.create()))
+        val newInfo = ASTNodeInfo(Span.merge(vars, NU.MERGED_SPAN))
         ABlock(
           newInfo,
           List(
