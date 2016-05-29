@@ -43,7 +43,10 @@ object NodeUtil {
   val REF_ERR_NAME = freshGlobalName("referenceError")
 
   val MERGED_FILE_NAME = freshFile("Merged")
-  val MERGED_SPAN = Span()
+  val MERGED_SPAN = Span(MERGED_FILE_NAME)
+  val MERGED_SOURCE_INFO = new ASTNodeInfo(MERGED_SPAN)
+
+  val DEFAULT_AST = NoOp(ASTNodeInfo(Span()), "defaultAST")
 
   val PRINT_WIDTH = 50
 

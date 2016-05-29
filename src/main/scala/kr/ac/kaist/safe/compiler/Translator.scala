@@ -38,15 +38,12 @@ class Translator(program: Program) {
   // default debugging mode
   private val DEBUG = false
 
-  // default ast
-  val defaultAst = NoOp(ASTNodeInfo(NodeUtil.MERGED_SPAN), "defaultAST")
-
   // default operators
-  private val PLUS = IROp(defaultAst, EJSEtcAdd)
-  private val MINUS = IROp(defaultAst, EJSEtcSub)
-  private val TYPEOF = IROp(defaultAst, EJSTypeOf)
-  private val EQUALS = IROp(defaultAst, EJSEq)
-  private val STRICT_EQ = IROp(defaultAst, EJSSEq)
+  private val PLUS = IROp(NU.DEFAULT_AST, EJSEtcAdd)
+  private val MINUS = IROp(NU.DEFAULT_AST, EJSEtcSub)
+  private val TYPEOF = IROp(NU.DEFAULT_AST, EJSTypeOf)
+  private val EQUALS = IROp(NU.DEFAULT_AST, EJSEq)
+  private val STRICT_EQ = IROp(NU.DEFAULT_AST, EJSSEq)
 
   // default strings
   private val THIS_NAME = "this"
@@ -60,11 +57,11 @@ class Translator(program: Program) {
   private val CONTINUE_NAME = "continue"
 
   // default boolean values
-  private val TRUE_BOOL = IRBool(defaultAst, true)
-  private val FALSE_BOOL = IRBool(defaultAst, false)
+  private val TRUE_BOOL = IRBool(NU.DEFAULT_AST, true)
+  private val FALSE_BOOL = IRBool(NU.DEFAULT_AST, false)
 
   // default one value
-  private val ONE_NUM = IRNumber(defaultAst, "1", 1)
+  private val ONE_NUM = IRNumber(NU.DEFAULT_AST, "1", 1)
 
   // reference error
   private lazy val REF_ERROR =
@@ -149,11 +146,11 @@ class Translator(program: Program) {
 
   // make default IRId
   private def defaultIRId(name: String): IRId =
-    IRTmpId(defaultAst, name, name, false)
+    IRTmpId(NU.DEFAULT_AST, name, name, false)
   private def defaultIRId(id: Id): IRId =
-    IRTmpId(defaultAst, id.text, id.text, false)
+    IRTmpId(NU.DEFAULT_AST, id.text, id.text, false)
   private def defaultIRId(label: Label): IRId =
-    IRTmpId(defaultAst, label.id.text, label.id.text, false)
+    IRTmpId(NU.DEFAULT_AST, label.id.text, label.id.text, false)
 
   // make default IRExpr
   private def defaultIRExpr: IRExpr = defaultIRId("_")
@@ -826,7 +823,7 @@ class Translator(program: Program) {
    */
   private def walkExpr(e: Expr, env: Env, res: IRId): (List[IRStmt], IRExpr) = e match {
     case ExprList(_, Nil) =>
-      (Nil, IRUndef(defaultAst))
+      (Nil, IRUndef(NU.DEFAULT_AST))
 
     case ExprList(_, exprs) =>
       val stmts = exprs.dropRight(1).foldLeft(List[IRStmt]())((l, e) => {
@@ -899,7 +896,7 @@ class Translator(program: Program) {
         val y = freshId(right, right.span, "y")
         val oldVal = freshId(lhs, lhs.span, OLD_NAME)
         val (ss, r) = walkExpr(right, env, y)
-        val bin = IRBin(e, oldVal, IROp(defaultAst, EJSOp(op.text.substring(0, op.text.length - 1))), r)
+        val bin = IRBin(e, oldVal, IROp(NU.DEFAULT_AST, EJSOp(op.text.substring(0, op.text.length - 1))), r)
         (walkLval(e, lhs, addE(env, OLD_NAME, oldVal), ss, bin, true) match { case (stmts, _) => stmts }, bin)
       }
 
@@ -962,7 +959,7 @@ class Translator(program: Program) {
       } else {
         val y = freshId(right, right.span, "y")
         val (ss, r) = walkExpr(right, env, y)
-        (ss, IRUn(e, IROp(defaultAst, EJSOp(opText)), r))
+        (ss, IRUn(e, IROp(NU.DEFAULT_AST, EJSOp(opText)), r))
       }
 
     case infix @ InfixOpApp(_, left, op, right) if op.text.equals("&&") =>
@@ -1038,9 +1035,9 @@ class Translator(program: Program) {
       val (ss2, r2) = walkExpr(right, env, z)
       ss2 match {
         case Nil =>
-          (ss1, IRBin(e, r1, IROp(defaultAst, EJSOp(op.text)), r2))
+          (ss1, IRBin(e, r1, IROp(NU.DEFAULT_AST, EJSOp(op.text)), r2))
         case _ =>
-          ((ss1 :+ mkExprS(left, y, r1)) ++ ss2, IRBin(e, y, IROp(defaultAst, EJSOp(op.text)), r2))
+          ((ss1 :+ mkExprS(left, y, r1)) ++ ss2, IRBin(e, y, IROp(NU.DEFAULT_AST, EJSOp(op.text)), r2))
       }
 
     case VarRef(_, id) => (List(), id2ir(env, id))

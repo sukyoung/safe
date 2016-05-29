@@ -22,7 +22,6 @@ import kr.ac.kaist.safe.nodes._
 import kr.ac.kaist.safe.util.{ NodeUtil => NU, SourceLoc, Span }
 
 object Parser {
-  val MERGED_SOURCE_INFO = new ASTNodeInfo(new Span())
 
   // Used by DynamicRewriter
   def stringToFnE(str: (String, (Int, Int), String)): Try[FunExpr] = {
@@ -56,7 +55,7 @@ object Parser {
         case (res, f) => fileToStmts(f).flatMap {
           case (ss, ee) => res.flatMap { case (l, ex) => Try((l ++ List(ss), ex + ee)) }
         }
-      }.map { case (s, e) => (Program(MERGED_SOURCE_INFO, s), e) }
+      }.map { case (s, e) => (Program(NU.MERGED_SOURCE_INFO, s), e) }
   }
 
   // Used by ast_rewriter/Hoister.scala
@@ -68,7 +67,7 @@ object Parser {
         case (res, s) => scriptToStmts(s).flatMap {
           case (ss, ee) => res.flatMap { case (l, ex) => Try((l ++ List(ss), ex + ee)) }
         }
-      }.map { case (s, e) => (Program(MERGED_SOURCE_INFO, s), e) }
+      }.map { case (s, e) => (Program(NU.MERGED_SOURCE_INFO, s), e) }
   }
 
   private def fileToStmts(f: String): Try[(SourceElements, ExcLog)] = {

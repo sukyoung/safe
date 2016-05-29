@@ -99,8 +99,8 @@ case class Span(
 object Span {
   def merge(left: Span, right: Span): Span = left + right
 
-  def merge(nodes: List[Node], defaultSpan: Span): Span = nodes match {
-    case Nil => defaultSpan
+  def merge(nodes: List[Node], default: Span): Span = nodes match {
+    case Nil => default
     case first :: _ => first.span + nodes.last.span
   }
 }

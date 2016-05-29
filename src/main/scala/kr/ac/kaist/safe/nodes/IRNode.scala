@@ -719,11 +719,19 @@ case class IRUserId(
  * Do not appear in the JavaScript source text.
  */
 case class IRTmpId(
-  override val ast: ASTNode,
-  override val originalName: String,
-  override val uniqueName: String,
-  override val global: Boolean = false
-) extends IRId(ast, originalName, uniqueName, global)
+    override val ast: ASTNode,
+    override val originalName: String,
+    override val uniqueName: String,
+    override val global: Boolean = false
+) extends IRId(ast, originalName, uniqueName, global) {
+  // constructor
+  def this(name: String) =
+    this(NU.DEFAULT_AST, name, name, false)
+  def this(id: Id) =
+    this(NU.DEFAULT_AST, id.text, id.text, false)
+  def this(label: Label) =
+    this(NU.DEFAULT_AST, label.id.text, label.id.text, false)
+}
 
 /**
  * this
