@@ -12,6 +12,12 @@
 package kr.ac.kaist.safe
 
 package object nodes {
+  // function id
+  type FunctionId = Int
+
+  // block id
+  type BlockId = Int
+
   // inst id
   type InstId = Int
 }

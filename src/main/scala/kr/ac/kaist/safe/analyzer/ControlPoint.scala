@@ -12,7 +12,7 @@
 package kr.ac.kaist.safe.analyzer
 
 import kr.ac.kaist.safe.analyzer.domain._
-import kr.ac.kaist.safe.cfg_builder.CFGBlock
+import kr.ac.kaist.safe.nodes.CFGBlock
 
 trait ControlPoint {
   val node: CFGBlock

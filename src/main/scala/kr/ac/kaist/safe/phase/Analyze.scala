@@ -16,7 +16,7 @@ import kr.ac.kaist.safe.config.{ BoolOption, Config, ConfigOption, NumOption, Op
 import kr.ac.kaist.safe.errors.ExcLog
 import kr.ac.kaist.safe.analyzer.Semantics
 import kr.ac.kaist.safe.analyzer.domain._
-import kr.ac.kaist.safe.cfg_builder.CFG
+import kr.ac.kaist.safe.nodes.CFG
 
 // Analyze phase struct.
 case class Analyze(

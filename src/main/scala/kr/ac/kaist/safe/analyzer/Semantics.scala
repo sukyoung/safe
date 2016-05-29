@@ -14,8 +14,8 @@ package kr.ac.kaist.safe.analyzer
 import kr.ac.kaist.safe.errors.ExcLog
 import kr.ac.kaist.safe.errors.error._
 import kr.ac.kaist.safe.analyzer.domain._
-import kr.ac.kaist.safe.cfg_builder._
-import kr.ac.kaist.safe.nodes.{ CFGExpr, CFGInst, CFGNode }
+import kr.ac.kaist.safe.cfg_builder.AddressManager
+import kr.ac.kaist.safe.nodes._
 
 class Semantics(cfg: CFG, utils: Utils, addressManager: AddressManager) {
   lazy val excLog: ExcLog = new ExcLog
