@@ -79,7 +79,7 @@ class Translator(program: Program) {
   ////////////////////////////////////////////////////////////////
 
   // set uid
-  private def setUID[A <: ASTNode](n: A, uid: Long): A = { n.setUID(uid); n }
+  private def setUID[A <: ASTNode](n: A, uid: Long): A = { n.uid = uid; n }
 
   // make fresh id
   private def freshId(ast: ASTNode, span: Span, n: String): IRTmpId = {
@@ -433,7 +433,7 @@ class Translator(program: Program) {
           StringLiteral(
             NU.makeASTNodeInfo(member.span),
             "\"", member.text, false
-          )), dot.getUID))
+          )), dot.uid))
       case br: Bracket => Some(br)
       case _ => None
     }
@@ -576,7 +576,7 @@ class Translator(program: Program) {
       IRStmtUnit(s, IRSeq(s, ss1 :+ IRLabelStmt(s, lab2, body2)))
 
     case If(info, Parenthesized(_, expr), trueBranch, falseBranch) =>
-      walkStmt(setUID(If(info, expr, trueBranch, falseBranch), s.getUID), env)
+      walkStmt(setUID(If(info, expr, trueBranch, falseBranch), s.uid), env)
 
     case If(_, cond, trueBranch, falseBranch) =>
       val (ss, r) = walkExpr(cond, env, freshId(cond, cond.span, NEW_NAME))
@@ -867,7 +867,7 @@ class Translator(program: Program) {
       (ssa :+ IRLabelStmt(e, lab2, body2), res)
 
     case Cond(info, Parenthesized(_, expr), trueBranch, falseBranch) =>
-      walkExpr(setUID(Cond(info, expr, trueBranch, falseBranch), e.getUID), env, res)
+      walkExpr(setUID(Cond(info, expr, trueBranch, falseBranch), e.uid), env, res)
 
     case Cond(_, cond, trueBranch, falseBranch) =>
       val new1 = freshId(cond, cond.span, "new1")
@@ -938,8 +938,8 @@ class Translator(program: Program) {
               StringLiteral(
                 NU.makeASTNodeInfo(member.span),
                 "\"", member.text, false
-              )), dot.getUID)
-            val tmpPrefixOpApp = setUID(PrefixOpApp(info, op, tmpBracket), e.getUID)
+              )), dot.uid)
+            val tmpPrefixOpApp = setUID(PrefixOpApp(info, op, tmpBracket), e.uid)
             walkExpr(tmpPrefixOpApp, env, res)
           case Bracket(_, lhs, e2) =>
             val objspan = lhs.span
@@ -1101,7 +1101,7 @@ class Translator(program: Program) {
         IRLoad(e, obj, r2))
 
     case n @ New(info, Parenthesized(_, e)) if e.isInstanceOf[LHS] =>
-      walkExpr(setUID(New(info, e.asInstanceOf[LHS]), n.getUID), env, res)
+      walkExpr(setUID(New(info, e.asInstanceOf[LHS]), n.uid), env, res)
 
     case n @ New(_, lhs) =>
       val objspan = lhs.span
@@ -1171,7 +1171,7 @@ class Translator(program: Program) {
         makeGId(e, NU.freshGlobalName("getTickCount")), res, None)), res)
 
     case FunApp(info, Parenthesized(_, e), args) if e.isInstanceOf[LHS] =>
-      walkExpr(setUID(FunApp(info, e.asInstanceOf[LHS], args), e.getUID), env, res)
+      walkExpr(setUID(FunApp(info, e.asInstanceOf[LHS], args), e.uid), env, res)
 
     case FunApp(info, dot @ Dot(i, obj, member), args) =>
       walkExpr(
@@ -1182,10 +1182,10 @@ class Translator(program: Program) {
               StringLiteral(
                 NU.makeASTNodeInfo(member.span),
                 "\"", member.text, false
-              )), dot.getUID),
+              )), dot.uid),
             args
           ),
-          e.getUID
+          e.uid
         ),
         env, res
       )
@@ -1405,7 +1405,7 @@ class Translator(program: Program) {
         StringLiteral(
           NU.makeASTNodeInfo(member.span),
           "\"", member.text, false
-        )), dot.getUID),
+        )), dot.uid),
         env, stmts, e, keepOld)
     case Bracket(info, first, index) =>
       val span = info.span
