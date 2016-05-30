@@ -18,7 +18,7 @@ import kr.ac.kaist.safe.errors.error._
 import kr.ac.kaist.safe.errors.warning._
 import kr.ac.kaist.safe.nodes._
 import kr.ac.kaist.safe.phase.CFGBuildConfig
-import kr.ac.kaist.safe.util.{ NodeUtil => NU, EJSLogNot }
+import kr.ac.kaist.safe.util.{ NodeUtil => NU, EJSLogNot, EJSString }
 import kr.ac.kaist.safe.analyzer.domain.Address
 
 // default CFG builder
@@ -456,9 +456,9 @@ class DefaultCFGBuilder(
         trueBlock.createInst(CFGAssert(cond, _, ir2cfgExpr(cond), true))
         cond match {
           case IRBin(_, first, op, second) if op.isAssertOperator =>
-            falseBlock.createInst(CFGAssert(cond, _, CFGBin(ir2cfgExpr(first), op.kind.trans, ir2cfgExpr(second)), false))
+            falseBlock.createInst(CFGAssert(cond, _, CFGBin(cond, ir2cfgExpr(first), op.kind.trans, ir2cfgExpr(second)), false))
           case _ =>
-            falseBlock.createInst(CFGAssert(cond, _, CFGUn(EJSLogNot, ir2cfgExpr(cond)), false))
+            falseBlock.createInst(CFGAssert(cond, _, CFGUn(cond, EJSLogNot, ir2cfgExpr(cond)), false))
         }
 
         /* true body */
@@ -519,9 +519,9 @@ class DefaultCFGBuilder(
         loopBodyBlock.createInst(CFGAssert(cond, _, ir2cfgExpr(cond), true))
         cond match {
           case IRBin(_, first, op, second) if op.isAssertOperator =>
-            loopOutBlock.createInst(CFGAssert(cond, _, CFGBin(ir2cfgExpr(first), op.kind.trans, ir2cfgExpr(second)), false))
+            loopOutBlock.createInst(CFGAssert(cond, _, CFGBin(cond, ir2cfgExpr(first), op.kind.trans, ir2cfgExpr(second)), false))
           case _ =>
-            loopOutBlock.createInst(CFGAssert(cond, _, CFGUn(EJSLogNot, ir2cfgExpr(cond)), false))
+            loopOutBlock.createInst(CFGAssert(cond, _, CFGUn(cond, EJSLogNot, ir2cfgExpr(cond)), false))
         }
         /* add edge from tail to loop head */
         cfg.addEdge(tailBlock, headBlock)
@@ -551,8 +551,7 @@ class DefaultCFGBuilder(
     mem match {
       case IRField(_, prop, expr) =>
         val lhsExpr: CFGVarRef = CFGVarRef(lhs, id2cfgId(lhs))
-        val indexExpr: CFGString = CFGString(prop.uniqueName)
-        block.createInst(CFGStore(mem, _, lhsExpr, indexExpr, ir2cfgExpr(expr)))
+        block.createInst(CFGStoreStringIdx(mem, _, lhsExpr, EJSString(prop.uniqueName), ir2cfgExpr(expr)))
       case getOrSet =>
         excLog.signal(NotSupportedIRError(getOrSet))
     }
@@ -561,17 +560,15 @@ class DefaultCFGBuilder(
   /* elem rule : IRNode x IRExpr x CFGNormalBlock x IRId x Int -> Unit */
   private def translateElement(ir: IRNode, elem: IRExpr, block: CFGNormalBlock, lhs: IRId, index: Int): Unit = {
     val lhsExpr: CFGExpr = CFGVarRef(lhs, id2cfgId(lhs))
-    val str = CFGString(index.toString)
-    block.createInst(CFGStore(ir, _, lhsExpr, str, ir2cfgExpr(elem)))
+    block.createInst(CFGStoreStringIdx(ir, _, lhsExpr, EJSString(index.toString), ir2cfgExpr(elem)))
     ()
   }
 
   /* elem rule : IRNode x Double x CFGNormalBlock x IRId x Int -> Unit */
   private def translateDoubleElement(ir: IRNode, elem: Double, block: CFGNormalBlock, lhs: IRId, index: Int): Unit = {
     val lhsExpr: CFGExpr = CFGVarRef(lhs, id2cfgId(lhs))
-    val str = CFGString(index.toString)
-    val num = CFGNumber(elem.toString, elem.doubleValue)
-    block.createInst(CFGStore(ir, _, lhsExpr, str, num))
+    val num = CFGVal(elem.toString, elem.doubleValue)
+    block.createInst(CFGStoreStringIdx(ir, _, lhsExpr, EJSString(index.toString), num))
     ()
   }
 
@@ -583,16 +580,13 @@ class DefaultCFGBuilder(
         CFGLoad(expr, id2cfgExpr(obj), ir2cfgExpr(index))
       /* PEI : op \in {instanceof, in}, id lookup */
       case IRBin(_, first, op, second) =>
-        CFGBin(ir2cfgExpr(first), op.kind, ir2cfgExpr(second))
+        CFGBin(expr, ir2cfgExpr(first), op.kind, ir2cfgExpr(second))
       /* PEI : id lookup */
       case IRUn(_, op, expr) =>
-        CFGUn(op.kind, ir2cfgExpr(expr))
+        CFGUn(expr, op.kind, ir2cfgExpr(expr))
       case id: IRId => CFGVarRef(id, id2cfgId(id))
       case IRThis(_) => CFGThis(expr)
-      case IRNumber(_, text, num) => CFGNumber(text, num.doubleValue)
-      case IRString(_, str) => CFGString(str)
-      case IRBool(_, bool) => CFGBool(bool)
-      case IRNull(_) => CFGNull
+      case IRVal(v) => CFGVal(v)
     }
   }
 

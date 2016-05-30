@@ -14,7 +14,7 @@ package kr.ac.kaist.safe.nodes
 import scala.collection.mutable.{ HashMap => MHashMap, Map => MMap }
 import kr.ac.kaist.safe.analyzer.domain.Address
 import kr.ac.kaist.safe.config.Config
-import kr.ac.kaist.safe.util.{ NodeUtil, EJSOp, Span, SourceLoc }
+import kr.ac.kaist.safe.util._
 
 sealed abstract class CFGNode(val ir: IRNode)
     extends Node {
@@ -360,6 +360,17 @@ case class CFGStore(
   override def toString: String = s"$obj[$index] := $rhs"
 }
 
+// e1[e2] := s
+case class CFGStoreStringIdx(
+    override val ir: IRNode,
+    override val block: CFGNormalBlock,
+    obj: CFGExpr,
+    index: EJSString,
+    rhs: CFGExpr
+) extends CFGNormalInst(ir, block) {
+  override def toString: String = s"$obj[$index] := $rhs"
+}
+
 // x1 := function x_2^?(f)
 case class CFGFunExpr(
     override val ir: IRNode,
@@ -518,20 +529,15 @@ case class CFGConstruct(
 // CFG Expression
 ////////////////////////////////////////////////////////////////////////////////
 
-trait CFGExpr
-
-/**
- * Complex expression
- */
-sealed abstract class CFGComplexExpr(
+sealed abstract class CFGExpr(
   override val ir: IRNode
-) extends CFGNode(ir) with CFGExpr
+) extends CFGNode(ir)
 
 // variable reference
 case class CFGVarRef(
     override val ir: IRNode,
     id: CFGId
-) extends CFGComplexExpr(ir) {
+) extends CFGExpr(ir) {
   override def toString: String = s"$id"
 }
 
@@ -540,64 +546,45 @@ case class CFGLoad(
     override val ir: IRNode,
     obj: CFGExpr,
     index: CFGExpr
-) extends CFGComplexExpr(ir) {
+) extends CFGExpr(ir) {
   override def toString: String = s"$obj[$index]"
 }
 
 // this
 case class CFGThis(
     override val ir: IRNode
-) extends CFGComplexExpr(ir) {
+) extends CFGExpr(ir) {
   override def toString: String = "this"
 }
 
-/**
- * Simple expression
- */
-sealed abstract class CFGSimpleExpr extends CFGExpr
-
 // binary operation
 case class CFGBin(
+    override val ir: IRNode,
     first: CFGExpr,
     op: EJSOp,
     second: CFGExpr
-) extends CFGSimpleExpr {
+) extends CFGExpr(ir) {
   override def toString: String = s"$first $op $second"
 }
 
 // unary operation
 case class CFGUn(
+    override val ir: IRNode,
     op: EJSOp,
     expr: CFGExpr
-) extends CFGSimpleExpr {
+) extends CFGExpr(ir) {
   override def toString: String = s"$op $expr"
 }
 
-// number
-case class CFGNumber(
-    text: String,
-    num: Double
-) extends CFGSimpleExpr {
-  override def toString: String = text
+case class CFGVal(
+    value: EJSVal
+) extends CFGExpr(NodeUtil.TEMP_IR) {
+  override def toString: String = value.toString
 }
-
-// string
-case class CFGString(
-    str: String
-) extends CFGSimpleExpr {
-  override def toString: String = "\"" + NodeUtil.pp(str) + "\""
-}
-
-// boolean
-case class CFGBool(
-    bool: Boolean
-) extends CFGSimpleExpr {
-  override def toString: String = if (bool) "true" else "false"
-}
-
-// null
-case object CFGNull extends CFGSimpleExpr {
-  override def toString: String = "null"
+object CFGVal {
+  def apply(text: String, num: Double): CFGVal = CFGVal(EJSNumber(text, num))
+  def apply(str: String): CFGVal = CFGVal(EJSString(str))
+  def apply(bool: Boolean): CFGVal = CFGVal(EJSBool(bool))
 }
 
 ////////////////////////////////////////////////////////////////////////////////

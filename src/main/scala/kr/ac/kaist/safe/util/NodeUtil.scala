@@ -46,7 +46,8 @@ object NodeUtil {
   val MERGED_SPAN = Span(MERGED_FILE_NAME)
   val MERGED_SOURCE_INFO = new ASTNodeInfo(MERGED_SPAN)
 
-  val DEFAULT_AST = NoOp(ASTNodeInfo(Span()), "defaultAST")
+  val TEMP_AST = NoOp(ASTNodeInfo(Span()), "defaultAST")
+  val TEMP_IR = IRNoOp(TEMP_AST, "defaultIR")
 
   val PRINT_WIDTH = 50
 

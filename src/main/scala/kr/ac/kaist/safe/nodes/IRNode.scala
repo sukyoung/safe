@@ -21,7 +21,7 @@ package kr.ac.kaist.safe.nodes
 import kr.ac.kaist.safe.config.Config
 import java.lang.Double
 import java.math.BigInteger
-import kr.ac.kaist.safe.util.{ NodeUtil => NU, Span, EJSOp, EJSEqType, SourceLoc }
+import kr.ac.kaist.safe.util._
 
 abstract class IRNode(
     val ast: ASTNode
@@ -45,14 +45,14 @@ case class IRRoot(
     irs: List[IRStmt]
 ) extends IRNode(ast) {
   override def toString(indent: Int): String = {
-    NU.initNodesPrint
+    NodeUtil.initNodesPrint
     val s: StringBuilder = new StringBuilder
-    val indentString = NU.getIndent(indent)
-    s.append(indentString).append(NU.join(indent, fds, Config.LINE_SEP + indentString, new StringBuilder("")))
+    val indentString = NodeUtil.getIndent(indent)
+    s.append(indentString).append(NodeUtil.join(indent, fds, Config.LINE_SEP + indentString, new StringBuilder("")))
     s.append(Config.LINE_SEP)
-    s.append(indentString).append(NU.join(indent, vds, Config.LINE_SEP + indentString, new StringBuilder("")))
+    s.append(indentString).append(NodeUtil.join(indent, vds, Config.LINE_SEP + indentString, new StringBuilder("")))
     s.append(Config.LINE_SEP)
-    s.append(indentString).append(NU.join(indent, irs, Config.LINE_SEP + indentString, new StringBuilder("")))
+    s.append(indentString).append(NodeUtil.join(indent, irs, Config.LINE_SEP + indentString, new StringBuilder("")))
     s.toString
   }
 }
@@ -131,9 +131,9 @@ case class IRObject(
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     s.append(lhs.toString(indent)).append(" = {").append(Config.LINE_SEP)
-    s.append(NU.getIndent(indent + 1)).append(NU.join(indent, members, "," + Config.LINE_SEP + NU.getIndent(indent + 1), new StringBuilder("")))
+    s.append(NodeUtil.getIndent(indent + 1)).append(NodeUtil.join(indent, members, "," + Config.LINE_SEP + NodeUtil.getIndent(indent + 1), new StringBuilder("")))
     proto.map(p => s.append("[[Prototype]]=").append(p.toString(indent + 1)))
-    s.append(Config.LINE_SEP).append(NU.getIndent(indent)).append("}")
+    s.append(Config.LINE_SEP).append(NodeUtil.getIndent(indent)).append("}")
     s.toString
   }
 }
@@ -254,7 +254,7 @@ case class IRNew(
     val s: StringBuilder = new StringBuilder
     s.append(lhs.toString(indent)).append(" = new ")
     s.append(fun.toString(indent)).append("(")
-    s.append(NU.join(indent, args, ", ", new StringBuilder("")))
+    s.append(NodeUtil.join(indent, args, ", ", new StringBuilder("")))
     s.append(")")
     s.toString
   }
@@ -306,8 +306,8 @@ case class IRStmtUnit(
     case _ =>
       val s: StringBuilder = new StringBuilder
       s.append("{").append(Config.LINE_SEP)
-      s.append(NU.getIndent(indent + 1)).append(NU.join(indent + 1, stmts, Config.LINE_SEP + NU.getIndent(indent + 1), new StringBuilder("")))
-      s.append(Config.LINE_SEP).append(NU.getIndent(indent)).append("}")
+      s.append(NodeUtil.getIndent(indent + 1)).append(NodeUtil.join(indent + 1, stmts, Config.LINE_SEP + NodeUtil.getIndent(indent + 1), new StringBuilder("")))
+      s.append(Config.LINE_SEP).append(NodeUtil.getIndent(indent)).append("}")
       s.toString
   }
 }
@@ -393,7 +393,7 @@ case class IRWith(
     val s: StringBuilder = new StringBuilder
     s.append("with(")
     s.append(id.toString(indent)).append(")").append(Config.LINE_SEP)
-    s.append(NU.getIndent(indent)).append(stmt.toString(indent))
+    s.append(NodeUtil.getIndent(indent)).append(stmt.toString(indent))
     s.toString
   }
 }
@@ -456,8 +456,8 @@ case class IRSeq(
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     s.append("{").append(Config.LINE_SEP)
-    s.append(NU.getIndent(indent + 1)).append(NU.join(indent + 1, stmts, Config.LINE_SEP + NU.getIndent(indent + 1), new StringBuilder("")))
-    s.append(Config.LINE_SEP).append(NU.getIndent(indent)).append("}")
+    s.append(NodeUtil.getIndent(indent + 1)).append(NodeUtil.join(indent + 1, stmts, Config.LINE_SEP + NodeUtil.getIndent(indent + 1), new StringBuilder("")))
+    s.append(Config.LINE_SEP).append(NodeUtil.getIndent(indent)).append("}")
     s.toString
   }
 }
@@ -478,11 +478,11 @@ case class IRIf(
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     s.append("if(").append(expr.toString(indent)).append(")").append(Config.LINE_SEP)
-    NU.inlineIndent(trueB, s, indent)
+    NodeUtil.inlineIndent(trueB, s, indent)
     falseB match {
       case Some(f) =>
-        s.append(Config.LINE_SEP).append(NU.getIndent(indent)).append("else").append(Config.LINE_SEP)
-        NU.inlineIndent(f, s, indent)
+        s.append(Config.LINE_SEP).append(NodeUtil.getIndent(indent)).append("else").append(Config.LINE_SEP)
+        NodeUtil.inlineIndent(f, s, indent)
       case None =>
     }
     s.toString
@@ -502,7 +502,7 @@ case class IRWhile(
     val s: StringBuilder = new StringBuilder
     s.append("while(")
     s.append(cond.toString(indent)).append(")").append(Config.LINE_SEP)
-    s.append(NU.getIndent(indent)).append(body.toString(indent))
+    s.append(NodeUtil.getIndent(indent)).append(body.toString(indent))
     s.toString
   }
 }
@@ -521,18 +521,18 @@ case class IRTry(
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     s.append("try").append(Config.LINE_SEP)
-    NU.inlineIndent(body, s, indent)
+    NodeUtil.inlineIndent(body, s, indent)
     catchB match {
       case Some(cb) =>
-        s.append(Config.LINE_SEP).append(NU.getIndent(indent))
+        s.append(Config.LINE_SEP).append(NodeUtil.getIndent(indent))
         s.append("catch(").append(name.get.toString(indent)).append(")").append(Config.LINE_SEP)
-        NU.inlineIndent(cb, s, indent)
+        NodeUtil.inlineIndent(cb, s, indent)
       case None =>
     }
     finallyB match {
       case Some(f) =>
-        s.append(Config.LINE_SEP).append(NU.getIndent(indent)).append("finally").append(Config.LINE_SEP)
-        NU.inlineIndent(f, s, indent)
+        s.append(Config.LINE_SEP).append(NodeUtil.getIndent(indent)).append("finally").append(Config.LINE_SEP)
+        NodeUtil.inlineIndent(f, s, indent)
       case None =>
     }
     s.toString
@@ -677,12 +677,12 @@ abstract class IRId(
   override def toString(indent: Int): String = {
     val size = Config.SIGNIFICANT_BITS
     val str = uniqueName match {
-      case x if (NU.isInternal(x) && !NU.isGlobalName(x)) =>
-        uniqueName.dropRight(size) + NU.getNodesE(uniqueName.takeRight(size))
+      case x if (NodeUtil.isInternal(x) && !NodeUtil.isGlobalName(x)) =>
+        uniqueName.dropRight(size) + NodeUtil.getNodesE(uniqueName.takeRight(size))
       case _ => uniqueName
     }
     val s: StringBuilder = new StringBuilder
-    s.append(NU.pp(str))
+    s.append(NodeUtil.pp(str))
     s.toString
   }
 
@@ -690,13 +690,13 @@ abstract class IRId(
   def toPropName(indent: Int): String = {
     val size = Config.SIGNIFICANT_BITS
     val str = uniqueName match {
-      case x if (NU.isInternal(x) && !NU.isGlobalName(x)) =>
-        uniqueName.dropRight(size) + NU.getNodesE(uniqueName.takeRight(size))
+      case x if (NodeUtil.isInternal(x) && !NodeUtil.isGlobalName(x)) =>
+        uniqueName.dropRight(size) + NodeUtil.getNodesE(uniqueName.takeRight(size))
       case _ => uniqueName
     }
     val s: StringBuilder = new StringBuilder
     s.append("\"")
-    s.append(NU.pp(str.replaceAll("\\\\", "\\\\\\\\")))
+    s.append(NodeUtil.pp(str.replaceAll("\\\\", "\\\\\\\\")))
     s.append("\"")
     s.toString
   }
@@ -726,11 +726,11 @@ case class IRTmpId(
 ) extends IRId(ast, originalName, uniqueName, global) {
   // constructor
   def this(name: String) =
-    this(NU.DEFAULT_AST, name, name, false)
+    this(NodeUtil.TEMP_AST, name, name, false)
   def this(id: Id) =
-    this(NU.DEFAULT_AST, id.text, id.text, false)
+    this(NodeUtil.TEMP_AST, id.text, id.text, false)
   def this(label: Label) =
-    this(NU.DEFAULT_AST, label.id.text, label.id.text, false)
+    this(NodeUtil.TEMP_AST, label.id.text, label.id.text, false)
 }
 
 /**
@@ -745,70 +745,19 @@ case class IRThis(
 /**
  * Value
  */
-abstract class IRVal(
-  override val ast: ASTNode
-) extends IRExpr(ast)
-
-/**
- * Primitive value
- */
-abstract class IRPVal(
-  override val ast: ASTNode
-) extends IRExpr(ast)
-
-/**
- * PVal ::= number literal
- */
-case class IRNumber(
-    override val ast: ASTNode,
-    text: String,
-    num: Double
-) extends IRVal(ast) {
-  override def toString(indent: Int): String = text
-}
-
-/**
- * PVal ::= String
- */
-case class IRString(
-    override val ast: ASTNode,
-    str: String
-) extends IRVal(ast) {
-  override def toString(indent: Int): String = {
-    val s: StringBuilder = new StringBuilder
-    s.append("\"")
-    s.append(NU.pp(str.replaceAll("\\\\", "\\\\\\\\")))
-    s.append("\"")
-    s.toString
+case class IRVal(
+    value: EJSVal
+) extends IRExpr(NodeUtil.TEMP_AST) {
+  override def toString(indent: Int): String = value match {
+    case EJSString(str) =>
+      "\"" + NodeUtil.pp(str.replaceAll("\\\\", "\\\\\\\\")) + "\""
+    case _ => value.toString
   }
 }
-
-/**
- * PVal ::= true | false
- */
-case class IRBool(
-    override val ast: ASTNode,
-    bool: Boolean
-) extends IRVal(ast) {
-  override def toString(indent: Int): String = if (bool) "true" else "false"
-}
-
-/**
- * PVal ::= undefined
- */
-case class IRUndef(
-    override val ast: ASTNode
-) extends IRVal(ast) {
-  override def toString(indent: Int): String = "undefined"
-}
-
-/**
- * PVal ::= null
- */
-case class IRNull(
-    override val ast: ASTNode
-) extends IRVal(ast) {
-  override def toString(indent: Int): String = "null"
+object IRVal {
+  def apply(text: String, num: Double): IRVal = IRVal(EJSNumber(text, num))
+  def apply(str: String): IRVal = IRVal(EJSString(str))
+  def apply(bool: Boolean): IRVal = IRVal(EJSBool(bool))
 }
 
 /**
@@ -839,11 +788,11 @@ case class IRFunctional(
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     s.append(name.toString(indent)).append("(")
-    s.append(NU.join(indent, params, ", ", new StringBuilder("")))
-    s.append(") ").append(Config.LINE_SEP).append(NU.getIndent(indent)).append("{").append(Config.LINE_SEP)
-    s.append(NU.getIndent(indent + 1))
-    s.append(NU.join(indent + 1, fds ++ vds ++ args ++ body, Config.LINE_SEP + NU.getIndent(indent + 1), new StringBuilder("")))
-    s.append(Config.LINE_SEP).append(NU.getIndent(indent)).append("}")
+    s.append(NodeUtil.join(indent, params, ", ", new StringBuilder("")))
+    s.append(") ").append(Config.LINE_SEP).append(NodeUtil.getIndent(indent)).append("{").append(Config.LINE_SEP)
+    s.append(NodeUtil.getIndent(indent + 1))
+    s.append(NodeUtil.join(indent + 1, fds ++ vds ++ args ++ body, Config.LINE_SEP + NodeUtil.getIndent(indent + 1), new StringBuilder("")))
+    s.append(Config.LINE_SEP).append(NodeUtil.getIndent(indent)).append("}")
     s.toString
   }
 }
@@ -922,16 +871,7 @@ trait IRWalker {
       walk(id)
     case IRThis(ast) =>
       IRThis(ast)
-    case IRNumber(ast, text, num) =>
-      IRNumber(ast, text, num)
-    case IRString(ast, str) =>
-      IRString(ast, str)
-    case IRBool(ast, isBool) =>
-      IRBool(ast, isBool)
-    case IRUndef(ast) =>
-      IRUndef(ast)
-    case IRNull(ast) =>
-      IRNull(ast)
+    case IRVal(value) => IRVal(value)
   }
 
   def walk(node: IRMember): IRMember = node match {
@@ -1059,16 +999,7 @@ trait IRGeneralWalker[Result] {
       walk(id)
     case IRThis(ast) =>
       walk(ast)
-    case IRNumber(ast, text, num) =>
-      walk(ast)
-    case IRString(ast, str) =>
-      walk(ast)
-    case IRBool(ast, isBool) =>
-      walk(ast)
-    case IRUndef(ast) =>
-      walk(ast)
-    case IRNull(ast) =>
-      walk(ast)
+    case IRVal(value) => walk(NodeUtil.TEMP_AST)
   }
 
   def walk(node: IRMember): Result = node match {

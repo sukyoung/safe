@@ -39,11 +39,11 @@ class Translator(program: Program) {
   private val DEBUG = false
 
   // default operators
-  private val PLUS = IROp(NU.DEFAULT_AST, EJSEtcAdd)
-  private val MINUS = IROp(NU.DEFAULT_AST, EJSEtcSub)
-  private val TYPEOF = IROp(NU.DEFAULT_AST, EJSTypeOf)
-  private val EQUALS = IROp(NU.DEFAULT_AST, EJSEq)
-  private val STRICT_EQ = IROp(NU.DEFAULT_AST, EJSSEq)
+  private val PLUS = IROp(NU.TEMP_AST, EJSEtcAdd)
+  private val MINUS = IROp(NU.TEMP_AST, EJSEtcSub)
+  private val TYPEOF = IROp(NU.TEMP_AST, EJSTypeOf)
+  private val EQUALS = IROp(NU.TEMP_AST, EJSEq)
+  private val STRICT_EQ = IROp(NU.TEMP_AST, EJSSEq)
 
   // default strings
   private val THIS_NAME = "this"
@@ -57,11 +57,11 @@ class Translator(program: Program) {
   private val CONTINUE_NAME = "continue"
 
   // default boolean values
-  private val TRUE_BOOL = IRBool(NU.DEFAULT_AST, true)
-  private val FALSE_BOOL = IRBool(NU.DEFAULT_AST, false)
+  private val TRUE_BOOL = IRVal(EJSBool(true))
+  private val FALSE_BOOL = IRVal(EJSBool(false))
 
   // default one value
-  private val ONE_NUM = IRNumber(NU.DEFAULT_AST, "1", 1)
+  private val ONE_NUM = IRVal(EJSNumber("1", 1))
 
   // reference error
   private lazy val REF_ERROR =
@@ -146,11 +146,11 @@ class Translator(program: Program) {
 
   // make default IRId
   private def defaultIRId(name: String): IRId =
-    IRTmpId(NU.DEFAULT_AST, name, name, false)
+    IRTmpId(NU.TEMP_AST, name, name, false)
   private def defaultIRId(id: Id): IRId =
-    IRTmpId(NU.DEFAULT_AST, id.text, id.text, false)
+    IRTmpId(NU.TEMP_AST, id.text, id.text, false)
   private def defaultIRId(label: Label): IRId =
-    IRTmpId(NU.DEFAULT_AST, label.id.text, label.id.text, false)
+    IRTmpId(NU.TEMP_AST, label.id.text, label.id.text, false)
 
   // make default IRExpr
   private def defaultIRExpr: IRExpr = defaultIRId("_")
@@ -353,7 +353,7 @@ class Translator(program: Program) {
       case (param, index) => makeLoadStmt(false, name, param.span,
         id2ir(newEnv, param),
         newArg,
-        IRString(param, index.toString))
+        IRVal(index.toString))
     }
     val newFds = fds.map(walkFd(_, newEnv))
     newEnv = newFds.foldLeft(newEnv)((e, fd) => addE(e, fd.ftn.name.uniqueName, fd.ftn.name))
@@ -823,7 +823,7 @@ class Translator(program: Program) {
    */
   private def walkExpr(e: Expr, env: Env, res: IRId): (List[IRStmt], IRExpr) = e match {
     case ExprList(_, Nil) =>
-      (Nil, IRUndef(NU.DEFAULT_AST))
+      (Nil, IRVal(EJSUndef))
 
     case ExprList(_, exprs) =>
       val stmts = exprs.dropRight(1).foldLeft(List[IRStmt]())((l, e) => {
@@ -896,7 +896,7 @@ class Translator(program: Program) {
         val y = freshId(right, right.span, "y")
         val oldVal = freshId(lhs, lhs.span, OLD_NAME)
         val (ss, r) = walkExpr(right, env, y)
-        val bin = IRBin(e, oldVal, IROp(NU.DEFAULT_AST, EJSOp(op.text.substring(0, op.text.length - 1))), r)
+        val bin = IRBin(e, oldVal, IROp(NU.TEMP_AST, EJSOp(op.text.substring(0, op.text.length - 1))), r)
         (walkLval(e, lhs, addE(env, OLD_NAME, oldVal), ss, bin, true) match { case (stmts, _) => stmts }, bin)
       }
 
@@ -959,7 +959,7 @@ class Translator(program: Program) {
       } else {
         val y = freshId(right, right.span, "y")
         val (ss, r) = walkExpr(right, env, y)
-        (ss, IRUn(e, IROp(NU.DEFAULT_AST, EJSOp(opText)), r))
+        (ss, IRUn(e, IROp(NU.TEMP_AST, EJSOp(opText)), r))
       }
 
     case infix @ InfixOpApp(_, left, op, right) if op.text.equals("&&") =>
@@ -983,7 +983,7 @@ class Translator(program: Program) {
               IRBin(
                 arg1,
                 IRUn(arg1, TYPEOF, cond),
-                EQUALS, IRString(arg1, "boolean")
+                EQUALS, IRVal("boolean")
               ),
               mkExprS(arg1, res, FALSE_BOOL),
               Some(mkExprS(arg1, res, cond))
@@ -1004,7 +1004,7 @@ class Translator(program: Program) {
                       IRBin(
                         e,
                         IRUn(e, TYPEOF, ie),
-                        EQUALS, IRString(e, "boolean")
+                        EQUALS, IRVal("boolean")
                       ),
                       mkExprS(e, res, FALSE_BOOL),
                       Some(mkExprS(e, res, ie))
@@ -1035,9 +1035,9 @@ class Translator(program: Program) {
       val (ss2, r2) = walkExpr(right, env, z)
       ss2 match {
         case Nil =>
-          (ss1, IRBin(e, r1, IROp(NU.DEFAULT_AST, EJSOp(op.text)), r2))
+          (ss1, IRBin(e, r1, IROp(NU.TEMP_AST, EJSOp(op.text)), r2))
         case _ =>
-          ((ss1 :+ mkExprS(left, y, r1)) ++ ss2, IRBin(e, y, IROp(NU.DEFAULT_AST, EJSOp(op.text)), r2))
+          ((ss1 :+ mkExprS(left, y, r1)) ++ ss2, IRBin(e, y, IROp(NU.TEMP_AST, EJSOp(op.text)), r2))
       }
 
     case VarRef(_, id) => (List(), id2ir(env, id))
@@ -1079,7 +1079,7 @@ class Translator(program: Program) {
       val str = member.text
       (ss1 :+ toObject(first, obj, r1),
         IRLoad(e, obj,
-          IRString(e, str)))
+          IRVal(str)))
 
     case Bracket(_, first, StringLiteral(_, _, str, _)) =>
       val objspan = first.span
@@ -1088,7 +1088,7 @@ class Translator(program: Program) {
       val (ss1, r1) = walkExpr(first, env, obj1)
       (ss1 :+ toObject(first, obj, r1),
         IRLoad(e, obj,
-          IRString(e, str)))
+          IRVal(str)))
 
     case Bracket(_, first, index) =>
       val objspan = first.span
@@ -1136,7 +1136,7 @@ class Translator(program: Program) {
                   if (cond) then x = newObj else x = obj
                  */
           makeLoadStmt(false, e, e.span, proto, fun,
-            IRString(n, "prototype")),
+            IRVal("prototype")),
           IRObject(e, obj, Nil, Some(proto)),
           IRNew(e, newObj, fun, List(obj, arg)),
           isObject(e, cond, newObj),
@@ -1261,20 +1261,20 @@ class Translator(program: Program) {
 
     case (t: This) => (List(), IRThis(t))
 
-    case (n: Null) => (List(), IRNull(n))
+    case (n: Null) => (List(), IRVal(EJSNull))
 
     case b @ Bool(_, isBool) =>
       (List(),
-        if (isBool) IRBool(b, true) else IRBool(b, false))
+        if (isBool) IRVal(true) else IRVal(false))
 
     case DoubleLiteral(_, text, num) =>
-      (List(), IRNumber(e, text, num))
+      (List(), IRVal(text, num))
 
     case IntLiteral(_, intVal, radix) =>
-      (List(), IRNumber(e, intVal.toString, intVal.doubleValue))
+      (List(), IRVal(intVal.toString, intVal.doubleValue))
 
     case s @ StringLiteral(_, _, str, isRE) =>
-      (List(), IRString(e, if (isRE) str else unescapeJava(str, s)))
+      (List(), IRVal(if (isRE) str else unescapeJava(str, s)))
   }
 
   private def prop2ir(prop: Property): IRId = prop match {
