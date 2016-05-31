@@ -12,9 +12,4 @@
 package kr.ac.kaist.safe
 
 package object cfg_builder {
-  // function id
-  type FunctionId = Int
-
-  // block id
-  type BlockId = Int
 }

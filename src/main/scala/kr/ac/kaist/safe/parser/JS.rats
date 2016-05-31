@@ -43,6 +43,9 @@ instantiate kr.ac.kaist.safe.parser.Unicode
 
 header {
 import java.util.HashMap;
+import kr.ac.kaist.safe.errors.ExcLog;
+import kr.ac.kaist.safe.errors.error.*;
+import kr.ac.kaist.safe.errors.warning.*;
 import kr.ac.kaist.safe.nodes.*;
 import kr.ac.kaist.safe.util.*;
 import xtc.util.Action;
@@ -82,16 +85,24 @@ body {
             end = start;
         Column s = column(start);
         Column e = column(end);
-        SourceLoc slStart = new SourceLoc(s.file, s.line, s.column, start);
-        SourceLoc slEnd   = new SourceLoc(e.file, e.line, e.column, end);
-        return new Span(slStart, slEnd);
+        SourceLoc slStart = new SourceLoc(s.line, s.column, start);
+        SourceLoc slEnd   = new SourceLoc(e.line, e.column, end);
+        if (s.file == e.file) { return new Span(s.file, slStart, slEnd); }
+        else { return NodeUtil.MERGED_SPAN(); }
     }
 
     private FileWriter fw;
     private BufferedWriter writer;
     private BufferedReader reader;
     private String logFile = column(0).file + ".log";
-    private boolean keepComments = NodeUtil.getKeepComments();
+    private boolean keepComments = NodeUtil.keepComments();
+    private ExcLog excLog = new ExcLog(toList(Collections.<SafeError>emptyList()),
+                                       toList(Collections.<SafeWarning>emptyList()));
+
+    public ExcLog excLog() {
+        return excLog;
+    }
+
     public Result JSmain(final int yyStart) throws IOException {
         return JSparse(yyStart, MAIN);
     }
@@ -150,10 +161,9 @@ body {
         if ((beforeDot + dot).equals("") ||
             ((beforeDot + afterDot).equals("") && !dot.equals("")) ||
             (!beforeDot.equals("") && dot.equals("") && !afterDot.equals("")))
-            log(writer, "Syntax Error: expected a numeral but got " +
-                beforeDot + dot + afterDot + exponent);
+            excLog.signal(new NoNumeralError(beforeDot + dot + afterDot + exponent));
         if (!beforeDot.equals("") && !beforeDot.equals("0") && beforeDot.charAt(0) == '0')
-            log(writer, "Syntax Error: a numeral begins with 0.");
+            excLog.signal(new NumeralPrefixZeroError());
         if (dot.equals("")) {
             if (exponent.equals(""))
                 return new IntLiteral(NodeUtil.makeASTNodeInfo(span), new BigInteger(beforeDot), 10);
@@ -189,9 +199,9 @@ body {
         String line = reader.readLine();
         while (line != null) {
             if (line.equals(""))
-                log(writer, "Syntax Error: expected a numeral but got " + line);
+                excLog.signal(new NoNumeralError(line));
             if (!line.equals("") && !line.equals("0") && line.charAt(0) == '0')
-                log(writer, "Syntax Error: a numeral begins with 0.");
+                excLog.signal(new NumeralPrefixZeroError());
             Double number = Double.valueOf(line);
             result.add(number);
             line = reader.readLine();

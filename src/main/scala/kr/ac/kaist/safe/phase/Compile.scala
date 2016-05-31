@@ -32,12 +32,12 @@ case class Compile(
   def compile(config: Config, program: Program): Try[IRRoot] = {
     // Translate AST -> IR.
     val translator = new Translator(program)
-    val ir = translator.doit
+    val ir = translator.result
     val excLog = translator.excLog
 
     // Report errors.
     if (excLog.hasError) {
-      println(NodeUtil.getFileName(program) + ":")
+      println(program.fileName + ":")
       println(excLog)
     }
 

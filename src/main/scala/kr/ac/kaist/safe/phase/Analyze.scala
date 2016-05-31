@@ -12,31 +12,35 @@
 package kr.ac.kaist.safe.phase
 
 import kr.ac.kaist.safe.analyzer.{ CallContextManager, Semantics }
+import scala.util.{ Try, Success, Failure }
 import kr.ac.kaist.safe.config.{ BoolOption, Config, ConfigOption, NumOption, OptionKind, StrOption }
-import kr.ac.kaist.safe.cfg_builder.CFG
 import kr.ac.kaist.safe.analyzer.domain._
-
-import scala.util.{ Success, Failure }
+import kr.ac.kaist.safe.nodes.CFG
 
 // Analyze phase struct.
 case class Analyze(
     prev: CFGBuild = CFGBuild(),
     analyzeConfig: AnalyzeConfig = AnalyzeConfig()
 ) extends Phase(Some(prev), Some(analyzeConfig)) {
-  override def apply(config: Config): Unit = analyze(config)
-  def analyze(config: Config): Option[Int] = {
-    prev.cfgBuild(config) match {
-      case Success(cfg) => analyze(config, cfg)
-      case Failure(_) => None
-    }
+  override def apply(config: Config): Unit = analyze(config) recover {
+    case ex => Console.err.print(ex.toString)
   }
-
-  def analyze(config: Config, cfg: CFG): Option[Int] = {
+  def analyze(config: Config): Try[Int] =
+    prev.cfgBuild(config).flatMap(analyze(config, _))
+  def analyze(config: Config, cfg: CFG): Try[Int] = {
     //TODO: Below are temporal analyzer main code
     val utils = Utils(analyzeConfig.AbsUndef, analyzeConfig.AbsNull, analyzeConfig.AbsBool, analyzeConfig.AbsNumber, analyzeConfig.AbsString)
     val semantics = new Semantics(cfg, utils, config.addrManager)
     val callCtxManager = CallContextManager(config.addrManager)
-    None
+    val excLog = semantics.excLog
+
+    // Report errors.
+    if (excLog.hasError) {
+      println(config.fileNames.head + ":")
+      println(excLog)
+    }
+
+    Try(0)
   }
 }
 

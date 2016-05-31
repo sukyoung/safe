@@ -11,7 +11,6 @@
 
 package kr.ac.kaist.safe.util
 
-import xtc.tree.Location
 import kr.ac.kaist.safe.nodes._
 import kr.ac.kaist.safe.config.Config
 import java.io.BufferedWriter
@@ -20,94 +19,70 @@ import scala.collection.immutable.HashMap
 
 object NodeUtil {
   ////////////////////////////////////////////////////////////////
+  // local mutable (TODO have to handle)
+  ////////////////////////////////////////////////////////////////
+
+  var uid = 0
+  var nodesPrintId = 0
+  var nodesPrintIdEnv: Map[String, String] = HashMap()
+  var keepComments = false
+  private var comment: Option[Comment] = None
+
+  val INTERNAL_SYMBOL = "<>"
+  val INTERNAL_PRINT = "_<>_print"
+  val INTERNAL_PRINT_IS = "_<>_printIS"
+  val INTERNAL_GET_TICK_COUNT = "_<>_getTickCount"
+  val GLOBAL_PREFIX = "<>Global<>"
+  val GENERATED_STR = "<>generated String Literal"
+
+  val VAR_TRUE = freshGlobalName("true")
+  val VAR_ONE = freshGlobalName("one")
+  val TO_OBJ_NAME = freshGlobalName("toObject")
+  val IGNORE_NAME = freshGlobalName("ignore")
+  val GLOBAL_NAME = freshGlobalName("global")
+  val REF_ERR_NAME = freshGlobalName("referenceError")
+
+  val MERGED_FILE_NAME = freshFile("Merged")
+  val MERGED_SPAN = Span(MERGED_FILE_NAME)
+  val MERGED_SOURCE_INFO = new ASTNodeInfo(MERGED_SPAN)
+
+  val TEMP_AST = NoOp(ASTNodeInfo(Span()), "defaultAST")
+  val TEMP_IR = IRNoOp(TEMP_AST, "defaultIR")
+
+  val PRINT_WIDTH = 50
+
+  ////////////////////////////////////////////////////////////////
   // For all AST, IR, and CFG
   ////////////////////////////////////////////////////////////////
 
-  val significantBits = 13
-
-  // Spans ///////////////////////////////////////////////////////
-  def makeSpan(loc: Location): Span = {
-    val sl = new SourceLoc(loc.file, loc.line, loc.column, 0);
-    new Span(sl, sl)
-  }
-
-  def makeSpan(start: Span, finish: Span): Span =
-    new Span(start.begin, finish.end)
-
-  def makeSpan(file: String, startLine: Int, endLine: Int, startC: Int, endC: Int, startOffset: Int, endOffset: Int): Span =
-    new Span(
-      new SourceLoc(file, startLine, startC, startOffset),
-      new SourceLoc(file, endLine, endC, endOffset)
-    )
-
-  def makeSpan(villain: String): Span = {
-    val sl = new SourceLoc(villain, 0, 0, 0)
-    new Span(sl, sl)
-  }
-
-  /**
-   * In some situations, a begin-to-end span is not really right, and something
-   * more like a set of spans ought to be used.  Even though this is not yet
-   * implemented, the name is provided to allow expression of intent.
-   */
-  def getSpan(n: ASTNode): Span = n.info.span
-  def getSpan(n: ASTNodeInfo): Span = n.span
-  def getFileName(n: ASTNode): String = getSpan(n).fileName
-  def getBegin(n: ASTNode): SourceLoc = getSpan(n).begin
-  def getEnd(n: ASTNode): SourceLoc = getSpan(n).end
-  def getLine(n: ASTNode): Int = getSpan(n).begin.line
-  def getOffset(n: ASTNode): Int = getSpan(n).begin.offset
-
-  def spanAll(span1: Span, span2: Span): Span =
-    new Span(span1.begin, span2.end)
-
   // Names ///////////////////////////////////////////////////////
   // unique name generation
-  var uid = 0
   def getUId: Int = { uid += 1; uid }
   def freshName(n: String): String =
-    internalSymbol + n + internalSymbol + "%013d".format(getUId)
+    INTERNAL_SYMBOL + n + INTERNAL_SYMBOL + "%013d".format(getUId)
   // unique name generation for global names
-  def freshGlobalName(n: String): String = globalPrefix + n
+  def freshGlobalName(n: String): String = GLOBAL_PREFIX + n
   def funexprName(span: Span): String = freshName("funexpr@" + span.toStringWithoutFiles)
 
-  def isInternal(s: String): Boolean = s.containsSlice(internalSymbol)
-  def isGlobalName(s: String): Boolean = s.startsWith(globalPrefix)
+  def isInternal(s: String): Boolean = s.containsSlice(INTERNAL_SYMBOL)
+  def isGlobalName(s: String): Boolean = s.startsWith(GLOBAL_PREFIX)
   def isFunExprName(name: String): Boolean = name.containsSlice("<>funexpr")
-
-  val internalSymbol = "<>"
-  val internalPrint = "_<>_print"
-  val internalPrintIS = "_<>_printIS"
-  val internalGetTickCount = "_<>_getTickCount"
-  val globalPrefix = "<>Global<>"
-  val generatedString = "<>generated String Literal"
-  val varTrue = freshGlobalName("true")
-  val varOne = freshGlobalName("one")
-  val toObjectName = freshGlobalName("toObject")
-  val ignoreName = freshGlobalName("ignore")
-  val globalName = freshGlobalName("global")
-  val referenceErrorName = freshGlobalName("referenceError")
 
   // Defaults ////////////////////////////////////////////////////
   // dummy file name for source location information
-  def freshFile(f: String): String = internalSymbol + f
-  // For use only when there is no hope of attaching a true span.
-  def defaultSpan(villain: String): Span =
-    if (villain.length != 0) makeSpan(villain) else defaultSpan
-  def defaultSpan: Span = makeSpan("defaultSpan")
+  def freshFile(f: String): String = INTERNAL_SYMBOL + f
 
-  var nodesPrintId = 0
-  var nodesPrintIdEnv: List[(String, String)] = Nil
   def initNodesPrint: Unit = {
     nodesPrintId = 0
-    nodesPrintIdEnv = Nil
+    nodesPrintIdEnv = HashMap()
   }
-  def getNodesE(uniq: String): String = nodesPrintIdEnv.find { case (name, _) => name.equals(uniq) } match {
+
+  def getNodesE(uniq: String): String = nodesPrintIdEnv.get(uniq) match {
+    case Some(newUniq) => newUniq
     case None =>
-      val newUniq = { nodesPrintId += 1; nodesPrintId.toString }
-      nodesPrintIdEnv = (uniq, newUniq) :: nodesPrintIdEnv
+      val newUniq: String = { nodesPrintId += 1; nodesPrintId.toString }
+      nodesPrintIdEnv += (uniq -> newUniq)
       newUniq
-    case Some((_, newUniq)) => newUniq
   }
 
   def ppAST(s: StringBuilder, str: String): Unit =
@@ -143,8 +118,6 @@ object NodeUtil {
     for (i <- 0 to indent - 1) s.append(" ")
     s.toString
   }
-
-  val printWidth = 50
   def join(indent: Int, all: List[Node], sep: String, result: StringBuilder): StringBuilder = all match {
     case Nil => result
     case _ => result.length match {
@@ -152,7 +125,7 @@ object NodeUtil {
         join(indent, all.tail, sep, result.append(all.head.toString(indent)))
       }
       case _ =>
-        if (result.length > printWidth && sep.equals(", "))
+        if (result.length > PRINT_WIDTH && sep.equals(", "))
           join(indent, all.tail, sep, result.append(", " + Config.LINE_SEP + getIndent(indent)).append(all.head.toString(indent)))
         else
           join(indent, all.tail, sep, result.append(sep).append(all.head.toString(indent)))
@@ -163,83 +136,28 @@ object NodeUtil {
   // AST
   ////////////////////////////////////////////////////////////////
 
-  // For use only when there is no hope of attaching a true span.
-  val defaultAst = makeNoOp(makeASTNodeInfo(defaultSpan("defaultAST")), "defaultAST")
-
   /*  make sure it is parenthesized */
   def prBody(body: List[SourceElement]): String =
     join(0, body, Config.LINE_SEP, new StringBuilder("")).toString
 
-  def getBody(ast: ASTNode): String = ast match {
-    case FunExpr(_, Functional(_, _, _, _, _, _, bodyS)) => bodyS
-    case FunDecl(_, Functional(_, _, _, _, _, _, bodyS), _) => bodyS
-    case GetProp(_, _, Functional(_, _, _, _, _, _, bodyS)) => bodyS
-    case SetProp(_, _, Functional(_, _, _, _, _, _, bodyS)) => bodyS
-    case _ => "Not a function body"
-  }
-
-  def isName(lhs: LHS): Boolean = lhs match {
-    case _: VarRef => true
-    case _: Dot => true
-    case _ => false
-  }
-
-  def isEval(n: Expr): Boolean = n match {
-    case VarRef(info, Id(_, text, _, _)) => text.equals("eval")
-    case _ => false
-  }
-
   def makeASTNodeInfo(span: Span): ASTNodeInfo =
-    if (getKeepComments && comment.isDefined) {
+    if (keepComments && comment.isDefined) {
       val result = new ASTNodeInfo(span, comment)
       comment = None
       result
     } else new ASTNodeInfo(span, None)
-
-  def makeProgram(info: ASTNodeInfo, ses: List[SourceElements]): Program =
-    new Program(info, new TopLevel(info, Nil, Nil, ses))
-
-  def makeNoOp(info: ASTNodeInfo, desc: String): NoOp =
-    new NoOp(info, desc)
-
-  def unwrapParen(expr: Expr): Expr = expr match {
-    case Parenthesized(info, body) => body
-    case _ => expr
-  }
-
-  def prop2Id(prop: Property): Id = prop match {
-    case PropId(info, id) => id
-    case PropStr(info, str) => Id(info, str, None, false)
-    case PropNum(info, DoubleLiteral(_, t, _)) => Id(info, t, None, false)
-    case PropNum(info, IntLiteral(_, i, _)) => Id(info, i.toString, None, false)
-  }
-
-  def prop2Str(prop: Property): String = prop match {
-    case PropId(_, id) => id.text
-    case PropStr(_, str) => str
-    case PropNum(info, DoubleLiteral(_, _, num)) => num.toString
-    case PropNum(info, IntLiteral(_, num, _)) => num.toString
-  }
-
-  def member2Str(member: Member): String = member match {
-    case Field(_, prop, _) => prop2Str(prop)
-    case GetProp(_, prop, _) => prop2Str(prop)
-    case SetProp(_, prop, _) => prop2Str(prop)
-  }
 
   def escape(s: String): String = s.replaceAll("\\\\", "\\\\\\\\")
 
   def lineTerminating(c: Char): Boolean =
     List('\u000a', '\u2028', '\u2029', '\u000d').contains(c)
 
-  private var keepComments = false
   def setKeepComments(flag: Boolean): Unit = { keepComments = flag }
-  def getKeepComments: Boolean = keepComments
 
-  private var comment: Option[Comment] = None
   def initComment: Unit = { comment = None }
+
   def commentLog(span: Span, message: String): Unit =
-    if (getKeepComments) {
+    if (keepComments) {
       if (!comment.isDefined ||
         (!comment.get.txt.startsWith("/*") && !comment.get.txt.startsWith("//")))
         comment = Some[Comment](new Comment(makeASTNodeInfo(span), message))
@@ -247,35 +165,15 @@ object NodeUtil {
         val com = comment.get
         if (!com.txt.equals(message))
           comment = Some[Comment](new Comment(
-            makeASTNodeInfo(spanAll(com.info.span, span)),
+            makeASTNodeInfo(com.info.span + span),
             com.txt + Config.LINE_SEP + message
           ))
       }
     }
 
-  def spanInfoAll(nodes: List[ASTNode]): ASTNodeInfo = new ASTNodeInfo(spanAll(nodes))
-
-  def spanAll(nodes: List[ASTNode], span: Span): Span = nodes match {
-    case Nil => span
-    case _ => spanAll(nodes)
-  }
-
-  def spanAll(nodes: List[ASTNode]): Span = nodes match {
-    case Nil => sys.error("Cannot make a span from an empty list of nodes.")
-    case hd :: _ =>
-      new Span(getSpan(hd).begin, getSpan(nodes.last).end)
-  }
-
-  def span(n: ASTNode): Span = n.info.span
-
   def adjustCallSpan(finish: Span, expr: LHS): Span = expr match {
-    case Parenthesized(info, body) => new Span(span(body).begin, finish.end)
+    case Parenthesized(info, body) => body.span + finish
     case _ => finish
-  }
-
-  def isOneline(s: Stmt): Boolean = s match {
-    case _: ABlock => false
-    case _ => true
   }
 
   def inParentheses(str: String): String = {
@@ -329,7 +227,7 @@ object NodeUtil {
       }
     }
 
-  object addLinesProgram extends ASTWalker {
+  object AddLinesProgram extends ASTWalker {
     var line = 0
     var offset = 0
     def addLines(node: Program, l: Int, o: Int): Program = {
@@ -339,20 +237,20 @@ object NodeUtil {
     }
 
     // filter "(" for property access
-    def getStartSourceLoc(node: ASTNode): (ASTNode, SourceLoc) = {
+    def getStartSpan(node: ASTNode): (ASTNode, Span) = {
       if (node.isInstanceOf[Parenthesized]) {
-        getStartSourceLoc(node.asInstanceOf[Parenthesized].expr)
+        getStartSpan(node.asInstanceOf[Parenthesized].expr)
       } else if (node.isInstanceOf[Dot]) {
-        getStartSourceLoc(node.asInstanceOf[Dot].obj)
+        getStartSpan(node.asInstanceOf[Dot].obj)
       } else if (node.isInstanceOf[FunApp]) {
-        getStartSourceLoc(node.asInstanceOf[FunApp].fun)
-      } else (node, node.info.span.begin)
+        getStartSpan(node.asInstanceOf[FunApp].fun)
+      } else (node, node.info.span)
     }
 
     var map = new HashMap[String, Span]
     override def walk(i: ASTNodeInfo): ASTNodeInfo = {
       val span = i.span
-      val key = span.at
+      val key = span.toString
       if (map.contains(key)) new ASTNodeInfo(map.apply(key))
       else {
         val newSpan = span.addLines(line, offset)
@@ -364,7 +262,7 @@ object NodeUtil {
     override def walk(node: FunDecl): FunDecl = node match {
       case FunDecl(i, getFtn, isStrict) =>
         val span = i.span
-        val key = span.at
+        val key = span.toString
         val newInfo = if (map.contains(key)) new ASTNodeInfo(map.apply(key))
         else {
           val newSpan = span.addLines(line, offset)
@@ -377,25 +275,25 @@ object NodeUtil {
 
     override def walk(node: Expr): Expr = node match {
       case dot @ Dot(info, lhs, id) =>
-        val (nlhs, sOffset) = getStartSourceLoc(lhs)
+        val (nlhs, sSpan) = getStartSpan(lhs)
         // make new SpanInfo...
         if (lhs != nlhs) {
-          val eOffset = info.span.end
-          val newSpan = new Span(sOffset, eOffset)
+          val eSpan = info.span
+          val newSpan = sSpan + eSpan
           val newInfo = new ASTNodeInfo(newSpan)
-          val key = newSpan.at
+          val key = newSpan.toString
           if (!map.contains(key))
             map += (key -> newSpan)
           super.walk(new Dot(newInfo, lhs, id))
         } else super.walk(dot)
       case f @ FunApp(info, lhs, list) =>
-        val (nlhs, sOffset) = getStartSourceLoc(lhs)
+        val (nlhs, sSpan) = getStartSpan(lhs)
         // make new SpanInfo...
         if (lhs != nlhs) {
-          val eOffset = info.span.end
-          val newSpan = new Span(sOffset, eOffset)
+          val eSpan = info.span
+          val newSpan = sSpan + eSpan
           val newInfo = new ASTNodeInfo(newSpan)
-          val key = newSpan.at
+          val key = newSpan.toString
           if (!map.contains(key))
             map += (key -> newSpan)
           super.walk(new FunApp(newInfo, lhs, list))
@@ -405,7 +303,7 @@ object NodeUtil {
   }
 
   // Assumes that the filename remains the same.
-  object addLinesWalker extends ASTWalker {
+  object AddLinesWalker extends ASTWalker {
     var line = 0
     var offset = 0
     def addLines(node: FunExpr, l: Int, o: Int): FunExpr = {
@@ -425,7 +323,7 @@ object NodeUtil {
 
     override def walk(i: ASTNodeInfo): ASTNodeInfo = {
       val span = i.span
-      val key = span.at
+      val key = span.toString
       if (map.contains(key)) new ASTNodeInfo(map(key))
       else {
         val newSpan = span.addLines(line, offset)
@@ -436,7 +334,7 @@ object NodeUtil {
   }
 
   // AST: Remove empty blocks, empty statements, debugger statements, ...
-  object simplifyWalker extends ASTWalker {
+  object SimplifyWalker extends ASTWalker {
     var repeat = false
 
     def simplify(stmts: List[SourceElement]): List[Stmt] = {
@@ -510,33 +408,6 @@ object NodeUtil {
   // IR
   ////////////////////////////////////////////////////////////////
 
-  def getFileName(n: IRNode): String = n.ast.info.span.fileName
-
-  def makeIROp(name: String, kind: Int = 0): IROp =
-    new IROp(defaultAst, name,
-      if (kind == 0) EJSOp.strToEJSOp(name) else kind)
-
-  def isAssertOperator(op: IROp): Boolean = EJSOp.isEquality(op.kind)
-
-  // Transposition rules for each relational IR Operator
-  def transIROp(op: IROp): IROp = {
-    op.kind match {
-      case EJSOp.BIN_COMP_REL_LESS => makeIROp(">=") // < --> >=
-      case EJSOp.BIN_COMP_REL_GREATER => makeIROp("<=") // > --> <=
-      case EJSOp.BIN_COMP_REL_LESSEQUAL => makeIROp(">") // <= --> >
-      case EJSOp.BIN_COMP_REL_GREATEREQUAL => makeIROp("<") // >= --> <
-      case EJSOp.BIN_COMP_EQ_EQUAL => makeIROp("!=") // == --> !=
-      case EJSOp.BIN_COMP_EQ_NEQUAL => makeIROp("==") // != --> ==
-      case EJSOp.BIN_COMP_EQ_SEQUAL => makeIROp("!==") // === --> !==
-      case EJSOp.BIN_COMP_EQ_SNEQUAL => makeIROp("===") // !== --> ===
-      case EJSOp.BIN_COMP_REL_IN => makeIROp("notIn") // in --> notIn
-      case EJSOp.BIN_COMP_REL_INSTANCEOF => makeIROp("notInstanceof") // instanceof --> notInstanceof
-      case EJSOp.BIN_COMP_REL_NOTIN => makeIROp("in") // notIn --> in
-      case EJSOp.BIN_COMP_REL_NOTINSTANCEOF => makeIROp("instanceof") // notInstanceof --> instanceof
-      case _ => op
-    }
-  }
-
   def inlineIndent(stmt: IRStmt, s: StringBuilder, indent: Int): Unit = {
     stmt match {
       case IRStmtUnit(_, stmts) if stmts.length != 1 =>
@@ -551,29 +422,29 @@ object NodeUtil {
   // IR: Remove empty blocks, empty statements, ...
   // Do not remove IRSeq aggressively.
   // They denote internal IRStmts whose values do not contribute to the result.
-  object simplifyIRWalker extends IRWalker {
+  object SimplifyIRWalker extends IRWalker {
     override def walk(node: IRRoot): IRRoot = node match {
-      case IRRoot(info, fds, vds, irs) =>
-        IRRoot(info, fds.map { fd: IRFunDecl => walk(fd) }, vds, simplify(irs))
+      case IRRoot(ast, fds, vds, irs) =>
+        IRRoot(ast, fds.map { fd: IRFunDecl => walk(fd) }, vds, simplify(irs))
     }
 
     override def walk(node: IRFunctional): IRFunctional = node match {
-      case IRFunctional(i, f, n, params, args, fds, vds, body) =>
-        IRFunctional(i, f, n, params, simplify(args),
+      case IRFunctional(astF, f, n, params, args, fds, vds, body) =>
+        IRFunctional(astF, f, n, params, simplify(args),
           fds.map { fd: IRFunDecl => walk(fd) }, vds, simplify(body))
     }
 
     override def walk(node: IRFunDecl): IRFunDecl = node match {
-      case IRFunDecl(info, ftn) =>
-        IRFunDecl(walk(info), walk(ftn))
+      case IRFunDecl(ast, ftn) =>
+        IRFunDecl(ast, walk(ftn))
     }
 
     override def walk(node: IRStmt): IRStmt = node match {
-      case IRStmtUnit(info, stmts) =>
-        IRStmtUnit(info, simplify(stmts))
+      case IRStmtUnit(ast, stmts) =>
+        IRStmtUnit(ast, simplify(stmts))
 
-      case IRSeq(info, stmts) =>
-        IRSeq(info, simplify(stmts))
+      case IRSeq(ast, stmts) =>
+        IRSeq(ast, simplify(stmts))
 
       case _ => super.walk(node)
     }
@@ -597,7 +468,7 @@ object NodeUtil {
         case first:IRAssign => rest match {
           case (second@SIRExprStmt(_, _, _, right:IRId, _))::others =>
             if (first.getLhs.getUniqueName.equals(right.getUniqueName) &&
-                right.getUniqueName.equals(ignoreName)) {
+                right.getUniqueName.equals(IGNORE_NAME)) {
               (walk(replaceLhs(first, second.getLhs)).asInstanceOf[IRStmt])::simpl(others)
             } else walk(first).asInstanceOf[IRStmt]::simpl(rest)
           case _ => walk(first).asInstanceOf[IRStmt]::simpl(rest)
@@ -608,9 +479,4 @@ object NodeUtil {
       }
     }
   }
-
-  ////////////////////////////////////////////////////////////////
-  // CFG
-  ////////////////////////////////////////////////////////////////
-
 }

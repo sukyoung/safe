@@ -40,8 +40,8 @@ object DynamicRewriter extends ASTWalker {
       // function (x,d) body;
       case n @ New(_, FunApp(_, VarRef(_, Id(_, text, _, _)), args)) if allConst(args) && text.equals("Function") =>
         val (params, body) = split(args, n)
-        Parser.stringToFnE((NU.getFileName(n),
-          (new JInteger(NU.getLine(n) - 1), new JInteger(NU.getOffset(n) - 1)),
+        Parser.stringToFnE((n.fileName,
+          (new JInteger(n.line - 1), new JInteger(n.offset - 1)),
           "function (" + params + ") {" + body + "};")) match {
           case Success(result) => result
           case _ => n
@@ -56,8 +56,8 @@ object DynamicRewriter extends ASTWalker {
       // setTimeout(function(){xqzSr()}, 1);
       case n @ FunApp(i1, vr @ VarRef(_, Id(_, text, _, _)),
         List(StringLiteral(_, _, body, _), no)) if text.equals("setTimeout") || text.equals("setInterval") =>
-        Parser.stringToFnE((NU.getFileName(n),
-          (new JInteger(NU.getLine(n) - 1), new JInteger(NU.getOffset(n) - 1)),
+        Parser.stringToFnE((n.fileName,
+          (new JInteger(n.line - 1), new JInteger(n.offset - 1)),
           "function () {" + body + "};")) match {
           case Success(fe) => FunApp(i1, vr, List(fe, no))
           case _ => n
@@ -67,8 +67,8 @@ object DynamicRewriter extends ASTWalker {
       // window.setTimeout(function(){xqzSr()}, 1);
       case n @ FunApp(i1, dot @ Dot(_, obj @ VarRef(_, Id(_, oname, _, _)), Id(_, mname, _, _)),
         List(StringLiteral(_, _, body, _), no)) if oname.equals("window") && (mname.equals("setTimeout") || mname.equals("setInterval")) =>
-        Parser.stringToFnE((NU.getFileName(n),
-          (new JInteger(NU.getLine(n) - 1), new JInteger(NU.getOffset(n) - 1)),
+        Parser.stringToFnE((n.fileName,
+          (new JInteger(n.line - 1), new JInteger(n.offset - 1)),
           "function () {" + body + "};")) match {
           case Success(fe) => FunApp(i1, dot, List(fe, no))
           case _ => n

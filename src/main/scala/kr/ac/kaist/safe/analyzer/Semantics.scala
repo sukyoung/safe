@@ -11,6 +11,8 @@
 
 package kr.ac.kaist.safe.analyzer
 
+import kr.ac.kaist.safe.errors.ExcLog
+import kr.ac.kaist.safe.errors.error._
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.cfg_builder._
 import kr.ac.kaist.safe.nodes._
@@ -18,6 +20,7 @@ import kr.ac.kaist.safe.nodes._
 import scala.collection.immutable.{ HashMap, HashSet }
 
 class Semantics(cfg: CFG, utils: Utils, addressManager: AddressManager) {
+  lazy val excLog: ExcLog = new ExcLog
   val predefLoc: PredefLoc = PredefLoc(addressManager)
   val helper: Helper = Helper(utils, addressManager, predefLoc)
   val operator: Operator = Operator(utils)
@@ -123,11 +126,14 @@ class Semantics(cfg: CFG, utils: Utils, addressManager: AddressManager) {
           val h3 = helper.varStore(h2, retVar, returnV)
           State(h3, c2)
         }
-      case (Exit(_), _) =>
+      case (Exit(f), _) =>
         val c1 = st.context
         val (c2, obj1) = helper.fixOldify(ctx, obj, c1.mayOld, c1.mustOld)
         if (c2.isBottom) State.Bot
-        else throw new InternalError("Inter-procedural edge from Exit node must be connected with After-Call node") //TODO
+        else {
+          excLog.signal(IPFromExitToNoneError(f.ir))
+          State.Bot
+        }
       case (ExitExc(_), _) if st.heap.isBottom => State.Bot
       case (ExitExc(_), _) if st.context.isBottom => State.Bot
       case (ExitExc(_), AfterCatch(_, _)) =>
@@ -147,11 +153,14 @@ class Semantics(cfg: CFG, utils: Utils, addressManager: AddressManager) {
           )
           State(h2, c2)
         }
-      case (ExitExc(_), _) =>
+      case (ExitExc(f), _) =>
         val c1 = st.context
         val (c2, obj1) = helper.fixOldify(ctx, obj, c1.mayOld, c1.mustOld)
         if (c2.isBottom) State.Bot
-        else throw new InternalError("Inter-procedural edge from Exit node must be connected with After-Call node") //TODO
+        else {
+          excLog.signal(IPFromExitToNoneError(f.ir))
+          State.Bot
+        }
       case _ => st
     }
   }
@@ -244,7 +253,7 @@ class Semantics(cfg: CFG, utils: Utils, addressManager: AddressManager) {
         val newExcSt = helper.raiseException(st, excSet)
         (State(h1, ctx1), excSt + newExcSt)
       }
-      case CFGDelete(_, _, x1, CFGVarRef(x2)) => {
+      case CFGDelete(_, _, x1, CFGVarRef(_, x2)) => {
         val baseLocSet = helper.lookupBase(st.heap, x2)
         val (h1, b) =
           if (baseLocSet.isEmpty) {
@@ -477,7 +486,7 @@ class Semantics(cfg: CFG, utils: Utils, addressManager: AddressManager) {
         val h7 = helper.varStore(h6, lhs, fVal)
         (State(h7, st3.context), excSt)
       }
-      case CFGConstruct(_, block, consExpr, thisArg, arguments, aNew, bNew) => {
+      case CFGConstruct(ir, block, consExpr, thisArg, arguments, aNew, bNew) => {
         // cons, thisArg and arguments must not be bottom
         val locR = addressManager.addrToLoc(aNew, Recent)
         val st1 = helper.oldify(st, aNew)
@@ -496,7 +505,9 @@ class Semantics(cfg: CFG, utils: Utils, addressManager: AddressManager) {
           val nCall =
             cp.node match {
               case callBlock: Call => callBlock
-              case _ => throw new InternalError("CFGConstruct must have corresponding after-call and after-catch")
+              case _ =>
+                excLog.signal(NoAfterCallAfterCatchError(ir))
+                block
             }
           val cpAfterCall = ControlPoint(nCall.afterCall, callerCallCtx)
           val cpAfterCatch = ControlPoint(nCall.afterCatch, callerCallCtx)
@@ -524,7 +535,7 @@ class Semantics(cfg: CFG, utils: Utils, addressManager: AddressManager) {
                       addReturnEdge(exitCP, cpAfterCall, st1.context, oldLocalObj)
                       addReturnEdge(exitExcCP, cpAfterCatch, st1.context, oldLocalObj)
                     }
-                    case None => throw new InternalError("CFGConstruct tried to call undefined function")
+                    case None => excLog.signal(UndefinedFunctionCallError(ir))
                   }
                 }
               }
@@ -554,7 +565,7 @@ class Semantics(cfg: CFG, utils: Utils, addressManager: AddressManager) {
           (State(h3, st1.context), excSt + newExcSt)
         }
       }
-      case CFGCall(_, block, funExpr, thisArg, arguments, aNew, bNew) => {
+      case CFGCall(ir, block, funExpr, thisArg, arguments, aNew, bNew) => {
         // cons, thisArg and arguments must not be bottom
         val locR = addressManager.addrToLoc(aNew, Recent)
         val st1 = helper.oldify(st, aNew)
@@ -572,7 +583,9 @@ class Semantics(cfg: CFG, utils: Utils, addressManager: AddressManager) {
           val callBlock =
             cp.node match {
               case callBlock: Call => callBlock
-              case _ => throw new InternalError("CFGCall must have corresponding after-call and after-catch")
+              case _ =>
+                excLog.signal(NoAfterCallAfterCatchError(ir))
+                block
             }
           val afterCallCP = ControlPoint(callBlock.afterCall, callerCallCtx)
           val afterCatchCP = ControlPoint(callBlock.afterCatch, callerCallCtx)
@@ -598,7 +611,7 @@ class Semantics(cfg: CFG, utils: Utils, addressManager: AddressManager) {
                       addReturnEdge(exitCP, afterCallCP, st1.context, oldLocalObj)
                       addReturnEdge(exitExcCP, afterCatchCP, st1.context, oldLocalObj)
                     }
-                    case None => throw new InternalError("CFGCall tried to call undefined function")
+                    case None => excLog.signal(UndefinedFunctionCallError(ir))
                   }
                 }
               }
@@ -674,7 +687,7 @@ class Semantics(cfg: CFG, utils: Utils, addressManager: AddressManager) {
 
         (State.Bot, excSt + State(h1, st.context) + newExcSt)
       }
-      case CFGInternalCall(_, info, lhs, fun, arguments, loc) =>
+      case CFGInternalCall(ir, info, lhs, fun, arguments, loc) =>
         (fun.toString, arguments, loc) match {
           case ("<>Global<>toObject", List(expr), Some(aNew)) => {
             val (v, excSet1) = V(expr, st)
@@ -735,7 +748,7 @@ class Semantics(cfg: CFG, utils: Utils, addressManager: AddressManager) {
             val newExcSt = helper.raiseException(st, excSet)
             (State(h1, ctx1), excSt + newExcSt)
           }
-          case ("<>Global<>getBase", List(CFGVarRef(x2)), None) => {
+          case ("<>Global<>getBase", List(CFGVarRef(_, x2)), None) => {
             val locSetBase = helper.lookupBase(st.heap, x2)
             val h1 = helper.varStore(st.heap, lhs, Value(utils.PValueBot, locSetBase))
             (State(h1, st.context), excSt)
@@ -749,7 +762,9 @@ class Semantics(cfg: CFG, utils: Utils, addressManager: AddressManager) {
             val strPV = utils.PValueBot.copyWith(utils.absString.Top)
             val h1 = helper.varStore(st.heap, lhs, Value(strPV))
             (State(h1, st.context), excSt)
-          case _ => throw new InternalError("Not yet implemented")
+          case _ =>
+            excLog.signal(SemanticsNotYetImplementedError(ir))
+            (State.Bot, State.Bot)
         }
       case CFGNoOp(_, _, _) => (st, excSt)
     }

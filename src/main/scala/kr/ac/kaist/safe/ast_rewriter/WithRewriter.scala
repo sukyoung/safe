@@ -14,7 +14,7 @@ package kr.ac.kaist.safe.ast_rewriter
 import kr.ac.kaist.safe.errors.ExcLog
 import kr.ac.kaist.safe.errors.error._
 import kr.ac.kaist.safe.nodes._
-import kr.ac.kaist.safe.util.{ NodeUtil => NU }
+import kr.ac.kaist.safe.util.{ NodeUtil => NU, Span }
 
 /* Rewrites a JavaScript source code using the with statement
  * to another one without using the with statement.
@@ -25,7 +25,7 @@ class WithRewriter(program: Program, forTest: Boolean) {
   ////////////////////////////////////////////////////////////////
 
   lazy val result: Program =
-    NU.simplifyWalker.walk(WithRewriteWalker.walk(program, EmptyEnv))
+    NU.SimplifyWalker.walk(WithRewriteWalker.walk(program, EmptyEnv))
   lazy val excLog: ExcLog = new ExcLog
 
   ////////////////////////////////////////////////////////////////
@@ -42,7 +42,7 @@ class WithRewriter(program: Program, forTest: Boolean) {
   ) extends Env
 
   // default values
-  private val TO_OBJ_INFO = NU.makeASTNodeInfo(NU.makeSpan("genToObject"))
+  private val TO_OBJ_INFO = NU.makeASTNodeInfo(Span("genToObject"))
   private lazy val TO_OBJ_FN_ID = mkId("toObject" + freshNameTest)
   private lazy val PARAM_EXPR = mkVarRef(mkId("x"))
   private lazy val FALSE = Some(mkIf("string", mkVarRef(mkId("String")),
@@ -64,7 +64,7 @@ class WithRewriter(program: Program, forTest: Boolean) {
   private lazy val TO_OBJ_FN_DECL =
     FunDecl(
       TO_OBJ_INFO,
-      Functional(TO_OBJ_INFO, List(), List(), TO_OBJ_BODY, TO_OBJ_FN_ID, List(mkId("x")), NU.generatedString),
+      Functional(TO_OBJ_INFO, List(), List(), TO_OBJ_BODY, TO_OBJ_FN_ID, List(mkId("x")), NU.GENERATED_STR),
       false
     )
 
@@ -95,7 +95,7 @@ class WithRewriter(program: Program, forTest: Boolean) {
       val name = NU.freshName("alpha")
       Id(info, name, Some(name), true)
     }
-    def toObjectId(info: ASTNodeInfo): Id = Id(info, NU.toObjectName, Some(NU.toObjectName), false)
+    def toObjectId(info: ASTNodeInfo): Id = Id(info, NU.TO_OBJ_NAME, Some(NU.TO_OBJ_NAME), false)
     def assignOp(info: ASTNodeInfo): Op = Op(info, "=")
     def inOp(info: ASTNodeInfo): Op = Op(info, "in")
     def paren(expr: Expr): Parenthesized = Parenthesized(expr.info, expr)
@@ -390,7 +390,7 @@ class WithRewriter(program: Program, forTest: Boolean) {
               aoa
             case alpha :: others =>
               val (first, rest) = splitNames(names)
-              NU.unwrapParen(lhs) match {
+              lhs.unwrapParen match {
                 case VarRef(vinfo, id) =>
                   if (first.contains(id.text)) AssignOpApp(vinfo, lhs, op, exprWalk)
                   else {

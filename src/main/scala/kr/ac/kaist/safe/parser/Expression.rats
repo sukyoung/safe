@@ -70,12 +70,12 @@ private transient Expr Conditional =
  */
 private transient Expr LogicalOR =
      a1:LogicalAND a2s:LogicalANDR*
-     { Span span = NodeUtil.span(a1);
+     { Span span = a1.span();
        yyValue = a1;
        for (Tuple2<Op, Expr> pair: a2s.list()) {
            Op op = pair._1();
            Expr right = pair._2();
-           yyValue = new InfixOpApp(NodeUtil.makeASTNodeInfo(NodeUtil.makeSpan(span, NodeUtil.span(right))),
+           yyValue = new InfixOpApp(NodeUtil.makeASTNodeInfo(Span.merge(span, right.span())),
                                     yyValue, op, right);
        }
      };
@@ -91,12 +91,12 @@ private transient Tuple2<Op, Expr> LogicalANDR =
  */
 private transient Expr LogicalAND =
      a1:BitwiseOR a2s:BitwiseORR*
-     { Span span = NodeUtil.span(a1);
+     { Span span = a1.span();
        yyValue = a1;
        for (Tuple2<Op, Expr> pair: a2s.list()) {
            Op op = pair._1();
            Expr right = pair._2();
-           yyValue = new InfixOpApp(NodeUtil.makeASTNodeInfo(NodeUtil.makeSpan(span, NodeUtil.span(right))),
+           yyValue = new InfixOpApp(NodeUtil.makeASTNodeInfo(Span.merge(span, right.span())),
                                     yyValue, op, right);
        }
      };
@@ -112,12 +112,12 @@ private transient Tuple2<Op, Expr> BitwiseORR =
  */
 private transient Expr BitwiseOR =
      a1:BitwiseXOR a2s:BitwiseXORR*
-     { Span span = NodeUtil.span(a1);
+     { Span span = a1.span();
        yyValue = a1;
        for (Tuple2<Op, Expr> pair: a2s.list()) {
            Op op = pair._1();
            Expr right = pair._2();
-           yyValue = new InfixOpApp(NodeUtil.makeASTNodeInfo(NodeUtil.makeSpan(span, NodeUtil.span(right))),
+           yyValue = new InfixOpApp(NodeUtil.makeASTNodeInfo(Span.merge(span, right.span())),
                                     yyValue, op, right);
        }
      };
@@ -133,12 +133,12 @@ private transient Tuple2<Op, Expr> BitwiseXORR =
  */
 private transient Expr BitwiseXOR =
      a1:BitwiseAND a2s:BitwiseANDR*
-     { Span span = NodeUtil.span(a1);
+     { Span span = a1.span();
        yyValue = a1;
        for (Tuple2<Op, Expr> pair: a2s.list()) {
            Op op = pair._1();
            Expr right = pair._2();
-           yyValue = new InfixOpApp(NodeUtil.makeASTNodeInfo(NodeUtil.makeSpan(span, NodeUtil.span(right))),
+           yyValue = new InfixOpApp(NodeUtil.makeASTNodeInfo(Span.merge(span, right.span())),
                                     yyValue, op, right);
        }
      };
@@ -154,12 +154,12 @@ private transient Tuple2<Op, Expr> BitwiseANDR =
  */
 private transient Expr BitwiseAND =
      a1:Equality a2s:EqualityR*
-     { Span span = NodeUtil.span(a1);
+     { Span span = a1.span();
        yyValue = a1;
        for (Tuple2<Op, Expr> pair: a2s.list()) {
            Op op = pair._1();
            Expr right = pair._2();
-           yyValue = new InfixOpApp(NodeUtil.makeASTNodeInfo(NodeUtil.makeSpan(span, NodeUtil.span(right))),
+           yyValue = new InfixOpApp(NodeUtil.makeASTNodeInfo(Span.merge(span, right.span())),
                                     yyValue, op, right);
        }
      };
@@ -178,12 +178,12 @@ private transient Tuple2<Op, Expr> EqualityR =
  */
 private transient Expr Equality =
      a1:Relational a2s:RelationalR*
-     { Span span = NodeUtil.span(a1);
+     { Span span = a1.span();
        yyValue = a1;
        for (Tuple2<Op, Expr> pair: a2s.list()) {
            Op op = pair._1();
            Expr right = pair._2();
-           yyValue = new InfixOpApp(NodeUtil.makeASTNodeInfo(NodeUtil.makeSpan(span, NodeUtil.span(right))),
+           yyValue = new InfixOpApp(NodeUtil.makeASTNodeInfo(Span.merge(span, right.span())),
                                     yyValue, op, right);
        }
      };
@@ -208,10 +208,10 @@ private transient Expr Relational =
        Tuple2<Expr, Op> first = ps.remove(0);
        Expr left = first._1();
        Op op = first._2();
-       Span span = NodeUtil.span(left);
+       Span span = left.span();
        for (Tuple2<Expr, Op> pair: ps) {
            Expr e = pair._1();
-           left = new InfixOpApp(NodeUtil.makeASTNodeInfo(NodeUtil.makeSpan(span, NodeUtil.span(e))),
+           left = new InfixOpApp(NodeUtil.makeASTNodeInfo(Span.merge(span, e.span())),
                                  left, op, e);
            op = pair._2();
        }
@@ -236,10 +236,10 @@ transient Expr Shift =
        Tuple2<Expr, Op> first = ps.remove(0);
        Expr left = first._1();
        Op op = first._2();
-       Span span = NodeUtil.span(left);
+       Span span = left.span();
        for (Tuple2<Expr, Op> pair: ps) {
            Expr e = pair._1();
-           left = new InfixOpApp(NodeUtil.makeASTNodeInfo(NodeUtil.makeSpan(span, NodeUtil.span(e))),
+           left = new InfixOpApp(NodeUtil.makeASTNodeInfo(Span.merge(span, e.span())),
                                  left, op, e);
            op = pair._2();
        }
@@ -263,10 +263,10 @@ private transient Expr Additive =
        Tuple2<Expr, Op> first = ps.remove(0);
        Expr left = first._1();
        Op op = first._2();
-       Span span = NodeUtil.span(left);
+       Span span = left.span();
        for (Tuple2<Expr, Op> pair: ps) {
            Expr e = pair._1();
-           left = new InfixOpApp(NodeUtil.makeASTNodeInfo(NodeUtil.makeSpan(span, NodeUtil.span(e))),
+           left = new InfixOpApp(NodeUtil.makeASTNodeInfo(Span.merge(span, e.span())),
                                  left, op, e);
            op = pair._2();
        }
@@ -291,10 +291,10 @@ private transient Expr Multiplicative =
        Tuple2<Expr, Op> first = ps.remove(0);
        Expr left = first._1();
        Op op = first._2();
-       Span span = NodeUtil.span(left);
+       Span span = left.span();
        for (Tuple2<Expr, Op> pair: ps) {
            Expr e = pair._1();
-           left = new InfixOpApp(NodeUtil.makeASTNodeInfo(NodeUtil.makeSpan(span, NodeUtil.span(e))),
+           left = new InfixOpApp(NodeUtil.makeASTNodeInfo(Span.merge(span, e.span())),
                                  left, op, e);
            op = pair._2();
        }
@@ -413,11 +413,11 @@ constant inline Action<LHS> FunApp =
      w a1:Args
      { yyValue = new Action<LHS>() {
              public LHS run(LHS base) {
-                 SourceLoc loc = NodeUtil.span(base).begin();
+                 SourceLoc loc = base.span().begin();
                  Span last;
-                 if (a1.isEmpty()) last = NodeUtil.span(base);
-                 else last = NodeUtil.span(a1.get(a1.size()-1));
-                 Span span = NodeUtil.makeSpan(loc.fileName(),
+                 if (a1.isEmpty()) last = base.span();
+                 else last = a1.get(a1.size()-1).span();
+                 Span span = new Span(base.span().fileName(),
                                                loc.line(), last.end().line(),
                                                loc.column(), last.end().column()+1,
                                                base.info().span().begin().offset(),
@@ -430,10 +430,10 @@ constant inline Action<LHS> Bracket =
      w opensquare w a1:Expression w closesquare
      { yyValue = new Action<LHS>() {
              public LHS run(LHS base) {
-                 SourceLoc loc = NodeUtil.span(base).begin();
-                 Span span = NodeUtil.makeSpan(loc.fileName(),
+                 SourceLoc loc = base.span().begin();
+                 Span span = new Span(base.span().fileName(),
                                                loc.line(), a1.info().span().end().line(),
-                                               loc.column()+1, NodeUtil.span(a1).end().column()+1,
+                                               loc.column()+1, a1.span().end().column()+1,
                                                base.info().span().begin().offset(),
                                                a1.info().span().end().offset()+1);
                  return new Bracket(NodeUtil.makeASTNodeInfo(span), (LHS)base, a1);
@@ -444,8 +444,8 @@ constant inline Action<LHS> Dot =
      w dot w a1:IdName
      { yyValue = new Action<LHS>() {
              public LHS run(LHS base) {
-                 return new Dot(NodeUtil.makeASTNodeInfo(NodeUtil.makeSpan(NodeUtil.span(base),
-                                                                              NodeUtil.span(a1))),
+                 return new Dot(NodeUtil.makeASTNodeInfo(Span.merge(base.span(),
+                                                                              a1.span())),
                                 (LHS)base, a1);
              }};
      };
@@ -508,10 +508,10 @@ constant inline Action<LHS> MemberBracket =
      w opensquare w a1:Expression w closesquare
      { yyValue = new Action<LHS>() {
              public LHS run(LHS base) {
-                 SourceLoc loc = NodeUtil.span(base).begin();
-                 Span span = NodeUtil.makeSpan(loc.fileName(), loc.line(),
+                 SourceLoc loc = base.span().begin();
+                 Span span = new Span(base.span().fileName(), loc.line(),
                                                a1.info().span().end().line(),
-                                               loc.column()+1, NodeUtil.span(a1).end().column()+1,
+                                               loc.column()+1, a1.span().end().column()+1,
                                                base.info().span().begin().offset(), a1.info().span().end().offset()+1);
                  return new Bracket(NodeUtil.makeASTNodeInfo(span), (LHS)base, a1);
              }};
@@ -521,8 +521,8 @@ constant inline Action<LHS> MemberDot =
      w dot w a1:IdName
      { yyValue = new Action<LHS>() {
              public LHS run(LHS base) {
-                 return new Dot(NodeUtil.makeASTNodeInfo(NodeUtil.makeSpan(NodeUtil.span(base),
-                                                                              NodeUtil.span(a1))),
+                 return new Dot(NodeUtil.makeASTNodeInfo(Span.merge(base.span(),
+                                                                              a1.span())),
                                 (LHS)base, a1);
              }};
      };
@@ -661,7 +661,7 @@ transient Member PropAssign =
        yyValue = new GetProp(info, a1,
                              new Functional(info, nilFds, nilVds,
                                             new SourceElements(info, toList(a2._1()), a2._3()),
-                                            NodeUtil.prop2Id(a1), nilIds, a2._2()));
+                                            a1.toId(), nilIds, a2._2()));
      }
    / <Setter> set w a1:PropName w openparen w a2:Id w closeparen w a3:FunctionBody
      { Span span = createSpan(yyStart,yyCount);
@@ -669,7 +669,7 @@ transient Member PropAssign =
        yyValue = new SetProp(info, a1,
                              new Functional(info, nilFds, nilVds,
                                             new SourceElements(info, toList(a3._1()), a3._3()),
-                                            NodeUtil.prop2Id(a1), toList(list(a2)), a3._2()));
+                                            a1.toId(), toList(list(a2)), a3._2()));
      }
    / <Prop> a1:PropName w colon w a2:Assignment
      { Span span = createSpan(yyStart,yyCount);

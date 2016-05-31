@@ -25,7 +25,7 @@ class Hoister(program: Program) {
 
   lazy val result: Program = {
     UnitWalker.walk(program)
-    NU.simplifyWalker.walk(HoistTopWalker.walk(program))
+    NU.SimplifyWalker.walk(HoistTopWalker.walk(program))
   }
   lazy val excLog: ExcLog = new ExcLog
 
@@ -292,7 +292,7 @@ class Hoister(program: Program) {
           case _ =>
         }
 
-      case fa @ FunApp(info, fun, List(StringLiteral(_, _, str, _))) if (NU.isEval(fun)) =>
+      case fa @ FunApp(info, fun, List(StringLiteral(_, _, str, _))) if (fun.isEval) =>
         Parser.scriptToAST(List(("evalParse", (1, 1), str))) recover {
           case e => excLog.signal(EvalArgSyntaxError(str, fa))
         }
@@ -603,7 +603,7 @@ class Hoister(program: Program) {
     override def walk(node: Stmt): Stmt = node match {
       case VarStmt(info, vds) => stmtUnit(info, hoistVds(vds))
       case ForVar(info, vars, cond, action, body) =>
-        val newInfo = NU.spanInfoAll(vars)
+        val newInfo = ASTNodeInfo(Span.merge(vars, Span()))
         ABlock(
           newInfo,
           List(
@@ -624,7 +624,7 @@ class Hoister(program: Program) {
           false
         )
       case LabelStmt(info, label, ForVar(i, vars, cond, action, body)) =>
-        val newInfo = NU.spanInfoAll(vars)
+        val newInfo = ASTNodeInfo(Span.merge(vars, Span()))
         ABlock(
           newInfo,
           List(

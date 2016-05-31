@@ -75,7 +75,7 @@ object DefaultBoolUtil extends AbsBoolUtil {
         case DefaultBoolFalse => "false"
       }
 
-    def unary_!(): AbsBool = {
+    def unary(): AbsBool = {
       this match {
         case DefaultBoolTop => DefaultBoolTop
         case DefaultBoolBot => DefaultBoolBot

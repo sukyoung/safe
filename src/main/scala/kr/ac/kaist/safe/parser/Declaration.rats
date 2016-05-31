@@ -49,9 +49,8 @@ void closeParser = w EndOfFile
 
 private String UseStrictDirectives =
      yyValue:UseStrictDirective UseStrictDirective+
-     { Span span = createSpan(yyStart,yyCount);
-       System.out.println(span+":");
-       System.out.println("* Warning: you may not use multiple Use Strict Directives.");
+     { // ECMAScript 5.1 Section 14.1
+       excLog.signal(new NoMultipleUseStrict(createSpan(yyStart,yyCount)));
      }
    / yyValue:UseStrictDirective
    ;

@@ -44,7 +44,7 @@ trait AbsBool extends AbsDomain {
   def getSingle: Option[Boolean]
   def gammaOpt: Option[Set[Boolean]]
 
-  def unary_!(): AbsBool
+  def unary(): AbsBool
 
   def <=(that: AbsBool): Boolean
   def </(that: AbsBool): Boolean

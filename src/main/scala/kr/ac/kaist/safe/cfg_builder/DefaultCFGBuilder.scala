@@ -17,9 +17,8 @@ import kr.ac.kaist.safe.errors.ExcLog
 import kr.ac.kaist.safe.errors.error._
 import kr.ac.kaist.safe.errors.warning._
 import kr.ac.kaist.safe.nodes._
-import kr.ac.kaist.safe.cfg_builder.EdgeType._
 import kr.ac.kaist.safe.phase.CFGBuildConfig
-import kr.ac.kaist.safe.util.{ NodeUtil => NU }
+import kr.ac.kaist.safe.util.{ NodeUtil => NU, EJSLogNot, EJSString }
 import kr.ac.kaist.safe.analyzer.domain.Address
 
 // default CFG builder
@@ -27,12 +26,12 @@ class DefaultCFGBuilder(
     ir: IRRoot,
     config: Config,
     cfgConfig: CFGBuildConfig
-) extends CFGBuilder {
+) extends CFGBuilder(ir, config, cfgConfig) {
   ////////////////////////////////////////////////////////////////
   // results
   ////////////////////////////////////////////////////////////////
 
-  val (cfg: CFG, excLog: ExcLog) = init
+  lazy val (cfg: CFG, excLog: ExcLog) = init
 
   ////////////////////////////////////////////////////////////////
   // private global
@@ -74,13 +73,13 @@ class DefaultCFGBuilder(
   private def init: (CFG, ExcLog) = {
     val cvResult = new CapturedVariableCollector(ir, config, cfgConfig)
     catchVarMap = HashSet()
-    captured = cvResult.captured
+    captured = cvResult.result
     cfgIdMap = HashMap()
     uniqueNameCounter = 0
     ir match {
       case IRRoot(_, fds, vds, _) =>
         val globalVars: List[CFGId] = namesOfFunDecls(fds) ++ namesOfVars(vds)
-        val cfg = new CFG(globalVars, ir)
+        val cfg = new CFG(ir, globalVars)
         currentFunc = cfg.globalFunc
         (cfg, cvResult.excLog)
     }
@@ -98,7 +97,7 @@ class DefaultCFGBuilder(
       val (blocks: List[CFGNormalBlock], lmap: LabelMap) = translateStmts(stmts, globalFunc, List(startBlock), HashMap())
 
       cfg.addEdge(blocks, globalFunc.exit)
-      cfg.addEdge(ThrowLabel of lmap toList, globalFunc.exitExc, EdgeExc)
+      cfg.addEdge(ThrowLabel of lmap toList, globalFunc.exitExc, CFGEdgeExc)
       cfg.addEdge(ThrowEndLabel of lmap toList, globalFunc.exitExc)
       cfg.addEdge(AfterCatchLabel of lmap toList, globalFunc.exitExc)
   }
@@ -141,16 +140,16 @@ class DefaultCFGBuilder(
   }
 
   /* translate IRFunctional */
-  private def translateFunctional(stmt: IRStmt, functional: IRFunctional): CFGFunction = functional match {
+  private def translateFunctional(functional: IRFunctional): CFGFunction = functional match {
     case IRFunctional(_, _, name, params, args, fds, vds, body) =>
       val argVars: List[CFGId] = namesOfArgs(args)
       val localVars: List[CFGId] = (namesOfFunDecls(fds) ++ namesOfVars(vds)).filterNot(argVars.contains)
       // TODO: reorder to make argumentsName to the top
       val argumentsName: String = id2cfgId(params(1)).toString
       val nameStr: String = name.originalName
-      val bodyStr: String = NU.getBody(stmt.ast)
+      val bodyStr: String = functional.ast.body
 
-      val newFunc: CFGFunction = cfg.createFunction(argumentsName, argVars, localVars, nameStr, stmt, bodyStr, true)
+      val newFunc: CFGFunction = cfg.createFunction(argumentsName, argVars, localVars, nameStr, functional, bodyStr, true)
       val oldFunc: CFGFunction = currentFunc
       currentFunc = newFunc
 
@@ -162,7 +161,7 @@ class DefaultCFGBuilder(
 
       cfg.addEdge(blocks, newFunc.exit)
       cfg.addEdge(RetLabel of lmap toList, newFunc.exit)
-      cfg.addEdge(ThrowLabel of lmap toList, newFunc.exitExc, EdgeExc)
+      cfg.addEdge(ThrowLabel of lmap toList, newFunc.exitExc, CFGEdgeExc)
       cfg.addEdge(ThrowEndLabel of lmap toList, newFunc.exitExc)
       cfg.addEdge(AfterCatchLabel of lmap toList, newFunc.exitExc)
 
@@ -180,7 +179,7 @@ class DefaultCFGBuilder(
     // println ("[Func] %s".format(fd))
     fd match {
       case IRFunDecl(_, functional) =>
-        val func: CFGFunction = translateFunctional(fd, functional)
+        val func: CFGFunction = translateFunctional(functional)
         block.createInst(CFGFunExpr(func.ir, _, id2cfgId(functional.name), None, func, newProgramAddr, newProgramAddr, None))
         List(block)
     }
@@ -196,7 +195,7 @@ class DefaultCFGBuilder(
     stmt match {
       case IRNoOp(_, desc) =>
         val tailBlock: CFGNormalBlock = getTail(blocks, func)
-        val filename: String = stmt.ast.info.span.end.fileName
+        val filename: String = stmt.ast.info.span.fileName
 
         val block = (desc, filename) match {
           case ("StartOfFile", s) if s.contains("#loading") =>
@@ -218,7 +217,7 @@ class DefaultCFGBuilder(
         excLog.signal(NotHoistedError(fd))
         (blocks, lmap)
       case IRFunExpr(_, lhs, functional) =>
-        val newFunc: CFGFunction = translateFunctional(stmt, functional)
+        val newFunc: CFGFunction = translateFunctional(functional)
         val (addr1, addr2) = (newProgramAddr, newProgramAddr)
         val (nameOpt: Option[CFGId], addrOpt: Option[Address]) = id2cfgId(functional.name) match {
           case id if id.kind == CapturedVar => (Some(id), Some(newProgramAddr))
@@ -250,7 +249,7 @@ class DefaultCFGBuilder(
             /* try body */
             val (trybs: List[CFGNormalBlock], trylmap: LabelMap) = translateStmt(body, func, List(tryBlock), HashMap())
 
-            cfg.addEdge(ThrowLabel of trylmap toList, catchBlock, EdgeExc)
+            cfg.addEdge(ThrowLabel of trylmap toList, catchBlock, CFGEdgeExc)
             cfg.addEdge(ThrowEndLabel of trylmap toList, catchBlock)
             cfg.addEdge(AfterCatchLabel of trylmap toList, catchBlock)
 
@@ -297,7 +296,7 @@ class DefaultCFGBuilder(
                   label match {
                     case ThrowLabel =>
                       cfg.addEdge(AfterCatchLabel of trylmap toList, dupBlock)
-                      cfg.addEdge(bs.toList, dupBlock, EdgeExc)
+                      cfg.addEdge(bs.toList, dupBlock, CFGEdgeExc)
                       lm.updated(ThrowEndLabel, (ThrowEndLabel of lm) ++ bs)
                     case _ =>
                       cfg.addEdge(bs.toList, dupBlock)
@@ -324,7 +323,7 @@ class DefaultCFGBuilder(
             /* try body */
             val (trybs: List[CFGNormalBlock], trylmap: LabelMap) = translateStmt(body, func, List(tryBlock), HashMap())
 
-            cfg.addEdge(ThrowLabel of trylmap toList, catchBlock, EdgeExc)
+            cfg.addEdge(ThrowLabel of trylmap toList, catchBlock, CFGEdgeExc)
             cfg.addEdge(ThrowEndLabel of trylmap toList, catchBlock)
             cfg.addEdge(AfterCatchLabel of trylmap toList, catchBlock)
 
@@ -344,7 +343,7 @@ class DefaultCFGBuilder(
                   label match {
                     case ThrowLabel =>
                       cfg.addEdge(AfterCatchLabel of catchlmap toList, dupBlock)
-                      cfg.addEdge(bs.toList, dupBlock, EdgeExc)
+                      cfg.addEdge(bs.toList, dupBlock, CFGEdgeExc)
                       lm.updated(ThrowEndLabel, (ThrowEndLabel of lm) ++ bs)
                     case _ =>
                       cfg.addEdge(bs.toList, dupBlock)
@@ -456,10 +455,10 @@ class DefaultCFGBuilder(
         /* Insert assert instructions */
         trueBlock.createInst(CFGAssert(cond, _, ir2cfgExpr(cond), true))
         cond match {
-          case IRBin(_, first, op, second) if NU.isAssertOperator(op) =>
-            falseBlock.createInst(CFGAssert(cond, _, CFGBin(ir2cfgExpr(first), NU.transIROp(op), ir2cfgExpr(second)), false))
+          case IRBin(_, first, op, second) if op.isAssertOperator =>
+            falseBlock.createInst(CFGAssert(cond, _, CFGBin(cond, ir2cfgExpr(first), op.kind.trans, ir2cfgExpr(second)), false))
           case _ =>
-            falseBlock.createInst(CFGAssert(cond, _, CFGUn(NU.makeIROp("!"), ir2cfgExpr(cond)), false))
+            falseBlock.createInst(CFGAssert(cond, _, CFGUn(cond, EJSLogNot, ir2cfgExpr(cond)), false))
         }
 
         /* true body */
@@ -519,10 +518,10 @@ class DefaultCFGBuilder(
         /* Insert assert instruction */
         loopBodyBlock.createInst(CFGAssert(cond, _, ir2cfgExpr(cond), true))
         cond match {
-          case IRBin(_, first, op, second) if NU.isAssertOperator(op) =>
-            loopOutBlock.createInst(CFGAssert(cond, _, CFGBin(ir2cfgExpr(first), NU.transIROp(op), ir2cfgExpr(second)), false))
+          case IRBin(_, first, op, second) if op.isAssertOperator =>
+            loopOutBlock.createInst(CFGAssert(cond, _, CFGBin(cond, ir2cfgExpr(first), op.kind.trans, ir2cfgExpr(second)), false))
           case _ =>
-            loopOutBlock.createInst(CFGAssert(cond, _, CFGUn(NU.makeIROp("!"), ir2cfgExpr(cond)), false))
+            loopOutBlock.createInst(CFGAssert(cond, _, CFGUn(cond, EJSLogNot, ir2cfgExpr(cond)), false))
         }
         /* add edge from tail to loop head */
         cfg.addEdge(tailBlock, headBlock)
@@ -551,9 +550,8 @@ class DefaultCFGBuilder(
   private def translateMember(mem: IRMember, block: CFGNormalBlock, lhs: IRId): Unit = {
     mem match {
       case IRField(_, prop, expr) =>
-        val lhsExpr: CFGVarRef = CFGVarRef(id2cfgId(lhs))
-        val indexExpr: CFGString = CFGString(prop.uniqueName)
-        block.createInst(CFGStore(mem, _, lhsExpr, indexExpr, ir2cfgExpr(expr)))
+        val lhsExpr: CFGVarRef = CFGVarRef(lhs, id2cfgId(lhs))
+        block.createInst(CFGStoreStringIdx(mem, _, lhsExpr, EJSString(prop.uniqueName), ir2cfgExpr(expr)))
       case getOrSet =>
         excLog.signal(NotSupportedIRError(getOrSet))
     }
@@ -561,18 +559,16 @@ class DefaultCFGBuilder(
 
   /* elem rule : IRNode x IRExpr x CFGNormalBlock x IRId x Int -> Unit */
   private def translateElement(ir: IRNode, elem: IRExpr, block: CFGNormalBlock, lhs: IRId, index: Int): Unit = {
-    val lhsExpr: CFGExpr = CFGVarRef(id2cfgId(lhs))
-    val str = CFGString(index.toString)
-    block.createInst(CFGStore(ir, _, lhsExpr, str, ir2cfgExpr(elem)))
+    val lhsExpr: CFGExpr = CFGVarRef(lhs, id2cfgId(lhs))
+    block.createInst(CFGStoreStringIdx(ir, _, lhsExpr, EJSString(index.toString), ir2cfgExpr(elem)))
     ()
   }
 
   /* elem rule : IRNode x Double x CFGNormalBlock x IRId x Int -> Unit */
   private def translateDoubleElement(ir: IRNode, elem: Double, block: CFGNormalBlock, lhs: IRId, index: Int): Unit = {
-    val lhsExpr: CFGExpr = CFGVarRef(id2cfgId(lhs))
-    val str = CFGString(index.toString)
-    val num = CFGNumber(elem.toString, elem.doubleValue)
-    block.createInst(CFGStore(ir, _, lhsExpr, str, num))
+    val lhsExpr: CFGExpr = CFGVarRef(lhs, id2cfgId(lhs))
+    val num = CFGVal(elem.toString, elem.doubleValue)
+    block.createInst(CFGStoreStringIdx(ir, _, lhsExpr, EJSString(index.toString), num))
     ()
   }
 
@@ -581,19 +577,16 @@ class DefaultCFGBuilder(
     expr match {
       /* PEI : id lookup */
       case IRLoad(_, obj, index) =>
-        CFGLoad(id2cfgExpr(obj), ir2cfgExpr(index))
+        CFGLoad(expr, id2cfgExpr(obj), ir2cfgExpr(index))
       /* PEI : op \in {instanceof, in}, id lookup */
       case IRBin(_, first, op, second) =>
-        CFGBin(ir2cfgExpr(first), op, ir2cfgExpr(second))
+        CFGBin(expr, ir2cfgExpr(first), op.kind, ir2cfgExpr(second))
       /* PEI : id lookup */
       case IRUn(_, op, expr) =>
-        CFGUn(op, ir2cfgExpr(expr))
-      case id: IRId => CFGVarRef(id2cfgId(id))
-      case IRThis(_) => CFGThis()
-      case IRNumber(_, text, num) => CFGNumber(text, num.doubleValue)
-      case IRString(_, str) => CFGString(str)
-      case IRBool(_, bool) => CFGBool(bool)
-      case IRNull(_) => CFGNull()
+        CFGUn(expr, op.kind, ir2cfgExpr(expr))
+      case id: IRId => CFGVarRef(id, id2cfgId(id))
+      case IRThis(_) => CFGThis(expr)
+      case IRVal(v) => CFGVal(v)
     }
   }
 
@@ -619,13 +612,13 @@ class DefaultCFGBuilder(
       text
     } else {
       uniqueNameCounter += 1
-      text.dropRight(NU.significantBits) + uniqueNameCounter.toString
+      text.dropRight(Config.SIGNIFICANT_BITS) + uniqueNameCounter.toString
     }
     name
   }
 
   // IR id to CFG expr
-  private def id2cfgExpr(id: IRId): CFGExpr = CFGVarRef(id2cfgId(id))
+  private def id2cfgExpr(id: IRId): CFGExpr = CFGVarRef(id, id2cfgId(id))
 
   // IR id list to CFG id list
   private def idList2cfgIdList(id: List[IRId]): List[CFGId] = id.map(id2cfgId)

@@ -12,8 +12,18 @@
 package kr.ac.kaist.safe.nodes
 
 import kr.ac.kaist.safe.util.UIDObject
+import kr.ac.kaist.safe.util.{ Span, SourceLoc }
 
 abstract class Node extends UIDObject {
   def toString(indent: Int): String
   override def toString: String = toString(0)
+
+  // helper for info
+  def span: Span
+  def comment: Option[Comment]
+  def fileName: String
+  def begin: SourceLoc
+  def end: SourceLoc
+  def line: Int
+  def offset: Int
 }

@@ -12,7 +12,8 @@
 package kr.ac.kaist.safe.analyzer
 
 import kr.ac.kaist.safe.analyzer.domain.{ Address, Heap, Loc, Obj }
-import kr.ac.kaist.safe.cfg_builder.{ AddressManager, CFG, FunctionId }
+import kr.ac.kaist.safe.cfg_builder.AddressManager
+import kr.ac.kaist.safe.nodes.{ CFG, FunctionId }
 
 import scala.collection.immutable.HashSet
 

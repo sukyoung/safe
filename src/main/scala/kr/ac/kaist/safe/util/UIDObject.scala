@@ -16,33 +16,18 @@ import kr.ac.kaist.safe.nodes.ASTNode
 // Object with a unique identifier.
 // Every Span, AST node, IR node, and CFG node extends UIDObject.
 class UIDObject {
-  private var uid: Long = next
+  /* LFSR generating 63-bit residues */
+  var uid: Long = {
+    var x = UIDObject.prevUID
+    x *= 2
+    if (x < 0) x ^= 0xb1463923a7c109cdL
+    UIDObject.prevUID = x
+    x
+  }
   override def hashCode: Int = uid.asInstanceOf[Int] ^ (uid >>> 32).asInstanceOf[Int]
+}
 
-  override def toString: String =
-    if (this.isInstanceOf[ASTNode]) {
-      val node = this.asInstanceOf[ASTNode]
-      node.getClass.getSimpleName + " at " + NodeUtil.span(node).begin.at
-    } else super.toString
-
+object UIDObject {
   private val seedUID = 0x7b546b0e12fd2559L
   private var prevUID = seedUID
-
-  /* LFSR generating 63-bit residues */
-  private def next: Long = {
-    this.synchronized {
-      var x: Long = prevUID
-      x = x + x
-      if (x < 0)
-        x = x ^ 0xb1463923a7c109cdL
-      prevUID = x
-      x
-    }
-  }
-
-  def getUID: Long = uid
-
-  def setUID(uid: Long): Unit = {
-    this.uid = uid
-  }
 }

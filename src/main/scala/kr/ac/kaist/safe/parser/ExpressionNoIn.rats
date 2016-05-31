@@ -70,12 +70,12 @@ private transient Expr ConditionalNoIn =
  */
 private transient Expr LogicalORNoIn =
      a1:LogicalANDNoIn a2s:LogicalANDNoInR*
-     { Span span = NodeUtil.span(a1);
+     { Span span = a1.span();
        yyValue = a1;
        for (Tuple2<Op, Expr> pair: a2s.list()) {
            Op op = pair._1();
            Expr right = pair._2();
-           yyValue = new InfixOpApp(NodeUtil.makeASTNodeInfo(NodeUtil.makeSpan(span, NodeUtil.span(right))),
+           yyValue = new InfixOpApp(NodeUtil.makeASTNodeInfo(Span.merge(span, right.span())),
                                     yyValue, op, right);
        }
      };
@@ -91,12 +91,12 @@ private transient Tuple2<Op, Expr> LogicalANDNoInR =
  */
 private transient Expr LogicalANDNoIn =
      a1:BitwiseORNoIn a2s:BitwiseORNoInR*
-     { Span span = NodeUtil.span(a1);
+     { Span span = a1.span();
        yyValue = a1;
        for (Tuple2<Op, Expr> pair: a2s.list()) {
            Op op = pair._1();
            Expr right = pair._2();
-           yyValue = new InfixOpApp(NodeUtil.makeASTNodeInfo(NodeUtil.makeSpan(span, NodeUtil.span(right))),
+           yyValue = new InfixOpApp(NodeUtil.makeASTNodeInfo(Span.merge(span, right.span())),
                                     yyValue, op, right);
        }
      };
@@ -112,12 +112,12 @@ private transient Tuple2<Op, Expr> BitwiseORNoInR =
  */
 private transient Expr BitwiseORNoIn =
      a1:BitwiseXORNoIn a2s:BitwiseXORNoInR*
-     { Span span = NodeUtil.span(a1);
+     { Span span = a1.span();
        yyValue = a1;
        for (Tuple2<Op, Expr> pair: a2s.list()) {
            Op op = pair._1();
            Expr right = pair._2();
-           yyValue = new InfixOpApp(NodeUtil.makeASTNodeInfo(NodeUtil.makeSpan(span, NodeUtil.span(right))),
+           yyValue = new InfixOpApp(NodeUtil.makeASTNodeInfo(Span.merge(span, right.span())),
                                     yyValue, op, right);
        }
      };
@@ -133,12 +133,12 @@ private transient Tuple2<Op, Expr> BitwiseXORNoInR =
  */
 private transient Expr BitwiseXORNoIn =
      a1:BitwiseANDNoIn a2s:BitwiseANDNoInR*
-     { Span span = NodeUtil.span(a1);
+     { Span span = a1.span();
        yyValue = a1;
        for (Tuple2<Op, Expr> pair: a2s.list()) {
            Op op = pair._1();
            Expr right = pair._2();
-           yyValue = new InfixOpApp(NodeUtil.makeASTNodeInfo(NodeUtil.makeSpan(span, NodeUtil.span(right))),
+           yyValue = new InfixOpApp(NodeUtil.makeASTNodeInfo(Span.merge(span, right.span())),
                                     yyValue, op, right);
        }
      };
@@ -154,12 +154,12 @@ private transient Tuple2<Op, Expr> BitwiseANDNoInR =
  */
 private transient Expr BitwiseANDNoIn =
      a1:EqualityNoIn a2s:EqualityNoInR*
-     { Span span = NodeUtil.span(a1);
+     { Span span = a1.span();
        yyValue = a1;
        for (Tuple2<Op, Expr> pair: a2s.list()) {
            Op op = pair._1();
            Expr right = pair._2();
-           yyValue = new InfixOpApp(NodeUtil.makeASTNodeInfo(NodeUtil.makeSpan(span, NodeUtil.span(right))),
+           yyValue = new InfixOpApp(NodeUtil.makeASTNodeInfo(Span.merge(span, right.span())),
                                     yyValue, op, right);
        }
      };
@@ -178,12 +178,12 @@ private transient Tuple2<Op, Expr> EqualityNoInR =
  */
 private transient Expr EqualityNoIn =
      a1:RelationalNoIn a2s:RelationalRNoIn*
-     { Span span = NodeUtil.span(a1);
+     { Span span = a1.span();
        yyValue = a1;
        for (Tuple2<Op, Expr> pair: a2s.list()) {
            Op op = pair._1();
            Expr right = pair._2();
-           yyValue = new InfixOpApp(NodeUtil.makeASTNodeInfo(NodeUtil.makeSpan(span, NodeUtil.span(right))),
+           yyValue = new InfixOpApp(NodeUtil.makeASTNodeInfo(Span.merge(span, right.span())),
                                     yyValue, op, right);
        }
      };
@@ -207,10 +207,10 @@ private transient Expr RelationalNoIn =
        Tuple2<Expr, Op> first = ps.remove(0);
        Expr left = first._1();
        Op op = first._2();
-       Span span = NodeUtil.span(left);
+       Span span = left.span();
        for (Tuple2<Expr, Op> pair: ps) {
            Expr e = pair._1();
-           left = new InfixOpApp(NodeUtil.makeASTNodeInfo(NodeUtil.makeSpan(span, NodeUtil.span(e))),
+           left = new InfixOpApp(NodeUtil.makeASTNodeInfo(Span.merge(span, e.span())),
                                  left, op, e);
            op = pair._2();
        }

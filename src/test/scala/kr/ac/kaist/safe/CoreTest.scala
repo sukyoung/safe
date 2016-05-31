@@ -18,8 +18,7 @@ import scala.io.Source
 import scala.util.{ Try, Success, Failure }
 
 import kr.ac.kaist.safe.util.NodeUtil
-import kr.ac.kaist.safe.nodes.{ Program, IRRoot }
-import kr.ac.kaist.safe.cfg_builder.CFG
+import kr.ac.kaist.safe.nodes.{ Program, IRRoot, CFG }
 import kr.ac.kaist.safe.config.{ Config, ArgParse }
 import kr.ac.kaist.safe.parser.Parser
 import kr.ac.kaist.safe.phase.CFGBuild
@@ -50,11 +49,11 @@ class CoreTest extends FlatSpec {
       case Success(program) =>
         Parser.stringToAST(program.toString(0)) match {
           case Failure(_) => assert(false)
-          case Success(pgm) =>
+          case Success((pgm, _)) =>
             val pretty = pgm.toString(0)
             Parser.stringToAST(pretty) match {
               case Failure(_) => assert(false)
-              case Success(p) =>
+              case Success((p, _)) =>
                 assert(normalized(p.toString(0)) == normalized(pretty))
             }
         }

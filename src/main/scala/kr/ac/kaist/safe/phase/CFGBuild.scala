@@ -15,8 +15,8 @@ import java.io.{ BufferedWriter, FileWriter, IOException }
 import scala.util.{ Try, Success, Failure }
 import kr.ac.kaist.safe.config.{ Config, ConfigOption, OptionKind, BoolOption, NumOption, StrOption }
 import kr.ac.kaist.safe.errors.ExcLog
-import kr.ac.kaist.safe.cfg_builder.{ DefaultCFGBuilder, CFG }
-import kr.ac.kaist.safe.nodes.IRRoot
+import kr.ac.kaist.safe.cfg_builder.DefaultCFGBuilder
+import kr.ac.kaist.safe.nodes.{ IRRoot, CFG }
 import kr.ac.kaist.safe.util.{ NodeUtil, Useful }
 
 // CFGBuild phase struct.
@@ -38,7 +38,7 @@ case class CFGBuild(
 
     // Report errors.
     if (excLog.hasError) {
-      println(NodeUtil.getFileName(ir) + ":")
+      println(ir.fileName + ":")
       println(excLog)
     }
 
