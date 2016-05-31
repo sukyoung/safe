@@ -62,8 +62,8 @@ trait AbsNumber extends AbsDomain {
   def </(that: AbsNumber): Boolean = !(this <= that)
   def +(that: AbsNumber): AbsNumber
   def <>(that: AbsNumber): AbsNumber
-  def ===(that: AbsNumber, absBool: AbsBoolUtil): AbsBool
-  def <(that: AbsNumber, absBool: AbsBoolUtil): AbsBool
+  def isEqualTo(that: AbsNumber, absBool: AbsBoolUtil): AbsBool
+  def isSmallerThan(that: AbsNumber, absBool: AbsBoolUtil): AbsBool
 
   def toBoolean(absBool: AbsBoolUtil): AbsBool
   def isNum(v: Double): Boolean

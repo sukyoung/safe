@@ -16,10 +16,6 @@ import kr.ac.kaist.safe.analyzer.domain.{ Address, Loc, RecencyTag, Recent, Old 
 
 // Used by cfg_builder/DefaultCFGBuilder.scala
 trait AddressManager {
-  lazy val GLOBAL_LOC: Loc = newSystemLoc("Global", Recent)
-  lazy val SINGLE_PURE_LOCAL_LOC: Loc = newSystemLoc("PureLocal", Recent)
-  lazy val COLLAPSED_LOC: Loc = newSystemLoc("Collapsed", Old)
-
   def addrToLoc(addr: Address, recency: RecencyTag): Loc
   def locToAddr(loc: Loc): Address
   def oldifyLoc(loc: Loc): Loc

@@ -203,6 +203,11 @@ class Obj(val map: Map[String, (PropValue, Absent)]) {
     else Obj(this.map - s)
   }
 
+  def -(absStr: AbsString): Obj = {
+    //TODO
+    this
+  }
+
   // absent value is set to AbsentBot because it is strong update.
   def update(x: String, propv: PropValue, exist: Boolean = false): Obj = {
     if (this.isBottom)

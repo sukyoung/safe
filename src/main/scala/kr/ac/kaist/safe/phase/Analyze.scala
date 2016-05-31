@@ -11,7 +11,7 @@
 
 package kr.ac.kaist.safe.phase
 
-import kr.ac.kaist.safe.analyzer.Semantics
+import kr.ac.kaist.safe.analyzer.{ CallContextManager, Semantics }
 import kr.ac.kaist.safe.config.{ BoolOption, Config, ConfigOption, NumOption, OptionKind, StrOption }
 import kr.ac.kaist.safe.cfg_builder.CFG
 import kr.ac.kaist.safe.analyzer.domain._
@@ -35,6 +35,7 @@ case class Analyze(
     //TODO: Below are temporal analyzer main code
     val utils = Utils(analyzeConfig.AbsUndef, analyzeConfig.AbsNull, analyzeConfig.AbsBool, analyzeConfig.AbsNumber, analyzeConfig.AbsString)
     val semantics = new Semantics(cfg, utils, config.addrManager)
+    val callCtxManager = CallContextManager(config.addrManager)
     None
   }
 }
@@ -52,12 +53,14 @@ case class AnalyzeConfig(
     var AbsNull: AbsNullUtil = DefaultNullUtil,
     var AbsBool: AbsBoolUtil = DefaultBoolUtil,
     var AbsNumber: AbsNumberUtil = DefaultNumUtil,
-    var AbsString: AbsStringUtil = new DefaultStrSetUtil(0)
+    var AbsString: AbsStringUtil = new DefaultStrSetUtil(0),
+    var callsiteSensitivity: Int = -1
 ) extends ConfigOption {
   val prefix: String = "analyze:"
   val optMap: Map[String, OptionKind] = Map(
     "verbose" -> BoolOption(() => verbose = true),
     "out" -> StrOption((s: String) => outFile = Some(s)),
-    "maxStrSetSize" -> NumOption((n: Int) => if (n > 0) AbsString = new DefaultStrSetUtil(n))
+    "maxStrSetSize" -> NumOption((n: Int) => if (n > 0) AbsString = new DefaultStrSetUtil(n)),
+    "callsiteSensitivity" -> NumOption((n: Int) => if (n > 0) callsiteSensitivity = n)
   )
 }

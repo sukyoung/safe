@@ -91,7 +91,7 @@ object DefaultNumUtil extends AbsNumberUtil {
         case _ => false
       }
 
-    def <(that: AbsNumber, absBool: AbsBoolUtil): AbsBool = {
+    def isSmallerThan(that: AbsNumber, absBool: AbsBoolUtil): AbsBool = {
       if (this <= DefaultNumBot || that <= DefaultNumBot) absBool.Bot
       else {
         (this.getSingle, that.getSingle) match {
@@ -111,7 +111,7 @@ object DefaultNumUtil extends AbsNumberUtil {
     }
 
     /* abstract operator 'equal to' */
-    def ===(that: AbsNumber, absBool: AbsBoolUtil): AbsBool = {
+    def isEqualTo(that: AbsNumber, absBool: AbsBoolUtil): AbsBool = {
       if (this <= DefaultNumBot || that <= DefaultNumBot)
         absBool.Bot
       else if (this <= DefaultNumNaN || that <= DefaultNumNaN)
@@ -209,7 +209,8 @@ object DefaultNumUtil extends AbsNumberUtil {
         case DefaultNumUIntConst(n) => absString.alpha(n.toInt.toString)
         case DefaultNumNUIntConst(n) if n == n.toInt => absString.alpha(n.toInt.toString)
         case DefaultNumNUIntConst(n) => absString.alpha(n.toString)
-        case _ => absString.Bot
+        case DefaultNumBot => absString.Bot
+        case _ => absString.NumStr
       }
     }
 

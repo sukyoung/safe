@@ -111,9 +111,10 @@ object DefaultBoolUtil extends AbsBoolUtil {
     def isConcrete: Boolean = this == DefaultBoolTrue || this == DefaultBoolFalse
     def toAbsString(absString: AbsStringUtil): AbsString =
       this match {
+        case DefaultBoolTop => absString.OtherStr
         case DefaultBoolTrue => absString.alpha("true")
         case DefaultBoolFalse => absString.alpha("false")
-        case _ => absString.Bot
+        case DefaultBoolBot => absString.Bot
       }
   }
   case object DefaultBoolTop extends DefaultBool
