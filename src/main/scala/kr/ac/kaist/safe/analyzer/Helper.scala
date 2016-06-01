@@ -13,8 +13,8 @@ package kr.ac.kaist.safe.analyzer
 
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.cfg_builder.{ AddressManager }
-import kr.ac.kaist.safe.nodes._
-
+import kr.ac.kaist.safe.nodes.{ CapturedCatchVar, CapturedVar, GlobalVar, PureLocalVar, CFGExpr, CFGId, FunctionId }
+import scala.util.Try
 import scala.collection.immutable.HashSet
 
 case class Helper(utils: Utils, addrManager: AddressManager, predefLoc: PredefLoc) {
@@ -696,11 +696,7 @@ case class Helper(utils: Utils, addrManager: AddressManager, predefLoc: PredefLo
           val strN = str.trim match {
             case "" => absNum.alpha(0)
             case s if isHex(s) => absNum.alpha((s + "p0").toDouble)
-            case s => try {
-              absNum.alpha(s.toDouble)
-            } catch {
-              case ne: NumberFormatException => absNum.NaN
-            }
+            case s => Try(absNum.alpha(s.toDouble)).getOrElse(absNum.NaN)
           }
           absN + strN
         })
