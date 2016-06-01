@@ -830,7 +830,7 @@ class Semantics(cfg: CFG, utils: Utils, addressManager: AddressManager) {
                 val locSet5 = locSet2.filter((l) => utils.absBool.False <= helper.hasInstance(st.heap, l))
                 val b1 = locSet1.foldLeft[Value](utils.ValueBot)((tmpVal1, loc1) => {
                   locSet4.foldLeft[Value](tmpVal1)((tmpVal2, loc2) =>
-                    tmpVal2 + helper.inherit(st.heap, loc1, loc2))
+                    tmpVal2 + helper.inherit(st.heap, loc1, loc2, operator.bopSEq))
                 })
                 val pv2 =
                   if (!v1.pvalue.isBottom && !locSet4.isEmpty) utils.PValueBot.copyWith(utils.absBool.False)

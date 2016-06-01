@@ -12,7 +12,7 @@
 package kr.ac.kaist.safe.analyzer
 
 import kr.ac.kaist.safe.analyzer.domain._
-import kr.ac.kaist.safe.cfg_builder.{ AddressManager }
+import kr.ac.kaist.safe.cfg_builder.AddressManager
 import kr.ac.kaist.safe.nodes.{ CapturedCatchVar, CapturedVar, GlobalVar, PureLocalVar, CFGExpr, CFGId, FunctionId }
 import scala.util.Try
 import scala.collection.immutable.HashSet
@@ -170,12 +170,21 @@ case class Helper(utils: Utils, addrManager: AddressManager, predefLoc: PredefLo
     b1 + b2
   }
 
-  def hasInstance(h: Heap, loc: Loc): AbsBool = utils.absBool.Bot
+  def hasInstance(h: Heap, loc: Loc): AbsBool = {
+    val isDomIn = h.getOrElse(loc, utils.ObjBot).domIn("@hasinstance", utils.absBool)
+    val b1 =
+      if (utils.absBool.True <= isDomIn) utils.absBool.True
+      else utils.absBool.Bot
+    val b2 =
+      if (utils.absBool.False <= isDomIn) utils.absBool.False
+      else utils.absBool.Bot
+    b1 + b2
+  }
 
   def hasProperty(h: Heap, loc: Loc, absStr: AbsString): AbsBool = {
     var visited = LocSetEmpty
     def visit(currentLoc: Loc): AbsBool = {
-      if (visited(currentLoc)) utils.absBool.Bot
+      if (visited.contains(currentLoc)) utils.absBool.Bot
       else {
         visited += currentLoc
         val test = hasOwnProperty(h, currentLoc, absStr)
@@ -204,7 +213,35 @@ case class Helper(utils: Utils, addrManager: AddressManager, predefLoc: PredefLo
     h.getOrElse(loc, utils.ObjBot).domIn(absStr, utils.absBool)
   }
 
-  def inherit(h: Heap, loc1: Loc, loc2: Loc): Value = utils.ValueBot
+  def inherit(h: Heap, loc1: Loc, loc2: Loc, bopSEq: (Value, Value) => Value): Value = {
+    var visited = LocSetEmpty
+    def iter(h: Heap, l1: Loc, l2: Loc): Value = {
+      if (visited.contains(l1)) utils.ValueBot
+      else {
+        visited += l1
+        val locVal1 = Value(utils.PValueBot, HashSet(l1))
+        val locVal2 = Value(utils.PValueBot, HashSet(l2))
+        val eqVal = bopSEq(locVal1, locVal2)
+        val boolBotVal = Value(utils.PValueBot.copyWith(utils.absBool.Bot))
+        val boolTrueVal = Value(utils.PValueBot.copyWith(utils.absBool.True))
+        val boolFalseVal = Value(utils.PValueBot.copyWith(utils.absBool.False))
+        val v1 =
+          if (utils.absBool.True <= eqVal.pvalue.boolval) boolTrueVal
+          else boolBotVal
+        val v2 = boolBotVal
+        if (utils.absBool.False <= eqVal.pvalue.boolval) {
+          val protoVal = h.getOrElse(l1, utils.ObjBot).getOrElse("@proto", utils.PropValueBot).objval.value
+          val v1 =
+            if (!protoVal.pvalue.nullval.isBottom) boolFalseVal
+            else boolBotVal
+          v1 + protoVal.locset.foldLeft(utils.ValueBot)((tmpVal, protoLoc) => tmpVal + iter(h, protoLoc, l2))
+        } else boolBotVal
+        v1 + v2
+      }
+    }
+
+    iter(h, loc1, loc1)
+  }
 
   def isArray(h: Heap, loc: Loc): AbsBool = {
     val classNamePropV = h.getOrElse(loc, utils.ObjBot).getOrElse("@class", utils.PropValueBot)
@@ -250,13 +287,86 @@ case class Helper(utils: Utils, addrManager: AddressManager, predefLoc: PredefLo
 
   def isCallable(h: Heap, value: Value): AbsBool = utils.absBool.Bot
 
-  def isObject(h: Heap, loc: Loc): AbsBool = utils.absBool.Bot
+  def isObject(h: Heap, loc: Loc): AbsBool = {
+    h.getOrElse(loc, utils.ObjBot).domIn("@class", utils.absBool)
+  }
 
-  def lookup(h: Heap, id: CFGId): (Value, Set[Exception]) = (utils.ValueBot, HashSet[Exception]())
+  def lookup(h: Heap, id: CFGId): (Value, Set[Exception]) = {
+    val x = id.text
+    val localObj = h.getOrElse(predefLoc.SINGLE_PURE_LOCAL_LOC, utils.ObjBot)
+    id.kind match {
+      case PureLocalVar => (localObj.getOrElse(x, utils.PropValueBot).objval.value, ExceptionSetEmpty)
+      case CapturedVar =>
+        val envLocSet = localObj.getOrElse("@env", utils.PropValueBot).objval.value.locset
+        val value = envLocSet.foldLeft(utils.ValueBot)((tmpVal, envLoc) => {
+          tmpVal + lookupL(h, envLoc, x)
+        })
+        (value, ExceptionSetEmpty)
+      case CapturedCatchVar =>
+        val collapsedObj = h.getOrElse(predefLoc.COLLAPSED_LOC, utils.ObjBot)
+        (collapsedObj.getOrElse(x, utils.PropValueBot).objval.value, ExceptionSetEmpty)
+      case GlobalVar => lookupG(h, x)
+    }
+  }
 
-  def lookupG(h: Heap, x: String): (Value, Set[Exception]) = (utils.ValueBot, HashSet[Exception]())
+  def lookupG(h: Heap, x: String): (Value, Set[Exception]) = {
+    if (h.domIn(predefLoc.GLOBAL_LOC)) {
+      val globalObj = h.getOrElse(predefLoc.GLOBAL_LOC, utils.ObjBot)
+      val v1 =
+        if (utils.absBool.True <= globalObj.domIn(x, utils.absBool))
+          globalObj.getOrElse(x, utils.PropValueBot).objval.value
+        else
+          utils.ValueBot
+      val protoLocSet = globalObj.getOrElse("@proto", utils.PropValueBot).objval.value.locset
+      val (v2, excSet) =
+        if (utils.absBool.False <= globalObj.domIn(x, utils.absBool)) {
+          val excSet = protoLocSet.foldLeft(ExceptionSetEmpty)((excSet, protoLoc) => {
+            if (utils.absBool.False <= hasProperty(h, protoLoc, utils.absString.alpha(x))) {
+              excSet + ReferenceError
+            } else {
+              excSet
+            }
+          })
+          val v3 = protoLocSet.foldLeft(utils.ValueBot)((tmpVal, protoLoc) => {
+            if (utils.absBool.True <= hasProperty(h, protoLoc, utils.absString.alpha(x))) {
+              tmpVal + proto(h, protoLoc, utils.absString.alpha(x))
+            } else {
+              tmpVal
+            }
+          })
+          (v3, excSet)
+        } else {
+          (utils.ValueBot, ExceptionSetEmpty)
+        }
+      (v1 + v2, excSet)
+    } else {
+      (utils.ValueBot, ExceptionSetEmpty)
+    }
+  }
 
-  def lookupL(h: Heap, loc: Loc, x: String): Value = utils.ValueBot
+  def lookupL(h: Heap, loc: Loc, x: String): Value = {
+    var visited = LocSetEmpty
+    def visit(l: Loc): Value = {
+      if (visited.contains(l)) utils.ValueBot
+      else {
+        visited += l
+        val env = h.getOrElse(l, utils.ObjBot)
+        val isDomIn = env.domIn(x, utils.absBool)
+        val v1 =
+          if (utils.absBool.True <= isDomIn) env.getOrElse(x, utils.PropValueBot).objval.value
+          else utils.ValueBot
+        val v2 =
+          if (utils.absBool.False <= isDomIn) {
+            val outerLocSet = env.getOrElse("@outer", utils.PropValueBot).objval.value.locset
+            outerLocSet.foldLeft(utils.ValueBot)((tmpVal, outerLoc) => tmpVal + visit(outerLoc))
+          } else {
+            utils.ValueBot
+          }
+        v1 + v2
+      }
+    }
+    visit(loc)
+  }
 
   def lookupBase(h: Heap, id: CFGId): Set[Loc] = {
     val x = id.text
@@ -524,7 +634,7 @@ case class Helper(utils: Utils, addrManager: AddressManager, predefLoc: PredefLo
     var visited = LocSetEmpty
 
     def visit(l: Loc): Set[Loc] = {
-      if (visited(l)) LocSetEmpty
+      if (visited.contains(l)) LocSetEmpty
       else {
         visited += l
         val obj = h.getOrElse(l, utils.ObjBot)
@@ -707,7 +817,14 @@ case class Helper(utils: Utils, addrManager: AddressManager, predefLoc: PredefLo
     pv1 + pv2 + pv3 + pv4 + pv5
   }
 
-  def toString(pvalue: PValue): AbsString = utils.absString.Bot
+  def toString(pvalue: PValue): AbsString = {
+    val pv1 = pvalue.undefval.toAbsString(utils.absString)
+    val pv2 = pvalue.nullval.toAbsString(utils.absString)
+    val pv3 = pvalue.boolval.toAbsString(utils.absString)
+    val pv4 = pvalue.numval.toAbsString(utils.absString)
+    val pv5 = pvalue.strval
+    pv1 + pv2 + pv3 + pv4 + pv5
+  }
 
   def toStringSet(pvalue: PValue): Set[AbsString] = {
     var set = HashSet[AbsString]()
@@ -945,7 +1062,35 @@ case class Helper(utils: Utils, addrManager: AddressManager, predefLoc: PredefLo
     absStr1 + absStr2 + absStr3 + absStr4 + absStr5
   }
 
-  def typeTag(h: Heap, value: Value): AbsString = utils.absString.Bot
+  def typeTag(h: Heap, value: Value): AbsString = {
+    val s1 =
+      if (!value.pvalue.undefval.isBottom) utils.absString.alpha("undefined")
+      else utils.absString.Bot
+    val s2 =
+      if (!value.pvalue.nullval.isBottom) utils.absString.alpha("object") //TODO: check null type?
+      else utils.absString.Bot
+    val s3 =
+      if (!value.pvalue.numval.isBottom) utils.absString.alpha("number")
+      else utils.absString.Bot
+    val s4 =
+      if (!value.pvalue.boolval.isBottom) utils.absString.alpha("boolean")
+      else utils.absString.Bot
+    val s5 =
+      if (!value.pvalue.strval.isBottom) utils.absString.alpha("string")
+      else utils.absString.Bot
+
+    val isCallableLocSet = value.locset.foldLeft(utils.absBool.Bot)((tmpAbsB, l) => tmpAbsB + isCallable(h, l))
+    val s6 =
+      if (!value.locset.isEmpty && (utils.absBool.False <= isCallableLocSet))
+        utils.absString.alpha("object")
+      else utils.absString.Bot
+    val s7 =
+      if (!value.locset.isEmpty && (utils.absBool.True <= isCallableLocSet))
+        utils.absString.alpha("function")
+      else utils.absString.Bot
+
+    s1 + s2 + s3 + s4 + s5 + s6 + s7
+  }
 
   def validity(expr: CFGExpr, st: State): Boolean = false
 
