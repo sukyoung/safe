@@ -16,6 +16,7 @@ import kr.ac.kaist.safe.errors.error._
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.cfg_builder._
 import kr.ac.kaist.safe.nodes._
+import kr.ac.kaist.safe.util._
 
 import scala.collection.immutable.{ HashMap, HashSet }
 
@@ -770,14 +771,130 @@ class Semantics(cfg: CFG, utils: Utils, addressManager: AddressManager) {
     }
   }
 
-  def V(e: CFGExpr, s: State): (Value, Set[Exception]) = (utils.ValueBot, ExceptionSetEmpty)
+  def V(expr: CFGExpr, st: State): (Value, Set[Exception]) = {
+    expr match {
+      case CFGVarRef(ir, id) => helper.lookup(st.heap, id)
+      case CFGLoad(ir, obj, index) => {
+        val (objV, _) = V(obj, st)
+        val objLocSet = objV.locset
+        val (idxV, idxExcSet) = V(index, st)
+        val absStrSet =
+          if (!idxV.isBottom) helper.toStringSet(helper.toPrimitiveBetter(st.heap, idxV))
+          else HashSet[AbsString]()
+        val v1 = objLocSet.foldLeft(utils.ValueBot)((tmpVal1, loc) => {
+          absStrSet.foldLeft(tmpVal1)((tmpVal2, absStr) => {
+            tmpVal2 + helper.proto(st.heap, loc, absStr)
+          })
+        })
+        (v1, idxExcSet)
+      }
+      case CFGThis(ir) =>
+        val localObj = st.heap.getOrElse(predefLoc.SINGLE_PURE_LOCAL_LOC, utils.ObjBot)
+        val thisLocSet = localObj.getOrElse("@this", utils.PropValueBot).objval.value.locset
+        (Value(utils.PValueBot, thisLocSet), ExceptionSetEmpty)
+      case CFGBin(ir, expr1, op, expr2) => {
+        val (v1, excSet1) = V(expr1, st)
+        val (v2, excSet2) = V(expr2, st)
+        (v1, v2) match {
+          case _ if v1.isBottom => (utils.ValueBot, excSet1)
+          case _ if v2.isBottom => (utils.ValueBot, excSet1 ++ excSet2)
+          case _ =>
+            op.name match {
+              case "|" => (operator.bopBitOr(v1, v2), excSet1 ++ excSet2)
+              case "&" => (operator.bopBitAnd(v1, v2), excSet1 ++ excSet2)
+              case "^" => (operator.bopBitXor(v1, v2), excSet1 ++ excSet2)
+              case "<<" => (operator.bopLShift(v1, v2), excSet1 ++ excSet2)
+              case ">>" => (operator.bopRShift(v1, v2), excSet1 ++ excSet2)
+              case ">>>" => (operator.bopURShift(v1, v2), excSet1 ++ excSet2)
+              case "+" => (operator.bopPlus(v1, v2), excSet1 ++ excSet2)
+              case "-" => (operator.bopMinus(v1, v2), excSet1 ++ excSet2)
+              case "*" => (operator.bopMul(v1, v2), excSet1 ++ excSet2)
+              case "/" => (operator.bopDiv(v1, v2), excSet1 ++ excSet2)
+              case "%" => (operator.bopMod(v1, v2), excSet1 ++ excSet2)
+              case "==" => (operator.bopEqBetter(st.heap, v1, v2), excSet1 ++ excSet2)
+              case "!=" => (operator.bopNeq(v1, v2), excSet1 ++ excSet2)
+              case "===" => (operator.bopSEq(v1, v2), excSet1 ++ excSet2)
+              case "!==" => (operator.bopSNeq(v1, v2), excSet1 ++ excSet2)
+              case "<" => (operator.bopLess(v1, v2), excSet1 ++ excSet2)
+              case ">" => (operator.bopGreater(v1, v2), excSet1 ++ excSet2)
+              case "<=" => (operator.bopLessEq(v1, v2), excSet1 ++ excSet2)
+              case ">=" => (operator.bopGreaterEq(v1, v2), excSet1 ++ excSet2)
+              case "instanceof" =>
+                val locSet1 = v1.locset
+                val locSet2 = v2.locset
+                val locSet3 = locSet2.filter((l) => utils.absBool.True <= helper.hasInstance(st.heap, l))
+                val protoVal = locSet3.foldLeft(utils.ValueBot)((v, l) => {
+                  v + helper.proto(st.heap, l, utils.absString.alpha("prototype"))
+                })
+                val locSet4 = protoVal.locset
+                val locSet5 = locSet2.filter((l) => utils.absBool.False <= helper.hasInstance(st.heap, l))
+                val b1 = locSet1.foldLeft[Value](utils.ValueBot)((tmpVal1, loc1) => {
+                  locSet4.foldLeft[Value](tmpVal1)((tmpVal2, loc2) =>
+                    tmpVal2 + helper.inherit(st.heap, loc1, loc2))
+                })
+                val pv2 =
+                  if (!v1.pvalue.isBottom && !locSet4.isEmpty) utils.PValueBot.copyWith(utils.absBool.False)
+                  else utils.PValueBot.copyWith(utils.absBool.Bot)
+                val b2 = Value(pv2)
+                val excSet3 =
+                  if (!v2.pvalue.isBottom || !locSet5.isEmpty || !protoVal.pvalue.isBottom)
+                    HashSet(TypeError)
+                  else
+                    ExceptionSetEmpty
+                val b = b1 + b2
+                val excSet = excSet1 ++ excSet2 ++ excSet3
+                (b, excSet)
+              case "in" => {
+                val str = helper.toString(helper.toPrimitiveBetter(st.heap, v1))
+                val absB = v2.locset.foldLeft(utils.absBool.Bot)((tmpAbsB, loc) => {
+                  tmpAbsB + helper.hasProperty(st.heap, loc, str)
+                })
+                val b = Value(utils.PValueBot.copyWith(absB))
+                val excSet3 =
+                  if (!v2.pvalue.isBottom) HashSet(TypeError)
+                  else ExceptionSetEmpty
+                val excSet = excSet1 ++ excSet2 ++ excSet3
+                (b, excSet)
+              }
+            }
+        }
+      }
+      case CFGUn(ir, op, expr) => {
+        val (v, excSet) = V(expr, st)
+        op.name match {
+          case "void" => (operator.uVoid(v), excSet)
+          case "+" => (operator.uopPlus(v), excSet)
+          case "-" => (operator.uopMinusBetter(st.heap, v), excSet)
+          case "~" => (operator.uopBitNeg(v), excSet)
+          case "!" => (operator.uopNeg(v), excSet)
+          case "typeof" =>
+            expr match {
+              case CFGVarRef(_, x) =>
+                val absStr1 = helper.typeTag(st.heap, v)
+                val absStr2 =
+                  if (excSet.contains(ReferenceError)) utils.absString.alpha("undefined")
+                  else utils.absString.Bot
+                val absStrPV = utils.PValueBot.copyWith(absStr1 + absStr2)
+                (Value(absStrPV), ExceptionSetEmpty)
+              case _ =>
+                val absStrPV = utils.PValueBot.copyWith(helper.typeTag(st.heap, v))
+                (Value(absStrPV), excSet)
+            }
+        }
+      }
+      case CFGVal(ejsVal) =>
+        val pv = ejsVal match {
+          case EJSNumber(_, num) => utils.PValueBot.copyWith(utils.absNumber.alpha(num))
+          case EJSString(str) => utils.PValueBot.copyWith(utils.absString.alpha(str))
+          case EJSBool(bool) => utils.PValueBot.copyWith(utils.absBool.alpha(bool))
+          case EJSNull => utils.PValueBot.copyWith(utils.absNull.Top)
+          case EJSUndef => utils.PValueBot.copyWith(utils.absUndef.Top)
+        }
+        (Value(pv), ExceptionSetEmpty)
+    }
+  }
 
   def B(expr: CFGExpr, s: State, se: State, inst: CFGInst, cfg: CFG, cp: ControlPoint): (State, State) = {
     (State.Bot, State.Bot)
   }
-}
-
-case class Operator(utils: Utils) { //TODO
-  def ToUInt32(v: Value): AbsNumber = utils.absNumber.Bot
-  def bopPlus(left: Value, right: Value): Value = utils.ValueBot
 }
