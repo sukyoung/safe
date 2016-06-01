@@ -945,7 +945,7 @@ case class Helper(utils: Utils, addrManager: AddressManager, predefLoc: PredefLo
     absStr1 + absStr2 + absStr3 + absStr4 + absStr5
   }
 
-  def typTag(h: Heap, value: Value): AbsString = utils.absString.Bot
+  def typeTag(h: Heap, value: Value): AbsString = utils.absString.Bot
 
   def validity(expr: CFGExpr, st: State): Boolean = false
 
