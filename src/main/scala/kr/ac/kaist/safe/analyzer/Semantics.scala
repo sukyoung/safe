@@ -24,7 +24,7 @@ class Semantics(cfg: CFG, utils: Utils, addressManager: AddressManager) {
   lazy val excLog: ExcLog = new ExcLog
   val predefLoc: PredefLoc = PredefLoc(addressManager)
   val helper: Helper = Helper(utils, addressManager, predefLoc)
-  val operator: Operator = Operator(utils)
+  val operator: Operator = Operator(helper)
 
   // Interprocedural edges
   var ipSuccMap: Map[ControlPoint, Map[ControlPoint, (Context, Obj)]] = HashMap[ControlPoint, Map[ControlPoint, (Context, Obj)]]()
@@ -346,14 +346,14 @@ class Semantics(cfg: CFG, utils: Utils, addressManager: AddressManager) {
                     if (utils.absString.alpha("length") <= absStr) {
                       val lenPropV = st.heap.getOrElse(l, utils.ObjBot).getOrElse("length", utils.PropValueBot)
                       val nOldLen = lenPropV.objval.value.pvalue.numval
-                      val nNewLen = operator.ToUInt32(vRhs)
+                      val nNewLen = operator.toUInt32(vRhs)
                       val numberPV = helper.objToPrimitive(vRhs.locset, "Number")
                       val nValue = helper.toNumber(vRhs.pvalue) + helper.toNumber(numberPV)
                       val bCanPut = helper.canPut(st.heap, l, utils.absString.alpha("length"))
 
                       val arrLengthHeap2 =
-                        if ((absTrue <= nOldLen.isSmallerThan(nNewLen, utils.absBool)
-                          || absTrue <= nOldLen.isEqualTo(nNewLen, utils.absBool))
+                        if ((absTrue <= (nOldLen < (nNewLen, utils.absBool))
+                          || absTrue <= (nOldLen === (nNewLen, utils.absBool)))
                           && (absTrue <= bCanPut))
                           helper.propStore(st.heap, l, utils.absString.alpha("length"), vRhs)
                         else
@@ -364,7 +364,7 @@ class Semantics(cfg: CFG, utils: Utils, addressManager: AddressManager) {
                         else Heap.Bot
 
                       val arrLengthHeap4 =
-                        if ((absTrue <= nNewLen.isSmallerThan(nOldLen, utils.absBool)) && (absTrue <= bCanPut)) {
+                        if ((absTrue <= (nNewLen < (nOldLen, utils.absBool))) && (absTrue <= bCanPut)) {
                           val hi = helper.propStore(st.heap, l, utils.absString.alpha("length"), vRhs)
                           (nNewLen.getSingle, nOldLen.getSingle) match {
                             case (Some(n1), Some(n2)) =>
@@ -378,13 +378,13 @@ class Semantics(cfg: CFG, utils: Utils, addressManager: AddressManager) {
                         }
 
                       val arrLengthHeap1 =
-                        if (absTrue <= nValue.isEqualTo(nNewLen, utils.absBool))
+                        if (absTrue <= (nValue === (nNewLen, utils.absBool)))
                           arrLengthHeap2 + arrLengthHeap3 + arrLengthHeap4
                         else
                           Heap.Bot
 
                       val lenExcSet1 =
-                        if (absFalse <= nValue.isEqualTo(nNewLen, utils.absBool)) Set[Exception](RangeError)
+                        if (absFalse <= (nValue === (nNewLen, utils.absBool))) HashSet[Exception](RangeError)
                         else ExceptionSetEmpty
                       (arrLengthHeap1, lenExcSet1)
                     } else {
@@ -397,9 +397,9 @@ class Semantics(cfg: CFG, utils: Utils, addressManager: AddressManager) {
                       val nOldLen = lenPropV.objval.value.pvalue.numval
                       val idxPV = utils.PValueBot.copyWith(absStr)
                       val numPV = utils.PValueBot.copyWith(helper.toNumber(idxPV))
-                      val nIndex = operator.ToUInt32(Value(numPV))
-                      val bGtEq = absTrue <= nOldLen.isSmallerThan(nIndex, utils.absBool) ||
-                        absTrue <= nOldLen.isEqualTo(nIndex, utils.absBool)
+                      val nIndex = operator.toUInt32(Value(numPV))
+                      val bGtEq = absTrue <= (nOldLen < (nIndex, utils.absBool)) ||
+                        absTrue <= (nOldLen === (nIndex, utils.absBool))
                       val bCanPutLen = helper.canPut(st.heap, l, utils.absString.alpha("length"))
                       // 4.b
                       val arrIndexHeap1 =
@@ -407,7 +407,7 @@ class Semantics(cfg: CFG, utils: Utils, addressManager: AddressManager) {
                         else Heap.Bot
                       // 4.c
                       val arrIndexHeap2 =
-                        if (absTrue <= nIndex.isSmallerThan(nOldLen, utils.absBool))
+                        if (absTrue <= (nIndex < (nOldLen, utils.absBool)))
                           helper.propStore(st.heap, l, absStr, vRhs)
                         else Heap.Bot
                       // 4.e

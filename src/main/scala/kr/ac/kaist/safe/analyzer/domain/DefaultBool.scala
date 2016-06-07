@@ -67,6 +67,14 @@ object DefaultBoolUtil extends AbsBoolUtil {
       }
     }
 
+    def negate: AbsBool = {
+      this match {
+        case DefaultBoolTrue => DefaultBoolFalse
+        case DefaultBoolFalse => DefaultBoolTrue
+        case _ => this
+      }
+    }
+
     override def toString: String =
       this match {
         case DefaultBoolTop => "Bool"

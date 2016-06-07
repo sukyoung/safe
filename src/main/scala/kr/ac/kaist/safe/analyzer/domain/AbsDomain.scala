@@ -51,6 +51,8 @@ trait AbsBool extends AbsDomain {
   def +(that: AbsBool): AbsBool
   def <>(that: AbsBool): AbsBool
   def ===(that: AbsBool, absBool: AbsBoolUtil): AbsBool
+
+  def negate: AbsBool
 }
 
 trait AbsNumber extends AbsDomain {
@@ -62,8 +64,8 @@ trait AbsNumber extends AbsDomain {
   def </(that: AbsNumber): Boolean = !(this <= that)
   def +(that: AbsNumber): AbsNumber
   def <>(that: AbsNumber): AbsNumber
-  def isEqualTo(that: AbsNumber, absBool: AbsBoolUtil): AbsBool
-  def isSmallerThan(that: AbsNumber, absBool: AbsBoolUtil): AbsBool
+  def ===(that: AbsNumber, absBool: AbsBoolUtil): AbsBool
+  def <(that: AbsNumber, absBool: AbsBoolUtil): AbsBool
 
   def toBoolean(absBool: AbsBoolUtil): AbsBool
   def isNum(v: Double): Boolean
@@ -77,7 +79,22 @@ trait AbsNumber extends AbsDomain {
   def isUIntAll: Boolean
   def isUInt: Boolean
   def isUIntOrBot: Boolean
+  def isNUInt: Boolean
   def isNaN: Boolean
+
+  def negate: AbsNumber
+  def bitNegate: AbsNumber
+  def bitOr(that: AbsNumber): AbsNumber
+  def bitAnd(that: AbsNumber): AbsNumber
+  def bitXor(that: AbsNumber): AbsNumber
+  def bitLShift(shift: AbsNumber): AbsNumber
+  def bitRShift(shift: AbsNumber): AbsNumber
+  def bitURShift(shift: AbsNumber): AbsNumber
+  def add(that: AbsNumber): AbsNumber
+  def sub(that: AbsNumber): AbsNumber
+  def mul(that: AbsNumber): AbsNumber
+  def div(that: AbsNumber): AbsNumber
+  def mod(that: AbsNumber): AbsNumber
 }
 
 trait AbsString extends AbsDomain {
@@ -90,6 +107,7 @@ trait AbsString extends AbsDomain {
   def +(that: AbsString): AbsString
   def <>(that: AbsString): AbsString
   def ===(that: AbsString, absBool: AbsBoolUtil): AbsBool
+  def <(that: AbsString, absBool: AbsBoolUtil): AbsBool
 
   def trim: AbsString
   def concat(that: AbsString): AbsString

@@ -910,7 +910,7 @@ case class Helper(utils: Utils, addrManager: AddressManager, predefLoc: PredefLo
     }
   }
 
-  private def objToPrimitiveBetter(h: Heap, objSet: Set[Loc], hint: String): PValue = {
+  def objToPrimitiveBetter(h: Heap, objSet: Set[Loc], hint: String): PValue = {
     if (objSet.isEmpty) utils.PValueBot
     else {
       hint match {

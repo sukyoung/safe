@@ -159,6 +159,17 @@ class DefaultStrSetUtil(maxSetSize: Int) extends AbsStringUtil {
         }
       }
 
+    def <(that: AbsString, absBool: AbsBoolUtil): AbsBool = {
+      (this, that) match {
+        case (DefaultStrBot, _) | (_, DefaultStrBot) => absBool.Bot
+        case (DefaultStrSet(leftStrSet), DefaultStrSet(rightStrSet)) =>
+          leftStrSet.foldLeft(absBool.Bot)((r1, x) => {
+            r1 + rightStrSet.foldLeft(absBool.Bot)((r2, y) => r2 + absBool.alpha(x < y))
+          })
+        case _ => absBool.Top
+      }
+    }
+
     val whitespace = " \u0009\u000B\u000C\u0020\u00A0\uFEFF"
     def isWhitespace(c: Char): Boolean = {
       if (whitespace.indexOf(c) < 0)
