@@ -22,7 +22,7 @@ object NodeUtil {
   // local mutable (TODO have to handle)
   ////////////////////////////////////////////////////////////////
 
-  var uid = 0
+  var iid = 0
   var nodesPrintId = 0
   var nodesPrintIdEnv: Map[String, String] = HashMap()
   var keepComments = false
@@ -57,9 +57,9 @@ object NodeUtil {
 
   // Names ///////////////////////////////////////////////////////
   // unique name generation
-  def getUId: Int = { uid += 1; uid }
+  def getIId: Int = { iid += 1; iid }
   def freshName(n: String): String =
-    INTERNAL_SYMBOL + n + INTERNAL_SYMBOL + "%013d".format(getUId)
+    INTERNAL_SYMBOL + n + INTERNAL_SYMBOL + "%013d".format(getIId)
   // unique name generation for global names
   def freshGlobalName(n: String): String = GLOBAL_PREFIX + n
   def funexprName(span: Span): String = freshName("funexpr@" + span.toStringWithoutFiles)

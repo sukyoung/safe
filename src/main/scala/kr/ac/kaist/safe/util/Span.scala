@@ -22,7 +22,7 @@ case class Span(
     fileName: String = "defaultSpan",
     begin: SourceLoc = SourceLoc(),
     end: SourceLoc = SourceLoc()
-) extends UIDObject {
+) {
   def addLines(line: Int, offset: Int): Span =
     Span(fileName, begin.addLines(line, offset), end.addLines(line, offset))
 
