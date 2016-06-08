@@ -12,9 +12,14 @@
 package kr.ac.kaist.safe.analyzer.domain
 
 trait AbsDomain {
+  // default gamma function
   def gamma: ConDomain
   override def toString: String
+
+  // convert function
   def toAbsString(absString: AbsStringUtil): AbsString
+  def toAbsBoolean(absBool: AbsBoolUtil): AbsBool
+  def toAbsNumber(absNumber: AbsNumberUtil): AbsNumber
 }
 
 trait AbsUndef extends AbsDomain {
@@ -81,7 +86,6 @@ trait AbsNumber extends AbsDomain {
   def ===(that: AbsNumber, absBool: AbsBoolUtil): AbsBool
   def <(that: AbsNumber, absBool: AbsBoolUtil): AbsBool
 
-  def toBoolean(absBool: AbsBoolUtil): AbsBool
   def isNum(v: Double): Boolean
   def isNum: Boolean
   def isInfinity: Boolean
@@ -129,7 +133,6 @@ trait AbsString extends AbsDomain {
   def ===(that: AbsString, absBool: AbsBoolUtil): AbsBool
   def <(that: AbsString, absBool: AbsBoolUtil): AbsBool
 
-  def toBoolean(absBool: AbsBoolUtil): AbsBool
   def trim: AbsString
   def concat(that: AbsString): AbsString
   def charAt(pos: AbsNumber): AbsString

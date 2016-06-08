@@ -32,6 +32,7 @@ trait Value {
   def typeKinds: String
 
   def isBottom: Boolean
+  def toAbsBoolean(absBool: AbsBoolUtil): AbsBool
 }
 
 case class DefaultValue(pvalue: PValue, locset: Set[Loc]) extends Value {
@@ -104,4 +105,9 @@ case class DefaultValue(pvalue: PValue, locset: Set[Loc]) extends Value {
 
   def isBottom: Boolean =
     this.pvalue.isBottom && this.locset.isEmpty
+
+  def toAbsBoolean(absBool: AbsBoolUtil): AbsBool = {
+    pvalue.toAbsBoolean(absBool) +
+      (if (locset.isEmpty) absBool.Bot else absBool.True)
+  }
 }

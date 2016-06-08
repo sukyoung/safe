@@ -21,6 +21,8 @@ object DefaultNullUtil extends AbsNullUtil {
     def gamma: ConSimple
     override def toString: String
     def toAbsString(absString: AbsStringUtil): AbsString
+    def toAbsBoolean(absBool: AbsBoolUtil): AbsBool
+    def toAbsNumber(absNumber: AbsNumberUtil): AbsNumber
 
     /* AbsUndef Interface */
     def <=(that: AbsNull): Boolean =
@@ -53,11 +55,15 @@ object DefaultNullUtil extends AbsNullUtil {
     val gamma: ConSimple = ConSimpleTop
     override val toString: String = "null"
     def toAbsString(absString: AbsStringUtil): AbsString = absString.alpha("null")
+    def toAbsBoolean(absBool: AbsBoolUtil): AbsBool = absBool.False
+    def toAbsNumber(absNumber: AbsNumberUtil): AbsNumber = absNumber.alpha(+0)
   }
 
   case object DefaultNullBot extends DefaultNull {
     val gamma: ConSimple = ConSimpleBot
     override val toString: String = "Bot"
     def toAbsString(absString: AbsStringUtil): AbsString = absString.Bot
+    def toAbsBoolean(absBool: AbsBoolUtil): AbsBool = absBool.Bot
+    def toAbsNumber(absNumber: AbsNumberUtil): AbsNumber = absNumber.Bot
   }
 }

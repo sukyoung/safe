@@ -348,7 +348,7 @@ class Semantics(cfg: CFG, utils: Utils, addressManager: AddressManager) {
                       val nOldLen = lenPropV.objval.value.pvalue.numval
                       val nNewLen = operator.toUInt32(vRhs)
                       val numberPV = helper.objToPrimitive(vRhs.locset, "Number")
-                      val nValue = helper.toNumber(vRhs.pvalue) + helper.toNumber(numberPV)
+                      val nValue = vRhs.pvalue.toAbsNumber(utils.absNumber) + numberPV.toAbsNumber(utils.absNumber)
                       val bCanPut = helper.canPut(st.heap, l, utils.absString.alpha("length"))
 
                       val arrLengthHeap2 =
@@ -396,7 +396,7 @@ class Semantics(cfg: CFG, utils: Utils, addressManager: AddressManager) {
                       val lenPropV = st.heap.getOrElse(l, utils.ObjBot).getOrElse("length", utils.PropValueBot)
                       val nOldLen = lenPropV.objval.value.pvalue.numval
                       val idxPV = utils.PValueBot.copyWith(absStr)
-                      val numPV = utils.PValueBot.copyWith(helper.toNumber(idxPV))
+                      val numPV = utils.PValueBot.copyWith(idxPV.toAbsNumber(utils.absNumber))
                       val nIndex = operator.toUInt32(Value(numPV))
                       val bGtEq = absTrue <= (nOldLen < (nIndex, utils.absBool)) ||
                         absTrue <= (nOldLen === (nIndex, utils.absBool))
@@ -729,7 +729,7 @@ class Semantics(cfg: CFG, utils: Utils, addressManager: AddressManager) {
             val (h1, ctx1) =
               if (!v.isBottom) {
                 val numPV = helper.toPrimitiveBetter(st.heap, v)
-                val numPV2 = utils.PValueBot.copyWith(helper.toNumber(numPV))
+                val numPV2 = utils.PValueBot.copyWith(numPV.toAbsNumber(utils.absNumber))
                 (helper.varStore(st.heap, lhs, Value(numPV2)), st.context)
               } else {
                 (Heap.Bot, Context.Bot)
@@ -741,7 +741,7 @@ class Semantics(cfg: CFG, utils: Utils, addressManager: AddressManager) {
             val (v, excSet) = V(expr, st)
             val (h1, ctx1) =
               if (!v.isBottom) {
-                val boolPV = utils.PValueBot.copyWith(helper.toBoolean(v))
+                val boolPV = utils.PValueBot.copyWith(v.toAbsBoolean(utils.absBool))
                 (helper.varStore(st.heap, lhs, Value(boolPV)), st.context)
               } else {
                 (Heap.Bot, Context.Bot)
@@ -845,7 +845,7 @@ class Semantics(cfg: CFG, utils: Utils, addressManager: AddressManager) {
                 val excSet = excSet1 ++ excSet2 ++ excSet3
                 (b, excSet)
               case "in" => {
-                val str = helper.toString(helper.toPrimitiveBetter(st.heap, v1))
+                val str = helper.toPrimitiveBetter(st.heap, v1).toAbsString(utils.absString)
                 val absB = v2.locset.foldLeft(utils.absBool.Bot)((tmpAbsB, loc) => {
                   tmpAbsB + helper.hasProperty(st.heap, loc, str)
                 })

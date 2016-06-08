@@ -748,64 +748,6 @@ case class Helper(utils: Utils, addrManager: AddressManager, predefLoc: PredefLo
 
   def returnStore(h: Heap, value: Value): Heap = Heap.Bot
 
-  def toBoolean(value: Value): AbsBool = {
-    val bot = utils.absBool.Bot
-    val top = utils.absBool.Top
-    val absTrue = utils.absBool.True
-    val absFalse = utils.absBool.False
-
-    val b1 = value.pvalue.undefval.fold(bot) { _ => absFalse }
-    val b2 = value.pvalue.nullval.fold(bot) { _ => absFalse }
-    val b3 = value.pvalue.boolval
-    val b4 = value.pvalue.numval.toBoolean(utils.absBool)
-    val b5 = value.pvalue.strval.toBoolean(utils.absBool)
-    val b6 = if (value.locset.isEmpty) bot else absTrue
-
-    b1 + b2 + b3 + b4 + b5 + b6
-  }
-
-  def toNumber(pvalue: PValue): AbsNumber = {
-    val absNum = utils.absNumber
-
-    val pv1 = pvalue.undefval.fold(absNum.Bot) { _ => absNum.NaN }
-
-    val pv2 = pvalue.nullval.fold(absNum.Bot) { _ => absNum.alpha(+0) }
-
-    val pv3 = pvalue.boolval.gamma match {
-      case ConSingleBot() => absNum.Bot
-      case ConSingleCon(true) => absNum.alpha(1)
-      case ConSingleCon(false) => absNum.alpha(+0)
-      case ConSingleTop() => absNum.UInt
-    }
-
-    val pv4 = pvalue.numval
-
-    val pv5 = pvalue.strval.gamma match {
-      case ConSetBot() => absNum.Bot
-      case ConSetTop() => absNum.Top
-      case ConSetCon(strSet) =>
-        strSet.foldLeft(absNum.Bot)((absN, str) => {
-          val strN = str.trim match {
-            case "" => absNum.alpha(0)
-            case s if isHex(s) => absNum.alpha((s + "p0").toDouble)
-            case s => Try(absNum.alpha(s.toDouble)).getOrElse(absNum.NaN)
-          }
-          absN + strN
-        })
-    }
-
-    pv1 + pv2 + pv3 + pv4 + pv5
-  }
-
-  def toString(pvalue: PValue): AbsString = {
-    val pv1 = pvalue.undefval.toAbsString(utils.absString)
-    val pv2 = pvalue.nullval.toAbsString(utils.absString)
-    val pv3 = pvalue.boolval.toAbsString(utils.absString)
-    val pv4 = pvalue.numval.toAbsString(utils.absString)
-    val pv5 = pvalue.strval
-    pv1 + pv2 + pv3 + pv4 + pv5
-  }
-
   def toStringSet(pvalue: PValue): Set[AbsString] = {
     var set = HashSet[AbsString]()
 
@@ -879,7 +821,7 @@ case class Helper(utils: Utils, addrManager: AddressManager, predefLoc: PredefLo
     else {
       hint match {
         case "Number" =>
-          utils.PValueBot.copyWith(toNumber(defaultValueNumber(h, objSet)))
+          utils.PValueBot.copyWith(defaultValueNumber(h, objSet).toAbsNumber(utils.absNumber))
         case "String" =>
           utils.PValueBot.copyWith(defaultToString(h, objSet))
       }

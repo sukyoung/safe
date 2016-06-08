@@ -49,6 +49,7 @@ trait AbsNumberUtil {
   val NaturalNumbers: AbsNumber
 
   def alpha(d: Double): AbsNumber
+  def alpha(l: Long): AbsNumber
 }
 
 trait AbsBoolUtil {

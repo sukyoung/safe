@@ -12,6 +12,7 @@
 package kr.ac.kaist.safe.analyzer.domain
 
 import scala.collection.immutable.HashSet
+import scala.util.Try
 
 class DefaultStrSetUtil(maxSetSize: Int) extends AbsStringUtil {
   val Top: AbsString = DefaultStrTop
@@ -58,6 +59,8 @@ class DefaultStrSetUtil(maxSetSize: Int) extends AbsStringUtil {
     def gammaIsAllNums: ConSingle[Boolean]
     override def toString: String
     def toAbsString(absString: AbsStringUtil): AbsString
+    def toAbsBoolean(absBool: AbsBoolUtil): AbsBool
+    def toAbsNumber(absNumber: AbsNumberUtil): AbsNumber
 
     /* AbsNumber Interface */
     def <=(that: AbsString): Boolean =
@@ -150,20 +153,6 @@ class DefaultStrSetUtil(maxSetSize: Int) extends AbsStringUtil {
       lineterminator.indexOf(c) >= 0
     }
     def isWhitespaceOrLineterminator(c: Char): Boolean = isWhitespace(c) || isLineTerminator(c)
-
-    def toBoolean(absBool: AbsBoolUtil): AbsBool =
-      this match {
-        case DefaultStrTop => absBool.Top
-        case DefaultStrBot => absBool.Bot
-        case DefaultStrNum => absBool.True
-        case DefaultStrOther => absBool.Top
-        case DefaultStrSet(v) => v contains "" match {
-          case true if v.size == 1 => absBool.False
-          case true => absBool.Top
-          case false if v.size == 0 => absBool.Bot
-          case false => absBool.True
-        }
-      }
 
     def trim: AbsString =
       this match {
@@ -293,6 +282,8 @@ class DefaultStrSetUtil(maxSetSize: Int) extends AbsStringUtil {
     val gammaIsAllNums: ConSingle[Boolean] = ConSingleTop()
     override val toString: String = "String"
     def toAbsString(absString: AbsStringUtil): AbsString = absString.Top
+    def toAbsBoolean(absBool: AbsBoolUtil): AbsBool = absBool.Top
+    def toAbsNumber(absNumber: AbsNumberUtil): AbsNumber = absNumber.Top
   }
 
   case object DefaultStrBot extends DefaultStringSet {
@@ -302,6 +293,8 @@ class DefaultStrSetUtil(maxSetSize: Int) extends AbsStringUtil {
     override val gammaSimple: ConSimple = ConSimpleBot
     override val toString: String = "Bot"
     def toAbsString(absString: AbsStringUtil): AbsString = absString.Bot
+    def toAbsBoolean(absBool: AbsBoolUtil): AbsBool = absBool.Bot
+    def toAbsNumber(absNumber: AbsNumberUtil): AbsNumber = absNumber.Bot
   }
 
   case object DefaultStrNum extends DefaultStringSet {
@@ -310,6 +303,8 @@ class DefaultStrSetUtil(maxSetSize: Int) extends AbsStringUtil {
     val gammaIsAllNums: ConSingle[Boolean] = ConSingleCon(true)
     override val toString: String = "NumStr"
     def toAbsString(absString: AbsStringUtil): AbsString = absString.NumStr
+    def toAbsBoolean(absBool: AbsBoolUtil): AbsBool = absBool.True
+    def toAbsNumber(absNumber: AbsNumberUtil): AbsNumber = absNumber.Top
   }
 
   case object DefaultStrOther extends DefaultStringSet {
@@ -318,6 +313,8 @@ class DefaultStrSetUtil(maxSetSize: Int) extends AbsStringUtil {
     val gammaIsAllNums: ConSingle[Boolean] = ConSingleCon(false)
     override val toString: String = "OtherStr"
     def toAbsString(absString: AbsStringUtil): AbsString = absString.OtherStr
+    def toAbsBoolean(absBool: AbsBoolUtil): AbsBool = absBool.Top
+    def toAbsNumber(absNumber: AbsNumberUtil): AbsNumber = absNumber.NaN
   }
 
   case class DefaultStrSet(values: Set[String]) extends DefaultStringSet {
@@ -338,5 +335,18 @@ class DefaultStrSetUtil(maxSetSize: Int) extends AbsStringUtil {
     }
     override def toString: String = values.map("\"" + _ + "\"").mkString(", ")
     def toAbsString(absString: AbsStringUtil): AbsString = absString.alpha(values)
+    def toAbsBoolean(absBool: AbsBoolUtil): AbsBool = values contains "" match {
+      case true if values.size == 1 => absBool.False
+      case true => absBool.Top
+      case false if values.size == 0 => absBool.Bot
+      case false => absBool.True
+    }
+    def toAbsNumber(absNumber: AbsNumberUtil): AbsNumber = values.foldLeft(absNumber.Bot)((absN, str) => {
+      absN + str.trim match {
+        case "" => absNumber.alpha(0)
+        case s if isHex(s) => absNumber.alpha((s + "p0").toDouble)
+        case s => Try(absNumber.alpha(s.toDouble)).getOrElse(absNumber.NaN)
+      }
+    })
   }
 }

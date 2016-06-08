@@ -21,8 +21,10 @@ object DefaultUndefUtil extends AbsUndefUtil {
   sealed abstract class DefaultUndef extends AbsUndef {
     /* AbsDomain Interface */
     def gamma: ConSimple
-    def toAbsString(absString: AbsStringUtil): AbsString
     override def toString: String
+    def toAbsString(absString: AbsStringUtil): AbsString
+    def toAbsBoolean(absBool: AbsBoolUtil): AbsBool
+    def toAbsNumber(absNumber: AbsNumberUtil): AbsNumber
 
     /* AbsUndef Interface */
     def <=(that: AbsUndef): Boolean =
@@ -56,11 +58,15 @@ object DefaultUndefUtil extends AbsUndefUtil {
     val gamma: ConSimple = ConSimpleTop
     override val toString: String = "undefined"
     def toAbsString(absString: AbsStringUtil): AbsString = absString.alpha("undefined")
+    def toAbsBoolean(absBool: AbsBoolUtil): AbsBool = absBool.False
+    def toAbsNumber(absNumber: AbsNumberUtil): AbsNumber = absNumber.NaN
   }
 
   case object DefaultUndefBot extends DefaultUndef {
     val gamma: ConSimple = ConSimpleBot
     override val toString: String = "Bot"
     def toAbsString(absString: AbsStringUtil): AbsString = absString.Bot
+    def toAbsBoolean(absBool: AbsBoolUtil): AbsBool = absBool.Bot
+    def toAbsNumber(absNumber: AbsNumberUtil): AbsNumber = absNumber.Bot
   }
 }

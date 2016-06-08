@@ -27,20 +27,20 @@ case class Operator(helper: Helper) { //TODO
   def uVoid(value: Value): Value = Value(utils.PValueBot.copyWith(utils.absUndef.Top))
   /* + */
   def uopPlus(value: Value): Value = {
-    val absNum = helper.toNumber(value.pvalue) + helper.toNumber(helper.objToPrimitive(value.locset, "Number"))
+    val absNum = value.pvalue.toAbsNumber(utils.absNumber) + helper.objToPrimitive(value.locset, "Number").toAbsNumber(utils.absNumber)
     Value(utils.PValueBot.copyWith(absNum))
   }
 
   /* - */
   def uopMinus(value: Value): Value = {
-    val oldAbsNum = helper.toNumber(value.pvalue) + helper.toNumber(helper.objToPrimitive(value.locset, "Number"))
+    val oldAbsNum = value.pvalue.toAbsNumber(utils.absNumber) + helper.objToPrimitive(value.locset, "Number").toAbsNumber(utils.absNumber)
     val newAbsNum = oldAbsNum.negate
     Value(utils.PValueBot.copyWith(newAbsNum))
   }
 
   /* - */
   def uopMinusBetter(h: Heap, value: Value): Value = {
-    val oldAbsNum = helper.toNumber(value.pvalue) + helper.toNumber(helper.objToPrimitiveBetter(h, value.locset, "Number"))
+    val oldAbsNum = value.pvalue.toAbsNumber(utils.absNumber) + helper.objToPrimitiveBetter(h, value.locset, "Number").toAbsNumber(utils.absNumber)
     val newAbsNum = oldAbsNum.negate
     Value(utils.PValueBot.copyWith(newAbsNum))
   }
@@ -54,7 +54,7 @@ case class Operator(helper: Helper) { //TODO
 
   /* ! */
   def uopNeg(value: Value): Value = {
-    val oldValue = helper.toBoolean(value)
+    val oldValue = value.toAbsBoolean(utils.absBool)
     oldValue.gamma match {
       case ConSingleCon(b) => Value(utils.PValueBot.copyWith(utils.absBool.alpha(b)))
       case _ => Value(utils.PValueBot.copyWith(oldValue))
@@ -127,41 +127,41 @@ case class Operator(helper: Helper) { //TODO
     val primRPV = helper.toPrimitive(right)
     (primLPV.strval.gamma, primRPV.strval.gamma) match {
       case (ConSetBot(), ConSetBot()) =>
-        val (lAbsNum, rAbsNum) = (helper.toNumber(primLPV), helper.toNumber(primRPV))
+        val (lAbsNum, rAbsNum) = (primLPV.toAbsNumber(utils.absNumber), primRPV.toAbsNumber(utils.absNumber))
         val resAbsNum = lAbsNum add rAbsNum
         Value(utils.PValueBot.copyWith(resAbsNum))
       case (_, ConSetBot()) =>
         val (undefPV, nullPV, boolPV, numPV, strPV) = PValue2Tpl(primRPV)
-        val res1 = primLPV.strval.concat(helper.toString(undefPV))
-        val res2 = primLPV.strval.concat(helper.toString(nullPV))
-        val res3 = primLPV.strval.concat(helper.toString(boolPV))
-        val res4 = primLPV.strval.concat(helper.toString(numPV))
-        val res5 = primLPV.strval.concat(helper.toString(strPV))
+        val res1 = primLPV.strval.concat(undefPV.toAbsString(utils.absString))
+        val res2 = primLPV.strval.concat(nullPV.toAbsString(utils.absString))
+        val res3 = primLPV.strval.concat(boolPV.toAbsString(utils.absString))
+        val res4 = primLPV.strval.concat(numPV.toAbsString(utils.absString))
+        val res5 = primLPV.strval.concat(strPV.toAbsString(utils.absString))
         val resVal = Value(utils.PValueBot.copyWith(res1 + res2 + res3 + res4 + res5))
         resVal + bopPlus(Value(primLPV.copyWith(utils.absString.Bot)), Value(primRPV))
       case (ConSetBot(), _) =>
         val (undefPV, nullPV, boolPV, numPV, strPV) = PValue2Tpl(primLPV)
-        val res1 = helper.toString(undefPV).concat(primRPV.strval)
-        val res2 = helper.toString(nullPV).concat(primRPV.strval)
-        val res3 = helper.toString(boolPV).concat(primRPV.strval)
-        val res4 = helper.toString(numPV).concat(primRPV.strval)
-        val res5 = helper.toString(strPV).concat(primRPV.strval)
+        val res1 = undefPV.toAbsString(utils.absString).concat(primRPV.strval)
+        val res2 = nullPV.toAbsString(utils.absString).concat(primRPV.strval)
+        val res3 = boolPV.toAbsString(utils.absString).concat(primRPV.strval)
+        val res4 = numPV.toAbsString(utils.absString).concat(primRPV.strval)
+        val res5 = strPV.toAbsString(utils.absString).concat(primRPV.strval)
         val resVal = Value(utils.PValueBot.copyWith(res1 + res2 + res3 + res4 + res5))
         resVal + bopPlus(Value(primLPV), Value(primRPV.copyWith(utils.absString.Bot)))
       case (_, _) =>
         val (undefLPV, nullLPV, boolLPV, numLPV, strLPV) = PValue2Tpl(primLPV)
-        val resR1 = helper.toString(undefLPV).concat(primRPV.strval)
-        val resR2 = helper.toString(nullLPV).concat(primRPV.strval)
-        val resR3 = helper.toString(boolLPV).concat(primRPV.strval)
-        val resR4 = helper.toString(numLPV).concat(primRPV.strval)
-        val resR5 = helper.toString(strLPV).concat(primRPV.strval)
+        val resR1 = undefLPV.toAbsString(utils.absString).concat(primRPV.strval)
+        val resR2 = nullLPV.toAbsString(utils.absString).concat(primRPV.strval)
+        val resR3 = boolLPV.toAbsString(utils.absString).concat(primRPV.strval)
+        val resR4 = numLPV.toAbsString(utils.absString).concat(primRPV.strval)
+        val resR5 = strLPV.toAbsString(utils.absString).concat(primRPV.strval)
 
         val (undefRPV, nullRPV, boolRPV, numRPV, strRPV) = PValue2Tpl(primRPV)
-        val resL1 = primLPV.strval.concat(helper.toString(undefRPV))
-        val resL2 = primLPV.strval.concat(helper.toString(nullRPV))
-        val resL3 = primLPV.strval.concat(helper.toString(boolRPV))
-        val resL4 = primLPV.strval.concat(helper.toString(numRPV))
-        val resL5 = primLPV.strval.concat(helper.toString(strRPV))
+        val resL1 = primLPV.strval.concat(undefRPV.toAbsString(utils.absString))
+        val resL2 = primLPV.strval.concat(nullRPV.toAbsString(utils.absString))
+        val resL3 = primLPV.strval.concat(boolRPV.toAbsString(utils.absString))
+        val resL4 = primLPV.strval.concat(numRPV.toAbsString(utils.absString))
+        val resL5 = primLPV.strval.concat(strRPV.toAbsString(utils.absString))
 
         val resAbsStr = resR1 + resR2 + resR3 + resR4 + resR5 + resL1 + resL2 + resL3 + resL4 + resL5
         val resVal = Value(utils.PValueBot.copyWith(resAbsStr))
@@ -172,32 +172,32 @@ case class Operator(helper: Helper) { //TODO
 
   /* - */
   def bopMinus(left: Value, right: Value): Value = {
-    val lAbsNum = helper.toNumber(left.pvalue) + helper.toNumber(helper.objToPrimitive(left.locset, "Number"))
-    val rAbsNum = helper.toNumber(right.pvalue) + helper.toNumber(helper.objToPrimitive(right.locset, "Number"))
+    val lAbsNum = left.pvalue.toAbsNumber(utils.absNumber) + helper.objToPrimitive(left.locset, "Number").toAbsNumber(utils.absNumber)
+    val rAbsNum = right.pvalue.toAbsNumber(utils.absNumber) + helper.objToPrimitive(right.locset, "Number").toAbsNumber(utils.absNumber)
     val resAbsNum = lAbsNum sub rAbsNum
     Value(utils.PValueBot.copyWith(resAbsNum))
   }
 
   /* * */
   def bopMul(left: Value, right: Value): Value = {
-    val lAbsNum = helper.toNumber(left.pvalue) + helper.toNumber(helper.objToPrimitive(left.locset, "Number"))
-    val rAbsNum = helper.toNumber(right.pvalue) + helper.toNumber(helper.objToPrimitive(right.locset, "Number"))
+    val lAbsNum = left.pvalue.toAbsNumber(utils.absNumber) + helper.objToPrimitive(left.locset, "Number").toAbsNumber(utils.absNumber)
+    val rAbsNum = right.pvalue.toAbsNumber(utils.absNumber) + helper.objToPrimitive(right.locset, "Number").toAbsNumber(utils.absNumber)
     val resAbsNum = lAbsNum mul rAbsNum
     Value(utils.PValueBot.copyWith(resAbsNum))
   }
 
   /* / */
   def bopDiv(left: Value, right: Value): Value = {
-    val lAbsNum = helper.toNumber(left.pvalue) + helper.toNumber(helper.objToPrimitive(left.locset, "Number"))
-    val rAbsNum = helper.toNumber(right.pvalue) + helper.toNumber(helper.objToPrimitive(right.locset, "Number"))
+    val lAbsNum = left.pvalue.toAbsNumber(utils.absNumber) + helper.objToPrimitive(left.locset, "Number").toAbsNumber(utils.absNumber)
+    val rAbsNum = right.pvalue.toAbsNumber(utils.absNumber) + helper.objToPrimitive(right.locset, "Number").toAbsNumber(utils.absNumber)
     val resAbsNum = lAbsNum div rAbsNum
     Value(utils.PValueBot.copyWith(resAbsNum))
   }
 
   /* % */
   def bopMod(left: Value, right: Value): Value = {
-    val lAbsNum = helper.toNumber(left.pvalue) + helper.toNumber(helper.objToPrimitive(left.locset, "Number"))
-    val rAbsNum = helper.toNumber(right.pvalue) + helper.toNumber(helper.objToPrimitive(right.locset, "Number"))
+    val lAbsNum = left.pvalue.toAbsNumber(utils.absNumber) + helper.objToPrimitive(left.locset, "Number").toAbsNumber(utils.absNumber)
+    val rAbsNum = right.pvalue.toAbsNumber(utils.absNumber) + helper.objToPrimitive(right.locset, "Number").toAbsNumber(utils.absNumber)
     val resAbsNum = lAbsNum mod rAbsNum
     Value(utils.PValueBot.copyWith(resAbsNum))
   }
@@ -230,21 +230,21 @@ case class Operator(helper: Helper) { //TODO
     val b4 = (leftPV.numval.gammaSimple, rightPV.strval.gammaSimple) match {
       case (ConSimpleBot, _) | (_, ConSimpleBot) => utils.absBool.Bot
       case _ =>
-        val rightNumVal = helper.toNumber(utils.PValueBot.copyWith(rightPV.strval))
+        val rightNumVal = utils.PValueBot.copyWith(rightPV.strval).toAbsNumber(utils.absNumber)
         leftPV.numval === (rightNumVal, utils.absBool)
     }
     val b5 = (leftPV.strval.gammaSimple, rightPV.numval.gammaSimple) match {
       case (ConSimpleBot, _) | (_, ConSimpleBot) => utils.absBool.Bot
       case _ =>
-        val leftNumVal = helper.toNumber(utils.PValueBot.copyWith(leftPV.strval))
+        val leftNumVal = utils.PValueBot.copyWith(leftPV.strval).toAbsNumber(utils.absNumber)
         leftNumVal === (rightPV.numval, utils.absBool)
     }
     val b6 = leftPV.boolval.gammaSimple match {
       case ConSimpleBot =>
-        val leftNumVal = helper.toNumber(utils.PValueBot.copyWith(leftPV.boolval))
+        val leftNumVal = utils.PValueBot.copyWith(leftPV.boolval).toAbsNumber(utils.absNumber)
         val b61 = rightPV.numval.fold(utils.absBool.Bot)(leftNumVal === (_, utils.absBool))
         val b62 = rightPV.strval.fold(utils.absBool.Bot)(rightStrVal => {
-          val rightNumVal = helper.toNumber(utils.PValueBot.copyWith(rightStrVal))
+          val rightNumVal = utils.PValueBot.copyWith(rightStrVal).toAbsNumber(utils.absNumber)
           leftNumVal === (rightNumVal, utils.absBool)
         })
         val b63 = right.locset.size match {
@@ -261,10 +261,10 @@ case class Operator(helper: Helper) { //TODO
 
     val b7 = rightPV.boolval.gammaSimple match {
       case ConSimpleTop =>
-        val rightNumVal = helper.toNumber(utils.PValueBot.copyWith(rightPV.boolval))
+        val rightNumVal = utils.PValueBot.copyWith(rightPV.boolval).toAbsNumber(utils.absNumber)
         val b71 = leftPV.numval.fold(utils.absBool.Bot)(_ === (rightNumVal, utils.absBool))
         val b72 = leftPV.strval.fold(utils.absBool.Bot)(leftStrVal => {
-          val leftNumVal = helper.toNumber(utils.PValueBot.copyWith(leftStrVal))
+          val leftNumVal = utils.PValueBot.copyWith(leftStrVal).toAbsNumber(utils.absNumber)
           leftNumVal === (rightNumVal, utils.absBool)
         })
         val b73 = left.locset.size match {
@@ -383,8 +383,8 @@ case class Operator(helper: Helper) { //TODO
   ): Value = {
     (leftPV.strval.gammaSimple, rightPV.strval.gammaSimple) match {
       case (ConSimpleBot, _) | (_, ConSimpleBot) =>
-        val leftAbsNum = helper.toNumber(leftPV)
-        val rightAbsNum = helper.toNumber(rightPV)
+        val leftAbsNum = leftPV.toAbsNumber(utils.absNumber)
+        val rightAbsNum = rightPV.toAbsNumber(utils.absNumber)
         Value(utils.PValueBot.copyWith(cmpAbsNum(leftAbsNum, rightAbsNum)))
       case _ =>
         val leftPV2 = leftPV.copyWith(utils.absString.Bot)
