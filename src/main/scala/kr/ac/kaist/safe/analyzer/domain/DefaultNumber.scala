@@ -69,7 +69,7 @@ object DefaultNumUtil extends AbsNumberUtil {
         case _ => false
       }
 
-    def <(that: AbsNumber, absBool: AbsBoolUtil): AbsBool = {
+    def <(that: AbsNumber)(absBool: AbsBoolUtil): AbsBool = {
       (this, that) match {
         case (DefaultNumBot, _) | (_, DefaultNumBot) => absBool.Bot
         case (DefaultNumNaN, _) | (_, DefaultNumNaN) => absBool.False
@@ -83,7 +83,7 @@ object DefaultNumUtil extends AbsNumberUtil {
       }
     }
 
-    def ===(that: AbsNumber, absBool: AbsBoolUtil): AbsBool = {
+    def ===(that: AbsNumber)(absBool: AbsBoolUtil): AbsBool = {
       (this, that) match {
         case (DefaultNumBot, _) | (_, DefaultNumBot) => absBool.Bot
         case (DefaultNumNaN, _) | (_, DefaultNumNaN) => absBool.False

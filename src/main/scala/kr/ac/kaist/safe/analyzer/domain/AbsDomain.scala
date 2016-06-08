@@ -34,7 +34,7 @@ trait AbsUndef extends AbsDomain {
   def </(that: AbsUndef): Boolean = !(this <= that)
   def +(that: AbsUndef): AbsUndef
   def <>(that: AbsUndef): AbsUndef
-  def ===(that: AbsUndef, absBool: AbsBoolUtil): AbsBool
+  def ===(that: AbsUndef)(absBool: AbsBoolUtil): AbsBool
 }
 
 trait AbsNull extends AbsDomain {
@@ -49,7 +49,7 @@ trait AbsNull extends AbsDomain {
   def </(that: AbsNull): Boolean = !(this <= that)
   def +(that: AbsNull): AbsNull
   def <>(that: AbsNull): AbsNull
-  def ===(that: AbsNull, absBool: AbsBoolUtil): AbsBool
+  def ===(that: AbsNull)(absBool: AbsBoolUtil): AbsBool
 }
 
 trait AbsBool extends AbsDomain {
@@ -65,7 +65,7 @@ trait AbsBool extends AbsDomain {
   def </(that: AbsBool): Boolean
   def +(that: AbsBool): AbsBool
   def <>(that: AbsBool): AbsBool
-  def ===(that: AbsBool, absBool: AbsBoolUtil): AbsBool
+  def ===(that: AbsBool)(absBool: AbsBoolUtil): AbsBool
   def negate: AbsBool
 }
 
@@ -83,8 +83,8 @@ trait AbsNumber extends AbsDomain {
   def </(that: AbsNumber): Boolean = !(this <= that)
   def +(that: AbsNumber): AbsNumber
   def <>(that: AbsNumber): AbsNumber
-  def ===(that: AbsNumber, absBool: AbsBoolUtil): AbsBool
-  def <(that: AbsNumber, absBool: AbsBoolUtil): AbsBool
+  def ===(that: AbsNumber)(absBool: AbsBoolUtil): AbsBool
+  def <(that: AbsNumber)(absBool: AbsBoolUtil): AbsBool
 
   def isNum(v: Double): Boolean
   def isNum: Boolean
@@ -130,14 +130,14 @@ trait AbsString extends AbsDomain {
   def </(that: AbsString): Boolean = !(this <= that)
   def +(that: AbsString): AbsString
   def <>(that: AbsString): AbsString
-  def ===(that: AbsString, absBool: AbsBoolUtil): AbsBool
-  def <(that: AbsString, absBool: AbsBoolUtil): AbsBool
+  def ===(that: AbsString)(absBool: AbsBoolUtil): AbsBool
+  def <(that: AbsString)(absBool: AbsBoolUtil): AbsBool
 
   def trim: AbsString
   def concat(that: AbsString): AbsString
   def charAt(pos: AbsNumber): AbsString
-  def charCodeAt(pos: AbsNumber, absNumber: AbsNumberUtil): AbsNumber
-  def contains(that: AbsString, absBool: AbsBoolUtil): AbsBool
+  def charCodeAt(pos: AbsNumber)(absNumber: AbsNumberUtil): AbsNumber
+  def contains(that: AbsString)(absBool: AbsBoolUtil): AbsBool
   def length(absNumber: AbsNumberUtil): AbsNumber
   def toLowerCase: AbsString
   def toUpperCase: AbsString

@@ -47,7 +47,7 @@ object DefaultUndefUtil extends AbsUndefUtil {
         case _ => DefaultUndefBot
       }
 
-    def ===(that: AbsUndef, absBool: AbsBoolUtil): AbsBool =
+    def ===(that: AbsUndef)(absBool: AbsBoolUtil): AbsBool =
       (this, that) match {
         case (DefaultUndefBot, _) | (_, DefaultUndefBot) => absBool.Bot
         case _ => absBool.True

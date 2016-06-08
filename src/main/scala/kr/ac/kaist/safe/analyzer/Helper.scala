@@ -27,7 +27,7 @@ case class Helper(utils: Utils, addrManager: AddressManager, predefLoc: PredefLo
   def canPut(h: Heap, loc: Loc, absStr: AbsString): AbsBool = canPutHelp(h, loc, absStr, loc)
 
   def canPutHelp(h: Heap, loc1: Loc, absStr: AbsString, loc2: Loc): AbsBool = {
-    val domInStr = h.getOrElse(loc1, utils.ObjBot).domIn(absStr, utils.absBool)
+    val domInStr = (h.getOrElse(loc1, utils.ObjBot) domIn absStr)(utils.absBool)
     val b1 =
       if (utils.absBool.True <= domInStr) {
         val obj = h.getOrElse(loc1, utils.ObjBot)
@@ -51,7 +51,7 @@ case class Helper(utils: Utils, addrManager: AddressManager, predefLoc: PredefLo
   def canPutVar(h: Heap, x: String): AbsBool = {
     val globalLoc = predefLoc.GLOBAL_LOC
     val globalObj = h.getOrElse(globalLoc, utils.ObjBot)
-    val domIn = globalObj.domIn(x, utils.absBool)
+    val domIn = (globalObj domIn x)(utils.absBool)
     val b1 =
       if (utils.absBool.True <= domIn) globalObj.getOrElse(x, utils.PropValueBot).objval.writable
       else utils.absBool.Bot
@@ -161,7 +161,7 @@ case class Helper(utils: Utils, addrManager: AddressManager, predefLoc: PredefLo
   }
 
   def hasConstruct(h: Heap, loc: Loc): AbsBool = {
-    val isDomIn = h.getOrElse(loc, utils.ObjBot).domIn("@construct", utils.absBool)
+    val isDomIn = (h.getOrElse(loc, utils.ObjBot) domIn "@construct")(utils.absBool)
     val b1 =
       if (utils.absBool.True <= isDomIn) utils.absBool.True
       else utils.absBool.Bot
@@ -172,7 +172,7 @@ case class Helper(utils: Utils, addrManager: AddressManager, predefLoc: PredefLo
   }
 
   def hasInstance(h: Heap, loc: Loc): AbsBool = {
-    val isDomIn = h.getOrElse(loc, utils.ObjBot).domIn("@hasinstance", utils.absBool)
+    val isDomIn = (h.getOrElse(loc, utils.ObjBot) domIn "@hasinstance")(utils.absBool)
     val b1 =
       if (utils.absBool.True <= isDomIn) utils.absBool.True
       else utils.absBool.Bot
@@ -209,7 +209,7 @@ case class Helper(utils: Utils, addrManager: AddressManager, predefLoc: PredefLo
   }
 
   def hasOwnProperty(h: Heap, loc: Loc, absStr: AbsString): AbsBool = {
-    h.getOrElse(loc, utils.ObjBot).domIn(absStr, utils.absBool)
+    (h.getOrElse(loc, utils.ObjBot) domIn absStr)(utils.absBool)
   }
 
   def inherit(h: Heap, loc1: Loc, loc2: Loc, bopSEq: (Value, Value) => Value): Value = {
@@ -274,7 +274,7 @@ case class Helper(utils: Utils, addrManager: AddressManager, predefLoc: PredefLo
   }
 
   def isCallable(h: Heap, loc: Loc): AbsBool = {
-    val isDomIn = h.getOrElse(loc, utils.ObjBot).domIn("@function", utils.absBool)
+    val isDomIn = (h.getOrElse(loc, utils.ObjBot) domIn "@function")(utils.absBool)
     val b1 =
       if (utils.absBool.True <= isDomIn) utils.absBool.True
       else utils.absBool.Bot
@@ -287,7 +287,7 @@ case class Helper(utils: Utils, addrManager: AddressManager, predefLoc: PredefLo
   def isCallable(h: Heap, value: Value): AbsBool = utils.absBool.Bot
 
   def isObject(h: Heap, loc: Loc): AbsBool = {
-    h.getOrElse(loc, utils.ObjBot).domIn("@class", utils.absBool)
+    (h.getOrElse(loc, utils.ObjBot) domIn "@class")(utils.absBool)
   }
 
   def lookup(h: Heap, id: CFGId): (Value, Set[Exception]) = {
@@ -309,16 +309,16 @@ case class Helper(utils: Utils, addrManager: AddressManager, predefLoc: PredefLo
   }
 
   def lookupG(h: Heap, x: String): (Value, Set[Exception]) = {
-    if (h.domIn(predefLoc.GLOBAL_LOC)) {
+    if (h domIn predefLoc.GLOBAL_LOC) {
       val globalObj = h.getOrElse(predefLoc.GLOBAL_LOC, utils.ObjBot)
       val v1 =
-        if (utils.absBool.True <= globalObj.domIn(x, utils.absBool))
+        if (utils.absBool.True <= (globalObj domIn x)(utils.absBool))
           globalObj.getOrElse(x, utils.PropValueBot).objval.value
         else
           utils.ValueBot
       val protoLocSet = globalObj.getOrElse("@proto", utils.PropValueBot).objval.value.locset
       val (v2, excSet) =
-        if (utils.absBool.False <= globalObj.domIn(x, utils.absBool)) {
+        if (utils.absBool.False <= (globalObj domIn x)(utils.absBool)) {
           val excSet = protoLocSet.foldLeft(ExceptionSetEmpty)((excSet, protoLoc) => {
             if (utils.absBool.False <= hasProperty(h, protoLoc, utils.absString.alpha(x))) {
               excSet + ReferenceError
@@ -350,7 +350,7 @@ case class Helper(utils: Utils, addrManager: AddressManager, predefLoc: PredefLo
       else {
         visited += l
         val env = h.getOrElse(l, utils.ObjBot)
-        val isDomIn = env.domIn(x, utils.absBool)
+        val isDomIn = (env domIn x)(utils.absBool)
         val v1 =
           if (utils.absBool.True <= isDomIn) env.getOrElse(x, utils.PropValueBot).objval.value
           else utils.ValueBot
@@ -384,7 +384,7 @@ case class Helper(utils: Utils, addrManager: AddressManager, predefLoc: PredefLo
 
   def lookupBaseG(h: Heap, x: String): Set[Loc] = {
     val globalObj = h.getOrElse(predefLoc.GLOBAL_LOC, utils.ObjBot)
-    val isDomIn = globalObj.domIn(x, utils.absBool)
+    val isDomIn = (globalObj domIn x)(utils.absBool)
     val locSet1 =
       if (utils.absBool.True <= isDomIn)
         HashSet(predefLoc.GLOBAL_LOC)
@@ -409,7 +409,7 @@ case class Helper(utils: Utils, addrManager: AddressManager, predefLoc: PredefLo
       else {
         visited += l
         val env = h.getOrElse(l, utils.ObjBot)
-        val isDomIn = env.domIn(x, utils.absBool)
+        val isDomIn = (env domIn x)(utils.absBool)
         val locSet1 =
           if (utils.absBool.True <= isDomIn) HashSet(l)
           else LocSetEmpty
@@ -566,7 +566,7 @@ case class Helper(utils: Utils, addrManager: AddressManager, predefLoc: PredefLo
       val locR = addrManager.addrToLoc(addr, Recent)
       val locO = addrManager.addrToLoc(addr, Old)
       val h1 =
-        if (st.heap.domIn(locR))
+        if ((st.heap domIn locR))
           st.heap.update(locO, st.heap.getOrElse(locR, utils.ObjBot)).remove(locR).subsLoc(locR, locO)
         else
           st.heap.subsLoc(locR, locO)
@@ -601,7 +601,7 @@ case class Helper(utils: Utils, addrManager: AddressManager, predefLoc: PredefLo
       if (visited.contains(currentLoc)) utils.ValueBot
       else {
         visited += currentLoc
-        val test = h.getOrElse(currentLoc, utils.ObjBot).domIn(absStr, utils.absBool)
+        val test = (h.getOrElse(currentLoc, utils.ObjBot) domIn absStr)(utils.absBool)
         val v1 =
           if (utils.absBool.True <= test) {
             h.getOrElse(currentLoc, utils.ObjBot).getOrElse(absStr, utils.PropValueBot).objval.value
@@ -634,7 +634,7 @@ case class Helper(utils: Utils, addrManager: AddressManager, predefLoc: PredefLo
       else {
         visited += l
         val obj = h.getOrElse(l, utils.ObjBot)
-        val isDomIn = obj.domIn(absStr, utils.absBool)
+        val isDomIn = (obj domIn absStr)(utils.absBool)
         val locSet1 =
           if (utils.absBool.True <= isDomIn) HashSet(l)
           else LocSetEmpty
@@ -696,7 +696,7 @@ case class Helper(utils: Utils, addrManager: AddressManager, predefLoc: PredefLo
       case None => LocSetEmpty
     }
     val h2 =
-      if (utils.absBool.False <= envObj.domIn(x, utils.absBool))
+      if (utils.absBool.False <= (envObj domIn x)(utils.absBool))
         outerLocSet.foldLeft(Heap.Bot)((tmpH, outerLoc) => varStoreL(h, outerLoc, x, value))
       else
         Heap.Bot
@@ -707,11 +707,11 @@ case class Helper(utils: Utils, addrManager: AddressManager, predefLoc: PredefLo
     val globalLoc = predefLoc.GLOBAL_LOC
     val obj = h.getOrElse(globalLoc, utils.ObjBot)
     val h1 =
-      if (utils.absBool.False <= obj.domIn(x, utils.absBool))
+      if (utils.absBool.False <= (obj domIn x)(utils.absBool))
         propStore(h, globalLoc, utils.absString.alpha(x), value)
       else Heap.Bot
     val h2 =
-      if (utils.absBool.True <= obj.domIn(x, utils.absBool)) {
+      if (utils.absBool.True <= (obj domIn x)(utils.absBool)) {
         val oldObjVal = obj.getOrElse(x, utils.PropValueBot).objval
         val newObjVal = oldObjVal.copyWith(value)
         h.update(globalLoc, obj.update(x, PropValue(newObjVal)))
@@ -721,7 +721,7 @@ case class Helper(utils: Utils, addrManager: AddressManager, predefLoc: PredefLo
 
   def propStore(h: Heap, loc: Loc, absStr: AbsString, value: Value): Heap = {
     val findingObj = h.getOrElse(loc, utils.ObjBot)
-    val objDomIn = findingObj.domIn(absStr, utils.absBool)
+    val objDomIn = (findingObj domIn absStr)(utils.absBool)
     objDomIn.gamma match {
       case ConSingleTop() =>
         val oldObjV: ObjectValue = findingObj.getOrElse(absStr, utils.PropValueBot).objval

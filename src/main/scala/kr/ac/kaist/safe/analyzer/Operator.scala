@@ -213,11 +213,11 @@ case class Operator(helper: Helper) { //TODO
         else if (left.locset.size == 1 && right.locset.size == 1 && addrManager.isRecentLoc(intersect.head)) utils.absBool.True
         else utils.absBool.Top
       } else utils.absBool.Bot
-    val b1 = (leftPV.undefval === (rightPV.undefval, utils.absBool)) +
-      (leftPV.nullval === (rightPV.nullval, utils.absBool)) +
-      (leftPV.numval === (rightPV.numval, utils.absBool)) +
-      (leftPV.strval === (rightPV.strval, utils.absBool)) +
-      (leftPV.boolval === (rightPV.boolval, utils.absBool)) +
+    val b1 = (leftPV.undefval === rightPV.undefval)(utils.absBool) +
+      (leftPV.nullval === rightPV.nullval)(utils.absBool) +
+      (leftPV.numval === rightPV.numval)(utils.absBool) +
+      (leftPV.strval === rightPV.strval)(utils.absBool) +
+      (leftPV.boolval === rightPV.boolval)(utils.absBool) +
       locsetTest
     val b2 = (leftPV.nullval.gamma, rightPV.undefval.gamma) match {
       case (ConSimpleTop, ConSimpleTop) => utils.absBool.True
@@ -231,27 +231,29 @@ case class Operator(helper: Helper) { //TODO
       case (ConSimpleBot, _) | (_, ConSimpleBot) => utils.absBool.Bot
       case _ =>
         val rightNumVal = utils.PValueBot.copyWith(rightPV.strval).toAbsNumber(utils.absNumber)
-        leftPV.numval === (rightNumVal, utils.absBool)
+        (leftPV.numval === rightNumVal)(utils.absBool)
     }
     val b5 = (leftPV.strval.gammaSimple, rightPV.numval.gammaSimple) match {
       case (ConSimpleBot, _) | (_, ConSimpleBot) => utils.absBool.Bot
       case _ =>
         val leftNumVal = utils.PValueBot.copyWith(leftPV.strval).toAbsNumber(utils.absNumber)
-        leftNumVal === (rightPV.numval, utils.absBool)
+        (leftNumVal === rightPV.numval)(utils.absBool)
     }
     val b6 = leftPV.boolval.gammaSimple match {
       case ConSimpleBot =>
         val leftNumVal = utils.PValueBot.copyWith(leftPV.boolval).toAbsNumber(utils.absNumber)
-        val b61 = rightPV.numval.fold(utils.absBool.Bot)(leftNumVal === (_, utils.absBool))
+        val b61 = rightPV.numval.fold(utils.absBool.Bot)(rightNumVal => {
+          (leftNumVal === rightNumVal)(utils.absBool)
+        })
         val b62 = rightPV.strval.fold(utils.absBool.Bot)(rightStrVal => {
           val rightNumVal = utils.PValueBot.copyWith(rightStrVal).toAbsNumber(utils.absNumber)
-          leftNumVal === (rightNumVal, utils.absBool)
+          (leftNumVal === rightNumVal)(utils.absBool)
         })
         val b63 = right.locset.size match {
           case 0 => utils.absBool.Bot
           case _ =>
             val rightNumVal = objToPrimitive(right.locset, "Number").numval
-            leftNumVal === (rightNumVal, utils.absBool)
+            (leftNumVal === rightNumVal)(utils.absBool)
         }
         val b64 = rightPV.undefval.fold(utils.absBool.Bot)(_ => utils.absBool.False)
         val b65 = rightPV.nullval.fold(utils.absBool.Bot)(_ => utils.absBool.False)
@@ -262,16 +264,18 @@ case class Operator(helper: Helper) { //TODO
     val b7 = rightPV.boolval.gammaSimple match {
       case ConSimpleTop =>
         val rightNumVal = utils.PValueBot.copyWith(rightPV.boolval).toAbsNumber(utils.absNumber)
-        val b71 = leftPV.numval.fold(utils.absBool.Bot)(_ === (rightNumVal, utils.absBool))
+        val b71 = leftPV.numval.fold(utils.absBool.Bot)(leftNumVal => {
+          (leftNumVal === rightNumVal)(utils.absBool)
+        })
         val b72 = leftPV.strval.fold(utils.absBool.Bot)(leftStrVal => {
           val leftNumVal = utils.PValueBot.copyWith(leftStrVal).toAbsNumber(utils.absNumber)
-          leftNumVal === (rightNumVal, utils.absBool)
+          (leftNumVal === rightNumVal)(utils.absBool)
         })
         val b73 = left.locset.size match {
           case 0 => utils.absBool.Bot
           case _ =>
             val leftNumVal = objToPrimitive(left.locset, "Number").numval
-            leftNumVal === (rightNumVal, utils.absBool)
+            (leftNumVal === rightNumVal)(utils.absBool)
         }
         val b74 = leftPV.undefval.fold(utils.absBool.Bot)(_ => utils.absBool.False)
         val b75 = leftPV.undefval.fold(utils.absBool.Bot)(_ => utils.absBool.False)
@@ -284,11 +288,11 @@ case class Operator(helper: Helper) { //TODO
       case _ =>
         val b81 = leftPV.numval.fold(utils.absBool.Bot)(leftNumVal => {
           val rightNumVal = objToPrimitive(right.locset, "Number").numval
-          leftNumVal === (rightNumVal, utils.absBool)
+          (leftNumVal === rightNumVal)(utils.absBool)
         })
         val b82 = leftPV.strval.fold(utils.absBool.Bot)(leftStrVal => {
           val rightStrVal = objToPrimitive(right.locset, "String").strval
-          leftStrVal === (rightStrVal, utils.absBool)
+          (leftStrVal === rightStrVal)(utils.absBool)
         })
         b81 + b82
     }
@@ -298,11 +302,11 @@ case class Operator(helper: Helper) { //TODO
       case _ =>
         val b91 = rightPV.numval.fold(utils.absBool.Bot)(rightNumVal => {
           val leftNumVal = objToPrimitive(left.locset, "Number").numval
-          leftNumVal === (rightNumVal, utils.absBool)
+          (leftNumVal === rightNumVal)(utils.absBool)
         })
         val b92 = rightPV.strval.fold(utils.absBool.Bot)(rightStrVal => {
           val leftStrVal = objToPrimitive(left.locset, "String").strval
-          leftStrVal === (rightStrVal, utils.absBool)
+          (leftStrVal === rightStrVal)(utils.absBool)
         })
         b91 + b92
     }
@@ -355,11 +359,11 @@ case class Operator(helper: Helper) { //TODO
         else utils.absBool.Top
       } else utils.absBool.Bot
     val isSame =
-      (left.pvalue.undefval === (right.pvalue.undefval, utils.absBool)) +
-        (left.pvalue.nullval === (right.pvalue.nullval, utils.absBool)) +
-        (left.pvalue.numval === (right.pvalue.numval, utils.absBool)) +
-        (left.pvalue.strval === (right.pvalue.strval, utils.absBool)) +
-        (left.pvalue.boolval === (right.pvalue.boolval, utils.absBool)) +
+      (left.pvalue.undefval === right.pvalue.undefval)(utils.absBool) +
+        (left.pvalue.nullval === right.pvalue.nullval)(utils.absBool) +
+        (left.pvalue.numval === right.pvalue.numval)(utils.absBool) +
+        (left.pvalue.strval === right.pvalue.strval)(utils.absBool) +
+        (left.pvalue.boolval === right.pvalue.boolval)(utils.absBool) +
         isLocsetSame
     Value(utils.PValueBot.copyWith(isMultiType + isSame))
   }
@@ -401,8 +405,8 @@ case class Operator(helper: Helper) { //TODO
     val leftPV = helper.toPrimitive(left)
     val rightPV = helper.toPrimitive(right)
     bopCompareHelp(leftPV, rightPV,
-      (leftAbsNum, rightAbsNum) => leftAbsNum < (rightAbsNum, utils.absBool),
-      (leftAbsStr, rightAbsStr) => leftAbsStr < (rightAbsStr, utils.absBool))
+      (leftAbsNum, rightAbsNum) => (leftAbsNum < rightAbsNum)(utils.absBool),
+      (leftAbsStr, rightAbsStr) => (leftAbsStr < rightAbsStr)(utils.absBool))
   }
 
   /* > */
@@ -410,8 +414,8 @@ case class Operator(helper: Helper) { //TODO
     val leftPV = helper.toPrimitive(left)
     val rightPV = helper.toPrimitive(right)
     bopCompareHelp(leftPV, rightPV,
-      (leftAbsNum, rightAbsNum) => rightAbsNum < (leftAbsNum, utils.absBool),
-      (leftAbsStr, rightAbsStr) => rightAbsStr < (leftAbsStr, utils.absBool))
+      (leftAbsNum, rightAbsNum) => (rightAbsNum < leftAbsNum)(utils.absBool),
+      (leftAbsStr, rightAbsStr) => (rightAbsStr < leftAbsStr)(utils.absBool))
   }
 
   /* <= */
@@ -421,9 +425,9 @@ case class Operator(helper: Helper) { //TODO
     bopCompareHelp(leftPV, rightPV,
       (leftAbsNum, rightAbsNum) => {
         if (leftAbsNum.isNaN | rightAbsNum.isNaN) utils.absBool.False
-        else (rightAbsNum < (leftAbsNum, utils.absBool)).negate
+        else (rightAbsNum < leftAbsNum)(utils.absBool).negate
       },
-      (leftAbsStr, rightAbsStr) => (rightAbsStr < (leftAbsStr, utils.absBool)).negate)
+      (leftAbsStr, rightAbsStr) => (rightAbsStr < leftAbsStr)(utils.absBool).negate)
   }
 
   /* >= */
@@ -433,8 +437,8 @@ case class Operator(helper: Helper) { //TODO
     bopCompareHelp(leftPV, rightPV,
       (leftAbsNum, rightAbsNum) => {
         if (leftAbsNum.isNaN | rightAbsNum.isNaN) utils.absBool.False
-        else (leftAbsNum < (rightAbsNum, utils.absBool)).negate
+        else (leftAbsNum < rightAbsNum)(utils.absBool).negate
       },
-      (leftAbsStr, rightAbsStr) => (leftAbsStr < (rightAbsStr, utils.absBool)).negate)
+      (leftAbsStr, rightAbsStr) => (leftAbsStr < rightAbsStr)(utils.absBool).negate)
   }
 }

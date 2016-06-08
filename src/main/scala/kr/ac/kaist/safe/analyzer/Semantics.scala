@@ -352,8 +352,8 @@ class Semantics(cfg: CFG, utils: Utils, addressManager: AddressManager) {
                       val bCanPut = helper.canPut(st.heap, l, utils.absString.alpha("length"))
 
                       val arrLengthHeap2 =
-                        if ((absTrue <= (nOldLen < (nNewLen, utils.absBool))
-                          || absTrue <= (nOldLen === (nNewLen, utils.absBool)))
+                        if ((absTrue <= (nOldLen < nNewLen)(utils.absBool)
+                          || absTrue <= (nOldLen === nNewLen)(utils.absBool))
                           && (absTrue <= bCanPut))
                           helper.propStore(st.heap, l, utils.absString.alpha("length"), vRhs)
                         else
@@ -364,7 +364,7 @@ class Semantics(cfg: CFG, utils: Utils, addressManager: AddressManager) {
                         else Heap.Bot
 
                       val arrLengthHeap4 =
-                        if ((absTrue <= (nNewLen < (nOldLen, utils.absBool))) && (absTrue <= bCanPut)) {
+                        if ((absTrue <= (nNewLen < nOldLen)(utils.absBool)) && (absTrue <= bCanPut)) {
                           val hi = helper.propStore(st.heap, l, utils.absString.alpha("length"), vRhs)
                           (nNewLen.gammaSingle, nOldLen.gammaSingle) match {
                             case (ConSingleCon(n1), ConSingleCon(n2)) =>
@@ -378,13 +378,13 @@ class Semantics(cfg: CFG, utils: Utils, addressManager: AddressManager) {
                         }
 
                       val arrLengthHeap1 =
-                        if (absTrue <= (nValue === (nNewLen, utils.absBool)))
+                        if (absTrue <= (nValue === nNewLen)(utils.absBool))
                           arrLengthHeap2 + arrLengthHeap3 + arrLengthHeap4
                         else
                           Heap.Bot
 
                       val lenExcSet1 =
-                        if (absFalse <= (nValue === (nNewLen, utils.absBool))) HashSet[Exception](RangeError)
+                        if (absFalse <= (nValue === nNewLen)(utils.absBool)) HashSet[Exception](RangeError)
                         else ExceptionSetEmpty
                       (arrLengthHeap1, lenExcSet1)
                     } else {
@@ -398,8 +398,8 @@ class Semantics(cfg: CFG, utils: Utils, addressManager: AddressManager) {
                       val idxPV = utils.PValueBot.copyWith(absStr)
                       val numPV = utils.PValueBot.copyWith(idxPV.toAbsNumber(utils.absNumber))
                       val nIndex = operator.toUInt32(Value(numPV))
-                      val bGtEq = absTrue <= (nOldLen < (nIndex, utils.absBool)) ||
-                        absTrue <= (nOldLen === (nIndex, utils.absBool))
+                      val bGtEq = absTrue <= (nOldLen < nIndex)(utils.absBool) ||
+                        absTrue <= (nOldLen === nIndex)(utils.absBool)
                       val bCanPutLen = helper.canPut(st.heap, l, utils.absString.alpha("length"))
                       // 4.b
                       val arrIndexHeap1 =
@@ -407,7 +407,7 @@ class Semantics(cfg: CFG, utils: Utils, addressManager: AddressManager) {
                         else Heap.Bot
                       // 4.c
                       val arrIndexHeap2 =
-                        if (absTrue <= (nIndex < (nOldLen, utils.absBool)))
+                        if (absTrue <= (nIndex < nOldLen)(utils.absBool))
                           helper.propStore(st.heap, l, absStr, vRhs)
                         else Heap.Bot
                       // 4.e

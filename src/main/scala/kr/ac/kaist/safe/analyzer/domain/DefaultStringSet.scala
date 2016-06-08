@@ -40,7 +40,7 @@ class DefaultStrSetUtil(maxSetSize: Int) extends AbsStringUtil {
   def hasOther(values: Set[String]): Boolean =
     values.foldLeft(false)((b: Boolean, v: String) => b | !isNum(v))
 
-  def fromCharCode(n: AbsNumber, absNumber: AbsNumberUtil): AbsString = {
+  def fromCharCode(n: AbsNumber)(absNumber: AbsNumberUtil): AbsString = {
     n.gamma match {
       case ConSetTop() => DefaultStrTop
       case ConSetBot() => DefaultStrBot
@@ -120,7 +120,7 @@ class DefaultStrSetUtil(maxSetSize: Int) extends AbsStringUtil {
           }
       }
 
-    def ===(that: AbsString, absBool: AbsBoolUtil): AbsBool =
+    def ===(that: AbsString)(absBool: AbsBoolUtil): AbsBool =
       (this.gammaSingle, that.gammaSingle) match {
         case (ConSingleCon(s1), ConSingleCon(s2)) => absBool.alpha(s1 == s2)
         case (ConSingleBot(), _) | (_, ConSingleBot()) => absBool.Bot
@@ -130,7 +130,7 @@ class DefaultStrSetUtil(maxSetSize: Int) extends AbsStringUtil {
         }
       }
 
-    def <(that: AbsString, absBool: AbsBoolUtil): AbsBool = {
+    def <(that: AbsString)(absBool: AbsBoolUtil): AbsBool = {
       (this, that) match {
         case (DefaultStrBot, _) | (_, DefaultStrBot) => absBool.Bot
         case (DefaultStrSet(leftStrSet), DefaultStrSet(rightStrSet)) =>
@@ -201,7 +201,7 @@ class DefaultStrSetUtil(maxSetSize: Int) extends AbsStringUtil {
       }
     }
 
-    def charCodeAt(pos: AbsNumber, absNumber: AbsNumberUtil): AbsNumber = {
+    def charCodeAt(pos: AbsNumber)(absNumber: AbsNumberUtil): AbsNumber = {
       gamma match {
         case ConSetTop() => absNumber.UInt
         case ConSetBot() => absNumber.Bot
@@ -221,7 +221,7 @@ class DefaultStrSetUtil(maxSetSize: Int) extends AbsStringUtil {
       }
     }
 
-    def contains(that: AbsString, absBool: AbsBoolUtil): AbsBool =
+    def contains(that: AbsString)(absBool: AbsBoolUtil): AbsBool =
       this match {
         case DefaultStrNum => absBool.Top
         case DefaultStrOther => absBool.Top

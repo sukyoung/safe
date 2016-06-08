@@ -34,7 +34,7 @@ trait AbsStringUtil {
   def alpha(str: String): AbsString
   def alpha(str: Set[String]): AbsString
 
-  def fromCharCode(n: AbsNumber, absNumber: AbsNumberUtil): AbsString
+  def fromCharCode(n: AbsNumber)(absNumber: AbsNumberUtil): AbsString
 }
 
 trait AbsNumberUtil {

@@ -297,7 +297,7 @@ class Obj(val map: Map[String, (PropValue, Absent)]) {
     }
   }
 
-  def domIn(x: String, absBool: AbsBoolUtil): AbsBool = {
+  def domIn(x: String)(absBool: AbsBoolUtil): AbsBool = {
     def defaultDomIn(default: String): AbsBool = {
       this.map.get(default) match {
         case Some((defaultPropV, _)) if !defaultPropV.objval.value.isBottom => absBool.Top
@@ -318,12 +318,12 @@ class Obj(val map: Map[String, (PropValue, Absent)]) {
     }
   }
 
-  def domIn(strSet: Set[String], absBool: AbsBoolUtil): AbsBool =
-    strSet.foldLeft(absBool.Bot)((absB, str) => absB + domIn(str, absBool))
+  def domIn(strSet: Set[String])(absBool: AbsBoolUtil): AbsBool =
+    strSet.foldLeft(absBool.Bot)((absB, str) => absB + (this domIn str)(absBool))
 
-  def domIn(absStr: AbsString, absBool: AbsBoolUtil): AbsBool = {
+  def domIn(absStr: AbsString)(absBool: AbsBoolUtil): AbsBool = {
     absStr.gamma match {
-      case ConSetCon(strSet) => domIn(strSet, absBool)
+      case ConSetCon(strSet) => (this domIn strSet)(absBool)
       case ConSetBot() => absBool.Bot
       case ConSetTop() => absStr.gammaIsAllNums match {
         case ConSingleBot() => absBool.Bot

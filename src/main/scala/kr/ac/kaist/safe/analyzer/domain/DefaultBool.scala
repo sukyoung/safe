@@ -60,7 +60,7 @@ object DefaultBoolUtil extends AbsBoolUtil {
         case _ => DefaultBoolBot
       }
 
-    def ===(that: AbsBool, absBool: AbsBoolUtil): AbsBool = {
+    def ===(that: AbsBool)(absBool: AbsBoolUtil): AbsBool = {
       (this, that) match {
         case (DefaultBoolBot, _) => DefaultBoolBot
         case (_, DefaultBoolBot) => DefaultBoolBot

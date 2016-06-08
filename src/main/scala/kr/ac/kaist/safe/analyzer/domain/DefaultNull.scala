@@ -44,7 +44,7 @@ object DefaultNullUtil extends AbsNullUtil {
         case _ => DefaultNullBot
       }
 
-    def ===(that: AbsNull, absBool: AbsBoolUtil): AbsBool =
+    def ===(that: AbsNull)(absBool: AbsBoolUtil): AbsBool =
       (this, that) match {
         case (DefaultNullBot, _) | (_, DefaultNullBot) => absBool.Bot
         case _ => absBool.True
