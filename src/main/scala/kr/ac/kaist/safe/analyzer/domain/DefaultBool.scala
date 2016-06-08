@@ -16,12 +16,15 @@ object DefaultBoolUtil extends AbsBoolUtil {
   val Bot: AbsBool = DefaultBoolBot
   val True: AbsBool = DefaultBoolTrue
   val False: AbsBool = DefaultBoolFalse
-
-  val bot: AbsBool = DefaultBoolBot
-
   def alpha(bool: Boolean): AbsBool = if (bool) DefaultBoolTrue else DefaultBoolFalse
 
   sealed abstract class DefaultBool extends AbsBool {
+    /* AbsDomain Interface */
+    def gamma: ConSingle[Boolean]
+    def gammaSimple: ConSimple = ConSimpleTop
+    override def toString: String
+    def toAbsString(absString: AbsStringUtil): AbsString
+
     /* AbsUndef Interface */
     def <=(that: AbsBool): Boolean =
       (this, that) match {
@@ -74,59 +77,30 @@ object DefaultBoolUtil extends AbsBoolUtil {
         case _ => this
       }
     }
-
-    override def toString: String =
-      this match {
-        case DefaultBoolTop => "Bool"
-        case DefaultBoolBot => "Bot"
-        case DefaultBoolTrue => "true"
-        case DefaultBoolFalse => "false"
-      }
-
-    def unary(): AbsBool = {
-      this match {
-        case DefaultBoolTop => DefaultBoolTop
-        case DefaultBoolBot => DefaultBoolBot
-        case DefaultBoolTrue => DefaultBoolFalse
-        case DefaultBoolFalse => DefaultBoolTrue
-      }
-    }
-
-    /* AbsDomain Interface */
-    def getAbsCase: AbsCase =
-      this match {
-        case DefaultBoolBot => AbsBot
-        case DefaultBoolTop => AbsTop
-        case DefaultBoolTrue | DefaultBoolFalse => AbsSingle
-      }
-
-    def getSingle: Option[Boolean] =
-      this match {
-        case DefaultBoolTrue => Some(true)
-        case DefaultBoolFalse => Some(false)
-        case _ => None
-      }
-
-    def gammaOpt: Option[Set[Boolean]] =
-      this match {
-        case DefaultBoolTrue => Some(Set(true))
-        case DefaultBoolFalse => Some(Set(false))
-        case _ => None
-      }
-
-    def isTop: Boolean = this == DefaultBoolTop
-    def isBottom: Boolean = this == DefaultBoolBot
-    def isConcrete: Boolean = this == DefaultBoolTrue || this == DefaultBoolFalse
-    def toAbsString(absString: AbsStringUtil): AbsString =
-      this match {
-        case DefaultBoolTop => absString.OtherStr
-        case DefaultBoolTrue => absString.alpha("true")
-        case DefaultBoolFalse => absString.alpha("false")
-        case DefaultBoolBot => absString.Bot
-      }
   }
-  case object DefaultBoolTop extends DefaultBool
-  case object DefaultBoolBot extends DefaultBool
-  case object DefaultBoolTrue extends DefaultBool
-  case object DefaultBoolFalse extends DefaultBool
+
+  case object DefaultBoolTop extends DefaultBool {
+    val gamma: ConSingle[Boolean] = ConSingleTop()
+    override val toString: String = "Bool"
+    def toAbsString(absString: AbsStringUtil): AbsString = absString.OtherStr
+  }
+
+  case object DefaultBoolBot extends DefaultBool {
+    val gamma: ConSingle[Boolean] = ConSingleBot()
+    override val toString: String = "Bot"
+    override val gammaSimple: ConSimple = ConSimpleBot
+    def toAbsString(absString: AbsStringUtil): AbsString = absString.Bot
+  }
+
+  case object DefaultBoolTrue extends DefaultBool {
+    val gamma: ConSingle[Boolean] = ConSingleCon(true)
+    override val toString: String = "true"
+    def toAbsString(absString: AbsStringUtil): AbsString = absString.alpha("true")
+  }
+
+  case object DefaultBoolFalse extends DefaultBool {
+    val gamma: ConSingle[Boolean] = ConSingleCon(false)
+    override val toString: String = "false"
+    def toAbsString(absString: AbsStringUtil): AbsString = absString.alpha("false")
+  }
 }

@@ -12,18 +12,19 @@
 package kr.ac.kaist.safe.analyzer.domain
 
 trait AbsDomain {
-  def getAbsCase: AbsCase
-
-  def isTop: Boolean
-  def isBottom: Boolean
-  def isConcrete: Boolean
+  def gamma: ConDomain
+  override def toString: String
   def toAbsString(absString: AbsStringUtil): AbsString
-  def getConcreteValueAsString(defaultString: String = ""): String = {
-    if (isConcrete) toString else defaultString
-  }
 }
 
 trait AbsUndef extends AbsDomain {
+  def gamma: ConSimple
+  def foldUnit(f: => Unit): Unit = fold(())(_ => f)
+  def foldUnit(f: AbsUndef => Unit): Unit = fold(())(f)
+  def fold[T](default: T)(f: AbsUndef => T): T = gamma match {
+    case ConSimpleBot => default
+    case _ => f(this)
+  }
   def <=(that: AbsUndef): Boolean
   def </(that: AbsUndef): Boolean = !(this <= that)
   def +(that: AbsUndef): AbsUndef
@@ -32,6 +33,13 @@ trait AbsUndef extends AbsDomain {
 }
 
 trait AbsNull extends AbsDomain {
+  def gamma: ConSimple
+  def foldUnit(f: => Unit): Unit = fold(())(_ => f)
+  def foldUnit(f: AbsNull => Unit): Unit = fold(())(f)
+  def fold[T](default: T)(f: AbsNull => T): T = gamma match {
+    case ConSimpleBot => default
+    case _ => f(this)
+  }
   def <=(that: AbsNull): Boolean
   def </(that: AbsNull): Boolean = !(this <= that)
   def +(that: AbsNull): AbsNull
@@ -40,26 +48,32 @@ trait AbsNull extends AbsDomain {
 }
 
 trait AbsBool extends AbsDomain {
-  def getPair: (AbsCase, Option[Boolean]) = (getAbsCase, getSingle)
-  def getSingle: Option[Boolean]
-  def gammaOpt: Option[Set[Boolean]]
-
-  def unary(): AbsBool
-
+  def gamma: ConSingle[Boolean]
+  def gammaSimple: ConSimple
+  def foldUnit(f: => Unit): Unit = fold(())(_ => f)
+  def foldUnit(f: AbsBool => Unit): Unit = fold(())(f)
+  def fold[T](default: T)(f: AbsBool => T): T = gammaSimple match {
+    case ConSimpleBot => default
+    case _ => f(this)
+  }
   def <=(that: AbsBool): Boolean
   def </(that: AbsBool): Boolean
   def +(that: AbsBool): AbsBool
   def <>(that: AbsBool): AbsBool
   def ===(that: AbsBool, absBool: AbsBoolUtil): AbsBool
-
   def negate: AbsBool
 }
 
 trait AbsNumber extends AbsDomain {
-  def getPair: (AbsCase, Option[Double]) = (getAbsCase, getSingle)
-  def getSingle: Option[Double]
-  def gammaOpt: Option[Set[Double]]
-
+  def gamma: ConSet[Double]
+  def gammaSingle: ConSingle[Double]
+  def gammaSimple: ConSimple
+  def foldUnit(f: => Unit): Unit = fold(())(_ => f)
+  def foldUnit(f: AbsNumber => Unit): Unit = fold(())(f)
+  def fold[T](default: T)(f: AbsNumber => T): T = gammaSimple match {
+    case ConSimpleBot => default
+    case _ => f(this)
+  }
   def <=(that: AbsNumber): Boolean
   def </(that: AbsNumber): Boolean = !(this <= that)
   def +(that: AbsNumber): AbsNumber
@@ -98,10 +112,16 @@ trait AbsNumber extends AbsDomain {
 }
 
 trait AbsString extends AbsDomain {
-  def getPair: (AbsCase, Option[String]) = (getAbsCase, getSingle)
-  def getSingle: Option[String]
-  def gammaOpt: Option[Set[String]]
-
+  def gamma: ConSet[String]
+  def gammaSingle: ConSingle[String]
+  def gammaSimple: ConSimple
+  def gammaIsAllNums: ConSingle[Boolean]
+  def foldUnit(f: => Unit): Unit = fold(())(_ => f)
+  def foldUnit(f: AbsString => Unit): Unit = fold(())(f)
+  def fold[T](default: T)(f: AbsString => T): T = gammaSimple match {
+    case ConSimpleBot => default
+    case _ => f(this)
+  }
   def <=(that: AbsString): Boolean
   def </(that: AbsString): Boolean = !(this <= that)
   def +(that: AbsString): AbsString
@@ -109,6 +129,7 @@ trait AbsString extends AbsDomain {
   def ===(that: AbsString, absBool: AbsBoolUtil): AbsBool
   def <(that: AbsString, absBool: AbsBoolUtil): AbsBool
 
+  def toBoolean(absBool: AbsBoolUtil): AbsBool
   def trim: AbsString
   def concat(that: AbsString): AbsString
   def charAt(pos: AbsNumber): AbsString
@@ -121,9 +142,3 @@ trait AbsString extends AbsDomain {
   def isAllNums: Boolean
   def isAllOthers: Boolean
 }
-
-sealed abstract class AbsCase
-case object AbsTop extends AbsCase
-case object AbsBot extends AbsCase
-case object AbsSingle extends AbsCase
-case object AbsMulti extends AbsCase

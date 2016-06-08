@@ -11,7 +11,7 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
-trait PValue {
+sealed abstract class PValue {
   val undefval: AbsUndef
   val nullval: AbsNull
   val boolval: AbsBool
@@ -27,12 +27,13 @@ trait PValue {
   /* meet */
   def <>(that: PValue): PValue
 
+  def gammaSimple: ConSimple
+
   override def toString(): String
   def typeCount: Int
   def typeKinds: String
   def foreach(f: (AbsDomain => Unit)): Unit
 
-  def isTop: Boolean
   def isBottom: Boolean
 
   def copyWith(newUndefVal: AbsUndef): PValue
@@ -99,75 +100,53 @@ case class DefaultPValue(
     )
   }
 
+  def gammaSimple: ConSimple = typeCount match {
+    case 0 => ConSimpleBot
+    case _ => ConSimpleTop
+  }
+
   override def toString(): String = {
-    if (this.isTop) {
-      "PValue"
-    } else {
-      var first = true
-      val sb = new StringBuilder()
+    var lst: List[String] = Nil
 
-      if (!this.undefval.isBottom) {
-        sb.append(this.undefval.toString)
-        first = false
-      }
-      if (!this.nullval.isBottom) {
-        if (!first) sb.append(", ");
-        sb.append(this.nullval.toString);
-        first = false;
-      }
-      if (!this.boolval.isBottom) {
-        if (!first) sb.append(", ");
-        sb.append(this.boolval.toString);
-        first = false;
-      }
-      if (!this.numval.isBottom) {
-        if (!first) sb.append(", ");
-        sb.append(this.numval.toString);
-        first = false;
-      }
-      if (!this.strval.isBottom) {
-        if (!first) sb.append(", ");
-        sb.append(this.strval.toString);
-        first = false;
-      }
+    this.undefval.fold(()) { lst ::= _.toString }
+    this.nullval.fold(()) { lst ::= _.toString }
+    this.boolval.fold(()) { lst ::= _.toString }
+    this.numval.fold(()) { lst ::= _.toString }
+    this.strval.fold(()) { lst ::= _.toString }
 
-      if (first) "Bot" else sb.toString()
+    lst match {
+      case Nil => "Bot"
+      case _ => lst.mkString(", ")
     }
   }
 
   def typeCount: Int = {
     var count = 0;
-    if (!this.undefval.isBottom)
-      count = count + 1;
-    if (!this.nullval.isBottom)
-      count = count + 1;
-    if (!this.boolval.isBottom)
-      count = count + 1;
-    if (!this.numval.isBottom)
-      count = count + 1;
-    if (!this.strval.isBottom)
-      count = count + 1;
+    this.undefval.fold(()) { _ => count += 1 }
+    this.nullval.fold(()) { _ => count += 1 }
+    this.boolval.fold(()) { _ => count += 1 }
+    this.numval.fold(()) { _ => count += 1 }
+    this.strval.fold(()) { _ => count += 1 }
     count
   }
 
   def typeKinds: String = {
-    val sb = new StringBuilder()
-    if (!undefval.isBottom) sb.append("Undefined")
-    if (!nullval.isBottom) sb.append((if (sb.length > 0) ", " else "") + "Null")
-    if (!boolval.isBottom) sb.append((if (sb.length > 0) ", " else "") + "Boolean")
-    if (!numval.isBottom) sb.append((if (sb.length > 0) ", " else "") + "Number")
-    if (!strval.isBottom) sb.append((if (sb.length > 0) ", " else "") + "String")
-    sb.toString
+    var lst: List[String] = Nil
+    this.undefval.fold(()) { _ => lst ::= "Undefined" }
+    this.nullval.fold(()) { _ => lst ::= "Null" }
+    this.boolval.fold(()) { _ => lst ::= "Boolean" }
+    this.numval.fold(()) { _ => lst ::= "Number" }
+    this.strval.fold(()) { _ => lst ::= "String" }
+    lst.mkString(", ")
   }
 
   def foreach(f: (AbsDomain => Unit)): Unit = {
     f(undefval); f(nullval); f(boolval); f(numval); f(strval)
   }
 
-  def isTop: Boolean =
-    undefval.isTop && nullval.isTop && boolval.isTop && numval.isTop && strval.isTop
   def isBottom: Boolean =
-    undefval.isBottom && nullval.isBottom && boolval.isBottom && numval.isBottom && strval.isBottom
+    (undefval.gamma, nullval.gamma, boolval.gammaSimple, numval.gammaSimple, strval.gammaSimple) ==
+      (ConSimpleBot, ConSimpleBot, ConSimpleBot, ConSimpleBot, ConSimpleBot)
 
   def copyWith(newUndefVal: AbsUndef): PValue = DefaultPValue(newUndefVal, nullval, boolval, numval, strval)
   def copyWith(newNullVal: AbsNull): PValue = DefaultPValue(undefval, newNullVal, boolval, numval, strval)

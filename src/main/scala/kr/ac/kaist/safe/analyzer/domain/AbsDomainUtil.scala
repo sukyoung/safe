@@ -32,6 +32,7 @@ trait AbsStringUtil {
   val OtherStr: AbsString
 
   def alpha(str: String): AbsString
+  def alpha(str: Set[String]): AbsString
 
   def fromCharCode(n: AbsNumber, absNumber: AbsNumberUtil): AbsString
 }
@@ -45,8 +46,7 @@ trait AbsNumberUtil {
   val NaN: AbsNumber
   val UInt: AbsNumber
   val NUInt: AbsNumber
-
-  val naturalNumbers: AbsNumber
+  val NaturalNumbers: AbsNumber
 
   def alpha(d: Double): AbsNumber
 }

@@ -366,11 +366,11 @@ class Semantics(cfg: CFG, utils: Utils, addressManager: AddressManager) {
                       val arrLengthHeap4 =
                         if ((absTrue <= (nNewLen < (nOldLen, utils.absBool))) && (absTrue <= bCanPut)) {
                           val hi = helper.propStore(st.heap, l, utils.absString.alpha("length"), vRhs)
-                          (nNewLen.getSingle, nOldLen.getSingle) match {
-                            case (Some(n1), Some(n2)) =>
+                          (nNewLen.gammaSingle, nOldLen.gammaSingle) match {
+                            case (ConSingleCon(n1), ConSingleCon(n2)) =>
                               (n1.toInt until n2.toInt).foldLeft(hi)((hj, i) =>
                                 helper.delete(hj, l, utils.absString.alpha(i.toString))._1)
-                            case _ if nNewLen <= utils.absNumber.Bot || nOldLen <= utils.absNumber.Bot => Heap.Bot
+                            case (ConSingleBot(), _) | (_, ConSingleBot()) => Heap.Bot
                             case _ => helper.delete(hi, l, utils.absString.NumStr)._1
                           }
                         } else {

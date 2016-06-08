@@ -14,10 +14,14 @@ package kr.ac.kaist.safe.analyzer.domain
 object DefaultNullUtil extends AbsNullUtil {
   val Top: AbsNull = DefaultNullTop
   val Bot: AbsNull = DefaultNullBot
-
   def alpha: AbsNull = Top
 
   sealed abstract class DefaultNull extends AbsNull {
+    /* AbsDomain Interface */
+    def gamma: ConSimple
+    override def toString: String
+    def toAbsString(absString: AbsStringUtil): AbsString
+
     /* AbsUndef Interface */
     def <=(that: AbsNull): Boolean =
       (this, that) match {
@@ -43,26 +47,17 @@ object DefaultNullUtil extends AbsNullUtil {
         case (DefaultNullBot, _) | (_, DefaultNullBot) => absBool.Bot
         case _ => absBool.True
       }
-
-    override def toString: String =
-      this match {
-        case DefaultNullTop => "null"
-        case DefaultNullBot => "Bot"
-      }
-
-    /* AbsDomain Interface */
-    def getAbsCase: AbsCase =
-      this match {
-        case DefaultNullBot => AbsBot
-        case DefaultNullTop => AbsTop
-      }
-    def isTop: Boolean = this == DefaultNullTop
-    def isBottom: Boolean = this == DefaultNullBot
-    def isConcrete: Boolean = this == DefaultNullTop
-    def toAbsString(absString: AbsStringUtil): AbsString =
-      if (isConcrete) absString.alpha("null")
-      else absString.Bot
   }
-  case object DefaultNullTop extends DefaultNull
-  case object DefaultNullBot extends DefaultNull
+
+  case object DefaultNullTop extends DefaultNull {
+    val gamma: ConSimple = ConSimpleTop
+    override val toString: String = "null"
+    def toAbsString(absString: AbsStringUtil): AbsString = absString.alpha("null")
+  }
+
+  case object DefaultNullBot extends DefaultNull {
+    val gamma: ConSimple = ConSimpleBot
+    override val toString: String = "Bot"
+    def toAbsString(absString: AbsStringUtil): AbsString = absString.Bot
+  }
 }

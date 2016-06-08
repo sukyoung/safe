@@ -37,10 +37,10 @@ case class Helper(utils: Utils, addrManager: AddressManager, predefLoc: PredefLo
       if (utils.absBool.False <= domInStr) {
         val protoObj = h.getOrElse(loc1, utils.ObjBot).getOrElse("@proto", utils.PropValueBot)
         val protoLocSet = protoObj.objval.value.locset
-        val b3 =
-          if (!protoObj.objval.value.pvalue.nullval.isBottom)
-            h.getOrElse(loc2, utils.ObjBot).getOrElse("@extensible", utils.PropValueBot).objval.value.pvalue.boolval
-          else utils.absBool.Bot
+        val b3 = protoObj.objval.value.pvalue.nullval.fold(utils.absBool.Bot)(_ => {
+          h.getOrElse(loc2, utils.ObjBot)
+            .getOrElse("@extensible", utils.PropValueBot).objval.value.pvalue.boolval
+        })
         protoLocSet.foldLeft(b3)((absB, loc) => {
           absB + canPutHelp(h, loc, absStr, loc2)
         })
@@ -142,9 +142,10 @@ case class Helper(utils: Utils, addrManager: AddressManager, predefLoc: PredefLo
   }
 
   def getThis(h: Heap, value: Value): Set[Loc] = {
-    val locSet1 =
-      if (value.pvalue.nullval.isTop || value.pvalue.undefval.isTop) HashSet(predefLoc.GLOBAL_LOC)
-      else LocSetEmpty
+    val locSet1 = (value.pvalue.nullval.gamma, value.pvalue.undefval.gamma) match {
+      case (ConSimpleBot, ConSimpleBot) => LocSetEmpty
+      case _ => HashSet(predefLoc.GLOBAL_LOC)
+    }
 
     val foundDeclEnvRecord = value.locset.exists(loc => utils.absBool.False <= isObject(h, loc))
 
@@ -194,9 +195,7 @@ case class Helper(utils: Utils, addrManager: AddressManager, predefLoc: PredefLo
         val b2 =
           if (utils.absBool.False <= test) {
             val protoV = h.getOrElse(currentLoc, utils.ObjBot).getOrElse("@proto", utils.PropValueBot).objval.value
-            val b3 =
-              if (!protoV.pvalue.nullval.isBottom) utils.absBool.False
-              else utils.absBool.Bot
+            val b3 = protoV.pvalue.nullval.fold(utils.absBool.Bot) { _ => utils.absBool.False }
             b3 + protoV.locset.foldLeft[AbsBool](utils.absBool.Bot)((b, protoLoc) => {
               b + visit(protoLoc)
             })
@@ -231,9 +230,7 @@ case class Helper(utils: Utils, addrManager: AddressManager, predefLoc: PredefLo
         val v2 = boolBotVal
         if (utils.absBool.False <= eqVal.pvalue.boolval) {
           val protoVal = h.getOrElse(l1, utils.ObjBot).getOrElse("@proto", utils.PropValueBot).objval.value
-          val v1 =
-            if (!protoVal.pvalue.nullval.isBottom) boolFalseVal
-            else boolBotVal
+          val v1 = protoVal.pvalue.nullval.fold(boolBotVal) { _ => boolFalseVal }
           v1 + protoVal.locset.foldLeft(utils.ValueBot)((tmpVal, protoLoc) => tmpVal + iter(h, protoLoc, l2))
         } else boolBotVal
         v1 + v2
@@ -260,17 +257,19 @@ case class Helper(utils: Utils, addrManager: AddressManager, predefLoc: PredefLo
   }
 
   def isArrayIndex(absStr: AbsString): AbsBool = {
-    absStr.gammaOpt match {
-      case None if absStr.isBottom => utils.absBool.Bot
-      case None if absStr.isTop => utils.absBool.Top
-      case Some(strSet) if absStr.isAllNums =>
-        strSet.foldLeft[AbsBool](utils.absBool.Bot)((res, v) => {
-          val num = v.toDouble
-          res + utils.absBool.alpha(0 <= num && num < scala.math.pow(2, 32) - 1)
+    absStr.gamma match {
+      case ConSetBot() => utils.absBool.Bot
+      case ConSetTop() => utils.absBool.Top
+      case ConSetCon(strSet) =>
+        val upper = scala.math.pow(2, 32) - 1
+        strSet.foldLeft(utils.absBool.Bot)((res, v) => {
+          res + utils.absBool.alpha({
+            isNum(v) && {
+              val num = v.toDouble
+              0 <= num && num < upper
+            }
+          })
         })
-      case Some(_) if absStr.isAllOthers => utils.absBool.False
-      case Some(_) => utils.absBool.Bot
-      case None => utils.absBool.Top
     }
   }
 
@@ -448,8 +447,8 @@ case class Helper(utils: Utils, addrManager: AddressManager, predefLoc: PredefLo
 
     val absFalse = utils.absBool.False
     val absTrue = utils.absBool.True
-    absStr.gammaOpt match {
-      case Some(strSet) =>
+    absStr.gamma match {
+      case ConSetCon(strSet) =>
         strSet.foldLeft(utils.ObjBot)((obj, str) => {
           val length = str.length
           val newObj3 = (0 until length).foldLeft(newObj2)((_o, _i) => {
@@ -460,7 +459,7 @@ case class Helper(utils: Utils, addrManager: AddressManager, predefLoc: PredefLo
           val lengthVal = Value(utils.PValueBot.copyWith(utils.absNumber.alpha(length)))
           obj + newObj3.update("length", PropValue(ObjectValue(lengthVal, absFalse, absFalse, absFalse)))
         })
-      case None =>
+      case _ =>
         val strTopVal = Value(utils.PValueBot.copyWith(utils.absString.Top))
         val lengthVal = Value(utils.PValueBot.copyWith(absStr.length(utils.absNumber)))
         newObj2
@@ -612,12 +611,9 @@ case class Helper(utils: Utils, addrManager: AddressManager, predefLoc: PredefLo
         val v2 =
           if (utils.absBool.False <= test) {
             val protoV = h.getOrElse(currentLoc, utils.ObjBot).getOrElse("@proto", utils.PropValueBot).objval.value
-            val v3 =
-              if (!protoV.pvalue.nullval.isBottom) {
-                Value(utils.PValueBot.copyWith(utils.absUndef.Top))
-              } else {
-                utils.ValueBot
-              }
+            val v3 = protoV.pvalue.nullval.fold(utils.ValueBot)(_ => {
+              Value(utils.PValueBot.copyWith(utils.absUndef.Top))
+            })
             v3 + protoV.locset.foldLeft(utils.ValueBot)((v, protoLoc) => {
               v + visit(protoLoc)
             })
@@ -726,16 +722,8 @@ case class Helper(utils: Utils, addrManager: AddressManager, predefLoc: PredefLo
   def propStore(h: Heap, loc: Loc, absStr: AbsString, value: Value): Heap = {
     val findingObj = h.getOrElse(loc, utils.ObjBot)
     val objDomIn = findingObj.domIn(absStr, utils.absBool)
-    objDomIn.getSingle match {
-      case Some(true) =>
-        val oldObjV: ObjectValue = findingObj.getOrElse(absStr, utils.PropValueBot).objval
-        val newObjV = oldObjV.copyWith(value)
-        h.update(loc, findingObj.update(absStr, PropValue(newObjV), utils))
-      case Some(false) =>
-        val oldObjV: ObjectValue = findingObj.getOrElse(absStr, utils.PropValueBot).objval
-        val newObjV = ObjectValue(value, utils.absBool.True, utils.absBool.True, utils.absBool.True)
-        h.update(loc, findingObj.update(absStr, PropValue(newObjV), utils))
-      case None if objDomIn.isTop =>
+    objDomIn.gamma match {
+      case ConSingleTop() =>
         val oldObjV: ObjectValue = findingObj.getOrElse(absStr, utils.PropValueBot).objval
         val newObjV = ObjectValue(
           value,
@@ -744,7 +732,15 @@ case class Helper(utils: Utils, addrManager: AddressManager, predefLoc: PredefLo
           oldObjV.configurable + utils.absBool.True
         )
         h.update(loc, findingObj.update(absStr, PropValue(newObjV), utils))
-      case None => Heap.Bot
+      case ConSingleBot() => Heap.Bot
+      case ConSingleCon(true) =>
+        val oldObjV: ObjectValue = findingObj.getOrElse(absStr, utils.PropValueBot).objval
+        val newObjV = oldObjV.copyWith(value)
+        h.update(loc, findingObj.update(absStr, PropValue(newObjV), utils))
+      case ConSingleCon(false) =>
+        val oldObjV: ObjectValue = findingObj.getOrElse(absStr, utils.PropValueBot).objval
+        val newObjV = ObjectValue(value, utils.absBool.True, utils.absBool.True, utils.absBool.True)
+        h.update(loc, findingObj.update(absStr, PropValue(newObjV), utils))
     }
   }
 
@@ -758,27 +754,11 @@ case class Helper(utils: Utils, addrManager: AddressManager, predefLoc: PredefLo
     val absTrue = utils.absBool.True
     val absFalse = utils.absBool.False
 
-    val b1 = if (value.pvalue.undefval.isTop) absFalse else bot
-    val b2 = if (value.pvalue.nullval.isTop) absFalse else bot
+    val b1 = value.pvalue.undefval.fold(bot) { _ => absFalse }
+    val b2 = value.pvalue.nullval.fold(bot) { _ => absFalse }
     val b3 = value.pvalue.boolval
-    val b4 = value.pvalue.numval.getAbsCase match {
-      case AbsTop => top
-      case AbsBot => bot
-      case AbsSingle => value.pvalue.numval.toBoolean(utils.absBool)
-      case AbsMulti if value.pvalue.numval.isInfinity => absTrue
-      case AbsMulti => top
-    }
-    val strval = value.pvalue.strval
-    val b5 =
-      if (strval.isAllNums) absTrue
-      else strval.gammaOpt match {
-        case _ if strval.isTop => top
-        case _ if strval.isBottom => bot
-        case Some(vs) => vs.foldLeft[AbsBool](bot)((r, v) => {
-          r + utils.absBool.alpha(v != "")
-        })
-        case None => top
-      }
+    val b4 = value.pvalue.numval.toBoolean(utils.absBool)
+    val b5 = value.pvalue.strval.toBoolean(utils.absBool)
     val b6 = if (value.locset.isEmpty) bot else absTrue
 
     b1 + b2 + b3 + b4 + b5 + b6
@@ -787,21 +767,23 @@ case class Helper(utils: Utils, addrManager: AddressManager, predefLoc: PredefLo
   def toNumber(pvalue: PValue): AbsNumber = {
     val absNum = utils.absNumber
 
-    val pv1 = if (pvalue.undefval.isTop) absNum.NaN else absNum.Bot
+    val pv1 = pvalue.undefval.fold(absNum.Bot) { _ => absNum.NaN }
 
-    val pv2 = if (pvalue.nullval.isTop) absNum.alpha(+0) else absNum.Bot
+    val pv2 = pvalue.nullval.fold(absNum.Bot) { _ => absNum.alpha(+0) }
 
-    val pv3 = pvalue.boolval.getPair match {
-      case (AbsBot, _) => absNum.Bot
-      case (AbsSingle, Some(true)) => absNum.alpha(1)
-      case (AbsSingle, Some(false)) => absNum.alpha(+0)
-      case _ => absNum.UInt
+    val pv3 = pvalue.boolval.gamma match {
+      case ConSingleBot() => absNum.Bot
+      case ConSingleCon(true) => absNum.alpha(1)
+      case ConSingleCon(false) => absNum.alpha(+0)
+      case ConSingleTop() => absNum.UInt
     }
 
     val pv4 = pvalue.numval
 
-    val pv5 = pvalue.strval.gammaOpt match {
-      case Some(strSet) =>
+    val pv5 = pvalue.strval.gamma match {
+      case ConSetBot() => absNum.Bot
+      case ConSetTop() => absNum.Top
+      case ConSetCon(strSet) =>
         strSet.foldLeft(absNum.Bot)((absN, str) => {
           val strN = str.trim match {
             case "" => absNum.alpha(0)
@@ -810,8 +792,6 @@ case class Helper(utils: Utils, addrManager: AddressManager, predefLoc: PredefLo
           }
           absN + strN
         })
-      case None if pvalue.strval.isBottom => absNum.Bot
-      case None => absNum.Top
     }
 
     pv1 + pv2 + pv3 + pv4 + pv5
@@ -829,31 +809,21 @@ case class Helper(utils: Utils, addrManager: AddressManager, predefLoc: PredefLo
   def toStringSet(pvalue: PValue): Set[AbsString] = {
     var set = HashSet[AbsString]()
 
-    if (pvalue.undefval.isTop) set += utils.absString.alpha("undefined")
+    pvalue.undefval.foldUnit(set += utils.absString.alpha("undefined"))
+    pvalue.nullval.foldUnit(set += utils.absString.alpha("null"))
 
-    if (pvalue.nullval.isTop) set += utils.absString.alpha("null")
-
-    pvalue.boolval.getPair match {
-      case (AbsBot, _) => ()
-      case (AbsSingle, Some(true)) => set += utils.absString.alpha("true")
-      case (AbsSingle, Some(false)) => set += utils.absString.alpha("false")
-      case _ =>
+    pvalue.boolval.gamma match {
+      case ConSingleBot() => ()
+      case ConSingleCon(true) => set += utils.absString.alpha("true")
+      case ConSingleCon(false) => set += utils.absString.alpha("false")
+      case ConSingleTop() =>
         set += utils.absString.alpha("true")
         set += utils.absString.alpha("false")
     }
 
-    pvalue.numval.getAbsCase match {
-      case AbsBot => ()
-      case AbsMulti if pvalue.numval.isInfinity =>
-        set += utils.absString.alpha("Infinity")
-        set += utils.absString.alpha("-Infinity")
-      case _ => pvalue.numval.toAbsString(utils.absString)
-    }
+    set += pvalue.numval.toAbsString(utils.absString)
 
-    pvalue.strval.getAbsCase match {
-      case AbsBot => ()
-      case _ => set += pvalue.strval
-    }
+    pvalue.strval.foldUnit(set += pvalue.strval)
 
     // remove redundancies
     set.filter(s => !set.exists(o => s != o && s <= o))
@@ -863,19 +833,13 @@ case class Helper(utils: Utils, addrManager: AddressManager, predefLoc: PredefLo
     val locSet = value.locset
     val pv = value.pvalue
 
-    val excSet =
-      if (!pv.undefval.isBottom || !pv.nullval.isBottom) HashSet[Exception](TypeError)
-      else ExceptionSetEmpty
-
-    val obj1 =
-      if (!pv.strval.isBottom) newString(pv.strval)
-      else utils.ObjBot
-    val obj2 =
-      if (!pv.boolval.isBottom) newBoolean(pv.boolval)
-      else utils.ObjBot
-    val obj3 =
-      if (!pv.numval.isBottom) newNumber(pv.numval)
-      else utils.ObjBot
+    val excSet = (pv.undefval.gamma, pv.nullval.gamma) match {
+      case (ConSimpleBot, ConSimpleBot) => ExceptionSetEmpty
+      case _ => HashSet[Exception](TypeError)
+    }
+    val obj1 = pv.strval.fold(utils.ObjBot) { newString(_) }
+    val obj2 = pv.boolval.fold(utils.ObjBot) { newBoolean(_) }
+    val obj3 = pv.numval.fold(utils.ObjBot) { newNumber(_) }
     val obj = obj1 + obj2 + obj3
 
     val recLoc = addrManager.addrToLoc(newAddr, Recent)
@@ -982,21 +946,27 @@ case class Helper(utils: Utils, addrManager: AddressManager, predefLoc: PredefLo
     val pv3 = utils.PValueBot.copyWith(n)
     val pv4 = utils.PValueBot.copyWith(n2)
 
-    val isNotBottom = !srcAbsStr.isBottom && !globalAbsB.isBottom && !ignoreCaseAbsB.isBottom && !multilineAbsB.isBottom
-    val absStr5 =
-      (srcAbsStr.getSingle, globalAbsB.getSingle, ignoreCaseAbsB.getSingle, multilineAbsB.getSingle) match {
-        case (Some(s), Some(g), Some(i), Some(m)) => {
+    val absStr5 = (
+      srcAbsStr.gammaSingle,
+      globalAbsB.gamma,
+      ignoreCaseAbsB.gamma,
+      multilineAbsB.gamma
+    ) match {
+        case (ConSingleCon(s), ConSingleCon(g), ConSingleCon(i), ConSingleCon(m)) =>
           val flags = (if (g) "g" else "") + (if (i) "i" else "") + (if (m) "m" else "")
           utils.absString.alpha("/" + s + "/" + flags)
-        }
-        case _ if isNotBottom => utils.absString.Top
-        case _ => utils.absString.Bot
+        case (ConSingleBot(), _, _, _)
+        | (_, ConSingleBot(), _, _)
+        | (_, _, ConSingleBot(), _)
+        | (_, _, _, ConSingleBot()) => utils.absString.Bot
+        case _ => utils.absString.Top
       }
 
-    val pv6 = others.getSingle match {
-      case None if others.isBottom => utils.PValueBot.copyWith(utils.absString.Bot)
-      case Some(_) | None => utils.PValueBot.copyWith(utils.absString.Top)
-    }
+    val pv6 = utils.PValueBot.copyWith(
+      others.fold(utils.absString.Bot)(_ => {
+        utils.absString.Top
+      })
+    )
     utils.PValueBot.copyWith(absStr1) + pv2 + pv3 + pv4 + utils.PValueBot.copyWith(absStr5) + pv6
   }
 
@@ -1042,42 +1012,44 @@ case class Helper(utils: Utils, addrManager: AddressManager, predefLoc: PredefLo
     })
     val absStr2 = b.toAbsString(utils.absString)
     val absStr3 = n.toAbsString(utils.absString)
-
-    val isNotBottom = !srcAbsStr.isBottom && !globalAbsB.isBottom && !ignoreCaseAbsB.isBottom && !multilineAbsB.isBottom
-    val absStr4 =
-      (srcAbsStr.getSingle, globalAbsB.getSingle, ignoreCaseAbsB.getSingle, multilineAbsB.getSingle) match {
-        case (Some(s), Some(g), Some(i), Some(m)) => {
+    val absStr4 = (
+      srcAbsStr.gammaSingle,
+      globalAbsB.gamma,
+      ignoreCaseAbsB.gamma,
+      multilineAbsB.gamma
+    ) match {
+        case (ConSingleCon(s), ConSingleCon(g), ConSingleCon(i), ConSingleCon(m)) =>
           val flags = (if (g) "g" else "") + (if (i) "i" else "") + (if (m) "m" else "")
           utils.absString.alpha("/" + s + "/" + flags)
-        }
-        case _ if isNotBottom => utils.absString.Top
-        case _ => utils.absString.Bot
+        case (ConSingleBot(), _, _, _)
+        | (_, ConSingleBot(), _, _)
+        | (_, _, ConSingleBot(), _)
+        | (_, _, _, ConSingleBot()) => utils.absString.Bot
+        case _ => utils.absString.Top
       }
 
-    val absStr5 = others.getSingle match {
-      case Some(s) => utils.absString.Top
-      case None if others.isBottom => utils.absString.Bot
-      case None => utils.absString.Top
-    }
+    val absStr5 = others.fold(utils.absString.Bot)(_ => {
+      utils.absString.Top
+    })
     absStr1 + absStr2 + absStr3 + absStr4 + absStr5
   }
 
   def typeTag(h: Heap, value: Value): AbsString = {
-    val s1 =
-      if (!value.pvalue.undefval.isBottom) utils.absString.alpha("undefined")
-      else utils.absString.Bot
-    val s2 =
-      if (!value.pvalue.nullval.isBottom) utils.absString.alpha("object") //TODO: check null type?
-      else utils.absString.Bot
-    val s3 =
-      if (!value.pvalue.numval.isBottom) utils.absString.alpha("number")
-      else utils.absString.Bot
-    val s4 =
-      if (!value.pvalue.boolval.isBottom) utils.absString.alpha("boolean")
-      else utils.absString.Bot
-    val s5 =
-      if (!value.pvalue.strval.isBottom) utils.absString.alpha("string")
-      else utils.absString.Bot
+    val s1 = value.pvalue.undefval.fold(utils.absString.Bot)(_ => {
+      utils.absString.alpha("undefined")
+    })
+    val s2 = value.pvalue.nullval.fold(utils.absString.Bot)(_ => {
+      utils.absString.alpha("object") //TODO: check null type?
+    })
+    val s3 = value.pvalue.numval.fold(utils.absString.Bot)(_ => {
+      utils.absString.alpha("number")
+    })
+    val s4 = value.pvalue.boolval.fold(utils.absString.Bot)(_ => {
+      utils.absString.alpha("boolean")
+    })
+    val s5 = value.pvalue.strval.fold(utils.absString.Bot)(_ => {
+      utils.absString.alpha("string")
+    })
 
     val isCallableLocSet = value.locset.foldLeft(utils.absBool.Bot)((tmpAbsB, l) => tmpAbsB + isCallable(h, l))
     val s6 =

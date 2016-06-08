@@ -76,8 +76,11 @@ case class DefaultObjectValue(
     )
   }
 
-  def isBottom: Boolean =
-    this.value.isBottom && this.writable.isBottom && this.enumerable.isBottom && this.configurable.isBottom
+  def isBottom: Boolean = {
+    value.isBottom &&
+      (writable.gammaSimple, enumerable.gammaSimple, configurable.gammaSimple) ==
+      (ConSimpleBot, ConSimpleBot, ConSimpleBot)
+  }
 
   def copyWith(newValue: Value): ObjectValue =
     DefaultObjectValue(newValue, writable, enumerable, configurable)

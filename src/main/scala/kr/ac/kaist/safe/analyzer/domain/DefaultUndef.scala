@@ -19,6 +19,11 @@ object DefaultUndefUtil extends AbsUndefUtil {
   def alpha: AbsUndef = Top
 
   sealed abstract class DefaultUndef extends AbsUndef {
+    /* AbsDomain Interface */
+    def gamma: ConSimple
+    def toAbsString(absString: AbsStringUtil): AbsString
+    override def toString: String
+
     /* AbsUndef Interface */
     def <=(that: AbsUndef): Boolean =
       (this, that) match {
@@ -45,26 +50,17 @@ object DefaultUndefUtil extends AbsUndefUtil {
         case (DefaultUndefBot, _) | (_, DefaultUndefBot) => absBool.Bot
         case _ => absBool.True
       }
-
-    override def toString: String =
-      this match {
-        case DefaultUndefTop => "undefined"
-        case DefaultUndefBot => "Bot"
-      }
-
-    /* AbsDomain Interface */
-    def getAbsCase: AbsCase =
-      this match {
-        case DefaultUndefBot => AbsBot
-        case DefaultUndefTop => AbsTop
-      }
-    def isTop: Boolean = this == DefaultUndefTop
-    def isBottom: Boolean = this == DefaultUndefBot
-    def isConcrete: Boolean = this == DefaultUndefTop
-    def toAbsString(absString: AbsStringUtil): AbsString =
-      if (isConcrete) absString.alpha("undefined")
-      else absString.Bot
   }
-  case object DefaultUndefTop extends DefaultUndef
-  case object DefaultUndefBot extends DefaultUndef
+
+  case object DefaultUndefTop extends DefaultUndef {
+    val gamma: ConSimple = ConSimpleTop
+    override val toString: String = "undefined"
+    def toAbsString(absString: AbsStringUtil): AbsString = absString.alpha("undefined")
+  }
+
+  case object DefaultUndefBot extends DefaultUndef {
+    val gamma: ConSimple = ConSimpleBot
+    override val toString: String = "Bot"
+    def toAbsString(absString: AbsStringUtil): AbsString = absString.Bot
+  }
 }
