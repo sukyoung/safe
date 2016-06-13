@@ -35,6 +35,8 @@ case class Analyze(
     val worklist = Worklist(cfg)
     worklist.add(ControlPoint(cfg.globalFunc.entry, callCtxManager.globalCallContext))
     val semantics = new Semantics(cfg, worklist, utils, config.addrManager)
+    val initSt = semantics.initState
+    cfg.globalFunc.entry.setState(callCtxManager.globalCallContext, initSt)
     val fixpoint = new Fixpoint(semantics, worklist)
     fixpoint.compute()
 

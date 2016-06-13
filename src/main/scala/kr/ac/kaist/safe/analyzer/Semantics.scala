@@ -32,6 +32,15 @@ class Semantics(cfg: CFG, worklist: Worklist, utils: Utils, addressManager: Addr
   def getInterProcSucc(cp: ControlPoint): Option[Map[ControlPoint, (Context, Obj)]] = ipSuccMap.get(cp)
   def getInterProcPred(cp: ControlPoint): Option[Set[ControlPoint]] = ipPredMap.get(cp)
 
+  def initState: State = {
+    val globalPureLocalObj = helper.newPureLocal(Value(utils.PValueBot.copyWith(utils.absNull.Top)), HashSet(predefLoc.GLOBAL_LOC)) - "@return"
+    val initHeap = Heap.Bot
+      .update(predefLoc.SINGLE_PURE_LOCAL_LOC, globalPureLocalObj)
+      .update(predefLoc.GLOBAL_LOC, utils.ObjEmpty)
+      .update(predefLoc.COLLAPSED_LOC, utils.ObjEmpty)
+    State(initHeap, Context.Bot)
+  }
+
   // Adds inter-procedural call edge from call-node cp1 to entry-node cp2.
   // Edge label ctx records callee context, which is joined if the edge existed already.
   def addCallEdge(cp1: ControlPoint, cp2: ControlPoint, ctx: Context, obj: Obj): Unit = {
