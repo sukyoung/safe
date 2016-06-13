@@ -27,9 +27,8 @@ object ControlPoint {
 }
 
 case class FlowSensitiveCP(node: CFGBlock, callContext: CallContext) extends ControlPoint {
-  private var state: State = State.Bot
-  def getState: State = this.state
-  def setState(s: State): Unit = this.state = s
+  def getState: State = this.node.getState(this.callContext)
+  def setState(st: State): Unit = this.node.setState(this.callContext, st)
 }
 
 case class FlowInsensitiveCP(node: CFGBlock, callContext: CallContext) extends ControlPoint {

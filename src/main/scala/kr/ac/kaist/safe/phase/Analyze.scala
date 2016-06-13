@@ -11,8 +11,9 @@
 
 package kr.ac.kaist.safe.phase
 
-import kr.ac.kaist.safe.analyzer.{ CallContextManager, Semantics }
-import scala.util.{ Try, Success, Failure }
+import kr.ac.kaist.safe.analyzer._
+
+import scala.util.{ Failure, Success, Try }
 import kr.ac.kaist.safe.config.{ BoolOption, Config, ConfigOption, NumOption, OptionKind, StrOption }
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.nodes.CFG
@@ -28,12 +29,16 @@ case class Analyze(
   def analyze(config: Config): Try[Int] =
     prev.cfgBuild(config).flatMap(analyze(config, _))
   def analyze(config: Config, cfg: CFG): Try[Int] = {
-    //TODO: Below are temporal analyzer main code
     val utils = Utils(analyzeConfig.AbsUndef, analyzeConfig.AbsNull, analyzeConfig.AbsBool, analyzeConfig.AbsNumber, analyzeConfig.AbsString)
-    val semantics = new Semantics(cfg, utils, config.addrManager)
     val callCtxManager = CallContextManager(config.addrManager)
-    val excLog = semantics.excLog
 
+    val worklist = Worklist(cfg)
+    worklist.add(ControlPoint(cfg.globalFunc.entry, callCtxManager.globalCallContext))
+    val semantics = new Semantics(cfg, worklist, utils, config.addrManager)
+    val fixpoint = new Fixpoint(semantics, worklist)
+    fixpoint.compute()
+
+    val excLog = semantics.excLog
     // Report errors.
     if (excLog.hasError) {
       println(config.fileNames.head + ":")

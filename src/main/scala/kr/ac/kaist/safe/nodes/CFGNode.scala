@@ -12,7 +12,8 @@
 package kr.ac.kaist.safe.nodes
 
 import scala.collection.mutable.{ HashMap => MHashMap, Map => MMap }
-import kr.ac.kaist.safe.analyzer.domain.Address
+import kr.ac.kaist.safe.analyzer.domain.{ Address, State }
+import kr.ac.kaist.safe.analyzer.CallContext
 import kr.ac.kaist.safe.config.Config
 import kr.ac.kaist.safe.util._
 
@@ -46,6 +47,7 @@ class CFG(
   // all blocks in this cfg
   private var blocks: List[CFGNormalBlock] = Nil
   def addNode(block: CFGNormalBlock): Unit = blocks ::= block
+  def getAllBlocks: List[CFGNormalBlock] = blocks
 
   // create function
   def createFunction(argumentsName: String, argVars: List[CFGId], localVars: List[CFGId],
@@ -159,6 +161,11 @@ sealed abstract class CFGBlock {
   // add edge
   def addSucc(edgeType: CFGEdgeType, node: CFGBlock): Unit = succs(edgeType) = node :: succs.getOrElse(edgeType, Nil)
   def addPred(edgeType: CFGEdgeType, node: CFGBlock): Unit = preds(edgeType) = node :: preds.getOrElse(edgeType, Nil)
+
+  // control point maps to state
+  protected val cpToState: MMap[CallContext, State] = MHashMap()
+  def getState(callCtx: CallContext): State = cpToState.getOrElse(callCtx, State.Bot)
+  def setState(callCtx: CallContext, state: State): Unit = cpToState(callCtx) = state
 }
 object CFGBlock {
   implicit def node2nodelist(node: CFGBlock): List[CFGBlock] = List(node)

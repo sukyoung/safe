@@ -20,15 +20,17 @@ import kr.ac.kaist.safe.util._
 
 import scala.collection.immutable.{ HashMap, HashSet }
 
-class Semantics(cfg: CFG, utils: Utils, addressManager: AddressManager) {
+class Semantics(cfg: CFG, worklist: Worklist, utils: Utils, addressManager: AddressManager) {
   lazy val excLog: ExcLog = new ExcLog
   val predefLoc: PredefLoc = PredefLoc(addressManager)
   val helper: Helper = Helper(utils, addressManager, predefLoc)
   val operator: Operator = Operator(helper)
 
   // Interprocedural edges
-  var ipSuccMap: Map[ControlPoint, Map[ControlPoint, (Context, Obj)]] = HashMap[ControlPoint, Map[ControlPoint, (Context, Obj)]]()
-  var ipPredMap: Map[ControlPoint, Set[ControlPoint]] = HashMap[ControlPoint, Set[ControlPoint]]()
+  private var ipSuccMap: Map[ControlPoint, Map[ControlPoint, (Context, Obj)]] = HashMap[ControlPoint, Map[ControlPoint, (Context, Obj)]]()
+  private var ipPredMap: Map[ControlPoint, Set[ControlPoint]] = HashMap[ControlPoint, Set[ControlPoint]]()
+  def getInterProcSucc(cp: ControlPoint): Option[Map[ControlPoint, (Context, Obj)]] = ipSuccMap.get(cp)
+  def getInterProcPred(cp: ControlPoint): Option[Set[ControlPoint]] = ipPredMap.get(cp)
 
   // Adds inter-procedural call edge from call-node cp1 to entry-node cp2.
   // Edge label ctx records callee context, which is joined if the edge existed already.
@@ -58,14 +60,14 @@ class Semantics(cfg: CFG, utils: Utils, addressManager: AddressManager) {
   def addReturnEdge(cp1: ControlPoint, cp2: ControlPoint, ctx: Context, obj: Obj): Unit = {
     val updatedSuccMap = ipSuccMap.get(cp1) match {
       case None => {
+        worklist.add(cp1)
         HashMap(cp2 -> (ctx, obj))
-        //        TODO: worklist.add(cp1)
       }
       case Some(map2) =>
         map2.get(cp2) match {
           case None => {
+            worklist.add(cp1)
             map2 + (cp2 -> (ctx, obj))
-            //            TODO: worklist.add(cp1)
           }
           case Some((oldCtx, oldObj)) =>
             val ctxChanged = !(ctx <= oldCtx)
@@ -77,8 +79,8 @@ class Semantics(cfg: CFG, utils: Utils, addressManager: AddressManager) {
               if (objChanged) oldObj + obj
               else oldObj
             if (ctxChanged || objChanged) {
+              worklist.add(cp1)
               map2 + (cp2 -> (newCtx, newObj))
-              //              TODO: worklist.add(cp1)
             } else {
               map2
             }
@@ -166,11 +168,11 @@ class Semantics(cfg: CFG, utils: Utils, addressManager: AddressManager) {
     }
   }
 
-  def C(cp: ControlPoint, cmd: CFGBlock, st: State): (State, State) = {
+  def C(cp: ControlPoint, st: State): (State, State) = {
     (st.heap, st.context) match {
       case (Heap.Bot, Context.Bot) => (State.Bot, State.Bot)
       case (h: Heap, ctx: Context) =>
-        cmd match {
+        cp.node match {
           case Entry(_) => {
             val fun = cp.node.func
             val xArgVars = fun.argVars
