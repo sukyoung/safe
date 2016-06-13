@@ -215,6 +215,123 @@ class Semantics(cfg: CFG, worklist: Worklist, utils: Utils, addressManager: Addr
     }
   }
 
+  private def storeInstrHelp(objLocSet: Set[Loc], idxAbsStr: AbsString, storeV: Value, heap: Heap): (Heap, Set[Exception]) = {
+    val absFalse = utils.absBool.False
+    val absTrue = utils.absBool.True
+
+    // non-array objects
+    val locSetNArr = objLocSet.filter(l =>
+      (absFalse <= helper.isArray(heap, l)) && absTrue <= helper.canPut(heap, l, idxAbsStr))
+    // array objects
+    val locSetArr = objLocSet.filter(l =>
+      (absTrue <= helper.isArray(heap, l)) && absTrue <= helper.canPut(heap, l, idxAbsStr))
+
+    // can not store
+    val cantPutHeap =
+      if (objLocSet.exists((l) => absFalse <= helper.canPut(heap, l, idxAbsStr))) heap
+      else Heap.Bot
+
+    // store for non-array object
+    val nArrHeap = locSetNArr.foldLeft(Heap.Bot)((iHeap, l) => {
+      iHeap + helper.propStore(heap, l, idxAbsStr, storeV)
+    })
+
+    // 15.4.5.1 [[DefineOwnProperty]] of Array
+    val (arrHeap, arrExcSet) = locSetArr.foldLeft((Heap.Bot, ExceptionSetEmpty))((res2, l) => {
+      // 3. s is length
+      val (lengthHeap, lengthExcSet) =
+        if (utils.absString.alpha("length") <= idxAbsStr) {
+          val lenPropV = heap.getOrElse(l, utils.ObjBot).getOrElse("length", utils.PropValueBot)
+          val nOldLen = lenPropV.objval.value.pvalue.numval
+          val nNewLen = operator.toUInt32(storeV)
+          val numberPV = helper.objToPrimitive(storeV.locset, "Number")
+          val nValue = storeV.pvalue.toAbsNumber(utils.absNumber) + numberPV.toAbsNumber(utils.absNumber)
+          val bCanPut = helper.canPut(heap, l, utils.absString.alpha("length"))
+
+          val arrLengthHeap2 =
+            if ((absTrue <= (nOldLen < nNewLen)(utils.absBool)
+              || absTrue <= (nOldLen === nNewLen)(utils.absBool))
+              && (absTrue <= bCanPut))
+              helper.propStore(heap, l, utils.absString.alpha("length"), storeV)
+            else
+              Heap.Bot
+
+          val arrLengthHeap3 =
+            if (absFalse <= bCanPut) heap
+            else Heap.Bot
+
+          val arrLengthHeap4 =
+            if ((absTrue <= (nNewLen < nOldLen)(utils.absBool)) && (absTrue <= bCanPut)) {
+              val hi = helper.propStore(heap, l, utils.absString.alpha("length"), storeV)
+              (nNewLen.gammaSingle, nOldLen.gammaSingle) match {
+                case (ConSingleCon(n1), ConSingleCon(n2)) =>
+                  (n1.toInt until n2.toInt).foldLeft(hi)((hj, i) =>
+                    helper.delete(hj, l, utils.absString.alpha(i.toString))._1)
+                case (ConSingleBot(), _) | (_, ConSingleBot()) => Heap.Bot
+                case _ => helper.delete(hi, l, utils.absString.NumStr)._1
+              }
+            } else {
+              Heap.Bot
+            }
+
+          val arrLengthHeap1 =
+            if (absTrue <= (nValue === nNewLen)(utils.absBool))
+              arrLengthHeap2 + arrLengthHeap3 + arrLengthHeap4
+            else
+              Heap.Bot
+
+          val lenExcSet1 =
+            if (absFalse <= (nValue === nNewLen)(utils.absBool)) HashSet[Exception](RangeError)
+            else ExceptionSetEmpty
+          (arrLengthHeap1, lenExcSet1)
+        } else {
+          (Heap.Bot, ExceptionSetEmpty)
+        }
+      // 4. s is array index
+      val arrIndexHeap =
+        if (absTrue <= helper.isArrayIndex(idxAbsStr)) {
+          val lenPropV = heap.getOrElse(l, utils.ObjBot).getOrElse("length", utils.PropValueBot)
+          val nOldLen = lenPropV.objval.value.pvalue.numval
+          val idxPV = utils.PValueBot.copyWith(idxAbsStr)
+          val numPV = utils.PValueBot.copyWith(idxPV.toAbsNumber(utils.absNumber))
+          val nIndex = operator.toUInt32(Value(numPV))
+          val bGtEq = absTrue <= (nOldLen < nIndex)(utils.absBool) ||
+            absTrue <= (nOldLen === nIndex)(utils.absBool)
+          val bCanPutLen = helper.canPut(heap, l, utils.absString.alpha("length"))
+          // 4.b
+          val arrIndexHeap1 =
+            if (bGtEq && absFalse <= bCanPutLen) heap
+            else Heap.Bot
+          // 4.c
+          val arrIndexHeap2 =
+            if (absTrue <= (nIndex < nOldLen)(utils.absBool))
+              helper.propStore(heap, l, idxAbsStr, storeV)
+            else Heap.Bot
+          // 4.e
+          val arrIndexHeap3 =
+            if (bGtEq && absTrue <= bCanPutLen) {
+              val hi = helper.propStore(heap, l, idxAbsStr, storeV)
+              val idxVal = Value(utils.PValueBot.copyWith(nIndex))
+              val absNum1PV = utils.PValueBot.copyWith(utils.absNumber.alpha(1))
+              val vNewIndex = operator.bopPlus(idxVal, Value(absNum1PV))
+              helper.propStore(hi, l, utils.absString.alpha("length"), vNewIndex)
+            } else Heap.Bot
+          arrIndexHeap1 + arrIndexHeap2 + arrIndexHeap3
+        } else
+          Heap.Bot
+      // 5. other
+      val otherHeap =
+        if (idxAbsStr != utils.absString.alpha("length") && absFalse <= helper.isArrayIndex(idxAbsStr))
+          helper.propStore(heap, l, idxAbsStr, storeV)
+        else
+          Heap.Bot
+      val (tmpHeap2, tmpExcSet2) = res2
+      (tmpHeap2 + lengthHeap + arrIndexHeap + otherHeap, tmpExcSet2 ++ lengthExcSet)
+    })
+
+    (cantPutHeap + nArrHeap + arrHeap, arrExcSet)
+  }
+
   def I(cp: ControlPoint, i: CFGInst, st: State, excSt: State): (State, State) = {
     val absTrue = utils.absBool.True
     val absFalse = utils.absBool.False
@@ -329,124 +446,32 @@ class Semantics(cfg: CFG, worklist: Worklist, utils: Utils, addressManager: Addr
           (vIdx, vRhs) match {
             case (v, _) if v.isBottom => (Heap.Bot, excSetIdx)
             case (_, v) if v.isBottom => (Heap.Bot, excSetIdx ++ esRhs)
-            case _ => {
+            case _ =>
               // iterate over set of strings for index
               val absStrSet = helper.toStringSet(helper.toPrimitiveBetter(st.heap, vIdx))
               absStrSet.foldLeft((Heap.Bot, excSetIdx ++ esRhs))((res1, absStr) => {
-                // non-array objects
-                val locSetNArr = locSet.filter(l =>
-                  (absFalse <= helper.isArray(st.heap, l)) && absTrue <= helper.canPut(st.heap, l, absStr))
-                // array objects
-                val locSetArr = locSet.filter(l =>
-                  (absTrue <= helper.isArray(st.heap, l)) && absTrue <= helper.canPut(st.heap, l, absStr))
-
-                // can not store
-                val cantPutHeap =
-                  if (locSet.exists((l) => absFalse <= helper.canPut(st.heap, l, absStr))) st.heap
-                  else Heap.Bot
-
-                // store for non-array object
-                val nArrHeap = locSetNArr.foldLeft(Heap.Bot)((iHeap, l) => {
-                  iHeap + helper.propStore(st.heap, l, absStr, vRhs)
-                })
-
-                // 15.4.5.1 [[DefineOwnProperty]] of Array
-                val (arrHeap, arrExcSet) = locSetArr.foldLeft((Heap.Bot, ExceptionSetEmpty))((res2, l) => {
-                  // 3. s is length
-                  val (lengthHeap, lengthExcSet) =
-                    if (utils.absString.alpha("length") <= absStr) {
-                      val lenPropV = st.heap.getOrElse(l, utils.ObjBot).getOrElse("length", utils.PropValueBot)
-                      val nOldLen = lenPropV.objval.value.pvalue.numval
-                      val nNewLen = operator.toUInt32(vRhs)
-                      val numberPV = helper.objToPrimitive(vRhs.locset, "Number")
-                      val nValue = vRhs.pvalue.toAbsNumber(utils.absNumber) + numberPV.toAbsNumber(utils.absNumber)
-                      val bCanPut = helper.canPut(st.heap, l, utils.absString.alpha("length"))
-
-                      val arrLengthHeap2 =
-                        if ((absTrue <= (nOldLen < nNewLen)(utils.absBool)
-                          || absTrue <= (nOldLen === nNewLen)(utils.absBool))
-                          && (absTrue <= bCanPut))
-                          helper.propStore(st.heap, l, utils.absString.alpha("length"), vRhs)
-                        else
-                          Heap.Bot
-
-                      val arrLengthHeap3 =
-                        if (absFalse <= bCanPut) st.heap
-                        else Heap.Bot
-
-                      val arrLengthHeap4 =
-                        if ((absTrue <= (nNewLen < nOldLen)(utils.absBool)) && (absTrue <= bCanPut)) {
-                          val hi = helper.propStore(st.heap, l, utils.absString.alpha("length"), vRhs)
-                          (nNewLen.gammaSingle, nOldLen.gammaSingle) match {
-                            case (ConSingleCon(n1), ConSingleCon(n2)) =>
-                              (n1.toInt until n2.toInt).foldLeft(hi)((hj, i) =>
-                                helper.delete(hj, l, utils.absString.alpha(i.toString))._1)
-                            case (ConSingleBot(), _) | (_, ConSingleBot()) => Heap.Bot
-                            case _ => helper.delete(hi, l, utils.absString.NumStr)._1
-                          }
-                        } else {
-                          Heap.Bot
-                        }
-
-                      val arrLengthHeap1 =
-                        if (absTrue <= (nValue === nNewLen)(utils.absBool))
-                          arrLengthHeap2 + arrLengthHeap3 + arrLengthHeap4
-                        else
-                          Heap.Bot
-
-                      val lenExcSet1 =
-                        if (absFalse <= (nValue === nNewLen)(utils.absBool)) HashSet[Exception](RangeError)
-                        else ExceptionSetEmpty
-                      (arrLengthHeap1, lenExcSet1)
-                    } else {
-                      (Heap.Bot, ExceptionSetEmpty)
-                    }
-                  // 4. s is array index
-                  val arrIndexHeap =
-                    if (absTrue <= helper.isArrayIndex(absStr)) {
-                      val lenPropV = st.heap.getOrElse(l, utils.ObjBot).getOrElse("length", utils.PropValueBot)
-                      val nOldLen = lenPropV.objval.value.pvalue.numval
-                      val idxPV = utils.PValueBot.copyWith(absStr)
-                      val numPV = utils.PValueBot.copyWith(idxPV.toAbsNumber(utils.absNumber))
-                      val nIndex = operator.toUInt32(Value(numPV))
-                      val bGtEq = absTrue <= (nOldLen < nIndex)(utils.absBool) ||
-                        absTrue <= (nOldLen === nIndex)(utils.absBool)
-                      val bCanPutLen = helper.canPut(st.heap, l, utils.absString.alpha("length"))
-                      // 4.b
-                      val arrIndexHeap1 =
-                        if (bGtEq && absFalse <= bCanPutLen) st.heap
-                        else Heap.Bot
-                      // 4.c
-                      val arrIndexHeap2 =
-                        if (absTrue <= (nIndex < nOldLen)(utils.absBool))
-                          helper.propStore(st.heap, l, absStr, vRhs)
-                        else Heap.Bot
-                      // 4.e
-                      val arrIndexHeap3 =
-                        if (bGtEq && absTrue <= bCanPutLen) {
-                          val hi = helper.propStore(st.heap, l, absStr, vRhs)
-                          val idxVal = Value(utils.PValueBot.copyWith(nIndex))
-                          val absNum1PV = utils.PValueBot.copyWith(utils.absNumber.alpha(1))
-                          val vNewIndex = operator.bopPlus(idxVal, Value(absNum1PV))
-                          helper.propStore(hi, l, utils.absString.alpha("length"), vNewIndex)
-                        } else Heap.Bot
-                      arrIndexHeap1 + arrIndexHeap2 + arrIndexHeap3
-                    } else
-                      Heap.Bot
-                  // 5. other
-                  val otherHeap =
-                    if (absStr != utils.absString.alpha("length") && absFalse <= helper.isArrayIndex(absStr))
-                      helper.propStore(st.heap, l, absStr, vRhs)
-                    else
-                      Heap.Bot
-                  val (tmpHeap2, tmpExcSet2) = res2
-                  (tmpHeap2 + lengthHeap + arrIndexHeap + otherHeap, tmpExcSet2 ++ lengthExcSet)
-                })
-
                 val (tmpHeap1, tmpExcSet1) = res1
-                (tmpHeap1 + cantPutHeap + nArrHeap + arrHeap, tmpExcSet1 ++ arrExcSet)
+                val (tmpHeap2, tmpExcSet2) = storeInstrHelp(locSet, absStr, vRhs, st.heap)
+                (tmpHeap1 + tmpHeap2, tmpExcSet1 ++ tmpExcSet2)
               })
-            }
+          }
+
+        val newExcSt = helper.raiseException(st, excSet1)
+        (State(heap1, st.context), excSt + newExcSt)
+      }
+      case CFGStoreStringIdx(_, block, obj, strIdx, rhs) => {
+        // locSet must not be empty because obj is coming through <>toObject.
+        val (value, _) = V(obj, st)
+        val locSet = value.locset
+        val (vRhs, esRhs) = V(rhs, st)
+
+        val (heap1, excSet1) =
+          (strIdx, vRhs) match {
+            case (_, v) if v.isBottom => (Heap.Bot, esRhs)
+            case (EJSString(str), v) =>
+              val absStr = utils.absString.alpha(str)
+              val (tmpHeap2, tmpExcSet2) = storeInstrHelp(locSet, absStr, vRhs, st.heap)
+              (tmpHeap2, tmpExcSet2 ++ esRhs)
           }
 
         val newExcSt = helper.raiseException(st, excSet1)
