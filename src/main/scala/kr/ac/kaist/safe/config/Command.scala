@@ -15,12 +15,12 @@ import kr.ac.kaist.safe.phase.{ PhaseHelper, Parse, ASTRewrite, Compile, CFGBuil
 
 object Command {
   val cmdMap: Map[String, Command] = Map(
-    "parse" -> CmdParse,
-    "astRewrite" -> CmdASTRewrite,
-    "compile" -> CmdCompile,
-    "cfgBuild" -> CmdCFGBuild,
-    "analyze" -> CmdAnalyze,
-    "help" -> CmdHelp
+    CmdParse.name -> CmdParse,
+    CmdASTRewrite.name -> CmdASTRewrite,
+    CmdCompile.name -> CmdCompile,
+    CmdCFGBuild.name -> CmdCFGBuild,
+    CmdAnalyze.name -> CmdAnalyze,
+    CmdHelp.name -> CmdHelp
   )
 }
 
