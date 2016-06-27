@@ -451,10 +451,10 @@ case class Helper(utils: Utils, addrManager: AddressManager, predefLoc: PredefLo
       case ConSetCon(strSet) =>
         strSet.foldLeft(utils.ObjBot)((obj, str) => {
           val length = str.length
-          val newObj3 = (0 until length).foldLeft(newObj2)((_o, _i) => {
-            val charAbsStr = utils.absString.alpha(str.charAt(_i).toString)
+          val newObj3 = (0 until length).foldLeft(newObj2)((tmpObj, tmpIdx) => {
+            val charAbsStr = utils.absString.alpha(str.charAt(tmpIdx).toString)
             val charVal = Value(utils.PValueBot.copyWith(charAbsStr))
-            _o.update(_i.toString, PropValue(ObjectValue(charVal, absFalse, absTrue, absFalse)))
+            tmpObj.update(tmpIdx.toString, PropValue(ObjectValue(charVal, absFalse, absTrue, absFalse)))
           })
           val lengthVal = Value(utils.PValueBot.copyWith(utils.absNumber.alpha(length)))
           obj + newObj3.update("length", PropValue(ObjectValue(lengthVal, absFalse, absFalse, absFalse)))

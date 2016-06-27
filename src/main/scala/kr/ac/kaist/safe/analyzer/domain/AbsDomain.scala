@@ -86,19 +86,8 @@ trait AbsNumber extends AbsDomain {
   def ===(that: AbsNumber)(absBool: AbsBoolUtil): AbsBool
   def <(that: AbsNumber)(absBool: AbsBoolUtil): AbsBool
 
-  def isNum(v: Double): Boolean
-  def isNum: Boolean
-  def isInfinity: Boolean
-  def isPosInf: Boolean
-  def isNegInf: Boolean
-  def getUIntSingle: Option[Double]
-  def isUIntSingle: Boolean
-  def isNUIntSingle: Boolean
-  def isUIntAll: Boolean
-  def isUInt: Boolean
-  def isUIntOrBot: Boolean
-  def isNUInt: Boolean
-  def isNaN: Boolean
+  def toInt32: AbsNumber
+  def toUInt32: AbsNumber
 
   def negate: AbsNumber
   def bitNegate: AbsNumber

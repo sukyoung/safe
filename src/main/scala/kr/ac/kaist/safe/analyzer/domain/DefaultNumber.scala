@@ -129,91 +129,58 @@ object DefaultNumUtil extends AbsNumberUtil {
       }
     }
 
-    def isNum(v: Double): Boolean =
-      this match {
-        case DefaultNumUIntConst(n) if n == v => true
-        case _ => false
-      }
+    /* Operators */
+    private def modulo(x: Double, y: Long): Long = {
+      val result = math.abs(x.toLong) % math.abs(y)
+      if (math.signum(x) < 0) math.signum(y) * (math.abs(y) - result)
+      else math.signum(y) * result
+    }
 
-    def isNum: Boolean =
+    def toInt32: AbsNumber = {
       this match {
-        case DefaultNumUIntConst(_)
-          | DefaultNumNUIntConst(_) => true
-        case _ => false
+        case DefaultNumBot => DefaultNumBot
+        case DefaultNumNaN
+          | DefaultNumInf
+          | DefaultNumPosInf
+          | DefaultNumNegInf
+          | DefaultNumUIntConst(0) => alpha(0)
+        case DefaultNumUIntConst(n) => alpha(n)
+        case DefaultNumNUIntConst(n) =>
+          val posInt = math.signum(n) * math.floor(math.abs(n))
+          val int32bit = modulo(posInt, 0x100000000L)
+          if (int32bit >= 0x80000000L) {
+            val int32bitS = int32bit - 0x100000000L
+            if (int32bitS >= 0) alpha(int32bitS.toInt)
+            else alpha(int32bitS.toInt)
+          } else if (int32bit >= 0) alpha(int32bit.toInt)
+          else alpha(int32bit.toInt)
+        case DefaultNumUInt => DefaultNumUInt
+        case DefaultNumNUInt
+          | DefaultNumTop => DefaultNumTop
       }
+    }
 
-    def isFinite: Boolean =
+    def toUInt32: AbsNumber = {
+      def help(n: Double): AbsNumber = {
+        val posInt = math.signum(n) * math.floor(math.abs(n))
+        val int32bit = modulo(posInt, 0x100000000L);
+        alpha(int32bit.toInt)
+      }
       this match {
+        case DefaultNumBot => DefaultNumBot
+        case DefaultNumNaN
+          | DefaultNumInf
+          | DefaultNumPosInf
+          | DefaultNumNegInf
+          | DefaultNumUIntConst(0) => alpha(0)
+        case DefaultNumUIntConst(n) => help(n)
+        case DefaultNumNUIntConst(n) => help(n)
         case DefaultNumUInt
           | DefaultNumNUInt
-          | DefaultNumUIntConst(_)
-          | DefaultNumNUIntConst(_) => true
-        case _ => false
+          | DefaultNumTop => DefaultNumUInt
       }
+    }
 
-    def isFiniteMulti: Boolean =
-      this match {
-        case DefaultNumUInt
-          | DefaultNumNUInt => true
-        case _ => false
-      }
-
-    def isInfinity: Boolean = this == DefaultNumInf
-    def isPosInf: Boolean = this == DefaultNumPosInf
-    def isNegInf: Boolean = this == DefaultNumNegInf
-
-    def isInf: Boolean =
-      this match {
-        case DefaultNumInf
-          | DefaultNumPosInf
-          | DefaultNumNegInf => true
-        case _ => false
-      }
-
-    def isInfOrNaN: Boolean =
-      this match {
-        case DefaultNumInf
-          | DefaultNumPosInf
-          | DefaultNumNegInf => true
-        case DefaultNumNaN => true
-        case _ => false
-      }
-
-    def getUIntSingle: Option[Double] =
-      this match {
-        case DefaultNumUIntConst(v) => Some(v)
-        case _ => None
-      }
-
-    def isUIntSingle: Boolean =
-      this match {
-        case DefaultNumUIntConst(_) => true
-        case _ => false
-      }
-
-    def isNUIntSingle: Boolean =
-      this match {
-        case DefaultNumNUIntConst(_) => true
-        case _ => false
-      }
-
-    def isUIntAll: Boolean = this == DefaultNumTop | this == DefaultNumUInt
-
-    def isUInt: Boolean = this == DefaultNumUInt
-
-    def isUIntOrBot: Boolean =
-      this match {
-        case DefaultNumUInt
-          | DefaultNumUIntConst(_) => true
-        case DefaultNumBot => true
-        case _ => false
-      }
-
-    def isNUInt: Boolean = this == DefaultNumNUInt
-
-    def isNaN: Boolean = this == DefaultNumNaN
-
-    /* Operators */
     def negate: AbsNumber = {
       this match {
         case DefaultNumNaN => DefaultNumNaN

@@ -19,28 +19,35 @@ case class Operator(helper: Helper) { //TODO
   private val addrManager: AddressManager = helper.addrManager
   private val absNumber: AbsNumberUtil = utils.absNumber
 
-  def toUInt32(v: Value): AbsNumber = absNumber.Bot
-  def toInt32(v: Value): AbsNumber = absNumber.Bot
+  def toUInt32(v: Value): AbsNumber = {
+    val absNum = v.pvalue.toAbsNumber(absNumber) + helper.objToPrimitive(v.locset, "Number").toAbsNumber(absNumber)
+    absNum.toUInt32
+  }
+
+  def toInt32(v: Value): AbsNumber = {
+    val absNum = v.pvalue.toAbsNumber(absNumber) + helper.objToPrimitive(v.locset, "Number").toAbsNumber(absNumber)
+    absNum.toInt32
+  }
 
   /* unary operator */
   /* void */
   def uVoid(value: Value): Value = Value(utils.PValueBot.copyWith(utils.absUndef.Top))
   /* + */
   def uopPlus(value: Value): Value = {
-    val absNum = value.pvalue.toAbsNumber(utils.absNumber) + helper.objToPrimitive(value.locset, "Number").toAbsNumber(utils.absNumber)
+    val absNum = value.pvalue.toAbsNumber(absNumber) + helper.objToPrimitive(value.locset, "Number").toAbsNumber(absNumber)
     Value(utils.PValueBot.copyWith(absNum))
   }
 
   /* - */
   def uopMinus(value: Value): Value = {
-    val oldAbsNum = value.pvalue.toAbsNumber(utils.absNumber) + helper.objToPrimitive(value.locset, "Number").toAbsNumber(utils.absNumber)
+    val oldAbsNum = value.pvalue.toAbsNumber(absNumber) + helper.objToPrimitive(value.locset, "Number").toAbsNumber(absNumber)
     val newAbsNum = oldAbsNum.negate
     Value(utils.PValueBot.copyWith(newAbsNum))
   }
 
   /* - */
   def uopMinusBetter(h: Heap, value: Value): Value = {
-    val oldAbsNum = value.pvalue.toAbsNumber(utils.absNumber) + helper.objToPrimitiveBetter(h, value.locset, "Number").toAbsNumber(utils.absNumber)
+    val oldAbsNum = value.pvalue.toAbsNumber(absNumber) + helper.objToPrimitiveBetter(h, value.locset, "Number").toAbsNumber(absNumber)
     val newAbsNum = oldAbsNum.negate
     Value(utils.PValueBot.copyWith(newAbsNum))
   }
@@ -127,7 +134,7 @@ case class Operator(helper: Helper) { //TODO
     val primRPV = helper.toPrimitive(right)
     (primLPV.strval.gamma, primRPV.strval.gamma) match {
       case (ConSetBot(), ConSetBot()) =>
-        val (lAbsNum, rAbsNum) = (primLPV.toAbsNumber(utils.absNumber), primRPV.toAbsNumber(utils.absNumber))
+        val (lAbsNum, rAbsNum) = (primLPV.toAbsNumber(absNumber), primRPV.toAbsNumber(absNumber))
         val resAbsNum = lAbsNum add rAbsNum
         Value(utils.PValueBot.copyWith(resAbsNum))
       case (_, ConSetBot()) =>
@@ -172,32 +179,32 @@ case class Operator(helper: Helper) { //TODO
 
   /* - */
   def bopMinus(left: Value, right: Value): Value = {
-    val lAbsNum = left.pvalue.toAbsNumber(utils.absNumber) + helper.objToPrimitive(left.locset, "Number").toAbsNumber(utils.absNumber)
-    val rAbsNum = right.pvalue.toAbsNumber(utils.absNumber) + helper.objToPrimitive(right.locset, "Number").toAbsNumber(utils.absNumber)
+    val lAbsNum = left.pvalue.toAbsNumber(absNumber) + helper.objToPrimitive(left.locset, "Number").toAbsNumber(absNumber)
+    val rAbsNum = right.pvalue.toAbsNumber(absNumber) + helper.objToPrimitive(right.locset, "Number").toAbsNumber(absNumber)
     val resAbsNum = lAbsNum sub rAbsNum
     Value(utils.PValueBot.copyWith(resAbsNum))
   }
 
   /* * */
   def bopMul(left: Value, right: Value): Value = {
-    val lAbsNum = left.pvalue.toAbsNumber(utils.absNumber) + helper.objToPrimitive(left.locset, "Number").toAbsNumber(utils.absNumber)
-    val rAbsNum = right.pvalue.toAbsNumber(utils.absNumber) + helper.objToPrimitive(right.locset, "Number").toAbsNumber(utils.absNumber)
+    val lAbsNum = left.pvalue.toAbsNumber(absNumber) + helper.objToPrimitive(left.locset, "Number").toAbsNumber(absNumber)
+    val rAbsNum = right.pvalue.toAbsNumber(absNumber) + helper.objToPrimitive(right.locset, "Number").toAbsNumber(absNumber)
     val resAbsNum = lAbsNum mul rAbsNum
     Value(utils.PValueBot.copyWith(resAbsNum))
   }
 
   /* / */
   def bopDiv(left: Value, right: Value): Value = {
-    val lAbsNum = left.pvalue.toAbsNumber(utils.absNumber) + helper.objToPrimitive(left.locset, "Number").toAbsNumber(utils.absNumber)
-    val rAbsNum = right.pvalue.toAbsNumber(utils.absNumber) + helper.objToPrimitive(right.locset, "Number").toAbsNumber(utils.absNumber)
+    val lAbsNum = left.pvalue.toAbsNumber(absNumber) + helper.objToPrimitive(left.locset, "Number").toAbsNumber(absNumber)
+    val rAbsNum = right.pvalue.toAbsNumber(absNumber) + helper.objToPrimitive(right.locset, "Number").toAbsNumber(absNumber)
     val resAbsNum = lAbsNum div rAbsNum
     Value(utils.PValueBot.copyWith(resAbsNum))
   }
 
   /* % */
   def bopMod(left: Value, right: Value): Value = {
-    val lAbsNum = left.pvalue.toAbsNumber(utils.absNumber) + helper.objToPrimitive(left.locset, "Number").toAbsNumber(utils.absNumber)
-    val rAbsNum = right.pvalue.toAbsNumber(utils.absNumber) + helper.objToPrimitive(right.locset, "Number").toAbsNumber(utils.absNumber)
+    val lAbsNum = left.pvalue.toAbsNumber(absNumber) + helper.objToPrimitive(left.locset, "Number").toAbsNumber(absNumber)
+    val rAbsNum = right.pvalue.toAbsNumber(absNumber) + helper.objToPrimitive(right.locset, "Number").toAbsNumber(absNumber)
     val resAbsNum = lAbsNum mod rAbsNum
     Value(utils.PValueBot.copyWith(resAbsNum))
   }
@@ -230,23 +237,23 @@ case class Operator(helper: Helper) { //TODO
     val b4 = (leftPV.numval.gammaSimple, rightPV.strval.gammaSimple) match {
       case (ConSimpleBot, _) | (_, ConSimpleBot) => utils.absBool.Bot
       case _ =>
-        val rightNumVal = utils.PValueBot.copyWith(rightPV.strval).toAbsNumber(utils.absNumber)
+        val rightNumVal = utils.PValueBot.copyWith(rightPV.strval).toAbsNumber(absNumber)
         (leftPV.numval === rightNumVal)(utils.absBool)
     }
     val b5 = (leftPV.strval.gammaSimple, rightPV.numval.gammaSimple) match {
       case (ConSimpleBot, _) | (_, ConSimpleBot) => utils.absBool.Bot
       case _ =>
-        val leftNumVal = utils.PValueBot.copyWith(leftPV.strval).toAbsNumber(utils.absNumber)
+        val leftNumVal = utils.PValueBot.copyWith(leftPV.strval).toAbsNumber(absNumber)
         (leftNumVal === rightPV.numval)(utils.absBool)
     }
     val b6 = leftPV.boolval.gammaSimple match {
       case ConSimpleBot =>
-        val leftNumVal = utils.PValueBot.copyWith(leftPV.boolval).toAbsNumber(utils.absNumber)
+        val leftNumVal = utils.PValueBot.copyWith(leftPV.boolval).toAbsNumber(absNumber)
         val b61 = rightPV.numval.fold(utils.absBool.Bot)(rightNumVal => {
           (leftNumVal === rightNumVal)(utils.absBool)
         })
         val b62 = rightPV.strval.fold(utils.absBool.Bot)(rightStrVal => {
-          val rightNumVal = utils.PValueBot.copyWith(rightStrVal).toAbsNumber(utils.absNumber)
+          val rightNumVal = utils.PValueBot.copyWith(rightStrVal).toAbsNumber(absNumber)
           (leftNumVal === rightNumVal)(utils.absBool)
         })
         val b63 = right.locset.size match {
@@ -263,12 +270,12 @@ case class Operator(helper: Helper) { //TODO
 
     val b7 = rightPV.boolval.gammaSimple match {
       case ConSimpleTop =>
-        val rightNumVal = utils.PValueBot.copyWith(rightPV.boolval).toAbsNumber(utils.absNumber)
+        val rightNumVal = utils.PValueBot.copyWith(rightPV.boolval).toAbsNumber(absNumber)
         val b71 = leftPV.numval.fold(utils.absBool.Bot)(leftNumVal => {
           (leftNumVal === rightNumVal)(utils.absBool)
         })
         val b72 = leftPV.strval.fold(utils.absBool.Bot)(leftStrVal => {
-          val leftNumVal = utils.PValueBot.copyWith(leftStrVal).toAbsNumber(utils.absNumber)
+          val leftNumVal = utils.PValueBot.copyWith(leftStrVal).toAbsNumber(absNumber)
           (leftNumVal === rightNumVal)(utils.absBool)
         })
         val b73 = left.locset.size match {
@@ -387,8 +394,8 @@ case class Operator(helper: Helper) { //TODO
   ): Value = {
     (leftPV.strval.gammaSimple, rightPV.strval.gammaSimple) match {
       case (ConSimpleBot, _) | (_, ConSimpleBot) =>
-        val leftAbsNum = leftPV.toAbsNumber(utils.absNumber)
-        val rightAbsNum = rightPV.toAbsNumber(utils.absNumber)
+        val leftAbsNum = leftPV.toAbsNumber(absNumber)
+        val rightAbsNum = rightPV.toAbsNumber(absNumber)
         Value(utils.PValueBot.copyWith(cmpAbsNum(leftAbsNum, rightAbsNum)))
       case _ =>
         val leftPV2 = leftPV.copyWith(utils.absString.Bot)
@@ -424,8 +431,10 @@ case class Operator(helper: Helper) { //TODO
     val rightPV = helper.toPrimitive(right)
     bopCompareHelp(leftPV, rightPV,
       (leftAbsNum, rightAbsNum) => {
-        if (leftAbsNum.isNaN | rightAbsNum.isNaN) utils.absBool.False
-        else (rightAbsNum < leftAbsNum)(utils.absBool).negate
+        (leftAbsNum.gammaSingle, rightAbsNum.gammaSingle) match {
+          case (ConSingleCon(n1), ConSingleCon(n2)) if n1.isNaN & n2.isNaN => utils.absBool.False
+          case _ => (rightAbsNum < leftAbsNum)(utils.absBool).negate
+        }
       },
       (leftAbsStr, rightAbsStr) => (rightAbsStr < leftAbsStr)(utils.absBool).negate)
   }
@@ -436,8 +445,10 @@ case class Operator(helper: Helper) { //TODO
     val rightPV = helper.toPrimitive(right)
     bopCompareHelp(leftPV, rightPV,
       (leftAbsNum, rightAbsNum) => {
-        if (leftAbsNum.isNaN | rightAbsNum.isNaN) utils.absBool.False
-        else (leftAbsNum < rightAbsNum)(utils.absBool).negate
+        (leftAbsNum.gammaSingle, rightAbsNum.gammaSingle) match {
+          case (ConSingleCon(n1), ConSingleCon(n2)) if n1.isNaN & n2.isNaN => utils.absBool.False
+          case _ => (rightAbsNum < leftAbsNum)(utils.absBool).negate
+        }
       },
       (leftAbsStr, rightAbsStr) => (leftAbsStr < rightAbsStr)(utils.absBool).negate)
   }

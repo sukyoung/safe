@@ -184,40 +184,40 @@ class DefaultStrSetUtil(maxSetSize: Int) extends AbsStringUtil {
       }
 
     def charAt(pos: AbsNumber): AbsString = gamma match {
-      case ConSetTop() => DefaultStrTop
-      case ConSetBot() => DefaultStrBot
-      case ConSetCon(vs) => pos.getUIntSingle match {
-        case Some(d) => {
-          vs.foldLeft[AbsString](DefaultStrBot)((r, s) => {
-            if (d >= s.length || d < 0)
-              r + alpha("")
-            else {
-              val i = d.toInt
-              r + alpha(s.substring(i, i + 1))
-            }
-          })
+      case ConSetTop() | ConSetBot() => DefaultStrBot
+      case ConSetCon(vs) =>
+        pos.gammaSingle match {
+          case ConSingleBot() => DefaultStrTop
+          case ConSingleCon(d) =>
+            vs.foldLeft[AbsString](DefaultStrBot)((r, s) => {
+              if (d >= s.length || d < 0)
+                r + alpha("")
+              else {
+                val i = d.toInt
+                r + alpha(s.substring(i, i + 1))
+              }
+            })
+          case ConSingleTop() => DefaultStrTop
         }
-        case _ => DefaultStrTop
-      }
     }
 
     def charCodeAt(pos: AbsNumber)(absNumber: AbsNumberUtil): AbsNumber = {
       gamma match {
         case ConSetTop() => absNumber.UInt
         case ConSetBot() => absNumber.Bot
-        case ConSetCon(vs) => pos.getUIntSingle match {
-          case Some(d) => {
-            vs.foldLeft[AbsNumber](absNumber.Bot)((r, s) => {
-              if (d >= s.length || d < 0)
-                r + absNumber.NaN
-              else {
-                val i = d.toInt
-                r + absNumber.alpha(s.substring(i, i + 1).head.toInt)
-              }
-            })
+        case ConSetCon(vs) =>
+          pos.gammaSingle match {
+            case ConSingleTop() | ConSingleBot() => absNumber.UInt
+            case ConSingleCon(d) =>
+              vs.foldLeft[AbsNumber](absNumber.Bot)((r, s) => {
+                if (d >= s.length || d < 0)
+                  r + absNumber.NaN
+                else {
+                  val i = d.toInt
+                  r + absNumber.alpha(s.substring(i, i + 1).head.toInt)
+                }
+              })
           }
-          case _ => absNumber.UInt
-        }
       }
     }
 
@@ -228,7 +228,9 @@ class DefaultStrSetUtil(maxSetSize: Int) extends AbsStringUtil {
         case DefaultStrSet(vs) => that.gammaSingle match {
           case ConSingleTop() => absBool.Top
           case ConSingleBot() => absBool.Bot
-          case ConSingleCon(_s) => vs.foldLeft[AbsBool](absBool.Bot)((result, v) => result + absBool.alpha(v.contains(_s)))
+          case ConSingleCon(s) => vs.foldLeft[AbsBool](absBool.Bot)((result, v) => {
+            result + absBool.alpha(v.contains(s))
+          })
         }
         case DefaultStrTop => absBool.Top
         case DefaultStrBot => absBool.Bot
