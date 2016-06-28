@@ -21,8 +21,7 @@ trait Heap {
     if (arr.length < 2) objStr
     else {
       val space = " " * indent
-      val tailStr = arr.tail.map(s => space + s).
-        reduce((s1, s2) => s1 + Config.LINE_SEP + s2)
+      val tailStr = arr.tail.map(s => space + s).mkString(Config.LINE_SEP)
       arr.head + Config.LINE_SEP + tailStr
     }
   }
@@ -30,17 +29,17 @@ trait Heap {
   override def toString: String = {
     if (this.isBottom) "⊥Heap"
     else {
-      val sortedMap = map.toSeq.sortBy(kv => {
+      val sortedSeq = map.toSeq.sortBy(kv => {
         val (key, _) = kv
         key
       })
 
-      sortedMap.foldLeft("")((str, kv) => {
+      sortedSeq.map(kv => {
         val (loc, obj) = kv
-        val keyStr = s"#${loc.toString} -> "
+        val keyStr = s"Loc(${loc.toString}) -> "
         val indentedStr = indentation(obj.toString, keyStr.length)
-        keyStr + indentedStr + Config.LINE_SEP
-      })
+        keyStr + indentedStr
+      }).mkString(Config.LINE_SEP)
     }
   }
 

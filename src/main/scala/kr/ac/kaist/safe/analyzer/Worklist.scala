@@ -38,6 +38,12 @@ class Worklist(private var orderMap: Map[CFGBlock, Int]) {
   }
 
   def head: ControlPoint = worklist.head.cp
+
+  override def toString: String = {
+    worklist.map(work => work.toString).reduce((s1, s2) => s1 + ", " + s2)
+  }
 }
 
-case class Work(order: Int, cp: ControlPoint)
+case class Work(order: Int, cp: ControlPoint) {
+  override def toString: String = s"(${cp.node.toString}, ${cp.callContext.toString})"
+}
