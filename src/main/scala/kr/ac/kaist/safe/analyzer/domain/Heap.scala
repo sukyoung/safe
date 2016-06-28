@@ -101,9 +101,9 @@ class DHeap(val map: Map[Loc, Obj]) extends Heap {
     else {
       val joinMap =
         if (this.map.size < that.map.size) {
-          this.map.foldLeft(that.map)((m, kv) => weakUpdated(m, kv._1, kv._2))
+          this.map.foldLeft(that.map)((m, kv) => { kv match { case (k, v) => weakUpdated(m, k, v) } })
         } else {
-          that.map.foldLeft(this.map)((m, kv) => weakUpdated(m, kv._1, kv._2))
+          that.map.foldLeft(this.map)((m, kv) => { kv match { case (k, v) => weakUpdated(m, k, v) } })
         }
       new DHeap(joinMap)
     }
@@ -116,9 +116,11 @@ class DHeap(val map: Map[Loc, Obj]) extends Heap {
     else if (that.map.isEmpty) Heap.Bot
     else {
       val meet = that.map.foldLeft(this.map)(
-        (m, kv) => m.get(kv._1) match {
-          case None => m - kv._1
-          case Some(v) => m + (kv._1 -> (kv._2 <> v))
+        (m, kv) => kv match {
+          case (k, v) => m.get(k) match {
+            case None => m - k
+            case Some(vv) => m + (k -> (v <> vv))
+          }
         }
       )
       new DHeap(meet)

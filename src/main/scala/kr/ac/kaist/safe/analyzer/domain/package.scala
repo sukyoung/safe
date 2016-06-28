@@ -64,11 +64,11 @@ package object domain {
   private val dec2 = "\\.[0-9]+(" + exp + ")?"
   private val dec3 = "[0-9]+(" + exp + ")?"
   private val dec = "([+-]?(Infinity|(" + dec1 + ")|(" + dec2 + ")|(" + dec3 + ")))"
-  private val num_regexp = ("NaN|(" + hex + ")|(" + dec + ")").r.pattern
+  private val numRegexp = ("NaN|(" + hex + ")|(" + dec + ")").r.pattern
 
   def isHex(str: String): Boolean =
     hex.matcher(str).matches()
 
   def isNum(str: String): Boolean =
-    num_regexp.matcher(str).matches()
+    numRegexp.matcher(str).matches()
 }
