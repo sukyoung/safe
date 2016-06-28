@@ -229,7 +229,8 @@ case object CmdPrint extends Command("print", "Print out various information.") 
             val blocks = reachableUserFunSet.foldRight(List[CFGBlock]()) {
               case (func, lst) => func.getBlocks ++ lst
             }
-            println(DotWriter.drawGraph(cfg, o, Some(blocks)))
+            // println(DotWriter.drawGraph(cfg, o, Some(blocks)))
+            DotWriter.spawnDot(cfg, o, Some(blocks))
           }
           case _ => help
         }

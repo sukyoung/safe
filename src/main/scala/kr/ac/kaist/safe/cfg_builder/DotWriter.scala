@@ -11,7 +11,7 @@
 
 package kr.ac.kaist.safe.cfg_builder
 
-import java.io.{ File, BufferedInputStream }
+import java.io.{ File, FileWriter, BufferedInputStream }
 import scala.collection.immutable.TreeMap
 import kr.ac.kaist.safe.nodes._
 import kr.ac.kaist.safe.config.Config
@@ -71,8 +71,8 @@ object DotWriter {
       case e @ Exit(_) => "Exit" + e.func.id
       case e @ ExitExc(_) => "ExitExc" + e.func.id
       case ca @ Call(_) => "Call" + ca.callInst.id
-      case ac @ AfterCall(_, _, _) => "Call" + ac.call.callInst.id
-      case ac @ AfterCatch(_, _) => "Call" + ac.call.callInst.id
+      case ac @ AfterCall(_, _, _) => "AfterCall" + ac.call.callInst.id
+      case ac @ AfterCatch(_, _) => "AfterCatch" + ac.call.callInst.id
       case b @ CFGNormalBlock(_) => "Block" + b.id
     }
   }
@@ -156,57 +156,44 @@ object DotWriter {
     sb.append("}").toString
   }
 
-  // TODO
-  // def spawnDot(dotExe: String, outputFile: String, dotFile: File): Unit = {
-  //   val cmdarray = Array(dotExe, "-Tsvg", "-o", outputFile, "-v", dotFile.getAbsolutePath)
-  //   System.out.println("Spawning process" + cmdarray.foldLeft("")((r, s) => r + " " + s))
-  //   try {
-  //     val p = Runtime.getRuntime.exec(cmdarray)
-  //     new BufferedInputStream(p.getInputStream).close
-  //     new BufferedInputStream(p.getErrorStream).close
-  //     var repeat = true
-  //     while (repeat) {
-  //       try {
-  //         Thread.sleep(100)
-  //       } catch {
-  //         case e1: InterruptedException =>
-  //           e1.printStackTrace
-  //         // just ignore and continue
-  //       }
-  //       try {
-  //         p.exitValue
-  //         // if we get here, the process has terminated
-  //         repeat = false
-  //         //System.out.println("process terminated with exit code " + p.exitValue)
-  //       } catch {
-  //         case _: IllegalThreadStateException =>
-  //           // this means the process has not yet terminated.
-  //           repeat = true
-  //       }
-  //     }
-  //   } catch {
-  //     case e: IOException =>
-  //       e.printStackTrace
-  //       JSAFError.error("IOException DotUtil.")
-  //   }
-  // }
+  def writeDotFile(
+    cfg: CFG,
+    o: OrderMap,
+    blocksOpt: Option[List[CFGBlock]] = None,
+    dotfile: String = "cfg.gv"
+  ): Unit = {
+    try {
+      val f = new File(dotfile)
+      val fw = new FileWriter(f)
+      fw.write(drawGraph(cfg, o, blocksOpt))
+      fw.close
+    } catch {
+      case e: Throwable =>
+        println(s"* error writing dot file $dotfile.")
+    } finally {
+      println(s"* success writing dot file $dotfile.")
+    }
+  }
 
-  // def writeDotFile(g: CFG, o: OrderMap, dotfile: String): Unit = {
-  //   try {
-  //     val f = new File(dotfile)
-  //     val fw = new FileWriter(f)
-  //     fw.write(drawGraph(g, o));
-  //     fw.close
-  //     f
-  //   } catch {
-  //     case e: Throwable =>
-  //       JSAFError.error("Error writing dot file " + dotfile + ".")
-  //   }
-  // }
-
-  // def write(g: CFG, dotFile: String, outputFile: String, dotExe: String): Unit = {
-  //   val wo = Worklist.computes(g)
-  //   val o = wo.getOrder()
-  //   spawnDot(dotExe, outputFile, writeDotFile(g, o, dotFile))
-  // }
+  def spawnDot(
+    cfg: CFG,
+    o: OrderMap,
+    blocksOpt: Option[List[CFGBlock]] = None,
+    dotFile: String = "cfg.gv",
+    outFile: String = "cfg.pdf"
+  ): Unit = {
+    val cmdarray = Array("dot", "-Tpdf", dotFile, "-o", outFile)
+    writeDotFile(cfg, o, blocksOpt, dotFile)
+    println("Spawning...: " + cmdarray.mkString(" "))
+    try {
+      val p = Runtime.getRuntime.exec(cmdarray)
+      // TODO handling it takes long time to create pdf file
+    } catch {
+      case e: Throwable =>
+        e.printStackTrace
+        println(s"* error writing CFG pdf file $outFile.")
+    } finally {
+      println(s"* success writing CFG pdf file $outFile.")
+    }
+  }
 }
