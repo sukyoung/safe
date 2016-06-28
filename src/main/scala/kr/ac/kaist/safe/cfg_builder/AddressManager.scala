@@ -23,7 +23,7 @@ trait AddressManager {
   def isOldLoc(loc: Loc): Boolean
   def compareLoc(a: Loc, b: Loc): Int
   def locName(loc: Loc): String
-  def parseLocName(s: String): Try[Loc]
+  def parseLocName(s: String): Option[Loc]
   def registerSystemAddress(addr: Address, name: String): Unit
   def newProgramAddr(): Address
   def newProgramAddr(name: String): Address

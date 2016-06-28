@@ -30,11 +30,14 @@ class Worklist(private var orderMap: Map[CFGBlock, Int]) {
   def isEmpty: Boolean = {
     worklist.isEmpty
   }
+
   def pop: ControlPoint = {
     val removedHead = worklist.head.cp
     worklist = worklist.tail
     removedHead
   }
+
+  def head: ControlPoint = worklist.head.cp
 }
 
 case class Work(order: Int, cp: ControlPoint)

@@ -41,6 +41,9 @@ object Config {
   // Base project directory root
   val BASE_DIR = System.getenv("SAFE_HOME")
 
+  // Base project directory root
+  val CUR_DIR = System.getProperty("user.dir")
+
   // Predefined variables
   val PRED_VARS = List(
     // 4.2 Language Overview

@@ -59,6 +59,6 @@ case class CallContextManager(addrManager: AddressManager, callsiteDepth: Int = 
         case _ => Failure(new InternalError("compare must be called on same CallContext kinds"))
       }
 
-    override def toString: String = callsiteList.toString
+    override def toString: String = "(" + callsiteList.mkString(", ") + ")"
   }
 }

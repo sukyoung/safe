@@ -16,7 +16,6 @@ import kr.ac.kaist.safe.util.{ Span, SourceLoc }
 
 abstract class Node extends UIDObject {
   def toString(indent: Int): String
-  override def toString: String = toString(0)
 
   // helper for info
   def span: Span

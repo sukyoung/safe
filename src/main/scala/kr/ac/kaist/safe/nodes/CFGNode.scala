@@ -137,6 +137,9 @@ case class CFGFunction(
     case func: CFGFunction => (func.id == id)
     case _ => false
   }
+
+  // toString
+  override def toString: String = s"function[$id] $name"
 }
 
 object CFGFunction {
@@ -166,15 +169,33 @@ sealed abstract class CFGBlock {
   protected val cpToState: MMap[CallContext, State] = MHashMap()
   def getState(callCtx: CallContext): State = cpToState.getOrElse(callCtx, State.Bot)
   def setState(callCtx: CallContext, state: State): Unit = cpToState(callCtx) = state
+
+  // get inst.
+  def getInsts: List[CFGInst] = Nil
+
+  // toString
+  override def toString: String
+
+  // span
+  def span: Span
 }
 object CFGBlock {
   implicit def node2nodelist(node: CFGBlock): List[CFGBlock] = List(node)
 }
 
 // entry, exit, exception exit
-case class Entry(func: CFGFunction) extends CFGBlock
-case class Exit(func: CFGFunction) extends CFGBlock
-case class ExitExc(func: CFGFunction) extends CFGBlock
+case class Entry(func: CFGFunction) extends CFGBlock {
+  override def toString: String = s"Entry"
+  def span: Span = func.span.copy(end = func.span.begin)
+}
+case class Exit(func: CFGFunction) extends CFGBlock {
+  override def toString: String = s"Exit"
+  def span: Span = func.span.copy(begin = func.span.end)
+}
+case class ExitExc(func: CFGFunction) extends CFGBlock {
+  override def toString: String = s"ExitExc"
+  def span: Span = func.span.copy(begin = func.span.end)
+}
 
 // call, after-call, after-catch
 case class Call(func: CFGFunction) extends CFGBlock {
@@ -184,6 +205,12 @@ case class Call(func: CFGFunction) extends CFGBlock {
   def afterCall: AfterCall = iAfterCall
   def afterCatch: AfterCatch = iAfterCatch
   def callInst: CFGCallInst = iCallInst
+  override def toString: String = "Call[callInst: " + (callInst match {
+    case CFGCall(_, _, _, _, _, _, _) => "Call"
+    case CFGConstruct(_, _, _, _, _, _, _) => "Construct"
+  }) + s"]"
+  def span: Span = callInst.span
+  override def getInsts: List[CFGInst] = List(callInst)
 }
 object Call {
   def apply(func: CFGFunction, callInstCons: Call => CFGCallInst, retVar: CFGId): Call = {
@@ -194,8 +221,14 @@ object Call {
     call
   }
 }
-case class AfterCall(func: CFGFunction, retVar: CFGId, call: Call) extends CFGBlock
-case class AfterCatch(func: CFGFunction, call: Call) extends CFGBlock
+case class AfterCall(func: CFGFunction, retVar: CFGId, call: Call) extends CFGBlock {
+  override def toString: String = s"AfterCall <- $call"
+  def span: Span = call.callInst.span.copy(begin = call.callInst.span.end)
+}
+case class AfterCatch(func: CFGFunction, call: Call) extends CFGBlock {
+  override def toString: String = s"AfterCatch <- $call"
+  def span: Span = call.callInst.span.copy(begin = call.callInst.span.end)
+}
 
 // normal block
 case class CFGNormalBlock(func: CFGFunction) extends CFGBlock {
@@ -203,7 +236,7 @@ case class CFGNormalBlock(func: CFGFunction) extends CFGBlock {
 
   // inst list
   private var insts: List[CFGNormalInst] = Nil
-  def getInsts: List[CFGNormalInst] = insts
+  override def getInsts: List[CFGNormalInst] = insts
 
   // create inst
   def createInst(instCons: CFGNormalBlock => CFGNormalInst): CFGNormalInst = {
@@ -219,11 +252,21 @@ case class CFGNormalBlock(func: CFGFunction) extends CFGBlock {
   }
 
   // toString
-  override def toString: String = s"(${func.id},LBlock($id))"
+  override def toString: String = s"Block($id)"
 
-  // dump node
+  // span
+  def span: Span = {
+    val fileName = func.span.fileName
+    val (begin, end) = insts match {
+      case head :: _ => (insts.last.span.begin, head.span.end)
+      case Nil => (SourceLoc(), SourceLoc()) // TODO return correct span
+    }
+    Span(fileName, begin, end)
+  }
+
+  // dump node for test TODO delete
   def dump: String = {
-    var str: String = s"$this" + Config.LINE_SEP
+    var str: String = s"(${func.id},LBlock($id))" + Config.LINE_SEP
     str += (preds.get(CFGEdgeNormal) match {
       case Some(List(AfterCall(_, retVar, _))) => s"    [EDGE] after-call($retVar)" + Config.LINE_SEP
       case _ => ""

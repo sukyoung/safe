@@ -1,20 +1,25 @@
 package kr.ac.kaist.safe.analyzer
 
 import kr.ac.kaist.safe.analyzer.domain.State
+import kr.ac.kaist.safe.analyzer.console.Console
 import kr.ac.kaist.safe.nodes.{ CFGEdgeExc, CFGEdgeNormal }
 
-class Fixpoint(semantics: Semantics, worklist: Worklist) {
+class Fixpoint(
+    semantics: Semantics,
+    worklist: Worklist,
+    consoleOpt: Option[Console]
+) {
   def compute(): Unit = {
-    var iter = 0
     while (!worklist.isEmpty) {
+      consoleOpt.fold() { _.runFixpoint }
       val cp = worklist.pop
       val st = cp.getState
       val (nextSt, nextExcSt) = semantics.C(cp, st)
       propagateNormal(cp, nextSt)
       propagateException(cp, nextExcSt)
       propagateInterProc(cp, nextSt)
-      iter += 1
     }
+    consoleOpt.fold() { _.runFinished }
   }
 
   def propagateNormal(cp: ControlPoint, nextSt: State): Unit = {

@@ -87,7 +87,7 @@ case object CmdCFGBuild extends Command("cfgBuild", CFGBuild) {
 
 case object CmdAnalyze extends Command("analyze", Analyze) {
   override def usage: String =
-    s" [-$name:out=outfile] [-$name:verbose] infile.js ..."
+    s" [-$name:out=outfile] [-$name:verbose] [-$name:console] infile.js ..."
   override def help: String = {
     val s: StringBuilder = new StringBuilder
     s.append("  Analyze the JavaScript source files.")
@@ -95,6 +95,8 @@ case object CmdAnalyze extends Command("analyze", Analyze) {
     s.append(s"  If -$name:out=outfile is given, the analysis results will be written to the outfile.")
     s.append(Config.LINE_SEP)
     s.append(s"  If -$name:verbose is given, messages during compilation are printed.")
+    s.append(Config.LINE_SEP)
+    s.append(s"  If -$name:console is given, you can use REPL-style debugger.")
     s.append(Config.LINE_SEP)
     s.append(s"  If -$name:maxStrSetSize=n is given, the analyzer will use the AbsString Set domain with given size limit n.")
     s.append(Config.LINE_SEP)

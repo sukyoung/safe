@@ -16,6 +16,7 @@ import kr.ac.kaist.safe.analyzer._
 import scala.util.{ Failure, Success, Try }
 import kr.ac.kaist.safe.config.{ BoolOption, Config, ConfigOption, NumOption, OptionKind, StrOption }
 import kr.ac.kaist.safe.analyzer.domain._
+import kr.ac.kaist.safe.analyzer.console.Console
 import kr.ac.kaist.safe.nodes.CFG
 
 // Analyze phase struct.
@@ -24,7 +25,7 @@ case class Analyze(
     analyzeConfig: AnalyzeConfig = AnalyzeConfig()
 ) extends Phase(Some(prev), Some(analyzeConfig)) {
   override def apply(config: Config): Unit = analyze(config) recover {
-    case ex => Console.err.print(ex.toString)
+    case ex => System.err.print(ex.toString)
   }
   def analyze(config: Config): Try[Int] =
     prev.cfgBuild(config).flatMap(analyze(config, _))
@@ -37,7 +38,11 @@ case class Analyze(
     val semantics = new Semantics(cfg, worklist, utils, config.addrManager)
     val initSt = semantics.initState
     cfg.globalFunc.entry.setState(callCtxManager.globalCallContext, initSt)
-    val fixpoint = new Fixpoint(semantics, worklist)
+    val consoleOpt = analyzeConfig.console match {
+      case true => Some(new Console(cfg, worklist, semantics, config.addrManager))
+      case false => None
+    }
+    val fixpoint = new Fixpoint(semantics, worklist, consoleOpt)
     fixpoint.compute()
 
     val excLog = semantics.excLog
@@ -59,6 +64,7 @@ object Analyze extends PhaseHelper {
 // Config options for Analyze phase.
 case class AnalyzeConfig(
     var verbose: Boolean = false,
+    var console: Boolean = false,
     var outFile: Option[String] = None,
     var AbsUndef: AbsUndefUtil = DefaultUndefUtil,
     var AbsNull: AbsNullUtil = DefaultNullUtil,
@@ -70,6 +76,7 @@ case class AnalyzeConfig(
   val prefix: String = "analyze:"
   val optMap: Map[String, OptionKind] = Map(
     "verbose" -> BoolOption(() => verbose = true),
+    "console" -> BoolOption(() => console = true),
     "out" -> StrOption((s: String) => outFile = Some(s)),
     "maxStrSetSize" -> NumOption((n: Int) => if (n > 0) AbsString = new DefaultStrSetUtil(n)),
     "callsiteSensitivity" -> NumOption((n: Int) => if (n > 0) callsiteSensitivity = n)
