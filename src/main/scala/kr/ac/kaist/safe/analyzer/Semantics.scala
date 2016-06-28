@@ -20,7 +20,12 @@ import kr.ac.kaist.safe.util._
 
 import scala.collection.immutable.{ HashMap, HashSet }
 
-class Semantics(cfg: CFG, worklist: Worklist, utils: Utils, addressManager: AddressManager) {
+class Semantics(
+    cfg: CFG,
+    worklist: Worklist,
+    utils: Utils,
+    addressManager: AddressManager
+) {
   lazy val excLog: ExcLog = new ExcLog
   val predefLoc: PredefLoc = PredefLoc(addressManager)
   val helper: Helper = Helper(utils, addressManager, predefLoc)
@@ -29,6 +34,8 @@ class Semantics(cfg: CFG, worklist: Worklist, utils: Utils, addressManager: Addr
   // Interprocedural edges
   private var ipSuccMap: Map[ControlPoint, Map[ControlPoint, (Context, Obj)]] = HashMap[ControlPoint, Map[ControlPoint, (Context, Obj)]]()
   private var ipPredMap: Map[ControlPoint, Set[ControlPoint]] = HashMap[ControlPoint, Set[ControlPoint]]()
+  def getAllIPSucc: Map[ControlPoint, Map[ControlPoint, (Context, Obj)]] = ipSuccMap
+  def getAllIPPred: Map[ControlPoint, Set[ControlPoint]] = ipPredMap
   def getInterProcSucc(cp: ControlPoint): Option[Map[ControlPoint, (Context, Obj)]] = ipSuccMap.get(cp)
   def getInterProcPred(cp: ControlPoint): Option[Set[ControlPoint]] = ipPredMap.get(cp)
 

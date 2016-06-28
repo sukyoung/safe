@@ -39,6 +39,8 @@ class Worklist(private var orderMap: Map[CFGBlock, Int]) {
 
   def head: ControlPoint = worklist.head.cp
 
+  def getOrderMap: Map[CFGBlock, Int] = orderMap
+
   override def toString: String = {
     worklist.map(work => work.toString).reduce((s1, s2) => s1 + ", " + s2)
   }
