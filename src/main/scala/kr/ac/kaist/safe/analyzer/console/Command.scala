@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright (c) 2013, KAIST.
+ * Copyright (c) 2016, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -11,9 +11,10 @@
 
 package kr.ac.kaist.safe.analyzer.console
 
+import jline.console.ConsoleReader
 import kr.ac.kaist.safe.nodes._
 import kr.ac.kaist.safe.analyzer.ControlPoint
-import kr.ac.kaist.safe.analyzer.domain.Loc
+import kr.ac.kaist.safe.analyzer.domain.{ Loc, State }
 import kr.ac.kaist.safe.config.Config
 
 sealed abstract class Command(
@@ -22,6 +23,24 @@ sealed abstract class Command(
 ) {
   def run(c: Console, args: List[String]): Option[Target]
   def help: Unit
+
+  protected def showState(
+    c: Console,
+    state: State,
+    desc: String = "state",
+    withPred: Boolean = true
+  ): Unit = {
+    println(s"** $desc **")
+    val heapStr = state.heap.toString
+    println(heapStr)
+    println
+    if (withPred) showPredefLocMap(c)
+  }
+
+  protected def showPredefLocMap(c: Console): Unit = {
+    println("** predefined location name info. **")
+    println(c.semantics.helper.strPredefLocMap)
+  }
 }
 
 // help
@@ -76,8 +95,8 @@ case object CmdPrint extends Command("print", "Print out various information.") 
     println("       " + name + " worklist")
     println("       " + name + " ipsucc")
     println("       " + name + " trace")
+    println("       " + name + " run_insts")
     // TODO println("       " + name + " cfg")
-    // TODO println("       " + name + " (cmd|command)")
   }
 
   def run(c: Console, args: List[String]): Option[Target] = {
@@ -88,15 +107,11 @@ case object CmdPrint extends Command("print", "Print out various information.") 
           val heapStr = c.getCurCP.getState.heap.toString
           rest match {
             case Nil =>
-              println(heapStr)
-              println
-              println("** predefined location name info. **")
-              println(c.semantics.helper.strPredefLocMap)
+              showState(c, c.getCurCP.getState)
             case key :: Nil =>
               println(grep(key, heapStr))
               println
-              println("** predefined location name info. **")
-              println(c.semantics.helper.strPredefLocMap)
+              showPredefLocMap(c)
             case _ => help
           }
         case "block" => rest match {
@@ -217,26 +232,6 @@ case object CmdPrint extends Command("print", "Print out various information.") 
         //     sb.append("\n}\n").toString()
         //     println(sb)
         //   case _ => help
-        // }
-        // TODO case "cmd" | "command" => {
-        //   val cp = c.current
-
-        //   c.getCFG.getCmd(cp._1) match {
-        //     case Block(insts) =>
-        //       System.out.println("- Command")
-        //       for (inst <- insts) {
-        //         inst.getInfo match {
-        //           case Some(info) =>
-        //             System.out.print("    [" + inst.getInstId + "] " + inst.toString + " \t [" + info.getSpan().begin.getOffset() + "~" + info.getSpan().end.getOffset() + "]")
-        //             System.out.print(" / Line info [" + info.getSpan().begin.getLine() + ":" + info.getSpan().begin.column() + " ~ " + info.getSpan().end.getLine() + ":" + info.getSpan().begin.column() + "]")
-        //             System.out.println(" / File name : " + info.getSpan().begin.getFileName)
-        //           case None =>
-        //             System.out.println("    [" + inst.getInstId + "] " + inst.toString)
-        //         }
-        //       }
-        //       System.out.println()
-        //     case _ => System.out.println("- Nothing")
-        //   }
         // }
         case _ => help
       }
@@ -664,5 +659,62 @@ case object CmdRun extends Command("run") {
       case Nil => Some(TargetIter(-1))
       case _ => help; None
     }
+  }
+}
+
+// run instructions
+case object CmdRunInsts extends Command("run_insts") {
+  def help: Unit = println("usage: " + name)
+  def run(c: Console, args: List[String]): Option[Target] = {
+    args match {
+      case Nil => {
+        val cp = c.getCurCP
+        val st = cp.getState
+        val block = cp.node
+        val insts = block.getInsts.reverse
+        val reader = new ConsoleReader()
+        insts match {
+          case Nil => println("* no instructions")
+          case _ => println(c.getCurCP.node.toString(0))
+        }
+        val (resSt, resExcSt, _) = insts.foldLeft((st, State.Bot, true)) {
+          case ((oldSt, oldExcSt, true), inst) =>
+            println
+            reader.setPrompt(
+              s"inst: [${inst.id}] $inst" + Config.LINE_SEP +
+                s"('s': show / 'q': stop / 'n','': next)" + Config.LINE_SEP +
+                s"> "
+            )
+            var line = ""
+            while ({
+              line = reader.readLine
+              line match {
+                case "s" => {
+                  showState(c, oldSt, "state", false)
+                  showState(c, oldExcSt, "exception state", false)
+                  showPredefLocMap(c)
+                  true
+                }
+                case "d" => true // TODO diff
+                case "n" | "" => false
+                case "q" => false
+                case _ => true
+              }
+            }) {}
+            line match {
+              case "q" => (oldSt, oldExcSt, false)
+              case _ =>
+                val (st, excSt) = c.semantics.I(cp, inst, oldSt, oldExcSt)
+                (st, excSt, true)
+            }
+          case (old @ (_, _, false), inst) => old
+        }
+        showState(c, resSt, "state", false)
+        showState(c, resExcSt, "exception state", false)
+        showPredefLocMap(c)
+      }
+      case _ => help
+    }
+    None
   }
 }

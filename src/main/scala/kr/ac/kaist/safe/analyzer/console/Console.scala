@@ -129,7 +129,8 @@ object Console {
     CmdNext,
     CmdJump,
     CmdPrint,
-    CmdRun
+    CmdRun,
+    CmdRunInsts
   // CmdPrintResult
   // CmdMove
   // CmdHome
