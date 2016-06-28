@@ -266,9 +266,10 @@ case class CFGNormalBlock(func: CFGFunction) extends CFGBlock {
   override def toString: String = s"Block($id)"
   def toString(indent: Int): String = {
     val pre = " " * indent
-    pre + s"Block($id)" + (insts.map(inst => {
-      Config.LINE_SEP + pre + s" [${inst.id}] $inst"
-    }))
+    pre + s"Block($id)" + Config.LINE_SEP +
+      (insts.reverse.map(inst => {
+        pre + s" [${inst.id}] $inst"
+      })).mkString(Config.LINE_SEP)
   }
 
   // span
