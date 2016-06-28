@@ -265,10 +265,14 @@ class Semantics(cfg: CFG, worklist: Worklist, utils: Utils, addressManager: Addr
               val hi = helper.propStore(heap, l, utils.absString.alpha("length"), storeV)
               (nNewLen.gammaSingle, nOldLen.gammaSingle) match {
                 case (ConSingleCon(n1), ConSingleCon(n2)) =>
-                  (n1.toInt until n2.toInt).foldLeft(hi)((hj, i) =>
-                    helper.delete(hj, l, utils.absString.alpha(i.toString))._1)
+                  (n1.toInt until n2.toInt).foldLeft(hi)((hj, i) => {
+                    val (tmpHeap, _) = helper.delete(hj, l, utils.absString.alpha(i.toString))
+                    tmpHeap
+                  })
                 case (ConSingleBot(), _) | (_, ConSingleBot()) => Heap.Bot
-                case _ => helper.delete(hi, l, utils.absString.NumStr)._1
+                case _ =>
+                  val (tmpHeap, _) = helper.delete(hi, l, utils.absString.NumStr)
+                  tmpHeap
               }
             } else {
               Heap.Bot
