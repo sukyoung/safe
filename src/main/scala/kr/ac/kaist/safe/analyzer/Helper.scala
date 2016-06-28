@@ -13,6 +13,7 @@ package kr.ac.kaist.safe.analyzer
 
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.cfg_builder.AddressManager
+import kr.ac.kaist.safe.config.Config
 import kr.ac.kaist.safe.nodes.{ CapturedCatchVar, CapturedVar, GlobalVar, PureLocalVar, CFGExpr, CFGId, FunctionId }
 import scala.util.Try
 import scala.collection.immutable.HashSet
@@ -1011,4 +1012,11 @@ case class Helper(utils: Utils, addrManager: AddressManager, predefLoc: PredefLo
   def validity(expr1: CFGExpr, expr2: CFGExpr, st: State): Boolean = false
 
   def validity(expr1: CFGExpr, expr2: CFGExpr, expr3: CFGExpr, st: State): Boolean = false
+
+  // predef location: string -> Loc map
+  def strPredefLocMap: String = (predefLoc.strToLocMap.toSeq.sortBy {
+    case (key, _) => -key
+  }.map {
+    case (loc, name) => s"$loc -> $name"
+  }).mkString(Config.LINE_SEP)
 }

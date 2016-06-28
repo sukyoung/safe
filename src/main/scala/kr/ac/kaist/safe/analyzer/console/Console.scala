@@ -100,7 +100,7 @@ class Console(
   private def runCmd(line: String): Option[Target] = {
     line match {
       case null =>
-        println; None
+        println; Some(TargetIter(-1)) // run
       case "" => Some(TargetIter(iter + 1))
       case _ => {
         val list = line.trim.split("\\s+").toList
@@ -128,7 +128,8 @@ object Console {
     CmdHelp,
     CmdNext,
     CmdJump,
-    CmdPrint
+    CmdPrint,
+    CmdRun
   // CmdPrintResult
   // CmdMove
   // CmdHome

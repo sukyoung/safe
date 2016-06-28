@@ -175,6 +175,7 @@ sealed abstract class CFGBlock {
 
   // toString
   override def toString: String
+  def toString(indent: Int): String
 
   // span
   def span: Span
@@ -185,15 +186,18 @@ object CFGBlock {
 
 // entry, exit, exception exit
 case class Entry(func: CFGFunction) extends CFGBlock {
-  override def toString: String = s"Entry"
+  override def toString: String = "Entry"
+  def toString(indent: Int): String = " " * indent + "Entry"
   def span: Span = func.span.copy(end = func.span.begin)
 }
 case class Exit(func: CFGFunction) extends CFGBlock {
-  override def toString: String = s"Exit"
+  override def toString: String = "Exit"
+  def toString(indent: Int): String = " " * indent + "Exit"
   def span: Span = func.span.copy(begin = func.span.end)
 }
 case class ExitExc(func: CFGFunction) extends CFGBlock {
-  override def toString: String = s"ExitExc"
+  override def toString: String = "ExitExc"
+  def toString(indent: Int): String = " " * indent + "ExitExc"
   def span: Span = func.span.copy(begin = func.span.end)
 }
 
@@ -209,6 +213,11 @@ case class Call(func: CFGFunction) extends CFGBlock {
     case CFGCall(_, _, _, _, _, _, _) => "Call"
     case CFGConstruct(_, _, _, _, _, _, _) => "Construct"
   }) + s"]"
+  def toString(indent: Int): String = {
+    val pre = " " * indent
+    pre + "Call" + Config.LINE_SEP +
+      pre + s" [${callInst.id}] $callInst"
+  }
   def span: Span = callInst.span
   override def getInsts: List[CFGInst] = List(callInst)
 }
@@ -224,9 +233,11 @@ object Call {
 case class AfterCall(func: CFGFunction, retVar: CFGId, call: Call) extends CFGBlock {
   override def toString: String = s"AfterCall <- $call"
   def span: Span = call.callInst.span.copy(begin = call.callInst.span.end)
+  def toString(indent: Int): String = " " * indent + "AfterCall"
 }
 case class AfterCatch(func: CFGFunction, call: Call) extends CFGBlock {
   override def toString: String = s"AfterCatch <- $call"
+  def toString(indent: Int): String = " " * indent + "AfterCatch"
   def span: Span = call.callInst.span.copy(begin = call.callInst.span.end)
 }
 
@@ -253,6 +264,12 @@ case class CFGNormalBlock(func: CFGFunction) extends CFGBlock {
 
   // toString
   override def toString: String = s"Block($id)"
+  def toString(indent: Int): String = {
+    val pre = " " * indent
+    pre + s"Block($id)" + (insts.map(inst => {
+      Config.LINE_SEP + pre + s" [${inst.id}] $inst"
+    }))
+  }
 
   // span
   def span: Span = {

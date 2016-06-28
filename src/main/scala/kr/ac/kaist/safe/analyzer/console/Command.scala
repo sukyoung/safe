@@ -70,6 +70,7 @@ case object CmdJump extends Command("jump", "Continue to analyze until the given
 case object CmdPrint extends Command("print", "Print out various information.") {
   def help: Unit = {
     println("usage: " + name + " state ({keyword})")
+    println("       " + name + " block")
     println("       " + name + " loc {LocName} ({keyword})")
     println("       " + name + " fid {functionID}")
     println("       " + name + " worklist")
@@ -85,11 +86,23 @@ case object CmdPrint extends Command("print", "Print out various information.") 
       case subcmd :: rest => subcmd match {
         case "state" =>
           val heapStr = c.getCurCP.getState.heap.toString
-          println(rest match {
-            case Nil => heapStr
-            case key :: Nil => grep(key, heapStr)
+          rest match {
+            case Nil =>
+              println(heapStr)
+              println
+              println("** predefined location name info. **")
+              println(c.semantics.helper.strPredefLocMap)
+            case key :: Nil =>
+              println(grep(key, heapStr))
+              println
+              println("** predefined location name info. **")
+              println(c.semantics.helper.strPredefLocMap)
             case _ => help
-          })
+          }
+        case "block" => rest match {
+          case Nil => println(c.getCurCP.node.toString(0))
+          case _ => help
+        }
         case "loc" => rest match {
           case locStr :: rest if rest.length <= 1 =>
             parseLocName(c, locStr) match {
@@ -642,3 +655,14 @@ case object CmdPrint extends Command("print", "Print out various information.") 
 //     }
 //   }
 // }
+
+// run
+case object CmdRun extends Command("run") {
+  def help: Unit = println("usage: " + name)
+  def run(c: Console, args: List[String]): Option[Target] = {
+    args match {
+      case Nil => Some(TargetIter(-1))
+      case _ => help; None
+    }
+  }
+}

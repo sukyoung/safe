@@ -45,5 +45,5 @@ class Worklist(private var orderMap: Map[CFGBlock, Int]) {
 }
 
 case class Work(order: Int, cp: ControlPoint) {
-  override def toString: String = s"(${cp.node.toString}, ${cp.callContext.toString})"
+  override def toString: String = s"(${cp.node}, ${cp.callContext})"
 }
