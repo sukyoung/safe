@@ -11,9 +11,29 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
+import kr.ac.kaist.safe.config.Config
+
 //TODO: Merge ObjMap implementation
 //TODO: Handle default values, key values with "@"
 class Obj(val map: Map[String, (PropValue, Absent)]) {
+  override def toString: String = {
+    val sortedMap = map.toSeq.sortBy(kv => {
+      val (key, _) = kv
+      key
+    })
+
+    sortedMap.map((kv) => {
+      val (key, pva) = kv
+      val (propv, absent) = pva
+      absent match {
+        case AbsentTop =>
+          s"${key.toString} @-> ${propv.toString}"
+        case AbsentBot =>
+          s"${key.toString} |-> ${propv.toString}"
+      }
+    }).reduce((s1, s2) => s1 + Config.LINE_SEP + s2)
+  }
+
   /* partial order */
   def <=(that: Obj): Boolean = {
     if (this.map.isEmpty) true

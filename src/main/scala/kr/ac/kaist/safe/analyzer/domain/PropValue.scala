@@ -11,11 +11,29 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
+import kr.ac.kaist.safe.config.Config
 import kr.ac.kaist.safe.nodes.FunctionId
 
 trait PropValue {
   val objval: ObjectValue
   val funid: Set[FunctionId]
+
+  override def toString: String = {
+    val objValStr =
+      if (objval.isBottom) ""
+      else objval.toString
+
+    val funidSetStr =
+      if (funid.isEmpty) ""
+      else s"[FunIds] ${funid.map(id => id.toString).reduce((s1, s2) => s"$s1, $s2")}"
+
+    (objval.isBottom, funid.isEmpty) match {
+      case (true, true) => "⊥PropValue"
+      case (true, false) => funidSetStr
+      case (false, true) => objValStr
+      case (false, false) => objValStr + Config.LINE_SEP + funidSetStr
+    }
+  }
 
   /* partial order */
   def <=(that: PropValue): Boolean

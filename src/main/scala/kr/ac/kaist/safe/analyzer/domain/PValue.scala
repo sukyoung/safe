@@ -139,7 +139,7 @@ case class DefaultPValue(
     this.strval.fold(()) { lst ::= _.toString }
 
     lst match {
-      case Nil => "Bot"
+      case Nil => "⊥PValue"
       case _ => lst.mkString(", ")
     }
   }

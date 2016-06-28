@@ -11,8 +11,38 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
+import kr.ac.kaist.safe.config.Config
+
 trait Heap {
   val map: Map[Loc, Obj]
+
+  private def indentation(objStr: String, indent: Int): String = {
+    val arr = objStr.split(Config.LINE_SEP)
+    if (arr.length < 2) objStr
+    else {
+      val space = " " * indent
+      val tailStr = arr.tail.map(s => space + s).
+        reduce((s1, s2) => s1 + Config.LINE_SEP + s2)
+      arr.head + Config.LINE_SEP + tailStr
+    }
+  }
+
+  override def toString: String = {
+    if (this.isBottom) "⊥Heap"
+    else {
+      val sortedMap = map.toSeq.sortBy(kv => {
+        val (key, _) = kv
+        key
+      })
+
+      sortedMap.foldLeft("")((str, kv) => {
+        val (loc, obj) = kv
+        val keyStr = s"#${loc.toString} -> "
+        val indentedStr = indentation(obj.toString, keyStr.length)
+        keyStr + indentedStr + Config.LINE_SEP
+      })
+    }
+  }
 
   /* partial order */
   def <=(that: Heap): Boolean

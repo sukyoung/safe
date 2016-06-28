@@ -17,6 +17,18 @@ trait ObjectValue {
   val enumerable: AbsBool
   val configurable: AbsBool
 
+  override def toString: String = {
+    if (this.isBottom) "⊥ObjectValue"
+    else {
+      val prefix =
+        (writable.gammaSimple, enumerable.gammaSimple, configurable.gammaSimple) match {
+          case (ConSimpleBot, ConSimpleBot, ConSimpleBot) => "[Val] "
+          case _ => s"[${writable.toString} ${enumerable.toString} ${configurable.toString}] "
+        }
+      prefix + value.toString
+    }
+  }
+
   /* partial order */
   def <=(that: ObjectValue): Boolean
   /* not a partial order */

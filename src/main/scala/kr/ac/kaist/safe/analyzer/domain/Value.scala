@@ -15,6 +15,23 @@ trait Value {
   val pvalue: PValue
   val locset: Set[Loc]
 
+  override def toString: String = {
+    val pvalStr =
+      if (pvalue.isBottom) ""
+      else pvalue.toString
+
+    val locSetStr =
+      if (locset.isEmpty) ""
+      else s"{${locset.map(id => id.toString).reduce((s1, s2) => s"$s1, $s2")}}"
+
+    (pvalue.isBottom, locset.isEmpty) match {
+      case (true, true) => "⊥Value"
+      case (true, false) => locSetStr
+      case (false, true) => pvalStr
+      case (false, false) => s"$pvalStr, $locSetStr"
+    }
+  }
+
   /* partial order */
   def <=(that: Value): Boolean
   /* not a partial order */
