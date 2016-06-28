@@ -38,7 +38,7 @@ class Semantics(cfg: CFG, worklist: Worklist, utils: Utils, addressManager: Addr
       .update(predefLoc.SINGLE_PURE_LOCAL_LOC, globalPureLocalObj)
       .update(predefLoc.GLOBAL_LOC, utils.ObjEmpty)
       .update(predefLoc.COLLAPSED_LOC, utils.ObjEmpty)
-    State(initHeap, Context.Bot)
+    State(initHeap, Context.Empty)
   }
 
   // Adds inter-procedural call edge from call-node cp1 to entry-node cp2.
@@ -207,7 +207,7 @@ class Semantics(cfg: CFG, worklist: Worklist, utils: Utils, addressManager: Addr
           case afterCall: AfterCall => (st, State.Bot)
           case afterCatch: AfterCatch => (st, State.Bot)
           case block: CFGNormalBlock =>
-            block.getInsts.foldLeft((st, State.Bot))((states, inst) => {
+            block.getInsts.foldRight((st, State.Bot))((inst, states) => {
               val (oldSt, oldExcSt) = states
               I(cp, inst, oldSt, oldExcSt)
             })
