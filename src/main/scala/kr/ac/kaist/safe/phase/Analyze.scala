@@ -27,9 +27,9 @@ case class Analyze(
   override def apply(config: Config): Unit = analyze(config) recover {
     case ex => System.err.print(ex.toString)
   }
-  def analyze(config: Config): Try[Int] =
+  def analyze(config: Config): Try[(State, State)] =
     prev.cfgBuild(config).flatMap(analyze(config, _))
-  def analyze(config: Config, cfg: CFG): Try[Int] = {
+  def analyze(config: Config, cfg: CFG): Try[(State, State)] = {
     val utils = Utils(analyzeConfig.AbsUndef, analyzeConfig.AbsNull, analyzeConfig.AbsBool, analyzeConfig.AbsNumber, analyzeConfig.AbsString)
     val callCtxManager = CallContextManager(config.addrManager)
 
@@ -43,7 +43,7 @@ case class Analyze(
       case false => None
     }
     val fixpoint = new Fixpoint(semantics, worklist, consoleOpt)
-    fixpoint.compute()
+    val (normalSt, excSt) = fixpoint.compute()
 
     val excLog = semantics.excLog
     // Report errors.
@@ -52,7 +52,7 @@ case class Analyze(
       println(excLog)
     }
 
-    Try(0)
+    Try((normalSt, excSt))
   }
 }
 

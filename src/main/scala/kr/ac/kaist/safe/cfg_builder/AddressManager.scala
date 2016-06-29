@@ -31,4 +31,31 @@ trait AddressManager {
   def newRecentLoc(): Loc
   def newSystemRecentLoc(name: String): Loc
   def newSystemLoc(name: String, tag: RecencyTag): Loc
+
+  object PredefLoc {
+    val GLOBAL: Loc = newSystemLoc("Global", Recent)
+    val SINGLE_PURE_LOCAL: Loc = newSystemLoc("PureLocal", Recent)
+    val COLLAPSED: Loc = newSystemLoc("Collapsed", Old)
+  }
+
+  object ProtoLoc {
+    val OBJ: Loc = newSystemLoc("ObjProto", Recent)
+    val FUNCTION: Loc = newSystemLoc("FunctionProto", Recent)
+
+    //TODO: temporal definitions of builtin proto locations
+    val ARRAY: Loc = newSystemLoc("BuiltinArrayProto", Recent)
+    val BOOLEAN: Loc = newSystemLoc("BuiltinBooleanProto", Recent)
+    val NUMBER: Loc = newSystemLoc("BuiltinNumberProto", Recent)
+    val STRING: Loc = newSystemLoc("BuiltinStringProto", Recent)
+  }
+
+  object ErrorLoc {
+    val ERR: Loc = newSystemLoc("Err", Old)
+    val EVAL_ERR: Loc = newSystemLoc("EvalErr", Old)
+    val RANGE_ERR: Loc = newSystemLoc("RangeErr", Old)
+    val REF_ERR: Loc = newSystemLoc("RefErr", Old)
+    val SYNTAX_ERR: Loc = newSystemLoc("SyntaxErr", Old)
+    val TYPE_ERR: Loc = newSystemLoc("TypeErr", Old)
+    val URI_ERR: Loc = newSystemLoc("URIErr", Old)
+  }
 }

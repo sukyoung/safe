@@ -18,7 +18,7 @@ import kr.ac.kaist.safe.nodes.{ CapturedCatchVar, CapturedVar, GlobalVar, PureLo
 import scala.util.Try
 import scala.collection.immutable.HashSet
 
-case class Helper(utils: Utils, addrManager: AddressManager, predefLoc: PredefLoc) {
+case class Helper(utils: Utils, addrManager: AddressManager) {
 
   def allocObject(h: Heap, locSetV: Set[Loc], locR: Loc): Heap = {
     val newObj = newObject(locSetV)
@@ -50,7 +50,7 @@ case class Helper(utils: Utils, addrManager: AddressManager, predefLoc: PredefLo
   }
 
   def canPutVar(h: Heap, x: String): AbsBool = {
-    val globalLoc = predefLoc.GLOBAL_LOC
+    val globalLoc = addrManager.PredefLoc.GLOBAL
     val globalObj = h.getOrElse(globalLoc, utils.ObjBot)
     val domIn = (globalObj domIn x)(utils.absBool)
     val b1 =
@@ -66,12 +66,12 @@ case class Helper(utils: Utils, addrManager: AddressManager, predefLoc: PredefLo
     val x = id.text
     id.kind match {
       case PureLocalVar =>
-        val localLoc = predefLoc.SINGLE_PURE_LOCAL_LOC
+        val localLoc = addrManager.PredefLoc.SINGLE_PURE_LOCAL
         val objV = ObjectValue(value, utils.absBool.Bot, utils.absBool.Bot, utils.absBool.False)
         val propV = PropValue(objV)
         h.update(localLoc, h.getOrElse(localLoc, utils.ObjBot).update(x, propV))
       case CapturedVar =>
-        val localLoc = predefLoc.SINGLE_PURE_LOCAL_LOC
+        val localLoc = addrManager.PredefLoc.SINGLE_PURE_LOCAL
         val objV = ObjectValue(value, utils.absBool.True, utils.absBool.Bot, utils.absBool.False)
         val propV = PropValue(objV)
         val localObj = h.getOrElse(localLoc, utils.ObjBot)
@@ -79,12 +79,12 @@ case class Helper(utils: Utils, addrManager: AddressManager, predefLoc: PredefLo
           tmpHeap + h.update(loc, h.getOrElse(loc, utils.ObjBot).update(x, propV))
         })
       case CapturedCatchVar =>
-        val collapsedLoc = predefLoc.COLLAPSED_LOC
+        val collapsedLoc = addrManager.PredefLoc.COLLAPSED
         val objV = ObjectValue(value, utils.absBool.Bot, utils.absBool.Bot, utils.absBool.False)
         val propV = PropValue(objV)
         h.update(collapsedLoc, h.getOrElse(collapsedLoc, utils.ObjBot).update(x, propV))
       case GlobalVar =>
-        val globalLoc = predefLoc.GLOBAL_LOC
+        val globalLoc = addrManager.PredefLoc.GLOBAL
         val objV = ObjectValue(value, utils.absBool.True, utils.absBool.True, utils.absBool.False)
         val propV = PropValue(objV)
         if (utils.absBool.True == hasProperty(h, globalLoc, utils.absString.alpha(x))) h
@@ -114,7 +114,7 @@ case class Helper(utils: Utils, addrManager: AddressManager, predefLoc: PredefLo
     if (excSet.isEmpty)
       State(Heap.Bot, Context.Bot)
     else {
-      val localLoc = predefLoc.SINGLE_PURE_LOCAL_LOC
+      val localLoc = addrManager.PredefLoc.SINGLE_PURE_LOCAL
       val localObj = st.heap.getOrElse(localLoc, utils.ObjBot)
       val oldValue = localObj.getOrElse("@exception_all", utils.PropValueBot).objval.value
       val newExcSet = excSet.foldLeft(LocSetEmpty)((locSet, exc) => locSet + newExceptionLoc(exc))
@@ -132,26 +132,26 @@ case class Helper(utils: Utils, addrManager: AddressManager, predefLoc: PredefLo
 
   def newExceptionLoc(exc: Exception): Loc = {
     exc match {
-      case Error => predefLoc.ERR_LOC
-      case EvalError => predefLoc.EVAL_ERR_LOC
-      case RangeError => predefLoc.RANGE_ERR_LOC
-      case ReferenceError => predefLoc.REF_ERR_LOC
-      case SyntaxError => predefLoc.SYNTAX_ERR_LOC
-      case TypeError => predefLoc.TYPE_ERR_LOC
-      case URIError => predefLoc.URI_ERR_LOC
+      case Error => addrManager.ErrorLoc.ERR
+      case EvalError => addrManager.ErrorLoc.EVAL_ERR
+      case RangeError => addrManager.ErrorLoc.RANGE_ERR
+      case ReferenceError => addrManager.ErrorLoc.REF_ERR
+      case SyntaxError => addrManager.ErrorLoc.SYNTAX_ERR
+      case TypeError => addrManager.ErrorLoc.TYPE_ERR
+      case URIError => addrManager.ErrorLoc.URI_ERR
     }
   }
 
   def getThis(h: Heap, value: Value): Set[Loc] = {
     val locSet1 = (value.pvalue.nullval.gamma, value.pvalue.undefval.gamma) match {
       case (ConSimpleBot, ConSimpleBot) => LocSetEmpty
-      case _ => HashSet(predefLoc.GLOBAL_LOC)
+      case _ => HashSet(addrManager.PredefLoc.GLOBAL)
     }
 
     val foundDeclEnvRecord = value.locset.exists(loc => utils.absBool.False <= isObject(h, loc))
 
     val locSet2 =
-      if (foundDeclEnvRecord) HashSet(predefLoc.GLOBAL_LOC)
+      if (foundDeclEnvRecord) HashSet(addrManager.PredefLoc.GLOBAL)
       else LocSetEmpty
     val locSet3 = value.locset.foldLeft(LocSetEmpty)((tmpLocSet, loc) => {
       if (utils.absBool.True <= isObject(h, loc)) tmpLocSet + loc
@@ -293,7 +293,7 @@ case class Helper(utils: Utils, addrManager: AddressManager, predefLoc: PredefLo
 
   def lookup(h: Heap, id: CFGId): (Value, Set[Exception]) = {
     val x = id.text
-    val localObj = h.getOrElse(predefLoc.SINGLE_PURE_LOCAL_LOC, utils.ObjBot)
+    val localObj = h.getOrElse(addrManager.PredefLoc.SINGLE_PURE_LOCAL, utils.ObjBot)
     id.kind match {
       case PureLocalVar => (localObj.getOrElse(x, utils.PropValueBot).objval.value, ExceptionSetEmpty)
       case CapturedVar =>
@@ -303,15 +303,15 @@ case class Helper(utils: Utils, addrManager: AddressManager, predefLoc: PredefLo
         })
         (value, ExceptionSetEmpty)
       case CapturedCatchVar =>
-        val collapsedObj = h.getOrElse(predefLoc.COLLAPSED_LOC, utils.ObjBot)
+        val collapsedObj = h.getOrElse(addrManager.PredefLoc.COLLAPSED, utils.ObjBot)
         (collapsedObj.getOrElse(x, utils.PropValueBot).objval.value, ExceptionSetEmpty)
       case GlobalVar => lookupG(h, x)
     }
   }
 
   def lookupG(h: Heap, x: String): (Value, Set[Exception]) = {
-    if (h domIn predefLoc.GLOBAL_LOC) {
-      val globalObj = h.getOrElse(predefLoc.GLOBAL_LOC, utils.ObjBot)
+    if (h domIn addrManager.PredefLoc.GLOBAL) {
+      val globalObj = h.getOrElse(addrManager.PredefLoc.GLOBAL, utils.ObjBot)
       val v1 =
         if (utils.absBool.True <= (globalObj domIn x)(utils.absBool))
           globalObj.getOrElse(x, utils.PropValueBot).objval.value
@@ -371,24 +371,24 @@ case class Helper(utils: Utils, addrManager: AddressManager, predefLoc: PredefLo
   def lookupBase(h: Heap, id: CFGId): Set[Loc] = {
     val x = id.text
     id.kind match {
-      case PureLocalVar => HashSet(predefLoc.SINGLE_PURE_LOCAL_LOC)
+      case PureLocalVar => HashSet(addrManager.PredefLoc.SINGLE_PURE_LOCAL)
       case CapturedVar =>
-        val localObj = h.getOrElse(predefLoc.SINGLE_PURE_LOCAL_LOC, utils.ObjBot)
+        val localObj = h.getOrElse(addrManager.PredefLoc.SINGLE_PURE_LOCAL, utils.ObjBot)
         val envLocSet = localObj.getOrElse("@env", utils.PropValueBot).objval.value.locset
         envLocSet.foldLeft(LocSetEmpty)((tmpLocSet, l) => {
           tmpLocSet ++ lookupBaseL(h, l, x)
         })
-      case CapturedCatchVar => HashSet(predefLoc.COLLAPSED_LOC)
+      case CapturedCatchVar => HashSet(addrManager.PredefLoc.COLLAPSED)
       case GlobalVar => lookupBaseG(h, x)
     }
   }
 
   def lookupBaseG(h: Heap, x: String): Set[Loc] = {
-    val globalObj = h.getOrElse(predefLoc.GLOBAL_LOC, utils.ObjBot)
+    val globalObj = h.getOrElse(addrManager.PredefLoc.GLOBAL, utils.ObjBot)
     val isDomIn = (globalObj domIn x)(utils.absBool)
     val locSet1 =
       if (utils.absBool.True <= isDomIn)
-        HashSet(predefLoc.GLOBAL_LOC)
+        HashSet(addrManager.PredefLoc.GLOBAL)
       else
         LocSetEmpty
     val locSet2 =
@@ -428,19 +428,19 @@ case class Helper(utils: Utils, addrManager: AddressManager, predefLoc: PredefLo
   }
 
   def newBoolean(absB: AbsBool): Obj = {
-    val newObj = newObject(predefLoc.BOOLEAN_PROTO) //TODO BOOLEAN_PROTO => BuiltinBoolean.ProtoLoc
+    val newObj = newObject(addrManager.ProtoLoc.BOOLEAN) //TODO BOOLEAN_PROTO => BuiltinBoolean.ProtoLoc
     newObj.update("@class", PropValue(utils.ObjectValueWith(utils.absString.alpha("Boolean"))))
       .update("@primitive", PropValue(utils.ObjectValueWith(absB)))
   }
 
   def newNumber(absNum: AbsNumber): Obj = {
-    val newObj = newObject(predefLoc.NUMBER_PROTO) //TODO Number_PROTO => BuiltinNumber.ProtoLoc
+    val newObj = newObject(addrManager.ProtoLoc.NUMBER) //TODO Number_PROTO => BuiltinNumber.ProtoLoc
     newObj.update("@class", PropValue(utils.ObjectValueWith(utils.absString.alpha("Number"))))
       .update("@primitive", PropValue(utils.ObjectValueWith(absNum)))
   }
 
   def newString(absStr: AbsString): Obj = {
-    val newObj = newObject(predefLoc.STRING_PROTO) //TODO STRING_PROTO => BuiltinString.ProtoLoc
+    val newObj = newObject(addrManager.ProtoLoc.STRING) //TODO STRING_PROTO => BuiltinString.ProtoLoc
 
     val newObj2 = newObj
       .update("@class", PropValue(utils.ObjectValueWith(utils.absString.alpha("String"))))
@@ -488,7 +488,7 @@ case class Helper(utils: Utils, addrManager: AddressManager, predefLoc: PredefLo
   }
 
   def newArgObject(absLength: AbsNumber): Obj = {
-    val protoVal = Value(utils.PValueBot, HashSet(predefLoc.OBJ_PROTO_LOC))
+    val protoVal = Value(utils.PValueBot, HashSet(addrManager.ProtoLoc.OBJ))
     val lengthVal = Value(utils.PValueBot.copyWith(absLength))
     val absFalse = utils.absBool.False
     val absTrue = utils.absBool.True
@@ -500,7 +500,7 @@ case class Helper(utils: Utils, addrManager: AddressManager, predefLoc: PredefLo
   }
 
   def newArrayObject(absLength: AbsNumber): Obj = {
-    val protoVal = Value(utils.PValueBot, HashSet(predefLoc.ARRAY_PROTO)) //TODO ARRAY_PROTO => BuiltinArray.ProtoLoc
+    val protoVal = Value(utils.PValueBot, HashSet(addrManager.ProtoLoc.ARRAY)) //TODO ARRAY_PROTO => BuiltinArray.ProtoLoc
     val lengthVal = Value(utils.PValueBot.copyWith(absLength))
     val absFalse = utils.absBool.False
     utils.ObjEmpty
@@ -523,7 +523,7 @@ case class Helper(utils: Utils, addrManager: AddressManager, predefLoc: PredefLo
   private def newFunctionObject(fidOpt: Option[FunctionId], constructIdOpt: Option[FunctionId], env: Value,
     locOpt: Option[Loc], writable: AbsBool, enumerable: AbsBool, configurable: AbsBool,
     absLength: AbsNumber): Obj = {
-    val protoVal = Value(utils.PValueBot, HashSet(predefLoc.FUNCTION_PROTO_LOC))
+    val protoVal = Value(utils.PValueBot, HashSet(addrManager.ProtoLoc.FUNCTION))
     val absFalse = utils.absBool.False
     val lengthVal = Value(utils.PValueBot.copyWith(absLength))
     val obj1 = utils.ObjEmpty
@@ -655,7 +655,7 @@ case class Helper(utils: Utils, addrManager: AddressManager, predefLoc: PredefLo
   }
 
   def varStore(h: Heap, id: CFGId, value: Value): Heap = {
-    val pureLocalLoc = predefLoc.SINGLE_PURE_LOCAL_LOC
+    val pureLocalLoc = addrManager.PredefLoc.SINGLE_PURE_LOCAL
     val x = id.text
     id.kind match {
       case PureLocalVar =>
@@ -669,8 +669,8 @@ case class Helper(utils: Utils, addrManager: AddressManager, predefLoc: PredefLo
         })
       case CapturedCatchVar =>
         val propV = PropValue(ObjectValue(value, utils.absBool.Bot, utils.absBool.Bot, utils.absBool.False))
-        val obj = h.getOrElse(predefLoc.COLLAPSED_LOC, utils.ObjBot)
-        h.update(predefLoc.COLLAPSED_LOC, obj.update(x, propV))
+        val obj = h.getOrElse(addrManager.PredefLoc.COLLAPSED, utils.ObjBot)
+        h.update(addrManager.PredefLoc.COLLAPSED, obj.update(x, propV))
       case GlobalVar => {
         val h1 =
           if (utils.absBool.True <= canPutVar(h, x)) varStoreG(h, x, value)
@@ -705,7 +705,7 @@ case class Helper(utils: Utils, addrManager: AddressManager, predefLoc: PredefLo
   }
 
   def varStoreG(h: Heap, x: String, value: Value): Heap = {
-    val globalLoc = predefLoc.GLOBAL_LOC
+    val globalLoc = addrManager.PredefLoc.GLOBAL
     val obj = h.getOrElse(globalLoc, utils.ObjBot)
     val h1 =
       if (utils.absBool.False <= (obj domIn x)(utils.absBool))
@@ -1013,10 +1013,4 @@ case class Helper(utils: Utils, addrManager: AddressManager, predefLoc: PredefLo
 
   def validity(expr1: CFGExpr, expr2: CFGExpr, expr3: CFGExpr, st: State): Boolean = false
 
-  // predef location: string -> Loc map
-  def strPredefLocMap: String = (predefLoc.strToLocMap.toSeq.sortBy {
-    case (key, _) => -key
-  }.map {
-    case (loc, name) => s"$loc -> $name"
-  }).mkString(Config.LINE_SEP)
 }

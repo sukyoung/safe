@@ -54,8 +54,8 @@ sealed abstract class Command(
   protected def showHeap(c: Console, heap: Heap, all: Boolean = false): String = {
     val am = c.addrManager
     def isUserLoc(loc: Loc): Boolean = {
-      val pred = c.semantics.predefLoc
-      am.locToAddr(loc) >= am.locToAddr(pred.COLLAPSED_LOC)
+      val pred = am.PredefLoc
+      am.locToAddr(loc) >= am.locToAddr(pred.COLLAPSED)
     }
     if (heap.isBottom) "⊥Heap"
     else {
