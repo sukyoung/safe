@@ -1,17 +1,7 @@
-(0,LBlock(5))
+function[0] top-level {
+  Entry[-1] -> [0]
 
-
-(0,LBlock(4))
-    [EDGE] after-call(<>Global<>ignore4)
-    [0] __result1 := foo
-    [1] noop(EndOfFile)
-
-
-(1,LBlock(0))
-    [0] <>foo<>2 := null
-
-
-(0,LBlock(0))
+  Block[0] -> [1], ExitExc
     [0] noop(StartOfFile)
     [1] <>Global<>ignore1 := function <>foo<>2(1) @ #1, #2, #3
     [2] foo := <>Global<>ignore1
@@ -19,6 +9,35 @@
     [4] <>obj<>3 := <>Global<>toObject(foo) @ #4
     [5] <>arguments<>4 := allocArg(0) @ #5
     [6] <>fun<>5 := <>Global<>getBase(foo)
+
+  Call[1]
     [0] call(<>obj<>3, <>fun<>5, <>arguments<>4) @ #6
 
+  AfterCall[2] -> [4]
+
+  AfterCatch[3] -> [5]
+
+  Block[4] -> Exit, ExitExc
+    [0] __result1 := foo
+    [1] noop(EndOfFile)
+
+  Block[5] -> ExitExc
+
+  Exit[-2]
+
+  ExitExc[-3]
+
+}
+
+function[1] foo {
+  Entry[-1] -> [0]
+
+  Block[0] -> Exit, ExitExc
+    [0] <>foo<>2 := null
+
+  Exit[-2]
+
+  ExitExc[-3]
+
+}
 

@@ -49,7 +49,7 @@ class DefaultCFGBuilder(
   private var currentFunc: CFGFunction = _
   // JavaScript Label Map
   private trait JSLabel {
-    def of(lmap: LabelMap): Set[CFGNormalBlock] =
+    def of(lmap: LabelMap): Set[NormalBlock] =
       lmap.getOrElse(this, HashSet())
   }
   private case object RetLabel extends JSLabel
@@ -57,7 +57,7 @@ class DefaultCFGBuilder(
   private case object ThrowEndLabel extends JSLabel
   private case object AfterCatchLabel extends JSLabel
   private case class UserLabel(label: String) extends JSLabel
-  private type LabelMap = Map[JSLabel, Set[CFGNormalBlock]]
+  private type LabelMap = Map[JSLabel, Set[NormalBlock]]
 
   ////////////////////////////////////////////////////////////////
   // main
@@ -90,11 +90,11 @@ class DefaultCFGBuilder(
     case IRRoot(_, fds, _, stmts) =>
       val globalFunc = cfg.globalFunc
       val globalVars = globalFunc.localVars
-      val startBlock: CFGNormalBlock = globalFunc.createBlock
+      val startBlock: NormalBlock = globalFunc.createBlock
       cfg.addEdge(globalFunc.entry, startBlock)
 
       translateFunDecls(fds, globalFunc, startBlock)
-      val (blocks: List[CFGNormalBlock], lmap: LabelMap) = translateStmts(stmts, globalFunc, List(startBlock), HashMap())
+      val (blocks: List[NormalBlock], lmap: LabelMap) = translateStmts(stmts, globalFunc, List(startBlock), HashMap())
 
       cfg.addEdge(blocks, globalFunc.exit)
       cfg.addEdge(ThrowLabel of lmap toList, globalFunc.exitExc, CFGEdgeExc)
@@ -153,11 +153,11 @@ class DefaultCFGBuilder(
       val oldFunc: CFGFunction = currentFunc
       currentFunc = newFunc
 
-      val startBlock: CFGNormalBlock = newFunc.createBlock
+      val startBlock: NormalBlock = newFunc.createBlock
       cfg.addEdge(newFunc.entry, startBlock)
 
       translateFunDecls(fds, newFunc, startBlock)
-      val (blocks: List[CFGNormalBlock], lmap: LabelMap) = translateStmts(body, newFunc, List(startBlock), HashMap())
+      val (blocks: List[NormalBlock], lmap: LabelMap) = translateStmts(body, newFunc, List(startBlock), HashMap())
 
       cfg.addEdge(blocks, newFunc.exit)
       cfg.addEdge(RetLabel of lmap toList, newFunc.exit)
@@ -169,13 +169,13 @@ class DefaultCFGBuilder(
       newFunc
   }
 
-  /* fd* rule : IRFunDecl list x CFGFunction x CFGNormalBlock -> Unit */
-  private def translateFunDecls(fds: List[IRFunDecl], func: CFGFunction, block: CFGNormalBlock): Unit = {
+  /* fd* rule : IRFunDecl list x CFGFunction x NormalBlock -> Unit */
+  private def translateFunDecls(fds: List[IRFunDecl], func: CFGFunction, block: NormalBlock): Unit = {
     fds.foreach(translateFunDecl(_, func, block))
   }
 
-  /* fd rule : IRFunDecl x CFGFunction x CFGNormalBlock -> Unit */
-  private def translateFunDecl(fd: IRFunDecl, func: CFGFunction, block: CFGNormalBlock): Unit = {
+  /* fd rule : IRFunDecl x CFGFunction x NormalBlock -> Unit */
+  private def translateFunDecl(fd: IRFunDecl, func: CFGFunction, block: NormalBlock): Unit = {
     // println ("[Func] %s".format(fd))
     fd match {
       case IRFunDecl(_, functional) =>
@@ -185,21 +185,21 @@ class DefaultCFGBuilder(
     }
   }
 
-  /* stmt* rule : IRStmt list x CFGFunction x CFGNormalBlock list x LabelMap x CFGNormalBlock option -> CFGNormalBlock list x LabelMap */
-  private def translateStmts(stmts: List[IRStmt], func: CFGFunction, blocks: List[CFGNormalBlock], lmap: LabelMap): (List[CFGNormalBlock], LabelMap) = {
+  /* stmt* rule : IRStmt list x CFGFunction x NormalBlock list x LabelMap x NormalBlock option -> NormalBlock list x LabelMap */
+  private def translateStmts(stmts: List[IRStmt], func: CFGFunction, blocks: List[NormalBlock], lmap: LabelMap): (List[NormalBlock], LabelMap) = {
     stmts.foldLeft((blocks, lmap)) { case ((tails, lmap), stmt) => translateStmt(stmt, func, tails, lmap) }
   }
 
-  /* stmt rule : IRStmt x CFGFunction x CFGNormalBlock list x LabelMap x CFGNormalBlock option -> CFGNormalBlock list x LabelMap */
-  private def translateStmt(stmt: IRStmt, func: CFGFunction, blocks: List[CFGNormalBlock], lmap: LabelMap): (List[CFGNormalBlock], LabelMap) = {
+  /* stmt rule : IRStmt x CFGFunction x NormalBlock list x LabelMap x NormalBlock option -> NormalBlock list x LabelMap */
+  private def translateStmt(stmt: IRStmt, func: CFGFunction, blocks: List[NormalBlock], lmap: LabelMap): (List[NormalBlock], LabelMap) = {
     stmt match {
       case IRNoOp(_, desc) =>
-        val tailBlock: CFGNormalBlock = getTail(blocks, func)
+        val tailBlock: NormalBlock = getTail(blocks, func)
         val filename: String = stmt.ast.info.span.fileName
 
         val block = (desc, filename) match {
           case ("StartOfFile", s) if s.contains("#loading") =>
-            val entryBlock: CFGNormalBlock = func.createBlock
+            val entryBlock: NormalBlock = func.createBlock
             cfg.addEdge(tailBlock, entryBlock)
             entryBlock
           case _ => tailBlock
@@ -223,12 +223,12 @@ class DefaultCFGBuilder(
           case id if id.kind == CapturedVar => (Some(id), Some(newProgramAddr))
           case _ => (None, None)
         }
-        val tailBlock: CFGNormalBlock = getTail(blocks, func)
+        val tailBlock: NormalBlock = getTail(blocks, func)
         tailBlock.createInst(CFGFunExpr(newFunc.ir, _, id2cfgId(lhs), nameOpt, newFunc, addr1, addr2, addrOpt))
         (List(tailBlock), lmap)
       /* PEI : when proto is not object*/
       case IRObject(_, lhs, members, proto) =>
-        val tailBlock: CFGNormalBlock = getTail(blocks, func)
+        val tailBlock: NormalBlock = getTail(blocks, func)
         var protoIdOpt: Option[CFGExpr] = proto.map(p => id2cfgExpr(p))
         tailBlock.createInst(CFGAlloc(stmt, _, id2cfgId(lhs), protoIdOpt, newProgramAddr))
         members.foreach(translateMember(_, tailBlock, lhs))
@@ -239,27 +239,27 @@ class DefaultCFGBuilder(
             catchVarMap += x.uniqueName
 
             /* try block */
-            val tryBlock: CFGNormalBlock = func.createBlock
+            val tryBlock: NormalBlock = func.createBlock
             cfg.addEdge(blocks, tryBlock)
 
             /* catch block */
-            val catchBlock: CFGNormalBlock = func.createBlock
+            val catchBlock: NormalBlock = func.createBlock
             catchBlock.createInst(CFGCatch(stmt, _, id2cfgId(x)))
 
             /* try body */
-            val (trybs: List[CFGNormalBlock], trylmap: LabelMap) = translateStmt(body, func, List(tryBlock), HashMap())
+            val (trybs: List[NormalBlock], trylmap: LabelMap) = translateStmt(body, func, List(tryBlock), HashMap())
 
             cfg.addEdge(ThrowLabel of trylmap toList, catchBlock, CFGEdgeExc)
             cfg.addEdge(ThrowEndLabel of trylmap toList, catchBlock)
             cfg.addEdge(AfterCatchLabel of trylmap toList, catchBlock)
 
             /* catch body */
-            val (catchbs: List[CFGNormalBlock], catchlmap: LabelMap) = translateStmt(catb, func, List(catchBlock), trylmap - ThrowLabel - ThrowEndLabel - AfterCatchLabel)
+            val (catchbs: List[NormalBlock], catchlmap: LabelMap) = translateStmt(catb, func, List(catchBlock), trylmap - ThrowLabel - ThrowEndLabel - AfterCatchLabel)
 
             /* tail blocks */
-            val tailbs: List[CFGNormalBlock] = trybs match {
+            val tailbs: List[NormalBlock] = trybs match {
               case block :: Nil if (ThrowLabel of trylmap).contains(block) =>
-                val newBlock: CFGNormalBlock = func.createBlock
+                val newBlock: NormalBlock = func.createBlock
                 cfg.addEdge(trybs, newBlock)
                 cfg.addEdge(catchbs, newBlock)
                 List(newBlock)
@@ -274,25 +274,25 @@ class DefaultCFGBuilder(
             (tailbs, lm)
           case (None, None, Some(finb)) =>
             /* try block */
-            val tryBlock: CFGNormalBlock = func.createBlock
+            val tryBlock: NormalBlock = func.createBlock
             cfg.addEdge(blocks, tryBlock)
 
             /* finally block */
-            val finBlock: CFGNormalBlock = func.createBlock
+            val finBlock: NormalBlock = func.createBlock
 
             /* try body */
-            val (trybs: List[CFGNormalBlock], trylmap: LabelMap) = translateStmt(body, func, List(tryBlock), HashMap())
+            val (trybs: List[NormalBlock], trylmap: LabelMap) = translateStmt(body, func, List(tryBlock), HashMap())
 
             /* finally body */
-            val (finbs: List[CFGNormalBlock], finlmap: LabelMap) = translateStmt(finb, func, List(finBlock), lmap)
+            val (finbs: List[NormalBlock], finlmap: LabelMap) = translateStmt(finb, func, List(finBlock), lmap)
 
             /* edge : try -> finally */
             cfg.addEdge(trybs, finBlock)
             val reslmap = (trylmap - AfterCatchLabel).foldLeft(finlmap) {
               case (map, (label, bs)) => bs.isEmpty match {
                 case false =>
-                  val dupBlock: CFGNormalBlock = func.createBlock
-                  val (bs: List[CFGNormalBlock], lm: LabelMap) = translateStmt(finb, func, List(dupBlock), map)
+                  val dupBlock: NormalBlock = func.createBlock
+                  val (bs: List[NormalBlock], lm: LabelMap) = translateStmt(finb, func, List(dupBlock), map)
                   label match {
                     case ThrowLabel =>
                       cfg.addEdge(AfterCatchLabel of trylmap toList, dupBlock)
@@ -310,36 +310,36 @@ class DefaultCFGBuilder(
             catchVarMap += x.uniqueName
 
             /* try block */
-            val tryBlock: CFGNormalBlock = func.createBlock
+            val tryBlock: NormalBlock = func.createBlock
             cfg.addEdge(blocks, tryBlock)
 
             /* catch block */
-            val catchBlock: CFGNormalBlock = func.createBlock
+            val catchBlock: NormalBlock = func.createBlock
             catchBlock.createInst(CFGCatch(stmt, _, id2cfgId(x)))
 
             /* finally block */
-            val finBlock: CFGNormalBlock = func.createBlock
+            val finBlock: NormalBlock = func.createBlock
 
             /* try body */
-            val (trybs: List[CFGNormalBlock], trylmap: LabelMap) = translateStmt(body, func, List(tryBlock), HashMap())
+            val (trybs: List[NormalBlock], trylmap: LabelMap) = translateStmt(body, func, List(tryBlock), HashMap())
 
             cfg.addEdge(ThrowLabel of trylmap toList, catchBlock, CFGEdgeExc)
             cfg.addEdge(ThrowEndLabel of trylmap toList, catchBlock)
             cfg.addEdge(AfterCatchLabel of trylmap toList, catchBlock)
 
             /* catch body */
-            val (catchbs: List[CFGNormalBlock], catchlmap: LabelMap) = translateStmt(catb, func, List(catchBlock), trylmap - ThrowLabel - ThrowEndLabel - AfterCatchLabel)
+            val (catchbs: List[NormalBlock], catchlmap: LabelMap) = translateStmt(catb, func, List(catchBlock), trylmap - ThrowLabel - ThrowEndLabel - AfterCatchLabel)
 
             /* finally body */
-            val (finbs: List[CFGNormalBlock], finlmap: LabelMap) = translateStmt(finb, func, List(finBlock), lmap)
+            val (finbs: List[NormalBlock], finlmap: LabelMap) = translateStmt(finb, func, List(finBlock), lmap)
 
             /* edge : try+catch -> finally */
             cfg.addEdge(trybs ++ catchbs, finBlock)
             val reslmap: LabelMap = (catchlmap - AfterCatchLabel).foldLeft(finlmap) {
               case (map, (label, bs)) => bs.isEmpty match {
                 case false =>
-                  val dupBlock: CFGNormalBlock = func.createBlock
-                  val (bs: List[CFGNormalBlock], lm: LabelMap) = translateStmt(finb, func, List(dupBlock), map)
+                  val dupBlock: NormalBlock = func.createBlock
+                  val (bs: List[NormalBlock], lm: LabelMap) = translateStmt(finb, func, List(dupBlock), map)
                   label match {
                     case ThrowLabel =>
                       cfg.addEdge(AfterCatchLabel of catchlmap toList, dupBlock)
@@ -359,7 +359,7 @@ class DefaultCFGBuilder(
         }
       /* PEI : element assign */
       case IRArgs(_, lhs, elements) =>
-        val tailBlock: CFGNormalBlock = getTail(blocks, func)
+        val tailBlock: NormalBlock = getTail(blocks, func)
         tailBlock.createInst(CFGAllocArg(stmt, _, id2cfgId(lhs), elements.length, newProgramAddr))
         elements.zipWithIndex.foreach {
           case (Some(elem), idx) => translateElement(stmt, elem, tailBlock, lhs, idx)
@@ -368,7 +368,7 @@ class DefaultCFGBuilder(
         (List(tailBlock), lmap.updated(ThrowLabel, (ThrowLabel of lmap) + tailBlock))
       /* PEI : element assign */
       case IRArray(_, lhs, elements) =>
-        val tailBlock: CFGNormalBlock = getTail(blocks, func)
+        val tailBlock: NormalBlock = getTail(blocks, func)
         tailBlock.createInst(CFGAllocArray(stmt, _, id2cfgId(lhs), elements.length, newProgramAddr))
         elements.zipWithIndex.foreach {
           case (Some(elem), idx) => translateElement(stmt, elem, tailBlock, lhs, idx)
@@ -377,7 +377,7 @@ class DefaultCFGBuilder(
         (List(tailBlock), lmap.updated(ThrowLabel, (ThrowLabel of lmap) + tailBlock))
       /* PEI : element assign */
       case IRArrayNumber(_, lhs, elements) =>
-        val tailBlock: CFGNormalBlock = getTail(blocks, func)
+        val tailBlock: NormalBlock = getTail(blocks, func)
         tailBlock.createInst(CFGAllocArray(stmt, _, id2cfgId(lhs), elements.length, newProgramAddr))
         elements.zipWithIndex.foreach {
           case (elem, idx) => translateDoubleElement(stmt, elem, tailBlock, lhs, idx)
@@ -385,11 +385,11 @@ class DefaultCFGBuilder(
         (List(tailBlock), lmap.updated(ThrowLabel, (ThrowLabel of lmap) + tailBlock))
       case IRBreak(_, label) =>
         val key: String = label.uniqueName
-        val bs: Set[CFGNormalBlock] = lmap.getOrElse(UserLabel(key), HashSet()) ++ blocks.toSet
+        val bs: Set[NormalBlock] = lmap.getOrElse(UserLabel(key), HashSet()) ++ blocks.toSet
         (Nil, lmap.updated(UserLabel(key), bs))
       /* PEI : fun == "<>toObject" */
       case IRInternalCall(_, lhs, fun @ (IRTmpId(_, originalName, uniqueName, _)), arg1, arg2) =>
-        val tailBlock: CFGNormalBlock = getTail(blocks, func)
+        val tailBlock: NormalBlock = getTail(blocks, func)
         val (addr: Option[Address], lm: LabelMap) = uniqueName match {
           case "<>Global<>toObject" | "<>Global<>iteratorInit" => (Some(newProgramAddr), lmap.updated(ThrowLabel, (ThrowLabel of lmap) + tailBlock))
           case _ => (None, lmap)
@@ -402,7 +402,7 @@ class DefaultCFGBuilder(
         (List(tailBlock), lm)
       /* PEI : call, after-call */
       case IRCall(_, lhs, fun, thisB, args) =>
-        val tailBlock: CFGNormalBlock = getTail(blocks, func)
+        val tailBlock: NormalBlock = getTail(blocks, func)
         val f = tailBlock.func
         val call = f.createCall(CFGCall(stmt, _, id2cfgExpr(fun), id2cfgExpr(thisB), id2cfgExpr(args), newProgramAddr, newProgramAddr), id2cfgId(lhs))
         cfg.addEdge(tailBlock, call)
@@ -415,7 +415,7 @@ class DefaultCFGBuilder(
         (List(nextAfterCallBlock), lmap.updated(ThrowLabel, (ThrowLabel of lmap) + tailBlock).updated(AfterCatchLabel, (AfterCatchLabel of lmap) + nextAfterCatchBlock))
       /* PEI : construct, after-call */
       case IRNew(_, lhs, cons, args) if (args.length == 2) =>
-        val tailBlock: CFGNormalBlock = getTail(blocks, func)
+        val tailBlock: NormalBlock = getTail(blocks, func)
         val f = tailBlock.func
         val call = f.createCall(CFGConstruct(stmt, _, id2cfgExpr(cons), id2cfgExpr(args(0)), id2cfgExpr(args(1)), newProgramAddr, newProgramAddr), id2cfgId(lhs))
         cfg.addEdge(tailBlock, call)
@@ -430,26 +430,26 @@ class DefaultCFGBuilder(
         (Nil, lmap)
       /* PEI : id lookup */
       case IRDelete(_, lhs, id) =>
-        val tailBlock: CFGNormalBlock = getTail(blocks, func)
+        val tailBlock: NormalBlock = getTail(blocks, func)
         tailBlock.createInst(CFGDelete(stmt, _, id2cfgId(lhs), id2cfgExpr(id)))
         (List(tailBlock), lmap.updated(ThrowLabel, (ThrowLabel of lmap) + tailBlock))
       /* PEI : id lookup */
       case IRDeleteProp(_, lhs, obj, index) =>
-        val tailBlock: CFGNormalBlock = getTail(blocks, func)
+        val tailBlock: NormalBlock = getTail(blocks, func)
         tailBlock.createInst(CFGDeleteProp(stmt, _, id2cfgId(lhs), id2cfgExpr(obj), ir2cfgExpr(index)))
         (List(tailBlock), lmap.updated(ThrowLabel, (ThrowLabel of lmap) + tailBlock))
       /* PEI : expr == IRId */
       case IRExprStmt(_, lhs, expr, _) =>
-        val tailBlock: CFGNormalBlock = getTail(blocks, func)
+        val tailBlock: NormalBlock = getTail(blocks, func)
         tailBlock.createInst(CFGExprStmt(stmt, _, id2cfgId(lhs), ir2cfgExpr(expr)))
         (List(tailBlock), lmap.updated(ThrowLabel, (ThrowLabel of lmap) + tailBlock))
       case IRIf(_, cond, trueIR, falseIR) =>
         /* true block */
-        val trueBlock: CFGNormalBlock = func.createBlock
+        val trueBlock: NormalBlock = func.createBlock
         cfg.addEdge(blocks, trueBlock)
 
         /* false block */
-        val falseBlock: CFGNormalBlock = func.createBlock
+        val falseBlock: NormalBlock = func.createBlock
         cfg.addEdge(blocks, falseBlock)
 
         /* Insert assert instructions */
@@ -462,13 +462,13 @@ class DefaultCFGBuilder(
         }
 
         /* true body */
-        val (truebs: List[CFGNormalBlock], truelmap: LabelMap) = translateStmt(trueIR, func, List(trueBlock), lmap)
+        val (truebs: List[NormalBlock], truelmap: LabelMap) = translateStmt(trueIR, func, List(trueBlock), lmap)
 
         /* false body */
-        val endBlock: CFGNormalBlock = func.createBlock
+        val endBlock: NormalBlock = func.createBlock
         falseIR match {
           case Some(stmt) =>
-            val (falsebs: List[CFGNormalBlock], falselmap: LabelMap) = translateStmt(stmt, func, List(falseBlock), truelmap)
+            val (falsebs: List[NormalBlock], falselmap: LabelMap) = translateStmt(stmt, func, List(falseBlock), truelmap)
             cfg.addEdge(truebs ++ falsebs, endBlock)
             (List(endBlock), falselmap.updated(ThrowLabel, (ThrowLabel of falselmap) + trueBlock + falseBlock))
           case None =>
@@ -476,24 +476,24 @@ class DefaultCFGBuilder(
             (List(endBlock), truelmap.updated(ThrowLabel, (ThrowLabel of truelmap) + trueBlock + falseBlock))
         }
       case IRLabelStmt(_, labelIR, stmt) =>
-        val block: CFGNormalBlock = func.createBlock
-        val (bs: List[CFGNormalBlock], lm: LabelMap) = translateStmt(stmt, func, blocks, lmap)
+        val block: NormalBlock = func.createBlock
+        val (bs: List[NormalBlock], lm: LabelMap) = translateStmt(stmt, func, blocks, lmap)
         val label: JSLabel = UserLabel(labelIR.uniqueName)
         cfg.addEdge(bs, block)
         cfg.addEdge(label of lm toList, block)
         (List(block), lm - label)
       /* PEI : expr lookup */
       case IRReturn(_, expr) =>
-        val tailBlock: CFGNormalBlock = getTail(blocks, func)
+        val tailBlock: NormalBlock = getTail(blocks, func)
         tailBlock.createInst(CFGReturn(stmt, _, expr.map(ir2cfgExpr _)))
         (Nil, lmap.updated(RetLabel, (RetLabel of lmap) + tailBlock).updated(ThrowLabel, (ThrowLabel of lmap) + tailBlock))
       /* PEI : id lookup */
       case IRStore(_, obj, index, rhs) =>
-        val tailBlock: CFGNormalBlock = getTail(blocks, func)
+        val tailBlock: NormalBlock = getTail(blocks, func)
         tailBlock.createInst(CFGStore(stmt, _, id2cfgExpr(obj), ir2cfgExpr(index), ir2cfgExpr(rhs)))
         (List(tailBlock), lmap.updated(ThrowLabel, (ThrowLabel of lmap) + tailBlock))
       case IRThrow(_, expr) =>
-        val tailBlock: CFGNormalBlock = getTail(blocks, func)
+        val tailBlock: NormalBlock = getTail(blocks, func)
         tailBlock.createInst(CFGThrow(stmt, _, ir2cfgExpr(expr)))
         (Nil, lmap.updated(ThrowLabel, (ThrowLabel of lmap) + tailBlock))
       case IRWhile(_, cond, body) =>
@@ -508,13 +508,13 @@ class DefaultCFGBuilder(
         }
 
         /* tail block */
-        val tailBlock: CFGNormalBlock = getTail(blocks, func)
+        val tailBlock: NormalBlock = getTail(blocks, func)
         /* while loop head */
-        val headBlock: CFGNormalBlock = func.createBlock
+        val headBlock: NormalBlock = func.createBlock
         /* loop body */
-        val loopBodyBlock: CFGNormalBlock = func.createBlock
+        val loopBodyBlock: NormalBlock = func.createBlock
         /* loop out */
-        val loopOutBlock: CFGNormalBlock = func.createBlock
+        val loopOutBlock: NormalBlock = func.createBlock
         /* Insert assert instruction */
         loopBodyBlock.createInst(CFGAssert(cond, _, ir2cfgExpr(cond), true))
         cond match {
@@ -530,7 +530,7 @@ class DefaultCFGBuilder(
         /* add edge from loop head to loop out*/
         cfg.addEdge(headBlock, loopOutBlock)
         /* build loop body */
-        val (bs: List[CFGNormalBlock], lm: LabelMap) = translateStmt(body, func, List(loopBodyBlock), lmap)
+        val (bs: List[NormalBlock], lm: LabelMap) = translateStmt(body, func, List(loopBodyBlock), lmap)
         /* add edge from tails of loop body to loop head */
         cfg.addEdge(bs, headBlock)
         (List(loopOutBlock), lm.updated(ThrowLabel, (ThrowLabel of lm) + loopBodyBlock + loopOutBlock))
@@ -546,8 +546,8 @@ class DefaultCFGBuilder(
     //case IRSetProp(info, fun) => (Nil, labelMap)
   }
 
-  /* mem rule : IRField x CFGNormalBlock x IRId -> Unit */
-  private def translateMember(mem: IRMember, block: CFGNormalBlock, lhs: IRId): Unit = {
+  /* mem rule : IRField x NormalBlock x IRId -> Unit */
+  private def translateMember(mem: IRMember, block: NormalBlock, lhs: IRId): Unit = {
     mem match {
       case IRField(_, prop, expr) =>
         val lhsExpr: CFGVarRef = CFGVarRef(lhs, id2cfgId(lhs))
@@ -557,15 +557,15 @@ class DefaultCFGBuilder(
     }
   }
 
-  /* elem rule : IRNode x IRExpr x CFGNormalBlock x IRId x Int -> Unit */
-  private def translateElement(ir: IRNode, elem: IRExpr, block: CFGNormalBlock, lhs: IRId, index: Int): Unit = {
+  /* elem rule : IRNode x IRExpr x NormalBlock x IRId x Int -> Unit */
+  private def translateElement(ir: IRNode, elem: IRExpr, block: NormalBlock, lhs: IRId, index: Int): Unit = {
     val lhsExpr: CFGExpr = CFGVarRef(lhs, id2cfgId(lhs))
     block.createInst(CFGStoreStringIdx(ir, _, lhsExpr, EJSString(index.toString), ir2cfgExpr(elem)))
     ()
   }
 
-  /* elem rule : IRNode x Double x CFGNormalBlock x IRId x Int -> Unit */
-  private def translateDoubleElement(ir: IRNode, elem: Double, block: CFGNormalBlock, lhs: IRId, index: Int): Unit = {
+  /* elem rule : IRNode x Double x NormalBlock x IRId x Int -> Unit */
+  private def translateDoubleElement(ir: IRNode, elem: Double, block: NormalBlock, lhs: IRId, index: Int): Unit = {
     val lhsExpr: CFGExpr = CFGVarRef(lhs, id2cfgId(lhs))
     val num = CFGVal(elem.toString, elem.doubleValue)
     block.createInst(CFGStoreStringIdx(ir, _, lhsExpr, EJSString(index.toString), num))
@@ -595,12 +595,12 @@ class DefaultCFGBuilder(
   ////////////////////////////////////////////////////////////////
 
   // get tail block
-  private def getTail(blocks: List[CFGNormalBlock], func: CFGFunction): CFGNormalBlock = {
+  private def getTail(blocks: List[NormalBlock], func: CFGFunction): NormalBlock = {
     blocks match {
       case Nil => func.createBlock
       case block :: Nil => block
       case _ =>
-        val tailBlock: CFGNormalBlock = func.createBlock
+        val tailBlock: NormalBlock = func.createBlock
         blocks.foreach(cfg.addEdge(_, tailBlock))
         tailBlock
     }

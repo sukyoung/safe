@@ -1,22 +1,41 @@
-(0,LBlock(5))
+function[0] top-level {
+  Entry[-1] -> [0]
 
-
-(0,LBlock(4))
-    [EDGE] after-call(<>Global<>ignore3)
-    [0] noop(EndOfFile)
-
-
-(1,LBlock(0))
-    [0] __result1 := <>NaN<>1
-
-
-(0,LBlock(0))
+  Block[0] -> [1], ExitExc
     [0] f := function (1) @ #1, #2
     [1] noop(StartOfFile)
     [2] __expect1 := undefined
     [3] <>obj<>3 := <>Global<>toObject(f) @ #3
     [4] <>arguments<>4 := allocArg(0) @ #4
     [5] <>fun<>5 := <>Global<>getBase(f)
+
+  Call[1]
     [0] call(<>obj<>3, <>fun<>5, <>arguments<>4) @ #5
 
+  AfterCall[2] -> [4]
+
+  AfterCatch[3] -> [5]
+
+  Block[4] -> Exit
+    [0] noop(EndOfFile)
+
+  Block[5] -> ExitExc
+
+  Exit[-2]
+
+  ExitExc[-3]
+
+}
+
+function[1] f {
+  Entry[-1] -> [0]
+
+  Block[0] -> Exit, ExitExc
+    [0] __result1 := <>NaN<>1
+
+  Exit[-2]
+
+  ExitExc[-3]
+
+}
 

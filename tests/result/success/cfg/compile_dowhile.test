@@ -1,37 +1,45 @@
-(0,LBlock(8))
+function[0] top-level {
+  Entry[-1] -> [0]
 
-
-(0,LBlock(7))
-
-
-(0,LBlock(6))
-    [0] assert(! true)
-
-
-(0,LBlock(5))
-    [0] assert(true)
-
-
-(0,LBlock(4))
-
-
-(0,LBlock(3))
-
-
-(0,LBlock(2))
-
-
-(0,LBlock(1))
-    [0] noop(EndOfFile)
-
-
-(1,LBlock(0))
-    [0] <>obj<>4 := <>Global<>toObject(<>a<>1) @ #1
-    [1] <>Global<>ignore2 := <>obj<>4[<>b<>2]
-
-
-(0,LBlock(0))
+  Block[0] -> [3]
     [0] f := function (1) @ #2, #3
     [1] noop(StartOfFile)
 
+  Block[1] -> Exit
+    [0] noop(EndOfFile)
+
+  Block[2] -> [4]
+
+  Block[3] -> [2]
+
+  Block[4] -> [6], [5]
+
+  Block[5] -> [8], ExitExc
+    [0] assert(true)
+
+  Block[6] -> [1], ExitExc
+    [0] assert(! true)
+
+  Block[7] -> [4]
+
+  Block[8] -> [7]
+
+  Exit[-2]
+
+  ExitExc[-3]
+
+}
+
+function[1] f {
+  Entry[-1] -> [0]
+
+  Block[0] -> Exit, ExitExc
+    [0] <>obj<>4 := <>Global<>toObject(<>a<>1) @ #1
+    [1] <>Global<>ignore2 := <>obj<>4[<>b<>2]
+
+  Exit[-2]
+
+  ExitExc[-3]
+
+}
 

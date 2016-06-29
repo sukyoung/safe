@@ -1,24 +1,56 @@
-(3,LBlock(0))
-    [0] <>Global<>ignore6 := <>arguments<>5
-    [1] <>Global<>ignore8 := this
+function[0] top-level {
+  Entry[-1] -> [0]
 
+  Block[0] -> Exit
+    [0] f := function (1) @ #6, #7
+    [1] noop(StartOfFile)
+    [2] noop(EndOfFile)
 
-(2,LBlock(0))
-    [0] <>Global<>ignore2 := <>arguments<>4
-    [1] <>Global<>ignore4 := this
+  Exit[-2]
 
+  ExitExc[-3]
 
-(1,LBlock(0))
+}
+
+function[1] f {
+  Entry[-1] -> [0]
+
+  Block[0] -> Exit, ExitExc
     [0] <>g<>1 := function (2) @ #1, #2
     [1] <>h<>2 := function (3) @ #3, #4
     [2] <>obj<>7 := <>Global<>toObject(<>arguments<>3) @ #5
     [3] <>Global<>ignore10 := <>obj<>7[1]
     [4] <>Global<>ignore12 := this
 
+  Exit[-2]
 
-(0,LBlock(0))
-    [0] f := function (1) @ #6, #7
-    [1] noop(StartOfFile)
-    [2] noop(EndOfFile)
+  ExitExc[-3]
 
+}
+
+function[2] g {
+  Entry[-1] -> [0]
+
+  Block[0] -> Exit, ExitExc
+    [0] <>Global<>ignore2 := <>arguments<>4
+    [1] <>Global<>ignore4 := this
+
+  Exit[-2]
+
+  ExitExc[-3]
+
+}
+
+function[3] h {
+  Entry[-1] -> [0]
+
+  Block[0] -> Exit, ExitExc
+    [0] <>Global<>ignore6 := <>arguments<>5
+    [1] <>Global<>ignore8 := this
+
+  Exit[-2]
+
+  ExitExc[-3]
+
+}
 

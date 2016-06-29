@@ -1,4 +1,7 @@
-(0,LBlock(0))
+function[0] top-level {
+  Entry[-1] -> [0]
+
+  Block[0] -> Exit, ExitExc
     [0] noop(StartOfFile)
     [1] <>Global<>ignore2 := 42
     [2] <>Global<>ignore4 := 4.2
@@ -19,4 +22,9 @@
     [17] <>Global<>ignore34 := - 0
     [18] noop(EndOfFile)
 
+  Exit[-2]
+
+  ExitExc[-3]
+
+}
 

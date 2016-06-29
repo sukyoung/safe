@@ -1,53 +1,48 @@
-(0,LBlock(13))
+function[0] top-level {
+  Entry[-1] -> [0]
 
-
-(0,LBlock(12))
-    [0] assert(! x)
-
-
-(0,LBlock(11))
-    [0] assert(x)
-
-
-(0,LBlock(10))
-
-
-(0,LBlock(9))
-    [0] assert(! x)
-
-
-(0,LBlock(8))
-    [0] assert(x)
-
-
-(0,LBlock(7))
-
-
-(0,LBlock(6))
-
-
-(0,LBlock(5))
-
-
-(0,LBlock(4))
-    [0] assert(! true)
-
-
-(0,LBlock(3))
-    [0] assert(true)
-    [1] x := 1
-
-
-(0,LBlock(2))
-
-
-(0,LBlock(1))
-    [0] x := 2
-    [1] noop(EndOfFile)
-
-
-(0,LBlock(0))
+  Block[0] -> [2], ExitExc
     [0] noop(StartOfFile)
     [1] x := 0
 
+  Block[1] -> Exit, ExitExc
+    [0] x := 2
+    [1] noop(EndOfFile)
+
+  Block[2] -> [4], [3]
+
+  Block[3] -> [7], ExitExc
+    [0] assert(true)
+    [1] x := 1
+
+  Block[4] -> [1], ExitExc
+    [0] assert(! true)
+
+  Block[5] -> [2]
+
+  Block[6] -> [5]
+
+  Block[7] -> [9], [8]
+
+  Block[8] -> [12], [11], ExitExc
+    [0] assert(x)
+
+  Block[9] -> [6], ExitExc
+    [0] assert(! x)
+
+  Block[10] -> [7]
+
+  Block[11] -> [6], ExitExc
+    [0] assert(x)
+
+  Block[12] -> [13], ExitExc
+    [0] assert(! x)
+
+  Block[13] -> [10]
+
+  Exit[-2]
+
+  ExitExc[-3]
+
+}
 

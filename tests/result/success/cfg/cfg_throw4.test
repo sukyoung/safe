@@ -1,38 +1,38 @@
-(0,LBlock(8))
+function[0] top-level {
+  Entry[-1] -> [0]
 
+  Block[0] -> [2], ExitExc
+    [0] noop(StartOfFile)
+    [1] x := "A"
 
-(0,LBlock(7))
-    [0] assert(x != "B")
+  Block[1] -> Exit, ExitExc
+    [0] x := "E"
+    [1] noop(EndOfFile)
 
+  Block[2] -> [4], [3]
 
-(0,LBlock(6))
-    [0] assert(x == "B")
-    [1] throw(3)
-
-
-(0,LBlock(5))
-
-
-(0,LBlock(4))
-    [0] assert(! true)
-
-
-(0,LBlock(3))
+  Block[3] -> ExitExc
     [0] assert(true)
     [1] x := "B"
     [2] throw("C")
 
+  Block[4] -> [1], ExitExc
+    [0] assert(! true)
 
-(0,LBlock(2))
+  Block[5] -> [2]
 
+  Block[6] -> ExitExc
+    [0] assert(x == "B")
+    [1] throw(3)
 
-(0,LBlock(1))
-    [0] x := "E"
-    [1] noop(EndOfFile)
+  Block[7] -> [8], ExitExc
+    [0] assert(x != "B")
 
+  Block[8] -> [5]
 
-(0,LBlock(0))
-    [0] noop(StartOfFile)
-    [1] x := "A"
+  Exit[-2]
 
+  ExitExc[-3]
+
+}
 

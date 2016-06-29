@@ -264,7 +264,7 @@ class Semantics(
           case call: Call => I(cp, call.callInst, st, State.Bot)
           case afterCall: AfterCall => (st, State.Bot)
           case afterCatch: AfterCatch => (st, State.Bot)
-          case block: CFGNormalBlock =>
+          case block: NormalBlock =>
             block.getInsts.foldRight((st, State.Bot))((inst, states) => {
               val (oldSt, oldExcSt) = states
               I(cp, inst, oldSt, oldExcSt)

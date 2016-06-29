@@ -1,4 +1,7 @@
-(0,LBlock(0))
+function[0] top-level {
+  Entry[-1] -> [0]
+
+  Block[0] -> Exit, ExitExc
     [0] noop(StartOfFile)
     [1] <>obj<>1 := <>Global<>toObject(a) @ #1
     [2] <>obj<>2 := <>Global<>toObject(<>obj<>1["b"]) @ #2
@@ -23,4 +26,9 @@
     [21] <>obj<>15["b"] := 1
     [22] noop(EndOfFile)
 
+  Exit[-2]
+
+  ExitExc[-3]
+
+}
 

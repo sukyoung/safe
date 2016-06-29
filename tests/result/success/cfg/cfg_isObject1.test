@@ -1,38 +1,54 @@
-(0,LBlock(8))
-    [0] x := <>Global<>ignore2
-    [1] noop(EndOfFile)
+function[0] top-level {
+  Entry[-1] -> [0]
 
-
-(0,LBlock(7))
-    [0] assert(! <>cond<>8)
-    [1] <>Global<>ignore2 := <>obj<>6
-
-
-(0,LBlock(6))
-    [0] assert(<>cond<>8)
-    [1] <>Global<>ignore2 := <>newObj<>7
-
-
-(0,LBlock(5))
-
-
-(0,LBlock(4))
-    [EDGE] after-call(<>newObj<>7)
-    [0] <>cond<>8 := <>Global<>isObject(<>newObj<>7)
-
-
-(1,LBlock(0))
-    [0] <>obj<>2 := <>Global<>toObject(this) @ #1
-    [1] <>obj<>2["x"] := 1
-
-
-(0,LBlock(0))
+  Block[0] -> [1], ExitExc
     [0] F := function (1) @ #2, #3
     [1] noop(StartOfFile)
     [2] <>fun<>3 := <>Global<>toObject(F) @ #4
     [3] <>arguments<>4 := allocArg(0) @ #5
     [4] <>proto<>5 := <>fun<>3["prototype"]
     [5] <>obj<>6 := alloc(<>proto<>5) @ #6
+
+  Call[1]
     [0] construct(<>fun<>3, <>obj<>6, <>arguments<>4) @ #7, #8
 
+  AfterCall[2] -> [4]
+
+  AfterCatch[3] -> [5]
+
+  Block[4] -> [7], [6]
+    [0] <>cond<>8 := <>Global<>isObject(<>newObj<>7)
+
+  Block[5] -> ExitExc
+
+  Block[6] -> [8], ExitExc
+    [0] assert(<>cond<>8)
+    [1] <>Global<>ignore2 := <>newObj<>7
+
+  Block[7] -> [8], ExitExc
+    [0] assert(! <>cond<>8)
+    [1] <>Global<>ignore2 := <>obj<>6
+
+  Block[8] -> Exit, ExitExc
+    [0] x := <>Global<>ignore2
+    [1] noop(EndOfFile)
+
+  Exit[-2]
+
+  ExitExc[-3]
+
+}
+
+function[1] F {
+  Entry[-1] -> [0]
+
+  Block[0] -> Exit, ExitExc
+    [0] <>obj<>2 := <>Global<>toObject(this) @ #1
+    [1] <>obj<>2["x"] := 1
+
+  Exit[-2]
+
+  ExitExc[-3]
+
+}
 

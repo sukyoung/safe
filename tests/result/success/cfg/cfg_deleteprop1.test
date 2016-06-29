@@ -1,4 +1,7 @@
-(0,LBlock(0))
+function[0] top-level {
+  Entry[-1] -> [0]
+
+  Block[0] -> Exit, ExitExc
     [0] noop(StartOfFile)
     [1] <>Global<>ignore1 := alloc() @ #1
     [2] <>Global<>ignore1["x"] := "A"
@@ -17,4 +20,9 @@
     [15] <>Global<>ignore4 := delete(<>obj<>3, "x")
     [16] noop(EndOfFile)
 
+  Exit[-2]
+
+  ExitExc[-3]
+
+}
 

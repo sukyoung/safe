@@ -1,37 +1,7 @@
-(0,LBlock(5))
+function[0] top-level {
+  Entry[-1] -> [0]
 
-
-(0,LBlock(4))
-    [EDGE] after-call(<>Global<>ignore3)
-    [0] x := <>Global<>ignore3
-    [1] noop(EndOfFile)
-
-
-(1,LBlock(5))
-
-
-(1,LBlock(4))
-    [EDGE] after-call(<>new1<>13)
-    [0] return(<>new1<>13)
-
-
-(2,LBlock(0))
-    [0] <>test<>7 := <>test<>7 + 6
-    [1] return(<>test<>7 - <>x<>1)
-
-
-(1,LBlock(0))
-    [0] <>g<>4 := function (2) @ #1, #2
-    [1] <>temp<>5 := <>y<>2 + <>z<>3
-    [2] <>obj<>9 := <>Global<>toObject(<>g<>4) @ #3
-    [3] <>temp<>10 := <>temp<>5
-    [4] <>arguments<>11 := allocArg(1) @ #4
-    [5] <>arguments<>11["0"] := <>temp<>10
-    [6] <>fun<>12 := <>Global<>getBase(<>g<>4)
-    [0] call(<>obj<>9, <>fun<>12, <>arguments<>11) @ #5
-
-
-(0,LBlock(0))
+  Block[0] -> [1], ExitExc
     [0] f := function (1) @ #7, #8
     [1] noop(StartOfFile)
     [2] <>obj<>14 := <>Global<>toObject(f) @ #9
@@ -43,6 +13,66 @@
     [8] <>arguments<>18["1"] := <>temp<>16
     [9] <>arguments<>18["2"] := <>temp<>17
     [10] <>fun<>19 := <>Global<>getBase(f)
+
+  Call[1]
     [0] call(<>obj<>14, <>fun<>19, <>arguments<>18) @ #11
 
+  AfterCall[2] -> [4]
+
+  AfterCatch[3] -> [5]
+
+  Block[4] -> Exit, ExitExc
+    [0] x := <>Global<>ignore3
+    [1] noop(EndOfFile)
+
+  Block[5] -> ExitExc
+
+  Exit[-2]
+
+  ExitExc[-3]
+
+}
+
+function[1] f {
+  Entry[-1] -> [0]
+
+  Block[0] -> [1], ExitExc
+    [0] <>g<>4 := function (2) @ #1, #2
+    [1] <>temp<>5 := <>y<>2 + <>z<>3
+    [2] <>obj<>9 := <>Global<>toObject(<>g<>4) @ #3
+    [3] <>temp<>10 := <>temp<>5
+    [4] <>arguments<>11 := allocArg(1) @ #4
+    [5] <>arguments<>11["0"] := <>temp<>10
+    [6] <>fun<>12 := <>Global<>getBase(<>g<>4)
+
+  Call[1]
+    [0] call(<>obj<>9, <>fun<>12, <>arguments<>11) @ #5
+
+  AfterCall[2] -> [4]
+
+  AfterCatch[3] -> [5]
+
+  Block[4] -> Exit, ExitExc
+    [0] return(<>new1<>13)
+
+  Block[5] -> ExitExc
+
+  Exit[-2]
+
+  ExitExc[-3]
+
+}
+
+function[2] g {
+  Entry[-1] -> [0]
+
+  Block[0] -> Exit, ExitExc
+    [0] <>test<>7 := <>test<>7 + 6
+    [1] return(<>test<>7 - <>x<>1)
+
+  Exit[-2]
+
+  ExitExc[-3]
+
+}
 

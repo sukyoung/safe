@@ -1,62 +1,54 @@
-(0,LBlock(16))
-    [0] catch(<>e<>5)
+function[0] top-level {
+  Entry[-1] -> [0]
 
+  Block[0] -> [1]
+    [0] noop(StartOfFile)
 
-(0,LBlock(15))
+  Block[1] -> [2]
+    [0] throw("1")
 
-
-(0,LBlock(14))
-    [0] noop(EndOfFile)
-
-
-(0,LBlock(13))
-    [0] catch(<>e<>4)
-
-
-(0,LBlock(12))
-
-
-(0,LBlock(11))
-
-
-(0,LBlock(10))
-    [0] catch(<>e<>3)
-
-
-(0,LBlock(9))
-
-
-(0,LBlock(8))
-
-
-(0,LBlock(7))
-
-
-(0,LBlock(6))
-    [0] catch(<>e<>2)
-
-
-(0,LBlock(5))
-
-
-(0,LBlock(4))
-    [0] <>Global<>ignore4 := "2"
-
-
-(0,LBlock(3))
-    [0] <>Global<>ignore4 := "2"
-
-
-(0,LBlock(2))
+  Block[2] -> [3]
     [0] catch(<>e<>1)
     [1] <>Global<>ignore2 := "1"
 
+  Block[3] -> [5]
+    [0] <>Global<>ignore4 := "2"
 
-(0,LBlock(1))
-    [0] throw("1")
+  Block[4] -> [4]
+    [0] <>Global<>ignore4 := "2"
 
+  Block[5] -> [7]
 
-(0,LBlock(0))
-    [0] noop(StartOfFile)
+  Block[6] -> [7]
+    [0] catch(<>e<>2)
 
+  Block[7] -> [8]
+
+  Block[8] -> [9]
+
+  Block[9] -> [11]
+
+  Block[10] -> [11]
+    [0] catch(<>e<>3)
+
+  Block[11] -> [12]
+
+  Block[12] -> [15]
+
+  Block[13] -> [14]
+    [0] catch(<>e<>4)
+
+  Block[14] -> Exit
+    [0] noop(EndOfFile)
+
+  Block[15] -> [14]
+
+  Block[16] -> [14]
+    [0] catch(<>e<>5)
+
+  Exit[-2]
+
+  ExitExc[-3]
+
+}
 

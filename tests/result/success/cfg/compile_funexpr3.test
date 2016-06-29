@@ -1,16 +1,7 @@
-(0,LBlock(5))
+function[0] top-level {
+  Entry[-1] -> [0]
 
-
-(0,LBlock(4))
-    [EDGE] after-call(<>Global<>ignore2)
-    [0] noop(EndOfFile)
-
-
-(1,LBlock(0))
-    [0] return(0)
-
-
-(0,LBlock(0))
+  Block[0] -> [1], ExitExc
     [0] noop(StartOfFile)
     [1] <>obj<>1 := <>Global<>toObject(SplayTree) @ #1
     [2] <>obj<>2 := <>Global<>toObject(<>obj<>1["prototype"]) @ #2
@@ -20,6 +11,34 @@
     [6] <>obj<>6 := <>Global<>toObject(<>obj<>5["prototype"]) @ #6
     [7] <>arguments<>7 := allocArg(0) @ #7
     [8] <>fun<>8 := <>Global<>toObject(<>obj<>6["insert"]) @ #8
+
+  Call[1]
     [0] call(<>fun<>8, <>obj<>6, <>arguments<>7) @ #9
 
+  AfterCall[2] -> [4]
+
+  AfterCatch[3] -> [5]
+
+  Block[4] -> Exit
+    [0] noop(EndOfFile)
+
+  Block[5] -> ExitExc
+
+  Exit[-2]
+
+  ExitExc[-3]
+
+}
+
+function[1] SplayTree.prototype.insert<>funexpr@1:30-54<>0000000000003 {
+  Entry[-1] -> [0]
+
+  Block[0] -> Exit, ExitExc
+    [0] return(0)
+
+  Exit[-2]
+
+  ExitExc[-3]
+
+}
 

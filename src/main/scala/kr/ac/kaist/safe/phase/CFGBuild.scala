@@ -47,7 +47,7 @@ case class CFGBuild(
       case Some(out) => Useful.fileNameToWriters(out).map { pair =>
         {
           val ((fw, writer)) = pair
-          writer.write(cfg.dump)
+          writer.write(cfg.toString(0))
           writer.close; fw.close
           println("Dumped CFG to " + out)
           cfg

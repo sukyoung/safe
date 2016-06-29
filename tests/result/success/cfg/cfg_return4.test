@@ -1,33 +1,49 @@
-(0,LBlock(5))
+function[0] top-level {
+  Entry[-1] -> [0]
 
-
-(0,LBlock(4))
-    [EDGE] after-call(<>Global<>ignore2)
-    [0] noop(EndOfFile)
-
-
-(1,LBlock(3))
-    [0] x := "B"
-
-
-(1,LBlock(2))
-    [0] assert(! true)
-
-
-(1,LBlock(1))
-    [0] assert(true)
-    [1] return()
-
-
-(1,LBlock(0))
-
-
-(0,LBlock(0))
+  Block[0] -> [1], ExitExc
     [0] f := function (1) @ #1, #2
     [1] noop(StartOfFile)
     [2] <>obj<>2 := <>Global<>toObject(f) @ #3
     [3] <>arguments<>3 := allocArg(0) @ #4
     [4] <>fun<>4 := <>Global<>getBase(f)
+
+  Call[1]
     [0] call(<>obj<>2, <>fun<>4, <>arguments<>3) @ #5
 
+  AfterCall[2] -> [4]
+
+  AfterCatch[3] -> [5]
+
+  Block[4] -> Exit
+    [0] noop(EndOfFile)
+
+  Block[5] -> ExitExc
+
+  Exit[-2]
+
+  ExitExc[-3]
+
+}
+
+function[1] f {
+  Entry[-1] -> [0]
+
+  Block[0] -> [2], [1]
+
+  Block[1] -> Exit, ExitExc
+    [0] assert(true)
+    [1] return()
+
+  Block[2] -> [3], ExitExc
+    [0] assert(! true)
+
+  Block[3] -> Exit, ExitExc
+    [0] x := "B"
+
+  Exit[-2]
+
+  ExitExc[-3]
+
+}
 

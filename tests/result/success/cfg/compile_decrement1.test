@@ -1,4 +1,7 @@
-(0,LBlock(0))
+function[0] top-level {
+  Entry[-1] -> [0]
+
+  Block[0] -> Exit, ExitExc
     [0] noop(StartOfFile)
     [1] <>old<>1 := a
     [2] <>new<>2 := <>Global<>toNumber(<>old<>1)
@@ -18,4 +21,9 @@
     [16] a := <>new<>8 - 1
     [17] noop(EndOfFile)
 
+  Exit[-2]
+
+  ExitExc[-3]
+
+}
 

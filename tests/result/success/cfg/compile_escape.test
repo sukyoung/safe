@@ -1,4 +1,7 @@
-(0,LBlock(0))
+function[0] top-level {
+  Entry[-1] -> [0]
+
+  Block[0] -> Exit, ExitExc
     [0] noop(StartOfFile)
     [1] x := "\n"
     [2] x := "\b"
@@ -11,4 +14,9 @@
     [9] x := "\"
     [10] noop(EndOfFile)
 
+  Exit[-2]
+
+  ExitExc[-3]
+
+}
 

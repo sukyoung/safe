@@ -1,118 +1,53 @@
-(0,LBlock(35))
+function[0] top-level {
+  Entry[-1] -> [0]
 
+  Block[0] -> [1], ExitExc
+    [0] noop(StartOfFile)
+    [1] <>y<>1 := b
+    [2] <>obj<>2 := <>Global<>toObject(c) @ #1
+    [3] <>temp<>3 := d + e
+    [4] <>arguments<>4 := allocArg(1) @ #2
+    [5] <>arguments<>4["0"] := <>temp<>3
+    [6] <>fun<>5 := <>Global<>getBase(c)
 
-(0,LBlock(34))
-    [EDGE] after-call(<>Global<>ignore11)
-    [0] <>Global<>ignore13 := + z
-    [1] noop(EndOfFile)
+  Call[1]
+    [0] call(<>obj<>2, <>fun<>5, <>arguments<>4) @ #3
 
+  AfterCall[2] -> [4]
 
-(0,LBlock(30))
+  AfterCatch[3] -> [5]
 
+  Block[4] -> [6], ExitExc
+    [0] <>obj<>7 := <>Global<>toObject(<>obj1<>6) @ #5
+    [1] <>arguments<>8 := allocArg(0) @ #6
+    [2] <>fun<>9 := <>Global<>toObject(<>obj<>7["print"]) @ #7
 
-(0,LBlock(29))
-    [EDGE] after-call(<>z<>95)
-    [0] i := <>y<>90 / <>z<>95
-    [1] x := + y
-    [2] y := - y
-    [3] <>obj<>96 := <>Global<>toObject(print) @ #63
-    [4] <>temp<>97 := - y
-    [5] <>arguments<>98 := allocArg(1) @ #64
-    [6] <>arguments<>98["0"] := <>temp<>97
-    [7] <>fun<>99 := <>Global<>getBase(print)
-    [0] call(<>obj<>96, <>fun<>99, <>arguments<>98) @ #65
+  Block[5] -> ExitExc
 
+  Call[6]
+    [0] call(<>fun<>9, <>obj<>7, <>arguments<>8) @ #8
 
-(0,LBlock(25))
+  AfterCall[7] -> [9]
 
+  AfterCatch[8] -> [10]
 
-(0,LBlock(24))
-    [EDGE] after-call(<>Global<>ignore3)
-    [0] s := "here is a string"
-    [1] <>y<>87 := 0
-    [2] <>temp<>88 := a - z
-    [3] <>z<>89 := allocArray(1) @ #57
-    [4] <>z<>89["0"] := <>temp<>88
-    [5] <>y<>90 := <>y<>87 / <>z<>89
-    [6] <>obj<>91 := <>Global<>toObject(g) @ #58
-    [7] <>temp<>92 := s
-    [8] <>arguments<>93 := allocArg(1) @ #59
-    [9] <>arguments<>93["0"] := <>temp<>92
-    [10] <>fun<>94 := <>Global<>toObject(<>obj<>91["exec"]) @ #60
-    [0] call(<>fun<>94, <>obj<>91, <>arguments<>93) @ #61
+  Block[9] -> [11], ExitExc
+    [0] a := <>y<>1 + <>z<>10
+    [1] a := b + c
+    [2] <>obj<>11 := <>Global<>toObject(d + e) @ #10
+    [3] <>arguments<>12 := allocArg(0) @ #11
+    [4] <>fun<>13 := <>Global<>toObject(<>obj<>11["print"]) @ #12
 
+  Block[10] -> ExitExc
 
-(2,LBlock(10))
+  Call[11]
+    [0] call(<>fun<>13, <>obj<>11, <>arguments<>12) @ #13
 
+  AfterCall[12] -> [14]
 
-(2,LBlock(9))
-    [EDGE] after-call(<>Global<>ignore6)
+  AfterCatch[13] -> [15]
 
-
-(2,LBlock(5))
-
-
-(2,LBlock(4))
-    [EDGE] after-call(<>Global<>ignore5)
-    [0] <>obj<>79 := <>Global<>toObject(fetch_and_cache) @ #47
-    [1] <>temp<>80 := <>uri<>73
-    [2] <>arguments<>81 := allocArg(1) @ #48
-    [3] <>arguments<>81["0"] := <>temp<>80
-    [4] <>fun<>82 := <>Global<>getBase(fetch_and_cache)
-    [0] call(<>obj<>79, <>fun<>82, <>arguments<>81) @ #49
-
-
-(2,LBlock(0))
-    [0] <>obj<>75 := <>Global<>toObject(log) @ #43
-    [1] <>temp<>76 := "Looking up and caching " + <>uri<>73
-    [2] <>arguments<>77 := allocArg(1) @ #44
-    [3] <>arguments<>77["0"] := <>temp<>76
-    [4] <>fun<>78 := <>Global<>getBase(log)
-    [0] call(<>obj<>75, <>fun<>78, <>arguments<>77) @ #45
-
-
-(0,LBlock(20))
-
-
-(0,LBlock(19))
-    [EDGE] after-call(<>obj1<>67)
-    [0] <>obj<>68 := <>Global<>toObject(<>obj1<>67) @ #41
-    [1] <>temp<>69 := "/script.js"
-    [2] <>temp<>70 := "/style1.css"
-    [3] <>temp<>71 := "/style2.css"
-    [4] <>obj<>72 := <>Global<>toObject(<>obj<>68["/page1.html"]) @ #42
-    [5] <>temp<>84 := function (2) @ #51, #52
-    [6] <>arguments<>85 := allocArg(1) @ #53
-    [7] <>arguments<>85["0"] := <>temp<>84
-    [8] <>fun<>86 := <>Global<>toObject(<>obj<>72["forEach"]) @ #54
-    [0] call(<>fun<>86, <>obj<>72, <>arguments<>85) @ #55
-
-
-(1,LBlock(5))
-
-
-(1,LBlock(4))
-    [EDGE] after-call(<>Global<>ignore4)
-
-
-(1,LBlock(0))
-    [0] <>obj<>55 := <>Global<>toObject(print) @ #29
-    [1] <>y<>56 := "The abbreviation of "
-    [2] <>obj<>57 := <>Global<>toObject(<>a<>53) @ #30
-    [3] <>y<>58 := <>y<>56 + <>obj<>57[0] + " is "
-    [4] <>obj<>59 := <>Global<>toObject(<>a<>53) @ #31
-    [5] <>temp<>60 := <>y<>58 + <>obj<>59[1] + "."
-    [6] <>arguments<>61 := allocArg(1) @ #32
-    [7] <>arguments<>61["0"] := <>temp<>60
-    [8] <>fun<>62 := <>Global<>getBase(print)
-    [0] call(<>obj<>55, <>fun<>62, <>arguments<>61) @ #33
-
-
-(0,LBlock(15))
-
-
-(0,LBlock(14))
-    [EDGE] after-call(<>obj1<>14)
+  Block[14] -> [16], ExitExc
     [0] <>obj<>15 := <>Global<>toObject(<>obj1<>14) @ #15
     [1] <>temp<>16 := "January"
     [2] <>temp<>17 := "Jan"
@@ -179,41 +114,160 @@
     [63] <>arguments<>65 := allocArg(1) @ #37
     [64] <>arguments<>65["0"] := <>temp<>64
     [65] <>fun<>66 := <>Global<>toObject(<>obj<>52["forEach"]) @ #38
+
+  Block[15] -> ExitExc
+
+  Call[16]
     [0] call(<>fun<>66, <>obj<>52, <>arguments<>65) @ #39
 
+  AfterCall[17] -> [19]
 
-(0,LBlock(10))
+  AfterCatch[18] -> [20]
 
+  Block[19] -> [21], ExitExc
+    [0] <>obj<>68 := <>Global<>toObject(<>obj1<>67) @ #41
+    [1] <>temp<>69 := "/script.js"
+    [2] <>temp<>70 := "/style1.css"
+    [3] <>temp<>71 := "/style2.css"
+    [4] <>obj<>72 := <>Global<>toObject(<>obj<>68["/page1.html"]) @ #42
+    [5] <>temp<>84 := function (2) @ #51, #52
+    [6] <>arguments<>85 := allocArg(1) @ #53
+    [7] <>arguments<>85["0"] := <>temp<>84
+    [8] <>fun<>86 := <>Global<>toObject(<>obj<>72["forEach"]) @ #54
 
-(0,LBlock(9))
-    [EDGE] after-call(<>z<>10)
-    [0] a := <>y<>1 + <>z<>10
-    [1] a := b + c
-    [2] <>obj<>11 := <>Global<>toObject(d + e) @ #10
-    [3] <>arguments<>12 := allocArg(0) @ #11
-    [4] <>fun<>13 := <>Global<>toObject(<>obj<>11["print"]) @ #12
-    [0] call(<>fun<>13, <>obj<>11, <>arguments<>12) @ #13
+  Block[20] -> ExitExc
 
+  Call[21]
+    [0] call(<>fun<>86, <>obj<>72, <>arguments<>85) @ #55
 
-(0,LBlock(5))
+  AfterCall[22] -> [24]
 
+  AfterCatch[23] -> [25]
 
-(0,LBlock(4))
-    [EDGE] after-call(<>obj1<>6)
-    [0] <>obj<>7 := <>Global<>toObject(<>obj1<>6) @ #5
-    [1] <>arguments<>8 := allocArg(0) @ #6
-    [2] <>fun<>9 := <>Global<>toObject(<>obj<>7["print"]) @ #7
-    [0] call(<>fun<>9, <>obj<>7, <>arguments<>8) @ #8
+  Block[24] -> [26], ExitExc
+    [0] s := "here is a string"
+    [1] <>y<>87 := 0
+    [2] <>temp<>88 := a - z
+    [3] <>z<>89 := allocArray(1) @ #57
+    [4] <>z<>89["0"] := <>temp<>88
+    [5] <>y<>90 := <>y<>87 / <>z<>89
+    [6] <>obj<>91 := <>Global<>toObject(g) @ #58
+    [7] <>temp<>92 := s
+    [8] <>arguments<>93 := allocArg(1) @ #59
+    [9] <>arguments<>93["0"] := <>temp<>92
+    [10] <>fun<>94 := <>Global<>toObject(<>obj<>91["exec"]) @ #60
 
+  Block[25] -> ExitExc
 
-(0,LBlock(0))
-    [0] noop(StartOfFile)
-    [1] <>y<>1 := b
-    [2] <>obj<>2 := <>Global<>toObject(c) @ #1
-    [3] <>temp<>3 := d + e
-    [4] <>arguments<>4 := allocArg(1) @ #2
-    [5] <>arguments<>4["0"] := <>temp<>3
-    [6] <>fun<>5 := <>Global<>getBase(c)
-    [0] call(<>obj<>2, <>fun<>5, <>arguments<>4) @ #3
+  Call[26]
+    [0] call(<>fun<>94, <>obj<>91, <>arguments<>93) @ #61
 
+  AfterCall[27] -> [29]
+
+  AfterCatch[28] -> [30]
+
+  Block[29] -> [31], ExitExc
+    [0] i := <>y<>90 / <>z<>95
+    [1] x := + y
+    [2] y := - y
+    [3] <>obj<>96 := <>Global<>toObject(print) @ #63
+    [4] <>temp<>97 := - y
+    [5] <>arguments<>98 := allocArg(1) @ #64
+    [6] <>arguments<>98["0"] := <>temp<>97
+    [7] <>fun<>99 := <>Global<>getBase(print)
+
+  Block[30] -> ExitExc
+
+  Call[31]
+    [0] call(<>obj<>96, <>fun<>99, <>arguments<>98) @ #65
+
+  AfterCall[32] -> [34]
+
+  AfterCatch[33] -> [35]
+
+  Block[34] -> Exit, ExitExc
+    [0] <>Global<>ignore13 := + z
+    [1] noop(EndOfFile)
+
+  Block[35] -> ExitExc
+
+  Exit[-2]
+
+  ExitExc[-3]
+
+}
+
+function[1] <>funexpr@19:11-76<>0000000000081 {
+  Entry[-1] -> [0]
+
+  Block[0] -> [1], ExitExc
+    [0] <>obj<>55 := <>Global<>toObject(print) @ #29
+    [1] <>y<>56 := "The abbreviation of "
+    [2] <>obj<>57 := <>Global<>toObject(<>a<>53) @ #30
+    [3] <>y<>58 := <>y<>56 + <>obj<>57[0] + " is "
+    [4] <>obj<>59 := <>Global<>toObject(<>a<>53) @ #31
+    [5] <>temp<>60 := <>y<>58 + <>obj<>59[1] + "."
+    [6] <>arguments<>61 := allocArg(1) @ #32
+    [7] <>arguments<>61["0"] := <>temp<>60
+    [8] <>fun<>62 := <>Global<>getBase(print)
+
+  Call[1]
+    [0] call(<>obj<>55, <>fun<>62, <>arguments<>61) @ #33
+
+  AfterCall[2] -> [4]
+
+  AfterCatch[3] -> [5]
+
+  Block[4] -> Exit
+
+  Block[5] -> ExitExc
+
+  Exit[-2]
+
+  ExitExc[-3]
+
+}
+
+function[2] <>funexpr@25:11-27:25<>0000000000105 {
+  Entry[-1] -> [0]
+
+  Block[0] -> [1], ExitExc
+    [0] <>obj<>75 := <>Global<>toObject(log) @ #43
+    [1] <>temp<>76 := "Looking up and caching " + <>uri<>73
+    [2] <>arguments<>77 := allocArg(1) @ #44
+    [3] <>arguments<>77["0"] := <>temp<>76
+    [4] <>fun<>78 := <>Global<>getBase(log)
+
+  Call[1]
+    [0] call(<>obj<>75, <>fun<>78, <>arguments<>77) @ #45
+
+  AfterCall[2] -> [4]
+
+  AfterCatch[3] -> [5]
+
+  Block[4] -> [6], ExitExc
+    [0] <>obj<>79 := <>Global<>toObject(fetch_and_cache) @ #47
+    [1] <>temp<>80 := <>uri<>73
+    [2] <>arguments<>81 := allocArg(1) @ #48
+    [3] <>arguments<>81["0"] := <>temp<>80
+    [4] <>fun<>82 := <>Global<>getBase(fetch_and_cache)
+
+  Block[5] -> ExitExc
+
+  Call[6]
+    [0] call(<>obj<>79, <>fun<>82, <>arguments<>81) @ #49
+
+  AfterCall[7] -> [9]
+
+  AfterCatch[8] -> [10]
+
+  Block[9] -> Exit
+
+  Block[10] -> ExitExc
+
+  Exit[-2]
+
+  ExitExc[-3]
+
+}
 

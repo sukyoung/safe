@@ -1,25 +1,27 @@
-(0,LBlock(6))
+function[0] top-level {
+  Entry[-1] -> [0]
 
-
-(0,LBlock(5))
-    [0] assert(! true)
-
-
-(0,LBlock(4))
-    [0] assert(true)
-
-
-(0,LBlock(3))
-
-
-(0,LBlock(2))
-
-
-(0,LBlock(1))
-    [0] noop(EndOfFile)
-
-
-(0,LBlock(0))
+  Block[0] -> [3]
     [0] noop(StartOfFile)
 
+  Block[1] -> Exit
+    [0] noop(EndOfFile)
+
+  Block[2] -> [1]
+
+  Block[3] -> [5], [4]
+
+  Block[4] -> [1], ExitExc
+    [0] assert(true)
+
+  Block[5] -> [2], ExitExc
+    [0] assert(! true)
+
+  Block[6] -> [3]
+
+  Exit[-2]
+
+  ExitExc[-3]
+
+}
 

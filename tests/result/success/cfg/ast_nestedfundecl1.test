@@ -1,39 +1,7 @@
-(0,LBlock(15))
+function[0] top-level {
+  Entry[-1] -> [0]
 
-
-(0,LBlock(14))
-    [EDGE] after-call(<>Global<>ignore5)
-    [0] <>Global<>ignore7 := y
-    [1] noop(EndOfFile)
-
-
-(0,LBlock(10))
-
-
-(0,LBlock(9))
-    [EDGE] after-call(<>Global<>ignore4)
-    [0] <>obj<>10 := <>Global<>toObject(f) @ #13
-    [1] <>arguments<>11 := allocArg(0) @ #14
-    [2] <>fun<>12 := <>Global<>getBase(f)
-    [0] call(<>obj<>10, <>fun<>12, <>arguments<>11) @ #15
-
-
-(0,LBlock(5))
-
-
-(0,LBlock(4))
-    [EDGE] after-call(<>temp<>7)
-    [0] <>arguments<>8 := allocArg(1) @ #10
-    [1] <>arguments<>8["0"] := <>temp<>7
-    [2] <>fun<>9 := <>Global<>getBase(alert)
-    [0] call(<>obj<>3, <>fun<>9, <>arguments<>8) @ #11
-
-
-(1,LBlock(0))
-    [0] return(y)
-
-
-(0,LBlock(0))
+  Block[0] -> [1], ExitExc
     [0] f := function (1) @ #1, #2
     [1] noop(StartOfFile)
     [2] y := 1
@@ -46,6 +14,63 @@
     [9] <>obj<>4 := <>Global<>toObject(f) @ #6
     [10] <>arguments<>5 := allocArg(0) @ #7
     [11] <>fun<>6 := <>Global<>getBase(f)
+
+  Call[1]
     [0] call(<>obj<>4, <>fun<>6, <>arguments<>5) @ #8
 
+  AfterCall[2] -> [4]
+
+  AfterCatch[3] -> [5]
+
+  Block[4] -> [6], ExitExc
+    [0] <>arguments<>8 := allocArg(1) @ #10
+    [1] <>arguments<>8["0"] := <>temp<>7
+    [2] <>fun<>9 := <>Global<>getBase(alert)
+
+  Block[5] -> ExitExc
+
+  Call[6]
+    [0] call(<>obj<>3, <>fun<>9, <>arguments<>8) @ #11
+
+  AfterCall[7] -> [9]
+
+  AfterCatch[8] -> [10]
+
+  Block[9] -> [11], ExitExc
+    [0] <>obj<>10 := <>Global<>toObject(f) @ #13
+    [1] <>arguments<>11 := allocArg(0) @ #14
+    [2] <>fun<>12 := <>Global<>getBase(f)
+
+  Block[10] -> ExitExc
+
+  Call[11]
+    [0] call(<>obj<>10, <>fun<>12, <>arguments<>11) @ #15
+
+  AfterCall[12] -> [14]
+
+  AfterCatch[13] -> [15]
+
+  Block[14] -> Exit, ExitExc
+    [0] <>Global<>ignore7 := y
+    [1] noop(EndOfFile)
+
+  Block[15] -> ExitExc
+
+  Exit[-2]
+
+  ExitExc[-3]
+
+}
+
+function[1] f {
+  Entry[-1] -> [0]
+
+  Block[0] -> Exit, ExitExc
+    [0] return(y)
+
+  Exit[-2]
+
+  ExitExc[-3]
+
+}
 

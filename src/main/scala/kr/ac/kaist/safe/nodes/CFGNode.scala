@@ -19,7 +19,6 @@ import kr.ac.kaist.safe.util._
 
 sealed abstract class CFGNode(val ir: IRNode)
     extends Node {
-  override def toString(indent: Int): String = " " * indent + this
   def span: Span = ir.span
   def comment: Option[Comment] = ir.comment
   def fileName: String = ir.fileName
@@ -27,6 +26,7 @@ sealed abstract class CFGNode(val ir: IRNode)
   def end: SourceLoc = ir.end
   def line: Int = ir.line
   def offset: Int = ir.offset
+  def toString(indent: Int): String = "  " * indent + toString() + Config.LINE_SEP
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -43,10 +43,6 @@ class CFG(
   def getAllBlocks: List[CFGBlock] = funcs.foldLeft(List[CFGBlock]()) {
     case (lst, func) => func.getAllBlocks ++ lst
   }
-
-  // TODO: delete this after refactoring dump
-  private var blocks: List[CFGNormalBlock] = Nil
-  def addNode(block: CFGNormalBlock): Unit = blocks ::= block
 
   // function / block map from id
   private val funMap: MMap[FunctionId, CFGFunction] = MHashMap()
@@ -91,11 +87,13 @@ class CFG(
     }))
   }
 
-  // TODO dump cfg
-  def dump: String = {
-    var str: String = ""
-    for (block <- blocks) str += block.dump
-    str
+  // toString
+  override def toString(indent: Int): String = {
+    val s: StringBuilder = new StringBuilder
+    funcs.reverseIterator.foreach {
+      case func => s.append(func.toString(indent)).append(Config.LINE_SEP)
+    }
+    s.toString
   }
 }
 
@@ -126,7 +124,7 @@ class CFGFunction(
   def createCall(callInstCons: Call => CFGCallInst, retVar: CFGId): Call = {
     val call = Call(this, callInstCons, retVar)
     bidCount += 3
-    blocks = call :: call.afterCall :: call.afterCatch :: blocks
+    blocks = call.afterCatch :: call.afterCall :: call :: blocks
     call
   }
 
@@ -141,12 +139,11 @@ class CFGFunction(
   def getAllBlocks: List[CFGBlock] = blocks
 
   // create block
-  def createBlock: CFGNormalBlock = {
-    val block = CFGNormalBlock(this)
+  def createBlock: NormalBlock = {
+    val block = NormalBlock(this)
     bidCount += 1
     blocks ::= block
     blockMap(block.id) = block
-    cfg.addNode(block) // TODO delete this after refactoring dump
     block
   }
 
@@ -164,6 +161,20 @@ class CFGFunction(
 
   // toString
   override def toString: String = s"function[$id] $name"
+  override def toString(indent: Int): String = {
+    val pre = "  " * indent
+    val s: StringBuilder = new StringBuilder
+    s.append(pre).append(s"$this {").append(Config.LINE_SEP)
+    blocks.reverseIterator.foreach {
+      case Exit(_) | ExitExc(_) =>
+      case block =>
+        s.append(pre).append(block.toString(indent + 1)).append(Config.LINE_SEP)
+    }
+    s.append(pre).append(exit.toString(indent + 1)).append(Config.LINE_SEP)
+    s.append(pre).append(exitExc.toString(indent + 1)).append(Config.LINE_SEP)
+    s.append(pre).append("}").append(Config.LINE_SEP)
+    s.toString
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -198,9 +209,31 @@ sealed abstract class CFGBlock {
   // get inst.
   def getInsts: List[CFGInst] = Nil
 
+  // get string of succs
+  protected def getSuccsStr: String = {
+    succs.toSeq.map {
+      case (_, succ) => succ.map {
+        case Entry(_) => "Entry"
+        case Exit(_) => "Exit"
+        case ExitExc(_) => "ExitExc"
+        case b => s"[${b.id}]"
+      }.mkString(", ")
+    }.mkString(", ") match {
+      case "" => ""
+      case res => " -> " + res
+    }
+  }
+
   // toString
   override def toString: String
-  def toString(indent: Int): String
+  def toString(indent: Int): String = {
+    val pre = "  " * indent
+    val s: StringBuilder = new StringBuilder
+    s.append(pre).append(toString())
+      .append(getSuccsStr)
+      .append(Config.LINE_SEP)
+    s.toString
+  }
 
   // span
   def span: Span
@@ -212,20 +245,17 @@ object CFGBlock {
 // entry, exit, exception exit
 case class Entry(func: CFGFunction) extends CFGBlock {
   val id: BlockId = -1
-  override def toString: String = "Entry"
-  def toString(indent: Int): String = " " * indent + "Entry"
+  override def toString: String = s"Entry[$id]"
   def span: Span = func.span.copy(end = func.span.begin)
 }
 case class Exit(func: CFGFunction) extends CFGBlock {
   val id: BlockId = -2
-  override def toString: String = "Exit"
-  def toString(indent: Int): String = " " * indent + "Exit"
+  override def toString: String = s"Exit[$id]"
   def span: Span = func.span.copy(begin = func.span.end)
 }
 case class ExitExc(func: CFGFunction) extends CFGBlock {
   val id: BlockId = -3
-  override def toString: String = "ExitExc"
-  def toString(indent: Int): String = " " * indent + "ExitExc"
+  override def toString: String = s"ExitExc[$id]"
   def span: Span = func.span.copy(begin = func.span.end)
 }
 
@@ -238,14 +268,14 @@ case class Call(func: CFGFunction) extends CFGBlock {
   def afterCall: AfterCall = iAfterCall
   def afterCatch: AfterCatch = iAfterCatch
   def callInst: CFGCallInst = iCallInst
-  override def toString: String = "Call[callInst: " + (callInst match {
-    case CFGCall(_, _, _, _, _, _, _) => "Call"
-    case CFGConstruct(_, _, _, _, _, _, _) => "Construct"
-  }) + s"]"
-  def toString(indent: Int): String = {
-    val pre = " " * indent
-    pre + "Call" + Config.LINE_SEP +
-      pre + s" [${callInst.id}] $callInst"
+  override def toString: String = s"Call[$id]"
+  override def toString(indent: Int): String = {
+    val pre = "  " * indent
+    val s: StringBuilder = new StringBuilder
+    s.append(pre).append(toString)
+    s.append(getSuccsStr).append(Config.LINE_SEP)
+      .append(pre).append(s"  [${callInst.id}] $callInst").append(Config.LINE_SEP)
+    s.toString
   }
   def span: Span = callInst.span
   override def getInsts: List[CFGInst] = List(callInst)
@@ -262,19 +292,17 @@ object Call {
 }
 case class AfterCall(func: CFGFunction, retVar: CFGId, call: Call) extends CFGBlock {
   val id: BlockId = func.getBId + 1
-  override def toString: String = s"AfterCall <- $call"
+  override def toString: String = s"AfterCall[$id]"
   def span: Span = call.callInst.span.copy(begin = call.callInst.span.end)
-  def toString(indent: Int): String = " " * indent + "AfterCall"
 }
 case class AfterCatch(func: CFGFunction, call: Call) extends CFGBlock {
   val id: BlockId = func.getBId + 2
-  override def toString: String = s"AfterCatch <- $call"
-  def toString(indent: Int): String = " " * indent + "AfterCatch"
+  override def toString: String = s"AfterCatch[$id]"
   def span: Span = call.callInst.span.copy(begin = call.callInst.span.end)
 }
 
 // normal block
-case class CFGNormalBlock(func: CFGFunction) extends CFGBlock {
+case class NormalBlock(func: CFGFunction) extends CFGBlock {
   // block id
   val id: BlockId = func.getBId
 
@@ -283,7 +311,7 @@ case class CFGNormalBlock(func: CFGFunction) extends CFGBlock {
   override def getInsts: List[CFGNormalInst] = insts
 
   // create inst
-  def createInst(instCons: CFGNormalBlock => CFGNormalInst): CFGNormalInst = {
+  def createInst(instCons: NormalBlock => CFGNormalInst): CFGNormalInst = {
     val inst: CFGNormalInst = instCons(this)
     iidCount += 1
     insts ::= inst
@@ -292,18 +320,31 @@ case class CFGNormalBlock(func: CFGFunction) extends CFGBlock {
 
   // equals
   override def equals(other: Any): Boolean = other match {
-    case (block: CFGNormalBlock) => (block.id == id)
+    case (block: NormalBlock) => (block.id == id)
     case _ => false
   }
 
   // toString
-  override def toString: String = s"Block($id)"
-  def toString(indent: Int): String = {
-    val pre = " " * indent
-    pre + s"Block($id)" + Config.LINE_SEP +
-      (insts.reverse.map(inst => {
-        pre + s" [${inst.id}] $inst"
-      })).mkString(Config.LINE_SEP)
+  override def toString: String = s"Block[$id]"
+  override def toString(indent: Int): String = {
+    val pre = "  " * indent
+    val s: StringBuilder = new StringBuilder
+    s.append(pre).append(toString)
+    s.append(getSuccsStr).append(Config.LINE_SEP)
+    val instLen = insts.length
+    instLen > Config.MAX_INST_PRINT_SIZE match {
+      case true =>
+        s.append(pre)
+          .append(s"  A LOT!!! $instLen instructions are not printed here.")
+          .append(Config.LINE_SEP)
+      case false => insts.reverseIterator.foreach {
+        case inst =>
+          s.append(pre)
+            .append(s"  [${inst.id}] $inst")
+            .append(Config.LINE_SEP)
+      }
+    }
+    s.toString
   }
 
   // span
@@ -314,30 +355,6 @@ case class CFGNormalBlock(func: CFGFunction) extends CFGBlock {
       case Nil => (SourceLoc(), SourceLoc()) // TODO return correct span
     }
     Span(fileName, begin, end)
-  }
-
-  // dump node for test TODO delete
-  def dump: String = {
-    var str: String = s"(${func.id},LBlock($id))" + Config.LINE_SEP
-    str += (preds.get(CFGEdgeNormal) match {
-      case Some(List(AfterCall(_, retVar, _))) => s"    [EDGE] after-call($retVar)" + Config.LINE_SEP
-      case _ => ""
-    })
-    insts.length > Config.MAX_INST_PRINT_SIZE match {
-      case true => str + "    A LOT!!! " + ((succs.get(CFGEdgeNormal) match {
-        case Some(List(call: Call)) => 1
-        case _ => 0
-      }) + insts.length) + " instructions are not printed here." + Config.LINE_SEP + Config.LINE_SEP
-      case false =>
-        insts.reverseIterator.foldLeft(str) {
-          case (s, inst) => s + s"    [${inst.id}] $inst" + Config.LINE_SEP
-        } + (succs.get(CFGEdgeNormal) match {
-          case Some(List(call: Call)) =>
-            val inst = call.callInst
-            s"    [${inst.id}] $inst" + Config.LINE_SEP
-          case _ => ""
-        }) + Config.LINE_SEP + Config.LINE_SEP
-    }
   }
 }
 
@@ -372,13 +389,13 @@ sealed abstract class CFGInst(
  */
 sealed abstract class CFGNormalInst(
   override val ir: IRNode,
-  val block: CFGNormalBlock
+  val block: NormalBlock
 ) extends CFGInst(ir, block)
 
 // x := alloc(e^?)
 case class CFGAlloc(
     override val ir: IRNode,
-    override val block: CFGNormalBlock,
+    override val block: NormalBlock,
     lhs: CFGId,
     protoOpt: Option[CFGExpr],
     addr: Address
@@ -392,7 +409,7 @@ case class CFGAlloc(
 // x := allocArray(n)
 case class CFGAllocArray(
     override val ir: IRNode,
-    override val block: CFGNormalBlock,
+    override val block: NormalBlock,
     lhs: CFGId,
     length: Int,
     addr: Address
@@ -403,7 +420,7 @@ case class CFGAllocArray(
 // x := allocArg(n)
 case class CFGAllocArg(
     override val ir: IRNode,
-    override val block: CFGNormalBlock,
+    override val block: NormalBlock,
     lhs: CFGId,
     length: Int,
     addr: Address
@@ -414,7 +431,7 @@ case class CFGAllocArg(
 // x := e
 case class CFGExprStmt(
     override val ir: IRNode,
-    override val block: CFGNormalBlock,
+    override val block: NormalBlock,
     lhs: CFGId, right: CFGExpr
 ) extends CFGNormalInst(ir, block) {
   override def toString: String = s"$lhs := $right"
@@ -423,7 +440,7 @@ case class CFGExprStmt(
 // x := delete(e)
 case class CFGDelete(
     override val ir: IRNode,
-    override val block: CFGNormalBlock,
+    override val block: NormalBlock,
     lhs: CFGId,
     expr: CFGExpr
 ) extends CFGNormalInst(ir, block) {
@@ -433,7 +450,7 @@ case class CFGDelete(
 // x := delete(e1, e2)
 case class CFGDeleteProp(
     override val ir: IRNode,
-    override val block: CFGNormalBlock,
+    override val block: NormalBlock,
     lhs: CFGId,
     obj: CFGExpr,
     index: CFGExpr
@@ -444,7 +461,7 @@ case class CFGDeleteProp(
 // e1[e2] := e3
 case class CFGStore(
     override val ir: IRNode,
-    override val block: CFGNormalBlock,
+    override val block: NormalBlock,
     obj: CFGExpr,
     index: CFGExpr,
     rhs: CFGExpr
@@ -455,7 +472,7 @@ case class CFGStore(
 // e1[e2] := s
 case class CFGStoreStringIdx(
     override val ir: IRNode,
-    override val block: CFGNormalBlock,
+    override val block: NormalBlock,
     obj: CFGExpr,
     index: EJSString,
     rhs: CFGExpr
@@ -466,7 +483,7 @@ case class CFGStoreStringIdx(
 // x1 := function x_2^?(f)
 case class CFGFunExpr(
     override val ir: IRNode,
-    override val block: CFGNormalBlock,
+    override val block: NormalBlock,
     lhs: CFGId,
     nameOpt: Option[CFGId],
     func: CFGFunction,
@@ -486,7 +503,7 @@ case class CFGFunExpr(
 // assert(e1 x e2)
 case class CFGAssert(
     override val ir: IRNode,
-    override val block: CFGNormalBlock,
+    override val block: NormalBlock,
     expr: CFGExpr,
     flag: Boolean
 ) extends CFGNormalInst(ir, block) {
@@ -496,7 +513,7 @@ case class CFGAssert(
 // cond(x)
 case class CFGCond(
     override val ir: IRNode,
-    override val block: CFGNormalBlock,
+    override val block: NormalBlock,
     expr: CFGExpr,
     isEvent: Boolean = false
 ) extends CFGNormalInst(ir, block) {
@@ -506,7 +523,7 @@ case class CFGCond(
 // catch(x)
 case class CFGCatch(
     override val ir: IRNode,
-    override val block: CFGNormalBlock,
+    override val block: NormalBlock,
     name: CFGId
 ) extends CFGNormalInst(ir, block) {
   override def toString: String = s"catch($name)"
@@ -515,7 +532,7 @@ case class CFGCatch(
 // return(e^?)
 case class CFGReturn(
     override val ir: IRNode,
-    override val block: CFGNormalBlock,
+    override val block: NormalBlock,
     exprOpt: Option[CFGExpr]
 ) extends CFGNormalInst(ir, block) {
   override def toString: String = {
@@ -527,7 +544,7 @@ case class CFGReturn(
 // throw(e)
 case class CFGThrow(
     override val ir: IRNode,
-    override val block: CFGNormalBlock,
+    override val block: NormalBlock,
     expr: CFGExpr
 ) extends CFGNormalInst(ir, block) {
   override def toString: String = s"throw($expr)"
@@ -536,7 +553,7 @@ case class CFGThrow(
 // noop
 case class CFGNoOp(
     override val ir: IRNode,
-    override val block: CFGNormalBlock,
+    override val block: NormalBlock,
     desc: String
 ) extends CFGNormalInst(ir, block) {
   override def toString: String = s"noop($desc)"
@@ -545,7 +562,7 @@ case class CFGNoOp(
 // x := <>x(x^*)
 case class CFGInternalCall(
     override val ir: IRNode,
-    override val block: CFGNormalBlock,
+    override val block: NormalBlock,
     lhs: CFGId,
     fun: CFGId,
     arguments: List[CFGExpr],
@@ -563,7 +580,7 @@ case class CFGInternalCall(
 // TODO revert after modeling
 // case class CFGAPICall(
 //   override val ir: IRNode,
-//   override val block: CFGNormalBlock,
+//   override val block: NormalBlock,
 //   model: String,
 //   fun: String,
 //   arguments: CFGExpr
@@ -573,7 +590,7 @@ case class CFGInternalCall(
 // 
 // case class CFGAsyncCall(
 //   override val ir: IRNode,
-//   override val block: CFGNormalBlock,
+//   override val block: NormalBlock,
 //   modelType: String,
 //   callType: String,
 //   addr1: Address,

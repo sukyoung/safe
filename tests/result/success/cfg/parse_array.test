@@ -1,4 +1,7 @@
-(0,LBlock(0))
+function[0] top-level {
+  Entry[-1] -> [0]
+
+  Block[0] -> Exit, ExitExc
     [0] noop(StartOfFile)
     [1] <>temp<>1 := 5
     [2] <>obj1<>2 := allocArray(2) @ #1
@@ -34,4 +37,9 @@
     [32] <>Global<>ignore12 := <>obj<>19["length"]
     [33] noop(EndOfFile)
 
+  Exit[-2]
+
+  ExitExc[-3]
+
+}
 

@@ -73,7 +73,7 @@ object DotWriter {
       case ca @ Call(_) => "Call" + ca.callInst.id
       case ac @ AfterCall(_, _, _) => "AfterCall" + ac.call.callInst.id
       case ac @ AfterCatch(_, _) => "AfterCatch" + ac.call.callInst.id
-      case b @ CFGNormalBlock(_) => "Block" + b.id
+      case b @ NormalBlock(_) => "Block" + b.id
     }
   }
 

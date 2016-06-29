@@ -1,8 +1,15 @@
-(0,LBlock(1))
-    [0] noop(EndOfFile)
+function[0] top-level {
+  Entry[-1] -> [0]
 
-
-(0,LBlock(0))
+  Block[0] -> [1]
     [0] noop(StartOfFile)
 
+  Block[1] -> Exit
+    [0] noop(EndOfFile)
+
+  Exit[-2]
+
+  ExitExc[-3]
+
+}
 
