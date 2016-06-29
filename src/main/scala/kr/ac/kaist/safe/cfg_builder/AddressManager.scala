@@ -12,7 +12,7 @@
 package kr.ac.kaist.safe.cfg_builder
 
 import scala.util.Try
-import kr.ac.kaist.safe.analyzer.domain.{ Address, Loc, RecencyTag, Recent, Old }
+import kr.ac.kaist.safe.analyzer.domain._
 
 // Used by cfg_builder/DefaultCFGBuilder.scala
 trait AddressManager {
