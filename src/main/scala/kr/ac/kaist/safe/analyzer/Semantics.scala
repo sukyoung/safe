@@ -992,8 +992,15 @@ class Semantics(
     }
   }
 
-  def B(expr: CFGExpr, s: State, se: State, inst: CFGInst, cfg: CFG, cp: ControlPoint): (State, State) = {
-    //TODO
-    (State.Bot, State.Bot)
+  def B(expr: CFGExpr, st: State, excSt: State, inst: CFGInst, cfg: CFG, cp: ControlPoint): (State, State) = {
+    val h1 = st.heap //TODO should be the pruned heap
+
+    val (v, excSet) = V(expr, st)
+    val newExcSt = helper.raiseException(st, excSet)
+    val h2 =
+      if (utils.absBool.alpha(true) <= v.toAbsBoolean(utils.absBool)) h1
+      else Heap.Bot
+
+    (State(h2, st.context), excSt + newExcSt)
   }
 }
