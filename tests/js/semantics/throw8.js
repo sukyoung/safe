@@ -1,12 +1,3 @@
-/*******************************************************************************
-    Copyright (c) 2012, S-Core.
-    All rights reserved.
-
-    Use is subject to license terms.
-
-    This distribution may include materials developed by third parties.
- ******************************************************************************/
-
 // As same as that of 'return6.js', throw value also be stored in a separated space for each procedure.
 var x;
 var y = "";
