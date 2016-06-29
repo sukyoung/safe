@@ -47,7 +47,9 @@ class CFG(
   // all blocks in this cfg
   private var blocks: List[CFGNormalBlock] = Nil
   def addNode(block: CFGNormalBlock): Unit = blocks ::= block
-  def getAllBlocks: List[CFGNormalBlock] = blocks
+  def getAllBlocks: List[CFGBlock] = (userFuncs ++ modelFuncs).foldRight(List[CFGBlock]()) {
+    case (func, lst) => func.getBlocks ++ lst
+  }
 
   // create function
   def createFunction(argumentsName: String, argVars: List[CFGId], localVars: List[CFGId],
@@ -158,6 +160,9 @@ sealed abstract class CFGBlock {
   // edges incident with this cfg node
   protected val succs: MMap[CFGEdgeType, List[CFGBlock]] = MHashMap()
   protected val preds: MMap[CFGEdgeType, List[CFGBlock]] = MHashMap()
+  def getAllSucc: Map[CFGEdgeType, List[CFGBlock]] = succs.toMap
+  def getAllPred: Map[CFGEdgeType, List[CFGBlock]] = preds.toMap
+
   def getSucc(edgeType: CFGEdgeType): List[CFGBlock] = succs.getOrElse(edgeType, Nil)
   def getPred(edgeType: CFGEdgeType): List[CFGBlock] = preds.getOrElse(edgeType, Nil)
 

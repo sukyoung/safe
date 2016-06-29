@@ -12,10 +12,11 @@
 package kr.ac.kaist.safe.analyzer.console
 
 import jline.console.ConsoleReader
-import kr.ac.kaist.safe.nodes._
-import kr.ac.kaist.safe.analyzer.ControlPoint
+import kr.ac.kaist.safe.analyzer.{ ControlPoint, Worklist }
 import kr.ac.kaist.safe.analyzer.domain.{ Loc, State }
 import kr.ac.kaist.safe.config.Config
+import kr.ac.kaist.safe.cfg_builder.DotWriter
+import kr.ac.kaist.safe.nodes._
 
 sealed abstract class Command(
     val name: String,
@@ -174,65 +175,65 @@ case object CmdPrint extends Command("print", "Print out various information.") 
             }
           case _ => help
         }
-        case "trace" => rest match {
-          case Nil =>
-            // function info.
-            def f(level: Int, cp: ControlPoint): Unit = {
-              val block = cp.node
-              val func = block.func
-              val cc = cp.callContext
-              println(s"$block of $func with $cc")
+        case "trace" =>
+          rest match {
+            case Nil =>
+              // function info.
+              def f(level: Int, cp: ControlPoint): Unit = {
+                val block = cp.node
+                val func = block.func
+                val cc = cp.callContext
+                println(s"$block of $func with $cc")
 
-              // Follow up the trace (Call relation "1(callee) : n(caller)" is possible)
-              val entryCP = ControlPoint(func.entry, cc)
-              c.semantics.getInterProcPred(entryCP) match {
-                case Some(cpSet) => cpSet.foreach(predCP => predCP.node match {
-                  case call @ Call(_) => i(level + 1, call, predCP)
-                  case _ =>
-                })
-                case None =>
+                // Follow up the trace (Call relation "1(callee) : n(caller)" is possible)
+                val entryCP = ControlPoint(func.entry, cc)
+                c.semantics.getInterProcPred(entryCP) match {
+                  case Some(cpSet) => cpSet.foreach(predCP => predCP.node match {
+                    case call @ Call(_) => i(level + 1, call, predCP)
+                    case _ =>
+                  })
+                  case None =>
+                }
               }
-            }
 
-            // instruction info.
-            def i(level: Int, call: Call, cp: ControlPoint): Unit = {
-              val cInst = call.callInst
-              val id = cInst.id
-              val span = cInst.span
-              print(s"  $level>" + "  " * level + s"[$id] $cInst $span @")
-              f(level, cp)
-            }
+              // instruction info.
+              def i(level: Int, call: Call, cp: ControlPoint): Unit = {
+                val cInst = call.callInst
+                val id = cInst.id
+                val span = cInst.span
+                print(s"  $level>" + "  " * level + s"[$id] $cInst $span @")
+                f(level, cp)
+              }
 
-            println("* Call-Context Trace")
-            f(0, c.getCurCP)
+              println("* Call-Context Trace")
+              f(0, c.getCurCP)
+            case _ => help
+          }
+        case "cfg" => rest match {
+          case Nil => {
+            // computes reachable fid_set
+            val cfg = c.cfg
+            val sem = c.semantics
+            val reachableFunSet = sem.getAllIPSucc.foldLeft(Set[CFGFunction]()) {
+              case (set, (caller, calleeMap)) => {
+                set ++ (calleeMap.toSeq.map {
+                  case (callee, _) => callee.node.func
+                }).toSet
+              }
+            } + cfg.globalFunc
+
+            // dump each function node
+            val reachableUserFunSet = reachableFunSet.filter(func => func.isUser)
+            val wo = c.worklist
+            val o = wo.getOrderMap
+            val blocks = reachableUserFunSet.foldRight(List[CFGBlock]()) {
+              case (func, lst) => func.getBlocks ++ lst
+            }
+            // println(DotWriter.drawGraph(cfg, o, Some(blocks)))
+            DotWriter.spawnDot(cfg, o, Some(blocks))
+          }
           case _ => help
         }
-        // TODO case "cfg" => rest match {
-        //   case Nil =>
-        //     // computes reachable fid_set
-        //     val reachableFIdSet = c.getSemantics.ipSuccMap.foldLeft(Set[FunctionId]())((set, kv) => {
-        //       val (caller, calleeset) = kv
-        //       val reachable_fids = calleeset.map(callee => callee._1._1._1).toSet
-        //       set ++ reachable_fids
-        //     }) + c.getCFG.getGlobalFId
-        //     // dump each function node
-        //     val reachableUserFIdSet = reachableFIdSet.filter(fid => c.getCFG.isUserFunction(fid))
-        //     val cfg = c.getCFG
-        //     val wo = Worklist.computes(cfg)
-        //     val o = wo.getOrder()
-        //     val nodes = cfg.getNodes.reverse
-        //     val sb = new StringBuilder
-        //     sb.append("digraph \"DirectedGraph\" {\n")
-        //     sb.append("\tfontsize=12;node [fontsize=12];edge [fontsize=12];\n\t")
-        //     for (node <- nodes) {
-        //       if (reachableUserFIdSet.contains(node._1)) {
-        //         sb.append(DotWriter.drawNode(cfg, node, o)).append(DotWriter.drawEdge(cfg, node, o))
-        //       }
-        //     }
-        //     sb.append("\n}\n").toString()
-        //     println(sb)
-        //   case _ => help
-        // }
         case _ => help
       }
     }
