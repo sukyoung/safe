@@ -80,7 +80,7 @@ function[0] top-level {
 
 }
 
-function[1] value<>funexpr@20:15-22:4<>0000000000006 {
+function[1] value<>funexpr@12:15-14:4<> {
   Entry[-1] -> [0]
 
   Block[0] -> Exit, ExitExc

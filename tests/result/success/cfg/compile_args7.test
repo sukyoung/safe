@@ -25,7 +25,7 @@ function[1] f110 {
 
 }
 
-function[2] <>arguments<>0000000000008 {
+function[2] <>arguments<> {
   Entry[-1] -> [0]
 
   Block[0] -> Exit

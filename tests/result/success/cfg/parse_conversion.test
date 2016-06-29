@@ -25,7 +25,7 @@ function[0] top-level {
 
 }
 
-function[1] <>funexpr@1:2-17:208<>0000000000138 {
+function[1] <>funexpr@1:2-17:208<> {
   Entry[-1] -> [0]
 
   Block[0] -> [1]
@@ -4124,7 +4124,7 @@ function[14] G {
 
 }
 
-function[15] d<>funexpr@12:177-261<>0000000001200 {
+function[15] d<>funexpr@12:177-261<> {
   Entry[-1] -> [0]
 
   Block[0] -> Exit, ExitExc
@@ -4265,7 +4265,7 @@ function[17] I {
 
 }
 
-function[18] a.onload<>funexpr@14:421-433<>0000000001441 {
+function[18] a.onload<>funexpr@14:421-433<> {
   Entry[-1] -> [0]
 
   Block[0] -> Exit
@@ -4276,7 +4276,7 @@ function[18] a.onload<>funexpr@14:421-433<>0000000001441 {
 
 }
 
-function[19] k<>funexpr@1:69-163<>0000000001464 {
+function[19] k<>funexpr@1:69-163<> {
   Entry[-1] -> [0]
 
   Block[0] -> [2], ExitExc
@@ -4367,7 +4367,7 @@ function[19] k<>funexpr@1:69-163<>0000000001464 {
 
 }
 
-function[20] l<>funexpr@1:170-265<>0000000001499 {
+function[20] l<>funexpr@1:170-265<> {
   Entry[-1] -> [0]
 
   Block[0] -> [2], ExitExc
@@ -4407,7 +4407,7 @@ function[20] l<>funexpr@1:170-265<>0000000001499 {
 
 }
 
-function[21] n<>funexpr@1:268-483<>0000000001524 {
+function[21] n<>funexpr@1:268-483<> {
   Entry[-1] -> [0]
 
   Block[0] -> [1], ExitExc
@@ -4632,7 +4632,7 @@ function[21] n<>funexpr@1:268-483<>0000000001524 {
 
 }
 
-function[22] l.prototype.c<>funexpr@1:498-555<>0000000001602 {
+function[22] l.prototype.c<>funexpr@1:498-555<> {
   Entry[-1] -> [0]
 
   Block[0] -> [1], ExitExc
@@ -4673,7 +4673,7 @@ function[22] l.prototype.c<>funexpr@1:498-555<>0000000001602 {
 
 }
 
-function[23] p<>funexpr@2:7-156<>0000000001633 {
+function[23] p<>funexpr@2:7-156<> {
   Entry[-1] -> [0]
 
   Block[0] -> [1], ExitExc
@@ -4799,7 +4799,7 @@ function[23] p<>funexpr@2:7-156<>0000000001633 {
 
 }
 
-function[24] <>funexpr@2:37-66<>0000000001642 {
+function[24] <>funexpr@2:37-66<> {
   Entry[-1] -> [0]
 
   Block[0] -> [2], [1]

@@ -197,7 +197,7 @@ function[0] top-level {
 
 }
 
-function[1] <>funexpr@19:11-76<>0000000000081 {
+function[1] <>funexpr@19:11-76<> {
   Entry[-1] -> [0]
 
   Block[0] -> [1], ExitExc
@@ -228,7 +228,7 @@ function[1] <>funexpr@19:11-76<>0000000000081 {
 
 }
 
-function[2] <>funexpr@25:11-27:25<>0000000000105 {
+function[2] <>funexpr@25:11-27:25<> {
   Entry[-1] -> [0]
 
   Block[0] -> [1], ExitExc

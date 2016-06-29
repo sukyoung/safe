@@ -132,7 +132,7 @@ function[0] top-level {
 
 }
 
-function[1] <>funexpr@4:22-10:2<>0000000000044 {
+function[1] <>funexpr@4:22-10:2<> {
   Entry[-1] -> [0]
 
   Block[0] -> Exit, ExitExc
@@ -146,7 +146,7 @@ function[1] <>funexpr@4:22-10:2<>0000000000044 {
 
 }
 
-function[2] this.valueOf<>funexpr@6:18-9:4<>0000000000046 {
+function[2] this.valueOf<>funexpr@6:18-9:4<> {
   Entry[-1] -> [0]
 
   Block[0] -> Exit, ExitExc

@@ -82,7 +82,7 @@ class CoreTest extends FlatSpec {
     cfg match {
       case Failure(_) => assert(false)
       case Success(cfg) =>
-        assert(readFile(testName) == normalized(cfg.dump))
+        assert(readFile(testName) == normalized(cfg.toString(0)))
     }
   }
 

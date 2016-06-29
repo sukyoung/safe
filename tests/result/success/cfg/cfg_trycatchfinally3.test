@@ -177,7 +177,7 @@ function[0] top-level {
 
 }
 
-function[1] x<>funexpr@17:9-19:6<>0000000000009 {
+function[1] x<>funexpr@9:9-11:6<> {
   Entry[-1] -> [0]
 
   Block[0] -> Exit, ExitExc

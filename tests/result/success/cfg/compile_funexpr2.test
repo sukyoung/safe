@@ -27,7 +27,7 @@ function[0] top-level {
 
 }
 
-function[1] functionName<>funexpr@1:20-44<>0000000000003 {
+function[1] functionName<>funexpr@1:20-44<> {
   Entry[-1] -> [0]
 
   Block[0] -> Exit, ExitExc

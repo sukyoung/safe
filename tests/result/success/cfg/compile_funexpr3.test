@@ -30,7 +30,7 @@ function[0] top-level {
 
 }
 
-function[1] SplayTree.prototype.insert<>funexpr@1:30-54<>0000000000003 {
+function[1] SplayTree.prototype.insert<>funexpr@1:30-54<> {
   Entry[-1] -> [0]
 
   Block[0] -> Exit, ExitExc

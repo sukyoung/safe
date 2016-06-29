@@ -60,7 +60,7 @@ function[1] g {
 
 }
 
-function[2] h<>funexpr@10:5-13:2<>0000000000020 {
+function[2] h<>funexpr@10:5-13:2<> {
   Entry[-1] -> [0]
 
   Block[0] -> Exit, ExitExc

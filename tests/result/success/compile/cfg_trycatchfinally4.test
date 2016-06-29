@@ -41,7 +41,7 @@ try
 catch(<>e<>7)
 {
   {
-    <>Global<>ignore3 = function value<>funexpr@20:15-22:4<>8(this, <>arguments<>9) 
+    <>Global<>ignore3 = function value<>funexpr@12:15-14:4<>8(this, <>arguments<>9) 
     {
       return <>e<>7
     }

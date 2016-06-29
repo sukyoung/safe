@@ -164,7 +164,12 @@ class CFGFunction(
   override def toString(indent: Int): String = {
     val pre = "  " * indent
     val s: StringBuilder = new StringBuilder
-    s.append(pre).append(s"$this {").append(Config.LINE_SEP)
+    s.append(pre).append(s"function[$id] ")
+      .append(NodeUtil.isInternal(name) match {
+        case true => name.dropRight(Config.SIGNIFICANT_BITS)
+        case false => name
+      })
+      .append(" {").append(Config.LINE_SEP)
     blocks.reverseIterator.foreach {
       case Exit(_) | ExitExc(_) =>
       case block =>

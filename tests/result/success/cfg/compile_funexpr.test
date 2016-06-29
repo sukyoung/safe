@@ -59,7 +59,7 @@ function[2] g {
 
 }
 
-function[3] x<>funexpr@5:9-35<>0000000000017 {
+function[3] x<>funexpr@5:9-35<> {
   Entry[-1] -> [0]
 
   Block[0] -> Exit, ExitExc
