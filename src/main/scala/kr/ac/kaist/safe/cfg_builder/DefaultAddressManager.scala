@@ -125,13 +125,17 @@ class DefaultAddressManager extends AddressManager {
           case "#" => Recent
           case "##" => Old
         }
-        val address = find(locname) match {
-          case Some(addr) => addr
-          case None => locname.toInt
-        }
-        Try(addrToLoc(address, r)) match {
-          case Success(l) => Some(l)
-          case Failure(_) => None
+        (find(locname) match {
+          case Some(addr) => Some(addr)
+          case None if locname.forall(_.isDigit) => Some(locname.toInt)
+          case None => None
+        }) match {
+          case Some(address) =>
+            Try(addrToLoc(address, r)) match {
+              case Success(l) => Some(l)
+              case Failure(_) => None
+            }
+          case None => None
         }
       case _ => None
     }

@@ -12,8 +12,9 @@
 package kr.ac.kaist.safe.analyzer.console
 
 import jline.console.ConsoleReader
+import scala.util.matching.Regex
 import kr.ac.kaist.safe.analyzer.{ ControlPoint, Worklist }
-import kr.ac.kaist.safe.analyzer.domain.{ Loc, State }
+import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.config.Config
 import kr.ac.kaist.safe.cfg_builder.DotWriter
 import kr.ac.kaist.safe.nodes._
@@ -25,22 +26,66 @@ sealed abstract class Command(
   def run(c: Console, args: List[String]): Option[Target]
   def help: Unit
 
-  protected def showState(
-    c: Console,
-    state: State,
-    desc: String = "state",
-    withPred: Boolean = true
-  ): Unit = {
-    println(s"** $desc **")
-    val heapStr = state.heap.toString
-    println(heapStr)
-    println
-    if (withPred) showPredefLocMap(c)
+  private def indentation(objStr: String, indent: Int): String = {
+    val arr = objStr.split(Config.LINE_SEP)
+    if (arr.length < 2) objStr
+    else {
+      val space = " " * indent
+      val tailStr = arr.tail.map(s => space + s).mkString(Config.LINE_SEP)
+      arr.head + Config.LINE_SEP + tailStr
+    }
   }
 
-  protected def showPredefLocMap(c: Console): Unit = {
-    println("** predefined location name info. **")
-    println(c.semantics.helper.strPredefLocMap)
+  private def showLoc(c: Console, loc: Loc, obj: Obj): String = {
+    val am = c.addrManager
+    val keyStr = (if (am.isRecentLoc(loc)) "#" else "##") +
+      am.locName(loc) + " -> "
+    val indentedStr = indentation(obj.toString, keyStr.length)
+    keyStr + indentedStr
+  }
+
+  protected def showLoc(c: Console, heap: Heap, loc: Loc): Option[String] = {
+    heap(loc) match {
+      case Some(obj) => Some(showLoc(c, loc, obj))
+      case None => None
+    }
+  }
+
+  protected def showHeap(c: Console, heap: Heap, all: Boolean = false): String = {
+    val am = c.addrManager
+    def isUserLoc(loc: Loc): Boolean = {
+      val pred = c.semantics.predefLoc
+      am.locToAddr(loc) >= am.locToAddr(pred.COLLAPSED_LOC)
+    }
+    if (heap.isBottom) "⊥Heap"
+    else {
+      val sortedSeq = heap.map.toSeq.filter {
+        case (loc, _) => all || isUserLoc(loc)
+      }.sortBy { case (loc, _) => loc }
+
+      sortedSeq.map {
+        case (loc, obj) => showLoc(c, loc, obj)
+      }.mkString(Config.LINE_SEP)
+    }
+  }
+
+  protected def showContext(c: Console, ctxt: Context, all: Boolean = false): String = "" // TODO
+
+  protected def showState(c: Console, state: State, all: Boolean = false): String = {
+    "** heap **" + Config.LINE_SEP +
+      showHeap(c, state.heap, all) + Config.LINE_SEP +
+      Config.LINE_SEP +
+      "** context **" + Config.LINE_SEP +
+      showContext(c, state.context, all)
+  }
+
+  protected def parseLocName(c: Console, str: String): Option[Loc] =
+    c.addrManager.parseLocName(str)
+
+  protected def grep(key: String, str: String): String = {
+    str.split(Config.LINE_SEP)
+      .filter(_.contains(key))
+      .mkString(Config.LINE_SEP)
   }
 }
 
@@ -89,15 +134,14 @@ case object CmdJump extends Command("jump", "Continue to analyze until the given
 // print
 case object CmdPrint extends Command("print", "Print out various information.") {
   def help: Unit = {
-    println("usage: " + name + " state ({keyword})")
+    println("usage: " + name + " state(-all) ({keyword})")
     println("       " + name + " block")
     println("       " + name + " loc {LocName} ({keyword})")
     println("       " + name + " fid {functionID}")
     println("       " + name + " worklist")
     println("       " + name + " ipsucc")
     println("       " + name + " trace")
-    println("       " + name + " run_insts")
-    // TODO println("       " + name + " cfg")
+    println("       " + name + " cfg")
   }
 
   def run(c: Console, args: List[String]): Option[Target] = {
@@ -105,14 +149,17 @@ case object CmdPrint extends Command("print", "Print out various information.") 
       case Nil => help
       case subcmd :: rest => subcmd match {
         case "state" =>
-          val heapStr = c.getCurCP.getState.heap.toString
+          val res = showState(c, c.getCurCP.getState)
           rest match {
-            case Nil =>
-              showState(c, c.getCurCP.getState)
-            case key :: Nil =>
-              println(grep(key, heapStr))
-              println
-              showPredefLocMap(c)
+            case Nil => println(res)
+            case key :: Nil => println(grep(key, res))
+            case _ => help
+          }
+        case "state-all" =>
+          val res = showState(c, c.getCurCP.getState, true)
+          rest match {
+            case Nil => println(res)
+            case key :: Nil => println(grep(key, res))
             case _ => help
           }
         case "block" => rest match {
@@ -124,14 +171,8 @@ case object CmdPrint extends Command("print", "Print out various information.") 
             parseLocName(c, locStr) match {
               case Some(loc) =>
                 val heap = c.getCurCP.getState.heap
-                heap(loc) match {
-                  case Some(obj) =>
-                    val objStr = obj.toString
-                    println(s"$locStr -> ")
-                    println(rest match {
-                      case Nil => objStr
-                      case key :: _ => grep(key, objStr)
-                    })
+                showLoc(c, heap, loc) match {
+                  case Some(res) => println(res)
                   case None => println(s"* not in heap : $locStr")
                 }
               case None => println(s"* cannot find: $locStr")
@@ -239,70 +280,6 @@ case object CmdPrint extends Command("print", "Print out various information.") 
     }
     None
   }
-
-  //  var cache: Map[Node, Set[Address]] = Map()
-  //   def getDefAddrSet(c: Console, node: Node): Set[Address] = {
-  //     //    cache.get(node) match {
-  //     //      case Some(addrset) => addrset
-  //     //      case None =>
-  //     var addrset = Set[Address]()
-  //     c.getCFG.getCmd(node) match {
-  //       case Block(insts) => {
-  //         insts.foreach(inst => {
-  //           inst match {
-  //             case CFGAlloc(_, _, x, e, a_new) => addrset += a_new
-  //             case CFGAllocArray(_, _, x, n, a_new) => addrset += a_new
-  //             case CFGAllocArg(_, _, x, n, a_new) => addrset += a_new
-  //             case CFGFunExpr(_, _, lhs, None, fid, a_new1, a_new2, None) => addrset ++= Set(a_new1, a_new2)
-  //             case CFGFunExpr(_, _, lhs, Some(name), fid, a_new1, a_new2, Some(a_new3)) => addrset ++= Set(a_new1, a_new2, a_new3)
-  //             case CFGConstruct(_, info, cons, thisArg, arguments, a_new, b_new) => addrset ++= Set(a_new, b_new)
-  //             case CFGCall(_, info, fun, thisArg, arguments, a_new, b_new) => addrset ++= Set(a_new, b_new)
-  //             case CFGInternalCall(_, info, lhs, fun, arguments, Some(a_new)) => addrset += a_new
-  //             case CFGAPICall(info, model, fun, args) =>
-  //             //                  println("  apicall : " + fun)
-  //             case CFGAsyncCall(_, _, model, call_type, addr1, addr2, addr3) => addrset ++= Set(addr1, addr2, addr3)
-  //             case _ => ()
-  //           }
-  //         })
-  //       }
-  //       case _ => ()
-  //     }
-  //     //        cache += node -> addrset
-  //     addrset
-  //     //    }
-  //   }
-  //   def printDefNode(c: Console, node: Node, addr: Address): Unit = {
-  //     c.getCFG.getCmd(node) match {
-  //       case Block(insts) => {
-  //         insts.foreach(inst => {
-  //           inst match {
-  //             case CFGAlloc(_, _, x, e, a_new) if a_new == addr => println("\t\t" + inst)
-  //             case CFGAllocArray(_, _, x, n, a_new) if a_new == addr => println("\t\t" + inst)
-  //             case CFGAllocArg(_, _, x, n, a_new) if a_new == addr => println("\t\t" + inst)
-  //             case CFGFunExpr(_, _, lhs, None, fid, a_new1, a_new2, None) if (a_new1 == addr || a_new2 == addr) => println("\t\t" + inst)
-  //             case CFGFunExpr(_, _, lhs, Some(name), fid, a_new1, a_new2, Some(a_new3)) if (a_new1 == addr || a_new2 == addr || a_new3 == addr) => println("\t\t" + inst)
-  //             case CFGConstruct(_, info, cons, thisArg, arguments, a_new, b_new) if (a_new == addr || b_new == addr) => println("\t\t" + inst)
-  //             case CFGCall(_, info, fun, thisArg, arguments, a_new, b_new) if (a_new == addr || b_new == addr) => println("\t\t" + inst)
-  //             case CFGInternalCall(_, info, lhs, fun, arguments, Some(a_new)) if (a_new == addr) => println("\t\t" + inst)
-  //             case CFGAPICall(info, model, fun, args) =>
-  //             //                  println("  apicall : " + fun)
-  //             case CFGAsyncCall(_, _, model, call_type, addr1, addr2, addr3) if (addr1 == addr || addr2 == addr || addr3 == addr) => println("\t\t" + inst)
-  //             case _ => ()
-  //           }
-  //         })
-  //       }
-  //       case _ => ()
-  //     }
-  //   }
-
-  private def parseLocName(c: Console, str: String): Option[Loc] =
-    c.addrManager.parseLocName(str)
-
-  private def grep(key: String, str: String): String = {
-    str.split(Config.LINE_SEP)
-      .filter(_.contains(key))
-      .mkString(Config.LINE_SEP)
-  }
 }
 
 // TODO break
@@ -383,274 +360,215 @@ case object CmdPrint extends Command("print", "Print out various information.") 
 //   }
 // }
 
-// TODO result
-// case object CmdPrintResult extends Command("result", "Print out various information.") {
-//   override def help(): Unit = {
-//     println("usage: result allstate")
-//     println("       result allexcstate")
-//     println("       result state")
-//     println("       result excstate")
-//     println("       result loc {LocName}")
-//     println("       result excloc {LocName}")
-//     println("       result id [idNum] loc {LocName}")
-//     println("       result id [idNum] excloc {LocName}")
-//     println("       result ip")
-//   }
-// 
-//   override def run(c: Console, args: List[String]): Unit = {
-//     //    val sem = new Semantics(c.getCFG, c.getWorklist, Shell.params.opt_LocClone)
-//     val sem = c.getSemantics
-//     try {
-//       val subcmd = args(0)
-//       subcmd.toLowerCase match {
-//         case "allstate" => {
-//           val inS = c.current.getState
-//           val cmd = c.getCFG.getCmd(c.current._1)
-// 
-//           val (outS, _) = sem.C(c.current, cmd, inS)
-//           System.out.println(DomainPrinter.printHeap(0, outS._1, c.getCFG, 3))
-//           if (outS._2 == ContextBot) System.out.print("Context Bottom : ")
-//           System.out.println(DomainPrinter.printContext(0, outS._2))
-//         }
-//         case "allexcstate" => {
-//           val inS = c.current.getState
-//           val cmd = c.getCFG.getCmd(c.current._1)
-// 
-//           val (_, outES) = sem.C(c.current, cmd, inS)
-//           System.out.println(DomainPrinter.printHeap(0, outES._1, c.getCFG, 3))
-//           if (outES._2 == ContextBot) System.out.print("Context Bottom : ")
-//           System.out.println(DomainPrinter.printContext(0, outES._2))
-//         }
-//         case "state" => {
-//           val inS = c.current.getState
-//           val cmd = c.getCFG.getCmd(c.current._1)
-// 
-//           val (outS, _) = sem.C(c.current, cmd, inS)
-//           System.out.println(DomainPrinter.printHeap(0, outS._1, c.getCFG))
-//           if (outS._2 == ContextBot) System.out.print("Context Bottom : ")
-//           System.out.println(DomainPrinter.printContext(0, outS._2))
-//         }
-//         case "excstate" => {
-//           val inS = c.current.getState
-//           val cmd = c.getCFG.getCmd(c.current._1)
-// 
-//           val (_, outES) = sem.C(c.current, cmd, inS)
-// 
-//           System.out.println(DomainPrinter.printHeap(0, outES._1, c.getCFG))
-//           if (outES._2 == ContextBot) System.out.print("Context Bottom : ")
-//           System.out.println(DomainPrinter.printContext(0, outES._2))
-//         }
-//         case "loc" if args.length > 1 => {
-//           val arg1 = args(1)
-//           val sloc = parseLocName(arg1)
-//           sloc match {
-//             case Some(loc) => {
-//               val inS = c.current.getState
-//               val cmd = c.getCFG.getCmd(c.current._1)
-// 
-//               val (outS, _) = sem.C(c.current, cmd, inS)
-// 
-//               if (outS._1.domIn(loc)) {
-//                 val o = outS._1(loc)
-//                 val name = DomainPrinter.printLoc(loc)
-//                 System.out.println(name + " -> ")
-//                 System.out.println(DomainPrinter.printObj(4 + name.length, o))
-//               } else {
-//                 println(" Not in heap : " + DomainPrinter.printLoc(loc))
-//               }
-// 
-//             }
-//             case None => {
-//               System.err.println("cannot find: " + arg1)
-//             }
-//           }
-//         }
-//         case "excloc" if args.length > 1 => {
-//           val arg1 = args(1)
-//           val sloc = parseLocName(arg1)
-//           sloc match {
-//             case Some(loc) => {
-//               val inS = c.current.getState
-//               val cmd = c.getCFG.getCmd(c.current._1)
-// 
-//               val (_, outES) = sem.C(c.current, cmd, inS)
-//               val o = outES._1(loc)
-//               val name = DomainPrinter.printLoc(loc)
-//               System.out.println(name + " -> ")
-//               System.out.println(DomainPrinter.printObj(4 + name.length, o))
-//             }
-//             case None => {
-//               System.err.println("cannot find: " + arg1)
-//             }
-//           }
-//         }
-//         case "id" if args.length <= 3 => {
-//           try {
-//             val arg1 = args(1)
-//             val id = arg1.toInt
-//             val cmd_ = c.getCFG.getCmd(c.current._1)
-//             val inS = c.current.getState
-// 
-//             val cmd = cmd_ match {
-//               case Block(insts) => Block(insts.filter(inst => inst.getInstId <= id))
-//               case _ => cmd_
-//             }
-//             val (outS, outES) = sem.C(c.current, cmd, inS)
-//             cmd match {
-//               case Block(insts) =>
-//                 System.out.println("- Command")
-//                 for (inst <- insts) {
-//                   System.out.println("    [" + inst.getInstId + "] " + inst.toString)
-//                 }
-//                 System.out.println()
-//               case _ => System.out.println("- Nothing")
-//             }
-//             System.out.println(DomainPrinter.printHeap(0, outS._1, c.getCFG))
-//             if (outS._2 == ContextBot) System.out.print("Context Bottom : ")
-//             System.out.println(DomainPrinter.printContext(0, outS._2))
-//             if (!(outES <= StateBot))
-//               System.err.println(" * Exception state is not bottom.")
-//           } catch {
-//             case _ => println(" * Invalid input for result id ")
-//           }
-//         }
-//         case "id" if (args.length > 3 && args(2).equals("loc")) => {
-//           val arg1 = args(1)
-//           val id = arg1.toInt
-//           val arg2 = args(3)
-//           val sloc = parseLocName(arg2)
-//           val cmd_ = c.getCFG.getCmd(c.current._1)
-//           val inS = c.current.getState
-// 
-//           sloc match {
-//             case Some(loc) => {
-//               val cmd = cmd_ match {
-//                 case Block(insts) => Block(insts.filter(inst => inst.getInstId <= id))
-//                 case _ => cmd_
-//               }
-//               cmd match {
-//                 case Block(insts) =>
-//                   System.out.println("- Command")
-//                   for (inst <- insts) {
-//                     System.out.println("    [" + inst.getInstId + "] " + inst.toString)
-//                   }
-//                   System.out.println()
-//                 case _ => System.out.println("- Nothing")
-//               }
-//               val (outS, outES) = sem.C(c.current, cmd, inS)
-//               val name = DomainPrinter.printLoc(loc)
-// 
-//               if (outS._1.domIn(loc)) {
-//                 val o = outS._1(loc)
-//                 System.out.println(name + " -> ")
-//                 System.out.println(DomainPrinter.printObj(4 + name.length, o))
-//               } else {
-//                 println(" Not in heap : " + DomainPrinter.printLoc(loc))
-//               }
-//               if (!(outES <= StateBot))
-//                 System.err.println(" * Exception state is not bottom.")
-//             }
-//             case None => {
-//               System.err.println("cannot find: " + arg2)
-//             }
-//           }
-//         }
-//         case "id" if (args.length > 3 && args(2).equals("excloc")) => {
-//           val arg1 = args(1)
-//           val id = arg1.toInt
-//           val arg2 = args(3)
-//           val sloc = parseLocName(arg2)
-//           val cmd_ = c.getCFG.getCmd(c.current._1)
-//           val inS = c.current.getState
-// 
-//           sloc match {
-//             case Some(loc) => {
-//               val cmd = cmd_ match {
-//                 case Block(insts) => Block(insts.filter(inst => inst.getInstId <= id))
-//                 case _ => cmd_
-//               }
-//               cmd match {
-//                 case Block(insts) =>
-//                   System.out.println("- Command")
-//                   for (inst <- insts) {
-//                     System.out.println("    [" + inst.getInstId + "] " + inst.toString)
-//                   }
-//                   System.out.println()
-//                 case _ => System.out.println("- Nothing")
-//               }
-//               val (_, outES) = sem.C(c.current, cmd, inS)
-//               if ((outES <= StateBot))
-//                 System.err.println(" * Exception state is bottom.")
-//               else {
-//                 val name = DomainPrinter.printLoc(loc)
-//                 val o = outES._1(loc)
-//                 System.out.println(name + " -> ")
-//                 System.out.println(DomainPrinter.printObj(4 + name.length, o))
-//               }
-//             }
-//             case None => {
-//               System.err.println("cannot find: " + arg2)
-//             }
-//           }
-//         }
-//         case "ip" if args.length < 3 => {
-//           val inS = c.current.getState
-//           val cmd = c.getCFG.getCmd(c.current._1)
-//           val (outS, _) = c.getSemantics.C(c.current, cmd, inS)
-//           c.getSemantics.getIPSucc(c.current) match {
-//             case Some(succMap) =>
-//               succMap.foreach(kv => {
-//                 val (ipSucc, (ctx, obj)) = kv
-//                 val outS_E = sem.E(c.current, ipSucc, ctx, obj, outS)
-//                 System.out.println(" * for IPSucc : " + ipSucc)
-//                 System.out.println(DomainPrinter.printHeap(0, outS_E._1, c.getCFG))
-//                 if (outS_E._2 == ContextBot) System.out.print("Context Bottom : ")
-//                 System.out.println(DomainPrinter.printContext(0, outS_E._2))
-//               })
-//             case None => System.err.println(" * " + c.current + " does not have ipSucc.")
-//           }
-//         }
-//         case "ip" if args.length >= 3 && args(1).equals("loc") => {
-//           val sloc = parseLocName(args(2))
-//           val inS = c.current.getState
-//           val cmd = c.getCFG.getCmd(c.current._1)
-//           val (outS, _) = c.getSemantics.C(c.current, cmd, inS)
-//           System.out.println(DomainPrinter.printLoc(sloc.get) + " -> ")
-//           System.out.println(DomainPrinter.printObj(4 + name.length, outS._1(sloc.get)))
-// 
-//           c.getSemantics.getIPSucc(c.current) match {
-//             case Some(succMap) =>
-//               succMap.foreach(kv => {
-//                 val (ipSucc, (ctx, obj)) = kv
-//                 val outS_E = c.getSemantics.E(c.current, ipSucc, ctx, obj, outS)
-//                 sloc match {
-//                   case Some(loc) =>
-//                     if (outS_E._1.domIn(loc)) {
-//                       val o = outS_E._1(loc)
-//                       val name = DomainPrinter.printLoc(loc)
-//                       System.out.println(" * for IPSucc : " + ipSucc)
-//                       System.out.println(name + " -> ")
-//                       System.out.println(DomainPrinter.printObj(4 + name.length, o))
-//                     } else {
-//                       println(" Not in heap : " + DomainPrinter.printLoc(loc))
-//                     }
-//                   case None =>
-//                     System.err.println("cannot find: " + args(2))
-//                 }
-//               })
-//             case None => System.err.println(" * " + c.current + " does not have ipSucc.")
-//           }
-//         }
-//         case _ => {
-//           System.err.println("Illegal arguments: " + subcmd)
-//         }
-//       }
-//     } catch {
-//       case e: ArrayIndexOutOfBoundsException => help()
-//       case _ => System.err.println("Illegal arguments")
-//     }
-//   }
-// }
+// result
+case object CmdPrintResult extends Command("result", "Print out various information.") {
+  def help(): Unit = {
+    println("usage: " + name + " (exc-)state(-all) ({keyword})")
+    println("       " + name + " (exc-)loc {LocName}")
+    // TODO println("       " + name + " id [idNum] loc {LocName}")
+    // TODO println("       " + name + " id [idNum] excloc {LocName}")
+    // TODO println("       " + name + " ip")
+  }
+
+  def run(c: Console, args: List[String]): Option[Target] = {
+    val sem = c.semantics
+    val cp = c.getCurCP
+    val st = cp.getState
+    val (resSt, resExcSt) = sem.C(cp, st)
+    val stPattern = new Regex("""(exc-|)state(-all|)""", "exc", "all")
+    val locPattern = new Regex("""(exc-|)loc""", "exc")
+    args match {
+      case Nil => help
+      case subcmd :: rest => subcmd match {
+        case stPattern(exc, all) =>
+          val res = showState(c, exc match {
+            case "exc-" => resExcSt
+            case _ => resSt
+          }, all == "-all")
+          rest match {
+            case Nil => println(res)
+            case key :: Nil => println(grep(key, res))
+            case _ => help
+          }
+        case locPattern(exc) => rest match {
+          case locStr :: rest if rest.length <= 1 =>
+            parseLocName(c, locStr) match {
+              case Some(loc) =>
+                val heap = (exc match {
+                  case "exc-" => resExcSt
+                  case _ => resSt
+                }).heap
+                showLoc(c, heap, loc) match {
+                  case Some(res) => println(res)
+                  case None => println(s"* not in heap : $locStr")
+                }
+              case None => println(s"* cannot find: $locStr")
+            }
+          case _ => help
+        }
+        case _ => help
+      }
+    }
+    // case "id" if args.length <= 3 => {
+    //   try {
+    //     val arg1 = args(1)
+    //     val id = arg1.toInt
+    //     val cmd_ = c.getCFG.getCmd(c.current._1)
+    //     val inS = c.current.getState
+
+    //     val cmd = cmd_ match {
+    //       case Block(insts) => Block(insts.filter(inst => inst.getInstId <= id))
+    //       case _ => cmd_
+    //     }
+    //     val (outS, outES) = sem.C(c.current, cmd, inS)
+    //     cmd match {
+    //       case Block(insts) =>
+    //         System.out.println("- Command")
+    //         for (inst <- insts) {
+    //           System.out.println("    [" + inst.getInstId + "] " + inst.toString)
+    //         }
+    //         System.out.println()
+    //       case _ => System.out.println("- Nothing")
+    //     }
+    //     System.out.println(DomainPrinter.printHeap(0, outS._1, c.getCFG))
+    //     if (outS._2 == ContextBot) System.out.print("Context Bottom : ")
+    //     System.out.println(DomainPrinter.printContext(0, outS._2))
+    //     if (!(outES <= StateBot))
+    //       System.err.println(" * Exception state is not bottom.")
+    //   } catch {
+    //     case _ => println(" * Invalid input for result id ")
+    //   }
+    // }
+    // case "id" if (args.length > 3 && args(2).equals("loc")) => {
+    //   val arg1 = args(1)
+    //   val id = arg1.toInt
+    //   val arg2 = args(3)
+    //   val sloc = parseLocName(arg2)
+    //   val cmd_ = c.getCFG.getCmd(c.current._1)
+    //   val inS = c.current.getState
+
+    //   sloc match {
+    //     case Some(loc) => {
+    //       val cmd = cmd_ match {
+    //         case Block(insts) => Block(insts.filter(inst => inst.getInstId <= id))
+    //         case _ => cmd_
+    //       }
+    //       cmd match {
+    //         case Block(insts) =>
+    //           System.out.println("- Command")
+    //           for (inst <- insts) {
+    //             System.out.println("    [" + inst.getInstId + "] " + inst.toString)
+    //           }
+    //           System.out.println()
+    //         case _ => System.out.println("- Nothing")
+    //       }
+    //       val (outS, outES) = sem.C(c.current, cmd, inS)
+    //       val name = DomainPrinter.printLoc(loc)
+
+    //       if (outS._1.domIn(loc)) {
+    //         val o = outS._1(loc)
+    //         System.out.println(name + " -> ")
+    //         System.out.println(DomainPrinter.printObj(4 + name.length, o))
+    //       } else {
+    //         println(" Not in heap : " + DomainPrinter.printLoc(loc))
+    //       }
+    //       if (!(outES <= StateBot))
+    //         System.err.println(" * Exception state is not bottom.")
+    //     }
+    //     case None => {
+    //       System.err.println("cannot find: " + arg2)
+    //     }
+    //   }
+    // }
+    // case "id" if (args.length > 3 && args(2).equals("excloc")) => {
+    //   val arg1 = args(1)
+    //   val id = arg1.toInt
+    //   val arg2 = args(3)
+    //   val sloc = parseLocName(arg2)
+    //   val cmd_ = c.getCFG.getCmd(c.current._1)
+    //   val inS = c.current.getState
+
+    //   sloc match {
+    //     case Some(loc) => {
+    //       val cmd = cmd_ match {
+    //         case Block(insts) => Block(insts.filter(inst => inst.getInstId <= id))
+    //         case _ => cmd_
+    //       }
+    //       cmd match {
+    //         case Block(insts) =>
+    //           System.out.println("- Command")
+    //           for (inst <- insts) {
+    //             System.out.println("    [" + inst.getInstId + "] " + inst.toString)
+    //           }
+    //           System.out.println()
+    //         case _ => System.out.println("- Nothing")
+    //       }
+    //       val (_, outES) = sem.C(c.current, cmd, inS)
+    //       if ((outES <= StateBot))
+    //         System.err.println(" * Exception state is bottom.")
+    //       else {
+    //         val name = DomainPrinter.printLoc(loc)
+    //         val o = outES._1(loc)
+    //         System.out.println(name + " -> ")
+    //         System.out.println(DomainPrinter.printObj(4 + name.length, o))
+    //       }
+    //     }
+    //     case None => {
+    //       System.err.println("cannot find: " + arg2)
+    //     }
+    //   }
+    // }
+    // case "ip" if args.length < 3 => {
+    //   val inS = c.current.getState
+    //   val cmd = c.getCFG.getCmd(c.current._1)
+    //   val (outS, _) = c.getSemantics.C(c.current, cmd, inS)
+    //   c.getSemantics.getIPSucc(c.current) match {
+    //     case Some(succMap) =>
+    //       succMap.foreach(kv => {
+    //         val (ipSucc, (ctx, obj)) = kv
+    //         val outS_E = sem.E(c.current, ipSucc, ctx, obj, outS)
+    //         System.out.println(" * for IPSucc : " + ipSucc)
+    //         System.out.println(DomainPrinter.printHeap(0, outS_E._1, c.getCFG))
+    //         if (outS_E._2 == ContextBot) System.out.print("Context Bottom : ")
+    //         System.out.println(DomainPrinter.printContext(0, outS_E._2))
+    //       })
+    //     case None => System.err.println(" * " + c.current + " does not have ipSucc.")
+    //   }
+    // }
+    // case "ip" if args.length >= 3 && args(1).equals("loc") => {
+    //   val sloc = parseLocName(args(2))
+    //   val inS = c.current.getState
+    //   val cmd = c.getCFG.getCmd(c.current._1)
+    //   val (outS, _) = c.getSemantics.C(c.current, cmd, inS)
+    //   System.out.println(DomainPrinter.printLoc(sloc.get) + " -> ")
+    //   System.out.println(DomainPrinter.printObj(4 + name.length, outS._1(sloc.get)))
+
+    //   c.getSemantics.getIPSucc(c.current) match {
+    //     case Some(succMap) =>
+    //       succMap.foreach(kv => {
+    //         val (ipSucc, (ctx, obj)) = kv
+    //         val outS_E = c.getSemantics.E(c.current, ipSucc, ctx, obj, outS)
+    //         sloc match {
+    //           case Some(loc) =>
+    //             if (outS_E._1.domIn(loc)) {
+    //               val o = outS_E._1(loc)
+    //               val name = DomainPrinter.printLoc(loc)
+    //               System.out.println(" * for IPSucc : " + ipSucc)
+    //               System.out.println(name + " -> ")
+    //               System.out.println(DomainPrinter.printObj(4 + name.length, o))
+    //             } else {
+    //               println(" Not in heap : " + DomainPrinter.printLoc(loc))
+    //             }
+    //           case None =>
+    //             System.err.println("cannot find: " + args(2))
+    //         }
+    //       })
+    //     case None => System.err.println(" * " + c.current + " does not have ipSucc.")
+    //   }
+    // }
+    None
+  }
+}
 
 // run
 case object CmdRun extends Command("run") {
@@ -683,7 +601,7 @@ case object CmdRunInsts extends Command("run_insts") {
             println
             reader.setPrompt(
               s"inst: [${inst.id}] $inst" + Config.LINE_SEP +
-                s"('s': show / 'q': stop / 'n','': next)" + Config.LINE_SEP +
+                s"('s': state / 'q': stop / 'n','': next)" + Config.LINE_SEP +
                 s"> "
             )
             var line = ""
@@ -691,9 +609,11 @@ case object CmdRunInsts extends Command("run_insts") {
               line = reader.readLine
               line match {
                 case "s" => {
-                  showState(c, oldSt, "state", false)
-                  showState(c, oldExcSt, "exception state", false)
-                  showPredefLocMap(c)
+                  println("*** state ***")
+                  println(showState(c, oldSt))
+                  println
+                  println("*** exception state ***")
+                  println(showState(c, oldExcSt))
                   true
                 }
                 case "d" => true // TODO diff
@@ -710,9 +630,11 @@ case object CmdRunInsts extends Command("run_insts") {
             }
           case (old @ (_, _, false), inst) => old
         }
-        showState(c, resSt, "state", false)
-        showState(c, resExcSt, "exception state", false)
-        showPredefLocMap(c)
+        println("*** state ***")
+        println(showState(c, resSt))
+        println
+        println("*** exception state ***")
+        println(showState(c, resExcSt))
       }
       case _ => help
     }

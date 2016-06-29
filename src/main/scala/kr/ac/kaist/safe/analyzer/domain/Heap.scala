@@ -16,33 +16,6 @@ import kr.ac.kaist.safe.config.Config
 trait Heap {
   val map: Map[Loc, Obj]
 
-  private def indentation(objStr: String, indent: Int): String = {
-    val arr = objStr.split(Config.LINE_SEP)
-    if (arr.length < 2) objStr
-    else {
-      val space = " " * indent
-      val tailStr = arr.tail.map(s => space + s).mkString(Config.LINE_SEP)
-      arr.head + Config.LINE_SEP + tailStr
-    }
-  }
-
-  override def toString: String = {
-    if (this.isBottom) "⊥Heap"
-    else {
-      val sortedSeq = map.toSeq.sortBy(kv => {
-        val (key, _) = kv
-        key
-      })
-
-      sortedSeq.map(kv => {
-        val (loc, obj) = kv
-        val keyStr = s"Loc(${loc.toString}) -> "
-        val indentedStr = indentation(obj.toString, keyStr.length)
-        keyStr + indentedStr
-      }).mkString(Config.LINE_SEP)
-    }
-  }
-
   /* partial order */
   def <=(that: Heap): Boolean
   /* join */

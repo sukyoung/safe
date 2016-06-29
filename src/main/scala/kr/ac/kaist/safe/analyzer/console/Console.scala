@@ -129,13 +129,14 @@ object Console {
     CmdNext,
     CmdJump,
     CmdPrint,
+    CmdPrintResult,
     CmdRun,
     CmdRunInsts
-  // CmdPrintResult
   // CmdMove
   // CmdHome
   // CmdRun
   // CmdBreak
+  // CmdBreakList
   // CmdRemoveBreak
   )
   val commands: Map[String, Command] = commandList.foldLeft(
