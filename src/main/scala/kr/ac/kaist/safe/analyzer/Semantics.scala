@@ -495,7 +495,7 @@ class Semantics(
         val st2 = helper.oldify(st1, aNew2)
         val oNew = helper.newObject(addrManager.ProtoLoc.OBJ)
 
-        val n = utils.absNumber.alpha(block.func.argVars.length)
+        val n = utils.absNumber.alpha(f.argVars.length)
         val localObj = st2.heap.getOrElse(addrManager.PredefLoc.SINGLE_PURE_LOCAL, utils.ObjBot)
         val scope = localObj.getOrElse("@env", utils.PropValueBot).objval.value
         val h3 = st2.heap.update(locR1, helper.newFunctionObject(f.id, scope, locR2, n))
@@ -517,7 +517,7 @@ class Semantics(
         val st3 = helper.oldify(st2, aNew3)
 
         val oNew = helper.newObject(addrManager.ProtoLoc.OBJ)
-        val n = utils.absNumber.alpha(block.func.argVars.length)
+        val n = utils.absNumber.alpha(f.argVars.length)
         val fObjValue = Value(utils.PValueBot, HashSet(locR3))
         val h4 = st3.heap.update(locR1, helper.newFunctionObject(f.id, fObjValue, locR2, n))
 
