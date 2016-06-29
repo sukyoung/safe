@@ -40,7 +40,6 @@ sealed abstract class Command(
 
   protected def showPredefLocMap(c: Console): Unit = {
     println("** predefined location name info. **")
-    println(c.semantics.helper.strPredefLocMap)
   }
 }
 

@@ -24,11 +24,10 @@ class Semantics(
     cfg: CFG,
     worklist: Worklist,
     utils: Utils,
-    addressManager: AddressManager
+    addrManager: AddressManager
 ) {
   lazy val excLog: ExcLog = new ExcLog
-  val predefLoc: PredefLoc = PredefLoc(addressManager)
-  val helper: Helper = Helper(utils, addressManager, predefLoc)
+  val helper: Helper = Helper(utils, addrManager)
   val operator: Operator = Operator(helper)
 
   // Interprocedural edges
@@ -40,11 +39,11 @@ class Semantics(
   def getInterProcPred(cp: ControlPoint): Option[Set[ControlPoint]] = ipPredMap.get(cp)
 
   def initState: State = {
-    val globalPureLocalObj = helper.newPureLocal(Value(utils.PValueBot.copyWith(utils.absNull.Top)), HashSet(predefLoc.GLOBAL_LOC)) - "@return"
+    val globalPureLocalObj = helper.newPureLocal(Value(utils.PValueBot.copyWith(utils.absNull.Top)), HashSet(addrManager.PredefLoc.GLOBAL)) - "@return"
     val initHeap = Heap.Bot
-      .update(predefLoc.SINGLE_PURE_LOCAL_LOC, globalPureLocalObj)
-      .update(predefLoc.GLOBAL_LOC, utils.ObjEmpty)
-      .update(predefLoc.COLLAPSED_LOC, utils.ObjEmpty)
+      .update(addrManager.PredefLoc.SINGLE_PURE_LOCAL, globalPureLocalObj)
+      .update(addrManager.PredefLoc.GLOBAL, utils.ObjEmpty)
+      .update(addrManager.PredefLoc.COLLAPSED, utils.ObjEmpty)
     State(initHeap, Context.Empty)
   }
 
@@ -121,7 +120,7 @@ class Semantics(
             case None => helper.newDeclEnvRecord(utils.ValueBot)
           }
           val obj2 = obj - "@scope"
-          val h2 = h1.remove(predefLoc.SINGLE_PURE_LOCAL_LOC).update(predefLoc.SINGLE_PURE_LOCAL_LOC, obj2)
+          val h2 = h1.remove(addrManager.PredefLoc.SINGLE_PURE_LOCAL).update(addrManager.PredefLoc.SINGLE_PURE_LOCAL, obj2)
           val h3 = obj2("@env") match {
             case Some(propV) =>
               propV.objval.value.locset.foldLeft(Heap.Bot)((hi, locEnv) => {
@@ -139,9 +138,9 @@ class Semantics(
         val (c2, obj1) = helper.fixOldify(ctx, obj, c1.mayOld, c1.mustOld)
         if (c2.isBottom) State.Bot
         else {
-          val localObj = h1.getOrElse(predefLoc.SINGLE_PURE_LOCAL_LOC, utils.ObjBot)
+          val localObj = h1.getOrElse(addrManager.PredefLoc.SINGLE_PURE_LOCAL, utils.ObjBot)
           val returnV = localObj.getOrElse("@return", utils.PropValueBot).objval.value
-          val h2 = h1.update(predefLoc.SINGLE_PURE_LOCAL_LOC, obj1)
+          val h2 = h1.update(addrManager.PredefLoc.SINGLE_PURE_LOCAL, obj1)
           val h3 = helper.varStore(h2, retVar, returnV)
           State(h3, c2)
         }
@@ -160,13 +159,13 @@ class Semantics(
         val (c2, obj1) = helper.fixOldify(ctx, obj, c1.mayOld, c1.mustOld)
         if (c2.isBottom) State.Bot
         else {
-          val localObj = h1.getOrElse(predefLoc.SINGLE_PURE_LOCAL_LOC, utils.ObjBot)
+          val localObj = h1.getOrElse(addrManager.PredefLoc.SINGLE_PURE_LOCAL, utils.ObjBot)
           val excValue = localObj.getOrElse("@exception", utils.PropValueBot).objval.value
           val excObjV = ObjectValue(excValue, utils.absBool.Bot, utils.absBool.Bot, utils.absBool.Bot)
           val oldExcAllValue = obj1.getOrElse("@exception_all", utils.PropValueBot).objval.value
           val newExcAllObjV = ObjectValue(excValue + oldExcAllValue, utils.absBool.Bot, utils.absBool.Bot, utils.absBool.Bot)
           val h2 = h1.update(
-            predefLoc.SINGLE_PURE_LOCAL_LOC,
+            addrManager.PredefLoc.SINGLE_PURE_LOCAL,
             obj1.update("@exception", PropValue(excObjV))
               .update("@exception_all", PropValue(newExcAllObjV))
           )
@@ -193,7 +192,7 @@ class Semantics(
             val fun = cp.node.func
             val xArgVars = fun.argVars
             val xLocalVars = fun.localVars
-            val localObj = h.getOrElse(predefLoc.SINGLE_PURE_LOCAL_LOC, utils.ObjBot)
+            val localObj = h.getOrElse(addrManager.PredefLoc.SINGLE_PURE_LOCAL, utils.ObjBot)
             val locSetArg = localObj.getOrElse(fun.argumentsName, utils.PropValueBot).objval.value.locset
             val (nHeap, _) = xArgVars.foldLeft((h, 0))((res, x) => {
               val (iHeap, i) = res
@@ -349,16 +348,16 @@ class Semantics(
     i match {
       case _ if st.heap.isBottom => (State.Bot, excSt)
       case CFGAlloc(_, _, x, e, newAddr) => {
-        val objProtoSingleton = HashSet(predefLoc.OBJ_PROTO_LOC)
+        val objProtoSingleton = HashSet(addrManager.ProtoLoc.OBJ)
         // Recency Abstraction
-        val locR = addressManager.addrToLoc(newAddr, Recent)
+        val locR = addrManager.addrToLoc(newAddr, Recent)
         val st1 = helper.oldify(st, newAddr)
         val (vLocSet, excSet) = e match {
           case None => (objProtoSingleton, ExceptionSetEmpty)
           case Some(proto) => {
             val (v, es) = V(proto, st1)
             if (!v.pvalue.isBottom)
-              (v.locset ++ HashSet(predefLoc.OBJ_PROTO_LOC), es)
+              (v.locset ++ HashSet(addrManager.ProtoLoc.OBJ), es)
             else
               (v.locset, es)
           }
@@ -370,7 +369,7 @@ class Semantics(
         (State(h3, st1.context), s1)
       }
       case CFGAllocArray(_, _, x, n, newAddr) => {
-        val locR = addressManager.addrToLoc(newAddr, Recent)
+        val locR = addrManager.addrToLoc(newAddr, Recent)
         val st1 = helper.oldify(st, newAddr)
         val np = utils.absNumber.alpha(n.toInt)
         val h2 = st1.heap.update(locR, helper.newArrayObject(np))
@@ -378,7 +377,7 @@ class Semantics(
         (State(h3, st1.context), excSt)
       }
       case CFGAllocArg(_, _, x, n, newAddr) => {
-        val locR = addressManager.addrToLoc(newAddr, Recent)
+        val locR = addrManager.addrToLoc(newAddr, Recent)
         val st1 = helper.oldify(st, newAddr)
         val absN = utils.absNumber.alpha(n.toInt)
         val h2 = st1.heap.update(locR, helper.newArgObject(absN))
@@ -490,14 +489,14 @@ class Semantics(
       }
       case CFGFunExpr(_, block, lhs, None, f, aNew1, aNew2, None) => {
         //Recency Abstraction
-        val locR1 = addressManager.addrToLoc(aNew1, Recent)
-        val locR2 = addressManager.addrToLoc(aNew2, Recent)
+        val locR1 = addrManager.addrToLoc(aNew1, Recent)
+        val locR2 = addrManager.addrToLoc(aNew2, Recent)
         val st1 = helper.oldify(st, aNew1)
         val st2 = helper.oldify(st1, aNew2)
-        val oNew = helper.newObject(predefLoc.OBJ_PROTO_LOC)
+        val oNew = helper.newObject(addrManager.ProtoLoc.OBJ)
 
         val n = utils.absNumber.alpha(block.func.argVars.length)
-        val localObj = st2.heap.getOrElse(predefLoc.SINGLE_PURE_LOCAL_LOC, utils.ObjBot)
+        val localObj = st2.heap.getOrElse(addrManager.PredefLoc.SINGLE_PURE_LOCAL, utils.ObjBot)
         val scope = localObj.getOrElse("@env", utils.PropValueBot).objval.value
         val h3 = st2.heap.update(locR1, helper.newFunctionObject(f.id, scope, locR2, n))
 
@@ -510,14 +509,14 @@ class Semantics(
       }
       case CFGFunExpr(_, block, lhs, Some(name), f, aNew1, aNew2, Some(aNew3)) => {
         // Recency Abstraction
-        val locR1 = addressManager.addrToLoc(aNew1, Recent)
-        val locR2 = addressManager.addrToLoc(aNew2, Recent)
-        val locR3 = addressManager.addrToLoc(aNew3, Recent)
+        val locR1 = addrManager.addrToLoc(aNew1, Recent)
+        val locR2 = addrManager.addrToLoc(aNew2, Recent)
+        val locR3 = addrManager.addrToLoc(aNew3, Recent)
         val st1 = helper.oldify(st, aNew1)
         val st2 = helper.oldify(st1, aNew2)
         val st3 = helper.oldify(st2, aNew3)
 
-        val oNew = helper.newObject(predefLoc.OBJ_PROTO_LOC)
+        val oNew = helper.newObject(addrManager.ProtoLoc.OBJ)
         val n = utils.absNumber.alpha(block.func.argVars.length)
         val fObjValue = Value(utils.PValueBot, HashSet(locR3))
         val h4 = st3.heap.update(locR1, helper.newFunctionObject(f.id, fObjValue, locR2, n))
@@ -526,7 +525,7 @@ class Semantics(
         val fPropV = PropValue(ObjectValue(fVal, utils.absBool.True, utils.absBool.False, utils.absBool.True))
         val h5 = h4.update(locR2, oNew.update("constructor", fPropV, exist = true))
 
-        val localObj = st3.heap.getOrElse(predefLoc.SINGLE_PURE_LOCAL_LOC, utils.ObjBot)
+        val localObj = st3.heap.getOrElse(addrManager.PredefLoc.SINGLE_PURE_LOCAL, utils.ObjBot)
         val scope = localObj.getOrElse("@env", utils.PropValueBot).objval.value
         val oEnv = helper.newDeclEnvRecord(scope)
         val fPropV2 = PropValue(ObjectValue(fVal, utils.absBool.False, utils.absBool.Bot, utils.absBool.False))
@@ -536,7 +535,7 @@ class Semantics(
       }
       case CFGConstruct(ir, block, consExpr, thisArg, arguments, aNew, bNew) => {
         // cons, thisArg and arguments must not be bottom
-        val locR = addressManager.addrToLoc(aNew, Recent)
+        val locR = addrManager.addrToLoc(aNew, Recent)
         val st1 = helper.oldify(st, aNew)
         val (consVal, consExcSet) = V(consExpr, st1)
         val consLocSet = consVal.locset.filter(l => absTrue <= helper.hasConstruct(st1.heap, l))
@@ -548,7 +547,7 @@ class Semantics(
         if (thisLocSet.isEmpty || argVal.isBottom) {
           (st, excSt)
         } else {
-          val oldLocalObj = st1.heap.getOrElse(predefLoc.SINGLE_PURE_LOCAL_LOC, utils.ObjBot)
+          val oldLocalObj = st1.heap.getOrElse(addrManager.PredefLoc.SINGLE_PURE_LOCAL, utils.ObjBot)
           val callerCallCtx = cp.callContext
           val nCall =
             cp.node match {
@@ -615,7 +614,7 @@ class Semantics(
       }
       case CFGCall(ir, block, funExpr, thisArg, arguments, aNew, bNew) => {
         // cons, thisArg and arguments must not be bottom
-        val locR = addressManager.addrToLoc(aNew, Recent)
+        val locR = addrManager.addrToLoc(aNew, Recent)
         val st1 = helper.oldify(st, aNew)
         val (funVal, funExcSet) = V(funExpr, st1)
         val funLocSet = funVal.locset.filter(l => utils.absBool.True <= helper.isCallable(st1.heap, l))
@@ -626,7 +625,7 @@ class Semantics(
         if (thisLocSet.isEmpty || argVal.isBottom) {
           (st, excSt)
         } else {
-          val oldLocalObj = st1.heap.getOrElse(predefLoc.SINGLE_PURE_LOCAL_LOC, utils.ObjBot)
+          val oldLocalObj = st1.heap.getOrElse(addrManager.PredefLoc.SINGLE_PURE_LOCAL, utils.ObjBot)
           val callerCallCtx = cp.callContext
           val callBlock =
             cp.node match {
@@ -691,35 +690,35 @@ class Semantics(
       }
       case CFGAssert(_, _, expr, _) => B(expr, st, excSt, i, cfg, cp)
       case CFGCatch(_, _, x) => {
-        val localObj = st.heap.getOrElse(predefLoc.SINGLE_PURE_LOCAL_LOC, utils.ObjBot)
+        val localObj = st.heap.getOrElse(addrManager.PredefLoc.SINGLE_PURE_LOCAL, utils.ObjBot)
         val excSetPropV = localObj.getOrElse("@exception_all", utils.PropValueBot)
         val excV = localObj.getOrElse("@exception", utils.PropValueBot).objval.value
         val h1 = helper.createMutableBinding(st.heap, x, excV)
-        val newObj = h1.getOrElse(predefLoc.SINGLE_PURE_LOCAL_LOC, utils.ObjBot).update("@exception", excSetPropV)
-        val h2 = h1.update(predefLoc.SINGLE_PURE_LOCAL_LOC, newObj)
+        val newObj = h1.getOrElse(addrManager.PredefLoc.SINGLE_PURE_LOCAL, utils.ObjBot).update("@exception", excSetPropV)
+        val h2 = h1.update(addrManager.PredefLoc.SINGLE_PURE_LOCAL, newObj)
         (State(h2, st.context), State(Heap.Bot, Context.Bot))
       }
       case CFGReturn(_, _, Some(expr)) => {
         val (v, excSet) = V(expr, st)
         val (h1, ctx1) =
           if (!v.isBottom) {
-            val localObj = st.heap.getOrElse(predefLoc.SINGLE_PURE_LOCAL_LOC, utils.ObjBot)
+            val localObj = st.heap.getOrElse(addrManager.PredefLoc.SINGLE_PURE_LOCAL, utils.ObjBot)
             val retValPropV = PropValue(utils.ObjectValueBot.copyWith(v))
-            (st.heap.update(predefLoc.SINGLE_PURE_LOCAL_LOC, localObj.update("@return", retValPropV)), st.context)
+            (st.heap.update(addrManager.PredefLoc.SINGLE_PURE_LOCAL, localObj.update("@return", retValPropV)), st.context)
           } else (Heap.Bot, Context.Bot)
         val newExcSt = helper.raiseException(st, excSet)
         (State(h1, ctx1), excSt + newExcSt)
       }
       case CFGReturn(_, _, None) => {
-        val localObj = st.heap.getOrElse(predefLoc.SINGLE_PURE_LOCAL_LOC, utils.ObjBot)
+        val localObj = st.heap.getOrElse(addrManager.PredefLoc.SINGLE_PURE_LOCAL, utils.ObjBot)
         val undefV = Value(utils.PValueBot.copyWith(utils.absUndef.Top))
         val retValPropV = PropValue(utils.ObjectValueBot.copyWith(undefV))
-        val h1 = st.heap.update(predefLoc.SINGLE_PURE_LOCAL_LOC, localObj.update("@return", retValPropV))
+        val h1 = st.heap.update(addrManager.PredefLoc.SINGLE_PURE_LOCAL, localObj.update("@return", retValPropV))
         (State(h1, st.context), excSt)
       }
       case CFGThrow(_, _, expr) => {
         val (v, excSet) = V(expr, st)
-        val localObj = st.heap.getOrElse(predefLoc.SINGLE_PURE_LOCAL_LOC, utils.ObjBot)
+        val localObj = st.heap.getOrElse(addrManager.PredefLoc.SINGLE_PURE_LOCAL, utils.ObjBot)
         val excSetV = localObj.getOrElse("@exception_all", utils.PropValueBot).objval.value
         val newExcPropV = PropValue(utils.ObjectValueBot.copyWith(v))
         val newExcSetPropV = PropValue(utils.ObjectValueBot.copyWith(v + excSetV))
@@ -730,7 +729,7 @@ class Semantics(
             update("@exception", newExcPropV).
             update("@exception_all", newExcSetPropV).
             update("@return", retValPropV)
-        val h1 = st.heap.update(predefLoc.SINGLE_PURE_LOCAL_LOC, newObj)
+        val h1 = st.heap.update(addrManager.PredefLoc.SINGLE_PURE_LOCAL, newObj)
         val newExcSt = helper.raiseException(st, excSet)
 
         (State.Bot, excSt + State(h1, st.context) + newExcSt)
@@ -836,7 +835,7 @@ class Semantics(
         (v1, idxExcSet)
       }
       case CFGThis(ir) =>
-        val localObj = st.heap.getOrElse(predefLoc.SINGLE_PURE_LOCAL_LOC, utils.ObjBot)
+        val localObj = st.heap.getOrElse(addrManager.PredefLoc.SINGLE_PURE_LOCAL, utils.ObjBot)
         val thisLocSet = localObj.getOrElse("@this", utils.PropValueBot).objval.value.locset
         (Value(utils.PValueBot, thisLocSet), ExceptionSetEmpty)
       case CFGBin(ir, expr1, op, expr2) => {
