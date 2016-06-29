@@ -23,7 +23,7 @@ trait ObjectValue {
       val prefix =
         (writable.gammaSimple, enumerable.gammaSimple, configurable.gammaSimple) match {
           case (ConSimpleBot, ConSimpleBot, ConSimpleBot) => "[Val] "
-          case _ => s"[${writable.toString} ${enumerable.toString} ${configurable.toString}] "
+          case _ => s"[${writable.toString.take(1)}${enumerable.toString.take(1)}${configurable.toString.take(1)}] "
         }
       prefix + value.toString
     }

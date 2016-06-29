@@ -40,11 +40,63 @@ class Semantics(
 
   def initState: State = {
     val globalPureLocalObj = helper.newPureLocal(Value(utils.PValueBot.copyWith(utils.absNull.Top)), HashSet(addrManager.PredefLoc.GLOBAL)) - "@return"
+
+    val absFalse = utils.absBool.False
+    val globalObjV = ObjectValue(Value(utils.PValueBot, HashSet(addrManager.PredefLoc.GLOBAL)), absFalse, absFalse, absFalse)
+    val globalObj = utils.ObjEmpty.update(NodeUtil.GLOBAL_NAME, PropValue(globalObjV))
+
     val initHeap = Heap.Bot
       .update(addrManager.PredefLoc.SINGLE_PURE_LOCAL, globalPureLocalObj)
-      .update(addrManager.PredefLoc.GLOBAL, utils.ObjEmpty)
+      .update(addrManager.PredefLoc.GLOBAL, globalObj)
       .update(addrManager.PredefLoc.COLLAPSED, utils.ObjEmpty)
+
+      .update(addrManager.ProtoLoc.OBJ, utils.ObjEmpty)
+      .update(addrManager.ProtoLoc.FUNCTION, utils.ObjEmpty)
+      .update(addrManager.ProtoLoc.ARRAY, utils.ObjEmpty)
+      .update(addrManager.ProtoLoc.BOOLEAN, utils.ObjEmpty)
+      .update(addrManager.ProtoLoc.NUMBER, utils.ObjEmpty)
+      .update(addrManager.ProtoLoc.STRING, utils.ObjEmpty)
+
+      .update(addrManager.ErrorLoc.ERR, utils.ObjEmpty)
+      .update(addrManager.ErrorLoc.EVAL_ERR, utils.ObjEmpty)
+      .update(addrManager.ErrorLoc.RANGE_ERR, utils.ObjEmpty)
+      .update(addrManager.ErrorLoc.REF_ERR, utils.ObjEmpty)
+      .update(addrManager.ErrorLoc.SYNTAX_ERR, utils.ObjEmpty)
+      .update(addrManager.ErrorLoc.TYPE_ERR, utils.ObjEmpty)
+      .update(addrManager.ErrorLoc.URI_ERR, utils.ObjEmpty)
     State(initHeap, Context.Empty)
+  }
+
+  def initTestState: State = {
+    def prop(value: Value): PropValue =
+      PropValue(ObjectValue(value, utils.absBool.Bot, utils.absBool.Bot, utils.absBool.Bot))
+
+    val st = initState
+    val globalObj = st.heap.getOrElse(addrManager.PredefLoc.GLOBAL, utils.ObjEmpty)
+
+    val testGlobalObj =
+      globalObj.update("__BOT", prop(utils.ValueBot))
+        .update("__TOP", prop(Value(utils.PValueTop)))
+        .update("__UInt", PropValue(utils.ObjectValueWith(utils.absNumber.UInt)))
+        .update("__Global", prop(Value(utils.PValueBot, HashSet(addrManager.PredefLoc.GLOBAL))))
+        .update("__BoolTop", PropValue(utils.ObjectValueWith(utils.absBool.Top)))
+        .update("__NumTop", PropValue(utils.ObjectValueWith(utils.absNumber.Top)))
+        .update("__StrTop", PropValue(utils.ObjectValueWith(utils.absString.Top)))
+    // TODO: test constants for builtin models
+    //  .update("__ObjConstLoc", Value(BuiltinObject.ConstLoc))
+    //  .update("__ArrayConstLoc", Value(BuiltinObject.ConstLoc))
+    //  .update("__RefErrLoc", Value(BuiltinError.RefErrLoc))
+    //  .update("__RangeErrLoc", Value(BuiltinError.RangeErrLoc))
+    //  .update("__TypeErrLoc", Value(BuiltinError.TypeErrLoc))
+    //  .update("__URIErrLoc", Value(BuiltinError.URIErrLoc))
+    //  .update("__RefErrProtoLoc", Value(BuiltinError.RefErrProtoLoc))
+    //  .update("__RangeErrProtoLoc", Value(BuiltinError.RangeErrProtoLoc))
+    //  .update("__TypeErrProtoLoc", Value(BuiltinError.TypeErrProtoLoc))
+    //  .update("__URIErrProtoLoc", Value(BuiltinError.URIErrProtoLoc))
+    //  .update("__ErrProtoLoc", Value(BuiltinError.ErrProtoLoc))
+
+    val testHeap = st.heap.update(addrManager.PredefLoc.GLOBAL, testGlobalObj)
+    State(testHeap, st.context)
   }
 
   // Adds inter-procedural call edge from call-node cp1 to entry-node cp2.
@@ -495,7 +547,7 @@ class Semantics(
         val st2 = helper.oldify(st1, aNew2)
         val oNew = helper.newObject(addrManager.ProtoLoc.OBJ)
 
-        val n = utils.absNumber.alpha(block.func.argVars.length)
+        val n = utils.absNumber.alpha(f.argVars.length)
         val localObj = st2.heap.getOrElse(addrManager.PredefLoc.SINGLE_PURE_LOCAL, utils.ObjBot)
         val scope = localObj.getOrElse("@env", utils.PropValueBot).objval.value
         val h3 = st2.heap.update(locR1, helper.newFunctionObject(f.id, scope, locR2, n))
@@ -517,7 +569,7 @@ class Semantics(
         val st3 = helper.oldify(st2, aNew3)
 
         val oNew = helper.newObject(addrManager.ProtoLoc.OBJ)
-        val n = utils.absNumber.alpha(block.func.argVars.length)
+        val n = utils.absNumber.alpha(f.argVars.length)
         val fObjValue = Value(utils.PValueBot, HashSet(locR3))
         val h4 = st3.heap.update(locR1, helper.newFunctionObject(f.id, fObjValue, locR2, n))
 
@@ -940,7 +992,15 @@ class Semantics(
     }
   }
 
-  def B(expr: CFGExpr, s: State, se: State, inst: CFGInst, cfg: CFG, cp: ControlPoint): (State, State) = {
-    (State.Bot, State.Bot)
+  def B(expr: CFGExpr, st: State, excSt: State, inst: CFGInst, cfg: CFG, cp: ControlPoint): (State, State) = {
+    val h1 = st.heap //TODO should be the pruned heap
+
+    val (v, excSet) = V(expr, st)
+    val newExcSt = helper.raiseException(st, excSet)
+    val h2 =
+      if (utils.absBool.alpha(true) <= v.toAbsBoolean(utils.absBool)) h1
+      else Heap.Bot
+
+    (State(h2, st.context), excSt + newExcSt)
   }
 }

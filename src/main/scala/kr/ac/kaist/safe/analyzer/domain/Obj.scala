@@ -15,7 +15,7 @@ import kr.ac.kaist.safe.config.Config
 
 //TODO: Merge ObjMap implementation
 //TODO: Handle default values, key values with "@"
-class Obj(val map: Map[String, (PropValue, Absent)]) {
+class Obj(private val map: Map[String, (PropValue, Absent)]) {
   override def toString: String = {
     val sortedMap = map.toSeq.sortBy(kv => {
       val (key, _) = kv
@@ -368,6 +368,10 @@ class Obj(val map: Map[String, (PropValue, Absent)]) {
           }
       }
     }
+  }
+
+  def collectKeysStartWith(prefix: String): Set[String] = {
+    this.map.keySet.filter(s => s.startsWith(prefix))
   }
 }
 
