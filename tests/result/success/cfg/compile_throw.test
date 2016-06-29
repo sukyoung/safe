@@ -1,18 +1,17 @@
 (0,LBlock(3))
-    [4] noop(EndOfFile)
+    [0] noop(EndOfFile)
 
 
 (0,LBlock(2))
-    [3] throw(1.1)
+    [0] throw(1.1)
 
 
 (0,LBlock(1))
-    [2] throw("asdf")
+    [0] throw("asdf")
 
 
 (0,LBlock(0))
     [0] noop(StartOfFile)
     [1] throw(1)
-
 
 

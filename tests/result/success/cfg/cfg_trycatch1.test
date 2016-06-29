@@ -1,20 +1,19 @@
 (0,LBlock(3))
-    [5] x := 8
-    [6] noop(EndOfFile)
+    [0] x := 8
+    [1] noop(EndOfFile)
 
 
 (0,LBlock(2))
-    [2] catch(<>x<>1)
-    [4] <>x<>1 := 4
+    [0] catch(<>x<>1)
+    [1] <>x<>1 := 4
 
 
 (0,LBlock(1))
-    [3] x := 2
+    [0] x := 2
 
 
 (0,LBlock(0))
     [0] noop(StartOfFile)
     [1] x := 1
-
 
 

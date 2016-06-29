@@ -1,341 +1,340 @@
-(0,LBlock(51))
+(0,LBlock(15))
 
 
-(0,LBlock(50))
+(0,LBlock(14))
     [EDGE] after-call(<>Global<>ignore59)
-    [427653] data := <>Global<>ignore59
+    [0] data := <>Global<>ignore59
 
 
-(0,LBlock(49))
-    [427654] <>old<>132 := index
-    [427655] <>new<>133 := <>Global<>toNumber(<>old<>132)
-    [427656] index := <>new<>133 + 1
-    [427657] <>Global<>ignore57 := <>new<>133
-    [427658] <>y<>122 := index
-    [427659] <>obj<>123 := <>Global<>toObject(paramArray) @ #89
+(0,LBlock(10))
+    [0] <>old<>132 := index
+    [1] <>new<>133 := <>Global<>toNumber(<>old<>132)
+    [2] index := <>new<>133 + 1
+    [3] <>Global<>ignore57 := <>new<>133
+    [4] <>y<>122 := index
+    [5] <>obj<>123 := <>Global<>toObject(paramArray) @ #89
 
 
-(0,LBlock(48))
-    [427638] assert(! <>y<>122 < <>obj<>123["length"])
+(0,LBlock(9))
+    [0] assert(! <>y<>122 < <>obj<>123["length"])
 
 
-(0,LBlock(47))
-    [427637] assert(<>y<>122 < <>obj<>123["length"])
-    [427639] data := squidImageData
-    [427640] <>obj<>124 := <>Global<>toObject(ProcessImageData) @ #84
-    [427641] <>temp<>125 := data
-    [427642] <>temp<>126 := width
-    [427643] <>temp<>127 := height
-    [427644] <>obj<>128 := <>Global<>toObject(paramArray) @ #85
-    [427645] <>temp<>129 := <>obj<>128[index]
-    [427646] <>arguments<>130 := allocArg(4) @ #86
-    [427647] <>arguments<>130["0"] := <>temp<>125
-    [427648] <>arguments<>130["1"] := <>temp<>126
-    [427649] <>arguments<>130["2"] := <>temp<>127
-    [427650] <>arguments<>130["3"] := <>temp<>129
-    [427651] <>fun<>131 := <>Global<>getBase(ProcessImageData)
-    [427652] call(<>obj<>124, <>fun<>131, <>arguments<>130) @ #87
+(0,LBlock(8))
+    [0] assert(<>y<>122 < <>obj<>123["length"])
+    [1] data := squidImageData
+    [2] <>obj<>124 := <>Global<>toObject(ProcessImageData) @ #84
+    [3] <>temp<>125 := data
+    [4] <>temp<>126 := width
+    [5] <>temp<>127 := height
+    [6] <>obj<>128 := <>Global<>toObject(paramArray) @ #85
+    [7] <>temp<>129 := <>obj<>128[index]
+    [8] <>arguments<>130 := allocArg(4) @ #86
+    [9] <>arguments<>130["0"] := <>temp<>125
+    [10] <>arguments<>130["1"] := <>temp<>126
+    [11] <>arguments<>130["2"] := <>temp<>127
+    [12] <>arguments<>130["3"] := <>temp<>129
+    [13] <>fun<>131 := <>Global<>getBase(ProcessImageData)
+    [0] call(<>obj<>124, <>fun<>131, <>arguments<>130) @ #87
 
 
-(0,LBlock(46))
+(0,LBlock(7))
 
 
-(0,LBlock(45))
-    [427660] noop(EndOfFile)
+(0,LBlock(6))
+    [0] noop(EndOfFile)
 
 
-(0,LBlock(44))
+(0,LBlock(5))
 
 
-(0,LBlock(43))
+(0,LBlock(4))
     [EDGE] after-call(<>Global<>ignore52)
-    [427631] LOG2_HALF := <>Global<>ignore52
-    [427632] width := 400
-    [427633] height := 267
-    [427634] index := 0
-    [427635] <>y<>122 := index
-    [427636] <>obj<>123 := <>Global<>toObject(paramArray) @ #83
-
-
-(5,LBlock(42))
-    [135] <>r<>63 := <>y<>66 + 0.956 * <>i<>67 + 0.621 * <>q<>68
-    [136] <>g<>64 := <>y<>66 - 0.272 * <>i<>67 - 0.647 * <>q<>68
-    [137] <>b<>65 := <>y<>66 - 1.105 * <>i<>67 + 1.702 * <>q<>68
-    [138] <>obj<>95 := <>Global<>toObject(<>data<>43) @ #54
-    [139] <>obj<>95[<>j<>62 * 4 + 0] := <>r<>63 * 255.0
-    [140] <>obj<>96 := <>Global<>toObject(<>data<>43) @ #55
-    [141] <>obj<>96[<>j<>62 * 4 + 1] := <>g<>64 * 255.0
-    [142] <>obj<>97 := <>Global<>toObject(<>data<>43) @ #56
-    [143] <>obj<>97[<>j<>62 * 4 + 2] := <>b<>65 * 255.0
-
-
-(5,LBlock(41))
-    [132] assert(! <>y<>66 < <>splitPoint<>57)
-    [134] <>i<>67 := <>i<>67 + <>highlightsHue<>55 * <>highlightsSaturation<>56 * <>y<>66 - <>splitPoint<>57
-
-
-(5,LBlock(40))
-    [131] assert(<>y<>66 < <>splitPoint<>57)
-    [133] <>q<>68 := <>q<>68 + <>shadowsHue<>53 * <>shadowsSaturation<>54 * <>splitPoint<>57 - <>y<>66
-
-
-(5,LBlock(39))
-
-
-(5,LBlock(38))
-    [EDGE] after-call(<>Global<>ignore41)
-    [130] <>y<>66 := <>Global<>ignore41
-
-
-(5,LBlock(37))
-
-
-(5,LBlock(36))
-    [EDGE] after-call(<>temp<>92)
-    [125] <>arguments<>93 := allocArg(2) @ #51
-    [126] <>arguments<>93["0"] := <>temp<>87
-    [127] <>arguments<>93["1"] := <>temp<>92
-    [128] <>fun<>94 := <>Global<>getBase(FastGain)
-    [129] call(<>obj<>86, <>fun<>94, <>arguments<>93) @ #52
-
-
-(5,LBlock(35))
-    [144] <>old<>98 := <>j<>62
-    [145] <>new<>99 := <>Global<>toNumber(<>old<>98)
-    [146] <>j<>62 := <>new<>99 + 1
-    [147] <>Global<>ignore27 := <>new<>99
-
-
-(5,LBlock(34))
-    [100] assert(! <>j<>62 < <>sz<>61)
-
-
-(5,LBlock(33))
-    [99] assert(<>j<>62 < <>sz<>61)
-    [101] <>obj<>83 := <>Global<>toObject(<>data<>43) @ #43
-    [102] <>r<>63 := <>obj<>83[<>j<>62 * 4 + 0] * <>oo255<>60
-    [103] <>obj<>84 := <>Global<>toObject(<>data<>43) @ #44
-    [104] <>g<>64 := <>obj<>84[<>j<>62 * 4 + 1] * <>oo255<>60
-    [105] <>obj<>85 := <>Global<>toObject(<>data<>43) @ #45
-    [106] <>b<>65 := <>obj<>85[<>j<>62 * 4 + 2] * <>oo255<>60
-    [107] <>y<>66 := 0.299 * <>r<>63 + 0.587 * <>g<>64 + 0.114 * <>b<>65
-    [108] <>i<>67 := 0.596 * <>r<>63 - 0.275 * <>g<>64 - 0.321 * <>b<>65
-    [109] <>q<>68 := 0.212 * <>r<>63 - 0.523 * <>g<>64 + 0.311 * <>b<>65
-    [110] <>i<>67 := <>i<>67 + <>temperature<>52
-    [111] <>q<>68 := <>q<>68 - <>temperature<>52
-    [112] <>i<>67 := <>i<>67 * <>saturation<>47
-    [113] <>q<>68 := <>q<>68 * <>saturation<>47
-    [114] <>y<>66 := 1.0 + <>blackPoint<>50 * <>y<>66 - <>blackPoint<>50
-    [115] <>y<>66 := <>y<>66 + <>fill<>51
-    [116] <>y<>66 := <>y<>66 * <>brightness_a<>58 + <>brightness_b<>59
-    [117] <>obj<>86 := <>Global<>toObject(FastGain) @ #46
-    [118] <>temp<>87 := <>contrast<>48
-    [119] <>obj<>88 := <>Global<>toObject(Clamp) @ #47
-    [120] <>temp<>89 := <>y<>66
-    [121] <>arguments<>90 := allocArg(1) @ #48
-    [122] <>arguments<>90["0"] := <>temp<>89
-    [123] <>fun<>91 := <>Global<>getBase(Clamp)
-    [124] call(<>obj<>88, <>fun<>91, <>arguments<>90) @ #49
-
-
-(5,LBlock(32))
-
-
-(5,LBlock(31))
-    [148] return(<>data<>43)
-
-
-(5,LBlock(30))
-    [96] <>splitPoint<>57 := <>splitPoint<>57 + 1.0 * 0.5
-    [97] <>sz<>61 := <>width<>44 * <>height<>45
-    [98] <>j<>62 := 0
-
-
-(5,LBlock(29))
-    [93] assert(! <>temperature<>52 > 0.0)
-
-
-(5,LBlock(28))
-    [92] assert(<>temperature<>52 > 0.0)
-    [94] <>old<>82 := <>temperature<>52
-    [95] <>temperature<>52 := <>old<>82 * 2.0
-
-
-(5,LBlock(27))
-    [89] <>contrast<>48 := <>contrast<>48 * 0.5
-    [90] <>contrast<>48 := <>contrast<>48 - 0.5 * 0.75 + 0.5
-    [91] <>temperature<>52 := <>temperature<>52 / 2000.0 * 0.1
-
-
-(5,LBlock(26))
-    [84] assert(! <>brightness<>49 < 1.0)
-    [87] <>brightness_b<>59 := <>brightness<>49 - 1.0
-    [88] <>brightness_a<>58 := 1.0 - <>brightness_b<>59
-
-
-(5,LBlock(25))
-    [83] assert(<>brightness<>49 < 1.0)
-    [85] <>brightness_a<>58 := <>brightness<>49
-    [86] <>brightness_b<>59 := 0.0
+    [0] LOG2_HALF := <>Global<>ignore52
+    [1] width := 400
+    [2] height := 267
+    [3] index := 0
+    [4] <>y<>122 := index
+    [5] <>obj<>123 := <>Global<>toObject(paramArray) @ #83
 
 
 (5,LBlock(24))
-    [57] <>obj<>70 := <>Global<>toObject(<>params<>46) @ #32
-    [58] <>saturation<>47 := <>obj<>70["saturation"]
-    [59] <>obj<>71 := <>Global<>toObject(<>params<>46) @ #33
-    [60] <>contrast<>48 := <>obj<>71["contrast"]
-    [61] <>obj<>72 := <>Global<>toObject(<>params<>46) @ #34
-    [62] <>brightness<>49 := <>obj<>72["brightness"]
-    [63] <>obj<>73 := <>Global<>toObject(<>params<>46) @ #35
-    [64] <>blackPoint<>50 := <>obj<>73["blackPoint"]
-    [65] <>obj<>74 := <>Global<>toObject(<>params<>46) @ #36
-    [66] <>fill<>51 := <>obj<>74["fill"]
-    [67] <>obj<>75 := <>Global<>toObject(<>params<>46) @ #37
-    [68] <>temperature<>52 := <>obj<>75["temperature"]
-    [69] <>obj<>76 := <>Global<>toObject(<>params<>46) @ #38
-    [70] <>shadowsHue<>53 := <>obj<>76["shadowsHue"]
-    [71] <>obj<>77 := <>Global<>toObject(<>params<>46) @ #39
-    [72] <>shadowsSaturation<>54 := <>obj<>77["shadowsSaturation"]
-    [73] <>obj<>78 := <>Global<>toObject(<>params<>46) @ #40
-    [74] <>highlightsHue<>55 := <>obj<>78["highlightsHue"]
-    [75] <>obj<>79 := <>Global<>toObject(<>params<>46) @ #41
-    [76] <>highlightsSaturation<>56 := <>obj<>79["highlightsSaturation"]
-    [77] <>obj<>80 := <>Global<>toObject(<>params<>46) @ #42
-    [78] <>splitPoint<>57 := <>obj<>80["splitPoint"]
-    [79] <>oo255<>60 := 1.0 / 255.0
-    [80] <>old<>81 := <>fill<>51
-    [81] <>fill<>51 := <>old<>81 * 0.2
-    [82] <>brightness<>49 := <>brightness<>49 - 1.0 * 0.75 + 1.0
+    [0] <>r<>63 := <>y<>66 + 0.956 * <>i<>67 + 0.621 * <>q<>68
+    [1] <>g<>64 := <>y<>66 - 0.272 * <>i<>67 - 0.647 * <>q<>68
+    [2] <>b<>65 := <>y<>66 - 1.105 * <>i<>67 + 1.702 * <>q<>68
+    [3] <>obj<>95 := <>Global<>toObject(<>data<>43) @ #54
+    [4] <>obj<>95[<>j<>62 * 4 + 0] := <>r<>63 * 255.0
+    [5] <>obj<>96 := <>Global<>toObject(<>data<>43) @ #55
+    [6] <>obj<>96[<>j<>62 * 4 + 1] := <>g<>64 * 255.0
+    [7] <>obj<>97 := <>Global<>toObject(<>data<>43) @ #56
+    [8] <>obj<>97[<>j<>62 * 4 + 2] := <>b<>65 * 255.0
 
 
-(4,LBlock(23))
+(5,LBlock(23))
+    [0] assert(! <>y<>66 < <>splitPoint<>57)
+    [1] <>i<>67 := <>i<>67 + <>highlightsHue<>55 * <>highlightsSaturation<>56 * <>y<>66 - <>splitPoint<>57
 
 
-(4,LBlock(22))
-    [52] assert(! <>x<>40 > 1.0)
-    [54] <>new1<>42 := <>x<>40
+(5,LBlock(22))
+    [0] assert(<>y<>66 < <>splitPoint<>57)
+    [1] <>q<>68 := <>q<>68 + <>shadowsHue<>53 * <>shadowsSaturation<>54 * <>splitPoint<>57 - <>y<>66
 
 
-(4,LBlock(21))
-    [51] assert(<>x<>40 > 1.0)
-    [53] <>new1<>42 := 1.0
+(5,LBlock(21))
 
 
-(4,LBlock(20))
-    [55] return(<>new1<>42)
+(5,LBlock(20))
+    [EDGE] after-call(<>Global<>ignore41)
+    [0] <>y<>66 := <>Global<>ignore41
 
 
-(4,LBlock(19))
-    [49] assert(! <>x<>40 < 0.0)
+(5,LBlock(16))
 
 
-(4,LBlock(18))
-    [48] assert(<>x<>40 < 0.0)
-    [50] <>new1<>42 := 0.0
+(5,LBlock(15))
+    [EDGE] after-call(<>temp<>92)
+    [0] <>arguments<>93 := allocArg(2) @ #51
+    [1] <>arguments<>93["0"] := <>temp<>87
+    [2] <>arguments<>93["1"] := <>temp<>92
+    [3] <>fun<>94 := <>Global<>getBase(FastGain)
+    [0] call(<>obj<>86, <>fun<>94, <>arguments<>93) @ #52
 
 
-(4,LBlock(17))
+(5,LBlock(11))
+    [0] <>old<>98 := <>j<>62
+    [1] <>new<>99 := <>Global<>toNumber(<>old<>98)
+    [2] <>j<>62 := <>new<>99 + 1
+    [3] <>Global<>ignore27 := <>new<>99
 
 
-(3,LBlock(16))
+(5,LBlock(10))
+    [0] assert(! <>j<>62 < <>sz<>61)
 
 
-(3,LBlock(15))
-    [EDGE] after-call(<>y<>39)
-    [45] <>new1<>32 := <>y<>33 - <>y<>39 * 0.5
+(5,LBlock(9))
+    [0] assert(<>j<>62 < <>sz<>61)
+    [1] <>obj<>83 := <>Global<>toObject(<>data<>43) @ #43
+    [2] <>r<>63 := <>obj<>83[<>j<>62 * 4 + 0] * <>oo255<>60
+    [3] <>obj<>84 := <>Global<>toObject(<>data<>43) @ #44
+    [4] <>g<>64 := <>obj<>84[<>j<>62 * 4 + 1] * <>oo255<>60
+    [5] <>obj<>85 := <>Global<>toObject(<>data<>43) @ #45
+    [6] <>b<>65 := <>obj<>85[<>j<>62 * 4 + 2] * <>oo255<>60
+    [7] <>y<>66 := 0.299 * <>r<>63 + 0.587 * <>g<>64 + 0.114 * <>b<>65
+    [8] <>i<>67 := 0.596 * <>r<>63 - 0.275 * <>g<>64 - 0.321 * <>b<>65
+    [9] <>q<>68 := 0.212 * <>r<>63 - 0.523 * <>g<>64 + 0.311 * <>b<>65
+    [10] <>i<>67 := <>i<>67 + <>temperature<>52
+    [11] <>q<>68 := <>q<>68 - <>temperature<>52
+    [12] <>i<>67 := <>i<>67 * <>saturation<>47
+    [13] <>q<>68 := <>q<>68 * <>saturation<>47
+    [14] <>y<>66 := 1.0 + <>blackPoint<>50 * <>y<>66 - <>blackPoint<>50
+    [15] <>y<>66 := <>y<>66 + <>fill<>51
+    [16] <>y<>66 := <>y<>66 * <>brightness_a<>58 + <>brightness_b<>59
+    [17] <>obj<>86 := <>Global<>toObject(FastGain) @ #46
+    [18] <>temp<>87 := <>contrast<>48
+    [19] <>obj<>88 := <>Global<>toObject(Clamp) @ #47
+    [20] <>temp<>89 := <>y<>66
+    [21] <>arguments<>90 := allocArg(1) @ #48
+    [22] <>arguments<>90["0"] := <>temp<>89
+    [23] <>fun<>91 := <>Global<>getBase(Clamp)
+    [0] call(<>obj<>88, <>fun<>91, <>arguments<>90) @ #49
 
 
-(3,LBlock(14))
-    [46] return(<>new1<>32)
+(5,LBlock(8))
+
+
+(5,LBlock(7))
+    [0] return(<>data<>43)
+
+
+(5,LBlock(6))
+    [0] <>splitPoint<>57 := <>splitPoint<>57 + 1.0 * 0.5
+    [1] <>sz<>61 := <>width<>44 * <>height<>45
+    [2] <>j<>62 := 0
+
+
+(5,LBlock(5))
+    [0] assert(! <>temperature<>52 > 0.0)
+
+
+(5,LBlock(4))
+    [0] assert(<>temperature<>52 > 0.0)
+    [1] <>old<>82 := <>temperature<>52
+    [2] <>temperature<>52 := <>old<>82 * 2.0
+
+
+(5,LBlock(3))
+    [0] <>contrast<>48 := <>contrast<>48 * 0.5
+    [1] <>contrast<>48 := <>contrast<>48 - 0.5 * 0.75 + 0.5
+    [2] <>temperature<>52 := <>temperature<>52 / 2000.0 * 0.1
+
+
+(5,LBlock(2))
+    [0] assert(! <>brightness<>49 < 1.0)
+    [1] <>brightness_b<>59 := <>brightness<>49 - 1.0
+    [2] <>brightness_a<>58 := 1.0 - <>brightness_b<>59
+
+
+(5,LBlock(1))
+    [0] assert(<>brightness<>49 < 1.0)
+    [1] <>brightness_a<>58 := <>brightness<>49
+    [2] <>brightness_b<>59 := 0.0
+
+
+(5,LBlock(0))
+    [0] <>obj<>70 := <>Global<>toObject(<>params<>46) @ #32
+    [1] <>saturation<>47 := <>obj<>70["saturation"]
+    [2] <>obj<>71 := <>Global<>toObject(<>params<>46) @ #33
+    [3] <>contrast<>48 := <>obj<>71["contrast"]
+    [4] <>obj<>72 := <>Global<>toObject(<>params<>46) @ #34
+    [5] <>brightness<>49 := <>obj<>72["brightness"]
+    [6] <>obj<>73 := <>Global<>toObject(<>params<>46) @ #35
+    [7] <>blackPoint<>50 := <>obj<>73["blackPoint"]
+    [8] <>obj<>74 := <>Global<>toObject(<>params<>46) @ #36
+    [9] <>fill<>51 := <>obj<>74["fill"]
+    [10] <>obj<>75 := <>Global<>toObject(<>params<>46) @ #37
+    [11] <>temperature<>52 := <>obj<>75["temperature"]
+    [12] <>obj<>76 := <>Global<>toObject(<>params<>46) @ #38
+    [13] <>shadowsHue<>53 := <>obj<>76["shadowsHue"]
+    [14] <>obj<>77 := <>Global<>toObject(<>params<>46) @ #39
+    [15] <>shadowsSaturation<>54 := <>obj<>77["shadowsSaturation"]
+    [16] <>obj<>78 := <>Global<>toObject(<>params<>46) @ #40
+    [17] <>highlightsHue<>55 := <>obj<>78["highlightsHue"]
+    [18] <>obj<>79 := <>Global<>toObject(<>params<>46) @ #41
+    [19] <>highlightsSaturation<>56 := <>obj<>79["highlightsSaturation"]
+    [20] <>obj<>80 := <>Global<>toObject(<>params<>46) @ #42
+    [21] <>splitPoint<>57 := <>obj<>80["splitPoint"]
+    [22] <>oo255<>60 := 1.0 / 255.0
+    [23] <>old<>81 := <>fill<>51
+    [24] <>fill<>51 := <>old<>81 * 0.2
+    [25] <>brightness<>49 := <>brightness<>49 - 1.0 * 0.75 + 1.0
+
+
+(4,LBlock(6))
+
+
+(4,LBlock(5))
+    [0] assert(! <>x<>40 > 1.0)
+    [1] <>new1<>42 := <>x<>40
+
+
+(4,LBlock(4))
+    [0] assert(<>x<>40 > 1.0)
+    [1] <>new1<>42 := 1.0
+
+
+(4,LBlock(3))
+    [0] return(<>new1<>42)
+
+
+(4,LBlock(2))
+    [0] assert(! <>x<>40 < 0.0)
+
+
+(4,LBlock(1))
+    [0] assert(<>x<>40 < 0.0)
+    [1] <>new1<>42 := 0.0
+
+
+(4,LBlock(0))
 
 
 (3,LBlock(13))
 
 
 (3,LBlock(12))
+    [EDGE] after-call(<>y<>39)
+    [0] <>new1<>32 := <>y<>33 - <>y<>39 * 0.5
+
+
+(3,LBlock(8))
+    [0] return(<>new1<>32)
+
+
+(3,LBlock(7))
+
+
+(3,LBlock(6))
     [EDGE] after-call(<>y<>31)
-    [35] <>new1<>32 := <>y<>31 * 0.5
+    [0] <>new1<>32 := <>y<>31 * 0.5
 
 
-(3,LBlock(11))
-    [26] assert(! <>x<>24 < 0.5)
-    [36] <>y<>33 := 1.0
-    [37] <>obj<>34 := <>Global<>toObject(FastBias) @ #24
-    [38] <>temp<>35 := 1.0 - <>g<>23
-    [39] <>temp<>36 := 2.0 - 2.0 * <>x<>24
-    [40] <>arguments<>37 := allocArg(2) @ #25
-    [41] <>arguments<>37["0"] := <>temp<>35
-    [42] <>arguments<>37["1"] := <>temp<>36
-    [43] <>fun<>38 := <>Global<>getBase(FastBias)
-    [44] call(<>obj<>34, <>fun<>38, <>arguments<>37) @ #26
+(3,LBlock(2))
+    [0] assert(! <>x<>24 < 0.5)
+    [1] <>y<>33 := 1.0
+    [2] <>obj<>34 := <>Global<>toObject(FastBias) @ #24
+    [3] <>temp<>35 := 1.0 - <>g<>23
+    [4] <>temp<>36 := 2.0 - 2.0 * <>x<>24
+    [5] <>arguments<>37 := allocArg(2) @ #25
+    [6] <>arguments<>37["0"] := <>temp<>35
+    [7] <>arguments<>37["1"] := <>temp<>36
+    [8] <>fun<>38 := <>Global<>getBase(FastBias)
+    [0] call(<>obj<>34, <>fun<>38, <>arguments<>37) @ #26
 
 
-(3,LBlock(10))
-    [25] assert(<>x<>24 < 0.5)
-    [27] <>obj<>26 := <>Global<>toObject(FastBias) @ #20
-    [28] <>temp<>27 := 1.0 - <>g<>23
-    [29] <>temp<>28 := 2.0 * <>x<>24
-    [30] <>arguments<>29 := allocArg(2) @ #21
-    [31] <>arguments<>29["0"] := <>temp<>27
-    [32] <>arguments<>29["1"] := <>temp<>28
-    [33] <>fun<>30 := <>Global<>getBase(FastBias)
-    [34] call(<>obj<>26, <>fun<>30, <>arguments<>29) @ #22
+(3,LBlock(1))
+    [0] assert(<>x<>24 < 0.5)
+    [1] <>obj<>26 := <>Global<>toObject(FastBias) @ #20
+    [2] <>temp<>27 := 1.0 - <>g<>23
+    [3] <>temp<>28 := 2.0 * <>x<>24
+    [4] <>arguments<>29 := allocArg(2) @ #21
+    [5] <>arguments<>29["0"] := <>temp<>27
+    [6] <>arguments<>29["1"] := <>temp<>28
+    [7] <>fun<>30 := <>Global<>getBase(FastBias)
+    [0] call(<>obj<>26, <>fun<>30, <>arguments<>29) @ #22
 
 
-(3,LBlock(9))
+(3,LBlock(0))
 
 
-(2,LBlock(8))
+(2,LBlock(10))
 
 
-(2,LBlock(7))
+(2,LBlock(9))
     [EDGE] after-call(<>new1<>22)
-    [23] return(<>new1<>22)
-
-
-(2,LBlock(6))
+    [0] return(<>new1<>22)
 
 
 (2,LBlock(5))
-    [EDGE] after-call(<>y<>18)
-    [17] <>temp<>19 := <>y<>18 / LOG2_HALF
-    [18] <>arguments<>20 := allocArg(2) @ #14
-    [19] <>arguments<>20["0"] := <>temp<>13
-    [20] <>arguments<>20["1"] := <>temp<>19
-    [21] <>fun<>21 := <>Global<>toObject(<>obj<>12["pow"]) @ #15
-    [22] call(<>fun<>21, <>obj<>12, <>arguments<>20) @ #16
 
 
 (2,LBlock(4))
-    [9] <>obj<>12 := <>Global<>toObject(Math) @ #9
-    [10] <>temp<>13 := <>x<>10
-    [11] <>obj<>14 := <>Global<>toObject(FastLog2) @ #10
-    [12] <>temp<>15 := <>b<>9
-    [13] <>arguments<>16 := allocArg(1) @ #11
-    [14] <>arguments<>16["0"] := <>temp<>15
-    [15] <>fun<>17 := <>Global<>getBase(FastLog2)
-    [16] call(<>obj<>14, <>fun<>17, <>arguments<>16) @ #12
+    [EDGE] after-call(<>y<>18)
+    [0] <>temp<>19 := <>y<>18 / LOG2_HALF
+    [1] <>arguments<>20 := allocArg(2) @ #14
+    [2] <>arguments<>20["0"] := <>temp<>13
+    [3] <>arguments<>20["1"] := <>temp<>19
+    [4] <>fun<>21 := <>Global<>toObject(<>obj<>12["pow"]) @ #15
+    [0] call(<>fun<>21, <>obj<>12, <>arguments<>20) @ #16
 
 
-(1,LBlock(3))
+(2,LBlock(0))
+    [0] <>obj<>12 := <>Global<>toObject(Math) @ #9
+    [1] <>temp<>13 := <>x<>10
+    [2] <>obj<>14 := <>Global<>toObject(FastLog2) @ #10
+    [3] <>temp<>15 := <>b<>9
+    [4] <>arguments<>16 := allocArg(1) @ #11
+    [5] <>arguments<>16["0"] := <>temp<>15
+    [6] <>fun<>17 := <>Global<>getBase(FastLog2)
+    [0] call(<>obj<>14, <>fun<>17, <>arguments<>16) @ #12
 
 
-(1,LBlock(2))
+(1,LBlock(5))
+
+
+(1,LBlock(4))
     [EDGE] after-call(<>y<>7)
-    [6] <>obj<>8 := <>Global<>toObject(Math) @ #6
-    [7] return(<>y<>7 / <>obj<>8["LN2"])
+    [0] <>obj<>8 := <>Global<>toObject(Math) @ #6
+    [1] return(<>y<>7 / <>obj<>8["LN2"])
 
 
-(1,LBlock(1))
+(1,LBlock(0))
     [0] <>obj<>3 := <>Global<>toObject(Math) @ #1
     [1] <>temp<>4 := <>x<>1
     [2] <>arguments<>5 := allocArg(1) @ #2
     [3] <>arguments<>5["0"] := <>temp<>4
     [4] <>fun<>6 := <>Global<>toObject(<>obj<>3["log"]) @ #3
-    [5] call(<>fun<>6, <>obj<>3, <>arguments<>5) @ #4
+    [0] call(<>fun<>6, <>obj<>3, <>arguments<>5) @ #4
 
 
 (0,LBlock(0))
     A LOT!!! 427486 instructions are not printed here.
-
 

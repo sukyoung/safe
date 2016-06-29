@@ -1,11 +1,11 @@
-(0,LBlock(2))
+(0,LBlock(5))
 
 
-(0,LBlock(1))
+(0,LBlock(4))
     [EDGE] after-call(<>Global<>ignore1)
-    [5] y := <>Global<>ignore1
-    [6] x := <>Global<>ignore1
-    [7] noop(EndOfFile)
+    [0] y := <>Global<>ignore1
+    [1] x := <>Global<>ignore1
+    [2] noop(EndOfFile)
 
 
 (0,LBlock(0))
@@ -13,7 +13,6 @@
     [1] <>obj<>1 := <>Global<>toObject(f) @ #1
     [2] <>arguments<>2 := allocArg(0) @ #2
     [3] <>fun<>3 := <>Global<>getBase(f)
-    [4] call(<>obj<>1, <>fun<>3, <>arguments<>2) @ #3
-
+    [0] call(<>obj<>1, <>fun<>3, <>arguments<>2) @ #3
 
 

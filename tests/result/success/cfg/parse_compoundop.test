@@ -1,16 +1,16 @@
 (0,LBlock(3))
-    [10] <>obj<>2["reason"] := <>old<>3 + <>y<>6
-    [11] noop(EndOfFile)
+    [0] <>obj<>2["reason"] := <>old<>3 + <>y<>6
+    [1] noop(EndOfFile)
 
 
 (0,LBlock(2))
-    [7] assert(! <>obj<>5["passed"])
-    [9] <>y<>6 := "wrong value "
+    [0] assert(! <>obj<>5["passed"])
+    [1] <>y<>6 := "wrong value "
 
 
 (0,LBlock(1))
-    [6] assert(<>obj<>5["passed"])
-    [8] <>y<>6 := ""
+    [0] assert(<>obj<>5["passed"])
+    [1] <>y<>6 := ""
 
 
 (0,LBlock(0))
@@ -20,6 +20,5 @@
     [3] <>old<>3 := <>obj<>2["reason"]
     [4] <>obj<>4 := <>Global<>toObject(testcases) @ #3
     [5] <>obj<>5 := <>Global<>toObject(<>obj<>4[tc]) @ #4
-
 
 

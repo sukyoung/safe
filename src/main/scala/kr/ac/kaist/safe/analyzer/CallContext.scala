@@ -36,7 +36,7 @@ case class CallContextManager(addrManager: AddressManager, callsiteDepth: Int = 
     def newCallContext(h: Heap, cfg: CFG, calleeFid: FunctionId, scopeLoc: Loc,
       thisLocSet: Set[Loc], newPureLocalObj: Obj): Set[(CallContext, Obj)] = {
       val k: Int =
-        cfg.funMap.get(calleeFid) match {
+        cfg.getFunc(calleeFid) match {
           case Some(fun) if fun.isUser => depth
           case _ => depth + 1 // additional depth for built-in calls.
         }

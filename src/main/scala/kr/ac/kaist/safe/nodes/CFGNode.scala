@@ -37,93 +37,115 @@ class CFG(
     override val ir: IRNode,
     globalVars: List[CFGId]
 ) extends CFGNode(ir) {
-  // all functions in this cfg
-  private var userFuncs: List[CFGFunction] = Nil
-  private var modelFuncs: List[CFGFunction] = Nil
-  def getUserFuncs: List[CFGFunction] = userFuncs
-  def getModelFuncs: List[CFGFunction] = modelFuncs
-
-  // TODO: delete this after refactoring dump
-  // all blocks in this cfg
-  private var blocks: List[CFGNormalBlock] = Nil
-  def addNode(block: CFGNormalBlock): Unit = blocks ::= block
-  def getAllBlocks: List[CFGBlock] = (userFuncs ++ modelFuncs).foldRight(List[CFGBlock]()) {
-    case (func, lst) => func.getBlocks ++ lst
+  // all functions / blocks in this cfg
+  private var funcs: List[CFGFunction] = Nil
+  def getAllFuncs: List[CFGFunction] = funcs
+  def getAllBlocks: List[CFGBlock] = funcs.foldLeft(List[CFGBlock]()) {
+    case (lst, func) => func.getAllBlocks ++ lst
   }
 
+  // TODO: delete this after refactoring dump
+  private var blocks: List[CFGNormalBlock] = Nil
+  def addNode(block: CFGNormalBlock): Unit = blocks ::= block
+
+  // function / block map from id
+  private val funMap: MMap[FunctionId, CFGFunction] = MHashMap()
+  def getFunc(fid: FunctionId): Option[CFGFunction] = funMap.get(fid)
+  def getBlock(fid: FunctionId, bid: BlockId): Option[CFGBlock] =
+    funMap.get(fid).fold[Option[CFGBlock]](None) { _.getBlock(bid) }
+
+  private var fidCount: FunctionId = 0
+  def getFId: FunctionId = fidCount
+
+  // global function
+  lazy val globalFunc: CFGFunction =
+    createFunction("", Nil, globalVars, "top-level", ir, "", true)
+
   // create function
-  def createFunction(argumentsName: String, argVars: List[CFGId], localVars: List[CFGId],
-    name: String, ir: IRNode, body: String, isUser: Boolean): CFGFunction = {
+  def createFunction(
+    argumentsName: String,
+    argVars: List[CFGId],
+    localVars: List[CFGId],
+    name: String,
+    ir: IRNode,
+    body: String,
+    isUser: Boolean
+  ): CFGFunction = {
     val func: CFGFunction =
-      CFGFunction(ir, this, argumentsName, argVars, localVars, name, body, isUser)
+      new CFGFunction(ir, this, argumentsName, argVars, localVars, name, body, isUser)
+    fidCount += 1
+    funcs ::= func
     funMap(func.id) = func
-    isUser match {
-      case true => userFuncs ::= func
-      case false => modelFuncs ::= func
-    }
-    return func
+    func
   }
 
   // add edge
-  def addEdge(fromList: List[CFGBlock], toList: List[CFGBlock], etype: CFGEdgeType = CFGEdgeNormal): Unit = {
+  def addEdge(
+    fromList: List[CFGBlock],
+    toList: List[CFGBlock],
+    etype: CFGEdgeType = CFGEdgeNormal
+  ): Unit = {
     fromList.foreach((from) => toList.foreach((to) => {
       from.addSucc(etype, to)
       to.addPred(etype, from)
     }))
   }
 
-  // dump cfg
+  // TODO dump cfg
   def dump: String = {
     var str: String = ""
     for (block <- blocks) str += block.dump
     str
   }
-
-  // init id counter
-  CFGFunction.resetId
-  CFGNormalBlock.resetId
-  CFGInst.resetId
-
-  // function / block map from id
-  val funMap: MMap[FunctionId, CFGFunction] = MHashMap()
-
-  // global function
-  val globalFunc: CFGFunction = createFunction("", Nil, globalVars, "top-level", ir, "", true)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // CFG Function
 ////////////////////////////////////////////////////////////////////////////////
 
-case class CFGFunction(
+class CFGFunction(
     override val ir: IRNode,
-    cfg: CFG,
-    argumentsName: String,
-    argVars: List[CFGId],
-    localVars: List[CFGId],
-    name: String,
-    body: String,
-    isUser: Boolean
+    val cfg: CFG,
+    val argumentsName: String,
+    val argVars: List[CFGId],
+    val localVars: List[CFGId],
+    val name: String,
+    val body: String,
+    val isUser: Boolean
 ) extends CFGNode(ir) {
-  val id: FunctionId = CFGFunction.getId
+  val id: FunctionId = cfg.getFId
 
   val entry = Entry(this)
   val exit = Exit(this)
   val exitExc = ExitExc(this)
 
+  private var bidCount: BlockId = 0
+  def getBId: BlockId = bidCount
+
   // create call
   def createCall(callInstCons: Call => CFGCallInst, retVar: CFGId): Call = {
     val call = Call(this, callInstCons, retVar)
+    bidCount += 3
     blocks = call :: call.afterCall :: call.afterCatch :: blocks
     call
   }
 
   // all blocks in this function
-  private var blocks: List[CFGBlock] = List(entry, exit, exitExc)
-  def getBlocks: List[CFGBlock] = blocks
+  private var blocks: List[CFGBlock] = List(exitExc, exit, entry)
+  private var blockMap: MMap[BlockId, CFGBlock] = MHashMap(
+    -1 -> entry,
+    -2 -> exit,
+    -3 -> exitExc
+  )
+  def getBlock(bid: BlockId): Option[CFGBlock] = blockMap.get(bid)
+  def getAllBlocks: List[CFGBlock] = blocks
+
+  // create block
   def createBlock: CFGNormalBlock = {
     val block = CFGNormalBlock(this)
+    bidCount += 1
     blocks ::= block
+    blockMap(block.id) = block
     cfg.addNode(block) // TODO delete this after refactoring dump
     block
   }
@@ -144,18 +166,16 @@ case class CFGFunction(
   override def toString: String = s"function[$id] $name"
 }
 
-object CFGFunction {
-  private var counter = 0
-  private def getId: Int = { counter += 1; counter - 1 }
-  def resetId: Unit = counter = 0
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 // CFG Block
 ////////////////////////////////////////////////////////////////////////////////
 
 sealed abstract class CFGBlock {
   val func: CFGFunction
+  val id: BlockId
+
+  protected var iidCount: InstId = 0
+  def getIId: InstId = iidCount
 
   // edges incident with this cfg node
   protected val succs: MMap[CFGEdgeType, List[CFGBlock]] = MHashMap()
@@ -191,16 +211,19 @@ object CFGBlock {
 
 // entry, exit, exception exit
 case class Entry(func: CFGFunction) extends CFGBlock {
+  val id: BlockId = -1
   override def toString: String = "Entry"
   def toString(indent: Int): String = " " * indent + "Entry"
   def span: Span = func.span.copy(end = func.span.begin)
 }
 case class Exit(func: CFGFunction) extends CFGBlock {
+  val id: BlockId = -2
   override def toString: String = "Exit"
   def toString(indent: Int): String = " " * indent + "Exit"
   def span: Span = func.span.copy(begin = func.span.end)
 }
 case class ExitExc(func: CFGFunction) extends CFGBlock {
+  val id: BlockId = -3
   override def toString: String = "ExitExc"
   def toString(indent: Int): String = " " * indent + "ExitExc"
   def span: Span = func.span.copy(begin = func.span.end)
@@ -208,6 +231,7 @@ case class ExitExc(func: CFGFunction) extends CFGBlock {
 
 // call, after-call, after-catch
 case class Call(func: CFGFunction) extends CFGBlock {
+  val id: BlockId = func.getBId
   private var iAfterCall: AfterCall = _
   private var iAfterCatch: AfterCatch = _
   private var iCallInst: CFGCallInst = _
@@ -232,15 +256,18 @@ object Call {
     call.iAfterCall = AfterCall(func, retVar, call)
     call.iAfterCatch = AfterCatch(func, call)
     call.iCallInst = callInstCons(call)
+    call.iidCount += 1
     call
   }
 }
 case class AfterCall(func: CFGFunction, retVar: CFGId, call: Call) extends CFGBlock {
+  val id: BlockId = func.getBId + 1
   override def toString: String = s"AfterCall <- $call"
   def span: Span = call.callInst.span.copy(begin = call.callInst.span.end)
   def toString(indent: Int): String = " " * indent + "AfterCall"
 }
 case class AfterCatch(func: CFGFunction, call: Call) extends CFGBlock {
+  val id: BlockId = func.getBId + 2
   override def toString: String = s"AfterCatch <- $call"
   def toString(indent: Int): String = " " * indent + "AfterCatch"
   def span: Span = call.callInst.span.copy(begin = call.callInst.span.end)
@@ -248,7 +275,8 @@ case class AfterCatch(func: CFGFunction, call: Call) extends CFGBlock {
 
 // normal block
 case class CFGNormalBlock(func: CFGFunction) extends CFGBlock {
-  val id: BlockId = CFGNormalBlock.getId
+  // block id
+  val id: BlockId = func.getBId
 
   // inst list
   private var insts: List[CFGNormalInst] = Nil
@@ -257,6 +285,7 @@ case class CFGNormalBlock(func: CFGFunction) extends CFGBlock {
   // create inst
   def createInst(instCons: CFGNormalBlock => CFGNormalInst): CFGNormalInst = {
     val inst: CFGNormalInst = instCons(this)
+    iidCount += 1
     insts ::= inst
     inst
   }
@@ -311,11 +340,6 @@ case class CFGNormalBlock(func: CFGFunction) extends CFGBlock {
     }
   }
 }
-object CFGNormalBlock {
-  private var counter: Int = 0
-  private def getId: Int = { counter += 1; counter - 1 }
-  def resetId: Unit = counter = 0
-}
 
 ////////////////////////////////////////////////////////////////////////////////
 // CFG Block
@@ -340,12 +364,7 @@ sealed abstract class CFGInst(
     override val ir: IRNode,
     block: CFGBlock
 ) extends CFGNode(ir) {
-  val id: InstId = CFGInst.getId
-}
-object CFGInst {
-  private var counter: Int = 0
-  private def getId: Int = { counter += 1; counter - 1 }
-  def resetId: Unit = counter = 0
+  val id: InstId = block.getIId
 }
 
 /**

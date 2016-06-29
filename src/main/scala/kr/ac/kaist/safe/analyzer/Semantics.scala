@@ -569,7 +569,7 @@ class Semantics(
               calleCtxSet.foreach {
                 case (newCallCtx, newObj) => {
                   val argPropV = PropValue(ObjectValue(argVal, absTrue, absFalse, absFalse))
-                  cfg.funMap.get(fid) match {
+                  cfg.getFunc(fid) match {
                     case Some(funCFG) => {
                       val scopeObj = consObj.getOrElse("@scope", utils.PropValueBot)
                       val newObj2 =
@@ -646,7 +646,7 @@ class Semantics(
               callCtxSet.foreach {
                 case (newCallCtx, newObj) => {
                   val value = PropValue(ObjectValue(argVal, absTrue, absFalse, absFalse))
-                  cfg.funMap.get(fid) match {
+                  cfg.getFunc(fid) match {
                     case Some(funCFG) => {
                       val oNew2 =
                         newObj.update(funCFG.argumentsName, value, exist = true)

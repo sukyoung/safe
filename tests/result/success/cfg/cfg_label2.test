@@ -1,9 +1,8 @@
 (0,LBlock(1))
-    [1] noop(EndOfFile)
+    [0] noop(EndOfFile)
 
 
 (0,LBlock(0))
     [0] noop(StartOfFile)
-
 
 

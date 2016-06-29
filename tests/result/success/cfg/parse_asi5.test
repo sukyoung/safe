@@ -1,209 +1,209 @@
-(0,LBlock(22))
+(0,LBlock(35))
 
 
-(0,LBlock(21))
+(0,LBlock(34))
     [EDGE] after-call(<>Global<>ignore11)
-    [138] <>Global<>ignore13 := + z
-    [139] noop(EndOfFile)
+    [0] <>Global<>ignore13 := + z
+    [1] noop(EndOfFile)
+
+
+(0,LBlock(30))
+
+
+(0,LBlock(29))
+    [EDGE] after-call(<>z<>95)
+    [0] i := <>y<>90 / <>z<>95
+    [1] x := + y
+    [2] y := - y
+    [3] <>obj<>96 := <>Global<>toObject(print) @ #63
+    [4] <>temp<>97 := - y
+    [5] <>arguments<>98 := allocArg(1) @ #64
+    [6] <>arguments<>98["0"] := <>temp<>97
+    [7] <>fun<>99 := <>Global<>getBase(print)
+    [0] call(<>obj<>96, <>fun<>99, <>arguments<>98) @ #65
+
+
+(0,LBlock(25))
+
+
+(0,LBlock(24))
+    [EDGE] after-call(<>Global<>ignore3)
+    [0] s := "here is a string"
+    [1] <>y<>87 := 0
+    [2] <>temp<>88 := a - z
+    [3] <>z<>89 := allocArray(1) @ #57
+    [4] <>z<>89["0"] := <>temp<>88
+    [5] <>y<>90 := <>y<>87 / <>z<>89
+    [6] <>obj<>91 := <>Global<>toObject(g) @ #58
+    [7] <>temp<>92 := s
+    [8] <>arguments<>93 := allocArg(1) @ #59
+    [9] <>arguments<>93["0"] := <>temp<>92
+    [10] <>fun<>94 := <>Global<>toObject(<>obj<>91["exec"]) @ #60
+    [0] call(<>fun<>94, <>obj<>91, <>arguments<>93) @ #61
+
+
+(2,LBlock(10))
+
+
+(2,LBlock(9))
+    [EDGE] after-call(<>Global<>ignore6)
+
+
+(2,LBlock(5))
+
+
+(2,LBlock(4))
+    [EDGE] after-call(<>Global<>ignore5)
+    [0] <>obj<>79 := <>Global<>toObject(fetch_and_cache) @ #47
+    [1] <>temp<>80 := <>uri<>73
+    [2] <>arguments<>81 := allocArg(1) @ #48
+    [3] <>arguments<>81["0"] := <>temp<>80
+    [4] <>fun<>82 := <>Global<>getBase(fetch_and_cache)
+    [0] call(<>obj<>79, <>fun<>82, <>arguments<>81) @ #49
+
+
+(2,LBlock(0))
+    [0] <>obj<>75 := <>Global<>toObject(log) @ #43
+    [1] <>temp<>76 := "Looking up and caching " + <>uri<>73
+    [2] <>arguments<>77 := allocArg(1) @ #44
+    [3] <>arguments<>77["0"] := <>temp<>76
+    [4] <>fun<>78 := <>Global<>getBase(log)
+    [0] call(<>obj<>75, <>fun<>78, <>arguments<>77) @ #45
 
 
 (0,LBlock(20))
 
 
 (0,LBlock(19))
-    [EDGE] after-call(<>z<>95)
-    [129] i := <>y<>90 / <>z<>95
-    [130] x := + y
-    [131] y := - y
-    [132] <>obj<>96 := <>Global<>toObject(print) @ #63
-    [133] <>temp<>97 := - y
-    [134] <>arguments<>98 := allocArg(1) @ #64
-    [135] <>arguments<>98["0"] := <>temp<>97
-    [136] <>fun<>99 := <>Global<>getBase(print)
-    [137] call(<>obj<>96, <>fun<>99, <>arguments<>98) @ #65
-
-
-(0,LBlock(18))
-
-
-(0,LBlock(17))
-    [EDGE] after-call(<>Global<>ignore3)
-    [117] s := "here is a string"
-    [118] <>y<>87 := 0
-    [119] <>temp<>88 := a - z
-    [120] <>z<>89 := allocArray(1) @ #57
-    [121] <>z<>89["0"] := <>temp<>88
-    [122] <>y<>90 := <>y<>87 / <>z<>89
-    [123] <>obj<>91 := <>Global<>toObject(g) @ #58
-    [124] <>temp<>92 := s
-    [125] <>arguments<>93 := allocArg(1) @ #59
-    [126] <>arguments<>93["0"] := <>temp<>92
-    [127] <>fun<>94 := <>Global<>toObject(<>obj<>91["exec"]) @ #60
-    [128] call(<>fun<>94, <>obj<>91, <>arguments<>93) @ #61
-
-
-(2,LBlock(16))
-
-
-(2,LBlock(15))
-    [EDGE] after-call(<>Global<>ignore6)
-
-
-(2,LBlock(14))
-
-
-(2,LBlock(13))
-    [EDGE] after-call(<>Global<>ignore5)
-    [106] <>obj<>79 := <>Global<>toObject(fetch_and_cache) @ #47
-    [107] <>temp<>80 := <>uri<>73
-    [108] <>arguments<>81 := allocArg(1) @ #48
-    [109] <>arguments<>81["0"] := <>temp<>80
-    [110] <>fun<>82 := <>Global<>getBase(fetch_and_cache)
-    [111] call(<>obj<>79, <>fun<>82, <>arguments<>81) @ #49
-
-
-(2,LBlock(12))
-    [100] <>obj<>75 := <>Global<>toObject(log) @ #43
-    [101] <>temp<>76 := "Looking up and caching " + <>uri<>73
-    [102] <>arguments<>77 := allocArg(1) @ #44
-    [103] <>arguments<>77["0"] := <>temp<>76
-    [104] <>fun<>78 := <>Global<>getBase(log)
-    [105] call(<>obj<>75, <>fun<>78, <>arguments<>77) @ #45
-
-
-(0,LBlock(11))
-
-
-(0,LBlock(10))
     [EDGE] after-call(<>obj1<>67)
-    [95] <>obj<>68 := <>Global<>toObject(<>obj1<>67) @ #41
-    [96] <>temp<>69 := "/script.js"
-    [97] <>temp<>70 := "/style1.css"
-    [98] <>temp<>71 := "/style2.css"
-    [99] <>obj<>72 := <>Global<>toObject(<>obj<>68["/page1.html"]) @ #42
-    [112] <>temp<>84 := function (2) @ #51, #52
-    [113] <>arguments<>85 := allocArg(1) @ #53
-    [114] <>arguments<>85["0"] := <>temp<>84
-    [115] <>fun<>86 := <>Global<>toObject(<>obj<>72["forEach"]) @ #54
-    [116] call(<>fun<>86, <>obj<>72, <>arguments<>85) @ #55
+    [0] <>obj<>68 := <>Global<>toObject(<>obj1<>67) @ #41
+    [1] <>temp<>69 := "/script.js"
+    [2] <>temp<>70 := "/style1.css"
+    [3] <>temp<>71 := "/style2.css"
+    [4] <>obj<>72 := <>Global<>toObject(<>obj<>68["/page1.html"]) @ #42
+    [5] <>temp<>84 := function (2) @ #51, #52
+    [6] <>arguments<>85 := allocArg(1) @ #53
+    [7] <>arguments<>85["0"] := <>temp<>84
+    [8] <>fun<>86 := <>Global<>toObject(<>obj<>72["forEach"]) @ #54
+    [0] call(<>fun<>86, <>obj<>72, <>arguments<>85) @ #55
 
 
-(1,LBlock(9))
+(1,LBlock(5))
 
 
-(1,LBlock(8))
+(1,LBlock(4))
     [EDGE] after-call(<>Global<>ignore4)
 
 
-(1,LBlock(7))
-    [80] <>obj<>55 := <>Global<>toObject(print) @ #29
-    [81] <>y<>56 := "The abbreviation of "
-    [82] <>obj<>57 := <>Global<>toObject(<>a<>53) @ #30
-    [83] <>y<>58 := <>y<>56 + <>obj<>57[0] + " is "
-    [84] <>obj<>59 := <>Global<>toObject(<>a<>53) @ #31
-    [85] <>temp<>60 := <>y<>58 + <>obj<>59[1] + "."
-    [86] <>arguments<>61 := allocArg(1) @ #32
-    [87] <>arguments<>61["0"] := <>temp<>60
-    [88] <>fun<>62 := <>Global<>getBase(print)
-    [89] call(<>obj<>55, <>fun<>62, <>arguments<>61) @ #33
+(1,LBlock(0))
+    [0] <>obj<>55 := <>Global<>toObject(print) @ #29
+    [1] <>y<>56 := "The abbreviation of "
+    [2] <>obj<>57 := <>Global<>toObject(<>a<>53) @ #30
+    [3] <>y<>58 := <>y<>56 + <>obj<>57[0] + " is "
+    [4] <>obj<>59 := <>Global<>toObject(<>a<>53) @ #31
+    [5] <>temp<>60 := <>y<>58 + <>obj<>59[1] + "."
+    [6] <>arguments<>61 := allocArg(1) @ #32
+    [7] <>arguments<>61["0"] := <>temp<>60
+    [8] <>fun<>62 := <>Global<>getBase(print)
+    [0] call(<>obj<>55, <>fun<>62, <>arguments<>61) @ #33
 
 
-(0,LBlock(6))
+(0,LBlock(15))
+
+
+(0,LBlock(14))
+    [EDGE] after-call(<>obj1<>14)
+    [0] <>obj<>15 := <>Global<>toObject(<>obj1<>14) @ #15
+    [1] <>temp<>16 := "January"
+    [2] <>temp<>17 := "Jan"
+    [3] <>temp<>18 := allocArray(2) @ #16
+    [4] <>temp<>18["0"] := <>temp<>16
+    [5] <>temp<>18["1"] := <>temp<>17
+    [6] <>temp<>19 := "February"
+    [7] <>temp<>20 := "Feb"
+    [8] <>temp<>21 := allocArray(2) @ #17
+    [9] <>temp<>21["0"] := <>temp<>19
+    [10] <>temp<>21["1"] := <>temp<>20
+    [11] <>temp<>22 := "March"
+    [12] <>temp<>23 := "Mar"
+    [13] <>temp<>24 := allocArray(2) @ #18
+    [14] <>temp<>24["0"] := <>temp<>22
+    [15] <>temp<>24["1"] := <>temp<>23
+    [16] <>temp<>25 := "April"
+    [17] <>temp<>26 := "Apr"
+    [18] <>temp<>27 := allocArray(2) @ #19
+    [19] <>temp<>27["0"] := <>temp<>25
+    [20] <>temp<>27["1"] := <>temp<>26
+    [21] <>temp<>28 := "May"
+    [22] <>temp<>29 := "May"
+    [23] <>temp<>30 := allocArray(2) @ #20
+    [24] <>temp<>30["0"] := <>temp<>28
+    [25] <>temp<>30["1"] := <>temp<>29
+    [26] <>temp<>31 := "June"
+    [27] <>temp<>32 := "Jun"
+    [28] <>temp<>33 := allocArray(2) @ #21
+    [29] <>temp<>33["0"] := <>temp<>31
+    [30] <>temp<>33["1"] := <>temp<>32
+    [31] <>temp<>34 := "July"
+    [32] <>temp<>35 := "Jul"
+    [33] <>temp<>36 := allocArray(2) @ #22
+    [34] <>temp<>36["0"] := <>temp<>34
+    [35] <>temp<>36["1"] := <>temp<>35
+    [36] <>temp<>37 := "August"
+    [37] <>temp<>38 := "Aug"
+    [38] <>temp<>39 := allocArray(2) @ #23
+    [39] <>temp<>39["0"] := <>temp<>37
+    [40] <>temp<>39["1"] := <>temp<>38
+    [41] <>temp<>40 := "September"
+    [42] <>temp<>41 := "Sep"
+    [43] <>temp<>42 := allocArray(2) @ #24
+    [44] <>temp<>42["0"] := <>temp<>40
+    [45] <>temp<>42["1"] := <>temp<>41
+    [46] <>temp<>43 := "October"
+    [47] <>temp<>44 := "Oct"
+    [48] <>temp<>45 := allocArray(2) @ #25
+    [49] <>temp<>45["0"] := <>temp<>43
+    [50] <>temp<>45["1"] := <>temp<>44
+    [51] <>temp<>46 := "November"
+    [52] <>temp<>47 := "Nov"
+    [53] <>temp<>48 := allocArray(2) @ #26
+    [54] <>temp<>48["0"] := <>temp<>46
+    [55] <>temp<>48["1"] := <>temp<>47
+    [56] <>temp<>49 := "December"
+    [57] <>temp<>50 := "Dec"
+    [58] <>field1<>51 := allocArray(2) @ #27
+    [59] <>field1<>51["0"] := <>temp<>49
+    [60] <>field1<>51["1"] := <>temp<>50
+    [61] <>obj<>52 := <>Global<>toObject(<>obj<>15[<>field1<>51]) @ #28
+    [62] <>temp<>64 := function (1) @ #35, #36
+    [63] <>arguments<>65 := allocArg(1) @ #37
+    [64] <>arguments<>65["0"] := <>temp<>64
+    [65] <>fun<>66 := <>Global<>toObject(<>obj<>52["forEach"]) @ #38
+    [0] call(<>fun<>66, <>obj<>52, <>arguments<>65) @ #39
+
+
+(0,LBlock(10))
+
+
+(0,LBlock(9))
+    [EDGE] after-call(<>z<>10)
+    [0] a := <>y<>1 + <>z<>10
+    [1] a := b + c
+    [2] <>obj<>11 := <>Global<>toObject(d + e) @ #10
+    [3] <>arguments<>12 := allocArg(0) @ #11
+    [4] <>fun<>13 := <>Global<>toObject(<>obj<>11["print"]) @ #12
+    [0] call(<>fun<>13, <>obj<>11, <>arguments<>12) @ #13
 
 
 (0,LBlock(5))
-    [EDGE] after-call(<>obj1<>14)
-    [18] <>obj<>15 := <>Global<>toObject(<>obj1<>14) @ #15
-    [19] <>temp<>16 := "January"
-    [20] <>temp<>17 := "Jan"
-    [21] <>temp<>18 := allocArray(2) @ #16
-    [22] <>temp<>18["0"] := <>temp<>16
-    [23] <>temp<>18["1"] := <>temp<>17
-    [24] <>temp<>19 := "February"
-    [25] <>temp<>20 := "Feb"
-    [26] <>temp<>21 := allocArray(2) @ #17
-    [27] <>temp<>21["0"] := <>temp<>19
-    [28] <>temp<>21["1"] := <>temp<>20
-    [29] <>temp<>22 := "March"
-    [30] <>temp<>23 := "Mar"
-    [31] <>temp<>24 := allocArray(2) @ #18
-    [32] <>temp<>24["0"] := <>temp<>22
-    [33] <>temp<>24["1"] := <>temp<>23
-    [34] <>temp<>25 := "April"
-    [35] <>temp<>26 := "Apr"
-    [36] <>temp<>27 := allocArray(2) @ #19
-    [37] <>temp<>27["0"] := <>temp<>25
-    [38] <>temp<>27["1"] := <>temp<>26
-    [39] <>temp<>28 := "May"
-    [40] <>temp<>29 := "May"
-    [41] <>temp<>30 := allocArray(2) @ #20
-    [42] <>temp<>30["0"] := <>temp<>28
-    [43] <>temp<>30["1"] := <>temp<>29
-    [44] <>temp<>31 := "June"
-    [45] <>temp<>32 := "Jun"
-    [46] <>temp<>33 := allocArray(2) @ #21
-    [47] <>temp<>33["0"] := <>temp<>31
-    [48] <>temp<>33["1"] := <>temp<>32
-    [49] <>temp<>34 := "July"
-    [50] <>temp<>35 := "Jul"
-    [51] <>temp<>36 := allocArray(2) @ #22
-    [52] <>temp<>36["0"] := <>temp<>34
-    [53] <>temp<>36["1"] := <>temp<>35
-    [54] <>temp<>37 := "August"
-    [55] <>temp<>38 := "Aug"
-    [56] <>temp<>39 := allocArray(2) @ #23
-    [57] <>temp<>39["0"] := <>temp<>37
-    [58] <>temp<>39["1"] := <>temp<>38
-    [59] <>temp<>40 := "September"
-    [60] <>temp<>41 := "Sep"
-    [61] <>temp<>42 := allocArray(2) @ #24
-    [62] <>temp<>42["0"] := <>temp<>40
-    [63] <>temp<>42["1"] := <>temp<>41
-    [64] <>temp<>43 := "October"
-    [65] <>temp<>44 := "Oct"
-    [66] <>temp<>45 := allocArray(2) @ #25
-    [67] <>temp<>45["0"] := <>temp<>43
-    [68] <>temp<>45["1"] := <>temp<>44
-    [69] <>temp<>46 := "November"
-    [70] <>temp<>47 := "Nov"
-    [71] <>temp<>48 := allocArray(2) @ #26
-    [72] <>temp<>48["0"] := <>temp<>46
-    [73] <>temp<>48["1"] := <>temp<>47
-    [74] <>temp<>49 := "December"
-    [75] <>temp<>50 := "Dec"
-    [76] <>field1<>51 := allocArray(2) @ #27
-    [77] <>field1<>51["0"] := <>temp<>49
-    [78] <>field1<>51["1"] := <>temp<>50
-    [79] <>obj<>52 := <>Global<>toObject(<>obj<>15[<>field1<>51]) @ #28
-    [90] <>temp<>64 := function (1) @ #35, #36
-    [91] <>arguments<>65 := allocArg(1) @ #37
-    [92] <>arguments<>65["0"] := <>temp<>64
-    [93] <>fun<>66 := <>Global<>toObject(<>obj<>52["forEach"]) @ #38
-    [94] call(<>fun<>66, <>obj<>52, <>arguments<>65) @ #39
 
 
 (0,LBlock(4))
-
-
-(0,LBlock(3))
-    [EDGE] after-call(<>z<>10)
-    [12] a := <>y<>1 + <>z<>10
-    [13] a := b + c
-    [14] <>obj<>11 := <>Global<>toObject(d + e) @ #10
-    [15] <>arguments<>12 := allocArg(0) @ #11
-    [16] <>fun<>13 := <>Global<>toObject(<>obj<>11["print"]) @ #12
-    [17] call(<>fun<>13, <>obj<>11, <>arguments<>12) @ #13
-
-
-(0,LBlock(2))
-
-
-(0,LBlock(1))
     [EDGE] after-call(<>obj1<>6)
-    [8] <>obj<>7 := <>Global<>toObject(<>obj1<>6) @ #5
-    [9] <>arguments<>8 := allocArg(0) @ #6
-    [10] <>fun<>9 := <>Global<>toObject(<>obj<>7["print"]) @ #7
-    [11] call(<>fun<>9, <>obj<>7, <>arguments<>8) @ #8
+    [0] <>obj<>7 := <>Global<>toObject(<>obj1<>6) @ #5
+    [1] <>arguments<>8 := allocArg(0) @ #6
+    [2] <>fun<>9 := <>Global<>toObject(<>obj<>7["print"]) @ #7
+    [0] call(<>fun<>9, <>obj<>7, <>arguments<>8) @ #8
 
 
 (0,LBlock(0))
@@ -214,7 +214,6 @@
     [4] <>arguments<>4 := allocArg(1) @ #2
     [5] <>arguments<>4["0"] := <>temp<>3
     [6] <>fun<>5 := <>Global<>getBase(c)
-    [7] call(<>obj<>2, <>fun<>5, <>arguments<>4) @ #3
-
+    [0] call(<>obj<>2, <>fun<>5, <>arguments<>4) @ #3
 
 

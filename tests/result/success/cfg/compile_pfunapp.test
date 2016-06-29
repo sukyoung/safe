@@ -1,68 +1,68 @@
-(0,LBlock(12))
+(0,LBlock(30))
 
 
-(0,LBlock(11))
+(0,LBlock(29))
     [EDGE] after-call(<>Global<>ignore7)
-    [30] noop(EndOfFile)
+    [0] noop(EndOfFile)
+
+
+(0,LBlock(25))
+
+
+(0,LBlock(24))
+    [EDGE] after-call(<>Global<>ignore6)
+    [0] <>obj<>18 := <>Global<>toObject(o) @ #24
+    [1] <>arguments<>19 := allocArg(0) @ #25
+    [2] <>fun<>20 := <>Global<>toObject(<>obj<>18["h"]) @ #26
+    [0] call(<>fun<>20, <>obj<>18, <>arguments<>19) @ #27
+
+
+(0,LBlock(20))
+
+
+(0,LBlock(19))
+    [EDGE] after-call(<>Global<>ignore5)
+    [0] <>obj<>15 := <>Global<>toObject(o) @ #19
+    [1] <>arguments<>16 := allocArg(0) @ #20
+    [2] <>fun<>17 := <>Global<>toObject(<>obj<>15["g"]) @ #21
+    [0] call(<>fun<>17, <>obj<>15, <>arguments<>16) @ #22
+
+
+(0,LBlock(15))
+
+
+(0,LBlock(14))
+    [EDGE] after-call(<>Global<>ignore4)
+    [0] <>obj<>12 := <>Global<>toObject(o) @ #14
+    [1] <>arguments<>13 := allocArg(0) @ #15
+    [2] <>fun<>14 := <>Global<>toObject(<>obj<>12[f]) @ #16
+    [0] call(<>fun<>14, <>obj<>12, <>arguments<>13) @ #17
 
 
 (0,LBlock(10))
 
 
 (0,LBlock(9))
-    [EDGE] after-call(<>Global<>ignore6)
-    [26] <>obj<>18 := <>Global<>toObject(o) @ #24
-    [27] <>arguments<>19 := allocArg(0) @ #25
-    [28] <>fun<>20 := <>Global<>toObject(<>obj<>18["h"]) @ #26
-    [29] call(<>fun<>20, <>obj<>18, <>arguments<>19) @ #27
-
-
-(0,LBlock(8))
-
-
-(0,LBlock(7))
-    [EDGE] after-call(<>Global<>ignore5)
-    [22] <>obj<>15 := <>Global<>toObject(o) @ #19
-    [23] <>arguments<>16 := allocArg(0) @ #20
-    [24] <>fun<>17 := <>Global<>toObject(<>obj<>15["g"]) @ #21
-    [25] call(<>fun<>17, <>obj<>15, <>arguments<>16) @ #22
-
-
-(0,LBlock(6))
+    [EDGE] after-call(<>Global<>ignore3)
+    [0] <>obj<>9 := <>Global<>toObject(o) @ #9
+    [1] <>arguments<>10 := allocArg(0) @ #10
+    [2] <>fun<>11 := <>Global<>toObject(<>obj<>9[f]) @ #11
+    [0] call(<>fun<>11, <>obj<>9, <>arguments<>10) @ #12
 
 
 (0,LBlock(5))
-    [EDGE] after-call(<>Global<>ignore4)
-    [18] <>obj<>12 := <>Global<>toObject(o) @ #14
-    [19] <>arguments<>13 := allocArg(0) @ #15
-    [20] <>fun<>14 := <>Global<>toObject(<>obj<>12[f]) @ #16
-    [21] call(<>fun<>14, <>obj<>12, <>arguments<>13) @ #17
 
 
 (0,LBlock(4))
-
-
-(0,LBlock(3))
-    [EDGE] after-call(<>Global<>ignore3)
-    [14] <>obj<>9 := <>Global<>toObject(o) @ #9
-    [15] <>arguments<>10 := allocArg(0) @ #10
-    [16] <>fun<>11 := <>Global<>toObject(<>obj<>9[f]) @ #11
-    [17] call(<>fun<>11, <>obj<>9, <>arguments<>10) @ #12
-
-
-(0,LBlock(2))
-
-
-(0,LBlock(1))
     [EDGE] after-call(<>Global<>ignore2)
-    [6] <>obj<>4 := <>Global<>toObject(f) @ #5
-    [7] <>temp<>5 := 3
-    [8] <>temp<>6 := true
-    [9] <>arguments<>7 := allocArg(2) @ #6
-    [10] <>arguments<>7["0"] := <>temp<>5
-    [11] <>arguments<>7["1"] := <>temp<>6
-    [12] <>fun<>8 := <>Global<>getBase(f)
-    [13] call(<>obj<>4, <>fun<>8, <>arguments<>7) @ #7
+    [0] <>obj<>4 := <>Global<>toObject(f) @ #5
+    [1] <>temp<>5 := 3
+    [2] <>temp<>6 := true
+    [3] <>arguments<>7 := allocArg(2) @ #6
+    [4] <>arguments<>7["0"] := <>temp<>5
+    [5] <>arguments<>7["1"] := <>temp<>6
+    [6] <>fun<>8 := <>Global<>getBase(f)
+    [0] call(<>obj<>4, <>fun<>8, <>arguments<>7) @ #7
 
 
 (0,LBlock(0))
@@ -71,7 +71,6 @@
     [2] <>obj<>1 := <>Global<>toObject(f) @ #1
     [3] <>arguments<>2 := allocArg(0) @ #2
     [4] <>fun<>3 := <>Global<>getBase(f)
-    [5] call(<>obj<>1, <>fun<>3, <>arguments<>2) @ #3
-
+    [0] call(<>obj<>1, <>fun<>3, <>arguments<>2) @ #3
 
 

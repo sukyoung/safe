@@ -1,24 +1,23 @@
-(0,LBlock(4))
-    [7] noop(EndOfFile)
-
-
 (0,LBlock(3))
-    [4] assert(! true)
-    [6] x := 3
+    [0] noop(EndOfFile)
 
 
 (0,LBlock(2))
-    [3] assert(true)
-    [5] x := 2
+    [0] assert(! true)
+    [1] x := 3
 
 
-(1,LBlock(1))
+(0,LBlock(1))
+    [0] assert(true)
+    [1] x := 2
+
+
+(1,LBlock(0))
 
 
 (0,LBlock(0))
     [0] f := function (1) @ #1, #2
     [1] noop(StartOfFile)
     [2] x := 1
-
 
 

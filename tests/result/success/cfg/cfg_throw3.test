@@ -1,20 +1,19 @@
 (0,LBlock(3))
-    [5] x := "D"
-    [6] noop(EndOfFile)
+    [0] x := "D"
+    [1] noop(EndOfFile)
 
 
 (0,LBlock(2))
-    [3] assert(! true)
+    [0] assert(! true)
 
 
 (0,LBlock(1))
-    [2] assert(true)
-    [4] throw("C")
+    [0] assert(true)
+    [1] throw("C")
 
 
 (0,LBlock(0))
     [0] noop(StartOfFile)
     [1] x := "A"
-
 
 

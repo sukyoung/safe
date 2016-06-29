@@ -2,38 +2,37 @@
 
 
 (0,LBlock(7))
-    [7] assert(x != "B")
+    [0] assert(x != "B")
 
 
 (0,LBlock(6))
-    [6] assert(x == "B")
-    [8] throw(3)
+    [0] assert(x == "B")
+    [1] throw(3)
 
 
 (0,LBlock(5))
 
 
 (0,LBlock(4))
-    [3] assert(! true)
+    [0] assert(! true)
 
 
 (0,LBlock(3))
-    [2] assert(true)
-    [4] x := "B"
-    [5] throw("C")
+    [0] assert(true)
+    [1] x := "B"
+    [2] throw("C")
 
 
 (0,LBlock(2))
 
 
 (0,LBlock(1))
-    [9] x := "E"
-    [10] noop(EndOfFile)
+    [0] x := "E"
+    [1] noop(EndOfFile)
 
 
 (0,LBlock(0))
     [0] noop(StartOfFile)
     [1] x := "A"
-
 
 

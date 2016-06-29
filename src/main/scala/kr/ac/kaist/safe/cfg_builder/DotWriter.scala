@@ -144,7 +144,7 @@ object DotWriter {
     o: OrderMap,
     blocksOpt: Option[List[CFGBlock]] = None
   ): String = {
-    val blocks = blocksOpt.getOrElse(cfg.getAllBlocks)
+    val blocks = blocksOpt.getOrElse(cfg.getAllBlocks.reverse)
     val sb = new StringBuilder
     sb.append("digraph \"DirectedGraph\" {").append(Config.LINE_SEP)
     sb.append(prefix)

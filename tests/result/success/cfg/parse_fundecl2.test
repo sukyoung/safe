@@ -1,7 +1,7 @@
-(2,LBlock(2))
+(2,LBlock(0))
 
 
-(1,LBlock(1))
+(1,LBlock(0))
 
 
 (0,LBlock(0))
@@ -10,6 +10,5 @@
     [2] noop(StartOfFile)
     [3] <>Global<>ignore2 := 3
     [4] noop(EndOfFile)
-
 
 

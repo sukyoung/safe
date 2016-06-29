@@ -2,11 +2,11 @@
 
 
 (0,LBlock(6))
-    [2] assert(! true)
+    [0] assert(! true)
 
 
 (0,LBlock(5))
-    [1] assert(true)
+    [0] assert(true)
 
 
 (0,LBlock(4))
@@ -19,11 +19,10 @@
 
 
 (0,LBlock(1))
-    [3] noop(EndOfFile)
+    [0] noop(EndOfFile)
 
 
 (0,LBlock(0))
     [0] noop(StartOfFile)
-
 
 

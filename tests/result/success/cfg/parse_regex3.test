@@ -1,24 +1,24 @@
+(0,LBlock(8))
+    [0] patt := <>Global<>ignore1
+    [1] noop(EndOfFile)
+
+
+(0,LBlock(7))
+    [0] assert(! <>cond<>8)
+    [1] <>Global<>ignore1 := <>obj<>6
+
+
+(0,LBlock(6))
+    [0] assert(<>cond<>8)
+    [1] <>Global<>ignore1 := <>newObj<>7
+
+
 (0,LBlock(5))
-    [15] patt := <>Global<>ignore1
-    [16] noop(EndOfFile)
 
 
 (0,LBlock(4))
-    [12] assert(! <>cond<>8)
-    [14] <>Global<>ignore1 := <>obj<>6
-
-
-(0,LBlock(3))
-    [11] assert(<>cond<>8)
-    [13] <>Global<>ignore1 := <>newObj<>7
-
-
-(0,LBlock(2))
-
-
-(0,LBlock(1))
     [EDGE] after-call(<>newObj<>7)
-    [10] <>cond<>8 := <>Global<>isObject(<>newObj<>7)
+    [0] <>cond<>8 := <>Global<>isObject(<>newObj<>7)
 
 
 (0,LBlock(0))
@@ -31,7 +31,6 @@
     [6] <>arguments<>4["1"] := <>temp<>3
     [7] <>proto<>5 := <>fun<>1["prototype"]
     [8] <>obj<>6 := alloc(<>proto<>5) @ #3
-    [9] construct(<>fun<>1, <>obj<>6, <>arguments<>4) @ #4, #5
-
+    [0] construct(<>fun<>1, <>obj<>6, <>arguments<>4) @ #4, #5
 
 

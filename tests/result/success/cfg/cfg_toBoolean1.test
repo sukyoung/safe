@@ -1,17 +1,16 @@
 (0,LBlock(3))
-    [3] noop(EndOfFile)
+    [0] noop(EndOfFile)
 
 
 (0,LBlock(2))
-    [2] assert(! x)
+    [0] assert(! x)
 
 
 (0,LBlock(1))
-    [1] assert(x)
+    [0] assert(x)
 
 
 (0,LBlock(0))
     [0] noop(StartOfFile)
-
 
 

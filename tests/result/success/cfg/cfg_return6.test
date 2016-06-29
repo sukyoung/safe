@@ -1,24 +1,21 @@
-(0,LBlock(9))
+(0,LBlock(5))
 
 
-(0,LBlock(8))
+(0,LBlock(4))
     [EDGE] after-call(<>Global<>ignore2)
-    [10] noop(EndOfFile)
-
-
-(1,LBlock(7))
+    [0] noop(EndOfFile)
 
 
 (1,LBlock(6))
-    [2] assert(! true)
 
 
 (1,LBlock(5))
-    [1] assert(true)
-    [3] x := "A"
+    [0] assert(! true)
 
 
 (1,LBlock(4))
+    [0] assert(true)
+    [1] x := "A"
 
 
 (1,LBlock(3))
@@ -28,16 +25,18 @@
 
 
 (1,LBlock(1))
+
+
+(1,LBlock(0))
     [0] return()
 
 
 (0,LBlock(0))
-    [4] f := function (1) @ #1, #2
-    [5] noop(StartOfFile)
-    [6] <>obj<>2 := <>Global<>toObject(f) @ #3
-    [7] <>arguments<>3 := allocArg(0) @ #4
-    [8] <>fun<>4 := <>Global<>getBase(f)
-    [9] call(<>obj<>2, <>fun<>4, <>arguments<>3) @ #5
-
+    [0] f := function (1) @ #1, #2
+    [1] noop(StartOfFile)
+    [2] <>obj<>2 := <>Global<>toObject(f) @ #3
+    [3] <>arguments<>3 := allocArg(0) @ #4
+    [4] <>fun<>4 := <>Global<>getBase(f)
+    [0] call(<>obj<>2, <>fun<>4, <>arguments<>3) @ #5
 
 

@@ -1,39 +1,38 @@
+(0,LBlock(8))
+    [0] x := <>Global<>ignore2
+    [1] noop(EndOfFile)
+
+
+(0,LBlock(7))
+    [0] assert(! <>cond<>8)
+    [1] <>Global<>ignore2 := <>obj<>6
+
+
 (0,LBlock(6))
-    [14] x := <>Global<>ignore2
-    [15] noop(EndOfFile)
+    [0] assert(<>cond<>8)
+    [1] <>Global<>ignore2 := <>newObj<>7
 
 
 (0,LBlock(5))
-    [11] assert(! <>cond<>8)
-    [13] <>Global<>ignore2 := <>obj<>6
 
 
 (0,LBlock(4))
-    [10] assert(<>cond<>8)
-    [12] <>Global<>ignore2 := <>newObj<>7
-
-
-(0,LBlock(3))
-
-
-(0,LBlock(2))
     [EDGE] after-call(<>newObj<>7)
-    [9] <>cond<>8 := <>Global<>isObject(<>newObj<>7)
+    [0] <>cond<>8 := <>Global<>isObject(<>newObj<>7)
 
 
-(1,LBlock(1))
+(1,LBlock(0))
     [0] <>obj<>2 := <>Global<>toObject(this) @ #1
     [1] <>obj<>2["x"] := 1
 
 
 (0,LBlock(0))
-    [2] F := function (1) @ #2, #3
-    [3] noop(StartOfFile)
-    [4] <>fun<>3 := <>Global<>toObject(F) @ #4
-    [5] <>arguments<>4 := allocArg(0) @ #5
-    [6] <>proto<>5 := <>fun<>3["prototype"]
-    [7] <>obj<>6 := alloc(<>proto<>5) @ #6
-    [8] construct(<>fun<>3, <>obj<>6, <>arguments<>4) @ #7, #8
-
+    [0] F := function (1) @ #2, #3
+    [1] noop(StartOfFile)
+    [2] <>fun<>3 := <>Global<>toObject(F) @ #4
+    [3] <>arguments<>4 := allocArg(0) @ #5
+    [4] <>proto<>5 := <>fun<>3["prototype"]
+    [5] <>obj<>6 := alloc(<>proto<>5) @ #6
+    [0] construct(<>fun<>3, <>obj<>6, <>arguments<>4) @ #7, #8
 
 
