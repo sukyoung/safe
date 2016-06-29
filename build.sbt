@@ -9,11 +9,13 @@ lazy val parseTest = taskKey[Unit]("Launch parse tests")
 lazy val astRewriteTest = taskKey[Unit]("Launch AST Rewrite tests")
 lazy val compileTest = taskKey[Unit]("Launch compile tests")
 lazy val cfgBuildTest = taskKey[Unit]("Launch cfg Build tests")
+lazy val analyzeTest = taskKey[Unit]("Launch analyze tests")
 
 parseTest := (testOnly in Test).toTask(s" -- -n ParseTest").value
 astRewriteTest := (testOnly in Test).toTask(s" -- -n ASTRewriteTest").value
 compileTest := (testOnly in Test).toTask(s" -- -n CompileTest").value
 cfgBuildTest := (testOnly in Test).toTask(s" -- -n CFGBuildTest").value
+analyzeTest := (testOnly in Test).toTask(s" -- -n AnalyzeTest").value
 
 lazy val root = (project in file(".")).
   settings(

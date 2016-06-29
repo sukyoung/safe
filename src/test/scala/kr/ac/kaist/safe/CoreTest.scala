@@ -12,21 +12,22 @@
 package kr.ac.kaist.safe
 
 import org.scalatest._
-import org.scalatest.Assertions._
 import java.io.{ File, FilenameFilter }
-import scala.io.Source
-import scala.util.{ Try, Success, Failure }
 
-import kr.ac.kaist.safe.util.NodeUtil
-import kr.ac.kaist.safe.nodes.{ Program, IRRoot, CFG }
-import kr.ac.kaist.safe.config.{ Config, ArgParse }
+import kr.ac.kaist.safe.analyzer.domain.State
+
+import scala.io.Source
+import scala.util.{ Failure, Success, Try }
+import kr.ac.kaist.safe.nodes.{ CFG, IRRoot, Program }
+import kr.ac.kaist.safe.config.{ ArgParse, Config }
 import kr.ac.kaist.safe.parser.Parser
-import kr.ac.kaist.safe.phase.CFGBuild
+import kr.ac.kaist.safe.phase.{ Analyze, CFGBuild }
 
 object ParseTest extends Tag("ParseTest")
 object ASTRewriteTest extends Tag("ASTRewriteTest")
 object CompileTest extends Tag("CompileTest")
 object CFGBuildTest extends Tag("CFGBuildTest")
+object AnalyzeTest extends Tag("AnalyzeTest")
 
 class CoreTest extends FlatSpec {
   val SEP = File.separator
@@ -84,6 +85,15 @@ class CoreTest extends FlatSpec {
     }
   }
 
+  def analyzeTest(analysis: Try[(State, State)]): Unit = {
+    analysis match {
+      case Failure(_) => assert(false)
+      case Success(states) =>
+        val (normalSt, excSt) = states
+        assert(!normalSt.heap.isBottom)
+    }
+  }
+
   // Permute filenames for randomness
   for (filename <- scala.util.Random.shuffle(new File(jsDir).list(jsFilter).toSeq)) {
     val name = filename.substring(0, filename.length - 3)
@@ -109,5 +119,16 @@ class CoreTest extends FlatSpec {
     val cfg = ir.flatMap(cfgBuild.cfgBuild(config, _))
     val cfgName = resDir + "/cfg/" + name + ".test"
     registerTest("[CFG]" + filename, CFGBuildTest) { cfgBuildTest(cfg, cfgName) }
+  }
+
+  val analyzerTestDir = Config.BASE_DIR + SEP + "tests/js/semantics"
+  for (filename <- scala.util.Random.shuffle(new File(analyzerTestDir).list(jsFilter).toSeq)) {
+    val jsName = analyzerTestDir + SEP + filename
+
+    val (config, phase) = ArgParse(List("analyze", jsName)).get
+    val analyzer = phase.asInstanceOf[Analyze]
+    val analysis = analyzer.analyze(config)
+
+    //TODO    registerTest("[Analyze]" + filename, AnalyzeTest) { analyzeTest(analysis) }
   }
 }
