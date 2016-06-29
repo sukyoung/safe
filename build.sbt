@@ -1,6 +1,7 @@
 import scalariform.formatter.preferences._
 import java.io.File
 
+lazy val checkCopyrights = taskKey[Unit]("Checks copyrights of source files")
 lazy val buildParsers = taskKey[Unit]("Builds parsers")
 lazy val deleteParserDir = taskKey[Unit]("Delete java parser directory")
 
@@ -23,15 +24,21 @@ lazy val root = (project in file(".")).
     version := "2.0",
     organization := "kr.ac.kaist.safe",
     scalaVersion := "2.11.7",
+    checkCopyrights in Compile := {
+      val violated: String = (baseDirectory.value + "/bin/checkCopyrights.sh" !!)
+      if (violated != "") {
+        throw new Error("\nFix the copyright(s) of the following:\n" + violated)
+      }
+    },
     buildParsers in Compile := {
       val xtcFile = new File("./lib/xtc.jar")
-      if(!xtcFile.exists) IO.download(new URL("http://cs.nyu.edu/rgrimm/xtc/xtc.jar"), xtcFile);
+      if (!xtcFile.exists) IO.download(new URL("http://cs.nyu.edu/rgrimm/xtc/xtc.jar"), xtcFile)
       val options = ForkOptions(bootJars = Seq(xtcFile))
       val srcDir = baseDirectory.value + "/src/main"
       val inDir = srcDir + "/scala/kr/ac/kaist/safe/parser/"
       val outDir = srcDir + "/java/kr/ac/kaist/safe/parser/"
       val outFile = file(outDir)
-      if(!outFile.exists) IO.createDirectory(outFile)
+      if (!outFile.exists) IO.createDirectory(outFile)
       val arguments = Seq("-in", srcDir + "/scala", "-enc-out", "UTF-8",
                           "-out", outDir, inDir + "JS.rats")
       val mainClass = "xtc.parser.Rats"
@@ -46,7 +53,7 @@ lazy val root = (project in file(".")).
       cache(file(inDir).asFile.listFiles.toSet)
     },
     testOptions in Test += Tests.Argument("-fDG", baseDirectory.value + "/tests/detail"),
-    compile <<= (compile in Compile) dependsOn (buildParsers in Compile),
+    compile <<= (compile in Compile) dependsOn (buildParsers in Compile, checkCopyrights in Compile),
     test <<= (test in Test) dependsOn compile
   )
 

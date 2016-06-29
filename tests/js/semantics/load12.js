@@ -1,12 +1,3 @@
-/*******************************************************************************
-    Copyright (c) 2012, S-Core.
-    All rights reserved.
-
-    Use is subject to license terms.
-
-    This distribution may include materials developed by third parties.
- ***************************************************************************** */
-
 function Class1() {this.x = "str"}
 function Class2() {this.y = 2}
 Class2.prototype = new Class1(); 

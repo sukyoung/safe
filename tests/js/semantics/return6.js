@@ -1,12 +1,3 @@
-/*******************************************************************************
-    Copyright (c) 2012, S-Core.
-    All rights reserved.
-
-    Use is subject to license terms.
-
-    This distribution may include materials developed by third parties.
- ******************************************************************************/
-
 // return value must be stored in divided space for each procedure.
 // However, because we store them into a space, the return value can be merged by finally block.
 var x, y, z;
