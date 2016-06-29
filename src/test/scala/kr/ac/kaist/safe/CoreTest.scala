@@ -15,6 +15,7 @@ import org.scalatest._
 import java.io.{ File, FilenameFilter }
 
 import kr.ac.kaist.safe.analyzer.domain.State
+import kr.ac.kaist.safe.cfg_builder.AddressManager
 
 import scala.io.Source
 import scala.util.{ Failure, Success, Try }
@@ -85,12 +86,31 @@ class CoreTest extends FlatSpec {
     }
   }
 
-  def analyzeTest(analysis: Try[(State, State)]): Unit = {
+  val resultPrefix = "__result"
+  val expectPrefix = "__expect"
+  def analyzeTest(analysis: Try[(State, State)], addrManager: AddressManager): Unit = {
     analysis match {
       case Failure(_) => assert(false)
       case Success(states) =>
         val (normalSt, excSt) = states
         assert(!normalSt.heap.isBottom)
+        normalSt.heap(addrManager.PredefLoc.GLOBAL) match {
+          case None => assert(false)
+          case Some(globalObj) if globalObj.isBottom => assert(false)
+          case Some(globalObj) =>
+            val resultKeySet = globalObj.collectKeysStartWith(resultPrefix)
+            val expectKeySet = globalObj.collectKeysStartWith(expectPrefix)
+            assert(resultKeySet.size == expectKeySet.size)
+            for (resultKey <- resultKeySet) {
+              val num = resultKey.substring(resultPrefix.length)
+              val expectKey = expectPrefix + num
+              assert(expectKeySet contains expectKey)
+              (globalObj(resultKey), globalObj(expectKey)) match {
+                case (None, _) | (_, None) => assert(false)
+                case (Some(resultVal), Some(expectVal)) => assert(expectVal <= resultVal)
+              }
+            }
+        }
     }
   }
 
@@ -125,7 +145,7 @@ class CoreTest extends FlatSpec {
   for (filename <- scala.util.Random.shuffle(new File(analyzerTestDir).list(jsFilter).toSeq)) {
     val jsName = analyzerTestDir + SEP + filename
 
-    val (config, phase) = ArgParse(List("analyze", jsName)).get
+    val (config, phase) = ArgParse(List("analyze", "-analyze:testMode", jsName)).get
     val analyzer = phase.asInstanceOf[Analyze]
     val analysis = analyzer.analyze(config)
 

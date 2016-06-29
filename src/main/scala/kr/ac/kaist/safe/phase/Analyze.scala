@@ -29,6 +29,7 @@ case class Analyze(
   }
   def analyze(config: Config): Try[(State, State)] =
     prev.cfgBuild(config).flatMap(analyze(config, _))
+
   def analyze(config: Config, cfg: CFG): Try[(State, State)] = {
     val utils = Utils(analyzeConfig.AbsUndef, analyzeConfig.AbsNull, analyzeConfig.AbsBool, analyzeConfig.AbsNumber, analyzeConfig.AbsString)
     val callCtxManager = CallContextManager(config.addrManager)
@@ -36,7 +37,9 @@ case class Analyze(
     val worklist = Worklist(cfg)
     worklist.add(ControlPoint(cfg.globalFunc.entry, callCtxManager.globalCallContext))
     val semantics = new Semantics(cfg, worklist, utils, config.addrManager)
-    val initSt = semantics.initState
+    val initSt =
+      if (analyzeConfig.testMode) semantics.initTestState
+      else semantics.initState
     cfg.globalFunc.entry.setState(callCtxManager.globalCallContext, initSt)
     val consoleOpt = analyzeConfig.console match {
       case true => Some(new Console(cfg, worklist, semantics, config.addrManager))
@@ -71,7 +74,8 @@ case class AnalyzeConfig(
     var AbsBool: AbsBoolUtil = DefaultBoolUtil,
     var AbsNumber: AbsNumberUtil = DefaultNumUtil,
     var AbsString: AbsStringUtil = new DefaultStrSetUtil(0),
-    var callsiteSensitivity: Int = -1
+    var callsiteSensitivity: Int = -1,
+    var testMode: Boolean = false
 ) extends ConfigOption {
   val prefix: String = "analyze:"
   val optMap: Map[String, OptionKind] = Map(
@@ -79,6 +83,7 @@ case class AnalyzeConfig(
     "console" -> BoolOption(() => console = true),
     "out" -> StrOption((s: String) => outFile = Some(s)),
     "maxStrSetSize" -> NumOption((n: Int) => if (n > 0) AbsString = new DefaultStrSetUtil(n)),
-    "callsiteSensitivity" -> NumOption((n: Int) => if (n > 0) callsiteSensitivity = n)
+    "callsiteSensitivity" -> NumOption((n: Int) => if (n > 0) callsiteSensitivity = n),
+    "testMode" -> BoolOption(() => testMode = true)
   )
 }
