@@ -65,6 +65,24 @@ class Semantics(
       .update("@proto", PropValue(ObjectValue(arrayProtoVal, absFalse, absFalse, absFalse)))
       .update("@extensible", PropValue(utils.ObjectValueWith(utils.absBool.True)))
 
+    val booleanProtoVal = Value(utils.PValueBot, HashSet(addrManager.ProtoLoc.OBJ))
+    val booleanProto = utils.ObjEmpty
+      .update("@class", PropValue(utils.ObjectValueWith(utils.absString.alpha("Boolean"))))
+      .update("@proto", PropValue(ObjectValue(booleanProtoVal, absFalse, absFalse, absFalse)))
+      .update("@extensible", PropValue(utils.ObjectValueWith(utils.absBool.True)))
+
+    val numberProtoVal = Value(utils.PValueBot, HashSet(addrManager.ProtoLoc.OBJ))
+    val numberProto = utils.ObjEmpty
+      .update("@class", PropValue(utils.ObjectValueWith(utils.absString.alpha("Number"))))
+      .update("@proto", PropValue(ObjectValue(numberProtoVal, absFalse, absFalse, absFalse)))
+      .update("@extensible", PropValue(utils.ObjectValueWith(utils.absBool.True)))
+
+    val stringProtoVal = Value(utils.PValueBot, HashSet(addrManager.ProtoLoc.OBJ))
+    val stringProto = utils.ObjEmpty
+      .update("@class", PropValue(utils.ObjectValueWith(utils.absString.alpha("String"))))
+      .update("@proto", PropValue(ObjectValue(stringProtoVal, absFalse, absFalse, absFalse)))
+      .update("@extensible", PropValue(utils.ObjectValueWith(utils.absBool.True)))
+
     val initHeap = Heap.Bot
       .update(addrManager.PredefLoc.SINGLE_PURE_LOCAL, globalPureLocalObj)
       .update(addrManager.PredefLoc.GLOBAL, globalObj)
@@ -73,9 +91,9 @@ class Semantics(
       .update(addrManager.ProtoLoc.OBJ, objPtoro)
       .update(addrManager.ProtoLoc.FUNCTION, functionProto)
       .update(addrManager.ProtoLoc.ARRAY, arrayProto)
-      .update(addrManager.ProtoLoc.BOOLEAN, utils.ObjEmpty)
-      .update(addrManager.ProtoLoc.NUMBER, utils.ObjEmpty)
-      .update(addrManager.ProtoLoc.STRING, utils.ObjEmpty)
+      .update(addrManager.ProtoLoc.BOOLEAN, booleanProto)
+      .update(addrManager.ProtoLoc.NUMBER, numberProto)
+      .update(addrManager.ProtoLoc.STRING, stringProto)
 
       .update(addrManager.ErrorLoc.ERR, utils.ObjEmpty)
       .update(addrManager.ErrorLoc.EVAL_ERR, utils.ObjEmpty)
