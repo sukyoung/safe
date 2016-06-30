@@ -37,11 +37,78 @@ abstract class Command(
     }
   }
 
+  private def showValue(c: Console, v: Value): String = {
+    val (pvalue, locset) = (v.pvalue, v.locset)
+    val pvalStr =
+      if (pvalue.isBottom) ""
+      else pvalue.toString
+
+    val locSetStr =
+      if (locset.isEmpty) ""
+      else locset.map(loc => locName(c, loc)).mkString(", ")
+
+    (pvalue.isBottom, locset.isEmpty) match {
+      case (true, true) => "⊥Value"
+      case (true, false) => locSetStr
+      case (false, true) => pvalStr
+      case (false, false) => s"$pvalStr, $locSetStr"
+    }
+  }
+
+  private def showObjVal(c: Console, ov: ObjectValue): String = {
+    val (value, writable, enumerable, configurable) = (ov.value, ov.writable, ov.enumerable, ov.configurable)
+    if (ov.isBottom) "⊥ObjectValue"
+    else {
+      val prefix =
+        (writable.gammaSimple, enumerable.gammaSimple, configurable.gammaSimple) match {
+          case (ConSimpleBot, ConSimpleBot, ConSimpleBot) => "[Val] "
+          case _ => s"[${writable.toString.take(1)}${enumerable.toString.take(1)}${configurable.toString.take(1)}] "
+        }
+      prefix + showValue(c, value)
+    }
+  }
+
+  private def showPropValue(c: Console, pv: PropValue): String = {
+    val objval = pv.objval
+    val funid = pv.funid
+    val objValStr =
+      if (objval.isBottom) ""
+      else showObjVal(c, objval)
+
+    val funidSetStr =
+      if (funid.isEmpty) ""
+      else s"[FunIds] " + funid.map(id => id.toString).mkString(", ")
+
+    (objval.isBottom, funid.isEmpty) match {
+      case (true, true) => "⊥PropValue"
+      case (true, false) => funidSetStr
+      case (false, true) => objValStr
+      case (false, false) => objValStr + Config.LINE_SEP + funidSetStr
+    }
+  }
+
+  private def showObj(c: Console, obj: Obj): String = {
+    val sortedMap = obj.map.toSeq.sortBy {
+      case (key, _) => key
+    }
+
+    sortedMap.map {
+      case (key, (propv, absent)) => key + (absent match {
+        case AbsentTop => s" @-> "
+        case AbsentBot => s" |-> "
+      }) + showPropValue(c, propv)
+    }.mkString(Config.LINE_SEP)
+  }
+
+  private def locName(c: Console, loc: Loc): String = {
+    val am = c.addrManager
+    (if (am.isRecentLoc(loc)) "#" else "##") + am.locName(loc)
+  }
+
   private def showLoc(c: Console, loc: Loc, obj: Obj): String = {
     val am = c.addrManager
-    val keyStr = (if (am.isRecentLoc(loc)) "#" else "##") +
-      am.locName(loc) + " -> "
-    val indentedStr = indentation(obj.toString, keyStr.length)
+    val keyStr = locName(c, loc) + " -> "
+    val indentedStr = indentation(showObj(c, obj), keyStr.length)
     keyStr + indentedStr
   }
 
