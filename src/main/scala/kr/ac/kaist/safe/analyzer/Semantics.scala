@@ -81,6 +81,8 @@ class Semantics(
   def initTestState: State = {
     def prop(value: Value): PropValue =
       PropValue(ObjectValue(value, utils.absBool.Bot, utils.absBool.Bot, utils.absBool.Bot))
+    def propLoc(l: Loc): PropValue =
+      PropValue(ObjectValue(Value(utils.PValueBot, HashSet(l)), utils.absBool.Bot, utils.absBool.Bot, utils.absBool.Bot))
 
     val st = initState
     val globalObj = st.heap.getOrElse(addrManager.PredefLoc.GLOBAL, utils.ObjEmpty)
@@ -96,10 +98,10 @@ class Semantics(
     // TODO: test constants for builtin models
     //  .update("__ObjConstLoc", Value(BuiltinObject.ConstLoc))
     //  .update("__ArrayConstLoc", Value(BuiltinObject.ConstLoc))
-    //  .update("__RefErrLoc", Value(BuiltinError.RefErrLoc))
-    //  .update("__RangeErrLoc", Value(BuiltinError.RangeErrLoc))
-    //  .update("__TypeErrLoc", Value(BuiltinError.TypeErrLoc))
-    //  .update("__URIErrLoc", Value(BuiltinError.URIErrLoc))
+        .update("__RefErrLoc", propLoc(addrManager.ErrorLoc.REF_ERR))
+        .update("__RangeErrLoc", propLoc(addrManager.ErrorLoc.RANGE_ERR))
+        .update("__TypeErrLoc", propLoc(addrManager.ErrorLoc.TYPE_ERR))
+        .update("__URIErrLoc", propLoc(addrManager.ErrorLoc.URI_ERR))
     //  .update("__RefErrProtoLoc", Value(BuiltinError.RefErrProtoLoc))
     //  .update("__RangeErrProtoLoc", Value(BuiltinError.RangeErrProtoLoc))
     //  .update("__TypeErrProtoLoc", Value(BuiltinError.TypeErrProtoLoc))

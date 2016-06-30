@@ -225,9 +225,40 @@ class Obj(private val map: Map[String, (PropValue, Absent)]) {
     else Obj(this.map - s)
   }
 
-  def -(absStr: AbsString): Obj = {
-    //TODO
-    this
+  def -(absStr: AbsString)(utils: Utils): Obj = {
+    val (defaultNumber, _) = this.map(STR_DEFAULT_NUMBER)
+    val (defaultOther, _) = this.map(STR_DEFAULT_OTHER)
+    absStr.gamma match {
+      case _ if this.isBottom => this
+      case ConSetBot() => utils.ObjBot
+      case ConSetTop() =>
+        val properties = this.map.keySet.filter(x => {
+          val isInternalProp = x.take(1) == "@"
+          val (prop, _) = this.map(x)
+          val configurable = utils.absBool.True <= prop.objval.configurable
+          (!isInternalProp) && configurable
+        })
+        val newMap = properties.foldLeft(this.map)((tmpMap, x) => {
+          val (prop, _) = tmpMap(x)
+          if (isNum(x) && prop <= defaultNumber) tmpMap - x
+          else if (!isNum(x) && prop <= defaultOther) tmpMap - x
+          else tmpMap.updated(x, (prop, AbsentTop))
+        })
+        Obj(newMap)
+      case ConSetCon(strSet) if strSet.size == 1 => this - strSet.head
+      case ConSetCon(strSet) =>
+        val newMap = strSet.foldLeft(this.map)((tmpMap, x) => {
+          tmpMap.get(x) match {
+            case None => tmpMap
+            case Some(pva) =>
+              val (prop, _) = pva
+              if (isNum(x) && prop <= defaultNumber) tmpMap - x
+              else if (!isNum(x) && prop <= defaultOther) tmpMap - x
+              else tmpMap.updated(x, (prop, AbsentTop))
+          }
+        })
+        Obj(newMap)
+    }
   }
 
   // absent value is set to AbsentBot because it is strong update.

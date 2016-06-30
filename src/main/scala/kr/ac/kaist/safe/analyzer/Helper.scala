@@ -113,7 +113,7 @@ case class Helper(utils: Utils, addrManager: AddressManager) {
     val (h2, b2) =
       if (((utils.absBool.True <= test) && (utils.absBool.False != isConfigurable))
         || utils.absBool.False <= test)
-        (h.update(loc, targetObj - absStr), utils.absBool.True)
+        (h.update(loc, (targetObj - absStr)(utils)), utils.absBool.True)
       else
         (Heap.Bot, utils.absBool.Bot)
     (h1 + h2, b1 + b2)
