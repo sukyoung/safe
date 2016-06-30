@@ -11,7 +11,7 @@
 
 package kr.ac.kaist.safe.analyzer
 
-import kr.ac.kaist.safe.nodes.{ CFGBlock, CFG }
+import kr.ac.kaist.safe.nodes.cfg.{ CFGBlock, CFG }
 
 import scala.collection.immutable.HashMap
 

@@ -11,7 +11,7 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
-import kr.ac.kaist.safe.nodes.FunctionId
+import kr.ac.kaist.safe.nodes.cfg.FunctionId
 
 trait AbsUndefUtil {
   val Top: AbsUndef

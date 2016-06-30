@@ -9,15 +9,8 @@
  * ****************************************************************************
  */
 
-package kr.ac.kaist.safe
+package kr.ac.kaist.safe.nodes.ast
 
-package object nodes {
-  // function id
-  type FunctionId = Int
-
-  // block id
-  type BlockId = Int
-
-  // inst id
-  type InstId = Int
+class ASTUnitWalker extends ASTGeneralWalker[Unit] {
+  def join(args: Unit*): Unit = {}
 }

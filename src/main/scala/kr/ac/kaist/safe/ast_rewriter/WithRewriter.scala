@@ -13,7 +13,7 @@ package kr.ac.kaist.safe.ast_rewriter
 
 import kr.ac.kaist.safe.errors.ExcLog
 import kr.ac.kaist.safe.errors.error._
-import kr.ac.kaist.safe.nodes._
+import kr.ac.kaist.safe.nodes.ast._
 import kr.ac.kaist.safe.util.{ NodeUtil => NU, Span }
 
 /* Rewrites a JavaScript source code using the with statement
@@ -104,7 +104,7 @@ class WithRewriter(program: Program, forTest: Boolean) {
       case _ => (Nil, Nil)
     }
     def mkBody(fds: List[FunDecl], vds: List[VarDecl], name: Id,
-      params: List[Id], body: SourceElements, env: Env, node: Node): SourceElements = env match {
+      params: List[Id], body: SourceElements, env: Env, node: ASTNode): SourceElements = env match {
       case EmptyEnv =>
         SourceElements(body.info, body.body.map(walk(_, env)), body.strict)
       case ConsEnv(withs, names, isNested) =>
@@ -120,7 +120,7 @@ class WithRewriter(program: Program, forTest: Boolean) {
         )
     }
     def mkFunctional(info: ASTNodeInfo, fds: List[FunDecl], vds: List[VarDecl], name: Id,
-      params: List[Id], bodyS: String, body: SourceElements, env: Env, node: Node): Functional =
+      params: List[Id], bodyS: String, body: SourceElements, env: Env, node: ASTNode): Functional =
       Functional(info, fds.map(walk(_, env)),
         vds.map(walk(_, env)),
         mkBody(fds, vds, name, params, body, env, node), name, params, bodyS)

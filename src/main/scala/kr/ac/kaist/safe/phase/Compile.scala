@@ -16,7 +16,8 @@ import scala.util.{ Try, Success, Failure }
 import kr.ac.kaist.safe.config.{ Config, ConfigOption, OptionKind, BoolOption, StrOption }
 import kr.ac.kaist.safe.errors.ExcLog
 import kr.ac.kaist.safe.compiler.Translator
-import kr.ac.kaist.safe.nodes.{ Program, IRRoot }
+import kr.ac.kaist.safe.nodes.ast.Program
+import kr.ac.kaist.safe.nodes.ir.IRRoot
 import kr.ac.kaist.safe.util.{ NodeUtil, Useful }
 
 // Compile phase struct.

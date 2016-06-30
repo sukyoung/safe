@@ -14,7 +14,7 @@ package kr.ac.kaist.safe.cfg_builder
 import scala.collection.mutable.{ Map => MMap, HashMap => MHashMap }
 import scala.util.{ Try, Success, Failure }
 import scala.util.matching.Regex
-import kr.ac.kaist.safe.nodes.{ FunctionId, InstId }
+import kr.ac.kaist.safe.nodes.cfg.{ FunctionId, InstId }
 import kr.ac.kaist.safe.analyzer.domain.{ Address, Loc, RecencyTag, Recent, Old }
 
 // Set by config/Config.scala

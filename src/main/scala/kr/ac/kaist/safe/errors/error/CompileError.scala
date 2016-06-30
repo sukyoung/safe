@@ -11,7 +11,7 @@
 
 package kr.ac.kaist.safe.errors.error
 
-import kr.ac.kaist.safe.nodes.{ ASTNode, NoOp, Id, Label, VarDecl, UnaryAssignOpApp, InfixOpApp, StringLiteral }
+import kr.ac.kaist.safe.nodes.ast._
 
 sealed abstract class CompileError(msg: String, ast: ASTNode) extends SafeError({
   s"${ast.info.span}: $msg"

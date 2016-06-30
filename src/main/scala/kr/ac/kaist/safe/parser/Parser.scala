@@ -18,7 +18,7 @@ import xtc.parser.Result
 import xtc.parser.SemanticValue
 import kr.ac.kaist.safe.errors.ExcLog
 import kr.ac.kaist.safe.errors.error.{ NotJSFileError, AlreadyMergedSourceError }
-import kr.ac.kaist.safe.nodes._
+import kr.ac.kaist.safe.nodes.ast._
 import kr.ac.kaist.safe.util.{ NodeUtil => NU, SourceLoc, Span }
 
 object Parser {

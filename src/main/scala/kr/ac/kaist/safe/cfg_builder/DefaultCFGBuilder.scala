@@ -16,7 +16,8 @@ import kr.ac.kaist.safe.config.Config
 import kr.ac.kaist.safe.errors.ExcLog
 import kr.ac.kaist.safe.errors.error._
 import kr.ac.kaist.safe.errors.warning._
-import kr.ac.kaist.safe.nodes._
+import kr.ac.kaist.safe.nodes.ir._
+import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.phase.CFGBuildConfig
 import kr.ac.kaist.safe.util.{ NodeUtil => NU, EJSLogNot, EJSString }
 import kr.ac.kaist.safe.analyzer.domain.Address

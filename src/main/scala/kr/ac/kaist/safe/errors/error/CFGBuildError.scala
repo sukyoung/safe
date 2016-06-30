@@ -11,7 +11,7 @@
 
 package kr.ac.kaist.safe.errors.error
 
-import kr.ac.kaist.safe.nodes.{ IRNode, IRTry, IRNew }
+import kr.ac.kaist.safe.nodes.ir.{ IRNode, IRTry, IRNew }
 
 ////////////////////////////////////////////////////////////////////////////////
 // CFG Build Error
