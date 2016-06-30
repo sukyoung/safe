@@ -343,12 +343,13 @@ class DefaultStrSetUtil(maxSetSize: Int) extends AbsStringUtil {
       case false if values.size == 0 => absBool.Bot
       case false => absBool.True
     }
-    def toAbsNumber(absNumber: AbsNumberUtil): AbsNumber = values.foldLeft(absNumber.Bot)((absN, str) => {
-      absN + str.trim match {
+    def toAbsNumber(absNumber: AbsNumberUtil): AbsNumber = values.foldLeft(absNumber.Bot)((tmpAbsNum, str) => {
+      val absNum = str.trim match {
         case "" => absNumber.alpha(0)
         case s if isHex(s) => absNumber.alpha((s + "p0").toDouble)
         case s => Try(absNumber.alpha(s.toDouble)).getOrElse(absNumber.NaN)
       }
+      absNum + tmpAbsNum
     })
   }
 }
