@@ -15,7 +15,7 @@ import kr.ac.kaist.safe.errors.ExcLog
 import kr.ac.kaist.safe.errors.error._
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.cfg_builder._
-import kr.ac.kaist.safe.nodes._
+import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.util._
 
 import scala.collection.immutable.{ HashMap, HashSet }

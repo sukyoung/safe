@@ -1,0 +1,25 @@
+/**
+ * *****************************************************************************
+ * Copyright (c) 2016, KAIST.
+ * All rights reserved.
+ *
+ * Use is subject to license terms.
+ *
+ * This distribution may include materials developed by third parties.
+ * ****************************************************************************
+ */
+
+package kr.ac.kaist.safe.nodes.ast
+
+// label
+case class Label(
+    override val info: ASTNodeInfo,
+    id: Id
+) extends ASTNode(info: ASTNodeInfo) {
+  override def toString(indent: Int): String = {
+    val s: StringBuilder = new StringBuilder
+    comment.map(c => s.append(c.toString(indent)))
+    s.append(id.toString(indent))
+    s.toString
+  }
+}

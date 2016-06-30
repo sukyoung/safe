@@ -19,7 +19,7 @@ import scala.collection.JavaConverters._
 import kr.ac.kaist.safe.config.Config
 import kr.ac.kaist.safe.analyzer.{ Worklist, Semantics, ControlPoint }
 import kr.ac.kaist.safe.analyzer.domain.State
-import kr.ac.kaist.safe.nodes._
+import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.cfg_builder.AddressManager
 import kr.ac.kaist.safe.util.Span
 

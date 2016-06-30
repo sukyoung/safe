@@ -46,7 +46,7 @@ import java.util.HashMap;
 import kr.ac.kaist.safe.errors.ExcLog;
 import kr.ac.kaist.safe.errors.error.*;
 import kr.ac.kaist.safe.errors.warning.*;
-import kr.ac.kaist.safe.nodes.*;
+import kr.ac.kaist.safe.nodes.ast.*;
 import kr.ac.kaist.safe.util.*;
 import xtc.util.Action;
 import java.io.*;

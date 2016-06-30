@@ -13,7 +13,7 @@ package kr.ac.kaist.safe.cfg_builder
 
 import java.io.{ File, FileWriter, BufferedInputStream }
 import scala.collection.immutable.TreeMap
-import kr.ac.kaist.safe.nodes._
+import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.config.Config
 
 object DotWriter {

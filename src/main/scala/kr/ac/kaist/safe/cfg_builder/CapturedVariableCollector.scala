@@ -15,7 +15,7 @@ import scala.collection.immutable.HashSet
 import kr.ac.kaist.safe.errors.ExcLog
 import kr.ac.kaist.safe.errors.error._
 import kr.ac.kaist.safe.errors.warning._
-import kr.ac.kaist.safe.nodes._
+import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.config.Config
 import kr.ac.kaist.safe.phase.CFGBuildConfig
 

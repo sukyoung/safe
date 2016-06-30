@@ -11,8 +11,7 @@
 
 package kr.ac.kaist.safe.analyzer
 
-import kr.ac.kaist.safe.nodes.FunctionId
-
+import kr.ac.kaist.safe.nodes.cfg.FunctionId
 import scala.collection.immutable.HashSet
 
 package object domain {

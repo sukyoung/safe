@@ -17,7 +17,7 @@ import kr.ac.kaist.safe.analyzer.{ ControlPoint, Worklist }
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.config.Config
 import kr.ac.kaist.safe.cfg_builder.DotWriter
-import kr.ac.kaist.safe.nodes._
+import kr.ac.kaist.safe.nodes.cfg._
 
 sealed abstract class Command(
     val name: String,

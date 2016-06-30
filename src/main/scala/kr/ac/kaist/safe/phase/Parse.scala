@@ -16,7 +16,7 @@ import java.io.{ BufferedWriter, FileWriter }
 import kr.ac.kaist.safe.config.{ Config, ConfigOption, OptionKind, BoolOption, StrOption }
 import kr.ac.kaist.safe.errors.ExcLog
 import kr.ac.kaist.safe.parser.Parser
-import kr.ac.kaist.safe.nodes.Program
+import kr.ac.kaist.safe.nodes.ast.Program
 import kr.ac.kaist.safe.util.Useful
 import kr.ac.kaist.safe.errors.error._
 

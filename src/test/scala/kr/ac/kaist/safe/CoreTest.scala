@@ -19,7 +19,9 @@ import kr.ac.kaist.safe.cfg_builder.AddressManager
 
 import scala.io.Source
 import scala.util.{ Failure, Success, Try }
-import kr.ac.kaist.safe.nodes.{ CFG, IRRoot, Program }
+import kr.ac.kaist.safe.nodes.ast.Program
+import kr.ac.kaist.safe.nodes.ir.IRRoot
+import kr.ac.kaist.safe.nodes.cfg.CFG
 import kr.ac.kaist.safe.config.{ ArgParse, Config }
 import kr.ac.kaist.safe.parser.Parser
 import kr.ac.kaist.safe.phase.{ Analyze, CFGBuild }

@@ -11,7 +11,9 @@
 
 package kr.ac.kaist.safe.util
 
-import kr.ac.kaist.safe.nodes._
+import kr.ac.kaist.safe.nodes.Node
+import kr.ac.kaist.safe.nodes.ast._
+import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.config.Config
 import java.io.BufferedWriter
 import java.io.IOException

@@ -11,7 +11,7 @@
 
 package kr.ac.kaist.safe.errors.error
 
-import kr.ac.kaist.safe.nodes.IRNode
+import kr.ac.kaist.safe.nodes.ir.IRNode
 
 ////////////////////////////////////////////////////////////////////////////////
 // Analyze Error

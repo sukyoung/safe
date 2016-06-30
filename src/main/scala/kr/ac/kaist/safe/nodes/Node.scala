@@ -13,6 +13,7 @@ package kr.ac.kaist.safe.nodes
 
 import kr.ac.kaist.safe.util.UIDObject
 import kr.ac.kaist.safe.util.{ Span, SourceLoc }
+import kr.ac.kaist.safe.nodes.ast.Comment
 
 abstract class Node extends UIDObject {
   def toString(indent: Int): String

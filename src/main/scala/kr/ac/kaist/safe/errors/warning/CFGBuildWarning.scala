@@ -11,7 +11,7 @@
 
 package kr.ac.kaist.safe.errors.warning
 
-import kr.ac.kaist.safe.nodes.{ IRNode, IRStmt }
+import kr.ac.kaist.safe.nodes.ir.{ IRNode, IRStmt }
 
 ////////////////////////////////////////////////////////////////////////////////
 // CFG Build Warning

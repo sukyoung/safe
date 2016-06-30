@@ -13,7 +13,7 @@ package kr.ac.kaist.safe.parser
 
 import java.lang.{ Integer => JInteger }
 import scala.util.Success
-import kr.ac.kaist.safe.nodes._
+import kr.ac.kaist.safe.nodes.ast._
 import kr.ac.kaist.safe.util.{ NodeUtil => NU }
 
 /* Rewrites a JavaScript source code
@@ -26,7 +26,7 @@ object DynamicRewriter extends ASTWalker {
 
   private def allConst(args: List[Expr]): Boolean = args.forall(_.isInstanceOf[StringLiteral])
   private def toStr(expr: Expr): String = expr.asInstanceOf[StringLiteral].escaped
-  private def split(args: List[Expr], n: Node): (String, String) = args.reverse match {
+  private def split(args: List[Expr], n: ASTNode): (String, String) = args.reverse match {
     case Nil => ("", "")
     case List(body) => ("", toStr(body))
     case body :: List(param) => (toStr(param), toStr(body))

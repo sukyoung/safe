@@ -17,7 +17,7 @@ import scala.util.{ Failure, Success, Try }
 import kr.ac.kaist.safe.config.{ BoolOption, Config, ConfigOption, NumOption, OptionKind, StrOption }
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.analyzer.console.Console
-import kr.ac.kaist.safe.nodes.CFG
+import kr.ac.kaist.safe.nodes.cfg.CFG
 
 // Analyze phase struct.
 case class Analyze(
