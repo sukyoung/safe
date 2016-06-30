@@ -45,15 +45,24 @@ class Semantics(
     val globalObjV = ObjectValue(Value(utils.PValueBot, HashSet(addrManager.PredefLoc.GLOBAL)), absFalse, absFalse, absFalse)
     val globalObj = helper.newObject(addrManager.ProtoLoc.OBJ)
       .update(NodeUtil.GLOBAL_NAME, PropValue(globalObjV))
+      .update("NaN", PropValue(ObjectValue(Value(utils.PValueBot.copyWith(utils.absNumber.NaN)), absFalse, absFalse, absFalse)))
+      .update("Infinity", PropValue(ObjectValue(Value(utils.PValueBot.copyWith(utils.absNumber.PosInf)), absFalse, absFalse, absFalse)))
+      .update("undefined", PropValue(ObjectValue(Value(utils.PValueBot.copyWith(utils.absUndef.Top)), absFalse, absFalse, absFalse)))
 
     //TODO need modeling for initial values of Proto
     val protoObjProto = utils.ObjectValueWith(utils.absNull.Top)
     val objPtoro = helper.newObject().update("@proto", PropValue(protoObjProto))
 
-    val protoVal = Value(utils.PValueBot, HashSet(addrManager.ProtoLoc.FUNCTION))
+    val functionProtoVal = Value(utils.PValueBot, HashSet(addrManager.ProtoLoc.FUNCTION))
     val functionProto = utils.ObjEmpty
       .update("@class", PropValue(utils.ObjectValueWith(utils.absString.alpha("Function"))))
-      .update("@proto", PropValue(ObjectValue(protoVal, absFalse, absFalse, absFalse)))
+      .update("@proto", PropValue(ObjectValue(functionProtoVal, absFalse, absFalse, absFalse)))
+      .update("@extensible", PropValue(utils.ObjectValueWith(utils.absBool.True)))
+
+    val arrayProtoVal = Value(utils.PValueBot, HashSet(addrManager.ProtoLoc.OBJ))
+    val arrayProto = utils.ObjEmpty
+      .update("@class", PropValue(utils.ObjectValueWith(utils.absString.alpha("Array"))))
+      .update("@proto", PropValue(ObjectValue(arrayProtoVal, absFalse, absFalse, absFalse)))
       .update("@extensible", PropValue(utils.ObjectValueWith(utils.absBool.True)))
 
     val initHeap = Heap.Bot
@@ -63,7 +72,7 @@ class Semantics(
 
       .update(addrManager.ProtoLoc.OBJ, objPtoro)
       .update(addrManager.ProtoLoc.FUNCTION, functionProto)
-      .update(addrManager.ProtoLoc.ARRAY, utils.ObjEmpty)
+      .update(addrManager.ProtoLoc.ARRAY, arrayProto)
       .update(addrManager.ProtoLoc.BOOLEAN, utils.ObjEmpty)
       .update(addrManager.ProtoLoc.NUMBER, utils.ObjEmpty)
       .update(addrManager.ProtoLoc.STRING, utils.ObjEmpty)
