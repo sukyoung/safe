@@ -66,15 +66,21 @@ object DotWriter {
   }
 
   def getLabel(block: CFGBlock): String = {
-    block match {
-      case e @ Entry(_) => "Entry" + e.func.id
-      case e @ Exit(_) => "Exit" + e.func.id
-      case e @ ExitExc(_) => "ExitExc" + e.func.id
-      case ca @ Call(_) => "Call" + ca.callInst.id
-      case ac @ AfterCall(_, _, _) => "AfterCall" + ac.call.callInst.id
-      case ac @ AfterCatch(_, _) => "AfterCatch" + ac.call.callInst.id
-      case b @ NormalBlock(_) => "Block" + b.id
-    }
+    val fid = block.func.id
+    val bid = block.id
+    (block match {
+      case Entry(_) => "Entry"
+      case Exit(_) => "Exit"
+      case ExitExc(_) => "ExitExc"
+      case Call(_) => "Call"
+      case AfterCall(_, _, _) => "AfterCall"
+      case AfterCatch(_, _) => "AfterCatch"
+      case NormalBlock(_) => "Block"
+    }) + s"[$fid][$bid]"
+  }
+
+  def getLabelQuote(block: CFGBlock): String = {
+    "\"" + getLabel(block) + "\""
   }
 
   def connectEdge(label: String, succs: Set[CFGBlock], edgStyle: String): String = succs.size match {
@@ -83,7 +89,7 @@ object DotWriter {
       val sb = new StringBuilder
       sb.append(label).append("->{")
       for (succ <- succs) {
-        sb.append(getLabel(succ)).append(";")
+        sb.append(getLabelQuote(succ)).append(";")
       }
       sb.append("}").append(edgeStyle(edgStyle))
       sb.toString()
@@ -96,7 +102,7 @@ object DotWriter {
       case None => ""
     }
     prefix +
-      getLabel(block) +
+      "\"" + getLabel(block) + "\"" +
       blockShape(NormalBlockShape) +
       blockInstLabel(getLabel(block) + "\\l" + order, block) +
       newLine
@@ -110,22 +116,22 @@ object DotWriter {
         val acall = call.afterCall
         val acatch = call.afterCatch
         sb.append(prefix)
-          .append(connectEdge(getLabel(block), Set(acall, acatch), call2AftcallEdgeStyle))
+          .append(connectEdge(getLabelQuote(block), Set(acall, acatch), call2AftcallEdgeStyle))
           .append(newLine)
       case exit @ Exit(func) =>
         sb.append(prefix)
-          .append(connectEdge(getLabel(block), Set(func.exitExc), exit2ExcExitEdgeStyle))
+          .append(connectEdge(getLabelQuote(block), Set(func.exitExc), exit2ExcExitEdgeStyle))
           .append(newLine)
           .append(prefix)
-          .append("{rank=same;" + getLabel(block))
-          .append(s" ExitExc${func.id}}")
+          .append("{rank=same;" + getLabelQuote(block))
+          .append(" " + getLabelQuote(func.exitExc) + "}")
           .append(newLine)
       case _ =>
     }
     block.getAllSucc.foreach {
       case (typ, blocks) =>
         sb.append(prefix)
-          .append(connectEdge(getLabel(block), blocks.toSet, typ match {
+          .append(connectEdge(getLabelQuote(block), blocks.toSet, typ match {
             case CFGEdgeNormal => NormalEdgeStyle
             case CFGEdgeExc => ExcEdgeStyle
             case CFGEdgeLoop => LoopEdgeStyle
