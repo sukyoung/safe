@@ -45,13 +45,23 @@ class Semantics(
     val globalObjV = ObjectValue(Value(utils.PValueBot, HashSet(addrManager.PredefLoc.GLOBAL)), absFalse, absFalse, absFalse)
     val globalObj = utils.ObjEmpty.update(NodeUtil.GLOBAL_NAME, PropValue(globalObjV))
 
+    //TODO need modeling for initial values of Proto
+    val protoObjProto = utils.ObjectValueWith(utils.absNull.Top)
+    val objPtoro = helper.newObject().update("@proto", PropValue(protoObjProto))
+
+    val protoVal = Value(utils.PValueBot, HashSet(addrManager.ProtoLoc.FUNCTION))
+    val functionProto = utils.ObjEmpty
+      .update("@class", PropValue(utils.ObjectValueWith(utils.absString.alpha("Function"))))
+      .update("@proto", PropValue(ObjectValue(protoVal, absFalse, absFalse, absFalse)))
+      .update("@extensible", PropValue(utils.ObjectValueWith(utils.absBool.True)))
+
     val initHeap = Heap.Bot
       .update(addrManager.PredefLoc.SINGLE_PURE_LOCAL, globalPureLocalObj)
       .update(addrManager.PredefLoc.GLOBAL, globalObj)
       .update(addrManager.PredefLoc.COLLAPSED, utils.ObjEmpty)
 
-      .update(addrManager.ProtoLoc.OBJ, utils.ObjEmpty)
-      .update(addrManager.ProtoLoc.FUNCTION, utils.ObjEmpty)
+      .update(addrManager.ProtoLoc.OBJ, objPtoro)
+      .update(addrManager.ProtoLoc.FUNCTION, functionProto)
       .update(addrManager.ProtoLoc.ARRAY, utils.ObjEmpty)
       .update(addrManager.ProtoLoc.BOOLEAN, utils.ObjEmpty)
       .update(addrManager.ProtoLoc.NUMBER, utils.ObjEmpty)

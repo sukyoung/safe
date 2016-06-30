@@ -27,24 +27,33 @@ case class Helper(utils: Utils, addrManager: AddressManager) {
 
   def canPut(h: Heap, loc: Loc, absStr: AbsString): AbsBool = canPutHelp(h, loc, absStr, loc)
 
-  def canPutHelp(h: Heap, loc1: Loc, absStr: AbsString, loc2: Loc): AbsBool = {
-    val domInStr = (h.getOrElse(loc1, utils.ObjBot) domIn absStr)(utils.absBool)
+  def canPutHelp(h: Heap, curLoc: Loc, absStr: AbsString, origLoc: Loc): AbsBool = {
+    val domInStr = (h.getOrElse(curLoc, utils.ObjBot) domIn absStr)(utils.absBool)
     val b1 =
       if (utils.absBool.True <= domInStr) {
-        val obj = h.getOrElse(loc1, utils.ObjBot)
+        val obj = h.getOrElse(curLoc, utils.ObjBot)
         obj.getOrElse(absStr, utils.PropValueBot).objval.writable
       } else utils.absBool.Bot
     val b2 =
       if (utils.absBool.False <= domInStr) {
-        val protoObj = h.getOrElse(loc1, utils.ObjBot).getOrElse("@proto", utils.PropValueBot)
+        val protoObj = h.getOrElse(curLoc, utils.ObjBot).getOrElse("@proto", utils.PropValueBot)
         val protoLocSet = protoObj.objval.value.locset
-        val b3 = protoObj.objval.value.pvalue.nullval.fold(utils.absBool.Bot)(_ => {
-          h.getOrElse(loc2, utils.ObjBot)
-            .getOrElse("@extensible", utils.PropValueBot).objval.value.pvalue.boolval
+        val b3 = protoObj.objval.value.pvalue.nullval.gamma match {
+          case ConSimpleBot => utils.absBool.Bot
+          case ConSimpleTop =>
+            h.getOrElse(curLoc, utils.ObjBot)
+              .getOrElse("@extensible", utils.PropValueBot).objval.value.pvalue.boolval
+        }
+        val b4 = protoLocSet.foldLeft(utils.absBool.Bot)((absB, loc) => {
+          absB + canPutHelp(h, loc, absStr, origLoc)
         })
-        protoLocSet.foldLeft(b3)((absB, loc) => {
-          absB + canPutHelp(h, loc, absStr, loc2)
-        })
+        val b5 =
+          if (utils.absBool.False <= b4)
+            h.getOrElse(origLoc, utils.ObjBot)
+              .getOrElse("@extensible", utils.PropValueBot).objval.value.pvalue.boolval
+          else utils.absBool.Bot
+
+        b3 + b4 + b5
       } else utils.absBool.Bot
     b1 + b2
   }
@@ -474,7 +483,13 @@ case class Helper(utils: Utils, addrManager: AddressManager) {
     utils.ObjEmpty.update("@outer", PropValue(outerEnvObjV))
   }
 
-  def newObject(): Obj = utils.ObjBot
+  def newObject(): Obj = {
+    val classObjVal = utils.ObjectValueWith(utils.absString.alpha("Object"))
+    val extensibleObjVal = utils.ObjectValueWith(utils.absBool.True)
+    utils.ObjEmpty
+      .update("@class", PropValue(classObjVal))
+      .update("@extensible", PropValue(extensibleObjVal))
+  }
 
   def newObject(loc: Loc): Obj = newObject(HashSet(loc))
 
@@ -800,7 +815,7 @@ case class Helper(utils: Utils, addrManager: AddressManager) {
     (Value(utils.PValueBot, locSet1 ++ locSet2), State(h2, ctx2) + st3, excSet)
   }
 
-  def toPrimitive(value: Value): PValue = utils.PValueBot
+  def toPrimitive(value: Value): PValue = value.pvalue
 
   def toPrimitiveBetter(h: Heap, value: Value): PValue = {
     value.pvalue + objToPrimitiveBetter(h, value.locset, "String")
