@@ -95,9 +95,9 @@ class Semantics(
         .update("__BoolTop", PropValue(utils.ObjectValueWith(utils.absBool.Top)))
         .update("__NumTop", PropValue(utils.ObjectValueWith(utils.absNumber.Top)))
         .update("__StrTop", PropValue(utils.ObjectValueWith(utils.absString.Top)))
-    // TODO: test constants for builtin models
-    //  .update("__ObjConstLoc", Value(BuiltinObject.ConstLoc))
-    //  .update("__ArrayConstLoc", Value(BuiltinObject.ConstLoc))
+        // TODO: test constants for builtin models
+        //  .update("__ObjConstLoc", Value(BuiltinObject.ConstLoc))
+        //  .update("__ArrayConstLoc", Value(BuiltinObject.ConstLoc))
         .update("__RefErrLoc", propLoc(addrManager.ErrorLoc.REF_ERR))
         .update("__RangeErrLoc", propLoc(addrManager.ErrorLoc.RANGE_ERR))
         .update("__TypeErrLoc", propLoc(addrManager.ErrorLoc.TYPE_ERR))
