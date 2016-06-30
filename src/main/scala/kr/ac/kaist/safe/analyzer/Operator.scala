@@ -63,7 +63,7 @@ case class Operator(helper: Helper) { //TODO
   def uopNeg(value: Value): Value = {
     val oldValue = value.toAbsBoolean(utils.absBool)
     oldValue.gamma match {
-      case ConSingleCon(b) => Value(utils.PValueBot.copyWith(utils.absBool.alpha(b)))
+      case ConSingleCon(b) => Value(utils.PValueBot.copyWith(utils.absBool.alpha(!b)))
       case _ => Value(utils.PValueBot.copyWith(oldValue))
     }
   }
