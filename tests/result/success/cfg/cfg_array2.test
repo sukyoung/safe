@@ -1,4 +1,7 @@
-(0,LBlock(0))
+function[0] top-level {
+  Entry[-1] -> [0]
+
+  Block[0] -> Exit, ExitExc
     [0] noop(StartOfFile)
     [1] <>Global<>ignore1 := allocArray(1) @ #1
     [2] a := <>Global<>ignore1
@@ -30,5 +33,9 @@
     [28] g := <>Global<>ignore7
     [29] noop(EndOfFile)
 
+  Exit[-2]
 
+  ExitExc[-3]
+
+}
 

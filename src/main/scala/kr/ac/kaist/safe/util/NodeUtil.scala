@@ -115,7 +115,7 @@ object NodeUtil {
 
   def getIndent(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
-    for (i <- 0 to indent - 1) s.append(" ")
+    for (i <- 0 to indent - 1) s.append("  ")
     s.toString
   }
   def join(indent: Int, all: List[Node], sep: String, result: StringBuilder): StringBuilder = all match {

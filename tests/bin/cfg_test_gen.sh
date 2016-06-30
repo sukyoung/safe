@@ -26,5 +26,5 @@ do
   cfg_out=$RSSPACE/success/cfg/$name.test
 
   echo "create $cfg_out"
-  `safe cfg $fil > $cfg_out`
+  safe cfgBuild -cfgBuild:out=$cfg_out $fil
 done

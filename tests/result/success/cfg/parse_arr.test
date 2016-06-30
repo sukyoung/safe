@@ -1,4 +1,7 @@
-(0,LBlock(0))
+function[0] top-level {
+  Entry[-1] -> [0]
+
+  Block[0] -> Exit, ExitExc
     [0] noop(StartOfFile)
     [1] <>temp<>1 := 1
     [2] <>temp<>2 := 2
@@ -14,5 +17,9 @@
     [12] <>Global<>ignore2["1"] := <>temp<>5
     [13] noop(EndOfFile)
 
+  Exit[-2]
 
+  ExitExc[-3]
+
+}
 

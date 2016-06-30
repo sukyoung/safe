@@ -1,12 +1,3 @@
-/*******************************************************************************
-    Copyright (c) 2012, S-Core.
-    All rights reserved.
-
-    Use is subject to license terms.
-
-    This distribution may include materials developed by third parties.
- ******************************************************************************/
-
 var func = [];
 for(var i = 0; i < 10; i++) {
 	func[i] = function(){ };

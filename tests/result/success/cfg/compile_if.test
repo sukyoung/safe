@@ -1,53 +1,48 @@
-(0,LBlock(12))
-    [12] noop(EndOfFile)
+function[0] top-level {
+  Entry[-1] -> [0]
 
-
-(0,LBlock(11))
-    [11] assert(! "1")
-
-
-(0,LBlock(10))
-    [10] assert("1")
-
-
-(0,LBlock(9))
-
-
-(0,LBlock(8))
-    [9] assert(! true)
-
-
-(0,LBlock(7))
-    [8] assert(true)
-
-
-(0,LBlock(6))
-
-
-(0,LBlock(5))
-    [6] assert(! false)
-
-
-(0,LBlock(4))
-    [5] assert(false)
-    [7] <>Global<>ignore6 := "jsaf"
-
-
-(0,LBlock(3))
-
-
-(0,LBlock(2))
-    [2] assert(! true)
-
-
-(0,LBlock(1))
-    [1] assert(true)
-    [3] <>Global<>ignore2 := 1
-    [4] <>Global<>ignore4 := 1.0
-
-
-(0,LBlock(0))
+  Block[0] -> [2], [1]
     [0] noop(StartOfFile)
 
+  Block[1] -> [3], ExitExc
+    [0] assert(true)
+    [1] <>Global<>ignore2 := 1
+    [2] <>Global<>ignore4 := 1.0
 
+  Block[2] -> [5], [4], ExitExc
+    [0] assert(! true)
+
+  Block[3] -> [8], [7]
+
+  Block[4] -> [6], ExitExc
+    [0] assert(false)
+    [1] <>Global<>ignore6 := "jsaf"
+
+  Block[5] -> [6], ExitExc
+    [0] assert(! false)
+
+  Block[6] -> [3]
+
+  Block[7] -> [9], ExitExc
+    [0] assert(true)
+
+  Block[8] -> [9], ExitExc
+    [0] assert(! true)
+
+  Block[9] -> [11], [10]
+
+  Block[10] -> [12], ExitExc
+    [0] assert("1")
+
+  Block[11] -> [12], ExitExc
+    [0] assert(! "1")
+
+  Block[12] -> Exit
+    [0] noop(EndOfFile)
+
+  Exit[-2]
+
+  ExitExc[-3]
+
+}
 

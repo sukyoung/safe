@@ -274,7 +274,7 @@ class Semantics(
           case call: Call => I(cp, call.callInst, st, State.Bot)
           case afterCall: AfterCall => (st, State.Bot)
           case afterCatch: AfterCatch => (st, State.Bot)
-          case block: CFGNormalBlock =>
+          case block: NormalBlock =>
             block.getInsts.foldRight((st, State.Bot))((inst, states) => {
               val (oldSt, oldExcSt) = states
               I(cp, inst, oldSt, oldExcSt)
@@ -631,7 +631,7 @@ class Semantics(
               calleCtxSet.foreach {
                 case (newCallCtx, newObj) => {
                   val argPropV = PropValue(ObjectValue(argVal, absTrue, absFalse, absFalse))
-                  cfg.funMap.get(fid) match {
+                  cfg.getFunc(fid) match {
                     case Some(funCFG) => {
                       val scopeObj = consObj.getOrElse("@scope", utils.PropValueBot)
                       val newObj2 =
@@ -708,7 +708,7 @@ class Semantics(
               callCtxSet.foreach {
                 case (newCallCtx, newObj) => {
                   val value = PropValue(ObjectValue(argVal, absTrue, absFalse, absFalse))
-                  cfg.funMap.get(fid) match {
+                  cfg.getFunc(fid) match {
                     case Some(funCFG) => {
                       val oNew2 =
                         newObj.update(funCFG.argumentsName, value, exist = true)

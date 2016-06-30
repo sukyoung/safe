@@ -29,7 +29,7 @@ catch(<>e<>2)
   try
   {
     {
-      <>Global<>ignore4 = function x<>funexpr@17:9-19:6<>3(this, <>arguments<>4) 
+      <>Global<>ignore4 = function x<>funexpr@9:9-11:6<>3(this, <>arguments<>4) 
       {
         var <>arg<>5
         <>arg<>5 = <>arguments<>4["0"]

@@ -1,62 +1,75 @@
-(2,LBlock(12))
-    [17] <>Global<>ignore8 := true
-    [18] <>t<>8 := false
+function[0] top-level {
+  Entry[-1] -> [0]
 
+  Block[0] -> [2], ExitExc
+    [0] g := function (1) @ #1, #2
+    [1] noop(StartOfFile)
+    [2] <>Global<>ignore3 := 3
+    [3] z := 4
+    [4] x := 5
+    [5] <>obj<>4 := y
+    [6] <>iterator<>5 := <>Global<>iteratorInit(<>obj<>4) @ #3
+    [7] <>cond1<>6 := <>Global<>iteratorHasNext(<>obj<>4, <>iterator<>5)
 
-(0,LBlock(11))
-    [16] <>cond1<>6 := <>Global<>iteratorHasNext(<>obj<>4, <>iterator<>5)
+  Block[1] -> Exit, ExitExc
+    [0] <>Global<>ignore6 := function (2) @ #4, #5
+    [1] h := <>Global<>ignore6
+    [2] noop(EndOfFile)
 
+  Block[2] -> [4], [3]
 
-(0,LBlock(10))
-    [13] assert(! <>cond1<>6)
+  Block[3] -> [5], ExitExc
+    [0] assert(<>cond1<>6)
+    [1] <>key<>7 := <>Global<>iteratorNext(<>obj<>4, <>iterator<>5)
+    [2] v := <>key<>7
 
+  Block[4] -> [1], ExitExc
+    [0] assert(! <>cond1<>6)
 
-(0,LBlock(9))
-    [12] assert(<>cond1<>6)
-    [14] <>key<>7 := <>Global<>iteratorNext(<>obj<>4, <>iterator<>5)
-    [15] v := <>key<>7
+  Block[5] -> [2]
+    [0] <>cond1<>6 := <>Global<>iteratorHasNext(<>obj<>4, <>iterator<>5)
 
+  Exit[-2]
 
-(0,LBlock(8))
+  ExitExc[-3]
 
+}
 
-(0,LBlock(7))
-    [19] <>Global<>ignore6 := function (2) @ #4, #5
-    [20] h := <>Global<>ignore6
-    [21] noop(EndOfFile)
+function[1] g {
+  Entry[-1] -> [0]
 
-
-(1,LBlock(6))
-
-
-(1,LBlock(5))
-    [2] assert(! e1)
-
-
-(1,LBlock(4))
-    [1] assert(e1)
-
-
-(1,LBlock(3))
-
-
-(1,LBlock(2))
-    [3] return(<>x<>1)
-
-
-(1,LBlock(1))
+  Block[0] -> [2], ExitExc
     [0] <>w<>2 := gen
 
+  Block[1] -> Exit, ExitExc
+    [0] return(<>x<>1)
 
-(0,LBlock(0))
-    [4] g := function (1) @ #1, #2
-    [5] noop(StartOfFile)
-    [6] <>Global<>ignore3 := 3
-    [7] z := 4
-    [8] x := 5
-    [9] <>obj<>4 := y
-    [10] <>iterator<>5 := <>Global<>iteratorInit(<>obj<>4) @ #3
-    [11] <>cond1<>6 := <>Global<>iteratorHasNext(<>obj<>4, <>iterator<>5)
+  Block[2] -> [4], [3]
 
+  Block[3] -> [5], ExitExc
+    [0] assert(e1)
 
+  Block[4] -> [1], ExitExc
+    [0] assert(! e1)
+
+  Block[5] -> [2]
+
+  Exit[-2]
+
+  ExitExc[-3]
+
+}
+
+function[2] h<>funexpr@10:5-13:2<> {
+  Entry[-1] -> [0]
+
+  Block[0] -> Exit, ExitExc
+    [0] <>Global<>ignore8 := true
+    [1] <>t<>8 := false
+
+  Exit[-2]
+
+  ExitExc[-3]
+
+}
 

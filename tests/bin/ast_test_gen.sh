@@ -26,5 +26,5 @@ do
   ast_out=$RSSPACE/success/astRewrite/$name.test
 
   echo "create $ast_out"
-  `safe astRewrite $fil > $ast_out`
+  safe astRewrite -astRewrite:out=$ast_out $fil
 done

@@ -182,7 +182,7 @@ case object CmdPrint extends Command("print", "Print out various information.") 
         case "fid" => rest match {
           case fidStr :: Nil if fidStr.forall(_.isDigit) =>
             val fid = fidStr.toInt
-            c.cfg.funMap.get(fid) match {
+            c.cfg.getFunc(fid) match {
               case Some(func) =>
                 val name = func.name
                 val span = func.span
@@ -268,9 +268,9 @@ case object CmdPrint extends Command("print", "Print out various information.") 
             val wo = c.worklist
             val o = wo.getOrderMap
             val blocks = reachableUserFunSet.foldRight(List[CFGBlock]()) {
-              case (func, lst) => func.getBlocks ++ lst
+              case (func, lst) => func.getAllBlocks ++ lst
             }
-            // println(DotWriter.drawGraph(cfg, o, Some(blocks)))
+            println(DotWriter.drawGraph(cfg, o, Some(blocks)))
             DotWriter.spawnDot(cfg, o, Some(blocks))
           }
           case _ => help

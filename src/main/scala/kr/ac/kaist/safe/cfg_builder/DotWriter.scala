@@ -73,7 +73,7 @@ object DotWriter {
       case ca @ Call(_) => "Call" + ca.callInst.id
       case ac @ AfterCall(_, _, _) => "AfterCall" + ac.call.callInst.id
       case ac @ AfterCatch(_, _) => "AfterCatch" + ac.call.callInst.id
-      case b @ CFGNormalBlock(_) => "Block" + b.id
+      case b @ NormalBlock(_) => "Block" + b.id
     }
   }
 
@@ -144,7 +144,7 @@ object DotWriter {
     o: OrderMap,
     blocksOpt: Option[List[CFGBlock]] = None
   ): String = {
-    val blocks = blocksOpt.getOrElse(cfg.getAllBlocks)
+    val blocks = blocksOpt.getOrElse(cfg.getAllBlocks.reverse)
     val sb = new StringBuilder
     sb.append("digraph \"DirectedGraph\" {").append(Config.LINE_SEP)
     sb.append(prefix)

@@ -26,5 +26,5 @@ do
   com_out=$RSSPACE/success/compile/$name.test
 
   echo "create $com_out"
-  `$SAFE_HOME/bin/safe compile -compile:out=$com_out $fil`
+  $SAFE_HOME/bin/safe compile -compile:out=$com_out $fil
 done

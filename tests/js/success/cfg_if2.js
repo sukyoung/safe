@@ -1,11 +1,3 @@
-/*******************************************************************************
-    Copyright (c) 2012, S-Core.
-    All rights reserved.
-
-    Use is subject to license terms.
-
-    This distribution may include materials developed by third parties.
- ***************************************************************************** */
 var productlist = {apple:100, banana:200, melon:300};
 var fruit, money;
 function pay (budget, product) {

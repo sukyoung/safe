@@ -1,3 +1,14 @@
+/**
+ * *****************************************************************************
+ * Copyright (c) 2016, KAIST.
+ * All rights reserved.
+ *
+ * Use is subject to license terms.
+ *
+ * This distribution may include materials developed by third parties.
+ * ****************************************************************************
+ */
+
 package kr.ac.kaist.safe.analyzer
 
 import kr.ac.kaist.safe.nodes.{ CFGBlock, CFG }
@@ -7,10 +18,10 @@ import scala.collection.immutable.HashMap
 object Worklist {
   def apply(cfg: CFG): Worklist = {
     val cfgBlockList: List[CFGBlock] = cfg.getAllBlocks
-    val (orderMap, order) = cfgBlockList.foldLeft((HashMap[CFGBlock, Int](), 0))((res, block) => {
-      val (tmpMap, tmpOrder) = res
-      (tmpMap + (block -> tmpOrder), tmpOrder + 1)
-    })
+    val (orderMap, order) = cfgBlockList.foldRight((HashMap[CFGBlock, Int](), 0)) {
+      case (block, (tmpMap, tmpOrder)) =>
+        (tmpMap + (block -> tmpOrder), tmpOrder + 1)
+    }
     new Worklist(orderMap)
   }
 }

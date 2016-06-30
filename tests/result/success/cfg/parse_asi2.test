@@ -1,85 +1,7 @@
-(0,LBlock(18))
+function[0] top-level {
+  Entry[-1] -> [0]
 
-
-(0,LBlock(17))
-    [EDGE] after-call(<>new1<>6)
-    [34] c := <>new1<>6
-
-
-(0,LBlock(16))
-
-
-(0,LBlock(15))
-    [23] assert(<>y<>9 != <>obj<>10[i])
-
-
-(0,LBlock(14))
-    [22] assert(<>y<>9 == <>obj<>10[i])
-
-
-(0,LBlock(13))
-    [24] <>old<>11 := i
-    [25] <>new<>12 := <>Global<>toNumber(<>old<>11)
-    [26] i := <>new<>12 + 1
-    [27] <>Global<>ignore5 := <>new<>12
-    [28] <>y<>7 := i
-    [29] <>obj<>8 := <>Global<>toObject(quitchars) @ #8
-
-
-(0,LBlock(12))
-    [19] assert(! <>y<>7 < <>obj<>8["length"])
-
-
-(0,LBlock(11))
-    [18] assert(<>y<>7 < <>obj<>8["length"])
-    [20] <>y<>9 := c
-    [21] <>obj<>10 := <>Global<>toObject(quitchars) @ #7
-
-
-(0,LBlock(10))
-
-
-(0,LBlock(9))
-
-
-(0,LBlock(8))
-    [30] <>obj<>3 := <>Global<>toObject(getc) @ #9
-    [31] <>arguments<>4 := allocArg(0) @ #10
-    [32] <>fun<>5 := <>Global<>getBase(getc)
-    [33] call(<>obj<>3, <>fun<>5, <>arguments<>4) @ #11
-
-
-(0,LBlock(7))
-    [13] assert(! <>new1<>6)
-
-
-(0,LBlock(6))
-    [12] assert(<>new1<>6)
-    [14] i := 0
-    [15] <>Global<>ignore3 := 0
-    [16] <>y<>7 := i
-    [17] <>obj<>8 := <>Global<>toObject(quitchars) @ #6
-
-
-(0,LBlock(5))
-
-
-(0,LBlock(4))
-
-
-(0,LBlock(3))
-    [EDGE] after-call(<>new1<>6)
-    [11] c := <>new1<>6
-
-
-(0,LBlock(2))
-
-
-(0,LBlock(1))
-    [35] noop(EndOfFile)
-
-
-(0,LBlock(0))
+  Block[0] -> [3], ExitExc
     [0] noop(StartOfFile)
     [1] <>temp<>1 := "q"
     [2] <>temp<>2 := "Q"
@@ -90,7 +12,84 @@
     [7] <>obj<>3 := <>Global<>toObject(getc) @ #2
     [8] <>arguments<>4 := allocArg(0) @ #3
     [9] <>fun<>5 := <>Global<>getBase(getc)
-    [10] call(<>obj<>3, <>fun<>5, <>arguments<>4) @ #4
 
+  Block[1] -> Exit
+    [0] noop(EndOfFile)
 
+  Block[2] -> [1]
+
+  Call[3]
+    [0] call(<>obj<>3, <>fun<>5, <>arguments<>4) @ #4
+
+  AfterCall[4] -> [6]
+
+  AfterCatch[5] -> [7]
+
+  Block[6] -> [8], ExitExc
+    [0] c := <>new1<>6
+
+  Block[7] -> ExitExc
+
+  Block[8] -> [10], [9]
+
+  Block[9] -> [13], ExitExc
+    [0] assert(<>new1<>6)
+    [1] i := 0
+    [2] <>Global<>ignore3 := 0
+    [3] <>y<>7 := i
+    [4] <>obj<>8 := <>Global<>toObject(quitchars) @ #6
+
+  Block[10] -> [2], ExitExc
+    [0] assert(! <>new1<>6)
+
+  Block[11] -> [20], ExitExc
+    [0] <>obj<>3 := <>Global<>toObject(getc) @ #9
+    [1] <>arguments<>4 := allocArg(0) @ #10
+    [2] <>fun<>5 := <>Global<>getBase(getc)
+
+  Block[12] -> [11]
+
+  Block[13] -> [15], [14]
+
+  Block[14] -> [18], [17], ExitExc
+    [0] assert(<>y<>7 < <>obj<>8["length"])
+    [1] <>y<>9 := c
+    [2] <>obj<>10 := <>Global<>toObject(quitchars) @ #7
+
+  Block[15] -> [12], ExitExc
+    [0] assert(! <>y<>7 < <>obj<>8["length"])
+
+  Block[16] -> [13], ExitExc
+    [0] <>old<>11 := i
+    [1] <>new<>12 := <>Global<>toNumber(<>old<>11)
+    [2] i := <>new<>12 + 1
+    [3] <>Global<>ignore5 := <>new<>12
+    [4] <>y<>7 := i
+    [5] <>obj<>8 := <>Global<>toObject(quitchars) @ #8
+
+  Block[17] -> [1], ExitExc
+    [0] assert(<>y<>9 == <>obj<>10[i])
+
+  Block[18] -> [19], ExitExc
+    [0] assert(<>y<>9 != <>obj<>10[i])
+
+  Block[19] -> [16]
+
+  Call[20]
+    [0] call(<>obj<>3, <>fun<>5, <>arguments<>4) @ #11
+
+  AfterCall[21] -> [23]
+
+  AfterCatch[22] -> [24]
+
+  Block[23] -> [8], ExitExc
+    [0] c := <>new1<>6
+
+  Block[24] -> ExitExc
+
+  Exit[-2]
+
+  ExitExc[-3]
+
+}
 

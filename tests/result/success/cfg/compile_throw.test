@@ -1,18 +1,22 @@
-(0,LBlock(3))
-    [4] noop(EndOfFile)
+function[0] top-level {
+  Entry[-1] -> [0]
 
-
-(0,LBlock(2))
-    [3] throw(1.1)
-
-
-(0,LBlock(1))
-    [2] throw("asdf")
-
-
-(0,LBlock(0))
+  Block[0] -> ExitExc
     [0] noop(StartOfFile)
     [1] throw(1)
 
+  Block[1] -> ExitExc
+    [0] throw("asdf")
 
+  Block[2] -> ExitExc
+    [0] throw(1.1)
+
+  Block[3] -> Exit
+    [0] noop(EndOfFile)
+
+  Exit[-2]
+
+  ExitExc[-3]
+
+}
 
