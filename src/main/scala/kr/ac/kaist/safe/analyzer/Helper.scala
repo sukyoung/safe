@@ -329,12 +329,10 @@ case class Helper(utils: Utils, addrManager: AddressManager) {
       val protoLocSet = globalObj.getOrElse("@proto", utils.PropValueBot).objval.value.locset
       val (v2, excSet) =
         if (utils.absBool.False <= (globalObj domIn x)(utils.absBool)) {
-          val excSet = protoLocSet.foldLeft(ExceptionSetEmpty)((excSet, protoLoc) => {
+          val excSet = protoLocSet.foldLeft(ExceptionSetEmpty)((tmpExcSet, protoLoc) => {
             if (utils.absBool.False <= hasProperty(h, protoLoc, utils.absString.alpha(x))) {
-              excSet + ReferenceError
-            } else {
-              excSet
-            }
+              tmpExcSet + ReferenceError
+            } else tmpExcSet
           })
           val v3 = protoLocSet.foldLeft(utils.ValueBot)((tmpVal, protoLoc) => {
             if (utils.absBool.True <= hasProperty(h, protoLoc, utils.absString.alpha(x))) {

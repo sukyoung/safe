@@ -43,7 +43,8 @@ class Semantics(
 
     val absFalse = utils.absBool.False
     val globalObjV = ObjectValue(Value(utils.PValueBot, HashSet(addrManager.PredefLoc.GLOBAL)), absFalse, absFalse, absFalse)
-    val globalObj = utils.ObjEmpty.update(NodeUtil.GLOBAL_NAME, PropValue(globalObjV))
+    val globalObj = helper.newObject(addrManager.ProtoLoc.OBJ)
+      .update(NodeUtil.GLOBAL_NAME, PropValue(globalObjV))
 
     //TODO need modeling for initial values of Proto
     val protoObjProto = utils.ObjectValueWith(utils.absNull.Top)
