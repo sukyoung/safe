@@ -70,7 +70,8 @@ class CFGFunction(
 
   // equals
   override def equals(other: Any): Boolean = other match {
-    case func: CFGFunction => (func.id == id)
+    case (func: CFGFunction) =>
+      (func.cfg.id == cfg.id && func.id == id)
     case _ => false
   }
 

@@ -156,7 +156,10 @@ case class NormalBlock(func: CFGFunction) extends CFGBlock {
 
   // equals
   override def equals(other: Any): Boolean = other match {
-    case (block: NormalBlock) => (block.id == id)
+    case (block: NormalBlock) =>
+      block.func.cfg.id == func.cfg.id &&
+        block.func.id == func.id &&
+        block.id == id
     case _ => false
   }
 

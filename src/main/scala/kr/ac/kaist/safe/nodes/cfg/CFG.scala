@@ -19,6 +19,9 @@ class CFG(
     override val ir: IRNode,
     globalVars: List[CFGId]
 ) extends CFGNode(ir) {
+  // cfg id
+  val id: Int = CFG.getId
+
   // all functions / blocks in this cfg
   private var funcs: List[CFGFunction] = Nil
   def getAllFuncs: List[CFGFunction] = funcs
@@ -77,4 +80,9 @@ class CFG(
     }
     s.toString
   }
+}
+
+object CFG {
+  private var idCount: Int = 0
+  private def getId: Int = idCount
 }

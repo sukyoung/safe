@@ -148,6 +148,7 @@ case object CmdPrint extends Command("print", "Print out various information.") 
                 }).toSet
               }
             } + cfg.globalFunc
+            val cur = c.getCurCP.node
 
             // dump each function node
             val reachableUserFunSet = reachableFunSet.filter(func => func.isUser)
@@ -155,9 +156,9 @@ case object CmdPrint extends Command("print", "Print out various information.") 
             val o = wo.getOrderMap
             val blocks = reachableUserFunSet.foldRight(List[CFGBlock]()) {
               case (func, lst) => func.getAllBlocks ++ lst
-            }
-            println(DotWriter.drawGraph(cfg, o, Some(blocks)))
-            DotWriter.spawnDot(cfg, o, Some(blocks))
+            }.reverse
+            println(DotWriter.drawGraph(cfg, o, cur, Some(blocks)))
+            DotWriter.spawnDot(cfg, o, cur, Some(blocks))
           }
           case _ => help
         }

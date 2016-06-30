@@ -18,6 +18,7 @@ import kr.ac.kaist.safe.config.Config
 
 object DotWriter {
   private type OrderMap = Map[CFGBlock, Int]
+  val CurBlockShape: String = "shape=record, style=bold, fontsize=11"
   val NormalBlockShape: String = "shape=record, fontsize=11"
   val NormalEdgeStyle: String = "style=solid"
   val ExcEdgeStyle: String = "style=dashed,label=\"exc\""
@@ -65,22 +66,24 @@ object DotWriter {
     sb.toString;
   }
 
+  def getName(block: CFGBlock): String = block match {
+    case Entry(_) => "Entry"
+    case Exit(_) => "Exit"
+    case ExitExc(_) => "ExitExc"
+    case Call(_) => "Call"
+    case AfterCall(_, _, _) => "AfterCall"
+    case AfterCatch(_, _) => "AfterCatch"
+    case NormalBlock(_) => "Block"
+  }
+
   def getLabel(block: CFGBlock): String = {
     val fid = block.func.id
     val bid = block.id
-    (block match {
-      case Entry(_) => "Entry"
-      case Exit(_) => "Exit"
-      case ExitExc(_) => "ExitExc"
-      case Call(_) => "Call"
-      case AfterCall(_, _, _) => "AfterCall"
-      case AfterCatch(_, _) => "AfterCatch"
-      case NormalBlock(_) => "Block"
-    }) + s"[$fid][$bid]"
-  }
-
-  def getLabelQuote(block: CFGBlock): String = {
-    "\"" + getLabel(block) + "\""
+    val name = getName(block)
+    "f" + fid + name + (block match {
+      case Entry(_) | Exit(_) | ExitExc(_) => ""
+      case _ => block.id
+    })
   }
 
   def connectEdge(label: String, succs: Set[CFGBlock], edgStyle: String): String = succs.size match {
@@ -89,22 +92,25 @@ object DotWriter {
       val sb = new StringBuilder
       sb.append(label).append("->{")
       for (succ <- succs) {
-        sb.append(getLabelQuote(succ)).append(";")
+        sb.append(getLabel(succ)).append(";")
       }
       sb.append("}").append(edgeStyle(edgStyle))
       sb.toString()
   }
 
   // block [label=...]
-  def drawBlock(cfg: CFG, block: CFGBlock, o: OrderMap): String = {
-    val order = o.get(block) match {
-      case Some(i) => s"[$i]"
-      case None => ""
-    }
+  def drawBlock(cfg: CFG, block: CFGBlock, o: OrderMap, isCur: Boolean = false): String = {
+    val order = o.get(block).getOrElse("")
+    val bid = block.id
+    val fid = block.func.id
+    val label = getName(block) + (block match {
+      case Entry(_) | Exit(_) | ExitExc(_) => s"\\l\\[fid=$fid\\]"
+      case _ => s"[$bid]"
+    })
     prefix +
-      "\"" + getLabel(block) + "\"" +
-      blockShape(NormalBlockShape) +
-      blockInstLabel(getLabel(block) + "\\l" + order, block) +
+      getLabel(block) +
+      blockShape(if (isCur) CurBlockShape else NormalBlockShape) +
+      blockInstLabel(label, block) +
       newLine
   }
 
@@ -116,22 +122,22 @@ object DotWriter {
         val acall = call.afterCall
         val acatch = call.afterCatch
         sb.append(prefix)
-          .append(connectEdge(getLabelQuote(block), Set(acall, acatch), call2AftcallEdgeStyle))
+          .append(connectEdge(getLabel(block), Set(acall, acatch), call2AftcallEdgeStyle))
           .append(newLine)
       case exit @ Exit(func) =>
         sb.append(prefix)
-          .append(connectEdge(getLabelQuote(block), Set(func.exitExc), exit2ExcExitEdgeStyle))
+          .append(connectEdge(getLabel(block), Set(func.exitExc), exit2ExcExitEdgeStyle))
           .append(newLine)
           .append(prefix)
-          .append("{rank=same;" + getLabelQuote(block))
-          .append(" " + getLabelQuote(func.exitExc) + "}")
+          .append("{rank=same;" + getLabel(block))
+          .append(" " + getLabel(func.exitExc) + "}")
           .append(newLine)
       case _ =>
     }
     block.getAllSucc.foreach {
       case (typ, blocks) =>
         sb.append(prefix)
-          .append(connectEdge(getLabelQuote(block), blocks.toSet, typ match {
+          .append(connectEdge(getLabel(block), blocks.toSet, typ match {
             case CFGEdgeNormal => NormalEdgeStyle
             case CFGEdgeExc => ExcEdgeStyle
             case CFGEdgeLoop => LoopEdgeStyle
@@ -148,6 +154,7 @@ object DotWriter {
   def drawGraph(
     cfg: CFG,
     o: OrderMap,
+    cur: CFGBlock,
     blocksOpt: Option[List[CFGBlock]] = None
   ): String = {
     val blocks = blocksOpt.getOrElse(cfg.getAllBlocks.reverse)
@@ -157,7 +164,7 @@ object DotWriter {
       .append("fontsize=12;node [fontsize=12];edge [fontsize=12]")
       .append(newLine)
     for (block <- blocks) {
-      sb.append(drawBlock(cfg, block, o)).append(drawEdge(cfg, block, o))
+      sb.append(drawBlock(cfg, block, o, block == cur)).append(drawEdge(cfg, block, o))
     }
     sb.append("}").toString
   }
@@ -165,13 +172,14 @@ object DotWriter {
   def writeDotFile(
     cfg: CFG,
     o: OrderMap,
+    cur: CFGBlock,
     blocksOpt: Option[List[CFGBlock]] = None,
     dotfile: String = "cfg.gv"
   ): Unit = {
     try {
       val f = new File(dotfile)
       val fw = new FileWriter(f)
-      fw.write(drawGraph(cfg, o, blocksOpt))
+      fw.write(drawGraph(cfg, o, cur, blocksOpt))
       fw.close
     } catch {
       case e: Throwable =>
@@ -184,12 +192,13 @@ object DotWriter {
   def spawnDot(
     cfg: CFG,
     o: OrderMap,
+    cur: CFGBlock,
     blocksOpt: Option[List[CFGBlock]] = None,
     dotFile: String = "cfg.gv",
     outFile: String = "cfg.pdf"
   ): Unit = {
     val cmdarray = Array("dot", "-Tpdf", dotFile, "-o", outFile)
-    writeDotFile(cfg, o, blocksOpt, dotFile)
+    writeDotFile(cfg, o, cur, blocksOpt, dotFile)
     println("Spawning...: " + cmdarray.mkString(" "))
     try {
       val p = Runtime.getRuntime.exec(cmdarray)
