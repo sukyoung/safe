@@ -13,6 +13,8 @@ package kr.ac.kaist.safe.analyzer.domain
 
 import kr.ac.kaist.safe.config.Config
 
+import scala.collection.immutable.HashMap
+
 trait Heap {
   val map: Map[Loc, Obj]
 
@@ -37,7 +39,7 @@ trait Heap {
 }
 
 object Heap {
-  val Bot: Heap = new DHeap(Map[Loc, Obj]())
+  val Bot: Heap = new DHeap(HashMap[Loc, Obj]())
   def apply(map: Map[Loc, Obj]): Heap = new DHeap(map)
 }
 
@@ -72,12 +74,19 @@ class DHeap(val map: Map[Loc, Obj]) extends Heap {
     else if (this.isBottom) that
     else if (that.isBottom) this
     else {
-      val joinMap =
-        if (this.map.size < that.map.size) {
-          this.map.foldLeft(that.map)((m, kv) => { kv match { case (k, v) => weakUpdated(m, k, v) } })
-        } else {
-          that.map.foldLeft(this.map)((m, kv) => { kv match { case (k, v) => weakUpdated(m, k, v) } })
+      val joinKeySet = this.map.keySet ++ that.map.keySet
+      val joinMap = joinKeySet.foldLeft(HashMap[Loc, Obj]())((m, key) => {
+        val joinObj = (this.map.get(key), that.map.get(key)) match {
+          case (Some(obj1), Some(obj2)) => Some(obj1 + obj2)
+          case (Some(obj1), None) => Some(obj1)
+          case (None, Some(obj2)) => Some(obj2)
+          case (None, None) => None
         }
+        joinObj match {
+          case Some(obj) => m.updated(key, obj)
+          case None => m
+        }
+      })
       new DHeap(joinMap)
     }
   }
