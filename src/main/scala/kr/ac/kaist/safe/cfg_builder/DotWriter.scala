@@ -38,22 +38,27 @@ object DotWriter {
   def blockInstLabel(label: String, block: CFGBlock): String = {
     val sb = new StringBuilder
     val escapeChars = Array('<', '>', '|', '"', '\\', '{', '}')
-    sb.append("[label=\"").append(label).append("|{")
-    var first = true;
+    sb.append("[label=\"").append(label)
     block match {
       case AfterCall(_, x, _) =>
+        sb.append("|{")
         sb.append("RET_VAR(")
         sb.append(escape(x.toString.toArray, escapeChars))
-        sb.append(")")
-        first = false;
+        sb.append(")}")
       case _ =>
     }
-    for (inst <- block.getInsts.reverse) {
-      if (first) first = false
-      else sb.append("\\l")
-      sb.append(escape((s"[${inst.id}] $inst").toArray, escapeChars))
+    block.getInsts.length match {
+      case 0 =>
+      case _ => {
+        sb.append("|{")
+        sb.append(block.getInsts.reverseIterator.map {
+          case inst =>
+            escape((s"[${inst.id}] $inst").toArray, escapeChars)
+        }.mkString("\\l"))
+        sb.append("\\l}")
+      }
     }
-    sb.append("\\l}\"]")
+    sb.append("\"]")
     sb.toString
   }
 
@@ -99,13 +104,13 @@ object DotWriter {
   }
 
   // block [label=...]
-  def drawBlock(cfg: CFG, block: CFGBlock, o: OrderMap, isCur: Boolean = false): String = {
-    val order = o.get(block).getOrElse("")
+  def drawBlock(cfg: CFG, block: CFGBlock, orderMap: Option[OrderMap], isCur: Boolean = false): String = {
+    val order: Option[String] = orderMap.map(_.get(block).fold("")(_.toString))
     val bid = block.id
     val fid = block.func.id
     val label = getName(block) + (block match {
-      case Entry(_) | Exit(_) | ExitExc(_) => s"\\l\\[fid=$fid\\]"
-      case _ => s"[$bid]"
+      case Entry(_) | Exit(_) | ExitExc(_) => s" \\[fid=$fid\\]"
+      case _ => s" [$bid]"
     })
     prefix +
       getLabel(block) +
@@ -115,7 +120,7 @@ object DotWriter {
   }
 
   // block1 -> block2 [style=...]
-  def drawEdge(cfg: CFG, block: CFGBlock, o: OrderMap): String = {
+  def drawEdge(cfg: CFG, block: CFGBlock): String = {
     val sb = new StringBuilder
     block match {
       case call @ Call(_) =>
@@ -153,8 +158,8 @@ object DotWriter {
 
   def drawGraph(
     cfg: CFG,
-    o: OrderMap,
-    cur: CFGBlock,
+    orderMap: Option[OrderMap] = None,
+    cur: Option[CFGBlock] = None,
     blocksOpt: Option[List[CFGBlock]] = None
   ): String = {
     val blocks = blocksOpt.getOrElse(cfg.getAllBlocks.reverse)
@@ -164,22 +169,22 @@ object DotWriter {
       .append("fontsize=12;node [fontsize=12];edge [fontsize=12]")
       .append(newLine)
     for (block <- blocks) {
-      sb.append(drawBlock(cfg, block, o, block == cur)).append(drawEdge(cfg, block, o))
+      sb.append(drawBlock(cfg, block, orderMap, cur.fold(false)(_ == block))).append(drawEdge(cfg, block))
     }
     sb.append("}").toString
   }
 
   def writeDotFile(
     cfg: CFG,
-    o: OrderMap,
-    cur: CFGBlock,
+    orderMap: Option[OrderMap] = None,
+    cur: Option[CFGBlock] = None,
     blocksOpt: Option[List[CFGBlock]] = None,
     dotfile: String = "cfg.gv"
   ): Unit = {
     try {
       val f = new File(dotfile)
       val fw = new FileWriter(f)
-      fw.write(drawGraph(cfg, o, cur, blocksOpt))
+      fw.write(drawGraph(cfg, orderMap, cur, blocksOpt))
       fw.close
     } catch {
       case e: Throwable =>
@@ -191,22 +196,22 @@ object DotWriter {
 
   def spawnDot(
     cfg: CFG,
-    o: OrderMap,
-    cur: CFGBlock,
+    orderMap: Option[OrderMap] = None,
+    cur: Option[CFGBlock] = None,
     blocksOpt: Option[List[CFGBlock]] = None,
     dotFile: String = "cfg.gv",
     outFile: String = "cfg.pdf"
   ): Unit = {
     val cmdarray = Array("dot", "-Tpdf", dotFile, "-o", outFile)
-    writeDotFile(cfg, o, cur, blocksOpt, dotFile)
+    writeDotFile(cfg, orderMap, cur, blocksOpt, dotFile)
     println("Spawning...: " + cmdarray.mkString(" "))
     try {
       val p = Runtime.getRuntime.exec(cmdarray)
       // TODO handling it takes long time to create pdf file
     } catch {
       case e: Throwable =>
-        e.printStackTrace
         println(s"* error writing CFG pdf file $outFile.")
+        e.printStackTrace
     } finally {
       println(s"* success writing CFG pdf file $outFile.")
     }

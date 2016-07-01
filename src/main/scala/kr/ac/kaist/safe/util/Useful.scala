@@ -30,9 +30,11 @@ object Useful {
     result
   }
 
-  def fileNameToWriters(fileName: String): Try[(FileWriter, BufferedWriter)] =
-    fileNameToFileWriter(fileName).map(fw => (fw, new BufferedWriter(fw)))
+  def fileNameToWriters(fileName: String): (FileWriter, BufferedWriter) = {
+    val fw = fileNameToFileWriter(fileName)
+    (fw, new BufferedWriter(fw))
+  }
 
-  def fileNameToFileWriter(fileName: String): Try[FileWriter] =
-    Try(new FileWriter(fileName))
+  def fileNameToFileWriter(fileName: String): FileWriter =
+    new FileWriter(fileName)
 }

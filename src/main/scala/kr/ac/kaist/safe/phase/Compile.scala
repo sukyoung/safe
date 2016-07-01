@@ -44,17 +44,15 @@ case class Compile(
 
     // Pretty print to file.
     compileConfig.outFile match {
-      case Some(out) => Useful.fileNameToWriters(out).map { pair =>
-        {
-          val ((fw, writer)) = pair
-          writer.write(ir.toString(0))
-          writer.close; fw.close
-          println("Dumped IR to " + out)
-          ir
-        }
+      case Some(out) => {
+        val ((fw, writer)) = Useful.fileNameToWriters(out)
+        writer.write(ir.toString(0))
+        writer.close; fw.close
+        println("Dumped IR to " + out)
       }
-      case None => Try(ir)
+      case None =>
     }
+    Success(ir)
   }
 }
 

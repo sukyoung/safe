@@ -30,7 +30,7 @@ case class Parse(
   def parse(config: Config): Try[Program] = config.fileNames match {
     case Nil => Failure(NoFileError("parse"))
     case _ =>
-      Parser.fileToAST(config.fileNames).flatMap {
+      Parser.fileToAST(config.fileNames).map {
         case (program, excLog) => {
           // Report errors.
           if (excLog.hasError) {
@@ -40,17 +40,16 @@ case class Parse(
 
           // Pretty print to file.
           parseConfig.outFile match {
-            case Some(out) => Useful.fileNameToWriters(out).map { pair =>
-              {
-                val (fw, writer) = pair
-                writer.write(program.toString(0))
-                writer.close; fw.close
-                println("Dumped parsed AST to " + out)
-                program
-              }
+            case Some(out) => {
+              val (fw, writer) = Useful.fileNameToWriters(out)
+              writer.write(program.toString(0))
+              writer.close; fw.close
+              println("Dumped parsed AST to " + out)
             }
-            case None => Try(program)
+            case None =>
           }
+
+          program
         }
       }
   }

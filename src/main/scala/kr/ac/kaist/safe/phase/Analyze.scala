@@ -55,7 +55,7 @@ case class Analyze(
       println(excLog)
     }
 
-    Try((normalSt, excSt))
+    Success((normalSt, excSt))
   }
 }
 

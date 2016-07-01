@@ -15,7 +15,7 @@ import java.io.{ BufferedWriter, FileWriter, IOException }
 import scala.util.{ Try, Success, Failure }
 import kr.ac.kaist.safe.config.{ Config, ConfigOption, OptionKind, BoolOption, NumOption, StrOption }
 import kr.ac.kaist.safe.errors.ExcLog
-import kr.ac.kaist.safe.cfg_builder.DefaultCFGBuilder
+import kr.ac.kaist.safe.cfg_builder.{ DefaultCFGBuilder, DotWriter }
 import kr.ac.kaist.safe.nodes.ir.IRRoot
 import kr.ac.kaist.safe.nodes.cfg.CFG
 import kr.ac.kaist.safe.util.{ NodeUtil, Useful }
@@ -44,18 +44,20 @@ case class CFGBuild(
     }
 
     // Pretty print to file.
-    cfgBuildConfig.outFile match {
-      case Some(out) => Useful.fileNameToWriters(out).map { pair =>
-        {
-          val ((fw, writer)) = pair
-          writer.write(cfg.toString(0))
-          writer.close; fw.close
-          println("Dumped CFG to " + out)
-          cfg
-        }
-      }
-      case None => Try(cfg)
-    }
+    cfgBuildConfig.outFile.map(out => {
+      val (fw, writer) = Useful.fileNameToWriters(out)
+      writer.write(cfg.toString(0))
+      writer.close
+      fw.close
+      println("Dumped CFG to " + out)
+    })
+
+    // print dot file: {dotName}.gv, {dotName}.pdf
+    cfgBuildConfig.dotName.map(name => {
+      DotWriter.spawnDot(cfg, None, None, None, s"$name.gv", s"$name.pdf")
+    })
+
+    Success(cfg)
   }
 }
 
@@ -67,12 +69,14 @@ object CFGBuild extends PhaseHelper {
 // Config options for CFGBuild phase.
 case class CFGBuildConfig(
     var verbose: Boolean = false,
-    var outFile: Option[String] = None
+    var outFile: Option[String] = None,
+    var dotName: Option[String] = None
 // TODO add option for cfg builder
 ) extends ConfigOption {
   val prefix: String = "cfgBuild:"
   val options: List[(String, OptionKind)] = List(
     ("verbose", BoolOption(() => verbose = true)),
-    ("out", StrOption((s: String) => outFile = Some(s)))
+    ("out", StrOption((s: String) => outFile = Some(s))),
+    ("dot", StrOption((s: String) => dotName = Some(s)))
   )
 }

@@ -131,7 +131,7 @@ body {
     }
 
     void initParser() {
-        fw = Useful.fileNameToFileWriter(logFile).get();
+        fw = Useful.fileNameToFileWriter(logFile);
         writer = new BufferedWriter(fw);
     }
 

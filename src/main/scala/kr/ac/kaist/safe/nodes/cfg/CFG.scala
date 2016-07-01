@@ -25,8 +25,8 @@ class CFG(
   // all functions / blocks in this cfg
   private var funcs: List[CFGFunction] = Nil
   def getAllFuncs: List[CFGFunction] = funcs
-  def getAllBlocks: List[CFGBlock] = funcs.foldLeft(List[CFGBlock]()) {
-    case (lst, func) => func.getAllBlocks ++ lst
+  def getAllBlocks: List[CFGBlock] = funcs.foldRight(List[CFGBlock]()) {
+    case (func, lst) => func.getAllBlocks ++ lst
   }
 
   // function / block map from id
