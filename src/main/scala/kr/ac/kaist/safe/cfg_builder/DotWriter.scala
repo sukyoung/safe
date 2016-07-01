@@ -37,7 +37,7 @@ object DotWriter {
   def edgeStyle(style: String): String = "[" + style + "]"
   def blockInstLabel(label: String, block: CFGBlock): String = {
     val sb = new StringBuilder
-    val escapeChars = Array('<', '>', '|', '"', '\\')
+    val escapeChars = Array('<', '>', '|', '"', '\\', '{', '}')
     sb.append("[label=\"").append(label).append("|{")
     var first = true;
     block match {
