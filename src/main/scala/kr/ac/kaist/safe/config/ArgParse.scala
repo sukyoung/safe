@@ -11,10 +11,11 @@
 
 package kr.ac.kaist.safe.config
 
-import kr.ac.kaist.safe.phase.Phase
 import scala.util.parsing.combinator._
 // Rename Success and Failure to avoid name conflicts with ParseResult
 import scala.util.{ Try, Success => Succ, Failure => Fail }
+import kr.ac.kaist.safe.phase.Phase
+import kr.ac.kaist.safe.errors.error._
 
 object ArgParse {
   def apply(args: List[String]): Try[(Config, Phase)] = args match {
@@ -31,59 +32,46 @@ object ArgParse {
   // Argument parser by using Scala RegexParsers.
   private object ArgParser extends RegexParsers {
     def apply(config: Config, phase: Phase, args: List[String]): Try[(Config, Phase)] = {
-      (config.optRegexMap, phase.optRegexMap) match {
-        case (Succ(c), Succ(p)) if (c.keySet intersect p.keySet).isEmpty =>
-          val success = Succ(())
-          val cmd = config.command.toString
-          val optMap = c ++ p
+      config.optRegexMap.flatMap(c => {
+        phase.optRegexMap.flatMap(p => {
+          (c.keySet intersect p.keySet).isEmpty match {
+            case true => {
+              val success = Succ(())
+              val cmd = config.command.toString
+              val optMap = c ++ p
 
-          // Basic parsing rules.
-          val str = ".*".r ^^ { s => s }
-          val optError: Parser[Try[Unit]] = ("-" ~> "[^=]+".r <~ "=") ~ str ^^ { case o ~ s => Fail(NoOptError(o, cmd)) }
-          val simpleOptError: Parser[Try[Unit]] = ("-" ~> str) ^^ { o => Fail(NoOptError(o, cmd)) }
-          val fileName: Parser[Try[Unit]] = str ^^ { s => config.fileNames = s :: config.fileNames; success }
+              // Basic parsing rules.
+              val str = ".*".r ^^ { s => s }
+              val optError: Parser[Try[Unit]] = ("-" ~> "[^=]+".r <~ "=") ~ str ^^ { case o ~ s => Fail(NoOptError(o, cmd)) }
+              val simpleOptError: Parser[Try[Unit]] = ("-" ~> str) ^^ { o => Fail(NoOptError(o, cmd)) }
+              val fileName: Parser[Try[Unit]] = str ^^ { s => config.fileNames = s :: config.fileNames; success }
 
-          // Create a parser.
-          val parser: Parser[Try[Unit]] = optMap.foldRight(
-            phrase(optError) | phrase(simpleOptError) | phrase(fileName)
-          ) {
-              case ((opt, list), prev) => list.foldRight(prev) {
-                case ((optRegex, argRegex, fun), prev) =>
-                  lazy val rule: Parser[Try[Unit]] = optRegex ~ argRegex ^^ {
-                    case _ ~ s => fun(s)
+              // Create a parser.
+              val parser: Parser[Try[Unit]] = optMap.foldRight(
+                phrase(optError) | phrase(simpleOptError) | phrase(fileName)
+              ) {
+                  case ((opt, list), prev) => list.foldRight(prev) {
+                    case ((optRegex, argRegex, fun), prev) =>
+                      lazy val rule: Parser[Try[Unit]] = optRegex ~ argRegex ^^ {
+                        case _ ~ s => fun(s)
+                      }
+                      phrase(rule) | prev
                   }
-                  phrase(rule) | prev
-              }
-            }
+                }
 
-          // Parsing arguments.
-          args.foldLeft[Try[Unit]](success) {
-            case (result, arg) => result match {
-              case Succ(_) =>
-                parse(parser, arg).getOrElse(Fail(NoExhaustiveError()))
-              case fail => fail
+              // Parsing arguments.
+              args.foldLeft[Try[Unit]](success) {
+                case (result, arg) => result match {
+                  case Succ(_) =>
+                    parse(parser, arg).get
+                  case fail => fail
+                }
+              }.map(_ => (config, phase))
             }
-          }.map(_ => (config, phase))
-        case (Succ(_), Succ(_)) => Fail(OptConflictError())
-        case (Fail(f), _) => Fail(f)
-        case (_, Fail(f)) => Fail(f)
-      }
+            case false => Fail(OptConflictError)
+          }
+        })
+      })
     }
   }
-
-  sealed abstract class ArgParseError(msg: String) extends Error(msg)
-  case class NoCmdError(str: String) extends ArgParseError({
-    s"Command '$str' does not exist."
-  })
-  case class NoInputError() extends ArgParseError("Please input a command.")
-  case class NoOptError(str: String, cmd: String) extends ArgParseError({
-    s"The option '-$str' is not available for the command '$cmd'."
-  })
-  case class NoOptArgError(opt: String, str: String) extends ArgParseError({
-    s"The option '-$opt' cannot have the value '$str'."
-  })
-  case class OptConflictError() extends ArgParseError("Config option conflict.")
-  case class NoExhaustiveError() extends ArgParseError({
-    "Argument parser is not exhaustive."
-  })
 }
