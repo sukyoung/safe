@@ -11,8 +11,7 @@
 
 package kr.ac.kaist.safe.nodes
 
-import kr.ac.kaist.safe.util.UIDObject
-import kr.ac.kaist.safe.util.{ Span, SourceLoc }
+import kr.ac.kaist.safe.util.{ UIDObject, Span, SourceLoc, Useful }
 import kr.ac.kaist.safe.nodes.ast.Comment
 
 abstract class Node extends UIDObject {
@@ -22,6 +21,7 @@ abstract class Node extends UIDObject {
   def span: Span
   def comment: Option[Comment]
   def fileName: String
+  def relFileName: String = Useful.toRelativePath(fileName)
   def begin: SourceLoc
   def end: SourceLoc
   def line: Int

@@ -17,7 +17,6 @@ import java.io.Serializable
 import java.lang.StringBuilder
 import xtc.tree.Location
 import kr.ac.kaist.safe.nodes.Node
-import kr.ac.kaist.safe.config.Config
 
 case class Span(
     fileName: String = "defaultSpan",
@@ -26,13 +25,6 @@ case class Span(
 ) {
   def addLines(line: Int, offset: Int): Span =
     Span(fileName, begin.addLines(line, offset), end.addLines(line, offset))
-
-  def fileNameRel: String = {
-    fileName startsWith Config.CUR_DIR match {
-      case true => fileName.substring(Config.CUR_DIR.length + 1)
-      case false => fileName
-    }
-  }
 
   override def toString: String =
     appendToStr(new StringBuilder).toString
@@ -43,7 +35,7 @@ case class Span(
   private def appendToStr(w: StringBuilder, doFiles: Boolean = true): String = {
     if (doFiles) {
       // TODO Need to add escapes to the file name
-      w.append(fileNameRel)
+      w.append(Useful.toRelativePath(fileName))
       w.append(":")
     }
     w.append(begin.toString)

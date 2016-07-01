@@ -38,7 +38,7 @@ case class Compile(
 
     // Report errors.
     if (excLog.hasError) {
-      println(program.fileName + ":")
+      println(ir.relFileName + ":")
       println(excLog)
     }
 

@@ -11,7 +11,7 @@
 
 package kr.ac.kaist.safe.errors.error
 
-import kr.ac.kaist.safe.util.Span
+import kr.ac.kaist.safe.util.{ Span, Useful }
 
 sealed abstract class ParseError(msg: String, spanOpt: Option[Span]) extends SafeError(spanOpt match {
   case Some(span) =>
@@ -26,7 +26,8 @@ case class NoFileError(cmd: String) extends ParseError({
 }, None)
 
 case class NotJSFileError(fileName: String) extends ParseError({
-  s"Need a JavaScript file instead of $fileName."
+  val relFileName = Useful.toRelativePath(fileName)
+  s"Need a JavaScript file instead of '$relFileName'."
 }, None)
 
 case class ParserError(msg: String, span: Span) extends ParseError(msg, Some(span))

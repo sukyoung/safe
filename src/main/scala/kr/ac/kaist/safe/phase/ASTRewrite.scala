@@ -47,7 +47,7 @@ case class ASTRewrite(
 
     // Report errors.
     if (excLog.hasError) {
-      println(program.fileName + ":")
+      println(program.relFileName + ":")
       println(excLog)
     }
 

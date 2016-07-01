@@ -39,7 +39,7 @@ case class CFGBuild(
 
     // Report errors.
     if (excLog.hasError) {
-      println(ir.fileName + ":")
+      println(cfg.relFileName + ":")
       println(excLog)
     }
 

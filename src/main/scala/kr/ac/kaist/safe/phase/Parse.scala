@@ -34,7 +34,7 @@ case class Parse(
         case (program, excLog) => {
           // Report errors.
           if (excLog.hasError) {
-            println(program.fileName + ":")
+            println(program.relFileName + ":")
             println(excLog)
           }
 

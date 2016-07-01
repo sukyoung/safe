@@ -51,7 +51,7 @@ case class Analyze(
     val excLog = semantics.excLog
     // Report errors.
     if (excLog.hasError) {
-      println(config.fileNames.head + ":")
+      println(cfg.fileName + ":")
       println(excLog)
     }
 

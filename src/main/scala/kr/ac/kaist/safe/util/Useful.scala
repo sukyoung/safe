@@ -12,12 +12,16 @@
 package kr.ac.kaist.safe.util
 
 import scala.util.Try
-import java.io.BufferedWriter
-import java.io.File
-import java.io.FileWriter
-import java.io.IOException
+import java.io.{ BufferedWriter, File, FileWriter, IOException }
+import kr.ac.kaist.safe.config.Config
 
 object Useful {
+  def toRelativePath(fileName: String): String = {
+    fileName startsWith Config.CUR_DIR match {
+      case true => fileName.substring(Config.CUR_DIR.length + 1)
+      case false => fileName
+    }
+  }
   def windowPathToUnixPath(filename: String): String = {
     var result: String = filename.replaceAll("\\\\", "/")
     val drive = result.charAt(0)
