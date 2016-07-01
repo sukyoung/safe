@@ -447,7 +447,7 @@ case class Operator(helper: Helper) { //TODO
       (leftAbsNum, rightAbsNum) => {
         (leftAbsNum.gammaSingle, rightAbsNum.gammaSingle) match {
           case (ConSingleCon(n1), ConSingleCon(n2)) if n1.isNaN & n2.isNaN => utils.absBool.False
-          case _ => (rightAbsNum < leftAbsNum)(utils.absBool).negate
+          case _ => (leftAbsNum < rightAbsNum)(utils.absBool).negate
         }
       },
       (leftAbsStr, rightAbsStr) => (leftAbsStr < rightAbsStr)(utils.absBool).negate)

@@ -23,11 +23,11 @@ import scala.collection.immutable.{ HashMap, HashSet }
 class Semantics(
     cfg: CFG,
     worklist: Worklist,
-    utils: Utils,
-    addrManager: AddressManager
+    helper: Helper
 ) {
   lazy val excLog: ExcLog = new ExcLog
-  val helper: Helper = Helper(utils, addrManager)
+  val utils: Utils = helper.utils
+  val addrManager: AddressManager = helper.addrManager
   val operator: Operator = Operator(helper)
 
   // Interprocedural edges
@@ -37,107 +37,6 @@ class Semantics(
   def getAllIPPred: Map[ControlPoint, Set[ControlPoint]] = ipPredMap
   def getInterProcSucc(cp: ControlPoint): Option[Map[ControlPoint, (Context, Obj)]] = ipSuccMap.get(cp)
   def getInterProcPred(cp: ControlPoint): Option[Set[ControlPoint]] = ipPredMap.get(cp)
-
-  def initState: State = {
-    val globalPureLocalObj = helper.newPureLocal(Value(utils.PValueBot.copyWith(utils.absNull.Top)), HashSet(addrManager.PredefLoc.GLOBAL)) - "@return"
-
-    val absFalse = utils.absBool.False
-    val globalObjV = ObjectValue(Value(utils.PValueBot, HashSet(addrManager.PredefLoc.GLOBAL)), absFalse, absFalse, absFalse)
-    val globalObj = helper.newObject(addrManager.ProtoLoc.OBJ)
-      .update(NodeUtil.GLOBAL_NAME, PropValue(globalObjV))
-      .update("NaN", PropValue(ObjectValue(Value(utils.PValueBot.copyWith(utils.absNumber.NaN)), absFalse, absFalse, absFalse)))
-      .update("Infinity", PropValue(ObjectValue(Value(utils.PValueBot.copyWith(utils.absNumber.PosInf)), absFalse, absFalse, absFalse)))
-      .update("undefined", PropValue(ObjectValue(Value(utils.PValueBot.copyWith(utils.absUndef.Top)), absFalse, absFalse, absFalse)))
-
-    //TODO need modeling for initial values of Proto
-    val protoObjProto = utils.ObjectValueWith(utils.absNull.Top)
-    val objPtoro = helper.newObject().update("@proto", PropValue(protoObjProto))
-
-    val functionProtoVal = Value(utils.PValueBot, HashSet(addrManager.ProtoLoc.FUNCTION))
-    val functionProto = utils.ObjEmpty
-      .update("@class", PropValue(utils.ObjectValueWith(utils.absString.alpha("Function"))))
-      .update("@proto", PropValue(ObjectValue(functionProtoVal, absFalse, absFalse, absFalse)))
-      .update("@extensible", PropValue(utils.ObjectValueWith(utils.absBool.True)))
-
-    val arrayProtoVal = Value(utils.PValueBot, HashSet(addrManager.ProtoLoc.OBJ))
-    val arrayProto = utils.ObjEmpty
-      .update("@class", PropValue(utils.ObjectValueWith(utils.absString.alpha("Array"))))
-      .update("@proto", PropValue(ObjectValue(arrayProtoVal, absFalse, absFalse, absFalse)))
-      .update("@extensible", PropValue(utils.ObjectValueWith(utils.absBool.True)))
-
-    val booleanProtoVal = Value(utils.PValueBot, HashSet(addrManager.ProtoLoc.OBJ))
-    val booleanProto = utils.ObjEmpty
-      .update("@class", PropValue(utils.ObjectValueWith(utils.absString.alpha("Boolean"))))
-      .update("@proto", PropValue(ObjectValue(booleanProtoVal, absFalse, absFalse, absFalse)))
-      .update("@extensible", PropValue(utils.ObjectValueWith(utils.absBool.True)))
-
-    val numberProtoVal = Value(utils.PValueBot, HashSet(addrManager.ProtoLoc.OBJ))
-    val numberProto = utils.ObjEmpty
-      .update("@class", PropValue(utils.ObjectValueWith(utils.absString.alpha("Number"))))
-      .update("@proto", PropValue(ObjectValue(numberProtoVal, absFalse, absFalse, absFalse)))
-      .update("@extensible", PropValue(utils.ObjectValueWith(utils.absBool.True)))
-
-    val stringProtoVal = Value(utils.PValueBot, HashSet(addrManager.ProtoLoc.OBJ))
-    val stringProto = utils.ObjEmpty
-      .update("@class", PropValue(utils.ObjectValueWith(utils.absString.alpha("String"))))
-      .update("@proto", PropValue(ObjectValue(stringProtoVal, absFalse, absFalse, absFalse)))
-      .update("@extensible", PropValue(utils.ObjectValueWith(utils.absBool.True)))
-
-    val initHeap = Heap.Bot
-      .update(addrManager.PredefLoc.SINGLE_PURE_LOCAL, globalPureLocalObj)
-      .update(addrManager.PredefLoc.GLOBAL, globalObj)
-      .update(addrManager.PredefLoc.COLLAPSED, utils.ObjEmpty)
-
-      .update(addrManager.ProtoLoc.OBJ, objPtoro)
-      .update(addrManager.ProtoLoc.FUNCTION, functionProto)
-      .update(addrManager.ProtoLoc.ARRAY, arrayProto)
-      .update(addrManager.ProtoLoc.BOOLEAN, booleanProto)
-      .update(addrManager.ProtoLoc.NUMBER, numberProto)
-      .update(addrManager.ProtoLoc.STRING, stringProto)
-
-      .update(addrManager.ErrorLoc.ERR, utils.ObjEmpty)
-      .update(addrManager.ErrorLoc.EVAL_ERR, utils.ObjEmpty)
-      .update(addrManager.ErrorLoc.RANGE_ERR, utils.ObjEmpty)
-      .update(addrManager.ErrorLoc.REF_ERR, utils.ObjEmpty)
-      .update(addrManager.ErrorLoc.SYNTAX_ERR, utils.ObjEmpty)
-      .update(addrManager.ErrorLoc.TYPE_ERR, utils.ObjEmpty)
-      .update(addrManager.ErrorLoc.URI_ERR, utils.ObjEmpty)
-    State(initHeap, Context.Empty)
-  }
-
-  def initTestState: State = {
-    def prop(value: Value): PropValue =
-      PropValue(ObjectValue(value, utils.absBool.Bot, utils.absBool.Bot, utils.absBool.Bot))
-    def propLoc(l: Loc): PropValue =
-      PropValue(ObjectValue(Value(utils.PValueBot, HashSet(l)), utils.absBool.Bot, utils.absBool.Bot, utils.absBool.Bot))
-
-    val st = initState
-    val globalObj = st.heap.getOrElse(addrManager.PredefLoc.GLOBAL, utils.ObjEmpty)
-
-    val testGlobalObj =
-      globalObj.update("__BOT", prop(utils.ValueBot))
-        .update("__TOP", prop(Value(utils.PValueTop)))
-        .update("__UInt", PropValue(utils.ObjectValueWith(utils.absNumber.UInt)))
-        .update("__Global", prop(Value(utils.PValueBot, HashSet(addrManager.PredefLoc.GLOBAL))))
-        .update("__BoolTop", PropValue(utils.ObjectValueWith(utils.absBool.Top)))
-        .update("__NumTop", PropValue(utils.ObjectValueWith(utils.absNumber.Top)))
-        .update("__StrTop", PropValue(utils.ObjectValueWith(utils.absString.Top)))
-        // TODO: test constants for builtin models
-        //  .update("__ObjConstLoc", Value(BuiltinObject.ConstLoc))
-        //  .update("__ArrayConstLoc", Value(BuiltinObject.ConstLoc))
-        .update("__RefErrLoc", propLoc(addrManager.ErrorLoc.REF_ERR))
-        .update("__RangeErrLoc", propLoc(addrManager.ErrorLoc.RANGE_ERR))
-        .update("__TypeErrLoc", propLoc(addrManager.ErrorLoc.TYPE_ERR))
-        .update("__URIErrLoc", propLoc(addrManager.ErrorLoc.URI_ERR))
-    //  .update("__RefErrProtoLoc", Value(BuiltinError.RefErrProtoLoc))
-    //  .update("__RangeErrProtoLoc", Value(BuiltinError.RangeErrProtoLoc))
-    //  .update("__TypeErrProtoLoc", Value(BuiltinError.TypeErrProtoLoc))
-    //  .update("__URIErrProtoLoc", Value(BuiltinError.URIErrProtoLoc))
-    //  .update("__ErrProtoLoc", Value(BuiltinError.ErrProtoLoc))
-
-    val testHeap = st.heap.update(addrManager.PredefLoc.GLOBAL, testGlobalObj)
-    State(testHeap, st.context)
-  }
 
   // Adds inter-procedural call edge from call-node cp1 to entry-node cp2.
   // Edge label ctx records callee context, which is joined if the edge existed already.

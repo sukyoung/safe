@@ -47,6 +47,20 @@ trait AddressManager {
     val BOOLEAN: Loc = newSystemLoc("BuiltinBooleanProto", Recent)
     val NUMBER: Loc = newSystemLoc("BuiltinNumberProto", Recent)
     val STRING: Loc = newSystemLoc("BuiltinStringProto", Recent)
+
+    val ERR: Loc = newSystemLoc("ErrProto", Recent)
+    val EVAL_ERR: Loc = newSystemLoc("EvalErrProto", Recent)
+    val RANGE_ERR: Loc = newSystemLoc("RangeErrProto", Recent)
+    val REF_ERR: Loc = newSystemLoc("RefErrProto", Recent)
+    val SYNTAX_ERR: Loc = newSystemLoc("SyntaxErrProto", Recent)
+    val TYPE_ERR: Loc = newSystemLoc("TypeErrProto", Recent)
+    val URI_ERR: Loc = newSystemLoc("URIErrProto", Recent)
+  }
+
+  object ConstructorLoc {
+    //TODO: temporal definitions of builtin constructor locations
+    val OBJ: Loc = newSystemLoc("ObjectConst", Recent)
+    val ARRAY: Loc = newSystemLoc("ArrayProto", Recent)
   }
 
   object ErrorLoc {

@@ -36,10 +36,12 @@ case class Analyze(
 
     val worklist = Worklist(cfg)
     worklist.add(ControlPoint(cfg.globalFunc.entry, callCtxManager.globalCallContext))
-    val semantics = new Semantics(cfg, worklist, utils, config.addrManager)
+    val helper = Helper(utils, config.addrManager)
+    val semantics = new Semantics(cfg, worklist, helper)
+    val init = Initialize(helper)
     val initSt =
-      if (analyzeConfig.testMode) semantics.initTestState
-      else semantics.initState
+      if (analyzeConfig.testMode) init.testState
+      else init.state
     cfg.globalFunc.entry.setState(callCtxManager.globalCallContext, initSt)
     val consoleOpt = analyzeConfig.console match {
       case true => Some(new Console(cfg, worklist, semantics, config.addrManager))
