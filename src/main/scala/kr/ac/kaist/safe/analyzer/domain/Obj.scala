@@ -175,36 +175,39 @@ class Obj(val map: Map[String, (PropValue, Absent)]) {
       }
 
     absStr.gamma match {
-      case ConSetCon(strSet) => strSet.map(apply(_)).reduce(addPropOpt(_, _))
+      case ConSetCon(strSet) if strSet.size == 1 => apply(strSet.head)
+      case ConSetCon(strSet) if strSet.size > 1 => strSet.map(apply(_)).reduce(addPropOpt(_, _))
       case ConSetBot() => None
-      case ConSetTop() => absStr.gammaIsAllNums match {
-        case ConSingleBot() => None
-        case ConSingleCon(true) =>
-          val pset = map.keySet.filter(x => !(x.take(1) == "@") && isNum(x))
-          val opt1 = pset.map((x) => this.apply(x)).reduce((propVOpt1, propVOpt2) => addPropOpt(propVOpt1, propVOpt2))
-          this.map.get(STR_DEFAULT_NUMBER) match {
-            case Some((propv, _)) => addPropOpt(Some(propv), opt1)
-            case None => opt1
-          }
-        case ConSingleCon(false) =>
-          val pset = map.keySet.filter(x => !(x.take(1) == "@") && !isNum(x))
-          val opt1 = pset.map((x) => this.apply(x)).reduce((propVOpt1, propVOpt2) => addPropOpt(propVOpt1, propVOpt2))
-          this.map.get(STR_DEFAULT_OTHER) match {
-            case Some((propv, _)) => addPropOpt(Some(propv), opt1)
-            case None => opt1
-          }
-        case ConSingleTop() =>
-          val pset = map.keySet.filter(x => !(x.take(1) == "@"))
-          val opt1 = pset.map((x) => this.apply(x)).reduce((propVOpt1, propVOpt2) => addPropOpt(propVOpt1, propVOpt2))
-          val opt2 =
-            (this.map.get(STR_DEFAULT_NUMBER), this.map.get(STR_DEFAULT_OTHER)) match {
-              case (Some((propv1, _)), Some((propv2, _))) => Some(propv1 + propv2)
-              case (Some((propv1, _)), None) => Some(propv1)
-              case (None, Some((propv2, _))) => Some(propv2)
-              case (None, None) => None
+      case ConSetTop() =>
+        val opt1 = absStr.gammaIsAllNums match {
+          case ConSingleBot() | ConSingleCon(false) => None
+          case ConSingleCon(true) | ConSingleTop() =>
+            val pset = map.keySet.filter(x => !(x.take(1) == "@") && isNum(x))
+            val optSet = pset.map((x) => apply(x))
+            val opt1 =
+              if (optSet.size > 1) optSet.reduce(addPropOpt(_, _))
+              else if (optSet.size == 1) optSet.head
+              else None
+            this.map.get(STR_DEFAULT_NUMBER) match {
+              case Some((propv, _)) => addPropOpt(Some(propv), opt1)
+              case None => opt1
             }
-          addPropOpt(opt1, opt2)
-      }
+        }
+        val opt2 = absStr.gammaIsAllNums match {
+          case ConSingleBot() | ConSingleCon(true) => None
+          case ConSingleCon(false) | ConSingleTop() =>
+            val pset = map.keySet.filter(x => !(x.take(1) == "@") && !isNum(x))
+            val optSet = pset.map((x) => apply(x))
+            val opt1 =
+              if (optSet.size > 1) optSet.reduce(addPropOpt(_, _))
+              else if (optSet.size == 1) optSet.head
+              else None
+            this.map.get(STR_DEFAULT_OTHER) match {
+              case Some((propv, _)) => addPropOpt(Some(propv), opt1)
+              case None => opt1
+            }
+        }
+        addPropOpt(opt1, opt2)
     }
   }
 
@@ -381,14 +384,14 @@ class Obj(val map: Map[String, (PropValue, Absent)]) {
         case ConSingleCon(true) =>
           this.map.get(STR_DEFAULT_NUMBER) match {
             case Some((numPropV, _)) if !numPropV.objval.value.isBottom => absBool.Top
-            case None if map.keySet.exists(x => !(x.take(1) == "@") && isNum(x)) => absBool.Top
-            case None => absBool.False
+            case _ if map.keySet.exists(x => !(x.take(1) == "@") && isNum(x)) => absBool.Top
+            case _ => absBool.False
           }
         case ConSingleCon(false) =>
           this.map.get(STR_DEFAULT_OTHER) match {
             case Some((otherPropV, _)) if !otherPropV.objval.value.isBottom => absBool.Top
-            case None if map.keySet.exists(x => !(x.take(1) == "@") && !isNum(x)) => absBool.Top
-            case None => absBool.False
+            case _ if map.keySet.exists(x => !(x.take(1) == "@") && !isNum(x)) => absBool.Top
+            case _ => absBool.False
           }
         case ConSingleTop() =>
           (this.map.get(STR_DEFAULT_NUMBER), this.map.get(STR_DEFAULT_OTHER)) match {
