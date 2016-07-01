@@ -17,9 +17,17 @@ import kr.ac.kaist.safe.util._
 
 sealed abstract class CFGInst(
     override val ir: IRNode,
-    block: CFGBlock
+    val block: CFGBlock
 ) extends CFGNode(ir) {
   val id: InstId = block.getIId
+
+  // equals
+  override def equals(other: Any): Boolean = other match {
+    case (inst: CFGInst) =>
+      inst.block == block &&
+        inst.id == id
+    case _ => false
+  }
 }
 
 /**
@@ -27,7 +35,7 @@ sealed abstract class CFGInst(
  */
 sealed abstract class CFGNormalInst(
   override val ir: IRNode,
-  val block: NormalBlock
+  override val block: NormalBlock
 ) extends CFGInst(ir, block)
 
 // x := alloc(e^?)
@@ -243,7 +251,7 @@ case class CFGInternalCall(
  */
 sealed abstract class CFGCallInst(
   override val ir: IRNode,
-  val block: Call
+  override val block: Call
 ) extends CFGInst(ir, block)
 
 // call(e1, e2, e3)

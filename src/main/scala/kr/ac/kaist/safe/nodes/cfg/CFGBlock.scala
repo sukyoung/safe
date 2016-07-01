@@ -60,6 +60,14 @@ sealed abstract class CFGBlock {
     }
   }
 
+  // equals
+  override def equals(other: Any): Boolean = other match {
+    case (block: CFGBlock) =>
+      block.func == func &&
+        block.id == id
+    case _ => false
+  }
+
   // toString
   override def toString: String
   def toString(indent: Int): String = {
@@ -152,15 +160,6 @@ case class NormalBlock(func: CFGFunction) extends CFGBlock {
     iidCount += 1
     insts ::= inst
     inst
-  }
-
-  // equals
-  override def equals(other: Any): Boolean = other match {
-    case (block: NormalBlock) =>
-      block.func.cfg.id == func.cfg.id &&
-        block.func.id == func.id &&
-        block.id == id
-    case _ => false
   }
 
   // toString
