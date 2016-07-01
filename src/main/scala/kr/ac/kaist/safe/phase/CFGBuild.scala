@@ -71,8 +71,8 @@ case class CFGBuildConfig(
 // TODO add option for cfg builder
 ) extends ConfigOption {
   val prefix: String = "cfgBuild:"
-  val optMap: Map[String, OptionKind] = Map(
-    "verbose" -> BoolOption(() => verbose = true),
-    "out" -> StrOption((s: String) => outFile = Some(s))
+  val options: List[(String, OptionKind)] = List(
+    ("verbose", BoolOption(() => verbose = true)),
+    ("out", StrOption((s: String) => outFile = Some(s)))
   )
 }

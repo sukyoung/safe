@@ -11,17 +11,22 @@
 
 package kr.ac.kaist.safe.config
 
-import kr.ac.kaist.safe.phase.{ PhaseHelper, Parse, ASTRewrite, Compile, CFGBuild, Analyze, Help }
+import scala.collection.immutable.HashMap
+import kr.ac.kaist.safe.phase._
 
 object Command {
-  val cmdMap: Map[String, Command] = Map(
-    CmdParse.name -> CmdParse,
-    CmdASTRewrite.name -> CmdASTRewrite,
-    CmdCompile.name -> CmdCompile,
-    CmdCFGBuild.name -> CmdCFGBuild,
-    CmdAnalyze.name -> CmdAnalyze,
-    CmdHelp.name -> CmdHelp
+  val commands: List[Command] = List(
+    CmdParse,
+    CmdASTRewrite,
+    CmdCompile,
+    CmdCFGBuild,
+    CmdAnalyze,
+    CmdHelp
   )
+  val cmdMap: Map[String, Command] =
+    commands.foldLeft[Map[String, Command]](HashMap()) {
+      case (map, cmd) => map + (cmd.name -> cmd)
+    }
 }
 
 sealed abstract class Command(val name: String, val phaseHelper: PhaseHelper) {
@@ -31,7 +36,7 @@ sealed abstract class Command(val name: String, val phaseHelper: PhaseHelper) {
 }
 case object CmdParse extends Command("parse", Parse) {
   override def usage: String =
-    s" [-$name:out=outfile] infile.js ..."
+    s"[-$name:out=outfile] infile.js ..."
   override def help: String = {
     val s: StringBuilder = new StringBuilder
     "  Parses files." + Config.LINE_SEP
@@ -42,7 +47,7 @@ case object CmdParse extends Command("parse", Parse) {
 }
 case object CmdASTRewrite extends Command("astRewrite", ASTRewrite) {
   override def usage: String =
-    s" [-$name:out=outfile] [-$name:verbose] infile.js ..."
+    s"[-$name:out=outfile] [-$name:verbose] infile.js ..."
   override def help: String = {
     val s: StringBuilder = new StringBuilder
     s.append("  Rewrites AST in JavaScript source files (hoister, disambiguater, withRewriter).")
@@ -56,7 +61,7 @@ case object CmdASTRewrite extends Command("astRewrite", ASTRewrite) {
 }
 case object CmdCompile extends Command("compile", Compile) {
   override def usage: String =
-    s" [-$name:out=outfile] [-$name:verbose] infile.js ..."
+    s"[-$name:out=outfile] [-$name:verbose] infile.js ..."
   override def help: String = {
     val s: StringBuilder = new StringBuilder
     s.append("  Translates JavaScript source files to IR.")
@@ -70,7 +75,7 @@ case object CmdCompile extends Command("compile", Compile) {
 }
 case object CmdCFGBuild extends Command("cfgBuild", CFGBuild) {
   override def usage: String =
-    s" [-$name:out=outfile] [-$name:verbose] infile.js ..."
+    s"[-$name:out=outfile] [-$name:verbose] infile.js ..."
   override def help: String = {
     val s: StringBuilder = new StringBuilder
     s.append("  Builds a control flow graph for JavaScript source files.")
@@ -87,7 +92,7 @@ case object CmdCFGBuild extends Command("cfgBuild", CFGBuild) {
 
 case object CmdAnalyze extends Command("analyze", Analyze) {
   override def usage: String =
-    s" [-$name:out=outfile] [-$name:verbose] [-$name:console] infile.js ..."
+    s"[-$name:out=outfile] [-$name:verbose] [-$name:console] infile.js ..."
   override def help: String = {
     val s: StringBuilder = new StringBuilder
     s.append("  Analyze the JavaScript source files.")

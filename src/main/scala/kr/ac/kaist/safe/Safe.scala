@@ -36,7 +36,7 @@ object Safe {
         }
       // Print the usage message if parsing arguments failed.
       case Failure(ex) =>
-        Console.err.print(ex.toString)
+        Console.err.println(ex.getMessage)
         Help.printUsageMessage
     }
   }

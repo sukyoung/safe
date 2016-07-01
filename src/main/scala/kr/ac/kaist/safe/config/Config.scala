@@ -22,9 +22,9 @@ case class Config(
     var addrManager: AddressManager = new DefaultAddressManager
 ) extends ConfigOption {
   val prefix: String = ""
-  val optMap: Map[String, OptionKind] = Map(
-    "time" -> BoolOption(() => time = true),
-    "verbose" -> BoolOption(() => verbose = true)
+  val options: List[(String, OptionKind)] = List(
+    ("time", BoolOption(() => time = true)),
+    ("verbose", BoolOption(() => verbose = true))
   )
 }
 

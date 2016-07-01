@@ -69,8 +69,8 @@ case class CompileConfig(
     var outFile: Option[String] = None
 ) extends ConfigOption {
   val prefix: String = "compile:"
-  val optMap: Map[String, OptionKind] = Map(
-    "verbose" -> BoolOption(() => verbose = true),
-    "out" -> StrOption((s: String) => outFile = Some(s))
+  val options: List[(String, OptionKind)] = List(
+    ("verbose", BoolOption(() => verbose = true)),
+    ("out", StrOption((s: String) => outFile = Some(s)))
   )
 }

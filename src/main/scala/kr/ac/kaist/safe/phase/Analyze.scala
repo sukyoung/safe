@@ -78,12 +78,12 @@ case class AnalyzeConfig(
     var testMode: Boolean = false
 ) extends ConfigOption {
   val prefix: String = "analyze:"
-  val optMap: Map[String, OptionKind] = Map(
-    "verbose" -> BoolOption(() => verbose = true),
-    "console" -> BoolOption(() => console = true),
-    "out" -> StrOption((s: String) => outFile = Some(s)),
-    "maxStrSetSize" -> NumOption((n: Int) => if (n > 0) AbsString = new DefaultStrSetUtil(n)),
-    "callsiteSensitivity" -> NumOption((n: Int) => if (n > 0) callsiteSensitivity = n),
-    "testMode" -> BoolOption(() => testMode = true)
+  val options: List[(String, OptionKind)] = List(
+    ("verbose", BoolOption(() => verbose = true)),
+    ("console", BoolOption(() => console = true)),
+    ("out", StrOption((s: String) => outFile = Some(s))),
+    ("maxStrSetSize", NumOption((n: Int) => if (n > 0) AbsString = new DefaultStrSetUtil(n))),
+    ("callsiteSensitivity", NumOption((n: Int) => if (n > 0) callsiteSensitivity = n)),
+    ("testMode", BoolOption(() => testMode = true))
   )
 }

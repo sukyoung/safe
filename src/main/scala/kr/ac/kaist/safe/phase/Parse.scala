@@ -66,7 +66,7 @@ case class ParseConfig(
     var outFile: Option[String] = None
 ) extends ConfigOption {
   val prefix: String = "parse:"
-  val optMap: Map[String, OptionKind] = Map(
-    "out" -> StrOption((s: String) => outFile = Some(s))
+  val options: List[(String, OptionKind)] = List(
+    ("out", StrOption((s: String) => outFile = Some(s)))
   )
 }

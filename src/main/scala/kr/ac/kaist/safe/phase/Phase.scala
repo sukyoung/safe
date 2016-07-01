@@ -11,7 +11,8 @@
 
 package kr.ac.kaist.safe.phase
 
-import scala.util.{ Try, Success }
+import scala.collection.immutable.HashMap
+import scala.util.{ Try, Success, Failure }
 import kr.ac.kaist.safe.config.{ Config, ConfigOption }
 
 abstract class Phase(
@@ -19,9 +20,15 @@ abstract class Phase(
     mayConfig: Option[ConfigOption]
 ) {
   def apply(config: Config): Unit = ()
-  def getOptMap: Try[OptRegexMap] = mayConfig match {
-    case Some(config) => config.getOptMap
-    case None => Success(Map())
+  lazy val optRegexMap: Try[OptRegexMap] = (mayConfig match {
+    case Some(configOption) => configOption.optRegexMap
+    case None => Success(HashMap())
+  }) match {
+    case Success(map) => (mayPrev match {
+      case Some(prev) => prev.optRegexMap
+      case None => Success(HashMap())
+    }).map(_ ++ map)
+    case Failure(e) => Failure(e)
   }
 }
 

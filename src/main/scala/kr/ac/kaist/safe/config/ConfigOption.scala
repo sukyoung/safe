@@ -12,6 +12,7 @@
 package kr.ac.kaist.safe.config
 
 import scala.util.{ Try, Success, Failure }
+import scala.collection.immutable.HashMap
 import kr.ac.kaist.safe.phase.OptRegexMap
 
 sealed abstract class OptionKind
@@ -22,9 +23,9 @@ case class ListOption(assign: List[String] => Unit) extends OptionKind
 
 trait ConfigOption {
   val prefix: String
-  val optMap: Map[String, OptionKind]
-  def getOptMap: Try[OptRegexMap] = {
-    optMap.foldLeft[Try[OptRegexMap]](Success(Map())) {
+  val options: List[(String, OptionKind)]
+  lazy val optRegexMap: Try[OptRegexMap] = {
+    options.foldLeft[Try[OptRegexMap]](Success(HashMap())) {
       case (Success(map), (opt, kind)) if !map.contains(opt) =>
         val name = prefix + opt
         Success(map + (name -> (kind match {
@@ -48,7 +49,8 @@ trait ConfigOption {
             (("-" + name).r, "".r, (_: String) => Failure(NoListArgError(name)))
           )
         })))
-      case _ => Failure(InvalidError())
+      case (Success(_), (opt, _)) => Failure(OptAlreadyExistError(opt))
+      case (fail, _) => fail
     }
   }
 
@@ -65,7 +67,7 @@ trait ConfigOption {
   case class NoListArgError(name: String) extends ConfigOptionError({
     s"The option '$name' needs at least one string argument."
   })
-  case class InvalidError() extends ConfigOptionError({
-    "It is an invalid option."
+  case class OptAlreadyExistError(name: String) extends ConfigOptionError({
+    s"Option conflict: '$name' alreay exists in option list."
   })
 }

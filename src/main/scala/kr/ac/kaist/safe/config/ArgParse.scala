@@ -31,7 +31,7 @@ object ArgParse {
   // Argument parser by using Scala RegexParsers.
   private object ArgParser extends RegexParsers {
     def apply(config: Config, phase: Phase, args: List[String]): Try[(Config, Phase)] = {
-      (config.getOptMap, phase.getOptMap) match {
+      (config.optRegexMap, phase.optRegexMap) match {
         case (Succ(c), Succ(p)) if (c.keySet intersect p.keySet).isEmpty =>
           val success = Succ(())
           val cmd = config.command.toString
@@ -50,7 +50,7 @@ object ArgParse {
               case ((opt, list), prev) => list.foldRight(prev) {
                 case ((optRegex, argRegex, fun), prev) =>
                   lazy val rule: Parser[Try[Unit]] = optRegex ~ argRegex ^^ {
-                    case _ ~ s => Try(fun(s).getOrElse(()))
+                    case _ ~ s => fun(s)
                   }
                   phrase(rule) | prev
               }
@@ -58,10 +58,15 @@ object ArgParse {
 
           // Parsing arguments.
           args.foldLeft[Try[Unit]](success) {
-            case (result, arg) => result.map(_ => parse(parser, arg).get)
+            case (result, arg) => result match {
+              case Succ(_) =>
+                parse(parser, arg).getOrElse(Fail(NoExhaustiveError()))
+              case fail => fail
+            }
           }.map(_ => (config, phase))
-        case _ =>
-          Fail(OptConflictError())
+        case (Succ(_), Succ(_)) => Fail(OptConflictError())
+        case (Fail(f), _) => Fail(f)
+        case (_, Fail(f)) => Fail(f)
       }
     }
   }
@@ -78,4 +83,7 @@ object ArgParse {
     s"The option '-$opt' cannot have the value '$str'."
   })
   case class OptConflictError() extends ArgParseError("Config option conflict.")
+  case class NoExhaustiveError() extends ArgParseError({
+    "Argument parser is not exhaustive."
+  })
 }
