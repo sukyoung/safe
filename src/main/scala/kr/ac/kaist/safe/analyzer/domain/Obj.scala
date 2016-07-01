@@ -62,8 +62,12 @@ class Obj(val map: Map[String, (PropValue, Absent)]) {
       val thatVal = that.map.get(key)
       (thisVal, thatVal) match {
         case (None, None) => m
-        case (None, Some(v)) => m + (key -> v)
-        case (Some(v), None) => m + (key -> v)
+        case (None, Some(v)) =>
+          val (prop, _) = v
+          m + (key -> (prop, AbsentTop))
+        case (Some(v), None) =>
+          val (prop, _) = v
+          m + (key -> (prop, AbsentTop))
         case (Some(v1), Some(v2)) =>
           val (propV1, absent1) = v1
           val (propV2, absent2) = v2
