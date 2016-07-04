@@ -39,14 +39,14 @@ class Obj(val map: Map[String, (PropValue, Absent)]) {
     if (this.map.isEmpty) true
     else if (that.map.isEmpty) false
     else if (!(this.map.keySet subsetOf that.map.keySet)) false
-    else this.map.foldLeft(true)((b, kv) => {
-      val (key, thisPVA) = kv
-      that.map.get(key) match {
+    else that.map.forall(kv => {
+      val (key, thatPVA) = kv
+      this.map.get(key) match {
         case None => false
-        case Some(thatPVA) =>
+        case Some(thisPVA) =>
           val (thisPV, thisAbsent) = thisPVA
           val (thatPV, thatAbsent) = thatPVA
-          b && thisPV <= thatPV && thisAbsent <= thatAbsent
+          thisPV <= thatPV && thisAbsent <= thatAbsent
       }
     })
   }

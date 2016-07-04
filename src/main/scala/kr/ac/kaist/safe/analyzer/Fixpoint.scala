@@ -20,20 +20,17 @@ class Fixpoint(
     worklist: Worklist,
     consoleOpt: Option[Console]
 ) {
-  def compute(): (State, State) = {
-    var states = (State.Bot, State.Bot)
+  def compute(): Unit = {
     while (!worklist.isEmpty) {
       consoleOpt.fold() { _.runFixpoint }
       val cp = worklist.pop
       val st = cp.getState
-      states = semantics.C(cp, st)
-      val (nextSt, nextExcSt) = states
+      val (nextSt, nextExcSt) = semantics.C(cp, st)
       propagateNormal(cp, nextSt)
       propagateException(cp, nextExcSt)
       propagateInterProc(cp, nextSt)
     }
     consoleOpt.fold() { _.runFinished }
-    states
   }
 
   def propagateNormal(cp: ControlPoint, nextSt: State): Unit = {

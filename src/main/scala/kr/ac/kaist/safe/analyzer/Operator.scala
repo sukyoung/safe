@@ -269,7 +269,7 @@ case class Operator(helper: Helper) { //TODO
     }
 
     val b7 = rightPV.boolval.gammaSimple match {
-      case ConSimpleTop =>
+      case ConSimpleBot =>
         val rightNumVal = utils.PValueBot.copyWith(rightPV.boolval).toAbsNumber(absNumber)
         val b71 = leftPV.numval.fold(utils.absBool.Bot)(leftNumVal => {
           (leftNumVal === rightNumVal)(utils.absBool)
@@ -287,7 +287,7 @@ case class Operator(helper: Helper) { //TODO
         val b74 = leftPV.undefval.fold(utils.absBool.Bot)(_ => utils.absBool.False)
         val b75 = leftPV.undefval.fold(utils.absBool.Bot)(_ => utils.absBool.False)
         b71 + b72 + b73 + b74 + b75
-      case ConSimpleBot => utils.absBool.Bot
+      case ConSimpleTop => utils.absBool.Bot
     }
 
     val b8 = right.locset.size match {

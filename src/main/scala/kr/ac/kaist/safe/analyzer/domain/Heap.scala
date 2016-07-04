@@ -50,10 +50,13 @@ class DHeap(val map: Map[Loc, Obj]) extends Heap {
     else if (this.map.size > that.map.size) false
     else if (this.map.isEmpty) true
     else if (that.map.isEmpty) false
-    else this.map.forall((kv) => {
+    else if (!(this.map.keySet subsetOf that.map.keySet)) false
+    else that.map.forall((kv) => {
       val (l, obj) = kv
-      val thatObj = that.map(l)
-      obj <= thatObj
+      this.map.get(l) match {
+        case Some(thisObj) => thisObj <= obj
+        case None => false
+      }
     })
   }
 

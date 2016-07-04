@@ -556,8 +556,8 @@ class Semantics(
             val fidSet = consObj.getOrElse("@construct", utils.PropValueBot).funid
             fidSet.foreach((fid) => {
               val newPureLocal = helper.newPureLocal(Value(utils.PValueBot, HashSet(locR)), thisLocSet)
-              val calleCtxSet = callerCallCtx.newCallContext(st1.heap, cfg, fid, locR, thisLocSet, newPureLocal, Some(aNew))
-              calleCtxSet.foreach {
+              val callerCtxSet = callerCallCtx.newCallContext(st1.heap, cfg, fid, locR, thisLocSet, newPureLocal, Some(aNew))
+              callerCtxSet.foreach {
                 case (newCallCtx, newObj) => {
                   val argPropV = PropValue(ObjectValue(argVal, absTrue, absFalse, absFalse))
                   cfg.getFunc(fid) match {

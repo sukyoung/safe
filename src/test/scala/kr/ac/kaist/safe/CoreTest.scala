@@ -14,6 +14,7 @@ package kr.ac.kaist.safe
 import org.scalatest._
 import java.io.{ File, FilenameFilter }
 
+import kr.ac.kaist.safe.analyzer.CallContext
 import kr.ac.kaist.safe.analyzer.domain.State
 import kr.ac.kaist.safe.cfg_builder.AddressManager
 
@@ -90,11 +91,12 @@ class CoreTest extends FlatSpec {
 
   val resultPrefix = "__result"
   val expectPrefix = "__expect"
-  def analyzeTest(analysis: Try[(State, State)], addrManager: AddressManager): Unit = {
+  def analyzeTest(analysis: Try[(CFG, CallContext)], addrManager: AddressManager): Unit = {
     analysis match {
       case Failure(_) => assert(false)
-      case Success(states) =>
-        val (normalSt, excSt) = states
+      case Success((cfg, globalCallCtx)) =>
+        val normalSt = cfg.globalFunc.exit.getState(globalCallCtx)
+        val excSt = cfg.globalFunc.exitExc.getState(globalCallCtx)
         assert(!normalSt.heap.isBottom)
         normalSt.heap(addrManager.PredefLoc.GLOBAL) match {
           case None => assert(false)

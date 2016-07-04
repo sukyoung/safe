@@ -11,15 +11,25 @@
 
 package kr.ac.kaist.safe.analyzer
 
-import kr.ac.kaist.safe.nodes.cfg.{ CFGBlock, CFG }
+import kr.ac.kaist.safe.nodes.cfg._
 
 import scala.collection.immutable.HashMap
 
 object Worklist {
   def apply(cfg: CFG): Worklist = {
-    val cfgBlockList: List[CFGBlock] = cfg.getAllBlocks
-    val (orderMap, order) = cfgBlockList.foldRight((HashMap[CFGBlock, Int](), 0)) {
-      case (block, (tmpMap, tmpOrder)) =>
+    val cfgBlockList: List[CFGBlock] = cfg.getAllBlocks.sortWith((b1, b2) => {
+      if (b1.func.id == b2.func.id) {
+        (b1, b2) match {
+          case (Entry(_), _) | (Exit(_), ExitExc(_)) => true
+          case (_, Entry(_)) | (ExitExc(_), Exit(_)) => false
+          case (_, Exit(_)) | (_, ExitExc(_)) => true
+          case (Exit(_), _) | (ExitExc(_), _) => false
+          case _ => b1.id < b2.id
+        }
+      } else b1.func.id < b2.func.id
+    })
+    val (orderMap, order) = cfgBlockList.foldLeft((HashMap[CFGBlock, Int](), 0)) {
+      case ((tmpMap, tmpOrder), block) =>
         (tmpMap + (block -> tmpOrder), tmpOrder + 1)
     }
     new Worklist(orderMap)
@@ -58,5 +68,5 @@ class Worklist(private var orderMap: Map[CFGBlock, Int]) {
 }
 
 case class Work(order: Int, cp: ControlPoint) {
-  override def toString: String = s"(${cp.node}, ${cp.callContext})"
+  override def toString: String = s"(${cp.node.func.id}:${cp.node}, ${cp.callContext})"
 }
