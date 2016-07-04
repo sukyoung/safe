@@ -436,22 +436,22 @@ case class Helper(utils: Utils, addrManager: AddressManager) {
 
   def newBoolean(absB: AbsBool): Obj = {
     val newObj = newObject(addrManager.ProtoLoc.BOOLEAN) //TODO BOOLEAN_PROTO => BuiltinBoolean.ProtoLoc
-    newObj.update("@class", PropValue(utils.ObjectValueWith(utils.absString.alpha("Boolean"))))
-      .update("@primitive", PropValue(utils.ObjectValueWith(absB)))
+    newObj.update("@class", PropValue(utils.ObjectValueBot.copyWith(utils.absString.alpha("Boolean"))))
+      .update("@primitive", PropValue(utils.ObjectValueBot.copyWith(absB)))
   }
 
   def newNumber(absNum: AbsNumber): Obj = {
     val newObj = newObject(addrManager.ProtoLoc.NUMBER) //TODO Number_PROTO => BuiltinNumber.ProtoLoc
-    newObj.update("@class", PropValue(utils.ObjectValueWith(utils.absString.alpha("Number"))))
-      .update("@primitive", PropValue(utils.ObjectValueWith(absNum)))
+    newObj.update("@class", PropValue(utils.ObjectValueBot.copyWith(utils.absString.alpha("Number"))))
+      .update("@primitive", PropValue(utils.ObjectValueBot.copyWith(absNum)))
   }
 
   def newString(absStr: AbsString): Obj = {
     val newObj = newObject(addrManager.ProtoLoc.STRING) //TODO STRING_PROTO => BuiltinString.ProtoLoc
 
     val newObj2 = newObj
-      .update("@class", PropValue(utils.ObjectValueWith(utils.absString.alpha("String"))))
-      .update("@primitive", PropValue(utils.ObjectValueWith(absStr)))
+      .update("@class", PropValue(utils.ObjectValueBot.copyWith(utils.absString.alpha("String"))))
+      .update("@primitive", PropValue(utils.ObjectValueBot.copyWith(absStr)))
 
     val absFalse = utils.absBool.False
     val absTrue = utils.absBool.True
@@ -482,8 +482,8 @@ case class Helper(utils: Utils, addrManager: AddressManager) {
   }
 
   def newObject(): Obj = {
-    val classObjVal = utils.ObjectValueWith(utils.absString.alpha("Object"))
-    val extensibleObjVal = utils.ObjectValueWith(utils.absBool.True)
+    val classObjVal = utils.ObjectValueBot.copyWith(utils.absString.alpha("Object"))
+    val extensibleObjVal = utils.ObjectValueBot.copyWith(utils.absBool.True)
     utils.ObjEmpty
       .update("@class", PropValue(classObjVal))
       .update("@extensible", PropValue(extensibleObjVal))
@@ -495,9 +495,9 @@ case class Helper(utils: Utils, addrManager: AddressManager) {
     val protoVal = Value(utils.PValueBot, locSet)
     val absFalse = utils.absBool.False
     utils.ObjEmpty
-      .update("@class", PropValue(utils.ObjectValueWith(utils.absString.alpha("Object"))))
+      .update("@class", PropValue(utils.ObjectValueBot.copyWith(utils.absString.alpha("Object"))))
       .update("@proto", PropValue(ObjectValue(protoVal, absFalse, absFalse, absFalse)))
-      .update("@extensible", PropValue(utils.ObjectValueWith(utils.absBool.True)))
+      .update("@extensible", PropValue(utils.ObjectValueBot.copyWith(utils.absBool.True)))
   }
 
   def newArgObject(absLength: AbsNumber): Obj = {
@@ -506,9 +506,9 @@ case class Helper(utils: Utils, addrManager: AddressManager) {
     val absFalse = utils.absBool.False
     val absTrue = utils.absBool.True
     utils.ObjEmpty
-      .update("@class", PropValue(utils.ObjectValueWith(utils.absString.alpha("Arguments"))))
+      .update("@class", PropValue(utils.ObjectValueBot.copyWith(utils.absString.alpha("Arguments"))))
       .update("@proto", PropValue(ObjectValue(protoVal, absFalse, absFalse, absFalse)))
-      .update("@extensible", PropValue(utils.ObjectValueWith(absTrue)))
+      .update("@extensible", PropValue(utils.ObjectValueBot.copyWith(absTrue)))
       .update("length", PropValue(ObjectValue(lengthVal, absTrue, absFalse, absTrue)))
   }
 
@@ -517,9 +517,9 @@ case class Helper(utils: Utils, addrManager: AddressManager) {
     val lengthVal = Value(utils.PValueBot.copyWith(absLength))
     val absFalse = utils.absBool.False
     utils.ObjEmpty
-      .update("@class", PropValue(utils.ObjectValueWith(utils.absString.alpha("Array"))))
+      .update("@class", PropValue(utils.ObjectValueBot.copyWith(utils.absString.alpha("Array"))))
       .update("@proto", PropValue(ObjectValue(protoVal, absFalse, absFalse, absFalse)))
-      .update("@extensible", PropValue(utils.ObjectValueWith(utils.absBool.True)))
+      .update("@extensible", PropValue(utils.ObjectValueBot.copyWith(utils.absBool.True)))
       .update("length", PropValue(ObjectValue(lengthVal, utils.absBool.True, absFalse, absFalse)))
   }
 
@@ -540,9 +540,9 @@ case class Helper(utils: Utils, addrManager: AddressManager) {
     val absFalse = utils.absBool.False
     val lengthVal = Value(utils.PValueBot.copyWith(absLength))
     val obj1 = utils.ObjEmpty
-      .update("@class", PropValue(utils.ObjectValueWith(utils.absString.alpha("Function"))))
+      .update("@class", PropValue(utils.ObjectValueBot.copyWith(utils.absString.alpha("Function"))))
       .update("@proto", PropValue(ObjectValue(protoVal, absFalse, absFalse, absFalse)))
-      .update("@extensible", PropValue(utils.ObjectValueWith(utils.absBool.True)))
+      .update("@extensible", PropValue(utils.ObjectValueBot.copyWith(utils.absBool.True)))
       .update("@scope", PropValue(utils.ObjectValueBot.copyWith(env)))
       .update("length", PropValue(ObjectValue(lengthVal, absFalse, absFalse, absFalse)))
 
@@ -557,7 +557,7 @@ case class Helper(utils: Utils, addrManager: AddressManager) {
     val obj4 = locOpt match {
       case Some(loc) =>
         val prototypeVal = Value(utils.PValueBot, HashSet(loc))
-        obj3.update("@hasinstance", PropValue(utils.ObjectValueWith(utils.absNull.Top)))
+        obj3.update("@hasinstance", PropValue(utils.ObjectValueBot.copyWith(utils.absNull.Top)))
           .update("prototype", PropValue(ObjectValue(prototypeVal, writable, enumerable, configurable)))
       case None => obj3
     }
@@ -571,7 +571,7 @@ case class Helper(utils: Utils, addrManager: AddressManager) {
       .update("@this", PropValue(utils.ObjectValueBot.copyWith(thisVal))).
       update("@exception", utils.PropValueBot).
       update("@exception_all", utils.PropValueBot).
-      update("@return", PropValue(utils.ObjectValueWith(utils.absUndef.Top)))
+      update("@return", PropValue(utils.ObjectValueBot.copyWith(utils.absUndef.Top)))
   }
 
   def oldify(st: State, addr: Address): State = {

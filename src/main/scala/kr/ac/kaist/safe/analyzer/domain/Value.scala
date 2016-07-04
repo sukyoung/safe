@@ -11,6 +11,8 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
+import scala.collection.immutable.HashSet
+
 trait Value {
   val pvalue: PValue
   val locset: Set[Loc]
@@ -50,6 +52,9 @@ trait Value {
 
   def isBottom: Boolean
   def toAbsBoolean(absBool: AbsBoolUtil): AbsBool
+
+  def copyWith(loc: Loc): Value
+  def copyWith(locSet: Set[Loc]): Value
 }
 
 case class DefaultValue(pvalue: PValue, locset: Set[Loc]) extends Value {
@@ -127,4 +132,7 @@ case class DefaultValue(pvalue: PValue, locset: Set[Loc]) extends Value {
     pvalue.toAbsBoolean(absBool) +
       (if (locset.isEmpty) absBool.Bot else absBool.True)
   }
+
+  def copyWith(loc: Loc): Value = DefaultValue(this.pvalue, HashSet(loc))
+  def copyWith(locSet: Set[Loc]): Value = DefaultValue(this.pvalue, locSet)
 }

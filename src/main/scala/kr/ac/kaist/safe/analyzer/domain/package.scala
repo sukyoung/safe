@@ -35,6 +35,9 @@ package object domain {
 
   def PropValue(objval: ObjectValue): PropValue = PropValue(objval, HashSet[FunctionId]())
 
+  def PropValue(pvalue: PValue, writable: AbsBool, enumerable: AbsBool, configurable: AbsBool): PropValue =
+    PropValue(ObjectValue(Value(pvalue), writable, enumerable, configurable))
+
   def ObjectValue(value: Value, writable: AbsBool, enumerable: AbsBool, configurable: AbsBool): ObjectValue =
     DefaultObjectValue(value, writable, enumerable, configurable)
 
