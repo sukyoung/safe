@@ -290,18 +290,18 @@ class DefaultCFGBuilder(
             /* edge : try -> finally */
             cfg.addEdge(trybs, finBlock)
             val reslmap = (trylmap - AfterCatchLabel).foldLeft(finlmap) {
-              case (map, (label, bs)) => bs.isEmpty match {
+              case (map, (label, bs1)) => bs1.isEmpty match {
                 case false =>
                   val dupBlock: NormalBlock = func.createBlock
-                  val (bs: List[NormalBlock], lm: LabelMap) = translateStmt(finb, func, List(dupBlock), map)
+                  val (bs2: List[NormalBlock], lm: LabelMap) = translateStmt(finb, func, List(dupBlock), map)
                   label match {
                     case ThrowLabel =>
                       cfg.addEdge(AfterCatchLabel of trylmap toList, dupBlock)
-                      cfg.addEdge(bs.toList, dupBlock, CFGEdgeExc)
-                      lm.updated(ThrowEndLabel, (ThrowEndLabel of lm) ++ bs)
+                      cfg.addEdge(bs1.toList, dupBlock, CFGEdgeExc)
+                      lm.updated(ThrowEndLabel, (ThrowEndLabel of lm) ++ bs2)
                     case _ =>
-                      cfg.addEdge(bs.toList, dupBlock)
-                      lm.updated(label, (label of lm) ++ bs)
+                      cfg.addEdge(bs1.toList, dupBlock)
+                      lm.updated(label, (label of lm) ++ bs2)
                   }
                 case true => map
               }
@@ -337,18 +337,18 @@ class DefaultCFGBuilder(
             /* edge : try+catch -> finally */
             cfg.addEdge(trybs ++ catchbs, finBlock)
             val reslmap: LabelMap = (catchlmap - AfterCatchLabel).foldLeft(finlmap) {
-              case (map, (label, bs)) => bs.isEmpty match {
+              case (map, (label, bs1)) => bs1.isEmpty match {
                 case false =>
                   val dupBlock: NormalBlock = func.createBlock
-                  val (bs: List[NormalBlock], lm: LabelMap) = translateStmt(finb, func, List(dupBlock), map)
+                  val (bs2: List[NormalBlock], lm: LabelMap) = translateStmt(finb, func, List(dupBlock), map)
                   label match {
                     case ThrowLabel =>
                       cfg.addEdge(AfterCatchLabel of catchlmap toList, dupBlock)
-                      cfg.addEdge(bs.toList, dupBlock, CFGEdgeExc)
-                      lm.updated(ThrowEndLabel, (ThrowEndLabel of lm) ++ bs)
+                      cfg.addEdge(bs1.toList, dupBlock, CFGEdgeExc)
+                      lm.updated(ThrowEndLabel, (ThrowEndLabel of lm) ++ bs2)
                     case _ =>
-                      cfg.addEdge(bs.toList, dupBlock)
-                      lm.updated(label, (label of lm) ++ bs)
+                      cfg.addEdge(bs1.toList, dupBlock)
+                      lm.updated(label, (label of lm) ++ bs2)
                   }
                 case true => map
               }
