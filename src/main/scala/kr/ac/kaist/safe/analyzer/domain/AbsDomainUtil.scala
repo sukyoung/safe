@@ -13,6 +13,8 @@ package kr.ac.kaist.safe.analyzer.domain
 
 import kr.ac.kaist.safe.nodes.cfg.FunctionId
 
+import scala.collection.immutable.HashSet
+
 trait AbsUndefUtil {
   val Top: AbsUndef
   val Bot: AbsUndef
@@ -72,7 +74,7 @@ case class Utils(
   val PValueBot: PValue = PValue(absUndef.Bot, absNull.Bot, absBool.Bot, absNumber.Bot, absString.Bot)
   val ValueBot: Value = Value(PValueBot, LocSetEmpty)
   val ObjectValueBot: ObjectValue = ObjectValue(ValueBot, absBool.Bot, absBool.Bot, absBool.Bot)
-  val PropValueBot: PropValue = PropValue(ObjectValueBot, Set[FunctionId]())
+  val PropValueBot: PropValue = PropValue(ObjectValueBot, HashSet[FunctionId]())
 
   val ObjBot: Obj = Obj(Obj.ObjMapBot.
     updated(STR_DEFAULT_NUMBER, (PropValueBot, AbsentBot)).
@@ -80,15 +82,4 @@ case class Utils(
   val ObjEmpty: Obj = Obj(Obj.ObjMapBot.
     updated(STR_DEFAULT_NUMBER, (PropValueBot, AbsentTop)).
     updated(STR_DEFAULT_OTHER, (PropValueBot, AbsentTop)))
-
-  def ObjectValueWith(newUndefVal: AbsUndef): ObjectValue =
-    ObjectValue(Value(PValueBot.copyWith(newUndefVal), LocSetEmpty), absBool.Bot, absBool.Bot, absBool.Bot)
-  def ObjectValueWith(newNullVal: AbsNull): ObjectValue =
-    ObjectValue(Value(PValueBot.copyWith(newNullVal), LocSetEmpty), absBool.Bot, absBool.Bot, absBool.Bot)
-  def ObjectValueWith(newBoolVal: AbsBool): ObjectValue =
-    ObjectValue(Value(PValueBot.copyWith(newBoolVal), LocSetEmpty), absBool.Bot, absBool.Bot, absBool.Bot)
-  def ObjectValueWith(newNumberVal: AbsNumber): ObjectValue =
-    ObjectValue(Value(PValueBot.copyWith(newNumberVal), LocSetEmpty), absBool.Bot, absBool.Bot, absBool.Bot)
-  def ObjectValueWith(newStringVal: AbsString): ObjectValue =
-    ObjectValue(Value(PValueBot.copyWith(newStringVal), LocSetEmpty), absBool.Bot, absBool.Bot, absBool.Bot)
 }

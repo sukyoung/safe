@@ -44,6 +44,15 @@ trait ObjectValue {
   def copyWithWritable(newWritable: AbsBool): ObjectValue
   def copyWithEnumerable(newEnumerable: AbsBool): ObjectValue
   def copyWithConfigurable(newConfigurable: AbsBool): ObjectValue
+
+  def copyWith(newUndefVal: AbsUndef): ObjectValue = copyWith(Value(this.value.pvalue.copyWith(newUndefVal)))
+  def copyWith(newNullVal: AbsNull): ObjectValue = copyWith(Value(this.value.pvalue.copyWith(newNullVal)))
+  def copyWith(newBoolVal: AbsBool): ObjectValue = copyWith(Value(this.value.pvalue.copyWith(newBoolVal)))
+  def copyWith(newNumberVal: AbsNumber): ObjectValue = copyWith(Value(this.value.pvalue.copyWith(newNumberVal)))
+  def copyWith(newStringVal: AbsString): ObjectValue = copyWith(Value(this.value.pvalue.copyWith(newStringVal)))
+
+  def copyWith(loc: Loc): ObjectValue = copyWith(this.value.copyWith(loc))
+  def copyWith(locSet: Set[Loc]): ObjectValue = copyWith(this.value.copyWith(locSet))
 }
 
 case class DefaultObjectValue(
