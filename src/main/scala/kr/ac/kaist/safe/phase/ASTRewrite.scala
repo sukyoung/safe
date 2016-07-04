@@ -25,7 +25,7 @@ case class ASTRewrite(
     astRewriteConfig: ASTRewriteConfig = ASTRewriteConfig()
 ) extends Phase(Some(prev), Some(astRewriteConfig)) {
   override def apply(config: Config): Unit = rewrite(config) recover {
-    case ex => Console.err.print(ex.toString)
+    case ex => Console.err.print(ex.getMessage)
   }
   def rewrite(config: Config): Try[Program] =
     prev.parse(config).flatMap(rewrite(config, _))

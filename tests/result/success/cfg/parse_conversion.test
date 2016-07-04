@@ -28,7 +28,7 @@ function[0] top-level {
 function[1] <>funexpr@1:2-17:208<> {
   Entry[-1] -> [0]
 
-  Block[0] -> [1]
+  Block[0] -> [1], ExitExc
     [0] <>r<>1 := function (2) @ #10, #11
     [1] <>s<>2 := function (3) @ #25, #26
     [2] <>t<>3 := function (4) @ #61, #62
@@ -57,7 +57,7 @@ function[1] <>funexpr@1:2-17:208<> {
 
   AfterCatch[3] -> [5]
 
-  Block[4] -> [6]
+  Block[4] -> [6], ExitExc
     [0] <>f<>16 := <>Global<>ignore72
     [1] <>obj<>936 := <>Global<>toObject(isNaN) @ #706
     [2] <>temp<>937 := <>f<>16
@@ -65,7 +65,7 @@ function[1] <>funexpr@1:2-17:208<> {
     [4] <>arguments<>938["0"] := <>temp<>937
     [5] <>fun<>939 := <>Global<>getBase(isNaN)
 
-  Block[5]
+  Block[5] -> ExitExc
 
   Call[6]
     [0] call(<>obj<>936, <>fun<>939, <>arguments<>938) @ #708
@@ -76,19 +76,19 @@ function[1] <>funexpr@1:2-17:208<> {
 
   Block[9] -> [12], [11]
 
-  Block[10]
+  Block[10] -> ExitExc
 
-  Block[11] -> [13]
+  Block[11] -> [13], ExitExc
     [0] assert(<>y<>940)
     [1] <>newa<>941 := <>y<>940
 
-  Block[12] -> [13]
+  Block[12] -> [13], ExitExc
     [0] assert(! <>y<>940)
     [1] <>newa<>941 := 1 < <>f<>16
 
   Block[13] -> [17], [16]
 
-  Block[14] -> [22]
+  Block[14] -> [22], ExitExc
     [0] <>h<>17 := <>Global<>ignore73
     [1] <>Global<>ignore74 := function (19) @ #724, #725
     [2] <>k<>18 := <>Global<>ignore74
@@ -113,24 +113,24 @@ function[1] <>funexpr@1:2-17:208<> {
     [21] <>arguments<>1095["0"] := <>temp<>1094
     [22] <>fun<>1096 := <>Global<>toObject(<>obj<>1093["split"]) @ #835
 
-  Block[15] -> [14]
+  Block[15] -> [14], ExitExc
     [0] <>Global<>ignore73 := 0
 
-  Block[16] -> [15]
+  Block[16] -> [15], ExitExc
     [0] assert(<>newa<>941)
 
-  Block[17] -> [18]
+  Block[17] -> [18], ExitExc
     [0] assert(! <>newa<>941)
 
   Block[18] -> [20], [19]
 
-  Block[19] -> [15]
+  Block[19] -> [15], ExitExc
     [0] assert(0 > <>f<>16)
 
-  Block[20] -> [21]
+  Block[20] -> [21], ExitExc
     [0] assert(! 0 > <>f<>16)
 
-  Block[21] -> [14]
+  Block[21] -> [14], ExitExc
     [0] <>Global<>ignore73 := <>f<>16
 
   Call[22]
@@ -140,11 +140,11 @@ function[1] <>funexpr@1:2-17:208<> {
 
   AfterCatch[24] -> [26]
 
-  Block[25] -> [28], [27]
+  Block[25] -> [28], [27], ExitExc
     [0] <>q<>23 := <>Global<>ignore96
     [1] <>E<>24 := window
 
-  Block[26]
+  Block[26] -> ExitExc
 
   Block[27] -> [29], ExitExc
     [0] assert(<>E<>24)
@@ -171,17 +171,17 @@ function[1] <>funexpr@1:2-17:208<> {
   Block[32] -> [35], [34]
     [0] <>cond<>1105 := <>Global<>isObject(<>newObj<>1104)
 
-  Block[33]
+  Block[33] -> ExitExc
 
-  Block[34] -> [36]
+  Block[34] -> [36], ExitExc
     [0] assert(<>cond<>1105)
     [1] <>obj1<>1106 := <>newObj<>1104
 
-  Block[35] -> [36]
+  Block[35] -> [36], ExitExc
     [0] assert(! <>cond<>1105)
     [1] <>obj1<>1106 := <>obj<>1103
 
-  Block[36] -> [37]
+  Block[36] -> [37], ExitExc
     [0] <>obj<>1107 := <>Global<>toObject(<>obj1<>1106) @ #843
     [1] <>obj<>1108 := <>Global<>toObject(document) @ #844
     [2] <>temp<>1109 := <>obj<>1108["URL"]
@@ -198,7 +198,7 @@ function[1] <>funexpr@1:2-17:208<> {
 
   Block[40] -> [43], [42]
 
-  Block[41]
+  Block[41] -> ExitExc
 
   Block[42] -> [44], ExitExc
     [0] assert(<>y<>1097 != <>z<>1112)
@@ -219,17 +219,17 @@ function[1] <>funexpr@1:2-17:208<> {
 
   AfterCatch[46] -> [48]
 
-  Block[47] -> [50], [49]
+  Block[47] -> [50], [49], ExitExc
     [0] <>obj<>1118 := <>Global<>toObject(<>obj1<>1117) @ #854
     [1] <>K<>26 := <>obj<>1118[0]
 
-  Block[48]
+  Block[48] -> ExitExc
 
-  Block[49] -> [51]
+  Block[49] -> [51], ExitExc
     [0] assert(<>K<>26)
     [1] <>Global<>ignore100 := <>K<>26
 
-  Block[50] -> [52]
+  Block[50] -> [52], ExitExc
     [0] assert(! <>K<>26)
     [1] <>obj<>1119 := <>Global<>toObject(document) @ #855
     [2] <>temp<>1120 := "head"
@@ -237,7 +237,7 @@ function[1] <>funexpr@1:2-17:208<> {
     [4] <>arguments<>1121["0"] := <>temp<>1120
     [5] <>fun<>1122 := <>Global<>toObject(<>obj<>1119["createElement"]) @ #857
 
-  Block[51] -> [72]
+  Block[51] -> [72], ExitExc
     [0] <>obj<>1142 := <>Global<>toObject(document) @ #877
     [1] <>temp<>1143 := "script"
     [2] <>arguments<>1144 := allocArg(1) @ #878
@@ -251,7 +251,7 @@ function[1] <>funexpr@1:2-17:208<> {
 
   AfterCatch[54] -> [56]
 
-  Block[55] -> [57]
+  Block[55] -> [57], ExitExc
     [0] <>K<>26 := <>temp<>1123
     [1] <>obj<>1124 := <>Global<>toObject(document) @ #860
     [2] <>temp<>1125 := "html"
@@ -259,7 +259,7 @@ function[1] <>funexpr@1:2-17:208<> {
     [4] <>arguments<>1126["0"] := <>temp<>1125
     [5] <>fun<>1127 := <>Global<>toObject(<>obj<>1124["getElementsByTagName"]) @ #862
 
-  Block[56]
+  Block[56] -> ExitExc
 
   Call[57]
     [0] call(<>fun<>1127, <>obj<>1124, <>arguments<>1126) @ #863
@@ -268,7 +268,7 @@ function[1] <>funexpr@1:2-17:208<> {
 
   AfterCatch[59] -> [61]
 
-  Block[60] -> [62]
+  Block[60] -> [62], ExitExc
     [0] <>obj<>1129 := <>Global<>toObject(<>obj1<>1128) @ #865
     [1] <>obj<>1130 := <>Global<>toObject(<>obj<>1129[0]) @ #866
     [2] <>temp<>1131 := <>K<>26
@@ -278,7 +278,7 @@ function[1] <>funexpr@1:2-17:208<> {
     [6] <>arguments<>1134["0"] := <>temp<>1133
     [7] <>fun<>1135 := <>Global<>toObject(<>obj<>1132["getElementsByTagName"]) @ #869
 
-  Block[61]
+  Block[61] -> ExitExc
 
   Call[62]
     [0] call(<>fun<>1135, <>obj<>1132, <>arguments<>1134) @ #870
@@ -287,7 +287,7 @@ function[1] <>funexpr@1:2-17:208<> {
 
   AfterCatch[64] -> [66]
 
-  Block[65] -> [67]
+  Block[65] -> [67], ExitExc
     [0] <>obj<>1137 := <>Global<>toObject(<>obj1<>1136) @ #872
     [1] <>temp<>1138 := <>obj<>1137[0]
     [2] <>arguments<>1139 := allocArg(2) @ #873
@@ -295,7 +295,7 @@ function[1] <>funexpr@1:2-17:208<> {
     [4] <>arguments<>1139["1"] := <>temp<>1138
     [5] <>fun<>1140 := <>Global<>toObject(<>obj<>1130["insertBefore"]) @ #874
 
-  Block[66]
+  Block[66] -> ExitExc
 
   Call[67]
     [0] call(<>fun<>1140, <>obj<>1130, <>arguments<>1139) @ #875
@@ -304,10 +304,10 @@ function[1] <>funexpr@1:2-17:208<> {
 
   AfterCatch[69] -> [71]
 
-  Block[70] -> [51]
+  Block[70] -> [51], ExitExc
     [0] <>Global<>ignore100 := <>z<>1141
 
-  Block[71]
+  Block[71] -> ExitExc
 
   Call[72]
     [0] call(<>fun<>1145, <>obj<>1142, <>arguments<>1144) @ #880
@@ -316,7 +316,7 @@ function[1] <>funexpr@1:2-17:208<> {
 
   AfterCatch[74] -> [76]
 
-  Block[75] -> [77]
+  Block[75] -> [77], ExitExc
     [0] <>L<>27 := <>Global<>ignore101
     [1] <>obj<>1146 := <>Global<>toObject(<>L<>27) @ #882
     [2] <>obj<>1147 := <>Global<>toObject(<>A<>9) @ #883
@@ -325,7 +325,7 @@ function[1] <>funexpr@1:2-17:208<> {
     [5] <>arguments<>1149["0"] := <>temp<>1148
     [6] <>fun<>1150 := <>Global<>getBase(<>A<>9)
 
-  Block[76]
+  Block[76] -> ExitExc
 
   Call[77]
     [0] call(<>obj<>1147, <>fun<>1150, <>arguments<>1149) @ #885
@@ -334,7 +334,7 @@ function[1] <>funexpr@1:2-17:208<> {
 
   AfterCatch[79] -> [81]
 
-  Block[80] -> [82]
+  Block[80] -> [82], ExitExc
     [0] <>y<>1152 := <>y<>1151 + "//"
     [1] <>obj<>1153 := <>Global<>toObject(<>B<>10) @ #887
     [2] <>temp<>1154 := <>J<>25
@@ -342,7 +342,7 @@ function[1] <>funexpr@1:2-17:208<> {
     [4] <>arguments<>1155["0"] := <>temp<>1154
     [5] <>fun<>1156 := <>Global<>getBase(<>B<>10)
 
-  Block[81]
+  Block[81] -> ExitExc
 
   Call[82]
     [0] call(<>obj<>1153, <>fun<>1156, <>arguments<>1155) @ #889
@@ -351,7 +351,7 @@ function[1] <>funexpr@1:2-17:208<> {
 
   AfterCatch[84] -> [86]
 
-  Block[85] -> [87]
+  Block[85] -> [87], ExitExc
     [0] <>obj<>1146["src"] := <>y<>1152 + <>z<>1157 + "/pagead/conversion_debug_overlay.js"
     [1] <>obj<>1158 := <>Global<>toObject(<>K<>26) @ #891
     [2] <>temp<>1159 := <>L<>27
@@ -359,7 +359,7 @@ function[1] <>funexpr@1:2-17:208<> {
     [4] <>arguments<>1160["0"] := <>temp<>1159
     [5] <>fun<>1161 := <>Global<>toObject(<>obj<>1158["appendChild"]) @ #893
 
-  Block[86]
+  Block[86] -> ExitExc
 
   Call[87]
     [0] call(<>fun<>1161, <>obj<>1158, <>arguments<>1160) @ #894
@@ -370,11 +370,11 @@ function[1] <>funexpr@1:2-17:208<> {
 
   Block[90] -> [92]
 
-  Block[91]
+  Block[91] -> ExitExc
 
   Block[92] -> [204]
 
-  Block[93] -> [96], [95], ExitExc, [94]
+  Block[93] -> [96], [95], [94]
     [0] <>N<>29 := <>E<>24
     [1] <>y<>1163 := "landing"
     [2] <>obj<>1164 := <>Global<>toObject(<>N<>29) @ #896
@@ -382,11 +382,11 @@ function[1] <>funexpr@1:2-17:208<> {
   Block[94] -> [198]
     [0] catch(<>O<>1162)
 
-  Block[95] -> [97], ExitExc, [94]
+  Block[95] -> [97], [94]
     [0] assert(<>y<>1163 == <>obj<>1164["google_conversion_type"])
     [1] <>newa<>1165 := <>y<>1163 == <>obj<>1164["google_conversion_type"]
 
-  Block[96] -> [97], ExitExc, [94]
+  Block[96] -> [97], [94]
     [0] assert(<>y<>1163 != <>obj<>1164["google_conversion_type"])
     [1] <>obj<>1166 := <>Global<>toObject(<>N<>29) @ #897
     [2] <>newa<>1165 := ! <>obj<>1166["google_conversion_id"]
@@ -395,46 +395,46 @@ function[1] <>funexpr@1:2-17:208<> {
 
   Block[98] -> [172], [171]
 
-  Block[99] -> [98], ExitExc, [94]
+  Block[99] -> [98], [94]
     [0] <>M<>28 := ! 1
     [1] <>Global<>ignore105 := ! 1
 
-  Block[100] -> [99], ExitExc, [94]
+  Block[100] -> [99], [94]
     [0] assert(<>newa<>1165)
 
-  Block[101] -> [102], ExitExc, [94]
+  Block[101] -> [102], [94]
     [0] assert(! <>newa<>1165)
 
-  Block[102] -> [104], [103], ExitExc, [94]
+  Block[102] -> [104], [103], [94]
     [0] <>obj<>1167 := <>Global<>toObject(<>N<>29) @ #898
 
-  Block[103] -> [105], ExitExc, [94]
+  Block[103] -> [105], [94]
     [0] assert(<>obj<>1167["google_remarketing_only"])
     [1] <>obj<>1168 := <>Global<>toObject(<>N<>29) @ #899
     [2] <>newb<>1169 := <>obj<>1168["google_disable_viewthrough"]
 
-  Block[104] -> [107], [106], ExitExc, [94]
+  Block[104] -> [107], [106], [94]
     [0] assert(! <>obj<>1167["google_remarketing_only"])
 
   Block[105] -> [110], [109]
 
-  Block[106] -> [108], ExitExc, [94]
+  Block[106] -> [108], [94]
     [0] assert(typeof <>obj<>1167["google_remarketing_only"] == "boolean")
     [1] <>newb<>1169 := false
 
-  Block[107] -> [108], ExitExc, [94]
+  Block[107] -> [108], [94]
     [0] assert(typeof <>obj<>1167["google_remarketing_only"] != "boolean")
     [1] <>newb<>1169 := <>obj<>1167["google_remarketing_only"]
 
   Block[108] -> [105]
 
-  Block[109] -> [99], ExitExc, [94]
+  Block[109] -> [99], [94]
     [0] assert(<>newb<>1169)
 
-  Block[110] -> [111], ExitExc, [94]
+  Block[110] -> [111], [94]
     [0] assert(! <>newb<>1169)
 
-  Block[111] -> [112], ExitExc, [94]
+  Block[111] -> [112], [94]
     [0] <>obj<>1170 := <>Global<>toObject(<>N<>29) @ #900
     [1] <>fun<>1171 := <>Global<>toObject(Date) @ #901
     [2] <>arguments<>1172 := allocArg(0) @ #902
@@ -451,17 +451,17 @@ function[1] <>funexpr@1:2-17:208<> {
   Block[115] -> [118], [117]
     [0] <>cond<>1176 := <>Global<>isObject(<>newObj<>1175)
 
-  Block[116] -> ExitExc, [94]
+  Block[116] -> [94]
 
-  Block[117] -> [119], ExitExc, [94]
+  Block[117] -> [119], [94]
     [0] assert(<>cond<>1176)
     [1] <>temp<>1177 := <>newObj<>1175
 
-  Block[118] -> [119], ExitExc, [94]
+  Block[118] -> [119], [94]
     [0] assert(! <>cond<>1176)
     [1] <>temp<>1177 := <>obj<>1174
 
-  Block[119] -> [120], ExitExc, [94]
+  Block[119] -> [120], [94]
     [0] <>obj<>1170["google_conversion_date"] := <>temp<>1177
     [1] <>temp<>1177 := <>obj<>1170["google_conversion_date"]
     [2] <>obj<>1178 := <>Global<>toObject(<>N<>29) @ #906
@@ -477,109 +477,109 @@ function[1] <>funexpr@1:2-17:208<> {
 
   AfterCatch[122] -> [124]
 
-  Block[123] -> [127], [126], ExitExc, [94]
+  Block[123] -> [127], [126], [94]
     [0] <>obj<>1178["google_conversion_time"] := <>temp<>1183
     [1] <>temp<>1183 := <>obj<>1178["google_conversion_time"]
     [2] <>obj<>1184 := <>Global<>toObject(<>N<>29) @ #913
     [3] <>y<>1185 := "number"
     [4] <>obj<>1186 := <>Global<>toObject(<>N<>29) @ #914
 
-  Block[124] -> ExitExc, [94]
+  Block[124] -> [94]
 
-  Block[125] -> [133], [132], ExitExc, [94]
+  Block[125] -> [133], [132], [94]
     [0] <>obj<>1184["google_conversion_snippets"] := <>temp<>1190
     [1] <>temp<>1190 := <>obj<>1184["google_conversion_snippets"]
     [2] <>y<>1191 := "number"
     [3] <>obj<>1192 := <>Global<>toObject(<>N<>29) @ #917
 
-  Block[126] -> [129], [128], ExitExc, [94]
+  Block[126] -> [129], [128], [94]
     [0] assert(<>y<>1185 == typeof <>obj<>1186["google_conversion_snippets"])
     [1] <>y<>1187 := 0
     [2] <>obj<>1188 := <>Global<>toObject(<>N<>29) @ #915
 
-  Block[127] -> [131], ExitExc, [94]
+  Block[127] -> [131], [94]
     [0] assert(<>y<>1185 != typeof <>obj<>1186["google_conversion_snippets"])
 
-  Block[128] -> [125], ExitExc, [94]
+  Block[128] -> [125], [94]
     [0] assert(<>y<>1187 < <>obj<>1188["google_conversion_snippets"])
     [1] <>obj<>1189 := <>Global<>toObject(<>N<>29) @ #916
     [2] <>temp<>1190 := <>obj<>1189["google_conversion_snippets"] + 1
 
-  Block[129] -> [130], ExitExc, [94]
+  Block[129] -> [130], [94]
     [0] assert(! <>y<>1187 < <>obj<>1188["google_conversion_snippets"])
 
   Block[130] -> [131]
 
-  Block[131] -> [125], ExitExc, [94]
+  Block[131] -> [125], [94]
     [0] <>temp<>1190 := 1
 
-  Block[132] -> [134], ExitExc, [94]
+  Block[132] -> [134], [94]
     [0] assert(<>y<>1191 != typeof <>obj<>1192["google_conversion_first_time"])
     [1] <>obj<>1193 := <>Global<>toObject(<>N<>29) @ #918
     [2] <>obj<>1194 := <>Global<>toObject(<>N<>29) @ #919
     [3] <>obj<>1193["google_conversion_first_time"] := <>obj<>1194["google_conversion_time"]
     [4] <>temp<>1195 := <>obj<>1193["google_conversion_first_time"]
 
-  Block[133] -> [136], [135], ExitExc, [94]
+  Block[133] -> [136], [135], [94]
     [0] assert(<>y<>1191 == typeof <>obj<>1192["google_conversion_first_time"])
 
-  Block[134] -> [139], [138], ExitExc, [94]
+  Block[134] -> [139], [138], [94]
     [0] <>obj<>1196 := <>Global<>toObject(<>N<>29) @ #920
     [1] <>obj<>1196["google_conversion_js_version"] := "7"
     [2] <>temp<>1197 := <>obj<>1196["google_conversion_js_version"]
     [3] <>y<>1198 := 0
     [4] <>obj<>1199 := <>Global<>toObject(<>N<>29) @ #921
 
-  Block[135] -> [137], ExitExc, [94]
+  Block[135] -> [137], [94]
     [0] assert(typeof <>y<>1191 != typeof <>obj<>1192["google_conversion_first_time"] == "boolean")
     [1] <>temp<>1195 := false
 
-  Block[136] -> [137], ExitExc, [94]
+  Block[136] -> [137], [94]
     [0] assert(typeof <>y<>1191 != typeof <>obj<>1192["google_conversion_first_time"] != "boolean")
     [1] <>temp<>1195 := <>y<>1191 != typeof <>obj<>1192["google_conversion_first_time"]
 
   Block[137] -> [134]
 
-  Block[138] -> [141], [140], ExitExc, [94]
+  Block[138] -> [141], [140], [94]
     [0] assert(<>y<>1198 != <>obj<>1199["google_conversion_format"])
     [1] <>y<>1200 := 1
     [2] <>obj<>1201 := <>Global<>toObject(<>N<>29) @ #922
 
-  Block[139] -> [160], [159], ExitExc, [94]
+  Block[139] -> [160], [159], [94]
     [0] assert(<>y<>1198 == <>obj<>1199["google_conversion_format"])
 
-  Block[140] -> [143], [142], ExitExc, [94]
+  Block[140] -> [143], [142], [94]
     [0] assert(<>y<>1200 != <>obj<>1201["google_conversion_format"])
     [1] <>y<>1202 := 2
     [2] <>obj<>1203 := <>Global<>toObject(<>N<>29) @ #923
 
-  Block[141] -> [156], [155], ExitExc, [94]
+  Block[141] -> [156], [155], [94]
     [0] assert(<>y<>1200 == <>obj<>1201["google_conversion_format"])
 
-  Block[142] -> [145], [144], ExitExc, [94]
+  Block[142] -> [145], [144], [94]
     [0] assert(<>y<>1202 != <>obj<>1203["google_conversion_format"])
     [1] <>y<>1204 := 3
     [2] <>obj<>1205 := <>Global<>toObject(<>N<>29) @ #924
 
-  Block[143] -> [152], [151], ExitExc, [94]
+  Block[143] -> [152], [151], [94]
     [0] assert(<>y<>1202 == <>obj<>1203["google_conversion_format"])
 
-  Block[144] -> [146], ExitExc, [94]
+  Block[144] -> [146], [94]
     [0] assert(<>y<>1204 != <>obj<>1205["google_conversion_format"])
     [1] <>obj<>1206 := <>Global<>toObject(<>N<>29) @ #925
     [2] <>obj<>1206["google_conversion_format"] := 1
     [3] <>temp<>1207 := <>obj<>1206["google_conversion_format"]
 
-  Block[145] -> [148], [147], ExitExc, [94]
+  Block[145] -> [148], [147], [94]
     [0] assert(<>y<>1204 == <>obj<>1205["google_conversion_format"])
 
   Block[146] -> [150]
 
-  Block[147] -> [149], ExitExc, [94]
+  Block[147] -> [149], [94]
     [0] assert(typeof <>y<>1204 != <>obj<>1205["google_conversion_format"] == "boolean")
     [1] <>temp<>1207 := false
 
-  Block[148] -> [149], ExitExc, [94]
+  Block[148] -> [149], [94]
     [0] assert(typeof <>y<>1204 != <>obj<>1205["google_conversion_format"] != "boolean")
     [1] <>temp<>1207 := <>y<>1204 != <>obj<>1205["google_conversion_format"]
 
@@ -587,11 +587,11 @@ function[1] <>funexpr@1:2-17:208<> {
 
   Block[150] -> [154]
 
-  Block[151] -> [153], ExitExc, [94]
+  Block[151] -> [153], [94]
     [0] assert(typeof <>y<>1202 != <>obj<>1203["google_conversion_format"] == "boolean")
     [1] <>temp<>1207 := false
 
-  Block[152] -> [153], ExitExc, [94]
+  Block[152] -> [153], [94]
     [0] assert(typeof <>y<>1202 != <>obj<>1203["google_conversion_format"] != "boolean")
     [1] <>temp<>1207 := <>y<>1202 != <>obj<>1203["google_conversion_format"]
 
@@ -599,17 +599,17 @@ function[1] <>funexpr@1:2-17:208<> {
 
   Block[154] -> [158]
 
-  Block[155] -> [157], ExitExc, [94]
+  Block[155] -> [157], [94]
     [0] assert(typeof <>y<>1200 != <>obj<>1201["google_conversion_format"] == "boolean")
     [1] <>temp<>1207 := false
 
-  Block[156] -> [157], ExitExc, [94]
+  Block[156] -> [157], [94]
     [0] assert(typeof <>y<>1200 != <>obj<>1201["google_conversion_format"] != "boolean")
     [1] <>temp<>1207 := <>y<>1200 != <>obj<>1201["google_conversion_format"]
 
   Block[157] -> [154]
 
-  Block[158] -> [162], ExitExc, [94]
+  Block[158] -> [162], [94]
     [0] <>fun<>1208 := <>Global<>toObject(<>l<>19) @ #926
     [1] <>temp<>1209 := 1
     [2] <>arguments<>1210 := allocArg(1) @ #927
@@ -617,11 +617,11 @@ function[1] <>funexpr@1:2-17:208<> {
     [4] <>proto<>1211 := <>fun<>1208["prototype"]
     [5] <>obj<>1212 := alloc(<>proto<>1211) @ #928
 
-  Block[159] -> [161], ExitExc, [94]
+  Block[159] -> [161], [94]
     [0] assert(typeof <>y<>1198 != <>obj<>1199["google_conversion_format"] == "boolean")
     [1] <>temp<>1207 := false
 
-  Block[160] -> [161], ExitExc, [94]
+  Block[160] -> [161], [94]
     [0] assert(typeof <>y<>1198 != <>obj<>1199["google_conversion_format"] != "boolean")
     [1] <>temp<>1207 := <>y<>1198 != <>obj<>1199["google_conversion_format"]
 
@@ -637,31 +637,31 @@ function[1] <>funexpr@1:2-17:208<> {
   Block[165] -> [168], [167]
     [0] <>cond<>1214 := <>Global<>isObject(<>newObj<>1213)
 
-  Block[166] -> ExitExc, [94]
+  Block[166] -> [94]
 
-  Block[167] -> [169], ExitExc, [94]
+  Block[167] -> [169], [94]
     [0] assert(<>cond<>1214)
     [1] <>temp<>1215 := <>newObj<>1213
 
-  Block[168] -> [169], ExitExc, [94]
+  Block[168] -> [169], [94]
     [0] assert(! <>cond<>1214)
     [1] <>temp<>1215 := <>obj<>1212
 
-  Block[169] -> [98], ExitExc, [94]
+  Block[169] -> [98], [94]
     [0] <>m<>22 := <>temp<>1215
     [1] <>M<>28 := ! 0
     [2] <>Global<>ignore105 := ! 0
 
   Block[170] -> [198]
 
-  Block[171] -> [173], ExitExc, [94]
+  Block[171] -> [173], [94]
     [0] assert(<>M<>28)
     [1] <>obj<>1216 := <>Global<>toObject(document) @ #931
     [2] <>obj<>1217 := <>Global<>toObject(<>G<>13) @ #932
     [3] <>arguments<>1218 := allocArg(0) @ #933
     [4] <>fun<>1219 := <>Global<>getBase(<>G<>13)
 
-  Block[172] -> [197], ExitExc, [94]
+  Block[172] -> [197], [94]
     [0] assert(! <>M<>28)
 
   Call[173]
@@ -671,12 +671,12 @@ function[1] <>funexpr@1:2-17:208<> {
 
   AfterCatch[175] -> [177]
 
-  Block[176] -> [178], ExitExc, [94]
+  Block[176] -> [178], [94]
     [0] <>arguments<>1221 := allocArg(1) @ #936
     [1] <>arguments<>1221["0"] := <>temp<>1220
     [2] <>fun<>1222 := <>Global<>toObject(<>obj<>1216["write"]) @ #937
 
-  Block[177] -> ExitExc, [94]
+  Block[177] -> [94]
 
   Call[178]
     [0] call(<>fun<>1222, <>obj<>1216, <>arguments<>1221) @ #938
@@ -685,39 +685,39 @@ function[1] <>funexpr@1:2-17:208<> {
 
   AfterCatch[180] -> [182]
 
-  Block[181] -> [184], [183], ExitExc, [94]
+  Block[181] -> [184], [183], [94]
     [0] <>obj<>1224 := <>Global<>toObject(<>E<>24) @ #940
 
-  Block[182] -> ExitExc, [94]
+  Block[182] -> [94]
 
-  Block[183] -> [185], ExitExc, [94]
+  Block[183] -> [185], [94]
     [0] assert(<>obj<>1224["google_remarketing_for_search"])
     [1] <>obj<>1225 := <>Global<>toObject(<>E<>24) @ #941
     [2] <>new1<>1226 := ! <>obj<>1225["google_conversion_domain"]
 
-  Block[184] -> [187], [186], ExitExc, [94]
+  Block[184] -> [187], [186], [94]
     [0] assert(! <>obj<>1224["google_remarketing_for_search"])
 
   Block[185] -> [190], [189]
 
-  Block[186] -> [188], ExitExc, [94]
+  Block[186] -> [188], [94]
     [0] assert(typeof <>obj<>1224["google_remarketing_for_search"] == "boolean")
     [1] <>new1<>1226 := false
 
-  Block[187] -> [188], ExitExc, [94]
+  Block[187] -> [188], [94]
     [0] assert(typeof <>obj<>1224["google_remarketing_for_search"] != "boolean")
     [1] <>new1<>1226 := <>obj<>1224["google_remarketing_for_search"]
 
   Block[188] -> [185]
 
-  Block[189] -> [191], ExitExc, [94]
+  Block[189] -> [191], [94]
     [0] assert(<>new1<>1226)
     [1] <>F<>30 := <>E<>24
     [2] <>obj<>1227 := <>Global<>toObject(<>I<>15) @ #942
     [3] <>arguments<>1228 := allocArg(0) @ #943
     [4] <>fun<>1229 := <>Global<>getBase(<>I<>15)
 
-  Block[190] -> [196], ExitExc, [94]
+  Block[190] -> [196], [94]
     [0] assert(! <>new1<>1226)
 
   Call[191]
@@ -729,7 +729,7 @@ function[1] <>funexpr@1:2-17:208<> {
 
   Block[194] -> [170]
 
-  Block[195] -> ExitExc, [94]
+  Block[195] -> [94]
 
   Block[196] -> [197]
 
@@ -2413,7 +2413,7 @@ function[8] y {
 function[9] z {
   Entry[-1] -> [0]
 
-  Block[0] -> [2], [1]
+  Block[0] -> [2], [1], ExitExc
     [0] <>c<>425 := ""
 
   Block[1] -> [4], [3], ExitExc
@@ -2427,14 +2427,14 @@ function[9] z {
   Block[2] -> [68], ExitExc
     [0] assert(! <>b<>423)
 
-  Block[3] -> [5]
+  Block[3] -> [5], ExitExc
     [0] assert(<>y<>431 != <>obj<>432["referrer"])
     [1] <>obj<>433 := <>Global<>toObject(<>b<>423) @ #335
     [2] <>obj<>434 := <>Global<>toObject(<>obj<>433["referrer"]) @ #336
     [3] <>arguments<>435 := allocArg(0) @ #337
     [4] <>fun<>436 := <>Global<>toObject(<>obj<>434["toString"]) @ #338
 
-  Block[4] -> [15]
+  Block[4] -> [15], ExitExc
     [0] assert(<>y<>431 == <>obj<>432["referrer"])
     [1] <>temp<>443 := ""
 
@@ -2445,7 +2445,7 @@ function[9] z {
 
   AfterCatch[7] -> [9]
 
-  Block[8] -> [10]
+  Block[8] -> [10], ExitExc
     [0] <>obj<>438 := <>Global<>toObject(<>obj1<>437) @ #341
     [1] <>temp<>439 := 0
     [2] <>temp<>440 := 256
@@ -2454,7 +2454,7 @@ function[9] z {
     [5] <>arguments<>441["1"] := <>temp<>440
     [6] <>fun<>442 := <>Global<>toObject(<>obj<>438["substring"]) @ #343
 
-  Block[9]
+  Block[9] -> ExitExc
 
   Call[10]
     [0] call(<>fun<>442, <>obj<>438, <>arguments<>441) @ #344
@@ -2465,9 +2465,9 @@ function[9] z {
 
   Block[13] -> [15]
 
-  Block[14]
+  Block[14] -> ExitExc
 
-  Block[15] -> [16]
+  Block[15] -> [16], ExitExc
     [0] <>arguments<>444 := allocArg(2) @ #346
     [1] <>arguments<>444["0"] := <>temp<>430
     [2] <>arguments<>444["1"] := <>temp<>443
@@ -2480,11 +2480,11 @@ function[9] z {
 
   AfterCatch[18] -> [20]
 
-  Block[19] -> [22], [21]
+  Block[19] -> [22], [21], ExitExc
     [0] <>c<>425 := <>y<>428 + <>z<>446
     [1] <>obj<>447 := <>Global<>toObject(<>a<>422) @ #349
 
-  Block[20]
+  Block[20] -> ExitExc
 
   Block[21] -> [23], ExitExc
     [0] assert(<>obj<>447["top"] == <>a<>422)
@@ -2512,20 +2512,20 @@ function[9] z {
     [1] <>obj<>455 := <>Global<>toObject(<>a<>422) @ #356
     [2] <>b<>423 := <>obj<>455["top"]
 
-  Block[26] -> [28]
+  Block[26] -> [28], ExitExc
     [0] assert(<>y<>452 == <>obj<>454["origin"])
     [1] <>Global<>ignore36 := 1
 
-  Block[27] -> [28]
+  Block[27] -> [28], ExitExc
     [0] assert(<>y<>452 != <>obj<>454["origin"])
     [1] <>Global<>ignore36 := 2
 
-  Block[28] -> [29]
+  Block[28] -> [29], ExitExc
     [0] <>e<>426 := <>Global<>ignore36
 
   Block[29] -> [23]
 
-  Block[30] -> [33], [32], ExitExc, [31]
+  Block[30] -> [33], [32], [31]
     [0] <>obj<>457 := <>Global<>toObject(<>b<>423) @ #357
     [1] <>obj<>458 := <>Global<>toObject(<>obj<>457["location"]) @ #358
 
@@ -2533,18 +2533,18 @@ function[9] z {
     [0] catch(<>g<>456)
     [1] <>e<>426 := ! 1
 
-  Block[32] -> [34], ExitExc, [31]
+  Block[32] -> [34], [31]
     [0] assert(! ! <>obj<>458["href"])
     [1] <>Global<>ignore39 := ! ! <>obj<>458["href"]
 
-  Block[33] -> [34], ExitExc, [31]
+  Block[33] -> [34], [31]
     [0] assert(! ! ! <>obj<>458["href"])
     [1] <>y<>459 := ""
     [2] <>obj<>460 := <>Global<>toObject(<>b<>423) @ #359
     [3] <>obj<>461 := <>Global<>toObject(<>obj<>460["location"]) @ #360
     [4] <>Global<>ignore39 := <>y<>459 === <>obj<>461["href"]
 
-  Block[34] -> [35], ExitExc, [31]
+  Block[34] -> [35], [31]
     [0] <>e<>426 := <>Global<>ignore39
 
   Block[35] -> [37], [36]

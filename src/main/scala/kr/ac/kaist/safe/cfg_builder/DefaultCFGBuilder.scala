@@ -266,7 +266,7 @@ class DefaultCFGBuilder(
                 List(newBlock)
               case _ => trybs ++ catchbs
             }
-            val lm: LabelMap = catchlmap.foldLeft(trylmap) {
+            val lm: LabelMap = catchlmap.foldLeft(lmap) {
               case (m, (label, bs)) => m.contains(label) match {
                 case true => m.updated(label, (label of m) ++ bs)
                 case false => m.updated(label, bs)

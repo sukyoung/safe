@@ -7,14 +7,14 @@ function[0] top-level {
   Block[1] -> [2]
     [0] throw("1")
 
-  Block[2] -> [3]
+  Block[2] -> [3], [4]
     [0] catch(<>e<>1)
     [1] <>Global<>ignore2 := "1"
 
-  Block[3] -> [5]
+  Block[3] -> [5], ExitExc
     [0] <>Global<>ignore4 := "2"
 
-  Block[4] -> [4]
+  Block[4] -> ExitExc, ExitExc
     [0] <>Global<>ignore4 := "2"
 
   Block[5] -> [7]

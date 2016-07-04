@@ -2754,7 +2754,7 @@ function[10] <>funexpr@57:6-30<> {
 function[11] <>funexpr@68:10-80:4<> {
   Entry[-1] -> [0]
 
-  Block[0] -> [2]
+  Block[0] -> [2], ExitExc
     [0] <>i<>215 := 0
     [1] <>obj<>219 := <>Global<>toObject(<>arguments<>218) @ #178
     [2] <>length<>216 := <>obj<>219["length"]
@@ -2778,7 +2778,7 @@ function[11] <>funexpr@68:10-80:4<> {
     [2] <>i<>215 := <>new<>226 + 1
     [3] <>Global<>ignore27 := <>new<>226
 
-  Block[6] -> [8], ExitExc, [7]
+  Block[6] -> [8], [7]
     [0] <>obj<>222 := <>Global<>toObject(<>lambda<>217) @ #180
     [1] <>arguments<>223 := allocArg(0) @ #181
     [2] <>fun<>224 := <>Global<>getBase(<>lambda<>217)
@@ -2793,10 +2793,10 @@ function[11] <>funexpr@68:10-80:4<> {
 
   AfterCatch[10] -> [12]
 
-  Block[11] -> [1], ExitExc, [7]
+  Block[11] -> [1], [7]
     [0] <>returnValue<>214 := <>Global<>ignore29
 
-  Block[12] -> ExitExc, [7]
+  Block[12] -> [7]
 
   Exit[-2]
 
@@ -3824,7 +3824,7 @@ function[23] inspect {
 
   Block[0] -> [1]
 
-  Block[1] -> [3], ExitExc, [2]
+  Block[1] -> [3], [2]
     [0] <>obj<>451 := <>Global<>toObject(<>isUndefined<>416) @ #349
     [1] <>temp<>452 := <>object<>448
     [2] <>arguments<>453 := allocArg(1) @ #350
@@ -3843,34 +3843,34 @@ function[23] inspect {
 
   Block[6] -> [9], [8]
 
-  Block[7] -> ExitExc, [2]
+  Block[7] -> [2]
 
-  Block[8] -> Exit, ExitExc, [2]
+  Block[8] -> Exit, [2]
     [0] assert(<>new<>455)
     [1] return("undefined")
 
-  Block[9] -> [10], ExitExc, [2]
+  Block[9] -> [10], [2]
     [0] assert(! <>new<>455)
 
   Block[10] -> [12], [11]
 
-  Block[11] -> Exit, ExitExc, [2]
+  Block[11] -> Exit, [2]
     [0] assert(<>object<>448 === null)
     [1] return("null")
 
-  Block[12] -> [13], ExitExc, [2]
+  Block[12] -> [13], [2]
     [0] assert(<>object<>448 !== null)
 
-  Block[13] -> [15], [14], ExitExc, [2]
+  Block[13] -> [15], [14], [2]
     [0] <>obj<>456 := <>Global<>toObject(<>object<>448) @ #353
 
-  Block[14] -> [16], ExitExc, [2]
+  Block[14] -> [16], [2]
     [0] assert(<>obj<>456["inspect"])
     [1] <>obj<>457 := <>Global<>toObject(<>object<>448) @ #354
     [2] <>arguments<>458 := allocArg(0) @ #355
     [3] <>fun<>459 := <>Global<>toObject(<>obj<>457["inspect"]) @ #356
 
-  Block[15] -> [22], ExitExc, [2]
+  Block[15] -> [22], [2]
     [0] assert(! <>obj<>456["inspect"])
     [1] <>obj<>461 := <>Global<>toObject(String) @ #359
     [2] <>temp<>462 := <>object<>448
@@ -3887,9 +3887,9 @@ function[23] inspect {
 
   Block[19] -> [21]
 
-  Block[20] -> ExitExc, [2]
+  Block[20] -> [2]
 
-  Block[21] -> Exit, ExitExc, [2]
+  Block[21] -> Exit, [2]
     [0] return(<>new1<>460)
 
   Call[22]
@@ -3901,7 +3901,7 @@ function[23] inspect {
 
   Block[25] -> [21]
 
-  Block[26] -> ExitExc, [2]
+  Block[26] -> [2]
 
   Block[27] -> Exit, ExitExc
     [0] assert(<>e<>450 instanceof RangeError)
@@ -6442,7 +6442,7 @@ function[64] <>funexpr@501:9-505:4<> {
 function[65] <>funexpr@507:17-518:4<> {
   Entry[-1] -> [0]
 
-  Block[0] -> [2], [1]
+  Block[0] -> [2], [1], ExitExc
     [0] <>obj<>1166 := <>Global<>toObject(this) @ #969
 
   Block[1] -> [3], ExitExc
@@ -6451,7 +6451,7 @@ function[65] <>funexpr@507:17-518:4<> {
   Block[2] -> [11], ExitExc
     [0] assert(! ! <>obj<>1166["currentlyExecuting"])
 
-  Block[3] -> [5], ExitExc, [4]
+  Block[3] -> [5], [4]
     [0] <>obj<>1168 := <>Global<>toObject(this) @ #970
     [1] <>obj<>1168["currentlyExecuting"] := true
     [2] <>obj<>1169 := <>Global<>toObject(this) @ #971
@@ -6471,11 +6471,11 @@ function[65] <>funexpr@507:17-518:4<> {
 
   AfterCatch[7] -> [9]
 
-  Block[8] -> [10], ExitExc, [4]
+  Block[8] -> [10], [4]
     [0] <>obj<>1172 := <>Global<>toObject(this) @ #976
     [1] <>obj<>1172["currentlyExecuting"] := false
 
-  Block[9] -> ExitExc, [4]
+  Block[9] -> [4]
 
   Block[10] -> [11]
 
@@ -9446,7 +9446,7 @@ function[97] isJSON {
 function[98] evalJSON {
   Entry[-1] -> [0]
 
-  Block[0] -> [1]
+  Block[0] -> [1], ExitExc
     [0] <>obj<>1970 := <>Global<>toObject(this) @ #1611
     [1] <>arguments<>1971 := allocArg(0) @ #1612
     [2] <>fun<>1972 := <>Global<>toObject(<>obj<>1970["unfilterJSON"]) @ #1613
@@ -9458,7 +9458,7 @@ function[98] evalJSON {
 
   AfterCatch[3] -> [5]
 
-  Block[4] -> [6]
+  Block[4] -> [6], ExitExc
     [0] <>json<>1967 := <>Global<>ignore191
     [1] <>fun<>1973 := <>Global<>toObject(RegExp) @ #1616
     [2] <>temp<>1974 := "[\u0000\u00ad\u0600-\u0604\u070f\u17b4\u17b5\u200c-\u200f\u2028-\u202f\u2060-\u206f\ufeff\ufff0-\uffff]"
@@ -9469,7 +9469,7 @@ function[98] evalJSON {
     [7] <>proto<>1977 := <>fun<>1973["prototype"]
     [8] <>obj<>1978 := alloc(<>proto<>1977) @ #1618
 
-  Block[5]
+  Block[5] -> ExitExc
 
   Call[6]
     [0] construct(<>fun<>1973, <>obj<>1978, <>arguments<>1976) @ #1619, #1620
@@ -9481,17 +9481,17 @@ function[98] evalJSON {
   Block[9] -> [12], [11]
     [0] <>cond<>1980 := <>Global<>isObject(<>newObj<>1979)
 
-  Block[10]
+  Block[10] -> ExitExc
 
-  Block[11] -> [13]
+  Block[11] -> [13], ExitExc
     [0] assert(<>cond<>1980)
     [1] <>Global<>ignore192 := <>newObj<>1979
 
-  Block[12] -> [13]
+  Block[12] -> [13], ExitExc
     [0] assert(! <>cond<>1980)
     [1] <>Global<>ignore192 := <>obj<>1978
 
-  Block[13] -> [14]
+  Block[13] -> [14], ExitExc
     [0] <>cx<>1968 := <>Global<>ignore192
     [1] <>obj<>1981 := <>Global<>toObject(<>cx<>1968) @ #1621
     [2] <>temp<>1982 := <>json<>1967
@@ -9508,9 +9508,9 @@ function[98] evalJSON {
 
   Block[17] -> [20], [19]
 
-  Block[18]
+  Block[18] -> ExitExc
 
-  Block[19] -> [21]
+  Block[19] -> [21], ExitExc
     [0] assert(<>new<>1985)
     [1] <>obj<>1986 := <>Global<>toObject(<>json<>1967) @ #1626
     [2] <>temp<>1987 := <>cx<>1968
@@ -9520,7 +9520,7 @@ function[98] evalJSON {
     [6] <>arguments<>2009["1"] := <>temp<>2008
     [7] <>fun<>2010 := <>Global<>toObject(<>obj<>1986["replace"]) @ #1645
 
-  Block[20] -> [26]
+  Block[20] -> [26], ExitExc
     [0] assert(! <>new<>1985)
 
   Call[21]
@@ -9530,10 +9530,10 @@ function[98] evalJSON {
 
   AfterCatch[23] -> [25]
 
-  Block[24] -> [26]
+  Block[24] -> [26], ExitExc
     [0] <>json<>1967 := <>Global<>ignore193
 
-  Block[25]
+  Block[25] -> ExitExc
 
   Block[26] -> [27]
 
@@ -9544,16 +9544,16 @@ function[98] evalJSON {
 
   Block[29] -> [42]
 
-  Block[30] -> Exit, ExitExc, [28]
+  Block[30] -> Exit, [28]
     [0] return(<>new1<>2016)
 
-  Block[31] -> [30], ExitExc, [28]
+  Block[31] -> [30], [28]
     [0] assert(! <>sanitize<>1966)
 
-  Block[32] -> [33], ExitExc, [28]
+  Block[32] -> [33], [28]
     [0] assert(! ! <>sanitize<>1966)
 
-  Block[33] -> [34], ExitExc, [28]
+  Block[33] -> [34], [28]
     [0] <>obj<>2012 := <>Global<>toObject(<>json<>1967) @ #1648
     [1] <>arguments<>2013 := allocArg(0) @ #1649
     [2] <>fun<>2014 := <>Global<>toObject(<>obj<>2012["isJSON"]) @ #1650
@@ -9567,12 +9567,12 @@ function[98] evalJSON {
 
   Block[37] -> [40], [39]
 
-  Block[38] -> ExitExc, [28]
+  Block[38] -> [28]
 
-  Block[39] -> [30], ExitExc, [28]
+  Block[39] -> [30], [28]
     [0] assert(<>new2<>2015)
 
-  Block[40] -> [41], ExitExc, [28]
+  Block[40] -> [41], [28]
     [0] assert(! <>new2<>2015)
 
   Block[41] -> [29]
@@ -10445,10 +10445,10 @@ function[110] <>funexpr@820:19-1064:2<> {
 function[111] each {
   Entry[-1] -> [0]
 
-  Block[0] -> [1]
+  Block[0] -> [1], ExitExc
     [0] <>index<>2259 := 0
 
-  Block[1] -> [3], ExitExc, [2]
+  Block[1] -> [3], [2]
     [0] <>obj<>2262 := <>Global<>toObject(this) @ #1846
     [1] <>temp<>2274 := function (112) @ #1852, #1853
     [2] <>arguments<>2275 := allocArg(1) @ #1854
@@ -10467,7 +10467,7 @@ function[111] each {
 
   Block[6] -> [11]
 
-  Block[7] -> ExitExc, [2]
+  Block[7] -> [2]
 
   Block[8] -> ExitExc
     [0] assert(<>e<>2261 != $break)
@@ -15271,7 +15271,7 @@ function[216] <>funexpr@1453:13-1461:4<> {
 function[217] <>funexpr@1454:15-1460:6<> {
   Entry[-1] -> [0]
 
-  Block[0] -> [1]
+  Block[0] -> [1], ExitExc
     [0] <>obj<>3531 := <>Global<>toObject(Object) @ #2954
     [1] <>obj<>3532 := <>Global<>toObject(<>responder<>3529) @ #2955
     [2] <>temp<>3533 := <>obj<>3532[<>callback<>3523]
@@ -15288,7 +15288,7 @@ function[217] <>funexpr@1454:15-1460:6<> {
 
   Block[4] -> [7], [6]
 
-  Block[5]
+  Block[5] -> ExitExc
 
   Block[6] -> [8], ExitExc
     [0] assert(<>new<>3536)
@@ -15296,7 +15296,7 @@ function[217] <>funexpr@1454:15-1460:6<> {
   Block[7] -> [15], ExitExc
     [0] assert(! <>new<>3536)
 
-  Block[8] -> [10], ExitExc, [9]
+  Block[8] -> [10], [9]
     [0] <>obj<>3538 := <>Global<>toObject(<>responder<>3529) @ #2960
     [1] <>obj<>3539 := <>Global<>toObject(<>obj<>3538[<>callback<>3523]) @ #2961
     [2] <>temp<>3540 := <>responder<>3529
@@ -15324,7 +15324,7 @@ function[217] <>funexpr@1454:15-1460:6<> {
 
   Block[13] -> [15]
 
-  Block[14] -> ExitExc, [9]
+  Block[14] -> [9]
 
   Block[15] -> Exit
 
@@ -15542,7 +15542,7 @@ function[221] <>funexpr@1492:15-1496:4<> {
 function[222] <>funexpr@1498:12-1540:4<> {
   Entry[-1] -> [0]
 
-  Block[0] -> [1]
+  Block[0] -> [1], ExitExc
     [0] <>obj<>3640 := <>Global<>toObject(this) @ #3058
     [1] <>obj<>3640["url"] := <>url<>3636
     [2] <>obj<>3641 := <>Global<>toObject(this) @ #3059
@@ -15566,15 +15566,15 @@ function[222] <>funexpr@1498:12-1540:4<> {
 
   Block[4] -> [7], [6]
 
-  Block[5]
+  Block[5] -> ExitExc
 
-  Block[6] -> [8]
+  Block[6] -> [8], ExitExc
     [0] assert(<>new1<>3650)
     [1] <>obj<>3651 := <>Global<>toObject(this) @ #3069
     [2] <>obj<>3652 := <>Global<>toObject(<>obj<>3651["options"]) @ #3070
     [3] <>Global<>ignore371 := <>obj<>3652["parameters"]
 
-  Block[7] -> [9]
+  Block[7] -> [9], ExitExc
     [0] assert(! <>new1<>3650)
     [1] <>obj<>3653 := <>Global<>toObject(Object) @ #3071
     [2] <>obj<>3654 := <>Global<>toObject(this) @ #3072
@@ -15584,7 +15584,7 @@ function[222] <>funexpr@1498:12-1540:4<> {
     [6] <>arguments<>3657["0"] := <>temp<>3656
     [7] <>fun<>3658 := <>Global<>toObject(<>obj<>3653["toQueryString"]) @ #3075
 
-  Block[8] -> [14]
+  Block[8] -> [14], ExitExc
     [0] <>params<>3637 := <>Global<>ignore371
     [1] <>temp<>3659 := "get"
     [2] <>temp<>3660 := "post"
@@ -15607,7 +15607,7 @@ function[222] <>funexpr@1498:12-1540:4<> {
 
   Block[12] -> [8]
 
-  Block[13]
+  Block[13] -> ExitExc
 
   Call[14]
     [0] call(<>fun<>3666, <>obj<>3662, <>arguments<>3665) @ #3083
@@ -15618,24 +15618,24 @@ function[222] <>funexpr@1498:12-1540:4<> {
 
   Block[17] -> [20], [19]
 
-  Block[18]
+  Block[18] -> ExitExc
 
-  Block[19] -> [22], [21]
+  Block[19] -> [22], [21], ExitExc
     [0] assert(! <>y<>3667)
     [1] <>old<>3668 := <>params<>3637
 
-  Block[20] -> [24]
+  Block[20] -> [24], ExitExc
     [0] assert(! ! <>y<>3667)
 
-  Block[21] -> [23]
+  Block[21] -> [23], ExitExc
     [0] assert(<>params<>3637)
     [1] <>y<>3669 := "&"
 
-  Block[22] -> [23]
+  Block[22] -> [23], ExitExc
     [0] assert(! <>params<>3637)
     [1] <>y<>3669 := ""
 
-  Block[23] -> [24]
+  Block[23] -> [24], ExitExc
     [0] <>y<>3670 := <>y<>3669 + "_method="
     [1] <>obj<>3671 := <>Global<>toObject(this) @ #3085
     [2] <>params<>3637 := <>old<>3668 + <>y<>3670 + <>obj<>3671["method"]
@@ -15644,20 +15644,20 @@ function[222] <>funexpr@1498:12-1540:4<> {
 
   Block[24] -> [27], [26]
 
-  Block[25] -> [40]
+  Block[25] -> [40], ExitExc
     [0] <>obj<>3683 := <>Global<>toObject(this) @ #3095
     [1] <>obj<>3684 := <>Global<>toObject(<>params<>3637) @ #3096
     [2] <>arguments<>3685 := allocArg(0) @ #3097
     [3] <>fun<>3686 := <>Global<>toObject(<>obj<>3684["toQueryParams"]) @ #3098
 
-  Block[26] -> [29], [28]
+  Block[26] -> [29], [28], ExitExc
     [0] assert(<>params<>3637)
     [1] <>obj<>3673 := <>Global<>toObject(this) @ #3087
 
-  Block[27] -> [39]
+  Block[27] -> [39], ExitExc
     [0] assert(! <>params<>3637)
 
-  Block[28] -> [30]
+  Block[28] -> [30], ExitExc
     [0] assert(<>obj<>3673["method"] === "get")
     [1] <>obj<>3674 := <>Global<>toObject(this) @ #3088
     [2] <>old<>3675 := <>obj<>3674["url"]
@@ -15668,7 +15668,7 @@ function[222] <>funexpr@1498:12-1540:4<> {
     [7] <>arguments<>3679["0"] := <>temp<>3678
     [8] <>fun<>3680 := <>Global<>toObject(<>obj<>3677["include"]) @ #3092
 
-  Block[29] -> [38]
+  Block[29] -> [38], ExitExc
     [0] assert(<>obj<>3673["method"] !== "get")
 
   Call[30]
@@ -15680,17 +15680,17 @@ function[222] <>funexpr@1498:12-1540:4<> {
 
   Block[33] -> [36], [35]
 
-  Block[34]
+  Block[34] -> ExitExc
 
-  Block[35] -> [37]
+  Block[35] -> [37], ExitExc
     [0] assert(<>new1<>3681)
     [1] <>y<>3682 := "&"
 
-  Block[36] -> [37]
+  Block[36] -> [37], ExitExc
     [0] assert(! <>new1<>3681)
     [1] <>y<>3682 := "?"
 
-  Block[37] -> [25]
+  Block[37] -> [25], ExitExc
     [0] <>obj<>3674["url"] := <>old<>3675 + <>y<>3682 + <>params<>3637
 
   Block[38] -> [39]
@@ -15704,12 +15704,12 @@ function[222] <>funexpr@1498:12-1540:4<> {
 
   AfterCatch[42] -> [44]
 
-  Block[43] -> [45]
+  Block[43] -> [45], ExitExc
     [0] <>obj<>3683["parameters"] := <>Global<>ignore375
 
-  Block[44]
+  Block[44] -> ExitExc
 
-  Block[45] -> [47], ExitExc, [46]
+  Block[45] -> [47], [46]
     [0] <>obj<>3688 := <>Global<>toObject(Ajax) @ #3101
     [1] <>fun<>3689 := <>Global<>toObject(<>obj<>3688["Response"]) @ #3102
     [2] <>temp<>3690 := this
@@ -15736,22 +15736,22 @@ function[222] <>funexpr@1498:12-1540:4<> {
   Block[50] -> [53], [52]
     [0] <>cond<>3695 := <>Global<>isObject(<>newObj<>3694)
 
-  Block[51] -> ExitExc, [46]
+  Block[51] -> [46]
 
-  Block[52] -> [54], ExitExc, [46]
+  Block[52] -> [54], [46]
     [0] assert(<>cond<>3695)
     [1] <>Global<>ignore377 := <>newObj<>3694
 
-  Block[53] -> [54], ExitExc, [46]
+  Block[53] -> [54], [46]
     [0] assert(! <>cond<>3695)
     [1] <>Global<>ignore377 := <>obj<>3693
 
-  Block[54] -> [56], [55], ExitExc, [46]
+  Block[54] -> [56], [55], [46]
     [0] <>response<>3638 := <>Global<>ignore377
     [1] <>obj<>3696 := <>Global<>toObject(this) @ #3107
     [2] <>obj<>3697 := <>Global<>toObject(<>obj<>3696["options"]) @ #3108
 
-  Block[55] -> [57], ExitExc, [46]
+  Block[55] -> [57], [46]
     [0] assert(<>obj<>3697["onCreate"])
     [1] <>obj<>3698 := <>Global<>toObject(this) @ #3109
     [2] <>obj<>3699 := <>Global<>toObject(<>obj<>3698["options"]) @ #3110
@@ -15760,7 +15760,7 @@ function[222] <>funexpr@1498:12-1540:4<> {
     [5] <>arguments<>3701["0"] := <>temp<>3700
     [6] <>fun<>3702 := <>Global<>toObject(<>obj<>3699["onCreate"]) @ #3112
 
-  Block[56] -> [62], ExitExc, [46]
+  Block[56] -> [62], [46]
     [0] assert(! <>obj<>3697["onCreate"])
 
   Call[57]
@@ -15772,9 +15772,9 @@ function[222] <>funexpr@1498:12-1540:4<> {
 
   Block[60] -> [62]
 
-  Block[61] -> ExitExc, [46]
+  Block[61] -> [46]
 
-  Block[62] -> [63], ExitExc, [46]
+  Block[62] -> [63], [46]
     [0] <>obj<>3703 := <>Global<>toObject(Ajax) @ #3115
     [1] <>obj<>3704 := <>Global<>toObject(<>obj<>3703["Responders"]) @ #3116
     [2] <>temp<>3705 := "onCreate"
@@ -15793,7 +15793,7 @@ function[222] <>funexpr@1498:12-1540:4<> {
 
   AfterCatch[65] -> [67]
 
-  Block[66] -> [68], ExitExc, [46]
+  Block[66] -> [68], [46]
     [0] <>obj<>3710 := <>Global<>toObject(this) @ #3121
     [1] <>obj<>3711 := <>Global<>toObject(<>obj<>3710["transport"]) @ #3122
     [2] <>obj<>3712 := <>Global<>toObject(this) @ #3123
@@ -15801,7 +15801,7 @@ function[222] <>funexpr@1498:12-1540:4<> {
     [4] <>arguments<>3714 := allocArg(0) @ #3125
     [5] <>fun<>3715 := <>Global<>toObject(<>obj<>3713["toUpperCase"]) @ #3126
 
-  Block[67] -> ExitExc, [46]
+  Block[67] -> [46]
 
   Call[68]
     [0] call(<>fun<>3715, <>obj<>3713, <>arguments<>3714) @ #3127
@@ -15810,7 +15810,7 @@ function[222] <>funexpr@1498:12-1540:4<> {
 
   AfterCatch[70] -> [72]
 
-  Block[71] -> [73], ExitExc, [46]
+  Block[71] -> [73], [46]
     [0] <>obj<>3717 := <>Global<>toObject(this) @ #3129
     [1] <>temp<>3718 := <>obj<>3717["url"]
     [2] <>obj<>3719 := <>Global<>toObject(this) @ #3130
@@ -15822,7 +15822,7 @@ function[222] <>funexpr@1498:12-1540:4<> {
     [8] <>arguments<>3722["2"] := <>temp<>3721
     [9] <>fun<>3723 := <>Global<>toObject(<>obj<>3711["open"]) @ #3133
 
-  Block[72] -> ExitExc, [46]
+  Block[72] -> [46]
 
   Call[73]
     [0] call(<>fun<>3723, <>obj<>3711, <>arguments<>3722) @ #3134
@@ -15831,13 +15831,13 @@ function[222] <>funexpr@1498:12-1540:4<> {
 
   AfterCatch[75] -> [77]
 
-  Block[76] -> [79], [78], ExitExc, [46]
+  Block[76] -> [79], [78], [46]
     [0] <>obj<>3724 := <>Global<>toObject(this) @ #3136
     [1] <>obj<>3725 := <>Global<>toObject(<>obj<>3724["options"]) @ #3137
 
-  Block[77] -> ExitExc, [46]
+  Block[77] -> [46]
 
-  Block[78] -> [80], ExitExc, [46]
+  Block[78] -> [80], [46]
     [0] assert(<>obj<>3725["asynchronous"])
     [1] <>obj<>3726 := <>Global<>toObject(this) @ #3138
     [2] <>obj<>3727 := <>Global<>toObject(<>obj<>3726["respondToReadyState"]) @ #3139
@@ -15846,7 +15846,7 @@ function[222] <>funexpr@1498:12-1540:4<> {
     [5] <>arguments<>3729["0"] := <>temp<>3728
     [6] <>fun<>3730 := <>Global<>toObject(<>obj<>3727["bind"]) @ #3141
 
-  Block[79] -> [90], ExitExc, [46]
+  Block[79] -> [90], [46]
     [0] assert(! <>obj<>3725["asynchronous"])
 
   Call[80]
@@ -15856,14 +15856,14 @@ function[222] <>funexpr@1498:12-1540:4<> {
 
   AfterCatch[82] -> [84]
 
-  Block[83] -> [85], ExitExc, [46]
+  Block[83] -> [85], [46]
     [0] <>obj<>3732 := <>Global<>toObject(<>obj1<>3731) @ #3144
     [1] <>temp<>3733 := 1
     [2] <>arguments<>3734 := allocArg(1) @ #3145
     [3] <>arguments<>3734["0"] := <>temp<>3733
     [4] <>fun<>3735 := <>Global<>toObject(<>obj<>3732["defer"]) @ #3146
 
-  Block[84] -> ExitExc, [46]
+  Block[84] -> [46]
 
   Call[85]
     [0] call(<>fun<>3735, <>obj<>3732, <>arguments<>3734) @ #3147
@@ -15874,9 +15874,9 @@ function[222] <>funexpr@1498:12-1540:4<> {
 
   Block[88] -> [90]
 
-  Block[89] -> ExitExc, [46]
+  Block[89] -> [46]
 
-  Block[90] -> [91], ExitExc, [46]
+  Block[90] -> [91], [46]
     [0] <>obj<>3736 := <>Global<>toObject(this) @ #3149
     [1] <>obj<>3737 := <>Global<>toObject(<>obj<>3736["transport"]) @ #3150
     [2] <>obj<>3738 := <>Global<>toObject(this) @ #3151
@@ -15893,13 +15893,13 @@ function[222] <>funexpr@1498:12-1540:4<> {
 
   AfterCatch[93] -> [95]
 
-  Block[94] -> [96], ExitExc, [46]
+  Block[94] -> [96], [46]
     [0] <>obj<>3737["onreadystatechange"] := <>Global<>ignore382
     [1] <>obj<>3743 := <>Global<>toObject(this) @ #3157
     [2] <>arguments<>3744 := allocArg(0) @ #3158
     [3] <>fun<>3745 := <>Global<>toObject(<>obj<>3743["setRequestHeaders"]) @ #3159
 
-  Block[95] -> ExitExc, [46]
+  Block[95] -> [46]
 
   Call[96]
     [0] call(<>fun<>3745, <>obj<>3743, <>arguments<>3744) @ #3160
@@ -15908,32 +15908,32 @@ function[222] <>funexpr@1498:12-1540:4<> {
 
   AfterCatch[98] -> [100]
 
-  Block[99] -> [102], [101], ExitExc, [46]
+  Block[99] -> [102], [101], [46]
     [0] <>obj<>3746 := <>Global<>toObject(this) @ #3162
     [1] <>obj<>3747 := <>Global<>toObject(this) @ #3163
 
-  Block[100] -> ExitExc, [46]
+  Block[100] -> [46]
 
-  Block[101] -> [104], [103], ExitExc, [46]
+  Block[101] -> [104], [103], [46]
     [0] assert(<>obj<>3747["method"] == "post")
     [1] <>obj<>3748 := <>Global<>toObject(this) @ #3164
     [2] <>obj<>3749 := <>Global<>toObject(<>obj<>3748["options"]) @ #3165
 
-  Block[102] -> [106], ExitExc, [46]
+  Block[102] -> [106], [46]
     [0] assert(<>obj<>3747["method"] != "post")
     [1] <>Global<>ignore384 := null
 
-  Block[103] -> [105], ExitExc, [46]
+  Block[103] -> [105], [46]
     [0] assert(<>obj<>3749["postBody"])
     [1] <>Global<>ignore384 := <>obj<>3749["postBody"]
 
-  Block[104] -> [105], ExitExc, [46]
+  Block[104] -> [105], [46]
     [0] assert(! <>obj<>3749["postBody"])
     [1] <>Global<>ignore384 := <>params<>3637
 
   Block[105] -> [106]
 
-  Block[106] -> [107], ExitExc, [46]
+  Block[106] -> [107], [46]
     [0] <>obj<>3746["body"] := <>Global<>ignore384
     [1] <>obj<>3750 := <>Global<>toObject(this) @ #3166
     [2] <>obj<>3751 := <>Global<>toObject(<>obj<>3750["transport"]) @ #3167
@@ -15950,29 +15950,29 @@ function[222] <>funexpr@1498:12-1540:4<> {
 
   AfterCatch[109] -> [111]
 
-  Block[110] -> [114], [113], ExitExc, [46]
+  Block[110] -> [114], [113], [46]
     [0] <>obj<>3756 := <>Global<>toObject(this) @ #3173
     [1] <>obj<>3757 := <>Global<>toObject(<>obj<>3756["options"]) @ #3174
 
-  Block[111] -> ExitExc, [46]
+  Block[111] -> [46]
 
   Block[112] -> Exit
 
-  Block[113] -> [116], [115], ExitExc, [46]
+  Block[113] -> [116], [115], [46]
     [0] assert(! <>obj<>3757["asynchronous"])
     [1] <>obj<>3758 := <>Global<>toObject(this) @ #3175
     [2] <>obj<>3759 := <>Global<>toObject(<>obj<>3758["transport"]) @ #3176
 
-  Block[114] -> [123], ExitExc, [46]
+  Block[114] -> [123], [46]
     [0] assert(! ! <>obj<>3757["asynchronous"])
 
-  Block[115] -> [117], ExitExc, [46]
+  Block[115] -> [117], [46]
     [0] assert(<>obj<>3759["overrideMimeType"])
     [1] <>obj<>3760 := <>Global<>toObject(this) @ #3177
     [2] <>arguments<>3761 := allocArg(0) @ #3178
     [3] <>fun<>3762 := <>Global<>toObject(<>obj<>3760["onStateChange"]) @ #3179
 
-  Block[116] -> [122], ExitExc, [46]
+  Block[116] -> [122], [46]
     [0] assert(! <>obj<>3759["overrideMimeType"])
 
   Call[117]
@@ -15984,7 +15984,7 @@ function[222] <>funexpr@1498:12-1540:4<> {
 
   Block[120] -> [112]
 
-  Block[121] -> ExitExc, [46]
+  Block[121] -> [46]
 
   Block[122] -> [123]
 
@@ -16432,7 +16432,7 @@ function[227] <>funexpr@1587:14-1592:4<> {
 
   Block[0] -> [1]
 
-  Block[1] -> [4], [3], ExitExc, [2]
+  Block[1] -> [4], [3], [2]
     [0] <>obj<>3879 := <>Global<>toObject(this) @ #3272
     [1] <>obj<>3880 := <>Global<>toObject(<>obj<>3879["transport"]) @ #3273
 
@@ -16440,26 +16440,26 @@ function[227] <>funexpr@1587:14-1592:4<> {
     [0] catch(<>e<>3878)
     [1] return(0)
 
-  Block[3] -> Exit, ExitExc, [2]
+  Block[3] -> Exit, [2]
     [0] assert(<>obj<>3880["status"] === 1223)
     [1] return(204)
 
-  Block[4] -> [5], ExitExc, [2]
+  Block[4] -> [5], [2]
     [0] assert(<>obj<>3880["status"] !== 1223)
 
-  Block[5] -> [7], [6], ExitExc, [2]
+  Block[5] -> [7], [6], [2]
     [0] <>obj<>3881 := <>Global<>toObject(this) @ #3274
     [1] <>obj<>3882 := <>Global<>toObject(<>obj<>3881["transport"]) @ #3275
 
-  Block[6] -> [8], ExitExc, [2]
+  Block[6] -> [8], [2]
     [0] assert(<>obj<>3882["status"])
     [1] <>new1<>3883 := <>obj<>3882["status"]
 
-  Block[7] -> [8], ExitExc, [2]
+  Block[7] -> [8], [2]
     [0] assert(! <>obj<>3882["status"])
     [1] <>new1<>3883 := 0
 
-  Block[8] -> Exit, ExitExc, [2]
+  Block[8] -> Exit, [2]
     [0] return(<>new1<>3883)
 
   Exit[-2]
@@ -16471,7 +16471,7 @@ function[227] <>funexpr@1587:14-1592:4<> {
 function[228] <>funexpr@1594:24-1624:4<> {
   Entry[-1] -> [0]
 
-  Block[0] -> [1]
+  Block[0] -> [1], ExitExc
     [0] <>obj<>3891 := <>Global<>toObject(Ajax) @ #3278
     [1] <>obj<>3892 := <>Global<>toObject(<>obj<>3891["Request"]) @ #3279
     [2] <>obj<>3893 := <>Global<>toObject(<>obj<>3892["Events"]) @ #3280
@@ -16494,23 +16494,23 @@ function[228] <>funexpr@1594:24-1624:4<> {
   Block[4] -> [7], [6]
     [0] <>cond<>3901 := <>Global<>isObject(<>newObj<>3900)
 
-  Block[5]
+  Block[5] -> ExitExc
 
-  Block[6] -> [8]
+  Block[6] -> [8], ExitExc
     [0] assert(<>cond<>3901)
     [1] <>Global<>ignore403 := <>newObj<>3900
 
-  Block[7] -> [8]
+  Block[7] -> [8], ExitExc
     [0] assert(! <>cond<>3901)
     [1] <>Global<>ignore403 := <>obj<>3899
 
-  Block[8] -> [10], [9]
+  Block[8] -> [10], [9], ExitExc
     [0] <>response<>3888 := <>Global<>ignore403
 
-  Block[9] -> [11]
+  Block[9] -> [11], ExitExc
     [0] assert(<>state<>3887 == "Complete")
 
-  Block[10] -> [92]
+  Block[10] -> [92], ExitExc
     [0] assert(<>state<>3887 != "Complete")
 
   Block[11] -> [14], [13], [12]
@@ -16521,7 +16521,7 @@ function[228] <>funexpr@1594:24-1624:4<> {
     [4] <>y<>3906 := "on"
     [5] <>obj<>3907 := <>Global<>toObject(<>response<>3888) @ #3290
 
-  Block[12] -> [32]
+  Block[12] -> [32], ExitExc
     [0] catch(<>e<>3902)
     [1] <>obj<>3924 := <>Global<>toObject(this) @ #3304
     [2] <>temp<>3925 := <>e<>3902
@@ -16604,9 +16604,9 @@ function[228] <>funexpr@1594:24-1624:4<> {
 
   Block[35] -> [37]
 
-  Block[36]
+  Block[36] -> ExitExc
 
-  Block[37] -> [38]
+  Block[37] -> [38], ExitExc
     [0] <>obj<>3928 := <>Global<>toObject(<>response<>3888) @ #3309
     [1] <>temp<>3929 := "Content-type"
     [2] <>arguments<>3930 := allocArg(1) @ #3310
@@ -16620,37 +16620,37 @@ function[228] <>funexpr@1594:24-1624:4<> {
 
   AfterCatch[40] -> [42]
 
-  Block[41] -> [46], [45]
+  Block[41] -> [46], [45], ExitExc
     [0] <>contentType<>3889 := <>Global<>ignore407
     [1] <>obj<>3932 := <>Global<>toObject(this) @ #3314
     [2] <>obj<>3933 := <>Global<>toObject(<>obj<>3932["options"]) @ #3315
 
-  Block[42]
+  Block[42] -> ExitExc
 
   Block[43] -> [92]
 
-  Block[44] -> [87]
+  Block[44] -> [87], ExitExc
     [0] <>obj<>3954 := <>Global<>toObject(this) @ #3333
     [1] <>arguments<>3955 := allocArg(0) @ #3334
     [2] <>fun<>3956 := <>Global<>toObject(<>obj<>3954["evalResponse"]) @ #3335
 
-  Block[45] -> [44]
+  Block[45] -> [44], ExitExc
     [0] assert(<>obj<>3933["evalJS"] == "force")
 
-  Block[46] -> [47]
+  Block[46] -> [47], ExitExc
     [0] assert(<>obj<>3933["evalJS"] != "force")
 
-  Block[47] -> [49], [48]
+  Block[47] -> [49], [48], ExitExc
     [0] <>obj<>3934 := <>Global<>toObject(this) @ #3316
     [1] <>obj<>3935 := <>Global<>toObject(<>obj<>3934["options"]) @ #3317
 
-  Block[48] -> [50]
+  Block[48] -> [50], ExitExc
     [0] assert(<>obj<>3935["evalJS"])
     [1] <>obj<>3936 := <>Global<>toObject(this) @ #3318
     [2] <>arguments<>3937 := allocArg(0) @ #3319
     [3] <>fun<>3938 := <>Global<>toObject(<>obj<>3936["isSameOrigin"]) @ #3320
 
-  Block[49] -> [82], [81]
+  Block[49] -> [82], [81], ExitExc
     [0] assert(! <>obj<>3935["evalJS"])
 
   Call[50]
@@ -16662,15 +16662,15 @@ function[228] <>funexpr@1594:24-1624:4<> {
 
   Block[53] -> [56], [55]
 
-  Block[54]
+  Block[54] -> ExitExc
 
-  Block[55] -> [58], [57]
+  Block[55] -> [58], [57], ExitExc
     [0] assert(<>new1<>3939)
 
-  Block[56] -> [78], [77]
+  Block[56] -> [78], [77], ExitExc
     [0] assert(! <>new1<>3939)
 
-  Block[57] -> [59]
+  Block[57] -> [59], ExitExc
     [0] assert(<>contentType<>3889)
     [1] <>obj<>3940 := <>Global<>toObject(<>contentType<>3889) @ #3323
     [2] <>fun<>3941 := <>Global<>toObject(RegExp) @ #3324
@@ -16682,7 +16682,7 @@ function[228] <>funexpr@1594:24-1624:4<> {
     [8] <>proto<>3945 := <>fun<>3941["prototype"]
     [9] <>obj<>3946 := alloc(<>proto<>3945) @ #3326
 
-  Block[58] -> [74], [73]
+  Block[58] -> [74], [73], ExitExc
     [0] assert(! <>contentType<>3889)
 
   Call[59]
@@ -16695,17 +16695,17 @@ function[228] <>funexpr@1594:24-1624:4<> {
   Block[62] -> [65], [64]
     [0] <>cond<>3948 := <>Global<>isObject(<>newObj<>3947)
 
-  Block[63]
+  Block[63] -> ExitExc
 
-  Block[64] -> [66]
+  Block[64] -> [66], ExitExc
     [0] assert(<>cond<>3948)
     [1] <>temp<>3949 := <>newObj<>3947
 
-  Block[65] -> [66]
+  Block[65] -> [66], ExitExc
     [0] assert(! <>cond<>3948)
     [1] <>temp<>3949 := <>obj<>3946
 
-  Block[66] -> [67]
+  Block[66] -> [67], ExitExc
     [0] <>arguments<>3950 := allocArg(1) @ #3329
     [1] <>arguments<>3950["0"] := <>temp<>3949
     [2] <>fun<>3951 := <>Global<>toObject(<>obj<>3940["match"]) @ #3330
@@ -16717,18 +16717,18 @@ function[228] <>funexpr@1594:24-1624:4<> {
 
   AfterCatch[69] -> [71]
 
-  Block[70] -> [72]
+  Block[70] -> [72], ExitExc
     [0] <>new2<>3953 := <>new3<>3952
 
-  Block[71]
+  Block[71] -> ExitExc
 
   Block[72] -> [76]
 
-  Block[73] -> [75]
+  Block[73] -> [75], ExitExc
     [0] assert(typeof <>contentType<>3889 == "boolean")
     [1] <>new2<>3953 := false
 
-  Block[74] -> [75]
+  Block[74] -> [75], ExitExc
     [0] assert(typeof <>contentType<>3889 != "boolean")
     [1] <>new2<>3953 := <>contentType<>3889
 
@@ -16736,11 +16736,11 @@ function[228] <>funexpr@1594:24-1624:4<> {
 
   Block[76] -> [80]
 
-  Block[77] -> [79]
+  Block[77] -> [79], ExitExc
     [0] assert(typeof <>new1<>3939 == "boolean")
     [1] <>new2<>3953 := false
 
-  Block[78] -> [79]
+  Block[78] -> [79], ExitExc
     [0] assert(typeof <>new1<>3939 != "boolean")
     [1] <>new2<>3953 := <>new1<>3939
 
@@ -16748,20 +16748,20 @@ function[228] <>funexpr@1594:24-1624:4<> {
 
   Block[80] -> [85], [84]
 
-  Block[81] -> [83]
+  Block[81] -> [83], ExitExc
     [0] assert(typeof <>obj<>3935["evalJS"] == "boolean")
     [1] <>new2<>3953 := false
 
-  Block[82] -> [83]
+  Block[82] -> [83], ExitExc
     [0] assert(typeof <>obj<>3935["evalJS"] != "boolean")
     [1] <>new2<>3953 := <>obj<>3935["evalJS"]
 
   Block[83] -> [80]
 
-  Block[84] -> [44]
+  Block[84] -> [44], ExitExc
     [0] assert(<>new2<>3953)
 
-  Block[85] -> [86]
+  Block[85] -> [86], ExitExc
     [0] assert(! <>new2<>3953)
 
   Block[86] -> [43]
@@ -16775,11 +16775,11 @@ function[228] <>funexpr@1594:24-1624:4<> {
 
   Block[90] -> [43]
 
-  Block[91]
+  Block[91] -> ExitExc
 
   Block[92] -> [93]
 
-  Block[93] -> [96], [95], ExitExc, [94]
+  Block[93] -> [96], [95], [94]
     [0] <>obj<>3958 := <>Global<>toObject(this) @ #3338
     [1] <>obj<>3959 := <>Global<>toObject(<>obj<>3958["options"]) @ #3339
 
@@ -16791,16 +16791,16 @@ function[228] <>funexpr@1594:24-1624:4<> {
     [4] <>arguments<>3978["0"] := <>temp<>3977
     [5] <>fun<>3979 := <>Global<>toObject(<>obj<>3976["dispatchException"]) @ #3355
 
-  Block[95] -> [97], ExitExc, [94]
+  Block[95] -> [97], [94]
     [0] assert(<>obj<>3959["on" + <>state<>3887])
     [1] <>obj1<>3960 := <>obj<>3959["on" + <>state<>3887]
 
-  Block[96] -> [97], ExitExc, [94]
+  Block[96] -> [97], [94]
     [0] assert(! <>obj<>3959["on" + <>state<>3887])
     [1] <>obj<>3961 := <>Global<>toObject(Prototype) @ #3340
     [2] <>obj1<>3960 := <>obj<>3961["emptyFunction"]
 
-  Block[97] -> [98], ExitExc, [94]
+  Block[97] -> [98], [94]
     [0] <>obj<>3962 := <>Global<>toObject(<>obj1<>3960) @ #3341
     [1] <>temp<>3963 := <>response<>3888
     [2] <>obj<>3964 := <>Global<>toObject(<>response<>3888) @ #3342
@@ -16816,7 +16816,7 @@ function[228] <>funexpr@1594:24-1624:4<> {
 
   AfterCatch[100] -> [102]
 
-  Block[101] -> [103], ExitExc, [94]
+  Block[101] -> [103], [94]
     [0] <>obj<>3967 := <>Global<>toObject(Ajax) @ #3346
     [1] <>obj<>3968 := <>Global<>toObject(<>obj<>3967["Responders"]) @ #3347
     [2] <>temp<>3969 := "on" + <>state<>3887
@@ -16831,7 +16831,7 @@ function[228] <>funexpr@1594:24-1624:4<> {
     [11] <>arguments<>3974["3"] := <>temp<>3973
     [12] <>fun<>3975 := <>Global<>toObject(<>obj<>3968["dispatch"]) @ #3350
 
-  Block[102] -> ExitExc, [94]
+  Block[102] -> [94]
 
   Call[103]
     [0] call(<>fun<>3975, <>obj<>3968, <>arguments<>3974) @ #3351
@@ -16842,7 +16842,7 @@ function[228] <>funexpr@1594:24-1624:4<> {
 
   Block[106] -> [114], [113]
 
-  Block[107] -> ExitExc, [94]
+  Block[107] -> [94]
 
   Call[108]
     [0] call(<>fun<>3979, <>obj<>3976, <>arguments<>3978) @ #3356
@@ -16983,7 +16983,7 @@ function[230] <>funexpr@1635:14-1639:4<> {
 
   Block[0] -> [1]
 
-  Block[1] -> [3], ExitExc, [2]
+  Block[1] -> [3], [2]
     [0] <>obj<>4019 := <>Global<>toObject(this) @ #3387
     [1] <>obj<>4020 := <>Global<>toObject(<>obj<>4019["transport"]) @ #3388
     [2] <>temp<>4021 := <>name<>4016
@@ -17004,17 +17004,17 @@ function[230] <>funexpr@1635:14-1639:4<> {
 
   Block[6] -> [9], [8]
 
-  Block[7] -> ExitExc, [2]
+  Block[7] -> [2]
 
-  Block[8] -> [10], ExitExc, [2]
+  Block[8] -> [10], [2]
     [0] assert(<>y<>4024)
     [1] <>new1<>4025 := <>y<>4024
 
-  Block[9] -> [10], ExitExc, [2]
+  Block[9] -> [10], [2]
     [0] assert(! <>y<>4024)
     [1] <>new1<>4025 := null
 
-  Block[10] -> Exit, ExitExc, [2]
+  Block[10] -> Exit, [2]
     [0] return(<>new1<>4025)
 
   Exit[-2]
@@ -17028,7 +17028,7 @@ function[231] <>funexpr@1641:17-1647:4<> {
 
   Block[0] -> [1]
 
-  Block[1] -> [4], [3], ExitExc, [2]
+  Block[1] -> [4], [3], [2]
     [0] <>obj<>4030 := <>Global<>toObject(this) @ #3395
     [1] <>obj<>4031 := <>Global<>toObject(<>obj<>4030["transport"]) @ #3396
 
@@ -17040,15 +17040,15 @@ function[231] <>funexpr@1641:17-1647:4<> {
     [4] <>arguments<>4040["0"] := <>temp<>4039
     [5] <>fun<>4041 := <>Global<>toObject(<>obj<>4038["dispatchException"]) @ #3404
 
-  Block[3] -> [5], ExitExc, [2]
+  Block[3] -> [5], [2]
     [0] assert(<>obj<>4031["responseText"])
     [1] <>obj1<>4032 := <>obj<>4031["responseText"]
 
-  Block[4] -> [5], ExitExc, [2]
+  Block[4] -> [5], [2]
     [0] assert(! <>obj<>4031["responseText"])
     [1] <>obj1<>4032 := ""
 
-  Block[5] -> [6], ExitExc, [2]
+  Block[5] -> [6], [2]
     [0] <>obj<>4033 := <>Global<>toObject(<>obj1<>4032) @ #3397
     [1] <>arguments<>4034 := allocArg(0) @ #3398
     [2] <>fun<>4035 := <>Global<>toObject(<>obj<>4033["unfilterJSON"]) @ #3399
@@ -17060,10 +17060,10 @@ function[231] <>funexpr@1641:17-1647:4<> {
 
   AfterCatch[8] -> [10]
 
-  Block[9] -> Exit, ExitExc, [2]
+  Block[9] -> Exit, [2]
     [0] return(<>new1<>4037)
 
-  Block[10] -> ExitExc, [2]
+  Block[10] -> [2]
 
   Call[11]
     [0] call(<>fun<>4041, <>obj<>4038, <>arguments<>4040) @ #3405
@@ -17332,7 +17332,7 @@ function[234] <>funexpr@1691:18-1695:4<> {
 
   Block[0] -> [1]
 
-  Block[1] -> [4], [3], ExitExc, [2]
+  Block[1] -> [4], [3], [2]
     [0] <>obj<>4124 := <>Global<>toObject(this) @ #3484
     [1] <>obj<>4125 := <>Global<>toObject(<>obj<>4124["transport"]) @ #3485
 
@@ -17340,15 +17340,15 @@ function[234] <>funexpr@1691:18-1695:4<> {
     [0] catch(<>e<>4123)
     [1] return("")
 
-  Block[3] -> [5], ExitExc, [2]
+  Block[3] -> [5], [2]
     [0] assert(<>obj<>4125["statusText"])
     [1] <>new1<>4126 := <>obj<>4125["statusText"]
 
-  Block[4] -> [5], ExitExc, [2]
+  Block[4] -> [5], [2]
     [0] assert(! <>obj<>4125["statusText"])
     [1] <>new1<>4126 := ""
 
-  Block[5] -> Exit, ExitExc, [2]
+  Block[5] -> Exit, [2]
     [0] return(<>new1<>4126)
 
   Exit[-2]
@@ -17362,7 +17362,7 @@ function[235] <>funexpr@1699:18-1703:4<> {
 
   Block[0] -> [1]
 
-  Block[1] -> [3], ExitExc, [2]
+  Block[1] -> [3], [2]
     [0] <>obj<>4134 := <>Global<>toObject(this) @ #3491
     [1] <>arguments<>4135 := allocArg(0) @ #3492
     [2] <>fun<>4136 := <>Global<>toObject(<>obj<>4134["getAllResponseHeaders"]) @ #3493
@@ -17378,10 +17378,10 @@ function[235] <>funexpr@1699:18-1703:4<> {
 
   AfterCatch[5] -> [7]
 
-  Block[6] -> Exit, ExitExc, [2]
+  Block[6] -> Exit, [2]
     [0] return(<>new1<>4137)
 
-  Block[7] -> ExitExc, [2]
+  Block[7] -> [2]
 
   Exit[-2]
 
@@ -17448,7 +17448,7 @@ function[237] <>funexpr@1709:26-1711:4<> {
 function[238] <>funexpr@1713:19-1723:4<> {
   Entry[-1] -> [0]
 
-  Block[0] -> [1]
+  Block[0] -> [1], ExitExc
     [0] <>obj<>4160 := <>Global<>toObject(this) @ #3514
     [1] <>temp<>4161 := "X-JSON"
     [2] <>arguments<>4162 := allocArg(1) @ #3515
@@ -17462,19 +17462,19 @@ function[238] <>funexpr@1713:19-1723:4<> {
 
   AfterCatch[3] -> [5]
 
-  Block[4] -> [7], [6]
+  Block[4] -> [7], [6], ExitExc
     [0] <>json<>4158 := <>Global<>ignore429
 
-  Block[5]
+  Block[5] -> ExitExc
 
-  Block[6]
+  Block[6] -> Exit, ExitExc
     [0] assert(! <>json<>4158)
     [1] return(null)
 
-  Block[7] -> [8]
+  Block[7] -> [8], ExitExc
     [0] assert(! ! <>json<>4158)
 
-  Block[8] -> [9]
+  Block[8] -> [9], ExitExc
     [0] <>obj<>4164 := <>Global<>toObject(decodeURIComponent) @ #3519
     [1] <>obj<>4165 := <>Global<>toObject(escape) @ #3520
     [2] <>temp<>4166 := <>json<>4158
@@ -17489,12 +17489,12 @@ function[238] <>funexpr@1713:19-1723:4<> {
 
   AfterCatch[11] -> [13]
 
-  Block[12] -> [14]
+  Block[12] -> [14], ExitExc
     [0] <>arguments<>4170 := allocArg(1) @ #3524
     [1] <>arguments<>4170["0"] := <>temp<>4169
     [2] <>fun<>4171 := <>Global<>getBase(decodeURIComponent)
 
-  Block[13]
+  Block[13] -> ExitExc
 
   Call[14]
     [0] call(<>obj<>4164, <>fun<>4171, <>arguments<>4170) @ #3525
@@ -17503,12 +17503,12 @@ function[238] <>funexpr@1713:19-1723:4<> {
 
   AfterCatch[16] -> [18]
 
-  Block[17] -> [19]
+  Block[17] -> [19], ExitExc
     [0] <>json<>4158 := <>Global<>ignore430
 
-  Block[18]
+  Block[18] -> ExitExc
 
-  Block[19] -> [22], [21], ExitExc, [20]
+  Block[19] -> [22], [21], [20]
     [0] <>obj<>4173 := <>Global<>toObject(<>json<>4158) @ #3527
     [1] <>obj<>4174 := <>Global<>toObject(this) @ #3528
     [2] <>obj<>4175 := <>Global<>toObject(<>obj<>4174["request"]) @ #3529
@@ -17523,18 +17523,18 @@ function[238] <>funexpr@1713:19-1723:4<> {
     [5] <>arguments<>4189["0"] := <>temp<>4188
     [6] <>fun<>4190 := <>Global<>toObject(<>obj<>4187["dispatchException"]) @ #3544
 
-  Block[21] -> [23], ExitExc, [20]
+  Block[21] -> [23], [20]
     [0] assert(<>obj<>4176["sanitizeJSON"])
     [1] <>temp<>4177 := <>obj<>4176["sanitizeJSON"]
 
-  Block[22] -> [24], ExitExc, [20]
+  Block[22] -> [24], [20]
     [0] assert(! <>obj<>4176["sanitizeJSON"])
     [1] <>obj<>4178 := <>Global<>toObject(this) @ #3531
     [2] <>obj<>4179 := <>Global<>toObject(<>obj<>4178["request"]) @ #3532
     [3] <>arguments<>4180 := allocArg(0) @ #3533
     [4] <>fun<>4181 := <>Global<>toObject(<>obj<>4179["isSameOrigin"]) @ #3534
 
-  Block[23] -> [29], ExitExc, [20]
+  Block[23] -> [29], [20]
     [0] <>arguments<>4183 := allocArg(1) @ #3537
     [1] <>arguments<>4183["0"] := <>temp<>4177
     [2] <>fun<>4184 := <>Global<>toObject(<>obj<>4173["evalJSON"]) @ #3538
@@ -17546,10 +17546,10 @@ function[238] <>funexpr@1713:19-1723:4<> {
 
   AfterCatch[26] -> [28]
 
-  Block[27] -> [23], ExitExc, [20]
+  Block[27] -> [23], [20]
     [0] <>temp<>4177 := ! <>y<>4182
 
-  Block[28] -> ExitExc, [20]
+  Block[28] -> [20]
 
   Call[29]
     [0] call(<>fun<>4184, <>obj<>4173, <>arguments<>4183) @ #3539
@@ -17558,10 +17558,10 @@ function[238] <>funexpr@1713:19-1723:4<> {
 
   AfterCatch[31] -> [33]
 
-  Block[32] -> Exit, ExitExc, [20]
+  Block[32] -> Exit, [20]
     [0] return(<>new1<>4185)
 
-  Block[33] -> ExitExc, [20]
+  Block[33] -> [20]
 
   Call[34]
     [0] call(<>fun<>4190, <>obj<>4187, <>arguments<>4189) @ #3545
@@ -17583,23 +17583,23 @@ function[238] <>funexpr@1713:19-1723:4<> {
 function[239] <>funexpr@1725:21-1737:4<> {
   Entry[-1] -> [0]
 
-  Block[0] -> [2], [1]
+  Block[0] -> [2], [1], ExitExc
     [0] <>obj<>4195 := <>Global<>toObject(this) @ #3549
     [1] <>obj<>4196 := <>Global<>toObject(<>obj<>4195["request"]) @ #3550
     [2] <>options<>4193 := <>obj<>4196["options"]
     [3] <>obj<>4197 := <>Global<>toObject(<>options<>4193) @ #3551
 
-  Block[1] -> [3]
+  Block[1] -> [3], ExitExc
     [0] assert(! <>obj<>4197["evalJSON"])
     [1] <>new1<>4198 := ! <>obj<>4197["evalJSON"]
 
-  Block[2] -> [5], [4]
+  Block[2] -> [5], [4], ExitExc
     [0] assert(! ! <>obj<>4197["evalJSON"])
     [1] <>obj<>4199 := <>Global<>toObject(<>options<>4193) @ #3552
 
   Block[3] -> [26], [25]
 
-  Block[4] -> [6]
+  Block[4] -> [6], ExitExc
     [0] assert(<>obj<>4199["evalJSON"] != "force")
     [1] <>obj<>4200 := <>Global<>toObject(this) @ #3553
     [2] <>temp<>4201 := "Content-type"
@@ -17607,7 +17607,7 @@ function[239] <>funexpr@1725:21-1737:4<> {
     [4] <>arguments<>4202["0"] := <>temp<>4201
     [5] <>fun<>4203 := <>Global<>toObject(<>obj<>4200["getHeader"]) @ #3555
 
-  Block[5] -> [21], [20]
+  Block[5] -> [21], [20], ExitExc
     [0] assert(<>obj<>4199["evalJSON"] == "force")
 
   Call[6]
@@ -17619,17 +17619,17 @@ function[239] <>funexpr@1725:21-1737:4<> {
 
   Block[9] -> [12], [11]
 
-  Block[10]
+  Block[10] -> ExitExc
 
-  Block[11] -> [13]
+  Block[11] -> [13], ExitExc
     [0] assert(<>y<>4204)
     [1] <>obj1<>4205 := <>y<>4204
 
-  Block[12] -> [13]
+  Block[12] -> [13], ExitExc
     [0] assert(! <>y<>4204)
     [1] <>obj1<>4205 := ""
 
-  Block[13] -> [14]
+  Block[13] -> [14], ExitExc
     [0] <>obj<>4206 := <>Global<>toObject(<>obj1<>4205) @ #3558
     [1] <>temp<>4207 := "application/json"
     [2] <>arguments<>4208 := allocArg(1) @ #3559
@@ -17643,19 +17643,19 @@ function[239] <>funexpr@1725:21-1737:4<> {
 
   AfterCatch[16] -> [18]
 
-  Block[17] -> [19]
+  Block[17] -> [19], ExitExc
     [0] <>z<>4211 := ! <>y<>4210
 
-  Block[18]
+  Block[18] -> ExitExc
 
-  Block[19] -> [3]
+  Block[19] -> [3], ExitExc
     [0] <>new1<>4198 := <>z<>4211
 
-  Block[20] -> [22]
+  Block[20] -> [22], ExitExc
     [0] assert(typeof <>obj<>4199["evalJSON"] != "force" == "boolean")
     [1] <>z<>4211 := false
 
-  Block[21] -> [22]
+  Block[21] -> [22], ExitExc
     [0] assert(typeof <>obj<>4199["evalJSON"] != "force" != "boolean")
     [1] <>z<>4211 := <>obj<>4199["evalJSON"] != "force"
 
@@ -17663,16 +17663,16 @@ function[239] <>funexpr@1725:21-1737:4<> {
 
   Block[23] -> [36]
 
-  Block[24]
+  Block[24] -> Exit, ExitExc
     [0] return(null)
 
-  Block[25] -> [24]
+  Block[25] -> [24], ExitExc
     [0] assert(<>new1<>4198)
 
-  Block[26] -> [27]
+  Block[26] -> [27], ExitExc
     [0] assert(! <>new1<>4198)
 
-  Block[27] -> [28]
+  Block[27] -> [28], ExitExc
     [0] <>obj<>4212 := <>Global<>toObject(this) @ #3563
     [1] <>obj<>4213 := <>Global<>toObject(<>obj<>4212["responseText"]) @ #3564
     [2] <>arguments<>4214 := allocArg(0) @ #3565
@@ -17687,17 +17687,17 @@ function[239] <>funexpr@1725:21-1737:4<> {
 
   Block[31] -> [34], [33]
 
-  Block[32]
+  Block[32] -> ExitExc
 
-  Block[33] -> [24]
+  Block[33] -> [24], ExitExc
     [0] assert(<>new2<>4216)
 
-  Block[34] -> [35]
+  Block[34] -> [35], ExitExc
     [0] assert(! <>new2<>4216)
 
   Block[35] -> [23]
 
-  Block[36] -> [39], [38], ExitExc, [37]
+  Block[36] -> [39], [38], [37]
     [0] <>obj<>4218 := <>Global<>toObject(this) @ #3569
     [1] <>obj<>4219 := <>Global<>toObject(<>obj<>4218["responseText"]) @ #3570
     [2] <>obj<>4220 := <>Global<>toObject(<>options<>4193) @ #3571
@@ -17711,18 +17711,18 @@ function[239] <>funexpr@1725:21-1737:4<> {
     [5] <>arguments<>4233["0"] := <>temp<>4232
     [6] <>fun<>4234 := <>Global<>toObject(<>obj<>4231["dispatchException"]) @ #3585
 
-  Block[38] -> [40], ExitExc, [37]
+  Block[38] -> [40], [37]
     [0] assert(<>obj<>4220["sanitizeJSON"])
     [1] <>temp<>4221 := <>obj<>4220["sanitizeJSON"]
 
-  Block[39] -> [41], ExitExc, [37]
+  Block[39] -> [41], [37]
     [0] assert(! <>obj<>4220["sanitizeJSON"])
     [1] <>obj<>4222 := <>Global<>toObject(this) @ #3572
     [2] <>obj<>4223 := <>Global<>toObject(<>obj<>4222["request"]) @ #3573
     [3] <>arguments<>4224 := allocArg(0) @ #3574
     [4] <>fun<>4225 := <>Global<>toObject(<>obj<>4223["isSameOrigin"]) @ #3575
 
-  Block[40] -> [46], ExitExc, [37]
+  Block[40] -> [46], [37]
     [0] <>arguments<>4227 := allocArg(1) @ #3578
     [1] <>arguments<>4227["0"] := <>temp<>4221
     [2] <>fun<>4228 := <>Global<>toObject(<>obj<>4219["evalJSON"]) @ #3579
@@ -17734,10 +17734,10 @@ function[239] <>funexpr@1725:21-1737:4<> {
 
   AfterCatch[43] -> [45]
 
-  Block[44] -> [40], ExitExc, [37]
+  Block[44] -> [40], [37]
     [0] <>temp<>4221 := ! <>y<>4226
 
-  Block[45] -> ExitExc, [37]
+  Block[45] -> [37]
 
   Call[46]
     [0] call(<>fun<>4228, <>obj<>4219, <>arguments<>4227) @ #3580
@@ -17746,10 +17746,10 @@ function[239] <>funexpr@1725:21-1737:4<> {
 
   AfterCatch[48] -> [50]
 
-  Block[49] -> Exit, ExitExc, [37]
+  Block[49] -> Exit, [37]
     [0] return(<>new1<>4229)
 
-  Block[50] -> ExitExc, [37]
+  Block[50] -> [37]
 
   Call[51]
     [0] call(<>fun<>4234, <>obj<>4231, <>arguments<>4233) @ #3586
@@ -18676,7 +18676,7 @@ function[251] <>funexpr@1870:45-1878:4<> {
 
   Block[0] -> [1]
 
-  Block[1] -> [3], ExitExc, [2]
+  Block[1] -> [3], [2]
     [0] <>obj<>4512 := <>Global<>toObject(document) @ #3832
     [1] <>temp<>4513 := "<input name=\"x\">"
     [2] <>arguments<>4514 := allocArg(1) @ #3833
@@ -18694,14 +18694,14 @@ function[251] <>funexpr@1870:45-1878:4<> {
 
   AfterCatch[5] -> [7]
 
-  Block[6] -> [8], ExitExc, [2]
+  Block[6] -> [8], [2]
     [0] <>el<>4509 := <>Global<>ignore480
     [1] <>obj<>4516 := <>Global<>toObject(<>el<>4509) @ #3837
     [2] <>obj<>4517 := <>Global<>toObject(<>obj<>4516["tagName"]) @ #3838
     [3] <>arguments<>4518 := allocArg(0) @ #3839
     [4] <>fun<>4519 := <>Global<>toObject(<>obj<>4517["toLowerCase"]) @ #3840
 
-  Block[7] -> ExitExc, [2]
+  Block[7] -> [2]
 
   Call[8]
     [0] call(<>fun<>4519, <>obj<>4517, <>arguments<>4518) @ #3841
@@ -18712,24 +18712,24 @@ function[251] <>funexpr@1870:45-1878:4<> {
 
   Block[11] -> [14], [13]
 
-  Block[12] -> ExitExc, [2]
+  Block[12] -> [2]
 
-  Block[13] -> [15], ExitExc, [2]
+  Block[13] -> [15], [2]
     [0] assert(<>y<>4520 === "input")
     [1] <>obj<>4521 := <>Global<>toObject(<>el<>4509) @ #3843
     [2] <>new1<>4522 := <>obj<>4521["name"] === "x"
 
-  Block[14] -> [17], [16], ExitExc, [2]
+  Block[14] -> [17], [16], [2]
     [0] assert(<>y<>4520 !== "input")
 
-  Block[15] -> Exit, ExitExc, [2]
+  Block[15] -> Exit, [2]
     [0] return(<>new1<>4522)
 
-  Block[16] -> [18], ExitExc, [2]
+  Block[16] -> [18], [2]
     [0] assert(typeof <>y<>4520 === "input" == "boolean")
     [1] <>new1<>4522 := false
 
-  Block[17] -> [18], ExitExc, [2]
+  Block[17] -> [18], [2]
     [0] assert(typeof <>y<>4520 === "input" != "boolean")
     [1] <>new1<>4522 := <>y<>4520 === "input"
 
@@ -19974,7 +19974,7 @@ function[264] <>funexpr@1960:42-1972:6<> {
 
   Block[0] -> [1]
 
-  Block[1] -> [3], ExitExc, [2]
+  Block[1] -> [3], [2]
     [0] <>obj<>4846 := <>Global<>toObject(document) @ #4159
     [1] <>temp<>4847 := "table"
     [2] <>arguments<>4848 := allocArg(1) @ #4160
@@ -19992,21 +19992,21 @@ function[264] <>funexpr@1960:42-1972:6<> {
 
   AfterCatch[5] -> [7]
 
-  Block[6] -> [10], [9], ExitExc, [2]
+  Block[6] -> [10], [9], [2]
     [0] <>el<>4842 := <>Global<>ignore534
 
-  Block[7] -> ExitExc, [2]
+  Block[7] -> [2]
 
   Block[8] -> Exit
 
-  Block[9] -> [12], [11], ExitExc, [2]
+  Block[9] -> [12], [11], [2]
     [0] assert(<>el<>4842)
     [1] <>obj<>4850 := <>Global<>toObject(<>el<>4842) @ #4164
 
-  Block[10] -> [14], ExitExc, [2]
+  Block[10] -> [14], [2]
     [0] assert(! <>el<>4842)
 
-  Block[11] -> Exit, ExitExc, [2]
+  Block[11] -> Exit, [2]
     [0] assert(<>obj<>4850["tBodies"])
     [1] <>obj<>4851 := <>Global<>toObject(<>el<>4842) @ #4165
     [2] <>obj<>4851["innerHTML"] := "<tbody><tr><td>test</td></tr></tbody>"
@@ -20016,7 +20016,7 @@ function[264] <>funexpr@1960:42-1972:6<> {
     [6] <>el<>4842 := null
     [7] return(<>isBuggy<>4843)
 
-  Block[12] -> [13], ExitExc, [2]
+  Block[12] -> [13], [2]
     [0] assert(! <>obj<>4850["tBodies"])
 
   Block[13] -> [14]
@@ -20034,7 +20034,7 @@ function[265] <>funexpr@1974:41-1984:6<> {
 
   Block[0] -> [1]
 
-  Block[1] -> [3], ExitExc, [2]
+  Block[1] -> [3], [2]
     [0] <>obj<>4862 := <>Global<>toObject(document) @ #4174
     [1] <>temp<>4863 := "div"
     [2] <>arguments<>4864 := allocArg(1) @ #4175
@@ -20052,7 +20052,7 @@ function[265] <>funexpr@1974:41-1984:6<> {
 
   AfterCatch[5] -> [7]
 
-  Block[6] -> Exit, ExitExc, [2]
+  Block[6] -> Exit, [2]
     [0] <>el<>4858 := <>Global<>ignore539
     [1] <>obj<>4866 := <>Global<>toObject(<>el<>4858) @ #4179
     [2] <>obj<>4866["innerHTML"] := "<link>"
@@ -20062,7 +20062,7 @@ function[265] <>funexpr@1974:41-1984:6<> {
     [6] <>el<>4858 := null
     [7] return(<>isBuggy<>4859)
 
-  Block[7] -> ExitExc, [2]
+  Block[7] -> [2]
 
   Exit[-2]
 
@@ -20073,7 +20073,7 @@ function[265] <>funexpr@1974:41-1984:6<> {
 function[266] <>funexpr@1989:54-2001:6<> {
   Entry[-1] -> [0]
 
-  Block[0] -> [1]
+  Block[0] -> [1], ExitExc
     [0] <>obj<>4877 := <>Global<>toObject(document) @ #4188
     [1] <>temp<>4878 := "script"
     [2] <>arguments<>4879 := allocArg(1) @ #4189
@@ -20087,13 +20087,13 @@ function[266] <>funexpr@1989:54-2001:6<> {
 
   AfterCatch[3] -> [5]
 
-  Block[4] -> [6]
+  Block[4] -> [6], ExitExc
     [0] <>s<>4874 := <>Global<>ignore545
     [1] <>isBuggy<>4875 := false
 
-  Block[5]
+  Block[5] -> ExitExc
 
-  Block[6] -> [8], ExitExc, [7]
+  Block[6] -> [8], [7]
     [0] <>obj<>4882 := <>Global<>toObject(<>s<>4874) @ #4193
     [1] <>obj<>4883 := <>Global<>toObject(document) @ #4194
     [2] <>temp<>4884 := ""
@@ -20112,12 +20112,12 @@ function[266] <>funexpr@1989:54-2001:6<> {
 
   AfterCatch[10] -> [12]
 
-  Block[11] -> [13], ExitExc, [7]
+  Block[11] -> [13], [7]
     [0] <>arguments<>4888 := allocArg(1) @ #4199
     [1] <>arguments<>4888["0"] := <>temp<>4887
     [2] <>fun<>4889 := <>Global<>toObject(<>obj<>4882["appendChild"]) @ #4200
 
-  Block[12] -> ExitExc, [7]
+  Block[12] -> [7]
 
   Call[13]
     [0] call(<>fun<>4889, <>obj<>4882, <>arguments<>4888) @ #4201
@@ -20126,39 +20126,39 @@ function[266] <>funexpr@1989:54-2001:6<> {
 
   AfterCatch[15] -> [17]
 
-  Block[16] -> [19], [18], ExitExc, [7]
+  Block[16] -> [19], [18], [7]
     [0] <>obj<>4890 := <>Global<>toObject(<>s<>4874) @ #4203
 
-  Block[17] -> ExitExc, [7]
+  Block[17] -> [7]
 
-  Block[18] -> [20], ExitExc, [7]
+  Block[18] -> [20], [7]
     [0] assert(! <>obj<>4890["firstChild"])
     [1] <>Global<>ignore549 := ! <>obj<>4890["firstChild"]
 
-  Block[19] -> [22], [21], ExitExc, [7]
+  Block[19] -> [22], [21], [7]
     [0] assert(! ! <>obj<>4890["firstChild"])
     [1] <>obj<>4891 := <>Global<>toObject(<>s<>4874) @ #4204
 
-  Block[20] -> [27], ExitExc, [7]
+  Block[20] -> [27], [7]
     [0] <>isBuggy<>4875 := <>Global<>ignore549
 
-  Block[21] -> [23], ExitExc, [7]
+  Block[21] -> [23], [7]
     [0] assert(<>obj<>4891["firstChild"])
     [1] <>obj<>4892 := <>Global<>toObject(<>s<>4874) @ #4205
     [2] <>obj<>4893 := <>Global<>toObject(<>obj<>4892["firstChild"]) @ #4206
     [3] <>z<>4894 := <>obj<>4893["nodeType"] !== 3
 
-  Block[22] -> [25], [24], ExitExc, [7]
+  Block[22] -> [25], [24], [7]
     [0] assert(! <>obj<>4891["firstChild"])
 
-  Block[23] -> [20], ExitExc, [7]
+  Block[23] -> [20], [7]
     [0] <>Global<>ignore549 := <>z<>4894
 
-  Block[24] -> [26], ExitExc, [7]
+  Block[24] -> [26], [7]
     [0] assert(typeof <>obj<>4891["firstChild"] == "boolean")
     [1] <>z<>4894 := false
 
-  Block[25] -> [26], ExitExc, [7]
+  Block[25] -> [26], [7]
     [0] assert(typeof <>obj<>4891["firstChild"] != "boolean")
     [1] <>z<>4894 := <>obj<>4891["firstChild"]
 
@@ -26907,7 +26907,7 @@ function[333] Element.Methods.setOpacity<>funexpr@2742:32-2747:4<> {
 function[334] Element.Methods.setOpacity<>funexpr@2751:32-2766:4<> {
   Entry[-1] -> [0]
 
-  Block[0] -> [1]
+  Block[0] -> [1], ExitExc
     [0] <>obj<>6755 := <>Global<>toObject($) @ #5802
     [1] <>temp<>6756 := <>element<>6751
     [2] <>arguments<>6757 := allocArg(1) @ #5803
@@ -26921,40 +26921,40 @@ function[334] Element.Methods.setOpacity<>funexpr@2751:32-2766:4<> {
 
   AfterCatch[3] -> [5]
 
-  Block[4] -> [9], [8]
+  Block[4] -> [9], [8], ExitExc
     [0] <>element<>6751 := <>Global<>ignore753
     [1] <>obj<>6759 := <>Global<>toObject(<>element<>6751) @ #5806
     [2] <>obj<>6760 := <>Global<>toObject(<>obj<>6759["style"]) @ #5807
 
-  Block[5]
+  Block[5] -> ExitExc
 
-  Block[6] -> [18], [17]
+  Block[6] -> [18], [17], ExitExc
     [0] <>obj<>6760["opacity"] := <>Global<>ignore754
 
-  Block[7] -> [6]
+  Block[7] -> [6], ExitExc
     [0] <>Global<>ignore754 := ""
 
-  Block[8] -> [7]
+  Block[8] -> [7], ExitExc
     [0] assert(<>value<>6752 == 1)
 
-  Block[9] -> [10]
+  Block[9] -> [10], ExitExc
     [0] assert(<>value<>6752 != 1)
 
   Block[10] -> [12], [11]
 
-  Block[11] -> [7]
+  Block[11] -> [7], ExitExc
     [0] assert(<>value<>6752 === "")
 
-  Block[12] -> [13]
+  Block[12] -> [13], ExitExc
     [0] assert(<>value<>6752 !== "")
 
   Block[13] -> [15], [14]
 
-  Block[14] -> [16]
+  Block[14] -> [16], ExitExc
     [0] assert(<>value<>6752 < 0.00001)
     [1] <>Global<>ignore754 := 0
 
-  Block[15] -> [16]
+  Block[15] -> [16], ExitExc
     [0] assert(! <>value<>6752 < 0.00001)
     [1] <>Global<>ignore754 := <>value<>6752
 
@@ -26979,23 +26979,23 @@ function[334] Element.Methods.setOpacity<>funexpr@2751:32-2766:4<> {
 
   Block[22] -> [25], [24]
 
-  Block[23]
+  Block[23] -> ExitExc
 
-  Block[24] -> [26]
+  Block[24] -> [26], ExitExc
     [0] assert(<>y<>6765 == "IMG")
     [1] <>obj<>6766 := <>Global<>toObject(<>element<>6751) @ #5814
     [2] <>new<>6767 := <>obj<>6766["width"]
 
-  Block[25] -> [28], [27]
+  Block[25] -> [28], [27], ExitExc
     [0] assert(<>y<>6765 != "IMG")
 
   Block[26] -> [31], [30]
 
-  Block[27] -> [29]
+  Block[27] -> [29], ExitExc
     [0] assert(typeof <>y<>6765 == "IMG" == "boolean")
     [1] <>new<>6767 := false
 
-  Block[28] -> [29]
+  Block[28] -> [29], ExitExc
     [0] assert(typeof <>y<>6765 == "IMG" != "boolean")
     [1] <>new<>6767 := <>y<>6765 == "IMG"
 
@@ -27019,7 +27019,7 @@ function[334] Element.Methods.setOpacity<>funexpr@2751:32-2766:4<> {
 
   Block[32] -> [50]
 
-  Block[33] -> [35], ExitExc, [34]
+  Block[33] -> [35], [34]
     [0] <>obj<>6775 := <>Global<>toObject(document) @ #5817
     [1] <>temp<>6776 := " "
     [2] <>arguments<>6777 := allocArg(1) @ #5818
@@ -27036,7 +27036,7 @@ function[334] Element.Methods.setOpacity<>funexpr@2751:32-2766:4<> {
 
   AfterCatch[37] -> [39]
 
-  Block[38] -> [40], ExitExc, [34]
+  Block[38] -> [40], [34]
     [0] <>n<>6753 := <>Global<>ignore759
     [1] <>obj<>6779 := <>Global<>toObject(<>element<>6751) @ #5822
     [2] <>temp<>6780 := <>n<>6753
@@ -27044,7 +27044,7 @@ function[334] Element.Methods.setOpacity<>funexpr@2751:32-2766:4<> {
     [4] <>arguments<>6781["0"] := <>temp<>6780
     [5] <>fun<>6782 := <>Global<>toObject(<>obj<>6779["appendChild"]) @ #5824
 
-  Block[39] -> ExitExc, [34]
+  Block[39] -> [34]
 
   Call[40]
     [0] call(<>fun<>6782, <>obj<>6779, <>arguments<>6781) @ #5825
@@ -27053,14 +27053,14 @@ function[334] Element.Methods.setOpacity<>funexpr@2751:32-2766:4<> {
 
   AfterCatch[42] -> [44]
 
-  Block[43] -> [45], ExitExc, [34]
+  Block[43] -> [45], [34]
     [0] <>obj<>6783 := <>Global<>toObject(<>element<>6751) @ #5827
     [1] <>temp<>6784 := <>n<>6753
     [2] <>arguments<>6785 := allocArg(1) @ #5828
     [3] <>arguments<>6785["0"] := <>temp<>6784
     [4] <>fun<>6786 := <>Global<>toObject(<>obj<>6783["removeChild"]) @ #5829
 
-  Block[44] -> ExitExc, [34]
+  Block[44] -> [34]
 
   Call[45]
     [0] call(<>fun<>6786, <>obj<>6783, <>arguments<>6785) @ #5830
@@ -27071,7 +27071,7 @@ function[334] Element.Methods.setOpacity<>funexpr@2751:32-2766:4<> {
 
   Block[48] -> [32]
 
-  Block[49] -> ExitExc, [34]
+  Block[49] -> [34]
 
   Block[50] -> Exit, ExitExc
     [0] return(<>element<>6751)
@@ -37650,7 +37650,7 @@ function[444] extendElements {
 function[445] <>funexpr@3972:2-4942:2<> {
   Entry[-1] -> [0]
 
-  Block[0] -> [1]
+  Block[0] -> [1], ExitExc
     [0] <>dirNodeCheck<>9571 := function (446) @ #8293, #8294
     [1] <>dirCheck<>9572 := function (447) @ #8316, #8317
     [2] <>fun<>9654 := <>Global<>toObject(RegExp) @ #8318
@@ -37672,17 +37672,17 @@ function[445] <>funexpr@3972:2-4942:2<> {
   Block[4] -> [7], [6]
     [0] <>cond<>9661 := <>Global<>isObject(<>newObj<>9660)
 
-  Block[5]
+  Block[5] -> ExitExc
 
-  Block[6] -> [8]
+  Block[6] -> [8], ExitExc
     [0] assert(<>cond<>9661)
     [1] <>Global<>ignore1172 := <>newObj<>9660
 
-  Block[7] -> [8]
+  Block[7] -> [8], ExitExc
     [0] assert(! <>cond<>9661)
     [1] <>Global<>ignore1172 := <>obj<>9659
 
-  Block[8] -> [9]
+  Block[8] -> [9], ExitExc
     [0] <>chunker<>9573 := <>Global<>ignore1172
     [1] <>done<>9574 := 0
     [2] <>obj<>9662 := <>Global<>toObject(Object) @ #8323
@@ -37708,7 +37708,7 @@ function[445] <>funexpr@3972:2-4942:2<> {
 
   AfterCatch[11] -> [13]
 
-  Block[12] -> [14]
+  Block[12] -> [14], ExitExc
     [0] <>Global<>ignore1179 := function (449) @ #8571, #8572
     [1] <>Sizzle<>9578 := <>Global<>ignore1179
     [2] <>obj<>9927 := <>Global<>toObject(<>Sizzle<>9578) @ #8573
@@ -37740,7 +37740,7 @@ function[445] <>funexpr@3972:2-4942:2<> {
     [28] <>proto<>10122 := <>fun<>10118["prototype"]
     [29] <>obj<>10123 := alloc(<>proto<>10122) @ #8711
 
-  Block[13]
+  Block[13] -> ExitExc
 
   Call[14]
     [0] construct(<>fun<>10118, <>obj<>10123, <>arguments<>10121) @ #8712, #8713
@@ -37752,17 +37752,17 @@ function[445] <>funexpr@3972:2-4942:2<> {
   Block[17] -> [20], [19]
     [0] <>cond<>10125 := <>Global<>isObject(<>newObj<>10124)
 
-  Block[18]
+  Block[18] -> ExitExc
 
-  Block[19] -> [21]
+  Block[19] -> [21], ExitExc
     [0] assert(<>cond<>10125)
     [1] <>temp<>10126 := <>newObj<>10124
 
-  Block[20] -> [21]
+  Block[20] -> [21], ExitExc
     [0] assert(! <>cond<>10125)
     [1] <>temp<>10126 := <>obj<>10123
 
-  Block[21] -> [22]
+  Block[21] -> [22], ExitExc
     [0] <>fun<>10127 := <>Global<>toObject(RegExp) @ #8714
     [1] <>temp<>10128 := "\.((?:[\w\u00c0-\uFFFF-]|\\.)+)"
     [2] <>temp<>10129 := ""
@@ -37782,17 +37782,17 @@ function[445] <>funexpr@3972:2-4942:2<> {
   Block[25] -> [28], [27]
     [0] <>cond<>10134 := <>Global<>isObject(<>newObj<>10133)
 
-  Block[26]
+  Block[26] -> ExitExc
 
-  Block[27] -> [29]
+  Block[27] -> [29], ExitExc
     [0] assert(<>cond<>10134)
     [1] <>temp<>10135 := <>newObj<>10133
 
-  Block[28] -> [29]
+  Block[28] -> [29], ExitExc
     [0] assert(! <>cond<>10134)
     [1] <>temp<>10135 := <>obj<>10132
 
-  Block[29] -> [30]
+  Block[29] -> [30], ExitExc
     [0] <>fun<>10136 := <>Global<>toObject(RegExp) @ #8719
     [1] <>temp<>10137 := "\[name=['\"]*((?:[\w\u00c0-\uFFFF-]|\\.)+)['\"]*\]"
     [2] <>temp<>10138 := ""
@@ -37812,17 +37812,17 @@ function[445] <>funexpr@3972:2-4942:2<> {
   Block[33] -> [36], [35]
     [0] <>cond<>10143 := <>Global<>isObject(<>newObj<>10142)
 
-  Block[34]
+  Block[34] -> ExitExc
 
-  Block[35] -> [37]
+  Block[35] -> [37], ExitExc
     [0] assert(<>cond<>10143)
     [1] <>temp<>10144 := <>newObj<>10142
 
-  Block[36] -> [37]
+  Block[36] -> [37], ExitExc
     [0] assert(! <>cond<>10143)
     [1] <>temp<>10144 := <>obj<>10141
 
-  Block[37] -> [38]
+  Block[37] -> [38], ExitExc
     [0] <>fun<>10145 := <>Global<>toObject(RegExp) @ #8724
     [1] <>temp<>10146 := "\[\s*((?:[\w\u00c0-\uFFFF-]|\\.)+)\s*(?:(\S?=)\s*(['\"]*)(.*?)\3|)\s*\]"
     [2] <>temp<>10147 := ""
@@ -37842,17 +37842,17 @@ function[445] <>funexpr@3972:2-4942:2<> {
   Block[41] -> [44], [43]
     [0] <>cond<>10152 := <>Global<>isObject(<>newObj<>10151)
 
-  Block[42]
+  Block[42] -> ExitExc
 
-  Block[43] -> [45]
+  Block[43] -> [45], ExitExc
     [0] assert(<>cond<>10152)
     [1] <>temp<>10153 := <>newObj<>10151
 
-  Block[44] -> [45]
+  Block[44] -> [45], ExitExc
     [0] assert(! <>cond<>10152)
     [1] <>temp<>10153 := <>obj<>10150
 
-  Block[45] -> [46]
+  Block[45] -> [46], ExitExc
     [0] <>fun<>10154 := <>Global<>toObject(RegExp) @ #8729
     [1] <>temp<>10155 := "^((?:[\w\u00c0-\uFFFF\*-]|\\.)+)"
     [2] <>temp<>10156 := ""
@@ -37872,17 +37872,17 @@ function[445] <>funexpr@3972:2-4942:2<> {
   Block[49] -> [52], [51]
     [0] <>cond<>10161 := <>Global<>isObject(<>newObj<>10160)
 
-  Block[50]
+  Block[50] -> ExitExc
 
-  Block[51] -> [53]
+  Block[51] -> [53], ExitExc
     [0] assert(<>cond<>10161)
     [1] <>temp<>10162 := <>newObj<>10160
 
-  Block[52] -> [53]
+  Block[52] -> [53], ExitExc
     [0] assert(! <>cond<>10161)
     [1] <>temp<>10162 := <>obj<>10159
 
-  Block[53] -> [54]
+  Block[53] -> [54], ExitExc
     [0] <>fun<>10163 := <>Global<>toObject(RegExp) @ #8734
     [1] <>temp<>10164 := ":(only|nth|last|first)-child(?:\((even|odd|[\dn+-]*)\))?"
     [2] <>temp<>10165 := ""
@@ -37902,17 +37902,17 @@ function[445] <>funexpr@3972:2-4942:2<> {
   Block[57] -> [60], [59]
     [0] <>cond<>10170 := <>Global<>isObject(<>newObj<>10169)
 
-  Block[58]
+  Block[58] -> ExitExc
 
-  Block[59] -> [61]
+  Block[59] -> [61], ExitExc
     [0] assert(<>cond<>10170)
     [1] <>temp<>10171 := <>newObj<>10169
 
-  Block[60] -> [61]
+  Block[60] -> [61], ExitExc
     [0] assert(! <>cond<>10170)
     [1] <>temp<>10171 := <>obj<>10168
 
-  Block[61] -> [62]
+  Block[61] -> [62], ExitExc
     [0] <>fun<>10172 := <>Global<>toObject(RegExp) @ #8739
     [1] <>temp<>10173 := ":(nth|eq|gt|lt|first|last|even|odd)(?:\((\d*)\))?(?=[^-]|$)"
     [2] <>temp<>10174 := ""
@@ -37932,17 +37932,17 @@ function[445] <>funexpr@3972:2-4942:2<> {
   Block[65] -> [68], [67]
     [0] <>cond<>10179 := <>Global<>isObject(<>newObj<>10178)
 
-  Block[66]
+  Block[66] -> ExitExc
 
-  Block[67] -> [69]
+  Block[67] -> [69], ExitExc
     [0] assert(<>cond<>10179)
     [1] <>temp<>10180 := <>newObj<>10178
 
-  Block[68] -> [69]
+  Block[68] -> [69], ExitExc
     [0] assert(! <>cond<>10179)
     [1] <>temp<>10180 := <>obj<>10177
 
-  Block[69] -> [70]
+  Block[69] -> [70], ExitExc
     [0] <>fun<>10181 := <>Global<>toObject(RegExp) @ #8744
     [1] <>temp<>10182 := ":((?:[\w\u00c0-\uFFFF-]|\\.)+)(?:\((['\"]*)((?:\([^\)]+\)|[^\2\(\)]*)+)\2\))?"
     [2] <>temp<>10183 := ""
@@ -37962,17 +37962,17 @@ function[445] <>funexpr@3972:2-4942:2<> {
   Block[73] -> [76], [75]
     [0] <>cond<>10188 := <>Global<>isObject(<>newObj<>10187)
 
-  Block[74]
+  Block[74] -> ExitExc
 
-  Block[75] -> [77]
+  Block[75] -> [77], ExitExc
     [0] assert(<>cond<>10188)
     [1] <>temp<>10189 := <>newObj<>10187
 
-  Block[76] -> [77]
+  Block[76] -> [77], ExitExc
     [0] assert(! <>cond<>10188)
     [1] <>temp<>10189 := <>obj<>10186
 
-  Block[77] -> [79]
+  Block[77] -> [79], ExitExc
     [0] <>temp<>10190 := alloc() @ #8749
     [1] <>temp<>10190["ID"] := <>temp<>10126
     [2] <>temp<>10190["CLASS"] := <>temp<>10135
@@ -38111,13 +38111,13 @@ function[445] <>funexpr@3972:2-4942:2<> {
     [135] <>iterator<>11083 := <>Global<>iteratorInit(<>obj<>11082) @ #9325
     [136] <>cond1<>11084 := <>Global<>iteratorHasNext(<>obj<>11082, <>iterator<>11083)
 
-  Block[78] -> [115]
+  Block[78] -> [115], ExitExc
     [0] <>Global<>ignore1361 := function (502) @ #9371, #9372
     [1] <>makeArray<>9582 := <>Global<>ignore1361
 
   Block[79] -> [81], [80]
 
-  Block[80] -> [83]
+  Block[80] -> [83], ExitExc
     [0] assert(<>cond1<>11084)
     [1] <>key<>11085 := <>Global<>iteratorNext(<>obj<>11082, <>iterator<>11083)
     [2] <>type<>9581 := <>key<>11085
@@ -38137,7 +38137,7 @@ function[445] <>funexpr@3972:2-4942:2<> {
     [16] <>proto<>11097 := <>fun<>11093["prototype"]
     [17] <>obj<>11098 := alloc(<>proto<>11097) @ #9334
 
-  Block[81] -> [78]
+  Block[81] -> [78], ExitExc
     [0] assert(! <>cond1<>11084)
 
   Block[82] -> [79]
@@ -38153,17 +38153,17 @@ function[445] <>funexpr@3972:2-4942:2<> {
   Block[86] -> [89], [88]
     [0] <>cond<>11100 := <>Global<>isObject(<>newObj<>11099)
 
-  Block[87]
+  Block[87] -> ExitExc
 
-  Block[88] -> [90]
+  Block[88] -> [90], ExitExc
     [0] assert(<>cond<>11100)
     [1] <>obj1<>11101 := <>newObj<>11099
 
-  Block[89] -> [90]
+  Block[89] -> [90], ExitExc
     [0] assert(! <>cond<>11100)
     [1] <>obj1<>11101 := <>obj<>11098
 
-  Block[90] -> [91]
+  Block[90] -> [91], ExitExc
     [0] <>obj<>11102 := <>Global<>toObject(<>obj1<>11101) @ #9337
     [1] <>temp<>11103 := <>y<>11092 + <>obj<>11102["source"]
     [2] <>arguments<>11104 := allocArg(1) @ #9338
@@ -38181,17 +38181,17 @@ function[445] <>funexpr@3972:2-4942:2<> {
   Block[94] -> [97], [96]
     [0] <>cond<>11108 := <>Global<>isObject(<>newObj<>11107)
 
-  Block[95]
+  Block[95] -> ExitExc
 
-  Block[96] -> [98]
+  Block[96] -> [98], ExitExc
     [0] assert(<>cond<>11108)
     [1] <>Global<>ignore1359 := <>newObj<>11107
 
-  Block[97] -> [98]
+  Block[97] -> [98], ExitExc
     [0] assert(! <>cond<>11108)
     [1] <>Global<>ignore1359 := <>obj<>11106
 
-  Block[98] -> [99]
+  Block[98] -> [99], ExitExc
     [0] <>obj<>11087[<>type<>9581] := <>Global<>ignore1359
     [1] <>obj<>11109 := <>Global<>toObject(<>Expr<>9579) @ #9342
     [2] <>obj<>11110 := <>Global<>toObject(<>obj<>11109["leftMatch"]) @ #9343
@@ -38215,17 +38215,17 @@ function[445] <>funexpr@3972:2-4942:2<> {
   Block[102] -> [105], [104]
     [0] <>cond<>11119 := <>Global<>isObject(<>newObj<>11118)
 
-  Block[103]
+  Block[103] -> ExitExc
 
-  Block[104] -> [106]
+  Block[104] -> [106], ExitExc
     [0] assert(<>cond<>11119)
     [1] <>obj1<>11120 := <>newObj<>11118
 
-  Block[105] -> [106]
+  Block[105] -> [106], ExitExc
     [0] assert(! <>cond<>11119)
     [1] <>obj1<>11120 := <>obj<>11117
 
-  Block[106] -> [107]
+  Block[106] -> [107], ExitExc
     [0] <>obj<>11121 := <>Global<>toObject(<>obj1<>11120) @ #9350
     [1] <>y<>11122 := <>obj<>11121["source"]
     [2] <>obj<>11123 := <>Global<>toObject(<>Expr<>9579) @ #9351
@@ -38247,20 +38247,20 @@ function[445] <>funexpr@3972:2-4942:2<> {
   Block[110] -> [113], [112]
     [0] <>cond<>11131 := <>Global<>isObject(<>newObj<>11130)
 
-  Block[111]
+  Block[111] -> ExitExc
 
-  Block[112] -> [114]
+  Block[112] -> [114], ExitExc
     [0] assert(<>cond<>11131)
     [1] <>Global<>ignore1360 := <>newObj<>11130
 
-  Block[113] -> [114]
+  Block[113] -> [114], ExitExc
     [0] assert(! <>cond<>11131)
     [1] <>Global<>ignore1360 := <>obj<>11129
 
-  Block[114] -> [82]
+  Block[114] -> [82], ExitExc
     [0] <>obj<>11110[<>type<>9581] := <>Global<>ignore1360
 
-  Block[115] -> [117], ExitExc, [116]
+  Block[115] -> [117], [116]
     [0] <>obj<>11150 := <>Global<>toObject(Array) @ #9373
     [1] <>obj<>11151 := <>Global<>toObject(<>obj<>11150["prototype"]) @ #9374
     [2] <>obj<>11152 := <>Global<>toObject(<>obj<>11151["slice"]) @ #9375
@@ -38287,7 +38287,7 @@ function[445] <>funexpr@3972:2-4942:2<> {
 
   Block[120] -> [122]
 
-  Block[121] -> ExitExc, [116]
+  Block[121] -> [116]
 
   Block[122] -> [124], [123], ExitExc
     [0] <>obj<>11196 := <>Global<>toObject(document) @ #9413
@@ -45425,25 +45425,25 @@ function[514] Sizzle<>funexpr@4790:17-4800:9<> {
 
   Block[0] -> [2], [1]
 
-  Block[1] -> [3]
+  Block[1] -> [3], ExitExc
     [0] assert(<>context<>11442)
     [1] <>Global<>ignore1426 := <>context<>11442
 
-  Block[2] -> [3]
+  Block[2] -> [3], ExitExc
     [0] assert(! <>context<>11442)
     [1] <>Global<>ignore1426 := document
 
-  Block[3] -> [5], [4]
+  Block[3] -> [5], [4], ExitExc
     [0] <>context<>11442 := <>Global<>ignore1426
 
-  Block[4] -> [7], [6]
+  Block[4] -> [7], [6], ExitExc
     [0] assert(! <>seed<>11444)
     [1] <>obj<>11446 := <>Global<>toObject(<>context<>11442) @ #9630
 
-  Block[5] -> [19], [18]
+  Block[5] -> [19], [18], ExitExc
     [0] assert(! ! <>seed<>11444)
 
-  Block[6] -> [8]
+  Block[6] -> [8], ExitExc
     [0] assert(<>obj<>11446["nodeType"] === 9)
     [1] <>obj<>11447 := <>Global<>toObject(<>isXML<>9585) @ #9631
     [2] <>temp<>11448 := <>context<>11442
@@ -45451,7 +45451,7 @@ function[514] Sizzle<>funexpr@4790:17-4800:9<> {
     [4] <>arguments<>11449["0"] := <>temp<>11448
     [5] <>fun<>11450 := <>Global<>getBase(<>isXML<>9585)
 
-  Block[7] -> [15], [14]
+  Block[7] -> [15], [14], ExitExc
     [0] assert(<>obj<>11446["nodeType"] !== 9)
 
   Call[8]
@@ -45461,18 +45461,18 @@ function[514] Sizzle<>funexpr@4790:17-4800:9<> {
 
   AfterCatch[10] -> [12]
 
-  Block[11] -> [13]
+  Block[11] -> [13], ExitExc
     [0] <>new<>11452 := ! <>y<>11451
 
-  Block[12]
+  Block[12] -> ExitExc
 
   Block[13] -> [17]
 
-  Block[14] -> [16]
+  Block[14] -> [16], ExitExc
     [0] assert(typeof <>obj<>11446["nodeType"] === 9 == "boolean")
     [1] <>new<>11452 := false
 
-  Block[15] -> [16]
+  Block[15] -> [16], ExitExc
     [0] assert(typeof <>obj<>11446["nodeType"] === 9 != "boolean")
     [1] <>new<>11452 := <>obj<>11446["nodeType"] === 9
 
@@ -45480,11 +45480,11 @@ function[514] Sizzle<>funexpr@4790:17-4800:9<> {
 
   Block[17] -> [22], [21]
 
-  Block[18] -> [20]
+  Block[18] -> [20], ExitExc
     [0] assert(typeof ! <>seed<>11444 == "boolean")
     [1] <>new<>11452 := false
 
-  Block[19] -> [20]
+  Block[19] -> [20], ExitExc
     [0] assert(typeof ! <>seed<>11444 != "boolean")
     [1] <>new<>11452 := ! <>seed<>11444
 
@@ -45496,7 +45496,7 @@ function[514] Sizzle<>funexpr@4790:17-4800:9<> {
   Block[22] -> [35], ExitExc
     [0] assert(! <>new<>11452)
 
-  Block[23] -> [25], ExitExc, [24]
+  Block[23] -> [25], [24]
     [0] <>obj<>11454 := <>Global<>toObject(<>makeArray<>9582) @ #9635
     [1] <>obj<>11455 := <>Global<>toObject(<>context<>11442) @ #9636
     [2] <>temp<>11456 := <>query<>11441
@@ -45514,14 +45514,14 @@ function[514] Sizzle<>funexpr@4790:17-4800:9<> {
 
   AfterCatch[27] -> [29]
 
-  Block[28] -> [30], ExitExc, [24]
+  Block[28] -> [30], [24]
     [0] <>temp<>11460 := <>extra<>11443
     [1] <>arguments<>11461 := allocArg(2) @ #9641
     [2] <>arguments<>11461["0"] := <>temp<>11459
     [3] <>arguments<>11461["1"] := <>temp<>11460
     [4] <>fun<>11462 := <>Global<>getBase(<>makeArray<>9582)
 
-  Block[29] -> ExitExc, [24]
+  Block[29] -> [24]
 
   Call[30]
     [0] call(<>obj<>11454, <>fun<>11462, <>arguments<>11461) @ #9642
@@ -45530,10 +45530,10 @@ function[514] Sizzle<>funexpr@4790:17-4800:9<> {
 
   AfterCatch[32] -> [34]
 
-  Block[33] -> Exit, ExitExc, [24]
+  Block[33] -> Exit, [24]
     [0] return(<>new1<>11463)
 
-  Block[34] -> ExitExc, [24]
+  Block[34] -> [24]
 
   Block[35] -> [36], ExitExc
     [0] <>obj<>11464 := <>Global<>toObject(<>oldSizzle<>11425) @ #9644
@@ -48171,7 +48171,7 @@ function[548] <>funexpr@5139:12-5141:4<> {
 function[549] <>funexpr@5143:13-5152:4<> {
   Entry[-1] -> [0]
 
-  Block[0] -> [1]
+  Block[0] -> [1], ExitExc
     [0] <>obj<>12182 := <>Global<>toObject($) @ #10259
     [1] <>temp<>12183 := <>element<>12180
     [2] <>arguments<>12184 := allocArg(1) @ #10260
@@ -48185,12 +48185,12 @@ function[549] <>funexpr@5143:13-5152:4<> {
 
   AfterCatch[3] -> [5]
 
-  Block[4] -> [6]
+  Block[4] -> [6], ExitExc
     [0] <>element<>12180 := <>Global<>ignore1524
 
-  Block[5]
+  Block[5] -> ExitExc
 
-  Block[6] -> [8], ExitExc, [7]
+  Block[6] -> [8], [7]
     [0] <>obj<>12187 := <>Global<>toObject(<>element<>12180) @ #10263
     [1] <>arguments<>12188 := allocArg(0) @ #10264
     [2] <>fun<>12189 := <>Global<>toObject(<>obj<>12187["focus"]) @ #10265
@@ -48205,21 +48205,21 @@ function[549] <>funexpr@5143:13-5152:4<> {
 
   AfterCatch[10] -> [12]
 
-  Block[11] -> [15], [14], ExitExc, [7]
+  Block[11] -> [15], [14], [7]
     [0] <>obj<>12190 := <>Global<>toObject(<>element<>12180) @ #10268
 
-  Block[12] -> ExitExc, [7]
+  Block[12] -> [7]
 
   Block[13] -> [46]
 
-  Block[14] -> [16], ExitExc, [7]
+  Block[14] -> [16], [7]
     [0] assert(<>obj<>12190["select"])
     [1] <>obj<>12191 := <>Global<>toObject(<>element<>12180) @ #10269
     [2] <>obj<>12192 := <>Global<>toObject(<>obj<>12191["tagName"]) @ #10270
     [3] <>arguments<>12193 := allocArg(0) @ #10271
     [4] <>fun<>12194 := <>Global<>toObject(<>obj<>12192["toLowerCase"]) @ #10272
 
-  Block[15] -> [45], ExitExc, [7]
+  Block[15] -> [45], [7]
     [0] assert(! <>obj<>12190["select"])
 
   Call[16]
@@ -48231,13 +48231,13 @@ function[549] <>funexpr@5143:13-5152:4<> {
 
   Block[19] -> [22], [21]
 
-  Block[20] -> ExitExc, [7]
+  Block[20] -> [7]
 
-  Block[21] -> [23], ExitExc, [7]
+  Block[21] -> [23], [7]
     [0] assert(<>y<>12195 != "input")
     [1] <>new1<>12196 := <>y<>12195 != "input"
 
-  Block[22] -> [24], ExitExc, [7]
+  Block[22] -> [24], [7]
     [0] assert(<>y<>12195 == "input")
     [1] <>fun<>12197 := <>Global<>toObject(RegExp) @ #10275
     [2] <>temp<>12198 := "^(?:button|reset|submit)$"
@@ -48260,17 +48260,17 @@ function[549] <>funexpr@5143:13-5152:4<> {
   Block[27] -> [30], [29]
     [0] <>cond<>12204 := <>Global<>isObject(<>newObj<>12203)
 
-  Block[28] -> ExitExc, [7]
+  Block[28] -> [7]
 
-  Block[29] -> [31], ExitExc, [7]
+  Block[29] -> [31], [7]
     [0] assert(<>cond<>12204)
     [1] <>obj1<>12205 := <>newObj<>12203
 
-  Block[30] -> [31], ExitExc, [7]
+  Block[30] -> [31], [7]
     [0] assert(! <>cond<>12204)
     [1] <>obj1<>12205 := <>obj<>12202
 
-  Block[31] -> [32], ExitExc, [7]
+  Block[31] -> [32], [7]
     [0] <>obj<>12206 := <>Global<>toObject(<>obj1<>12205) @ #10280
     [1] <>obj<>12207 := <>Global<>toObject(<>element<>12180) @ #10281
     [2] <>temp<>12208 := <>obj<>12207["type"]
@@ -48285,18 +48285,18 @@ function[549] <>funexpr@5143:13-5152:4<> {
 
   AfterCatch[34] -> [36]
 
-  Block[35] -> [23], ExitExc, [7]
+  Block[35] -> [23], [7]
     [0] <>new1<>12196 := ! <>y<>12211
 
-  Block[36] -> ExitExc, [7]
+  Block[36] -> [7]
 
-  Block[37] -> [39], ExitExc, [7]
+  Block[37] -> [39], [7]
     [0] assert(<>new1<>12196)
     [1] <>obj<>12212 := <>Global<>toObject(<>element<>12180) @ #10286
     [2] <>arguments<>12213 := allocArg(0) @ #10287
     [3] <>fun<>12214 := <>Global<>toObject(<>obj<>12212["select"]) @ #10288
 
-  Block[38] -> [44], ExitExc, [7]
+  Block[38] -> [44], [7]
     [0] assert(! <>new1<>12196)
 
   Call[39]
@@ -48308,7 +48308,7 @@ function[549] <>funexpr@5143:13-5152:4<> {
 
   Block[42] -> [13]
 
-  Block[43] -> ExitExc, [7]
+  Block[43] -> [7]
 
   Block[44] -> [45]
 
@@ -51331,7 +51331,7 @@ function[585] responder<>funexpr@5567:19-5576:8<> {
 function[586] responder<>funexpr@5581:23-5593:12<> {
   Entry[-1] -> [0]
 
-  Block[0] -> [1]
+  Block[0] -> [1], ExitExc
     [0] <>obj<>12898 := <>Global<>toObject(<>Event<>12625) @ #10866
     [1] <>temp<>12899 := <>event<>12895
     [2] <>temp<>12900 := <>element<>12815
@@ -51347,28 +51347,28 @@ function[586] responder<>funexpr@5581:23-5593:12<> {
 
   AfterCatch[3] -> [5]
 
-  Block[4] -> [8], [7]
+  Block[4] -> [8], [7], ExitExc
     [0] <>obj<>12903 := <>Global<>toObject(<>event<>12895) @ #10871
     [1] <>parent<>12896 := <>obj<>12903["relatedTarget"]
 
-  Block[5]
+  Block[5] -> ExitExc
 
   Block[6] -> [27], [26]
 
-  Block[7] -> [9]
+  Block[7] -> [9], ExitExc
     [0] assert(<>parent<>12896)
     [1] <>new1<>12904 := <>parent<>12896 !== <>element<>12815
 
-  Block[8] -> [11], [10]
+  Block[8] -> [11], [10], ExitExc
     [0] assert(! <>parent<>12896)
 
   Block[9] -> [13]
 
-  Block[10] -> [12]
+  Block[10] -> [12], ExitExc
     [0] assert(typeof <>parent<>12896 == "boolean")
     [1] <>new1<>12904 := false
 
-  Block[11] -> [12]
+  Block[11] -> [12], ExitExc
     [0] assert(typeof <>parent<>12896 != "boolean")
     [1] <>new1<>12904 := <>parent<>12896
 
@@ -51384,7 +51384,7 @@ function[586] responder<>funexpr@5581:23-5593:12<> {
 
   Block[16] -> [21], [20]
 
-  Block[17] -> [19], ExitExc, [18]
+  Block[17] -> [19], [18]
     [0] <>obj<>12906 := <>Global<>toObject(<>parent<>12896) @ #10872
     [1] <>parent<>12896 := <>obj<>12906["parentNode"]
 
@@ -53333,7 +53333,7 @@ function[612] pollDoScroll {
 
   Block[0] -> [1]
 
-  Block[1] -> [3], ExitExc, [2]
+  Block[1] -> [3], [2]
     [0] <>obj<>13489 := <>Global<>toObject(document) @ #11409
     [1] <>obj<>13490 := <>Global<>toObject(<>obj<>13489["documentElement"]) @ #11410
     [2] <>temp<>13491 := "left"
@@ -53359,7 +53359,7 @@ function[612] pollDoScroll {
     [1] <>arguments<>13498 := allocArg(0) @ #11421
     [2] <>fun<>13499 := <>Global<>getBase(<>fireContentLoadedEvent<>13461)
 
-  Block[7] -> ExitExc, [2]
+  Block[7] -> [2]
 
   Call[8]
     [0] call(<>fun<>13496, <>obj<>13494, <>arguments<>13495) @ #11418

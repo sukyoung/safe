@@ -25,7 +25,7 @@ case class Analyze(
     analyzeConfig: AnalyzeConfig = AnalyzeConfig()
 ) extends Phase(Some(prev), Some(analyzeConfig)) {
   override def apply(config: Config): Unit = analyze(config) recover {
-    case ex => System.err.print(ex.toString)
+    case ex => System.err.print(ex.getMessage)
   }
   def analyze(config: Config): Try[(CFG, CallContext)] =
     prev.cfgBuild(config).flatMap(analyze(config, _))

@@ -25,7 +25,7 @@ case class Parse(
     parseConfig: ParseConfig = ParseConfig()
 ) extends Phase(None, Some(parseConfig)) {
   override def apply(config: Config): Unit = parse(config) recover {
-    case ex => Console.err.print(ex.toString)
+    case ex => Console.err.print(ex.getMessage)
   }
   def parse(config: Config): Try[Program] = config.fileNames match {
     case Nil => Failure(NoFileError("parse"))

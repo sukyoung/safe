@@ -26,7 +26,7 @@ case class Compile(
     compileConfig: CompileConfig = CompileConfig()
 ) extends Phase(Some(prev), Some(compileConfig)) {
   override def apply(config: Config): Unit = compile(config) recover {
-    case ex => Console.err.print(ex.toString)
+    case ex => Console.err.print(ex.getMessage)
   }
   def compile(config: Config): Try[IRRoot] =
     prev.rewrite(config).flatMap(compile(config, _))

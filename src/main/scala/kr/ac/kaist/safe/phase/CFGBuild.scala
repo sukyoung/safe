@@ -26,8 +26,8 @@ case class CFGBuild(
     cfgBuildConfig: CFGBuildConfig = CFGBuildConfig()
 ) extends Phase(Some(prev), Some(cfgBuildConfig)) {
   override def apply(config: Config): Unit = cfgBuild(config) recover {
-    //case ex => Console.err.print(ex.toString)
-    case ex => Console.err.print(ex.getStackTrace.mkString("\n"))
+    case ex =>
+      Console.err.println(ex.getMessage)
   }
   def cfgBuild(config: Config): Try[CFG] =
     prev.compile(config).flatMap(cfgBuild(config, _))
