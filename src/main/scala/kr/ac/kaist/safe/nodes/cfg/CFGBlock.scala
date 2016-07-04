@@ -39,6 +39,7 @@ sealed abstract class CFGBlock {
 
   // control point maps to state
   protected val cpToState: MMap[CallContext, State] = MHashMap()
+  def getState(): Map[CallContext, State] = cpToState.toMap
   def getState(callCtx: CallContext): State = cpToState.getOrElse(callCtx, State.Bot)
   def setState(callCtx: CallContext, state: State): Unit = cpToState(callCtx) = state
 
@@ -84,6 +85,9 @@ sealed abstract class CFGBlock {
 }
 object CFGBlock {
   implicit def node2nodelist(node: CFGBlock): List[CFGBlock] = List(node)
+  implicit def ordering[B <: CFGBlock]: Ordering[B] = Ordering.by {
+    case block => (block.func.id, block.id)
+  }
 }
 
 // entry, exit, exception exit

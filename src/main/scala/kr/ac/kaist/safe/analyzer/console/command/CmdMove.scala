@@ -13,50 +13,50 @@ package kr.ac.kaist.safe.analyzer.console.command
 
 import kr.ac.kaist.safe.analyzer.console._
 
-// TODO move
+// move
 case object CmdMove extends Command("move", "Change a current position.") {
   def help: Unit = {
-    println("usage: move {CFGBlock}")
-    println("example: move entry0")
-    println("         move block23")
-    println("         move exitexc2")
+    println("usage: " + name + " {fid}:{bid}")
+    println("       " + name + " {fid}:entry")
+    println("       " + name + " {fid}:exit")
+    println("       " + name + " {fid}:exitExc")
   }
-  def run(c: Console, args: List[String]): Option[Target] = None
-  // try {
-  //   if (args.length > 0) {
-  //     // parse first argument(cp)
-  //     // TODO need to support a syntax for control point.
-  //     val arg0 = args(0).toLowerCase
-  //     parseNode(c, arg0) match {
-  //       case Some(node) => {
-  //         c.getTable.get(node) match {
-  //           case Some(cs) => {
-  //             val contexts = cs.keySet.toArray
-  //             if (contexts.length == 1) {
-  //               c.current = (node, contexts.head)
-  //             } else {
-  //               System.out.println("* Contexts")
-  //               (0 to contexts.length - 1).foreach(i => System.out.println("[" + i + "]: " + contexts(i).toString))
-  //               val line = c.reader.readLine("[0 to " + (contexts.length - 1) + "]? ")
-  //               val i = line.toInt
-  //               c.current = (node, contexts(i))
-  //             }
-  //           }
-  //           case None => {
-  //             System.out.println(node + " doesn't have a state")
-  //           }
-  //         }
-  //       }
-  //       case None => {
-  //         System.out.println("Cannot parse: " + arg0)
-  //       }
-  //     }
-  //   }
-  // } catch {
-  //   case _ =>
-  //     if (args.length > 0)
-  //       System.out.println("Cannot parse command : " + args(0))
-  //     else
-  //       System.out.println("Cannot parse command : ")
-  // }
+
+  def run(c: Console, args: List[String]): Option[Target] = {
+    val cfg = c.cfg
+    val idPattern = "(\\d+):(\\d+)".r
+    val spPattern = "(\\d+):(entry|exit|exit-exc)".r
+    args match {
+      case subcmd :: Nil => subcmd match {
+        case idPattern(fidStr, bidStr) => {
+          val fid = fidStr.toInt
+          val bid = bidStr.toInt
+          cfg.getFunc(fid) match {
+            case Some(func) => func.getBlock(bid) match {
+              case Some(block) => c.moveCurCP(block)
+              case None => println(s"* unknown bid in function[$fid]: $bid")
+            }
+            case None => println(s"* unknown fid: $fid")
+          }
+        }
+        case spPattern(fidStr, sp) => {
+          val fid = fidStr.toInt
+          cfg.getFunc(fid) match {
+            case Some(func) => {
+              val block = sp match {
+                case "entry" => func.entry
+                case "exit" => func.exit
+                case _ => func.exitExc
+              }
+              c.moveCurCP(block)
+            }
+            case None => println(s"* unknown fid: $fid")
+          }
+        }
+        case _ => help
+      }
+      case _ => help
+    }
+    None
+  }
 }

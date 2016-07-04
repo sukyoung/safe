@@ -13,23 +13,26 @@ package kr.ac.kaist.safe.analyzer.console.command
 
 import kr.ac.kaist.safe.analyzer.console._
 
-// help
-case object CmdHelp extends Command("help") {
-  def help: Unit = println("usage: " + name + " (command)")
+// break list
+case object CmdBreakList extends Command("break-list", "Show the list of break points.") {
+  def help: Unit = {
+    println("usage: " + name)
+  }
+
   def run(c: Console, args: List[String]): Option[Target] = {
     args match {
-      case Nil => {
-        println("Command list:")
-        Console.commands.foreach {
-          case cmd =>
-            println("- %-15s%s".format(cmd.name, cmd.info))
+      case Nil => c.getBreakList match {
+        case Nil => println("* no break point.")
+        case breakList => {
+          val len = breakList.length
+          println(s"* $len break point(s).")
+          breakList.zipWithIndex.foreach {
+            case (block, order) => {
+              val fid = block.func.id
+              println(s"  [$order] function[$fid] $block")
+            }
+          }
         }
-        println("For more information, see '" + name + " <command>'.")
-      }
-      case str :: Nil => Console.cmdMap.get(str) match {
-        case Some(cmd) => cmd.help
-        case None =>
-          println("* '" + str + "' is not a command. See '" + name + "'.")
       }
       case _ => help
     }

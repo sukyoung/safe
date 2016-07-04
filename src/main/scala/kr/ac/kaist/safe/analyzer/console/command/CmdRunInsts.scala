@@ -17,7 +17,7 @@ import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.config.Config
 
 // run instructions
-case object CmdRunInsts extends Command("run_insts") {
+case object CmdRunInsts extends Command("run_insts", "Run instruction by instruction.") {
   def help: Unit = println("usage: " + name)
   def run(c: Console, args: List[String]): Option[Target] = {
     args match {
