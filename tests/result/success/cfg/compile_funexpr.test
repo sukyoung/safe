@@ -12,18 +12,16 @@ function[0] top-level {
     [7] <>arguments<>22 := allocArg(1) @ #15
     [8] <>arguments<>22["0"] := <>temp<>21
 
-  Call[1]
+  Call[1] -> ExitExc
     [0] call(<>obj<>20, <>Global<>global, <>arguments<>22) @ #16
 
   AfterCall[2] -> [4]
 
-  AfterCatch[3] -> [5]
+  AfterCatch[3] -> ExitExc
 
   Block[4] -> Exit, ExitExc
     [0] y := <>Global<>ignore9
     [1] noop(EndOfFile)
-
-  Block[5] -> ExitExc
 
   Exit[-2]
 
@@ -90,17 +88,15 @@ function[4] h {
 
   Block[3] -> Exit
 
-  Call[4]
+  Call[4] -> ExitExc
     [0] call(<>obj<>14, <>fun<>17, <>arguments<>16) @ #9
 
   AfterCall[5] -> [7]
 
-  AfterCatch[6] -> [8]
+  AfterCatch[6] -> ExitExc
 
   Block[7] -> Exit, ExitExc
     [0] return(<>new1<>18)
-
-  Block[8] -> ExitExc
 
   Exit[-2]
 

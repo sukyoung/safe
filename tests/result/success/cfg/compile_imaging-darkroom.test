@@ -4,14 +4,14 @@ function[0] top-level {
   Block[0] -> [1], ExitExc
     A LOT!!! 427485 instructions are not printed here.
 
-  Call[1]
+  Call[1] -> ExitExc
     [0] call(<>obj<>118, <>fun<>121, <>arguments<>120) @ #81
 
   AfterCall[2] -> [4]
 
-  AfterCatch[3] -> [5]
+  AfterCatch[3] -> ExitExc
 
-  Block[4] -> [7], ExitExc
+  Block[4] -> [6], ExitExc
     [0] LOG2_HALF := <>Global<>ignore52
     [1] width := 400
     [2] height := 267
@@ -19,14 +19,12 @@ function[0] top-level {
     [4] <>y<>122 := index
     [5] <>obj<>123 := <>Global<>toObject(paramArray) @ #83
 
-  Block[5] -> ExitExc
-
-  Block[6] -> Exit
+  Block[5] -> Exit
     [0] noop(EndOfFile)
 
-  Block[7] -> [9], [8]
+  Block[6] -> [8], [7]
 
-  Block[8] -> [11], ExitExc
+  Block[7] -> [10], ExitExc
     [0] assert(<>y<>122 < <>obj<>123["length"])
     [1] data := squidImageData
     [2] <>obj<>124 := <>Global<>toObject(ProcessImageData) @ #84
@@ -42,10 +40,10 @@ function[0] top-level {
     [12] <>arguments<>130["3"] := <>temp<>129
     [13] <>fun<>131 := <>Global<>getBase(ProcessImageData)
 
-  Block[9] -> [6], ExitExc
+  Block[8] -> [5], ExitExc
     [0] assert(! <>y<>122 < <>obj<>123["length"])
 
-  Block[10] -> [7], ExitExc
+  Block[9] -> [6], ExitExc
     [0] <>old<>132 := index
     [1] <>new<>133 := <>Global<>toNumber(<>old<>132)
     [2] index := <>new<>133 + 1
@@ -53,17 +51,15 @@ function[0] top-level {
     [4] <>y<>122 := index
     [5] <>obj<>123 := <>Global<>toObject(paramArray) @ #89
 
-  Call[11]
+  Call[10] -> ExitExc
     [0] call(<>obj<>124, <>fun<>131, <>arguments<>130) @ #87
 
-  AfterCall[12] -> [14]
+  AfterCall[11] -> [13]
 
-  AfterCatch[13] -> [15]
+  AfterCatch[12] -> ExitExc
 
-  Block[14] -> [10], ExitExc
+  Block[13] -> [9], ExitExc
     [0] data := <>Global<>ignore59
-
-  Block[15] -> ExitExc
 
   Exit[-2]
 
@@ -81,18 +77,16 @@ function[1] FastLog2 {
     [3] <>arguments<>5["0"] := <>temp<>4
     [4] <>fun<>6 := <>Global<>toObject(<>obj<>3["log"]) @ #3
 
-  Call[1]
+  Call[1] -> ExitExc
     [0] call(<>fun<>6, <>obj<>3, <>arguments<>5) @ #4
 
   AfterCall[2] -> [4]
 
-  AfterCatch[3] -> [5]
+  AfterCatch[3] -> ExitExc
 
   Block[4] -> Exit, ExitExc
     [0] <>obj<>8 := <>Global<>toObject(Math) @ #6
     [1] return(<>y<>7 / <>obj<>8["LN2"])
-
-  Block[5] -> ExitExc
 
   Exit[-2]
 
@@ -112,33 +106,29 @@ function[2] FastBias {
     [5] <>arguments<>16["0"] := <>temp<>15
     [6] <>fun<>17 := <>Global<>getBase(FastLog2)
 
-  Call[1]
+  Call[1] -> ExitExc
     [0] call(<>obj<>14, <>fun<>17, <>arguments<>16) @ #12
 
   AfterCall[2] -> [4]
 
-  AfterCatch[3] -> [5]
+  AfterCatch[3] -> ExitExc
 
-  Block[4] -> [6], ExitExc
+  Block[4] -> [5], ExitExc
     [0] <>temp<>19 := <>y<>18 / LOG2_HALF
     [1] <>arguments<>20 := allocArg(2) @ #14
     [2] <>arguments<>20["0"] := <>temp<>13
     [3] <>arguments<>20["1"] := <>temp<>19
     [4] <>fun<>21 := <>Global<>toObject(<>obj<>12["pow"]) @ #15
 
-  Block[5] -> ExitExc
-
-  Call[6]
+  Call[5] -> ExitExc
     [0] call(<>fun<>21, <>obj<>12, <>arguments<>20) @ #16
 
-  AfterCall[7] -> [9]
+  AfterCall[6] -> [8]
 
-  AfterCatch[8] -> [10]
+  AfterCatch[7] -> ExitExc
 
-  Block[9] -> Exit, ExitExc
+  Block[8] -> Exit, ExitExc
     [0] return(<>new1<>22)
-
-  Block[10] -> ExitExc
 
   Exit[-2]
 
@@ -161,7 +151,7 @@ function[3] FastGain {
     [6] <>arguments<>29["1"] := <>temp<>28
     [7] <>fun<>30 := <>Global<>getBase(FastBias)
 
-  Block[2] -> [9], ExitExc
+  Block[2] -> [8], ExitExc
     [0] assert(! <>x<>24 < 0.5)
     [1] <>y<>33 := 1.0
     [2] <>obj<>34 := <>Global<>toObject(FastBias) @ #24
@@ -172,32 +162,28 @@ function[3] FastGain {
     [7] <>arguments<>37["1"] := <>temp<>36
     [8] <>fun<>38 := <>Global<>getBase(FastBias)
 
-  Call[3]
+  Call[3] -> ExitExc
     [0] call(<>obj<>26, <>fun<>30, <>arguments<>29) @ #22
 
   AfterCall[4] -> [6]
 
-  AfterCatch[5] -> [7]
+  AfterCatch[5] -> ExitExc
 
-  Block[6] -> [8], ExitExc
+  Block[6] -> [7], ExitExc
     [0] <>new1<>32 := <>y<>31 * 0.5
 
-  Block[7] -> ExitExc
-
-  Block[8] -> Exit, ExitExc
+  Block[7] -> Exit, ExitExc
     [0] return(<>new1<>32)
 
-  Call[9]
+  Call[8] -> ExitExc
     [0] call(<>obj<>34, <>fun<>38, <>arguments<>37) @ #26
 
-  AfterCall[10] -> [12]
+  AfterCall[9] -> [11]
 
-  AfterCatch[11] -> [13]
+  AfterCatch[10] -> ExitExc
 
-  Block[12] -> [8], ExitExc
+  Block[11] -> [7], ExitExc
     [0] <>new1<>32 := <>y<>33 - <>y<>39 * 0.5
-
-  Block[13] -> ExitExc
 
   Exit[-2]
 
@@ -335,42 +321,38 @@ function[5] ProcessImageData {
     [2] <>j<>62 := <>new<>99 + 1
     [3] <>Global<>ignore27 := <>new<>99
 
-  Call[12]
+  Call[12] -> ExitExc
     [0] call(<>obj<>88, <>fun<>91, <>arguments<>90) @ #49
 
   AfterCall[13] -> [15]
 
-  AfterCatch[14] -> [16]
+  AfterCatch[14] -> ExitExc
 
-  Block[15] -> [17], ExitExc
+  Block[15] -> [16], ExitExc
     [0] <>arguments<>93 := allocArg(2) @ #51
     [1] <>arguments<>93["0"] := <>temp<>87
     [2] <>arguments<>93["1"] := <>temp<>92
     [3] <>fun<>94 := <>Global<>getBase(FastGain)
 
-  Block[16] -> ExitExc
-
-  Call[17]
+  Call[16] -> ExitExc
     [0] call(<>obj<>86, <>fun<>94, <>arguments<>93) @ #52
 
-  AfterCall[18] -> [20]
+  AfterCall[17] -> [19]
 
-  AfterCatch[19] -> [21]
+  AfterCatch[18] -> ExitExc
 
-  Block[20] -> [23], [22], ExitExc
+  Block[19] -> [21], [20], ExitExc
     [0] <>y<>66 := <>Global<>ignore41
 
-  Block[21] -> ExitExc
-
-  Block[22] -> [24], ExitExc
+  Block[20] -> [22], ExitExc
     [0] assert(<>y<>66 < <>splitPoint<>57)
     [1] <>q<>68 := <>q<>68 + <>shadowsHue<>53 * <>shadowsSaturation<>54 * <>splitPoint<>57 - <>y<>66
 
-  Block[23] -> [24], ExitExc
+  Block[21] -> [22], ExitExc
     [0] assert(! <>y<>66 < <>splitPoint<>57)
     [1] <>i<>67 := <>i<>67 + <>highlightsHue<>55 * <>highlightsSaturation<>56 * <>y<>66 - <>splitPoint<>57
 
-  Block[24] -> [11], ExitExc
+  Block[22] -> [11], ExitExc
     [0] <>r<>63 := <>y<>66 + 0.956 * <>i<>67 + 0.621 * <>q<>68
     [1] <>g<>64 := <>y<>66 - 0.272 * <>i<>67 - 0.647 * <>q<>68
     [2] <>b<>65 := <>y<>66 - 1.105 * <>i<>67 + 1.702 * <>q<>68

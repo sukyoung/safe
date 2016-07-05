@@ -38,20 +38,18 @@ function[0] top-level {
     [2] <>arguments<>2 := allocArg(0) @ #2
     [3] <>fun<>3 := <>Global<>getBase(a)
 
-  Call[10]
+  Call[10] -> ExitExc
     [0] call(<>obj<>1, <>fun<>3, <>arguments<>2) @ #3
 
   AfterCall[11] -> [13]
 
-  AfterCatch[12] -> [14]
+  AfterCatch[12] -> ExitExc
 
   Block[13] -> Exit, ExitExc
     [0] a := <>y<>4 | b
     [1] <>obj<>5 := <>Global<>toObject(a) @ #5
     [2] a := <>obj<>5["b"] + b
     [3] noop(EndOfFile)
-
-  Block[14] -> ExitExc
 
   Exit[-2]
 

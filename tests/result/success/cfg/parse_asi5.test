@@ -10,44 +10,40 @@ function[0] top-level {
     [5] <>arguments<>4["0"] := <>temp<>3
     [6] <>fun<>5 := <>Global<>getBase(c)
 
-  Call[1]
+  Call[1] -> ExitExc
     [0] call(<>obj<>2, <>fun<>5, <>arguments<>4) @ #3
 
   AfterCall[2] -> [4]
 
-  AfterCatch[3] -> [5]
+  AfterCatch[3] -> ExitExc
 
-  Block[4] -> [6], ExitExc
+  Block[4] -> [5], ExitExc
     [0] <>obj<>7 := <>Global<>toObject(<>obj1<>6) @ #5
     [1] <>arguments<>8 := allocArg(0) @ #6
     [2] <>fun<>9 := <>Global<>toObject(<>obj<>7["print"]) @ #7
 
-  Block[5] -> ExitExc
-
-  Call[6]
+  Call[5] -> ExitExc
     [0] call(<>fun<>9, <>obj<>7, <>arguments<>8) @ #8
 
-  AfterCall[7] -> [9]
+  AfterCall[6] -> [8]
 
-  AfterCatch[8] -> [10]
+  AfterCatch[7] -> ExitExc
 
-  Block[9] -> [11], ExitExc
+  Block[8] -> [9], ExitExc
     [0] a := <>y<>1 + <>z<>10
     [1] a := b + c
     [2] <>obj<>11 := <>Global<>toObject(d + e) @ #10
     [3] <>arguments<>12 := allocArg(0) @ #11
     [4] <>fun<>13 := <>Global<>toObject(<>obj<>11["print"]) @ #12
 
-  Block[10] -> ExitExc
-
-  Call[11]
+  Call[9] -> ExitExc
     [0] call(<>fun<>13, <>obj<>11, <>arguments<>12) @ #13
 
-  AfterCall[12] -> [14]
+  AfterCall[10] -> [12]
 
-  AfterCatch[13] -> [15]
+  AfterCatch[11] -> ExitExc
 
-  Block[14] -> [16], ExitExc
+  Block[12] -> [13], ExitExc
     [0] <>obj<>15 := <>Global<>toObject(<>obj1<>14) @ #15
     [1] <>temp<>16 := "January"
     [2] <>temp<>17 := "Jan"
@@ -115,16 +111,14 @@ function[0] top-level {
     [64] <>arguments<>65["0"] := <>temp<>64
     [65] <>fun<>66 := <>Global<>toObject(<>obj<>52["forEach"]) @ #38
 
-  Block[15] -> ExitExc
-
-  Call[16]
+  Call[13] -> ExitExc
     [0] call(<>fun<>66, <>obj<>52, <>arguments<>65) @ #39
 
-  AfterCall[17] -> [19]
+  AfterCall[14] -> [16]
 
-  AfterCatch[18] -> [20]
+  AfterCatch[15] -> ExitExc
 
-  Block[19] -> [21], ExitExc
+  Block[16] -> [17], ExitExc
     [0] <>obj<>68 := <>Global<>toObject(<>obj1<>67) @ #41
     [1] <>temp<>69 := "/script.js"
     [2] <>temp<>70 := "/style1.css"
@@ -135,16 +129,14 @@ function[0] top-level {
     [7] <>arguments<>85["0"] := <>temp<>84
     [8] <>fun<>86 := <>Global<>toObject(<>obj<>72["forEach"]) @ #54
 
-  Block[20] -> ExitExc
-
-  Call[21]
+  Call[17] -> ExitExc
     [0] call(<>fun<>86, <>obj<>72, <>arguments<>85) @ #55
 
-  AfterCall[22] -> [24]
+  AfterCall[18] -> [20]
 
-  AfterCatch[23] -> [25]
+  AfterCatch[19] -> ExitExc
 
-  Block[24] -> [26], ExitExc
+  Block[20] -> [21], ExitExc
     [0] s := "here is a string"
     [1] <>y<>87 := 0
     [2] <>temp<>88 := a - z
@@ -157,16 +149,14 @@ function[0] top-level {
     [9] <>arguments<>93["0"] := <>temp<>92
     [10] <>fun<>94 := <>Global<>toObject(<>obj<>91["exec"]) @ #60
 
-  Block[25] -> ExitExc
-
-  Call[26]
+  Call[21] -> ExitExc
     [0] call(<>fun<>94, <>obj<>91, <>arguments<>93) @ #61
 
-  AfterCall[27] -> [29]
+  AfterCall[22] -> [24]
 
-  AfterCatch[28] -> [30]
+  AfterCatch[23] -> ExitExc
 
-  Block[29] -> [31], ExitExc
+  Block[24] -> [25], ExitExc
     [0] i := <>y<>90 / <>z<>95
     [1] x := + y
     [2] y := - y
@@ -176,20 +166,16 @@ function[0] top-level {
     [6] <>arguments<>98["0"] := <>temp<>97
     [7] <>fun<>99 := <>Global<>getBase(print)
 
-  Block[30] -> ExitExc
-
-  Call[31]
+  Call[25] -> ExitExc
     [0] call(<>obj<>96, <>fun<>99, <>arguments<>98) @ #65
 
-  AfterCall[32] -> [34]
+  AfterCall[26] -> [28]
 
-  AfterCatch[33] -> [35]
+  AfterCatch[27] -> ExitExc
 
-  Block[34] -> Exit, ExitExc
+  Block[28] -> Exit, ExitExc
     [0] <>Global<>ignore13 := + z
     [1] noop(EndOfFile)
-
-  Block[35] -> ExitExc
 
   Exit[-2]
 
@@ -211,16 +197,12 @@ function[1] <>funexpr@19:11-76<> {
     [7] <>arguments<>61["0"] := <>temp<>60
     [8] <>fun<>62 := <>Global<>getBase(print)
 
-  Call[1]
+  Call[1] -> ExitExc
     [0] call(<>obj<>55, <>fun<>62, <>arguments<>61) @ #33
 
-  AfterCall[2] -> [4]
+  AfterCall[2] -> Exit
 
-  AfterCatch[3] -> [5]
-
-  Block[4] -> Exit
-
-  Block[5] -> ExitExc
+  AfterCatch[3] -> ExitExc
 
   Exit[-2]
 
@@ -238,32 +220,26 @@ function[2] <>funexpr@25:11-27:25<> {
     [3] <>arguments<>77["0"] := <>temp<>76
     [4] <>fun<>78 := <>Global<>getBase(log)
 
-  Call[1]
+  Call[1] -> ExitExc
     [0] call(<>obj<>75, <>fun<>78, <>arguments<>77) @ #45
 
   AfterCall[2] -> [4]
 
-  AfterCatch[3] -> [5]
+  AfterCatch[3] -> ExitExc
 
-  Block[4] -> [6], ExitExc
+  Block[4] -> [5], ExitExc
     [0] <>obj<>79 := <>Global<>toObject(fetch_and_cache) @ #47
     [1] <>temp<>80 := <>uri<>73
     [2] <>arguments<>81 := allocArg(1) @ #48
     [3] <>arguments<>81["0"] := <>temp<>80
     [4] <>fun<>82 := <>Global<>getBase(fetch_and_cache)
 
-  Block[5] -> ExitExc
-
-  Call[6]
+  Call[5] -> ExitExc
     [0] call(<>obj<>79, <>fun<>82, <>arguments<>81) @ #49
 
-  AfterCall[7] -> [9]
+  AfterCall[6] -> Exit
 
-  AfterCatch[8] -> [10]
-
-  Block[9] -> Exit
-
-  Block[10] -> ExitExc
+  AfterCatch[7] -> ExitExc
 
   Exit[-2]
 

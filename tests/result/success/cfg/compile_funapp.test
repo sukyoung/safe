@@ -16,17 +16,15 @@ function[0] top-level {
     [11] <>arguments<>7["1"] := <>temp<>6
     [12] <>fun<>8 := <>Global<>getBase(f)
 
-  Call[1]
+  Call[1] -> ExitExc
     [0] call(<>obj<>4, <>fun<>8, <>arguments<>7) @ #5
 
   AfterCall[2] -> [4]
 
-  AfterCatch[3] -> [5]
+  AfterCatch[3] -> ExitExc
 
   Block[4] -> Exit
     [0] noop(EndOfFile)
-
-  Block[5] -> ExitExc
 
   Exit[-2]
 

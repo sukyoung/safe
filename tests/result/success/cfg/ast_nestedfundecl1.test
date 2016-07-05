@@ -15,46 +15,40 @@ function[0] top-level {
     [10] <>arguments<>5 := allocArg(0) @ #7
     [11] <>fun<>6 := <>Global<>getBase(f)
 
-  Call[1]
+  Call[1] -> ExitExc
     [0] call(<>obj<>4, <>fun<>6, <>arguments<>5) @ #8
 
   AfterCall[2] -> [4]
 
-  AfterCatch[3] -> [5]
+  AfterCatch[3] -> ExitExc
 
-  Block[4] -> [6], ExitExc
+  Block[4] -> [5], ExitExc
     [0] <>arguments<>8 := allocArg(1) @ #10
     [1] <>arguments<>8["0"] := <>temp<>7
     [2] <>fun<>9 := <>Global<>getBase(alert)
 
-  Block[5] -> ExitExc
-
-  Call[6]
+  Call[5] -> ExitExc
     [0] call(<>obj<>3, <>fun<>9, <>arguments<>8) @ #11
 
-  AfterCall[7] -> [9]
+  AfterCall[6] -> [8]
 
-  AfterCatch[8] -> [10]
+  AfterCatch[7] -> ExitExc
 
-  Block[9] -> [11], ExitExc
+  Block[8] -> [9], ExitExc
     [0] <>obj<>10 := <>Global<>toObject(f) @ #13
     [1] <>arguments<>11 := allocArg(0) @ #14
     [2] <>fun<>12 := <>Global<>getBase(f)
 
-  Block[10] -> ExitExc
-
-  Call[11]
+  Call[9] -> ExitExc
     [0] call(<>obj<>10, <>fun<>12, <>arguments<>11) @ #15
 
-  AfterCall[12] -> [14]
+  AfterCall[10] -> [12]
 
-  AfterCatch[13] -> [15]
+  AfterCatch[11] -> ExitExc
 
-  Block[14] -> Exit, ExitExc
+  Block[12] -> Exit, ExitExc
     [0] <>Global<>ignore7 := y
     [1] noop(EndOfFile)
-
-  Block[15] -> ExitExc
 
   Exit[-2]
 

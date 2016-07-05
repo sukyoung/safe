@@ -33,17 +33,15 @@ function[2] g {
     [1] <>arguments<>4 := allocArg(0) @ #4
     [2] <>fun<>5 := <>Global<>getBase(f)
 
-  Call[1]
+  Call[1] -> ExitExc
     [0] call(<>obj<>3, <>fun<>5, <>arguments<>4) @ #5
 
   AfterCall[2] -> [4]
 
-  AfterCatch[3] -> [5]
+  AfterCatch[3] -> ExitExc
 
   Block[4] -> Exit, ExitExc
     [0] return(<>new1<>6)
-
-  Block[5] -> ExitExc
 
   Exit[-2]
 

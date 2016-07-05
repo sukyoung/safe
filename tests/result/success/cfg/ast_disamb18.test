@@ -10,18 +10,16 @@ function[0] top-level {
     [5] <>arguments<>4 := allocArg(0) @ #5
     [6] <>fun<>5 := <>Global<>getBase(foo)
 
-  Call[1]
+  Call[1] -> ExitExc
     [0] call(<>obj<>3, <>fun<>5, <>arguments<>4) @ #6
 
   AfterCall[2] -> [4]
 
-  AfterCatch[3] -> [5]
+  AfterCatch[3] -> ExitExc
 
   Block[4] -> Exit, ExitExc
     [0] __result1 := foo
     [1] noop(EndOfFile)
-
-  Block[5] -> ExitExc
 
   Exit[-2]
 

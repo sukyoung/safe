@@ -5,19 +5,19 @@ function[0] top-level {
     [0] noop(StartOfFile)
     [1] x := 5
 
-  Block[1] -> [2], [22]
+  Block[1] -> [2], [18]
     [0] <>Global<>ignore3 := x
 
   Block[2] -> [3], ExitExc
     [0] x := 7
 
-  Block[3] -> [4], [13]
+  Block[3] -> [4], [11]
     [0] x := 2
 
   Block[4] -> [5], ExitExc
     [0] x := 10
 
-  Block[5] -> [7], [12]
+  Block[5] -> [7], [10]
     [0] <>obj<>1 := <>Global<>toObject(print) @ #1
     [1] <>temp<>2 := x
     [2] <>arguments<>3 := allocArg(1) @ #2
@@ -29,105 +29,89 @@ function[0] top-level {
     [1] x := 12
     [2] noop(EndOfFile)
 
-  Call[7]
+  Call[7] -> [10]
     [0] call(<>obj<>1, <>fun<>4, <>arguments<>3) @ #3
 
-  AfterCall[8] -> [10]
+  AfterCall[8] -> [6]
 
-  AfterCatch[9] -> [11]
+  AfterCatch[9] -> [10]
 
-  Block[10] -> [6]
-
-  Block[11] -> [12]
-
-  Block[12] -> ExitExc, ExitExc
+  Block[10] -> ExitExc, ExitExc
     [0] x := 9
 
-  Block[13] -> [14], ExitExc
+  Block[11] -> [12], ExitExc
     [0] x := 10
 
-  Block[14] -> [16], [21]
+  Block[12] -> [14], [17]
     [0] <>obj<>1 := <>Global<>toObject(print) @ #5
     [1] <>temp<>2 := x
     [2] <>arguments<>3 := allocArg(1) @ #6
     [3] <>arguments<>3["0"] := <>temp<>2
     [4] <>fun<>4 := <>Global<>getBase(print)
 
-  Block[15] -> ExitExc, ExitExc
+  Block[13] -> ExitExc, ExitExc
     [0] x := 9
 
-  Call[16]
+  Call[14] -> [17]
     [0] call(<>obj<>1, <>fun<>4, <>arguments<>3) @ #7
 
-  AfterCall[17] -> [19]
+  AfterCall[15] -> [13]
 
-  AfterCatch[18] -> [20]
+  AfterCatch[16] -> [17]
 
-  Block[19] -> [15]
-
-  Block[20] -> [21]
-
-  Block[21] -> ExitExc, ExitExc
+  Block[17] -> ExitExc, ExitExc
     [0] x := 9
 
-  Block[22] -> [23], ExitExc
+  Block[18] -> [19], ExitExc
     [0] x := 7
 
-  Block[23] -> [24], [33]
+  Block[19] -> [20], [27]
     [0] x := 2
 
-  Block[24] -> [25], ExitExc
+  Block[20] -> [21], ExitExc
     [0] x := 10
 
-  Block[25] -> [27], [32]
+  Block[21] -> [23], [26]
     [0] <>obj<>1 := <>Global<>toObject(print) @ #9
     [1] <>temp<>2 := x
     [2] <>arguments<>3 := allocArg(1) @ #10
     [3] <>arguments<>3["0"] := <>temp<>2
     [4] <>fun<>4 := <>Global<>getBase(print)
 
+  Block[22] -> ExitExc, ExitExc
+    [0] x := 9
+
+  Call[23] -> [26]
+    [0] call(<>obj<>1, <>fun<>4, <>arguments<>3) @ #11
+
+  AfterCall[24] -> [22]
+
+  AfterCatch[25] -> [26]
+
   Block[26] -> ExitExc, ExitExc
     [0] x := 9
 
-  Call[27]
-    [0] call(<>obj<>1, <>fun<>4, <>arguments<>3) @ #11
-
-  AfterCall[28] -> [30]
-
-  AfterCatch[29] -> [31]
-
-  Block[30] -> [26]
-
-  Block[31] -> [32]
-
-  Block[32] -> ExitExc, ExitExc
-    [0] x := 9
-
-  Block[33] -> [34], ExitExc
+  Block[27] -> [28], ExitExc
     [0] x := 10
 
-  Block[34] -> [36], [41]
+  Block[28] -> [30], [33]
     [0] <>obj<>1 := <>Global<>toObject(print) @ #13
     [1] <>temp<>2 := x
     [2] <>arguments<>3 := allocArg(1) @ #14
     [3] <>arguments<>3["0"] := <>temp<>2
     [4] <>fun<>4 := <>Global<>getBase(print)
 
-  Block[35] -> ExitExc, ExitExc
+  Block[29] -> ExitExc, ExitExc
     [0] x := 9
 
-  Call[36]
+  Call[30] -> [33]
     [0] call(<>obj<>1, <>fun<>4, <>arguments<>3) @ #15
 
-  AfterCall[37] -> [39]
+  AfterCall[31] -> [29]
 
-  AfterCatch[38] -> [40]
+  AfterCatch[32] -> [33]
 
-  Block[39] -> [35]
-
-  Block[40] -> [41]
-
-  Block[41] -> ExitExc, ExitExc
+  Block[33] -> ExitExc, ExitExc
     [0] x := 9
 
   Exit[-2]

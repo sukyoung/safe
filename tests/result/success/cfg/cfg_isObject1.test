@@ -9,27 +9,25 @@ function[0] top-level {
     [4] <>proto<>5 := <>fun<>3["prototype"]
     [5] <>obj<>6 := alloc(<>proto<>5) @ #6
 
-  Call[1]
+  Call[1] -> ExitExc
     [0] construct(<>fun<>3, <>obj<>6, <>arguments<>4) @ #7, #8
 
   AfterCall[2] -> [4]
 
-  AfterCatch[3] -> [5]
+  AfterCatch[3] -> ExitExc
 
-  Block[4] -> [7], [6]
+  Block[4] -> [6], [5]
     [0] <>cond<>8 := <>Global<>isObject(<>newObj<>7)
 
-  Block[5] -> ExitExc
-
-  Block[6] -> [8], ExitExc
+  Block[5] -> [7], ExitExc
     [0] assert(<>cond<>8)
     [1] <>Global<>ignore2 := <>newObj<>7
 
-  Block[7] -> [8], ExitExc
+  Block[6] -> [7], ExitExc
     [0] assert(! <>cond<>8)
     [1] <>Global<>ignore2 := <>obj<>6
 
-  Block[8] -> Exit, ExitExc
+  Block[7] -> Exit, ExitExc
     [0] x := <>Global<>ignore2
     [1] noop(EndOfFile)
 

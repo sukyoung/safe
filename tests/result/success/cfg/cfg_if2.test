@@ -21,32 +21,28 @@ function[0] top-level {
     [16] <>arguments<>15["1"] := <>temp<>14
     [17] <>fun<>16 := <>Global<>getBase(pay)
 
-  Call[1]
+  Call[1] -> ExitExc
     [0] call(<>obj<>12, <>fun<>16, <>arguments<>15) @ #10
 
   AfterCall[2] -> [4]
 
-  AfterCatch[3] -> [5]
+  AfterCatch[3] -> ExitExc
 
-  Block[4] -> [6], ExitExc
+  Block[4] -> [5], ExitExc
     [0] <>temp<>18 := <>y<>11 + <>z<>17 + " won."
     [1] <>arguments<>19 := allocArg(1) @ #12
     [2] <>arguments<>19["0"] := <>temp<>18
     [3] <>fun<>20 := <>Global<>getBase(print)
 
-  Block[5] -> ExitExc
-
-  Call[6]
+  Call[5] -> ExitExc
     [0] call(<>obj<>10, <>fun<>20, <>arguments<>19) @ #13
 
-  AfterCall[7] -> [9]
+  AfterCall[6] -> [8]
 
-  AfterCatch[8] -> [10]
+  AfterCatch[7] -> ExitExc
 
-  Block[9] -> Exit
+  Block[8] -> Exit
     [0] noop(EndOfFile)
-
-  Block[10] -> ExitExc
 
   Exit[-2]
 

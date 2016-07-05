@@ -56,12 +56,12 @@ function[0] top-level {
 
   Block[13] -> [10]
 
-  Call[14]
+  Call[14] -> ExitExc
     [0] call(<>obj<>10, <>fun<>12, <>arguments<>11) @ #8
 
   AfterCall[15] -> [17]
 
-  AfterCatch[16] -> [18]
+  AfterCatch[16] -> ExitExc
 
   Block[17] -> Exit, ExitExc
     [0] <>Global<>ignore4 := allocArray(3) @ #10
@@ -71,8 +71,6 @@ function[0] top-level {
     [4] arr := <>Global<>ignore4
     [5] <>Global<>ignore6 := undefined
     [6] noop(EndOfFile)
-
-  Block[18] -> ExitExc
 
   Exit[-2]
 

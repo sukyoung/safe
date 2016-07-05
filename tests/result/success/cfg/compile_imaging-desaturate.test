@@ -4,27 +4,25 @@ function[0] top-level {
   Block[0] -> [1], ExitExc
     A LOT!!! 427209 instructions are not printed here.
 
-  Call[1]
+  Call[1] -> ExitExc
     [0] construct(<>fun<>1, <>obj<>4, <>arguments<>2) @ #5, #6
 
   AfterCall[2] -> [4]
 
-  AfterCatch[3] -> [5]
+  AfterCatch[3] -> ExitExc
 
-  Block[4] -> [7], [6]
+  Block[4] -> [6], [5]
     [0] <>cond<>6 := <>Global<>isObject(<>newObj<>5)
 
-  Block[5] -> ExitExc
-
-  Block[6] -> [8], ExitExc
+  Block[5] -> [7], ExitExc
     [0] assert(<>cond<>6)
     [1] <>Global<>ignore4 := <>newObj<>5
 
-  Block[7] -> [8], ExitExc
+  Block[6] -> [7], ExitExc
     [0] assert(! <>cond<>6)
     [1] <>Global<>ignore4 := <>obj<>4
 
-  Block[8] -> [10], ExitExc
+  Block[7] -> [9], ExitExc
     [0] _sunSpiderStartDate := <>Global<>ignore4
     [1] <>Global<>ignore5 := alloc() @ #7
     [2] Pixastic := <>Global<>ignore5
@@ -48,12 +46,12 @@ function[0] top-level {
     [20] params := <>Global<>ignore17
     [21] pixcounter := 0
 
-  Block[9] -> Exit
+  Block[8] -> Exit
     [0] noop(EndOfFile)
 
-  Block[10] -> [12], [11]
+  Block[9] -> [11], [10]
 
-  Block[11] -> [14], ExitExc
+  Block[10] -> [13], ExitExc
     [0] assert(pixcounter < 200)
     [1] <>obj<>57 := <>Global<>toObject(Pixastic) @ #39
     [2] <>obj<>58 := <>Global<>toObject(<>obj<>57["Actions"]) @ #40
@@ -63,25 +61,21 @@ function[0] top-level {
     [6] <>arguments<>61["0"] := <>temp<>60
     [7] <>fun<>62 := <>Global<>toObject(<>obj<>59["process"]) @ #43
 
-  Block[12] -> [9], ExitExc
+  Block[11] -> [8], ExitExc
     [0] assert(! pixcounter < 200)
 
-  Block[13] -> [10], ExitExc
+  Block[12] -> [9], ExitExc
     [0] <>old<>63 := pixcounter
     [1] <>new<>64 := <>Global<>toNumber(<>old<>63)
     [2] pixcounter := <>new<>64 + 1
     [3] <>Global<>ignore20 := <>new<>64
 
-  Call[14]
+  Call[13] -> ExitExc
     [0] call(<>fun<>62, <>obj<>59, <>arguments<>61) @ #44
 
-  AfterCall[15] -> [17]
+  AfterCall[14] -> [12]
 
-  AfterCatch[16] -> [18]
-
-  Block[17] -> [13]
-
-  Block[18] -> ExitExc
+  AfterCatch[15] -> ExitExc
 
   Exit[-2]
 
