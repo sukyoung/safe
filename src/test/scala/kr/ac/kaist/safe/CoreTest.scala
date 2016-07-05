@@ -153,6 +153,6 @@ class CoreTest extends FlatSpec {
     val analyzer = phase.asInstanceOf[Analyze]
     val analysis = analyzer.analyze(config)
 
-    //TODO    registerTest("[Analyze]" + filename, AnalyzeTest) { analyzeTest(analysis, config.addrManager) }
+    registerTest("[Analyze]" + filename, AnalyzeTest) { analyzeTest(analysis, config.addrManager) }
   }
 }
