@@ -14,17 +14,18 @@ export JSSPACE=$WKSPACE/js
 export RSSPACE=$WKSPACE/result
 
 cd $RSSPACE
-rm -f success/cfg/*.test
+rm -f success/astRewrite/*.test
 
 cd $WKSPACE
 succ_files=`find js/success -name "*.js" -print`
 
+echo "generating parse tests..."
 for fil in $succ_files
 do
   prename=`basename $fil`
   name=${prename%.js}
-  cfg_out=$RSSPACE/success/cfg/$name.test
+  ast_out=$RSSPACE/success/astRewrite/$name.test
 
-  echo "create $cfg_out"
-  safe cfgBuild -cfgBuild:out=$cfg_out $fil
+  echo "create $ast_out"
+  safe astRewrite -astRewrite:out=$ast_out $fil
 done

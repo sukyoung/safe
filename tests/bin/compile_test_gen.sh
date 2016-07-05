@@ -19,6 +19,7 @@ rm -f success/compile/*.test
 cd $WKSPACE
 succ_files=`find js/success -name "*.js" -print`
 
+echo "generating compile tests..."
 for fil in $succ_files
 do
   prename=`basename $fil`
