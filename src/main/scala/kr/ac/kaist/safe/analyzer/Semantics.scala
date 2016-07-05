@@ -870,14 +870,12 @@ class Semantics(
                     tmpVal2 + helper.inherit(st.heap, loc1, loc2, operator.bopSEq))
                 })
                 val pv2 =
-                  if (!v1.pvalue.isBottom && !locSet4.isEmpty) utils.PValueBot.copyWith(utils.absBool.False)
+                  if (!v2.pvalue.isBottom && !locSet4.isEmpty) utils.PValueBot.copyWith(utils.absBool.False)
                   else utils.PValueBot.copyWith(utils.absBool.Bot)
                 val b2 = Value(pv2)
                 val excSet3 =
-                  if (!v2.pvalue.isBottom || !locSet5.isEmpty || !protoVal.pvalue.isBottom)
-                    HashSet(TypeError)
-                  else
-                    ExceptionSetEmpty
+                  if (!v2.pvalue.isBottom || !locSet5.isEmpty || !protoVal.pvalue.isBottom) HashSet(TypeError)
+                  else ExceptionSetEmpty
                 val b = b1 + b2
                 val excSet = excSet1 ++ excSet2 ++ excSet3
                 (b, excSet)

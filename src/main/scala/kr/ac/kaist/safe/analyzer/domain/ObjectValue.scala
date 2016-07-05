@@ -41,9 +41,6 @@ trait ObjectValue {
   def isBottom: Boolean
 
   def copyWith(newValue: Value): ObjectValue
-  def copyWithWritable(newWritable: AbsBool): ObjectValue
-  def copyWithEnumerable(newEnumerable: AbsBool): ObjectValue
-  def copyWithConfigurable(newConfigurable: AbsBool): ObjectValue
 
   def copyWith(newUndefVal: AbsUndef): ObjectValue = copyWith(Value(this.value.pvalue.copyWith(newUndefVal)))
   def copyWith(newNullVal: AbsNull): ObjectValue = copyWith(Value(this.value.pvalue.copyWith(newNullVal)))
@@ -105,10 +102,4 @@ case class DefaultObjectValue(
 
   def copyWith(newValue: Value): ObjectValue =
     DefaultObjectValue(newValue, writable, enumerable, configurable)
-  def copyWithWritable(newWritable: AbsBool): ObjectValue =
-    DefaultObjectValue(value, newWritable, enumerable, configurable)
-  def copyWithEnumerable(newEnumerable: AbsBool): ObjectValue =
-    DefaultObjectValue(value, writable, newEnumerable, configurable)
-  def copyWithConfigurable(newConfigurable: AbsBool): ObjectValue =
-    DefaultObjectValue(value, writable, enumerable, newConfigurable)
 }
