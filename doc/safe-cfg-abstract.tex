@@ -1,0 +1,387 @@
+\chapter{CFG Abstract Semantics}
+{\tt kr.ac.kaist.safe.analyzer}\\
+
+Assumptions and limitations are as follows:
+\begin{itemize}
+    \item Semantics for helper functions is not written using denotational semantics
+    (they are not compositional).
+    \item For appropriate type conversion, a subscript is used. 
+    In this case, all the implicit values can be considered as $\bot$.
+    \item We maintain mutable inter-procedural edge set ($\ipnext$) throughout semantics.
+\end{itemize}
+
+\newpage
+\section{Settings}
+\[
+\begin{array}{rlcl}
+\acp \in & \aControlPoint & = & \SF{CFGNode} \times \abs{CallContext} \\
+\hat{cc} \in & \abs{CallContext} &  & \comment{\inblue  Parameterized context-sensitivity.}\\
+
+\hat{S} \in & \aState & = & \aHeap \times \aContext\\
+\hat{H} \in & \aHeap & = & \aLoc \finto \aObj \\
+\hat{C} \in & \aContext & = & \powerset{\aAddress} \times \powerset{\aAddress}
+    \comment{\inblue may old set, \ must old set} \\
+
+\hat{l}_R,\hat{l}_O,\hat{l} \in & \aLoc &  = & \aAddress \times \abs{RecencyTag}\\
+\hat{a} \in & \aAddress & ::= & \avarloc{Global} ~\mid~ 
+                                \avarloc{StringProto} ~\mid~ 
+                                \avarloc{BooleanProto} ~\mid~ 
+                                \avarloc{FunctionProto} \\
+                          & & & ~\mid~ 
+                                \avarloc{RefErr} ~\mid~ 
+                                \avarloc{RangeErr} ~\mid~ 
+                                \avarloc{TypeErr} ~\mid~ 
+                                \avarloc{RefErrProto}  \\
+                          & & & ~\mid~ 
+                                 \avarloc{RangeErrProto} ~\mid~ 
+                                 \avarloc{ArrayProto} ~\mid~ 
+                                 \avarloc{TypeErrProto} \\
+                          & & & ~\mid~ 
+                                 \avarloc{ObjProto} ~\mid~ 
+                                 \avarloc{PureLocal} ~\mid~ 
+                                 \avarloc{GlobalCallsite} ~\mid~ 
+                                 \avarloc{Collapsed} \\
+                          & & & ~\mid~
+                                 \hat{a}_1 ~\mid~ \cdots \\
+    & \abs{RecencyTag} & ::= & \hat{Recent} \mid \hat{Old}\\
+
+\hat{o} \in & \aObj & = & \SF{Prop} \finto \abs{PropValue} \times \abs{Absent} \\
+\hat{propv} \in & \abs{PropValue} & = & \abs{ObjectValue} \times \powerset{\fid} \\
+\hat{objv} \in & \abs{ObjectValue} & = & 
+    \aValue \times \abs{Bool} \times \abs{Bool} \times \abs{Bool} \\
+    & & & {\inblue value,\ writable,\ enumerable,\ configurable} \\
+\hat{v} \in & \aValue & = & \abs{PValue} \times \powerset{\aLoc} \\
+\hat{pv}\in & \abs{PValue} & = & 
+    \abs{Undef} \times \abs{Null} \times \abs{Bool} \times \abs{Number} \times \abs{String} \\
+\hat{exc}\in& \abs{Exception} & ::= & \hat{\exc{Error}} ~\mid~ 
+                                      \hat{\exc{EvalError}} ~\mid~
+                                      \hat{\exc{RangeError}} ~\mid~
+                                      \hat{\exc{ReferenceError}} ~\mid~
+                                      \hat{\exc{SyntaxError}} \\
+                                & & & ~\mid~
+                                      \hat{\exc{TypeError}} ~\mid~ 
+                                      \hat{\exc{URIError}} \\
+    & \abs{IPEdge} & = & 
+        \aControlPoint \times \aControlPoint \times \abs{Context} \times \abs{Obj} \\
+\ipnext \in & \powerset{\abs{IPEdge}} & &\\
+
+\end{array}
+\]
+
+\subsection{Shape of Data types}
+\[
+\abs{Undef} =
+\begin{matrix}
+  \begin{tikzpicture}
+    \node (top) at (0,0) {$\aundef$};
+    \node (down) at (0,-1.4) {$\bot_{\mbox{\scriptsize Undef}}$};
+    \draw [black, thick, shorten <= -1pt, shorten >=-1pt] (top) -- (down);
+  \end{tikzpicture}
+\end{matrix}
+\quad
+\abs{Null} =
+\begin{matrix}
+  \begin{tikzpicture}
+    \node (top) at (0,0) {$\anull$};
+    \node (down) at (0,-1.4) {$\bot_{\mbox{\scriptsize Null}}$};
+    \draw [black, thick, shorten <= -1pt, shorten >=-1pt] (top) -- (down);
+  \end{tikzpicture}
+\end{matrix}
+\quad
+\abs{Bool} =
+\begin{matrix}
+  \begin{tikzpicture}
+    \node (top) at (0,0) {$\top_{\mbox{\scriptsize Bool}}$};
+    \node (midleft) at (-0.7,-0.7) {$\atrue$};
+    \node (midright) at (0.7,-0.7) {$\afalse$};
+    \node (down) at (0,-1.4) {$\bot_{\mbox{\scriptsize Bool}}$};
+    \draw [black, thick, shorten <= -1pt, shorten >=-1pt] (top) -- (midleft);
+    \draw [black, thick, shorten <= -1pt, shorten >=-1pt] (top) -- (midright);
+    \draw [black, thick, shorten <= -1pt, shorten >=-1pt] (midleft) -- (down);
+    \draw [black, thick, shorten <= -1pt, shorten >=-1pt] (midright) -- (down);
+  \end{tikzpicture}
+\end{matrix}
+\quad
+\abs{Absent} =
+\begin{matrix}
+  \begin{tikzpicture}
+    \node (top) at (0,0) {$\hat{\SF{absent}}$};
+    \node (down) at (0,-1.4) {$\bot_{\mbox{\scriptsize Absent}}$};
+    \draw [black, thick, shorten <= -1pt, shorten >=-1pt] (top) -- (down);
+  \end{tikzpicture}
+\end{matrix}
+\]
+\[
+\abs{Number} = 
+\begin{matrix} 
+  \begin{tikzpicture}
+    % First, locate each of the nodes and name them
+    \node (top) at (0,0) {$\top_{\mbox{\scriptsize Number}}$};
+    \node (upperleft) at (-1.9,-0.7) {$\hat{\SF{Inf}}$};
+    \node (uppercenter) at (0,-0.7) {$\hat{\SF{UInt}}$};
+    \node (upperright) at (2.1,-0.7) {$\hat{\SF{NUInt}}$};
+    \node (lower1) at (-3.0,-1.5) {$\hat{\SF{-inf}}$};
+    \node (lower2) at (-2.2,-1.5) {$\hat{\SF{+inf}}$};
+    \node (lower3) at (-1.2,-1.5) {$\hat{\SF{NaN}}$};
+    \node (lower4) at (-0.4,-1.5) {$\hat{0}$};
+    \node (lower5) at (0,-1.5) {$\hat{1}$};
+    \node (lower6) at (0.4,-1.5) {...};
+    \node (lower7) at (1.2,-1.5) {...};
+    \node (lower8) at (1.8,-1.5) {$\hat{-42}$};
+    \node (lower9) at (2.4,-1.5) {$\hat{1.2}$};
+    \node (lower10) at (3,-1.5) {...};
+    \node (down) at (0,-2.4) {$\bot_{\mbox{\scriptsize Number}}$};
+    % Now draw the lines0
+    \draw [black, thick, shorten <= -1pt, shorten >=-1pt] (top) -- (upperleft);
+    \draw [black, thick, shorten <= -1pt, shorten >=-1pt] (top) -- (uppercenter);
+    \draw [black, thick, shorten <= -1pt, shorten >=-1pt] (top) -- (upperright);
+    \draw [black, thick, shorten <= -1pt, shorten >=-1pt] (top) -- (lower3);
+    \draw [black, thick, shorten <= -1pt, shorten >=-1pt] (upperleft) -- (lower1);
+    \draw [black, thick, shorten <= -1pt, shorten >=-1pt] (upperleft) -- (lower2);
+    \draw [black, thick, shorten <= -1pt, shorten >=-1pt] (uppercenter) -- (lower4);
+    \draw [black, thick, shorten <= -1pt, shorten >=-1pt] (uppercenter) -- (lower5);
+    \draw [black, thick, shorten <= -1pt, shorten >=-1pt] (uppercenter) -- (lower6);
+    \draw [black, thick, shorten <= -1pt, shorten >=-1pt] (upperright) -- (lower7);
+    \draw [black, thick, shorten <= -1pt, shorten >=-1pt] (upperright) -- (lower8);
+    \draw [black, thick, shorten <= -1pt, shorten >=-1pt] (upperright) -- (lower9);
+    \draw [black, thick, shorten <= -1pt, shorten >=-1pt] (upperright) -- (lower10);
+    \draw [black, thick, shorten <= -1pt, shorten >=-1pt] (lower1) -- (down);
+    \draw [black, thick, shorten <= -1pt, shorten >=-1pt] (lower2) -- (down);
+    \draw [black, thick, shorten <= -1pt, shorten >=-1pt] (lower3) -- (down);
+    \draw [black, thick, shorten <= -1pt, shorten >=-1pt] (lower4) -- (down);
+    \draw [black, thick, shorten <= -1pt, shorten >=-1pt] (lower5) -- (down);
+    \draw [black, thick, shorten <= -1pt, shorten >=-1pt] (lower6) -- (down);
+    \draw [black, thick, shorten <= -1pt, shorten >=-1pt] (lower7) -- (down);
+    \draw [black, thick, shorten <= -1pt, shorten >=-1pt] (lower8) -- (down);
+    \draw [black, thick, shorten <= -1pt, shorten >=-1pt] (lower9) -- (down);
+    \draw [black, thick, shorten <= -1pt, shorten >=-1pt] (lower10) -- (down);
+  \end{tikzpicture}
+\end{matrix}
+\]
+\[
+\abs{String} = 
+	\begin{matrix} 
+		\begin{tikzpicture}
+	    % First, locate each of the nodes and name them
+	    \node (top) at (0,0) {$\top_{\mbox{\scriptsize String}}$};
+	    \node (upperleft) at (-1,-0.7) {$\hat{\SF{NumStr}}$};
+	    \node (upperright) at (1,-0.7) {$\hat{\SF{OtherStr}}$};
+	    \node (lower1) at (-2,-1.5) {$\hat{``\SF{NaN}"}$};
+	    \node (lower2) at (-1.2,-1.5) {$\hat{``1.1"}$};
+	    \node (lower3) at (-0.4,-1.5) {...};
+	    \node (lower4) at (0.4,-1.5) {$\hat{``\mbox{foo}"}$};
+	    \node (lower5) at (1.5,-1.5) {$\hat{``\mbox{bar}"}$};
+	   	\node (lower6) at (2.2,-1.5) {...};
+	    \node (down) at (0,-2.4) {$\bot_{\mbox{\scriptsize String}}$};
+	    % Now draw the lines0
+	  	\draw [black, thick, shorten <= -1pt, shorten >=-1pt] (top) -- (upperleft);
+	  	\draw [black, thick, shorten <= -1pt, shorten >=-1pt] (top) -- (upperright);
+	  	\draw [black, thick, shorten <= -1pt, shorten >=-1pt] (midleft) -- (lower1);
+	  	\draw [black, thick, shorten <= -1pt, shorten >=-1pt] (midleft) -- (lower2);
+	  	\draw [black, thick, shorten <= -1pt, shorten >=-1pt] (midleft) -- (lower3);
+	  	\draw [black, thick, shorten <= -1pt, shorten >=-1pt] (midright) -- (lower4);
+	  	\draw [black, thick, shorten <= -1pt, shorten >=-1pt] (midright) -- (lower5);
+	  	\draw [black, thick, shorten <= -1pt, shorten >=-1pt] (midright) -- (lower6);
+	  	\draw [black, thick, shorten <= -1pt, shorten >=-1pt] (lower1) -- (down);
+	  	\draw [black, thick, shorten <= -1pt, shorten >=-1pt] (lower2) -- (down);
+	  	\draw [black, thick, shorten <= -1pt, shorten >=-1pt] (lower3) -- (down);
+	  	\draw [black, thick, shorten <= -1pt, shorten >=-1pt] (lower4) -- (down);
+	  	\draw [black, thick, shorten <= -1pt, shorten >=-1pt] (lower5) -- (down);
+	  	\draw [black, thick, shorten <= -1pt, shorten >=-1pt] (lower6) -- (down);
+		\end{tikzpicture}
+	\end{matrix}
+\]
+
+\newpage
+\section{Domain Operators}
+\subsection{Heap}
+\subsection{Context}
+\subsection{Obj}
+
+\newpage
+\section{Context-sensitivity}
+\subsection{Context-insensitive}
+\subsection{k-callsite-sensitive}
+
+\newpage
+\section{Helper Functions}
+
+\subsection{Prunning Helper Functions}
+
+\newpage
+\section{Semantics}
+\[
+\begin{array}{lcl}
+\aE & \in & \abs{IPEdge} \rightarrow \aState \rightarrow \aState \\
+\aC & \in & \aControlPoint \rightarrow \aState \rightarrow \aState \times \aState\\
+\aI & \in & \aControlPoint \rightarrow \SF{Instruction} 
+    \rightarrow \aState \times \aState \rightarrow \aState \times \aState\\
+\aV & \in & \SF{Expression} \rightarrow \aState 
+    \rightarrow \aValue \times \powerset{\abs{Exception}} \\
+\aB & \in & \SF{Expression} \rightarrow \aState \times \aState 
+    \rightarrow \aState \times \aState\\
+\end{array}
+\]
+
+\subsection{Interprocedural Edge}
+\[
+\renewcommand\arraystretch{1.5}
+\begin{array}{l}
+% call edge (bottom heap)
+\aE \lbr \acp \cfgnext_{\hat{C},\hat{o}} (\SF{Entry},\hat{cc}) \rbr (\bot_{Heap},\hat{C}_1) 
+    = \bot_{State}\\
+
+% call edge
+\aE \lbr \acp \cfgnext_{\hat{C},\hat{o}} (\SF{Entry},\hat{cc}) \rbr (\hat{H}_1,\hat{C}_1) 
+    = (\hat{H}_3,\hat{C}) \\
+  \quad\wherec{
+    \hat{H}_3 = \bigsqcup_{\hat{l}_{env}\in \hat{L}_{env}} \hat{H}_2[\hat{l}_{env} \mapsto \hat{o}_{env}]\\
+    \land\ \hat{L}_{env} = \hat{o}_2(\varprop{env})\tsf{:ObjectValue:Value:LocSet}\\
+    \land\ \hat{H}_2 = \hat{H}_1[\avarloc{PureLocal}_R \mapsto \hat{o}_2] \\
+    \land\ \hat{o}_2 = \hat{o} - \varprop{scope} \\
+    \land\ \hat{o}_{env} = \ahf{NewDeclEnvRecord}(\hat{v}) \\
+    \land\ \hat{v} = \hat{o}(\varprop{scope})\tsf{:ObjectValue:Value}
+  }
+\\\\
+
+% normal return edge (bottom heap/context)
+\aE \lbr (\SF{Exit}, \hat{cc}) \cfgnext_{\hat{C},\hat{o}} \acp \rbr (\bot_{Heap}, \hat{C})
+    = \bot_{State}\\
+
+\aE \lbr (\SF{Exit}, \hat{cc}) \cfgnext_{\hat{C},\hat{o}} \acp \rbr (\hat{H}, \bot_{Context})
+    = \bot_{State}\\
+
+% normal return edge
+\aE \lbr (\SF{Exit}, \hat{cc}_1) \cfgnext_{\hat{C},\hat{o}} (n \in \SF{AfterCall}, \hat{cc}_2) \rbr (\hat{H}_1, \hat{C}_1)
+   = \left\{
+   \begin{array}{ll}
+   {\inred new State}(\hat{H}_3, \hat{C}_2) & \ifc{\hat{C}_2 \neq \bot_{Context}}\\
+   \bot_{State} & \ifc{\hat{C}_2 = \bot{Context}}\\
+   \end{array}
+   \right. \\
+\quad\wherec{
+    \hat{H}_3 = \ahf{VarStore}(\hat{H}_2, n\tsf{:retVar}, \hat{v})\\
+	\land\ \hat{H}_2 = \hat{H}_1[\avarloc{PureLocal} \mapsto \hat{o}_1]\\
+	\land\ \hat{v} = \hat{H}_1(\avarloc{PureLocal})\\
+	\land\ (\hat{C}_2, \hat{o}_1) = \ahf{FixOldify}(\hat{C}, \hat{o}, \hat{C}_1\tsf{:May}, \hat{C}_1\tsf{:Must})
+}\\\\
+
+\aE \lbr (\SF{Exit}, \hat{cc}_1) \cfgnext_{\hat{C},\hat{o}} (n \not\in \SF{AfterCall}, \hat{cc}_2) \rbr\ \hat{S}
+    \quad \comment{\inblue Impossible Case: IPFromExitToNoneError} \\
+
+% exception return edge (bottom heap/context)
+\aE \lbr (\SF{ExitExc}, \hat{cc}) \cfgnext_{\hat{C},\hat{o}} \acp \rbr (\bot_{Heap}, \hat{C})
+    = \bot_{State}\\
+
+\aE \lbr (\SF{ExitExc}, \hat{cc}) \cfgnext_{\hat{C},\hat{o}} \acp \rbr (\hat{H}, \bot_{Context})
+    = \bot_{State}\\
+
+% exception return inter-procedural edge
+\aE \lbr (\SF{ExitExc}, \hat{cc}_1) \cfgnext_{\hat{C},\hat{o}} (n \in \SF{AfterCatch}, \hat{cc}_2) \rbr (\hat{H}_1, \hat{C}_1)
+   = \left\{
+   \begin{array}{ll}
+   {\inred new State}(\hat{H}_2, \hat{C}_2) & \ifc{\hat{C}_2 \neq \bot_{Context}}\\
+   \bot_{State} & \ifc{\hat{C}_2 = \bot{Context}}\\
+   \end{array}
+   \right. \\
+\quad\wherec{
+    \hat{H}_2 = \hat{H}_1 \left[ \avarloc{PureLocal} \mapsto 
+        \hat{o}_1 \left[ \begin{array}{ll}
+		    \varprop{exception} \mapsto \hat{v}_1, \\
+			\varprop{exception\_all} \mapsto \hat{v}_1 \sqcup \hat{v}_2
+		\end{array} \right] \right] \\
+	\land\ \hat{v}_1 = \hat{H}_1(\avarloc{PureLocal})(\varprop{exception})\tsf{:ObjectValue:Value}\\
+	\land\ \hat{v}_2 = \hat{o}_1(\varprop{exception\_all})\tsf{:ObjectValue:Value}\\
+	\land\ (\hat{C}_2, \hat{o}_1) = \ahf{FixOldify}(\hat{C}, \hat{o}, \hat{C}_1\tsf{:May}, \hat{C}_1\tsf{:Must})
+}\\\\
+
+\aE \lbr (\SF{ExitExc}, \hat{cc}_1) \cfgnext_{\hat{C},\hat{o}} (n \not\in \SF{AfterCatch}, \hat{cc}_2) \rbr\ \hat{S}
+    \quad \comment{\inblue Impossible Case: IPFromExitToNoneError} \\
+
+\end{array}
+\]
+
+\subsection{Block}
+\[
+\renewcommand\arraystretch{1.5}
+\begin{array}{l}
+
+\aC \lbr (n \in \SF{Entry}, \hat{cc}) \rbr\ \bot_{State} = (\bot_{State}, \bot_{State}) \\
+\aC \lbr (n \in \SF{Entry}, \hat{cc}) \rbr\ \hat{S} \\
+\aC \lbr (n \in \SF{Exit}, \hat{cc}) \rbr\ \hat{S} \\
+\aC \lbr (n \in \SF{ExitExc}, \hat{cc}) \rbr\ \hat{S} \\
+\aC \lbr (n \in \SF{Call}, \hat{cc}) \rbr\ \hat{S} \\
+\aC \lbr (n \in \SF{AfterCall}, \hat{cc}) \rbr\ \hat{S} \\
+\aC \lbr (n \in \SF{AfterCatch}, \hat{cc}) \rbr\ \hat{S} \\
+\aC \lbr (n \in \SF{Block}, \hat{cc}) \rbr\ \hat{S} \\
+
+\end{array}
+\]
+
+\subsection{Instruction}
+\[
+\renewcommand\arraystretch{1.5}
+\begin{array}{l}
+
+\aI_{\acp} \lbr i \rbr ((\bot_{Heap}, \hat{C}), \hat{S})  = (\bot_{State}, \hat{S}) \\
+\aI_{\acp} \lbr x~\verb+:=+~\TT{alloc}\verb+(+ e^{?} \verb+)+ \rbr\ (\hat{S}, \hat{S_e}) \\
+\aI_{\acp} \lbr x~\verb+:=+~\TT{allocArray}\verb+(+n\verb+)+ \rbr\ (\hat{S}, \hat{S_e}) \\
+\aI_{\acp} \lbr x~\verb+:=+~\TT{allocArg}\verb+(+n\verb+)+ \rbr\ (\hat{S}, \hat{S_e}) \\
+\aI_{\acp} \lbr x ~\verb+:=+~ e \rbr\ (\hat{S}, \hat{S_e}) \\
+\aI_{\acp} \lbr x ~\verb+:=+~ \TT{delete}\verb+(+e\verb+)+ \rbr\ (\hat{S}, \hat{S_e}) \\
+\aI_{\acp} \lbr x ~\verb+:=+~ \TT{delete}\verb+(+e_1,e_2\verb+)+ \rbr\ (\hat{S}, \hat{S_e}) \\
+\aI_{\acp} \lbr e\verb+[+e\verb+]+ ~\verb+:=+~ e \rbr\ (\hat{S}, \hat{S_e}) \\
+\aI_{\acp} \lbr e\verb+[+s\verb+]+ ~\verb+:=+~ e \rbr\ (\hat{S}, \hat{S_e}) \\
+\aI_{\acp} \lbr x_1 ~\verb+:=+~ \TT{function} ~x_2^{?}\verb+(+f\verb+)+ \rbr\ (\hat{S}, \hat{S_e}) \\
+\aI_{\acp} \lbr \TT{assert}\verb+(+e\inop e\verb+)+ \rbr\ (\hat{S}, \hat{S_e}) \\
+\aI_{\acp} \lbr \TT{cond}\verb+(+x\verb+)+ \rbr\ (\hat{S}, \hat{S_e}) \\
+\aI_{\acp} \lbr \TT{catch}\verb+(+x\verb+)+ \rbr\ (\hat{S}, \hat{S_e}) \\
+\aI_{\acp} \lbr \TT{return}\verb+(+e^{?}\verb+)+ \rbr\ (\hat{S}, \hat{S_e}) \\
+\aI_{\acp} \lbr \TT{throw}\verb+(+e\verb+)+ \rbr\ (\hat{S}, \hat{S_e}) \\
+\aI_{\acp} \lbr \TT{noop} \rbr\ (\hat{S}, \hat{S_e}) \\
+\aI_{\acp} \lbr x ~\verb+:=+~\ensuremath{\diamond}x\verb+(+x^{*}\verb+)+ \rbr\ (\hat{S}, \hat{S_e}) \\
+\aI_{\acp} \lbr \TT{call}\verb+(+e_1,e_2,e_3\verb+)+ \rbr\ (\hat{S}, \hat{S_e}) \\
+\aI_{\acp} \lbr \TT{construct}\verb+(+e_1,e_2,e_3\verb+)+ \rbr\ (\hat{S}, \hat{S_e}) \\
+
+\end{array}
+\]
+
+\subsection{Expression}
+\[
+\renewcommand\arraystretch{1.5}
+\begin{array}{l}
+
+\aV \lbr x \rbr\ \hat{S} \\
+\aV \lbr e \inop e \rbr\ \hat{S} \\
+\aV \lbr \preop e \rbr\ \hat{S} \\
+\aV \lbr e\verb+[+e\verb+]+ \rbr\ \hat{S} \\
+\aV \lbr \TT{this} \rbr\ \hat{S} \\
+\aV \lbr n \rbr\ \hat{S} \\
+\aV \lbr ``s" \rbr\ \hat{S} \\
+\aV \lbr \TT{true} \rbr\ \hat{S} \\
+\aV \lbr \TT{false} \rbr\ \hat{S} \\
+\aV \lbr \TT{null} \rbr\ \hat{S} \\
+
+\end{array}
+\]
+
+\subsection{Assertion}
+\[
+\renewcommand\arraystretch{1.5}
+\begin{array}{l}
+
+\aB \lbr e \rbr (\hat{S}_1, \hat{S_e}_1) 
+    = ({\inred new State}(\hat{H}_2, \hat{S}_1\tsf{:Context}), \hat{S_e}_3) \\
+\quad\wherec{
+    \hat{H}_2 = \left \{
+	\begin{array}{ll}
+        \hat{S}_1\tsf{:Heap} & \ifc{\hat{true} \sqsubseteq \hat{v}\tsf{:toAbsBool}} \\
+	    \bot_{Heap} & \owc
+    \end{array}  \right.\\
+    \land\ \hat{S_e}_3 = \hat{S_e}_1 \sqcup \hat{S_e}_2 \\
+    \land\ \hat{S_e}_2 = \chf{RaiseException}(\hat{S}_1, \hat{es}) \\
+	\land\ (\hat{v}, \hat{es}) = \aV \lbr e \rbr\ \hat{S}_1
+}\\\\
+
+\end{array}
+\]
