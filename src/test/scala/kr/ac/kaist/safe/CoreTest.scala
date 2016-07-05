@@ -146,6 +146,6 @@ class CoreTest extends FlatSpec {
 
     val analysis = CmdAnalyze(List("-analyze:testMode", jsName))
 
-    //TODO    registerTest("[Analyze]" + filename, AnalyzeTest) { analyzeTest(analysis, config.addrManager) }
+    registerTest("[Analyze]" + filename, AnalyzeTest) { analyzeTest(analysis, config.addrManager) }
   }
 }
