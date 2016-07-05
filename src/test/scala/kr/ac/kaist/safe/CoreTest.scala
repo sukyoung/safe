@@ -16,7 +16,7 @@ import java.io.{ File, FilenameFilter }
 
 import kr.ac.kaist.safe.analyzer.CallContext
 import kr.ac.kaist.safe.analyzer.domain.State
-import kr.ac.kaist.safe.cfg_builder.AddressManager
+import kr.ac.kaist.safe.cfg_builder.{ AddressManager, DefaultAddressManager }
 
 import scala.io.Source
 import scala.util.{ Failure, Success, Try }
@@ -144,8 +144,7 @@ class CoreTest extends FlatSpec {
   for (filename <- scala.util.Random.shuffle(new File(analyzerTestDir).list(jsFilter).toSeq)) {
     val jsName = analyzerTestDir + SEP + filename
 
-    val analysis = CmdAnalyze(List("-analyze:testMode", jsName))
-
-    registerTest("[Analyze]" + filename, AnalyzeTest) { analyzeTest(analysis, config.addrManager) }
+    val analysis = CmdAnalyze(List("-analyzer:testMode", jsName))
+    registerTest("[Analyze]" + filename, AnalyzeTest) { analyzeTest(analysis, new DefaultAddressManager) }
   }
 }

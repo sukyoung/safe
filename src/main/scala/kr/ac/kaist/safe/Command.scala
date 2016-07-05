@@ -17,19 +17,19 @@ import kr.ac.kaist.safe.util.ArgParser
 
 sealed trait Command {
   val name: String
-  def apply(args: List[String]): Try[Unit]
+  def apply(args: List[String]): Try[Any]
 }
 
 sealed abstract class CommandObj[Result](
     override val name: String,
     pList: PhaseList[Result]
 ) extends Command {
-  def apply(args: List[String]): Try[Unit] = {
+  def apply(args: List[String]): Try[Result] = {
     val safeConfig = SafeConfig(this)
     val parser = new ArgParser(this, safeConfig)
     pList.getRunner(parser).flatMap {
       case runner => parser(args).flatMap {
-        case _ => Safe(runner(_).map(_ => ()), safeConfig)
+        case _ => Safe(runner(_), safeConfig)
       }
     }
   }

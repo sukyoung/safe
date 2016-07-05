@@ -43,12 +43,15 @@ object Safe {
     }
   }
 
-  def apply(runner: SafeConfig => Try[Unit], config: SafeConfig): Try[Unit] = {
+  def apply[Result](
+    runner: SafeConfig => Try[Result],
+    config: SafeConfig
+  ): Try[Result] = {
     // set the start time.
     val startTime = System.currentTimeMillis
 
     // execute the command.
-    val result: Try[Unit] = runner(config)
+    val result: Try[Result] = runner(config)
 
     // print the time spent if the time option is set.
     if (config.time) {
