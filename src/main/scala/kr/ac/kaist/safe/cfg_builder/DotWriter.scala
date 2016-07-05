@@ -14,7 +14,7 @@ package kr.ac.kaist.safe.cfg_builder
 import java.io.{ File, FileWriter, BufferedInputStream }
 import scala.collection.immutable.TreeMap
 import kr.ac.kaist.safe.nodes.cfg._
-import kr.ac.kaist.safe.config.Config
+import kr.ac.kaist.safe.LINE_SEP
 
 object DotWriter {
   private type OrderMap = Map[CFGBlock, Int]
@@ -164,7 +164,7 @@ object DotWriter {
   ): String = {
     val blocks = blocksOpt.getOrElse(cfg.getAllBlocks.reverse)
     val sb = new StringBuilder
-    sb.append("digraph \"DirectedGraph\" {").append(Config.LINE_SEP)
+    sb.append("digraph \"DirectedGraph\" {").append(LINE_SEP)
     sb.append(prefix)
       .append("fontsize=12;node [fontsize=12];edge [fontsize=12]")
       .append(newLine)

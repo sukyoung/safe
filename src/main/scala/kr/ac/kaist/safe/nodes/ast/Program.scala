@@ -12,7 +12,6 @@
 package kr.ac.kaist.safe.nodes.ast
 
 import kr.ac.kaist.safe.util.{ NodeUtil => NU }
-import kr.ac.kaist.safe.config.Config
 
 // Program ::= SourceElement*
 case class Program(

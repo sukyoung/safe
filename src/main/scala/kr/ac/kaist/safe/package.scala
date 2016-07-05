@@ -9,26 +9,11 @@
  * ****************************************************************************
  */
 
-package kr.ac.kaist.safe.config
+package kr.ac.kaist
 
-import kr.ac.kaist.safe.cfg_builder.{ AddressManager, DefaultAddressManager }
 import kr.ac.kaist.safe.util.{ NodeUtil => NU }
 
-case class Config(
-    var command: Command,
-    var fileNames: List[String] = Nil,
-    var time: Boolean = false,
-    var verbose: Boolean = false,
-    var addrManager: AddressManager = new DefaultAddressManager
-) extends ConfigOption {
-  val prefix: String = ""
-  val options: List[(String, OptionKind)] = List(
-    ("time", BoolOption(() => time = true)),
-    ("verbose", BoolOption(() => verbose = true))
-  )
-}
-
-object Config {
+package object safe {
   // Line seperator
   val LINE_SEP = System.getProperty("line.separator")
 

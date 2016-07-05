@@ -11,7 +11,6 @@
 
 package kr.ac.kaist.safe.nodes.ast
 
-import kr.ac.kaist.safe.config.Config
 import kr.ac.kaist.safe.nodes.Node
 import kr.ac.kaist.safe.util.{ SourceLoc, Span }
 

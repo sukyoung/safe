@@ -12,7 +12,7 @@
 package kr.ac.kaist.safe.nodes.cfg
 
 import scala.collection.mutable.{ HashMap => MHashMap, Map => MMap }
-import kr.ac.kaist.safe.config.Config
+import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.nodes.ir.IRNode
 
 class CFG(
@@ -76,7 +76,7 @@ class CFG(
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     funcs.reverseIterator.foreach {
-      case func => s.append(func.toString(indent)).append(Config.LINE_SEP)
+      case func => s.append(func.toString(indent)).append(LINE_SEP)
     }
     s.toString
   }

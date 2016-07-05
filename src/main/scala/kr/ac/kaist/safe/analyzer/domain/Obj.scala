@@ -11,7 +11,7 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
-import kr.ac.kaist.safe.config.Config
+import kr.ac.kaist.safe.LINE_SEP
 
 //TODO: Merge ObjMap implementation
 //TODO: Handle default values, key values with "@"
@@ -31,7 +31,7 @@ class Obj(val map: Map[String, (PropValue, Absent)]) {
         case AbsentBot =>
           s"${key.toString} |-> ${propv.toString}"
       }
-    }).reduce((s1, s2) => s1 + Config.LINE_SEP + s2)
+    }).reduce((s1, s2) => s1 + LINE_SEP + s2)
   }
 
   /* partial order */

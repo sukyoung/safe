@@ -14,7 +14,7 @@ package kr.ac.kaist.safe.util
 import kr.ac.kaist.safe.nodes.Node
 import kr.ac.kaist.safe.nodes.ast._
 import kr.ac.kaist.safe.nodes.ir._
-import kr.ac.kaist.safe.config.Config
+import kr.ac.kaist.safe.LINE_SEP
 import java.io.BufferedWriter
 import java.io.IOException
 import scala.collection.immutable.HashMap
@@ -128,7 +128,7 @@ object NodeUtil {
       }
       case _ =>
         if (result.length > PRINT_WIDTH && sep.equals(", "))
-          join(indent, all.tail, sep, result.append(", " + Config.LINE_SEP + getIndent(indent)).append(all.head.toString(indent)))
+          join(indent, all.tail, sep, result.append(", " + LINE_SEP + getIndent(indent)).append(all.head.toString(indent)))
         else
           join(indent, all.tail, sep, result.append(sep).append(all.head.toString(indent)))
     }
@@ -140,7 +140,7 @@ object NodeUtil {
 
   /*  make sure it is parenthesized */
   def prBody(body: List[SourceElement]): String =
-    join(0, body, Config.LINE_SEP, new StringBuilder("")).toString
+    join(0, body, LINE_SEP, new StringBuilder("")).toString
 
   def makeASTNodeInfo(span: Span): ASTNodeInfo =
     if (keepComments && comment.isDefined) {
@@ -168,7 +168,7 @@ object NodeUtil {
         if (!com.txt.equals(message))
           comment = Some[Comment](new Comment(
             makeASTNodeInfo(com.info.span + span),
-            com.txt + Config.LINE_SEP + message
+            com.txt + LINE_SEP + message
           ))
       }
     }
@@ -198,8 +198,8 @@ object NodeUtil {
     fds match {
       case Nil =>
       case _ =>
-        s.append(getIndent(indent + 1)).append(join(indent + 1, fds, Config.LINE_SEP + getIndent(indent + 1), new StringBuilder("")))
-        s.append(Config.LINE_SEP).append(getIndent(indent))
+        s.append(getIndent(indent + 1)).append(join(indent + 1, fds, LINE_SEP + getIndent(indent + 1), new StringBuilder("")))
+        s.append(LINE_SEP).append(getIndent(indent))
     }
     vds match {
       case Nil =>
@@ -207,11 +207,11 @@ object NodeUtil {
         s.append(getIndent(indent + 1))
         vds.foreach(vd => vd match {
           case VarDecl(_, n, _, _) =>
-            s.append("var " + n.text + ";" + Config.LINE_SEP + getIndent(indent + 1))
+            s.append("var " + n.text + ";" + LINE_SEP + getIndent(indent + 1))
         })
-        s.append(Config.LINE_SEP).append(getIndent(indent))
+        s.append(LINE_SEP).append(getIndent(indent))
     }
-    s.append(getIndent(indent + 1)).append(join(indent + 1, body, Config.LINE_SEP + getIndent(indent + 1), new StringBuilder("")))
+    s.append(getIndent(indent + 1)).append(join(indent + 1, body, LINE_SEP + getIndent(indent + 1), new StringBuilder("")))
   }
 
   def prUseStrictDirective(s: StringBuilder, indent: Int, fds: List[FunDecl], vds: List[VarDecl], body: SourceElements): Unit =
@@ -219,11 +219,11 @@ object NodeUtil {
 
   def prUseStrictDirective(s: StringBuilder, indent: Int, fds: List[FunDecl], vds: List[VarDecl], stmts: List[SourceElements]): Unit =
     fds.find(fd => fd.strict) match {
-      case Some(_) => s.append(getIndent(indent)).append("\"use strict\";").append(Config.LINE_SEP)
+      case Some(_) => s.append(getIndent(indent)).append("\"use strict\";").append(LINE_SEP)
       case None => vds.find(vd => vd.strict) match {
-        case Some(_) => s.append(getIndent(indent)).append("\"use strict\";").append(Config.LINE_SEP)
+        case Some(_) => s.append(getIndent(indent)).append("\"use strict\";").append(LINE_SEP)
         case None => stmts.find(stmts => stmts.strict) match {
-          case Some(_) => s.append(getIndent(indent)).append("\"use strict\";").append(Config.LINE_SEP)
+          case Some(_) => s.append(getIndent(indent)).append("\"use strict\";").append(LINE_SEP)
           case None =>
         }
       }

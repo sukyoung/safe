@@ -11,33 +11,135 @@
 
 package kr.ac.kaist.safe
 
-import scala.util.{ Try, Success, Failure }
-import kr.ac.kaist.safe.phase.Help
-import kr.ac.kaist.safe.config.ArgParse
+import scala.collection.immutable.HashMap
+import scala.util.{ Try, Failure }
+import kr.ac.kaist.safe.cfg_builder.{ AddressManager, DefaultAddressManager }
+import kr.ac.kaist.safe.errors.SafeException
+import kr.ac.kaist.safe.errors.error.{ NoCmdError, NoInputError }
+import kr.ac.kaist.safe.phase._
+import kr.ac.kaist.safe.util._
 
 object Safe {
   ////////////////////////////////////////////////////////////////////////////////
   // Main entry point
   ////////////////////////////////////////////////////////////////////////////////
   def main(tokens: Array[String]): Unit = {
-    // Get the config and its corresponding phase from the shell parameters.
-    ArgParse(tokens.toList) match {
-      case Success((config, phase)) =>
-        // Set the start time.
-        val startTime = System.currentTimeMillis
-
-        // Execute the phase.
-        phase(config)
-
-        // Print the time spent if the time option is set.
-        if (config.time) {
-          val duration = System.currentTimeMillis - startTime
-          println("Command " + config.command + " took " + duration + "ms.")
-        }
-      // Print the usage message if parsing arguments failed.
-      case Failure(ex) =>
+    (tokens.toList match {
+      case str :: args => cmdMap.get(str) match {
+        case Some(cmd) => cmd(args)
+        case None => Failure(NoCmdError(str))
+      }
+      case Nil => Failure(NoInputError)
+    }) recover {
+      // SafeException: print the usage message.
+      case ex: SafeException =>
         Console.err.println(ex.getMessage)
-        Help.printUsageMessage
+        println(usage)
+      // Unexpected: print the stack trace.
+      case ex =>
+        Console.err.println("* Unexpected error occurred.")
+        Console.err.println(ex.toString)
+        Console.err.println(ex.getStackTrace.mkString(LINE_SEP))
     }
   }
+
+  def apply(runner: SafeConfig => Try[Unit], config: SafeConfig): Try[Unit] = {
+    // set the start time.
+    val startTime = System.currentTimeMillis
+
+    // execute the command.
+    val result: Try[Unit] = runner(config)
+
+    // print the time spent if the time option is set.
+    if (config.time) {
+      val duration = System.currentTimeMillis - startTime
+      val name = config.command.name
+      println(s"Command $name took $duration ms.")
+    }
+
+    // return result
+    result
+  }
+
+  // commands
+  val commands: List[Command] = List(
+    CmdParse,
+    CmdASTRewrite,
+    CmdCompile,
+    CmdCFGBuild,
+    CmdAnalyze,
+    CmdHelp
+  )
+  val cmdMap = commands.foldLeft[Map[String, Command]](HashMap()) {
+    case (map, cmd) => map + (cmd.name -> cmd)
+  }
+
+  // phases
+  var phases: List[Phase] = List(
+    Parse,
+    ASTRewrite,
+    Compile,
+    CFGBuild,
+    Analyze,
+    Help
+  )
+
+  // global options
+  val options: List[PhaseOption[SafeConfig]] = List(
+    ("time", BoolOption(c => c.time = true),
+      ""), // TODO
+    ("verbose", BoolOption(c => c.verbose = true),
+      "") // TODO
+  )
+
+  // print usage message.
+  val usage: String = {
+    val s: StringBuilder = new StringBuilder
+    s.append("Usage:").append(LINE_SEP)
+      .append("  safe {command} [-{option}]* [-{phase}:{option}[={input}]]* {filename}*").append(LINE_SEP)
+      .append("  example: safe analyze -time -astRewrite:verbose cfgBuild:out=out test.js").append(LINE_SEP)
+      .append(LINE_SEP)
+      .append("  command list:").append(LINE_SEP)
+    commands foreach (cmd => s.append("    %-15s".format(cmd.name)).append(cmd).append(LINE_SEP))
+    s.append(LINE_SEP)
+      .append("  phase list:").append(LINE_SEP)
+    phases foreach (phase => {
+      s.append("    %-15s".format(phase.name))
+      val names = phase.getOptShapes
+      s.append(names.slice(0, 3).mkString(", "))
+        .append(if (names.size > 3) ", ..." else "")
+      s.append(LINE_SEP)
+    })
+    s.toString
+  }
+
+  // print help message.
+  val help: String = {
+    val s: StringBuilder = new StringBuilder
+    s.append("Invoked as script: safe args").append(LINE_SEP)
+      .append("Invoked by java: java ... kr.ac.kaist.safe.Safe args").append(LINE_SEP)
+      .append(LINE_SEP)
+      .append("command list:").append(LINE_SEP)
+    commands foreach (cmd => s.append("  %-15s".format(cmd.name)).append(cmd).append(LINE_SEP))
+    s.append(LINE_SEP)
+      .append("phase list:").append(LINE_SEP)
+    phases foreach (phase => {
+      s.append("  %-15s".format(phase.name)).append(Useful.indentation(phase.help, 17)).append(LINE_SEP)
+        .append(LINE_SEP)
+      phase.getOptDescs foreach {
+        case (name, desc) =>
+          s.append(s"    If $name is given, $desc").append(LINE_SEP)
+      }
+      s.append(LINE_SEP)
+    })
+    s.toString
+  }
 }
+
+case class SafeConfig(
+  var command: Command,
+  var fileNames: List[String] = Nil,
+  var time: Boolean = false,
+  var verbose: Boolean = false,
+  var addrManager: AddressManager = new DefaultAddressManager
+) extends Config

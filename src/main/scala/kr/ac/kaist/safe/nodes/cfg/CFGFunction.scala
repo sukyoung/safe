@@ -12,7 +12,7 @@
 package kr.ac.kaist.safe.nodes.cfg
 
 import scala.collection.mutable.{ HashMap => MHashMap, Map => MMap }
-import kr.ac.kaist.safe.config.Config
+import kr.ac.kaist.safe.{ LINE_SEP, SIGNIFICANT_BITS }
 import kr.ac.kaist.safe.nodes.ir.IRNode
 import kr.ac.kaist.safe.util.NodeUtil
 
@@ -83,18 +83,18 @@ class CFGFunction(
     val s: StringBuilder = new StringBuilder
     s.append(pre).append(s"function[$id] ")
       .append(NodeUtil.isInternal(name) match {
-        case true => name.dropRight(Config.SIGNIFICANT_BITS)
+        case true => name.dropRight(SIGNIFICANT_BITS)
         case false => name
       })
-      .append(" {").append(Config.LINE_SEP)
+      .append(" {").append(LINE_SEP)
     blocks.reverseIterator.foreach {
       case Exit(_) | ExitExc(_) =>
       case block =>
-        s.append(pre).append(block.toString(indent + 1)).append(Config.LINE_SEP)
+        s.append(pre).append(block.toString(indent + 1)).append(LINE_SEP)
     }
-    s.append(pre).append(exit.toString(indent + 1)).append(Config.LINE_SEP)
-    s.append(pre).append(exitExc.toString(indent + 1)).append(Config.LINE_SEP)
-    s.append(pre).append("}").append(Config.LINE_SEP)
+    s.append(pre).append(exit.toString(indent + 1)).append(LINE_SEP)
+    s.append(pre).append(exitExc.toString(indent + 1)).append(LINE_SEP)
+    s.append(pre).append("}").append(LINE_SEP)
     s.toString
   }
 }

@@ -12,7 +12,7 @@
 package kr.ac.kaist.safe.nodes.ast
 
 import kr.ac.kaist.safe.util.{ NodeUtil => NU }
-import kr.ac.kaist.safe.config.Config
+import kr.ac.kaist.safe.LINE_SEP
 
 abstract class Member(
     override val info: ASTNodeInfo,
@@ -49,13 +49,13 @@ case class GetProp(
     s.append("get ")
       .append(prop.toString(indent))
       .append("()")
-      .append(Config.LINE_SEP)
+      .append(LINE_SEP)
       .append(NU.getIndent(indent))
       .append("{")
-      .append(Config.LINE_SEP)
+      .append(LINE_SEP)
     NU.prUseStrictDirective(s, indent, ftn.fds, ftn.vds, ftn.stmts)
     NU.prFtn(s, indent, ftn.fds, ftn.vds, ftn.stmts.body)
-    s.append(Config.LINE_SEP)
+    s.append(LINE_SEP)
       .append(NU.getIndent(indent))
       .append("}")
     s.toString
@@ -76,13 +76,13 @@ case class SetProp(
       .append("(")
       .append(ftn.params.head.toString(indent))
       .append(") ")
-      .append(Config.LINE_SEP)
+      .append(LINE_SEP)
       .append(NU.getIndent(indent))
       .append("{")
-      .append(Config.LINE_SEP)
+      .append(LINE_SEP)
     NU.prUseStrictDirective(s, indent, ftn.fds, ftn.vds, ftn.stmts)
     NU.prFtn(s, indent, ftn.fds, ftn.vds, ftn.stmts.body)
-    s.append(Config.LINE_SEP)
+    s.append(LINE_SEP)
       .append(NU.getIndent(indent))
       .append("}")
     s.toString

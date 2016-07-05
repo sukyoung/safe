@@ -11,26 +11,23 @@
 
 package kr.ac.kaist.safe.phase
 
-import java.io.{ BufferedWriter, FileWriter, IOException }
-import scala.util.{ Try, Success, Failure }
-import kr.ac.kaist.safe.config.{ Config, ConfigOption, OptionKind, BoolOption, StrOption }
-import kr.ac.kaist.safe.errors.ExcLog
+import scala.util.{ Try, Success }
+import kr.ac.kaist.safe.SafeConfig
 import kr.ac.kaist.safe.compiler.Translator
 import kr.ac.kaist.safe.nodes.ast.Program
 import kr.ac.kaist.safe.nodes.ir.IRRoot
-import kr.ac.kaist.safe.util.{ NodeUtil, Useful }
+import kr.ac.kaist.safe.util._
 
-// Compile phase struct.
-case class Compile(
-    prev: ASTRewrite = ASTRewrite(),
-    compileConfig: CompileConfig = CompileConfig()
-) extends Phase(Some(prev), Some(compileConfig)) {
-  override def apply(config: Config): Unit = compile(config) recover {
-    case ex => Console.err.print(ex.getMessage)
-  }
-  def compile(config: Config): Try[IRRoot] =
-    prev.rewrite(config).flatMap(compile(config, _))
-  def compile(config: Config, program: Program): Try[IRRoot] = {
+// Compile phase
+case object Compile extends PhaseObj[Program, CompileConfig, IRRoot] {
+  val name: String = "compiler"
+  val help: String = "Translates JavaScript source files to IR."
+
+  def apply(
+    program: Program,
+    safeConfig: SafeConfig,
+    config: CompileConfig
+  ): Try[IRRoot] = {
     // Translate AST -> IR.
     val translator = new Translator(program)
     val ir = translator.result
@@ -43,7 +40,7 @@ case class Compile(
     }
 
     // Pretty print to file.
-    compileConfig.outFile match {
+    config.outFile match {
       case Some(out) => {
         val ((fw, writer)) = Useful.fileNameToWriters(out)
         writer.write(ir.toString(0))
@@ -54,21 +51,18 @@ case class Compile(
     }
     Success(ir)
   }
-}
 
-// Compile phase helper.
-object Compile extends PhaseHelper {
-  def create: Compile = Compile()
-}
-
-// Config options for Compile phase.
-case class CompileConfig(
-    var verbose: Boolean = false,
-    var outFile: Option[String] = None
-) extends ConfigOption {
-  val prefix: String = "compile:"
-  val options: List[(String, OptionKind)] = List(
-    ("verbose", BoolOption(() => verbose = true)),
-    ("out", StrOption((s: String) => outFile = Some(s)))
+  def defaultConfig: CompileConfig = CompileConfig()
+  val options: List[PhaseOption[CompileConfig]] = List(
+    ("verbose", BoolOption(c => c.verbose = true),
+      "messages during compilation are printed."),
+    ("out", StrOption((c, s) => c.outFile = Some(s)),
+      "the resulting IR will be written to the outfile.")
   )
 }
+
+// Compile phase config
+case class CompileConfig(
+  var verbose: Boolean = false,
+  var outFile: Option[String] = None
+) extends Config

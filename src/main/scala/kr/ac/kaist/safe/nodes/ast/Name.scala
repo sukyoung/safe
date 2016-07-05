@@ -12,7 +12,7 @@
 package kr.ac.kaist.safe.nodes.ast
 
 import kr.ac.kaist.safe.util.{ NodeUtil => NU }
-import kr.ac.kaist.safe.config.Config
+import kr.ac.kaist.safe.SIGNIFICANT_BITS
 
 abstract class Name(
   override val info: ASTNodeInfo
@@ -39,8 +39,8 @@ case class Id(
     comment.map(c => s.append(c.toString(indent)))
     uniqueName match {
       case Some(u) if isWith =>
-        s.append(u.dropRight(Config.SIGNIFICANT_BITS) +
-          NU.getNodesE(u.takeRight(Config.SIGNIFICANT_BITS)))
+        s.append(u.dropRight(SIGNIFICANT_BITS) +
+          NU.getNodesE(u.takeRight(SIGNIFICANT_BITS)))
       case _ => s.append(text)
     }
     s.toString

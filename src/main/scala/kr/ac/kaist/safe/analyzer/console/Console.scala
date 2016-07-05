@@ -16,7 +16,7 @@ import jline.console.completer._
 import java.io.PrintWriter
 import scala.collection.immutable.{ HashMap, TreeSet }
 import scala.collection.JavaConverters._
-import kr.ac.kaist.safe.config.Config
+import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.analyzer.{ Worklist, Semantics, ControlPoint, CallContext }
 import kr.ac.kaist.safe.analyzer.console.command._
 import kr.ac.kaist.safe.analyzer.domain.State
@@ -100,7 +100,7 @@ class Console(
     } else {
       reader.setPrompt(
         ccList.zipWithIndex.map {
-          case (cc, idx) => s"[$idx] $cc" + Config.LINE_SEP
+          case (cc, idx) => s"[$idx] $cc" + LINE_SEP
         }.mkString + s"select call context index > "
       )
       while ({
@@ -172,7 +172,7 @@ class Console(
 
   private def setPrompt: Unit = {
     reader.setPrompt(
-      toString(cur) + Config.LINE_SEP +
+      toString(cur) + LINE_SEP +
         s"Iter[$iter] > "
     )
   }

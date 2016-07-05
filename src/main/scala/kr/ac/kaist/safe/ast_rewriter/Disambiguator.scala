@@ -15,7 +15,7 @@ import kr.ac.kaist.safe.errors.ExcLog
 import kr.ac.kaist.safe.errors.error._
 import kr.ac.kaist.safe.nodes.ast._
 import kr.ac.kaist.safe.util.{ NodeUtil => NU, Span }
-import kr.ac.kaist.safe.config.Config
+import kr.ac.kaist.safe.{ PRED_FUNS, PRED_VARS }
 
 /**
  * Eliminates ambiguities in an AST that can be resolved solely by knowing what
@@ -55,8 +55,8 @@ class Disambiguator(program: Program) {
   // environment for renaming identifiers.
   private type Env = List[(String, String)]
   private val EMPTY_LABEL = ("empty", "empty")
-  private var env: Env = Config.PRED_VARS.map(v => (v, v)) ++
-    Config.PRED_FUNS.map(f => (f, f)) ++ List(
+  private var env: Env = PRED_VARS.map(v => (v, v)) ++
+    PRED_FUNS.map(f => (f, f)) ++ List(
       ("alert", "alert"),
       (NU.INTERNAL_PRINT, NU.INTERNAL_PRINT)
     )

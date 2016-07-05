@@ -11,8 +11,6 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
-import kr.ac.kaist.safe.config.Config
-
 import scala.collection.immutable.HashMap
 
 trait Heap {

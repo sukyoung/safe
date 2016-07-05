@@ -11,61 +11,56 @@
 
 package kr.ac.kaist.safe.phase
 
-import scala.util.{ Try, Success, Failure }
-import java.io.{ BufferedWriter, FileWriter }
-import kr.ac.kaist.safe.config.{ Config, ConfigOption, OptionKind, BoolOption, StrOption }
-import kr.ac.kaist.safe.errors.ExcLog
+import scala.util.{ Try, Failure }
+import kr.ac.kaist.safe.SafeConfig
 import kr.ac.kaist.safe.parser.Parser
 import kr.ac.kaist.safe.nodes.ast.Program
-import kr.ac.kaist.safe.util.Useful
-import kr.ac.kaist.safe.errors.error._
+import kr.ac.kaist.safe.util._
+import kr.ac.kaist.safe.errors.error.NoFileError
 
 // Parse phase
-case class Parse(
-    parseConfig: ParseConfig = ParseConfig()
-) extends Phase(None, Some(parseConfig)) {
-  override def apply(config: Config): Unit = parse(config) recover {
-    case ex => Console.err.print(ex.getMessage)
-  }
-  def parse(config: Config): Try[Program] = config.fileNames match {
+case object Parse extends PhaseObj[Unit, ParseConfig, Program] {
+  val name = "parser"
+  val help = "Parses files."
+
+  def apply(
+    unit: Unit,
+    safeConfig: SafeConfig,
+    config: ParseConfig
+  ): Try[Program] = safeConfig.fileNames match {
     case Nil => Failure(NoFileError("parse"))
-    case _ =>
-      Parser.fileToAST(config.fileNames).map {
-        case (program, excLog) => {
-          // Report errors.
-          if (excLog.hasError) {
-            println(program.relFileName + ":")
-            println(excLog)
-          }
-
-          // Pretty print to file.
-          parseConfig.outFile match {
-            case Some(out) => {
-              val (fw, writer) = Useful.fileNameToWriters(out)
-              writer.write(program.toString(0))
-              writer.close; fw.close
-              println("Dumped parsed AST to " + out)
-            }
-            case None =>
-          }
-
-          program
+    case _ => Parser.fileToAST(safeConfig.fileNames).map {
+      case (program, excLog) => {
+        // Report errors.
+        if (excLog.hasError) {
+          println(program.relFileName + ":")
+          println(excLog)
         }
+
+        // Pretty print to file.
+        config.outFile match {
+          case Some(out) => {
+            val (fw, writer) = Useful.fileNameToWriters(out)
+            writer.write(program.toString(0))
+            writer.close; fw.close
+            println("Dumped parsed AST to " + out)
+          }
+          case None =>
+        }
+
+        program
       }
+    }
   }
-}
 
-// Parse phase helper.
-object Parse extends PhaseHelper {
-  def create: Parse = Parse(ParseConfig())
-}
-
-// Config options for the Parse phase.
-case class ParseConfig(
-    var outFile: Option[String] = None
-) extends ConfigOption {
-  val prefix: String = "parse:"
-  val options: List[(String, OptionKind)] = List(
-    ("out", StrOption((s: String) => outFile = Some(s)))
+  def defaultConfig: ParseConfig = ParseConfig()
+  val options: List[PhaseOption[ParseConfig]] = List(
+    ("out", StrOption((c, s) => c.outFile = Some(s)),
+      "the parsed AST will be written to the outfile.")
   )
 }
+
+// Parse phase config
+case class ParseConfig(
+  var outFile: Option[String] = None
+) extends Config

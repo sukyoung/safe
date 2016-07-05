@@ -15,13 +15,13 @@ import kr.ac.kaist.safe.errors.ExcLog
 import kr.ac.kaist.safe.nodes.ir.IRRoot
 import kr.ac.kaist.safe.nodes.cfg.CFG
 import kr.ac.kaist.safe.phase.CFGBuildConfig
-import kr.ac.kaist.safe.config.Config
+import kr.ac.kaist.safe.SafeConfig
 
 // cfg builder
 abstract class CFGBuilder(
     ir: IRRoot,
-    config: Config,
-    cfgConfig: CFGBuildConfig
+    safeConfig: SafeConfig,
+    config: CFGBuildConfig
 ) {
   val cfg: CFG
   val excLog: ExcLog

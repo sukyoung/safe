@@ -23,9 +23,8 @@ import scala.util.{ Failure, Success, Try }
 import kr.ac.kaist.safe.nodes.ast.Program
 import kr.ac.kaist.safe.nodes.ir.IRRoot
 import kr.ac.kaist.safe.nodes.cfg.CFG
-import kr.ac.kaist.safe.config.{ ArgParse, Config }
 import kr.ac.kaist.safe.parser.Parser
-import kr.ac.kaist.safe.phase.{ Analyze, CFGBuild }
+import kr.ac.kaist.safe.phase._
 
 object ParseTest extends Tag("ParseTest")
 object ASTRewriteTest extends Tag("ASTRewriteTest")
@@ -35,8 +34,8 @@ object AnalyzeTest extends Tag("AnalyzeTest")
 
 class CoreTest extends FlatSpec {
   val SEP = File.separator
-  val jsDir = Config.BASE_DIR + SEP + "tests/js/success"
-  val resDir = Config.BASE_DIR + SEP + "tests/result/success"
+  val jsDir = BASE_DIR + SEP + "tests/js/success"
+  val resDir = BASE_DIR + SEP + "tests/result/success"
   val jsFilter = new FilenameFilter() {
     def accept(dir: File, name: String): Boolean = name.endsWith(".js")
   }
@@ -45,7 +44,7 @@ class CoreTest extends FlatSpec {
 
   def readFile(filename: String): String = {
     assert(new File(filename).exists)
-    normalized(Source.fromFile(filename).getLines.mkString(Config.LINE_SEP))
+    normalized(Source.fromFile(filename).getLines.mkString(LINE_SEP))
   }
 
   private def parseTest(pgm: Try[Program]): Unit = {
@@ -123,35 +122,29 @@ class CoreTest extends FlatSpec {
     val name = filename.substring(0, filename.length - 3)
     val jsName = jsDir + SEP + filename
 
-    val (config, phase) = ArgParse(List("cfgBuild", jsName)).get
-    val cfgBuild = phase.asInstanceOf[CFGBuild]
-    val compile = cfgBuild.prev
-    val astRewrite = compile.prev
-    val parse = astRewrite.prev
+    val config = SafeConfig(CmdBase, List(jsName))
 
-    val pgm = parse.parse(config)
+    val pgm = Parse((), config)
     registerTest("[Parse] " + filename, ParseTest) { parseTest(pgm) }
 
-    val ast = pgm.flatMap(astRewrite.rewrite(config, _))
+    val ast = pgm.flatMap(ASTRewrite(_, config))
     val astName = resDir + "/astRewrite/" + name + ".test"
     registerTest("[ASTRewrite] " + filename, ASTRewriteTest) { astRewriteTest(ast, astName) }
 
-    val ir = ast.flatMap(compile.compile(config, _))
+    val ir = ast.flatMap(Compile(_, config))
     val compileName = resDir + "/compile/" + name + ".test"
     registerTest("[Compile]" + filename, CompileTest) { compileTest(ir, compileName) }
 
-    val cfg = ir.flatMap(cfgBuild.cfgBuild(config, _))
+    val cfg = ir.flatMap(CFGBuild(_, config))
     val cfgName = resDir + "/cfg/" + name + ".test"
     registerTest("[CFG]" + filename, CFGBuildTest) { cfgBuildTest(cfg, cfgName) }
   }
 
-  val analyzerTestDir = Config.BASE_DIR + SEP + "tests/js/semantics"
+  val analyzerTestDir = BASE_DIR + SEP + "tests/js/semantics"
   for (filename <- scala.util.Random.shuffle(new File(analyzerTestDir).list(jsFilter).toSeq)) {
     val jsName = analyzerTestDir + SEP + filename
 
-    val (config, phase) = ArgParse(List("analyze", "-analyze:testMode", jsName)).get
-    val analyzer = phase.asInstanceOf[Analyze]
-    val analysis = analyzer.analyze(config)
+    val analysis = CmdAnalyze(List("-analyze:testMode", jsName))
 
     //TODO    registerTest("[Analyze]" + filename, AnalyzeTest) { analyzeTest(analysis, config.addrManager) }
   }

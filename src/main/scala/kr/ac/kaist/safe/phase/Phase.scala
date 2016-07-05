@@ -11,31 +11,42 @@
 
 package kr.ac.kaist.safe.phase
 
-import scala.collection.immutable.HashMap
-import scala.util.{ Try, Success, Failure }
-import kr.ac.kaist.safe.config.{ Config, ConfigOption }
-import kr.ac.kaist.safe.errors.error.OptConflictError
+import scala.util.Try
+import kr.ac.kaist.safe.SafeConfig
+import kr.ac.kaist.safe.util.ArgParser
 
-abstract class Phase(
-    mayPrev: Option[Phase],
-    mayConfig: Option[ConfigOption]
-) {
-  def apply(config: Config): Unit = ()
-  lazy val optRegexMap: Try[OptRegexMap] = {
-    val empty: OptRegexMap = HashMap()
-    (mayConfig match {
-      case Some(configOption) => configOption.optRegexMap
-      case None => Success(empty)
-    }).flatMap(map => (mayPrev match {
-      case Some(prev) => prev.optRegexMap
-      case None => Success(empty)
-    }).flatMap(pMap => (pMap.keySet intersect map.keySet).isEmpty match {
-      case true => Success(pMap ++ map)
-      case false => Failure(OptConflictError)
-    }))
+abstract class Phase {
+  val name: String
+  val help: String
+  def getOptShapes: List[String]
+  def getOptDescs: List[(String, String)]
+}
+abstract class PhaseObj[Input, PhaseConfig <: Config, Output] extends Phase {
+  val name: String
+  val help: String
+  def apply(
+    in: Input,
+    safeConfig: SafeConfig,
+    config: PhaseConfig = defaultConfig
+  ): Try[Output]
+  def defaultConfig: PhaseConfig
+  val options: List[PhaseOption[PhaseConfig]] // TODO option conflict check
+
+  def getRunner(
+    parser: ArgParser
+  ): Try[(Input, SafeConfig) => Try[Output]] = {
+    val config = defaultConfig
+    parser.addRule(config, name, options).map(_ => {
+      (in, safeConfig) => apply(in, safeConfig, config)
+    })
+  }
+
+  def getOptShapes: List[String] = options.map {
+    case (opt, kind, _) => s"-$name:${opt}${kind.postfix}"
+  }
+  def getOptDescs: List[(String, String)] = options.map {
+    case (opt, kind, desc) => (s"-$name:${opt}${kind.postfix}", desc)
   }
 }
 
-trait PhaseHelper {
-  def create: Phase
-}
+trait Config

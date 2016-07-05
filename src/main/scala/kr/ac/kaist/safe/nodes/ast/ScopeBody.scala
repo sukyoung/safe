@@ -12,7 +12,7 @@
 package kr.ac.kaist.safe.nodes.ast
 
 import kr.ac.kaist.safe.util.{ NodeUtil => NU }
-import kr.ac.kaist.safe.config.Config
+import kr.ac.kaist.safe.LINE_SEP
 
 // Common body for program and functions
 abstract class ScopeBody(
@@ -55,13 +55,13 @@ case class Functional(
       .append("(")
       .append(NU.join(indent, params, ", ", new StringBuilder("")))
       .append(") ")
-      .append(Config.LINE_SEP)
+      .append(LINE_SEP)
       .append(NU.getIndent(indent))
       .append("{")
-      .append(Config.LINE_SEP)
+      .append(LINE_SEP)
     NU.prUseStrictDirective(s, indent, fds, vds, stmts)
     NU.prFtn(s, indent, fds, vds, stmts.body)
-    s.append(Config.LINE_SEP)
+    s.append(LINE_SEP)
       .append(NU.getIndent(indent))
       .append("}")
     s.toString

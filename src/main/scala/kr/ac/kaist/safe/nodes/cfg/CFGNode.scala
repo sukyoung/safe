@@ -11,7 +11,7 @@
 
 package kr.ac.kaist.safe.nodes.cfg
 
-import kr.ac.kaist.safe.config.Config
+import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.nodes.Node
 import kr.ac.kaist.safe.nodes.ast.Comment
 import kr.ac.kaist.safe.nodes.ir.IRNode
@@ -33,5 +33,5 @@ abstract class CFGNode(val ir: IRNode)
   def end: SourceLoc = ir.end
   def line: Int = ir.line
   def offset: Int = ir.offset
-  def toString(indent: Int): String = "  " * indent + toString() + Config.LINE_SEP
+  def toString(indent: Int): String = "  " * indent + toString() + LINE_SEP
 }

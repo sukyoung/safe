@@ -14,7 +14,7 @@ package kr.ac.kaist.safe.nodes.ast
 import java.lang.Double
 import java.math.BigInteger
 import kr.ac.kaist.safe.util.{ NodeUtil => NU }
-import kr.ac.kaist.safe.config.Config
+import kr.ac.kaist.safe.LINE_SEP
 
 abstract class Expr(
     override val info: ASTNodeInfo
@@ -307,15 +307,15 @@ case class ObjectExpr(
     val s: StringBuilder = new StringBuilder
     comment.map(c => s.append(c.toString(indent)))
     s.append("{")
-      .append(Config.LINE_SEP)
+      .append(LINE_SEP)
       .append(NU.getIndent(indent + 1))
       .append(NU.join(
         indent + 1,
         members,
-        "," + Config.LINE_SEP + NU.getIndent(indent + 1),
+        "," + LINE_SEP + NU.getIndent(indent + 1),
         new StringBuilder("")
       ))
-      .append(Config.LINE_SEP)
+      .append(LINE_SEP)
       .append(NU.getIndent(indent))
       .append("}")
     s.toString
@@ -353,13 +353,13 @@ case class FunExpr(
         new StringBuilder("")
       ))
       .append(") ")
-      .append(Config.LINE_SEP)
+      .append(LINE_SEP)
       .append(NU.getIndent(indent))
       .append("{")
-      .append(Config.LINE_SEP)
+      .append(LINE_SEP)
     NU.prUseStrictDirective(s, indent, ftn.fds, ftn.vds, ftn.stmts)
     NU.prFtn(s, indent, ftn.fds, ftn.vds, ftn.stmts.body)
-    s.append(Config.LINE_SEP)
+    s.append(LINE_SEP)
       .append(NU.getIndent(indent))
       .append("})")
     s.toString

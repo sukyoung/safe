@@ -14,7 +14,7 @@ package kr.ac.kaist.safe.analyzer.console.command
 import jline.console.ConsoleReader
 import kr.ac.kaist.safe.analyzer.console._
 import kr.ac.kaist.safe.analyzer.domain._
-import kr.ac.kaist.safe.config.Config
+import kr.ac.kaist.safe.LINE_SEP
 
 // run instructions
 case object CmdRunInsts extends Command("run_insts", "Run instruction by instruction.") {
@@ -35,8 +35,8 @@ case object CmdRunInsts extends Command("run_insts", "Run instruction by instruc
           case ((oldSt, oldExcSt, true), inst) =>
             println
             reader.setPrompt(
-              s"inst: [${inst.id}] $inst" + Config.LINE_SEP +
-                s"('s': state / 'q': stop / 'n','': next)" + Config.LINE_SEP +
+              s"inst: [${inst.id}] $inst" + LINE_SEP +
+                s"('s': state / 'q': stop / 'n','': next)" + LINE_SEP +
                 s"> "
             )
             var line = ""

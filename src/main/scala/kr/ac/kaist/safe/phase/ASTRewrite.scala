@@ -11,25 +11,23 @@
 
 package kr.ac.kaist.safe.phase
 
-import java.io.{ BufferedWriter, FileWriter, IOException }
-import scala.util.{ Try, Success, Failure }
-import kr.ac.kaist.safe.config.{ Config, ConfigOption, OptionKind, BoolOption, StrOption }
+import scala.util.{ Try, Success }
+import kr.ac.kaist.safe.SafeConfig
 import kr.ac.kaist.safe.ast_rewriter.{ Hoister, Disambiguator, WithRewriter }
-import kr.ac.kaist.safe.errors.ExcLog
 import kr.ac.kaist.safe.nodes.ast.Program
-import kr.ac.kaist.safe.util.{ NodeUtil, Useful }
+import kr.ac.kaist.safe.util._
 
 // ASTRewrite phase
-case class ASTRewrite(
-    prev: Parse = Parse(),
-    astRewriteConfig: ASTRewriteConfig = ASTRewriteConfig()
-) extends Phase(Some(prev), Some(astRewriteConfig)) {
-  override def apply(config: Config): Unit = rewrite(config) recover {
-    case ex => Console.err.print(ex.getMessage)
-  }
-  def rewrite(config: Config): Try[Program] =
-    prev.parse(config).flatMap(rewrite(config, _))
-  def rewrite(config: Config, pgm: Program): Try[Program] = {
+case object ASTRewrite extends PhaseObj[Program, ASTRewriteConfig, Program] {
+  val name: String = "astRewriter"
+  val help: String =
+    "Rewrites AST in JavaScript source files (hoister, disambiguater, withRewriter)"
+
+  def apply(
+    pgm: Program,
+    safeConfig: SafeConfig,
+    config: ASTRewriteConfig
+  ): Try[Program] = {
     // hoist
     val hoister = new Hoister(pgm)
     var program = hoister.result
@@ -52,7 +50,7 @@ case class ASTRewrite(
     }
 
     // Pretty print to file.
-    astRewriteConfig.outFile match {
+    config.outFile match {
       case Some(out) => {
         val ((fw, writer)) = Useful.fileNameToWriters(out)
         writer.write(program.toString(0))
@@ -64,21 +62,18 @@ case class ASTRewrite(
 
     Success(program)
   }
-}
 
-// ASTRewrite phase helper.
-object ASTRewrite extends PhaseHelper {
-  def create: ASTRewrite = ASTRewrite()
-}
-
-// Config options for the ASTRewrite phase.
-case class ASTRewriteConfig(
-    var verbose: Boolean = false,
-    var outFile: Option[String] = None
-) extends ConfigOption {
-  val prefix: String = "astRewrite:"
-  val options: List[(String, OptionKind)] = List(
-    ("verbose", BoolOption(() => verbose = true)),
-    ("out", StrOption((s: String) => outFile = Some(s)))
+  def defaultConfig: ASTRewriteConfig = ASTRewriteConfig()
+  val options: List[PhaseOption[ASTRewriteConfig]] = List(
+    ("verbose", BoolOption(c => c.verbose = true),
+      "messages during rewriting AST are printed."),
+    ("out", StrOption((c, s) => c.outFile = Some(s)),
+      "the disambiguated AST will be written to the outfile.")
   )
 }
+
+// ASTRewrite phase config
+case class ASTRewriteConfig(
+  var verbose: Boolean = false,
+  var outFile: Option[String] = None
+) extends Config

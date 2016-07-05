@@ -12,7 +12,7 @@
 package kr.ac.kaist.safe.nodes.ast
 
 import kr.ac.kaist.safe.util.{ NodeUtil => NU }
-import kr.ac.kaist.safe.config.Config
+import kr.ac.kaist.safe.LINE_SEP
 
 // SourceElement ::= Stmt
 abstract class Stmt(
@@ -45,14 +45,14 @@ case class StmtUnit(
     val s: StringBuilder = new StringBuilder
     comment.map(c => s.append(c.toString(indent)))
     s.append("{")
-      .append(Config.LINE_SEP)
+      .append(LINE_SEP)
       .append(NU.getIndent(indent + 1))
       .append(NU.join(
         indent + 1, stmts,
-        Config.LINE_SEP + NU.getIndent(indent + 1),
+        LINE_SEP + NU.getIndent(indent + 1),
         new StringBuilder("")
       ))
-      .append(Config.LINE_SEP)
+      .append(LINE_SEP)
       .append(NU.getIndent(indent))
       .append("}")
     s.toString
@@ -84,15 +84,15 @@ case class ABlock(
     val s: StringBuilder = new StringBuilder
     comment.map(c => s.append(c.toString(indent)))
     s.append("{")
-      .append(Config.LINE_SEP)
+      .append(LINE_SEP)
       .append(NU.getIndent(indent + 1))
       .append(NU.join(
         indent + 1,
         stmts,
-        Config.LINE_SEP + NU.getIndent(indent + 1),
+        LINE_SEP + NU.getIndent(indent + 1),
         new StringBuilder("")
       ))
-      .append(Config.LINE_SEP)
+      .append(LINE_SEP)
       .append(NU.getIndent(indent))
       .append("}")
     s.toString
@@ -175,16 +175,16 @@ case class If(
     s.append("if (")
       .append(cond.toString(indent))
       .append(")")
-      .append(Config.LINE_SEP)
+      .append(LINE_SEP)
       .append(NU.getIndent(trueIndent))
       .append(trueBranch.toString(trueIndent))
     falseBranch match {
       case Some(fb) =>
         val falseIndent = fb.getIndent(indent)
-        s.append(Config.LINE_SEP)
+        s.append(LINE_SEP)
           .append(NU.getIndent(indent))
           .append("else")
-          .append(Config.LINE_SEP)
+          .append(LINE_SEP)
           .append(NU.getIndent(falseIndent))
           .append(fb.toString(falseIndent))
       case _ =>
@@ -204,7 +204,7 @@ case class DoWhile(
     comment.map(c => s.append(c.toString(indent)))
     var bodyIndent = body.getIndent(indent)
     s.append("do")
-      .append(Config.LINE_SEP)
+      .append(LINE_SEP)
       .append(NU.getIndent(bodyIndent))
       .append(body.toString(bodyIndent))
       .append("while (")
@@ -227,7 +227,7 @@ case class While(
     s.append("while (")
     s.append(cond.toString(indent))
       .append(")")
-      .append(Config.LINE_SEP)
+      .append(LINE_SEP)
       .append(NU.getIndent(bodyIndent))
       .append(body.toString(bodyIndent))
     s.toString
@@ -253,7 +253,7 @@ case class For(
     s.append(";")
     action.map(a => s.append(a.toString(indent)))
     s.append(")")
-      .append(Config.LINE_SEP)
+      .append(LINE_SEP)
       .append(NU.getIndent(bodyIndent))
       .append(body.toString(bodyIndent))
     s.toString
@@ -276,7 +276,7 @@ case class ForIn(
       .append(" in ")
       .append(expr.toString(indent))
       .append(")")
-      .append(Config.LINE_SEP)
+      .append(LINE_SEP)
       .append(NU.getIndent(bodyIndent))
       .append(body.toString(bodyIndent))
     s.toString
@@ -307,7 +307,7 @@ case class ForVar(
     s.append(";")
     action.map(a => s.append(a.toString(indent)))
     s.append(")")
-      .append(Config.LINE_SEP)
+      .append(LINE_SEP)
       .append(NU.getIndent(bodyIndent))
       .append(body.toString(bodyIndent))
     s.toString
@@ -330,7 +330,7 @@ case class ForVarIn(
       .append(" in ")
       .append(expr.toString(indent))
       .append(")")
-      .append(Config.LINE_SEP)
+      .append(LINE_SEP)
       .append(NU.getIndent(bodyIndent))
       .append(body.toString(bodyIndent))
     s.toString
@@ -395,7 +395,7 @@ case class With(
     s.append("with (")
       .append(expr.toString(indent))
       .append(")")
-      .append(Config.LINE_SEP)
+      .append(LINE_SEP)
       .append(NU.getIndent(stmtIndent))
       .append(stmt.toString(stmtIndent))
     s.toString
@@ -416,36 +416,36 @@ case class Switch(
     s.append("switch (")
       .append(cond.toString(indent))
       .append("){")
-      .append(Config.LINE_SEP)
+      .append(LINE_SEP)
       .append(NU.getIndent(indent + 1))
       .append(NU.join(
         indent + 1,
         frontCases,
-        Config.LINE_SEP + NU.getIndent(indent + 1),
+        LINE_SEP + NU.getIndent(indent + 1),
         new StringBuilder("")
       ))
     defopt.map(d => {
-      s.append(Config.LINE_SEP)
+      s.append(LINE_SEP)
         .append(NU.getIndent(indent + 1))
         .append("default:")
-        .append(Config.LINE_SEP)
+        .append(LINE_SEP)
         .append(NU.getIndent(indent + 2))
         .append(NU.join(
           indent + 2,
           d,
-          Config.LINE_SEP + NU.getIndent(indent + 2),
+          LINE_SEP + NU.getIndent(indent + 2),
           new StringBuilder("")
         ))
     })
-    s.append(Config.LINE_SEP)
+    s.append(LINE_SEP)
       .append(NU.getIndent(indent + 1))
       .append(NU.join(
         indent + 1,
         backCases,
-        Config.LINE_SEP + NU.getIndent(indent + 1),
+        LINE_SEP + NU.getIndent(indent + 1),
         new StringBuilder("")
       ))
-      .append(Config.LINE_SEP)
+      .append(LINE_SEP)
       .append(NU.getIndent(indent))
       .append("}")
     s.toString
@@ -464,15 +464,15 @@ case class Case(
     s.append("case ")
       .append(cond.toString(indent))
       .append(":")
-      .append(Config.LINE_SEP)
+      .append(LINE_SEP)
       .append(NU.getIndent(indent + 1))
       .append(NU.join(
         indent + 1,
         body,
-        Config.LINE_SEP + NU.getIndent(indent + 1),
+        LINE_SEP + NU.getIndent(indent + 1),
         new StringBuilder("")
       ))
-      .append(Config.LINE_SEP)
+      .append(LINE_SEP)
     s.toString
   }
 }
@@ -519,36 +519,36 @@ case class Try(
     val s: StringBuilder = new StringBuilder
     comment.map(c => s.append(c.toString(indent)))
     s.append("try")
-      .append(Config.LINE_SEP)
+      .append(LINE_SEP)
       .append("{")
       .append(NU.getIndent(indent + 1))
       .append(NU.join(
         indent + 1,
         body,
-        Config.LINE_SEP + NU.getIndent(indent + 1),
+        LINE_SEP + NU.getIndent(indent + 1),
         new StringBuilder("")
       ))
       .append("}")
     catchBlock.map(c => {
-      s.append(Config.LINE_SEP)
+      s.append(LINE_SEP)
         .append(NU.getIndent(indent))
         .append(c.toString(indent))
     })
     fin.map(f => {
-      s.append(Config.LINE_SEP)
+      s.append(LINE_SEP)
         .append(NU.getIndent(indent))
         .append("finally")
-        .append(Config.LINE_SEP)
+        .append(LINE_SEP)
         .append("{")
         .append(NU.getIndent(indent + 1))
         .append(NU.join(
           indent + 1,
           f,
-          Config.LINE_SEP + NU.getIndent(indent + 1),
+          LINE_SEP + NU.getIndent(indent + 1),
           new StringBuilder("")
         ))
         .append("}")
-        .append(Config.LINE_SEP)
+        .append(LINE_SEP)
     })
     s.toString
   }
@@ -566,17 +566,17 @@ case class Catch(
     s.append("catch (")
       .append(id.toString(indent))
       .append(")")
-      .append(Config.LINE_SEP)
+      .append(LINE_SEP)
       .append("{")
       .append(NU.getIndent(indent + 1))
       .append(NU.join(
         indent + 1,
         body,
-        Config.LINE_SEP + NU.getIndent(indent + 1),
+        LINE_SEP + NU.getIndent(indent + 1),
         new StringBuilder("")
       ))
       .append("}")
-      .append(Config.LINE_SEP)
+      .append(LINE_SEP)
     s.toString
   }
 }

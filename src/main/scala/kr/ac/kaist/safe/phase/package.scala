@@ -12,9 +12,10 @@
 package kr.ac.kaist.safe
 
 import scala.util.Try
+import kr.ac.kaist.safe.util.OptionKind
 
 package object phase {
-  // Mapping between Config options and their regular expressions
   type Regex = scala.util.matching.Regex
-  type OptRegexMap = Map[String, List[(Regex, Regex, String => Try[Unit])]]
+  type ArgRegex[PhaseConfig <: Config] = (Regex, Regex, (PhaseConfig, String) => Try[Unit])
+  type PhaseOption[PhaseConfig <: Config] = (String, OptionKind[PhaseConfig], String)
 }

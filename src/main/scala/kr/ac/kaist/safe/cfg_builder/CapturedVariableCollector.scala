@@ -16,15 +16,15 @@ import kr.ac.kaist.safe.errors.ExcLog
 import kr.ac.kaist.safe.errors.error._
 import kr.ac.kaist.safe.errors.warning._
 import kr.ac.kaist.safe.nodes.ir._
-import kr.ac.kaist.safe.config.Config
+import kr.ac.kaist.safe.SafeConfig
 import kr.ac.kaist.safe.phase.CFGBuildConfig
 
 // Collects captured variables in a given IRNode
 // Used by compiler/DefaultCFGBuilder.scala
 class CapturedVariableCollector(
     irRoot: IRRoot,
-    config: Config,
-    cfgConfig: CFGBuildConfig
+    safeConfig: SafeConfig,
+    config: CFGBuildConfig
 ) {
   ////////////////////////////////////////////////////////////////
   // results
@@ -161,7 +161,7 @@ class CapturedVariableCollector(
       case IRWhile(_, cond, body) =>
         walk(cond, locals) ++ walk(body, locals)
       case _ =>
-        if (config.verbose || cfgConfig.verbose) excLog.signal(IRIgnored(stmt))
+        if (safeConfig.verbose || config.verbose) excLog.signal(IRIgnored(stmt))
         EMPTY
     }
 

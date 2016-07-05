@@ -14,7 +14,7 @@ package kr.ac.kaist.safe.nodes.cfg
 import scala.collection.mutable.{ HashMap => MHashMap, Map => MMap }
 import kr.ac.kaist.safe.analyzer.domain.State
 import kr.ac.kaist.safe.analyzer.CallContext
-import kr.ac.kaist.safe.config.Config
+import kr.ac.kaist.safe.{ LINE_SEP, MAX_INST_PRINT_SIZE }
 import kr.ac.kaist.safe.util._
 
 sealed abstract class CFGBlock {
@@ -76,7 +76,7 @@ sealed abstract class CFGBlock {
     val s: StringBuilder = new StringBuilder
     s.append(pre).append(toString())
       .append(getSuccsStr)
-      .append(Config.LINE_SEP)
+      .append(LINE_SEP)
     s.toString
   }
 
@@ -121,8 +121,8 @@ case class Call(func: CFGFunction) extends CFGBlock {
     val pre = "  " * indent
     val s: StringBuilder = new StringBuilder
     s.append(pre).append(toString)
-    s.append(getSuccsStr).append(Config.LINE_SEP)
-      .append(pre).append(s"  [${callInst.id}] $callInst").append(Config.LINE_SEP)
+    s.append(getSuccsStr).append(LINE_SEP)
+      .append(pre).append(s"  [${callInst.id}] $callInst").append(LINE_SEP)
     s.toString
   }
   def span: Span = callInst.span
@@ -172,18 +172,18 @@ case class NormalBlock(func: CFGFunction) extends CFGBlock {
     val pre = "  " * indent
     val s: StringBuilder = new StringBuilder
     s.append(pre).append(toString)
-    s.append(getSuccsStr).append(Config.LINE_SEP)
+    s.append(getSuccsStr).append(LINE_SEP)
     val instLen = insts.length
-    instLen > Config.MAX_INST_PRINT_SIZE match {
+    instLen > MAX_INST_PRINT_SIZE match {
       case true =>
         s.append(pre)
           .append(s"  A LOT!!! $instLen instructions are not printed here.")
-          .append(Config.LINE_SEP)
+          .append(LINE_SEP)
       case false => insts.reverseIterator.foreach {
         case inst =>
           s.append(pre)
             .append(s"  [${inst.id}] $inst")
-            .append(Config.LINE_SEP)
+            .append(LINE_SEP)
       }
     }
     s.toString

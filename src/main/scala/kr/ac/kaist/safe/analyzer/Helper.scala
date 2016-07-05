@@ -13,7 +13,6 @@ package kr.ac.kaist.safe.analyzer
 
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.cfg_builder.AddressManager
-import kr.ac.kaist.safe.config.Config
 import kr.ac.kaist.safe.nodes.cfg._
 import scala.util.Try
 import scala.collection.immutable.HashSet

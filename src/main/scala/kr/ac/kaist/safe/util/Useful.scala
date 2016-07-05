@@ -13,12 +13,12 @@ package kr.ac.kaist.safe.util
 
 import scala.util.Try
 import java.io.{ BufferedWriter, File, FileWriter, IOException }
-import kr.ac.kaist.safe.config.Config
+import kr.ac.kaist.safe.{ LINE_SEP, CUR_DIR }
 
 object Useful {
   def toRelativePath(fileName: String): String = {
-    fileName startsWith Config.CUR_DIR match {
-      case true => fileName.substring(Config.CUR_DIR.length + 1)
+    fileName startsWith CUR_DIR match {
+      case true => fileName.substring(CUR_DIR.length + 1)
       case false => fileName
     }
   }
@@ -37,4 +37,8 @@ object Useful {
 
   def fileNameToFileWriter(fileName: String): FileWriter =
     new FileWriter(fileName)
+
+  def indentation(str: String, indent: Int): String = {
+    str.split(LINE_SEP).mkString(LINE_SEP + " " * indent)
+  }
 }

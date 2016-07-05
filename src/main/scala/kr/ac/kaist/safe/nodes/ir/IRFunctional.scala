@@ -11,7 +11,7 @@
 
 package kr.ac.kaist.safe.nodes.ir
 
-import kr.ac.kaist.safe.config.Config
+import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.nodes.ast.Functional
 import kr.ac.kaist.safe.util.NodeUtil
 
@@ -30,10 +30,10 @@ case class IRFunctional(
     val s: StringBuilder = new StringBuilder
     s.append(name.toString(indent)).append("(")
     s.append(NodeUtil.join(indent, params, ", ", new StringBuilder("")))
-    s.append(") ").append(Config.LINE_SEP).append(NodeUtil.getIndent(indent)).append("{").append(Config.LINE_SEP)
+    s.append(") ").append(LINE_SEP).append(NodeUtil.getIndent(indent)).append("{").append(LINE_SEP)
     s.append(NodeUtil.getIndent(indent + 1))
-    s.append(NodeUtil.join(indent + 1, fds ++ vds ++ args ++ body, Config.LINE_SEP + NodeUtil.getIndent(indent + 1), new StringBuilder("")))
-    s.append(Config.LINE_SEP).append(NodeUtil.getIndent(indent)).append("}")
+    s.append(NodeUtil.join(indent + 1, fds ++ vds ++ args ++ body, LINE_SEP + NodeUtil.getIndent(indent + 1), new StringBuilder("")))
+    s.append(LINE_SEP).append(NodeUtil.getIndent(indent)).append("}")
     s.toString
   }
 }

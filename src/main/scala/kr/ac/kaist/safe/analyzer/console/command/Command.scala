@@ -11,14 +11,10 @@
 
 package kr.ac.kaist.safe.analyzer.console.command
 
-// import jline.console.ConsoleReader
-// import scala.util.matching.Regex
-// import kr.ac.kaist.safe.analyzer.{ ControlPoint, Worklist }
-// import kr.ac.kaist.safe.cfg_builder.DotWriter
-// import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.analyzer.console._
 import kr.ac.kaist.safe.analyzer.domain._
-import kr.ac.kaist.safe.config.Config
+import kr.ac.kaist.safe.LINE_SEP
+import kr.ac.kaist.safe.util.Useful
 
 abstract class Command(
     val name: String,
@@ -26,16 +22,6 @@ abstract class Command(
 ) {
   def run(c: Console, args: List[String]): Option[Target]
   def help: Unit
-
-  private def indentation(objStr: String, indent: Int): String = {
-    val arr = objStr.split(Config.LINE_SEP)
-    if (arr.length < 2) objStr
-    else {
-      val space = " " * indent
-      val tailStr = arr.tail.map(s => space + s).mkString(Config.LINE_SEP)
-      arr.head + Config.LINE_SEP + tailStr
-    }
-  }
 
   private def showValue(c: Console, v: Value): String = {
     val (pvalue, locset) = (v.pvalue, v.locset)
@@ -83,7 +69,7 @@ abstract class Command(
       case (true, true) => "⊥PropValue"
       case (true, false) => funidSetStr
       case (false, true) => objValStr
-      case (false, false) => objValStr + Config.LINE_SEP + funidSetStr
+      case (false, false) => objValStr + LINE_SEP + funidSetStr
     }
   }
 
@@ -97,7 +83,7 @@ abstract class Command(
         case AbsentTop => s" @-> "
         case AbsentBot => s" |-> "
       }) + showPropValue(c, propv)
-    }.mkString(Config.LINE_SEP)
+    }.mkString(LINE_SEP)
   }
 
   private def locName(c: Console, loc: Loc): String = {
@@ -108,7 +94,7 @@ abstract class Command(
   private def showLoc(c: Console, loc: Loc, obj: Obj): String = {
     val am = c.addrManager
     val keyStr = locName(c, loc) + " -> "
-    val indentedStr = indentation(showObj(c, obj), keyStr.length)
+    val indentedStr = Useful.indentation(showObj(c, obj), keyStr.length)
     keyStr + indentedStr
   }
 
@@ -133,17 +119,17 @@ abstract class Command(
 
       sortedSeq.map {
         case (loc, obj) => showLoc(c, loc, obj)
-      }.mkString(Config.LINE_SEP)
+      }.mkString(LINE_SEP)
     }
   }
 
   protected def showContext(c: Console, ctxt: Context, all: Boolean = false): String = "" // TODO
 
   protected def showState(c: Console, state: State, all: Boolean = false): String = {
-    "** heap **" + Config.LINE_SEP +
-      showHeap(c, state.heap, all) + Config.LINE_SEP +
-      Config.LINE_SEP +
-      "** context **" + Config.LINE_SEP +
+    "** heap **" + LINE_SEP +
+      showHeap(c, state.heap, all) + LINE_SEP +
+      LINE_SEP +
+      "** context **" + LINE_SEP +
       showContext(c, state.context, all)
   }
 
@@ -151,8 +137,8 @@ abstract class Command(
     c.addrManager.parseLocName(str)
 
   protected def grep(key: String, str: String): String = {
-    str.split(Config.LINE_SEP)
+    str.split(LINE_SEP)
       .filter(_.contains(key))
-      .mkString(Config.LINE_SEP)
+      .mkString(LINE_SEP)
   }
 }

@@ -12,7 +12,7 @@
 package kr.ac.kaist.safe.nodes.ir
 
 import kr.ac.kaist.safe.nodes.ast.{ ASTNode, Label, Id }
-import kr.ac.kaist.safe.config.Config
+import kr.ac.kaist.safe.SIGNIFICANT_BITS
 import kr.ac.kaist.safe.util._
 
 // Expression
@@ -78,7 +78,7 @@ abstract class IRId(
     val global: Boolean
 ) extends IRExpr(ast) {
   override def toString(indent: Int): String = {
-    val size = Config.SIGNIFICANT_BITS
+    val size = SIGNIFICANT_BITS
     val str = uniqueName match {
       case x if (NodeUtil.isInternal(x) && !NodeUtil.isGlobalName(x)) =>
         uniqueName.dropRight(size) + NodeUtil.getNodesE(uniqueName.takeRight(size))
@@ -91,7 +91,7 @@ abstract class IRId(
 
   // When this IRId is a property string name, use toPropName instead of toString
   def toPropName(indent: Int): String = {
-    val size = Config.SIGNIFICANT_BITS
+    val size = SIGNIFICANT_BITS
     val str = uniqueName match {
       case x if (NodeUtil.isInternal(x) && !NodeUtil.isGlobalName(x)) =>
         uniqueName.dropRight(size) + NodeUtil.getNodesE(uniqueName.takeRight(size))

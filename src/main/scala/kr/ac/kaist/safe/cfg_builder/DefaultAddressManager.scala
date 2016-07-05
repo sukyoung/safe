@@ -17,7 +17,7 @@ import scala.util.matching.Regex
 import kr.ac.kaist.safe.nodes.cfg.{ FunctionId, InstId }
 import kr.ac.kaist.safe.analyzer.domain.{ Address, Loc, RecencyTag, Recent, Old }
 
-// Set by config/Config.scala
+// Set by SafeConfig.scala
 class DefaultAddressManager extends AddressManager {
   private object AMObj {
     // Address 0 is pre-allocated for Global Callsite.

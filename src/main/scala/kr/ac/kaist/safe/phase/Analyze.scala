@@ -14,37 +14,36 @@ package kr.ac.kaist.safe.phase
 import kr.ac.kaist.safe.analyzer._
 
 import scala.util.{ Failure, Success, Try }
-import kr.ac.kaist.safe.config.{ BoolOption, Config, ConfigOption, NumOption, OptionKind, StrOption }
+import kr.ac.kaist.safe.SafeConfig
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.analyzer.console.Console
 import kr.ac.kaist.safe.nodes.cfg.CFG
+import kr.ac.kaist.safe.util._
 
-// Analyze phase struct.
-case class Analyze(
-    prev: CFGBuild = CFGBuild(),
-    analyzeConfig: AnalyzeConfig = AnalyzeConfig()
-) extends Phase(Some(prev), Some(analyzeConfig)) {
-  override def apply(config: Config): Unit = analyze(config) recover {
-    case ex => System.err.print(ex.getMessage)
-  }
-  def analyze(config: Config): Try[(CFG, CallContext)] =
-    prev.cfgBuild(config).flatMap(analyze(config, _))
+// Analyze phase
+case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, CallContext)] {
+  val name: String = "analyzer"
+  val help: String = "Analyze the JavaScript source files."
 
-  def analyze(config: Config, cfg: CFG): Try[(CFG, CallContext)] = {
-    val utils = Utils(analyzeConfig.AbsUndef, analyzeConfig.AbsNull, analyzeConfig.AbsBool, analyzeConfig.AbsNumber, analyzeConfig.AbsString)
-    val callCtxManager = CallContextManager(config.addrManager)
+  def apply(
+    cfg: CFG,
+    safeConfig: SafeConfig,
+    config: AnalyzeConfig
+  ): Try[(CFG, CallContext)] = {
+    val utils = Utils(config.AbsUndef, config.AbsNull, config.AbsBool, config.AbsNumber, config.AbsString)
+    val callCtxManager = CallContextManager(safeConfig.addrManager)
 
     val worklist = Worklist(cfg)
     worklist.add(ControlPoint(cfg.globalFunc.entry, callCtxManager.globalCallContext))
-    val helper = Helper(utils, config.addrManager)
+    val helper = Helper(utils, safeConfig.addrManager)
     val semantics = new Semantics(cfg, worklist, helper)
     val init = Initialize(helper)
     val initSt =
-      if (analyzeConfig.testMode) init.testState
+      if (config.testMode) init.testState
       else init.state
     cfg.globalFunc.entry.setState(callCtxManager.globalCallContext, initSt)
-    val consoleOpt = analyzeConfig.console match {
-      case true => Some(new Console(cfg, worklist, semantics, config.addrManager))
+    val consoleOpt = config.console match {
+      case true => Some(new Console(cfg, worklist, semantics, safeConfig.addrManager))
       case false => None
     }
     val fixpoint = new Fixpoint(semantics, worklist, consoleOpt)
@@ -59,33 +58,34 @@ case class Analyze(
 
     Success((cfg, callCtxManager.globalCallContext))
   }
-}
 
-// Analyze phase helper.
-object Analyze extends PhaseHelper {
-  def create: Analyze = Analyze()
-}
-
-// Config options for Analyze phase.
-case class AnalyzeConfig(
-    var verbose: Boolean = false,
-    var console: Boolean = false,
-    var outFile: Option[String] = None,
-    var AbsUndef: AbsUndefUtil = DefaultUndefUtil,
-    var AbsNull: AbsNullUtil = DefaultNullUtil,
-    var AbsBool: AbsBoolUtil = DefaultBoolUtil,
-    var AbsNumber: AbsNumberUtil = DefaultNumUtil,
-    var AbsString: AbsStringUtil = new DefaultStrSetUtil(0),
-    var callsiteSensitivity: Int = -1,
-    var testMode: Boolean = false
-) extends ConfigOption {
-  val prefix: String = "analyze:"
-  val options: List[(String, OptionKind)] = List(
-    ("verbose", BoolOption(() => verbose = true)),
-    ("console", BoolOption(() => console = true)),
-    ("out", StrOption((s: String) => outFile = Some(s))),
-    ("maxStrSetSize", NumOption((n: Int) => if (n > 0) AbsString = new DefaultStrSetUtil(n))),
-    ("callsiteSensitivity", NumOption((n: Int) => if (n > 0) callsiteSensitivity = n)),
-    ("testMode", BoolOption(() => testMode = true))
+  def defaultConfig: AnalyzeConfig = AnalyzeConfig()
+  val options: List[PhaseOption[AnalyzeConfig]] = List(
+    ("verbose", BoolOption(c => c.verbose = true),
+      "messages during compilation are printed."),
+    ("console", BoolOption(c => c.console = true),
+      "you can use REPL-style debugger."),
+    ("out", StrOption((c, s) => c.outFile = Some(s)),
+      "the analysis results will be written to the outfile."),
+    ("maxStrSetSize", NumOption((c, n) => if (n > 0) c.AbsString = new DefaultStrSetUtil(n)),
+      "the analyzer will use the AbsString Set domain with given size limit n."),
+    ("callsiteSensitivity", NumOption((c, n) => if (n > 0) c.callsiteSensitivity = n),
+      ""), // TODO
+    ("testMode", BoolOption(c => c.testMode = true),
+      "") // TODO
   )
 }
+
+// Analyze phase config
+case class AnalyzeConfig(
+  var verbose: Boolean = false,
+  var console: Boolean = false,
+  var outFile: Option[String] = None,
+  var AbsUndef: AbsUndefUtil = DefaultUndefUtil,
+  var AbsNull: AbsNullUtil = DefaultNullUtil,
+  var AbsBool: AbsBoolUtil = DefaultBoolUtil,
+  var AbsNumber: AbsNumberUtil = DefaultNumUtil,
+  var AbsString: AbsStringUtil = new DefaultStrSetUtil(0),
+  var callsiteSensitivity: Int = -1,
+  var testMode: Boolean = false
+) extends Config

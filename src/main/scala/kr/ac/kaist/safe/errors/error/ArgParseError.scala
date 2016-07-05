@@ -11,6 +11,8 @@
 
 package kr.ac.kaist.safe.errors.error
 
+import kr.ac.kaist.safe.Command
+
 sealed abstract class ArgParseError(msg: String) extends SafeError(msg)
 
 case class ExtraArgError(name: String) extends ArgParseError({
@@ -33,12 +35,12 @@ case class NoCmdError(str: String) extends ArgParseError({
   s"Command '$str' does not exist."
 })
 
-case class NoInputError() extends ArgParseError({
+case object NoInputError extends ArgParseError({
   "Please input a command."
 })
 
-case class NoOptError(str: String, cmd: String) extends ArgParseError({
-  s"The option '-$str' is not available for the command '$cmd'."
+case class NoOptError(str: String, cmd: Command) extends ArgParseError({
+  s"The option '-$str' is not available for the command '${cmd.name}'."
 })
 
 case class NoOptArgError(opt: String, str: String) extends ArgParseError({

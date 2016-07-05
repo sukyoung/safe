@@ -11,7 +11,7 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
-import kr.ac.kaist.safe.config.Config
+import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.nodes.cfg.FunctionId
 
 trait PropValue {
@@ -31,7 +31,7 @@ trait PropValue {
       case (true, true) => "⊥PropValue"
       case (true, false) => funidSetStr
       case (false, true) => objValStr
-      case (false, false) => objValStr + Config.LINE_SEP + funidSetStr
+      case (false, false) => objValStr + LINE_SEP + funidSetStr
     }
   }
 

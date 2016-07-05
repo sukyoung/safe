@@ -13,7 +13,7 @@ package kr.ac.kaist.safe.errors
 
 import kr.ac.kaist.safe.errors.error.SafeError
 import kr.ac.kaist.safe.errors.warning.SafeWarning
-import kr.ac.kaist.safe.config.Config.LINE_SEP
+import kr.ac.kaist.safe.LINE_SEP
 
 class ExcLog(es: List[SafeError] = Nil, ws: List[SafeWarning] = Nil) {
   private var errs: List[SafeError] = es

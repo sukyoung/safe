@@ -12,7 +12,7 @@
 package kr.ac.kaist.safe.nodes.ast
 
 import kr.ac.kaist.safe.util.{ NodeUtil => NU }
-import kr.ac.kaist.safe.config.Config
+import kr.ac.kaist.safe.LINE_SEP
 
 // comment
 case class Comment(
@@ -22,7 +22,7 @@ case class Comment(
   def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     s.append(NU.getIndent(indent))
-    s.append(txt).append(Config.LINE_SEP)
+    s.append(txt).append(LINE_SEP)
     s.toString
   }
 }

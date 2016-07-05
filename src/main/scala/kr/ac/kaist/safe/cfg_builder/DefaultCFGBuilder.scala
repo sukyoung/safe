@@ -12,7 +12,7 @@
 package kr.ac.kaist.safe.cfg_builder
 
 import scala.collection.immutable.{ HashMap, HashSet }
-import kr.ac.kaist.safe.config.Config
+import kr.ac.kaist.safe.{ SafeConfig, SIGNIFICANT_BITS }
 import kr.ac.kaist.safe.errors.ExcLog
 import kr.ac.kaist.safe.errors.error._
 import kr.ac.kaist.safe.errors.warning._
@@ -25,9 +25,9 @@ import kr.ac.kaist.safe.analyzer.domain.Address
 // default CFG builder
 class DefaultCFGBuilder(
     ir: IRRoot,
-    config: Config,
-    cfgConfig: CFGBuildConfig
-) extends CFGBuilder(ir, config, cfgConfig) {
+    safeConfig: SafeConfig,
+    config: CFGBuildConfig
+) extends CFGBuilder(ir, safeConfig, config) {
   ////////////////////////////////////////////////////////////////
   // results
   ////////////////////////////////////////////////////////////////
@@ -72,7 +72,7 @@ class DefaultCFGBuilder(
 
   // initialize global variables
   private def init: (CFG, ExcLog) = {
-    val cvResult = new CapturedVariableCollector(ir, config, cfgConfig)
+    val cvResult = new CapturedVariableCollector(ir, safeConfig, config)
     catchVarMap = HashSet()
     captured = cvResult.result
     cfgIdMap = HashMap()
@@ -535,7 +535,7 @@ class DefaultCFGBuilder(
         cfg.addEdge(bs, headBlock)
         (List(loopOutBlock), lm.updated(ThrowLabel, (ThrowLabel of lm) + loopBodyBlock + loopOutBlock))
       case _ => {
-        if (config.verbose || cfgConfig.verbose) excLog.signal(IRIgnored(stmt))
+        if (safeConfig.verbose || config.verbose) excLog.signal(IRIgnored(stmt))
         (blocks, lmap)
       }
     }
@@ -612,7 +612,7 @@ class DefaultCFGBuilder(
       text
     } else {
       uniqueNameCounter += 1
-      text.dropRight(Config.SIGNIFICANT_BITS) + uniqueNameCounter.toString
+      text.dropRight(SIGNIFICANT_BITS) + uniqueNameCounter.toString
     }
     name
   }
@@ -651,5 +651,5 @@ class DefaultCFGBuilder(
   }
 
   // get new program address
-  private def newProgramAddr: Address = config.addrManager.newProgramAddr
+  private def newProgramAddr: Address = safeConfig.addrManager.newProgramAddr
 }
