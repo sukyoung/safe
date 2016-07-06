@@ -13,7 +13,6 @@ package kr.ac.kaist.safe
 
 import scala.collection.immutable.HashMap
 import scala.util.{ Try, Failure }
-import kr.ac.kaist.safe.cfg_builder.{ AddressManager, DefaultAddressManager }
 import kr.ac.kaist.safe.errors.SafeException
 import kr.ac.kaist.safe.errors.error.{ NoCmdError, NoInputError }
 import kr.ac.kaist.safe.phase._
@@ -143,6 +142,5 @@ case class SafeConfig(
   var command: Command,
   var fileNames: List[String] = Nil,
   var time: Boolean = false,
-  var verbose: Boolean = false,
-  var addrManager: AddressManager = new DefaultAddressManager
+  var verbose: Boolean = false
 ) extends Config

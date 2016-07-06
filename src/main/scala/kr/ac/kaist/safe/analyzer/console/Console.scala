@@ -21,14 +21,12 @@ import kr.ac.kaist.safe.analyzer.{ Worklist, Semantics, ControlPoint, CallContex
 import kr.ac.kaist.safe.analyzer.console.command._
 import kr.ac.kaist.safe.analyzer.domain.State
 import kr.ac.kaist.safe.nodes.cfg._
-import kr.ac.kaist.safe.cfg_builder.AddressManager
 import kr.ac.kaist.safe.util.Span
 
 class Console(
     val cfg: CFG,
     val worklist: Worklist,
-    val semantics: Semantics,
-    val addrManager: AddressManager
+    val semantics: Semantics
 ) {
   ////////////////////////////////////////////////////////////////
   // private variables

@@ -13,6 +13,8 @@ package kr.ac.kaist.safe.analyzer.domain
 
 import scala.collection.immutable.HashSet
 
+import kr.ac.kaist.safe.util.Loc
+
 trait Value {
   val pvalue: PValue
   val locset: Set[Loc]

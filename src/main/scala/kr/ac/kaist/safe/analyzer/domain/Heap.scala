@@ -12,6 +12,7 @@
 package kr.ac.kaist.safe.analyzer.domain
 
 import scala.collection.immutable.HashMap
+import kr.ac.kaist.safe.util.{ Loc, Address, Old, Recent }
 
 trait Heap {
   val map: Map[Loc, Obj]
@@ -58,16 +59,11 @@ class DHeap(val map: Map[Loc, Obj]) extends Heap {
     })
   }
 
-  private def weakUpdated(m: Map[Loc, Obj], key: Loc, newData: Obj): Map[Loc, Obj] = {
-    if (m.isEmpty) m
-    else {
-      val currentData = m(key)
-      if (currentData eq newData) m
-      else if (newData <= currentData) m
-      else if (currentData <= newData) m.updated(key, newData)
-      else m.updated(key, currentData + newData)
+  private def weakUpdated(m: Map[Loc, Obj], loc: Loc, newObj: Obj): Map[Loc, Obj] =
+    m.get(loc) match {
+      case Some(oldObj) => m.updated(loc, oldObj + newObj)
+      case None => m.updated(loc, newObj)
     }
-  }
 
   /* join */
   def +(that: Heap): Heap = {
@@ -122,16 +118,16 @@ class DHeap(val map: Map[Loc, Obj]) extends Heap {
   /* heap update */
   def update(loc: Loc, obj: Obj): Heap = {
     // recent location
-    if ((loc & Recent) == 0) {
-      if (obj.isBottom) Heap.Bot
-      else new DHeap(map.updated(loc, obj))
-    } // old location
-    else {
-      if (obj.isBottom) this(loc) match {
-        case Some(_) => this
-        case None => Heap.Bot
-      }
-      else new DHeap(weakUpdated(map, loc, obj))
+    loc.recency match {
+      case Recent =>
+        if (obj.isBottom) Heap.Bot
+        else new DHeap(map.updated(loc, obj))
+      case Old =>
+        if (obj.isBottom) this(loc) match {
+          case Some(_) => this
+          case None => Heap.Bot
+        }
+        else new DHeap(weakUpdated(map, loc, obj))
     }
   }
 
@@ -155,5 +151,5 @@ class DHeap(val map: Map[Loc, Obj]) extends Heap {
 
   def domIn(loc: Loc): Boolean = map.contains(loc)
 
-  def isBottom: Boolean = this.map.isEmpty
+  def isBottom: Boolean = this.map.isEmpty // TODO is really bottom?
 }

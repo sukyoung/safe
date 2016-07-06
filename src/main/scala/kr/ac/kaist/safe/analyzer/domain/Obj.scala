@@ -12,6 +12,7 @@
 package kr.ac.kaist.safe.analyzer.domain
 
 import kr.ac.kaist.safe.LINE_SEP
+import kr.ac.kaist.safe.util.Loc
 
 //TODO: Merge ObjMap implementation
 //TODO: Handle default values, key values with "@"

@@ -12,11 +12,10 @@
 package kr.ac.kaist.safe.analyzer
 
 import kr.ac.kaist.safe.analyzer.domain._
-import kr.ac.kaist.safe.cfg_builder.AddressManager
+import kr.ac.kaist.safe.util.{ Loc, Recent }
 
 case class Operator(helper: Helper) { //TODO
   private val utils: Utils = helper.utils
-  private val addrManager: AddressManager = helper.addrManager
   private val absNumber: AbsNumberUtil = utils.absNumber
 
   def toUInt32(v: Value): AbsNumber = {
@@ -217,7 +216,7 @@ case class Operator(helper: Helper) { //TODO
       if (!left.locset.isEmpty && !right.locset.isEmpty) {
         val intersect = left.locset.intersect(right.locset)
         if (intersect.isEmpty) utils.absBool.False
-        else if (left.locset.size == 1 && right.locset.size == 1 && addrManager.isRecentLoc(intersect.head)) utils.absBool.True
+        else if (left.locset.size == 1 && right.locset.size == 1 && intersect.head.recency == Recent) utils.absBool.True
         else utils.absBool.Top
       } else utils.absBool.Bot
     val b1 = (leftPV.undefval === rightPV.undefval)(utils.absBool) +
@@ -362,7 +361,7 @@ case class Operator(helper: Helper) { //TODO
       if (!left.locset.isEmpty && !right.locset.isEmpty) {
         val intersect = left.locset.intersect(right.locset)
         if (intersect.isEmpty) utils.absBool.False
-        else if (left.locset.size == 1 && right.locset.size == 1 && addrManager.isRecentLoc(intersect.head)) utils.absBool.True
+        else if (left.locset.size == 1 && right.locset.size == 1 && intersect.head.recency == Recent) utils.absBool.True
         else utils.absBool.Top
       } else utils.absBool.Bot
     val isSame =

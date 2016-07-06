@@ -11,11 +11,13 @@
 
 package kr.ac.kaist.safe.analyzer.console.command
 
+import scala.util.{ Success, Failure }
 import kr.ac.kaist.safe.analyzer.ControlPoint //, Worklist }
 import kr.ac.kaist.safe.analyzer.console._
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.cfg_builder.DotWriter
+import kr.ac.kaist.safe.util.Loc
 
 // print
 case object CmdPrint extends Command("print", "Print out various information.") {
@@ -54,14 +56,14 @@ case object CmdPrint extends Command("print", "Print out various information.") 
         }
         case "loc" => rest match {
           case locStr :: rest if rest.length <= 1 =>
-            parseLocName(c, locStr) match {
-              case Some(loc) =>
+            Loc.parse(locStr) match {
+              case Success(loc) =>
                 val heap = c.getCurCP.getState.heap
                 showLoc(c, heap, loc) match {
                   case Some(res) => println(res)
                   case None => println(s"* not in heap : $locStr")
                 }
-              case None => println(s"* cannot find: $locStr")
+              case Failure(_) => println(s"* cannot find: $locStr")
             }
           case _ => help
         }

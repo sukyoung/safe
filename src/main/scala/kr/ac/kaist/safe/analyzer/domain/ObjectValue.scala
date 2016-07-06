@@ -11,6 +11,8 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
+import kr.ac.kaist.safe.util.Loc
+
 trait ObjectValue {
   val value: Value
   val writable: AbsBool

@@ -11,19 +11,11 @@
 
 package kr.ac.kaist.safe.analyzer
 
-import kr.ac.kaist.safe.nodes.cfg.FunctionId
 import scala.collection.immutable.HashSet
+import kr.ac.kaist.safe.nodes.cfg.FunctionId
+import kr.ac.kaist.safe.util.Loc
 
 package object domain {
-  ////////////////////////////////////////////////////////////////
-  // abstract location
-  ////////////////////////////////////////////////////////////////
-  type Loc = Int
-  type Address = Int
-  type RecencyTag = Int
-  val Recent = 0
-  val Old = 1
-
   ////////////////////////////////////////////////////////////////
   // value constructors
   ////////////////////////////////////////////////////////////////

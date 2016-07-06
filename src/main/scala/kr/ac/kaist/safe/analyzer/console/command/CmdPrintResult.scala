@@ -11,7 +11,9 @@
 
 package kr.ac.kaist.safe.analyzer.console.command
 
+import scala.util.{ Success, Failure }
 import kr.ac.kaist.safe.analyzer.console._
+import kr.ac.kaist.safe.util.Loc
 
 // result
 case object CmdPrintResult extends Command("result", "Print out various information.") {
@@ -45,8 +47,8 @@ case object CmdPrintResult extends Command("result", "Print out various informat
           }
         case locPattern(exc) => rest match {
           case locStr :: rest if rest.length <= 1 =>
-            parseLocName(c, locStr) match {
-              case Some(loc) =>
+            Loc.parse(locStr) match {
+              case Success(loc) =>
                 val heap = (exc match {
                   case "exc-" => resExcSt
                   case _ => resSt
@@ -55,7 +57,7 @@ case object CmdPrintResult extends Command("result", "Print out various informat
                   case Some(res) => println(res)
                   case None => println(s"* not in heap : $locStr")
                 }
-              case None => println(s"* cannot find: $locStr")
+              case Failure(_) => println(s"* cannot find: $locStr")
             }
           case _ => help
         }

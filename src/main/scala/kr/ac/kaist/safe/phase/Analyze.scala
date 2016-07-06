@@ -31,11 +31,11 @@ case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, CallContext)] {
     config: AnalyzeConfig
   ): Try[(CFG, CallContext)] = {
     val utils = Utils(config.AbsUndef, config.AbsNull, config.AbsBool, config.AbsNumber, config.AbsString)
-    val callCtxManager = CallContextManager(safeConfig.addrManager)
+    val callCtxManager = CallContextManager()
 
     val worklist = Worklist(cfg)
     worklist.add(ControlPoint(cfg.globalFunc.entry, callCtxManager.globalCallContext))
-    val helper = Helper(utils, safeConfig.addrManager)
+    val helper = Helper(utils)
     val semantics = new Semantics(cfg, worklist, helper)
     val init = Initialize(helper)
     val initSt =
@@ -43,7 +43,7 @@ case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, CallContext)] {
       else init.state
     cfg.globalFunc.entry.setState(callCtxManager.globalCallContext, initSt)
     val consoleOpt = config.console match {
-      case true => Some(new Console(cfg, worklist, semantics, safeConfig.addrManager))
+      case true => Some(new Console(cfg, worklist, semantics))
       case false => None
     }
     val fixpoint = new Fixpoint(semantics, worklist, consoleOpt)

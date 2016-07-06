@@ -16,10 +16,10 @@ import java.io.{ File, FilenameFilter }
 
 import kr.ac.kaist.safe.analyzer.CallContext
 import kr.ac.kaist.safe.analyzer.domain.State
-import kr.ac.kaist.safe.cfg_builder.{ AddressManager, DefaultAddressManager }
 
 import scala.io.Source
 import scala.util.{ Failure, Success, Try }
+import kr.ac.kaist.safe.analyzer.models._
 import kr.ac.kaist.safe.nodes.ast.Program
 import kr.ac.kaist.safe.nodes.ir.IRRoot
 import kr.ac.kaist.safe.nodes.cfg.CFG
@@ -49,7 +49,8 @@ class CoreTest extends FlatSpec {
 
   private def parseTest(pgm: Try[Program]): Unit = {
     pgm match {
-      case Failure(_) => assert(false)
+      case Failure(e) =>
+        println(e.toString); println(e.getStackTrace.mkString("\n")); assert(false)
       case Success(program) =>
         Parser.stringToAST(program.toString(0)) match {
           case Failure(_) => assert(false)
@@ -90,14 +91,14 @@ class CoreTest extends FlatSpec {
 
   val resultPrefix = "__result"
   val expectPrefix = "__expect"
-  def analyzeTest(analysis: Try[(CFG, CallContext)], addrManager: AddressManager): Unit = {
+  def analyzeTest(analysis: Try[(CFG, CallContext)]): Unit = {
     analysis match {
       case Failure(_) => assert(false)
       case Success((cfg, globalCallCtx)) =>
         val normalSt = cfg.globalFunc.exit.getState(globalCallCtx)
         val excSt = cfg.globalFunc.exitExc.getState(globalCallCtx)
         assert(!normalSt.heap.isBottom)
-        normalSt.heap(addrManager.PredefLoc.GLOBAL) match {
+        normalSt.heap(PredefLoc.GLOBAL) match {
           case None => assert(false)
           case Some(globalObj) if globalObj.isBottom => assert(false)
           case Some(globalObj) =>
@@ -145,6 +146,6 @@ class CoreTest extends FlatSpec {
     val jsName = analyzerTestDir + SEP + filename
 
     val analysis = CmdAnalyze(List("-analyzer:testMode", jsName))
-    registerTest("[Analyze]" + filename, AnalyzeTest) { analyzeTest(analysis, new DefaultAddressManager) }
+    registerTest("[Analyze]" + filename, AnalyzeTest) { analyzeTest(analysis) }
   }
 }

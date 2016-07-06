@@ -14,7 +14,7 @@ package kr.ac.kaist.safe.analyzer.console.command
 import kr.ac.kaist.safe.analyzer.console._
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.LINE_SEP
-import kr.ac.kaist.safe.util.Useful
+import kr.ac.kaist.safe.util.{ Useful, Loc, ProgramAddr }
 
 abstract class Command(
     val name: String,
@@ -31,7 +31,7 @@ abstract class Command(
 
     val locSetStr =
       if (locset.isEmpty) ""
-      else locset.map(loc => locName(c, loc)).mkString(", ")
+      else locset.mkString(", ")
 
     (pvalue.isBottom, locset.isEmpty) match {
       case (true, true) => "⊥Value"
@@ -86,14 +86,8 @@ abstract class Command(
     }.mkString(LINE_SEP)
   }
 
-  private def locName(c: Console, loc: Loc): String = {
-    val am = c.addrManager
-    (if (am.isRecentLoc(loc)) "#" else "##") + am.locName(loc)
-  }
-
   private def showLoc(c: Console, loc: Loc, obj: Obj): String = {
-    val am = c.addrManager
-    val keyStr = locName(c, loc) + " -> "
+    val keyStr = loc.toString + " -> "
     val indentedStr = Useful.indentation(showObj(c, obj), keyStr.length)
     keyStr + indentedStr
   }
@@ -106,15 +100,11 @@ abstract class Command(
   }
 
   protected def showHeap(c: Console, heap: Heap, all: Boolean = false): String = {
-    val am = c.addrManager
-    def isUserLoc(loc: Loc): Boolean = {
-      val pred = am.PredefLoc
-      am.locToAddr(loc) >= am.locToAddr(pred.COLLAPSED)
-    }
     if (heap.isBottom) "⊥Heap"
     else {
       val sortedSeq = heap.map.toSeq.filter {
-        case (loc, _) => all || isUserLoc(loc)
+        case (Loc(ProgramAddr(_), _), _) => true
+        case _ => all
       }.sortBy { case (loc, _) => loc }
 
       sortedSeq.map {
@@ -132,9 +122,6 @@ abstract class Command(
       "** context **" + LINE_SEP +
       showContext(c, state.context, all)
   }
-
-  protected def parseLocName(c: Console, str: String): Option[Loc] =
-    c.addrManager.parseLocName(str)
 
   protected def grep(key: String, str: String): String = {
     str.split(LINE_SEP)

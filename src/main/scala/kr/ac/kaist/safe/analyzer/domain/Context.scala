@@ -11,9 +11,8 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
-import kr.ac.kaist.safe.cfg_builder.AddressManager
-
 import scala.collection.immutable.HashSet
+import kr.ac.kaist.safe.util.{ Loc, Address }
 
 case class Context(private val env: Set[Loc], private val thisBinding: Set[Loc], mayOld: Set[Address], mustOld: Set[Address]) {
   /* partial order */
@@ -64,13 +63,13 @@ case class Context(private val env: Set[Loc], private val thisBinding: Set[Loc],
   }
 
   /* substitute locR by locO */
-  def subsLoc(locR: Loc, locO: Loc, addressManager: AddressManager): Context = {
-    Context(HashSet[Loc](), HashSet[Loc](), mayOld + addressManager.locToAddr(locR), mustOld + addressManager.locToAddr(locR))
+  def subsLoc(locR: Loc, locO: Loc): Context = {
+    Context(HashSet[Loc](), HashSet[Loc](), mayOld + locR.address, mustOld + locR.address)
   }
 
   /* weakly substitute locR by locO, that is keep locR together */
-  def weakSubsLoc(locR: Loc, locO: Loc, addressManager: AddressManager): Context = {
-    Context(HashSet[Loc](), HashSet[Loc](), mayOld + addressManager.locToAddr(locR), mustOld)
+  def weakSubsLoc(locR: Loc, locO: Loc): Context = {
+    Context(HashSet[Loc](), HashSet[Loc](), mayOld + locR.address, mustOld)
   }
 }
 

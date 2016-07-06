@@ -12,7 +12,6 @@
 package kr.ac.kaist.safe.nodes.cfg
 
 import kr.ac.kaist.safe.nodes.ir.IRNode
-import kr.ac.kaist.safe.analyzer.domain.Address
 import kr.ac.kaist.safe.util._
 
 sealed abstract class CFGInst(

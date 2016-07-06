@@ -19,8 +19,7 @@ import kr.ac.kaist.safe.errors.warning._
 import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.phase.CFGBuildConfig
-import kr.ac.kaist.safe.util.{ NodeUtil => NU, EJSLogNot, EJSString }
-import kr.ac.kaist.safe.analyzer.domain.Address
+import kr.ac.kaist.safe.util._
 
 // default CFG builder
 class DefaultCFGBuilder(
@@ -181,7 +180,7 @@ class DefaultCFGBuilder(
     fd match {
       case IRFunDecl(_, functional) =>
         val func: CFGFunction = translateFunctional(functional)
-        block.createInst(CFGFunExpr(func.ir, _, id2cfgId(functional.name), None, func, newProgramAddr, newProgramAddr, None))
+        block.createInst(CFGFunExpr(func.ir, _, id2cfgId(functional.name), None, func, newAddr, newAddr, None))
         List(block)
     }
   }
@@ -219,9 +218,9 @@ class DefaultCFGBuilder(
         (blocks, lmap)
       case IRFunExpr(_, lhs, functional) =>
         val newFunc: CFGFunction = translateFunctional(functional)
-        val (addr1, addr2) = (newProgramAddr, newProgramAddr)
+        val (addr1, addr2) = (newAddr, newAddr)
         val (nameOpt: Option[CFGId], addrOpt: Option[Address]) = id2cfgId(functional.name) match {
-          case id if id.kind == CapturedVar => (Some(id), Some(newProgramAddr))
+          case id if id.kind == CapturedVar => (Some(id), Some(newAddr))
           case _ => (None, None)
         }
         val tailBlock: NormalBlock = getTail(blocks, func)
@@ -231,7 +230,7 @@ class DefaultCFGBuilder(
       case IRObject(_, lhs, members, proto) =>
         val tailBlock: NormalBlock = getTail(blocks, func)
         var protoIdOpt: Option[CFGExpr] = proto.map(p => id2cfgExpr(p))
-        tailBlock.createInst(CFGAlloc(stmt, _, id2cfgId(lhs), protoIdOpt, newProgramAddr))
+        tailBlock.createInst(CFGAlloc(stmt, _, id2cfgId(lhs), protoIdOpt, newAddr))
         members.foreach(translateMember(_, tailBlock, lhs))
         (List(tailBlock), lmap.updated(ThrowLabel, (ThrowLabel of lmap) + tailBlock))
       case irTry @ IRTry(_, body, name, catchIR, finIR) =>
@@ -361,7 +360,7 @@ class DefaultCFGBuilder(
       /* PEI : element assign */
       case IRArgs(_, lhs, elements) =>
         val tailBlock: NormalBlock = getTail(blocks, func)
-        tailBlock.createInst(CFGAllocArg(stmt, _, id2cfgId(lhs), elements.length, newProgramAddr))
+        tailBlock.createInst(CFGAllocArg(stmt, _, id2cfgId(lhs), elements.length, newAddr))
         elements.zipWithIndex.foreach {
           case (Some(elem), idx) => translateElement(stmt, elem, tailBlock, lhs, idx)
           case _ =>
@@ -370,7 +369,7 @@ class DefaultCFGBuilder(
       /* PEI : element assign */
       case IRArray(_, lhs, elements) =>
         val tailBlock: NormalBlock = getTail(blocks, func)
-        tailBlock.createInst(CFGAllocArray(stmt, _, id2cfgId(lhs), elements.length, newProgramAddr))
+        tailBlock.createInst(CFGAllocArray(stmt, _, id2cfgId(lhs), elements.length, newAddr))
         elements.zipWithIndex.foreach {
           case (Some(elem), idx) => translateElement(stmt, elem, tailBlock, lhs, idx)
           case _ =>
@@ -379,7 +378,7 @@ class DefaultCFGBuilder(
       /* PEI : element assign */
       case IRArrayNumber(_, lhs, elements) =>
         val tailBlock: NormalBlock = getTail(blocks, func)
-        tailBlock.createInst(CFGAllocArray(stmt, _, id2cfgId(lhs), elements.length, newProgramAddr))
+        tailBlock.createInst(CFGAllocArray(stmt, _, id2cfgId(lhs), elements.length, newAddr))
         elements.zipWithIndex.foreach {
           case (elem, idx) => translateDoubleElement(stmt, elem, tailBlock, lhs, idx)
         }
@@ -392,7 +391,7 @@ class DefaultCFGBuilder(
       case IRInternalCall(_, lhs, fun @ (IRTmpId(_, originalName, uniqueName, _)), arg1, arg2) =>
         val tailBlock: NormalBlock = getTail(blocks, func)
         val (addr: Option[Address], lm: LabelMap) = uniqueName match {
-          case "<>Global<>toObject" | "<>Global<>iteratorInit" => (Some(newProgramAddr), lmap.updated(ThrowLabel, (ThrowLabel of lmap) + tailBlock))
+          case "<>Global<>toObject" | "<>Global<>iteratorInit" => (Some(newAddr), lmap.updated(ThrowLabel, (ThrowLabel of lmap) + tailBlock))
           case _ => (None, lmap)
         }
         val argList: List[CFGExpr] = arg2 match {
@@ -405,7 +404,7 @@ class DefaultCFGBuilder(
       case IRCall(_, lhs, fun, thisB, args) =>
         val tailBlock: NormalBlock = getTail(blocks, func)
         val f = tailBlock.func
-        val call = f.createCall(CFGCall(stmt, _, id2cfgExpr(fun), id2cfgExpr(thisB), id2cfgExpr(args), newProgramAddr, newProgramAddr), id2cfgId(lhs))
+        val call = f.createCall(CFGCall(stmt, _, id2cfgExpr(fun), id2cfgExpr(thisB), id2cfgExpr(args), newAddr, newAddr), id2cfgId(lhs))
         cfg.addEdge(tailBlock, call)
 
         (
@@ -417,7 +416,7 @@ class DefaultCFGBuilder(
       case IRNew(_, lhs, cons, args) if (args.length == 2) =>
         val tailBlock: NormalBlock = getTail(blocks, func)
         val f = tailBlock.func
-        val call = f.createCall(CFGConstruct(stmt, _, id2cfgExpr(cons), id2cfgExpr(args(0)), id2cfgExpr(args(1)), newProgramAddr, newProgramAddr), id2cfgId(lhs))
+        val call = f.createCall(CFGConstruct(stmt, _, id2cfgExpr(cons), id2cfgExpr(args(0)), id2cfgExpr(args(1)), newAddr, newAddr), id2cfgId(lhs))
         cfg.addEdge(tailBlock, call)
 
         (
@@ -572,7 +571,7 @@ class DefaultCFGBuilder(
     ()
   }
 
-  private def isInternalCall(fname: String): Boolean = NU.isGlobalName(fname)
+  private def isInternalCall(fname: String): Boolean = NodeUtil.isGlobalName(fname)
   private def ir2cfgExpr(expr: IRExpr): CFGExpr = {
     expr match {
       /* PEI : id lookup */
@@ -608,7 +607,7 @@ class DefaultCFGBuilder(
 
   // get unique name
   private def getUniqueName(text: String): String = {
-    val name = if (!NU.isInternal(text) || NU.isGlobalName(text)) {
+    val name = if (!NodeUtil.isInternal(text) || NodeUtil.isGlobalName(text)) {
       text
     } else {
       uniqueNameCounter += 1
@@ -651,5 +650,5 @@ class DefaultCFGBuilder(
   }
 
   // get new program address
-  private def newProgramAddr: Address = safeConfig.addrManager.newProgramAddr
+  private def newAddr: ProgramAddr = config.addrGen()
 }
