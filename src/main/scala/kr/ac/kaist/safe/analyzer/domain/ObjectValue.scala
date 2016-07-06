@@ -20,7 +20,7 @@ trait ObjectValue {
   val configurable: AbsBool
 
   override def toString: String = {
-    if (this.isBottom) "⊥ObjectValue"
+    if (isBottom) "⊥ObjectValue"
     else {
       val prefix =
         (writable.gammaSimple, enumerable.gammaSimple, configurable.gammaSimple) match {

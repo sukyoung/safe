@@ -25,7 +25,7 @@ trait PropValue {
 
     val funidSetStr =
       if (funid.isEmpty) ""
-      else s"[FunIds] ${funid.map(id => id.toString).reduce((s1, s2) => s"$s1, $s2")}"
+      else s"[FunIds] " + funid.map(id => id.toString).mkString(", ")
 
     (objval.isBottom, funid.isEmpty) match {
       case (true, true) => "⊥PropValue"

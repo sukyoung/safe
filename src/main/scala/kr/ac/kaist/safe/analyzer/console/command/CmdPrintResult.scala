@@ -53,7 +53,7 @@ case object CmdPrintResult extends Command("result", "Print out various informat
                   case "exc-" => resExcSt
                   case _ => resSt
                 }).heap
-                showLoc(c, heap, loc) match {
+                heap.toStringLoc(loc) match {
                   case Some(res) => println(res)
                   case None => println(s"* not in heap : $locStr")
                 }

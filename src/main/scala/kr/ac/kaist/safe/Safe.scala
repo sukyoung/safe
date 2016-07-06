@@ -126,7 +126,9 @@ object Safe {
     s.append(LINE_SEP)
       .append("phase list:").append(LINE_SEP)
     phases foreach (phase => {
-      s.append("  %-15s".format(phase.name)).append(Useful.indentation(phase.help, 17)).append(LINE_SEP)
+      s.append("  %-15s".format(phase.name))
+      Useful.indentation(s, phase.help, 17)
+      s.append(LINE_SEP)
         .append(LINE_SEP)
       phase.getOptDescs foreach {
         case (name, desc) =>

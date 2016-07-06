@@ -12,7 +12,9 @@
 package kr.ac.kaist.safe.analyzer.domain
 
 import scala.collection.immutable.HashMap
-import kr.ac.kaist.safe.util.{ Loc, Address, Old, Recent }
+import kr.ac.kaist.safe.LINE_SEP
+import kr.ac.kaist.safe.util._
+import kr.ac.kaist.safe.analyzer.models.PredefLoc.{ GLOBAL, SINGLE_PURE_LOCAL }
 
 trait Heap {
   val map: Map[Loc, Obj]
@@ -35,6 +37,10 @@ trait Heap {
   def domIn(loc: Loc): Boolean
 
   def isBottom: Boolean
+
+  // toString
+  def toStringAll: String
+  def toStringLoc(loc: Loc): Option[String]
 }
 
 object Heap {
@@ -152,4 +158,44 @@ class DHeap(val map: Map[Loc, Obj]) extends Heap {
   def domIn(loc: Loc): Boolean = map.contains(loc)
 
   def isBottom: Boolean = this.map.isEmpty // TODO is really bottom?
+
+  override def toString: String = {
+    buildString(loc => loc match {
+      case Loc(ProgramAddr(_), _) => true
+      case GLOBAL | SINGLE_PURE_LOCAL => true
+      case _ => false
+    }).toString
+  }
+
+  def toStringAll: String = {
+    buildString(_ => true).toString
+  }
+
+  private def buildString(filter: Loc => Boolean): String = {
+    val s = new StringBuilder
+    this match {
+      case Heap.Bot => s.append("⊥Heap")
+      case _ => {
+        val sortedSeq =
+          map.toSeq.filter { case (loc, _) => filter(loc) }
+            .sortBy { case (loc, _) => loc }
+        sortedSeq.map {
+          case (loc, obj) => s.append(toStringLoc(loc, obj)).append(LINE_SEP)
+        }
+      }
+    }
+    s.toString
+  }
+
+  def toStringLoc(loc: Loc): Option[String] = {
+    map.get(loc).map(toStringLoc(loc, _))
+  }
+
+  private def toStringLoc(loc: Loc, obj: Obj): String = {
+    val s = new StringBuilder
+    val keyStr = loc.toString + " -> "
+    s.append(keyStr)
+    Useful.indentation(s, obj.toString, keyStr.length)
+    s.toString
+  }
 }

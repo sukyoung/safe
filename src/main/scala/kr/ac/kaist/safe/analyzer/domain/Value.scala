@@ -26,7 +26,7 @@ trait Value {
 
     val locSetStr =
       if (locset.isEmpty) ""
-      else s"{${locset.map(id => id.toString).reduce((s1, s2) => s"$s1, $s2")}}"
+      else locset.mkString(", ")
 
     (pvalue.isBottom, locset.isEmpty) match {
       case (true, true) => "⊥Value"

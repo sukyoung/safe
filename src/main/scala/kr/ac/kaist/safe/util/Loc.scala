@@ -31,7 +31,12 @@ object Loc {
       case str => Failure(NoLoc(str))
     }
   }
-  implicit def ordering[B <: Loc]: Ordering[B] = Ordering.by(_.address)
+  implicit def ordering[B <: Loc]: Ordering[B] = Ordering.by({
+    case Loc(address, _) => address match {
+      case ProgramAddr(id) => (id, "")
+      case SystemAddr(name) => (0, name)
+    }
+  })
 }
 
 // system location

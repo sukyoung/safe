@@ -12,6 +12,7 @@
 package kr.ac.kaist.safe.analyzer.domain
 
 import scala.collection.immutable.HashSet
+import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.util.{ Loc, Address }
 
 case class Context(private val env: Set[Loc], private val thisBinding: Set[Loc], mayOld: Set[Address], mustOld: Set[Address]) {
@@ -70,6 +71,11 @@ case class Context(private val env: Set[Loc], private val thisBinding: Set[Loc],
   /* weakly substitute locR by locO, that is keep locR together */
   def weakSubsLoc(locR: Loc, locO: Loc): Context = {
     Context(HashSet[Loc](), HashSet[Loc](), mayOld + locR.address, mustOld)
+  }
+
+  override def toString: String = {
+    "mayOld: (" + mayOld.mkString(", ") + ")" + LINE_SEP +
+      "mustOld: (" + mustOld.mkString(", ") + ")"
   }
 }
 

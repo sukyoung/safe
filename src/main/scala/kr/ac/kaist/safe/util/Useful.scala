@@ -38,7 +38,17 @@ object Useful {
   def fileNameToFileWriter(fileName: String): FileWriter =
     new FileWriter(fileName)
 
-  def indentation(str: String, indent: Int): String = {
-    str.split(LINE_SEP).mkString(LINE_SEP + " " * indent)
+  def indentation(s: StringBuilder, str: String, indent: Int): Unit = {
+    str.split(LINE_SEP) match {
+      case Array(str, rest @ _*) => {
+        s.append(str)
+        rest.foreach(rStr => {
+          s.append(LINE_SEP)
+          for (i <- 0 until indent) { s.append(" ") }
+          s.append(rStr)
+        })
+      }
+      case _ =>
+    }
   }
 }

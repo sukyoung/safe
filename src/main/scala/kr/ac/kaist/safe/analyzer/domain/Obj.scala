@@ -18,21 +18,21 @@ import kr.ac.kaist.safe.util.Loc
 //TODO: Handle default values, key values with "@"
 class Obj(val map: Map[String, (PropValue, Absent)]) {
   override def toString: String = {
-    val sortedMap = map.toSeq.sortBy(kv => {
-      val (key, _) = kv
-      key
-    })
+    val sortedMap = map.toSeq.sortBy {
+      case (key, _) => key
+    }
 
-    sortedMap.map((kv) => {
-      val (key, pva) = kv
-      val (propv, absent) = pva
-      absent match {
-        case AbsentTop =>
-          s"${key.toString} @-> ${propv.toString}"
-        case AbsentBot =>
-          s"${key.toString} |-> ${propv.toString}"
+    val s = new StringBuilder
+    sortedMap.map {
+      case (key, (propv, absent)) => {
+        s.append(key).append(absent match {
+          case AbsentTop => s" @-> "
+          case AbsentBot => s" |-> "
+        }).append(propv.toString).append(LINE_SEP)
       }
-    }).reduce((s1, s2) => s1 + LINE_SEP + s2)
+    }
+
+    s.toString
   }
 
   /* partial order */

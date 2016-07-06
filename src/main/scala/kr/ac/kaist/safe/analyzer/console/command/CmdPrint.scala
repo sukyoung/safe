@@ -59,7 +59,7 @@ case object CmdPrint extends Command("print", "Print out various information.") 
             Loc.parse(locStr) match {
               case Success(loc) =>
                 val heap = c.getCurCP.getState.heap
-                showLoc(c, heap, loc) match {
+                heap.toStringLoc(loc) match {
                   case Some(res) => println(res)
                   case None => println(s"* not in heap : $locStr")
                 }
