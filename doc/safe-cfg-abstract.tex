@@ -14,20 +14,25 @@ Assumptions and limitations are as follows:
 \section{Settings}
 \[
 \begin{array}{rlcl}
-\acp \in & \aControlPoint & = & \SF{CFGNode} \times \abs{CallContext} \\
-\hat{cc} \in & \abs{CallContext} &  & \comment{\inblue  Parameterized context-sensitivity.}\\
+\acp, (n, \hat{cc}) \in & \aControlPoint & = & \SF{CFGNode} \times \abs{CallContext} \\
+\hat{cc} \in & \abs{CallContext} &  & \comment{\inblue  Parameterized context-sensitivity.} \vspace{1mm}\\
 
-\hat{S} \in & \aState & = & \aHeap \times \aContext\\
-\hat{H} \in & \aHeap & = & \aLoc \finto \aObj \\
-\hat{C} \in & \aContext & = & \powerset{\aAddress} \times \powerset{\aAddress}
-    \comment{\inblue may old set, \ must old set} \\
+\hat{S}, (\hat{H}, \hat{C}), \hat{E} \in & \aState & = &  \aHeap \times \aContext\\
+\hat{H} \in & \aHeap & = & \aLoc \finto \aObj \vspace{1mm}\\
+\hat{C} \in & \aContext & = &
+%    \powerset{\aAddress} \times \powerset{\aAddress}
+%    \comment{\inblue may old set, \ must old set} \\
+\left\{ \begin{array}{rcl}
+\emph{mayOld} & : & \powerset{\aAddress} \\
+\emph{mustOld} & : & \powerset{\aAddress} \\
+\end{array} \right\} \vspace{1mm}\\
 
-\hat{l}_R,\hat{l}_O,\hat{l} \in & \aLoc &  = & \aAddress \times \abs{RecencyTag}\\
+\hat{l}_R,\hat{l}_O,\hat{l} \in & \aLoc &  = & \aAddress \times \abs{RecencyTag} \vspace{1mm}\\
 \hat{a} \in & \aAddress & ::= & \avarloc{Global} ~\mid~ 
                                 \avarloc{StringProto} ~\mid~ 
                                 \avarloc{BooleanProto} ~\mid~ 
                                 \avarloc{FunctionProto} \\
-                          & & & ~\mid~ 
+                          & & & ~\mid~m 
                                 \avarloc{RefErr} ~\mid~ 
                                 \avarloc{RangeErr} ~\mid~ 
                                 \avarloc{TypeErr} ~\mid~ 
@@ -43,16 +48,44 @@ Assumptions and limitations are as follows:
                                  \avarloc{Collapsed} \\
                           & & & ~\mid~
                                  \hat{a}_1 ~\mid~ \cdots \\
-    & \abs{RecencyTag} & ::= & \hat{Recent} \mid \hat{Old}\\
+    & \abs{RecencyTag} & ::= & \hat{Recent} \mid \hat{Old} \vspace{1mm}\\
 
 \hat{o} \in & \aObj & = & \SF{Prop} \finto \abs{PropValue} \times \abs{Absent} \\
-\hat{propv} \in & \abs{PropValue} & = & \abs{ObjectValue} \times \powerset{\fid} \\
+\hat{propv} \in & \abs{PropValue} & = & 
+%    \abs{ObjectValue} \times \powerset{\fid} \\
+\left\{ \begin{array}{rcl}
+\emph{objval} & : & \abs{ObjectValue} \\
+\emph{fidSet} & : & \powerset{\fid} \\
+\end{array} \right\} \vspace{1mm}\\
+
 \hat{objv} \in & \abs{ObjectValue} & = & 
-    \aValue \times \abs{Bool} \times \abs{Bool} \times \abs{Bool} \\
-    & & & {\inblue value,\ writable,\ enumerable,\ configurable} \\
-\hat{v} \in & \aValue & = & \abs{PValue} \times \powerset{\aLoc} \\
+%    \aValue \times \abs{Bool} \times \abs{Bool} \times \abs{Bool} \\
+%    & & & {\inblue value,\ writable,\ enumerable,\ configurable} \\
+\left\{ \begin{array}{rcl}
+\emph{value} & : & \aValue \\
+\emph{writable} & : & \abs{Bool} \\
+\emph{enumerable} & : & \abs{Bool} \\
+\emph{configurable} & : & \abs{Bool} \\
+\end{array} \right\} \vspace{1mm}\\
+
+\hat{v} \in & \aValue & = & 
+%    \abs{PValue} \times \powerset{\aLoc} \\
+\left\{ \begin{array}{rcl}
+\emph{pvalue} & : & \abs{PValue} \\
+\emph{locSet} & : & \powerset{\aLoc} \\
+\emph{toAbsBool} & : & \SF{Unit} \rightarrow \abs{Bool}
+\end{array} \right\} \vspace{1mm}\\
+
 \hat{pv}\in & \abs{PValue} & = & 
-    \abs{Undef} \times \abs{Null} \times \abs{Bool} \times \abs{Number} \times \abs{String} \\
+%    \abs{Undef} \times \abs{Null} \times \abs{Bool} \times \abs{Number} \times \abs{String} \\
+\left\{ \begin{array}{rcl}
+\emph{undefVal} & : & \abs{Undef} \\
+\emph{nullVal} & : & \abs{Null} \\
+\emph{boolVal} & : & \abs{Bool} \\
+\emph{numVal} & : & \abs{Number} \\
+\emph{strVal} & : & \abs{String} \\
+\end{array} \right\} \vspace{1mm}\\
+
 \hat{exc}\in& \abs{Exception} & ::= & \hat{\exc{Error}} ~\mid~ 
                                       \hat{\exc{EvalError}} ~\mid~
                                       \hat{\exc{RangeError}} ~\mid~
@@ -60,14 +93,16 @@ Assumptions and limitations are as follows:
                                       \hat{\exc{SyntaxError}} \\
                                 & & & ~\mid~
                                       \hat{\exc{TypeError}} ~\mid~ 
-                                      \hat{\exc{URIError}} \\
-    & \abs{IPEdge} & = & 
-        \aControlPoint \times \aControlPoint \times \abs{Context} \times \abs{Obj} \\
-\ipnext \in & \powerset{\abs{IPEdge}} & &\\
+                                      \hat{\exc{URIError}} \vspace{1mm}\\
+
+\cfgnext, (\hat{cp}_1, \hat{cp}_2, \hat{C}, \hat{o}) \in & \abs{IPEdge} & = & 
+    \aControlPoint \times \aControlPoint \times \abs{Context} \times \abs{Obj} \\
+\ipnext\ \in & \powerset{\abs{IPEdge}} & & \\
 
 \end{array}
 \]
 
+\newpage
 \subsection{Shape of Data types}
 \[
 \abs{Undef} =
@@ -228,60 +263,60 @@ Assumptions and limitations are as follows:
 \renewcommand\arraystretch{1.5}
 \begin{array}{l}
 % call edge (bottom heap)
-\aE \lbr \acp \cfgnext_{\hat{C},\hat{o}} (\SF{Entry},\hat{cc}) \rbr (\bot_{Heap},\hat{C}_1) 
+\aE \lbr ( \acp, (n \in \SF{Entry},\hat{cc}), \hat{C}, \hat{o} ) \rbr (\bot_{Heap},\hat{C}_1) 
     = \bot_{State}\\
 
 % call edge
-\aE \lbr \acp \cfgnext_{\hat{C},\hat{o}} (\SF{Entry},\hat{cc}) \rbr (\hat{H}_1,\hat{C}_1) 
-    = (\hat{H}_3,\hat{C}) \\
+\aE \lbr ( \acp, (n \in \SF{Entry},\hat{cc}), \hat{C},\hat{o} ) \rbr (\hat{H}_1,\hat{C}_1) 
+    = (\hat{H}_3,\hat{C}_1) \\
   \quad\wherec{
     \hat{H}_3 = \bigsqcup_{\hat{l}_{env}\in \hat{L}_{env}} \hat{H}_2[\hat{l}_{env} \mapsto \hat{o}_{env}]\\
-    \land\ \hat{L}_{env} = \hat{o}_2(\varprop{env})\tsf{:ObjectValue:Value:LocSet}\\
+    \land\ \hat{L}_{env} = \hat{o}_2(\varprop{env})\emph{.objval.value.locSet}\\
     \land\ \hat{H}_2 = \hat{H}_1[\avarloc{PureLocal}_R \mapsto \hat{o}_2] \\
     \land\ \hat{o}_2 = \hat{o} - \varprop{scope} \\
     \land\ \hat{o}_{env} = \ahf{NewDeclEnvRecord}(\hat{v}) \\
-    \land\ \hat{v} = \hat{o}(\varprop{scope})\tsf{:ObjectValue:Value}
+    \land\ \hat{v} = \hat{o}(\varprop{scope})\emph{.objval.value}
   }
 \\\\
 
 % normal return edge (bottom heap/context)
-\aE \lbr (\SF{Exit}, \hat{cc}) \cfgnext_{\hat{C},\hat{o}} \acp \rbr (\bot_{Heap}, \hat{C})
+\aE \lbr ( (n \in \SF{Exit}, \hat{cc}), \acp, \hat{C},\hat{o} ) \rbr (\bot_{Heap}, \hat{C}_1)
     = \bot_{State}\\
 
-\aE \lbr (\SF{Exit}, \hat{cc}) \cfgnext_{\hat{C},\hat{o}} \acp \rbr (\hat{H}, \bot_{Context})
+\aE \lbr ( (n \in \SF{Exit}, \hat{cc}), \acp, \hat{C},\hat{o} ) \rbr (\hat{H}_1, \bot_{Context})
     = \bot_{State}\\
 
 % normal return edge
-\aE \lbr (\SF{Exit}, \hat{cc}_1) \cfgnext_{\hat{C},\hat{o}} (n \in \SF{AfterCall}, \hat{cc}_2) \rbr (\hat{H}_1, \hat{C}_1)
+\aE \lbr ( (n_1 \in \SF{Exit}, \hat{cc}_1), (n_2 \in \SF{AfterCall}, \hat{cc}_2), \hat{C}, \hat{o} ) \rbr (\hat{H}_1, \hat{C}_1)
    = \left\{
    \begin{array}{ll}
-   {\inred new State}(\hat{H}_3, \hat{C}_2) & \ifc{\hat{C}_2 \neq \bot_{Context}}\\
-   \bot_{State} & \ifc{\hat{C}_2 = \bot{Context}}\\
+   \emph{\TT{new}\ State}(\hat{H}_3, \hat{C}_2) & \ifc{\hat{C}_2 \neq \bot_{Context}}\\
+   \bot_{State} & \ifc{\hat{C}_2 = \bot_{Context}}\\
    \end{array}
    \right. \\
 \quad\wherec{
-    \hat{H}_3 = \ahf{VarStore}(\hat{H}_2, n\tsf{:retVar}, \hat{v})\\
+    \hat{H}_3 = \ahf{VarStore}(\hat{H}_2, n_2\emph{.retVar}, \hat{v})\\
 	\land\ \hat{H}_2 = \hat{H}_1[\avarloc{PureLocal} \mapsto \hat{o}_1]\\
 	\land\ \hat{v} = \hat{H}_1(\avarloc{PureLocal})\\
-	\land\ (\hat{C}_2, \hat{o}_1) = \ahf{FixOldify}(\hat{C}, \hat{o}, \hat{C}_1\tsf{:May}, \hat{C}_1\tsf{:Must})
+	\land\ (\hat{C}_2, \hat{o}_1) = \ahf{FixOldify}(\hat{C},\ \hat{o},\ \hat{C}_1\emph{.mayOld},\ \hat{C}_1\emph{.mustOld})
 }\\\\
 
-\aE \lbr (\SF{Exit}, \hat{cc}_1) \cfgnext_{\hat{C},\hat{o}} (n \not\in \SF{AfterCall}, \hat{cc}_2) \rbr\ \hat{S}
+\aE \lbr ( (n_1 \in \SF{Exit}, \hat{cc}_1), (n_2 \not\in \SF{AfterCall}, \hat{cc}_2), \hat{C}, \hat{o} ) \rbr\ \hat{S}
     \quad \comment{\inblue Impossible Case: IPFromExitToNoneError} \\
 
 % exception return edge (bottom heap/context)
-\aE \lbr (\SF{ExitExc}, \hat{cc}) \cfgnext_{\hat{C},\hat{o}} \acp \rbr (\bot_{Heap}, \hat{C})
+\aE \lbr ( (n \in \SF{ExitExc}, \hat{cc}), \acp, \hat{C},\hat{o} ) \rbr (\bot_{Heap}, \hat{C}_1)
     = \bot_{State}\\
 
-\aE \lbr (\SF{ExitExc}, \hat{cc}) \cfgnext_{\hat{C},\hat{o}} \acp \rbr (\hat{H}, \bot_{Context})
+\aE \lbr ( (n \in \SF{ExitExc}, \hat{cc}), \acp, \hat{C},\hat{o} ) \rbr (\hat{H}_1, \bot_{Context})
     = \bot_{State}\\
 
 % exception return inter-procedural edge
-\aE \lbr (\SF{ExitExc}, \hat{cc}_1) \cfgnext_{\hat{C},\hat{o}} (n \in \SF{AfterCatch}, \hat{cc}_2) \rbr (\hat{H}_1, \hat{C}_1)
+\aE \lbr ( (n_1 \in \SF{ExitExc}, \hat{cc}_1), (n_2 \in \SF{AfterCatch}, \hat{cc}_2), \hat{C}, \hat{o} ) \rbr (\hat{H}_1, \hat{C}_1)
    = \left\{
    \begin{array}{ll}
-   {\inred new State}(\hat{H}_2, \hat{C}_2) & \ifc{\hat{C}_2 \neq \bot_{Context}}\\
-   \bot_{State} & \ifc{\hat{C}_2 = \bot{Context}}\\
+   \emph{\TT{new}\ State}(\hat{H}_2, \hat{C}_2) & \ifc{\hat{C}_2 \neq \bot_{Context}}\\
+   \bot_{State} & \ifc{\hat{C}_2 = \bot_{Context}}\\
    \end{array}
    \right. \\
 \quad\wherec{
@@ -290,12 +325,12 @@ Assumptions and limitations are as follows:
 		    \varprop{exception} \mapsto \hat{v}_1, \\
 			\varprop{exception\_all} \mapsto \hat{v}_1 \sqcup \hat{v}_2
 		\end{array} \right] \right] \\
-	\land\ \hat{v}_1 = \hat{H}_1(\avarloc{PureLocal})(\varprop{exception})\tsf{:ObjectValue:Value}\\
-	\land\ \hat{v}_2 = \hat{o}_1(\varprop{exception\_all})\tsf{:ObjectValue:Value}\\
-	\land\ (\hat{C}_2, \hat{o}_1) = \ahf{FixOldify}(\hat{C}, \hat{o}, \hat{C}_1\tsf{:May}, \hat{C}_1\tsf{:Must})
+	\land\ \hat{v}_1 = \hat{H}_1(\avarloc{PureLocal})(\varprop{exception})\emph{.objval.value}\\
+	\land\ \hat{v}_2 = \hat{o}_1(\varprop{exception\_all})\emph{.objval.value}\\
+	\land\ (\hat{C}_2, \hat{o}_1) = \ahf{FixOldify}(\hat{C},\ \hat{o},\ \hat{C}_1\emph{.mayOld},\ \hat{C}_1\emph{.mustOld})
 }\\\\
 
-\aE \lbr (\SF{ExitExc}, \hat{cc}_1) \cfgnext_{\hat{C},\hat{o}} (n \not\in \SF{AfterCatch}, \hat{cc}_2) \rbr\ \hat{S}
+\aE \lbr ( (n_1 \in \SF{ExitExc}, \hat{cc}_1), (n_2 \not\in \SF{AfterCatch}, \hat{cc}_2), \hat{C}, \hat{o} ) \rbr\ \hat{S}
     \quad \comment{\inblue Impossible Case: IPFromExitToNoneError} \\
 
 \end{array}
@@ -306,14 +341,43 @@ Assumptions and limitations are as follows:
 \renewcommand\arraystretch{1.5}
 \begin{array}{l}
 
-\aC \lbr (n \in \SF{Entry}, \hat{cc}) \rbr\ \bot_{State} = (\bot_{State}, \bot_{State}) \\
-\aC \lbr (n \in \SF{Entry}, \hat{cc}) \rbr\ \hat{S} \\
-\aC \lbr (n \in \SF{Exit}, \hat{cc}) \rbr\ \hat{S} \\
-\aC \lbr (n \in \SF{ExitExc}, \hat{cc}) \rbr\ \hat{S} \\
-\aC \lbr (n \in \SF{Call}, \hat{cc}) \rbr\ \hat{S} \\
-\aC \lbr (n \in \SF{AfterCall}, \hat{cc}) \rbr\ \hat{S} \\
-\aC \lbr (n \in \SF{AfterCatch}, \hat{cc}) \rbr\ \hat{S} \\
-\aC \lbr (n \in \SF{Block}, \hat{cc}) \rbr\ \hat{S} \\
+\aC \lbr \hat{cp} \rbr\ \bot_{State} = (\bot_{State}, \bot_{State}) \\
+
+% Entry Block
+\aC \lbr (n \in \SF{Entry}, \hat{cc}) \rbr (\hat{H}_0, \hat{C}) = ((\hat{H}_m, \hat{C}), \bot_{State}) \\
+\quad\wherec{
+\forall n+1 \leq j \leq m.\ \hat{H}_j = \ahf{CreateMutableBinding}(\hat{H}_{j-1}, x_j, \abs{Value}(\aundef)) \\
+\land\ \forall 1 \leq i \leq n.\ \hat{H}_i = \ahf{CreateMutableBinding}(\hat{H}_{i-1}, x_i,
+    \bigsqcup_{\hat{l}_{arg} \in \hat{L}_{arg}}\ \ahf{Proto}(\hat{H}_{i-1}, \hat{l}_{arg}, \hat{``i-1"}) \\
+\land\ x_{n+1} \cdots x_m = n\emph{.func.localVars} \
+\land\ x_1 \cdots x_n = n\emph{.func.argVars} \\
+\land\ \hat{L}_{arg} = \hat{H}_0(\avarloc{PureLocal})(n\emph{.func.argumentsName})\emph{.objval.value.locSet}
+}\\\\
+
+% Exit Block
+\aC \lbr (n \in \SF{Exit}, \hat{cc}) \rbr\ \hat{S} = (\hat{S}, \bot_{State}) \\
+
+% ExitExc Block
+\aC \lbr (n \in \SF{ExitExc}, \hat{cc}) \rbr\ \hat{S} = (\hat{S}, \bot_{State}) \\
+
+% Call Block
+\aC \lbr (n \in \SF{Call}, \hat{cc}) \rbr\ \hat{S} 
+= \aI_{(n, \hat{cc})} \lbr n\emph{.callInst} \rbr (\hat{S}, \bot_{State}) \\
+
+% AfterCall Block
+\aC \lbr (n \in \SF{AfterCall}, \hat{cc}) \rbr\ \hat{S} = (\hat{S}, \bot_{State}) \\
+
+% AfterCatch Block
+\aC \lbr (n \in \SF{AfterCatch}, \hat{cc}) \rbr\ \hat{S} = (\hat{S}, \bot_{State}) \\
+
+% Normal Block
+\aC \lbr (n \in \SF{Block}, \hat{cc}) \rbr\ \hat{S}_0 = (\hat{S}_n, \hat{E}_n) \\
+\quad\wherec{
+\forall 1 \leq k \leq n.\ 
+(\hat{S}_k, \hat{E}_k) = \aI_{(n, \hat{cc})} \lbr i_k \rbr (\hat{S}_{k-1}, \hat{E}_{k-1}) \\
+\land\ i_1 \cdots i_n = n\emph{.insts} \
+\land\ \hat{E}_0 = \bot_{State}
+}\\\\
 
 \end{array}
 \]
@@ -324,24 +388,24 @@ Assumptions and limitations are as follows:
 \begin{array}{l}
 
 \aI_{\acp} \lbr i \rbr ((\bot_{Heap}, \hat{C}), \hat{S})  = (\bot_{State}, \hat{S}) \\
-\aI_{\acp} \lbr x~\verb+:=+~\TT{alloc}\verb+(+ e^{?} \verb+)+ \rbr\ (\hat{S}, \hat{S_e}) \\
-\aI_{\acp} \lbr x~\verb+:=+~\TT{allocArray}\verb+(+n\verb+)+ \rbr\ (\hat{S}, \hat{S_e}) \\
-\aI_{\acp} \lbr x~\verb+:=+~\TT{allocArg}\verb+(+n\verb+)+ \rbr\ (\hat{S}, \hat{S_e}) \\
-\aI_{\acp} \lbr x ~\verb+:=+~ e \rbr\ (\hat{S}, \hat{S_e}) \\
-\aI_{\acp} \lbr x ~\verb+:=+~ \TT{delete}\verb+(+e\verb+)+ \rbr\ (\hat{S}, \hat{S_e}) \\
-\aI_{\acp} \lbr x ~\verb+:=+~ \TT{delete}\verb+(+e_1,e_2\verb+)+ \rbr\ (\hat{S}, \hat{S_e}) \\
-\aI_{\acp} \lbr e\verb+[+e\verb+]+ ~\verb+:=+~ e \rbr\ (\hat{S}, \hat{S_e}) \\
-\aI_{\acp} \lbr e\verb+[+s\verb+]+ ~\verb+:=+~ e \rbr\ (\hat{S}, \hat{S_e}) \\
-\aI_{\acp} \lbr x_1 ~\verb+:=+~ \TT{function} ~x_2^{?}\verb+(+f\verb+)+ \rbr\ (\hat{S}, \hat{S_e}) \\
-\aI_{\acp} \lbr \TT{assert}\verb+(+e\inop e\verb+)+ \rbr\ (\hat{S}, \hat{S_e}) \\
-\aI_{\acp} \lbr \TT{cond}\verb+(+x\verb+)+ \rbr\ (\hat{S}, \hat{S_e}) \\
-\aI_{\acp} \lbr \TT{catch}\verb+(+x\verb+)+ \rbr\ (\hat{S}, \hat{S_e}) \\
-\aI_{\acp} \lbr \TT{return}\verb+(+e^{?}\verb+)+ \rbr\ (\hat{S}, \hat{S_e}) \\
-\aI_{\acp} \lbr \TT{throw}\verb+(+e\verb+)+ \rbr\ (\hat{S}, \hat{S_e}) \\
-\aI_{\acp} \lbr \TT{noop} \rbr\ (\hat{S}, \hat{S_e}) \\
-\aI_{\acp} \lbr x ~\verb+:=+~\ensuremath{\diamond}x\verb+(+x^{*}\verb+)+ \rbr\ (\hat{S}, \hat{S_e}) \\
-\aI_{\acp} \lbr \TT{call}\verb+(+e_1,e_2,e_3\verb+)+ \rbr\ (\hat{S}, \hat{S_e}) \\
-\aI_{\acp} \lbr \TT{construct}\verb+(+e_1,e_2,e_3\verb+)+ \rbr\ (\hat{S}, \hat{S_e}) \\
+\aI_{\acp} \lbr x~\verb+:=+~\TT{alloc}\verb+(+ e^{?} \verb+)+ \rbr\ (\hat{S}, \hat{E}) \\
+\aI_{\acp} \lbr x~\verb+:=+~\TT{allocArray}\verb+(+n\verb+)+ \rbr\ (\hat{S}, \hat{E}) \\
+\aI_{\acp} \lbr x~\verb+:=+~\TT{allocArg}\verb+(+n\verb+)+ \rbr\ (\hat{S}, \hat{E}) \\
+\aI_{\acp} \lbr x ~\verb+:=+~ e \rbr\ (\hat{S}, \hat{E}) \\
+\aI_{\acp} \lbr x ~\verb+:=+~ \TT{delete}\verb+(+e\verb+)+ \rbr\ (\hat{S}, \hat{E}) \\
+\aI_{\acp} \lbr x ~\verb+:=+~ \TT{delete}\verb+(+e_1,e_2\verb+)+ \rbr\ (\hat{S}, \hat{E}) \\
+\aI_{\acp} \lbr e\verb+[+e\verb+]+ ~\verb+:=+~ e \rbr\ (\hat{S}, \hat{E}) \\
+\aI_{\acp} \lbr e\verb+[+s\verb+]+ ~\verb+:=+~ e \rbr\ (\hat{S}, \hat{E}) \\
+\aI_{\acp} \lbr x_1 ~\verb+:=+~ \TT{function} ~x_2^{?}\verb+(+f\verb+)+ \rbr\ (\hat{S}, \hat{E}) \\
+\aI_{\acp} \lbr \TT{assert}\verb+(+e\inop e\verb+)+ \rbr\ (\hat{S}, \hat{E}) \\
+\aI_{\acp} \lbr \TT{cond}\verb+(+x\verb+)+ \rbr\ (\hat{S}, \hat{E}) \\
+\aI_{\acp} \lbr \TT{catch}\verb+(+x\verb+)+ \rbr\ (\hat{S}, \hat{E}) \\
+\aI_{\acp} \lbr \TT{return}\verb+(+e^{?}\verb+)+ \rbr\ (\hat{S}, \hat{E}) \\
+\aI_{\acp} \lbr \TT{throw}\verb+(+e\verb+)+ \rbr\ (\hat{S}, \hat{E}) \\
+\aI_{\acp} \lbr \TT{noop} \rbr\ (\hat{S}, \hat{E}) \\
+\aI_{\acp} \lbr x ~\verb+:=+~\ensuremath{\diamond}x\verb+(+x^{*}\verb+)+ \rbr\ (\hat{S}, \hat{E}) \\
+\aI_{\acp} \lbr \TT{call}\verb+(+e_1,e_2,e_3\verb+)+ \rbr\ (\hat{S}, \hat{E}) \\
+\aI_{\acp} \lbr \TT{construct}\verb+(+e_1,e_2,e_3\verb+)+ \rbr\ (\hat{S}, \hat{E}) \\
 
 \end{array}
 \]
@@ -370,16 +434,16 @@ Assumptions and limitations are as follows:
 \renewcommand\arraystretch{1.5}
 \begin{array}{l}
 
-\aB \lbr e \rbr (\hat{S}_1, \hat{S_e}_1) 
-    = ({\inred new State}(\hat{H}_2, \hat{S}_1\tsf{:Context}), \hat{S_e}_3) \\
+\aB \lbr e \rbr (\hat{S}_1, \hat{E}_1) 
+    = (\emph{\TT{new}\ State}(\hat{H}_2, \hat{S}_1\emph{.context}), \hat{E}_3) \\
 \quad\wherec{
     \hat{H}_2 = \left \{
 	\begin{array}{ll}
-        \hat{S}_1\tsf{:Heap} & \ifc{\hat{true} \sqsubseteq \hat{v}\tsf{:toAbsBool}} \\
+        \hat{S}_1\emph{.heap} & \ifc{\hat{true} \sqsubseteq \hat{v}\emph{.toAbsBool}} \\
 	    \bot_{Heap} & \owc
     \end{array}  \right.\\
-    \land\ \hat{S_e}_3 = \hat{S_e}_1 \sqcup \hat{S_e}_2 \\
-    \land\ \hat{S_e}_2 = \chf{RaiseException}(\hat{S}_1, \hat{es}) \\
+    \land\ \hat{E}_3 = \hat{E}_1 \sqcup \hat{E}_2 \\
+    \land\ \hat{E}_2 = \chf{RaiseException}(\hat{S}_1, \hat{es}) \\
 	\land\ (\hat{v}, \hat{es}) = \aV \lbr e \rbr\ \hat{S}_1
 }\\\\
 
