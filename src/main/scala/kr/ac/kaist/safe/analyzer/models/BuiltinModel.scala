@@ -11,10 +11,15 @@
 
 package kr.ac.kaist.safe.analyzer.models
 
-import kr.ac.kaist.safe.util.{ Loc, SystemLoc, Recent, Old }
+import kr.ac.kaist.safe.analyzer.domain.{ Heap, Utils }
 
-object ConstructorLoc extends ModelLoc {
-  //TODO: temporal definitions of builtin constructor locations
-  val OBJ: Loc = SystemLoc("ObjectConst", Recent)
-  val ARRAY: Loc = SystemLoc("ArrayProto", Recent)
+abstract class BuiltinModel {
+  def initHeap(h: Heap, utils: Utils): Heap
+}
+
+object BuiltinModel {
+  val models: List[BuiltinModel] =
+    BuiltinGlobal :: BuiltinArray :: BuiltinFunction ::
+      BuiltinObject :: BuiltinBoolean :: BuiltinNumber :: BuiltinString ::
+      BuiltinError :: Nil
 }

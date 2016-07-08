@@ -30,7 +30,7 @@ object DefaultNumUtil extends AbsNumberUtil {
   }
 
   def alpha(num: Double): AbsNumber = num match {
-    case Double.NaN => DefaultNumNaN
+    case _ if num.isNaN => DefaultNumNaN
     case Double.NegativeInfinity => DefaultNumNegInf
     case Double.PositiveInfinity => DefaultNumPosInf
     case _ =>

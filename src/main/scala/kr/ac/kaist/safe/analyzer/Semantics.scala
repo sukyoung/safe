@@ -338,7 +338,7 @@ class Semantics(
     i match {
       case _ if st.heap.isBottom => (State.Bot, excSt)
       case CFGAlloc(_, _, x, e, newAddr) => {
-        val objProtoSingleton = HashSet(ProtoLoc.OBJ)
+        val objProtoSingleton = HashSet(BuiltinObject.PROTO_LOC)
         // Recency Abstraction
         val locR = Loc(newAddr, Recent)
         val st1 = helper.oldify(st, newAddr)
@@ -347,7 +347,7 @@ class Semantics(
           case Some(proto) => {
             val (v, es) = V(proto, st1)
             if (!v.pvalue.isBottom)
-              (v.locset ++ HashSet(ProtoLoc.OBJ), es)
+              (v.locset ++ HashSet(BuiltinObject.PROTO_LOC), es)
             else
               (v.locset, es)
           }
@@ -483,7 +483,7 @@ class Semantics(
         val locR2 = Loc(aNew2, Recent)
         val st1 = helper.oldify(st, aNew1)
         val st2 = helper.oldify(st1, aNew2)
-        val oNew = helper.newObject(ProtoLoc.OBJ)
+        val oNew = helper.newObject(BuiltinObject.PROTO_LOC)
 
         val n = utils.absNumber.alpha(f.argVars.length)
         val localObj = st2.heap.getOrElse(PredefLoc.SINGLE_PURE_LOCAL, utils.ObjBot)
@@ -506,7 +506,7 @@ class Semantics(
         val st2 = helper.oldify(st1, aNew2)
         val st3 = helper.oldify(st2, aNew3)
 
-        val oNew = helper.newObject(ProtoLoc.OBJ)
+        val oNew = helper.newObject(BuiltinObject.PROTO_LOC)
         val n = utils.absNumber.alpha(f.argVars.length)
         val fObjValue = Value(utils.PValueBot, HashSet(locR3))
         val h4 = st3.heap.update(locR1, helper.newFunctionObject(f.id, fObjValue, locR2, n))

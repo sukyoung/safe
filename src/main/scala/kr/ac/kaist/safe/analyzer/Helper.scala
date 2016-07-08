@@ -11,7 +11,6 @@
 
 package kr.ac.kaist.safe.analyzer
 
-import scala.util.Try
 import scala.collection.immutable.HashSet
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.analyzer.models._
@@ -28,34 +27,39 @@ case class Helper(utils: Utils) {
   def canPut(h: Heap, loc: Loc, absStr: AbsString): AbsBool = canPutHelp(h, loc, absStr, loc)
 
   def canPutHelp(h: Heap, curLoc: Loc, absStr: AbsString, origLoc: Loc): AbsBool = {
-    val domInStr = (h.getOrElse(curLoc, utils.ObjBot) domIn absStr)(utils.absBool)
-    val b1 =
-      if (utils.absBool.True <= domInStr) {
-        val obj = h.getOrElse(curLoc, utils.ObjBot)
-        obj.getOrElse(absStr, utils.PropValueBot).objval.writable
-      } else utils.absBool.Bot
-    val b2 =
-      if (utils.absBool.False <= domInStr) {
-        val protoObj = h.getOrElse(curLoc, utils.ObjBot).getOrElse("@proto", utils.PropValueBot)
-        val protoLocSet = protoObj.objval.value.locset
-        val b3 = protoObj.objval.value.pvalue.nullval.gamma match {
-          case ConSimpleBot => utils.absBool.Bot
-          case ConSimpleTop =>
-            h.getOrElse(curLoc, utils.ObjBot)
-              .getOrElse("@extensible", utils.PropValueBot).objval.value.pvalue.boolval
-        }
-        val b4 = protoLocSet.foldLeft(utils.absBool.Bot)((absB, loc) => {
-          absB + canPutHelp(h, loc, absStr, origLoc)
-        })
-        val b5 =
-          if (utils.absBool.False <= b4)
-            h.getOrElse(origLoc, utils.ObjBot)
-              .getOrElse("@extensible", utils.PropValueBot).objval.value.pvalue.boolval
-          else utils.absBool.Bot
-
-        b3 + b4 + b5
-      } else utils.absBool.Bot
-    b1 + b2
+    var visited = LocSetEmpty
+    def visit(visitLoc: Loc): AbsBool = {
+      if (visited contains visitLoc) utils.absBool.Bot
+      else {
+        visited += visitLoc
+        val domInStr = (h.getOrElse(visitLoc, utils.ObjBot) domIn absStr)(utils.absBool)
+        val b1 =
+          if (utils.absBool.True <= domInStr) {
+            val obj = h.getOrElse(visitLoc, utils.ObjBot)
+            obj.getOrElse(absStr, utils.PropValueBot).objval.writable
+          } else utils.absBool.Bot
+        val b2 =
+          if (utils.absBool.False <= domInStr) {
+            val protoObj = h.getOrElse(visitLoc, utils.ObjBot).getOrElse("@proto", utils.PropValueBot)
+            val protoLocSet = protoObj.objval.value.locset
+            val b3 = protoObj.objval.value.pvalue.nullval.gamma match {
+              case ConSimpleBot => utils.absBool.Bot
+              case ConSimpleTop =>
+                h.getOrElse(visitLoc, utils.ObjBot)
+                  .getOrElse("@extensible", utils.PropValueBot).objval.value.pvalue.boolval
+            }
+            val b4 = protoLocSet.foldLeft(utils.absBool.Bot)((absB, loc) => absB + visit(loc))
+            val b5 =
+              if (utils.absBool.False <= b4)
+                h.getOrElse(origLoc, utils.ObjBot)
+                  .getOrElse("@extensible", utils.PropValueBot).objval.value.pvalue.boolval
+              else utils.absBool.Bot
+            b3 + b4 + b5
+          } else utils.absBool.Bot
+        b1 + b2
+      }
+    }
+    visit(curLoc)
   }
 
   def canPutVar(h: Heap, x: String): AbsBool = {
@@ -141,13 +145,13 @@ case class Helper(utils: Utils) {
 
   def newExceptionLoc(exc: Exception): Loc = {
     exc match {
-      case Error => ErrorLoc.ERR
-      case EvalError => ErrorLoc.EVAL_ERR
-      case RangeError => ErrorLoc.RANGE_ERR
-      case ReferenceError => ErrorLoc.REF_ERR
-      case SyntaxError => ErrorLoc.SYNTAX_ERR
-      case TypeError => ErrorLoc.TYPE_ERR
-      case URIError => ErrorLoc.URI_ERR
+      case Error => BuiltinError.ERR_LOC
+      case EvalError => BuiltinError.EVAL_ERR_LOC
+      case RangeError => BuiltinError.RANGE_ERR_LOC
+      case ReferenceError => BuiltinError.REF_ERR_LOC
+      case SyntaxError => BuiltinError.SYNTAX_ERR_LOC
+      case TypeError => BuiltinError.TYPE_ERR_LOC
+      case URIError => BuiltinError.URI_ERR_LOC
     }
   }
 
@@ -435,19 +439,19 @@ case class Helper(utils: Utils) {
   }
 
   def newBoolean(absB: AbsBool): Obj = {
-    val newObj = newObject(ProtoLoc.BOOLEAN) //TODO BOOLEAN_PROTO => BuiltinBoolean.ProtoLoc
+    val newObj = newObject(BuiltinBoolean.PROTO_LOC)
     newObj.update("@class", PropValue(utils.ObjectValueBot.copyWith(utils.absString.alpha("Boolean"))))
       .update("@primitive", PropValue(utils.ObjectValueBot.copyWith(absB)))
   }
 
   def newNumber(absNum: AbsNumber): Obj = {
-    val newObj = newObject(ProtoLoc.NUMBER) //TODO Number_PROTO => BuiltinNumber.ProtoLoc
+    val newObj = newObject(BuiltinNumber.PROTO_LOC)
     newObj.update("@class", PropValue(utils.ObjectValueBot.copyWith(utils.absString.alpha("Number"))))
       .update("@primitive", PropValue(utils.ObjectValueBot.copyWith(absNum)))
   }
 
   def newString(absStr: AbsString): Obj = {
-    val newObj = newObject(ProtoLoc.STRING) //TODO STRING_PROTO => BuiltinString.ProtoLoc
+    val newObj = newObject(BuiltinString.PROTO_LOC)
 
     val newObj2 = newObj
       .update("@class", PropValue(utils.ObjectValueBot.copyWith(utils.absString.alpha("String"))))
@@ -501,7 +505,7 @@ case class Helper(utils: Utils) {
   }
 
   def newArgObject(absLength: AbsNumber): Obj = {
-    val protoVal = Value(utils.PValueBot, HashSet(ProtoLoc.OBJ))
+    val protoVal = utils.ValueBot.copyWith(BuiltinObject.PROTO_LOC)
     val lengthVal = Value(utils.PValueBot.copyWith(absLength))
     val absFalse = utils.absBool.False
     val absTrue = utils.absBool.True
@@ -513,7 +517,7 @@ case class Helper(utils: Utils) {
   }
 
   def newArrayObject(absLength: AbsNumber): Obj = {
-    val protoVal = Value(utils.PValueBot, HashSet(ProtoLoc.ARRAY)) //TODO ARRAY_PROTO => BuiltinArray.ProtoLoc
+    val protoVal = utils.ValueBot.copyWith(BuiltinArray.PROTO_LOC)
     val lengthVal = Value(utils.PValueBot.copyWith(absLength))
     val absFalse = utils.absBool.False
     utils.ObjEmpty
@@ -536,7 +540,7 @@ case class Helper(utils: Utils) {
   private def newFunctionObject(fidOpt: Option[FunctionId], constructIdOpt: Option[FunctionId], env: Value,
     locOpt: Option[Loc], writable: AbsBool, enumerable: AbsBool, configurable: AbsBool,
     absLength: AbsNumber): Obj = {
-    val protoVal = Value(utils.PValueBot, HashSet(ProtoLoc.FUNCTION))
+    val protoVal = utils.ValueBot.copyWith(BuiltinFunction.PROTO_LOC)
     val absFalse = utils.absBool.False
     val lengthVal = Value(utils.PValueBot.copyWith(absLength))
     val obj1 = utils.ObjEmpty
