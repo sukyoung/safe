@@ -74,8 +74,10 @@ case class Context(private val env: Set[Loc], private val thisBinding: Set[Loc],
   }
 
   override def toString: String = {
-    "mayOld: (" + mayOld.mkString(", ") + ")" + LINE_SEP +
-      "mustOld: (" + mustOld.mkString(", ") + ")"
+    if (this.isBottom) "⊥Context"
+    else
+      "mayOld: (" + mayOld.mkString(", ") + ")" + LINE_SEP +
+        "mustOld: (" + mustOld.mkString(", ") + ")"
   }
 }
 

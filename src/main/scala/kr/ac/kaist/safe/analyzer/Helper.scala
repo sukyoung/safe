@@ -228,30 +228,31 @@ case class Helper(utils: Utils) {
 
   def inherit(h: Heap, loc1: Loc, loc2: Loc, bopSEq: (Value, Value) => Value): Value = {
     var visited = LocSetEmpty
-    def iter(h: Heap, l1: Loc, l2: Loc): Value = {
+    val locVal2 = utils.ValueBot.copyWith(loc2)
+    val boolBotVal = Value(utils.PValueBot.copyWith(utils.absBool.Bot))
+    val boolTrueVal = Value(utils.PValueBot.copyWith(utils.absBool.True))
+    val boolFalseVal = Value(utils.PValueBot.copyWith(utils.absBool.False))
+
+    def iter(l1: Loc): Value = {
       if (visited.contains(l1)) utils.ValueBot
       else {
         visited += l1
-        val locVal1 = Value(utils.PValueBot, HashSet(l1))
-        val locVal2 = Value(utils.PValueBot, HashSet(l2))
+        val locVal1 = utils.ValueBot.copyWith(l1)
         val eqVal = bopSEq(locVal1, locVal2)
-        val boolBotVal = Value(utils.PValueBot.copyWith(utils.absBool.Bot))
-        val boolTrueVal = Value(utils.PValueBot.copyWith(utils.absBool.True))
-        val boolFalseVal = Value(utils.PValueBot.copyWith(utils.absBool.False))
         val v1 =
           if (utils.absBool.True <= eqVal.pvalue.boolval) boolTrueVal
           else boolBotVal
-        val v2 = boolBotVal
-        if (utils.absBool.False <= eqVal.pvalue.boolval) {
-          val protoVal = h.getOrElse(l1, utils.ObjBot).getOrElse("@proto", utils.PropValueBot).objval.value
-          val v1 = protoVal.pvalue.nullval.fold(boolBotVal) { _ => boolFalseVal }
-          v1 + protoVal.locset.foldLeft(utils.ValueBot)((tmpVal, protoLoc) => tmpVal + iter(h, protoLoc, l2))
-        } else boolBotVal
+        val v2 =
+          if (utils.absBool.False <= eqVal.pvalue.boolval) {
+            val protoVal = h.getOrElse(l1, utils.ObjBot).getOrElse("@proto", utils.PropValueBot).objval.value
+            val v1 = protoVal.pvalue.nullval.fold(boolBotVal) { _ => boolFalseVal }
+            v1 + protoVal.locset.foldLeft(utils.ValueBot)((tmpVal, protoLoc) => tmpVal + iter(protoLoc))
+          } else boolBotVal
         v1 + v2
       }
     }
 
-    iter(h, loc1, loc1)
+    iter(loc1)
   }
 
   def isArray(h: Heap, loc: Loc): AbsBool = {

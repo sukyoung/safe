@@ -26,6 +26,10 @@ object BuiltinGlobal extends BuiltinModel {
       .update("undefined", PropValue(utils.PValueBot.copyWith(utils.absUndef.Top), afalse, afalse, afalse))
       .update("Object", PropValue(ObjectValue(utils.ValueBot.copyWith(BuiltinObject.CONSTRUCT_LOC), atrue, afalse, atrue)))
       .update("Array", PropValue(ObjectValue(utils.ValueBot.copyWith(BuiltinArray.CONSTRUCT_LOC), atrue, afalse, atrue)))
+      .update("Function", PropValue(ObjectValue(utils.ValueBot.copyWith(BuiltinFunction.CONSTRUCT_LOC), atrue, afalse, atrue)))
+      .update("Boolean", PropValue(ObjectValue(utils.ValueBot.copyWith(BuiltinBoolean.CONSTRUCT_LOC), atrue, afalse, atrue)))
+      .update("Number", PropValue(ObjectValue(utils.ValueBot.copyWith(BuiltinNumber.CONSTRUCT_LOC), atrue, afalse, atrue)))
+      .update("String", PropValue(ObjectValue(utils.ValueBot.copyWith(BuiltinString.CONSTRUCT_LOC), atrue, afalse, atrue)))
     h.update(PredefLoc.GLOBAL, globalObj)
   }
 }
