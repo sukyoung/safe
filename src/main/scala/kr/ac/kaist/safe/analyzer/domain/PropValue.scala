@@ -14,10 +14,18 @@ package kr.ac.kaist.safe.analyzer.domain
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.nodes.cfg.FunctionId
 
-trait PropValue {
-  val objval: ObjectValue
-  val funid: Set[FunctionId]
+import scala.collection.immutable.HashSet
 
+object PropValue {
+  def apply(objval: ObjectValue): PropValue = PropValue(objval, HashSet[FunctionId]())
+  def apply(pvalue: PValue, writable: AbsBool, enumerable: AbsBool, configurable: AbsBool): PropValue =
+    PropValue(ObjectValue(Value(pvalue), writable, enumerable, configurable))
+}
+
+case class PropValue(
+    objval: ObjectValue,
+    funid: Set[FunctionId]
+) {
   override def toString: String = {
     val objValStr =
       if (objval.isBottom) ""
@@ -35,22 +43,6 @@ trait PropValue {
     }
   }
 
-  /* partial order */
-  def <=(that: PropValue): Boolean
-  /* not a partial order */
-  def </(that: PropValue): Boolean
-  /* join */
-  def +(that: PropValue): PropValue
-  /* meet */
-  def <>(that: PropValue): PropValue
-
-  def isBottom: Boolean
-}
-
-case class DefaultPropValue(
-    objval: ObjectValue,
-    funid: Set[FunctionId]
-) extends PropValue {
   /* partial order */
   def <=(that: PropValue): Boolean = {
     if (this eq that) true
@@ -73,7 +65,7 @@ case class DefaultPropValue(
   def +(that: PropValue): PropValue = {
     if (this eq that) this
     else {
-      DefaultPropValue(
+      PropValue(
         this.objval + that.objval,
         this.funid ++ that.funid
       )
@@ -82,7 +74,7 @@ case class DefaultPropValue(
 
   /* meet */
   def <>(that: PropValue): PropValue = {
-    DefaultPropValue(
+    PropValue(
       this.objval <> that.objval,
       this.funid.intersect(that.funid)
     )

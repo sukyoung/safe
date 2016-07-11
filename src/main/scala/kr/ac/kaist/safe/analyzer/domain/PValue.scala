@@ -11,47 +11,30 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
-sealed abstract class PValue {
-  val undefval: AbsUndef
-  val nullval: AbsNull
-  val boolval: AbsBool
-  val numval: AbsNumber
-  val strval: AbsString
+object PValue {
+  def apply(undefval: AbsUndef)(utils: Utils): PValue =
+    PValue(undefval, utils.absNull.Bot, utils.absBool.Bot, utils.absNumber.Bot, utils.absString.Bot)
 
-  /* partial order */
-  def <=(that: PValue): Boolean
-  /* not a partial order */
-  def </(that: PValue): Boolean
-  /* join */
-  def +(that: PValue): PValue
-  /* meet */
-  def <>(that: PValue): PValue
+  def apply(nullval: AbsNull)(utils: Utils): PValue =
+    PValue(utils.absUndef.Bot, nullval, utils.absBool.Bot, utils.absNumber.Bot, utils.absString.Bot)
 
-  def toAbsString(absString: AbsStringUtil): AbsString
-  def toAbsBoolean(absBool: AbsBoolUtil): AbsBool
-  def toAbsNumber(absNumber: AbsNumberUtil): AbsNumber
+  def apply(boolval: AbsBool)(utils: Utils): PValue =
+    PValue(utils.absUndef.Bot, utils.absNull.Bot, boolval, utils.absNumber.Bot, utils.absString.Bot)
 
-  override def toString(): String
-  def typeCount: Int
-  def typeKinds: String
-  def foreach(f: (AbsDomain => Unit)): Unit
+  def apply(numval: AbsNumber)(utils: Utils): PValue =
+    PValue(utils.absUndef.Bot, utils.absNull.Bot, utils.absBool.Bot, numval, utils.absString.Bot)
 
-  def isBottom: Boolean
-
-  def copyWith(newUndefVal: AbsUndef): PValue
-  def copyWith(newNullVal: AbsNull): PValue
-  def copyWith(newBoolVal: AbsBool): PValue
-  def copyWith(newNumberVal: AbsNumber): PValue
-  def copyWith(newStringVal: AbsString): PValue
+  def apply(strval: AbsString)(utils: Utils): PValue =
+    PValue(utils.absUndef.Bot, utils.absNull.Bot, utils.absBool.Bot, utils.absNumber.Bot, strval)
 }
 
-case class DefaultPValue(
+case class PValue(
     undefval: AbsUndef,
     nullval: AbsNull,
     boolval: AbsBool,
     numval: AbsNumber,
     strval: AbsString
-) extends PValue {
+) {
 
   /* partial order */
   def <=(that: PValue): Boolean = {
@@ -78,10 +61,10 @@ case class DefaultPValue(
   }
 
   /* join */
-  def +(that: PValue): DefaultPValue = {
+  def +(that: PValue): PValue = {
     if (this eq that) this
     else {
-      DefaultPValue(
+      PValue(
         this.undefval + that.undefval,
         this.nullval + that.nullval,
         this.boolval + that.boolval,
@@ -92,8 +75,8 @@ case class DefaultPValue(
   }
 
   /* meet */
-  def <>(that: PValue): DefaultPValue = {
-    DefaultPValue(
+  def <>(that: PValue): PValue = {
+    PValue(
       this.undefval <> that.undefval,
       this.nullval <> that.nullval,
       this.boolval <> that.boolval,
@@ -172,9 +155,9 @@ case class DefaultPValue(
     (undefval.gamma, nullval.gamma, boolval.gammaSimple, numval.gammaSimple, strval.gammaSimple) ==
       (ConSimpleBot, ConSimpleBot, ConSimpleBot, ConSimpleBot, ConSimpleBot)
 
-  def copyWith(newUndefVal: AbsUndef): PValue = DefaultPValue(newUndefVal, nullval, boolval, numval, strval)
-  def copyWith(newNullVal: AbsNull): PValue = DefaultPValue(undefval, newNullVal, boolval, numval, strval)
-  def copyWith(newBoolVal: AbsBool): PValue = DefaultPValue(undefval, nullval, newBoolVal, numval, strval)
-  def copyWith(newNumberVal: AbsNumber): PValue = DefaultPValue(undefval, nullval, boolval, newNumberVal, strval)
-  def copyWith(newStringVal: AbsString): PValue = DefaultPValue(undefval, nullval, boolval, numval, newStringVal)
+  def copyWith(newUndefVal: AbsUndef): PValue = PValue(newUndefVal, nullval, boolval, numval, strval)
+  def copyWith(newNullVal: AbsNull): PValue = PValue(undefval, newNullVal, boolval, numval, strval)
+  def copyWith(newBoolVal: AbsBool): PValue = PValue(undefval, nullval, newBoolVal, numval, strval)
+  def copyWith(newNumberVal: AbsNumber): PValue = PValue(undefval, nullval, boolval, newNumberVal, strval)
+  def copyWith(newStringVal: AbsString): PValue = PValue(undefval, nullval, boolval, numval, newStringVal)
 }

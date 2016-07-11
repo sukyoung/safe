@@ -22,25 +22,6 @@ package object domain {
   val LocSetEmpty: Set[Loc] = HashSet[Loc]()
   val ExceptionSetEmpty: Set[Exception] = HashSet[Exception]()
 
-  def PropValue(objval: ObjectValue, funid: Set[FunctionId]): PropValue =
-    DefaultPropValue(objval, funid)
-
-  def PropValue(objval: ObjectValue): PropValue = PropValue(objval, HashSet[FunctionId]())
-
-  def PropValue(pvalue: PValue, writable: AbsBool, enumerable: AbsBool, configurable: AbsBool): PropValue =
-    PropValue(ObjectValue(Value(pvalue), writable, enumerable, configurable))
-
-  def ObjectValue(value: Value, writable: AbsBool, enumerable: AbsBool, configurable: AbsBool): ObjectValue =
-    DefaultObjectValue(value, writable, enumerable, configurable)
-
-  def Value(pvalue: PValue, locset: Set[Loc]): Value =
-    DefaultValue(pvalue, locset)
-
-  def Value(pvalue: PValue): Value = Value(pvalue, LocSetEmpty)
-
-  def PValue(undefval: AbsUndef, nullval: AbsNull, boolval: AbsBool, numval: AbsNumber, strval: AbsString): PValue =
-    DefaultPValue(undefval, nullval, boolval, numval, strval)
-
   ////////////////////////////////////////////////////////////////
   // constant values
   ////////////////////////////////////////////////////////////////

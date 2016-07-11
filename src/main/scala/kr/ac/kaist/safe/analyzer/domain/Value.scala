@@ -15,10 +15,11 @@ import scala.collection.immutable.HashSet
 
 import kr.ac.kaist.safe.util.Loc
 
-trait Value {
-  val pvalue: PValue
-  val locset: Set[Loc]
+object Value {
+  def apply(pvalue: PValue): Value = Value(pvalue, LocSetEmpty)
+}
 
+case class Value(pvalue: PValue, locset: Set[Loc]) {
   override def toString: String = {
     val pvalStr =
       if (pvalue.isBottom) ""
@@ -36,30 +37,6 @@ trait Value {
     }
   }
 
-  /* partial order */
-  def <=(that: Value): Boolean
-  /* not a partial order */
-  def </(that: Value): Boolean
-  /* join */
-  def +(that: Value): Value
-  /* meet */
-  def <>(that: Value): Value
-  /* substitute locR by locO */
-  def subsLoc(locR: Loc, locO: Loc): Value
-  /* weakly substitute locR by locO, that is keep locR together */
-  def weakSubsLoc(locR: Loc, locO: Loc): Value
-
-  def typeCount: Int
-  def typeKinds: String
-
-  def isBottom: Boolean
-  def toAbsBoolean(absBool: AbsBoolUtil): AbsBool
-
-  def copyWith(loc: Loc): Value
-  def copyWith(locSet: Set[Loc]): Value
-}
-
-case class DefaultValue(pvalue: PValue, locset: Set[Loc]) extends Value {
   /* partial order */
   def <=(that: Value): Boolean = {
     if (this eq that) true
@@ -84,7 +61,7 @@ case class DefaultValue(pvalue: PValue, locset: Set[Loc]) extends Value {
       case (a, b) if a eq b => this
       case (a, _) if a.isBottom => that
       case (_, b) if b.isBottom => this
-      case (_, _) => DefaultValue(
+      case (_, _) => Value(
         this.pvalue + that.pvalue,
         this.locset ++ that.locset
       )
@@ -94,7 +71,7 @@ case class DefaultValue(pvalue: PValue, locset: Set[Loc]) extends Value {
   def <>(that: Value): Value = {
     if (this eq that) this
     else {
-      DefaultValue(
+      Value(
         this.pvalue <> that.pvalue,
         this.locset.intersect(that.locset)
       )
@@ -103,13 +80,13 @@ case class DefaultValue(pvalue: PValue, locset: Set[Loc]) extends Value {
 
   /* substitute locR by locO */
   def subsLoc(locR: Loc, locO: Loc): Value = {
-    if (this.locset(locR)) DefaultValue(this.pvalue, (this.locset - locR) + locO)
+    if (this.locset(locR)) Value(this.pvalue, (this.locset - locR) + locO)
     else this
   }
 
   /* weakly substitute locR by locO, that is keep locR together */
   def weakSubsLoc(locR: Loc, locO: Loc): Value = {
-    if (this.locset(locR)) DefaultValue(this.pvalue, this.locset + locO)
+    if (this.locset(locR)) Value(this.pvalue, this.locset + locO)
     else this
   }
 
@@ -135,6 +112,6 @@ case class DefaultValue(pvalue: PValue, locset: Set[Loc]) extends Value {
       (if (locset.isEmpty) absBool.Bot else absBool.True)
   }
 
-  def copyWith(loc: Loc): Value = DefaultValue(this.pvalue, HashSet(loc))
-  def copyWith(locSet: Set[Loc]): Value = DefaultValue(this.pvalue, locSet)
+  def copyWith(loc: Loc): Value = Value(this.pvalue, HashSet(loc))
+  def copyWith(locSet: Set[Loc]): Value = Value(this.pvalue, locSet)
 }
