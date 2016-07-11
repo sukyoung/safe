@@ -22,14 +22,14 @@ object BuiltinNumber extends BuiltinModel {
     val afalse = utils.absBool.False
     val atrue = utils.absBool.True
 
-    val numberProto = utils.ObjEmpty
+    val numberProto = Obj.Empty(utils)
       .update("@class", PropValue(utils.absString.alpha("Number"))(utils))
       .update("@proto", PropValue(ObjectValue(Value(BuiltinObject.PROTO_LOC)(utils), afalse, afalse, afalse)))
       .update("@extensible", PropValue(atrue)(utils))
       .update("@primitive", PropValue(utils.absNumber.alpha(0))(utils))
       .update("constructor", PropValue(ObjectValue(Value(CONSTRUCT_LOC)(utils), afalse, afalse, afalse)))
 
-    val numberConstructor = utils.ObjEmpty
+    val numberConstructor = Obj.Empty(utils)
       .update("@class", PropValue(utils.absString.alpha("Function"))(utils))
       .update("@proto", PropValue(ObjectValue(Value(BuiltinFunction.PROTO_LOC)(utils), afalse, afalse, afalse)))
       .update("@extensible", PropValue(atrue)(utils))

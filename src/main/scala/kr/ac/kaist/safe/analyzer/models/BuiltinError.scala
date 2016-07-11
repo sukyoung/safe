@@ -35,7 +35,7 @@ object BuiltinError extends BuiltinModel {
     val afalse = utils.absBool.False
     val atrue = utils.absBool.True
 
-    val errObj = utils.ObjEmpty
+    val errObj = Obj.Empty(utils)
       .update("@class", PropValue(utils.absString.alpha("Error"))(utils))
       .update("@extensible", PropValue(atrue)(utils))
 
@@ -60,12 +60,12 @@ object BuiltinError extends BuiltinModel {
     val uriErr = errObj
       .update("@proto", PropValue(ObjectValue(Value(URI_ERR_PROTO_LOC)(utils), afalse, afalse, afalse)))
 
-    val errProtoObj = utils.ObjEmpty
+    val errProtoObj = Obj.Empty(utils)
       .update("@class", PropValue(utils.absString.alpha("Error"))(utils))
       .update("@extensible", PropValue(atrue)(utils))
       .update("@proto", PropValue(ObjectValue(Value(ERR_PROTO_LOC)(utils), afalse, afalse, afalse)))
 
-    val defaultErrProto = utils.ObjEmpty
+    val defaultErrProto = Obj.Empty(utils)
       .update("@class", PropValue(utils.absString.alpha("Error"))(utils))
       .update("@extensible", PropValue(atrue)(utils))
       .update("@proto", PropValue(ObjectValue(Value(BuiltinObject.PROTO_LOC)(utils), afalse, afalse, afalse)))

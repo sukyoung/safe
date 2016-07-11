@@ -22,7 +22,7 @@ object BuiltinFunction extends BuiltinModel {
     val afalse = utils.absBool.False
     val atrue = utils.absBool.True
 
-    val functionProto = utils.ObjEmpty
+    val functionProto = Obj.Empty(utils)
       .update("@class", PropValue(utils.absString.alpha("Function"))(utils))
       .update("@proto", PropValue(ObjectValue(Value(BuiltinObject.PROTO_LOC)(utils), afalse, afalse, afalse)))
       .update("@extensible", PropValue(atrue)(utils))
@@ -30,7 +30,7 @@ object BuiltinFunction extends BuiltinModel {
       .update("constructor", PropValue(ObjectValue(Value(CONSTRUCT_LOC)(utils), atrue, afalse, atrue)))
       .update("length", PropValue(PValue(utils.absNumber.alpha(0))(utils), afalse, afalse, afalse))
 
-    val functionConstructor = utils.ObjEmpty
+    val functionConstructor = Obj.Empty(utils)
       .update("@class", PropValue(utils.absString.alpha("Function"))(utils))
       .update("@proto", PropValue(ObjectValue(Value(BuiltinFunction.PROTO_LOC)(utils), afalse, afalse, afalse)))
       .update("@extensible", PropValue(atrue)(utils))

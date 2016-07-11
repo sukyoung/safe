@@ -22,13 +22,13 @@ object BuiltinArray extends BuiltinModel {
     val afalse = utils.absBool.False
     val atrue = utils.absBool.True
 
-    val arrayProto = utils.ObjEmpty
+    val arrayProto = Obj.Empty(utils)
       .update("@class", PropValue(utils.absString.alpha("Array"))(utils))
       .update("@proto", PropValue(ObjectValue(Value(BuiltinObject.PROTO_LOC)(utils), afalse, afalse, afalse)))
       .update("@extensible", PropValue(atrue)(utils))
       .update("constructor", PropValue(ObjectValue(Value(CONSTRUCT_LOC)(utils), afalse, afalse, afalse)))
 
-    val arrayConstructor = utils.ObjEmpty
+    val arrayConstructor = Obj.Empty(utils)
       .update("@class", PropValue(utils.absString.alpha("Function"))(utils))
       .update("@proto", PropValue(ObjectValue(Value(BuiltinFunction.PROTO_LOC)(utils), afalse, afalse, afalse)))
       .update("@extensible", PropValue(atrue)(utils))

@@ -64,16 +64,9 @@ trait AbsBoolUtil {
 }
 
 case class Utils(
-    absUndef: AbsUndefUtil,
-    absNull: AbsNullUtil,
-    absBool: AbsBoolUtil,
-    absNumber: AbsNumberUtil,
-    absString: AbsStringUtil
-) {
-  val ObjBot: Obj = Obj(Obj.ObjMapBot.
-    updated(STR_DEFAULT_NUMBER, (PropValue.Bot(this), AbsentBot)).
-    updated(STR_DEFAULT_OTHER, (PropValue.Bot(this), AbsentBot)))
-  val ObjEmpty: Obj = Obj(Obj.ObjMapBot.
-    updated(STR_DEFAULT_NUMBER, (PropValue.Bot(this), AbsentTop)).
-    updated(STR_DEFAULT_OTHER, (PropValue.Bot(this), AbsentTop)))
-}
+  absUndef: AbsUndefUtil,
+  absNull: AbsNullUtil,
+  absBool: AbsBoolUtil,
+  absNumber: AbsNumberUtil,
+  absString: AbsStringUtil
+)

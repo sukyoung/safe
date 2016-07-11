@@ -25,14 +25,14 @@ case class Initialize(helper: Helper) {
 
     val globalPureLocalObj = Obj.newPureLocalObj(Value(PValue(utils.absNull.Top)(utils)), HashSet(PredefLoc.GLOBAL))(utils) - "@return"
 
-    val globalObj = utils.ObjEmpty
+    val globalObj = Obj.Empty(utils)
       .update(NodeUtil.GLOBAL_NAME, PropValue(ObjectValue(Value(PredefLoc.GLOBAL)(utils), afalse, afalse, afalse)))
       .update(NodeUtil.VAR_TRUE, PropValue(utils.absBool.alpha(true))(utils))
 
     val initHeap = Heap.Bot
       .update(PredefLoc.SINGLE_PURE_LOCAL, globalPureLocalObj)
       .update(PredefLoc.GLOBAL, globalObj)
-      .update(PredefLoc.COLLAPSED, utils.ObjEmpty)
+      .update(PredefLoc.COLLAPSED, Obj.Empty(utils))
 
     val modeledHeap = BuiltinModel.models.foldLeft(initHeap)((h, m) => m.initHeap(h, utils))
     State(modeledHeap, Context.Empty)
@@ -41,7 +41,7 @@ case class Initialize(helper: Helper) {
   def testState: State = {
 
     val st = state
-    val globalObj = st.heap.getOrElse(PredefLoc.GLOBAL, utils.ObjEmpty)
+    val globalObj = st.heap.getOrElse(PredefLoc.GLOBAL, Obj.Empty(utils))
 
     val boolBot = utils.absBool.Bot
 

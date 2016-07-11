@@ -22,13 +22,13 @@ object BuiltinBoolean extends BuiltinModel {
     val afalse = utils.absBool.False
     val atrue = utils.absBool.True
 
-    val booleanProto = utils.ObjEmpty
+    val booleanProto = Obj.Empty(utils)
       .update("@class", PropValue(utils.absString.alpha("Boolean"))(utils))
       .update("@proto", PropValue(ObjectValue(Value(BuiltinObject.PROTO_LOC)(utils), afalse, afalse, afalse)))
       .update("@extensible", PropValue(atrue)(utils))
       .update("constructor", PropValue(ObjectValue(Value(CONSTRUCT_LOC)(utils), afalse, afalse, afalse)))
 
-    val booleanConstructor = utils.ObjEmpty
+    val booleanConstructor = Obj.Empty(utils)
       .update("@class", PropValue(utils.absString.alpha("Function"))(utils))
       .update("@proto", PropValue(ObjectValue(Value(BuiltinFunction.PROTO_LOC)(utils), afalse, afalse, afalse)))
       .update("@extensible", PropValue(atrue)(utils))

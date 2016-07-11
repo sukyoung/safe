@@ -242,7 +242,7 @@ class Obj(val map: Map[String, (PropValue, Absent)]) {
     val (defaultOther, _) = this.map(STR_DEFAULT_OTHER)
     absStr.gamma match {
       case _ if this.isBottom => this
-      case ConSetBot() => utils.ObjBot
+      case ConSetBot() => Obj.Bot(utils)
       case ConSetTop() =>
         val properties = this.map.keySet.filter(x => {
           val isInternalProp = x.take(1) == "@"
@@ -289,9 +289,9 @@ class Obj(val map: Map[String, (PropValue, Absent)]) {
         Obj(map.updated(strSet.head, (propV, AbsentBot)))
       case ConSetCon(strSet) =>
         strSet.foldLeft(this)((r, x) => r + update(x, propV))
-      case ConSetBot() => utils.ObjBot
+      case ConSetBot() => Obj.Bot(utils)
       case ConSetTop() => absStr.gammaIsAllNums match {
-        case ConSingleBot() => utils.ObjBot
+        case ConSingleBot() => Obj.Bot(utils)
         case ConSingleCon(true) =>
           val newDefaultNum = this.map.get(STR_DEFAULT_NUMBER) match {
             case Some((numPropV, _)) => numPropV + propV
@@ -423,11 +423,27 @@ object Obj {
 
   def apply(m: Map[String, (PropValue, Absent)]): Obj = new Obj(m)
 
+  def Bot: Utils => Obj = utils => {
+    val map = ObjMapBot +
+      (STR_DEFAULT_NUMBER -> (PropValue.Bot(utils), AbsentBot)) +
+      (STR_DEFAULT_OTHER -> (PropValue.Bot(utils), AbsentBot))
+
+    new Obj(map)
+  }
+
+  def Empty: Utils => Obj = utils => {
+    val map = ObjMapBot +
+      (STR_DEFAULT_NUMBER -> (PropValue.Bot(utils), AbsentTop)) +
+      (STR_DEFAULT_OTHER -> (PropValue.Bot(utils), AbsentTop))
+
+    new Obj(map)
+  }
+
   ////////////////////////////////////////////////////////////////
   // new Object constructos
   ////////////////////////////////////////////////////////////////
   def newObject(utils: Utils): Obj = {
-    utils.ObjEmpty
+    Empty(utils)
       .update("@class", PropValue(utils.absString.alpha("Object"))(utils))
       .update("@extensible", PropValue(utils.absBool.True)(utils))
   }
@@ -436,7 +452,7 @@ object Obj {
 
   def newObject(locSet: Set[Loc])(utils: Utils): Obj = {
     val absFalse = utils.absBool.False
-    utils.ObjEmpty
+    Empty(utils)
       .update("@class", PropValue(utils.absString.alpha("Object"))(utils))
       .update("@proto", PropValue(ObjectValue(Value(locSet)(utils), absFalse, absFalse, absFalse)))
       .update("@extensible", PropValue(utils.absBool.True)(utils))
@@ -447,7 +463,7 @@ object Obj {
     val lengthVal = Value(PValue(absLength)(utils))
     val absFalse = utils.absBool.False
     val absTrue = utils.absBool.True
-    utils.ObjEmpty
+    Empty(utils)
       .update("@class", PropValue(utils.absString.alpha("Arguments"))(utils))
       .update("@proto", PropValue(ObjectValue(protoVal, absFalse, absFalse, absFalse)))
       .update("@extensible", PropValue(absTrue)(utils))
@@ -458,7 +474,7 @@ object Obj {
     val protoVal = Value(BuiltinArray.PROTO_LOC)(utils)
     val lengthVal = Value(PValue(absLength)(utils))
     val absFalse = utils.absBool.False
-    utils.ObjEmpty
+    Empty(utils)
       .update("@class", PropValue(utils.absString.alpha("Array"))(utils))
       .update("@proto", PropValue(ObjectValue(protoVal, absFalse, absFalse, absFalse)))
       .update("@extensible", PropValue(utils.absBool.True)(utils))
@@ -481,7 +497,7 @@ object Obj {
     val protoVal = Value(BuiltinFunction.PROTO_LOC)(utils)
     val absFalse = utils.absBool.False
     val lengthVal = Value(PValue(absLength)(utils))
-    val obj1 = utils.ObjEmpty
+    val obj1 = Empty(utils)
       .update("@class", PropValue(utils.absString.alpha("Function"))(utils))
       .update("@proto", PropValue(ObjectValue(protoVal, absFalse, absFalse, absFalse)))
       .update("@extensible", PropValue(utils.absBool.True)(utils))
@@ -529,7 +545,7 @@ object Obj {
     val absTrue = utils.absBool.True
     absStr.gamma match {
       case ConSetCon(strSet) =>
-        strSet.foldLeft(utils.ObjBot)((obj, str) => {
+        strSet.foldLeft(Bot(utils))((obj, str) => {
           val length = str.length
           val newObj3 = (0 until length).foldLeft(newObj2)((tmpObj, tmpIdx) => {
             val charAbsStr = utils.absString.alpha(str.charAt(tmpIdx).toString)
@@ -552,11 +568,11 @@ object Obj {
   // new Scope Object constructors
   ////////////////////////////////////////////////////////////////
   def newDeclEnvRecordObj(outerEnv: Value)(utils: Utils): Obj = {
-    utils.ObjEmpty.update("@outer", PropValue(ObjectValue(outerEnv)(utils)))
+    Empty(utils).update("@outer", PropValue(ObjectValue(outerEnv)(utils)))
   }
 
   def newPureLocalObj(envVal: Value, thisLocSet: Set[Loc])(utils: Utils): Obj = {
-    utils.ObjEmpty
+    Empty(utils)
       .update("@env", PropValue(ObjectValue(envVal)(utils)))
       .update("@this", PropValue(ObjectValue(thisLocSet)(utils)))
       .update("@exception", PropValue.Bot(utils))

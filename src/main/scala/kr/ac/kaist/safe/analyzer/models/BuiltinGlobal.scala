@@ -17,7 +17,7 @@ object BuiltinGlobal extends BuiltinModel {
   def initHeap(h: Heap, utils: Utils): Heap = {
     val afalse = utils.absBool.False
     val atrue = utils.absBool.True
-    val globalObj = h.getOrElse(PredefLoc.GLOBAL, utils.ObjEmpty)
+    val globalObj = h.getOrElse(PredefLoc.GLOBAL, Obj.Empty(utils))
       .update("@class", PropValue(utils.absString.alpha("Object"))(utils))
       .update("@proto", PropValue(ObjectValue(Value(BuiltinObject.PROTO_LOC)(utils), afalse, afalse, afalse)))
       .update("@extensible", PropValue(utils.absBool.True)(utils))
