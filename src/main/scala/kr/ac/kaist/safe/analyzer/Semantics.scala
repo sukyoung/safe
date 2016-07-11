@@ -129,7 +129,7 @@ class Semantics(
         if (c2.isBottom) State.Bot
         else {
           val localObj = h1.getOrElse(PredefLoc.SINGLE_PURE_LOCAL, Obj.Bot(utils))
-          val returnV = localObj.getOrElse("@return", PropValue.Bot(utils)).objval.value
+          val returnV = localObj.getOrElse("@return")(Value.Bot(utils)) { _.objval.value }
           val h2 = h1.update(PredefLoc.SINGLE_PURE_LOCAL, obj1)
           val h3 = helper.varStore(h2, retVar, returnV)
           State(h3, c2)
@@ -150,9 +150,9 @@ class Semantics(
         if (c2.isBottom) State.Bot
         else {
           val localObj = h1.getOrElse(PredefLoc.SINGLE_PURE_LOCAL, Obj.Bot(utils))
-          val excValue = localObj.getOrElse("@exception", PropValue.Bot(utils)).objval.value
+          val excValue = localObj.getOrElse("@exception")(Value.Bot(utils)) { _.objval.value }
           val excObjV = ObjectValue(excValue, utils.absBool.Bot, utils.absBool.Bot, utils.absBool.Bot)
-          val oldExcAllValue = obj1.getOrElse("@exception_all", PropValue.Bot(utils)).objval.value
+          val oldExcAllValue = obj1.getOrElse("@exception_all")(Value.Bot(utils)) { _.objval.value }
           val newExcAllObjV = ObjectValue(excValue + oldExcAllValue, utils.absBool.Bot, utils.absBool.Bot, utils.absBool.Bot)
           val h2 = h1.update(
             PredefLoc.SINGLE_PURE_LOCAL,
@@ -183,7 +183,7 @@ class Semantics(
             val xArgVars = fun.argVars
             val xLocalVars = fun.localVars
             val localObj = h.getOrElse(PredefLoc.SINGLE_PURE_LOCAL, Obj.Bot(utils))
-            val locSetArg = localObj.getOrElse(fun.argumentsName, PropValue.Bot(utils)).objval.value.locset
+            val locSetArg = localObj.getOrElse(fun.argumentsName)(LocSetEmpty) { _.objval.value.locset }
             val (nHeap, _) = xArgVars.foldLeft((h, 0))((res, x) => {
               val (iHeap, i) = res
               val vi = locSetArg.foldLeft(Value.Bot(utils))((vk, lArg) => {
@@ -237,8 +237,8 @@ class Semantics(
       // 3. s is length
       val (lengthHeap, lengthExcSet) =
         if (utils.absString.alpha("length") <= idxAbsStr) {
-          val lenPropV = heap.getOrElse(l, Obj.Bot(utils)).getOrElse("length", PropValue.Bot(utils))
-          val nOldLen = lenPropV.objval.value.pvalue.numval
+          val nOldLen = heap.getOrElse(l, Obj.Bot(utils))
+            .getOrElse("length")(utils.absNumber.Bot) { _.objval.value.pvalue.numval }
           val nNewLen = operator.toUInt32(storeV)
           val numberPV = helper.objToPrimitive(storeV.locset, "Number")
           val nValue = storeV.pvalue.toAbsNumber(utils.absNumber) + numberPV.toAbsNumber(utils.absNumber)
@@ -290,8 +290,8 @@ class Semantics(
       // 4. s is array index
       val arrIndexHeap =
         if (absTrue <= helper.isArrayIndex(idxAbsStr)) {
-          val lenPropV = heap.getOrElse(l, Obj.Bot(utils)).getOrElse("length", PropValue.Bot(utils))
-          val nOldLen = lenPropV.objval.value.pvalue.numval
+          val nOldLen = heap.getOrElse(l, Obj.Bot(utils))
+            .getOrElse("length")(utils.absNumber.Bot) { _.objval.value.pvalue.numval }
           val idxPV = PValue(idxAbsStr)(utils)
           val numPV = PValue(idxPV.toAbsNumber(utils.absNumber))(utils)
           val nIndex = operator.toUInt32(Value(numPV))
@@ -487,7 +487,7 @@ class Semantics(
 
         val n = utils.absNumber.alpha(f.argVars.length)
         val localObj = st2.heap.getOrElse(PredefLoc.SINGLE_PURE_LOCAL, Obj.Bot(utils))
-        val scope = localObj.getOrElse("@env", PropValue.Bot(utils)).objval.value
+        val scope = localObj.getOrElse("@env")(Value.Bot(utils)) { _.objval.value }
         val h3 = st2.heap.update(locR1, Obj.newFunctionObject(f.id, scope, locR2, n)(utils))
 
         val fVal = Value(PValue.Bot(utils), HashSet(locR1))
@@ -516,7 +516,7 @@ class Semantics(
         val h5 = h4.update(locR2, oNew.update("constructor", fPropV, exist = true))
 
         val localObj = st3.heap.getOrElse(PredefLoc.SINGLE_PURE_LOCAL, Obj.Bot(utils))
-        val scope = localObj.getOrElse("@env", PropValue.Bot(utils)).objval.value
+        val scope = localObj.getOrElse("@env")(Value.Bot(utils)) { _.objval.value }
         val oEnv = Obj.newDeclEnvRecordObj(scope)(utils)
         val fPropV2 = PropValue(ObjectValue(fVal, utils.absBool.False, utils.absBool.Bot, utils.absBool.False))
         val h6 = h5.update(locR3, oEnv.update(name.text, fPropV2))
@@ -552,7 +552,7 @@ class Semantics(
           // Draw call/return edges
           consLocSet.foreach((consLoc) => {
             val consObj = st1.heap.getOrElse(consLoc, Obj.Bot(utils))
-            val fidSet = consObj.getOrElse("@construct", PropValue.Bot(utils)).funid
+            val fidSet = consObj.getOrElse[Set[FunctionId]]("@construct")(HashSet[FunctionId]()) { _.funid }
             fidSet.foreach((fid) => {
               val newPureLocal = Obj.newPureLocalObj(Value(PValue.Bot(utils), HashSet(locR)), thisLocSet)(utils)
               val callerCtxSet = callerCallCtx.newCallContext(st1.heap, cfg, fid, locR, thisLocSet, newPureLocal, Some(aNew))
@@ -561,10 +561,9 @@ class Semantics(
                   val argPropV = PropValue(ObjectValue(argVal, absTrue, absFalse, absFalse))
                   cfg.getFunc(fid) match {
                     case Some(funCFG) => {
-                      val scopeObj = consObj.getOrElse("@scope", PropValue.Bot(utils))
-                      val newObj2 =
-                        newObj.update(funCFG.argumentsName, argPropV, exist = true)
-                          .update("@scope", scopeObj)
+                      val scopeObj = consObj.get("@scope")(utils)
+                      val newObj2 = newObj.update(funCFG.argumentsName, argPropV, exist = true)
+                        .update("@scope", scopeObj)
                       val entryCP = ControlPoint(funCFG.entry, newCallCtx)
                       val exitCP = ControlPoint(funCFG.exit, newCallCtx)
                       val exitExcCP = ControlPoint(funCFG.exitExc, newCallCtx)
@@ -629,7 +628,7 @@ class Semantics(
 
           funLocSet.foreach((funLoc) => {
             val funObj = st1.heap.getOrElse(funLoc, Obj.Bot(utils))
-            val fidSet = funObj.getOrElse("@function", PropValue.Bot(utils)).funid
+            val fidSet = funObj.getOrElse[Set[FunctionId]]("@function")(HashSet[FunctionId]()) { _.funid }
             fidSet.foreach((fid) => {
               val newPureLocal = Obj.newPureLocalObj(Value(PValue.Bot(utils), HashSet(locR)), thisLocSet)(utils)
               val callCtxSet = callerCallCtx.newCallContext(st.heap, cfg, fid, locR, thisLocSet, newPureLocal, Some(aNew))
@@ -638,9 +637,8 @@ class Semantics(
                   val value = PropValue(ObjectValue(argVal, absTrue, absFalse, absFalse))
                   cfg.getFunc(fid) match {
                     case Some(funCFG) => {
-                      val oNew2 =
-                        newObj.update(funCFG.argumentsName, value, exist = true)
-                          .update("@scope", funObj.getOrElse("@scope", PropValue.Bot(utils)))
+                      val oNew2 = newObj.update(funCFG.argumentsName, value, exist = true)
+                        .update("@scope", funObj.get("@scope")(utils))
                       val entryCP = ControlPoint(funCFG.entry, newCallCtx)
                       val exitCP = ControlPoint(funCFG.exit, newCallCtx)
                       val exitExcCP = ControlPoint(funCFG.exitExc, newCallCtx)
@@ -681,8 +679,8 @@ class Semantics(
       case CFGAssert(_, _, expr, _) => B(expr, st, excSt, i, cfg, cp)
       case CFGCatch(_, _, x) => {
         val localObj = st.heap.getOrElse(PredefLoc.SINGLE_PURE_LOCAL, Obj.Bot(utils))
-        val excSetPropV = localObj.getOrElse("@exception_all", PropValue.Bot(utils))
-        val excV = localObj.getOrElse("@exception", PropValue.Bot(utils)).objval.value
+        val excSetPropV = localObj.get("@exception_all")(utils)
+        val excV = localObj.getOrElse("@exception")(Value.Bot(utils)) { _.objval.value }
         val h1 = helper.createMutableBinding(st.heap, x, excV)
         val newObj = h1.getOrElse(PredefLoc.SINGLE_PURE_LOCAL, Obj.Bot(utils)).update("@exception", excSetPropV)
         val h2 = h1.update(PredefLoc.SINGLE_PURE_LOCAL, newObj)
@@ -708,7 +706,7 @@ class Semantics(
       case CFGThrow(_, _, expr) => {
         val (v, excSet) = V(expr, st)
         val localObj = st.heap.getOrElse(PredefLoc.SINGLE_PURE_LOCAL, Obj.Bot(utils))
-        val excSetV = localObj.getOrElse("@exception_all", PropValue.Bot(utils)).objval.value
+        val excSetV = localObj.getOrElse("@exception_all")(Value.Bot(utils)) { _.objval.value }
         val newExcPropV = PropValue(ObjectValue(v)(utils))
         val newExcSetPropV = PropValue(ObjectValue(v + excSetV)(utils))
         val retValPropV = PropValue(utils.absUndef.Top)(utils)
@@ -824,7 +822,7 @@ class Semantics(
       }
       case CFGThis(ir) =>
         val localObj = st.heap.getOrElse(PredefLoc.SINGLE_PURE_LOCAL, Obj.Bot(utils))
-        val thisLocSet = localObj.getOrElse("@this", PropValue.Bot(utils)).objval.value.locset
+        val thisLocSet = localObj.getOrElse("@this")(LocSetEmpty) { _.objval.value.locset }
         (Value(PValue.Bot(utils), thisLocSet), ExceptionSetEmpty)
       case CFGBin(ir, expr1, op, expr2) => {
         val (v1, excSet1) = V(expr1, st)

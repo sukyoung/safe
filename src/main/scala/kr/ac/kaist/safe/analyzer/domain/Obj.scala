@@ -220,17 +220,26 @@ class Obj(val map: Map[String, (PropValue, Absent)]) {
     }
   }
 
-  def getOrElse(s: String, default: PropValue): PropValue =
+  def getOrElse[T](s: String)(default: T)(f: PropValue => T): T = {
+    this(s) match {
+      case Some(propV) => f(propV)
+      case None => default
+    }
+  }
+
+  def getOrElse[T](absStr: AbsString)(default: T)(f: PropValue => T): T = {
+    this(absStr) match {
+      case Some(propV) => f(propV)
+      case None => default
+    }
+  }
+
+  def get(s: String)(utils: Utils): PropValue = {
     this(s) match {
       case Some(propV) => propV
-      case None => default
+      case None => PropValue.Bot(utils)
     }
-
-  def getOrElse(absStr: AbsString, default: PropValue): PropValue =
-    this(absStr) match {
-      case Some(propV) => propV
-      case None => default
-    }
+  }
 
   def -(s: String): Obj = {
     if (this.isBottom) this
