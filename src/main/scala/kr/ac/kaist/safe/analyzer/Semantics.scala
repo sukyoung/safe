@@ -106,8 +106,8 @@ class Semantics(
         case State.Bot => State.Bot
         case h1: Heap => {
           val objEnv = obj("@scope") match {
-            case Some(propV) => helper.newDeclEnvRecord(propV.objval.value)
-            case None => helper.newDeclEnvRecord(utils.ValueBot)
+            case Some(propV) => Obj.newDeclEnvRecordObj(propV.objval.value)(utils)
+            case None => Obj.newDeclEnvRecordObj(utils.ValueBot)(utils)
           }
           val obj2 = obj - "@scope"
           val h2 = h1.remove(PredefLoc.SINGLE_PURE_LOCAL).update(PredefLoc.SINGLE_PURE_LOCAL, obj2)
@@ -362,7 +362,7 @@ class Semantics(
         val locR = Loc(newAddr, Recent)
         val st1 = helper.oldify(st, newAddr)
         val np = utils.absNumber.alpha(n.toInt)
-        val h2 = st1.heap.update(locR, helper.newArrayObject(np))
+        val h2 = st1.heap.update(locR, Obj.newArrayObject(np)(utils))
         val h3 = helper.varStore(h2, x, Value(utils.PValueBot, HashSet(locR)))
         (State(h3, st1.context), excSt)
       }
@@ -370,7 +370,7 @@ class Semantics(
         val locR = Loc(newAddr, Recent)
         val st1 = helper.oldify(st, newAddr)
         val absN = utils.absNumber.alpha(n.toInt)
-        val h2 = st1.heap.update(locR, helper.newArgObject(absN))
+        val h2 = st1.heap.update(locR, Obj.newArgObject(absN)(utils))
         val h3 = helper.varStore(h2, x, Value(utils.PValueBot, HashSet(locR)))
         (State(h3, st1.context), excSt)
       }
@@ -483,12 +483,12 @@ class Semantics(
         val locR2 = Loc(aNew2, Recent)
         val st1 = helper.oldify(st, aNew1)
         val st2 = helper.oldify(st1, aNew2)
-        val oNew = helper.newObject(BuiltinObject.PROTO_LOC)
+        val oNew = Obj.newObject(BuiltinObject.PROTO_LOC)(utils)
 
         val n = utils.absNumber.alpha(f.argVars.length)
         val localObj = st2.heap.getOrElse(PredefLoc.SINGLE_PURE_LOCAL, utils.ObjBot)
         val scope = localObj.getOrElse("@env", utils.PropValueBot).objval.value
-        val h3 = st2.heap.update(locR1, helper.newFunctionObject(f.id, scope, locR2, n))
+        val h3 = st2.heap.update(locR1, Obj.newFunctionObject(f.id, scope, locR2, n)(utils))
 
         val fVal = Value(utils.PValueBot, HashSet(locR1))
         val fPropV = PropValue(ObjectValue(fVal, utils.absBool.True, utils.absBool.False, utils.absBool.True))
@@ -506,10 +506,10 @@ class Semantics(
         val st2 = helper.oldify(st1, aNew2)
         val st3 = helper.oldify(st2, aNew3)
 
-        val oNew = helper.newObject(BuiltinObject.PROTO_LOC)
+        val oNew = Obj.newObject(BuiltinObject.PROTO_LOC)(utils)
         val n = utils.absNumber.alpha(f.argVars.length)
         val fObjValue = Value(utils.PValueBot, HashSet(locR3))
-        val h4 = st3.heap.update(locR1, helper.newFunctionObject(f.id, fObjValue, locR2, n))
+        val h4 = st3.heap.update(locR1, Obj.newFunctionObject(f.id, fObjValue, locR2, n)(utils))
 
         val fVal = Value(utils.PValueBot, HashSet(locR1))
         val fPropV = PropValue(ObjectValue(fVal, utils.absBool.True, utils.absBool.False, utils.absBool.True))
@@ -517,7 +517,7 @@ class Semantics(
 
         val localObj = st3.heap.getOrElse(PredefLoc.SINGLE_PURE_LOCAL, utils.ObjBot)
         val scope = localObj.getOrElse("@env", utils.PropValueBot).objval.value
-        val oEnv = helper.newDeclEnvRecord(scope)
+        val oEnv = Obj.newDeclEnvRecordObj(scope)(utils)
         val fPropV2 = PropValue(ObjectValue(fVal, utils.absBool.False, utils.absBool.Bot, utils.absBool.False))
         val h6 = h5.update(locR3, oEnv.update(name.text, fPropV2))
         val h7 = helper.varStore(h6, lhs, fVal)
@@ -554,7 +554,7 @@ class Semantics(
             val consObj = st1.heap.getOrElse(consLoc, utils.ObjBot)
             val fidSet = consObj.getOrElse("@construct", utils.PropValueBot).funid
             fidSet.foreach((fid) => {
-              val newPureLocal = helper.newPureLocal(Value(utils.PValueBot, HashSet(locR)), thisLocSet)
+              val newPureLocal = Obj.newPureLocalObj(Value(utils.PValueBot, HashSet(locR)), thisLocSet)(utils)
               val callerCtxSet = callerCallCtx.newCallContext(st1.heap, cfg, fid, locR, thisLocSet, newPureLocal, Some(aNew))
               callerCtxSet.foreach {
                 case (newCallCtx, newObj) => {
@@ -631,7 +631,7 @@ class Semantics(
             val funObj = st1.heap.getOrElse(funLoc, utils.ObjBot)
             val fidSet = funObj.getOrElse("@function", utils.PropValueBot).funid
             fidSet.foreach((fid) => {
-              val newPureLocal = helper.newPureLocal(Value(utils.PValueBot, HashSet(locR)), thisLocSet)
+              val newPureLocal = Obj.newPureLocalObj(Value(utils.PValueBot, HashSet(locR)), thisLocSet)(utils)
               val callCtxSet = callerCallCtx.newCallContext(st.heap, cfg, fid, locR, thisLocSet, newPureLocal, Some(aNew))
               callCtxSet.foreach {
                 case (newCallCtx, newObj) => {

@@ -23,7 +23,7 @@ case class Initialize(helper: Helper) {
   def state: State = {
     val afalse = utils.absBool.False
 
-    val globalPureLocalObj = helper.newPureLocal(Value(utils.PValueBot.copyWith(utils.absNull.Top)), HashSet(PredefLoc.GLOBAL)) - "@return"
+    val globalPureLocalObj = Obj.newPureLocalObj(Value(utils.PValueBot.copyWith(utils.absNull.Top)), HashSet(PredefLoc.GLOBAL))(utils) - "@return"
 
     val globalObj = utils.ObjEmpty
       .update(NodeUtil.GLOBAL_NAME, PropValue(ObjectValue(utils.ValueBot.copyWith(PredefLoc.GLOBAL), afalse, afalse, afalse)))
