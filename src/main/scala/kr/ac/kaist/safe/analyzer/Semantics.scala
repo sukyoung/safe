@@ -240,7 +240,7 @@ class Semantics(
           val nOldLen = heap.getOrElse(l, Obj.Bot(utils))
             .getOrElse("length")(utils.absNumber.Bot) { _.objval.value.pvalue.numval }
           val nNewLen = operator.toUInt32(storeV)
-          val numberPV = helper.objToPrimitive(storeV.locset, "Number")
+          val numberPV = storeV.objToPrimitive("Number")(utils)
           val nValue = storeV.pvalue.toAbsNumber(utils.absNumber) + numberPV.toAbsNumber(utils.absNumber)
           val bCanPut = helper.canPut(heap, l, utils.absString.alpha("length"))
 
@@ -416,7 +416,7 @@ class Semantics(
         val (v, excSet) = V(index, st)
         val absStrSet =
           if (v.isBottom) HashSet[AbsString]()
-          else helper.toStringSet(helper.toPrimitiveBetter(st.heap, v))
+          else v.toPrimitiveBetter(st.heap)(utils).toStringSet(utils.absString)
         val (h1: Heap, b: AbsBool) = locSet.foldLeft[(Heap, AbsBool)](Heap.Bot, utils.absBool.Bot)((res1, l) => {
           val (tmpHeap1, tmpB1) = res1
           absStrSet.foldLeft((tmpHeap1, tmpB1))((res2, s) => {
@@ -439,16 +439,16 @@ class Semantics(
         val (value, _) = V(obj, st)
         val locSet = value.locset
 
-        val (vIdx, excSetIdx) = V(index, st)
+        val (idxV, excSetIdx) = V(index, st)
         val (vRhs, esRhs) = V(rhs, st)
 
         val (heap1, excSet1) =
-          (vIdx, vRhs) match {
+          (idxV, vRhs) match {
             case (v, _) if v.isBottom => (Heap.Bot, excSetIdx)
             case (_, v) if v.isBottom => (Heap.Bot, excSetIdx ++ esRhs)
             case _ =>
               // iterate over set of strings for index
-              val absStrSet = helper.toStringSet(helper.toPrimitiveBetter(st.heap, vIdx))
+              val absStrSet = idxV.toPrimitiveBetter(st.heap)(utils).toStringSet(utils.absString)
               absStrSet.foldLeft((Heap.Bot, excSetIdx ++ esRhs))((res1, absStr) => {
                 val (tmpHeap1, tmpExcSet1) = res1
                 val (tmpHeap2, tmpExcSet2) = storeInstrHelp(locSet, absStr, vRhs, st.heap)
@@ -760,7 +760,7 @@ class Semantics(
             val (v, excSet) = V(expr, st)
             val (h1, ctx1) =
               if (!v.isBottom) {
-                val numPV = helper.toPrimitiveBetter(st.heap, v)
+                val numPV = v.toPrimitiveBetter(st.heap)(utils)
                 val numPV2 = PValue(numPV.toAbsNumber(utils.absNumber))(utils)
                 (helper.varStore(st.heap, lhs, Value(numPV2)), st.context)
               } else {
@@ -811,7 +811,7 @@ class Semantics(
         val objLocSet = objV.locset
         val (idxV, idxExcSet) = V(index, st)
         val absStrSet =
-          if (!idxV.isBottom) helper.toStringSet(helper.toPrimitiveBetter(st.heap, idxV))
+          if (!idxV.isBottom) idxV.toPrimitiveBetter(st.heap)(utils).toStringSet(utils.absString)
           else HashSet[AbsString]()
         val v1 = objLocSet.foldLeft(Value.Bot(utils))((tmpVal1, loc) => {
           absStrSet.foldLeft(tmpVal1)((tmpVal2, absStr) => {
@@ -875,7 +875,7 @@ class Semantics(
                 val excSet = excSet1 ++ excSet2 ++ excSet3
                 (b, excSet)
               case "in" => {
-                val str = helper.toPrimitiveBetter(st.heap, v1).toAbsString(utils.absString)
+                val str = v1.toPrimitiveBetter(st.heap)(utils).toAbsString(utils.absString)
                 val absB = v2.locset.foldLeft(utils.absBool.Bot)((tmpAbsB, loc) => {
                   tmpAbsB + helper.hasProperty(st.heap, loc, str)
                 })

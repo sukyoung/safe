@@ -12,7 +12,6 @@
 package kr.ac.kaist.safe.analyzer.domain
 
 import scala.collection.immutable.HashSet
-
 import kr.ac.kaist.safe.util.Loc
 
 object Value {
@@ -115,5 +114,186 @@ case class Value(pvalue: PValue, locset: Set[Loc]) {
   def toAbsBoolean(absBool: AbsBoolUtil): AbsBool = {
     pvalue.toAbsBoolean(absBool) +
       (if (locset.isEmpty) absBool.Bot else absBool.True)
+  }
+
+  def toPrimitive: PValue = this.pvalue
+
+  def toPrimitiveBetter(h: Heap)(utils: Utils): PValue = {
+    this.pvalue + objToPrimitiveBetter(h, "String")(utils)
+  }
+
+  def objToPrimitive(hint: String)(utils: Utils): PValue = {
+    val pvalue: (Utils => PValue) =
+      if (this.locset.isEmpty) PValue.Bot
+      else {
+        hint match {
+          case "Number" => PValue(utils.absNumber.Top)
+          case "String" => PValue(utils.absString.Top)
+          case _ => PValue.Top
+        }
+      }
+    pvalue(utils)
+  }
+
+  def objToPrimitiveBetter(h: Heap, hint: String)(utils: Utils): PValue = {
+    val pvalue: (Utils => PValue) =
+      if (this.locset.isEmpty) PValue.Bot
+      else {
+        hint match {
+          case "Number" =>
+            PValue(defaultValueNumber(h)(utils).toAbsNumber(utils.absNumber))
+          case "String" =>
+            PValue(defaultToString(h)(utils))
+        }
+      }
+    pvalue(utils)
+  }
+
+  private def defaultValueNumber(h: Heap)(utils: Utils): PValue = {
+    def getClassStrVal(obj: Obj): AbsString = {
+      obj.getOrElse("@class")(utils.absString.Bot) { _.objval.value.pvalue.strval }
+    }
+
+    val objSet = this.locset.map(l => h.getOrElse(l, Obj.Bot(utils)))
+    val boolObjSet = objSet.filter(obj => {
+      utils.absString.alpha("Boolean") <= getClassStrVal(obj)
+    })
+    val numObjSet = objSet.filter(obj => {
+      utils.absString.alpha("Number") <= getClassStrVal(obj)
+    })
+    val dateObjSet = objSet.filter(obj => {
+      utils.absString.alpha("Date") <= getClassStrVal(obj)
+    })
+    val strObjSet = objSet.filter(obj => {
+      utils.absString.alpha("String") <= getClassStrVal(obj)
+    })
+    val regexpObjSet = objSet.filter(obj => {
+      utils.absString.alpha("RegExp") <= getClassStrVal(obj)
+    })
+    val othersObjSet = objSet.filter(obj => {
+      val absClassStr = getClassStrVal(obj)
+      absClassStr != utils.absString.alpha("Boolean") &&
+        absClassStr != utils.absString.alpha("Number") &&
+        absClassStr != utils.absString.alpha("String") &&
+        absClassStr != utils.absString.alpha("RegExp") &&
+        absClassStr != utils.absString.alpha("Date")
+    })
+
+    val others = othersObjSet.foldLeft[AbsString](utils.absString.Bot)((absStr, obj) => {
+      absStr + getClassStrVal(obj)
+    })
+    val b = boolObjSet.foldLeft[AbsBool](utils.absBool.Bot)((absBool, obj) => {
+      absBool + obj.getOrElse("@primitive")(utils.absBool.Bot) { _.objval.value.pvalue.boolval }
+    })
+    val n = numObjSet.foldLeft[AbsNumber](utils.absNumber.Bot)((absNum, obj) => {
+      absNum + obj.getOrElse("@primitive")(utils.absNumber.Bot) { _.objval.value.pvalue.numval }
+    })
+    val n2 = dateObjSet.foldLeft[AbsNumber](utils.absNumber.Bot)((absNum, obj) => {
+      absNum + obj.getOrElse("@primitive")(utils.absNumber.Bot) { _.objval.value.pvalue.numval }
+    })
+    val (srcAbsStr, globalAbsB, ignoreCaseAbsB, multilineAbsB) =
+      regexpObjSet.foldLeft[(AbsString, AbsBool, AbsBool, AbsBool)](
+        (utils.absString.Bot, utils.absBool.Bot, utils.absBool.Bot, utils.absBool.Bot)
+      )((res, obj) => {
+          val (tmpSrc, tmpGlobal, tmpIgnoreCase, tmpMultiline) = res
+          (tmpSrc + obj.getOrElse("source")(utils.absString.Bot) { _.objval.value.pvalue.strval },
+            tmpGlobal + obj.getOrElse("global")(utils.absBool.Bot) { _.objval.value.pvalue.boolval },
+            tmpIgnoreCase + obj.getOrElse("ignoreCase")(utils.absBool.Bot) { _.objval.value.pvalue.boolval },
+            tmpMultiline + obj.getOrElse("multiline")(utils.absBool.Bot) { _.objval.value.pvalue.boolval })
+        })
+
+    val absStr1 = strObjSet.foldLeft[AbsString](utils.absString.Bot)((absStr, obj) => {
+      absStr + obj.getOrElse("@primitive")(utils.absString.Bot) { _.objval.value.pvalue.strval }
+    })
+    val pv2 = PValue(b)(utils)
+    val pv3 = PValue(n)(utils)
+    val pv4 = PValue(n2)(utils)
+
+    val absStr5 = (
+      srcAbsStr.gammaSingle,
+      globalAbsB.gamma,
+      ignoreCaseAbsB.gamma,
+      multilineAbsB.gamma
+    ) match {
+        case (ConSingleCon(s), ConSingleCon(g), ConSingleCon(i), ConSingleCon(m)) =>
+          val flags = (if (g) "g" else "") + (if (i) "i" else "") + (if (m) "m" else "")
+          utils.absString.alpha("/" + s + "/" + flags)
+        case (ConSingleBot(), _, _, _)
+        | (_, ConSingleBot(), _, _)
+        | (_, _, ConSingleBot(), _)
+        | (_, _, _, ConSingleBot()) => utils.absString.Bot
+        case _ => utils.absString.Top
+      }
+
+    val pv6 = PValue(
+      others.fold(utils.absString.Bot)(_ => {
+        utils.absString.Top
+      })
+    )(utils)
+    PValue(absStr1)(utils) + pv2 + pv3 + pv4 + PValue(absStr5)(utils) + pv6
+  }
+
+  private def defaultToString(h: Heap)(utils: Utils): AbsString = {
+    def getClassStrVal(obj: Obj): AbsString = {
+      obj.getOrElse("@class")(utils.absString.Bot) { _.objval.value.pvalue.strval }
+    }
+    val objSet = this.locset.map(l => h.getOrElse(l, Obj.Bot(utils)))
+    val boolObjSet = objSet.filter(obj => utils.absString.alpha("Boolean") <= getClassStrVal(obj))
+    val numObjSet = objSet.filter(obj => utils.absString.alpha("Number") <= getClassStrVal(obj))
+    val strObjSet = objSet.filter(obj => utils.absString.alpha("String") <= getClassStrVal(obj))
+    val regexpObjSet = objSet.filter(obj => utils.absString.alpha("RegExp") <= getClassStrVal(obj))
+    val othersObjSet = objSet.filter(obj => {
+      val absClassStr = getClassStrVal(obj)
+      absClassStr != utils.absString.alpha("Boolean") &&
+        absClassStr != utils.absString.alpha("Number") &&
+        absClassStr != utils.absString.alpha("String") &&
+        absClassStr != utils.absString.alpha("RegExp")
+    })
+
+    val others = othersObjSet.foldLeft[AbsString](utils.absString.Bot)((absStr, obj) => {
+      absStr + getClassStrVal(obj)
+    })
+    val b = boolObjSet.foldLeft[AbsBool](utils.absBool.Bot)((absBool, obj) => {
+      absBool + obj.getOrElse("@primitive")(utils.absBool.Bot) { _.objval.value.pvalue.boolval }
+    })
+    val n = numObjSet.foldLeft[AbsNumber](utils.absNumber.Bot)((absNum, obj) => {
+      absNum + obj.getOrElse("@primitive")(utils.absNumber.Bot) { _.objval.value.pvalue.numval }
+    })
+    val (srcAbsStr, globalAbsB, ignoreCaseAbsB, multilineAbsB) =
+      regexpObjSet.foldLeft[(AbsString, AbsBool, AbsBool, AbsBool)](
+        (utils.absString.Bot, utils.absBool.Bot, utils.absBool.Bot, utils.absBool.Bot)
+      )((res, obj) => {
+          val (tmpSrc, tmpGlobal, tmpIgnoreCase, tmpMultiline) = res
+          (tmpSrc + obj.getOrElse("source")(utils.absString.Bot) { _.objval.value.pvalue.strval },
+            tmpGlobal + obj.getOrElse("global")(utils.absBool.Bot) { _.objval.value.pvalue.boolval },
+            tmpIgnoreCase + obj.getOrElse("ignoreCase")(utils.absBool.Bot) { _.objval.value.pvalue.boolval },
+            tmpMultiline + obj.getOrElse("multiline")(utils.absBool.Bot) { _.objval.value.pvalue.boolval })
+        })
+
+    val absStr1 = strObjSet.foldLeft[AbsString](utils.absString.Bot)((absStr, obj) => {
+      absStr + obj.getOrElse("@primitive")(utils.absString.Bot) { _.objval.value.pvalue.strval }
+    })
+    val absStr2 = b.toAbsString(utils.absString)
+    val absStr3 = n.toAbsString(utils.absString)
+    val absStr4 = (
+      srcAbsStr.gammaSingle,
+      globalAbsB.gamma,
+      ignoreCaseAbsB.gamma,
+      multilineAbsB.gamma
+    ) match {
+        case (ConSingleCon(s), ConSingleCon(g), ConSingleCon(i), ConSingleCon(m)) =>
+          val flags = (if (g) "g" else "") + (if (i) "i" else "") + (if (m) "m" else "")
+          utils.absString.alpha("/" + s + "/" + flags)
+        case (ConSingleBot(), _, _, _)
+        | (_, ConSingleBot(), _, _)
+        | (_, _, ConSingleBot(), _)
+        | (_, _, _, ConSingleBot()) => utils.absString.Bot
+        case _ => utils.absString.Top
+      }
+
+    val absStr5 = others.fold(utils.absString.Bot)(_ => {
+      utils.absString.Top
+    })
+    absStr1 + absStr2 + absStr3 + absStr4 + absStr5
   }
 }

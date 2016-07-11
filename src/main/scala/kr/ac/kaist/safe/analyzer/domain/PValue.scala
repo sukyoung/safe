@@ -11,6 +11,8 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
+import scala.collection.immutable.HashSet
+
 object PValue {
   def Bot: Utils => PValue = utils =>
     PValue(utils.absUndef.Bot, utils.absNull.Bot, utils.absBool.Bot, utils.absNumber.Bot, utils.absString.Bot)
@@ -151,6 +153,29 @@ case class PValue(
     this.numval.fold(()) { _ => lst ::= "Number" }
     this.strval.fold(()) { _ => lst ::= "String" }
     lst.mkString(", ")
+  }
+
+  def toStringSet(absString: AbsStringUtil): Set[AbsString] = {
+    var set = HashSet[AbsString]()
+
+    this.undefval.foldUnit(set += absString.alpha("undefined"))
+    this.nullval.foldUnit(set += absString.alpha("null"))
+
+    this.boolval.gamma match {
+      case ConSingleBot() => ()
+      case ConSingleCon(true) => set += absString.alpha("true")
+      case ConSingleCon(false) => set += absString.alpha("false")
+      case ConSingleTop() =>
+        set += absString.alpha("true")
+        set += absString.alpha("false")
+    }
+
+    set += this.numval.toAbsString(absString)
+
+    this.strval.foldUnit(set += this.strval)
+
+    // remove redundancies
+    set.filter(s => !set.exists(o => s != o && s <= o))
   }
 
   def foreach(f: (AbsDomain => Unit)): Unit = {
