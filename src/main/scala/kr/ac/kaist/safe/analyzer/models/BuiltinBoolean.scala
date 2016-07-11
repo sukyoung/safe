@@ -23,21 +23,21 @@ object BuiltinBoolean extends BuiltinModel {
     val atrue = utils.absBool.True
 
     val booleanProto = utils.ObjEmpty
-      .update("@class", PropValue(utils.ObjectValueBot.copyWith(utils.absString.alpha("Boolean"))))
-      .update("@proto", PropValue(ObjectValue(utils.ValueBot.copyWith(BuiltinObject.PROTO_LOC), afalse, afalse, afalse)))
-      .update("@extensible", PropValue(utils.ObjectValueBot.copyWith(atrue)))
-      .update("constructor", PropValue(ObjectValue(utils.ValueBot.copyWith(CONSTRUCT_LOC), afalse, afalse, afalse)))
+      .update("@class", PropValue(utils.absString.alpha("Boolean"))(utils))
+      .update("@proto", PropValue(ObjectValue(Value(BuiltinObject.PROTO_LOC)(utils), afalse, afalse, afalse)))
+      .update("@extensible", PropValue(atrue)(utils))
+      .update("constructor", PropValue(ObjectValue(Value(CONSTRUCT_LOC)(utils), afalse, afalse, afalse)))
 
     val booleanConstructor = utils.ObjEmpty
-      .update("@class", PropValue(utils.ObjectValueBot.copyWith(utils.absString.alpha("Function"))))
-      .update("@proto", PropValue(ObjectValue(utils.ValueBot.copyWith(BuiltinFunction.PROTO_LOC), afalse, afalse, afalse)))
-      .update("@extensible", PropValue(utils.ObjectValueBot.copyWith(atrue)))
-      .update("@scope", PropValue(utils.ObjectValueBot.copyWith(utils.absNull.Top)))
+      .update("@class", PropValue(utils.absString.alpha("Function"))(utils))
+      .update("@proto", PropValue(ObjectValue(Value(BuiltinFunction.PROTO_LOC)(utils), afalse, afalse, afalse)))
+      .update("@extensible", PropValue(atrue)(utils))
+      .update("@scope", PropValue(utils.absNull.Top)(utils))
       //.update("@function", AbsInternalFunc("Boolean"))
       //.update("@construct", AbsInternalFunc("Boolean.constructor"))
-      .update("@hasinstance", PropValue(utils.ObjectValueBot.copyWith(utils.absNull.Top)))
-      .update("prototype", PropValue(ObjectValue(utils.ValueBot.copyWith(PROTO_LOC), afalse, afalse, afalse)))
-      .update("length", PropValue(utils.PValueBot.copyWith(utils.absNumber.alpha(1)), afalse, afalse, afalse))
+      .update("@hasinstance", PropValue(utils.absNull.Top)(utils))
+      .update("prototype", PropValue(ObjectValue(Value(PROTO_LOC)(utils), afalse, afalse, afalse)))
+      .update("length", PropValue(PValue(utils.absNumber.alpha(1))(utils), afalse, afalse, afalse))
 
     h.update(PROTO_LOC, booleanProto)
       .update(CONSTRUCT_LOC, booleanConstructor)

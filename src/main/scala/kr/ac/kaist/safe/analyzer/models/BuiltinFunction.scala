@@ -23,23 +23,23 @@ object BuiltinFunction extends BuiltinModel {
     val atrue = utils.absBool.True
 
     val functionProto = utils.ObjEmpty
-      .update("@class", PropValue(utils.ObjectValueBot.copyWith(utils.absString.alpha("Function"))))
-      .update("@proto", PropValue(ObjectValue(utils.ValueBot.copyWith(BuiltinObject.PROTO_LOC), afalse, afalse, afalse)))
-      .update("@extensible", PropValue(utils.ObjectValueBot.copyWith(atrue)))
+      .update("@class", PropValue(utils.absString.alpha("Function"))(utils))
+      .update("@proto", PropValue(ObjectValue(Value(BuiltinObject.PROTO_LOC)(utils), afalse, afalse, afalse)))
+      .update("@extensible", PropValue(atrue)(utils))
       //      .update("@function", AbsInternalFunc("Function.prototype"))
-      .update("constructor", PropValue(ObjectValue(utils.ValueBot.copyWith(CONSTRUCT_LOC), atrue, afalse, atrue)))
-      .update("length", PropValue(utils.PValueBot.copyWith(utils.absNumber.alpha(0)), afalse, afalse, afalse))
+      .update("constructor", PropValue(ObjectValue(Value(CONSTRUCT_LOC)(utils), atrue, afalse, atrue)))
+      .update("length", PropValue(PValue(utils.absNumber.alpha(0))(utils), afalse, afalse, afalse))
 
     val functionConstructor = utils.ObjEmpty
-      .update("@class", PropValue(utils.ObjectValueBot.copyWith(utils.absString.alpha("Function"))))
-      .update("@proto", PropValue(ObjectValue(utils.ValueBot.copyWith(BuiltinFunction.PROTO_LOC), afalse, afalse, afalse)))
-      .update("@extensible", PropValue(utils.ObjectValueBot.copyWith(atrue)))
-      .update("@scope", PropValue(utils.ObjectValueBot.copyWith(utils.absNull.Top)))
+      .update("@class", PropValue(utils.absString.alpha("Function"))(utils))
+      .update("@proto", PropValue(ObjectValue(Value(BuiltinFunction.PROTO_LOC)(utils), afalse, afalse, afalse)))
+      .update("@extensible", PropValue(atrue)(utils))
+      .update("@scope", PropValue(utils.absNull.Top)(utils))
       //.update("@function", AbsInternalFunc("Function.constructor"))
       //.update("@construct", AbsInternalFunc("Function.constructor"))
-      .update("@hasinstance", PropValue(utils.ObjectValueBot.copyWith(utils.absNull.Top)))
-      .update("prototype", PropValue(ObjectValue(utils.ValueBot.copyWith(PROTO_LOC), afalse, afalse, afalse)))
-      .update("length", PropValue(utils.PValueBot.copyWith(utils.absNumber.alpha(1)), afalse, afalse, afalse))
+      .update("@hasinstance", PropValue(utils.absNull.Top)(utils))
+      .update("prototype", PropValue(ObjectValue(Value(PROTO_LOC)(utils), afalse, afalse, afalse)))
+      .update("length", PropValue(PValue(utils.absNumber.alpha(1))(utils), afalse, afalse, afalse))
 
     h.update(PROTO_LOC, functionProto)
       .update(CONSTRUCT_LOC, functionConstructor)

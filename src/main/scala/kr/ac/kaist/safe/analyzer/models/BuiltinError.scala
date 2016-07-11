@@ -36,65 +36,65 @@ object BuiltinError extends BuiltinModel {
     val atrue = utils.absBool.True
 
     val errObj = utils.ObjEmpty
-      .update("@class", PropValue(utils.ObjectValueBot.copyWith(utils.absString.alpha("Error"))))
-      .update("@extensible", PropValue(utils.ObjectValueBot.copyWith(atrue)))
+      .update("@class", PropValue(utils.absString.alpha("Error"))(utils))
+      .update("@extensible", PropValue(atrue)(utils))
 
     val defaultErr = errObj
-      .update("@proto", PropValue(ObjectValue(utils.ValueBot.copyWith(ERR_PROTO_LOC), afalse, afalse, afalse)))
+      .update("@proto", PropValue(ObjectValue(Value(ERR_PROTO_LOC)(utils), afalse, afalse, afalse)))
 
     val evalErr = errObj
-      .update("@proto", PropValue(ObjectValue(utils.ValueBot.copyWith(EVAL_ERR_PROTO_LOC), afalse, afalse, afalse)))
+      .update("@proto", PropValue(ObjectValue(Value(EVAL_ERR_PROTO_LOC)(utils), afalse, afalse, afalse)))
 
     val rangeErr = errObj
-      .update("@proto", PropValue(ObjectValue(utils.ValueBot.copyWith(RANGE_ERR_PROTO_LOC), afalse, afalse, afalse)))
+      .update("@proto", PropValue(ObjectValue(Value(RANGE_ERR_PROTO_LOC)(utils), afalse, afalse, afalse)))
 
     val refErr = errObj
-      .update("@proto", PropValue(ObjectValue(utils.ValueBot.copyWith(REF_ERR_PROTO_LOC), afalse, afalse, afalse)))
+      .update("@proto", PropValue(ObjectValue(Value(REF_ERR_PROTO_LOC)(utils), afalse, afalse, afalse)))
 
     val syntaxErr = errObj
-      .update("@proto", PropValue(ObjectValue(utils.ValueBot.copyWith(SYNTAX_ERR_PROTO_LOC), afalse, afalse, afalse)))
+      .update("@proto", PropValue(ObjectValue(Value(SYNTAX_ERR_PROTO_LOC)(utils), afalse, afalse, afalse)))
 
     val typeErr = errObj
-      .update("@proto", PropValue(ObjectValue(utils.ValueBot.copyWith(TYPE_ERR_PROTO_LOC), afalse, afalse, afalse)))
+      .update("@proto", PropValue(ObjectValue(Value(TYPE_ERR_PROTO_LOC)(utils), afalse, afalse, afalse)))
 
     val uriErr = errObj
-      .update("@proto", PropValue(ObjectValue(utils.ValueBot.copyWith(URI_ERR_PROTO_LOC), afalse, afalse, afalse)))
+      .update("@proto", PropValue(ObjectValue(Value(URI_ERR_PROTO_LOC)(utils), afalse, afalse, afalse)))
 
     val errProtoObj = utils.ObjEmpty
-      .update("@class", PropValue(utils.ObjectValueBot.copyWith(utils.absString.alpha("Error"))))
-      .update("@extensible", PropValue(utils.ObjectValueBot.copyWith(atrue)))
-      .update("@proto", PropValue(ObjectValue(utils.ValueBot.copyWith(ERR_PROTO_LOC), afalse, afalse, afalse)))
+      .update("@class", PropValue(utils.absString.alpha("Error"))(utils))
+      .update("@extensible", PropValue(atrue)(utils))
+      .update("@proto", PropValue(ObjectValue(Value(ERR_PROTO_LOC)(utils), afalse, afalse, afalse)))
 
     val defaultErrProto = utils.ObjEmpty
-      .update("@class", PropValue(utils.ObjectValueBot.copyWith(utils.absString.alpha("Error"))))
-      .update("@extensible", PropValue(utils.ObjectValueBot.copyWith(atrue)))
-      .update("@proto", PropValue(ObjectValue(utils.ValueBot.copyWith(BuiltinObject.PROTO_LOC), afalse, afalse, afalse)))
-      .update("name", PropValue(utils.PValueBot.copyWith(utils.absString.alpha("Error")), atrue, afalse, atrue))
-      .update("message", PropValue(utils.PValueBot.copyWith(utils.absString.alpha("")), atrue, afalse, atrue))
+      .update("@class", PropValue(utils.absString.alpha("Error"))(utils))
+      .update("@extensible", PropValue(atrue)(utils))
+      .update("@proto", PropValue(ObjectValue(Value(BuiltinObject.PROTO_LOC)(utils), afalse, afalse, afalse)))
+      .update("name", PropValue(PValue(utils.absString.alpha("Error"))(utils), atrue, afalse, atrue))
+      .update("message", PropValue(PValue(utils.absString.alpha(""))(utils), atrue, afalse, atrue))
 
     val evalErrProto = errProtoObj
-      .update("name", PropValue(utils.PValueBot.copyWith(utils.absString.alpha("EvalError")), atrue, afalse, atrue))
-      .update("message", PropValue(utils.PValueBot.copyWith(utils.absString.alpha("")), atrue, afalse, atrue))
+      .update("name", PropValue(PValue(utils.absString.alpha("EvalError"))(utils), atrue, afalse, atrue))
+      .update("message", PropValue(PValue(utils.absString.alpha(""))(utils), atrue, afalse, atrue))
 
     val rangeErrProto = errProtoObj
-      .update("name", PropValue(utils.PValueBot.copyWith(utils.absString.alpha("RangeError")), atrue, afalse, atrue))
-      .update("message", PropValue(utils.PValueBot.copyWith(utils.absString.alpha("")), atrue, afalse, atrue))
+      .update("name", PropValue(PValue(utils.absString.alpha("RangeError"))(utils), atrue, afalse, atrue))
+      .update("message", PropValue(PValue(utils.absString.alpha(""))(utils), atrue, afalse, atrue))
 
     val refErrProto = errProtoObj
-      .update("name", PropValue(utils.PValueBot.copyWith(utils.absString.alpha("ReferenceError")), atrue, afalse, atrue))
-      .update("message", PropValue(utils.PValueBot.copyWith(utils.absString.alpha("")), atrue, afalse, atrue))
+      .update("name", PropValue(PValue(utils.absString.alpha("ReferenceError"))(utils), atrue, afalse, atrue))
+      .update("message", PropValue(PValue(utils.absString.alpha(""))(utils), atrue, afalse, atrue))
 
     val syntaxErrProto = errProtoObj
-      .update("name", PropValue(utils.PValueBot.copyWith(utils.absString.alpha("SyntaxError")), atrue, afalse, atrue))
-      .update("message", PropValue(utils.PValueBot.copyWith(utils.absString.alpha("")), atrue, afalse, atrue))
+      .update("name", PropValue(PValue(utils.absString.alpha("SyntaxError"))(utils), atrue, afalse, atrue))
+      .update("message", PropValue(PValue(utils.absString.alpha(""))(utils), atrue, afalse, atrue))
 
     val typeErrProto = errProtoObj
-      .update("name", PropValue(utils.PValueBot.copyWith(utils.absString.alpha("TypeError")), atrue, afalse, atrue))
-      .update("message", PropValue(utils.PValueBot.copyWith(utils.absString.alpha("")), atrue, afalse, atrue))
+      .update("name", PropValue(PValue(utils.absString.alpha("TypeError"))(utils), atrue, afalse, atrue))
+      .update("message", PropValue(PValue(utils.absString.alpha(""))(utils), atrue, afalse, atrue))
 
     val uriErrProto = errProtoObj
-      .update("name", PropValue(utils.PValueBot.copyWith(utils.absString.alpha("URIError")), atrue, afalse, atrue))
-      .update("message", PropValue(utils.PValueBot.copyWith(utils.absString.alpha("")), atrue, afalse, atrue))
+      .update("name", PropValue(PValue(utils.absString.alpha("URIError"))(utils), atrue, afalse, atrue))
+      .update("message", PropValue(PValue(utils.absString.alpha(""))(utils), atrue, afalse, atrue))
 
     h.update(ERR_LOC, defaultErr)
       .update(EVAL_ERR_LOC, evalErr)

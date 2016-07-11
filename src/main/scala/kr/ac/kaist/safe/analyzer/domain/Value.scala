@@ -16,7 +16,12 @@ import scala.collection.immutable.HashSet
 import kr.ac.kaist.safe.util.Loc
 
 object Value {
+  def Bot: Utils => Value = utils => Value(PValue.Bot(utils), LocSetEmpty)
+
   def apply(pvalue: PValue): Value = Value(pvalue, LocSetEmpty)
+
+  def apply(loc: Loc): Utils => Value = utils => Value(PValue.Bot(utils), HashSet(loc))
+  def apply(locSet: Set[Loc]): Utils => Value = utils => Value(PValue.Bot(utils), locSet)
 }
 
 case class Value(pvalue: PValue, locset: Set[Loc]) {
@@ -111,7 +116,4 @@ case class Value(pvalue: PValue, locset: Set[Loc]) {
     pvalue.toAbsBoolean(absBool) +
       (if (locset.isEmpty) absBool.Bot else absBool.True)
   }
-
-  def copyWith(loc: Loc): Value = Value(this.pvalue, HashSet(loc))
-  def copyWith(locSet: Set[Loc]): Value = Value(this.pvalue, locSet)
 }

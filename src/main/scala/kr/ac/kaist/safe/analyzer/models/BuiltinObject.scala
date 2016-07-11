@@ -23,21 +23,21 @@ object BuiltinObject extends BuiltinModel {
     val atrue = utils.absBool.True
 
     val objPtoro = utils.ObjEmpty
-      .update("@class", PropValue(utils.ObjectValueBot.copyWith(utils.absString.alpha("Object"))))
-      .update("@extensible", PropValue(utils.ObjectValueBot.copyWith(atrue)))
-      .update("@proto", PropValue(utils.ObjectValueBot.copyWith(utils.absNull.Top)))
-      .update("constructor", PropValue(ObjectValue(utils.ValueBot.copyWith(CONSTRUCT_LOC), atrue, afalse, atrue)))
+      .update("@class", PropValue(utils.absString.alpha("Object"))((utils)))
+      .update("@extensible", PropValue(atrue)(utils))
+      .update("@proto", PropValue(utils.absNull.Top)(utils))
+      .update("constructor", PropValue(ObjectValue(Value(CONSTRUCT_LOC)(utils), atrue, afalse, atrue)))
 
     val objConstructor = utils.ObjEmpty
-      .update("@class", PropValue(utils.ObjectValueBot.copyWith(utils.absString.alpha("Function"))))
-      .update("@proto", PropValue(ObjectValue(utils.ValueBot.copyWith(BuiltinFunction.PROTO_LOC), afalse, afalse, afalse)))
-      .update("@extensible", PropValue(utils.ObjectValueBot.copyWith(utils.absBool.True)))
-      .update("@scope", PropValue(utils.ObjectValueBot.copyWith(utils.absNull.Top)))
-      .update("@hasinstance", PropValue(utils.ObjectValueBot.copyWith(utils.absNull.Top)))
+      .update("@class", PropValue(utils.absString.alpha("Function"))(utils))
+      .update("@proto", PropValue(ObjectValue(Value(BuiltinFunction.PROTO_LOC)(utils), afalse, afalse, afalse)))
+      .update("@extensible", PropValue(atrue)(utils))
+      .update("@scope", PropValue(utils.absNull.Top)(utils))
+      .update("@hasinstance", PropValue(utils.absNull.Top)(utils))
       //.update("@function", AbsInternalFunc("Object"))
       //.update("@construct", AbsInternalFunc("Object.constructor"))
-      .update("prototype", PropValue(ObjectValue(utils.ValueBot.copyWith(PROTO_LOC), afalse, afalse, afalse)))
-      .update("length", PropValue(utils.PValueBot.copyWith(utils.absNumber.alpha(1)), afalse, afalse, afalse))
+      .update("prototype", PropValue(ObjectValue(Value(PROTO_LOC)(utils), afalse, afalse, afalse)))
+      .update("length", PropValue(PValue(utils.absNumber.alpha(1))(utils), afalse, afalse, afalse))
 
     h.update(PROTO_LOC, objPtoro)
       .update(CONSTRUCT_LOC, objConstructor)

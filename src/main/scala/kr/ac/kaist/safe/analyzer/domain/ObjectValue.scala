@@ -14,8 +14,20 @@ package kr.ac.kaist.safe.analyzer.domain
 import kr.ac.kaist.safe.util.Loc
 
 object ObjectValue {
+  def Bot: Utils => ObjectValue = utils =>
+    ObjectValue(Value.Bot(utils), utils.absBool.Bot, utils.absBool.Bot, utils.absBool.Bot)
+
+  def apply(value: Value): Utils => ObjectValue = utils =>
+    ObjectValue(value, utils.absBool.Bot, utils.absBool.Bot, utils.absBool.Bot)
+
   def apply(pvalue: PValue, writable: AbsBool, enumerable: AbsBool, configurable: AbsBool): ObjectValue =
     ObjectValue(Value(pvalue), writable, enumerable, configurable)
+
+  def apply(loc: Loc): Utils => ObjectValue = utils =>
+    ObjectValue(Value(loc)(utils), utils.absBool.Bot, utils.absBool.Bot, utils.absBool.Bot)
+
+  def apply(locSet: Set[Loc]): Utils => ObjectValue = utils =>
+    ObjectValue(Value(locSet)(utils), utils.absBool.Bot, utils.absBool.Bot, utils.absBool.Bot)
 }
 
 case class ObjectValue(
@@ -79,13 +91,4 @@ case class ObjectValue(
   }
 
   def copyWith(newValue: Value): ObjectValue = ObjectValue(newValue, writable, enumerable, configurable)
-
-  def copyWith(newUndefVal: AbsUndef): ObjectValue = copyWith(Value(this.value.pvalue.copyWith(newUndefVal)))
-  def copyWith(newNullVal: AbsNull): ObjectValue = copyWith(Value(this.value.pvalue.copyWith(newNullVal)))
-  def copyWith(newBoolVal: AbsBool): ObjectValue = copyWith(Value(this.value.pvalue.copyWith(newBoolVal)))
-  def copyWith(newNumberVal: AbsNumber): ObjectValue = copyWith(Value(this.value.pvalue.copyWith(newNumberVal)))
-  def copyWith(newStringVal: AbsString): ObjectValue = copyWith(Value(this.value.pvalue.copyWith(newStringVal)))
-
-  def copyWith(loc: Loc): ObjectValue = copyWith(this.value.copyWith(loc))
-  def copyWith(locSet: Set[Loc]): ObjectValue = copyWith(this.value.copyWith(locSet))
 }

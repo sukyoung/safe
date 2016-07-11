@@ -70,16 +70,10 @@ case class Utils(
     absNumber: AbsNumberUtil,
     absString: AbsStringUtil
 ) {
-  val PValueTop: PValue = PValue(absUndef.Top, absNull.Top, absBool.Top, absNumber.Top, absString.Top)
-  val PValueBot: PValue = PValue(absUndef.Bot, absNull.Bot, absBool.Bot, absNumber.Bot, absString.Bot)
-  val ValueBot: Value = Value(PValueBot, LocSetEmpty)
-  val ObjectValueBot: ObjectValue = ObjectValue(ValueBot, absBool.Bot, absBool.Bot, absBool.Bot)
-  val PropValueBot: PropValue = PropValue(ObjectValueBot, HashSet[FunctionId]())
-
   val ObjBot: Obj = Obj(Obj.ObjMapBot.
-    updated(STR_DEFAULT_NUMBER, (PropValueBot, AbsentBot)).
-    updated(STR_DEFAULT_OTHER, (PropValueBot, AbsentBot)))
+    updated(STR_DEFAULT_NUMBER, (PropValue.Bot(this), AbsentBot)).
+    updated(STR_DEFAULT_OTHER, (PropValue.Bot(this), AbsentBot)))
   val ObjEmpty: Obj = Obj(Obj.ObjMapBot.
-    updated(STR_DEFAULT_NUMBER, (PropValueBot, AbsentTop)).
-    updated(STR_DEFAULT_OTHER, (PropValueBot, AbsentTop)))
+    updated(STR_DEFAULT_NUMBER, (PropValue.Bot(this), AbsentTop)).
+    updated(STR_DEFAULT_OTHER, (PropValue.Bot(this), AbsentTop)))
 }

@@ -36,23 +36,23 @@ case class Helper(utils: Utils) {
         val b1 =
           if (utils.absBool.True <= domInStr) {
             val obj = h.getOrElse(visitLoc, utils.ObjBot)
-            obj.getOrElse(absStr, utils.PropValueBot).objval.writable
+            obj.getOrElse(absStr, PropValue.Bot(utils)).objval.writable
           } else utils.absBool.Bot
         val b2 =
           if (utils.absBool.False <= domInStr) {
-            val protoObj = h.getOrElse(visitLoc, utils.ObjBot).getOrElse("@proto", utils.PropValueBot)
+            val protoObj = h.getOrElse(visitLoc, utils.ObjBot).getOrElse("@proto", PropValue.Bot(utils))
             val protoLocSet = protoObj.objval.value.locset
             val b3 = protoObj.objval.value.pvalue.nullval.gamma match {
               case ConSimpleBot => utils.absBool.Bot
               case ConSimpleTop =>
                 h.getOrElse(visitLoc, utils.ObjBot)
-                  .getOrElse("@extensible", utils.PropValueBot).objval.value.pvalue.boolval
+                  .getOrElse("@extensible", PropValue.Bot(utils)).objval.value.pvalue.boolval
             }
             val b4 = protoLocSet.foldLeft(utils.absBool.Bot)((absB, loc) => absB + visit(loc))
             val b5 =
               if (utils.absBool.False <= b4)
                 h.getOrElse(origLoc, utils.ObjBot)
-                  .getOrElse("@extensible", utils.PropValueBot).objval.value.pvalue.boolval
+                  .getOrElse("@extensible", PropValue.Bot(utils)).objval.value.pvalue.boolval
               else utils.absBool.Bot
             b3 + b4 + b5
           } else utils.absBool.Bot
@@ -67,7 +67,7 @@ case class Helper(utils: Utils) {
     val globalObj = h.getOrElse(globalLoc, utils.ObjBot)
     val domIn = (globalObj domIn x)(utils.absBool)
     val b1 =
-      if (utils.absBool.True <= domIn) globalObj.getOrElse(x, utils.PropValueBot).objval.writable
+      if (utils.absBool.True <= domIn) globalObj.getOrElse(x, PropValue.Bot(utils)).objval.writable
       else utils.absBool.Bot
     val b2 =
       if (utils.absBool.False <= domIn) canPut(h, globalLoc, utils.absString.alpha(x))
@@ -88,7 +88,7 @@ case class Helper(utils: Utils) {
         val objV = ObjectValue(value, utils.absBool.True, utils.absBool.Bot, utils.absBool.False)
         val propV = PropValue(objV)
         val localObj = h.getOrElse(localLoc, utils.ObjBot)
-        localObj.getOrElse("@env", utils.PropValueBot).objval.value.locset.foldLeft(Heap.Bot)((tmpHeap, loc) => {
+        localObj.getOrElse("@env", PropValue.Bot(utils)).objval.value.locset.foldLeft(Heap.Bot)((tmpHeap, loc) => {
           tmpHeap + h.update(loc, h.getOrElse(loc, utils.ObjBot).update(x, propV))
         })
       case CapturedCatchVar =>
@@ -108,7 +108,7 @@ case class Helper(utils: Utils) {
   def delete(h: Heap, loc: Loc, absStr: AbsString): (Heap, AbsBool) = {
     val test = hasOwnProperty(h, loc, absStr)
     val targetObj = h.getOrElse(loc, utils.ObjBot)
-    val isConfigurable = targetObj.getOrElse(absStr, utils.PropValueBot).objval.configurable
+    val isConfigurable = targetObj.getOrElse(absStr, PropValue.Bot(utils)).objval.configurable
     val (h1, b1) =
       if ((utils.absBool.True <= test) && (utils.absBool.False <= isConfigurable))
         (h, utils.absBool.False)
@@ -129,11 +129,11 @@ case class Helper(utils: Utils) {
     else {
       val localLoc = PredefLoc.SINGLE_PURE_LOCAL
       val localObj = st.heap.getOrElse(localLoc, utils.ObjBot)
-      val oldValue = localObj.getOrElse("@exception_all", utils.PropValueBot).objval.value
+      val oldValue = localObj.getOrElse("@exception_all", PropValue.Bot(utils)).objval.value
       val newExcSet = excSet.foldLeft(LocSetEmpty)((locSet, exc) => locSet + newExceptionLoc(exc))
-      val excValue = Value(utils.PValueBot, newExcSet)
-      val newExcObjV = utils.ObjectValueBot.copyWith(excValue)
-      val newExcSetObjV = utils.ObjectValueBot.copyWith(excValue + oldValue)
+      val excValue = Value(PValue.Bot(utils), newExcSet)
+      val newExcObjV = ObjectValue(excValue)(utils)
+      val newExcSetObjV = ObjectValue(excValue + oldValue)(utils)
       val h1 = st.heap.update(
         localLoc,
         localObj.update("@exception", PropValue(newExcObjV)).
@@ -208,7 +208,7 @@ case class Helper(utils: Utils) {
           else utils.absBool.Bot
         val b2 =
           if (utils.absBool.False <= test) {
-            val protoV = h.getOrElse(currentLoc, utils.ObjBot).getOrElse("@proto", utils.PropValueBot).objval.value
+            val protoV = h.getOrElse(currentLoc, utils.ObjBot).getOrElse("@proto", PropValue.Bot(utils)).objval.value
             val b3 = protoV.pvalue.nullval.fold(utils.absBool.Bot) { _ => utils.absBool.False }
             b3 + protoV.locset.foldLeft[AbsBool](utils.absBool.Bot)((b, protoLoc) => {
               b + visit(protoLoc)
@@ -228,25 +228,25 @@ case class Helper(utils: Utils) {
 
   def inherit(h: Heap, loc1: Loc, loc2: Loc, bopSEq: (Value, Value) => Value): Value = {
     var visited = LocSetEmpty
-    val locVal2 = utils.ValueBot.copyWith(loc2)
-    val boolBotVal = Value(utils.PValueBot.copyWith(utils.absBool.Bot))
-    val boolTrueVal = Value(utils.PValueBot.copyWith(utils.absBool.True))
-    val boolFalseVal = Value(utils.PValueBot.copyWith(utils.absBool.False))
+    val locVal2 = Value(loc2)(utils)
+    val boolBotVal = Value(PValue(utils.absBool.Bot)(utils))
+    val boolTrueVal = Value(PValue(utils.absBool.True)(utils))
+    val boolFalseVal = Value(PValue(utils.absBool.False)(utils))
 
     def iter(l1: Loc): Value = {
-      if (visited.contains(l1)) utils.ValueBot
+      if (visited.contains(l1)) Value.Bot(utils)
       else {
         visited += l1
-        val locVal1 = utils.ValueBot.copyWith(l1)
+        val locVal1 = Value(l1)(utils)
         val eqVal = bopSEq(locVal1, locVal2)
         val v1 =
           if (utils.absBool.True <= eqVal.pvalue.boolval) boolTrueVal
           else boolBotVal
         val v2 =
           if (utils.absBool.False <= eqVal.pvalue.boolval) {
-            val protoVal = h.getOrElse(l1, utils.ObjBot).getOrElse("@proto", utils.PropValueBot).objval.value
+            val protoVal = h.getOrElse(l1, utils.ObjBot).getOrElse("@proto", PropValue.Bot(utils)).objval.value
             val v1 = protoVal.pvalue.nullval.fold(boolBotVal) { _ => boolFalseVal }
-            v1 + protoVal.locset.foldLeft(utils.ValueBot)((tmpVal, protoLoc) => tmpVal + iter(protoLoc))
+            v1 + protoVal.locset.foldLeft(Value.Bot(utils))((tmpVal, protoLoc) => tmpVal + iter(protoLoc))
           } else boolBotVal
         v1 + v2
       }
@@ -256,7 +256,7 @@ case class Helper(utils: Utils) {
   }
 
   def isArray(h: Heap, loc: Loc): AbsBool = {
-    val classNamePropV = h.getOrElse(loc, utils.ObjBot).getOrElse("@class", utils.PropValueBot)
+    val classNamePropV = h.getOrElse(loc, utils.ObjBot).getOrElse("@class", PropValue.Bot(utils))
     val arrayAbsStr = utils.absString.alpha("Array")
     val b1 =
       if (arrayAbsStr <= classNamePropV.objval.value.pvalue.strval)
@@ -309,16 +309,16 @@ case class Helper(utils: Utils) {
     val x = id.text
     val localObj = h.getOrElse(PredefLoc.SINGLE_PURE_LOCAL, utils.ObjBot)
     id.kind match {
-      case PureLocalVar => (localObj.getOrElse(x, utils.PropValueBot).objval.value, ExceptionSetEmpty)
+      case PureLocalVar => (localObj.getOrElse(x, PropValue.Bot(utils)).objval.value, ExceptionSetEmpty)
       case CapturedVar =>
-        val envLocSet = localObj.getOrElse("@env", utils.PropValueBot).objval.value.locset
-        val value = envLocSet.foldLeft(utils.ValueBot)((tmpVal, envLoc) => {
+        val envLocSet = localObj.getOrElse("@env", PropValue.Bot(utils)).objval.value.locset
+        val value = envLocSet.foldLeft(Value.Bot(utils))((tmpVal, envLoc) => {
           tmpVal + lookupL(h, envLoc, x)
         })
         (value, ExceptionSetEmpty)
       case CapturedCatchVar =>
         val collapsedObj = h.getOrElse(PredefLoc.COLLAPSED, utils.ObjBot)
-        (collapsedObj.getOrElse(x, utils.PropValueBot).objval.value, ExceptionSetEmpty)
+        (collapsedObj.getOrElse(x, PropValue.Bot(utils)).objval.value, ExceptionSetEmpty)
       case GlobalVar => lookupG(h, x)
     }
   }
@@ -328,10 +328,10 @@ case class Helper(utils: Utils) {
       val globalObj = h.getOrElse(PredefLoc.GLOBAL, utils.ObjBot)
       val v1 =
         if (utils.absBool.True <= (globalObj domIn x)(utils.absBool))
-          globalObj.getOrElse(x, utils.PropValueBot).objval.value
+          globalObj.getOrElse(x, PropValue.Bot(utils)).objval.value
         else
-          utils.ValueBot
-      val protoLocSet = globalObj.getOrElse("@proto", utils.PropValueBot).objval.value.locset
+          Value.Bot(utils)
+      val protoLocSet = globalObj.getOrElse("@proto", PropValue.Bot(utils)).objval.value.locset
       val (v2, excSet) =
         if (utils.absBool.False <= (globalObj domIn x)(utils.absBool)) {
           val excSet = protoLocSet.foldLeft(ExceptionSetEmpty)((tmpExcSet, protoLoc) => {
@@ -339,7 +339,7 @@ case class Helper(utils: Utils) {
               tmpExcSet + ReferenceError
             } else tmpExcSet
           })
-          val v3 = protoLocSet.foldLeft(utils.ValueBot)((tmpVal, protoLoc) => {
+          val v3 = protoLocSet.foldLeft(Value.Bot(utils))((tmpVal, protoLoc) => {
             if (utils.absBool.True <= hasProperty(h, protoLoc, utils.absString.alpha(x))) {
               tmpVal + proto(h, protoLoc, utils.absString.alpha(x))
             } else {
@@ -348,31 +348,31 @@ case class Helper(utils: Utils) {
           })
           (v3, excSet)
         } else {
-          (utils.ValueBot, ExceptionSetEmpty)
+          (Value.Bot(utils), ExceptionSetEmpty)
         }
       (v1 + v2, excSet)
     } else {
-      (utils.ValueBot, ExceptionSetEmpty)
+      (Value.Bot(utils), ExceptionSetEmpty)
     }
   }
 
   def lookupL(h: Heap, loc: Loc, x: String): Value = {
     var visited = LocSetEmpty
     def visit(l: Loc): Value = {
-      if (visited.contains(l)) utils.ValueBot
+      if (visited.contains(l)) Value.Bot(utils)
       else {
         visited += l
         val env = h.getOrElse(l, utils.ObjBot)
         val isDomIn = (env domIn x)(utils.absBool)
         val v1 =
-          if (utils.absBool.True <= isDomIn) env.getOrElse(x, utils.PropValueBot).objval.value
-          else utils.ValueBot
+          if (utils.absBool.True <= isDomIn) env.getOrElse(x, PropValue.Bot(utils)).objval.value
+          else Value.Bot(utils)
         val v2 =
           if (utils.absBool.False <= isDomIn) {
-            val outerLocSet = env.getOrElse("@outer", utils.PropValueBot).objval.value.locset
-            outerLocSet.foldLeft(utils.ValueBot)((tmpVal, outerLoc) => tmpVal + visit(outerLoc))
+            val outerLocSet = env.getOrElse("@outer", PropValue.Bot(utils)).objval.value.locset
+            outerLocSet.foldLeft(Value.Bot(utils))((tmpVal, outerLoc) => tmpVal + visit(outerLoc))
           } else {
-            utils.ValueBot
+            Value.Bot(utils)
           }
         v1 + v2
       }
@@ -386,7 +386,7 @@ case class Helper(utils: Utils) {
       case PureLocalVar => HashSet(PredefLoc.SINGLE_PURE_LOCAL)
       case CapturedVar =>
         val localObj = h.getOrElse(PredefLoc.SINGLE_PURE_LOCAL, utils.ObjBot)
-        val envLocSet = localObj.getOrElse("@env", utils.PropValueBot).objval.value.locset
+        val envLocSet = localObj.getOrElse("@env", PropValue.Bot(utils)).objval.value.locset
         envLocSet.foldLeft(LocSetEmpty)((tmpLocSet, l) => {
           tmpLocSet ++ lookupBaseL(h, l, x)
         })
@@ -405,7 +405,7 @@ case class Helper(utils: Utils) {
         LocSetEmpty
     val locSet2 =
       if (utils.absBool.False <= isDomIn) {
-        val protoLocSet = globalObj.getOrElse("@proto", utils.PropValueBot).objval.value.locset
+        val protoLocSet = globalObj.getOrElse("@proto", PropValue.Bot(utils)).objval.value.locset
         protoLocSet.foldLeft(LocSetEmpty)((res, protoLoc) => {
           res ++ protoBase(h, protoLoc, utils.absString.alpha(x))
         })
@@ -428,7 +428,7 @@ case class Helper(utils: Utils) {
           else LocSetEmpty
         val locSet2 =
           if (utils.absBool.False <= isDomIn) {
-            val outerLocSet = env.getOrElse("@outer", utils.PropValueBot).objval.value.locset
+            val outerLocSet = env.getOrElse("@outer", PropValue.Bot(utils)).objval.value.locset
             outerLocSet.foldLeft(LocSetEmpty)((res, outerLoc) => res ++ visit(outerLoc))
           } else {
             LocSetEmpty
@@ -477,27 +477,27 @@ case class Helper(utils: Utils) {
   def proto(h: Heap, loc: Loc, absStr: AbsString): Value = {
     var visited = LocSetEmpty
     def visit(currentLoc: Loc): Value = {
-      if (visited.contains(currentLoc)) utils.ValueBot
+      if (visited.contains(currentLoc)) Value.Bot(utils)
       else {
         visited += currentLoc
         val test = (h.getOrElse(currentLoc, utils.ObjBot) domIn absStr)(utils.absBool)
         val v1 =
           if (utils.absBool.True <= test) {
-            h.getOrElse(currentLoc, utils.ObjBot).getOrElse(absStr, utils.PropValueBot).objval.value
+            h.getOrElse(currentLoc, utils.ObjBot).getOrElse(absStr, PropValue.Bot(utils)).objval.value
           } else {
-            utils.ValueBot
+            Value.Bot(utils)
           }
         val v2 =
           if (utils.absBool.False <= test) {
-            val protoV = h.getOrElse(currentLoc, utils.ObjBot).getOrElse("@proto", utils.PropValueBot).objval.value
-            val v3 = protoV.pvalue.nullval.fold(utils.ValueBot)(_ => {
-              Value(utils.PValueBot.copyWith(utils.absUndef.Top))
+            val protoV = h.getOrElse(currentLoc, utils.ObjBot).getOrElse("@proto", PropValue.Bot(utils)).objval.value
+            val v3 = protoV.pvalue.nullval.fold(Value.Bot(utils))(_ => {
+              Value(PValue(utils.absUndef.Top)(utils))
             })
-            v3 + protoV.locset.foldLeft(utils.ValueBot)((v, protoLoc) => {
+            v3 + protoV.locset.foldLeft(Value.Bot(utils))((v, protoLoc) => {
               v + visit(protoLoc)
             })
           } else {
-            utils.ValueBot
+            Value.Bot(utils)
           }
         v1 + v2
       }
@@ -519,7 +519,7 @@ case class Helper(utils: Utils) {
           else LocSetEmpty
         val locSet2 =
           if (utils.absBool.False <= isDomIn) {
-            val protoLocSet = obj.getOrElse("@proto", utils.PropValueBot).objval.value.locset
+            val protoLocSet = obj.getOrElse("@proto", PropValue.Bot(utils)).objval.value.locset
             protoLocSet.foldLeft(LocSetEmpty)((res, protoLoc) => {
               res ++ visit(protoLoc)
             })
@@ -541,7 +541,7 @@ case class Helper(utils: Utils) {
         val obj = h.getOrElse(pureLocalLoc, utils.ObjBot)
         h.update(pureLocalLoc, obj.update(x, pv))
       case CapturedVar =>
-        val propV = h.getOrElse(pureLocalLoc, utils.ObjBot).getOrElse("@env", utils.PropValueBot)
+        val propV = h.getOrElse(pureLocalLoc, utils.ObjBot).getOrElse("@env", PropValue.Bot(utils))
         propV.objval.value.locset.foldLeft(Heap.Bot)((tmpH, loc) => {
           tmpH + varStoreL(h, loc, x, value)
         })
@@ -591,7 +591,7 @@ case class Helper(utils: Utils) {
       else Heap.Bot
     val h2 =
       if (utils.absBool.True <= (obj domIn x)(utils.absBool)) {
-        val oldObjVal = obj.getOrElse(x, utils.PropValueBot).objval
+        val oldObjVal = obj.getOrElse(x, PropValue.Bot(utils)).objval
         val newObjVal = oldObjVal.copyWith(value)
         h.update(globalLoc, obj.update(x, PropValue(newObjVal)))
       } else Heap.Bot
@@ -603,7 +603,7 @@ case class Helper(utils: Utils) {
     val objDomIn = (findingObj domIn absStr)(utils.absBool)
     objDomIn.gamma match {
       case ConSingleTop() =>
-        val oldObjV: ObjectValue = findingObj.getOrElse(absStr, utils.PropValueBot).objval
+        val oldObjV: ObjectValue = findingObj.getOrElse(absStr, PropValue.Bot(utils)).objval
         val newObjV = ObjectValue(
           value,
           oldObjV.writable + utils.absBool.True,
@@ -613,11 +613,11 @@ case class Helper(utils: Utils) {
         h.update(loc, findingObj.update(absStr, PropValue(newObjV), utils))
       case ConSingleBot() => Heap.Bot
       case ConSingleCon(true) =>
-        val oldObjV: ObjectValue = findingObj.getOrElse(absStr, utils.PropValueBot).objval
+        val oldObjV: ObjectValue = findingObj.getOrElse(absStr, PropValue.Bot(utils)).objval
         val newObjV = oldObjV.copyWith(value)
         h.update(loc, findingObj.update(absStr, PropValue(newObjV), utils))
       case ConSingleCon(false) =>
-        val oldObjV: ObjectValue = findingObj.getOrElse(absStr, utils.PropValueBot).objval
+        val oldObjV: ObjectValue = findingObj.getOrElse(absStr, PropValue.Bot(utils)).objval
         val newObjV = ObjectValue(value, utils.absBool.True, utils.absBool.True, utils.absBool.True)
         h.update(loc, findingObj.update(absStr, PropValue(newObjV), utils))
     }
@@ -675,7 +675,7 @@ case class Helper(utils: Utils) {
       if (!locSet.isEmpty) (locSet, st)
       else (LocSetEmpty, State.Bot)
 
-    (Value(utils.PValueBot, locSet1 ++ locSet2), State(h2, ctx2) + st3, excSet)
+    (Value(PValue.Bot(utils), locSet1 ++ locSet2), State(h2, ctx2) + st3, excSet)
   }
 
   def toPrimitive(value: Value): PValue = value.pvalue
@@ -685,31 +685,35 @@ case class Helper(utils: Utils) {
   }
 
   def objToPrimitive(objs: Set[Loc], hint: String): PValue = {
-    if (objs.isEmpty) utils.PValueBot
-    else {
-      hint match {
-        case "Number" => utils.PValueBot.copyWith(utils.absNumber.Top)
-        case "String" => utils.PValueBot.copyWith(utils.absString.Top)
-        case _ => utils.PValueTop
+    val pvalue: (Utils => PValue) =
+      if (objs.isEmpty) PValue.Bot
+      else {
+        hint match {
+          case "Number" => PValue(utils.absNumber.Top)
+          case "String" => PValue(utils.absString.Top)
+          case _ => PValue.Top
+        }
       }
-    }
+    pvalue(utils)
   }
 
   def objToPrimitiveBetter(h: Heap, objSet: Set[Loc], hint: String): PValue = {
-    if (objSet.isEmpty) utils.PValueBot
-    else {
-      hint match {
-        case "Number" =>
-          utils.PValueBot.copyWith(defaultValueNumber(h, objSet).toAbsNumber(utils.absNumber))
-        case "String" =>
-          utils.PValueBot.copyWith(defaultToString(h, objSet))
+    val pvalue: (Utils => PValue) =
+      if (objSet.isEmpty) PValue.Bot
+      else {
+        hint match {
+          case "Number" =>
+            PValue(defaultValueNumber(h, objSet).toAbsNumber(utils.absNumber))
+          case "String" =>
+            PValue(defaultToString(h, objSet))
+        }
       }
-    }
+    pvalue(utils)
   }
 
   private def defaultValueNumber(h: Heap, objLocSet: Set[Loc]): PValue = {
     def getClassStrVal(obj: Obj): AbsString = {
-      obj.getOrElse("@class", utils.PropValueBot).objval.value.pvalue.strval
+      obj.getOrElse("@class", PropValue.Bot(utils)).objval.value.pvalue.strval
     }
 
     val objSet = objLocSet.map(l => h.getOrElse(l, utils.ObjBot))
@@ -741,31 +745,31 @@ case class Helper(utils: Utils) {
       absStr + getClassStrVal(obj)
     })
     val b = boolObjSet.foldLeft[AbsBool](utils.absBool.Bot)((absBool, obj) => {
-      absBool + obj.getOrElse("@primitive", utils.PropValueBot).objval.value.pvalue.boolval
+      absBool + obj.getOrElse("@primitive", PropValue.Bot(utils)).objval.value.pvalue.boolval
     })
     val n = numObjSet.foldLeft[AbsNumber](utils.absNumber.Bot)((absNum, obj) => {
-      absNum + obj.getOrElse("@primitive", utils.PropValueBot).objval.value.pvalue.numval
+      absNum + obj.getOrElse("@primitive", PropValue.Bot(utils)).objval.value.pvalue.numval
     })
     val n2 = dateObjSet.foldLeft[AbsNumber](utils.absNumber.Bot)((absNum, obj) => {
-      absNum + obj.getOrElse("@primitive", utils.PropValueBot).objval.value.pvalue.numval
+      absNum + obj.getOrElse("@primitive", PropValue.Bot(utils)).objval.value.pvalue.numval
     })
     val (srcAbsStr, globalAbsB, ignoreCaseAbsB, multilineAbsB) =
       regexpObjSet.foldLeft[(AbsString, AbsBool, AbsBool, AbsBool)](
         (utils.absString.Bot, utils.absBool.Bot, utils.absBool.Bot, utils.absBool.Bot)
       )((res, obj) => {
           val (tmpSrc, tmpGlobal, tmpIgnoreCase, tmpMultiline) = res
-          (tmpSrc + obj.getOrElse("source", utils.PropValueBot).objval.value.pvalue.strval,
-            tmpGlobal + obj.getOrElse("global", utils.PropValueBot).objval.value.pvalue.boolval,
-            tmpIgnoreCase + obj.getOrElse("ignoreCase", utils.PropValueBot).objval.value.pvalue.boolval,
-            tmpMultiline + obj.getOrElse("multiline", utils.PropValueBot).objval.value.pvalue.boolval)
+          (tmpSrc + obj.getOrElse("source", PropValue.Bot(utils)).objval.value.pvalue.strval,
+            tmpGlobal + obj.getOrElse("global", PropValue.Bot(utils)).objval.value.pvalue.boolval,
+            tmpIgnoreCase + obj.getOrElse("ignoreCase", PropValue.Bot(utils)).objval.value.pvalue.boolval,
+            tmpMultiline + obj.getOrElse("multiline", PropValue.Bot(utils)).objval.value.pvalue.boolval)
         })
 
     val absStr1 = strObjSet.foldLeft[AbsString](utils.absString.Bot)((absStr, obj) => {
-      absStr + obj.getOrElse("@primitive", utils.PropValueBot).objval.value.pvalue.strval
+      absStr + obj.getOrElse("@primitive", PropValue.Bot(utils)).objval.value.pvalue.strval
     })
-    val pv2 = utils.PValueBot.copyWith(b)
-    val pv3 = utils.PValueBot.copyWith(n)
-    val pv4 = utils.PValueBot.copyWith(n2)
+    val pv2 = PValue(b)(utils)
+    val pv3 = PValue(n)(utils)
+    val pv4 = PValue(n2)(utils)
 
     val absStr5 = (
       srcAbsStr.gammaSingle,
@@ -783,17 +787,17 @@ case class Helper(utils: Utils) {
         case _ => utils.absString.Top
       }
 
-    val pv6 = utils.PValueBot.copyWith(
+    val pv6 = PValue(
       others.fold(utils.absString.Bot)(_ => {
         utils.absString.Top
       })
-    )
-    utils.PValueBot.copyWith(absStr1) + pv2 + pv3 + pv4 + utils.PValueBot.copyWith(absStr5) + pv6
+    )(utils)
+    PValue(absStr1)(utils) + pv2 + pv3 + pv4 + PValue(absStr5)(utils) + pv6
   }
 
   private def defaultToString(h: Heap, objLocSet: Set[Loc]): AbsString = {
     def getClassStrVal(obj: Obj): AbsString = {
-      obj.getOrElse("@class", utils.PropValueBot).objval.value.pvalue.strval
+      obj.getOrElse("@class", PropValue.Bot(utils)).objval.value.pvalue.strval
     }
     val objSet = objLocSet.map(l => h.getOrElse(l, utils.ObjBot))
     val boolObjSet = objSet.filter(obj => utils.absString.alpha("Boolean") <= getClassStrVal(obj))
@@ -812,24 +816,24 @@ case class Helper(utils: Utils) {
       absStr + getClassStrVal(obj)
     })
     val b = boolObjSet.foldLeft[AbsBool](utils.absBool.Bot)((absBool, obj) => {
-      absBool + obj.getOrElse("@primitive", utils.PropValueBot).objval.value.pvalue.boolval
+      absBool + obj.getOrElse("@primitive", PropValue.Bot(utils)).objval.value.pvalue.boolval
     })
     val n = numObjSet.foldLeft[AbsNumber](utils.absNumber.Bot)((absNum, obj) => {
-      absNum + obj.getOrElse("@primitive", utils.PropValueBot).objval.value.pvalue.numval
+      absNum + obj.getOrElse("@primitive", PropValue.Bot(utils)).objval.value.pvalue.numval
     })
     val (srcAbsStr, globalAbsB, ignoreCaseAbsB, multilineAbsB) =
       regexpObjSet.foldLeft[(AbsString, AbsBool, AbsBool, AbsBool)](
         (utils.absString.Bot, utils.absBool.Bot, utils.absBool.Bot, utils.absBool.Bot)
       )((res, obj) => {
           val (tmpSrc, tmpGlobal, tmpIgnoreCase, tmpMultiline) = res
-          (tmpSrc + obj.getOrElse("source", utils.PropValueBot).objval.value.pvalue.strval,
-            tmpGlobal + obj.getOrElse("global", utils.PropValueBot).objval.value.pvalue.boolval,
-            tmpIgnoreCase + obj.getOrElse("ignoreCase", utils.PropValueBot).objval.value.pvalue.boolval,
-            tmpMultiline + obj.getOrElse("multiline", utils.PropValueBot).objval.value.pvalue.boolval)
+          (tmpSrc + obj.getOrElse("source", PropValue.Bot(utils)).objval.value.pvalue.strval,
+            tmpGlobal + obj.getOrElse("global", PropValue.Bot(utils)).objval.value.pvalue.boolval,
+            tmpIgnoreCase + obj.getOrElse("ignoreCase", PropValue.Bot(utils)).objval.value.pvalue.boolval,
+            tmpMultiline + obj.getOrElse("multiline", PropValue.Bot(utils)).objval.value.pvalue.boolval)
         })
 
     val absStr1 = strObjSet.foldLeft[AbsString](utils.absString.Bot)((absStr, obj) => {
-      absStr + obj.getOrElse("@primitive", utils.PropValueBot).objval.value.pvalue.strval
+      absStr + obj.getOrElse("@primitive", PropValue.Bot(utils)).objval.value.pvalue.strval
     })
     val absStr2 = b.toAbsString(utils.absString)
     val absStr3 = n.toAbsString(utils.absString)

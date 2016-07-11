@@ -12,19 +12,25 @@
 package kr.ac.kaist.safe.analyzer.domain
 
 object PValue {
-  def apply(undefval: AbsUndef)(utils: Utils): PValue =
+  def Bot: Utils => PValue = utils =>
+    PValue(utils.absUndef.Bot, utils.absNull.Bot, utils.absBool.Bot, utils.absNumber.Bot, utils.absString.Bot)
+
+  def Top: Utils => PValue = utils =>
+    PValue(utils.absUndef.Top, utils.absNull.Top, utils.absBool.Top, utils.absNumber.Top, utils.absString.Top)
+
+  def apply(undefval: AbsUndef): Utils => PValue = utils =>
     PValue(undefval, utils.absNull.Bot, utils.absBool.Bot, utils.absNumber.Bot, utils.absString.Bot)
 
-  def apply(nullval: AbsNull)(utils: Utils): PValue =
+  def apply(nullval: AbsNull): Utils => PValue = utils =>
     PValue(utils.absUndef.Bot, nullval, utils.absBool.Bot, utils.absNumber.Bot, utils.absString.Bot)
 
-  def apply(boolval: AbsBool)(utils: Utils): PValue =
+  def apply(boolval: AbsBool): Utils => PValue = utils =>
     PValue(utils.absUndef.Bot, utils.absNull.Bot, boolval, utils.absNumber.Bot, utils.absString.Bot)
 
-  def apply(numval: AbsNumber)(utils: Utils): PValue =
+  def apply(numval: AbsNumber): Utils => PValue = utils =>
     PValue(utils.absUndef.Bot, utils.absNull.Bot, utils.absBool.Bot, numval, utils.absString.Bot)
 
-  def apply(strval: AbsString)(utils: Utils): PValue =
+  def apply(strval: AbsString): Utils => PValue = utils =>
     PValue(utils.absUndef.Bot, utils.absNull.Bot, utils.absBool.Bot, utils.absNumber.Bot, strval)
 }
 
@@ -155,9 +161,5 @@ case class PValue(
     (undefval.gamma, nullval.gamma, boolval.gammaSimple, numval.gammaSimple, strval.gammaSimple) ==
       (ConSimpleBot, ConSimpleBot, ConSimpleBot, ConSimpleBot, ConSimpleBot)
 
-  def copyWith(newUndefVal: AbsUndef): PValue = PValue(newUndefVal, nullval, boolval, numval, strval)
-  def copyWith(newNullVal: AbsNull): PValue = PValue(undefval, newNullVal, boolval, numval, strval)
-  def copyWith(newBoolVal: AbsBool): PValue = PValue(undefval, nullval, newBoolVal, numval, strval)
-  def copyWith(newNumberVal: AbsNumber): PValue = PValue(undefval, nullval, boolval, newNumberVal, strval)
   def copyWith(newStringVal: AbsString): PValue = PValue(undefval, nullval, boolval, numval, newStringVal)
 }

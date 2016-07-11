@@ -23,11 +23,11 @@ case class Initialize(helper: Helper) {
   def state: State = {
     val afalse = utils.absBool.False
 
-    val globalPureLocalObj = Obj.newPureLocalObj(Value(utils.PValueBot.copyWith(utils.absNull.Top)), HashSet(PredefLoc.GLOBAL))(utils) - "@return"
+    val globalPureLocalObj = Obj.newPureLocalObj(Value(PValue(utils.absNull.Top)(utils)), HashSet(PredefLoc.GLOBAL))(utils) - "@return"
 
     val globalObj = utils.ObjEmpty
-      .update(NodeUtil.GLOBAL_NAME, PropValue(ObjectValue(utils.ValueBot.copyWith(PredefLoc.GLOBAL), afalse, afalse, afalse)))
-      .update(NodeUtil.VAR_TRUE, PropValue(utils.ObjectValueBot.copyWith(utils.absBool.alpha(true))))
+      .update(NodeUtil.GLOBAL_NAME, PropValue(ObjectValue(Value(PredefLoc.GLOBAL)(utils), afalse, afalse, afalse)))
+      .update(NodeUtil.VAR_TRUE, PropValue(utils.absBool.alpha(true))(utils))
 
     val initHeap = Heap.Bot
       .update(PredefLoc.SINGLE_PURE_LOCAL, globalPureLocalObj)
@@ -43,25 +43,27 @@ case class Initialize(helper: Helper) {
     val st = state
     val globalObj = st.heap.getOrElse(PredefLoc.GLOBAL, utils.ObjEmpty)
 
+    val boolBot = utils.absBool.Bot
+
     val testGlobalObj =
-      globalObj.update("__BOT", utils.PropValueBot)
-        .update("__TOP", PropValue(utils.ObjectValueBot.copyWith(Value(utils.PValueTop))))
-        .update("__UInt", PropValue(utils.ObjectValueBot.copyWith(utils.absNumber.UInt)))
-        .update("__Global", PropValue(utils.ObjectValueBot.copyWith(PredefLoc.GLOBAL)))
-        .update("__BoolTop", PropValue(utils.ObjectValueBot.copyWith(utils.absBool.Top)))
-        .update("__NumTop", PropValue(utils.ObjectValueBot.copyWith(utils.absNumber.Top)))
-        .update("__StrTop", PropValue(utils.ObjectValueBot.copyWith(utils.absString.Top)))
-        .update("__RefErrLoc", PropValue(utils.ObjectValueBot.copyWith(BuiltinError.REF_ERR_LOC)))
-        .update("__RangeErrLoc", PropValue(utils.ObjectValueBot.copyWith(BuiltinError.RANGE_ERR_LOC)))
-        .update("__TypeErrLoc", PropValue(utils.ObjectValueBot.copyWith(BuiltinError.TYPE_ERR_LOC)))
-        .update("__URIErrLoc", PropValue(utils.ObjectValueBot.copyWith(BuiltinError.URI_ERR_LOC)))
-        .update("__RefErrProtoLoc", PropValue(utils.ObjectValueBot.copyWith(BuiltinError.REF_ERR_PROTO_LOC)))
-        .update("__RangeErrProtoLoc", PropValue(utils.ObjectValueBot.copyWith(BuiltinError.RANGE_ERR_PROTO_LOC)))
-        .update("__TypeErrProtoLoc", PropValue(utils.ObjectValueBot.copyWith(BuiltinError.TYPE_ERR_PROTO_LOC)))
-        .update("__URIErrProtoLoc", PropValue(utils.ObjectValueBot.copyWith(BuiltinError.URI_ERR_PROTO_LOC)))
-        .update("__ErrProtoLoc", PropValue(utils.ObjectValueBot.copyWith(BuiltinError.ERR_PROTO_LOC)))
-        .update("__ObjConstLoc", PropValue(utils.ObjectValueBot.copyWith(BuiltinObject.CONSTRUCT_LOC)))
-        .update("__ArrayConstLoc", PropValue(utils.ObjectValueBot.copyWith(BuiltinArray.CONSTRUCT_LOC)))
+      globalObj.update("__BOT", PropValue.Bot(utils))
+        .update("__TOP", PropValue(ObjectValue(Value(PValue.Top(utils)))(utils)))
+        .update("__UInt", PropValue(utils.absNumber.UInt)(utils))
+        .update("__Global", PropValue(ObjectValue(PredefLoc.GLOBAL)(utils)))
+        .update("__BoolTop", PropValue(utils.absBool.Top)(utils))
+        .update("__NumTop", PropValue(utils.absNumber.Top)(utils))
+        .update("__StrTop", PropValue(utils.absString.Top)(utils))
+        .update("__RefErrLoc", PropValue(ObjectValue(BuiltinError.REF_ERR_LOC)(utils)))
+        .update("__RangeErrLoc", PropValue(ObjectValue(BuiltinError.RANGE_ERR_LOC)(utils)))
+        .update("__TypeErrLoc", PropValue(ObjectValue(BuiltinError.TYPE_ERR_LOC)(utils)))
+        .update("__URIErrLoc", PropValue(ObjectValue(BuiltinError.URI_ERR_LOC)(utils)))
+        .update("__RefErrProtoLoc", PropValue(ObjectValue(BuiltinError.REF_ERR_PROTO_LOC)(utils)))
+        .update("__RangeErrProtoLoc", PropValue(ObjectValue(BuiltinError.RANGE_ERR_PROTO_LOC)(utils)))
+        .update("__TypeErrProtoLoc", PropValue(ObjectValue(BuiltinError.TYPE_ERR_PROTO_LOC)(utils)))
+        .update("__URIErrProtoLoc", PropValue(ObjectValue(BuiltinError.URI_ERR_PROTO_LOC)(utils)))
+        .update("__ErrProtoLoc", PropValue(ObjectValue(BuiltinError.ERR_PROTO_LOC)(utils)))
+        .update("__ObjConstLoc", PropValue(ObjectValue(BuiltinObject.CONSTRUCT_LOC)(utils)))
+        .update("__ArrayConstLoc", PropValue(ObjectValue(BuiltinArray.CONSTRUCT_LOC)(utils)))
 
     val testHeap = st.heap.update(PredefLoc.GLOBAL, testGlobalObj)
     State(testHeap, st.context)
