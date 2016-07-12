@@ -18,6 +18,35 @@ case class Operator(helper: Helper) { //TODO
   private val utils: Utils = helper.utils
   private val absNumber: AbsNumberUtil = utils.absNumber
 
+  def inherit(h: Heap, loc1: Loc, loc2: Loc): Value = {
+    var visited = LocSetEmpty
+    val locVal2 = Value(loc2)(utils)
+    val boolBotVal = Value(PValue(utils.absBool.Bot)(utils))
+    val boolTrueVal = Value(PValue(utils.absBool.True)(utils))
+    val boolFalseVal = Value(PValue(utils.absBool.False)(utils))
+
+    def iter(l1: Loc): Value = {
+      if (visited.contains(l1)) Value.Bot(utils)
+      else {
+        visited += l1
+        val locVal1 = Value(l1)(utils)
+        val eqVal = bopSEq(locVal1, locVal2)
+        val v1 =
+          if (utils.absBool.True <= eqVal.pvalue.boolval) boolTrueVal
+          else boolBotVal
+        val v2 =
+          if (utils.absBool.False <= eqVal.pvalue.boolval) {
+            val protoVal = h.getOrElse(l1, Obj.Bot(utils)).getOrElse("@proto")(Value.Bot(utils)) { _.objval.value }
+            val v1 = protoVal.pvalue.nullval.fold(boolBotVal) { _ => boolFalseVal }
+            v1 + protoVal.locset.foldLeft(Value.Bot(utils))((tmpVal, protoLoc) => tmpVal + iter(protoLoc))
+          } else boolBotVal
+        v1 + v2
+      }
+    }
+
+    iter(loc1)
+  }
+
   def toUInt32(v: Value): AbsNumber = {
     val absNum = v.pvalue.toAbsNumber(absNumber) + v.objToPrimitive("Number")(utils).toAbsNumber(absNumber)
     absNum.toUInt32

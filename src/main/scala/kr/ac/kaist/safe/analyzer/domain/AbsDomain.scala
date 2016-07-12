@@ -133,4 +133,5 @@ trait AbsString extends AbsDomain {
 
   def isAllNums: Boolean
   def isAllOthers: Boolean
+  def isArrayIndex(absBool: AbsBoolUtil): AbsBool
 }

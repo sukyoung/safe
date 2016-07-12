@@ -217,14 +217,14 @@ class Semantics(
 
     // non-array objects
     val locSetNArr = objLocSet.filter(l =>
-      (absFalse <= helper.isArray(heap, l)) && absTrue <= helper.canPut(heap, l, idxAbsStr))
+      (absFalse <= heap.isArray(l)(utils)) && absTrue <= heap.canPut(l, idxAbsStr)(utils))
     // array objects
     val locSetArr = objLocSet.filter(l =>
-      (absTrue <= helper.isArray(heap, l)) && absTrue <= helper.canPut(heap, l, idxAbsStr))
+      (absTrue <= heap.isArray(l)(utils)) && absTrue <= heap.canPut(l, idxAbsStr)(utils))
 
     // can not store
     val cantPutHeap =
-      if (objLocSet.exists((l) => absFalse <= helper.canPut(heap, l, idxAbsStr))) heap
+      if (objLocSet.exists((l) => absFalse <= heap.canPut(l, idxAbsStr)(utils))) heap
       else Heap.Bot
 
     // store for non-array object
@@ -242,7 +242,7 @@ class Semantics(
           val nNewLen = operator.toUInt32(storeV)
           val numberPV = storeV.objToPrimitive("Number")(utils)
           val nValue = storeV.pvalue.toAbsNumber(utils.absNumber) + numberPV.toAbsNumber(utils.absNumber)
-          val bCanPut = helper.canPut(heap, l, utils.absString.alpha("length"))
+          val bCanPut = heap.canPut(l, utils.absString.alpha("length"))(utils)
 
           val arrLengthHeap2 =
             if ((absTrue <= (nOldLen < nNewLen)(utils.absBool)
@@ -289,7 +289,7 @@ class Semantics(
         }
       // 4. s is array index
       val arrIndexHeap =
-        if (absTrue <= helper.isArrayIndex(idxAbsStr)) {
+        if (absTrue <= idxAbsStr.isArrayIndex(utils.absBool)) {
           val nOldLen = heap.getOrElse(l, Obj.Bot(utils))
             .getOrElse("length")(utils.absNumber.Bot) { _.objval.value.pvalue.numval }
           val idxPV = PValue(idxAbsStr)(utils)
@@ -297,7 +297,7 @@ class Semantics(
           val nIndex = operator.toUInt32(Value(numPV))
           val bGtEq = absTrue <= (nOldLen < nIndex)(utils.absBool) ||
             absTrue <= (nOldLen === nIndex)(utils.absBool)
-          val bCanPutLen = helper.canPut(heap, l, utils.absString.alpha("length"))
+          val bCanPutLen = heap.canPut(l, utils.absString.alpha("length"))(utils)
           // 4.b
           val arrIndexHeap1 =
             if (bGtEq && absFalse <= bCanPutLen) heap
@@ -321,7 +321,7 @@ class Semantics(
           Heap.Bot
       // 5. other
       val otherHeap =
-        if (idxAbsStr != utils.absString.alpha("length") && absFalse <= helper.isArrayIndex(idxAbsStr))
+        if (idxAbsStr != utils.absString.alpha("length") && absFalse <= idxAbsStr.isArrayIndex(utils.absBool))
           helper.propStore(heap, l, idxAbsStr, storeV)
         else
           Heap.Bot
@@ -528,7 +528,7 @@ class Semantics(
         val locR = Loc(aNew, Recent)
         val st1 = helper.oldify(st, aNew)
         val (consVal, consExcSet) = V(consExpr, st1)
-        val consLocSet = consVal.locset.filter(l => absTrue <= helper.hasConstruct(st1.heap, l))
+        val consLocSet = consVal.locset.filter(l => absTrue <= st1.heap.hasConstruct(l)(utils.absBool))
         val (thisVal, _) = V(thisArg, st1)
         val thisLocSet = helper.getThis(st1.heap, thisVal)
         val (argVal, _) = V(arguments, st1)
@@ -586,7 +586,7 @@ class Semantics(
 
           // exception handling
           val typeExcSet1 =
-            if (consVal.locset.exists(l => absFalse <= helper.hasConstruct(st1.heap, l))) Set(TypeError)
+            if (consVal.locset.exists(l => absFalse <= st1.heap.hasConstruct(l)(utils.absBool))) Set(TypeError)
             else ExceptionSetEmpty
           val typeExcSet2 =
             if (!consVal.pvalue.isBottom) Set(TypeError)
@@ -606,7 +606,7 @@ class Semantics(
         val locR = Loc(aNew, Recent)
         val st1 = helper.oldify(st, aNew)
         val (funVal, funExcSet) = V(funExpr, st1)
-        val funLocSet = funVal.locset.filter(l => utils.absBool.True <= helper.isCallable(st1.heap, l))
+        val funLocSet = funVal.locset.filter(l => utils.absBool.True <= st1.heap.isCallable(l)(utils))
         val (thisV, thisExcSet) = V(thisArg, st1)
         val thisLocSet = helper.getThis(st1.heap, thisV)
         val (argVal, _) = V(arguments, st1)
@@ -661,7 +661,7 @@ class Semantics(
 
           // exception handling
           val typeExcSet1 =
-            if (funVal.locset.exists(l => absFalse <= helper.isCallable(st1.heap, l))) Set(TypeError)
+            if (funVal.locset.exists(l => absFalse <= st1.heap.isCallable(l)(utils))) Set(TypeError)
             else ExceptionSetEmpty
           val typeExcSet2 =
             if (!funVal.pvalue.isBottom) Set(TypeError)
@@ -854,15 +854,15 @@ class Semantics(
               case "instanceof" =>
                 val locSet1 = v1.locset
                 val locSet2 = v2.locset
-                val locSet3 = locSet2.filter((l) => utils.absBool.True <= helper.hasInstance(st.heap, l))
+                val locSet3 = locSet2.filter((l) => utils.absBool.True <= st.heap.hasInstance(l)(utils.absBool))
                 val protoVal = locSet3.foldLeft(Value.Bot(utils))((v, l) => {
                   v + helper.proto(st.heap, l, utils.absString.alpha("prototype"))
                 })
                 val locSet4 = protoVal.locset
-                val locSet5 = locSet2.filter((l) => utils.absBool.False <= helper.hasInstance(st.heap, l))
+                val locSet5 = locSet2.filter((l) => utils.absBool.False <= st.heap.hasInstance(l)(utils.absBool))
                 val b1 = locSet1.foldLeft[Value](Value.Bot(utils))((tmpVal1, loc1) => {
                   locSet4.foldLeft[Value](tmpVal1)((tmpVal2, loc2) =>
-                    tmpVal2 + helper.inherit(st.heap, loc1, loc2, operator.bopSEq))
+                    tmpVal2 + operator.inherit(st.heap, loc1, loc2))
                 })
                 val pv2 =
                   if (!v2.pvalue.isBottom && !locSet4.isEmpty) PValue(utils.absBool.False)(utils)
@@ -877,7 +877,7 @@ class Semantics(
               case "in" => {
                 val str = v1.toPrimitiveBetter(st.heap)(utils).toAbsString(utils.absString)
                 val absB = v2.locset.foldLeft(utils.absBool.Bot)((tmpAbsB, loc) => {
-                  tmpAbsB + helper.hasProperty(st.heap, loc, str)
+                  tmpAbsB + st.heap.hasProperty(loc, str)(utils)
                 })
                 val b = Value(PValue(absB)(utils))
                 val excSet3 =

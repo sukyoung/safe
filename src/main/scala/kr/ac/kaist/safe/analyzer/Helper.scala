@@ -24,57 +24,6 @@ case class Helper(utils: Utils) {
     h.update(locR, newObj)
   }
 
-  def canPut(h: Heap, loc: Loc, absStr: AbsString): AbsBool = canPutHelp(h, loc, absStr, loc)
-
-  def canPutHelp(h: Heap, curLoc: Loc, absStr: AbsString, origLoc: Loc): AbsBool = {
-    var visited = LocSetEmpty
-    def visit(visitLoc: Loc): AbsBool = {
-      if (visited contains visitLoc) utils.absBool.Bot
-      else {
-        visited += visitLoc
-        val domInStr = (h.getOrElse(visitLoc, Obj.Bot(utils)) domIn absStr)(utils.absBool)
-        val b1 =
-          if (utils.absBool.True <= domInStr) {
-            val obj = h.getOrElse(visitLoc, Obj.Bot(utils))
-            obj.getOrElse(absStr)(utils.absBool.Bot) { _.objval.writable }
-          } else utils.absBool.Bot
-        val b2 =
-          if (utils.absBool.False <= domInStr) {
-            val protoObj = h.getOrElse(visitLoc, Obj.Bot(utils)).get("@proto")(utils)
-            val protoLocSet = protoObj.objval.value.locset
-            val b3 = protoObj.objval.value.pvalue.nullval.gamma match {
-              case ConSimpleBot => utils.absBool.Bot
-              case ConSimpleTop =>
-                h.getOrElse(visitLoc, Obj.Bot(utils))
-                  .getOrElse("@extensible")(utils.absBool.Bot) { _.objval.value.pvalue.boolval }
-            }
-            val b4 = protoLocSet.foldLeft(utils.absBool.Bot)((absB, loc) => absB + visit(loc))
-            val b5 =
-              if (utils.absBool.False <= b4)
-                h.getOrElse(origLoc, Obj.Bot(utils))
-                  .getOrElse("@extensible")(utils.absBool.Bot) { _.objval.value.pvalue.boolval }
-              else utils.absBool.Bot
-            b3 + b4 + b5
-          } else utils.absBool.Bot
-        b1 + b2
-      }
-    }
-    visit(curLoc)
-  }
-
-  def canPutVar(h: Heap, x: String): AbsBool = {
-    val globalLoc = PredefLoc.GLOBAL
-    val globalObj = h.getOrElse(globalLoc, Obj.Bot(utils))
-    val domIn = (globalObj domIn x)(utils.absBool)
-    val b1 =
-      if (utils.absBool.True <= domIn) globalObj.getOrElse(x)(utils.absBool.Bot) { _.objval.writable }
-      else utils.absBool.Bot
-    val b2 =
-      if (utils.absBool.False <= domIn) canPut(h, globalLoc, utils.absString.alpha(x))
-      else utils.absBool.Bot
-    b1 + b2
-  }
-
   def createMutableBinding(h: Heap, id: CFGId, value: Value): Heap = {
     val x = id.text
     id.kind match {
@@ -102,13 +51,13 @@ case class Helper(utils: Utils) {
         val globalLoc = PredefLoc.GLOBAL
         val objV = ObjectValue(value, utils.absBool.True, utils.absBool.True, utils.absBool.False)
         val propV = PropValue(objV)
-        if (utils.absBool.True == hasProperty(h, globalLoc, utils.absString.alpha(x))) h
+        if (utils.absBool.True == h.hasProperty(globalLoc, utils.absString.alpha(x))(utils)) h
         else h.update(globalLoc, h.getOrElse(globalLoc, Obj.Bot(utils)).update(x, propV))
     }
   }
 
   def delete(h: Heap, loc: Loc, absStr: AbsString): (Heap, AbsBool) = {
-    val test = hasOwnProperty(h, loc, absStr)
+    val test = h.hasOwnProperty(loc, absStr)(utils)
     val targetObj = h.getOrElse(loc, Obj.Bot(utils))
     val isConfigurable = targetObj.getOrElse(absStr)(utils.absBool.Bot) { _.objval.configurable }
     val (h1, b1) =
@@ -151,149 +100,17 @@ case class Helper(utils: Utils) {
       case _ => HashSet(PredefLoc.GLOBAL)
     }
 
-    val foundDeclEnvRecord = value.locset.exists(loc => utils.absBool.False <= isObject(h, loc))
+    val foundDeclEnvRecord = value.locset.exists(loc => utils.absBool.False <= h.isObject(loc)(utils))
 
     val locSet2 =
       if (foundDeclEnvRecord) HashSet(PredefLoc.GLOBAL)
       else LocSetEmpty
     val locSet3 = value.locset.foldLeft(LocSetEmpty)((tmpLocSet, loc) => {
-      if (utils.absBool.True <= isObject(h, loc)) tmpLocSet + loc
+      if (utils.absBool.True <= h.isObject(loc)(utils)) tmpLocSet + loc
       else tmpLocSet
     })
 
     locSet1 ++ locSet2 ++ locSet3
-  }
-
-  def hasConstruct(h: Heap, loc: Loc): AbsBool = {
-    val isDomIn = (h.getOrElse(loc, Obj.Bot(utils)) domIn "@construct")(utils.absBool)
-    val b1 =
-      if (utils.absBool.True <= isDomIn) utils.absBool.True
-      else utils.absBool.Bot
-    val b2 =
-      if (utils.absBool.False <= isDomIn) utils.absBool.False
-      else utils.absBool.Bot
-    b1 + b2
-  }
-
-  def hasInstance(h: Heap, loc: Loc): AbsBool = {
-    val isDomIn = (h.getOrElse(loc, Obj.Bot(utils)) domIn "@hasinstance")(utils.absBool)
-    val b1 =
-      if (utils.absBool.True <= isDomIn) utils.absBool.True
-      else utils.absBool.Bot
-    val b2 =
-      if (utils.absBool.False <= isDomIn) utils.absBool.False
-      else utils.absBool.Bot
-    b1 + b2
-  }
-
-  def hasProperty(h: Heap, loc: Loc, absStr: AbsString): AbsBool = {
-    var visited = LocSetEmpty
-    def visit(currentLoc: Loc): AbsBool = {
-      if (visited.contains(currentLoc)) utils.absBool.Bot
-      else {
-        visited += currentLoc
-        val test = hasOwnProperty(h, currentLoc, absStr)
-        val b1 =
-          if (utils.absBool.True <= test) utils.absBool.True
-          else utils.absBool.Bot
-        val b2 =
-          if (utils.absBool.False <= test) {
-            val protoV = h.getOrElse(currentLoc, Obj.Bot(utils)).getOrElse("@proto")(Value.Bot(utils)) { _.objval.value }
-            val b3 = protoV.pvalue.nullval.fold(utils.absBool.Bot) { _ => utils.absBool.False }
-            b3 + protoV.locset.foldLeft[AbsBool](utils.absBool.Bot)((b, protoLoc) => {
-              b + visit(protoLoc)
-            })
-          } else {
-            utils.absBool.Bot
-          }
-        b1 + b2
-      }
-    }
-    visit(loc)
-  }
-
-  def hasOwnProperty(h: Heap, loc: Loc, absStr: AbsString): AbsBool = {
-    (h.getOrElse(loc, Obj.Bot(utils)) domIn absStr)(utils.absBool)
-  }
-
-  def inherit(h: Heap, loc1: Loc, loc2: Loc, bopSEq: (Value, Value) => Value): Value = {
-    var visited = LocSetEmpty
-    val locVal2 = Value(loc2)(utils)
-    val boolBotVal = Value(PValue(utils.absBool.Bot)(utils))
-    val boolTrueVal = Value(PValue(utils.absBool.True)(utils))
-    val boolFalseVal = Value(PValue(utils.absBool.False)(utils))
-
-    def iter(l1: Loc): Value = {
-      if (visited.contains(l1)) Value.Bot(utils)
-      else {
-        visited += l1
-        val locVal1 = Value(l1)(utils)
-        val eqVal = bopSEq(locVal1, locVal2)
-        val v1 =
-          if (utils.absBool.True <= eqVal.pvalue.boolval) boolTrueVal
-          else boolBotVal
-        val v2 =
-          if (utils.absBool.False <= eqVal.pvalue.boolval) {
-            val protoVal = h.getOrElse(l1, Obj.Bot(utils)).getOrElse("@proto")(Value.Bot(utils)) { _.objval.value }
-            val v1 = protoVal.pvalue.nullval.fold(boolBotVal) { _ => boolFalseVal }
-            v1 + protoVal.locset.foldLeft(Value.Bot(utils))((tmpVal, protoLoc) => tmpVal + iter(protoLoc))
-          } else boolBotVal
-        v1 + v2
-      }
-    }
-
-    iter(loc1)
-  }
-
-  def isArray(h: Heap, loc: Loc): AbsBool = {
-    val className = h.getOrElse(loc, Obj.Bot(utils))
-      .getOrElse("@class")(utils.absString.Bot) { _.objval.value.pvalue.strval }
-    val arrayAbsStr = utils.absString.alpha("Array")
-    val b1 =
-      if (arrayAbsStr <= className)
-        utils.absBool.True
-      else
-        utils.absBool.Bot
-    val b2 =
-      if (arrayAbsStr != className)
-        utils.absBool.False
-      else
-        utils.absBool.Bot
-    b1 + b2
-  }
-
-  def isArrayIndex(absStr: AbsString): AbsBool = {
-    absStr.gamma match {
-      case ConSetBot() => utils.absBool.Bot
-      case ConSetTop() => utils.absBool.Top
-      case ConSetCon(strSet) =>
-        val upper = scala.math.pow(2, 32) - 1
-        strSet.foldLeft(utils.absBool.Bot)((res, v) => {
-          res + utils.absBool.alpha({
-            isNum(v) && {
-              val num = v.toDouble
-              0 <= num && num < upper
-            }
-          })
-        })
-    }
-  }
-
-  def isCallable(h: Heap, loc: Loc): AbsBool = {
-    val isDomIn = (h.getOrElse(loc, Obj.Bot(utils)) domIn "@function")(utils.absBool)
-    val b1 =
-      if (utils.absBool.True <= isDomIn) utils.absBool.True
-      else utils.absBool.Bot
-    val b2 =
-      if (utils.absBool.False <= isDomIn) utils.absBool.False
-      else utils.absBool.Bot
-    b1 + b2
-  }
-
-  def isCallable(h: Heap, value: Value): AbsBool = utils.absBool.Bot
-
-  def isObject(h: Heap, loc: Loc): AbsBool = {
-    (h.getOrElse(loc, Obj.Bot(utils)) domIn "@class")(utils.absBool)
   }
 
   def lookup(h: Heap, id: CFGId): (Value, Set[Exception]) = {
@@ -326,12 +143,12 @@ case class Helper(utils: Utils) {
       val (v2, excSet) =
         if (utils.absBool.False <= (globalObj domIn x)(utils.absBool)) {
           val excSet = protoLocSet.foldLeft(ExceptionSetEmpty)((tmpExcSet, protoLoc) => {
-            if (utils.absBool.False <= hasProperty(h, protoLoc, utils.absString.alpha(x))) {
+            if (utils.absBool.False <= h.hasProperty(protoLoc, utils.absString.alpha(x))(utils)) {
               tmpExcSet + ReferenceError
             } else tmpExcSet
           })
           val v3 = protoLocSet.foldLeft(Value.Bot(utils))((tmpVal, protoLoc) => {
-            if (utils.absBool.True <= hasProperty(h, protoLoc, utils.absString.alpha(x))) {
+            if (utils.absBool.True <= h.hasProperty(protoLoc, utils.absString.alpha(x))(utils)) {
               tmpVal + proto(h, protoLoc, utils.absString.alpha(x))
             } else {
               tmpVal
@@ -543,10 +360,10 @@ case class Helper(utils: Utils) {
         h.update(PredefLoc.COLLAPSED, obj.update(x, propV))
       case GlobalVar => {
         val h1 =
-          if (utils.absBool.True <= canPutVar(h, x)) varStoreG(h, x, value)
+          if (utils.absBool.True <= h.canPutVar(x)(utils)) varStoreG(h, x, value)
           else Heap.Bot
         val h2 =
-          if (utils.absBool.False <= canPutVar(h, x)) h
+          if (utils.absBool.False <= h.canPutVar(x)(utils)) h
           else Heap.Bot
         h1 + h2
       }
@@ -664,7 +481,7 @@ case class Helper(utils: Utils) {
       utils.absString.alpha("string")
     })
 
-    val isCallableLocSet = value.locset.foldLeft(utils.absBool.Bot)((tmpAbsB, l) => tmpAbsB + isCallable(h, l))
+    val isCallableLocSet = value.locset.foldLeft(utils.absBool.Bot)((tmpAbsB, l) => tmpAbsB + h.isCallable(l)(utils))
     val s6 =
       if (!value.locset.isEmpty && (utils.absBool.False <= isCallableLocSet))
         utils.absString.alpha("object")

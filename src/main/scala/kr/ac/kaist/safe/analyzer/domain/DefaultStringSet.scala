@@ -286,6 +286,7 @@ class DefaultStrSetUtil(maxSetSize: Int) extends AbsStringUtil {
     def toAbsString(absString: AbsStringUtil): AbsString = absString.Top
     def toAbsBoolean(absBool: AbsBoolUtil): AbsBool = absBool.Top
     def toAbsNumber(absNumber: AbsNumberUtil): AbsNumber = absNumber.Top
+    def isArrayIndex(absBool: AbsBoolUtil): AbsBool = absBool.Top
   }
 
   case object DefaultStrBot extends DefaultStringSet {
@@ -297,6 +298,7 @@ class DefaultStrSetUtil(maxSetSize: Int) extends AbsStringUtil {
     def toAbsString(absString: AbsStringUtil): AbsString = absString.Bot
     def toAbsBoolean(absBool: AbsBoolUtil): AbsBool = absBool.Bot
     def toAbsNumber(absNumber: AbsNumberUtil): AbsNumber = absNumber.Bot
+    def isArrayIndex(absBool: AbsBoolUtil): AbsBool = absBool.Bot
   }
 
   case object DefaultStrNum extends DefaultStringSet {
@@ -307,6 +309,7 @@ class DefaultStrSetUtil(maxSetSize: Int) extends AbsStringUtil {
     def toAbsString(absString: AbsStringUtil): AbsString = absString.NumStr
     def toAbsBoolean(absBool: AbsBoolUtil): AbsBool = absBool.True
     def toAbsNumber(absNumber: AbsNumberUtil): AbsNumber = absNumber.Top
+    def isArrayIndex(absBool: AbsBoolUtil): AbsBool = absBool.Top
   }
 
   case object DefaultStrOther extends DefaultStringSet {
@@ -317,6 +320,7 @@ class DefaultStrSetUtil(maxSetSize: Int) extends AbsStringUtil {
     def toAbsString(absString: AbsStringUtil): AbsString = absString.OtherStr
     def toAbsBoolean(absBool: AbsBoolUtil): AbsBool = absBool.Top
     def toAbsNumber(absNumber: AbsNumberUtil): AbsNumber = absNumber.NaN
+    def isArrayIndex(absBool: AbsBoolUtil): AbsBool = absBool.False
   }
 
   case class DefaultStrSet(values: Set[String]) extends DefaultStringSet {
@@ -351,5 +355,17 @@ class DefaultStrSetUtil(maxSetSize: Int) extends AbsStringUtil {
       }
       absNum + tmpAbsNum
     })
+
+    def isArrayIndex(absBool: AbsBoolUtil): AbsBool = {
+      val upper = scala.math.pow(2, 32) - 1
+      values.foldLeft(absBool.Bot)((res, v) => {
+        res + absBool.alpha({
+          isNum(v) && {
+            val num = v.toDouble
+            0 <= num && num < upper
+          }
+        })
+      })
+    }
   }
 }

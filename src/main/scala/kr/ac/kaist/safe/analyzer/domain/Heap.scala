@@ -13,6 +13,7 @@ package kr.ac.kaist.safe.analyzer.domain
 
 import scala.collection.immutable.HashMap
 import kr.ac.kaist.safe.LINE_SEP
+import kr.ac.kaist.safe.analyzer.models.PredefLoc
 import kr.ac.kaist.safe.util._
 import kr.ac.kaist.safe.analyzer.models.PredefLoc.{ GLOBAL, SINGLE_PURE_LOCAL }
 
@@ -28,6 +29,7 @@ trait Heap {
   /* lookup */
   def apply(loc: Loc): Option[Obj]
   def getOrElse(loc: Loc, default: Obj): Obj
+  def getOrElse[T](loc: Loc)(default: T)(f: Obj => T): T
   /* heap update */
   def update(loc: Loc, obj: Obj): Heap
   /* remove location */
@@ -41,6 +43,20 @@ trait Heap {
   // toString
   def toStringAll: String
   def toStringLoc(loc: Loc): Option[String]
+
+  ////////////////////////////////////////////////////////////////
+  // Predicates
+  ////////////////////////////////////////////////////////////////
+  def hasConstruct(loc: Loc)(absBool: AbsBoolUtil): AbsBool
+  def hasInstance(loc: Loc)(absBool: AbsBoolUtil): AbsBool
+  def hasProperty(loc: Loc, absStr: AbsString)(utils: Utils): AbsBool
+  def hasOwnProperty(loc: Loc, absStr: AbsString)(utils: Utils): AbsBool
+  def isArray(loc: Loc)(utils: Utils): AbsBool
+  def isCallable(loc: Loc)(utils: Utils): AbsBool
+  def isObject(loc: Loc)(utils: Utils): AbsBool
+  def canPut(loc: Loc, absStr: AbsString)(utils: Utils): AbsBool
+  def canPutHelp(curLoc: Loc, absStr: AbsString, origLoc: Loc)(utils: Utils): AbsBool
+  def canPutVar(x: String)(utils: Utils): AbsBool
 }
 
 object Heap {
@@ -121,6 +137,13 @@ class DHeap(val map: Map[Loc, Obj]) extends Heap {
       case None => default
     }
 
+  def getOrElse[T](loc: Loc)(default: T)(f: Obj => T): T = {
+    this(loc) match {
+      case Some(obj) => f(obj)
+      case None => default
+    }
+  }
+
   /* heap update */
   def update(loc: Loc, obj: Obj): Heap = {
     // recent location
@@ -129,10 +152,7 @@ class DHeap(val map: Map[Loc, Obj]) extends Heap {
         if (obj.isBottom) Heap.Bot
         else new DHeap(map.updated(loc, obj))
       case Old =>
-        if (obj.isBottom) this(loc) match {
-          case Some(_) => this
-          case None => Heap.Bot
-        }
+        if (obj.isBottom) this.getOrElse(loc)(Heap.Bot) { _ => this }
         else new DHeap(weakUpdated(map, loc, obj))
     }
   }
@@ -197,5 +217,150 @@ class DHeap(val map: Map[Loc, Obj]) extends Heap {
     s.append(keyStr)
     Useful.indentation(s, obj.toString, keyStr.length)
     s.toString
+  }
+
+  ////////////////////////////////////////////////////////////////
+  // Predicates
+  ////////////////////////////////////////////////////////////////
+  def hasConstruct(loc: Loc)(absBool: AbsBoolUtil): AbsBool = {
+    val isDomIn = this(loc) match {
+      case Some(obj) => (obj domIn "@construct")(absBool)
+      case None => absBool.False
+    }
+    val b1 =
+      if (absBool.True <= isDomIn) absBool.True
+      else absBool.Bot
+    val b2 =
+      if (absBool.False <= isDomIn) absBool.False
+      else absBool.Bot
+    b1 + b2
+  }
+
+  def hasInstance(loc: Loc)(absBool: AbsBoolUtil): AbsBool = {
+    val isDomIn = this(loc) match {
+      case Some(obj) => (obj domIn "@hasinstance")(absBool)
+      case None => absBool.False
+    }
+    val b1 =
+      if (absBool.True <= isDomIn) absBool.True
+      else absBool.Bot
+    val b2 =
+      if (absBool.False <= isDomIn) absBool.False
+      else absBool.Bot
+    b1 + b2
+  }
+
+  def hasProperty(loc: Loc, absStr: AbsString)(utils: Utils): AbsBool = {
+    var visited = LocSetEmpty
+    def visit(currentLoc: Loc): AbsBool = {
+      if (visited.contains(currentLoc)) utils.absBool.Bot
+      else {
+        visited += currentLoc
+        val test = hasOwnProperty(currentLoc, absStr)(utils)
+        val b1 =
+          if (utils.absBool.True <= test) utils.absBool.True
+          else utils.absBool.Bot
+        val b2 =
+          if (utils.absBool.False <= test) {
+            val protoV = this.getOrElse(currentLoc, Obj.Bot(utils))
+              .getOrElse("@proto")(Value.Bot(utils)) { _.objval.value }
+            val b3 = protoV.pvalue.nullval.fold(utils.absBool.Bot) { _ => utils.absBool.False }
+            b3 + protoV.locset.foldLeft[AbsBool](utils.absBool.Bot)((b, protoLoc) => {
+              b + visit(protoLoc)
+            })
+          } else {
+            utils.absBool.Bot
+          }
+        b1 + b2
+      }
+    }
+    visit(loc)
+  }
+
+  def hasOwnProperty(loc: Loc, absStr: AbsString)(utils: Utils): AbsBool = {
+    (this.getOrElse(loc, Obj.Bot(utils)) domIn absStr)(utils.absBool)
+  }
+
+  def isArray(loc: Loc)(utils: Utils): AbsBool = {
+    val className = this.getOrElse(loc, Obj.Bot(utils))
+      .getOrElse("@class")(utils.absString.Bot) { _.objval.value.pvalue.strval }
+    val arrayAbsStr = utils.absString.alpha("Array")
+    val b1 =
+      if (arrayAbsStr <= className)
+        utils.absBool.True
+      else
+        utils.absBool.Bot
+    val b2 =
+      if (arrayAbsStr != className)
+        utils.absBool.False
+      else
+        utils.absBool.Bot
+    b1 + b2
+  }
+
+  def isCallable(loc: Loc)(utils: Utils): AbsBool = {
+    val isDomIn = (this.getOrElse(loc, Obj.Bot(utils)) domIn "@function")(utils.absBool)
+    val b1 =
+      if (utils.absBool.True <= isDomIn) utils.absBool.True
+      else utils.absBool.Bot
+    val b2 =
+      if (utils.absBool.False <= isDomIn) utils.absBool.False
+      else utils.absBool.Bot
+    b1 + b2
+  }
+
+  def isObject(loc: Loc)(utils: Utils): AbsBool = {
+    (this.getOrElse(loc, Obj.Bot(utils)) domIn "@class")(utils.absBool)
+  }
+
+  def canPut(loc: Loc, absStr: AbsString)(utils: Utils): AbsBool = canPutHelp(loc, absStr, loc)(utils)
+
+  def canPutHelp(curLoc: Loc, absStr: AbsString, origLoc: Loc)(utils: Utils): AbsBool = {
+    var visited = LocSetEmpty
+    def visit(visitLoc: Loc): AbsBool = {
+      if (visited contains visitLoc) utils.absBool.Bot
+      else {
+        visited += visitLoc
+        val domInStr = (this.getOrElse(visitLoc, Obj.Bot(utils)) domIn absStr)(utils.absBool)
+        val b1 =
+          if (utils.absBool.True <= domInStr) {
+            val obj = this.getOrElse(visitLoc, Obj.Bot(utils))
+            obj.getOrElse(absStr)(utils.absBool.Bot) { _.objval.writable }
+          } else utils.absBool.Bot
+        val b2 =
+          if (utils.absBool.False <= domInStr) {
+            val protoObj = this.getOrElse(visitLoc, Obj.Bot(utils)).get("@proto")(utils)
+            val protoLocSet = protoObj.objval.value.locset
+            val b3 = protoObj.objval.value.pvalue.nullval.gamma match {
+              case ConSimpleBot => utils.absBool.Bot
+              case ConSimpleTop =>
+                this.getOrElse(visitLoc, Obj.Bot(utils))
+                  .getOrElse("@extensible")(utils.absBool.Bot) { _.objval.value.pvalue.boolval }
+            }
+            val b4 = protoLocSet.foldLeft(utils.absBool.Bot)((absB, loc) => absB + visit(loc))
+            val b5 =
+              if (utils.absBool.False <= b4)
+                this.getOrElse(origLoc, Obj.Bot(utils))
+                  .getOrElse("@extensible")(utils.absBool.Bot) { _.objval.value.pvalue.boolval }
+              else utils.absBool.Bot
+            b3 + b4 + b5
+          } else utils.absBool.Bot
+        b1 + b2
+      }
+    }
+    visit(curLoc)
+  }
+
+  def canPutVar(x: String)(utils: Utils): AbsBool = {
+    val globalLoc = PredefLoc.GLOBAL
+    val globalObj = this.getOrElse(globalLoc, Obj.Bot(utils))
+    val domIn = (globalObj domIn x)(utils.absBool)
+    val b1 =
+      if (utils.absBool.True <= domIn) globalObj.getOrElse(x)(utils.absBool.Bot) { _.objval.writable }
+      else utils.absBool.Bot
+    val b2 =
+      if (utils.absBool.False <= domIn) canPut(globalLoc, utils.absString.alpha(x))(utils)
+      else utils.absBool.Bot
+    b1 + b2
   }
 }
