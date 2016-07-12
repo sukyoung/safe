@@ -39,7 +39,6 @@ case class Initialize(helper: Helper) {
   }
 
   def testState: State = {
-
     val st = state
     val globalObj = st.heap.getOrElse(PredefLoc.GLOBAL, Obj.Empty(utils))
 

@@ -13,7 +13,7 @@ package kr.ac.kaist.safe.analyzer.domain
 
 import scala.collection.immutable.HashSet
 import kr.ac.kaist.safe.LINE_SEP
-import kr.ac.kaist.safe.util.{ Loc, Address }
+import kr.ac.kaist.safe.util.{ Address, Loc, Old, Recent }
 
 case class Context(private val env: Set[Loc], private val thisBinding: Set[Loc], mayOld: Set[Address], mustOld: Set[Address]) {
   /* partial order */
@@ -78,6 +78,26 @@ case class Context(private val env: Set[Loc], private val thisBinding: Set[Loc],
     else
       "mayOld: (" + mayOld.mkString(", ") + ")" + LINE_SEP +
         "mustOld: (" + mustOld.mkString(", ") + ")"
+  }
+
+  def fixOldify(obj: Obj, mayOld: Set[Address], mustOld: Set[Address])(utils: Utils): (Context, Obj) = {
+    if (this.isBottom) (Context.Bot, Obj.Bot(utils))
+    else {
+      mayOld.foldLeft((this, obj))((res, a) => {
+        val (resCtx, resObj) = res
+        val locR = Loc(a, Recent)
+        val locO = Loc(a, Old)
+        if (mustOld contains a) {
+          val newCtx = resCtx.subsLoc(locR, locO)
+          val newObj = resObj.subsLoc(locR, locO)
+          (newCtx, newObj)
+        } else {
+          val newCtx = resCtx.weakSubsLoc(locR, locO)
+          val newObj = resObj.weakSubsLoc(locR, locO)
+          (newCtx, newObj)
+        }
+      })
+    }
   }
 }
 

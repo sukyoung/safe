@@ -11,6 +11,8 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
+import kr.ac.kaist.safe.analyzer.models.PredefLoc
+
 import scala.collection.immutable.HashSet
 import kr.ac.kaist.safe.util.Loc
 
@@ -295,5 +297,54 @@ case class Value(pvalue: PValue, locset: Set[Loc]) {
       utils.absString.Top
     })
     absStr1 + absStr2 + absStr3 + absStr4 + absStr5
+  }
+
+  def typeTag(h: Heap)(utils: Utils): AbsString = {
+    val s1 = pvalue.undefval.fold(utils.absString.Bot)(_ => {
+      utils.absString.alpha("undefined")
+    })
+    val s2 = pvalue.nullval.fold(utils.absString.Bot)(_ => {
+      utils.absString.alpha("object") //TODO: check null type?
+    })
+    val s3 = pvalue.numval.fold(utils.absString.Bot)(_ => {
+      utils.absString.alpha("number")
+    })
+    val s4 = pvalue.boolval.fold(utils.absString.Bot)(_ => {
+      utils.absString.alpha("boolean")
+    })
+    val s5 = pvalue.strval.fold(utils.absString.Bot)(_ => {
+      utils.absString.alpha("string")
+    })
+
+    val isCallableLocSet = locset.foldLeft(utils.absBool.Bot)((tmpAbsB, l) => tmpAbsB + h.isCallable(l)(utils))
+    val s6 =
+      if (this.locset.nonEmpty && (utils.absBool.False <= isCallableLocSet))
+        utils.absString.alpha("object")
+      else utils.absString.Bot
+    val s7 =
+      if (this.locset.nonEmpty && (utils.absBool.True <= isCallableLocSet))
+        utils.absString.alpha("function")
+      else utils.absString.Bot
+
+    s1 + s2 + s3 + s4 + s5 + s6 + s7
+  }
+
+  def getThis(h: Heap)(utils: Utils): Set[Loc] = {
+    val locSet1 = (pvalue.nullval.gamma, pvalue.undefval.gamma) match {
+      case (ConSimpleBot, ConSimpleBot) => LocSetEmpty
+      case _ => HashSet(PredefLoc.GLOBAL)
+    }
+
+    val foundDeclEnvRecord = locset.exists(loc => utils.absBool.False <= h.isObject(loc)(utils))
+
+    val locSet2 =
+      if (foundDeclEnvRecord) HashSet(PredefLoc.GLOBAL)
+      else LocSetEmpty
+    val locSet3 = locset.foldLeft(LocSetEmpty)((tmpLocSet, loc) => {
+      if (utils.absBool.True <= h.isObject(loc)(utils)) tmpLocSet + loc
+      else tmpLocSet
+    })
+
+    locSet1 ++ locSet2 ++ locSet3
   }
 }
