@@ -545,7 +545,7 @@ Assumptions and limitations are as follows:
 \left[ ``constructor" \mapsto \langle \abs{Value}(\hat{l}_{R1}),\ \atrue,\ \afalse,\ \atrue \rangle \right]
 \right] \\
 \land\ \hat{H}_4 = \hat{H}_3 
-\left[ \hat{l}_{R3} \mapsto \ahf{NewFunctionObject}(fid,\ \abs{Value}(\hat{l}_{R3},\ \hat{l}_{R2},\ \hat{n})) \right] \\
+\left[ \hat{l}_{R1} \mapsto \ahf{NewFunctionObject}(fid,\ \abs{Value}(\hat{l}_{R3}),\ \hat{l}_{R2},\ \hat{n})) \right] \\
 \land\ (\hat{H}_3, \hat{C}_3) = \ahf{Oldify}(\hat{S}_2, \hat{a}_3) \
 \land\ \hat{S}_2 = \ahf{Oldify}(\hat{S}_1, \hat{a}_2) \
 \land\ \hat{S}_1 = \ahf{Oldify}(\hat{S}, \hat{a}_1) \\
@@ -627,29 +627,120 @@ Assumptions and limitations are as follows:
 % CFGNoOp
 \aI_{\acp} \lbr \TT{noop} \rbr\ (\hat{S}, \hat{E}) = (\hat{S}, \hat{E}) \\\\
 
+\end{array}
+\]
+
+\[
+\renewcommand\arraystretch{1.5}
+\begin{array}{l}
+
 % CFGInternalCall <>toObject
-\aI_{\acp} \lbr x ~\verb+:=+~\ahf{\ensuremath{\diamond}toObject}\verb+(+e\verb+)+ \rbr\ (\hat{S}, \hat{E}) \\
+\aI_{\acp} \lbr x ~\verb+:=+~\ahf{\ensuremath{\diamond}toObject}\verb+(+e\verb+)+_{\hat{a}} \rbr\ (\hat{S}, \hat{E}) 
+= (\hat{S}_7,\ \hat{E} \sqcup \hat{E}_1) \\
+\quad\wherec{
+\hat{E}_1 = \ahf{RaiseException}(\hat{S},\ \hat{es}_2) \\
+\land\ (\hat{S}_7,\ \hat{es}_2) = \left \{ \begin{array}{ll}
+(\hat{S}_6,\ \hat{es} \sqcup \hat{es}_1) & \ifc{\hat{v} \not\sqsubseteq \bot_{Value}} \\
+(\bot_{State},\ \hat{es}) & \owc \\
+\end{array} \right. \\
+\land\ \hat{es}_1 = \left \{ \begin{array}{ll}
+\varnothing & \ifc{ \hat{pv}\emph{.nullVal} \not\sqsubseteq \bot_{Null}\ \land\ \hat{pv}\emph{.undefVal} \not\sqsubseteq \bot_{Undef} }\\
+\hat{\exc{TypeError}} & \owc \\
+\end{array} \right. \\
+\land\ \hat{S}_5 = \left \{ \begin{array}{ll}
+(\ahf{VarStore}(\hat{H}_4,\ x,\ \hat{v}_1),\ \hat{C}_4) & \ifc{\hat{v}_1 \not\sqsubseteq \bot_{Value}} \\
+\bot_{State} & \owc \\
+\end{array} \right. \\
+\land\ (\hat{H}_4,\ \hat{C}_4) = \hat{S}_1 \sqcup \hat{S}_2 \
+\land\ \hat{v}_1 = \abs{Value}(\hat{L}_1 \cup \hat{L}_2) \\
+\land\ (\hat{S}_1,\ \hat{L}_1) = \left \{ \begin{array}{ll}
+(\hat{H}_3 \left[ \hat{l}_R \mapsto \hat{o} \right],\ \hat{l}_R ) & \ifc{ \hat{o} \not\sqsubseteq \bot_{Obj} }\\
+(\bot_{State},\ \varnothing) & \owc \\
+\end{array} \right. \\
+\land\ (\hat{S}_2,\ \hat{L}_2) = \left \{ \begin{array}{ll}
+(\hat{S},\ \hat{v}\emph{.locSet}) & \ifc{ \hat{v}\emph{.locSet} \neq \varnothing }\\
+(\bot_{State},\ \varnothing) & \owc \\
+\end{array} \right. \\
+\land\ (\hat{H}_3,\ \hat{C}_3) = \ahf{Oldify}(\hat{S}, \hat{a}) \
+\land\ \hat{l}_R = \emph{\TT{new} Loc}(\hat{a}, \hat{Recent}) \\
+\land\ \hat{o} = \ahf{newBooleanObj}(\hat{pv}\emph{.boolVal})\ \sqcup\ \ahf{newNumberObj}(\hat{pv}\emph{.numVal})\
+\sqcup\ \ahf{newStringObj}(\hat{pv}\emph{.strVal}) \\
+\land\ \hat{pv} = \hat{v}\emph{.pvalue} \
+\land\ (\hat{v}, \hat{es}) = \aV \lbr e \rbr\ \hat{S}
+}\\\\
 
 % CFGInternalCall <>isObject
-\aI_{\acp} \lbr x ~\verb+:=+~\ahf{\ensuremath{\diamond}isObject}\verb+(+e\verb+)+ \rbr\ (\hat{S}, \hat{E}) \\
+\aI_{\acp} \lbr x ~\verb+:=+~\ahf{\ensuremath{\diamond}isObject}\verb+(+e\verb+)+ \rbr\ ((\hat{H}, \hat{C}), \hat{E}) 
+= (\hat{S}_1,\ \hat{E} \sqcup \hat{E}_1) \\
+\quad\wherec{
+\hat{S}_1 = \ahf{VarStore}(\hat{H},\ x,\ \abs{Value}(\hat{b}_1 \sqcup \hat{b}_2))\\
+\land\ \hat{b}_1 = \left \{ \begin{array}{ll}
+\atrue & \ifc{\hat{v}\emph{.locSet} \neq \varnothing} \\
+\bot_{Bool} & \owc \\
+\end{array} \right. \
+\land\ \hat{b}_2 = \left \{ \begin{array}{ll}
+\afalse & \ifc{\hat{v}\emph{.pvalue} \not\sqsubseteq \bot_{PValue}} \\
+\bot_{Bool} & \owc \\
+\end{array} \right. \\
+\land\ hat{E}_1 = \ahf{RaiseException}((\hat{H}, \hat{C}),\ \hat{es}) \\
+\land\ (\hat{v}, \hat{es}) = \aV \lbr e \rbr (\hat{H}, \hat{C})
+}\\\\
 
 % CFGInternalCall <>toNumber
-\aI_{\acp} \lbr x ~\verb+:=+~\ahf{\ensuremath{\diamond}toNumber}\verb+(+e\verb+)+ \rbr\ (\hat{S}, \hat{E}) \\
+\aI_{\acp} \lbr x ~\verb+:=+~\ahf{\ensuremath{\diamond}toNumber}\verb+(+e\verb+)+ \rbr\ ((\hat{H}, \hat{C}), \hat{E}) 
+= (\hat{S}_1, \hat{E} \sqcup \hat{E}_1) \\
+\quad\wherec{
+\hat{S}_1 = \left \{ \begin{array}{ll}
+\ahf{VarStore}(\hat{H},\ \abs{Value}(\hat{v}\emph{.toPrimitive.toAbsNumber})) & \ifc{\hat{v} \not\sqsubseteq \bot_{Value}}\\
+\bot_{State} & \owc \\
+\end{array} \right.\\
+\land\ \hat{E}_1 = \ahf{RaiseException}((\hat{H}, \hat{C}),\ \hat{es}) \\
+\land\ (\hat{v}, \hat{es}) = \aV \lbr e \rbr (\hat{H}, \hat{C})
+}\\\\
 
 % CFGInternalCall <>toBoolean
-\aI_{\acp} \lbr x ~\verb+:=+~\ahf{\ensuremath{\diamond}toBoolean}\verb+(+e\verb+)+ \rbr\ (\hat{S}, \hat{E}) \\
+\aI_{\acp} \lbr x ~\verb+:=+~\ahf{\ensuremath{\diamond}toBoolean}\verb+(+e\verb+)+ \rbr\ ((\hat{H}, \hat{C}), \hat{E}) 
+= (\hat{S}_1, \hat{E} \sqcup \hat{E}_1) \\
+\quad\wherec{
+\hat{S}_1 = \left \{ \begin{array}{ll}
+\ahf{VarStore}(\hat{H},\ \abs{Value}(\hat{v}\emph{.toAbsBoolean})) & \ifc{\hat{v} \not\sqsubseteq \bot_{Value}}\\
+\bot_{State} & \owc \\
+\end{array} \right.\\
+\land\ \hat{E}_1 = \ahf{RaiseException}((\hat{H}, \hat{C}),\ \hat{es}) \\
+\land\ (\hat{v}, \hat{es}) = \aV \lbr e \rbr (\hat{H}, \hat{C})
+}\\\\
 
 % CFGInternalCall <>getBase
-\aI_{\acp} \lbr x ~\verb+:=+~\ahf{\ensuremath{\diamond}getBase}\verb+(+x\verb+)+ \rbr\ (\hat{S}, \hat{E}) \\
+\aI_{\acp} \lbr x_1 ~\verb+:=+~\ahf{\ensuremath{\diamond}getBase}\verb+(+x_2\verb+)+ \rbr\ ((\hat{H}, \hat{C}), \hat{E})
+= ((\hat{H}_1, \hat{C}), \hat{E}) \\
+\quad\wherec{
+\hat{H}_1 = \ahf{VarStore}(\hat{H},\ x_1,\ \abs{Value}(\hat{L}_{base}) \\
+\land\ \hat{L}_{base} = \ahf{LookupBase}(\hat{H},\ x_2)
+}\\\\
 
-% CFGInternalCall <>iteratorInit
+\end{array}
+\]
+
+\[
+\renewcommand\arraystretch{1.5}
+\begin{array}{l}
+
+% CFGInternalCall <>iteratorInit %TODO!!!!!!
 \aI_{\acp} \lbr x ~\verb+:=+~\ahf{\ensuremath{\diamond}iteratorInit}\verb+(+e_1\verb+)+_{\hat{a}} \rbr\ (\hat{S}, \hat{E}) \\
 
 % CFGInternalCall <>iteratorHasNext
-\aI_{\acp} \lbr x ~\verb+:=+~\ahf{\ensuremath{\diamond}iteratorHasNext}\verb+(+e_1,\ e_2\verb+)+ \rbr\ (\hat{S}, \hat{E}) \\
+\aI_{\acp} \lbr x ~\verb+:=+~\ahf{\ensuremath{\diamond}iteratorHasNext}\verb+(+e_1,\ e_2\verb+)+ \rbr\ 
+((\hat{H}, \hat{C}), \hat{E}) = ((\hat{H}_1, \hat{C}), \hat{E}) \\
+\quad\wherec{
+\hat{H}_1 = \ahf{VarStore}(\hat{H},\ x,\ \abs{Value}(\top_{Bool}))
+}\\\\
 
 % CFGInternalCall <>iteratorNext
-\aI_{\acp} \lbr x ~\verb+:=+~\ahf{\ensuremath{\diamond}iteratorNext}\verb+(+e_1,\ e_2\verb+)+ \rbr\ (\hat{S}, \hat{E}) \\
+\aI_{\acp} \lbr x ~\verb+:=+~\ahf{\ensuremath{\diamond}iteratorNext}\verb+(+e_1,\ e_2\verb+)+ \rbr\ 
+((\hat{H}, \hat{C}), \hat{E}) = ((\hat{H}_1, \hat{C}), \hat{E}) \\
+\quad\wherec{
+\hat{H}_1 = \ahf{VarStore}(\hat{H},\ x,\ \abs{Value}(\top_{String}))
+}
 
 \end{array}
 \]
@@ -659,16 +750,251 @@ Assumptions and limitations are as follows:
 \renewcommand\arraystretch{1.5}
 \begin{array}{l}
 
-\aV \lbr x \rbr\ \hat{S} \\
-\aV \lbr e \inop e \rbr\ \hat{S} \\
-\aV \lbr \preop e \rbr\ \hat{S} \\
-\aV \lbr e\verb+[+e\verb+]+ \rbr\ \hat{S} \\
-\aV \lbr \TT{this} \rbr\ \hat{S} \\
-\aV \lbr n \rbr\ \hat{S} \\
-\aV \lbr ``s" \rbr\ \hat{S} \\
-\aV \lbr \TT{true} \rbr\ \hat{S} \\
-\aV \lbr \TT{false} \rbr\ \hat{S} \\
-\aV \lbr \TT{null} \rbr\ \hat{S} \\
+% CFGVarRef
+\aV \lbr x \rbr (\hat{H}, \hat{C}) = \ahf{Lookup}(\hat{H},\ x) \\
+
+% CFGLoad
+\aV \lbr e_1\verb+[+e_2\verb+]+ \rbr (\hat{H}, \hat{C}) = (\hat{v}_3,\ \hat{es}_2) \\
+\quad\wherec{
+\hat{v}_3 = \bigsqcup_{\hat{l} \in \hat{L}} \bigsqcup_{\hat{s} \in S_{idx}}
+\ahf{Proto}(\hat{H}, \hat{l}, \hat{s}) \\
+\land\ \hat{L} = \hat{v}_1\emph{.locSet} \
+\land\ S_{idx} = \hat{v}_2\emph{.toPrimitive}(\hat{H})\emph{.toStringSet} \\
+\land\ (\hat{v}_1, -) = \aV \lbr e_1 \rbr (\hat{H}, \hat{C})\
+\land\ (\hat{v}_2, \hat{es}_2) = \aV \lbr e_2 \rbr (\hat{H}, \hat{C})
+}\\\\
+
+% CFGThis
+\aV \lbr \TT{this} \rbr\ \hat{S} = (\abs{Value}(
+\hat{H}(\avarloc{PureLocal})(\varprop{this})\emph{objval.value.locSet} ),\
+\varnothing) \\
+
+% CFGBin
+\aV \lbr e_1 \inop e_2 \rbr\ \hat{S} = (\bot_{Value},\ \hat{es}_1)
+\quad\ifc{\hat{v}_1 \sqsubseteq \bot_{Value}}\\
+\quad\wherec{
+(\hat{v}_1,\ \hat{es}_1) = \aV \lbr e_1 \rbr\ \hat{S}
+}\\\\
+
+\aV \lbr e_1 \inop e_2 \rbr\ \hat{S} = (\bot_{Value},\ \hat{es}_1 \sqcup \hat{es}_2)
+\quad\ifc{\hat{v}_2 \sqsubseteq \bot_{Value}}\\
+\quad\wherec{
+(\hat{v}_1,\ \hat{es}_1) = \aV \lbr e_1 \rbr\ \hat{S} \
+\land\ (\hat{v}_2,\ \hat{es}_2) = \aV \lbr e_2 \rbr\ \hat{S}
+}\\\\
+
+\aV \lbr e_1 \inop e_2 \rbr\ \hat{S} = (\hat{v}_3,\ \hat{es}_1 \sqcup \hat{es}_2)
+\quad\ifc{\inop \in } \left\{ \verb+|+ ,\ \verb+&+ ,\ \verb+^+ ,\ \verb+<<+ ,\ \verb+>>+ ,\ \verb+>>>+ \right\}\\
+\quad\wherec{
+\hat{v}_3 = \abs{Value}(\hat{n}_1 ~~\hat{\inop}~~ \hat{n}_2) \\
+\land\ \hat{n}_1 = \ahf{toInt32}(\hat{v}_1) \
+\land\ \hat{n}_2 = \ahf{toInt32}(\hat{v}_2) \\
+\land\ (\hat{v}_1,\ \hat{es}_1) = \aV \lbr e_1 \rbr\ \hat{S} \
+\land\ (\hat{v}_2,\ \hat{es}_2) = \aV \lbr e_2 \rbr\ \hat{S}
+}\\\\
+
+\aV \lbr e_1 ~\verb+++~ e_2 \rbr\ \hat{S} = (\hat{v}_3 \sqcup \hat{v}_4, \hat{es}_1 \sqcup \hat{es}_2) \\
+\quad\wherec {
+\hat{v}_3 = \abs{Value}(\hat{n}) \
+\land\ \hat{n} = \hat{v}_1\emph{.toPrimitive.toAbsNumber} ~~\hat{+}~~ \hat{v}_2\emph{.toPrimitive.toAbsNumber} \\
+\hat{v}_4 = \abs{Value}(\hat{s}) \
+\land\ \hat{s} = \hat{v}_1\emph{.toPrimivive.toAbsString} ~~\hat{concat}~~ \hat{v}_2\emph{.toPrimitive.toAbsString}\\
+\land\ (\hat{v}_1,\ \hat{es}_1) = \aV \lbr e_1 \rbr\ \hat{S} \
+\land\ (\hat{v}_2,\ \hat{es}_2) = \aV \lbr e_2 \rbr\ \hat{S}
+}\\\\
+
+\aV \lbr e_1 \inop e_2 \rbr\ \hat{S} = (\abs{Value}(\hat{n}), \hat{es}_1 \sqcup \hat{es}_2)
+\quad\ifc{\inop \in } \left\{ \verb+-+ ,\ \verb+*+ ,\ \verb+/+ ,\ \verb+%+ \right\}\\
+\quad\wherec{
+\hat{n} = \hat{v}_1\emph{.toPrimitive.toAbsNumber} ~~\hat{\inop}~~ \hat{v}_2\emph{.toPrimitive.toAbsNumber} \\
+\land\ (\hat{v}_1,\ \hat{es}_1) = \aV \lbr e_1 \rbr\ \hat{S} \
+\land\ (\hat{v}_2,\ \hat{es}_2) = \aV \lbr e_2 \rbr\ \hat{S}
+}\\\\
+
+\end{array}
+\]
+
+\[
+\renewcommand\arraystretch{1.5}
+\begin{array}{l}
+
+\aV \lbr e_1 ~\verb+==+~ e_2 \rbr\ \hat{S} = (\hat{v}_3, \hat{es}_1 \sqcup \hat{es}_2) \\
+\quad\wherec{
+\hat{v}_3 = \abs{Value}(\hat{b}_1 \sqcup \hat{b}_2 \sqcup \hat{b}_3 \sqcup \hat{b}_4) \\
+\land\ \hat{b}_1 = \hat{n}_1 ~~\hat{=}~~ \hat{n}_2 \
+\land\ \hat{b}_2 = \hat{s}_1 ~~\hat{=}~~ \hat{s}_2 \\
+\land\ \hat{b}_3 = \bigsqcup_{\hat{l} \in \hat{v}_1\emph{.locSet}}
+(\hat{l}\emph{.toPrimitive.numVal} ~~\hat{=}~~ \hat{n}_2 )\ \sqcup\ (\hat{l}\emph{.toPrimitive.strVal} ~~\hat{=}~~ \hat{s}_2) \\
+\land\ \hat{b}_4 = \bigsqcup_{\hat{l} \in \hat{v}_2\emph{.locSet}} 
+(\hat{n}_1 ~~\hat{=}~~ \hat{l}\emph{.toPrimitive.numVal} )\ \sqcup\ (\hat{s}_1 ~~\hat{=}~~ \hat{l}\emph{.toPrimitive.strVal}) \\
+\land\ \hat{n}_1 = \hat{v}_1\emph{.pvalue.toAbsNumber} \
+\land\ \hat{n}_2 = \hat{v}_2\emph{.pvalue.toAbsNumber} \\
+\land\ \hat{s}_1 = \hat{v}_1\emph{.pvalue.toAbsString} \
+\land\ \hat{s}_2 = \hat{v}_2\emph{.pvalue.toAbsString} \\
+\land\ (\hat{v}_1,\ \hat{es}_1) = \aV \lbr e_1 \rbr\ \hat{S} \
+\land\ (\hat{v}_2,\ \hat{es}_2) = \aV \lbr e_2 \rbr\ \hat{S}
+}\\\\
+
+\aV \lbr e_1 ~\verb+!=+~ e_2 \rbr\ \hat{S} = (\hat{v}_2, \hat{es}_1) \\
+\quad\wherec{
+\hat{v}_2 = \abs{Value}(\hat{v}_1\emph{.numVal.negate})
+\land\ (\hat{v}_1, \hat{es}_1) = \aV \lbr e_1 == e_2 \rbr\ \hat{S}
+}\\\\
+
+\aV \lbr e_1 ~\verb+===+~ e_2 \rbr\ \hat{S} = (\hat{v}_3, \hat{es}_1 \sqcup \hat{es}_2) \\
+\quad\wherec{
+\hat{v}_3 = \abs{Value}(\hat{b}_1 \sqcup \hat{b}_2 \sqcup \hat{b}_3)
+\land\ \hat{b}_1 = \left \{ \begin{array}{ll}
+\afalse & \ifc{\hat{v}_3\emph{.typeCount}} \\
+\bot_{Bool} & \owc \\ 
+\end{array} \right. \\
+\land\ \hat{b}_2 =  \left \{ \begin{array}{ll}
+\afalse & \ifc{\hat{L}_1 \cap \hat{L}_2 = \varnothing} \\
+\atrue & \ifc{|\hat{L}_1| = 1 \ \land\ |\hat{L}_2| = 1 \land\ \hat{L}_1 \
+\land\ \forall \hat{l} \in (\hat{L}_1 \cap \hat{L}_2) \hat{l}\emph{.isRecent} } \\
+\bot_{Bool} & \ifc{\hat{L}_1 = \varnothing\ \land\ \hat{L}_2 = \varnothing }\\
+\top_{Bool} & \owc \\ 
+\end{array} \right. \\
+\begin{array}{ll}
+\land\ \hat{v}_3 = & \hat{v}_1\emph{.pvalue.undefVal} ~~\hat{=}~~ \hat{v}_2\emph{.pvalue.undefVal} \
+\sqcup\ \hat{v}_1\emph{.pvalue.nullVal} ~~\hat{=}~~ \hat{v}_2\emph{.pvalue.nullVal} \\
+& \sqcup\ \hat{v}_1\emph{.pvalue.boolVal} ~~\hat{=}~~ \hat{v}_2\emph{.pvalue.boolVal} \
+\sqcup\ \hat{v}_1\emph{.pvalue.numVal} ~~\hat{=}~~ \hat{v}_2\emph{.pvalue.numVal} \\
+& \sqcup\ \hat{v}_1\emph{.pvalue.strVal} ~~\hat{=}~~ \hat{v}_2\emph{.pvalue.strVal} \\
+\end{array} \\
+\land\ \hat{L}_1 = \hat{v}_1\emph{locSet} \
+\land\ \hat{L}_2 = \hat{v}_2 \emph{locSet} \\
+\land\ (\hat{v}_1,\ \hat{es}_1) = \aV \lbr e_1 \rbr\ \hat{S} \
+\land\ (\hat{v}_2,\ \hat{es}_2) = \aV \lbr e_2 \rbr\ \hat{S}
+}\\\\
+
+\aV \lbr e_1 ~\verb+!==+~ e_2 \rbr\ \hat{S} = (\hat{v}_2, \hat{es}_1) \\
+\quad\wherec{
+\hat{v}_2 = \abs{Value}(\hat{v}_1\emph{.numVal.negate})
+\land\ (\hat{v}_1, \hat{es}_1) = \aV \lbr e_1 === e_2 \rbr\ \hat{S}
+}\\\\
+
+\aV \lbr e_1 \inop e_2 \rbr\ \hat{S} = (\hat{v}_3, \hat{es}_1 \sqcup \hat{es}_2)
+\quad\ifc{\inop \in } \left\{ \verb+<+ ,\ \verb+>+ ,\ \verb+<=+ ,\ \verb+>=+ \right\}\\
+\quad\wherec{
+\hat{v}_3 = \abs{Value}(\hat{b}_1 \sqcup \hat{b}_2) \\
+\land\ \hat{b}_1 = \hat{v}_1\emph{.toPrimitive.toAbsNum} ~~\hat{\inop}~~ \hat{v}_2\emph{.toPrimitive.toAbsNum} \\
+\land\ \hat{b}_2 = \hat{v}_2\emph{.toPrimitive.strVal} ~~\hat{\inop}~~ \hat{v}_2\emph{.toPrimitive.strVal} \\
+\land\ (\hat{v}_1,\ \hat{es}_1) = \aV \lbr e_1 \rbr\ \hat{S} \
+\land\ (\hat{v}_2,\ \hat{es}_2) = \aV \lbr e_2 \rbr\ \hat{S}
+}\\\\
+
+
+\end{array}
+\]
+
+\[
+\renewcommand\arraystretch{1.5}
+\begin{array}{l}
+
+\aV \lbr e_1 ~\verb+instanceof+~ e_2 \rbr (\hat{H}, \hat{C}) 
+= (\hat{v}_3 \sqcup \hat{v}_4, \hat{es}_1 \sqcup \hat{es}_2 \sqcup \hat{es}_3 )\\
+\quad\wherec{
+\land\ \hat{v}_3 = \bigsqcup_{\hat{l}_1 \in \hat{v}_1\emph{.locSet}} \bigsqcup_{\hat{l}_2 \in \hat{v}_p\emph{.locSet}}
+\ahf{Inherit}(\hat{H},\ \hat{l}_1,\ \hat{l}_2) \\
+\land\ \hat{v}_4 = \left \{ \begin{array}{ll}
+\abs{Value}(\afalse) & \ifc{\hat{v}_2\emph{.pvalue} \not\sqsubseteq \bot_{PValue} 
+\land\ \hat{v}_p\emph{.pvalue} \not\sqsubseteq \bot_{PValue}} \\
+\bot_{Value} & \owc \\
+\end{array} \right. \\
+\land\ \hat{es}_3 = \left \{ \begin{array}{ll}
+\set{\hat{\exc{TypeError}}} & \ifc{\hat{L}_f \neq \varnothing \
+\land\ \hat{v}_2\emph{.pvalue} \not\sqsubseteq \bot_{PValue} \
+\land\ \hat{v}_p\emph{.pvalue} \not\sqsubseteq \bot_{PValue} \\} \\
+\varnothing & \owc \\
+\end{array} \right. \\
+\land\ \hat{v}_p = \bigsqcup_{\hat{l} \in \hat{L}_t} \ahf{Proto}(\hat{H},\ \hat{l},\ \hat{``prototype"}) \\
+\land\ \hat{L}_f = \set{\hat{l} \in \hat{v}_2\emph{.locSet} \mid 
+\afalse \sqsubseteq \ahf{HasInstance(\hat{H},\ \hat{l})} } \\
+\land\ \hat{L}_t = \set{ \hat{l} \in \hat{v}_2\emph{.locSet} \mid 
+\atrue \sqsubseteq \ahf{HasInstance}(\hat{H},\ \hat{l}) } \\
+\land\ (\hat{v}_1,\ \hat{es}_1) = \aV \lbr e_1 \rbr\ \hat{S} \
+\land\ (\hat{v}_2,\ \hat{es}_2) = \aV \lbr e_2 \rbr\ \hat{S} \\
+}\\\\
+
+\aV \lbr e_1 ~\verb+in+~ e_2 \rbr (\hat{H}, \hat{C}) = (\hat{v}, \hat{es}_1 \sqcup \hat{es}_2 \sqcup \hat{es}_3)\\
+\quad\wherec{
+\hat{v}_3 = \abs{Value}(\hat{b}) \\
+\land\ \hat{es}_3 = \left \{ \begin{array}{ll}
+\set{\hat{\exc{TypeError}}} & \ifc{\hat{v}_2\emph{.pvalue} \not\sqsubseteq \bot_{PValue}} \\
+\varnothing & \owc \\
+\end{array} \right. \\
+\land\ \hat{b} = \bigsqcup_{\hat{l} \in \hat{v}_2\emph{.locset}} \abs{HasProperty}(\hat{H},\ \hat{loc},\ \hat{s}) \
+\land\ \hat{s} = \hat{v}_1\emph{.toPrimitive.toAbsString} \\
+\land\ (\hat{v}_1,\ \hat{es}_1) = \aV \lbr e_1 \rbr\ \hat{S} \
+\land\ (\hat{v}_2,\ \hat{es}_2) = \aV \lbr e_2 \rbr\ \hat{S} \\
+}\\\\
+
+\end{array}
+\]
+
+\[
+\renewcommand\arraystretch{1.5}
+\begin{array}{l}
+
+% CFGUn
+\aV \lbr \verb+void+~ e \rbr\ \hat{S} = (\hat{v}, \hat{es}) \\
+\quad\wherec{
+\hat{v} = \abs{Value}(\aundef) \
+\land\ (-,\ \hat{es}) = \aV \lbr e \rbr\ \hat{S}
+}\\\\
+
+\aV \lbr \verb+++~ e \rbr\ \hat{S} = (\hat{v}_1, \hat{es}) \\
+\quad\wherec{
+\hat{v}_1 = \abs{Value}(\hat{n}) \\
+\land\ \hat{n} = \hat{v}\emph{.pvalue.toAbsNumber} \ \sqcup
+ \hat{n}_2 = \hat{v}\emph{.objToPrimitive}(``Number")\emph{.toAbsNumber} \\
+\land\ (\hat{v},\ \hat{es}) = \aV \lbr e \rbr\ \hat{S}
+}\\\\
+
+\aV \lbr \verb+-+~ e \rbr\ \hat{S} = (\hat{v}_1, \hat{es}) \\
+\quad\wherec{
+\hat{v}_1 = \abs{Value}(\hat{n}\emph{.negate}) \\
+\land\ \hat{n} = \hat{v}\emph{.pvalue.toAbsNumber} \ \sqcup
+ \hat{n}_2 = \hat{v}\emph{.objToPrimitive}(``Number")\emph{.toAbsNumber} \\
+\land\ (\hat{v},\ \hat{es}) = \aV \lbr e \rbr\ \hat{S}
+}\\\\
+
+\aV \lbr \verb+~+~ e \rbr\ \hat{S} = (\hat{v}_1, \hat{es}) \\
+\quad\wherec{
+\hat{v}_1 = \abs{Value}(\hat{v}\emph{toInt32.bitNegate}) \\
+\land\ (\hat{v},\ \hat{es}) = \aV \lbr e \rbr\ \hat{S}
+}\\\\
+
+\aV \lbr \verb+!+~ e \rbr\ \hat{S} = (\hat{v}_1, \hat{es}) \\
+\quad\wherec{
+\hat{v}_1 = \abs{Value}(\hat{v}\emph{toAbsBool.negate}) \\
+\land\ (\hat{v},\ \hat{es}) = \aV \lbr e \rbr\ \hat{S}
+}\\\\
+
+\aV \lbr \verb+typeof+~ x \rbr (\hat{H}, \hat{C}) = (\hat{v}_1, \varnothing) \\
+\quad\wherec{
+\hat{v}_1 = \abs{Value}(\hat{s}_1 \sqcup \hat{s}_2) \\
+\land\ \hat{s}_1 = \hat{v}\emph{.typeTag}(\hat{H}) \\
+\land\ \hat{s}_2 = \left \{ \begin{array}{ll}
+\hat{``undefinde"} & \ifc{\hat{\exc{ReferenceError}} \in \hat{es}} \\
+\bot_{String} & \owc \\
+\end{array} \right. \\
+\land\ (\hat{v},\ \hat{es}) = \aV \lbr e \rbr\ \hat{S}
+}\\\\
+
+\aV \lbr \verb+typeof+~ e \rbr (\hat{H}, \hat{C}) = (\hat{v}_1, \hat{es}) \\
+\quad\wherec{
+\hat{v}_1 = \abs{Value}(\hat{v}\emph{ypteTag}(\hat{H})) \\
+\land\ (\hat{v},\ \hat{es}) = \aV \lbr e \rbr\ \hat{S}
+}\\\\
+
+% CFGVal
+\aV \lbr n \rbr\ \hat{S} = (\abs{Value}(\hat{n}),\ \varnothing) \\
+\aV \lbr ``s" \rbr\ \hat{S} = (\abs{Value}(\hat{``s"}),\ \varnothing) \\
+\aV \lbr \TT{true} \rbr\ \hat{S} = (\abs{Value}(\atrue),\ \varnothing) \\
+\aV \lbr \TT{false} \rbr\ \hat{S} = (\abs{Value}(\afalse),\ \varnothing) \\
+\aV \lbr \TT{null} \rbr\ \hat{S} = (\abs{Value}(\anull),\ \varnothing) \\
 
 \end{array}
 \]
