@@ -93,34 +93,40 @@ class Console(
     }
     val len: Int = ccList.length
     val fid: Int = block.func.id
-    if (len == 0) {
-      println(s"* no call-context in function[$fid] $block")
-    } else {
-      reader.setPrompt(
-        ccList.zipWithIndex.map {
-          case (cc, idx) => s"[$idx] $cc" + LINE_SEP
-        }.mkString + s"select call context index > "
-      )
-      while ({
-        println
-        reader.readLine match {
-          case null => {
-            println
-            println("* current control point not changed.")
-            false
-          }
-          case "" => true
-          case line => !line.forall(_.isDigit) || (line.toInt match {
-            case idx if idx < len => {
-              cur = ControlPoint(block, ccList(idx))
-              println(s"* currrent cotrol point changed.")
+    ccList match {
+      case Nil => println(s"* no call-context in function[$fid] $block")
+      case cc :: Nil => {
+        cur = ControlPoint(block, cc)
+        println(s"* currrent cotrol point changed.")
+        this.setPrompt
+      }
+      case _ => {
+        reader.setPrompt(
+          ccList.zipWithIndex.map {
+            case (cc, idx) => s"[$idx] $cc" + LINE_SEP
+          }.mkString + s"select call context index > "
+        )
+        while ({
+          println
+          reader.readLine match {
+            case null => {
+              println
+              println("* current control point not changed.")
               false
             }
-            case _ => println(s"* given index is out of bound $len"); true
-          })
-        }
-      }) {}
-      this.setPrompt
+            case "" => true
+            case line => !line.forall(_.isDigit) || (line.toInt match {
+              case idx if idx < len => {
+                cur = ControlPoint(block, ccList(idx))
+                println(s"* currrent cotrol point changed.")
+                false
+              }
+              case _ => println(s"* given index is out of bound $len"); true
+            })
+          }
+        }) {}
+        this.setPrompt
+      }
     }
   }
 

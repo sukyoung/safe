@@ -35,14 +35,6 @@ class CFGFunction(
   private var bidCount: BlockId = 0
   def getBId: BlockId = bidCount
 
-  // create call
-  def createCall(callInstCons: Call => CFGCallInst, retVar: CFGId): Call = {
-    val call = Call(this, callInstCons, retVar)
-    bidCount += 3
-    blocks = call.afterCatch :: call.afterCall :: call :: blocks
-    call
-  }
-
   // all blocks in this function
   private var blocks: List[CFGBlock] = List(exitExc, exit, entry)
   private var blockMap: MMap[BlockId, CFGBlock] = MHashMap(
@@ -53,12 +45,29 @@ class CFGFunction(
   def getBlock(bid: BlockId): Option[CFGBlock] = blockMap.get(bid)
   def getAllBlocks: List[CFGBlock] = blocks
 
-  // create block
-  def createBlock: NormalBlock = {
-    val block = NormalBlock(this)
+  // append block
+  private def addBlock(block: CFGBlock): CFGBlock = {
     bidCount += 1
     blocks ::= block
     blockMap(block.id) = block
+    block
+  }
+
+  // create call
+  def createCall(callInstCons: Call => CFGCallInst, retVar: CFGId): Call = {
+    val call = Call(this, callInstCons, retVar)
+    val afterCall = call.afterCall
+    val afterCatch = call.afterCatch
+    addBlock(call)
+    addBlock(afterCall)
+    addBlock(afterCatch)
+    call
+  }
+
+  // create block
+  def createBlock: NormalBlock = {
+    val block = NormalBlock(this)
+    addBlock(block)
     block
   }
 
