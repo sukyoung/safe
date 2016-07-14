@@ -15,6 +15,7 @@ import jline.console.ConsoleReader
 import kr.ac.kaist.safe.analyzer.console._
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.LINE_SEP
+import kr.ac.kaist.safe.nodes.cfg.{ CFGCallInst, CFGNormalInst }
 
 // run instructions
 case object CmdRunInsts extends Command("run_insts", "Run instruction by instruction.") {
@@ -60,7 +61,10 @@ case object CmdRunInsts extends Command("run_insts", "Run instruction by instruc
             line match {
               case "q" => (oldSt, oldExcSt, false)
               case _ =>
-                val (st, excSt) = c.semantics.I(cp, inst, oldSt, oldExcSt)
+                val (st, excSt) = inst match {
+                  case i: CFGNormalInst => c.semantics.I(i, oldSt, oldExcSt)
+                  case i: CFGCallInst => c.semantics.CI(cp, i, oldSt, oldExcSt)
+                }
                 (st, excSt, true)
             }
           case (old @ (_, _, false), inst) => old

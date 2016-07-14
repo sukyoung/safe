@@ -28,6 +28,9 @@ class Semantics(
   lazy val excLog: ExcLog = new ExcLog
   val utils: Utils = helper.utils
 
+  private val afalse = utils.absBool.False
+  private val atrue = utils.absBool.True
+
   // Interprocedural edges
   private var ipSuccMap: Map[ControlPoint, Map[ControlPoint, (Context, Obj)]] = HashMap[ControlPoint, Map[ControlPoint, (Context, Obj)]]()
   private var ipPredMap: Map[ControlPoint, Set[ControlPoint]] = HashMap[ControlPoint, Set[ControlPoint]]()
@@ -198,21 +201,19 @@ class Semantics(
           }
           case Exit(_) => (st, State.Bot)
           case ExitExc(_) => (st, State.Bot)
-          case call: Call => I(cp, call.callInst, st, State.Bot)
+          case call: Call => CI(cp, call.callInst, st, State.Bot)
           case afterCall: AfterCall => (st, State.Bot)
           case afterCatch: AfterCatch => (st, State.Bot)
           case block: NormalBlock =>
             block.getInsts.foldRight((st, State.Bot))((inst, states) => {
               val (oldSt, oldExcSt) = states
-              I(cp, inst, oldSt, oldExcSt)
+              I(inst, oldSt, oldExcSt)
             })
         }
     }
   }
 
-  def I(cp: ControlPoint, i: CFGInst, st: State, excSt: State): (State, State) = {
-    val absTrue = utils.absBool.True
-    val absFalse = utils.absBool.False
+  def I(i: CFGNormalInst, st: State, excSt: State): (State, State) = {
     i match {
       case _ if st.heap.isBottom => (State.Bot, excSt)
       case CFGAlloc(_, _, x, e, newAddr) => {
@@ -264,7 +265,7 @@ class Semantics(
         val baseLocSet = st.heap.lookupBase(x2)(utils)
         val (h1, b) =
           if (baseLocSet.isEmpty) {
-            (st.heap, utils.absBool.True)
+            (st.heap, atrue)
           } else {
             val x2Abs = utils.absString.alpha(x2.toString)
             baseLocSet.foldLeft[(Heap, AbsBool)](Heap.Bot, utils.absBool.Bot)((res, baseLoc) => {
@@ -281,7 +282,7 @@ class Semantics(
         val (v, excSet) = V(expr, st)
         val (h1, ctx1) =
           if (!v.isBottom) {
-            val trueVal = Value(PValue(utils.absBool.True)(utils))
+            val trueVal = Value(PValue(atrue)(utils))
             (st.heap.varStore(x1, trueVal)(utils), st.context)
           } else (Heap.Bot, Context.Bot)
         val newExcSt = st.raiseException(excSet)(utils)
@@ -369,7 +370,7 @@ class Semantics(
         val h3 = st2.heap.update(locR1, Obj.newFunctionObject(f.id, scope, locR2, n)(utils))
 
         val fVal = Value(PValue.Bot(utils), HashSet(locR1))
-        val fPropV = PropValue(ObjectValue(fVal, utils.absBool.True, utils.absBool.False, utils.absBool.True))
+        val fPropV = PropValue(ObjectValue(fVal, atrue, afalse, atrue))
         val h4 = h3.update(locR2, oNew.update("constructor", fPropV, exist = true))
 
         val h5 = h4.varStore(lhs, fVal)(utils)
@@ -390,171 +391,18 @@ class Semantics(
         val h4 = st3.heap.update(locR1, Obj.newFunctionObject(f.id, fObjValue, locR2, n)(utils))
 
         val fVal = Value(PValue.Bot(utils), HashSet(locR1))
-        val fPropV = PropValue(ObjectValue(fVal, utils.absBool.True, utils.absBool.False, utils.absBool.True))
+        val fPropV = PropValue(ObjectValue(fVal, atrue, afalse, atrue))
         val h5 = h4.update(locR2, oNew.update("constructor", fPropV, exist = true))
 
         val localObj = st3.heap.getOrElse(PredefLoc.SINGLE_PURE_LOCAL, Obj.Bot(utils))
         val scope = localObj.getOrElse("@env")(Value.Bot(utils)) { _.objval.value }
         val oEnv = Obj.newDeclEnvRecordObj(scope)(utils)
-        val fPropV2 = PropValue(ObjectValue(fVal, utils.absBool.False, utils.absBool.Bot, utils.absBool.False))
+        val fPropV2 = PropValue(ObjectValue(fVal, afalse, utils.absBool.Bot, afalse))
         val h6 = h5.update(locR3, oEnv.update(name.text, fPropV2))
         val h7 = h6.varStore(lhs, fVal)(utils)
         (State(h7, st3.context), excSt)
       }
-      case CFGConstruct(ir, block, consExpr, thisArg, arguments, aNew, bNew) => {
-        // cons, thisArg and arguments must not be bottom
-        val locR = Loc(aNew, Recent)
-        val st1 = st.oldify(aNew)(utils)
-        val (consVal, consExcSet) = V(consExpr, st1)
-        val consLocSet = consVal.locset.filter(l => absTrue <= st1.heap.hasConstruct(l)(utils.absBool))
-        val (thisVal, _) = V(thisArg, st1)
-        val thisLocSet = thisVal.getThis(st1.heap)(utils)
-        val (argVal, _) = V(arguments, st1)
-
-        // XXX: stop if thisArg or arguments is LocSetBot(ValueBot)
-        if (thisLocSet.isEmpty || argVal.isBottom) {
-          (st, excSt)
-        } else {
-          val oldLocalObj = st1.heap.getOrElse(PredefLoc.SINGLE_PURE_LOCAL, Obj.Bot(utils))
-          val callerCallCtx = cp.callContext
-          val nCall =
-            cp.node match {
-              case callBlock: Call => callBlock
-              case _ =>
-                excLog.signal(NoAfterCallAfterCatchError(ir))
-                block
-            }
-          val cpAfterCall = ControlPoint(nCall.afterCall, callerCallCtx)
-          val cpAfterCatch = ControlPoint(nCall.afterCatch, callerCallCtx)
-
-          // Draw call/return edges
-          consLocSet.foreach((consLoc) => {
-            val consObj = st1.heap.getOrElse(consLoc, Obj.Bot(utils))
-            val fidSet = consObj.getOrElse[Set[FunctionId]]("@construct")(HashSet[FunctionId]()) { _.funid }
-            fidSet.foreach((fid) => {
-              val newPureLocal = Obj.newPureLocalObj(Value(PValue.Bot(utils), HashSet(locR)), thisLocSet)(utils)
-              val callerCtxSet = callerCallCtx.newCallContext(st1.heap, cfg, fid, locR, thisLocSet, newPureLocal, Some(aNew))
-              callerCtxSet.foreach {
-                case (newCallCtx, newObj) => {
-                  val argPropV = PropValue(ObjectValue(argVal, absTrue, absFalse, absFalse))
-                  cfg.getFunc(fid) match {
-                    case Some(funCFG) => {
-                      val scopeObj = consObj.get("@scope")(utils)
-                      val newObj2 = newObj.update(funCFG.argumentsName, argPropV, exist = true)
-                        .update("@scope", scopeObj)
-                      val entryCP = ControlPoint(funCFG.entry, newCallCtx)
-                      val exitCP = ControlPoint(funCFG.exit, newCallCtx)
-                      val exitExcCP = ControlPoint(funCFG.exitExc, newCallCtx)
-                      addCallEdge(cp, entryCP, Context.Empty, newObj2)
-                      addReturnEdge(exitCP, cpAfterCall, st1.context, oldLocalObj)
-                      addReturnEdge(exitExcCP, cpAfterCatch, st1.context, oldLocalObj)
-                    }
-                    case None => excLog.signal(UndefinedFunctionCallError(ir))
-                  }
-                }
-              }
-            })
-          })
-
-          val h2 = argVal.locset.foldLeft(Heap.Bot)((tmpHeap, l) => {
-            val consPropV = PropValue(ObjectValue(Value(PValue.Bot(utils), consLocSet), absTrue, absFalse, absTrue))
-            val argObj = st1.heap.getOrElse(l, Obj.Bot(utils))
-            tmpHeap + st1.heap.update(l, argObj.update("callee", consPropV))
-          })
-
-          // exception handling
-          val typeExcSet1 =
-            if (consVal.locset.exists(l => absFalse <= st1.heap.hasConstruct(l)(utils.absBool))) Set(TypeError)
-            else ExceptionSetEmpty
-          val typeExcSet2 =
-            if (!consVal.pvalue.isBottom) Set(TypeError)
-            else ExceptionSetEmpty
-
-          val totalExcSet = consExcSet ++ typeExcSet1 ++ typeExcSet2
-          val newExcSt = st1.raiseException(totalExcSet)(utils)
-
-          val h3 =
-            if (!consLocSet.isEmpty) h2
-            else Heap.Bot
-          (State(h3, st1.context), excSt + newExcSt)
-        }
-      }
-      case CFGCall(ir, block, funExpr, thisArg, arguments, aNew, bNew) => {
-        // cons, thisArg and arguments must not be bottom
-        val locR = Loc(aNew, Recent)
-        val st1 = st.oldify(aNew)(utils)
-        val (funVal, funExcSet) = V(funExpr, st1)
-        val funLocSet = funVal.locset.filter(l => utils.absBool.True <= st1.heap.isCallable(l)(utils))
-        val (thisV, thisExcSet) = V(thisArg, st1)
-        val thisLocSet = thisV.getThis(st1.heap)(utils)
-        val (argVal, _) = V(arguments, st1)
-        // XXX: stop if thisArg or arguments is LocSetBot(ValueBot)
-        if (thisLocSet.isEmpty || argVal.isBottom) {
-          (st, excSt)
-        } else {
-          val oldLocalObj = st1.heap.getOrElse(PredefLoc.SINGLE_PURE_LOCAL, Obj.Bot(utils))
-          val callerCallCtx = cp.callContext
-          val callBlock =
-            cp.node match {
-              case callBlock: Call => callBlock
-              case _ =>
-                excLog.signal(NoAfterCallAfterCatchError(ir))
-                block
-            }
-          val afterCallCP = ControlPoint(callBlock.afterCall, callerCallCtx)
-          val afterCatchCP = ControlPoint(callBlock.afterCatch, callerCallCtx)
-
-          funLocSet.foreach((funLoc) => {
-            val funObj = st1.heap.getOrElse(funLoc, Obj.Bot(utils))
-            val fidSet = funObj.getOrElse[Set[FunctionId]]("@function")(HashSet[FunctionId]()) { _.funid }
-            fidSet.foreach((fid) => {
-              val newPureLocal = Obj.newPureLocalObj(Value(PValue.Bot(utils), HashSet(locR)), thisLocSet)(utils)
-              val callCtxSet = callerCallCtx.newCallContext(st.heap, cfg, fid, locR, thisLocSet, newPureLocal, Some(aNew))
-              callCtxSet.foreach {
-                case (newCallCtx, newObj) => {
-                  val value = PropValue(ObjectValue(argVal, absTrue, absFalse, absFalse))
-                  cfg.getFunc(fid) match {
-                    case Some(funCFG) => {
-                      val oNew2 = newObj.update(funCFG.argumentsName, value, exist = true)
-                        .update("@scope", funObj.get("@scope")(utils))
-                      val entryCP = ControlPoint(funCFG.entry, newCallCtx)
-                      val exitCP = ControlPoint(funCFG.exit, newCallCtx)
-                      val exitExcCP = ControlPoint(funCFG.exitExc, newCallCtx)
-                      addCallEdge(cp, entryCP, Context.Empty, oNew2)
-                      addReturnEdge(exitCP, afterCallCP, st1.context, oldLocalObj)
-                      addReturnEdge(exitExcCP, afterCatchCP, st1.context, oldLocalObj)
-                    }
-                    case None => excLog.signal(UndefinedFunctionCallError(ir))
-                  }
-                }
-              }
-            })
-          })
-
-          val h2 = argVal.locset.foldLeft(Heap.Bot)((tmpHeap, argLoc) => {
-            val calleePropV = PropValue(ObjectValue(Value(PValue.Bot(utils), funLocSet), absTrue, absFalse, absTrue))
-            val argObj = st1.heap.getOrElse(argLoc, Obj.Bot(utils))
-            tmpHeap + st1.heap.update(argLoc, argObj.update("callee", calleePropV))
-          })
-
-          // exception handling
-          val typeExcSet1 =
-            if (funVal.locset.exists(l => absFalse <= st1.heap.isCallable(l)(utils))) Set(TypeError)
-            else ExceptionSetEmpty
-          val typeExcSet2 =
-            if (!funVal.pvalue.isBottom) Set(TypeError)
-            else ExceptionSetEmpty
-
-          val totalExcSet = funExcSet ++ typeExcSet1 ++ typeExcSet2
-          val newExcSt = st1.raiseException(totalExcSet)(utils)
-
-          val h3 =
-            if (!funLocSet.isEmpty) h2
-            else Heap.Bot
-          (State(h3, st1.context), excSt + newExcSt)
-        }
-      }
-      case CFGAssert(_, _, expr, _) => B(expr, st, excSt, i, cfg, cp)
+      case CFGAssert(_, _, expr, _) => B(expr, st, excSt, i, cfg)
       case CFGCatch(_, _, x) => {
         val localObj = st.heap.getOrElse(PredefLoc.SINGLE_PURE_LOCAL, Obj.Bot(utils))
         val excSetPropV = localObj.get("@exception_all")(utils)
@@ -621,10 +469,10 @@ class Semantics(
             val (h1, ctx1) =
               if (!v.isBottom) {
                 val b1 =
-                  if (!v.locset.isEmpty) utils.absBool.True
+                  if (!v.locset.isEmpty) atrue
                   else utils.absBool.Bot
                 val b2 =
-                  if (!v.pvalue.isBottom) utils.absBool.False
+                  if (!v.pvalue.isBottom) afalse
                   else utils.absBool.Bot
                 val boolVal = Value(PValue(b1 + b2)(utils))
                 (st.heap.varStore(lhs, boolVal)(utils), st.context)
@@ -681,6 +529,168 @@ class Semantics(
     }
   }
 
+  def CI(cp: ControlPoint, i: CFGCallInst, st: State, excSt: State): (State, State) = {
+    i match {
+      case CFGConstruct(ir, block, consExpr, thisArg, arguments, aNew, bNew) => {
+        // cons, thisArg and arguments must not be bottom
+        val locR = Loc(aNew, Recent)
+        val st1 = st.oldify(aNew)(utils)
+        val (consVal, consExcSet) = V(consExpr, st1)
+        val consLocSet = consVal.locset.filter(l => atrue <= st1.heap.hasConstruct(l)(utils.absBool))
+        val (thisVal, _) = V(thisArg, st1)
+        val thisLocSet = thisVal.getThis(st1.heap)(utils)
+        val (argVal, _) = V(arguments, st1)
+
+        // XXX: stop if thisArg or arguments is LocSetBot(ValueBot)
+        if (thisLocSet.isEmpty || argVal.isBottom) {
+          (st, excSt)
+        } else {
+          val oldLocalObj = st1.heap.getOrElse(PredefLoc.SINGLE_PURE_LOCAL, Obj.Bot(utils))
+          val callerCallCtx = cp.callContext
+          val nCall =
+            cp.node match {
+              case callBlock: Call => callBlock
+              case _ =>
+                excLog.signal(NoAfterCallAfterCatchError(ir))
+                block
+            }
+          val cpAfterCall = ControlPoint(nCall.afterCall, callerCallCtx)
+          val cpAfterCatch = ControlPoint(nCall.afterCatch, callerCallCtx)
+
+          // Draw call/return edges
+          consLocSet.foreach((consLoc) => {
+            val consObj = st1.heap.getOrElse(consLoc, Obj.Bot(utils))
+            val fidSet = consObj.getOrElse[Set[FunctionId]]("@construct")(HashSet[FunctionId]()) {
+              _.funid
+            }
+            fidSet.foreach((fid) => {
+              val newPureLocal = Obj.newPureLocalObj(Value(PValue.Bot(utils), HashSet(locR)), thisLocSet)(utils)
+              val callerCtxSet = callerCallCtx.newCallContext(st1.heap, cfg, fid, locR, thisLocSet, newPureLocal, Some(aNew))
+              callerCtxSet.foreach {
+                case (newCallCtx, newObj) => {
+                  val argPropV = PropValue(ObjectValue(argVal, atrue, afalse, afalse))
+                  cfg.getFunc(fid) match {
+                    case Some(funCFG) => {
+                      val scopeObj = consObj.get("@scope")(utils)
+                      val newObj2 = newObj.update(funCFG.argumentsName, argPropV, exist = true)
+                        .update("@scope", scopeObj)
+                      val entryCP = ControlPoint(funCFG.entry, newCallCtx)
+                      val exitCP = ControlPoint(funCFG.exit, newCallCtx)
+                      val exitExcCP = ControlPoint(funCFG.exitExc, newCallCtx)
+                      addCallEdge(cp, entryCP, Context.Empty, newObj2)
+                      addReturnEdge(exitCP, cpAfterCall, st1.context, oldLocalObj)
+                      addReturnEdge(exitExcCP, cpAfterCatch, st1.context, oldLocalObj)
+                    }
+                    case None => excLog.signal(UndefinedFunctionCallError(ir))
+                  }
+                }
+              }
+            })
+          })
+
+          val h2 = argVal.locset.foldLeft(Heap.Bot)((tmpHeap, l) => {
+            val consPropV = PropValue(ObjectValue(Value(PValue.Bot(utils), consLocSet), atrue, afalse, atrue))
+            val argObj = st1.heap.getOrElse(l, Obj.Bot(utils))
+            tmpHeap + st1.heap.update(l, argObj.update("callee", consPropV))
+          })
+
+          // exception handling
+          val typeExcSet1 =
+            if (consVal.locset.exists(l => afalse <= st1.heap.hasConstruct(l)(utils.absBool))) Set(TypeError)
+            else ExceptionSetEmpty
+          val typeExcSet2 =
+            if (!consVal.pvalue.isBottom) Set(TypeError)
+            else ExceptionSetEmpty
+
+          val totalExcSet = consExcSet ++ typeExcSet1 ++ typeExcSet2
+          val newExcSt = st1.raiseException(totalExcSet)(utils)
+
+          val h3 =
+            if (!consLocSet.isEmpty) h2
+            else Heap.Bot
+          (State(h3, st1.context), excSt + newExcSt)
+        }
+      }
+      case CFGCall(ir, block, funExpr, thisArg, arguments, aNew, bNew) => {
+        // cons, thisArg and arguments must not be bottom
+        val locR = Loc(aNew, Recent)
+        val st1 = st.oldify(aNew)(utils)
+        val (funVal, funExcSet) = V(funExpr, st1)
+        val funLocSet = funVal.locset.filter(l => atrue <= st1.heap.isCallable(l)(utils))
+        val (thisV, thisExcSet) = V(thisArg, st1)
+        val thisLocSet = thisV.getThis(st1.heap)(utils)
+        val (argVal, _) = V(arguments, st1)
+        // XXX: stop if thisArg or arguments is LocSetBot(ValueBot)
+        if (thisLocSet.isEmpty || argVal.isBottom) {
+          (st, excSt)
+        } else {
+          val oldLocalObj = st1.heap.getOrElse(PredefLoc.SINGLE_PURE_LOCAL, Obj.Bot(utils))
+          val callerCallCtx = cp.callContext
+          val callBlock =
+            cp.node match {
+              case callBlock: Call => callBlock
+              case _ =>
+                excLog.signal(NoAfterCallAfterCatchError(ir))
+                block
+            }
+          val afterCallCP = ControlPoint(callBlock.afterCall, callerCallCtx)
+          val afterCatchCP = ControlPoint(callBlock.afterCatch, callerCallCtx)
+
+          funLocSet.foreach((funLoc) => {
+            val funObj = st1.heap.getOrElse(funLoc, Obj.Bot(utils))
+            val fidSet = funObj.getOrElse[Set[FunctionId]]("@function")(HashSet[FunctionId]()) {
+              _.funid
+            }
+            fidSet.foreach((fid) => {
+              val newPureLocal = Obj.newPureLocalObj(Value(PValue.Bot(utils), HashSet(locR)), thisLocSet)(utils)
+              val callCtxSet = callerCallCtx.newCallContext(st.heap, cfg, fid, locR, thisLocSet, newPureLocal, Some(aNew))
+              callCtxSet.foreach {
+                case (newCallCtx, newObj) => {
+                  val value = PropValue(ObjectValue(argVal, atrue, afalse, afalse))
+                  cfg.getFunc(fid) match {
+                    case Some(funCFG) => {
+                      val oNew2 = newObj.update(funCFG.argumentsName, value, exist = true)
+                        .update("@scope", funObj.get("@scope")(utils))
+                      val entryCP = ControlPoint(funCFG.entry, newCallCtx)
+                      val exitCP = ControlPoint(funCFG.exit, newCallCtx)
+                      val exitExcCP = ControlPoint(funCFG.exitExc, newCallCtx)
+                      addCallEdge(cp, entryCP, Context.Empty, oNew2)
+                      addReturnEdge(exitCP, afterCallCP, st1.context, oldLocalObj)
+                      addReturnEdge(exitExcCP, afterCatchCP, st1.context, oldLocalObj)
+                    }
+                    case None => excLog.signal(UndefinedFunctionCallError(ir))
+                  }
+                }
+              }
+            })
+          })
+
+          val h2 = argVal.locset.foldLeft(Heap.Bot)((tmpHeap, argLoc) => {
+            val calleePropV = PropValue(ObjectValue(Value(PValue.Bot(utils), funLocSet), atrue, afalse, atrue))
+            val argObj = st1.heap.getOrElse(argLoc, Obj.Bot(utils))
+            tmpHeap + st1.heap.update(argLoc, argObj.update("callee", calleePropV))
+          })
+
+          // exception handling
+          val typeExcSet1 =
+            if (funVal.locset.exists(l => afalse <= st1.heap.isCallable(l)(utils))) Set(TypeError)
+            else ExceptionSetEmpty
+          val typeExcSet2 =
+            if (!funVal.pvalue.isBottom) Set(TypeError)
+            else ExceptionSetEmpty
+
+          val totalExcSet = funExcSet ++ typeExcSet1 ++ typeExcSet2
+          val newExcSt = st1.raiseException(totalExcSet)(utils)
+
+          val h3 =
+            if (!funLocSet.isEmpty) h2
+            else Heap.Bot
+          (State(h3, st1.context), excSt + newExcSt)
+        }
+      }
+    }
+  }
+
   def V(expr: CFGExpr, st: State): (Value, Set[Exception]) = {
     expr match {
       case CFGVarRef(ir, id) => st.heap.lookup(id)(utils)
@@ -732,18 +742,18 @@ class Semantics(
               case "instanceof" =>
                 val locSet1 = v1.locset
                 val locSet2 = v2.locset
-                val locSet3 = locSet2.filter((l) => utils.absBool.True <= st.heap.hasInstance(l)(utils.absBool))
+                val locSet3 = locSet2.filter((l) => atrue <= st.heap.hasInstance(l)(utils.absBool))
                 val protoVal = locSet3.foldLeft(Value.Bot(utils))((v, l) => {
                   v + st.heap.proto(l, utils.absString.alpha("prototype"))(utils)
                 })
                 val locSet4 = protoVal.locset
-                val locSet5 = locSet2.filter((l) => utils.absBool.False <= st.heap.hasInstance(l)(utils.absBool))
+                val locSet5 = locSet2.filter((l) => afalse <= st.heap.hasInstance(l)(utils.absBool))
                 val b1 = locSet1.foldLeft[Value](Value.Bot(utils))((tmpVal1, loc1) => {
                   locSet4.foldLeft[Value](tmpVal1)((tmpVal2, loc2) =>
                     tmpVal2 + helper.inherit(st.heap, loc1, loc2))
                 })
                 val pv2 =
-                  if (!v2.pvalue.isBottom && !locSet4.isEmpty) PValue(utils.absBool.False)(utils)
+                  if (!v2.pvalue.isBottom && !locSet4.isEmpty) PValue(afalse)(utils)
                   else PValue.Bot(utils)
                 val b2 = Value(pv2)
                 val excSet3 =
@@ -802,7 +812,7 @@ class Semantics(
     }
   }
 
-  def B(expr: CFGExpr, st: State, excSt: State, inst: CFGInst, cfg: CFG, cp: ControlPoint): (State, State) = {
+  def B(expr: CFGExpr, st: State, excSt: State, inst: CFGInst, cfg: CFG): (State, State) = {
     val h1 = st.heap //TODO should be the pruned heap
 
     val (v, excSet) = V(expr, st)
