@@ -20,21 +20,107 @@ import kr.ac.kaist.safe.util.{ Address, Loc, Recent }
 ////////////////////////////////////////////////////////////////
 case class Helper(utils: Utils) {
   private val absNumber: AbsNumberUtil = utils.absNumber
+  private val afalse = utils.absBool.False
+  private val atrue = utils.absBool.True
+
+  def arrayLenghtStore(heap: Heap, idxAbsStr: AbsString, storeV: Value, l: Loc): (Heap, Set[Exception]) = {
+    if (utils.absString.alpha("length") <= idxAbsStr) {
+      val nOldLen = heap.getOrElse(l, Obj.Bot(utils))
+        .getOrElse("length")(absNumber.Bot) { _.objval.value.pvalue.numval }
+      val nNewLen = toUInt32(storeV)
+      val numberPV = storeV.objToPrimitive("Number")(utils)
+      val nValue = storeV.pvalue.toAbsNumber(absNumber) + numberPV.toAbsNumber(absNumber)
+      val bCanPut = heap.canPut(l, utils.absString.alpha("length"))(utils)
+
+      val arrLengthHeap2 =
+        if ((atrue <= (nOldLen < nNewLen)(utils.absBool)
+          || atrue <= (nOldLen === nNewLen)(utils.absBool))
+          && (atrue <= bCanPut))
+          heap.propStore(l, utils.absString.alpha("length"), storeV)(utils)
+        else
+          Heap.Bot
+
+      val arrLengthHeap3 =
+        if (afalse <= bCanPut) heap
+        else Heap.Bot
+
+      val arrLengthHeap4 =
+        if ((atrue <= (nNewLen < nOldLen)(utils.absBool)) && (atrue <= bCanPut)) {
+          val hi = heap.propStore(l, utils.absString.alpha("length"), storeV)(utils)
+          (nNewLen.gammaSingle, nOldLen.gammaSingle) match {
+            case (ConSingleCon(n1), ConSingleCon(n2)) =>
+              (n1.toInt until n2.toInt).foldLeft(hi)((hj, i) => {
+                val (tmpHeap, _) = hj.delete(l, utils.absString.alpha(i.toString))(utils)
+                tmpHeap
+              })
+            case (ConSingleBot(), _) | (_, ConSingleBot()) => Heap.Bot
+            case _ =>
+              val (tmpHeap, _) = hi.delete(l, utils.absString.NumStr)(utils)
+              tmpHeap
+          }
+        } else {
+          Heap.Bot
+        }
+
+      val arrLengthHeap1 =
+        if (atrue <= (nValue === nNewLen)(utils.absBool))
+          arrLengthHeap2 + arrLengthHeap3 + arrLengthHeap4
+        else
+          Heap.Bot
+
+      val lenExcSet1 =
+        if (afalse <= (nValue === nNewLen)(utils.absBool)) HashSet[Exception](RangeError)
+        else ExceptionSetEmpty
+      (arrLengthHeap1, lenExcSet1)
+    } else {
+      (Heap.Bot, ExceptionSetEmpty)
+    }
+  }
+
+  def arrayIdxStore(heap: Heap, idxAbsStr: AbsString, storeV: Value, l: Loc): Heap = {
+    if (atrue <= idxAbsStr.isArrayIndex(utils.absBool)) {
+      val nOldLen = heap.getOrElse(l, Obj.Bot(utils))
+        .getOrElse("length")(absNumber.Bot) { _.objval.value.pvalue.numval }
+      val idxPV = PValue(idxAbsStr)(utils)
+      val numPV = PValue(idxPV.toAbsNumber(absNumber))(utils)
+      val nIndex = toUInt32(Value(numPV))
+      val bGtEq = atrue <= (nOldLen < nIndex)(utils.absBool) ||
+        atrue <= (nOldLen === nIndex)(utils.absBool)
+      val bCanPutLen = heap.canPut(l, utils.absString.alpha("length"))(utils)
+      // 4.b
+      val arrIndexHeap1 =
+        if (bGtEq && afalse <= bCanPutLen) heap
+        else Heap.Bot
+      // 4.c
+      val arrIndexHeap2 =
+        if (atrue <= (nIndex < nOldLen)(utils.absBool))
+          heap.propStore(l, idxAbsStr, storeV)(utils)
+        else Heap.Bot
+      // 4.e
+      val arrIndexHeap3 =
+        if (bGtEq && atrue <= bCanPutLen) {
+          val hi = heap.propStore(l, idxAbsStr, storeV)(utils)
+          val idxVal = Value(PValue(nIndex)(utils))
+          val absNum1PV = PValue(absNumber.alpha(1))(utils)
+          val vNewIndex = bopPlus(idxVal, Value(absNum1PV))
+          hi.propStore(l, utils.absString.alpha("length"), vNewIndex)(utils)
+        } else Heap.Bot
+      arrIndexHeap1 + arrIndexHeap2 + arrIndexHeap3
+    } else
+      Heap.Bot
+  }
 
   def storeHelp(objLocSet: Set[Loc], idxAbsStr: AbsString, storeV: Value, heap: Heap): (Heap, Set[Exception]) = {
-    val absFalse = utils.absBool.False
-    val absTrue = utils.absBool.True
-
     // non-array objects
     val locSetNArr = objLocSet.filter(l =>
-      (absFalse <= heap.isArray(l)(utils)) && absTrue <= heap.canPut(l, idxAbsStr)(utils))
+      (afalse <= heap.isArray(l)(utils)) && atrue <= heap.canPut(l, idxAbsStr)(utils))
     // array objects
     val locSetArr = objLocSet.filter(l =>
-      (absTrue <= heap.isArray(l)(utils)) && absTrue <= heap.canPut(l, idxAbsStr)(utils))
+      (atrue <= heap.isArray(l)(utils)) && atrue <= heap.canPut(l, idxAbsStr)(utils))
 
     // can not store
     val cantPutHeap =
-      if (objLocSet.exists((l) => absFalse <= heap.canPut(l, idxAbsStr)(utils))) heap
+      if (objLocSet.exists((l) => afalse <= heap.canPut(l, idxAbsStr)(utils))) heap
       else Heap.Bot
 
     // store for non-array object
@@ -45,93 +131,13 @@ case class Helper(utils: Utils) {
     // 15.4.5.1 [[DefineOwnProperty]] of Array
     val (arrHeap, arrExcSet) = locSetArr.foldLeft((Heap.Bot, ExceptionSetEmpty))((res2, l) => {
       // 3. s is length
-      val (lengthHeap, lengthExcSet) =
-        if (utils.absString.alpha("length") <= idxAbsStr) {
-          val nOldLen = heap.getOrElse(l, Obj.Bot(utils))
-            .getOrElse("length")(absNumber.Bot) { _.objval.value.pvalue.numval }
-          val nNewLen = toUInt32(storeV)
-          val numberPV = storeV.objToPrimitive("Number")(utils)
-          val nValue = storeV.pvalue.toAbsNumber(absNumber) + numberPV.toAbsNumber(absNumber)
-          val bCanPut = heap.canPut(l, utils.absString.alpha("length"))(utils)
-
-          val arrLengthHeap2 =
-            if ((absTrue <= (nOldLen < nNewLen)(utils.absBool)
-              || absTrue <= (nOldLen === nNewLen)(utils.absBool))
-              && (absTrue <= bCanPut))
-              heap.propStore(l, utils.absString.alpha("length"), storeV)(utils)
-            else
-              Heap.Bot
-
-          val arrLengthHeap3 =
-            if (absFalse <= bCanPut) heap
-            else Heap.Bot
-
-          val arrLengthHeap4 =
-            if ((absTrue <= (nNewLen < nOldLen)(utils.absBool)) && (absTrue <= bCanPut)) {
-              val hi = heap.propStore(l, utils.absString.alpha("length"), storeV)(utils)
-              (nNewLen.gammaSingle, nOldLen.gammaSingle) match {
-                case (ConSingleCon(n1), ConSingleCon(n2)) =>
-                  (n1.toInt until n2.toInt).foldLeft(hi)((hj, i) => {
-                    val (tmpHeap, _) = hj.delete(l, utils.absString.alpha(i.toString))(utils)
-                    tmpHeap
-                  })
-                case (ConSingleBot(), _) | (_, ConSingleBot()) => Heap.Bot
-                case _ =>
-                  val (tmpHeap, _) = hi.delete(l, utils.absString.NumStr)(utils)
-                  tmpHeap
-              }
-            } else {
-              Heap.Bot
-            }
-
-          val arrLengthHeap1 =
-            if (absTrue <= (nValue === nNewLen)(utils.absBool))
-              arrLengthHeap2 + arrLengthHeap3 + arrLengthHeap4
-            else
-              Heap.Bot
-
-          val lenExcSet1 =
-            if (absFalse <= (nValue === nNewLen)(utils.absBool)) HashSet[Exception](RangeError)
-            else ExceptionSetEmpty
-          (arrLengthHeap1, lenExcSet1)
-        } else {
-          (Heap.Bot, ExceptionSetEmpty)
-        }
+      val (lengthHeap, lengthExcSet) = arrayLenghtStore(heap, idxAbsStr, storeV, l)
       // 4. s is array index
-      val arrIndexHeap =
-        if (absTrue <= idxAbsStr.isArrayIndex(utils.absBool)) {
-          val nOldLen = heap.getOrElse(l, Obj.Bot(utils))
-            .getOrElse("length")(absNumber.Bot) { _.objval.value.pvalue.numval }
-          val idxPV = PValue(idxAbsStr)(utils)
-          val numPV = PValue(idxPV.toAbsNumber(absNumber))(utils)
-          val nIndex = toUInt32(Value(numPV))
-          val bGtEq = absTrue <= (nOldLen < nIndex)(utils.absBool) ||
-            absTrue <= (nOldLen === nIndex)(utils.absBool)
-          val bCanPutLen = heap.canPut(l, utils.absString.alpha("length"))(utils)
-          // 4.b
-          val arrIndexHeap1 =
-            if (bGtEq && absFalse <= bCanPutLen) heap
-            else Heap.Bot
-          // 4.c
-          val arrIndexHeap2 =
-            if (absTrue <= (nIndex < nOldLen)(utils.absBool))
-              heap.propStore(l, idxAbsStr, storeV)(utils)
-            else Heap.Bot
-          // 4.e
-          val arrIndexHeap3 =
-            if (bGtEq && absTrue <= bCanPutLen) {
-              val hi = heap.propStore(l, idxAbsStr, storeV)(utils)
-              val idxVal = Value(PValue(nIndex)(utils))
-              val absNum1PV = PValue(absNumber.alpha(1))(utils)
-              val vNewIndex = bopPlus(idxVal, Value(absNum1PV))
-              hi.propStore(l, utils.absString.alpha("length"), vNewIndex)(utils)
-            } else Heap.Bot
-          arrIndexHeap1 + arrIndexHeap2 + arrIndexHeap3
-        } else
-          Heap.Bot
+      val arrIndexHeap = arrayIdxStore(heap, idxAbsStr, storeV, l)
+
       // 5. other
       val otherHeap =
-        if (idxAbsStr != utils.absString.alpha("length") && absFalse <= idxAbsStr.isArrayIndex(utils.absBool))
+        if (idxAbsStr != utils.absString.alpha("length") && afalse <= idxAbsStr.isArrayIndex(utils.absBool))
           heap.propStore(l, idxAbsStr, storeV)(utils)
         else
           Heap.Bot

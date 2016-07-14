@@ -504,10 +504,89 @@ Assumptions and limitations are as follows:
 \renewcommand\arraystretch{1.5}
 \begin{array}{l}
 
-% CFGStore
-\aI_{\acp} \lbr e\verb+[+s\verb+]+ ~\verb+:=+~ e \rbr\ (\hat{S}, \hat{E}) \\
-\aI_{\acp} \lbr e\verb+[+e\verb+]+ ~\verb+:=+~ e \rbr\ (\hat{S}, \hat{E}) \\
+% CFGStoreStringIdx
+\aI_{\acp} \lbr e_1 \verb+[+s\verb+]+ ~\verb+:=+~ e_3 \rbr\ ((\hat{H}, \hat{C}), \hat{E})
+= \left \{ \begin{array}{ll}
+((\bot_{Heap}, \hat{C}),\ \hat{E} \sqcup \hat{E}_1) & \ifc{ \hat{v}_3 \sqsubseteq \bot_{Value} } \\
+((\hat{H}_1, \hat{C}),\ \hat{E} \sqcup \hat{E}_2) & \owc \\
+\end{array} \right. \\
+\quad\wherec{
+\hat{E}_1 = \ahf{RaiseException}((\hat{H}, \hat{C}),\ \hat{es}_3) \\
+\land\ \hat{E}_2 = \ahf{RaiseException}((\hat{H}, \hat{C}),\ \hat{es}_3 \sqcup \hat{es}_4) \\
 
+\land\ \hat{H}_1 = \hat{H}_{cantPut} \sqcup \hat{H}_{notArr} \sqcup \hat{H}_{Arr} \\
+\land\ \hat{H}_{cantPut} = \left \{ \begin{array}{ll} 
+\hat{H} & \ifc{\exists \hat{l} \in \hat{L}_1 ~\mid~ \afalse \sqsubseteq \ahf{CanPut}(\hat{H},\ \hat{l},\ \hat{s}) } \\
+\bot_{Heap} & \owc \\
+\end{array} \right.\\
+
+\land\ \hat{H}_{notArr} = \bigsqcup_{\hat{l}_n \in \hat{L}_{notArr}} \ahf{PropStore}(\hat{H},\ \hat{l}_n,\ \hat{s},\ \hat{v}_3) \\
+
+\land\ (\hat{H}_{Arr},\ \hat{es}_4) = \bigsqcup_{\hat{l}_a \in \hat{L}_{Arr}} 
+(\hat{H}_{length} \sqcup \hat{H}_{idx} \sqcup \hat{H}_{other},\ \hat{es}_{length}) \\
+\quad\wherec {
+(\hat{H}_{length},\ \hat{es}_{length}) = \ahf{ArrayLenghtStore}(\hat{H},\ \hat{s},\ \hat{v},\ \hat{l}_a) \\
+\land\ \hat{H}_{idx} = \ahf{ArrayIdxStore}(\hat{H},\ \hat{s},\ \hat{v},\ \hat{l}_a) \\
+\land\ \hat{H}_{other} = \left \{ \begin{array}{ll}
+\ahf{PropStore}(\hat{H},\ \hat{l}_a,\ \hat{s},\ \hat{v}_3) 
+& \ifc{\hat{s} \hat{\neq} \hat{``length"}\ \land\ \afalse \sqsubseteq \hat{s}\emph{.isArrayIndex} } \\
+\bot_{Heap} & \owc
+\end{array} \right.
+} \vspace{1mm} \\
+
+\land\ \hat{L}_{notArr} = \set{\hat{l} \in \hat{L}_1 ~\mid~  \afalse \sqsubseteq \ahf{IsArray}(\hat{H},\ \hat{l}) \ 
+\land\ \atrue \sqsubseteq \ahf{CanPut}(\hat{H},\ \hat{l},\ \hat{s}) } \\
+\land\ \hat{L}_{Arr} = \set{\hat{l} \in \hat{L}_1 ~\mid~  \atrue \sqsubseteq \ahf{IsArray}(\hat{H},\ \hat{l}) \ 
+\land\ \atrue \sqsubseteq \ahf{CanPut}(\hat{H},\ \hat{l},\ \hat{s}) } \\
+\land\ \hat{L}_1 = \hat{v}_1\emph{.locSet} \
+\land\ (\hat{v}_1, \hat{es}_1) = \aV \lbr e_1 \rbr (\hat{H}, \hat{C}) \
+\land\ (\hat{v}_3, \hat{es}_3) = \aV \lbr e_3 \rbr (\hat{H}, \hat{C})
+} \\\\
+
+% CFGStore
+\aI_{\acp} \lbr e_1 \verb+[+ e_2 \verb+]+ ~\verb+:=+~ e_3 \rbr\ ((\hat{H}, \hat{C}), \hat{E})
+= \left \{ \begin{array}{ll}
+((\bot_{Heap}, \hat{C}),\ \hat{E} \sqcup \hat{E}_1) & \ifc{ \hat{v}_3 \sqsubseteq \bot_{Value} } \\
+((\hat{H}_1, \hat{C}),\ \hat{E} \sqcup \hat{E}_2) & \owc \\
+\end{array} \right. \\
+\quad\wherec{
+\hat{E}_1 = \ahf{RaiseException}((\hat{H}, \hat{C}),\ \hat{es}_2 \sqcup \hat{es}_3) \\
+\land\ \hat{E}_2 = \ahf{RaiseException}((\hat{H}, \hat{C}),\ \hat{es}_2 \sqcup \hat{es}_3 \sqcup \hat{es}_4) \\
+
+\land\ (\hat{H}_1,\ \hat{es}_4) = \bigsqcup_{\hat{s} \in S_{idx}}
+(\hat{H}_{cantPut} \sqcup \hat{H}_{notArr} \sqcup \hat{H}_{Arr},\ \hat{es}_{Arr}) \\
+\quad\wherec{
+\hat{H}_{cantPut} = \left \{ \begin{array}{ll} 
+\hat{H} & \ifc{\exists \hat{l} \in \hat{L}_1 ~\mid~ \afalse \sqsubseteq \ahf{CanPut}(\hat{H},\ \hat{l},\ \hat{s}) } \\
+\bot_{Heap} & \owc \\
+\end{array} \right.\\
+
+\land\ \hat{H}_{notArr} = \bigsqcup_{\hat{l}_n \in \hat{L}_{notArr}} \ahf{PropStore}(\hat{H},\ \hat{l}_n,\ \hat{s},\ \hat{v}_3) \\
+
+\land\ (\hat{H}_{Arr},\ \hat{es}_{Arr}) = \bigsqcup_{\hat{l}_a \in \hat{L}_{Arr}} 
+(\hat{H}_{length} \sqcup \hat{H}_{idx} \sqcup \hat{H}_{other},\ \hat{es}_{length}) \\
+\quad\wherec {
+(\hat{H}_{length},\ \hat{es}_{length}) = \ahf{ArrayLenghtStore}(\hat{H},\ \hat{s},\ \hat{v},\ \hat{l}_a) \\
+\land\ \hat{H}_{idx} = \ahf{ArrayIdxStore}(\hat{H},\ \hat{s},\ \hat{v},\ \hat{l}_a) \\
+\land\ \hat{H}_{other} = \left \{ \begin{array}{ll}
+\ahf{PropStore}(\hat{H},\ \hat{l}_a,\ \hat{s},\ \hat{v}_3) 
+& \ifc{\hat{s} \hat{\neq} \hat{``length"}\ \land\ \afalse \sqsubseteq \hat{s}\emph{.isArrayIndex} } \\
+\bot_{Heap} & \owc
+\end{array} \right.
+} \vspace{1mm} \\
+
+\land\ \hat{L}_{notArr} = \set{\hat{l} \in \hat{L}_1 ~\mid~  \afalse \sqsubseteq \ahf{IsArray}(\hat{H},\ \hat{l}) \ 
+\land\ \atrue \sqsubseteq \ahf{CanPut}(\hat{H},\ \hat{l},\ \hat{s}) } \\
+\land\ \hat{L}_{Arr} = \set{\hat{l} \in \hat{L}_1 ~\mid~  \atrue \sqsubseteq \ahf{IsArray}(\hat{H},\ \hat{l}) \ 
+\land\ \atrue \sqsubseteq \ahf{CanPut}(\hat{H},\ \hat{l},\ \hat{s}) } \\
+} \vspace{1mm} \\
+
+\land\ \hat{L}_1 = \hat{v}_1\emph{.locSet} \
+\land\ S_{idx} = \hat{v}_2\emph{.toPrimitive.toStringSet} \\
+\land\ (\hat{v}_1, \hat{es}_1) = \aV \lbr e_1 \rbr (\hat{H}, \hat{C}) \
+\land\ (\hat{v}_2, \hat{es}_2) = \aV \lbr e_2 \rbr (\hat{H}, \hat{C}) \
+\land\ (\hat{v}_3, \hat{es}_3) = \aV \lbr e_3 \rbr (\hat{H}, \hat{C})
+} \\\\
 
 \end{array}
 \]
