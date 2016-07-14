@@ -249,7 +249,9 @@ Assumptions and limitations are as follows:
 \begin{array}{lcl}
 \aE & \in & \abs{IPEdge} \rightarrow \aState \rightarrow \aState \\
 \aC & \in & \aControlPoint \rightarrow \aState \rightarrow \aState \times \aState\\
-\aI & \in & \aControlPoint \rightarrow \SF{Instruction} 
+\aI & \in & \SF{Instruction} 
+    \rightarrow \aState \times \aState \rightarrow \aState \times \aState\\
+\aCI & \in & \aControlPoint \rightarrow \SF{CallInstruction} 
     \rightarrow \aState \times \aState \rightarrow \aState \times \aState\\
 \aV & \in & \SF{Expression} \rightarrow \aState 
     \rightarrow \aValue \times \powerset{\abs{Exception}} \\
@@ -362,7 +364,7 @@ Assumptions and limitations are as follows:
 
 % Call Block
 \aC \lbr (n \in \SF{Call}, \hat{cc}) \rbr\ \hat{S} 
-= \aI_{(n, \hat{cc})} \lbr n\emph{.callInst} \rbr (\hat{S}, \bot_{State}) \\
+= \aCI_{(n, \hat{cc})} \lbr n\emph{.callInst} \rbr (\hat{S}, \bot_{State}) \\
 
 % AfterCall Block
 \aC \lbr (n \in \SF{AfterCall}, \hat{cc}) \rbr\ \hat{S} = (\hat{S}, \bot_{State}) \\
@@ -374,7 +376,7 @@ Assumptions and limitations are as follows:
 \aC \lbr (n \in \SF{Block}, \hat{cc}) \rbr\ \hat{S}_0 = (\hat{S}_n, \hat{E}_n) \\
 \quad\wherec{
 \forall 1 \leq k \leq n.\ 
-(\hat{S}_k, \hat{E}_k) = \aI_{(n, \hat{cc})} \lbr i_k \rbr (\hat{S}_{k-1}, \hat{E}_{k-1}) \\
+(\hat{S}_k, \hat{E}_k) = \aI \lbr i_k \rbr (\hat{S}_{k-1}, \hat{E}_{k-1}) \\
 \land\ i_1 \cdots i_n = n\emph{.insts} \
 \land\ \hat{E}_0 = \bot_{State}
 }\\\\
@@ -387,10 +389,10 @@ Assumptions and limitations are as follows:
 \renewcommand\arraystretch{1.5}
 \begin{array}{l}
 
-\aI_{\acp} \lbr i \rbr ((\bot_{Heap}, \hat{C}), \hat{S})  = (\bot_{State}, \hat{S}) \\\\
+\aI \lbr i \rbr ((\bot_{Heap}, \hat{C}), \hat{S})  = (\bot_{State}, \hat{S}) \\\\
 
 % CFGAlloc
-\aI_{\acp} \lbr x~\verb+:=+~\TT{alloc}\verb+(+ \verb+)+_{\hat{a}} \rbr\ (\hat{S}, \hat{E}) = ((\hat{H}_3, \hat{C}_1), \hat{E}) \\
+\aI \lbr x~\verb+:=+~\TT{alloc}\verb+(+ \verb+)+_{\hat{a}} \rbr\ (\hat{S}, \hat{E}) = ((\hat{H}_3, \hat{C}_1), \hat{E}) \\
 \quad\wherec{
 \hat{H}_3 = \ahf{VarStore}(\hat{H}_2, x, \abs{Value}(\hat{l}_R)) \\
 \land\ \hat{H}_2 = \ahf{AllocObject}(\hat{H}_1, \hat{L}_v, \hat{l}_R) \\
@@ -399,7 +401,7 @@ Assumptions and limitations are as follows:
 \land\ \hat{L}_v = \{\avarloc{ObjProto}\}
 }\\\\
 
-\aI_{\acp} \lbr x~\verb+:=+~\TT{alloc}\verb+(+ e \verb+)+_{\hat{a}} \rbr\ (\hat{S}, \hat{E}) = ((\hat{H}_3, \hat{C}_1), \hat{E}_1) \\
+\aI \lbr x~\verb+:=+~\TT{alloc}\verb+(+ e \verb+)+_{\hat{a}} \rbr\ (\hat{S}, \hat{E}) = ((\hat{H}_3, \hat{C}_1), \hat{E}_1) \\
 \quad\wherec{
 \hat{H}_3 = \ahf{VarStore}(\hat{H}_2, x, \abs{Value}(\hat{l}_R)) \\
 \land\ \hat{H}_2 = \ahf{AllocObject}(\hat{H}_1, \hat{L}_v, \hat{l}_R) \\
@@ -423,7 +425,7 @@ Assumptions and limitations are as follows:
 
 
 % CFGAllocArray
-\aI_{\acp} \lbr x~\verb+:=+~\TT{allocArray}\verb+(+n\verb+)+_{\hat{a}} \rbr\ (\hat{S}, \hat{E}) = ((\hat{H}_3, \hat{C}_1), \hat{E}) \\
+\aI \lbr x~\verb+:=+~\TT{allocArray}\verb+(+n\verb+)+_{\hat{a}} \rbr\ (\hat{S}, \hat{E}) = ((\hat{H}_3, \hat{C}_1), \hat{E}) \\
 \quad\wherec{
 \hat{H}_3 = \ahf{VarStore}(\hat{H}_2, x, \abs{Value}(\hat{l}_R)) \\
 \land\ \hat{H}_2 = \hat{H}_1 [\hat{l}_R \mapsto \ahf{NewArrayObject}(\hat{n})] \\
@@ -434,7 +436,7 @@ Assumptions and limitations are as follows:
 }\\\\
 
 % CFGAllocArg
-\aI_{\acp} \lbr x~\verb+:=+~\TT{allocArg}\verb+(+n\verb+)+_{\hat{a}} \rbr\ (\hat{S}, \hat{E}) = ((\hat{H}_3, \hat{C}_1), \hat{E}) \\
+\aI \lbr x~\verb+:=+~\TT{allocArg}\verb+(+n\verb+)+_{\hat{a}} \rbr\ (\hat{S}, \hat{E}) = ((\hat{H}_3, \hat{C}_1), \hat{E}) \\
 \quad\wherec{
 \hat{H}_3 = \ahf{VarStore}(\hat{H}_2, x, \abs{Value}(\hat{l}_R)) \\
 \land\ \hat{H}_2 = \hat{H}_1 [\hat{l}_R \mapsto \ahf{NewArgObject}(\hat{n})] \\
@@ -445,7 +447,7 @@ Assumptions and limitations are as follows:
 }\\\\
 
 % CFGExprStmt
-\aI_{\acp} \lbr x ~\verb+:=+~ e \rbr\ ((\hat{H}, \hat{C}), \hat{E}) = ((\hat{H}_1, \hat{C}_1), \hat{E}_1) \\
+\aI \lbr x ~\verb+:=+~ e \rbr\ ((\hat{H}, \hat{C}), \hat{E}) = ((\hat{H}_1, \hat{C}_1), \hat{E}_1) \\
 \quad\wherec{
 (\hat{H}_1, \hat{C}_1) = \left \{ \begin{array}{ll}
 (\ahf{VarStore}(\hat{H}, x, \hat{v}),\ \hat{C}) & \ifc{\hat{v} \not\sqsubseteq \bot_{Value}}\\
@@ -456,7 +458,7 @@ Assumptions and limitations are as follows:
 }\\\\
 
 % CFGDelete
-\aI_{\acp} \lbr x_1 ~\verb+:=+~ \TT{delete}\verb+(+x_2\verb+)+ \rbr\ ((\hat{H}, \hat{C}), \hat{E}) = ((\hat{H}_2, \hat{C}), \hat{E}) \\
+\aI \lbr x_1 ~\verb+:=+~ \TT{delete}\verb+(+x_2\verb+)+ \rbr\ ((\hat{H}, \hat{C}), \hat{E}) = ((\hat{H}_2, \hat{C}), \hat{E}) \\
 \quad\wherec{
 \hat{H}_2 = \ahf{VarStore}(\hat{H}_1,\ x_1,\ \abs{Value}(\hat{b})) \\
 \land\ (\hat{H}_1, \hat{b}) = \left \{ \begin{array}{ll}
@@ -466,7 +468,7 @@ Assumptions and limitations are as follows:
 \land\ \hat{L}_{base} = \ahf{LookupBase}(\hat{H},\ x_2)
 }\\\\
 
-\aI_{\acp} \lbr x ~\verb+:=+~ \TT{delete}\verb+(+e\verb+)+ \rbr\ ((\hat{H}, \hat{C}), \hat{E}) = ((\hat{H}_1, \hat{C}_1), \hat{E}_1) \\
+\aI \lbr x ~\verb+:=+~ \TT{delete}\verb+(+e\verb+)+ \rbr\ ((\hat{H}, \hat{C}), \hat{E}) = ((\hat{H}_1, \hat{C}_1), \hat{E}_1) \\
 \quad\wherec{
 (\hat{H}_1, \hat{C}_1) = \left \{ \begin{array}{ll}
 (\ahf{VarStore}(\hat{H},\ x,\ \abs{Value}(\atrue),\ \hat{C}) & \ifc{ \hat{v} \not\sqsubseteq \bot_{Value}} \\
@@ -477,7 +479,7 @@ Assumptions and limitations are as follows:
 }\\\\
 
 % CFGDeleteProp
-\aI_{\acp} \lbr x ~\verb+:=+~ \TT{delete}\verb+(+e_1,e_2\verb+)+ \rbr\ ((\hat{H}, \hat{C}), \hat{E}) = ((\hat{H}_2, \hat{C}_2), \hat{E}_1) \\
+\aI \lbr x ~\verb+:=+~ \TT{delete}\verb+(+e_1,e_2\verb+)+ \rbr\ ((\hat{H}, \hat{C}), \hat{E}) = ((\hat{H}_2, \hat{C}_2), \hat{E}_1) \\
 \quad\wherec{
 (\hat{H}_2, \hat{C}_2) = \left \{ \begin{array}{ll}
 (\ahf{VarStore}(\hat{H}_1,\ x,\ \abs{Value}(\hat{b})),\ \hat{C}) & \ifc{\hat{H}_1 \not\sqsubseteq \bot_{Heap}} \\
@@ -505,7 +507,7 @@ Assumptions and limitations are as follows:
 \begin{array}{l}
 
 % CFGStoreStringIdx
-\aI_{\acp} \lbr e_1 \verb+[+s\verb+]+ ~\verb+:=+~ e_3 \rbr\ ((\hat{H}, \hat{C}), \hat{E})
+\aI \lbr e_1 \verb+[+s\verb+]+ ~\verb+:=+~ e_3 \rbr\ ((\hat{H}, \hat{C}), \hat{E})
 = \left \{ \begin{array}{ll}
 ((\bot_{Heap}, \hat{C}),\ \hat{E} \sqcup \hat{E}_1) & \ifc{ \hat{v}_3 \sqsubseteq \bot_{Value} } \\
 ((\hat{H}_1, \hat{C}),\ \hat{E} \sqcup \hat{E}_2) & \owc \\
@@ -516,7 +518,7 @@ Assumptions and limitations are as follows:
 
 \land\ \hat{H}_1 = \hat{H}_{cantPut} \sqcup \hat{H}_{notArr} \sqcup \hat{H}_{Arr} \\
 \land\ \hat{H}_{cantPut} = \left \{ \begin{array}{ll} 
-\hat{H} & \ifc{\exists \hat{l} \in \hat{L}_1 ~\mid~ \afalse \sqsubseteq \ahf{CanPut}(\hat{H},\ \hat{l},\ \hat{s}) } \\
+\hat{H} & \ifc{\exists\ \hat{l} \in \hat{L}_1 ~\mid~ \afalse \sqsubseteq \ahf{CanPut}(\hat{H},\ \hat{l},\ \hat{s}) } \\
 \bot_{Heap} & \owc \\
 \end{array} \right.\\
 
@@ -544,7 +546,7 @@ Assumptions and limitations are as follows:
 } \\\\
 
 % CFGStore
-\aI_{\acp} \lbr e_1 \verb+[+ e_2 \verb+]+ ~\verb+:=+~ e_3 \rbr\ ((\hat{H}, \hat{C}), \hat{E})
+\aI \lbr e_1 \verb+[+ e_2 \verb+]+ ~\verb+:=+~ e_3 \rbr\ ((\hat{H}, \hat{C}), \hat{E})
 = \left \{ \begin{array}{ll}
 ((\bot_{Heap}, \hat{C}),\ \hat{E} \sqcup \hat{E}_1) & \ifc{ \hat{v}_3 \sqsubseteq \bot_{Value} } \\
 ((\hat{H}_1, \hat{C}),\ \hat{E} \sqcup \hat{E}_2) & \owc \\
@@ -557,7 +559,7 @@ Assumptions and limitations are as follows:
 (\hat{H}_{cantPut} \sqcup \hat{H}_{notArr} \sqcup \hat{H}_{Arr},\ \hat{es}_{Arr}) \\
 \quad\wherec{
 \hat{H}_{cantPut} = \left \{ \begin{array}{ll} 
-\hat{H} & \ifc{\exists \hat{l} \in \hat{L}_1 ~\mid~ \afalse \sqsubseteq \ahf{CanPut}(\hat{H},\ \hat{l},\ \hat{s}) } \\
+\hat{H} & \ifc{\exists\ \hat{l} \in \hat{L}_1 ~\mid~ \afalse \sqsubseteq \ahf{CanPut}(\hat{H},\ \hat{l},\ \hat{s}) } \\
 \bot_{Heap} & \owc \\
 \end{array} \right.\\
 
@@ -596,7 +598,7 @@ Assumptions and limitations are as follows:
 \begin{array}{l}
 
 % CFGFunExpr
-\aI_{\acp} \lbr x ~\verb+:=+~ \TT{function} ~\verb+(+f\verb+)+_{\hat{a}_1, \hat{a}_2} \rbr\ (\hat{S}, \hat{E}) 
+\aI \lbr x ~\verb+:=+~ \TT{function} ~\verb+(+f\verb+)+_{\hat{a}_1, \hat{a}_2} \rbr\ (\hat{S}, \hat{E}) 
 = ((\hat{H}_5, \hat{C}_2), \hat{E}) \\
 \quad\wherec{
 \hat{H}_5 = \ahf{VarStore}(\hat{H}_4,\ x,\ \abs{Value}(\hat{l}_{R1})) \\
@@ -614,7 +616,7 @@ Assumptions and limitations are as follows:
 \land\ \hat{n} = f\emph{.argVars.length} \\
 }\\\\
 
-\aI_{\acp} \lbr x_1 ~\verb+:=+~ \TT{function} ~x_2 \verb+(+f\verb+)+_{\hat{a}_1,\ \hat{a}_2,\ \hat{a}_3} \rbr\ (\hat{S}, \hat{E}) = ((\hat{H}_7, \hat{C}_3), \hat{E}) \\
+\aI \lbr x_1 ~\verb+:=+~ \TT{function} ~x_2 \verb+(+f\verb+)+_{\hat{a}_1,\ \hat{a}_2,\ \hat{a}_3} \rbr\ (\hat{S}, \hat{E}) = ((\hat{H}_7, \hat{C}_3), \hat{E}) \\
 \quad\wherec{
 \land\ \hat{H}_7 = \ahf{VarStore}(\hat{H}_6, x_1, \abs{Value}(\hat{l}_{R1})) \\
 \land\ \hat{H}_6 = \hat{H}_5 \left[ \hat{l}_{R3} \mapsto \hat{o}_{env}
@@ -638,13 +640,13 @@ Assumptions and limitations are as follows:
 }\\\\
 
 % CFGReturn
-\aI_{\acp} \lbr \TT{return} \rbr\ ((\hat{H}, \hat{C}), \hat{E}) = ((\hat{H}_1, \hat{C}), \hat{E}) \\
+\aI \lbr \TT{return} \rbr\ ((\hat{H}, \hat{C}), \hat{E}) = ((\hat{H}_1, \hat{C}), \hat{E}) \\
 \quad\wherec{
 \hat{H}_1 = \hat{H} \left[ \avarloc{PureLocal} \mapsto
 \hat{o} \left[ \varprop{return} \mapsto \abs{PropValue}(\aundef) \right] \right]
 }\\\\
 
-\aI_{\acp} \lbr \TT{return}\verb+(+e\verb+)+ \rbr\ ((\hat{H}, \hat{C}), \hat{E}) = ((\hat{H}_1, \hat{C}_1), \hat{E}_1) \\
+\aI \lbr \TT{return}\verb+(+e\verb+)+ \rbr\ ((\hat{H}, \hat{C}), \hat{E}) = ((\hat{H}_1, \hat{C}_1), \hat{E}_1) \\
 \quad\wherec{
 (\hat{H}_1, \hat{C}_1) = \left \{ \begin{array}{ll}
 (\hat{H} \left[ \avarloc{PureLocal} \mapsto
@@ -663,25 +665,12 @@ Assumptions and limitations are as follows:
 \renewcommand\arraystretch{1.5}
 \begin{array}{l}
 
-% CFGCall
-\aI_{\acp} \lbr \TT{call}\verb+(+e_1,e_2,e_3\verb+)+ \rbr\ (\hat{S}, \hat{E}) \\
-
-% CFGConstruct
-\aI_{\acp} \lbr \TT{construct}\verb+(+e_1,e_2,e_3\verb+)+ \rbr\ (\hat{S}, \hat{E}) \\
-
-\end{array}
-\]
-
-\[
-\renewcommand\arraystretch{1.5}
-\begin{array}{l}
-
 % CFGAssert
-\aI_{\acp} \lbr \TT{assert}\verb+(+e\inop e\verb+)+ \rbr\ (\hat{S}, \hat{E}) 
+\aI \lbr \TT{assert}\verb+(+e\inop e\verb+)+ \rbr\ (\hat{S}, \hat{E}) 
 = \aB \lbr \verb+(+e\inop e\verb+)+ \rbr\ (\hat{S}, \hat{E}) \\\\
 
 % CFGCatch
-\aI_{\acp} \lbr \TT{catch}\verb+(+x\verb+)+ \rbr\ ((\hat{H}, \hat{C}), \hat{E}) = ((\hat{H}_2, \hat{C}), \bot_{State}) \\
+\aI \lbr \TT{catch}\verb+(+x\verb+)+ \rbr\ ((\hat{H}, \hat{C}), \hat{E}) = ((\hat{H}_2, \hat{C}), \bot_{State}) \\
 \quad\wherec{
 \hat{H}_2 = \left[ \avarloc{PureLocal} \mapsto \hat{H}_1(\avarloc{PureLocal})
 \left[ \varprop{exception} \mapsto \hat{o}_{es} \right] \right]\\
@@ -691,7 +680,7 @@ Assumptions and limitations are as follows:
 }\\\\
 
 % CFGThrow
-\aI_{\acp} \lbr \TT{throw}\verb+(+e\verb+)+ \rbr\ ((\hat{H}, \hat{C}), \hat{E}) = (\bot_{State}, \hat{E}_1) \\
+\aI \lbr \TT{throw}\verb+(+e\verb+)+ \rbr\ ((\hat{H}, \hat{C}), \hat{E}) = (\bot_{State}, \hat{E}_1) \\
 \quad\wherec{
 \hat{E}_1 = \hat{E} \sqcup (\hat{H}_1, \hat{C}) \sqcup \ahf{RaiseException}((\hat{H}, \hat{C}), \hat{es}) \\
 \land\ \hat{H}_1 = \hat{H} \left[ \avarloc{PureLocal} \mapsto \left[ \begin{array}{ll}
@@ -704,17 +693,10 @@ Assumptions and limitations are as follows:
 }\\\\
 
 % CFGNoOp
-\aI_{\acp} \lbr \TT{noop} \rbr\ (\hat{S}, \hat{E}) = (\hat{S}, \hat{E}) \\\\
-
-\end{array}
-\]
-
-\[
-\renewcommand\arraystretch{1.5}
-\begin{array}{l}
+\aI \lbr \TT{noop} \rbr\ (\hat{S}, \hat{E}) = (\hat{S}, \hat{E}) \\\\
 
 % CFGInternalCall <>toObject
-\aI_{\acp} \lbr x ~\verb+:=+~\ahf{\ensuremath{\diamond}toObject}\verb+(+e\verb+)+_{\hat{a}} \rbr\ (\hat{S}, \hat{E}) 
+\aI \lbr x ~\verb+:=+~\ahf{\ensuremath{\diamond}toObject}\verb+(+e\verb+)+_{\hat{a}} \rbr\ (\hat{S}, \hat{E}) 
 = (\hat{S}_7,\ \hat{E} \sqcup \hat{E}_1) \\
 \quad\wherec{
 \hat{E}_1 = \ahf{RaiseException}(\hat{S},\ \hat{es}_2) \\
@@ -749,7 +731,7 @@ Assumptions and limitations are as follows:
 }\\\\
 
 % CFGInternalCall <>isObject
-\aI_{\acp} \lbr x ~\verb+:=+~\ahf{\ensuremath{\diamond}isObject}\verb+(+e\verb+)+ \rbr\ ((\hat{H}, \hat{C}), \hat{E}) 
+\aI \lbr x ~\verb+:=+~\ahf{\ensuremath{\diamond}isObject}\verb+(+e\verb+)+ \rbr\ ((\hat{H}, \hat{C}), \hat{E}) 
 = (\hat{S}_1,\ \hat{E} \sqcup \hat{E}_1) \\
 \quad\wherec{
 \hat{S}_1 = \ahf{VarStore}(\hat{H},\ x,\ \abs{Value}(\hat{b}_1 \sqcup \hat{b}_2))\\
@@ -765,8 +747,15 @@ Assumptions and limitations are as follows:
 \land\ (\hat{v}, \hat{es}) = \aV \lbr e \rbr (\hat{H}, \hat{C})
 }\\\\
 
+\end{array}
+\]
+
+\[
+\renewcommand\arraystretch{1.5}
+\begin{array}{l}
+
 % CFGInternalCall <>toNumber
-\aI_{\acp} \lbr x ~\verb+:=+~\ahf{\ensuremath{\diamond}toNumber}\verb+(+e\verb+)+ \rbr\ ((\hat{H}, \hat{C}), \hat{E}) 
+\aI \lbr x ~\verb+:=+~\ahf{\ensuremath{\diamond}toNumber}\verb+(+e\verb+)+ \rbr\ ((\hat{H}, \hat{C}), \hat{E}) 
 = (\hat{S}_1, \hat{E} \sqcup \hat{E}_1) \\
 \quad\wherec{
 \hat{S}_1 = \left \{ \begin{array}{ll}
@@ -778,7 +767,7 @@ Assumptions and limitations are as follows:
 }\\\\
 
 % CFGInternalCall <>toBoolean
-\aI_{\acp} \lbr x ~\verb+:=+~\ahf{\ensuremath{\diamond}toBoolean}\verb+(+e\verb+)+ \rbr\ ((\hat{H}, \hat{C}), \hat{E}) 
+\aI \lbr x ~\verb+:=+~\ahf{\ensuremath{\diamond}toBoolean}\verb+(+e\verb+)+ \rbr\ ((\hat{H}, \hat{C}), \hat{E}) 
 = (\hat{S}_1, \hat{E} \sqcup \hat{E}_1) \\
 \quad\wherec{
 \hat{S}_1 = \left \{ \begin{array}{ll}
@@ -790,36 +779,137 @@ Assumptions and limitations are as follows:
 }\\\\
 
 % CFGInternalCall <>getBase
-\aI_{\acp} \lbr x_1 ~\verb+:=+~\ahf{\ensuremath{\diamond}getBase}\verb+(+x_2\verb+)+ \rbr\ ((\hat{H}, \hat{C}), \hat{E})
+\aI \lbr x_1 ~\verb+:=+~\ahf{\ensuremath{\diamond}getBase}\verb+(+x_2\verb+)+ \rbr\ ((\hat{H}, \hat{C}), \hat{E})
 = ((\hat{H}_1, \hat{C}), \hat{E}) \\
 \quad\wherec{
 \hat{H}_1 = \ahf{VarStore}(\hat{H},\ x_1,\ \abs{Value}(\hat{L}_{base}) \\
 \land\ \hat{L}_{base} = \ahf{LookupBase}(\hat{H},\ x_2)
 }\\\\
 
-\end{array}
-\]
-
-\[
-\renewcommand\arraystretch{1.5}
-\begin{array}{l}
-
 % CFGInternalCall <>iteratorInit %TODO!!!!!!
-\aI_{\acp} \lbr x ~\verb+:=+~\ahf{\ensuremath{\diamond}iteratorInit}\verb+(+e_1\verb+)+_{\hat{a}} \rbr\ (\hat{S}, \hat{E}) \\
+\aI \lbr x ~\verb+:=+~\ahf{\ensuremath{\diamond}iteratorInit}\verb+(+e_1\verb+)+_{\hat{a}} \rbr\ (\hat{S}, \hat{E}) \\
 
 % CFGInternalCall <>iteratorHasNext
-\aI_{\acp} \lbr x ~\verb+:=+~\ahf{\ensuremath{\diamond}iteratorHasNext}\verb+(+e_1,\ e_2\verb+)+ \rbr\ 
+\aI \lbr x ~\verb+:=+~\ahf{\ensuremath{\diamond}iteratorHasNext}\verb+(+e_1,\ e_2\verb+)+ \rbr\ 
 ((\hat{H}, \hat{C}), \hat{E}) = ((\hat{H}_1, \hat{C}), \hat{E}) \\
 \quad\wherec{
 \hat{H}_1 = \ahf{VarStore}(\hat{H},\ x,\ \abs{Value}(\top_{Bool}))
 }\\\\
 
 % CFGInternalCall <>iteratorNext
-\aI_{\acp} \lbr x ~\verb+:=+~\ahf{\ensuremath{\diamond}iteratorNext}\verb+(+e_1,\ e_2\verb+)+ \rbr\ 
+\aI \lbr x ~\verb+:=+~\ahf{\ensuremath{\diamond}iteratorNext}\verb+(+e_1,\ e_2\verb+)+ \rbr\ 
 ((\hat{H}, \hat{C}), \hat{E}) = ((\hat{H}_1, \hat{C}), \hat{E}) \\
 \quad\wherec{
 \hat{H}_1 = \ahf{VarStore}(\hat{H},\ x,\ \abs{Value}(\top_{String}))
 }
+
+\end{array}
+\]
+
+\subsection{Call Instruction}
+\[
+\renewcommand\arraystretch{1.4}
+\begin{array}{l}
+{\inred \aCI ~\TT{may\ have\ side-effect\ on}~ \ipnext} \vspace{1mm}\\
+% CFGCall
+\aCI_{\acp} \lbr \TT{call}\verb+(+e_{fun},e_{this},e_{arg}\verb+)+_{\hat{a}_1,\ \hat{a}_2} \rbr\ (\hat{S}, \hat{E}) 
+= ((\hat{H}_3, \hat{C}_1), \hat{E} \sqcup \hat{E}_1)\\
+\quad\wherec{
+\hat{E}_1 = \ahf{RaiseException}(\hat{S},\ \hat{es}_{fun} \sqcup \hat{es}_{type}) \\ 
+\land\ \hat{H}_3 = \left \{ \begin{array}{ll}
+\hat{H}_2 & \ifc{ \hat{L}_f \neq \varnothing } \\
+\bot_{Heap} & \owc \\
+\end{array} \right.\\
+\land\ \hat{H}_2 = \bigsqcup_{\hat{l} \in \hat{v}_{arg}\emph{.locSet}}
+\hat{H}_1 \left[ \hat{l} \mapsto \hat{H}_1(\hat{l}) \left[ ``callee" \mapsto 
+\langle \abs{Value}(\hat{L}_f),\ \atrue,\ \afalse,\ \atrue \rangle\right] \right] \\
+\land\ (\hat{H}_1,\ -) = \ahf{Oldify}(\hat{S},\ \hat{a}_1)\
+\land\ \hat{l}_R = \emph{\TT{new} Loc}(\hat{a}_1, \hat{Recent}) \\
+\land\ \hat{L}_f = \set{\hat{l} \in \hat{v}_{fun}\emph{.locSet} 
+~\mid~ \atrue \sqsubseteq \ahf{IsCallabel}(\hat{H}_1,\ \hat{l})} \\
+\land\ \hat{es}_{type} = \left \{ \begin{array}{ll}
+\set{\hat{\exc{TypeError}}} & \ifc{ \begin{array}{l}
+\exists\ \hat{l} \in \hat{v}_{fun}\emph{.locSet} ~\mid~ \afalse \sqsubseteq \ahf{IsCallable}(\hat{H}_1,\ \hat{l}) \\
+\lor\ \hat{v}_{fun}\emph{.pvalue} \not\sqsubseteq \bot_{PValue} \\
+\end{array}}\\
+\varnothing & \owc \\
+\end{array} \right. \\
+\land\ (\hat{v}_{fun}, \hat{es}_{fun}) = \aV \lbr e_{fun} \rbr\ \hat{S} \
+\land\ (\hat{v}_{this}, \hat{es}_{this}) = \aV \lbr e_{this} \rbr\ \hat{S} \
+\land\ (\hat{v}_{arg}, \hat{es}_{arg}) = \aV \lbr e_{arg} \rbr\ \hat{S}
+} \vspace{1mm}\\
+
+\quad \forall \hat{l}_f \in \hat{L}_f.\ \forall f \in S_{fun}.\ 
+\ipnext\ =\ \ipnext\ \cup\ (\acp, \acp_1, \bot_{Context}, \hat{o}_1) \
+\cup\ (\acp_2, \hat{cp}_4, \hat{C}, \hat{o}_3) \ 
+\cup\ (\acp_3, \hat{cp}_5, \hat{C}, \hat{o}_3)\\
+\quad\quad\wherec{
+S_{fun} = \hat{o}_f(\varprop{function})\emph{.funid} \
+\land\ \hat{o}_f = \hat{H}_1(\hat{l}_f) \\
+\land\ \hat{o}_1 = \hat{o}_2\left[ \begin{array}{l}
+f\emph{.argumentsName} \mapsto \langle \hat{v}_{arg},\ \atrue,\ \afalse,\ \afalse \rangle \\
+\varprop{scope} \mapsto \hat{o}_f(\varprop{scope}) \\
+\end{array} \right]\\
+\land\ (\hat{cc},\ \hat{o}_2) = \acp\emph{.callContext.newCallContext}(\hat{H}_1,\ f,\ \hat{l}_R,\ \hat{L}_{this}, \hat{o}_4) \\
+\land\ \hat{o}_3 = \hat{H}_1(\avarloc{PureLocal}) \\
+\land\ \hat{o}_4 = \ahf{NewPureLocalObj}(\abs{Value}(\hat{l}_R),\ \hat{L}_{this}) \
+\land\ \hat{L}_{this} = \ahf{GetThis}(\hat{H}_1,\ \hat{v}_{this}) \\
+\land\ \acp_1 = (f\emph{.entry},\ \hat{cc}) \
+\land\ \acp_2 = (f\emph{.exit},\ \hat{cc}) \
+\land\ \acp_3 = (f\emph{.exitExc},\ \hat{cc}) \\
+\land\ \acp_4 = (\acp\emph{.node.AfterCall},\ \acp\emph{.callContext}) \
+\land\ \acp_5 = (\acp\emph{.node.AfterCatch},\ \acp\emph{.callContext}) \\
+}\\\\
+
+% CFGConstruct
+\aCI_{\acp} \lbr \TT{construct}\verb+(+e_1,e_2,e_3\verb+)+ \rbr\ (\hat{S}, \hat{E})
+= ((\hat{H}_3, \hat{C}_1), \hat{E} \sqcup \hat{E}_1)\\
+\quad\wherec{
+\hat{E}_1 = \ahf{RaiseException}(\hat{S},\ \hat{es}_{fun} \sqcup \hat{es}_{type}) \\ 
+\land\ \hat{H}_3 = \left \{ \begin{array}{ll}
+\hat{H}_2 & \ifc{ \hat{L}_f \neq \varnothing } \\
+\bot_{Heap} & \owc \\
+\end{array} \right.\\
+\land\ \hat{H}_2 = \bigsqcup_{\hat{l} \in \hat{v}_{arg}\emph{.locSet}}
+\hat{H}_1 \left[ \hat{l} \mapsto \hat{H}_1(\hat{l}) \left[ ``callee" \mapsto 
+\langle \abs{Value}(\hat{L}_f),\ \atrue,\ \afalse,\ \atrue \rangle\right] \right] \\
+\land\ (\hat{H}_1,\ -) = \ahf{Oldify}(\hat{S},\ \hat{a}_1)\
+\land\ \hat{l}_R = \emph{\TT{new} Loc}(\hat{a}_1, \hat{Recent}) \\
+\land\ \hat{L}_f = \set{\hat{l} \in \hat{v}_{fun}\emph{.locSet} 
+~\mid~ \atrue \sqsubseteq \ahf{HasConstruct}(\hat{H}_1,\ \hat{l})} \\
+\land\ \hat{es}_{type} = \left \{ \begin{array}{ll}
+\set{\hat{\exc{TypeError}}} & \ifc{ \begin{array}{l}
+\exists\ \hat{l} \in \hat{v}_{fun}\emph{.locSet} ~\mid~ \afalse \sqsubseteq \ahf{HasConstruct}(\hat{H}_1,\ \hat{l}) \\
+\lor\ \hat{v}_{fun}\emph{.pvalue} \not\sqsubseteq \bot_{PValue} \\
+\end{array}}\\
+\varnothing & \owc \\
+\end{array} \right. \\
+\land\ (\hat{v}_{fun}, \hat{es}_{fun}) = \aV \lbr e_{fun} \rbr\ \hat{S} \
+\land\ (\hat{v}_{this}, \hat{es}_{this}) = \aV \lbr e_{this} \rbr\ \hat{S} \
+\land\ (\hat{v}_{arg}, \hat{es}_{arg}) = \aV \lbr e_{arg} \rbr\ \hat{S}
+} \vspace{1mm}\\
+
+\quad \forall \hat{l}_f \in \hat{L}_f.\ \forall f \in S_{fun}.\ 
+\ipnext\ =\ \ipnext\ \cup\ (\acp, \acp_1, \bot_{Context}, \hat{o}_1) \
+\cup\ (\acp_2, \hat{cp}_4, \hat{C}, \hat{o}_3) \ 
+\cup\ (\acp_3, \hat{cp}_5, \hat{C}, \hat{o}_3)\\
+\quad\quad\wherec{
+S_{fun} = \hat{o}_f(\varprop{construct})\emph{.funid} \
+\land\ \hat{o}_f = \hat{H}_1(\hat{l}_f) \\
+\land\ \hat{o}_1 = \hat{o}_2\left[ \begin{array}{l}
+f\emph{.argumentsName} \mapsto \langle \hat{v}_{arg},\ \atrue,\ \afalse,\ \afalse \rangle \\
+\varprop{scope} \mapsto \hat{o}_f(\varprop{scope}) \\
+\end{array} \right]\\
+\land\ (\hat{cc},\ \hat{o}_2) = \acp\emph{.callContext.newCallContext}(\hat{H}_1,\ f,\ \hat{l}_R,\ \hat{L}_{this}, \hat{o}_4) \\
+\land\ \hat{o}_3 = \hat{H}_1(\avarloc{PureLocal}) \\
+\land\ \hat{o}_4 = \ahf{NewPureLocalObj}(\abs{Value}(\hat{l}_R),\ \hat{L}_{this}) \
+\land\ \hat{L}_{this} = \ahf{GetThis}(\hat{H}_1,\ \hat{v}_{this}) \\
+\land\ \acp_1 = (f\emph{.entry},\ \hat{cc}) \
+\land\ \acp_2 = (f\emph{.exit},\ \hat{cc}) \
+\land\ \acp_3 = (f\emph{.exitExc},\ \hat{cc}) \\
+\land\ \acp_4 = (\acp\emph{.node.AfterCall},\ \acp\emph{.callContext}) \
+\land\ \acp_5 = (\acp\emph{.node.AfterCatch},\ \acp\emph{.callContext}) \\
+}\\\\
 
 \end{array}
 \]
