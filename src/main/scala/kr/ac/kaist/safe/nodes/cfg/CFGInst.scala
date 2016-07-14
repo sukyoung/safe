@@ -250,19 +250,24 @@ case class CFGInternalCall(
  */
 sealed abstract class CFGCallInst(
   override val ir: IRNode,
-  override val block: Call
+  override val block: Call,
+  val fun: CFGExpr,
+  val thisArg: CFGExpr,
+  val arguments: CFGExpr,
+  val addr1: Address,
+  val addr2: Address
 ) extends CFGInst(ir, block)
 
 // call(e1, e2, e3)
 case class CFGCall(
     override val ir: IRNode,
     override val block: Call,
-    fun: CFGExpr,
-    thisArg: CFGExpr,
-    arguments: CFGExpr,
-    addr1: Address,
-    addr2: Address
-) extends CFGCallInst(ir, block) {
+    override val fun: CFGExpr,
+    override val thisArg: CFGExpr,
+    override val arguments: CFGExpr,
+    override val addr1: Address,
+    override val addr2: Address
+) extends CFGCallInst(ir, block, fun, thisArg, arguments, addr1, addr2) {
   override def toString: String = s"call($fun, $thisArg, $arguments) @ #$addr1"
 }
 
@@ -270,11 +275,11 @@ case class CFGCall(
 case class CFGConstruct(
     override val ir: IRNode,
     override val block: Call,
-    cons: CFGExpr,
-    thisArg: CFGExpr,
-    arguments: CFGExpr,
-    addr1: Address,
-    addr2: Address
-) extends CFGCallInst(ir, block) {
-  override def toString: String = s"construct($cons, $thisArg, $arguments) @ #$addr1, #$addr2"
+    override val fun: CFGExpr,
+    override val thisArg: CFGExpr,
+    override val arguments: CFGExpr,
+    override val addr1: Address,
+    override val addr2: Address
+) extends CFGCallInst(ir, block, fun, thisArg, arguments, addr1, addr2) {
+  override def toString: String = s"construct($fun, $thisArg, $arguments) @ #$addr1, #$addr2"
 }

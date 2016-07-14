@@ -316,7 +316,7 @@ case class Value(pvalue: PValue, locset: Set[Loc]) {
       utils.absString.alpha("string")
     })
 
-    val isCallableLocSet = locset.foldLeft(utils.absBool.Bot)((tmpAbsB, l) => tmpAbsB + h.isCallable(l)(utils))
+    val isCallableLocSet = locset.foldLeft(utils.absBool.Bot)((tmpAbsB, l) => tmpAbsB + h.isCallable(l)(utils.absBool))
     val s6 =
       if (this.locset.nonEmpty && (utils.absBool.False <= isCallableLocSet))
         utils.absString.alpha("object")
