@@ -15,6 +15,7 @@ import scala.collection.mutable.{ HashMap => MHashMap, Map => MMap }
 import kr.ac.kaist.safe.{ LINE_SEP, SIGNIFICANT_BITS }
 import kr.ac.kaist.safe.nodes.ir.IRNode
 import kr.ac.kaist.safe.util.NodeUtil
+import kr.ac.kaist.safe.analyzer.models.SemanticFun
 
 class CFGFunction(
     override val ir: IRNode,
@@ -67,6 +68,13 @@ class CFGFunction(
   // create block
   def createBlock: NormalBlock = {
     val block = NormalBlock(this)
+    addBlock(block)
+    block
+  }
+
+  // create model block
+  def createModelBlock(sem: SemanticFun): ModelBlock = {
+    val block = ModelBlock(this, sem)
     addBlock(block)
     block
   }

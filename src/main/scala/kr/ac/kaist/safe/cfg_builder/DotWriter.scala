@@ -79,6 +79,7 @@ object DotWriter {
     case AfterCall(_, _, _) => "AfterCall"
     case AfterCatch(_, _) => "AfterCatch"
     case NormalBlock(_) => "Block"
+    case ModelBlock(_, _) => "Model"
   }
 
   def getLabel(block: CFGBlock): String = {

@@ -14,6 +14,7 @@ package kr.ac.kaist.safe.nodes.cfg
 import scala.collection.mutable.{ HashMap => MHashMap, Map => MMap }
 import kr.ac.kaist.safe.analyzer.domain.State
 import kr.ac.kaist.safe.analyzer.CallContext
+import kr.ac.kaist.safe.analyzer.models.SemanticFun
 import kr.ac.kaist.safe.{ LINE_SEP, MAX_INST_PRINT_SIZE }
 import kr.ac.kaist.safe.util._
 
@@ -198,4 +199,10 @@ case class NormalBlock(func: CFGFunction) extends CFGBlock {
     }
     Span(fileName, begin, end)
   }
+}
+
+case class ModelBlock(func: CFGFunction, sem: SemanticFun) extends CFGBlock {
+  val id: BlockId = func.getBId
+  override def toString: String = s"Model[$id]"
+  val span: Span = Span() // TODO set meaningful Span
 }

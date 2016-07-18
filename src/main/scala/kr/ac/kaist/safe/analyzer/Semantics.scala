@@ -209,6 +209,7 @@ class Semantics(
               val (oldSt, oldExcSt) = states
               I(inst, oldSt, oldExcSt)
             })
+          case ModelBlock(_, sem) => (st, State.Bot)
         }
     }
   }
