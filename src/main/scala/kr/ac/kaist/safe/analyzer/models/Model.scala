@@ -11,4 +11,9 @@
 
 package kr.ac.kaist.safe.analyzer.models
 
-abstract class ModelLoc
+import kr.ac.kaist.safe.analyzer.domain._
+import kr.ac.kaist.safe.nodes.cfg.CFG
+
+abstract class Model {
+  def initHeap(h: Heap, cfg: CFG, utils: Utils): Heap
+}
