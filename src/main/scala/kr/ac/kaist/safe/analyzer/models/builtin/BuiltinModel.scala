@@ -9,13 +9,13 @@
  * ****************************************************************************
  */
 
-package kr.ac.kaist.safe.analyzer.models
+package kr.ac.kaist.safe.analyzer.models.builtin
 
 import kr.ac.kaist.safe.analyzer.domain.{ Heap, Utils }
+import kr.ac.kaist.safe.analyzer.models.Model
+import kr.ac.kaist.safe.nodes.cfg.CFG
 
-abstract class BuiltinModel {
-  def initHeap(h: Heap, utils: Utils): Heap
-}
+abstract class BuiltinModel extends Model
 
 object BuiltinModel {
   val models: List[BuiltinModel] =

@@ -37,7 +37,7 @@ case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, CallContext)] {
     worklist.add(ControlPoint(cfg.globalFunc.entry, callCtxManager.globalCallContext))
     val helper = Helper(utils)
     val semantics = new Semantics(cfg, worklist, helper)
-    val init = Initialize(helper)
+    val init = Initialize(cfg, helper)
     val initSt =
       if (config.testMode) init.testState
       else init.state

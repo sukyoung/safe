@@ -9,16 +9,18 @@
  * ****************************************************************************
  */
 
-package kr.ac.kaist.safe.analyzer.models
+package kr.ac.kaist.safe.analyzer.models.builtin
 
 import kr.ac.kaist.safe.analyzer.domain._
+import kr.ac.kaist.safe.analyzer.models.Model
+import kr.ac.kaist.safe.nodes.cfg.CFG
 import kr.ac.kaist.safe.util.{ Loc, Recent, SystemLoc }
 
-object BuiltinObject extends BuiltinModel {
+case object BuiltinObject extends BuiltinModel {
   val PROTO_LOC: Loc = SystemLoc("ObjProto", Recent)
   val CONSTRUCT_LOC: Loc = SystemLoc("ObjectConst", Recent)
 
-  def initHeap(h: Heap, utils: Utils): Heap = {
+  def initHeap(h: Heap, cfg: CFG, utils: Utils): Heap = {
     val afalse = utils.absBool.False
     val atrue = utils.absBool.True
 

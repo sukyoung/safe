@@ -13,11 +13,13 @@ package kr.ac.kaist.safe.analyzer
 
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.analyzer.models._
+import kr.ac.kaist.safe.analyzer.models.builtin._
+import kr.ac.kaist.safe.nodes.cfg.CFG
 import kr.ac.kaist.safe.util.{ NodeUtil, Loc, Address }
 
 import scala.collection.immutable.HashSet
 
-case class Initialize(helper: Helper) {
+case class Initialize(cfg: CFG, helper: Helper) {
   val utils = helper.utils
 
   def state: State = {
@@ -34,7 +36,7 @@ case class Initialize(helper: Helper) {
       .update(PredefLoc.GLOBAL, globalObj)
       .update(PredefLoc.COLLAPSED, Obj.Empty(utils))
 
-    val modeledHeap = BuiltinModel.models.foldLeft(initHeap)((h, m) => m.initHeap(h, utils))
+    val modeledHeap = BuiltinModel.models.foldLeft(initHeap)((h, m) => m.initHeap(h, cfg, utils))
     State(modeledHeap, Context.Empty)
   }
 

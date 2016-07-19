@@ -9,12 +9,14 @@
  * ****************************************************************************
  */
 
-package kr.ac.kaist.safe.analyzer.models
+package kr.ac.kaist.safe.analyzer.models.builtin
 
 import kr.ac.kaist.safe.analyzer.domain._
+import kr.ac.kaist.safe.analyzer.models.{ Model, PredefLoc }
+import kr.ac.kaist.safe.nodes.cfg.CFG
 
-object BuiltinGlobal extends BuiltinModel {
-  def initHeap(h: Heap, utils: Utils): Heap = {
+case object BuiltinGlobal extends BuiltinModel {
+  def initHeap(h: Heap, cfg: CFG, utils: Utils): Heap = {
     val afalse = utils.absBool.False
     val atrue = utils.absBool.True
     val globalObj = h.getOrElse(PredefLoc.GLOBAL, Obj.Empty(utils))

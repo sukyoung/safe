@@ -11,7 +11,7 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
-import kr.ac.kaist.safe.analyzer.models.BuiltinError
+import kr.ac.kaist.safe.analyzer.models.builtin.BuiltinError
 import kr.ac.kaist.safe.util.Loc
 
 sealed abstract class Exception {

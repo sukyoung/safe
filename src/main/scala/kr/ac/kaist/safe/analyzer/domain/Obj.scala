@@ -12,7 +12,7 @@
 package kr.ac.kaist.safe.analyzer.domain
 
 import kr.ac.kaist.safe.LINE_SEP
-import kr.ac.kaist.safe.analyzer.models.{ BuiltinString, _ }
+import kr.ac.kaist.safe.analyzer.models.builtin.{ BuiltinString, _ }
 import kr.ac.kaist.safe.nodes.cfg.FunctionId
 import kr.ac.kaist.safe.util.Loc
 

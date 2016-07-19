@@ -9,16 +9,18 @@
  * ****************************************************************************
  */
 
-package kr.ac.kaist.safe.analyzer.models
+package kr.ac.kaist.safe.analyzer.models.builtin
 
 import kr.ac.kaist.safe.analyzer.domain._
+import kr.ac.kaist.safe.analyzer.models.Model
+import kr.ac.kaist.safe.nodes.cfg.CFG
 import kr.ac.kaist.safe.util.{ Loc, Recent, SystemLoc }
 
-object BuiltinFunction extends BuiltinModel {
+case object BuiltinFunction extends BuiltinModel {
   val PROTO_LOC: Loc = SystemLoc("FunctionProto", Recent)
   val CONSTRUCT_LOC = SystemLoc("FunctionConst", Recent)
 
-  def initHeap(h: Heap, utils: Utils): Heap = {
+  def initHeap(h: Heap, cfg: CFG, utils: Utils): Heap = {
     val afalse = utils.absBool.False
     val atrue = utils.absBool.True
 
@@ -32,7 +34,7 @@ object BuiltinFunction extends BuiltinModel {
 
     val functionConstructor = Obj.Empty(utils)
       .update("@class", PropValue(utils.absString.alpha("Function"))(utils))
-      .update("@proto", PropValue(ObjectValue(Value(BuiltinFunction.PROTO_LOC)(utils), afalse, afalse, afalse)))
+      .update("@proto", PropValue(ObjectValue(Value(PROTO_LOC)(utils), afalse, afalse, afalse)))
       .update("@extensible", PropValue(atrue)(utils))
       .update("@scope", PropValue(utils.absNull.Top)(utils))
       //.update("@function", AbsInternalFunc("Function.constructor"))

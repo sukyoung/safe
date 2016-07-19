@@ -9,12 +9,14 @@
  * ****************************************************************************
  */
 
-package kr.ac.kaist.safe.analyzer.models
+package kr.ac.kaist.safe.analyzer.models.builtin
 
 import kr.ac.kaist.safe.analyzer.domain._
+import kr.ac.kaist.safe.analyzer.models.Model
+import kr.ac.kaist.safe.nodes.cfg.CFG
 import kr.ac.kaist.safe.util.{ Recent, Loc, SystemLoc, Old }
 
-object BuiltinError extends BuiltinModel {
+case object BuiltinError extends BuiltinModel {
   val ERR_PROTO_LOC: Loc = SystemLoc("ErrProto", Recent)
   val EVAL_ERR_PROTO_LOC: Loc = SystemLoc("EvalErrProto", Recent)
   val RANGE_ERR_PROTO_LOC: Loc = SystemLoc("RangeErrProto", Recent)
@@ -31,7 +33,7 @@ object BuiltinError extends BuiltinModel {
   val TYPE_ERR_LOC: Loc = SystemLoc("TypeErr", Old)
   val URI_ERR_LOC: Loc = SystemLoc("URIErr", Old)
 
-  def initHeap(h: Heap, utils: Utils): Heap = {
+  def initHeap(h: Heap, cfg: CFG, utils: Utils): Heap = {
     val afalse = utils.absBool.False
     val atrue = utils.absBool.True
 
