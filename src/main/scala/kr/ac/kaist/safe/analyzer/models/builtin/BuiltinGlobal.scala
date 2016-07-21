@@ -23,15 +23,26 @@ case object BuiltinGlobal extends BuiltinModel {
       .update("@class", PropValue(utils.absString.alpha("Object"))(utils))
       .update("@proto", PropValue(ObjectValue(Value(BuiltinObject.PROTO_LOC)(utils), afalse, afalse, afalse)))
       .update("@extensible", PropValue(utils.absBool.True)(utils))
+
       .update("NaN", PropValue(PValue(utils.absNumber.alpha(Double.NaN))(utils), afalse, afalse, afalse))
       .update("Infinity", PropValue(PValue(utils.absNumber.alpha(Double.PositiveInfinity))(utils), afalse, afalse, afalse))
       .update("undefined", PropValue(PValue(utils.absUndef.Top)(utils), afalse, afalse, afalse))
+
       .update("Object", PropValue(ObjectValue(Value(BuiltinObject.CONSTRUCT_LOC)(utils), atrue, afalse, atrue)))
       .update("Array", PropValue(ObjectValue(Value(BuiltinArray.CONSTRUCT_LOC)(utils), atrue, afalse, atrue)))
       .update("Function", PropValue(ObjectValue(Value(BuiltinFunction.CONSTRUCT_LOC)(utils), atrue, afalse, atrue)))
       .update("Boolean", PropValue(ObjectValue(Value(BuiltinBoolean.CONSTRUCT_LOC)(utils), atrue, afalse, atrue)))
       .update("Number", PropValue(ObjectValue(Value(BuiltinNumber.CONSTRUCT_LOC)(utils), atrue, afalse, atrue)))
       .update("String", PropValue(ObjectValue(Value(BuiltinString.CONSTRUCT_LOC)(utils), atrue, afalse, atrue)))
+      .update("Math", PropValue(ObjectValue(Value(BuiltinMath.CONSTRUCT_LOC)(utils), atrue, afalse, atrue)))
+
+      .update("Error", PropValue(ObjectValue(Value(BuiltinError.ERR_LOC)(utils), atrue, afalse, atrue)))
+      .update("EvalError", PropValue(ObjectValue(Value(BuiltinError.EVAL_ERR_LOC)(utils), atrue, afalse, atrue)))
+      .update("RangeError", PropValue(ObjectValue(Value(BuiltinError.RANGE_ERR_LOC)(utils), atrue, afalse, atrue)))
+      .update("ReferenceError", PropValue(ObjectValue(Value(BuiltinError.REF_ERR_LOC)(utils), atrue, afalse, atrue)))
+      .update("SyntaxError", PropValue(ObjectValue(Value(BuiltinError.SYNTAX_ERR_LOC)(utils), atrue, afalse, atrue)))
+      .update("TypeError", PropValue(ObjectValue(Value(BuiltinError.TYPE_ERR_LOC)(utils), atrue, afalse, atrue)))
+      .update("URIError", PropValue(ObjectValue(Value(BuiltinError.URI_ERR_LOC)(utils), atrue, afalse, atrue)))
     h.update(PredefLoc.GLOBAL, globalObj)
   }
 }

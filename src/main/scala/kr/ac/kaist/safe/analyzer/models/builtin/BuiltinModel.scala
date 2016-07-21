@@ -21,5 +21,5 @@ object BuiltinModel {
   val models: List[BuiltinModel] =
     BuiltinGlobal :: BuiltinArray :: BuiltinFunction ::
       BuiltinObject :: BuiltinBoolean :: BuiltinNumber :: BuiltinString ::
-      BuiltinError :: Nil
+      BuiltinError :: BuiltinMath :: Nil
 }
