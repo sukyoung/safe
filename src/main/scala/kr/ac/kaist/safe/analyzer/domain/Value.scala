@@ -118,10 +118,10 @@ case class Value(pvalue: PValue, locset: Set[Loc]) {
       (if (locset.isEmpty) absBool.Bot else absBool.True)
   }
 
-  def toPrimitive: PValue = this.pvalue
+  def toPrimitive: PValue = this.pvalue // TODO unsound??
 
-  def toPrimitiveBetter(h: Heap)(utils: Utils): PValue = {
-    this.pvalue + objToPrimitiveBetter(h, "String")(utils)
+  def toPrimitiveBetter(h: Heap, hint: String = "String")(utils: Utils): PValue = {
+    this.pvalue + objToPrimitiveBetter(h, hint)(utils)
   }
 
   def objToPrimitive(hint: String)(utils: Utils): PValue = {
@@ -146,6 +146,7 @@ case class Value(pvalue: PValue, locset: Set[Loc]) {
             PValue(defaultValueNumber(h)(utils).toAbsNumber(utils.absNumber))
           case "String" =>
             PValue(defaultToString(h)(utils))
+          case _ => PValue.Top
         }
       }
     pvalue(utils)

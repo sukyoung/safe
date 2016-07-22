@@ -195,6 +195,15 @@ object DefaultNumUtil extends AbsNumberUtil {
       }
     }
 
+    def abs: AbsNumber = {
+      this match {
+        case DefaultNumInf | DefaultNumNegInf => DefaultNumPosInf
+        case DefaultNumNUInt => DefaultNumTop
+        case DefaultNumNUIntConst(n) => alpha(math.abs(n))
+        case _ => this
+      }
+    }
+
     def bitNegate: AbsNumber = {
       this match {
         case DefaultNumUIntConst(n) => alpha(~n.toInt)

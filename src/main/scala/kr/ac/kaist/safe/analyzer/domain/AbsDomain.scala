@@ -90,6 +90,7 @@ trait AbsNumber extends AbsDomain {
   def toUInt32: AbsNumber
 
   def negate: AbsNumber
+  def abs: AbsNumber
   def bitNegate: AbsNumber
   def bitOr(that: AbsNumber): AbsNumber
   def bitAnd(that: AbsNumber): AbsNumber
