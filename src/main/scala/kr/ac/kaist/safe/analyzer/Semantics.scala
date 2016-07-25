@@ -624,16 +624,11 @@ class Semantics(
       case CFGVarRef(ir, id) => st.heap.lookup(id)(utils)
       case CFGLoad(ir, obj, index) => {
         val (objV, _) = V(obj, st)
-        val objLocSet = objV.locset
         val (idxV, idxExcSet) = V(index, st)
         val absStrSet =
           if (!idxV.isBottom) idxV.toPrimitiveBetter(st.heap)(utils).toStringSet(utils.absString)
           else HashSet[AbsString]()
-        val v1 = objLocSet.foldLeft(Value.Bot(utils))((tmpVal1, loc) => {
-          absStrSet.foldLeft(tmpVal1)((tmpVal2, absStr) => {
-            tmpVal2 + st.heap.proto(loc, absStr)(utils)
-          })
-        })
+        val v1 = CFGLoadHelper(objV, absStrSet, st.heap)
         (v1, idxExcSet)
       }
       case CFGThis(ir) =>
@@ -750,5 +745,15 @@ class Semantics(
       else Heap.Bot
 
     (State(h2, st.context), excSt + newExcSt)
+  }
+
+  def CFGLoadHelper(objV: Value, absStrSet: Set[AbsString], h: Heap): Value = {
+    val objLocSet = objV.locset
+    val v1 = objLocSet.foldLeft(Value.Bot(utils))((tmpVal1, loc) => {
+      absStrSet.foldLeft(tmpVal1)((tmpVal2, absStr) => {
+        tmpVal2 + h.proto(loc, absStr)(utils)
+      })
+    })
+    v1
   }
 }
