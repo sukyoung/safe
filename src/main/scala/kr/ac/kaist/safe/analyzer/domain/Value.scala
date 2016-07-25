@@ -118,6 +118,10 @@ case class Value(pvalue: PValue, locset: Set[Loc]) {
       (if (locset.isEmpty) absBool.Bot else absBool.True)
   }
 
+  def toAbsNumber(absNumber: AbsNumberUtil): AbsNumber = {
+    pvalue.toAbsNumber(absNumber)
+  }
+
   def toPrimitive: PValue = this.pvalue // TODO unsound??
 
   def toPrimitiveBetter(h: Heap, hint: String = "String")(utils: Utils): PValue = {
