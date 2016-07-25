@@ -19,6 +19,7 @@ import kr.ac.kaist.safe.util.{ Loc, Recent, SystemLoc }
 case object BuiltinNumber extends BuiltinModel {
   val PROTO_LOC: Loc = SystemLoc("NumberProto", Recent)
   val CONSTRUCT_LOC: Loc = SystemLoc("NumberConst", Recent)
+  val prefix: String = "Number"
 
   def initHeap(h: Heap, cfg: CFG, utils: Utils): Heap = {
     val afalse = utils.absBool.False

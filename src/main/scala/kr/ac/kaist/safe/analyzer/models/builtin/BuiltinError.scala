@@ -33,6 +33,8 @@ case object BuiltinError extends BuiltinModel {
   val TYPE_ERR_LOC: Loc = SystemLoc("TypeErr", Old)
   val URI_ERR_LOC: Loc = SystemLoc("URIErr", Old)
 
+  val prefix: String = "Error"
+
   def initHeap(h: Heap, cfg: CFG, utils: Utils): Heap = {
     val afalse = utils.absBool.False
     val atrue = utils.absBool.True

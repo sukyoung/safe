@@ -16,6 +16,7 @@ import kr.ac.kaist.safe.analyzer.models.{ Model, PredefLoc }
 import kr.ac.kaist.safe.nodes.cfg.CFG
 
 case object BuiltinGlobal extends BuiltinModel {
+  val prefix: String = "Global"
   def initHeap(h: Heap, cfg: CFG, utils: Utils): Heap = {
     val afalse = utils.absBool.False
     val atrue = utils.absBool.True
