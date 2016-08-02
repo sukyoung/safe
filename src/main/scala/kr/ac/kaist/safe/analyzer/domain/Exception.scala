@@ -11,7 +11,7 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
-import kr.ac.kaist.safe.analyzer.models.builtin.BuiltinError
+import kr.ac.kaist.safe.analyzer.models.builtin._
 import kr.ac.kaist.safe.util.Loc
 
 sealed abstract class Exception {
@@ -29,13 +29,13 @@ sealed abstract class Exception {
 
   def getLoc: Loc = {
     this match {
-      case Error => BuiltinError.ERR_LOC
-      case EvalError => BuiltinError.EVAL_ERR_LOC
-      case RangeError => BuiltinError.RANGE_ERR_LOC
-      case ReferenceError => BuiltinError.REF_ERR_LOC
-      case SyntaxError => BuiltinError.SYNTAX_ERR_LOC
-      case TypeError => BuiltinError.TYPE_ERR_LOC
-      case URIError => BuiltinError.URI_ERR_LOC
+      case Error => BuiltinError.loc
+      case EvalError => BuiltinEvalError.loc
+      case RangeError => BuiltinRangeError.loc
+      case ReferenceError => BuiltinReferenceError.loc
+      case SyntaxError => BuiltinSyntaxError.loc
+      case TypeError => BuiltinTypeError.loc
+      case URIError => BuiltinURIError.loc
     }
   }
 }

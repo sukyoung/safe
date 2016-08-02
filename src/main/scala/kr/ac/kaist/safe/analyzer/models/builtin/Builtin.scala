@@ -11,11 +11,4 @@
 
 package kr.ac.kaist.safe.analyzer.models.builtin
 
-import kr.ac.kaist.safe.analyzer.models.{ PrimModel, FuncModel, EmptyCode }
-
-object BuiltinObject extends FuncModel(
-  "Object",
-  EmptyCode,
-  ("length", PrimModel(1), F, F, F) :: Nil,
-  ("@proto", PrimModel(null), F, F, F) :: Nil
-) with Builtin
+trait Builtin

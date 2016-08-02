@@ -11,40 +11,12 @@
 
 package kr.ac.kaist.safe.analyzer.models.builtin
 
-import kr.ac.kaist.safe.analyzer.domain._
-import kr.ac.kaist.safe.analyzer.models.Model
-import kr.ac.kaist.safe.nodes.cfg.CFG
-import kr.ac.kaist.safe.util.{ Loc, Recent, SystemLoc }
+import kr.ac.kaist.safe.analyzer.models.{ PrimModel, FuncModel, EmptyCode }
 
-case object BuiltinFunction extends BuiltinModel {
-  val PROTO_LOC: Loc = SystemLoc("FunctionProto", Recent)
-  val CONSTRUCT_LOC = SystemLoc("FunctionConst", Recent)
-  val prefix: String = "Function"
-
-  def initHeap(h: Heap, cfg: CFG, utils: Utils): Heap = {
-    val afalse = utils.absBool.False
-    val atrue = utils.absBool.True
-
-    val functionProto = Obj.Empty(utils)
-      .update("@class", PropValue(utils.absString.alpha("Function"))(utils))
-      .update("@proto", PropValue(ObjectValue(Value(BuiltinObject.PROTO_LOC)(utils), afalse, afalse, afalse)))
-      .update("@extensible", PropValue(atrue)(utils))
-      //      .update("@function", AbsInternalFunc("Function.prototype"))
-      .update("constructor", PropValue(ObjectValue(Value(CONSTRUCT_LOC)(utils), atrue, afalse, atrue)))
-      .update("length", PropValue(PValue(utils.absNumber.alpha(0))(utils), afalse, afalse, afalse))
-
-    val functionConstructor = Obj.Empty(utils)
-      .update("@class", PropValue(utils.absString.alpha("Function"))(utils))
-      .update("@proto", PropValue(ObjectValue(Value(PROTO_LOC)(utils), afalse, afalse, afalse)))
-      .update("@extensible", PropValue(atrue)(utils))
-      .update("@scope", PropValue(utils.absNull.Top)(utils))
-      //.update("@function", AbsInternalFunc("Function.constructor"))
-      //.update("@construct", AbsInternalFunc("Function.constructor"))
-      .update("@hasinstance", PropValue(utils.absNull.Top)(utils))
-      .update("prototype", PropValue(ObjectValue(Value(PROTO_LOC)(utils), afalse, afalse, afalse)))
-      .update("length", PropValue(PValue(utils.absNumber.alpha(1))(utils), afalse, afalse, afalse))
-
-    h.update(PROTO_LOC, functionProto)
-      .update(CONSTRUCT_LOC, functionConstructor)
-  }
-}
+object BuiltinFunction extends FuncModel(
+  "Function",
+  EmptyCode,
+  ("length", PrimModel(1), F, F, F) :: Nil,
+  ("@class", PrimModel("Function"), F, F, F) ::
+    ("length", PrimModel(0), F, F, F) :: Nil
+) with Builtin

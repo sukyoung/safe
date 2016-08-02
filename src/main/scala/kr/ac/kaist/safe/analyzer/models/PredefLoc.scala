@@ -14,7 +14,7 @@ package kr.ac.kaist.safe.analyzer.models
 import kr.ac.kaist.safe.util.{ Loc, SystemLoc, Recent, Old }
 
 object PredefLoc {
-  val GLOBAL: Loc = SystemLoc("Global", Recent)
+  val GLOBAL: Loc = SystemLoc("Global", Recent) // TODO delete
   val SINGLE_PURE_LOCAL: Loc = SystemLoc("PureLocal", Recent)
   val COLLAPSED: Loc = SystemLoc("Collapsed", Old)
 }

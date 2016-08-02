@@ -11,70 +11,149 @@
 
 package kr.ac.kaist.safe.analyzer.models
 
-import kr.ac.kaist.safe.analyzer.Semantics
 import kr.ac.kaist.safe.analyzer.domain._
-import kr.ac.kaist.safe.analyzer.models.PredefLoc.SINGLE_PURE_LOCAL
-import kr.ac.kaist.safe.nodes.cfg.{ CFG, CFGFunction, CFGEdgeExc, ModelBlock }
-import kr.ac.kaist.safe.nodes.ir.IRModelFunc
-import kr.ac.kaist.safe.nodes.ast.{ ASTNodeInfo, ModelFunc }
-import kr.ac.kaist.safe.util.{ Loc, Span }
+import kr.ac.kaist.safe.nodes.cfg.CFG
+import kr.ac.kaist.safe.util.{ Loc, SystemLoc, Recent }
 import scala.collection.immutable.HashSet
 
 abstract class Model {
-  protected val prefix: String
+  def init(h: Heap, cfg: CFG, utils: Utils): (Heap, Value)
+}
 
-  def initHeap(h: Heap, cfg: CFG, utils: Utils): Heap
+class PrimModel(
+    val pvGen: Utils => PValue
+) extends Model {
+  def init(h: Heap, cfg: CFG, utils: Utils): (Heap, Value) =
+    (h, Value(pvGen(utils)))
+}
 
-  protected def updateFunc(h: Heap, func: CFGFunction, constLoc: Loc, protoLoc: Loc, utils: Utils, prototypeLoc: Loc): Heap = {
-    val n = utils.absNumber.alpha(0)
-    val scope = Value.Bot(utils)
-    val fVal = Value(PValue.Bot(utils), HashSet(constLoc))
-    val F = utils.absBool.False
-    val T = utils.absBool.True
-    val fPropV = PropValue(ObjectValue(fVal, T, F, T))
+object PrimModel {
+  def apply(pvGen: Utils => PValue): PrimModel = new PrimModel(pvGen)
+  def apply(n: Double): PrimModel =
+    PrimModel(utils => PValue(utils.absNumber.alpha(n))(utils))
+  def apply(str: String): PrimModel =
+    PrimModel(utils => PValue(utils.absString.alpha(str))(utils))
+  def apply(): PrimModel =
+    PrimModel(utils => PValue(utils.absUndef.alpha)(utils))
+  def apply(x: Null): PrimModel =
+    PrimModel(utils => PValue(utils.absNull.alpha)(utils))
+  def apply(b: Boolean): PrimModel =
+    PrimModel(utils => PValue(utils.absBool.alpha(b))(utils))
+}
 
-    val const = Obj
-      .newFunctionObject(func.id, scope, protoLoc, n)(utils)
+class LocModel(
+    val locset: Set[Loc]
+) extends Model {
+  def init(h: Heap, cfg: CFG, utils: Utils): (Heap, Value) =
+    (h, Value(locset)(utils))
+}
 
-    val proto = Obj
-      .newObject(prototypeLoc)(utils)
-      .update("constructor", fPropV, exist = true)
+object LocModel {
+  def apply(locset: Set[Loc]): LocModel = new LocModel(locset)
+}
 
-    h.update(constLoc, const)
-      .update(protoLoc, proto)
-  }
+class ObjModel(
+    val name: String,
+    val props: List[(String, Model, Boolean, Boolean, Boolean)] = Nil
+) extends Model {
+  val loc: Loc = SystemLoc(name, Recent)
+  def init(h: Heap, cfg: CFG, utils: Utils): (Heap, Value) = (h(loc) match {
+    case Some(_) => h
+    case None => initHeap(h, cfg, utils)
+  }, Value(loc)(utils))
 
-  protected def createSemanticFunc(funName: String, argsName: String, userFunction: (Value, Heap, Semantics) => Value, utils: Utils): SemanticFun = (sem, st) => st match {
-    case State(heap, ctx) => {
-      val stBotPair = (State.Bot, State.Bot)
-      heap(SINGLE_PURE_LOCAL) match {
-        case Some(localObj) => {
-          localObj(argsName) match {
-            case Some(pv) => {
-              val retV = userFunction(pv.objval.value, heap, sem)
-              val retObj = localObj.update("@return", PropValue(ObjectValue(retV)(utils)))
-              val retHeap = heap.update(SINGLE_PURE_LOCAL, retObj)
-              (State(retHeap, ctx), State.Bot)
-            }
-            case None => stBotPair // TODO dead code
-          }
+  def initHeap(h: Heap, cfg: CFG, utils: Utils): Heap =
+    initObj(h, cfg, utils, loc, Obj.newObject(utils), props)
+
+  protected def initObj(
+    h: Heap,
+    cfg: CFG,
+    utils: Utils,
+    loc: Loc,
+    obj: Obj,
+    ps: List[(String, Model, Boolean, Boolean, Boolean)]
+  ): Heap = {
+    ps.foldLeft((h, obj)) {
+      case ((heap, obj), (name, model, writable, enumerable, configurable)) => {
+        model.init(heap, cfg, utils) match {
+          case (heap, value) => (heap, obj.update(
+            name,
+            PropValue(ObjectValue(
+              value,
+              utils.absBool.alpha(writable),
+              utils.absBool.alpha(enumerable),
+              utils.absBool.alpha(configurable)
+            ))
+          ))
         }
-        case None => stBotPair // TODO dead code
       }
+    } match {
+      case (heap, obj) => heap.update(loc, obj)
     }
   }
+}
 
-  protected def createCFGFunc(name: String, userFunction: (Value, Heap, Semantics) => Value, cfg: CFG, utils: Utils): CFGFunction = {
-    val funName: String = s"$prefix.$name"
-    val argsName: String = s"<>arguments<>$funName"
-    val ir: IRModelFunc = IRModelFunc(ModelFunc(ASTNodeInfo(Span(funName))))
-    val func: CFGFunction = cfg.createFunction(argsName, Nil, Nil, funName, ir, "", false)
-    val sem: SemanticFun = createSemanticFunc(funName, argsName, userFunction, utils)
-    val modelBlock: ModelBlock = func.createModelBlock(sem)
-    cfg.addEdge(func.entry, modelBlock)
-    cfg.addEdge(modelBlock, func.exit)
-    cfg.addEdge(modelBlock, func.exitExc, CFGEdgeExc)
-    func
+object ObjModel {
+  def apply(
+    name: String,
+    props: List[(String, Model, Boolean, Boolean, Boolean)]
+  ): ObjModel = new ObjModel(name, props)
+}
+
+class FuncModel(
+    override val name: String,
+    val code: Code,
+    override val props: List[(String, Model, Boolean, Boolean, Boolean)],
+    val protoProps: List[(String, Model, Boolean, Boolean, Boolean)]
+) extends ObjModel(name, props) {
+  val protoLoc: Loc = SystemLoc(s"$name.prototype", Recent)
+  override def initHeap(h: Heap, cfg: CFG, utils: Utils): Heap = {
+    val h0 = h
+    val AT = utils.absBool.True
+    val AF = utils.absBool.False
+
+    // [model].prototype object
+    val obj = Obj.newObject(utils)
+      .update("constructor", PropValue(ObjectValue(Value(loc)(utils), AT, AF, AT)))
+    val h1 = initObj(h0, cfg, utils, protoLoc, obj, protoProps)
+
+    // [model] function object
+    val func = code.getCFGFunc(cfg, name, utils)
+    val scope = Value(PValue(utils.absNull.Top)(utils)) // TODO get scope as args
+    val n = utils.absNumber.alpha(0) // TODO get arguments size as args
+    val funcObj = Obj.newFunctionObject(func.id, scope, protoLoc, n)(utils)
+    initObj(h1, cfg, utils, loc, funcObj, props)
   }
 
+  def protoModel: LocModel = LocModel(HashSet(protoLoc))
+}
+
+object FuncModel {
+  def apply(
+    name: String,
+    code: Code,
+    props: List[(String, Model, Boolean, Boolean, Boolean)],
+    protoProps: List[(String, Model, Boolean, Boolean, Boolean)]
+  ): FuncModel = new FuncModel(name, code, props, protoProps)
+}
+
+class BuiltinFuncModel(
+    override val name: String,
+    val code: Code
+) extends ObjModel(name, Nil) {
+  override def initHeap(h: Heap, cfg: CFG, utils: Utils): Heap = {
+    val h0 = h
+    val AF = utils.absBool.False
+
+    // [model] function object
+    val func = code.getCFGFunc(cfg, name, utils)
+    val n = utils.absNumber.alpha(0) // TODO get arguments size as args
+    val funcObj = Obj.newBuiltinFunctionObject(func.id, n)(utils)
+    initObj(h0, cfg, utils, loc, funcObj, props)
+  }
+}
+
+object BuiltinFuncModel {
+  def apply(name: String, code: Code): BuiltinFuncModel =
+    new BuiltinFuncModel(name, code)
 }

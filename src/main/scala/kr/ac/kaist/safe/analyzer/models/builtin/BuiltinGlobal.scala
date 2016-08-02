@@ -11,39 +11,26 @@
 
 package kr.ac.kaist.safe.analyzer.models.builtin
 
-import kr.ac.kaist.safe.analyzer.domain._
-import kr.ac.kaist.safe.analyzer.models.{ Model, PredefLoc }
 import kr.ac.kaist.safe.nodes.cfg.CFG
+import kr.ac.kaist.safe.analyzer.models._
+import kr.ac.kaist.safe.util.NodeUtil
 
-case object BuiltinGlobal extends BuiltinModel {
-  val prefix: String = "Global"
-  def initHeap(h: Heap, cfg: CFG, utils: Utils): Heap = {
-    val afalse = utils.absBool.False
-    val atrue = utils.absBool.True
-    val globalObj = h.getOrElse(PredefLoc.GLOBAL, Obj.Empty(utils))
-      .update("@class", PropValue(utils.absString.alpha("Object"))(utils))
-      .update("@proto", PropValue(ObjectValue(Value(BuiltinObject.PROTO_LOC)(utils), afalse, afalse, afalse)))
-      .update("@extensible", PropValue(utils.absBool.True)(utils))
-
-      .update("NaN", PropValue(PValue(utils.absNumber.alpha(Double.NaN))(utils), afalse, afalse, afalse))
-      .update("Infinity", PropValue(PValue(utils.absNumber.alpha(Double.PositiveInfinity))(utils), afalse, afalse, afalse))
-      .update("undefined", PropValue(PValue(utils.absUndef.Top)(utils), afalse, afalse, afalse))
-
-      .update("Object", PropValue(ObjectValue(Value(BuiltinObject.CONSTRUCT_LOC)(utils), atrue, afalse, atrue)))
-      .update("Array", PropValue(ObjectValue(Value(BuiltinArray.CONSTRUCT_LOC)(utils), atrue, afalse, atrue)))
-      .update("Function", PropValue(ObjectValue(Value(BuiltinFunction.CONSTRUCT_LOC)(utils), atrue, afalse, atrue)))
-      .update("Boolean", PropValue(ObjectValue(Value(BuiltinBoolean.CONSTRUCT_LOC)(utils), atrue, afalse, atrue)))
-      .update("Number", PropValue(ObjectValue(Value(BuiltinNumber.CONSTRUCT_LOC)(utils), atrue, afalse, atrue)))
-      .update("String", PropValue(ObjectValue(Value(BuiltinString.CONSTRUCT_LOC)(utils), atrue, afalse, atrue)))
-      .update("Math", PropValue(ObjectValue(Value(BuiltinMath.CONSTRUCT_LOC)(utils), atrue, afalse, atrue)))
-
-      .update("Error", PropValue(ObjectValue(Value(BuiltinError.ERR_LOC)(utils), atrue, afalse, atrue)))
-      .update("EvalError", PropValue(ObjectValue(Value(BuiltinError.EVAL_ERR_LOC)(utils), atrue, afalse, atrue)))
-      .update("RangeError", PropValue(ObjectValue(Value(BuiltinError.RANGE_ERR_LOC)(utils), atrue, afalse, atrue)))
-      .update("ReferenceError", PropValue(ObjectValue(Value(BuiltinError.REF_ERR_LOC)(utils), atrue, afalse, atrue)))
-      .update("SyntaxError", PropValue(ObjectValue(Value(BuiltinError.SYNTAX_ERR_LOC)(utils), atrue, afalse, atrue)))
-      .update("TypeError", PropValue(ObjectValue(Value(BuiltinError.TYPE_ERR_LOC)(utils), atrue, afalse, atrue)))
-      .update("URIError", PropValue(ObjectValue(Value(BuiltinError.URI_ERR_LOC)(utils), atrue, afalse, atrue)))
-    h.update(PredefLoc.GLOBAL, globalObj)
-  }
-}
+object BuiltinGlobal extends ObjModel("Global", {
+  ("NaN", PrimModel(Double.NaN), F, F, F) ::
+    ("Infinity", PrimModel(Double.PositiveInfinity), F, F, F) ::
+    ("undefined", PrimModel(), F, F, F) ::
+    ("Object", BuiltinObject, T, F, T) ::
+    ("Array", BuiltinArray, T, F, T) ::
+    ("Function", BuiltinFunction, T, F, T) ::
+    ("Boolean", BuiltinBoolean, T, F, T) ::
+    ("Number", BuiltinNumber, T, F, T) ::
+    ("String", BuiltinString, T, F, T) ::
+    ("Math", BuiltinMath, T, F, T) ::
+    ("Error", BuiltinError, T, F, T) ::
+    ("EvalError", BuiltinEvalError, T, F, T) ::
+    ("RangeError", BuiltinRangeError, T, F, T) ::
+    ("ReferenceError", BuiltinReferenceError, T, F, T) ::
+    ("SyntaxError", BuiltinSyntaxError, T, F, T) ::
+    ("TypeError", BuiltinTypeError, T, F, T) ::
+    ("URIError", BuiltinURIError, T, F, T) :: Nil
+}) with Builtin

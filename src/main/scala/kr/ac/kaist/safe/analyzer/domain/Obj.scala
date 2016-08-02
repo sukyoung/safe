@@ -451,11 +451,7 @@ object Obj {
   ////////////////////////////////////////////////////////////////
   // new Object constructos
   ////////////////////////////////////////////////////////////////
-  def newObject(utils: Utils): Obj = {
-    Empty(utils)
-      .update("@class", PropValue(utils.absString.alpha("Object"))(utils))
-      .update("@extensible", PropValue(utils.absBool.True)(utils))
-  }
+  def newObject(utils: Utils): Obj = newObject(BuiltinObject.protoLoc)(utils)
 
   def newObject(loc: Loc)(utils: Utils): Obj = newObject(HashSet(loc))(utils)
 
@@ -468,7 +464,7 @@ object Obj {
   }
 
   def newArgObject(absLength: AbsNumber)(utils: Utils): Obj = {
-    val protoVal = Value(BuiltinObject.PROTO_LOC)(utils)
+    val protoVal = Value(BuiltinObject.protoLoc)(utils)
     val lengthVal = Value(PValue(absLength)(utils))
     val absFalse = utils.absBool.False
     val absTrue = utils.absBool.True
@@ -480,7 +476,7 @@ object Obj {
   }
 
   def newArrayObject(absLength: AbsNumber)(utils: Utils): Obj = {
-    val protoVal = Value(BuiltinArray.PROTO_LOC)(utils)
+    val protoVal = Value(BuiltinArray.protoLoc)(utils)
     val lengthVal = Value(PValue(absLength)(utils))
     val absFalse = utils.absBool.False
     Empty(utils)
@@ -494,6 +490,11 @@ object Obj {
     newFunctionObject(Some(fid), Some(fid), env, Some(l), n)(utils)
   }
 
+  def newBuiltinFunctionObject(fid: FunctionId, n: AbsNumber)(utils: Utils): Obj = {
+    val scope = Value(PValue(utils.absNull.Top)(utils))
+    newFunctionObject(Some(fid), None, scope, None, n)(utils)
+  }
+
   private def newFunctionObject(fidOpt: Option[FunctionId], constructIdOpt: Option[FunctionId], env: Value,
     locOpt: Option[Loc], n: AbsNumber)(utils: Utils): Obj = {
     newFunctionObject(fidOpt, constructIdOpt, env,
@@ -503,7 +504,7 @@ object Obj {
   private def newFunctionObject(fidOpt: Option[FunctionId], constructIdOpt: Option[FunctionId], env: Value,
     locOpt: Option[Loc], writable: AbsBool, enumerable: AbsBool, configurable: AbsBool,
     absLength: AbsNumber)(utils: Utils): Obj = {
-    val protoVal = Value(BuiltinFunction.PROTO_LOC)(utils)
+    val protoVal = Value(BuiltinFunction.protoLoc)(utils)
     val absFalse = utils.absBool.False
     val lengthVal = Value(PValue(absLength)(utils))
     val obj1 = Empty(utils)
@@ -532,19 +533,19 @@ object Obj {
   }
 
   def newBooleanObj(absB: AbsBool)(utils: Utils): Obj = {
-    val newObj = newObject(BuiltinBoolean.PROTO_LOC)(utils)
+    val newObj = newObject(BuiltinBoolean.protoLoc)(utils)
     newObj.update("@class", PropValue(utils.absString.alpha("Boolean"))(utils))
       .update("@primitive", PropValue(absB)(utils))
   }
 
   def newNumberObj(absNum: AbsNumber)(utils: Utils): Obj = {
-    val newObj = newObject(BuiltinNumber.PROTO_LOC)(utils)
+    val newObj = newObject(BuiltinNumber.protoLoc)(utils)
     newObj.update("@class", PropValue(utils.absString.alpha("Number"))(utils))
       .update("@primitive", PropValue(absNum)(utils))
   }
 
   def newStringObj(absStr: AbsString)(utils: Utils): Obj = {
-    val newObj = newObject(BuiltinString.PROTO_LOC)(utils)
+    val newObj = newObject(BuiltinString.protoLoc)(utils)
 
     val newObj2 = newObj
       .update("@class", PropValue(utils.absString.alpha("String"))(utils))

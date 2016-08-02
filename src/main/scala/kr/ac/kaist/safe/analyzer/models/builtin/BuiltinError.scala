@@ -11,108 +11,72 @@
 
 package kr.ac.kaist.safe.analyzer.models.builtin
 
-import kr.ac.kaist.safe.analyzer.domain._
-import kr.ac.kaist.safe.analyzer.models.Model
-import kr.ac.kaist.safe.nodes.cfg.CFG
-import kr.ac.kaist.safe.util.{ Recent, Loc, SystemLoc, Old }
+import kr.ac.kaist.safe.analyzer.models._
 
-case object BuiltinError extends BuiltinModel {
-  val ERR_PROTO_LOC: Loc = SystemLoc("ErrProto", Recent)
-  val EVAL_ERR_PROTO_LOC: Loc = SystemLoc("EvalErrProto", Recent)
-  val RANGE_ERR_PROTO_LOC: Loc = SystemLoc("RangeErrProto", Recent)
-  val REF_ERR_PROTO_LOC: Loc = SystemLoc("RefErrProto", Recent)
-  val SYNTAX_ERR_PROTO_LOC: Loc = SystemLoc("SyntaxErrProto", Recent)
-  val TYPE_ERR_PROTO_LOC: Loc = SystemLoc("TypeErrProto", Recent)
-  val URI_ERR_PROTO_LOC: Loc = SystemLoc("URIErrProto", Recent)
+object BuiltinError extends FuncModel(
+  "Error",
+  EmptyCode,
+  Nil,
+  ("name", PrimModel("Error"), T, F, T) ::
+    ("message", PrimModel(""), T, F, T) :: Nil
+) with Builtin
 
-  val ERR_LOC: Loc = SystemLoc("Err", Old)
-  val EVAL_ERR_LOC: Loc = SystemLoc("EvalErr", Old)
-  val RANGE_ERR_LOC: Loc = SystemLoc("RangeErr", Old)
-  val REF_ERR_LOC: Loc = SystemLoc("RefErr", Old)
-  val SYNTAX_ERR_LOC: Loc = SystemLoc("SyntaxErr", Old)
-  val TYPE_ERR_LOC: Loc = SystemLoc("TypeErr", Old)
-  val URI_ERR_LOC: Loc = SystemLoc("URIErr", Old)
+object BuiltinEvalError extends FuncModel(
+  "EvalError",
+  EmptyCode,
+  ("@proto", BuiltinError, F, F, F) ::
+    ("name", PrimModel("EvalError"), T, F, T) :: Nil,
+  ("@proto", BuiltinError.protoModel, F, F, F) ::
+    ("name", PrimModel("EvalError"), T, F, T) ::
+    ("message", PrimModel(""), T, F, T) :: Nil
+) with Builtin
 
-  val prefix: String = "Error"
+object BuiltinRangeError extends FuncModel(
+  "RangeError",
+  EmptyCode,
+  ("@proto", BuiltinError, F, F, F) ::
+    ("name", PrimModel("RangeError"), T, F, T) :: Nil,
+  ("@proto", BuiltinError.protoModel, F, F, F) ::
+    ("name", PrimModel("RangeError"), T, F, T) ::
+    ("message", PrimModel(""), T, F, T) :: Nil
+) with Builtin
 
-  def initHeap(h: Heap, cfg: CFG, utils: Utils): Heap = {
-    val afalse = utils.absBool.False
-    val atrue = utils.absBool.True
+object BuiltinReferenceError extends FuncModel(
+  "ReferenceError",
+  EmptyCode,
+  ("@proto", BuiltinError, F, F, F) ::
+    ("name", PrimModel("ReferenceError"), T, F, T) :: Nil,
+  ("@proto", BuiltinError.protoModel, F, F, F) ::
+    ("name", PrimModel("ReferenceError"), T, F, T) ::
+    ("message", PrimModel(""), T, F, T) :: Nil
+) with Builtin
 
-    val errObj = Obj.Empty(utils)
-      .update("@class", PropValue(utils.absString.alpha("Error"))(utils))
-      .update("@extensible", PropValue(atrue)(utils))
+object BuiltinSyntaxError extends FuncModel(
+  "SyntaxError",
+  EmptyCode,
+  ("@proto", BuiltinError, F, F, F) ::
+    ("name", PrimModel("SyntaxError"), T, F, T) :: Nil,
+  ("@proto", BuiltinError.protoModel, F, F, F) ::
+    ("name", PrimModel("SyntaxError"), T, F, T) ::
+    ("message", PrimModel(""), T, F, T) :: Nil
+) with Builtin
 
-    val defaultErr = errObj
-      .update("@proto", PropValue(ObjectValue(Value(ERR_PROTO_LOC)(utils), afalse, afalse, afalse)))
+object BuiltinTypeError extends FuncModel(
+  "TypeError",
+  EmptyCode,
+  ("@proto", BuiltinError, F, F, F) ::
+    ("name", PrimModel("TypeError"), T, F, T) :: Nil,
+  ("@proto", BuiltinError.protoModel, F, F, F) ::
+    ("name", PrimModel("TypeError"), T, F, T) ::
+    ("message", PrimModel(""), T, F, T) :: Nil
+) with Builtin
 
-    val evalErr = errObj
-      .update("@proto", PropValue(ObjectValue(Value(EVAL_ERR_PROTO_LOC)(utils), afalse, afalse, afalse)))
-
-    val rangeErr = errObj
-      .update("@proto", PropValue(ObjectValue(Value(RANGE_ERR_PROTO_LOC)(utils), afalse, afalse, afalse)))
-
-    val refErr = errObj
-      .update("@proto", PropValue(ObjectValue(Value(REF_ERR_PROTO_LOC)(utils), afalse, afalse, afalse)))
-
-    val syntaxErr = errObj
-      .update("@proto", PropValue(ObjectValue(Value(SYNTAX_ERR_PROTO_LOC)(utils), afalse, afalse, afalse)))
-
-    val typeErr = errObj
-      .update("@proto", PropValue(ObjectValue(Value(TYPE_ERR_PROTO_LOC)(utils), afalse, afalse, afalse)))
-
-    val uriErr = errObj
-      .update("@proto", PropValue(ObjectValue(Value(URI_ERR_PROTO_LOC)(utils), afalse, afalse, afalse)))
-
-    val errProtoObj = Obj.Empty(utils)
-      .update("@class", PropValue(utils.absString.alpha("Error"))(utils))
-      .update("@extensible", PropValue(atrue)(utils))
-      .update("@proto", PropValue(ObjectValue(Value(ERR_PROTO_LOC)(utils), afalse, afalse, afalse)))
-
-    val defaultErrProto = Obj.Empty(utils)
-      .update("@class", PropValue(utils.absString.alpha("Error"))(utils))
-      .update("@extensible", PropValue(atrue)(utils))
-      .update("@proto", PropValue(ObjectValue(Value(BuiltinObject.PROTO_LOC)(utils), afalse, afalse, afalse)))
-      .update("name", PropValue(PValue(utils.absString.alpha("Error"))(utils), atrue, afalse, atrue))
-      .update("message", PropValue(PValue(utils.absString.alpha(""))(utils), atrue, afalse, atrue))
-
-    val evalErrProto = errProtoObj
-      .update("name", PropValue(PValue(utils.absString.alpha("EvalError"))(utils), atrue, afalse, atrue))
-      .update("message", PropValue(PValue(utils.absString.alpha(""))(utils), atrue, afalse, atrue))
-
-    val rangeErrProto = errProtoObj
-      .update("name", PropValue(PValue(utils.absString.alpha("RangeError"))(utils), atrue, afalse, atrue))
-      .update("message", PropValue(PValue(utils.absString.alpha(""))(utils), atrue, afalse, atrue))
-
-    val refErrProto = errProtoObj
-      .update("name", PropValue(PValue(utils.absString.alpha("ReferenceError"))(utils), atrue, afalse, atrue))
-      .update("message", PropValue(PValue(utils.absString.alpha(""))(utils), atrue, afalse, atrue))
-
-    val syntaxErrProto = errProtoObj
-      .update("name", PropValue(PValue(utils.absString.alpha("SyntaxError"))(utils), atrue, afalse, atrue))
-      .update("message", PropValue(PValue(utils.absString.alpha(""))(utils), atrue, afalse, atrue))
-
-    val typeErrProto = errProtoObj
-      .update("name", PropValue(PValue(utils.absString.alpha("TypeError"))(utils), atrue, afalse, atrue))
-      .update("message", PropValue(PValue(utils.absString.alpha(""))(utils), atrue, afalse, atrue))
-
-    val uriErrProto = errProtoObj
-      .update("name", PropValue(PValue(utils.absString.alpha("URIError"))(utils), atrue, afalse, atrue))
-      .update("message", PropValue(PValue(utils.absString.alpha(""))(utils), atrue, afalse, atrue))
-
-    h.update(ERR_LOC, defaultErr)
-      .update(EVAL_ERR_LOC, evalErr)
-      .update(RANGE_ERR_LOC, rangeErr)
-      .update(REF_ERR_LOC, refErr)
-      .update(SYNTAX_ERR_LOC, syntaxErr)
-      .update(TYPE_ERR_LOC, typeErr)
-      .update(URI_ERR_LOC, uriErr)
-      .update(ERR_PROTO_LOC, defaultErrProto)
-      .update(EVAL_ERR_PROTO_LOC, evalErrProto)
-      .update(RANGE_ERR_PROTO_LOC, rangeErrProto)
-      .update(REF_ERR_PROTO_LOC, refErrProto)
-      .update(SYNTAX_ERR_PROTO_LOC, syntaxErrProto)
-      .update(TYPE_ERR_PROTO_LOC, typeErrProto)
-      .update(URI_ERR_PROTO_LOC, uriErrProto)
-  }
-}
+object BuiltinURIError extends FuncModel(
+  "URIError",
+  EmptyCode,
+  ("@proto", BuiltinError, F, F, F) ::
+    ("name", PrimModel("URIError"), T, F, T) :: Nil,
+  ("@proto", BuiltinError.protoModel, F, F, F) ::
+    ("name", PrimModel("URIError"), T, F, T) ::
+    ("message", PrimModel(""), T, F, T) :: Nil
+) with Builtin

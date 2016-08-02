@@ -11,44 +11,16 @@
 
 package kr.ac.kaist.safe.analyzer.models.builtin
 
-import kr.ac.kaist.safe.analyzer.domain._
-import kr.ac.kaist.safe.analyzer.models.Model
-import kr.ac.kaist.safe.nodes.cfg.CFG
-import kr.ac.kaist.safe.util.{ Loc, Recent, SystemLoc }
+import kr.ac.kaist.safe.analyzer.models.{ PrimModel, FuncModel, EmptyCode }
 
-case object BuiltinNumber extends BuiltinModel {
-  val PROTO_LOC: Loc = SystemLoc("NumberProto", Recent)
-  val CONSTRUCT_LOC: Loc = SystemLoc("NumberConst", Recent)
-  val prefix: String = "Number"
-
-  def initHeap(h: Heap, cfg: CFG, utils: Utils): Heap = {
-    val afalse = utils.absBool.False
-    val atrue = utils.absBool.True
-
-    val numberProto = Obj.Empty(utils)
-      .update("@class", PropValue(utils.absString.alpha("Number"))(utils))
-      .update("@proto", PropValue(ObjectValue(Value(BuiltinObject.PROTO_LOC)(utils), afalse, afalse, afalse)))
-      .update("@extensible", PropValue(atrue)(utils))
-      .update("@primitive", PropValue(utils.absNumber.alpha(0))(utils))
-      .update("constructor", PropValue(ObjectValue(Value(CONSTRUCT_LOC)(utils), afalse, afalse, afalse)))
-
-    val numberConstructor = Obj.Empty(utils)
-      .update("@class", PropValue(utils.absString.alpha("Function"))(utils))
-      .update("@proto", PropValue(ObjectValue(Value(BuiltinFunction.PROTO_LOC)(utils), afalse, afalse, afalse)))
-      .update("@extensible", PropValue(atrue)(utils))
-      .update("@scope", PropValue(utils.absNull.Top)(utils))
-      //.update("@function", AbsInternalFunc("Number"))
-      //.update("@construct", AbsInternalFunc("Number.constructor"))
-      .update("@hasinstance", PropValue(utils.absNull.Top)(utils))
-      .update("prototype", PropValue(ObjectValue(Value(PROTO_LOC)(utils), afalse, afalse, afalse)))
-      .update("length", PropValue(PValue(utils.absNumber.alpha(1))(utils), afalse, afalse, afalse))
-      .update("MAX_VALUE", PropValue(PValue(utils.absNumber.alpha(Double.MaxValue))(utils), afalse, afalse, afalse))
-      .update("MIN_VALUE", PropValue(PValue(utils.absNumber.alpha(Double.MinValue))(utils), afalse, afalse, afalse))
-      .update("NaN", PropValue(PValue(utils.absNumber.alpha(Double.NaN))(utils), afalse, afalse, afalse))
-      .update("NEGATIVE_INFINITY", PropValue(PValue(utils.absNumber.alpha(Double.NegativeInfinity))(utils), afalse, afalse, afalse))
-      .update("POSITIVE_INFINITY", PropValue(PValue(utils.absNumber.alpha(Double.PositiveInfinity))(utils), afalse, afalse, afalse))
-
-    h.update(PROTO_LOC, numberProto)
-      .update(CONSTRUCT_LOC, numberConstructor)
-  }
-}
+object BuiltinNumber extends FuncModel(
+  "Number",
+  EmptyCode,
+  ("length", PrimModel(1), F, F, F) ::
+    ("MAX_VALUE", PrimModel(Double.MaxValue), F, F, F) ::
+    ("MIN_VALUE", PrimModel(Double.MinValue), F, F, F) ::
+    ("NaN", PrimModel(Double.NaN), F, F, F) ::
+    ("NEGATIVE_INFINITY", PrimModel(Double.NegativeInfinity), F, F, F) ::
+    ("POSITIVE_INFINITY", PrimModel(Double.PositiveInfinity), F, F, F) :: Nil,
+  ("@class", PrimModel("Number"), F, F, F) :: Nil
+) with Builtin

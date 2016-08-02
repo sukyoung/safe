@@ -9,13 +9,9 @@
  * ****************************************************************************
  */
 
-package kr.ac.kaist.safe.analyzer.models.builtin
+package kr.ac.kaist.safe.analyzer.models
 
-import kr.ac.kaist.safe.analyzer.models.{ PrimModel, FuncModel, EmptyCode }
-
-object BuiltinObject extends FuncModel(
-  "Object",
-  EmptyCode,
-  ("length", PrimModel(1), F, F, F) :: Nil,
-  ("@proto", PrimModel(null), F, F, F) :: Nil
-) with Builtin
+package object builtin {
+  val T = true
+  val F = false
+}
