@@ -33,16 +33,7 @@ case class Initialize(cfg: CFG, helper: Helper) {
 
     val modeledHeap = BuiltinGlobal.initHeap(initHeap, cfg, utils)
 
-    val heap = modeledHeap(BuiltinGlobal.loc) match {
-      case Some(obj) => {
-        val globalObj = obj
-          .update(NodeUtil.GLOBAL_NAME, PropValue(ObjectValue(Value(PredefLoc.GLOBAL)(utils), afalse, afalse, afalse)))
-          .update(NodeUtil.VAR_TRUE, PropValue(utils.absBool.alpha(true))(utils))
-        modeledHeap.update(BuiltinGlobal.loc, globalObj)
-      }
-      case None => Heap.Bot
-    }
-    State(heap, Context.Empty)
+    State(modeledHeap, Context.Empty)
   }
 
   def testState: State = {

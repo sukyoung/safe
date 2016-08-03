@@ -41,15 +41,15 @@ object PrimModel {
     PrimModel(utils => PValue(utils.absBool.alpha(b))(utils))
 }
 
-class LocModel(
-    val locset: Set[Loc]
+class ProtoModel(
+    val funcModel: FuncModel
 ) extends Model {
   def init(h: Heap, cfg: CFG, utils: Utils): (Heap, Value) =
-    (h, Value(locset)(utils))
+    (funcModel.initHeap(h, cfg, utils), Value(funcModel.protoLoc)(utils))
 }
 
-object LocModel {
-  def apply(locset: Set[Loc]): LocModel = new LocModel(locset)
+object ProtoModel {
+  def apply(funcModel: FuncModel): ProtoModel = new ProtoModel(funcModel)
 }
 
 class ObjModel(
@@ -75,7 +75,10 @@ class ObjModel(
   ): Heap = {
     ps.foldLeft((h, obj)) {
       case ((heap, obj), (name, model, writable, enumerable, configurable)) => {
-        model.init(heap, cfg, utils) match {
+        (model match {
+          case SelfModel => (heap, Value(loc)(utils))
+          case _ => model.init(heap, cfg, utils)
+        }) match {
           case (heap, value) => (heap, obj.update(
             name,
             PropValue(ObjectValue(
@@ -125,7 +128,7 @@ class FuncModel(
     initObj(h1, cfg, utils, loc, funcObj, props)
   }
 
-  def protoModel: LocModel = LocModel(HashSet(protoLoc))
+  val protoModel: ProtoModel = ProtoModel(this)
 }
 
 object FuncModel {
@@ -156,4 +159,8 @@ class BuiltinFuncModel(
 object BuiltinFuncModel {
   def apply(name: String, code: Code): BuiltinFuncModel =
     new BuiltinFuncModel(name, code)
+}
+
+object SelfModel extends Model {
+  def init(h: Heap, cfg: CFG, utils: Utils): (Heap, Value) = (h, Value.Bot(utils))
 }

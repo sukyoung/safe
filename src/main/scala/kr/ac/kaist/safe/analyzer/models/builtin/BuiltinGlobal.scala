@@ -32,5 +32,7 @@ object BuiltinGlobal extends ObjModel("Global", {
     ("ReferenceError", BuiltinReferenceError, T, F, T) ::
     ("SyntaxError", BuiltinSyntaxError, T, F, T) ::
     ("TypeError", BuiltinTypeError, T, F, T) ::
-    ("URIError", BuiltinURIError, T, F, T) :: Nil
+    ("URIError", BuiltinURIError, T, F, T) ::
+    (NodeUtil.GLOBAL_NAME, SelfModel, F, F, F) ::
+    (NodeUtil.VAR_TRUE, PrimModel(true), F, F, F) :: Nil
 }) with Builtin
