@@ -204,6 +204,48 @@ object DefaultNumUtil extends AbsNumberUtil {
       }
     }
 
+    def acos: AbsNumber = {
+      this match {
+        case DefaultNumBot => this
+        case DefaultNumNaN
+          | DefaultNumInf
+          | DefaultNumPosInf
+          | DefaultNumNegInf => DefaultNumNaN
+        case DefaultNumUIntConst(n) if n > 1 || n < -1 => DefaultNumNaN
+        case DefaultNumUIntConst(n) => alpha(Math.acos(n))
+        case DefaultNumNUIntConst(n) if n > 1 || n < -1 => DefaultNumNaN
+        case DefaultNumNUIntConst(n) => alpha(Math.acos(n))
+        case _ => DefaultNumTop
+      }
+    }
+
+    def asin: AbsNumber = {
+      this match {
+        case DefaultNumBot => this
+        case DefaultNumNaN
+          | DefaultNumInf
+          | DefaultNumPosInf
+          | DefaultNumNegInf => DefaultNumNaN
+        case DefaultNumUIntConst(n) if n > 1 || n < -1 => DefaultNumNaN
+        case DefaultNumUIntConst(n) => alpha(Math.asin(n))
+        case DefaultNumNUIntConst(n) if n > 1 || n < -1 => DefaultNumNaN
+        case DefaultNumNUIntConst(n) => alpha(Math.asin(n))
+        case _ => DefaultNumTop
+      }
+    }
+
+    def atan: AbsNumber = {
+      this match {
+        case DefaultNumBot | DefaultNumNaN => this
+        case DefaultNumInf => DefaultNumNUInt
+        case DefaultNumPosInf => alpha(scala.math.Pi / 2)
+        case DefaultNumNegInf => alpha(-scala.math.Pi / 2)
+        case DefaultNumUIntConst(n) => alpha(Math.atan(n))
+        case DefaultNumNUIntConst(n) => alpha(Math.atan(n))
+        case _ => DefaultNumTop
+      }
+    }
+
     def bitNegate: AbsNumber = {
       this match {
         case DefaultNumUIntConst(n) => alpha(~n.toInt)

@@ -28,5 +28,20 @@ object BuiltinMath extends ObjModel("Math", {
       val resV = sem.CFGLoadHelper(args, Set(utils.absString.alpha("0")), h)
       val num = resV.toAbsNumber(utils.absNumber).abs
       Value(PValue(num)(utils))
+    })), T, F, T) ::
+    ("acos", BuiltinFuncModel("Math.acos", SimpleCode((args, h, sem, utils) => {
+      val resV = sem.CFGLoadHelper(args, Set(utils.absString.alpha("0")), h)
+      val num = resV.toAbsNumber(utils.absNumber).acos
+      Value(PValue(num)(utils))
+    })), T, F, T) ::
+    ("asin", BuiltinFuncModel("Math.asin", SimpleCode((args, h, sem, utils) => {
+      val resV = sem.CFGLoadHelper(args, Set(utils.absString.alpha("0")), h)
+      val num = resV.toAbsNumber(utils.absNumber).asin
+      Value(PValue(num)(utils))
+    })), T, F, T) ::
+    ("atan", BuiltinFuncModel("Math.atan", SimpleCode((args, h, sem, utils) => {
+      val resV = sem.CFGLoadHelper(args, Set(utils.absString.alpha("0")), h)
+      val num = resV.toAbsNumber(utils.absNumber).atan
+      Value(PValue(num)(utils))
     })), T, F, T) :: Nil
 }) with Builtin

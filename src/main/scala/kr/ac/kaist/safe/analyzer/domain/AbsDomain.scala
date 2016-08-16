@@ -91,6 +91,9 @@ trait AbsNumber extends AbsDomain {
 
   def negate: AbsNumber
   def abs: AbsNumber
+  def acos: AbsNumber
+  def asin: AbsNumber
+  def atan: AbsNumber
   def bitNegate: AbsNumber
   def bitOr(that: AbsNumber): AbsNumber
   def bitAnd(that: AbsNumber): AbsNumber
