@@ -17,5 +17,6 @@ object BuiltinObject extends FuncModel(
   "Object",
   EmptyCode,
   ("length", PrimModel(1), F, F, F) :: Nil,
-  ("@proto", PrimModel(null), F, F, F) :: Nil
+  ("@proto", PrimModel(null), F, F, F) :: Nil,
+  F
 ) with Builtin

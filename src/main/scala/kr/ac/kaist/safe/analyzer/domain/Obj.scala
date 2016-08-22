@@ -487,18 +487,22 @@ object Obj {
   }
 
   def newFunctionObject(fid: FunctionId, env: Value, l: Loc, n: AbsNumber)(utils: Utils): Obj = {
-    newFunctionObject(Some(fid), Some(fid), env, Some(l), n)(utils)
+    newFunctionObject(Some(fid), Some(fid), env, Some(l), n, utils.absBool.True)(utils)
+  }
+
+  def newFunctionObject(fid: FunctionId, env: Value, l: Loc, n: AbsNumber, writable: AbsBool)(utils: Utils): Obj = {
+    newFunctionObject(Some(fid), Some(fid), env, Some(l), n, writable)(utils)
   }
 
   def newBuiltinFunctionObject(fid: FunctionId, n: AbsNumber)(utils: Utils): Obj = {
     val scope = Value(PValue(utils.absNull.Top)(utils))
-    newFunctionObject(Some(fid), None, scope, None, n)(utils)
+    newFunctionObject(Some(fid), None, scope, None, n, utils.absBool.True)(utils)
   }
 
   private def newFunctionObject(fidOpt: Option[FunctionId], constructIdOpt: Option[FunctionId], env: Value,
-    locOpt: Option[Loc], n: AbsNumber)(utils: Utils): Obj = {
+    locOpt: Option[Loc], n: AbsNumber, writable: AbsBool)(utils: Utils): Obj = {
     newFunctionObject(fidOpt, constructIdOpt, env,
-      locOpt, utils.absBool.True, utils.absBool.False, utils.absBool.False, n)(utils)
+      locOpt, writable, utils.absBool.False, utils.absBool.False, n)(utils)
   }
 
   private def newFunctionObject(fidOpt: Option[FunctionId], constructIdOpt: Option[FunctionId], env: Value,

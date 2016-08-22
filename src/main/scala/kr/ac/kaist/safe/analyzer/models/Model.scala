@@ -107,7 +107,8 @@ class FuncModel(
     override val name: String,
     val code: Code,
     override val props: List[(String, Model, Boolean, Boolean, Boolean)],
-    val protoProps: List[(String, Model, Boolean, Boolean, Boolean)]
+    val protoProps: List[(String, Model, Boolean, Boolean, Boolean)],
+    writable: Boolean = true
 ) extends ObjModel(name, props) {
   val protoLoc: Loc = SystemLoc(s"$name.prototype", Recent)
   override def initHeap(h: Heap, cfg: CFG, utils: Utils): Heap = {
@@ -124,7 +125,7 @@ class FuncModel(
     val func = code.getCFGFunc(cfg, name, utils)
     val scope = Value(PValue(utils.absNull.Top)(utils)) // TODO get scope as args
     val n = utils.absNumber.alpha(0) // TODO get arguments size as args
-    val funcObj = Obj.newFunctionObject(func.id, scope, protoLoc, n)(utils)
+    val funcObj = Obj.newFunctionObject(func.id, scope, protoLoc, n, utils.absBool.alpha(writable))(utils)
     initObj(h1, cfg, utils, loc, funcObj, props)
   }
 
@@ -136,8 +137,9 @@ object FuncModel {
     name: String,
     code: Code,
     props: List[(String, Model, Boolean, Boolean, Boolean)],
-    protoProps: List[(String, Model, Boolean, Boolean, Boolean)]
-  ): FuncModel = new FuncModel(name, code, props, protoProps)
+    protoProps: List[(String, Model, Boolean, Boolean, Boolean)],
+    writable: Boolean = true
+  ): FuncModel = new FuncModel(name, code, props, protoProps, writable)
 }
 
 class BuiltinFuncModel(
