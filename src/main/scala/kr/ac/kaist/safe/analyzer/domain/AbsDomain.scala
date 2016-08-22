@@ -86,6 +86,12 @@ trait AbsNumber extends AbsDomain {
   def ===(that: AbsNumber)(absBool: AbsBoolUtil): AbsBool
   def <(that: AbsNumber)(absBool: AbsBoolUtil): AbsBool
 
+  def isPositive: Boolean
+  def isNegative: Boolean
+  def isZero: Boolean
+  def isPositiveZero: Boolean
+  def isNegativeZero: Boolean
+
   def toInt32: AbsNumber
   def toUInt32: AbsNumber
 
@@ -94,6 +100,17 @@ trait AbsNumber extends AbsDomain {
   def acos: AbsNumber
   def asin: AbsNumber
   def atan: AbsNumber
+  def atan2(that: AbsNumber): AbsNumber
+  def ceil: AbsNumber
+  def cos: AbsNumber
+  def exp: AbsNumber
+  def floor: AbsNumber
+  def log: AbsNumber
+  def pow(that: AbsNumber): AbsNumber
+  def round: AbsNumber
+  def sin: AbsNumber
+  def sqrt: AbsNumber
+  def tan: AbsNumber
   def bitNegate: AbsNumber
   def bitOr(that: AbsNumber): AbsNumber
   def bitAnd(that: AbsNumber): AbsNumber
