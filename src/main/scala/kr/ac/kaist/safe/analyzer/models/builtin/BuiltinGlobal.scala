@@ -12,6 +12,8 @@
 package kr.ac.kaist.safe.analyzer.models.builtin
 
 import kr.ac.kaist.safe.nodes.cfg.CFG
+import kr.ac.kaist.safe.analyzer.Helper
+import kr.ac.kaist.safe.analyzer.domain.Value
 import kr.ac.kaist.safe.analyzer.models._
 import kr.ac.kaist.safe.util.NodeUtil
 
@@ -19,6 +21,15 @@ object BuiltinGlobal extends ObjModel("Global", {
   ("NaN", PrimModel(Double.NaN), F, F, F) ::
     ("Infinity", PrimModel(Double.PositiveInfinity), F, F, F) ::
     ("undefined", PrimModel(), F, F, F) ::
+    ("eval", BuiltinFuncModel("Global.eval", SimpleCode((args, h, sem, utils) => {
+      val resV = sem.CFGLoadHelper(args, Set(utils.absString.alpha("0")), h)
+      if (resV.pvalue.strval </ utils.absString.Bot) {
+        // TODO unsound
+        Value.Bot(utils)
+      } else {
+        resV
+      }
+    })), T, F, T) ::
     ("Object", BuiltinObject, T, F, T) ::
     ("Array", BuiltinArray, T, F, T) ::
     ("Function", BuiltinFunction, T, F, T) ::

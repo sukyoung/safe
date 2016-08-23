@@ -35,7 +35,7 @@ object DefaultNumUtil extends AbsNumberUtil {
     case Double.PositiveInfinity => DefaultNumPosInf
     case _ =>
       val uint = num.toLong
-      if ((num == uint) && uint >= 0) DefaultNumUIntConst(uint)
+      if ((num == uint) && (uint > 0 || (num compare 0.0) == 0)) DefaultNumUIntConst(uint)
       else DefaultNumNUIntConst(num)
   }
 
@@ -136,6 +136,41 @@ object DefaultNumUtil extends AbsNumberUtil {
       else math.signum(y) * result
     }
 
+    def isPositive: Boolean = {
+      this match {
+        case DefaultNumPosInf => true
+        case DefaultNumUIntConst(x) if x > 0 => true
+        case DefaultNumNUIntConst(x) if x > 0 => true
+        case _ => false
+      }
+    }
+
+    def isNegative: Boolean = {
+      this match {
+        case DefaultNumNegInf => true
+        case DefaultNumNUIntConst(x) if x < 0 => true
+        case _ => false
+      }
+    }
+
+    def isZero: Boolean = {
+      isPositiveZero || isNegativeZero
+    }
+
+    def isPositiveZero: Boolean = {
+      this match {
+        case DefaultNumUIntConst(x) if x == 0 => true
+        case _ => false
+      }
+    }
+
+    def isNegativeZero: Boolean = {
+      this match {
+        case DefaultNumNUIntConst(x) if x == 0 => true
+        case _ => false
+      }
+    }
+
     def toInt32: AbsNumber = {
       this match {
         case DefaultNumBot => DefaultNumBot
@@ -211,7 +246,7 @@ object DefaultNumUtil extends AbsNumberUtil {
           | DefaultNumInf
           | DefaultNumPosInf
           | DefaultNumNegInf => DefaultNumNaN
-        case DefaultNumUIntConst(n) if n > 1 || n < -1 => DefaultNumNaN
+        case DefaultNumUIntConst(n) if n > 1 => DefaultNumNaN
         case DefaultNumUIntConst(n) => alpha(Math.acos(n))
         case DefaultNumNUIntConst(n) if n > 1 || n < -1 => DefaultNumNaN
         case DefaultNumNUIntConst(n) => alpha(Math.acos(n))
@@ -226,7 +261,7 @@ object DefaultNumUtil extends AbsNumberUtil {
           | DefaultNumInf
           | DefaultNumPosInf
           | DefaultNumNegInf => DefaultNumNaN
-        case DefaultNumUIntConst(n) if n > 1 || n < -1 => DefaultNumNaN
+        case DefaultNumUIntConst(n) if n > 1 => DefaultNumNaN
         case DefaultNumUIntConst(n) => alpha(Math.asin(n))
         case DefaultNumNUIntConst(n) if n > 1 || n < -1 => DefaultNumNaN
         case DefaultNumNUIntConst(n) => alpha(Math.asin(n))
@@ -242,6 +277,193 @@ object DefaultNumUtil extends AbsNumberUtil {
         case DefaultNumNegInf => alpha(-scala.math.Pi / 2)
         case DefaultNumUIntConst(n) => alpha(Math.atan(n))
         case DefaultNumNUIntConst(n) => alpha(Math.atan(n))
+        case DefaultNumUInt
+          | DefaultNumNUInt => DefaultNumNUInt
+        case _ => DefaultNumTop
+      }
+    }
+
+    //TODO sound but not precise if DefaultNumUInt, DefaultNumNUInt
+    def atan2(that: AbsNumber): AbsNumber = {
+      (this, that) match {
+        case (DefaultNumNaN, _)
+          | (_, DefaultNumNaN) => DefaultNumNaN
+        case (_, _) if this.isPositive && that.isZero => alpha(scala.math.Pi / 2)
+        case (_, _) if this.isPositiveZero => {
+          if (that.isPositive || that.isPositiveZero) alpha(0)
+          else alpha(scala.math.Pi)
+        }
+        case (_, _) if this.isNegativeZero => {
+          if (that.isPositive || that.isPositiveZero) alpha(-0.0)
+          else alpha(-scala.math.Pi)
+        }
+        case (_, _) if this.isNegative && that.isZero => alpha(-scala.math.Pi / 2)
+        case (DefaultNumUIntConst(y), DefaultNumPosInf) if y > 0 => alpha(0)
+        case (DefaultNumNUIntConst(y), DefaultNumPosInf) if y > 0 => alpha(0)
+        case (DefaultNumUIntConst(y), DefaultNumNegInf) if y > 0 => alpha(scala.math.Pi)
+        case (DefaultNumNUIntConst(y), DefaultNumNegInf) if y > 0 => alpha(scala.math.Pi)
+        case (DefaultNumNUIntConst(y), DefaultNumPosInf) if y < 0 => alpha(-0.0)
+        case (DefaultNumNUIntConst(y), DefaultNumNegInf) if y < 0 => alpha(-scala.math.Pi)
+        case (DefaultNumPosInf, DefaultNumUInt | DefaultNumNUInt | DefaultNumUIntConst(_) | DefaultNumNUIntConst(_)) => alpha(scala.math.Pi / 2)
+        case (DefaultNumNegInf, DefaultNumUInt | DefaultNumNUInt | DefaultNumUIntConst(_) | DefaultNumNUIntConst(_)) => alpha(scala.math.Pi / 2)
+        case (DefaultNumPosInf, DefaultNumPosInf) => alpha(scala.math.Pi / 4)
+        case (DefaultNumPosInf, DefaultNumNegInf) => alpha(scala.math.Pi * 3 / 4)
+        case (DefaultNumNegInf, DefaultNumPosInf) => alpha(-scala.math.Pi / 4)
+        case (DefaultNumNegInf, DefaultNumNegInf) => alpha(-scala.math.Pi * 3 / 4)
+        case (DefaultNumUIntConst(y), DefaultNumUIntConst(x)) => alpha(scala.math.atan2(y, x))
+        case (DefaultNumUIntConst(y), DefaultNumNUIntConst(x)) => alpha(scala.math.atan2(y, x))
+        case (DefaultNumNUIntConst(y), DefaultNumUIntConst(x)) => alpha(scala.math.atan2(y, x))
+        case (DefaultNumNUIntConst(y), DefaultNumNUIntConst(x)) => alpha(scala.math.atan2(y, x))
+        case (_, _) => DefaultNumTop
+      }
+    }
+
+    def ceil: AbsNumber = {
+      this match {
+        case DefaultNumBot
+          | DefaultNumNaN
+          | DefaultNumInf
+          | DefaultNumPosInf
+          | DefaultNumNegInf
+          | DefaultNumUInt => this
+        case DefaultNumUIntConst(n) => alpha(scala.math.ceil(n))
+        case DefaultNumNUIntConst(n) => alpha(scala.math.ceil(n))
+        case _ => DefaultNumTop
+      }
+    }
+
+    def cos: AbsNumber = {
+      this match {
+        case DefaultNumNaN
+          | DefaultNumInf
+          | DefaultNumPosInf
+          | DefaultNumNegInf => DefaultNumNaN
+        case DefaultNumUInt
+          | DefaultNumNUInt => DefaultNumNUInt
+        case DefaultNumUIntConst(n) => alpha(Math.cos(n))
+        case DefaultNumNUIntConst(n) => alpha(Math.cos(n))
+        case _ => DefaultNumTop
+      }
+    }
+
+    def exp: AbsNumber = {
+      this match {
+        case DefaultNumNaN
+          | DefaultNumPosInf => this
+        case _ if isZero => alpha(1)
+        case DefaultNumNegInf => alpha(0)
+        case DefaultNumUInt
+          | DefaultNumNUInt => DefaultNumNUInt
+        case DefaultNumUIntConst(n) => alpha(Math.exp(n))
+        case DefaultNumNUIntConst(n) => alpha(Math.exp(n))
+        case _ => DefaultNumTop
+      }
+    }
+
+    def floor: AbsNumber = {
+      this match {
+        case DefaultNumBot
+          | DefaultNumNaN
+          | DefaultNumInf
+          | DefaultNumPosInf
+          | DefaultNumNegInf
+          | DefaultNumUInt => this
+        case DefaultNumUIntConst(n) => alpha(scala.math.floor(n))
+        case DefaultNumNUIntConst(n) => alpha(scala.math.floor(n))
+        case _ => DefaultNumTop
+      }
+    }
+
+    def log: AbsNumber = {
+      this match {
+        case DefaultNumNaN => this
+        case _ if isNegative => DefaultNumNaN
+        case _ if isZero => DefaultNumNegInf
+        case DefaultNumPosInf => this
+        case DefaultNumUIntConst(n) => alpha(scala.math.log(n))
+        case DefaultNumNUIntConst(n) => alpha(scala.math.log(n))
+        case _ => DefaultNumTop
+      }
+    }
+
+    def pow(that: AbsNumber): AbsNumber = {
+      (this, that) match {
+        case (DefaultNumUInt, DefaultNumUInt) => DefaultNumUInt
+        case (DefaultNumUInt, DefaultNumUIntConst(_)) => DefaultNumUInt
+        case (DefaultNumUIntConst(_), DefaultNumUInt) => DefaultNumUInt
+        case (DefaultNumUIntConst(1), DefaultNumInf) => DefaultNumNaN
+        case (DefaultNumUIntConst(_) | DefaultNumNUIntConst(_) | DefaultNumNaN | DefaultNumPosInf | DefaultNumNegInf,
+          DefaultNumUIntConst(_) | DefaultNumNUIntConst(_) | DefaultNumNaN | DefaultNumPosInf | DefaultNumNegInf) => {
+          val x: Double = this match {
+            case DefaultNumUIntConst(n) => n
+            case DefaultNumNUIntConst(n) => n
+            case DefaultNumNaN => Double.NaN
+            case DefaultNumPosInf => Double.PositiveInfinity
+            case DefaultNumNegInf => Double.NegativeInfinity
+            case _ => 1 //unreachable
+          }
+          val y: Double = that match {
+            case DefaultNumUIntConst(n) => n
+            case DefaultNumNUIntConst(n) => n
+            case DefaultNumNaN => Double.NaN
+            case DefaultNumPosInf => Double.PositiveInfinity
+            case DefaultNumNegInf => Double.NegativeInfinity
+            case _ => 1 //unreachable
+          }
+          alpha(scala.math.pow(x, y))
+        }
+        case (_, _) => DefaultNumTop
+      }
+    }
+
+    def round: AbsNumber = {
+      this match {
+        case DefaultNumNaN
+          | DefaultNumInf
+          | DefaultNumPosInf
+          | DefaultNumNegInf
+          | DefaultNumUInt
+          | DefaultNumUIntConst(_) => this
+        case DefaultNumNUIntConst(n) => alpha(scala.math.round(n))
+        case _ => DefaultNumTop
+      }
+    }
+
+    def sin: AbsNumber = {
+      this match {
+        case DefaultNumNaN
+          | DefaultNumInf
+          | DefaultNumPosInf
+          | DefaultNumNegInf => DefaultNumNaN
+        case DefaultNumNUInt => this
+        case DefaultNumUIntConst(n) => alpha(scala.math.sin(n))
+        case DefaultNumNUIntConst(n) => alpha(scala.math.sin(n))
+        case _ => DefaultNumTop
+      }
+    }
+
+    def sqrt: AbsNumber = {
+      this match {
+        case DefaultNumNaN
+          | DefaultNumNegInf => DefaultNumNaN
+        case DefaultNumPosInf
+          | DefaultNumUInt => this
+        case DefaultNumUIntConst(n) => alpha(scala.math.sqrt(n))
+        case DefaultNumNUIntConst(n) if n < 0 => DefaultNumNaN
+        case DefaultNumNUIntConst(n) => alpha(scala.math.sqrt(n))
+        case _ => DefaultNumTop
+      }
+    }
+
+    def tan: AbsNumber = {
+      this match {
+        case DefaultNumNaN
+          | DefaultNumInf
+          | DefaultNumPosInf
+          | DefaultNumNegInf => DefaultNumNaN
+        case DefaultNumNUInt => this
+        case DefaultNumUIntConst(n) => alpha(scala.math.tan(n))
+        case DefaultNumNUIntConst(n) => alpha(scala.math.tan(n))
         case _ => DefaultNumTop
       }
     }
