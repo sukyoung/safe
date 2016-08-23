@@ -44,7 +44,7 @@ case object EmptyCode extends Code {
 }
 
 case class SimpleCode(
-    code: (Value, Heap, Semantics, Utils) => Value
+    code: (Value, Heap, Semantics, Utils) => (Heap, Value)
 ) extends Code {
   def getCFGFunc(cfg: CFG, name: String, utils: Utils): CFGFunction = {
     val (funName, argsName, func) = createCFGFunc(cfg, name, utils)
@@ -63,9 +63,9 @@ case class SimpleCode(
         case Some(localObj) => {
           localObj(argsName) match {
             case Some(pv) => {
-              val retV = code(pv.objval.value, heap, sem, utils)
+              val (retH, retV) = code(pv.objval.value, heap, sem, utils)
               val retObj = localObj.update("@return", PropValue(ObjectValue(retV)(utils)))
-              val retHeap = heap.update(SINGLE_PURE_LOCAL, retObj)
+              val retHeap = retH.update(SINGLE_PURE_LOCAL, retObj)
               (State(retHeap, ctx), State.Bot)
             }
             case None => stBotPair // TODO dead code
