@@ -27,50 +27,45 @@ object BuiltinMath extends ObjModel(
     ("SQRT1_2", PrimModel(0.7071067811865476), F, F, F),
     ("SQRT2", PrimModel(1.4142135623730951), F, F, F),
 
-    ("abs", BuiltinFuncModel(
+    ("abs", FuncModel(
       name = "Math.abs",
-      argLen = 1,
-      code = SimpleCode((args, h, sem, utils) => {
+      code = SimpleCode(argLen = 1, (args, h, sem, utils) => {
         val resV = sem.CFGLoadHelper(args, Set(utils.absString.alpha("0")), h)
         val num = resV.toAbsNumber(utils.absNumber).abs
         Value(PValue(num)(utils))
       })
     ), T, F, T),
 
-    ("acos", BuiltinFuncModel(
+    ("acos", FuncModel(
       name = "Math.acos",
-      argLen = 1,
-      code = SimpleCode((args, h, sem, utils) => {
+      code = SimpleCode(argLen = 1, (args, h, sem, utils) => {
         val resV = sem.CFGLoadHelper(args, Set(utils.absString.alpha("0")), h)
         val num = resV.toAbsNumber(utils.absNumber).acos
         Value(PValue(num)(utils))
       })
     ), T, F, T),
 
-    ("asin", BuiltinFuncModel(
+    ("asin", FuncModel(
       name = "Math.asin",
-      argLen = 1,
-      code = SimpleCode((args, h, sem, utils) => {
+      code = SimpleCode(argLen = 1, (args, h, sem, utils) => {
         val resV = sem.CFGLoadHelper(args, Set(utils.absString.alpha("0")), h)
         val num = resV.toAbsNumber(utils.absNumber).asin
         Value(PValue(num)(utils))
       })
     ), T, F, T),
 
-    ("atan", BuiltinFuncModel(
+    ("atan", FuncModel(
       name = "Math.atan",
-      argLen = 1,
-      code = SimpleCode((args, h, sem, utils) => {
+      code = SimpleCode(argLen = 1, (args, h, sem, utils) => {
         val resV = sem.CFGLoadHelper(args, Set(utils.absString.alpha("0")), h)
         val num = resV.toAbsNumber(utils.absNumber).atan
         Value(PValue(num)(utils))
       })
     ), T, F, T),
 
-    ("atan2", BuiltinFuncModel(
+    ("atan2", FuncModel(
       name = "Math.atan2",
-      argLen = 2,
-      code = SimpleCode((args, h, sem, utils) => {
+      code = SimpleCode(argLen = 2, (args, h, sem, utils) => {
         val resVy = sem.CFGLoadHelper(args, Set(utils.absString.alpha("0")), h)
         val resVx = sem.CFGLoadHelper(args, Set(utils.absString.alpha("1")), h)
         val num = resVy.toAbsNumber(utils.absNumber).atan2(resVx.toAbsNumber(utils.absNumber))
@@ -78,50 +73,45 @@ object BuiltinMath extends ObjModel(
       })
     ), T, F, T),
 
-    ("ceil", BuiltinFuncModel(
+    ("ceil", FuncModel(
       name = "Math.ceil",
-      argLen = 1,
-      code = SimpleCode((args, h, sem, utils) => {
+      code = SimpleCode(argLen = 1, (args, h, sem, utils) => {
         val resV = sem.CFGLoadHelper(args, Set(utils.absString.alpha("0")), h)
         val num = resV.toAbsNumber(utils.absNumber).ceil
         Value(PValue(num)(utils))
       })
     ), T, F, T),
 
-    ("cos", BuiltinFuncModel(
+    ("cos", FuncModel(
       name = "Math.cos",
-      argLen = 1,
-      code = SimpleCode((args, h, sem, utils) => {
+      code = SimpleCode(argLen = 1, (args, h, sem, utils) => {
         val resV = sem.CFGLoadHelper(args, Set(utils.absString.alpha("0")), h)
         val num = resV.toAbsNumber(utils.absNumber).cos
         Value(PValue(num)(utils))
       })
     ), T, F, T),
 
-    ("exp", BuiltinFuncModel(
+    ("exp", FuncModel(
       name = "Math.exp",
-      argLen = 1,
-      code = SimpleCode((args, h, sem, utils) => {
+      code = SimpleCode(argLen = 1, (args, h, sem, utils) => {
         val resV = sem.CFGLoadHelper(args, Set(utils.absString.alpha("0")), h)
         val num = resV.toAbsNumber(utils.absNumber).exp
         Value(PValue(num)(utils))
       })
     ), T, F, T),
 
-    ("floor", BuiltinFuncModel(
+    ("floor", FuncModel(
       name = "Math.floor",
-      argLen = 1,
-      code = SimpleCode((args, h, sem, utils) => {
+      code = SimpleCode(argLen = 1, (args, h, sem, utils) => {
         val resV = sem.CFGLoadHelper(args, Set(utils.absString.alpha("0")), h)
         val num = resV.toAbsNumber(utils.absNumber).floor
         Value(PValue(num)(utils))
       })
     ), T, F, T),
 
-    ("log", BuiltinFuncModel(
+    ("log", FuncModel(
       name = "Math.log",
-      argLen = 1,
-      code = SimpleCode((args, h, sem, utils) => {
+      code = SimpleCode(argLen = 1, (args, h, sem, utils) => {
         val resV = sem.CFGLoadHelper(args, Set(utils.absString.alpha("0")), h)
         val num = resV.toAbsNumber(utils.absNumber).log
         Value(PValue(num)(utils))
@@ -129,27 +119,24 @@ object BuiltinMath extends ObjModel(
     ), T, F, T),
 
     //TODO max
-    ("max", BuiltinFuncModel(
+    ("max", FuncModel(
       name = "Math.max",
-      argLen = 2,
-      code = SimpleCode((args, h, sem, utils) => {
+      code = SimpleCode(argLen = 2, (args, h, sem, utils) => {
         Value(PValue(utils.absNumber.Top)(utils))
       })
     ), T, F, T),
 
     //TODO min
-    ("min", BuiltinFuncModel(
+    ("min", FuncModel(
       name = "Math.min",
-      argLen = 2,
-      code = SimpleCode((args, h, sem, utils) => {
+      code = SimpleCode(argLen = 2, (args, h, sem, utils) => {
         Value(PValue(utils.absNumber.Top)(utils))
       })
     ), T, F, T),
 
-    ("pow", BuiltinFuncModel(
+    ("pow", FuncModel(
       name = "Math.pow",
-      argLen = 2,
-      code = SimpleCode((args, h, sem, utils) => {
+      code = SimpleCode(argLen = 2, (args, h, sem, utils) => {
         val resVx = sem.CFGLoadHelper(args, Set(utils.absString.alpha("0")), h)
         val resVy = sem.CFGLoadHelper(args, Set(utils.absString.alpha("1")), h)
         val num = resVx.toAbsNumber(utils.absNumber).pow(resVy.toAbsNumber(utils.absNumber))
@@ -157,51 +144,47 @@ object BuiltinMath extends ObjModel(
       })
     ), T, F, T),
 
-    ("random", BuiltinFuncModel(
+    ("random", FuncModel(
       name = "Math.random",
-      code = SimpleCode((args, h, sem, utils) => {
+      code = SimpleCode(argLen = 0, (args, h, sem, utils) => {
         Value(PValue(utils.absNumber.Top)(utils))
       })
     ), T, F, T),
 
-    ("round", BuiltinFuncModel(
+    ("round", FuncModel(
       name = "Math.round",
-      argLen = 1,
-      code = SimpleCode((args, h, sem, utils) => {
+      code = SimpleCode(argLen = 1, (args, h, sem, utils) => {
         val resV = sem.CFGLoadHelper(args, Set(utils.absString.alpha("0")), h)
         val num = resV.toAbsNumber(utils.absNumber).round
         Value(PValue(num)(utils))
       })
     ), T, F, T),
 
-    ("sin", BuiltinFuncModel(
+    ("sin", FuncModel(
       name = "Math.sin",
-      argLen = 1,
-      code = SimpleCode((args, h, sem, utils) => {
+      code = SimpleCode(argLen = 1, (args, h, sem, utils) => {
         val resV = sem.CFGLoadHelper(args, Set(utils.absString.alpha("0")), h)
         val num = resV.toAbsNumber(utils.absNumber).sin
         Value(PValue(num)(utils))
       })
     ), T, F, T),
 
-    ("sqrt", BuiltinFuncModel(
+    ("sqrt", FuncModel(
       name = "Math.sqrt",
-      argLen = 1,
-      code = SimpleCode((args, h, sem, utils) => {
+      code = SimpleCode(argLen = 1, (args, h, sem, utils) => {
         val resV = sem.CFGLoadHelper(args, Set(utils.absString.alpha("0")), h)
         val num = resV.toAbsNumber(utils.absNumber).sqrt
         Value(PValue(num)(utils))
       })
     ), T, F, T),
 
-    ("tan", BuiltinFuncModel(
+    ("tan", FuncModel(
       name = "Math.tan",
-      argLen = 1,
-      code = SimpleCode((args, h, sem, utils) => {
+      code = SimpleCode(argLen = 1, (args, h, sem, utils) => {
         val resV = sem.CFGLoadHelper(args, Set(utils.absString.alpha("0")), h)
         val num = resV.toAbsNumber(utils.absNumber).tan
         Value(PValue(num)(utils))
       })
     ), T, F, T)
   )
-) with Builtin
+)

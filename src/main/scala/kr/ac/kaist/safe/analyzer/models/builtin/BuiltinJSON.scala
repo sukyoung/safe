@@ -20,4 +20,4 @@ object BuiltinJSON extends ObjModel(
   props = List(
     ("@class", PrimModel("Math"), F, F, F)
   )
-) with Builtin
+)

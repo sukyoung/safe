@@ -11,16 +11,20 @@
 
 package kr.ac.kaist.safe.analyzer.models.builtin
 
-import kr.ac.kaist.safe.analyzer.models.{ PrimModel, FuncModel, EmptyCode }
+import kr.ac.kaist.safe.analyzer.models._
 
 // TODO Boolean
 object BuiltinBoolean extends FuncModel(
   name = "Boolean",
   props = List(),
-  protoProps = List(
+  code = EmptyCode(1),
+  hasConstruct = T,
+  protoModel = Some((BuiltinBooleanProto, F, F, F))
+)
+
+object BuiltinBooleanProto extends ObjModel(
+  name = "Boolean.prototype",
+  props = List(
     ("@class", PrimModel("Boolean"), F, F, F)
-  ),
-  prototypeWritable = F,
-  argLen = 1,
-  code = EmptyCode
-) with Builtin
+  )
+)

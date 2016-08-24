@@ -13,144 +13,133 @@ package kr.ac.kaist.safe.analyzer.models.builtin
 
 import kr.ac.kaist.safe.analyzer.models._
 
+// TODO Object
 object BuiltinObject extends FuncModel(
   name = "Object",
   props = List(
     // TODO getPrototypeOf
-    ("getPrototypeOf", BuiltinFuncModel(
+    ("getPrototypeOf", FuncModel(
       name = "Object.getPrototypeOf",
-      argLen = 1,
-      code = EmptyCode
+      code = EmptyCode(argLen = 1)
     ), T, F, T),
 
     // TODO getOwnPropertyDescriptor
-    ("getOwnPropertyDescriptor", BuiltinFuncModel(
+    ("getOwnPropertyDescriptor", FuncModel(
       name = "Object.getOwnPropertyDescriptor",
-      argLen = 2,
-      code = EmptyCode
+      code = EmptyCode(argLen = 2)
     ), T, F, T),
 
     // TODO getOwnPropertyNames
-    ("getOwnPropertyNames", BuiltinFuncModel(
+    ("getOwnPropertyNames", FuncModel(
       name = "Object.getOwnPropertyNames",
-      argLen = 1,
-      code = EmptyCode
+      code = EmptyCode(argLen = 1)
     ), T, F, T),
 
     // TODO create
-    ("create", BuiltinFuncModel(
+    ("create", FuncModel(
       name = "Object.create",
-      argLen = 2,
-      code = EmptyCode
+      code = EmptyCode(argLen = 2)
     ), T, F, T),
 
     // TODO defineProperty
-    ("defineProperty", BuiltinFuncModel(
+    ("defineProperty", FuncModel(
       name = "Object.defineProperty",
-      argLen = 3,
-      code = EmptyCode
+      code = EmptyCode(argLen = 3)
     ), T, F, T),
 
     // TODO defineProperties
-    ("defineProperties", BuiltinFuncModel(
+    ("defineProperties", FuncModel(
       name = "Object.defineProperties",
-      argLen = 2,
-      code = EmptyCode
+      code = EmptyCode(argLen = 2)
     ), T, F, T),
 
     // TODO seal
-    ("seal", BuiltinFuncModel(
+    ("seal", FuncModel(
       name = "Object.seal",
-      argLen = 1,
-      code = EmptyCode
+      code = EmptyCode(argLen = 1)
     ), T, F, T),
 
     // TODO freeze
-    ("freeze", BuiltinFuncModel(
+    ("freeze", FuncModel(
       name = "Object.freeze",
-      argLen = 1,
-      code = EmptyCode
+      code = EmptyCode(argLen = 1)
     ), T, F, T),
 
     // TODO preventExtensions
-    ("preventExtensions", BuiltinFuncModel(
+    ("preventExtensions", FuncModel(
       name = "Object.preventExtensions",
-      argLen = 1,
-      code = EmptyCode
+      code = EmptyCode(argLen = 1)
     ), T, F, T),
 
     // TODO isSealed
-    ("isSealed", BuiltinFuncModel(
+    ("isSealed", FuncModel(
       name = "Object.isSealed",
-      argLen = 1,
-      code = EmptyCode
+      code = EmptyCode(argLen = 1)
     ), T, F, T),
 
     // TODO isFrozen
-    ("isFrozen", BuiltinFuncModel(
+    ("isFrozen", FuncModel(
       name = "Object.isFrozen",
-      argLen = 1,
-      code = EmptyCode
+      code = EmptyCode(argLen = 1)
     ), T, F, T),
 
     // TODO isExtensible
-    ("isExtensible", BuiltinFuncModel(
+    ("isExtensible", FuncModel(
       name = "Object.isExtensible",
-      argLen = 1,
-      code = EmptyCode
+      code = EmptyCode(argLen = 1)
     ), T, F, T),
 
     // TODO keys
-    ("keys", BuiltinFuncModel(
+    ("keys", FuncModel(
       name = "Object.keys",
-      argLen = 1,
-      code = EmptyCode
+      code = EmptyCode(argLen = 1)
     ), T, F, T)
   ),
-  protoProps = List(
+  // TODO @function
+  code = EmptyCode(1),
+  hasConstruct = T,
+  protoModel = Some((BuiltinObjectProto, F, F, F))
+)
+
+object BuiltinObjectProto extends ObjModel(
+  name = "Object.prototype",
+  props = List(
     ("@proto", PrimModel(null), F, F, F),
 
     // TODO toString
-    ("toString", BuiltinFuncModel(
+    ("toString", FuncModel(
       name = "Object.prototype.toString",
-      code = EmptyCode
+      code = EmptyCode()
     ), T, F, T),
 
     // TODO toLocaleString
-    ("toLocaleString", BuiltinFuncModel(
+    ("toLocaleString", FuncModel(
       name = "Object.prototype.toLocaleString",
-      code = EmptyCode
+      code = EmptyCode()
     ), T, F, T),
 
     // TODO valueOf
-    ("valueOf", BuiltinFuncModel(
+    ("valueOf", FuncModel(
       name = "Object.prototype.valueOf",
-      code = EmptyCode
+      code = EmptyCode()
     ), T, F, T),
 
     // TODO hasOwnProperty
-    ("hasOwnProperty", BuiltinFuncModel(
+    ("hasOwnProperty", FuncModel(
       name = "Object.prototype.hasOwnProperty",
-      argLen = 1,
-      code = EmptyCode
+      code = EmptyCode(argLen = 1)
     ), T, F, T),
 
     // TODO isPrototypeOf
-    ("isPrototypeOf", BuiltinFuncModel(
+    ("isPrototypeOf", FuncModel(
       name = "Object.prototype.isPrototypeOf",
-      argLen = 1,
-      code = EmptyCode
+      code = EmptyCode(argLen = 1)
     ), T, F, T),
 
     // TODO propertyIsEnumerable
-    ("propertyIsEnumerable", BuiltinFuncModel(
+    ("propertyIsEnumerable", FuncModel(
       name = "Object.prototype.propertyIsEnumerable",
-      argLen = 1,
-      code = EmptyCode
+      code = EmptyCode(argLen = 1)
     ), T, F, T)
-  ),
-  prototypeWritable = F,
-  argLen = 1,
-  // TODO @function
-  code = EmptyCode
-) with Builtin
+  )
+)

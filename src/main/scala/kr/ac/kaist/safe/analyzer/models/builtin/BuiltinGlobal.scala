@@ -22,67 +22,58 @@ object BuiltinGlobal extends ObjModel(
     ("Infinity", PrimModel(Double.PositiveInfinity), F, F, F),
     ("undefined", PrimModel(), F, F, F),
 
-    ("eval", BuiltinFuncModel(
+    ("eval", FuncModel(
       name = "Global.eval",
-      argLen = 1,
       // TODO code
-      code = EmptyCode
+      code = EmptyCode(argLen = 1)
     ), T, F, T),
 
-    ("parseInt", BuiltinFuncModel(
+    ("parseInt", FuncModel(
       name = "Global.parseInt",
-      argLen = 2,
       // TODO code
-      code = EmptyCode
+      code = EmptyCode(argLen = 2)
     ), T, F, T),
 
-    ("parseFloat", BuiltinFuncModel(
+    ("parseFloat", FuncModel(
       name = "Global.parseFloat",
-      argLen = 1,
       // TODO code
-      code = EmptyCode
+      code = EmptyCode(argLen = 1)
     ), T, F, T),
 
-    ("isNaN", BuiltinFuncModel(
+    ("isNaN", FuncModel(
       name = "Global.isNaN",
-      argLen = 1,
       // TODO code
-      code = EmptyCode
+      code = EmptyCode(argLen = 1)
     ), T, F, T),
 
-    ("isFinite", BuiltinFuncModel(
+    ("isFinite", FuncModel(
       name = "Global.isFinite",
-      argLen = 1,
       // TODO code
-      code = EmptyCode
+      code = EmptyCode(argLen = 1)
     ), T, F, T),
 
-    ("decodeURI", BuiltinFuncModel(
+    ("decodeURI", FuncModel(
       name = "Global.decodeURI",
-      argLen = 1,
       // TODO code
-      code = EmptyCode
+      code = EmptyCode(argLen = 1)
     ), T, F, T),
 
-    ("decodeURIComponent", BuiltinFuncModel(
+    ("decodeURIComponent", FuncModel(
       name = "Global.decodeURIComponent",
-      argLen = 1,
       // TODO code
-      code = EmptyCode
+      code = EmptyCode(argLen = 1)
     ), T, F, T),
 
-    ("encodeURI", BuiltinFuncModel(
+    ("encodeURI", FuncModel(
       name = "Global.encodeURI",
-      argLen = 1,
       // TODO code
-      code = EmptyCode
+      code = EmptyCode(argLen = 1)
     ), T, F, T),
 
-    ("encodeURIComponent", BuiltinFuncModel(
+    ("encodeURIComponent", FuncModel(
       name = "Global.encodeURIComponent",
-      argLen = 1,
       // TODO code
-      code = EmptyCode
+      code = EmptyCode(argLen = 1)
     ), T, F, T),
 
     ("Object", BuiltinObject, T, F, T),
@@ -105,4 +96,4 @@ object BuiltinGlobal extends ObjModel(
     (NodeUtil.GLOBAL_NAME, SelfModel, F, F, F),
     (NodeUtil.VAR_TRUE, PrimModel(true), F, F, F)
   )
-) with Builtin
+)

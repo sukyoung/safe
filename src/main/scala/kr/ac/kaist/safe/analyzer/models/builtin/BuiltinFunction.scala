@@ -11,16 +11,22 @@
 
 package kr.ac.kaist.safe.analyzer.models.builtin
 
-import kr.ac.kaist.safe.analyzer.models.{ PrimModel, FuncModel, EmptyCode }
+import kr.ac.kaist.safe.analyzer.models._
 
+// TODO Function
 object BuiltinFunction extends FuncModel(
   name = "Function",
-  protoProps = List(
+  props = List(),
+  // TODO @function
+  code = EmptyCode(argLen = 1),
+  hasConstruct = T,
+  protoModel = Some((BuiltinFunctionProto, F, F, F))
+)
+
+object BuiltinFunctionProto extends ObjModel(
+  name = "Function.prototype",
+  props = List(
     ("@class", PrimModel("Function"), F, F, F),
     ("length", PrimModel(0), F, F, F)
-  ),
-  prototypeWritable = F,
-  argLen = 1,
-  // TODO @function
-  code = EmptyCode
-) with Builtin
+  )
+)

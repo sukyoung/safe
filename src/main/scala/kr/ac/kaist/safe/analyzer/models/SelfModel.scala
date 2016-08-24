@@ -9,13 +9,11 @@
  * ****************************************************************************
  */
 
-package kr.ac.kaist.safe.analyzer
+package kr.ac.kaist.safe.analyzer.models
 
-import kr.ac.kaist.safe.analyzer.domain.State
+import kr.ac.kaist.safe.analyzer.domain._
+import kr.ac.kaist.safe.nodes.cfg.CFG
 
-package object models {
-  type SemanticFun = (Semantics, State) => (State, State)
-  type PropDesc = (String, Model, Boolean, Boolean, Boolean)
-  val T = true
-  val F = false
+object SelfModel extends Model {
+  def init(h: Heap, cfg: CFG, utils: Utils): (Heap, Value) = (h, Value.Bot(utils))
 }

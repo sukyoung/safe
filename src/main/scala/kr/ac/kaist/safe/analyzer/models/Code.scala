@@ -20,6 +20,7 @@ import kr.ac.kaist.safe.nodes.ast.{ ModelFunc, ASTNodeInfo }
 import kr.ac.kaist.safe.util.Span
 
 abstract class Code {
+  val argLen: Int = 0
   def getCFGFunc(cfg: CFG, name: String, utils: Utils): CFGFunction
   protected def createCFGFunc(
     cfg: CFG,
@@ -35,15 +36,21 @@ abstract class Code {
   }
 }
 
-object EmptyCode extends Code {
+class EmptyCode(
+    override val argLen: Int = 0
+) extends Code {
   def getCFGFunc(cfg: CFG, name: String, utils: Utils): CFGFunction = {
     val (_, _, func) = createCFGFunc(cfg, name, utils)
     cfg.addEdge(func.entry, func.exit)
     func
   }
 }
+object EmptyCode {
+  def apply(argLen: Int = 0): EmptyCode = new EmptyCode(argLen)
+}
 
 class BasicCode(
+    override val argLen: Int = 0,
     code: (Value, Heap, Semantics, Utils) => (Heap, Heap, Value)
 ) extends Code {
   def getCFGFunc(cfg: CFG, name: String, utils: Utils): CFGFunction = {
@@ -78,17 +85,20 @@ class BasicCode(
 }
 object BasicCode {
   def apply(
+    argLen: Int = 0,
     code: (Value, Heap, Semantics, Utils) => (Heap, Heap, Value)
-  ): BasicCode = new BasicCode(code)
+  ): BasicCode = new BasicCode(argLen, code)
 }
 
 class SimpleCode(
+  override val argLen: Int = 0,
   code: (Value, Heap, Semantics, Utils) => Value
-) extends BasicCode((v: Value, h: Heap, sem: Semantics, utils: Utils) => {
+) extends BasicCode(argLen, (v: Value, h: Heap, sem: Semantics, utils: Utils) => {
   (h, Heap.Bot, code(v, h, sem, utils))
 })
 object SimpleCode {
   def apply(
+    argLen: Int = 0,
     code: (Value, Heap, Semantics, Utils) => Value
-  ): SimpleCode = new SimpleCode(code)
+  ): SimpleCode = new SimpleCode(argLen, code)
 }

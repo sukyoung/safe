@@ -11,16 +11,20 @@
 
 package kr.ac.kaist.safe.analyzer.models.builtin
 
-import kr.ac.kaist.safe.analyzer.models.{ PrimModel, FuncModel, EmptyCode }
+import kr.ac.kaist.safe.analyzer.models._
 
 // TODO Date
 object BuiltinDate extends FuncModel(
   name = "Date",
   props = List(),
-  protoProps = List(
+  code = EmptyCode(1),
+  hasConstruct = T,
+  protoModel = Some((BuiltinDateProto, F, F, F))
+)
+
+object BuiltinDateProto extends ObjModel(
+  name = "Date.prototype",
+  props = List(
     ("@class", PrimModel("Date"), F, F, F)
-  ),
-  prototypeWritable = F,
-  argLen = 1,
-  code = EmptyCode
-) with Builtin
+  )
+)

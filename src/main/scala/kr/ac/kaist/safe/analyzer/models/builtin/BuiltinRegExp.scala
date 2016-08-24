@@ -11,16 +11,20 @@
 
 package kr.ac.kaist.safe.analyzer.models.builtin
 
-import kr.ac.kaist.safe.analyzer.models.{ PrimModel, FuncModel, EmptyCode }
+import kr.ac.kaist.safe.analyzer.models._
 
 // TODO RegExp
 object BuiltinRegExp extends FuncModel(
   name = "RegExp",
   props = List(),
-  protoProps = List(
+  code = EmptyCode(2),
+  hasConstruct = T,
+  protoModel = Some((BuiltinRegExpProto, F, F, F))
+)
+
+object BuiltinRegExpProto extends ObjModel(
+  name = "RegExp.prototype",
+  props = List(
     ("@class", PrimModel("RegExp"), F, F, F)
-  ),
-  prototypeWritable = F,
-  argLen = 2,
-  code = EmptyCode
-) with Builtin
+  )
+)

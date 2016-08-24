@@ -11,18 +11,20 @@
 
 package kr.ac.kaist.safe.analyzer.models.builtin
 
-import kr.ac.kaist.safe.analyzer.models.{ PrimModel, FuncModel, EmptyCode }
+import kr.ac.kaist.safe.analyzer.models._
 
 // TODO String
 object BuiltinString extends FuncModel(
   name = "String",
+  props = List(),
+  code = EmptyCode(1),
+  hasConstruct = T,
+  protoModel = Some((BuiltinStringProto, F, F, F))
+)
+
+object BuiltinStringProto extends ObjModel(
+  name = "String.prototype",
   props = List(
-    ("length", PrimModel(1), F, F, F)
-  ),
-  protoProps = List(
     ("@class", PrimModel("String"), F, F, F)
-  ),
-  prototypeWritable = F,
-  argLen = 1,
-  code = EmptyCode
-) with Builtin
+  )
+)
