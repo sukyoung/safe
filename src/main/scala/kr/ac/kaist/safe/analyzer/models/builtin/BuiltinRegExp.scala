@@ -13,14 +13,14 @@ package kr.ac.kaist.safe.analyzer.models.builtin
 
 import kr.ac.kaist.safe.analyzer.models.{ PrimModel, FuncModel, EmptyCode }
 
-// TODO Boolean
-object BuiltinBoolean extends FuncModel(
-  name = "Boolean",
+// TODO RegExp
+object BuiltinRegExp extends FuncModel(
+  name = "RegExp",
   props = List(),
   protoProps = List(
-    ("@class", PrimModel("Boolean"), F, F, F)
+    ("@class", PrimModel("RegExp"), F, F, F)
   ),
   prototypeWritable = F,
-  argLen = 1,
+  argLen = 2,
   code = EmptyCode
 ) with Builtin

@@ -13,12 +13,12 @@ package kr.ac.kaist.safe.analyzer.models.builtin
 
 import kr.ac.kaist.safe.analyzer.models.{ PrimModel, FuncModel, EmptyCode }
 
-// TODO Boolean
-object BuiltinBoolean extends FuncModel(
-  name = "Boolean",
+// TODO Date
+object BuiltinDate extends FuncModel(
+  name = "Date",
   props = List(),
   protoProps = List(
-    ("@class", PrimModel("Boolean"), F, F, F)
+    ("@class", PrimModel("Date"), F, F, F)
   ),
   prototypeWritable = F,
   argLen = 1,

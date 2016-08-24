@@ -13,70 +13,117 @@ package kr.ac.kaist.safe.analyzer.models.builtin
 
 import kr.ac.kaist.safe.analyzer.models._
 
+//TODO Error
 object BuiltinError extends FuncModel(
-  "Error",
-  EmptyCode,
-  Nil,
-  ("name", PrimModel("Error"), T, F, T) ::
-    ("message", PrimModel(""), T, F, T) :: Nil
+  name = "Error",
+  props = Nil,
+  protoProps = List(
+    ("name", PrimModel("Error"), T, F, T),
+    ("message", PrimModel(""), T, F, T)
+  ),
+  prototypeWritable = F,
+  argLen = 1,
+  code = EmptyCode
 ) with Builtin
 
+// TODO EvalError
 object BuiltinEvalError extends FuncModel(
-  "EvalError",
-  EmptyCode,
-  ("@proto", BuiltinError, F, F, F) ::
-    ("name", PrimModel("EvalError"), T, F, T) :: Nil,
-  ("@proto", BuiltinError.protoModel, F, F, F) ::
-    ("name", PrimModel("EvalError"), T, F, T) ::
-    ("message", PrimModel(""), T, F, T) :: Nil
+  name = "EvalError",
+  props = List(
+    ("@proto", BuiltinError, F, F, F),
+    ("name", PrimModel("EvalError"), T, F, T)
+  ),
+  protoProps = List(
+    ("@proto", BuiltinError.protoModel, F, F, F),
+    ("name", PrimModel("EvalError"), T, F, T),
+    ("message", PrimModel(""), T, F, T)
+  ),
+  prototypeWritable = F,
+  argLen = 1,
+  code = EmptyCode
 ) with Builtin
 
+// TODO RangeError
 object BuiltinRangeError extends FuncModel(
-  "RangeError",
-  EmptyCode,
-  ("@proto", BuiltinError, F, F, F) ::
-    ("name", PrimModel("RangeError"), T, F, T) :: Nil,
-  ("@proto", BuiltinError.protoModel, F, F, F) ::
-    ("name", PrimModel("RangeError"), T, F, T) ::
-    ("message", PrimModel(""), T, F, T) :: Nil
+  name = "RangeError",
+  props = List(
+    ("@proto", BuiltinError, F, F, F),
+    ("name", PrimModel("RangeError"), T, F, T)
+  ),
+  protoProps = List(
+    ("@proto", BuiltinError.protoModel, F, F, F),
+    ("name", PrimModel("RangeError"), T, F, T),
+    ("message", PrimModel(""), T, F, T)
+  ),
+  prototypeWritable = F,
+  argLen = 1,
+  code = EmptyCode
 ) with Builtin
 
+// TODO ReferenceError
 object BuiltinReferenceError extends FuncModel(
-  "ReferenceError",
-  EmptyCode,
-  ("@proto", BuiltinError, F, F, F) ::
-    ("name", PrimModel("ReferenceError"), T, F, T) :: Nil,
-  ("@proto", BuiltinError.protoModel, F, F, F) ::
-    ("name", PrimModel("ReferenceError"), T, F, T) ::
-    ("message", PrimModel(""), T, F, T) :: Nil
+  name = "ReferenceError",
+  props = List(
+    ("@proto", BuiltinError, F, F, F),
+    ("name", PrimModel("ReferenceError"), T, F, T)
+  ),
+  protoProps = List(
+    ("@proto", BuiltinError.protoModel, F, F, F),
+    ("name", PrimModel("ReferenceError"), T, F, T),
+    ("message", PrimModel(""), T, F, T)
+  ),
+  prototypeWritable = F,
+  argLen = 1,
+  code = EmptyCode
 ) with Builtin
 
+// TODO SyntaxError
 object BuiltinSyntaxError extends FuncModel(
-  "SyntaxError",
-  EmptyCode,
-  ("@proto", BuiltinError, F, F, F) ::
-    ("name", PrimModel("SyntaxError"), T, F, T) :: Nil,
-  ("@proto", BuiltinError.protoModel, F, F, F) ::
-    ("name", PrimModel("SyntaxError"), T, F, T) ::
-    ("message", PrimModel(""), T, F, T) :: Nil
+  name = "SyntaxError",
+  props = List(
+    ("@proto", BuiltinError, F, F, F),
+    ("name", PrimModel("SyntaxError"), T, F, T)
+  ),
+  protoProps = List(
+    ("@proto", BuiltinError.protoModel, F, F, F),
+    ("name", PrimModel("SyntaxError"), T, F, T),
+    ("message", PrimModel(""), T, F, T)
+  ),
+  prototypeWritable = F,
+  argLen = 1,
+  code = EmptyCode
 ) with Builtin
 
+// TODO TypeError
 object BuiltinTypeError extends FuncModel(
-  "TypeError",
-  EmptyCode,
-  ("@proto", BuiltinError, F, F, F) ::
-    ("name", PrimModel("TypeError"), T, F, T) :: Nil,
-  ("@proto", BuiltinError.protoModel, F, F, F) ::
-    ("name", PrimModel("TypeError"), T, F, T) ::
-    ("message", PrimModel(""), T, F, T) :: Nil
+  name = "TypeError",
+  props = List(
+    ("@proto", BuiltinError, F, F, F),
+    ("name", PrimModel("TypeError"), T, F, T)
+  ),
+  protoProps = List(
+    ("@proto", BuiltinError.protoModel, F, F, F),
+    ("name", PrimModel("TypeError"), T, F, T),
+    ("message", PrimModel(""), T, F, T)
+  ),
+  prototypeWritable = F,
+  argLen = 1,
+  code = EmptyCode
 ) with Builtin
 
+// TODO URIError
 object BuiltinURIError extends FuncModel(
-  "URIError",
-  EmptyCode,
-  ("@proto", BuiltinError, F, F, F) ::
-    ("name", PrimModel("URIError"), T, F, T) :: Nil,
-  ("@proto", BuiltinError.protoModel, F, F, F) ::
-    ("name", PrimModel("URIError"), T, F, T) ::
-    ("message", PrimModel(""), T, F, T) :: Nil
+  name = "URIError",
+  props = List(
+    ("@proto", BuiltinError, F, F, F),
+    ("name", PrimModel("URIError"), T, F, T)
+  ),
+  protoProps = List(
+    ("@proto", BuiltinError.protoModel, F, F, F),
+    ("name", PrimModel("URIError"), T, F, T),
+    ("message", PrimModel(""), T, F, T)
+  ),
+  prototypeWritable = F,
+  argLen = 1,
+  code = EmptyCode
 ) with Builtin

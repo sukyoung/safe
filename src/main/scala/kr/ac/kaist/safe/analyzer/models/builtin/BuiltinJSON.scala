@@ -11,16 +11,13 @@
 
 package kr.ac.kaist.safe.analyzer.models.builtin
 
-import kr.ac.kaist.safe.analyzer.models.{ PrimModel, FuncModel, EmptyCode }
+import kr.ac.kaist.safe.analyzer.domain._
+import kr.ac.kaist.safe.analyzer.models._
 
-// TODO Boolean
-object BuiltinBoolean extends FuncModel(
-  name = "Boolean",
-  props = List(),
-  protoProps = List(
-    ("@class", PrimModel("Boolean"), F, F, F)
-  ),
-  prototypeWritable = F,
-  argLen = 1,
-  code = EmptyCode
+// TODO JSON
+object BuiltinJSON extends ObjModel(
+  name = "JSON",
+  props = List(
+    ("@class", PrimModel("Math"), F, F, F)
+  )
 ) with Builtin

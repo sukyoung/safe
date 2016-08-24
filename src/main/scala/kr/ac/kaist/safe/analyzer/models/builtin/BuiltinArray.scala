@@ -13,9 +13,14 @@ package kr.ac.kaist.safe.analyzer.models.builtin
 
 import kr.ac.kaist.safe.analyzer.models.{ PrimModel, FuncModel, EmptyCode }
 
+// TODO Array
 object BuiltinArray extends FuncModel(
-  "Array",
-  EmptyCode,
-  ("length", PrimModel(1), F, F, F) :: Nil,
-  ("@class", PrimModel("Array"), F, F, F) :: Nil
+  name = "Array",
+  props = List(),
+  protoProps = List(
+    ("@class", PrimModel("Array"), F, F, F)
+  ),
+  prototypeWritable = F,
+  argLen = 1,
+  code = EmptyCode
 ) with Builtin
