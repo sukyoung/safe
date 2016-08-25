@@ -143,9 +143,10 @@ class CoreTest extends FlatSpec {
 
   val analyzerTestDir = BASE_DIR + SEP + "tests/js/semantics"
   for (filename <- scala.util.Random.shuffle(new File(analyzerTestDir).list(jsFilter).toSeq)) {
-    val jsName = analyzerTestDir + SEP + filename
-
-    val analysis = CmdAnalyze(List("-analyzer:testMode", jsName))
-    registerTest("[Analyze]" + filename, AnalyzeTest) { analyzeTest(analysis) }
+    registerTest("[Analyze]" + filename, AnalyzeTest) {
+      val jsName = analyzerTestDir + SEP + filename
+      val analysis = CmdAnalyze(List("-analyzer:testMode", jsName))
+      analyzeTest(analysis)
+    }
   }
 }
