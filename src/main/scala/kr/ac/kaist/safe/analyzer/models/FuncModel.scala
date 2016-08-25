@@ -28,9 +28,11 @@ class FuncModel(
     case None => {
       val AT = utils.absBool.True
       val AF = utils.absBool.False
+      val AB = utils.absBool.Bot
+      def toAB(b: Boolean): AbsBool = utils.absBool.alpha(b)
 
       // [model].prototype object
-      val (h1, protoOpt) = protoModel match {
+      val (h1, protoOpt, writable, enumerable, configurable) = protoModel match {
         case Some((objModel, writable, enumerable, configurable)) => {
           (h(objModel.loc) match {
             case Some(_) => h
@@ -43,9 +45,9 @@ class FuncModel(
                 ))
               })
             }
-          }, Some(objModel.loc))
+          }, Some(objModel.loc), toAB(writable), toAB(enumerable), toAB(configurable))
         }
-        case None => (h, None)
+        case None => (h, None, AB, AB, AB)
       }
 
       // [model] function object
@@ -54,7 +56,16 @@ class FuncModel(
       val constructIdOpt = construct.map(_.getCFGFunc(cfg, name, utils).id)
       val scope = Value(PValue(utils.absNull.Top)(utils)) // TODO get scope as args
       val n = utils.absNumber.alpha(code.argLen)
-      val funcObj = Obj.newFunctionObject(fidOpt, constructIdOpt, scope, protoOpt, n)(utils)
+      val funcObj = Obj.newFunctionObject(
+        fidOpt,
+        constructIdOpt,
+        scope,
+        protoOpt,
+        writable,
+        enumerable,
+        configurable,
+        n
+      )(utils)
       initObj(h1, cfg, utils, loc, funcObj, props)
     }
   }

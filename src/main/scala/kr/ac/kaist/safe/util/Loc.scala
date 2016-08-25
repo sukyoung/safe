@@ -22,7 +22,7 @@ case class Loc(address: Address, recency: RecencyTag = Recent) {
 object Loc {
   def parse(str: String): Try[Loc] = {
     val pgmPattern = "(#|##)([0-9]+)".r
-    val sysPattern = "(#|##)([0-9a-zA-Z.]+)".r
+    val sysPattern = "(#|##)([0-9a-zA-Z.<>]+)".r
     str match {
       case pgmPattern(prefix, idStr) =>
         RecencyTag.parse(prefix).map(Loc(ProgramAddr(idStr.toInt), _))

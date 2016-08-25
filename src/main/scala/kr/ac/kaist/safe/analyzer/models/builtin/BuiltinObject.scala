@@ -26,7 +26,7 @@ object BuiltinObject extends FuncModel(
   ) => {
     val h = st.heap
     val argV = sem.CFGLoadHelper(args, Set(utils.absString.alpha("0")), h)
-    val addr = SystemAddr("<>instance<>Object")
+    val addr = SystemAddr("Object<instance>")
 
     // 1. If value is null, undefined or not supplied, create and return
     //    a new Object object exactly as if the standard built-in Object
@@ -57,7 +57,7 @@ object BuiltinObject extends FuncModel(
   ) => {
     val h = st.heap
     val argV = sem.CFGLoadHelper(args, Set(utils.absString.alpha("0")), h)
-    val addr = SystemAddr("<>instance<>Object")
+    val addr = SystemAddr("Object<instance>")
 
     // 1. If value is supplied, then
     //    a. If Type(value) is Object, then
@@ -103,7 +103,7 @@ object BuiltinObject extends FuncModel(
       ) => {
         val h = st.heap
         val argV = sem.CFGLoadHelper(args, Set(utils.absString.alpha("0")), h)
-        val tmpAddr = SystemAddr("temp")
+        val tmpAddr = SystemAddr("<temp>")
 
         val (retV, retSt, excSet) = Helper(utils).toObject(st, argV, tmpAddr)
 
@@ -119,10 +119,61 @@ object BuiltinObject extends FuncModel(
       })
     ), T, F, T),
 
-    // TODO getOwnPropertyDescriptor
+    // 15.2.3.3 getOwnPropertyDescriptor(O, P)
     ("getOwnPropertyDescriptor", FuncModel(
       name = "Object.getOwnPropertyDescriptor",
-      code = EmptyCode(argLen = 2)
+      code = BasicCode(argLen = 2, (
+        args: Value, st: State, sem: Semantics, utils: Utils
+      ) => {
+        val h = st.heap
+        val objV = sem.CFGLoadHelper(args, Set(utils.absString.alpha("0")), h)
+        val strV = sem.CFGLoadHelper(args, Set(utils.absString.alpha("1")), h)
+        val tmpAddr = SystemAddr("<temp>")
+        val descAddr = SystemAddr("Object.getOwnPropertyDescriptor<descriptor>")
+        val AT = utils.absBool.alpha(true)
+        val AF = utils.absBool.alpha(false)
+
+        val (locV, retSt, excSet) = Helper(utils).toObject(st, objV, tmpAddr)
+
+        // 1. If Type(O) is not Object throw a TypeError exception.
+        val excSt = st.raiseException(excSet)(utils)
+
+        // 2. Let name be ToString(P).
+        val name = strV
+          .toPrimitiveBetter(h)(utils)
+          .toAbsString(utils.absString)
+
+        // 3. Let desc be the result of calling the [[GetOwnProperty]]
+        //    internal method of O with argument name.
+        // 4. Return the result of calling FromPropertyDescriptor(desc)
+        val obj = locV.locset.foldLeft(Obj.Bot(utils))((obj, loc) => {
+          obj + retSt.heap.getOrElse(loc, Obj.Bot(utils))
+        })
+        val isDomIn = (obj domIn name)(utils.absBool)
+        val v1 =
+          if (AF <= isDomIn) Value(PValue(utils.absUndef.Top)(utils))
+          else Value.Bot(utils)
+        val (state, v2) =
+          if (AT <= isDomIn) {
+            val objval = obj(name).getOrElse(PropValue.Bot(utils)).objval
+            val valueV = objval.value
+            val writableV = Value(PValue(objval.writable)(utils))
+            val enumerableV = Value(PValue(objval.enumerable)(utils))
+            val configurableV = Value(PValue(objval.configurable)(utils))
+            val descObj = Obj.newObject(utils)
+              .update("value", PropValue(ObjectValue(valueV, AT, AF, AT)))
+              .update("writable", PropValue(ObjectValue(writableV, AT, AF, AT)))
+              .update("enumerable", PropValue(ObjectValue(enumerableV, AT, AF, AT)))
+              .update("configurable", PropValue(ObjectValue(configurableV, AT, AF, AT)))
+            val state = st.oldify(descAddr)(utils)
+            val descLoc = Loc(descAddr, Recent)
+            val retHeap = state.heap.update(descLoc, descObj)
+            val ctx = state.context
+            (State(retHeap, ctx), Value(descLoc)(utils))
+          } else (st, Value.Bot(utils))
+
+        (state, excSt, v1 + v2)
+      })
     ), T, F, T),
 
     // TODO getOwnPropertyNames
