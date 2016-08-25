@@ -51,7 +51,7 @@ object EmptyCode {
 
 class BasicCode(
     override val argLen: Int = 0,
-    code: (Value, Heap, Semantics, Utils) => (Heap, Heap, Value)
+    code: (Value, State, Semantics, Utils) => (State, State, Value)
 ) extends Code {
   def getCFGFunc(cfg: CFG, name: String, utils: Utils): CFGFunction = {
     val (funName, argsName, func) = createCFGFunc(cfg, name, utils)
@@ -70,10 +70,10 @@ class BasicCode(
         case Some(localObj) => {
           localObj(argsName) match {
             case Some(pv) => {
-              val (h, he, retV) = code(pv.objval.value, heap, sem, utils)
+              val (retSt, retSte, retV) = code(pv.objval.value, st, sem, utils)
               val retObj = localObj.update("@return", PropValue(ObjectValue(retV)(utils)))
-              val retHeap = h.update(SINGLE_PURE_LOCAL, retObj)
-              (State(retHeap, ctx), State(he, Context.Bot))
+              val retHeap = retSt.heap.update(SINGLE_PURE_LOCAL, retObj)
+              (State(retHeap, st.context), retSte)
             }
             case None => stBotPair // TODO dead code
           }
@@ -86,15 +86,15 @@ class BasicCode(
 object BasicCode {
   def apply(
     argLen: Int = 0,
-    code: (Value, Heap, Semantics, Utils) => (Heap, Heap, Value)
+    code: (Value, State, Semantics, Utils) => (State, State, Value)
   ): BasicCode = new BasicCode(argLen, code)
 }
 
 class SimpleCode(
   override val argLen: Int = 0,
   code: (Value, Heap, Semantics, Utils) => Value
-) extends BasicCode(argLen, (v: Value, h: Heap, sem: Semantics, utils: Utils) => {
-  (h, Heap.Bot, code(v, h, sem, utils))
+) extends BasicCode(argLen, (v: Value, st: State, sem: Semantics, utils: Utils) => {
+  (st, State.Bot, code(v, st.heap, sem, utils))
 })
 object SimpleCode {
   def apply(
