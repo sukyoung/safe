@@ -18,7 +18,8 @@ object BuiltinFunction extends FuncModel(
   name = "Function",
   // TODO @function
   code = EmptyCode(argLen = 1),
-  hasConstruct = T,
+  // TODO @construct
+  construct = Some(EmptyCode()),
   protoModel = Some((BuiltinFunctionProto, F, F, F))
 )
 

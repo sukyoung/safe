@@ -37,7 +37,8 @@ object BuiltinDate extends FuncModel(
       code = EmptyCode(argLen = 0)
     ), T, F, T)
   ),
-  hasConstruct = T,
+  // TODO @construct
+  construct = Some(EmptyCode()),
   protoModel = Some((BuiltinDateProto, F, F, F))
 )
 

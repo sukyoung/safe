@@ -20,7 +20,7 @@ class FuncModel(
     override val name: String,
     override val props: List[PropDesc] = Nil,
     val code: Code = EmptyCode(),
-    val hasConstruct: Boolean = F,
+    val construct: Option[Code] = None,
     val protoModel: Option[(ObjModel, Boolean, Boolean, Boolean)] = None
 ) extends ObjModel(name, props) {
   override def initHeap(h: Heap, cfg: CFG, utils: Utils): Heap = h(loc) match {
@@ -51,7 +51,7 @@ class FuncModel(
       // [model] function object
       val func = code.getCFGFunc(cfg, name, utils)
       val fidOpt = Some(func.id)
-      val constructIdOpt = if (hasConstruct) Some(func.id) else None
+      val constructIdOpt = construct.map(_.getCFGFunc(cfg, name, utils).id)
       val scope = Value(PValue(utils.absNull.Top)(utils)) // TODO get scope as args
       val n = utils.absNumber.alpha(code.argLen)
       val funcObj = Obj.newFunctionObject(fidOpt, constructIdOpt, scope, protoOpt, n)(utils)
@@ -65,7 +65,7 @@ object FuncModel {
     name: String,
     props: List[PropDesc] = Nil,
     code: Code = EmptyCode(),
-    hasConstruct: Boolean = F,
+    construct: Option[Code] = None,
     protoModel: Option[(ObjModel, Boolean, Boolean, Boolean)] = None
-  ): FuncModel = new FuncModel(name, props, code, hasConstruct, protoModel)
+  ): FuncModel = new FuncModel(name, props, code, construct, protoModel)
 }

@@ -97,7 +97,8 @@ object BuiltinObject extends FuncModel(
   ),
   // TODO @function
   code = EmptyCode(argLen = 1),
-  hasConstruct = T,
+  // TODO @construct
+  construct = Some(EmptyCode()),
   protoModel = Some((BuiltinObjectProto, F, F, F))
 )
 

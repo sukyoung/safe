@@ -21,7 +21,7 @@ class UserFuncModel(
   override val props: List[(String, Model, Boolean, Boolean, Boolean)] = Nil,
   val protoProps: List[(String, Model, Boolean, Boolean, Boolean)] = Nil,
   override val code: Code = EmptyCode()
-) extends FuncModel(name, props, code, T, Some((ObjModel(
+) extends FuncModel(name, props, code, Some(code), Some((ObjModel(
   name = s"$name.prototype",
   props = protoProps
 ), T, F, F)))

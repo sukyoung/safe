@@ -17,7 +17,8 @@ object BuiltinError extends FuncModel(
   name = "Error",
   // TODO @function
   code = EmptyCode(1),
-  hasConstruct = T,
+  // TODO @construct
+  construct = Some(EmptyCode()),
   protoModel = Some((BuiltinErrorProto, F, F, F))
 )
 
@@ -48,7 +49,8 @@ object BuiltinEvalError extends FuncModel(
   props = List(
     ("name", PrimModel("EvalError"), T, F, T)
   ),
-  hasConstruct = T,
+  // TODO @construct
+  construct = Some(EmptyCode()),
   protoModel = Some((BuiltinEvalErrorProto, F, F, F))
 )
 
@@ -70,7 +72,8 @@ object BuiltinRangeError extends FuncModel(
   props = List(
     ("name", PrimModel("RangeError"), T, F, T)
   ),
-  hasConstruct = T,
+  // TODO @construct
+  construct = Some(EmptyCode()),
   protoModel = Some((BuiltinRangeErrorProto, F, F, F))
 )
 
@@ -92,7 +95,8 @@ object BuiltinReferenceError extends FuncModel(
   props = List(
     ("name", PrimModel("ReferenceError"), T, F, T)
   ),
-  hasConstruct = T,
+  // TODO @construct
+  construct = Some(EmptyCode()),
   protoModel = Some((BuiltinReferenceErrorProto, F, F, F))
 )
 
@@ -114,7 +118,8 @@ object BuiltinSyntaxError extends FuncModel(
   props = List(
     ("name", PrimModel("SyntaxError"), T, F, T)
   ),
-  hasConstruct = T,
+  // TODO @construct
+  construct = Some(EmptyCode()),
   protoModel = Some((BuiltinSyntaxErrorProto, F, F, F))
 )
 
@@ -136,7 +141,8 @@ object BuiltinTypeError extends FuncModel(
   props = List(
     ("name", PrimModel("TypeError"), T, F, T)
   ),
-  hasConstruct = T,
+  // TODO @construct
+  construct = Some(EmptyCode()),
   protoModel = Some((BuiltinTypeErrorProto, F, F, F))
 )
 
@@ -158,7 +164,8 @@ object BuiltinURIError extends FuncModel(
   props = List(
     ("name", PrimModel("URIError"), T, F, T)
   ),
-  hasConstruct = T,
+  // TODO @construct
+  construct = Some(EmptyCode()),
   protoModel = Some((BuiltinURIErrorProto, F, F, F))
 )
 

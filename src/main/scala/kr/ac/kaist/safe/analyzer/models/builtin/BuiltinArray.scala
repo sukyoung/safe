@@ -24,7 +24,8 @@ object BuiltinArray extends FuncModel(
   ),
   // TODO @function
   code = EmptyCode(argLen = 1),
-  hasConstruct = T,
+  // TODO @construct
+  construct = Some(EmptyCode()),
   protoModel = Some((BuiltinArrayProto, F, F, F))
 )
 

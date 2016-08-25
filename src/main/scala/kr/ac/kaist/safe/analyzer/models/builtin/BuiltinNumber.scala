@@ -25,7 +25,8 @@ object BuiltinNumber extends FuncModel(
     ("NEGATIVE_INFINITY", PrimModel(Double.NegativeInfinity), F, F, F),
     ("POSITIVE_INFINITY", PrimModel(Double.PositiveInfinity), F, F, F)
   ),
-  hasConstruct = T,
+  // TODO @construct
+  construct = Some(EmptyCode()),
   protoModel = Some((BuiltinNumberProto, F, F, F))
 )
 

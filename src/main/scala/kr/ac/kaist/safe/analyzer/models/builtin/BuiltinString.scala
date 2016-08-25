@@ -24,7 +24,8 @@ object BuiltinString extends FuncModel(
   ),
   // TODO @function
   code = EmptyCode(1),
-  hasConstruct = T,
+  // TODO @construct
+  construct = Some(EmptyCode()),
   protoModel = Some((BuiltinStringProto, F, F, F))
 )
 

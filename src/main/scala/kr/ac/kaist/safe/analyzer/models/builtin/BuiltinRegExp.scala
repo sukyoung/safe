@@ -18,7 +18,8 @@ object BuiltinRegExp extends FuncModel(
   name = "RegExp",
   // TODO @function
   code = EmptyCode(2),
-  hasConstruct = T,
+  // TODO @construct
+  construct = Some(EmptyCode()),
   protoModel = Some((BuiltinRegExpProto, F, F, F))
 )
 

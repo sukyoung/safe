@@ -18,7 +18,7 @@ object BuiltinBoolean extends FuncModel(
   name = "Boolean",
   props = List(),
   code = EmptyCode(1),
-  hasConstruct = T,
+  construct = Some(EmptyCode()),
   protoModel = Some((BuiltinBooleanProto, F, F, F))
 )
 
