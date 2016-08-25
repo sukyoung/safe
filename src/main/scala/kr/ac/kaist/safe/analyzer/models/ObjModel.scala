@@ -21,13 +21,13 @@ class ObjModel(
     val props: List[PropDesc] = Nil
 ) extends Model {
   val loc: Loc = SystemLoc(name, Recent)
-  def init(h: Heap, cfg: CFG, utils: Utils): (Heap, Value) = (h(loc) match {
-    case Some(_) => h
-    case None => initHeap(h, cfg, utils)
-  }, Value(loc)(utils))
+  def init(h: Heap, cfg: CFG, utils: Utils): (Heap, Value) =
+    (initHeap(h, cfg, utils), Value(loc)(utils))
 
-  def initHeap(h: Heap, cfg: CFG, utils: Utils): Heap =
-    initObj(h, cfg, utils, loc, Obj.newObject(utils), props)
+  def initHeap(h: Heap, cfg: CFG, utils: Utils): Heap = h(loc) match {
+    case Some(_) => h
+    case None => initObj(h, cfg, utils, loc, Obj.newObject(utils), props)
+  }
 
   protected def initObj(
     h: Heap,

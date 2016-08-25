@@ -16,17 +16,41 @@ import kr.ac.kaist.safe.analyzer.models._
 // TODO Function
 object BuiltinFunction extends FuncModel(
   name = "Function",
-  props = List(),
   // TODO @function
   code = EmptyCode(argLen = 1),
   hasConstruct = T,
   protoModel = Some((BuiltinFunctionProto, F, F, F))
 )
 
-object BuiltinFunctionProto extends ObjModel(
+object BuiltinFunctionProto extends FuncModel(
   name = "Function.prototype",
+  // TODO @function
+  code = EmptyCode(argLen = 0),
   props = List(
-    ("@class", PrimModel("Function"), F, F, F),
-    ("length", PrimModel(0), F, F, F)
+    ("@proto", BuiltinObjectProto, F, F, F),
+
+    // TODO toString
+    ("toString", FuncModel(
+      name = "Function.prototype.toString",
+      code = EmptyCode(argLen = 0)
+    ), T, F, T),
+
+    // TODO apply
+    ("apply", FuncModel(
+      name = "Function.prototype.apply",
+      code = EmptyCode(argLen = 2)
+    ), T, F, T),
+
+    // TODO call
+    ("call", FuncModel(
+      name = "Function.prototype.call",
+      code = EmptyCode(argLen = 1)
+    ), T, F, T),
+
+    // TODO bind
+    ("bind", FuncModel(
+      name = "Function.prototype.bind",
+      code = EmptyCode(argLen = 1)
+    ), T, F, T)
   )
 )
