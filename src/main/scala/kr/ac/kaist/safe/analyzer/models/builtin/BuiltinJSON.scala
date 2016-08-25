@@ -18,6 +18,18 @@ import kr.ac.kaist.safe.analyzer.models._
 object BuiltinJSON extends ObjModel(
   name = "JSON",
   props = List(
-    ("@class", PrimModel("Math"), F, F, F)
+    ("@class", PrimModel("JSON"), F, F, F),
+
+    // TODO parse
+    ("parse", FuncModel(
+      name = "JSON.parse",
+      code = EmptyCode(argLen = 2)
+    ), T, F, T),
+
+    // TODO stringify
+    ("stringify", FuncModel(
+      name = "JSON.stringify",
+      code = EmptyCode(argLen = 3)
+    ), T, F, T)
   )
 )
