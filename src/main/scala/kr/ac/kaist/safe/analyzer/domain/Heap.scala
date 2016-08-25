@@ -172,14 +172,18 @@ class DHeap(val map: Map[Loc, Obj]) extends Heap {
 
   /* heap update */
   def update(loc: Loc, obj: Obj): Heap = {
-    // recent location
-    loc.recency match {
-      case Recent =>
-        if (obj.isBottom) Heap.Bot
-        else new DHeap(map.updated(loc, obj))
-      case Old =>
-        if (obj.isBottom) this.getOrElse(loc)(Heap.Bot) { _ => this }
-        else new DHeap(weakUpdated(map, loc, obj))
+    if (!isBottom) {
+      // recent location
+      loc.recency match {
+        case Recent =>
+          if (obj.isBottom) Heap.Bot
+          else new DHeap(map.updated(loc, obj))
+        case Old =>
+          if (obj.isBottom) this.getOrElse(loc)(Heap.Bot) { _ => this }
+          else new DHeap(weakUpdated(map, loc, obj))
+      }
+    } else {
+      this
     }
   }
 

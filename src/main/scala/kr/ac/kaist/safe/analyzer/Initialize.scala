@@ -16,6 +16,7 @@ import kr.ac.kaist.safe.analyzer.models._
 import kr.ac.kaist.safe.analyzer.models.builtin._
 import kr.ac.kaist.safe.nodes.cfg.CFG
 import kr.ac.kaist.safe.util.{ NodeUtil, Loc, Address }
+import scala.collection.immutable.HashMap
 
 import scala.collection.immutable.HashSet
 
@@ -27,9 +28,10 @@ case class Initialize(cfg: CFG, helper: Helper) {
 
     val globalPureLocalObj = Obj.newPureLocalObj(Value(PValue(utils.absNull.Top)(utils)), HashSet(PredefLoc.GLOBAL))(utils) - "@return"
 
-    val initHeap = Heap.Bot
-      .update(PredefLoc.SINGLE_PURE_LOCAL, globalPureLocalObj)
-      .update(PredefLoc.COLLAPSED, Obj.Empty(utils))
+    val initHeap = Heap(HashMap(
+      PredefLoc.SINGLE_PURE_LOCAL -> globalPureLocalObj,
+      PredefLoc.COLLAPSED -> Obj.Empty(utils)
+    ))
 
     val modeledHeap = BuiltinGlobal.initHeap(initHeap, cfg, utils)
 
