@@ -52,6 +52,7 @@ trait AbsNumberUtil {
 
   def alpha(d: Double): AbsNumber
   def alpha(l: Long): AbsNumber
+  def alpha(set: Set[Double]): AbsNumber
 }
 
 trait AbsBoolUtil {

@@ -39,6 +39,9 @@ object DefaultNumUtil extends AbsNumberUtil {
       else DefaultNumNUIntConst(num)
   }
 
+  def alpha(set: Set[Double]): AbsNumber =
+    set.foldLeft[AbsNumber](DefaultNumBot)((anum, num) => anum + alpha(num))
+
   sealed abstract class DefaultNumber extends AbsNumber {
     /* AbsDomain Interface */
     def gamma: ConSet[Double]

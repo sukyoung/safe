@@ -15,6 +15,7 @@ import kr.ac.kaist.safe.analyzer.{ Semantics, Helper }
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.analyzer.models._
 import kr.ac.kaist.safe.util.{ SystemAddr, Loc, Recent }
+import scala.collection.immutable.HashSet
 
 // 15.2 Object Objects
 object BuiltinObject extends FuncModel(
@@ -132,7 +133,6 @@ object BuiltinObject extends FuncModel(
         val descAddr = SystemAddr("Object.getOwnPropertyDescriptor<descriptor>")
         val AT = utils.absBool.alpha(true)
         val AF = utils.absBool.alpha(false)
-
         val (locV, retSt, excSet) = Helper(utils).toObject(st, objV, tmpAddr)
 
         // 1. If Type(O) is not Object throw a TypeError exception.
@@ -176,10 +176,64 @@ object BuiltinObject extends FuncModel(
       })
     ), T, F, T),
 
-    // TODO getOwnPropertyNames
+    // 15.2.3.4 Object.getOwnPropertyNames(O)
     ("getOwnPropertyNames", FuncModel(
       name = "Object.getOwnPropertyNames",
-      code = EmptyCode(argLen = 1)
+      code = BasicCode(argLen = 1, (
+        args: Value, st: State, sem: Semantics, utils: Utils
+      ) => {
+        val h = st.heap
+        val objV = sem.CFGLoadHelper(args, Set(utils.absString.alpha("0")), h)
+        val tmpAddr = SystemAddr("<temp>")
+        val arrAddr = SystemAddr("Object.getOwnPropertyNames<array>")
+        val (locV, retSt, excSet) = Helper(utils).toObject(st, objV, tmpAddr)
+        val (keyStr, lenSet) = locV.locset.foldLeft(
+          (utils.absString.Bot, Set[Double]())
+        ) {
+            case ((str, lenSet), loc) => {
+              val obj = h.getOrElse(loc, Obj.Bot(utils))
+              val keys = obj.map.keySet.filter(!_.startsWith("@"))
+              val keyStr = utils.absString.alpha(keys)
+              (str + keyStr, lenSet + keys.size)
+            }
+          }
+        val len = lenSet.max
+        val AT = utils.absBool.True
+
+        // 1. If Type(O) is not Object throw a TypeError exception.
+        val excSt = st.raiseException(excSet)(utils)
+
+        // 2. Let array be the result of creating a new object
+        //    as if by the expression new Array() where Array is the
+        //    standard built-in constructor with that name.
+        val arrObj = Obj.newArrayObject(utils.absNumber.alpha(lenSet))(utils)
+
+        // 3. Let n be 0.
+        // 4. For each named own property P of O
+        //    a. Let name be the String value that is the name of P.
+        //    b. Call the [[DefineOwnProperty]] internal method of
+        //       array with arguments ToString(n), the PropertyDescriptor
+        //       {[[Value]]: name, [[Writable]]: true, [[Enumerable]]: true,
+        //       [[Configurable]]: true}, and false.
+        //    c. Increment n by 1.
+        val v = Value(PValue(
+          utils.absUndef.Top,
+          utils.absNull.Bot,
+          utils.absBool.Bot,
+          utils.absNumber.Bot,
+          keyStr
+        ))
+        val retObj = (0 until len.toInt).foldLeft(arrObj)((obj, idx) => {
+          obj.update(idx.toString, PropValue(ObjectValue(v, AT, AT, AT)))
+        })
+        val state = st.oldify(arrAddr)(utils)
+        val arrLoc = Loc(arrAddr, Recent)
+        val retHeap = state.heap.update(arrLoc, retObj)
+        val ctx = state.context
+
+        // 5. Return array.
+        (State(retHeap, ctx), excSt, Value(arrLoc)(utils))
+      })
     ), T, F, T),
 
     // TODO create
