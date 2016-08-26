@@ -11,20 +11,115 @@
 
 package kr.ac.kaist.safe.analyzer.models.builtin
 
+import scala.collection.immutable.HashSet
+import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.analyzer.models._
+import kr.ac.kaist.safe.util.{ SystemAddr, Loc, Recent }
 
-// TODO Boolean
+// 15.6 Boolean Objects
 object BuiltinBoolean extends FuncModel(
   name = "Boolean",
-  props = List(),
-  code = EmptyCode(1),
-  construct = Some(EmptyCode()),
+
+  // 15.6.1 The Boolean Constructor Called as a Function: Boolean([value])
+  code = SimpleCode(argLen = 1, code = (
+    args, h, sem, utils
+  ) => {
+    val argV = sem.CFGLoadHelper(args, Set(utils.absString.alpha("0")), h)
+
+    // Returns a Boolean value (not a Boolean object) computed by ToBoolean(value).
+    val boolPV = PValue(argV.toAbsBoolean(utils.absBool))(utils)
+    Value(boolPV)
+  }),
+
+  // 15.6.2 The Boolean Constructor: new Boolean([value])
+  construct = Some(BasicCode(argLen = 1, code = (
+    args, st, sem, utils
+  ) => {
+    val h = st.heap
+    val argV = sem.CFGLoadHelper(args, Set(utils.absString.alpha("0")), h)
+    val addr = SystemAddr("Boolean<instance>")
+
+    val state = st.oldify(addr)(utils)
+    val loc = Loc(addr, Recent)
+    val obj = Obj.newBooleanObj(argV.toAbsBoolean(utils.absBool))(utils)
+    val heap = state.heap.update(loc, obj)
+    val ctx = state.context
+
+    (State(heap, ctx), State.Bot, Value(loc)(utils))
+  })),
+
+  // 15.6.3.1 Boolean.prototype
   protoModel = Some((BuiltinBooleanProto, F, F, F))
 )
 
+// 15.6.4 Boolean.prototype
 object BuiltinBooleanProto extends ObjModel(
   name = "Boolean.prototype",
   props = List(
-    ("@class", PrimModel("Boolean"), F, F, F)
+    ("@proto", BuiltinObjectProto, F, F, F),
+
+    // 15.6.4.2 Boolean.prototype.toString()
+    ("toString", FuncModel(
+      name = "Boolean.prototype.toString",
+      code = BasicCode(code = (
+        args, st, sem, utils
+      ) => {
+        val h = st.heap
+        val localObj = h.getOrElse(PredefLoc.SINGLE_PURE_LOCAL, Obj.Bot(utils))
+        val thisLocSet = localObj.getOrElse("@this")(LocSetEmpty) { _.objval.value.locset }
+        val thisV = Value(PValue.Bot(utils), thisLocSet)
+        val classV = sem.CFGLoadHelper(thisV, Set(utils.absString.alpha("@class")), h)
+        val pv = thisV.pvalue
+        val excSet = (pv.undefval.gamma, pv.nullval.gamma, pv.numval.gamma, pv.strval.gamma) match {
+          case (ConSimpleBot, ConSimpleBot, ConSetBot(), ConSetBot()) if (
+            (utils.absString.alpha("Boolean") <= classV.pvalue.strval
+              && classV.pvalue.strval <= utils.absString.alpha("Boolean"))
+              || classV.pvalue.strval <= utils.absString.Bot
+          ) => ExceptionSetEmpty
+          case _ => HashSet[Exception](TypeError)
+        }
+        val b = thisV.pvalue.boolval + {
+          if ((utils.absString.alpha("Boolean") <= classV.pvalue.strval)) {
+            val primitiveV = sem.CFGLoadHelper(thisV, Set(utils.absString.alpha("@primitive")), h)
+            primitiveV.pvalue.boolval
+          } else {
+            utils.absBool.Bot
+          }
+        }
+        (st, st.raiseException(excSet)(utils), Value(PValue(b.toAbsString(utils.absString))(utils)))
+      })
+    ), T, F, T),
+
+    // 15.6.4.3 Boolean.prototype.valueOf()
+    ("valueOf", FuncModel(
+      name = "Boolean.prototype.valueOf",
+      code = BasicCode(code = (
+        args, st, sem, utils
+      ) => {
+        val h = st.heap
+        val localObj = h.getOrElse(PredefLoc.SINGLE_PURE_LOCAL, Obj.Bot(utils))
+        val thisLocSet = localObj.getOrElse("@this")(LocSetEmpty) { _.objval.value.locset }
+        val thisV = Value(PValue.Bot(utils), thisLocSet)
+        val classV = sem.CFGLoadHelper(thisV, Set(utils.absString.alpha("@class")), h)
+        val pv = thisV.pvalue
+        val excSet = (pv.undefval.gamma, pv.nullval.gamma, pv.numval.gamma, pv.strval.gamma) match {
+          case (ConSimpleBot, ConSimpleBot, ConSetBot(), ConSetBot()) if (
+            (utils.absString.alpha("Boolean") <= classV.pvalue.strval
+              && classV.pvalue.strval <= utils.absString.alpha("Boolean"))
+              || classV.pvalue.strval <= utils.absString.Bot
+          ) => ExceptionSetEmpty
+          case _ => HashSet[Exception](TypeError)
+        }
+        val b = thisV.pvalue.boolval + {
+          if ((utils.absString.alpha("Boolean") <= classV.pvalue.strval)) {
+            val primitiveV = sem.CFGLoadHelper(thisV, Set(utils.absString.alpha("@primitive")), h)
+            primitiveV.pvalue.boolval
+          } else {
+            utils.absBool.Bot
+          }
+        }
+        (st, st.raiseException(excSet)(utils), Value(PValue(b)(utils)))
+      })
+    ), T, F, T)
   )
 )
