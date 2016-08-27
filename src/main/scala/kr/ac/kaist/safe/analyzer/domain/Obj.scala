@@ -139,7 +139,7 @@ class Obj(val map: Map[String, (PropValue, Absent)]) {
         val (key, pva) = kv
         val (propV, absent) = pva
         val newV = propV.objval.value.subsLoc(locR, locO)
-        val newOV = ObjectValue(newV, propV.objval.writable, propV.objval.enumerable, propV.objval.configurable)
+        val newOV = DataProperty(newV, propV.objval.writable, propV.objval.enumerable, propV.objval.configurable)
         val newPropV = PropValue(newOV, propV.funid)
         m + (key -> (newPropV, absent))
       })
@@ -154,7 +154,7 @@ class Obj(val map: Map[String, (PropValue, Absent)]) {
         val (key, pva) = kv
         val (propV, absent) = pva
         val newV = propV.objval.value.weakSubsLoc(locR, locO)
-        val newOV = ObjectValue(newV, propV.objval.writable, propV.objval.enumerable, propV.objval.configurable)
+        val newOV = DataProperty(newV, propV.objval.writable, propV.objval.enumerable, propV.objval.configurable)
         val newPropV = PropValue(newOV, propV.funid)
         m + (key -> (newPropV, absent))
       })
@@ -459,7 +459,7 @@ object Obj {
     val absFalse = utils.absBool.False
     Empty(utils)
       .update("@class", PropValue(utils.absString.alpha("Object"))(utils))
-      .update("@proto", PropValue(ObjectValue(utils.value(locSet), absFalse, absFalse, absFalse)))
+      .update("@proto", PropValue(utils.dataProp(locSet)(absFalse, absFalse, absFalse)))
       .update("@extensible", PropValue(utils.absBool.True)(utils))
   }
 
@@ -470,9 +470,9 @@ object Obj {
     val absTrue = utils.absBool.True
     Empty(utils)
       .update("@class", PropValue(utils.absString.alpha("Arguments"))(utils))
-      .update("@proto", PropValue(ObjectValue(protoVal, absFalse, absFalse, absFalse)))
+      .update("@proto", PropValue(utils.dataProp(protoVal)(absFalse, absFalse, absFalse)))
       .update("@extensible", PropValue(absTrue)(utils))
-      .update("length", PropValue(ObjectValue(lengthVal, absTrue, absFalse, absTrue)))
+      .update("length", PropValue(utils.dataProp(lengthVal)(absTrue, absFalse, absTrue)))
   }
 
   def newArrayObject(absLength: AbsNumber)(utils: Utils): Obj = {
@@ -481,9 +481,9 @@ object Obj {
     val absFalse = utils.absBool.False
     Empty(utils)
       .update("@class", PropValue(utils.absString.alpha("Array"))(utils))
-      .update("@proto", PropValue(ObjectValue(protoVal, absFalse, absFalse, absFalse)))
+      .update("@proto", PropValue(utils.dataProp(protoVal)(absFalse, absFalse, absFalse)))
       .update("@extensible", PropValue(utils.absBool.True)(utils))
-      .update("length", PropValue(ObjectValue(lengthVal, utils.absBool.True, absFalse, absFalse)))
+      .update("length", PropValue(utils.dataProp(lengthVal)(utils.absBool.True, absFalse, absFalse)))
   }
 
   def newFunctionObject(fid: FunctionId, env: Value, l: Loc, n: AbsNumber)(utils: Utils): Obj = {
@@ -504,10 +504,10 @@ object Obj {
     val lengthVal = utils.value(absLength)
     val obj1 = Empty(utils)
       .update("@class", PropValue(utils.absString.alpha("Function"))(utils))
-      .update("@proto", PropValue(ObjectValue(protoVal, absFalse, absFalse, absFalse)))
+      .update("@proto", PropValue(utils.dataProp(protoVal)(absFalse, absFalse, absFalse)))
       .update("@extensible", PropValue(utils.absBool.True)(utils))
-      .update("@scope", PropValue(ObjectValue(env)(utils)))
-      .update("length", PropValue(ObjectValue(lengthVal, absFalse, absFalse, absFalse)))
+      .update("@scope", PropValue(utils.dataProp(env)))
+      .update("length", PropValue(utils.dataProp(lengthVal)(absFalse, absFalse, absFalse)))
 
     val obj2 = fidOpt match {
       case Some(fid) => obj1.update("@function", PropValue(HashSet(fid))(utils))
@@ -521,7 +521,7 @@ object Obj {
       case Some(loc) =>
         val prototypeVal = utils.value(HashSet(loc))
         obj3.update("@hasinstance", PropValue(utils.absNull.Top)(utils))
-          .update("prototype", PropValue(ObjectValue(prototypeVal, writable, enumerable, configurable)))
+          .update("prototype", PropValue(utils.dataProp(prototypeVal)(writable, enumerable, configurable)))
       case None => obj3
     }
     obj4
@@ -555,17 +555,17 @@ object Obj {
           val newObj3 = (0 until length).foldLeft(newObj2)((tmpObj, tmpIdx) => {
             val charAbsStr = utils.absString.alpha(str.charAt(tmpIdx).toString)
             val charVal = utils.value(charAbsStr)
-            tmpObj.update(tmpIdx.toString, PropValue(ObjectValue(charVal, absFalse, absTrue, absFalse)))
+            tmpObj.update(tmpIdx.toString, PropValue(utils.dataProp(charVal)(absFalse, absTrue, absFalse)))
           })
           val lengthVal = utils.value.alpha(length)
-          obj + newObj3.update("length", PropValue(ObjectValue(lengthVal, absFalse, absFalse, absFalse)))
+          obj + newObj3.update("length", PropValue(utils.dataProp(lengthVal)(absFalse, absFalse, absFalse)))
         })
       case _ =>
         val strTopVal = utils.value(utils.absString.Top)
         val lengthVal = utils.value(absStr.length(utils.absNumber))
         newObj2
-          .update(utils.absString.NumStr, PropValue(ObjectValue(strTopVal, absFalse, absTrue, absFalse)), utils)
-          .update("length", PropValue(ObjectValue(lengthVal, absFalse, absFalse, absFalse)))
+          .update(utils.absString.NumStr, PropValue(utils.dataProp(strTopVal)(absFalse, absTrue, absFalse)), utils)
+          .update("length", PropValue(utils.dataProp(lengthVal)(absFalse, absFalse, absFalse)))
     }
   }
 
@@ -573,13 +573,13 @@ object Obj {
   // new Scope Object constructors
   ////////////////////////////////////////////////////////////////
   def newDeclEnvRecordObj(outerEnv: Value)(utils: Utils): Obj = {
-    Empty(utils).update("@outer", PropValue(ObjectValue(outerEnv)(utils)))
+    Empty(utils).update("@outer", PropValue(utils.dataProp(outerEnv)))
   }
 
   def newPureLocalObj(envVal: Value, thisLocSet: Set[Loc])(utils: Utils): Obj = {
     Empty(utils)
-      .update("@env", PropValue(ObjectValue(envVal)(utils)))
-      .update("@this", PropValue(ObjectValue(thisLocSet)(utils)))
+      .update("@env", PropValue(utils.dataProp(envVal)))
+      .update("@this", PropValue(utils.dataProp(thisLocSet)))
       .update("@exception", PropValue.Bot(utils))
       .update("@exception_all", PropValue.Bot(utils))
       .update("@return", PropValue(utils.absUndef.Top)(utils))

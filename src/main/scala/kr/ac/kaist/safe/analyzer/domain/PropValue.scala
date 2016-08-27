@@ -18,33 +18,33 @@ import scala.collection.immutable.HashSet
 
 object PropValue {
   def Bot: Utils => PropValue = utils =>
-    PropValue(ObjectValue.Bot(utils), HashSet[FunctionId]())
+    PropValue(utils.dataProp.Bot, HashSet[FunctionId]())
 
-  def apply(objval: ObjectValue): PropValue = PropValue(objval, HashSet[FunctionId]())
+  def apply(objval: DataProperty): PropValue = PropValue(objval, HashSet[FunctionId]())
   def apply(pvalue: PValue, writable: AbsBool, enumerable: AbsBool, configurable: AbsBool): PropValue =
-    PropValue(ObjectValue(Value(pvalue, HashSet()), writable, enumerable, configurable))
+    PropValue(DataProperty(Value(pvalue, HashSet()), writable, enumerable, configurable))
 
   def apply(fidSet: Set[FunctionId]): Utils => PropValue = utils =>
-    PropValue(ObjectValue.Bot(utils), fidSet)
+    PropValue(utils.dataProp.Bot, fidSet)
 
   def apply(undefval: AbsUndef): Utils => PropValue = utils =>
-    PropValue(ObjectValue(utils.pvalue(undefval), utils.absBool.Bot, utils.absBool.Bot, utils.absBool.Bot), HashSet[FunctionId]())
+    PropValue(utils.dataProp(undefval), HashSet[FunctionId]())
 
   def apply(nullval: AbsNull): Utils => PropValue = utils =>
-    PropValue(ObjectValue(utils.pvalue(nullval), utils.absBool.Bot, utils.absBool.Bot, utils.absBool.Bot), HashSet[FunctionId]())
+    PropValue(utils.dataProp(nullval), HashSet[FunctionId]())
 
   def apply(boolval: AbsBool): Utils => PropValue = utils =>
-    PropValue(ObjectValue(utils.pvalue(boolval), utils.absBool.Bot, utils.absBool.Bot, utils.absBool.Bot), HashSet[FunctionId]())
+    PropValue(utils.dataProp(boolval), HashSet[FunctionId]())
 
   def apply(numval: AbsNumber): Utils => PropValue = utils =>
-    PropValue(ObjectValue(utils.pvalue(numval), utils.absBool.Bot, utils.absBool.Bot, utils.absBool.Bot), HashSet[FunctionId]())
+    PropValue(utils.dataProp(numval), HashSet[FunctionId]())
 
   def apply(strval: AbsString): Utils => PropValue = utils =>
-    PropValue(ObjectValue(utils.pvalue(strval), utils.absBool.Bot, utils.absBool.Bot, utils.absBool.Bot), HashSet[FunctionId]())
+    PropValue(utils.dataProp(strval), HashSet[FunctionId]())
 }
 
 case class PropValue(
-    objval: ObjectValue,
+    objval: DataProperty,
     funid: Set[FunctionId]
 ) {
   override def toString: String = {

@@ -161,10 +161,10 @@ object BuiltinObject extends FuncModel(
             val enumerableV = utils.value(objval.enumerable)
             val configurableV = utils.value(objval.configurable)
             val descObj = Obj.newObject(utils)
-              .update("value", PropValue(ObjectValue(valueV, AT, AF, AT)))
-              .update("writable", PropValue(ObjectValue(writableV, AT, AF, AT)))
-              .update("enumerable", PropValue(ObjectValue(enumerableV, AT, AF, AT)))
-              .update("configurable", PropValue(ObjectValue(configurableV, AT, AF, AT)))
+              .update("value", PropValue(DataProperty(valueV, AT, AF, AT)))
+              .update("writable", PropValue(DataProperty(writableV, AT, AF, AT)))
+              .update("enumerable", PropValue(DataProperty(enumerableV, AT, AF, AT)))
+              .update("configurable", PropValue(DataProperty(configurableV, AT, AF, AT)))
             val state = st.oldify(descAddr)(utils)
             val descLoc = Loc(descAddr, Recent)
             val retHeap = state.heap.update(descLoc, descObj)
@@ -224,7 +224,7 @@ object BuiltinObject extends FuncModel(
           keyStr
         ))
         val retObj = (0 until len.toInt).foldLeft(arrObj)((obj, idx) => {
-          obj.update(idx.toString, PropValue(ObjectValue(v, AT, AT, AT)))
+          obj.update(idx.toString, PropValue(DataProperty(v, AT, AT, AT)))
         })
         val state = st.oldify(arrAddr)(utils)
         val arrLoc = Loc(arrAddr, Recent)

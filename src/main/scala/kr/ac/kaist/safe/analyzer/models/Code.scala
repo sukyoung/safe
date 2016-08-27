@@ -71,7 +71,7 @@ class BasicCode(
           localObj(argsName) match {
             case Some(pv) => {
               val (retSt, retSte, retV) = code(pv.objval.value, st, sem, utils)
-              val retObj = localObj.update("@return", PropValue(ObjectValue(retV)(utils)))
+              val retObj = localObj.update("@return", PropValue(utils.dataProp(retV)))
               val retHeap = retSt.heap.update(SINGLE_PURE_LOCAL, retObj)
               (State(retHeap, st.context), retSte)
             }

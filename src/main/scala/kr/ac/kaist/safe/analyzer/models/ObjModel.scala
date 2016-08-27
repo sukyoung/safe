@@ -45,7 +45,7 @@ class ObjModel(
         }) match {
           case (heap, value) => (heap, obj.update(
             name,
-            PropValue(ObjectValue(
+            PropValue(DataProperty(
               value,
               utils.absBool.alpha(writable),
               utils.absBool.alpha(enumerable),

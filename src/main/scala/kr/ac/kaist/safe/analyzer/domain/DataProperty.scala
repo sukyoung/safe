@@ -13,31 +13,51 @@ package kr.ac.kaist.safe.analyzer.domain
 
 import kr.ac.kaist.safe.util.Loc
 
-object ObjectValue {
-  def Bot: Utils => ObjectValue = utils =>
-    ObjectValue(utils.value.Bot, utils.absBool.Bot, utils.absBool.Bot, utils.absBool.Bot)
+case class DataPropertyUtil(utils: Utils) {
+  val valueU = utils.value
+  val AB = utils.absBool.Bot
+  val Bot: DataProperty = DataProperty(valueU.Bot, AB, AB, AB)
+  // TODO Top
 
-  def apply(value: Value): Utils => ObjectValue = utils =>
-    ObjectValue(value, utils.absBool.Bot, utils.absBool.Bot, utils.absBool.Bot)
+  // TODO more consturctor
+  // constructor
+  def apply(value: Value): DPGen = DPGen(DataProperty(value, _, _, _), AB)
+  def apply(pvalue: PValue): DPGen = apply(valueU(pvalue))
+  def apply(loc: Loc): DPGen = apply(valueU(loc))
+  def apply(locSet: Set[Loc]): DPGen = apply(valueU(locSet))
+  def apply(undefval: AbsUndef): DPGen = apply(valueU(undefval))
+  def apply(nullval: AbsNull): DPGen = apply(valueU(nullval))
+  def apply(boolval: AbsBool): DPGen = apply(valueU(boolval))
+  def apply(numval: AbsNumber): DPGen = apply(valueU(numval))
+  def apply(strval: AbsString): DPGen = apply(valueU(strval))
 
-  def apply(pvalue: PValue, writable: AbsBool, enumerable: AbsBool, configurable: AbsBool): ObjectValue =
-    ObjectValue(Value(pvalue, Set()), writable, enumerable, configurable)
-
-  def apply(loc: Loc): Utils => ObjectValue = utils =>
-    ObjectValue(utils.value(loc), utils.absBool.Bot, utils.absBool.Bot, utils.absBool.Bot)
-
-  def apply(locSet: Set[Loc]): Utils => ObjectValue = utils =>
-    ObjectValue(utils.value(locSet), utils.absBool.Bot, utils.absBool.Bot, utils.absBool.Bot)
+  // TODO alpha
 }
 
-case class ObjectValue(
+case class DPGen(
+    gen: (AbsBool, AbsBool, AbsBool) => DataProperty,
+    default: AbsBool
+) {
+  def apply(
+    writable: AbsBool,
+    enumerable: AbsBool,
+    configurable: AbsBool
+  ): DataProperty = gen(writable, enumerable, configurable)
+}
+object DPGen {
+  // implicit conversion for no attributes setting
+  implicit def conversion(dpGen: DPGen): DataProperty =
+    dpGen(dpGen.default, dpGen.default, dpGen.default)
+}
+
+case class DataProperty(
     value: Value,
     writable: AbsBool,
     enumerable: AbsBool,
     configurable: AbsBool
 ) {
   override def toString: String = {
-    if (isBottom) "⊥ObjectValue"
+    if (isBottom) "⊥DataProperty"
     else {
       val prefix =
         (writable.gammaSimple, enumerable.gammaSimple, configurable.gammaSimple) match {
@@ -49,7 +69,7 @@ case class ObjectValue(
   }
 
   /* partial order */
-  def <=(that: ObjectValue): Boolean = {
+  def <=(that: DataProperty): Boolean = {
     this.value <= that.value &&
       this.writable <= that.writable &&
       this.enumerable <= that.enumerable &&
@@ -57,7 +77,7 @@ case class ObjectValue(
   }
 
   /* not a partial order */
-  def </(that: ObjectValue): Boolean = {
+  def </(that: DataProperty): Boolean = {
     this.value </ that.value ||
       this.writable </ that.writable ||
       this.enumerable </ that.enumerable ||
@@ -65,8 +85,8 @@ case class ObjectValue(
   }
 
   /* join */
-  def +(that: ObjectValue): ObjectValue = {
-    ObjectValue(
+  def +(that: DataProperty): DataProperty = {
+    DataProperty(
       this.value + that.value,
       this.writable + that.writable,
       this.enumerable + that.enumerable,
@@ -75,8 +95,8 @@ case class ObjectValue(
   }
 
   /* meet */
-  def <>(that: ObjectValue): ObjectValue = {
-    ObjectValue(
+  def <>(that: DataProperty): DataProperty = {
+    DataProperty(
       this.value <> that.value,
       this.writable <> that.writable,
       this.enumerable <> that.enumerable,
@@ -90,5 +110,5 @@ case class ObjectValue(
       (ConSimpleBot, ConSimpleBot, ConSimpleBot)
   }
 
-  def copyWith(newValue: Value): ObjectValue = ObjectValue(newValue, writable, enumerable, configurable)
+  def copyWith(newValue: Value): DataProperty = DataProperty(newValue, writable, enumerable, configurable)
 }

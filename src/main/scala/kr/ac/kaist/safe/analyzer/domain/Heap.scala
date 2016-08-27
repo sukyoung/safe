@@ -597,9 +597,8 @@ class DHeap(val map: Map[Loc, Obj]) extends Heap {
     val objDomIn = (findingObj domIn absStr)(utils.absBool)
     objDomIn.gamma match {
       case ConSingleTop() =>
-        val oldObjV: ObjectValue = findingObj.getOrElse(absStr)(ObjectValue.Bot(utils)) { _.objval }
-        val newObjV = ObjectValue(
-          value,
+        val oldObjV: DataProperty = findingObj.getOrElse(absStr)(utils.dataProp.Bot) { _.objval }
+        val newObjV = utils.dataProp(value)(
           oldObjV.writable + utils.absBool.True,
           oldObjV.enumerable + utils.absBool.True,
           oldObjV.configurable + utils.absBool.True
@@ -607,11 +606,11 @@ class DHeap(val map: Map[Loc, Obj]) extends Heap {
         this.update(loc, findingObj.update(absStr, PropValue(newObjV), utils))
       case ConSingleBot() => Heap.Bot
       case ConSingleCon(true) =>
-        val oldObjV: ObjectValue = findingObj.getOrElse(absStr)(ObjectValue.Bot(utils)) { _.objval }
+        val oldObjV: DataProperty = findingObj.getOrElse(absStr)(utils.dataProp.Bot) { _.objval }
         val newObjV = oldObjV.copyWith(value)
         this.update(loc, findingObj.update(absStr, PropValue(newObjV), utils))
       case ConSingleCon(false) =>
-        val newObjV = ObjectValue(value, utils.absBool.True, utils.absBool.True, utils.absBool.True)
+        val newObjV = utils.dataProp(value)(utils.absBool.True, utils.absBool.True, utils.absBool.True)
         this.update(loc, findingObj.update(absStr, PropValue(newObjV), utils))
     }
   }
@@ -621,7 +620,7 @@ class DHeap(val map: Map[Loc, Obj]) extends Heap {
     val x = id.text
     id.kind match {
       case PureLocalVar =>
-        val pv = PropValue(ObjectValue(value, utils.absBool.Bot, utils.absBool.Bot, utils.absBool.False))
+        val pv = PropValue(utils.dataProp(value)(utils.absBool.Bot, utils.absBool.Bot, utils.absBool.False))
         val obj = this.getOrElse(pureLocalLoc, Obj.Bot(utils))
         this.update(pureLocalLoc, obj.update(x, pv))
       case CapturedVar =>
@@ -631,7 +630,7 @@ class DHeap(val map: Map[Loc, Obj]) extends Heap {
           })
         }
       case CapturedCatchVar =>
-        val propV = PropValue(ObjectValue(value, utils.absBool.Bot, utils.absBool.Bot, utils.absBool.False))
+        val propV = PropValue(utils.dataProp(value)(utils.absBool.Bot, utils.absBool.Bot, utils.absBool.False))
         val obj = this.getOrElse(PredefLoc.COLLAPSED, Obj.Bot(utils))
         this.update(PredefLoc.COLLAPSED, obj.update(x, propV))
       case GlobalVar => {
@@ -650,7 +649,7 @@ class DHeap(val map: Map[Loc, Obj]) extends Heap {
     val envObj = this.getOrElse(loc, Obj.Bot(utils))
     val h1 = envObj(x) match {
       case Some(propV) if propV.objval.writable == utils.absBool.True =>
-        val newPropV = PropValue(ObjectValue(value, utils.absBool.True, utils.absBool.Bot, utils.absBool.False))
+        val newPropV = PropValue(utils.dataProp(value)(utils.absBool.True, utils.absBool.Bot, utils.absBool.False))
         this.update(loc, envObj.update(x, newPropV))
       case Some(propV) if propV.objval.writable == utils.absBool.False => this
       case _ => Heap.Bot
@@ -676,7 +675,7 @@ class DHeap(val map: Map[Loc, Obj]) extends Heap {
       else Heap.Bot
     val h2 =
       if (utils.absBool.True <= (obj domIn x)(utils.absBool)) {
-        val oldObjVal = obj.getOrElse(x)(ObjectValue.Bot(utils)) { _.objval }
+        val oldObjVal = obj.getOrElse(x)(utils.dataProp.Bot) { _.objval }
         val newObjVal = oldObjVal.copyWith(value)
         this.update(globalLoc, obj.update(x, PropValue(newObjVal)))
       } else Heap.Bot
@@ -696,12 +695,12 @@ class DHeap(val map: Map[Loc, Obj]) extends Heap {
     id.kind match {
       case PureLocalVar =>
         val localLoc = PredefLoc.SINGLE_PURE_LOCAL
-        val objV = ObjectValue(value, utils.absBool.Bot, utils.absBool.Bot, utils.absBool.False)
+        val objV = utils.dataProp(value)(utils.absBool.Bot, utils.absBool.Bot, utils.absBool.False)
         val propV = PropValue(objV)
         this.update(localLoc, this.getOrElse(localLoc, Obj.Bot(utils)).update(x, propV))
       case CapturedVar =>
         val localLoc = PredefLoc.SINGLE_PURE_LOCAL
-        val objV = ObjectValue(value, utils.absBool.True, utils.absBool.Bot, utils.absBool.False)
+        val objV = utils.dataProp(value)(utils.absBool.True, utils.absBool.Bot, utils.absBool.False)
         val propV = PropValue(objV)
         val localObj = this.getOrElse(localLoc, Obj.Bot(utils))
         localObj.getOrElse("@env")(Heap.Bot) { propv =>
@@ -711,12 +710,12 @@ class DHeap(val map: Map[Loc, Obj]) extends Heap {
         }
       case CapturedCatchVar =>
         val collapsedLoc = PredefLoc.COLLAPSED
-        val objV = ObjectValue(value, utils.absBool.Bot, utils.absBool.Bot, utils.absBool.False)
+        val objV = utils.dataProp(value)(utils.absBool.Bot, utils.absBool.Bot, utils.absBool.False)
         val propV = PropValue(objV)
         this.update(collapsedLoc, this.getOrElse(collapsedLoc, Obj.Bot(utils)).update(x, propV))
       case GlobalVar =>
         val globalLoc = PredefLoc.GLOBAL
-        val objV = ObjectValue(value, utils.absBool.True, utils.absBool.True, utils.absBool.False)
+        val objV = utils.dataProp(value)(utils.absBool.True, utils.absBool.True, utils.absBool.False)
         val propV = PropValue(objV)
         if (utils.absBool.True == this.hasProperty(globalLoc, utils.absString.alpha(x))(utils)) this
         else this.update(globalLoc, this.getOrElse(globalLoc, Obj.Bot(utils)).update(x, propV))
