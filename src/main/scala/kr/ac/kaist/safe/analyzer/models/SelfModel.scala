@@ -15,5 +15,5 @@ import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.nodes.cfg.CFG
 
 object SelfModel extends Model {
-  def init(h: Heap, cfg: CFG, utils: Utils): (Heap, Value) = (h, Value.Bot(utils))
+  def init(h: Heap, cfg: CFG, utils: Utils): (Heap, Value) = (h, utils.value.Bot)
 }

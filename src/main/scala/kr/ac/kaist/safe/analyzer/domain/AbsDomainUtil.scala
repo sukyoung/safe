@@ -65,9 +65,12 @@ trait AbsBoolUtil {
 }
 
 case class Utils(
-  absUndef: AbsUndefUtil,
-  absNull: AbsNullUtil,
-  absBool: AbsBoolUtil,
-  absNumber: AbsNumberUtil,
-  absString: AbsStringUtil
-)
+    absUndef: AbsUndefUtil,
+    absNull: AbsNullUtil,
+    absBool: AbsBoolUtil,
+    absNumber: AbsNumberUtil,
+    absString: AbsStringUtil
+) {
+  val pvalue = PValueUtil(this)
+  val value = ValueUtil(this)
+}

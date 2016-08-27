@@ -40,9 +40,9 @@ case class State(heap: Heap, context: Context) {
     else {
       val localLoc = PredefLoc.SINGLE_PURE_LOCAL
       val localObj = heap.getOrElse(localLoc, Obj.Bot(utils))
-      val oldValue = localObj.getOrElse("@exception_all")(Value.Bot(utils)) { _.objval.value }
+      val oldValue = localObj.getOrElse("@exception_all")(utils.value.Bot) { _.objval.value }
       val newExcSet = excSet.foldLeft(LocSetEmpty)((locSet, exc) => locSet + exc.getLoc)
-      val excValue = Value(PValue.Bot(utils), newExcSet)
+      val excValue = Value(utils.pvalue.Bot, newExcSet)
       val newExcObjV = ObjectValue(excValue)(utils)
       val newExcSetObjV = ObjectValue(excValue + oldValue)(utils)
       val h1 = heap.update(

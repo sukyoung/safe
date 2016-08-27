@@ -22,7 +22,7 @@ class ObjModel(
 ) extends Model {
   val loc: Loc = SystemLoc(name, Recent)
   def init(h: Heap, cfg: CFG, utils: Utils): (Heap, Value) =
-    (initHeap(h, cfg, utils), Value(loc)(utils))
+    (initHeap(h, cfg, utils), utils.value(loc))
 
   def initHeap(h: Heap, cfg: CFG, utils: Utils): Heap = h(loc) match {
     case Some(_) => h
@@ -40,7 +40,7 @@ class ObjModel(
     ps.foldLeft((h, obj)) {
       case ((heap, obj), (name, model, writable, enumerable, configurable)) => {
         (model match {
-          case SelfModel => (heap, Value(loc)(utils))
+          case SelfModel => (heap, utils.value(loc))
           case _ => model.init(heap, cfg, utils)
         }) match {
           case (heap, value) => (heap, obj.update(

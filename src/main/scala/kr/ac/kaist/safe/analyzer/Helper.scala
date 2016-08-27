@@ -22,6 +22,8 @@ case class Helper(utils: Utils) {
   private val absNumber: AbsNumberUtil = utils.absNumber
   private val afalse = utils.absBool.False
   private val atrue = utils.absBool.True
+  private val pvalueU = utils.pvalue
+  private val valueU = utils.value
 
   def arrayLenghtStore(heap: Heap, idxAbsStr: AbsString, storeV: Value, l: Loc): (Heap, Set[Exception]) = {
     if (utils.absString.alpha("length") <= idxAbsStr) {
@@ -81,9 +83,9 @@ case class Helper(utils: Utils) {
     if (atrue <= idxAbsStr.isArrayIndex(utils.absBool)) {
       val nOldLen = heap.getOrElse(l, Obj.Bot(utils))
         .getOrElse("length")(absNumber.Bot) { _.objval.value.pvalue.numval }
-      val idxPV = PValue(idxAbsStr)(utils)
-      val numPV = PValue(idxPV.toAbsNumber(absNumber))(utils)
-      val nIndex = toUInt32(Value(numPV))
+      val idxPV = pvalueU(idxAbsStr)
+      val numPV = pvalueU(idxPV.toAbsNumber(absNumber))
+      val nIndex = toUInt32(valueU(numPV))
       val bGtEq = atrue <= (nOldLen < nIndex)(utils.absBool) ||
         atrue <= (nOldLen === nIndex)(utils.absBool)
       val bCanPutLen = heap.canPut(l, utils.absString.alpha("length"))(utils)
@@ -100,9 +102,9 @@ case class Helper(utils: Utils) {
       val arrIndexHeap3 =
         if (bGtEq && atrue <= bCanPutLen) {
           val hi = heap.propStore(l, idxAbsStr, storeV)(utils)
-          val idxVal = Value(PValue(nIndex)(utils))
-          val absNum1PV = PValue(absNumber.alpha(1))(utils)
-          val vNewIndex = bopPlus(idxVal, Value(absNum1PV))
+          val idxVal = valueU(nIndex)
+          val absNum1PV = pvalueU.alpha(1)
+          val vNewIndex = bopPlus(idxVal, valueU(absNum1PV))
           hi.propStore(l, utils.absString.alpha("length"), vNewIndex)(utils)
         } else Heap.Bot
       arrIndexHeap1 + arrIndexHeap2 + arrIndexHeap3
@@ -173,30 +175,30 @@ case class Helper(utils: Utils) {
       if (!locSet.isEmpty) (locSet, st)
       else (LocSetEmpty, State.Bot)
 
-    (Value(PValue.Bot(utils), locSet1 ++ locSet2), State(h2, ctx2) + st3, excSet)
+    (valueU(locSet1 ++ locSet2), State(h2, ctx2) + st3, excSet)
   }
 
   def inherit(h: Heap, loc1: Loc, loc2: Loc): Value = {
     var visited = LocSetEmpty
-    val locVal2 = Value(loc2)(utils)
-    val boolBotVal = Value(PValue(utils.absBool.Bot)(utils))
-    val boolTrueVal = Value(PValue(utils.absBool.True)(utils))
-    val boolFalseVal = Value(PValue(utils.absBool.False)(utils))
+    val locVal2 = valueU(loc2)
+    val boolBotVal = valueU(pvalueU.Bot)
+    val boolTrueVal = valueU.alpha(true)
+    val boolFalseVal = valueU.alpha(false)
 
     def iter(l1: Loc): Value = {
-      if (visited.contains(l1)) Value.Bot(utils)
+      if (visited.contains(l1)) valueU.Bot
       else {
         visited += l1
-        val locVal1 = Value(l1)(utils)
+        val locVal1 = valueU(l1)
         val eqVal = bopSEq(locVal1, locVal2)
         val v1 =
           if (utils.absBool.True <= eqVal.pvalue.boolval) boolTrueVal
           else boolBotVal
         val v2 =
           if (utils.absBool.False <= eqVal.pvalue.boolval) {
-            val protoVal = h.getOrElse(l1, Obj.Bot(utils)).getOrElse("@proto")(Value.Bot(utils)) { _.objval.value }
+            val protoVal = h.getOrElse(l1, Obj.Bot(utils)).getOrElse("@proto")(valueU.Bot) { _.objval.value }
             val v1 = protoVal.pvalue.nullval.fold(boolBotVal) { _ => boolFalseVal }
-            v1 + protoVal.locset.foldLeft(Value.Bot(utils))((tmpVal, protoLoc) => tmpVal + iter(protoLoc))
+            v1 + protoVal.locset.foldLeft(valueU.Bot)((tmpVal, protoLoc) => tmpVal + iter(protoLoc))
           } else boolBotVal
         v1 + v2
       }
@@ -217,40 +219,40 @@ case class Helper(utils: Utils) {
 
   /* unary operator */
   /* void */
-  def uVoid(value: Value): Value = Value(PValue(utils.absUndef.Top)(utils))
+  def uVoid(value: Value): Value = valueU.alpha()
   /* + */
   def uopPlus(value: Value): Value = {
     val absNum = value.pvalue.toAbsNumber(absNumber) + value.objToPrimitive("Number")(utils).toAbsNumber(absNumber)
-    Value(PValue(absNum)(utils))
+    valueU(absNum)
   }
 
   /* - */
   def uopMinus(value: Value): Value = {
     val oldAbsNum = value.pvalue.toAbsNumber(absNumber) + value.objToPrimitive("Number")(utils).toAbsNumber(absNumber)
     val newAbsNum = oldAbsNum.negate
-    Value(PValue(newAbsNum)(utils))
+    valueU(newAbsNum)
   }
 
   /* - */
   def uopMinusBetter(h: Heap, value: Value): Value = {
     val oldAbsNum = value.pvalue.toAbsNumber(absNumber) + value.objToPrimitiveBetter(h, "Number")(utils).toAbsNumber(absNumber)
     val newAbsNum = oldAbsNum.negate
-    Value(PValue(newAbsNum)(utils))
+    valueU(newAbsNum)
   }
 
   /* ~ */
   def uopBitNeg(value: Value): Value = {
     val oldAbsNum = toInt32(value)
     val newAbsNum = oldAbsNum.bitNegate
-    Value(PValue(newAbsNum)(utils))
+    valueU(newAbsNum)
   }
 
   /* ! */
   def uopNeg(value: Value): Value = {
     val oldValue = value.toAbsBoolean(utils.absBool)
     oldValue.gamma match {
-      case ConSingleCon(b) => Value(PValue(utils.absBool.alpha(!b))(utils))
-      case _ => Value(PValue(oldValue)(utils))
+      case ConSingleCon(b) => valueU.alpha(!b)
+      case _ => valueU(oldValue)
     }
   }
 
@@ -260,7 +262,7 @@ case class Helper(utils: Utils) {
     val lAbsNum = toInt32(left)
     val rAbsNum = toInt32(right)
     val resAbsNum = lAbsNum.bitOr(rAbsNum)
-    Value(PValue(resAbsNum)(utils))
+    valueU(resAbsNum)
   }
 
   /* & */
@@ -268,7 +270,7 @@ case class Helper(utils: Utils) {
     val lAbsNum = toInt32(left)
     val rAbsNum = toInt32(right)
     val resAbsNum = lAbsNum.bitAnd(rAbsNum)
-    Value(PValue(resAbsNum)(utils))
+    valueU(resAbsNum)
   }
 
   /* ^ */
@@ -276,7 +278,7 @@ case class Helper(utils: Utils) {
     val lAbsNum = toInt32(left)
     val rAbsNum = toInt32(right)
     val resAbsNum = lAbsNum.bitXor(rAbsNum)
-    Value(PValue(resAbsNum)(utils))
+    valueU(resAbsNum)
   }
 
   /* << */
@@ -284,7 +286,7 @@ case class Helper(utils: Utils) {
     val lAbsNum = toInt32(left)
     val rAbsNum = toUInt32(right)
     val resAbsNum = lAbsNum.bitLShift(rAbsNum)
-    Value(PValue(resAbsNum)(utils))
+    valueU(resAbsNum)
   }
 
   /* >> */
@@ -292,7 +294,7 @@ case class Helper(utils: Utils) {
     val lAbsNum = toInt32(left)
     val rAbsNum = toUInt32(right)
     val resAbsNum = lAbsNum.bitRShift(rAbsNum)
-    Value(PValue(resAbsNum)(utils))
+    valueU(resAbsNum)
   }
 
   /* >>> */
@@ -300,18 +302,18 @@ case class Helper(utils: Utils) {
     val lAbsNum = toInt32(left)
     val rAbsNum = toUInt32(right)
     val resAbsNum = lAbsNum.bitURShift(rAbsNum)
-    Value(PValue(resAbsNum)(utils))
+    valueU(resAbsNum)
   }
 
   /* + */
   def bopPlus(left: Value, right: Value): Value = {
     def PValue2Tpl(pv: PValue): (PValue, PValue, PValue, PValue, PValue) = {
       (
-        PValue(pv.undefval)(utils),
-        PValue(pv.nullval)(utils),
-        PValue(pv.boolval)(utils),
-        PValue(pv.numval)(utils),
-        PValue(pv.strval)(utils)
+        pvalueU(pv.undefval),
+        pvalueU(pv.nullval),
+        pvalueU(pv.boolval),
+        pvalueU(pv.numval),
+        pvalueU(pv.strval)
       )
     }
 
@@ -321,7 +323,7 @@ case class Helper(utils: Utils) {
       case (ConSetBot(), ConSetBot()) =>
         val (lAbsNum, rAbsNum) = (primLPV.toAbsNumber(absNumber), primRPV.toAbsNumber(absNumber))
         val resAbsNum = lAbsNum add rAbsNum
-        Value(PValue(resAbsNum)(utils))
+        valueU(resAbsNum)
       case (_, ConSetBot()) =>
         val (undefPV, nullPV, boolPV, numPV, strPV) = PValue2Tpl(primRPV)
         val res1 = primLPV.strval.concat(undefPV.toAbsString(utils.absString))
@@ -329,8 +331,8 @@ case class Helper(utils: Utils) {
         val res3 = primLPV.strval.concat(boolPV.toAbsString(utils.absString))
         val res4 = primLPV.strval.concat(numPV.toAbsString(utils.absString))
         val res5 = primLPV.strval.concat(strPV.toAbsString(utils.absString))
-        val resVal = Value(PValue(res1 + res2 + res3 + res4 + res5)(utils))
-        resVal + bopPlus(Value(primLPV.copyWith(utils.absString.Bot)), Value(primRPV))
+        val resVal = valueU(res1 + res2 + res3 + res4 + res5)
+        resVal + bopPlus(valueU(primLPV.copyWith(utils.absString.Bot)), valueU(primRPV))
       case (ConSetBot(), _) =>
         val (undefPV, nullPV, boolPV, numPV, strPV) = PValue2Tpl(primLPV)
         val res1 = undefPV.toAbsString(utils.absString).concat(primRPV.strval)
@@ -338,8 +340,8 @@ case class Helper(utils: Utils) {
         val res3 = boolPV.toAbsString(utils.absString).concat(primRPV.strval)
         val res4 = numPV.toAbsString(utils.absString).concat(primRPV.strval)
         val res5 = strPV.toAbsString(utils.absString).concat(primRPV.strval)
-        val resVal = Value(PValue(res1 + res2 + res3 + res4 + res5)(utils))
-        resVal + bopPlus(Value(primLPV), Value(primRPV.copyWith(utils.absString.Bot)))
+        val resVal = valueU(pvalueU(res1 + res2 + res3 + res4 + res5))
+        resVal + bopPlus(valueU(primLPV), valueU(primRPV.copyWith(utils.absString.Bot)))
       case (_, _) =>
         val (undefLPV, nullLPV, boolLPV, numLPV, strLPV) = PValue2Tpl(primLPV)
         val resR1 = undefLPV.toAbsString(utils.absString).concat(primRPV.strval)
@@ -356,9 +358,9 @@ case class Helper(utils: Utils) {
         val resL5 = primLPV.strval.concat(strRPV.toAbsString(utils.absString))
 
         val resAbsStr = resR1 + resR2 + resR3 + resR4 + resR5 + resL1 + resL2 + resL3 + resL4 + resL5
-        val resVal = Value(PValue(resAbsStr)(utils))
+        val resVal = valueU(resAbsStr)
 
-        resVal + bopPlus(Value(primLPV.copyWith(utils.absString.Bot)), Value(primRPV.copyWith(utils.absString.Bot)))
+        resVal + bopPlus(valueU(primLPV.copyWith(utils.absString.Bot)), valueU(primRPV.copyWith(utils.absString.Bot)))
     }
   }
 
@@ -367,7 +369,7 @@ case class Helper(utils: Utils) {
     val lAbsNum = left.pvalue.toAbsNumber(absNumber) + left.objToPrimitive("Number")(utils).toAbsNumber(absNumber)
     val rAbsNum = right.pvalue.toAbsNumber(absNumber) + right.objToPrimitive("Number")(utils).toAbsNumber(absNumber)
     val resAbsNum = lAbsNum sub rAbsNum
-    Value(PValue(resAbsNum)(utils))
+    valueU(resAbsNum)
   }
 
   /* * */
@@ -375,7 +377,7 @@ case class Helper(utils: Utils) {
     val lAbsNum = left.pvalue.toAbsNumber(absNumber) + left.objToPrimitive("Number")(utils).toAbsNumber(absNumber)
     val rAbsNum = right.pvalue.toAbsNumber(absNumber) + right.objToPrimitive("Number")(utils).toAbsNumber(absNumber)
     val resAbsNum = lAbsNum mul rAbsNum
-    Value(PValue(resAbsNum)(utils))
+    valueU(resAbsNum)
   }
 
   /* / */
@@ -383,7 +385,7 @@ case class Helper(utils: Utils) {
     val lAbsNum = left.pvalue.toAbsNumber(absNumber) + left.objToPrimitive("Number")(utils).toAbsNumber(absNumber)
     val rAbsNum = right.pvalue.toAbsNumber(absNumber) + right.objToPrimitive("Number")(utils).toAbsNumber(absNumber)
     val resAbsNum = lAbsNum div rAbsNum
-    Value(PValue(resAbsNum)(utils))
+    valueU(resAbsNum)
   }
 
   /* % */
@@ -391,7 +393,7 @@ case class Helper(utils: Utils) {
     val lAbsNum = left.pvalue.toAbsNumber(absNumber) + left.objToPrimitive("Number")(utils).toAbsNumber(absNumber)
     val rAbsNum = right.pvalue.toAbsNumber(absNumber) + right.objToPrimitive("Number")(utils).toAbsNumber(absNumber)
     val resAbsNum = lAbsNum mod rAbsNum
-    Value(PValue(resAbsNum)(utils))
+    valueU(resAbsNum)
   }
 
   /* == */
@@ -422,23 +424,23 @@ case class Helper(utils: Utils) {
     val b4 = (leftPV.numval.gammaSimple, rightPV.strval.gammaSimple) match {
       case (ConSimpleBot, _) | (_, ConSimpleBot) => utils.absBool.Bot
       case _ =>
-        val rightNumVal = PValue(rightPV.strval)(utils).toAbsNumber(absNumber)
+        val rightNumVal = pvalueU(rightPV.strval).toAbsNumber(absNumber)
         (leftPV.numval === rightNumVal)(utils.absBool)
     }
     val b5 = (leftPV.strval.gammaSimple, rightPV.numval.gammaSimple) match {
       case (ConSimpleBot, _) | (_, ConSimpleBot) => utils.absBool.Bot
       case _ =>
-        val leftNumVal = PValue(leftPV.strval)(utils).toAbsNumber(absNumber)
+        val leftNumVal = pvalueU(leftPV.strval).toAbsNumber(absNumber)
         (leftNumVal === rightPV.numval)(utils.absBool)
     }
     val b6 = leftPV.boolval.gammaSimple match {
       case ConSimpleBot =>
-        val leftNumVal = PValue(leftPV.boolval)(utils).toAbsNumber(absNumber)
+        val leftNumVal = pvalueU(leftPV.boolval).toAbsNumber(absNumber)
         val b61 = rightPV.numval.fold(utils.absBool.Bot)(rightNumVal => {
           (leftNumVal === rightNumVal)(utils.absBool)
         })
         val b62 = rightPV.strval.fold(utils.absBool.Bot)(rightStrVal => {
-          val rightNumVal = PValue(rightStrVal)(utils).toAbsNumber(absNumber)
+          val rightNumVal = pvalueU(rightStrVal).toAbsNumber(absNumber)
           (leftNumVal === rightNumVal)(utils.absBool)
         })
         val b63 = right.locset.size match {
@@ -455,12 +457,12 @@ case class Helper(utils: Utils) {
 
     val b7 = rightPV.boolval.gammaSimple match {
       case ConSimpleBot =>
-        val rightNumVal = PValue(rightPV.boolval)(utils).toAbsNumber(absNumber)
+        val rightNumVal = pvalueU(rightPV.boolval).toAbsNumber(absNumber)
         val b71 = leftPV.numval.fold(utils.absBool.Bot)(leftNumVal => {
           (leftNumVal === rightNumVal)(utils.absBool)
         })
         val b72 = leftPV.strval.fold(utils.absBool.Bot)(leftStrVal => {
-          val leftNumVal = PValue(leftStrVal)(utils).toAbsNumber(absNumber)
+          val leftNumVal = pvalueU(leftStrVal).toAbsNumber(absNumber)
           (leftNumVal === rightNumVal)(utils.absBool)
         })
         val b73 = left.locset.size match {
@@ -516,7 +518,7 @@ case class Helper(utils: Utils) {
       case _ => utils.absBool.False
     }
 
-    Value(PValue(b1 + b2 + b3 + b4 + b5 + b6 + b7 + b8 + b9 + b10)(utils))
+    valueU(b1 + b2 + b3 + b4 + b5 + b6 + b7 + b8 + b9 + b10)
   }
 
   def bopEqBetter(h: Heap, left: Value, right: Value): Value = {
@@ -535,7 +537,7 @@ case class Helper(utils: Utils) {
       case ConSingleTop() => utils.absBool.Top
       case ConSingleBot() => utils.absBool.Bot
     }
-    Value(PValue(resAbsBool)(utils))
+    valueU(resAbsBool)
   }
 
   /* === */
@@ -557,7 +559,7 @@ case class Helper(utils: Utils) {
         (left.pvalue.strval === right.pvalue.strval)(utils.absBool) +
         (left.pvalue.boolval === right.pvalue.boolval)(utils.absBool) +
         isLocsetSame
-    Value(PValue(isMultiType + isSame)(utils))
+    valueU(isMultiType + isSame)
   }
 
   /* !== */
@@ -568,7 +570,7 @@ case class Helper(utils: Utils) {
       case ConSingleTop() => utils.absBool.Top
       case ConSingleBot() => utils.absBool.Bot
     }
-    Value(PValue(resAbsBool)(utils))
+    valueU(resAbsBool)
   }
 
   private def bopCompareHelp(
@@ -581,12 +583,12 @@ case class Helper(utils: Utils) {
       case (ConSimpleBot, _) | (_, ConSimpleBot) =>
         val leftAbsNum = leftPV.toAbsNumber(absNumber)
         val rightAbsNum = rightPV.toAbsNumber(absNumber)
-        Value(PValue(cmpAbsNum(leftAbsNum, rightAbsNum))(utils))
+        valueU(cmpAbsNum(leftAbsNum, rightAbsNum))
       case _ =>
         val leftPV2 = leftPV.copyWith(utils.absString.Bot)
         val rightPV2 = rightPV.copyWith(utils.absString.Bot)
         val resAbsBool = cmpAbsStr(leftPV.strval, rightPV.strval)
-        Value(PValue(resAbsBool)(utils)) +
+        valueU(resAbsBool) +
           bopCompareHelp(leftPV, rightPV2, cmpAbsNum, cmpAbsStr) +
           bopCompareHelp(leftPV2, rightPV, cmpAbsNum, cmpAbsStr)
     }

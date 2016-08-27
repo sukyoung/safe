@@ -459,13 +459,13 @@ object Obj {
     val absFalse = utils.absBool.False
     Empty(utils)
       .update("@class", PropValue(utils.absString.alpha("Object"))(utils))
-      .update("@proto", PropValue(ObjectValue(Value(locSet)(utils), absFalse, absFalse, absFalse)))
+      .update("@proto", PropValue(ObjectValue(utils.value(locSet), absFalse, absFalse, absFalse)))
       .update("@extensible", PropValue(utils.absBool.True)(utils))
   }
 
   def newArgObject(absLength: AbsNumber)(utils: Utils): Obj = {
-    val protoVal = Value(BuiltinObjectProto.loc)(utils)
-    val lengthVal = Value(PValue(absLength)(utils))
+    val protoVal = utils.value(BuiltinObjectProto.loc)
+    val lengthVal = utils.value(absLength)
     val absFalse = utils.absBool.False
     val absTrue = utils.absBool.True
     Empty(utils)
@@ -476,8 +476,8 @@ object Obj {
   }
 
   def newArrayObject(absLength: AbsNumber)(utils: Utils): Obj = {
-    val protoVal = Value(BuiltinArrayProto.loc)(utils)
-    val lengthVal = Value(PValue(absLength)(utils))
+    val protoVal = utils.value(BuiltinArrayProto.loc)
+    val lengthVal = utils.value(absLength)
     val absFalse = utils.absBool.False
     Empty(utils)
       .update("@class", PropValue(utils.absString.alpha("Array"))(utils))
@@ -499,9 +499,9 @@ object Obj {
   def newFunctionObject(fidOpt: Option[FunctionId], constructIdOpt: Option[FunctionId], env: Value,
     locOpt: Option[Loc], writable: AbsBool, enumerable: AbsBool, configurable: AbsBool,
     absLength: AbsNumber)(utils: Utils): Obj = {
-    val protoVal = Value(BuiltinFunctionProto.loc)(utils)
+    val protoVal = utils.value(BuiltinFunctionProto.loc)
     val absFalse = utils.absBool.False
-    val lengthVal = Value(PValue(absLength)(utils))
+    val lengthVal = utils.value(absLength)
     val obj1 = Empty(utils)
       .update("@class", PropValue(utils.absString.alpha("Function"))(utils))
       .update("@proto", PropValue(ObjectValue(protoVal, absFalse, absFalse, absFalse)))
@@ -519,7 +519,7 @@ object Obj {
     }
     val obj4 = locOpt match {
       case Some(loc) =>
-        val prototypeVal = Value(PValue.Bot(utils), HashSet(loc))
+        val prototypeVal = utils.value(HashSet(loc))
         obj3.update("@hasinstance", PropValue(utils.absNull.Top)(utils))
           .update("prototype", PropValue(ObjectValue(prototypeVal, writable, enumerable, configurable)))
       case None => obj3
@@ -554,15 +554,15 @@ object Obj {
           val length = str.length
           val newObj3 = (0 until length).foldLeft(newObj2)((tmpObj, tmpIdx) => {
             val charAbsStr = utils.absString.alpha(str.charAt(tmpIdx).toString)
-            val charVal = Value(PValue(charAbsStr)(utils))
+            val charVal = utils.value(charAbsStr)
             tmpObj.update(tmpIdx.toString, PropValue(ObjectValue(charVal, absFalse, absTrue, absFalse)))
           })
-          val lengthVal = Value(PValue(utils.absNumber.alpha(length))(utils))
+          val lengthVal = utils.value.alpha(length)
           obj + newObj3.update("length", PropValue(ObjectValue(lengthVal, absFalse, absFalse, absFalse)))
         })
       case _ =>
-        val strTopVal = Value(PValue(utils.absString.Top)(utils))
-        val lengthVal = Value(PValue(absStr.length(utils.absNumber))(utils))
+        val strTopVal = utils.value(utils.absString.Top)
+        val lengthVal = utils.value(absStr.length(utils.absNumber))
         newObj2
           .update(utils.absString.NumStr, PropValue(ObjectValue(strTopVal, absFalse, absTrue, absFalse)), utils)
           .update("length", PropValue(ObjectValue(lengthVal, absFalse, absFalse, absFalse)))

@@ -27,8 +27,8 @@ object BuiltinBoolean extends FuncModel(
     val argV = sem.CFGLoadHelper(args, Set(utils.absString.alpha("0")), h)
 
     // Returns a Boolean value (not a Boolean object) computed by ToBoolean(value).
-    val boolPV = PValue(argV.toAbsBoolean(utils.absBool))(utils)
-    Value(boolPV)
+    val boolPV = utils.pvalue(argV.toAbsBoolean(utils.absBool))
+    utils.value(boolPV)
   }),
 
   // 15.6.2 The Boolean Constructor: new Boolean([value])
@@ -45,7 +45,7 @@ object BuiltinBoolean extends FuncModel(
     val heap = state.heap.update(loc, obj)
     val ctx = state.context
 
-    (State(heap, ctx), State.Bot, Value(loc)(utils))
+    (State(heap, ctx), State.Bot, utils.value(loc))
   })),
 
   // 15.6.3.1 Boolean.prototype
@@ -67,7 +67,7 @@ object BuiltinBooleanProto extends ObjModel(
         val h = st.heap
         val localObj = h.getOrElse(PredefLoc.SINGLE_PURE_LOCAL, Obj.Bot(utils))
         val thisLocSet = localObj.getOrElse("@this")(LocSetEmpty) { _.objval.value.locset }
-        val thisV = Value(PValue.Bot(utils), thisLocSet)
+        val thisV = utils.value(thisLocSet)
         val classV = sem.CFGLoadHelper(thisV, Set(utils.absString.alpha("@class")), h)
         val pv = thisV.pvalue
         val excSet = (pv.undefval.gamma, pv.nullval.gamma, pv.numval.gamma, pv.strval.gamma) match {
@@ -86,7 +86,7 @@ object BuiltinBooleanProto extends ObjModel(
             utils.absBool.Bot
           }
         }
-        (st, st.raiseException(excSet)(utils), Value(PValue(b.toAbsString(utils.absString))(utils)))
+        (st, st.raiseException(excSet)(utils), utils.value(b.toAbsString(utils.absString)))
       })
     ), T, F, T),
 
@@ -99,7 +99,7 @@ object BuiltinBooleanProto extends ObjModel(
         val h = st.heap
         val localObj = h.getOrElse(PredefLoc.SINGLE_PURE_LOCAL, Obj.Bot(utils))
         val thisLocSet = localObj.getOrElse("@this")(LocSetEmpty) { _.objval.value.locset }
-        val thisV = Value(PValue.Bot(utils), thisLocSet)
+        val thisV = utils.value(thisLocSet)
         val classV = sem.CFGLoadHelper(thisV, Set(utils.absString.alpha("@class")), h)
         val pv = thisV.pvalue
         val excSet = (pv.undefval.gamma, pv.nullval.gamma, pv.numval.gamma, pv.strval.gamma) match {
@@ -118,7 +118,7 @@ object BuiltinBooleanProto extends ObjModel(
             utils.absBool.Bot
           }
         }
-        (st, st.raiseException(excSet)(utils), Value(PValue(b)(utils)))
+        (st, st.raiseException(excSet)(utils), utils.value(b))
       })
     ), T, F, T)
   )

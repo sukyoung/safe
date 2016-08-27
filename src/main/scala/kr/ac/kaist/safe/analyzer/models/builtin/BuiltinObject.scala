@@ -41,9 +41,9 @@ object BuiltinObject extends FuncModel(
       val obj = Obj.newObject(utils)
       val heap = state.heap.update(loc, obj)
       val ctx = state.context
-      (Value(loc)(utils), State(heap, ctx))
+      (utils.value(loc), State(heap, ctx))
     } else {
-      (Value.Bot(utils), State.Bot)
+      (utils.value.Bot, State.Bot)
     }
 
     // 2. Return ToObject(value)
@@ -84,9 +84,9 @@ object BuiltinObject extends FuncModel(
       val obj = Obj.newObject(utils)
       val heap = state.heap.update(loc, obj)
       val ctx = state.context
-      (Value(loc)(utils), State(heap, ctx))
+      (utils.value(loc), State(heap, ctx))
     } else {
-      (Value.Bot(utils), State.Bot)
+      (utils.value.Bot, State.Bot)
     }
 
     (st1 + st2, State.Bot, v1 + v2)
@@ -112,7 +112,7 @@ object BuiltinObject extends FuncModel(
         val excSt = st.raiseException(excSet)(utils)
 
         // 2. Return the value of [[Prototype]] internal property of O.
-        val protoV = retV.locset.foldLeft(Value.Bot(utils))((v, loc) => {
+        val protoV = retV.locset.foldLeft(utils.value.Bot)((v, loc) => {
           v + retSt.heap(loc).getOrElse(Obj.Bot(utils)).get("@proto")(utils).objval.value
         })
 
@@ -151,15 +151,15 @@ object BuiltinObject extends FuncModel(
         })
         val isDomIn = (obj domIn name)(utils.absBool)
         val v1 =
-          if (AF <= isDomIn) Value(PValue(utils.absUndef.Top)(utils))
-          else Value.Bot(utils)
+          if (AF <= isDomIn) utils.value.alpha()
+          else utils.value.Bot
         val (state, v2) =
           if (AT <= isDomIn) {
             val objval = obj(name).getOrElse(PropValue.Bot(utils)).objval
             val valueV = objval.value
-            val writableV = Value(PValue(objval.writable)(utils))
-            val enumerableV = Value(PValue(objval.enumerable)(utils))
-            val configurableV = Value(PValue(objval.configurable)(utils))
+            val writableV = utils.value(objval.writable)
+            val enumerableV = utils.value(objval.enumerable)
+            val configurableV = utils.value(objval.configurable)
             val descObj = Obj.newObject(utils)
               .update("value", PropValue(ObjectValue(valueV, AT, AF, AT)))
               .update("writable", PropValue(ObjectValue(writableV, AT, AF, AT)))
@@ -169,8 +169,8 @@ object BuiltinObject extends FuncModel(
             val descLoc = Loc(descAddr, Recent)
             val retHeap = state.heap.update(descLoc, descObj)
             val ctx = state.context
-            (State(retHeap, ctx), Value(descLoc)(utils))
-          } else (st, Value.Bot(utils))
+            (State(retHeap, ctx), utils.value(descLoc))
+          } else (st, utils.value.Bot)
 
         (state, excSt, v1 + v2)
       })
@@ -216,7 +216,7 @@ object BuiltinObject extends FuncModel(
         //       {[[Value]]: name, [[Writable]]: true, [[Enumerable]]: true,
         //       [[Configurable]]: true}, and false.
         //    c. Increment n by 1.
-        val v = Value(PValue(
+        val v = utils.value(PValue(
           utils.absUndef.Top,
           utils.absNull.Bot,
           utils.absBool.Bot,
@@ -232,7 +232,7 @@ object BuiltinObject extends FuncModel(
         val ctx = state.context
 
         // 5. Return array.
-        (State(retHeap, ctx), excSt, Value(arrLoc)(utils))
+        (State(retHeap, ctx), excSt, utils.value(arrLoc))
       })
     ), T, F, T),
 

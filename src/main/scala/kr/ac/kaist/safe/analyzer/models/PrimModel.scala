@@ -19,19 +19,14 @@ class PrimModel(
     val pvGen: Utils => PValue
 ) extends Model {
   def init(h: Heap, cfg: CFG, utils: Utils): (Heap, Value) =
-    (h, Value(pvGen(utils)))
+    (h, utils.value(pvGen(utils)))
 }
 
 object PrimModel {
   def apply(pvGen: Utils => PValue): PrimModel = new PrimModel(pvGen)
-  def apply(n: Double): PrimModel =
-    PrimModel(utils => PValue(utils.absNumber.alpha(n))(utils))
-  def apply(str: String): PrimModel =
-    PrimModel(utils => PValue(utils.absString.alpha(str))(utils))
-  def apply(): PrimModel =
-    PrimModel(utils => PValue(utils.absUndef.alpha)(utils))
-  def apply(x: Null): PrimModel =
-    PrimModel(utils => PValue(utils.absNull.alpha)(utils))
-  def apply(b: Boolean): PrimModel =
-    PrimModel(utils => PValue(utils.absBool.alpha(b))(utils))
+  def apply(n: Double): PrimModel = PrimModel(_.pvalue.alpha(n))
+  def apply(str: String): PrimModel = PrimModel(_.pvalue.alpha(str))
+  def apply(): PrimModel = PrimModel(_.pvalue.alpha())
+  def apply(x: Null): PrimModel = PrimModel(_.pvalue.alpha(x))
+  def apply(b: Boolean): PrimModel = PrimModel(_.pvalue.alpha(b))
 }

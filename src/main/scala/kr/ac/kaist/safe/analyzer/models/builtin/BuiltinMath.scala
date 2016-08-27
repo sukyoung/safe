@@ -32,7 +32,7 @@ object BuiltinMath extends ObjModel(
       code = SimpleCode(argLen = 1, (args, h, sem, utils) => {
         val resV = sem.CFGLoadHelper(args, Set(utils.absString.alpha("0")), h)
         val num = resV.toAbsNumber(utils.absNumber).abs
-        Value(PValue(num)(utils))
+        utils.value(num)
       })
     ), T, F, T),
 
@@ -41,7 +41,7 @@ object BuiltinMath extends ObjModel(
       code = SimpleCode(argLen = 1, (args, h, sem, utils) => {
         val resV = sem.CFGLoadHelper(args, Set(utils.absString.alpha("0")), h)
         val num = resV.toAbsNumber(utils.absNumber).acos
-        Value(PValue(num)(utils))
+        utils.value(num)
       })
     ), T, F, T),
 
@@ -50,7 +50,7 @@ object BuiltinMath extends ObjModel(
       code = SimpleCode(argLen = 1, (args, h, sem, utils) => {
         val resV = sem.CFGLoadHelper(args, Set(utils.absString.alpha("0")), h)
         val num = resV.toAbsNumber(utils.absNumber).asin
-        Value(PValue(num)(utils))
+        utils.value(num)
       })
     ), T, F, T),
 
@@ -59,7 +59,7 @@ object BuiltinMath extends ObjModel(
       code = SimpleCode(argLen = 1, (args, h, sem, utils) => {
         val resV = sem.CFGLoadHelper(args, Set(utils.absString.alpha("0")), h)
         val num = resV.toAbsNumber(utils.absNumber).atan
-        Value(PValue(num)(utils))
+        utils.value(num)
       })
     ), T, F, T),
 
@@ -69,7 +69,7 @@ object BuiltinMath extends ObjModel(
         val resVy = sem.CFGLoadHelper(args, Set(utils.absString.alpha("0")), h)
         val resVx = sem.CFGLoadHelper(args, Set(utils.absString.alpha("1")), h)
         val num = resVy.toAbsNumber(utils.absNumber).atan2(resVx.toAbsNumber(utils.absNumber))
-        Value(PValue(num)(utils))
+        utils.value(num)
       })
     ), T, F, T),
 
@@ -78,7 +78,7 @@ object BuiltinMath extends ObjModel(
       code = SimpleCode(argLen = 1, (args, h, sem, utils) => {
         val resV = sem.CFGLoadHelper(args, Set(utils.absString.alpha("0")), h)
         val num = resV.toAbsNumber(utils.absNumber).ceil
-        Value(PValue(num)(utils))
+        utils.value(num)
       })
     ), T, F, T),
 
@@ -87,7 +87,7 @@ object BuiltinMath extends ObjModel(
       code = SimpleCode(argLen = 1, (args, h, sem, utils) => {
         val resV = sem.CFGLoadHelper(args, Set(utils.absString.alpha("0")), h)
         val num = resV.toAbsNumber(utils.absNumber).cos
-        Value(PValue(num)(utils))
+        utils.value(num)
       })
     ), T, F, T),
 
@@ -96,7 +96,7 @@ object BuiltinMath extends ObjModel(
       code = SimpleCode(argLen = 1, (args, h, sem, utils) => {
         val resV = sem.CFGLoadHelper(args, Set(utils.absString.alpha("0")), h)
         val num = resV.toAbsNumber(utils.absNumber).exp
-        Value(PValue(num)(utils))
+        utils.value(num)
       })
     ), T, F, T),
 
@@ -105,7 +105,7 @@ object BuiltinMath extends ObjModel(
       code = SimpleCode(argLen = 1, (args, h, sem, utils) => {
         val resV = sem.CFGLoadHelper(args, Set(utils.absString.alpha("0")), h)
         val num = resV.toAbsNumber(utils.absNumber).floor
-        Value(PValue(num)(utils))
+        utils.value(num)
       })
     ), T, F, T),
 
@@ -114,7 +114,7 @@ object BuiltinMath extends ObjModel(
       code = SimpleCode(argLen = 1, (args, h, sem, utils) => {
         val resV = sem.CFGLoadHelper(args, Set(utils.absString.alpha("0")), h)
         val num = resV.toAbsNumber(utils.absNumber).log
-        Value(PValue(num)(utils))
+        utils.value(num)
       })
     ), T, F, T),
 
@@ -122,7 +122,7 @@ object BuiltinMath extends ObjModel(
     ("max", FuncModel(
       name = "Math.max",
       code = SimpleCode(argLen = 2, (args, h, sem, utils) => {
-        Value(PValue(utils.absNumber.Top)(utils))
+        utils.value(utils.absNumber.Top)
       })
     ), T, F, T),
 
@@ -130,7 +130,7 @@ object BuiltinMath extends ObjModel(
     ("min", FuncModel(
       name = "Math.min",
       code = SimpleCode(argLen = 2, (args, h, sem, utils) => {
-        Value(PValue(utils.absNumber.Top)(utils))
+        utils.value(utils.absNumber.Top)
       })
     ), T, F, T),
 
@@ -140,14 +140,14 @@ object BuiltinMath extends ObjModel(
         val resVx = sem.CFGLoadHelper(args, Set(utils.absString.alpha("0")), h)
         val resVy = sem.CFGLoadHelper(args, Set(utils.absString.alpha("1")), h)
         val num = resVx.toAbsNumber(utils.absNumber).pow(resVy.toAbsNumber(utils.absNumber))
-        Value(PValue(num)(utils))
+        utils.value(num)
       })
     ), T, F, T),
 
     ("random", FuncModel(
       name = "Math.random",
       code = SimpleCode(argLen = 0, (args, h, sem, utils) => {
-        Value(PValue(utils.absNumber.Top)(utils))
+        utils.value(utils.absNumber.Top)
       })
     ), T, F, T),
 
@@ -156,7 +156,7 @@ object BuiltinMath extends ObjModel(
       code = SimpleCode(argLen = 1, (args, h, sem, utils) => {
         val resV = sem.CFGLoadHelper(args, Set(utils.absString.alpha("0")), h)
         val num = resV.toAbsNumber(utils.absNumber).round
-        Value(PValue(num)(utils))
+        utils.value(num)
       })
     ), T, F, T),
 
@@ -165,7 +165,7 @@ object BuiltinMath extends ObjModel(
       code = SimpleCode(argLen = 1, (args, h, sem, utils) => {
         val resV = sem.CFGLoadHelper(args, Set(utils.absString.alpha("0")), h)
         val num = resV.toAbsNumber(utils.absNumber).sin
-        Value(PValue(num)(utils))
+        utils.value(num)
       })
     ), T, F, T),
 
@@ -174,7 +174,7 @@ object BuiltinMath extends ObjModel(
       code = SimpleCode(argLen = 1, (args, h, sem, utils) => {
         val resV = sem.CFGLoadHelper(args, Set(utils.absString.alpha("0")), h)
         val num = resV.toAbsNumber(utils.absNumber).sqrt
-        Value(PValue(num)(utils))
+        utils.value(num)
       })
     ), T, F, T),
 
@@ -183,7 +183,7 @@ object BuiltinMath extends ObjModel(
       code = SimpleCode(argLen = 1, (args, h, sem, utils) => {
         val resV = sem.CFGLoadHelper(args, Set(utils.absString.alpha("0")), h)
         val num = resV.toAbsNumber(utils.absNumber).tan
-        Value(PValue(num)(utils))
+        utils.value(num)
       })
     ), T, F, T)
   )

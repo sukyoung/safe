@@ -16,13 +16,31 @@ import kr.ac.kaist.safe.analyzer.models.PredefLoc
 import scala.collection.immutable.HashSet
 import kr.ac.kaist.safe.util.Loc
 
-object Value {
-  def Bot: Utils => Value = utils => Value(PValue.Bot(utils), LocSetEmpty)
+case class ValueUtil(utils: Utils) {
+  val pvalueU = utils.pvalue
+  val Bot: Value = Value(pvalueU.Bot, LocSetEmpty)
+  // TODO Top
 
+  // constructor
   def apply(pvalue: PValue): Value = Value(pvalue, LocSetEmpty)
+  def apply(loc: Loc): Value = Value(pvalueU.Bot, HashSet(loc))
+  def apply(locSet: Set[Loc]): Value = Value(pvalueU.Bot, locSet)
+  def apply(undefval: AbsUndef): Value = apply(pvalueU(undefval))
+  def apply(nullval: AbsNull): Value = apply(pvalueU(nullval))
+  def apply(boolval: AbsBool): Value = apply(pvalueU(boolval))
+  def apply(numval: AbsNumber): Value = apply(pvalueU(numval))
+  def apply(strval: AbsString): Value = apply(pvalueU(strval))
 
-  def apply(loc: Loc): Utils => Value = utils => Value(PValue.Bot(utils), HashSet(loc))
-  def apply(locSet: Set[Loc]): Utils => Value = utils => Value(PValue.Bot(utils), locSet)
+  // abstraction
+  def alpha(): Value = apply(pvalueU.alpha())
+  def alpha(x: Null): Value = apply(pvalueU.alpha(x))
+  def alpha(str: String): Value = apply(pvalueU.alpha(str))
+  def alpha(set: Set[String]): Value = apply(pvalueU.alpha(set))
+  def alpha(d: Double): Value = apply(pvalueU.alpha(d))
+  def alpha(l: Long): Value = apply(pvalueU.alpha(l))
+  // trick for 'have same type after erasure' (Set[Double] & Set[String])
+  def alpha(set: => Set[Double]): Value = apply(pvalueU.alpha(set))
+  def alpha(b: Boolean): Value = apply(pvalueU.alpha(b))
 }
 
 case class Value(pvalue: PValue, locset: Set[Loc]) {
@@ -129,34 +147,37 @@ case class Value(pvalue: PValue, locset: Set[Loc]) {
   }
 
   def objToPrimitive(hint: String)(utils: Utils): PValue = {
-    val pvalue: (Utils => PValue) =
-      if (this.locset.isEmpty) PValue.Bot
+    val pvalueU = utils.pvalue
+    val pvalue: PValue =
+      if (this.locset.isEmpty) pvalueU.Bot
       else {
         hint match {
-          case "Number" => PValue(utils.absNumber.Top)
-          case "String" => PValue(utils.absString.Top)
-          case _ => PValue.Top
+          case "Number" => pvalueU(utils.absNumber.Top)
+          case "String" => pvalueU(utils.absString.Top)
+          case _ => pvalueU.Top
         }
       }
-    pvalue(utils)
+    pvalue
   }
 
   def objToPrimitiveBetter(h: Heap, hint: String)(utils: Utils): PValue = {
-    val pvalue: (Utils => PValue) =
-      if (this.locset.isEmpty) PValue.Bot
+    val pvalueU = utils.pvalue
+    val pvalue: PValue =
+      if (this.locset.isEmpty) pvalueU.Bot
       else {
         hint match {
           case "Number" =>
-            PValue(defaultValueNumber(h)(utils).toAbsNumber(utils.absNumber))
+            pvalueU(defaultValueNumber(h)(utils).toAbsNumber(utils.absNumber))
           case "String" =>
-            PValue(defaultToString(h)(utils))
-          case _ => PValue.Top
+            pvalueU(defaultToString(h)(utils))
+          case _ => pvalueU.Top
         }
       }
-    pvalue(utils)
+    pvalue
   }
 
   private def defaultValueNumber(h: Heap)(utils: Utils): PValue = {
+    val pvalueU = utils.pvalue
     def getClassStrVal(obj: Obj): AbsString = {
       obj.getOrElse("@class")(utils.absString.Bot) { _.objval.value.pvalue.strval }
     }
@@ -212,9 +233,9 @@ case class Value(pvalue: PValue, locset: Set[Loc]) {
     val absStr1 = strObjSet.foldLeft[AbsString](utils.absString.Bot)((absStr, obj) => {
       absStr + obj.getOrElse("@primitive")(utils.absString.Bot) { _.objval.value.pvalue.strval }
     })
-    val pv2 = PValue(b)(utils)
-    val pv3 = PValue(n)(utils)
-    val pv4 = PValue(n2)(utils)
+    val pv2 = pvalueU(b)
+    val pv3 = pvalueU(n)
+    val pv4 = pvalueU(n2)
 
     val absStr5 = (
       srcAbsStr.gammaSingle,
@@ -232,12 +253,12 @@ case class Value(pvalue: PValue, locset: Set[Loc]) {
         case _ => utils.absString.Top
       }
 
-    val pv6 = PValue(
+    val pv6 = utils.pvalue(
       others.fold(utils.absString.Bot)(_ => {
         utils.absString.Top
       })
-    )(utils)
-    PValue(absStr1)(utils) + pv2 + pv3 + pv4 + PValue(absStr5)(utils) + pv6
+    )
+    pvalueU(absStr1) + pv2 + pv3 + pv4 + pvalueU(absStr5) + pv6
   }
 
   private def defaultToString(h: Heap)(utils: Utils): AbsString = {

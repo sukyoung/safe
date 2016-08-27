@@ -287,7 +287,7 @@ class DHeap(val map: Map[Loc, Obj]) extends Heap {
         val b2 =
           if (utils.absBool.False <= test) {
             val protoV = this.getOrElse(currentLoc, Obj.Bot(utils))
-              .getOrElse("@proto")(Value.Bot(utils)) { _.objval.value }
+              .getOrElse("@proto")(utils.value.Bot) { _.objval.value }
             val b3 = protoV.pvalue.nullval.fold(utils.absBool.Bot) { _ => utils.absBool.False }
             b3 + protoV.locset.foldLeft[AbsBool](utils.absBool.Bot)((b, protoLoc) => {
               b + visit(protoLoc)
@@ -393,28 +393,29 @@ class DHeap(val map: Map[Loc, Obj]) extends Heap {
   ////////////////////////////////////////////////////////////////
   def proto(loc: Loc, absStr: AbsString)(utils: Utils): Value = {
     var visited = LocSetEmpty
+    val valueBot = utils.value.Bot
     def visit(currentLoc: Loc): Value = {
-      if (visited.contains(currentLoc)) Value.Bot(utils)
+      if (visited.contains(currentLoc)) valueBot
       else {
         visited += currentLoc
         val test = (this.getOrElse(currentLoc, Obj.Bot(utils)) domIn absStr)(utils.absBool)
         val v1 =
           if (utils.absBool.True <= test) {
-            this.getOrElse(currentLoc, Obj.Bot(utils)).getOrElse(absStr)(Value.Bot(utils)) { _.objval.value }
+            this.getOrElse(currentLoc, Obj.Bot(utils)).getOrElse(absStr)(valueBot) { _.objval.value }
           } else {
-            Value.Bot(utils)
+            valueBot
           }
         val v2 =
           if (utils.absBool.False <= test) {
-            val protoV = this.getOrElse(currentLoc, Obj.Bot(utils)).getOrElse("@proto")(Value.Bot(utils)) { _.objval.value }
-            val v3 = protoV.pvalue.nullval.fold(Value.Bot(utils))(_ => {
-              Value(PValue(utils.absUndef.Top)(utils))
+            val protoV = this.getOrElse(currentLoc, Obj.Bot(utils)).getOrElse("@proto")(valueBot) { _.objval.value }
+            val v3 = protoV.pvalue.nullval.fold(valueBot)(_ => {
+              utils.value.alpha()
             })
-            v3 + protoV.locset.foldLeft(Value.Bot(utils))((v, protoLoc) => {
+            v3 + protoV.locset.foldLeft(valueBot)((v, protoLoc) => {
               v + visit(protoLoc)
             })
           } else {
-            Value.Bot(utils)
+            valueBot
           }
         v1 + v2
       }
@@ -453,30 +454,32 @@ class DHeap(val map: Map[Loc, Obj]) extends Heap {
   ////////////////////////////////////////////////////////////////
   def lookup(id: CFGId)(utils: Utils): (Value, Set[Exception]) = {
     val x = id.text
+    val valueBot = utils.value.Bot
     val localObj = this.getOrElse(PredefLoc.SINGLE_PURE_LOCAL, Obj.Bot(utils))
     id.kind match {
-      case PureLocalVar => (localObj.getOrElse(x)(Value.Bot(utils)) { _.objval.value }, ExceptionSetEmpty)
+      case PureLocalVar => (localObj.getOrElse(x)(valueBot) { _.objval.value }, ExceptionSetEmpty)
       case CapturedVar =>
         val envLocSet = localObj.getOrElse("@env")(LocSetEmpty) { _.objval.value.locset }
-        val value = envLocSet.foldLeft(Value.Bot(utils))((tmpVal, envLoc) => {
+        val value = envLocSet.foldLeft(valueBot)((tmpVal, envLoc) => {
           tmpVal + lookupLocal(envLoc, x)(utils)
         })
         (value, ExceptionSetEmpty)
       case CapturedCatchVar =>
         val collapsedObj = this.getOrElse(PredefLoc.COLLAPSED, Obj.Bot(utils))
-        (collapsedObj.getOrElse(x)(Value.Bot(utils)) { _.objval.value }, ExceptionSetEmpty)
+        (collapsedObj.getOrElse(x)(valueBot) { _.objval.value }, ExceptionSetEmpty)
       case GlobalVar => lookupGlobal(x)(utils)
     }
   }
 
   def lookupGlobal(x: String)(utils: Utils): (Value, Set[Exception]) = {
+    val valueBot = utils.value.Bot
     if (this domIn PredefLoc.GLOBAL) {
       val globalObj = this.getOrElse(PredefLoc.GLOBAL, Obj.Bot(utils))
       val v1 =
         if (utils.absBool.True <= (globalObj domIn x)(utils.absBool))
-          globalObj.getOrElse(x)(Value.Bot(utils)) { _.objval.value }
+          globalObj.getOrElse(x)(valueBot) { _.objval.value }
         else
-          Value.Bot(utils)
+          valueBot
       val protoLocSet = globalObj.getOrElse("@proto")(LocSetEmpty) { _.objval.value.locset }
       val (v2, excSet) =
         if (utils.absBool.False <= (globalObj domIn x)(utils.absBool)) {
@@ -485,7 +488,7 @@ class DHeap(val map: Map[Loc, Obj]) extends Heap {
               tmpExcSet + ReferenceError
             } else tmpExcSet
           })
-          val v3 = protoLocSet.foldLeft(Value.Bot(utils))((tmpVal, protoLoc) => {
+          val v3 = protoLocSet.foldLeft(valueBot)((tmpVal, protoLoc) => {
             if (utils.absBool.True <= hasProperty(protoLoc, utils.absString.alpha(x))(utils)) {
               tmpVal + this.proto(protoLoc, utils.absString.alpha(x))(utils)
             } else {
@@ -494,31 +497,32 @@ class DHeap(val map: Map[Loc, Obj]) extends Heap {
           })
           (v3, excSet)
         } else {
-          (Value.Bot(utils), ExceptionSetEmpty)
+          (valueBot, ExceptionSetEmpty)
         }
       (v1 + v2, excSet)
     } else {
-      (Value.Bot(utils), ExceptionSetEmpty)
+      (valueBot, ExceptionSetEmpty)
     }
   }
 
   def lookupLocal(loc: Loc, x: String)(utils: Utils): Value = {
     var visited = LocSetEmpty
+    val valueBot = utils.value.Bot
     def visit(l: Loc): Value = {
-      if (visited.contains(l)) Value.Bot(utils)
+      if (visited.contains(l)) valueBot
       else {
         visited += l
         val env = this.getOrElse(l, Obj.Bot(utils))
         val isDomIn = (env domIn x)(utils.absBool)
         val v1 =
-          if (utils.absBool.True <= isDomIn) env.getOrElse(x)(Value.Bot(utils)) { _.objval.value }
-          else Value.Bot(utils)
+          if (utils.absBool.True <= isDomIn) env.getOrElse(x)(valueBot) { _.objval.value }
+          else valueBot
         val v2 =
           if (utils.absBool.False <= isDomIn) {
             val outerLocSet = env.getOrElse("@outer")(LocSetEmpty) { _.objval.value.locset }
-            outerLocSet.foldLeft(Value.Bot(utils))((tmpVal, outerLoc) => tmpVal + visit(outerLoc))
+            outerLocSet.foldLeft(valueBot)((tmpVal, outerLoc) => tmpVal + visit(outerLoc))
           } else {
-            Value.Bot(utils)
+            valueBot
           }
         v1 + v2
       }

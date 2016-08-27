@@ -15,19 +15,19 @@ import kr.ac.kaist.safe.util.Loc
 
 object ObjectValue {
   def Bot: Utils => ObjectValue = utils =>
-    ObjectValue(Value.Bot(utils), utils.absBool.Bot, utils.absBool.Bot, utils.absBool.Bot)
+    ObjectValue(utils.value.Bot, utils.absBool.Bot, utils.absBool.Bot, utils.absBool.Bot)
 
   def apply(value: Value): Utils => ObjectValue = utils =>
     ObjectValue(value, utils.absBool.Bot, utils.absBool.Bot, utils.absBool.Bot)
 
   def apply(pvalue: PValue, writable: AbsBool, enumerable: AbsBool, configurable: AbsBool): ObjectValue =
-    ObjectValue(Value(pvalue), writable, enumerable, configurable)
+    ObjectValue(Value(pvalue, Set()), writable, enumerable, configurable)
 
   def apply(loc: Loc): Utils => ObjectValue = utils =>
-    ObjectValue(Value(loc)(utils), utils.absBool.Bot, utils.absBool.Bot, utils.absBool.Bot)
+    ObjectValue(utils.value(loc), utils.absBool.Bot, utils.absBool.Bot, utils.absBool.Bot)
 
   def apply(locSet: Set[Loc]): Utils => ObjectValue = utils =>
-    ObjectValue(Value(locSet)(utils), utils.absBool.Bot, utils.absBool.Bot, utils.absBool.Bot)
+    ObjectValue(utils.value(locSet), utils.absBool.Bot, utils.absBool.Bot, utils.absBool.Bot)
 }
 
 case class ObjectValue(

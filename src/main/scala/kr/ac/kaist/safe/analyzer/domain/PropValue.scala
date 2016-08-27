@@ -22,25 +22,25 @@ object PropValue {
 
   def apply(objval: ObjectValue): PropValue = PropValue(objval, HashSet[FunctionId]())
   def apply(pvalue: PValue, writable: AbsBool, enumerable: AbsBool, configurable: AbsBool): PropValue =
-    PropValue(ObjectValue(Value(pvalue), writable, enumerable, configurable))
+    PropValue(ObjectValue(Value(pvalue, HashSet()), writable, enumerable, configurable))
 
   def apply(fidSet: Set[FunctionId]): Utils => PropValue = utils =>
     PropValue(ObjectValue.Bot(utils), fidSet)
 
   def apply(undefval: AbsUndef): Utils => PropValue = utils =>
-    PropValue(ObjectValue(PValue(undefval)(utils), utils.absBool.Bot, utils.absBool.Bot, utils.absBool.Bot), HashSet[FunctionId]())
+    PropValue(ObjectValue(utils.pvalue(undefval), utils.absBool.Bot, utils.absBool.Bot, utils.absBool.Bot), HashSet[FunctionId]())
 
   def apply(nullval: AbsNull): Utils => PropValue = utils =>
-    PropValue(ObjectValue(PValue(nullval)(utils), utils.absBool.Bot, utils.absBool.Bot, utils.absBool.Bot), HashSet[FunctionId]())
+    PropValue(ObjectValue(utils.pvalue(nullval), utils.absBool.Bot, utils.absBool.Bot, utils.absBool.Bot), HashSet[FunctionId]())
 
   def apply(boolval: AbsBool): Utils => PropValue = utils =>
-    PropValue(ObjectValue(PValue(boolval)(utils), utils.absBool.Bot, utils.absBool.Bot, utils.absBool.Bot), HashSet[FunctionId]())
+    PropValue(ObjectValue(utils.pvalue(boolval), utils.absBool.Bot, utils.absBool.Bot, utils.absBool.Bot), HashSet[FunctionId]())
 
   def apply(numval: AbsNumber): Utils => PropValue = utils =>
-    PropValue(ObjectValue(PValue(numval)(utils), utils.absBool.Bot, utils.absBool.Bot, utils.absBool.Bot), HashSet[FunctionId]())
+    PropValue(ObjectValue(utils.pvalue(numval), utils.absBool.Bot, utils.absBool.Bot, utils.absBool.Bot), HashSet[FunctionId]())
 
   def apply(strval: AbsString): Utils => PropValue = utils =>
-    PropValue(ObjectValue(PValue(strval)(utils), utils.absBool.Bot, utils.absBool.Bot, utils.absBool.Bot), HashSet[FunctionId]())
+    PropValue(ObjectValue(utils.pvalue(strval), utils.absBool.Bot, utils.absBool.Bot, utils.absBool.Bot), HashSet[FunctionId]())
 }
 
 case class PropValue(

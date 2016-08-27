@@ -22,11 +22,13 @@ import scala.collection.immutable.HashSet
 
 case class Initialize(cfg: CFG, helper: Helper) {
   val utils = helper.utils
+  val pvalueU = utils.pvalue
+  val valueU = utils.value
 
   def state: State = {
     val afalse = utils.absBool.False
 
-    val globalPureLocalObj = Obj.newPureLocalObj(Value(PValue(utils.absNull.Top)(utils)), HashSet(PredefLoc.GLOBAL))(utils) - "@return"
+    val globalPureLocalObj = Obj.newPureLocalObj(valueU.alpha(null), HashSet(PredefLoc.GLOBAL))(utils) - "@return"
 
     val initHeap = Heap(HashMap(
       PredefLoc.SINGLE_PURE_LOCAL -> globalPureLocalObj,
@@ -46,7 +48,7 @@ case class Initialize(cfg: CFG, helper: Helper) {
 
     val testGlobalObj =
       globalObj.update("__BOT", PropValue.Bot(utils))
-        .update("__TOP", PropValue(ObjectValue(Value(PValue.Top(utils)))(utils)))
+        .update("__TOP", PropValue(ObjectValue(valueU(pvalueU.Top))(utils)))
         .update("__UInt", PropValue(utils.absNumber.UInt)(utils))
         .update("__Global", PropValue(ObjectValue(PredefLoc.GLOBAL)(utils)))
         .update("__BoolTop", PropValue(utils.absBool.Top)(utils))

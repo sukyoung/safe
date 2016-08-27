@@ -13,27 +13,29 @@ package kr.ac.kaist.safe.analyzer.domain
 
 import scala.collection.immutable.HashSet
 
-object PValue {
-  def Bot: Utils => PValue = utils =>
+case class PValueUtil(utils: Utils) {
+  val Bot: PValue =
     PValue(utils.absUndef.Bot, utils.absNull.Bot, utils.absBool.Bot, utils.absNumber.Bot, utils.absString.Bot)
-
-  def Top: Utils => PValue = utils =>
+  val Top: PValue =
     PValue(utils.absUndef.Top, utils.absNull.Top, utils.absBool.Top, utils.absNumber.Top, utils.absString.Top)
 
-  def apply(undefval: AbsUndef): Utils => PValue = utils =>
-    PValue(undefval, utils.absNull.Bot, utils.absBool.Bot, utils.absNumber.Bot, utils.absString.Bot)
+  // constructor
+  def apply(undefval: AbsUndef): PValue = Bot.copy(undefval = undefval)
+  def apply(nullval: AbsNull): PValue = Bot.copy(nullval = nullval)
+  def apply(boolval: AbsBool): PValue = Bot.copy(boolval = boolval)
+  def apply(numval: AbsNumber): PValue = Bot.copy(numval = numval)
+  def apply(strval: AbsString): PValue = Bot.copy(strval = strval)
 
-  def apply(nullval: AbsNull): Utils => PValue = utils =>
-    PValue(utils.absUndef.Bot, nullval, utils.absBool.Bot, utils.absNumber.Bot, utils.absString.Bot)
-
-  def apply(boolval: AbsBool): Utils => PValue = utils =>
-    PValue(utils.absUndef.Bot, utils.absNull.Bot, boolval, utils.absNumber.Bot, utils.absString.Bot)
-
-  def apply(numval: AbsNumber): Utils => PValue = utils =>
-    PValue(utils.absUndef.Bot, utils.absNull.Bot, utils.absBool.Bot, numval, utils.absString.Bot)
-
-  def apply(strval: AbsString): Utils => PValue = utils =>
-    PValue(utils.absUndef.Bot, utils.absNull.Bot, utils.absBool.Bot, utils.absNumber.Bot, strval)
+  // abstraction
+  def alpha(): PValue = apply(utils.absUndef.alpha)
+  def alpha(x: Null): PValue = apply(utils.absNull.alpha)
+  def alpha(str: String): PValue = apply(utils.absString.alpha(str))
+  def alpha(set: Set[String]): PValue = apply(utils.absString.alpha(set))
+  def alpha(d: Double): PValue = apply(utils.absNumber.alpha(d))
+  def alpha(l: Long): PValue = apply(utils.absNumber.alpha(l))
+  // trick for 'have same type after erasure' (Set[Double] & Set[String])
+  def alpha(set: => Set[Double]): PValue = apply(utils.absNumber.alpha(set))
+  def alpha(b: Boolean): PValue = apply(utils.absBool.alpha(b))
 }
 
 case class PValue(
