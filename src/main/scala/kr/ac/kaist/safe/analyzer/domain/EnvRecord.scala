@@ -299,7 +299,7 @@ class DecEnvRecord(
     val (defaultOther, _) = this.map(STR_DEFAULT_OTHER)
     absStr.gamma match {
       case _ if this.isBottom => this
-      case ConSetBot() => DecEnvRecord.Bot(utils)
+      case ConSetBot() => DecEnvRecord.Bot
       case ConSetTop() =>
         val properties = this.map.keySet.filter(x => {
           val isInternalProp = x.take(1) == "@"
@@ -332,12 +332,7 @@ class DecEnvRecord(
 
   // absent value is set to AbsentBot because it is strong update.
   def update(x: String, propv: PropValue, exist: Boolean = false): DecEnvRecord = {
-    if (this.isBottom)
-      this
-    else if (x.startsWith("@default"))
-      DecEnvRecord(map.updated(x, (propv, AbsentTop)))
-    else
-      DecEnvRecord(map.updated(x, (propv, AbsentBot)))
+    DecEnvRecord(map.updated(x, (propv, AbsentBot)))
   }
 
   def update(absStr: AbsString, propV: PropValue, utils: Utils): DecEnvRecord = {
@@ -346,9 +341,9 @@ class DecEnvRecord(
         DecEnvRecord(map.updated(strSet.head, (propV, AbsentBot)))
       case ConSetCon(strSet) =>
         strSet.foldLeft(this)((r, x) => r + update(x, propV))
-      case ConSetBot() => DecEnvRecord.Bot(utils)
+      case ConSetBot() => DecEnvRecord.Bot
       case ConSetTop() => absStr.gammaIsAllNums match {
-        case ConSingleBot() => DecEnvRecord.Bot(utils)
+        case ConSingleBot() => DecEnvRecord.Bot
         case ConSingleCon(true) =>
           val newDefaultNum = this.map.get(STR_DEFAULT_NUMBER) match {
             case Some((numPropV, _)) => numPropV + propV
@@ -479,28 +474,14 @@ object DecEnvRecord {
   val MapBot: Map[String, (PropValue, Absent)] = HashMap[String, (PropValue, Absent)]()
   def apply(m: Map[String, (PropValue, Absent)]): DecEnvRecord = new DecEnvRecord(m)
 
-  def Bot: Utils => DecEnvRecord = utils => {
-    val map = MapBot +
-      (STR_DEFAULT_NUMBER -> (PropValue.Bot(utils), AbsentBot)) +
-      (STR_DEFAULT_OTHER -> (PropValue.Bot(utils), AbsentBot))
-
-    new DecEnvRecord(map)
-  }
-
-  def Empty: Utils => DecEnvRecord = utils => {
-    val map = MapBot +
-      (STR_DEFAULT_NUMBER -> (PropValue.Bot(utils), AbsentTop)) +
-      (STR_DEFAULT_OTHER -> (PropValue.Bot(utils), AbsentTop))
-
-    new DecEnvRecord(map)
-  }
+  val Bot: DecEnvRecord = new DecEnvRecord(MapBot)
 
   def newDeclEnvRecord(outerEnv: Value)(utils: Utils): DecEnvRecord = {
-    Empty(utils).update("@outer", PropValue(utils.dataProp(outerEnv)))
+    Bot.update("@outer", PropValue(utils.dataProp(outerEnv)))
   }
 
   def newPureLocal(envVal: Value, thisLocSet: Set[Loc])(utils: Utils): DecEnvRecord = {
-    Empty(utils)
+    Bot
       .update("@env", PropValue(utils.dataProp(envVal)))
       .update("@this", PropValue(utils.dataProp(thisLocSet)))
       .update("@exception", PropValue.Bot(utils))

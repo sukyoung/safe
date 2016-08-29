@@ -13,9 +13,8 @@ package kr.ac.kaist.safe.analyzer.domain
 
 import scala.collection.immutable.{ HashMap, HashSet }
 import kr.ac.kaist.safe.LINE_SEP
-import kr.ac.kaist.safe.analyzer.models.PredefLoc
+import kr.ac.kaist.safe.analyzer.models.builtin.BuiltinGlobal
 import kr.ac.kaist.safe.util._
-import kr.ac.kaist.safe.analyzer.models.PredefLoc.{ GLOBAL, SINGLE_PURE_LOCAL }
 import kr.ac.kaist.safe.nodes.cfg._
 
 trait Heap {
@@ -223,7 +222,7 @@ class DHeap(val map: Map[Loc, Obj]) extends Heap {
   override def toString: String = {
     buildString(loc => loc match {
       case Loc(ProgramAddr(_), _) => true
-      case GLOBAL => true
+      case BuiltinGlobal.loc => true
       case _ => false
     }).toString
   }
@@ -387,7 +386,7 @@ class DHeap(val map: Map[Loc, Obj]) extends Heap {
   }
 
   def canPutVar(x: String)(utils: Utils): AbsBool = {
-    val globalLoc = PredefLoc.GLOBAL
+    val globalLoc = BuiltinGlobal.loc
     val globalObj = this.getOrElse(globalLoc, Obj.Bot(utils))
     val domIn = (globalObj domIn x)(utils.absBool)
     val b1 =
@@ -465,8 +464,8 @@ class DHeap(val map: Map[Loc, Obj]) extends Heap {
   ////////////////////////////////////////////////////////////////
   def lookupGlobal(x: String)(utils: Utils): (Value, Set[Exception]) = {
     val valueBot = utils.value.Bot
-    if (this domIn PredefLoc.GLOBAL) {
-      val globalObj = this.getOrElse(PredefLoc.GLOBAL, Obj.Bot(utils))
+    if (this domIn BuiltinGlobal.loc) {
+      val globalObj = this.getOrElse(BuiltinGlobal.loc, Obj.Bot(utils))
       val v1 =
         if (utils.absBool.True <= (globalObj domIn x)(utils.absBool))
           globalObj.getOrElse(x)(valueBot) { _.objval.value }
@@ -498,11 +497,11 @@ class DHeap(val map: Map[Loc, Obj]) extends Heap {
   }
 
   def lookupBaseGlobal(x: String)(utils: Utils): Set[Loc] = {
-    val globalObj = this.getOrElse(PredefLoc.GLOBAL, Obj.Bot(utils))
+    val globalObj = this.getOrElse(BuiltinGlobal.loc, Obj.Bot(utils))
     val isDomIn = (globalObj domIn x)(utils.absBool)
     val locSet1 =
       if (utils.absBool.True <= isDomIn)
-        HashSet(PredefLoc.GLOBAL)
+        HashSet(BuiltinGlobal.loc)
       else
         LocSetEmpty
     val locSet2 =
@@ -544,7 +543,7 @@ class DHeap(val map: Map[Loc, Obj]) extends Heap {
   }
 
   def varStoreGlobal(x: String, value: Value)(utils: Utils): Heap = {
-    val globalLoc = PredefLoc.GLOBAL
+    val globalLoc = BuiltinGlobal.loc
     val obj = this.getOrElse(globalLoc, Obj.Bot(utils))
     val h1 =
       if (utils.absBool.False <= (obj domIn x)(utils.absBool))

@@ -117,7 +117,7 @@ class Semantics(
             case None => DecEnvRecord.newDeclEnvRecord(valueU.Bot)(utils)
           }
           val env2 = env - "@scope"
-          val ctx2 = ctx1.remove(PredefLoc.SINGLE_PURE_LOCAL).update(PredefLoc.SINGLE_PURE_LOCAL, env2)
+          val ctx2 = ctx1.subsPureLocal(env2)
           val ctx3 = env2("@env") match {
             case Some(propV) =>
               propV.objval.value.locset.foldLeft(ExecContext.Bot)((hi, locEnv) => {
@@ -135,9 +135,9 @@ class Semantics(
         val (old2, env1) = old.fixOldify(env, old1.mayOld, old1.mustOld)(utils)
         if (old2.isBottom) State.Bot
         else {
-          val localEnv = ctx1.getOrElse(PredefLoc.SINGLE_PURE_LOCAL, DecEnvRecord.Bot(utils))
+          val localEnv = ctx1.pureLocal
           val returnV = localEnv.getOrElse("@return")(valueU.Bot) { _.objval.value }
-          val ctx2 = ctx1.update(PredefLoc.SINGLE_PURE_LOCAL, env1)
+          val ctx2 = ctx1.subsPureLocal(env1)
           val newSt = State(st.heap, ExecContext(ctx2.map, old2))
           newSt.varStore(retVar, returnV)(utils)
         }
@@ -156,16 +156,14 @@ class Semantics(
         val (c2, env1) = old.fixOldify(env, c1.mayOld, c1.mustOld)(utils)
         if (c2.isBottom) State.Bot
         else {
-          val localEnv = ctx1.getOrElse(PredefLoc.SINGLE_PURE_LOCAL, DecEnvRecord.Bot(utils))
+          val localEnv = ctx1.pureLocal
           val excValue = localEnv.getOrElse("@exception")(valueU.Bot) { _.objval.value }
           val excObjV = dataPropU(excValue)
           val oldExcAllValue = env1.getOrElse("@exception_all")(valueU.Bot) { _.objval.value }
           val newExcAllObjV = dataPropU(excValue + oldExcAllValue)
-          val ctx2 = ctx1.update(
-            PredefLoc.SINGLE_PURE_LOCAL,
-            env1.update("@exception", PropValue(excObjV))
-              .update("@exception_all", PropValue(newExcAllObjV))
-          )
+          val ctx2 = ctx1.subsPureLocal(env1
+            .update("@exception", PropValue(excObjV))
+            .update("@exception_all", PropValue(newExcAllObjV)))
           State(st.heap, ExecContext(ctx2.map, c2))
         }
       case (ExitExc(f), _) =>
@@ -191,7 +189,7 @@ class Semantics(
           val fun = cp.node.func
           val xArgVars = fun.argVars
           val xLocalVars = fun.localVars
-          val localEnv = ctx.getOrElse(PredefLoc.SINGLE_PURE_LOCAL, DecEnvRecord.Bot(utils))
+          val localEnv = ctx.pureLocal
           val locSetArg = localEnv.getOrElse(fun.argumentsName)(LocSetEmpty) { _.objval.value.locset }
           val (nSt, _) = xArgVars.foldLeft((st, 0))((res, x) => {
             val (iSt, i) = res
@@ -373,7 +371,7 @@ class Semantics(
         val oNew = Obj.newObject(BuiltinObjectProto.loc)(utils)
 
         val n = utils.absNumber.alpha(f.argVars.length)
-        val localEnv = st2.context.getOrElse(PredefLoc.SINGLE_PURE_LOCAL, DecEnvRecord.Bot(utils))
+        val localEnv = st2.context.pureLocal
         val scope = localEnv.getOrElse("@env")(valueU.Bot) { _.objval.value }
         val h3 = st2.heap.update(locR1, Obj.newFunctionObject(f.id, scope, locR2, n)(utils))
 
@@ -402,7 +400,7 @@ class Semantics(
         val fPropV = PropValue(dataPropU(fVal)(AT, AF, AT))
         val h5 = h4.update(locR2, oNew.update("constructor", fPropV, exist = true))
 
-        val localEnv = st3.context.getOrElse(PredefLoc.SINGLE_PURE_LOCAL, DecEnvRecord.Bot(utils))
+        val localEnv = st3.context.pureLocal
         val scope = localEnv.getOrElse("@env")(valueU.Bot) { _.objval.value }
         val oEnv = DecEnvRecord.newDeclEnvRecord(scope)(utils)
         val fPropV2 = PropValue(dataPropU(fVal)(AF, AB, AF))
@@ -412,12 +410,12 @@ class Semantics(
       }
       case CFGAssert(_, _, expr, _) => B(expr, st, excSt, i, cfg)
       case CFGCatch(_, _, x) => {
-        val localEnv = st.context.getOrElse(PredefLoc.SINGLE_PURE_LOCAL, DecEnvRecord.Bot(utils))
+        val localEnv = st.context.pureLocal
         val excSetPropV = localEnv.get("@exception_all")(utils)
         val excV = localEnv.getOrElse("@exception")(valueU.Bot) { _.objval.value }
         val st1 = st.createMutableBinding(x, excV)(utils)
-        val newEnv = st1.context.getOrElse(PredefLoc.SINGLE_PURE_LOCAL, DecEnvRecord.Bot(utils)).update("@exception", excSetPropV)
-        val newCtx = st1.context.update(PredefLoc.SINGLE_PURE_LOCAL, newEnv)
+        val newEnv = st1.context.pureLocal.update("@exception", excSetPropV)
+        val newCtx = st1.context.subsPureLocal(newEnv)
         val newSt = State(st1.heap, newCtx)
         (newSt, State.Bot)
       }
@@ -425,23 +423,23 @@ class Semantics(
         val (v, excSet) = V(expr, st)
         val ctx1 =
           if (!v.isBottom) {
-            val localEnv = st.context.getOrElse(PredefLoc.SINGLE_PURE_LOCAL, DecEnvRecord.Bot(utils))
+            val localEnv = st.context.pureLocal
             val retValPropV = PropValue(dataPropU(v))
-            st.context.update(PredefLoc.SINGLE_PURE_LOCAL, localEnv.update("@return", retValPropV))
+            st.context.subsPureLocal(localEnv.update("@return", retValPropV))
           } else ExecContext.Bot
         val newExcSt = st.raiseException(excSet)(utils)
         (State(st.heap, ctx1), excSt + newExcSt)
       }
       case CFGReturn(_, _, None) => {
-        val localEnv = st.context.getOrElse(PredefLoc.SINGLE_PURE_LOCAL, DecEnvRecord.Bot(utils))
+        val localEnv = st.context.pureLocal
         val retValPropV = PropValue(utils.absUndef.Top)(utils)
-        val ctx1 = st.context.update(PredefLoc.SINGLE_PURE_LOCAL, localEnv.update("@return", retValPropV))
+        val ctx1 = st.context.subsPureLocal(localEnv.update("@return", retValPropV))
         val newSt = State(st.heap, ctx1)
         (newSt, excSt)
       }
       case CFGThrow(_, _, expr) => {
         val (v, excSet) = V(expr, st)
-        val localEnv = st.context.getOrElse(PredefLoc.SINGLE_PURE_LOCAL, DecEnvRecord.Bot(utils))
+        val localEnv = st.context.pureLocal
         val excSetV = localEnv.getOrElse("@exception_all")(valueU.Bot) { _.objval.value }
         val newExcPropV = PropValue(dataPropU(v))
         val newExcSetPropV = PropValue(dataPropU(v + excSetV))
@@ -451,7 +449,7 @@ class Semantics(
             update("@exception", newExcPropV).
             update("@exception_all", newExcSetPropV).
             update("@return", retValPropV)
-        val ctx1 = st.context.update(PredefLoc.SINGLE_PURE_LOCAL, newEnv)
+        val ctx1 = st.context.subsPureLocal(newEnv)
         val newExcSt = st.raiseException(excSet)(utils)
 
         (State.Bot, excSt + State(st.heap, ctx1) + newExcSt)
@@ -556,7 +554,7 @@ class Semantics(
     if (thisLocSet.isEmpty || argVal.isBottom) {
       (st, excSt)
     } else {
-      val oldLocalEnv = st1.context.getOrElse(PredefLoc.SINGLE_PURE_LOCAL, DecEnvRecord.Bot(utils))
+      val oldLocalEnv = st1.context.pureLocal
       val callerCallCtx = cp.callContext
       val nCall = cp.node match {
         case callBlock: Call => callBlock
@@ -642,7 +640,7 @@ class Semantics(
         (v1, idxExcSet)
       }
       case CFGThis(ir) =>
-        val localEnv = st.context.getOrElse(PredefLoc.SINGLE_PURE_LOCAL, DecEnvRecord.Bot(utils))
+        val localEnv = st.context.pureLocal
         val thisLocSet = localEnv.getOrElse("@this")(LocSetEmpty) { _.objval.value.locset }
         (valueU(thisLocSet), ExceptionSetEmpty)
       case CFGBin(ir, expr1, op, expr2) => {

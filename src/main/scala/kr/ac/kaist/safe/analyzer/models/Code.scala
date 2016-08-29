@@ -13,7 +13,6 @@ package kr.ac.kaist.safe.analyzer.models
 
 import kr.ac.kaist.safe.analyzer.Semantics
 import kr.ac.kaist.safe.analyzer.domain._
-import kr.ac.kaist.safe.analyzer.models.PredefLoc.SINGLE_PURE_LOCAL
 import kr.ac.kaist.safe.nodes.cfg.{ CFG, CFGFunction, ModelBlock, CFGEdgeExc }
 import kr.ac.kaist.safe.nodes.ir.IRModelFunc
 import kr.ac.kaist.safe.nodes.ast.{ ModelFunc, ASTNodeInfo }
@@ -66,11 +65,11 @@ class BasicCode(
   private def createSemanticFunc(argsName: String, utils: Utils): SemanticFun = (sem, st) => st match {
     case State(heap, context) => {
       val stBotPair = (State.Bot, State.Bot)
-      val localEnv = context.getOrElse(SINGLE_PURE_LOCAL, DecEnvRecord.Bot(utils))
+      val localEnv = context.pureLocal
       val argV = localEnv.getOrElse(argsName)(utils.value.Bot) { _.objval.value }
       val (retSt, retSte, retV) = code(argV, st, sem, utils)
       val retObj = localEnv.update("@return", PropValue(utils.dataProp(retV)))
-      val retCtx = retSt.context.update(SINGLE_PURE_LOCAL, retObj)
+      val retCtx = retSt.context.subsPureLocal(retObj)
       (State(retSt.heap, retCtx), retSte)
     }
   }
