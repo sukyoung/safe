@@ -44,7 +44,7 @@ object BuiltinBoolean extends FuncModel(
     val obj = Obj.newBooleanObj(argV.toAbsBoolean(utils.absBool))(utils)
     val heap = state.heap.update(loc, obj)
 
-    (State(heap), State.Bot, utils.value(loc))
+    (State(heap, state.context), State.Bot, utils.value(loc))
   })),
 
   // 15.6.3.1 Boolean.prototype

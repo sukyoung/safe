@@ -12,15 +12,63 @@
 package kr.ac.kaist.safe.analyzer.domain
 
 import kr.ac.kaist.safe.LINE_SEP
-import kr.ac.kaist.safe.analyzer.models.builtin.{ BuiltinString, _ }
-import kr.ac.kaist.safe.nodes.cfg.FunctionId
 import kr.ac.kaist.safe.util.Loc
+import scala.collection.immutable.HashMap
 
-import scala.collection.immutable.{ HashMap, HashSet }
+// 10.2.1 Environment Records
+abstract class EnvRecord {
+  // HasBinding(N)
+  def HasBinding(name: String): AbsBool
 
-//TODO: Merge ObjMap implementation
-//TODO: Handle default values, key values with "@"
-class Obj(val map: Map[String, (PropValue, Absent)]) {
+  // CreateMutableBinding(N, D)
+  def CreateMutableBinding(name: String, del: Boolean): Unit
+
+  // SetMutableBinding(N, V, S)
+  def SetMutableBinding(name: String, v: Value, strict: Boolean): Set[Exception]
+
+  // GetBindingValue(N, S)
+  def GetBindingValue(name: String, strict: Boolean): Set[Exception]
+
+  // DeleteBinding(N)
+  def DeleteBinding(name: String): AbsBool
+
+  // ImplicitThisValue()
+  def ImplicitThisValue: Value
+}
+
+// 10.2.1.1 Declarative Environment Records
+class DecEnvRecord(
+    val map: Map[String, (PropValue, Absent)] // TODO Just String -> Value
+) extends EnvRecord {
+  // TODO 10.2.1.1.1 HasBinding(N)
+  def HasBinding(name: String): AbsBool = null
+
+  // TODO 10.2.1.1.2 CreateMutableBinding(N, D)
+  def CreateMutableBinding(name: String, del: Boolean): Unit = {}
+
+  // TODO 10.2.1.1.3 SetMutableBinding(N, V, S)
+  def SetMutableBinding(
+    name: String,
+    v: Value,
+    strict: Boolean
+  ): Set[Exception] = null
+
+  // TODO 10.2.1.1.4 GetBindingValue(N, S)
+  def GetBindingValue(name: String, strict: Boolean): Set[Exception] = null
+
+  // TODO 10.2.1.1.5 DeleteBinding(N)
+  def DeleteBinding(name: String): AbsBool = null
+
+  // TODO 10.2.1.1.6 ImplicitThisValue()
+  def ImplicitThisValue: Value = null
+
+  // TODO 10.2.1.1.7 CreateImmutableBinding(N)
+  def CreateImmutableBinding(name: String): Unit = {}
+
+  // TODO 10.2.1.1.6 InitializeImmutableBinding(N, V)
+  def InitializeImmutableBinding(name: String, v: Value): Unit = {}
+
+  // TODO temporal copy
   override def toString: String = {
     val sortedMap = map.toSeq.sortBy {
       case (key, _) => key
@@ -40,7 +88,7 @@ class Obj(val map: Map[String, (PropValue, Absent)]) {
   }
 
   /* partial order */
-  def <=(that: Obj): Boolean = {
+  def <=(that: DecEnvRecord): Boolean = {
     if (this.map.isEmpty) true
     else if (that.map.isEmpty) false
     else if (!(this.map.keySet subsetOf that.map.keySet)) false
@@ -57,12 +105,12 @@ class Obj(val map: Map[String, (PropValue, Absent)]) {
   }
 
   /* not a partial order */
-  def </(that: Obj): Boolean = !(this <= that)
+  def </(that: DecEnvRecord): Boolean = !(this <= that)
 
   /* join */
-  def +(that: Obj): Obj = {
+  def +(that: DecEnvRecord): DecEnvRecord = {
     val keys = this.map.keySet ++ that.map.keySet
-    val newMap = keys.foldLeft(Obj.ObjMapBot)((m, key) => {
+    val newMap = keys.foldLeft(DecEnvRecord.MapBot)((m, key) => {
       val thisVal = this.map.get(key)
       val thatVal = that.map.get(key)
       (thisVal, thatVal) match {
@@ -79,7 +127,7 @@ class Obj(val map: Map[String, (PropValue, Absent)]) {
           m + (key -> (propV1 + propV2, absent1 + absent2))
       }
     })
-    new Obj(newMap)
+    DecEnvRecord(newMap)
   }
 
   /* lookup */
@@ -99,7 +147,7 @@ class Obj(val map: Map[String, (PropValue, Absent)]) {
   }
 
   /* meet */
-  def <>(that: Obj): Obj = {
+  def <>(that: DecEnvRecord): DecEnvRecord = {
     if (this.map eq that.map) this
     else {
       val map1 = that.map.foldLeft(this.map)((m, kv) => {
@@ -116,7 +164,7 @@ class Obj(val map: Map[String, (PropValue, Absent)]) {
         if (that.map.contains(key)) m
         else m - key
       })
-      new Obj(map2)
+      DecEnvRecord(map2)
     }
   }
 
@@ -132,10 +180,10 @@ class Obj(val map: Map[String, (PropValue, Absent)]) {
   }
 
   /* substitute locR by locO */
-  def subsLoc(locR: Loc, locO: Loc): Obj = {
+  def subsLoc(locR: Loc, locO: Loc): DecEnvRecord = {
     if (this.map.isEmpty) this
     else {
-      val newMap = this.map.foldLeft(Obj.ObjMapBot)((m, kv) => {
+      val newMap = this.map.foldLeft(DecEnvRecord.MapBot)((m, kv) => {
         val (key, pva) = kv
         val (propV, absent) = pva
         val newV = propV.objval.value.subsLoc(locR, locO)
@@ -143,14 +191,14 @@ class Obj(val map: Map[String, (PropValue, Absent)]) {
         val newPropV = PropValue(newOV, propV.funid)
         m + (key -> (newPropV, absent))
       })
-      new Obj(newMap)
+      DecEnvRecord(newMap)
     }
   }
 
-  def weakSubsLoc(locR: Loc, locO: Loc): Obj = {
+  def weakSubsLoc(locR: Loc, locO: Loc): DecEnvRecord = {
     if (this.map.isEmpty) this
     else {
-      val newMap = this.map.foldLeft(Obj.ObjMapBot)((m, kv) => {
+      val newMap = this.map.foldLeft(DecEnvRecord.MapBot)((m, kv) => {
         val (key, pva) = kv
         val (propV, absent) = pva
         val newV = propV.objval.value.weakSubsLoc(locR, locO)
@@ -158,7 +206,7 @@ class Obj(val map: Map[String, (PropValue, Absent)]) {
         val newPropV = PropValue(newOV, propV.funid)
         m + (key -> (newPropV, absent))
       })
-      new Obj(newMap)
+      DecEnvRecord(newMap)
     }
   }
 
@@ -241,17 +289,17 @@ class Obj(val map: Map[String, (PropValue, Absent)]) {
     }
   }
 
-  def -(s: String): Obj = {
+  def -(s: String): DecEnvRecord = {
     if (this.isBottom) this
-    else Obj(this.map - s)
+    else DecEnvRecord(this.map - s)
   }
 
-  def -(absStr: AbsString)(utils: Utils): Obj = {
+  def -(absStr: AbsString)(utils: Utils): DecEnvRecord = {
     val (defaultNumber, _) = this.map(STR_DEFAULT_NUMBER)
     val (defaultOther, _) = this.map(STR_DEFAULT_OTHER)
     absStr.gamma match {
       case _ if this.isBottom => this
-      case ConSetBot() => Obj.Bot(utils)
+      case ConSetBot() => DecEnvRecord.Bot(utils)
       case ConSetTop() =>
         val properties = this.map.keySet.filter(x => {
           val isInternalProp = x.take(1) == "@"
@@ -265,7 +313,7 @@ class Obj(val map: Map[String, (PropValue, Absent)]) {
           else if (!isNum(x) && prop <= defaultOther) tmpMap - x
           else tmpMap.updated(x, (prop, AbsentTop))
         })
-        Obj(newMap)
+        DecEnvRecord(newMap)
       case ConSetCon(strSet) if strSet.size == 1 => this - strSet.head
       case ConSetCon(strSet) =>
         val newMap = strSet.foldLeft(this.map)((tmpMap, x) => {
@@ -278,29 +326,29 @@ class Obj(val map: Map[String, (PropValue, Absent)]) {
               else tmpMap.updated(x, (prop, AbsentTop))
           }
         })
-        Obj(newMap)
+        DecEnvRecord(newMap)
     }
   }
 
   // absent value is set to AbsentBot because it is strong update.
-  def update(x: String, propv: PropValue, exist: Boolean = false): Obj = {
+  def update(x: String, propv: PropValue, exist: Boolean = false): DecEnvRecord = {
     if (this.isBottom)
       this
     else if (x.startsWith("@default"))
-      Obj(map.updated(x, (propv, AbsentTop)))
+      DecEnvRecord(map.updated(x, (propv, AbsentTop)))
     else
-      Obj(map.updated(x, (propv, AbsentBot)))
+      DecEnvRecord(map.updated(x, (propv, AbsentBot)))
   }
 
-  def update(absStr: AbsString, propV: PropValue, utils: Utils): Obj = {
+  def update(absStr: AbsString, propV: PropValue, utils: Utils): DecEnvRecord = {
     absStr.gamma match {
       case ConSetCon(strSet) if strSet.size == 1 => // strong update
-        Obj(map.updated(strSet.head, (propV, AbsentBot)))
+        DecEnvRecord(map.updated(strSet.head, (propV, AbsentBot)))
       case ConSetCon(strSet) =>
         strSet.foldLeft(this)((r, x) => r + update(x, propV))
-      case ConSetBot() => Obj.Bot(utils)
+      case ConSetBot() => DecEnvRecord.Bot(utils)
       case ConSetTop() => absStr.gammaIsAllNums match {
-        case ConSingleBot() => Obj.Bot(utils)
+        case ConSingleBot() => DecEnvRecord.Bot(utils)
         case ConSingleCon(true) =>
           val newDefaultNum = this.map.get(STR_DEFAULT_NUMBER) match {
             case Some((numPropV, _)) => numPropV + propV
@@ -319,7 +367,7 @@ class Obj(val map: Map[String, (PropValue, Absent)]) {
             if (AbsentTop <= xAbsent && absX.isAllNums) m - x
             else m + (x -> (xPropV, xAbsent))
           })
-          Obj(weakUpdatedMap + (STR_DEFAULT_NUMBER -> (newDefaultNum, AbsentTop)))
+          DecEnvRecord(weakUpdatedMap + (STR_DEFAULT_NUMBER -> (newDefaultNum, AbsentTop)))
         case ConSingleCon(false) =>
           val newDefaultOther = this.map.get(STR_DEFAULT_OTHER) match {
             case Some((otherPropV, _)) => otherPropV + propV
@@ -338,7 +386,7 @@ class Obj(val map: Map[String, (PropValue, Absent)]) {
             if (AbsentTop <= xAbsent && absX.isAllOthers) m - x
             else m + (x -> (xPropV, xAbsent))
           })
-          Obj(weakUpdatedMap + (STR_DEFAULT_OTHER -> (newDefaultOther, AbsentTop)))
+          DecEnvRecord(weakUpdatedMap + (STR_DEFAULT_OTHER -> (newDefaultOther, AbsentTop)))
         case ConSingleTop() =>
           val newDefaultNum = this.map.get(STR_DEFAULT_NUMBER) match {
             case Some((numPropV, _)) => numPropV + propV
@@ -362,7 +410,7 @@ class Obj(val map: Map[String, (PropValue, Absent)]) {
             else if (AbsentTop <= xAbsent && absX.isAllOthers && xPropV <= newDefaultOther) m - x
             else m + (x -> (xPropV, xAbsent))
           })
-          Obj(weakUpdatedMap +
+          DecEnvRecord(weakUpdatedMap +
             (STR_DEFAULT_NUMBER -> (newDefaultNum, AbsentTop),
               STR_DEFAULT_OTHER -> (newDefaultOther, AbsentTop)))
       }
@@ -427,145 +475,63 @@ class Obj(val map: Map[String, (PropValue, Absent)]) {
   }
 }
 
-object Obj {
-  val ObjMapBot: Map[String, (PropValue, Absent)] = HashMap[String, (PropValue, Absent)]()
+object DecEnvRecord {
+  val MapBot: Map[String, (PropValue, Absent)] = HashMap[String, (PropValue, Absent)]()
+  def apply(m: Map[String, (PropValue, Absent)]): DecEnvRecord = new DecEnvRecord(m)
 
-  def apply(m: Map[String, (PropValue, Absent)]): Obj = new Obj(m)
-
-  def Bot: Utils => Obj = utils => {
-    val map = ObjMapBot +
+  def Bot: Utils => DecEnvRecord = utils => {
+    val map = MapBot +
       (STR_DEFAULT_NUMBER -> (PropValue.Bot(utils), AbsentBot)) +
       (STR_DEFAULT_OTHER -> (PropValue.Bot(utils), AbsentBot))
 
-    new Obj(map)
+    new DecEnvRecord(map)
   }
 
-  def Empty: Utils => Obj = utils => {
-    val map = ObjMapBot +
+  def Empty: Utils => DecEnvRecord = utils => {
+    val map = MapBot +
       (STR_DEFAULT_NUMBER -> (PropValue.Bot(utils), AbsentTop)) +
       (STR_DEFAULT_OTHER -> (PropValue.Bot(utils), AbsentTop))
 
-    new Obj(map)
+    new DecEnvRecord(map)
   }
 
-  ////////////////////////////////////////////////////////////////
-  // new Object constructos
-  ////////////////////////////////////////////////////////////////
-  def newObject(utils: Utils): Obj = newObject(BuiltinObjectProto.loc)(utils)
+  def newDeclEnvRecord(outerEnv: Value)(utils: Utils): DecEnvRecord = {
+    Empty(utils).update("@outer", PropValue(utils.dataProp(outerEnv)))
+  }
 
-  def newObject(loc: Loc)(utils: Utils): Obj = newObject(HashSet(loc))(utils)
-
-  def newObject(locSet: Set[Loc])(utils: Utils): Obj = {
-    val absFalse = utils.absBool.False
+  def newPureLocal(envVal: Value, thisLocSet: Set[Loc])(utils: Utils): DecEnvRecord = {
     Empty(utils)
-      .update("@class", PropValue(utils.absString.alpha("Object"))(utils))
-      .update("@proto", PropValue(utils.dataProp(locSet)(absFalse, absFalse, absFalse)))
-      .update("@extensible", PropValue(utils.absBool.True)(utils))
+      .update("@env", PropValue(utils.dataProp(envVal)))
+      .update("@this", PropValue(utils.dataProp(thisLocSet)))
+      .update("@exception", PropValue.Bot(utils))
+      .update("@exception_all", PropValue.Bot(utils))
+      .update("@return", PropValue(utils.absUndef.Top)(utils))
   }
+}
 
-  def newArgObject(absLength: AbsNumber)(utils: Utils): Obj = {
-    val protoVal = utils.value(BuiltinObjectProto.loc)
-    val lengthVal = utils.value(absLength)
-    val absFalse = utils.absBool.False
-    val absTrue = utils.absBool.True
-    Empty(utils)
-      .update("@class", PropValue(utils.absString.alpha("Arguments"))(utils))
-      .update("@proto", PropValue(utils.dataProp(protoVal)(absFalse, absFalse, absFalse)))
-      .update("@extensible", PropValue(absTrue)(utils))
-      .update("length", PropValue(utils.dataProp(lengthVal)(absTrue, absFalse, absTrue)))
-  }
+// 10.2.1.2 Object Environment Records
+class ObjEnvRecord(
+    val loc: Loc
+) extends EnvRecord {
+  // TODO 10.2.1.2.1 HasBinding(N)
+  def HasBinding(name: String): AbsBool = null
 
-  def newArrayObject(absLength: AbsNumber)(utils: Utils): Obj = {
-    val protoVal = utils.value(BuiltinArrayProto.loc)
-    val lengthVal = utils.value(absLength)
-    val absFalse = utils.absBool.False
-    Empty(utils)
-      .update("@class", PropValue(utils.absString.alpha("Array"))(utils))
-      .update("@proto", PropValue(utils.dataProp(protoVal)(absFalse, absFalse, absFalse)))
-      .update("@extensible", PropValue(utils.absBool.True)(utils))
-      .update("length", PropValue(utils.dataProp(lengthVal)(utils.absBool.True, absFalse, absFalse)))
-  }
+  // TODO 10.2.1.2.2 CreateMutableBinding(N, D)
+  def CreateMutableBinding(name: String, del: Boolean): Unit = {}
 
-  def newFunctionObject(fid: FunctionId, env: Value, l: Loc, n: AbsNumber)(utils: Utils): Obj = {
-    newFunctionObject(Some(fid), Some(fid), env, Some(l), n)(utils)
-  }
+  // TODO 10.2.1.2.3 SetMutableBinding(N, V, S)
+  def SetMutableBinding(
+    name: String,
+    v: Value,
+    strict: Boolean
+  ): Set[Exception] = null
 
-  def newFunctionObject(fidOpt: Option[FunctionId], constructIdOpt: Option[FunctionId], env: Value,
-    locOpt: Option[Loc], n: AbsNumber)(utils: Utils): Obj = {
-    newFunctionObject(fidOpt, constructIdOpt, env,
-      locOpt, utils.absBool.True, utils.absBool.False, utils.absBool.False, n)(utils)
-  }
+  // TODO 10.2.1.2.4 GetBindingValue(N, S)
+  def GetBindingValue(name: String, strict: Boolean): Set[Exception] = null
 
-  def newFunctionObject(fidOpt: Option[FunctionId], constructIdOpt: Option[FunctionId], env: Value,
-    locOpt: Option[Loc], writable: AbsBool, enumerable: AbsBool, configurable: AbsBool,
-    absLength: AbsNumber)(utils: Utils): Obj = {
-    val protoVal = utils.value(BuiltinFunctionProto.loc)
-    val absFalse = utils.absBool.False
-    val lengthVal = utils.value(absLength)
-    val obj1 = Empty(utils)
-      .update("@class", PropValue(utils.absString.alpha("Function"))(utils))
-      .update("@proto", PropValue(utils.dataProp(protoVal)(absFalse, absFalse, absFalse)))
-      .update("@extensible", PropValue(utils.absBool.True)(utils))
-      .update("@scope", PropValue(utils.dataProp(env)))
-      .update("length", PropValue(utils.dataProp(lengthVal)(absFalse, absFalse, absFalse)))
+  // TODO 10.2.1.2.5 DeleteBinding(N)
+  def DeleteBinding(name: String): AbsBool = null
 
-    val obj2 = fidOpt match {
-      case Some(fid) => obj1.update("@function", PropValue(HashSet(fid))(utils))
-      case None => obj1
-    }
-    val obj3 = constructIdOpt match {
-      case Some(cid) => obj2.update("@construct", PropValue(HashSet(cid))(utils))
-      case None => obj2
-    }
-    val obj4 = locOpt match {
-      case Some(loc) =>
-        val prototypeVal = utils.value(HashSet(loc))
-        obj3.update("@hasinstance", PropValue(utils.absNull.Top)(utils))
-          .update("prototype", PropValue(utils.dataProp(prototypeVal)(writable, enumerable, configurable)))
-      case None => obj3
-    }
-    obj4
-  }
-
-  def newBooleanObj(absB: AbsBool)(utils: Utils): Obj = {
-    val newObj = newObject(BuiltinBooleanProto.loc)(utils)
-    newObj.update("@class", PropValue(utils.absString.alpha("Boolean"))(utils))
-      .update("@primitive", PropValue(absB)(utils))
-  }
-
-  def newNumberObj(absNum: AbsNumber)(utils: Utils): Obj = {
-    val newObj = newObject(BuiltinNumberProto.loc)(utils)
-    newObj.update("@class", PropValue(utils.absString.alpha("Number"))(utils))
-      .update("@primitive", PropValue(absNum)(utils))
-  }
-
-  def newStringObj(absStr: AbsString)(utils: Utils): Obj = {
-    val newObj = newObject(BuiltinStringProto.loc)(utils)
-
-    val newObj2 = newObj
-      .update("@class", PropValue(utils.absString.alpha("String"))(utils))
-      .update("@primitive", PropValue(absStr)(utils))
-
-    val absFalse = utils.absBool.False
-    val absTrue = utils.absBool.True
-    absStr.gamma match {
-      case ConSetCon(strSet) =>
-        strSet.foldLeft(Bot(utils))((obj, str) => {
-          val length = str.length
-          val newObj3 = (0 until length).foldLeft(newObj2)((tmpObj, tmpIdx) => {
-            val charAbsStr = utils.absString.alpha(str.charAt(tmpIdx).toString)
-            val charVal = utils.value(charAbsStr)
-            tmpObj.update(tmpIdx.toString, PropValue(utils.dataProp(charVal)(absFalse, absTrue, absFalse)))
-          })
-          val lengthVal = utils.value.alpha(length)
-          obj + newObj3.update("length", PropValue(utils.dataProp(lengthVal)(absFalse, absFalse, absFalse)))
-        })
-      case _ =>
-        val strTopVal = utils.value(utils.absString.Top)
-        val lengthVal = utils.value(absStr.length(utils.absNumber))
-        newObj2
-          .update(utils.absString.NumStr, PropValue(utils.dataProp(strTopVal)(absFalse, absTrue, absFalse)), utils)
-          .update("length", PropValue(utils.dataProp(lengthVal)(absFalse, absFalse, absFalse)))
-    }
-  }
+  // TODO 10.2.1.2.6 ImplicitThisValue()
+  def ImplicitThisValue: Value = null
 }

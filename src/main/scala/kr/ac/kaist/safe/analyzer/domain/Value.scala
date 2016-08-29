@@ -355,6 +355,7 @@ case class Value(pvalue: PValue, locset: Set[Loc]) {
     s1 + s2 + s3 + s4 + s5 + s6 + s7
   }
 
+  // TODO working but more simple way is exist with modifying getBase
   def getThis(h: Heap)(utils: Utils): Set[Loc] = {
     val locSet1 = (pvalue.nullval.gamma, pvalue.undefval.gamma) match {
       case (ConSimpleBot, ConSimpleBot) => LocSetEmpty

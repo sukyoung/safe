@@ -26,9 +26,13 @@ abstract class Command(
 
   protected def showState(c: Console, state: State, all: Boolean = false): String = {
     val heap = state.heap
-    val old = state.heap.old
+    val context = state.context
+    val old = context.old
     "** heap **" + LINE_SEP +
       (if (all) heap.toStringAll else heap.toString) + LINE_SEP +
+      LINE_SEP +
+      "** context **" + LINE_SEP +
+      context.toString + LINE_SEP +
       LINE_SEP +
       "** old address set **" + LINE_SEP +
       old.toString

@@ -64,22 +64,14 @@ class BasicCode(
   }
 
   private def createSemanticFunc(argsName: String, utils: Utils): SemanticFun = (sem, st) => st match {
-    case State(heap) => {
+    case State(heap, context) => {
       val stBotPair = (State.Bot, State.Bot)
-      heap(SINGLE_PURE_LOCAL) match {
-        case Some(localObj) => {
-          localObj(argsName) match {
-            case Some(pv) => {
-              val (retSt, retSte, retV) = code(pv.objval.value, st, sem, utils)
-              val retObj = localObj.update("@return", PropValue(utils.dataProp(retV)))
-              val retHeap = retSt.heap.update(SINGLE_PURE_LOCAL, retObj)
-              (State(retHeap), retSte)
-            }
-            case None => stBotPair // TODO dead code
-          }
-        }
-        case None => stBotPair // TODO dead code
-      }
+      val localEnv = context.getOrElse(SINGLE_PURE_LOCAL, DecEnvRecord.Bot(utils))
+      val argV = localEnv.getOrElse(argsName)(utils.value.Bot) { _.objval.value }
+      val (retSt, retSte, retV) = code(argV, st, sem, utils)
+      val retObj = localEnv.update("@return", PropValue(utils.dataProp(retV)))
+      val retCtx = retSt.context.update(SINGLE_PURE_LOCAL, retObj)
+      (State(retSt.heap, retCtx), retSte)
     }
   }
 }

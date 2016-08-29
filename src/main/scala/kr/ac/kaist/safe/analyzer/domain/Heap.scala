@@ -20,7 +20,6 @@ import kr.ac.kaist.safe.nodes.cfg._
 
 trait Heap {
   val map: Map[Loc, Obj]
-  val old: OldAddrSet
 
   /* partial order */
   def <=(that: Heap): Boolean
@@ -38,6 +37,7 @@ trait Heap {
   def remove(loc: Loc): Heap
   /* substitute locR by locO */
   def subsLoc(locR: Loc, locO: Loc): Heap
+  def oldify(addr: Address)(utils: Utils): Heap
   def domIn(loc: Loc): Boolean
 
   def isBottom: Boolean
@@ -69,49 +69,41 @@ trait Heap {
   ////////////////////////////////////////////////////////////////
   // Lookup
   ////////////////////////////////////////////////////////////////
-  def lookup(id: CFGId)(utils: Utils): (Value, Set[Exception])
-  def lookupBase(id: CFGId)(utils: Utils): Set[Loc]
+  def lookupGlobal(x: String)(utils: Utils): (Value, Set[Exception])
+  def lookupBaseGlobal(x: String)(utils: Utils): Set[Loc]
 
   ////////////////////////////////////////////////////////////////
   // Store
   ////////////////////////////////////////////////////////////////
   def propStore(loc: Loc, absStr: AbsString, value: Value)(utils: Utils): Heap
-  def varStore(id: CFGId, value: Value)(utils: Utils): Heap
+  def varStoreGlobal(x: String, value: Value)(utils: Utils): Heap
 
   ////////////////////////////////////////////////////////////////
   // Update location
   ////////////////////////////////////////////////////////////////
-  def allocObject(locSetV: Set[Loc], locR: Loc)(utils: Utils): Heap
-  def createMutableBinding(id: CFGId, value: Value)(utils: Utils): Heap
   def delete(loc: Loc, absStr: AbsString)(utils: Utils): (Heap, AbsBool)
 }
 
 object Heap {
-  val Bot: Heap = new DHeap(HashMap[Loc, Obj](), OldAddrSet.Bot)
-  def apply(map: Map[Loc, Obj], old: OldAddrSet): Heap = new DHeap(map, old)
+  val Bot: Heap = new DHeap(HashMap[Loc, Obj]())
+  def apply(map: Map[Loc, Obj]): Heap = new DHeap(map)
 }
 
-class DHeap(
-    val map: Map[Loc, Obj],
-    val old: OldAddrSet
-) extends Heap {
+class DHeap(val map: Map[Loc, Obj]) extends Heap {
   /* partial order */
   def <=(that: Heap): Boolean = {
-    val mapB =
-      if (this.map eq that.map) true
-      else if (this.map.size > that.map.size) false
-      else if (this.map.isEmpty) true
-      else if (that.map.isEmpty) false
-      else if (!(this.map.keySet subsetOf that.map.keySet)) false
-      else that.map.forall((kv) => {
-        val (l, obj) = kv
-        this.map.get(l) match {
-          case Some(thisObj) => thisObj <= obj
-          case None => false
-        }
-      })
-    val oldB = this.old <= that.old
-    mapB && oldB
+    if (this.map eq that.map) true
+    else if (this.map.size > that.map.size) false
+    else if (this.map.isEmpty) true
+    else if (that.map.isEmpty) false
+    else if (!(this.map.keySet subsetOf that.map.keySet)) false
+    else that.map.forall((kv) => {
+      val (l, obj) = kv
+      this.map.get(l) match {
+        case Some(thisObj) => thisObj <= obj
+        case None => false
+      }
+    })
   }
 
   private def weakUpdated(m: Map[Loc, Obj], loc: Loc, newObj: Obj): Map[Loc, Obj] =
@@ -141,8 +133,7 @@ class DHeap(
           }
         })
       }
-    val newOld = this.old + that.old
-    new DHeap(newMap, newOld)
+    new DHeap(newMap)
   }
 
   /* meet */
@@ -161,8 +152,7 @@ class DHeap(
           }
         )
       }
-    val newOld = this.old <> that.old
-    new DHeap(newMap, newOld)
+    new DHeap(newMap)
   }
 
   /* lookup */
@@ -188,10 +178,10 @@ class DHeap(
       loc.recency match {
         case Recent =>
           if (obj.isBottom) Heap.Bot
-          else new DHeap(map.updated(loc, obj), old)
+          else new DHeap(map.updated(loc, obj))
         case Old =>
           if (obj.isBottom) this.getOrElse(loc)(Heap.Bot) { _ => this }
-          else new DHeap(weakUpdated(map, loc, obj), old)
+          else new DHeap(weakUpdated(map, loc, obj))
       }
     } else {
       this
@@ -200,7 +190,7 @@ class DHeap(
 
   /* remove location */
   def remove(loc: Loc): Heap = {
-    new DHeap(map - loc, old)
+    new DHeap(map - loc)
   }
 
   /* substitute locR by locO */
@@ -213,19 +203,27 @@ class DHeap(
           m + (l -> obj.subsLoc(locR, locO))
         })
       }
-    val newOld = this.old.subsLoc(locR, locO)
-    new DHeap(newMap, newOld)
+    new DHeap(newMap)
+  }
+
+  def oldify(addr: Address)(utils: Utils): Heap = {
+    val locR = Loc(addr, Recent)
+    val locO = Loc(addr, Old)
+    if (this domIn locR) {
+      update(locO, getOrElse(locR, Obj.Bot(utils))).remove(locR).subsLoc(locR, locO)
+    } else {
+      subsLoc(locR, locO)
+    }
   }
 
   def domIn(loc: Loc): Boolean = map.contains(loc)
 
-  def isBottom: Boolean =
-    this.map.isEmpty && this.old.isBottom // TODO is really bottom?
+  def isBottom: Boolean = this.map.isEmpty // TODO is really bottom?
 
   override def toString: String = {
     buildString(loc => loc match {
       case Loc(ProgramAddr(_), _) => true
-      case GLOBAL | SINGLE_PURE_LOCAL => true
+      case GLOBAL => true
       case _ => false
     }).toString
   }
@@ -237,7 +235,7 @@ class DHeap(
   private def buildString(filter: Loc => Boolean): String = {
     val s = new StringBuilder
     this match {
-      case Heap.Bot => s.append("⊥Heap")
+      case _ if isBottom => s.append("⊥Heap")
       case _ => {
         val sortedSeq =
           map.toSeq.filter { case (loc, _) => filter(loc) }
@@ -465,25 +463,6 @@ class DHeap(
   ////////////////////////////////////////////////////////////////
   // Lookup
   ////////////////////////////////////////////////////////////////
-  def lookup(id: CFGId)(utils: Utils): (Value, Set[Exception]) = {
-    val x = id.text
-    val valueBot = utils.value.Bot
-    val localObj = this.getOrElse(PredefLoc.SINGLE_PURE_LOCAL, Obj.Bot(utils))
-    id.kind match {
-      case PureLocalVar => (localObj.getOrElse(x)(valueBot) { _.objval.value }, ExceptionSetEmpty)
-      case CapturedVar =>
-        val envLocSet = localObj.getOrElse("@env")(LocSetEmpty) { _.objval.value.locset }
-        val value = envLocSet.foldLeft(valueBot)((tmpVal, envLoc) => {
-          tmpVal + lookupLocal(envLoc, x)(utils)
-        })
-        (value, ExceptionSetEmpty)
-      case CapturedCatchVar =>
-        val collapsedObj = this.getOrElse(PredefLoc.COLLAPSED, Obj.Bot(utils))
-        (collapsedObj.getOrElse(x)(valueBot) { _.objval.value }, ExceptionSetEmpty)
-      case GlobalVar => lookupGlobal(x)(utils)
-    }
-  }
-
   def lookupGlobal(x: String)(utils: Utils): (Value, Set[Exception]) = {
     val valueBot = utils.value.Bot
     if (this domIn PredefLoc.GLOBAL) {
@@ -518,46 +497,6 @@ class DHeap(
     }
   }
 
-  def lookupLocal(loc: Loc, x: String)(utils: Utils): Value = {
-    var visited = LocSetEmpty
-    val valueBot = utils.value.Bot
-    def visit(l: Loc): Value = {
-      if (visited.contains(l)) valueBot
-      else {
-        visited += l
-        val env = this.getOrElse(l, Obj.Bot(utils))
-        val isDomIn = (env domIn x)(utils.absBool)
-        val v1 =
-          if (utils.absBool.True <= isDomIn) env.getOrElse(x)(valueBot) { _.objval.value }
-          else valueBot
-        val v2 =
-          if (utils.absBool.False <= isDomIn) {
-            val outerLocSet = env.getOrElse("@outer")(LocSetEmpty) { _.objval.value.locset }
-            outerLocSet.foldLeft(valueBot)((tmpVal, outerLoc) => tmpVal + visit(outerLoc))
-          } else {
-            valueBot
-          }
-        v1 + v2
-      }
-    }
-    visit(loc)
-  }
-
-  def lookupBase(id: CFGId)(utils: Utils): Set[Loc] = {
-    val x = id.text
-    id.kind match {
-      case PureLocalVar => HashSet(PredefLoc.SINGLE_PURE_LOCAL)
-      case CapturedVar =>
-        val localObj = this.getOrElse(PredefLoc.SINGLE_PURE_LOCAL, Obj.Bot(utils))
-        val envLocSet = localObj.getOrElse("@env")(LocSetEmpty) { _.objval.value.locset }
-        envLocSet.foldLeft(LocSetEmpty)((tmpLocSet, l) => {
-          tmpLocSet ++ lookupBaseLocal(l, x)(utils)
-        })
-      case CapturedCatchVar => HashSet(PredefLoc.COLLAPSED)
-      case GlobalVar => lookupBaseGlobal(x)(utils)
-    }
-  }
-
   def lookupBaseGlobal(x: String)(utils: Utils): Set[Loc] = {
     val globalObj = this.getOrElse(PredefLoc.GLOBAL, Obj.Bot(utils))
     val isDomIn = (globalObj domIn x)(utils.absBool)
@@ -576,30 +515,6 @@ class DHeap(
         LocSetEmpty
       }
     locSet1 ++ locSet2
-  }
-
-  def lookupBaseLocal(loc: Loc, x: String)(utils: Utils): Set[Loc] = {
-    var visited = LocSetEmpty
-    def visit(l: Loc): Set[Loc] = {
-      if (visited.contains(l)) LocSetEmpty
-      else {
-        visited += l
-        val env = this.getOrElse(l, Obj.Bot(utils))
-        val isDomIn = (env domIn x)(utils.absBool)
-        val locSet1 =
-          if (utils.absBool.True <= isDomIn) HashSet(l)
-          else LocSetEmpty
-        val locSet2 =
-          if (utils.absBool.False <= isDomIn) {
-            val outerLocSet = env.getOrElse("@outer")(LocSetEmpty) { _.objval.value.locset }
-            outerLocSet.foldLeft(LocSetEmpty)((res, outerLoc) => res ++ visit(outerLoc))
-          } else {
-            LocSetEmpty
-          }
-        locSet1 ++ locSet2
-      }
-    }
-    visit(loc)
   }
 
   ////////////////////////////////////////////////////////////////
@@ -628,57 +543,6 @@ class DHeap(
     }
   }
 
-  def varStore(id: CFGId, value: Value)(utils: Utils): Heap = {
-    val pureLocalLoc = PredefLoc.SINGLE_PURE_LOCAL
-    val x = id.text
-    id.kind match {
-      case PureLocalVar =>
-        val pv = PropValue(utils.dataProp(value)(utils.absBool.Bot, utils.absBool.Bot, utils.absBool.False))
-        val obj = this.getOrElse(pureLocalLoc, Obj.Bot(utils))
-        this.update(pureLocalLoc, obj.update(x, pv))
-      case CapturedVar =>
-        this.getOrElse(pureLocalLoc, Obj.Bot(utils)).getOrElse("@env")(Heap.Bot) { propv =>
-          propv.objval.value.locset.foldLeft(Heap.Bot)((tmpH, loc) => {
-            tmpH + varStoreLocal(loc, x, value)(utils)
-          })
-        }
-      case CapturedCatchVar =>
-        val propV = PropValue(utils.dataProp(value)(utils.absBool.Bot, utils.absBool.Bot, utils.absBool.False))
-        val obj = this.getOrElse(PredefLoc.COLLAPSED, Obj.Bot(utils))
-        this.update(PredefLoc.COLLAPSED, obj.update(x, propV))
-      case GlobalVar => {
-        val h1 =
-          if (utils.absBool.True <= this.canPutVar(x)(utils)) varStoreGlobal(x, value)(utils)
-          else Heap.Bot
-        val h2 =
-          if (utils.absBool.False <= this.canPutVar(x)(utils)) this
-          else Heap.Bot
-        h1 + h2
-      }
-    }
-  }
-
-  def varStoreLocal(loc: Loc, x: String, value: Value)(utils: Utils): Heap = {
-    val envObj = this.getOrElse(loc, Obj.Bot(utils))
-    val h1 = envObj(x) match {
-      case Some(propV) if propV.objval.writable == utils.absBool.True =>
-        val newPropV = PropValue(utils.dataProp(value)(utils.absBool.True, utils.absBool.Bot, utils.absBool.False))
-        this.update(loc, envObj.update(x, newPropV))
-      case Some(propV) if propV.objval.writable == utils.absBool.False => this
-      case _ => Heap.Bot
-    }
-    val outerLocSet = envObj("@outer") match {
-      case Some(propV) => propV.objval.value.locset
-      case None => LocSetEmpty
-    }
-    val h2 =
-      if (utils.absBool.False <= (envObj domIn x)(utils.absBool))
-        outerLocSet.foldLeft(Heap.Bot)((tmpH, outerLoc) => varStoreLocal(outerLoc, x, value)(utils))
-      else
-        Heap.Bot
-    h1 + h2
-  }
-
   def varStoreGlobal(x: String, value: Value)(utils: Utils): Heap = {
     val globalLoc = PredefLoc.GLOBAL
     val obj = this.getOrElse(globalLoc, Obj.Bot(utils))
@@ -696,60 +560,25 @@ class DHeap(
   }
 
   ////////////////////////////////////////////////////////////////
-  // Update location
+  // delete
   ////////////////////////////////////////////////////////////////
-  def allocObject(locSetV: Set[Loc], locR: Loc)(utils: Utils): Heap = {
-    val newObj = Obj.newObject(locSetV)(utils)
-    this.update(locR, newObj)
-  }
-
-  def createMutableBinding(id: CFGId, value: Value)(utils: Utils): Heap = {
-    val x = id.text
-    id.kind match {
-      case PureLocalVar =>
-        val localLoc = PredefLoc.SINGLE_PURE_LOCAL
-        val objV = utils.dataProp(value)(utils.absBool.Bot, utils.absBool.Bot, utils.absBool.False)
-        val propV = PropValue(objV)
-        this.update(localLoc, this.getOrElse(localLoc, Obj.Bot(utils)).update(x, propV))
-      case CapturedVar =>
-        val localLoc = PredefLoc.SINGLE_PURE_LOCAL
-        val objV = utils.dataProp(value)(utils.absBool.True, utils.absBool.Bot, utils.absBool.False)
-        val propV = PropValue(objV)
-        val localObj = this.getOrElse(localLoc, Obj.Bot(utils))
-        localObj.getOrElse("@env")(Heap.Bot) { propv =>
-          propv.objval.value.locset.foldLeft(Heap.Bot)((tmpHeap, loc) => {
-            tmpHeap + this.update(loc, this.getOrElse(loc, Obj.Bot(utils)).update(x, propV))
-          })
-        }
-      case CapturedCatchVar =>
-        val collapsedLoc = PredefLoc.COLLAPSED
-        val objV = utils.dataProp(value)(utils.absBool.Bot, utils.absBool.Bot, utils.absBool.False)
-        val propV = PropValue(objV)
-        this.update(collapsedLoc, this.getOrElse(collapsedLoc, Obj.Bot(utils)).update(x, propV))
-      case GlobalVar =>
-        val globalLoc = PredefLoc.GLOBAL
-        val objV = utils.dataProp(value)(utils.absBool.True, utils.absBool.True, utils.absBool.False)
-        val propV = PropValue(objV)
-        if (utils.absBool.True == this.hasProperty(globalLoc, utils.absString.alpha(x))(utils)) this
-        else this.update(globalLoc, this.getOrElse(globalLoc, Obj.Bot(utils)).update(x, propV))
-    }
-  }
-
   def delete(loc: Loc, absStr: AbsString)(utils: Utils): (Heap, AbsBool) = {
-    val test = hasOwnProperty(loc, absStr)(utils)
-    val targetObj = this.getOrElse(loc, Obj.Bot(utils))
-    val isConfigurable = targetObj.getOrElse(absStr)(utils.absBool.Bot) { _.objval.configurable }
-    val (h1, b1) =
-      if ((utils.absBool.True <= test) && (utils.absBool.False <= isConfigurable))
-        (this, utils.absBool.False)
-      else
-        (Heap.Bot, utils.absBool.Bot)
-    val (h2, b2) =
-      if (((utils.absBool.True <= test) && (utils.absBool.False != isConfigurable))
-        || utils.absBool.False <= test)
-        (this.update(loc, (targetObj - absStr)(utils)), utils.absBool.True)
-      else
-        (Heap.Bot, utils.absBool.Bot)
-    (h1 + h2, b1 + b2)
+    getOrElse[(Heap, AbsBool)](loc)((this, utils.absBool.Bot))(_ => {
+      val test = hasOwnProperty(loc, absStr)(utils)
+      val targetObj = this.getOrElse(loc, Obj.Bot(utils))
+      val isConfigurable = targetObj.getOrElse(absStr)(utils.absBool.Bot) { _.objval.configurable }
+      val (h1, b1) =
+        if ((utils.absBool.True <= test) && (utils.absBool.False <= isConfigurable))
+          (this, utils.absBool.False)
+        else
+          (Heap.Bot, utils.absBool.Bot)
+      val (h2, b2) =
+        if (((utils.absBool.True <= test) && (utils.absBool.False != isConfigurable))
+          || utils.absBool.False <= test)
+          (this.update(loc, (targetObj - absStr)(utils)), utils.absBool.True)
+        else
+          (Heap.Bot, utils.absBool.Bot)
+      (h1 + h2, b1 + b2)
+    })
   }
 }

@@ -15,7 +15,7 @@ import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.analyzer.models._
 import kr.ac.kaist.safe.analyzer.models.builtin._
 import kr.ac.kaist.safe.nodes.cfg.CFG
-import kr.ac.kaist.safe.util.{ NodeUtil, Loc, Address }
+import kr.ac.kaist.safe.util._
 import scala.collection.immutable.{ HashMap, HashSet }
 
 case class Initialize(cfg: CFG, helper: Helper) {
@@ -27,16 +27,20 @@ case class Initialize(cfg: CFG, helper: Helper) {
   def state: State = {
     val afalse = utils.absBool.False
 
-    val globalPureLocalObj = Obj.newPureLocalObj(valueU.alpha(null), HashSet(PredefLoc.GLOBAL))(utils) - "@return"
+    val globalPureLocalEnv = DecEnvRecord.newPureLocal(valueU.alpha(null), HashSet(PredefLoc.GLOBAL))(utils) - "@return"
 
     val initHeap = Heap(HashMap(
-      PredefLoc.SINGLE_PURE_LOCAL -> globalPureLocalObj,
-      PredefLoc.COLLAPSED -> Obj.Empty(utils)
+      SystemLoc("Dummy", Old) -> Obj.Bot(utils) // TODO If delete, not working because not allowed update to bottom heap
+    ))
+
+    val initCtx = ExecContext(HashMap(
+      PredefLoc.SINGLE_PURE_LOCAL -> globalPureLocalEnv,
+      PredefLoc.COLLAPSED -> DecEnvRecord.Empty(utils)
     ), OldAddrSet.Empty)
 
     val modeledHeap = BuiltinGlobal.initHeap(initHeap, cfg, utils)
 
-    State(modeledHeap)
+    State(modeledHeap, initCtx)
   }
 
   def testState: State = {
@@ -66,6 +70,6 @@ case class Initialize(cfg: CFG, helper: Helper) {
         .update("__ArrayConstLoc", PropValue(dataPropU(BuiltinArray.loc)))
 
     val testHeap = st.heap.update(PredefLoc.GLOBAL, testGlobalObj)
-    State(testHeap)
+    State(testHeap, st.context)
   }
 }

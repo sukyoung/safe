@@ -11,7 +11,7 @@
 
 package kr.ac.kaist.safe.analyzer
 
-import kr.ac.kaist.safe.analyzer.domain.{ Heap, Obj }
+import kr.ac.kaist.safe.analyzer.domain.{ Heap, DecEnvRecord }
 import kr.ac.kaist.safe.nodes.cfg.{ CFG, FunctionId }
 import kr.ac.kaist.safe.util.{ Loc, Address }
 
@@ -21,10 +21,10 @@ import scala.util.{ Try, Failure, Success }
 
 abstract class CallContext {
   def newCallContext(h: Heap, cfg: CFG, calleeFid: FunctionId, scopeLoc: Loc, thisLocSet: Set[Loc],
-    newPureLocalObj: Obj, l2: Option[Address] = None): Set[(CallContext, Obj)] =
-    newCallContext(h, cfg, calleeFid, scopeLoc, thisLocSet, newPureLocalObj)
+    newPureLocal: DecEnvRecord, l2: Option[Address] = None): Set[(CallContext, DecEnvRecord)] =
+    newCallContext(h, cfg, calleeFid, scopeLoc, thisLocSet, newPureLocal)
   def newCallContext(h: Heap, cfg: CFG, calleeFid: FunctionId, scopeLoc: Loc,
-    thisLocSet: Set[Loc], newPureLocalObj: Obj): Set[(CallContext, Obj)]
+    thisLocSet: Set[Loc], newPureLocal: DecEnvRecord): Set[(CallContext, DecEnvRecord)]
 }
 
 /* Interface */
@@ -33,14 +33,14 @@ case class CallContextManager(callsiteDepth: Int = 0) {
 
   private case class KCallsite(depth: Int, callsiteList: List[Address]) extends CallContext {
     def newCallContext(h: Heap, cfg: CFG, calleeFid: FunctionId, scopeLoc: Loc,
-      thisLocSet: Set[Loc], newPureLocalObj: Obj): Set[(CallContext, Obj)] = {
+      thisLocSet: Set[Loc], newPureLocal: DecEnvRecord): Set[(CallContext, DecEnvRecord)] = {
       val k: Int =
         cfg.getFunc(calleeFid) match {
           case Some(fun) if fun.isUser => depth
           case _ => depth + 1 // additional depth for built-in calls.
         }
       val newCallsiteList = (scopeLoc.address :: this.callsiteList).take(k)
-      HashSet((KCallsite(depth, newCallsiteList), newPureLocalObj))
+      HashSet((KCallsite(depth, newCallsiteList), newPureLocal))
     }
 
     override def toString: String = "(" + callsiteList.mkString(", ") + ")"

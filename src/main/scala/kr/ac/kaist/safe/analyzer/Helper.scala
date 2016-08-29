@@ -175,7 +175,7 @@ case class Helper(utils: Utils) {
       if (!locSet.isEmpty) (locSet, st)
       else (LocSetEmpty, State.Bot)
 
-    (valueU(locSet1 ++ locSet2), State(h2) + st3, excSet)
+    (valueU(locSet1 ++ locSet2), State(h2, st.context) + st3, excSet)
   }
 
   def inherit(h: Heap, loc1: Loc, loc2: Loc): Value = {

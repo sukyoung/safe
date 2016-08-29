@@ -77,21 +77,21 @@ case class OldAddrSet(mayOld: Set[Address], mustOld: Set[Address]) {
         "mustOld: (" + mustOld.mkString(", ") + ")"
   }
 
-  def fixOldify(obj: Obj, mayOld: Set[Address], mustOld: Set[Address])(utils: Utils): (OldAddrSet, Obj) = {
-    if (this.isBottom) (OldAddrSet.Bot, Obj.Bot(utils))
+  def fixOldify(env: DecEnvRecord, mayOld: Set[Address], mustOld: Set[Address])(utils: Utils): (OldAddrSet, DecEnvRecord) = {
+    if (this.isBottom) (OldAddrSet.Bot, DecEnvRecord.Bot(utils))
     else {
-      mayOld.foldLeft((this, obj))((res, a) => {
-        val (resCtx, resObj) = res
+      mayOld.foldLeft((this, env))((res, a) => {
+        val (resCtx, resEnv) = res
         val locR = Loc(a, Recent)
         val locO = Loc(a, Old)
         if (mustOld contains a) {
           val newCtx = resCtx.subsLoc(locR, locO)
-          val newObj = resObj.subsLoc(locR, locO)
-          (newCtx, newObj)
+          val newEnv = resEnv.subsLoc(locR, locO)
+          (newCtx, newEnv)
         } else {
           val newCtx = resCtx.weakSubsLoc(locR, locO)
-          val newObj = resObj.weakSubsLoc(locR, locO)
-          (newCtx, newObj)
+          val newEnv = resEnv.weakSubsLoc(locR, locO)
+          (newCtx, newEnv)
         }
       })
     }
