@@ -26,12 +26,12 @@ abstract class Command(
 
   protected def showState(c: Console, state: State, all: Boolean = false): String = {
     val heap = state.heap
-    val context = state.context
+    val old = state.heap.old
     "** heap **" + LINE_SEP +
       (if (all) heap.toStringAll else heap.toString) + LINE_SEP +
       LINE_SEP +
-      "** context **" + LINE_SEP +
-      context.toString
+      "** old address set **" + LINE_SEP +
+      old.toString
   }
 
   protected def grep(key: String, str: String): String = {

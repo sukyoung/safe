@@ -40,8 +40,7 @@ object BuiltinObject extends FuncModel(
       val loc = Loc(addr, Recent)
       val obj = Obj.newObject(utils)
       val heap = state.heap.update(loc, obj)
-      val ctx = state.context
-      (utils.value(loc), State(heap, ctx))
+      (utils.value(loc), State(heap))
     } else {
       (utils.value.Bot, State.Bot)
     }
@@ -83,8 +82,7 @@ object BuiltinObject extends FuncModel(
       val loc = Loc(addr, Recent)
       val obj = Obj.newObject(utils)
       val heap = state.heap.update(loc, obj)
-      val ctx = state.context
-      (utils.value(loc), State(heap, ctx))
+      (utils.value(loc), State(heap))
     } else {
       (utils.value.Bot, State.Bot)
     }
@@ -168,8 +166,7 @@ object BuiltinObject extends FuncModel(
             val state = st.oldify(descAddr)(utils)
             val descLoc = Loc(descAddr, Recent)
             val retHeap = state.heap.update(descLoc, descObj)
-            val ctx = state.context
-            (State(retHeap, ctx), utils.value(descLoc))
+            (State(retHeap), utils.value(descLoc))
           } else (st, utils.value.Bot)
 
         (state, excSt, v1 + v2)
@@ -229,10 +226,9 @@ object BuiltinObject extends FuncModel(
         val state = st.oldify(arrAddr)(utils)
         val arrLoc = Loc(arrAddr, Recent)
         val retHeap = state.heap.update(arrLoc, retObj)
-        val ctx = state.context
 
         // 5. Return array.
-        (State(retHeap, ctx), excSt, utils.value(arrLoc))
+        (State(retHeap), excSt, utils.value(arrLoc))
       })
     ), T, F, T),
 

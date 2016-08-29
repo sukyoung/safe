@@ -64,7 +64,7 @@ class BasicCode(
   }
 
   private def createSemanticFunc(argsName: String, utils: Utils): SemanticFun = (sem, st) => st match {
-    case State(heap, ctx) => {
+    case State(heap) => {
       val stBotPair = (State.Bot, State.Bot)
       heap(SINGLE_PURE_LOCAL) match {
         case Some(localObj) => {
@@ -73,7 +73,7 @@ class BasicCode(
               val (retSt, retSte, retV) = code(pv.objval.value, st, sem, utils)
               val retObj = localObj.update("@return", PropValue(utils.dataProp(retV)))
               val retHeap = retSt.heap.update(SINGLE_PURE_LOCAL, retObj)
-              (State(retHeap, st.context), retSte)
+              (State(retHeap), retSte)
             }
             case None => stBotPair // TODO dead code
           }

@@ -37,24 +37,24 @@ class Semantics(
   private val AB = utils.absBool.Bot
 
   // Interprocedural edges
-  private var ipSuccMap: Map[ControlPoint, Map[ControlPoint, (Context, Obj)]] = HashMap[ControlPoint, Map[ControlPoint, (Context, Obj)]]()
-  private var ipPredMap: Map[ControlPoint, Set[ControlPoint]] = HashMap[ControlPoint, Set[ControlPoint]]()
-  def getAllIPSucc: Map[ControlPoint, Map[ControlPoint, (Context, Obj)]] = ipSuccMap
+  private var ipSuccMap: Map[ControlPoint, Map[ControlPoint, (OldAddrSet, Obj)]] = HashMap()
+  private var ipPredMap: Map[ControlPoint, Set[ControlPoint]] = HashMap()
+  def getAllIPSucc: Map[ControlPoint, Map[ControlPoint, (OldAddrSet, Obj)]] = ipSuccMap
   def getAllIPPred: Map[ControlPoint, Set[ControlPoint]] = ipPredMap
-  def getInterProcSucc(cp: ControlPoint): Option[Map[ControlPoint, (Context, Obj)]] = ipSuccMap.get(cp)
+  def getInterProcSucc(cp: ControlPoint): Option[Map[ControlPoint, (OldAddrSet, Obj)]] = ipSuccMap.get(cp)
   def getInterProcPred(cp: ControlPoint): Option[Set[ControlPoint]] = ipPredMap.get(cp)
 
   // Adds inter-procedural call edge from call-node cp1 to entry-node cp2.
   // Edge label ctx records callee context, which is joined if the edge existed already.
-  def addCallEdge(cp1: ControlPoint, cp2: ControlPoint, ctx: Context, obj: Obj): Unit = {
+  def addCallEdge(cp1: ControlPoint, cp2: ControlPoint, old: OldAddrSet, obj: Obj): Unit = {
     val updatedSuccMap = ipSuccMap.get(cp1) match {
-      case None => HashMap(cp2 -> (ctx, obj))
+      case None => HashMap(cp2 -> (old, obj))
       case Some(map2) =>
         map2.get(cp2) match {
           case None =>
-            map2 + (cp2 -> (ctx, obj))
-          case Some((oldCtx, oldObj)) =>
-            map2 + (cp2 -> (oldCtx + ctx, oldObj + obj))
+            map2 + (cp2 -> (old, obj))
+          case Some((oldOld, oldObj)) =>
+            map2 + (cp2 -> (oldOld + old, oldObj + obj))
         }
     }
     ipSuccMap += (cp1 -> updatedSuccMap)
@@ -69,30 +69,30 @@ class Semantics(
   // Adds inter-procedural return edge from exit or exit-exc node cp1 to after-call node cp2.
   // Edge label ctx records caller context, which is joined if the edge existed already.
   // If change occurs, cp1 is added to worklist as side-effect.
-  def addReturnEdge(cp1: ControlPoint, cp2: ControlPoint, ctx: Context, obj: Obj): Unit = {
+  def addReturnEdge(cp1: ControlPoint, cp2: ControlPoint, old: OldAddrSet, obj: Obj): Unit = {
     val updatedSuccMap = ipSuccMap.get(cp1) match {
       case None => {
         worklist.add(cp1)
-        HashMap(cp2 -> (ctx, obj))
+        HashMap(cp2 -> (old, obj))
       }
       case Some(map2) =>
         map2.get(cp2) match {
           case None => {
             worklist.add(cp1)
-            map2 + (cp2 -> (ctx, obj))
+            map2 + (cp2 -> (old, obj))
           }
-          case Some((oldCtx, oldObj)) =>
-            val ctxChanged = !(ctx <= oldCtx)
-            val newCtx =
-              if (ctxChanged) oldCtx + ctx
-              else oldCtx
+          case Some((oldOld, oldObj)) =>
+            val oldChanged = !(old <= oldOld)
+            val newOld =
+              if (oldChanged) oldOld + old
+              else oldOld
             val objChanged = !(obj <= oldObj)
             val newObj =
               if (objChanged) oldObj + obj
               else oldObj
-            if (ctxChanged || objChanged) {
+            if (oldChanged || objChanged) {
               worklist.add(cp1)
-              map2 + (cp2 -> (newCtx, newObj))
+              map2 + (cp2 -> (newOld, newObj))
             } else {
               map2
             }
@@ -107,7 +107,7 @@ class Semantics(
     ipPredMap += (cp2 -> updatedPredSet)
   }
 
-  def E(cp1: ControlPoint, cp2: ControlPoint, ctx: Context, obj: Obj, st: State): State = {
+  def E(cp1: ControlPoint, cp2: ControlPoint, old: OldAddrSet, obj: Obj, st: State): State = {
     (cp1.node, cp2.node) match {
       case (_, Entry(f)) => st.heap match {
         case State.Bot => State.Bot
@@ -125,35 +125,35 @@ class Semantics(
               })
             case None => Heap.Bot
           }
-          State(h3, ctx)
+          State(Heap(h3.map, old))
         }
       }
       case (Exit(_), _) if st.heap.isBottom => State.Bot
-      case (Exit(_), _) if st.context.isBottom => State.Bot
+      case (Exit(_), _) if st.heap.old.isBottom => State.Bot
       case (Exit(f1), AfterCall(f2, retVar, call)) =>
-        val (h1, c1) = (st.heap, st.context)
-        val (c2, obj1) = ctx.fixOldify(obj, c1.mayOld, c1.mustOld)(utils)
+        val (h1, c1) = (st.heap, st.heap.old)
+        val (c2, obj1) = old.fixOldify(obj, c1.mayOld, c1.mustOld)(utils)
         if (c2.isBottom) State.Bot
         else {
           val localObj = h1.getOrElse(PredefLoc.SINGLE_PURE_LOCAL, Obj.Bot(utils))
           val returnV = localObj.getOrElse("@return")(valueU.Bot) { _.objval.value }
           val h2 = h1.update(PredefLoc.SINGLE_PURE_LOCAL, obj1)
           val h3 = h2.varStore(retVar, returnV)(utils)
-          State(h3, c2)
+          State(Heap(h3.map, c2))
         }
       case (Exit(f), _) =>
-        val c1 = st.context
-        val (c2, obj1) = ctx.fixOldify(obj, c1.mayOld, c1.mustOld)(utils)
+        val c1 = st.heap.old
+        val (c2, obj1) = old.fixOldify(obj, c1.mayOld, c1.mustOld)(utils)
         if (c2.isBottom) State.Bot
         else {
           excLog.signal(IPFromExitToNoneError(f.ir))
           State.Bot
         }
       case (ExitExc(_), _) if st.heap.isBottom => State.Bot
-      case (ExitExc(_), _) if st.context.isBottom => State.Bot
+      case (ExitExc(_), _) if st.heap.old.isBottom => State.Bot
       case (ExitExc(_), AfterCatch(_, _)) =>
-        val (h1, c1) = (st.heap, st.context)
-        val (c2, obj1) = ctx.fixOldify(obj, c1.mayOld, c1.mustOld)(utils)
+        val (h1, c1) = (st.heap, st.heap.old)
+        val (c2, obj1) = old.fixOldify(obj, c1.mayOld, c1.mustOld)(utils)
         if (c2.isBottom) State.Bot
         else {
           val localObj = h1.getOrElse(PredefLoc.SINGLE_PURE_LOCAL, Obj.Bot(utils))
@@ -166,11 +166,11 @@ class Semantics(
             obj1.update("@exception", PropValue(excObjV))
               .update("@exception_all", PropValue(newExcAllObjV))
           )
-          State(h2, c2)
+          State(Heap(h2.map, c2))
         }
       case (ExitExc(f), _) =>
-        val c1 = st.context
-        val (c2, obj1) = ctx.fixOldify(obj, c1.mayOld, c1.mustOld)(utils)
+        val c1 = st.heap.old
+        val (c2, obj1) = old.fixOldify(obj, c1.mayOld, c1.mustOld)(utils)
         if (c2.isBottom) State.Bot
         else {
           excLog.signal(IPFromExitToNoneError(f.ir))
@@ -181,9 +181,9 @@ class Semantics(
   }
 
   def C(cp: ControlPoint, st: State): (State, State) = {
-    (st.heap, st.context) match {
-      case (Heap.Bot, Context.Bot) => (State.Bot, State.Bot)
-      case (h: Heap, ctx: Context) =>
+    (st.heap, st.heap.old) match {
+      case (Heap.Bot, OldAddrSet.Bot) => (State.Bot, State.Bot)
+      case (h: Heap, old: OldAddrSet) =>
         cp.node match {
           case Entry(_) => {
             val fun = cp.node.func
@@ -202,7 +202,7 @@ class Semantics(
               val undefPV = pvalueU.alpha()
               jHeap.createMutableBinding(x, valueU(undefPV))(utils)
             })
-            (State(hm, ctx), State.Bot)
+            (State(Heap(hm.map, old)), State.Bot)
           }
           case Exit(_) => (st, State.Bot)
           case ExitExc(_) => (st, State.Bot)
@@ -241,7 +241,7 @@ class Semantics(
         val h3 = h2.varStore(x, valueU(HashSet(locR)))(utils)
         val newExcSt = st.raiseException(excSet)(utils)
         val s1 = excSt + newExcSt
-        (State(h3, st1.context), s1)
+        (State(Heap(h3.map, st1.heap.old)), s1)
       }
       case CFGAllocArray(_, _, x, n, newAddr) => {
         val locR = Loc(newAddr, Recent)
@@ -249,7 +249,7 @@ class Semantics(
         val np = utils.absNumber.alpha(n.toInt)
         val h2 = st1.heap.update(locR, Obj.newArrayObject(np)(utils))
         val h3 = h2.varStore(x, valueU(HashSet(locR)))(utils)
-        (State(h3, st1.context), excSt)
+        (State(Heap(h3.map, st1.heap.old)), excSt)
       }
       case CFGAllocArg(_, _, x, n, newAddr) => {
         val locR = Loc(newAddr, Recent)
@@ -257,15 +257,15 @@ class Semantics(
         val absN = utils.absNumber.alpha(n.toInt)
         val h2 = st1.heap.update(locR, Obj.newArgObject(absN)(utils))
         val h3 = h2.varStore(x, valueU(HashSet(locR)))(utils)
-        (State(h3, st1.context), excSt)
+        (State(Heap(h3.map, st1.heap.old)), excSt)
       }
       case CFGExprStmt(_, _, x, e) => {
         val (v, excSet) = V(e, st)
-        val (h1, ctx1) =
-          if (!v.isBottom) (st.heap.varStore(x, v)(utils), st.context)
-          else (Heap.Bot, Context.Bot)
+        val (h1, old1) =
+          if (!v.isBottom) (st.heap.varStore(x, v)(utils), st.heap.old)
+          else (Heap.Bot, OldAddrSet.Bot)
         val newExcSt = st.raiseException(excSet)(utils)
-        (State(h1, ctx1), excSt + newExcSt)
+        (State(Heap(h1.map, old1)), excSt + newExcSt)
       }
       case CFGDelete(_, _, x1, CFGVarRef(_, x2)) => {
         val baseLocSet = st.heap.lookupBase(x2)(utils)
@@ -282,17 +282,17 @@ class Semantics(
           }
         val bVal = valueU(b)
         val h2 = h1.varStore(x1, bVal)(utils)
-        (State(h2, st.context), excSt)
+        (State(Heap(h2.map, st.heap.old)), excSt)
       }
       case CFGDelete(_, _, x1, expr) => {
         val (v, excSet) = V(expr, st)
-        val (h1, ctx1) =
+        val (h1, old1) =
           if (!v.isBottom) {
             val trueVal = valueU(AT)
-            (st.heap.varStore(x1, trueVal)(utils), st.context)
-          } else (Heap.Bot, Context.Bot)
+            (st.heap.varStore(x1, trueVal)(utils), st.heap.old)
+          } else (Heap.Bot, OldAddrSet.Bot)
         val newExcSt = st.raiseException(excSet)(utils)
-        (State(h1, ctx1), excSt + newExcSt)
+        (State(Heap(h1.map, old1)), excSt + newExcSt)
       }
       case CFGDeleteProp(_, _, lhs, obj, index) => {
         // locSet must not be empty because obj is coming through <>toObject.
@@ -310,14 +310,14 @@ class Semantics(
             (tmpHeap2 + delHeap, tmpB2 + delB)
           })
         })
-        val (h2, ctx2) =
-          if (h1.isBottom) (Heap.Bot, Context.Bot)
+        val (h2, old2) =
+          if (h1.isBottom) (Heap.Bot, OldAddrSet.Bot)
           else {
             val boolPV = pvalueU(b)
-            (h1.varStore(lhs, valueU(boolPV))(utils), st.context)
+            (h1.varStore(lhs, valueU(boolPV))(utils), st.heap.old)
           }
         val newExcSt = st.raiseException(excSet)(utils)
-        (State(h2, ctx2), excSt + newExcSt)
+        (State(Heap(h2.map, old2)), excSt + newExcSt)
       }
       case CFGStore(_, block, obj, index, rhs) => {
         // locSet must not be empty because obj is coming through <>toObject.
@@ -342,7 +342,7 @@ class Semantics(
           }
 
         val newExcSt = st.raiseException(excSet1)(utils)
-        (State(heap1, st.context), excSt + newExcSt)
+        (State(Heap(heap1.map, st.heap.old)), excSt + newExcSt)
       }
       case CFGStoreStringIdx(_, block, obj, strIdx, rhs) => {
         // locSet must not be empty because obj is coming through <>toObject.
@@ -360,7 +360,7 @@ class Semantics(
           }
 
         val newExcSt = st.raiseException(excSet1)(utils)
-        (State(heap1, st.context), excSt + newExcSt)
+        (State(Heap(heap1.map, st.heap.old)), excSt + newExcSt)
       }
       case CFGFunExpr(_, block, lhs, None, f, aNew1, aNew2, None) => {
         //Recency Abstraction
@@ -380,7 +380,7 @@ class Semantics(
         val h4 = h3.update(locR2, oNew.update("constructor", fPropV, exist = true))
 
         val h5 = h4.varStore(lhs, fVal)(utils)
-        (State(h5, st2.context), excSt)
+        (State(Heap(h5.map, st2.heap.old)), excSt)
       }
       case CFGFunExpr(_, block, lhs, Some(name), f, aNew1, aNew2, Some(aNew3)) => {
         // Recency Abstraction
@@ -406,7 +406,7 @@ class Semantics(
         val fPropV2 = PropValue(dataPropU(fVal)(AF, AB, AF))
         val h6 = h5.update(locR3, oEnv.update(name.text, fPropV2))
         val h7 = h6.varStore(lhs, fVal)(utils)
-        (State(h7, st3.context), excSt)
+        (State(Heap(h7.map, st3.heap.old)), excSt)
       }
       case CFGAssert(_, _, expr, _) => B(expr, st, excSt, i, cfg)
       case CFGCatch(_, _, x) => {
@@ -416,24 +416,24 @@ class Semantics(
         val h1 = st.heap.createMutableBinding(x, excV)(utils)
         val newObj = h1.getOrElse(PredefLoc.SINGLE_PURE_LOCAL, Obj.Bot(utils)).update("@exception", excSetPropV)
         val h2 = h1.update(PredefLoc.SINGLE_PURE_LOCAL, newObj)
-        (State(h2, st.context), State(Heap.Bot, Context.Bot))
+        (State(Heap(h2.map, st.heap.old)), State.Bot)
       }
       case CFGReturn(_, _, Some(expr)) => {
         val (v, excSet) = V(expr, st)
-        val (h1, ctx1) =
+        val (h1, old1) =
           if (!v.isBottom) {
             val localObj = st.heap.getOrElse(PredefLoc.SINGLE_PURE_LOCAL, Obj.Bot(utils))
             val retValPropV = PropValue(dataPropU(v))
-            (st.heap.update(PredefLoc.SINGLE_PURE_LOCAL, localObj.update("@return", retValPropV)), st.context)
-          } else (Heap.Bot, Context.Bot)
+            (st.heap.update(PredefLoc.SINGLE_PURE_LOCAL, localObj.update("@return", retValPropV)), st.heap.old)
+          } else (Heap.Bot, OldAddrSet.Bot)
         val newExcSt = st.raiseException(excSet)(utils)
-        (State(h1, ctx1), excSt + newExcSt)
+        (State(Heap(h1.map, old1)), excSt + newExcSt)
       }
       case CFGReturn(_, _, None) => {
         val localObj = st.heap.getOrElse(PredefLoc.SINGLE_PURE_LOCAL, Obj.Bot(utils))
         val retValPropV = PropValue(utils.absUndef.Top)(utils)
         val h1 = st.heap.update(PredefLoc.SINGLE_PURE_LOCAL, localObj.update("@return", retValPropV))
-        (State(h1, st.context), excSt)
+        (State(Heap(h1.map, st.heap.old)), excSt)
       }
       case CFGThrow(_, _, expr) => {
         val (v, excSet) = V(expr, st)
@@ -450,21 +450,21 @@ class Semantics(
         val h1 = st.heap.update(PredefLoc.SINGLE_PURE_LOCAL, newObj)
         val newExcSt = st.raiseException(excSet)(utils)
 
-        (State.Bot, excSt + State(h1, st.context) + newExcSt)
+        (State.Bot, excSt + State(Heap(h1.map, st.heap.old)) + newExcSt)
       }
       case CFGInternalCall(ir, info, lhs, fun, arguments, loc) =>
         (fun.toString, arguments, loc) match {
           case ("<>Global<>toObject", List(expr), Some(aNew)) => {
             val (v, excSet1) = V(expr, st)
             val (v1, st1, excSet2) = helper.toObject(st, v, aNew)
-            val (h2, ctx2) =
+            val (h2, old2) =
               if (!v1.isBottom)
-                (st1.heap.varStore(lhs, v1)(utils), st1.context)
+                (st1.heap.varStore(lhs, v1)(utils), st1.heap.old)
               else
-                (Heap.Bot, Context.Bot)
+                (Heap.Bot, OldAddrSet.Bot)
             val (st3, excSet3) =
               if (!v.isBottom)
-                (State(h2, ctx2), excSet1 ++ excSet2)
+                (State(Heap(h2.map, old2)), excSet1 ++ excSet2)
               else
                 (State.Bot, excSet1)
             val newExcSt = st.raiseException(excSet3)(utils)
@@ -472,7 +472,7 @@ class Semantics(
           }
           case ("<>Global<>isObject", List(expr), None) => {
             val (v, excSet) = V(expr, st)
-            val (h1, ctx1) =
+            val (h1, old1) =
               if (!v.isBottom) {
                 val b1 =
                   if (!v.locset.isEmpty) AT
@@ -481,52 +481,52 @@ class Semantics(
                   if (!v.pvalue.isBottom) AF
                   else AB
                 val boolVal = valueU(pvalueU(b1 + b2))
-                (st.heap.varStore(lhs, boolVal)(utils), st.context)
+                (st.heap.varStore(lhs, boolVal)(utils), st.heap.old)
               } else {
-                (Heap.Bot, Context.Bot)
+                (Heap.Bot, OldAddrSet.Bot)
               }
             val newExcSt = st.raiseException(excSet)(utils)
-            (State(h1, ctx1), excSt + newExcSt)
+            (State(Heap(h1.map, old1)), excSt + newExcSt)
           }
           case ("<>Global<>toNumber", List(expr), None) => {
             val (v, excSet) = V(expr, st)
-            val (h1, ctx1) =
+            val (h1, old1) =
               if (!v.isBottom) {
                 val numPV = v.toPrimitiveBetter(st.heap)(utils)
                 val numPV2 = pvalueU(numPV.toAbsNumber(utils.absNumber))
-                (st.heap.varStore(lhs, valueU(numPV2))(utils), st.context)
+                (st.heap.varStore(lhs, valueU(numPV2))(utils), st.heap.old)
               } else {
-                (Heap.Bot, Context.Bot)
+                (Heap.Bot, OldAddrSet.Bot)
               }
             val newExcSt = st.raiseException(excSet)(utils)
-            (State(h1, ctx1), excSt + newExcSt)
+            (State(Heap(h1.map, old1)), excSt + newExcSt)
           }
           case ("<>Global<>toBoolean", List(expr), None) => {
             val (v, excSet) = V(expr, st)
-            val (h1, ctx1) =
+            val (h1, old1) =
               if (!v.isBottom) {
                 val boolPV = pvalueU(v.toAbsBoolean(utils.absBool))
-                (st.heap.varStore(lhs, valueU(boolPV))(utils), st.context)
+                (st.heap.varStore(lhs, valueU(boolPV))(utils), st.heap.old)
               } else {
-                (Heap.Bot, Context.Bot)
+                (Heap.Bot, OldAddrSet.Bot)
               }
             val newExcSt = st.raiseException(excSet)(utils)
-            (State(h1, ctx1), excSt + newExcSt)
+            (State(Heap(h1.map, old1)), excSt + newExcSt)
           }
           case ("<>Global<>getBase", List(CFGVarRef(_, x2)), None) => {
             val locSetBase = st.heap.lookupBase(x2)(utils)
             val h1 = st.heap.varStore(lhs, valueU(locSetBase))(utils)
-            (State(h1, st.context), excSt)
+            (State(Heap(h1.map, st.heap.old)), excSt)
           }
           case ("<>Global<>iteratorInit", List(expr), Some(aNew)) => (st, excSt)
           case ("<>Global<>iteratorHasNext", List(expr2, expr3), None) =>
             val boolPV = pvalueU(utils.absBool.Top)
             val h1 = st.heap.varStore(lhs, valueU(boolPV))(utils)
-            (State(h1, st.context), excSt)
+            (State(Heap(h1.map, st.heap.old)), excSt)
           case ("<>Global<>iteratorNext", List(expr2, expr3), None) =>
             val strPV = pvalueU(utils.absString.Top)
             val h1 = st.heap.varStore(lhs, valueU(strPV))(utils)
-            (State(h1, st.context), excSt)
+            (State(Heap(h1.map, st.heap.old)), excSt)
           case _ =>
             excLog.signal(SemanticsNotYetImplementedError(ir))
             (State.Bot, State.Bot)
@@ -586,9 +586,9 @@ class Semantics(
                   val entryCP = ControlPoint(funCFG.entry, newCallCtx)
                   val exitCP = ControlPoint(funCFG.exit, newCallCtx)
                   val exitExcCP = ControlPoint(funCFG.exitExc, newCallCtx)
-                  addCallEdge(cp, entryCP, Context.Empty, newObj2)
-                  addReturnEdge(exitCP, cpAfterCall, st1.context, oldLocalObj)
-                  addReturnEdge(exitExcCP, cpAfterCatch, st1.context, oldLocalObj)
+                  addCallEdge(cp, entryCP, OldAddrSet.Empty, newObj2)
+                  addReturnEdge(exitCP, cpAfterCall, st1.heap.old, oldLocalObj)
+                  addReturnEdge(exitExcCP, cpAfterCatch, st1.heap.old, oldLocalObj)
                 }
                 case None => excLog.signal(UndefinedFunctionCallError(i.ir))
               }
@@ -619,7 +619,7 @@ class Semantics(
       val h3 =
         if (!funLocSet.isEmpty) h2
         else Heap.Bot
-      (State(h3, st1.context), excSt + newExcSt)
+      (State(Heap(h3.map, st1.heap.old)), excSt + newExcSt)
     }
   }
 
@@ -748,7 +748,7 @@ class Semantics(
       if (utils.absBool.alpha(true) <= v.toAbsBoolean(utils.absBool)) h1
       else Heap.Bot
 
-    (State(h2, st.context), excSt + newExcSt)
+    (State(Heap(h2.map, st.heap.old)), excSt + newExcSt)
   }
 
   def CFGLoadHelper(objV: Value, absStrSet: Set[AbsString], h: Heap): Value = {

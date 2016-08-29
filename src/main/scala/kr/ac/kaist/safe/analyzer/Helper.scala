@@ -164,18 +164,18 @@ case class Helper(utils: Utils) {
     val obj = obj1 + obj2 + obj3
 
     val recLoc = Loc(newAddr, Recent)
-    val (locSet1, h2, ctx2) =
+    val (locSet1, h2) =
       if (!obj.isBottom) {
         val st1 = st.oldify(newAddr)(utils)
-        (HashSet(recLoc), st1.heap.update(recLoc, obj), st1.context)
+        (HashSet(recLoc), st1.heap.update(recLoc, obj))
       } else {
-        (LocSetEmpty, Heap.Bot, Context.Bot)
+        (LocSetEmpty, Heap.Bot)
       }
     val (locSet2, st3) =
       if (!locSet.isEmpty) (locSet, st)
       else (LocSetEmpty, State.Bot)
 
-    (valueU(locSet1 ++ locSet2), State(h2, ctx2) + st3, excSet)
+    (valueU(locSet1 ++ locSet2), State(h2) + st3, excSet)
   }
 
   def inherit(h: Heap, loc1: Loc, loc2: Loc): Value = {

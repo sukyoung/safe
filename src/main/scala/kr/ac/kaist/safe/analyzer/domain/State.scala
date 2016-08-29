@@ -14,26 +14,18 @@ package kr.ac.kaist.safe.analyzer.domain
 import kr.ac.kaist.safe.analyzer.models.PredefLoc
 import kr.ac.kaist.safe.util.{ Address, Loc, Old, Recent }
 
-case class State(heap: Heap, context: Context) {
+case class State(heap: Heap) {
   /* partial order */
-  def <=(that: State): Boolean = {
-    this.heap <= that.heap && this.context <= that.context
-  }
+  def <=(that: State): Boolean = this.heap <= that.heap
 
   /* not a partial order */
-  def </(that: State): Boolean = {
-    !(this.heap <= that.heap) || !(this.context <= that.context)
-  }
+  def </(that: State): Boolean = !(this.heap <= that.heap)
 
   /* join */
-  def +(that: State): State = {
-    new State(this.heap + that.heap, this.context + that.context)
-  }
+  def +(that: State): State = new State(this.heap + that.heap)
 
   /* meet */
-  def <>(that: State): State = {
-    new State(this.heap <> that.heap, this.context <> that.context)
-  }
+  def <>(that: State): State = new State(this.heap <> that.heap)
 
   def raiseException(excSet: Set[Exception])(utils: Utils): State = {
     if (excSet.isEmpty) State.Bot
@@ -50,12 +42,12 @@ case class State(heap: Heap, context: Context) {
         localObj.update("@exception", PropValue(newExcObjV)).
           update("@exception_all", PropValue(newExcSetObjV))
       )
-      State(h1, context)
+      State(h1)
     }
   }
 
   def oldify(addr: Address)(utils: Utils): State = {
-    if (context.isBottom) State.Bot
+    if (heap.old.isBottom) State.Bot
     else {
       val locR = Loc(addr, Recent)
       val locO = Loc(addr, Old)
@@ -64,12 +56,11 @@ case class State(heap: Heap, context: Context) {
           heap.update(locO, heap.getOrElse(locR, Obj.Bot(utils))).remove(locR).subsLoc(locR, locO)
         else
           heap.subsLoc(locR, locO)
-      val ctx1 = context.subsLoc(locR, locO)
-      State(h1, ctx1)
+      State(h1)
     }
   }
 }
 
 object State {
-  val Bot: State = State(Heap.Bot, Context.Bot)
+  val Bot: State = State(Heap.Bot)
 }

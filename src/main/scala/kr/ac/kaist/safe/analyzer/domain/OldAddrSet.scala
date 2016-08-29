@@ -15,9 +15,9 @@ import scala.collection.immutable.HashSet
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.util.{ Address, Loc, Old, Recent }
 
-case class Context(private val env: Set[Loc], private val thisBinding: Set[Loc], mayOld: Set[Address], mustOld: Set[Address]) {
+case class OldAddrSet(mayOld: Set[Address], mustOld: Set[Address]) {
   /* partial order */
-  def <=(that: Context): Boolean = {
+  def <=(that: OldAddrSet): Boolean = {
     if (this eq that) true
     else {
       this.mayOld.subsetOf(that.mayOld) &&
@@ -27,16 +27,13 @@ case class Context(private val env: Set[Loc], private val thisBinding: Set[Loc],
     }
   }
 
-  /* not a partial order */
-  def </(that: Context): Boolean = !(this <= that)
-
   /* bottom checking */
   def isBottom: Boolean = {
     this.mustOld == null && this.mayOld.isEmpty
   }
 
   /* join */
-  def +(that: Context): Context = {
+  def +(that: OldAddrSet): OldAddrSet = {
     if (this eq that) this
     else if (this.isBottom) that
     else if (that.isBottom) this
@@ -46,12 +43,12 @@ case class Context(private val env: Set[Loc], private val thisBinding: Set[Loc],
         else if (that.mustOld == null) this.mustOld
         else this.mustOld.intersect(that.mustOld)
 
-      Context(HashSet[Loc](), HashSet[Loc](), this.mayOld ++ that.mayOld, newMustOld)
+      OldAddrSet(this.mayOld ++ that.mayOld, newMustOld)
     }
   }
 
   /* meet */
-  def <>(that: Context): Context = {
+  def <>(that: OldAddrSet): OldAddrSet = {
     if (this eq that) this
     else {
       val newMustOld =
@@ -59,29 +56,29 @@ case class Context(private val env: Set[Loc], private val thisBinding: Set[Loc],
         else if (that.mustOld == null) null
         else this.mustOld ++ that.mustOld
 
-      Context(HashSet[Loc](), HashSet[Loc](), this.mayOld.intersect(that.mayOld), newMustOld)
+      OldAddrSet(this.mayOld.intersect(that.mayOld), newMustOld)
     }
   }
 
   /* substitute locR by locO */
-  def subsLoc(locR: Loc, locO: Loc): Context = {
-    Context(HashSet[Loc](), HashSet[Loc](), mayOld + locR.address, mustOld + locR.address)
+  def subsLoc(locR: Loc, locO: Loc): OldAddrSet = {
+    OldAddrSet(mayOld + locR.address, mustOld + locR.address)
   }
 
   /* weakly substitute locR by locO, that is keep locR together */
-  def weakSubsLoc(locR: Loc, locO: Loc): Context = {
-    Context(HashSet[Loc](), HashSet[Loc](), mayOld + locR.address, mustOld)
+  def weakSubsLoc(locR: Loc, locO: Loc): OldAddrSet = {
+    OldAddrSet(mayOld + locR.address, mustOld)
   }
 
   override def toString: String = {
-    if (this.isBottom) "⊥Context"
+    if (this.isBottom) "⊥OldAddrSet"
     else
       "mayOld: (" + mayOld.mkString(", ") + ")" + LINE_SEP +
         "mustOld: (" + mustOld.mkString(", ") + ")"
   }
 
-  def fixOldify(obj: Obj, mayOld: Set[Address], mustOld: Set[Address])(utils: Utils): (Context, Obj) = {
-    if (this.isBottom) (Context.Bot, Obj.Bot(utils))
+  def fixOldify(obj: Obj, mayOld: Set[Address], mustOld: Set[Address])(utils: Utils): (OldAddrSet, Obj) = {
+    if (this.isBottom) (OldAddrSet.Bot, Obj.Bot(utils))
     else {
       mayOld.foldLeft((this, obj))((res, a) => {
         val (resCtx, resObj) = res
@@ -101,7 +98,7 @@ case class Context(private val env: Set[Loc], private val thisBinding: Set[Loc],
   }
 }
 
-object Context {
-  val Bot: Context = Context(HashSet[Loc](), HashSet[Loc](), HashSet[Address](), null)
-  val Empty: Context = Context(HashSet[Loc](), HashSet[Loc](), HashSet[Address](), HashSet[Address]())
+object OldAddrSet {
+  val Bot: OldAddrSet = OldAddrSet(HashSet[Address](), null)
+  val Empty: OldAddrSet = OldAddrSet(HashSet[Address](), HashSet[Address]())
 }

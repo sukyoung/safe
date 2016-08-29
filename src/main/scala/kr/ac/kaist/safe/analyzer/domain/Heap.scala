@@ -20,6 +20,7 @@ import kr.ac.kaist.safe.nodes.cfg._
 
 trait Heap {
   val map: Map[Loc, Obj]
+  val old: OldAddrSet
 
   /* partial order */
   def <=(that: Heap): Boolean
@@ -86,25 +87,31 @@ trait Heap {
 }
 
 object Heap {
-  val Bot: Heap = new DHeap(HashMap[Loc, Obj]())
-  def apply(map: Map[Loc, Obj]): Heap = new DHeap(map)
+  val Bot: Heap = new DHeap(HashMap[Loc, Obj](), OldAddrSet.Bot)
+  def apply(map: Map[Loc, Obj], old: OldAddrSet): Heap = new DHeap(map, old)
 }
 
-class DHeap(val map: Map[Loc, Obj]) extends Heap {
+class DHeap(
+    val map: Map[Loc, Obj],
+    val old: OldAddrSet
+) extends Heap {
   /* partial order */
   def <=(that: Heap): Boolean = {
-    if (this.map eq that.map) true
-    else if (this.map.size > that.map.size) false
-    else if (this.map.isEmpty) true
-    else if (that.map.isEmpty) false
-    else if (!(this.map.keySet subsetOf that.map.keySet)) false
-    else that.map.forall((kv) => {
-      val (l, obj) = kv
-      this.map.get(l) match {
-        case Some(thisObj) => thisObj <= obj
-        case None => false
-      }
-    })
+    val mapB =
+      if (this.map eq that.map) true
+      else if (this.map.size > that.map.size) false
+      else if (this.map.isEmpty) true
+      else if (that.map.isEmpty) false
+      else if (!(this.map.keySet subsetOf that.map.keySet)) false
+      else that.map.forall((kv) => {
+        val (l, obj) = kv
+        this.map.get(l) match {
+          case Some(thisObj) => thisObj <= obj
+          case None => false
+        }
+      })
+    val oldB = this.old <= that.old
+    mapB && oldB
   }
 
   private def weakUpdated(m: Map[Loc, Obj], loc: Loc, newObj: Obj): Map[Loc, Obj] =
@@ -115,43 +122,47 @@ class DHeap(val map: Map[Loc, Obj]) extends Heap {
 
   /* join */
   def +(that: Heap): Heap = {
-    if (this.map eq that.map) this
-    else if (this.isBottom) that
-    else if (that.isBottom) this
-    else {
-      val joinKeySet = this.map.keySet ++ that.map.keySet
-      val joinMap = joinKeySet.foldLeft(HashMap[Loc, Obj]())((m, key) => {
-        val joinObj = (this.map.get(key), that.map.get(key)) match {
-          case (Some(obj1), Some(obj2)) => Some(obj1 + obj2)
-          case (Some(obj1), None) => Some(obj1)
-          case (None, Some(obj2)) => Some(obj2)
-          case (None, None) => None
-        }
-        joinObj match {
-          case Some(obj) => m.updated(key, obj)
-          case None => m
-        }
-      })
-      new DHeap(joinMap)
-    }
+    val newMap =
+      if (this.map eq that.map) this.map
+      else if (this.isBottom) that.map
+      else if (that.isBottom) this.map
+      else {
+        val joinKeySet = this.map.keySet ++ that.map.keySet
+        joinKeySet.foldLeft(HashMap[Loc, Obj]())((m, key) => {
+          val joinObj = (this.map.get(key), that.map.get(key)) match {
+            case (Some(obj1), Some(obj2)) => Some(obj1 + obj2)
+            case (Some(obj1), None) => Some(obj1)
+            case (None, Some(obj2)) => Some(obj2)
+            case (None, None) => None
+          }
+          joinObj match {
+            case Some(obj) => m.updated(key, obj)
+            case None => m
+          }
+        })
+      }
+    val newOld = this.old + that.old
+    new DHeap(newMap, newOld)
   }
 
   /* meet */
   def <>(that: Heap): Heap = {
-    if (this.map eq that.map) this
-    else if (this.map.isEmpty) Heap.Bot
-    else if (that.map.isEmpty) Heap.Bot
-    else {
-      val meet = that.map.foldLeft(this.map)(
-        (m, kv) => kv match {
-          case (k, v) => m.get(k) match {
-            case None => m - k
-            case Some(vv) => m + (k -> (v <> vv))
+    val newMap: Map[Loc, Obj] =
+      if (this.map eq that.map) this.map
+      else if (this.map.isEmpty) HashMap()
+      else if (that.map.isEmpty) HashMap()
+      else {
+        that.map.foldLeft(this.map)(
+          (m, kv) => kv match {
+            case (k, v) => m.get(k) match {
+              case None => m - k
+              case Some(vv) => m + (k -> (v <> vv))
+            }
           }
-        }
-      )
-      new DHeap(meet)
-    }
+        )
+      }
+    val newOld = this.old <> that.old
+    new DHeap(newMap, newOld)
   }
 
   /* lookup */
@@ -177,10 +188,10 @@ class DHeap(val map: Map[Loc, Obj]) extends Heap {
       loc.recency match {
         case Recent =>
           if (obj.isBottom) Heap.Bot
-          else new DHeap(map.updated(loc, obj))
+          else new DHeap(map.updated(loc, obj), old)
         case Old =>
           if (obj.isBottom) this.getOrElse(loc)(Heap.Bot) { _ => this }
-          else new DHeap(weakUpdated(map, loc, obj))
+          else new DHeap(weakUpdated(map, loc, obj), old)
       }
     } else {
       this
@@ -189,25 +200,27 @@ class DHeap(val map: Map[Loc, Obj]) extends Heap {
 
   /* remove location */
   def remove(loc: Loc): Heap = {
-    new DHeap(map - loc)
+    new DHeap(map - loc, old)
   }
 
   /* substitute locR by locO */
   def subsLoc(locR: Loc, locO: Loc): Heap = {
-    if (this.map.isEmpty) this
-    else {
-      val newMap =
+    val newMap =
+      if (this.map.isEmpty) this.map
+      else {
         this.map.foldLeft(Map[Loc, Obj]())((m, kv) => {
           val (l, obj) = kv
           m + (l -> obj.subsLoc(locR, locO))
         })
-      new DHeap(newMap)
-    }
+      }
+    val newOld = this.old.subsLoc(locR, locO)
+    new DHeap(newMap, newOld)
   }
 
   def domIn(loc: Loc): Boolean = map.contains(loc)
 
-  def isBottom: Boolean = this.map.isEmpty // TODO is really bottom?
+  def isBottom: Boolean =
+    this.map.isEmpty && this.old.isBottom // TODO is really bottom?
 
   override def toString: String = {
     buildString(loc => loc match {

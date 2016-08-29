@@ -32,11 +32,11 @@ case class Initialize(cfg: CFG, helper: Helper) {
     val initHeap = Heap(HashMap(
       PredefLoc.SINGLE_PURE_LOCAL -> globalPureLocalObj,
       PredefLoc.COLLAPSED -> Obj.Empty(utils)
-    ))
+    ), OldAddrSet.Empty)
 
     val modeledHeap = BuiltinGlobal.initHeap(initHeap, cfg, utils)
 
-    State(modeledHeap, Context.Empty)
+    State(modeledHeap)
   }
 
   def testState: State = {
@@ -66,6 +66,6 @@ case class Initialize(cfg: CFG, helper: Helper) {
         .update("__ArrayConstLoc", PropValue(dataPropU(BuiltinArray.loc)))
 
     val testHeap = st.heap.update(PredefLoc.GLOBAL, testGlobalObj)
-    State(testHeap, st.context)
+    State(testHeap)
   }
 }

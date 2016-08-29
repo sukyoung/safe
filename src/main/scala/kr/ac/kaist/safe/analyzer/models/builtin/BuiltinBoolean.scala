@@ -43,9 +43,8 @@ object BuiltinBoolean extends FuncModel(
     val loc = Loc(addr, Recent)
     val obj = Obj.newBooleanObj(argV.toAbsBoolean(utils.absBool))(utils)
     val heap = state.heap.update(loc, obj)
-    val ctx = state.context
 
-    (State(heap, ctx), State.Bot, utils.value(loc))
+    (State(heap), State.Bot, utils.value(loc))
   })),
 
   // 15.6.3.1 Boolean.prototype
