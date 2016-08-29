@@ -273,10 +273,9 @@ class Semantics(
           if (baseLocSet.isEmpty) {
             (st, AT)
           } else {
-            val x2Abs = utils.absString.alpha(x2.toString)
             baseLocSet.foldLeft[(State, AbsBool)](State.Bot, AB)((res, baseLoc) => {
               val (tmpState, tmpB) = res
-              val (delState, delB) = st.delete(baseLoc, x2Abs)(utils)
+              val (delState, delB) = st.delete(baseLoc, x2.text)(utils)
               (tmpState + delState, tmpB + delB)
             })
           }
@@ -302,14 +301,15 @@ class Semantics(
         val absStrSet =
           if (v.isBottom) HashSet[AbsString]()
           else v.toPrimitiveBetter(st.heap)(utils).toStringSet(utils.absString)
-        val (st1, b) = locSet.foldLeft[(State, AbsBool)](State.Bot, AB)((res1, l) => {
-          val (tmpState1, tmpB1) = res1
-          absStrSet.foldLeft((tmpState1, tmpB1))((res2, s) => {
-            val (tmpState2, tmpB2) = res2
-            val (delState, delB) = st.delete(l, s)(utils)
-            (tmpState2 + delState, tmpB2 + delB)
+        val (h1, b) = locSet.foldLeft[(Heap, AbsBool)](Heap.Bot, AB)((res1, l) => {
+          val (tmpHeap1, tmpB1) = res1
+          absStrSet.foldLeft((tmpHeap1, tmpB1))((res2, s) => {
+            val (tmpHeap2, tmpB2) = res2
+            val (delHeap, delB) = st.heap.delete(l, s)(utils)
+            (tmpHeap2 + delHeap, tmpB2 + delB)
           })
         })
+        val st1 = State(h1, st.context)
         val st2 =
           if (st1.isBottom) State.Bot
           else {
@@ -583,7 +583,7 @@ class Semantics(
               cfg.getFunc(fid) match {
                 case Some(funCFG) => {
                   val scopeObj = funObj.get("@scope")(utils)
-                  val newEnv2 = newEnv.update(funCFG.argumentsName, argPropV, exist = true)
+                  val newEnv2 = newEnv.update(funCFG.argumentsName, argPropV)
                     .update("@scope", scopeObj)
                   val entryCP = ControlPoint(funCFG.entry, newCallCtx)
                   val exitCP = ControlPoint(funCFG.exit, newCallCtx)

@@ -165,9 +165,10 @@ case class State(heap: Heap, context: ExecContext) {
   ////////////////////////////////////////////////////////////////
   // delete
   ////////////////////////////////////////////////////////////////
-  def delete(loc: Loc, absStr: AbsString)(utils: Utils): (State, AbsBool) = {
+  def delete(loc: Loc, str: String)(utils: Utils): (State, AbsBool) = {
+    val absStr = utils.absString.alpha(str)
     val (newHeap, b1) = heap.delete(loc, absStr)(utils)
-    val (newCtx, b2) = context.delete(loc, absStr)(utils)
+    val (newCtx, b2) = context.delete(loc, str)(utils)
     (State(newHeap, newCtx), b1 + b2)
   }
 }

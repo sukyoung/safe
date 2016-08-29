@@ -210,12 +210,12 @@ class ExecContext(
       else {
         visited += l
         val env = this.getOrElse(l, DecEnvRecord.Bot)
-        val isDomIn = (env domIn x)(utils.absBool)
+        val isIn = (env HasBinding x)(utils.absBool)
         val v1 =
-          if (utils.absBool.True <= isDomIn) env.getOrElse(x)(valueBot) { _.objval.value }
+          if (utils.absBool.True <= isIn) env.getOrElse(x)(valueBot) { _.objval.value }
           else valueBot
         val v2 =
-          if (utils.absBool.False <= isDomIn) {
+          if (utils.absBool.False <= isIn) {
             val outerLocSet = env.getOrElse("@outer")(LocSetEmpty) { _.objval.value.locset }
             outerLocSet.foldLeft(valueBot)((tmpVal, outerLoc) => tmpVal + visit(outerLoc))
           } else {
@@ -234,12 +234,12 @@ class ExecContext(
       else {
         visited += l
         val env = this.getOrElse(l, DecEnvRecord.Bot)
-        val isDomIn = (env domIn x)(utils.absBool)
+        val isIn = (env HasBinding x)(utils.absBool)
         val locSet1 =
-          if (utils.absBool.True <= isDomIn) HashSet(l)
+          if (utils.absBool.True <= isIn) HashSet(l)
           else LocSetEmpty
         val locSet2 =
-          if (utils.absBool.False <= isDomIn) {
+          if (utils.absBool.False <= isIn) {
             val outerLocSet = env.getOrElse("@outer")(LocSetEmpty) { _.objval.value.locset }
             outerLocSet.foldLeft(LocSetEmpty)((res, outerLoc) => res ++ visit(outerLoc))
           } else {
@@ -268,7 +268,7 @@ class ExecContext(
       case None => LocSetEmpty
     }
     val h2 =
-      if (utils.absBool.False <= (env domIn x)(utils.absBool))
+      if (utils.absBool.False <= (env HasBinding x)(utils.absBool))
         outerLocSet.foldLeft(ExecContext.Bot)((tmpH, outerLoc) => varStoreLocal(outerLoc, x, value)(utils))
       else
         ExecContext.Bot
@@ -278,11 +278,11 @@ class ExecContext(
   ////////////////////////////////////////////////////////////////
   // delete
   ////////////////////////////////////////////////////////////////
-  def delete(loc: Loc, absStr: AbsString)(utils: Utils): (ExecContext, AbsBool) = {
+  def delete(loc: Loc, str: String)(utils: Utils): (ExecContext, AbsBool) = {
     getOrElse(loc)((this, utils.absBool.Bot))(_ => {
-      val test = hasOwnProperty(loc, absStr)(utils)
+      val test = hasOwnProperty(loc, str)(utils)
       val targetEnv = this.getOrElse(loc, DecEnvRecord.Bot)
-      val isConfigurable = targetEnv.getOrElse(absStr)(utils.absBool.Bot) { _.objval.configurable }
+      val isConfigurable = targetEnv.getOrElse(str)(utils.absBool.Bot) { _.objval.configurable }
       val (h1, b1) =
         if ((utils.absBool.True <= test) && (utils.absBool.False <= isConfigurable))
           (this, utils.absBool.False)
@@ -291,15 +291,15 @@ class ExecContext(
       val (h2, b2) =
         if (((utils.absBool.True <= test) && (utils.absBool.False != isConfigurable))
           || utils.absBool.False <= test)
-          (this.update(loc, (targetEnv - absStr)(utils)), utils.absBool.True)
+          (this.update(loc, (targetEnv - str)), utils.absBool.True)
         else
           (ExecContext.Bot, utils.absBool.Bot)
       (h1 + h2, b1 + b2)
     })
   }
 
-  private def hasOwnProperty(loc: Loc, absStr: AbsString)(utils: Utils): AbsBool = {
-    (this.getOrElse(loc, DecEnvRecord.Bot) domIn absStr)(utils.absBool)
+  private def hasOwnProperty(loc: Loc, str: String)(utils: Utils): AbsBool = {
+    (this.getOrElse(loc, DecEnvRecord.Bot) HasBinding str)(utils.absBool)
   }
 
   ////////////////////////////////////////////////////////////////

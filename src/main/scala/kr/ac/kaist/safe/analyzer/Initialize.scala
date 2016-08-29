@@ -35,7 +35,7 @@ case class Initialize(cfg: CFG, helper: Helper) {
 
     val initCtx = ExecContext(HashMap(
       PredefLoc.PURE_LOCAL -> globalPureLocalEnv,
-      PredefLoc.COLLAPSED -> DecEnvRecord.Bot
+      PredefLoc.COLLAPSED -> DecEnvRecord.Empty
     ), OldAddrSet.Empty)
 
     val modeledHeap = BuiltinGlobal.initHeap(initHeap, cfg, utils)
