@@ -27,11 +27,12 @@ class Semantics(
     helper: Helper
 ) {
   lazy val excLog: ExcLog = new ExcLog
-  val utils: Utils = helper.utils
-  val pvalueU = utils.pvalue
-  val valueU = utils.value
-  val dataPropU = utils.dataProp
-  val bindingU = utils.binding
+  private val utils: Utils = helper.utils
+  val typeHelper = helper.typeHelper
+  private val pvalueU = utils.pvalue
+  private val valueU = utils.value
+  private val dataPropU = utils.dataProp
+  private val bindingU = utils.binding
 
   private val AF = utils.absBool.False
   private val AT = utils.absBool.True
@@ -301,7 +302,7 @@ class Semantics(
         val (v, excSet) = V(index, st)
         val absStrSet =
           if (v.isBottom) HashSet[AbsString]()
-          else v.toPrimitiveBetter(st.heap)(utils).toStringSet(utils.absString)
+          else typeHelper.ToPrimitive(v, st.heap).toStringSet(utils.absString)
         val (h1, b) = locSet.foldLeft[(Heap, AbsBool)](Heap.Bot, AB)((res1, l) => {
           val (tmpHeap1, tmpB1) = res1
           absStrSet.foldLeft((tmpHeap1, tmpB1))((res2, s) => {
@@ -334,7 +335,7 @@ class Semantics(
             case (_, v) if v.isBottom => (Heap.Bot, excSetIdx ++ esRhs)
             case _ =>
               // iterate over set of strings for index
-              val absStrSet = idxV.toPrimitiveBetter(st.heap)(utils).toStringSet(utils.absString)
+              val absStrSet = typeHelper.ToPrimitive(idxV, st.heap).toStringSet(utils.absString)
               absStrSet.foldLeft((Heap.Bot, excSetIdx ++ esRhs))((res1, absStr) => {
                 val (tmpHeap1, tmpExcSet1) = res1
                 val (tmpHeap2, tmpExcSet2) = helper.storeHelp(locSet, absStr, vRhs, st.heap)
@@ -459,19 +460,18 @@ class Semantics(
         (fun.toString, arguments, loc) match {
           case ("<>Global<>toObject", List(expr), Some(aNew)) => {
             val (v, excSet1) = V(expr, st)
-            val (v1, st1, excSet2) = helper.toObject(st, v, aNew)
-            val st2 =
-              if (!v1.isBottom)
-                st1.varStore(lhs, v1)(utils)
-              else
-                State.Bot
-            val (st3, excSet3) =
-              if (!v.isBottom)
-                (st2, excSet1 ++ excSet2)
-              else
+            val (newSt, newExcSet) =
+              if (v.isBottom) {
                 (State.Bot, excSet1)
-            val newExcSt = st.raiseException(excSet3)(utils)
-            (st3, excSt + newExcSt)
+              } else {
+                val (v1, st1, excSet2) = typeHelper.ToObject(v, st, aNew)
+                val st2 =
+                  if (!v1.isBottom) st1.varStore(lhs, v1)(utils)
+                  else State.Bot
+                (st2, excSet1 ++ excSet2)
+              }
+            val newExcSt = st.raiseException(newExcSet)(utils)
+            (newSt, excSt + newExcSt)
           }
           case ("<>Global<>isObject", List(expr), None) => {
             val (v, excSet) = V(expr, st)
@@ -494,25 +494,18 @@ class Semantics(
           case ("<>Global<>toNumber", List(expr), None) => {
             val (v, excSet) = V(expr, st)
             val st1 =
-              if (!v.isBottom) {
-                val numPV = v.toPrimitiveBetter(st.heap)(utils)
-                val numPV2 = pvalueU(numPV.toAbsNumber(utils.absNumber))
-                st.varStore(lhs, valueU(numPV2))(utils)
-              } else {
-                State.Bot
-              }
+              if (!v.isBottom) st.varStore(lhs, valueU(typeHelper.ToNumber(v, st.heap)))(utils)
+              else State.Bot
+
             val newExcSt = st.raiseException(excSet)(utils)
             (st1, excSt + newExcSt)
           }
           case ("<>Global<>toBoolean", List(expr), None) => {
             val (v, excSet) = V(expr, st)
             val st1 =
-              if (!v.isBottom) {
-                val boolPV = pvalueU(v.toAbsBoolean(utils.absBool))
-                st.varStore(lhs, valueU(boolPV))(utils)
-              } else {
-                State.Bot
-              }
+              if (!v.isBottom) st.varStore(lhs, valueU(typeHelper.ToBoolean(v)))(utils)
+              else State.Bot
+
             val newExcSt = st.raiseException(excSet)(utils)
             (st1, excSt + newExcSt)
           }
@@ -545,7 +538,7 @@ class Semantics(
     val (funVal, funExcSet) = V(i.fun, st1)
     val funLocSet = i match {
       case (_: CFGConstruct) => funVal.locset.filter(l => AT <= st1.heap.hasConstruct(l)(utils.absBool))
-      case (_: CFGCall) => funVal.locset.filter(l => AT <= st1.heap.isCallable(l)(utils.absBool))
+      case (_: CFGCall) => funVal.locset.filter(l => AT <= typeHelper.IsCallable(l, st1.heap))
     }
     val (thisVal, _) = V(i.thisArg, st1)
     val thisLocSet = thisVal.getThis(st1.heap)(utils)
@@ -610,7 +603,7 @@ class Semantics(
       // exception handling
       val typeExcSet1 = i match {
         case _: CFGConstruct if funVal.locset.exists(l => AF <= st1.heap.hasConstruct(l)(utils.absBool)) => HashSet(TypeError)
-        case _: CFGCall if funVal.locset.exists(l => AF <= st1.heap.isCallable(l)(utils.absBool)) => HashSet(TypeError)
+        case _: CFGCall if funVal.locset.exists(l => AF <= typeHelper.IsCallable(l, st1.heap)) => HashSet(TypeError)
         case _ => ExceptionSetEmpty
       }
       val typeExcSet2 =
@@ -636,7 +629,7 @@ class Semantics(
         val (objV, _) = V(obj, st)
         val (idxV, idxExcSet) = V(index, st)
         val absStrSet =
-          if (!idxV.isBottom) idxV.toPrimitiveBetter(st.heap)(utils).toStringSet(utils.absString)
+          if (!idxV.isBottom) typeHelper.ToPrimitive(idxV, st.heap).toStringSet(utils.absString)
           else HashSet[AbsString]()
         val v1 = CFGLoadHelper(objV, absStrSet, st.heap)
         (v1, idxExcSet)
@@ -696,7 +689,7 @@ class Semantics(
                 val excSet = excSet1 ++ excSet2 ++ excSet3
                 (b, excSet)
               case "in" => {
-                val str = v1.toPrimitiveBetter(st.heap)(utils).toAbsString(utils.absString)
+                val str = typeHelper.ToString(v1, st.heap)
                 val absB = v2.locset.foldLeft(AB)((tmpAbsB, loc) => {
                   tmpAbsB + st.heap.hasProperty(loc, str)(utils)
                 })
@@ -721,14 +714,14 @@ class Semantics(
           case "typeof" =>
             expr match {
               case CFGVarRef(_, x) =>
-                val absStr1 = v.typeTag(st.heap)(utils)
+                val absStr1 = typeHelper.typeTag(v, st.heap)
                 val absStr2 =
                   if (excSet.contains(ReferenceError)) utils.absString.alpha("undefined")
                   else utils.absString.Bot
                 val absStrPV = pvalueU(absStr1 + absStr2)
                 (valueU(absStrPV), ExceptionSetEmpty)
               case _ =>
-                val absStrPV = pvalueU(v.typeTag(st.heap)(utils))
+                val absStrPV = pvalueU(typeHelper.typeTag(v, st.heap))
                 (valueU(absStrPV), excSet)
             }
         }
@@ -751,7 +744,7 @@ class Semantics(
     val (v, excSet) = V(expr, st)
     val newExcSt = st.raiseException(excSet)(utils)
     val st2 =
-      if (utils.absBool.alpha(true) <= v.toAbsBoolean(utils.absBool)) st1
+      if (utils.absBool.alpha(true) <= typeHelper.ToBoolean(v)) st1
       else State.Bot
 
     (st2, excSt + newExcSt)

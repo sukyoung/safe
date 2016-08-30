@@ -11,9 +11,7 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
-import kr.ac.kaist.safe.nodes.cfg.FunctionId
-
-import scala.collection.immutable.HashSet
+import kr.ac.kaist.safe.analyzer.TypeConversionHelper
 
 trait AbsUndefUtil {
   val Top: AbsUndef
@@ -71,8 +69,9 @@ case class Utils(
     absNumber: AbsNumberUtil,
     absString: AbsStringUtil
 ) {
-  val pvalue = PValueUtil(this)
-  val value = ValueUtil(this)
-  val dataProp = DataPropertyUtil(this)
-  val binding = BindingUtil(this)
+  lazy val pvalue = PValueUtil(this)
+  lazy val value = ValueUtil(this)
+  lazy val dataProp = DataPropertyUtil(this)
+  lazy val binding = BindingUtil(this)
+  lazy val absObject = AbsObjectUtil(this)
 }

@@ -53,7 +53,6 @@ trait Heap {
   def hasProperty(loc: Loc, absStr: AbsString)(utils: Utils): AbsBool
   def hasOwnProperty(loc: Loc, absStr: AbsString)(utils: Utils): AbsBool
   def isArray(loc: Loc)(utils: Utils): AbsBool
-  def isCallable(loc: Loc)(absBool: AbsBoolUtil): AbsBool
   def isObject(loc: Loc)(utils: Utils): AbsBool
   def canPut(loc: Loc, absStr: AbsString)(utils: Utils): AbsBool
   def canPutHelp(curLoc: Loc, absStr: AbsString, origLoc: Loc)(utils: Utils): AbsBool
@@ -329,17 +328,6 @@ class DHeap(val map: Map[Loc, Obj]) extends Heap {
         utils.absBool.False
       else
         utils.absBool.Bot
-    b1 + b2
-  }
-
-  def isCallable(loc: Loc)(absBool: AbsBoolUtil): AbsBool = {
-    val isDomIn = this.getOrElse(loc)(absBool.False) { obj => (obj domIn "@function")(absBool) }
-    val b1 =
-      if (absBool.True <= isDomIn) absBool.True
-      else absBool.Bot
-    val b2 =
-      if (absBool.False <= isDomIn) absBool.False
-      else absBool.Bot
     b1 + b2
   }
 

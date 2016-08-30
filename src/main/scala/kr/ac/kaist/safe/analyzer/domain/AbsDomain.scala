@@ -16,10 +16,12 @@ trait AbsDomain {
   def gamma: ConDomain
   override def toString: String
 
-  // convert function
-  def toAbsString(absString: AbsStringUtil): AbsString
+  // Abstraction of Table 11 in section 9.2, ECMAScript 5.1
   def toAbsBoolean(absBool: AbsBoolUtil): AbsBool
+  // Abstraction of Table 12 in section 9.3, ECMAScript 5.1
   def toAbsNumber(absNumber: AbsNumberUtil): AbsNumber
+  // Abstraction of Table 13 in section 9.8, ECMAScript 5.1
+  def toAbsString(absString: AbsStringUtil): AbsString
 }
 
 trait AbsUndef extends AbsDomain {
@@ -92,8 +94,18 @@ trait AbsNumber extends AbsDomain {
   def isPositiveZero: Boolean
   def isNegativeZero: Boolean
 
+  // Abstraction of step 2 - 4 in section 9.5, ECMAScript 5.1
+  def toInteger: AbsNumber
+  // Abstraction of step 2 - 5 in section 9.6, ECMAScript 5.1
   def toInt32: AbsNumber
+  // Abstraction of step 2 - 5 in section 9.7, ECMAScript 5.1
   def toUInt32: AbsNumber
+  // Abstraction of step 2 - 5 in section 9.8, ECMAScript 5.1
+  def toUInt16: AbsNumber
+
+  // Abstraction of step 4.a - 4.e in section 9.12, ECMAScript 5.1
+  // This algorithm differs from the strict equal(===) in its treatment of signed zeros and NaN
+  def sameValue(that: AbsNumber)(absBool: AbsBoolUtil): AbsBool
 
   def negate: AbsNumber
   def abs: AbsNumber

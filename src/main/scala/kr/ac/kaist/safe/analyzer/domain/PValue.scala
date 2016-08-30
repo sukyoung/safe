@@ -95,33 +95,6 @@ case class PValue(
     )
   }
 
-  def toAbsString(absString: AbsStringUtil): AbsString = {
-    val pv1 = undefval.toAbsString(absString)
-    val pv2 = nullval.toAbsString(absString)
-    val pv3 = boolval.toAbsString(absString)
-    val pv4 = numval.toAbsString(absString)
-    val pv5 = strval.toAbsString(absString)
-    pv1 + pv2 + pv3 + pv4 + pv5
-  }
-
-  def toAbsBoolean(absBool: AbsBoolUtil): AbsBool = {
-    val pv1 = undefval.toAbsBoolean(absBool)
-    val pv2 = nullval.toAbsBoolean(absBool)
-    val pv3 = boolval.toAbsBoolean(absBool)
-    val pv4 = numval.toAbsBoolean(absBool)
-    val pv5 = strval.toAbsBoolean(absBool)
-    pv1 + pv2 + pv3 + pv4 + pv5
-  }
-
-  def toAbsNumber(absNumber: AbsNumberUtil): AbsNumber = {
-    val pv1 = undefval.toAbsNumber(absNumber)
-    val pv2 = nullval.toAbsNumber(absNumber)
-    val pv3 = boolval.toAbsNumber(absNumber)
-    val pv4 = numval.toAbsNumber(absNumber)
-    val pv5 = strval.toAbsNumber(absNumber)
-    pv1 + pv2 + pv3 + pv4 + pv5
-  }
-
   override def toString(): String = {
     var lst: List[String] = Nil
 
@@ -182,6 +155,10 @@ case class PValue(
 
   def foreach(f: (AbsDomain => Unit)): Unit = {
     f(undefval); f(nullval); f(boolval); f(numval); f(strval)
+  }
+
+  def foreach[T](f: (AbsDomain => T)): (T, T, T, T, T) = {
+    (f(undefval), f(nullval), f(boolval), f(numval), f(strval))
   }
 
   def isBottom: Boolean =
