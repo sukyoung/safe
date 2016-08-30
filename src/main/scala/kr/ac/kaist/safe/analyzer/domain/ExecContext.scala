@@ -12,7 +12,7 @@
 package kr.ac.kaist.safe.analyzer.domain
 
 import kr.ac.kaist.safe.analyzer.models.PredefLoc
-import kr.ac.kaist.safe.analyzer.models.PredefLoc.{ COLLAPSED, SINGLE_PURE_LOCAL }
+import kr.ac.kaist.safe.analyzer.models.PredefLoc.{ COLLAPSED, PURE_LOCAL }
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.util._
 import scala.collection.immutable.{ HashMap, HashSet }
@@ -22,7 +22,6 @@ import kr.ac.kaist.safe.nodes.cfg._
 class ExecContext(
     // TODO val varEnv: LexEnv // VariableEnvironment
     // val thisBinding: Set[Loc], // ThisBinding
-    // val pureLocal: DecEnvRecord, // TODO Pure Local
     // val oldAddrSet: OldAddrSet // TODO old address set
     val map: Map[Loc, DecEnvRecord],
     val old: OldAddrSet
@@ -37,9 +36,9 @@ class ExecContext(
       else if (that.map.isEmpty) false
       else if (!(this.map.keySet subsetOf that.map.keySet)) false
       else that.map.forall((kv) => {
-        val (l, obj) = kv
+        val (l, env) = kv
         this.map.get(l) match {
-          case Some(thisEnv) => thisEnv <= obj
+          case Some(thisEnv) => thisEnv <= env
           case None => false
         }
       })
@@ -63,13 +62,13 @@ class ExecContext(
         val joinKeySet = this.map.keySet ++ that.map.keySet
         joinKeySet.foldLeft(HashMap[Loc, DecEnvRecord]())((m, key) => {
           val joinEnv = (this.map.get(key), that.map.get(key)) match {
-            case (Some(obj1), Some(obj2)) => Some(obj1 + obj2)
-            case (Some(obj1), None) => Some(obj1)
-            case (None, Some(obj2)) => Some(obj2)
+            case (Some(env1), Some(env2)) => Some(env1 + env2)
+            case (Some(env1), None) => Some(env1)
+            case (None, Some(env2)) => Some(env2)
             case (None, None) => None
           }
           joinEnv match {
-            case Some(obj) => m.updated(key, obj)
+            case Some(env) => m.updated(key, env)
             case None => m
           }
         })
@@ -103,28 +102,24 @@ class ExecContext(
 
   def getOrElse(loc: Loc, default: DecEnvRecord): DecEnvRecord =
     this(loc) match {
-      case Some(obj) => obj
+      case Some(env) => env
       case None => default
     }
 
   def getOrElse[T](loc: Loc)(default: T)(f: DecEnvRecord => T): T = {
     this(loc) match {
-      case Some(obj) => f(obj)
+      case Some(env) => f(env)
       case None => default
     }
   }
 
   /* heap update */
-  def update(loc: Loc, obj: DecEnvRecord): ExecContext = {
+  def update(loc: Loc, env: DecEnvRecord): ExecContext = {
     if (!isBottom) {
       // recent location
       loc.recency match {
-        case Recent =>
-          if (obj.isBottom) ExecContext.Bot
-          else ExecContext(map.updated(loc, obj), old)
-        case Old =>
-          if (obj.isBottom) this.getOrElse(loc)(ExecContext.Bot) { _ => this }
-          else ExecContext(weakUpdated(map, loc, obj), old)
+        case Recent => ExecContext(map.updated(loc, env), old)
+        case Old => ExecContext(weakUpdated(map, loc, env), old)
       }
     } else {
       this
@@ -142,8 +137,8 @@ class ExecContext(
       if (this.map.isEmpty) this.map
       else {
         this.map.foldLeft(Map[Loc, DecEnvRecord]())((m, kv) => {
-          val (l, obj) = kv
-          m + (l -> obj.subsLoc(locR, locO))
+          val (l, env) = kv
+          m + (l -> env.subsLoc(locR, locO))
         })
       }
     val newOld = this.old.subsLoc(locR, locO)
@@ -156,7 +151,7 @@ class ExecContext(
       val locR = Loc(addr, Recent)
       val locO = Loc(addr, Old)
       if (this domIn locR) {
-        update(locO, getOrElse(locR, DecEnvRecord.Bot(utils))).remove(locR).subsLoc(locR, locO)
+        update(locO, getOrElse(locR, DecEnvRecord.Bot)).remove(locR).subsLoc(locR, locO)
       } else {
         subsLoc(locR, locO)
       }
@@ -169,11 +164,7 @@ class ExecContext(
     this.map.isEmpty && this.old.isBottom // TODO is really bottom?
 
   override def toString: String = {
-    buildString(loc => loc match {
-      case Loc(ProgramAddr(_), _) => true
-      case SINGLE_PURE_LOCAL | COLLAPSED => true
-      case _ => false
-    }).toString
+    buildString(_ => true).toString
   }
 
   def toStringAll: String = {
@@ -189,7 +180,7 @@ class ExecContext(
           map.toSeq.filter { case (loc, _) => filter(loc) }
             .sortBy { case (loc, _) => loc }
         sortedSeq.map {
-          case (loc, obj) => s.append(toStringLoc(loc, obj)).append(LINE_SEP)
+          case (loc, env) => s.append(toStringLoc(loc, env)).append(LINE_SEP)
         }
       }
     }
@@ -200,11 +191,11 @@ class ExecContext(
     map.get(loc).map(toStringLoc(loc, _))
   }
 
-  private def toStringLoc(loc: Loc, obj: DecEnvRecord): String = {
+  private def toStringLoc(loc: Loc, env: DecEnvRecord): String = {
     val s = new StringBuilder
     val keyStr = loc.toString + " -> "
     s.append(keyStr)
-    Useful.indentation(s, obj.toString, keyStr.length)
+    Useful.indentation(s, env.toString, keyStr.length)
     s.toString
   }
 
@@ -218,13 +209,13 @@ class ExecContext(
       if (visited.contains(l)) valueBot
       else {
         visited += l
-        val env = this.getOrElse(l, DecEnvRecord.Bot(utils))
-        val isDomIn = (env domIn x)(utils.absBool)
+        val env = this.getOrElse(l, DecEnvRecord.Bot)
+        val isIn = (env HasBinding x)(utils.absBool)
         val v1 =
-          if (utils.absBool.True <= isDomIn) env.getOrElse(x)(valueBot) { _.objval.value }
+          if (utils.absBool.True <= isIn) env.getOrElse(x)(valueBot) { _.objval.value }
           else valueBot
         val v2 =
-          if (utils.absBool.False <= isDomIn) {
+          if (utils.absBool.False <= isIn) {
             val outerLocSet = env.getOrElse("@outer")(LocSetEmpty) { _.objval.value.locset }
             outerLocSet.foldLeft(valueBot)((tmpVal, outerLoc) => tmpVal + visit(outerLoc))
           } else {
@@ -242,13 +233,13 @@ class ExecContext(
       if (visited.contains(l)) LocSetEmpty
       else {
         visited += l
-        val env = this.getOrElse(l, DecEnvRecord.Bot(utils))
-        val isDomIn = (env domIn x)(utils.absBool)
+        val env = this.getOrElse(l, DecEnvRecord.Bot)
+        val isIn = (env HasBinding x)(utils.absBool)
         val locSet1 =
-          if (utils.absBool.True <= isDomIn) HashSet(l)
+          if (utils.absBool.True <= isIn) HashSet(l)
           else LocSetEmpty
         val locSet2 =
-          if (utils.absBool.False <= isDomIn) {
+          if (utils.absBool.False <= isIn) {
             val outerLocSet = env.getOrElse("@outer")(LocSetEmpty) { _.objval.value.locset }
             outerLocSet.foldLeft(LocSetEmpty)((res, outerLoc) => res ++ visit(outerLoc))
           } else {
@@ -264,7 +255,7 @@ class ExecContext(
   // Store
   ////////////////////////////////////////////////////////////////
   def varStoreLocal(loc: Loc, x: String, value: Value)(utils: Utils): ExecContext = {
-    val env = this.getOrElse(loc, DecEnvRecord.Bot(utils))
+    val env = this.getOrElse(loc, DecEnvRecord.Bot)
     val h1 = env(x) match {
       case Some(propV) if propV.objval.writable == utils.absBool.True =>
         val newPropV = PropValue(utils.dataProp(value)(utils.absBool.True, utils.absBool.Bot, utils.absBool.False))
@@ -277,7 +268,7 @@ class ExecContext(
       case None => LocSetEmpty
     }
     val h2 =
-      if (utils.absBool.False <= (env domIn x)(utils.absBool))
+      if (utils.absBool.False <= (env HasBinding x)(utils.absBool))
         outerLocSet.foldLeft(ExecContext.Bot)((tmpH, outerLoc) => varStoreLocal(outerLoc, x, value)(utils))
       else
         ExecContext.Bot
@@ -287,11 +278,11 @@ class ExecContext(
   ////////////////////////////////////////////////////////////////
   // delete
   ////////////////////////////////////////////////////////////////
-  def delete(loc: Loc, absStr: AbsString)(utils: Utils): (ExecContext, AbsBool) = {
+  def delete(loc: Loc, str: String)(utils: Utils): (ExecContext, AbsBool) = {
     getOrElse(loc)((this, utils.absBool.Bot))(_ => {
-      val test = hasOwnProperty(loc, absStr)(utils)
-      val targetEnv = this.getOrElse(loc, DecEnvRecord.Bot(utils))
-      val isConfigurable = targetEnv.getOrElse(absStr)(utils.absBool.Bot) { _.objval.configurable }
+      val test = hasOwnProperty(loc, str)(utils)
+      val targetEnv = this.getOrElse(loc, DecEnvRecord.Bot)
+      val isConfigurable = targetEnv.getOrElse(str)(utils.absBool.Bot) { _.objval.configurable }
       val (h1, b1) =
         if ((utils.absBool.True <= test) && (utils.absBool.False <= isConfigurable))
           (this, utils.absBool.False)
@@ -300,19 +291,28 @@ class ExecContext(
       val (h2, b2) =
         if (((utils.absBool.True <= test) && (utils.absBool.False != isConfigurable))
           || utils.absBool.False <= test)
-          (this.update(loc, (targetEnv - absStr)(utils)), utils.absBool.True)
+          (this.update(loc, (targetEnv - str)), utils.absBool.True)
         else
           (ExecContext.Bot, utils.absBool.Bot)
       (h1 + h2, b1 + b2)
     })
   }
 
-  private def hasOwnProperty(loc: Loc, absStr: AbsString)(utils: Utils): AbsBool = {
-    (this.getOrElse(loc, DecEnvRecord.Bot(utils)) domIn absStr)(utils.absBool)
+  private def hasOwnProperty(loc: Loc, str: String)(utils: Utils): AbsBool = {
+    (this.getOrElse(loc, DecEnvRecord.Bot) HasBinding str)(utils.absBool)
   }
+
+  ////////////////////////////////////////////////////////////////
+  // pure local environment
+  ////////////////////////////////////////////////////////////////
+  def pureLocal: DecEnvRecord = map.getOrElse(PURE_LOCAL, DecEnvRecord.Bot)
+  def subsPureLocal(env: DecEnvRecord): ExecContext = update(PURE_LOCAL, env)
 }
 
 object ExecContext {
-  val Bot: ExecContext = new ExecContext(HashMap[Loc, DecEnvRecord](), OldAddrSet.Bot)
-  def apply(map: Map[Loc, DecEnvRecord], old: OldAddrSet): ExecContext = new ExecContext(map, old)
+  val Bot: ExecContext = new ExecContext(HashMap(), OldAddrSet.Bot)
+  def apply(
+    map: Map[Loc, DecEnvRecord],
+    old: OldAddrSet
+  ): ExecContext = new ExecContext(map, old)
 }

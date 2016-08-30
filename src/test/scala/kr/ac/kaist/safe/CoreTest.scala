@@ -19,7 +19,7 @@ import kr.ac.kaist.safe.analyzer.domain.State
 
 import scala.io.Source
 import scala.util.{ Failure, Success, Try }
-import kr.ac.kaist.safe.analyzer.models._
+import kr.ac.kaist.safe.analyzer.models.builtin.BuiltinGlobal
 import kr.ac.kaist.safe.nodes.ast.Program
 import kr.ac.kaist.safe.nodes.ir.IRRoot
 import kr.ac.kaist.safe.nodes.cfg.CFG
@@ -98,7 +98,7 @@ class CoreTest extends FlatSpec {
         val normalSt = cfg.globalFunc.exit.getState(globalCallCtx)
         val excSt = cfg.globalFunc.exitExc.getState(globalCallCtx)
         assert(!normalSt.heap.isBottom)
-        normalSt.heap(PredefLoc.GLOBAL) match {
+        normalSt.heap(BuiltinGlobal.loc) match {
           case None => assert(false)
           case Some(globalObj) if globalObj.isBottom => assert(false)
           case Some(globalObj) =>

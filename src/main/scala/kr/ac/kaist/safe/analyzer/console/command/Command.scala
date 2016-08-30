@@ -13,7 +13,6 @@ package kr.ac.kaist.safe.analyzer.console.command
 
 import kr.ac.kaist.safe.analyzer.console._
 import kr.ac.kaist.safe.analyzer.domain._
-import kr.ac.kaist.safe.analyzer.models.PredefLoc.{ GLOBAL, SINGLE_PURE_LOCAL }
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.util.{ Useful, Loc, ProgramAddr }
 

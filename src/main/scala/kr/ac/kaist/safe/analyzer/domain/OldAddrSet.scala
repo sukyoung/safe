@@ -78,7 +78,7 @@ case class OldAddrSet(mayOld: Set[Address], mustOld: Set[Address]) {
   }
 
   def fixOldify(env: DecEnvRecord, mayOld: Set[Address], mustOld: Set[Address])(utils: Utils): (OldAddrSet, DecEnvRecord) = {
-    if (this.isBottom) (OldAddrSet.Bot, DecEnvRecord.Bot(utils))
+    if (this.isBottom) (OldAddrSet.Bot, DecEnvRecord.Bot)
     else {
       mayOld.foldLeft((this, env))((res, a) => {
         val (resCtx, resEnv) = res

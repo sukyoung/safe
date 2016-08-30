@@ -12,7 +12,7 @@
 package kr.ac.kaist.safe.analyzer.domain
 
 import kr.ac.kaist.safe.analyzer.models.PredefLoc
-
+import kr.ac.kaist.safe.analyzer.models.builtin.BuiltinGlobal
 import scala.collection.immutable.HashSet
 import kr.ac.kaist.safe.util.Loc
 
@@ -135,13 +135,13 @@ case class Value(pvalue: PValue, locset: Set[Loc]) {
   def getThis(h: Heap)(utils: Utils): Set[Loc] = {
     val locSet1 = (pvalue.nullval.gamma, pvalue.undefval.gamma) match {
       case (ConSimpleBot, ConSimpleBot) => LocSetEmpty
-      case _ => HashSet(PredefLoc.GLOBAL)
+      case _ => HashSet(BuiltinGlobal.loc)
     }
 
     val foundDeclEnvRecord = locset.exists(loc => utils.absBool.False <= h.isObject(loc)(utils))
 
     val locSet2 =
-      if (foundDeclEnvRecord) HashSet(PredefLoc.GLOBAL)
+      if (foundDeclEnvRecord) HashSet(BuiltinGlobal.loc)
       else LocSetEmpty
     val locSet3 = locset.foldLeft(LocSetEmpty)((tmpLocSet, loc) => {
       if (utils.absBool.True <= h.isObject(loc)(utils)) tmpLocSet + loc

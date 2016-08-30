@@ -27,15 +27,15 @@ case class Initialize(cfg: CFG, helper: Helper) {
   def state: State = {
     val afalse = utils.absBool.False
 
-    val globalPureLocalEnv = DecEnvRecord.newPureLocal(valueU.alpha(null), HashSet(PredefLoc.GLOBAL))(utils) - "@return"
+    val globalPureLocalEnv = DecEnvRecord.newPureLocal(valueU.alpha(null), HashSet(BuiltinGlobal.loc))(utils) - "@return"
 
     val initHeap = Heap(HashMap(
       SystemLoc("Dummy", Old) -> Obj.Bot(utils) // TODO If delete, not working because not allowed update to bottom heap
     ))
 
     val initCtx = ExecContext(HashMap(
-      PredefLoc.SINGLE_PURE_LOCAL -> globalPureLocalEnv,
-      PredefLoc.COLLAPSED -> DecEnvRecord.Empty(utils)
+      PredefLoc.PURE_LOCAL -> globalPureLocalEnv,
+      PredefLoc.COLLAPSED -> DecEnvRecord.Empty
     ), OldAddrSet.Empty)
 
     val modeledHeap = BuiltinGlobal.initHeap(initHeap, cfg, utils)
@@ -45,7 +45,7 @@ case class Initialize(cfg: CFG, helper: Helper) {
 
   def testState: State = {
     val st = state
-    val globalObj = st.heap.getOrElse(PredefLoc.GLOBAL, Obj.Empty(utils))
+    val globalObj = st.heap.getOrElse(BuiltinGlobal.loc, Obj.Empty(utils))
 
     val boolBot = utils.absBool.Bot
 
@@ -53,7 +53,7 @@ case class Initialize(cfg: CFG, helper: Helper) {
       globalObj.update("__BOT", PropValue.Bot(utils))
         .update("__TOP", PropValue(dataPropU(pvalueU.Top)))
         .update("__UInt", PropValue(utils.absNumber.UInt)(utils))
-        .update("__Global", PropValue(dataPropU(PredefLoc.GLOBAL)))
+        .update("__Global", PropValue(dataPropU(BuiltinGlobal.loc)))
         .update("__BoolTop", PropValue(utils.absBool.Top)(utils))
         .update("__NumTop", PropValue(utils.absNumber.Top)(utils))
         .update("__StrTop", PropValue(utils.absString.Top)(utils))
@@ -69,7 +69,7 @@ case class Initialize(cfg: CFG, helper: Helper) {
         .update("__ObjConstLoc", PropValue(dataPropU(BuiltinObject.loc)))
         .update("__ArrayConstLoc", PropValue(dataPropU(BuiltinArray.loc)))
 
-    val testHeap = st.heap.update(PredefLoc.GLOBAL, testGlobalObj)
+    val testHeap = st.heap.update(BuiltinGlobal.loc, testGlobalObj)
     State(testHeap, st.context)
   }
 }
