@@ -46,7 +46,7 @@ object BuiltinObject extends FuncModel(
     }
 
     // 2. Return ToObject(value)
-    val (v2, st2, _) = Helper(utils).toObject(st, argV, addr)
+    val (v2, st2, _) = sem.typeHelper.ToObject(argV, st, addr)
 
     (st1 + st2, State.Bot, v1 + v2)
   }),
@@ -70,7 +70,7 @@ object BuiltinObject extends FuncModel(
     //    b. If Type(value) is String, return ToObject(value).
     //    c. If Type(value) is Boolean, return ToObject(value).
     //    d. If Type(value) is Number, return ToObject(value).
-    val (v2, st2, _) = Helper(utils).toObject(st, argV, addr)
+    val (v2, st2, _) = sem.typeHelper.ToObject(argV, st, addr)
 
     // 2. Assert: The argument value was not supplied or its type was Null or Undefined.
     // 3. Let obj be a newly created native ECMAScript object.
@@ -104,7 +104,7 @@ object BuiltinObject extends FuncModel(
         val argV = sem.CFGLoadHelper(args, Set(utils.absString.alpha("0")), h)
         val tmpAddr = SystemAddr("<temp>")
 
-        val (retV, retSt, excSet) = Helper(utils).toObject(st, argV, tmpAddr)
+        val (retV, retSt, excSet) = sem.typeHelper.ToObject(argV, st, tmpAddr)
 
         // 1. If Type(O) is not Object throw a TypeError exception.
         val excSt = st.raiseException(excSet)(utils)
@@ -131,15 +131,13 @@ object BuiltinObject extends FuncModel(
         val descAddr = SystemAddr("Object.getOwnPropertyDescriptor<descriptor>")
         val AT = utils.absBool.alpha(true)
         val AF = utils.absBool.alpha(false)
-        val (locV, retSt, excSet) = Helper(utils).toObject(st, objV, tmpAddr)
+        val (locV, retSt, excSet) = sem.typeHelper.ToObject(objV, st, tmpAddr)
 
         // 1. If Type(O) is not Object throw a TypeError exception.
         val excSt = st.raiseException(excSet)(utils)
 
         // 2. Let name be ToString(P).
-        val name = strV
-          .toPrimitiveBetter(h)(utils)
-          .toAbsString(utils.absString)
+        val name = sem.typeHelper.ToString(strV)
 
         // 3. Let desc be the result of calling the [[GetOwnProperty]]
         //    internal method of O with argument name.
@@ -183,7 +181,7 @@ object BuiltinObject extends FuncModel(
         val objV = sem.CFGLoadHelper(args, Set(utils.absString.alpha("0")), h)
         val tmpAddr = SystemAddr("<temp>")
         val arrAddr = SystemAddr("Object.getOwnPropertyNames<array>")
-        val (locV, retSt, excSet) = Helper(utils).toObject(st, objV, tmpAddr)
+        val (locV, retSt, excSet) = sem.typeHelper.ToObject(objV, st, tmpAddr)
         val (keyStr, lenSet) = locV.locset.foldLeft(
           (utils.absString.Bot, Set[Double]())
         ) {

@@ -27,7 +27,7 @@ object BuiltinBoolean extends FuncModel(
     val argV = sem.CFGLoadHelper(args, Set(utils.absString.alpha("0")), h)
 
     // Returns a Boolean value (not a Boolean object) computed by ToBoolean(value).
-    val boolPV = utils.pvalue(argV.toAbsBoolean(utils.absBool))
+    val boolPV = utils.pvalue(sem.typeHelper.ToBoolean(argV))
     utils.value(boolPV)
   }),
 
@@ -41,7 +41,7 @@ object BuiltinBoolean extends FuncModel(
 
     val state = st.oldify(addr)(utils)
     val loc = Loc(addr, Recent)
-    val obj = Obj.newBooleanObj(argV.toAbsBoolean(utils.absBool))(utils)
+    val obj = Obj.newBooleanObj(sem.typeHelper.ToBoolean(argV))(utils)
     val heap = state.heap.update(loc, obj)
 
     (State(heap, state.context), State.Bot, utils.value(loc))

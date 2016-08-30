@@ -174,6 +174,21 @@ object DefaultNumUtil extends AbsNumberUtil {
       }
     }
 
+    def toInteger: AbsNumber = {
+      this match {
+        case DefaultNumNaN => alpha(0)
+        case DefaultNumUIntConst(0)
+          | DefaultNumInf
+          | DefaultNumPosInf
+          | DefaultNumNegInf => this
+        case DefaultNumUIntConst(n) =>
+          alpha(math.signum(n) * math.floor(n))
+        case DefaultNumNUIntConst(n) =>
+          alpha(math.signum(n) * math.floor(n))
+        case _ => DefaultNumUInt
+      }
+    }
+
     def toInt32: AbsNumber = {
       this match {
         case DefaultNumBot => DefaultNumBot
@@ -216,6 +231,35 @@ object DefaultNumUtil extends AbsNumberUtil {
         case DefaultNumUInt
           | DefaultNumNUInt
           | DefaultNumTop => DefaultNumUInt
+      }
+    }
+
+    def toUInt16: AbsNumber = {
+      def help(n: Double): AbsNumber = {
+        val posInt = math.signum(n) * math.floor(math.abs(n))
+        val int16bit = modulo(posInt, 0x10000000L);
+        alpha(int16bit.toInt)
+      }
+      this match {
+        case DefaultNumBot => DefaultNumBot
+        case DefaultNumNaN
+          | DefaultNumInf
+          | DefaultNumPosInf
+          | DefaultNumNegInf
+          | DefaultNumUIntConst(0) => alpha(0)
+        case DefaultNumUIntConst(n) => help(n)
+        case DefaultNumNUIntConst(n) => help(n)
+        case DefaultNumUInt
+          | DefaultNumNUInt
+          | DefaultNumTop => DefaultNumUInt
+      }
+    }
+
+    def sameValue(that: AbsNumber)(absBoolU: AbsBoolUtil): AbsBool = {
+      (this, that) match {
+        case (DefaultNumNaN, DefaultNumNaN) => absBoolU.True
+        case (DefaultNumUIntConst(0), DefaultNumUIntConst(0)) => absBoolU.Top
+        case _ => (this === that)(absBoolU)
       }
     }
 
