@@ -66,9 +66,9 @@ class BasicCode(
     case State(heap, context) => {
       val stBotPair = (State.Bot, State.Bot)
       val localEnv = context.pureLocal
-      val argV = localEnv.getOrElse(argsName)(utils.value.Bot) { _.objval.value }
+      val argV = localEnv.getOrElse(argsName)(utils.value.Bot) { _.value }
       val (retSt, retSte, retV) = code(argV, st, sem, utils)
-      val retObj = localEnv.update("@return", PropValue(utils.dataProp(retV)))
+      val retObj = localEnv.update("@return", utils.binding(retV))
       val retCtx = retSt.context.subsPureLocal(retObj)
       (State(retSt.heap, retCtx), retSte)
     }

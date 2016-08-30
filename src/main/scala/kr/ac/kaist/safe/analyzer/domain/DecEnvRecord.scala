@@ -22,7 +22,7 @@ abstract class DecEnvRecord extends EnvRecord {
     case DecEnvRecordBot => boolU.Bot
     case DecEnvRecordMap(map) => map.get(name) match {
       case None => boolU.False
-      case Some((pv, abs)) => abs match {
+      case Some((_, abs)) => abs match {
         case AbsentBot => boolU.True
         case AbsentTop => boolU.Top
       }
@@ -65,11 +65,11 @@ abstract class DecEnvRecord extends EnvRecord {
 
       val s = new StringBuilder
       sortedMap.map {
-        case (key, (propv, absent)) => {
+        case (key, (bind, absent)) => {
           s.append(key).append(absent match {
             case AbsentTop => s" @-> "
             case AbsentBot => s" |-> "
-          }).append(propv.toString).append(LINE_SEP)
+          }).append(bind.toString).append(LINE_SEP)
         }
       }
 
@@ -85,10 +85,10 @@ abstract class DecEnvRecord extends EnvRecord {
       if (thisMap.isEmpty) true
       else if (thatMap.isEmpty) false
       else thisMap.forall {
-        case (key, (thisPV, thisAbs)) => thatMap.get(key) match {
+        case (key, (thisB, thisAbs)) => thatMap.get(key) match {
           case None => false
-          case Some((thatPV, thatAbs)) =>
-            thisPV <= thatPV && thisAbs <= thatAbs
+          case Some((thatB, thatAbs)) =>
+            thisB <= thatB && thisAbs <= thatAbs
         }
       }
     }
@@ -105,10 +105,10 @@ abstract class DecEnvRecord extends EnvRecord {
       if (this eq that) this
       else {
         val newMap = thatMap.foldLeft(thisMap) {
-          case (m, (key, (thatPV, thatAbs))) => m.get(key) match {
-            case None => m + (key -> (thatPV, thatAbs))
-            case Some((thisPV, thisAbs)) =>
-              m + (key -> (thisPV + thatPV, thisAbs + thatAbs))
+          case (m, (key, (thatB, thatAbs))) => m.get(key) match {
+            case None => m + (key -> (thatB, thatAbs))
+            case Some((thisB, thisAbs)) =>
+              m + (key -> (thisB + thatB, thisAbs + thatAbs))
           }
         }
         DecEnvRecord(newMap)
@@ -125,9 +125,9 @@ abstract class DecEnvRecord extends EnvRecord {
         val keys = thisMap.keySet intersect thatMap.keySet
         val map = keys.foldLeft(DecEnvRecord.MapBot) {
           case (m, key) => {
-            val (thisPV, thisAbs) = thisMap(key)
-            val (thatPV, thatAbs) = thatMap(key)
-            m + (key -> (thisPV <> thatPV, thisAbs <> thatAbs))
+            val (thisB, thisAbs) = thisMap(key)
+            val (thatB, thatAbs) = thatMap(key)
+            m + (key -> (thisB <> thatB, thisAbs <> thatAbs))
           }
         }
         DecEnvRecord(map)
@@ -144,12 +144,10 @@ abstract class DecEnvRecord extends EnvRecord {
       if (map.isEmpty) this
       else {
         val newMap = map.foldLeft(DecEnvRecord.MapBot) {
-          case (m, (key, (pv, abs))) => {
-            val ov = pv.objval
-            val newV = ov.value.subsLoc(locR, locO)
-            val newOV = DataProperty(newV, ov.writable, ov.enumerable, ov.configurable)
-            val newPropV = PropValue(newOV, pv.funid)
-            m + (key -> (newPropV, abs))
+          case (m, (key, (bind, abs))) => {
+            val newV = bind.value.subsLoc(locR, locO)
+            val newBind = Binding(newV, bind.mutable)
+            m + (key -> (newBind, abs))
           }
         }
         DecEnvRecord(newMap)
@@ -163,12 +161,10 @@ abstract class DecEnvRecord extends EnvRecord {
       if (map.isEmpty) this
       else {
         val newMap = map.foldLeft(DecEnvRecord.MapBot) {
-          case (m, (key, (pv, abs))) => {
-            val ov = pv.objval
-            val newV = ov.value.weakSubsLoc(locR, locO)
-            val newOV = DataProperty(newV, ov.writable, ov.enumerable, ov.configurable)
-            val newPropV = PropValue(newOV, pv.funid)
-            m + (key -> (newPropV, abs))
+          case (m, (key, (bind, abs))) => {
+            val newV = bind.value.weakSubsLoc(locR, locO)
+            val newBind = Binding(newV, bind.mutable)
+            m + (key -> (newBind, abs))
           }
         }
         DecEnvRecord(newMap)
@@ -176,22 +172,22 @@ abstract class DecEnvRecord extends EnvRecord {
     }
   }
 
-  def apply(s: String): Option[PropValue] = this match {
+  def apply(s: String): Option[Binding] = this match {
     case DecEnvRecordBot => None
-    case DecEnvRecordMap(map) => map.get(s).map { case (pv, _) => pv }
+    case DecEnvRecordMap(map) => map.get(s).map { case (bind, _) => bind }
   }
 
-  def getOrElse[T](s: String)(default: T)(f: PropValue => T): T = {
+  def getOrElse[T](s: String)(default: T)(f: Binding => T): T = {
     this(s) match {
-      case Some(propV) => f(propV)
+      case Some(bind) => f(bind)
       case None => default
     }
   }
 
-  def get(s: String)(utils: Utils): PropValue = {
+  def get(s: String)(utils: Utils): Binding = {
     this(s) match {
-      case Some(propV) => propV
-      case None => PropValue.Bot(utils)
+      case Some(bind) => bind
+      case None => utils.binding.Bot
     }
   }
 
@@ -201,33 +197,33 @@ abstract class DecEnvRecord extends EnvRecord {
   }
 
   // strong update
-  def update(x: String, propv: PropValue): DecEnvRecord = this match {
+  def update(x: String, bind: Binding): DecEnvRecord = this match {
     case DecEnvRecordBot => DecEnvRecordBot
     case DecEnvRecordMap(map) =>
-      DecEnvRecord(map.updated(x, (propv, AbsentBot)))
+      DecEnvRecord(map.updated(x, (bind, AbsentBot)))
   }
 }
 
 object DecEnvRecord {
-  private val MapBot: Map[String, (PropValue, Absent)] = HashMap()
+  private val MapBot: Map[String, (Binding, Absent)] = HashMap()
   val Bot: DecEnvRecord = DecEnvRecordBot
   val Empty: DecEnvRecord = DecEnvRecordMap(MapBot)
-  def apply(m: Map[String, (PropValue, Absent)]): DecEnvRecord = DecEnvRecordMap(m)
+  def apply(m: Map[String, (Binding, Absent)]): DecEnvRecord = DecEnvRecordMap(m)
   def newDeclEnvRecord(outerEnv: Value)(utils: Utils): DecEnvRecord = {
-    Empty.update("@outer", PropValue(utils.dataProp(outerEnv)))
+    Empty.update("@outer", utils.binding(outerEnv))
   }
 
   def newPureLocal(envVal: Value, thisLocSet: Set[Loc])(utils: Utils): DecEnvRecord = {
     Empty
-      .update("@env", PropValue(utils.dataProp(envVal)))
-      .update("@this", PropValue(utils.dataProp(thisLocSet)))
-      .update("@exception", PropValue.Bot(utils))
-      .update("@exception_all", PropValue.Bot(utils))
-      .update("@return", PropValue(utils.absUndef.Top)(utils))
+      .update("@env", utils.binding(envVal))
+      .update("@this", utils.binding(utils.value(thisLocSet)))
+      .update("@exception", utils.binding.Bot)
+      .update("@exception_all", utils.binding.Bot)
+      .update("@return", utils.binding(utils.value.alpha()))
   }
 }
 
 case class DecEnvRecordMap(
-  val map: Map[String, (PropValue, Absent)] // TODO Just String -> Value
+  val map: Map[String, (Binding, Absent)]
 ) extends DecEnvRecord
 object DecEnvRecordBot extends DecEnvRecord

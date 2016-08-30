@@ -83,7 +83,7 @@ object DefaultBoolUtil extends AbsBoolUtil {
 
   case object DefaultBoolTop extends DefaultBool {
     val gamma: ConSingle[Boolean] = ConSingleTop()
-    override val toString: String = "Bool"
+    override val toString: String = "Top"
     def toAbsString(absString: AbsStringUtil): AbsString = absString.OtherStr
     def toAbsBoolean(absBool: AbsBoolUtil): AbsBool = absBool.Top
     def toAbsNumber(absNumber: AbsNumberUtil): AbsNumber = absNumber.UInt
@@ -91,7 +91,7 @@ object DefaultBoolUtil extends AbsBoolUtil {
 
   case object DefaultBoolBot extends DefaultBool {
     val gamma: ConSingle[Boolean] = ConSingleBot()
-    override val toString: String = "Bot"
+    override val toString: String = "⊥"
     override val gammaSimple: ConSimple = ConSimpleBot
     def toAbsString(absString: AbsStringUtil): AbsString = absString.Bot
     def toAbsBoolean(absBool: AbsBoolUtil): AbsBool = absBool.Bot

@@ -212,11 +212,11 @@ class ExecContext(
         val env = this.getOrElse(l, DecEnvRecord.Bot)
         val isIn = (env HasBinding x)(utils.absBool)
         val v1 =
-          if (utils.absBool.True <= isIn) env.getOrElse(x)(valueBot) { _.objval.value }
+          if (utils.absBool.True <= isIn) env.getOrElse(x)(valueBot) { _.value }
           else valueBot
         val v2 =
           if (utils.absBool.False <= isIn) {
-            val outerLocSet = env.getOrElse("@outer")(LocSetEmpty) { _.objval.value.locset }
+            val outerLocSet = env.getOrElse("@outer")(LocSetEmpty) { _.value.locset }
             outerLocSet.foldLeft(valueBot)((tmpVal, outerLoc) => tmpVal + visit(outerLoc))
           } else {
             valueBot
@@ -240,7 +240,7 @@ class ExecContext(
           else LocSetEmpty
         val locSet2 =
           if (utils.absBool.False <= isIn) {
-            val outerLocSet = env.getOrElse("@outer")(LocSetEmpty) { _.objval.value.locset }
+            val outerLocSet = env.getOrElse("@outer")(LocSetEmpty) { _.value.locset }
             outerLocSet.foldLeft(LocSetEmpty)((res, outerLoc) => res ++ visit(outerLoc))
           } else {
             LocSetEmpty
@@ -256,23 +256,31 @@ class ExecContext(
   ////////////////////////////////////////////////////////////////
   def varStoreLocal(loc: Loc, x: String, value: Value)(utils: Utils): ExecContext = {
     val env = this.getOrElse(loc, DecEnvRecord.Bot)
-    val h1 = env(x) match {
-      case Some(propV) if propV.objval.writable == utils.absBool.True =>
-        val newPropV = PropValue(utils.dataProp(value)(utils.absBool.True, utils.absBool.Bot, utils.absBool.False))
-        this.update(loc, env.update(x, newPropV))
-      case Some(propV) if propV.objval.writable == utils.absBool.False => this
-      case _ => ExecContext.Bot
+    val AT = utils.absBool.True
+    val AF = utils.absBool.False
+    val ctx1 = env(x) match {
+      case Some(bind) => {
+        val trueV =
+          if (AT <= bind.mutable) value
+          else utils.value.Bot
+        val falseV =
+          if (AF <= bind.mutable) bind.value
+          else utils.value.Bot
+        val newBind = utils.binding(trueV + falseV)
+        update(loc, env.update(x, newBind))
+      }
+      case None => ExecContext.Bot
     }
     val outerLocSet = env("@outer") match {
-      case Some(propV) => propV.objval.value.locset
+      case Some(bind) => bind.value.locset
       case None => LocSetEmpty
     }
-    val h2 =
+    val ctx2 =
       if (utils.absBool.False <= (env HasBinding x)(utils.absBool))
         outerLocSet.foldLeft(ExecContext.Bot)((tmpH, outerLoc) => varStoreLocal(outerLoc, x, value)(utils))
       else
         ExecContext.Bot
-    h1 + h2
+    ctx1 + ctx2
   }
 
   ////////////////////////////////////////////////////////////////
@@ -282,19 +290,10 @@ class ExecContext(
     getOrElse(loc)((this, utils.absBool.Bot))(_ => {
       val test = hasOwnProperty(loc, str)(utils)
       val targetEnv = this.getOrElse(loc, DecEnvRecord.Bot)
-      val isConfigurable = targetEnv.getOrElse(str)(utils.absBool.Bot) { _.objval.configurable }
-      val (h1, b1) =
-        if ((utils.absBool.True <= test) && (utils.absBool.False <= isConfigurable))
-          (this, utils.absBool.False)
-        else
-          (ExecContext.Bot, utils.absBool.Bot)
-      val (h2, b2) =
-        if (((utils.absBool.True <= test) && (utils.absBool.False != isConfigurable))
-          || utils.absBool.False <= test)
-          (this.update(loc, (targetEnv - str)), utils.absBool.True)
-        else
-          (ExecContext.Bot, utils.absBool.Bot)
-      (h1 + h2, b1 + b2)
+      if (utils.absBool.True <= test)
+        (this, utils.absBool.False)
+      else
+        (ExecContext.Bot, utils.absBool.Bot)
     })
   }
 

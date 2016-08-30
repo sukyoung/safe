@@ -65,7 +65,7 @@ object BuiltinBooleanProto extends ObjModel(
       ) => {
         val h = st.heap
         val localObj = st.context.pureLocal
-        val thisLocSet = localObj.getOrElse("@this")(LocSetEmpty) { _.objval.value.locset }
+        val thisLocSet = localObj.getOrElse("@this")(LocSetEmpty) { _.value.locset }
         val thisV = utils.value(thisLocSet)
         val classV = sem.CFGLoadHelper(thisV, Set(utils.absString.alpha("@class")), h)
         val pv = thisV.pvalue
@@ -97,7 +97,7 @@ object BuiltinBooleanProto extends ObjModel(
       ) => {
         val h = st.heap
         val localObj = st.context.pureLocal
-        val thisLocSet = localObj.getOrElse("@this")(LocSetEmpty) { _.objval.value.locset }
+        val thisLocSet = localObj.getOrElse("@this")(LocSetEmpty) { _.value.locset }
         val thisV = utils.value(thisLocSet)
         val classV = sem.CFGLoadHelper(thisV, Set(utils.absString.alpha("@class")), h)
         val pv = thisV.pvalue

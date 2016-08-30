@@ -74,4 +74,5 @@ case class Utils(
   val pvalue = PValueUtil(this)
   val value = ValueUtil(this)
   val dataProp = DataPropertyUtil(this)
+  val binding = BindingUtil(this)
 }
