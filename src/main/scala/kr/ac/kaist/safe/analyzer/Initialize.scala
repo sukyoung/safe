@@ -23,6 +23,7 @@ case class Initialize(cfg: CFG, helper: Helper) {
   val pvalueU = utils.pvalue
   val valueU = utils.value
   val dataPropU = utils.dataProp
+  val objU = utils.absObject
 
   def state: State = {
     val afalse = utils.absBool.False
@@ -30,7 +31,7 @@ case class Initialize(cfg: CFG, helper: Helper) {
     val globalPureLocalEnv = DecEnvRecord.newPureLocal(valueU.alpha(null), HashSet(BuiltinGlobal.loc))(utils) - "@return"
 
     val initHeap = Heap(HashMap(
-      SystemLoc("Dummy", Old) -> Obj.Bot(utils) // TODO If delete, not working because not allowed update to bottom heap
+      SystemLoc("Dummy", Old) -> objU.Bot // TODO If delete, not working because not allowed update to bottom heap
     ))
 
     val initCtx = ExecContext(HashMap(
@@ -45,7 +46,7 @@ case class Initialize(cfg: CFG, helper: Helper) {
 
   def testState: State = {
     val st = state
-    val globalObj = st.heap.getOrElse(BuiltinGlobal.loc, Obj.Empty(utils))
+    val globalObj = st.heap.getOrElse(BuiltinGlobal.loc, objU.Empty)
 
     val boolBot = utils.absBool.Bot
 

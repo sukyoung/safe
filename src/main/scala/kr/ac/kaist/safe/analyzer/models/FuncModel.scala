@@ -56,7 +56,7 @@ class FuncModel(
       val constructIdOpt = construct.map(_.getCFGFunc(cfg, name, utils).id)
       val scope = utils.value.alpha(null) // TODO get scope as args
       val n = utils.absNumber.alpha(code.argLen)
-      val funcObj = Obj.newFunctionObject(
+      val funcObj = utils.absObject.newFunctionObject(
         fidOpt,
         constructIdOpt,
         scope,
@@ -65,7 +65,7 @@ class FuncModel(
         enumerable,
         configurable,
         n
-      )(utils)
+      )
       initObj(h1, cfg, utils, loc, funcObj, props)
     }
   }

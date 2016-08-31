@@ -38,7 +38,7 @@ object BuiltinObject extends FuncModel(
       argV.isBottom) {
       val state = st.oldify(addr)(utils)
       val loc = Loc(addr, Recent)
-      val obj = Obj.newObject(utils)
+      val obj = utils.absObject.newObject
       val heap = state.heap.update(loc, obj)
       (utils.value(loc), State(heap, st.context))
     } else {
@@ -80,7 +80,7 @@ object BuiltinObject extends FuncModel(
       argV.isBottom) {
       val state = st.oldify(addr)(utils)
       val loc = Loc(addr, Recent)
-      val obj = Obj.newObject(utils)
+      val obj = utils.absObject.newObject
       val heap = state.heap.update(loc, obj)
       (utils.value(loc), State(heap, st.context))
     } else {
@@ -111,7 +111,7 @@ object BuiltinObject extends FuncModel(
 
         // 2. Return the value of [[Prototype]] internal property of O.
         val protoV = retV.locset.foldLeft(utils.value.Bot)((v, loc) => {
-          v + retSt.heap(loc).getOrElse(Obj.Bot(utils)).get("@proto")(utils).objval.value
+          v + retSt.heap(loc).getOrElse(utils.absObject.Bot).get("@proto")(utils).objval.value
         })
 
         (st, excSt, protoV)
@@ -142,8 +142,8 @@ object BuiltinObject extends FuncModel(
         // 3. Let desc be the result of calling the [[GetOwnProperty]]
         //    internal method of O with argument name.
         // 4. Return the result of calling FromPropertyDescriptor(desc)
-        val obj = locV.locset.foldLeft(Obj.Bot(utils))((obj, loc) => {
-          obj + retSt.heap.getOrElse(loc, Obj.Bot(utils))
+        val obj = locV.locset.foldLeft(utils.absObject.Bot)((obj, loc) => {
+          obj + retSt.heap.getOrElse(loc, utils.absObject.Bot)
         })
         val isDomIn = (obj domIn name)(utils.absBool)
         val v1 =
@@ -156,7 +156,7 @@ object BuiltinObject extends FuncModel(
             val writableV = utils.value(objval.writable)
             val enumerableV = utils.value(objval.enumerable)
             val configurableV = utils.value(objval.configurable)
-            val descObj = Obj.newObject(utils)
+            val descObj = utils.absObject.newObject
               .update("value", PropValue(DataProperty(valueV, AT, AF, AT)))
               .update("writable", PropValue(DataProperty(writableV, AT, AF, AT)))
               .update("enumerable", PropValue(DataProperty(enumerableV, AT, AF, AT)))
@@ -186,7 +186,7 @@ object BuiltinObject extends FuncModel(
           (utils.absString.Bot, Set[Double]())
         ) {
             case ((str, lenSet), loc) => {
-              val obj = h.getOrElse(loc, Obj.Bot(utils))
+              val obj = h.getOrElse(loc, utils.absObject.Bot)
               val keys = obj.map.keySet.filter(!_.startsWith("@"))
               val keyStr = utils.absString.alpha(keys)
               (str + keyStr, lenSet + keys.size)
@@ -201,7 +201,7 @@ object BuiltinObject extends FuncModel(
         // 2. Let array be the result of creating a new object
         //    as if by the expression new Array() where Array is the
         //    standard built-in constructor with that name.
-        val arrObj = Obj.newArrayObject(utils.absNumber.alpha(lenSet))(utils)
+        val arrObj = utils.absObject.newArrayObject(utils.absNumber.alpha(lenSet))
 
         // 3. Let n be 0.
         // 4. For each named own property P of O

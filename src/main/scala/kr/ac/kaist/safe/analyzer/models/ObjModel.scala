@@ -26,7 +26,7 @@ class ObjModel(
 
   def initHeap(h: Heap, cfg: CFG, utils: Utils): Heap = h(loc) match {
     case Some(_) => h
-    case None => initObj(h, cfg, utils, loc, Obj.newObject(utils), props)
+    case None => initObj(h, cfg, utils, loc, utils.absObject.newObject, props)
   }
 
   protected def initObj(

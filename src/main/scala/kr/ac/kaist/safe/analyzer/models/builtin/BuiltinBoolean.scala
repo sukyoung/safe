@@ -41,7 +41,7 @@ object BuiltinBoolean extends FuncModel(
 
     val state = st.oldify(addr)(utils)
     val loc = Loc(addr, Recent)
-    val obj = Obj.newBooleanObj(sem.typeHelper.ToBoolean(argV))(utils)
+    val obj = utils.absObject.newBooleanObj(sem.typeHelper.ToBoolean(argV))
     val heap = state.heap.update(loc, obj)
 
     (State(heap, state.context), State.Bot, utils.value(loc))

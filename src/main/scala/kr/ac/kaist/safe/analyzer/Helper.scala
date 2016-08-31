@@ -25,10 +25,11 @@ case class Helper(utils: Utils) {
   private val atrue = utils.absBool.True
   private val pvalueU = utils.pvalue
   private val valueU = utils.value
+  private val objU = utils.absObject
 
   def arrayLenghtStore(heap: Heap, idxAbsStr: AbsString, storeV: Value, l: Loc): (Heap, Set[Exception]) = {
     if (utils.absString.alpha("length") <= idxAbsStr) {
-      val nOldLen = heap.getOrElse(l, Obj.Bot(utils))
+      val nOldLen = heap.getOrElse(l, objU.Bot)
         .getOrElse("length")(absNumber.Bot) { _.objval.value.pvalue.numval }
       val nNewLen = typeHelper.ToUInt32(storeV)
       val nValue = typeHelper.ToNumber(storeV)
@@ -81,7 +82,7 @@ case class Helper(utils: Utils) {
 
   def arrayIdxStore(heap: Heap, idxAbsStr: AbsString, storeV: Value, l: Loc): Heap = {
     if (atrue <= idxAbsStr.isArrayIndex(utils.absBool)) {
-      val nOldLen = heap.getOrElse(l, Obj.Bot(utils))
+      val nOldLen = heap.getOrElse(l, objU.Bot)
         .getOrElse("length")(absNumber.Bot) { _.objval.value.pvalue.numval }
       val idxPV = pvalueU(idxAbsStr)
       val numPV = pvalueU(typeHelper.ToNumber(idxPV))
@@ -168,7 +169,7 @@ case class Helper(utils: Utils) {
           else boolBotVal
         val v2 =
           if (utils.absBool.False <= eqVal.pvalue.boolval) {
-            val protoVal = h.getOrElse(l1, Obj.Bot(utils)).getOrElse("@proto")(valueU.Bot) { _.objval.value }
+            val protoVal = h.getOrElse(l1, objU.Bot).getOrElse("@proto")(valueU.Bot) { _.objval.value }
             val v1 = protoVal.pvalue.nullval.fold(boolBotVal) { _ => boolFalseVal }
             v1 + protoVal.locset.foldLeft(valueU.Bot)((tmpVal, protoLoc) => tmpVal + iter(protoLoc))
           } else boolBotVal

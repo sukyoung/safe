@@ -33,6 +33,7 @@ class Semantics(
   private val valueU = utils.value
   private val dataPropU = utils.dataProp
   private val bindingU = utils.binding
+  private val objU = utils.absObject
 
   private val AF = utils.absBool.False
   private val AT = utils.absBool.True
@@ -239,7 +240,7 @@ class Semantics(
               (v.locset, es)
           }
         }
-        val h2 = st1.heap.update(locR, Obj.newObject(vLocSet)(utils))
+        val h2 = st1.heap.update(locR, objU.newObject(vLocSet))
         val newSt = State(h2, st1.context).varStore(x, valueU(HashSet(locR)))(utils)
         val newExcSt = st.raiseException(excSet)(utils)
         val s1 = excSt + newExcSt
@@ -249,7 +250,7 @@ class Semantics(
         val locR = Loc(newAddr, Recent)
         val st1 = st.oldify(newAddr)(utils)
         val np = utils.absNumber.alpha(n.toInt)
-        val h2 = st1.heap.update(locR, Obj.newArrayObject(np)(utils))
+        val h2 = st1.heap.update(locR, objU.newArrayObject(np))
         val newSt = State(h2, st1.context).varStore(x, valueU(HashSet(locR)))(utils)
         (newSt, excSt)
       }
@@ -257,7 +258,7 @@ class Semantics(
         val locR = Loc(newAddr, Recent)
         val st1 = st.oldify(newAddr)(utils)
         val absN = utils.absNumber.alpha(n.toInt)
-        val h2 = st1.heap.update(locR, Obj.newArgObject(absN)(utils))
+        val h2 = st1.heap.update(locR, objU.newArgObject(absN))
         val newSt = State(h2, st1.context).varStore(x, valueU(HashSet(locR)))(utils)
         (newSt, excSt)
       }
@@ -370,12 +371,12 @@ class Semantics(
         val locR2 = Loc(aNew2, Recent)
         val st1 = st.oldify(aNew1)(utils)
         val st2 = st1.oldify(aNew2)(utils)
-        val oNew = Obj.newObject(BuiltinObjectProto.loc)(utils)
+        val oNew = objU.newObject(BuiltinObjectProto.loc)
 
         val n = utils.absNumber.alpha(f.argVars.length)
         val localEnv = st2.context.pureLocal
         val scope = localEnv.getOrElse("@env")(valueU.Bot) { _.value }
-        val h3 = st2.heap.update(locR1, Obj.newFunctionObject(f.id, scope, locR2, n)(utils))
+        val h3 = st2.heap.update(locR1, objU.newFunctionObject(f.id, scope, locR2, n))
 
         val fVal = valueU(HashSet(locR1))
         val fPropV = PropValue(dataPropU(fVal)(AT, AF, AT))
@@ -393,10 +394,10 @@ class Semantics(
         val st2 = st1.oldify(aNew2)(utils)
         val st3 = st2.oldify(aNew3)(utils)
 
-        val oNew = Obj.newObject(BuiltinObjectProto.loc)(utils)
+        val oNew = objU.newObject(BuiltinObjectProto.loc)
         val n = utils.absNumber.alpha(f.argVars.length)
         val fObjValue = valueU(HashSet(locR3))
-        val h4 = st3.heap.update(locR1, Obj.newFunctionObject(f.id, fObjValue, locR2, n)(utils))
+        val h4 = st3.heap.update(locR1, objU.newFunctionObject(f.id, fObjValue, locR2, n))
 
         val fVal = valueU(HashSet(locR1))
         val fPropV = PropValue(dataPropU(fVal)(AT, AF, AT))
@@ -561,7 +562,7 @@ class Semantics(
 
       // Draw call/return edges
       funLocSet.foreach((fLoc) => {
-        val funObj = st1.heap.getOrElse(fLoc, Obj.Bot(utils))
+        val funObj = st1.heap.getOrElse(fLoc, objU.Bot)
         val fidSet = i match {
           case _: CFGConstruct =>
             funObj.getOrElse[Set[FunctionId]]("@construct")(HashSet[FunctionId]()) { _.funid }
@@ -596,7 +597,7 @@ class Semantics(
 
       val h2 = argVal.locset.foldLeft(Heap.Bot)((tmpHeap, l) => {
         val funPropV = PropValue(dataPropU(funLocSet)(AT, AF, AT))
-        val argObj = st1.heap.getOrElse(l, Obj.Bot(utils))
+        val argObj = st1.heap.getOrElse(l, objU.Bot)
         tmpHeap + st1.heap.update(l, argObj.update("callee", funPropV))
       })
 

@@ -154,7 +154,7 @@ case class State(heap: Heap, context: ExecContext) {
         val propV = PropValue(objV)
         val newHeap =
           if (utils.absBool.True == heap.hasProperty(globalLoc, utils.absString.alpha(x))(utils)) heap
-          else heap.update(globalLoc, heap.getOrElse(globalLoc, Obj.Bot(utils)).update(x, propV))
+          else heap.update(globalLoc, heap.getOrElse(globalLoc, utils.absObject.Bot).update(x, propV))
         State(newHeap, context)
     }
   }

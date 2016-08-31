@@ -161,9 +161,9 @@ case class TypeConversionHelper(utils: Utils) {
   ////////////////////////////////////////////////////////////////
   def ToObject(pvalue: PValue): (Obj, Set[Exception]) = {
     val excSet = CheckObjectCoercible(pvalue)
-    val obj3 = pvalue.numval.fold(Obj.Bot(utils)) { Obj.newNumberObj(_)(utils) }
-    val obj4 = pvalue.boolval.fold(Obj.Bot(utils)) { Obj.newBooleanObj(_)(utils) }
-    val obj5 = pvalue.strval.fold(Obj.Bot(utils)) { Obj.newStringObj(_)(utils) }
+    val obj3 = pvalue.numval.fold(objU.Bot) { objU.newNumberObj(_) }
+    val obj4 = pvalue.boolval.fold(objU.Bot) { objU.newBooleanObj(_) }
+    val obj5 = pvalue.strval.fold(objU.Bot) { objU.newStringObj(_) }
     (obj3 + obj4 + obj5, excSet)
   }
 
