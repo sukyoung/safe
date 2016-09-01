@@ -221,7 +221,7 @@ case class TypeConversionHelper(utils: Utils) {
   }
 
   def IsCallable(loc: Loc, h: Heap): AbsBool = {
-    val isDomIn = h.getOrElse(loc)(absBoolU.False) { obj => (obj domIn "@function")(absBoolU) }
+    val isDomIn = h.getOrElse(loc)(absBoolU.False) { obj => (obj domIn ICall)(absBoolU) }
     val b1 =
       if (absBoolU.True <= isDomIn) absBoolU.True
       else absBoolU.Bot

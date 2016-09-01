@@ -55,10 +55,10 @@ object BuiltinBoolean extends FuncModel(
 object BuiltinBooleanProto extends ObjModel(
   name = "Boolean.prototype",
   props = List(
-    ("@proto", BuiltinObjectProto, F, F, F),
+    InternalProp(IPrototype, BuiltinObjectProto),
 
     // 15.6.4.2 Boolean.prototype.toString()
-    ("toString", FuncModel(
+    NormalProp("toString", FuncModel(
       name = "Boolean.prototype.toString",
       code = BasicCode(code = (
         args, st, sem, utils
@@ -90,7 +90,7 @@ object BuiltinBooleanProto extends ObjModel(
     ), T, F, T),
 
     // 15.6.4.3 Boolean.prototype.valueOf()
-    ("valueOf", FuncModel(
+    NormalProp("valueOf", FuncModel(
       name = "Boolean.prototype.valueOf",
       code = BasicCode(code = (
         args, st, sem, utils

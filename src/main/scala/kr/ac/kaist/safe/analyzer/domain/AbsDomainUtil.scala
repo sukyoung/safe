@@ -11,8 +11,6 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
-import kr.ac.kaist.safe.analyzer.TypeConversionHelper
-
 trait AbsUndefUtil {
   val Top: AbsUndef
   val Bot: AbsUndef
@@ -72,6 +70,7 @@ case class Utils(
   lazy val pvalue = PValueUtil(this)
   lazy val value = ValueUtil(this)
   lazy val dataProp = DataPropertyUtil(this)
+  lazy val ivalue = InternalValueUtil(this)
   lazy val binding = BindingUtil(this)
   lazy val absObject = AbsObjectUtil(this)
 }

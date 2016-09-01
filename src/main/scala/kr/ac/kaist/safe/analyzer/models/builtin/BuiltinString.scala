@@ -11,13 +11,14 @@
 
 package kr.ac.kaist.safe.analyzer.models.builtin
 
+import kr.ac.kaist.safe.analyzer.domain.IClass
 import kr.ac.kaist.safe.analyzer.models._
 
 object BuiltinString extends FuncModel(
   name = "String",
   props = List(
     // TODO fromCharCode
-    ("fromCharCode", FuncModel(
+    NormalProp("fromCharCode", FuncModel(
       name = "String.fromCharCode",
       code = EmptyCode(argLen = 1)
     ), T, F, T)
@@ -32,118 +33,118 @@ object BuiltinString extends FuncModel(
 object BuiltinStringProto extends ObjModel(
   name = "String.prototype",
   props = List(
-    ("@class", PrimModel("String"), F, F, F),
+    InternalProp(IClass, PrimModel("String")),
 
     // TODO toString
-    ("toString", FuncModel(
+    NormalProp("toString", FuncModel(
       name = "String.prototype.toString",
       code = EmptyCode(argLen = 0)
     ), T, F, T),
 
     // TODO valueOf
-    ("valueOf", FuncModel(
+    NormalProp("valueOf", FuncModel(
       name = "String.prototype.valueOf",
       code = EmptyCode(argLen = 0)
     ), T, F, T),
 
     // TODO charAt
-    ("charAt", FuncModel(
+    NormalProp("charAt", FuncModel(
       name = "String.prototype.charAt",
       code = EmptyCode(argLen = 1)
     ), T, F, T),
 
     // TODO charCodeAt
-    ("charCodeAt", FuncModel(
+    NormalProp("charCodeAt", FuncModel(
       name = "String.prototype.charCodeAt",
       code = EmptyCode(argLen = 1)
     ), T, F, T),
 
     // TODO concat
-    ("concat", FuncModel(
+    NormalProp("concat", FuncModel(
       name = "String.prototype.concat",
       code = EmptyCode(argLen = 1)
     ), T, F, T),
 
     // TODO indexOf
-    ("indexOf", FuncModel(
+    NormalProp("indexOf", FuncModel(
       name = "String.prototype.indexOf",
       code = EmptyCode(argLen = 1)
     ), T, F, T),
 
     // TODO lastIndexOf
-    ("lastIndexOf", FuncModel(
+    NormalProp("lastIndexOf", FuncModel(
       name = "String.prototype.lastIndexOf",
       code = EmptyCode(argLen = 1)
     ), T, F, T),
 
     // TODO localeCompare
-    ("localeCompare", FuncModel(
+    NormalProp("localeCompare", FuncModel(
       name = "String.prototype.localeCompare",
       code = EmptyCode(argLen = 1)
     ), T, F, T),
 
     // TODO match
-    ("match", FuncModel(
+    NormalProp("match", FuncModel(
       name = "String.prototype.match",
       code = EmptyCode(argLen = 1)
     ), T, F, T),
 
     // TODO replace
-    ("replace", FuncModel(
+    NormalProp("replace", FuncModel(
       name = "String.prototype.replace",
       code = EmptyCode(argLen = 2)
     ), T, F, T),
 
     // TODO search
-    ("search", FuncModel(
+    NormalProp("search", FuncModel(
       name = "String.prototype.search",
       code = EmptyCode(argLen = 1)
     ), T, F, T),
 
     // TODO slice
-    ("slice", FuncModel(
+    NormalProp("slice", FuncModel(
       name = "String.prototype.slice",
       code = EmptyCode(argLen = 2)
     ), T, F, T),
 
     // TODO split
-    ("split", FuncModel(
+    NormalProp("split", FuncModel(
       name = "String.prototype.split",
       code = EmptyCode(argLen = 2)
     ), T, F, T),
 
     // TODO substring
-    ("substring", FuncModel(
+    NormalProp("substring", FuncModel(
       name = "String.prototype.substring",
       code = EmptyCode(argLen = 2)
     ), T, F, T),
 
     // TODO toLowerCase
-    ("toLowerCase", FuncModel(
+    NormalProp("toLowerCase", FuncModel(
       name = "String.prototype.toLowerCase",
       code = EmptyCode(argLen = 0)
     ), T, F, T),
 
     // TODO toLocaleLowerCase
-    ("toLocaleLowerCase", FuncModel(
+    NormalProp("toLocaleLowerCase", FuncModel(
       name = "String.prototype.toLocaleLowerCase",
       code = EmptyCode(argLen = 0)
     ), T, F, T),
 
     // TODO toUpperCase
-    ("toUpperCase", FuncModel(
+    NormalProp("toUpperCase", FuncModel(
       name = "String.prototype.toUpperCase",
       code = EmptyCode(argLen = 0)
     ), T, F, T),
 
     // TODO toLocaleUpperCase
-    ("toLocaleUpperCase", FuncModel(
+    NormalProp("toLocaleUpperCase", FuncModel(
       name = "String.prototype.toLocaleUpperCase",
       code = EmptyCode(argLen = 0)
     ), T, F, T),
 
     // TODO trim
-    ("trim", FuncModel(
+    NormalProp("trim", FuncModel(
       name = "String.prototype.trim",
       code = EmptyCode(argLen = 0)
     ), T, F, T)

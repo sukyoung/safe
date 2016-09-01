@@ -11,6 +11,7 @@
 
 package kr.ac.kaist.safe.analyzer.models.builtin
 
+import kr.ac.kaist.safe.analyzer.domain.IClass
 import kr.ac.kaist.safe.analyzer.models._
 
 // TODO RegExp
@@ -26,22 +27,22 @@ object BuiltinRegExp extends FuncModel(
 object BuiltinRegExpProto extends ObjModel(
   name = "RegExp.prototype",
   props = List(
-    ("@class", PrimModel("RegExp"), F, F, F),
+    InternalProp(IClass, PrimModel("RegExp")),
 
     // TODO exec
-    ("exec", FuncModel(
+    NormalProp("exec", FuncModel(
       name = "RegExp.prototype.exec",
       code = EmptyCode(argLen = 1)
     ), T, F, T),
 
     // TODO test
-    ("test", FuncModel(
+    NormalProp("test", FuncModel(
       name = "RegExp.prototype.test",
       code = EmptyCode(argLen = 1)
     ), T, F, T),
 
     // TODO toString
-    ("toString", FuncModel(
+    NormalProp("toString", FuncModel(
       name = "RegExp.prototype.toString",
       code = EmptyCode(argLen = 0)
     ), T, F, T)

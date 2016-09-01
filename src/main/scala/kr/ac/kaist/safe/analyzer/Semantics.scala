@@ -565,9 +565,9 @@ class Semantics(
         val funObj = st1.heap.getOrElse(fLoc, objU.Bot)
         val fidSet = i match {
           case _: CFGConstruct =>
-            funObj.getOrElse[Set[FunctionId]]("@construct")(HashSet[FunctionId]()) { _.funid }
+            funObj.getOrElse[Set[FunctionId]](IConstruct)(HashSet[FunctionId]()) { _.fidset }
           case _: CFGCall =>
-            funObj.getOrElse[Set[FunctionId]]("@function")(HashSet[FunctionId]()) { _.funid }
+            funObj.getOrElse[Set[FunctionId]](ICall)(HashSet[FunctionId]()) { _.fidset }
         }
         fidSet.foreach((fid) => {
           val newPureLocal = DecEnvRecord.newPureLocal(valueU(locR), thisLocSet)(utils)
@@ -577,7 +577,7 @@ class Semantics(
               val argBind = bindingU(argVal)
               cfg.getFunc(fid) match {
                 case Some(funCFG) => {
-                  val scopeValue = funObj.get("@scope")(utils).objval.value
+                  val scopeValue = funObj.getOrElse(IScope)(valueU.Bot) { _.value }
                   val scopeBind = bindingU(scopeValue)
                   val newEnv2 = newEnv.update(funCFG.argumentsName, argBind)
                     .update("@scope", scopeBind)

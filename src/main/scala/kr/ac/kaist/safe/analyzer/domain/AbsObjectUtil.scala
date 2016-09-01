@@ -19,21 +19,29 @@ import scala.collection.immutable.{ HashSet, HashMap }
 
 case class AbsObjectUtil(utils: Utils) {
   private val pvalueU = utils.pvalue
+  private val valueU = utils.value
+  private val ivalueU = utils.ivalue
+  private val absBoolU = utils.absBool
+  private val atrue = absBoolU.True
+  private val afalse = absBoolU.False
   private val absNumberU = utils.absNumber
   private val absStringU = utils.absString
 
+  def apply(m: Map[String, (PropValue, Absent)]): Obj = new Obj(m, ObjEmptyIMap)
+  def apply(m: Map[String, (PropValue, Absent)], im: ObjInternalMap): Obj = new Obj(m, im)
+
   val Bot: Obj = {
-    val map = Obj.ObjMapBot +
+    val map = ObjEmptyMap +
       (STR_DEFAULT_NUMBER -> (PropValue.Bot(utils), AbsentBot)) +
       (STR_DEFAULT_OTHER -> (PropValue.Bot(utils), AbsentBot))
-    new Obj(map)
+    apply(map)
   }
 
   val Empty: Obj = {
-    val map = Obj.ObjMapBot +
+    val map = ObjEmptyMap +
       (STR_DEFAULT_NUMBER -> (PropValue.Bot(utils), AbsentTop)) +
       (STR_DEFAULT_OTHER -> (PropValue.Bot(utils), AbsentTop))
-    new Obj(map)
+    apply(map)
   }
 
   ////////////////////////////////////////////////////////////////
@@ -44,34 +52,26 @@ case class AbsObjectUtil(utils: Utils) {
   def newObject(loc: Loc): Obj = newObject(HashSet(loc))
 
   def newObject(locSet: Set[Loc]): Obj = {
-    val absFalse = utils.absBool.False
     Empty
-      .update("@class", PropValue(utils.absString.alpha("Object"))(utils))
-      .update("@proto", PropValue(utils.dataProp(locSet)(absFalse, absFalse, absFalse)))
-      .update("@extensible", PropValue(utils.absBool.True)(utils))
+      .update(IClass, ivalueU(absStringU.alpha("Object")))
+      .update(IPrototype, ivalueU(locSet))
+      .update(IExtensible, ivalueU(atrue))
   }
 
   def newArgObject(absLength: AbsNumber): Obj = {
-    val protoVal = utils.value(BuiltinObjectProto.loc)
-    val lengthVal = utils.value(absLength)
-    val absFalse = utils.absBool.False
-    val absTrue = utils.absBool.True
     Empty
-      .update("@class", PropValue(utils.absString.alpha("Arguments"))(utils))
-      .update("@proto", PropValue(utils.dataProp(protoVal)(absFalse, absFalse, absFalse)))
-      .update("@extensible", PropValue(absTrue)(utils))
-      .update("length", PropValue(utils.dataProp(lengthVal)(absTrue, absFalse, absTrue)))
+      .update(IClass, ivalueU(absStringU.alpha("Arguments")))
+      .update(IPrototype, ivalueU(BuiltinObjectProto.loc))
+      .update(IExtensible, ivalueU(atrue))
+      .update("length", PropValue(utils.dataProp(absLength)(atrue, afalse, atrue)))
   }
 
   def newArrayObject(absLength: AbsNumber): Obj = {
-    val protoVal = utils.value(BuiltinArrayProto.loc)
-    val lengthVal = utils.value(absLength)
-    val absFalse = utils.absBool.False
     Empty
-      .update("@class", PropValue(utils.absString.alpha("Array"))(utils))
-      .update("@proto", PropValue(utils.dataProp(protoVal)(absFalse, absFalse, absFalse)))
-      .update("@extensible", PropValue(utils.absBool.True)(utils))
-      .update("length", PropValue(utils.dataProp(lengthVal)(utils.absBool.True, absFalse, absFalse)))
+      .update(IClass, ivalueU(absStringU.alpha("Array")))
+      .update(IPrototype, ivalueU(BuiltinArrayProto.loc))
+      .update(IExtensible, ivalueU(atrue))
+      .update("length", PropValue(utils.dataProp(absLength)(atrue, afalse, afalse)))
   }
 
   def newFunctionObject(fid: FunctionId, env: Value, l: Loc, n: AbsNumber): Obj = {
@@ -81,35 +81,32 @@ case class AbsObjectUtil(utils: Utils) {
   def newFunctionObject(fidOpt: Option[FunctionId], constructIdOpt: Option[FunctionId], env: Value,
     locOpt: Option[Loc], n: AbsNumber): Obj = {
     newFunctionObject(fidOpt, constructIdOpt, env,
-      locOpt, utils.absBool.True, utils.absBool.False, utils.absBool.False, n)
+      locOpt, atrue, afalse, afalse, n)
   }
 
   def newFunctionObject(fidOpt: Option[FunctionId], constructIdOpt: Option[FunctionId], env: Value,
     locOpt: Option[Loc], writable: AbsBool, enumerable: AbsBool, configurable: AbsBool,
     absLength: AbsNumber): Obj = {
-    val protoVal = utils.value(BuiltinFunctionProto.loc)
-    val absFalse = utils.absBool.False
-    val lengthVal = utils.value(absLength)
     val obj1 =
       Empty
-        .update("@class", PropValue(utils.absString.alpha("Function"))(utils))
-        .update("@proto", PropValue(utils.dataProp(protoVal)(absFalse, absFalse, absFalse)))
-        .update("@extensible", PropValue(utils.absBool.True)(utils))
-        .update("@scope", PropValue(utils.dataProp(env)))
-        .update("length", PropValue(utils.dataProp(lengthVal)(absFalse, absFalse, absFalse)))
+        .update(IClass, ivalueU(absStringU.alpha("Function")))
+        .update(IPrototype, ivalueU(BuiltinFunctionProto.loc))
+        .update(IExtensible, ivalueU(atrue))
+        .update(IScope, ivalueU(env))
+        .update("length", PropValue(utils.dataProp(absLength)(afalse, afalse, afalse)))
 
     val obj2 = fidOpt match {
-      case Some(fid) => obj1.update("@function", PropValue(HashSet(fid))(utils))
+      case Some(fid) => obj1.update(ICall, ivalueU(fid))
       case None => obj1
     }
     val obj3 = constructIdOpt match {
-      case Some(cid) => obj2.update("@construct", PropValue(HashSet(cid))(utils))
+      case Some(cid) => obj2.update(IConstruct, ivalueU(cid))
       case None => obj2
     }
     val obj4 = locOpt match {
       case Some(loc) =>
-        val prototypeVal = utils.value(HashSet(loc))
-        obj3.update("@hasinstance", PropValue(utils.absNull.Top)(utils))
+        val prototypeVal = valueU(HashSet(loc))
+        obj3.update(IHasInstance, ivalueU(utils.absNull.Top))
           .update("prototype", PropValue(utils.dataProp(prototypeVal)(writable, enumerable, configurable)))
       case None => obj3
     }
@@ -118,46 +115,41 @@ case class AbsObjectUtil(utils: Utils) {
 
   def newBooleanObj(absB: AbsBool): Obj = {
     val newObj = newObject(BuiltinBooleanProto.loc)
-    newObj.update("@class", PropValue(utils.absString.alpha("Boolean"))(utils))
-      .update("@primitive", PropValue(absB)(utils))
+    newObj.update(IClass, ivalueU(absStringU.alpha("Boolean")))
+      .update(IPrimitiveValue, ivalueU(absB))
   }
 
   def newNumberObj(absNum: AbsNumber): Obj = {
     val newObj = newObject(BuiltinNumberProto.loc)
-    newObj.update("@class", PropValue(utils.absString.alpha("Number"))(utils))
-      .update("@primitive", PropValue(absNum)(utils))
+    newObj.update(IClass, ivalueU(absStringU.alpha("Number")))
+      .update(IPrimitiveValue, ivalueU(absNum))
   }
 
   def newStringObj(absStr: AbsString): Obj = {
     val newObj = newObject(BuiltinStringProto.loc)
 
     val newObj2 = newObj
-      .update("@class", PropValue(utils.absString.alpha("String"))(utils))
-      .update("@primitive", PropValue(absStr)(utils))
+      .update(IClass, ivalueU(absStringU.alpha("String")))
+      .update(IPrimitiveValue, ivalueU(absStr))
 
-    val absFalse = utils.absBool.False
-    val absTrue = utils.absBool.True
     absStr.gamma match {
       case ConSetCon(strSet) =>
         strSet.foldLeft(Bot)((obj, str) => {
           val length = str.length
           val newObj3 = (0 until length).foldLeft(newObj2)((tmpObj, tmpIdx) => {
-            val charAbsStr = utils.absString.alpha(str.charAt(tmpIdx).toString)
-            val charVal = utils.value(charAbsStr)
-            tmpObj.update(tmpIdx.toString, PropValue(utils.dataProp(charVal)(absFalse, absTrue, absFalse)))
+            val charAbsStr = absStringU.alpha(str.charAt(tmpIdx).toString)
+            val charVal = valueU(charAbsStr)
+            tmpObj.update(tmpIdx.toString, PropValue(utils.dataProp(charVal)(afalse, atrue, afalse)))
           })
-          val lengthVal = utils.value.alpha(length)
-          obj + newObj3.update("length", PropValue(utils.dataProp(lengthVal)(absFalse, absFalse, absFalse)))
+          val lengthVal = valueU.alpha(length)
+          obj + newObj3.update("length", PropValue(utils.dataProp(lengthVal)(afalse, afalse, afalse)))
         })
       case _ =>
-        val strTopVal = utils.value(utils.absString.Top)
-        val lengthVal = utils.value(absStr.length(utils.absNumber))
         newObj2
-          .update(utils.absString.NumStr, PropValue(utils.dataProp(strTopVal)(absFalse, absTrue, absFalse)), utils)
-          .update("length", PropValue(utils.dataProp(lengthVal)(absFalse, absFalse, absFalse)))
+          .update(absStringU.NumStr, PropValue(utils.dataProp(valueU(absStringU.Top))(afalse, atrue, afalse)), utils)
+          .update("length", PropValue(utils.dataProp(absStr.length(absNumberU))(afalse, afalse, afalse)))
     }
   }
-  ////////////////////////////
 
   def defaultValue(locSet: Set[Loc]): PValue = {
     if (locSet.isEmpty) pvalueU.Bot
@@ -190,7 +182,7 @@ case class AbsObjectUtil(utils: Utils) {
 
   private def defaultValueNumber(locSet: Set[Loc], h: Heap): AbsNumber = {
     def getClassStrVal(obj: Obj): AbsString = {
-      obj.getOrElse("@class")(absStringU.Bot) { _.objval.value.pvalue.strval }
+      obj.getOrElse(IClass)(absStringU.Bot) { _.value.pvalue.strval }
     }
 
     val objSet = locSet.map(l => h.getOrElse(l, Bot))
@@ -222,13 +214,13 @@ case class AbsObjectUtil(utils: Utils) {
       absStr + getClassStrVal(obj)
     })
     val b = boolObjSet.foldLeft[AbsBool](utils.absBool.Bot)((absBool, obj) => {
-      absBool + obj.getOrElse("@primitive")(utils.absBool.Bot) { _.objval.value.pvalue.boolval }
+      absBool + obj.getOrElse(IPrimitiveValue)(utils.absBool.Bot) { _.value.pvalue.boolval }
     })
     val n = numObjSet.foldLeft[AbsNumber](absNumberU.Bot)((absNum, obj) => {
-      absNum + obj.getOrElse("@primitive")(absNumberU.Bot) { _.objval.value.pvalue.numval }
+      absNum + obj.getOrElse(IPrimitiveValue)(absNumberU.Bot) { _.value.pvalue.numval }
     })
     val n2 = dateObjSet.foldLeft[AbsNumber](absNumberU.Bot)((absNum, obj) => {
-      absNum + obj.getOrElse("@primitive")(absNumberU.Bot) { _.objval.value.pvalue.numval }
+      absNum + obj.getOrElse(IPrimitiveValue)(absNumberU.Bot) { _.value.pvalue.numval }
     })
     val (srcAbsStr, globalAbsB, ignoreCaseAbsB, multilineAbsB) =
       regexpObjSet.foldLeft[(AbsString, AbsBool, AbsBool, AbsBool)](
@@ -242,7 +234,7 @@ case class AbsObjectUtil(utils: Utils) {
         })
 
     val absStr1 = strObjSet.foldLeft[AbsString](absStringU.Bot)((absStr, obj) => {
-      absStr + obj.getOrElse("@primitive")(absStringU.Bot) { _.objval.value.pvalue.strval }
+      absStr + obj.getOrElse(IPrimitiveValue)(absStringU.Bot) { _.value.pvalue.strval }
     })
     val anum2 = b.toAbsNumber(absNumberU)
     val anum3 = n.toAbsNumber(absNumberU)
@@ -271,7 +263,7 @@ case class AbsObjectUtil(utils: Utils) {
 
   private def defaultToString(locSet: Set[Loc], h: Heap): AbsString = {
     def getClassStrVal(obj: Obj): AbsString = {
-      obj.getOrElse("@class")(absStringU.Bot) { _.objval.value.pvalue.strval }
+      obj.getOrElse(IClass)(absStringU.Bot) { _.value.pvalue.strval }
     }
     val objSet = locSet.map(l => h.getOrElse(l, Bot))
     val boolObjSet = objSet.filter(obj => absStringU.alpha("Boolean") <= getClassStrVal(obj))
@@ -290,10 +282,10 @@ case class AbsObjectUtil(utils: Utils) {
       absStr + getClassStrVal(obj)
     })
     val b = boolObjSet.foldLeft[AbsBool](utils.absBool.Bot)((absBool, obj) => {
-      absBool + obj.getOrElse("@primitive")(utils.absBool.Bot) { _.objval.value.pvalue.boolval }
+      absBool + obj.getOrElse(IPrimitiveValue)(utils.absBool.Bot) { _.value.pvalue.boolval }
     })
     val n = numObjSet.foldLeft[AbsNumber](absNumberU.Bot)((absNum, obj) => {
-      absNum + obj.getOrElse("@primitive")(absNumberU.Bot) { _.objval.value.pvalue.numval }
+      absNum + obj.getOrElse(IPrimitiveValue)(absNumberU.Bot) { _.value.pvalue.numval }
     })
     val (srcAbsStr, globalAbsB, ignoreCaseAbsB, multilineAbsB) =
       regexpObjSet.foldLeft[(AbsString, AbsBool, AbsBool, AbsBool)](
@@ -307,7 +299,7 @@ case class AbsObjectUtil(utils: Utils) {
         })
 
     val absStr1 = strObjSet.foldLeft[AbsString](absStringU.Bot)((absStr, obj) => {
-      absStr + obj.getOrElse("@primitive")(absStringU.Bot) { _.objval.value.pvalue.strval }
+      absStr + obj.getOrElse(IPrimitiveValue)(absStringU.Bot) { _.value.pvalue.strval }
     })
     val absStr2 = b.toAbsString(absStringU)
     val absStr3 = n.toAbsString(absStringU)

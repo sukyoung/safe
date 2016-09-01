@@ -13,15 +13,51 @@ package kr.ac.kaist.safe.analyzer.domain
 
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.nodes.cfg.FunctionId
+import kr.ac.kaist.safe.util.Loc
 
 sealed abstract class InternalName
-case object IPrototype extends InternalName
-case object IClass extends InternalName
-case object IExtensible extends InternalName
-case object IPrimitiveValue extends InternalName
-case object ICall extends InternalName
-case object IConstruct extends InternalName
-case object IScope extends InternalName
+case object IPrototype extends InternalName {
+  override def toString: String = s"[[Prototype]]"
+}
+case object IClass extends InternalName {
+  override def toString: String = s"[[Class]]"
+}
+case object IExtensible extends InternalName {
+  override def toString: String = s"[[Extensible]]"
+}
+case object IPrimitiveValue extends InternalName {
+  override def toString: String = s"[[PrimitiveValue]]"
+}
+case object ICall extends InternalName {
+  override def toString: String = s"[[Call]]"
+}
+case object IConstruct extends InternalName {
+  override def toString: String = s"[[Construct]]"
+}
+case object IScope extends InternalName {
+  override def toString: String = s"[[Scope]]"
+}
+case object IHasInstance extends InternalName {
+  override def toString: String = s"@hasinstance" // TODO
+}
+
+case class InternalValueUtil(utils: Utils) {
+  private val valueU = utils.value
+
+  val Bot: InternalValue = InternalValue(utils.value.Bot, FidSetEmpty)
+
+  // constructor
+  def apply(undefval: AbsUndef): InternalValue = InternalValue(valueU(undefval), FidSetEmpty)
+  def apply(nullval: AbsNull): InternalValue = InternalValue(valueU(nullval), FidSetEmpty)
+  def apply(boolval: AbsBool): InternalValue = InternalValue(valueU(boolval), FidSetEmpty)
+  def apply(numval: AbsNumber): InternalValue = InternalValue(valueU(numval), FidSetEmpty)
+  def apply(strval: AbsString): InternalValue = InternalValue(valueU(strval), FidSetEmpty)
+  def apply(loc: Loc): InternalValue = InternalValue(valueU(loc), FidSetEmpty)
+  def apply(locSet: Set[Loc]): InternalValue = InternalValue(valueU(locSet), FidSetEmpty)
+  def apply(fid: FunctionId): InternalValue = InternalValue(valueU.Bot, FidSetEmpty + fid)
+  def apply(fidSet: => Set[FunctionId]): InternalValue = InternalValue(valueU.Bot, fidSet)
+  def apply(value: Value): InternalValue = InternalValue(value, FidSetEmpty)
+}
 
 case class InternalValue(value: Value, fidset: Set[FunctionId]) {
   override def toString: String = {
