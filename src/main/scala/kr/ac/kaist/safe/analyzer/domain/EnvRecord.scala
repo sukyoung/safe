@@ -21,17 +21,27 @@ abstract class EnvRecord {
   def HasBinding(name: String)(boolU: AbsBoolUtil): AbsBool
 
   // CreateMutableBinding(N, D)
-  def CreateMutableBinding(name: String, del: Boolean): Unit
+  def CreateMutableBinding(
+    name: String,
+    del: Boolean
+  )(utils: Utils): EnvRecord
 
   // SetMutableBinding(N, V, S)
-  def SetMutableBinding(name: String, v: Value, strict: Boolean): Set[Exception]
+  def SetMutableBinding(
+    name: String,
+    v: Value,
+    strict: Boolean
+  )(utils: Utils): (EnvRecord, Set[Exception])
 
   // GetBindingValue(N, S)
-  def GetBindingValue(name: String, strict: Boolean): Set[Exception]
+  def GetBindingValue(
+    name: String,
+    strict: Boolean
+  )(utils: Utils): (Value, Set[Exception])
 
   // DeleteBinding(N)
-  def DeleteBinding(name: String): AbsBool
+  def DeleteBinding(name: String)(utils: Utils): (EnvRecord, AbsBool)
 
   // ImplicitThisValue()
-  def ImplicitThisValue: Value
+  def ImplicitThisValue(utils: Utils): Value
 }

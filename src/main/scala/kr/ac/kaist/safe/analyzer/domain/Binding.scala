@@ -17,23 +17,26 @@ case class BindingUtil(utils: Utils) {
   val valueU = utils.value
   val boolU = utils.absBool
 
-  val Bot: Binding = Binding(valueU.Bot, boolU.Bot)
+  val Bot: Binding = Binding(valueU.Bot, boolU.Bot, boolU.Bot)
   // TODO Top
 
   // constructor
   def apply(
     value: Value = valueU.Bot,
+    initialized: AbsBool = boolU.True,
     mutable: AbsBool = boolU.True
-  ): Binding = Binding(value, mutable)
+  ): Binding = Binding(value, initialized, mutable)
 }
 
 case class Binding(
     value: Value,
+    initialized: AbsBool,
     mutable: AbsBool
 ) {
   /* partial order */
   def <=(that: Binding): Boolean = {
     this.value <= that.value &&
+      this.initialized <= that.initialized &&
       this.mutable <= that.mutable
   }
 
@@ -43,14 +46,23 @@ case class Binding(
   /* join */
   def +(that: Binding): Binding = Binding(
     this.value + that.value,
+    this.initialized + that.initialized,
     this.mutable + that.mutable
   )
 
   /* meet */
   def <>(that: Binding): Binding = Binding(
-    this.value + that.value,
-    this.mutable + that.mutable
+    this.value <> that.value,
+    this.initialized <> that.initialized,
+    this.mutable <> that.mutable
   )
+
+  // bottom check
+  def isBottom: Boolean = {
+    value.isBottom &&
+      initialized.gammaSimple == ConSimpleBot &&
+      mutable.gammaSimple == ConSimpleBot
+  }
 
   override def toString: String = s"[${mutable.toString.take(1)}] $value"
 }

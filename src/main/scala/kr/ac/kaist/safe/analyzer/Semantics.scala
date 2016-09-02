@@ -406,7 +406,7 @@ class Semantics(
         val localEnv = st3.context.pureLocal
         val scope = localEnv.getOrElse("@env")(valueU.Bot) { _.value }
         val oEnv = DecEnvRecord.newDeclEnvRecord(scope)(utils)
-        val fBind = bindingU(fVal, AF)
+        val fBind = bindingU(fVal, mutable = AF)
         val newCtx = st3.context.update(locR3, oEnv.update(name.text, fBind))
         val newSt = State(h5, newCtx).varStore(lhs, fVal)(utils)
         (newSt, excSt)

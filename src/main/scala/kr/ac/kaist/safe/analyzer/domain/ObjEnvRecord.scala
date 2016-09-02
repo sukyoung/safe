@@ -23,21 +23,25 @@ class ObjEnvRecord(
   def HasBinding(name: String)(boolU: AbsBoolUtil): AbsBool = null
 
   // TODO 10.2.1.2.2 CreateMutableBinding(N, D)
-  def CreateMutableBinding(name: String, del: Boolean): Unit = {}
+  def CreateMutableBinding(name: String, del: Boolean)(utils: Utils): ObjEnvRecord = null
 
   // TODO 10.2.1.2.3 SetMutableBinding(N, V, S)
   def SetMutableBinding(
     name: String,
     v: Value,
     strict: Boolean
-  ): Set[Exception] = null
+  )(utils: Utils): (ObjEnvRecord, Set[Exception]) = null
 
   // TODO 10.2.1.2.4 GetBindingValue(N, S)
-  def GetBindingValue(name: String, strict: Boolean): Set[Exception] = null
+  def GetBindingValue(
+    name: String,
+    strict: Boolean
+  )(utils: Utils): (Value, Set[Exception]) = null
 
   // TODO 10.2.1.2.5 DeleteBinding(N)
   def DeleteBinding(name: String): AbsBool = null
+  def DeleteBinding(name: String)(utils: Utils): (ObjEnvRecord, AbsBool) = null
 
   // TODO 10.2.1.2.6 ImplicitThisValue()
-  def ImplicitThisValue: Value = null
+  def ImplicitThisValue(utils: Utils): Value = null
 }

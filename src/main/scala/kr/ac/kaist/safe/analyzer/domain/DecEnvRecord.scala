@@ -11,50 +11,205 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
+import kr.ac.kaist.safe.errors.error.ContextAssertionError
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.util.Loc
-import scala.collection.immutable.HashMap
+import scala.collection.immutable.{ HashMap, HashSet }
 
 // 10.2.1.1 Declarative Environment Records
 abstract class DecEnvRecord extends EnvRecord {
   // 10.2.1.1.1 HasBinding(N)
-  def HasBinding(name: String)(boolU: AbsBoolUtil): AbsBool = this match {
-    case DecEnvRecordBot => boolU.Bot
-    case DecEnvRecordMap(map) => map.get(name) match {
-      case None => boolU.False
-      case Some((_, abs)) => abs match {
-        case AbsentBot => boolU.True
-        case AbsentTop => boolU.Top
-      }
+  def HasBinding(name: String)(absBool: AbsBoolUtil): AbsBool = this match {
+    case DecEnvRecordBot => absBool.Bot
+    // 1. Let envRec be the declarative environment record for
+    //    which the method was invoked.
+    case (envRec: DecEnvRecordMap) => envRec.has(name) match {
+      // 2. If envRec has a binding for the name that is the value of N,
+      //    return true.
+      case MustExist(_) => absBool.True
+      // 3. If it does not have such a binding, return false.
+      case MustNotExist => absBool.False
+      case MayExist(_) => absBool.Top
     }
   }
 
-  // TODO 10.2.1.1.2 CreateMutableBinding(N, D)
-  def CreateMutableBinding(name: String, del: Boolean): Unit = {}
+  // 10.2.1.1.2 CreateMutableBinding(N, D)
+  def CreateMutableBinding(
+    name: String,
+    del: Boolean
+  )(utils: Utils): DecEnvRecord = this match {
+    case DecEnvRecordBot => DecEnvRecordBot
+    // 1. Let envRec be the declarative environment record for
+    //    which the method was invoked.
+    case envRec @ DecEnvRecordMap(map) => {
+      envRec.has(name) match {
+        case MustNotExist =>
+        // 2. Assert: envRec does not already have a binding for N.
+        case _ => throw ContextAssertionError(
+          "CreateMutableBinding",
+          "envRec does not already have a binding for N."
+        )
+      }
+      // 3. Create a mutable binding in envRec for N and
+      //    set its bound value to undefined.
+      val newV = utils.value.alpha()
+      val newBind = utils.binding(newV)
+      DecEnvRecordMap(map.updated(name, (newBind, AbsentBot)))
+    }
+  }
 
-  // TODO 10.2.1.1.3 SetMutableBinding(N, V, S)
+  // 10.2.1.1.3 SetMutableBinding(N, V, S)
   def SetMutableBinding(
     name: String,
     v: Value,
     strict: Boolean
-  ): Set[Exception] = null
+  )(utils: Utils): (DecEnvRecord, Set[Exception]) = this match {
+    case DecEnvRecordBot => (DecEnvRecordBot, HashSet())
+    // 1. Let envRec be the declarative environment record for
+    //    which the method was invoked.
+    case envRec @ DecEnvRecordMap(map) => {
+      // 2. Assert: envRec must have a binding for N.
+      val bind = envRec.has(name) match {
+        case MustExist(bind) => bind
+        case _ => throw ContextAssertionError(
+          "SetMutableBinding",
+          "envRec must have a binding for N."
+        )
+      }
+      // 3. If the binding for N in envRec is a mutable binding,
+      //    change its bound value to V.
+      val thenV =
+        if (utils.absBool.True <= bind.mutable) v
+        else utils.value.Bot
+      // 4. Else this must be an attempt to change the value of
+      //    an immutable binding so if S if true throw a TypeError
+      //    exception.
+      val emptyExcSet: Set[Exception] = HashSet()
+      val (elseV, excSet: Set[Exception]) =
+        if (utils.absBool.False <= bind.mutable) {
+          if (strict) (utils.value.Bot, HashSet(TypeError))
+          else (v, emptyExcSet)
+        } else { (utils.value.Bot, emptyExcSet) }
+      val newBind = utils.binding(thenV + elseV)
+      (DecEnvRecordMap(map.updated(name, (newBind, AbsentBot))), excSet)
+    }
+  }
 
-  // TODO 10.2.1.1.4 GetBindingValue(N, S)
-  def GetBindingValue(name: String, strict: Boolean): Set[Exception] = null
+  // 10.2.1.1.4 GetBindingValue(N, S)
+  def GetBindingValue(
+    name: String,
+    strict: Boolean
+  )(utils: Utils): (Value, Set[Exception]) = this match {
+    case DecEnvRecordBot => (utils.value.Bot, HashSet())
+    // 1. Let envRec be the declarative environment record for
+    //    which the method was invoked.
+    case envRec @ DecEnvRecordMap(map) => {
+      val bind = envRec.has(name) match {
+        case MustExist(bind) => bind
+        // 2. Assert: envRec has a binding for N.
+        case _ => throw ContextAssertionError(
+          "GetBindingValue",
+          "envRec has a binding for N."
+        )
+      }
+      // 3. If the binding for N in envRec is
+      //    an uninitialised immutable binding, then
+      val emptyExcSet: Set[Exception] = HashSet()
+      val (thenV, excSet: Set[Exception]) =
+        if (utils.absBool.False <= bind.mutable &&
+          utils.absBool.False <= bind.initialized) {
+          //    a. If S is false, return the value undefined,
+          //       otherwise throw a ReferenceError exception.
+          if (strict) (utils.value.Bot, HashSet(ReferenceError))
+          else (utils.value.alpha(), emptyExcSet)
+        } else { (utils.value.Bot, emptyExcSet) }
+      // 4. Else, return the value currently bound to N in envRec.
+      val elseV =
+        if (utils.absBool.True <= bind.mutable ||
+          utils.absBool.True <= bind.initialized) bind.value
+        else utils.value.Bot
+      (thenV + elseV, excSet)
+    }
+  }
 
-  // TODO 10.2.1.1.5 DeleteBinding(N)
-  def DeleteBinding(name: String): AbsBool = null
+  // 10.2.1.1.5 DeleteBinding(N)
+  def DeleteBinding(
+    name: String
+  )(utils: Utils): (DecEnvRecord, AbsBool) = this match {
+    case DecEnvRecordBot => (DecEnvRecordBot, utils.absBool.Bot)
+    // 1. Let envRec be the declarative environment record for
+    //    which the method was invoked.
+    case envRec @ DecEnvRecordMap(map) => {
+      // 2. If envRec does not have a binding for
+      //    the name that is the value of N, return true.
+      // 3. If the binding for N in envRec is cannot be deleted, return false.
+      //    (we do not consider explicit design)
+      // 4. Remove the binding for N from envRec.
+      val newMap = map - name
+      // 5. Return true.
+      (DecEnvRecordMap(newMap), utils.absBool.True)
+    }
+  }
 
-  // TODO 10.2.1.1.6 ImplicitThisValue()
-  def ImplicitThisValue: Value = null
+  // 10.2.1.1.6 ImplicitThisValue()
+  def ImplicitThisValue(utils: Utils): Value = utils.value.alpha()
 
-  // TODO 10.2.1.1.7 CreateImmutableBinding(N)
-  def CreateImmutableBinding(name: String): Unit = {}
+  // 10.2.1.1.7 CreateImmutableBinding(N)
+  def CreateImmutableBinding(
+    name: String
+  )(utils: Utils): DecEnvRecord = this match {
+    case DecEnvRecordBot => DecEnvRecordBot
+    // 1. Let envRec be the declarative environment record for
+    //    which the method was invoked.
+    case envRec @ DecEnvRecordMap(map) => {
+      envRec.has(name) match {
+        case MustNotExist =>
+        // 2. Assert: envRec does not already have a binding for N.
+        case _ => throw ContextAssertionError(
+          "CreateImmutableBinding",
+          "envRec does not already have a binding for N."
+        )
+      }
+      // 3. Create an immutable binding in envRec for N and
+      //    record that it is uninitialised.
+      val newBind = utils.binding(
+        value = utils.value.Bot,
+        initialized = utils.absBool.False,
+        mutable = utils.absBool.False
+      )
+      DecEnvRecordMap(map.updated(name, (newBind, AbsentBot)))
+    }
+  }
 
-  // TODO 10.2.1.1.6 InitializeImmutableBinding(N, V)
-  def InitializeImmutableBinding(name: String, v: Value): Unit = {}
+  // 10.2.1.1.6 InitializeImmutableBinding(N, V)
+  def InitializeImmutableBinding(
+    name: String,
+    v: Value
+  )(utils: Utils): DecEnvRecord = this match {
+    case DecEnvRecordBot => DecEnvRecordBot
+    // 1. Let envRec be the declarative environment record for
+    //    which the method was invoked.
+    case envRec @ DecEnvRecordMap(map) => {
+      // 2. Assert: envRec must have an uninitialised immutable binding for N.
+      val bind = envRec.has(name) match {
+        case MustExist(bind) if (
+          bind.mutable == utils.absBool.False &&
+          bind.initialized == utils.absBool.False
+        ) => bind
+        case _ => throw ContextAssertionError(
+          "InitializeImmutableBinding",
+          "envRec must have an uninitialised immutable binding for N."
+        )
+      }
+      // 3. Set the bound value for N in envRec to V.
+      val newBind = bind.copy(value = v, initialized = utils.absBool.True)
+      // 4. Record that the immutable binding for N
+      //    in envRec has been initialised.
+      DecEnvRecordMap(map.updated(name, (newBind, AbsentBot)))
+    }
+  }
 
-  // TODO temporal copy
+  // toString
   override def toString: String = this match {
     case DecEnvRecordBot => "⊥"
     case DecEnvRecordMap(m) if m.isEmpty => "Empty"
@@ -77,7 +232,7 @@ abstract class DecEnvRecord extends EnvRecord {
     }
   }
 
-  /* partial order */
+  // partial order
   def <=(that: DecEnvRecord): Boolean = (this, that) match {
     case (DecEnvRecordBot, _) => true
     case (_, DecEnvRecordBot) => false
@@ -94,10 +249,10 @@ abstract class DecEnvRecord extends EnvRecord {
     }
   }
 
-  /* not a partial order */
+  // not a partial order
   def </(that: DecEnvRecord): Boolean = !(this <= that)
 
-  /* join */
+  // join
   def +(that: DecEnvRecord): DecEnvRecord = (this, that) match {
     case (DecEnvRecordBot, _) => that
     case (_, DecEnvRecordBot) => this
@@ -116,7 +271,7 @@ abstract class DecEnvRecord extends EnvRecord {
     }
   }
 
-  /* meet */
+  // meet
   def <>(that: DecEnvRecord): DecEnvRecord = (this, that) match {
     case (DecEnvRecordBot, _) | (_, DecEnvRecordBot) => DecEnvRecordBot
     case (DecEnvRecordMap(thisMap), DecEnvRecordMap(thatMap)) => {
@@ -135,9 +290,10 @@ abstract class DecEnvRecord extends EnvRecord {
     }
   }
 
+  // bottom check
   def isBottom: Boolean = this == DecEnvRecordBot
 
-  /* substitute locR by locO */
+  // substitute locR by locO
   def subsLoc(locR: Loc, locO: Loc): DecEnvRecord = this match {
     case DecEnvRecordBot => DecEnvRecordBot
     case DecEnvRecordMap(map) => {
@@ -146,7 +302,7 @@ abstract class DecEnvRecord extends EnvRecord {
         val newMap = map.foldLeft(DecEnvRecord.MapBot) {
           case (m, (key, (bind, abs))) => {
             val newV = bind.value.subsLoc(locR, locO)
-            val newBind = Binding(newV, bind.mutable)
+            val newBind = bind.copy(value = newV)
             m + (key -> (newBind, abs))
           }
         }
@@ -155,6 +311,7 @@ abstract class DecEnvRecord extends EnvRecord {
     }
   }
 
+  // weak substitute locR by locO
   def weakSubsLoc(locR: Loc, locO: Loc): DecEnvRecord = this match {
     case DecEnvRecordBot => DecEnvRecordBot
     case DecEnvRecordMap(map) => {
@@ -163,7 +320,7 @@ abstract class DecEnvRecord extends EnvRecord {
         val newMap = map.foldLeft(DecEnvRecord.MapBot) {
           case (m, (key, (bind, abs))) => {
             val newV = bind.value.weakSubsLoc(locR, locO)
-            val newBind = Binding(newV, bind.mutable)
+            val newBind = bind.copy(value = newV)
             m + (key -> (newBind, abs))
           }
         }
@@ -223,7 +380,23 @@ object DecEnvRecord {
   }
 }
 
-case class DecEnvRecordMap(
-  val map: Map[String, (Binding, Absent)]
-) extends DecEnvRecord
 object DecEnvRecordBot extends DecEnvRecord
+case class DecEnvRecordMap(
+    val map: Map[String, (Binding, Absent)]
+) extends DecEnvRecord {
+  // existence check
+  def has(name: String): Existence = map.get(name) match {
+    case None => MustNotExist
+    case Some((bind, abs)) => abs match {
+      case AbsentBot => MustExist(bind)
+      case AbsentTop =>
+        if (bind.isBottom) MustNotExist
+        else MayExist(bind)
+    }
+  }
+}
+
+abstract class Existence
+case object MustNotExist extends Existence
+case class MustExist(bind: Binding) extends Existence
+case class MayExist(bind: Binding) extends Existence
