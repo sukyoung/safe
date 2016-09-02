@@ -169,7 +169,7 @@ case class Helper(utils: Utils) {
           else boolBotVal
         val v2 =
           if (utils.absBool.False <= eqVal.pvalue.boolval) {
-            val protoVal = h.getOrElse(l1, objU.Bot).getOrElse("@proto")(valueU.Bot) { _.objval.value }
+            val protoVal = h.getOrElse(l1, objU.Bot).getOrElse(IPrototype)(valueU.Bot) { _.value }
             val v1 = protoVal.pvalue.nullval.fold(boolBotVal) { _ => boolFalseVal }
             v1 + protoVal.locset.foldLeft(valueU.Bot)((tmpVal, protoLoc) => tmpVal + iter(protoLoc))
           } else boolBotVal

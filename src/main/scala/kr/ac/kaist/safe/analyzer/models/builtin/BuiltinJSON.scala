@@ -11,23 +11,23 @@
 
 package kr.ac.kaist.safe.analyzer.models.builtin
 
-import kr.ac.kaist.safe.analyzer.domain._
+import kr.ac.kaist.safe.analyzer.domain.IClass
 import kr.ac.kaist.safe.analyzer.models._
 
 // TODO JSON
 object BuiltinJSON extends ObjModel(
   name = "JSON",
   props = List(
-    ("@class", PrimModel("JSON"), F, F, F),
+    InternalProp(IClass, PrimModel("JSON")),
 
     // TODO parse
-    ("parse", FuncModel(
+    NormalProp("parse", FuncModel(
       name = "JSON.parse",
       code = EmptyCode(argLen = 2)
     ), T, F, T),
 
     // TODO stringify
-    ("stringify", FuncModel(
+    NormalProp("stringify", FuncModel(
       name = "JSON.stringify",
       code = EmptyCode(argLen = 3)
     ), T, F, T)

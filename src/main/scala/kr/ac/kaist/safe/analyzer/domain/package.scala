@@ -11,8 +11,9 @@
 
 package kr.ac.kaist.safe.analyzer
 
-import scala.collection.immutable.HashSet
 import kr.ac.kaist.safe.nodes.cfg.FunctionId
+
+import scala.collection.immutable.{ HashMap, HashSet }
 import kr.ac.kaist.safe.util.Loc
 
 package object domain {
@@ -21,6 +22,12 @@ package object domain {
   ////////////////////////////////////////////////////////////////
   val LocSetEmpty: Set[Loc] = HashSet[Loc]()
   val ExceptionSetEmpty: Set[Exception] = HashSet[Exception]()
+
+  val FidSetEmpty: Set[FunctionId] = HashSet[FunctionId]()
+
+  type ObjInternalMap = Map[InternalName, InternalValue]
+  val ObjEmptyMap: Map[String, (PropValue, Absent)] = HashMap[String, (PropValue, Absent)]()
+  val ObjEmptyIMap: ObjInternalMap = HashMap[InternalName, InternalValue]()
 
   ////////////////////////////////////////////////////////////////
   // constant values

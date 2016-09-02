@@ -11,6 +11,7 @@
 
 package kr.ac.kaist.safe.analyzer.models.builtin
 
+import kr.ac.kaist.safe.analyzer.domain.IPrototype
 import kr.ac.kaist.safe.analyzer.models._
 
 // TODO Function
@@ -28,28 +29,28 @@ object BuiltinFunctionProto extends FuncModel(
   // TODO @function
   code = EmptyCode(argLen = 0),
   props = List(
-    ("@proto", BuiltinObjectProto, F, F, F),
+    InternalProp(IPrototype, BuiltinObjectProto),
 
     // TODO toString
-    ("toString", FuncModel(
+    NormalProp("toString", FuncModel(
       name = "Function.prototype.toString",
       code = EmptyCode(argLen = 0)
     ), T, F, T),
 
     // TODO apply
-    ("apply", FuncModel(
+    NormalProp("apply", FuncModel(
       name = "Function.prototype.apply",
       code = EmptyCode(argLen = 2)
     ), T, F, T),
 
     // TODO call
-    ("call", FuncModel(
+    NormalProp("call", FuncModel(
       name = "Function.prototype.call",
       code = EmptyCode(argLen = 1)
     ), T, F, T),
 
     // TODO bind
-    ("bind", FuncModel(
+    NormalProp("bind", FuncModel(
       name = "Function.prototype.bind",
       code = EmptyCode(argLen = 1)
     ), T, F, T)

@@ -38,7 +38,7 @@ class ObjModel(
     ps: List[PropDesc]
   ): Heap = {
     ps.foldLeft((h, obj)) {
-      case ((heap, obj), (name, model, writable, enumerable, configurable)) => {
+      case ((heap, obj), NormalProp(name, model, writable, enumerable, configurable)) => {
         (model match {
           case SelfModel => (heap, utils.value(loc))
           case _ => model.init(heap, cfg, utils)
@@ -51,6 +51,17 @@ class ObjModel(
               utils.absBool.alpha(enumerable),
               utils.absBool.alpha(configurable)
             ))
+          ))
+        }
+      }
+      case ((heap, obj), InternalProp(name, model)) => {
+        (model match {
+          case SelfModel => (heap, utils.value(loc))
+          case _ => model.init(heap, cfg, utils)
+        }) match {
+          case (heap, value) => (heap, obj.update(
+            name,
+            utils.ivalue(value)
           ))
         }
       }

@@ -18,8 +18,8 @@ import kr.ac.kaist.safe.util.{ Loc, SystemLoc, Recent }
 // User Function Model
 class UserFuncModel(
   override val name: String,
-  override val props: List[(String, Model, Boolean, Boolean, Boolean)] = Nil,
-  val protoProps: List[(String, Model, Boolean, Boolean, Boolean)] = Nil,
+  override val props: List[PropDesc] = Nil,
+  val protoProps: List[PropDesc] = Nil,
   override val code: Code = EmptyCode()
 ) extends FuncModel(name, props, code, Some(code), Some((ObjModel(
   name = s"$name.prototype",
@@ -29,8 +29,8 @@ class UserFuncModel(
 object UserFuncModel {
   def apply(
     name: String,
-    props: List[(String, Model, Boolean, Boolean, Boolean)] = Nil,
-    protoProps: List[(String, Model, Boolean, Boolean, Boolean)] = Nil,
+    props: List[PropDesc] = Nil,
+    protoProps: List[PropDesc] = Nil,
     code: Code = EmptyCode()
   ): FuncModel = new UserFuncModel(name, props, protoProps, code)
 }

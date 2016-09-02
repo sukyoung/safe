@@ -262,7 +262,7 @@ class DHeap(val map: Map[Loc, Obj]) extends Heap {
   // Predicates
   ////////////////////////////////////////////////////////////////
   def hasConstruct(loc: Loc)(absBool: AbsBoolUtil): AbsBool = {
-    val isDomIn = this.getOrElse(loc)(absBool.False) { obj => (obj domIn "@construct")(absBool) }
+    val isDomIn = this.getOrElse(loc)(absBool.False) { obj => (obj domIn IConstruct)(absBool) }
     val b1 =
       if (absBool.True <= isDomIn) absBool.True
       else absBool.Bot
@@ -273,7 +273,7 @@ class DHeap(val map: Map[Loc, Obj]) extends Heap {
   }
 
   def hasInstance(loc: Loc)(absBool: AbsBoolUtil): AbsBool = {
-    val isDomIn = this.getOrElse(loc)(absBool.False) { obj => (obj domIn "@hasinstance")(absBool) }
+    val isDomIn = this.getOrElse(loc)(absBool.False) { obj => (obj domIn IHasInstance)(absBool) }
     val b1 =
       if (absBool.True <= isDomIn) absBool.True
       else absBool.Bot
@@ -296,7 +296,7 @@ class DHeap(val map: Map[Loc, Obj]) extends Heap {
         val b2 =
           if (utils.absBool.False <= test) {
             val protoV = this.getOrElse(currentLoc, utils.absObject.Bot)
-              .getOrElse("@proto")(utils.value.Bot) { _.objval.value }
+              .getOrElse(IPrototype)(utils.value.Bot) { _.value }
             val b3 = protoV.pvalue.nullval.fold(utils.absBool.Bot) { _ => utils.absBool.False }
             b3 + protoV.locset.foldLeft[AbsBool](utils.absBool.Bot)((b, protoLoc) => {
               b + visit(protoLoc)
@@ -316,7 +316,7 @@ class DHeap(val map: Map[Loc, Obj]) extends Heap {
 
   def isArray(loc: Loc)(utils: Utils): AbsBool = {
     val className = this.getOrElse(loc, utils.absObject.Bot)
-      .getOrElse("@class")(utils.absString.Bot) { _.objval.value.pvalue.strval }
+      .getOrElse(IClass)(utils.absString.Bot) { _.value.pvalue.strval }
     val arrayAbsStr = utils.absString.alpha("Array")
     val b1 =
       if (arrayAbsStr <= className)
@@ -332,7 +332,7 @@ class DHeap(val map: Map[Loc, Obj]) extends Heap {
   }
 
   def isObject(loc: Loc)(utils: Utils): AbsBool = {
-    (this.getOrElse(loc, utils.absObject.Bot) domIn "@class")(utils.absBool)
+    (this.getOrElse(loc, utils.absObject.Bot) domIn IClass)(utils.absBool)
   }
 
   def canPut(loc: Loc, absStr: AbsString)(utils: Utils): AbsBool = canPutHelp(loc, absStr, loc)(utils)
@@ -351,19 +351,19 @@ class DHeap(val map: Map[Loc, Obj]) extends Heap {
           } else utils.absBool.Bot
         val b2 =
           if (utils.absBool.False <= domInStr) {
-            val protoObj = this.getOrElse(visitLoc, utils.absObject.Bot).get("@proto")(utils)
-            val protoLocSet = protoObj.objval.value.locset
-            val b3 = protoObj.objval.value.pvalue.nullval.gamma match {
+            val protoObj = this.getOrElse(visitLoc, utils.absObject.Bot).get(IPrototype)(utils)
+            val protoLocSet = protoObj.value.locset
+            val b3 = protoObj.value.pvalue.nullval.gamma match {
               case ConSimpleBot => utils.absBool.Bot
               case ConSimpleTop =>
                 this.getOrElse(visitLoc, utils.absObject.Bot)
-                  .getOrElse("@extensible")(utils.absBool.Bot) { _.objval.value.pvalue.boolval }
+                  .getOrElse(IExtensible)(utils.absBool.Bot) { _.value.pvalue.boolval }
             }
             val b4 = protoLocSet.foldLeft(utils.absBool.Bot)((absB, loc) => absB + visit(loc))
             val b5 =
               if (utils.absBool.False <= b4)
                 this.getOrElse(origLoc, utils.absObject.Bot)
-                  .getOrElse("@extensible")(utils.absBool.Bot) { _.objval.value.pvalue.boolval }
+                  .getOrElse(IExtensible)(utils.absBool.Bot) { _.value.pvalue.boolval }
               else utils.absBool.Bot
             b3 + b4 + b5
           } else utils.absBool.Bot
@@ -405,7 +405,7 @@ class DHeap(val map: Map[Loc, Obj]) extends Heap {
           }
         val v2 =
           if (utils.absBool.False <= test) {
-            val protoV = this.getOrElse(currentLoc, utils.absObject.Bot).getOrElse("@proto")(valueBot) { _.objval.value }
+            val protoV = this.getOrElse(currentLoc, utils.absObject.Bot).getOrElse(IPrototype)(valueBot) { _.value }
             val v3 = protoV.pvalue.nullval.fold(valueBot)(_ => {
               utils.value.alpha()
             })
@@ -434,7 +434,7 @@ class DHeap(val map: Map[Loc, Obj]) extends Heap {
           else LocSetEmpty
         val locSet2 =
           if (utils.absBool.False <= isDomIn) {
-            val protoLocSet = obj.getOrElse("@proto")(LocSetEmpty) { _.objval.value.locset }
+            val protoLocSet = obj.getOrElse(IPrototype)(LocSetEmpty) { _.value.locset }
             protoLocSet.foldLeft(LocSetEmpty)((res, protoLoc) => {
               res ++ visit(protoLoc)
             })
@@ -459,7 +459,7 @@ class DHeap(val map: Map[Loc, Obj]) extends Heap {
           globalObj.getOrElse(x)(valueBot) { _.objval.value }
         else
           valueBot
-      val protoLocSet = globalObj.getOrElse("@proto")(LocSetEmpty) { _.objval.value.locset }
+      val protoLocSet = globalObj.getOrElse(IPrototype)(LocSetEmpty) { _.value.locset }
       val (v2, excSet) =
         if (utils.absBool.False <= (globalObj domIn x)(utils.absBool)) {
           val excSet = protoLocSet.foldLeft(ExceptionSetEmpty)((tmpExcSet, protoLoc) => {
@@ -494,7 +494,7 @@ class DHeap(val map: Map[Loc, Obj]) extends Heap {
         LocSetEmpty
     val locSet2 =
       if (utils.absBool.False <= isDomIn) {
-        val protoLocSet = globalObj.getOrElse("@proto")(LocSetEmpty) { _.objval.value.locset }
+        val protoLocSet = globalObj.getOrElse(IPrototype)(LocSetEmpty) { _.value.locset }
         protoLocSet.foldLeft(LocSetEmpty)((res, protoLoc) => {
           res ++ this.protoBase(protoLoc, utils.absString.alpha(x))(utils)
         })

@@ -19,3 +19,7 @@ import kr.ac.kaist.safe.util.{ Loc, SystemLoc, Recent }
 abstract class Model {
   def init(h: Heap, cfg: CFG, utils: Utils): (Heap, Value)
 }
+
+sealed abstract class PropDesc
+case class NormalProp(name: String, key: Model, w: Boolean, e: Boolean, c: Boolean) extends PropDesc
+case class InternalProp(name: InternalName, key: Model) extends PropDesc

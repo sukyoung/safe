@@ -11,6 +11,7 @@
 
 package kr.ac.kaist.safe.analyzer.models.builtin
 
+import kr.ac.kaist.safe.analyzer.domain.{ IClass, IPrototype }
 import kr.ac.kaist.safe.analyzer.models._
 
 object BuiltinError extends FuncModel(
@@ -25,12 +26,12 @@ object BuiltinError extends FuncModel(
 object BuiltinErrorProto extends ObjModel(
   name = "Error.prototype",
   props = List(
-    ("@class", PrimModel("Error"), T, F, T),
-    ("name", PrimModel("Error"), T, F, T),
-    ("message", PrimModel(""), T, F, T),
+    InternalProp(IClass, PrimModel("Error")),
+    NormalProp("name", PrimModel("Error"), T, F, T),
+    NormalProp("message", PrimModel(""), T, F, T),
 
     // TODO toString
-    ("toString", FuncModel(
+    NormalProp("toString", FuncModel(
       name = "Error.prototype.toString",
       code = EmptyCode(argLen = 0)
     ), T, F, T)
@@ -47,7 +48,7 @@ object BuiltinEvalError extends FuncModel(
   // TODO @function
   code = EmptyCode(1),
   props = List(
-    ("name", PrimModel("EvalError"), T, F, T)
+    NormalProp("name", PrimModel("EvalError"), T, F, T)
   ),
   // TODO @construct
   construct = Some(EmptyCode()),
@@ -57,10 +58,10 @@ object BuiltinEvalError extends FuncModel(
 object BuiltinEvalErrorProto extends ObjModel(
   name = "EvalError.prototype",
   props = List(
-    ("@class", PrimModel("Error"), T, F, T),
-    ("@proto", BuiltinErrorProto, F, F, F),
-    ("name", PrimModel("EvalError"), T, F, T),
-    ("message", PrimModel(""), T, F, T)
+    InternalProp(IClass, PrimModel("Error")),
+    InternalProp(IPrototype, BuiltinErrorProto),
+    NormalProp("name", PrimModel("EvalError"), T, F, T),
+    NormalProp("message", PrimModel(""), T, F, T)
   )
 )
 
@@ -70,7 +71,7 @@ object BuiltinRangeError extends FuncModel(
   // TODO @function
   code = EmptyCode(1),
   props = List(
-    ("name", PrimModel("RangeError"), T, F, T)
+    NormalProp("name", PrimModel("RangeError"), T, F, T)
   ),
   // TODO @construct
   construct = Some(EmptyCode()),
@@ -80,10 +81,10 @@ object BuiltinRangeError extends FuncModel(
 object BuiltinRangeErrorProto extends ObjModel(
   name = "RangeError.prototype",
   props = List(
-    ("@class", PrimModel("Error"), T, F, T),
-    ("@proto", BuiltinErrorProto, F, F, F),
-    ("name", PrimModel("RangeError"), T, F, T),
-    ("message", PrimModel(""), T, F, T)
+    InternalProp(IClass, PrimModel("Error")),
+    InternalProp(IPrototype, BuiltinErrorProto),
+    NormalProp("name", PrimModel("RangeError"), T, F, T),
+    NormalProp("message", PrimModel(""), T, F, T)
   )
 )
 
@@ -93,7 +94,7 @@ object BuiltinReferenceError extends FuncModel(
   // TODO @function
   code = EmptyCode(1),
   props = List(
-    ("name", PrimModel("ReferenceError"), T, F, T)
+    NormalProp("name", PrimModel("ReferenceError"), T, F, T)
   ),
   // TODO @construct
   construct = Some(EmptyCode()),
@@ -103,10 +104,10 @@ object BuiltinReferenceError extends FuncModel(
 object BuiltinReferenceErrorProto extends ObjModel(
   name = "ReferenceError.prototype",
   props = List(
-    ("@class", PrimModel("Error"), T, F, T),
-    ("@proto", BuiltinErrorProto, F, F, F),
-    ("name", PrimModel("ReferenceError"), T, F, T),
-    ("message", PrimModel(""), T, F, T)
+    InternalProp(IClass, PrimModel("Error")),
+    InternalProp(IPrototype, BuiltinErrorProto),
+    NormalProp("name", PrimModel("ReferenceError"), T, F, T),
+    NormalProp("message", PrimModel(""), T, F, T)
   )
 )
 
@@ -116,7 +117,7 @@ object BuiltinSyntaxError extends FuncModel(
   // TODO @function
   code = EmptyCode(1),
   props = List(
-    ("name", PrimModel("SyntaxError"), T, F, T)
+    NormalProp("name", PrimModel("SyntaxError"), T, F, T)
   ),
   // TODO @construct
   construct = Some(EmptyCode()),
@@ -126,10 +127,10 @@ object BuiltinSyntaxError extends FuncModel(
 object BuiltinSyntaxErrorProto extends ObjModel(
   name = "SyntaxError.prototype",
   props = List(
-    ("@class", PrimModel("Error"), T, F, T),
-    ("@proto", BuiltinErrorProto, F, F, F),
-    ("name", PrimModel("SyntaxError"), T, F, T),
-    ("message", PrimModel(""), T, F, T)
+    InternalProp(IClass, PrimModel("Error")),
+    InternalProp(IPrototype, BuiltinErrorProto),
+    NormalProp("name", PrimModel("SyntaxError"), T, F, T),
+    NormalProp("message", PrimModel(""), T, F, T)
   )
 )
 
@@ -139,7 +140,7 @@ object BuiltinTypeError extends FuncModel(
   // TODO @function
   code = EmptyCode(1),
   props = List(
-    ("name", PrimModel("TypeError"), T, F, T)
+    NormalProp("name", PrimModel("TypeError"), T, F, T)
   ),
   // TODO @construct
   construct = Some(EmptyCode()),
@@ -149,10 +150,10 @@ object BuiltinTypeError extends FuncModel(
 object BuiltinTypeErrorProto extends ObjModel(
   name = "TypeError.prototype",
   props = List(
-    ("@class", PrimModel("Error"), T, F, T),
-    ("@proto", BuiltinErrorProto, F, F, F),
-    ("name", PrimModel("TypeError"), T, F, T),
-    ("message", PrimModel(""), T, F, T)
+    InternalProp(IClass, PrimModel("Error")),
+    InternalProp(IPrototype, BuiltinErrorProto),
+    NormalProp("name", PrimModel("TypeError"), T, F, T),
+    NormalProp("message", PrimModel(""), T, F, T)
   )
 )
 
@@ -162,7 +163,7 @@ object BuiltinURIError extends FuncModel(
   // TODO @function
   code = EmptyCode(1),
   props = List(
-    ("name", PrimModel("URIError"), T, F, T)
+    NormalProp("name", PrimModel("URIError"), T, F, T)
   ),
   // TODO @construct
   construct = Some(EmptyCode()),
@@ -172,9 +173,9 @@ object BuiltinURIError extends FuncModel(
 object BuiltinURIErrorProto extends ObjModel(
   name = "URIError.prototype",
   props = List(
-    ("@class", PrimModel("Error"), T, F, T),
-    ("@proto", BuiltinErrorProto, F, F, F),
-    ("name", PrimModel("URIError"), T, F, T),
-    ("message", PrimModel(""), T, F, T)
+    InternalProp(IClass, PrimModel("Error")),
+    InternalProp(IPrototype, BuiltinErrorProto),
+    NormalProp("name", PrimModel("URIError"), T, F, T),
+    NormalProp("message", PrimModel(""), T, F, T)
   )
 )

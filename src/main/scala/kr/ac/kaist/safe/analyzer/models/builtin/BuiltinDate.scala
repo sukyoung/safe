@@ -11,6 +11,7 @@
 
 package kr.ac.kaist.safe.analyzer.models.builtin
 
+import kr.ac.kaist.safe.analyzer.domain.{ IClass, IPrototype }
 import kr.ac.kaist.safe.analyzer.models._
 
 // TODO Date
@@ -20,19 +21,19 @@ object BuiltinDate extends FuncModel(
   code = EmptyCode(7),
   props = List(
     // TODO parse
-    ("parse", FuncModel(
+    NormalProp("parse", FuncModel(
       name = "Date.parse",
       code = EmptyCode(argLen = 1)
     ), T, F, T),
 
     // TODO UTC
-    ("UTC", FuncModel(
+    NormalProp("UTC", FuncModel(
       name = "Date.UTC",
       code = EmptyCode(argLen = 7)
     ), T, F, T),
 
     // TODO now
-    ("now", FuncModel(
+    NormalProp("now", FuncModel(
       name = "Date.now",
       code = EmptyCode(argLen = 0)
     ), T, F, T)
@@ -45,263 +46,263 @@ object BuiltinDate extends FuncModel(
 object BuiltinDateProto extends ObjModel(
   name = "Date.prototype",
   props = List(
-    ("@class", PrimModel("Date"), F, F, F),
-    ("@primitive", PrimModel(Double.NaN), F, F, F),
+    InternalProp(IClass, PrimModel("Date")),
+    InternalProp(IPrototype, PrimModel(Double.NaN)),
 
     // TODO toString
-    ("toString", FuncModel(
+    NormalProp("toString", FuncModel(
       name = "Date.prototype.toString",
       code = EmptyCode(argLen = 0)
     ), T, F, T),
 
     // TODO toDateString
-    ("toDateString", FuncModel(
+    NormalProp("toDateString", FuncModel(
       name = "Date.prototype.toDateString",
       code = EmptyCode(argLen = 0)
     ), T, F, T),
 
     // TODO toTimeString
-    ("toTimeString", FuncModel(
+    NormalProp("toTimeString", FuncModel(
       name = "Date.prototype.toTimeString",
       code = EmptyCode(argLen = 0)
     ), T, F, T),
 
     // TODO toLocaleString
-    ("toLocaleString", FuncModel(
+    NormalProp("toLocaleString", FuncModel(
       name = "Date.prototype.toLocaleString",
       code = EmptyCode(argLen = 0)
     ), T, F, T),
 
     // TODO toLocaleDateString
-    ("toLocaleDateString", FuncModel(
+    NormalProp("toLocaleDateString", FuncModel(
       name = "Date.prototype.toLocaleDateString",
       code = EmptyCode(argLen = 0)
     ), T, F, T),
 
     // TODO toLocaleTimeString
-    ("toLocaleTimeString", FuncModel(
+    NormalProp("toLocaleTimeString", FuncModel(
       name = "Date.prototype.toLocaleTimeString",
       code = EmptyCode(argLen = 0)
     ), T, F, T),
 
     // TODO valueOf
-    ("valueOf", FuncModel(
+    NormalProp("valueOf", FuncModel(
       name = "Date.prototype.valueOf",
       code = EmptyCode(argLen = 0)
     ), T, F, T),
 
     // TODO getTime
-    ("getTime", FuncModel(
+    NormalProp("getTime", FuncModel(
       name = "Date.prototype.getTime",
       code = EmptyCode(argLen = 0)
     ), T, F, T),
 
     // TODO getFullYear
-    ("getFullYear", FuncModel(
+    NormalProp("getFullYear", FuncModel(
       name = "Date.prototype.getFullYear",
       code = EmptyCode(argLen = 0)
     ), T, F, T),
 
     // TODO getUTCFullYear
-    ("getUTCFullYear", FuncModel(
+    NormalProp("getUTCFullYear", FuncModel(
       name = "Date.prototype.getUTCFullYear",
       code = EmptyCode(argLen = 0)
     ), T, F, T),
 
     // TODO getMonth
-    ("getMonth", FuncModel(
+    NormalProp("getMonth", FuncModel(
       name = "Date.prototype.getMonth",
       code = EmptyCode(argLen = 0)
     ), T, F, T),
 
     // TODO getUTCMonth
-    ("getUTCMonth", FuncModel(
+    NormalProp("getUTCMonth", FuncModel(
       name = "Date.prototype.getUTCMonth",
       code = EmptyCode(argLen = 0)
     ), T, F, T),
 
     // TODO getDate
-    ("getDate", FuncModel(
+    NormalProp("getDate", FuncModel(
       name = "Date.prototype.getDate",
       code = EmptyCode(argLen = 0)
     ), T, F, T),
 
     // TODO getUTCDate
-    ("getUTCDate", FuncModel(
+    NormalProp("getUTCDate", FuncModel(
       name = "Date.prototype.getUTCDate",
       code = EmptyCode(argLen = 0)
     ), T, F, T),
 
     // TODO getDay
-    ("getDay", FuncModel(
+    NormalProp("getDay", FuncModel(
       name = "Date.prototype.getDay",
       code = EmptyCode(argLen = 0)
     ), T, F, T),
 
     // TODO getUTCDay
-    ("getUTCDay", FuncModel(
+    NormalProp("getUTCDay", FuncModel(
       name = "Date.prototype.getUTCDay",
       code = EmptyCode(argLen = 0)
     ), T, F, T),
 
     // TODO getHours
-    ("getHours", FuncModel(
+    NormalProp("getHours", FuncModel(
       name = "Date.prototype.getUTCDay",
       code = EmptyCode(argLen = 0)
     ), T, F, T),
 
     // TODO getUTCHours
-    ("getUTCHours", FuncModel(
+    NormalProp("getUTCHours", FuncModel(
       name = "Date.prototype.getUTCHours",
       code = EmptyCode(argLen = 0)
     ), T, F, T),
 
     // TODO getMinutes
-    ("getMinutes", FuncModel(
+    NormalProp("getMinutes", FuncModel(
       name = "Date.prototype.getMinutes",
       code = EmptyCode(argLen = 0)
     ), T, F, T),
 
     // TODO getUTCMinutes
-    ("getUTCMinutes", FuncModel(
+    NormalProp("getUTCMinutes", FuncModel(
       name = "Date.prototype.getUTCMinutes",
       code = EmptyCode(argLen = 0)
     ), T, F, T),
 
     // TODO getSeconds
-    ("getSeconds", FuncModel(
+    NormalProp("getSeconds", FuncModel(
       name = "Date.prototype.getSeconds",
       code = EmptyCode(argLen = 0)
     ), T, F, T),
 
     // TODO getUTCSeconds
-    ("getUTCSeconds", FuncModel(
+    NormalProp("getUTCSeconds", FuncModel(
       name = "Date.prototype.getUTCSeconds",
       code = EmptyCode(argLen = 0)
     ), T, F, T),
 
     // TODO getMilliseconds
-    ("getMilliseconds", FuncModel(
+    NormalProp("getMilliseconds", FuncModel(
       name = "Date.prototype.getMilliseconds",
       code = EmptyCode(argLen = 0)
     ), T, F, T),
 
     // TODO getUTCMilliseconds
-    ("getUTCMilliseconds", FuncModel(
+    NormalProp("getUTCMilliseconds", FuncModel(
       name = "Date.prototype.getUTCMilliseconds",
       code = EmptyCode(argLen = 0)
     ), T, F, T),
 
     // TODO getTimezoneOffset
-    ("getTimezoneOffset", FuncModel(
+    NormalProp("getTimezoneOffset", FuncModel(
       name = "Date.prototype.getTimezoneOffset",
       code = EmptyCode(argLen = 0)
     ), T, F, T),
 
     // TODO setTime
-    ("setTime", FuncModel(
+    NormalProp("setTime", FuncModel(
       name = "Date.prototype.setTime",
       code = EmptyCode(argLen = 1)
     ), T, F, T),
 
     // TODO setMilliseconds
-    ("setMilliseconds", FuncModel(
+    NormalProp("setMilliseconds", FuncModel(
       name = "Date.prototype.setMilliseconds",
       code = EmptyCode(argLen = 1)
     ), T, F, T),
 
     // TODO setUTCMilliseconds
-    ("setUTCMilliseconds", FuncModel(
+    NormalProp("setUTCMilliseconds", FuncModel(
       name = "Date.prototype.setUTCMilliseconds",
       code = EmptyCode(argLen = 1)
     ), T, F, T),
 
     // TODO setSeconds
-    ("setSeconds", FuncModel(
+    NormalProp("setSeconds", FuncModel(
       name = "Date.prototype.setSeconds",
       code = EmptyCode(argLen = 2)
     ), T, F, T),
 
     // TODO setUTCSeconds
-    ("setUTCSeconds", FuncModel(
+    NormalProp("setUTCSeconds", FuncModel(
       name = "Date.prototype.setUTCSeconds",
       code = EmptyCode(argLen = 2)
     ), T, F, T),
 
     // TODO setMinutes
-    ("setMinutes", FuncModel(
+    NormalProp("setMinutes", FuncModel(
       name = "Date.prototype.setMinutes",
       code = EmptyCode(argLen = 3)
     ), T, F, T),
 
     // TODO setUTCMinutes
-    ("setUTCMinutes", FuncModel(
+    NormalProp("setUTCMinutes", FuncModel(
       name = "Date.prototype.setUTCMinutes",
       code = EmptyCode(argLen = 3)
     ), T, F, T),
 
     // TODO setHours
-    ("setHours", FuncModel(
+    NormalProp("setHours", FuncModel(
       name = "Date.prototype.setHours",
       code = EmptyCode(argLen = 4)
     ), T, F, T),
 
     // TODO setUTCHours
-    ("setUTCHours", FuncModel(
+    NormalProp("setUTCHours", FuncModel(
       name = "Date.prototype.setUTCHours",
       code = EmptyCode(argLen = 4)
     ), T, F, T),
 
     // TODO setDate
-    ("setDate", FuncModel(
+    NormalProp("setDate", FuncModel(
       name = "Date.prototype.setDate",
       code = EmptyCode(argLen = 1)
     ), T, F, T),
 
     // TODO setUTCDate
-    ("setUTCDate", FuncModel(
+    NormalProp("setUTCDate", FuncModel(
       name = "Date.prototype.setUTCDate",
       code = EmptyCode(argLen = 1)
     ), T, F, T),
 
     // TODO setMonth
-    ("setMonth", FuncModel(
+    NormalProp("setMonth", FuncModel(
       name = "Date.prototype.setMonth",
       code = EmptyCode(argLen = 2)
     ), T, F, T),
 
     // TODO setUTCMonth
-    ("setUTCMonth", FuncModel(
+    NormalProp("setUTCMonth", FuncModel(
       name = "Date.prototype.setUTCMonth",
       code = EmptyCode(argLen = 2)
     ), T, F, T),
 
     // TODO setFullYear
-    ("setFullYear", FuncModel(
+    NormalProp("setFullYear", FuncModel(
       name = "Date.prototype.setFullYear",
       code = EmptyCode(argLen = 3)
     ), T, F, T),
 
     // TODO setUTCFullYear
-    ("setUTCFullYear", FuncModel(
+    NormalProp("setUTCFullYear", FuncModel(
       name = "Date.prototype.setUTCFullYear",
       code = EmptyCode(argLen = 3)
     ), T, F, T),
 
     // TODO toUTCString
-    ("toUTCString", FuncModel(
+    NormalProp("toUTCString", FuncModel(
       name = "Date.prototype.toUTCString",
       code = EmptyCode(argLen = 0)
     ), T, F, T),
 
     // TODO toISOString
-    ("toISOString", FuncModel(
+    NormalProp("toISOString", FuncModel(
       name = "Date.prototype.toISOString",
       code = EmptyCode(argLen = 0)
     ), T, F, T),
 
     // TODO toJSON
-    ("toJSON", FuncModel(
+    NormalProp("toJSON", FuncModel(
       name = "Date.prototype.toJSON",
       code = EmptyCode(argLen = 1)
     ), T, F, T)

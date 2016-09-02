@@ -12,18 +12,20 @@
 package kr.ac.kaist.safe.analyzer.domain
 
 import kr.ac.kaist.safe.LINE_SEP
-import kr.ac.kaist.safe.analyzer.models.builtin._
-import kr.ac.kaist.safe.nodes.cfg.FunctionId
 import kr.ac.kaist.safe.util.Loc
 
-import scala.collection.immutable.{ HashMap, HashSet }
+import scala.collection.immutable.HashMap
 
-//TODO: Merge ObjMap implementation
-//TODO: Handle default values, key values with "@"
-class Obj(val map: Map[String, (PropValue, Absent)]) {
+class Obj(
+    val map: Map[String, (PropValue, Absent)],
+    val imap: ObjInternalMap
+) {
   override def toString: String = {
     val sortedMap = map.toSeq.sortBy {
       case (key, _) => key
+    }
+    val sortedIMap = imap.toSeq.sortBy {
+      case (key, _) => key.toString()
     }
 
     val s = new StringBuilder
@@ -35,25 +37,42 @@ class Obj(val map: Map[String, (PropValue, Absent)]) {
         }).append(propv.toString).append(LINE_SEP)
       }
     }
+    sortedIMap.map {
+      case (key, iv) => {
+        s.append(key.toString)
+          .append(s" : ")
+          .append(iv.toString)
+          .append(LINE_SEP)
+      }
+    }
 
     s.toString
   }
 
   /* partial order */
   def <=(that: Obj): Boolean = {
-    if (this.map.isEmpty) true
-    else if (that.map.isEmpty) false
+    if (this.isEmpty) true
+    else if (that.isEmpty) false
     else if (!(this.map.keySet subsetOf that.map.keySet)) false
-    else that.map.forall(kv => {
-      val (key, thatPVA) = kv
-      this.map.get(key) match {
-        case None => false
-        case Some(thisPVA) =>
-          val (thisPV, thisAbsent) = thisPVA
-          val (thatPV, thatAbsent) = thatPVA
-          thisPV <= thatPV && thisAbsent <= thatAbsent
+    else if (!(this.imap.keySet subsetOf that.imap.keySet)) false
+    else that.map.forall {
+      case (key, thatPVA) => {
+        this.map.get(key) match {
+          case None => false
+          case Some(thisPVA) =>
+            val (thisPV, thisAbsent) = thisPVA
+            val (thatPV, thatAbsent) = thatPVA
+            thisPV <= thatPV && thisAbsent <= thatAbsent
+        }
       }
-    })
+    } && that.imap.forall {
+      case (key, thatIV) => {
+        this.imap.get(key) match {
+          case None => false
+          case Some(thisIV) => thisIV <= thatIV
+        }
+      }
+    }
   }
 
   /* not a partial order */
@@ -62,7 +81,7 @@ class Obj(val map: Map[String, (PropValue, Absent)]) {
   /* join */
   def +(that: Obj): Obj = {
     val keys = this.map.keySet ++ that.map.keySet
-    val newMap = keys.foldLeft(Obj.ObjMapBot)((m, key) => {
+    val newMap = keys.foldLeft(ObjEmptyMap)((m, key) => {
       val thisVal = this.map.get(key)
       val thatVal = that.map.get(key)
       (thisVal, thatVal) match {
@@ -79,7 +98,20 @@ class Obj(val map: Map[String, (PropValue, Absent)]) {
           m + (key -> (propV1 + propV2, absent1 + absent2))
       }
     })
-    new Obj(newMap)
+
+    val ikeys = this.imap.keySet ++ that.imap.keySet
+    val newIMap = ikeys.foldLeft(ObjEmptyIMap)((im, key) => {
+      val thisIVal = this.imap.get(key)
+      val thatIVal = that.imap.get(key)
+      (thisIVal, thatIVal) match {
+        case (None, None) => im
+        case (None, Some(iv)) => im + (key -> iv)
+        case (Some(iv), None) => im + (key -> iv)
+        case (Some(iv1), Some(iv2)) => im + (key -> (iv1 + iv2))
+      }
+    })
+
+    new Obj(newMap, newIMap)
   }
 
   /* lookup */
@@ -88,7 +120,7 @@ class Obj(val map: Map[String, (PropValue, Absent)]) {
       case Some(pva) =>
         val (propV, absent) = pva
         (Some(propV), absent)
-      case None if x.take(1) == "@" => (None, AbsentBot)
+      //      case None if x.take(1) == "@" => (None, AbsentBot)
       case None if isNum(x) =>
         val (propV, absent) = map(STR_DEFAULT_NUMBER)
         (Some(propV), absent)
@@ -102,40 +134,44 @@ class Obj(val map: Map[String, (PropValue, Absent)]) {
   def <>(that: Obj): Obj = {
     if (this.map eq that.map) this
     else {
-      val map1 = that.map.foldLeft(this.map)((m, kv) => {
-        val (key, thatPVA) = kv
-        val (thatPV, thatAbsent) = thatPVA
-        val (thisPVOpt, thisAbsent) = this.lookup(key)
-        thisPVOpt match {
-          case Some(thisPV) if m.contains(key) => m + (key -> (thisPV <> thatPV, thisAbsent <> thatAbsent))
-          case _ => m - key
-        }
-      })
-      val map2 = this.map.foldLeft(map1)((m, kv) => {
-        val (key, thisPVA) = kv
-        if (that.map.contains(key)) m
-        else m - key
-      })
-      new Obj(map2)
+      //      val map1 = that.map.foldLeft(this.map)((m, kv) => {
+      //        val (key, thatPVA) = kv
+      //        val (thatPV, thatAbsent) = thatPVA
+      //        val (thisPVOpt, thisAbsent) = this.lookup(key)
+      //        thisPVOpt match {
+      //          case Some(thisPV) if m.contains(key) => m + (key -> (thisPV <> thatPV, thisAbsent <> thatAbsent))
+      //          case _ => m - key
+      //        }
+      //      })
+      //      val map2 = this.map.foldLeft(map1)((m, kv) => {
+      //        val (key, thisPVA) = kv
+      //        if (that.map.contains(key)) m
+      //        else m - key
+      //      })
+      //      new Obj(map2)
+      new Obj(ObjEmptyMap, ObjEmptyIMap)
     }
   }
 
   def isBottom: Boolean = {
-    if (this.map.isEmpty) true
+    if (this.isEmpty) true
     else if ((this.map.keySet diff DEFAULT_KEYSET).nonEmpty) false
     else
       this.map.foldLeft(true)((b, kv) => {
         val (_, pva) = kv
         val (propV, absent) = pva
         b && propV.isBottom && absent.isBottom
+      }) && this.imap.foldLeft(true)((b, kv) => {
+        val (_, iv) = kv
+        b && iv.isBottom
       })
   }
 
   /* substitute locR by locO */
   def subsLoc(locR: Loc, locO: Loc): Obj = {
-    if (this.map.isEmpty) this
+    if (this.isEmpty) this
     else {
-      val newMap = this.map.foldLeft(Obj.ObjMapBot)((m, kv) => {
+      val newMap = this.map.foldLeft(ObjEmptyMap)((m, kv) => {
         val (key, pva) = kv
         val (propV, absent) = pva
         val newV = propV.objval.value.subsLoc(locR, locO)
@@ -143,14 +179,19 @@ class Obj(val map: Map[String, (PropValue, Absent)]) {
         val newPropV = PropValue(newOV, propV.funid)
         m + (key -> (newPropV, absent))
       })
-      new Obj(newMap)
+      val newIMap = this.imap.foldLeft(ObjEmptyIMap)((im, kv) => {
+        val (key, iv) = kv
+        val newV = iv.value.subsLoc(locR, locO)
+        im + (key -> InternalValue(newV, iv.fidset))
+      })
+      new Obj(newMap, newIMap)
     }
   }
 
   def weakSubsLoc(locR: Loc, locO: Loc): Obj = {
     if (this.map.isEmpty) this
     else {
-      val newMap = this.map.foldLeft(Obj.ObjMapBot)((m, kv) => {
+      val newMap = this.map.foldLeft(ObjEmptyMap)((m, kv) => {
         val (key, pva) = kv
         val (propV, absent) = pva
         val newV = propV.objval.value.weakSubsLoc(locR, locO)
@@ -158,7 +199,12 @@ class Obj(val map: Map[String, (PropValue, Absent)]) {
         val newPropV = PropValue(newOV, propV.funid)
         m + (key -> (newPropV, absent))
       })
-      new Obj(newMap)
+      val newIMap = this.imap.foldLeft(ObjEmptyIMap)((im, kv) => {
+        val (key, iv) = kv
+        val newV = iv.value.weakSubsLoc(locR, locO)
+        im + (key -> InternalValue(newV, iv.fidset))
+      })
+      new Obj(newMap, newIMap)
     }
   }
 
@@ -220,6 +266,8 @@ class Obj(val map: Map[String, (PropValue, Absent)]) {
     }
   }
 
+  def apply(in: InternalName): Option[InternalValue] = imap.get(in)
+
   def getOrElse[T](s: String)(default: T)(f: PropValue => T): T = {
     this(s) match {
       case Some(propV) => f(propV)
@@ -241,9 +289,23 @@ class Obj(val map: Map[String, (PropValue, Absent)]) {
     }
   }
 
+  def getOrElse[T](in: InternalName)(default: T)(f: InternalValue => T): T = {
+    this(in) match {
+      case Some(iv) => f(iv)
+      case None => default
+    }
+  }
+
+  def get(in: InternalName)(utils: Utils): InternalValue = {
+    this(in) match {
+      case Some(iv) => iv
+      case None => utils.ivalue.Bot
+    }
+  }
+
   def -(s: String): Obj = {
     if (this.isBottom) this
-    else Obj(this.map - s)
+    else new Obj(this.map - s, this.imap)
   }
 
   def -(absStr: AbsString)(utils: Utils): Obj = {
@@ -265,7 +327,7 @@ class Obj(val map: Map[String, (PropValue, Absent)]) {
           else if (!isNum(x) && prop <= defaultOther) tmpMap - x
           else tmpMap.updated(x, (prop, AbsentTop))
         })
-        Obj(newMap)
+        new Obj(newMap, this.imap)
       case ConSetCon(strSet) if strSet.size == 1 => this - strSet.head
       case ConSetCon(strSet) =>
         val newMap = strSet.foldLeft(this.map)((tmpMap, x) => {
@@ -278,7 +340,7 @@ class Obj(val map: Map[String, (PropValue, Absent)]) {
               else tmpMap.updated(x, (prop, AbsentTop))
           }
         })
-        Obj(newMap)
+        new Obj(newMap, this.imap)
     }
   }
 
@@ -287,15 +349,15 @@ class Obj(val map: Map[String, (PropValue, Absent)]) {
     if (this.isBottom)
       this
     else if (x.startsWith("@default"))
-      Obj(map.updated(x, (propv, AbsentTop)))
+      new Obj(map.updated(x, (propv, AbsentTop)), imap)
     else
-      Obj(map.updated(x, (propv, AbsentBot)))
+      new Obj(map.updated(x, (propv, AbsentBot)), imap)
   }
 
   def update(absStr: AbsString, propV: PropValue, utils: Utils): Obj = {
     absStr.gamma match {
       case ConSetCon(strSet) if strSet.size == 1 => // strong update
-        Obj(map.updated(strSet.head, (propV, AbsentBot)))
+        new Obj(map.updated(strSet.head, (propV, AbsentBot)), imap)
       case ConSetCon(strSet) =>
         strSet.foldLeft(this)((r, x) => r + update(x, propV))
       case ConSetBot() => utils.absObject.Bot
@@ -319,7 +381,7 @@ class Obj(val map: Map[String, (PropValue, Absent)]) {
             if (AbsentTop <= xAbsent && absX.isAllNums) m - x
             else m + (x -> (xPropV, xAbsent))
           })
-          Obj(weakUpdatedMap + (STR_DEFAULT_NUMBER -> (newDefaultNum, AbsentTop)))
+          new Obj(weakUpdatedMap + (STR_DEFAULT_NUMBER -> (newDefaultNum, AbsentTop)), imap)
         case ConSingleCon(false) =>
           val newDefaultOther = this.map.get(STR_DEFAULT_OTHER) match {
             case Some((otherPropV, _)) => otherPropV + propV
@@ -338,7 +400,7 @@ class Obj(val map: Map[String, (PropValue, Absent)]) {
             if (AbsentTop <= xAbsent && absX.isAllOthers) m - x
             else m + (x -> (xPropV, xAbsent))
           })
-          Obj(weakUpdatedMap + (STR_DEFAULT_OTHER -> (newDefaultOther, AbsentTop)))
+          new Obj(weakUpdatedMap + (STR_DEFAULT_OTHER -> (newDefaultOther, AbsentTop)), imap)
         case ConSingleTop() =>
           val newDefaultNum = this.map.get(STR_DEFAULT_NUMBER) match {
             case Some((numPropV, _)) => numPropV + propV
@@ -362,11 +424,23 @@ class Obj(val map: Map[String, (PropValue, Absent)]) {
             else if (AbsentTop <= xAbsent && absX.isAllOthers && xPropV <= newDefaultOther) m - x
             else m + (x -> (xPropV, xAbsent))
           })
-          Obj(weakUpdatedMap +
-            (STR_DEFAULT_NUMBER -> (newDefaultNum, AbsentTop),
-              STR_DEFAULT_OTHER -> (newDefaultOther, AbsentTop)))
+          new Obj(
+            weakUpdatedMap +
+              (STR_DEFAULT_NUMBER -> (newDefaultNum, AbsentTop),
+                STR_DEFAULT_OTHER -> (newDefaultOther, AbsentTop)),
+            imap
+          )
       }
     }
+  }
+
+  def update(in: InternalName, iv: InternalValue): Obj = {
+    val newIv =
+      this(in) match {
+        case Some(oldIv) => iv + oldIv
+        case None => iv
+      }
+    new Obj(map, imap + (in -> newIv))
   }
 
   def domIn(x: String)(absBool: AbsBoolUtil): AbsBool = {
@@ -422,150 +496,16 @@ class Obj(val map: Map[String, (PropValue, Absent)]) {
     }
   }
 
+  def domIn(in: InternalName)(absBoolU: AbsBoolUtil): AbsBool = {
+    imap.get(in) match {
+      case None => absBoolU.False
+      case Some(_) => absBoolU.Top
+    }
+  }
+
   def collectKeysStartWith(prefix: String): Set[String] = {
     this.map.keySet.filter(s => s.startsWith(prefix))
   }
-}
 
-object Obj {
-  val ObjMapBot: Map[String, (PropValue, Absent)] = HashMap[String, (PropValue, Absent)]()
-
-  def apply(m: Map[String, (PropValue, Absent)]): Obj = new Obj(m)
-
-  //  def Bot: Utils => Obj = utils => {
-  //    val map = ObjMapBot +
-  //      (STR_DEFAULT_NUMBER -> (PropValue.Bot(utils), AbsentBot)) +
-  //      (STR_DEFAULT_OTHER -> (PropValue.Bot(utils), AbsentBot))
-  //
-  //    new Obj(map)
-  //  }
-  //
-  //  def Empty: Utils => Obj = utils => {
-  //    val map = ObjMapBot +
-  //      (STR_DEFAULT_NUMBER -> (PropValue.Bot(utils), AbsentTop)) +
-  //      (STR_DEFAULT_OTHER -> (PropValue.Bot(utils), AbsentTop))
-  //
-  //    new Obj(map)
-  //  }
-  //
-  //  ////////////////////////////////////////////////////////////////
-  //  // new Object constructos
-  //  ////////////////////////////////////////////////////////////////
-  //  def newObject(utils: Utils): Obj = newObject(BuiltinObjectProto.loc)(utils)
-  //
-  //  def newObject(loc: Loc)(utils: Utils): Obj = newObject(HashSet(loc))(utils)
-  //
-  //  def newObject(locSet: Set[Loc])(utils: Utils): Obj = {
-  //    val absFalse = utils.absBool.False
-  //    Empty(utils)
-  //      .update("@class", PropValue(utils.absString.alpha("Object"))(utils))
-  //      .update("@proto", PropValue(utils.dataProp(locSet)(absFalse, absFalse, absFalse)))
-  //      .update("@extensible", PropValue(utils.absBool.True)(utils))
-  //  }
-  //
-  //  def newArgObject(absLength: AbsNumber)(utils: Utils): Obj = {
-  //    val protoVal = utils.value(BuiltinObjectProto.loc)
-  //    val lengthVal = utils.value(absLength)
-  //    val absFalse = utils.absBool.False
-  //    val absTrue = utils.absBool.True
-  //    Empty(utils)
-  //      .update("@class", PropValue(utils.absString.alpha("Arguments"))(utils))
-  //      .update("@proto", PropValue(utils.dataProp(protoVal)(absFalse, absFalse, absFalse)))
-  //      .update("@extensible", PropValue(absTrue)(utils))
-  //      .update("length", PropValue(utils.dataProp(lengthVal)(absTrue, absFalse, absTrue)))
-  //  }
-  //
-  //  def newArrayObject(absLength: AbsNumber)(utils: Utils): Obj = {
-  //    val protoVal = utils.value(BuiltinArrayProto.loc)
-  //    val lengthVal = utils.value(absLength)
-  //    val absFalse = utils.absBool.False
-  //    Empty(utils)
-  //      .update("@class", PropValue(utils.absString.alpha("Array"))(utils))
-  //      .update("@proto", PropValue(utils.dataProp(protoVal)(absFalse, absFalse, absFalse)))
-  //      .update("@extensible", PropValue(utils.absBool.True)(utils))
-  //      .update("length", PropValue(utils.dataProp(lengthVal)(utils.absBool.True, absFalse, absFalse)))
-  //  }
-  //
-  //  def newFunctionObject(fid: FunctionId, env: Value, l: Loc, n: AbsNumber)(utils: Utils): Obj = {
-  //    newFunctionObject(Some(fid), Some(fid), env, Some(l), n)(utils)
-  //  }
-  //
-  //  def newFunctionObject(fidOpt: Option[FunctionId], constructIdOpt: Option[FunctionId], env: Value,
-  //    locOpt: Option[Loc], n: AbsNumber)(utils: Utils): Obj = {
-  //    newFunctionObject(fidOpt, constructIdOpt, env,
-  //      locOpt, utils.absBool.True, utils.absBool.False, utils.absBool.False, n)(utils)
-  //  }
-  //
-  //  def newFunctionObject(fidOpt: Option[FunctionId], constructIdOpt: Option[FunctionId], env: Value,
-  //    locOpt: Option[Loc], writable: AbsBool, enumerable: AbsBool, configurable: AbsBool,
-  //    absLength: AbsNumber)(utils: Utils): Obj = {
-  //    val protoVal = utils.value(BuiltinFunctionProto.loc)
-  //    val absFalse = utils.absBool.False
-  //    val lengthVal = utils.value(absLength)
-  //    val obj1 = Empty(utils)
-  //      .update("@class", PropValue(utils.absString.alpha("Function"))(utils))
-  //      .update("@proto", PropValue(utils.dataProp(protoVal)(absFalse, absFalse, absFalse)))
-  //      .update("@extensible", PropValue(utils.absBool.True)(utils))
-  //      .update("@scope", PropValue(utils.dataProp(env)))
-  //      .update("length", PropValue(utils.dataProp(lengthVal)(absFalse, absFalse, absFalse)))
-  //
-  //    val obj2 = fidOpt match {
-  //      case Some(fid) => obj1.update("@function", PropValue(HashSet(fid))(utils))
-  //      case None => obj1
-  //    }
-  //    val obj3 = constructIdOpt match {
-  //      case Some(cid) => obj2.update("@construct", PropValue(HashSet(cid))(utils))
-  //      case None => obj2
-  //    }
-  //    val obj4 = locOpt match {
-  //      case Some(loc) =>
-  //        val prototypeVal = utils.value(HashSet(loc))
-  //        obj3.update("@hasinstance", PropValue(utils.absNull.Top)(utils))
-  //          .update("prototype", PropValue(utils.dataProp(prototypeVal)(writable, enumerable, configurable)))
-  //      case None => obj3
-  //    }
-  //    obj4
-  //  }
-  //
-  //  def newBooleanObj(absB: AbsBool)(utils: Utils): Obj = {
-  //    val newObj = newObject(BuiltinBooleanProto.loc)(utils)
-  //    newObj.update("@class", PropValue(utils.absString.alpha("Boolean"))(utils))
-  //      .update("@primitive", PropValue(absB)(utils))
-  //  }
-  //
-  //  def newNumberObj(absNum: AbsNumber)(utils: Utils): Obj = {
-  //    val newObj = newObject(BuiltinNumberProto.loc)(utils)
-  //    newObj.update("@class", PropValue(utils.absString.alpha("Number"))(utils))
-  //      .update("@primitive", PropValue(absNum)(utils))
-  //  }
-  //
-  //  def newStringObj(absStr: AbsString)(utils: Utils): Obj = {
-  //    val newObj = newObject(BuiltinStringProto.loc)(utils)
-  //
-  //    val newObj2 = newObj
-  //      .update("@class", PropValue(utils.absString.alpha("String"))(utils))
-  //      .update("@primitive", PropValue(absStr)(utils))
-  //
-  //    val absFalse = utils.absBool.False
-  //    val absTrue = utils.absBool.True
-  //    absStr.gamma match {
-  //      case ConSetCon(strSet) =>
-  //        strSet.foldLeft(Bot(utils))((obj, str) => {
-  //          val length = str.length
-  //          val newObj3 = (0 until length).foldLeft(newObj2)((tmpObj, tmpIdx) => {
-  //            val charAbsStr = utils.absString.alpha(str.charAt(tmpIdx).toString)
-  //            val charVal = utils.value(charAbsStr)
-  //            tmpObj.update(tmpIdx.toString, PropValue(utils.dataProp(charVal)(absFalse, absTrue, absFalse)))
-  //          })
-  //          val lengthVal = utils.value.alpha(length)
-  //          obj + newObj3.update("length", PropValue(utils.dataProp(lengthVal)(absFalse, absFalse, absFalse)))
-  //        })
-  //      case _ =>
-  //        val strTopVal = utils.value(utils.absString.Top)
-  //        val lengthVal = utils.value(absStr.length(utils.absNumber))
-  //        newObj2
-  //          .update(utils.absString.NumStr, PropValue(utils.dataProp(strTopVal)(absFalse, absTrue, absFalse)), utils)
-  //          .update("length", PropValue(utils.dataProp(lengthVal)(absFalse, absFalse, absFalse)))
-  //    }
-  //  }
+  def isEmpty: Boolean = this.map.isEmpty && this.imap.isEmpty
 }

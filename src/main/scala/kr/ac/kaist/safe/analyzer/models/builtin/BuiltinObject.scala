@@ -95,7 +95,7 @@ object BuiltinObject extends FuncModel(
 
   props = List(
     // 15.2.3.2 Object.getPrototypeOf(O)
-    ("getPrototypeOf", FuncModel(
+    NormalProp("getPrototypeOf", FuncModel(
       name = "Object.getPrototypeOf",
       code = BasicCode(argLen = 1, (
         args: Value, st: State, sem: Semantics, utils: Utils
@@ -111,7 +111,7 @@ object BuiltinObject extends FuncModel(
 
         // 2. Return the value of [[Prototype]] internal property of O.
         val protoV = retV.locset.foldLeft(utils.value.Bot)((v, loc) => {
-          v + retSt.heap(loc).getOrElse(utils.absObject.Bot).get("@proto")(utils).objval.value
+          v + retSt.heap(loc).getOrElse(utils.absObject.Bot).get(IPrototype)(utils).value
         })
 
         (st, excSt, protoV)
@@ -119,7 +119,7 @@ object BuiltinObject extends FuncModel(
     ), T, F, T),
 
     // 15.2.3.3 getOwnPropertyDescriptor(O, P)
-    ("getOwnPropertyDescriptor", FuncModel(
+    NormalProp("getOwnPropertyDescriptor", FuncModel(
       name = "Object.getOwnPropertyDescriptor",
       code = BasicCode(argLen = 2, (
         args: Value, st: State, sem: Semantics, utils: Utils
@@ -172,7 +172,7 @@ object BuiltinObject extends FuncModel(
     ), T, F, T),
 
     // 15.2.3.4 Object.getOwnPropertyNames(O)
-    ("getOwnPropertyNames", FuncModel(
+    NormalProp("getOwnPropertyNames", FuncModel(
       name = "Object.getOwnPropertyNames",
       code = BasicCode(argLen = 1, (
         args: Value, st: State, sem: Semantics, utils: Utils
@@ -231,61 +231,61 @@ object BuiltinObject extends FuncModel(
     ), T, F, T),
 
     // TODO create
-    ("create", FuncModel(
+    NormalProp("create", FuncModel(
       name = "Object.create",
       code = EmptyCode(argLen = 2)
     ), T, F, T),
 
     // TODO defineProperty
-    ("defineProperty", FuncModel(
+    NormalProp("defineProperty", FuncModel(
       name = "Object.defineProperty",
       code = EmptyCode(argLen = 3)
     ), T, F, T),
 
     // TODO defineProperties
-    ("defineProperties", FuncModel(
+    NormalProp("defineProperties", FuncModel(
       name = "Object.defineProperties",
       code = EmptyCode(argLen = 2)
     ), T, F, T),
 
     // TODO seal
-    ("seal", FuncModel(
+    NormalProp("seal", FuncModel(
       name = "Object.seal",
       code = EmptyCode(argLen = 1)
     ), T, F, T),
 
     // TODO freeze
-    ("freeze", FuncModel(
+    NormalProp("freeze", FuncModel(
       name = "Object.freeze",
       code = EmptyCode(argLen = 1)
     ), T, F, T),
 
     // TODO preventExtensions
-    ("preventExtensions", FuncModel(
+    NormalProp("preventExtensions", FuncModel(
       name = "Object.preventExtensions",
       code = EmptyCode(argLen = 1)
     ), T, F, T),
 
     // TODO isSealed
-    ("isSealed", FuncModel(
+    NormalProp("isSealed", FuncModel(
       name = "Object.isSealed",
       code = EmptyCode(argLen = 1)
     ), T, F, T),
 
     // TODO isFrozen
-    ("isFrozen", FuncModel(
+    NormalProp("isFrozen", FuncModel(
       name = "Object.isFrozen",
       code = EmptyCode(argLen = 1)
     ), T, F, T),
 
     // TODO isExtensible
-    ("isExtensible", FuncModel(
+    NormalProp("isExtensible", FuncModel(
       name = "Object.isExtensible",
       code = EmptyCode(argLen = 1)
     ), T, F, T),
 
     // TODO keys
-    ("keys", FuncModel(
+    NormalProp("keys", FuncModel(
       name = "Object.keys",
       code = EmptyCode(argLen = 1)
     ), T, F, T)
@@ -295,40 +295,40 @@ object BuiltinObject extends FuncModel(
 object BuiltinObjectProto extends ObjModel(
   name = "Object.prototype",
   props = List(
-    ("@proto", PrimModel(null), F, F, F),
+    InternalProp(IPrototype, PrimModel(null)),
 
     // TODO toString
-    ("toString", FuncModel(
+    NormalProp("toString", FuncModel(
       name = "Object.prototype.toString",
       code = EmptyCode()
     ), T, F, T),
 
     // TODO toLocaleString
-    ("toLocaleString", FuncModel(
+    NormalProp("toLocaleString", FuncModel(
       name = "Object.prototype.toLocaleString",
       code = EmptyCode()
     ), T, F, T),
 
     // TODO valueOf
-    ("valueOf", FuncModel(
+    NormalProp("valueOf", FuncModel(
       name = "Object.prototype.valueOf",
       code = EmptyCode()
     ), T, F, T),
 
     // TODO hasOwnProperty
-    ("hasOwnProperty", FuncModel(
+    NormalProp("hasOwnProperty", FuncModel(
       name = "Object.prototype.hasOwnProperty",
       code = EmptyCode(argLen = 1)
     ), T, F, T),
 
     // TODO isPrototypeOf
-    ("isPrototypeOf", FuncModel(
+    NormalProp("isPrototypeOf", FuncModel(
       name = "Object.prototype.isPrototypeOf",
       code = EmptyCode(argLen = 1)
     ), T, F, T),
 
     // TODO propertyIsEnumerable
-    ("propertyIsEnumerable", FuncModel(
+    NormalProp("propertyIsEnumerable", FuncModel(
       name = "Object.prototype.propertyIsEnumerable",
       code = EmptyCode(argLen = 1)
     ), T, F, T)

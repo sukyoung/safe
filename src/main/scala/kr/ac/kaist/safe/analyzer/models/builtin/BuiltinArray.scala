@@ -11,13 +11,14 @@
 
 package kr.ac.kaist.safe.analyzer.models.builtin
 
+import kr.ac.kaist.safe.analyzer.domain.IClass
 import kr.ac.kaist.safe.analyzer.models._
 
 object BuiltinArray extends FuncModel(
   name = "Array",
   props = List(
     // TODO isArray
-    ("isArray", FuncModel(
+    NormalProp("isArray", FuncModel(
       name = "Array.isArray",
       code = EmptyCode(argLen = 1)
     ), T, F, T)
@@ -32,131 +33,131 @@ object BuiltinArray extends FuncModel(
 object BuiltinArrayProto extends ObjModel(
   name = "Array.prototype",
   props = List(
-    ("@class", PrimModel("Array"), F, F, F),
-    ("length", PrimModel(0.0), T, F, T),
+    InternalProp(IClass, PrimModel("Array")),
+    NormalProp("length", PrimModel(0.0), T, F, T),
 
     // TODO toString
-    ("toString", FuncModel(
+    NormalProp("toString", FuncModel(
       name = "Array.prototype.toString",
       code = EmptyCode(argLen = 0)
     ), T, F, T),
 
     // TODO toLocaleString
-    ("toLocaleString", FuncModel(
+    NormalProp("toLocaleString", FuncModel(
       name = "Array.prototype.toLocaleString",
       code = EmptyCode(argLen = 0)
     ), T, F, T),
 
     // TODO concat
-    ("concat", FuncModel(
+    NormalProp("concat", FuncModel(
       name = "Array.prototype.concat",
       code = EmptyCode(argLen = 1)
     ), T, F, T),
 
     // TODO join
-    ("join", FuncModel(
+    NormalProp("join", FuncModel(
       name = "Array.prototype.join",
       code = EmptyCode(argLen = 1)
     ), T, F, T),
 
     // TODO pop
-    ("pop", FuncModel(
+    NormalProp("pop", FuncModel(
       name = "Array.prototype.pop",
       code = EmptyCode(argLen = 0)
     ), T, F, T),
 
     // TODO push
-    ("push", FuncModel(
+    NormalProp("push", FuncModel(
       name = "Array.prototype.push",
       code = EmptyCode(argLen = 1)
     ), T, F, T),
 
     // TODO reverse
-    ("reverse", FuncModel(
+    NormalProp("reverse", FuncModel(
       name = "Array.prototype.reverse",
       code = EmptyCode(argLen = 0)
     ), T, F, T),
 
     // TODO shift
-    ("shift", FuncModel(
+    NormalProp("shift", FuncModel(
       name = "Array.prototype.shift",
       code = EmptyCode(argLen = 0)
     ), T, F, T),
 
     // TODO slice
-    ("slice", FuncModel(
+    NormalProp("slice", FuncModel(
       name = "Array.prototype.slice",
       code = EmptyCode(argLen = 2)
     ), T, F, T),
 
     // TODO sort
-    ("sort", FuncModel(
+    NormalProp("sort", FuncModel(
       name = "Array.prototype.sort",
       code = EmptyCode(argLen = 1)
     ), T, F, T),
 
     // TODO splice
-    ("splice", FuncModel(
+    NormalProp("splice", FuncModel(
       name = "Array.prototype.splice",
       code = EmptyCode(argLen = 2)
     ), T, F, T),
 
     // TODO unshift
-    ("unshift", FuncModel(
+    NormalProp("unshift", FuncModel(
       name = "Array.prototype.unshift",
       code = EmptyCode(argLen = 1)
     ), T, F, T),
 
     // TODO indexOf
-    ("indexOf", FuncModel(
+    NormalProp("indexOf", FuncModel(
       name = "Array.prototype.indexOf",
       code = EmptyCode(argLen = 1)
     ), T, F, T),
 
     // TODO lastIndexOf
-    ("lastIndexOf", FuncModel(
+    NormalProp("lastIndexOf", FuncModel(
       name = "Array.prototype.lastIndexOf",
       code = EmptyCode(argLen = 1)
     ), T, F, T),
 
     // TODO every
-    ("every", FuncModel(
+    NormalProp("every", FuncModel(
       name = "Array.prototype.every",
       code = EmptyCode(argLen = 1)
     ), T, F, T),
 
     // TODO some
-    ("some", FuncModel(
+    NormalProp("some", FuncModel(
       name = "Array.prototype.some",
       code = EmptyCode(argLen = 1)
     ), T, F, T),
 
     // TODO forEach
-    ("forEach", FuncModel(
+    NormalProp("forEach", FuncModel(
       name = "Array.prototype.forEach",
       code = EmptyCode(argLen = 1)
     ), T, F, T),
 
     // TODO map
-    ("map", FuncModel(
+    NormalProp("map", FuncModel(
       name = "Array.prototype.map",
       code = EmptyCode(argLen = 1)
     ), T, F, T),
 
     // TODO filter
-    ("filter", FuncModel(
+    NormalProp("filter", FuncModel(
       name = "Array.prototype.filter",
       code = EmptyCode(argLen = 1)
     ), T, F, T),
 
     // TODO reduce
-    ("reduce", FuncModel(
+    NormalProp("reduce", FuncModel(
       name = "Array.prototype.reduce",
       code = EmptyCode(argLen = 1)
     ), T, F, T),
 
     // TODO reduceRight
-    ("reduceRight", FuncModel(
+    NormalProp("reduceRight", FuncModel(
       name = "Array.prototype.reduceRight",
       code = EmptyCode(argLen = 1)
     ), T, F, T)
