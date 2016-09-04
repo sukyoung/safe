@@ -128,11 +128,10 @@ class Semantics(
               })
             case None => ExecContext.Bot
           }
-          State(st.heap, ExecContext(ctx3.map, old))
+          State(st.heap, ctx3.setOldAddrSet(old))
         }
       }
       case (Exit(_), _) if st.context.isBottom => State.Bot
-      case (Exit(_), _) if st.context.old.isBottom => State.Bot
       case (Exit(f1), AfterCall(f2, retVar, call)) =>
         val (ctx1, old1) = (st.context, st.context.old)
         val (old2, env1) = old.fixOldify(env, old1.mayOld, old1.mustOld)(utils)
@@ -141,7 +140,7 @@ class Semantics(
           val localEnv = ctx1.pureLocal
           val returnV = localEnv.getOrElse("@return")(valueU.Bot) { _.value }
           val ctx2 = ctx1.subsPureLocal(env1)
-          val newSt = State(st.heap, ExecContext(ctx2.map, old2))
+          val newSt = State(st.heap, ctx2.setOldAddrSet(old2))
           newSt.varStore(retVar, returnV)(utils)
         }
       case (Exit(f), _) =>
@@ -167,7 +166,7 @@ class Semantics(
           val ctx2 = ctx1.subsPureLocal(env1
             .update("@exception", excBind)
             .update("@exception_all", newExcAllBind))
-          State(st.heap, ExecContext(ctx2.map, c2))
+          State(st.heap, ctx2.setOldAddrSet(c2))
         }
       case (ExitExc(f), _) =>
         val old1 = st.context.old

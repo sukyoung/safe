@@ -257,7 +257,7 @@ abstract class DecEnvRecord extends EnvRecord {
     case (DecEnvRecordBot, _) => that
     case (_, DecEnvRecordBot) => this
     case (DecEnvRecordMap(thisMap), DecEnvRecordMap(thatMap)) => {
-      if (this eq that) this
+      if (thisMap eq thatMap) this
       else {
         val newMap = thatMap.foldLeft(thisMap) {
           case (m, (key, (thatB, thatAbs))) => m.get(key) match {
@@ -278,7 +278,7 @@ abstract class DecEnvRecord extends EnvRecord {
       if (thisMap eq thatMap) this
       else {
         val keys = thisMap.keySet intersect thatMap.keySet
-        val map = keys.foldLeft(DecEnvRecord.MapBot) {
+        val map = keys.foldLeft(DecEnvRecord.EmptyMap) {
           case (m, key) => {
             val (thisB, thisAbs) = thisMap(key)
             val (thatB, thatAbs) = thatMap(key)
@@ -299,7 +299,7 @@ abstract class DecEnvRecord extends EnvRecord {
     case DecEnvRecordMap(map) => {
       if (map.isEmpty) this
       else {
-        val newMap = map.foldLeft(DecEnvRecord.MapBot) {
+        val newMap = map.foldLeft(DecEnvRecord.EmptyMap) {
           case (m, (key, (bind, abs))) => {
             val newV = bind.value.subsLoc(locR, locO)
             val newBind = bind.copy(value = newV)
@@ -317,7 +317,7 @@ abstract class DecEnvRecord extends EnvRecord {
     case DecEnvRecordMap(map) => {
       if (map.isEmpty) this
       else {
-        val newMap = map.foldLeft(DecEnvRecord.MapBot) {
+        val newMap = map.foldLeft(DecEnvRecord.EmptyMap) {
           case (m, (key, (bind, abs))) => {
             val newV = bind.value.weakSubsLoc(locR, locO)
             val newBind = bind.copy(value = newV)
@@ -362,9 +362,9 @@ abstract class DecEnvRecord extends EnvRecord {
 }
 
 object DecEnvRecord {
-  private val MapBot: Map[String, (Binding, Absent)] = HashMap()
+  private val EmptyMap: Map[String, (Binding, Absent)] = HashMap()
   val Bot: DecEnvRecord = DecEnvRecordBot
-  val Empty: DecEnvRecord = DecEnvRecordMap(MapBot)
+  val Empty: DecEnvRecord = DecEnvRecordMap(EmptyMap)
   def apply(m: Map[String, (Binding, Absent)]): DecEnvRecord = DecEnvRecordMap(m)
   def newDeclEnvRecord(outerEnv: Value)(utils: Utils): DecEnvRecord = {
     Empty.update("@outer", utils.binding(outerEnv))

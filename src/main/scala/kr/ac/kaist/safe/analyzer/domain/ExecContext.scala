@@ -19,32 +19,29 @@ import scala.collection.immutable.{ HashMap, HashSet }
 import kr.ac.kaist.safe.nodes.cfg._
 
 // 10.3 Execution Contexts
-class ExecContext(
-    // TODO val varEnv: LexEnv // VariableEnvironment
-    // val thisBinding: Set[Loc], // ThisBinding
-    // val oldAddrSet: OldAddrSet // TODO old address set
-    val map: Map[Loc, DecEnvRecord],
-    val old: OldAddrSet
-) {
+abstract class ExecContext {
   // TODO var lexEnv: LexEnv = varEnv // LexicalEnvironment
-  /* partial order */
-  def <=(that: ExecContext): Boolean = {
-    val mapB =
-      if (this.map eq that.map) true
-      else if (this.map.size > that.map.size) false
-      else if (this.map.isEmpty) true
-      else if (that.map.isEmpty) false
-      else if (!(this.map.keySet subsetOf that.map.keySet)) false
-      else that.map.forall((kv) => {
-        val (l, env) = kv
-        this.map.get(l) match {
-          case Some(thisEnv) => thisEnv <= env
-          case None => false
+  // partial order
+  def <=(that: ExecContext): Boolean = (this, that) match {
+    case (ExecContextBot, _) => true
+    case (_, ExecContextBot) => false
+    case (ExecContextMap(thisMap, thisOld), ExecContextMap(thatMap, thatOld)) => {
+      val mapB =
+        if (thisMap.isEmpty) true
+        else if (thatMap.isEmpty) false
+        else thisMap.forall {
+          case (loc, thisEnv) => thatMap.get(loc) match {
+            case None => false
+            case Some(thatEnv) => thisEnv <= thatEnv
+          }
         }
-      })
-    val oldB = this.old <= that.old
-    mapB && oldB
+      val oldB = thisOld <= thatOld
+      mapB && oldB
+    }
   }
+
+  // not a partial order
+  def </(that: ExecContext): Boolean = !(this <= that)
 
   private def weakUpdated(m: Map[Loc, DecEnvRecord], loc: Loc, newEnv: DecEnvRecord): Map[Loc, DecEnvRecord] =
     m.get(loc) match {
@@ -52,53 +49,51 @@ class ExecContext(
       case None => m.updated(loc, newEnv)
     }
 
-  /* join */
-  def +(that: ExecContext): ExecContext = {
-    val newMap =
-      if (this.map eq that.map) this.map
-      else if (this.isBottom) that.map
-      else if (that.isBottom) this.map
+  // join
+  def +(that: ExecContext): ExecContext = (this, that) match {
+    case (ExecContextBot, _) => that
+    case (_, ExecContextBot) => this
+    case (ExecContextMap(thisMap, thisOld), ExecContextMap(thatMap, thatOld)) => {
+      if (this eq that) this
       else {
-        val joinKeySet = this.map.keySet ++ that.map.keySet
-        joinKeySet.foldLeft(HashMap[Loc, DecEnvRecord]())((m, key) => {
-          val joinEnv = (this.map.get(key), that.map.get(key)) match {
-            case (Some(env1), Some(env2)) => Some(env1 + env2)
-            case (Some(env1), None) => Some(env1)
-            case (None, Some(env2)) => Some(env2)
-            case (None, None) => None
+        val newMap = thatMap.foldLeft(thisMap) {
+          case (m, (loc, thatEnv)) => m.get(loc) match {
+            case None => m + (loc -> thatEnv)
+            case Some(thisEnv) =>
+              m + (loc -> (thisEnv + thatEnv))
           }
-          joinEnv match {
-            case Some(env) => m.updated(key, env)
-            case None => m
-          }
-        })
+        }
+        val newOld = thisOld + thatOld
+        ExecContext(newMap, newOld)
       }
-    val newOld = this.old + that.old
-    ExecContext(newMap, newOld)
+    }
   }
 
-  /* meet */
-  def <>(that: ExecContext): ExecContext = {
-    val newMap: Map[Loc, DecEnvRecord] =
-      if (this.map eq that.map) this.map
-      else if (this.map.isEmpty) HashMap()
-      else if (that.map.isEmpty) HashMap()
+  // meet
+  def <>(that: ExecContext): ExecContext = (this, that) match {
+    case (ExecContextBot, _) | (_, ExecContextBot) => ExecContextBot
+    case (ExecContextMap(thisMap, thisOld), ExecContextMap(thatMap, thatOld)) => {
+      if (thisMap eq thatMap) this
       else {
-        that.map.foldLeft(this.map)(
-          (m, kv) => kv match {
-            case (k, v) => m.get(k) match {
-              case None => m - k
-              case Some(vv) => m + (k -> (v <> vv))
-            }
+        val locSet = thisMap.keySet intersect thatMap.keySet
+        val newMap = locSet.foldLeft(ExecContext.EmptyMap) {
+          case (m, loc) => {
+            val thisEnv = thisMap(loc)
+            val thatEnv = thatMap(loc)
+            m + (loc -> (thisEnv <> thatEnv))
           }
-        )
+        }
+        val newOld = thisOld <> thatOld
+        ExecContext(newMap, newOld)
       }
-    val newOld = this.old <> that.old
-    ExecContext(newMap, newOld)
+    }
   }
 
   /* lookup */
-  def apply(loc: Loc): Option[DecEnvRecord] = map.get(loc)
+  def apply(loc: Loc): Option[DecEnvRecord] = this match {
+    case ExecContextBot => None
+    case ExecContextMap(map, old) => map.get(loc)
+  }
 
   def getOrElse(loc: Loc, default: DecEnvRecord): DecEnvRecord =
     this(loc) match {
@@ -114,54 +109,67 @@ class ExecContext(
   }
 
   /* heap update */
-  def update(loc: Loc, env: DecEnvRecord): ExecContext = {
-    if (!isBottom) {
+  def update(loc: Loc, env: DecEnvRecord): ExecContext = this match {
+    case ExecContextBot => ExecContextBot
+    case ExecContextMap(map, old) => {
       // recent location
       loc.recency match {
         case Recent => ExecContext(map.updated(loc, env), old)
         case Old => ExecContext(weakUpdated(map, loc, env), old)
       }
-    } else {
-      this
     }
   }
 
   /* remove location */
-  def remove(loc: Loc): ExecContext = {
-    ExecContext(map - loc, old)
+  def remove(loc: Loc): ExecContext = this match {
+    case ExecContextBot => ExecContextBot
+    case ExecContextMap(map, old) => ExecContext(map - loc, old)
   }
 
   /* substitute locR by locO */
-  def subsLoc(locR: Loc, locO: Loc): ExecContext = {
-    val newMap =
-      if (this.map.isEmpty) this.map
-      else {
-        this.map.foldLeft(Map[Loc, DecEnvRecord]())((m, kv) => {
-          val (l, env) = kv
-          m + (l -> env.subsLoc(locR, locO))
-        })
+  def subsLoc(locR: Loc, locO: Loc): ExecContext = this match {
+    case ExecContextBot => ExecContextBot
+    case ExecContextMap(map, old) => {
+      val newMap = map.foldLeft(ExecContext.EmptyMap) {
+        case (m, (loc, env)) =>
+          m + (loc -> env.subsLoc(locR, locO))
       }
-    val newOld = this.old.subsLoc(locR, locO)
-    ExecContext(newMap, newOld)
-  }
-
-  def oldify(addr: Address)(utils: Utils): ExecContext = {
-    if (this.old.isBottom) ExecContext.Bot
-    else {
-      val locR = Loc(addr, Recent)
-      val locO = Loc(addr, Old)
-      if (this domIn locR) {
-        update(locO, getOrElse(locR, DecEnvRecord.Bot)).remove(locR).subsLoc(locR, locO)
-      } else {
-        subsLoc(locR, locO)
-      }
+      val newOld = old.subsLoc(locR, locO)
+      ExecContext(newMap, newOld)
     }
   }
 
-  def domIn(loc: Loc): Boolean = map.contains(loc)
+  def oldify(addr: Address)(utils: Utils): ExecContext = this match {
+    case ExecContextBot => ExecContextBot
+    case ExecContextMap(map, old) => {
+      val locR = Loc(addr, Recent)
+      val locO = Loc(addr, Old)
+      val newCtx = if (this domIn locR) {
+        update(locO, getOrElse(locR, DecEnvRecord.Bot)).remove(locR)
+      } else this
+      newCtx.subsLoc(locR, locO)
+    }
+  }
 
-  def isBottom: Boolean =
-    this.map.isEmpty && this.old.isBottom // TODO is really bottom?
+  def domIn(loc: Loc): Boolean = this match {
+    case ExecContextBot => false
+    case ExecContextMap(map, old) => map.contains(loc)
+  }
+
+  def isBottom: Boolean = this match {
+    case ExecContextBot => true
+    case _ => false
+  }
+
+  def setOldAddrSet(old: OldAddrSet): ExecContext = this match {
+    case ExecContextBot => ExecContextBot
+    case ExecContextMap(map, _) => ExecContext(map, old)
+  }
+
+  def old: OldAddrSet = this match {
+    case ExecContextBot => OldAddrSet.Bot
+    case ExecContextMap(_, old) => old
+  }
 
   override def toString: String = {
     buildString(_ => true).toString
@@ -171,24 +179,22 @@ class ExecContext(
     buildString(_ => true).toString
   }
 
-  private def buildString(filter: Loc => Boolean): String = {
-    val s = new StringBuilder
-    this match {
-      case _ if isBottom => s.append("⊥ExecContext")
-      case _ => {
-        val sortedSeq =
-          map.toSeq.filter { case (loc, _) => filter(loc) }
-            .sortBy { case (loc, _) => loc }
-        sortedSeq.map {
-          case (loc, env) => s.append(toStringLoc(loc, env)).append(LINE_SEP)
-        }
+  private def buildString(filter: Loc => Boolean): String = this match {
+    case ExecContextBot => "⊥ExecContext"
+    case ExecContextMap(map, old) => {
+      val s = new StringBuilder
+      val sortedSeq =
+        map.toSeq.filter { case (loc, _) => filter(loc) }
+          .sortBy { case (loc, _) => loc }
+      sortedSeq.map {
+        case (loc, env) => s.append(toStringLoc(loc, env)).append(LINE_SEP)
       }
+      s.toString
     }
-    s.toString
   }
 
   def toStringLoc(loc: Loc): Option[String] = {
-    map.get(loc).map(toStringLoc(loc, _))
+    apply(loc).map(toStringLoc(loc, _))
   }
 
   private def toStringLoc(loc: Loc, env: DecEnvRecord): String = {
@@ -277,7 +283,7 @@ class ExecContext(
     }
     val ctx2 =
       if (utils.absBool.False <= (env HasBinding x)(utils.absBool))
-        outerLocSet.foldLeft(ExecContext.Bot)((tmpH, outerLoc) => varStoreLocal(outerLoc, x, value)(utils))
+        outerLocSet.foldLeft(ExecContext.Empty)((tmpH, outerLoc) => varStoreLocal(outerLoc, x, value)(utils))
       else
         ExecContext.Bot
     ctx1 + ctx2
@@ -304,14 +310,25 @@ class ExecContext(
   ////////////////////////////////////////////////////////////////
   // pure local environment
   ////////////////////////////////////////////////////////////////
-  def pureLocal: DecEnvRecord = map.getOrElse(PURE_LOCAL, DecEnvRecord.Bot)
+  def pureLocal: DecEnvRecord = getOrElse(PURE_LOCAL, DecEnvRecord.Bot)
   def subsPureLocal(env: DecEnvRecord): ExecContext = update(PURE_LOCAL, env)
 }
 
 object ExecContext {
-  val Bot: ExecContext = new ExecContext(HashMap(), OldAddrSet.Bot)
+  private val EmptyMap: Map[Loc, DecEnvRecord] = HashMap()
+  val Bot: ExecContext = ExecContextBot
+  val Empty: ExecContext = ExecContextMap(EmptyMap, OldAddrSet.Empty)
   def apply(
     map: Map[Loc, DecEnvRecord],
     old: OldAddrSet
-  ): ExecContext = new ExecContext(map, old)
+  ): ExecContext = new ExecContextMap(map, old)
 }
+
+case object ExecContextBot extends ExecContext
+case class ExecContextMap(
+  // TODO val varEnv: LexEnv // VariableEnvironment
+  // val thisBinding: Set[Loc], // ThisBinding
+  // val oldAddrSet: OldAddrSet // TODO old address set
+  val map: Map[Loc, DecEnvRecord],
+  override val old: OldAddrSet
+) extends ExecContext
