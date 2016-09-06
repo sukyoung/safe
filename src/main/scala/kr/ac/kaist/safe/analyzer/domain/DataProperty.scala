@@ -11,25 +11,25 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
+import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.util.Loc
 
-case class DataPropertyUtil(utils: Utils) {
-  val valueU = utils.value
-  val AB = utils.absBool.Bot
-  val Bot: DataProperty = DataProperty(valueU.Bot, AB, AB, AB)
+object DataPropertyUtil {
+  val AB = AbsBool.Bot
+  val Bot: DataProperty = DataProperty(ValueUtil.Bot, AB, AB, AB)
   // TODO Top
 
   // TODO more consturctor
   // constructor
   def apply(value: Value): DPGen = DPGen(DataProperty(value, _, _, _), AB)
-  def apply(pvalue: PValue): DPGen = apply(valueU(pvalue))
-  def apply(loc: Loc): DPGen = apply(valueU(loc))
-  def apply(locSet: Set[Loc]): DPGen = apply(valueU(locSet))
-  def apply(undefval: AbsUndef): DPGen = apply(valueU(undefval))
-  def apply(nullval: AbsNull): DPGen = apply(valueU(nullval))
-  def apply(boolval: AbsBool): DPGen = apply(valueU(boolval))
-  def apply(numval: AbsNumber): DPGen = apply(valueU(numval))
-  def apply(strval: AbsString): DPGen = apply(valueU(strval))
+  def apply(pvalue: PValue): DPGen = apply(ValueUtil(pvalue))
+  def apply(loc: Loc): DPGen = apply(ValueUtil(loc))
+  def apply(locSet: Set[Loc]): DPGen = apply(ValueUtil(locSet))
+  def apply(undefval: AbsUndef): DPGen = apply(ValueUtil(undefval))
+  def apply(nullval: AbsNull): DPGen = apply(ValueUtil(nullval))
+  def apply(boolval: AbsBool): DPGen = apply(ValueUtil(boolval))
+  def apply(numval: AbsNumber): DPGen = apply(ValueUtil(numval))
+  def apply(strval: AbsString): DPGen = apply(ValueUtil(strval))
 
   // TODO alpha
 }

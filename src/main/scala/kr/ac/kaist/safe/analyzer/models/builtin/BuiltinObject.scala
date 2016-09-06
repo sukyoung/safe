@@ -13,7 +13,9 @@ package kr.ac.kaist.safe.analyzer.models.builtin
 
 import kr.ac.kaist.safe.analyzer.{ Semantics, Helper }
 import kr.ac.kaist.safe.analyzer.domain._
+import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.analyzer.models._
+import kr.ac.kaist.safe.analyzer.TypeConversionHelper
 import kr.ac.kaist.safe.util.{ SystemAddr, Loc, Recent }
 import scala.collection.immutable.HashSet
 
@@ -23,10 +25,10 @@ object BuiltinObject extends FuncModel(
 
   // 15.2.1 The Object Constructor Called as a Function: Object([value])
   code = BasicCode(argLen = 1, (
-    args: Value, st: State, sem: Semantics, utils: Utils
+    args: Value, st: State, sem: Semantics
   ) => {
     val h = st.heap
-    val argV = sem.CFGLoadHelper(args, Set(utils.absString.alpha("0")), h)
+    val argV = sem.CFGLoadHelper(args, Set(AbsString.alpha("0")), h)
     val addr = SystemAddr("Object<instance>")
 
     // 1. If value is null, undefined or not supplied, create and return
@@ -36,27 +38,27 @@ object BuiltinObject extends FuncModel(
     val (v1, st1) = if (pv.undefval.gamma != ConSimpleBot ||
       pv.nullval.gamma != ConSimpleBot ||
       argV.isBottom) {
-      val state = st.oldify(addr)(utils)
+      val state = st.oldify(addr)
       val loc = Loc(addr, Recent)
-      val obj = utils.absObject.newObject
+      val obj = AbsObjectUtil.newObject
       val heap = state.heap.update(loc, obj)
-      (utils.value(loc), State(heap, st.context))
+      (ValueUtil(loc), State(heap, st.context))
     } else {
-      (utils.value.Bot, State.Bot)
+      (ValueUtil.Bot, State.Bot)
     }
 
     // 2. Return ToObject(value)
-    val (v2, st2, _) = sem.typeHelper.ToObject(argV, st, addr)
+    val (v2, st2, _) = TypeConversionHelper.ToObject(argV, st, addr)
 
     (st1 + st2, State.Bot, v1 + v2)
   }),
 
   // 15.2.2 The Object Constructor: new Object([value])
   construct = Some(BasicCode(argLen = 1, (
-    args: Value, st: State, sem: Semantics, utils: Utils
+    args: Value, st: State, sem: Semantics
   ) => {
     val h = st.heap
-    val argV = sem.CFGLoadHelper(args, Set(utils.absString.alpha("0")), h)
+    val argV = sem.CFGLoadHelper(args, Set(AbsString.alpha("0")), h)
     val addr = SystemAddr("Object<instance>")
 
     // 1. If value is supplied, then
@@ -70,7 +72,7 @@ object BuiltinObject extends FuncModel(
     //    b. If Type(value) is String, return ToObject(value).
     //    c. If Type(value) is Boolean, return ToObject(value).
     //    d. If Type(value) is Number, return ToObject(value).
-    val (v2, st2, _) = sem.typeHelper.ToObject(argV, st, addr)
+    val (v2, st2, _) = TypeConversionHelper.ToObject(argV, st, addr)
 
     // 2. Assert: The argument value was not supplied or its type was Null or Undefined.
     // 3. Let obj be a newly created native ECMAScript object.
@@ -78,13 +80,13 @@ object BuiltinObject extends FuncModel(
     val (v1, st1) = if (pv.undefval.gamma != ConSimpleBot ||
       pv.nullval.gamma != ConSimpleBot ||
       argV.isBottom) {
-      val state = st.oldify(addr)(utils)
+      val state = st.oldify(addr)
       val loc = Loc(addr, Recent)
-      val obj = utils.absObject.newObject
+      val obj = AbsObjectUtil.newObject
       val heap = state.heap.update(loc, obj)
-      (utils.value(loc), State(heap, st.context))
+      (ValueUtil(loc), State(heap, st.context))
     } else {
-      (utils.value.Bot, State.Bot)
+      (ValueUtil.Bot, State.Bot)
     }
 
     (st1 + st2, State.Bot, v1 + v2)
@@ -98,20 +100,20 @@ object BuiltinObject extends FuncModel(
     NormalProp("getPrototypeOf", FuncModel(
       name = "Object.getPrototypeOf",
       code = BasicCode(argLen = 1, (
-        args: Value, st: State, sem: Semantics, utils: Utils
+        args: Value, st: State, sem: Semantics
       ) => {
         val h = st.heap
-        val argV = sem.CFGLoadHelper(args, Set(utils.absString.alpha("0")), h)
+        val argV = sem.CFGLoadHelper(args, Set(AbsString.alpha("0")), h)
         val tmpAddr = SystemAddr("<temp>")
 
-        val (retV, retSt, excSet) = sem.typeHelper.ToObject(argV, st, tmpAddr)
+        val (retV, retSt, excSet) = TypeConversionHelper.ToObject(argV, st, tmpAddr)
 
         // 1. If Type(O) is not Object throw a TypeError exception.
-        val excSt = st.raiseException(excSet)(utils)
+        val excSt = st.raiseException(excSet)
 
         // 2. Return the value of [[Prototype]] internal property of O.
-        val protoV = retV.locset.foldLeft(utils.value.Bot)((v, loc) => {
-          v + retSt.heap(loc).getOrElse(utils.absObject.Bot).get(IPrototype)(utils).value
+        val protoV = retV.locset.foldLeft(ValueUtil.Bot)((v, loc) => {
+          v + retSt.heap(loc).getOrElse(AbsObjectUtil.Bot).get(IPrototype).value
         })
 
         (st, excSt, protoV)
@@ -122,50 +124,50 @@ object BuiltinObject extends FuncModel(
     NormalProp("getOwnPropertyDescriptor", FuncModel(
       name = "Object.getOwnPropertyDescriptor",
       code = BasicCode(argLen = 2, (
-        args: Value, st: State, sem: Semantics, utils: Utils
+        args: Value, st: State, sem: Semantics
       ) => {
         val h = st.heap
-        val objV = sem.CFGLoadHelper(args, Set(utils.absString.alpha("0")), h)
-        val strV = sem.CFGLoadHelper(args, Set(utils.absString.alpha("1")), h)
+        val objV = sem.CFGLoadHelper(args, Set(AbsString.alpha("0")), h)
+        val strV = sem.CFGLoadHelper(args, Set(AbsString.alpha("1")), h)
         val tmpAddr = SystemAddr("<temp>")
         val descAddr = SystemAddr("Object.getOwnPropertyDescriptor<descriptor>")
-        val AT = utils.absBool.alpha(true)
-        val AF = utils.absBool.alpha(false)
-        val (locV, retSt, excSet) = sem.typeHelper.ToObject(objV, st, tmpAddr)
+        val AT = AbsBool.alpha(true)
+        val AF = AbsBool.alpha(false)
+        val (locV, retSt, excSet) = TypeConversionHelper.ToObject(objV, st, tmpAddr)
 
         // 1. If Type(O) is not Object throw a TypeError exception.
-        val excSt = st.raiseException(excSet)(utils)
+        val excSt = st.raiseException(excSet)
 
         // 2. Let name be ToString(P).
-        val name = sem.typeHelper.ToString(strV)
+        val name = TypeConversionHelper.ToString(strV)
 
         // 3. Let desc be the result of calling the [[GetOwnProperty]]
         //    internal method of O with argument name.
         // 4. Return the result of calling FromPropertyDescriptor(desc)
-        val obj = locV.locset.foldLeft(utils.absObject.Bot)((obj, loc) => {
-          obj + retSt.heap.getOrElse(loc, utils.absObject.Bot)
+        val obj = locV.locset.foldLeft(AbsObjectUtil.Bot)((obj, loc) => {
+          obj + retSt.heap.getOrElse(loc, AbsObjectUtil.Bot)
         })
-        val isDomIn = (obj domIn name)(utils.absBool)
+        val isDomIn = (obj domIn name)
         val v1 =
-          if (AF <= isDomIn) utils.value.alpha()
-          else utils.value.Bot
+          if (AF <= isDomIn) ValueUtil.alpha()
+          else ValueUtil.Bot
         val (state, v2) =
           if (AT <= isDomIn) {
-            val objval = obj(name).getOrElse(PropValue.Bot(utils)).objval
+            val objval = obj(name).getOrElse(PropValue.Bot).objval
             val valueV = objval.value
-            val writableV = utils.value(objval.writable)
-            val enumerableV = utils.value(objval.enumerable)
-            val configurableV = utils.value(objval.configurable)
-            val descObj = utils.absObject.newObject
+            val writableV = ValueUtil(objval.writable)
+            val enumerableV = ValueUtil(objval.enumerable)
+            val configurableV = ValueUtil(objval.configurable)
+            val descObj = AbsObjectUtil.newObject
               .update("value", PropValue(DataProperty(valueV, AT, AF, AT)))
               .update("writable", PropValue(DataProperty(writableV, AT, AF, AT)))
               .update("enumerable", PropValue(DataProperty(enumerableV, AT, AF, AT)))
               .update("configurable", PropValue(DataProperty(configurableV, AT, AF, AT)))
-            val state = st.oldify(descAddr)(utils)
+            val state = st.oldify(descAddr)
             val descLoc = Loc(descAddr, Recent)
             val retHeap = state.heap.update(descLoc, descObj)
-            (State(retHeap, st.context), utils.value(descLoc))
-          } else (st, utils.value.Bot)
+            (State(retHeap, st.context), ValueUtil(descLoc))
+          } else (st, ValueUtil.Bot)
 
         (state, excSt, v1 + v2)
       })
@@ -175,33 +177,33 @@ object BuiltinObject extends FuncModel(
     NormalProp("getOwnPropertyNames", FuncModel(
       name = "Object.getOwnPropertyNames",
       code = BasicCode(argLen = 1, (
-        args: Value, st: State, sem: Semantics, utils: Utils
+        args: Value, st: State, sem: Semantics
       ) => {
         val h = st.heap
-        val objV = sem.CFGLoadHelper(args, Set(utils.absString.alpha("0")), h)
+        val objV = sem.CFGLoadHelper(args, Set(AbsString.alpha("0")), h)
         val tmpAddr = SystemAddr("<temp>")
         val arrAddr = SystemAddr("Object.getOwnPropertyNames<array>")
-        val (locV, retSt, excSet) = sem.typeHelper.ToObject(objV, st, tmpAddr)
+        val (locV, retSt, excSet) = TypeConversionHelper.ToObject(objV, st, tmpAddr)
         val (keyStr, lenSet) = locV.locset.foldLeft(
-          (utils.absString.Bot, Set[Double]())
+          (AbsString.Bot, Set[Double]())
         ) {
             case ((str, lenSet), loc) => {
-              val obj = h.getOrElse(loc, utils.absObject.Bot)
+              val obj = h.getOrElse(loc, AbsObjectUtil.Bot)
               val keys = obj.map.keySet.filter(!_.startsWith("@"))
-              val keyStr = utils.absString.alpha(keys)
+              val keyStr = AbsString.alpha(keys)
               (str + keyStr, lenSet + keys.size)
             }
           }
         val len = lenSet.max
-        val AT = utils.absBool.True
+        val AT = AbsBool.True
 
         // 1. If Type(O) is not Object throw a TypeError exception.
-        val excSt = st.raiseException(excSet)(utils)
+        val excSt = st.raiseException(excSet)
 
         // 2. Let array be the result of creating a new object
         //    as if by the expression new Array() where Array is the
         //    standard built-in constructor with that name.
-        val arrObj = utils.absObject.newArrayObject(utils.absNumber.alpha(lenSet))
+        val arrObj = AbsObjectUtil.newArrayObject(AbsNumber.alpha(lenSet))
 
         // 3. Let n be 0.
         // 4. For each named own property P of O
@@ -211,22 +213,22 @@ object BuiltinObject extends FuncModel(
         //       {[[Value]]: name, [[Writable]]: true, [[Enumerable]]: true,
         //       [[Configurable]]: true}, and false.
         //    c. Increment n by 1.
-        val v = utils.value(PValue(
-          utils.absUndef.Top,
-          utils.absNull.Bot,
-          utils.absBool.Bot,
-          utils.absNumber.Bot,
+        val v = ValueUtil(PValue(
+          AbsUndef.Top,
+          AbsNull.Bot,
+          AbsBool.Bot,
+          AbsNumber.Bot,
           keyStr
         ))
         val retObj = (0 until len.toInt).foldLeft(arrObj)((obj, idx) => {
           obj.update(idx.toString, PropValue(DataProperty(v, AT, AT, AT)))
         })
-        val state = st.oldify(arrAddr)(utils)
+        val state = st.oldify(arrAddr)
         val arrLoc = Loc(arrAddr, Recent)
         val retHeap = state.heap.update(arrLoc, retObj)
 
         // 5. Return array.
-        (State(retHeap, st.context), excSt, utils.value(arrLoc))
+        (State(retHeap, st.context), excSt, ValueUtil(arrLoc))
       })
     ), T, F, T),
 

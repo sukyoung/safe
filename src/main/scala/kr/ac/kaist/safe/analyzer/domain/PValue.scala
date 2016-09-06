@@ -11,13 +11,14 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
+import kr.ac.kaist.safe.analyzer.domain.Utils._
 import scala.collection.immutable.HashSet
 
-case class PValueUtil(utils: Utils) {
+object PValueUtil {
   val Bot: PValue =
-    PValue(utils.absUndef.Bot, utils.absNull.Bot, utils.absBool.Bot, utils.absNumber.Bot, utils.absString.Bot)
+    PValue(AbsUndef.Bot, AbsNull.Bot, AbsBool.Bot, AbsNumber.Bot, AbsString.Bot)
   val Top: PValue =
-    PValue(utils.absUndef.Top, utils.absNull.Top, utils.absBool.Top, utils.absNumber.Top, utils.absString.Top)
+    PValue(AbsUndef.Top, AbsNull.Top, AbsBool.Top, AbsNumber.Top, AbsString.Top)
 
   // constructor
   def apply(undefval: AbsUndef): PValue = Bot.copy(undefval = undefval)
@@ -27,15 +28,15 @@ case class PValueUtil(utils: Utils) {
   def apply(strval: AbsString): PValue = Bot.copy(strval = strval)
 
   // abstraction
-  def alpha(): PValue = apply(utils.absUndef.alpha)
-  def alpha(x: Null): PValue = apply(utils.absNull.alpha)
-  def alpha(str: String): PValue = apply(utils.absString.alpha(str))
-  def alpha(set: Set[String]): PValue = apply(utils.absString.alpha(set))
-  def alpha(d: Double): PValue = apply(utils.absNumber.alpha(d))
-  def alpha(l: Long): PValue = apply(utils.absNumber.alpha(l))
+  def alpha(): PValue = apply(AbsUndef.alpha)
+  def alpha(x: Null): PValue = apply(AbsNull.alpha)
+  def alpha(str: String): PValue = apply(AbsString.alpha(str))
+  def alpha(set: Set[String]): PValue = apply(AbsString.alpha(set))
+  def alpha(d: Double): PValue = apply(AbsNumber.alpha(d))
+  def alpha(l: Long): PValue = apply(AbsNumber.alpha(l))
   // trick for 'have same type after erasure' (Set[Double] & Set[String])
-  def alpha(set: => Set[Double]): PValue = apply(utils.absNumber.alpha(set))
-  def alpha(b: Boolean): PValue = apply(utils.absBool.alpha(b))
+  def alpha(set: => Set[Double]): PValue = apply(AbsNumber.alpha(set))
+  def alpha(b: Boolean): PValue = apply(AbsBool.alpha(b))
 }
 
 case class PValue(
@@ -145,7 +146,7 @@ case class PValue(
         set += absString.alpha("false")
     }
 
-    set += this.numval.toAbsString(absString)
+    set += this.numval.toAbsString
 
     this.strval.foldUnit(set += this.strval)
 

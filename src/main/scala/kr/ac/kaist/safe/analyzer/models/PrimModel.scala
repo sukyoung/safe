@@ -16,17 +16,16 @@ import kr.ac.kaist.safe.nodes.cfg.CFG
 
 // Primitive Model
 class PrimModel(
-    val pvGen: Utils => PValue
+    val pvGen: PValue
 ) extends Model {
-  def init(h: Heap, cfg: CFG, utils: Utils): (Heap, Value) =
-    (h, utils.value(pvGen(utils)))
+  def init(h: Heap, cfg: CFG): (Heap, Value) = (h, ValueUtil(pvGen))
 }
 
 object PrimModel {
-  def apply(pvGen: Utils => PValue): PrimModel = new PrimModel(pvGen)
-  def apply(n: Double): PrimModel = PrimModel(_.pvalue.alpha(n))
-  def apply(str: String): PrimModel = PrimModel(_.pvalue.alpha(str))
-  def apply(): PrimModel = PrimModel(_.pvalue.alpha())
-  def apply(x: Null): PrimModel = PrimModel(_.pvalue.alpha(x))
-  def apply(b: Boolean): PrimModel = PrimModel(_.pvalue.alpha(b))
+  def apply(pvGen: PValue): PrimModel = new PrimModel(pvGen)
+  def apply(n: Double): PrimModel = PrimModel(PValueUtil.alpha(n))
+  def apply(str: String): PrimModel = PrimModel(PValueUtil.alpha(str))
+  def apply(): PrimModel = PrimModel(PValueUtil.alpha())
+  def apply(x: Null): PrimModel = PrimModel(PValueUtil.alpha(x))
+  def apply(b: Boolean): PrimModel = PrimModel(PValueUtil.alpha(b))
 }

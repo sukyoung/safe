@@ -30,14 +30,19 @@ case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, CallContext)] {
     safeConfig: SafeConfig,
     config: AnalyzeConfig
   ): Try[(CFG, CallContext)] = {
-    val utils = Utils(config.AbsUndef, config.AbsNull, config.AbsBool, config.AbsNumber, config.AbsString)
+    Utils.register(
+      config.AbsUndef,
+      config.AbsNull,
+      config.AbsBool,
+      config.AbsNumber,
+      config.AbsString
+    )
     val callCtxManager = CallContextManager()
 
     val worklist = Worklist(cfg)
     worklist.add(ControlPoint(cfg.globalFunc.entry, callCtxManager.globalCallContext))
-    val helper = Helper(utils)
-    val semantics = new Semantics(cfg, worklist, helper)
-    val init = Initialize(cfg, helper)
+    val semantics = new Semantics(cfg, worklist)
+    val init = Initialize(cfg)
     val initSt =
       if (config.testMode) init.testState
       else init.state

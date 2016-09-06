@@ -32,7 +32,7 @@ trait AbsStringUtil {
   def alpha(str: String): AbsString
   def alpha(str: Set[String]): AbsString
 
-  def fromCharCode(n: AbsNumber)(absNumber: AbsNumberUtil): AbsString
+  def fromCharCode(n: AbsNumber): AbsString
 }
 
 trait AbsNumberUtil {
@@ -58,19 +58,4 @@ trait AbsBoolUtil {
   val False: AbsBool
 
   def alpha(b: Boolean): AbsBool
-}
-
-case class Utils(
-    absUndef: AbsUndefUtil,
-    absNull: AbsNullUtil,
-    absBool: AbsBoolUtil,
-    absNumber: AbsNumberUtil,
-    absString: AbsStringUtil
-) {
-  lazy val pvalue = PValueUtil(this)
-  lazy val value = ValueUtil(this)
-  lazy val dataProp = DataPropertyUtil(this)
-  lazy val ivalue = InternalValueUtil(this)
-  lazy val binding = BindingUtil(this)
-  lazy val absObject = AbsObjectUtil(this)
 }

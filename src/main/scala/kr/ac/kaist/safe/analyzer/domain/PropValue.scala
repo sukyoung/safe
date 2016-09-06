@@ -17,30 +17,29 @@ import kr.ac.kaist.safe.nodes.cfg.FunctionId
 import scala.collection.immutable.HashSet
 
 object PropValue {
-  def Bot: Utils => PropValue = utils =>
-    PropValue(utils.dataProp.Bot, HashSet[FunctionId]())
+  def Bot: PropValue = PropValue(DataPropertyUtil.Bot, HashSet[FunctionId]())
 
   def apply(objval: DataProperty): PropValue = PropValue(objval, HashSet[FunctionId]())
   def apply(pvalue: PValue, writable: AbsBool, enumerable: AbsBool, configurable: AbsBool): PropValue =
     PropValue(DataProperty(Value(pvalue, HashSet()), writable, enumerable, configurable))
 
-  def apply(fidSet: Set[FunctionId]): Utils => PropValue = utils =>
-    PropValue(utils.dataProp.Bot, fidSet)
+  def apply(fidSet: Set[FunctionId]): PropValue =
+    PropValue(DataPropertyUtil.Bot, fidSet)
 
-  def apply(undefval: AbsUndef): Utils => PropValue = utils =>
-    PropValue(utils.dataProp(undefval), HashSet[FunctionId]())
+  def apply(undefval: AbsUndef): PropValue =
+    PropValue(DataPropertyUtil(undefval), HashSet[FunctionId]())
 
-  def apply(nullval: AbsNull): Utils => PropValue = utils =>
-    PropValue(utils.dataProp(nullval), HashSet[FunctionId]())
+  def apply(nullval: AbsNull): PropValue =
+    PropValue(DataPropertyUtil(nullval), HashSet[FunctionId]())
 
-  def apply(boolval: AbsBool): Utils => PropValue = utils =>
-    PropValue(utils.dataProp(boolval), HashSet[FunctionId]())
+  def apply(boolval: AbsBool): PropValue =
+    PropValue(DataPropertyUtil(boolval), HashSet[FunctionId]())
 
-  def apply(numval: AbsNumber): Utils => PropValue = utils =>
-    PropValue(utils.dataProp(numval), HashSet[FunctionId]())
+  def apply(numval: AbsNumber): PropValue =
+    PropValue(DataPropertyUtil(numval), HashSet[FunctionId]())
 
-  def apply(strval: AbsString): Utils => PropValue = utils =>
-    PropValue(utils.dataProp(strval), HashSet[FunctionId]())
+  def apply(strval: AbsString): PropValue =
+    PropValue(DataPropertyUtil(strval), HashSet[FunctionId]())
 }
 
 case class PropValue(

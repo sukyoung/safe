@@ -11,36 +11,36 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
+import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.analyzer.models.PredefLoc
 import kr.ac.kaist.safe.analyzer.models.builtin.BuiltinGlobal
 import scala.collection.immutable.HashSet
 import kr.ac.kaist.safe.util.Loc
 
-case class ValueUtil(utils: Utils) {
-  val pvalueU = utils.pvalue
-  val Bot: Value = Value(pvalueU.Bot, LocSetEmpty)
+object ValueUtil {
+  val Bot: Value = Value(PValueUtil.Bot, LocSetEmpty)
   // TODO Top
 
   // constructor
   def apply(pvalue: PValue): Value = Value(pvalue, LocSetEmpty)
-  def apply(loc: Loc): Value = Value(pvalueU.Bot, HashSet(loc))
-  def apply(locSet: Set[Loc]): Value = Value(pvalueU.Bot, locSet)
-  def apply(undefval: AbsUndef): Value = apply(pvalueU(undefval))
-  def apply(nullval: AbsNull): Value = apply(pvalueU(nullval))
-  def apply(boolval: AbsBool): Value = apply(pvalueU(boolval))
-  def apply(numval: AbsNumber): Value = apply(pvalueU(numval))
-  def apply(strval: AbsString): Value = apply(pvalueU(strval))
+  def apply(loc: Loc): Value = Value(PValueUtil.Bot, HashSet(loc))
+  def apply(locSet: Set[Loc]): Value = Value(PValueUtil.Bot, locSet)
+  def apply(undefval: AbsUndef): Value = apply(PValueUtil(undefval))
+  def apply(nullval: AbsNull): Value = apply(PValueUtil(nullval))
+  def apply(boolval: AbsBool): Value = apply(PValueUtil(boolval))
+  def apply(numval: AbsNumber): Value = apply(PValueUtil(numval))
+  def apply(strval: AbsString): Value = apply(PValueUtil(strval))
 
   // abstraction
-  def alpha(): Value = apply(pvalueU.alpha())
-  def alpha(x: Null): Value = apply(pvalueU.alpha(x))
-  def alpha(str: String): Value = apply(pvalueU.alpha(str))
-  def alpha(set: Set[String]): Value = apply(pvalueU.alpha(set))
-  def alpha(d: Double): Value = apply(pvalueU.alpha(d))
-  def alpha(l: Long): Value = apply(pvalueU.alpha(l))
+  def alpha(): Value = apply(PValueUtil.alpha())
+  def alpha(x: Null): Value = apply(PValueUtil.alpha(x))
+  def alpha(str: String): Value = apply(PValueUtil.alpha(str))
+  def alpha(set: Set[String]): Value = apply(PValueUtil.alpha(set))
+  def alpha(d: Double): Value = apply(PValueUtil.alpha(d))
+  def alpha(l: Long): Value = apply(PValueUtil.alpha(l))
   // trick for 'have same type after erasure' (Set[Double] & Set[String])
-  def alpha(set: => Set[Double]): Value = apply(pvalueU.alpha(set))
-  def alpha(b: Boolean): Value = apply(pvalueU.alpha(b))
+  def alpha(set: => Set[Double]): Value = apply(PValueUtil.alpha(set))
+  def alpha(b: Boolean): Value = apply(PValueUtil.alpha(b))
 }
 
 case class Value(pvalue: PValue, locset: Set[Loc]) {
@@ -132,19 +132,19 @@ case class Value(pvalue: PValue, locset: Set[Loc]) {
     this.pvalue.isBottom && this.locset.isEmpty
 
   // TODO working but more simple way is exist with modifying getBase
-  def getThis(h: Heap)(utils: Utils): Set[Loc] = {
+  def getThis(h: Heap): Set[Loc] = {
     val locSet1 = (pvalue.nullval.gamma, pvalue.undefval.gamma) match {
       case (ConSimpleBot, ConSimpleBot) => LocSetEmpty
       case _ => HashSet(BuiltinGlobal.loc)
     }
 
-    val foundDeclEnvRecord = locset.exists(loc => utils.absBool.False <= h.isObject(loc)(utils))
+    val foundDeclEnvRecord = locset.exists(loc => AbsBool.False <= h.isObject(loc))
 
     val locSet2 =
       if (foundDeclEnvRecord) HashSet(BuiltinGlobal.loc)
       else LocSetEmpty
     val locSet3 = locset.foldLeft(LocSetEmpty)((tmpLocSet, loc) => {
-      if (utils.absBool.True <= h.isObject(loc)(utils)) tmpLocSet + loc
+      if (AbsBool.True <= h.isObject(loc)) tmpLocSet + loc
       else tmpLocSet
     })
 

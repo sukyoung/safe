@@ -11,6 +11,8 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
+import kr.ac.kaist.safe.analyzer.domain.Utils._
+
 object DefaultBoolUtil extends AbsBoolUtil {
   val Top: AbsBool = DefaultBoolTop
   val Bot: AbsBool = DefaultBoolBot
@@ -23,9 +25,9 @@ object DefaultBoolUtil extends AbsBoolUtil {
     def gamma: ConSingle[Boolean]
     def gammaSimple: ConSimple = ConSimpleTop
     override def toString: String
-    def toAbsString(absString: AbsStringUtil): AbsString
-    def toAbsBoolean(absBool: AbsBoolUtil): AbsBool
-    def toAbsNumber(absNumber: AbsNumberUtil): AbsNumber
+    def toAbsString: AbsString
+    def toAbsBoolean: AbsBool = this
+    def toAbsNumber: AbsNumber
 
     /* AbsUndef Interface */
     def <=(that: AbsBool): Boolean =
@@ -60,7 +62,7 @@ object DefaultBoolUtil extends AbsBoolUtil {
         case _ => DefaultBoolBot
       }
 
-    def ===(that: AbsBool)(absBool: AbsBoolUtil): AbsBool = {
+    def ===(that: AbsBool): AbsBool = {
       (this, that) match {
         case (DefaultBoolBot, _) => DefaultBoolBot
         case (_, DefaultBoolBot) => DefaultBoolBot
@@ -84,33 +86,29 @@ object DefaultBoolUtil extends AbsBoolUtil {
   case object DefaultBoolTop extends DefaultBool {
     val gamma: ConSingle[Boolean] = ConSingleTop()
     override val toString: String = "Top"
-    def toAbsString(absString: AbsStringUtil): AbsString = absString.OtherStr
-    def toAbsBoolean(absBool: AbsBoolUtil): AbsBool = absBool.Top
-    def toAbsNumber(absNumber: AbsNumberUtil): AbsNumber = absNumber.UInt
+    def toAbsString: AbsString = AbsString.OtherStr
+    def toAbsNumber: AbsNumber = AbsNumber.UInt
   }
 
   case object DefaultBoolBot extends DefaultBool {
     val gamma: ConSingle[Boolean] = ConSingleBot()
     override val toString: String = "⊥"
     override val gammaSimple: ConSimple = ConSimpleBot
-    def toAbsString(absString: AbsStringUtil): AbsString = absString.Bot
-    def toAbsBoolean(absBool: AbsBoolUtil): AbsBool = absBool.Bot
-    def toAbsNumber(absNumber: AbsNumberUtil): AbsNumber = absNumber.Bot
+    def toAbsString: AbsString = AbsString.Bot
+    def toAbsNumber: AbsNumber = AbsNumber.Bot
   }
 
   case object DefaultBoolTrue extends DefaultBool {
     val gamma: ConSingle[Boolean] = ConSingleCon(true)
     override val toString: String = "true"
-    def toAbsString(absString: AbsStringUtil): AbsString = absString.alpha("true")
-    def toAbsBoolean(absBool: AbsBoolUtil): AbsBool = absBool.True
-    def toAbsNumber(absNumber: AbsNumberUtil): AbsNumber = absNumber.alpha(1)
+    def toAbsString: AbsString = AbsString.alpha("true")
+    def toAbsNumber: AbsNumber = AbsNumber.alpha(1)
   }
 
   case object DefaultBoolFalse extends DefaultBool {
     val gamma: ConSingle[Boolean] = ConSingleCon(false)
     override val toString: String = "false"
-    def toAbsString(absString: AbsStringUtil): AbsString = absString.alpha("false")
-    def toAbsBoolean(absBool: AbsBoolUtil): AbsBool = absBool.False
-    def toAbsNumber(absNumber: AbsNumberUtil): AbsNumber = absNumber.alpha(+0)
+    def toAbsString: AbsString = AbsString.alpha("false")
+    def toAbsNumber: AbsNumber = AbsNumber.alpha(+0)
   }
 }

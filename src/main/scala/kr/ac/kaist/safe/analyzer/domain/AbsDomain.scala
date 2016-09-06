@@ -17,11 +17,11 @@ trait AbsDomain {
   override def toString: String
 
   // Abstraction of Table 11 in section 9.2, ECMAScript 5.1
-  def toAbsBoolean(absBool: AbsBoolUtil): AbsBool
+  def toAbsBoolean: AbsBool
   // Abstraction of Table 12 in section 9.3, ECMAScript 5.1
-  def toAbsNumber(absNumber: AbsNumberUtil): AbsNumber
+  def toAbsNumber: AbsNumber
   // Abstraction of Table 13 in section 9.8, ECMAScript 5.1
-  def toAbsString(absString: AbsStringUtil): AbsString
+  def toAbsString: AbsString
 }
 
 trait AbsUndef extends AbsDomain {
@@ -36,7 +36,7 @@ trait AbsUndef extends AbsDomain {
   def </(that: AbsUndef): Boolean = !(this <= that)
   def +(that: AbsUndef): AbsUndef
   def <>(that: AbsUndef): AbsUndef
-  def ===(that: AbsUndef)(absBool: AbsBoolUtil): AbsBool
+  def ===(that: AbsUndef): AbsBool
 }
 
 trait AbsNull extends AbsDomain {
@@ -51,7 +51,7 @@ trait AbsNull extends AbsDomain {
   def </(that: AbsNull): Boolean = !(this <= that)
   def +(that: AbsNull): AbsNull
   def <>(that: AbsNull): AbsNull
-  def ===(that: AbsNull)(absBool: AbsBoolUtil): AbsBool
+  def ===(that: AbsNull): AbsBool
 }
 
 trait AbsBool extends AbsDomain {
@@ -67,7 +67,7 @@ trait AbsBool extends AbsDomain {
   def </(that: AbsBool): Boolean
   def +(that: AbsBool): AbsBool
   def <>(that: AbsBool): AbsBool
-  def ===(that: AbsBool)(absBool: AbsBoolUtil): AbsBool
+  def ===(that: AbsBool): AbsBool
   def negate: AbsBool
 }
 
@@ -85,8 +85,8 @@ trait AbsNumber extends AbsDomain {
   def </(that: AbsNumber): Boolean = !(this <= that)
   def +(that: AbsNumber): AbsNumber
   def <>(that: AbsNumber): AbsNumber
-  def ===(that: AbsNumber)(absBool: AbsBoolUtil): AbsBool
-  def <(that: AbsNumber)(absBool: AbsBoolUtil): AbsBool
+  def ===(that: AbsNumber): AbsBool
+  def <(that: AbsNumber): AbsBool
 
   def isPositive: Boolean
   def isNegative: Boolean
@@ -105,7 +105,7 @@ trait AbsNumber extends AbsDomain {
 
   // Abstraction of step 4.a - 4.e in section 9.12, ECMAScript 5.1
   // This algorithm differs from the strict equal(===) in its treatment of signed zeros and NaN
-  def sameValue(that: AbsNumber)(absBool: AbsBoolUtil): AbsBool
+  def sameValue(that: AbsNumber): AbsBool
 
   def negate: AbsNumber
   def abs: AbsNumber
@@ -152,19 +152,19 @@ trait AbsString extends AbsDomain {
   def </(that: AbsString): Boolean = !(this <= that)
   def +(that: AbsString): AbsString
   def <>(that: AbsString): AbsString
-  def ===(that: AbsString)(absBool: AbsBoolUtil): AbsBool
-  def <(that: AbsString)(absBool: AbsBoolUtil): AbsBool
+  def ===(that: AbsString): AbsBool
+  def <(that: AbsString): AbsBool
 
   def trim: AbsString
   def concat(that: AbsString): AbsString
   def charAt(pos: AbsNumber): AbsString
-  def charCodeAt(pos: AbsNumber)(absNumber: AbsNumberUtil): AbsNumber
-  def contains(that: AbsString)(absBool: AbsBoolUtil): AbsBool
-  def length(absNumber: AbsNumberUtil): AbsNumber
+  def charCodeAt(pos: AbsNumber): AbsNumber
+  def contains(that: AbsString): AbsBool
+  def length: AbsNumber
   def toLowerCase: AbsString
   def toUpperCase: AbsString
 
   def isAllNums: Boolean
   def isAllOthers: Boolean
-  def isArrayIndex(absBool: AbsBoolUtil): AbsBool
+  def isArrayIndex: AbsBool
 }

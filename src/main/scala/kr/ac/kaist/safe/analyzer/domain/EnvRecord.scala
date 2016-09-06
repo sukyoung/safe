@@ -18,30 +18,30 @@ import scala.collection.immutable.HashMap
 // 10.2.1 Environment Records
 abstract class EnvRecord {
   // HasBinding(N)
-  def HasBinding(name: String)(boolU: AbsBoolUtil): AbsBool
+  def HasBinding(name: String): AbsBool
 
   // CreateMutableBinding(N, D)
   def CreateMutableBinding(
     name: String,
     del: Boolean
-  )(utils: Utils): EnvRecord
+  ): EnvRecord
 
   // SetMutableBinding(N, V, S)
   def SetMutableBinding(
     name: String,
     v: Value,
     strict: Boolean
-  )(utils: Utils): (EnvRecord, Set[Exception])
+  ): (EnvRecord, Set[Exception])
 
   // GetBindingValue(N, S)
   def GetBindingValue(
     name: String,
     strict: Boolean
-  )(utils: Utils): (Value, Set[Exception])
+  ): (Value, Set[Exception])
 
   // DeleteBinding(N)
-  def DeleteBinding(name: String)(utils: Utils): (EnvRecord, AbsBool)
+  def DeleteBinding(name: String): (EnvRecord, AbsBool)
 
   // ImplicitThisValue()
-  def ImplicitThisValue(utils: Utils): Value
+  def ImplicitThisValue: Value
 }

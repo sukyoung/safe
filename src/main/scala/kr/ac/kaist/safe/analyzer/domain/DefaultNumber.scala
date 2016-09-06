@@ -11,6 +11,7 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
+import kr.ac.kaist.safe.analyzer.domain.Utils._
 import scala.collection.immutable.HashSet
 
 object DefaultNumUtil extends AbsNumberUtil {
@@ -48,9 +49,9 @@ object DefaultNumUtil extends AbsNumberUtil {
     def gammaSingle: ConSingle[Double]
     def gammaSimple: ConSimple = ConSimpleTop
     override def toString: String
-    def toAbsString(absString: AbsStringUtil): AbsString
-    def toAbsBoolean(absBool: AbsBoolUtil): AbsBool
-    def toAbsNumber(absNumber: AbsNumberUtil): AbsNumber
+    def toAbsString: AbsString
+    def toAbsBoolean: AbsBool
+    def toAbsNumber: AbsNumber = this
 
     /* AbsNumber Interface */
     def <=(that: AbsNumber): Boolean =
@@ -72,32 +73,32 @@ object DefaultNumUtil extends AbsNumberUtil {
         case _ => false
       }
 
-    def <(that: AbsNumber)(absBool: AbsBoolUtil): AbsBool = {
+    def <(that: AbsNumber): AbsBool = {
       (this, that) match {
-        case (DefaultNumBot, _) | (_, DefaultNumBot) => absBool.Bot
-        case (DefaultNumNaN, _) | (_, DefaultNumNaN) => absBool.False
-        case (DefaultNumUIntConst(n1), DefaultNumUIntConst(n2)) => absBool.alpha(n1 < n2)
-        case (DefaultNumUIntConst(n1), DefaultNumNUIntConst(n2)) => absBool.alpha(n1 < n2)
-        case (DefaultNumNUIntConst(n1), DefaultNumUIntConst(n2)) => absBool.alpha(n1 < n2)
-        case (DefaultNumNUIntConst(n1), DefaultNumNUIntConst(n2)) => absBool.alpha(n1 < n2)
-        case (DefaultNumUInt, DefaultNumUIntConst(n2)) if n2 <= 0 => absBool.False
-        case (DefaultNumUInt, DefaultNumNUIntConst(n2)) if n2 <= 0 => absBool.False
-        case _ => absBool.Top
+        case (DefaultNumBot, _) | (_, DefaultNumBot) => AbsBool.Bot
+        case (DefaultNumNaN, _) | (_, DefaultNumNaN) => AbsBool.False
+        case (DefaultNumUIntConst(n1), DefaultNumUIntConst(n2)) => AbsBool.alpha(n1 < n2)
+        case (DefaultNumUIntConst(n1), DefaultNumNUIntConst(n2)) => AbsBool.alpha(n1 < n2)
+        case (DefaultNumNUIntConst(n1), DefaultNumUIntConst(n2)) => AbsBool.alpha(n1 < n2)
+        case (DefaultNumNUIntConst(n1), DefaultNumNUIntConst(n2)) => AbsBool.alpha(n1 < n2)
+        case (DefaultNumUInt, DefaultNumUIntConst(n2)) if n2 <= 0 => AbsBool.False
+        case (DefaultNumUInt, DefaultNumNUIntConst(n2)) if n2 <= 0 => AbsBool.False
+        case _ => AbsBool.Top
       }
     }
 
-    def ===(that: AbsNumber)(absBool: AbsBoolUtil): AbsBool = {
+    def ===(that: AbsNumber): AbsBool = {
       (this, that) match {
-        case (DefaultNumBot, _) | (_, DefaultNumBot) => absBool.Bot
-        case (DefaultNumNaN, _) | (_, DefaultNumNaN) => absBool.False
-        case (DefaultNumUIntConst(n1), DefaultNumUIntConst(n2)) => absBool.alpha(n1 == n2)
-        case (DefaultNumUIntConst(n1), DefaultNumNUIntConst(n2)) => absBool.alpha(n1 == n2)
-        case (DefaultNumNUIntConst(n1), DefaultNumUIntConst(n2)) => absBool.alpha(n1 == n2)
-        case (DefaultNumNUIntConst(n1), DefaultNumNUIntConst(n2)) => absBool.alpha(n1 == n2)
+        case (DefaultNumBot, _) | (_, DefaultNumBot) => AbsBool.Bot
+        case (DefaultNumNaN, _) | (_, DefaultNumNaN) => AbsBool.False
+        case (DefaultNumUIntConst(n1), DefaultNumUIntConst(n2)) => AbsBool.alpha(n1 == n2)
+        case (DefaultNumUIntConst(n1), DefaultNumNUIntConst(n2)) => AbsBool.alpha(n1 == n2)
+        case (DefaultNumNUIntConst(n1), DefaultNumUIntConst(n2)) => AbsBool.alpha(n1 == n2)
+        case (DefaultNumNUIntConst(n1), DefaultNumNUIntConst(n2)) => AbsBool.alpha(n1 == n2)
         case _ =>
           (this <= that, that <= this) match {
-            case (false, false) => absBool.False
-            case _ => absBool.Top
+            case (false, false) => AbsBool.False
+            case _ => AbsBool.Top
           }
       }
     }
@@ -255,11 +256,11 @@ object DefaultNumUtil extends AbsNumberUtil {
       }
     }
 
-    def sameValue(that: AbsNumber)(absBoolU: AbsBoolUtil): AbsBool = {
+    def sameValue(that: AbsNumber): AbsBool = {
       (this, that) match {
-        case (DefaultNumNaN, DefaultNumNaN) => absBoolU.True
-        case (DefaultNumUIntConst(0), DefaultNumUIntConst(0)) => absBoolU.Top
-        case _ => (this === that)(absBoolU)
+        case (DefaultNumNaN, DefaultNumNaN) => AbsBool.True
+        case (DefaultNumUIntConst(0), DefaultNumUIntConst(0)) => AbsBool.Top
+        case _ => this === that
       }
     }
 
@@ -812,9 +813,8 @@ object DefaultNumUtil extends AbsNumberUtil {
     val gamma: ConSet[Double] = ConSetTop()
     val gammaSingle: ConSingle[Double] = ConSingleTop()
     override val toString: String = "Number"
-    def toAbsString(absString: AbsStringUtil): AbsString = absString.NumStr
-    def toAbsBoolean(absBool: AbsBoolUtil): AbsBool = absBool.Top
-    def toAbsNumber(absNumber: AbsNumberUtil): AbsNumber = absNumber.Top
+    def toAbsString: AbsString = AbsString.NumStr
+    def toAbsBoolean: AbsBool = AbsBool.Top
   }
 
   case object DefaultNumBot extends DefaultNumber {
@@ -822,83 +822,74 @@ object DefaultNumUtil extends AbsNumberUtil {
     val gammaSingle: ConSingle[Double] = ConSingleBot()
     override val gammaSimple: ConSimple = ConSimpleBot
     override val toString: String = "Bot"
-    def toAbsString(absString: AbsStringUtil): AbsString = absString.Bot
-    def toAbsBoolean(absBool: AbsBoolUtil): AbsBool = absBool.Bot
-    def toAbsNumber(absNumber: AbsNumberUtil): AbsNumber = absNumber.Bot
+    def toAbsString: AbsString = AbsString.Bot
+    def toAbsBoolean: AbsBool = AbsBool.Bot
   }
 
   case object DefaultNumInf extends DefaultNumber {
     val gamma: ConSet[Double] = ConSetCon(HashSet(Double.PositiveInfinity, Double.NegativeInfinity))
     val gammaSingle: ConSingle[Double] = ConSingleTop()
     override val toString: String = "Inf"
-    def toAbsString(absString: AbsStringUtil): AbsString = absString.NumStr
-    def toAbsBoolean(absBool: AbsBoolUtil): AbsBool = absBool.True
-    def toAbsNumber(absNumber: AbsNumberUtil): AbsNumber = absNumber.Infinity
+    def toAbsString: AbsString = AbsString.NumStr
+    def toAbsBoolean: AbsBool = AbsBool.True
   }
 
   case object DefaultNumPosInf extends DefaultNumber {
     val gamma: ConSet[Double] = ConSetCon(HashSet(Double.PositiveInfinity))
     val gammaSingle: ConSingle[Double] = ConSingleCon(Double.PositiveInfinity)
     override val toString: String = "+Inf"
-    def toAbsString(absString: AbsStringUtil): AbsString = absString.alpha("Infinity")
-    def toAbsBoolean(absBool: AbsBoolUtil): AbsBool = absBool.True
-    def toAbsNumber(absNumber: AbsNumberUtil): AbsNumber = absNumber.PosInf
+    def toAbsString: AbsString = AbsString.alpha("Infinity")
+    def toAbsBoolean: AbsBool = AbsBool.True
   }
 
   case object DefaultNumNegInf extends DefaultNumber {
     val gamma: ConSet[Double] = ConSetCon(HashSet(Double.NegativeInfinity))
     val gammaSingle: ConSingle[Double] = ConSingleCon(Double.NegativeInfinity)
     override val toString: String = "-Inf"
-    def toAbsString(absString: AbsStringUtil): AbsString = absString.alpha("-Infinity")
-    def toAbsBoolean(absBool: AbsBoolUtil): AbsBool = absBool.True
-    def toAbsNumber(absNumber: AbsNumberUtil): AbsNumber = absNumber.NegInf
+    def toAbsString: AbsString = AbsString.alpha("-Infinity")
+    def toAbsBoolean: AbsBool = AbsBool.True
   }
 
   case object DefaultNumNaN extends DefaultNumber {
     val gamma: ConSet[Double] = ConSetCon(HashSet(Double.NaN))
     val gammaSingle: ConSingle[Double] = ConSingleCon(Double.NaN)
     override val toString: String = "NaN"
-    def toAbsString(absString: AbsStringUtil): AbsString = absString.alpha("NaN")
-    def toAbsBoolean(absBool: AbsBoolUtil): AbsBool = absBool.False
-    def toAbsNumber(absNumber: AbsNumberUtil): AbsNumber = absNumber.NaN
+    def toAbsString: AbsString = AbsString.alpha("NaN")
+    def toAbsBoolean: AbsBool = AbsBool.False
   }
 
   case object DefaultNumUInt extends DefaultNumber {
     val gamma: ConSet[Double] = ConSetTop()
     val gammaSingle: ConSingle[Double] = ConSingleTop()
     override val toString: String = "UInt"
-    def toAbsString(absString: AbsStringUtil): AbsString = absString.NumStr
-    def toAbsBoolean(absBool: AbsBoolUtil): AbsBool = absBool.Top
-    def toAbsNumber(absNumber: AbsNumberUtil): AbsNumber = absNumber.UInt
+    def toAbsString: AbsString = AbsString.NumStr
+    def toAbsBoolean: AbsBool = AbsBool.Top
   }
 
   case object DefaultNumNUInt extends DefaultNumber {
     val gamma: ConSet[Double] = ConSetTop()
     val gammaSingle: ConSingle[Double] = ConSingleTop()
     override val toString: String = "NUInt"
-    def toAbsString(absString: AbsStringUtil): AbsString = absString.NumStr
-    def toAbsBoolean(absBool: AbsBoolUtil): AbsBool = absBool.Top
-    def toAbsNumber(absNumber: AbsNumberUtil): AbsNumber = absNumber.NUInt
+    def toAbsString: AbsString = AbsString.NumStr
+    def toAbsBoolean: AbsBool = AbsBool.Top
   }
 
   case class DefaultNumUIntConst(value: Long) extends DefaultNumber {
     def gamma: ConSet[Double] = ConSetCon(HashSet(value))
     def gammaSingle: ConSingle[Double] = ConSingleCon(value)
     override def toString: String = value.toLong.toString
-    def toAbsString(absString: AbsStringUtil): AbsString = absString.alpha(value.toString)
-    def toAbsBoolean(absBool: AbsBoolUtil): AbsBool = value match {
-      case 0 => absBool.False
-      case _ => absBool.True
+    def toAbsString: AbsString = AbsString.alpha(value.toString)
+    def toAbsBoolean: AbsBool = value match {
+      case 0 => AbsBool.False
+      case _ => AbsBool.True
     }
-    def toAbsNumber(absNumber: AbsNumberUtil): AbsNumber = absNumber.alpha(value)
   }
 
   case class DefaultNumNUIntConst(value: Double) extends DefaultNumber {
     def gamma: ConSet[Double] = ConSetCon(HashSet(value))
     def gammaSingle: ConSingle[Double] = ConSingleCon(value)
     override def toString: String = value.toString
-    def toAbsString(absString: AbsStringUtil): AbsString = absString.alpha(value.toString)
-    def toAbsBoolean(absBool: AbsBoolUtil): AbsBool = absBool.True
-    def toAbsNumber(absNumber: AbsNumberUtil): AbsNumber = absNumber.alpha(value)
+    def toAbsString: AbsString = AbsString.alpha(value.toString)
+    def toAbsBoolean: AbsBool = AbsBool.True
   }
 }

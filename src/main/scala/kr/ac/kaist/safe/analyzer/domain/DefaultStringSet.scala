@@ -11,6 +11,7 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
+import kr.ac.kaist.safe.analyzer.domain.Utils._
 import scala.collection.immutable.HashSet
 import scala.util.Try
 
@@ -40,7 +41,7 @@ class DefaultStrSetUtil(maxSetSize: Int) extends AbsStringUtil {
   def hasOther(values: Set[String]): Boolean =
     values.foldLeft(false)((b: Boolean, v: String) => b | !isNum(v))
 
-  def fromCharCode(n: AbsNumber)(absNumber: AbsNumberUtil): AbsString = {
+  def fromCharCode(n: AbsNumber): AbsString = {
     n.gamma match {
       case ConSetTop() => DefaultStrTop
       case ConSetBot() => DefaultStrBot
@@ -58,13 +59,13 @@ class DefaultStrSetUtil(maxSetSize: Int) extends AbsStringUtil {
     def gammaSimple: ConSimple = ConSimpleTop
     def gammaIsAllNums: ConSingle[Boolean]
     override def toString: String
-    def toAbsString(absString: AbsStringUtil): AbsString
-    def toAbsBoolean(absBool: AbsBoolUtil): AbsBool
-    def toAbsNumber(absNumber: AbsNumberUtil): AbsNumber
+    def toAbsString: AbsString = this
+    def toAbsBoolean: AbsBool
+    def toAbsNumber: AbsNumber
 
     /* AbsNumber Interface */
     def <=(that: AbsString): Boolean =
-      (this, that) match {
+      (this, that.asInstanceOf[DefaultStringSet]) match {
         case (DefaultStrBot, _) => true
         case (_, DefaultStrTop) => true
         //      case (DefaultStrSet(v1), DefaultStrSet(v2)) => (!a.hasNum || b.hasNum) && (!a.hasOther || b.hasOther) && a.values.subsetOf(b.values)
@@ -120,24 +121,24 @@ class DefaultStrSetUtil(maxSetSize: Int) extends AbsStringUtil {
           }
       }
 
-    def ===(that: AbsString)(absBool: AbsBoolUtil): AbsBool =
+    def ===(that: AbsString): AbsBool =
       (this.gammaSingle, that.gammaSingle) match {
-        case (ConSingleCon(s1), ConSingleCon(s2)) => absBool.alpha(s1 == s2)
-        case (ConSingleBot(), _) | (_, ConSingleBot()) => absBool.Bot
+        case (ConSingleCon(s1), ConSingleCon(s2)) => AbsBool.alpha(s1 == s2)
+        case (ConSingleBot(), _) | (_, ConSingleBot()) => AbsBool.Bot
         case _ => (this <= that, that <= this) match {
-          case (false, false) => absBool.False
-          case _ => absBool.Top
+          case (false, false) => AbsBool.False
+          case _ => AbsBool.Top
         }
       }
 
-    def <(that: AbsString)(absBool: AbsBoolUtil): AbsBool = {
+    def <(that: AbsString): AbsBool = {
       (this, that) match {
-        case (DefaultStrBot, _) | (_, DefaultStrBot) => absBool.Bot
+        case (DefaultStrBot, _) | (_, DefaultStrBot) => AbsBool.Bot
         case (DefaultStrSet(leftStrSet), DefaultStrSet(rightStrSet)) =>
-          leftStrSet.foldLeft(absBool.Bot)((r1, x) => {
-            r1 + rightStrSet.foldLeft(absBool.Bot)((r2, y) => r2 + absBool.alpha(x < y))
+          leftStrSet.foldLeft(AbsBool.Bot)((r1, x) => {
+            r1 + rightStrSet.foldLeft(AbsBool.Bot)((r2, y) => r2 + AbsBool.alpha(x < y))
           })
-        case _ => absBool.Top
+        case _ => AbsBool.Top
       }
     }
 
@@ -201,48 +202,48 @@ class DefaultStrSetUtil(maxSetSize: Int) extends AbsStringUtil {
         }
     }
 
-    def charCodeAt(pos: AbsNumber)(absNumber: AbsNumberUtil): AbsNumber = {
+    def charCodeAt(pos: AbsNumber): AbsNumber = {
       gamma match {
-        case ConSetTop() => absNumber.UInt
-        case ConSetBot() => absNumber.Bot
+        case ConSetTop() => AbsNumber.UInt
+        case ConSetBot() => AbsNumber.Bot
         case ConSetCon(vs) =>
           pos.gammaSingle match {
-            case ConSingleTop() | ConSingleBot() => absNumber.UInt
+            case ConSingleTop() | ConSingleBot() => AbsNumber.UInt
             case ConSingleCon(d) =>
-              vs.foldLeft[AbsNumber](absNumber.Bot)((r, s) => {
+              vs.foldLeft[AbsNumber](AbsNumber.Bot)((r, s) => {
                 if (d >= s.length || d < 0)
-                  r + absNumber.NaN
+                  r + AbsNumber.NaN
                 else {
                   val i = d.toInt
-                  r + absNumber.alpha(s.substring(i, i + 1).head.toInt)
+                  r + AbsNumber.alpha(s.substring(i, i + 1).head.toInt)
                 }
               })
           }
       }
     }
 
-    def contains(that: AbsString)(absBool: AbsBoolUtil): AbsBool =
+    def contains(that: AbsString): AbsBool =
       this match {
-        case DefaultStrNum => absBool.Top
-        case DefaultStrOther => absBool.Top
+        case DefaultStrNum => AbsBool.Top
+        case DefaultStrOther => AbsBool.Top
         case DefaultStrSet(vs) => that.gammaSingle match {
-          case ConSingleTop() => absBool.Top
-          case ConSingleBot() => absBool.Bot
-          case ConSingleCon(s) => vs.foldLeft[AbsBool](absBool.Bot)((result, v) => {
-            result + absBool.alpha(v.contains(s))
+          case ConSingleTop() => AbsBool.Top
+          case ConSingleBot() => AbsBool.Bot
+          case ConSingleCon(s) => vs.foldLeft[AbsBool](AbsBool.Bot)((result, v) => {
+            result + AbsBool.alpha(v.contains(s))
           })
         }
-        case DefaultStrTop => absBool.Top
-        case DefaultStrBot => absBool.Bot
+        case DefaultStrTop => AbsBool.Top
+        case DefaultStrBot => AbsBool.Bot
       }
 
-    def length(absNumber: AbsNumberUtil): AbsNumber =
+    def length: AbsNumber =
       this match {
-        case DefaultStrNum => absNumber.UInt
-        case DefaultStrOther => absNumber.UInt
-        case DefaultStrSet(vs) => vs.foldLeft[AbsNumber](absNumber.Bot)((result, v) => result + absNumber.alpha(v.length))
-        case DefaultStrTop => absNumber.UInt
-        case DefaultStrBot => absNumber.Bot
+        case DefaultStrNum => AbsNumber.UInt
+        case DefaultStrOther => AbsNumber.UInt
+        case DefaultStrSet(vs) => vs.foldLeft[AbsNumber](AbsNumber.Bot)((result, v) => result + AbsNumber.alpha(v.length))
+        case DefaultStrTop => AbsNumber.UInt
+        case DefaultStrBot => AbsNumber.Bot
       }
 
     def toLowerCase: AbsString =
@@ -283,10 +284,9 @@ class DefaultStrSetUtil(maxSetSize: Int) extends AbsStringUtil {
     val gammaSingle: ConSingle[String] = ConSingleTop()
     val gammaIsAllNums: ConSingle[Boolean] = ConSingleTop()
     override val toString: String = "String"
-    def toAbsString(absString: AbsStringUtil): AbsString = absString.Top
-    def toAbsBoolean(absBool: AbsBoolUtil): AbsBool = absBool.Top
-    def toAbsNumber(absNumber: AbsNumberUtil): AbsNumber = absNumber.Top
-    def isArrayIndex(absBool: AbsBoolUtil): AbsBool = absBool.Top
+    def toAbsBoolean: AbsBool = AbsBool.Top
+    def toAbsNumber: AbsNumber = AbsNumber.Top
+    def isArrayIndex: AbsBool = AbsBool.Top
   }
 
   case object DefaultStrBot extends DefaultStringSet {
@@ -295,10 +295,9 @@ class DefaultStrSetUtil(maxSetSize: Int) extends AbsStringUtil {
     val gammaIsAllNums: ConSingle[Boolean] = ConSingleBot()
     override val gammaSimple: ConSimple = ConSimpleBot
     override val toString: String = "Bot"
-    def toAbsString(absString: AbsStringUtil): AbsString = absString.Bot
-    def toAbsBoolean(absBool: AbsBoolUtil): AbsBool = absBool.Bot
-    def toAbsNumber(absNumber: AbsNumberUtil): AbsNumber = absNumber.Bot
-    def isArrayIndex(absBool: AbsBoolUtil): AbsBool = absBool.Bot
+    def toAbsBoolean: AbsBool = AbsBool.Bot
+    def toAbsNumber: AbsNumber = AbsNumber.Bot
+    def isArrayIndex: AbsBool = AbsBool.Bot
   }
 
   case object DefaultStrNum extends DefaultStringSet {
@@ -306,10 +305,9 @@ class DefaultStrSetUtil(maxSetSize: Int) extends AbsStringUtil {
     val gammaSingle: ConSingle[String] = ConSingleTop()
     val gammaIsAllNums: ConSingle[Boolean] = ConSingleCon(true)
     override val toString: String = "NumStr"
-    def toAbsString(absString: AbsStringUtil): AbsString = absString.NumStr
-    def toAbsBoolean(absBool: AbsBoolUtil): AbsBool = absBool.True
-    def toAbsNumber(absNumber: AbsNumberUtil): AbsNumber = absNumber.Top
-    def isArrayIndex(absBool: AbsBoolUtil): AbsBool = absBool.Top
+    def toAbsBoolean: AbsBool = AbsBool.True
+    def toAbsNumber: AbsNumber = AbsNumber.Top
+    def isArrayIndex: AbsBool = AbsBool.Top
   }
 
   case object DefaultStrOther extends DefaultStringSet {
@@ -317,10 +315,9 @@ class DefaultStrSetUtil(maxSetSize: Int) extends AbsStringUtil {
     val gammaSingle: ConSingle[String] = ConSingleTop()
     val gammaIsAllNums: ConSingle[Boolean] = ConSingleCon(false)
     override val toString: String = "OtherStr"
-    def toAbsString(absString: AbsStringUtil): AbsString = absString.OtherStr
-    def toAbsBoolean(absBool: AbsBoolUtil): AbsBool = absBool.Top
-    def toAbsNumber(absNumber: AbsNumberUtil): AbsNumber = absNumber.NaN
-    def isArrayIndex(absBool: AbsBoolUtil): AbsBool = absBool.False
+    def toAbsBoolean: AbsBool = AbsBool.Top
+    def toAbsNumber: AbsNumber = AbsNumber.NaN
+    def isArrayIndex: AbsBool = AbsBool.False
   }
 
   case class DefaultStrSet(values: Set[String]) extends DefaultStringSet {
@@ -340,26 +337,25 @@ class DefaultStrSetUtil(maxSetSize: Int) extends AbsStringUtil {
       case _ => ConSingleTop()
     }
     override def toString: String = values.map("\"" + _ + "\"").mkString(", ")
-    def toAbsString(absString: AbsStringUtil): AbsString = absString.alpha(values)
-    def toAbsBoolean(absBool: AbsBoolUtil): AbsBool = values contains "" match {
-      case true if values.size == 1 => absBool.False
-      case true => absBool.Top
-      case false if values.size == 0 => absBool.Bot
-      case false => absBool.True
+    def toAbsBoolean: AbsBool = values contains "" match {
+      case true if values.size == 1 => AbsBool.False
+      case true => AbsBool.Top
+      case false if values.size == 0 => AbsBool.Bot
+      case false => AbsBool.True
     }
-    def toAbsNumber(absNumber: AbsNumberUtil): AbsNumber = values.foldLeft(absNumber.Bot)((tmpAbsNum, str) => {
+    def toAbsNumber: AbsNumber = values.foldLeft(AbsNumber.Bot)((tmpAbsNum, str) => {
       val absNum = str.trim match {
-        case "" => absNumber.alpha(0)
-        case s if isHex(s) => absNumber.alpha((s + "p0").toDouble)
-        case s => Try(absNumber.alpha(s.toDouble)).getOrElse(absNumber.NaN)
+        case "" => AbsNumber.alpha(0)
+        case s if isHex(s) => AbsNumber.alpha((s + "p0").toDouble)
+        case s => Try(AbsNumber.alpha(s.toDouble)).getOrElse(AbsNumber.NaN)
       }
       absNum + tmpAbsNum
     })
 
-    def isArrayIndex(absBool: AbsBoolUtil): AbsBool = {
+    def isArrayIndex: AbsBool = {
       val upper = scala.math.pow(2, 32) - 1
-      values.foldLeft(absBool.Bot)((res, v) => {
-        res + absBool.alpha({
+      values.foldLeft(AbsBool.Bot)((res, v) => {
+        res + AbsBool.alpha({
           isNum(v) && {
             val num = v.toDouble
             0 <= num && num < upper

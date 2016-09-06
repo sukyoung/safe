@@ -17,7 +17,7 @@ import kr.ac.kaist.safe.util.{ Loc, SystemLoc, Recent }
 
 // Model
 abstract class Model {
-  def init(h: Heap, cfg: CFG, utils: Utils): (Heap, Value)
+  def init(h: Heap, cfg: CFG): (Heap, Value)
 }
 
 sealed abstract class PropDesc

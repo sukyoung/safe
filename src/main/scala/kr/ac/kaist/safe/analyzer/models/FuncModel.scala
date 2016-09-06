@@ -12,6 +12,7 @@
 package kr.ac.kaist.safe.analyzer.models
 
 import kr.ac.kaist.safe.analyzer.domain._
+import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.nodes.cfg.CFG
 import kr.ac.kaist.safe.util.{ Loc, SystemLoc, Recent }
 
@@ -23,13 +24,13 @@ class FuncModel(
     val construct: Option[Code] = None,
     val protoModel: Option[(ObjModel, Boolean, Boolean, Boolean)] = None
 ) extends ObjModel(name, props) {
-  override def initHeap(h: Heap, cfg: CFG, utils: Utils): Heap = h(loc) match {
+  override def initHeap(h: Heap, cfg: CFG): Heap = h(loc) match {
     case Some(_) => h
     case None => {
-      val AT = utils.absBool.True
-      val AF = utils.absBool.False
-      val AB = utils.absBool.Bot
-      def toAB(b: Boolean): AbsBool = utils.absBool.alpha(b)
+      val AT = AbsBool.True
+      val AF = AbsBool.False
+      val AB = AbsBool.Bot
+      def toAB(b: Boolean): AbsBool = AbsBool.alpha(b)
 
       // [model].prototype object
       val (h1, protoOpt, writable, enumerable, configurable) = protoModel match {
@@ -37,11 +38,11 @@ class FuncModel(
           (h(objModel.loc) match {
             case Some(_) => h
             case None => {
-              val heap = objModel.initHeap(h, cfg, utils)
+              val heap = objModel.initHeap(h, cfg)
               heap.getOrElse(objModel.loc)(Heap.Bot)(obj => {
                 heap.update(objModel.loc, obj.update(
                   "constructor",
-                  PropValue(DataProperty(utils.value(loc), AT, AF, AT))
+                  PropValue(DataProperty(ValueUtil(loc), AT, AF, AT))
                 ))
               })
             }
@@ -51,12 +52,12 @@ class FuncModel(
       }
 
       // [model] function object
-      val func = code.getCFGFunc(cfg, name, utils)
+      val func = code.getCFGFunc(cfg, name)
       val fidOpt = Some(func.id)
-      val constructIdOpt = construct.map(_.getCFGFunc(cfg, name, utils).id)
-      val scope = utils.value.alpha(null) // TODO get scope as args
-      val n = utils.absNumber.alpha(code.argLen)
-      val funcObj = utils.absObject.newFunctionObject(
+      val constructIdOpt = construct.map(_.getCFGFunc(cfg, name).id)
+      val scope = ValueUtil.alpha(null) // TODO get scope as args
+      val n = AbsNumber.alpha(code.argLen)
+      val funcObj = AbsObjectUtil.newFunctionObject(
         fidOpt,
         constructIdOpt,
         scope,
@@ -66,7 +67,7 @@ class FuncModel(
         configurable,
         n
       )
-      initObj(h1, cfg, utils, loc, funcObj, props)
+      initObj(h1, cfg, loc, funcObj, props)
     }
   }
 }

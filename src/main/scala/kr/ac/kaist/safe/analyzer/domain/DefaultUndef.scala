@@ -11,7 +11,7 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
-/* Default Undefined Domain */
+import kr.ac.kaist.safe.analyzer.domain.Utils._
 
 object DefaultUndefUtil extends AbsUndefUtil {
   val Top: AbsUndef = DefaultUndefTop
@@ -22,9 +22,9 @@ object DefaultUndefUtil extends AbsUndefUtil {
     /* AbsDomain Interface */
     def gamma: ConSimple
     override def toString: String
-    def toAbsString(absString: AbsStringUtil): AbsString
-    def toAbsBoolean(absBool: AbsBoolUtil): AbsBool
-    def toAbsNumber(absNumber: AbsNumberUtil): AbsNumber
+    def toAbsString: AbsString
+    def toAbsBoolean: AbsBool
+    def toAbsNumber: AbsNumber
 
     /* AbsUndef Interface */
     def <=(that: AbsUndef): Boolean =
@@ -47,26 +47,26 @@ object DefaultUndefUtil extends AbsUndefUtil {
         case _ => DefaultUndefBot
       }
 
-    def ===(that: AbsUndef)(absBool: AbsBoolUtil): AbsBool =
+    def ===(that: AbsUndef): AbsBool =
       (this, that) match {
-        case (DefaultUndefBot, _) | (_, DefaultUndefBot) => absBool.Bot
-        case _ => absBool.True
+        case (DefaultUndefBot, _) | (_, DefaultUndefBot) => AbsBool.Bot
+        case _ => AbsBool.True
       }
   }
 
   case object DefaultUndefTop extends DefaultUndef {
     val gamma: ConSimple = ConSimpleTop
     override val toString: String = "undefined"
-    def toAbsString(absString: AbsStringUtil): AbsString = absString.alpha("undefined")
-    def toAbsBoolean(absBool: AbsBoolUtil): AbsBool = absBool.False
-    def toAbsNumber(absNumber: AbsNumberUtil): AbsNumber = absNumber.NaN
+    def toAbsString: AbsString = AbsString.alpha("undefined")
+    def toAbsBoolean: AbsBool = AbsBool.False
+    def toAbsNumber: AbsNumber = AbsNumber.NaN
   }
 
   case object DefaultUndefBot extends DefaultUndef {
     val gamma: ConSimple = ConSimpleBot
     override val toString: String = "Bot"
-    def toAbsString(absString: AbsStringUtil): AbsString = absString.Bot
-    def toAbsBoolean(absBool: AbsBoolUtil): AbsBool = absBool.Bot
-    def toAbsNumber(absNumber: AbsNumberUtil): AbsNumber = absNumber.Bot
+    def toAbsString: AbsString = AbsString.Bot
+    def toAbsBoolean: AbsBool = AbsBool.Bot
+    def toAbsNumber: AbsNumber = AbsNumber.Bot
   }
 }

@@ -11,6 +11,7 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
+import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.analyzer.models.PredefLoc
 import kr.ac.kaist.safe.analyzer.models.PredefLoc.{ COLLAPSED, PURE_LOCAL }
 import kr.ac.kaist.safe.LINE_SEP
@@ -139,7 +140,7 @@ abstract class ExecContext {
     }
   }
 
-  def oldify(addr: Address)(utils: Utils): ExecContext = this match {
+  def oldify(addr: Address): ExecContext = this match {
     case ExecContextBot => ExecContextBot
     case ExecContextMap(map, old) => {
       val locR = Loc(addr, Recent)
@@ -208,20 +209,20 @@ abstract class ExecContext {
   ////////////////////////////////////////////////////////////////
   // Lookup
   ////////////////////////////////////////////////////////////////
-  def lookupLocal(loc: Loc, x: String)(utils: Utils): Value = {
+  def lookupLocal(loc: Loc, x: String): Value = {
     var visited = LocSetEmpty
-    val valueBot = utils.value.Bot
+    val valueBot = ValueUtil.Bot
     def visit(l: Loc): Value = {
       if (visited.contains(l)) valueBot
       else {
         visited += l
         val env = this.getOrElse(l, DecEnvRecord.Bot)
-        val isIn = (env HasBinding x)(utils.absBool)
+        val isIn = (env HasBinding x)
         val v1 =
-          if (utils.absBool.True <= isIn) env.getOrElse(x)(valueBot) { _.value }
+          if (AbsBool.True <= isIn) env.getOrElse(x)(valueBot) { _.value }
           else valueBot
         val v2 =
-          if (utils.absBool.False <= isIn) {
+          if (AbsBool.False <= isIn) {
             val outerLocSet = env.getOrElse("@outer")(LocSetEmpty) { _.value.locset }
             outerLocSet.foldLeft(valueBot)((tmpVal, outerLoc) => tmpVal + visit(outerLoc))
           } else {
@@ -233,19 +234,19 @@ abstract class ExecContext {
     visit(loc)
   }
 
-  def lookupBaseLocal(loc: Loc, x: String)(utils: Utils): Set[Loc] = {
+  def lookupBaseLocal(loc: Loc, x: String): Set[Loc] = {
     var visited = LocSetEmpty
     def visit(l: Loc): Set[Loc] = {
       if (visited.contains(l)) LocSetEmpty
       else {
         visited += l
         val env = this.getOrElse(l, DecEnvRecord.Bot)
-        val isIn = (env HasBinding x)(utils.absBool)
+        val isIn = (env HasBinding x)
         val locSet1 =
-          if (utils.absBool.True <= isIn) HashSet(l)
+          if (AbsBool.True <= isIn) HashSet(l)
           else LocSetEmpty
         val locSet2 =
-          if (utils.absBool.False <= isIn) {
+          if (AbsBool.False <= isIn) {
             val outerLocSet = env.getOrElse("@outer")(LocSetEmpty) { _.value.locset }
             outerLocSet.foldLeft(LocSetEmpty)((res, outerLoc) => res ++ visit(outerLoc))
           } else {
@@ -260,19 +261,19 @@ abstract class ExecContext {
   ////////////////////////////////////////////////////////////////
   // Store
   ////////////////////////////////////////////////////////////////
-  def varStoreLocal(loc: Loc, x: String, value: Value)(utils: Utils): ExecContext = {
+  def varStoreLocal(loc: Loc, x: String, value: Value): ExecContext = {
     val env = this.getOrElse(loc, DecEnvRecord.Bot)
-    val AT = utils.absBool.True
-    val AF = utils.absBool.False
+    val AT = AbsBool.True
+    val AF = AbsBool.False
     val ctx1 = env(x) match {
       case Some(bind) => {
         val trueV =
           if (AT <= bind.mutable) value
-          else utils.value.Bot
+          else ValueUtil.Bot
         val falseV =
           if (AF <= bind.mutable) bind.value
-          else utils.value.Bot
-        val newBind = utils.binding(trueV + falseV)
+          else ValueUtil.Bot
+        val newBind = BindingUtil(trueV + falseV)
         update(loc, env.update(x, newBind))
       }
       case None => ExecContext.Bot
@@ -282,8 +283,8 @@ abstract class ExecContext {
       case None => LocSetEmpty
     }
     val ctx2 =
-      if (utils.absBool.False <= (env HasBinding x)(utils.absBool))
-        outerLocSet.foldLeft(ExecContext.Empty)((tmpH, outerLoc) => varStoreLocal(outerLoc, x, value)(utils))
+      if (AbsBool.False <= (env HasBinding x))
+        outerLocSet.foldLeft(ExecContext.Empty)((tmpH, outerLoc) => varStoreLocal(outerLoc, x, value))
       else
         ExecContext.Bot
     ctx1 + ctx2
@@ -292,19 +293,19 @@ abstract class ExecContext {
   ////////////////////////////////////////////////////////////////
   // delete
   ////////////////////////////////////////////////////////////////
-  def delete(loc: Loc, str: String)(utils: Utils): (ExecContext, AbsBool) = {
-    getOrElse(loc)((this, utils.absBool.Bot))(_ => {
-      val test = hasOwnProperty(loc, str)(utils)
+  def delete(loc: Loc, str: String): (ExecContext, AbsBool) = {
+    getOrElse(loc)((this, AbsBool.Bot))(_ => {
+      val test = hasOwnProperty(loc, str)
       val targetEnv = this.getOrElse(loc, DecEnvRecord.Bot)
-      if (utils.absBool.True <= test)
-        (this, utils.absBool.False)
+      if (AbsBool.True <= test)
+        (this, AbsBool.False)
       else
-        (ExecContext.Bot, utils.absBool.Bot)
+        (ExecContext.Bot, AbsBool.Bot)
     })
   }
 
-  private def hasOwnProperty(loc: Loc, str: String)(utils: Utils): AbsBool = {
-    (this.getOrElse(loc, DecEnvRecord.Bot) HasBinding str)(utils.absBool)
+  private def hasOwnProperty(loc: Loc, str: String): AbsBool = {
+    (this.getOrElse(loc, DecEnvRecord.Bot) HasBinding str)
   }
 
   ////////////////////////////////////////////////////////////////

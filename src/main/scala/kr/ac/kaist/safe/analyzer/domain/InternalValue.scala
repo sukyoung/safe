@@ -41,21 +41,19 @@ case object IHasInstance extends InternalName {
   override def toString: String = s"@hasinstance" // TODO
 }
 
-case class InternalValueUtil(utils: Utils) {
-  private val valueU = utils.value
-
-  val Bot: InternalValue = InternalValue(utils.value.Bot, FidSetEmpty)
+object InternalValueUtil {
+  val Bot: InternalValue = InternalValue(ValueUtil.Bot, FidSetEmpty)
 
   // constructor
-  def apply(undefval: AbsUndef): InternalValue = InternalValue(valueU(undefval), FidSetEmpty)
-  def apply(nullval: AbsNull): InternalValue = InternalValue(valueU(nullval), FidSetEmpty)
-  def apply(boolval: AbsBool): InternalValue = InternalValue(valueU(boolval), FidSetEmpty)
-  def apply(numval: AbsNumber): InternalValue = InternalValue(valueU(numval), FidSetEmpty)
-  def apply(strval: AbsString): InternalValue = InternalValue(valueU(strval), FidSetEmpty)
-  def apply(loc: Loc): InternalValue = InternalValue(valueU(loc), FidSetEmpty)
-  def apply(locSet: Set[Loc]): InternalValue = InternalValue(valueU(locSet), FidSetEmpty)
-  def apply(fid: FunctionId): InternalValue = InternalValue(valueU.Bot, FidSetEmpty + fid)
-  def apply(fidSet: => Set[FunctionId]): InternalValue = InternalValue(valueU.Bot, fidSet)
+  def apply(undefval: AbsUndef): InternalValue = InternalValue(ValueUtil(undefval), FidSetEmpty)
+  def apply(nullval: AbsNull): InternalValue = InternalValue(ValueUtil(nullval), FidSetEmpty)
+  def apply(boolval: AbsBool): InternalValue = InternalValue(ValueUtil(boolval), FidSetEmpty)
+  def apply(numval: AbsNumber): InternalValue = InternalValue(ValueUtil(numval), FidSetEmpty)
+  def apply(strval: AbsString): InternalValue = InternalValue(ValueUtil(strval), FidSetEmpty)
+  def apply(loc: Loc): InternalValue = InternalValue(ValueUtil(loc), FidSetEmpty)
+  def apply(locSet: Set[Loc]): InternalValue = InternalValue(ValueUtil(locSet), FidSetEmpty)
+  def apply(fid: FunctionId): InternalValue = InternalValue(ValueUtil.Bot, FidSetEmpty + fid)
+  def apply(fidSet: => Set[FunctionId]): InternalValue = InternalValue(ValueUtil.Bot, fidSet)
   def apply(value: Value): InternalValue = InternalValue(value, FidSetEmpty)
 }
 

@@ -12,7 +12,9 @@
 package kr.ac.kaist.safe.analyzer.models.builtin
 
 import kr.ac.kaist.safe.analyzer.domain._
+import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.analyzer.models._
+import kr.ac.kaist.safe.analyzer.TypeConversionHelper
 
 object BuiltinMath extends ObjModel(
   name = "Math",
@@ -29,161 +31,161 @@ object BuiltinMath extends ObjModel(
 
     NormalProp("abs", FuncModel(
       name = "Math.abs",
-      code = SimpleCode(argLen = 1, (args, h, sem, utils) => {
-        val resV = sem.CFGLoadHelper(args, Set(utils.absString.alpha("0")), h)
-        val num = sem.typeHelper.ToNumber(resV).abs
-        utils.value(num)
+      code = SimpleCode(argLen = 1, (args, h, sem) => {
+        val resV = sem.CFGLoadHelper(args, Set(AbsString.alpha("0")), h)
+        val num = TypeConversionHelper.ToNumber(resV).abs
+        ValueUtil(num)
       })
     ), T, F, T),
 
     NormalProp("acos", FuncModel(
       name = "Math.acos",
-      code = SimpleCode(argLen = 1, (args, h, sem, utils) => {
-        val resV = sem.CFGLoadHelper(args, Set(utils.absString.alpha("0")), h)
-        val num = sem.typeHelper.ToNumber(resV).acos
-        utils.value(num)
+      code = SimpleCode(argLen = 1, (args, h, sem) => {
+        val resV = sem.CFGLoadHelper(args, Set(AbsString.alpha("0")), h)
+        val num = TypeConversionHelper.ToNumber(resV).acos
+        ValueUtil(num)
       })
     ), T, F, T),
 
     NormalProp("asin", FuncModel(
       name = "Math.asin",
-      code = SimpleCode(argLen = 1, (args, h, sem, utils) => {
-        val resV = sem.CFGLoadHelper(args, Set(utils.absString.alpha("0")), h)
-        val num = sem.typeHelper.ToNumber(resV).asin
-        utils.value(num)
+      code = SimpleCode(argLen = 1, (args, h, sem) => {
+        val resV = sem.CFGLoadHelper(args, Set(AbsString.alpha("0")), h)
+        val num = TypeConversionHelper.ToNumber(resV).asin
+        ValueUtil(num)
       })
     ), T, F, T),
 
     NormalProp("atan", FuncModel(
       name = "Math.atan",
-      code = SimpleCode(argLen = 1, (args, h, sem, utils) => {
-        val resV = sem.CFGLoadHelper(args, Set(utils.absString.alpha("0")), h)
-        val num = sem.typeHelper.ToNumber(resV).atan
-        utils.value(num)
+      code = SimpleCode(argLen = 1, (args, h, sem) => {
+        val resV = sem.CFGLoadHelper(args, Set(AbsString.alpha("0")), h)
+        val num = TypeConversionHelper.ToNumber(resV).atan
+        ValueUtil(num)
       })
     ), T, F, T),
 
     NormalProp("atan2", FuncModel(
       name = "Math.atan2",
-      code = SimpleCode(argLen = 2, (args, h, sem, utils) => {
-        val resVy = sem.CFGLoadHelper(args, Set(utils.absString.alpha("0")), h)
-        val resVx = sem.CFGLoadHelper(args, Set(utils.absString.alpha("1")), h)
-        val num = sem.typeHelper.ToNumber(resVy).atan2(sem.typeHelper.ToNumber(resVx))
-        utils.value(num)
+      code = SimpleCode(argLen = 2, (args, h, sem) => {
+        val resVy = sem.CFGLoadHelper(args, Set(AbsString.alpha("0")), h)
+        val resVx = sem.CFGLoadHelper(args, Set(AbsString.alpha("1")), h)
+        val num = TypeConversionHelper.ToNumber(resVy).atan2(TypeConversionHelper.ToNumber(resVx))
+        ValueUtil(num)
       })
     ), T, F, T),
 
     NormalProp("ceil", FuncModel(
       name = "Math.ceil",
-      code = SimpleCode(argLen = 1, (args, h, sem, utils) => {
-        val resV = sem.CFGLoadHelper(args, Set(utils.absString.alpha("0")), h)
-        val num = sem.typeHelper.ToNumber(resV).ceil
-        utils.value(num)
+      code = SimpleCode(argLen = 1, (args, h, sem) => {
+        val resV = sem.CFGLoadHelper(args, Set(AbsString.alpha("0")), h)
+        val num = TypeConversionHelper.ToNumber(resV).ceil
+        ValueUtil(num)
       })
     ), T, F, T),
 
     NormalProp("cos", FuncModel(
       name = "Math.cos",
-      code = SimpleCode(argLen = 1, (args, h, sem, utils) => {
-        val resV = sem.CFGLoadHelper(args, Set(utils.absString.alpha("0")), h)
-        val num = sem.typeHelper.ToNumber(resV).cos
-        utils.value(num)
+      code = SimpleCode(argLen = 1, (args, h, sem) => {
+        val resV = sem.CFGLoadHelper(args, Set(AbsString.alpha("0")), h)
+        val num = TypeConversionHelper.ToNumber(resV).cos
+        ValueUtil(num)
       })
     ), T, F, T),
 
     NormalProp("exp", FuncModel(
       name = "Math.exp",
-      code = SimpleCode(argLen = 1, (args, h, sem, utils) => {
-        val resV = sem.CFGLoadHelper(args, Set(utils.absString.alpha("0")), h)
-        val num = sem.typeHelper.ToNumber(resV).exp
-        utils.value(num)
+      code = SimpleCode(argLen = 1, (args, h, sem) => {
+        val resV = sem.CFGLoadHelper(args, Set(AbsString.alpha("0")), h)
+        val num = TypeConversionHelper.ToNumber(resV).exp
+        ValueUtil(num)
       })
     ), T, F, T),
 
     NormalProp("floor", FuncModel(
       name = "Math.floor",
-      code = SimpleCode(argLen = 1, (args, h, sem, utils) => {
-        val resV = sem.CFGLoadHelper(args, Set(utils.absString.alpha("0")), h)
-        val num = sem.typeHelper.ToNumber(resV).floor
-        utils.value(num)
+      code = SimpleCode(argLen = 1, (args, h, sem) => {
+        val resV = sem.CFGLoadHelper(args, Set(AbsString.alpha("0")), h)
+        val num = TypeConversionHelper.ToNumber(resV).floor
+        ValueUtil(num)
       })
     ), T, F, T),
 
     NormalProp("log", FuncModel(
       name = "Math.log",
-      code = SimpleCode(argLen = 1, (args, h, sem, utils) => {
-        val resV = sem.CFGLoadHelper(args, Set(utils.absString.alpha("0")), h)
-        val num = sem.typeHelper.ToNumber(resV).log
-        utils.value(num)
+      code = SimpleCode(argLen = 1, (args, h, sem) => {
+        val resV = sem.CFGLoadHelper(args, Set(AbsString.alpha("0")), h)
+        val num = TypeConversionHelper.ToNumber(resV).log
+        ValueUtil(num)
       })
     ), T, F, T),
 
     //TODO max
     NormalProp("max", FuncModel(
       name = "Math.max",
-      code = SimpleCode(argLen = 2, (args, h, sem, utils) => {
-        utils.value(utils.absNumber.Top)
+      code = SimpleCode(argLen = 2, (args, h, sem) => {
+        ValueUtil(AbsNumber.Top)
       })
     ), T, F, T),
 
     //TODO min
     NormalProp("min", FuncModel(
       name = "Math.min",
-      code = SimpleCode(argLen = 2, (args, h, sem, utils) => {
-        utils.value(utils.absNumber.Top)
+      code = SimpleCode(argLen = 2, (args, h, sem) => {
+        ValueUtil(AbsNumber.Top)
       })
     ), T, F, T),
 
     NormalProp("pow", FuncModel(
       name = "Math.pow",
-      code = SimpleCode(argLen = 2, (args, h, sem, utils) => {
-        val resVx = sem.CFGLoadHelper(args, Set(utils.absString.alpha("0")), h)
-        val resVy = sem.CFGLoadHelper(args, Set(utils.absString.alpha("1")), h)
-        val num = sem.typeHelper.ToNumber(resVx).pow(sem.typeHelper.ToNumber(resVy))
-        utils.value(num)
+      code = SimpleCode(argLen = 2, (args, h, sem) => {
+        val resVx = sem.CFGLoadHelper(args, Set(AbsString.alpha("0")), h)
+        val resVy = sem.CFGLoadHelper(args, Set(AbsString.alpha("1")), h)
+        val num = TypeConversionHelper.ToNumber(resVx).pow(TypeConversionHelper.ToNumber(resVy))
+        ValueUtil(num)
       })
     ), T, F, T),
 
     NormalProp("random", FuncModel(
       name = "Math.random",
-      code = SimpleCode(argLen = 0, (args, h, sem, utils) => {
-        utils.value(utils.absNumber.Top)
+      code = SimpleCode(argLen = 0, (args, h, sem) => {
+        ValueUtil(AbsNumber.Top)
       })
     ), T, F, T),
 
     NormalProp("round", FuncModel(
       name = "Math.round",
-      code = SimpleCode(argLen = 1, (args, h, sem, utils) => {
-        val resV = sem.CFGLoadHelper(args, Set(utils.absString.alpha("0")), h)
-        val num = sem.typeHelper.ToNumber(resV).round
-        utils.value(num)
+      code = SimpleCode(argLen = 1, (args, h, sem) => {
+        val resV = sem.CFGLoadHelper(args, Set(AbsString.alpha("0")), h)
+        val num = TypeConversionHelper.ToNumber(resV).round
+        ValueUtil(num)
       })
     ), T, F, T),
 
     NormalProp("sin", FuncModel(
       name = "Math.sin",
-      code = SimpleCode(argLen = 1, (args, h, sem, utils) => {
-        val resV = sem.CFGLoadHelper(args, Set(utils.absString.alpha("0")), h)
-        val num = sem.typeHelper.ToNumber(resV).sin
-        utils.value(num)
+      code = SimpleCode(argLen = 1, (args, h, sem) => {
+        val resV = sem.CFGLoadHelper(args, Set(AbsString.alpha("0")), h)
+        val num = TypeConversionHelper.ToNumber(resV).sin
+        ValueUtil(num)
       })
     ), T, F, T),
 
     NormalProp("sqrt", FuncModel(
       name = "Math.sqrt",
-      code = SimpleCode(argLen = 1, (args, h, sem, utils) => {
-        val resV = sem.CFGLoadHelper(args, Set(utils.absString.alpha("0")), h)
-        val num = sem.typeHelper.ToNumber(resV).sqrt
-        utils.value(num)
+      code = SimpleCode(argLen = 1, (args, h, sem) => {
+        val resV = sem.CFGLoadHelper(args, Set(AbsString.alpha("0")), h)
+        val num = TypeConversionHelper.ToNumber(resV).sqrt
+        ValueUtil(num)
       })
     ), T, F, T),
 
     NormalProp("tan", FuncModel(
       name = "Math.tan",
-      code = SimpleCode(argLen = 1, (args, h, sem, utils) => {
-        val resV = sem.CFGLoadHelper(args, Set(utils.absString.alpha("0")), h)
-        val num = sem.typeHelper.ToNumber(resV).tan
-        utils.value(num)
+      code = SimpleCode(argLen = 1, (args, h, sem) => {
+        val resV = sem.CFGLoadHelper(args, Set(AbsString.alpha("0")), h)
+        val num = TypeConversionHelper.ToNumber(resV).tan
+        ValueUtil(num)
       })
     ), T, F, T)
   )

@@ -12,6 +12,7 @@
 package kr.ac.kaist.safe.analyzer.models
 
 import kr.ac.kaist.safe.analyzer.domain._
+import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.nodes.cfg.CFG
 import kr.ac.kaist.safe.util.{ Loc, SystemLoc, Recent }
 
@@ -21,18 +22,17 @@ class ObjModel(
     val props: List[PropDesc] = Nil
 ) extends Model {
   val loc: Loc = SystemLoc(name, Recent)
-  def init(h: Heap, cfg: CFG, utils: Utils): (Heap, Value) =
-    (initHeap(h, cfg, utils), utils.value(loc))
+  def init(h: Heap, cfg: CFG): (Heap, Value) =
+    (initHeap(h, cfg), ValueUtil(loc))
 
-  def initHeap(h: Heap, cfg: CFG, utils: Utils): Heap = h(loc) match {
+  def initHeap(h: Heap, cfg: CFG): Heap = h(loc) match {
     case Some(_) => h
-    case None => initObj(h, cfg, utils, loc, utils.absObject.newObject, props)
+    case None => initObj(h, cfg, loc, AbsObjectUtil.newObject, props)
   }
 
   protected def initObj(
     h: Heap,
     cfg: CFG,
-    utils: Utils,
     loc: Loc,
     obj: Obj,
     ps: List[PropDesc]
@@ -40,28 +40,28 @@ class ObjModel(
     ps.foldLeft((h, obj)) {
       case ((heap, obj), NormalProp(name, model, writable, enumerable, configurable)) => {
         (model match {
-          case SelfModel => (heap, utils.value(loc))
-          case _ => model.init(heap, cfg, utils)
+          case SelfModel => (heap, ValueUtil(loc))
+          case _ => model.init(heap, cfg)
         }) match {
           case (heap, value) => (heap, obj.update(
             name,
             PropValue(DataProperty(
               value,
-              utils.absBool.alpha(writable),
-              utils.absBool.alpha(enumerable),
-              utils.absBool.alpha(configurable)
+              AbsBool.alpha(writable),
+              AbsBool.alpha(enumerable),
+              AbsBool.alpha(configurable)
             ))
           ))
         }
       }
       case ((heap, obj), InternalProp(name, model)) => {
         (model match {
-          case SelfModel => (heap, utils.value(loc))
-          case _ => model.init(heap, cfg, utils)
+          case SelfModel => (heap, ValueUtil(loc))
+          case _ => model.init(heap, cfg)
         }) match {
           case (heap, value) => (heap, obj.update(
             name,
-            utils.ivalue(value)
+            InternalValueUtil(value)
           ))
         }
       }

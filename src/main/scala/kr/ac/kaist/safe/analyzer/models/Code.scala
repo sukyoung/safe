@@ -20,11 +20,10 @@ import kr.ac.kaist.safe.util.Span
 
 abstract class Code {
   val argLen: Int = 0
-  def getCFGFunc(cfg: CFG, name: String, utils: Utils): CFGFunction
+  def getCFGFunc(cfg: CFG, name: String): CFGFunction
   protected def createCFGFunc(
     cfg: CFG,
-    name: String,
-    utils: Utils
+    name: String
   ): (String, String, CFGFunction) = {
     val funName: String = s"[]$name"
     val argsName: String = s"<>arguments<>$funName"
@@ -38,8 +37,8 @@ abstract class Code {
 class EmptyCode(
     override val argLen: Int = 0
 ) extends Code {
-  def getCFGFunc(cfg: CFG, name: String, utils: Utils): CFGFunction = {
-    val (_, _, func) = createCFGFunc(cfg, name, utils)
+  def getCFGFunc(cfg: CFG, name: String): CFGFunction = {
+    val (_, _, func) = createCFGFunc(cfg, name)
     cfg.addEdge(func.entry, func.exit)
     func
   }
@@ -50,11 +49,11 @@ object EmptyCode {
 
 class BasicCode(
     override val argLen: Int = 0,
-    code: (Value, State, Semantics, Utils) => (State, State, Value)
+    code: (Value, State, Semantics) => (State, State, Value)
 ) extends Code {
-  def getCFGFunc(cfg: CFG, name: String, utils: Utils): CFGFunction = {
-    val (funName, argsName, func) = createCFGFunc(cfg, name, utils)
-    val sem: SemanticFun = createSemanticFunc(argsName, utils)
+  def getCFGFunc(cfg: CFG, name: String): CFGFunction = {
+    val (funName, argsName, func) = createCFGFunc(cfg, name)
+    val sem: SemanticFun = createSemanticFunc(argsName)
     val modelBlock: ModelBlock = func.createModelBlock(sem)
     cfg.addEdge(func.entry, modelBlock)
     cfg.addEdge(modelBlock, func.exit)
@@ -62,13 +61,13 @@ class BasicCode(
     func
   }
 
-  private def createSemanticFunc(argsName: String, utils: Utils): SemanticFun = (sem, st) => st match {
+  private def createSemanticFunc(argsName: String): SemanticFun = (sem, st) => st match {
     case State(heap, context) => {
       val stBotPair = (State.Bot, State.Bot)
       val localEnv = context.pureLocal
-      val argV = localEnv.getOrElse(argsName)(utils.value.Bot) { _.value }
-      val (retSt, retSte, retV) = code(argV, st, sem, utils)
-      val retObj = localEnv.update("@return", utils.binding(retV))
+      val argV = localEnv.getOrElse(argsName)(ValueUtil.Bot) { _.value }
+      val (retSt, retSte, retV) = code(argV, st, sem)
+      val retObj = localEnv.update("@return", BindingUtil(retV))
       val retCtx = retSt.context.subsPureLocal(retObj)
       (State(retSt.heap, retCtx), retSte)
     }
@@ -77,19 +76,19 @@ class BasicCode(
 object BasicCode {
   def apply(
     argLen: Int = 0,
-    code: (Value, State, Semantics, Utils) => (State, State, Value)
+    code: (Value, State, Semantics) => (State, State, Value)
   ): BasicCode = new BasicCode(argLen, code)
 }
 
 class SimpleCode(
   override val argLen: Int = 0,
-  code: (Value, Heap, Semantics, Utils) => Value
-) extends BasicCode(argLen, (v: Value, st: State, sem: Semantics, utils: Utils) => {
-  (st, State.Bot, code(v, st.heap, sem, utils))
+  code: (Value, Heap, Semantics) => Value
+) extends BasicCode(argLen, (v: Value, st: State, sem: Semantics) => {
+  (st, State.Bot, code(v, st.heap, sem))
 })
 object SimpleCode {
   def apply(
     argLen: Int = 0,
-    code: (Value, Heap, Semantics, Utils) => Value
+    code: (Value, Heap, Semantics) => Value
   ): SimpleCode = new SimpleCode(argLen, code)
 }

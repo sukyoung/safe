@@ -12,6 +12,7 @@
 package kr.ac.kaist.safe.analyzer
 
 import kr.ac.kaist.safe.analyzer.domain._
+import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.util.{ Address, Loc, Recent }
 
 import scala.collection.immutable.HashSet
@@ -20,32 +21,25 @@ import scala.collection.immutable.HashSet
 // Abstract helper functions of
 // Section 9. Type Conversion and Testing, ECMASCript 5.1
 ////////////////////////////////////////////////////////////////
-case class TypeConversionHelper(utils: Utils) {
-  val absUndefU: AbsUndefUtil = utils.absUndef
-  val absNullU: AbsNullUtil = utils.absNull
-  val absBoolU: AbsBoolUtil = utils.absBool
-  val absNumberU: AbsNumberUtil = utils.absNumber
-  val absStringU: AbsStringUtil = utils.absString
-  val pvalueU: PValueUtil = utils.pvalue
-  val objU: AbsObjectUtil = utils.absObject
+object TypeConversionHelper {
 
   ////////////////////////////////////////////////////////////////
   // 9.1 ToPrimitive
   ////////////////////////////////////////////////////////////////
   def ToPrimitive(value: Value): PValue =
-    value.pvalue + objU.defaultValue(value.locset)
+    value.pvalue + AbsObjectUtil.defaultValue(value.locset)
 
   def ToPrimitive(value: Value, preferredType: String): PValue =
-    value.pvalue + objU.defaultValue(value.locset, preferredType)
+    value.pvalue + AbsObjectUtil.defaultValue(value.locset, preferredType)
 
   def ToPrimitive(locSet: Set[Loc], preferredType: String): PValue =
-    objU.defaultValue(locSet, preferredType)
+    AbsObjectUtil.defaultValue(locSet, preferredType)
 
   def ToPrimitive(value: Value, h: Heap, preferredType: String = "String"): PValue =
-    value.pvalue + objU.defaultValue(value.locset, h, preferredType)
+    value.pvalue + AbsObjectUtil.defaultValue(value.locset, h, preferredType)
 
   def ToPrimitive(locSet: Set[Loc], h: Heap, preferredType: String): PValue =
-    objU.defaultValue(locSet, h, preferredType)
+    AbsObjectUtil.defaultValue(locSet, h, preferredType)
 
   ////////////////////////////////////////////////////////////////
   // 9.2 ToBoolean
@@ -53,12 +47,12 @@ case class TypeConversionHelper(utils: Utils) {
   // implementation of each abstract domains.
   ////////////////////////////////////////////////////////////////
   def ToBoolean(value: Value): AbsBool = {
-    val abool1 = value.pvalue.undefval.toAbsBoolean(absBoolU)
-    val abool2 = value.pvalue.nullval.toAbsBoolean(absBoolU)
-    val abool3 = value.pvalue.boolval.toAbsBoolean(absBoolU)
-    val abool4 = value.pvalue.numval.toAbsBoolean(absBoolU)
-    val abool5 = value.pvalue.strval.toAbsBoolean(absBoolU)
-    val abool6 = if (value.locset.isEmpty) absBoolU.Bot else absBoolU.True
+    val abool1 = value.pvalue.undefval.toAbsBoolean
+    val abool2 = value.pvalue.nullval.toAbsBoolean
+    val abool3 = value.pvalue.boolval.toAbsBoolean
+    val abool4 = value.pvalue.numval.toAbsBoolean
+    val abool5 = value.pvalue.strval.toAbsBoolean
+    val abool6 = if (value.locset.isEmpty) AbsBool.Bot else AbsBool.True
     abool1 + abool2 + abool3 + abool4 + abool5 + abool6
   }
 
@@ -78,11 +72,11 @@ case class TypeConversionHelper(utils: Utils) {
   }
 
   def ToNumber(pvalue: PValue): AbsNumber = {
-    val anum1 = pvalue.undefval.toAbsNumber(absNumberU)
-    val anum2 = pvalue.nullval.toAbsNumber(absNumberU)
-    val anum3 = pvalue.boolval.toAbsNumber(absNumberU)
-    val anum4 = pvalue.numval.toAbsNumber(absNumberU)
-    val anum5 = pvalue.strval.toAbsNumber(absNumberU)
+    val anum1 = pvalue.undefval.toAbsNumber
+    val anum2 = pvalue.nullval.toAbsNumber
+    val anum3 = pvalue.boolval.toAbsNumber
+    val anum4 = pvalue.numval.toAbsNumber
+    val anum5 = pvalue.strval.toAbsNumber
     anum1 + anum2 + anum3 + anum4 + anum5
   }
 
@@ -146,11 +140,11 @@ case class TypeConversionHelper(utils: Utils) {
   }
 
   def ToString(pvalue: PValue): AbsString = {
-    val astr1 = pvalue.undefval.toAbsString(absStringU)
-    val astr2 = pvalue.nullval.toAbsString(absStringU)
-    val astr3 = pvalue.boolval.toAbsString(absStringU)
-    val astr4 = pvalue.numval.toAbsString(absStringU)
-    val astr5 = pvalue.strval.toAbsString(absStringU)
+    val astr1 = pvalue.undefval.toAbsString
+    val astr2 = pvalue.nullval.toAbsString
+    val astr3 = pvalue.boolval.toAbsString
+    val astr4 = pvalue.numval.toAbsString
+    val astr5 = pvalue.strval.toAbsString
     astr1 + astr2 + astr3 + astr4 + astr5
   }
 
@@ -161,9 +155,9 @@ case class TypeConversionHelper(utils: Utils) {
   ////////////////////////////////////////////////////////////////
   def ToObject(pvalue: PValue): (Obj, Set[Exception]) = {
     val excSet = CheckObjectCoercible(pvalue)
-    val obj3 = pvalue.numval.fold(objU.Bot) { objU.newNumberObj(_) }
-    val obj4 = pvalue.boolval.fold(objU.Bot) { objU.newBooleanObj(_) }
-    val obj5 = pvalue.strval.fold(objU.Bot) { objU.newStringObj(_) }
+    val obj3 = pvalue.numval.fold(AbsObjectUtil.Bot) { AbsObjectUtil.newNumberObj(_) }
+    val obj4 = pvalue.boolval.fold(AbsObjectUtil.Bot) { AbsObjectUtil.newBooleanObj(_) }
+    val obj5 = pvalue.strval.fold(AbsObjectUtil.Bot) { AbsObjectUtil.newStringObj(_) }
     (obj3 + obj4 + obj5, excSet)
   }
 
@@ -174,13 +168,13 @@ case class TypeConversionHelper(utils: Utils) {
     val (locSet1, h1) =
       if (!obj.isBottom) {
         val loc = Loc(addr, Recent)
-        (HashSet(loc), st.oldify(addr)(utils).heap.update(loc, obj))
+        (HashSet(loc), st.oldify(addr).heap.update(loc, obj))
       } else (LocSetEmpty, Heap.Bot)
     val (locSet2, h2) =
       if (!locSet.isEmpty) (locSet, st.heap)
       else (LocSetEmpty, Heap.Bot)
 
-    (utils.value(locSet1 ++ locSet2), State(h1 + h2, st.context), excSet)
+    (ValueUtil(locSet1 ++ locSet2), State(h1 + h2, st.context), excSet)
   }
 
   ////////////////////////////////////////////////////////////////
@@ -200,34 +194,34 @@ case class TypeConversionHelper(utils: Utils) {
   // 9.11 IsCallable, Table 16
   ////////////////////////////////////////////////////////////////
   def IsCallable(value: Value): AbsBool = {
-    val abool1 = value.pvalue.undefval.fold(absBoolU.Bot) { _ => absBoolU.False }
-    val abool2 = value.pvalue.nullval.fold(absBoolU.Bot) { _ => absBoolU.False }
-    val abool3 = value.pvalue.boolval.fold(absBoolU.Bot) { _ => absBoolU.False }
-    val abool4 = value.pvalue.numval.fold(absBoolU.Bot) { _ => absBoolU.False }
-    val abool5 = value.pvalue.strval.fold(absBoolU.Bot) { _ => absBoolU.False }
-    val abool6 = if (value.locset.isEmpty) absBoolU.Bot else absBoolU.Top
+    val abool1 = value.pvalue.undefval.fold(AbsBool.Bot) { _ => AbsBool.False }
+    val abool2 = value.pvalue.nullval.fold(AbsBool.Bot) { _ => AbsBool.False }
+    val abool3 = value.pvalue.boolval.fold(AbsBool.Bot) { _ => AbsBool.False }
+    val abool4 = value.pvalue.numval.fold(AbsBool.Bot) { _ => AbsBool.False }
+    val abool5 = value.pvalue.strval.fold(AbsBool.Bot) { _ => AbsBool.False }
+    val abool6 = if (value.locset.isEmpty) AbsBool.Bot else AbsBool.Top
     abool1 + abool2 + abool3 + abool4 + abool5 + abool6
   }
 
   def IsCallable(value: Value, h: Heap): AbsBool = {
-    val abool1 = value.pvalue.undefval.fold(absBoolU.Bot) { _ => absBoolU.False }
-    val abool2 = value.pvalue.nullval.fold(absBoolU.Bot) { _ => absBoolU.False }
-    val abool3 = value.pvalue.boolval.fold(absBoolU.Bot) { _ => absBoolU.False }
-    val abool4 = value.pvalue.numval.fold(absBoolU.Bot) { _ => absBoolU.False }
-    val abool5 = value.pvalue.strval.fold(absBoolU.Bot) { _ => absBoolU.False }
-    val abool6 = value.locset.foldLeft(absBoolU.Bot)((tmpAbool, l) =>
+    val abool1 = value.pvalue.undefval.fold(AbsBool.Bot) { _ => AbsBool.False }
+    val abool2 = value.pvalue.nullval.fold(AbsBool.Bot) { _ => AbsBool.False }
+    val abool3 = value.pvalue.boolval.fold(AbsBool.Bot) { _ => AbsBool.False }
+    val abool4 = value.pvalue.numval.fold(AbsBool.Bot) { _ => AbsBool.False }
+    val abool5 = value.pvalue.strval.fold(AbsBool.Bot) { _ => AbsBool.False }
+    val abool6 = value.locset.foldLeft(AbsBool.Bot)((tmpAbool, l) =>
       tmpAbool + IsCallable(l, h))
     abool1 + abool2 + abool3 + abool4 + abool5 + abool6
   }
 
   def IsCallable(loc: Loc, h: Heap): AbsBool = {
-    val isDomIn = h.getOrElse(loc)(absBoolU.False) { obj => (obj domIn ICall)(absBoolU) }
+    val isDomIn = h.getOrElse(loc)(AbsBool.False) { obj => (obj domIn ICall) }
     val b1 =
-      if (absBoolU.True <= isDomIn) absBoolU.True
-      else absBoolU.Bot
+      if (AbsBool.True <= isDomIn) AbsBool.True
+      else AbsBool.Bot
     val b2 =
-      if (absBoolU.False <= isDomIn) absBoolU.False
-      else absBoolU.Bot
+      if (AbsBool.False <= isDomIn) AbsBool.False
+      else AbsBool.Bot
     b1 + b2
   }
 
@@ -238,21 +232,21 @@ case class TypeConversionHelper(utils: Utils) {
   ////////////////////////////////////////////////////////////////
   def SameValue(left: Value, right: Value): AbsBool = {
     val isMultiType =
-      if ((left + right).typeCount > 1) absBoolU.False
-      else absBoolU.Bot
+      if ((left + right).typeCount > 1) AbsBool.False
+      else AbsBool.Bot
 
-    val isSame1 = (left.pvalue.undefval === right.pvalue.undefval)(absBoolU)
-    val isSame2 = (left.pvalue.nullval === right.pvalue.nullval)(absBoolU)
-    val isSame3 = (left.pvalue.boolval === right.pvalue.boolval)(absBoolU)
-    val isSame4 = (left.pvalue.numval sameValue right.pvalue.numval)(absBoolU)
-    val isSame5 = (left.pvalue.strval === right.pvalue.strval)(absBoolU)
+    val isSame1 = (left.pvalue.undefval === right.pvalue.undefval)
+    val isSame2 = (left.pvalue.nullval === right.pvalue.nullval)
+    val isSame3 = (left.pvalue.boolval === right.pvalue.boolval)
+    val isSame4 = (left.pvalue.numval sameValue right.pvalue.numval)
+    val isSame5 = (left.pvalue.strval === right.pvalue.strval)
     val isSame6 =
       if (!left.locset.isEmpty && !right.locset.isEmpty) {
         val intersect = left.locset.intersect(right.locset)
-        if (intersect.isEmpty) absBoolU.False
-        else if (left.locset.size == 1 && right.locset.size == 1 && intersect.head.recency == Recent) absBoolU.True
-        else absBoolU.Top
-      } else absBoolU.Bot
+        if (intersect.isEmpty) AbsBool.False
+        else if (left.locset.size == 1 && right.locset.size == 1 && intersect.head.recency == Recent) AbsBool.True
+        else AbsBool.Top
+      } else AbsBool.Bot
 
     isMultiType + isSame1 + isSame2 + isSame3 + isSame4 + isSame5 + isSame6
   }
@@ -261,31 +255,31 @@ case class TypeConversionHelper(utils: Utils) {
   // Additional type-related helper functions
   ////////////////////////////////////////////////////////////////
   def typeTag(value: Value, h: Heap): AbsString = {
-    val s1 = value.pvalue.undefval.fold(utils.absString.Bot)(_ => {
-      utils.absString.alpha("undefined")
+    val s1 = value.pvalue.undefval.fold(AbsString.Bot)(_ => {
+      AbsString.alpha("undefined")
     })
-    val s2 = value.pvalue.nullval.fold(utils.absString.Bot)(_ => {
-      utils.absString.alpha("object") //TODO: check null type?
+    val s2 = value.pvalue.nullval.fold(AbsString.Bot)(_ => {
+      AbsString.alpha("object") //TODO: check null type?
     })
-    val s3 = value.pvalue.numval.fold(utils.absString.Bot)(_ => {
-      utils.absString.alpha("number")
+    val s3 = value.pvalue.numval.fold(AbsString.Bot)(_ => {
+      AbsString.alpha("number")
     })
-    val s4 = value.pvalue.boolval.fold(utils.absString.Bot)(_ => {
-      utils.absString.alpha("boolean")
+    val s4 = value.pvalue.boolval.fold(AbsString.Bot)(_ => {
+      AbsString.alpha("boolean")
     })
-    val s5 = value.pvalue.strval.fold(utils.absString.Bot)(_ => {
-      utils.absString.alpha("string")
+    val s5 = value.pvalue.strval.fold(AbsString.Bot)(_ => {
+      AbsString.alpha("string")
     })
 
-    val isCallableLocSet = value.locset.foldLeft(utils.absBool.Bot)((tmpAbsB, l) => tmpAbsB + IsCallable(l, h))
+    val isCallableLocSet = value.locset.foldLeft(AbsBool.Bot)((tmpAbsB, l) => tmpAbsB + IsCallable(l, h))
     val s6 =
-      if (value.locset.nonEmpty && (utils.absBool.False <= isCallableLocSet))
-        utils.absString.alpha("object")
-      else utils.absString.Bot
+      if (value.locset.nonEmpty && (AbsBool.False <= isCallableLocSet))
+        AbsString.alpha("object")
+      else AbsString.Bot
     val s7 =
-      if (value.locset.nonEmpty && (utils.absBool.True <= isCallableLocSet))
-        utils.absString.alpha("function")
-      else utils.absString.Bot
+      if (value.locset.nonEmpty && (AbsBool.True <= isCallableLocSet))
+        AbsString.alpha("function")
+      else AbsString.Bot
 
     s1 + s2 + s3 + s4 + s5 + s6 + s7
   }
