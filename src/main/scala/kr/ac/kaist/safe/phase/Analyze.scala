@@ -72,7 +72,7 @@ case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, CallContext)] {
       "you can use REPL-style debugger."),
     ("out", StrOption((c, s) => c.outFile = Some(s)),
       "the analysis results will be written to the outfile."),
-    ("maxStrSetSize", NumOption((c, n) => if (n > 0) c.AbsString = new DefaultStrSetUtil(n)),
+    ("maxStrSetSize", NumOption((c, n) => if (n > 0) c.AbsString = StringSet(n)),
       "the analyzer will use the AbsString Set domain with given size limit n."),
     ("callsiteSensitivity", NumOption((c, n) => if (n > 0) c.callsiteSensitivity = n),
       ""), // TODO
@@ -86,11 +86,11 @@ case class AnalyzeConfig(
   var verbose: Boolean = false,
   var console: Boolean = false,
   var outFile: Option[String] = None,
-  var AbsUndef: AbsUndefUtil = DefaultUndefUtil,
-  var AbsNull: AbsNullUtil = DefaultNullUtil,
-  var AbsBool: AbsBoolUtil = DefaultBoolUtil,
-  var AbsNumber: AbsNumberUtil = DefaultNumUtil,
-  var AbsString: AbsStringUtil = new DefaultStrSetUtil(0),
+  var AbsUndef: AbsUndefUtil = DefaultUndef,
+  var AbsNull: AbsNullUtil = DefaultNull,
+  var AbsBool: AbsBoolUtil = DefaultBool,
+  var AbsNumber: AbsNumberUtil = DefaultNumber,
+  var AbsString: AbsStringUtil = StringSet(0),
   var callsiteSensitivity: Int = -1,
   var testMode: Boolean = false
 ) extends Config

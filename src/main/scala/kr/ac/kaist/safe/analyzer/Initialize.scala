@@ -21,7 +21,7 @@ import scala.collection.immutable.{ HashMap, HashSet }
 
 case class Initialize(cfg: CFG) {
   def state: State = {
-    val afalse = AbsBool.False
+    val afalse = AbsBool.alpha(false)
 
     val globalPureLocalEnv = DecEnvRecord.newPureLocal(ValueUtil.alpha(null), HashSet(BuiltinGlobal.loc)) - "@return"
 

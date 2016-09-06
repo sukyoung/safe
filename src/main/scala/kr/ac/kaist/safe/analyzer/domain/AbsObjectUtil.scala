@@ -141,7 +141,7 @@ object AbsObjectUtil {
         })
       case _ =>
         newObj2
-          .update(AbsString.NumStr, PropValue(DataPropertyUtil(ValueUtil(AbsString.Top))(afalse, atrue, afalse)))
+          .update(AbsString.Number, PropValue(DataPropertyUtil(ValueUtil(AbsString.Top))(afalse, atrue, afalse)))
           .update("length", PropValue(DataPropertyUtil(absStr.length)(afalse, afalse, afalse)))
     }
   }

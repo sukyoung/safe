@@ -134,7 +134,7 @@ case class Value(pvalue: PValue, locset: Set[Loc]) {
   // TODO working but more simple way is exist with modifying getBase
   def getThis(h: Heap): Set[Loc] = {
     val locSet1 = (pvalue.nullval.gamma, pvalue.undefval.gamma) match {
-      case (ConSimpleBot, ConSimpleBot) => LocSetEmpty
+      case (ConSimpleBot(), ConSimpleBot()) => LocSetEmpty
       case _ => HashSet(BuiltinGlobal.loc)
     }
 

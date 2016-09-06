@@ -72,7 +72,7 @@ object BuiltinBooleanProto extends ObjModel(
         val classV = sem.CFGLoadHelper(thisV, Set(AbsString.alpha("@class")), h)
         val pv = thisV.pvalue
         val excSet = (pv.undefval.gamma, pv.nullval.gamma, pv.numval.gamma, pv.strval.gamma) match {
-          case (ConSimpleBot, ConSimpleBot, ConSetBot(), ConSetBot()) if (
+          case (ConSimpleBot(), ConSimpleBot(), ConSetBot(), ConSetBot()) if (
             (AbsString.alpha("Boolean") <= classV.pvalue.strval
               && classV.pvalue.strval <= AbsString.alpha("Boolean"))
               || classV.pvalue.strval <= AbsString.Bot
@@ -104,7 +104,7 @@ object BuiltinBooleanProto extends ObjModel(
         val classV = sem.CFGLoadHelper(thisV, Set(AbsString.alpha("@class")), h)
         val pv = thisV.pvalue
         val excSet = (pv.undefval.gamma, pv.nullval.gamma, pv.numval.gamma, pv.strval.gamma) match {
-          case (ConSimpleBot, ConSimpleBot, ConSetBot(), ConSetBot()) if (
+          case (ConSimpleBot(), ConSimpleBot(), ConSetBot(), ConSetBot()) if (
             (AbsString.alpha("Boolean") <= classV.pvalue.strval
               && classV.pvalue.strval <= AbsString.alpha("Boolean"))
               || classV.pvalue.strval <= AbsString.Bot

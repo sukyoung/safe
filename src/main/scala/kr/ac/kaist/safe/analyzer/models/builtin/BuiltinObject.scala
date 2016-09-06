@@ -35,8 +35,8 @@ object BuiltinObject extends FuncModel(
     //    a new Object object exactly as if the standard built-in Object
     //    constructor had been called with the same arguments.
     val pv = argV.pvalue
-    val (v1, st1) = if (pv.undefval.gamma != ConSimpleBot ||
-      pv.nullval.gamma != ConSimpleBot ||
+    val (v1, st1) = if (pv.undefval.gamma != ConSimpleBot() ||
+      pv.nullval.gamma != ConSimpleBot() ||
       argV.isBottom) {
       val state = st.oldify(addr)
       val loc = Loc(addr, Recent)
@@ -77,8 +77,8 @@ object BuiltinObject extends FuncModel(
     // 2. Assert: The argument value was not supplied or its type was Null or Undefined.
     // 3. Let obj be a newly created native ECMAScript object.
     val pv = argV.pvalue
-    val (v1, st1) = if (pv.undefval.gamma != ConSimpleBot ||
-      pv.nullval.gamma != ConSimpleBot ||
+    val (v1, st1) = if (pv.undefval.gamma != ConSimpleBot() ||
+      pv.nullval.gamma != ConSimpleBot() ||
       argV.isBottom) {
       val state = st.oldify(addr)
       val loc = Loc(addr, Recent)

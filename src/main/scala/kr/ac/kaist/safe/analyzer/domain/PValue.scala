@@ -28,8 +28,8 @@ object PValueUtil {
   def apply(strval: AbsString): PValue = Bot.copy(strval = strval)
 
   // abstraction
-  def alpha(): PValue = apply(AbsUndef.alpha)
-  def alpha(x: Null): PValue = apply(AbsNull.alpha)
+  def alpha(): PValue = apply(AbsUndef.alpha(Undefined))
+  def alpha(x: Null): PValue = apply(AbsNull.alpha(null))
   def alpha(str: String): PValue = apply(AbsString.alpha(str))
   def alpha(set: Set[String]): PValue = apply(AbsString.alpha(set))
   def alpha(d: Double): PValue = apply(AbsNumber.alpha(d))
@@ -154,17 +154,17 @@ case class PValue(
     set.filter(s => !set.exists(o => s != o && s <= o))
   }
 
-  def foreach(f: (AbsDomain => Unit)): Unit = {
+  def foreach(f: (Primitive => Unit)): Unit = {
     f(undefval); f(nullval); f(boolval); f(numval); f(strval)
   }
 
-  def foreach[T](f: (AbsDomain => T)): (T, T, T, T, T) = {
+  def foreach[T](f: (Primitive => T)): (T, T, T, T, T) = {
     (f(undefval), f(nullval), f(boolval), f(numval), f(strval))
   }
 
   def isBottom: Boolean =
     (undefval.gamma, nullval.gamma, boolval.gammaSimple, numval.gammaSimple, strval.gammaSimple) ==
-      (ConSimpleBot, ConSimpleBot, ConSimpleBot, ConSimpleBot, ConSimpleBot)
+      (ConSimpleBot(), ConSimpleBot(), ConSimpleBot(), ConSimpleBot(), ConSimpleBot())
 
   def copyWith(newStringVal: AbsString): PValue = PValue(undefval, nullval, boolval, numval, newStringVal)
 }

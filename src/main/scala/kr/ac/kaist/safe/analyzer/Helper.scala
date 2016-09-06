@@ -21,8 +21,8 @@ import kr.ac.kaist.safe.util.{ Address, Loc, Recent }
 ////////////////////////////////////////////////////////////////
 object Helper {
   val typeHelper = TypeConversionHelper
-  private val afalse = AbsBool.False
-  private val atrue = AbsBool.True
+  private val afalse = AbsBool.alpha(false)
+  private val atrue = AbsBool.alpha(true)
 
   def arrayLenghtStore(heap: Heap, idxAbsStr: AbsString, storeV: Value, l: Loc): (Heap, Set[Exception]) = {
     if (AbsString.alpha("length") <= idxAbsStr) {
@@ -55,7 +55,7 @@ object Helper {
               })
             case (ConSingleBot(), _) | (_, ConSingleBot()) => Heap.Bot
             case _ =>
-              val (tmpHeap, _) = hi.delete(l, AbsString.NumStr)
+              val (tmpHeap, _) = hi.delete(l, AbsString.Number)
               tmpHeap
           }
         } else {
@@ -162,10 +162,10 @@ object Helper {
         val locVal1 = ValueUtil(l1)
         val eqVal = bopSEq(locVal1, locVal2)
         val v1 =
-          if (AbsBool.True <= eqVal.pvalue.boolval) boolTrueVal
+          if (atrue <= eqVal.pvalue.boolval) boolTrueVal
           else boolBotVal
         val v2 =
-          if (AbsBool.False <= eqVal.pvalue.boolval) {
+          if (afalse <= eqVal.pvalue.boolval) {
             val protoVal = h.getOrElse(l1, AbsObjectUtil.Bot).getOrElse(IPrototype)(ValueUtil.Bot) { _.value }
             val v1 = protoVal.pvalue.nullval.fold(boolBotVal) { _ => boolFalseVal }
             v1 + protoVal.locset.foldLeft(ValueUtil.Bot)((tmpVal, protoLoc) => tmpVal + iter(protoLoc))
@@ -269,22 +269,22 @@ object Helper {
         val resAbsNum = lAbsNum add rAbsNum
         ValueUtil(resAbsNum)
       case (_, ConSetBot()) =>
-        val (res1, res2, res3, res4, res5) = primRPV.foreach((abs: AbsDomain) => {
+        val (res1, res2, res3, res4, res5) = primRPV.foreach((abs: Primitive) => {
           primLPV.strval.concat(abs.toAbsString)
         })
         val resVal = ValueUtil(res1 + res2 + res3 + res4 + res5)
         resVal + bopPlus(ValueUtil(primLPV.copyWith(AbsString.Bot)), ValueUtil(primRPV))
       case (ConSetBot(), _) =>
-        val (res1, res2, res3, res4, res5) = primLPV.foreach((abs: AbsDomain) => {
+        val (res1, res2, res3, res4, res5) = primLPV.foreach((abs: Primitive) => {
           abs.toAbsString.concat(primRPV.strval)
         })
         val resVal = ValueUtil(PValueUtil(res1 + res2 + res3 + res4 + res5))
         resVal + bopPlus(ValueUtil(primLPV), ValueUtil(primRPV.copyWith(AbsString.Bot)))
       case (_, _) =>
-        val (resR1, resR2, resR3, resR4, resR5) = primLPV.foreach((abs: AbsDomain) => {
+        val (resR1, resR2, resR3, resR4, resR5) = primLPV.foreach((abs: Primitive) => {
           abs.toAbsString.concat(primRPV.strval)
         })
-        val (resL1, resL2, resL3, resL4, resL5) = primRPV.foreach((abs: AbsDomain) => {
+        val (resL1, resL2, resL3, resL4, resL5) = primRPV.foreach((abs: Primitive) => {
           primLPV.strval.concat(abs.toAbsString)
         })
         val resAbsStr = resR1 + resR2 + resR3 + resR4 + resR5 + resL1 + resL2 + resL3 + resL4 + resL5
@@ -325,8 +325,8 @@ object Helper {
     val locsetTest =
       if (!left.locset.isEmpty && !right.locset.isEmpty) {
         val intersect = left.locset.intersect(right.locset)
-        if (intersect.isEmpty) AbsBool.False
-        else if (left.locset.size == 1 && right.locset.size == 1 && intersect.head.recency == Recent) AbsBool.True
+        if (intersect.isEmpty) afalse
+        else if (left.locset.size == 1 && right.locset.size == 1 && intersect.head.recency == Recent) atrue
         else AbsBool.Top
       } else AbsBool.Bot
     val b1 = (leftPV.undefval === rightPV.undefval) +
@@ -336,27 +336,27 @@ object Helper {
       (leftPV.boolval === rightPV.boolval) +
       locsetTest
     val b2 = (leftPV.nullval.gamma, rightPV.undefval.gamma) match {
-      case (ConSimpleTop, ConSimpleTop) => AbsBool.True
+      case (ConSimpleTop(), ConSimpleTop()) => atrue
       case _ => AbsBool.Bot
     }
     val b3 = (leftPV.undefval.gamma, rightPV.nullval.gamma) match {
-      case (ConSimpleTop, ConSimpleTop) => AbsBool.True
+      case (ConSimpleTop(), ConSimpleTop()) => atrue
       case _ => AbsBool.Bot
     }
     val b4 = (leftPV.numval.gammaSimple, rightPV.strval.gammaSimple) match {
-      case (ConSimpleBot, _) | (_, ConSimpleBot) => AbsBool.Bot
+      case (ConSimpleBot(), _) | (_, ConSimpleBot()) => AbsBool.Bot
       case _ =>
         val rightNumVal = rightPV.strval.toAbsNumber
         (leftPV.numval === rightNumVal)
     }
     val b5 = (leftPV.strval.gammaSimple, rightPV.numval.gammaSimple) match {
-      case (ConSimpleBot, _) | (_, ConSimpleBot) => AbsBool.Bot
+      case (ConSimpleBot(), _) | (_, ConSimpleBot()) => AbsBool.Bot
       case _ =>
         val leftNumVal = leftPV.strval.toAbsNumber
         (leftNumVal === rightPV.numval)
     }
     val b6 = leftPV.boolval.gammaSimple match {
-      case ConSimpleBot =>
+      case ConSimpleBot() =>
         val leftNumVal = leftPV.boolval.toAbsNumber
         val b61 = rightPV.numval.fold(AbsBool.Bot)(rightNumVal => {
           (leftNumVal === rightNumVal)
@@ -371,14 +371,14 @@ object Helper {
             val rightNumVal = objToPrimitive(right, "Number").numval
             (leftNumVal === rightNumVal)
         }
-        val b64 = rightPV.undefval.fold(AbsBool.Bot)(_ => AbsBool.False)
-        val b65 = rightPV.nullval.fold(AbsBool.Bot)(_ => AbsBool.False)
+        val b64 = rightPV.undefval.fold(AbsBool.Bot)(_ => afalse)
+        val b65 = rightPV.nullval.fold(AbsBool.Bot)(_ => afalse)
         b61 + b62 + b63 + b64 + b65
-      case ConSimpleTop => AbsBool.Bot
+      case ConSimpleTop() => AbsBool.Bot
     }
 
     val b7 = rightPV.boolval.gammaSimple match {
-      case ConSimpleBot =>
+      case ConSimpleBot() =>
         val rightNumVal = rightPV.boolval.toAbsNumber
         val b71 = leftPV.numval.fold(AbsBool.Bot)(leftNumVal => {
           (leftNumVal === rightNumVal)
@@ -393,10 +393,10 @@ object Helper {
             val leftNumVal = objToPrimitive(left, "Number").numval
             (leftNumVal === rightNumVal)
         }
-        val b74 = leftPV.undefval.fold(AbsBool.Bot)(_ => AbsBool.False)
-        val b75 = leftPV.undefval.fold(AbsBool.Bot)(_ => AbsBool.False)
+        val b74 = leftPV.undefval.fold(AbsBool.Bot)(_ => afalse)
+        val b75 = leftPV.undefval.fold(AbsBool.Bot)(_ => afalse)
         b71 + b72 + b73 + b74 + b75
-      case ConSimpleTop => AbsBool.Bot
+      case ConSimpleTop() => AbsBool.Bot
     }
 
     val b8 = right.locset.size match {
@@ -428,16 +428,16 @@ object Helper {
     }
 
     def testUndefNull(pv: PValue, locset: Set[Loc]): Boolean = (pv.undefval.gamma, pv.nullval.gamma) match {
-      case (ConSimpleBot, ConSimpleBot) => false
+      case (ConSimpleBot(), ConSimpleBot()) => false
       case _ => (pv.numval.gammaSimple, pv.strval.gammaSimple, locset.size) match {
-        case (ConSimpleBot, ConSimpleBot, 0) => false
+        case (ConSimpleBot(), ConSimpleBot(), 0) => false
         case _ => true
       }
     }
 
     val b10 = (testUndefNull(leftPV, left.locset), testUndefNull(rightPV, right.locset)) match {
       case (false, false) => AbsBool.Bot
-      case _ => AbsBool.False
+      case _ => afalse
     }
 
     ValueUtil(b1 + b2 + b3 + b4 + b5 + b6 + b7 + b8 + b9 + b10)
@@ -454,8 +454,8 @@ object Helper {
   /* != */
   def bopNeq(left: Value, right: Value): Value = {
     val resAbsBool = bopEq(left, right).pvalue.boolval.gamma match {
-      case ConSingleCon(true) => AbsBool.False
-      case ConSingleCon(false) => AbsBool.True
+      case ConSingleCon(true) => afalse
+      case ConSingleCon(false) => atrue
       case ConSingleTop() => AbsBool.Top
       case ConSingleBot() => AbsBool.Bot
     }
@@ -465,13 +465,13 @@ object Helper {
   /* === */
   def bopSEq(left: Value, right: Value): Value = {
     val isMultiType =
-      if ((left + right).typeCount > 1) AbsBool.False
+      if ((left + right).typeCount > 1) afalse
       else AbsBool.Bot
     val isLocsetSame =
       if (!left.locset.isEmpty && !right.locset.isEmpty) {
         val intersect = left.locset.intersect(right.locset)
-        if (intersect.isEmpty) AbsBool.False
-        else if (left.locset.size == 1 && right.locset.size == 1 && intersect.head.recency == Recent) AbsBool.True
+        if (intersect.isEmpty) afalse
+        else if (left.locset.size == 1 && right.locset.size == 1 && intersect.head.recency == Recent) atrue
         else AbsBool.Top
       } else AbsBool.Bot
     val isSame =
@@ -487,8 +487,8 @@ object Helper {
   /* !== */
   def bopSNeq(left: Value, right: Value): Value = {
     val resAbsBool = bopSEq(left, right).pvalue.boolval.gamma match {
-      case ConSingleCon(true) => AbsBool.False
-      case ConSingleCon(false) => AbsBool.True
+      case ConSingleCon(true) => afalse
+      case ConSingleCon(false) => atrue
       case ConSingleTop() => AbsBool.Top
       case ConSingleBot() => AbsBool.Bot
     }
@@ -502,7 +502,7 @@ object Helper {
     cmpAbsStr: (AbsString, AbsString) => AbsBool
   ): Value = {
     (leftPV.strval.gammaSimple, rightPV.strval.gammaSimple) match {
-      case (ConSimpleBot, _) | (_, ConSimpleBot) =>
+      case (ConSimpleBot(), _) | (_, ConSimpleBot()) =>
         val leftAbsNum = typeHelper.ToNumber(leftPV)
         val rightAbsNum = typeHelper.ToNumber(rightPV)
         ValueUtil(cmpAbsNum(leftAbsNum, rightAbsNum))
@@ -541,7 +541,7 @@ object Helper {
     bopCompareHelp(leftPV, rightPV,
       (leftAbsNum, rightAbsNum) => {
         (leftAbsNum.gammaSingle, rightAbsNum.gammaSingle) match {
-          case (ConSingleCon(n1), ConSingleCon(n2)) if n1.isNaN & n2.isNaN => AbsBool.False
+          case (ConSingleCon(n1), ConSingleCon(n2)) if n1.isNaN & n2.isNaN => afalse
           case _ => (rightAbsNum < leftAbsNum).negate
         }
       },
@@ -555,7 +555,7 @@ object Helper {
     bopCompareHelp(leftPV, rightPV,
       (leftAbsNum, rightAbsNum) => {
         (leftAbsNum.gammaSingle, rightAbsNum.gammaSingle) match {
-          case (ConSingleCon(n1), ConSingleCon(n2)) if n1.isNaN & n2.isNaN => AbsBool.False
+          case (ConSingleCon(n1), ConSingleCon(n2)) if n1.isNaN & n2.isNaN => afalse
           case _ => (leftAbsNum < rightAbsNum).negate
         }
       },

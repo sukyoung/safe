@@ -355,8 +355,8 @@ class DHeap(val map: Map[Loc, Obj]) extends Heap {
             val protoObj = this.getOrElse(visitLoc, AbsObjectUtil.Bot).get(IPrototype)
             val protoLocSet = protoObj.value.locset
             val b3 = protoObj.value.pvalue.nullval.gamma match {
-              case ConSimpleBot => AbsBool.Bot
-              case ConSimpleTop =>
+              case ConSimpleBot() => AbsBool.Bot
+              case ConSimpleTop() =>
                 this.getOrElse(visitLoc, AbsObjectUtil.Bot)
                   .getOrElse(IExtensible)(AbsBool.Bot) { _.value.pvalue.boolval }
             }

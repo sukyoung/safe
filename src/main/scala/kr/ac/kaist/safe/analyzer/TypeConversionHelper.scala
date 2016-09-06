@@ -185,8 +185,8 @@ object TypeConversionHelper {
 
   def CheckObjectCoercible(pvalue: PValue): Set[Exception] = {
     (pvalue.undefval.gamma, pvalue.nullval.gamma) match {
-      case (ConSimpleTop, _) | (_, ConSimpleTop) => HashSet(TypeError)
-      case (ConSimpleBot, ConSimpleBot) => HashSet[Exception]()
+      case (ConSimpleTop(), _) | (_, ConSimpleTop()) => HashSet(TypeError)
+      case (ConSimpleBot(), ConSimpleBot()) => HashSet[Exception]()
     }
   }
 

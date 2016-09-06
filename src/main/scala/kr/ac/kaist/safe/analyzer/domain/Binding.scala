@@ -58,8 +58,8 @@ case class Binding(
   // bottom check
   def isBottom: Boolean = {
     value.isBottom &&
-      initialized.gammaSimple == ConSimpleBot &&
-      mutable.gammaSimple == ConSimpleBot
+      initialized.isBottom &&
+      mutable.isBottom
   }
 
   override def toString: String = s"[${mutable.toString.take(1)}] $value"

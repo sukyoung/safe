@@ -61,7 +61,7 @@ case class DataProperty(
     else {
       val prefix =
         (writable.gammaSimple, enumerable.gammaSimple, configurable.gammaSimple) match {
-          case (ConSimpleBot, ConSimpleBot, ConSimpleBot) => "[Val] "
+          case (ConSimpleBot(), ConSimpleBot(), ConSimpleBot()) => "[Val] "
           case _ => s"[${writable.toString.take(1)}${enumerable.toString.take(1)}${configurable.toString.take(1)}] "
         }
       prefix + value.toString
@@ -107,7 +107,7 @@ case class DataProperty(
   def isBottom: Boolean = {
     value.isBottom &&
       (writable.gammaSimple, enumerable.gammaSimple, configurable.gammaSimple) ==
-      (ConSimpleBot, ConSimpleBot, ConSimpleBot)
+      (ConSimpleBot(), ConSimpleBot(), ConSimpleBot())
   }
 
   def copyWith(newValue: Value): DataProperty = DataProperty(newValue, writable, enumerable, configurable)
