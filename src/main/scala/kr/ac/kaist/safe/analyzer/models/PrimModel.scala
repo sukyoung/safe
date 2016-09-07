@@ -12,20 +12,21 @@
 package kr.ac.kaist.safe.analyzer.models
 
 import kr.ac.kaist.safe.analyzer.domain._
+import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.nodes.cfg.CFG
 
 // Primitive Model
 class PrimModel(
-    val pvGen: PValue
+    val pvalue: AbsPValue
 ) extends Model {
-  def init(h: Heap, cfg: CFG): (Heap, Value) = (h, ValueUtil(pvGen))
+  def init(h: Heap, cfg: CFG): (Heap, Value) = (h, ValueUtil(pvalue))
 }
 
 object PrimModel {
-  def apply(pvGen: PValue): PrimModel = new PrimModel(pvGen)
-  def apply(n: Double): PrimModel = PrimModel(PValueUtil.alpha(n))
-  def apply(str: String): PrimModel = PrimModel(PValueUtil.alpha(str))
-  def apply(): PrimModel = PrimModel(PValueUtil.alpha())
-  def apply(x: Null): PrimModel = PrimModel(PValueUtil.alpha(x))
-  def apply(b: Boolean): PrimModel = PrimModel(PValueUtil.alpha(b))
+  def apply(pvalue: AbsPValue): PrimModel = new PrimModel(pvalue)
+  def apply(n: Double): PrimModel = PrimModel(AbsPValue.alpha(n))
+  def apply(str: String): PrimModel = PrimModel(AbsPValue.alpha(str))
+  def apply(undef: Undef): PrimModel = PrimModel(AbsPValue.alpha(Undef))
+  def apply(x: Null): PrimModel = PrimModel(AbsPValue.alpha(x))
+  def apply(b: Boolean): PrimModel = PrimModel(AbsPValue.alpha(b))
 }

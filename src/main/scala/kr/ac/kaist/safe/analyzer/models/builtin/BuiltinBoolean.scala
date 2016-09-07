@@ -29,7 +29,7 @@ object BuiltinBoolean extends FuncModel(
     val argV = sem.CFGLoadHelper(args, Set(AbsString.alpha("0")), h)
 
     // Returns a Boolean value (not a Boolean object) computed by ToBoolean(value).
-    val boolPV = PValueUtil(TypeConversionHelper.ToBoolean(argV))
+    val boolPV = AbsPValue(TypeConversionHelper.ToBoolean(argV))
     ValueUtil(boolPV)
   }),
 

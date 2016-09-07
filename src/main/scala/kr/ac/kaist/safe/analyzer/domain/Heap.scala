@@ -408,7 +408,7 @@ class DHeap(val map: Map[Loc, Obj]) extends Heap {
           if (AbsBool.False <= test) {
             val protoV = this.getOrElse(currentLoc, AbsObjectUtil.Bot).getOrElse(IPrototype)(valueBot) { _.value }
             val v3 = protoV.pvalue.nullval.fold(valueBot)(_ => {
-              ValueUtil.alpha()
+              ValueUtil.alpha(Undef)
             })
             v3 + protoV.locset.foldLeft(valueBot)((v, protoLoc) => {
               v + visit(protoLoc)

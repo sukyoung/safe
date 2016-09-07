@@ -43,7 +43,7 @@ case class State(heap: Heap, context: ExecContext) {
       val localEnv = context.pureLocal
       val oldValue = localEnv.getOrElse("@exception_all")(ValueUtil.Bot) { _.value }
       val newExcSet = excSet.foldLeft(LocSetEmpty)((locSet, exc) => locSet + exc.getLoc)
-      val excValue = Value(PValueUtil.Bot, newExcSet)
+      val excValue = Value(AbsPValue.Bot, newExcSet)
       val newExcBind = BindingUtil(excValue)
       val newExcSetBind = BindingUtil(excValue + oldValue)
       val newCtx = context.subsPureLocal(localEnv

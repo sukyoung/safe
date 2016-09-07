@@ -26,10 +26,12 @@ object Utils {
     AbsBool = absBool
     AbsNumber = absNumber
     AbsString = absString
+    AbsPValue = new DefaultPValue(absUndef, absNull, absBool, absNumber, absString)
   }
   var AbsUndef: AbsUndefUtil = null
   var AbsNull: AbsNullUtil = null
   var AbsBool: AbsBoolUtil = null
   var AbsNumber: AbsNumberUtil = null
   var AbsString: AbsStringUtil = null
+  var AbsPValue: AbsPValueUtil = null
 }

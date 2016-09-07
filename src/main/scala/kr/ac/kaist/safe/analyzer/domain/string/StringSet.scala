@@ -26,9 +26,7 @@ case class StringSet(maxSetSize: Int) extends AbsStringUtil {
   }
   val Bot: AbsDom = StrSet()
 
-  def alpha(str: String): AbsString =
-    if (str == null) Bot
-    else StrSet(str)
+  def alpha(str: String): AbsString = StrSet(str)
 
   override def alpha(values: Set[String]): AbsString =
     if (values.isEmpty)

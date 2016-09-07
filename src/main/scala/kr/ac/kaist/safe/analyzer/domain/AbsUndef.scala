@@ -13,7 +13,7 @@ package kr.ac.kaist.safe.analyzer.domain
 
 // concrete undefined type
 sealed abstract class Undef
-case object Undefined extends Undef
+case object Undef extends Undef
 
 // undefined abstract domain
 trait AbsUndef extends AbsDomain[Undef, AbsUndef] with Primitive {

@@ -20,7 +20,7 @@ object BuiltinGlobal extends ObjModel(
   props = List(
     NormalProp("NaN", PrimModel(Double.NaN), F, F, F),
     NormalProp("Infinity", PrimModel(Double.PositiveInfinity), F, F, F),
-    NormalProp("undefined", PrimModel(), F, F, F),
+    NormalProp("undefined", PrimModel(Undef), F, F, F),
 
     NormalProp("eval", FuncModel(
       name = "Global.eval",

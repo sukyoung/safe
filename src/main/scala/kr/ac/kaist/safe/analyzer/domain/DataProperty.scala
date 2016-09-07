@@ -22,7 +22,7 @@ object DataPropertyUtil {
   // TODO more consturctor
   // constructor
   def apply(value: Value): DPGen = DPGen(DataProperty(value, _, _, _), AB)
-  def apply(pvalue: PValue): DPGen = apply(ValueUtil(pvalue))
+  def apply(pvalue: AbsPValue): DPGen = apply(ValueUtil(pvalue))
   def apply(loc: Loc): DPGen = apply(ValueUtil(loc))
   def apply(locSet: Set[Loc]): DPGen = apply(ValueUtil(locSet))
   def apply(undefval: AbsUndef): DPGen = apply(ValueUtil(undefval))

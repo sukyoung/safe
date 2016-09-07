@@ -194,7 +194,7 @@ class Semantics(
             (iSt.createMutableBinding(x, vi), i + 1)
           })
           val newSt = xLocalVars.foldLeft(nSt)((jSt, x) => {
-            val undefV = ValueUtil.alpha()
+            val undefV = ValueUtil.alpha(Undef)
             jSt.createMutableBinding(x, undefV)
           })
           (newSt, State.Bot)
@@ -295,7 +295,7 @@ class Semantics(
         val (v, excSet) = V(index, st)
         val absStrSet =
           if (v.isBottom) HashSet[AbsString]()
-          else TypeConversionHelper.ToPrimitive(v, st.heap).toStringSet(AbsString)
+          else TypeConversionHelper.ToPrimitive(v, st.heap).toStringSet
         val (h1, b) = locSet.foldLeft[(Heap, AbsBool)](Heap.Bot, AB)((res1, l) => {
           val (tmpHeap1, tmpB1) = res1
           absStrSet.foldLeft((tmpHeap1, tmpB1))((res2, s) => {
@@ -308,7 +308,7 @@ class Semantics(
         val st2 =
           if (st1.isBottom) State.Bot
           else {
-            val boolPV = PValueUtil(b)
+            val boolPV = AbsPValue(b)
             st1.varStore(lhs, ValueUtil(boolPV))
           }
         val newExcSt = st.raiseException(excSet)
@@ -328,7 +328,7 @@ class Semantics(
             case (_, v) if v.isBottom => (Heap.Bot, excSetIdx ++ esRhs)
             case _ =>
               // iterate over set of strings for index
-              val absStrSet = TypeConversionHelper.ToPrimitive(idxV, st.heap).toStringSet(AbsString)
+              val absStrSet = TypeConversionHelper.ToPrimitive(idxV, st.heap).toStringSet
               absStrSet.foldLeft((Heap.Bot, excSetIdx ++ esRhs))((res1, absStr) => {
                 val (tmpHeap1, tmpExcSet1) = res1
                 val (tmpHeap2, tmpExcSet2) = Helper.storeHelp(locSet, absStr, vRhs, st.heap)
@@ -427,7 +427,7 @@ class Semantics(
       }
       case CFGReturn(_, _, None) => {
         val localEnv = st.context.pureLocal
-        val retValBind = BindingUtil(ValueUtil.alpha())
+        val retValBind = BindingUtil(ValueUtil.alpha(Undef))
         val ctx1 = st.context.subsPureLocal(localEnv.update("@return", retValBind))
         val newSt = State(st.heap, ctx1)
         (newSt, excSt)
@@ -438,7 +438,7 @@ class Semantics(
         val excSetV = localEnv.getOrElse("@exception_all")(ValueUtil.Bot) { _.value }
         val newExcBind = BindingUtil(v)
         val newExcSetBind = BindingUtil(v + excSetV)
-        val retValBind = BindingUtil(ValueUtil.alpha())
+        val retValBind = BindingUtil(ValueUtil.alpha(Undef))
         val newEnv =
           localEnv.
             update("@exception", newExcBind).
@@ -476,7 +476,7 @@ class Semantics(
                 val b2 =
                   if (!v.pvalue.isBottom) AF
                   else AB
-                val boolVal = ValueUtil(PValueUtil(b1 + b2))
+                val boolVal = ValueUtil(AbsPValue(b1 + b2))
                 st.varStore(lhs, boolVal)
               } else {
                 State.Bot
@@ -509,11 +509,11 @@ class Semantics(
           }
           case ("<>Global<>iteratorInit", List(expr), Some(aNew)) => (st, excSt)
           case ("<>Global<>iteratorHasNext", List(expr2, expr3), None) =>
-            val boolPV = PValueUtil(AbsBool.Top)
+            val boolPV = AbsPValue(AbsBool.Top)
             val st1 = st.varStore(lhs, ValueUtil(boolPV))
             (st1, excSt)
           case ("<>Global<>iteratorNext", List(expr2, expr3), None) =>
-            val strPV = PValueUtil(AbsString.Top)
+            val strPV = AbsPValue(AbsString.Top)
             val st1 = st.varStore(lhs, ValueUtil(strPV))
             (st1, excSt)
           case _ =>
@@ -622,7 +622,7 @@ class Semantics(
         val (objV, _) = V(obj, st)
         val (idxV, idxExcSet) = V(index, st)
         val absStrSet =
-          if (!idxV.isBottom) TypeConversionHelper.ToPrimitive(idxV, st.heap).toStringSet(AbsString)
+          if (!idxV.isBottom) TypeConversionHelper.ToPrimitive(idxV, st.heap).toStringSet
           else HashSet[AbsString]()
         val v1 = CFGLoadHelper(objV, absStrSet, st.heap)
         (v1, idxExcSet)
@@ -672,8 +672,8 @@ class Semantics(
                     tmpVal2 + Helper.inherit(st.heap, loc1, loc2))
                 })
                 val pv2 =
-                  if (!v2.pvalue.isBottom && !locSet4.isEmpty) PValueUtil(AF)
-                  else PValueUtil.Bot
+                  if (!v2.pvalue.isBottom && !locSet4.isEmpty) AbsPValue(AF)
+                  else AbsPValue.Bot
                 val b2 = ValueUtil(pv2)
                 val excSet3 =
                   if (!v2.pvalue.isBottom || !locSet5.isEmpty || !protoVal.pvalue.isBottom) HashSet(TypeError)
@@ -686,7 +686,7 @@ class Semantics(
                 val absB = v2.locset.foldLeft(AB)((tmpAbsB, loc) => {
                   tmpAbsB + st.heap.hasProperty(loc, str)
                 })
-                val b = ValueUtil(PValueUtil(absB))
+                val b = ValueUtil(AbsPValue(absB))
                 val excSet3 =
                   if (!v2.pvalue.isBottom) HashSet(TypeError)
                   else ExceptionSetEmpty
@@ -711,21 +711,21 @@ class Semantics(
                 val absStr2 =
                   if (excSet.contains(ReferenceError)) AbsString.alpha("undefined")
                   else AbsString.Bot
-                val absStrPV = PValueUtil(absStr1 + absStr2)
+                val absStrPV = AbsPValue(absStr1 + absStr2)
                 (ValueUtil(absStrPV), ExceptionSetEmpty)
               case _ =>
-                val absStrPV = PValueUtil(TypeConversionHelper.typeTag(v, st.heap))
+                val absStrPV = AbsPValue(TypeConversionHelper.typeTag(v, st.heap))
                 (ValueUtil(absStrPV), excSet)
             }
         }
       }
       case CFGVal(ejsVal) =>
-        val pvalue: PValue = ejsVal match {
-          case EJSNumber(_, num) => PValueUtil.alpha(num)
-          case EJSString(str) => PValueUtil.alpha(str)
-          case EJSBool(bool) => PValueUtil.alpha(bool)
-          case EJSNull => PValueUtil.alpha(null)
-          case EJSUndef => PValueUtil.alpha()
+        val pvalue: AbsPValue = ejsVal match {
+          case EJSNumber(_, num) => AbsPValue.alpha(num)
+          case EJSString(str) => AbsPValue.alpha(str)
+          case EJSBool(bool) => AbsPValue.alpha(bool)
+          case EJSNull => AbsPValue.alpha(Null)
+          case EJSUndef => AbsPValue.alpha()
         }
         (ValueUtil(pvalue), ExceptionSetEmpty)
     }

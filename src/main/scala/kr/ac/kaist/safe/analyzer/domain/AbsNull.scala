@@ -11,6 +11,10 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
+// concrete undefined type
+sealed abstract class Null
+case object Null extends Null
+
 // null abstract domain
 trait AbsNull extends AbsDomain[Null, AbsNull] with Primitive {
   def gamma: ConSimple[Null]
@@ -18,5 +22,5 @@ trait AbsNull extends AbsDomain[Null, AbsNull] with Primitive {
 }
 
 trait AbsNullUtil extends AbsDomainUtil[Null, AbsNull] {
-  def alpha(value: Null = null): AbsNull = Top
+  def alpha(value: Null): AbsNull = Top
 }

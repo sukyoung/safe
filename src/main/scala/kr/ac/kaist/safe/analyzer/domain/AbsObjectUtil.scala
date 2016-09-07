@@ -146,31 +146,31 @@ object AbsObjectUtil {
     }
   }
 
-  def defaultValue(locSet: Set[Loc]): PValue = {
-    if (locSet.isEmpty) PValueUtil.Bot
-    else PValueUtil.Top
+  def defaultValue(locSet: Set[Loc]): AbsPValue = {
+    if (locSet.isEmpty) AbsPValue.Bot
+    else AbsPValue.Top
   }
 
-  def defaultValue(locSet: Set[Loc], preferredType: String): PValue = {
-    if (locSet.isEmpty) PValueUtil.Bot
+  def defaultValue(locSet: Set[Loc], preferredType: String): AbsPValue = {
+    if (locSet.isEmpty) AbsPValue.Bot
     else {
       preferredType match {
-        case "Number" => PValueUtil(AbsNumber.Top)
-        case "String" => PValueUtil(AbsString.Top)
-        case _ => PValueUtil.Top
+        case "Number" => AbsPValue(AbsNumber.Top)
+        case "String" => AbsPValue(AbsString.Top)
+        case _ => AbsPValue.Top
       }
     }
   }
 
-  def defaultValue(locSet: Set[Loc], h: Heap, preferredType: String): PValue = {
-    if (locSet.isEmpty) PValueUtil.Bot
+  def defaultValue(locSet: Set[Loc], h: Heap, preferredType: String): AbsPValue = {
+    if (locSet.isEmpty) AbsPValue.Bot
     else {
       preferredType match {
         case "Number" =>
-          PValueUtil(defaultValueNumber(locSet, h))
+          AbsPValue(defaultValueNumber(locSet, h))
         case "String" =>
-          PValueUtil(defaultToString(locSet, h))
-        case _ => PValueUtil.Top
+          AbsPValue(defaultToString(locSet, h))
+        case _ => AbsPValue.Top
       }
     }
   }

@@ -38,7 +38,6 @@ object DefaultNumber extends AbsNumberUtil {
   }
 
   sealed abstract class AbsDom extends AbsNumber {
-    /* AbsDomain Interface */
     def gamma: ConSet[Double] = this match {
       case Bot => ConSetBot()
       case Inf => ConSetCon(Double.PositiveInfinity, Double.NegativeInfinity)
@@ -103,7 +102,6 @@ object DefaultNumber extends AbsNumberUtil {
 
     def toAbsNumber: AbsNumber = this
 
-    /* AbsNumber Interface */
     def <=(that: AbsNumber): Boolean = (this, check(that)) match {
       case (Bot, _) => true
       case (_, Top) => true

@@ -149,7 +149,7 @@ object BuiltinObject extends FuncModel(
         })
         val isDomIn = (obj domIn name)
         val v1 =
-          if (AF <= isDomIn) ValueUtil.alpha()
+          if (AF <= isDomIn) ValueUtil.alpha(Undef)
           else ValueUtil.Bot
         val (state, v2) =
           if (AT <= isDomIn) {
@@ -213,13 +213,7 @@ object BuiltinObject extends FuncModel(
         //       {[[Value]]: name, [[Writable]]: true, [[Enumerable]]: true,
         //       [[Configurable]]: true}, and false.
         //    c. Increment n by 1.
-        val v = ValueUtil(PValue(
-          AbsUndef.Top,
-          AbsNull.Bot,
-          AbsBool.Bot,
-          AbsNumber.Bot,
-          keyStr
-        ))
+        val v = ValueUtil(AbsPValue(AbsUndef.Top).copyWith(keyStr))
         val retObj = (0 until len.toInt).foldLeft(arrObj)((obj, idx) => {
           obj.update(idx.toString, PropValue(DataProperty(v, AT, AT, AT)))
         })
@@ -297,7 +291,7 @@ object BuiltinObject extends FuncModel(
 object BuiltinObjectProto extends ObjModel(
   name = "Object.prototype",
   props = List(
-    InternalProp(IPrototype, PrimModel(null)),
+    InternalProp(IPrototype, PrimModel(Null)),
 
     // TODO toString
     NormalProp("toString", FuncModel(

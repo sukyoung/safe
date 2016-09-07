@@ -26,19 +26,19 @@ object TypeConversionHelper {
   ////////////////////////////////////////////////////////////////
   // 9.1 ToPrimitive
   ////////////////////////////////////////////////////////////////
-  def ToPrimitive(value: Value): PValue =
+  def ToPrimitive(value: Value): AbsPValue =
     value.pvalue + AbsObjectUtil.defaultValue(value.locset)
 
-  def ToPrimitive(value: Value, preferredType: String): PValue =
+  def ToPrimitive(value: Value, preferredType: String): AbsPValue =
     value.pvalue + AbsObjectUtil.defaultValue(value.locset, preferredType)
 
-  def ToPrimitive(locSet: Set[Loc], preferredType: String): PValue =
+  def ToPrimitive(locSet: Set[Loc], preferredType: String): AbsPValue =
     AbsObjectUtil.defaultValue(locSet, preferredType)
 
-  def ToPrimitive(value: Value, h: Heap, preferredType: String = "String"): PValue =
+  def ToPrimitive(value: Value, h: Heap, preferredType: String = "String"): AbsPValue =
     value.pvalue + AbsObjectUtil.defaultValue(value.locset, h, preferredType)
 
-  def ToPrimitive(locSet: Set[Loc], h: Heap, preferredType: String): PValue =
+  def ToPrimitive(locSet: Set[Loc], h: Heap, preferredType: String): AbsPValue =
     AbsObjectUtil.defaultValue(locSet, h, preferredType)
 
   ////////////////////////////////////////////////////////////////
@@ -71,7 +71,7 @@ object TypeConversionHelper {
     ToNumber(value.pvalue) + anum6
   }
 
-  def ToNumber(pvalue: PValue): AbsNumber = {
+  def ToNumber(pvalue: AbsPValue): AbsNumber = {
     val anum1 = pvalue.undefval.toAbsNumber
     val anum2 = pvalue.nullval.toAbsNumber
     val anum3 = pvalue.boolval.toAbsNumber
@@ -139,7 +139,7 @@ object TypeConversionHelper {
     ToString(value.pvalue) + astr6
   }
 
-  def ToString(pvalue: PValue): AbsString = {
+  def ToString(pvalue: AbsPValue): AbsString = {
     val astr1 = pvalue.undefval.toAbsString
     val astr2 = pvalue.nullval.toAbsString
     val astr3 = pvalue.boolval.toAbsString
@@ -153,7 +153,7 @@ object TypeConversionHelper {
   // Detailed abstract meaning of ToObject relies on
   // implementation of abstract object and builtin modeling.
   ////////////////////////////////////////////////////////////////
-  def ToObject(pvalue: PValue): (Obj, Set[Exception]) = {
+  def ToObject(pvalue: AbsPValue): (Obj, Set[Exception]) = {
     val excSet = CheckObjectCoercible(pvalue)
     val obj3 = pvalue.numval.fold(AbsObjectUtil.Bot) { AbsObjectUtil.newNumberObj(_) }
     val obj4 = pvalue.boolval.fold(AbsObjectUtil.Bot) { AbsObjectUtil.newBooleanObj(_) }
@@ -183,7 +183,7 @@ object TypeConversionHelper {
   def CheckObjectCoercible(value: Value): Set[Exception] =
     CheckObjectCoercible(value.pvalue)
 
-  def CheckObjectCoercible(pvalue: PValue): Set[Exception] = {
+  def CheckObjectCoercible(pvalue: AbsPValue): Set[Exception] = {
     (pvalue.undefval.gamma, pvalue.nullval.gamma) match {
       case (ConSimpleTop(), _) | (_, ConSimpleTop()) => HashSet(TypeError)
       case (ConSimpleBot(), ConSimpleBot()) => HashSet[Exception]()

@@ -18,32 +18,32 @@ import scala.collection.immutable.HashSet
 import kr.ac.kaist.safe.util.Loc
 
 object ValueUtil {
-  val Bot: Value = Value(PValueUtil.Bot, LocSetEmpty)
+  val Bot: Value = Value(AbsPValue.Bot, LocSetEmpty)
   // TODO Top
 
   // constructor
-  def apply(pvalue: PValue): Value = Value(pvalue, LocSetEmpty)
-  def apply(loc: Loc): Value = Value(PValueUtil.Bot, HashSet(loc))
-  def apply(locSet: Set[Loc]): Value = Value(PValueUtil.Bot, locSet)
-  def apply(undefval: AbsUndef): Value = apply(PValueUtil(undefval))
-  def apply(nullval: AbsNull): Value = apply(PValueUtil(nullval))
-  def apply(boolval: AbsBool): Value = apply(PValueUtil(boolval))
-  def apply(numval: AbsNumber): Value = apply(PValueUtil(numval))
-  def apply(strval: AbsString): Value = apply(PValueUtil(strval))
+  def apply(pvalue: AbsPValue): Value = Value(pvalue, LocSetEmpty)
+  def apply(loc: Loc): Value = Value(AbsPValue.Bot, HashSet(loc))
+  def apply(locSet: Set[Loc]): Value = Value(AbsPValue.Bot, locSet)
+  def apply(undefval: AbsUndef): Value = apply(AbsPValue(undefval))
+  def apply(nullval: AbsNull): Value = apply(AbsPValue(nullval))
+  def apply(boolval: AbsBool): Value = apply(AbsPValue(boolval))
+  def apply(numval: AbsNumber): Value = apply(AbsPValue(numval))
+  def apply(strval: AbsString): Value = apply(AbsPValue(strval))
 
   // abstraction
-  def alpha(): Value = apply(PValueUtil.alpha())
-  def alpha(x: Null): Value = apply(PValueUtil.alpha(x))
-  def alpha(str: String): Value = apply(PValueUtil.alpha(str))
-  def alpha(set: Set[String]): Value = apply(PValueUtil.alpha(set))
-  def alpha(d: Double): Value = apply(PValueUtil.alpha(d))
-  def alpha(l: Long): Value = apply(PValueUtil.alpha(l))
+  def alpha(undef: Undef): Value = apply(AbsPValue.alpha(Undef))
+  def alpha(x: Null): Value = apply(AbsPValue.alpha(x))
+  def alpha(str: String): Value = apply(AbsPValue.alpha(str))
+  def alpha(set: Set[String]): Value = apply(AbsPValue.alpha(set))
+  def alpha(d: Double): Value = apply(AbsPValue.alpha(d))
+  def alpha(l: Long): Value = apply(AbsPValue.alpha(l))
   // trick for 'have same type after erasure' (Set[Double] & Set[String])
-  def alpha(set: => Set[Double]): Value = apply(PValueUtil.alpha(set))
-  def alpha(b: Boolean): Value = apply(PValueUtil.alpha(b))
+  def alpha(set: => Set[Double]): Value = apply(AbsPValue.alpha(set))
+  def alpha(b: Boolean): Value = apply(AbsPValue.alpha(b))
 }
 
-case class Value(pvalue: PValue, locset: Set[Loc]) {
+case class Value(pvalue: AbsPValue, locset: Set[Loc]) {
   override def toString: String = {
     val pvalStr =
       if (pvalue.isBottom) ""
