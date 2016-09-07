@@ -12,7 +12,7 @@
 package kr.ac.kaist.safe.analyzer.domain
 
 // string abstract domain
-trait AbsString extends AbsDomain[String, AbsString] with Primitive {
+trait AbsString extends AbsDomain[String, AbsString] {
   def gamma: ConSet[String]
   def gammaSingle: ConSingle[String]
   def gammaSimple: ConSimple[String]
@@ -33,6 +33,9 @@ trait AbsString extends AbsDomain[String, AbsString] with Primitive {
   def isAllNums: Boolean
   def isAllNotNumbers: Boolean
   def isArrayIndex: AbsBool
+
+  def toAbsNumber: AbsNumber
+  def toAbsBoolean: AbsBool
 }
 
 trait AbsStringUtil extends AbsDomainUtil[String, AbsString] {

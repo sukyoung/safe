@@ -269,25 +269,17 @@ object Helper {
         val resAbsNum = lAbsNum add rAbsNum
         ValueUtil(resAbsNum)
       case (_, ConSetBot()) =>
-        val resVal = ValueUtil(primRPV.foldLeft(AbsString.Bot) {
-          case (str, abs) => str + primLPV.strval.concat(abs.toAbsString)
-        })
-        resVal + bopPlus(ValueUtil(primLPV.copyWith(AbsString.Bot)), ValueUtil(primRPV))
+        val resVal = ValueUtil(primLPV.strval.concat(TypeConversionHelper.ToString(primRPV)))
+        resVal + bopPlus(ValueUtil(primLPV.copyWith(strval = AbsString.Bot)), ValueUtil(primRPV))
       case (ConSetBot(), _) =>
-        val resVal = ValueUtil(AbsPValue(primLPV.foldLeft(AbsString.Bot) {
-          case (str, abs) => str + abs.toAbsString.concat(primRPV.strval)
-        }))
-        resVal + bopPlus(ValueUtil(primLPV), ValueUtil(primRPV.copyWith(AbsString.Bot)))
+        val resVal = ValueUtil(TypeConversionHelper.ToString(primLPV).concat(primRPV.strval))
+        resVal + bopPlus(ValueUtil(primLPV), ValueUtil(primRPV.copyWith(strval = AbsString.Bot)))
       case (_, _) =>
-        val lStr = primLPV.foldLeft(AbsString.Bot) {
-          case (str, abs) => str + abs.toAbsString.concat(primRPV.strval)
-        }
-        val rStr = primRPV.foldLeft(AbsString.Bot) {
-          case (str, abs) => str + primLPV.strval.concat(abs.toAbsString)
-        }
+        val lStr = TypeConversionHelper.ToString(primLPV).concat(primRPV.strval)
+        val rStr = primLPV.strval.concat(TypeConversionHelper.ToString(primRPV))
         val resVal = ValueUtil(lStr + rStr)
 
-        resVal + bopPlus(ValueUtil(primLPV.copyWith(AbsString.Bot)), ValueUtil(primRPV.copyWith(AbsString.Bot)))
+        resVal + bopPlus(ValueUtil(primLPV.copyWith(strval = AbsString.Bot)), ValueUtil(primRPV.copyWith(strval = AbsString.Bot)))
     }
   }
 
@@ -504,8 +496,8 @@ object Helper {
         val rightAbsNum = typeHelper.ToNumber(rightPV)
         ValueUtil(cmpAbsNum(leftAbsNum, rightAbsNum))
       case _ =>
-        val leftPV2 = leftPV.copyWith(AbsString.Bot)
-        val rightPV2 = rightPV.copyWith(AbsString.Bot)
+        val leftPV2 = leftPV.copyWith(strval = AbsString.Bot)
+        val rightPV2 = rightPV.copyWith(strval = AbsString.Bot)
         val resAbsBool = cmpAbsStr(leftPV.strval, rightPV.strval)
         ValueUtil(resAbsBool) +
           bopCompareHelp(leftPV, rightPV2, cmpAbsNum, cmpAbsStr) +

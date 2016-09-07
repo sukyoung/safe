@@ -12,7 +12,7 @@
 package kr.ac.kaist.safe.analyzer.domain
 
 // number abstract domain
-trait AbsNumber extends AbsDomain[Double, AbsNumber] with Primitive {
+trait AbsNumber extends AbsDomain[Double, AbsNumber] {
   def ===(that: AbsNumber): AbsBool
   def <(that: AbsNumber): AbsBool
   def gamma: ConSet[Double]
@@ -33,6 +33,9 @@ trait AbsNumber extends AbsDomain[Double, AbsNumber] with Primitive {
   def toUInt32: AbsNumber
   // Abstraction of step 2 - 5 in section 9.8, ECMAScript 5.1
   def toUInt16: AbsNumber
+
+  def toAbsBoolean: AbsBool
+  def toAbsString: AbsString
 
   // Abstraction of step 4.a - 4.e in section 9.12, ECMAScript 5.1
   // This algorithm differs from the strict equal(===) in its treatment of signed zeros and NaN
@@ -69,7 +72,7 @@ trait AbsNumber extends AbsDomain[Double, AbsNumber] with Primitive {
 }
 
 trait AbsNumberUtil extends AbsDomainUtil[Double, AbsNumber] {
-  type AbsDom <: AbsNumber with Primitive
+  type AbsDom <: AbsNumber
   val Inf: AbsNumber
   val PosInf: AbsNumber
   val NegInf: AbsNumber

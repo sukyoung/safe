@@ -47,14 +47,28 @@ object TypeConversionHelper {
   // implementation of each abstract domains.
   ////////////////////////////////////////////////////////////////
   def ToBoolean(value: Value): AbsBool = {
-    val abool1 = value.pvalue.undefval.toAbsBoolean
-    val abool2 = value.pvalue.nullval.toAbsBoolean
-    val abool3 = value.pvalue.boolval.toAbsBoolean
-    val abool4 = value.pvalue.numval.toAbsBoolean
-    val abool5 = value.pvalue.strval.toAbsBoolean
     val abool6 = if (value.locset.isEmpty) AbsBool.Bot else AbsBool.True
-    abool1 + abool2 + abool3 + abool4 + abool5 + abool6
+    ToBoolean(value.pvalue) + abool6
   }
+
+  def ToBoolean(pvalue: AbsPValue): AbsBool =
+    ToBoolean(pvalue.undefval) +
+      ToBoolean(pvalue.nullval) +
+      ToBoolean(pvalue.boolval) +
+      ToBoolean(pvalue.numval) +
+      ToBoolean(pvalue.strval)
+
+  def ToBoolean(undef: AbsUndef): AbsBool =
+    undef.fold(AbsBool.Bot)(_ => AbsBool.False)
+
+  def ToBoolean(x: AbsNull): AbsBool =
+    x.fold(AbsBool.Bot)(_ => AbsBool.False)
+
+  def ToBoolean(bool: AbsBool): AbsBool = bool
+
+  def ToBoolean(num: AbsNumber): AbsBool = num.toAbsBoolean
+
+  def ToBoolean(str: AbsString): AbsBool = str.toAbsBoolean
 
   ////////////////////////////////////////////////////////////////
   // 9.3. ToNumber
@@ -71,14 +85,24 @@ object TypeConversionHelper {
     ToNumber(value.pvalue) + anum6
   }
 
-  def ToNumber(pvalue: AbsPValue): AbsNumber = {
-    val anum1 = pvalue.undefval.toAbsNumber
-    val anum2 = pvalue.nullval.toAbsNumber
-    val anum3 = pvalue.boolval.toAbsNumber
-    val anum4 = pvalue.numval.toAbsNumber
-    val anum5 = pvalue.strval.toAbsNumber
-    anum1 + anum2 + anum3 + anum4 + anum5
-  }
+  def ToNumber(pvalue: AbsPValue): AbsNumber =
+    ToNumber(pvalue.undefval) +
+      ToNumber(pvalue.nullval) +
+      ToNumber(pvalue.boolval) +
+      ToNumber(pvalue.numval) +
+      ToNumber(pvalue.strval)
+
+  def ToNumber(undef: AbsUndef): AbsNumber =
+    undef.fold(AbsNumber.Bot)(_ => AbsNumber.NaN)
+
+  def ToNumber(x: AbsNull): AbsNumber =
+    x.fold(AbsNumber.Bot)(_ => AbsNumber.alpha(+0))
+
+  def ToNumber(bool: AbsBool): AbsNumber = bool.toAbsNumber
+
+  def ToNumber(num: AbsNumber): AbsNumber = num
+
+  def ToNumber(str: AbsString): AbsNumber = str.toAbsNumber
 
   ////////////////////////////////////////////////////////////////
   // 9.4 ToInteger
@@ -139,14 +163,24 @@ object TypeConversionHelper {
     ToString(value.pvalue) + astr6
   }
 
-  def ToString(pvalue: AbsPValue): AbsString = {
-    val astr1 = pvalue.undefval.toAbsString
-    val astr2 = pvalue.nullval.toAbsString
-    val astr3 = pvalue.boolval.toAbsString
-    val astr4 = pvalue.numval.toAbsString
-    val astr5 = pvalue.strval.toAbsString
-    astr1 + astr2 + astr3 + astr4 + astr5
-  }
+  def ToString(pvalue: AbsPValue): AbsString =
+    ToString(pvalue.undefval) +
+      ToString(pvalue.nullval) +
+      ToString(pvalue.boolval) +
+      ToString(pvalue.numval) +
+      ToString(pvalue.strval)
+
+  def ToString(undef: AbsUndef): AbsString =
+    undef.fold(AbsString.Bot)(_ => AbsString.alpha("undefined"))
+
+  def ToString(x: AbsNull): AbsString =
+    x.fold(AbsString.Bot)(_ => AbsString.alpha("null"))
+
+  def ToString(bool: AbsBool): AbsString = bool.toAbsString
+
+  def ToString(num: AbsNumber): AbsString = num.toAbsString
+
+  def ToString(str: AbsString): AbsString = str
 
   ////////////////////////////////////////////////////////////////
   // 9.9 ToObject, Table 14
@@ -273,11 +307,11 @@ object TypeConversionHelper {
 
     val isCallableLocSet = value.locset.foldLeft(AbsBool.Bot)((tmpAbsB, l) => tmpAbsB + IsCallable(l, h))
     val s6 =
-      if (value.locset.nonEmpty && (AbsBool.False <= isCallableLocSet))
+      if (!value.locset.isEmpty && (AbsBool.False <= isCallableLocSet))
         AbsString.alpha("object")
       else AbsString.Bot
     val s7 =
-      if (value.locset.nonEmpty && (AbsBool.True <= isCallableLocSet))
+      if (!value.locset.isEmpty && (AbsBool.True <= isCallableLocSet))
         AbsString.alpha("function")
       else AbsString.Bot
 

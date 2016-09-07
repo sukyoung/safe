@@ -29,9 +29,7 @@ case class StringSet(maxSetSize: Int) extends AbsStringUtil {
   def alpha(str: String): AbsString = StrSet(str)
 
   override def alpha(values: Set[String]): AbsString =
-    if (values.isEmpty)
-      Bot
-    else if (maxSetSize == 0 | values.size <= maxSetSize)
+    if (maxSetSize == 0 | values.size <= maxSetSize)
       StrSet(values)
     else if (hasNum(values)) {
       if (hasNotNumber(values)) Top
@@ -76,7 +74,6 @@ case class StringSet(maxSetSize: Int) extends AbsStringUtil {
       case StrSet(set) => set.map("\"" + _ + "\"").mkString(", ")
     }
 
-    def toAbsString: AbsString = this
     def toAbsBoolean: AbsBool = this match {
       case StrSet(set) => set contains "" match {
         case true if set.size == 1 => AbsBool.False

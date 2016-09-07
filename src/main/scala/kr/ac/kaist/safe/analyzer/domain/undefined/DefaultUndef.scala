@@ -31,21 +31,6 @@ object DefaultUndef extends AbsUndefUtil {
       case Top => "undefined"
     }
 
-    def toAbsString: AbsString = this match {
-      case Bot => AbsString.Bot
-      case Top => AbsString.alpha("undefined")
-    }
-
-    def toAbsBoolean: AbsBool = this match {
-      case Bot => AbsBool.Bot
-      case Top => AbsBool.False
-    }
-
-    def toAbsNumber: AbsNumber = this match {
-      case Bot => AbsNumber.Bot
-      case Top => AbsNumber.NaN
-    }
-
     def <=(that: AbsUndef): Boolean = (this, check(that)) match {
       case (Top, Bot) => false
       case _ => true

@@ -100,8 +100,6 @@ object DefaultNumber extends AbsNumberUtil {
       case _ => AbsBool.True
     }
 
-    def toAbsNumber: AbsNumber = this
-
     def <=(that: AbsNumber): Boolean = (this, check(that)) match {
       case (Bot, _) => true
       case (_, Top) => true

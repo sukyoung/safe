@@ -12,11 +12,14 @@
 package kr.ac.kaist.safe.analyzer.domain
 
 // boolean abstract domain
-trait AbsBool extends AbsDomain[Boolean, AbsBool] with Primitive {
+trait AbsBool extends AbsDomain[Boolean, AbsBool] {
   def gamma: ConSingle[Boolean]
   def gammaSimple: ConSimple[Boolean]
   def ===(that: AbsBool): AbsBool
   def negate: AbsBool
+
+  def toAbsNumber: AbsNumber
+  def toAbsString: AbsString
 }
 
 trait AbsBoolUtil extends AbsDomainUtil[Boolean, AbsBool] {

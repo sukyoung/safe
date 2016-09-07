@@ -42,13 +42,21 @@ trait AbsPValue extends AbsDomain[PValue, AbsPValue] {
   def typeCount: Int
   def typeKinds: String
   def toStringSet: Set[AbsString]
-  def foreach(f: (Primitive => Unit)): Unit
-  def foldLeft[T](default: T)(f: ((T, Primitive) => T)): T
-  def copyWith(prim: Primitive): AbsPValue
+  def copyWith(
+    undefval: AbsUndef = this.undefval,
+    nullval: AbsNull = this.nullval,
+    boolval: AbsBool = this.boolval,
+    numval: AbsNumber = this.numval,
+    strval: AbsString = this.strval
+  ): AbsPValue
 }
 
 trait AbsPValueUtil extends AbsDomainUtil[PValue, AbsPValue] {
-  def apply(prim: Primitive): AbsPValue
+  def apply(undefval: AbsUndef): AbsPValue
+  def apply(nullval: AbsNull): AbsPValue
+  def apply(boolval: AbsBool): AbsPValue
+  def apply(numval: AbsNumber): AbsPValue
+  def apply(strval: AbsString): AbsPValue
 }
 
 // default primitive value abstract domain
@@ -64,8 +72,6 @@ case class DefaultPValue(
   val Top: AbsDom =
     AbsDom(AbsUndef.Top, AbsNull.Top, AbsBool.Top, AbsNumber.Top, AbsString.Top)
 
-  def apply(prim: Primitive): AbsPValue = Bot.copyWith(prim)
-
   def alpha(pvalue: PValue): AbsPValue = pvalue match {
     case PVUndef => Bot.copy(undefval = AbsUndef.Top)
     case PVNull => Bot.copy(nullval = AbsNull.Top)
@@ -73,6 +79,12 @@ case class DefaultPValue(
     case PVNumber(n) => Bot.copy(numval = AbsNumber.alpha(n))
     case PVString(str) => Bot.copy(strval = AbsString.alpha(str))
   }
+
+  def apply(undefval: AbsUndef): AbsPValue = Bot.copyWith(undefval = undefval)
+  def apply(nullval: AbsNull): AbsPValue = Bot.copyWith(nullval = nullval)
+  def apply(boolval: AbsBool): AbsPValue = Bot.copyWith(boolval = boolval)
+  def apply(numval: AbsNumber): AbsPValue = Bot.copyWith(numval = numval)
+  def apply(strval: AbsString): AbsPValue = Bot.copyWith(strval = strval)
 
   case class AbsDom(
       undefval: AbsUndef,
@@ -183,18 +195,12 @@ case class DefaultPValue(
       set.filter(s => !set.exists(o => s != o && s <= o))
     }
 
-    private val pList: List[Primitive] = List(undefval, nullval, boolval, numval, strval)
-
-    def foreach(f: (Primitive => Unit)): Unit = pList.foreach(f)
-
-    def foldLeft[T](default: T)(f: ((T, Primitive) => T)): T = pList.foldLeft(default)(f)
-
-    def copyWith(prim: Primitive): AbsPValue = prim match {
-      case (undefval: AbsUndef) => copy(undefval = undefval)
-      case (nullval: AbsNull) => copy(nullval = nullval)
-      case (boolval: AbsBool) => copy(boolval = boolval)
-      case (numval: AbsNumber) => copy(numval = numval)
-      case (strval: AbsString) => copy(strval = strval)
-    }
+    def copyWith(
+      undefval: AbsUndef = this.undefval,
+      nullval: AbsNull = this.nullval,
+      boolval: AbsBool = this.boolval,
+      numval: AbsNumber = this.numval,
+      strval: AbsString = this.strval
+    ): AbsPValue = AbsDom(undefval, nullval, boolval, numval, strval)
   }
 }

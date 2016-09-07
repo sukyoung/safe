@@ -52,6 +52,7 @@ trait AbsDomainUtil[C, ABS <: AbsDomain[C, ABS]] {
   val Top: ABS
 
   // lattice bottom
+  /** gamma(Bot) is always empty set in our analyzer **/
   val Bot: ABS
 
   // abstraction

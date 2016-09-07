@@ -26,26 +26,6 @@ object DefaultNull extends AbsNullUtil {
 
     def isBottom: Boolean = this == Bot
 
-    override def toString: String = this match {
-      case Bot => "Bot"
-      case Top => "null"
-    }
-
-    def toAbsString: AbsString = this match {
-      case Bot => AbsString.Bot
-      case Top => AbsString.alpha("null")
-    }
-
-    def toAbsBoolean: AbsBool = this match {
-      case Bot => AbsBool.Bot
-      case Top => AbsBool.False
-    }
-
-    def toAbsNumber: AbsNumber = this match {
-      case Bot => AbsNumber.Bot
-      case Top => AbsNumber.alpha(+0)
-    }
-
     def <=(that: AbsNull): Boolean = (this, check(that)) match {
       case (Top, Bot) => false
       case _ => true

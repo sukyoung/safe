@@ -16,7 +16,7 @@ sealed abstract class Null
 case object Null extends Null
 
 // null abstract domain
-trait AbsNull extends AbsDomain[Null, AbsNull] with Primitive {
+trait AbsNull extends AbsDomain[Null, AbsNull] {
   def gamma: ConSimple[Null]
   def ===(that: AbsNull): AbsBool
 }

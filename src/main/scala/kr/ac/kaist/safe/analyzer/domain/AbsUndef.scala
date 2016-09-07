@@ -16,7 +16,7 @@ sealed abstract class Undef
 case object Undef extends Undef
 
 // undefined abstract domain
-trait AbsUndef extends AbsDomain[Undef, AbsUndef] with Primitive {
+trait AbsUndef extends AbsDomain[Undef, AbsUndef] {
   def gamma: ConSimple[Undef]
   def ===(that: AbsUndef): AbsBool
 }

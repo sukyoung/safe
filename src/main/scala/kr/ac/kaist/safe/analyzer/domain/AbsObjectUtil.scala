@@ -11,6 +11,7 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
+import kr.ac.kaist.safe.analyzer.TypeConversionHelper
 import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.analyzer.models.builtin._
 import kr.ac.kaist.safe.nodes.cfg._
@@ -231,9 +232,9 @@ object AbsObjectUtil {
     val absStr1 = strObjSet.foldLeft[AbsString](AbsString.Bot)((absStr, obj) => {
       absStr + obj.getOrElse(IPrimitiveValue)(AbsString.Bot) { _.value.pvalue.strval }
     })
-    val anum2 = b.toAbsNumber
-    val anum3 = n.toAbsNumber
-    val anum4 = n2.toAbsNumber
+    val anum2 = TypeConversionHelper.ToNumber(b)
+    val anum3 = n
+    val anum4 = n2
 
     val absStr5 = (
       srcAbsStr.gammaSingle,

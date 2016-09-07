@@ -51,8 +51,6 @@ object DefaultBool extends AbsBoolUtil {
       case Top => AbsString.alpha("true", "false")
     }
 
-    def toAbsBoolean: AbsBool = this
-
     def toAbsNumber: AbsNumber = this match {
       case Bot => AbsNumber.Bot
       case True => AbsNumber.alpha(1)
