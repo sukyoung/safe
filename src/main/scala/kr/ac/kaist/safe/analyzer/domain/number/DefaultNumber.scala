@@ -27,18 +27,18 @@ object DefaultNumber extends AbsNumberUtil {
   case class NUIntConst(value: Double) extends AbsDom
   val NatNum: AbsDom = UInt
 
-  def alpha(num: Double): AbsNumber = num match {
-    case _ if num.isNaN => NaN
+  def alpha(num: Num): AbsNumber = num.num match {
+    case num if num.isNaN => NaN
     case Double.NegativeInfinity => NegInf
     case Double.PositiveInfinity => PosInf
-    case _ =>
+    case num =>
       val uint = num.toLong
       if ((num == uint) && (uint > 0 || (num compare 0.0) == 0)) UIntConst(uint)
       else NUIntConst(num)
   }
 
   sealed abstract class AbsDom extends AbsNumber {
-    def gamma: ConSet[Double] = this match {
+    def gamma: ConSet[Num] = this match {
       case Bot => ConSetBot()
       case Inf => ConSetCon(Double.PositiveInfinity, Double.NegativeInfinity)
       case PosInf => ConSetCon(Double.PositiveInfinity)
@@ -49,7 +49,7 @@ object DefaultNumber extends AbsNumberUtil {
       case Top | UInt | NUInt => ConSetTop()
     }
 
-    def gammaSingle: ConSingle[Double] = this match {
+    def gammaSingle: ConSingle[Num] = this match {
       case Top | UInt | NUInt | Inf => ConSingleTop()
       case Bot => ConSingleBot()
       case PosInf => ConSingleCon(Double.PositiveInfinity)
@@ -59,7 +59,7 @@ object DefaultNumber extends AbsNumberUtil {
       case NUIntConst(v) => ConSingleCon(v)
     }
 
-    def gammaSimple: ConSimple[Double] = this match {
+    def gammaSimple: ConSimple[Num] = this match {
       case Bot => ConSimpleBot()
       case _ => ConSimpleTop()
     }

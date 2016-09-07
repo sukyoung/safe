@@ -470,7 +470,7 @@ class Obj(
 
   def domIn(absStr: AbsString): AbsBool = {
     absStr.gamma match {
-      case ConSetCon(strSet) => (this domIn strSet)
+      case ConSetCon(strSet) => (this domIn strSet.map(_.str))
       case ConSetBot() => AbsBool.Bot
       case ConSetTop() => absStr.gammaIsAllNums match {
         case ConSingleBot() => AbsBool.Bot

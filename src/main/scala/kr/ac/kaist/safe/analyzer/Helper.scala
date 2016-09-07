@@ -48,7 +48,7 @@ object Helper {
         if ((atrue <= (nNewLen < nOldLen)) && (atrue <= bCanPut)) {
           val hi = heap.propStore(l, AbsString.alpha("length"), storeV)
           (nNewLen.gammaSingle, nOldLen.gammaSingle) match {
-            case (ConSingleCon(n1), ConSingleCon(n2)) =>
+            case (ConSingleCon(Num(n1)), ConSingleCon(Num(n2))) =>
               (n1.toInt until n2.toInt).foldLeft(hi)((hj, i) => {
                 val (tmpHeap, _) = hj.delete(l, AbsString.alpha(i.toString))
                 tmpHeap
@@ -101,8 +101,7 @@ object Helper {
         if (bGtEq && atrue <= bCanPutLen) {
           val hi = heap.propStore(l, idxAbsStr, storeV)
           val idxVal = ValueUtil(nIndex)
-          val absNum1PV = AbsPValue.alpha(1)
-          val vNewIndex = bopPlus(idxVal, ValueUtil(absNum1PV))
+          val vNewIndex = bopPlus(idxVal, ValueUtil.alpha(1))
           hi.propStore(l, AbsString.alpha("length"), vNewIndex)
         } else Heap.Bot
       arrIndexHeap1 + arrIndexHeap2 + arrIndexHeap3
@@ -440,12 +439,7 @@ object Helper {
 
   /* != */
   def bopNeq(left: Value, right: Value): Value = {
-    val resAbsBool = bopEq(left, right).pvalue.boolval.gamma match {
-      case ConSingleCon(true) => afalse
-      case ConSingleCon(false) => atrue
-      case ConSingleTop() => AbsBool.Top
-      case ConSingleBot() => AbsBool.Bot
-    }
+    val resAbsBool = bopEq(left, right).pvalue.boolval.negate
     ValueUtil(resAbsBool)
   }
 
@@ -475,12 +469,7 @@ object Helper {
 
   /* !== */
   def bopSNeq(left: Value, right: Value): Value = {
-    val resAbsBool = bopSEq(left, right).pvalue.boolval.gamma match {
-      case ConSingleCon(true) => afalse
-      case ConSingleCon(false) => atrue
-      case ConSingleTop() => AbsBool.Top
-      case ConSingleBot() => AbsBool.Bot
-    }
+    val resAbsBool = bopSEq(left, right).pvalue.boolval.negate
     ValueUtil(resAbsBool)
   }
 
@@ -530,7 +519,7 @@ object Helper {
     bopCompareHelp(leftPV, rightPV,
       (leftAbsNum, rightAbsNum) => {
         (leftAbsNum.gammaSingle, rightAbsNum.gammaSingle) match {
-          case (ConSingleCon(n1), ConSingleCon(n2)) if n1.isNaN & n2.isNaN => afalse
+          case (ConSingleCon(Num(n1)), ConSingleCon(Num(n2))) if n1.isNaN & n2.isNaN => afalse
           case _ => (rightAbsNum < leftAbsNum).negate
         }
       },
@@ -544,7 +533,7 @@ object Helper {
     bopCompareHelp(leftPV, rightPV,
       (leftAbsNum, rightAbsNum) => {
         (leftAbsNum.gammaSingle, rightAbsNum.gammaSingle) match {
-          case (ConSingleCon(n1), ConSingleCon(n2)) if n1.isNaN & n2.isNaN => afalse
+          case (ConSingleCon(Num(n1)), ConSingleCon(Num(n2))) if n1.isNaN & n2.isNaN => afalse
           case _ => (leftAbsNum < rightAbsNum).negate
         }
       },

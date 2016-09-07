@@ -26,31 +26,33 @@ case class StringSet(maxSetSize: Int) extends AbsStringUtil {
   }
   val Bot: AbsDom = StrSet()
 
-  def alpha(str: String): AbsString = StrSet(str)
+  def alpha(str: Str): AbsString = StrSet(str)
 
-  override def alpha(values: Set[String]): AbsString =
-    if (maxSetSize == 0 | values.size <= maxSetSize)
-      StrSet(values)
-    else if (hasNum(values)) {
-      if (hasNotNumber(values)) Top
+  override def alpha(values: Set[Str]): AbsString = {
+    val strSet = values.map(_.str)
+    if (maxSetSize == 0 | strSet.size <= maxSetSize)
+      StrSet(strSet)
+    else if (hasNum(strSet)) {
+      if (hasNotNumber(strSet)) Top
       else Number
-    } else if (hasNotNumber(values)) NotNumber
+    } else if (hasNotNumber(strSet)) NotNumber
     else Top
+  }
 
   sealed abstract class AbsDom(maxSetSize: Int = 0) extends AbsString {
-    def gamma: ConSet[String] = this match {
+    def gamma: ConSet[Str] = this match {
       case StrSet(set) if set.size == 0 => ConSetBot()
       case StrSet(set) => ConSetCon(set)
       case Top | Number | NotNumber => ConSetTop()
     }
 
-    def gammaSingle: ConSingle[String] = this match {
+    def gammaSingle: ConSingle[Str] = this match {
       case StrSet(set) if set.size == 0 => ConSingleBot()
       case StrSet(set) if set.size == 1 => ConSingleCon(set.head)
       case _ => ConSingleTop()
     }
 
-    def gammaSimple: ConSimple[String] = this match {
+    def gammaSimple: ConSimple[Str] = this match {
       case StrSet(set) if set.size == 0 => ConSimpleBot()
       case _ => ConSimpleTop()
     }

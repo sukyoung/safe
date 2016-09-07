@@ -34,11 +34,8 @@ object ValueUtil {
   def alpha(undef: Undef): Value = apply(AbsPValue.alpha(Undef))
   def alpha(x: Null): Value = apply(AbsPValue.alpha(x))
   def alpha(str: String): Value = apply(AbsPValue.alpha(str))
-  def alpha(set: Set[String]): Value = apply(AbsPValue.alpha(set))
   def alpha(d: Double): Value = apply(AbsPValue.alpha(d))
   def alpha(l: Long): Value = apply(AbsPValue.alpha(l))
-  // trick for 'have same type after erasure' (Set[Double] & Set[String])
-  def alpha(set: => Set[Double]): Value = apply(AbsPValue.alpha(set))
   def alpha(b: Boolean): Value = apply(AbsPValue.alpha(b))
 }
 

@@ -11,8 +11,8 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
-// concrete undefined type
-sealed abstract class Null
+// concrete null type
+sealed abstract class Null extends PValue
 case object Null extends Null
 
 // null abstract domain

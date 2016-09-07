@@ -15,20 +15,20 @@ import kr.ac.kaist.safe.analyzer.domain.Utils._
 import scala.collection.immutable.HashSet
 
 // concrete primitive value type
-sealed abstract class PValue
-case object PVUndef extends PValue
-case object PVNull extends PValue
-case class PVBool(b: Boolean) extends PValue
-case class PVNumber(n: Double) extends PValue
-case class PVString(str: String) extends PValue
-case object PValue {
-  implicit def undef2PValue(undef: Undef): PValue = PVUndef
-  implicit def null2PValue(x: Null): PValue = PVNull
-  implicit def bool2PValue(b: Boolean): PValue = PVBool(b)
-  implicit def num2PValue(n: Double): PValue = PVNumber(n)
-  implicit def numset2PValue(set: Set[Double]): Set[PValue] = set.map(num2PValue)
-  implicit def str2PValue(str: String): PValue = PVString(str)
-  implicit def strset2PValue(set: Set[String]): Set[PValue] = set.map(str2PValue)
+abstract class PValue
+// Undef in AbsUndef.scala
+// Null in AbsNull.scala
+// Bool in AbsBool.scala
+// Num in AbsNumber.scala
+// Str in AbsString.scala
+object PValue {
+  // TODO how to define only once following implicit conversion functions
+  implicit def bool2bool(b: Boolean): Bool = Bool(b)
+  implicit def bool2bool(set: Set[Boolean]): Set[Bool] = set.map(bool2bool)
+  implicit def num2num(num: Double): Num = Num(num)
+  implicit def num2num(set: Set[Double]): Set[Num] = set.map(num2num)
+  implicit def str2str(str: String): Str = Str(str)
+  implicit def str2str(set: Set[String]): Set[Str] = set.map(str2str)
 }
 
 // primitive value abstract domain
@@ -73,11 +73,11 @@ case class DefaultPValue(
     AbsDom(AbsUndef.Top, AbsNull.Top, AbsBool.Top, AbsNumber.Top, AbsString.Top)
 
   def alpha(pvalue: PValue): AbsPValue = pvalue match {
-    case PVUndef => Bot.copy(undefval = AbsUndef.Top)
-    case PVNull => Bot.copy(nullval = AbsNull.Top)
-    case PVBool(b) => Bot.copy(boolval = AbsBool.alpha(b))
-    case PVNumber(n) => Bot.copy(numval = AbsNumber.alpha(n))
-    case PVString(str) => Bot.copy(strval = AbsString.alpha(str))
+    case Undef => Bot.copy(undefval = AbsUndef.Top)
+    case Null => Bot.copy(nullval = AbsNull.Top)
+    case Bool(b) => Bot.copy(boolval = AbsBool.alpha(b))
+    case Num(n) => Bot.copy(numval = AbsNumber.alpha(n))
+    case Str(str) => Bot.copy(strval = AbsString.alpha(str))
   }
 
   def apply(undefval: AbsUndef): AbsPValue = Bot.copyWith(undefval = undefval)
@@ -178,14 +178,8 @@ case class DefaultPValue(
       this.undefval.foldUnit(set += AbsString.alpha("undefined"))
       this.nullval.foldUnit(set += AbsString.alpha("null"))
 
-      this.boolval.gamma match {
-        case ConSingleBot() => ()
-        case ConSingleCon(true) => set += AbsString.alpha("true")
-        case ConSingleCon(false) => set += AbsString.alpha("false")
-        case ConSingleTop() =>
-          set += AbsString.alpha("true")
-          set += AbsString.alpha("false")
-      }
+      if (AbsBool.True <= this.boolval) set += AbsString.alpha("true")
+      if (AbsBool.False <= this.boolval) set += AbsString.alpha("false")
 
       set += this.numval.toAbsString
 

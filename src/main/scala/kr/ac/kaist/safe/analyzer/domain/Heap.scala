@@ -511,23 +511,23 @@ class DHeap(val map: Map[Loc, Obj]) extends Heap {
   def propStore(loc: Loc, absStr: AbsString, value: Value): Heap = {
     val findingObj = this.getOrElse(loc, AbsObjectUtil.Bot)
     val objDomIn = (findingObj domIn absStr)
-    objDomIn.gamma match {
-      case ConSingleTop() =>
-        val oldObjV: DataProperty = findingObj.getOrElse(absStr)(DataPropertyUtil.Bot) { _.objval }
-        val newObjV = DataPropertyUtil(value)(
-          oldObjV.writable + AbsBool.True,
-          oldObjV.enumerable + AbsBool.True,
-          oldObjV.configurable + AbsBool.True
-        )
-        this.update(loc, findingObj.update(absStr, PropValue(newObjV)))
-      case ConSingleBot() => Heap.Bot
-      case ConSingleCon(true) =>
-        val oldObjV: DataProperty = findingObj.getOrElse(absStr)(DataPropertyUtil.Bot) { _.objval }
-        val newObjV = oldObjV.copyWith(value)
-        this.update(loc, findingObj.update(absStr, PropValue(newObjV)))
-      case ConSingleCon(false) =>
-        val newObjV = DataPropertyUtil(value)(AbsBool.True, AbsBool.True, AbsBool.True)
-        this.update(loc, findingObj.update(absStr, PropValue(newObjV)))
+    if (objDomIn == AbsBool.Top) {
+      val oldObjV: DataProperty = findingObj.getOrElse(absStr)(DataPropertyUtil.Bot) { _.objval }
+      val newObjV = DataPropertyUtil(value)(
+        oldObjV.writable + AbsBool.True,
+        oldObjV.enumerable + AbsBool.True,
+        oldObjV.configurable + AbsBool.True
+      )
+      this.update(loc, findingObj.update(absStr, PropValue(newObjV)))
+    } else if (objDomIn == AbsBool.True) {
+      val oldObjV: DataProperty = findingObj.getOrElse(absStr)(DataPropertyUtil.Bot) { _.objval }
+      val newObjV = oldObjV.copyWith(value)
+      this.update(loc, findingObj.update(absStr, PropValue(newObjV)))
+    } else if (objDomIn == AbsBool.False) {
+      val newObjV = DataPropertyUtil(value)(AbsBool.True, AbsBool.True, AbsBool.True)
+      this.update(loc, findingObj.update(absStr, PropValue(newObjV)))
+    } else {
+      Heap.Bot
     }
   }
 

@@ -11,13 +11,19 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
+// concrete number type
+case class Num(num: Double) extends PValue
+object Num {
+  implicit def num2num(num: Num): Double = num.num
+}
+
 // number abstract domain
-trait AbsNumber extends AbsDomain[Double, AbsNumber] {
+trait AbsNumber extends AbsDomain[Num, AbsNumber] {
   def ===(that: AbsNumber): AbsBool
   def <(that: AbsNumber): AbsBool
-  def gamma: ConSet[Double]
-  def gammaSingle: ConSingle[Double]
-  def gammaSimple: ConSimple[Double]
+  def gamma: ConSet[Num]
+  def gammaSingle: ConSingle[Num]
+  def gammaSimple: ConSimple[Num]
 
   def isPositive: Boolean
   def isNegative: Boolean
@@ -71,7 +77,7 @@ trait AbsNumber extends AbsDomain[Double, AbsNumber] {
   def mod(that: AbsNumber): AbsNumber
 }
 
-trait AbsNumberUtil extends AbsDomainUtil[Double, AbsNumber] {
+trait AbsNumberUtil extends AbsDomainUtil[Num, AbsNumber] {
   type AbsDom <: AbsNumber
   val Inf: AbsNumber
   val PosInf: AbsNumber

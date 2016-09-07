@@ -12,7 +12,7 @@
 package kr.ac.kaist.safe.analyzer.domain
 
 // concrete undefined type
-sealed abstract class Undef
+sealed abstract class Undef extends PValue
 case object Undef extends Undef
 
 // undefined abstract domain

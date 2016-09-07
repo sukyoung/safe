@@ -20,17 +20,17 @@ object DefaultBool extends AbsBoolUtil {
   case object False extends AbsDom
   case object Top extends AbsDom
 
-  def alpha(bool: Boolean): AbsBool = if (bool) True else False
+  def alpha(bool: Bool): AbsBool = if (bool) True else False
 
   sealed abstract class AbsDom extends AbsBool {
-    def gamma: ConSingle[Boolean] = this match {
+    def gamma: ConSingle[Bool] = this match {
       case Bot => ConSingleBot()
       case True => ConSingleCon(true)
       case False => ConSingleCon(false)
       case Top => ConSingleTop()
     }
 
-    def gammaSimple: ConSimple[Boolean] = isBottom match {
+    def gammaSimple: ConSimple[Bool] = isBottom match {
       case true => ConSimpleBot()
       case false => ConSimpleTop()
     }
