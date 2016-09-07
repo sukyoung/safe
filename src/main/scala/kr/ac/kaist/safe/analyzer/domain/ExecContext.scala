@@ -210,7 +210,7 @@ abstract class ExecContext {
   // Lookup
   ////////////////////////////////////////////////////////////////
   def lookupLocal(loc: Loc, x: String): Value = {
-    var visited = LocSetEmpty
+    var visited = AbsLoc.Bot
     val valueBot = ValueUtil.Bot
     def visit(l: Loc): Value = {
       if (visited.contains(l)) valueBot
@@ -223,7 +223,7 @@ abstract class ExecContext {
           else valueBot
         val v2 =
           if (AbsBool.False <= isIn) {
-            val outerLocSet = env.getOrElse("@outer")(LocSetEmpty) { _.value.locset }
+            val outerLocSet = env.getOrElse("@outer")(AbsLoc.Bot) { _.value.locset }
             outerLocSet.foldLeft(valueBot)((tmpVal, outerLoc) => tmpVal + visit(outerLoc))
           } else {
             valueBot
@@ -234,25 +234,25 @@ abstract class ExecContext {
     visit(loc)
   }
 
-  def lookupBaseLocal(loc: Loc, x: String): Set[Loc] = {
-    var visited = LocSetEmpty
-    def visit(l: Loc): Set[Loc] = {
-      if (visited.contains(l)) LocSetEmpty
+  def lookupBaseLocal(loc: Loc, x: String): AbsLoc = {
+    var visited = AbsLoc.Bot
+    def visit(l: Loc): AbsLoc = {
+      if (visited.contains(l)) AbsLoc.Bot
       else {
         visited += l
         val env = this.getOrElse(l, DecEnvRecord.Bot)
         val isIn = (env HasBinding x)
         val locSet1 =
-          if (AbsBool.True <= isIn) HashSet(l)
-          else LocSetEmpty
+          if (AbsBool.True <= isIn) AbsLoc.alpha(l)
+          else AbsLoc.Bot
         val locSet2 =
           if (AbsBool.False <= isIn) {
-            val outerLocSet = env.getOrElse("@outer")(LocSetEmpty) { _.value.locset }
-            outerLocSet.foldLeft(LocSetEmpty)((res, outerLoc) => res ++ visit(outerLoc))
+            val outerLocSet = env.getOrElse("@outer")(AbsLoc.Bot) { _.value.locset }
+            outerLocSet.foldLeft(AbsLoc.Bot)((res, outerLoc) => res + visit(outerLoc))
           } else {
-            LocSetEmpty
+            AbsLoc.Bot
           }
-        locSet1 ++ locSet2
+        locSet1 + locSet2
       }
     }
     visit(loc)
@@ -280,7 +280,7 @@ abstract class ExecContext {
     }
     val outerLocSet = env("@outer") match {
       case Some(bind) => bind.value.locset
-      case None => LocSetEmpty
+      case None => AbsLoc.Bot
     }
     val ctx2 =
       if (AbsBool.False <= (env HasBinding x))
@@ -328,7 +328,7 @@ object ExecContext {
 case object ExecContextBot extends ExecContext
 case class ExecContextMap(
   // TODO val varEnv: LexEnv // VariableEnvironment
-  // val thisBinding: Set[Loc], // ThisBinding
+  // val thisBinding: AbsLoc, // ThisBinding
   // val oldAddrSet: OldAddrSet // TODO old address set
   val map: Map[Loc, DecEnvRecord],
   override val old: OldAddrSet

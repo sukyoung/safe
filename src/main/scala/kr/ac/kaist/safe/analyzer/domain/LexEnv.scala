@@ -16,6 +16,6 @@ import kr.ac.kaist.safe.util.Loc
 // 10.2 Lexical Environments
 class LexEnv(
     val envRecord: EnvRecord, // Environment Record
-    val outer: (Set[Loc], AbsNull) // Lexical Environment or null
+    val outer: (AbsLoc, AbsNull) // Lexical Environment or null
 ) {
 }

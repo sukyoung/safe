@@ -32,13 +32,13 @@ object TypeConversionHelper {
   def ToPrimitive(value: Value, preferredType: String): AbsPValue =
     value.pvalue + AbsObjectUtil.defaultValue(value.locset, preferredType)
 
-  def ToPrimitive(locSet: Set[Loc], preferredType: String): AbsPValue =
+  def ToPrimitive(locSet: AbsLoc, preferredType: String): AbsPValue =
     AbsObjectUtil.defaultValue(locSet, preferredType)
 
   def ToPrimitive(value: Value, h: Heap, preferredType: String = "String"): AbsPValue =
     value.pvalue + AbsObjectUtil.defaultValue(value.locset, h, preferredType)
 
-  def ToPrimitive(locSet: Set[Loc], h: Heap, preferredType: String): AbsPValue =
+  def ToPrimitive(locSet: AbsLoc, h: Heap, preferredType: String): AbsPValue =
     AbsObjectUtil.defaultValue(locSet, h, preferredType)
 
   ////////////////////////////////////////////////////////////////
@@ -47,7 +47,7 @@ object TypeConversionHelper {
   // implementation of each abstract domains.
   ////////////////////////////////////////////////////////////////
   def ToBoolean(value: Value): AbsBool = {
-    val abool6 = if (value.locset.isEmpty) AbsBool.Bot else AbsBool.True
+    val abool6 = if (value.locset.isBottom) AbsBool.Bot else AbsBool.True
     ToBoolean(value.pvalue) + abool6
   }
 
@@ -202,13 +202,13 @@ object TypeConversionHelper {
     val (locSet1, h1) =
       if (!obj.isBottom) {
         val loc = Loc(addr, Recent)
-        (HashSet(loc), st.oldify(addr).heap.update(loc, obj))
-      } else (LocSetEmpty, Heap.Bot)
+        (AbsLoc.alpha(loc), st.oldify(addr).heap.update(loc, obj))
+      } else (AbsLoc.Bot, Heap.Bot)
     val (locSet2, h2) =
-      if (!locSet.isEmpty) (locSet, st.heap)
-      else (LocSetEmpty, Heap.Bot)
+      if (!locSet.isBottom) (locSet, st.heap)
+      else (AbsLoc.Bot, Heap.Bot)
 
-    (ValueUtil(locSet1 ++ locSet2), State(h1 + h2, st.context), excSet)
+    (ValueUtil(locSet1 + locSet2), State(h1 + h2, st.context), excSet)
   }
 
   ////////////////////////////////////////////////////////////////
@@ -233,7 +233,7 @@ object TypeConversionHelper {
     val abool3 = value.pvalue.boolval.fold(AbsBool.Bot) { _ => AbsBool.False }
     val abool4 = value.pvalue.numval.fold(AbsBool.Bot) { _ => AbsBool.False }
     val abool5 = value.pvalue.strval.fold(AbsBool.Bot) { _ => AbsBool.False }
-    val abool6 = if (value.locset.isEmpty) AbsBool.Bot else AbsBool.Top
+    val abool6 = if (value.locset.isBottom) AbsBool.Bot else AbsBool.Top
     abool1 + abool2 + abool3 + abool4 + abool5 + abool6
   }
 
@@ -275,11 +275,13 @@ object TypeConversionHelper {
     val isSame4 = (left.pvalue.numval sameValue right.pvalue.numval)
     val isSame5 = (left.pvalue.strval === right.pvalue.strval)
     val isSame6 =
-      if (!left.locset.isEmpty && !right.locset.isEmpty) {
-        val intersect = left.locset.intersect(right.locset)
-        if (intersect.isEmpty) AbsBool.False
-        else if (left.locset.size == 1 && right.locset.size == 1 && intersect.head.recency == Recent) AbsBool.True
-        else AbsBool.Top
+      if (!left.locset.isBottom && !right.locset.isBottom) {
+        val intersect = left.locset <> right.locset
+        (left.locset.gammaSingle, right.locset.gammaSingle, intersect.gammaSingle) match {
+          case (_, _, ConSingleBot()) => AbsBool.False
+          case (ConSingleCon(_), ConSingleCon(_), ConSingleCon(loc)) if loc.recency == Recent => AbsBool.True
+          case _ => AbsBool.Top
+        }
       } else AbsBool.Bot
 
     isMultiType + isSame1 + isSame2 + isSame3 + isSame4 + isSame5 + isSame6
@@ -307,11 +309,11 @@ object TypeConversionHelper {
 
     val isCallableLocSet = value.locset.foldLeft(AbsBool.Bot)((tmpAbsB, l) => tmpAbsB + IsCallable(l, h))
     val s6 =
-      if (!value.locset.isEmpty && (AbsBool.False <= isCallableLocSet))
+      if (!value.locset.isBottom && (AbsBool.False <= isCallableLocSet))
         AbsString.alpha("object")
       else AbsString.Bot
     val s7 =
-      if (!value.locset.isEmpty && (AbsBool.True <= isCallableLocSet))
+      if (!value.locset.isBottom && (AbsBool.True <= isCallableLocSet))
         AbsString.alpha("function")
       else AbsString.Bot
 

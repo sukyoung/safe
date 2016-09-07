@@ -110,7 +110,7 @@ object Helper {
       Heap.Bot
   }
 
-  def storeHelp(objLocSet: Set[Loc], idxAbsStr: AbsString, storeV: Value, heap: Heap): (Heap, Set[Exception]) = {
+  def storeHelp(objLocSet: AbsLoc, idxAbsStr: AbsString, storeV: Value, heap: Heap): (Heap, Set[Exception]) = {
     // non-array objects
     val locSetNArr = objLocSet.filter(l =>
       (afalse <= heap.isArray(l)) && atrue <= heap.canPut(l, idxAbsStr))
@@ -149,7 +149,7 @@ object Helper {
   }
 
   def inherit(h: Heap, loc1: Loc, loc2: Loc): Value = {
-    var visited = LocSetEmpty
+    var visited = AbsLoc.Bot
     val locVal2 = ValueUtil(loc2)
     val boolBotVal = ValueUtil(AbsPValue.Bot)
     val boolTrueVal = ValueUtil.alpha(true)
@@ -312,11 +312,13 @@ object Helper {
     val leftPV = left.pvalue
     val rightPV = right.pvalue
     val locsetTest =
-      if (!left.locset.isEmpty && !right.locset.isEmpty) {
-        val intersect = left.locset.intersect(right.locset)
-        if (intersect.isEmpty) afalse
-        else if (left.locset.size == 1 && right.locset.size == 1 && intersect.head.recency == Recent) atrue
-        else AbsBool.Top
+      if (!left.locset.isBottom && !right.locset.isBottom) {
+        val intersect = left.locset <> right.locset
+        (left.locset.gammaSingle, right.locset.gammaSingle, intersect.gammaSingle) match {
+          case (_, _, ConSingleBot()) => afalse
+          case (ConSingleCon(_), ConSingleCon(_), ConSingleCon(loc)) if loc.recency == Recent => atrue
+          case _ => AbsBool.Top
+        }
       } else AbsBool.Bot
     val b1 = (leftPV.undefval === rightPV.undefval) +
       (leftPV.nullval === rightPV.nullval) +
@@ -354,8 +356,7 @@ object Helper {
           val rightNumVal = rightStrVal.toAbsNumber
           (leftNumVal === rightNumVal)
         })
-        val b63 = right.locset.size match {
-          case 0 => AbsBool.Bot
+        val b63 = right.locset.fold(AbsBool.Bot) {
           case _ =>
             val rightNumVal = objToPrimitive(right, "Number").numval
             (leftNumVal === rightNumVal)
@@ -376,8 +377,7 @@ object Helper {
           val leftNumVal = leftStrVal.toAbsNumber
           (leftNumVal === rightNumVal)
         })
-        val b73 = left.locset.size match {
-          case 0 => AbsBool.Bot
+        val b73 = left.locset.fold(AbsBool.Bot) {
           case _ =>
             val leftNumVal = objToPrimitive(left, "Number").numval
             (leftNumVal === rightNumVal)
@@ -388,8 +388,7 @@ object Helper {
       case ConSimpleTop() => AbsBool.Bot
     }
 
-    val b8 = right.locset.size match {
-      case 0 => AbsBool.Bot
+    val b8 = right.locset.fold(AbsBool.Bot) {
       case _ =>
         val b81 = leftPV.numval.fold(AbsBool.Bot)(leftNumVal => {
           val rightNumVal = objToPrimitive(right, "Number").numval
@@ -402,8 +401,7 @@ object Helper {
         b81 + b82
     }
 
-    val b9 = left.locset.size match {
-      case 0 => AbsBool.Bot
+    val b9 = left.locset.fold(AbsBool.Bot) {
       case _ =>
         val b91 = rightPV.numval.fold(AbsBool.Bot)(rightNumVal => {
           val leftNumVal = objToPrimitive(left, "Number").numval
@@ -416,10 +414,10 @@ object Helper {
         b91 + b92
     }
 
-    def testUndefNull(pv: AbsPValue, locset: Set[Loc]): Boolean = (pv.undefval.gamma, pv.nullval.gamma) match {
+    def testUndefNull(pv: AbsPValue, locset: AbsLoc): Boolean = (pv.undefval.gamma, pv.nullval.gamma) match {
       case (ConSimpleBot(), ConSimpleBot()) => false
-      case _ => (pv.numval.gammaSimple, pv.strval.gammaSimple, locset.size) match {
-        case (ConSimpleBot(), ConSimpleBot(), 0) => false
+      case _ => (pv.numval.gammaSimple, pv.strval.gammaSimple, locset.isBottom) match {
+        case (ConSimpleBot(), ConSimpleBot(), true) => false
         case _ => true
       }
     }
@@ -457,11 +455,13 @@ object Helper {
       if ((left + right).typeCount > 1) afalse
       else AbsBool.Bot
     val isLocsetSame =
-      if (!left.locset.isEmpty && !right.locset.isEmpty) {
-        val intersect = left.locset.intersect(right.locset)
-        if (intersect.isEmpty) afalse
-        else if (left.locset.size == 1 && right.locset.size == 1 && intersect.head.recency == Recent) atrue
-        else AbsBool.Top
+      if (!left.locset.isBottom && !right.locset.isBottom) {
+        val intersect = left.locset <> right.locset
+        (left.locset.gammaSingle, right.locset.gammaSingle, intersect.gammaSingle) match {
+          case (_, _, ConSingleBot()) => afalse
+          case (ConSingleCon(_), ConSingleCon(_), ConSingleCon(loc)) if loc.recency == Recent => atrue
+          case _ => AbsBool.Top
+        }
       } else AbsBool.Bot
     val isSame =
       (left.pvalue.undefval === right.pvalue.undefval) +

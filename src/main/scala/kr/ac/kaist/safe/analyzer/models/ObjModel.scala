@@ -14,7 +14,7 @@ package kr.ac.kaist.safe.analyzer.models
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.nodes.cfg.CFG
-import kr.ac.kaist.safe.util.{ Loc, SystemLoc, Recent }
+import kr.ac.kaist.safe.util._
 
 // Object Model
 class ObjModel(
@@ -27,7 +27,10 @@ class ObjModel(
 
   def initHeap(h: Heap, cfg: CFG): Heap = h(loc) match {
     case Some(_) => h
-    case None => initObj(h, cfg, loc, AbsObjectUtil.newObject, props)
+    case None => {
+      cfg.registerSystemLoc(loc)
+      initObj(h, cfg, loc, AbsObjectUtil.newObject, props)
+    }
   }
 
   protected def initObj(

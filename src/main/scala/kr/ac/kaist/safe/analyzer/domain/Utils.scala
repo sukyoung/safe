@@ -11,7 +11,7 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
-case class Utils()
+import kr.ac.kaist.safe.nodes.cfg.CFG
 
 object Utils {
   def register(
@@ -19,14 +19,22 @@ object Utils {
     absNull: AbsNullUtil,
     absBool: AbsBoolUtil,
     absNumber: AbsNumberUtil,
-    absString: AbsStringUtil
+    absString: AbsStringUtil,
+    cfg: CFG
   ): Unit = {
     AbsUndef = absUndef
     AbsNull = absNull
     AbsBool = absBool
     AbsNumber = absNumber
     AbsString = absString
-    AbsPValue = new DefaultPValue(absUndef, absNull, absBool, absNumber, absString)
+    AbsPValue = new DefaultPValue(
+      absUndef,
+      absNull,
+      absBool,
+      absNumber,
+      absString
+    )
+    AbsLoc = new DefaultLoc(cfg.getAllLocSet)
   }
   var AbsUndef: AbsUndefUtil = null
   var AbsNull: AbsNullUtil = null
@@ -34,4 +42,5 @@ object Utils {
   var AbsNumber: AbsNumberUtil = null
   var AbsString: AbsStringUtil = null
   var AbsPValue: AbsPValueUtil = null
+  var AbsLoc: AbsLocUtil = null
 }

@@ -185,7 +185,7 @@ class Semantics(
           val xArgVars = fun.argVars
           val xLocalVars = fun.localVars
           val localEnv = ctx.pureLocal
-          val locSetArg = localEnv.getOrElse(fun.argumentsName)(LocSetEmpty) { _.value.locset }
+          val locSetArg = localEnv.getOrElse(fun.argumentsName)(AbsLoc.Bot) { _.value.locset }
           val (nSt, _) = xArgVars.foldLeft((st, 0))((res, x) => {
             val (iSt, i) = res
             val vi = locSetArg.foldLeft(ValueUtil.Bot)((vk, lArg) => {
@@ -218,7 +218,7 @@ class Semantics(
     i match {
       case _ if st.isBottom => (State.Bot, excSt)
       case CFGAlloc(_, _, x, e, newAddr) => {
-        val objProtoSingleton = HashSet(BuiltinObjectProto.loc)
+        val objProtoSingleton = AbsLoc.alpha(BuiltinObjectProto.loc)
         // Recency Abstraction
         val locR = Loc(newAddr, Recent)
         val st1 = st.oldify(newAddr)
@@ -227,13 +227,13 @@ class Semantics(
           case Some(proto) => {
             val (v, es) = V(proto, st1)
             if (!v.pvalue.isBottom)
-              (v.locset ++ HashSet(BuiltinObjectProto.loc), es)
+              (v.locset + BuiltinObjectProto.loc, es)
             else
               (v.locset, es)
           }
         }
         val h2 = st1.heap.update(locR, AbsObjectUtil.newObject(vLocSet))
-        val newSt = State(h2, st1.context).varStore(x, ValueUtil(HashSet(locR)))
+        val newSt = State(h2, st1.context).varStore(x, ValueUtil(locR))
         val newExcSt = st.raiseException(excSet)
         val s1 = excSt + newExcSt
         (newSt, s1)
@@ -243,7 +243,7 @@ class Semantics(
         val st1 = st.oldify(newAddr)
         val np = AbsNumber.alpha(n.toInt)
         val h2 = st1.heap.update(locR, AbsObjectUtil.newArrayObject(np))
-        val newSt = State(h2, st1.context).varStore(x, ValueUtil(HashSet(locR)))
+        val newSt = State(h2, st1.context).varStore(x, ValueUtil(locR))
         (newSt, excSt)
       }
       case CFGAllocArg(_, _, x, n, newAddr) => {
@@ -251,7 +251,7 @@ class Semantics(
         val st1 = st.oldify(newAddr)
         val absN = AbsNumber.alpha(n.toInt)
         val h2 = st1.heap.update(locR, AbsObjectUtil.newArgObject(absN))
-        val newSt = State(h2, st1.context).varStore(x, ValueUtil(HashSet(locR)))
+        val newSt = State(h2, st1.context).varStore(x, ValueUtil(locR))
         (newSt, excSt)
       }
       case CFGExprStmt(_, _, x, e) => {
@@ -265,7 +265,7 @@ class Semantics(
       case CFGDelete(_, _, x1, CFGVarRef(_, x2)) => {
         val baseLocSet = st.lookupBase(x2)
         val (st1, b) =
-          if (baseLocSet.isEmpty) {
+          if (baseLocSet.isBottom) {
             (st, AT)
           } else {
             baseLocSet.foldLeft[(State, AbsBool)](State.Bot, AB)((res, baseLoc) => {
@@ -370,7 +370,7 @@ class Semantics(
         val scope = localEnv.getOrElse("@env")(ValueUtil.Bot) { _.value }
         val h3 = st2.heap.update(locR1, AbsObjectUtil.newFunctionObject(f.id, scope, locR2, n))
 
-        val fVal = ValueUtil(HashSet(locR1))
+        val fVal = ValueUtil(locR1)
         val fPropV = PropValue(DataPropertyUtil(fVal)(AT, AF, AT))
         val h4 = h3.update(locR2, oNew.update("constructor", fPropV, exist = true))
 
@@ -388,10 +388,10 @@ class Semantics(
 
         val oNew = AbsObjectUtil.newObject(BuiltinObjectProto.loc)
         val n = AbsNumber.alpha(f.argVars.length)
-        val fObjValue = ValueUtil(HashSet(locR3))
+        val fObjValue = ValueUtil(locR3)
         val h4 = st3.heap.update(locR1, AbsObjectUtil.newFunctionObject(f.id, fObjValue, locR2, n))
 
-        val fVal = ValueUtil(HashSet(locR1))
+        val fVal = ValueUtil(locR1)
         val fPropV = PropValue(DataPropertyUtil(fVal)(AT, AF, AT))
         val h5 = h4.update(locR2, oNew.update("constructor", fPropV, exist = true))
 
@@ -471,7 +471,7 @@ class Semantics(
             val st1 =
               if (!v.isBottom) {
                 val b1 =
-                  if (!v.locset.isEmpty) AT
+                  if (!v.locset.isBottom) AT
                   else AB
                 val b2 =
                   if (!v.pvalue.isBottom) AF
@@ -538,7 +538,7 @@ class Semantics(
     val (argVal, _) = V(i.arguments, st1)
 
     // XXX: stop if thisArg or arguments is LocSetBot(ValueBot)
-    if (thisLocSet.isEmpty || argVal.isBottom) {
+    if (thisLocSet.isBottom || argVal.isBottom) {
       (st, excSt)
     } else {
       val oldLocalEnv = st1.context.pureLocal
@@ -607,7 +607,7 @@ class Semantics(
       val newExcSt = st1.raiseException(totalExcSet)
 
       val h3 =
-        if (!funLocSet.isEmpty) h2
+        if (!funLocSet.isBottom) h2
         else Heap.Bot
 
       val newSt = State(h3, st1.context)
@@ -629,7 +629,7 @@ class Semantics(
       }
       case CFGThis(ir) =>
         val localEnv = st.context.pureLocal
-        val thisLocSet = localEnv.getOrElse("@this")(LocSetEmpty) { _.value.locset }
+        val thisLocSet = localEnv.getOrElse("@this")(AbsLoc.Bot) { _.value.locset }
         (ValueUtil(thisLocSet), ExceptionSetEmpty)
       case CFGBin(ir, expr1, op, expr2) => {
         val (v1, excSet1) = V(expr1, st)
@@ -672,11 +672,11 @@ class Semantics(
                     tmpVal2 + Helper.inherit(st.heap, loc1, loc2))
                 })
                 val pv2 =
-                  if (!v2.pvalue.isBottom && !locSet4.isEmpty) AbsPValue(AF)
+                  if (!v2.pvalue.isBottom && !locSet4.isBottom) AbsPValue(AF)
                   else AbsPValue.Bot
                 val b2 = ValueUtil(pv2)
                 val excSet3 =
-                  if (!v2.pvalue.isBottom || !locSet5.isEmpty || !protoVal.pvalue.isBottom) HashSet(TypeError)
+                  if (!v2.pvalue.isBottom || !locSet5.isBottom || !protoVal.pvalue.isBottom) HashSet(TypeError)
                   else ExceptionSetEmpty
                 val b = b1 + b2
                 val excSet = excSet1 ++ excSet2 ++ excSet3

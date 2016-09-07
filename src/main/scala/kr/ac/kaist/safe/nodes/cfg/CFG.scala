@@ -11,9 +11,12 @@
 
 package kr.ac.kaist.safe.nodes.cfg
 
+import scala.collection.immutable.HashSet
 import scala.collection.mutable.{ HashMap => MHashMap, Map => MMap }
+import kr.ac.kaist.safe.analyzer.models.PredefLoc._
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.nodes.ir.IRNode
+import kr.ac.kaist.safe.util._
 
 class CFG(
     override val ir: IRNode,
@@ -79,6 +82,26 @@ class CFG(
       case func => s.append(func.toString(indent)).append(LINE_SEP)
     }
     s.toString
+  }
+
+  // program address size
+  private var pgmAddrSize: Int = 0
+  def getProgramAddrSize: Int = pgmAddrSize
+  def newProgramAddr: ProgramAddr = {
+    pgmAddrSize += 1
+    val addr = ProgramAddr(pgmAddrSize)
+    addr
+  }
+
+  // system address set
+  private var systemLocSet: Set[Loc] = HashSet(PURE_LOCAL, COLLAPSED)
+  def getSystemLocSet: Set[Loc] = systemLocSet
+  def registerSystemLoc(loc: Loc): Unit = systemLocSet += loc
+
+  // get all locations
+  def getAllLocSet: Set[Loc] = (1 to pgmAddrSize).foldLeft(systemLocSet) {
+    case (locset, k) =>
+      locset + Loc(ProgramAddr(k), Recent) + Loc(ProgramAddr(k), Old)
   }
 }
 

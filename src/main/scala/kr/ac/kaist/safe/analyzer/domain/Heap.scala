@@ -11,7 +11,7 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
-import scala.collection.immutable.{ HashMap, HashSet }
+import scala.collection.immutable.{ HashMap }
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.analyzer.models.builtin.BuiltinGlobal
@@ -63,13 +63,13 @@ trait Heap {
   // Proto
   ////////////////////////////////////////////////////////////////
   def proto(loc: Loc, absStr: AbsString): Value
-  def protoBase(loc: Loc, absStr: AbsString): Set[Loc]
+  def protoBase(loc: Loc, absStr: AbsString): AbsLoc
 
   ////////////////////////////////////////////////////////////////
   // Lookup
   ////////////////////////////////////////////////////////////////
   def lookupGlobal(x: String): (Value, Set[Exception])
-  def lookupBaseGlobal(x: String): Set[Loc]
+  def lookupBaseGlobal(x: String): AbsLoc
 
   ////////////////////////////////////////////////////////////////
   // Store
@@ -285,7 +285,7 @@ class DHeap(val map: Map[Loc, Obj]) extends Heap {
   }
 
   def hasProperty(loc: Loc, absStr: AbsString): AbsBool = {
-    var visited = LocSetEmpty
+    var visited = AbsLoc.Bot
     def visit(currentLoc: Loc): AbsBool = {
       if (visited.contains(currentLoc)) AbsBool.Bot
       else {
@@ -339,7 +339,7 @@ class DHeap(val map: Map[Loc, Obj]) extends Heap {
   def canPut(loc: Loc, absStr: AbsString): AbsBool = canPutHelp(loc, absStr, loc)
 
   def canPutHelp(curLoc: Loc, absStr: AbsString, origLoc: Loc): AbsBool = {
-    var visited = LocSetEmpty
+    var visited = AbsLoc.Bot
     def visit(visitLoc: Loc): AbsBool = {
       if (visited contains visitLoc) AbsBool.Bot
       else {
@@ -391,7 +391,7 @@ class DHeap(val map: Map[Loc, Obj]) extends Heap {
   // Proto
   ////////////////////////////////////////////////////////////////
   def proto(loc: Loc, absStr: AbsString): Value = {
-    var visited = LocSetEmpty
+    var visited = AbsLoc.Bot
     val valueBot = ValueUtil.Bot
     def visit(currentLoc: Loc): Value = {
       if (visited.contains(currentLoc)) valueBot
@@ -422,27 +422,27 @@ class DHeap(val map: Map[Loc, Obj]) extends Heap {
     visit(loc)
   }
 
-  def protoBase(loc: Loc, absStr: AbsString): Set[Loc] = {
-    var visited = LocSetEmpty
-    def visit(l: Loc): Set[Loc] = {
-      if (visited.contains(l)) LocSetEmpty
+  def protoBase(loc: Loc, absStr: AbsString): AbsLoc = {
+    var visited = AbsLoc.Bot
+    def visit(l: Loc): AbsLoc = {
+      if (visited.contains(l)) AbsLoc.Bot
       else {
         visited += l
         val obj = this.getOrElse(l, AbsObjectUtil.Bot)
         val isDomIn = (obj domIn absStr)
         val locSet1 =
-          if (AbsBool.True <= isDomIn) HashSet(l)
-          else LocSetEmpty
+          if (AbsBool.True <= isDomIn) AbsLoc.alpha(l)
+          else AbsLoc.Bot
         val locSet2 =
           if (AbsBool.False <= isDomIn) {
-            val protoLocSet = obj.getOrElse(IPrototype)(LocSetEmpty) { _.value.locset }
-            protoLocSet.foldLeft(LocSetEmpty)((res, protoLoc) => {
-              res ++ visit(protoLoc)
+            val protoLocSet = obj.getOrElse(IPrototype)(AbsLoc.Bot) { _.value.locset }
+            protoLocSet.foldLeft(AbsLoc.Bot)((res, protoLoc) => {
+              res + visit(protoLoc)
             })
           } else {
-            LocSetEmpty
+            AbsLoc.Bot
           }
-        locSet1 ++ locSet2
+        locSet1 + locSet2
       }
     }
     visit(loc)
@@ -460,7 +460,7 @@ class DHeap(val map: Map[Loc, Obj]) extends Heap {
           globalObj.getOrElse(x)(valueBot) { _.objval.value }
         else
           valueBot
-      val protoLocSet = globalObj.getOrElse(IPrototype)(LocSetEmpty) { _.value.locset }
+      val protoLocSet = globalObj.getOrElse(IPrototype)(AbsLoc.Bot) { _.value.locset }
       val (v2, excSet) =
         if (AbsBool.False <= (globalObj domIn x)) {
           val excSet = protoLocSet.foldLeft(ExceptionSetEmpty)((tmpExcSet, protoLoc) => {
@@ -485,24 +485,24 @@ class DHeap(val map: Map[Loc, Obj]) extends Heap {
     }
   }
 
-  def lookupBaseGlobal(x: String): Set[Loc] = {
+  def lookupBaseGlobal(x: String): AbsLoc = {
     val globalObj = this.getOrElse(BuiltinGlobal.loc, AbsObjectUtil.Bot)
     val isDomIn = (globalObj domIn x)
     val locSet1 =
       if (AbsBool.True <= isDomIn)
-        HashSet(BuiltinGlobal.loc)
+        AbsLoc.alpha(BuiltinGlobal.loc)
       else
-        LocSetEmpty
+        AbsLoc.Bot
     val locSet2 =
       if (AbsBool.False <= isDomIn) {
-        val protoLocSet = globalObj.getOrElse(IPrototype)(LocSetEmpty) { _.value.locset }
-        protoLocSet.foldLeft(LocSetEmpty)((res, protoLoc) => {
-          res ++ this.protoBase(protoLoc, AbsString.alpha(x))
+        val protoLocSet = globalObj.getOrElse(IPrototype)(AbsLoc.Bot) { _.value.locset }
+        protoLocSet.foldLeft(AbsLoc.Bot)((res, protoLoc) => {
+          res + this.protoBase(protoLoc, AbsString.alpha(x))
         })
       } else {
-        LocSetEmpty
+        AbsLoc.Bot
       }
-    locSet1 ++ locSet2
+    locSet1 + locSet2
   }
 
   ////////////////////////////////////////////////////////////////

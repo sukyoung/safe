@@ -13,7 +13,7 @@ package kr.ac.kaist.safe.phase
 
 import scala.util.{ Try, Success }
 import kr.ac.kaist.safe.{ LINE_SEP, SafeConfig }
-import kr.ac.kaist.safe.cfg_builder.{ DefaultCFGBuilder, DotWriter, AddrGen }
+import kr.ac.kaist.safe.cfg_builder.{ DefaultCFGBuilder, DotWriter }
 import kr.ac.kaist.safe.nodes.ir.IRRoot
 import kr.ac.kaist.safe.nodes.cfg.CFG
 import kr.ac.kaist.safe.util._
@@ -72,7 +72,6 @@ case object CFGBuild extends PhaseObj[IRRoot, CFGBuildConfig, CFG] {
 case class CFGBuildConfig(
   var verbose: Boolean = false,
   var outFile: Option[String] = None,
-  var dotName: Option[String] = None,
-  var addrGen: AddrGen = new AddrGen
+  var dotName: Option[String] = None
 // TODO add option for cfg builder
 ) extends Config

@@ -51,7 +51,7 @@ object InternalValueUtil {
   def apply(numval: AbsNumber): InternalValue = InternalValue(ValueUtil(numval), FidSetEmpty)
   def apply(strval: AbsString): InternalValue = InternalValue(ValueUtil(strval), FidSetEmpty)
   def apply(loc: Loc): InternalValue = InternalValue(ValueUtil(loc), FidSetEmpty)
-  def apply(locSet: Set[Loc]): InternalValue = InternalValue(ValueUtil(locSet), FidSetEmpty)
+  def apply(locSet: AbsLoc): InternalValue = InternalValue(ValueUtil(locSet), FidSetEmpty)
   def apply(fid: FunctionId): InternalValue = InternalValue(ValueUtil.Bot, FidSetEmpty + fid)
   def apply(fidSet: => Set[FunctionId]): InternalValue = InternalValue(ValueUtil.Bot, fidSet)
   def apply(value: Value): InternalValue = InternalValue(value, FidSetEmpty)

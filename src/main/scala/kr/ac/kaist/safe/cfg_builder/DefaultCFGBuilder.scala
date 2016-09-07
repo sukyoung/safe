@@ -650,5 +650,5 @@ class DefaultCFGBuilder(
   }
 
   // get new program address
-  private def newAddr: ProgramAddr = config.addrGen()
+  private def newAddr: ProgramAddr = cfg.newProgramAddr
 }

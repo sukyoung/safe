@@ -17,13 +17,13 @@ import kr.ac.kaist.safe.analyzer.models._
 import kr.ac.kaist.safe.analyzer.models.builtin._
 import kr.ac.kaist.safe.nodes.cfg.CFG
 import kr.ac.kaist.safe.util._
-import scala.collection.immutable.{ HashMap, HashSet }
+import scala.collection.immutable.{ HashMap }
 
 case class Initialize(cfg: CFG) {
   def state: State = {
     val afalse = AbsBool.alpha(false)
 
-    val globalPureLocalEnv = DecEnvRecord.newPureLocal(ValueUtil.alpha(Null), HashSet(BuiltinGlobal.loc)) - "@return"
+    val globalPureLocalEnv = DecEnvRecord.newPureLocal(ValueUtil.alpha(Null), AbsLoc.alpha(BuiltinGlobal.loc)) - "@return"
 
     val initHeap = Heap(HashMap(
       SystemLoc("Dummy", Old) -> AbsObjectUtil.Bot // TODO If delete, not working because not allowed update to bottom heap

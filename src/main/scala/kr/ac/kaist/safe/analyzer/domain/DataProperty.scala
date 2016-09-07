@@ -24,7 +24,7 @@ object DataPropertyUtil {
   def apply(value: Value): DPGen = DPGen(DataProperty(value, _, _, _), AB)
   def apply(pvalue: AbsPValue): DPGen = apply(ValueUtil(pvalue))
   def apply(loc: Loc): DPGen = apply(ValueUtil(loc))
-  def apply(locSet: Set[Loc]): DPGen = apply(ValueUtil(locSet))
+  def apply(locSet: AbsLoc): DPGen = apply(ValueUtil(locSet))
   def apply(undefval: AbsUndef): DPGen = apply(ValueUtil(undefval))
   def apply(nullval: AbsNull): DPGen = apply(ValueUtil(nullval))
   def apply(boolval: AbsBool): DPGen = apply(ValueUtil(boolval))

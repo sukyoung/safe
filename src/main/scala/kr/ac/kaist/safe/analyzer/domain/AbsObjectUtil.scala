@@ -45,9 +45,9 @@ object AbsObjectUtil {
   ////////////////////////////////////////////////////////////////
   def newObject: Obj = newObject(BuiltinObjectProto.loc)
 
-  def newObject(loc: Loc): Obj = newObject(HashSet(loc))
+  def newObject(loc: Loc): Obj = newObject(AbsLoc.alpha(loc))
 
-  def newObject(locSet: Set[Loc]): Obj = {
+  def newObject(locSet: AbsLoc): Obj = {
     Empty
       .update(IClass, InternalValueUtil(AbsString.alpha("Object")))
       .update(IPrototype, InternalValueUtil(locSet))
@@ -101,7 +101,7 @@ object AbsObjectUtil {
     }
     val obj4 = locOpt match {
       case Some(loc) =>
-        val prototypeVal = ValueUtil(HashSet(loc))
+        val prototypeVal = ValueUtil(loc)
         obj3.update(IHasInstance, InternalValueUtil(AbsNull.Top))
           .update("prototype", PropValue(DataPropertyUtil(prototypeVal)(writable, enumerable, configurable)))
       case None => obj3
@@ -147,13 +147,13 @@ object AbsObjectUtil {
     }
   }
 
-  def defaultValue(locSet: Set[Loc]): AbsPValue = {
-    if (locSet.isEmpty) AbsPValue.Bot
+  def defaultValue(locSet: AbsLoc): AbsPValue = {
+    if (locSet.isBottom) AbsPValue.Bot
     else AbsPValue.Top
   }
 
-  def defaultValue(locSet: Set[Loc], preferredType: String): AbsPValue = {
-    if (locSet.isEmpty) AbsPValue.Bot
+  def defaultValue(locSet: AbsLoc, preferredType: String): AbsPValue = {
+    if (locSet.isBottom) AbsPValue.Bot
     else {
       preferredType match {
         case "Number" => AbsPValue(AbsNumber.Top)
@@ -163,8 +163,8 @@ object AbsObjectUtil {
     }
   }
 
-  def defaultValue(locSet: Set[Loc], h: Heap, preferredType: String): AbsPValue = {
-    if (locSet.isEmpty) AbsPValue.Bot
+  def defaultValue(locSet: AbsLoc, h: Heap, preferredType: String): AbsPValue = {
+    if (locSet.isBottom) AbsPValue.Bot
     else {
       preferredType match {
         case "Number" =>
@@ -176,7 +176,7 @@ object AbsObjectUtil {
     }
   }
 
-  private def defaultValueNumber(locSet: Set[Loc], h: Heap): AbsNumber = {
+  private def defaultValueNumber(locSet: AbsLoc, h: Heap): AbsNumber = {
     def getClassStrVal(obj: Obj): AbsString = {
       obj.getOrElse(IClass)(AbsString.Bot) { _.value.pvalue.strval }
     }
@@ -257,7 +257,7 @@ object AbsObjectUtil {
     absStr1.toAbsNumber + anum2 + anum3 + anum4 + absStr5.toAbsNumber + absStr6.toAbsNumber
   }
 
-  private def defaultToString(locSet: Set[Loc], h: Heap): AbsString = {
+  private def defaultToString(locSet: AbsLoc, h: Heap): AbsString = {
     def getClassStrVal(obj: Obj): AbsString = {
       obj.getOrElse(IClass)(AbsString.Bot) { _.value.pvalue.strval }
     }

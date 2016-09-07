@@ -20,7 +20,6 @@ package object domain {
   ////////////////////////////////////////////////////////////////
   // value constructors
   ////////////////////////////////////////////////////////////////
-  val LocSetEmpty: Set[Loc] = HashSet[Loc]()
   val ExceptionSetEmpty: Set[Exception] = HashSet[Exception]()
   val ExceptionSetTop: Set[Exception] = null // TODO refactoring
 

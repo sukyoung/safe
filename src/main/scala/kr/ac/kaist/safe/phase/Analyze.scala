@@ -35,7 +35,8 @@ case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, CallContext)] {
       config.AbsNull,
       config.AbsBool,
       config.AbsNumber,
-      config.AbsString
+      config.AbsString,
+      cfg
     )
     val callCtxManager = CallContextManager()
 

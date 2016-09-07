@@ -16,7 +16,7 @@ import kr.ac.kaist.safe.analyzer.models.PredefLoc
 import kr.ac.kaist.safe.analyzer.models.builtin.BuiltinGlobal
 import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.util.{ Address, Loc, Old, Recent }
-import scala.collection.immutable.{ HashMap, HashSet }
+import scala.collection.immutable.{ HashMap }
 
 case class State(heap: Heap, context: ExecContext) {
   /* partial order */
@@ -42,7 +42,7 @@ case class State(heap: Heap, context: ExecContext) {
     else {
       val localEnv = context.pureLocal
       val oldValue = localEnv.getOrElse("@exception_all")(ValueUtil.Bot) { _.value }
-      val newExcSet = excSet.foldLeft(LocSetEmpty)((locSet, exc) => locSet + exc.getLoc)
+      val newExcSet = excSet.foldLeft(AbsLoc.Bot)((locSet, exc) => locSet + exc.getLoc)
       val excValue = Value(AbsPValue.Bot, newExcSet)
       val newExcBind = BindingUtil(excValue)
       val newExcSetBind = BindingUtil(excValue + oldValue)
@@ -67,7 +67,7 @@ case class State(heap: Heap, context: ExecContext) {
     id.kind match {
       case PureLocalVar => (localEnv.getOrElse(x)(valueBot) { _.value }, ExceptionSetEmpty)
       case CapturedVar =>
-        val envLocSet = localEnv.getOrElse("@env")(LocSetEmpty) { _.value.locset }
+        val envLocSet = localEnv.getOrElse("@env")(AbsLoc.Bot) { _.value.locset }
         val value = envLocSet.foldLeft(valueBot)((tmpVal, envLoc) => {
           tmpVal + context.lookupLocal(envLoc, x)
         })
@@ -79,17 +79,17 @@ case class State(heap: Heap, context: ExecContext) {
     }
   }
 
-  def lookupBase(id: CFGId): Set[Loc] = {
+  def lookupBase(id: CFGId): AbsLoc = {
     val x = id.text
     id.kind match {
-      case PureLocalVar => HashSet(PredefLoc.PURE_LOCAL)
+      case PureLocalVar => AbsLoc.alpha(PredefLoc.PURE_LOCAL)
       case CapturedVar =>
         val localEnv = context.pureLocal
-        val envLocSet = localEnv.getOrElse("@env")(LocSetEmpty) { _.value.locset }
-        envLocSet.foldLeft(LocSetEmpty)((tmpLocSet, l) => {
-          tmpLocSet ++ context.lookupBaseLocal(l, x)
+        val envLocSet = localEnv.getOrElse("@env")(AbsLoc.Bot) { _.value.locset }
+        envLocSet.foldLeft(AbsLoc.Bot)((tmpLocSet, l) => {
+          tmpLocSet + context.lookupBaseLocal(l, x)
         })
-      case CapturedCatchVar => HashSet(PredefLoc.COLLAPSED)
+      case CapturedCatchVar => AbsLoc.alpha(PredefLoc.COLLAPSED)
       case GlobalVar => heap.lookupBaseGlobal(x)
     }
   }

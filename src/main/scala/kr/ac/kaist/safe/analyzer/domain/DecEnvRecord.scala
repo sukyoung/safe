@@ -371,7 +371,7 @@ object DecEnvRecord {
     Empty.update("@outer", BindingUtil(outerEnv))
   }
 
-  def newPureLocal(envVal: Value, thisLocSet: Set[Loc]): DecEnvRecord = {
+  def newPureLocal(envVal: Value, thisLocSet: AbsLoc): DecEnvRecord = {
     Empty
       .update("@env", BindingUtil(envVal))
       .update("@this", BindingUtil(ValueUtil(thisLocSet)))

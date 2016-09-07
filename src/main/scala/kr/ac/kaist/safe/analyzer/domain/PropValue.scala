@@ -11,9 +11,9 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
+import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.nodes.cfg.FunctionId
-
 import scala.collection.immutable.HashSet
 
 object PropValue {
@@ -21,7 +21,7 @@ object PropValue {
 
   def apply(objval: DataProperty): PropValue = PropValue(objval, HashSet[FunctionId]())
   def apply(pvalue: AbsPValue, writable: AbsBool, enumerable: AbsBool, configurable: AbsBool): PropValue =
-    PropValue(DataProperty(Value(pvalue, HashSet()), writable, enumerable, configurable))
+    PropValue(DataProperty(Value(pvalue, AbsLoc.Bot), writable, enumerable, configurable))
 
   def apply(fidSet: Set[FunctionId]): PropValue =
     PropValue(DataPropertyUtil.Bot, fidSet)
