@@ -14,7 +14,6 @@ package kr.ac.kaist.safe.analyzer.models
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.nodes.cfg.CFG
-import kr.ac.kaist.safe.util.{ Loc, SystemLoc, Recent }
 
 // Function Model
 class FuncModel(

@@ -15,7 +15,6 @@ import kr.ac.kaist.safe.analyzer.TypeConversionHelper
 import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.analyzer.models.builtin._
 import kr.ac.kaist.safe.nodes.cfg._
-import kr.ac.kaist.safe.util.Loc
 
 import scala.collection.immutable.{ HashSet, HashMap }
 

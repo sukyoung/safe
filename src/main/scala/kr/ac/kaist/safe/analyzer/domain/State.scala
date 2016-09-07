@@ -15,7 +15,7 @@ import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.analyzer.models.PredefLoc
 import kr.ac.kaist.safe.analyzer.models.builtin.BuiltinGlobal
 import kr.ac.kaist.safe.nodes.cfg._
-import kr.ac.kaist.safe.util.{ Address, Loc, Old, Recent }
+import kr.ac.kaist.safe.util.Address
 import scala.collection.immutable.{ HashMap }
 
 case class State(heap: Heap, context: ExecContext) {

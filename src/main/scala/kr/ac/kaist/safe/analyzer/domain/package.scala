@@ -14,7 +14,6 @@ package kr.ac.kaist.safe.analyzer
 import kr.ac.kaist.safe.nodes.cfg.FunctionId
 
 import scala.collection.immutable.{ HashMap, HashSet }
-import kr.ac.kaist.safe.util.Loc
 
 package object domain {
   ////////////////////////////////////////////////////////////////

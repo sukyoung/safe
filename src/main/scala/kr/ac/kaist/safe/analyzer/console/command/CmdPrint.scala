@@ -17,7 +17,6 @@ import kr.ac.kaist.safe.analyzer.console._
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.cfg_builder.DotWriter
-import kr.ac.kaist.safe.util.Loc
 
 // print
 case object CmdPrint extends Command("print", "Print out various information.") {

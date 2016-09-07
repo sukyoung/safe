@@ -13,7 +13,7 @@ package kr.ac.kaist.safe.analyzer.console.command
 
 import scala.util.{ Success, Failure }
 import kr.ac.kaist.safe.analyzer.console._
-import kr.ac.kaist.safe.util.Loc
+import kr.ac.kaist.safe.analyzer.domain.Loc
 
 // result
 case object CmdPrintResult extends Command("result", "Print out various information.") {

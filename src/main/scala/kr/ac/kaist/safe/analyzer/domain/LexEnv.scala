@@ -11,8 +11,6 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
-import kr.ac.kaist.safe.util.Loc
-
 // 10.2 Lexical Environments
 class LexEnv(
     val envRecord: EnvRecord, // Environment Record

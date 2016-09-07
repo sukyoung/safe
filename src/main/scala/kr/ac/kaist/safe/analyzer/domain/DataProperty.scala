@@ -12,7 +12,6 @@
 package kr.ac.kaist.safe.analyzer.domain
 
 import kr.ac.kaist.safe.analyzer.domain.Utils._
-import kr.ac.kaist.safe.util.Loc
 
 object DataPropertyUtil {
   val AB = AbsBool.Bot

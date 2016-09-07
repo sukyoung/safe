@@ -16,7 +16,7 @@ import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.analyzer.TypeConversionHelper
 import kr.ac.kaist.safe.analyzer.models._
-import kr.ac.kaist.safe.util.{ SystemAddr, Loc, Recent }
+import kr.ac.kaist.safe.util.SystemAddr
 
 // 15.6 Boolean Objects
 object BuiltinBoolean extends FuncModel(

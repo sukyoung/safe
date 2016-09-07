@@ -13,7 +13,7 @@ package kr.ac.kaist.safe.analyzer.domain
 
 import scala.collection.immutable.HashSet
 import kr.ac.kaist.safe.LINE_SEP
-import kr.ac.kaist.safe.util.{ Address, Loc, Old, Recent }
+import kr.ac.kaist.safe.util.Address
 
 case class OldAddrSet(mayOld: Set[Address], mustOld: Set[Address]) {
   /* partial order */

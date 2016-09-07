@@ -21,14 +21,15 @@ class ObjModel(
     val name: String,
     val props: List[PropDesc] = Nil
 ) extends Model {
-  val loc: Loc = SystemLoc(name, Recent)
+  val addr: Address = SystemAddr(name)
+  val loc: Loc = Loc(addr, Recent)
   def init(h: Heap, cfg: CFG): (Heap, Value) =
     (initHeap(h, cfg), ValueUtil(loc))
 
   def initHeap(h: Heap, cfg: CFG): Heap = h(loc) match {
     case Some(_) => h
     case None => {
-      cfg.registerSystemLoc(loc)
+      cfg.registerSystemAddr(addr)
       initObj(h, cfg, loc, AbsObjectUtil.newObject, props)
     }
   }

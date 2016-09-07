@@ -12,7 +12,6 @@
 package kr.ac.kaist.safe.analyzer.domain
 
 import kr.ac.kaist.safe.LINE_SEP
-import kr.ac.kaist.safe.util.Loc
 import scala.collection.immutable.HashMap
 
 // 10.2.1.2 Object Environment Records

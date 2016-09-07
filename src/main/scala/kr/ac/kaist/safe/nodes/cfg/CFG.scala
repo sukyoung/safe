@@ -94,15 +94,16 @@ class CFG(
   }
 
   // system address set
-  private var systemLocSet: Set[Loc] = HashSet(PURE_LOCAL, COLLAPSED)
-  def getSystemLocSet: Set[Loc] = systemLocSet
-  def registerSystemLoc(loc: Loc): Unit = systemLocSet += loc
+  private var systemAddrSet: Set[Address] = HashSet(
+    PURE_LOCAL.address,
+    COLLAPSED.address
+  )
+  def getSystemAddrSet: Set[Address] = systemAddrSet
+  def registerSystemAddr(addr: Address): Unit = systemAddrSet += addr
 
   // get all locations
-  def getAllLocSet: Set[Loc] = (1 to pgmAddrSize).foldLeft(systemLocSet) {
-    case (locset, k) =>
-      locset + Loc(ProgramAddr(k), Recent) + Loc(ProgramAddr(k), Old)
-  }
+  def getAllAddrSet: Set[Address] =
+    (1 to pgmAddrSize).foldLeft(systemAddrSet)(_ + ProgramAddr(_))
 }
 
 object CFG {

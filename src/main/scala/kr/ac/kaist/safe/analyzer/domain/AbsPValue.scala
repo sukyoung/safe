@@ -14,15 +14,12 @@ package kr.ac.kaist.safe.analyzer.domain
 import kr.ac.kaist.safe.analyzer.domain.Utils._
 import scala.collection.immutable.HashSet
 
+////////////////////////////////////////////////////////////////////////////////
 // concrete primitive value type
+////////////////////////////////////////////////////////////////////////////////
 abstract class PValue
-// Undef in AbsUndef.scala
-// Null in AbsNull.scala
-// Bool in AbsBool.scala
-// Num in AbsNumber.scala
-// Str in AbsString.scala
 object PValue {
-  // TODO how to define only once following implicit conversion functions
+  // TODO how to define only once following implicit conversions
   implicit def bool2bool(b: Boolean): Bool = Bool(b)
   implicit def bool2bool(set: Set[Boolean]): Set[Bool] = set.map(bool2bool)
   implicit def num2num(num: Double): Num = Num(num)
@@ -31,7 +28,9 @@ object PValue {
   implicit def str2str(set: Set[String]): Set[Str] = set.map(str2str)
 }
 
+////////////////////////////////////////////////////////////////////////////////
 // primitive value abstract domain
+////////////////////////////////////////////////////////////////////////////////
 trait AbsPValue extends AbsDomain[PValue, AbsPValue] {
   val undefval: AbsUndef
   val nullval: AbsNull
@@ -59,7 +58,9 @@ trait AbsPValueUtil extends AbsDomainUtil[PValue, AbsPValue] {
   def apply(strval: AbsString): AbsPValue
 }
 
+////////////////////////////////////////////////////////////////////////////////
 // default primitive value abstract domain
+////////////////////////////////////////////////////////////////////////////////
 case class DefaultPValue(
     AbsUndef: AbsUndefUtil,
     AbsNull: AbsNullUtil,

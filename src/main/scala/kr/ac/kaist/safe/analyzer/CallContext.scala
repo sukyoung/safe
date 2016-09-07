@@ -13,7 +13,7 @@ package kr.ac.kaist.safe.analyzer
 
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.nodes.cfg.{ CFG, FunctionId }
-import kr.ac.kaist.safe.util.{ Loc, Address }
+import kr.ac.kaist.safe.util.Address
 
 import scala.collection.immutable.HashSet
 

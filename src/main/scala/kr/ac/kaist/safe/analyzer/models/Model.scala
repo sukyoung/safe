@@ -13,7 +13,6 @@ package kr.ac.kaist.safe.analyzer.models
 
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.nodes.cfg.CFG
-import kr.ac.kaist.safe.util.{ Loc, SystemLoc, Recent }
 
 // Model
 abstract class Model {

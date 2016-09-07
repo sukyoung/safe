@@ -14,7 +14,6 @@ package kr.ac.kaist.safe.analyzer.domain
 import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.analyzer.models.PredefLoc
 import kr.ac.kaist.safe.analyzer.models.builtin.BuiltinGlobal
-import kr.ac.kaist.safe.util.Loc
 
 object ValueUtil {
   val Bot: Value = Value(AbsPValue.Bot, AbsLoc.Bot)

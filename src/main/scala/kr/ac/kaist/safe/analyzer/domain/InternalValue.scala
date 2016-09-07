@@ -13,7 +13,6 @@ package kr.ac.kaist.safe.analyzer.domain
 
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.nodes.cfg.FunctionId
-import kr.ac.kaist.safe.util.Loc
 
 sealed abstract class InternalName
 case object IPrototype extends InternalName {

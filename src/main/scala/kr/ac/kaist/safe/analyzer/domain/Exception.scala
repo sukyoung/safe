@@ -12,7 +12,6 @@
 package kr.ac.kaist.safe.analyzer.domain
 
 import kr.ac.kaist.safe.analyzer.models.builtin._
-import kr.ac.kaist.safe.util.Loc
 
 sealed abstract class Exception {
   override def toString(): String = {

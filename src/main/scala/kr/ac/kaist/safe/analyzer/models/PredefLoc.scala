@@ -11,7 +11,7 @@
 
 package kr.ac.kaist.safe.analyzer.models
 
-import kr.ac.kaist.safe.util.{ Loc, SystemLoc, Recent, Old }
+import kr.ac.kaist.safe.analyzer.domain.{ Loc, SystemLoc, Recent, Old }
 
 object PredefLoc {
   val PURE_LOCAL: Loc = SystemLoc("PureLocal", Recent)

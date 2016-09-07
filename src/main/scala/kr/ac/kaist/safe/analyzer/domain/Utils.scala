@@ -34,7 +34,7 @@ object Utils {
       absNumber,
       absString
     )
-    AbsLoc = new DefaultLoc(cfg.getAllLocSet)
+    AbsLoc = new DefaultLoc(cfg.getAllAddrSet)
   }
   var AbsUndef: AbsUndefUtil = null
   var AbsNull: AbsNullUtil = null

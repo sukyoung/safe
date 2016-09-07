@@ -16,7 +16,7 @@ import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.analyzer.models._
 import kr.ac.kaist.safe.analyzer.TypeConversionHelper
-import kr.ac.kaist.safe.util.{ SystemAddr, Loc, Recent }
+import kr.ac.kaist.safe.util.SystemAddr
 import scala.collection.immutable.HashSet
 
 // 15.2 Object Objects
