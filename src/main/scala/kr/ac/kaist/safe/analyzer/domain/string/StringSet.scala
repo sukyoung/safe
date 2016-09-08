@@ -93,9 +93,9 @@ case class StringSet(maxSetSize: Int) extends AbsStringUtil {
       case NotNumber => AbsNumber.NaN
       case StrSet(set) => set.foldLeft(AbsNumber.Bot)((tmpAbsNum, str) => {
         val absNum = str.trim match {
-          case "" => AbsNumber.alpha(0)
-          case s if isHex(s) => AbsNumber.alpha((s + "p0").toDouble)
-          case s => Try(AbsNumber.alpha(s.toDouble)).getOrElse(AbsNumber.NaN)
+          case "" => AbsNumber(0)
+          case s if isHex(s) => AbsNumber((s + "p0").toDouble)
+          case s => Try(AbsNumber(s.toDouble)).getOrElse(AbsNumber.NaN)
         }
         absNum + tmpAbsNum
       })
@@ -157,7 +157,7 @@ case class StringSet(maxSetSize: Int) extends AbsStringUtil {
 
     def ===(that: AbsString): AbsBool =
       (this.gammaSingle, that.gammaSingle) match {
-        case (ConSingleCon(s1), ConSingleCon(s2)) => AbsBool.alpha(s1 == s2)
+        case (ConSingleCon(s1), ConSingleCon(s2)) => AbsBool(s1 == s2)
         case (ConSingleBot(), _) | (_, ConSingleBot()) => AbsBool.Bot
         case _ => (this <= that, that <= this) match {
           case (false, false) => AbsBool.False
@@ -169,7 +169,7 @@ case class StringSet(maxSetSize: Int) extends AbsStringUtil {
       case (Bot, _) | (_, Bot) => AbsBool.Bot
       case (StrSet(leftStrSet), StrSet(rightStrSet)) =>
         leftStrSet.foldLeft(AbsBool.Bot)((r1, x) => {
-          r1 + rightStrSet.foldLeft(AbsBool.Bot)((r2, y) => r2 + AbsBool.alpha(x < y))
+          r1 + rightStrSet.foldLeft(AbsBool.Bot)((r2, y) => r2 + AbsBool(x < y))
         })
       case _ => AbsBool.Top
     }
@@ -246,7 +246,7 @@ case class StringSet(maxSetSize: Int) extends AbsStringUtil {
                   r + AbsNumber.NaN
                 else {
                   val i = d.toInt
-                  r + AbsNumber.alpha(s.substring(i, i + 1).head.toInt)
+                  r + AbsNumber(s.substring(i, i + 1).head.toInt)
                 }
               })
           }
@@ -261,7 +261,7 @@ case class StringSet(maxSetSize: Int) extends AbsStringUtil {
           case ConSingleTop() => AbsBool.Top
           case ConSingleBot() => AbsBool.Bot
           case ConSingleCon(s) => vs.foldLeft[AbsBool](AbsBool.Bot)((result, v) => {
-            result + AbsBool.alpha(v.contains(s))
+            result + AbsBool(v.contains(s))
           })
         }
         case Top => AbsBool.Top
@@ -272,7 +272,7 @@ case class StringSet(maxSetSize: Int) extends AbsStringUtil {
       this match {
         case Number => AbsNumber.UInt
         case NotNumber => AbsNumber.UInt
-        case StrSet(vs) => vs.foldLeft[AbsNumber](AbsNumber.Bot)((result, v) => result + AbsNumber.alpha(v.length))
+        case StrSet(vs) => vs.foldLeft[AbsNumber](AbsNumber.Bot)((result, v) => result + AbsNumber(v.length))
         case Top => AbsNumber.UInt
         case Bot => AbsNumber.Bot
       }
@@ -315,7 +315,7 @@ case class StringSet(maxSetSize: Int) extends AbsStringUtil {
       case StrSet(set) => {
         val upper = scala.math.pow(2, 32) - 1
         set.foldLeft(AbsBool.Bot)((res, v) => {
-          res + AbsBool.alpha({
+          res + AbsBool({
             isNum(v) && {
               val num = v.toDouble
               0 <= num && num < upper

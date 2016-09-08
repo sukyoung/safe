@@ -82,14 +82,14 @@ case class State(heap: Heap, context: ExecContext) {
   def lookupBase(id: CFGId): AbsLoc = {
     val x = id.text
     id.kind match {
-      case PureLocalVar => AbsLoc.alpha(PredefLoc.PURE_LOCAL)
+      case PureLocalVar => AbsLoc(PredefLoc.PURE_LOCAL)
       case CapturedVar =>
         val localEnv = context.pureLocal
         val envLocSet = localEnv.getOrElse("@env")(AbsLoc.Bot) { _.value.locset }
         envLocSet.foldLeft(AbsLoc.Bot)((tmpLocSet, l) => {
           tmpLocSet + context.lookupBaseLocal(l, x)
         })
-      case CapturedCatchVar => AbsLoc.alpha(PredefLoc.COLLAPSED)
+      case CapturedCatchVar => AbsLoc(PredefLoc.COLLAPSED)
       case GlobalVar => heap.lookupBaseGlobal(x)
     }
   }
@@ -151,10 +151,10 @@ case class State(heap: Heap, context: ExecContext) {
         State(heap, context.update(collapsedLoc, context.getOrElse(collapsedLoc, DecEnvRecord.Bot).update(x, bind)))
       case GlobalVar =>
         val globalLoc = BuiltinGlobal.loc
-        val objV = DataPropertyUtil(value)(AbsBool.True, AbsBool.True, AbsBool.False)
+        val objV = AbsDataProp(value, AbsBool.True, AbsBool.True, AbsBool.False)
         val propV = PropValue(objV)
         val newHeap =
-          if (AbsBool.True == heap.hasProperty(globalLoc, AbsString.alpha(x))) heap
+          if (AbsBool.True == heap.hasProperty(globalLoc, AbsString(x))) heap
           else heap.update(globalLoc, heap.getOrElse(globalLoc, AbsObjectUtil.Bot).update(x, propV))
         State(newHeap, context)
     }
@@ -164,7 +164,7 @@ case class State(heap: Heap, context: ExecContext) {
   // delete
   ////////////////////////////////////////////////////////////////
   def delete(loc: Loc, str: String): (State, AbsBool) = {
-    val absStr = AbsString.alpha(str)
+    val absStr = AbsString(str)
     val (newHeap, b1) = heap.delete(loc, absStr)
     val (newCtx, b2) = context.delete(loc, str)
     (State(newHeap, newCtx), b1 + b2)

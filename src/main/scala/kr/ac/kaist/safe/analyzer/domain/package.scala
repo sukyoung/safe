@@ -11,8 +11,8 @@
 
 package kr.ac.kaist.safe.analyzer
 
+import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.nodes.cfg.FunctionId
-
 import scala.collection.immutable.{ HashMap, HashSet }
 
 package object domain {
@@ -52,4 +52,35 @@ package object domain {
 
   def isNum(str: String): Boolean =
     numRegexp.matcher(str).matches()
+
+  ////////////////////////////////////////////////////////////////
+  // implicit conversion for domains
+  ////////////////////////////////////////////////////////////////
+  // Boolean <-> Bool
+  implicit def bool2boolean(b: Bool): Boolean = b.b
+  implicit def boolean2bool(b: Boolean): Bool = Bool(b)
+  implicit def booleanSet2bool(set: Set[Boolean]): Set[Bool] = set.map(boolean2bool)
+
+  // Double <-> Num
+  implicit def num2double(num: Num): Double = num.num
+  implicit def double2num(num: Double): Num = Num(num)
+  implicit def doubleSet2num(set: Set[Double]): Set[Num] = set.map(double2num)
+
+  // String <-> Str
+  implicit def str2string(str: Str): String = str.str
+  implicit def string2str(str: String): Str = Str(str)
+  implicit def stringSet2str(set: Set[String]): Set[Str] = set.map(string2str)
+
+  // primitive abstract domains -> AbsPValue
+  implicit def undef2pv[T <% AbsUndef](undef: T): AbsPValue = AbsPValue(undef)
+  implicit def null2pv[T <% AbsNull](x: T): AbsPValue = AbsPValue(x)
+  implicit def bool2pv[T <% AbsBool](b: T): AbsPValue = AbsPValue(b)
+  implicit def num2pv[T <% AbsNumber](num: T): AbsPValue = AbsPValue(num)
+  implicit def str2pv[T <% AbsString](str: T): AbsPValue = AbsPValue(str)
+
+  // AbsPValue -> AbsValue
+  implicit def pv2v[T <% AbsPValue](pv: T): AbsValue = AbsValue(pv)
+
+  // AbsLoc -> AbsValue
+  implicit def loc2v[T <% AbsLoc](loc: T): AbsValue = AbsValue(loc)
 }

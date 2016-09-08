@@ -21,22 +21,22 @@ import kr.ac.kaist.safe.util.Address
 ////////////////////////////////////////////////////////////////
 object Helper {
   val typeHelper = TypeConversionHelper
-  private val afalse = AbsBool.alpha(false)
-  private val atrue = AbsBool.alpha(true)
+  private val afalse = AbsBool.False
+  private val atrue = AbsBool.True
 
   def arrayLenghtStore(heap: Heap, idxAbsStr: AbsString, storeV: AbsValue, l: Loc): (Heap, Set[Exception]) = {
-    if (AbsString.alpha("length") <= idxAbsStr) {
+    if (AbsString("length") <= idxAbsStr) {
       val nOldLen = heap.getOrElse(l, AbsObjectUtil.Bot)
         .getOrElse("length")(AbsNumber.Bot) { _.objval.value.pvalue.numval }
       val nNewLen = typeHelper.ToUInt32(storeV)
       val nValue = typeHelper.ToNumber(storeV)
-      val bCanPut = heap.canPut(l, AbsString.alpha("length"))
+      val bCanPut = heap.canPut(l, AbsString("length"))
 
       val arrLengthHeap2 =
         if ((atrue <= (nOldLen < nNewLen)
           || atrue <= (nOldLen === nNewLen))
           && (atrue <= bCanPut))
-          heap.propStore(l, AbsString.alpha("length"), storeV)
+          heap.propStore(l, AbsString("length"), storeV)
         else
           Heap.Bot
 
@@ -46,11 +46,11 @@ object Helper {
 
       val arrLengthHeap4 =
         if ((atrue <= (nNewLen < nOldLen)) && (atrue <= bCanPut)) {
-          val hi = heap.propStore(l, AbsString.alpha("length"), storeV)
+          val hi = heap.propStore(l, AbsString("length"), storeV)
           (nNewLen.gammaSingle, nOldLen.gammaSingle) match {
             case (ConSingleCon(Num(n1)), ConSingleCon(Num(n2))) =>
               (n1.toInt until n2.toInt).foldLeft(hi)((hj, i) => {
-                val (tmpHeap, _) = hj.delete(l, AbsString.alpha(i.toString))
+                val (tmpHeap, _) = hj.delete(l, AbsString(i.toString))
                 tmpHeap
               })
             case (ConSingleBot(), _) | (_, ConSingleBot()) => Heap.Bot
@@ -86,7 +86,7 @@ object Helper {
       val nIndex = typeHelper.ToUInt32(AbsValue(numPV))
       val bGtEq = atrue <= (nOldLen < nIndex) ||
         atrue <= (nOldLen === nIndex)
-      val bCanPutLen = heap.canPut(l, AbsString.alpha("length"))
+      val bCanPutLen = heap.canPut(l, AbsString("length"))
       // 4.b
       val arrIndexHeap1 =
         if (bGtEq && afalse <= bCanPutLen) heap
@@ -101,8 +101,8 @@ object Helper {
         if (bGtEq && atrue <= bCanPutLen) {
           val hi = heap.propStore(l, idxAbsStr, storeV)
           val idxVal = AbsValue(nIndex)
-          val vNewIndex = bopPlus(idxVal, AbsValue.alpha(1))
-          hi.propStore(l, AbsString.alpha("length"), vNewIndex)
+          val vNewIndex = bopPlus(idxVal, AbsValue(1))
+          hi.propStore(l, AbsString("length"), vNewIndex)
         } else Heap.Bot
       arrIndexHeap1 + arrIndexHeap2 + arrIndexHeap3
     } else
@@ -136,7 +136,7 @@ object Helper {
 
       // 5. other
       val otherHeap =
-        if (idxAbsStr != AbsString.alpha("length") && afalse <= idxAbsStr.isArrayIndex)
+        if (idxAbsStr != AbsString("length") && afalse <= idxAbsStr.isArrayIndex)
           heap.propStore(l, idxAbsStr, storeV)
         else
           Heap.Bot
@@ -151,8 +151,8 @@ object Helper {
     var visited = AbsLoc.Bot
     val locVal2 = AbsValue(loc2)
     val boolBotVal = AbsValue(AbsPValue.Bot)
-    val boolTrueVal = AbsValue.alpha(true)
-    val boolFalseVal = AbsValue.alpha(false)
+    val boolTrueVal = AbsValue(true)
+    val boolFalseVal = AbsValue(false)
 
     def iter(l1: Loc): AbsValue = {
       if (visited.contains(l1)) AbsValue.Bot
@@ -178,7 +178,7 @@ object Helper {
 
   /* unary operator */
   /* void */
-  def uVoid(value: AbsValue): AbsValue = AbsValue.alpha(Undef)
+  def uVoid(value: AbsValue): AbsValue = AbsValue(Undef)
   /* + */
   def uopPlus(value: AbsValue): AbsValue =
     AbsValue(typeHelper.ToNumber(value))

@@ -29,7 +29,7 @@ class FuncModel(
       val AT = AbsBool.True
       val AF = AbsBool.False
       val AB = AbsBool.Bot
-      def toAB(b: Boolean): AbsBool = AbsBool.alpha(b)
+      def toAB(b: Boolean): AbsBool = AbsBool(b)
 
       // [model].prototype object
       val (h1, protoOpt, writable, enumerable, configurable) = protoModel match {
@@ -41,7 +41,7 @@ class FuncModel(
               heap.getOrElse(objModel.loc)(Heap.Bot)(obj => {
                 heap.update(objModel.loc, obj.update(
                   "constructor",
-                  PropValue(DataProperty(AbsValue(loc), AT, AF, AT))
+                  PropValue(AbsDataProp(AbsValue(loc), AT, AF, AT))
                 ))
               })
             }
@@ -54,8 +54,8 @@ class FuncModel(
       val func = code.getCFGFunc(cfg, name)
       val fidOpt = Some(func.id)
       val constructIdOpt = construct.map(_.getCFGFunc(cfg, name).id)
-      val scope = AbsValue.alpha(Null) // TODO get scope as args
-      val n = AbsNumber.alpha(code.argLen)
+      val scope = AbsValue(Null) // TODO get scope as args
+      val n = AbsNumber(code.argLen)
       val funcObj = AbsObjectUtil.newFunctionObject(
         fidOpt,
         constructIdOpt,

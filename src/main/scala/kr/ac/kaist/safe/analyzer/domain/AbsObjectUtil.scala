@@ -44,29 +44,29 @@ object AbsObjectUtil {
   ////////////////////////////////////////////////////////////////
   def newObject: Obj = newObject(BuiltinObjectProto.loc)
 
-  def newObject(loc: Loc): Obj = newObject(AbsLoc.alpha(loc))
+  def newObject(loc: Loc): Obj = newObject(AbsLoc(loc))
 
   def newObject(locSet: AbsLoc): Obj = {
     Empty
-      .update(IClass, InternalValueUtil(AbsString.alpha("Object")))
+      .update(IClass, InternalValueUtil(AbsString("Object")))
       .update(IPrototype, InternalValueUtil(locSet))
       .update(IExtensible, InternalValueUtil(atrue))
   }
 
   def newArgObject(absLength: AbsNumber): Obj = {
     Empty
-      .update(IClass, InternalValueUtil(AbsString.alpha("Arguments")))
+      .update(IClass, InternalValueUtil(AbsString("Arguments")))
       .update(IPrototype, InternalValueUtil(BuiltinObjectProto.loc))
       .update(IExtensible, InternalValueUtil(atrue))
-      .update("length", PropValue(DataPropertyUtil(absLength)(atrue, afalse, atrue)))
+      .update("length", PropValue(AbsDataProp(absLength, atrue, afalse, atrue)))
   }
 
   def newArrayObject(absLength: AbsNumber): Obj = {
     Empty
-      .update(IClass, InternalValueUtil(AbsString.alpha("Array")))
+      .update(IClass, InternalValueUtil(AbsString("Array")))
       .update(IPrototype, InternalValueUtil(BuiltinArrayProto.loc))
       .update(IExtensible, InternalValueUtil(atrue))
-      .update("length", PropValue(DataPropertyUtil(absLength)(atrue, afalse, afalse)))
+      .update("length", PropValue(AbsDataProp(absLength, atrue, afalse, afalse)))
   }
 
   def newFunctionObject(fid: FunctionId, env: AbsValue, l: Loc, n: AbsNumber): Obj = {
@@ -84,11 +84,11 @@ object AbsObjectUtil {
     absLength: AbsNumber): Obj = {
     val obj1 =
       Empty
-        .update(IClass, InternalValueUtil(AbsString.alpha("Function")))
+        .update(IClass, InternalValueUtil(AbsString("Function")))
         .update(IPrototype, InternalValueUtil(BuiltinFunctionProto.loc))
         .update(IExtensible, InternalValueUtil(atrue))
         .update(IScope, InternalValueUtil(env))
-        .update("length", PropValue(DataPropertyUtil(absLength)(afalse, afalse, afalse)))
+        .update("length", PropValue(AbsDataProp(absLength, afalse, afalse, afalse)))
 
     val obj2 = fidOpt match {
       case Some(fid) => obj1.update(ICall, InternalValueUtil(fid))
@@ -102,7 +102,7 @@ object AbsObjectUtil {
       case Some(loc) =>
         val prototypeVal = AbsValue(loc)
         obj3.update(IHasInstance, InternalValueUtil(AbsNull.Top))
-          .update("prototype", PropValue(DataPropertyUtil(prototypeVal)(writable, enumerable, configurable)))
+          .update("prototype", PropValue(AbsDataProp(prototypeVal, writable, enumerable, configurable)))
       case None => obj3
     }
     obj4
@@ -110,13 +110,13 @@ object AbsObjectUtil {
 
   def newBooleanObj(absB: AbsBool): Obj = {
     val newObj = newObject(BuiltinBooleanProto.loc)
-    newObj.update(IClass, InternalValueUtil(AbsString.alpha("Boolean")))
+    newObj.update(IClass, InternalValueUtil(AbsString("Boolean")))
       .update(IPrimitiveValue, InternalValueUtil(absB))
   }
 
   def newNumberObj(absNum: AbsNumber): Obj = {
     val newObj = newObject(BuiltinNumberProto.loc)
-    newObj.update(IClass, InternalValueUtil(AbsString.alpha("Number")))
+    newObj.update(IClass, InternalValueUtil(AbsString("Number")))
       .update(IPrimitiveValue, InternalValueUtil(absNum))
   }
 
@@ -124,7 +124,7 @@ object AbsObjectUtil {
     val newObj = newObject(BuiltinStringProto.loc)
 
     val newObj2 = newObj
-      .update(IClass, InternalValueUtil(AbsString.alpha("String")))
+      .update(IClass, InternalValueUtil(AbsString("String")))
       .update(IPrimitiveValue, InternalValueUtil(absStr))
 
     absStr.gamma match {
@@ -132,17 +132,17 @@ object AbsObjectUtil {
         strSet.foldLeft(Bot)((obj, str) => {
           val length = str.length
           val newObj3 = (0 until length).foldLeft(newObj2)((tmpObj, tmpIdx) => {
-            val charAbsStr = AbsString.alpha(str.charAt(tmpIdx).toString)
+            val charAbsStr = AbsString(str.charAt(tmpIdx).toString)
             val charVal = AbsValue(charAbsStr)
-            tmpObj.update(tmpIdx.toString, PropValue(DataPropertyUtil(charVal)(afalse, atrue, afalse)))
+            tmpObj.update(tmpIdx.toString, PropValue(AbsDataProp(charVal, afalse, atrue, afalse)))
           })
-          val lengthVal = AbsValue.alpha(length)
-          obj + newObj3.update("length", PropValue(DataPropertyUtil(lengthVal)(afalse, afalse, afalse)))
+          val lengthVal = AbsValue(length)
+          obj + newObj3.update("length", PropValue(AbsDataProp(lengthVal, afalse, afalse, afalse)))
         })
       case _ =>
         newObj2
-          .update(AbsString.Number, PropValue(DataPropertyUtil(AbsValue(AbsString.Top))(afalse, atrue, afalse)))
-          .update("length", PropValue(DataPropertyUtil(absStr.length)(afalse, afalse, afalse)))
+          .update(AbsString.Number, PropValue(AbsDataProp(AbsValue(AbsString.Top), afalse, atrue, afalse)))
+          .update("length", PropValue(AbsDataProp(absStr.length, afalse, afalse, afalse)))
     }
   }
 
@@ -182,27 +182,27 @@ object AbsObjectUtil {
 
     val objSet = locSet.map(l => h.getOrElse(l, Bot))
     val boolObjSet = objSet.filter(obj => {
-      AbsString.alpha("Boolean") <= getClassStrVal(obj)
+      AbsString("Boolean") <= getClassStrVal(obj)
     })
     val numObjSet = objSet.filter(obj => {
-      AbsString.alpha("Number") <= getClassStrVal(obj)
+      AbsString("Number") <= getClassStrVal(obj)
     })
     val dateObjSet = objSet.filter(obj => {
-      AbsString.alpha("Date") <= getClassStrVal(obj)
+      AbsString("Date") <= getClassStrVal(obj)
     })
     val strObjSet = objSet.filter(obj => {
-      AbsString.alpha("String") <= getClassStrVal(obj)
+      AbsString("String") <= getClassStrVal(obj)
     })
     val regexpObjSet = objSet.filter(obj => {
-      AbsString.alpha("RegExp") <= getClassStrVal(obj)
+      AbsString("RegExp") <= getClassStrVal(obj)
     })
     val othersObjSet = objSet.filter(obj => {
       val absClassStr = getClassStrVal(obj)
-      absClassStr != AbsString.alpha("Boolean") &&
-        absClassStr != AbsString.alpha("Number") &&
-        absClassStr != AbsString.alpha("String") &&
-        absClassStr != AbsString.alpha("RegExp") &&
-        absClassStr != AbsString.alpha("Date")
+      absClassStr != AbsString("Boolean") &&
+        absClassStr != AbsString("Number") &&
+        absClassStr != AbsString("String") &&
+        absClassStr != AbsString("RegExp") &&
+        absClassStr != AbsString("Date")
     })
 
     val others = othersObjSet.foldLeft[AbsString](AbsString.Bot)((absStr, obj) => {
@@ -243,7 +243,7 @@ object AbsObjectUtil {
     ) match {
         case (ConSingleCon(s), ConSingleCon(g), ConSingleCon(i), ConSingleCon(m)) =>
           val flags = (if (g) "g" else "") + (if (i) "i" else "") + (if (m) "m" else "")
-          AbsString.alpha("/" + s + "/" + flags)
+          AbsString("/" + s + "/" + flags)
         case (ConSingleBot(), _, _, _)
         | (_, ConSingleBot(), _, _)
         | (_, _, ConSingleBot(), _)
@@ -261,16 +261,16 @@ object AbsObjectUtil {
       obj.getOrElse(IClass)(AbsString.Bot) { _.value.pvalue.strval }
     }
     val objSet = locSet.map(l => h.getOrElse(l, Bot))
-    val boolObjSet = objSet.filter(obj => AbsString.alpha("Boolean") <= getClassStrVal(obj))
-    val numObjSet = objSet.filter(obj => AbsString.alpha("Number") <= getClassStrVal(obj))
-    val strObjSet = objSet.filter(obj => AbsString.alpha("String") <= getClassStrVal(obj))
-    val regexpObjSet = objSet.filter(obj => AbsString.alpha("RegExp") <= getClassStrVal(obj))
+    val boolObjSet = objSet.filter(obj => AbsString("Boolean") <= getClassStrVal(obj))
+    val numObjSet = objSet.filter(obj => AbsString("Number") <= getClassStrVal(obj))
+    val strObjSet = objSet.filter(obj => AbsString("String") <= getClassStrVal(obj))
+    val regexpObjSet = objSet.filter(obj => AbsString("RegExp") <= getClassStrVal(obj))
     val othersObjSet = objSet.filter(obj => {
       val absClassStr = getClassStrVal(obj)
-      absClassStr != AbsString.alpha("Boolean") &&
-        absClassStr != AbsString.alpha("Number") &&
-        absClassStr != AbsString.alpha("String") &&
-        absClassStr != AbsString.alpha("RegExp")
+      absClassStr != AbsString("Boolean") &&
+        absClassStr != AbsString("Number") &&
+        absClassStr != AbsString("String") &&
+        absClassStr != AbsString("RegExp")
     })
 
     val others = othersObjSet.foldLeft[AbsString](AbsString.Bot)((absStr, obj) => {
@@ -306,7 +306,7 @@ object AbsObjectUtil {
     ) match {
         case (ConSingleCon(s), ConSingleCon(g), ConSingleCon(i), ConSingleCon(m)) =>
           val flags = (if (g) "g" else "") + (if (i) "i" else "") + (if (m) "m" else "")
-          AbsString.alpha("/" + s + "/" + flags)
+          AbsString("/" + s + "/" + flags)
         case (ConSingleBot(), _, _, _)
         | (_, ConSingleBot(), _, _)
         | (_, _, ConSingleBot(), _)

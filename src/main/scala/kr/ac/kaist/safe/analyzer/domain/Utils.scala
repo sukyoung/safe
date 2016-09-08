@@ -38,4 +38,5 @@ object Utils {
   var AbsPValue: AbsPValueUtil = DefaultPValue
   var AbsLoc: AbsLocUtil = null
   var AbsValue: AbsValueUtil = DefaultValue
+  var AbsDataProp: AbsDataPropUtil = DefaultDataProp
 }

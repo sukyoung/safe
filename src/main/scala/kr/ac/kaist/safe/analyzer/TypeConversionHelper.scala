@@ -96,7 +96,7 @@ object TypeConversionHelper {
     undef.fold(AbsNumber.Bot)(_ => AbsNumber.NaN)
 
   def ToNumber(x: AbsNull): AbsNumber =
-    x.fold(AbsNumber.Bot)(_ => AbsNumber.alpha(+0))
+    x.fold(AbsNumber.Bot)(_ => AbsNumber(+0))
 
   def ToNumber(bool: AbsBool): AbsNumber = bool.toAbsNumber
 
@@ -171,10 +171,10 @@ object TypeConversionHelper {
       ToString(pvalue.strval)
 
   def ToString(undef: AbsUndef): AbsString =
-    undef.fold(AbsString.Bot)(_ => AbsString.alpha("undefined"))
+    undef.fold(AbsString.Bot)(_ => AbsString("undefined"))
 
   def ToString(x: AbsNull): AbsString =
-    x.fold(AbsString.Bot)(_ => AbsString.alpha("null"))
+    x.fold(AbsString.Bot)(_ => AbsString("null"))
 
   def ToString(bool: AbsBool): AbsString = bool.toAbsString
 
@@ -202,7 +202,7 @@ object TypeConversionHelper {
     val (locSet1, h1) =
       if (!obj.isBottom) {
         val loc = Loc(addr, Recent)
-        (AbsLoc.alpha(loc), st.oldify(addr).heap.update(loc, obj))
+        (AbsLoc(loc), st.oldify(addr).heap.update(loc, obj))
       } else (AbsLoc.Bot, Heap.Bot)
     val (locSet2, h2) =
       if (!locSet.isBottom) (locSet, st.heap)
@@ -292,29 +292,29 @@ object TypeConversionHelper {
   ////////////////////////////////////////////////////////////////
   def typeTag(value: AbsValue, h: Heap): AbsString = {
     val s1 = value.pvalue.undefval.fold(AbsString.Bot)(_ => {
-      AbsString.alpha("undefined")
+      AbsString("undefined")
     })
     val s2 = value.pvalue.nullval.fold(AbsString.Bot)(_ => {
-      AbsString.alpha("object") //TODO: check null type?
+      AbsString("object") //TODO: check null type?
     })
     val s3 = value.pvalue.numval.fold(AbsString.Bot)(_ => {
-      AbsString.alpha("number")
+      AbsString("number")
     })
     val s4 = value.pvalue.boolval.fold(AbsString.Bot)(_ => {
-      AbsString.alpha("boolean")
+      AbsString("boolean")
     })
     val s5 = value.pvalue.strval.fold(AbsString.Bot)(_ => {
-      AbsString.alpha("string")
+      AbsString("string")
     })
 
     val isCallableLocSet = value.locset.foldLeft(AbsBool.Bot)((tmpAbsB, l) => tmpAbsB + IsCallable(l, h))
     val s6 =
       if (!value.locset.isBottom && (AbsBool.False <= isCallableLocSet))
-        AbsString.alpha("object")
+        AbsString("object")
       else AbsString.Bot
     val s7 =
       if (!value.locset.isBottom && (AbsBool.True <= isCallableLocSet))
-        AbsString.alpha("function")
+        AbsString("function")
       else AbsString.Bot
 
     s1 + s2 + s3 + s4 + s5 + s6 + s7

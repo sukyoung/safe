@@ -318,7 +318,7 @@ class DHeap(val map: Map[Loc, Obj]) extends Heap {
   def isArray(loc: Loc): AbsBool = {
     val className = this.getOrElse(loc, AbsObjectUtil.Bot)
       .getOrElse(IClass)(AbsString.Bot) { _.value.pvalue.strval }
-    val arrayAbsStr = AbsString.alpha("Array")
+    val arrayAbsStr = AbsString("Array")
     val b1 =
       if (arrayAbsStr <= className)
         AbsBool.True
@@ -382,7 +382,7 @@ class DHeap(val map: Map[Loc, Obj]) extends Heap {
       if (AbsBool.True <= domIn) globalObj.getOrElse(x)(AbsBool.Bot) { _.objval.writable }
       else AbsBool.Bot
     val b2 =
-      if (AbsBool.False <= domIn) canPut(globalLoc, AbsString.alpha(x))
+      if (AbsBool.False <= domIn) canPut(globalLoc, AbsString(x))
       else AbsBool.Bot
     b1 + b2
   }
@@ -408,7 +408,7 @@ class DHeap(val map: Map[Loc, Obj]) extends Heap {
           if (AbsBool.False <= test) {
             val protoV = this.getOrElse(currentLoc, AbsObjectUtil.Bot).getOrElse(IPrototype)(valueBot) { _.value }
             val v3 = protoV.pvalue.nullval.fold(valueBot)(_ => {
-              AbsValue.alpha(Undef)
+              AbsValue(Undef)
             })
             v3 + protoV.locset.foldLeft(valueBot)((v, protoLoc) => {
               v + visit(protoLoc)
@@ -431,7 +431,7 @@ class DHeap(val map: Map[Loc, Obj]) extends Heap {
         val obj = this.getOrElse(l, AbsObjectUtil.Bot)
         val isDomIn = (obj domIn absStr)
         val locSet1 =
-          if (AbsBool.True <= isDomIn) AbsLoc.alpha(l)
+          if (AbsBool.True <= isDomIn) AbsLoc(l)
           else AbsLoc.Bot
         val locSet2 =
           if (AbsBool.False <= isDomIn) {
@@ -464,13 +464,13 @@ class DHeap(val map: Map[Loc, Obj]) extends Heap {
       val (v2, excSet) =
         if (AbsBool.False <= (globalObj domIn x)) {
           val excSet = protoLocSet.foldLeft(ExceptionSetEmpty)((tmpExcSet, protoLoc) => {
-            if (AbsBool.False <= hasProperty(protoLoc, AbsString.alpha(x))) {
+            if (AbsBool.False <= hasProperty(protoLoc, AbsString(x))) {
               tmpExcSet + ReferenceError
             } else tmpExcSet
           })
           val v3 = protoLocSet.foldLeft(valueBot)((tmpVal, protoLoc) => {
-            if (AbsBool.True <= hasProperty(protoLoc, AbsString.alpha(x))) {
-              tmpVal + this.proto(protoLoc, AbsString.alpha(x))
+            if (AbsBool.True <= hasProperty(protoLoc, AbsString(x))) {
+              tmpVal + this.proto(protoLoc, AbsString(x))
             } else {
               tmpVal
             }
@@ -490,14 +490,14 @@ class DHeap(val map: Map[Loc, Obj]) extends Heap {
     val isDomIn = (globalObj domIn x)
     val locSet1 =
       if (AbsBool.True <= isDomIn)
-        AbsLoc.alpha(BuiltinGlobal.loc)
+        AbsLoc(BuiltinGlobal.loc)
       else
         AbsLoc.Bot
     val locSet2 =
       if (AbsBool.False <= isDomIn) {
         val protoLocSet = globalObj.getOrElse(IPrototype)(AbsLoc.Bot) { _.value.locset }
         protoLocSet.foldLeft(AbsLoc.Bot)((res, protoLoc) => {
-          res + this.protoBase(protoLoc, AbsString.alpha(x))
+          res + this.protoBase(protoLoc, AbsString(x))
         })
       } else {
         AbsLoc.Bot
@@ -512,19 +512,20 @@ class DHeap(val map: Map[Loc, Obj]) extends Heap {
     val findingObj = this.getOrElse(loc, AbsObjectUtil.Bot)
     val objDomIn = (findingObj domIn absStr)
     if (objDomIn == AbsBool.Top) {
-      val oldObjV: DataProperty = findingObj.getOrElse(absStr)(DataPropertyUtil.Bot) { _.objval }
-      val newObjV = DataPropertyUtil(value)(
+      val oldObjV: AbsDataProp = findingObj.getOrElse(absStr)(AbsDataProp.Bot) { _.objval }
+      val newObjV = AbsDataProp(
+        value,
         oldObjV.writable + AbsBool.True,
         oldObjV.enumerable + AbsBool.True,
         oldObjV.configurable + AbsBool.True
       )
       this.update(loc, findingObj.update(absStr, PropValue(newObjV)))
     } else if (objDomIn == AbsBool.True) {
-      val oldObjV: DataProperty = findingObj.getOrElse(absStr)(DataPropertyUtil.Bot) { _.objval }
+      val oldObjV: AbsDataProp = findingObj.getOrElse(absStr)(AbsDataProp.Bot) { _.objval }
       val newObjV = oldObjV.copyWith(value)
       this.update(loc, findingObj.update(absStr, PropValue(newObjV)))
     } else if (objDomIn == AbsBool.False) {
-      val newObjV = DataPropertyUtil(value)(AbsBool.True, AbsBool.True, AbsBool.True)
+      val newObjV = AbsDataProp(value, AbsBool.True, AbsBool.True, AbsBool.True)
       this.update(loc, findingObj.update(absStr, PropValue(newObjV)))
     } else {
       Heap.Bot
@@ -536,11 +537,11 @@ class DHeap(val map: Map[Loc, Obj]) extends Heap {
     val obj = this.getOrElse(globalLoc, AbsObjectUtil.Bot)
     val h1 =
       if (AbsBool.False <= (obj domIn x))
-        this.propStore(globalLoc, AbsString.alpha(x), value)
+        this.propStore(globalLoc, AbsString(x), value)
       else Heap.Bot
     val h2 =
       if (AbsBool.True <= (obj domIn x)) {
-        val oldObjVal = obj.getOrElse(x)(DataPropertyUtil.Bot) { _.objval }
+        val oldObjVal = obj.getOrElse(x)(AbsDataProp.Bot) { _.objval }
         val newObjVal = oldObjVal.copyWith(value)
         this.update(globalLoc, obj.update(x, PropValue(newObjVal)))
       } else Heap.Bot

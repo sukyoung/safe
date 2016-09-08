@@ -61,6 +61,8 @@ trait AbsDomainUtil[C, ABS <: AbsDomain[C, ABS]] {
     case (abs, value) => abs + alpha(value)
   }
   def alpha(seq: C*): ABS = alpha(seq.toSet)
+  def apply(set: Set[C]): ABS = alpha(set)
+  def apply(seq: C*): ABS = alpha(seq.toSet)
 
   // check for input
   def check(that: ABS): AbsDom = that.asInstanceOf[AbsDom]

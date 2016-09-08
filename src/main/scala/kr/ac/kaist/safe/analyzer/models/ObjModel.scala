@@ -49,11 +49,11 @@ class ObjModel(
         }) match {
           case (heap, value) => (heap, obj.update(
             name,
-            PropValue(DataProperty(
+            PropValue(AbsDataProp(
               value,
-              AbsBool.alpha(writable),
-              AbsBool.alpha(enumerable),
-              AbsBool.alpha(configurable)
+              AbsBool(writable),
+              AbsBool(enumerable),
+              AbsBool(configurable)
             ))
           ))
         }

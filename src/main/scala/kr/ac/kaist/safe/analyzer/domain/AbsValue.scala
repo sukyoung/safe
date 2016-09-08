@@ -19,15 +19,6 @@ import kr.ac.kaist.safe.analyzer.models.builtin.BuiltinGlobal
 // concrete value type
 ////////////////////////////////////////////////////////////////////////////////
 abstract class Value
-object Value {
-  // TODO how to define only once following implicit conversions
-  implicit def bool2bool(b: Boolean): Bool = Bool(b)
-  implicit def bool2bool(set: Set[Boolean]): Set[Bool] = set.map(bool2bool)
-  implicit def num2num(num: Double): Num = Num(num)
-  implicit def num2num(set: Set[Double]): Set[Num] = set.map(num2num)
-  implicit def str2str(str: String): Str = Str(str)
-  implicit def str2str(set: Set[String]): Set[Str] = set.map(str2str)
-}
 
 ////////////////////////////////////////////////////////////////////////////////
 // value abstract domain
@@ -49,13 +40,7 @@ trait AbsValue extends AbsDomain[Value, AbsValue] {
 
 trait AbsValueUtil extends AbsDomainUtil[Value, AbsValue] {
   def apply(pvalue: AbsPValue): AbsValue
-  def apply(loc: Loc): AbsValue
   def apply(locset: AbsLoc): AbsValue
-  def apply(undefval: AbsUndef): AbsValue
-  def apply(nullval: AbsNull): AbsValue
-  def apply(boolval: AbsBool): AbsValue
-  def apply(numval: AbsNumber): AbsValue
-  def apply(strval: AbsString): AbsValue
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -66,18 +51,12 @@ object DefaultValue extends AbsValueUtil {
   lazy val Top: AbsDom = AbsDom(AbsPValue.Top, AbsLoc.Top)
 
   def alpha(value: Value): AbsValue = value match {
-    case (pvalue: PValue) => apply(AbsPValue.alpha(pvalue))
-    case (loc: Loc) => apply(AbsLoc.alpha(loc))
+    case (pvalue: PValue) => apply(AbsPValue(pvalue))
+    case (loc: Loc) => apply(AbsLoc(loc))
   }
 
   def apply(pvalue: AbsPValue): AbsValue = Bot.copy(pvalue = pvalue)
-  def apply(loc: Loc): AbsValue = Bot.copy(locset = AbsLoc.alpha(loc))
   def apply(locset: AbsLoc): AbsValue = Bot.copy(locset = locset)
-  def apply(undefval: AbsUndef): AbsValue = apply(AbsPValue(undefval))
-  def apply(nullval: AbsNull): AbsValue = apply(AbsPValue(nullval))
-  def apply(boolval: AbsBool): AbsValue = apply(AbsPValue(boolval))
-  def apply(numval: AbsNumber): AbsValue = apply(AbsPValue(numval))
-  def apply(strval: AbsString): AbsValue = apply(AbsPValue(strval))
 
   case class AbsDom(pvalue: AbsPValue, locset: AbsLoc) extends AbsValue {
     def gamma: ConSet[Value] = ConSetTop() // TODO more precisely
@@ -150,13 +129,13 @@ object DefaultValue extends AbsValueUtil {
     def getThis(h: Heap): AbsLoc = {
       val locSet1 = (pvalue.nullval.gamma, pvalue.undefval.gamma) match {
         case (ConSimpleBot(), ConSimpleBot()) => AbsLoc.Bot
-        case _ => AbsLoc.alpha(BuiltinGlobal.loc)
+        case _ => AbsLoc(BuiltinGlobal.loc)
       }
 
       val foundDeclEnvRecord = locset.exists(loc => AbsBool.False <= h.isObject(loc))
 
       val locSet2 =
-        if (foundDeclEnvRecord) AbsLoc.alpha(BuiltinGlobal.loc)
+        if (foundDeclEnvRecord) AbsLoc(BuiltinGlobal.loc)
         else AbsLoc.Bot
       val locSet3 = locset.foldLeft(AbsLoc.Bot)((tmpLocSet, loc) => {
         if (AbsBool.True <= h.isObject(loc)) tmpLocSet + loc

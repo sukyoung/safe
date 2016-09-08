@@ -243,7 +243,7 @@ abstract class ExecContext {
         val env = this.getOrElse(l, DecEnvRecord.Bot)
         val isIn = (env HasBinding x)
         val locSet1 =
-          if (AbsBool.True <= isIn) AbsLoc.alpha(l)
+          if (AbsBool.True <= isIn) AbsLoc(l)
           else AbsLoc.Bot
         val locSet2 =
           if (AbsBool.False <= isIn) {

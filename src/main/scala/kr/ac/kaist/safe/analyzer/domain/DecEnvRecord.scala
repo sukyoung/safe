@@ -52,7 +52,7 @@ abstract class DecEnvRecord extends EnvRecord {
       }
       // 3. Create a mutable binding in envRec for N and
       //    set its bound value to undefined.
-      val newV = AbsValue.alpha(Undef)
+      val newV = AbsValue(Undef)
       val newBind = BindingUtil(newV)
       DecEnvRecordMap(map.updated(name, (newBind, AbsentBot)))
     }
@@ -121,7 +121,7 @@ abstract class DecEnvRecord extends EnvRecord {
           //    a. If S is false, return the value undefined,
           //       otherwise throw a ReferenceError exception.
           if (strict) (AbsValue.Bot, HashSet(ReferenceError))
-          else (AbsValue.alpha(Undef), emptyExcSet)
+          else (AbsValue(Undef), emptyExcSet)
         } else { (AbsValue.Bot, emptyExcSet) }
       // 4. Else, return the value currently bound to N in envRec.
       val elseV =
@@ -152,7 +152,7 @@ abstract class DecEnvRecord extends EnvRecord {
   }
 
   // 10.2.1.1.6 ImplicitThisValue()
-  def ImplicitThisValue: AbsValue = AbsValue.alpha(Undef)
+  def ImplicitThisValue: AbsValue = AbsValue(Undef)
 
   // 10.2.1.1.7 CreateImmutableBinding(N)
   def CreateImmutableBinding(
@@ -376,7 +376,7 @@ object DecEnvRecord {
       .update("@this", BindingUtil(AbsValue(thisLocSet)))
       .update("@exception", BindingUtil.Bot)
       .update("@exception_all", BindingUtil.Bot)
-      .update("@return", BindingUtil(AbsValue.alpha(Undef)))
+      .update("@return", BindingUtil(AbsValue(Undef)))
   }
 }
 

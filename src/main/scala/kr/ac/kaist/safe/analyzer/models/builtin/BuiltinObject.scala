@@ -28,7 +28,7 @@ object BuiltinObject extends FuncModel(
     args: AbsValue, st: State, sem: Semantics
   ) => {
     val h = st.heap
-    val argV = sem.CFGLoadHelper(args, Set(AbsString.alpha("0")), h)
+    val argV = sem.CFGLoadHelper(args, Set(AbsString("0")), h)
     val addr = SystemAddr("Object<instance>")
 
     // 1. If value is null, undefined or not supplied, create and return
@@ -58,7 +58,7 @@ object BuiltinObject extends FuncModel(
     args: AbsValue, st: State, sem: Semantics
   ) => {
     val h = st.heap
-    val argV = sem.CFGLoadHelper(args, Set(AbsString.alpha("0")), h)
+    val argV = sem.CFGLoadHelper(args, Set(AbsString("0")), h)
     val addr = SystemAddr("Object<instance>")
 
     // 1. If value is supplied, then
@@ -103,7 +103,7 @@ object BuiltinObject extends FuncModel(
         args: AbsValue, st: State, sem: Semantics
       ) => {
         val h = st.heap
-        val argV = sem.CFGLoadHelper(args, Set(AbsString.alpha("0")), h)
+        val argV = sem.CFGLoadHelper(args, Set(AbsString("0")), h)
         val tmpAddr = SystemAddr("<temp>")
 
         val (retV, retSt, excSet) = TypeConversionHelper.ToObject(argV, st, tmpAddr)
@@ -127,12 +127,12 @@ object BuiltinObject extends FuncModel(
         args: AbsValue, st: State, sem: Semantics
       ) => {
         val h = st.heap
-        val objV = sem.CFGLoadHelper(args, Set(AbsString.alpha("0")), h)
-        val strV = sem.CFGLoadHelper(args, Set(AbsString.alpha("1")), h)
+        val objV = sem.CFGLoadHelper(args, Set(AbsString("0")), h)
+        val strV = sem.CFGLoadHelper(args, Set(AbsString("1")), h)
         val tmpAddr = SystemAddr("<temp>")
         val descAddr = SystemAddr("Object.getOwnPropertyDescriptor<descriptor>")
-        val AT = AbsBool.alpha(true)
-        val AF = AbsBool.alpha(false)
+        val AT = AbsBool(true)
+        val AF = AbsBool(false)
         val (locV, retSt, excSet) = TypeConversionHelper.ToObject(objV, st, tmpAddr)
 
         // 1. If Type(O) is not Object throw a TypeError exception.
@@ -149,7 +149,7 @@ object BuiltinObject extends FuncModel(
         })
         val isDomIn = (obj domIn name)
         val v1 =
-          if (AF <= isDomIn) AbsValue.alpha(Undef)
+          if (AF <= isDomIn) AbsValue(Undef)
           else AbsValue.Bot
         val (state, v2) =
           if (AT <= isDomIn) {
@@ -159,10 +159,10 @@ object BuiltinObject extends FuncModel(
             val enumerableV = AbsValue(objval.enumerable)
             val configurableV = AbsValue(objval.configurable)
             val descObj = AbsObjectUtil.newObject
-              .update("value", PropValue(DataProperty(valueV, AT, AF, AT)))
-              .update("writable", PropValue(DataProperty(writableV, AT, AF, AT)))
-              .update("enumerable", PropValue(DataProperty(enumerableV, AT, AF, AT)))
-              .update("configurable", PropValue(DataProperty(configurableV, AT, AF, AT)))
+              .update("value", PropValue(AbsDataProp(valueV, AT, AF, AT)))
+              .update("writable", PropValue(AbsDataProp(writableV, AT, AF, AT)))
+              .update("enumerable", PropValue(AbsDataProp(enumerableV, AT, AF, AT)))
+              .update("configurable", PropValue(AbsDataProp(configurableV, AT, AF, AT)))
             val state = st.oldify(descAddr)
             val descLoc = Loc(descAddr, Recent)
             val retHeap = state.heap.update(descLoc, descObj)
@@ -180,7 +180,7 @@ object BuiltinObject extends FuncModel(
         args: AbsValue, st: State, sem: Semantics
       ) => {
         val h = st.heap
-        val objV = sem.CFGLoadHelper(args, Set(AbsString.alpha("0")), h)
+        val objV = sem.CFGLoadHelper(args, Set(AbsString("0")), h)
         val tmpAddr = SystemAddr("<temp>")
         val arrAddr = SystemAddr("Object.getOwnPropertyNames<array>")
         val (locV, retSt, excSet) = TypeConversionHelper.ToObject(objV, st, tmpAddr)
@@ -190,7 +190,7 @@ object BuiltinObject extends FuncModel(
             case ((str, lenSet), loc) => {
               val obj = h.getOrElse(loc, AbsObjectUtil.Bot)
               val keys = obj.map.keySet.filter(!_.startsWith("@"))
-              val keyStr = AbsString.alpha(keys)
+              val keyStr = AbsString(keys)
               (str + keyStr, lenSet + keys.size)
             }
           }
@@ -203,7 +203,7 @@ object BuiltinObject extends FuncModel(
         // 2. Let array be the result of creating a new object
         //    as if by the expression new Array() where Array is the
         //    standard built-in constructor with that name.
-        val arrObj = AbsObjectUtil.newArrayObject(AbsNumber.alpha(lenSet))
+        val arrObj = AbsObjectUtil.newArrayObject(AbsNumber(lenSet))
 
         // 3. Let n be 0.
         // 4. For each named own property P of O
@@ -215,7 +215,7 @@ object BuiltinObject extends FuncModel(
         //    c. Increment n by 1.
         val v = AbsValue(AbsPValue(AbsUndef.Top).copyWith(strval = keyStr))
         val retObj = (0 until len.toInt).foldLeft(arrObj)((obj, idx) => {
-          obj.update(idx.toString, PropValue(DataProperty(v, AT, AT, AT)))
+          obj.update(idx.toString, PropValue(AbsDataProp(v, AT, AT, AT)))
         })
         val state = st.oldify(arrAddr)
         val arrLoc = Loc(arrAddr, Recent)

@@ -175,7 +175,7 @@ class Obj(
         val (key, pva) = kv
         val (propV, absent) = pva
         val newV = propV.objval.value.subsLoc(locR, locO)
-        val newOV = DataProperty(newV, propV.objval.writable, propV.objval.enumerable, propV.objval.configurable)
+        val newOV = AbsDataProp(newV, propV.objval.writable, propV.objval.enumerable, propV.objval.configurable)
         val newPropV = PropValue(newOV, propV.funid)
         m + (key -> (newPropV, absent))
       })
@@ -195,7 +195,7 @@ class Obj(
         val (key, pva) = kv
         val (propV, absent) = pva
         val newV = propV.objval.value.weakSubsLoc(locR, locO)
-        val newOV = DataProperty(newV, propV.objval.writable, propV.objval.enumerable, propV.objval.configurable)
+        val newOV = AbsDataProp(newV, propV.objval.writable, propV.objval.enumerable, propV.objval.configurable)
         val newPropV = PropValue(newOV, propV.funid)
         m + (key -> (newPropV, absent))
       })
@@ -373,7 +373,7 @@ class Obj(
             case None => false
           })
           val weakUpdatedMap = pset.foldLeft(this.map)((m, x) => {
-            val absX = AbsString.alpha(x)
+            val absX = AbsString(x)
             val (xPropV, xAbsent) = m.get(x) match {
               case Some((xPropV, xAbsent)) => (propV + xPropV, xAbsent)
               case None => (propV, AbsentBot)
@@ -392,7 +392,7 @@ class Obj(
             case None => false
           })
           val weakUpdatedMap = pset.foldLeft(this.map)((m, x) => {
-            val absX = AbsString.alpha(x)
+            val absX = AbsString(x)
             val (xPropV, xAbsent) = m.get(x) match {
               case Some((xPropV, xAbsent)) => (propV + xPropV, xAbsent)
               case None => (propV, AbsentBot)
@@ -415,7 +415,7 @@ class Obj(
             case None => false
           })
           val weakUpdatedMap = pset.foldLeft(this.map)((m, x) => {
-            val absX = AbsString.alpha(x)
+            val absX = AbsString(x)
             val (xPropV, xAbsent) = m.get(x) match {
               case Some((xPropV, xAbsent)) => (propV + xPropV, xAbsent)
               case None => (propV, AbsentBot)

@@ -26,7 +26,7 @@ object BuiltinBoolean extends FuncModel(
   code = SimpleCode(argLen = 1, code = (
     args, h, sem
   ) => {
-    val argV = sem.CFGLoadHelper(args, Set(AbsString.alpha("0")), h)
+    val argV = sem.CFGLoadHelper(args, Set(AbsString("0")), h)
 
     // Returns a Boolean value (not a Boolean object) computed by ToBoolean(value).
     val boolPV = AbsPValue(TypeConversionHelper.ToBoolean(argV))
@@ -38,7 +38,7 @@ object BuiltinBoolean extends FuncModel(
     args, st, sem
   ) => {
     val h = st.heap
-    val argV = sem.CFGLoadHelper(args, Set(AbsString.alpha("0")), h)
+    val argV = sem.CFGLoadHelper(args, Set(AbsString("0")), h)
     val addr = SystemAddr("Boolean<instance>")
 
     val state = st.oldify(addr)
@@ -69,19 +69,19 @@ object BuiltinBooleanProto extends ObjModel(
         val localObj = st.context.pureLocal
         val thisLocSet = localObj.getOrElse("@this")(AbsLoc.Bot) { _.value.locset }
         val thisV = AbsValue(thisLocSet)
-        val classV = sem.CFGLoadHelper(thisV, Set(AbsString.alpha("@class")), h)
+        val classV = sem.CFGLoadHelper(thisV, Set(AbsString("@class")), h)
         val pv = thisV.pvalue
         val excSet = (pv.undefval.gamma, pv.nullval.gamma, pv.numval.gamma, pv.strval.gamma) match {
           case (ConSimpleBot(), ConSimpleBot(), ConSetBot(), ConSetBot()) if (
-            (AbsString.alpha("Boolean") <= classV.pvalue.strval
-              && classV.pvalue.strval <= AbsString.alpha("Boolean"))
+            (AbsString("Boolean") <= classV.pvalue.strval
+              && classV.pvalue.strval <= AbsString("Boolean"))
               || classV.pvalue.strval <= AbsString.Bot
           ) => ExceptionSetEmpty
           case _ => HashSet[Exception](TypeError)
         }
         val b = thisV.pvalue.boolval + {
-          if ((AbsString.alpha("Boolean") <= classV.pvalue.strval)) {
-            val primitiveV = sem.CFGLoadHelper(thisV, Set(AbsString.alpha("@primitive")), h)
+          if ((AbsString("Boolean") <= classV.pvalue.strval)) {
+            val primitiveV = sem.CFGLoadHelper(thisV, Set(AbsString("@primitive")), h)
             primitiveV.pvalue.boolval
           } else {
             AbsBool.Bot
@@ -101,19 +101,19 @@ object BuiltinBooleanProto extends ObjModel(
         val localObj = st.context.pureLocal
         val thisLocSet = localObj.getOrElse("@this")(AbsLoc.Bot) { _.value.locset }
         val thisV = AbsValue(thisLocSet)
-        val classV = sem.CFGLoadHelper(thisV, Set(AbsString.alpha("@class")), h)
+        val classV = sem.CFGLoadHelper(thisV, Set(AbsString("@class")), h)
         val pv = thisV.pvalue
         val excSet = (pv.undefval.gamma, pv.nullval.gamma, pv.numval.gamma, pv.strval.gamma) match {
           case (ConSimpleBot(), ConSimpleBot(), ConSetBot(), ConSetBot()) if (
-            (AbsString.alpha("Boolean") <= classV.pvalue.strval
-              && classV.pvalue.strval <= AbsString.alpha("Boolean"))
+            (AbsString("Boolean") <= classV.pvalue.strval
+              && classV.pvalue.strval <= AbsString("Boolean"))
               || classV.pvalue.strval <= AbsString.Bot
           ) => ExceptionSetEmpty
           case _ => HashSet[Exception](TypeError)
         }
         val b = thisV.pvalue.boolval + {
-          if ((AbsString.alpha("Boolean") <= classV.pvalue.strval)) {
-            val primitiveV = sem.CFGLoadHelper(thisV, Set(AbsString.alpha("@primitive")), h)
+          if ((AbsString("Boolean") <= classV.pvalue.strval)) {
+            val primitiveV = sem.CFGLoadHelper(thisV, Set(AbsString("@primitive")), h)
             primitiveV.pvalue.boolval
           } else {
             AbsBool.Bot

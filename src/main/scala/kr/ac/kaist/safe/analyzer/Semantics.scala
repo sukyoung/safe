@@ -189,12 +189,12 @@ class Semantics(
           val (nSt, _) = xArgVars.foldLeft((st, 0))((res, x) => {
             val (iSt, i) = res
             val vi = locSetArg.foldLeft(AbsValue.Bot)((vk, lArg) => {
-              vk + iSt.heap.proto(lArg, AbsString.alpha(i.toString))
+              vk + iSt.heap.proto(lArg, AbsString(i.toString))
             })
             (iSt.createMutableBinding(x, vi), i + 1)
           })
           val newSt = xLocalVars.foldLeft(nSt)((jSt, x) => {
-            val undefV = AbsValue.alpha(Undef)
+            val undefV = AbsValue(Undef)
             jSt.createMutableBinding(x, undefV)
           })
           (newSt, State.Bot)
@@ -218,7 +218,7 @@ class Semantics(
     i match {
       case _ if st.isBottom => (State.Bot, excSt)
       case CFGAlloc(_, _, x, e, newAddr) => {
-        val objProtoSingleton = AbsLoc.alpha(BuiltinObjectProto.loc)
+        val objProtoSingleton = AbsLoc(BuiltinObjectProto.loc)
         // Recency Abstraction
         val locR = Loc(newAddr, Recent)
         val st1 = st.oldify(newAddr)
@@ -241,7 +241,7 @@ class Semantics(
       case CFGAllocArray(_, _, x, n, newAddr) => {
         val locR = Loc(newAddr, Recent)
         val st1 = st.oldify(newAddr)
-        val np = AbsNumber.alpha(n.toInt)
+        val np = AbsNumber(n.toInt)
         val h2 = st1.heap.update(locR, AbsObjectUtil.newArrayObject(np))
         val newSt = State(h2, st1.context).varStore(x, AbsValue(locR))
         (newSt, excSt)
@@ -249,7 +249,7 @@ class Semantics(
       case CFGAllocArg(_, _, x, n, newAddr) => {
         val locR = Loc(newAddr, Recent)
         val st1 = st.oldify(newAddr)
-        val absN = AbsNumber.alpha(n.toInt)
+        val absN = AbsNumber(n.toInt)
         val h2 = st1.heap.update(locR, AbsObjectUtil.newArgObject(absN))
         val newSt = State(h2, st1.context).varStore(x, AbsValue(locR))
         (newSt, excSt)
@@ -349,7 +349,7 @@ class Semantics(
           (strIdx, vRhs) match {
             case (_, v) if v.isBottom => (Heap.Bot, esRhs)
             case (EJSString(str), v) =>
-              val absStr = AbsString.alpha(str)
+              val absStr = AbsString(str)
               val (tmpHeap2, tmpExcSet2) = Helper.storeHelp(locSet, absStr, vRhs, st.heap)
               (tmpHeap2, tmpExcSet2 ++ esRhs)
           }
@@ -365,13 +365,13 @@ class Semantics(
         val st2 = st1.oldify(aNew2)
         val oNew = AbsObjectUtil.newObject(BuiltinObjectProto.loc)
 
-        val n = AbsNumber.alpha(f.argVars.length)
+        val n = AbsNumber(f.argVars.length)
         val localEnv = st2.context.pureLocal
         val scope = localEnv.getOrElse("@env")(AbsValue.Bot) { _.value }
         val h3 = st2.heap.update(locR1, AbsObjectUtil.newFunctionObject(f.id, scope, locR2, n))
 
         val fVal = AbsValue(locR1)
-        val fPropV = PropValue(DataPropertyUtil(fVal)(AT, AF, AT))
+        val fPropV = PropValue(AbsDataProp(fVal, AT, AF, AT))
         val h4 = h3.update(locR2, oNew.update("constructor", fPropV, exist = true))
 
         val newSt = State(h4, st2.context).varStore(lhs, fVal)
@@ -387,12 +387,12 @@ class Semantics(
         val st3 = st2.oldify(aNew3)
 
         val oNew = AbsObjectUtil.newObject(BuiltinObjectProto.loc)
-        val n = AbsNumber.alpha(f.argVars.length)
+        val n = AbsNumber(f.argVars.length)
         val fObjValue = AbsValue(locR3)
         val h4 = st3.heap.update(locR1, AbsObjectUtil.newFunctionObject(f.id, fObjValue, locR2, n))
 
         val fVal = AbsValue(locR1)
-        val fPropV = PropValue(DataPropertyUtil(fVal)(AT, AF, AT))
+        val fPropV = PropValue(AbsDataProp(fVal, AT, AF, AT))
         val h5 = h4.update(locR2, oNew.update("constructor", fPropV, exist = true))
 
         val localEnv = st3.context.pureLocal
@@ -427,7 +427,7 @@ class Semantics(
       }
       case CFGReturn(_, _, None) => {
         val localEnv = st.context.pureLocal
-        val retValBind = BindingUtil(AbsValue.alpha(Undef))
+        val retValBind = BindingUtil(AbsValue(Undef))
         val ctx1 = st.context.subsPureLocal(localEnv.update("@return", retValBind))
         val newSt = State(st.heap, ctx1)
         (newSt, excSt)
@@ -438,7 +438,7 @@ class Semantics(
         val excSetV = localEnv.getOrElse("@exception_all")(AbsValue.Bot) { _.value }
         val newExcBind = BindingUtil(v)
         val newExcSetBind = BindingUtil(v + excSetV)
-        val retValBind = BindingUtil(AbsValue.alpha(Undef))
+        val retValBind = BindingUtil(AbsValue(Undef))
         val newEnv =
           localEnv.
             update("@exception", newExcBind).
@@ -588,7 +588,7 @@ class Semantics(
       })
 
       val h2 = argVal.locset.foldLeft(Heap.Bot)((tmpHeap, l) => {
-        val funPropV = PropValue(DataPropertyUtil(funLocSet)(AT, AF, AT))
+        val funPropV = PropValue(AbsDataProp(funLocSet, AT, AF, AT))
         val argObj = st1.heap.getOrElse(l, AbsObjectUtil.Bot)
         tmpHeap + st1.heap.update(l, argObj.update("callee", funPropV))
       })
@@ -663,7 +663,7 @@ class Semantics(
                 val locSet2 = v2.locset
                 val locSet3 = locSet2.filter((l) => AT <= st.heap.hasInstance(l)(AbsBool))
                 val protoVal = locSet3.foldLeft(AbsValue.Bot)((v, l) => {
-                  v + st.heap.proto(l, AbsString.alpha("prototype"))
+                  v + st.heap.proto(l, AbsString("prototype"))
                 })
                 val locSet4 = protoVal.locset
                 val locSet5 = locSet2.filter((l) => AF <= st.heap.hasInstance(l)(AbsBool))
@@ -709,7 +709,7 @@ class Semantics(
               case CFGVarRef(_, x) =>
                 val absStr1 = TypeConversionHelper.typeTag(v, st.heap)
                 val absStr2 =
-                  if (excSet.contains(ReferenceError)) AbsString.alpha("undefined")
+                  if (excSet.contains(ReferenceError)) AbsString("undefined")
                   else AbsString.Bot
                 val absStrPV = AbsPValue(absStr1 + absStr2)
                 (AbsValue(absStrPV), ExceptionSetEmpty)
@@ -721,11 +721,11 @@ class Semantics(
       }
       case CFGVal(ejsVal) =>
         val pvalue: AbsPValue = ejsVal match {
-          case EJSNumber(_, num) => AbsPValue.alpha(num)
-          case EJSString(str) => AbsPValue.alpha(str)
-          case EJSBool(bool) => AbsPValue.alpha(bool)
-          case EJSNull => AbsPValue.alpha(Null)
-          case EJSUndef => AbsPValue.alpha()
+          case EJSNumber(_, num) => AbsPValue(num)
+          case EJSString(str) => AbsPValue(str)
+          case EJSBool(bool) => AbsPValue(bool)
+          case EJSNull => AbsPValue(Null)
+          case EJSUndef => AbsPValue(Undef)
         }
         (AbsValue(pvalue), ExceptionSetEmpty)
     }
@@ -737,7 +737,7 @@ class Semantics(
     val (v, excSet) = V(expr, st)
     val newExcSt = st.raiseException(excSet)
     val st2 =
-      if (AbsBool.alpha(true) <= TypeConversionHelper.ToBoolean(v)) st1
+      if (AbsBool(true) <= TypeConversionHelper.ToBoolean(v)) st1
       else State.Bot
 
     (st2, excSt + newExcSt)

@@ -24,9 +24,9 @@ class PrimModel(
 
 object PrimModel {
   def apply(pvalue: AbsPValue): PrimModel = new PrimModel(pvalue)
-  def apply(n: Double): PrimModel = PrimModel(AbsPValue.alpha(n))
-  def apply(str: String): PrimModel = PrimModel(AbsPValue.alpha(str))
-  def apply(undef: Undef): PrimModel = PrimModel(AbsPValue.alpha(Undef))
-  def apply(x: Null): PrimModel = PrimModel(AbsPValue.alpha(x))
-  def apply(b: Boolean): PrimModel = PrimModel(AbsPValue.alpha(b))
+  def apply(n: Double): PrimModel = PrimModel(AbsPValue(n))
+  def apply(str: String): PrimModel = PrimModel(AbsPValue(str))
+  def apply(undef: Undef): PrimModel = PrimModel(AbsPValue(Undef))
+  def apply(x: Null): PrimModel = PrimModel(AbsPValue(x))
+  def apply(b: Boolean): PrimModel = PrimModel(AbsPValue(b))
 }

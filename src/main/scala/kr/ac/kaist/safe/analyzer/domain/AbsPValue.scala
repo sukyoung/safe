@@ -18,15 +18,6 @@ import scala.collection.immutable.HashSet
 // concrete primitive value type
 ////////////////////////////////////////////////////////////////////////////////
 abstract class PValue extends Value
-object PValue {
-  // TODO how to define only once following implicit conversions
-  implicit def bool2bool(b: Boolean): Bool = Bool(b)
-  implicit def bool2bool(set: Set[Boolean]): Set[Bool] = set.map(bool2bool)
-  implicit def num2num(num: Double): Num = Num(num)
-  implicit def num2num(set: Set[Double]): Set[Num] = set.map(num2num)
-  implicit def str2str(str: String): Str = Str(str)
-  implicit def str2str(set: Set[String]): Set[Str] = set.map(str2str)
-}
 
 ////////////////////////////////////////////////////////////////////////////////
 // primitive value abstract domain
@@ -70,9 +61,9 @@ object DefaultPValue extends AbsPValueUtil {
   def alpha(pvalue: PValue): AbsPValue = pvalue match {
     case Undef => Bot.copy(undefval = AbsUndef.Top)
     case Null => Bot.copy(nullval = AbsNull.Top)
-    case Bool(b) => Bot.copy(boolval = AbsBool.alpha(b))
-    case Num(n) => Bot.copy(numval = AbsNumber.alpha(n))
-    case Str(str) => Bot.copy(strval = AbsString.alpha(str))
+    case Bool(b) => Bot.copy(boolval = AbsBool(b))
+    case Num(n) => Bot.copy(numval = AbsNumber(n))
+    case Str(str) => Bot.copy(strval = AbsString(str))
   }
 
   def apply(undefval: AbsUndef): AbsPValue = Bot.copyWith(undefval = undefval)
@@ -170,11 +161,11 @@ object DefaultPValue extends AbsPValueUtil {
     def toStringSet: Set[AbsString] = {
       var set = HashSet[AbsString]()
 
-      this.undefval.foldUnit(set += AbsString.alpha("undefined"))
-      this.nullval.foldUnit(set += AbsString.alpha("null"))
+      this.undefval.foldUnit(set += AbsString("undefined"))
+      this.nullval.foldUnit(set += AbsString("null"))
 
-      if (AbsBool.True <= this.boolval) set += AbsString.alpha("true")
-      if (AbsBool.False <= this.boolval) set += AbsString.alpha("false")
+      if (AbsBool.True <= this.boolval) set += AbsString("true")
+      if (AbsBool.False <= this.boolval) set += AbsString("false")
 
       set += this.numval.toAbsString
 

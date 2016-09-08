@@ -46,16 +46,16 @@ object DefaultBool extends AbsBoolUtil {
 
     def toAbsString: AbsString = this match {
       case Bot => AbsString.Bot
-      case True => AbsString.alpha("true")
-      case False => AbsString.alpha("false")
-      case Top => AbsString.alpha("true", "false")
+      case True => AbsString("true")
+      case False => AbsString("false")
+      case Top => AbsString("true", "false")
     }
 
     def toAbsNumber: AbsNumber = this match {
       case Bot => AbsNumber.Bot
-      case True => AbsNumber.alpha(1)
-      case False => AbsNumber.alpha(+0)
-      case Top => AbsNumber.alpha(1, +0)
+      case True => AbsNumber(1)
+      case False => AbsNumber(+0)
+      case Top => AbsNumber(1, +0)
     }
 
     def <=(that: AbsBool): Boolean = (this, check(that)) match {

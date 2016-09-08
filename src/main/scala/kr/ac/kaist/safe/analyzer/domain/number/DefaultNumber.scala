@@ -82,14 +82,14 @@ object DefaultNumber extends AbsNumberUtil {
     def toAbsString: AbsString = this match {
       case Top => AbsString.Number
       case Bot => AbsString.Bot
-      case Inf => AbsString.alpha("Infinity", "-Infinity")
-      case PosInf => AbsString.alpha("Infinity")
-      case NegInf => AbsString.alpha("-Infinity")
-      case NaN => AbsString.alpha("NaN")
+      case Inf => AbsString("Infinity", "-Infinity")
+      case PosInf => AbsString("Infinity")
+      case NegInf => AbsString("-Infinity")
+      case NaN => AbsString("NaN")
       case UInt => AbsString.Number
       case NUInt => AbsString.Number
-      case UIntConst(v) => AbsString.alpha(v.toString)
-      case NUIntConst(v) => AbsString.alpha(v.toString)
+      case UIntConst(v) => AbsString(v.toString)
+      case NUIntConst(v) => AbsString(v.toString)
     }
 
     def toAbsBoolean: AbsBool = this match {
@@ -121,10 +121,10 @@ object DefaultNumber extends AbsNumberUtil {
     def <(that: AbsNumber): AbsBool = (this, check(that)) match {
       case (Bot, _) | (_, Bot) => AbsBool.Bot
       case (NaN, _) | (_, NaN) => AbsBool.False
-      case (UIntConst(n1), UIntConst(n2)) => AbsBool.alpha(n1 < n2)
-      case (UIntConst(n1), NUIntConst(n2)) => AbsBool.alpha(n1 < n2)
-      case (NUIntConst(n1), UIntConst(n2)) => AbsBool.alpha(n1 < n2)
-      case (NUIntConst(n1), NUIntConst(n2)) => AbsBool.alpha(n1 < n2)
+      case (UIntConst(n1), UIntConst(n2)) => AbsBool(n1 < n2)
+      case (UIntConst(n1), NUIntConst(n2)) => AbsBool(n1 < n2)
+      case (NUIntConst(n1), UIntConst(n2)) => AbsBool(n1 < n2)
+      case (NUIntConst(n1), NUIntConst(n2)) => AbsBool(n1 < n2)
       case (UInt, UIntConst(n2)) if n2 <= 0 => AbsBool.False
       case (UInt, NUIntConst(n2)) if n2 <= 0 => AbsBool.False
       case _ => AbsBool.Top
@@ -133,10 +133,10 @@ object DefaultNumber extends AbsNumberUtil {
     def ===(that: AbsNumber): AbsBool = (this, check(that)) match {
       case (Bot, _) | (_, Bot) => AbsBool.Bot
       case (NaN, _) | (_, NaN) => AbsBool.False
-      case (UIntConst(n1), UIntConst(n2)) => AbsBool.alpha(n1 == n2)
-      case (UIntConst(n1), NUIntConst(n2)) => AbsBool.alpha(n1 == n2)
-      case (NUIntConst(n1), UIntConst(n2)) => AbsBool.alpha(n1 == n2)
-      case (NUIntConst(n1), NUIntConst(n2)) => AbsBool.alpha(n1 == n2)
+      case (UIntConst(n1), UIntConst(n2)) => AbsBool(n1 == n2)
+      case (UIntConst(n1), NUIntConst(n2)) => AbsBool(n1 == n2)
+      case (NUIntConst(n1), UIntConst(n2)) => AbsBool(n1 == n2)
+      case (NUIntConst(n1), NUIntConst(n2)) => AbsBool(n1 == n2)
       case _ =>
         (this <= that, that <= this) match {
           case (false, false) => AbsBool.False

@@ -21,9 +21,9 @@ import scala.collection.immutable.{ HashMap }
 
 case class Initialize(cfg: CFG) {
   def state: State = {
-    val afalse = AbsBool.alpha(false)
+    val afalse = AbsBool(false)
 
-    val globalPureLocalEnv = DecEnvRecord.newPureLocal(AbsValue.alpha(Null), AbsLoc.alpha(BuiltinGlobal.loc)) - "@return"
+    val globalPureLocalEnv = DecEnvRecord.newPureLocal(AbsValue(Null), AbsLoc(BuiltinGlobal.loc)) - "@return"
 
     val initHeap = Heap(HashMap(
       SystemLoc("Dummy", Old) -> AbsObjectUtil.Bot // TODO If delete, not working because not allowed update to bottom heap
@@ -47,23 +47,23 @@ case class Initialize(cfg: CFG) {
 
     val testGlobalObj =
       globalObj.update("__BOT", PropValue.Bot)
-        .update("__TOP", PropValue(DataPropertyUtil(AbsPValue.Top)))
+        .update("__TOP", PropValue(AbsDataProp(AbsPValue.Top)))
         .update("__UInt", PropValue(AbsNumber.UInt))
-        .update("__Global", PropValue(DataPropertyUtil(BuiltinGlobal.loc)))
+        .update("__Global", PropValue(AbsDataProp(AbsLoc(BuiltinGlobal.loc))))
         .update("__BoolTop", PropValue(AbsBool.Top))
         .update("__NumTop", PropValue(AbsNumber.Top))
         .update("__StrTop", PropValue(AbsString.Top))
-        .update("__RefErrLoc", PropValue(DataPropertyUtil(BuiltinReferenceError.loc)))
-        .update("__RangeErrLoc", PropValue(DataPropertyUtil(BuiltinRangeError.loc)))
-        .update("__TypeErrLoc", PropValue(DataPropertyUtil(BuiltinTypeError.loc)))
-        .update("__URIErrLoc", PropValue(DataPropertyUtil(BuiltinURIError.loc)))
-        .update("__RefErrProtoLoc", PropValue(DataPropertyUtil(BuiltinReferenceErrorProto.loc)))
-        .update("__RangeErrProtoLoc", PropValue(DataPropertyUtil(BuiltinRangeErrorProto.loc)))
-        .update("__TypeErrProtoLoc", PropValue(DataPropertyUtil(BuiltinTypeErrorProto.loc)))
-        .update("__URIErrProtoLoc", PropValue(DataPropertyUtil(BuiltinURIErrorProto.loc)))
-        .update("__ErrProtoLoc", PropValue(DataPropertyUtil(BuiltinErrorProto.loc)))
-        .update("__ObjConstLoc", PropValue(DataPropertyUtil(BuiltinObject.loc)))
-        .update("__ArrayConstLoc", PropValue(DataPropertyUtil(BuiltinArray.loc)))
+        .update("__RefErrLoc", PropValue(AbsDataProp(AbsLoc(BuiltinReferenceError.loc))))
+        .update("__RangeErrLoc", PropValue(AbsDataProp(AbsLoc(BuiltinRangeError.loc))))
+        .update("__TypeErrLoc", PropValue(AbsDataProp(AbsLoc(BuiltinTypeError.loc))))
+        .update("__URIErrLoc", PropValue(AbsDataProp(AbsLoc(BuiltinURIError.loc))))
+        .update("__RefErrProtoLoc", PropValue(AbsDataProp(AbsLoc(BuiltinReferenceErrorProto.loc))))
+        .update("__RangeErrProtoLoc", PropValue(AbsDataProp(AbsLoc(BuiltinRangeErrorProto.loc))))
+        .update("__TypeErrProtoLoc", PropValue(AbsDataProp(AbsLoc(BuiltinTypeErrorProto.loc))))
+        .update("__URIErrProtoLoc", PropValue(AbsDataProp(AbsLoc(BuiltinURIErrorProto.loc))))
+        .update("__ErrProtoLoc", PropValue(AbsDataProp(AbsLoc(BuiltinErrorProto.loc))))
+        .update("__ObjConstLoc", PropValue(AbsDataProp(AbsLoc(BuiltinObject.loc))))
+        .update("__ArrayConstLoc", PropValue(AbsDataProp(AbsLoc(BuiltinArray.loc))))
 
     val testHeap = st.heap.update(BuiltinGlobal.loc, testGlobalObj)
     State(testHeap, st.context)
