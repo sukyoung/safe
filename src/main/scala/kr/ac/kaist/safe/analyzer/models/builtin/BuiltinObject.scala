@@ -25,7 +25,7 @@ object BuiltinObject extends FuncModel(
 
   // 15.2.1 The Object Constructor Called as a Function: Object([value])
   code = BasicCode(argLen = 1, (
-    args: Value, st: State, sem: Semantics
+    args: AbsValue, st: State, sem: Semantics
   ) => {
     val h = st.heap
     val argV = sem.CFGLoadHelper(args, Set(AbsString.alpha("0")), h)
@@ -42,9 +42,9 @@ object BuiltinObject extends FuncModel(
       val loc = Loc(addr, Recent)
       val obj = AbsObjectUtil.newObject
       val heap = state.heap.update(loc, obj)
-      (ValueUtil(loc), State(heap, st.context))
+      (AbsValue(loc), State(heap, st.context))
     } else {
-      (ValueUtil.Bot, State.Bot)
+      (AbsValue.Bot, State.Bot)
     }
 
     // 2. Return ToObject(value)
@@ -55,7 +55,7 @@ object BuiltinObject extends FuncModel(
 
   // 15.2.2 The Object Constructor: new Object([value])
   construct = Some(BasicCode(argLen = 1, (
-    args: Value, st: State, sem: Semantics
+    args: AbsValue, st: State, sem: Semantics
   ) => {
     val h = st.heap
     val argV = sem.CFGLoadHelper(args, Set(AbsString.alpha("0")), h)
@@ -84,9 +84,9 @@ object BuiltinObject extends FuncModel(
       val loc = Loc(addr, Recent)
       val obj = AbsObjectUtil.newObject
       val heap = state.heap.update(loc, obj)
-      (ValueUtil(loc), State(heap, st.context))
+      (AbsValue(loc), State(heap, st.context))
     } else {
-      (ValueUtil.Bot, State.Bot)
+      (AbsValue.Bot, State.Bot)
     }
 
     (st1 + st2, State.Bot, v1 + v2)
@@ -100,7 +100,7 @@ object BuiltinObject extends FuncModel(
     NormalProp("getPrototypeOf", FuncModel(
       name = "Object.getPrototypeOf",
       code = BasicCode(argLen = 1, (
-        args: Value, st: State, sem: Semantics
+        args: AbsValue, st: State, sem: Semantics
       ) => {
         val h = st.heap
         val argV = sem.CFGLoadHelper(args, Set(AbsString.alpha("0")), h)
@@ -112,7 +112,7 @@ object BuiltinObject extends FuncModel(
         val excSt = st.raiseException(excSet)
 
         // 2. Return the value of [[Prototype]] internal property of O.
-        val protoV = retV.locset.foldLeft(ValueUtil.Bot)((v, loc) => {
+        val protoV = retV.locset.foldLeft(AbsValue.Bot)((v, loc) => {
           v + retSt.heap(loc).getOrElse(AbsObjectUtil.Bot).get(IPrototype).value
         })
 
@@ -124,7 +124,7 @@ object BuiltinObject extends FuncModel(
     NormalProp("getOwnPropertyDescriptor", FuncModel(
       name = "Object.getOwnPropertyDescriptor",
       code = BasicCode(argLen = 2, (
-        args: Value, st: State, sem: Semantics
+        args: AbsValue, st: State, sem: Semantics
       ) => {
         val h = st.heap
         val objV = sem.CFGLoadHelper(args, Set(AbsString.alpha("0")), h)
@@ -149,15 +149,15 @@ object BuiltinObject extends FuncModel(
         })
         val isDomIn = (obj domIn name)
         val v1 =
-          if (AF <= isDomIn) ValueUtil.alpha(Undef)
-          else ValueUtil.Bot
+          if (AF <= isDomIn) AbsValue.alpha(Undef)
+          else AbsValue.Bot
         val (state, v2) =
           if (AT <= isDomIn) {
             val objval = obj(name).getOrElse(PropValue.Bot).objval
             val valueV = objval.value
-            val writableV = ValueUtil(objval.writable)
-            val enumerableV = ValueUtil(objval.enumerable)
-            val configurableV = ValueUtil(objval.configurable)
+            val writableV = AbsValue(objval.writable)
+            val enumerableV = AbsValue(objval.enumerable)
+            val configurableV = AbsValue(objval.configurable)
             val descObj = AbsObjectUtil.newObject
               .update("value", PropValue(DataProperty(valueV, AT, AF, AT)))
               .update("writable", PropValue(DataProperty(writableV, AT, AF, AT)))
@@ -166,8 +166,8 @@ object BuiltinObject extends FuncModel(
             val state = st.oldify(descAddr)
             val descLoc = Loc(descAddr, Recent)
             val retHeap = state.heap.update(descLoc, descObj)
-            (State(retHeap, st.context), ValueUtil(descLoc))
-          } else (st, ValueUtil.Bot)
+            (State(retHeap, st.context), AbsValue(descLoc))
+          } else (st, AbsValue.Bot)
 
         (state, excSt, v1 + v2)
       })
@@ -177,7 +177,7 @@ object BuiltinObject extends FuncModel(
     NormalProp("getOwnPropertyNames", FuncModel(
       name = "Object.getOwnPropertyNames",
       code = BasicCode(argLen = 1, (
-        args: Value, st: State, sem: Semantics
+        args: AbsValue, st: State, sem: Semantics
       ) => {
         val h = st.heap
         val objV = sem.CFGLoadHelper(args, Set(AbsString.alpha("0")), h)
@@ -213,7 +213,7 @@ object BuiltinObject extends FuncModel(
         //       {[[Value]]: name, [[Writable]]: true, [[Enumerable]]: true,
         //       [[Configurable]]: true}, and false.
         //    c. Increment n by 1.
-        val v = ValueUtil(AbsPValue(AbsUndef.Top).copyWith(strval = keyStr))
+        val v = AbsValue(AbsPValue(AbsUndef.Top).copyWith(strval = keyStr))
         val retObj = (0 until len.toInt).foldLeft(arrObj)((obj, idx) => {
           obj.update(idx.toString, PropValue(DataProperty(v, AT, AT, AT)))
         })
@@ -222,7 +222,7 @@ object BuiltinObject extends FuncModel(
         val retHeap = state.heap.update(arrLoc, retObj)
 
         // 5. Return array.
-        (State(retHeap, st.context), excSt, ValueUtil(arrLoc))
+        (State(retHeap, st.context), excSt, AbsValue(arrLoc))
       })
     ), T, F, T),
 

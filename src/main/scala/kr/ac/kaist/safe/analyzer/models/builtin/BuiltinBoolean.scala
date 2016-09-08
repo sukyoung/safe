@@ -30,7 +30,7 @@ object BuiltinBoolean extends FuncModel(
 
     // Returns a Boolean value (not a Boolean object) computed by ToBoolean(value).
     val boolPV = AbsPValue(TypeConversionHelper.ToBoolean(argV))
-    ValueUtil(boolPV)
+    AbsValue(boolPV)
   }),
 
   // 15.6.2 The Boolean Constructor: new Boolean([value])
@@ -46,7 +46,7 @@ object BuiltinBoolean extends FuncModel(
     val obj = AbsObjectUtil.newBooleanObj(TypeConversionHelper.ToBoolean(argV))
     val heap = state.heap.update(loc, obj)
 
-    (State(heap, state.context), State.Bot, ValueUtil(loc))
+    (State(heap, state.context), State.Bot, AbsValue(loc))
   })),
 
   // 15.6.3.1 Boolean.prototype
@@ -68,7 +68,7 @@ object BuiltinBooleanProto extends ObjModel(
         val h = st.heap
         val localObj = st.context.pureLocal
         val thisLocSet = localObj.getOrElse("@this")(AbsLoc.Bot) { _.value.locset }
-        val thisV = ValueUtil(thisLocSet)
+        val thisV = AbsValue(thisLocSet)
         val classV = sem.CFGLoadHelper(thisV, Set(AbsString.alpha("@class")), h)
         val pv = thisV.pvalue
         val excSet = (pv.undefval.gamma, pv.nullval.gamma, pv.numval.gamma, pv.strval.gamma) match {
@@ -87,7 +87,7 @@ object BuiltinBooleanProto extends ObjModel(
             AbsBool.Bot
           }
         }
-        (st, st.raiseException(excSet), ValueUtil(b.toAbsString))
+        (st, st.raiseException(excSet), AbsValue(b.toAbsString))
       })
     ), T, F, T),
 
@@ -100,7 +100,7 @@ object BuiltinBooleanProto extends ObjModel(
         val h = st.heap
         val localObj = st.context.pureLocal
         val thisLocSet = localObj.getOrElse("@this")(AbsLoc.Bot) { _.value.locset }
-        val thisV = ValueUtil(thisLocSet)
+        val thisV = AbsValue(thisLocSet)
         val classV = sem.CFGLoadHelper(thisV, Set(AbsString.alpha("@class")), h)
         val pv = thisV.pvalue
         val excSet = (pv.undefval.gamma, pv.nullval.gamma, pv.numval.gamma, pv.strval.gamma) match {
@@ -119,7 +119,7 @@ object BuiltinBooleanProto extends ObjModel(
             AbsBool.Bot
           }
         }
-        (st, st.raiseException(excSet), ValueUtil(b))
+        (st, st.raiseException(excSet), AbsValue(b))
       })
     ), T, F, T)
   )

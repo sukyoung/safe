@@ -11,6 +11,7 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
+import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.nodes.cfg.FunctionId
 
@@ -41,22 +42,22 @@ case object IHasInstance extends InternalName {
 }
 
 object InternalValueUtil {
-  val Bot: InternalValue = InternalValue(ValueUtil.Bot, FidSetEmpty)
+  val Bot: InternalValue = InternalValue(AbsValue.Bot, FidSetEmpty)
 
   // constructor
-  def apply(undefval: AbsUndef): InternalValue = InternalValue(ValueUtil(undefval), FidSetEmpty)
-  def apply(nullval: AbsNull): InternalValue = InternalValue(ValueUtil(nullval), FidSetEmpty)
-  def apply(boolval: AbsBool): InternalValue = InternalValue(ValueUtil(boolval), FidSetEmpty)
-  def apply(numval: AbsNumber): InternalValue = InternalValue(ValueUtil(numval), FidSetEmpty)
-  def apply(strval: AbsString): InternalValue = InternalValue(ValueUtil(strval), FidSetEmpty)
-  def apply(loc: Loc): InternalValue = InternalValue(ValueUtil(loc), FidSetEmpty)
-  def apply(locSet: AbsLoc): InternalValue = InternalValue(ValueUtil(locSet), FidSetEmpty)
-  def apply(fid: FunctionId): InternalValue = InternalValue(ValueUtil.Bot, FidSetEmpty + fid)
-  def apply(fidSet: => Set[FunctionId]): InternalValue = InternalValue(ValueUtil.Bot, fidSet)
-  def apply(value: Value): InternalValue = InternalValue(value, FidSetEmpty)
+  def apply(undefval: AbsUndef): InternalValue = InternalValue(AbsValue(undefval), FidSetEmpty)
+  def apply(nullval: AbsNull): InternalValue = InternalValue(AbsValue(nullval), FidSetEmpty)
+  def apply(boolval: AbsBool): InternalValue = InternalValue(AbsValue(boolval), FidSetEmpty)
+  def apply(numval: AbsNumber): InternalValue = InternalValue(AbsValue(numval), FidSetEmpty)
+  def apply(strval: AbsString): InternalValue = InternalValue(AbsValue(strval), FidSetEmpty)
+  def apply(loc: Loc): InternalValue = InternalValue(AbsValue(loc), FidSetEmpty)
+  def apply(locSet: AbsLoc): InternalValue = InternalValue(AbsValue(locSet), FidSetEmpty)
+  def apply(fid: FunctionId): InternalValue = InternalValue(AbsValue.Bot, FidSetEmpty + fid)
+  def apply(fidSet: => Set[FunctionId]): InternalValue = InternalValue(AbsValue.Bot, fidSet)
+  def apply(value: AbsValue): InternalValue = InternalValue(value, FidSetEmpty)
 }
 
-case class InternalValue(value: Value, fidset: Set[FunctionId]) {
+case class InternalValue(value: AbsValue, fidset: Set[FunctionId]) {
   override def toString: String = {
     val valStr =
       if (value.isBottom) ""

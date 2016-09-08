@@ -34,7 +34,7 @@ object BuiltinMath extends ObjModel(
       code = SimpleCode(argLen = 1, (args, h, sem) => {
         val resV = sem.CFGLoadHelper(args, Set(AbsString.alpha("0")), h)
         val num = TypeConversionHelper.ToNumber(resV).abs
-        ValueUtil(num)
+        AbsValue(num)
       })
     ), T, F, T),
 
@@ -43,7 +43,7 @@ object BuiltinMath extends ObjModel(
       code = SimpleCode(argLen = 1, (args, h, sem) => {
         val resV = sem.CFGLoadHelper(args, Set(AbsString.alpha("0")), h)
         val num = TypeConversionHelper.ToNumber(resV).acos
-        ValueUtil(num)
+        AbsValue(num)
       })
     ), T, F, T),
 
@@ -52,7 +52,7 @@ object BuiltinMath extends ObjModel(
       code = SimpleCode(argLen = 1, (args, h, sem) => {
         val resV = sem.CFGLoadHelper(args, Set(AbsString.alpha("0")), h)
         val num = TypeConversionHelper.ToNumber(resV).asin
-        ValueUtil(num)
+        AbsValue(num)
       })
     ), T, F, T),
 
@@ -61,7 +61,7 @@ object BuiltinMath extends ObjModel(
       code = SimpleCode(argLen = 1, (args, h, sem) => {
         val resV = sem.CFGLoadHelper(args, Set(AbsString.alpha("0")), h)
         val num = TypeConversionHelper.ToNumber(resV).atan
-        ValueUtil(num)
+        AbsValue(num)
       })
     ), T, F, T),
 
@@ -71,7 +71,7 @@ object BuiltinMath extends ObjModel(
         val resVy = sem.CFGLoadHelper(args, Set(AbsString.alpha("0")), h)
         val resVx = sem.CFGLoadHelper(args, Set(AbsString.alpha("1")), h)
         val num = TypeConversionHelper.ToNumber(resVy).atan2(TypeConversionHelper.ToNumber(resVx))
-        ValueUtil(num)
+        AbsValue(num)
       })
     ), T, F, T),
 
@@ -80,7 +80,7 @@ object BuiltinMath extends ObjModel(
       code = SimpleCode(argLen = 1, (args, h, sem) => {
         val resV = sem.CFGLoadHelper(args, Set(AbsString.alpha("0")), h)
         val num = TypeConversionHelper.ToNumber(resV).ceil
-        ValueUtil(num)
+        AbsValue(num)
       })
     ), T, F, T),
 
@@ -89,7 +89,7 @@ object BuiltinMath extends ObjModel(
       code = SimpleCode(argLen = 1, (args, h, sem) => {
         val resV = sem.CFGLoadHelper(args, Set(AbsString.alpha("0")), h)
         val num = TypeConversionHelper.ToNumber(resV).cos
-        ValueUtil(num)
+        AbsValue(num)
       })
     ), T, F, T),
 
@@ -98,7 +98,7 @@ object BuiltinMath extends ObjModel(
       code = SimpleCode(argLen = 1, (args, h, sem) => {
         val resV = sem.CFGLoadHelper(args, Set(AbsString.alpha("0")), h)
         val num = TypeConversionHelper.ToNumber(resV).exp
-        ValueUtil(num)
+        AbsValue(num)
       })
     ), T, F, T),
 
@@ -107,7 +107,7 @@ object BuiltinMath extends ObjModel(
       code = SimpleCode(argLen = 1, (args, h, sem) => {
         val resV = sem.CFGLoadHelper(args, Set(AbsString.alpha("0")), h)
         val num = TypeConversionHelper.ToNumber(resV).floor
-        ValueUtil(num)
+        AbsValue(num)
       })
     ), T, F, T),
 
@@ -116,7 +116,7 @@ object BuiltinMath extends ObjModel(
       code = SimpleCode(argLen = 1, (args, h, sem) => {
         val resV = sem.CFGLoadHelper(args, Set(AbsString.alpha("0")), h)
         val num = TypeConversionHelper.ToNumber(resV).log
-        ValueUtil(num)
+        AbsValue(num)
       })
     ), T, F, T),
 
@@ -124,7 +124,7 @@ object BuiltinMath extends ObjModel(
     NormalProp("max", FuncModel(
       name = "Math.max",
       code = SimpleCode(argLen = 2, (args, h, sem) => {
-        ValueUtil(AbsNumber.Top)
+        AbsValue(AbsNumber.Top)
       })
     ), T, F, T),
 
@@ -132,7 +132,7 @@ object BuiltinMath extends ObjModel(
     NormalProp("min", FuncModel(
       name = "Math.min",
       code = SimpleCode(argLen = 2, (args, h, sem) => {
-        ValueUtil(AbsNumber.Top)
+        AbsValue(AbsNumber.Top)
       })
     ), T, F, T),
 
@@ -142,14 +142,14 @@ object BuiltinMath extends ObjModel(
         val resVx = sem.CFGLoadHelper(args, Set(AbsString.alpha("0")), h)
         val resVy = sem.CFGLoadHelper(args, Set(AbsString.alpha("1")), h)
         val num = TypeConversionHelper.ToNumber(resVx).pow(TypeConversionHelper.ToNumber(resVy))
-        ValueUtil(num)
+        AbsValue(num)
       })
     ), T, F, T),
 
     NormalProp("random", FuncModel(
       name = "Math.random",
       code = SimpleCode(argLen = 0, (args, h, sem) => {
-        ValueUtil(AbsNumber.Top)
+        AbsValue(AbsNumber.Top)
       })
     ), T, F, T),
 
@@ -158,7 +158,7 @@ object BuiltinMath extends ObjModel(
       code = SimpleCode(argLen = 1, (args, h, sem) => {
         val resV = sem.CFGLoadHelper(args, Set(AbsString.alpha("0")), h)
         val num = TypeConversionHelper.ToNumber(resV).round
-        ValueUtil(num)
+        AbsValue(num)
       })
     ), T, F, T),
 
@@ -167,7 +167,7 @@ object BuiltinMath extends ObjModel(
       code = SimpleCode(argLen = 1, (args, h, sem) => {
         val resV = sem.CFGLoadHelper(args, Set(AbsString.alpha("0")), h)
         val num = TypeConversionHelper.ToNumber(resV).sin
-        ValueUtil(num)
+        AbsValue(num)
       })
     ), T, F, T),
 
@@ -176,7 +176,7 @@ object BuiltinMath extends ObjModel(
       code = SimpleCode(argLen = 1, (args, h, sem) => {
         val resV = sem.CFGLoadHelper(args, Set(AbsString.alpha("0")), h)
         val num = TypeConversionHelper.ToNumber(resV).sqrt
-        ValueUtil(num)
+        AbsValue(num)
       })
     ), T, F, T),
 
@@ -185,7 +185,7 @@ object BuiltinMath extends ObjModel(
       code = SimpleCode(argLen = 1, (args, h, sem) => {
         val resV = sem.CFGLoadHelper(args, Set(AbsString.alpha("0")), h)
         val num = TypeConversionHelper.ToNumber(resV).tan
-        ValueUtil(num)
+        AbsValue(num)
       })
     ), T, F, T)
   )

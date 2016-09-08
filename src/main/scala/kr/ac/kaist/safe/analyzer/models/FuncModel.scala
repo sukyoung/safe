@@ -41,7 +41,7 @@ class FuncModel(
               heap.getOrElse(objModel.loc)(Heap.Bot)(obj => {
                 heap.update(objModel.loc, obj.update(
                   "constructor",
-                  PropValue(DataProperty(ValueUtil(loc), AT, AF, AT))
+                  PropValue(DataProperty(AbsValue(loc), AT, AF, AT))
                 ))
               })
             }
@@ -54,7 +54,7 @@ class FuncModel(
       val func = code.getCFGFunc(cfg, name)
       val fidOpt = Some(func.id)
       val constructIdOpt = construct.map(_.getCFGFunc(cfg, name).id)
-      val scope = ValueUtil.alpha(Null) // TODO get scope as args
+      val scope = AbsValue.alpha(Null) // TODO get scope as args
       val n = AbsNumber.alpha(code.argLen)
       val funcObj = AbsObjectUtil.newFunctionObject(
         fidOpt,

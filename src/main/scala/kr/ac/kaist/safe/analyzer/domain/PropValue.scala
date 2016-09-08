@@ -21,7 +21,7 @@ object PropValue {
 
   def apply(objval: DataProperty): PropValue = PropValue(objval, HashSet[FunctionId]())
   def apply(pvalue: AbsPValue, writable: AbsBool, enumerable: AbsBool, configurable: AbsBool): PropValue =
-    PropValue(DataProperty(Value(pvalue, AbsLoc.Bot), writable, enumerable, configurable))
+    PropValue(DataProperty(AbsValue(pvalue), writable, enumerable, configurable))
 
   def apply(fidSet: Set[FunctionId]): PropValue =
     PropValue(DataPropertyUtil.Bot, fidSet)

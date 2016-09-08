@@ -23,8 +23,8 @@ class ObjModel(
 ) extends Model {
   val addr: Address = SystemAddr(name)
   val loc: Loc = Loc(addr, Recent)
-  def init(h: Heap, cfg: CFG): (Heap, Value) =
-    (initHeap(h, cfg), ValueUtil(loc))
+  def init(h: Heap, cfg: CFG): (Heap, AbsValue) =
+    (initHeap(h, cfg), AbsValue(loc))
 
   def initHeap(h: Heap, cfg: CFG): Heap = h(loc) match {
     case Some(_) => h
@@ -44,7 +44,7 @@ class ObjModel(
     ps.foldLeft((h, obj)) {
       case ((heap, obj), NormalProp(name, model, writable, enumerable, configurable)) => {
         (model match {
-          case SelfModel => (heap, ValueUtil(loc))
+          case SelfModel => (heap, AbsValue(loc))
           case _ => model.init(heap, cfg)
         }) match {
           case (heap, value) => (heap, obj.update(
@@ -60,7 +60,7 @@ class ObjModel(
       }
       case ((heap, obj), InternalProp(name, model)) => {
         (model match {
-          case SelfModel => (heap, ValueUtil(loc))
+          case SelfModel => (heap, AbsValue(loc))
           case _ => model.init(heap, cfg)
         }) match {
           case (heap, value) => (heap, obj.update(

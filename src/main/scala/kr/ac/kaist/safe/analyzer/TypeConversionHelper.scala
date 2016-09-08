@@ -26,16 +26,16 @@ object TypeConversionHelper {
   ////////////////////////////////////////////////////////////////
   // 9.1 ToPrimitive
   ////////////////////////////////////////////////////////////////
-  def ToPrimitive(value: Value): AbsPValue =
+  def ToPrimitive(value: AbsValue): AbsPValue =
     value.pvalue + AbsObjectUtil.defaultValue(value.locset)
 
-  def ToPrimitive(value: Value, preferredType: String): AbsPValue =
+  def ToPrimitive(value: AbsValue, preferredType: String): AbsPValue =
     value.pvalue + AbsObjectUtil.defaultValue(value.locset, preferredType)
 
   def ToPrimitive(locSet: AbsLoc, preferredType: String): AbsPValue =
     AbsObjectUtil.defaultValue(locSet, preferredType)
 
-  def ToPrimitive(value: Value, h: Heap, preferredType: String = "String"): AbsPValue =
+  def ToPrimitive(value: AbsValue, h: Heap, preferredType: String = "String"): AbsPValue =
     value.pvalue + AbsObjectUtil.defaultValue(value.locset, h, preferredType)
 
   def ToPrimitive(locSet: AbsLoc, h: Heap, preferredType: String): AbsPValue =
@@ -46,7 +46,7 @@ object TypeConversionHelper {
   // Detailed abstract meaning of Table 11 relies on
   // implementation of each abstract domains.
   ////////////////////////////////////////////////////////////////
-  def ToBoolean(value: Value): AbsBool = {
+  def ToBoolean(value: AbsValue): AbsBool = {
     val abool6 = if (value.locset.isBottom) AbsBool.Bot else AbsBool.True
     ToBoolean(value.pvalue) + abool6
   }
@@ -75,12 +75,12 @@ object TypeConversionHelper {
   // Detailed abstract meaning of Table 12 relies on
   // implementation of each abstract domains.
   ////////////////////////////////////////////////////////////////
-  def ToNumber(value: Value): AbsNumber = {
+  def ToNumber(value: AbsValue): AbsNumber = {
     val anum6 = ToNumber(ToPrimitive(value.locset, preferredType = "Number"))
     ToNumber(value.pvalue) + anum6
   }
 
-  def ToNumber(value: Value, h: Heap): AbsNumber = {
+  def ToNumber(value: AbsValue, h: Heap): AbsNumber = {
     val anum6 = ToNumber(ToPrimitive(value.locset, h, preferredType = "Number"))
     ToNumber(value.pvalue) + anum6
   }
@@ -109,10 +109,10 @@ object TypeConversionHelper {
   // Detailed abstract meaning of ToInteger relies on
   // implementation of abstract number domain.
   ////////////////////////////////////////////////////////////////
-  def ToInteger(value: Value): AbsNumber =
+  def ToInteger(value: AbsValue): AbsNumber =
     ToNumber(value).toInteger
 
-  def ToInteger(value: Value, h: Heap): AbsNumber =
+  def ToInteger(value: AbsValue, h: Heap): AbsNumber =
     ToNumber(value, h).toInteger
 
   ////////////////////////////////////////////////////////////////
@@ -120,10 +120,10 @@ object TypeConversionHelper {
   // Detailed abstract meaning of ToInt32 relies on
   // implementation of abstract number domain.
   ////////////////////////////////////////////////////////////////
-  def ToInt32(value: Value): AbsNumber =
+  def ToInt32(value: AbsValue): AbsNumber =
     ToNumber(value).toInt32
 
-  def ToInt32(value: Value, h: Heap): AbsNumber =
+  def ToInt32(value: AbsValue, h: Heap): AbsNumber =
     ToNumber(value, h).toInt32
 
   ////////////////////////////////////////////////////////////////
@@ -131,10 +131,10 @@ object TypeConversionHelper {
   // Detailed abstract meaning of ToUInt32 relies on
   // implementation of abstract number domain.
   ////////////////////////////////////////////////////////////////
-  def ToUInt32(value: Value): AbsNumber =
+  def ToUInt32(value: AbsValue): AbsNumber =
     ToNumber(value).toUInt32
 
-  def ToUInt32(value: Value, h: Heap): AbsNumber =
+  def ToUInt32(value: AbsValue, h: Heap): AbsNumber =
     ToNumber(value, h).toUInt32
 
   ////////////////////////////////////////////////////////////////
@@ -142,10 +142,10 @@ object TypeConversionHelper {
   // Detailed abstract meaning of ToUInt16 relies on
   // implementation of abstract number domain.
   ////////////////////////////////////////////////////////////////
-  def ToUInt16(value: Value): AbsNumber =
+  def ToUInt16(value: AbsValue): AbsNumber =
     ToNumber(value).toUInt16
 
-  def ToUInt16(value: Value, h: Heap): AbsNumber =
+  def ToUInt16(value: AbsValue, h: Heap): AbsNumber =
     ToNumber(value, h).toUInt16
 
   ////////////////////////////////////////////////////////////////
@@ -153,12 +153,12 @@ object TypeConversionHelper {
   // Detailed abstract meaning of Table 13 relies on
   // implementation of each abstract domains.
   ////////////////////////////////////////////////////////////////
-  def ToString(value: Value): AbsString = {
+  def ToString(value: AbsValue): AbsString = {
     val astr6 = ToString(ToPrimitive(value.locset, preferredType = "String"))
     ToString(value.pvalue) + astr6
   }
 
-  def ToString(value: Value, h: Heap): AbsString = {
+  def ToString(value: AbsValue, h: Heap): AbsString = {
     val astr6 = ToString(ToPrimitive(value.locset, h, preferredType = "String"))
     ToString(value.pvalue) + astr6
   }
@@ -195,7 +195,7 @@ object TypeConversionHelper {
     (obj3 + obj4 + obj5, excSet)
   }
 
-  def ToObject(value: Value, st: State, addr: Address): (Value, State, Set[Exception]) = {
+  def ToObject(value: AbsValue, st: State, addr: Address): (AbsValue, State, Set[Exception]) = {
     val locSet = value.locset
     val (obj, excSet) = ToObject(value.pvalue)
 
@@ -208,13 +208,13 @@ object TypeConversionHelper {
       if (!locSet.isBottom) (locSet, st.heap)
       else (AbsLoc.Bot, Heap.Bot)
 
-    (ValueUtil(locSet1 + locSet2), State(h1 + h2, st.context), excSet)
+    (AbsValue(locSet1 + locSet2), State(h1 + h2, st.context), excSet)
   }
 
   ////////////////////////////////////////////////////////////////
   // 9.10 CheckObjectCoercible, Table 15
   ////////////////////////////////////////////////////////////////
-  def CheckObjectCoercible(value: Value): Set[Exception] =
+  def CheckObjectCoercible(value: AbsValue): Set[Exception] =
     CheckObjectCoercible(value.pvalue)
 
   def CheckObjectCoercible(pvalue: AbsPValue): Set[Exception] = {
@@ -227,7 +227,7 @@ object TypeConversionHelper {
   ////////////////////////////////////////////////////////////////
   // 9.11 IsCallable, Table 16
   ////////////////////////////////////////////////////////////////
-  def IsCallable(value: Value): AbsBool = {
+  def IsCallable(value: AbsValue): AbsBool = {
     val abool1 = value.pvalue.undefval.fold(AbsBool.Bot) { _ => AbsBool.False }
     val abool2 = value.pvalue.nullval.fold(AbsBool.Bot) { _ => AbsBool.False }
     val abool3 = value.pvalue.boolval.fold(AbsBool.Bot) { _ => AbsBool.False }
@@ -237,7 +237,7 @@ object TypeConversionHelper {
     abool1 + abool2 + abool3 + abool4 + abool5 + abool6
   }
 
-  def IsCallable(value: Value, h: Heap): AbsBool = {
+  def IsCallable(value: AbsValue, h: Heap): AbsBool = {
     val abool1 = value.pvalue.undefval.fold(AbsBool.Bot) { _ => AbsBool.False }
     val abool2 = value.pvalue.nullval.fold(AbsBool.Bot) { _ => AbsBool.False }
     val abool3 = value.pvalue.boolval.fold(AbsBool.Bot) { _ => AbsBool.False }
@@ -264,7 +264,7 @@ object TypeConversionHelper {
   // This algorithm differs from the strict equal(===) in its
   // treatment of signed zeros and NaN
   ////////////////////////////////////////////////////////////////
-  def SameValue(left: Value, right: Value): AbsBool = {
+  def SameValue(left: AbsValue, right: AbsValue): AbsBool = {
     val isMultiType =
       if ((left + right).typeCount > 1) AbsBool.False
       else AbsBool.Bot
@@ -290,7 +290,7 @@ object TypeConversionHelper {
   ////////////////////////////////////////////////////////////////
   // Additional type-related helper functions
   ////////////////////////////////////////////////////////////////
-  def typeTag(value: Value, h: Heap): AbsString = {
+  def typeTag(value: AbsValue, h: Heap): AbsString = {
     val s1 = value.pvalue.undefval.fold(AbsString.Bot)(_ => {
       AbsString.alpha("undefined")
     })

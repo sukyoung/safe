@@ -23,7 +23,7 @@ case class Initialize(cfg: CFG) {
   def state: State = {
     val afalse = AbsBool.alpha(false)
 
-    val globalPureLocalEnv = DecEnvRecord.newPureLocal(ValueUtil.alpha(Null), AbsLoc.alpha(BuiltinGlobal.loc)) - "@return"
+    val globalPureLocalEnv = DecEnvRecord.newPureLocal(AbsValue.alpha(Null), AbsLoc.alpha(BuiltinGlobal.loc)) - "@return"
 
     val initHeap = Heap(HashMap(
       SystemLoc("Dummy", Old) -> AbsObjectUtil.Bot // TODO If delete, not working because not allowed update to bottom heap

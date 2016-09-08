@@ -69,17 +69,17 @@ object AbsObjectUtil {
       .update("length", PropValue(DataPropertyUtil(absLength)(atrue, afalse, afalse)))
   }
 
-  def newFunctionObject(fid: FunctionId, env: Value, l: Loc, n: AbsNumber): Obj = {
+  def newFunctionObject(fid: FunctionId, env: AbsValue, l: Loc, n: AbsNumber): Obj = {
     newFunctionObject(Some(fid), Some(fid), env, Some(l), n)
   }
 
-  def newFunctionObject(fidOpt: Option[FunctionId], constructIdOpt: Option[FunctionId], env: Value,
+  def newFunctionObject(fidOpt: Option[FunctionId], constructIdOpt: Option[FunctionId], env: AbsValue,
     locOpt: Option[Loc], n: AbsNumber): Obj = {
     newFunctionObject(fidOpt, constructIdOpt, env,
       locOpt, atrue, afalse, afalse, n)
   }
 
-  def newFunctionObject(fidOpt: Option[FunctionId], constructIdOpt: Option[FunctionId], env: Value,
+  def newFunctionObject(fidOpt: Option[FunctionId], constructIdOpt: Option[FunctionId], env: AbsValue,
     locOpt: Option[Loc], writable: AbsBool, enumerable: AbsBool, configurable: AbsBool,
     absLength: AbsNumber): Obj = {
     val obj1 =
@@ -100,7 +100,7 @@ object AbsObjectUtil {
     }
     val obj4 = locOpt match {
       case Some(loc) =>
-        val prototypeVal = ValueUtil(loc)
+        val prototypeVal = AbsValue(loc)
         obj3.update(IHasInstance, InternalValueUtil(AbsNull.Top))
           .update("prototype", PropValue(DataPropertyUtil(prototypeVal)(writable, enumerable, configurable)))
       case None => obj3
@@ -133,15 +133,15 @@ object AbsObjectUtil {
           val length = str.length
           val newObj3 = (0 until length).foldLeft(newObj2)((tmpObj, tmpIdx) => {
             val charAbsStr = AbsString.alpha(str.charAt(tmpIdx).toString)
-            val charVal = ValueUtil(charAbsStr)
+            val charVal = AbsValue(charAbsStr)
             tmpObj.update(tmpIdx.toString, PropValue(DataPropertyUtil(charVal)(afalse, atrue, afalse)))
           })
-          val lengthVal = ValueUtil.alpha(length)
+          val lengthVal = AbsValue.alpha(length)
           obj + newObj3.update("length", PropValue(DataPropertyUtil(lengthVal)(afalse, afalse, afalse)))
         })
       case _ =>
         newObj2
-          .update(AbsString.Number, PropValue(DataPropertyUtil(ValueUtil(AbsString.Top))(afalse, atrue, afalse)))
+          .update(AbsString.Number, PropValue(DataPropertyUtil(AbsValue(AbsString.Top))(afalse, atrue, afalse)))
           .update("length", PropValue(DataPropertyUtil(absStr.length)(afalse, afalse, afalse)))
     }
   }

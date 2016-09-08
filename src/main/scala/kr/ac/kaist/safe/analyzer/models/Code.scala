@@ -13,6 +13,7 @@ package kr.ac.kaist.safe.analyzer.models
 
 import kr.ac.kaist.safe.analyzer.Semantics
 import kr.ac.kaist.safe.analyzer.domain._
+import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.nodes.cfg.{ CFG, CFGFunction, ModelBlock, CFGEdgeExc }
 import kr.ac.kaist.safe.nodes.ir.IRModelFunc
 import kr.ac.kaist.safe.nodes.ast.{ ModelFunc, ASTNodeInfo }
@@ -49,7 +50,7 @@ object EmptyCode {
 
 class BasicCode(
     override val argLen: Int = 0,
-    code: (Value, State, Semantics) => (State, State, Value)
+    code: (AbsValue, State, Semantics) => (State, State, AbsValue)
 ) extends Code {
   def getCFGFunc(cfg: CFG, name: String): CFGFunction = {
     val (funName, argsName, func) = createCFGFunc(cfg, name)
@@ -65,7 +66,7 @@ class BasicCode(
     case State(heap, context) => {
       val stBotPair = (State.Bot, State.Bot)
       val localEnv = context.pureLocal
-      val argV = localEnv.getOrElse(argsName)(ValueUtil.Bot) { _.value }
+      val argV = localEnv.getOrElse(argsName)(AbsValue.Bot) { _.value }
       val (retSt, retSte, retV) = code(argV, st, sem)
       val retObj = localEnv.update("@return", BindingUtil(retV))
       val retCtx = retSt.context.subsPureLocal(retObj)
@@ -76,19 +77,19 @@ class BasicCode(
 object BasicCode {
   def apply(
     argLen: Int = 0,
-    code: (Value, State, Semantics) => (State, State, Value)
+    code: (AbsValue, State, Semantics) => (State, State, AbsValue)
   ): BasicCode = new BasicCode(argLen, code)
 }
 
 class SimpleCode(
   override val argLen: Int = 0,
-  code: (Value, Heap, Semantics) => Value
-) extends BasicCode(argLen, (v: Value, st: State, sem: Semantics) => {
+  code: (AbsValue, Heap, Semantics) => AbsValue
+) extends BasicCode(argLen, (v: AbsValue, st: State, sem: Semantics) => {
   (st, State.Bot, code(v, st.heap, sem))
 })
 object SimpleCode {
   def apply(
     argLen: Int = 0,
-    code: (Value, Heap, Semantics) => Value
+    code: (AbsValue, Heap, Semantics) => AbsValue
   ): SimpleCode = new SimpleCode(argLen, code)
 }

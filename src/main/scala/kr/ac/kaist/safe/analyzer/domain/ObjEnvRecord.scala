@@ -27,7 +27,7 @@ class ObjEnvRecord(
   // TODO 10.2.1.2.3 SetMutableBinding(N, V, S)
   def SetMutableBinding(
     name: String,
-    v: Value,
+    v: AbsValue,
     strict: Boolean
   ): (ObjEnvRecord, Set[Exception]) = null
 
@@ -35,11 +35,11 @@ class ObjEnvRecord(
   def GetBindingValue(
     name: String,
     strict: Boolean
-  ): (Value, Set[Exception]) = null
+  ): (AbsValue, Set[Exception]) = null
 
   // TODO 10.2.1.2.5 DeleteBinding(N)
   def DeleteBinding(name: String): (ObjEnvRecord, AbsBool) = null
 
   // TODO 10.2.1.2.6 ImplicitThisValue()
-  def ImplicitThisValue: Value = null
+  def ImplicitThisValue: AbsValue = null
 }

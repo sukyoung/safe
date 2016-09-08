@@ -28,7 +28,7 @@ abstract class EnvRecord {
   // SetMutableBinding(N, V, S)
   def SetMutableBinding(
     name: String,
-    v: Value,
+    v: AbsValue,
     strict: Boolean
   ): (EnvRecord, Set[Exception])
 
@@ -36,11 +36,11 @@ abstract class EnvRecord {
   def GetBindingValue(
     name: String,
     strict: Boolean
-  ): (Value, Set[Exception])
+  ): (AbsValue, Set[Exception])
 
   // DeleteBinding(N)
   def DeleteBinding(name: String): (EnvRecord, AbsBool)
 
   // ImplicitThisValue()
-  def ImplicitThisValue: Value
+  def ImplicitThisValue: AbsValue
 }

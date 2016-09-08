@@ -17,7 +17,7 @@ import scala.collection.immutable.HashSet
 ////////////////////////////////////////////////////////////////////////////////
 // concrete primitive value type
 ////////////////////////////////////////////////////////////////////////////////
-abstract class PValue
+abstract class PValue extends Value
 object PValue {
   // TODO how to define only once following implicit conversions
   implicit def bool2bool(b: Boolean): Bool = Bool(b)
@@ -61,16 +61,10 @@ trait AbsPValueUtil extends AbsDomainUtil[PValue, AbsPValue] {
 ////////////////////////////////////////////////////////////////////////////////
 // default primitive value abstract domain
 ////////////////////////////////////////////////////////////////////////////////
-case class DefaultPValue(
-    AbsUndef: AbsUndefUtil,
-    AbsNull: AbsNullUtil,
-    AbsBool: AbsBoolUtil,
-    AbsNumber: AbsNumberUtil,
-    AbsString: AbsStringUtil
-) extends AbsPValueUtil {
-  val Bot: AbsDom =
+object DefaultPValue extends AbsPValueUtil {
+  lazy val Bot: AbsDom =
     AbsDom(AbsUndef.Bot, AbsNull.Bot, AbsBool.Bot, AbsNumber.Bot, AbsString.Bot)
-  val Top: AbsDom =
+  lazy val Top: AbsDom =
     AbsDom(AbsUndef.Top, AbsNull.Top, AbsBool.Top, AbsNumber.Top, AbsString.Top)
 
   def alpha(pvalue: PValue): AbsPValue = pvalue match {

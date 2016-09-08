@@ -41,9 +41,9 @@ case class State(heap: Heap, context: ExecContext) {
     if (excSet.isEmpty) State.Bot
     else {
       val localEnv = context.pureLocal
-      val oldValue = localEnv.getOrElse("@exception_all")(ValueUtil.Bot) { _.value }
+      val oldValue = localEnv.getOrElse("@exception_all")(AbsValue.Bot) { _.value }
       val newExcSet = excSet.foldLeft(AbsLoc.Bot)((locSet, exc) => locSet + exc.getLoc)
-      val excValue = Value(AbsPValue.Bot, newExcSet)
+      val excValue = AbsValue(newExcSet)
       val newExcBind = BindingUtil(excValue)
       val newExcSetBind = BindingUtil(excValue + oldValue)
       val newCtx = context.subsPureLocal(localEnv
@@ -60,9 +60,9 @@ case class State(heap: Heap, context: ExecContext) {
   ////////////////////////////////////////////////////////////////
   // Lookup
   ////////////////////////////////////////////////////////////////
-  def lookup(id: CFGId): (Value, Set[Exception]) = {
+  def lookup(id: CFGId): (AbsValue, Set[Exception]) = {
     val x = id.text
-    val valueBot = ValueUtil.Bot
+    val valueBot = AbsValue.Bot
     val localEnv = context.pureLocal
     id.kind match {
       case PureLocalVar => (localEnv.getOrElse(x)(valueBot) { _.value }, ExceptionSetEmpty)
@@ -97,7 +97,7 @@ case class State(heap: Heap, context: ExecContext) {
   ////////////////////////////////////////////////////////////////
   // Store
   ////////////////////////////////////////////////////////////////
-  def varStore(id: CFGId, value: Value): State = {
+  def varStore(id: CFGId, value: AbsValue): State = {
     val x = id.text
     id.kind match {
       case PureLocalVar =>
@@ -130,7 +130,7 @@ case class State(heap: Heap, context: ExecContext) {
   ////////////////////////////////////////////////////////////////
   // Update location
   ////////////////////////////////////////////////////////////////
-  def createMutableBinding(id: CFGId, value: Value): State = {
+  def createMutableBinding(id: CFGId, value: AbsValue): State = {
     val x = id.text
     id.kind match {
       case PureLocalVar =>

@@ -62,20 +62,20 @@ trait Heap {
   ////////////////////////////////////////////////////////////////
   // Proto
   ////////////////////////////////////////////////////////////////
-  def proto(loc: Loc, absStr: AbsString): Value
+  def proto(loc: Loc, absStr: AbsString): AbsValue
   def protoBase(loc: Loc, absStr: AbsString): AbsLoc
 
   ////////////////////////////////////////////////////////////////
   // Lookup
   ////////////////////////////////////////////////////////////////
-  def lookupGlobal(x: String): (Value, Set[Exception])
+  def lookupGlobal(x: String): (AbsValue, Set[Exception])
   def lookupBaseGlobal(x: String): AbsLoc
 
   ////////////////////////////////////////////////////////////////
   // Store
   ////////////////////////////////////////////////////////////////
-  def propStore(loc: Loc, absStr: AbsString, value: Value): Heap
-  def varStoreGlobal(x: String, value: Value): Heap
+  def propStore(loc: Loc, absStr: AbsString, value: AbsValue): Heap
+  def varStoreGlobal(x: String, value: AbsValue): Heap
 
   ////////////////////////////////////////////////////////////////
   // Update location
@@ -297,7 +297,7 @@ class DHeap(val map: Map[Loc, Obj]) extends Heap {
         val b2 =
           if (AbsBool.False <= test) {
             val protoV = this.getOrElse(currentLoc, AbsObjectUtil.Bot)
-              .getOrElse(IPrototype)(ValueUtil.Bot) { _.value }
+              .getOrElse(IPrototype)(AbsValue.Bot) { _.value }
             val b3 = protoV.pvalue.nullval.fold(AbsBool.Bot) { _ => AbsBool.False }
             b3 + protoV.locset.foldLeft[AbsBool](AbsBool.Bot)((b, protoLoc) => {
               b + visit(protoLoc)
@@ -390,10 +390,10 @@ class DHeap(val map: Map[Loc, Obj]) extends Heap {
   ////////////////////////////////////////////////////////////////
   // Proto
   ////////////////////////////////////////////////////////////////
-  def proto(loc: Loc, absStr: AbsString): Value = {
+  def proto(loc: Loc, absStr: AbsString): AbsValue = {
     var visited = AbsLoc.Bot
-    val valueBot = ValueUtil.Bot
-    def visit(currentLoc: Loc): Value = {
+    val valueBot = AbsValue.Bot
+    def visit(currentLoc: Loc): AbsValue = {
       if (visited.contains(currentLoc)) valueBot
       else {
         visited += currentLoc
@@ -408,7 +408,7 @@ class DHeap(val map: Map[Loc, Obj]) extends Heap {
           if (AbsBool.False <= test) {
             val protoV = this.getOrElse(currentLoc, AbsObjectUtil.Bot).getOrElse(IPrototype)(valueBot) { _.value }
             val v3 = protoV.pvalue.nullval.fold(valueBot)(_ => {
-              ValueUtil.alpha(Undef)
+              AbsValue.alpha(Undef)
             })
             v3 + protoV.locset.foldLeft(valueBot)((v, protoLoc) => {
               v + visit(protoLoc)
@@ -451,8 +451,8 @@ class DHeap(val map: Map[Loc, Obj]) extends Heap {
   ////////////////////////////////////////////////////////////////
   // Lookup
   ////////////////////////////////////////////////////////////////
-  def lookupGlobal(x: String): (Value, Set[Exception]) = {
-    val valueBot = ValueUtil.Bot
+  def lookupGlobal(x: String): (AbsValue, Set[Exception]) = {
+    val valueBot = AbsValue.Bot
     if (this domIn BuiltinGlobal.loc) {
       val globalObj = this.getOrElse(BuiltinGlobal.loc, AbsObjectUtil.Bot)
       val v1 =
@@ -508,7 +508,7 @@ class DHeap(val map: Map[Loc, Obj]) extends Heap {
   ////////////////////////////////////////////////////////////////
   // Store
   ////////////////////////////////////////////////////////////////
-  def propStore(loc: Loc, absStr: AbsString, value: Value): Heap = {
+  def propStore(loc: Loc, absStr: AbsString, value: AbsValue): Heap = {
     val findingObj = this.getOrElse(loc, AbsObjectUtil.Bot)
     val objDomIn = (findingObj domIn absStr)
     if (objDomIn == AbsBool.Top) {
@@ -531,7 +531,7 @@ class DHeap(val map: Map[Loc, Obj]) extends Heap {
     }
   }
 
-  def varStoreGlobal(x: String, value: Value): Heap = {
+  def varStoreGlobal(x: String, value: AbsValue): Heap = {
     val globalLoc = BuiltinGlobal.loc
     val obj = this.getOrElse(globalLoc, AbsObjectUtil.Bot)
     val h1 =

@@ -209,10 +209,10 @@ abstract class ExecContext {
   ////////////////////////////////////////////////////////////////
   // Lookup
   ////////////////////////////////////////////////////////////////
-  def lookupLocal(loc: Loc, x: String): Value = {
+  def lookupLocal(loc: Loc, x: String): AbsValue = {
     var visited = AbsLoc.Bot
-    val valueBot = ValueUtil.Bot
-    def visit(l: Loc): Value = {
+    val valueBot = AbsValue.Bot
+    def visit(l: Loc): AbsValue = {
       if (visited.contains(l)) valueBot
       else {
         visited += l
@@ -261,7 +261,7 @@ abstract class ExecContext {
   ////////////////////////////////////////////////////////////////
   // Store
   ////////////////////////////////////////////////////////////////
-  def varStoreLocal(loc: Loc, x: String, value: Value): ExecContext = {
+  def varStoreLocal(loc: Loc, x: String, value: AbsValue): ExecContext = {
     val env = this.getOrElse(loc, DecEnvRecord.Bot)
     val AT = AbsBool.True
     val AF = AbsBool.False
@@ -269,10 +269,10 @@ abstract class ExecContext {
       case Some(bind) => {
         val trueV =
           if (AT <= bind.mutable) value
-          else ValueUtil.Bot
+          else AbsValue.Bot
         val falseV =
           if (AF <= bind.mutable) bind.value
-          else ValueUtil.Bot
+          else AbsValue.Bot
         val newBind = BindingUtil(trueV + falseV)
         update(loc, env.update(x, newBind))
       }

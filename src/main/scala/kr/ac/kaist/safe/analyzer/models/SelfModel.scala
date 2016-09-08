@@ -12,8 +12,9 @@
 package kr.ac.kaist.safe.analyzer.models
 
 import kr.ac.kaist.safe.analyzer.domain._
+import kr.ac.kaist.safe.analyzer.domain.Utils.AbsValue
 import kr.ac.kaist.safe.nodes.cfg.CFG
 
 object SelfModel extends Model {
-  def init(h: Heap, cfg: CFG): (Heap, Value) = (h, ValueUtil.Bot)
+  def init(h: Heap, cfg: CFG): (Heap, AbsValue) = (h, AbsValue.Bot)
 }

@@ -102,6 +102,7 @@ class CFG(
   def registerSystemAddr(addr: Address): Unit = systemAddrSet += addr
 
   // get all locations
+  // TODO it does not have all system address(addresses in modeling function)
   def getAllAddrSet: Set[Address] =
     (1 to pgmAddrSize).foldLeft(systemAddrSet)(_ + ProgramAddr(_))
 }

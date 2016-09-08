@@ -27,20 +27,15 @@ object Utils {
     AbsBool = absBool
     AbsNumber = absNumber
     AbsString = absString
-    AbsPValue = new DefaultPValue(
-      absUndef,
-      absNull,
-      absBool,
-      absNumber,
-      absString
-    )
-    AbsLoc = new DefaultLoc(cfg.getAllAddrSet)
+
+    AbsLoc = DefaultLoc(cfg.getAllAddrSet)
   }
   var AbsUndef: AbsUndefUtil = null
   var AbsNull: AbsNullUtil = null
   var AbsBool: AbsBoolUtil = null
   var AbsNumber: AbsNumberUtil = null
   var AbsString: AbsStringUtil = null
-  var AbsPValue: AbsPValueUtil = null
+  var AbsPValue: AbsPValueUtil = DefaultPValue
   var AbsLoc: AbsLocUtil = null
+  var AbsValue: AbsValueUtil = DefaultValue
 }

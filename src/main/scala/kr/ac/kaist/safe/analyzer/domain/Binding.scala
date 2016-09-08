@@ -14,19 +14,19 @@ package kr.ac.kaist.safe.analyzer.domain
 import kr.ac.kaist.safe.analyzer.domain.Utils._
 
 object BindingUtil {
-  val Bot: Binding = Binding(ValueUtil.Bot, AbsBool.Bot, AbsBool.Bot)
+  val Bot: Binding = Binding(AbsValue.Bot, AbsBool.Bot, AbsBool.Bot)
   // TODO Top
 
   // constructor
   def apply(
-    value: Value = ValueUtil.Bot,
+    value: AbsValue = AbsValue.Bot,
     initialized: AbsBool = AbsBool.True,
     mutable: AbsBool = AbsBool.True
   ): Binding = Binding(value, initialized, mutable)
 }
 
 case class Binding(
-    value: Value,
+    value: AbsValue,
     initialized: AbsBool,
     mutable: AbsBool
 ) {

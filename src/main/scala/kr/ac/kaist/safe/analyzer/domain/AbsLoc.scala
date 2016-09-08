@@ -19,7 +19,7 @@ import scala.collection.immutable.HashSet
 ////////////////////////////////////////////////////////////////////////////////
 // concrete location type
 ////////////////////////////////////////////////////////////////////////////////
-case class Loc(address: Address, recency: RecencyTag = Recent) {
+case class Loc(address: Address, recency: RecencyTag = Recent) extends Value {
   override def toString: String = s"${recency}${address}"
 }
 
@@ -92,8 +92,8 @@ case class DefaultLoc(
   private val totalLocSet = totalAddrSet.foldLeft(HashSet[Loc]()) {
     case (set, addr) => set + Loc(addr, Recent) + Loc(addr, Old)
   }
-  val Top: AbsDom = AbsDom(totalLocSet)
-  val Bot: AbsDom = AbsDom()
+  lazy val Top: AbsDom = AbsDom(totalLocSet)
+  lazy val Bot: AbsDom = AbsDom()
 
   def alpha(loc: Loc): AbsLoc = AbsDom(loc)
   override def alpha(locset: Set[Loc]): AbsLoc = AbsDom(locset)
