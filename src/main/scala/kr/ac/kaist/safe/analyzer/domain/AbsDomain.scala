@@ -14,10 +14,13 @@ package kr.ac.kaist.safe.analyzer.domain
 // abstract domain
 trait AbsDomain[C, Self <: AbsDomain[C, _]] {
   // concretization
-  def gamma: ConDomain[C]
+  def gamma: ConSet[C]
 
   // bottom check
   def isBottom: Boolean
+
+  // get concrete value if |gamma(this)| = 1
+  def getSingle: ConSingle[C]
 
   // folding for bottom
   def foldUnit(f: => Unit): Unit = fold(())(_ => f)

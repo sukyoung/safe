@@ -23,19 +23,21 @@ object DefaultBool extends AbsBoolUtil {
   def alpha(bool: Bool): AbsBool = if (bool) True else False
 
   sealed abstract class AbsDom extends AbsBool {
-    def gamma: ConSingle[Bool] = this match {
-      case Bot => ConSingleBot()
-      case True => ConSingleCon(true)
-      case False => ConSingleCon(false)
-      case Top => ConSingleTop()
-    }
-
-    def gammaSimple: ConSimple[Bool] = isBottom match {
-      case true => ConSimpleBot()
-      case false => ConSimpleTop()
+    def gamma: ConSet[Bool] = this match {
+      case Bot => ConFin()
+      case True => ConFin(true)
+      case False => ConFin(false)
+      case Top => ConFin(true, false)
     }
 
     def isBottom: Boolean = this == Bot
+
+    def getSingle: ConSingle[Bool] = this match {
+      case Bot => ConZero()
+      case True => ConOne(true)
+      case False => ConOne(false)
+      case Top => ConMany()
+    }
 
     override def toString: String = this match {
       case Bot => "⊥"

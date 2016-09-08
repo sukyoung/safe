@@ -20,13 +20,10 @@ case class Str(str: String) extends PValue
 // string abstract domain
 ////////////////////////////////////////////////////////////////////////////////
 trait AbsString extends AbsDomain[Str, AbsString] {
-  def gamma: ConSet[Str]
-  def gammaSingle: ConSingle[Str]
-  def gammaSimple: ConSimple[Str]
-  def gammaIsAllNums: ConSingle[Boolean]
-
   def ===(that: AbsString): AbsBool
   def <(that: AbsString): AbsBool
+
+  def isNum: AbsBool
 
   def trim: AbsString
   def concat(that: AbsString): AbsString

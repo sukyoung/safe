@@ -59,9 +59,11 @@ object DefaultValue extends AbsValueUtil {
   def apply(locset: AbsLoc): AbsValue = Bot.copy(locset = locset)
 
   case class AbsDom(pvalue: AbsPValue, locset: AbsLoc) extends AbsValue {
-    def gamma: ConSet[Value] = ConSetTop() // TODO more precisely
+    def gamma: ConSet[Value] = ConInf() // TODO more precisely
 
     def isBottom: Boolean = this == Bot
+
+    def getSingle: ConSingle[Value] = ConMany() // TODO more precisely
 
     def <=(that: AbsValue): Boolean = {
       val (left, right) = (this, check(that))
@@ -127,8 +129,8 @@ object DefaultValue extends AbsValueUtil {
     }
 
     def getThis(h: Heap): AbsLoc = {
-      val locSet1 = (pvalue.nullval.gamma, pvalue.undefval.gamma) match {
-        case (ConSimpleBot(), ConSimpleBot()) => AbsLoc.Bot
+      val locSet1 = (pvalue.nullval.isBottom, pvalue.undefval.isBottom) match {
+        case (true, true) => AbsLoc.Bot
         case _ => AbsLoc(BuiltinGlobal.loc)
       }
 

@@ -128,7 +128,7 @@ object AbsObjectUtil {
       .update(IPrimitiveValue, InternalValueUtil(absStr))
 
     absStr.gamma match {
-      case ConSetCon(strSet) =>
+      case ConFin(strSet) =>
         strSet.foldLeft(Bot)((obj, str) => {
           val length = str.length
           val newObj3 = (0 until length).foldLeft(newObj2)((tmpObj, tmpIdx) => {
@@ -236,18 +236,18 @@ object AbsObjectUtil {
     val anum4 = n2
 
     val absStr5 = (
-      srcAbsStr.gammaSingle,
-      globalAbsB.gamma,
-      ignoreCaseAbsB.gamma,
-      multilineAbsB.gamma
+      srcAbsStr.getSingle,
+      globalAbsB.getSingle,
+      ignoreCaseAbsB.getSingle,
+      multilineAbsB.getSingle
     ) match {
-        case (ConSingleCon(s), ConSingleCon(g), ConSingleCon(i), ConSingleCon(m)) =>
+        case (ConOne(s), ConOne(g), ConOne(i), ConOne(m)) =>
           val flags = (if (g) "g" else "") + (if (i) "i" else "") + (if (m) "m" else "")
           AbsString("/" + s + "/" + flags)
-        case (ConSingleBot(), _, _, _)
-        | (_, ConSingleBot(), _, _)
-        | (_, _, ConSingleBot(), _)
-        | (_, _, _, ConSingleBot()) => AbsString.Bot
+        case (ConZero(), _, _, _)
+        | (_, ConZero(), _, _)
+        | (_, _, ConZero(), _)
+        | (_, _, _, ConZero()) => AbsString.Bot
         case _ => AbsString.Top
       }
 
@@ -299,18 +299,18 @@ object AbsObjectUtil {
     val absStr2 = b.toAbsString
     val absStr3 = n.toAbsString
     val absStr4 = (
-      srcAbsStr.gammaSingle,
-      globalAbsB.gamma,
-      ignoreCaseAbsB.gamma,
-      multilineAbsB.gamma
+      srcAbsStr.getSingle,
+      globalAbsB.getSingle,
+      ignoreCaseAbsB.getSingle,
+      multilineAbsB.getSingle
     ) match {
-        case (ConSingleCon(s), ConSingleCon(g), ConSingleCon(i), ConSingleCon(m)) =>
+        case (ConOne(s), ConOne(g), ConOne(i), ConOne(m)) =>
           val flags = (if (g) "g" else "") + (if (i) "i" else "") + (if (m) "m" else "")
           AbsString("/" + s + "/" + flags)
-        case (ConSingleBot(), _, _, _)
-        | (_, ConSingleBot(), _, _)
-        | (_, _, ConSingleBot(), _)
-        | (_, _, _, ConSingleBot()) => AbsString.Bot
+        case (ConZero(), _, _, _)
+        | (_, ConZero(), _, _)
+        | (_, _, ConZero(), _)
+        | (_, _, _, ConZero()) => AbsString.Bot
         case _ => AbsString.Top
       }
 

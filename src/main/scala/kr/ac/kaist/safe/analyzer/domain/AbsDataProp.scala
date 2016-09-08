@@ -76,7 +76,16 @@ object DefaultDataProp extends AbsDataPropUtil {
       enumerable: AbsBool,
       configurable: AbsBool
   ) extends AbsDataProp {
-    def gamma: ConSet[DataProp] = ConSetTop() // TODO more precise
+    def gamma: ConSet[DataProp] = ConInf() // TODO more precise
+
+    def isBottom: Boolean = {
+      value.isBottom &&
+        writable.isBottom &&
+        enumerable.isBottom &&
+        configurable.isBottom
+    }
+
+    def getSingle: ConSingle[DataProp] = ConMany() // TODO more precise
 
     def <=(that: AbsDataProp): Boolean = {
       val (left, right) = (this, check(that))
@@ -114,13 +123,6 @@ object DefaultDataProp extends AbsDataPropUtil {
         val cch = configurable.toString.take(1)
         s"[$wch$ech$cch] $value"
       }
-    }
-
-    def isBottom: Boolean = {
-      value.isBottom &&
-        writable.isBottom &&
-        enumerable.isBottom &&
-        configurable.isBottom
     }
 
     def copyWith(

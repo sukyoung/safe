@@ -41,32 +41,26 @@ case class StringSet(maxSetSize: Int) extends AbsStringUtil {
 
   sealed abstract class AbsDom(maxSetSize: Int = 0) extends AbsString {
     def gamma: ConSet[Str] = this match {
-      case StrSet(set) if set.size == 0 => ConSetBot()
-      case StrSet(set) => ConSetCon(set)
-      case Top | Number | NotNumber => ConSetTop()
-    }
-
-    def gammaSingle: ConSingle[Str] = this match {
-      case StrSet(set) if set.size == 0 => ConSingleBot()
-      case StrSet(set) if set.size == 1 => ConSingleCon(set.head)
-      case _ => ConSingleTop()
-    }
-
-    def gammaSimple: ConSimple[Str] = this match {
-      case StrSet(set) if set.size == 0 => ConSimpleBot()
-      case _ => ConSimpleTop()
-    }
-
-    def gammaIsAllNums: ConSingle[Boolean] = this match {
-      case StrSet(set) if set.size == 0 => ConSingleBot()
-      case StrSet(set) if !hasNotNumber(set) => ConSingleCon(true)
-      case Number => ConSingleCon(true)
-      case StrSet(set) if !hasNum(set) => ConSingleCon(false)
-      case NotNumber => ConSingleCon(false)
-      case _ => ConSingleTop()
+      case StrSet(set) => ConFin(set)
+      case Top | Number | NotNumber => ConInf()
     }
 
     def isBottom: Boolean = this == Bot
+
+    def getSingle: ConSingle[Str] = this match {
+      case StrSet(set) if set.size == 0 => ConZero()
+      case StrSet(set) if set.size == 1 => ConOne(set.head)
+      case _ => ConMany()
+    }
+
+    def isNum: AbsBool = this match {
+      case StrSet(set) if set.size == 0 => AbsBool.Bot
+      case StrSet(set) if !hasNotNumber(set) => AbsBool.True
+      case Number => AbsBool.True
+      case StrSet(set) if !hasNum(set) => AbsBool.False
+      case NotNumber => AbsBool.False
+      case _ => AbsBool.Top
+    }
 
     override def toString: String = this match {
       case StrSet(set) if set.size == 0 => "Bot"
@@ -129,16 +123,16 @@ case class StringSet(maxSetSize: Int) extends AbsStringUtil {
       case (StrSet(v1), StrSet(v2)) => alpha(v1 intersect v2)
 
       case (StrSet(v), Number) if hasNum(v) =>
-        alpha(v.filter((s: String) => isNum(s)))
+        alpha(v.filter((s: String) => isNumber(s)))
       case (Number, StrSet(v)) if hasNum(v) =>
-        alpha(v.filter((s: String) => isNum(s)))
+        alpha(v.filter((s: String) => isNumber(s)))
       case (StrSet(_), Number)
         | (Number, StrSet(_)) => Bot
 
       case (StrSet(v), NotNumber) if hasNotNumber(v) =>
-        alpha(v.filter((s: String) => !isNum(s)))
+        alpha(v.filter((s: String) => !isNumber(s)))
       case (NotNumber, StrSet(v)) if hasNotNumber(v) =>
-        alpha(v.filter((s: String) => !isNum(s)))
+        alpha(v.filter((s: String) => !isNumber(s)))
       case (StrSet(_), NotNumber)
         | (NotNumber, StrSet(_)) => Bot
 
@@ -156,9 +150,9 @@ case class StringSet(maxSetSize: Int) extends AbsStringUtil {
     }
 
     def ===(that: AbsString): AbsBool =
-      (this.gammaSingle, that.gammaSingle) match {
-        case (ConSingleCon(s1), ConSingleCon(s2)) => AbsBool(s1 == s2)
-        case (ConSingleBot(), _) | (_, ConSingleBot()) => AbsBool.Bot
+      (this.getSingle, that.getSingle) match {
+        case (ConOne(s1), ConOne(s2)) => AbsBool(s1 == s2)
+        case (ConZero(), _) | (_, ConZero()) => AbsBool.Bot
         case _ => (this <= that, that <= this) match {
           case (false, false) => AbsBool.False
           case _ => AbsBool.Top
@@ -215,41 +209,36 @@ case class StringSet(maxSetSize: Int) extends AbsStringUtil {
       case _ => Top
     }
 
-    def charAt(pos: AbsNumber): AbsString = gamma match {
-      case ConSetTop() | ConSetBot() => Bot
-      case ConSetCon(vs) =>
-        pos.gammaSingle match {
-          case ConSingleBot() => Top
-          case ConSingleCon(d) =>
-            vs.foldLeft[AbsString](Bot)((r, s) => {
-              if (d >= s.length || d < 0)
-                r + alpha("")
+    def charAt(pos: AbsNumber): AbsString = (gamma, pos.gamma) match {
+      case (ConFin(vs), ConFin(ds)) => {
+        ds.foldLeft[AbsString](Bot) {
+          case (res, d) => vs.foldLeft(res) {
+            case (res, str) =>
+              if (d >= str.length || d < 0)
+                res + alpha("")
               else {
                 val i = d.toInt
-                r + alpha(s.substring(i, i + 1))
+                res + alpha(str.substring(i, i + 1))
               }
-            })
-          case ConSingleTop() => Top
+          }
         }
+      }
+      case _ => Top
     }
 
-    def charCodeAt(pos: AbsNumber): AbsNumber = {
-      gamma match {
-        case ConSetTop() => AbsNumber.UInt
-        case ConSetBot() => AbsNumber.Bot
-        case ConSetCon(vs) =>
-          pos.gammaSingle match {
-            case ConSingleTop() | ConSingleBot() => AbsNumber.UInt
-            case ConSingleCon(d) =>
-              vs.foldLeft[AbsNumber](AbsNumber.Bot)((r, s) => {
-                if (d >= s.length || d < 0)
-                  r + AbsNumber.NaN
-                else {
-                  val i = d.toInt
-                  r + AbsNumber(s.substring(i, i + 1).head.toInt)
-                }
-              })
-          }
+    def charCodeAt(pos: AbsNumber): AbsNumber = gamma match {
+      case ConInf() => AbsNumber.UInt
+      case ConFin(vs) => pos.getSingle match {
+        case ConOne(d) =>
+          vs.foldLeft[AbsNumber](AbsNumber.Bot)((r, s) => {
+            if (d >= s.length || d < 0)
+              r + AbsNumber.NaN
+            else {
+              val i = d.toInt
+              r + AbsNumber(s.substring(i, i + 1).head.toInt)
+            }
+          })
+        case _ => AbsNumber.UInt
       }
     }
 
@@ -257,10 +246,10 @@ case class StringSet(maxSetSize: Int) extends AbsStringUtil {
       this match {
         case Number => AbsBool.Top
         case NotNumber => AbsBool.Top
-        case StrSet(vs) => that.gammaSingle match {
-          case ConSingleTop() => AbsBool.Top
-          case ConSingleBot() => AbsBool.Bot
-          case ConSingleCon(s) => vs.foldLeft[AbsBool](AbsBool.Bot)((result, v) => {
+        case StrSet(vs) => that.getSingle match {
+          case ConMany() => AbsBool.Top
+          case ConZero() => AbsBool.Bot
+          case ConOne(s) => vs.foldLeft[AbsBool](AbsBool.Bot)((result, v) => {
             result + AbsBool(v.contains(s))
           })
         }
@@ -316,7 +305,7 @@ case class StringSet(maxSetSize: Int) extends AbsStringUtil {
         val upper = scala.math.pow(2, 32) - 1
         set.foldLeft(AbsBool.Bot)((res, v) => {
           res + AbsBool({
-            isNum(v) && {
+            isNumber(v) && {
               val num = v.toDouble
               0 <= num && num < upper
             }
@@ -327,18 +316,35 @@ case class StringSet(maxSetSize: Int) extends AbsStringUtil {
   }
 
   def hasNum(values: Set[String]): Boolean =
-    values.foldLeft(false)((b: Boolean, v: String) => b | isNum(v))
+    values.foldLeft(false)((b: Boolean, v: String) => b | isNumber(v))
   def hasNotNumber(values: Set[String]): Boolean =
-    values.foldLeft(false)((b: Boolean, v: String) => b | !isNum(v))
+    values.foldLeft(false)((b: Boolean, v: String) => b | !isNumber(v))
 
   def fromCharCode(n: AbsNumber): AbsString = {
     n.gamma match {
-      case ConSetTop() => Top
-      case ConSetBot() => Bot
-      case ConSetCon(vs) =>
+      case ConInf() => Top
+      case ConFin(vs) =>
         vs.foldLeft[AbsString](Bot)((r, v) => {
           r + alpha("%c".format(v.toInt))
         })
     }
   }
+
+  ////////////////////////////////////////////////////////////////
+  // string value helper functions
+  ////////////////////////////////////////////////////////////////
+  /* regexp, number string */
+  private val hex = "(0[xX][0-9a-fA-F]+)".r.pattern
+  private val exp = "[eE][+-]?[0-9]+"
+  private val dec1 = "[0-9]+\\.[0-9]*(" + exp + ")?"
+  private val dec2 = "\\.[0-9]+(" + exp + ")?"
+  private val dec3 = "[0-9]+(" + exp + ")?"
+  private val dec = "([+-]?(Infinity|(" + dec1 + ")|(" + dec2 + ")|(" + dec3 + ")))"
+  private val numRegexp = ("NaN|(" + hex + ")|(" + dec + ")").r.pattern
+
+  private def isHex(str: String): Boolean =
+    hex.matcher(str).matches()
+
+  private def isNumber(str: String): Boolean =
+    numRegexp.matcher(str).matches()
 }

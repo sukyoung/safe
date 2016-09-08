@@ -50,7 +50,7 @@ package object domain {
   def isHex(str: String): Boolean =
     hex.matcher(str).matches()
 
-  def isNum(str: String): Boolean =
+  def isNumber(str: String): Boolean =
     numRegexp.matcher(str).matches()
 
   ////////////////////////////////////////////////////////////////
