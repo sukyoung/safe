@@ -11,41 +11,58 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
-sealed abstract class Absent {
-  /* partial order */
-  def <=(that: Absent): Boolean = {
-    (this == AbsentBot) || (that == AbsentTop)
-  }
+////////////////////////////////////////////////////////////////////////////////
+// concrete absent type
+////////////////////////////////////////////////////////////////////////////////
+sealed abstract class Absent
+case object Absent extends Absent
 
-  /* not a partial order */
-  def </(that: Absent): Boolean = {
-    (this == AbsentTop) && (that == AbsentBot)
-  }
+////////////////////////////////////////////////////////////////////////////////
+// absent abstract domain
+////////////////////////////////////////////////////////////////////////////////
+trait AbsAbsent extends AbsDomain[Absent, AbsAbsent]
+trait AbsAbsentUtil extends AbsDomainUtil[Absent, AbsAbsent]
 
-  /* join */
-  def +(that: Absent): Absent = {
-    if (this == AbsentTop || that == AbsentTop) AbsentTop
-    else AbsentBot
-  }
+////////////////////////////////////////////////////////////////////////////////
+// default absent abstract domain
+////////////////////////////////////////////////////////////////////////////////
+object DefaultAbsent extends AbsAbsentUtil {
+  case object Bot extends AbsDom
+  case object Top extends AbsDom
 
-  /* meet */
-  def <>(that: Absent): Absent = {
-    if (this == AbsentTop && that == AbsentTop) AbsentTop
-    else AbsentBot
-  }
+  def alpha(abs: Absent): AbsAbsent = Top
 
-  override def toString: String = {
-    this match {
-      case AbsentTop => "absent"
-      case AbsentBot => "Bot"
+  abstract class AbsDom extends AbsAbsent {
+    def gamma: ConSet[Absent] = this match {
+      case Bot => ConFin()
+      case Top => ConFin(Absent)
+    }
+
+    def isBottom: Boolean = this == Bot
+
+    def getSingle: ConSingle[Absent] = this match {
+      case Bot => ConZero()
+      case Top => ConOne(Absent)
+    }
+
+    def <=(that: AbsAbsent): Boolean = (this, check(that)) match {
+      case (Top, Bot) => false
+      case _ => true
+    }
+
+    def +(that: AbsAbsent): AbsAbsent = (this, check(that)) match {
+      case (Bot, Bot) => Bot
+      case _ => Top
+    }
+
+    def <>(that: AbsAbsent): AbsAbsent = (this, check(that)) match {
+      case (Top, Top) => Top
+      case _ => Bot
+    }
+
+    override def toString: String = this match {
+      case Top => "absent"
+      case Bot => "Bot"
     }
   }
-
-  def isBottom: Boolean = this match {
-    case AbsentBot => true
-    case _ => false
-  }
 }
-
-case object AbsentTop extends Absent
-case object AbsentBot extends Absent

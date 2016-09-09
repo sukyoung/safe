@@ -22,20 +22,20 @@ object AbsObjectUtil {
   private val atrue = AbsBool.True
   private val afalse = AbsBool.False
 
-  def apply(m: Map[String, (PropValue, Absent)]): Obj = new Obj(m, ObjEmptyIMap)
-  def apply(m: Map[String, (PropValue, Absent)], im: ObjInternalMap): Obj = new Obj(m, im)
+  def apply(m: Map[String, (PropValue, AbsAbsent)]): Obj = new Obj(m, ObjEmptyIMap)
+  def apply(m: Map[String, (PropValue, AbsAbsent)], im: ObjInternalMap): Obj = new Obj(m, im)
 
   val Bot: Obj = {
     val map = ObjEmptyMap +
-      (STR_DEFAULT_NUMBER -> (PropValue.Bot, AbsentBot)) +
-      (STR_DEFAULT_OTHER -> (PropValue.Bot, AbsentBot))
+      (STR_DEFAULT_NUMBER -> (PropValue.Bot, AbsAbsent.Bot)) +
+      (STR_DEFAULT_OTHER -> (PropValue.Bot, AbsAbsent.Bot))
     apply(map)
   }
 
   val Empty: Obj = {
     val map = ObjEmptyMap +
-      (STR_DEFAULT_NUMBER -> (PropValue.Bot, AbsentTop)) +
-      (STR_DEFAULT_OTHER -> (PropValue.Bot, AbsentTop))
+      (STR_DEFAULT_NUMBER -> (PropValue.Bot, AbsAbsent.Top)) +
+      (STR_DEFAULT_OTHER -> (PropValue.Bot, AbsAbsent.Top))
     apply(map)
   }
 

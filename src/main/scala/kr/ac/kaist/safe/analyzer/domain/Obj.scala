@@ -17,7 +17,7 @@ import kr.ac.kaist.safe.LINE_SEP
 import scala.collection.immutable.HashMap
 
 class Obj(
-    val map: Map[String, (PropValue, Absent)],
+    val map: Map[String, (PropValue, AbsAbsent)],
     val imap: ObjInternalMap
 ) {
   override def toString: String = {
@@ -31,9 +31,9 @@ class Obj(
     val s = new StringBuilder
     sortedMap.map {
       case (key, (propv, absent)) => {
-        s.append(key).append(absent match {
-          case AbsentTop => s" @-> "
-          case AbsentBot => s" |-> "
+        s.append(key).append(absent.isBottom match {
+          case true => s" |-> "
+          case false => s" @-> "
         }).append(propv.toString).append(LINE_SEP)
       }
     }
@@ -88,10 +88,10 @@ class Obj(
         case (None, None) => m
         case (None, Some(v)) =>
           val (prop, _) = v
-          m + (key -> (prop, AbsentTop))
+          m + (key -> (prop, AbsAbsent.Top))
         case (Some(v), None) =>
           val (prop, _) = v
-          m + (key -> (prop, AbsentTop))
+          m + (key -> (prop, AbsAbsent.Top))
         case (Some(v1), Some(v2)) =>
           val (propV1, absent1) = v1
           val (propV2, absent2) = v2
@@ -115,12 +115,12 @@ class Obj(
   }
 
   /* lookup */
-  private def lookup(x: String): (Option[PropValue], Absent) = {
+  private def lookup(x: String): (Option[PropValue], AbsAbsent) = {
     this.map.get(x) match {
       case Some(pva) =>
         val (propV, absent) = pva
         (Some(propV), absent)
-      //      case None if x.take(1) == "@" => (None, AbsentBot)
+      //      case None if x.take(1) == "@" => (None, AbsAbsent.Bot)
       case None if isNumber(x) =>
         val (propV, absent) = map(STR_DEFAULT_NUMBER)
         (Some(propV), absent)
@@ -318,7 +318,7 @@ class Obj(
           val (prop, _) = tmpMap(x)
           if (isNumber(x) && prop <= defaultNumber) tmpMap - x
           else if (!isNumber(x) && prop <= defaultOther) tmpMap - x
-          else tmpMap.updated(x, (prop, AbsentTop))
+          else tmpMap.updated(x, (prop, AbsAbsent.Top))
         })
         new Obj(newMap, this.imap)
       case ConFin(strSet) if strSet.size == 1 => this - strSet.head
@@ -330,27 +330,27 @@ class Obj(
               val (prop, _) = pva
               if (isNumber(x) && prop <= defaultNumber) tmpMap - x
               else if (!isNumber(x) && prop <= defaultOther) tmpMap - x
-              else tmpMap.updated(x, (prop, AbsentTop))
+              else tmpMap.updated(x, (prop, AbsAbsent.Top))
           }
         })
         new Obj(newMap, this.imap)
     }
   }
 
-  // absent value is set to AbsentBot because it is strong update.
+  // absent value is set to AbsAbsent.Bot because it is strong update.
   def update(x: String, propv: PropValue, exist: Boolean = false): Obj = {
     if (this.isBottom)
       this
     else if (x.startsWith("@default"))
-      new Obj(map.updated(x, (propv, AbsentTop)), imap)
+      new Obj(map.updated(x, (propv, AbsAbsent.Top)), imap)
     else
-      new Obj(map.updated(x, (propv, AbsentBot)), imap)
+      new Obj(map.updated(x, (propv, AbsAbsent.Bot)), imap)
   }
 
   def update(absStr: AbsString, propV: PropValue): Obj = {
     absStr.gamma match {
       case ConFin(strSet) if strSet.size == 1 => // strong update
-        new Obj(map.updated(strSet.head, (propV, AbsentBot)), imap)
+        new Obj(map.updated(strSet.head, (propV, AbsAbsent.Bot)), imap)
       case ConFin(strSet) =>
         strSet.foldLeft(this)((r, x) => r + update(x, propV))
       case ConInf() => absStr.isNum.getSingle match {
@@ -368,12 +368,12 @@ class Obj(
             val absX = AbsString(x)
             val (xPropV, xAbsent) = m.get(x) match {
               case Some((xPropV, xAbsent)) => (propV + xPropV, xAbsent)
-              case None => (propV, AbsentBot)
+              case None => (propV, AbsAbsent.Bot)
             }
-            if (AbsentTop <= xAbsent && absX.isAllNums) m - x
+            if (AbsAbsent.Top <= xAbsent && absX.isAllNums) m - x
             else m + (x -> (xPropV, xAbsent))
           })
-          new Obj(weakUpdatedMap + (STR_DEFAULT_NUMBER -> (newDefaultNum, AbsentTop)), imap)
+          new Obj(weakUpdatedMap + (STR_DEFAULT_NUMBER -> (newDefaultNum, AbsAbsent.Top)), imap)
         case ConOne(Bool(false)) =>
           val newDefaultOther = this.map.get(STR_DEFAULT_OTHER) match {
             case Some((otherPropV, _)) => otherPropV + propV
@@ -387,12 +387,12 @@ class Obj(
             val absX = AbsString(x)
             val (xPropV, xAbsent) = m.get(x) match {
               case Some((xPropV, xAbsent)) => (propV + xPropV, xAbsent)
-              case None => (propV, AbsentBot)
+              case None => (propV, AbsAbsent.Bot)
             }
-            if (AbsentTop <= xAbsent && absX.isAllNotNumbers) m - x
+            if (AbsAbsent.Top <= xAbsent && absX.isAllNotNumbers) m - x
             else m + (x -> (xPropV, xAbsent))
           })
-          new Obj(weakUpdatedMap + (STR_DEFAULT_OTHER -> (newDefaultOther, AbsentTop)), imap)
+          new Obj(weakUpdatedMap + (STR_DEFAULT_OTHER -> (newDefaultOther, AbsAbsent.Top)), imap)
         case ConMany() =>
           val newDefaultNum = this.map.get(STR_DEFAULT_NUMBER) match {
             case Some((numPropV, _)) => numPropV + propV
@@ -410,16 +410,16 @@ class Obj(
             val absX = AbsString(x)
             val (xPropV, xAbsent) = m.get(x) match {
               case Some((xPropV, xAbsent)) => (propV + xPropV, xAbsent)
-              case None => (propV, AbsentBot)
+              case None => (propV, AbsAbsent.Bot)
             }
-            if (AbsentTop <= xAbsent && absX.isAllNums && xPropV <= newDefaultNum) m - x
-            else if (AbsentTop <= xAbsent && absX.isAllNotNumbers && xPropV <= newDefaultOther) m - x
+            if (AbsAbsent.Top <= xAbsent && absX.isAllNums && xPropV <= newDefaultNum) m - x
+            else if (AbsAbsent.Top <= xAbsent && absX.isAllNotNumbers && xPropV <= newDefaultOther) m - x
             else m + (x -> (xPropV, xAbsent))
           })
           new Obj(
             weakUpdatedMap +
-              (STR_DEFAULT_NUMBER -> (newDefaultNum, AbsentTop),
-                STR_DEFAULT_OTHER -> (newDefaultOther, AbsentTop)),
+              (STR_DEFAULT_NUMBER -> (newDefaultNum, AbsAbsent.Top),
+                STR_DEFAULT_OTHER -> (newDefaultOther, AbsAbsent.Top)),
             imap
           )
       }
@@ -444,9 +444,9 @@ class Obj(
     }
 
     this.map.get(x) match {
-      case Some((propV, AbsentBot)) if !propV.isBottom => AbsBool.True
-      case Some((propV, AbsentTop)) if !propV.isBottom & x.take(1) == "@" => AbsBool.True
-      case Some((propV, AbsentTop)) if !propV.isBottom => AbsBool.Top
+      case Some((propV, abs)) if !propV.isBottom & abs.isBottom => AbsBool.True
+      case Some((propV, abs)) if !propV.isBottom & x.take(1) == "@" & !abs.isBottom => AbsBool.True
+      case Some((propV, abs)) if !propV.isBottom & !abs.isBottom => AbsBool.Top
       case Some((propV, _)) if x.take(1) == "@" => AbsBool.False
       case Some((propV, _)) if propV.isBottom & isNumber(x) => defaultDomIn(STR_DEFAULT_NUMBER)
       case Some((propV, _)) if propV.isBottom & !isNumber(x) => defaultDomIn(STR_DEFAULT_OTHER)
