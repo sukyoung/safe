@@ -61,8 +61,8 @@ object DefaultAbsent extends AbsAbsentUtil {
     }
 
     override def toString: String = this match {
-      case Top => "absent"
-      case Bot => "Bot"
+      case Top => "Top(absent)"
+      case Bot => "⊥(absent)"
     }
   }
 }

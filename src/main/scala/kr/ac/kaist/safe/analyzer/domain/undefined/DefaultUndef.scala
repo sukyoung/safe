@@ -34,8 +34,8 @@ object DefaultUndef extends AbsUndefUtil {
     }
 
     override def toString: String = this match {
-      case Bot => "Bot"
-      case Top => "undefined"
+      case Bot => "⊥(undefined)"
+      case Top => "Top(undefined)"
     }
 
     def <=(that: AbsUndef): Boolean = (this, check(that)) match {

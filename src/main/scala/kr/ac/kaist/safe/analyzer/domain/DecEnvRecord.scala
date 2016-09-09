@@ -116,7 +116,7 @@ abstract class DecEnvRecord extends EnvRecord {
       val emptyExcSet: Set[Exception] = HashSet()
       val (thenV, excSet: Set[Exception]) =
         if (AbsBool.False <= bind.mutable &&
-          AbsAbsent.Top <= bind.absent) {
+          AbsAbsent.Top <= bind.uninit) {
           //    a. If S is false, return the value undefined,
           //       otherwise throw a ReferenceError exception.
           if (strict) (AbsValue.Bot, HashSet(ReferenceError))
@@ -188,7 +188,7 @@ abstract class DecEnvRecord extends EnvRecord {
       val bind = envRec.has(name) match {
         case MustExist(bind) if (
           bind.mutable == AbsBool.False &&
-          bind.absent == AbsAbsent.Top
+          bind.uninit == AbsAbsent.Top
         ) => bind
         case _ => throw ContextAssertionError(
           "InitializeImmutableBinding",
@@ -196,7 +196,7 @@ abstract class DecEnvRecord extends EnvRecord {
         )
       }
       // 3. Set the bound value for N in envRec to V.
-      val newBind = bind.copyWith(value = v, absent = AbsAbsent.Bot)
+      val newBind = bind.copyWith(value = v, uninit = AbsAbsent.Bot)
       // 4. Record that the immutable binding for N
       //    in envRec has been initialised.
       DecEnvRecordMap(map.updated(name, (newBind, AbsAbsent.Bot)))

@@ -40,10 +40,10 @@ object DefaultBool extends AbsBoolUtil {
     }
 
     override def toString: String = this match {
-      case Bot => "⊥"
+      case Bot => "⊥(boolean)"
       case True => "true"
       case False => "false"
-      case Top => "Top"
+      case Top => "Top(boolean)"
     }
 
     def toAbsString: AbsString = this match {

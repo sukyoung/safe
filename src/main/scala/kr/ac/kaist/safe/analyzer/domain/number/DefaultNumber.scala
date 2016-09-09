@@ -62,8 +62,8 @@ object DefaultNumber extends AbsNumberUtil {
     }
 
     override def toString: String = this match {
-      case Top => "Number"
-      case Bot => "Bot"
+      case Top => "Top(number)"
+      case Bot => "⊥(number)"
       case Inf => "Inf"
       case PosInf => "+Inf"
       case NegInf => "-Inf"

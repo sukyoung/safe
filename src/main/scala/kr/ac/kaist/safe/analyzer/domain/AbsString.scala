@@ -35,7 +35,7 @@ trait AbsString extends AbsDomain[Str, AbsString] {
   def toUpperCase: AbsString
 
   def isAllNums: Boolean
-  def isAllNotNumbers: Boolean
+  def isAllOthers: Boolean
   def isArrayIndex: AbsBool
 
   def toAbsNumber: AbsNumber
@@ -47,5 +47,5 @@ trait AbsStringUtil extends AbsDomainUtil[Str, AbsString] {
   val Number: AbsString
 
   // abstraction from all non-number string
-  val NotNumber: AbsString
+  val Other: AbsString
 }

@@ -109,7 +109,8 @@ case class DefaultLoc(
     }
 
     override def toString: String = set.size match {
-      case MAX_SIZE => "Top"
+      case 0 => "⊥(location)"
+      case MAX_SIZE => "Top(location)"
       case _ => set.mkString(", ")
     }
 

@@ -19,7 +19,7 @@ import scala.util.Try
 case class StringSet(maxSetSize: Int) extends AbsStringUtil {
   case object Top extends AbsDom
   case object Number extends AbsDom
-  case object NotNumber extends AbsDom
+  case object Other extends AbsDom
   case class StrSet(values: Set[String]) extends AbsDom
   object StrSet {
     def apply(seq: String*): StrSet = StrSet(seq.toSet)
@@ -33,16 +33,16 @@ case class StringSet(maxSetSize: Int) extends AbsStringUtil {
     if (maxSetSize == 0 | strSet.size <= maxSetSize)
       StrSet(strSet)
     else if (hasNum(strSet)) {
-      if (hasNotNumber(strSet)) Top
+      if (hasOther(strSet)) Top
       else Number
-    } else if (hasNotNumber(strSet)) NotNumber
+    } else if (hasOther(strSet)) Other
     else Top
   }
 
   sealed abstract class AbsDom(maxSetSize: Int = 0) extends AbsString {
     def gamma: ConSet[Str] = this match {
       case StrSet(set) => ConFin(set)
-      case Top | Number | NotNumber => ConInf()
+      case Top | Number | Other => ConInf()
     }
 
     def isBottom: Boolean = this == Bot
@@ -55,18 +55,18 @@ case class StringSet(maxSetSize: Int) extends AbsStringUtil {
 
     def isNum: AbsBool = this match {
       case StrSet(set) if set.size == 0 => AbsBool.Bot
-      case StrSet(set) if !hasNotNumber(set) => AbsBool.True
+      case StrSet(set) if !hasOther(set) => AbsBool.True
       case Number => AbsBool.True
       case StrSet(set) if !hasNum(set) => AbsBool.False
-      case NotNumber => AbsBool.False
+      case Other => AbsBool.False
       case _ => AbsBool.Top
     }
 
     override def toString: String = this match {
-      case StrSet(set) if set.size == 0 => "Bot"
-      case Top => "String"
+      case StrSet(set) if set.size == 0 => "⊥(string)"
+      case Top => "Top(string)"
       case Number => "Number"
-      case NotNumber => "NotNumber"
+      case Other => "Other"
       case StrSet(set) => set.map("\"" + _ + "\"").mkString(", ")
     }
 
@@ -78,13 +78,13 @@ case class StringSet(maxSetSize: Int) extends AbsStringUtil {
         case false => AbsBool.True
       }
       case Number => AbsBool.True
-      case Top | NotNumber => AbsBool.Top
+      case Top | Other => AbsBool.Top
     }
 
     def toAbsNumber: AbsNumber = this match {
       case Top => AbsNumber.Top
       case Number => AbsNumber.Top
-      case NotNumber => AbsNumber.NaN
+      case Other => AbsNumber.NaN
       case StrSet(set) => set.foldLeft(AbsNumber.Bot)((tmpAbsNum, str) => {
         val absNum = str.trim match {
           case "" => AbsNumber(0)
@@ -98,13 +98,13 @@ case class StringSet(maxSetSize: Int) extends AbsStringUtil {
     def <=(that: AbsString): Boolean = (this, check(that)) match {
       case (Bot, _) => true
       case (_, Top) => true
-      //      case (StrSet(v1), StrSet(v2)) => (!a.hasNum || b.hasNum) && (!a.hasNotNumber || b.hasNotNumber) && a.values.subsetOf(b.values)
+      //      case (StrSet(v1), StrSet(v2)) => (!a.hasNum || b.hasNum) && (!a.hasOther || b.hasOther) && a.values.subsetOf(b.values)
       case (StrSet(v1), StrSet(v2)) if v1.subsetOf(v2) => true
       case (StrSet(v1), StrSet(v2)) => false
-      case (StrSet(v), Number) => hasNum(v) && !hasNotNumber(v)
-      case (StrSet(v), NotNumber) => !hasNum(v) && hasNotNumber(v)
+      case (StrSet(v), Number) => hasNum(v) && !hasOther(v)
+      case (StrSet(v), Other) => !hasNum(v) && hasOther(v)
       case (Number, Number) => true
-      case (NotNumber, NotNumber) => true
+      case (Other, Other) => true
       case _ => false
     }
 
@@ -129,17 +129,17 @@ case class StringSet(maxSetSize: Int) extends AbsStringUtil {
       case (StrSet(_), Number)
         | (Number, StrSet(_)) => Bot
 
-      case (StrSet(v), NotNumber) if hasNotNumber(v) =>
+      case (StrSet(v), Other) if hasOther(v) =>
         alpha(v.filter((s: String) => !isNumber(s)))
-      case (NotNumber, StrSet(v)) if hasNotNumber(v) =>
+      case (Other, StrSet(v)) if hasOther(v) =>
         alpha(v.filter((s: String) => !isNumber(s)))
-      case (StrSet(_), NotNumber)
-        | (NotNumber, StrSet(_)) => Bot
+      case (StrSet(_), Other)
+        | (Other, StrSet(_)) => Bot
 
       case (Number, Number) => Number
-      case (Number, NotNumber)
-        | (NotNumber, Number) => Bot
-      case (NotNumber, NotNumber) => NotNumber
+      case (Number, Other)
+        | (Other, Number) => Bot
+      case (Other, Other) => Other
 
       case _ =>
         (this <= that, that <= this) match {
@@ -186,7 +186,7 @@ case class StringSet(maxSetSize: Int) extends AbsStringUtil {
         case StrSet(vs) =>
           vs.foldLeft[AbsString](Bot)((r: AbsString, s: String) => r + alpha(s.trim))
         case Number => Number
-        case NotNumber => NotNumber + Number
+        case Other => Other + Number
         case Bot => Bot
         case _ => Top
       }
@@ -198,10 +198,10 @@ case class StringSet(maxSetSize: Int) extends AbsStringUtil {
         alpha(set)
       }
       case (StrSet(v1), StrSet(v2)) =>
-        (hasNum(v1) | hasNum(v2), hasNotNumber(v1) | hasNotNumber(v2)) match {
+        (hasNum(v1) | hasNum(v2), hasOther(v1) | hasOther(v2)) match {
           case (true, true) => Top
           case (true, false) => Number
-          case (false, true) => NotNumber
+          case (false, true) => Other
           case (false, false) => Bot
         }
       case (Bot, _) => Bot
@@ -245,7 +245,7 @@ case class StringSet(maxSetSize: Int) extends AbsStringUtil {
     def contains(that: AbsString): AbsBool =
       this match {
         case Number => AbsBool.Top
-        case NotNumber => AbsBool.Top
+        case Other => AbsBool.Top
         case StrSet(vs) => that.getSingle match {
           case ConMany() => AbsBool.Top
           case ConZero() => AbsBool.Bot
@@ -260,7 +260,7 @@ case class StringSet(maxSetSize: Int) extends AbsStringUtil {
     def length: AbsNumber =
       this match {
         case Number => AbsNumber.UInt
-        case NotNumber => AbsNumber.UInt
+        case Other => AbsNumber.UInt
         case StrSet(vs) => vs.foldLeft[AbsNumber](AbsNumber.Bot)((result, v) => result + AbsNumber(v.length))
         case Top => AbsNumber.UInt
         case Bot => AbsNumber.Bot
@@ -269,7 +269,7 @@ case class StringSet(maxSetSize: Int) extends AbsStringUtil {
     def toLowerCase: AbsString =
       this match {
         case Number => Top
-        case NotNumber => NotNumber
+        case Other => Other
         case StrSet(vs) => vs.foldLeft[AbsString](Bot)((result, v) => result + alpha(v.toLowerCase))
         case Top => Top
         case Bot => Bot
@@ -278,7 +278,7 @@ case class StringSet(maxSetSize: Int) extends AbsStringUtil {
     def toUpperCase: AbsString =
       this match {
         case Number => Top
-        case NotNumber => NotNumber
+        case Other => Other
         case StrSet(vs) => vs.foldLeft[AbsString](Bot)((result, v) => result + alpha(v.toUpperCase))
         case Top => Top
         case Bot => Bot
@@ -287,20 +287,20 @@ case class StringSet(maxSetSize: Int) extends AbsStringUtil {
     def isAllNums: Boolean =
       this match {
         case Number => true
-        case StrSet(v) => hasNum(v) && !hasNotNumber(v)
+        case StrSet(v) => hasNum(v) && !hasOther(v)
         case _ => false
       }
 
-    def isAllNotNumbers: Boolean =
+    def isAllOthers: Boolean =
       this match {
-        case NotNumber => true
-        case StrSet(v) => !hasNum(v) && hasNotNumber(v)
+        case Other => true
+        case StrSet(v) => !hasNum(v) && hasOther(v)
         case _ => false
       }
 
     def isArrayIndex: AbsBool = this match {
       case Top | Number => AbsBool.Top
-      case NotNumber => AbsBool.False
+      case Other => AbsBool.False
       case StrSet(set) => {
         val upper = scala.math.pow(2, 32) - 1
         set.foldLeft(AbsBool.Bot)((res, v) => {
@@ -317,7 +317,7 @@ case class StringSet(maxSetSize: Int) extends AbsStringUtil {
 
   def hasNum(values: Set[String]): Boolean =
     values.foldLeft(false)((b: Boolean, v: String) => b | isNumber(v))
-  def hasNotNumber(values: Set[String]): Boolean =
+  def hasOther(values: Set[String]): Boolean =
     values.foldLeft(false)((b: Boolean, v: String) => b | !isNumber(v))
 
   def fromCharCode(n: AbsNumber): AbsString = {

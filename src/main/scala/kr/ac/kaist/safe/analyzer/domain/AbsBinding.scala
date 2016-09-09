@@ -28,12 +28,12 @@ case class IBinding(valueOpt: Option[Value]) extends Binding
 ////////////////////////////////////////////////////////////////////////////////
 trait AbsBinding extends AbsDomain[Binding, AbsBinding] {
   val value: AbsValue
-  val absent: AbsAbsent
+  val uninit: AbsAbsent
   val mutable: AbsBool
 
   def copyWith(
     value: AbsValue = this.value,
-    absent: AbsAbsent = this.absent,
+    uninit: AbsAbsent = this.uninit,
     mutable: AbsBool = this.mutable
   ): AbsBinding
 }
@@ -41,7 +41,7 @@ trait AbsBinding extends AbsDomain[Binding, AbsBinding] {
 trait AbsBindingUtil extends AbsDomainUtil[Binding, AbsBinding] {
   def apply(
     value: AbsValue,
-    absent: AbsAbsent = AbsAbsent.Bot,
+    uninit: AbsAbsent = AbsAbsent.Bot,
     mutable: AbsBool = AbsBool.True
   ): AbsBinding
 }
@@ -61,13 +61,13 @@ object DefaultBinding extends AbsBindingUtil {
 
   def apply(
     value: AbsValue,
-    absent: AbsAbsent,
+    uninit: AbsAbsent,
     mutable: AbsBool
-  ): AbsBinding = AbsDom(value, absent, mutable)
+  ): AbsBinding = AbsDom(value, uninit, mutable)
 
   case class AbsDom(
       value: AbsValue,
-      absent: AbsAbsent,
+      uninit: AbsAbsent,
       mutable: AbsBool
   ) extends AbsBinding {
     def gamma: ConSet[Binding] = value.gamma match {
@@ -78,7 +78,7 @@ object DefaultBinding extends AbsBindingUtil {
           bindSet ++= valSet.map(MBinding(_))
         }
         if (AbsBool.False <= mutable) {
-          if (AbsAbsent.Top <= absent) bindSet += IBinding(None)
+          if (AbsAbsent.Top <= uninit) bindSet += IBinding(None)
           bindSet ++= valSet.map(v => IBinding(Some(v)))
         }
         ConFin(bindSet)
@@ -87,12 +87,12 @@ object DefaultBinding extends AbsBindingUtil {
 
     def isBottom: Boolean = {
       value.isBottom &&
-        absent.isBottom &&
+        uninit.isBottom &&
         mutable.isBottom
     }
 
     def getSingle: ConSingle[Binding] = {
-      (value.getSingle, absent.getSingle, mutable.getSingle) match {
+      (value.getSingle, uninit.getSingle, mutable.getSingle) match {
         case (ConZero(), ConZero(), ConZero()) => ConZero()
         case (ConOne(value), ConZero(), ConOne(Bool(true))) => ConOne(MBinding(value))
         case (ConZero(), ConOne(Absent), ConOne(Bool(false))) => ConOne(IBinding(None))
@@ -104,7 +104,7 @@ object DefaultBinding extends AbsBindingUtil {
     def <=(that: AbsBinding): Boolean = {
       val right = check(that)
       this.value <= right.value &&
-        this.absent <= right.absent &&
+        this.uninit <= right.uninit &&
         this.mutable <= right.mutable
     }
 
@@ -113,7 +113,7 @@ object DefaultBinding extends AbsBindingUtil {
       val right = check(that)
       AbsDom(
         this.value + right.value,
-        this.absent + right.absent,
+        this.uninit + right.uninit,
         this.mutable + right.mutable
       )
     }
@@ -123,17 +123,27 @@ object DefaultBinding extends AbsBindingUtil {
       val right = check(that)
       AbsDom(
         this.value <> right.value,
-        this.absent <> right.absent,
+        this.uninit <> right.uninit,
         this.mutable <> right.mutable
       )
     }
 
-    override def toString: String = s"[${mutable.toString.take(1)}] $value"
+    override def toString: String = {
+      s"[${mutable.toString.take(1)}]" + (
+        if (isBottom) "⊥(binding)"
+        else (value.isBottom, uninit.isBottom) match {
+          case (true, true) => "⊥(binding)"
+          case (false, true) => value.toString
+          case (true, false) => "uninitialized"
+          case (false, false) => value.toString + ", uninitialized"
+        }
+      )
+    }
 
     def copyWith(
       value: AbsValue = this.value,
-      absent: AbsAbsent = this.absent,
+      uninit: AbsAbsent = this.uninit,
       mutable: AbsBool = this.mutable
-    ): AbsBinding = AbsDom(value, absent, mutable)
+    ): AbsBinding = AbsDom(value, uninit, mutable)
   }
 }

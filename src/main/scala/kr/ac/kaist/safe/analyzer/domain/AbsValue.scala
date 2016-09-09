@@ -97,7 +97,7 @@ object DefaultValue extends AbsValueUtil {
         else locset.toString
 
       (pvalue.isBottom, locset.isBottom) match {
-        case (true, true) => "⊥Value"
+        case (true, true) => "⊥(value)"
         case (true, false) => locSetStr
         case (false, true) => pvalStr
         case (false, false) => s"$pvalStr, $locSetStr"

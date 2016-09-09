@@ -135,7 +135,7 @@ object DefaultPValue extends AbsPValueUtil {
       this.strval.fold(()) { lst ::= _.toString }
 
       lst match {
-        case Nil => "⊥PValue"
+        case Nil => "⊥(pvalue)"
         case _ => lst.mkString(", ")
       }
     }

@@ -389,7 +389,7 @@ class Obj(
               case Some((xPropV, xAbsent)) => (propV + xPropV, xAbsent)
               case None => (propV, AbsAbsent.Bot)
             }
-            if (AbsAbsent.Top <= xAbsent && absX.isAllNotNumbers) m - x
+            if (AbsAbsent.Top <= xAbsent && absX.isAllOthers) m - x
             else m + (x -> (xPropV, xAbsent))
           })
           new Obj(weakUpdatedMap + (STR_DEFAULT_OTHER -> (newDefaultOther, AbsAbsent.Top)), imap)
@@ -413,7 +413,7 @@ class Obj(
               case None => (propV, AbsAbsent.Bot)
             }
             if (AbsAbsent.Top <= xAbsent && absX.isAllNums && xPropV <= newDefaultNum) m - x
-            else if (AbsAbsent.Top <= xAbsent && absX.isAllNotNumbers && xPropV <= newDefaultOther) m - x
+            else if (AbsAbsent.Top <= xAbsent && absX.isAllOthers && xPropV <= newDefaultOther) m - x
             else m + (x -> (xPropV, xAbsent))
           })
           new Obj(
