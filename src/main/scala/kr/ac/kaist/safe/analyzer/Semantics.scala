@@ -153,9 +153,9 @@ class Semantics(
         else {
           val localEnv = ctx1.pureLocal
           val excValue = localEnv.getOrElse("@exception")(AbsValue.Bot) { _.value }
-          val excBind = BindingUtil(excValue)
+          val excBind = AbsBinding(excValue)
           val oldExcAllValue = env1.getOrElse("@exception_all")(AbsValue.Bot) { _.value }
-          val newExcAllBind = BindingUtil(excValue + oldExcAllValue)
+          val newExcAllBind = AbsBinding(excValue + oldExcAllValue)
           val ctx2 = ctx1.subsPureLocal(env1
             .update("@exception", excBind)
             .update("@exception_all", newExcAllBind))
@@ -398,7 +398,7 @@ class Semantics(
         val localEnv = st3.context.pureLocal
         val scope = localEnv.getOrElse("@env")(AbsValue.Bot) { _.value }
         val oEnv = DecEnvRecord.newDeclEnvRecord(scope)
-        val fBind = BindingUtil(fVal, mutable = AF)
+        val fBind = AbsBinding(fVal, mutable = AF)
         val newCtx = st3.context.update(locR3, oEnv.update(name.text, fBind))
         val newSt = State(h5, newCtx).varStore(lhs, fVal)
         (newSt, excSt)
@@ -419,7 +419,7 @@ class Semantics(
         val ctx1 =
           if (!v.isBottom) {
             val localEnv = st.context.pureLocal
-            val retValBind = BindingUtil(v)
+            val retValBind = AbsBinding(v)
             st.context.subsPureLocal(localEnv.update("@return", retValBind))
           } else ExecContext.Bot
         val newExcSt = st.raiseException(excSet)
@@ -427,7 +427,7 @@ class Semantics(
       }
       case CFGReturn(_, _, None) => {
         val localEnv = st.context.pureLocal
-        val retValBind = BindingUtil(AbsValue(Undef))
+        val retValBind = AbsBinding(AbsValue(Undef))
         val ctx1 = st.context.subsPureLocal(localEnv.update("@return", retValBind))
         val newSt = State(st.heap, ctx1)
         (newSt, excSt)
@@ -436,9 +436,9 @@ class Semantics(
         val (v, excSet) = V(expr, st)
         val localEnv = st.context.pureLocal
         val excSetV = localEnv.getOrElse("@exception_all")(AbsValue.Bot) { _.value }
-        val newExcBind = BindingUtil(v)
-        val newExcSetBind = BindingUtil(v + excSetV)
-        val retValBind = BindingUtil(AbsValue(Undef))
+        val newExcBind = AbsBinding(v)
+        val newExcSetBind = AbsBinding(v + excSetV)
+        val retValBind = AbsBinding(AbsValue(Undef))
         val newEnv =
           localEnv.
             update("@exception", newExcBind).
@@ -566,11 +566,11 @@ class Semantics(
           val callerCtxSet = callerCallCtx.newCallContext(st1.heap, cfg, fid, locR, thisLocSet, newPureLocal, Some(i.addr1))
           callerCtxSet.foreach {
             case (newCallCtx, newEnv) => {
-              val argBind = BindingUtil(argVal)
+              val argBind = AbsBinding(argVal)
               cfg.getFunc(fid) match {
                 case Some(funCFG) => {
                   val scopeValue = funObj.getOrElse(IScope)(AbsValue.Bot) { _.value }
-                  val scopeBind = BindingUtil(scopeValue)
+                  val scopeBind = AbsBinding(scopeValue)
                   val newEnv2 = newEnv.update(funCFG.argumentsName, argBind)
                     .update("@scope", scopeBind)
                   val entryCP = ControlPoint(funCFG.entry, newCallCtx)

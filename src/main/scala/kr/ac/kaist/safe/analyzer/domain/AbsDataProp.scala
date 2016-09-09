@@ -43,9 +43,9 @@ trait AbsDataProp extends AbsDomain[DataProp, AbsDataProp] {
 trait AbsDataPropUtil extends AbsDomainUtil[DataProp, AbsDataProp] {
   def apply(
     value: AbsValue,
-    writable: AbsBool = AbsBool.Top,
-    enumerable: AbsBool = AbsBool.Top,
-    configurable: AbsBool = AbsBool.Top
+    writable: AbsBool = AbsBool.True,
+    enumerable: AbsBool = AbsBool.True,
+    configurable: AbsBool = AbsBool.True
   ): AbsDataProp
 }
 
@@ -64,10 +64,10 @@ object DefaultDataProp extends AbsDataPropUtil {
   )
 
   def apply(
-    value: AbsValue = AbsValue.Bot,
-    writable: AbsBool = AbsBool.Bot,
-    enumerable: AbsBool = AbsBool.Bot,
-    configurable: AbsBool = AbsBool.Bot
+    value: AbsValue,
+    writable: AbsBool,
+    enumerable: AbsBool,
+    configurable: AbsBool
   ): AbsDataProp = AbsDom(value, writable, enumerable, configurable)
 
   case class AbsDom(

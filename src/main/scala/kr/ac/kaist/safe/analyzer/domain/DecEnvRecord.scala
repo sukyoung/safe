@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright (c) 2016, KAIST.
+ * Copyright With(c) 2016, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -52,8 +52,7 @@ abstract class DecEnvRecord extends EnvRecord {
       }
       // 3. Create a mutable binding in envRec for N and
       //    set its bound value to undefined.
-      val newV = AbsValue(Undef)
-      val newBind = BindingUtil(newV)
+      val newBind = AbsBinding.alpha(MBinding(Undef))
       DecEnvRecordMap(map.updated(name, (newBind, AbsAbsent.Bot)))
     }
   }
@@ -90,7 +89,7 @@ abstract class DecEnvRecord extends EnvRecord {
           if (strict) (AbsValue.Bot, HashSet(TypeError))
           else (v, emptyExcSet)
         } else { (AbsValue.Bot, emptyExcSet) }
-      val newBind = BindingUtil(thenV + elseV)
+      val newBind = AbsBinding(thenV + elseV)
       (DecEnvRecordMap(map.updated(name, (newBind, AbsAbsent.Bot))), excSet)
     }
   }
@@ -117,7 +116,7 @@ abstract class DecEnvRecord extends EnvRecord {
       val emptyExcSet: Set[Exception] = HashSet()
       val (thenV, excSet: Set[Exception]) =
         if (AbsBool.False <= bind.mutable &&
-          AbsBool.False <= bind.initialized) {
+          AbsAbsent.Top <= bind.absent) {
           //    a. If S is false, return the value undefined,
           //       otherwise throw a ReferenceError exception.
           if (strict) (AbsValue.Bot, HashSet(ReferenceError))
@@ -125,8 +124,7 @@ abstract class DecEnvRecord extends EnvRecord {
         } else { (AbsValue.Bot, emptyExcSet) }
       // 4. Else, return the value currently bound to N in envRec.
       val elseV =
-        if (AbsBool.True <= bind.mutable ||
-          AbsBool.True <= bind.initialized) bind.value
+        if (AbsBool.True <= bind.mutable) bind.value
         else AbsValue.Bot
       (thenV + elseV, excSet)
     }
@@ -172,11 +170,7 @@ abstract class DecEnvRecord extends EnvRecord {
       }
       // 3. Create an immutable binding in envRec for N and
       //    record that it is uninitialised.
-      val newBind = BindingUtil(
-        value = AbsValue.Bot,
-        initialized = AbsBool.False,
-        mutable = AbsBool.False
-      )
+      val newBind = AbsBinding.alpha(IBinding(None))
       DecEnvRecordMap(map.updated(name, (newBind, AbsAbsent.Bot)))
     }
   }
@@ -194,7 +188,7 @@ abstract class DecEnvRecord extends EnvRecord {
       val bind = envRec.has(name) match {
         case MustExist(bind) if (
           bind.mutable == AbsBool.False &&
-          bind.initialized == AbsBool.False
+          bind.absent == AbsAbsent.Top
         ) => bind
         case _ => throw ContextAssertionError(
           "InitializeImmutableBinding",
@@ -202,7 +196,7 @@ abstract class DecEnvRecord extends EnvRecord {
         )
       }
       // 3. Set the bound value for N in envRec to V.
-      val newBind = bind.copy(value = v, initialized = AbsBool.True)
+      val newBind = bind.copyWith(value = v, absent = AbsAbsent.Bot)
       // 4. Record that the immutable binding for N
       //    in envRec has been initialised.
       DecEnvRecordMap(map.updated(name, (newBind, AbsAbsent.Bot)))
@@ -302,7 +296,7 @@ abstract class DecEnvRecord extends EnvRecord {
         val newMap = map.foldLeft(DecEnvRecord.EmptyMap) {
           case (m, (key, (bind, abs))) => {
             val newV = bind.value.subsLoc(locR, locO)
-            val newBind = bind.copy(value = newV)
+            val newBind = bind.copyWith(value = newV)
             m + (key -> (newBind, abs))
           }
         }
@@ -320,7 +314,7 @@ abstract class DecEnvRecord extends EnvRecord {
         val newMap = map.foldLeft(DecEnvRecord.EmptyMap) {
           case (m, (key, (bind, abs))) => {
             val newV = bind.value.weakSubsLoc(locR, locO)
-            val newBind = bind.copy(value = newV)
+            val newBind = bind.copyWith(value = newV)
             m + (key -> (newBind, abs))
           }
         }
@@ -329,22 +323,22 @@ abstract class DecEnvRecord extends EnvRecord {
     }
   }
 
-  def apply(s: String): Option[Binding] = this match {
+  def apply(s: String): Option[AbsBinding] = this match {
     case DecEnvRecordBot => None
     case DecEnvRecordMap(map) => map.get(s).map { case (bind, _) => bind }
   }
 
-  def getOrElse[T](s: String)(default: T)(f: Binding => T): T = {
+  def getOrElse[T](s: String)(default: T)(f: AbsBinding => T): T = {
     this(s) match {
       case Some(bind) => f(bind)
       case None => default
     }
   }
 
-  def get(s: String): Binding = {
+  def get(s: String): AbsBinding = {
     this(s) match {
       case Some(bind) => bind
-      case None => BindingUtil.Bot
+      case None => AbsBinding.Bot
     }
   }
 
@@ -354,7 +348,7 @@ abstract class DecEnvRecord extends EnvRecord {
   }
 
   // strong update
-  def update(x: String, bind: Binding): DecEnvRecord = this match {
+  def update(x: String, bind: AbsBinding): DecEnvRecord = this match {
     case DecEnvRecordBot => DecEnvRecordBot
     case DecEnvRecordMap(map) =>
       DecEnvRecord(map.updated(x, (bind, AbsAbsent.Bot)))
@@ -362,27 +356,27 @@ abstract class DecEnvRecord extends EnvRecord {
 }
 
 object DecEnvRecord {
-  private val EmptyMap: Map[String, (Binding, AbsAbsent)] = HashMap()
+  private val EmptyMap: Map[String, (AbsBinding, AbsAbsent)] = HashMap()
   val Bot: DecEnvRecord = DecEnvRecordBot
   val Empty: DecEnvRecord = DecEnvRecordMap(EmptyMap)
-  def apply(m: Map[String, (Binding, AbsAbsent)]): DecEnvRecord = DecEnvRecordMap(m)
+  def apply(m: Map[String, (AbsBinding, AbsAbsent)]): DecEnvRecord = DecEnvRecordMap(m)
   def newDeclEnvRecord(outerEnv: AbsValue): DecEnvRecord = {
-    Empty.update("@outer", BindingUtil(outerEnv))
+    Empty.update("@outer", AbsBinding(outerEnv))
   }
 
   def newPureLocal(envVal: AbsValue, thisLocSet: AbsLoc): DecEnvRecord = {
     Empty
-      .update("@env", BindingUtil(envVal))
-      .update("@this", BindingUtil(AbsValue(thisLocSet)))
-      .update("@exception", BindingUtil.Bot)
-      .update("@exception_all", BindingUtil.Bot)
-      .update("@return", BindingUtil(AbsValue(Undef)))
+      .update("@env", AbsBinding(envVal))
+      .update("@this", AbsBinding(thisLocSet))
+      .update("@exception", AbsBinding.Bot)
+      .update("@exception_all", AbsBinding.Bot)
+      .update("@return", AbsBinding(MBinding(Undef)))
   }
 }
 
 object DecEnvRecordBot extends DecEnvRecord
 case class DecEnvRecordMap(
-    val map: Map[String, (Binding, AbsAbsent)]
+    val map: Map[String, (AbsBinding, AbsAbsent)]
 ) extends DecEnvRecord {
   // existence check
   def has(name: String): Existence = map.get(name) match {
@@ -398,5 +392,5 @@ case class DecEnvRecordMap(
 
 abstract class Existence
 case object MustNotExist extends Existence
-case class MustExist(bind: Binding) extends Existence
-case class MayExist(bind: Binding) extends Existence
+case class MustExist(bind: AbsBinding) extends Existence
+case class MayExist(bind: AbsBinding) extends Existence

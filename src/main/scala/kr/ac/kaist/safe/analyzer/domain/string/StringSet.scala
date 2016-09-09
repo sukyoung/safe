@@ -24,7 +24,7 @@ case class StringSet(maxSetSize: Int) extends AbsStringUtil {
   object StrSet {
     def apply(seq: String*): StrSet = StrSet(seq.toSet)
   }
-  val Bot: AbsDom = StrSet()
+  lazy val Bot: AbsDom = StrSet()
 
   def alpha(str: Str): AbsString = StrSet(str)
 

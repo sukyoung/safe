@@ -20,9 +20,8 @@ import kr.ac.kaist.safe.util._
 import scala.collection.immutable.{ HashMap }
 
 case class Initialize(cfg: CFG) {
+  private val AT = AbsBool.True
   def state: State = {
-    val afalse = AbsBool(false)
-
     val globalPureLocalEnv = DecEnvRecord.newPureLocal(AbsValue(Null), AbsLoc(BuiltinGlobal.loc)) - "@return"
 
     val initHeap = Heap(HashMap(
@@ -47,7 +46,7 @@ case class Initialize(cfg: CFG) {
 
     val testGlobalObj =
       globalObj.update("__BOT", PropValue.Bot)
-        .update("__TOP", PropValue(AbsDataProp(AbsPValue.Top)))
+        .update("__TOP", PropValue(AbsDataProp.Top))
         .update("__UInt", PropValue(AbsNumber.UInt))
         .update("__Global", PropValue(AbsDataProp(AbsLoc(BuiltinGlobal.loc))))
         .update("__BoolTop", PropValue(AbsBool.Top))

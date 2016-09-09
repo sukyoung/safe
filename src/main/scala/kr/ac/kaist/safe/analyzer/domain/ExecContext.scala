@@ -273,7 +273,7 @@ abstract class ExecContext {
         val falseV =
           if (AF <= bind.mutable) bind.value
           else AbsValue.Bot
-        val newBind = BindingUtil(trueV + falseV)
+        val newBind = AbsBinding(trueV + falseV)
         update(loc, env.update(x, newBind))
       }
       case None => ExecContext.Bot

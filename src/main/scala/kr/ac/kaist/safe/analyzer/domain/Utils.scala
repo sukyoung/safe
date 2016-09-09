@@ -50,4 +50,7 @@ object Utils {
 
   // absent value for parital map
   var AbsAbsent: AbsAbsentUtil = DefaultAbsent
+
+  // execution context
+  var AbsBinding: AbsBindingUtil = DefaultBinding
 }
