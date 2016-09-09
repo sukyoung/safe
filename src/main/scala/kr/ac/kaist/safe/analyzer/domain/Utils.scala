@@ -53,4 +53,5 @@ object Utils {
 
   // execution context
   var AbsBinding: AbsBindingUtil = DefaultBinding
+  var AbsDecEnvRec: AbsDecEnvRecUtil = DefaultDecEnvRec
 }

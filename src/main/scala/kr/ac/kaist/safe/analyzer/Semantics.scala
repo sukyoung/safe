@@ -33,16 +33,16 @@ class Semantics(
   private val AB = AbsBool.Bot
 
   // Interprocedural edges
-  private var ipSuccMap: Map[ControlPoint, Map[ControlPoint, (OldAddrSet, DecEnvRecord)]] = HashMap()
+  private var ipSuccMap: Map[ControlPoint, Map[ControlPoint, (OldAddrSet, AbsDecEnvRec)]] = HashMap()
   private var ipPredMap: Map[ControlPoint, Set[ControlPoint]] = HashMap()
-  def getAllIPSucc: Map[ControlPoint, Map[ControlPoint, (OldAddrSet, DecEnvRecord)]] = ipSuccMap
+  def getAllIPSucc: Map[ControlPoint, Map[ControlPoint, (OldAddrSet, AbsDecEnvRec)]] = ipSuccMap
   def getAllIPPred: Map[ControlPoint, Set[ControlPoint]] = ipPredMap
-  def getInterProcSucc(cp: ControlPoint): Option[Map[ControlPoint, (OldAddrSet, DecEnvRecord)]] = ipSuccMap.get(cp)
+  def getInterProcSucc(cp: ControlPoint): Option[Map[ControlPoint, (OldAddrSet, AbsDecEnvRec)]] = ipSuccMap.get(cp)
   def getInterProcPred(cp: ControlPoint): Option[Set[ControlPoint]] = ipPredMap.get(cp)
 
   // Adds inter-procedural call edge from call-node cp1 to entry-node cp2.
   // Edge label ctx records callee context, which is joined if the edge existed already.
-  def addCallEdge(cp1: ControlPoint, cp2: ControlPoint, old: OldAddrSet, env: DecEnvRecord): Unit = {
+  def addCallEdge(cp1: ControlPoint, cp2: ControlPoint, old: OldAddrSet, env: AbsDecEnvRec): Unit = {
     val updatedSuccMap = ipSuccMap.get(cp1) match {
       case None => HashMap(cp2 -> (old, env))
       case Some(map2) =>
@@ -65,7 +65,7 @@ class Semantics(
   // Adds inter-procedural return edge from exit or exit-exc node cp1 to after-call node cp2.
   // Edge label ctx records caller context, which is joined if the edge existed already.
   // If change occurs, cp1 is added to worklist as side-effect.
-  def addReturnEdge(cp1: ControlPoint, cp2: ControlPoint, old: OldAddrSet, env: DecEnvRecord): Unit = {
+  def addReturnEdge(cp1: ControlPoint, cp2: ControlPoint, old: OldAddrSet, env: AbsDecEnvRec): Unit = {
     val updatedSuccMap = ipSuccMap.get(cp1) match {
       case None => {
         worklist.add(cp1)
@@ -103,14 +103,14 @@ class Semantics(
     ipPredMap += (cp2 -> updatedPredSet)
   }
 
-  def E(cp1: ControlPoint, cp2: ControlPoint, old: OldAddrSet, env: DecEnvRecord, st: State): State = {
+  def E(cp1: ControlPoint, cp2: ControlPoint, old: OldAddrSet, env: AbsDecEnvRec, st: State): State = {
     (cp1.node, cp2.node) match {
       case (_, Entry(f)) => st.context match {
         case ExecContext.Bot => State.Bot
         case ctx1: ExecContext => {
           val objEnv = env("@scope") match {
-            case Some(bind) => DecEnvRecord.newDeclEnvRecord(bind.value)
-            case None => DecEnvRecord.newDeclEnvRecord(AbsValue.Bot)
+            case Some(bind) => AbsDecEnvRec.newDeclEnvRecord(bind.value)
+            case None => AbsDecEnvRec.newDeclEnvRecord(AbsValue.Bot)
           }
           val env2 = env - "@scope"
           val ctx2 = ctx1.subsPureLocal(env2)
@@ -397,7 +397,7 @@ class Semantics(
 
         val localEnv = st3.context.pureLocal
         val scope = localEnv.getOrElse("@env")(AbsValue.Bot) { _.value }
-        val oEnv = DecEnvRecord.newDeclEnvRecord(scope)
+        val oEnv = AbsDecEnvRec.newDeclEnvRecord(scope)
         val fBind = AbsBinding(fVal, mutable = AF)
         val newCtx = st3.context.update(locR3, oEnv.update(name.text, fBind))
         val newSt = State(h5, newCtx).varStore(lhs, fVal)
@@ -562,7 +562,7 @@ class Semantics(
             funObj.getOrElse[Set[FunctionId]](ICall)(HashSet[FunctionId]()) { _.fidset }
         }
         fidSet.foreach((fid) => {
-          val newPureLocal = DecEnvRecord.newPureLocal(AbsValue(locR), thisLocSet)
+          val newPureLocal = AbsDecEnvRec.newPureLocal(AbsValue(locR), thisLocSet)
           val callerCtxSet = callerCallCtx.newCallContext(st1.heap, cfg, fid, locR, thisLocSet, newPureLocal, Some(i.addr1))
           callerCtxSet.foreach {
             case (newCallCtx, newEnv) => {

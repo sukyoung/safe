@@ -73,7 +73,7 @@ case class State(heap: Heap, context: ExecContext) {
         })
         (value, ExceptionSetEmpty)
       case CapturedCatchVar =>
-        val collapsedEnv = context.getOrElse(PredefLoc.COLLAPSED, DecEnvRecord.Bot)
+        val collapsedEnv = context.getOrElse(PredefLoc.COLLAPSED, AbsDecEnvRec.Bot)
         (collapsedEnv.getOrElse(x)(valueBot) { _.value }, ExceptionSetEmpty)
       case GlobalVar => heap.lookupGlobal(x)
     }
@@ -113,7 +113,7 @@ case class State(heap: Heap, context: ExecContext) {
         State(heap, newCtx)
       case CapturedCatchVar =>
         val bind = AbsBinding(value)
-        val env = context.getOrElse(PredefLoc.COLLAPSED, DecEnvRecord.Bot)
+        val env = context.getOrElse(PredefLoc.COLLAPSED, AbsDecEnvRec.Bot)
         State(heap, context.update(PredefLoc.COLLAPSED, env.update(x, bind)))
       case GlobalVar => {
         val h1 =
@@ -141,14 +141,14 @@ case class State(heap: Heap, context: ExecContext) {
         val localEnv = context.pureLocal
         val newCtx = localEnv.getOrElse("@env")(ExecContext.Bot) { bind =>
           bind.value.locset.foldLeft(ExecContext.Bot)((tmpCtx, loc) => {
-            tmpCtx + context.update(loc, context.getOrElse(loc, DecEnvRecord.Bot).update(x, bind))
+            tmpCtx + context.update(loc, context.getOrElse(loc, AbsDecEnvRec.Bot).update(x, bind))
           })
         }
         State(heap, newCtx)
       case CapturedCatchVar =>
         val collapsedLoc = PredefLoc.COLLAPSED
         val bind = AbsBinding(value)
-        State(heap, context.update(collapsedLoc, context.getOrElse(collapsedLoc, DecEnvRecord.Bot).update(x, bind)))
+        State(heap, context.update(collapsedLoc, context.getOrElse(collapsedLoc, AbsDecEnvRec.Bot).update(x, bind)))
       case GlobalVar =>
         val globalLoc = BuiltinGlobal.loc
         val objV = AbsDataProp(value, AbsBool.True, AbsBool.True, AbsBool.False)

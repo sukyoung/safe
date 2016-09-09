@@ -14,6 +14,7 @@ package kr.ac.kaist.safe.analyzer.domain
 import scala.collection.immutable.HashSet
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.util.Address
+import kr.ac.kaist.safe.analyzer.domain.Utils._
 
 case class OldAddrSet(mayOld: Set[Address], mustOld: Set[Address]) {
   /* partial order */
@@ -77,8 +78,8 @@ case class OldAddrSet(mayOld: Set[Address], mustOld: Set[Address]) {
         "mustOld: (" + mustOld.mkString(", ") + ")"
   }
 
-  def fixOldify(env: DecEnvRecord, mayOld: Set[Address], mustOld: Set[Address]): (OldAddrSet, DecEnvRecord) = {
-    if (this.isBottom) (OldAddrSet.Bot, DecEnvRecord.Bot)
+  def fixOldify(env: AbsDecEnvRec, mayOld: Set[Address], mustOld: Set[Address]): (OldAddrSet, AbsDecEnvRec) = {
+    if (this.isBottom) (OldAddrSet.Bot, AbsDecEnvRec.Bot)
     else {
       mayOld.foldLeft((this, env))((res, a) => {
         val (resCtx, resEnv) = res
