@@ -125,20 +125,26 @@ class CoreTest extends FlatSpec {
 
     val config = SafeConfig(CmdBase, List(jsName))
 
-    val pgm = Parse((), config)
+    lazy val pgm = Parse((), config)
     registerTest("[Parse] " + filename, ParseTest) { parseTest(pgm) }
 
-    val ast = pgm.flatMap(ASTRewrite(_, config))
-    val astName = resDir + "/astRewrite/" + name + ".test"
-    registerTest("[ASTRewrite] " + filename, ASTRewriteTest) { astRewriteTest(ast, astName) }
+    lazy val ast = pgm.flatMap(ASTRewrite(_, config))
+    registerTest("[ASTRewrite] " + filename, ASTRewriteTest) {
+      val astName = resDir + "/astRewrite/" + name + ".test"
+      astRewriteTest(ast, astName)
+    }
 
-    val ir = ast.flatMap(Compile(_, config))
-    val compileName = resDir + "/compile/" + name + ".test"
-    registerTest("[Compile]" + filename, CompileTest) { compileTest(ir, compileName) }
+    lazy val ir = ast.flatMap(Compile(_, config))
+    registerTest("[Compile]" + filename, CompileTest) {
+      val compileName = resDir + "/compile/" + name + ".test"
+      compileTest(ir, compileName)
+    }
 
-    val cfg = ir.flatMap(CFGBuild(_, config))
-    val cfgName = resDir + "/cfg/" + name + ".test"
-    registerTest("[CFG]" + filename, CFGBuildTest) { cfgBuildTest(cfg, cfgName) }
+    lazy val cfg = ir.flatMap(CFGBuild(_, config))
+    registerTest("[CFG]" + filename, CFGBuildTest) {
+      val cfgName = resDir + "/cfg/" + name + ".test"
+      cfgBuildTest(cfg, cfgName)
+    }
   }
 
   val analyzerTestDir = BASE_DIR + SEP + "tests/js/semantics"
