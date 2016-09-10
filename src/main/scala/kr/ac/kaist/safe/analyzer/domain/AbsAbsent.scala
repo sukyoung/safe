@@ -39,6 +39,7 @@ object DefaultAbsent extends AbsAbsentUtil {
     }
 
     def isBottom: Boolean = this == Bot
+    def isTop: Boolean = this == Top
 
     def getSingle: ConSingle[Absent] = this match {
       case Bot => ConZero()

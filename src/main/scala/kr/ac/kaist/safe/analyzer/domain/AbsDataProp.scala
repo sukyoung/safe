@@ -78,12 +78,8 @@ object DefaultDataProp extends AbsDataPropUtil {
   ) extends AbsDataProp {
     def gamma: ConSet[DataProp] = ConInf() // TODO more precise
 
-    def isBottom: Boolean = {
-      value.isBottom &&
-        writable.isBottom &&
-        enumerable.isBottom &&
-        configurable.isBottom
-    }
+    def isBottom: Boolean = this == Bot
+    def isTop: Boolean = this == Top
 
     def getSingle: ConSingle[DataProp] = ConMany() // TODO more precise
 

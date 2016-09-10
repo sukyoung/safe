@@ -27,6 +27,7 @@ object DefaultNull extends AbsNullUtil {
     }
 
     def isBottom: Boolean = this == Bot
+    def isTop: Boolean = this == Top
 
     def getSingle: ConSingle[Null] = this match {
       case Bot => ConZero()

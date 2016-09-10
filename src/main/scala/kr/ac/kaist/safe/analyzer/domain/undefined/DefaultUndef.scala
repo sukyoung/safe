@@ -27,6 +27,7 @@ object DefaultUndef extends AbsUndefUtil {
     }
 
     def isBottom: Boolean = this == Bot
+    def isTop: Boolean = this == Top
 
     def getSingle: ConSingle[Undef] = this match {
       case Bot => ConZero()

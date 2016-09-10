@@ -50,6 +50,7 @@ object DefaultNumber extends AbsNumberUtil {
     }
 
     def isBottom: Boolean = this == Bot
+    def isTop: Boolean = this == Top
 
     def getSingle: ConSingle[Num] = this match {
       case Bot => ConZero()

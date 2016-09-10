@@ -70,10 +70,10 @@ object Helper {
 
       val lenExcSet1 =
         if (afalse <= (nValue === nNewLen)) HashSet[Exception](RangeError)
-        else ExceptionSetEmpty
+        else ExcSetEmpty
       (arrLengthHeap1, lenExcSet1)
     } else {
-      (Heap.Bot, ExceptionSetEmpty)
+      (Heap.Bot, ExcSetEmpty)
     }
   }
 
@@ -128,7 +128,7 @@ object Helper {
     })
 
     // 15.4.5.1 [[DefineOwnProperty]] of Array
-    val (arrHeap, arrExcSet) = locSetArr.foldLeft((Heap.Bot, ExceptionSetEmpty))((res2, l) => {
+    val (arrHeap, arrExcSet) = locSetArr.foldLeft((Heap.Bot, ExcSetEmpty))((res2, l) => {
       // 3. s is length
       val (lengthHeap, lengthExcSet) = arrayLenghtStore(heap, idxAbsStr, storeV, l)
       // 4. s is array index

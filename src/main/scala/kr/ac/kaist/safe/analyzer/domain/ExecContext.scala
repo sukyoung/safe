@@ -218,17 +218,13 @@ abstract class ExecContext {
         visited += l
         val env = this.getOrElse(l, AbsDecEnvRec.Bot)
         val isIn = (env HasBinding x)
-        val v1 =
-          if (AbsBool.True <= isIn) env.getOrElse(x)(valueBot) { _.value }
-          else valueBot
-        val v2 =
-          if (AbsBool.False <= isIn) {
-            val outerLocSet = env.getOrElse("@outer")(AbsLoc.Bot) { _.value.locset }
-            outerLocSet.foldLeft(valueBot)((tmpVal, outerLoc) => tmpVal + visit(outerLoc))
-          } else {
-            valueBot
-          }
-        v1 + v2
+        isIn.map[AbsValue](thenV = {
+          val (value, _) = env.GetBindingValue(x)
+          value
+        }, elseV = {
+          val (outerV, _) = env.GetBindingValue("@outer")
+          outerV.locset.foldLeft(valueBot)((tmpVal, outerLoc) => tmpVal + visit(outerLoc))
+        })(AbsValue)
       }
     }
     visit(loc)
@@ -242,17 +238,13 @@ abstract class ExecContext {
         visited += l
         val env = this.getOrElse(l, AbsDecEnvRec.Bot)
         val isIn = (env HasBinding x)
-        val locSet1 =
-          if (AbsBool.True <= isIn) AbsLoc(l)
-          else AbsLoc.Bot
-        val locSet2 =
-          if (AbsBool.False <= isIn) {
-            val outerLocSet = env.getOrElse("@outer")(AbsLoc.Bot) { _.value.locset }
-            outerLocSet.foldLeft(AbsLoc.Bot)((res, outerLoc) => res + visit(outerLoc))
-          } else {
-            AbsLoc.Bot
+        isIn.map[AbsLoc](
+          thenV = AbsLoc(l),
+          elseV = {
+            val (outerV, _) = env.GetBindingValue("@outer")
+            outerV.locset.foldLeft(AbsLoc.Bot)((res, outerLoc) => res + visit(outerLoc))
           }
-        locSet1 + locSet2
+        )(AbsLoc)
       }
     }
     visit(loc)
@@ -265,26 +257,12 @@ abstract class ExecContext {
     val env = this.getOrElse(loc, AbsDecEnvRec.Bot)
     val AT = AbsBool.True
     val AF = AbsBool.False
-    val ctx1 = env(x) match {
-      case Some(bind) => {
-        val trueV =
-          if (AT <= bind.mutable) value
-          else AbsValue.Bot
-        val falseV =
-          if (AF <= bind.mutable) bind.value
-          else AbsValue.Bot
-        val newBind = AbsBinding(trueV + falseV)
-        update(loc, env.update(x, newBind))
-      }
-      case None => ExecContext.Bot
-    }
-    val outerLocSet = env("@outer") match {
-      case Some(bind) => bind.value.locset
-      case None => AbsLoc.Bot
-    }
+    val (newEnv, _) = env.SetMutableBinding(x, value)
+    val ctx1 = update(loc, newEnv)
+    val (outerV, _) = env.GetBindingValue("@outer")
     val ctx2 =
       if (AbsBool.False <= (env HasBinding x))
-        outerLocSet.foldLeft(ExecContext.Empty)((tmpH, outerLoc) => varStoreLocal(outerLoc, x, value))
+        outerV.locset.foldLeft(ExecContext.Empty)((tmpH, outerLoc) => varStoreLocal(outerLoc, x, value))
       else
         ExecContext.Bot
     ctx1 + ctx2

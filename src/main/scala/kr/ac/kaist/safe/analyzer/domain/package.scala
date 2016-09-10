@@ -19,8 +19,8 @@ package object domain {
   ////////////////////////////////////////////////////////////////
   // value constructors
   ////////////////////////////////////////////////////////////////
-  val ExceptionSetEmpty: Set[Exception] = HashSet[Exception]()
-  val ExceptionSetTop: Set[Exception] = null // TODO refactoring
+  val ExcSetEmpty: Set[Exception] = HashSet[Exception]()
+  val ExcSetTop: Set[Exception] = null // TODO refactoring
 
   val FidSetEmpty: Set[FunctionId] = HashSet[FunctionId]()
 

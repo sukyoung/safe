@@ -82,6 +82,7 @@ object DefaultPValue extends AbsPValueUtil {
     def gamma: ConSet[PValue] = ConInf() // TODO more precisely
 
     def isBottom: Boolean = this == Bot
+    def isTop: Boolean = this == Top
 
     def getSingle: ConSingle[PValue] = ConMany() // TODO more precisely
 
@@ -135,7 +136,7 @@ object DefaultPValue extends AbsPValueUtil {
       this.strval.fold(()) { lst ::= _.toString }
 
       lst match {
-        case Nil => "⊥(pvalue)"
+        case Nil => "⊥(primitive value)"
         case _ => lst.mkString(", ")
       }
     }

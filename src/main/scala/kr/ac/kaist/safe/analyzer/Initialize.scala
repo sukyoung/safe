@@ -22,7 +22,9 @@ import scala.collection.immutable.{ HashMap }
 case class Initialize(cfg: CFG) {
   private val AT = AbsBool.True
   def state: State = {
-    val globalPureLocalEnv = AbsDecEnvRec.newPureLocal(AbsValue(Null), AbsLoc(BuiltinGlobal.loc)) - "@return"
+    val (globalPureLocalEnv, _) = AbsDecEnvRec
+      .newPureLocal(AbsValue(Null), AbsLoc(BuiltinGlobal.loc))
+      .DeleteBinding("@return")
 
     val initHeap = Heap(HashMap(
       SystemLoc("Dummy", Old) -> AbsObjectUtil.Bot // TODO If delete, not working because not allowed update to bottom heap

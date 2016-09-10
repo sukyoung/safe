@@ -62,6 +62,7 @@ object DefaultValue extends AbsValueUtil {
     def gamma: ConSet[Value] = ConInf() // TODO more precisely
 
     def isBottom: Boolean = this == Bot
+    def isTop: Boolean = this == Top
 
     def getSingle: ConSingle[Value] = ConMany() // TODO more precisely
 

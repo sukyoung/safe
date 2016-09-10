@@ -31,6 +31,7 @@ object DefaultBool extends AbsBoolUtil {
     }
 
     def isBottom: Boolean = this == Bot
+    def isTop: Boolean = this == Top
 
     def getSingle: ConSingle[Bool] = this match {
       case Bot => ConZero()
@@ -99,6 +100,20 @@ object DefaultBool extends AbsBoolUtil {
       case _ => this
     }
 
+    def &&(that: AbsBool): Dom = (this, check(that)) match {
+      case (Bot, _) | (_, Bot) => Bot
+      case (False, _) | (_, False) => False
+      case (True, True) => True
+      case _ => Top
+    }
+
+    def ||(that: AbsBool): Dom = (this, check(that)) match {
+      case (Bot, _) | (_, Bot) => Bot
+      case (True, _) | (_, True) => True
+      case (False, False) => False
+      case _ => Top
+    }
+
     def map[T <: Domain[T]](
       thenV: => T,
       elseV: => T
@@ -110,6 +125,20 @@ object DefaultBool extends AbsBoolUtil {
         if (False <= this) elseV
         else util.Bot
       t + e
+    }
+
+    def map[T <: Domain[T], U <: Domain[U]](
+      thenV: => (T, U),
+      elseV: => (T, U)
+    )(implicit util: (DomainUtil[T], DomainUtil[U])): (T, U) = {
+      val (lUtil, rUtil) = util
+      val (lt, rt) =
+        if (True <= this) thenV
+        else (lUtil.Bot, rUtil.Bot)
+      val (le, re) =
+        if (False <= this) elseV
+        else (lUtil.Bot, rUtil.Bot)
+      (lt + le, rt + re)
     }
   }
 }

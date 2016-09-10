@@ -16,6 +16,9 @@ trait Domain[Self <: Domain[_]] {
   // bottom check
   def isBottom: Boolean
 
+  // bottom check
+  def isTop: Boolean
+
   // folding for bottom
   def foldUnit(f: => Unit): Unit = fold(())(_ => f)
   def foldUnit(f: Self => Unit): Unit = fold(())(f)

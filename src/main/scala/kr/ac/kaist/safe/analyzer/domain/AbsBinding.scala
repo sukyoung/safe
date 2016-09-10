@@ -85,11 +85,8 @@ object DefaultBinding extends AbsBindingUtil {
       }
     }
 
-    def isBottom: Boolean = {
-      value.isBottom &&
-        uninit.isBottom &&
-        mutable.isBottom
-    }
+    def isBottom: Boolean = this == Bot
+    def isTop: Boolean = this == Top
 
     def getSingle: ConSingle[Binding] = {
       (value.getSingle, uninit.getSingle, mutable.getSingle) match {

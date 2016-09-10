@@ -19,6 +19,7 @@ trait ConDomainUtil[T, CON <: ConDomain[T, CON]] extends DomainUtil[CON]
 ////////////////////////////////////////////////////////////////////////////////
 sealed abstract class ConSingle[T] extends ConDomain[T, ConSingle[T]] {
   def isBottom: Boolean = this == ConZero[T]()
+  def isTop: Boolean = this == ConMany()
 
   override def toString: String = this match {
     case ConZero() => "[]"
@@ -60,7 +61,8 @@ case class ConSingleUtil[T]() extends ConDomainUtil[T, ConSingle[T]] {
 // concrete finite set domain
 ////////////////////////////////////////////////////////////////////////////////
 sealed abstract class ConSet[T] extends ConDomain[T, ConSet[T]] {
-  def isBottom: Boolean = this == ConZero[T]()
+  def isBottom: Boolean = this == ConFin[T]()
+  def isTop: Boolean = this == ConInf[T]()
 
   override def toString: String = this match {
     case ConFin(set) => "[" + set.mkString(", ") + "]"

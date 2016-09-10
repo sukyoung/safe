@@ -22,6 +22,8 @@ case class Bool(b: Boolean) extends PValue
 trait AbsBool extends AbsDomain[Bool, AbsBool] {
   def ===(that: AbsBool): AbsBool
   def negate: AbsBool
+  def &&(that: AbsBool): AbsBool
+  def ||(that: AbsBool): AbsBool
 
   def toAbsNumber: AbsNumber
   def toAbsString: AbsString
@@ -30,6 +32,12 @@ trait AbsBool extends AbsDomain[Bool, AbsBool] {
     thenV: => T,
     elseV: => T
   )(implicit util: DomainUtil[T]): T
+
+  // TODO remove after when product domains are possible
+  def map[T <: Domain[T], U <: Domain[U]](
+    thenV: => (T, U),
+    elseV: => (T, U)
+  )(implicit util: (DomainUtil[T], DomainUtil[U])): (T, U)
 }
 
 trait AbsBoolUtil extends AbsDomainUtil[Bool, AbsBool] {

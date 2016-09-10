@@ -101,6 +101,7 @@ case class DefaultLoc(
     def gamma: ConSet[Loc] = ConFin(set)
 
     def isBottom: Boolean = set.isEmpty
+    def isTop: Boolean = set.size == MAX_SIZE
 
     def getSingle: ConSingle[Loc] = set.size match {
       case 0 => ConZero()

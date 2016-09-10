@@ -46,6 +46,7 @@ case class StringSet(maxSetSize: Int) extends AbsStringUtil {
     }
 
     def isBottom: Boolean = this == Bot
+    def isTop: Boolean = this == Top
 
     def getSingle: ConSingle[Str] = this match {
       case StrSet(set) if set.size == 0 => ConZero()
