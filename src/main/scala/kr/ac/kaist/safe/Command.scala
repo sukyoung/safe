@@ -48,4 +48,5 @@ case object CmdASTRewrite extends CommandObj("astRewrite", CmdParse >> ASTRewrit
 case object CmdCompile extends CommandObj("compile", CmdASTRewrite >> Compile)
 case object CmdCFGBuild extends CommandObj("cfgBuild", CmdCompile >> CFGBuild)
 case object CmdAnalyze extends CommandObj("analyze", CmdCFGBuild >> Analyze)
+case object CmdDynamicTest extends CommandObj("dynamicTest", CmdBase >> DynamicTest)
 case object CmdHelp extends CommandObj("help", CmdBase >> Help)

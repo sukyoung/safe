@@ -70,6 +70,7 @@ object Safe {
     CmdCompile,
     CmdCFGBuild,
     CmdAnalyze,
+    CmdDynamicTest,
     CmdHelp
   )
   val cmdMap = commands.foldLeft[Map[String, Command]](HashMap()) {
