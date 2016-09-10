@@ -61,13 +61,12 @@ scalacOptions in ThisBuild ++= Seq("-deprecation", "-feature",
                                    "-language:postfixOps",
                                    "-language:implicitConversions")
 
-unmanagedJars in Compile ++= Seq(file("lib/xtc.jar"), file("jline-2.12.jar"))
+unmanagedJars in Compile ++= Seq(file("lib/xtc.jar"), file("lib/jline-2.12.jar"), file("lib/spray-json_2.11-1.3.2.jar"))
 cleanFiles ++= Seq(file("src/main/java/kr/ac/kaist/safe/parser/"))
 
 libraryDependencies ++= Seq(
   "org.scalatest" % "scalatest_2.11" % "2.2.0" % "test" withSources,
-  "org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.1" withSources,
-  "io.spray" %%  "spray-json" % "1.3.2"
+  "org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.1" withSources
 )
 
 javacOptions ++= Seq("-encoding", "UTF-8")
