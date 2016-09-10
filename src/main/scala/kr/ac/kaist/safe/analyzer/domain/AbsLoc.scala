@@ -68,8 +68,6 @@ case object Old extends RecencyTag("##")
 // location abstract domain
 ////////////////////////////////////////////////////////////////////////////////
 trait AbsLoc extends AbsDomain[Loc, AbsLoc] {
-  def gamma: ConSet[Loc]
-  def gammaSingle: ConSingle[Loc]
   def contains(loc: Loc): Boolean
   def exists(f: Loc => Boolean): Boolean
   def filter(f: Loc => Boolean): AbsLoc
@@ -100,22 +98,19 @@ case class DefaultLoc(
 
   val MAX_SIZE: Int = totalLocSet.size
   case class AbsDom(set: Set[Loc]) extends AbsLoc {
-    def gamma: ConSet[Loc] = set.size match {
-      case 0 => ConSetBot()
-      case MAX_SIZE => ConSetTop()
-      case _ => ConSetCon(set)
-    }
-
-    def gammaSingle: ConSingle[Loc] = set.size match {
-      case 0 => ConSingleBot()
-      case 1 => ConSingleCon(set.head)
-      case _ => ConSingleTop()
-    }
+    def gamma: ConSet[Loc] = ConFin(set)
 
     def isBottom: Boolean = set.isEmpty
 
+    def getSingle: ConSingle[Loc] = set.size match {
+      case 0 => ConZero()
+      case 1 => ConOne(set.head)
+      case _ => ConMany()
+    }
+
     override def toString: String = set.size match {
-      case MAX_SIZE => "Top"
+      case 0 => "⊥(location)"
+      case MAX_SIZE => "Top(location)"
       case _ => set.mkString(", ")
     }
 

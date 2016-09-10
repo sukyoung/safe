@@ -39,36 +39,31 @@ object DefaultNumber extends AbsNumberUtil {
 
   sealed abstract class AbsDom extends AbsNumber {
     def gamma: ConSet[Num] = this match {
-      case Bot => ConSetBot()
-      case Inf => ConSetCon(Double.PositiveInfinity, Double.NegativeInfinity)
-      case PosInf => ConSetCon(Double.PositiveInfinity)
-      case NegInf => ConSetCon(Double.NegativeInfinity)
-      case NaN => ConSetCon(Double.NaN)
-      case UIntConst(v) => ConSetCon(v)
-      case NUIntConst(v) => ConSetCon(v)
-      case Top | UInt | NUInt => ConSetTop()
-    }
-
-    def gammaSingle: ConSingle[Num] = this match {
-      case Top | UInt | NUInt | Inf => ConSingleTop()
-      case Bot => ConSingleBot()
-      case PosInf => ConSingleCon(Double.PositiveInfinity)
-      case NegInf => ConSingleCon(Double.NegativeInfinity)
-      case NaN => ConSingleCon(Double.NaN)
-      case UIntConst(v) => ConSingleCon(v)
-      case NUIntConst(v) => ConSingleCon(v)
-    }
-
-    def gammaSimple: ConSimple[Num] = this match {
-      case Bot => ConSimpleBot()
-      case _ => ConSimpleTop()
+      case Bot => ConFin()
+      case Inf => ConFin(Double.PositiveInfinity, Double.NegativeInfinity)
+      case PosInf => ConFin(Double.PositiveInfinity)
+      case NegInf => ConFin(Double.NegativeInfinity)
+      case NaN => ConFin(Double.NaN)
+      case UIntConst(v) => ConFin(v)
+      case NUIntConst(v) => ConFin(v)
+      case Top | UInt | NUInt => ConInf()
     }
 
     def isBottom: Boolean = this == Bot
 
+    def getSingle: ConSingle[Num] = this match {
+      case Bot => ConZero()
+      case PosInf => ConOne(Double.PositiveInfinity)
+      case NegInf => ConOne(Double.NegativeInfinity)
+      case NaN => ConOne(Double.NaN)
+      case UIntConst(v) => ConOne(v)
+      case NUIntConst(v) => ConOne(v)
+      case Top | UInt | NUInt | Inf => ConMany()
+    }
+
     override def toString: String = this match {
-      case Top => "Number"
-      case Bot => "Bot"
+      case Top => "Top(number)"
+      case Bot => "⊥(number)"
       case Inf => "Inf"
       case PosInf => "+Inf"
       case NegInf => "-Inf"

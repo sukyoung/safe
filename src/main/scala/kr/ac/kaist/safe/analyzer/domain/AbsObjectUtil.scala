@@ -22,20 +22,20 @@ object AbsObjectUtil {
   private val atrue = AbsBool.True
   private val afalse = AbsBool.False
 
-  def apply(m: Map[String, (PropValue, Absent)]): Obj = new Obj(m, ObjEmptyIMap)
-  def apply(m: Map[String, (PropValue, Absent)], im: ObjInternalMap): Obj = new Obj(m, im)
+  def apply(m: Map[String, (PropValue, AbsAbsent)]): Obj = new Obj(m, ObjEmptyIMap)
+  def apply(m: Map[String, (PropValue, AbsAbsent)], im: ObjInternalMap): Obj = new Obj(m, im)
 
   val Bot: Obj = {
     val map = ObjEmptyMap +
-      (STR_DEFAULT_NUMBER -> (PropValue.Bot, AbsentBot)) +
-      (STR_DEFAULT_OTHER -> (PropValue.Bot, AbsentBot))
+      (STR_DEFAULT_NUMBER -> (PropValue.Bot, AbsAbsent.Bot)) +
+      (STR_DEFAULT_OTHER -> (PropValue.Bot, AbsAbsent.Bot))
     apply(map)
   }
 
   val Empty: Obj = {
     val map = ObjEmptyMap +
-      (STR_DEFAULT_NUMBER -> (PropValue.Bot, AbsentTop)) +
-      (STR_DEFAULT_OTHER -> (PropValue.Bot, AbsentTop))
+      (STR_DEFAULT_NUMBER -> (PropValue.Bot, AbsAbsent.Top)) +
+      (STR_DEFAULT_OTHER -> (PropValue.Bot, AbsAbsent.Top))
     apply(map)
   }
 
@@ -128,7 +128,7 @@ object AbsObjectUtil {
       .update(IPrimitiveValue, InternalValueUtil(absStr))
 
     absStr.gamma match {
-      case ConSetCon(strSet) =>
+      case ConFin(strSet) =>
         strSet.foldLeft(Bot)((obj, str) => {
           val length = str.length
           val newObj3 = (0 until length).foldLeft(newObj2)((tmpObj, tmpIdx) => {
@@ -236,18 +236,18 @@ object AbsObjectUtil {
     val anum4 = n2
 
     val absStr5 = (
-      srcAbsStr.gammaSingle,
-      globalAbsB.gamma,
-      ignoreCaseAbsB.gamma,
-      multilineAbsB.gamma
+      srcAbsStr.getSingle,
+      globalAbsB.getSingle,
+      ignoreCaseAbsB.getSingle,
+      multilineAbsB.getSingle
     ) match {
-        case (ConSingleCon(s), ConSingleCon(g), ConSingleCon(i), ConSingleCon(m)) =>
+        case (ConOne(s), ConOne(g), ConOne(i), ConOne(m)) =>
           val flags = (if (g) "g" else "") + (if (i) "i" else "") + (if (m) "m" else "")
           AbsString("/" + s + "/" + flags)
-        case (ConSingleBot(), _, _, _)
-        | (_, ConSingleBot(), _, _)
-        | (_, _, ConSingleBot(), _)
-        | (_, _, _, ConSingleBot()) => AbsString.Bot
+        case (ConZero(), _, _, _)
+        | (_, ConZero(), _, _)
+        | (_, _, ConZero(), _)
+        | (_, _, _, ConZero()) => AbsString.Bot
         case _ => AbsString.Top
       }
 
@@ -299,18 +299,18 @@ object AbsObjectUtil {
     val absStr2 = b.toAbsString
     val absStr3 = n.toAbsString
     val absStr4 = (
-      srcAbsStr.gammaSingle,
-      globalAbsB.gamma,
-      ignoreCaseAbsB.gamma,
-      multilineAbsB.gamma
+      srcAbsStr.getSingle,
+      globalAbsB.getSingle,
+      ignoreCaseAbsB.getSingle,
+      multilineAbsB.getSingle
     ) match {
-        case (ConSingleCon(s), ConSingleCon(g), ConSingleCon(i), ConSingleCon(m)) =>
+        case (ConOne(s), ConOne(g), ConOne(i), ConOne(m)) =>
           val flags = (if (g) "g" else "") + (if (i) "i" else "") + (if (m) "m" else "")
           AbsString("/" + s + "/" + flags)
-        case (ConSingleBot(), _, _, _)
-        | (_, ConSingleBot(), _, _)
-        | (_, _, ConSingleBot(), _)
-        | (_, _, _, ConSingleBot()) => AbsString.Bot
+        case (ConZero(), _, _, _)
+        | (_, ConZero(), _, _)
+        | (_, _, ConZero(), _)
+        | (_, _, _, ConZero()) => AbsString.Bot
         case _ => AbsString.Top
       }
 

@@ -21,10 +21,7 @@ case object Undef extends Undef
 // undefined abstract domain
 ////////////////////////////////////////////////////////////////////////////////
 trait AbsUndef extends AbsDomain[Undef, AbsUndef] {
-  def gamma: ConSimple[Undef]
   def ===(that: AbsUndef): AbsBool
 }
 
-trait AbsUndefUtil extends AbsDomainUtil[Undef, AbsUndef] {
-  def alpha(value: Undef): AbsUndef = Top
-}
+trait AbsUndefUtil extends AbsDomainUtil[Undef, AbsUndef]

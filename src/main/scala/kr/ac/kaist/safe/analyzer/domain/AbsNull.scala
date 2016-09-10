@@ -21,10 +21,7 @@ case object Null extends Null
 // null abstract domain
 ////////////////////////////////////////////////////////////////////////////////
 trait AbsNull extends AbsDomain[Null, AbsNull] {
-  def gamma: ConSimple[Null]
   def ===(that: AbsNull): AbsBool
 }
 
-trait AbsNullUtil extends AbsDomainUtil[Null, AbsNull] {
-  def alpha(value: Null): AbsNull = Top
-}
+trait AbsNullUtil extends AbsDomainUtil[Null, AbsNull]

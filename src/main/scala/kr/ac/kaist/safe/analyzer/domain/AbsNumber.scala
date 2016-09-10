@@ -22,9 +22,6 @@ case class Num(num: Double) extends PValue
 trait AbsNumber extends AbsDomain[Num, AbsNumber] {
   def ===(that: AbsNumber): AbsBool
   def <(that: AbsNumber): AbsBool
-  def gamma: ConSet[Num]
-  def gammaSingle: ConSingle[Num]
-  def gammaSimple: ConSimple[Num]
 
   def isPositive: Boolean
   def isNegative: Boolean
@@ -79,7 +76,6 @@ trait AbsNumber extends AbsDomain[Num, AbsNumber] {
 }
 
 trait AbsNumberUtil extends AbsDomainUtil[Num, AbsNumber] {
-  type AbsDom <: AbsNumber
   val Inf: AbsNumber
   val PosInf: AbsNumber
   val NegInf: AbsNumber

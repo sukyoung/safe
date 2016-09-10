@@ -30,13 +30,28 @@ object Utils {
 
     AbsLoc = DefaultLoc(cfg.getAllAddrSet)
   }
+
+  // primitive values
   var AbsUndef: AbsUndefUtil = null
   var AbsNull: AbsNullUtil = null
   var AbsBool: AbsBoolUtil = null
   var AbsNumber: AbsNumberUtil = null
   var AbsString: AbsStringUtil = null
   var AbsPValue: AbsPValueUtil = DefaultPValue
+
+  // location
   var AbsLoc: AbsLocUtil = null
+
+  // value
   var AbsValue: AbsValueUtil = DefaultValue
+
+  // data property
   var AbsDataProp: AbsDataPropUtil = DefaultDataProp
+
+  // absent value for parital map
+  var AbsAbsent: AbsAbsentUtil = DefaultAbsent
+
+  // execution context
+  var AbsBinding: AbsBindingUtil = DefaultBinding
+  var AbsDecEnvRec: AbsDecEnvRecUtil = DefaultDecEnvRec
 }

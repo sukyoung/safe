@@ -20,13 +20,10 @@ case class Str(str: String) extends PValue
 // string abstract domain
 ////////////////////////////////////////////////////////////////////////////////
 trait AbsString extends AbsDomain[Str, AbsString] {
-  def gamma: ConSet[Str]
-  def gammaSingle: ConSingle[Str]
-  def gammaSimple: ConSimple[Str]
-  def gammaIsAllNums: ConSingle[Boolean]
-
   def ===(that: AbsString): AbsBool
   def <(that: AbsString): AbsBool
+
+  def isNum: AbsBool
 
   def trim: AbsString
   def concat(that: AbsString): AbsString
@@ -38,7 +35,7 @@ trait AbsString extends AbsDomain[Str, AbsString] {
   def toUpperCase: AbsString
 
   def isAllNums: Boolean
-  def isAllNotNumbers: Boolean
+  def isAllOthers: Boolean
   def isArrayIndex: AbsBool
 
   def toAbsNumber: AbsNumber
@@ -50,5 +47,5 @@ trait AbsStringUtil extends AbsDomainUtil[Str, AbsString] {
   val Number: AbsString
 
   // abstraction from all non-number string
-  val NotNumber: AbsString
+  val Other: AbsString
 }

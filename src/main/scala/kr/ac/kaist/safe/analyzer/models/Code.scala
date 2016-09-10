@@ -68,7 +68,7 @@ class BasicCode(
       val localEnv = context.pureLocal
       val argV = localEnv.getOrElse(argsName)(AbsValue.Bot) { _.value }
       val (retSt, retSte, retV) = code(argV, st, sem)
-      val retObj = localEnv.update("@return", BindingUtil(retV))
+      val retObj = localEnv.update("@return", AbsBinding(retV))
       val retCtx = retSt.context.subsPureLocal(retObj)
       (State(retSt.heap, retCtx), retSte)
     }

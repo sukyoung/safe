@@ -44,7 +44,7 @@ abstract class ExecContext {
   // not a partial order
   def </(that: ExecContext): Boolean = !(this <= that)
 
-  private def weakUpdated(m: Map[Loc, DecEnvRecord], loc: Loc, newEnv: DecEnvRecord): Map[Loc, DecEnvRecord] =
+  private def weakUpdated(m: Map[Loc, AbsDecEnvRec], loc: Loc, newEnv: AbsDecEnvRec): Map[Loc, AbsDecEnvRec] =
     m.get(loc) match {
       case Some(oldEnv) => m.updated(loc, oldEnv + newEnv)
       case None => m.updated(loc, newEnv)
@@ -91,18 +91,18 @@ abstract class ExecContext {
   }
 
   /* lookup */
-  def apply(loc: Loc): Option[DecEnvRecord] = this match {
+  def apply(loc: Loc): Option[AbsDecEnvRec] = this match {
     case ExecContextBot => None
     case ExecContextMap(map, old) => map.get(loc)
   }
 
-  def getOrElse(loc: Loc, default: DecEnvRecord): DecEnvRecord =
+  def getOrElse(loc: Loc, default: AbsDecEnvRec): AbsDecEnvRec =
     this(loc) match {
       case Some(env) => env
       case None => default
     }
 
-  def getOrElse[T](loc: Loc)(default: T)(f: DecEnvRecord => T): T = {
+  def getOrElse[T](loc: Loc)(default: T)(f: AbsDecEnvRec => T): T = {
     this(loc) match {
       case Some(env) => f(env)
       case None => default
@@ -110,7 +110,7 @@ abstract class ExecContext {
   }
 
   /* heap update */
-  def update(loc: Loc, env: DecEnvRecord): ExecContext = this match {
+  def update(loc: Loc, env: AbsDecEnvRec): ExecContext = this match {
     case ExecContextBot => ExecContextBot
     case ExecContextMap(map, old) => {
       // recent location
@@ -146,7 +146,7 @@ abstract class ExecContext {
       val locR = Loc(addr, Recent)
       val locO = Loc(addr, Old)
       val newCtx = if (this domIn locR) {
-        update(locO, getOrElse(locR, DecEnvRecord.Bot)).remove(locR)
+        update(locO, getOrElse(locR, AbsDecEnvRec.Bot)).remove(locR)
       } else this
       newCtx.subsLoc(locR, locO)
     }
@@ -198,7 +198,7 @@ abstract class ExecContext {
     apply(loc).map(toStringLoc(loc, _))
   }
 
-  private def toStringLoc(loc: Loc, env: DecEnvRecord): String = {
+  private def toStringLoc(loc: Loc, env: AbsDecEnvRec): String = {
     val s = new StringBuilder
     val keyStr = loc.toString + " -> "
     s.append(keyStr)
@@ -216,7 +216,7 @@ abstract class ExecContext {
       if (visited.contains(l)) valueBot
       else {
         visited += l
-        val env = this.getOrElse(l, DecEnvRecord.Bot)
+        val env = this.getOrElse(l, AbsDecEnvRec.Bot)
         val isIn = (env HasBinding x)
         val v1 =
           if (AbsBool.True <= isIn) env.getOrElse(x)(valueBot) { _.value }
@@ -240,7 +240,7 @@ abstract class ExecContext {
       if (visited.contains(l)) AbsLoc.Bot
       else {
         visited += l
-        val env = this.getOrElse(l, DecEnvRecord.Bot)
+        val env = this.getOrElse(l, AbsDecEnvRec.Bot)
         val isIn = (env HasBinding x)
         val locSet1 =
           if (AbsBool.True <= isIn) AbsLoc(l)
@@ -262,7 +262,7 @@ abstract class ExecContext {
   // Store
   ////////////////////////////////////////////////////////////////
   def varStoreLocal(loc: Loc, x: String, value: AbsValue): ExecContext = {
-    val env = this.getOrElse(loc, DecEnvRecord.Bot)
+    val env = this.getOrElse(loc, AbsDecEnvRec.Bot)
     val AT = AbsBool.True
     val AF = AbsBool.False
     val ctx1 = env(x) match {
@@ -273,7 +273,7 @@ abstract class ExecContext {
         val falseV =
           if (AF <= bind.mutable) bind.value
           else AbsValue.Bot
-        val newBind = BindingUtil(trueV + falseV)
+        val newBind = AbsBinding(trueV + falseV)
         update(loc, env.update(x, newBind))
       }
       case None => ExecContext.Bot
@@ -296,7 +296,7 @@ abstract class ExecContext {
   def delete(loc: Loc, str: String): (ExecContext, AbsBool) = {
     getOrElse(loc)((this, AbsBool.Bot))(_ => {
       val test = hasOwnProperty(loc, str)
-      val targetEnv = this.getOrElse(loc, DecEnvRecord.Bot)
+      val targetEnv = this.getOrElse(loc, AbsDecEnvRec.Bot)
       if (AbsBool.True <= test)
         (this, AbsBool.False)
       else
@@ -305,22 +305,22 @@ abstract class ExecContext {
   }
 
   private def hasOwnProperty(loc: Loc, str: String): AbsBool = {
-    (this.getOrElse(loc, DecEnvRecord.Bot) HasBinding str)
+    (this.getOrElse(loc, AbsDecEnvRec.Bot) HasBinding str)
   }
 
   ////////////////////////////////////////////////////////////////
   // pure local environment
   ////////////////////////////////////////////////////////////////
-  def pureLocal: DecEnvRecord = getOrElse(PURE_LOCAL, DecEnvRecord.Bot)
-  def subsPureLocal(env: DecEnvRecord): ExecContext = update(PURE_LOCAL, env)
+  def pureLocal: AbsDecEnvRec = getOrElse(PURE_LOCAL, AbsDecEnvRec.Bot)
+  def subsPureLocal(env: AbsDecEnvRec): ExecContext = update(PURE_LOCAL, env)
 }
 
 object ExecContext {
-  private val EmptyMap: Map[Loc, DecEnvRecord] = HashMap()
+  private val EmptyMap: Map[Loc, AbsDecEnvRec] = HashMap()
   val Bot: ExecContext = ExecContextBot
   val Empty: ExecContext = ExecContextMap(EmptyMap, OldAddrSet.Empty)
   def apply(
-    map: Map[Loc, DecEnvRecord],
+    map: Map[Loc, AbsDecEnvRec],
     old: OldAddrSet
   ): ExecContext = new ExecContextMap(map, old)
 }
@@ -330,6 +330,6 @@ case class ExecContextMap(
   // TODO val varEnv: LexEnv // VariableEnvironment
   // val thisBinding: AbsLoc, // ThisBinding
   // val oldAddrSet: OldAddrSet // TODO old address set
-  val map: Map[Loc, DecEnvRecord],
+  val map: Map[Loc, AbsDecEnvRec],
   override val old: OldAddrSet
 ) extends ExecContext

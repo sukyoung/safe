@@ -79,9 +79,11 @@ object DefaultPValue extends AbsPValueUtil {
       numval: AbsNumber,
       strval: AbsString
   ) extends AbsPValue {
-    def gamma: ConSet[PValue] = ConSetTop() // TODO more precisely
+    def gamma: ConSet[PValue] = ConInf() // TODO more precisely
 
     def isBottom: Boolean = this == Bot
+
+    def getSingle: ConSingle[PValue] = ConMany() // TODO more precisely
 
     /* partial order */
     def <=(that: AbsPValue): Boolean = {
@@ -133,7 +135,7 @@ object DefaultPValue extends AbsPValueUtil {
       this.strval.fold(()) { lst ::= _.toString }
 
       lst match {
-        case Nil => "⊥PValue"
+        case Nil => "⊥(pvalue)"
         case _ => lst.mkString(", ")
       }
     }

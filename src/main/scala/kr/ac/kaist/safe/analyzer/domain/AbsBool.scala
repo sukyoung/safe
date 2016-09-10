@@ -20,8 +20,6 @@ case class Bool(b: Boolean) extends PValue
 // boolean abstract domain
 ////////////////////////////////////////////////////////////////////////////////
 trait AbsBool extends AbsDomain[Bool, AbsBool] {
-  def gamma: ConSingle[Bool]
-  def gammaSimple: ConSimple[Bool]
   def ===(that: AbsBool): AbsBool
   def negate: AbsBool
 

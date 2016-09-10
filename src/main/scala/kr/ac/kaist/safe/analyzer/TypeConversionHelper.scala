@@ -218,9 +218,9 @@ object TypeConversionHelper {
     CheckObjectCoercible(value.pvalue)
 
   def CheckObjectCoercible(pvalue: AbsPValue): Set[Exception] = {
-    (pvalue.undefval.gamma, pvalue.nullval.gamma) match {
-      case (ConSimpleTop(), _) | (_, ConSimpleTop()) => HashSet(TypeError)
-      case (ConSimpleBot(), ConSimpleBot()) => HashSet[Exception]()
+    (pvalue.undefval.isBottom, pvalue.nullval.isBottom) match {
+      case (false, _) | (_, false) => HashSet(TypeError)
+      case (true, true) => HashSet[Exception]()
     }
   }
 
@@ -277,9 +277,9 @@ object TypeConversionHelper {
     val isSame6 =
       if (!left.locset.isBottom && !right.locset.isBottom) {
         val intersect = left.locset <> right.locset
-        (left.locset.gammaSingle, right.locset.gammaSingle, intersect.gammaSingle) match {
-          case (_, _, ConSingleBot()) => AbsBool.False
-          case (ConSingleCon(_), ConSingleCon(_), ConSingleCon(loc)) if loc.recency == Recent => AbsBool.True
+        (left.locset.getSingle, right.locset.getSingle, intersect.getSingle) match {
+          case (_, _, ConZero()) => AbsBool.False
+          case (ConOne(_), ConOne(_), ConOne(loc)) if loc.recency == Recent => AbsBool.True
           case _ => AbsBool.Top
         }
       } else AbsBool.Bot

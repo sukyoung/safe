@@ -25,7 +25,7 @@ package object domain {
   val FidSetEmpty: Set[FunctionId] = HashSet[FunctionId]()
 
   type ObjInternalMap = Map[InternalName, InternalValue]
-  val ObjEmptyMap: Map[String, (PropValue, Absent)] = HashMap[String, (PropValue, Absent)]()
+  val ObjEmptyMap: Map[String, (PropValue, AbsAbsent)] = HashMap()
   val ObjEmptyIMap: ObjInternalMap = HashMap[InternalName, InternalValue]()
 
   ////////////////////////////////////////////////////////////////
@@ -50,7 +50,7 @@ package object domain {
   def isHex(str: String): Boolean =
     hex.matcher(str).matches()
 
-  def isNum(str: String): Boolean =
+  def isNumber(str: String): Boolean =
     numRegexp.matcher(str).matches()
 
   ////////////////////////////////////////////////////////////////

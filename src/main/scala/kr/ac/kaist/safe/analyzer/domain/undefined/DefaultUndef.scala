@@ -18,17 +18,24 @@ object DefaultUndef extends AbsUndefUtil {
   case object Top extends AbsDom
   case object Bot extends AbsDom
 
+  def alpha(undef: Undef): AbsUndef = Top
+
   sealed abstract class AbsDom extends AbsUndef {
-    def gamma: ConSimple[Undef] = this match {
-      case Bot => ConSimpleBot()
-      case Top => ConSimpleTop()
+    def gamma: ConSet[Undef] = this match {
+      case Bot => ConFin()
+      case Top => ConFin(Undef)
     }
 
     def isBottom: Boolean = this == Bot
 
+    def getSingle: ConSingle[Undef] = this match {
+      case Bot => ConZero()
+      case Top => ConOne(Undef)
+    }
+
     override def toString: String = this match {
-      case Bot => "Bot"
-      case Top => "undefined"
+      case Bot => "⊥(undefined)"
+      case Top => "Top(undefined)"
     }
 
     def <=(that: AbsUndef): Boolean = (this, check(that)) match {

@@ -21,10 +21,10 @@ import scala.util.{ Try, Failure, Success }
 
 abstract class CallContext {
   def newCallContext(h: Heap, cfg: CFG, calleeFid: FunctionId, scopeLoc: Loc, thisLocSet: AbsLoc,
-    newPureLocal: DecEnvRecord, l2: Option[Address] = None): Set[(CallContext, DecEnvRecord)] =
+    newPureLocal: AbsDecEnvRec, l2: Option[Address] = None): Set[(CallContext, AbsDecEnvRec)] =
     newCallContext(h, cfg, calleeFid, scopeLoc, thisLocSet, newPureLocal)
   def newCallContext(h: Heap, cfg: CFG, calleeFid: FunctionId, scopeLoc: Loc,
-    thisLocSet: AbsLoc, newPureLocal: DecEnvRecord): Set[(CallContext, DecEnvRecord)]
+    thisLocSet: AbsLoc, newPureLocal: AbsDecEnvRec): Set[(CallContext, AbsDecEnvRec)]
 }
 
 /* Interface */
@@ -33,7 +33,7 @@ case class CallContextManager(callsiteDepth: Int = 0) {
 
   private case class KCallsite(depth: Int, callsiteList: List[Address]) extends CallContext {
     def newCallContext(h: Heap, cfg: CFG, calleeFid: FunctionId, scopeLoc: Loc,
-      thisLocSet: AbsLoc, newPureLocal: DecEnvRecord): Set[(CallContext, DecEnvRecord)] = {
+      thisLocSet: AbsLoc, newPureLocal: AbsDecEnvRec): Set[(CallContext, AbsDecEnvRec)] = {
       val k: Int =
         cfg.getFunc(calleeFid) match {
           case Some(fun) if fun.isUser => depth
