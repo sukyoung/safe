@@ -160,16 +160,14 @@ object Helper {
         visited += l1
         val locVal1 = AbsValue(l1)
         val eqVal = bopSEq(locVal1, locVal2)
-        val v1 =
-          if (atrue <= eqVal.pvalue.boolval) boolTrueVal
-          else boolBotVal
-        val v2 =
-          if (afalse <= eqVal.pvalue.boolval) {
-            val protoVal = h.getOrElse(l1, AbsObjectUtil.Bot).getOrElse(IPrototype)(AbsValue.Bot) { _.value }
-            val v1 = protoVal.pvalue.nullval.fold(boolBotVal) { _ => boolFalseVal }
-            v1 + protoVal.locset.foldLeft(AbsValue.Bot)((tmpVal, protoLoc) => tmpVal + iter(protoLoc))
-          } else boolBotVal
-        v1 + v2
+        eqVal.pvalue.boolval.map(
+          thenV = boolTrueVal,
+          elseV = {
+          val protoVal = h.getOrElse(l1, AbsObjectUtil.Bot).getOrElse(IPrototype)(AbsValue.Bot) { _.value }
+          val v1 = protoVal.pvalue.nullval.fold(boolBotVal) { _ => boolFalseVal }
+          v1 + protoVal.locset.foldLeft(AbsValue.Bot)((tmpVal, protoLoc) => tmpVal + iter(protoLoc))
+        }
+        )(AbsValue)
       }
     }
 

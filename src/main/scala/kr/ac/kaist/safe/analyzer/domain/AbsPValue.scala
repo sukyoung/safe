@@ -53,10 +53,10 @@ trait AbsPValueUtil extends AbsDomainUtil[PValue, AbsPValue] {
 // default primitive value abstract domain
 ////////////////////////////////////////////////////////////////////////////////
 object DefaultPValue extends AbsPValueUtil {
-  lazy val Bot: AbsDom =
-    AbsDom(AbsUndef.Bot, AbsNull.Bot, AbsBool.Bot, AbsNumber.Bot, AbsString.Bot)
-  lazy val Top: AbsDom =
-    AbsDom(AbsUndef.Top, AbsNull.Top, AbsBool.Top, AbsNumber.Top, AbsString.Top)
+  lazy val Bot: Dom =
+    Dom(AbsUndef.Bot, AbsNull.Bot, AbsBool.Bot, AbsNumber.Bot, AbsString.Bot)
+  lazy val Top: Dom =
+    Dom(AbsUndef.Top, AbsNull.Top, AbsBool.Top, AbsNumber.Top, AbsString.Top)
 
   def alpha(pvalue: PValue): AbsPValue = pvalue match {
     case Undef => Bot.copy(undefval = AbsUndef.Top)
@@ -72,7 +72,7 @@ object DefaultPValue extends AbsPValueUtil {
   def apply(numval: AbsNumber): AbsPValue = Bot.copyWith(numval = numval)
   def apply(strval: AbsString): AbsPValue = Bot.copyWith(strval = strval)
 
-  case class AbsDom(
+  case class Dom(
       undefval: AbsUndef,
       nullval: AbsNull,
       boolval: AbsBool,
@@ -103,7 +103,7 @@ object DefaultPValue extends AbsPValueUtil {
       val (left, right) = (this, check(that))
       if (left eq right) left
       else {
-        AbsDom(
+        Dom(
           left.undefval + right.undefval,
           left.nullval + right.nullval,
           left.boolval + right.boolval,
@@ -116,7 +116,7 @@ object DefaultPValue extends AbsPValueUtil {
     /* meet */
     def <>(that: AbsPValue): AbsPValue = {
       val (left, right) = (this, check(that))
-      AbsDom(
+      Dom(
         left.undefval <> right.undefval,
         left.nullval <> right.nullval,
         left.boolval <> right.boolval,
@@ -183,6 +183,6 @@ object DefaultPValue extends AbsPValueUtil {
       boolval: AbsBool = this.boolval,
       numval: AbsNumber = this.numval,
       strval: AbsString = this.strval
-    ): AbsPValue = AbsDom(undefval, nullval, boolval, numval, strval)
+    ): AbsPValue = Dom(undefval, nullval, boolval, numval, strval)
   }
 }

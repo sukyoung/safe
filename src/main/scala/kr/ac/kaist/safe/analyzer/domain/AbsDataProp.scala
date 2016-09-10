@@ -53,10 +53,10 @@ trait AbsDataPropUtil extends AbsDomainUtil[DataProp, AbsDataProp] {
 // default data property abstract domain
 ////////////////////////////////////////////////////////////////////////////////
 object DefaultDataProp extends AbsDataPropUtil {
-  lazy val Bot: AbsDom = AbsDom(AbsValue.Bot, AbsBool.Bot, AbsBool.Bot, AbsBool.Bot)
-  lazy val Top: AbsDom = AbsDom(AbsValue.Top, AbsBool.Top, AbsBool.Top, AbsBool.Top)
+  lazy val Bot: Dom = Dom(AbsValue.Bot, AbsBool.Bot, AbsBool.Bot, AbsBool.Bot)
+  lazy val Top: Dom = Dom(AbsValue.Top, AbsBool.Top, AbsBool.Top, AbsBool.Top)
 
-  def alpha(prop: DataProp): AbsDataProp = AbsDom(
+  def alpha(prop: DataProp): AbsDataProp = Dom(
     AbsValue(prop.value),
     AbsBool(prop.writable),
     AbsBool(prop.enumerable),
@@ -68,9 +68,9 @@ object DefaultDataProp extends AbsDataPropUtil {
     writable: AbsBool,
     enumerable: AbsBool,
     configurable: AbsBool
-  ): AbsDataProp = AbsDom(value, writable, enumerable, configurable)
+  ): AbsDataProp = Dom(value, writable, enumerable, configurable)
 
-  case class AbsDom(
+  case class Dom(
       value: AbsValue,
       writable: AbsBool,
       enumerable: AbsBool,
@@ -97,7 +97,7 @@ object DefaultDataProp extends AbsDataPropUtil {
 
     def +(that: AbsDataProp): AbsDataProp = {
       val (left, right) = (this, check(that))
-      AbsDom(
+      Dom(
         left.value + right.value,
         left.writable + right.writable,
         left.enumerable + right.enumerable,
@@ -107,7 +107,7 @@ object DefaultDataProp extends AbsDataPropUtil {
 
     def <>(that: AbsDataProp): AbsDataProp = {
       val (left, right) = (this, check(that))
-      AbsDom(
+      Dom(
         left.value <> right.value,
         left.writable <> right.writable,
         left.enumerable <> right.enumerable,
@@ -130,6 +130,6 @@ object DefaultDataProp extends AbsDataPropUtil {
       writable: AbsBool,
       enumerable: AbsBool,
       configurable: AbsBool
-    ): AbsDataProp = AbsDom(value, writable, enumerable, configurable)
+    ): AbsDataProp = Dom(value, writable, enumerable, configurable)
   }
 }

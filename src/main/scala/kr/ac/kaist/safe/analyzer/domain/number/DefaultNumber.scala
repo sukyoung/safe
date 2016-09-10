@@ -15,17 +15,17 @@ import kr.ac.kaist.safe.analyzer.domain.Utils._
 
 // default number abstract domain
 object DefaultNumber extends AbsNumberUtil {
-  case object Top extends AbsDom
-  case object Bot extends AbsDom
-  case object Inf extends AbsDom
-  case object PosInf extends AbsDom
-  case object NegInf extends AbsDom
-  case object NaN extends AbsDom
-  case object UInt extends AbsDom
-  case object NUInt extends AbsDom
-  case class UIntConst(value: Long) extends AbsDom
-  case class NUIntConst(value: Double) extends AbsDom
-  val NatNum: AbsDom = UInt
+  case object Top extends Dom
+  case object Bot extends Dom
+  case object Inf extends Dom
+  case object PosInf extends Dom
+  case object NegInf extends Dom
+  case object NaN extends Dom
+  case object UInt extends Dom
+  case object NUInt extends Dom
+  case class UIntConst(value: Long) extends Dom
+  case class NUIntConst(value: Double) extends Dom
+  val NatNum: Dom = UInt
 
   def alpha(num: Num): AbsNumber = num.num match {
     case num if num.isNaN => NaN
@@ -37,7 +37,7 @@ object DefaultNumber extends AbsNumberUtil {
       else NUIntConst(num)
   }
 
-  sealed abstract class AbsDom extends AbsNumber {
+  sealed abstract class Dom extends AbsNumber {
     def gamma: ConSet[Num] = this match {
       case Bot => ConFin()
       case Inf => ConFin(Double.PositiveInfinity, Double.NegativeInfinity)

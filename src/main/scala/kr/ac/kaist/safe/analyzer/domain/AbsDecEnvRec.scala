@@ -100,9 +100,9 @@ trait AbsDecEnvRecUtil extends AbsDomainUtil[DecEnvRec, AbsDecEnvRec] {
 // default primitive value abstract domain
 ////////////////////////////////////////////////////////////////////////////////
 object DefaultDecEnvRec extends AbsDecEnvRecUtil {
-  case object Bot extends AbsDom
-  case object Top extends AbsDom
-  case class BindMap(map: EnvMap) extends AbsDom {
+  case object Bot extends Dom
+  case object Top extends Dom
+  case class BindMap(map: EnvMap) extends Dom {
     // existence check
     def has(name: String): Existence = map.get(name) match {
       case None => MustNotExist
@@ -129,7 +129,7 @@ object DefaultDecEnvRec extends AbsDecEnvRecUtil {
 
   def apply(m: EnvMap): AbsDecEnvRec = BindMap(m)
 
-  abstract class AbsDom extends AbsDecEnvRec {
+  abstract class Dom extends AbsDecEnvRec {
     def gamma: ConSet[DecEnvRec] = ConInf() // TODO more precise
 
     def isBottom: Boolean = this == Bot

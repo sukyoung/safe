@@ -15,12 +15,12 @@ import kr.ac.kaist.safe.analyzer.domain.Utils._
 
 // default undefined abstract domain
 object DefaultUndef extends AbsUndefUtil {
-  case object Top extends AbsDom
-  case object Bot extends AbsDom
+  case object Top extends Dom
+  case object Bot extends Dom
 
   def alpha(undef: Undef): AbsUndef = Top
 
-  sealed abstract class AbsDom extends AbsUndef {
+  sealed abstract class Dom extends AbsUndef {
     def gamma: ConSet[Undef] = this match {
       case Bot => ConFin()
       case Top => ConFin(Undef)

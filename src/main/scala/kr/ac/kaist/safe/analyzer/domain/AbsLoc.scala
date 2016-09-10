@@ -90,14 +90,14 @@ case class DefaultLoc(
   private val totalLocSet = totalAddrSet.foldLeft(HashSet[Loc]()) {
     case (set, addr) => set + Loc(addr, Recent) + Loc(addr, Old)
   }
-  lazy val Top: AbsDom = AbsDom(totalLocSet)
-  lazy val Bot: AbsDom = AbsDom()
+  lazy val Top: Dom = Dom(totalLocSet)
+  lazy val Bot: Dom = Dom()
 
-  def alpha(loc: Loc): AbsLoc = AbsDom(loc)
-  override def alpha(locset: Set[Loc]): AbsLoc = AbsDom(locset)
+  def alpha(loc: Loc): AbsLoc = Dom(loc)
+  override def alpha(locset: Set[Loc]): AbsLoc = Dom(locset)
 
   val MAX_SIZE: Int = totalLocSet.size
-  case class AbsDom(set: Set[Loc]) extends AbsLoc {
+  case class Dom(set: Set[Loc]) extends AbsLoc {
     def gamma: ConSet[Loc] = ConFin(set)
 
     def isBottom: Boolean = set.isEmpty
@@ -116,15 +116,15 @@ case class DefaultLoc(
 
     def <=(that: AbsLoc): Boolean = set subsetOf check(that).set
 
-    def +(that: AbsLoc): AbsLoc = AbsDom(set ++ check(that).set)
+    def +(that: AbsLoc): AbsLoc = Dom(set ++ check(that).set)
 
-    def <>(that: AbsLoc): AbsLoc = AbsDom(set intersect check(that).set)
+    def <>(that: AbsLoc): AbsLoc = Dom(set intersect check(that).set)
 
     def contains(loc: Loc): Boolean = set.contains(loc)
 
     def exists(f: Loc => Boolean): Boolean = set.exists(f)
 
-    def filter(f: Loc => Boolean): AbsLoc = AbsDom(set.filter(f))
+    def filter(f: Loc => Boolean): AbsLoc = Dom(set.filter(f))
 
     def foreach(f: Loc => Unit): Unit = set.foreach(f)
 
@@ -134,11 +134,11 @@ case class DefaultLoc(
 
     def isConcrete: Boolean = set.size == 1
 
-    def +(loc: Loc): AbsLoc = AbsDom(set + loc)
+    def +(loc: Loc): AbsLoc = Dom(set + loc)
 
-    def -(loc: Loc): AbsLoc = AbsDom(set - loc)
+    def -(loc: Loc): AbsLoc = Dom(set - loc)
   }
-  object AbsDom {
-    def apply(seq: Loc*): AbsDom = AbsDom(seq.toSet)
+  object Dom {
+    def apply(seq: Loc*): Dom = Dom(seq.toSet)
   }
 }

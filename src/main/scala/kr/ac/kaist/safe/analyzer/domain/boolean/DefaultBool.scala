@@ -15,14 +15,14 @@ import kr.ac.kaist.safe.analyzer.domain.Utils._
 
 // default boolean abstract domain
 object DefaultBool extends AbsBoolUtil {
-  case object Bot extends AbsDom
-  case object True extends AbsDom
-  case object False extends AbsDom
-  case object Top extends AbsDom
+  case object Bot extends Dom
+  case object True extends Dom
+  case object False extends Dom
+  case object Top extends Dom
 
   def alpha(bool: Bool): AbsBool = if (bool) True else False
 
-  sealed abstract class AbsDom extends AbsBool {
+  sealed abstract class Dom extends AbsBool {
     def gamma: ConSet[Bool] = this match {
       case Bot => ConFin()
       case True => ConFin(true)
@@ -97,6 +97,19 @@ object DefaultBool extends AbsBoolUtil {
       case True => False
       case False => True
       case _ => this
+    }
+
+    def map[T <: Domain[T]](
+      thenV: => T,
+      elseV: => T
+    )(implicit util: DomainUtil[T]): T = {
+      val t =
+        if (True <= this) thenV
+        else util.Bot
+      val e =
+        if (False <= this) elseV
+        else util.Bot
+      t + e
     }
   }
 }

@@ -25,6 +25,11 @@ trait AbsBool extends AbsDomain[Bool, AbsBool] {
 
   def toAbsNumber: AbsNumber
   def toAbsString: AbsString
+
+  def map[T <: Domain[T]](
+    thenV: => T,
+    elseV: => T
+  )(implicit util: DomainUtil[T]): T
 }
 
 trait AbsBoolUtil extends AbsDomainUtil[Bool, AbsBool] {
