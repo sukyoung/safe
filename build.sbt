@@ -66,5 +66,8 @@ cleanFiles ++= Seq(file("src/main/java/kr/ac/kaist/safe/parser/"))
 
 libraryDependencies ++= Seq(
   "org.scalatest" % "scalatest_2.11" % "2.2.0" % "test" withSources,
-  "org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.1" withSources
+  "org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.1" withSources,
+  "io.spray" %%  "spray-json" % "1.3.2"
 )
+
+javacOptions ++= Seq("-encoding", "UTF-8")
