@@ -109,7 +109,7 @@ abstract class ExecContext {
     }
   }
 
-  /* heap update */
+  /* context update */
   def update(loc: Loc, env: AbsDecEnvRec): ExecContext = this match {
     case ExecContextBot => ExecContextBot
     case ExecContextMap(map, old) => {

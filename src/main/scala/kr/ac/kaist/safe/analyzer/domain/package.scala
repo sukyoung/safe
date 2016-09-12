@@ -54,7 +54,7 @@ package object domain {
     numRegexp.matcher(str).matches()
 
   ////////////////////////////////////////////////////////////////
-  // implicit conversion for domains
+  // implicit conversion for concrete types of primitive values
   ////////////////////////////////////////////////////////////////
   // Boolean <-> Bool
   implicit def bool2boolean(b: Bool): Boolean = b.b
@@ -71,16 +71,27 @@ package object domain {
   implicit def string2str(str: String): Str = Str(str)
   implicit def stringSet2str(set: Set[String]): Set[Str] = set.map(string2str)
 
+  ////////////////////////////////////////////////////////////////
+  // implicit conversion for abstract domains
+  ////////////////////////////////////////////////////////////////
   // primitive abstract domains -> AbsPValue
-  implicit def undef2pv[T <% AbsUndef](undef: T): AbsPValue = AbsPValue(undef)
-  implicit def null2pv[T <% AbsNull](x: T): AbsPValue = AbsPValue(x)
-  implicit def bool2pv[T <% AbsBool](b: T): AbsPValue = AbsPValue(b)
-  implicit def num2pv[T <% AbsNumber](num: T): AbsPValue = AbsPValue(num)
-  implicit def str2pv[T <% AbsString](str: T): AbsPValue = AbsPValue(str)
+  implicit def undef2pv(undef: AbsUndef): AbsPValue = AbsPValue(undef)
+  implicit def null2pv(x: AbsNull): AbsPValue = AbsPValue(x)
+  implicit def bool2pv(b: AbsBool): AbsPValue = AbsPValue(b)
+  implicit def num2pv(num: AbsNumber): AbsPValue = AbsPValue(num)
+  implicit def str2pv(str: AbsString): AbsPValue = AbsPValue(str)
 
   // AbsPValue -> AbsValue
   implicit def pv2v[T <% AbsPValue](pv: T): AbsValue = AbsValue(pv)
 
   // AbsLoc -> AbsValue
   implicit def loc2v[T <% AbsLoc](loc: T): AbsValue = AbsValue(loc)
+
+  // AbsDecEnvRec, AbsGlobalEnvRec -> AbsEnvRec
+  implicit def denv2env(dEnv: AbsDecEnvRec): AbsEnvRec = AbsEnvRec(dEnv)
+  implicit def genv2env(gEnv: AbsGlobalEnvRec): AbsEnvRec = AbsEnvRec(gEnv)
+
+  // AbsNormalEnv, AbsNullEnv -> AbsLexEnv
+  implicit def normenv2env(env: AbsNormalEnv): AbsLexEnv = AbsLexEnv(env)
+  implicit def nullenv2env(env: AbsNullEnv): AbsLexEnv = AbsLexEnv(env)
 }

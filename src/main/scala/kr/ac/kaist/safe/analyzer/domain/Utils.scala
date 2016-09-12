@@ -54,6 +54,11 @@ object Utils {
   // execution context
   var AbsBinding: AbsBindingUtil = DefaultBinding
   var AbsDecEnvRec: AbsDecEnvRecUtil = DefaultDecEnvRec
+  var AbsGlobalEnvRec: AbsGlobalEnvRecUtil = DefaultGlobalEnvRec
+  var AbsEnvRec: AbsEnvRecUtil = DefaultEnvRec
+  var AbsNormalEnv: AbsNormalEnvUtil = DefaultNormalEnv
+  var AbsNullEnv: AbsNullEnvUtil = DefaultNullEnv
+  var AbsLexEnv: AbsLexEnvUtil = DefaultLexEnv
 
   // concrete domains
   def ConSingle[T]: ConSingleUtil[T] = ConSingleUtil[T]
