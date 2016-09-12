@@ -30,7 +30,7 @@ case class Initialize(cfg: CFG) {
       SystemLoc("Dummy", Old) -> AbsObjectUtil.Bot // TODO If delete, not working because not allowed update to bottom heap
     ))
 
-    val initCtx = ExecContext(HashMap(
+    val initCtx = AbsContext(HashMap(
       PredefLoc.PURE_LOCAL -> globalPureLocalEnv,
       PredefLoc.COLLAPSED -> AbsDecEnvRec.Empty
     ), OldAddrSet.Empty)

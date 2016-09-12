@@ -106,8 +106,8 @@ class Semantics(
   def E(cp1: ControlPoint, cp2: ControlPoint, old: OldAddrSet, env: AbsDecEnvRec, st: State): State = {
     (cp1.node, cp2.node) match {
       case (_, Entry(f)) => st.context match {
-        case ExecContext.Bot => State.Bot
-        case ctx1: ExecContext => {
+        case _ if st.context.isBottom => State.Bot
+        case ctx1: AbsContext => {
           val objEnv = env.GetBindingValue("@scope") match {
             case (value, _) => AbsDecEnvRec.newDeclEnvRecord(value)
           }
@@ -115,7 +115,7 @@ class Semantics(
           val ctx2 = ctx1.subsPureLocal(env2)
           val ctx3 = env2.GetBindingValue("@env") match {
             case (value, _) =>
-              value.locset.foldLeft(ExecContext.Bot)((hi, locEnv) => {
+              value.locset.foldLeft(AbsContext.Bot)((hi, locEnv) => {
                 hi + ctx2.update(locEnv, objEnv)
               })
           }
@@ -419,7 +419,7 @@ class Semantics(
             val localEnv = st.context.pureLocal
             val (localEnv2, _) = localEnv.SetMutableBinding("@return", v)
             st.context.subsPureLocal(localEnv2)
-          } else ExecContext.Bot
+          } else AbsContext.Bot
         val newExcSt = st.raiseException(excSet)
         (State(st.heap, ctx1), excSt + newExcSt)
       }

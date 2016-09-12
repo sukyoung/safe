@@ -59,6 +59,7 @@ object Utils {
   var AbsNormalEnv: AbsNormalEnvUtil = DefaultNormalEnv
   var AbsNullEnv: AbsNullEnvUtil = DefaultNullEnv
   var AbsLexEnv: AbsLexEnvUtil = DefaultLexEnv
+  var AbsContext: AbsContextUtil = DefaultContext
 
   // concrete domains
   def ConSingle[T]: ConSingleUtil[T] = ConSingleUtil[T]

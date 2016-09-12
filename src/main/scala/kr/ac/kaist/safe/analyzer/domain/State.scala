@@ -18,7 +18,7 @@ import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.util.Address
 import scala.collection.immutable.{ HashMap }
 
-case class State(heap: Heap, context: ExecContext) {
+case class State(heap: Heap, context: AbsContext) {
   /* partial order */
   def <=(that: State): Boolean =
     this.heap <= that.heap && this.context <= that.context
@@ -146,7 +146,7 @@ case class State(heap: Heap, context: ExecContext) {
       case CapturedVar =>
         val bind = AbsBinding(value)
         val (envV, _) = context.pureLocal.GetBindingValue("@env")
-        val newCtx = envV.locset.foldLeft(ExecContext.Bot)((tmpCtx, loc) => {
+        val newCtx = envV.locset.foldLeft(AbsContext.Bot)((tmpCtx, loc) => {
           val env = context.getOrElse(loc, AbsDecEnvRec.Bot)
           val (newEnv, _) = env
             .CreateMutableBinding(x).fold(env)((e: AbsDecEnvRec) => e)
@@ -184,5 +184,5 @@ case class State(heap: Heap, context: ExecContext) {
 }
 
 object State {
-  val Bot: State = State(Heap.Bot, ExecContext.Bot)
+  val Bot: State = State(Heap.Bot, AbsContext.Bot)
 }
