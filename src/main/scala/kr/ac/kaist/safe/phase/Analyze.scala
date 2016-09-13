@@ -63,7 +63,6 @@ case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, CallContext)] {
       println(excLog)
     }
 
-    println(config.dump, config.dumpAll)
     if (config.dump || config.dumpAll) {
       val state = cfg.globalFunc.exit.getState(globalCC)
       val heap = state.heap
