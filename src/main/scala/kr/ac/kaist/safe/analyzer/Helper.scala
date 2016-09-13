@@ -70,10 +70,10 @@ object Helper {
 
       val lenExcSet1 =
         if (afalse <= (nValue === nNewLen)) HashSet[Exception](RangeError)
-        else ExceptionSetEmpty
+        else ExcSetEmpty
       (arrLengthHeap1, lenExcSet1)
     } else {
-      (Heap.Bot, ExceptionSetEmpty)
+      (Heap.Bot, ExcSetEmpty)
     }
   }
 
@@ -128,7 +128,7 @@ object Helper {
     })
 
     // 15.4.5.1 [[DefineOwnProperty]] of Array
-    val (arrHeap, arrExcSet) = locSetArr.foldLeft((Heap.Bot, ExceptionSetEmpty))((res2, l) => {
+    val (arrHeap, arrExcSet) = locSetArr.foldLeft((Heap.Bot, ExcSetEmpty))((res2, l) => {
       // 3. s is length
       val (lengthHeap, lengthExcSet) = arrayLenghtStore(heap, idxAbsStr, storeV, l)
       // 4. s is array index
@@ -160,16 +160,14 @@ object Helper {
         visited += l1
         val locVal1 = AbsValue(l1)
         val eqVal = bopSEq(locVal1, locVal2)
-        val v1 =
-          if (atrue <= eqVal.pvalue.boolval) boolTrueVal
-          else boolBotVal
-        val v2 =
-          if (afalse <= eqVal.pvalue.boolval) {
-            val protoVal = h.getOrElse(l1, AbsObjectUtil.Bot).getOrElse(IPrototype)(AbsValue.Bot) { _.value }
-            val v1 = protoVal.pvalue.nullval.fold(boolBotVal) { _ => boolFalseVal }
-            v1 + protoVal.locset.foldLeft(AbsValue.Bot)((tmpVal, protoLoc) => tmpVal + iter(protoLoc))
-          } else boolBotVal
-        v1 + v2
+        eqVal.pvalue.boolval.map(
+          thenV = boolTrueVal,
+          elseV = {
+          val protoVal = h.getOrElse(l1, AbsObjectUtil.Bot).getOrElse(IPrototype)(AbsValue.Bot) { _.value }
+          val v1 = protoVal.pvalue.nullval.fold(boolBotVal) { _ => boolFalseVal }
+          v1 + protoVal.locset.foldLeft(AbsValue.Bot)((tmpVal, protoLoc) => tmpVal + iter(protoLoc))
+        }
+        )(AbsValue)
       }
     }
 

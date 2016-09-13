@@ -27,18 +27,19 @@ trait AbsAbsentUtil extends AbsDomainUtil[Absent, AbsAbsent]
 // default absent abstract domain
 ////////////////////////////////////////////////////////////////////////////////
 object DefaultAbsent extends AbsAbsentUtil {
-  case object Bot extends AbsDom
-  case object Top extends AbsDom
+  case object Bot extends Dom
+  case object Top extends Dom
 
   def alpha(abs: Absent): AbsAbsent = Top
 
-  abstract class AbsDom extends AbsAbsent {
+  abstract class Dom extends AbsAbsent {
     def gamma: ConSet[Absent] = this match {
       case Bot => ConFin()
       case Top => ConFin(Absent)
     }
 
     def isBottom: Boolean = this == Bot
+    def isTop: Boolean = this == Top
 
     def getSingle: ConSingle[Absent] = this match {
       case Bot => ConZero()

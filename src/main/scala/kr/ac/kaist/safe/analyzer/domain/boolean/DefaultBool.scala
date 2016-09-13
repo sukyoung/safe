@@ -15,14 +15,14 @@ import kr.ac.kaist.safe.analyzer.domain.Utils._
 
 // default boolean abstract domain
 object DefaultBool extends AbsBoolUtil {
-  case object Bot extends AbsDom
-  case object True extends AbsDom
-  case object False extends AbsDom
-  case object Top extends AbsDom
+  case object Bot extends Dom
+  case object True extends Dom
+  case object False extends Dom
+  case object Top extends Dom
 
   def alpha(bool: Bool): AbsBool = if (bool) True else False
 
-  sealed abstract class AbsDom extends AbsBool {
+  sealed abstract class Dom extends AbsBool {
     def gamma: ConSet[Bool] = this match {
       case Bot => ConFin()
       case True => ConFin(true)
@@ -31,6 +31,7 @@ object DefaultBool extends AbsBoolUtil {
     }
 
     def isBottom: Boolean = this == Bot
+    def isTop: Boolean = this == Top
 
     def getSingle: ConSingle[Bool] = this match {
       case Bot => ConZero()
@@ -97,6 +98,47 @@ object DefaultBool extends AbsBoolUtil {
       case True => False
       case False => True
       case _ => this
+    }
+
+    def &&(that: AbsBool): Dom = (this, check(that)) match {
+      case (Bot, _) | (_, Bot) => Bot
+      case (False, _) | (_, False) => False
+      case (True, True) => True
+      case _ => Top
+    }
+
+    def ||(that: AbsBool): Dom = (this, check(that)) match {
+      case (Bot, _) | (_, Bot) => Bot
+      case (True, _) | (_, True) => True
+      case (False, False) => False
+      case _ => Top
+    }
+
+    def map[T <: Domain[T]](
+      thenV: => T,
+      elseV: => T
+    )(implicit util: DomainUtil[T]): T = {
+      val t =
+        if (True <= this) thenV
+        else util.Bot
+      val e =
+        if (False <= this) elseV
+        else util.Bot
+      t + e
+    }
+
+    def map[T <: Domain[T], U <: Domain[U]](
+      thenV: => (T, U),
+      elseV: => (T, U)
+    )(implicit util: (DomainUtil[T], DomainUtil[U])): (T, U) = {
+      val (lUtil, rUtil) = util
+      val (lt, rt) =
+        if (True <= this) thenV
+        else (lUtil.Bot, rUtil.Bot)
+      val (le, re) =
+        if (False <= this) elseV
+        else (lUtil.Bot, rUtil.Bot)
+      (lt + le, rt + re)
     }
   }
 }

@@ -66,9 +66,9 @@ class BasicCode(
     case State(heap, context) => {
       val stBotPair = (State.Bot, State.Bot)
       val localEnv = context.pureLocal
-      val argV = localEnv.getOrElse(argsName)(AbsValue.Bot) { _.value }
+      val (argV, _) = localEnv.GetBindingValue(argsName)
       val (retSt, retSte, retV) = code(argV, st)
-      val retObj = localEnv.update("@return", AbsBinding(retV))
+      val (retObj, _) = localEnv.SetMutableBinding("@return", retV)
       val retCtx = retSt.context.subsPureLocal(retObj)
       (State(retSt.heap, retCtx), retSte)
     }

@@ -47,8 +47,8 @@ trait AbsValueUtil extends AbsDomainUtil[Value, AbsValue] {
 // default value abstract domain
 ////////////////////////////////////////////////////////////////////////////////
 object DefaultValue extends AbsValueUtil {
-  lazy val Bot: AbsDom = AbsDom(AbsPValue.Bot, AbsLoc.Bot)
-  lazy val Top: AbsDom = AbsDom(AbsPValue.Top, AbsLoc.Top)
+  lazy val Bot: Dom = Dom(AbsPValue.Bot, AbsLoc.Bot)
+  lazy val Top: Dom = Dom(AbsPValue.Top, AbsLoc.Top)
 
   def alpha(value: Value): AbsValue = value match {
     case (pvalue: PValue) => apply(AbsPValue(pvalue))
@@ -58,10 +58,11 @@ object DefaultValue extends AbsValueUtil {
   def apply(pvalue: AbsPValue): AbsValue = Bot.copy(pvalue = pvalue)
   def apply(locset: AbsLoc): AbsValue = Bot.copy(locset = locset)
 
-  case class AbsDom(pvalue: AbsPValue, locset: AbsLoc) extends AbsValue {
+  case class Dom(pvalue: AbsPValue, locset: AbsLoc) extends AbsValue {
     def gamma: ConSet[Value] = ConInf() // TODO more precisely
 
     def isBottom: Boolean = this == Bot
+    def isTop: Boolean = this == Top
 
     def getSingle: ConSingle[Value] = ConMany() // TODO more precisely
 
@@ -73,7 +74,7 @@ object DefaultValue extends AbsValueUtil {
 
     def +(that: AbsValue): AbsValue = {
       val (left, right) = (this, check(that))
-      AbsDom(
+      Dom(
         left.pvalue + right.pvalue,
         left.locset + right.locset
       )
@@ -81,7 +82,7 @@ object DefaultValue extends AbsValueUtil {
 
     def <>(that: AbsValue): AbsValue = {
       val (left, right) = (this, check(that))
-      AbsDom(
+      Dom(
         left.pvalue <> right.pvalue,
         left.locset <> right.locset
       )
@@ -105,12 +106,12 @@ object DefaultValue extends AbsValueUtil {
     }
 
     def subsLoc(locR: Loc, locO: Loc): AbsValue = {
-      if (this.locset contains locR) AbsDom(this.pvalue, (this.locset - locR) + locO)
+      if (this.locset contains locR) Dom(this.pvalue, (this.locset - locR) + locO)
       else this
     }
 
     def weakSubsLoc(locR: Loc, locO: Loc): AbsValue = {
-      if (this.locset contains locR) AbsDom(this.pvalue, this.locset + locO)
+      if (this.locset contains locR) Dom(this.pvalue, this.locset + locO)
       else this
     }
 

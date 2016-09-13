@@ -17,14 +17,14 @@ import scala.util.Try
 
 // string set domain with max set size
 case class StringSet(maxSetSize: Int) extends AbsStringUtil {
-  case object Top extends AbsDom
-  case object Number extends AbsDom
-  case object Other extends AbsDom
-  case class StrSet(values: Set[String]) extends AbsDom
+  case object Top extends Dom
+  case object Number extends Dom
+  case object Other extends Dom
+  case class StrSet(values: Set[String]) extends Dom
   object StrSet {
     def apply(seq: String*): StrSet = StrSet(seq.toSet)
   }
-  lazy val Bot: AbsDom = StrSet()
+  lazy val Bot: Dom = StrSet()
 
   def alpha(str: Str): AbsString = StrSet(str)
 
@@ -39,13 +39,14 @@ case class StringSet(maxSetSize: Int) extends AbsStringUtil {
     else Top
   }
 
-  sealed abstract class AbsDom(maxSetSize: Int = 0) extends AbsString {
+  sealed abstract class Dom(maxSetSize: Int = 0) extends AbsString {
     def gamma: ConSet[Str] = this match {
       case StrSet(set) => ConFin(set)
       case Top | Number | Other => ConInf()
     }
 
     def isBottom: Boolean = this == Bot
+    def isTop: Boolean = this == Top
 
     def getSingle: ConSingle[Str] = this match {
       case StrSet(set) if set.size == 0 => ConZero()

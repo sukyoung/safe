@@ -15,18 +15,19 @@ import kr.ac.kaist.safe.analyzer.domain.Utils._
 
 // default null abstract domain
 object DefaultNull extends AbsNullUtil {
-  case object Top extends AbsDom
-  case object Bot extends AbsDom
+  case object Top extends Dom
+  case object Bot extends Dom
 
   def alpha(x: Null): AbsNull = Top
 
-  sealed abstract class AbsDom extends AbsNull {
+  sealed abstract class Dom extends AbsNull {
     def gamma: ConSet[Null] = this match {
       case Bot => ConFin()
       case Top => ConFin(Null)
     }
 
     def isBottom: Boolean = this == Bot
+    def isTop: Boolean = this == Top
 
     def getSingle: ConSingle[Null] = this match {
       case Bot => ConZero()

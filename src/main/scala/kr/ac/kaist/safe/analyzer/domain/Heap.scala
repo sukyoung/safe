@@ -461,7 +461,7 @@ class DHeap(val map: Map[Loc, Obj]) extends Heap {
       val protoLocSet = globalObj.getOrElse(IPrototype)(AbsLoc.Bot) { _.value.locset }
       val (v2, excSet) =
         if (AbsBool.False <= (globalObj domIn x)) {
-          val excSet = protoLocSet.foldLeft(ExceptionSetEmpty)((tmpExcSet, protoLoc) => {
+          val excSet = protoLocSet.foldLeft(ExcSetEmpty)((tmpExcSet, protoLoc) => {
             if (AbsBool.False <= hasProperty(protoLoc, AbsString(x))) {
               tmpExcSet + ReferenceError
             } else tmpExcSet
@@ -475,11 +475,11 @@ class DHeap(val map: Map[Loc, Obj]) extends Heap {
           })
           (v3, excSet)
         } else {
-          (valueBot, ExceptionSetEmpty)
+          (valueBot, ExcSetEmpty)
         }
       (v1 + v2, excSet)
     } else {
-      (valueBot, ExceptionSetEmpty)
+      (valueBot, ExcSetEmpty)
     }
   }
 

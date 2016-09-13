@@ -67,8 +67,7 @@ object BuiltinBooleanProto extends ObjModel(
       ) => {
         val h = st.heap
         val localObj = st.context.pureLocal
-        val thisLocSet = localObj.getOrElse("@this")(AbsLoc.Bot) { _.value.locset }
-        val thisV = AbsValue(thisLocSet)
+        val (thisV, _) = localObj.GetBindingValue("@this")
         val classV = Helper.propLoad(thisV, Set(AbsString("@class")), h)
         val pv = thisV.pvalue
         val excSet = (pv.undefval.isBottom, pv.nullval.isBottom, pv.numval.isBottom, pv.strval.isBottom) match {
@@ -76,7 +75,7 @@ object BuiltinBooleanProto extends ObjModel(
             (AbsString("Boolean") <= classV.pvalue.strval
               && classV.pvalue.strval <= AbsString("Boolean"))
               || classV.pvalue.strval <= AbsString.Bot
-          ) => ExceptionSetEmpty
+          ) => ExcSetEmpty
           case _ => HashSet[Exception](TypeError)
         }
         val b = thisV.pvalue.boolval + {
@@ -99,8 +98,7 @@ object BuiltinBooleanProto extends ObjModel(
       ) => {
         val h = st.heap
         val localObj = st.context.pureLocal
-        val thisLocSet = localObj.getOrElse("@this")(AbsLoc.Bot) { _.value.locset }
-        val thisV = AbsValue(thisLocSet)
+        val (thisV, _) = localObj.GetBindingValue("@this")
         val classV = Helper.propLoad(thisV, Set(AbsString("@class")), h)
         val pv = thisV.pvalue
         val excSet = (pv.undefval.isBottom, pv.nullval.isBottom, pv.numval.isBottom, pv.strval.isBottom) match {
@@ -108,7 +106,7 @@ object BuiltinBooleanProto extends ObjModel(
             (AbsString("Boolean") <= classV.pvalue.strval
               && classV.pvalue.strval <= AbsString("Boolean"))
               || classV.pvalue.strval <= AbsString.Bot
-          ) => ExceptionSetEmpty
+          ) => ExcSetEmpty
           case _ => HashSet[Exception](TypeError)
         }
         val b = thisV.pvalue.boolval + {

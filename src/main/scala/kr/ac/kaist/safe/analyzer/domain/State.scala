@@ -18,7 +18,7 @@ import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.util.Address
 import scala.collection.immutable.{ HashMap }
 
-case class State(heap: Heap, context: ExecContext) {
+case class State(heap: Heap, context: AbsContext) {
   /* partial order */
   def <=(that: State): Boolean =
     this.heap <= that.heap && this.context <= that.context
@@ -41,14 +41,12 @@ case class State(heap: Heap, context: ExecContext) {
     if (excSet.isEmpty) State.Bot
     else {
       val localEnv = context.pureLocal
-      val oldValue = localEnv.getOrElse("@exception_all")(AbsValue.Bot) { _.value }
+      val (oldValue, _) = localEnv.GetBindingValue("@exception_all")
       val newExcSet = excSet.foldLeft(AbsLoc.Bot)((locSet, exc) => locSet + exc.getLoc)
       val excValue = AbsValue(newExcSet)
-      val newExcBind = AbsBinding(excValue)
-      val newExcSetBind = AbsBinding(excValue + oldValue)
-      val newCtx = context.subsPureLocal(localEnv
-        .update("@exception", newExcBind)
-        .update("@exception_all", newExcSetBind))
+      val (localEnv2, _) = localEnv.SetMutableBinding("@exception", excValue)
+      val (localEnv3, _) = localEnv2.SetMutableBinding("@exception_all", excValue + oldValue)
+      val newCtx = context.subsPureLocal(localEnv3)
       State(heap, newCtx)
     }
   }
@@ -65,16 +63,19 @@ case class State(heap: Heap, context: ExecContext) {
     val valueBot = AbsValue.Bot
     val localEnv = context.pureLocal
     id.kind match {
-      case PureLocalVar => (localEnv.getOrElse(x)(valueBot) { _.value }, ExceptionSetEmpty)
+      case PureLocalVar =>
+        val (v, _) = localEnv.GetBindingValue(x)
+        (v, ExcSetEmpty)
       case CapturedVar =>
-        val envLocSet = localEnv.getOrElse("@env")(AbsLoc.Bot) { _.value.locset }
-        val value = envLocSet.foldLeft(valueBot)((tmpVal, envLoc) => {
+        val (envV, _) = localEnv.GetBindingValue("@env")
+        val value = envV.locset.foldLeft(valueBot)((tmpVal, envLoc) => {
           tmpVal + context.lookupLocal(envLoc, x)
         })
-        (value, ExceptionSetEmpty)
+        (value, ExcSetEmpty)
       case CapturedCatchVar =>
         val collapsedEnv = context.getOrElse(PredefLoc.COLLAPSED, AbsDecEnvRec.Bot)
-        (collapsedEnv.getOrElse(x)(valueBot) { _.value }, ExceptionSetEmpty)
+        val (collapsedV, _) = collapsedEnv.GetBindingValue(x)
+        (collapsedV, ExcSetEmpty)
       case GlobalVar => heap.lookupGlobal(x)
     }
   }
@@ -85,8 +86,8 @@ case class State(heap: Heap, context: ExecContext) {
       case PureLocalVar => AbsLoc(PredefLoc.PURE_LOCAL)
       case CapturedVar =>
         val localEnv = context.pureLocal
-        val envLocSet = localEnv.getOrElse("@env")(AbsLoc.Bot) { _.value.locset }
-        envLocSet.foldLeft(AbsLoc.Bot)((tmpLocSet, l) => {
+        val (envV, _) = localEnv.GetBindingValue("@env")
+        envV.locset.foldLeft(AbsLoc.Bot)((tmpLocSet, l) => {
           tmpLocSet + context.lookupBaseLocal(l, x)
         })
       case CapturedCatchVar => AbsLoc(PredefLoc.COLLAPSED)
@@ -101,20 +102,23 @@ case class State(heap: Heap, context: ExecContext) {
     val x = id.text
     id.kind match {
       case PureLocalVar =>
-        val bind = AbsBinding(value)
         val env = context.pureLocal
-        State(heap, context.subsPureLocal(env.update(x, bind)))
+        val (newEnv, _) = env
+          .CreateMutableBinding(x).fold(env)((e: AbsDecEnvRec) => e)
+          .SetMutableBinding(x, value)
+        State(heap, context.subsPureLocal(newEnv))
       case CapturedVar =>
-        val newCtx = context.pureLocal.getOrElse("@env")(ExecContext.Bot) { bind =>
-          bind.value.locset.foldLeft(context)((tmpCtx, loc) => {
-            tmpCtx + tmpCtx.varStoreLocal(loc, x, value)
-          })
-        }
+        val (envV, _) = context.pureLocal.GetBindingValue("@env")
+        val newCtx = envV.locset.foldLeft(context)((tmpCtx, loc) => {
+          tmpCtx + tmpCtx.varStoreLocal(loc, x, value)
+        })
         State(heap, newCtx)
       case CapturedCatchVar =>
-        val bind = AbsBinding(value)
         val env = context.getOrElse(PredefLoc.COLLAPSED, AbsDecEnvRec.Bot)
-        State(heap, context.update(PredefLoc.COLLAPSED, env.update(x, bind)))
+        val (newEnv, _) = env
+          .CreateMutableBinding(x).fold(env)((e: AbsDecEnvRec) => e)
+          .SetMutableBinding(x, value)
+        State(heap, context.update(PredefLoc.COLLAPSED, newEnv))
       case GlobalVar => {
         val h1 =
           if (AbsBool.True <= heap.canPutVar(x)) heap.varStoreGlobal(x, value)
@@ -134,21 +138,29 @@ case class State(heap: Heap, context: ExecContext) {
     val x = id.text
     id.kind match {
       case PureLocalVar =>
-        val bind = AbsBinding(value)
-        State(heap, context.subsPureLocal(context.pureLocal.update(x, bind)))
+        val env = context.pureLocal
+        val (newEnv, _) = env
+          .CreateMutableBinding(x).fold(env)((e: AbsDecEnvRec) => e)
+          .SetMutableBinding(x, value)
+        State(heap, context.subsPureLocal(newEnv))
       case CapturedVar =>
         val bind = AbsBinding(value)
-        val localEnv = context.pureLocal
-        val newCtx = localEnv.getOrElse("@env")(ExecContext.Bot) { bind =>
-          bind.value.locset.foldLeft(ExecContext.Bot)((tmpCtx, loc) => {
-            tmpCtx + context.update(loc, context.getOrElse(loc, AbsDecEnvRec.Bot).update(x, bind))
-          })
-        }
+        val (envV, _) = context.pureLocal.GetBindingValue("@env")
+        val newCtx = envV.locset.foldLeft(AbsContext.Bot)((tmpCtx, loc) => {
+          val env = context.getOrElse(loc, AbsDecEnvRec.Bot)
+          val (newEnv, _) = env
+            .CreateMutableBinding(x).fold(env)((e: AbsDecEnvRec) => e)
+            .SetMutableBinding(x, envV)
+          tmpCtx + context.update(loc, newEnv)
+        })
         State(heap, newCtx)
       case CapturedCatchVar =>
         val collapsedLoc = PredefLoc.COLLAPSED
-        val bind = AbsBinding(value)
-        State(heap, context.update(collapsedLoc, context.getOrElse(collapsedLoc, AbsDecEnvRec.Bot).update(x, bind)))
+        val env = context.getOrElse(collapsedLoc, AbsDecEnvRec.Bot)
+        val (newEnv, _) = env
+          .CreateMutableBinding(x).fold(env)((e: AbsDecEnvRec) => e)
+          .SetMutableBinding(x, value)
+        State(heap, context.update(collapsedLoc, newEnv))
       case GlobalVar =>
         val globalLoc = BuiltinGlobal.loc
         val objV = AbsDataProp(value, AbsBool.True, AbsBool.True, AbsBool.False)
@@ -172,5 +184,5 @@ case class State(heap: Heap, context: ExecContext) {
 }
 
 object State {
-  val Bot: State = State(Heap.Bot, ExecContext.Bot)
+  val Bot: State = State(Heap.Bot, AbsContext.Bot)
 }
