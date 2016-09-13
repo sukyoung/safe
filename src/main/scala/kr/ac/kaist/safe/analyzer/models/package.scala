@@ -14,7 +14,7 @@ package kr.ac.kaist.safe.analyzer
 import kr.ac.kaist.safe.analyzer.domain.State
 
 package object models {
-  type SemanticFun = (Semantics, State) => (State, State)
+  type SemanticFun = State => (State, State)
   val T = true
   val F = false
 }

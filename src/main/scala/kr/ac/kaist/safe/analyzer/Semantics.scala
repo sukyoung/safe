@@ -209,7 +209,7 @@ class Semantics(
             val (oldSt, oldExcSt) = states
             I(inst, oldSt, oldExcSt)
           })
-        case ModelBlock(_, sem) => sem(this, st)
+        case ModelBlock(_, sem) => sem(st)
       }
     }
   }
@@ -624,7 +624,7 @@ class Semantics(
         val absStrSet =
           if (!idxV.isBottom) TypeConversionHelper.ToPrimitive(idxV, st.heap).toStringSet
           else HashSet[AbsString]()
-        val v1 = CFGLoadHelper(objV, absStrSet, st.heap)
+        val v1 = Helper.propLoad(objV, absStrSet, st.heap)
         (v1, idxExcSet)
       }
       case CFGThis(ir) =>
@@ -741,15 +741,5 @@ class Semantics(
       else State.Bot
 
     (st2, excSt + newExcSt)
-  }
-
-  def CFGLoadHelper(objV: AbsValue, absStrSet: Set[AbsString], h: Heap): AbsValue = {
-    val objLocSet = objV.locset
-    val v1 = objLocSet.foldLeft(AbsValue.Bot)((tmpVal1, loc) => {
-      absStrSet.foldLeft(tmpVal1)((tmpVal2, absStr) => {
-        tmpVal2 + h.proto(loc, absStr)
-      })
-    })
-    v1
   }
 }

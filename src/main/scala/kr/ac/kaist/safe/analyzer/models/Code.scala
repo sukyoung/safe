@@ -50,7 +50,7 @@ object EmptyCode {
 
 class BasicCode(
     override val argLen: Int = 0,
-    code: (AbsValue, State, Semantics) => (State, State, AbsValue)
+    code: (AbsValue, State) => (State, State, AbsValue)
 ) extends Code {
   def getCFGFunc(cfg: CFG, name: String): CFGFunction = {
     val (funName, argsName, func) = createCFGFunc(cfg, name)
@@ -62,12 +62,12 @@ class BasicCode(
     func
   }
 
-  private def createSemanticFunc(argsName: String): SemanticFun = (sem, st) => st match {
+  private def createSemanticFunc(argsName: String): SemanticFun = st => st match {
     case State(heap, context) => {
       val stBotPair = (State.Bot, State.Bot)
       val localEnv = context.pureLocal
       val argV = localEnv.getOrElse(argsName)(AbsValue.Bot) { _.value }
-      val (retSt, retSte, retV) = code(argV, st, sem)
+      val (retSt, retSte, retV) = code(argV, st)
       val retObj = localEnv.update("@return", AbsBinding(retV))
       val retCtx = retSt.context.subsPureLocal(retObj)
       (State(retSt.heap, retCtx), retSte)
@@ -77,19 +77,19 @@ class BasicCode(
 object BasicCode {
   def apply(
     argLen: Int = 0,
-    code: (AbsValue, State, Semantics) => (State, State, AbsValue)
+    code: (AbsValue, State) => (State, State, AbsValue)
   ): BasicCode = new BasicCode(argLen, code)
 }
 
 class SimpleCode(
   override val argLen: Int = 0,
-  code: (AbsValue, Heap, Semantics) => AbsValue
-) extends BasicCode(argLen, (v: AbsValue, st: State, sem: Semantics) => {
-  (st, State.Bot, code(v, st.heap, sem))
+  code: (AbsValue, Heap) => AbsValue
+) extends BasicCode(argLen, (v: AbsValue, st: State) => {
+  (st, State.Bot, code(v, st.heap))
 })
 object SimpleCode {
   def apply(
     argLen: Int = 0,
-    code: (AbsValue, Heap, Semantics) => AbsValue
+    code: (AbsValue, Heap) => AbsValue
   ): SimpleCode = new SimpleCode(argLen, code)
 }

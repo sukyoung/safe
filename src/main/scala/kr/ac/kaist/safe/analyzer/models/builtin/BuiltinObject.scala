@@ -15,7 +15,7 @@ import kr.ac.kaist.safe.analyzer.{ Semantics, Helper }
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.analyzer.models._
-import kr.ac.kaist.safe.analyzer.TypeConversionHelper
+import kr.ac.kaist.safe.analyzer._
 import kr.ac.kaist.safe.util.SystemAddr
 import scala.collection.immutable.HashSet
 
@@ -25,10 +25,10 @@ object BuiltinObject extends FuncModel(
 
   // 15.2.1 The Object Constructor Called as a Function: Object([value])
   code = BasicCode(argLen = 1, (
-    args: AbsValue, st: State, sem: Semantics
+    args: AbsValue, st: State
   ) => {
     val h = st.heap
-    val argV = sem.CFGLoadHelper(args, Set(AbsString("0")), h)
+    val argV = Helper.propLoad(args, Set(AbsString("0")), h)
     val addr = SystemAddr("Object<instance>")
 
     // 1. If value is null, undefined or not supplied, create and return
@@ -55,10 +55,10 @@ object BuiltinObject extends FuncModel(
 
   // 15.2.2 The Object Constructor: new Object([value])
   construct = Some(BasicCode(argLen = 1, (
-    args: AbsValue, st: State, sem: Semantics
+    args: AbsValue, st: State
   ) => {
     val h = st.heap
-    val argV = sem.CFGLoadHelper(args, Set(AbsString("0")), h)
+    val argV = Helper.propLoad(args, Set(AbsString("0")), h)
     val addr = SystemAddr("Object<instance>")
 
     // 1. If value is supplied, then
@@ -100,10 +100,10 @@ object BuiltinObject extends FuncModel(
     NormalProp("getPrototypeOf", FuncModel(
       name = "Object.getPrototypeOf",
       code = BasicCode(argLen = 1, (
-        args: AbsValue, st: State, sem: Semantics
+        args: AbsValue, st: State
       ) => {
         val h = st.heap
-        val argV = sem.CFGLoadHelper(args, Set(AbsString("0")), h)
+        val argV = Helper.propLoad(args, Set(AbsString("0")), h)
         val tmpAddr = SystemAddr("<temp>")
 
         val (retV, retSt, excSet) = TypeConversionHelper.ToObject(argV, st, tmpAddr)
@@ -124,11 +124,11 @@ object BuiltinObject extends FuncModel(
     NormalProp("getOwnPropertyDescriptor", FuncModel(
       name = "Object.getOwnPropertyDescriptor",
       code = BasicCode(argLen = 2, (
-        args: AbsValue, st: State, sem: Semantics
+        args: AbsValue, st: State
       ) => {
         val h = st.heap
-        val objV = sem.CFGLoadHelper(args, Set(AbsString("0")), h)
-        val strV = sem.CFGLoadHelper(args, Set(AbsString("1")), h)
+        val objV = Helper.propLoad(args, Set(AbsString("0")), h)
+        val strV = Helper.propLoad(args, Set(AbsString("1")), h)
         val tmpAddr = SystemAddr("<temp>")
         val descAddr = SystemAddr("Object.getOwnPropertyDescriptor<descriptor>")
         val AT = AbsBool(true)
@@ -177,10 +177,10 @@ object BuiltinObject extends FuncModel(
     NormalProp("getOwnPropertyNames", FuncModel(
       name = "Object.getOwnPropertyNames",
       code = BasicCode(argLen = 1, (
-        args: AbsValue, st: State, sem: Semantics
+        args: AbsValue, st: State
       ) => {
         val h = st.heap
-        val objV = sem.CFGLoadHelper(args, Set(AbsString("0")), h)
+        val objV = Helper.propLoad(args, Set(AbsString("0")), h)
         val tmpAddr = SystemAddr("<temp>")
         val arrAddr = SystemAddr("Object.getOwnPropertyNames<array>")
         val (locV, retSt, excSet) = TypeConversionHelper.ToObject(objV, st, tmpAddr)

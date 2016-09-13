@@ -539,4 +539,14 @@ object Helper {
       },
       (leftAbsStr, rightAbsStr) => (leftAbsStr < rightAbsStr).negate)
   }
+
+  def propLoad(objV: AbsValue, absStrSet: Set[AbsString], h: Heap): AbsValue = {
+    val objLocSet = objV.locset
+    val v1 = objLocSet.foldLeft(AbsValue.Bot)((tmpVal1, loc) => {
+      absStrSet.foldLeft(tmpVal1)((tmpVal2, absStr) => {
+        tmpVal2 + h.proto(loc, absStr)
+      })
+    })
+    v1
+  }
 }

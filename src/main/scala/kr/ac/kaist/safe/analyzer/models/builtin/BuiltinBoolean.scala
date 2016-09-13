@@ -14,7 +14,7 @@ package kr.ac.kaist.safe.analyzer.models.builtin
 import scala.collection.immutable.HashSet
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.analyzer.domain.Utils._
-import kr.ac.kaist.safe.analyzer.TypeConversionHelper
+import kr.ac.kaist.safe.analyzer._
 import kr.ac.kaist.safe.analyzer.models._
 import kr.ac.kaist.safe.util.SystemAddr
 
@@ -24,9 +24,9 @@ object BuiltinBoolean extends FuncModel(
 
   // 15.6.1 The Boolean Constructor Called as a Function: Boolean([value])
   code = SimpleCode(argLen = 1, code = (
-    args, h, sem
+    args, h
   ) => {
-    val argV = sem.CFGLoadHelper(args, Set(AbsString("0")), h)
+    val argV = Helper.propLoad(args, Set(AbsString("0")), h)
 
     // Returns a Boolean value (not a Boolean object) computed by ToBoolean(value).
     val boolPV = AbsPValue(TypeConversionHelper.ToBoolean(argV))
@@ -35,10 +35,10 @@ object BuiltinBoolean extends FuncModel(
 
   // 15.6.2 The Boolean Constructor: new Boolean([value])
   construct = Some(BasicCode(argLen = 1, code = (
-    args, st, sem
+    args, st
   ) => {
     val h = st.heap
-    val argV = sem.CFGLoadHelper(args, Set(AbsString("0")), h)
+    val argV = Helper.propLoad(args, Set(AbsString("0")), h)
     val addr = SystemAddr("Boolean<instance>")
 
     val state = st.oldify(addr)
@@ -63,13 +63,13 @@ object BuiltinBooleanProto extends ObjModel(
     NormalProp("toString", FuncModel(
       name = "Boolean.prototype.toString",
       code = BasicCode(code = (
-        args, st, sem
+        args, st
       ) => {
         val h = st.heap
         val localObj = st.context.pureLocal
         val thisLocSet = localObj.getOrElse("@this")(AbsLoc.Bot) { _.value.locset }
         val thisV = AbsValue(thisLocSet)
-        val classV = sem.CFGLoadHelper(thisV, Set(AbsString("@class")), h)
+        val classV = Helper.propLoad(thisV, Set(AbsString("@class")), h)
         val pv = thisV.pvalue
         val excSet = (pv.undefval.isBottom, pv.nullval.isBottom, pv.numval.isBottom, pv.strval.isBottom) match {
           case (true, true, true, true) if (
@@ -81,7 +81,7 @@ object BuiltinBooleanProto extends ObjModel(
         }
         val b = thisV.pvalue.boolval + {
           if ((AbsString("Boolean") <= classV.pvalue.strval)) {
-            val primitiveV = sem.CFGLoadHelper(thisV, Set(AbsString("@primitive")), h)
+            val primitiveV = Helper.propLoad(thisV, Set(AbsString("@primitive")), h)
             primitiveV.pvalue.boolval
           } else {
             AbsBool.Bot
@@ -95,13 +95,13 @@ object BuiltinBooleanProto extends ObjModel(
     NormalProp("valueOf", FuncModel(
       name = "Boolean.prototype.valueOf",
       code = BasicCode(code = (
-        args, st, sem
+        args, st
       ) => {
         val h = st.heap
         val localObj = st.context.pureLocal
         val thisLocSet = localObj.getOrElse("@this")(AbsLoc.Bot) { _.value.locset }
         val thisV = AbsValue(thisLocSet)
-        val classV = sem.CFGLoadHelper(thisV, Set(AbsString("@class")), h)
+        val classV = Helper.propLoad(thisV, Set(AbsString("@class")), h)
         val pv = thisV.pvalue
         val excSet = (pv.undefval.isBottom, pv.nullval.isBottom, pv.numval.isBottom, pv.strval.isBottom) match {
           case (true, true, true, true) if (
@@ -113,7 +113,7 @@ object BuiltinBooleanProto extends ObjModel(
         }
         val b = thisV.pvalue.boolval + {
           if ((AbsString("Boolean") <= classV.pvalue.strval)) {
-            val primitiveV = sem.CFGLoadHelper(thisV, Set(AbsString("@primitive")), h)
+            val primitiveV = Helper.propLoad(thisV, Set(AbsString("@primitive")), h)
             primitiveV.pvalue.boolval
           } else {
             AbsBool.Bot
