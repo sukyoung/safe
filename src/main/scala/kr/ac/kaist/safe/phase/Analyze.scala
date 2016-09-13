@@ -17,6 +17,7 @@ import scala.util.{ Failure, Success, Try }
 import kr.ac.kaist.safe.SafeConfig
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.analyzer.console.Console
+import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.nodes.cfg.CFG
 import kr.ac.kaist.safe.util._
 
@@ -38,16 +39,16 @@ case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, CallContext)] {
       config.AbsString,
       cfg
     )
-    val callCtxManager = CallContextManager()
+    val globalCC = CallContextManager().globalCallContext
 
     val worklist = Worklist(cfg)
-    worklist.add(ControlPoint(cfg.globalFunc.entry, callCtxManager.globalCallContext))
+    worklist.add(ControlPoint(cfg.globalFunc.entry, globalCC))
     val semantics = new Semantics(cfg, worklist)
     val init = Initialize(cfg)
     val initSt =
       if (config.testMode) init.testState
       else init.state
-    cfg.globalFunc.entry.setState(callCtxManager.globalCallContext, initSt)
+    cfg.globalFunc.entry.setState(globalCC, initSt)
     val consoleOpt = config.console match {
       case true => Some(new Console(cfg, worklist, semantics))
       case false => None
@@ -62,13 +63,33 @@ case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, CallContext)] {
       println(excLog)
     }
 
-    Success((cfg, callCtxManager.globalCallContext))
+    println(config.dump, config.dumpAll)
+    if (config.dump || config.dumpAll) {
+      val state = cfg.globalFunc.exit.getState(globalCC)
+      val heap = state.heap
+      val context = state.context
+      val old = context.old
+      println("** heap **" + LINE_SEP +
+        (if (config.dumpAll) heap.toStringAll else heap.toString) + LINE_SEP +
+        LINE_SEP +
+        "** context **" + LINE_SEP +
+        context.toString + LINE_SEP +
+        LINE_SEP +
+        "** old address set **" + LINE_SEP +
+        old.toString)
+    }
+
+    Success((cfg, globalCC))
   }
 
   def defaultConfig: AnalyzeConfig = AnalyzeConfig()
   val options: List[PhaseOption[AnalyzeConfig]] = List(
     ("verbose", BoolOption(c => c.verbose = true),
       "messages during compilation are printed."),
+    ("dump", BoolOption(c => c.dump = true),
+      "dump the state of the exit node of the global function."),
+    ("dumpAll", BoolOption(c => c.dumpAll = true),
+      "dump all locations for the state of the exit node of the global function."),
     ("console", BoolOption(c => c.console = true),
       "you can use REPL-style debugger."),
     ("out", StrOption((c, s) => c.outFile = Some(s)),
@@ -85,6 +106,8 @@ case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, CallContext)] {
 // Analyze phase config
 case class AnalyzeConfig(
   var verbose: Boolean = false,
+  var dump: Boolean = false,
+  var dumpAll: Boolean = false,
   var console: Boolean = false,
   var outFile: Option[String] = None,
   var AbsUndef: AbsUndefUtil = DefaultUndef,
