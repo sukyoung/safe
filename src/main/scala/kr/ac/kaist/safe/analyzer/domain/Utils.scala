@@ -56,8 +56,6 @@ object Utils {
   var AbsDecEnvRec: AbsDecEnvRecUtil = DefaultDecEnvRec
   var AbsGlobalEnvRec: AbsGlobalEnvRecUtil = DefaultGlobalEnvRec
   var AbsEnvRec: AbsEnvRecUtil = DefaultEnvRec
-  var AbsNormalEnv: AbsNormalEnvUtil = DefaultNormalEnv
-  var AbsNullEnv: AbsNullEnvUtil = DefaultNullEnv
   var AbsLexEnv: AbsLexEnvUtil = DefaultLexEnv
   var AbsContext: AbsContextUtil = DefaultContext
 

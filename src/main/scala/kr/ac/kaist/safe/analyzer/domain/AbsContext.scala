@@ -316,7 +316,7 @@ object DefaultContext extends AbsContextUtil {
         if (visited.contains(l)) valueBot
         else {
           visited += l
-          val envRec = this.getOrElse(l, AbsLexEnv.Bot).normEnv.record.decEnvRec
+          val envRec = this.getOrElse(l, AbsLexEnv.Bot).record.decEnvRec
           val isIn = (envRec HasBinding x)
           isIn.map[AbsValue](thenV = {
             val (value, _) = envRec.GetBindingValue(x)
@@ -336,7 +336,7 @@ object DefaultContext extends AbsContextUtil {
         if (visited.contains(l)) AbsLoc.Bot
         else {
           visited += l
-          val envRec = this.getOrElse(l, AbsLexEnv.Bot).normEnv.record.decEnvRec
+          val envRec = this.getOrElse(l, AbsLexEnv.Bot).record.decEnvRec
           val isIn = (envRec HasBinding x)
           isIn.map[AbsLoc](
             thenV = AbsLoc(l),
@@ -354,11 +354,11 @@ object DefaultContext extends AbsContextUtil {
     // Store
     ////////////////////////////////////////////////////////////////
     def varStoreLocal(loc: Loc, x: String, value: AbsValue): AbsContext = {
-      val envRec = this.getOrElse(loc, AbsLexEnv.Bot).normEnv.record.decEnvRec
+      val envRec = this.getOrElse(loc, AbsLexEnv.Bot).record.decEnvRec
       val AT = AbsBool.True
       val AF = AbsBool.False
       val (newEnvRec, _) = envRec.SetMutableBinding(x, value)
-      val ctx1 = update(loc, AbsNormalEnv(newEnvRec))
+      val ctx1 = update(loc, AbsLexEnv(newEnvRec))
       val (outerV, _) = envRec.GetBindingValue("@outer")
       val ctx2 =
         if (AbsBool.False <= (envRec HasBinding x))
@@ -382,7 +382,7 @@ object DefaultContext extends AbsContextUtil {
     }
 
     private def hasOwnProperty(loc: Loc, str: String): AbsBool = {
-      (this.getOrElse(loc, AbsLexEnv.Bot).normEnv.record.decEnvRec HasBinding str)
+      (this.getOrElse(loc, AbsLexEnv.Bot).record.decEnvRec HasBinding str)
     }
 
     ////////////////////////////////////////////////////////////////

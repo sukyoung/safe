@@ -12,18 +12,22 @@
 package kr.ac.kaist.safe.analyzer.domain
 
 import kr.ac.kaist.safe.analyzer.domain.Utils._
+import scala.collection.immutable.HashSet
+
+/* 10.2 Lexical Environments */
 
 ////////////////////////////////////////////////////////////////////////////////
 // concrete lexical environment type
 ////////////////////////////////////////////////////////////////////////////////
-trait LexEnv
+case class LexEnv(record: EnvRec, outer: Option[Loc])
 
 ////////////////////////////////////////////////////////////////////////////////
 // lexical environment abstract domain
 ////////////////////////////////////////////////////////////////////////////////
 trait AbsLexEnv extends AbsDomain[LexEnv, AbsLexEnv] {
-  val normEnv: AbsNormalEnv
-  val nullEnv: AbsNullEnv
+  val record: AbsEnvRec
+  val outer: AbsLoc
+  val nullOuter: AbsAbsent
 
   // 10.2.2.1 GetIdentifierReference(lex, name, strict) + 8.7.1 GetValue (V)
   def getId(name: String, strict: Boolean)(st: State): (AbsValue, Set[Exception])
@@ -43,29 +47,37 @@ trait AbsLexEnv extends AbsDomain[LexEnv, AbsLexEnv] {
   // weak substitute locR by locO
   def weakSubsLoc(locR: Loc, locO: Loc): AbsLexEnv
 }
+
 trait AbsLexEnvUtil extends AbsDomainUtil[LexEnv, AbsLexEnv] {
-  def apply(env: AbsNormalEnv): AbsLexEnv
-  def apply(env: AbsNullEnv): AbsLexEnv
+  def apply(
+    record: AbsEnvRec,
+    outer: AbsLoc = AbsLoc.Bot,
+    nullOuter: AbsAbsent = AbsAbsent.Top
+  ): AbsLexEnv
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // default lexical environment abstract domain
 ////////////////////////////////////////////////////////////////////////////////
 object DefaultLexEnv extends AbsLexEnvUtil {
-  lazy val Bot = Dom(AbsNormalEnv.Bot, AbsNullEnv.Bot)
-  lazy val Top = Dom(AbsNormalEnv.Top, AbsNullEnv.Top)
+  lazy val Bot = Dom(AbsEnvRec.Bot, AbsLoc.Bot, AbsAbsent.Bot)
+  lazy val Top = Dom(AbsEnvRec.Top, AbsLoc.Top, AbsAbsent.Top)
 
-  def alpha(env: LexEnv): AbsLexEnv = env match {
-    case (env: NormalEnv) => AbsNormalEnv(env)
-    case (env: NullEnv) => AbsNullEnv(env)
+  def alpha(env: LexEnv): AbsLexEnv = env.outer match {
+    case None => Dom(AbsEnvRec(env.record), AbsLoc.Bot, AbsAbsent.Top)
+    case Some(loc) => Dom(AbsEnvRec(env.record), AbsLoc(loc), AbsAbsent.Bot)
   }
 
-  def apply(env: AbsNormalEnv): AbsLexEnv = Bot.copy(normEnv = env)
-  def apply(env: AbsNullEnv): AbsLexEnv = Bot.copy(nullEnv = env)
+  def apply(
+    record: AbsEnvRec,
+    outer: AbsLoc,
+    nullOuter: AbsAbsent
+  ): AbsLexEnv = Dom(record, outer, nullOuter)
 
   case class Dom(
-      normEnv: AbsNormalEnv,
-      nullEnv: AbsNullEnv
+      record: AbsEnvRec,
+      outer: AbsLoc,
+      nullOuter: AbsAbsent
   ) extends AbsLexEnv {
     def gamma: ConSet[LexEnv] = ConInf() // TODO more precise
 
@@ -76,27 +88,30 @@ object DefaultLexEnv extends AbsLexEnvUtil {
 
     def <=(that: AbsLexEnv): Boolean = {
       val right = check(that)
-      this.normEnv <= right.normEnv &&
-        this.nullEnv <= right.nullEnv
+      this.record <= right.record &&
+        this.outer <= right.outer &&
+        this.nullOuter <= right.nullOuter
     }
 
     def +(that: AbsLexEnv): AbsLexEnv = {
       val right = check(that)
       Dom(
-        this.normEnv + right.normEnv,
-        this.nullEnv + right.nullEnv
+        this.record + right.record,
+        this.outer + right.outer,
+        this.nullOuter + right.nullOuter
       )
     }
 
     def <>(that: AbsLexEnv): AbsLexEnv = {
       val right = check(that)
       Dom(
-        this.normEnv <> right.normEnv,
-        this.nullEnv <> right.nullEnv
+        this.record <> right.record,
+        this.outer <> right.outer,
+        this.nullOuter <> right.nullOuter
       )
     }
 
-    override def toString: String = normEnv.toString
+    override def toString: String = record.toString // TODO
 
     def getId(name: String, strict: Boolean)(st: State): (AbsValue, Set[Exception]) = {
       var visited = AbsLoc.Bot
@@ -104,17 +119,17 @@ object DefaultLexEnv extends AbsLexEnvUtil {
       val ctx = st.context
       var excSet = ExcSetEmpty
       def visit(env: AbsLexEnv): AbsValue = {
-        val envRec = env.normEnv.record
+        val envRec = env.record
         val exists = envRec.HasBinding(name)(heap)
 
-        if (nullEnv.isTop) excSet += ReferenceError
+        if (nullOuter.isTop) excSet += ReferenceError
 
         exists.map[AbsValue](thenV = {
           val (v, e) = envRec.GetBindingValue(name, strict)(heap)
           excSet ++ e
           v
         }, elseV = {
-          env.normEnv.outer.foldLeft(AbsValue.Bot) {
+          env.outer.foldLeft(AbsValue.Bot) {
             case (v, loc) => {
               val newV =
                 if (visited.contains(loc)) AbsValue.Bot
@@ -133,9 +148,9 @@ object DefaultLexEnv extends AbsLexEnvUtil {
     // def NewDeclarativeEnvironment: NormalEnv
 
     def subsLoc(locR: Loc, locO: Loc): AbsLexEnv =
-      Dom(normEnv.subsLoc(locR, locO), nullEnv)
+      Dom(record.subsLoc(locR, locO), outer.subsLoc(locR, locO), nullOuter)
 
     def weakSubsLoc(locR: Loc, locO: Loc): AbsLexEnv =
-      Dom(normEnv.weakSubsLoc(locR, locO), nullEnv)
+      Dom(record.weakSubsLoc(locR, locO), outer.subsLoc(locR, locO), nullOuter)
   }
 }

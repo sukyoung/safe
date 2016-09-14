@@ -65,11 +65,11 @@ class BasicCode(
   private def createSemanticFunc(argsName: String): SemanticFun = st => st match {
     case State(heap, context) => {
       val stBotPair = (State.Bot, State.Bot)
-      val localEnv = context.pureLocal.normEnv.record.decEnvRec
+      val localEnv = context.pureLocal.record.decEnvRec
       val (argV, _) = localEnv.GetBindingValue(argsName)
       val (retSt, retSte, retV) = code(argV, st)
       val (retObj, _) = localEnv.SetMutableBinding("@return", retV)
-      val retCtx = retSt.context.subsPureLocal(AbsNormalEnv(retObj))
+      val retCtx = retSt.context.subsPureLocal(AbsLexEnv(retObj))
       (State(retSt.heap, retCtx), retSte)
     }
   }

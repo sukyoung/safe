@@ -31,8 +31,8 @@ case class Initialize(cfg: CFG) {
     ))
 
     val initCtx = AbsContext(HashMap[Loc, AbsLexEnv](
-      PredefLoc.PURE_LOCAL -> AbsNormalEnv(globalPureLocalEnv),
-      PredefLoc.COLLAPSED -> AbsNormalEnv(AbsDecEnvRec.Empty)
+      PredefLoc.PURE_LOCAL -> AbsLexEnv(globalPureLocalEnv),
+      PredefLoc.COLLAPSED -> AbsLexEnv(AbsDecEnvRec.Empty)
     ), OldAddrSet.Empty)
 
     val modeledHeap = BuiltinGlobal.initHeap(initHeap, cfg)

@@ -108,15 +108,15 @@ class Semantics(
       case (_, Entry(f)) => st.context match {
         case _ if st.context.isBottom => State.Bot
         case ctx1: AbsContext => {
-          val objEnvRec = env.normEnv.record.decEnvRec.GetBindingValue("@scope") match {
+          val objEnvRec = env.record.decEnvRec.GetBindingValue("@scope") match {
             case (value, _) => AbsDecEnvRec.newDeclEnvRecord(value)
           }
-          val (envRec2, _) = env.normEnv.record.decEnvRec.DeleteBinding("@scope")
-          val ctx2 = ctx1.subsPureLocal(AbsNormalEnv(envRec2))
+          val (envRec2, _) = env.record.decEnvRec.DeleteBinding("@scope")
+          val ctx2 = ctx1.subsPureLocal(AbsLexEnv(envRec2))
           val ctx3 = envRec2.GetBindingValue("@env") match {
             case (value, _) =>
               value.locset.foldLeft(AbsContext.Bot)((hi, locEnv) => {
-                hi + ctx2.update(locEnv, AbsNormalEnv(objEnvRec))
+                hi + ctx2.update(locEnv, AbsLexEnv(objEnvRec))
               })
           }
           State(st.heap, ctx3.setOldAddrSet(old))
@@ -129,7 +129,7 @@ class Semantics(
         if (old2.isBottom) State.Bot
         else {
           val localEnv = ctx1.pureLocal
-          val (returnV, _) = localEnv.normEnv.record.decEnvRec.GetBindingValue("@return")
+          val (returnV, _) = localEnv.record.decEnvRec.GetBindingValue("@return")
           val ctx2 = ctx1.subsPureLocal(env1)
           val newSt = State(st.heap, ctx2.setOldAddrSet(old2))
           newSt.varStore(retVar, returnV)
@@ -147,15 +147,15 @@ class Semantics(
       case (ExitExc(_), AfterCatch(_, _)) =>
         val (ctx1, c1) = (st.context, st.context.old)
         val (c2, envL) = old.fixOldify(env, c1.mayOld, c1.mustOld)
-        val env1 = envL.normEnv.record.decEnvRec
+        val env1 = envL.record.decEnvRec
         if (c2.isBottom) State.Bot
         else {
           val localEnv = ctx1.pureLocal
-          val (excValue, _) = localEnv.normEnv.record.decEnvRec.GetBindingValue("@exception")
+          val (excValue, _) = localEnv.record.decEnvRec.GetBindingValue("@exception")
           val (oldExcAllValue, _) = env1.GetBindingValue("@exception_all")
           val (env2, _) = env1.SetMutableBinding("@exception", excValue)
           val (env3, _) = env2.SetMutableBinding("@exception_all", excValue + oldExcAllValue)
-          val ctx2 = ctx1.subsPureLocal(AbsNormalEnv(env3))
+          val ctx2 = ctx1.subsPureLocal(AbsLexEnv(env3))
           State(st.heap, ctx2.setOldAddrSet(c2))
         }
       case (ExitExc(f), _) =>
@@ -182,7 +182,7 @@ class Semantics(
           val xArgVars = fun.argVars
           val xLocalVars = fun.localVars
           val localEnv = ctx.pureLocal
-          val (argV, _) = localEnv.normEnv.record.decEnvRec.GetBindingValue(fun.argumentsName)
+          val (argV, _) = localEnv.record.decEnvRec.GetBindingValue(fun.argumentsName)
           val (nSt, _) = xArgVars.foldLeft((st, 0))((res, x) => {
             val (iSt, i) = res
             val vi = argV.locset.foldLeft(AbsValue.Bot)((vk, lArg) => {
@@ -364,7 +364,7 @@ class Semantics(
 
         val n = AbsNumber(f.argVars.length)
         val localEnv = st2.context.pureLocal
-        val (scope, _) = localEnv.normEnv.record.decEnvRec.GetBindingValue("@env")
+        val (scope, _) = localEnv.record.decEnvRec.GetBindingValue("@env")
         val h3 = st2.heap.update(locR1, AbsObjectUtil.newFunctionObject(f.id, scope, locR2, n))
 
         val fVal = AbsValue(locR1)
@@ -393,23 +393,23 @@ class Semantics(
         val h5 = h4.update(locR2, oNew.update("constructor", fPropV, exist = true))
 
         val localEnv = st3.context.pureLocal
-        val (scope, _) = localEnv.normEnv.record.decEnvRec.GetBindingValue("@env")
+        val (scope, _) = localEnv.record.decEnvRec.GetBindingValue("@env")
         val oEnv = AbsDecEnvRec.newDeclEnvRecord(scope)
         val oEnv2 = oEnv
           .CreateImmutableBinding(name.text)
           .InitializeImmutableBinding(name.text, fVal)
-        val newCtx = st3.context.update(locR3, AbsNormalEnv(oEnv2))
+        val newCtx = st3.context.update(locR3, AbsLexEnv(oEnv2))
         val newSt = State(h5, newCtx).varStore(lhs, fVal)
         (newSt, excSt)
       }
       case CFGAssert(_, _, expr, _) => B(expr, st, excSt, i, cfg)
       case CFGCatch(_, _, x) => {
         val localEnv = st.context.pureLocal
-        val (excSetV, _) = localEnv.normEnv.record.decEnvRec.GetBindingValue("@exception_all")
-        val (excV, _) = localEnv.normEnv.record.decEnvRec.GetBindingValue("@exception")
+        val (excSetV, _) = localEnv.record.decEnvRec.GetBindingValue("@exception_all")
+        val (excV, _) = localEnv.record.decEnvRec.GetBindingValue("@exception")
         val st1 = st.createMutableBinding(x, excV)
-        val (newEnv, _) = st1.context.pureLocal.normEnv.record.decEnvRec.SetMutableBinding("@exception", excSetV)
-        val newCtx = st1.context.subsPureLocal(AbsNormalEnv(newEnv))
+        val (newEnv, _) = st1.context.pureLocal.record.decEnvRec.SetMutableBinding("@exception", excSetV)
+        val newCtx = st1.context.subsPureLocal(AbsLexEnv(newEnv))
         val newSt = State(st1.heap, newCtx)
         (newSt, State.Bot)
       }
@@ -418,29 +418,29 @@ class Semantics(
         val ctx1 =
           if (!v.isBottom) {
             val localEnv = st.context.pureLocal
-            val (localEnv2, _) = localEnv.normEnv.record.decEnvRec.SetMutableBinding("@return", v)
-            st.context.subsPureLocal(AbsNormalEnv(localEnv2))
+            val (localEnv2, _) = localEnv.record.decEnvRec.SetMutableBinding("@return", v)
+            st.context.subsPureLocal(AbsLexEnv(localEnv2))
           } else AbsContext.Bot
         val newExcSt = st.raiseException(excSet)
         (State(st.heap, ctx1), excSt + newExcSt)
       }
       case CFGReturn(_, _, None) => {
         val localEnv = st.context.pureLocal
-        val (localEnv2, _) = localEnv.normEnv.record.decEnvRec.SetMutableBinding("@return", AbsUndef.Top)
-        val ctx1 = st.context.subsPureLocal(AbsNormalEnv(localEnv2))
+        val (localEnv2, _) = localEnv.record.decEnvRec.SetMutableBinding("@return", AbsUndef.Top)
+        val ctx1 = st.context.subsPureLocal(AbsLexEnv(localEnv2))
         val newSt = State(st.heap, ctx1)
         (newSt, excSt)
       }
       case CFGThrow(_, _, expr) => {
         val (v, excSet) = V(expr, st)
         val localEnv = st.context.pureLocal
-        val (excSetV, _) = localEnv.normEnv.record.decEnvRec.GetBindingValue("@exception_all")
-        val (newEnv, _) = localEnv.normEnv.record.decEnvRec.SetMutableBinding("@exception", v)
+        val (excSetV, _) = localEnv.record.decEnvRec.GetBindingValue("@exception_all")
+        val (newEnv, _) = localEnv.record.decEnvRec.SetMutableBinding("@exception", v)
         val (newEnv2, _) = newEnv.SetMutableBinding("@exception_all", v + excSetV)
         val (newEnv3, _) = newEnv2
           .CreateMutableBinding("@return").fold(newEnv2)((e: AbsDecEnvRec) => e)
           .SetMutableBinding("@return", AbsUndef.Top)
-        val ctx1 = st.context.subsPureLocal(AbsNormalEnv(newEnv3))
+        val ctx1 = st.context.subsPureLocal(AbsLexEnv(newEnv3))
         val newExcSt = st.raiseException(excSet)
 
         (State.Bot, excSt + State(st.heap, ctx1) + newExcSt)
@@ -576,7 +576,7 @@ class Semantics(
                   val entryCP = ControlPoint(funCFG.entry, newCallCtx)
                   val exitCP = ControlPoint(funCFG.exit, newCallCtx)
                   val exitExcCP = ControlPoint(funCFG.exitExc, newCallCtx)
-                  addCallEdge(cp, entryCP, OldAddrSet.Empty, AbsNormalEnv(newEnv3))
+                  addCallEdge(cp, entryCP, OldAddrSet.Empty, AbsLexEnv(newEnv3))
                   addReturnEdge(exitCP, cpAfterCall, st1.context.old, oldLocalEnv)
                   addReturnEdge(exitExcCP, cpAfterCatch, st1.context.old, oldLocalEnv)
                 }
@@ -629,7 +629,7 @@ class Semantics(
       }
       case CFGThis(ir) =>
         val localEnv = st.context.pureLocal
-        val (thisV, _) = localEnv.normEnv.record.decEnvRec.GetBindingValue("@this")
+        val (thisV, _) = localEnv.record.decEnvRec.GetBindingValue("@this")
         (thisV, ExcSetEmpty)
       case CFGBin(ir, expr1, op, expr2) => {
         val (v1, excSet1) = V(expr1, st)

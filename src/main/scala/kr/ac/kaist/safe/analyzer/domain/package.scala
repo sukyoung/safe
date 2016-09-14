@@ -90,8 +90,4 @@ package object domain {
   // AbsDecEnvRec, AbsGlobalEnvRec -> AbsEnvRec
   implicit def denv2env(dEnv: AbsDecEnvRec): AbsEnvRec = AbsEnvRec(dEnv)
   implicit def genv2env(gEnv: AbsGlobalEnvRec): AbsEnvRec = AbsEnvRec(gEnv)
-
-  // AbsNormalEnv, AbsNullEnv -> AbsLexEnv
-  implicit def normenv2env(env: AbsNormalEnv): AbsLexEnv = AbsLexEnv(env)
-  implicit def nullenv2env(env: AbsNullEnv): AbsLexEnv = AbsLexEnv(env)
 }
