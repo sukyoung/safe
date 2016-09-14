@@ -56,6 +56,12 @@ trait AbsEnvRec extends AbsDomain[EnvRec, AbsEnvRec] {
 
   // 10.2.1.2.6 ImplicitThisValue()
   def ImplicitThisValue(heap: Heap): AbsValue
+
+  // substitute locR by locO
+  def subsLoc(locR: Loc, locO: Loc): AbsEnvRec
+
+  // weak substitute locR by locO
+  def weakSubsLoc(locR: Loc, locO: Loc): AbsEnvRec
 }
 
 trait AbsEnvRecUtil extends AbsDomainUtil[EnvRec, AbsEnvRec] {
@@ -160,5 +166,11 @@ object DefaultEnvRec extends AbsEnvRecUtil {
     // 10.2.1.2.6 ImplicitThisValue()
     def ImplicitThisValue(heap: Heap): AbsValue =
       decEnvRec.ImplicitThisValue + globalEnvRec.ImplicitThisValue(heap)
+
+    def subsLoc(locR: Loc, locO: Loc): AbsEnvRec =
+      Dom(decEnvRec.subsLoc(locR, locO), globalEnvRec)
+
+    def weakSubsLoc(locR: Loc, locO: Loc): AbsEnvRec =
+      Dom(decEnvRec.weakSubsLoc(locR, locO), globalEnvRec)
   }
 }

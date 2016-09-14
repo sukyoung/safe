@@ -31,12 +31,14 @@ trait Context // TODO
 ////////////////////////////////////////////////////////////////////////////////
 trait AbsContext extends AbsDomain[Context, AbsContext] {
   // lookup
-  def apply(loc: Loc): Option[AbsDecEnvRec]
-  def getOrElse(loc: Loc, default: AbsDecEnvRec): AbsDecEnvRec
-  def getOrElse[T](loc: Loc)(default: T)(f: AbsDecEnvRec => T): T
+  def apply(loc: Loc): Option[AbsLexEnv]
+  def apply(locSet: Set[Loc]): AbsLexEnv
+  def apply(locSet: AbsLoc): AbsLexEnv
+  def getOrElse(loc: Loc, default: AbsLexEnv): AbsLexEnv
+  def getOrElse[T](loc: Loc)(default: T)(f: AbsLexEnv => T): T
 
   // context update
-  def update(loc: Loc, env: AbsDecEnvRec): AbsContext
+  def update(loc: Loc, env: AbsLexEnv): AbsContext
 
   // remove location
   def remove(loc: Loc): AbsContext
@@ -69,14 +71,14 @@ trait AbsContext extends AbsDomain[Context, AbsContext] {
   def delete(loc: Loc, str: String): (AbsContext, AbsBool)
 
   // pure local environment
-  def pureLocal: AbsDecEnvRec
-  def subsPureLocal(env: AbsDecEnvRec): AbsContext
+  def pureLocal: AbsLexEnv
+  def subsPureLocal(env: AbsLexEnv): AbsContext
 }
 
 trait AbsContextUtil extends AbsDomainUtil[Context, AbsContext] {
   val Empty: AbsContext
   def apply(
-    map: Map[Loc, AbsDecEnvRec],
+    map: Map[Loc, AbsLexEnv],
     old: OldAddrSet
   ): AbsContext
 }
@@ -85,7 +87,7 @@ trait AbsContextUtil extends AbsDomainUtil[Context, AbsContext] {
 // default execution context abstract domain
 ////////////////////////////////////////////////////////////////////////////////
 object DefaultContext extends AbsContextUtil {
-  private val EmptyMap: Map[Loc, AbsDecEnvRec] = HashMap()
+  private val EmptyMap: Map[Loc, AbsLexEnv] = HashMap()
 
   case object Bot extends Dom
   case object Top extends Dom
@@ -93,7 +95,7 @@ object DefaultContext extends AbsContextUtil {
     // TODO val varEnv: LexEnv // VariableEnvironment
     // val thisBinding: AbsLoc, // ThisBinding
     // val oldAddrSet: OldAddrSet // TODO old address set
-    val map: Map[Loc, AbsDecEnvRec],
+    val map: Map[Loc, AbsLexEnv],
     override val old: OldAddrSet
   ) extends Dom
   val Empty: AbsContext = CtxMap(EmptyMap, OldAddrSet.Empty)
@@ -101,9 +103,9 @@ object DefaultContext extends AbsContextUtil {
   def alpha(ctx: Context): AbsContext = Top // TODO more precise
 
   def apply(
-    map: Map[Loc, AbsDecEnvRec],
+    map: Map[Loc, AbsLexEnv],
     old: OldAddrSet
-  ): AbsContext = new CtxMap(map, old)
+  ): AbsContext = CtxMap(map, old)
 
   abstract class Dom extends AbsContext {
     def gamma: ConSet[Context] = ConInf() // TODO more precise
@@ -174,32 +176,40 @@ object DefaultContext extends AbsContextUtil {
       }
     }
 
-    def apply(loc: Loc): Option[AbsDecEnvRec] = this match {
+    def apply(loc: Loc): Option[AbsLexEnv] = this match {
       case Bot => None
-      case Top => Some(AbsDecEnvRec.Top)
+      case Top => Some(AbsLexEnv.Top)
       case CtxMap(map, old) => map.get(loc)
     }
 
-    def getOrElse(loc: Loc, default: AbsDecEnvRec): AbsDecEnvRec =
+    def apply(locSet: Set[Loc]): AbsLexEnv = locSet.foldLeft(AbsLexEnv.Bot) {
+      case (envRec, loc) => envRec + getOrElse(loc, AbsLexEnv.Bot)
+    }
+
+    def apply(locSet: AbsLoc): AbsLexEnv = locSet.foldLeft(AbsLexEnv.Bot) {
+      case (envRec, loc) => envRec + getOrElse(loc, AbsLexEnv.Bot)
+    }
+
+    def getOrElse(loc: Loc, default: AbsLexEnv): AbsLexEnv =
       this(loc) match {
         case Some(env) => env
         case None => default
       }
 
-    def getOrElse[T](loc: Loc)(default: T)(f: AbsDecEnvRec => T): T = {
+    def getOrElse[T](loc: Loc)(default: T)(f: AbsLexEnv => T): T = {
       this(loc) match {
         case Some(env) => f(env)
         case None => default
       }
     }
 
-    private def weakUpdated(m: Map[Loc, AbsDecEnvRec], loc: Loc, newEnv: AbsDecEnvRec): Map[Loc, AbsDecEnvRec] =
+    private def weakUpdated(m: Map[Loc, AbsLexEnv], loc: Loc, newEnv: AbsLexEnv): Map[Loc, AbsLexEnv] =
       m.get(loc) match {
         case Some(oldEnv) => m.updated(loc, oldEnv + newEnv)
         case None => m.updated(loc, newEnv)
       }
 
-    def update(loc: Loc, env: AbsDecEnvRec): AbsContext = this match {
+    def update(loc: Loc, env: AbsLexEnv): AbsContext = this match {
       case Bot => Bot
       case Top => Top
       case CtxMap(map, old) => {
@@ -237,7 +247,7 @@ object DefaultContext extends AbsContextUtil {
         val locR = Loc(addr, Recent)
         val locO = Loc(addr, Old)
         val newCtx = if (this domIn locR) {
-          update(locO, getOrElse(locR, AbsDecEnvRec.Bot)).remove(locR)
+          update(locO, getOrElse(locR, AbsLexEnv.Bot)).remove(locR)
         } else this
         newCtx.subsLoc(locR, locO)
       }
@@ -288,7 +298,7 @@ object DefaultContext extends AbsContextUtil {
       apply(loc).map(toStringLoc(loc, _))
     }
 
-    private def toStringLoc(loc: Loc, env: AbsDecEnvRec): String = {
+    private def toStringLoc(loc: Loc, env: AbsLexEnv): String = {
       val s = new StringBuilder
       val keyStr = loc.toString + " -> "
       s.append(keyStr)
@@ -306,13 +316,13 @@ object DefaultContext extends AbsContextUtil {
         if (visited.contains(l)) valueBot
         else {
           visited += l
-          val env = this.getOrElse(l, AbsDecEnvRec.Bot)
-          val isIn = (env HasBinding x)
+          val envRec = this.getOrElse(l, AbsLexEnv.Bot).normEnv.record.decEnvRec
+          val isIn = (envRec HasBinding x)
           isIn.map[AbsValue](thenV = {
-            val (value, _) = env.GetBindingValue(x)
+            val (value, _) = envRec.GetBindingValue(x)
             value
           }, elseV = {
-            val (outerV, _) = env.GetBindingValue("@outer")
+            val (outerV, _) = envRec.GetBindingValue("@outer")
             outerV.locset.foldLeft(valueBot)((tmpVal, outerLoc) => tmpVal + visit(outerLoc))
           })(AbsValue)
         }
@@ -326,12 +336,12 @@ object DefaultContext extends AbsContextUtil {
         if (visited.contains(l)) AbsLoc.Bot
         else {
           visited += l
-          val env = this.getOrElse(l, AbsDecEnvRec.Bot)
-          val isIn = (env HasBinding x)
+          val envRec = this.getOrElse(l, AbsLexEnv.Bot).normEnv.record.decEnvRec
+          val isIn = (envRec HasBinding x)
           isIn.map[AbsLoc](
             thenV = AbsLoc(l),
             elseV = {
-              val (outerV, _) = env.GetBindingValue("@outer")
+              val (outerV, _) = envRec.GetBindingValue("@outer")
               outerV.locset.foldLeft(AbsLoc.Bot)((res, outerLoc) => res + visit(outerLoc))
             }
           )(AbsLoc)
@@ -344,14 +354,14 @@ object DefaultContext extends AbsContextUtil {
     // Store
     ////////////////////////////////////////////////////////////////
     def varStoreLocal(loc: Loc, x: String, value: AbsValue): AbsContext = {
-      val env = this.getOrElse(loc, AbsDecEnvRec.Bot)
+      val envRec = this.getOrElse(loc, AbsLexEnv.Bot).normEnv.record.decEnvRec
       val AT = AbsBool.True
       val AF = AbsBool.False
-      val (newEnv, _) = env.SetMutableBinding(x, value)
-      val ctx1 = update(loc, newEnv)
-      val (outerV, _) = env.GetBindingValue("@outer")
+      val (newEnvRec, _) = envRec.SetMutableBinding(x, value)
+      val ctx1 = update(loc, AbsNormalEnv(newEnvRec))
+      val (outerV, _) = envRec.GetBindingValue("@outer")
       val ctx2 =
-        if (AbsBool.False <= (env HasBinding x))
+        if (AbsBool.False <= (envRec HasBinding x))
           outerV.locset.foldLeft(Empty)((tmpH, outerLoc) => varStoreLocal(outerLoc, x, value))
         else
           AbsContext.Bot
@@ -364,7 +374,6 @@ object DefaultContext extends AbsContextUtil {
     def delete(loc: Loc, str: String): (AbsContext, AbsBool) = {
       getOrElse(loc)((this, AbsBool.Bot))(_ => {
         val test = hasOwnProperty(loc, str)
-        val targetEnv = this.getOrElse(loc, AbsDecEnvRec.Bot)
         if (AbsBool.True <= test)
           (this, AbsBool.False)
         else
@@ -373,13 +382,13 @@ object DefaultContext extends AbsContextUtil {
     }
 
     private def hasOwnProperty(loc: Loc, str: String): AbsBool = {
-      (this.getOrElse(loc, AbsDecEnvRec.Bot) HasBinding str)
+      (this.getOrElse(loc, AbsLexEnv.Bot).normEnv.record.decEnvRec HasBinding str)
     }
 
     ////////////////////////////////////////////////////////////////
     // pure local environment
     ////////////////////////////////////////////////////////////////
-    def pureLocal: AbsDecEnvRec = getOrElse(PURE_LOCAL, AbsDecEnvRec.Bot)
-    def subsPureLocal(env: AbsDecEnvRec): AbsContext = update(PURE_LOCAL, env)
+    def pureLocal: AbsLexEnv = getOrElse(PURE_LOCAL, AbsLexEnv.Bot)
+    def subsPureLocal(env: AbsLexEnv): AbsContext = update(PURE_LOCAL, env)
   }
 }

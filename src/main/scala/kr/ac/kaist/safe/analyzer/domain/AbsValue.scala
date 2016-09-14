@@ -105,15 +105,11 @@ object DefaultValue extends AbsValueUtil {
       }
     }
 
-    def subsLoc(locR: Loc, locO: Loc): AbsValue = {
-      if (this.locset contains locR) Dom(this.pvalue, (this.locset - locR) + locO)
-      else this
-    }
+    def subsLoc(locR: Loc, locO: Loc): AbsValue =
+      Dom(this.pvalue, this.locset.subsLoc(locR, locO))
 
-    def weakSubsLoc(locR: Loc, locO: Loc): AbsValue = {
-      if (this.locset contains locR) Dom(this.pvalue, this.locset + locO)
-      else this
-    }
+    def weakSubsLoc(locR: Loc, locO: Loc): AbsValue =
+      Dom(this.pvalue, this.locset.weakSubsLoc(locR, locO))
 
     def typeCount: Int = {
       if (this.locset.isBottom)

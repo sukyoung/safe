@@ -30,9 +30,9 @@ case class Initialize(cfg: CFG) {
       SystemLoc("Dummy", Old) -> AbsObjectUtil.Bot // TODO If delete, not working because not allowed update to bottom heap
     ))
 
-    val initCtx = AbsContext(HashMap(
-      PredefLoc.PURE_LOCAL -> globalPureLocalEnv,
-      PredefLoc.COLLAPSED -> AbsDecEnvRec.Empty
+    val initCtx = AbsContext(HashMap[Loc, AbsLexEnv](
+      PredefLoc.PURE_LOCAL -> AbsNormalEnv(globalPureLocalEnv),
+      PredefLoc.COLLAPSED -> AbsNormalEnv(AbsDecEnvRec.Empty)
     ), OldAddrSet.Empty)
 
     val modeledHeap = BuiltinGlobal.initHeap(initHeap, cfg)

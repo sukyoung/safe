@@ -21,7 +21,28 @@ trait LexEnv
 ////////////////////////////////////////////////////////////////////////////////
 // lexical environment abstract domain
 ////////////////////////////////////////////////////////////////////////////////
-trait AbsLexEnv extends AbsDomain[LexEnv, AbsLexEnv]
+trait AbsLexEnv extends AbsDomain[LexEnv, AbsLexEnv] {
+  val normEnv: AbsNormalEnv
+  val nullEnv: AbsNullEnv
+
+  // 10.2.2.1 GetIdentifierReference(lex, name, strict) + 8.7.1 GetValue (V)
+  def getId(name: String, strict: Boolean)(st: State): (AbsValue, Set[Exception])
+
+  // 10.2.2.1 GetIdentifierReference(lex, name, strict) + 8.7.2 PutValue (V, W)
+  // def setId(name: String, value: AbsValue)(st: State): (State, Set[Exception])
+
+  // 10.2.2.2 NewDeclarativeEnvironment(E)
+  // def NewDeclarativeEnvironment: NormalEnv
+
+  // 10.2.2.3 NewObjectEnvironment (O, E)
+  // XXX: we do not support
+
+  // substitute locR by locO
+  def subsLoc(locR: Loc, locO: Loc): AbsLexEnv
+
+  // weak substitute locR by locO
+  def weakSubsLoc(locR: Loc, locO: Loc): AbsLexEnv
+}
 trait AbsLexEnvUtil extends AbsDomainUtil[LexEnv, AbsLexEnv] {
   def apply(env: AbsNormalEnv): AbsLexEnv
   def apply(env: AbsNullEnv): AbsLexEnv
@@ -76,5 +97,45 @@ object DefaultLexEnv extends AbsLexEnvUtil {
     }
 
     override def toString: String = "" // TODO
+
+    def getId(name: String, strict: Boolean)(st: State): (AbsValue, Set[Exception]) = {
+      var visited = AbsLoc.Bot
+      val heap = st.heap
+      val ctx = st.context
+      var excSet = ExcSetEmpty
+      def visit(env: AbsLexEnv): AbsValue = {
+        val envRec = env.normEnv.record
+        val exists = envRec.HasBinding(name)(heap)
+
+        if (nullEnv.isTop) excSet += ReferenceError
+
+        exists.map[AbsValue](thenV = {
+          val (v, e) = envRec.GetBindingValue(name, strict)(heap)
+          excSet ++ e
+          v
+        }, elseV = {
+          env.normEnv.outer.foldLeft(AbsValue.Bot) {
+            case (v, loc) => {
+              val newV =
+                if (visited.contains(loc)) AbsValue.Bot
+                else {
+                  visited += loc
+                  visit(ctx.getOrElse(loc, AbsLexEnv.Bot))
+                }
+              v + newV
+            }
+          }
+        })(AbsValue)
+      }
+      (visit(this), excSet)
+    }
+    // def setId(name: String, value: AbsValue)(st: State): (State, Set[Exception])
+    // def NewDeclarativeEnvironment: NormalEnv
+
+    def subsLoc(locR: Loc, locO: Loc): AbsLexEnv =
+      Dom(normEnv.subsLoc(locR, locO), nullEnv)
+
+    def weakSubsLoc(locR: Loc, locO: Loc): AbsLexEnv =
+      Dom(normEnv.weakSubsLoc(locR, locO), nullEnv)
   }
 }

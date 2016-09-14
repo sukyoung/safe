@@ -77,6 +77,10 @@ trait AbsLoc extends AbsDomain[Loc, AbsLoc] {
   def isConcrete: Boolean
   def +(loc: Loc): AbsLoc
   def -(loc: Loc): AbsLoc
+  /* substitute locR by locO */
+  def subsLoc(locR: Loc, locO: Loc): AbsLoc
+  /* weakly substitute locR by locO, that is keep locR together */
+  def weakSubsLoc(locR: Loc, locO: Loc): AbsLoc
 }
 
 trait AbsLocUtil extends AbsDomainUtil[Loc, AbsLoc]
@@ -138,6 +142,13 @@ case class DefaultLoc(
     def +(loc: Loc): AbsLoc = Dom(set + loc)
 
     def -(loc: Loc): AbsLoc = Dom(set - loc)
+
+    def subsLoc(locR: Loc, locO: Loc): AbsLoc = {
+      if (set contains locR) Dom(set - locR + locO)
+      else this
+    }
+
+    def weakSubsLoc(locR: Loc, locO: Loc): AbsLoc = Dom(set + locO)
   }
   object Dom {
     def apply(seq: Loc*): Dom = Dom(seq.toSet)

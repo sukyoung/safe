@@ -78,8 +78,8 @@ case class OldAddrSet(mayOld: Set[Address], mustOld: Set[Address]) {
         "mustOld: (" + mustOld.mkString(", ") + ")"
   }
 
-  def fixOldify(env: AbsDecEnvRec, mayOld: Set[Address], mustOld: Set[Address]): (OldAddrSet, AbsDecEnvRec) = {
-    if (this.isBottom) (OldAddrSet.Bot, AbsDecEnvRec.Bot)
+  def fixOldify(env: AbsLexEnv, mayOld: Set[Address], mustOld: Set[Address]): (OldAddrSet, AbsLexEnv) = {
+    if (this.isBottom) (OldAddrSet.Bot, AbsLexEnv.Bot)
     else {
       mayOld.foldLeft((this, env))((res, a) => {
         val (resCtx, resEnv) = res

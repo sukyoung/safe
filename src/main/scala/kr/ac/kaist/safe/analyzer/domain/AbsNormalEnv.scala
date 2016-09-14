@@ -12,6 +12,7 @@
 package kr.ac.kaist.safe.analyzer.domain
 
 import kr.ac.kaist.safe.analyzer.domain.Utils._
+import scala.collection.immutable.HashSet
 
 /* 10.2 Lexical Environments */
 
@@ -24,20 +25,22 @@ case class NormalEnv(record: EnvRec, outer: Loc) extends LexEnv
 // normal lexical environment abstract domain
 ////////////////////////////////////////////////////////////////////////////////
 trait AbsNormalEnv extends AbsDomain[NormalEnv, AbsNormalEnv] {
-  // 10.2.2.1 GetIdentifierReference(lex, name, strict) + 8.7.1 GetValue (V)
-  // def getId(name: String)(st: State): (AbsValue, Set[Exception])
+  val record: AbsEnvRec
+  val outer: AbsLoc
 
-  // 10.2.2.1 GetIdentifierReference(lex, name, strict) + 8.7.2 PutValue (V, W)
-  // def setId(name: String, value: AbsValue)(st: State): (State, Set[Exception])
+  // substitute locR by locO
+  def subsLoc(locR: Loc, locO: Loc): AbsNormalEnv
 
-  // 10.2.2.2 NewDeclarativeEnvironment(E)
-  // def NewDeclarativeEnvironment: NormalEnv
-
-  // 10.2.2.3 NewObjectEnvironment (O, E)
-  // XXX: we do not support
+  // weak substitute locR by locO
+  def weakSubsLoc(locR: Loc, locO: Loc): AbsNormalEnv
 }
 
-trait AbsNormalEnvUtil extends AbsDomainUtil[NormalEnv, AbsNormalEnv]
+trait AbsNormalEnvUtil extends AbsDomainUtil[NormalEnv, AbsNormalEnv] {
+  def apply(
+    record: AbsEnvRec,
+    outer: AbsLoc = AbsLoc.Bot // TODO delete default input
+  ): AbsNormalEnv
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // default normal lexical environment abstract domain
@@ -83,8 +86,10 @@ object DefaultNormalEnv extends AbsNormalEnvUtil {
 
     override def toString: String = "" // TODO
 
-    // def getId(name: String)(st: State): (AbsValue, Set[Exception])
-    // def setId(name: String, value: AbsValue)(st: State): (State, Set[Exception])
-    // def NewDeclarativeEnvironment: NormalEnv
+    def subsLoc(locR: Loc, locO: Loc): AbsNormalEnv =
+      Dom(record.subsLoc(locR, locO), outer.subsLoc(locR, locO))
+
+    def weakSubsLoc(locR: Loc, locO: Loc): AbsNormalEnv =
+      Dom(record.weakSubsLoc(locR, locO), outer.subsLoc(locR, locO))
   }
 }
