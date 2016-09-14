@@ -117,7 +117,7 @@ object DefaultEnvRec extends AbsEnvRecUtil {
       )
     }
 
-    override def toString: String = "" // TODO
+    override def toString: String = decEnvRec.toString // TODO
 
     // 10.2.1.2.1 HasBinding(N)
     def HasBinding(name: String)(heap: Heap): AbsBool =

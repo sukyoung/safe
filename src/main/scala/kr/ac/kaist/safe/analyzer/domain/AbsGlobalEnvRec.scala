@@ -141,7 +141,7 @@ object DefaultGlobalEnvRec extends AbsGlobalEnvRecUtil {
           //    [[Writable]]: true, [[Enumerable]]: true , [[Configurable]]:
           //    configValue}, and true as arguments.
           // TODO refactoring after defining [[DefineOwnProperty]] for Obj.
-          (this, heap.varStoreGlobal(name, AbsUndef.Top))
+          (this, heap.propStore(BuiltinGlobal.loc, AbsString(name), AbsUndef.Top))
         } else { (Bot, Heap.Bot) }
     }
 
@@ -160,7 +160,7 @@ object DefaultGlobalEnvRec extends AbsGlobalEnvRecUtil {
         // 3. Call the [[Put]] internal method of bindings with
         //    arguments N, V, and S.
         // TODO refactoring after defining [[Put]] for Obj.
-        (this, heap.varStoreGlobal(name, v), ExcSetEmpty)
+        (this, heap.propStore(BuiltinGlobal.loc, AbsString(name), v), ExcSetEmpty)
     }
 
     // 10.2.1.2.4 GetBindingValue(N, S)

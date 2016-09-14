@@ -66,16 +66,9 @@ trait Heap {
   def protoBase(loc: Loc, absStr: AbsString): AbsLoc
 
   ////////////////////////////////////////////////////////////////
-  // Lookup
-  ////////////////////////////////////////////////////////////////
-  def lookupGlobal(x: String): (AbsValue, Set[Exception])
-  def lookupBaseGlobal(x: String): AbsLoc
-
-  ////////////////////////////////////////////////////////////////
   // Store
   ////////////////////////////////////////////////////////////////
   def propStore(loc: Loc, absStr: AbsString, value: AbsValue): Heap
-  def varStoreGlobal(x: String, value: AbsValue): Heap
 
   ////////////////////////////////////////////////////////////////
   // Update location
@@ -447,63 +440,6 @@ class DHeap(val map: Map[Loc, Obj]) extends Heap {
   }
 
   ////////////////////////////////////////////////////////////////
-  // Lookup
-  ////////////////////////////////////////////////////////////////
-  def lookupGlobal(x: String): (AbsValue, Set[Exception]) = {
-    val valueBot = AbsValue.Bot
-    if (this domIn BuiltinGlobal.loc) {
-      val globalObj = this.getOrElse(BuiltinGlobal.loc, AbsObjectUtil.Bot)
-      val v1 =
-        if (AbsBool.True <= (globalObj domIn x))
-          globalObj.getOrElse(x)(valueBot) { _.objval.value }
-        else
-          valueBot
-      val protoLocSet = globalObj.getOrElse(IPrototype)(AbsLoc.Bot) { _.value.locset }
-      val (v2, excSet) =
-        if (AbsBool.False <= (globalObj domIn x)) {
-          val excSet = protoLocSet.foldLeft(ExcSetEmpty)((tmpExcSet, protoLoc) => {
-            if (AbsBool.False <= hasProperty(protoLoc, AbsString(x))) {
-              tmpExcSet + ReferenceError
-            } else tmpExcSet
-          })
-          val v3 = protoLocSet.foldLeft(valueBot)((tmpVal, protoLoc) => {
-            if (AbsBool.True <= hasProperty(protoLoc, AbsString(x))) {
-              tmpVal + this.proto(protoLoc, AbsString(x))
-            } else {
-              tmpVal
-            }
-          })
-          (v3, excSet)
-        } else {
-          (valueBot, ExcSetEmpty)
-        }
-      (v1 + v2, excSet)
-    } else {
-      (valueBot, ExcSetEmpty)
-    }
-  }
-
-  def lookupBaseGlobal(x: String): AbsLoc = {
-    val globalObj = this.getOrElse(BuiltinGlobal.loc, AbsObjectUtil.Bot)
-    val isDomIn = (globalObj domIn x)
-    val locSet1 =
-      if (AbsBool.True <= isDomIn)
-        AbsLoc(BuiltinGlobal.loc)
-      else
-        AbsLoc.Bot
-    val locSet2 =
-      if (AbsBool.False <= isDomIn) {
-        val protoLocSet = globalObj.getOrElse(IPrototype)(AbsLoc.Bot) { _.value.locset }
-        protoLocSet.foldLeft(AbsLoc.Bot)((res, protoLoc) => {
-          res + this.protoBase(protoLoc, AbsString(x))
-        })
-      } else {
-        AbsLoc.Bot
-      }
-    locSet1 + locSet2
-  }
-
-  ////////////////////////////////////////////////////////////////
   // Store
   ////////////////////////////////////////////////////////////////
   def propStore(loc: Loc, absStr: AbsString, value: AbsValue): Heap = {
@@ -528,22 +464,6 @@ class DHeap(val map: Map[Loc, Obj]) extends Heap {
     } else {
       Heap.Bot
     }
-  }
-
-  def varStoreGlobal(x: String, value: AbsValue): Heap = {
-    val globalLoc = BuiltinGlobal.loc
-    val obj = this.getOrElse(globalLoc, AbsObjectUtil.Bot)
-    val h1 =
-      if (AbsBool.False <= (obj domIn x))
-        this.propStore(globalLoc, AbsString(x), value)
-      else Heap.Bot
-    val h2 =
-      if (AbsBool.True <= (obj domIn x)) {
-        val oldObjVal = obj.getOrElse(x)(AbsDataProp.Bot) { _.objval }
-        val newObjVal = oldObjVal.copyWith(value)
-        this.update(globalLoc, obj.update(x, PropValue(newObjVal)))
-      } else Heap.Bot
-    h1 + h2
   }
 
   ////////////////////////////////////////////////////////////////

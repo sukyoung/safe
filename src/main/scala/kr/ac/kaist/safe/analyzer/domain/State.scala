@@ -76,7 +76,7 @@ case class State(heap: Heap, context: AbsContext) {
         val collapsedEnv = context.getOrElse(PredefLoc.COLLAPSED, AbsLexEnv.Bot)
         val (collapsedV, _) = collapsedEnv.normEnv.record.decEnvRec.GetBindingValue(x)
         (collapsedV, ExcSetEmpty)
-      case GlobalVar => heap.lookupGlobal(x)
+      case GlobalVar => AbsGlobalEnvRec.Top.GetBindingValue(x, true)(heap)
     }
   }
 
@@ -91,7 +91,7 @@ case class State(heap: Heap, context: AbsContext) {
           tmpLocSet + context.lookupBaseLocal(l, x)
         })
       case CapturedCatchVar => AbsLoc(PredefLoc.COLLAPSED)
-      case GlobalVar => heap.lookupBaseGlobal(x)
+      case GlobalVar => AbsLoc(BuiltinGlobal.loc)
     }
   }
 
@@ -121,8 +121,10 @@ case class State(heap: Heap, context: AbsContext) {
         State(heap, context.update(PredefLoc.COLLAPSED, AbsNormalEnv(newEnv)))
       case GlobalVar => {
         val h1 =
-          if (AbsBool.True <= heap.canPutVar(x)) heap.varStoreGlobal(x, value)
-          else Heap.Bot
+          if (AbsBool.True <= heap.canPutVar(x)) {
+            val (_, newH, _) = AbsGlobalEnvRec.Top.SetMutableBinding(x, value, false)(heap)
+            newH
+          } else Heap.Bot
         val h2 =
           if (AbsBool.False <= heap.canPutVar(x)) heap
           else Heap.Bot

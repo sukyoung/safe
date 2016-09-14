@@ -96,7 +96,7 @@ object DefaultLexEnv extends AbsLexEnvUtil {
       )
     }
 
-    override def toString: String = "" // TODO
+    override def toString: String = normEnv.toString
 
     def getId(name: String, strict: Boolean)(st: State): (AbsValue, Set[Exception]) = {
       var visited = AbsLoc.Bot

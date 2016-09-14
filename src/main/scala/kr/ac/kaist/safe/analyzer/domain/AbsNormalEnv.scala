@@ -84,7 +84,7 @@ object DefaultNormalEnv extends AbsNormalEnvUtil {
       )
     }
 
-    override def toString: String = "" // TODO
+    override def toString: String = record.toString // TODO
 
     def subsLoc(locR: Loc, locO: Loc): AbsNormalEnv =
       Dom(record.subsLoc(locR, locO), outer.subsLoc(locR, locO))
