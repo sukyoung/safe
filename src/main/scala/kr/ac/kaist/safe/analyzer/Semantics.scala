@@ -558,31 +558,27 @@ class Semantics(
             funObj.getOrElse[Set[FunctionId]](ICall)(HashSet[FunctionId]()) { _.fidset }
         }
         fidSet.foreach((fid) => {
-          val newPureLocal = AbsDecEnvRec.newPureLocal(AbsValue(locR), thisLocSet)
-          val callerCtxSet = callerCallCtx.newCallContext(st1.heap, cfg, fid, locR, thisLocSet, newPureLocal, Some(i.addr1))
-          callerCtxSet.foreach {
-            case (newCallCtx, newEnv) => {
-              cfg.getFunc(fid) match {
-                case Some(funCFG) => {
-                  val scopeValue = funObj.getOrElse(IScope)(AbsValue.Bot) { _.value }
-                  val (newEnv2, _) = newEnv
-                    .CreateMutableBinding(funCFG.argumentsName)
-                    .fold(newEnv)((e: AbsDecEnvRec) => e)
-                    .SetMutableBinding(funCFG.argumentsName, argVal)
-                  val (newEnv3, _) = newEnv2
-                    .CreateMutableBinding("@scope")
-                    .fold(newEnv2)((e: AbsDecEnvRec) => e)
-                    .SetMutableBinding("@scope", scopeValue)
-                  val entryCP = ControlPoint(funCFG.entry, newCallCtx)
-                  val exitCP = ControlPoint(funCFG.exit, newCallCtx)
-                  val exitExcCP = ControlPoint(funCFG.exitExc, newCallCtx)
-                  addCallEdge(cp, entryCP, OldAddrSet.Empty, AbsLexEnv(newEnv3))
-                  addReturnEdge(exitCP, cpAfterCall, st1.context.old, oldLocalEnv)
-                  addReturnEdge(exitExcCP, cpAfterCatch, st1.context.old, oldLocalEnv)
-                }
-                case None => excLog.signal(UndefinedFunctionCallError(i.ir))
-              }
+          val newEnv = AbsDecEnvRec.newPureLocal(AbsValue(locR), thisLocSet)
+          val newCallCtx = callerCallCtx.newCallContext(cfg, fid, locR)
+          cfg.getFunc(fid) match {
+            case Some(funCFG) => {
+              val scopeValue = funObj.getOrElse(IScope)(AbsValue.Bot) { _.value }
+              val (newEnv2, _) = newEnv
+                .CreateMutableBinding(funCFG.argumentsName)
+                .fold(newEnv)((e: AbsDecEnvRec) => e)
+                .SetMutableBinding(funCFG.argumentsName, argVal)
+              val (newEnv3, _) = newEnv2
+                .CreateMutableBinding("@scope")
+                .fold(newEnv2)((e: AbsDecEnvRec) => e)
+                .SetMutableBinding("@scope", scopeValue)
+              val entryCP = ControlPoint(funCFG.entry, newCallCtx)
+              val exitCP = ControlPoint(funCFG.exit, newCallCtx)
+              val exitExcCP = ControlPoint(funCFG.exitExc, newCallCtx)
+              addCallEdge(cp, entryCP, OldAddrSet.Empty, AbsLexEnv(newEnv3))
+              addReturnEdge(exitCP, cpAfterCall, st1.context.old, oldLocalEnv)
+              addReturnEdge(exitExcCP, cpAfterCatch, st1.context.old, oldLocalEnv)
             }
+            case None => excLog.signal(UndefinedFunctionCallError(i.ir))
           }
         })
       })

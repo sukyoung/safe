@@ -20,11 +20,11 @@ import scala.collection.immutable.HashSet
 import scala.util.{ Try, Failure, Success }
 
 abstract class CallContext {
-  def newCallContext(h: Heap, cfg: CFG, calleeFid: FunctionId, scopeLoc: Loc, thisLocSet: AbsLoc,
-    newPureLocal: AbsDecEnvRec, l2: Option[Address] = None): Set[(CallContext, AbsDecEnvRec)] =
-    newCallContext(h, cfg, calleeFid, scopeLoc, thisLocSet, newPureLocal)
-  def newCallContext(h: Heap, cfg: CFG, calleeFid: FunctionId, scopeLoc: Loc,
-    thisLocSet: AbsLoc, newPureLocal: AbsDecEnvRec): Set[(CallContext, AbsDecEnvRec)]
+  def newCallContext(
+    cfg: CFG,
+    calleeFid: FunctionId,
+    scopeLoc: Loc
+  ): CallContext
 }
 
 /* Interface */
@@ -32,15 +32,18 @@ case class CallContextManager(callsiteDepth: Int = 0) {
   val globalCallContext: CallContext = KCallsite(callsiteDepth, List[Address]())
 
   private case class KCallsite(depth: Int, callsiteList: List[Address]) extends CallContext {
-    def newCallContext(h: Heap, cfg: CFG, calleeFid: FunctionId, scopeLoc: Loc,
-      thisLocSet: AbsLoc, newPureLocal: AbsDecEnvRec): Set[(CallContext, AbsDecEnvRec)] = {
+    def newCallContext(
+      cfg: CFG,
+      calleeFid: FunctionId,
+      scopeLoc: Loc
+    ): CallContext = {
       val k: Int =
         cfg.getFunc(calleeFid) match {
           case Some(fun) if fun.isUser => depth
           case _ => depth + 1 // additional depth for built-in calls.
         }
       val newCallsiteList = (scopeLoc.address :: this.callsiteList).take(k)
-      HashSet((KCallsite(depth, newCallsiteList), newPureLocal))
+      KCallsite(depth, newCallsiteList)
     }
 
     override def toString: String = "(" + callsiteList.mkString(", ") + ")"
