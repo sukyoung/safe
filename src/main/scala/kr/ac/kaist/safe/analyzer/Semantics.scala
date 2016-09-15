@@ -111,14 +111,11 @@ class Semantics(
           val objEnv = env.record.decEnvRec.GetBindingValue("@scope") match {
             case (value, _) => AbsLexEnv.NewDeclarativeEnvironment(value.locset)
           }
-          val (envRec2, _) = env.record.decEnvRec.DeleteBinding("@scope")
-          val ctx2 = ctx1.subsPureLocal(AbsLexEnv(envRec2))
-          val ctx3 = envRec2.GetBindingValue("@env") match {
-            case (value, _) =>
-              value.locset.foldLeft(AbsContext.Bot)((hi, locEnv) => {
-                hi + ctx2.update(locEnv, objEnv)
-              })
-          }
+          val (envRec, _) = env.record.decEnvRec.DeleteBinding("@scope")
+          val ctx2 = ctx1.subsPureLocal(env.copyWith(record = envRec))
+          val ctx3 = env.outer.foldLeft(AbsContext.Bot)((hi, locEnv) => {
+            hi + ctx2.update(locEnv, objEnv)
+          })
           State(st.heap, ctx3.setOldAddrSet(old))
         }
       }
@@ -155,7 +152,7 @@ class Semantics(
           val (oldExcAllValue, _) = env1.GetBindingValue("@exception_all")
           val (env2, _) = env1.SetMutableBinding("@exception", excValue)
           val (env3, _) = env2.SetMutableBinding("@exception_all", excValue + oldExcAllValue)
-          val ctx2 = ctx1.subsPureLocal(AbsLexEnv(env3))
+          val ctx2 = ctx1.subsPureLocal(envL.copyWith(record = env3))
           State(st.heap, ctx2.setOldAddrSet(c2))
         }
       case (ExitExc(f), _) =>
@@ -364,8 +361,7 @@ class Semantics(
 
         val n = AbsNumber(f.argVars.length)
         val localEnv = st2.context.pureLocal
-        val (scope, _) = localEnv.record.decEnvRec.GetBindingValue("@env")
-        val h3 = st2.heap.update(locR1, AbsObjectUtil.newFunctionObject(f.id, scope, locR2, n))
+        val h3 = st2.heap.update(locR1, AbsObjectUtil.newFunctionObject(f.id, localEnv.outer, locR2, n))
 
         val fVal = AbsValue(locR1)
         val fPropV = PropValue(AbsDataProp(fVal, AT, AF, AT))
@@ -393,8 +389,7 @@ class Semantics(
         val h5 = h4.update(locR2, oNew.update("constructor", fPropV, exist = true))
 
         val localEnv = st3.context.pureLocal
-        val (scope, _) = localEnv.record.decEnvRec.GetBindingValue("@env")
-        val oEnv = AbsLexEnv.NewDeclarativeEnvironment(scope.locset)
+        val oEnv = AbsLexEnv.NewDeclarativeEnvironment(localEnv.outer)
         val oEnvRec2 = oEnv.record.decEnvRec
           .CreateImmutableBinding(name.text)
           .InitializeImmutableBinding(name.text, fVal)
@@ -408,8 +403,9 @@ class Semantics(
         val (excSetV, _) = localEnv.record.decEnvRec.GetBindingValue("@exception_all")
         val (excV, _) = localEnv.record.decEnvRec.GetBindingValue("@exception")
         val st1 = st.createMutableBinding(x, excV)
-        val (newEnv, _) = st1.context.pureLocal.record.decEnvRec.SetMutableBinding("@exception", excSetV)
-        val newCtx = st1.context.subsPureLocal(AbsLexEnv(newEnv))
+        val env = st1.context.pureLocal
+        val (newEnv, _) = env.record.decEnvRec.SetMutableBinding("@exception", excSetV)
+        val newCtx = st1.context.subsPureLocal(env.copyWith(record = newEnv))
         val newSt = State(st1.heap, newCtx)
         (newSt, State.Bot)
       }
@@ -419,7 +415,7 @@ class Semantics(
           if (!v.isBottom) {
             val localEnv = st.context.pureLocal
             val (localEnv2, _) = localEnv.record.decEnvRec.SetMutableBinding("@return", v)
-            st.context.subsPureLocal(AbsLexEnv(localEnv2))
+            st.context.subsPureLocal(localEnv.copyWith(record = localEnv2))
           } else AbsContext.Bot
         val newExcSt = st.raiseException(excSet)
         (State(st.heap, ctx1), excSt + newExcSt)
@@ -427,7 +423,7 @@ class Semantics(
       case CFGReturn(_, _, None) => {
         val localEnv = st.context.pureLocal
         val (localEnv2, _) = localEnv.record.decEnvRec.SetMutableBinding("@return", AbsUndef.Top)
-        val ctx1 = st.context.subsPureLocal(AbsLexEnv(localEnv2))
+        val ctx1 = st.context.subsPureLocal(localEnv.copyWith(record = localEnv2))
         val newSt = State(st.heap, ctx1)
         (newSt, excSt)
       }
@@ -440,7 +436,7 @@ class Semantics(
         val (newEnv3, _) = newEnv2
           .CreateMutableBinding("@return").fold(newEnv2)((e: AbsDecEnvRec) => e)
           .SetMutableBinding("@return", AbsUndef.Top)
-        val ctx1 = st.context.subsPureLocal(AbsLexEnv(newEnv3))
+        val ctx1 = st.context.subsPureLocal(localEnv.copyWith(record = newEnv3))
         val newExcSt = st.raiseException(excSet)
 
         (State.Bot, excSt + State(st.heap, ctx1) + newExcSt)
@@ -558,23 +554,21 @@ class Semantics(
             funObj.getOrElse[Set[FunctionId]](ICall)(HashSet[FunctionId]()) { _.fidset }
         }
         fidSet.foreach((fid) => {
-          val newEnv = AbsDecEnvRec.newPureLocal(AbsValue(locR), thisLocSet)
+          val newEnv = AbsLexEnv.newPureLocal(AbsLoc(locR), thisLocSet)
           val newCallCtx = callerCallCtx.newCallContext(cfg, fid, locR)
           cfg.getFunc(fid) match {
             case Some(funCFG) => {
               val scopeValue = funObj.getOrElse(IScope)(AbsValue.Bot) { _.value }
-              val (newEnv2, _) = newEnv
+              val (newEnv2, _) = newEnv.record.decEnvRec
                 .CreateMutableBinding(funCFG.argumentsName)
-                .fold(newEnv)((e: AbsDecEnvRec) => e)
                 .SetMutableBinding(funCFG.argumentsName, argVal)
               val (newEnv3, _) = newEnv2
                 .CreateMutableBinding("@scope")
-                .fold(newEnv2)((e: AbsDecEnvRec) => e)
                 .SetMutableBinding("@scope", scopeValue)
               val entryCP = ControlPoint(funCFG.entry, newCallCtx)
               val exitCP = ControlPoint(funCFG.exit, newCallCtx)
               val exitExcCP = ControlPoint(funCFG.exitExc, newCallCtx)
-              addCallEdge(cp, entryCP, OldAddrSet.Empty, AbsLexEnv(newEnv3))
+              addCallEdge(cp, entryCP, OldAddrSet.Empty, newEnv.copyWith(record = newEnv3))
               addReturnEdge(exitCP, cpAfterCall, st1.context.old, oldLocalEnv)
               addReturnEdge(exitExcCP, cpAfterCatch, st1.context.old, oldLocalEnv)
             }

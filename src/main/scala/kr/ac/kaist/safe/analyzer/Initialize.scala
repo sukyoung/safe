@@ -22,16 +22,15 @@ import scala.collection.immutable.{ HashMap }
 case class Initialize(cfg: CFG) {
   private val AT = AbsBool.True
   def state: State = {
-    val (globalPureLocalEnv, _) = AbsDecEnvRec
-      .newPureLocal(AbsValue(Null), AbsLoc(BuiltinGlobal.loc))
-      .DeleteBinding("@return")
-
+    val globalLocSet = AbsLoc(BuiltinGlobal.loc)
+    val globalPureLocalEnv = AbsLexEnv.newPureLocal(globalLocSet, globalLocSet)
     val initHeap = Heap(HashMap(
       SystemLoc("Dummy", Old) -> AbsObjectUtil.Bot // TODO If delete, not working because not allowed update to bottom heap
     ))
 
     val initCtx = AbsContext(HashMap[Loc, AbsLexEnv](
-      PredefLoc.PURE_LOCAL -> AbsLexEnv(globalPureLocalEnv),
+      PredefLoc.GLOBAL_ENV -> AbsLexEnv(AbsGlobalEnvRec.Top),
+      PredefLoc.PURE_LOCAL -> globalPureLocalEnv,
       PredefLoc.COLLAPSED -> AbsLexEnv(AbsDecEnvRec.Empty)
     ), OldAddrSet.Empty)
 

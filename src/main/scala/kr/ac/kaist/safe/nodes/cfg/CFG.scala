@@ -95,6 +95,7 @@ class CFG(
 
   // system address set
   private var systemAddrSet: Set[Address] = HashSet(
+    GLOBAL_ENV.address,
     PURE_LOCAL.address,
     COLLAPSED.address
   )

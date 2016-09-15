@@ -12,7 +12,7 @@
 package kr.ac.kaist.safe.analyzer.domain
 
 import kr.ac.kaist.safe.analyzer.domain.Utils._
-import scala.collection.immutable.HashSet
+import scala.collection.immutable.{ HashSet, HashMap }
 
 /* 10.2 Lexical Environments */
 
@@ -60,6 +60,9 @@ trait AbsLexEnvUtil extends AbsDomainUtil[LexEnv, AbsLexEnv] {
 
   // 10.2.2.3 NewObjectEnvironment (O, E)
   // XXX: we do not support
+
+  // create new pure-local lexical environment.
+  def newPureLocal(locSet: AbsLoc, thisLocSet: AbsLoc): AbsLexEnv
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -117,7 +120,10 @@ object DefaultLexEnv extends AbsLexEnvUtil {
       )
     }
 
-    override def toString: String = record.toString // TODO
+    override def toString: String = {
+      record.toString +
+        s"outer: $outer, $nullOuter"
+    }
 
     def copyWith(
       record: AbsEnvRec = this.record,
@@ -167,6 +173,16 @@ object DefaultLexEnv extends AbsLexEnvUtil {
       Dom(record.weakSubsLoc(locR, locO), outer.subsLoc(locR, locO), nullOuter)
   }
 
-  def NewDeclarativeEnvironment(locSet: AbsLoc): AbsLexEnv =
-    Dom(AbsDecEnvRec.Empty, locSet, AbsAbsent.Bot)
+  def NewDeclarativeEnvironment(outer: AbsLoc): AbsLexEnv =
+    Dom(AbsDecEnvRec.Empty, outer, AbsAbsent.Bot)
+
+  def newPureLocal(outer: AbsLoc, thisLocSet: AbsLoc): AbsLexEnv = {
+    val envRec = AbsDecEnvRec(HashMap(
+      "@this" -> (AbsBinding(thisLocSet), AbsAbsent.Bot),
+      "@exception" -> (AbsBinding(AbsUndef.Top), AbsAbsent.Top),
+      "@exception_all" -> (AbsBinding(AbsUndef.Top), AbsAbsent.Top),
+      "@return" -> (AbsBinding(AbsUndef.Top), AbsAbsent.Bot)
+    ))
+    Dom(envRec, outer, AbsAbsent.Bot)
+  }
 }

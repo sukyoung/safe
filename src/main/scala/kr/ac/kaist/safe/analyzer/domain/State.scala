@@ -46,7 +46,7 @@ case class State(heap: Heap, context: AbsContext) {
       val excValue = AbsValue(newExcSet)
       val (localEnv2, _) = localEnv.record.decEnvRec.SetMutableBinding("@exception", excValue)
       val (localEnv3, _) = localEnv2.SetMutableBinding("@exception_all", excValue + oldValue)
-      val newCtx = context.subsPureLocal(AbsLexEnv(localEnv3))
+      val newCtx = context.subsPureLocal(localEnv.copyWith(record = localEnv3))
       State(heap, newCtx)
     }
   }
@@ -67,8 +67,7 @@ case class State(heap: Heap, context: AbsContext) {
         val (v, _) = localEnv.record.decEnvRec.GetBindingValue(x)
         (v, ExcSetEmpty)
       case CapturedVar =>
-        val (envV, _) = localEnv.record.decEnvRec.GetBindingValue("@env")
-        val value = envV.locset.foldLeft(valueBot)((tmpVal, envLoc) => {
+        val value = localEnv.outer.foldLeft(valueBot)((tmpVal, envLoc) => {
           tmpVal + context.lookupLocal(envLoc, x)
         })
         (value, ExcSetEmpty)
@@ -86,8 +85,7 @@ case class State(heap: Heap, context: AbsContext) {
       case PureLocalVar => AbsLoc(PredefLoc.PURE_LOCAL)
       case CapturedVar =>
         val localEnv = context.pureLocal
-        val (envV, _) = localEnv.record.decEnvRec.GetBindingValue("@env")
-        envV.locset.foldLeft(AbsLoc.Bot)((tmpLocSet, l) => {
+        localEnv.outer.foldLeft(AbsLoc.Bot)((tmpLocSet, l) => {
           tmpLocSet + context.lookupBaseLocal(l, x)
         })
       case CapturedCatchVar => AbsLoc(PredefLoc.COLLAPSED)
@@ -102,14 +100,14 @@ case class State(heap: Heap, context: AbsContext) {
     val x = id.text
     id.kind match {
       case PureLocalVar =>
-        val env = context.pureLocal.record.decEnvRec
-        val (newEnv, _) = env
-          .CreateMutableBinding(x).fold(env)((e: AbsDecEnvRec) => e)
+        val env = context.pureLocal
+        val envRec = env.record.decEnvRec
+        val (newEnv, _) = envRec
+          .CreateMutableBinding(x).fold(envRec)((e: AbsDecEnvRec) => e)
           .SetMutableBinding(x, value)
-        State(heap, context.subsPureLocal(AbsLexEnv(newEnv)))
+        State(heap, context.subsPureLocal(env.copyWith(record = newEnv)))
       case CapturedVar =>
-        val (envV, _) = context.pureLocal.record.decEnvRec.GetBindingValue("@env")
-        val newCtx = envV.locset.foldLeft(context)((tmpCtx, loc) => {
+        val newCtx = context.pureLocal.outer.foldLeft(context)((tmpCtx, loc) => {
           tmpCtx + tmpCtx.varStoreLocal(loc, x, value)
         })
         State(heap, newCtx)
@@ -140,19 +138,19 @@ case class State(heap: Heap, context: AbsContext) {
     val x = id.text
     id.kind match {
       case PureLocalVar =>
-        val env = context.pureLocal.record.decEnvRec
-        val (newEnv, _) = env
-          .CreateMutableBinding(x).fold(env)((e: AbsDecEnvRec) => e)
+        val env = context.pureLocal
+        val envRec = env.record.decEnvRec
+        val (newEnv, _) = envRec
+          .CreateMutableBinding(x).fold(envRec)((e: AbsDecEnvRec) => e)
           .SetMutableBinding(x, value)
-        State(heap, context.subsPureLocal(AbsLexEnv(newEnv)))
+        State(heap, context.subsPureLocal(env.copyWith(record = newEnv)))
       case CapturedVar =>
         val bind = AbsBinding(value)
-        val (envV, _) = context.pureLocal.record.decEnvRec.GetBindingValue("@env")
-        val newCtx = envV.locset.foldLeft(AbsContext.Bot)((tmpCtx, loc) => {
+        val newCtx = context.pureLocal.outer.foldLeft(AbsContext.Bot)((tmpCtx, loc) => {
           val env = context.getOrElse(loc, AbsLexEnv.Bot).record.decEnvRec
           val (newEnv, _) = env
             .CreateMutableBinding(x).fold(env)((e: AbsDecEnvRec) => e)
-            .SetMutableBinding(x, envV)
+            .SetMutableBinding(x, context.pureLocal.outer)
           tmpCtx + context.update(loc, AbsLexEnv(newEnv))
         })
         State(heap, newCtx)
