@@ -29,17 +29,17 @@ trait AbsLexEnv extends AbsDomain[LexEnv, AbsLexEnv] {
   val outer: AbsLoc
   val nullOuter: AbsAbsent
 
+  def copyWith(
+    record: AbsEnvRec = this.record,
+    outer: AbsLoc = this.outer,
+    nullOuter: AbsAbsent = this.nullOuter
+  ): AbsLexEnv
+
   // 10.2.2.1 GetIdentifierReference(lex, name, strict) + 8.7.1 GetValue (V)
   def getId(name: String, strict: Boolean)(st: State): (AbsValue, Set[Exception])
 
   // 10.2.2.1 GetIdentifierReference(lex, name, strict) + 8.7.2 PutValue (V, W)
   // def setId(name: String, value: AbsValue)(st: State): (State, Set[Exception])
-
-  // 10.2.2.2 NewDeclarativeEnvironment(E)
-  // def NewDeclarativeEnvironment: NormalEnv
-
-  // 10.2.2.3 NewObjectEnvironment (O, E)
-  // XXX: we do not support
 
   // substitute locR by locO
   def subsLoc(locR: Loc, locO: Loc): AbsLexEnv
@@ -54,6 +54,12 @@ trait AbsLexEnvUtil extends AbsDomainUtil[LexEnv, AbsLexEnv] {
     outer: AbsLoc = AbsLoc.Bot,
     nullOuter: AbsAbsent = AbsAbsent.Top
   ): AbsLexEnv
+
+  // 10.2.2.2 NewDeclarativeEnvironment(E)
+  def NewDeclarativeEnvironment(locSet: AbsLoc): AbsLexEnv
+
+  // 10.2.2.3 NewObjectEnvironment (O, E)
+  // XXX: we do not support
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -113,6 +119,12 @@ object DefaultLexEnv extends AbsLexEnvUtil {
 
     override def toString: String = record.toString // TODO
 
+    def copyWith(
+      record: AbsEnvRec = this.record,
+      outer: AbsLoc = this.outer,
+      nullOuter: AbsAbsent = this.nullOuter
+    ): AbsLexEnv = Dom(record, outer, nullOuter)
+
     def getId(name: String, strict: Boolean)(st: State): (AbsValue, Set[Exception]) = {
       var visited = AbsLoc.Bot
       val heap = st.heap
@@ -144,8 +156,9 @@ object DefaultLexEnv extends AbsLexEnvUtil {
       }
       (visit(this), excSet)
     }
+
+    // TODO
     // def setId(name: String, value: AbsValue)(st: State): (State, Set[Exception])
-    // def NewDeclarativeEnvironment: NormalEnv
 
     def subsLoc(locR: Loc, locO: Loc): AbsLexEnv =
       Dom(record.subsLoc(locR, locO), outer.subsLoc(locR, locO), nullOuter)
@@ -153,4 +166,7 @@ object DefaultLexEnv extends AbsLexEnvUtil {
     def weakSubsLoc(locR: Loc, locO: Loc): AbsLexEnv =
       Dom(record.weakSubsLoc(locR, locO), outer.subsLoc(locR, locO), nullOuter)
   }
+
+  def NewDeclarativeEnvironment(locSet: AbsLoc): AbsLexEnv =
+    Dom(AbsDecEnvRec.Empty, locSet, AbsAbsent.Bot)
 }

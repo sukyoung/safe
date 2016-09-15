@@ -316,14 +316,16 @@ object DefaultContext extends AbsContextUtil {
         if (visited.contains(l)) valueBot
         else {
           visited += l
-          val envRec = this.getOrElse(l, AbsLexEnv.Bot).record.decEnvRec
+          val env = this.getOrElse(l, AbsLexEnv.Bot)
+          val envRec = env.record.decEnvRec
           val isIn = (envRec HasBinding x)
           isIn.map[AbsValue](thenV = {
             val (value, _) = envRec.GetBindingValue(x)
             value
           }, elseV = {
-            val (outerV, _) = envRec.GetBindingValue("@outer")
-            outerV.locset.foldLeft(valueBot)((tmpVal, outerLoc) => tmpVal + visit(outerLoc))
+            env.outer.locset.foldLeft(valueBot)(
+              (tmpVal, outerLoc) => tmpVal + visit(outerLoc)
+            )
           })(AbsValue)
         }
       }
@@ -336,13 +338,13 @@ object DefaultContext extends AbsContextUtil {
         if (visited.contains(l)) AbsLoc.Bot
         else {
           visited += l
-          val envRec = this.getOrElse(l, AbsLexEnv.Bot).record.decEnvRec
+          val env = this.getOrElse(l, AbsLexEnv.Bot)
+          val envRec = env.record.decEnvRec
           val isIn = (envRec HasBinding x)
           isIn.map[AbsLoc](
             thenV = AbsLoc(l),
             elseV = {
-              val (outerV, _) = envRec.GetBindingValue("@outer")
-              outerV.locset.foldLeft(AbsLoc.Bot)((res, outerLoc) => res + visit(outerLoc))
+              env.outer.foldLeft(AbsLoc.Bot)((res, outerLoc) => res + visit(outerLoc))
             }
           )(AbsLoc)
         }
@@ -354,15 +356,15 @@ object DefaultContext extends AbsContextUtil {
     // Store
     ////////////////////////////////////////////////////////////////
     def varStoreLocal(loc: Loc, x: String, value: AbsValue): AbsContext = {
-      val envRec = this.getOrElse(loc, AbsLexEnv.Bot).record.decEnvRec
+      val env = this.getOrElse(loc, AbsLexEnv.Bot)
+      val envRec = env.record.decEnvRec
       val AT = AbsBool.True
       val AF = AbsBool.False
       val (newEnvRec, _) = envRec.SetMutableBinding(x, value)
       val ctx1 = update(loc, AbsLexEnv(newEnvRec))
-      val (outerV, _) = envRec.GetBindingValue("@outer")
       val ctx2 =
         if (AbsBool.False <= (envRec HasBinding x))
-          outerV.locset.foldLeft(Empty)((tmpH, outerLoc) => varStoreLocal(outerLoc, x, value))
+          env.outer.foldLeft(Empty)((tmpH, outerLoc) => varStoreLocal(outerLoc, x, value))
         else
           AbsContext.Bot
       ctx1 + ctx2

@@ -108,15 +108,15 @@ class Semantics(
       case (_, Entry(f)) => st.context match {
         case _ if st.context.isBottom => State.Bot
         case ctx1: AbsContext => {
-          val objEnvRec = env.record.decEnvRec.GetBindingValue("@scope") match {
-            case (value, _) => AbsDecEnvRec.newDeclEnvRecord(value)
+          val objEnv = env.record.decEnvRec.GetBindingValue("@scope") match {
+            case (value, _) => AbsLexEnv.NewDeclarativeEnvironment(value.locset)
           }
           val (envRec2, _) = env.record.decEnvRec.DeleteBinding("@scope")
           val ctx2 = ctx1.subsPureLocal(AbsLexEnv(envRec2))
           val ctx3 = envRec2.GetBindingValue("@env") match {
             case (value, _) =>
               value.locset.foldLeft(AbsContext.Bot)((hi, locEnv) => {
-                hi + ctx2.update(locEnv, AbsLexEnv(objEnvRec))
+                hi + ctx2.update(locEnv, objEnv)
               })
           }
           State(st.heap, ctx3.setOldAddrSet(old))
@@ -394,11 +394,11 @@ class Semantics(
 
         val localEnv = st3.context.pureLocal
         val (scope, _) = localEnv.record.decEnvRec.GetBindingValue("@env")
-        val oEnv = AbsDecEnvRec.newDeclEnvRecord(scope)
-        val oEnv2 = oEnv
+        val oEnv = AbsLexEnv.NewDeclarativeEnvironment(scope.locset)
+        val oEnvRec2 = oEnv.record.decEnvRec
           .CreateImmutableBinding(name.text)
           .InitializeImmutableBinding(name.text, fVal)
-        val newCtx = st3.context.update(locR3, AbsLexEnv(oEnv2))
+        val newCtx = st3.context.update(locR3, oEnv.copyWith(record = oEnvRec2))
         val newSt = State(h5, newCtx).varStore(lhs, fVal)
         (newSt, excSt)
       }

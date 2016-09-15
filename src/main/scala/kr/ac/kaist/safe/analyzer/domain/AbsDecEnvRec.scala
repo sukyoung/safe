@@ -81,7 +81,6 @@ trait AbsDecEnvRecUtil extends AbsDomainUtil[DecEnvRec, AbsDecEnvRec] {
   val Empty: AbsDecEnvRec
 
   def apply(m: EnvMap, upper: Boolean = false): AbsDecEnvRec
-  def newDeclEnvRecord(outerEnv: AbsValue): AbsDecEnvRec
   def newPureLocal(envVal: AbsValue, thisLocSet: AbsLoc): AbsDecEnvRec
 }
 
@@ -429,10 +428,6 @@ object DefaultDecEnvRec extends AbsDecEnvRecUtil {
     // delete
     def -(name: String): Dom =
       update(name, (AbsBinding.Bot, AbsAbsent.Top))
-  }
-
-  def newDeclEnvRecord(outerEnv: AbsValue): AbsDecEnvRec = {
-    Empty.update("@outer", (AbsBinding(outerEnv), AbsAbsent.Bot))
   }
 
   def newPureLocal(envVal: AbsValue, thisLocSet: AbsLoc): AbsDecEnvRec = {
