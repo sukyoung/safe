@@ -42,29 +42,32 @@ case class Initialize(cfg: CFG) {
 
   def testState: State = {
     val st = state
-    val globalObj = st.heap.getOrElse(BuiltinGlobal.loc, AbsObjectUtil.Empty)
+    val globalObj = st.heap(BuiltinGlobal.loc) match {
+      case Some(obj) => obj
+      case None => AbsObjectUtil.Empty
+    }
 
     val boolBot = AbsBool.Bot
 
     val testGlobalObj =
-      globalObj.update("__BOT", PropValue.Bot)
-        .update("__TOP", PropValue(AbsDataProp.Top))
-        .update("__UInt", PropValue(AbsNumber.UInt))
-        .update("__Global", PropValue(AbsDataProp(AbsLoc(BuiltinGlobal.loc))))
-        .update("__BoolTop", PropValue(AbsBool.Top))
-        .update("__NumTop", PropValue(AbsNumber.Top))
-        .update("__StrTop", PropValue(AbsString.Top))
-        .update("__RefErrLoc", PropValue(AbsDataProp(AbsLoc(BuiltinReferenceError.loc))))
-        .update("__RangeErrLoc", PropValue(AbsDataProp(AbsLoc(BuiltinRangeError.loc))))
-        .update("__TypeErrLoc", PropValue(AbsDataProp(AbsLoc(BuiltinTypeError.loc))))
-        .update("__URIErrLoc", PropValue(AbsDataProp(AbsLoc(BuiltinURIError.loc))))
-        .update("__RefErrProtoLoc", PropValue(AbsDataProp(AbsLoc(BuiltinReferenceErrorProto.loc))))
-        .update("__RangeErrProtoLoc", PropValue(AbsDataProp(AbsLoc(BuiltinRangeErrorProto.loc))))
-        .update("__TypeErrProtoLoc", PropValue(AbsDataProp(AbsLoc(BuiltinTypeErrorProto.loc))))
-        .update("__URIErrProtoLoc", PropValue(AbsDataProp(AbsLoc(BuiltinURIErrorProto.loc))))
-        .update("__ErrProtoLoc", PropValue(AbsDataProp(AbsLoc(BuiltinErrorProto.loc))))
-        .update("__ObjConstLoc", PropValue(AbsDataProp(AbsLoc(BuiltinObject.loc))))
-        .update("__ArrayConstLoc", PropValue(AbsDataProp(AbsLoc(BuiltinArray.loc))))
+      globalObj.initializeUpdate("__BOT", AbsDataProp.Bot)
+        .initializeUpdate("__TOP", AbsDataProp(AbsPValue.Top))
+        .initializeUpdate("__UInt", AbsDataProp(AbsNumber.UInt))
+        .initializeUpdate("__Global", AbsDataProp(AbsValue(BuiltinGlobal.loc)))
+        .initializeUpdate("__BoolTop", AbsDataProp(AbsBool.Top))
+        .initializeUpdate("__NumTop", AbsDataProp(AbsNumber.Top))
+        .initializeUpdate("__StrTop", AbsDataProp(AbsString.Top))
+        .initializeUpdate("__RefErrLoc", AbsDataProp(AbsValue(BuiltinReferenceError.loc)))
+        .initializeUpdate("__RangeErrLoc", AbsDataProp(AbsValue(BuiltinRangeError.loc)))
+        .initializeUpdate("__TypeErrLoc", AbsDataProp(AbsValue(BuiltinTypeError.loc)))
+        .initializeUpdate("__URIErrLoc", AbsDataProp(AbsValue(BuiltinURIError.loc)))
+        .initializeUpdate("__RefErrProtoLoc", AbsDataProp(AbsValue(BuiltinReferenceErrorProto.loc)))
+        .initializeUpdate("__RangeErrProtoLoc", AbsDataProp(AbsValue(BuiltinRangeErrorProto.loc)))
+        .initializeUpdate("__TypeErrProtoLoc", AbsDataProp(AbsValue(BuiltinTypeErrorProto.loc)))
+        .initializeUpdate("__URIErrProtoLoc", AbsDataProp(AbsValue(BuiltinURIErrorProto.loc)))
+        .initializeUpdate("__ErrProtoLoc", AbsDataProp(AbsValue(BuiltinErrorProto.loc)))
+        .initializeUpdate("__ObjConstLoc", AbsDataProp(AbsValue(BuiltinObject.loc)))
+        .initializeUpdate("__ArrayConstLoc", AbsDataProp(AbsValue(BuiltinArray.loc)))
 
     val testHeap = st.heap.update(BuiltinGlobal.loc, testGlobalObj)
     State(testHeap, st.context)

@@ -26,8 +26,7 @@ object Helper {
 
   def arrayLenghtStore(heap: Heap, idxAbsStr: AbsString, storeV: AbsValue, l: Loc): (Heap, Set[Exception]) = {
     if (AbsString("length") <= idxAbsStr) {
-      val nOldLen = heap.getOrElse(l, AbsObjectUtil.Bot)
-        .getOrElse("length")(AbsNumber.Bot) { _.objval.value.pvalue.numval }
+      val nOldLen = heap.get(l)("length").value.pvalue.numval
       val nNewLen = typeHelper.ToUInt32(storeV)
       val nValue = typeHelper.ToNumber(storeV)
       val bCanPut = heap.canPut(l, AbsString("length"))
@@ -79,8 +78,7 @@ object Helper {
 
   def arrayIdxStore(heap: Heap, idxAbsStr: AbsString, storeV: AbsValue, l: Loc): Heap = {
     if (atrue <= idxAbsStr.isArrayIndex) {
-      val nOldLen = heap.getOrElse(l, AbsObjectUtil.Bot)
-        .getOrElse("length")(AbsNumber.Bot) { _.objval.value.pvalue.numval }
+      val nOldLen = heap.get(l)("length").value.pvalue.numval
       val idxPV = AbsPValue(idxAbsStr)
       val numPV = AbsPValue(typeHelper.ToNumber(idxPV))
       val nIndex = typeHelper.ToUInt32(AbsValue(numPV))
@@ -163,7 +161,7 @@ object Helper {
         eqVal.pvalue.boolval.map(
           thenV = boolTrueVal,
           elseV = {
-          val protoVal = h.getOrElse(l1, AbsObjectUtil.Bot).getOrElse(IPrototype)(AbsValue.Bot) { _.value }
+          val protoVal = h.get(l1)(IPrototype).value
           val v1 = protoVal.pvalue.nullval.fold(boolBotVal) { _ => boolFalseVal }
           v1 + protoVal.locset.foldLeft(AbsValue.Bot)((tmpVal, protoLoc) => tmpVal + iter(protoLoc))
         }
@@ -541,8 +539,9 @@ object Helper {
   def propLoad(objV: AbsValue, absStrSet: Set[AbsString], h: Heap): AbsValue = {
     val objLocSet = objV.locset
     val v1 = objLocSet.foldLeft(AbsValue.Bot)((tmpVal1, loc) => {
+      val tmpObj = h.get(loc)
       absStrSet.foldLeft(tmpVal1)((tmpVal2, absStr) => {
-        tmpVal2 + h.proto(loc, absStr)
+        tmpVal2 + tmpObj.Get(absStr, h)
       })
     })
     v1

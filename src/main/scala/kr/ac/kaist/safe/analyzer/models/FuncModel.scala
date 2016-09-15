@@ -41,7 +41,7 @@ class FuncModel(
               heap.getOrElse(objModel.loc)(Heap.Bot)(obj => {
                 heap.update(objModel.loc, obj.update(
                   "constructor",
-                  PropValue(AbsDataProp(AbsValue(loc), AT, AF, AT))
+                  AbsDataProp(AbsValue(loc), AT, AF, AT)
                 ))
               })
             }

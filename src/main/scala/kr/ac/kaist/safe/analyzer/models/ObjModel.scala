@@ -38,7 +38,7 @@ class ObjModel(
     h: Heap,
     cfg: CFG,
     loc: Loc,
-    obj: Obj,
+    obj: AbsObject,
     ps: List[PropDesc]
   ): Heap = {
     ps.foldLeft((h, obj)) {
@@ -49,12 +49,12 @@ class ObjModel(
         }) match {
           case (heap, value) => (heap, obj.update(
             name,
-            PropValue(AbsDataProp(
+            AbsDataProp(
               value,
               AbsBool(writable),
               AbsBool(enumerable),
               AbsBool(configurable)
-            ))
+            )
           ))
         }
       }

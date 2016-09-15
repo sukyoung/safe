@@ -15,7 +15,6 @@ import kr.ac.kaist.safe.errors.ExcLog
 import kr.ac.kaist.safe.errors.error._
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.analyzer.domain.Utils._
-import kr.ac.kaist.safe.analyzer.models._
 import kr.ac.kaist.safe.analyzer.models.builtin._
 import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.util._
@@ -185,7 +184,7 @@ class Semantics(
           val (nSt, _) = xArgVars.foldLeft((st, 0))((res, x) => {
             val (iSt, i) = res
             val vi = argV.locset.foldLeft(AbsValue.Bot)((vk, lArg) => {
-              vk + iSt.heap.proto(lArg, AbsString(i.toString))
+              vk + iSt.heap.get(lArg).Get(i.toString, iSt.heap)
             })
             (iSt.createMutableBinding(x, vi), i + 1)
           })
@@ -367,8 +366,7 @@ class Semantics(
         val h3 = st2.heap.update(locR1, AbsObjectUtil.newFunctionObject(f.id, scope, locR2, n))
 
         val fVal = AbsValue(locR1)
-        val fPropV = PropValue(AbsDataProp(fVal, AT, AF, AT))
-        val h4 = h3.update(locR2, oNew.update("constructor", fPropV, exist = true))
+        val h4 = h3.update(locR2, oNew.update("constructor", AbsDataProp(fVal, AT, AF, AT), exist = true))
 
         val newSt = State(h4, st2.context).varStore(lhs, fVal)
         (newSt, excSt)
@@ -388,8 +386,7 @@ class Semantics(
         val h4 = st3.heap.update(locR1, AbsObjectUtil.newFunctionObject(f.id, fObjValue, locR2, n))
 
         val fVal = AbsValue(locR1)
-        val fPropV = PropValue(AbsDataProp(fVal, AT, AF, AT))
-        val h5 = h4.update(locR2, oNew.update("constructor", fPropV, exist = true))
+        val h5 = h4.update(locR2, oNew.update("constructor", AbsDataProp(fVal, AT, AF, AT), exist = true))
 
         val localEnv = st3.context.pureLocal
         val (scope, _) = localEnv.GetBindingValue("@env")
@@ -549,12 +546,12 @@ class Semantics(
 
       // Draw call/return edges
       funLocSet.foreach((fLoc) => {
-        val funObj = st1.heap.getOrElse(fLoc, AbsObjectUtil.Bot)
+        val funObj = st1.heap.get(fLoc)
         val fidSet = i match {
           case _: CFGConstruct =>
-            funObj.getOrElse[Set[FunctionId]](IConstruct)(HashSet[FunctionId]()) { _.fidset }
+            funObj(IConstruct).fidset
           case _: CFGCall =>
-            funObj.getOrElse[Set[FunctionId]](ICall)(HashSet[FunctionId]()) { _.fidset }
+            funObj(ICall).fidset
         }
         fidSet.foreach((fid) => {
           val newPureLocal = AbsDecEnvRec.newPureLocal(AbsValue(locR), thisLocSet)
@@ -563,7 +560,7 @@ class Semantics(
             case (newCallCtx, newEnv) => {
               cfg.getFunc(fid) match {
                 case Some(funCFG) => {
-                  val scopeValue = funObj.getOrElse(IScope)(AbsValue.Bot) { _.value }
+                  val scopeValue = funObj(IScope).value
                   val (newEnv2, _) = newEnv
                     .CreateMutableBinding(funCFG.argumentsName)
                     .fold(newEnv)((e: AbsDecEnvRec) => e)
@@ -587,9 +584,8 @@ class Semantics(
       })
 
       val h2 = argVal.locset.foldLeft(Heap.Bot)((tmpHeap, l) => {
-        val funPropV = PropValue(AbsDataProp(funLocSet, AT, AF, AT))
-        val argObj = st1.heap.getOrElse(l, AbsObjectUtil.Bot)
-        tmpHeap + st1.heap.update(l, argObj.update("callee", funPropV))
+        val argObj = st1.heap.get(l)
+        tmpHeap + st1.heap.update(l, argObj.update("callee", AbsDataProp(funLocSet, AT, AF, AT)))
       })
 
       // exception handling
@@ -662,7 +658,7 @@ class Semantics(
                 val locSet2 = v2.locset
                 val locSet3 = locSet2.filter((l) => AT <= st.heap.hasInstance(l)(AbsBool))
                 val protoVal = locSet3.foldLeft(AbsValue.Bot)((v, l) => {
-                  v + st.heap.proto(l, AbsString("prototype"))
+                  v + st.heap.get(l).Get("prototype", st.heap)
                 })
                 val locSet4 = protoVal.locset
                 val locSet5 = locSet2.filter((l) => AF <= st.heap.hasInstance(l)(AbsBool))

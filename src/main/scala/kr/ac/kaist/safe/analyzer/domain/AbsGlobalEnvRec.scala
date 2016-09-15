@@ -188,7 +188,7 @@ object DefaultGlobalEnvRec extends AbsGlobalEnvRecUtil {
           // 5. Return the result of calling the [[Get]] internal method of
           //    bindings, passing N for the argument.
           // TODO refactoring after defining [[Get]] for Obj.
-          thenV = heap.proto(GLOBAL_LOC, AbsString(name))
+          thenV = heap.get(GLOBAL_LOC).Get(name, heap)
         )(AbsValue)
         (retV, excSet)
     }
@@ -224,8 +224,8 @@ object DefaultGlobalEnvRec extends AbsGlobalEnvRecUtil {
     }
 
     private val GLOBAL_LOC: Loc = BuiltinGlobal.loc
-    private def getGlobalObj(heap: Heap): Obj =
+    private def getGlobalObj(heap: Heap): AbsObject =
       // TODO refactoring after defining getter of Heap.
-      heap.getOrElse(GLOBAL_LOC, AbsObjectUtil.Bot)
+      heap.get(GLOBAL_LOC)
   }
 }

@@ -38,6 +38,9 @@ trait AbsString extends AbsDomain[Str, AbsString] {
   def isAllOthers: Boolean
   def isArrayIndex: AbsBool
 
+  def isRelated(str: String): Boolean
+  def isRelated(astr: AbsString): Boolean
+
   def toAbsNumber: AbsNumber
   def toAbsBoolean: AbsBool
 }

@@ -102,17 +102,14 @@ class CoreTest extends FlatSpec {
           case None => assert(false)
           case Some(globalObj) if globalObj.isBottom => assert(false)
           case Some(globalObj) =>
-            val resultKeySet = globalObj.collectKeysStartWith(resultPrefix)
-            val expectKeySet = globalObj.collectKeysStartWith(expectPrefix)
+            val resultKeySet = globalObj.collectKeySet(resultPrefix)
+            val expectKeySet = globalObj.collectKeySet(expectPrefix)
             assert(resultKeySet.size == expectKeySet.size)
             for (resultKey <- resultKeySet) {
               val num = resultKey.substring(resultPrefix.length)
               val expectKey = expectPrefix + num
               assert(expectKeySet contains expectKey)
-              (globalObj(resultKey), globalObj(expectKey)) match {
-                case (None, _) | (_, None) => assert(false)
-                case (Some(resultVal), Some(expectVal)) => assert(expectVal <= resultVal)
-              }
+              assert(globalObj(expectKey) <= globalObj(resultKey))
             }
         }
     }
