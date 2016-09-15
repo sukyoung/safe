@@ -62,7 +62,7 @@ trait AbsLexEnvUtil extends AbsDomainUtil[LexEnv, AbsLexEnv] {
   // XXX: we do not support
 
   // create new pure-local lexical environment.
-  def newPureLocal(locSet: AbsLoc, thisLocSet: AbsLoc): AbsLexEnv
+  def newPureLocal(locSet: AbsLoc): AbsLexEnv
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -176,9 +176,8 @@ object DefaultLexEnv extends AbsLexEnvUtil {
   def NewDeclarativeEnvironment(outer: AbsLoc): AbsLexEnv =
     Dom(AbsDecEnvRec.Empty, outer, AbsAbsent.Bot)
 
-  def newPureLocal(outer: AbsLoc, thisLocSet: AbsLoc): AbsLexEnv = {
+  def newPureLocal(outer: AbsLoc): AbsLexEnv = {
     val envRec = AbsDecEnvRec(HashMap(
-      "@this" -> (AbsBinding(thisLocSet), AbsAbsent.Bot),
       "@exception" -> (AbsBinding(AbsUndef.Top), AbsAbsent.Top),
       "@exception_all" -> (AbsBinding(AbsUndef.Top), AbsAbsent.Top),
       "@return" -> (AbsBinding(AbsUndef.Top), AbsAbsent.Bot)

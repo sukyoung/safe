@@ -12,8 +12,8 @@
 package kr.ac.kaist.safe.analyzer.domain
 
 import kr.ac.kaist.safe.analyzer.domain.Utils._
-import kr.ac.kaist.safe.analyzer.models.PredefLoc
-import kr.ac.kaist.safe.analyzer.models.PredefLoc.{ COLLAPSED, PURE_LOCAL }
+import kr.ac.kaist.safe.analyzer.models.PredefLoc.PURE_LOCAL
+import kr.ac.kaist.safe.analyzer.models.builtin.BuiltinGlobal
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.util._
 import scala.collection.immutable.{ HashMap, HashSet }
@@ -54,7 +54,11 @@ trait AbsContext extends AbsDomain[Context, AbsContext] {
 
   def setOldAddrSet(old: OldAddrSet): AbsContext
 
+  def setThisBinding(thisBinding: AbsLoc): AbsContext
+
   def old: OldAddrSet
+
+  def thisBinding: AbsLoc
 
   def toStringAll: String
 
@@ -79,7 +83,8 @@ trait AbsContextUtil extends AbsDomainUtil[Context, AbsContext] {
   val Empty: AbsContext
   def apply(
     map: Map[Loc, AbsLexEnv],
-    old: OldAddrSet
+    old: OldAddrSet,
+    thisBinding: AbsLoc
   ): AbsContext
 }
 
@@ -93,19 +98,19 @@ object DefaultContext extends AbsContextUtil {
   case object Top extends Dom
   case class CtxMap(
     // TODO val varEnv: LexEnv // VariableEnvironment
-    // val thisBinding: AbsLoc, // ThisBinding
-    // val oldAddrSet: OldAddrSet // TODO old address set
     val map: Map[Loc, AbsLexEnv],
-    override val old: OldAddrSet
+    override val old: OldAddrSet,
+    override val thisBinding: AbsLoc // ThisBinding
   ) extends Dom
-  val Empty: AbsContext = CtxMap(EmptyMap, OldAddrSet.Empty)
+  lazy val Empty: AbsContext = CtxMap(EmptyMap, OldAddrSet.Empty, AbsLoc(BuiltinGlobal.loc))
 
   def alpha(ctx: Context): AbsContext = Top // TODO more precise
 
   def apply(
     map: Map[Loc, AbsLexEnv],
-    old: OldAddrSet
-  ): AbsContext = CtxMap(map, old)
+    old: OldAddrSet,
+    thisBinding: AbsLoc
+  ): AbsContext = CtxMap(map, old, thisBinding)
 
   abstract class Dom extends AbsContext {
     def gamma: ConSet[Context] = ConInf() // TODO more precise
@@ -120,7 +125,7 @@ object DefaultContext extends AbsContextUtil {
       case (_, Bot) => false
       case (_, Top) => true
       case (Top, _) => false
-      case (CtxMap(thisMap, thisOld), CtxMap(thatMap, thatOld)) => {
+      case (CtxMap(thisMap, thisOld, thisThis), CtxMap(thatMap, thatOld, thatThis)) => {
         val mapB =
           if (thisMap.isEmpty) true
           else if (thatMap.isEmpty) false
@@ -131,7 +136,8 @@ object DefaultContext extends AbsContextUtil {
             }
           }
         val oldB = thisOld <= thatOld
-        mapB && oldB
+        val thisB = thisThis <= thatThis
+        mapB && oldB && thisB
       }
     }
 
@@ -139,7 +145,7 @@ object DefaultContext extends AbsContextUtil {
       case (Bot, _) => that
       case (_, Bot) => this
       case (Top, _) | (_, Top) => Top
-      case (CtxMap(thisMap, thisOld), CtxMap(thatMap, thatOld)) => {
+      case (CtxMap(thisMap, thisOld, thisThis), CtxMap(thatMap, thatOld, thatThis)) => {
         if (this eq that) this
         else {
           val newMap = thatMap.foldLeft(thisMap) {
@@ -150,7 +156,8 @@ object DefaultContext extends AbsContextUtil {
             }
           }
           val newOld = thisOld + thatOld
-          AbsContext(newMap, newOld)
+          val newThis = thisThis + thatThis
+          CtxMap(newMap, newOld, newThis)
         }
       }
     }
@@ -159,7 +166,7 @@ object DefaultContext extends AbsContextUtil {
       case (Bot, _) | (_, Bot) => Bot
       case (Top, _) => that
       case (_, Top) => this
-      case (CtxMap(thisMap, thisOld), CtxMap(thatMap, thatOld)) => {
+      case (CtxMap(thisMap, thisOld, thisThis), CtxMap(thatMap, thatOld, thatThis)) => {
         if (thisMap eq thatMap) this
         else {
           val locSet = thisMap.keySet intersect thatMap.keySet
@@ -171,7 +178,8 @@ object DefaultContext extends AbsContextUtil {
             }
           }
           val newOld = thisOld <> thatOld
-          AbsContext(newMap, newOld)
+          val newThis = thisThis <> thatThis
+          CtxMap(newMap, newOld, newThis)
         }
       }
     }
@@ -179,7 +187,7 @@ object DefaultContext extends AbsContextUtil {
     def apply(loc: Loc): Option[AbsLexEnv] = this match {
       case Bot => None
       case Top => Some(AbsLexEnv.Top)
-      case CtxMap(map, old) => map.get(loc)
+      case CtxMap(map, _, _) => map.get(loc)
     }
 
     def apply(locSet: Set[Loc]): AbsLexEnv = locSet.foldLeft(AbsLexEnv.Bot) {
@@ -212,11 +220,11 @@ object DefaultContext extends AbsContextUtil {
     def update(loc: Loc, env: AbsLexEnv): AbsContext = this match {
       case Bot => Bot
       case Top => Top
-      case CtxMap(map, old) => {
+      case CtxMap(map, old, thisBinding) => {
         // recent location
         loc.recency match {
-          case Recent => AbsContext(map.updated(loc, env), old)
-          case Old => AbsContext(weakUpdated(map, loc, env), old)
+          case Recent => CtxMap(map.updated(loc, env), old, thisBinding)
+          case Old => CtxMap(weakUpdated(map, loc, env), old, thisBinding)
         }
       }
     }
@@ -224,26 +232,27 @@ object DefaultContext extends AbsContextUtil {
     def remove(loc: Loc): AbsContext = this match {
       case Bot => Bot
       case Top => Top
-      case CtxMap(map, old) => AbsContext(map - loc, old)
+      case CtxMap(map, old, thisBinding) => CtxMap(map - loc, old, thisBinding)
     }
 
     def subsLoc(locR: Loc, locO: Loc): AbsContext = this match {
       case Bot => Bot
       case Top => Top
-      case CtxMap(map, old) => {
+      case CtxMap(map, old, thisBinding) => {
         val newMap = map.foldLeft(EmptyMap) {
           case (m, (loc, env)) =>
             m + (loc -> env.subsLoc(locR, locO))
         }
         val newOld = old.subsLoc(locR, locO)
-        AbsContext(newMap, newOld)
+        val newThis = thisBinding.subsLoc(locR, locO)
+        CtxMap(newMap, newOld, newThis)
       }
     }
 
     def oldify(addr: Address): AbsContext = this match {
       case Bot => Bot
       case Top => Top
-      case CtxMap(map, old) => {
+      case CtxMap(map, _, _) => {
         val locR = Loc(addr, Recent)
         val locO = Loc(addr, Old)
         val newCtx = if (this domIn locR) {
@@ -256,19 +265,31 @@ object DefaultContext extends AbsContextUtil {
     def domIn(loc: Loc): Boolean = this match {
       case Bot => false
       case Top => true
-      case CtxMap(map, old) => map.contains(loc)
+      case CtxMap(map, _, _) => map.contains(loc)
     }
 
     def setOldAddrSet(old: OldAddrSet): AbsContext = this match {
       case Bot => Bot
       case Top => Top
-      case CtxMap(map, _) => AbsContext(map, old)
+      case CtxMap(map, _, thisBinding) => CtxMap(map, old, thisBinding)
+    }
+
+    def setThisBinding(thisBinding: AbsLoc): AbsContext = this match {
+      case Bot => Bot
+      case Top => Top
+      case CtxMap(map, old, _) => CtxMap(map, old, thisBinding)
     }
 
     def old: OldAddrSet = this match {
       case Bot => OldAddrSet.Bot
       case Top => OldAddrSet.Bot // TODO it is not sound
-      case CtxMap(_, old) => old
+      case CtxMap(_, old, _) => old
+    }
+
+    def thisBinding: AbsLoc = this match {
+      case Bot => AbsLoc.Bot
+      case Top => AbsLoc.Top
+      case CtxMap(_, _, thisBinding) => thisBinding
     }
 
     override def toString: String = {
@@ -282,7 +303,7 @@ object DefaultContext extends AbsContextUtil {
     private def buildString(filter: Loc => Boolean): String = this match {
       case Bot => "⊥AbsContext"
       case Top => "Top"
-      case CtxMap(map, old) => {
+      case CtxMap(map, old, thisBinding) => {
         val s = new StringBuilder
         val sortedSeq =
           map.toSeq.filter { case (loc, _) => filter(loc) }
@@ -290,6 +311,7 @@ object DefaultContext extends AbsContextUtil {
         sortedSeq.map {
           case (loc, env) => s.append(toStringLoc(loc, env)).append(LINE_SEP)
         }
+        s.append(s"this: $thisBinding")
         s.toString
       }
     }

@@ -23,7 +23,7 @@ case class Initialize(cfg: CFG) {
   private val AT = AbsBool.True
   def state: State = {
     val globalLocSet = AbsLoc(BuiltinGlobal.loc)
-    val globalPureLocalEnv = AbsLexEnv.newPureLocal(globalLocSet, globalLocSet)
+    val globalPureLocalEnv = AbsLexEnv.newPureLocal(globalLocSet)
     val initHeap = Heap(HashMap(
       SystemLoc("Dummy", Old) -> AbsObjectUtil.Bot // TODO If delete, not working because not allowed update to bottom heap
     ))
@@ -32,7 +32,7 @@ case class Initialize(cfg: CFG) {
       PredefLoc.GLOBAL_ENV -> AbsLexEnv(AbsGlobalEnvRec.Top),
       PredefLoc.PURE_LOCAL -> globalPureLocalEnv,
       PredefLoc.COLLAPSED -> AbsLexEnv(AbsDecEnvRec.Empty)
-    ), OldAddrSet.Empty)
+    ), OldAddrSet.Empty, globalLocSet)
 
     val modeledHeap = BuiltinGlobal.initHeap(initHeap, cfg)
 

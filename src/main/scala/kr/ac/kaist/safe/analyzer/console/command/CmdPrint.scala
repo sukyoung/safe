@@ -95,8 +95,8 @@ case object CmdPrint extends Command("print", "Print out various information.") 
             succs match {
               case Some(m) => {
                 m.foreach {
-                  case (cp, (ctxt, _)) =>
-                    println(s"- dst: $cp, $ctxt")
+                  case (cp, data) =>
+                    println(s"- dst: $cp, ${data.old}")
                 }
               }
               case None => println("- Nothing")

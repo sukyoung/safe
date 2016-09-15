@@ -79,17 +79,17 @@ class Fixpoint(
     semantics.getInterProcSucc(cp) match {
       case None => ()
       case Some(succMap) => {
-        succMap.foreach(kv => {
-          val (succCP, succCtxObj) = kv
-          val (succCtx, succObj) = succCtxObj
-          val oldSt = succCP.getState
-          val nextSt2 = semantics.E(cp, succCP, succCtx, succObj, nextSt)
-          if (!(nextSt2 <= nextSt)) {
-            val newSt = oldSt + nextSt2
-            succCP.setState(newSt)
-            worklist.add(succCP)
+        succMap.foreach {
+          case (succCP, data) => {
+            val oldSt = succCP.getState
+            val nextSt2 = semantics.E(cp, succCP, data, nextSt)
+            if (!(nextSt2 <= nextSt)) {
+              val newSt = oldSt + nextSt2
+              succCP.setState(newSt)
+              worklist.add(succCP)
+            }
           }
-        })
+        }
       }
     }
   }

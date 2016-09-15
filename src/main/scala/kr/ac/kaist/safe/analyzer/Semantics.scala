@@ -33,24 +33,35 @@ class Semantics(
   private val AB = AbsBool.Bot
 
   // Interprocedural edges
-  private var ipSuccMap: Map[ControlPoint, Map[ControlPoint, (OldAddrSet, AbsLexEnv)]] = HashMap()
-  private var ipPredMap: Map[ControlPoint, Set[ControlPoint]] = HashMap()
-  def getAllIPSucc: Map[ControlPoint, Map[ControlPoint, (OldAddrSet, AbsLexEnv)]] = ipSuccMap
-  def getAllIPPred: Map[ControlPoint, Set[ControlPoint]] = ipPredMap
-  def getInterProcSucc(cp: ControlPoint): Option[Map[ControlPoint, (OldAddrSet, AbsLexEnv)]] = ipSuccMap.get(cp)
-  def getInterProcPred(cp: ControlPoint): Option[Set[ControlPoint]] = ipPredMap.get(cp)
+  case class EdgeData(old: OldAddrSet, env: AbsLexEnv, thisBinding: AbsLoc) {
+    def +(other: EdgeData): EdgeData = EdgeData(
+      this.old + other.old,
+      this.env + other.env,
+      this.thisBinding + other.thisBinding
+    )
+  }
+  type IPSucc = Map[ControlPoint, EdgeData]
+  type IPPred = Set[ControlPoint]
+  type IPSuccMap = Map[ControlPoint, IPSucc]
+  type IPPredMap = Map[ControlPoint, IPPred]
+  private var ipSuccMap: IPSuccMap = HashMap()
+  private var ipPredMap: IPPredMap = HashMap()
+  def getAllIPSucc: IPSuccMap = ipSuccMap
+  def getAllIPPred: IPPredMap = ipPredMap
+  def getInterProcSucc(cp: ControlPoint): Option[IPSucc] = ipSuccMap.get(cp)
+  def getInterProcPred(cp: ControlPoint): Option[IPPred] = ipPredMap.get(cp)
 
   // Adds inter-procedural call edge from call-node cp1 to entry-node cp2.
   // Edge label ctx records callee context, which is joined if the edge existed already.
-  def addCallEdge(cp1: ControlPoint, cp2: ControlPoint, old: OldAddrSet, env: AbsLexEnv): Unit = {
+  def addCallEdge(cp1: ControlPoint, cp2: ControlPoint, data: EdgeData): Unit = {
     val updatedSuccMap = ipSuccMap.get(cp1) match {
-      case None => HashMap(cp2 -> (old, env))
+      case None => HashMap(cp2 -> data)
       case Some(map2) =>
         map2.get(cp2) match {
           case None =>
-            map2 + (cp2 -> (old, env))
-          case Some((oldOld, oldEnv)) =>
-            map2 + (cp2 -> (oldOld + old, oldEnv + env))
+            map2 + (cp2 -> data)
+          case Some(oldData) =>
+            map2 + (cp2 -> (data + oldData))
         }
     }
     ipSuccMap += (cp1 -> updatedSuccMap)
@@ -65,30 +76,34 @@ class Semantics(
   // Adds inter-procedural return edge from exit or exit-exc node cp1 to after-call node cp2.
   // Edge label ctx records caller context, which is joined if the edge existed already.
   // If change occurs, cp1 is added to worklist as side-effect.
-  def addReturnEdge(cp1: ControlPoint, cp2: ControlPoint, old: OldAddrSet, env: AbsLexEnv): Unit = {
+  def addReturnEdge(cp1: ControlPoint, cp2: ControlPoint, data: EdgeData): Unit = {
     val updatedSuccMap = ipSuccMap.get(cp1) match {
       case None => {
         worklist.add(cp1)
-        HashMap(cp2 -> (old, env))
+        HashMap(cp2 -> data)
       }
       case Some(map2) =>
         map2.get(cp2) match {
           case None => {
             worklist.add(cp1)
-            map2 + (cp2 -> (old, env))
+            map2 + (cp2 -> data)
           }
-          case Some((oldOld, oldEnv)) =>
-            val oldChanged = !(old <= oldOld)
+          case Some(oldData) =>
+            val oldChanged = !(data.old <= oldData.old)
             val newOld =
-              if (oldChanged) oldOld + old
-              else oldOld
-            val envChanged = !(env <= oldEnv)
+              if (oldChanged) data.old + oldData.old
+              else oldData.old
+            val envChanged = !(data.env <= oldData.env)
             val newEnv =
-              if (envChanged) oldEnv + env
-              else oldEnv
-            if (oldChanged || envChanged) {
+              if (envChanged) data.env + oldData.env
+              else oldData.env
+            val thisChanged = !(data.thisBinding <= oldData.thisBinding)
+            val newThis =
+              if (thisChanged) data.thisBinding + oldData.thisBinding
+              else oldData.thisBinding
+            if (oldChanged || envChanged || thisChanged) {
               worklist.add(cp1)
-              map2 + (cp2 -> (newOld, newEnv))
+              map2 + (cp2 -> EdgeData(newOld, newEnv, newThis))
             } else {
               map2
             }
@@ -103,26 +118,28 @@ class Semantics(
     ipPredMap += (cp2 -> updatedPredSet)
   }
 
-  def E(cp1: ControlPoint, cp2: ControlPoint, old: OldAddrSet, env: AbsLexEnv, st: State): State = {
+  def E(cp1: ControlPoint, cp2: ControlPoint, data: EdgeData, st: State): State = {
     (cp1.node, cp2.node) match {
       case (_, Entry(f)) => st.context match {
         case _ if st.context.isBottom => State.Bot
         case ctx1: AbsContext => {
-          val objEnv = env.record.decEnvRec.GetBindingValue("@scope") match {
+          val objEnv = data.env.record.decEnvRec.GetBindingValue("@scope") match {
             case (value, _) => AbsLexEnv.NewDeclarativeEnvironment(value.locset)
           }
-          val (envRec, _) = env.record.decEnvRec.DeleteBinding("@scope")
-          val ctx2 = ctx1.subsPureLocal(env.copyWith(record = envRec))
-          val ctx3 = env.outer.foldLeft(AbsContext.Bot)((hi, locEnv) => {
+          val (envRec, _) = data.env.record.decEnvRec.DeleteBinding("@scope")
+          val ctx2 = ctx1.subsPureLocal(data.env.copyWith(record = envRec))
+          val ctx3 = data.env.outer.foldLeft(AbsContext.Bot)((hi, locEnv) => {
             hi + ctx2.update(locEnv, objEnv)
           })
-          State(st.heap, ctx3.setOldAddrSet(old))
+          State(st.heap, ctx3
+            .setOldAddrSet(data.old)
+            .setThisBinding(data.thisBinding))
         }
       }
       case (Exit(_), _) if st.context.isBottom => State.Bot
       case (Exit(f1), AfterCall(f2, retVar, call)) =>
         val (ctx1, old1) = (st.context, st.context.old)
-        val (old2, env1) = old.fixOldify(env, old1.mayOld, old1.mustOld)
+        val (old2, env1) = data.old.fixOldify(data.env, old1.mayOld, old1.mustOld)
         if (old2.isBottom) State.Bot
         else {
           val localEnv = ctx1.pureLocal
@@ -133,7 +150,7 @@ class Semantics(
         }
       case (Exit(f), _) =>
         val old1 = st.context.old
-        val (old2, env1) = old.fixOldify(env, old1.mayOld, old1.mustOld)
+        val (old2, env1) = data.old.fixOldify(data.env, old1.mayOld, old1.mustOld)
         if (old2.isBottom) State.Bot
         else {
           excLog.signal(IPFromExitToNoneError(f.ir))
@@ -143,7 +160,7 @@ class Semantics(
       case (ExitExc(_), _) if st.context.old.isBottom => State.Bot
       case (ExitExc(_), AfterCatch(_, _)) =>
         val (ctx1, c1) = (st.context, st.context.old)
-        val (c2, envL) = old.fixOldify(env, c1.mayOld, c1.mustOld)
+        val (c2, envL) = data.old.fixOldify(data.env, c1.mayOld, c1.mustOld)
         val env1 = envL.record.decEnvRec
         if (c2.isBottom) State.Bot
         else {
@@ -157,7 +174,7 @@ class Semantics(
         }
       case (ExitExc(f), _) =>
         val old1 = st.context.old
-        val (old2, env1) = old.fixOldify(env, old1.mayOld, old1.mustOld)
+        val (old2, env1) = data.old.fixOldify(data.env, old1.mayOld, old1.mustOld)
         if (old2.isBottom) State.Bot
         else {
           excLog.signal(IPFromExitToNoneError(f.ir))
@@ -554,7 +571,7 @@ class Semantics(
             funObj.getOrElse[Set[FunctionId]](ICall)(HashSet[FunctionId]()) { _.fidset }
         }
         fidSet.foreach((fid) => {
-          val newEnv = AbsLexEnv.newPureLocal(AbsLoc(locR), thisLocSet)
+          val newEnv = AbsLexEnv.newPureLocal(AbsLoc(locR))
           val newCallCtx = callerCallCtx.newCallContext(cfg, fid, locR)
           cfg.getFunc(fid) match {
             case Some(funCFG) => {
@@ -568,9 +585,21 @@ class Semantics(
               val entryCP = ControlPoint(funCFG.entry, newCallCtx)
               val exitCP = ControlPoint(funCFG.exit, newCallCtx)
               val exitExcCP = ControlPoint(funCFG.exitExc, newCallCtx)
-              addCallEdge(cp, entryCP, OldAddrSet.Empty, newEnv.copyWith(record = newEnv3))
-              addReturnEdge(exitCP, cpAfterCall, st1.context.old, oldLocalEnv)
-              addReturnEdge(exitExcCP, cpAfterCatch, st1.context.old, oldLocalEnv)
+              addCallEdge(cp, entryCP, EdgeData(
+                OldAddrSet.Empty,
+                newEnv.copyWith(record = newEnv3),
+                thisLocSet
+              ))
+              addReturnEdge(exitCP, cpAfterCall, EdgeData(
+                st1.context.old,
+                oldLocalEnv,
+                st1.context.thisBinding
+              ))
+              addReturnEdge(exitExcCP, cpAfterCatch, EdgeData(
+                st1.context.old,
+                oldLocalEnv,
+                st1.context.thisBinding
+              ))
             }
             case None => excLog.signal(UndefinedFunctionCallError(i.ir))
           }
@@ -618,9 +647,7 @@ class Semantics(
         (v1, idxExcSet)
       }
       case CFGThis(ir) =>
-        val localEnv = st.context.pureLocal
-        val (thisV, _) = localEnv.record.decEnvRec.GetBindingValue("@this")
-        (thisV, ExcSetEmpty)
+        (st.context.thisBinding, ExcSetEmpty)
       case CFGBin(ir, expr1, op, expr2) => {
         val (v1, excSet1) = V(expr1, st)
         val (v2, excSet2) = V(expr2, st)

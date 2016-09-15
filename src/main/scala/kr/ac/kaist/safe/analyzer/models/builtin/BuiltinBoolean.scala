@@ -66,8 +66,7 @@ object BuiltinBooleanProto extends ObjModel(
         args, st
       ) => {
         val h = st.heap
-        val localObj = st.context.pureLocal.record.decEnvRec
-        val (thisV, _) = localObj.GetBindingValue("@this")
+        val thisV = AbsValue(st.context.thisBinding)
         val classV = Helper.propLoad(thisV, Set(AbsString("@class")), h)
         val pv = thisV.pvalue
         val excSet = (pv.undefval.isBottom, pv.nullval.isBottom, pv.numval.isBottom, pv.strval.isBottom) match {
@@ -97,8 +96,7 @@ object BuiltinBooleanProto extends ObjModel(
         args, st
       ) => {
         val h = st.heap
-        val localObj = st.context.pureLocal.record.decEnvRec
-        val (thisV, _) = localObj.GetBindingValue("@this")
+        val thisV = AbsValue(st.context.thisBinding)
         val classV = Helper.propLoad(thisV, Set(AbsString("@class")), h)
         val pv = thisV.pvalue
         val excSet = (pv.undefval.isBottom, pv.nullval.isBottom, pv.numval.isBottom, pv.strval.isBottom) match {
