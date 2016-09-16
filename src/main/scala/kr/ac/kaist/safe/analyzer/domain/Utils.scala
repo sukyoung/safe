@@ -19,16 +19,13 @@ object Utils {
     absNull: AbsNullUtil,
     absBool: AbsBoolUtil,
     absNumber: AbsNumberUtil,
-    absString: AbsStringUtil,
-    cfg: CFG
+    absString: AbsStringUtil
   ): Unit = {
     AbsUndef = absUndef
     AbsNull = absNull
     AbsBool = absBool
     AbsNumber = absNumber
     AbsString = absString
-
-    AbsLoc = DefaultLoc(cfg.getAllAddrSet)
   }
 
   // primitive values
@@ -40,7 +37,7 @@ object Utils {
   var AbsPValue: AbsPValueUtil = DefaultPValue
 
   // location
-  var AbsLoc: AbsLocUtil = null
+  var AbsLoc: AbsLocUtil = DefaultLoc
 
   // value
   var AbsValue: AbsValueUtil = DefaultValue

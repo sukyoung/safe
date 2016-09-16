@@ -319,8 +319,6 @@ case class StringSet(maxSetSize: Int) extends AbsStringUtil {
     def isRelated(that: AbsString): Boolean =
       (this, check(that)) match {
         case (Top, _) | (_, Top) => true
-        case (t, _) if t.isTop => true
-        case (_, t) if t.isTop => true // TODO: t.isTop is true but t == Top is false ?????
         case (Bot, _) | (_, Bot) => false
         case (Number, StrSet(v)) if v.exists(str => isNumber(str)) => true
         case (StrSet(v), Number) if v.exists(str => isNumber(str)) => true
