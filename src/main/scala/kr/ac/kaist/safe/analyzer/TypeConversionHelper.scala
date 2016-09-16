@@ -187,7 +187,7 @@ object TypeConversionHelper {
   // Detailed abstract meaning of ToObject relies on
   // implementation of abstract object and builtin modeling.
   ////////////////////////////////////////////////////////////////
-  def ToObject(pvalue: AbsPValue): (Obj, Set[Exception]) = {
+  def ToObject(pvalue: AbsPValue): (AbsObject, Set[Exception]) = {
     val excSet = CheckObjectCoercible(pvalue)
     val obj3 = pvalue.numval.fold(AbsObjectUtil.Bot) { AbsObjectUtil.newNumberObj(_) }
     val obj4 = pvalue.boolval.fold(AbsObjectUtil.Bot) { AbsObjectUtil.newBooleanObj(_) }
@@ -249,7 +249,7 @@ object TypeConversionHelper {
   }
 
   def IsCallable(loc: Loc, h: Heap): AbsBool = {
-    val isDomIn = h.getOrElse(loc)(AbsBool.False) { obj => (obj domIn ICall) }
+    val isDomIn = h.getOrElse(loc)(AbsBool.False) { obj => (obj contains ICall) }
     val b1 =
       if (AbsBool.True <= isDomIn) AbsBool.True
       else AbsBool.Bot

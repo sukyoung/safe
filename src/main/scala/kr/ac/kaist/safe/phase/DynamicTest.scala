@@ -82,10 +82,7 @@ case object DynamicTest extends PhaseObj[Unit, DynamicTestConfig, Unit] {
           case None => assert(false)
           case Some(globalObj) if globalObj.isBottom => assert(false)
           case Some(globalObj) =>
-            (globalObj("__result1"), globalObj("__expect1")) match {
-              case (None, _) | (_, None) => assert(false)
-              case (Some(resultVal), Some(expectVal)) => assert(expectVal <= resultVal)
-            }
+            assert(globalObj("__expect1") <= globalObj("__result1"))
         }
     }
   }

@@ -164,10 +164,9 @@ case class State(heap: Heap, context: AbsContext) {
       case GlobalVar =>
         val globalLoc = BuiltinGlobal.loc
         val objV = AbsDataProp(value, AbsBool.True, AbsBool.True, AbsBool.False)
-        val propV = PropValue(objV)
         val newHeap =
           if (AbsBool.True == heap.hasProperty(globalLoc, AbsString(x))) heap
-          else heap.update(globalLoc, heap.getOrElse(globalLoc, AbsObjectUtil.Bot).update(x, propV))
+          else heap.update(globalLoc, heap.get(globalLoc).update(x, objV))
         State(newHeap, context)
     }
   }

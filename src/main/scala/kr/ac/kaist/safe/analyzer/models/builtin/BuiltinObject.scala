@@ -113,7 +113,7 @@ object BuiltinObject extends FuncModel(
 
         // 2. Return the value of [[Prototype]] internal property of O.
         val protoV = retV.locset.foldLeft(AbsValue.Bot)((v, loc) => {
-          v + retSt.heap(loc).getOrElse(AbsObjectUtil.Bot).get(IPrototype).value
+          v + retSt.heap(loc).getOrElse(AbsObjectUtil.Bot)(IPrototype).value
         })
 
         (st, excSt, protoV)
@@ -145,24 +145,24 @@ object BuiltinObject extends FuncModel(
         //    internal method of O with argument name.
         // 4. Return the result of calling FromPropertyDescriptor(desc)
         val obj = locV.locset.foldLeft(AbsObjectUtil.Bot)((obj, loc) => {
-          obj + retSt.heap.getOrElse(loc, AbsObjectUtil.Bot)
+          obj + retSt.heap.get(loc)
         })
-        val isDomIn = (obj domIn name)
+        val isDomIn = (obj contains name)
         val v1 =
           if (AF <= isDomIn) AbsValue(Undef)
           else AbsValue.Bot
         val (state, v2) =
           if (AT <= isDomIn) {
-            val objval = obj(name).getOrElse(PropValue.Bot).objval
+            val objval = obj(name)
             val valueV = objval.value
             val writableV = AbsValue(objval.writable)
             val enumerableV = AbsValue(objval.enumerable)
             val configurableV = AbsValue(objval.configurable)
             val descObj = AbsObjectUtil.newObject
-              .update("value", PropValue(AbsDataProp(valueV, AT, AF, AT)))
-              .update("writable", PropValue(AbsDataProp(writableV, AT, AF, AT)))
-              .update("enumerable", PropValue(AbsDataProp(enumerableV, AT, AF, AT)))
-              .update("configurable", PropValue(AbsDataProp(configurableV, AT, AF, AT)))
+              .update("value", AbsDataProp(valueV, AT, AF, AT))
+              .update("writable", AbsDataProp(writableV, AT, AF, AT))
+              .update("enumerable", AbsDataProp(enumerableV, AT, AF, AT))
+              .update("configurable", AbsDataProp(configurableV, AT, AF, AT))
             val state = st.oldify(descAddr)
             val descLoc = Loc(descAddr, Recent)
             val retHeap = state.heap.update(descLoc, descObj)
@@ -188,8 +188,8 @@ object BuiltinObject extends FuncModel(
           (AbsString.Bot, Set[Double]())
         ) {
             case ((str, lenSet), loc) => {
-              val obj = h.getOrElse(loc, AbsObjectUtil.Bot)
-              val keys = obj.map.keySet.filter(!_.startsWith("@"))
+              val obj = h.get(loc)
+              val keys = obj.collectKeySet("")
               val keyStr = AbsString(keys)
               (str + keyStr, lenSet + keys.size)
             }
@@ -215,7 +215,7 @@ object BuiltinObject extends FuncModel(
         //    c. Increment n by 1.
         val v = AbsValue(AbsPValue(AbsUndef.Top).copyWith(strval = keyStr))
         val retObj = (0 until len.toInt).foldLeft(arrObj)((obj, idx) => {
-          obj.update(idx.toString, PropValue(AbsDataProp(v, AT, AT, AT)))
+          obj.update(idx.toString, AbsDataProp(v, AT, AT, AT))
         })
         val state = st.oldify(arrAddr)
         val arrLoc = Loc(arrAddr, Recent)
