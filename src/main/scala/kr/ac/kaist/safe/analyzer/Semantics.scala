@@ -273,19 +273,15 @@ class Semantics(
         (st1, excSt + newExcSt)
       }
       case CFGDelete(_, _, x1, CFGVarRef(_, x2)) => {
-        val baseLocSet = st.lookupBase(x2)
-        val (st1, b) =
-          if (baseLocSet.isBottom) {
-            (st, AT)
-          } else {
-            baseLocSet.foldLeft[(State, AbsBool)](State.Bot, AB)((res, baseLoc) => {
-              val (tmpState, tmpB) = res
-              val (delState, delB) = st.delete(baseLoc, x2.text)
-              (tmpState + delState, tmpB + delB)
-            })
-          }
-        val bVal = AbsValue(b)
-        val st2 = st1.varStore(x1, bVal)
+        val baseV = st.lookupBase(x2)
+        val undefB = baseV.pvalue.undefval.fold(AB)(_ => AT)
+        val (st1, locB) =
+          baseV.locset.foldLeft[(State, AbsBool)](State.Bot, AB)((res, baseLoc) => {
+            val (tmpState, tmpB) = res
+            val (delState, delB) = st.delete(baseLoc, x2.text)
+            (tmpState + delState, tmpB + delB)
+          })
+        val st2 = st1.varStore(x1, locB + undefB)
         (st2, excSt)
       }
       case CFGDelete(_, _, x1, expr) => {
@@ -509,8 +505,8 @@ class Semantics(
             (st1, excSt + newExcSt)
           }
           case ("<>Global<>getBase", List(CFGVarRef(_, x2)), None) => {
-            val locSetBase = st.lookupBase(x2)
-            val st1 = st.varStore(lhs, AbsValue(locSetBase))
+            val baseV = st.lookupBase(x2)
+            val st1 = st.varStore(lhs, baseV)
             (st1, excSt)
           }
           case ("<>Global<>iteratorInit", List(expr), Some(aNew)) => (st, excSt)

@@ -38,6 +38,7 @@ trait AbsContext extends AbsDomain[Context, AbsContext] {
   def getOrElse[T](loc: Loc)(default: T)(f: AbsLexEnv => T): T
 
   // context update
+  def weakUpdate(loc: Loc, env: AbsLexEnv): AbsContext
   def update(loc: Loc, env: AbsLexEnv): AbsContext
 
   // remove location
@@ -63,13 +64,6 @@ trait AbsContext extends AbsDomain[Context, AbsContext] {
   def toStringAll: String
 
   def toStringLoc(loc: Loc): Option[String]
-
-  // Lookup
-  def lookupLocal(loc: Loc, x: String): AbsValue
-  def lookupBaseLocal(loc: Loc, x: String): AbsLoc
-
-  // Store
-  def varStoreLocal(loc: Loc, x: String, value: AbsValue): AbsContext
 
   // delete
   def delete(loc: Loc, str: String): (AbsContext, AbsBool)
@@ -217,6 +211,13 @@ object DefaultContext extends AbsContextUtil {
         case None => m.updated(loc, newEnv)
       }
 
+    def weakUpdate(loc: Loc, env: AbsLexEnv): AbsContext = this match {
+      case Bot => Bot
+      case Top => Top
+      case CtxMap(map, old, thisBinding) =>
+        CtxMap(weakUpdated(map, loc, env), old, thisBinding)
+    }
+
     def update(loc: Loc, env: AbsLexEnv): AbsContext = this match {
       case Bot => Bot
       case Top => Top
@@ -326,70 +327,6 @@ object DefaultContext extends AbsContextUtil {
       s.append(keyStr)
       Useful.indentation(s, env.toString, keyStr.length)
       s.toString
-    }
-
-    ////////////////////////////////////////////////////////////////
-    // Lookup
-    ////////////////////////////////////////////////////////////////
-    def lookupLocal(loc: Loc, x: String): AbsValue = {
-      var visited = AbsLoc.Bot
-      val valueBot = AbsValue.Bot
-      def visit(l: Loc): AbsValue = {
-        if (visited.contains(l)) valueBot
-        else {
-          visited += l
-          val env = this.getOrElse(l, AbsLexEnv.Bot)
-          val envRec = env.record.decEnvRec
-          val isIn = (envRec HasBinding x)
-          isIn.map[AbsValue](thenV = {
-            val (value, _) = envRec.GetBindingValue(x)
-            value
-          }, elseV = {
-            env.outer.locset.foldLeft(valueBot)(
-              (tmpVal, outerLoc) => tmpVal + visit(outerLoc)
-            )
-          })(AbsValue)
-        }
-      }
-      visit(loc)
-    }
-
-    def lookupBaseLocal(loc: Loc, x: String): AbsLoc = {
-      var visited = AbsLoc.Bot
-      def visit(l: Loc): AbsLoc = {
-        if (visited.contains(l)) AbsLoc.Bot
-        else {
-          visited += l
-          val env = this.getOrElse(l, AbsLexEnv.Bot)
-          val envRec = env.record.decEnvRec
-          val isIn = (envRec HasBinding x)
-          isIn.map[AbsLoc](
-            thenV = AbsLoc(l),
-            elseV = {
-              env.outer.foldLeft(AbsLoc.Bot)((res, outerLoc) => res + visit(outerLoc))
-            }
-          )(AbsLoc)
-        }
-      }
-      visit(loc)
-    }
-
-    ////////////////////////////////////////////////////////////////
-    // Store
-    ////////////////////////////////////////////////////////////////
-    def varStoreLocal(loc: Loc, x: String, value: AbsValue): AbsContext = {
-      val env = this.getOrElse(loc, AbsLexEnv.Bot)
-      val envRec = env.record.decEnvRec
-      val AT = AbsBool.True
-      val AF = AbsBool.False
-      val (newEnvRec, _) = envRec.SetMutableBinding(x, value)
-      val ctx1 = update(loc, AbsLexEnv(newEnvRec))
-      val ctx2 =
-        if (AbsBool.False <= (envRec HasBinding x))
-          env.outer.foldLeft(Empty)((tmpH, outerLoc) => varStoreLocal(outerLoc, x, value))
-        else
-          AbsContext.Bot
-      ctx1 + ctx2
     }
 
     ////////////////////////////////////////////////////////////////

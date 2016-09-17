@@ -32,6 +32,7 @@ trait Heap {
   def get(loc: Loc): AbsObject
   def getOrElse[T](loc: Loc)(default: T)(f: AbsObject => T): T
   /* heap update */
+  def weakUpdate(loc: Loc, obj: AbsObject): Heap
   def update(loc: Loc, obj: AbsObject): Heap
   /* remove location */
   def remove(loc: Loc): Heap
@@ -163,6 +164,11 @@ class DHeap(val map: Map[Loc, AbsObject]) extends Heap {
   }
 
   /* heap update */
+  def weakUpdate(loc: Loc, obj: AbsObject): Heap = {
+    if (!isBottom) new DHeap(weakUpdated(map, loc, obj))
+    else this
+  }
+
   def update(loc: Loc, obj: AbsObject): Heap = {
     if (!isBottom) {
       // recent location

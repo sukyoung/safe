@@ -12,6 +12,7 @@
 package kr.ac.kaist.safe.analyzer.domain
 
 import kr.ac.kaist.safe.analyzer.domain.Utils._
+import kr.ac.kaist.safe.analyzer.models.builtin.BuiltinGlobal
 import scala.collection.immutable.{ HashSet, HashMap }
 
 /* 10.2 Lexical Environments */
@@ -35,12 +36,6 @@ trait AbsLexEnv extends AbsDomain[LexEnv, AbsLexEnv] {
     nullOuter: AbsAbsent = this.nullOuter
   ): AbsLexEnv
 
-  // 10.2.2.1 GetIdentifierReference(lex, name, strict) + 8.7.1 GetValue (V)
-  def getId(name: String, strict: Boolean)(st: State): (AbsValue, Set[Exception])
-
-  // 10.2.2.1 GetIdentifierReference(lex, name, strict) + 8.7.2 PutValue (V, W)
-  // def setId(name: String, value: AbsValue)(st: State): (State, Set[Exception])
-
   // substitute locR by locO
   def subsLoc(locR: Loc, locO: Loc): AbsLexEnv
 
@@ -54,6 +49,31 @@ trait AbsLexEnvUtil extends AbsDomainUtil[LexEnv, AbsLexEnv] {
     outer: AbsLoc = AbsLoc.Bot,
     nullOuter: AbsAbsent = AbsAbsent.Top
   ): AbsLexEnv
+
+  // 10.2.2.1 GetIdentifierReference(lex, name, strict)
+  // + 8.7 GetBase(V)
+  def getIdBase(
+    locSet: AbsLoc,
+    name: String,
+    strict: Boolean
+  )(st: State): AbsValue
+
+  // 10.2.2.1 GetIdentifierReference(lex, name, strict)
+  // + 8.7.1 GetValue(V)
+  def getId(
+    locSet: AbsLoc,
+    name: String,
+    strict: Boolean
+  )(st: State): (AbsValue, Set[Exception])
+
+  // 10.2.2.1 GetIdentifierReference(lex, name, strict)
+  // + 8.7.2 PutValue(V, W)
+  def setId(
+    locSet: AbsLoc,
+    name: String,
+    value: AbsValue,
+    strict: Boolean
+  )(st: State): (State, Set[Exception])
 
   // 10.2.2.2 NewDeclarativeEnvironment(E)
   def NewDeclarativeEnvironment(locSet: AbsLoc): AbsLexEnv
@@ -131,46 +151,117 @@ object DefaultLexEnv extends AbsLexEnvUtil {
       nullOuter: AbsAbsent = this.nullOuter
     ): AbsLexEnv = Dom(record, outer, nullOuter)
 
-    def getId(name: String, strict: Boolean)(st: State): (AbsValue, Set[Exception]) = {
-      var visited = AbsLoc.Bot
-      val heap = st.heap
-      val ctx = st.context
-      var excSet = ExcSetEmpty
-      def visit(env: AbsLexEnv): AbsValue = {
-        val envRec = env.record
-        val exists = envRec.HasBinding(name)(heap)
-
-        if (nullOuter.isTop) excSet += ReferenceError
-
-        exists.map[AbsValue](thenV = {
-          val (v, e) = envRec.GetBindingValue(name, strict)(heap)
-          excSet ++ e
-          v
-        }, elseV = {
-          env.outer.foldLeft(AbsValue.Bot) {
-            case (v, loc) => {
-              val newV =
-                if (visited.contains(loc)) AbsValue.Bot
-                else {
-                  visited += loc
-                  visit(ctx.getOrElse(loc, AbsLexEnv.Bot))
-                }
-              v + newV
-            }
-          }
-        })(AbsValue)
-      }
-      (visit(this), excSet)
-    }
-
-    // TODO
-    // def setId(name: String, value: AbsValue)(st: State): (State, Set[Exception])
-
     def subsLoc(locR: Loc, locO: Loc): AbsLexEnv =
       Dom(record.subsLoc(locR, locO), outer.subsLoc(locR, locO), nullOuter)
 
     def weakSubsLoc(locR: Loc, locO: Loc): AbsLexEnv =
       Dom(record.weakSubsLoc(locR, locO), outer.subsLoc(locR, locO), nullOuter)
+  }
+
+  def getIdBase(
+    locSet: AbsLoc,
+    name: String,
+    strict: Boolean
+  )(st: State): AbsValue = {
+    var visited = AbsLoc.Bot
+    val heap = st.heap
+    val ctx = st.context
+    def visit(loc: Loc): AbsValue = {
+      if (visited.contains(loc)) AbsValue.Bot
+      else {
+        visited += loc
+        val env = ctx.getOrElse(loc, AbsLexEnv.Bot)
+        val envRec = env.record
+        val exists = envRec.HasBinding(name)(heap)
+        exists.map[AbsValue](thenV = {
+          AbsLoc(loc)
+        }, elseV = {
+          var initV: AbsValue =
+            if (env.nullOuter.isTop) AbsUndef.Top
+            else AbsValue.Bot
+          env.outer.foldLeft(initV) {
+            case (v, loc) => v + visit(loc)
+          }
+        })(AbsValue)
+      }
+    }
+    locSet.foldLeft(AbsValue.Bot) {
+      case (v, loc) => v + visit(loc)
+    }
+  }
+
+  def getId(
+    locSet: AbsLoc,
+    name: String,
+    strict: Boolean
+  )(st: State): (AbsValue, Set[Exception]) = {
+    var visited = AbsLoc.Bot
+    val heap = st.heap
+    val ctx = st.context
+    var excSet = ExcSetEmpty
+    def visit(loc: Loc): AbsValue = {
+      if (visited.contains(loc)) AbsValue.Bot
+      else {
+        visited += loc
+        val env = ctx.getOrElse(loc, AbsLexEnv.Bot)
+        val envRec = env.record
+        val exists = envRec.HasBinding(name)(heap)
+        exists.map[AbsValue](thenV = {
+          val (v, e) = envRec.GetBindingValue(name, strict)(heap)
+          excSet ++= e
+          v
+        }, elseV = {
+          if (env.nullOuter.isTop) excSet += ReferenceError
+          env.outer.foldLeft(AbsValue.Bot) {
+            case (v, loc) => v + visit(loc)
+          }
+        })(AbsValue)
+      }
+    }
+    val resV = locSet.foldLeft(AbsValue.Bot) {
+      case (v, loc) => v + visit(loc)
+    }
+    (resV, excSet)
+  }
+
+  def setId(
+    locSet: AbsLoc,
+    name: String,
+    value: AbsValue,
+    strict: Boolean
+  )(st: State): (State, Set[Exception]) = {
+    var visited = AbsLoc.Bot
+    var newH = st.heap
+    var newCtx = st.context
+    var excSet = ExcSetEmpty
+    def visit(loc: Loc): Unit = if (!visited.contains(loc)) {
+      visited += loc
+      val env = st.context.getOrElse(loc, AbsLexEnv.Bot)
+      val envRec = env.record
+      val exists = envRec.HasBinding(name)(st.heap)
+      exists.map[AbsAbsent](thenV = {
+        val (er, h, e) = envRec.SetMutableBinding(name, value, strict)(st.heap)
+        val newEnv = env.copyWith(record = er)
+        newCtx = newCtx.update(loc, newEnv)
+        newH = newH.weakUpdate(BuiltinGlobal.loc, h.get(BuiltinGlobal.loc))
+        excSet ++= e
+        AbsAbsent.Bot
+      }, elseV = {
+        if (env.nullOuter.isTop) {
+          if (strict) excSet += ReferenceError
+          else {
+            val (_, h, e) = AbsGlobalEnvRec.Top
+              .SetMutableBinding(name, value, false)(newH)
+            newH = newH.weakUpdate(BuiltinGlobal.loc, h.get(BuiltinGlobal.loc))
+            excSet ++= e
+          }
+        }
+        env.outer.foreach(visit(_))
+        AbsAbsent.Bot
+      })(AbsAbsent)
+    }
+    locSet.foreach(visit(_))
+    (State(newH, newCtx), excSet)
   }
 
   def NewDeclarativeEnvironment(outer: AbsLoc): AbsLexEnv =
