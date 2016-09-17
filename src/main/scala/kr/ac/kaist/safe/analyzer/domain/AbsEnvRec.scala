@@ -12,6 +12,7 @@
 package kr.ac.kaist.safe.analyzer.domain
 
 import kr.ac.kaist.safe.analyzer.domain.Utils._
+import kr.ac.kaist.safe.LINE_SEP
 
 /* 10.2.1 Environment Records */
 
@@ -117,7 +118,13 @@ object DefaultEnvRec extends AbsEnvRecUtil {
       )
     }
 
-    override def toString: String = decEnvRec.toString // TODO
+    override def toString: String = {
+      var lst: List[String] = Nil
+      if (!globalEnvRec.isBottom) lst ::= globalEnvRec.toString
+      if (!decEnvRec.isBottom) lst ::= decEnvRec.toString
+      if (decEnvRec.isBottom && globalEnvRec.isBottom) lst ::= "⊥(environment)"
+      lst.mkString(LINE_SEP)
+    }
 
     // 10.2.1.2.1 HasBinding(N)
     def HasBinding(name: String)(heap: Heap): AbsBool =

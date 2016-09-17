@@ -186,23 +186,25 @@ object DefaultDecEnvRec extends AbsDecEnvRecUtil {
     override def toString: String = {
       val dataOpt = this match {
         case Bot => None
-        case LBindMap(map) => Some((map, AbsValue.Bot, AbsAbsent.Top))
-        case UBindMap(map) => Some((map, AbsValue.Top, AbsAbsent.Top))
+        case LBindMap(map) => Some((map, AbsValue.Bot))
+        case UBindMap(map) => Some((map, AbsValue.Top))
       }
-      if (isTop) "Top(declarative environment)"
+      if (isTop) "Top(declarative environment record)"
       else dataOpt match {
-        case None => "⊥(declarative environment)"
-        case Some((map, obind, oabs)) => {
+        case None => "⊥(declarative environment record)"
+        case Some((map, obind)) => {
           val sortedMap = (map.toSeq.sortBy {
             case (key, _) => key
-          }) :+ ("others", (obind, oabs))
+          })
           val s = new StringBuilder
+          s.append(s"[[Default]] @-> $obind")
           sortedMap.map {
             case (key, (bind, absent)) => {
-              s.append(key).append(absent.isBottom match {
-                case true => s" |-> "
-                case false => s" @-> "
-              }).append(bind.toString).append(LINE_SEP)
+              s.append(LINE_SEP)
+                .append(key).append(absent.isBottom match {
+                  case true => s" |-> "
+                  case false => s" @-> "
+                }).append(bind.toString)
             }
           }
           s.toString

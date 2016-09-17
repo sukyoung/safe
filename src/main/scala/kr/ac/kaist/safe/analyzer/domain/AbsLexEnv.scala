@@ -13,6 +13,7 @@ package kr.ac.kaist.safe.analyzer.domain
 
 import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.analyzer.models.builtin.BuiltinGlobal
+import kr.ac.kaist.safe.LINE_SEP
 import scala.collection.immutable.{ HashSet, HashMap }
 
 /* 10.2 Lexical Environments */
@@ -141,8 +142,13 @@ object DefaultLexEnv extends AbsLexEnvUtil {
     }
 
     override def toString: String = {
-      record.toString +
-        s"outer: $outer, $nullOuter"
+      val s = new StringBuilder
+      var lst: List[String] = Nil
+      s.append(record).append(LINE_SEP)
+      if (!outer.isBottom) lst ::= outer.toString
+      if (!nullOuter.isBottom) lst ::= "null"
+      s.append("* Outer: ").append(lst.mkString(", "))
+      s.toString
     }
 
     def copyWith(

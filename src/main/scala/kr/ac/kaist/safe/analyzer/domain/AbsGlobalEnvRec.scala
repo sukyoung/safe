@@ -103,8 +103,8 @@ object DefaultGlobalEnvRec extends AbsGlobalEnvRecUtil {
     }
 
     override def toString: String = this match {
-      case Bot => "⊥(global environment)"
-      case Top => "Top(global environment)"
+      case Bot => "⊥(global environment record)"
+      case Top => "Top(global environment record)"
     }
 
     // 10.2.1.2.1 HasBinding(N)
