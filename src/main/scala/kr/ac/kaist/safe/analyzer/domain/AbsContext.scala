@@ -106,7 +106,7 @@ object DefaultContext extends AbsContextUtil {
     thisBinding: AbsLoc
   ): AbsContext = CtxMap(map, old, thisBinding)
 
-  abstract class Dom extends AbsContext {
+  sealed abstract class Dom extends AbsContext {
     def gamma: ConSet[Context] = ConInf() // TODO more precise
 
     def getSingle: ConSingle[Context] = ConMany() // TODO more precise

@@ -23,7 +23,7 @@ lazy val root = (project in file(".")).
     name := "SAFE",
     version := "2.0",
     organization := "kr.ac.kaist.safe",
-    scalaVersion := "2.11.7",
+    scalaVersion := "2.12.0-M5",
     checkCopyrights in Compile := {
       val violated: String = (baseDirectory.value + "/bin/checkCopyrights.sh" !!)
       if (violated != "") {
@@ -65,8 +65,8 @@ unmanagedJars in Compile ++= Seq(file("lib/xtc.jar"), file("lib/jline-2.12.jar")
 cleanFiles ++= Seq(file("src/main/java/kr/ac/kaist/safe/parser/"))
 
 libraryDependencies ++= Seq(
-  "org.scalatest" % "scalatest_2.11" % "2.2.0" % "test" withSources,
-  "org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.1" withSources
+  "org.scalatest" % "scalatest_2.12.0-M5" % "3.0.0" % "test" withSources,
+  "org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.4" withSources
 )
 
 javacOptions ++= Seq("-encoding", "UTF-8")
