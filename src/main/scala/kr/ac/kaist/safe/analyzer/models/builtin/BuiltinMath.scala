@@ -120,19 +120,77 @@ object BuiltinMath extends ObjModel(
       })
     ), T, F, T),
 
-    //TODO max
     NormalProp("max", FuncModel(
       name = "Math.max",
       code = SimpleCode(argLen = 2, (args, h) => {
-        AbsValue(AbsNumber.Top)
+        val resV = Helper.propLoad(args, Set(AbsString("length")), h)
+        def uintCheck(num: Double): Boolean = {
+          val uint = num.toLong
+          (num == uint) && (uint > 0 || (num compare 0.0) == 0)
+        }
+        def nArg(i: Int): AbsNumber = {
+          TypeConversionHelper.ToNumber(
+            Helper.propLoad(args, Set(AbsString(i.toString)), h)
+          )
+        }
+        resV.pvalue.numval.getSingle match {
+          case ConZero() => AbsNumber.Bot
+          case ConOne(Num(0)) => AbsNumber.NegInf
+          case ConOne(Num(num)) if uintCheck(num) => {
+            val len = num.toInt
+            val nanN =
+              if ((0 until len).exists(AbsNumber.NaN <= nArg(_))) AbsNumber.NaN
+              else AbsNumber.Bot
+            val maxN = (1 until len).foldLeft(nArg(0)) {
+              case (absN, i) => {
+                val curN = nArg(i)
+                (absN < curN).map[AbsNumber](
+                  thenV = curN,
+                  elseV = absN
+                )(AbsNumber)
+              }
+            }
+            nanN + maxN
+          }
+          case ConMany() => AbsNumber.Top
+        }
       })
     ), T, F, T),
 
-    //TODO min
     NormalProp("min", FuncModel(
       name = "Math.min",
       code = SimpleCode(argLen = 2, (args, h) => {
-        AbsValue(AbsNumber.Top)
+        val resV = Helper.propLoad(args, Set(AbsString("length")), h)
+        def uintCheck(num: Double): Boolean = {
+          val uint = num.toLong
+          (num == uint) && (uint > 0 || (num compare 0.0) == 0)
+        }
+        def nArg(i: Int): AbsNumber = {
+          TypeConversionHelper.ToNumber(
+            Helper.propLoad(args, Set(AbsString(i.toString)), h)
+          )
+        }
+        resV.pvalue.numval.getSingle match {
+          case ConZero() => AbsNumber.Bot
+          case ConOne(Num(0)) => AbsNumber.PosInf
+          case ConOne(Num(num)) if uintCheck(num) => {
+            val len = num.toInt
+            val nanN =
+              if ((0 until len).exists(AbsNumber.NaN <= nArg(_))) AbsNumber.NaN
+              else AbsNumber.Bot
+            val minN = (1 until len).foldLeft(nArg(0)) {
+              case (absN, i) => {
+                val curN = nArg(i)
+                (absN < curN).map[AbsNumber](
+                  thenV = absN,
+                  elseV = curN
+                )(AbsNumber)
+              }
+            }
+            nanN + minN
+          }
+          case ConMany() => AbsNumber.Top
+        }
       })
     ), T, F, T),
 
