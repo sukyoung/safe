@@ -56,8 +56,6 @@ trait Heap {
   def hasOwnProperty(loc: Loc, absStr: AbsString): AbsBool
   def isArray(loc: Loc): AbsBool
   def isObject(loc: Loc): AbsBool
-  def canPut(loc: Loc, absStr: AbsString): AbsBool
-  def canPutHelp(curLoc: Loc, absStr: AbsString, origLoc: Loc): AbsBool
   def canPutVar(x: String): AbsBool
 
   ////////////////////////////////////////////////////////////////
@@ -332,37 +330,6 @@ class DHeap(val map: Map[Loc, AbsObject]) extends Heap {
     this.get(loc) contains IClass
   }
 
-  def canPut(loc: Loc, absStr: AbsString): AbsBool = canPutHelp(loc, absStr, loc)
-
-  def canPutHelp(curLoc: Loc, absStr: AbsString, origLoc: Loc): AbsBool = {
-    var visited = AbsLoc.Bot
-    def visit(visitLoc: Loc): AbsBool = {
-      if (visited contains visitLoc) AbsBool.Bot
-      else {
-        visited += visitLoc
-        val domInStr = this.get(visitLoc) contains absStr
-        val b1 =
-          if (AbsBool.True <= domInStr) this.get(visitLoc)(absStr).writable
-          else AbsBool.Bot
-        val b2 =
-          if (AbsBool.False <= domInStr) {
-            val protoObj = this.get(visitLoc)(IPrototype)
-            val protoLocSet = protoObj.value.locset
-            val b3 = protoObj.value.pvalue.nullval.fold(AbsBool.Bot)(_ => {
-              this.get(visitLoc)(IExtensible).value.pvalue.boolval
-            })
-            val b4 = protoLocSet.foldLeft(AbsBool.Bot)((absB, loc) => absB + visit(loc))
-            val b5 =
-              if (AbsBool.False <= b4) this.get(origLoc)(IExtensible).value.pvalue.boolval
-              else AbsBool.Bot
-            b3 + b4 + b5
-          } else AbsBool.Bot
-        b1 + b2
-      }
-    }
-    visit(curLoc)
-  }
-
   def canPutVar(x: String): AbsBool = {
     val globalLoc = BuiltinGlobal.loc
     val globalObj = this.get(globalLoc)
@@ -371,7 +338,7 @@ class DHeap(val map: Map[Loc, AbsObject]) extends Heap {
       if (AbsBool.True <= domIn) globalObj(x).writable
       else AbsBool.Bot
     val b2 =
-      if (AbsBool.False <= domIn) canPut(globalLoc, AbsString(x))
+      if (AbsBool.False <= domIn) this.get(globalLoc).CanPut(x, this)
       else AbsBool.Bot
     b1 + b2
   }

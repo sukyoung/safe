@@ -13,6 +13,7 @@ package kr.ac.kaist.safe.analyzer.domain
 
 import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.LINE_SEP
+import kr.ac.kaist.safe.analyzer.TypeConversionHelper
 
 import scala.collection.immutable.HashSet
 
@@ -183,7 +184,7 @@ class AbsObject(
   ///////////////////////////////////////////////////////////////
   // Section 8.12.1 [[GetOwnProperty]](P)
   def GetOwnProperty(P: String): AbsDataProp = {
-    val astr = AbsString.alpha(P)
+    val astr = AbsString(P)
     GetOwnProperty(astr)
   }
 
@@ -198,15 +199,29 @@ class AbsObject(
   }
 
   // Section 8.12.2 [[GetProperty]](P)
+  def GetProperty(P: String, h: Heap): AbsDataProp = {
+    val astr = AbsString(P)
+    GetProperty(astr, h)
+  }
+
   def GetProperty(P: AbsString, h: Heap): AbsDataProp = {
-    val prop = GetOwnProperty(P)
-    if (prop.value.pvalue.undefval </ AbsUndef.Bot) {
-      val proto = this(IPrototype)
-      if (proto.value.pvalue.nullval </ AbsNull.Bot || proto.value.locset.isBottom)
-        prop.copyWith(prop.value + AbsValue(AbsUndef.Top))
-      else
-        proto.value.locset.foldLeft(prop)((dp, loc) => dp + h.get(loc).GetProperty(P, h))
-    } else prop
+    var visited = HashSet[Loc]()
+    def visit(currObj: AbsObject): AbsDataProp = {
+      val prop = currObj.GetOwnProperty(P)
+      if (prop.value.pvalue.undefval </ AbsUndef.Bot) {
+        val proto = currObj(IPrototype)
+        if (proto.value.pvalue.nullval </ AbsNull.Bot || proto.value.locset.isBottom)
+          prop.copyWith(prop.value + AbsValue(AbsUndef.Top))
+        else
+          proto.value.locset.foldLeft(prop)((dp, loc) =>
+            if (visited contains loc) dp
+            else {
+              visited += loc
+              dp + visit(h.get(loc))
+            })
+      } else prop
+    }
+    visit(this)
   }
 
   // Section 8.12.3 [[Get]](P)
@@ -265,6 +280,30 @@ class AbsObject(
   }
 
   // Section 8.12.4 [[CanPut]](P)
+  def CanPut(P: String, h: Heap): AbsBool = this.CanPut(AbsString(P), h)
+
+  def CanPut(P: AbsString, h: Heap): AbsBool = {
+    var visited = HashSet[Loc]()
+    val desc = this.GetOwnProperty(P)
+    if (AbsUndef.Top </ desc.value.pvalue.undefval) desc.writable
+    else {
+      val proto = this(IPrototype).value
+      val extensible = this(IExtensible).value.pvalue.boolval
+      val nullProtoCase =
+        if (AbsNull.Top <= proto.pvalue.nullval) extensible
+        else AbsBool.Bot
+      val inherited = proto.locset.foldLeft(AbsDataProp.Bot)((b, loc) =>
+        if (visited contains loc) b
+        else {
+          visited += loc
+          b + this.GetProperty(P, h)
+        })
+      val undefInheritCase =
+        if (AbsUndef.Top <= inherited.value.pvalue.undefval) extensible
+        else extensible && inherited.writable
+      nullProtoCase + undefInheritCase
+    }
+  }
 
   // Section 8.12.5 [[Put]](P, V, Throw)
 
@@ -288,6 +327,49 @@ class AbsObject(
   }
 
   // Section 8.12.8 [[DefaultValue]](hint)
+  def DefaultValue(hint: String, h: Heap): AbsPValue = {
+    hint match {
+      case "String" => DefaultValueAsString(h)
+      case "Number" => DefaultValueAsNumber(h)
+      case _ => DefaultValue(h)
+    }
+  }
+
+  def DefaultValue(h: Heap): AbsPValue = {
+    val className = this(IClass)
+    val isDateClass = className.value.pvalue.strval === AbsString("Date")
+    isDateClass.map(this.DefaultValueAsString(h), this.DefaultValueAsNumber(h))(AbsPValue)
+  }
+
+  private def DefaultValueAsString(h: Heap): AbsPValue = {
+    val toString = this.Get("toString", h)
+    val isCallable = TypeConversionHelper.IsCallable(toString, h)
+    val str =
+      if (AbsBool.True <= isCallable) AbsPValue(AbsString.Top)
+      else AbsPValue.Bot
+    if (AbsBool.False <= isCallable) {
+      val valueOf = this.Get("valueOf", h)
+      val value =
+        if (AbsBool.True <= TypeConversionHelper.IsCallable(valueOf, h)) AbsPValue.Top
+        else AbsPValue.Bot
+      str + value
+    } else str
+  }
+
+  private def DefaultValueAsNumber(h: Heap): AbsPValue = {
+    val valueOf = this.Get("valueOf", h)
+    val isCallable = TypeConversionHelper.IsCallable(valueOf, h)
+    val value =
+      if (AbsBool.True <= isCallable) AbsPValue.Top
+      else AbsPValue.Bot
+    if (AbsBool.False <= isCallable) {
+      val toString = this.Get("toString", h)
+      val str =
+        if (AbsBool.True <= TypeConversionHelper.IsCallable(toString, h)) AbsPValue(AbsString.Top)
+        else AbsPValue.Bot
+      value + str
+    } else value
+  }
 
   //Section 8.12.9 [[DefineOwnProperty]](P, Desc, Throw)
 }
