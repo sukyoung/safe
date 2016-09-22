@@ -306,8 +306,56 @@ class AbsObject(
   }
 
   // Section 8.12.5 [[Put]](P, V, Throw)
+  def Put(P: AbsString, V: AbsValue, Throw: Boolean = true, h: Heap): (AbsObject, Set[Exception]) = {
+    def IsDataDescriptor(dataProp: AbsDataProp): AbsBool = {
+      if (AbsUndef.Top <= dataProp.value) {
+        if (dataProp.value <= AbsUndef.Top) AbsBool.False
+        else AbsBool.Top
+      } else AbsBool.True
+    }
+
+    val canPut = this.CanPut(P, h)
+    val excSet1 =
+      if (AbsBool.False <= canPut) ExcSetEmpty + TypeError
+      else ExcSetEmpty
+    if (AbsBool.True <= canPut) {
+      val ownDesc = this.GetOwnProperty(P)
+      val (obj2, b2, excSet2) =
+        if (AbsBool.True <= IsDataDescriptor(ownDesc)) {
+          val valueDesc = AbsDataProp(V, AbsBool.Bot, AbsBool.Bot, AbsBool.Bot)
+          this.DefineOwnProperty(P, valueDesc, Throw)
+        } else (this, AbsBool.Bot, ExcSetEmpty)
+      val desc = this.GetProperty(P, h)
+      val newDesc = AbsDataProp(V, AbsBool.True, AbsBool.True, AbsBool.True)
+      val (obj3, b3, excSet3) = this.DefineOwnProperty(P, newDesc)
+      (obj2 + obj3, excSet1 ++ excSet2 ++ excSet3)
+    } else
+      (this, excSet1)
+  }
 
   // Section 8.12.6 [[HasProperty]](P)
+  def HasProperty(P: AbsString, h: Heap): AbsBool = {
+    var visited = AbsLoc.Bot
+    def visit(currObj: AbsObject): AbsBool = {
+      val test = currObj contains P
+      val b1 =
+        if (AbsBool.True <= test) AbsBool.True
+        else AbsBool.Bot
+      val b2 =
+        if (AbsBool.False <= test) {
+          val protoV = currObj(IPrototype).value
+          val b3 = protoV.pvalue.nullval.fold(AbsBool.Bot) { _ => AbsBool.False }
+          b3 + protoV.locset.foldLeft[AbsBool](AbsBool.Bot)((b, protoLoc) =>
+            if (visited contains protoLoc) b
+            else {
+              visited += protoLoc
+              b + visit(h.get(protoLoc))
+            })
+        } else AbsBool.Bot
+      b1 + b2
+    }
+    visit(this)
+  }
 
   // Section 8.12.7 [[Delete]](P, Throw)
   def Delete(str: String): (AbsObject, AbsBool) = {
@@ -372,4 +420,38 @@ class AbsObject(
   }
 
   //Section 8.12.9 [[DefineOwnProperty]](P, Desc, Throw)
+  def DefineOwnProperty(P: AbsString, Desc: AbsDataProp, Throw: Boolean = true): (AbsObject, AbsBool, Set[Exception]) = {
+    def Reject: (AbsBool, Set[Exception]) =
+      if (Throw) (AbsBool.Bot, ExcSetEmpty + TypeError)
+      else (AbsBool.False, ExcSetEmpty)
+
+    val current = this.GetOwnProperty(P)
+    val extensible = this(IExtensible).value.pvalue.boolval
+
+    val (b, excSet) =
+      if (AbsUndef.Top <= current.value && AbsBool.False <= extensible) Reject
+      else (AbsBool.Bot, ExcSetEmpty)
+
+    // below are estimation of DefineOwnProperty
+    val objDomIn = this contains P
+    if (objDomIn == AbsBool.Top) {
+      val oldObjV = this(P)
+      val newObjV = AbsDataProp(
+        Desc.value,
+        oldObjV.writable + Desc.writable,
+        oldObjV.enumerable + Desc.enumerable,
+        oldObjV.configurable + Desc.configurable
+      )
+      (this.update(P, newObjV), AbsBool.True + b, excSet)
+    } else if (objDomIn == AbsBool.True) {
+      val oldObjV: AbsDataProp = this(P)
+      val newObjV = oldObjV.copyWith(Desc.value)
+      (this.update(P, newObjV), AbsBool.True + b, excSet)
+    } else if (objDomIn == AbsBool.False) {
+      val newObjV = AbsDataProp(Desc.value, AbsBool.True, AbsBool.True, AbsBool.True)
+      (this.update(P, newObjV), AbsBool.True + b, excSet)
+    } else {
+      (AbsObjectUtil.Bot, b, excSet)
+    }
+  }
 }

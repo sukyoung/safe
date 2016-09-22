@@ -148,7 +148,7 @@ case class State(heap: Heap, context: AbsContext) {
         val globalLoc = BuiltinGlobal.loc
         val objV = AbsDataProp(value, AbsBool.True, AbsBool.True, AbsBool.False)
         val newHeap =
-          if (AbsBool.True == heap.hasProperty(globalLoc, AbsString(x))) heap
+          if (AbsBool.True == heap.get(globalLoc).HasProperty(AbsString(x), heap)) heap
           else heap.update(globalLoc, heap.get(globalLoc).update(x, objV))
         State(newHeap, context)
     }
