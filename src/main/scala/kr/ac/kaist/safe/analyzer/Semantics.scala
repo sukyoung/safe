@@ -693,7 +693,7 @@ class Semantics(
               case "in" => {
                 val str = TypeConversionHelper.ToString(v1, st.heap)
                 val absB = v2.locset.foldLeft(AB)((tmpAbsB, loc) => {
-                  tmpAbsB + st.heap.hasProperty(loc, str)
+                  tmpAbsB + st.heap.get(loc).HasProperty(str, st.heap)
                 })
                 val b = AbsValue(AbsPValue(absB))
                 val excSet3 =

@@ -29,7 +29,7 @@ object Helper {
       val nOldLen = heap.get(l)("length").value.pvalue.numval
       val nNewLen = typeHelper.ToUInt32(storeV)
       val nValue = typeHelper.ToNumber(storeV)
-      val bCanPut = heap.canPut(l, AbsString("length"))
+      val bCanPut = heap.get(l).CanPut("length", heap)
 
       val arrLengthHeap2 =
         if ((atrue <= (nOldLen < nNewLen)
@@ -84,7 +84,7 @@ object Helper {
       val nIndex = typeHelper.ToUInt32(AbsValue(numPV))
       val bGtEq = atrue <= (nOldLen < nIndex) ||
         atrue <= (nOldLen === nIndex)
-      val bCanPutLen = heap.canPut(l, AbsString("length"))
+      val bCanPutLen = heap.get(l).CanPut("length", heap)
       // 4.b
       val arrIndexHeap1 =
         if (bGtEq && afalse <= bCanPutLen) heap
@@ -110,14 +110,14 @@ object Helper {
   def storeHelp(objLocSet: AbsLoc, idxAbsStr: AbsString, storeV: AbsValue, heap: Heap): (Heap, Set[Exception]) = {
     // non-array objects
     val locSetNArr = objLocSet.filter(l =>
-      (afalse <= heap.isArray(l)) && atrue <= heap.canPut(l, idxAbsStr))
+      (afalse <= heap.isArray(l)) && atrue <= heap.get(l).CanPut(idxAbsStr, heap))
     // array objects
     val locSetArr = objLocSet.filter(l =>
-      (atrue <= heap.isArray(l)) && atrue <= heap.canPut(l, idxAbsStr))
+      (atrue <= heap.isArray(l)) && atrue <= heap.get(l).CanPut(idxAbsStr, heap))
 
     // can not store
     val cantPutHeap =
-      if (objLocSet.exists((l) => afalse <= heap.canPut(l, idxAbsStr))) heap
+      if (objLocSet.exists((l) => afalse <= heap.get(l).CanPut(idxAbsStr, heap))) heap
       else Heap.Bot
 
     // store for non-array object

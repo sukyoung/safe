@@ -116,7 +116,7 @@ object DefaultGlobalEnvRec extends AbsGlobalEnvRecUtil {
       // 3. Return the result of calling the [[HasProperty]] internal method
       //    of bindings, passing N as the property name.
       // TODO refactoring after defining [[HasProperty]] for Obj.
-      heap.hasProperty(GLOBAL_LOC, AbsString(name))
+      heap.get(GLOBAL_LOC).HasProperty(AbsString(name), heap)
     }
 
     // 10.2.1.2.2 CreateMutableBinding(N, D)
@@ -132,7 +132,7 @@ object DefaultGlobalEnvRec extends AbsGlobalEnvRecUtil {
         val bindings = getGlobalObj(heap)
         // 3. Assert: The result of calling the [[HasProperty]] internal method
         //    of bindings, passing N as the property name, is false.
-        if (AbsBool.False <= heap.hasProperty(GLOBAL_LOC, AbsString(name))) {
+        if (AbsBool.False <= heap.get(GLOBAL_LOC).HasProperty(AbsString(name), heap)) {
           // 4. If D is true then let configValue be true
           //    otherwise let configValue be false.
           val configValue = AbsBool(del)
@@ -176,7 +176,7 @@ object DefaultGlobalEnvRec extends AbsGlobalEnvRecUtil {
         val bindings = getGlobalObj(heap)
         // 3. Let value be the result of calling the [[HasProperty]]
         //    internal method of bindings, passing N as the property name.
-        val value = heap.hasProperty(GLOBAL_LOC, AbsString(name))
+        val value = heap.get(GLOBAL_LOC).HasProperty(AbsString(name), heap)
         var excSet = ExcSetEmpty
         val retV = value.map[AbsValue](
           // 4. If value is false, then

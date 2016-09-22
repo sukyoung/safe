@@ -52,12 +52,8 @@ trait Heap {
   ////////////////////////////////////////////////////////////////
   def hasConstruct(loc: Loc)(absBool: AbsBoolUtil): AbsBool
   def hasInstance(loc: Loc)(absBool: AbsBoolUtil): AbsBool
-  def hasProperty(loc: Loc, absStr: AbsString): AbsBool
-  def hasOwnProperty(loc: Loc, absStr: AbsString): AbsBool
   def isArray(loc: Loc): AbsBool
   def isObject(loc: Loc): AbsBool
-  def canPut(loc: Loc, absStr: AbsString): AbsBool
-  def canPutHelp(curLoc: Loc, absStr: AbsString, origLoc: Loc): AbsBool
   def canPutVar(x: String): AbsBool
 
   ////////////////////////////////////////////////////////////////
@@ -282,36 +278,6 @@ class DHeap(val map: Map[Loc, AbsObject]) extends Heap {
     b1 + b2
   }
 
-  def hasProperty(loc: Loc, absStr: AbsString): AbsBool = {
-    var visited = AbsLoc.Bot
-    def visit(currentLoc: Loc): AbsBool = {
-      if (visited.contains(currentLoc)) AbsBool.Bot
-      else {
-        visited += currentLoc
-        val test = hasOwnProperty(currentLoc, absStr)
-        val b1 =
-          if (AbsBool.True <= test) AbsBool.True
-          else AbsBool.Bot
-        val b2 =
-          if (AbsBool.False <= test) {
-            val protoV = this.get(currentLoc)(IPrototype).value
-            val b3 = protoV.pvalue.nullval.fold(AbsBool.Bot) { _ => AbsBool.False }
-            b3 + protoV.locset.foldLeft[AbsBool](AbsBool.Bot)((b, protoLoc) => {
-              b + visit(protoLoc)
-            })
-          } else {
-            AbsBool.Bot
-          }
-        b1 + b2
-      }
-    }
-    visit(loc)
-  }
-
-  def hasOwnProperty(loc: Loc, absStr: AbsString): AbsBool = {
-    this.get(loc) contains absStr
-  }
-
   def isArray(loc: Loc): AbsBool = {
     val className = this.get(loc)(IClass).value.pvalue.strval
     val arrayAbsStr = AbsString.alpha("Array")
@@ -332,37 +298,6 @@ class DHeap(val map: Map[Loc, AbsObject]) extends Heap {
     this.get(loc) contains IClass
   }
 
-  def canPut(loc: Loc, absStr: AbsString): AbsBool = canPutHelp(loc, absStr, loc)
-
-  def canPutHelp(curLoc: Loc, absStr: AbsString, origLoc: Loc): AbsBool = {
-    var visited = AbsLoc.Bot
-    def visit(visitLoc: Loc): AbsBool = {
-      if (visited contains visitLoc) AbsBool.Bot
-      else {
-        visited += visitLoc
-        val domInStr = this.get(visitLoc) contains absStr
-        val b1 =
-          if (AbsBool.True <= domInStr) this.get(visitLoc)(absStr).writable
-          else AbsBool.Bot
-        val b2 =
-          if (AbsBool.False <= domInStr) {
-            val protoObj = this.get(visitLoc)(IPrototype)
-            val protoLocSet = protoObj.value.locset
-            val b3 = protoObj.value.pvalue.nullval.fold(AbsBool.Bot)(_ => {
-              this.get(visitLoc)(IExtensible).value.pvalue.boolval
-            })
-            val b4 = protoLocSet.foldLeft(AbsBool.Bot)((absB, loc) => absB + visit(loc))
-            val b5 =
-              if (AbsBool.False <= b4) this.get(origLoc)(IExtensible).value.pvalue.boolval
-              else AbsBool.Bot
-            b3 + b4 + b5
-          } else AbsBool.Bot
-        b1 + b2
-      }
-    }
-    visit(curLoc)
-  }
-
   def canPutVar(x: String): AbsBool = {
     val globalLoc = BuiltinGlobal.loc
     val globalObj = this.get(globalLoc)
@@ -371,7 +306,7 @@ class DHeap(val map: Map[Loc, AbsObject]) extends Heap {
       if (AbsBool.True <= domIn) globalObj(x).writable
       else AbsBool.Bot
     val b2 =
-      if (AbsBool.False <= domIn) canPut(globalLoc, AbsString(x))
+      if (AbsBool.False <= domIn) this.get(globalLoc).CanPut(x, this)
       else AbsBool.Bot
     b1 + b2
   }
@@ -441,27 +376,10 @@ class DHeap(val map: Map[Loc, AbsObject]) extends Heap {
   // Store
   ////////////////////////////////////////////////////////////////
   def propStore(loc: Loc, absStr: AbsString, value: AbsValue): Heap = {
+    //TODO: propagate type error of [[Put]] to semantics
     val findingObj = this.get(loc)
-    val objDomIn = findingObj contains absStr
-    if (objDomIn == AbsBool.Top) {
-      val oldObjV: AbsDataProp = findingObj(absStr)
-      val newObjV = AbsDataProp(
-        value,
-        oldObjV.writable + AbsBool.True,
-        oldObjV.enumerable + AbsBool.True,
-        oldObjV.configurable + AbsBool.True
-      )
-      this.update(loc, findingObj.update(absStr, newObjV))
-    } else if (objDomIn == AbsBool.True) {
-      val oldObjV: AbsDataProp = findingObj(absStr)
-      val newObjV = oldObjV.copyWith(value)
-      this.update(loc, findingObj.update(absStr, newObjV))
-    } else if (objDomIn == AbsBool.False) {
-      val newObjV = AbsDataProp(value, AbsBool.True, AbsBool.True, AbsBool.True)
-      this.update(loc, findingObj.update(absStr, newObjV))
-    } else {
-      Heap.Bot
-    }
+    val (obj, _) = findingObj.Put(absStr, value, true, this)
+    this.update(loc, obj)
   }
 
   ////////////////////////////////////////////////////////////////
