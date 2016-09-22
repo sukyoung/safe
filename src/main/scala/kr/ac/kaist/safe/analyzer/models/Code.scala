@@ -81,15 +81,15 @@ object BasicCode {
   ): BasicCode = new BasicCode(argLen, code)
 }
 
-class SimpleCode(
+class PureCode(
   override val argLen: Int = 0,
   code: (AbsValue, Heap) => AbsValue
 ) extends BasicCode(argLen, (v: AbsValue, st: State) => {
   (st, State.Bot, code(v, st.heap))
 })
-object SimpleCode {
+object PureCode {
   def apply(
     argLen: Int = 0,
     code: (AbsValue, Heap) => AbsValue
-  ): SimpleCode = new SimpleCode(argLen, code)
+  ): PureCode = new PureCode(argLen, code)
 }

@@ -23,7 +23,7 @@ object BuiltinBoolean extends FuncModel(
   name = "Boolean",
 
   // 15.6.1 The Boolean Constructor Called as a Function: Boolean([value])
-  code = SimpleCode(argLen = 1, code = (
+  code = PureCode(argLen = 1, code = (
     args, h
   ) => {
     val argV = Helper.propLoad(args, Set(AbsString("0")), h)
