@@ -38,7 +38,7 @@ trait AbsGlobalEnvRec extends AbsDomain[GlobalEnvRec, AbsGlobalEnvRec] {
   def CreateMutableBinding(
     name: String,
     del: Boolean
-  )(heap: Heap): (AbsGlobalEnvRec, Heap)
+  )(heap: Heap): (AbsGlobalEnvRec, Heap, Set[Exception])
 
   // 10.2.1.2.3 SetMutableBinding(N, V, S)
   def SetMutableBinding(
@@ -115,7 +115,6 @@ object DefaultGlobalEnvRec extends AbsGlobalEnvRecUtil {
       val bindings = getGlobalObj(heap)
       // 3. Return the result of calling the [[HasProperty]] internal method
       //    of bindings, passing N as the property name.
-      // TODO refactoring after defining [[HasProperty]] for Obj.
       heap.get(GLOBAL_LOC).HasProperty(AbsString(name), heap)
     }
 
@@ -123,8 +122,8 @@ object DefaultGlobalEnvRec extends AbsGlobalEnvRecUtil {
     def CreateMutableBinding(
       name: String,
       del: Boolean
-    )(heap: Heap): (AbsGlobalEnvRec, Heap) = this match {
-      case Bot => (Bot, Heap.Bot)
+    )(heap: Heap): (AbsGlobalEnvRec, Heap, Set[Exception]) = this match {
+      case Bot => (Bot, Heap.Bot, ExcSetEmpty)
       case Top =>
         // 1. Let envRec be the object environment record for
         //    which the method was invoked.
@@ -140,9 +139,13 @@ object DefaultGlobalEnvRec extends AbsGlobalEnvRecUtil {
           //    passing N, Property Descriptor {[[Value]]:undefined,
           //    [[Writable]]: true, [[Enumerable]]: true , [[Configurable]]:
           //    configValue}, and true as arguments.
-          // TODO refactoring after defining [[DefineOwnProperty]] for Obj.
-          (this, heap.propStore(BuiltinGlobal.loc, AbsString(name), AbsUndef.Top))
-        } else { (Bot, Heap.Bot) }
+          val (newObj, _, excSet) = bindings.DefineOwnProperty(
+            AbsString(name),
+            AbsDataProp(AbsUndef.Top, AbsBool.True, AbsBool.True, AbsBool.True),
+            true
+          )
+          (this, heap.update(BuiltinGlobal.loc, newObj), excSet)
+        } else { (Bot, Heap.Bot, ExcSetEmpty) }
     }
 
     // 10.2.1.2.3 SetMutableBinding(N, V, S)
@@ -159,8 +162,12 @@ object DefaultGlobalEnvRec extends AbsGlobalEnvRecUtil {
         val bindings = getGlobalObj(heap)
         // 3. Call the [[Put]] internal method of bindings with
         //    arguments N, V, and S.
-        // TODO refactoring after defining [[Put]] for Obj.
-        (this, heap.propStore(BuiltinGlobal.loc, AbsString(name), v), ExcSetEmpty)
+        val (newObj, excSet) = bindings.Put(AbsString(name), v, strict, heap)
+        (
+          this,
+          heap.update(BuiltinGlobal.loc, newObj),
+          excSet
+        )
     }
 
     // 10.2.1.2.4 GetBindingValue(N, S)
@@ -187,7 +194,6 @@ object DefaultGlobalEnvRec extends AbsGlobalEnvRecUtil {
           else { AbsUndef.Top },
           // 5. Return the result of calling the [[Get]] internal method of
           //    bindings, passing N for the argument.
-          // TODO refactoring after defining [[Get]] for Obj.
           thenV = heap.get(GLOBAL_LOC).Get(name, heap)
         )(AbsValue)
         (retV, excSet)

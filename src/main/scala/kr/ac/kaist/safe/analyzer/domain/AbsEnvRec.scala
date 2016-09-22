@@ -35,7 +35,7 @@ trait AbsEnvRec extends AbsDomain[EnvRec, AbsEnvRec] {
   def CreateMutableBinding(
     name: String,
     del: Boolean
-  )(heap: Heap): (AbsEnvRec, Heap)
+  )(heap: Heap): (AbsEnvRec, Heap, Set[Exception])
 
   // 10.2.1.2.3 SetMutableBinding(N, V, S)
   def SetMutableBinding(
@@ -134,10 +134,10 @@ object DefaultEnvRec extends AbsEnvRecUtil {
     def CreateMutableBinding(
       name: String,
       del: Boolean
-    )(heap: Heap): (AbsEnvRec, Heap) = {
+    )(heap: Heap): (AbsEnvRec, Heap, Set[Exception]) = {
       val newD = decEnvRec.CreateMutableBinding(name, del)
-      val (newG, newH) = globalEnvRec.CreateMutableBinding(name, del)(heap)
-      (Dom(newD, newG), newH)
+      val (newG, newH, excSet) = globalEnvRec.CreateMutableBinding(name, del)(heap)
+      (Dom(newD, newG), newH, excSet)
     }
 
     // 10.2.1.2.3 SetMutableBinding(N, V, S)
