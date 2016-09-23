@@ -20,7 +20,9 @@ object BuiltinNumber extends FuncModel(
   // TODO @function
   code = EmptyCode(argLen = 1),
   props = List(
+    // the largest positive finite value of the Number type, which is approximately 1.7976931348623157*10^308
     NormalProp("MAX_VALUE", PrimModel(Double.MaxValue), F, F, F),
+    // the smallest positive value of the Number type, which is approximately 5*10^-324
     NormalProp("MIN_VALUE", PrimModel(Double.MinPositiveValue), F, F, F),
     NormalProp("NaN", PrimModel(Double.NaN), F, F, F),
     NormalProp("NEGATIVE_INFINITY", PrimModel(Double.NegativeInfinity), F, F, F),
