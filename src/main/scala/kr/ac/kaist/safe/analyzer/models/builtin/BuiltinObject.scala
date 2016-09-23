@@ -35,9 +35,7 @@ object BuiltinObject extends FuncModel(
     //    a new Object object exactly as if the standard built-in Object
     //    constructor had been called with the same arguments.
     val pv = argV.pvalue
-    val (v1, st1) = if (!pv.undefval.isBottom ||
-      !pv.nullval.isBottom ||
-      argV.isBottom) {
+    val (v1, st1) = if (!pv.undefval.isBottom || !pv.nullval.isBottom) {
       val state = st.oldify(addr)
       val loc = Loc(addr, Recent)
       val obj = AbsObjectUtil.newObject
