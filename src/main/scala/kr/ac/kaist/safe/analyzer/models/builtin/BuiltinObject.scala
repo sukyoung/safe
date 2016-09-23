@@ -102,16 +102,15 @@ object BuiltinObject extends FuncModel(
       ) => {
         val h = st.heap
         val argV = Helper.propLoad(args, Set(AbsString("0")), h)
-        val tmpAddr = SystemAddr("<temp>")
-
-        val (retV, retSt, excSet) = TypeConversionHelper.ToObject(argV, st, tmpAddr)
 
         // 1. If Type(O) is not Object throw a TypeError exception.
-        val excSt = st.raiseException(excSet)
+        val excSt =
+          if (argV.pvalue.isBottom) State.Bot
+          else st.raiseException(HashSet(TypeError))
 
         // 2. Return the value of [[Prototype]] internal property of O.
-        val protoV = retV.locset.foldLeft(AbsValue.Bot)((v, loc) => {
-          v + retSt.heap(loc).getOrElse(AbsObjectUtil.Bot)(IPrototype).value
+        val protoV = argV.locset.foldLeft(AbsValue.Bot)((v, loc) => {
+          v + h.get(loc)(IPrototype).value
         })
 
         (st, excSt, protoV)
