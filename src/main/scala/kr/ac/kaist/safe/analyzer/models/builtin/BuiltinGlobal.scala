@@ -12,7 +12,9 @@
 package kr.ac.kaist.safe.analyzer.models.builtin
 
 import kr.ac.kaist.safe.analyzer.domain._
+import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.analyzer.models._
+import kr.ac.kaist.safe.analyzer._
 import kr.ac.kaist.safe.util.NodeUtil
 
 object BuiltinGlobal extends ObjModel(
@@ -42,14 +44,34 @@ object BuiltinGlobal extends ObjModel(
 
     NormalProp("isNaN", FuncModel(
       name = "Global.isNaN",
-      // TODO code
-      code = EmptyCode(argLen = 1)
+      code = PureCode(argLen = 1, (args, h) => {
+        val resV = Helper.propLoad(args, Set(AbsString("0")), h)
+        val num = TypeConversionHelper.ToNumber(resV)
+        num.gamma match {
+          case ConFin(set) if set.size == 0 => AbsBool.Bot
+          case ConFin(set) if set.size == 1 => {
+            if (set.head.num.isNaN) AbsBool.True
+            else AbsBool.False
+          }
+          case _ => AbsBool.Top
+        }
+      })
     ), T, F, T),
 
     NormalProp("isFinite", FuncModel(
       name = "Global.isFinite",
-      // TODO code
-      code = EmptyCode(argLen = 1)
+      code = PureCode(argLen = 1, (args, h) => {
+        val resV = Helper.propLoad(args, Set(AbsString("0")), h)
+        val num = TypeConversionHelper.ToNumber(resV)
+        num.gamma match {
+          case ConFin(set) if set.size <= 3 => set.foldLeft(AbsBool.Bot) {
+            case (b, Num(n)) =>
+              if (n.isNaN || n.isInfinity) b + AbsBool.False
+              else b + AbsBool.True
+          }
+          case _ => AbsBool.Top
+        }
+      })
     ), T, F, T),
 
     NormalProp("decodeURI", FuncModel(
