@@ -324,10 +324,13 @@ class AbsObject(
         if (AbsBool.True <= IsDataDescriptor(ownDesc)) {
           val valueDesc = AbsDataProp(V, AbsBool.Bot, AbsBool.Bot, AbsBool.Bot)
           this.DefineOwnProperty(P, valueDesc, Throw)
-        } else (this, AbsBool.Bot, ExcSetEmpty)
-      val desc = this.GetProperty(P, h)
-      val newDesc = AbsDataProp(V, AbsBool.True, AbsBool.True, AbsBool.True)
-      val (obj3, b3, excSet3) = this.DefineOwnProperty(P, newDesc)
+        } else (AbsObjectUtil.Bot, AbsBool.Bot, ExcSetEmpty)
+      val (obj3, b3, excSet3) =
+        if (AbsBool.False <= IsDataDescriptor(ownDesc)) {
+          val desc = this.GetProperty(P, h)
+          val newDesc = AbsDataProp(V, AbsBool.True, AbsBool.True, AbsBool.True)
+          this.DefineOwnProperty(P, newDesc)
+        } else (AbsObjectUtil.Bot, AbsBool.Bot, ExcSetEmpty)
       (obj2 + obj3, excSet1 ++ excSet2 ++ excSet3)
     } else
       (this, excSet1)

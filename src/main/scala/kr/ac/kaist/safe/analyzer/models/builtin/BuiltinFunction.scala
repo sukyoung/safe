@@ -18,15 +18,17 @@ import kr.ac.kaist.safe.analyzer.models._
 object BuiltinFunction extends FuncModel(
   name = "Function",
   // TODO @function
+  // argLen: 15.3.3.2 Function.length
   code = EmptyCode(argLen = 1),
   // TODO @construct
   construct = Some(EmptyCode()),
+  // 15.3.3.1 Function.prototype
   protoModel = Some((BuiltinFunctionProto, F, F, F))
 )
 
 object BuiltinFunctionProto extends FuncModel(
   name = "Function.prototype",
-  // TODO @function
+  // 15.3.4
   code = EmptyCode(argLen = 0),
   props = List(
     InternalProp(IPrototype, BuiltinObjectProto),
