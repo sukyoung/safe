@@ -155,4 +155,29 @@ object AbsObjectUtil {
     if (locSet.isBottom) AbsPValue.Bot
     else locSet.foldLeft(AbsPValue.Bot)((pv, loc) => h.get(loc).DefaultValue(preferredType, h))
   }
+
+  // 8.10.4 FromPropertyDescriptor ( Desc )
+  def FromPropertyDescriptor(desc: AbsDesc): (AbsObject, Set[Exception]) = {
+    def put(
+      obj: AbsObject,
+      name: String,
+      pair: (AbsValue, AbsAbsent)
+    ): (AbsObject, AbsBool, Set[Exception]) = {
+      val T = (AbsBool.True, AbsAbsent.Bot)
+      obj.DefineOwnProperty(
+        AbsString(name),
+        AbsDesc(pair, T, T, T),
+        false
+      )
+    }
+    def toValue(pair: (AbsBool, AbsAbsent)): (AbsValue, AbsAbsent) = {
+      val (b, a) = pair
+      (AbsValue(b), a)
+    }
+    val (obj1, _, excSet1) = put(newObject, "value", desc.value)
+    val (obj2, _, excSet2) = put(obj1, "writable", toValue(desc.writable))
+    val (obj3, _, excSet3) = put(obj2, "enumerable", toValue(desc.enumerable))
+    val (obj4, _, excSet4) = put(obj3, "configurable", toValue(desc.configurable))
+    (obj4, excSet1 ++ excSet2 ++ excSet3 ++ excSet4)
+  }
 }

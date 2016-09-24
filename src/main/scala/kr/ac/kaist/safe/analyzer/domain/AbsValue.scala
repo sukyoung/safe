@@ -41,6 +41,7 @@ trait AbsValue extends AbsDomain[Value, AbsValue] {
 trait AbsValueUtil extends AbsDomainUtil[Value, AbsValue] {
   def apply(pvalue: AbsPValue): AbsValue
   def apply(locset: AbsLoc): AbsValue
+  def apply(pvalue: AbsPValue, locset: AbsLoc): AbsValue
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -57,6 +58,7 @@ object DefaultValue extends AbsValueUtil {
 
   def apply(pvalue: AbsPValue): AbsValue = Bot.copy(pvalue = pvalue)
   def apply(locset: AbsLoc): AbsValue = Bot.copy(locset = locset)
+  def apply(pvalue: AbsPValue, locset: AbsLoc): AbsValue = Dom(pvalue, locset)
 
   case class Dom(pvalue: AbsPValue, locset: AbsLoc) extends AbsValue {
     def gamma: ConSet[Value] = ConInf() // TODO more precisely

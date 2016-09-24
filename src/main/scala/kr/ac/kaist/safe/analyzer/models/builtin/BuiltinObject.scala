@@ -125,48 +125,34 @@ object BuiltinObject extends FuncModel(
       ) => {
         val h = st.heap
         val objV = Helper.propLoad(args, Set(AbsString("0")), h)
-        val strV = Helper.propLoad(args, Set(AbsString("1")), h)
-        val tmpAddr = SystemAddr("<temp>")
-        val descAddr = SystemAddr("Object.getOwnPropertyDescriptor<descriptor>")
-        val AT = AbsBool(true)
-        val AF = AbsBool(false)
-        val (locV, retSt, excSet) = TypeConversionHelper.ToObject(objV, st, tmpAddr)
+        val propV = Helper.propLoad(args, Set(AbsString("1")), h)
 
         // 1. If Type(O) is not Object throw a TypeError exception.
-        val excSt = st.raiseException(excSet)
+        val excSet1 =
+          if (objV.pvalue.isBottom) ExcSetEmpty
+          else HashSet(TypeError)
 
         // 2. Let name be ToString(P).
-        val name = TypeConversionHelper.ToString(strV)
+        val name = TypeConversionHelper.ToString(propV)
 
         // 3. Let desc be the result of calling the [[GetOwnProperty]]
         //    internal method of O with argument name.
-        // 4. Return the result of calling FromPropertyDescriptor(desc)
-        val obj = locV.locset.foldLeft(AbsObjectUtil.Bot)((obj, loc) => {
-          obj + retSt.heap.get(loc)
-        })
-        val isDomIn = (obj contains name)
-        val v1 =
-          if (AF <= isDomIn) AbsValue(Undef)
-          else AbsValue.Bot
-        val (state, v2) =
-          if (AT <= isDomIn) {
-            val objval = obj(name)
-            val valueV = objval.value
-            val writableV = AbsValue(objval.writable)
-            val enumerableV = AbsValue(objval.enumerable)
-            val configurableV = AbsValue(objval.configurable)
-            val descObj = AbsObjectUtil.newObject
-              .update("value", AbsDataProp(valueV, AT, AF, AT))
-              .update("writable", AbsDataProp(writableV, AT, AF, AT))
-              .update("enumerable", AbsDataProp(enumerableV, AT, AF, AT))
-              .update("configurable", AbsDataProp(configurableV, AT, AF, AT))
-            val state = st.oldify(descAddr)
-            val descLoc = Loc(descAddr, Recent)
-            val retHeap = state.heap.update(descLoc, descObj)
-            (State(retHeap, st.context), AbsValue(descLoc))
-          } else (st, AbsValue.Bot)
+        val obj = h.get(objV.locset)
+        val (desc, undef) = obj.GetOwnProperty(name)
 
-        (state, excSt, v1 + v2)
+        // 4. Return the result of calling FromPropertyDescriptor(desc) (8.10.4).
+        val (retH, retV, excSet2) = if (!desc.isBottom) {
+          val (descObj, excSet) = AbsObjectUtil.FromPropertyDescriptor(desc)
+          val descAddr = SystemAddr("Object.getOwnPropertyDescriptor<descriptor>")
+          val descLoc = Loc(descAddr, Recent)
+          val retH = h.update(descLoc, descObj)
+          val retV = AbsValue(undef, AbsLoc(descLoc))
+          (retH, retV, excSet)
+        } else (h, AbsValue(undef), ExcSetEmpty)
+
+        val excSt = st.raiseException(excSet1 ++ excSet2)
+
+        (State(retH, st.context), excSt, retV)
       })
     ), T, F, T),
 
