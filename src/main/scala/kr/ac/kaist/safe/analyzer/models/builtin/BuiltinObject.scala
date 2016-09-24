@@ -24,71 +24,10 @@ object BuiltinObject extends FuncModel(
   name = "Object",
 
   // 15.2.1 The Object Constructor Called as a Function: Object([value])
-  code = BasicCode(argLen = 1, (
-    args: AbsValue, st: State
-  ) => {
-    val h = st.heap
-    val argV = Helper.propLoad(args, Set(AbsString("0")), h)
-    val addr = SystemAddr("Object<instance>")
-
-    // 1. If value is null, undefined or not supplied, create and return
-    //    a new Object object exactly as if the standard built-in Object
-    //    constructor had been called with the same arguments.
-    val pv = argV.pvalue
-    val (v1, st1) = if (!pv.undefval.isBottom || !pv.nullval.isBottom) {
-      val state = st.oldify(addr)
-      val loc = Loc(addr, Recent)
-      val obj = AbsObjectUtil.newObject
-      val heap = state.heap.update(loc, obj)
-      (AbsValue(loc), State(heap, st.context))
-    } else {
-      (AbsValue.Bot, State.Bot)
-    }
-
-    // 2. Return ToObject(value)
-    val (v2, st2, _) = TypeConversionHelper.ToObject(argV, st, addr)
-
-    (st1 + st2, State.Bot, v1 + v2)
-  }),
+  code = BasicCode(argLen = 1, BuiltinObjectHelper.construct),
 
   // 15.2.2 The Object Constructor: new Object([value])
-  construct = Some(BasicCode(argLen = 1, (
-    args: AbsValue, st: State
-  ) => {
-    val h = st.heap
-    val argV = Helper.propLoad(args, Set(AbsString("0")), h)
-    val addr = SystemAddr("Object<instance>")
-
-    // 1. If value is supplied, then
-    //    a. If Type(value) is Object, then
-    //       i. If the value is a native ECMAScript object, do not create a new object
-    //          but simply return value.
-    //       ii. If the value is a host object, then actions are taken and a result is
-    //           returned in an implementation-dependent manner that may depend on
-    //           the host object.
-    //           (We do not consider an implementation-dependent actions for a host object)
-    //    b. If Type(value) is String, return ToObject(value).
-    //    c. If Type(value) is Boolean, return ToObject(value).
-    //    d. If Type(value) is Number, return ToObject(value).
-    val (v2, st2, _) = TypeConversionHelper.ToObject(argV, st, addr)
-
-    // 2. Assert: The argument value was not supplied or its type was Null or Undefined.
-    // 3. Let obj be a newly created native ECMAScript object.
-    val pv = argV.pvalue
-    val (v1, st1) = if (!pv.undefval.isBottom ||
-      !pv.nullval.isBottom ||
-      argV.isBottom) {
-      val state = st.oldify(addr)
-      val loc = Loc(addr, Recent)
-      val obj = AbsObjectUtil.newObject
-      val heap = state.heap.update(loc, obj)
-      (AbsValue(loc), State(heap, st.context))
-    } else {
-      (AbsValue.Bot, State.Bot)
-    }
-
-    (st1 + st2, State.Bot, v1 + v2)
-  })),
+  construct = Some(BasicCode(argLen = 1, BuiltinObjectHelper.construct)),
 
   // 15.2.3.1 Object.prototype
   protoModel = Some((BuiltinObjectProto, F, F, F)),
@@ -97,116 +36,19 @@ object BuiltinObject extends FuncModel(
     // 15.2.3.2 Object.getPrototypeOf(O)
     NormalProp("getPrototypeOf", FuncModel(
       name = "Object.getPrototypeOf",
-      code = BasicCode(argLen = 1, (
-        args: AbsValue, st: State
-      ) => {
-        val h = st.heap
-        val argV = Helper.propLoad(args, Set(AbsString("0")), h)
-
-        // 1. If Type(O) is not Object throw a TypeError exception.
-        val excSt =
-          if (argV.pvalue.isBottom) State.Bot
-          else st.raiseException(HashSet(TypeError))
-
-        // 2. Return the value of [[Prototype]] internal property of O.
-        val protoV = argV.locset.foldLeft(AbsValue.Bot)((v, loc) => {
-          v + h.get(loc)(IPrototype).value
-        })
-
-        (st, excSt, protoV)
-      })
+      code = BasicCode(argLen = 1, BuiltinObjectHelper.getPrototypeOf)
     ), T, F, T),
 
     // 15.2.3.3 getOwnPropertyDescriptor(O, P)
     NormalProp("getOwnPropertyDescriptor", FuncModel(
       name = "Object.getOwnPropertyDescriptor",
-      code = BasicCode(argLen = 2, (
-        args: AbsValue, st: State
-      ) => {
-        val h = st.heap
-        val objV = Helper.propLoad(args, Set(AbsString("0")), h)
-        val propV = Helper.propLoad(args, Set(AbsString("1")), h)
-
-        // 1. If Type(O) is not Object throw a TypeError exception.
-        val excSet1 =
-          if (objV.pvalue.isBottom) ExcSetEmpty
-          else HashSet(TypeError)
-
-        // 2. Let name be ToString(P).
-        val name = TypeConversionHelper.ToString(propV)
-
-        // 3. Let desc be the result of calling the [[GetOwnProperty]]
-        //    internal method of O with argument name.
-        val obj = h.get(objV.locset)
-        val (desc, undef) = obj.GetOwnProperty(name)
-
-        // 4. Return the result of calling FromPropertyDescriptor(desc) (8.10.4).
-        val (retH, retV, excSet2) = if (!desc.isBottom) {
-          val (descObj, excSet) = AbsObjectUtil.FromPropertyDescriptor(desc)
-          val descAddr = SystemAddr("Object.getOwnPropertyDescriptor<descriptor>")
-          val descLoc = Loc(descAddr, Recent)
-          val retH = h.update(descLoc, descObj)
-          val retV = AbsValue(undef, AbsLoc(descLoc))
-          (retH, retV, excSet)
-        } else (h, AbsValue(undef), ExcSetEmpty)
-
-        val excSt = st.raiseException(excSet1 ++ excSet2)
-
-        (State(retH, st.context), excSt, retV)
-      })
+      code = BasicCode(argLen = 2, BuiltinObjectHelper.getOwnPropertyDescriptor)
     ), T, F, T),
 
     // 15.2.3.4 Object.getOwnPropertyNames(O)
     NormalProp("getOwnPropertyNames", FuncModel(
       name = "Object.getOwnPropertyNames",
-      code = BasicCode(argLen = 1, (
-        args: AbsValue, st: State
-      ) => {
-        val h = st.heap
-        val objV = Helper.propLoad(args, Set(AbsString("0")), h)
-        val tmpAddr = SystemAddr("<temp>")
-        val arrAddr = SystemAddr("Object.getOwnPropertyNames<array>")
-        val (locV, retSt, excSet) = TypeConversionHelper.ToObject(objV, st, tmpAddr)
-        val (keyStr, lenSet) = locV.locset.foldLeft(
-          (AbsString.Bot, Set[Double]())
-        ) {
-            case ((str, lenSet), loc) => {
-              val obj = h.get(loc)
-              val keys = obj.collectKeySet("")
-              val keyStr = AbsString(keys)
-              (str + keyStr, lenSet + keys.size)
-            }
-          }
-        val len = lenSet.max
-        val AT = AbsBool.True
-
-        // 1. If Type(O) is not Object throw a TypeError exception.
-        val excSt = st.raiseException(excSet)
-
-        // 2. Let array be the result of creating a new object
-        //    as if by the expression new Array() where Array is the
-        //    standard built-in constructor with that name.
-        val arrObj = AbsObjectUtil.newArrayObject(AbsNumber(lenSet))
-
-        // 3. Let n be 0.
-        // 4. For each named own property P of O
-        //    a. Let name be the String value that is the name of P.
-        //    b. Call the [[DefineOwnProperty]] internal method of
-        //       array with arguments ToString(n), the PropertyDescriptor
-        //       {[[Value]]: name, [[Writable]]: true, [[Enumerable]]: true,
-        //       [[Configurable]]: true}, and false.
-        //    c. Increment n by 1.
-        val v = AbsValue(AbsPValue(AbsUndef.Top).copyWith(strval = keyStr))
-        val retObj = (0 until len.toInt).foldLeft(arrObj)((obj, idx) => {
-          obj.update(idx.toString, AbsDataProp(v, AT, AT, AT))
-        })
-        val state = st.oldify(arrAddr)
-        val arrLoc = Loc(arrAddr, Recent)
-        val retHeap = state.heap.update(arrLoc, retObj)
-
-        // 5. Return array.
-        (State(retHeap, st.context), excSt, AbsValue(arrLoc))
-      })
+      code = BasicCode(argLen = 1, BuiltinObjectHelper.getOwnPropertyNames)
     ), T, F, T),
 
     // TODO create
@@ -313,3 +155,136 @@ object BuiltinObjectProto extends ObjModel(
     ), T, F, T)
   )
 )
+
+object BuiltinObjectHelper {
+  def construct(args: AbsValue, st: State): (State, State, AbsValue) = {
+    val h = st.heap
+    val argV = Helper.propLoad(args, Set(AbsString("0")), h)
+    val addr = SystemAddr("Object<instance>")
+
+    // 1. If value is supplied and it is not null or undefined,
+    //    then, return ToObject(value)
+    //    XXX: We do not consider an implementation-dependent actions
+    //         for a host objects)
+    val (v2, st2, _) = TypeConversionHelper.ToObject(argV, st, addr)
+
+    // 2. Else, return a newly created native ECMAScript object.
+    val pv = argV.pvalue
+    val (v1, st1) =
+      if (pv.undefval.isBottom && pv.nullval.isBottom) (AbsValue.Bot, State.Bot)
+      else newObjSt(st, addr)
+
+    (st1 + st2, State.Bot, v1 + v2)
+  }
+
+  def getPrototypeOf(args: AbsValue, st: State): (State, State, AbsValue) = {
+    val h = st.heap
+    val argV = Helper.propLoad(args, Set(AbsString("0")), h)
+
+    // 1. If Type(O) is not Object throw a TypeError exception.
+    val excSet = objCheck(argV)
+
+    // 2. Return the value of [[Prototype]] internal property of O.
+    val protoV = argV.locset.foldLeft(AbsValue.Bot)((v, loc) => {
+      v + h.get(loc)(IPrototype).value
+    })
+
+    val excSt = st.raiseException(excSet)
+
+    (st, excSt, protoV)
+  }
+
+  def getOwnPropertyDescriptor(args: AbsValue, st: State): (State, State, AbsValue) = {
+    val h = st.heap
+    val objV = Helper.propLoad(args, Set(AbsString("0")), h)
+    val propV = Helper.propLoad(args, Set(AbsString("1")), h)
+
+    // 1. If Type(O) is not Object throw a TypeError exception.
+    val excSet1 = objCheck(objV)
+
+    // 2. Let name be ToString(P).
+    val name = TypeConversionHelper.ToString(propV)
+
+    // 3. Let desc be the result of calling the [[GetOwnProperty]]
+    //    internal method of O with argument name.
+    val obj = h.get(objV.locset)
+    val (desc, undef) = obj.GetOwnProperty(name)
+
+    // 4. Return the result of calling FromPropertyDescriptor(desc) (8.10.4).
+    val (retH, retV, excSet2) = if (!desc.isBottom) {
+      val (descObj, excSet) = AbsObjectUtil.FromPropertyDescriptor(desc)
+      val descAddr = SystemAddr("Object.getOwnPropertyDescriptor<descriptor>")
+      val descLoc = Loc(descAddr, Recent)
+      val retH = h.update(descLoc, descObj)
+      val retV = AbsValue(undef, AbsLoc(descLoc))
+      (retH, retV, excSet)
+    } else (h, AbsValue(undef), ExcSetEmpty)
+
+    val excSt = st.raiseException(excSet1 ++ excSet2)
+
+    (State(retH, st.context), excSt, retV)
+  }
+
+  def getOwnPropertyNames(args: AbsValue, st: State): (State, State, AbsValue) = {
+    val h = st.heap
+    val objV = Helper.propLoad(args, Set(AbsString("0")), h)
+    val tmpAddr = SystemAddr("<temp>")
+    val arrAddr = SystemAddr("Object.getOwnPropertyNames<array>")
+    val (locV, retSt, excSet) = TypeConversionHelper.ToObject(objV, st, tmpAddr)
+    val (keyStr, lenSet) = locV.locset.foldLeft(
+      (AbsString.Bot, Set[Double]())
+    ) {
+        case ((str, lenSet), loc) => {
+          val obj = h.get(loc)
+          val keys = obj.collectKeySet("")
+          val keyStr = AbsString(keys)
+          (str + keyStr, lenSet + keys.size)
+        }
+      }
+    val len = lenSet.max
+    val AT = AbsBool.True
+
+    // 1. If Type(O) is not Object throw a TypeError exception.
+    val excSt = st.raiseException(excSet)
+
+    // 2. Let array be the result of creating a new object
+    //    as if by the expression new Array() where Array is the
+    //    standard built-in constructor with that name.
+    val arrObj = AbsObjectUtil.newArrayObject(AbsNumber(lenSet))
+
+    // 3. Let n be 0.
+    // 4. For each named own property P of O
+    //    a. Let name be the String value that is the name of P.
+    //    b. Call the [[DefineOwnProperty]] internal method of
+    //       array with arguments ToString(n), the PropertyDescriptor
+    //       {[[Value]]: name, [[Writable]]: true, [[Enumerable]]: true,
+    //       [[Configurable]]: true}, and false.
+    //    c. Increment n by 1.
+    val v = AbsValue(AbsPValue(AbsUndef.Top).copyWith(strval = keyStr))
+    val retObj = (0 until len.toInt).foldLeft(arrObj)((obj, idx) => {
+      obj.update(idx.toString, AbsDataProp(v, AT, AT, AT))
+    })
+    val state = st.oldify(arrAddr)
+    val arrLoc = Loc(arrAddr, Recent)
+    val retHeap = state.heap.update(arrLoc, retObj)
+
+    // 5. Return array.
+    (State(retHeap, st.context), excSt, AbsValue(arrLoc))
+  }
+
+  ////////////////////////////////////////////////////////////////
+  // private helper functions
+  ////////////////////////////////////////////////////////////////
+  private def objCheck(value: AbsValue): Set[Exception] = {
+    if (value.pvalue.isBottom) ExcSetEmpty
+    else HashSet(TypeError)
+  }
+
+  private def newObjSt(st: State, addr: SystemAddr): (AbsValue, State) = {
+    val state = st.oldify(addr)
+    val loc = Loc(addr, Recent)
+    val obj = AbsObjectUtil.newObject
+    val heap = state.heap.update(loc, obj)
+    (AbsValue(loc), State(heap, state.context))
+  }
+}
