@@ -228,47 +228,42 @@ object BuiltinObjectHelper {
   def getOwnPropertyNames(args: AbsValue, st: State): (State, State, AbsValue) = {
     val h = st.heap
     val objV = Helper.propLoad(args, Set(AbsString("0")), h)
-    val tmpAddr = SystemAddr("<temp>")
     val arrAddr = SystemAddr("Object.getOwnPropertyNames<array>")
-    val (locV, retSt, excSet) = TypeConversionHelper.ToObject(objV, st, tmpAddr)
-    val (keyStr, lenSet) = locV.locset.foldLeft(
-      (AbsString.Bot, Set[Double]())
-    ) {
-        case ((str, lenSet), loc) => {
-          val obj = h.get(loc)
-          val keys = obj.collectKeySet("")
-          val keyStr = AbsString(keys)
-          (str + keyStr, lenSet + keys.size)
-        }
+    val (keyStr, lenSet) = objV.locset.foldLeft((AbsString.Bot, Set[Double]())) {
+      case ((str, lenSet), loc) => {
+        val obj = h.get(loc)
+        val keys = obj.collectKeySet("")
+        (str + AbsString(keys), lenSet + keys.size)
       }
+    }
     val len = lenSet.max
-    val AT = AbsBool.True
 
     // 1. If Type(O) is not Object throw a TypeError exception.
-    val excSt = st.raiseException(excSet)
+    val excSet = objCheck(objV)
 
-    // 2. Let array be the result of creating a new object
-    //    as if by the expression new Array() where Array is the
-    //    standard built-in constructor with that name.
-    val arrObj = AbsObjectUtil.newArrayObject(AbsNumber(lenSet))
+    // 2. Let array be the result of creating a new Array object.
+    // (XXX: we assign the length of the Array object as the number of properties)
+    val array = AbsObjectUtil.newArrayObject(AbsNumber(lenSet))
 
-    // 3. Let n be 0.
-    // 4. For each named own property P of O
-    //    a. Let name be the String value that is the name of P.
-    //    b. Call the [[DefineOwnProperty]] internal method of
-    //       array with arguments ToString(n), the PropertyDescriptor
-    //       {[[Value]]: name, [[Writable]]: true, [[Enumerable]]: true,
-    //       [[Configurable]]: true}, and false.
-    //    c. Increment n by 1.
-    val v = AbsValue(AbsPValue(AbsUndef.Top).copyWith(strval = keyStr))
-    val retObj = (0 until len.toInt).foldLeft(arrObj)((obj, idx) => {
-      obj.update(idx.toString, AbsDataProp(v, AT, AT, AT))
+    // 3. For each named own property P of O (with index n started from 0)
+    //   a. Let name be the String value that is the name of P.
+    val name = AbsValue(AbsPValue(strval = keyStr))
+    val AT = AbsBool.True
+    val retObj = (0 until len.toInt).foldLeft(array)((obj, n) => {
+      // b. Call the [[DefineOwnProperty]] internal method of array with arguments
+      //    ToString(n), the PropertyDescriptor {[[Value]]: name, [[Writable]]:
+      //    true, [[Enumerable]]: true, [[Configurable]]:true}, and false.
+      obj.update(n.toString, AbsDataProp(name, AT, AT, AT), true)
+      // (XXX: we use update helper function instead of [[DefineOwnProperty]]
+      //       because it does not consider the 'undefined' descriptor.)
     })
+
+    // 5. Return array.
     val state = st.oldify(arrAddr)
     val arrLoc = Loc(arrAddr, Recent)
     val retHeap = state.heap.update(arrLoc, retObj)
+    val excSt = st.raiseException(excSet)
 
-    // 5. Return array.
     (State(retHeap, st.context), excSt, AbsValue(arrLoc))
   }
 

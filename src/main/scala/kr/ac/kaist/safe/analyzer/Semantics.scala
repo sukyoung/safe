@@ -318,8 +318,7 @@ class Semantics(
         val st2 =
           if (st1.isBottom) State.Bot
           else {
-            val boolPV = AbsPValue(b)
-            st1.varStore(lhs, AbsValue(boolPV))
+            st1.varStore(lhs, AbsValue(b))
           }
         val newExcSt = st.raiseException(excSet)
         (st2, excSt + newExcSt)
@@ -380,7 +379,7 @@ class Semantics(
         val h3 = st2.heap.update(locR1, AbsObjectUtil.newFunctionObject(f.id, localEnv.outer, locR2, n))
 
         val fVal = AbsValue(locR1)
-        val h4 = h3.update(locR2, oNew.update("constructor", AbsDataProp(fVal, AT, AF, AT), exist = true))
+        val h4 = h3.update(locR2, oNew.update("constructor", AbsDataProp(fVal, AT, AF, AT)))
 
         val newSt = State(h4, st2.context).varStore(lhs, fVal)
         (newSt, excSt)
@@ -400,7 +399,7 @@ class Semantics(
         val h4 = st3.heap.update(locR1, AbsObjectUtil.newFunctionObject(f.id, fObjValue, locR2, n))
 
         val fVal = AbsValue(locR1)
-        val h5 = h4.update(locR2, oNew.update("constructor", AbsDataProp(fVal, AT, AF, AT), exist = true))
+        val h5 = h4.update(locR2, oNew.update("constructor", AbsDataProp(fVal, AT, AF, AT)))
 
         val localEnv = st3.context.pureLocal
         val oEnv = AbsLexEnv.NewDeclarativeEnvironment(localEnv.outer)
@@ -482,7 +481,7 @@ class Semantics(
                 val b2 =
                   if (!v.pvalue.isBottom) AF
                   else AB
-                val boolVal = AbsValue(AbsPValue(b1 + b2))
+                val boolVal = AbsValue(b1 + b2)
                 st.varStore(lhs, boolVal)
               } else {
                 State.Bot
@@ -515,12 +514,10 @@ class Semantics(
           }
           case ("<>Global<>iteratorInit", List(expr), Some(aNew)) => (st, excSt)
           case ("<>Global<>iteratorHasNext", List(expr2, expr3), None) =>
-            val boolPV = AbsPValue(AbsBool.Top)
-            val st1 = st.varStore(lhs, AbsValue(boolPV))
+            val st1 = st.varStore(lhs, AbsBool.Top)
             (st1, excSt)
           case ("<>Global<>iteratorNext", List(expr2, expr3), None) =>
-            val strPV = AbsPValue(AbsString.Top)
-            val st1 = st.varStore(lhs, AbsValue(strPV))
+            val st1 = st.varStore(lhs, AbsString.Top)
             (st1, excSt)
           case _ =>
             excLog.signal(SemanticsNotYetImplementedError(ir))
@@ -684,10 +681,9 @@ class Semantics(
                   locSet4.foldLeft[AbsValue](tmpVal1)((tmpVal2, loc2) =>
                     tmpVal2 + Helper.inherit(st.heap, loc1, loc2))
                 })
-                val pv2 =
-                  if (!v2.pvalue.isBottom && !locSet4.isBottom) AbsPValue(AF)
-                  else AbsPValue.Bot
-                val b2 = AbsValue(pv2)
+                val b2 =
+                  if (!v2.pvalue.isBottom && !locSet4.isBottom) AbsValue(AF)
+                  else AbsValue.Bot
                 val excSet3 =
                   if (!v2.pvalue.isBottom || !locSet5.isBottom || !protoVal.pvalue.isBottom) HashSet(TypeError)
                   else ExcSetEmpty
@@ -699,7 +695,7 @@ class Semantics(
                 val absB = v2.locset.foldLeft(AB)((tmpAbsB, loc) => {
                   tmpAbsB + st.heap.get(loc).HasProperty(str, st.heap)
                 })
-                val b = AbsValue(AbsPValue(absB))
+                val b = AbsValue(absB)
                 val excSet3 =
                   if (!v2.pvalue.isBottom) HashSet(TypeError)
                   else ExcSetEmpty
@@ -724,11 +720,11 @@ class Semantics(
                 val absStr2 =
                   if (excSet.contains(ReferenceError)) AbsString("undefined")
                   else AbsString.Bot
-                val absStrPV = AbsPValue(absStr1 + absStr2)
-                (AbsValue(absStrPV), ExcSetEmpty)
+                val absStr = absStr1 + absStr2
+                (AbsValue(absStr), ExcSetEmpty)
               case _ =>
-                val absStrPV = AbsPValue(TypeConversionHelper.typeTag(v, st.heap))
-                (AbsValue(absStrPV), excSet)
+                val absStr = TypeConversionHelper.typeTag(v, st.heap)
+                (AbsValue(absStr), excSet)
             }
         }
       }

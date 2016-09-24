@@ -79,9 +79,8 @@ object Helper {
   def arrayIdxStore(heap: Heap, idxAbsStr: AbsString, storeV: AbsValue, l: Loc): Heap = {
     if (atrue <= idxAbsStr.isArrayIndex) {
       val nOldLen = heap.get(l)("length").value.pvalue.numval
-      val idxPV = AbsPValue(idxAbsStr)
-      val numPV = AbsPValue(typeHelper.ToNumber(idxPV))
-      val nIndex = typeHelper.ToUInt32(AbsValue(numPV))
+      val num = typeHelper.ToNumber(idxAbsStr)
+      val nIndex = typeHelper.ToUInt32(num)
       val bGtEq = atrue <= (nOldLen < nIndex) ||
         atrue <= (nOldLen === nIndex)
       val bCanPutLen = heap.get(l).CanPut("length", heap)
@@ -248,11 +247,11 @@ object Helper {
   def bopPlus(left: AbsValue, right: AbsValue): AbsValue = {
     def PValue2Tpl(pv: AbsPValue): (AbsPValue, AbsPValue, AbsPValue, AbsPValue, AbsPValue) = {
       (
-        AbsPValue(pv.undefval),
-        AbsPValue(pv.nullval),
-        AbsPValue(pv.boolval),
-        AbsPValue(pv.numval),
-        AbsPValue(pv.strval)
+        pv.undefval,
+        pv.nullval,
+        pv.boolval,
+        pv.numval,
+        pv.strval
       )
     }
 

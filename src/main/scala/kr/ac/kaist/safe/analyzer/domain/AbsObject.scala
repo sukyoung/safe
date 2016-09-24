@@ -149,9 +149,9 @@ class AbsObject(
   }
 
   // absent value is set to AbsentBot because it is strong update.
-  def update(str: String, dp: AbsDataProp, exist: Boolean = false): AbsObject = {
+  def update(str: String, dp: AbsDataProp, weak: Boolean = false): AbsObject = {
     if (this.isBottom) this
-    else new AbsObject(amap.update(str, dp), imap)
+    else new AbsObject(amap.update(str, dp, weak), imap)
   }
 
   def update(astr: AbsString, dp: AbsDataProp): AbsObject =
@@ -416,7 +416,7 @@ class AbsObject(
     val toString = this.Get("toString", h)
     val isCallable = TypeConversionHelper.IsCallable(toString, h)
     val str =
-      if (AbsBool.True <= isCallable) AbsPValue(AbsString.Top)
+      if (AbsBool.True <= isCallable) AbsPValue(strval = AbsString.Top)
       else AbsPValue.Bot
     if (AbsBool.False <= isCallable) {
       val valueOf = this.Get("valueOf", h)
@@ -436,7 +436,7 @@ class AbsObject(
     if (AbsBool.False <= isCallable) {
       val toString = this.Get("toString", h)
       val str =
-        if (AbsBool.True <= TypeConversionHelper.IsCallable(toString, h)) AbsPValue(AbsString.Top)
+        if (AbsBool.True <= TypeConversionHelper.IsCallable(toString, h)) AbsPValue(strval = AbsString.Top)
         else AbsPValue.Bot
       value + str
     } else value

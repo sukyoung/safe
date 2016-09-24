@@ -42,11 +42,13 @@ trait AbsPValue extends AbsDomain[PValue, AbsPValue] {
 }
 
 trait AbsPValueUtil extends AbsDomainUtil[PValue, AbsPValue] {
-  def apply(undefval: AbsUndef): AbsPValue
-  def apply(nullval: AbsNull): AbsPValue
-  def apply(boolval: AbsBool): AbsPValue
-  def apply(numval: AbsNumber): AbsPValue
-  def apply(strval: AbsString): AbsPValue
+  def apply(
+    undefval: AbsUndef = AbsUndef.Bot,
+    nullval: AbsNull = AbsNull.Bot,
+    boolval: AbsBool = AbsBool.Bot,
+    numval: AbsNumber = AbsNumber.Bot,
+    strval: AbsString = AbsString.Bot
+  ): AbsPValue
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -66,11 +68,13 @@ object DefaultPValue extends AbsPValueUtil {
     case Str(str) => Bot.copy(strval = AbsString(str))
   }
 
-  def apply(undefval: AbsUndef): AbsPValue = Bot.copyWith(undefval = undefval)
-  def apply(nullval: AbsNull): AbsPValue = Bot.copyWith(nullval = nullval)
-  def apply(boolval: AbsBool): AbsPValue = Bot.copyWith(boolval = boolval)
-  def apply(numval: AbsNumber): AbsPValue = Bot.copyWith(numval = numval)
-  def apply(strval: AbsString): AbsPValue = Bot.copyWith(strval = strval)
+  def apply(
+    undefval: AbsUndef,
+    nullval: AbsNull,
+    boolval: AbsBool,
+    numval: AbsNumber,
+    strval: AbsString
+  ): AbsPValue = Dom(undefval, nullval, boolval, numval, strval)
 
   case class Dom(
       undefval: AbsUndef,

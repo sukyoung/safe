@@ -29,8 +29,8 @@ object BuiltinBoolean extends FuncModel(
     val argV = Helper.propLoad(args, Set(AbsString("0")), h)
 
     // Returns a Boolean value (not a Boolean object) computed by ToBoolean(value).
-    val boolPV = AbsPValue(TypeConversionHelper.ToBoolean(argV))
-    AbsValue(boolPV)
+    val bool = TypeConversionHelper.ToBoolean(argV)
+    AbsValue(bool)
   }),
 
   // 15.6.2 The Boolean Constructor: new Boolean([value])

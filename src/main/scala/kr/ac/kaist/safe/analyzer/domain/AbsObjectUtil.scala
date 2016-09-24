@@ -144,8 +144,8 @@ object AbsObjectUtil {
     if (locSet.isBottom) AbsPValue.Bot
     else {
       preferredType match {
-        case "Number" => AbsPValue(AbsNumber.Top)
-        case "String" => AbsPValue(AbsString.Top)
+        case "Number" => AbsPValue(numval = AbsNumber.Top)
+        case "String" => AbsPValue(strval = AbsString.Top)
         case _ => AbsPValue.Top
       }
     }

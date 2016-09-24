@@ -74,11 +74,11 @@ package object domain {
   // implicit conversion for abstract domains
   ////////////////////////////////////////////////////////////////
   // primitive abstract domains -> AbsPValue
-  implicit def undef2pv(undef: AbsUndef): AbsPValue = AbsPValue(undef)
-  implicit def null2pv(x: AbsNull): AbsPValue = AbsPValue(x)
-  implicit def bool2pv(b: AbsBool): AbsPValue = AbsPValue(b)
-  implicit def num2pv(num: AbsNumber): AbsPValue = AbsPValue(num)
-  implicit def str2pv(str: AbsString): AbsPValue = AbsPValue(str)
+  implicit def undef2pv(undef: AbsUndef): AbsPValue = AbsPValue(undefval = undef)
+  implicit def null2pv(x: AbsNull): AbsPValue = AbsPValue(nullval = x)
+  implicit def bool2pv(b: AbsBool): AbsPValue = AbsPValue(boolval = b)
+  implicit def num2pv(num: AbsNumber): AbsPValue = AbsPValue(numval = num)
+  implicit def str2pv(str: AbsString): AbsPValue = AbsPValue(strval = str)
 
   // AbsPValue -> AbsValue
   implicit def pv2v[T <% AbsPValue](pv: T): AbsValue = AbsValue(pv)
