@@ -25,3 +25,6 @@ var __expect7 = 1;
 var y = new Number();
 var __result8 = y.valueOf(); 
 var __expect8 = 0;
+
+var __result9 = (new Number()).constructor
+var __expect9 = Number.prototype.constructor

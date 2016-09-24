@@ -21,8 +21,25 @@ import kr.ac.kaist.safe.analyzer.models._
 import kr.ac.kaist.safe.util.SystemAddr
 
 object BuiltinNumberUtil {
+  val constructor = BasicCode(argLen = 1, code = (
+    args: AbsValue, st: State
+  ) => {
+    val h = st.heap
+    val argV = Helper.propLoad(args, Set(AbsString("0")), h)
+    val argL = Helper.propLoad(args, Set(AbsString("length")), h).pvalue.numval
+    val addr = SystemAddr("Number<instance>")
+
+    val state = st.oldify(addr)
+    val loc = Loc(addr, Recent)
+    val num = if (argL <= AbsNumber(0)) AbsNumber(0)
+    else TypeConversionHelper.ToNumber(argV)
+    val heap = state.heap.update(loc, AbsObjectUtil.newNumberObj(num))
+
+    (State(heap, state.context), State.Bot, AbsValue(loc))
+  })
+
   val typeConversion = PureCode(argLen = 1, code = (
-    args, h
+    args: AbsValue, h: Heap
   ) => {
     val resV = Helper.propLoad(args, Set(AbsString("length")), h)
     resV.pvalue.numval.getSingle match {
@@ -59,22 +76,7 @@ object BuiltinNumber extends FuncModel(
 
   // 15.7.2 The Number Constructor
   // 15.7.2.1 new Number ( [ value ] )
-  construct = Some(BasicCode(argLen = 1, code = (
-    args: AbsValue, st: State
-  ) => {
-    val h = st.heap
-    val argV = Helper.propLoad(args, Set(AbsString("0")), h)
-    val argL = Helper.propLoad(args, Set(AbsString("length")), h).pvalue.numval
-    val addr = SystemAddr("Number<instance>")
-
-    val state = st.oldify(addr)
-    val loc = Loc(addr, Recent)
-    val num = if (argL <= AbsNumber(0)) AbsNumber(0)
-    else TypeConversionHelper.ToNumber(argV)
-    val heap = state.heap.update(loc, AbsObjectUtil.newNumberObj(num))
-
-    (State(heap, state.context), State.Bot, AbsValue(loc))
-  })),
+  construct = Some(BuiltinNumberUtil.constructor),
 
   // 15.7.3.1 Number.prototype
   protoModel = Some((BuiltinNumberProto, F, F, F)),
@@ -104,8 +106,9 @@ object BuiltinNumber extends FuncModel(
 )
 
 object BuiltinNumberProto extends ObjModel(
-  // 15.7.4
   name = "Number.prototype",
+
+  // 15.7.4 Properties of the Number Prototype Object
   props = List(
     InternalProp(IClass, PrimModel("Number")),
 
@@ -113,10 +116,54 @@ object BuiltinNumberProto extends ObjModel(
 
     InternalProp(IPrototype, BuiltinObjectProto),
 
-    // TODO toString
+    // 15.7.4.1 Number.prototype.constructor
+    NormalProp("constructor", FuncModel(
+      name = "Number.prototype.constructor",
+      code = BuiltinNumberUtil.constructor
+    ), T, F, T),
+
+    // 15.7.4.2 Number.prototype.toString ( [ radix ] )
     NormalProp("toString", FuncModel(
       name = "Number.prototype.toString",
-      code = EmptyCode(argLen = 1)
+      code = BasicCode(argLen = 1, (
+        args: AbsValue, st: State
+      ) => {
+        val h = st.heap
+        val thisV = AbsValue(st.context.thisBinding)
+        val excSet = BuiltinNumberUtil.checkExn(h, thisV, "Number")
+
+        // The optional radix should be an integer value in the inclusive range 2 to 36.
+        val argV = Helper.propLoad(args, Set(AbsString("0")), h)
+        val argL = Helper.propLoad(args, Set(AbsString("length")), h).pvalue.numval
+        // If radix not present or is undefined the Number 10 is used as the value of radix.
+        val radix = if (argL <= AbsNumber(0) || argV <= AbsUndef.Top) AbsNumber(10)
+        else TypeConversionHelper.ToInteger(argV)
+
+        // If ToInteger(radix) is not an integer between 2 and 36 inclusive
+        // throw a RangeError exception.
+        val excSt = if (AbsBool.True <= Helper.bopGreater(radix, AbsNumber(36)))
+          excSet + RangeError
+        else if (AbsBool.True <= Helper.bopLess(radix, AbsNumber(2)))
+          excSet + RangeError
+        else
+          excSet
+
+        // If ToInteger(radix) is the Number 10
+        // then this Number value is given as an argument to the ToString abstract operation;
+        // the resulting String value is returned.
+        val n = thisV.pvalue.numval +
+          thisV.locset.foldLeft(AbsNumber.Bot)((res, loc) => {
+            if ((AbsString("Number") <= h.get(loc)(IClass).value.pvalue.strval))
+              h.get(loc)(IPrimitiveValue).value.pvalue.numval
+            else res
+          })
+        val s = if (radix <= AbsNumber(10)) TypeConversionHelper.ToString(n)
+        // If ToInteger(radix) is an integer from 2 to 36, but not 10,
+        // give up the precision!
+        else AbsString.Top
+
+        (st, st.raiseException(excSt), AbsValue(s))
+      })
     ), T, F, T),
 
     // TODO toLocaleString
