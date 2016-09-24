@@ -134,14 +134,14 @@ object DefaultGlobalEnvRec extends AbsGlobalEnvRecUtil {
         if (AbsBool.False <= heap.get(GLOBAL_LOC).HasProperty(AbsString(name), heap)) {
           // 4. If D is true then let configValue be true
           //    otherwise let configValue be false.
-          val configValue = AbsBool(del)
+          val configValue = del
           // 5. Call the [[DefineOwnProperty]] internal method of bindings,
           //    passing N, Property Descriptor {[[Value]]:undefined,
           //    [[Writable]]: true, [[Enumerable]]: true , [[Configurable]]:
           //    configValue}, and true as arguments.
           val (newObj, _, excSet) = bindings.DefineOwnProperty(
             AbsString(name),
-            AbsDataProp(AbsUndef.Top, AbsBool.True, AbsBool.True, AbsBool.True),
+            AbsDesc(Desc(Some(Undef), Some(true), Some(true), Some(configValue))),
             true
           )
           (this, heap.update(BuiltinGlobal.loc, newObj), excSet)

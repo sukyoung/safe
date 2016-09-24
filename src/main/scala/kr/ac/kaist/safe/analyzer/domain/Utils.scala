@@ -45,6 +45,9 @@ object Utils {
   // data property
   var AbsDataProp: AbsDataPropUtil = DefaultDataProp
 
+  // descriptor
+  var AbsDesc: AbsDescUtil = DefaultDesc
+
   // absent value for parital map
   var AbsAbsent: AbsAbsentUtil = DefaultAbsent
 

@@ -30,6 +30,7 @@ trait Heap {
   /* lookup */
   def apply(loc: Loc): Option[AbsObject]
   def get(loc: Loc): AbsObject
+  def get(locSet: AbsLoc): AbsObject
   def getOrElse[T](loc: Loc)(default: T)(f: AbsObject => T): T
   /* heap update */
   def weakUpdate(loc: Loc, obj: AbsObject): Heap
@@ -151,6 +152,10 @@ class DHeap(val map: Map[Loc, AbsObject]) extends Heap {
       case Some(obj) => obj
       case None => AbsObjectUtil.Bot
     }
+
+  def get(locSet: AbsLoc): AbsObject = locSet.foldLeft(AbsObjectUtil.Bot) {
+    case (obj, loc) => obj + get(loc)
+  }
 
   def getOrElse[T](loc: Loc)(default: T)(f: AbsObject => T): T = {
     this(loc) match {

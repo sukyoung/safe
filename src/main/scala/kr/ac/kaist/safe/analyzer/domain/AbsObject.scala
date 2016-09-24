@@ -183,43 +183,50 @@ class AbsObject(
   // internal methods of ECMAScript Object
   ///////////////////////////////////////////////////////////////
   // Section 8.12.1 [[GetOwnProperty]](P)
-  def GetOwnProperty(P: String): AbsDataProp = {
-    val astr = AbsString(P)
-    GetOwnProperty(astr)
-  }
+  def GetOwnProperty(P: String): (AbsDesc, AbsUndef) =
+    GetOwnProperty(AbsString(P))
 
-  def GetOwnProperty(P: AbsString): AbsDataProp = {
+  def GetOwnProperty(P: AbsString): (AbsDesc, AbsUndef) = {
     val (dpset, definite) = amap.lookup(P)
-    val dp =
-      if (dpset.nonEmpty) dpset.reduce(_ + _)
-      else AbsDataProp.Bot
-
-    if (definite) dp
-    else dp.copyWith(dp.value + AbsValue(AbsUndef.Top))
+    val dp = dpset.foldLeft(AbsDataProp.Bot)(_ + _)
+    val undef =
+      if (definite) AbsUndef.Bot else AbsUndef.Top
+    val desc = AbsDesc(
+      (dp.value, AbsAbsent.Bot),
+      (dp.writable, AbsAbsent.Bot),
+      (dp.enumerable, AbsAbsent.Bot),
+      (dp.configurable, AbsAbsent.Bot)
+    )
+    (desc, undef)
   }
 
   // Section 8.12.2 [[GetProperty]](P)
-  def GetProperty(P: String, h: Heap): AbsDataProp = {
-    val astr = AbsString(P)
-    GetProperty(astr, h)
-  }
+  def GetProperty(P: String, h: Heap): (AbsDesc, AbsUndef) =
+    GetProperty(AbsString(P), h)
 
-  def GetProperty(P: AbsString, h: Heap): AbsDataProp = {
+  def GetProperty(P: AbsString, h: Heap): (AbsDesc, AbsUndef) = {
     var visited = HashSet[Loc]()
-    def visit(currObj: AbsObject): AbsDataProp = {
-      val prop = currObj.GetOwnProperty(P)
-      if (prop.value.pvalue.undefval </ AbsUndef.Bot) {
-        val proto = currObj(IPrototype)
-        if (proto.value.pvalue.nullval </ AbsNull.Bot || proto.value.locset.isBottom)
-          prop.copyWith(prop.value + AbsValue(AbsUndef.Top))
-        else
-          proto.value.locset.foldLeft(prop)((dp, loc) =>
-            if (visited contains loc) dp
-            else {
-              visited += loc
-              dp + visit(h.get(loc))
-            })
-      } else prop
+    def visit(currObj: AbsObject): (AbsDesc, AbsUndef) = {
+      val (desc, undef) = currObj.GetOwnProperty(P)
+      val (parentDesc, parentUndef) =
+        if (undef.isBottom) (AbsDesc.Bot, AbsUndef.Bot)
+        else {
+          val proto = currObj(IPrototype)
+          val undef =
+            if (proto.value.pvalue.nullval.isBottom) AbsUndef.Top
+            else AbsUndef.Bot
+          proto.value.locset.foldLeft((AbsDesc.Bot, AbsUndef.Bot)) {
+            case ((desc, undef), loc) => {
+              if (visited contains loc) (desc, undef)
+              else {
+                visited += loc
+                val (newDesc, newUndef) = visit(h.get(loc))
+                (desc + newDesc, undef + newUndef)
+              }
+            }
+          }
+        }
+      (desc + parentDesc, undef + parentUndef)
     }
     visit(this)
   }
@@ -283,57 +290,69 @@ class AbsObject(
   def CanPut(P: String, h: Heap): AbsBool = this.CanPut(AbsString(P), h)
 
   def CanPut(P: AbsString, h: Heap): AbsBool = {
-    var visited = HashSet[Loc]()
-    val desc = this.GetOwnProperty(P)
-    if (AbsUndef.Top </ desc.value.pvalue.undefval) desc.writable
-    else {
-      val proto = this(IPrototype).value
-      val extensible = this(IExtensible).value.pvalue.boolval
-      val nullProtoCase =
-        if (AbsNull.Top <= proto.pvalue.nullval) extensible
-        else AbsBool.Bot
-      val inherited = proto.locset.foldLeft(AbsDataProp.Bot)((b, loc) =>
-        if (visited contains loc) b
-        else {
-          visited += loc
-          b + this.GetProperty(P, h)
-        })
-      val undefInheritCase =
-        if (AbsUndef.Top <= inherited.value.pvalue.undefval) extensible
-        else extensible && inherited.writable
-      nullProtoCase + undefInheritCase
+    val (desc, undef) = this.GetOwnProperty(P)
+    val (b, _) = desc.writable
+    val newB = {
+      if (undef.isBottom) AbsBool.Bot
+      else {
+        val proto = this(IPrototype).value
+        val extensible = this(IExtensible).value.pvalue.boolval
+        val nullProtoCase =
+          if (proto.pvalue.nullval.isBottom) AbsBool.Bot
+          else extensible
+        val (inheritDesc, inheritUndef) = proto.locset.foldLeft((AbsDesc.Bot, AbsUndef.Bot)) {
+          case ((desc, undef), loc) => {
+            val (newDesc, newUndef) = this.GetProperty(P, h)
+            (desc + newDesc, undef + newUndef)
+          }
+        }
+        val undefInheritCase =
+          if (inheritUndef.isBottom) AbsBool.Bot
+          else extensible
+        val inheritCase = extensible.map[AbsBool](
+          elseV = AbsBool.False,
+          thenV = { val (b, _) = inheritDesc.writable; b }
+        )(AbsBool)
+        nullProtoCase + undefInheritCase + inheritCase
+      }
     }
+    b + newB
   }
 
   // Section 8.12.5 [[Put]](P, V, Throw)
   def Put(P: AbsString, V: AbsValue, Throw: Boolean = true, h: Heap): (AbsObject, Set[Exception]) = {
-    def IsDataDescriptor(dataProp: AbsDataProp): AbsBool = {
-      if (AbsUndef.Top <= dataProp.value) {
-        if (dataProp.value <= AbsUndef.Top) AbsBool.False
-        else AbsBool.Top
-      } else AbsBool.True
-    }
-
     val canPut = this.CanPut(P, h)
-    val excSet1 =
-      if (AbsBool.False <= canPut) ExcSetEmpty + TypeError
-      else ExcSetEmpty
-    if (AbsBool.True <= canPut) {
-      val ownDesc = this.GetOwnProperty(P)
-      val (obj2, b2, excSet2) =
-        if (AbsBool.True <= IsDataDescriptor(ownDesc)) {
-          val valueDesc = AbsDataProp(V, AbsBool.Bot, AbsBool.Bot, AbsBool.Bot)
-          this.DefineOwnProperty(P, valueDesc, Throw)
-        } else (AbsObjectUtil.Bot, AbsBool.Bot, ExcSetEmpty)
-      val (obj3, b3, excSet3) =
-        if (AbsBool.False <= IsDataDescriptor(ownDesc)) {
-          val desc = this.GetProperty(P, h)
-          val newDesc = AbsDataProp(V, AbsBool.True, AbsBool.True, AbsBool.True)
-          this.DefineOwnProperty(P, newDesc)
-        } else (AbsObjectUtil.Bot, AbsBool.Bot, ExcSetEmpty)
-      (obj2 + obj3, excSet1 ++ excSet2 ++ excSet3)
-    } else
-      (this, excSet1)
+    val (falseObj: AbsObject, falseExcSet: Set[Exception]) =
+      if (AbsBool.False <= canPut) {
+        if (Throw) (AbsObjectUtil.Bot, HashSet(TypeError))
+        else (this, ExcSetEmpty)
+      } else (AbsObjectUtil.Bot, ExcSetEmpty)
+    val (trueObj, trueExcSet) =
+      if (AbsBool.True <= canPut) {
+        val (ownDesc, ownUndef) = this.GetOwnProperty(P)
+        val (ownObj, ownExcSet) =
+          if (ownDesc.isBottom) (AbsObjectUtil.Bot, ExcSetEmpty)
+          else {
+            val valueDesc = AbsDesc((V, AbsAbsent.Bot))
+            val (o, _, e) = this.DefineOwnProperty(P, valueDesc, Throw)
+            (o, e)
+          }
+        val (undefObj, undefExcSet) =
+          if (ownUndef.isBottom) (AbsObjectUtil.Bot, ExcSetEmpty)
+          else {
+            val desc = this.GetProperty(P, h)
+            val newDesc = AbsDesc(
+              (V, AbsAbsent.Bot),
+              (AbsBool.True, AbsAbsent.Bot),
+              (AbsBool.True, AbsAbsent.Bot),
+              (AbsBool.True, AbsAbsent.Bot)
+            )
+            val (o, _, e) = this.DefineOwnProperty(P, newDesc, Throw)
+            (o, e)
+          }
+        (ownObj + undefObj, ownExcSet ++ undefExcSet)
+      } else (AbsObjectUtil.Bot, ExcSetEmpty)
+    (falseObj + trueObj, falseExcSet ++ trueExcSet)
   }
 
   // Section 8.12.6 [[HasProperty]](P)
@@ -423,38 +442,46 @@ class AbsObject(
   }
 
   //Section 8.12.9 [[DefineOwnProperty]](P, Desc, Throw)
-  def DefineOwnProperty(P: AbsString, Desc: AbsDataProp, Throw: Boolean = true): (AbsObject, AbsBool, Set[Exception]) = {
-    def Reject: (AbsBool, Set[Exception]) =
-      if (Throw) (AbsBool.Bot, ExcSetEmpty + TypeError)
-      else (AbsBool.False, ExcSetEmpty)
-
-    val current = this.GetOwnProperty(P)
+  def DefineOwnProperty(P: AbsString, Desc: AbsDesc, Throw: Boolean = true): (AbsObject, AbsBool, Set[Exception]) = {
+    val Reject =
+      if (Throw) (AbsObjectUtil.Bot, AbsBool.Bot, HashSet(TypeError))
+      else (AbsObjectUtil.Bot, AbsBool.False, ExcSetEmpty)
+    val BotTriple = (AbsObjectUtil.Bot, AbsBool.Bot, ExcSetEmpty)
+    val (current, curUndef) = this.GetOwnProperty(P)
     val extensible = this(IExtensible).value.pvalue.boolval
 
-    val (b, excSet) =
-      if (AbsUndef.Top <= current.value && AbsBool.False <= extensible) Reject
-      else (AbsBool.Bot, ExcSetEmpty)
+    val (obj1, b1, excSet1) = if (curUndef.isTop) {
+      val (obj1, b1, excSet1) =
+        if (AbsBool.True <= extensible) {
+          val changedObj = this.update(P, AbsDataProp(Desc))
+          (changedObj, AbsBool.True, ExcSetEmpty)
+        } else BotTriple
+      val (obj2: AbsObject, b2: AbsBool, excSet2: Set[Exception]) =
+        if (AbsBool.False <= extensible) Reject
+        else BotTriple
+      (obj1 + obj2, b1 + b2, excSet1 ++ excSet2)
+    } else BotTriple
 
-    // below are estimation of DefineOwnProperty
-    val objDomIn = this contains P
-    if (objDomIn == AbsBool.Top) {
-      val oldObjV = this(P)
-      val newObjV = AbsDataProp(
-        Desc.value,
-        oldObjV.writable + Desc.writable,
-        oldObjV.enumerable + Desc.enumerable,
-        oldObjV.configurable + Desc.configurable
-      )
-      (this.update(P, newObjV), AbsBool.True + b, excSet)
-    } else if (objDomIn == AbsBool.True) {
-      val oldObjV: AbsDataProp = this(P)
-      val newObjV = oldObjV.copyWith(Desc.value)
-      (this.update(P, newObjV), AbsBool.True + b, excSet)
-    } else if (objDomIn == AbsBool.False) {
-      val newObjV = AbsDataProp(Desc.value, AbsBool.True, AbsBool.True, AbsBool.True)
-      (this.update(P, newObjV), AbsBool.True + b, excSet)
-    } else {
-      (AbsObjectUtil.Bot, b, excSet)
-    }
+    val (w, _) = current.writable
+    val (c, _) = current.configurable
+    val (obj2: AbsObject, b2: AbsBool, excSet2: Set[Exception]) =
+      if (AbsBool.False <= c && AbsBool.False <= w) Reject
+      else BotTriple
+
+    val (obj3, b3, excSet3) =
+      if (AbsBool.True <= c || AbsBool.True <= w) {
+        val (v, _) = Desc.value
+        val (w, _) = Desc.writable
+        val (e, _) = Desc.enumerable
+        val (c, _) = Desc.configurable
+        var newDP = this(P)
+        if (!v.isBottom) newDP = newDP.copyWith(value = v)
+        if (!w.isBottom) newDP = newDP.copyWith(writable = w)
+        if (!e.isBottom) newDP = newDP.copyWith(enumerable = e)
+        if (!c.isBottom) newDP = newDP.copyWith(configurable = c)
+        val changedObj = this.update(P, newDP)
+        (changedObj, AbsBool.True, ExcSetEmpty)
+      } else BotTriple
+    (obj1 + obj2 + obj3, b1 + b2 + b3, excSet1 ++ excSet2 ++ excSet3)
   }
 }
