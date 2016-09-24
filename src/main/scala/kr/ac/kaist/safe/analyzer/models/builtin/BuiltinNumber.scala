@@ -64,6 +64,14 @@ object BuiltinNumberUtil {
     else
       HashSet[Exception]()
   }
+
+  def getValue(thisV: AbsValue, h: Heap): AbsNumber =
+    thisV.pvalue.numval +
+      thisV.locset.foldLeft(AbsNumber.Bot)((res, loc) => {
+        if ((AbsString("Number") <= h.get(loc)(IClass).value.pvalue.strval))
+          h.get(loc)(IPrimitiveValue).value.pvalue.numval
+        else res
+      })
 }
 
 // 15.7 Number Objects
@@ -151,25 +159,32 @@ object BuiltinNumberProto extends ObjModel(
         // If ToInteger(radix) is the Number 10
         // then this Number value is given as an argument to the ToString abstract operation;
         // the resulting String value is returned.
-        val n = thisV.pvalue.numval +
-          thisV.locset.foldLeft(AbsNumber.Bot)((res, loc) => {
-            if ((AbsString("Number") <= h.get(loc)(IClass).value.pvalue.strval))
-              h.get(loc)(IPrimitiveValue).value.pvalue.numval
-            else res
-          })
+        val n = BuiltinNumberUtil.getValue(thisV, h)
         val s = if (radix <= AbsNumber(10)) TypeConversionHelper.ToString(n)
         // If ToInteger(radix) is an integer from 2 to 36, but not 10,
-        // give up the precision!
+        // give up the precision! (Room for the analysis precision improvement!)
         else AbsString.Top
 
         (st, st.raiseException(excSt), AbsValue(s))
       })
     ), T, F, T),
 
-    // TODO toLocaleString
+    // 15.7.4.3 Number.prototype.toLocaleString()
     NormalProp("toLocaleString", FuncModel(
       name = "Number.prototype.toLocaleString",
-      code = EmptyCode(argLen = 0)
+      code = BasicCode(argLen = 1, (
+        args: AbsValue, st: State
+      ) => {
+        val h = st.heap
+        // Produces a String value that represents this Number value formatted
+        // according to the conventions of the host-dependent, and it is permissible,
+        // but not encouraged, for it to return the same thing as toString.
+        val thisV = AbsValue(st.context.thisBinding)
+        val excSet = BuiltinNumberUtil.checkExn(h, thisV, "Number")
+        val s = TypeConversionHelper.ToString(BuiltinNumberUtil.getValue(thisV, h))
+
+        (st, st.raiseException(excSet), AbsValue(s))
+      })
     ), T, F, T),
 
     // 15.7.4.4 Number.prototype.valueOf()
@@ -184,12 +199,7 @@ object BuiltinNumberProto extends ObjModel(
         val thisV = AbsValue(st.context.thisBinding)
         val excSet = BuiltinNumberUtil.checkExn(h, thisV, "Number")
         // Otherwise, returns the Number value.
-        val n = thisV.pvalue.numval +
-          thisV.locset.foldLeft(AbsNumber.Bot)((res, loc) => {
-            if ((AbsString("Number") <= h.get(loc)(IClass).value.pvalue.strval))
-              h.get(loc)(IPrimitiveValue).value.pvalue.numval
-            else res
-          })
+        val n = BuiltinNumberUtil.getValue(thisV, h)
         (st, st.raiseException(excSet), AbsValue(n))
       })
     ), T, F, T),
