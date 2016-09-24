@@ -31,7 +31,7 @@ trait AbsValue extends AbsDomain[Value, AbsValue] {
   def subsLoc(locR: Loc, locO: Loc): AbsValue
   /* weakly substitute locR by locO, that is keep locR together */
   def weakSubsLoc(locR: Loc, locO: Loc): AbsValue
-  // TODO working but more simple way is exist with modifying getBase
+  // TODO working but a more simple way exists with modifying getBase
   def getThis(h: Heap): AbsLoc
 
   def typeCount: Int
