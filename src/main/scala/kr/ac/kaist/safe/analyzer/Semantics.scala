@@ -144,7 +144,9 @@ class Semantics(
           val localEnv = ctx1.pureLocal
           val (returnV, _) = localEnv.record.decEnvRec.GetBindingValue("@return")
           val ctx2 = ctx1.subsPureLocal(env1)
-          val newSt = State(st.heap, ctx2.setOldAddrSet(old2))
+          val newSt = State(st.heap, ctx2
+            .setOldAddrSet(old2)
+            .setThisBinding(data.thisBinding))
           newSt.varStore(retVar, returnV)
         }
       case (Exit(f), _) =>
@@ -169,7 +171,9 @@ class Semantics(
           val (env2, _) = env1.SetMutableBinding("@exception", excValue)
           val (env3, _) = env2.SetMutableBinding("@exception_all", excValue + oldExcAllValue)
           val ctx2 = ctx1.subsPureLocal(envL.copyWith(record = env3))
-          State(st.heap, ctx2.setOldAddrSet(c2))
+          State(st.heap, ctx2
+            .setOldAddrSet(c2)
+            .setThisBinding(data.thisBinding))
         }
       case (ExitExc(f), _) =>
         val old1 = st.context.old

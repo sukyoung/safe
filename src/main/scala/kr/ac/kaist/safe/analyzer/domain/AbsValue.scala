@@ -133,13 +133,13 @@ object DefaultValue extends AbsValueUtil {
         case _ => AbsLoc(BuiltinGlobal.loc)
       }
 
-      val foundDeclEnvRecord = locset.exists(loc => AbsBool.False <= h.isObject(loc))
+      val foundDeclEnvRecord = locset.exists(loc => !h.isObject(loc))
 
       val locSet2 =
         if (foundDeclEnvRecord) AbsLoc(BuiltinGlobal.loc)
         else AbsLoc.Bot
       val locSet3 = locset.foldLeft(AbsLoc.Bot)((tmpLocSet, loc) => {
-        if (AbsBool.True <= h.isObject(loc)) tmpLocSet + loc
+        if (h.isObject(loc)) tmpLocSet + loc
         else tmpLocSet
       })
 

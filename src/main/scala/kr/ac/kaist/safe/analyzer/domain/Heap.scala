@@ -54,7 +54,7 @@ trait Heap {
   def hasConstruct(loc: Loc)(absBool: AbsBoolUtil): AbsBool
   def hasInstance(loc: Loc)(absBool: AbsBoolUtil): AbsBool
   def isArray(loc: Loc): AbsBool
-  def isObject(loc: Loc): AbsBool
+  def isObject(loc: Loc): Boolean
   def canPutVar(x: String): AbsBool
 
   ////////////////////////////////////////////////////////////////
@@ -299,9 +299,7 @@ class DHeap(val map: Map[Loc, AbsObject]) extends Heap {
     b1 + b2
   }
 
-  def isObject(loc: Loc): AbsBool = {
-    this.get(loc) contains IClass
-  }
+  def isObject(loc: Loc): Boolean = !this.get(loc).isBottom
 
   def canPutVar(x: String): AbsBool = {
     val globalLoc = BuiltinGlobal.loc
