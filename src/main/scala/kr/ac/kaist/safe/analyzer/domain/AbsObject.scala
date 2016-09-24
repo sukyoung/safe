@@ -158,7 +158,8 @@ class AbsObject(
     new AbsObject(amap.update(astr, dp), imap)
 
   def update(in: InternalName, iv: InternalValue): AbsObject = {
-    val newIv = iv + this(in)
+    //val newIv = iv + this(in)
+    val newIv = iv
     new AbsObject(amap, imap + (in -> newIv))
   }
 
