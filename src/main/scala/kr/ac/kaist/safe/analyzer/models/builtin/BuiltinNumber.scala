@@ -31,8 +31,10 @@ object BuiltinNumberUtil {
 
     val state = st.oldify(addr)
     val loc = Loc(addr, Recent)
-    val num = if (argL <= AbsNumber(0)) AbsNumber(0)
-    else TypeConversionHelper.ToNumber(argV)
+    val emptyN =
+      if (AbsNumber(0) <= argL) AbsNumber(0)
+      else AbsNumber.Bot
+    val num = TypeConversionHelper.ToNumber(argV) + emptyN
     val heap = state.heap.update(loc, AbsObjectUtil.newNumberObj(num))
 
     (State(heap, state.context), State.Bot, AbsValue(loc))
@@ -41,37 +43,29 @@ object BuiltinNumberUtil {
   val typeConversion = PureCode(argLen = 1, code = (
     args: AbsValue, h: Heap
   ) => {
-    val resV = Helper.propLoad(args, Set(AbsString("length")), h)
-    resV.pvalue.numval.getSingle match {
-      // If value is not supplied, +0 is returned.
-      case ConOne(Num(num)) if num == 0 =>
-        AbsValue(+0)
-      // Returns a Number value computed by ToNumber(value).
-      case ConOne(Num(num)) =>
-        val res = Helper.propLoad(args, Set(AbsString("0")), h)
-        AbsValue(TypeConversionHelper.ToNumber(res))
-      case _ => AbsNumber.Bot
-    }
+    val argV = Helper.propLoad(args, Set(AbsString("0")), h)
+    val argL = Helper.propLoad(args, Set(AbsString("length")), h).pvalue.numval
+    val emptyN =
+      if (AbsNumber(0) <= argL) AbsNumber(0)
+      else AbsNumber.Bot
+    TypeConversionHelper.ToNumber(argV) + emptyN
   })
 
   def checkExn(h: Heap, absValue: AbsValue, clsName: String): HashSet[Exception] = {
-    val exist = absValue.locset.exists(loc => {
-      val v = h.get(loc)(IClass).value.pvalue.strval
-      (AbsString(clsName) <= v && v <= AbsString(clsName)) || v <= AbsString.Bot
+    val exist = absValue.locset.foldLeft(AbsBool.Bot)((b, loc) => {
+      b + (h.get(loc)(IClass).value.pvalue.strval === AbsString(clsName))
     })
-    if (exist)
-      HashSet[Exception](TypeError)
-    else
-      HashSet[Exception]()
+    if (AbsBool.False <= exist) HashSet[Exception](TypeError)
+    else HashSet[Exception]()
   }
 
-  def getValue(thisV: AbsValue, h: Heap): AbsNumber =
-    thisV.pvalue.numval +
-      thisV.locset.foldLeft(AbsNumber.Bot)((res, loc) => {
-        if ((AbsString("Number") <= h.get(loc)(IClass).value.pvalue.strval))
-          h.get(loc)(IPrimitiveValue).value.pvalue.numval
-        else res
-      })
+  def getValue(thisV: AbsValue, h: Heap): AbsNumber = {
+    thisV.pvalue.numval + thisV.locset.foldLeft(AbsNumber.Bot)((res, loc) => {
+      if ((AbsString("Number") <= h.get(loc)(IClass).value.pvalue.strval))
+        res + h.get(loc)(IPrimitiveValue).value.pvalue.numval
+      else res
+    })
+  }
 }
 
 // 15.7 Number Objects
@@ -90,10 +84,6 @@ object BuiltinNumber extends FuncModel(
   protoModel = Some((BuiltinNumberProto, F, F, F)),
 
   props = List(
-    InternalProp(IPrototype, BuiltinFunctionProto),
-
-    NormalProp("length", PrimModel(1), F, F, F),
-
     // 15.7.3.2 Number.MAX_VALUE
     // the largest positive finite value of the Number type, which is approximately 1.7976931348623157*10^308
     NormalProp("MAX_VALUE", PrimModel(Double.MaxValue), F, F, F),
@@ -122,8 +112,6 @@ object BuiltinNumberProto extends ObjModel(
 
     InternalProp(IPrimitiveValue, PrimModel(0)),
 
-    InternalProp(IPrototype, BuiltinObjectProto),
-
     // 15.7.4.1 Number.prototype.constructor
     NormalProp("constructor", FuncModel(
       name = "Number.prototype.constructor",
@@ -138,7 +126,7 @@ object BuiltinNumberProto extends ObjModel(
       ) => {
         val h = st.heap
         val thisV = AbsValue(st.context.thisBinding)
-        val excSet = BuiltinNumberUtil.checkExn(h, thisV, "Number")
+        var excSet = BuiltinNumberUtil.checkExn(h, thisV, "Number")
 
         // The optional radix should be an integer value in the inclusive range 2 to 36.
         val argV = Helper.propLoad(args, Set(AbsString("0")), h)
@@ -149,23 +137,22 @@ object BuiltinNumberProto extends ObjModel(
 
         // If ToInteger(radix) is not an integer between 2 and 36 inclusive
         // throw a RangeError exception.
-        val excSt = if (AbsBool.True <= Helper.bopGreater(radix, AbsNumber(36)))
-          excSet + RangeError
-        else if (AbsBool.True <= Helper.bopLess(radix, AbsNumber(2)))
-          excSet + RangeError
-        else
-          excSet
+        if (AbsBool.True <= Helper.bopGreater(radix, AbsNumber(36)) ||
+          AbsBool.True <= Helper.bopLess(radix, AbsNumber(2))) {
+          excSet += RangeError
+        }
 
         // If ToInteger(radix) is the Number 10
         // then this Number value is given as an argument to the ToString abstract operation;
         // the resulting String value is returned.
         val n = BuiltinNumberUtil.getValue(thisV, h)
-        val s = if (radix <= AbsNumber(10)) TypeConversionHelper.ToString(n)
-        // If ToInteger(radix) is an integer from 2 to 36, but not 10,
-        // give up the precision! (Room for the analysis precision improvement!)
-        else AbsString.Top
+        val s =
+          if (AbsNumber(10) <= radix) TypeConversionHelper.ToString(n)
+          // If ToInteger(radix) is an integer from 2 to 36, but not 10,
+          // XXX: give up the precision! (Room for the analysis precision improvement!)
+          else AbsString.Top
 
-        (st, st.raiseException(excSt), AbsValue(s))
+        (st, st.raiseException(excSet), AbsValue(s))
       })
     ), T, F, T),
 
