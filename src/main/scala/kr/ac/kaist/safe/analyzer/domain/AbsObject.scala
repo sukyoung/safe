@@ -178,6 +178,7 @@ class AbsObject(
   }
 
   def getOwnPropertyNames: Set[String] = this.amap.concreteKeySet
+  def abstractKeySet: Set[AbsString] = this.amap.abstractKeySet
   def collectKeySet(prefix: String): Set[String] = this.amap.collectKeySet(prefix)
 
   ////////////////////////////////////////////////////////////////

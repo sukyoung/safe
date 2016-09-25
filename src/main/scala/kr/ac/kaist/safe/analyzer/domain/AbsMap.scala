@@ -330,6 +330,8 @@ sealed abstract class AbsMap(
     AbsMapFin(newMap, defset)
   }
 
+  def abstractKeySet: Set[AbsString] = map.keySet
+
   def concreteKeySet: Set[String] =
     this.map.keySet.foldLeft(HashSet[String]())((keyset, astr) =>
       astr.gamma match {

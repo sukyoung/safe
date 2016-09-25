@@ -69,10 +69,9 @@ object BuiltinObject extends FuncModel(
       code = EmptyCode(argLen = 2)
     ), T, F, T),
 
-    // TODO seal
     NormalProp("seal", FuncModel(
       name = "Object.seal",
-      code = EmptyCode(argLen = 1)
+      code = BasicCode(argLen = 1, BuiltinObjectHelper.seal)
     ), T, F, T),
 
     // TODO freeze
@@ -201,15 +200,12 @@ object BuiltinObjectHelper {
 
     // 1. If Type(O) is not Object throw a TypeError exception.
     val excSet1 = objCheck(objV)
-
     // 2. Let name be ToString(P).
     val name = TypeConversionHelper.ToString(propV)
-
     // 3. Let desc be the result of calling the [[GetOwnProperty]]
     //    internal method of O with argument name.
     val obj = h.get(objV.locset)
     val (desc, undef) = obj.GetOwnProperty(name)
-
     // 4. Return the result of calling FromPropertyDescriptor(desc) (8.10.4).
     val (retH, retV, excSet2) = if (!desc.isBottom) {
       val (descObj, excSet) = AbsObjectUtil.FromPropertyDescriptor(desc)
@@ -240,11 +236,9 @@ object BuiltinObjectHelper {
 
     // 1. If Type(O) is not Object throw a TypeError exception.
     val excSet = objCheck(objV)
-
     // 2. Let array be the result of creating a new Array object.
     // (XXX: we assign the length of the Array object as the number of properties)
     val array = AbsObjectUtil.newArrayObject(AbsNumber(lenSet))
-
     // 3. For each named own property P of O (with index n started from 0)
     //   a. Let name be the String value that is the name of P.
     val AT = (AbsBool.True, AbsAbsent.Bot)
@@ -268,6 +262,46 @@ object BuiltinObjectHelper {
     val excSt = st.raiseException(retExcSet)
 
     (State(retHeap, st.context), excSt, AbsValue(arrLoc))
+  }
+
+  def seal(args: AbsValue, st: State): (State, State, AbsValue) = {
+    val h = st.heap
+    val objV = Helper.propLoad(args, Set(AbsString("0")), h)
+
+    // 1. If Type(O) is not Object throw a TypeError exception.
+    val excSet = objCheck(objV)
+
+    val (retH, retExcSet) = objV.locset.foldLeft((h, excSet)) {
+      case ((heap, e), loc) => {
+        val obj = h.get(loc)
+        val aKeySet = obj.abstractKeySet
+        // 2. For each named own property name P of O,
+        val (newObj, excSet) = aKeySet.foldLeft(obj, e) {
+          case ((o, e), key) => {
+            //   a. Let desc be the result of calling the [[GetOwnProperty]] internal method of O with P.
+            val (desc, _) = obj.GetOwnProperty(key)
+            //   b. If desc.[[Configurable]] is true, set desc.[[Configurable]] to false.
+            val (c, ca) = desc.configurable
+            val newConfig =
+              if (c.isBottom) AbsBool.Bot
+              else AbsBool.False
+            val newDesc = desc.copyWith(configurable = (newConfig, ca))
+            //   c. Call the [[DefineOwnProperty]] internal method of O with P, desc, and true as arguments.
+            val (retObj, _, excSet) = o.DefineOwnProperty(key, newDesc, true)
+            (retObj, e ++ excSet)
+          }
+        }
+        // 3. Set the [[Extensible]] internal property of O to false.
+        val retObj = newObj.update(IExtensible, InternalValueUtil(AbsBool.False))
+        // 4. Return O.
+        val retH = heap.update(loc, retObj)
+        (retH, excSet)
+      }
+    }
+
+    val excSt = st.raiseException(retExcSet)
+
+    (State(retH, st.context), excSt, objV.locset)
   }
 
   ////////////////////////////////////////////////////////////////
