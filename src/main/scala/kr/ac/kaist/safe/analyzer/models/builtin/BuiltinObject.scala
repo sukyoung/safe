@@ -51,51 +51,61 @@ object BuiltinObject extends FuncModel(
       code = BasicCode(argLen = 1, BuiltinObjectHelper.getOwnPropertyNames)
     ), T, F, T),
 
+    // 15.2.3.5 Object.create(O [, Properties])
     NormalProp("create", FuncModel(
       name = "Object.create",
       code = BasicCode(argLen = 2, BuiltinObjectHelper.create)
     ), T, F, T),
 
+    // 15.2.3.6 Object.defineProperty(O, P, Attributes)
     NormalProp("defineProperty", FuncModel(
       name = "Object.defineProperty",
       code = BasicCode(argLen = 3, BuiltinObjectHelper.defineProperty)
     ), T, F, T),
 
+    // 15.2.3.7 Object.defineProperties(O, Properties)
     NormalProp("defineProperties", FuncModel(
       name = "Object.defineProperties",
       code = BasicCode(argLen = 2, BuiltinObjectHelper.defineProperties)
     ), T, F, T),
 
+    // 15.2.3.8 Object.seal(O)
     NormalProp("seal", FuncModel(
       name = "Object.seal",
       code = BasicCode(argLen = 1, BuiltinObjectHelper.seal)
     ), T, F, T),
 
+    // 15.2.3.9 Object.freeze(O)
     NormalProp("freeze", FuncModel(
       name = "Object.freeze",
       code = BasicCode(argLen = 1, BuiltinObjectHelper.freeze)
     ), T, F, T),
 
+    // 15.2.3.10 Object.preventExtensions(O)
     NormalProp("preventExtensions", FuncModel(
       name = "Object.preventExtensions",
       code = BasicCode(argLen = 1, BuiltinObjectHelper.preventExtensions)
     ), T, F, T),
 
+    // 15.2.3.11 Object.isSealed(O)
     NormalProp("isSealed", FuncModel(
       name = "Object.isSealed",
       code = BasicCode(argLen = 1, BuiltinObjectHelper.isSealed)
     ), T, F, T),
 
+    // 15.2.3.12 Object.isFrozen(O)
     NormalProp("isFrozen", FuncModel(
       name = "Object.isFrozen",
       code = BasicCode(argLen = 1, BuiltinObjectHelper.isFrozen)
     ), T, F, T),
 
+    // 15.2.3.13 Object.isExtensible(O)
     NormalProp("isExtensible", FuncModel(
       name = "Object.isExtensible",
       code = BasicCode(argLen = 1, BuiltinObjectHelper.isExtensible)
     ), T, F, T),
 
+    // 15.2.3.14 Object.keys(O)
     NormalProp("keys", FuncModel(
       name = "Object.keys",
       code = BasicCode(argLen = 1, BuiltinObjectHelper.keys)
@@ -103,15 +113,16 @@ object BuiltinObject extends FuncModel(
   )
 )
 
+// 15.2.4 Properties of the Object Prototype Object
 object BuiltinObjectProto extends ObjModel(
   name = "Object.prototype",
   props = List(
     InternalProp(IPrototype, PrimModel(Null)),
 
-    // TODO toString
+    // 15.2.4.2 Object.prototype.toString()
     NormalProp("toString", FuncModel(
       name = "Object.prototype.toString",
-      code = EmptyCode()
+      code = PureCode(argLen = 0, BuiltinObjectHelper.toString)
     ), T, F, T),
 
     // TODO toLocaleString
@@ -147,6 +158,9 @@ object BuiltinObjectProto extends ObjModel(
 )
 
 object BuiltinObjectHelper {
+  ////////////////////////////////////////////////////////////////
+  // Object
+  ////////////////////////////////////////////////////////////////
   def construct(args: AbsValue, st: State): (State, State, AbsValue) = {
     val h = st.heap
     val argV = Helper.propLoad(args, Set(AbsString("0")), h)
@@ -524,6 +538,23 @@ object BuiltinObjectHelper {
     val excSt = st.raiseException(retExcSet)
 
     (State(retHeap, st.context), excSt, AbsValue(arrLoc))
+  }
+
+  ////////////////////////////////////////////////////////////////
+  // Object.prototype
+  ////////////////////////////////////////////////////////////////
+  def toString(args: AbsValue, st: State): AbsValue = {
+    val h = st.heap
+    val thisLoc = st.context.thisBinding
+    // XXX: 1. If the this value is undefined, return "[object Undefined]".
+    // XXX: 2. If the this value is null, return "[object Null]".
+    // XXX: 3. Let O be the result of calling ToObject passing the this value as the argument.
+    // TODO current "this" value only have location. we should change!
+    // 4. Let class be the value of the [[Class]] internal property of O.
+    val obj = h.get(thisLoc)
+    val className = obj(IClass).value.pvalue.strval
+    // 5. Return the String value that is the result of concatenating the three Strings "[object ", class, and "]".
+    AbsString("[object ") concat className concat AbsString("]")
   }
 
   ////////////////////////////////////////////////////////////////
