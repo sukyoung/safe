@@ -236,7 +236,7 @@ object BuiltinObjectHelper {
         (str + AbsString(keys), lenSet + keys.size)
       }
     }
-    val len = lenSet.max
+    val max = lenSet.max
 
     // 1. If Type(O) is not Object throw a TypeError exception.
     val excSet = objCheck(objV)
@@ -247,22 +247,25 @@ object BuiltinObjectHelper {
 
     // 3. For each named own property P of O (with index n started from 0)
     //   a. Let name be the String value that is the name of P.
+    val AT = (AbsBool.True, AbsAbsent.Bot)
     val name = AbsValue(AbsPValue(strval = keyStr))
-    val AT = AbsBool.True
-    val retObj = (0 until len.toInt).foldLeft(array)((obj, n) => {
-      // b. Call the [[DefineOwnProperty]] internal method of array with arguments
-      //    ToString(n), the PropertyDescriptor {[[Value]]: name, [[Writable]]:
-      //    true, [[Enumerable]]: true, [[Configurable]]:true}, and false.
-      obj.update(n.toString, AbsDataProp(name, AT, AT, AT), true)
-      // (XXX: we use update helper function instead of [[DefineOwnProperty]]
-      //       because it does not consider the 'undefined' descriptor.)
-    })
+    val desc = AbsDesc((name, AbsAbsent.Bot), AT, AT, AT)
+    val (retObj, retExcSet) = (0 until max.toInt).foldLeft((array, excSet)) {
+      case ((obj, e), n) => {
+        val prop = AbsString(n.toString)
+        // b. Call the [[DefineOwnProperty]] internal method of array with arguments
+        //    ToString(n), the PropertyDescriptor {[[Value]]: name, [[Writable]]:
+        //    true, [[Enumerable]]: true, [[Configurable]]:true}, and false.
+        val (newObj, _, excSet) = obj.DefineOwnProperty(prop, desc, false)
+        (obj + newObj, e ++ excSet)
+      }
+    }
 
     // 5. Return array.
     val state = st.oldify(arrAddr)
     val arrLoc = Loc(arrAddr, Recent)
     val retHeap = state.heap.update(arrLoc, retObj)
-    val excSt = st.raiseException(excSet)
+    val excSt = st.raiseException(retExcSet)
 
     (State(retHeap, st.context), excSt, AbsValue(arrLoc))
   }
