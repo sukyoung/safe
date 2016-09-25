@@ -139,13 +139,13 @@ object CallCode {
 
 class PureCode(
   override val argLen: Int = 0,
-  code: (AbsValue, Heap) => AbsValue
+  code: (AbsValue, State) => AbsValue
 ) extends BasicCode(argLen, (v: AbsValue, st: State) => {
-  (st, State.Bot, code(v, st.heap))
+  (st, State.Bot, code(v, st))
 })
 object PureCode {
   def apply(
     argLen: Int = 0,
-    code: (AbsValue, Heap) => AbsValue
+    code: (AbsValue, State) => AbsValue
   ): PureCode = new PureCode(argLen, code)
 }

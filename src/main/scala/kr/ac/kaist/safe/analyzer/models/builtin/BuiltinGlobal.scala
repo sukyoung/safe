@@ -44,7 +44,8 @@ object BuiltinGlobal extends ObjModel(
 
     NormalProp("isNaN", FuncModel(
       name = "Global.isNaN",
-      code = PureCode(argLen = 1, (args, h) => {
+      code = PureCode(argLen = 1, (args, st) => {
+        val h = st.heap
         val resV = Helper.propLoad(args, Set(AbsString("0")), h)
         val num = TypeConversionHelper.ToNumber(resV)
         num.gamma match {
@@ -60,7 +61,8 @@ object BuiltinGlobal extends ObjModel(
 
     NormalProp("isFinite", FuncModel(
       name = "Global.isFinite",
-      code = PureCode(argLen = 1, (args, h) => {
+      code = PureCode(argLen = 1, (args, st) => {
+        val h = st.heap
         val resV = Helper.propLoad(args, Set(AbsString("0")), h)
         val num = TypeConversionHelper.ToNumber(resV)
         num.gamma match {

@@ -21,7 +21,8 @@ import kr.ac.kaist.safe.analyzer.models._
 import kr.ac.kaist.safe.util.SystemAddr
 
 object BuiltinStringHelper {
-  def typeConvert(args: AbsValue, h: Heap): AbsString = {
+  def typeConvert(args: AbsValue, st: State): AbsString = {
+    val h = st.heap
     val argV = Helper.propLoad(args, Set(AbsString("0")), h)
     val argL = Helper.propLoad(args, Set(AbsString("length")), h).pvalue.numval
     val emptyS =
@@ -49,8 +50,7 @@ object BuiltinStringHelper {
   val constructor = BasicCode(argLen = 1, code = (
     args: AbsValue, st: State
   ) => {
-    val h = st.heap
-    val num = typeConvert(args, h)
+    val num = typeConvert(args, st)
     val addr = SystemAddr("String<instance>")
     val state = st.oldify(addr)
     val loc = Loc(addr, Recent)
