@@ -19,7 +19,3 @@ var __expect4 = 2;
 x.p3 = 3;
 var __result5 = x.p3;
 var __expect5 = undefined;
-
-// TODO
-// var __result8 = Object.isExtensible(x);
-// var __expect8 = false;

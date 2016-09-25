@@ -86,18 +86,17 @@ object BuiltinObject extends FuncModel(
 
     NormalProp("isSealed", FuncModel(
       name = "Object.isSealed",
-      code = PureCode(argLen = 1, BuiltinObjectHelper.isSealed)
+      code = BasicCode(argLen = 1, BuiltinObjectHelper.isSealed)
     ), T, F, T),
 
     NormalProp("isFrozen", FuncModel(
       name = "Object.isFrozen",
-      code = PureCode(argLen = 1, BuiltinObjectHelper.isFrozen)
+      code = BasicCode(argLen = 1, BuiltinObjectHelper.isFrozen)
     ), T, F, T),
 
-    // TODO isExtensible
     NormalProp("isExtensible", FuncModel(
       name = "Object.isExtensible",
-      code = EmptyCode(argLen = 1)
+      code = BasicCode(argLen = 1, BuiltinObjectHelper.isExtensible)
     ), T, F, T),
 
     // TODO keys
@@ -350,7 +349,8 @@ object BuiltinObjectHelper {
     (State(retH, st.context), excSt, objV.locset)
   }
 
-  def isSealed(args: AbsValue, h: Heap): AbsValue = {
+  def isSealed(args: AbsValue, st: State): (State, State, AbsValue) = {
+    val h = st.heap
     val objV = Helper.propLoad(args, Set(AbsString("0")), h)
 
     // 1. If Type(O) is not Object throw a TypeError exception.
@@ -366,10 +366,13 @@ object BuiltinObjectHelper {
     // 3. If the [[Extensible]] internal property of O is false, then return true.
     val eCheck = obj(IExtensible).value.pvalue.boolval.negate
     // 4. Otherwise, return false.
-    (cCheck && eCheck)
+    val retB = cCheck && eCheck
+    val excSt = st.raiseException(excSet)
+    (st, excSt, retB)
   }
 
-  def isFrozen(args: AbsValue, h: Heap): AbsValue = {
+  def isFrozen(args: AbsValue, st: State): (State, State, AbsValue) = {
+    val h = st.heap
     val objV = Helper.propLoad(args, Set(AbsString("0")), h)
 
     // 1. If Type(O) is not Object throw a TypeError exception.
@@ -387,7 +390,22 @@ object BuiltinObjectHelper {
     // 3. If the [[Extensible]] internal property of O is false, then return true.
     val eCheck = obj(IExtensible).value.pvalue.boolval.negate
     // 4. Otherwise, return false.
-    (cCheck && eCheck)
+    val retB = cCheck && eCheck
+    val excSt = st.raiseException(excSet)
+    (st, excSt, retB)
+  }
+
+  def isExtensible(args: AbsValue, st: State): (State, State, AbsValue) = {
+    val h = st.heap
+    val objV = Helper.propLoad(args, Set(AbsString("0")), h)
+
+    // 1. If Type(O) is not Object throw a TypeError exception.
+    val excSet = objCheck(objV)
+    // 2. Return the Boolean value of the [[Extensible]] internal property of O.
+    val obj = h.get(objV.locset)
+    val retB = obj(IExtensible).value.pvalue.boolval
+    val excSt = st.raiseException(excSet)
+    (st, excSt, retB)
   }
 
   ////////////////////////////////////////////////////////////////
