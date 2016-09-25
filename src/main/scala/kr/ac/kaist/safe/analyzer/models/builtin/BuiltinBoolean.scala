@@ -12,42 +12,68 @@
 package kr.ac.kaist.safe.analyzer.models.builtin
 
 import scala.collection.immutable.HashSet
+import kr.ac.kaist.safe.analyzer.domain.IClass
+import kr.ac.kaist.safe.analyzer.domain.IPrimitiveValue
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.analyzer._
 import kr.ac.kaist.safe.analyzer.models._
 import kr.ac.kaist.safe.util.SystemAddr
 
+object BuiltinBooleanUtil {
+  def typeConvert(args: AbsValue, h: Heap): AbsBool = {
+    val argV = Helper.propLoad(args, Set(AbsString("0")), h)
+    val argL = Helper.propLoad(args, Set(AbsString("length")), h).pvalue.numval
+    val emptyB =
+      if (AbsNumber(0) <= argL) AbsBool(false)
+      else AbsBool.Bot
+    TypeConversionHelper.ToBoolean(argV) + emptyB
+  }
+
+  def checkExn(h: Heap, absValue: AbsValue, clsName: String): HashSet[Exception] = {
+    val exist = absValue.locset.foldLeft(AbsBool.Bot)((b, loc) => {
+      val clsStr = h.get(loc)(IClass).value.pvalue.strval
+      b + ((clsStr === AbsString(clsName)) || (clsStr === AbsString.Bot))
+    })
+    val pv = absValue.pvalue
+    if (AbsBool.False <= exist || !(pv.undefval.isBottom && pv.nullval.isBottom && pv.numval.isBottom && pv.strval.isBottom))
+      HashSet[Exception](TypeError)
+    else HashSet[Exception]()
+  }
+
+  def getValue(thisV: AbsValue, h: Heap): AbsBool = {
+    thisV.pvalue.boolval + thisV.locset.foldLeft(AbsBool.Bot)((res, loc) => {
+      if ((AbsString("Boolean") <= h.get(loc)(IClass).value.pvalue.strval))
+        res + h.get(loc)(IPrimitiveValue).value.pvalue.boolval
+      else res
+    })
+  }
+
+  val constructor = BasicCode(argLen = 1, code = (
+    args: AbsValue, st: State
+  ) => {
+    val h = st.heap
+    val bool = typeConvert(args, h)
+    val addr = SystemAddr("Boolean<instance>")
+    val state = st.oldify(addr)
+    val loc = Loc(addr, Recent)
+    val heap = state.heap.update(loc, AbsObjectUtil.newBooleanObj(bool))
+
+    (State(heap, state.context), State.Bot, AbsValue(loc))
+  })
+
+  val typeConversion = PureCode(argLen = 1, code = typeConvert)
+}
+
 // 15.6 Boolean Objects
 object BuiltinBoolean extends FuncModel(
   name = "Boolean",
 
   // 15.6.1 The Boolean Constructor Called as a Function: Boolean([value])
-  code = PureCode(argLen = 1, code = (
-    args, h
-  ) => {
-    val argV = Helper.propLoad(args, Set(AbsString("0")), h)
-
-    // Returns a Boolean value (not a Boolean object) computed by ToBoolean(value).
-    val bool = TypeConversionHelper.ToBoolean(argV)
-    AbsValue(bool)
-  }),
+  code = BuiltinBooleanUtil.typeConversion,
 
   // 15.6.2 The Boolean Constructor: new Boolean([value])
-  construct = Some(BasicCode(argLen = 1, code = (
-    args, st
-  ) => {
-    val h = st.heap
-    val argV = Helper.propLoad(args, Set(AbsString("0")), h)
-    val addr = SystemAddr("Boolean<instance>")
-
-    val state = st.oldify(addr)
-    val loc = Loc(addr, Recent)
-    val obj = AbsObjectUtil.newBooleanObj(TypeConversionHelper.ToBoolean(argV))
-    val heap = state.heap.update(loc, obj)
-
-    (State(heap, state.context), State.Bot, AbsValue(loc))
-  })),
+  construct = Some(BuiltinBooleanUtil.constructor),
 
   // 15.6.3.1 Boolean.prototype
   protoModel = Some((BuiltinBooleanProto, F, F, F))
@@ -62,59 +88,28 @@ object BuiltinBooleanProto extends ObjModel(
     // 15.6.4.2 Boolean.prototype.toString()
     NormalProp("toString", FuncModel(
       name = "Boolean.prototype.toString",
-      code = BasicCode(code = (
-        args, st
+      code = BasicCode(argLen = 1, (
+        args: AbsValue, st: State
       ) => {
         val h = st.heap
         val thisV = AbsValue(st.context.thisBinding)
-        val classV = Helper.propLoad(thisV, Set(AbsString("@class")), h)
-        val pv = thisV.pvalue
-        val excSet = (pv.undefval.isBottom, pv.nullval.isBottom, pv.numval.isBottom, pv.strval.isBottom) match {
-          case (true, true, true, true) if (
-            (AbsString("Boolean") <= classV.pvalue.strval
-              && classV.pvalue.strval <= AbsString("Boolean"))
-              || classV.pvalue.strval <= AbsString.Bot
-          ) => ExcSetEmpty
-          case _ => HashSet[Exception](TypeError)
-        }
-        val b = thisV.pvalue.boolval + {
-          if ((AbsString("Boolean") <= classV.pvalue.strval)) {
-            val primitiveV = Helper.propLoad(thisV, Set(AbsString("@primitive")), h)
-            primitiveV.pvalue.boolval
-          } else {
-            AbsBool.Bot
-          }
-        }
-        (st, st.raiseException(excSet), AbsValue(b.toAbsString))
+        val excSet = BuiltinBooleanUtil.checkExn(h, thisV, "Boolean")
+        val b = BuiltinBooleanUtil.getValue(thisV, h)
+        val s = TypeConversionHelper.ToString(b)
+        (st, st.raiseException(excSet), AbsValue(s))
       })
     ), T, F, T),
 
     // 15.6.4.3 Boolean.prototype.valueOf()
     NormalProp("valueOf", FuncModel(
       name = "Boolean.prototype.valueOf",
-      code = BasicCode(code = (
-        args, st
+      code = BasicCode(argLen = 1, (
+        args: AbsValue, st: State
       ) => {
         val h = st.heap
         val thisV = AbsValue(st.context.thisBinding)
-        val classV = Helper.propLoad(thisV, Set(AbsString("@class")), h)
-        val pv = thisV.pvalue
-        val excSet = (pv.undefval.isBottom, pv.nullval.isBottom, pv.numval.isBottom, pv.strval.isBottom) match {
-          case (true, true, true, true) if (
-            (AbsString("Boolean") <= classV.pvalue.strval
-              && classV.pvalue.strval <= AbsString("Boolean"))
-              || classV.pvalue.strval <= AbsString.Bot
-          ) => ExcSetEmpty
-          case _ => HashSet[Exception](TypeError)
-        }
-        val b = thisV.pvalue.boolval + {
-          if ((AbsString("Boolean") <= classV.pvalue.strval)) {
-            val primitiveV = Helper.propLoad(thisV, Set(AbsString("@primitive")), h)
-            primitiveV.pvalue.boolval
-          } else {
-            AbsBool.Bot
-          }
-        }
+        val excSet = BuiltinBooleanUtil.checkExn(h, thisV, "Boolean")
+        val b = BuiltinBooleanUtil.getValue(thisV, h)
         (st, st.raiseException(excSet), AbsValue(b))
       })
     ), T, F, T)
