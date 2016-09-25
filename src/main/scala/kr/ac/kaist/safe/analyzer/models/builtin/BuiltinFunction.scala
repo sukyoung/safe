@@ -63,13 +63,24 @@ object BuiltinFunctionProto extends FuncModel(
       })
     ), T, F, T),
 
-    // TODO 15.3.4.3 Fucntion.prototype.apply(thisArg, argArray)
+    // 15.3.4.3 Fucntion.prototype.apply(thisArg, argArray)
     NormalProp("apply", FuncModel(
       name = "Function.prototype.apply",
-      code = BasicCode(argLen = 2, BuiltinFunctionProtoHelper.apply)
+      code = {
+      val funcId = CFGTempId("<>Model<>Function.prototype.apply<>func<>", PureLocalVar)
+      val thisId = CFGTempId("<>Model<>Function.prototype.apply<>this<>", PureLocalVar)
+      val argsId = CFGTempId("<>Model<>Function.prototype.apply<>arguments<>", PureLocalVar)
+      val retId = CFGTempId("<>Model<>Function.prototype.apply<>return<>", PureLocalVar)
+      CallCode(
+        argLen = 2,
+        funcId, thisId, argsId, retId,
+        BuiltinFunctionProtoHelper.applyBeforeCall(funcId, thisId, argsId),
+        BuiltinFunctionProtoHelper.connectAfterCall(retId)
+      )
+    }
     ), T, F, T),
 
-    // TODO 15.3.4.4 Function.prototype.call(thisArg [, arg1 [, arg2, ...]])
+    // 15.3.4.4 Function.prototype.call(thisArg [, arg1 [, arg2, ...]])
     NormalProp("call", FuncModel(
       name = "Function.prototype.call",
       code = {
@@ -81,7 +92,7 @@ object BuiltinFunctionProto extends FuncModel(
         argLen = 1,
         funcId, thisId, argsId, retId,
         BuiltinFunctionProtoHelper.callBeforeCall(funcId, thisId, argsId),
-        BuiltinFunctionProtoHelper.callAfterCall(retId)
+        BuiltinFunctionProtoHelper.connectAfterCall(retId)
       )
     }
     ), T, F, T),
@@ -97,8 +108,8 @@ object BuiltinFunctionProto extends FuncModel(
 private object BuiltinFunctionProtoHelper {
   val atrue = AbsBool.True
 
-  // TODO 15.3.4.3 Fucntion.prototype.apply(thisArg, argArray)
-  def apply(args: AbsValue, st: State): (State, State, AbsValue) = {
+  // 15.3.4.3 Fucntion.prototype.apply(thisArg, argArray)
+  def applyBeforeCall(funcId: CFGId, thisId: CFGId, argsId: CFGId)(args: AbsValue, st: State, addr: Address): (State, State) = {
     val func = st.context.thisBinding
     val thisArg = Helper.propLoad(args, HashSet(AbsString("0")), st.heap)
     val argArray = Helper.propLoad(args, HashSet(AbsString("1")), st.heap)
@@ -151,12 +162,18 @@ private object BuiltinFunctionProtoHelper {
     // val result = callableFunc.foldLeft[AbsValue](AbsPValue.Bot)((avalue, loc) => {
     //   st.heap.get(loc).[[Call]](thisArg, argList1 + argList2)
     // })
-    val result = AbsUndef.Top
+    val argsLoc = Loc(addr, Old)
+    val h1 = st.heap.update(argsLoc, argList1 + argList2)
+    val newState =
+      State(h1, st.context)
+        .varStore(funcId, callableFunc)
+        .varStore(thisId, thisArg)
+        .varStore(argsId, AbsValue(argsLoc))
 
-    (st, st.raiseException(excSet1 ++ excSet2), result)
+    (newState, st.raiseException(excSet1 ++ excSet2))
   }
 
-  // TODO 15.3.4.4 Function.prototype.call(thisArg [, arg1 [, arg2, ...]])
+  // 15.3.4.4 Function.prototype.call(thisArg [, arg1 [, arg2, ...]])
   def callBeforeCall(funcId: CFGId, thisId: CFGId, argsId: CFGId)(args: AbsValue, st: State, addr: Address): (State, State) = {
     val func = st.context.thisBinding
     val thisArg = Helper.propLoad(args, HashSet(AbsString("0")), st.heap)
@@ -195,11 +212,7 @@ private object BuiltinFunctionProtoHelper {
       }
     })
 
-    // TODO: 4. [[Call]]
-    // val result = callableFunc.foldLeft[AbsValue](AbsPValue.Bot)((avalue, loc) => {
-    //   st.heap.get(loc).[[Call]](thisArg, argList)
-    // })
-
+    // 4. [[Call]]
     val argsLoc = Loc(addr, Old)
     val h1 = st.heap.update(argsLoc, argList)
     val newState =
@@ -211,7 +224,7 @@ private object BuiltinFunctionProtoHelper {
     (newState, st.raiseException(excSet))
   }
 
-  def callAfterCall(retId: CFGId)(args: AbsValue, st: State): (State, State, AbsValue) = {
+  def connectAfterCall(retId: CFGId)(args: AbsValue, st: State): (State, State, AbsValue) = {
     val (retVal, excSet) = st.lookup(retId)
     (st, st.raiseException(excSet), retVal)
   }
