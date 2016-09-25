@@ -62,10 +62,9 @@ object BuiltinObject extends FuncModel(
       code = BasicCode(argLen = 3, BuiltinObjectHelper.defineProperty)
     ), T, F, T),
 
-    // TODO defineProperties
     NormalProp("defineProperties", FuncModel(
       name = "Object.defineProperties",
-      code = EmptyCode(argLen = 2)
+      code = BasicCode(argLen = 2, BuiltinObjectHelper.defineProperties)
     ), T, F, T),
 
     NormalProp("seal", FuncModel(
@@ -284,6 +283,47 @@ object BuiltinObjectHelper {
     val excSt = st.raiseException(excSet)
 
     (State(retH, st.context), excSt, objV.locset)
+  }
+
+  def defineProperties(args: AbsValue, st: State): (State, State, AbsValue) = {
+    val h = st.heap
+    val objV = Helper.propLoad(args, Set(AbsString("0")), h)
+    val propsV = Helper.propLoad(args, Set(AbsString("1")), h)
+    val addr = SystemAddr("Object.defineProperties<props>")
+
+    // 1. If Type(O) is not Object throw a TypeError exception.
+    val excSet = objCheck(objV)
+    // 2. Let props be ToObject(Properties).
+    val (v1, st1, toExcSet) = TypeConversionHelper.ToObject(propsV, st, addr)
+    val h1 = st1.heap
+    val ctx1 = st1.context
+    val props = h1.get(v1.locset)
+    // 4. For each enumerable property of props whose name String is P
+    val keyStrSet = props.amap.abstractKeySet((key, dp) => {
+      AbsBool.True <= dp.enumerable
+    })
+    val (retH, retExcSet) = objV.locset.foldLeft((h1, excSet ++ toExcSet)) {
+      case ((heap, e), loc) => {
+        val obj = h1.get(loc)
+        val (retObj, excSet) = keyStrSet.foldLeft((obj, e)) {
+          case ((obj, e), astr) => {
+            // a. Let descObj be the result of calling the [[Get]] internal method of props with P as the argument.
+            val descObjLoc = props.Get(astr, h1).locset
+            val descObj = h1.get(descObjLoc)
+            // b. Let desc be the result of calling ToPropertyDescriptor with descObj as the argument.
+            val desc = AbsDesc.ToPropertyDescriptor(descObj, h1)
+            // c. Call the [[DefineOwnProperty]] internal method of O with arguments P, desc, and true.
+            val (retObj, _, excSet) = obj.DefineOwnProperty(astr, desc, true)
+            (retObj, e ++ excSet)
+          }
+        }
+        val retH = heap.update(loc, retObj)
+        (retH, excSet)
+      }
+    }
+    // 5. Return O.
+    val excSt = st1.raiseException(retExcSet)
+    (State(retH, ctx1), excSt, objV.locset)
   }
 
   def seal(args: AbsValue, st: State): (State, State, AbsValue) = {
