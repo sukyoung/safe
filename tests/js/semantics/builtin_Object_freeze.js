@@ -21,9 +21,6 @@ var __result5 = x.p3;
 var __expect5 = undefined;
 
 // TODO
-// var __result6 = Object.isSealed(x);
-// var __expect6 = true;
-// 
 // var __result7 = Object.isFrozen(x);
 // var __expect7 = true;
 // 

@@ -84,10 +84,9 @@ object BuiltinObject extends FuncModel(
       code = BasicCode(argLen = 1, BuiltinObjectHelper.preventExtensions)
     ), T, F, T),
 
-    // TODO isSealed
     NormalProp("isSealed", FuncModel(
       name = "Object.isSealed",
-      code = EmptyCode(argLen = 1)
+      code = PureCode(argLen = 1, BuiltinObjectHelper.isSealed)
     ), T, F, T),
 
     // TODO isFrozen
@@ -352,6 +351,25 @@ object BuiltinObjectHelper {
     (State(retH, st.context), excSt, objV.locset)
   }
 
+  def isSealed(args: AbsValue, h: Heap): AbsValue = {
+    val objV = Helper.propLoad(args, Set(AbsString("0")), h)
+
+    // 1. If Type(O) is not Object throw a TypeError exception.
+    val excSet = objCheck(objV)
+    // 2. For each named own property name P of O,
+    //   a. Let desc be the result of calling the [[GetOwnProperty]] internal method of O with P.
+    //   b. If desc.[[Configurable]] is true, then return false.
+    val obj = h.get(objV.locset)
+    val cCheck = forall(obj, desc => {
+      val (c, ca) = desc.configurable
+      c.negate || AbsBool(ca.isTop)
+    })
+    // 3. If the [[Extensible]] internal property of O is false, then return true.
+    val eCheck = obj(IExtensible).value.pvalue.boolval.negate
+    // 4. Otherwise, return false.
+    (cCheck && eCheck)
+  }
+
   ////////////////////////////////////////////////////////////////
   // private helper functions
   ////////////////////////////////////////////////////////////////
@@ -380,6 +398,22 @@ object BuiltinObjectHelper {
         // Call the [[DefineOwnProperty]] internal method of O with P, desc, and true as arguments.
         val (retObj, _, excSet) = o.DefineOwnProperty(key, newDesc, true)
         (retObj, e ++ excSet)
+      }
+    }
+  }
+
+  private def forall(obj: AbsObject, f: AbsDesc => AbsBool): AbsBool = {
+    val aKeySet = obj.abstractKeySet
+    if (obj.isBottom) AbsBool.Bot
+    else {
+      // For each named own property name P of O,
+      aKeySet.foldLeft(AbsBool.True) {
+        case (b, key) => {
+          // Let desc be the result of calling the [[GetOwnProperty]] internal method of O with P.
+          val (desc, _) = obj.GetOwnProperty(key)
+          // Check by using f.
+          b && f(desc)
+        }
       }
     }
   }
