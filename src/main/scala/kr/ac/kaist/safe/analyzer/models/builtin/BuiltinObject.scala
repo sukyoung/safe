@@ -51,10 +51,9 @@ object BuiltinObject extends FuncModel(
       code = BasicCode(argLen = 1, BuiltinObjectHelper.getOwnPropertyNames)
     ), T, F, T),
 
-    // TODO create
     NormalProp("create", FuncModel(
       name = "Object.create",
-      code = EmptyCode(argLen = 2)
+      code = BasicCode(argLen = 2, BuiltinObjectHelper.create)
     ), T, F, T),
 
     NormalProp("defineProperty", FuncModel(
@@ -256,6 +255,36 @@ object BuiltinObjectHelper {
     (State(retHeap, st.context), excSt, AbsValue(arrLoc))
   }
 
+  def create(args: AbsValue, st: State): (State, State, AbsValue) = {
+    val h = st.heap
+    val objV = Helper.propLoad(args, Set(AbsString("0")), h)
+    val propsV = Helper.propLoad(args, Set(AbsString("1")), h)
+
+    // 1. If Type(O) is not Object or Null throw a TypeError exception.
+    val excSet =
+      if (objV.pvalue.copyWith(nullval = AbsNull.Bot).isBottom) ExcSetEmpty
+      else HashSet(TypeError)
+    // 2. Let obj be the result of creating a new object.
+    val obj = AbsObjectUtil.newObject
+    // 3. Set the [[Prototype]] internal property of obj to O.
+    val protoV = AbsValue(objV.locset) + objV.pvalue.nullval
+    val newObj = obj.update(IPrototype, InternalValueUtil(protoV))
+    // 4. If the argument Properties is present and not undefined, add own properties to obj as if by calling the
+    //    standard built-in function Object.defineProperties with arguments obj and Properties.
+    val addr = SystemAddr("Object.create<object>")
+    val state = st.oldify(addr)
+    val loc = Loc(addr, Recent)
+    val newH = h.update(loc, newObj)
+    val retV = AbsLoc(loc)
+    val (retSt, e) =
+      if (propsV <= AbsUndef.Top) (State(newH, st.context), ExcSetEmpty)
+      else defProps(retV, propsV, State(newH, st.context))
+    // 5. Return obj.
+    val excSt = st.raiseException(excSet ++ e)
+
+    (retSt, excSt, retV)
+  }
+
   def defineProperty(args: AbsValue, st: State): (State, State, AbsValue) = {
     val h = st.heap
     val objV = Helper.propLoad(args, Set(AbsString("0")), h)
@@ -289,41 +318,11 @@ object BuiltinObjectHelper {
     val h = st.heap
     val objV = Helper.propLoad(args, Set(AbsString("0")), h)
     val propsV = Helper.propLoad(args, Set(AbsString("1")), h)
-    val addr = SystemAddr("Object.defineProperties<props>")
 
-    // 1. If Type(O) is not Object throw a TypeError exception.
-    val excSet = objCheck(objV)
-    // 2. Let props be ToObject(Properties).
-    val (v1, st1, toExcSet) = TypeConversionHelper.ToObject(propsV, st, addr)
-    val h1 = st1.heap
-    val ctx1 = st1.context
-    val props = h1.get(v1.locset)
-    // 4. For each enumerable property of props whose name String is P
-    val keyStrSet = props.amap.abstractKeySet((key, dp) => {
-      AbsBool.True <= dp.enumerable
-    })
-    val (retH, retExcSet) = objV.locset.foldLeft((h1, excSet ++ toExcSet)) {
-      case ((heap, e), loc) => {
-        val obj = h1.get(loc)
-        val (retObj, excSet) = keyStrSet.foldLeft((obj, e)) {
-          case ((obj, e), astr) => {
-            // a. Let descObj be the result of calling the [[Get]] internal method of props with P as the argument.
-            val descObjLoc = props.Get(astr, h1).locset
-            val descObj = h1.get(descObjLoc)
-            // b. Let desc be the result of calling ToPropertyDescriptor with descObj as the argument.
-            val desc = AbsDesc.ToPropertyDescriptor(descObj, h1)
-            // c. Call the [[DefineOwnProperty]] internal method of O with arguments P, desc, and true.
-            val (retObj, _, excSet) = obj.DefineOwnProperty(astr, desc, true)
-            (retObj, e ++ excSet)
-          }
-        }
-        val retH = heap.update(loc, retObj)
-        (retH, excSet)
-      }
-    }
-    // 5. Return O.
-    val excSt = st1.raiseException(retExcSet)
-    (State(retH, ctx1), excSt, objV.locset)
+    val (retSt, excSet) = defProps(objV, propsV, st)
+    val excSt = st.raiseException(excSet)
+
+    (retSt, excSt, objV.locset)
   }
 
   def seal(args: AbsValue, st: State): (State, State, AbsValue) = {
@@ -573,5 +572,41 @@ object BuiltinObjectHelper {
         }
       }
     }
+  }
+
+  private def defProps(objV: AbsValue, propsV: AbsValue, st: State): (State, Set[Exception]) = {
+    // 1. If Type(O) is not Object throw a TypeError exception.
+    val excSet = objCheck(objV)
+    // 2. Let props be ToObject(Properties).
+    val addr = SystemAddr("Object.defineProperties<props>")
+    val (v1, st1, toExcSet) = TypeConversionHelper.ToObject(propsV, st, addr)
+    val h1 = st1.heap
+    val ctx1 = st1.context
+    val props = h1.get(v1.locset)
+    // 4. For each enumerable property of props whose name String is P
+    val keyStrSet = props.amap.abstractKeySet((key, dp) => {
+      AbsBool.True <= dp.enumerable
+    })
+    val (retH, retExcSet) = objV.locset.foldLeft((h1, excSet ++ toExcSet)) {
+      case ((heap, e), loc) => {
+        val obj = h1.get(loc)
+        val (retObj, excSet) = keyStrSet.foldLeft((obj, e)) {
+          case ((obj, e), astr) => {
+            // a. Let descObj be the result of calling the [[Get]] internal method of props with P as the argument.
+            val descObjLoc = props.Get(astr, h1).locset
+            val descObj = h1.get(descObjLoc)
+            // b. Let desc be the result of calling ToPropertyDescriptor with descObj as the argument.
+            val desc = AbsDesc.ToPropertyDescriptor(descObj, h1)
+            // c. Call the [[DefineOwnProperty]] internal method of O with arguments P, desc, and true.
+            val (retObj, _, excSet) = obj.DefineOwnProperty(astr, desc, true)
+            (retObj, e ++ excSet)
+          }
+        }
+        // 5. Return O.
+        val retH = heap.update(loc, retObj)
+        (retH, excSet)
+      }
+    }
+    (State(retH, ctx1), retExcSet)
   }
 }
