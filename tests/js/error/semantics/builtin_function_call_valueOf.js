@@ -7,8 +7,8 @@
     This distribution may include materials developed by third parties.
  ******************************************************************************/
 
-function f() { return this.x+1; }
+function f() { return this; }
+var x = f.call(10);
 
-var __result1 = f.call({x:1});
-var __expect1 = 2;
-
+var __result1 = x.valueOf();
+var __expect1 = 10;
