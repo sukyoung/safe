@@ -224,7 +224,7 @@ object BuiltinNumberProto extends ObjModel(
         val argV = Helper.propLoad(args, Set(AbsString("0")), h)
         val f = TypeConversionHelper.ToInteger(argV)
         // 7. If fractionDigits is not undefined and (f < 0 or f > 20), throw a RangeError exception.
-        if (argV <= AbsUndef.Bot &&
+        if (!(AbsUndef.Top <= argV) &&
           (AbsBool.True <= Helper.bopGreater(f, AbsNumber(20)) ||
             AbsBool.True <= Helper.bopLess(f, AbsNumber(0)))) {
           excSet += RangeError
