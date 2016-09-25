@@ -143,10 +143,10 @@ object BuiltinObjectProto extends ObjModel(
       code = PureCode(argLen = 1, BuiltinObjectHelper.hasOwnProperty)
     ), T, F, T),
 
-    // TODO isPrototypeOf
+    // 15.2.4.6 Object.prototype.isPrototypeOf(V)
     NormalProp("isPrototypeOf", FuncModel(
       name = "Object.prototype.isPrototypeOf",
-      code = EmptyCode(argLen = 1)
+      code = PureCode(argLen = 1, BuiltinObjectHelper.isPrototypeOf)
     ), T, F, T),
 
     // TODO propertyIsEnumerable
@@ -582,6 +582,35 @@ object BuiltinObjectHelper {
     // 5. Return true.
     val trueV = desc.fold(AbsBool.Bot)(_ => AbsBool.True)
     falseV + trueV
+  }
+
+  def isPrototypeOf(args: AbsValue, st: State): AbsValue = {
+    val h = st.heap
+    val value = Helper.propLoad(args, Set(AbsString("0")), h)
+    val thisLoc = st.context.thisBinding
+    // 1. If V is not an object, return false.
+    val v1 = value.pvalue.fold(AbsBool.Bot)(_ => AbsBool.False)
+    // XXX: 2. Let O be the result of calling ToObject passing the this value as the argument.
+    // TODO current "this" value only have location. we should change!
+    // 3. Repeat
+    var visited: Set[Loc] = HashSet()
+    def repeat(loc: Loc): AbsBool = {
+      if (visited contains loc) AbsBool.Bot
+      else {
+        visited += loc
+        // a. Let V be the value of the [[Prototype]] internal property of V.
+        val obj = h.get(loc)
+        val value = obj(IPrototype).value
+        // b. if V is null, return false
+        val falseV = value.pvalue.nullval.fold(AbsBool.Bot)(_ => AbsBool.False)
+        // c. If O and V refer to the same object, return true.
+        val trueV =
+          if (AbsLoc(loc) <= thisLoc) AbsBool.True
+          else AbsBool.Bot
+        value.locset.foldLeft(falseV + trueV)(_ + repeat(_))
+      }
+    }
+    value.locset.foldLeft(v1)(_ + repeat(_))
   }
 
   ////////////////////////////////////////////////////////////////
