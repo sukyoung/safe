@@ -200,13 +200,38 @@ object BuiltinStringProto extends ObjModel(
         val res = emptyN + s.charCodeAt(pos)
         (st, State.Bot, AbsValue(res))
       })
-
     ), T, F, T),
 
-    // TODO concat
+    // 15.5.4.6 String.prototype.concat([string1 [, string2 [, ...]]])
     NormalProp("concat", FuncModel(
       name = "String.prototype.concat",
-      code = EmptyCode(argLen = 1)
+      code = BasicCode(argLen = 0, (
+        args: AbsValue, st: State
+      ) => {
+        val h = st.heap
+        // 1. Call CheckObjectCoercible passing the this value as its argument.
+        // 2. Let S be the result of calling ToString, giving it the this value as its argument.
+        val thisV = AbsValue(st.context.thisBinding)
+        val s = TypeConversionHelper.ToString(BuiltinStringHelper.getValue(thisV, h))
+        // 3. Let args be an internal list that is a copy of the argument list passed to this function.
+        // 4. Let R be S.
+        // 5. Repeat, while args is not empty
+        //   a. Remove the first element from args and let next be the value of that element.
+        //   b. Let R be the String value consisting of the characters
+        //      in the previous value of R followed by the characters of ToString(next).
+        // 6. Return R.
+        val argL = Helper.propLoad(args, Set(AbsString("length")), h).pvalue.numval
+        val res = argL.getSingle match {
+          case ConOne(Num(n)) if n == 0 => s
+          case ConOne(Num(n)) if n > 0 =>
+            (0 until n.toInt).foldLeft(s)((str, i) => {
+              val argV = Helper.propLoad(args, Set(AbsString(i.toString)), h)
+              str.concat(TypeConversionHelper.ToString(argV))
+            })
+          case _ => AbsString.Top
+        }
+        (st, State.Bot, AbsValue(res))
+      })
     ), T, F, T),
 
     // TODO indexOf
