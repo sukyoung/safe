@@ -125,10 +125,12 @@ object BuiltinObjectProto extends ObjModel(
       code = PureCode(argLen = 0, BuiltinObjectHelper.toString)
     ), T, F, T),
 
-    // TODO toLocaleString
+    // 15.2.4.3 Object.prototype.toLocaleString()
     NormalProp("toLocaleString", FuncModel(
       name = "Object.prototype.toLocaleString",
-      code = EmptyCode()
+      // TODO unsound: not use locale function.
+      // we should fix this unsound manner by using CallCode.
+      code = PureCode(argLen = 0, BuiltinObjectHelper.toString)
     ), T, F, T),
 
     // 15.2.4.4 Object.prototype.valueOf()

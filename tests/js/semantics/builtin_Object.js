@@ -20,3 +20,26 @@ var x5 = new Object(true);
 Boolean.prototype.y = 10;
 var __result5 = x5.y;
 var __expect5 = 10;
+
+var v;
+if (__TOP) {
+  v = 123;
+} else {
+  v = "ABC";
+}
+
+var obj = new Object(v);
+var obj_str = obj.toString();
+var obj_val = obj.valueOf();
+
+var __result6 = obj_str;
+var __expect6 = "123";
+
+var __result7 = obj_str;
+var __expect7 = "ABC";
+
+var __result8 = obj_val;
+var __expect8 = 123;
+
+var __result9 = obj_val;
+var __expect9 = "ABC";
