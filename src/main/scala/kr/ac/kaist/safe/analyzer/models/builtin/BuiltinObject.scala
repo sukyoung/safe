@@ -79,10 +79,9 @@ object BuiltinObject extends FuncModel(
       code = BasicCode(argLen = 1, BuiltinObjectHelper.freeze)
     ), T, F, T),
 
-    // TODO preventExtensions
     NormalProp("preventExtensions", FuncModel(
       name = "Object.preventExtensions",
-      code = EmptyCode(argLen = 1)
+      code = BasicCode(argLen = 1, BuiltinObjectHelper.preventExtensions)
     ), T, F, T),
 
     // TODO isSealed
@@ -280,8 +279,6 @@ object BuiltinObjectHelper {
         val (newObj, excSet) = changeProps(obj, desc => {
           val (c, ca) = desc.configurable
           val newConfig = c.fold(AbsBool.Bot)(_ => AbsBool.False)
-          if (c.isBottom) AbsBool.Bot
-          else AbsBool.False
           desc.copyWith(configurable = (newConfig, ca))
         })
         // 3. Set the [[Extensible]] internal property of O to false.
@@ -330,6 +327,27 @@ object BuiltinObjectHelper {
     }
 
     val excSt = st.raiseException(retExcSet)
+
+    (State(retH, st.context), excSt, objV.locset)
+  }
+
+  def preventExtensions(args: AbsValue, st: State): (State, State, AbsValue) = {
+    val h = st.heap
+    val objV = Helper.propLoad(args, Set(AbsString("0")), h)
+
+    // 1. If Type(O) is not Object throw a TypeError exception.
+    val excSet = objCheck(objV)
+    val retH = objV.locset.foldLeft(h) {
+      case (heap, loc) => {
+        val obj = h.get(loc)
+        // 2. Set the [[Extensible]] internal property of O to false.
+        val retObj = obj.update(IExtensible, InternalValueUtil(AbsBool.False))
+        // 3. Return O.
+        heap.update(loc, retObj)
+      }
+    }
+
+    val excSt = st.raiseException(excSet)
 
     (State(retH, st.context), excSt, objV.locset)
   }
