@@ -137,10 +137,10 @@ object BuiltinObjectProto extends ObjModel(
       code = PureCode(argLen = 0, BuiltinObjectHelper.valueOf)
     ), T, F, T),
 
-    // TODO hasOwnProperty
+    // 15.2.4.5 Object.prototype.hasOwnProperty(V)
     NormalProp("hasOwnProperty", FuncModel(
       name = "Object.prototype.hasOwnProperty",
-      code = EmptyCode(argLen = 1)
+      code = PureCode(argLen = 1, BuiltinObjectHelper.hasOwnProperty)
     ), T, F, T),
 
     // TODO isPrototypeOf
@@ -564,6 +564,24 @@ object BuiltinObjectHelper {
     // TODO current "this" value only have location. we should change!
     // 2. Return O.
     thisLoc
+  }
+
+  def hasOwnProperty(args: AbsValue, st: State): AbsValue = {
+    val h = st.heap
+    val value = Helper.propLoad(args, Set(AbsString("0")), h)
+    val thisLoc = st.context.thisBinding
+    // 1. Let P be ToString(V).
+    val prop = TypeConversionHelper.ToString(value)
+    // XXX: 2. Let O be the result of calling ToObject passing the this value as the argument.
+    // TODO current "this" value only have location. we should change!
+    // 3. Let desc be the result of calling the [[GetOwnProperty]] internal method of O passing P as the argument.
+    val obj = h.get(thisLoc)
+    val (desc, undef) = obj.GetOwnProperty(prop)
+    // 4. If desc is undefined, return false.
+    val falseV = undef.fold(AbsBool.Bot)(_ => AbsBool.False)
+    // 5. Return true.
+    val trueV = desc.fold(AbsBool.Bot)(_ => AbsBool.True)
+    falseV + trueV
   }
 
   ////////////////////////////////////////////////////////////////
