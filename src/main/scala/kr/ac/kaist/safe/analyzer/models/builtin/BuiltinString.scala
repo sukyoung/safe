@@ -30,6 +30,22 @@ object BuiltinStringHelper {
     TypeConversionHelper.ToString(argV) + emptyS
   }
 
+  def checkExn(h: Heap, absValue: AbsValue): HashSet[Exception] = {
+    val exist = absValue.locset.foldLeft(AbsBool.Bot)((b, loc) => {
+      b + (h.get(loc)(IClass).value.pvalue.strval === AbsString("String"))
+    })
+    if (AbsBool.False <= exist) HashSet[Exception](TypeError)
+    else HashSet[Exception]()
+  }
+
+  def getValue(thisV: AbsValue, h: Heap): AbsString = {
+    thisV.pvalue.strval + thisV.locset.foldLeft(AbsString.Bot)((res, loc) => {
+      if ((AbsString("String") <= h.get(loc)(IClass).value.pvalue.strval))
+        res + h.get(loc)(IPrimitiveValue).value.pvalue.strval
+      else res
+    })
+  }
+
   val constructor = BasicCode(argLen = 1, code = (
     args: AbsValue, st: State
   ) => {
@@ -40,6 +56,16 @@ object BuiltinStringHelper {
     val loc = Loc(addr, Recent)
     val heap = state.heap.update(loc, AbsObjectUtil.newStringObj(num))
     (State(heap, state.context), State.Bot, AbsValue(loc))
+  })
+
+  val valueOf = BasicCode(argLen = 1, (
+    args: AbsValue, st: State
+  ) => {
+    val h = st.heap
+    val thisV = AbsValue(st.context.thisBinding)
+    var excSet = BuiltinStringHelper.checkExn(h, thisV)
+    val s = BuiltinStringHelper.getValue(thisV, h)
+    (st, st.raiseException(excSet), AbsValue(s))
   })
 
   val typeConversion = PureCode(argLen = 1, code = typeConvert)
@@ -102,16 +128,16 @@ object BuiltinStringProto extends ObjModel(
       code = BuiltinStringHelper.constructor
     ), T, F, T),
 
-    // TODO toString
+    // 15.5.4.2 String.prototype.toString()
     NormalProp("toString", FuncModel(
       name = "String.prototype.toString",
-      code = EmptyCode(argLen = 0)
+      code = BuiltinStringHelper.valueOf
     ), T, F, T),
 
-    // TODO valueOf
+    // 15.5.4.3 String.prototype.valueOf()
     NormalProp("valueOf", FuncModel(
       name = "String.prototype.valueOf",
-      code = EmptyCode(argLen = 0)
+      code = BuiltinStringHelper.valueOf
     ), T, F, T),
 
     // TODO charAt
