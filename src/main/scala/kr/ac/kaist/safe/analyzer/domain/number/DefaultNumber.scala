@@ -274,7 +274,7 @@ object DefaultNumber extends AbsNumberUtil {
     def toUInt16: AbsNumber = {
       def help(n: Double): AbsNumber = {
         val posInt = math.signum(n) * math.floor(math.abs(n))
-        val int16bit = modulo(posInt, 0x10000000L);
+        val int16bit = modulo(posInt, 0x10000L);
         alpha(int16bit.toInt)
       }
       this match {
