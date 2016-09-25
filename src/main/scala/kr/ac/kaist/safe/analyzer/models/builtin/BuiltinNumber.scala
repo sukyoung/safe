@@ -20,7 +20,7 @@ import kr.ac.kaist.safe.analyzer._
 import kr.ac.kaist.safe.analyzer.models._
 import kr.ac.kaist.safe.util.SystemAddr
 
-object BuiltinNumberUtil {
+object BuiltinNumberHelper {
   def typeConvert(args: AbsValue, h: Heap): AbsNumber = {
     val argV = Helper.propLoad(args, Set(AbsString("0")), h)
     val argL = Helper.propLoad(args, Set(AbsString("length")), h).pvalue.numval
@@ -30,9 +30,9 @@ object BuiltinNumberUtil {
     TypeConversionHelper.ToNumber(argV) + emptyN
   }
 
-  def checkExn(h: Heap, absValue: AbsValue, clsName: String): HashSet[Exception] = {
+  def checkExn(h: Heap, absValue: AbsValue): HashSet[Exception] = {
     val exist = absValue.locset.foldLeft(AbsBool.Bot)((b, loc) => {
-      b + (h.get(loc)(IClass).value.pvalue.strval === AbsString(clsName))
+      b + (h.get(loc)(IClass).value.pvalue.strval === AbsString("Number"))
     })
     if (AbsBool.False <= exist) HashSet[Exception](TypeError)
     else HashSet[Exception]()
@@ -67,11 +67,11 @@ object BuiltinNumber extends FuncModel(
 
   // 15.7.1 The Number Constructor Called as a Function
   // 15.7.1.1 Number( [value] )
-  code = BuiltinNumberUtil.typeConversion,
+  code = BuiltinNumberHelper.typeConversion,
 
   // 15.7.2 The Number Constructor
   // 15.7.2.1 new Number ( [ value ] )
-  construct = Some(BuiltinNumberUtil.constructor),
+  construct = Some(BuiltinNumberHelper.constructor),
 
   // 15.7.3.1 Number.prototype
   protoModel = Some((BuiltinNumberProto, F, F, F)),
@@ -108,7 +108,7 @@ object BuiltinNumberProto extends ObjModel(
     // 15.7.4.1 Number.prototype.constructor
     NormalProp("constructor", FuncModel(
       name = "Number.prototype.constructor",
-      code = BuiltinNumberUtil.constructor
+      code = BuiltinNumberHelper.constructor
     ), T, F, T),
 
     // 15.7.4.2 Number.prototype.toString ( [ radix ] )
@@ -119,7 +119,7 @@ object BuiltinNumberProto extends ObjModel(
       ) => {
         val h = st.heap
         val thisV = AbsValue(st.context.thisBinding)
-        var excSet = BuiltinNumberUtil.checkExn(h, thisV, "Number")
+        var excSet = BuiltinNumberHelper.checkExn(h, thisV)
 
         // The optional radix should be an integer value in the inclusive range 2 to 36.
         val argV = Helper.propLoad(args, Set(AbsString("0")), h)
@@ -140,7 +140,7 @@ object BuiltinNumberProto extends ObjModel(
         // If ToInteger(radix) is the Number 10
         // then this Number value is given as an argument to the ToString abstract operation;
         // the resulting String value is returned.
-        val n = BuiltinNumberUtil.getValue(thisV, h)
+        val n = BuiltinNumberHelper.getValue(thisV, h)
         val s =
           if (AbsNumber(10) <= radix) TypeConversionHelper.ToString(n)
           // If ToInteger(radix) is an integer from 2 to 36, but not 10,
@@ -162,8 +162,8 @@ object BuiltinNumberProto extends ObjModel(
         // according to the conventions of the host-dependent, and it is permissible,
         // but not encouraged, for it to return the same thing as toString.
         val thisV = AbsValue(st.context.thisBinding)
-        val excSet = BuiltinNumberUtil.checkExn(h, thisV, "Number")
-        val s = TypeConversionHelper.ToString(BuiltinNumberUtil.getValue(thisV, h))
+        val excSet = BuiltinNumberHelper.checkExn(h, thisV)
+        val s = TypeConversionHelper.ToString(BuiltinNumberHelper.getValue(thisV, h))
         (st, st.raiseException(excSet), AbsValue(s))
       })
     ), T, F, T),
@@ -178,9 +178,9 @@ object BuiltinNumberProto extends ObjModel(
         // If the "this" value is not a Number or a Number object,
         // throws a TypeError exception.
         val thisV = AbsValue(st.context.thisBinding)
-        val excSet = BuiltinNumberUtil.checkExn(h, thisV, "Number")
+        val excSet = BuiltinNumberHelper.checkExn(h, thisV)
         // Otherwise, returns the Number value.
-        val n = BuiltinNumberUtil.getValue(thisV, h)
+        val n = BuiltinNumberHelper.getValue(thisV, h)
         (st, st.raiseException(excSet), AbsValue(n))
       })
     ), T, F, T),
@@ -193,7 +193,7 @@ object BuiltinNumberProto extends ObjModel(
       ) => {
         val h = st.heap
         val thisV = AbsValue(st.context.thisBinding)
-        var excSet = BuiltinNumberUtil.checkExn(h, thisV, "Number")
+        var excSet = BuiltinNumberHelper.checkExn(h, thisV)
         // 1. Let f be ToInteger(fractionDigits).
         // (If fractionDigits is undefined, this step produces the value 0).
         val frac = Helper.propLoad(args, Set(AbsString("0")), h)
@@ -217,9 +217,9 @@ object BuiltinNumberProto extends ObjModel(
       ) => {
         val h = st.heap
         val thisV = AbsValue(st.context.thisBinding)
-        var excSet = BuiltinNumberUtil.checkExn(h, thisV, "Number")
+        var excSet = BuiltinNumberHelper.checkExn(h, thisV)
         // 1. Let x be this Number value.
-        val x = BuiltinNumberUtil.getValue(thisV, h)
+        val x = BuiltinNumberHelper.getValue(thisV, h)
         // 2. Let f be ToInteger(fractionDigits).
         val argV = Helper.propLoad(args, Set(AbsString("0")), h)
         val f = TypeConversionHelper.ToInteger(argV)
@@ -242,7 +242,7 @@ object BuiltinNumberProto extends ObjModel(
       ) => {
         val h = st.heap
         val thisV = AbsValue(st.context.thisBinding)
-        var excSet = BuiltinNumberUtil.checkExn(h, thisV, "Number")
+        var excSet = BuiltinNumberHelper.checkExn(h, thisV)
         val argV = Helper.propLoad(args, Set(AbsString("0")), h)
         // 3. Let p be ToInteger(precision).
         val p = TypeConversionHelper.ToInteger(argV)

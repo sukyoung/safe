@@ -57,16 +57,14 @@ object BuiltinObject extends FuncModel(
       code = EmptyCode(argLen = 2)
     ), T, F, T),
 
-    // TODO defineProperty
     NormalProp("defineProperty", FuncModel(
       name = "Object.defineProperty",
-      code = EmptyCode(argLen = 3)
+      code = BasicCode(argLen = 3, BuiltinObjectHelper.defineProperty)
     ), T, F, T),
 
-    // TODO defineProperties
     NormalProp("defineProperties", FuncModel(
       name = "Object.defineProperties",
-      code = EmptyCode(argLen = 2)
+      code = BasicCode(argLen = 2, BuiltinObjectHelper.defineProperties)
     ), T, F, T),
 
     NormalProp("seal", FuncModel(
@@ -86,24 +84,22 @@ object BuiltinObject extends FuncModel(
 
     NormalProp("isSealed", FuncModel(
       name = "Object.isSealed",
-      code = PureCode(argLen = 1, BuiltinObjectHelper.isSealed)
+      code = BasicCode(argLen = 1, BuiltinObjectHelper.isSealed)
     ), T, F, T),
 
     NormalProp("isFrozen", FuncModel(
       name = "Object.isFrozen",
-      code = PureCode(argLen = 1, BuiltinObjectHelper.isFrozen)
+      code = BasicCode(argLen = 1, BuiltinObjectHelper.isFrozen)
     ), T, F, T),
 
-    // TODO isExtensible
     NormalProp("isExtensible", FuncModel(
       name = "Object.isExtensible",
-      code = EmptyCode(argLen = 1)
+      code = BasicCode(argLen = 1, BuiltinObjectHelper.isExtensible)
     ), T, F, T),
 
-    // TODO keys
     NormalProp("keys", FuncModel(
       name = "Object.keys",
-      code = EmptyCode(argLen = 1)
+      code = BasicCode(argLen = 1, BuiltinObjectHelper.keys)
     ), T, F, T)
   )
 )
@@ -260,6 +256,76 @@ object BuiltinObjectHelper {
     (State(retHeap, st.context), excSt, AbsValue(arrLoc))
   }
 
+  def defineProperty(args: AbsValue, st: State): (State, State, AbsValue) = {
+    val h = st.heap
+    val objV = Helper.propLoad(args, Set(AbsString("0")), h)
+    val propV = Helper.propLoad(args, Set(AbsString("1")), h)
+    val attrV = Helper.propLoad(args, Set(AbsString("2")), h)
+
+    // 1. If Type(O) is not Object throw a TypeError exception.
+    val excSet = objCheck(objV)
+    // 2. Let name be ToString(P).
+    val name = TypeConversionHelper.ToString(propV)
+    // 3. Let desc be the result of calling ToPropertyDescriptor with Attributes as the argument.
+    val attr = h.get(attrV.locset)
+    val desc = AbsDesc.ToPropertyDescriptor(attr, h)
+    val (retH, retExcSet) = objV.locset.foldLeft((h, excSet)) {
+      case ((heap, e), loc) => {
+        // 4. Call the [[DefineOwnProperty]] internal method of O with arguments name, desc, and true.
+        val obj = heap.get(loc)
+        val (retObj, _, newExcSet) = obj.DefineOwnProperty(name, desc, true)
+        // 5. Return O.
+        val retH = heap.update(loc, retObj)
+        (retH, e ++ excSet)
+      }
+    }
+
+    val excSt = st.raiseException(excSet)
+
+    (State(retH, st.context), excSt, objV.locset)
+  }
+
+  def defineProperties(args: AbsValue, st: State): (State, State, AbsValue) = {
+    val h = st.heap
+    val objV = Helper.propLoad(args, Set(AbsString("0")), h)
+    val propsV = Helper.propLoad(args, Set(AbsString("1")), h)
+    val addr = SystemAddr("Object.defineProperties<props>")
+
+    // 1. If Type(O) is not Object throw a TypeError exception.
+    val excSet = objCheck(objV)
+    // 2. Let props be ToObject(Properties).
+    val (v1, st1, toExcSet) = TypeConversionHelper.ToObject(propsV, st, addr)
+    val h1 = st1.heap
+    val ctx1 = st1.context
+    val props = h1.get(v1.locset)
+    // 4. For each enumerable property of props whose name String is P
+    val keyStrSet = props.amap.abstractKeySet((key, dp) => {
+      AbsBool.True <= dp.enumerable
+    })
+    val (retH, retExcSet) = objV.locset.foldLeft((h1, excSet ++ toExcSet)) {
+      case ((heap, e), loc) => {
+        val obj = h1.get(loc)
+        val (retObj, excSet) = keyStrSet.foldLeft((obj, e)) {
+          case ((obj, e), astr) => {
+            // a. Let descObj be the result of calling the [[Get]] internal method of props with P as the argument.
+            val descObjLoc = props.Get(astr, h1).locset
+            val descObj = h1.get(descObjLoc)
+            // b. Let desc be the result of calling ToPropertyDescriptor with descObj as the argument.
+            val desc = AbsDesc.ToPropertyDescriptor(descObj, h1)
+            // c. Call the [[DefineOwnProperty]] internal method of O with arguments P, desc, and true.
+            val (retObj, _, excSet) = obj.DefineOwnProperty(astr, desc, true)
+            (retObj, e ++ excSet)
+          }
+        }
+        val retH = heap.update(loc, retObj)
+        (retH, excSet)
+      }
+    }
+    // 5. Return O.
+    val excSt = st1.raiseException(retExcSet)
+    (State(retH, ctx1), excSt, objV.locset)
+  }
+
   def seal(args: AbsValue, st: State): (State, State, AbsValue) = {
     val h = st.heap
     val objV = Helper.propLoad(args, Set(AbsString("0")), h)
@@ -350,7 +416,8 @@ object BuiltinObjectHelper {
     (State(retH, st.context), excSt, objV.locset)
   }
 
-  def isSealed(args: AbsValue, h: Heap): AbsValue = {
+  def isSealed(args: AbsValue, st: State): (State, State, AbsValue) = {
+    val h = st.heap
     val objV = Helper.propLoad(args, Set(AbsString("0")), h)
 
     // 1. If Type(O) is not Object throw a TypeError exception.
@@ -366,10 +433,13 @@ object BuiltinObjectHelper {
     // 3. If the [[Extensible]] internal property of O is false, then return true.
     val eCheck = obj(IExtensible).value.pvalue.boolval.negate
     // 4. Otherwise, return false.
-    (cCheck && eCheck)
+    val retB = cCheck && eCheck
+    val excSt = st.raiseException(excSet)
+    (st, excSt, retB)
   }
 
-  def isFrozen(args: AbsValue, h: Heap): AbsValue = {
+  def isFrozen(args: AbsValue, st: State): (State, State, AbsValue) = {
+    val h = st.heap
     val objV = Helper.propLoad(args, Set(AbsString("0")), h)
 
     // 1. If Type(O) is not Object throw a TypeError exception.
@@ -387,7 +457,74 @@ object BuiltinObjectHelper {
     // 3. If the [[Extensible]] internal property of O is false, then return true.
     val eCheck = obj(IExtensible).value.pvalue.boolval.negate
     // 4. Otherwise, return false.
-    (cCheck && eCheck)
+    val retB = cCheck && eCheck
+    val excSt = st.raiseException(excSet)
+    (st, excSt, retB)
+  }
+
+  def isExtensible(args: AbsValue, st: State): (State, State, AbsValue) = {
+    val h = st.heap
+    val objV = Helper.propLoad(args, Set(AbsString("0")), h)
+
+    // 1. If Type(O) is not Object throw a TypeError exception.
+    val excSet = objCheck(objV)
+    // 2. Return the Boolean value of the [[Extensible]] internal property of O.
+    val obj = h.get(objV.locset)
+    val retB = obj(IExtensible).value.pvalue.boolval
+    val excSt = st.raiseException(excSet)
+    (st, excSt, retB)
+  }
+
+  def keys(args: AbsValue, st: State): (State, State, AbsValue) = {
+    val h = st.heap
+    val objV = Helper.propLoad(args, Set(AbsString("0")), h)
+    val arrAddr = SystemAddr("Object.keys<array>")
+    val obj = h.get(objV.locset)
+    val keyStr = obj.amap.abstractKeySet((key, dp) => {
+      AbsBool.True <= dp.enumerable
+    }).foldLeft(AbsString.Bot)(_ + _)
+
+    // 1. If the Type(O) is not Object, throw a TypeError exception.
+    val excSet = objCheck(objV)
+
+    val AT = (AbsBool.True, AbsAbsent.Bot)
+    val name = AbsValue(AbsPValue(strval = keyStr))
+    val desc = AbsDesc((name, AbsAbsent.Bot), AT, AT, AT)
+    val (retObj, retExcSet) = keyStr.gamma match {
+      case ConFin(set) if obj.amap.isDefinite(keyStr) => {
+        // 2. Let n be the number of own enumerable properties of O
+        val n = set.size
+        // 3. Let array be the result of creating a new Object as if by the ex pression new Array(n).
+        val array = AbsObjectUtil.newArrayObject(AbsNumber(n))
+        // 4. For each own enumerable property of O whose name String is P (wiht index 0 until n)
+        (0 until n).foldLeft((array, ExcSetEmpty)) {
+          case ((arr, e), index) => {
+            // a. Call the [[DefineOwnProperty]] internal method of array with arguments ToString(index),
+            //    the PropertyDescriptor {[[Value]]: P, [[Writable]]: true, [[Enumerable]]: true, [[Configurable]]: true}, and false.
+            val (newArr, _, excSet) = arr.DefineOwnProperty(AbsString(index.toString), desc, false)
+            (newArr, e ++ excSet)
+          }
+        }
+      }
+      case _ => {
+        // 2. Let n be the number of own enumerable properties of O
+        val n = AbsNumber.Top
+        // 3. Let array be the result of creating a new Object as if by the ex pression new Array(n).
+        val array = AbsObjectUtil.newArrayObject(n)
+        // 4. For each own enumerable property of O whose name String is P (wiht index 0 until n)
+        //   a. Call the [[DefineOwnProperty]] internal method of array with arguments ToString(index),
+        //      the PropertyDescriptor {[[Value]]: P, [[Writable]]: true, [[Enumerable]]: true, [[Configurable]]: true}, and false.
+        val (newArr, _, excSet) = array.DefineOwnProperty(AbsString.Number, desc, false)
+        (newArr, excSet)
+      }
+    }
+    // 6. Return array.
+    val state = st.oldify(arrAddr)
+    val arrLoc = Loc(arrAddr, Recent)
+    val retHeap = state.heap.update(arrLoc, retObj)
+    val excSt = st.raiseException(retExcSet)
+
+    (State(retHeap, st.context), excSt, AbsValue(arrLoc))
   }
 
   ////////////////////////////////////////////////////////////////
