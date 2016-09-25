@@ -20,7 +20,7 @@ import kr.ac.kaist.safe.analyzer._
 import kr.ac.kaist.safe.analyzer.models._
 import kr.ac.kaist.safe.util.SystemAddr
 
-object BuiltinBooleanUtil {
+object BuiltinBooleanHelper {
   def typeConvert(args: AbsValue, h: Heap): AbsBool = {
     val argV = Helper.propLoad(args, Set(AbsString("0")), h)
     val argL = Helper.propLoad(args, Set(AbsString("length")), h).pvalue.numval
@@ -70,10 +70,10 @@ object BuiltinBoolean extends FuncModel(
   name = "Boolean",
 
   // 15.6.1 The Boolean Constructor Called as a Function: Boolean([value])
-  code = BuiltinBooleanUtil.typeConversion,
+  code = BuiltinBooleanHelper.typeConversion,
 
   // 15.6.2 The Boolean Constructor: new Boolean([value])
-  construct = Some(BuiltinBooleanUtil.constructor),
+  construct = Some(BuiltinBooleanHelper.constructor),
 
   // 15.6.3.1 Boolean.prototype
   protoModel = Some((BuiltinBooleanProto, F, F, F))
@@ -93,8 +93,8 @@ object BuiltinBooleanProto extends ObjModel(
       ) => {
         val h = st.heap
         val thisV = AbsValue(st.context.thisBinding)
-        val excSet = BuiltinBooleanUtil.checkExn(h, thisV, "Boolean")
-        val b = BuiltinBooleanUtil.getValue(thisV, h)
+        val excSet = BuiltinBooleanHelper.checkExn(h, thisV, "Boolean")
+        val b = BuiltinBooleanHelper.getValue(thisV, h)
         val s = TypeConversionHelper.ToString(b)
         (st, st.raiseException(excSet), AbsValue(s))
       })
@@ -108,8 +108,8 @@ object BuiltinBooleanProto extends ObjModel(
       ) => {
         val h = st.heap
         val thisV = AbsValue(st.context.thisBinding)
-        val excSet = BuiltinBooleanUtil.checkExn(h, thisV, "Boolean")
-        val b = BuiltinBooleanUtil.getValue(thisV, h)
+        val excSet = BuiltinBooleanHelper.checkExn(h, thisV, "Boolean")
+        val b = BuiltinBooleanHelper.getValue(thisV, h)
         (st, st.raiseException(excSet), AbsValue(b))
       })
     ), T, F, T)

@@ -30,6 +30,22 @@ object BuiltinStringHelper {
     TypeConversionHelper.ToString(argV) + emptyS
   }
 
+  def checkExn(h: Heap, absValue: AbsValue): HashSet[Exception] = {
+    val exist = absValue.locset.foldLeft(AbsBool.Bot)((b, loc) => {
+      b + (h.get(loc)(IClass).value.pvalue.strval === AbsString("String"))
+    })
+    if (AbsBool.False <= exist) HashSet[Exception](TypeError)
+    else HashSet[Exception]()
+  }
+
+  def getValue(thisV: AbsValue, h: Heap): AbsString = {
+    thisV.pvalue.strval + thisV.locset.foldLeft(AbsString.Bot)((res, loc) => {
+      if ((AbsString("String") <= h.get(loc)(IClass).value.pvalue.strval))
+        res + h.get(loc)(IPrimitiveValue).value.pvalue.strval
+      else res
+    })
+  }
+
   val constructor = BasicCode(argLen = 1, code = (
     args: AbsValue, st: State
   ) => {
@@ -40,6 +56,16 @@ object BuiltinStringHelper {
     val loc = Loc(addr, Recent)
     val heap = state.heap.update(loc, AbsObjectUtil.newStringObj(num))
     (State(heap, state.context), State.Bot, AbsValue(loc))
+  })
+
+  val valueOf = BasicCode(argLen = 1, (
+    args: AbsValue, st: State
+  ) => {
+    val h = st.heap
+    val thisV = AbsValue(st.context.thisBinding)
+    var excSet = BuiltinStringHelper.checkExn(h, thisV)
+    val s = BuiltinStringHelper.getValue(thisV, h)
+    (st, st.raiseException(excSet), AbsValue(s))
   })
 
   val typeConversion = PureCode(argLen = 1, code = typeConvert)
@@ -102,28 +128,79 @@ object BuiltinStringProto extends ObjModel(
       code = BuiltinStringHelper.constructor
     ), T, F, T),
 
-    // TODO toString
+    // 15.5.4.2 String.prototype.toString()
     NormalProp("toString", FuncModel(
       name = "String.prototype.toString",
-      code = EmptyCode(argLen = 0)
+      code = BuiltinStringHelper.valueOf
     ), T, F, T),
 
-    // TODO valueOf
+    // 15.5.4.3 String.prototype.valueOf()
     NormalProp("valueOf", FuncModel(
       name = "String.prototype.valueOf",
-      code = EmptyCode(argLen = 0)
+      code = BuiltinStringHelper.valueOf
     ), T, F, T),
 
-    // TODO charAt
+    // 15.5.4.4 String.prototype.charAt(pos)
     NormalProp("charAt", FuncModel(
       name = "String.prototype.charAt",
-      code = EmptyCode(argLen = 1)
+      code = BasicCode(argLen = 0, (
+        args: AbsValue, st: State
+      ) => {
+        val h = st.heap
+        // 1. Call CheckObjectCoercible passing the this value as its argument.
+        //   Don't need to check this because <>getBase always returns a location which points to an object.
+        // 2. Let S be the result of calling ToString, giving it the this value as its argument.
+        val thisV = AbsValue(st.context.thisBinding)
+        val s = BuiltinStringHelper.getValue(thisV, h)
+        // 3. Let position be ToInteger(pos).
+        val argV = Helper.propLoad(args, Set(AbsString("0")), h)
+        val pos = TypeConversionHelper.ToInteger(argV)
+        // 4. Let size be the number of characters in S.
+        val size = s.length
+        // 5. If position < 0 or position >= size, return the empty String.
+        val emptyS =
+          if (AbsBool.True <= Helper.bopGreaterEq(pos, size) ||
+            AbsBool.True <= Helper.bopLess(pos, AbsNumber(0)))
+            AbsString("")
+          else AbsString.Bot
+        // 6. Return a String of length 1, containing one character from S,
+        // namely the character at position position, where the first (leftmost) character
+        // in S is considered to be at position 0, the next one at position 1, and so on.
+        val res = emptyS + s.charAt(pos)
+        (st, State.Bot, AbsValue(res))
+      })
     ), T, F, T),
 
-    // TODO charCodeAt
+    // 15.5.4.5 String.prototype.charCodeAt(pos)
     NormalProp("charCodeAt", FuncModel(
       name = "String.prototype.charCodeAt",
-      code = EmptyCode(argLen = 1)
+      code = BasicCode(argLen = 0, (
+        args: AbsValue, st: State
+      ) => {
+        val h = st.heap
+        // 1. Call CheckObjectCoercible passing the this value as its argument.
+        //   Don't need to check this because <>getBase always returns a location which points to an object.
+        // 2. Let S be the result of calling ToString, giving it the this value as its argument.
+        val thisV = AbsValue(st.context.thisBinding)
+        val s = BuiltinStringHelper.getValue(thisV, h)
+        // 3. Let position be ToInteger(pos).
+        val argV = Helper.propLoad(args, Set(AbsString("0")), h)
+        val pos = TypeConversionHelper.ToInteger(argV)
+        // 4. Let size be the number of characters in S.
+        val size = s.length
+        // 5. If position < 0 or position >= size, return NaN.
+        val emptyN =
+          if (AbsBool.True <= Helper.bopGreaterEq(pos, size) ||
+            AbsBool.True <= Helper.bopLess(pos, AbsNumber(0)))
+            AbsNumber.NaN
+          else AbsNumber.Bot
+        // 6. Return a value of Number type, whose value is the code unit value of
+        // the character at position position in the String S, where the first (leftmost)
+        // character in S is considered to be at position 0, the next one at position 1, and so on.
+        val res = emptyN + s.charCodeAt(pos)
+        (st, State.Bot, AbsValue(res))
+      })
+
     ), T, F, T),
 
     // TODO concat
