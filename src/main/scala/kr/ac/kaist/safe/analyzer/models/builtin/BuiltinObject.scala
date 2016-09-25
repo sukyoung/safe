@@ -131,10 +131,10 @@ object BuiltinObjectProto extends ObjModel(
       code = EmptyCode()
     ), T, F, T),
 
-    // TODO valueOf
+    // 15.2.4.4 Object.prototype.valueOf()
     NormalProp("valueOf", FuncModel(
       name = "Object.prototype.valueOf",
-      code = EmptyCode()
+      code = PureCode(argLen = 0, BuiltinObjectHelper.valueOf)
     ), T, F, T),
 
     // TODO hasOwnProperty
@@ -555,6 +555,15 @@ object BuiltinObjectHelper {
     val className = obj(IClass).value.pvalue.strval
     // 5. Return the String value that is the result of concatenating the three Strings "[object ", class, and "]".
     AbsString("[object ") concat className concat AbsString("]")
+  }
+
+  def valueOf(args: AbsValue, st: State): AbsValue = {
+    val h = st.heap
+    val thisLoc = st.context.thisBinding
+    // XXX: 1. Let O be the result of calling ToObject passing the this value as the argument.
+    // TODO current "this" value only have location. we should change!
+    // 2. Return O.
+    thisLoc
   }
 
   ////////////////////////////////////////////////////////////////
