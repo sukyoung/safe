@@ -332,6 +332,15 @@ sealed abstract class AbsMap(
 
   def abstractKeySet: Set[AbsString] = map.keySet
 
+  def abstractKeySet(filter: (AbsString, AbsDataProp) => Boolean): Set[AbsString] = {
+    map.foldLeft(HashSet[AbsString]()) {
+      case (set, (key, dp)) => {
+        if (filter(key, dp)) set + key
+        else set
+      }
+    }
+  }
+
   def concreteKeySet: Set[String] =
     this.map.keySet.foldLeft(HashSet[String]())((keyset, astr) =>
       astr.gamma match {
@@ -341,6 +350,11 @@ sealed abstract class AbsMap(
 
   def collectKeySet(prefix: String): Set[String] =
     concreteKeySet.filter(_.startsWith(prefix))
+
+  def isDefinite(str: AbsString): Boolean = str.gamma match {
+    case ConFin(set) if set.forall(defset contains _) => true
+    case _ => false
+  }
 }
 case class AbsMapFin(private val map: Map[AbsString, AbsDataProp], private val defset: DefSet) extends AbsMap(map, defset)
 case object AbsMapEmpty extends AbsMap(HashMap[AbsString, AbsDataProp](), DefSet.Empty)

@@ -99,10 +99,9 @@ object BuiltinObject extends FuncModel(
       code = BasicCode(argLen = 1, BuiltinObjectHelper.isExtensible)
     ), T, F, T),
 
-    // TODO keys
     NormalProp("keys", FuncModel(
       name = "Object.keys",
-      code = EmptyCode(argLen = 1)
+      code = BasicCode(argLen = 1, BuiltinObjectHelper.keys)
     ), T, F, T)
   )
 )
@@ -406,6 +405,58 @@ object BuiltinObjectHelper {
     val retB = obj(IExtensible).value.pvalue.boolval
     val excSt = st.raiseException(excSet)
     (st, excSt, retB)
+  }
+
+  def keys(args: AbsValue, st: State): (State, State, AbsValue) = {
+    val h = st.heap
+    val objV = Helper.propLoad(args, Set(AbsString("0")), h)
+    val arrAddr = SystemAddr("Object.keys<array>")
+    val obj = h.get(objV.locset)
+    val keyStr = obj.amap.abstractKeySet((key, dp) => {
+      AbsBool.True <= dp.enumerable
+    }).foldLeft(AbsString.Bot)(_ + _)
+
+    // 1. If the Type(O) is not Object, throw a TypeError exception.
+    val excSet = objCheck(objV)
+
+    val AT = (AbsBool.True, AbsAbsent.Bot)
+    val name = AbsValue(AbsPValue(strval = keyStr))
+    val desc = AbsDesc((name, AbsAbsent.Bot), AT, AT, AT)
+    val (retObj, retExcSet) = keyStr.gamma match {
+      case ConFin(set) if obj.amap.isDefinite(keyStr) => {
+        // 2. Let n be the number of own enumerable properties of O
+        val n = set.size
+        // 3. Let array be the result of creating a new Object as if by the ex pression new Array(n).
+        val array = AbsObjectUtil.newArrayObject(AbsNumber(n))
+        // 4. For each own enumerable property of O whose name String is P (wiht index 0 until n)
+        (0 until n).foldLeft((array, ExcSetEmpty)) {
+          case ((arr, e), index) => {
+            // a. Call the [[DefineOwnProperty]] internal method of array with arguments ToString(index),
+            //    the PropertyDescriptor {[[Value]]: P, [[Writable]]: true, [[Enumerable]]: true, [[Configurable]]: true}, and false.
+            val (newArr, _, excSet) = arr.DefineOwnProperty(AbsString(index.toString), desc, false)
+            (newArr, e ++ excSet)
+          }
+        }
+      }
+      case _ => {
+        // 2. Let n be the number of own enumerable properties of O
+        val n = AbsNumber.Top
+        // 3. Let array be the result of creating a new Object as if by the ex pression new Array(n).
+        val array = AbsObjectUtil.newArrayObject(n)
+        // 4. For each own enumerable property of O whose name String is P (wiht index 0 until n)
+        //   a. Call the [[DefineOwnProperty]] internal method of array with arguments ToString(index),
+        //      the PropertyDescriptor {[[Value]]: P, [[Writable]]: true, [[Enumerable]]: true, [[Configurable]]: true}, and false.
+        val (newArr, _, excSet) = array.DefineOwnProperty(AbsString.Number, desc, false)
+        (newArr, excSet)
+      }
+    }
+    // 6. Return array.
+    val state = st.oldify(arrAddr)
+    val arrLoc = Loc(arrAddr, Recent)
+    val retHeap = state.heap.update(arrLoc, retObj)
+    val excSt = st.raiseException(retExcSet)
+
+    (State(retHeap, st.context), excSt, AbsValue(arrLoc))
   }
 
   ////////////////////////////////////////////////////////////////
