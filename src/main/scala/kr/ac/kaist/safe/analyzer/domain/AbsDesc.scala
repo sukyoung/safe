@@ -12,6 +12,7 @@
 package kr.ac.kaist.safe.analyzer.domain
 
 import kr.ac.kaist.safe.analyzer.domain.Utils._
+import kr.ac.kaist.safe.analyzer.TypeConversionHelper
 
 /* 8.10 The Property Descriptor and Property Identifier Specification Types */
 
@@ -50,9 +51,6 @@ trait AbsDesc extends AbsDomain[Desc, AbsDesc] {
 
   // 8.10.3 IsGenericDescriptor ( Desc )
   def IsGenericDescriptor: AbsBool
-
-  // TODO 8.10.4 FromPropertyDescriptor ( Desc )
-  // def FromPropertyDescriptor: (AbsObject, AbsUndef)
 }
 
 trait AbsDescUtil extends AbsDomainUtil[Desc, AbsDesc] {
@@ -63,8 +61,8 @@ trait AbsDescUtil extends AbsDomainUtil[Desc, AbsDesc] {
     configurable: (AbsBool, AbsAbsent) = (AbsBool.Bot, AbsAbsent.Top)
   ): AbsDesc
 
-  // TODO 8.10.5 ToPropertyDescriptor ( Obj )
-  // def ToPropertyDescriptor(obj: AbsObject, h: Heap): (AbsDesc, Set[Exception])
+  // 8.10.5 ToPropertyDescriptor ( Obj )
+  def ToPropertyDescriptor(obj: AbsObject, h: Heap): AbsDesc
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -201,10 +199,30 @@ object DefaultDesc extends AbsDescUtil {
 
     def IsGenericDescriptor: AbsBool =
       IsDataDescriptor.negate
-
-    // TODO
-    // def FromPropertyDescriptor: (AbsObject, AbsUndef)
   }
-  // TODO
-  // def ToPropertyDescriptor(obj: AbsObject, h: Heap): (AbsDesc, Set[Exception])
+
+  def ToPropertyDescriptor(obj: AbsObject, h: Heap): AbsDesc = {
+    def get(str: String): (AbsValue, AbsAbsent) = {
+      val has = obj.HasProperty(AbsString(str), h)
+      val v =
+        if (AbsBool.True <= has) obj.Get(str, h)
+        else AbsValue.Bot
+
+      val va =
+        if (AbsBool.False <= has) AbsAbsent.Top
+        else AbsAbsent.Bot
+      (v, va)
+    }
+    def getB(str: String): (AbsBool, AbsAbsent) = {
+      val (v, va) = get(str)
+      (TypeConversionHelper.ToBoolean(v), va)
+    }
+
+    val v = get("value")
+    val w = getB("writable")
+    val e = getB("enumerable")
+    val c = getB("configurable")
+
+    AbsDesc(v, w, e, c)
+  }
 }

@@ -57,10 +57,9 @@ object BuiltinObject extends FuncModel(
       code = EmptyCode(argLen = 2)
     ), T, F, T),
 
-    // TODO defineProperty
     NormalProp("defineProperty", FuncModel(
       name = "Object.defineProperty",
-      code = EmptyCode(argLen = 3)
+      code = BasicCode(argLen = 3, BuiltinObjectHelper.defineProperty)
     ), T, F, T),
 
     // TODO defineProperties
@@ -256,6 +255,35 @@ object BuiltinObjectHelper {
     val excSt = st.raiseException(retExcSet)
 
     (State(retHeap, st.context), excSt, AbsValue(arrLoc))
+  }
+
+  def defineProperty(args: AbsValue, st: State): (State, State, AbsValue) = {
+    val h = st.heap
+    val objV = Helper.propLoad(args, Set(AbsString("0")), h)
+    val propV = Helper.propLoad(args, Set(AbsString("1")), h)
+    val attrV = Helper.propLoad(args, Set(AbsString("2")), h)
+
+    // 1. If Type(O) is not Object throw a TypeError exception.
+    val excSet = objCheck(objV)
+    // 2. Let name be ToString(P).
+    val name = TypeConversionHelper.ToString(propV)
+    // 3. Let desc be the result of calling ToPropertyDescriptor with Attributes as the argument.
+    val attr = h.get(attrV.locset)
+    val desc = AbsDesc.ToPropertyDescriptor(attr, h)
+    val (retH, retExcSet) = objV.locset.foldLeft((h, excSet)) {
+      case ((heap, e), loc) => {
+        // 4. Call the [[DefineOwnProperty]] internal method of O with arguments name, desc, and true.
+        val obj = heap.get(loc)
+        val (retObj, _, newExcSet) = obj.DefineOwnProperty(name, desc, true)
+        // 5. Return O.
+        val retH = heap.update(loc, retObj)
+        (retH, e ++ excSet)
+      }
+    }
+
+    val excSt = st.raiseException(excSet)
+
+    (State(retH, st.context), excSt, objV.locset)
   }
 
   def seal(args: AbsValue, st: State): (State, State, AbsValue) = {
