@@ -11,13 +11,12 @@
 
 package kr.ac.kaist.safe.analyzer.models
 
-import kr.ac.kaist.safe.analyzer.Semantics
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.analyzer.domain.Utils._
-import kr.ac.kaist.safe.nodes.cfg.{ CFG, CFGFunction, ModelBlock, CFGEdgeExc }
+import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.nodes.ir.IRModelFunc
 import kr.ac.kaist.safe.nodes.ast.{ ModelFunc, ASTNodeInfo }
-import kr.ac.kaist.safe.util.Span
+import kr.ac.kaist.safe.util.{ Address, Span }
 
 abstract class Code {
   val argLen: Int = 0
@@ -79,6 +78,63 @@ object BasicCode {
     argLen: Int = 0,
     code: (AbsValue, State) => (State, State, AbsValue)
   ): BasicCode = new BasicCode(argLen, code)
+}
+
+class CallCode(
+    override val argLen: Int = 0,
+    funcId: CFGId, thisId: CFGId, argsId: CFGId, retId: CFGId,
+    beforeCallCode: (AbsValue, State, Address) => (State, State),
+    afterCallCode: (AbsValue, State) => (State, State, AbsValue)
+) extends Code {
+  def getCFGFunc(cfg: CFG, name: String): CFGFunction = {
+    val (funName, argsName, func) = createCFGFunc(cfg, name)
+    val beforeSem: SemanticFun = createBeforeFunc(argsName, cfg.newProgramAddr)
+    val beforeBlock: ModelBlock = func.createModelBlock(beforeSem)
+
+    val callBlock: Call = func.createCall(
+      CFGCall(func.ir, _, CFGVarRef(func.ir, funcId), CFGVarRef(func.ir, thisId), CFGVarRef(func.ir, argsId), cfg.newProgramAddr, cfg.newProgramAddr),
+      retId
+    )
+
+    val afterSem: SemanticFun = createAfterFunc(argsName)
+    val afterBlock: ModelBlock = func.createModelBlock(afterSem)
+
+    cfg.addEdge(func.entry, beforeBlock)
+    cfg.addEdge(beforeBlock, callBlock)
+    cfg.addEdge(callBlock.afterCall, afterBlock)
+    cfg.addEdge(afterBlock, func.exit)
+    cfg.addEdge(callBlock.afterCatch, func.exitExc, CFGEdgeExc)
+    func
+  }
+
+  private def createBeforeFunc(argsName: String, newAddr: Address): SemanticFun = st => st match {
+    case State(heap, context) => {
+      val localEnv = context.pureLocal.record.decEnvRec
+      val (argV, _) = localEnv.GetBindingValue(argsName)
+      val (newSt, newExcSt) = beforeCallCode(argV, st, newAddr)
+      (newSt, newExcSt)
+    }
+  }
+
+  private def createAfterFunc(argsName: String): SemanticFun = st => st match {
+    case State(heap, context) => {
+      val localEnv = context.pureLocal.record.decEnvRec
+      val (argV, _) = localEnv.GetBindingValue(argsName)
+      val (newSt, newExcSt, retV) = afterCallCode(argV, st)
+      val (retObj, _) = localEnv.SetMutableBinding("@return", retV)
+      val retCtx = newSt.context.subsPureLocal(AbsLexEnv(retObj))
+      (State(newSt.heap, retCtx), newExcSt)
+    }
+  }
+}
+
+object CallCode {
+  def apply(
+    argLen: Int = 0,
+    funcId: CFGId, thisId: CFGId, argsId: CFGId, retId: CFGId,
+    beforeCallCode: (AbsValue, State, Address) => (State, State),
+    afterCallCode: (AbsValue, State) => (State, State, AbsValue)
+  ): CallCode = new CallCode(argLen, funcId, thisId, argsId, retId, beforeCallCode, afterCallCode)
 }
 
 class PureCode(

@@ -11,9 +11,14 @@
 
 package kr.ac.kaist.safe.analyzer.models.builtin
 
+import kr.ac.kaist.safe.analyzer.{ Helper, TypeConversionHelper }
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.analyzer.models._
+import kr.ac.kaist.safe.nodes.cfg._
+import kr.ac.kaist.safe.util.Address
+
+import scala.collection.immutable.HashSet
 
 // TODO Function
 object BuiltinFunction extends FuncModel(
@@ -38,10 +43,10 @@ object BuiltinFunctionProto extends FuncModel(
     // the standard built-in Object prototype object."
     InternalProp(IPrototype, BuiltinObjectProto),
 
-    // TODO 15.3.4.2 Function.prototype.toString()
+    // 15.3.4.2 Function.prototype.toString()
     NormalProp("toString", FuncModel(
       name = "Function.prototype.toString",
-      code = BasicCode(argLen = 1, (args: AbsValue, st: State) => {
+      code = BasicCode(argLen = 0, (args: AbsValue, st: State) => {
         val thisBinding = st.context.thisBinding
         val functionClass = AbsString("Function")
         val notAllFunctionClass = thisBinding.exists(loc => {
@@ -52,20 +57,44 @@ object BuiltinFunctionProto extends FuncModel(
           if (notAllFunctionClass) ExcSetEmpty + TypeError
           else ExcSetEmpty
 
-        (st, st.raiseException(excSet), AbsString.Top)
+        // return value is implementation dependent
+        val result = AbsString.Top
+        (st, st.raiseException(excSet), result)
       })
     ), T, F, T),
 
-    // TODO 15.3.4.3 Fucntion.prototype.apply(thisArg, argArray)
+    // 15.3.4.3 Fucntion.prototype.apply(thisArg, argArray)
     NormalProp("apply", FuncModel(
       name = "Function.prototype.apply",
-      code = EmptyCode(argLen = 2)
+      code = {
+      val funcId = CFGTempId("<>Model<>Function.prototype.apply<>func<>", PureLocalVar)
+      val thisId = CFGTempId("<>Model<>Function.prototype.apply<>this<>", PureLocalVar)
+      val argsId = CFGTempId("<>Model<>Function.prototype.apply<>arguments<>", PureLocalVar)
+      val retId = CFGTempId("<>Model<>Function.prototype.apply<>return<>", PureLocalVar)
+      CallCode(
+        argLen = 2,
+        funcId, thisId, argsId, retId,
+        BuiltinFunctionProtoHelper.applyBeforeCall(funcId, thisId, argsId),
+        BuiltinFunctionProtoHelper.connectAfterCall(retId)
+      )
+    }
     ), T, F, T),
 
-    // TODO 15.3.4.4 Function.prototype.call(thisArg [, arg1 [, arg2, ...]])
+    // 15.3.4.4 Function.prototype.call(thisArg [, arg1 [, arg2, ...]])
     NormalProp("call", FuncModel(
       name = "Function.prototype.call",
-      code = EmptyCode(argLen = 1)
+      code = {
+      val funcId = CFGTempId("<>Model<>Function.prototype.call<>func<>", PureLocalVar)
+      val thisId = CFGTempId("<>Model<>Function.prototype.call<>this<>", PureLocalVar)
+      val argsId = CFGTempId("<>Model<>Function.prototype.call<>arguments<>", PureLocalVar)
+      val retId = CFGTempId("<>Model<>Function.prototype.call<>return<>", PureLocalVar)
+      CallCode(
+        argLen = 1,
+        funcId, thisId, argsId, retId,
+        BuiltinFunctionProtoHelper.callBeforeCall(funcId, thisId, argsId),
+        BuiltinFunctionProtoHelper.connectAfterCall(retId)
+      )
+    }
     ), T, F, T),
 
     // TODO 15.3.4.5 Function.prototype.bind(thisArg [, arg1 [, arg2, ...]])
@@ -75,3 +104,128 @@ object BuiltinFunctionProto extends FuncModel(
     ), T, F, T)
   )
 )
+
+private object BuiltinFunctionProtoHelper {
+  val atrue = AbsBool.True
+
+  // 15.3.4.3 Fucntion.prototype.apply(thisArg, argArray)
+  def applyBeforeCall(funcId: CFGId, thisId: CFGId, argsId: CFGId)(args: AbsValue, st: State, addr: Address): (State, State) = {
+    val func = st.context.thisBinding
+    val thisArg = Helper.propLoad(args, HashSet(AbsString("0")), st.heap)
+    val argArray = Helper.propLoad(args, HashSet(AbsString("1")), st.heap)
+
+    // 1. If IsCallable(func) is false, then throw a TypeError exception.
+    val notAllCallable = func.exists(loc => {
+      AbsBool.False <= TypeConversionHelper.IsCallable(loc, st.heap)
+    })
+    val excSet1 =
+      if (notAllCallable) ExcSetEmpty + TypeError
+      else ExcSetEmpty
+
+    val callableFunc = func.locset.filter(loc => {
+      AbsBool.True <= TypeConversionHelper.IsCallable(loc, st.heap)
+    })
+
+    // 2. If argArray is null or undefined, then
+    val nullOrUndef = (argArray.pvalue.nullval </ AbsNull.Bot) || (argArray.pvalue.undefval </ AbsUndef.Bot)
+    val argList1 =
+      if (nullOrUndef) AbsObjectUtil.newArgObject(AbsNumber(0.0))
+      else AbsObjectUtil.Bot
+
+    // 3. If Type(argArray) is not Object, then throw a TypeError exception.
+    val excSet2 =
+      if (argArray.pvalue </ AbsPValue.Bot) ExcSetEmpty + TypeError
+      else ExcSetEmpty
+
+    // 4. - 8.
+    val argList2 = argArray.locset.foldLeft(AbsObjectUtil.Bot)((aobj, loc) => {
+      val argObj = st.heap.get(loc)
+      val len = argObj.Get("length", st.heap)
+      val n = TypeConversionHelper.ToUInt32(len)
+      n.gamma match {
+        case ConInf() =>
+          val indexName = AbsString.Number
+          val nextArg = argObj.Get(indexName, st.heap)
+          aobj + AbsObjectUtil.newArgObject(n).update(indexName, AbsDataProp(nextArg, atrue, atrue, atrue))
+        case ConFin(values) =>
+          values.foldLeft(aobj)((aobj2, num) => {
+            (0 until num.toInt).foldLeft(AbsObjectUtil.newArgObject(n))((tmpArg, i) => {
+              val indexName = AbsNumber(i).toAbsString
+              val nextArg = argObj.Get(indexName, st.heap)
+              tmpArg.update(indexName, AbsDataProp(nextArg, atrue, atrue, atrue))
+            }) + aobj2
+          })
+      }
+    })
+
+    // TODO: 9. [[Call]]
+    // val result = callableFunc.foldLeft[AbsValue](AbsPValue.Bot)((avalue, loc) => {
+    //   st.heap.get(loc).[[Call]](thisArg, argList1 + argList2)
+    // })
+    val argsLoc = Loc(addr, Old)
+    val h1 = st.heap.update(argsLoc, argList1 + argList2)
+    val newState =
+      State(h1, st.context)
+        .varStore(funcId, callableFunc)
+        .varStore(thisId, thisArg)
+        .varStore(argsId, AbsValue(argsLoc))
+
+    (newState, st.raiseException(excSet1 ++ excSet2))
+  }
+
+  // 15.3.4.4 Function.prototype.call(thisArg [, arg1 [, arg2, ...]])
+  def callBeforeCall(funcId: CFGId, thisId: CFGId, argsId: CFGId)(args: AbsValue, st: State, addr: Address): (State, State) = {
+    val func = st.context.thisBinding
+    val thisArg = Helper.propLoad(args, HashSet(AbsString("0")), st.heap)
+
+    // 1. If IsCallable(func) is false, then throw a TypeError exception.
+    val notAllCallable = func.exists(loc => {
+      AbsBool.False <= TypeConversionHelper.IsCallable(loc, st.heap)
+    })
+    val excSet =
+      if (notAllCallable) ExcSetEmpty + TypeError
+      else ExcSetEmpty
+
+    val callableFunc = func.locset.filter(loc => {
+      AbsBool.True <= TypeConversionHelper.IsCallable(loc, st.heap)
+    })
+
+    // 2. - 3.
+    val len = {
+      val origLength = Helper.propLoad(args, HashSet(AbsString("length")), st.heap)
+      Helper.bopMinus(origLength, AbsNumber(1.0)).pvalue.numval
+    }
+    val argList = args.locset.foldLeft(AbsObjectUtil.Bot)((aobj, loc) => {
+      val argObj = st.heap.get(loc)
+      len.gamma match {
+        case ConInf() =>
+          val indexName = AbsString.Number
+          val nextArg = argObj.Get(indexName, st.heap)
+          AbsObjectUtil.newArgObject(len).update(indexName, AbsDataProp(nextArg, atrue, atrue, atrue))
+        case ConFin(values) =>
+          values.foldLeft(aobj)((aobj2, num) => {
+            (0 until num.toInt).foldLeft(AbsObjectUtil.newArgObject(len))((tmpArg, i) => {
+              val nextArg = argObj.Get(AbsNumber(i + 1).toAbsString, st.heap)
+              tmpArg.update(AbsNumber(i).toAbsString, AbsDataProp(nextArg, atrue, atrue, atrue))
+            }) + aobj2
+          })
+      }
+    })
+
+    // 4. [[Call]]
+    val argsLoc = Loc(addr, Old)
+    val h1 = st.heap.update(argsLoc, argList)
+    val newState =
+      State(h1, st.context)
+        .varStore(funcId, callableFunc)
+        .varStore(thisId, thisArg)
+        .varStore(argsId, AbsValue(argsLoc))
+
+    (newState, st.raiseException(excSet))
+  }
+
+  def connectAfterCall(retId: CFGId)(args: AbsValue, st: State): (State, State, AbsValue) = {
+    val (retVal, excSet) = st.lookup(retId)
+    (st, st.raiseException(excSet), retVal)
+  }
+}
