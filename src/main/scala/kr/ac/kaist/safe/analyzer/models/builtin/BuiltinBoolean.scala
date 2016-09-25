@@ -31,17 +31,6 @@ object BuiltinBooleanHelper {
     TypeConversionHelper.ToBoolean(argV) + emptyB
   }
 
-  def checkExn(h: Heap, absValue: AbsValue, clsName: String): HashSet[Exception] = {
-    val exist = absValue.locset.foldLeft(AbsBool.Bot)((b, loc) => {
-      val clsStr = h.get(loc)(IClass).value.pvalue.strval
-      b + ((clsStr === AbsString(clsName)) || (clsStr === AbsString.Bot))
-    })
-    val pv = absValue.pvalue
-    if (AbsBool.False <= exist || !(pv.undefval.isBottom && pv.nullval.isBottom && pv.numval.isBottom && pv.strval.isBottom))
-      HashSet[Exception](TypeError)
-    else HashSet[Exception]()
-  }
-
   def getValue(thisV: AbsValue, h: Heap): AbsBool = {
     thisV.pvalue.boolval + thisV.locset.foldLeft(AbsBool.Bot)((res, loc) => {
       if ((AbsString("Boolean") <= h.get(loc)(IClass).value.pvalue.strval))
@@ -93,7 +82,7 @@ object BuiltinBooleanProto extends ObjModel(
       ) => {
         val h = st.heap
         val thisV = AbsValue(st.context.thisBinding)
-        val excSet = BuiltinBooleanHelper.checkExn(h, thisV, "Boolean")
+        val excSet = BuiltinHelper.checkExn(h, thisV, "Boolean")
         val b = BuiltinBooleanHelper.getValue(thisV, h)
         val s = TypeConversionHelper.ToString(b)
         (st, st.raiseException(excSet), AbsValue(s))
@@ -108,7 +97,7 @@ object BuiltinBooleanProto extends ObjModel(
       ) => {
         val h = st.heap
         val thisV = AbsValue(st.context.thisBinding)
-        val excSet = BuiltinBooleanHelper.checkExn(h, thisV, "Boolean")
+        val excSet = BuiltinHelper.checkExn(h, thisV, "Boolean")
         val b = BuiltinBooleanHelper.getValue(thisV, h)
         (st, st.raiseException(excSet), AbsValue(b))
       })

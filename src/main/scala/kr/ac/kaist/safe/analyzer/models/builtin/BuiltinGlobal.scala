@@ -47,15 +47,7 @@ object BuiltinGlobal extends ObjModel(
       code = PureCode(argLen = 1, (args, st) => {
         val h = st.heap
         val resV = Helper.propLoad(args, Set(AbsString("0")), h)
-        val num = TypeConversionHelper.ToNumber(resV)
-        num.gamma match {
-          case ConFin(set) if set.size == 0 => AbsBool.Bot
-          case ConFin(set) if set.size == 1 => {
-            if (set.head.num.isNaN) AbsBool.True
-            else AbsBool.False
-          }
-          case _ => AbsBool.Top
-        }
+        BuiltinHelper.isNaN(resV)
       })
     ), T, F, T),
 

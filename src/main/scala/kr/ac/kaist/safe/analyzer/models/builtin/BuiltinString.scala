@@ -31,14 +31,6 @@ object BuiltinStringHelper {
     TypeConversionHelper.ToString(argV) + emptyS
   }
 
-  def checkExn(h: Heap, absValue: AbsValue): HashSet[Exception] = {
-    val exist = absValue.locset.foldLeft(AbsBool.Bot)((b, loc) => {
-      b + (h.get(loc)(IClass).value.pvalue.strval === AbsString("String"))
-    })
-    if (AbsBool.False <= exist) HashSet[Exception](TypeError)
-    else HashSet[Exception]()
-  }
-
   def getValue(thisV: AbsValue, h: Heap): AbsString = {
     thisV.pvalue.strval + thisV.locset.foldLeft(AbsString.Bot)((res, loc) => {
       if ((AbsString("String") <= h.get(loc)(IClass).value.pvalue.strval))
@@ -63,7 +55,7 @@ object BuiltinStringHelper {
   ) => {
     val h = st.heap
     val thisV = AbsValue(st.context.thisBinding)
-    var excSet = BuiltinStringHelper.checkExn(h, thisV)
+    var excSet = BuiltinHelper.checkExn(h, thisV, "String")
     val s = BuiltinStringHelper.getValue(thisV, h)
     (st, st.raiseException(excSet), AbsValue(s))
   })
@@ -105,6 +97,7 @@ object BuiltinString extends FuncModel(
               val argV = Helper.propLoad(args, Set(AbsString(i.toString)), h)
               str.concat(AbsString.fromCharCode(TypeConversionHelper.ToUInt16(argV)))
             })
+          // XXX: give up the precision! (Room for the analysis precision improvement!)
           case _ => AbsString.Top
         })
         (st, State.Bot, AbsValue(s))
@@ -228,22 +221,104 @@ object BuiltinStringProto extends ObjModel(
               val argV = Helper.propLoad(args, Set(AbsString(i.toString)), h)
               str.concat(TypeConversionHelper.ToString(argV))
             })
+          // XXX: give up the precision! (Room for the analysis precision improvement!)
           case _ => AbsString.Top
         }
         (st, State.Bot, AbsValue(res))
       })
     ), T, F, T),
 
-    // TODO indexOf
+    // 15.5.4.7 String.prototype.indexOf(searchString, position)
     NormalProp("indexOf", FuncModel(
       name = "String.prototype.indexOf",
-      code = EmptyCode(argLen = 1)
+      code = BasicCode(argLen = 0, (
+        args: AbsValue, st: State
+      ) => {
+        val h = st.heap
+        // 1. Call CheckObjectCoercible passing the this value as its argument.
+        // 2. Let S be the result of calling ToString, giving it the this value as its argument.
+        val thisV = AbsValue(st.context.thisBinding)
+        val s = TypeConversionHelper.ToString(BuiltinStringHelper.getValue(thisV, h))
+        // 3. Let searchStr be ToString(searchString).
+        val searchStr = TypeConversionHelper.ToString(Helper.propLoad(args, Set(AbsString("0")), h))
+        // 4. Let pos be ToInteger(position). (If position is undefined, this step produces the value 0).
+        val position = Helper.propLoad(args, Set(AbsString("1")), h)
+        val emptyN = if (AbsUndef.Top <= position) AbsNumber(0) else AbsNumber.Bot
+        val pos = emptyN + TypeConversionHelper.ToInteger(position)
+        // 5. Let len be the number of characters in S.
+        val len = s.length
+        // 6. Let start be min(max(pos, 0), len).
+        // 7. Let searchLen be the number of characters in searchStr.
+        val searchLen = searchStr.length
+        // 8. Return the smallest possible integer k not smaller than start such that
+        //   k+searchLen is not greater than len, and for all nonnegative integers j
+        //   less than searchLen, the character at position k+j of S is the same as
+        //   the character at position j of searchStr; but if there is no such integer k,
+        //   then return the value -1.
+        // XXX: give up the precision! (Room for the analysis precision improvement!)
+        val n = (s.gamma, searchStr.gamma, pos.getSingle) match {
+          case (ConFin(thisSet), ConFin(searchSet), ConOne(Num(posN))) =>
+            var num: AbsNumber = AbsNumber.Bot
+            for (thisS <- thisSet) for (searchS <- searchSet)
+              num += AbsNumber(thisS.indexOf(searchS, posN.toInt).toDouble)
+            num
+          case _ =>
+            if (s <= AbsString.Bot || searchStr <= AbsString.Bot || pos <= AbsNumber.Bot)
+              AbsNumber.Bot
+            else
+              AbsNumber.Top
+        }
+        (st, State.Bot, AbsValue(n))
+      })
     ), T, F, T),
 
-    // TODO lastIndexOf
+    // 15.5.4.8 String.prototype.lastIndexOf(searchString, position)
     NormalProp("lastIndexOf", FuncModel(
       name = "String.prototype.lastIndexOf",
-      code = EmptyCode(argLen = 1)
+      code = BasicCode(argLen = 0, (
+        args: AbsValue, st: State
+      ) => {
+        val h = st.heap
+        // 1. Call CheckObjectCoercible passing the this value as its argument.
+        // 2. Let S be the result of calling ToString, giving it the this value as its argument.
+        val thisV = AbsValue(st.context.thisBinding)
+        val s = TypeConversionHelper.ToString(BuiltinStringHelper.getValue(thisV, h))
+        // 3. Let searchStr be ToString(searchString).
+        val searchStr = TypeConversionHelper.ToString(Helper.propLoad(args, Set(AbsString("0")), h))
+        // 4. Let numPos be ToNumber(position). (If position is undefined, this step produces the value NaN).
+        val position = Helper.propLoad(args, Set(AbsString("1")), h)
+        val emptyN = if (AbsUndef.Top <= position) AbsNumber.NaN else AbsNumber.Bot
+        val numPos = emptyN + TypeConversionHelper.ToNumber(position)
+        // 5. If numPos is NaN, let pos be +Infinity; otherwise, let pos be ToInteger(numPos).
+        val pos = (BuiltinHelper.isNaN(numPos)).map[AbsNumber](
+          thenV = AbsNumber.PosInf,
+          elseV = TypeConversionHelper.ToInteger(numPos)
+        )(AbsNumber)
+        // 6. Let len be the number of characters in S.
+        val len = s.length
+        // 7. Let start min(max(pos, 0), len).
+        // 8. Let searchLen be the number of characters in searchStr.
+        val searchLen = searchStr.length
+        // 9. Return the largest possible nonnegative integer k not larger than start such that
+        //   k+searchLen is not greater than len, and for all nonnegative integers j less than searchLen,
+        //   the character at position k+j of S is the same as the character at position j of searchStr;
+        //   but if there is no such integer k, then return the value -1.
+        // XXX: give up the precision! (Room for the analysis precision improvement!)
+        val n = (s.gamma, searchStr.gamma, pos.getSingle) match {
+          case (ConFin(thisSet), ConFin(searchSet), ConOne(Num(posN))) =>
+            var num: AbsNumber = AbsNumber.Bot
+            for (thisS <- thisSet) for (searchS <- searchSet) {
+              num += AbsNumber(thisS.lastIndexOf(searchS, posN.toInt).toDouble)
+            }
+            num
+          case _ =>
+            if (s <= AbsString.Bot || searchStr <= AbsString.Bot || pos <= AbsNumber.Bot)
+              AbsNumber.Bot
+            else
+              AbsNumber.Top
+        }
+        (st, State.Bot, AbsValue(n))
+      })
     ), T, F, T),
 
     // TODO localeCompare
