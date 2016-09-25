@@ -21,8 +21,5 @@ var __result5 = x.p3;
 var __expect5 = undefined;
 
 // TODO
-// var __result7 = Object.isFrozen(x);
-// var __expect7 = true;
-// 
 // var __result8 = Object.isExtensible(x);
 // var __expect8 = false;

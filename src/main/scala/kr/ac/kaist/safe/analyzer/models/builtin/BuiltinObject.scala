@@ -89,10 +89,9 @@ object BuiltinObject extends FuncModel(
       code = PureCode(argLen = 1, BuiltinObjectHelper.isSealed)
     ), T, F, T),
 
-    // TODO isFrozen
     NormalProp("isFrozen", FuncModel(
       name = "Object.isFrozen",
-      code = EmptyCode(argLen = 1)
+      code = PureCode(argLen = 1, BuiltinObjectHelper.isFrozen)
     ), T, F, T),
 
     // TODO isExtensible
@@ -363,6 +362,27 @@ object BuiltinObjectHelper {
     val cCheck = forall(obj, desc => {
       val (c, ca) = desc.configurable
       c.negate || AbsBool(ca.isTop)
+    })
+    // 3. If the [[Extensible]] internal property of O is false, then return true.
+    val eCheck = obj(IExtensible).value.pvalue.boolval.negate
+    // 4. Otherwise, return false.
+    (cCheck && eCheck)
+  }
+
+  def isFrozen(args: AbsValue, h: Heap): AbsValue = {
+    val objV = Helper.propLoad(args, Set(AbsString("0")), h)
+
+    // 1. If Type(O) is not Object throw a TypeError exception.
+    val excSet = objCheck(objV)
+    // 2. For each named own property name P of O,
+    //   a. Let desc be the result of calling the [[GetOwnProperty]] internal method of O with P.
+    //   b. If desc.[[Writable]] is true, return false.
+    //   c. If desc.[[Configurable]] is true, then return false.
+    val obj = h.get(objV.locset)
+    val cCheck = forall(obj, desc => {
+      val (w, wa) = desc.writable
+      val (c, ca) = desc.configurable
+      (w.negate || AbsBool(wa.isTop)) && (c.negate || AbsBool(ca.isTop))
     })
     // 3. If the [[Extensible]] internal property of O is false, then return true.
     val eCheck = obj(IExtensible).value.pvalue.boolval.negate
