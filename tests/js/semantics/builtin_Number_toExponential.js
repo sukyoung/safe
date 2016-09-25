@@ -9,7 +9,6 @@ var __expect2 = "1.2345e+4";
 var __result3 = x.toExponential(11);
 var __expect3 = "1.234512345678900e+4";
 
-/*
 try {
 	x.toExponential(21);
 }
@@ -17,4 +16,3 @@ catch (e) {
 	var __result4 = e.name;
 	var __expect4 = "RangeError";
 }
-*/
