@@ -77,10 +77,10 @@ object BuiltinArrayProto extends ObjModel(
       code = BasicCode(argLen = 0, BuiltinArrayHelper.pop)
     ), T, F, T),
 
-    // TODO push
+    // 15.4.4.7 Array.prototype.push([item1[, item2[, ... ]]])
     NormalProp("push", FuncModel(
       name = "Array.prototype.push",
-      code = EmptyCode(argLen = 1)
+      code = BasicCode(argLen = 1, BuiltinArrayHelper.push)
     ), T, F, T),
 
     // TODO reverse
@@ -457,6 +457,54 @@ object BuiltinArrayHelper {
           }
           // XXX: very imprecise ConMany case
           case ConMany() => (arr.update(AbsString.Number, AbsDataProp.Top), AbsValue.Top, HashSet(TypeError))
+        }
+        val retH = h.update(loc, retObj)
+        (retH, value + retV, excSet ++ retExcSet)
+      }
+    }
+    val excSt = st.raiseException(excSet)
+    (State(retH, st.context), excSt, retV)
+  }
+
+  def push(args: AbsValue, st: State): (State, State, AbsValue) = {
+    val h = st.heap
+    val argObj = h.get(args.locset)
+    val argLen = Helper.propLoad(args, Set(AbsString("length")), h).pvalue.numval
+    val thisLoc = st.context.thisBinding
+    val (retH, retV, excSet) = thisLoc.foldLeft((h, AbsValue.Bot, ExcSetEmpty)) {
+      case ((h, value, excSet), loc) => {
+        // XXX: 1. Let O be the result of calling ToObject passing the this value as the argument.
+        // TODO current "this" value only have location. we should change!
+        val arr = h.get(loc)
+        // 2. Let lenVal be the result of calling the [[Get]] internal method of O with argument "length".
+        val lenVal = arr.Get("length", h)
+        // 3. Let n be ToUint32(lenVal).
+        val n = TypeConversionHelper.ToUInt32(lenVal)
+        // 4. Let items be an internal List whose elements are, in left to right order, the arguments that were passed to this
+        //    function invocation.
+        val (retObj: AbsObject, retV: AbsValue, retExcSet: Set[Exception]) = (argLen.getSingle, n.getSingle) match {
+          case (ConZero(), _) | (_, ConZero()) => (AbsObjectUtil.Bot, AbsValue.Bot, ExcSetEmpty)
+          case (ConOne(Num(al)), ConOne(Num(tl))) => {
+            val argLen = al.toInt
+            val thisLen = tl.toInt
+            // 5. Repeat, while items is not empty
+            val (retObj, retExcSet) = (0 until argLen).foldLeft((arr, ExcSetEmpty)) {
+              case ((arr, excSet), k) => {
+                val kValue = argObj.Get(k.toString, h)
+                //   a. Remove the first element from items and let E be the value of the element.
+                //   b. Call the [[Put]] internal method of O with arguments ToString(n), E, and true.
+                val (retObj, retExcSet) = arr.Put(AbsString((thisLen + k).toString), kValue, true, h)
+                (retObj, retExcSet)
+                //   c. Increase n by 1.
+              }
+            }
+            // 6. Call the [[Put]] internal method of O with arguments "length", n, and true.
+            val n = AbsNumber(argLen + thisLen)
+            val (putObj, putExcSet) = retObj.Put(AbsString("length"), n, true, h)
+            // 7. Return n.
+            (putObj, AbsValue(n), putExcSet ++ retExcSet)
+          }
+          case _ => (arr.update(AbsString.Number, AbsDataProp.Top), AbsNumber.Top, HashSet(TypeError))
         }
         val retH = h.update(loc, retObj)
         (retH, value + retV, excSet ++ retExcSet)
