@@ -307,9 +307,8 @@ object BuiltinStringProto extends ObjModel(
         val n = (s.gamma, searchStr.gamma, pos.getSingle) match {
           case (ConFin(thisSet), ConFin(searchSet), ConOne(Num(posN))) =>
             var num: AbsNumber = AbsNumber.Bot
-            for (thisS <- thisSet) for (searchS <- searchSet) {
+            for (thisS <- thisSet) for (searchS <- searchSet)
               num += AbsNumber(thisS.lastIndexOf(searchS, posN.toInt).toDouble)
-            }
             num
           case _ =>
             if (s <= AbsString.Bot || searchStr <= AbsString.Bot || pos <= AbsNumber.Bot)
@@ -321,10 +320,33 @@ object BuiltinStringProto extends ObjModel(
       })
     ), T, F, T),
 
-    // TODO localeCompare
+    // 15.5.4.9 String.prototype.localeCompare(that)
     NormalProp("localeCompare", FuncModel(
       name = "String.prototype.localeCompare",
-      code = EmptyCode(argLen = 1)
+      code = BasicCode(argLen = 0, (
+        args: AbsValue, st: State
+      ) => {
+        val h = st.heap
+        // 1. Call CheckObjectCoercible passing the this value as its argument.
+        // 2. Let S be the result of calling ToString, giving it the this value as its argument.
+        val thisV = AbsValue(st.context.thisBinding)
+        val s = TypeConversionHelper.ToString(BuiltinStringHelper.getValue(thisV, h))
+        // 3. Let That be ToString(that).
+        val that = TypeConversionHelper.ToString(Helper.propLoad(args, Set(AbsString("0")), h))
+        val n = (s.gamma, that.gamma) match {
+          case (ConFin(thisSet), ConFin(thatSet)) =>
+            var num: AbsNumber = AbsNumber.Bot
+            for (thisS <- thisSet) for (thatS <- thatSet)
+              num += AbsNumber(thisS.str.compare(thatS).toDouble)
+            num
+          case _ =>
+            if (s <= AbsString.Bot || that <= AbsString.Bot)
+              AbsNumber.Bot
+            else
+              AbsNumber.Top
+        }
+        (st, State.Bot, AbsValue(n))
+      })
     ), T, F, T),
 
     // TODO match
