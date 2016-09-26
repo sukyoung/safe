@@ -71,10 +71,10 @@ object BuiltinArrayProto extends ObjModel(
       code = PureCode(argLen = 1, BuiltinArrayHelper.join)
     ), T, F, T),
 
-    // TODO pop
+    // 15.4.4.6 Array.prototype.pop()
     NormalProp("pop", FuncModel(
       name = "Array.prototype.pop",
-      code = EmptyCode(argLen = 0)
+      code = BasicCode(argLen = 0, BuiltinArrayHelper.pop)
     ), T, F, T),
 
     // TODO push
@@ -420,6 +420,52 @@ object BuiltinArrayHelper {
     })
   }
 
+  def pop(args: AbsValue, st: State): (State, State, AbsValue) = {
+    val h = st.heap
+    val thisLoc = st.context.thisBinding
+    val (retH, retV, excSet) = thisLoc.foldLeft((h, AbsValue.Bot, ExcSetEmpty)) {
+      case ((h, value, excSet), loc) => {
+        // XXX: 1. Let O be the result of calling ToObject passing the this value as the argument.
+        // TODO current "this" value only have location. we should change!
+        val arr = h.get(loc)
+        // 2. Let lenVal be the result of calling the [[Get]] internal method of O with argument "length".
+        val lenVal = arr.Get("length", h)
+        // 3. Let len be ToUint32(lenVal).
+        val len = TypeConversionHelper.ToUInt32(lenVal)
+        val (retObj: AbsObject, retV: AbsValue, retExcSet: Set[Exception]) = len.getSingle match {
+          case ConZero() => (AbsObjectUtil.Bot, AbsValue.Bot, ExcSetEmpty)
+          // 4. If len is zero,
+          case ConOne(Num(0)) => {
+            // a. Call the [[Put]] internal method of O with arguments "length", 0, and true.
+            val (retArr, excSet) = arr.Put(AbsString("length"), AbsNumber(0), true, h)
+            // b. Return undefined.
+            (retArr, AbsValue(AbsUndef.Top), excSet)
+          }
+          // 5. Else, len > 0
+          case ConOne(Num(n)) => {
+            val len = n.toInt
+            // a. Let indx be ToString(len–1).
+            val indx = (len - 1).toString
+            // b. Let element be the result of calling the [[Get]] internal method of O with argument indx.
+            val element = arr.Get(indx, h)
+            // c. Call the [[Delete]] internal method of O with arguments indx and true.
+            val (delArr, _) = arr.Delete(indx) // XXX: missing second argument Throw = true.
+            // d. Call the [[Put]] internal method of O with arguments "length", indx, and true.
+            val (putArr, excSet) = delArr.Put(AbsString("length"), AbsNumber(len - 1), true, h)
+            // e. Return element.
+            (putArr, element, excSet)
+          }
+          // XXX: very imprecise ConMany case
+          case ConMany() => (arr.update(AbsString.Number, AbsDataProp.Top), AbsValue.Top, HashSet(TypeError))
+        }
+        val retH = h.update(loc, retObj)
+        (retH, value + retV, excSet ++ retExcSet)
+      }
+    }
+    val excSt = st.raiseException(excSet)
+    (State(retH, st.context), excSt, retV)
+  }
+
   def shift(args: AbsValue, st: State): (State, State, AbsValue) = {
     val h = st.heap
     val thisLoc = st.context.thisBinding
@@ -482,7 +528,7 @@ object BuiltinArrayHelper {
             (putObj, first, retExcSet)
           }
           // XXX: very imprecise ConMany case
-          case ConMany() => (obj.update(AbsString.Top, AbsDataProp.Top), AbsValue.Top, HashSet(TypeError))
+          case ConMany() => (obj.update(AbsString.Number, AbsDataProp.Top), AbsValue.Top, HashSet(TypeError))
         }
         val retH = h.update(loc, retObj)
         (retH, value + retV, excSet ++ retExcSet)
