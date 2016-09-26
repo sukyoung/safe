@@ -20,18 +20,24 @@ import scala.collection.immutable.HashSet
 
 object BuiltinArray extends FuncModel(
   name = "Array",
+
+  // 15.4.1.1 Array([item1[, item2[, ... ]]])
+  code = BasicCode(argLen = 1, BuiltinArrayHelper.construct),
+
+  // 15.4.2.1 new Array([item0[, item1[, ... ]]])
+  // 15.4.2.2 new Array(len)
+  construct = Some(BasicCode(argLen = 1, BuiltinArrayHelper.construct)),
+
+  // 15.4.3.1 Array.prototype
+  protoModel = Some((BuiltinArrayProto, F, F, F)),
+
   props = List(
     // TODO isArray
     NormalProp("isArray", FuncModel(
       name = "Array.isArray",
       code = EmptyCode(argLen = 1)
     ), T, F, T)
-  ),
-  // TODO @function
-  code = EmptyCode(argLen = 1),
-  // TODO @construct
-  construct = Some(EmptyCode()),
-  protoModel = Some((BuiltinArrayProto, F, F, F))
+  )
 )
 
 object BuiltinArrayProto extends ObjModel(
@@ -172,6 +178,74 @@ object BuiltinArrayHelper {
   ////////////////////////////////////////////////////////////////
   // Array
   ////////////////////////////////////////////////////////////////
+  def construct(args: AbsValue, st: State): (State, State, AbsValue) = {
+    val h = st.heap
+    val length = Helper.propLoad(args, Set(AbsString("length")), h).pvalue.numval
+    val first = Helper.propLoad(args, Set(AbsString("0")), h)
+    val argObj = h.get(args.locset)
+    val AT = AbsBool.True
+    val (retObj: AbsObject, retExcSet: Set[Exception]) = length.getSingle match {
+      case ConZero() => (AbsObjectUtil.Bot, ExcSetEmpty)
+      case ConOne(Num(1)) => {
+        // 15.4.2.2 new Array(len)
+        val firstN = first.pvalue.numval
+        val (lenObj: AbsObject, excSet: Set[Exception]) = if (!firstN.isBottom) {
+          // If the argument len is a Number and ToUint32(len) is equal to len,
+          // then the length property of the newly constructed object is set to ToUint32(len).
+          val equal = (firstN === firstN.toUInt32)
+          val trueV = if (AbsBool.True <= equal) {
+            AbsObjectUtil.newArrayObject(firstN)
+          } else AbsObjectUtil.Bot
+          // If the argument len is a Number and ToUint32(len) is not equal to len,
+          // a RangeError exception is thrown.
+          val falseV =
+            if (AbsBool.False <= equal) HashSet(RangeError)
+            else ExcSetEmpty
+          (trueV, falseV)
+        } else (AbsObjectUtil.Bot, ExcSetEmpty)
+
+        val otherObj = if (!first.pvalue.copyWith(numval = AbsNumber.Bot).isBottom || !first.locset.isBottom) {
+          // If the argument len is not a Number, then the length property of the newly constructed object
+          // is set to 1 and the 0 property of the newly constructed object is set to len with attributes
+          // {[[Writable]]: true, [[Enumerable]]: true, [[Configurable]]: true}.
+          val arr = AbsObjectUtil.newArrayObject(AbsNumber(1))
+          val dp = AbsDataProp(first, AT, AT, AT)
+          arr.initializeUpdate("0", dp)
+        } else AbsObjectUtil.Bot
+
+        (lenObj + otherObj, excSet)
+      }
+      case ConOne(Num(n)) => {
+        // 15.4.2.1 new Array([item0[, item1[, ... ]]])
+        val length = n.toInt
+        val arr = AbsObjectUtil.newArrayObject(AbsNumber(length))
+        val obj = (0 until length).foldLeft(arr)((arr, k) => {
+          val kStr = k.toString
+          val kValue = argObj(kStr).value
+          val dp = AbsDataProp(kValue, AT, AT, AT)
+          arr.initializeUpdate(kStr, dp)
+        })
+        (obj, ExcSetEmpty)
+      }
+      case ConMany() => {
+        val len = first.pvalue.numval + length
+        val arr = AbsObjectUtil.newArrayObject(len)
+        val aKeySet = argObj.amap.abstractKeySet((aKey, _) => aKey <= AbsString.Number)
+        val arrObj = aKeySet.foldLeft(arr)((arr, aKey) => {
+          val value = argObj(aKey).value
+          val dp = AbsDataProp(value, AT, AT, AT)
+          arr.update(aKey, dp)
+        })
+        (arrObj, HashSet(RangeError))
+      }
+    }
+    val arrAddr = SystemAddr("Array<instance>")
+    val state = st.oldify(arrAddr)
+    val arrLoc = Loc(arrAddr, Recent)
+    val retH = state.heap.update(arrLoc, retObj)
+    val excSt = state.raiseException(retExcSet)
+    (State(retH, state.context), excSt, AbsLoc(arrLoc))
+  }
 
   ////////////////////////////////////////////////////////////////
   // Array.prototype

@@ -252,7 +252,7 @@ object DefaultNumber extends AbsNumberUtil {
 
     def toUInt32: AbsNumber = {
       def help(n: Double): AbsNumber = {
-        val posInt = math.signum(n) * math.floor(math.abs(n))
+        val posInt = math.floor(math.abs(n))
         val int32bit = modulo(posInt, 0x100000000L);
         alpha(int32bit.toInt)
       }
