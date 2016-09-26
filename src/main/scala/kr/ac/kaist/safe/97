@@ -46,7 +46,7 @@ object BuiltinArrayProto extends ObjModel(
     InternalProp(IClass, PrimModel("Array")),
     NormalProp("length", PrimModel(0.0), T, F, T),
 
-    // 15.4.4.2 Array.prototype.toString()
+    // 15.4.4.2 Array.prototype.toString ( )
     NormalProp("toString", FuncModel(
       name = "Array.prototype.toString",
       code = PureCode(argLen = 0, BuiltinArrayHelper.toString)
@@ -294,9 +294,9 @@ object BuiltinArrayHelper {
       // 2. Let lenVal be the result of calling the [[Get]] internal method of O with argument "length".
       val lenVal = obj.Get("length", h)
       // 3. Let len be ToUint32(lenVal).
-      val len = TypeConversionHelper.ToUInt32(lenVal)
+      val len = lenVal.toUInt32(lenVal)
       // 4. If separator is undefined, let separator be the single-character String ",".
-      val noUndef = AbsValue(separator.pvalue.copyWith(undefval = AbsUndef.Bot), separator.locset)
+      val noUndef = separator.copyWith(pvalue = separator.pvalue.copyWith(undefval = AbsUndef.Bot))
       val undefV: AbsValue =
         if (separator.pvalue.undefval.isTop) AbsString(",")
         else AbsValue.Bot
@@ -307,13 +307,12 @@ object BuiltinArrayHelper {
         case ConZero() => AbsString.Bot
         // 6. If len is zero, return the empty String.
         case ConOne(Num(0)) => AbsString("")
-        case ConOne(Num(l)) => {
-          val len = l.toInt
-          def noUndefNull(value: AbsValue): AbsString = {
+        case ConOne(Num(len)) => {
+          def noUndefNull(value: Value): AbsString = {
             val empty =
               if (value.pvalue.undefval.isBottom && value.pvalue.nullval.isBottom) AbsString.Bot
               else AbsString("")
-            val noUNPV = value.pvalue.copyWith(undefval = AbsUndef.Bot, nullval = AbsNull.Bot)
+            val noUNPV = value.pvalue.copyWith(undefval = AbsUndef.Bot, nullval = AbsUndef.Bot)
             val other = TypeConversionHelper.ToString(AbsValue(noUNPV, value.locset))
             empty + other
           }

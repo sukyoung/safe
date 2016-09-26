@@ -3,9 +3,8 @@ var x = [1,2,3];
 var __result1 = x.shift();
 var __expect1 = 1;
 
-// TODO depending on Array.prototype.toString
-// var __result2 = x.toString();
-// var __expect2 = "2,3";
+var __result2 = x.toString();
+var __expect2 = "2,3";
 
 var __result3 = x.length;
 var __expect3 = 2
