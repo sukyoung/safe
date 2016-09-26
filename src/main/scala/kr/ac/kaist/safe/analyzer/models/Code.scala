@@ -15,8 +15,8 @@ import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.nodes.ir.IRModelFunc
-import kr.ac.kaist.safe.nodes.ast.{ ModelFunc, ASTNodeInfo }
-import kr.ac.kaist.safe.util.{ Address, Span }
+import kr.ac.kaist.safe.nodes.ast.{ ASTNodeInfo, ModelFunc }
+import kr.ac.kaist.safe.util.{ Address, Span, SystemAddr }
 
 abstract class Code {
   val argLen: Int = 0
@@ -92,7 +92,7 @@ class CallCode(
     val beforeBlock: ModelBlock = func.createModelBlock(beforeSem)
 
     val callBlock: Call = func.createCall(
-      CFGCall(func.ir, _, CFGVarRef(func.ir, funcId), CFGVarRef(func.ir, thisId), CFGVarRef(func.ir, argsId), cfg.newProgramAddr, cfg.newProgramAddr),
+      CFGCall(func.ir, _, CFGVarRef(func.ir, funcId), CFGVarRef(func.ir, thisId), CFGVarRef(func.ir, argsId), SystemAddr(name + "<BuiltinCall>1"), SystemAddr(name + "<BuiltinCall>2")),
       retId
     )
 
