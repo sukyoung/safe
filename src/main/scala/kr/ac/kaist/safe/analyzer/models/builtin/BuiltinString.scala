@@ -60,6 +60,30 @@ object BuiltinStringHelper {
     (st, st.raiseException(excSet), AbsValue(s))
   })
 
+  val toLowerCase = BasicCode(argLen = 0, (
+    args: AbsValue, st: State
+  ) => {
+    val h = st.heap
+    // 1. Call CheckObjectCoercible passing the this value as its argument.
+    // 2. Let S be the result of calling ToString, giving it the this value as its argument.
+    // 3. Let L be a String where each character of L is either the Unicode lowercase
+    //   equivalent of the corresponding character of S or the actual corresponding
+    //   character of S if no Unicode lowercase equivalent exists.
+    // 4. Return L.
+    val thisV = AbsValue(st.context.thisBinding)
+    val s = TypeConversionHelper.ToString(BuiltinStringHelper.getValue(thisV, h)).toLowerCase
+    (st, State.Bot, AbsValue(s))
+  })
+
+  val toUpperCase = BasicCode(argLen = 0, (
+    args: AbsValue, st: State
+  ) => {
+    val h = st.heap
+    val thisV = AbsValue(st.context.thisBinding)
+    val s = TypeConversionHelper.ToString(BuiltinStringHelper.getValue(thisV, h)).toUpperCase
+    (st, State.Bot, AbsValue(s))
+  })
+
   val typeConversion = PureCode(argLen = 1, code = typeConvert)
 }
 
@@ -468,28 +492,28 @@ object BuiltinStringProto extends ObjModel(
       })
     ), T, F, T),
 
-    // TODO toLowerCase
+    // 15.5.4.16 String.prototype.toLowerCase()
     NormalProp("toLowerCase", FuncModel(
       name = "String.prototype.toLowerCase",
-      code = EmptyCode(argLen = 0)
+      code = BuiltinStringHelper.toLowerCase
     ), T, F, T),
 
-    // TODO toLocaleLowerCase
+    // 15.5.4.17 String.prototype.toLocaleLowerCase()
     NormalProp("toLocaleLowerCase", FuncModel(
       name = "String.prototype.toLocaleLowerCase",
-      code = EmptyCode(argLen = 0)
+      code = BuiltinStringHelper.toLowerCase
     ), T, F, T),
 
-    // TODO toUpperCase
+    // 15.5.4.18 String.prototype.toUpperCase()
     NormalProp("toUpperCase", FuncModel(
       name = "String.prototype.toUpperCase",
-      code = EmptyCode(argLen = 0)
+      code = BuiltinStringHelper.toUpperCase
     ), T, F, T),
 
-    // TODO toLocaleUpperCase
+    // 15.5.4.19 String.prototype.toLocaleUpperCase()
     NormalProp("toLocaleUpperCase", FuncModel(
       name = "String.prototype.toLocaleUpperCase",
-      code = EmptyCode(argLen = 0)
+      code = BuiltinStringHelper.toUpperCase
     ), T, F, T),
 
     // TODO trim
