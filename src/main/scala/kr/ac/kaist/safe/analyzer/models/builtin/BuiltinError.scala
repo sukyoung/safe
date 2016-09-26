@@ -24,20 +24,70 @@ object BuiltinError extends FuncModel(
   code = BasicCode(1, BuiltinErrorHelper.construct),
   // 15.11.2 new Error(...)
   construct = Some(BasicCode(1, BuiltinErrorHelper.construct)),
-  protoModel = Some((BuiltinErrorProto, F, F, F))
+  // 15.11.3.1 Error.prototype
+  protoModel = Some((BuiltinErrorProto, F, F, F)),
+  props = List(
+    InternalProp(IPrototype, BuiltinFunctionProto)
+  )
 )
 
+// 15.11.4. Properties of the Error Prototype Object
 object BuiltinErrorProto extends ObjModel(
   name = "Error.prototype",
   props = List(
     InternalProp(IClass, PrimModel("Error")),
+    // 15.11.4.2 Error.prototype.name
     NormalProp("name", PrimModel("Error"), T, F, T),
+    // 15.11.4.3 Error.prototype.message
     NormalProp("message", PrimModel(""), T, F, T),
 
-    // TODO toString
+    // 15.11.4.4 Error.prototype.toString()
     NormalProp("toString", FuncModel(
       name = "Error.prototype.toString",
-      code = EmptyCode(argLen = 0)
+      code = BasicCode(argLen = 0, (args: AbsValue, st: State) => {
+        val thisBinding = st.context.thisBinding
+        // 2. If Type(O) is not Object, throw a TypeError exception.
+        val excSet =
+          if (thisBinding.isBottom) ExcSetEmpty + TypeError
+          else ExcSetEmpty
+        // 3. - 10.
+        thisBinding.foldLeft(AbsString.Bot)((res, loc) => {
+          val O = st.heap.get(loc)
+          val name3 = O.Get("name", st.heap)
+          val nameUndef =
+            if (name3.pvalue.undefval </ AbsUndef.Top) AbsString("Error")
+            else AbsString.Bot
+          val nameNotUndef =
+            if (name3 </ AbsUndef.Top) TypeConversionHelper.ToString(name3)
+            else AbsString.Bot
+          val name4 = nameUndef + nameNotUndef
+          val msg5 = O.Get("message", st.heap)
+          val msgUndef =
+            if (msg5.pvalue.undefval </ AbsUndef.Top) AbsString("")
+            else AbsString.Bot
+          val msgNotUndef =
+            if (msg5 </ AbsUndef.Top) TypeConversionHelper.ToString(msg5)
+            else AbsString.Bot
+          val msg6 = msgUndef + msgNotUndef
+
+          val emptyString = AbsString("")
+          val res8 =
+            if (AbsBool.True <= (name4 === emptyString)) msg6
+            else AbsString.Bot
+          val res9 =
+            if ((AbsBool.False <= (name4 === emptyString))
+              && (AbsBool.True <= (msg6 === emptyString))) name4
+            else AbsString.Bot
+          val res10 =
+            if ((AbsBool.False <= (name4 === emptyString))
+              && (AbsBool.False <= (msg6 === emptyString))) name4.concat(AbsString(":")).concat(msg6)
+            else AbsString.Bot
+          res + (res8 + res9 + res10)
+        })
+        // return value is implementation dependent
+        val result = AbsString.Top
+        (st, st.raiseException(excSet), result)
+      })
     ), T, F, T)
   )
 )
