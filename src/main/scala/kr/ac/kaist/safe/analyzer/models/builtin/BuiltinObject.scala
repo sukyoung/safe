@@ -11,7 +11,6 @@
 
 package kr.ac.kaist.safe.analyzer.models.builtin
 
-import kr.ac.kaist.safe.analyzer.{ Semantics, Helper }
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.analyzer.models._
@@ -266,9 +265,9 @@ object BuiltinObjectHelper {
     val state = st.oldify(arrAddr)
     val arrLoc = Loc(arrAddr, Recent)
     val retHeap = state.heap.update(arrLoc, retObj)
-    val excSt = st.raiseException(retExcSet)
+    val excSt = state.raiseException(retExcSet)
 
-    (State(retHeap, st.context), excSt, AbsValue(arrLoc))
+    (State(retHeap, state.context), excSt, AbsValue(arrLoc))
   }
 
   def create(args: AbsValue, st: State): (State, State, AbsValue) = {
@@ -293,10 +292,10 @@ object BuiltinObjectHelper {
     val newH = h.update(loc, newObj)
     val retV = AbsLoc(loc)
     val (retSt, e) =
-      if (propsV <= AbsUndef.Top) (State(newH, st.context), ExcSetEmpty)
-      else defProps(retV, propsV, State(newH, st.context))
+      if (propsV <= AbsUndef.Top) (State(newH, state.context), ExcSetEmpty)
+      else defProps(retV, propsV, State(newH, state.context))
     // 5. Return obj.
-    val excSt = st.raiseException(excSet ++ e)
+    val excSt = state.raiseException(excSet ++ e)
 
     (retSt, excSt, retV)
   }
@@ -539,7 +538,7 @@ object BuiltinObjectHelper {
     val retHeap = state.heap.update(arrLoc, retObj)
     val excSt = st.raiseException(retExcSet)
 
-    (State(retHeap, st.context), excSt, AbsValue(arrLoc))
+    (State(retHeap, state.context), excSt, AbsValue(arrLoc))
   }
 
   ////////////////////////////////////////////////////////////////

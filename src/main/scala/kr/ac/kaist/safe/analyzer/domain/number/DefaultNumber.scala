@@ -219,9 +219,9 @@ object DefaultNumber extends AbsNumberUtil {
           | PosInf
           | NegInf => this
         case UIntConst(n) =>
-          alpha(math.signum(n) * math.floor(n))
+          alpha(math.floor(n))
         case NUIntConst(n) =>
-          alpha(math.signum(n) * math.floor(n))
+          alpha(math.floor(n))
         case _ => UInt
       }
     }
