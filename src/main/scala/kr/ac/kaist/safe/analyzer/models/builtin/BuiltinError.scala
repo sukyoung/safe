@@ -165,13 +165,19 @@ object BuiltinEvalErrorProto extends ObjModel(
 // RangeError
 object BuiltinRangeError extends FuncModel(
   name = "RangeError",
-  // TODO @function
-  code = EmptyCode(1),
+  // @function
+  code = BasicCode(
+    1,
+    BuiltinErrorHelper.construct("RangeError", BuiltinRangeErrorProto.loc)
+  ),
   props = List(
     NormalProp("name", PrimModel("RangeError"), T, F, T)
   ),
-  // TODO @construct
-  construct = Some(EmptyCode()),
+  // @construct
+  construct = Some(BasicCode(
+    1,
+    BuiltinErrorHelper.construct("RangeError", BuiltinRangeErrorProto.loc)
+  )),
   protoModel = Some((BuiltinRangeErrorProto, F, F, F))
 )
 
@@ -188,13 +194,19 @@ object BuiltinRangeErrorProto extends ObjModel(
 // ReferenceError
 object BuiltinReferenceError extends FuncModel(
   name = "ReferenceError",
-  // TODO @function
-  code = EmptyCode(1),
+  // @function
+  code = BasicCode(
+    1,
+    BuiltinErrorHelper.construct("ReferenceError", BuiltinReferenceErrorProto.loc)
+  ),
   props = List(
     NormalProp("name", PrimModel("ReferenceError"), T, F, T)
   ),
-  // TODO @construct
-  construct = Some(EmptyCode()),
+  // @construct
+  construct = Some(BasicCode(
+    1,
+    BuiltinErrorHelper.construct("ReferenceError", BuiltinReferenceErrorProto.loc)
+  )),
   protoModel = Some((BuiltinReferenceErrorProto, F, F, F))
 )
 
@@ -211,13 +223,19 @@ object BuiltinReferenceErrorProto extends ObjModel(
 // SyntaxError
 object BuiltinSyntaxError extends FuncModel(
   name = "SyntaxError",
-  // TODO @function
-  code = EmptyCode(1),
+  // @function
+  code = BasicCode(
+    1,
+    BuiltinErrorHelper.construct("SyntaxError", BuiltinSyntaxErrorProto.loc)
+  ),
   props = List(
     NormalProp("name", PrimModel("SyntaxError"), T, F, T)
   ),
-  // TODO @construct
-  construct = Some(EmptyCode()),
+  // @construct
+  construct = Some(BasicCode(
+    1,
+    BuiltinErrorHelper.construct("SyntaxError", BuiltinSyntaxErrorProto.loc)
+  )),
   protoModel = Some((BuiltinSyntaxErrorProto, F, F, F))
 )
 
@@ -234,13 +252,19 @@ object BuiltinSyntaxErrorProto extends ObjModel(
 // TypeError
 object BuiltinTypeError extends FuncModel(
   name = "TypeError",
-  // TODO @function
-  code = EmptyCode(1),
+  // @function
+  code = BasicCode(
+    1,
+    BuiltinErrorHelper.construct("TypeError", BuiltinTypeErrorProto.loc)
+  ),
   props = List(
     NormalProp("name", PrimModel("TypeError"), T, F, T)
   ),
-  // TODO @construct
-  construct = Some(EmptyCode()),
+  // @construct
+  construct = Some(BasicCode(
+    1,
+    BuiltinErrorHelper.construct("TypeError", BuiltinTypeErrorProto.loc)
+  )),
   protoModel = Some((BuiltinTypeErrorProto, F, F, F))
 )
 
@@ -257,13 +281,19 @@ object BuiltinTypeErrorProto extends ObjModel(
 // URIError
 object BuiltinURIError extends FuncModel(
   name = "URIError",
-  // TODO @function
-  code = EmptyCode(1),
+  // @function
+  code = BasicCode(
+    1,
+    BuiltinErrorHelper.construct("URIError", BuiltinURIErrorProto.loc)
+  ),
   props = List(
     NormalProp("name", PrimModel("URIError"), T, F, T)
   ),
-  // TODO @construct
-  construct = Some(EmptyCode()),
+  // @construct
+  construct = Some(BasicCode(
+    1,
+    BuiltinErrorHelper.construct("URIError", BuiltinURIErrorProto.loc)
+  )),
   protoModel = Some((BuiltinURIErrorProto, F, F, F))
 )
 
