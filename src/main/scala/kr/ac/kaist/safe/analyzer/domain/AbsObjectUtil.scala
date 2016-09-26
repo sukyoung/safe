@@ -42,7 +42,7 @@ object AbsObjectUtil {
       .update(IExtensible, InternalValueUtil(atrue))
   }
 
-  def newArgObject(absLength: AbsNumber): AbsObject = {
+  def newArgObject(absLength: AbsNumber = AbsNumber(0)): AbsObject = {
     Empty
       .update(IClass, InternalValueUtil(AbsString("Arguments")))
       .update(IPrototype, InternalValueUtil(BuiltinObjectProto.loc))
