@@ -43,4 +43,16 @@ object BuiltinHelper {
       case _ => AbsBool.Top
     }
   }
+
+  def max(left: AbsNumber, right: AbsNumber): AbsNumber =
+    AbsBool(AbsNumber.NaN <= left || AbsNumber.NaN <= right).map[AbsNumber](
+      thenV = AbsNumber.NaN,
+      elseV = (left < right).map[AbsNumber](thenV = right, elseV = left)(AbsNumber)
+    )(AbsNumber)
+
+  def min(left: AbsNumber, right: AbsNumber): AbsNumber =
+    AbsBool(AbsNumber.NaN <= left || AbsNumber.NaN <= right).map[AbsNumber](
+      thenV = AbsNumber.NaN,
+      elseV = (left < right).map[AbsNumber](thenV = left, elseV = right)(AbsNumber)
+    )(AbsNumber)
 }

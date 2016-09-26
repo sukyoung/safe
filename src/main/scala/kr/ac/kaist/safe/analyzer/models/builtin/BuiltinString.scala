@@ -373,10 +373,51 @@ object BuiltinStringProto extends ObjModel(
       code = EmptyCode(argLen = 1)
     ), T, F, T),
 
-    // TODO slice
+    // 15.5.4.13 String.prototype.slice(start, end)
     NormalProp("slice", FuncModel(
       name = "String.prototype.slice",
-      code = EmptyCode(argLen = 2)
+      code = BasicCode(argLen = 0, (
+        args: AbsValue, st: State
+      ) => {
+        val h = st.heap
+        // 1. Call CheckObjectCoercible passing the this value as its argument.
+        // 2. Let S be the result of calling ToString, giving it the this value as its argument.
+        val thisV = AbsValue(st.context.thisBinding)
+        val s = TypeConversionHelper.ToString(BuiltinStringHelper.getValue(thisV, h))
+        // 3. Let len be the number of characters in S.
+        val len = s.length
+        // 4. Let intStart be ToInteger(start).
+        val intStart = TypeConversionHelper.ToInteger(Helper.propLoad(args, Set(AbsString("0")), h))
+        // 5. If end is undefined, let intEnd be len; else let intEnd be ToInteger(end).
+        val end = Helper.propLoad(args, Set(AbsString("1")), h)
+        val intEnd = AbsBool(AbsUndef.Top <= end).map[AbsNumber](
+          thenV = len,
+          elseV = TypeConversionHelper.ToInteger(end)
+        )(AbsNumber)
+        // 6. If intStart is negative, let from be max(len + intStart,0); else let from be min(intStart, len).
+        val from = (intStart < AbsNumber(0)).map[AbsNumber](
+          thenV = BuiltinHelper.max(len.add(intStart), AbsNumber(0)),
+          elseV = BuiltinHelper.min(intStart, len)
+        )(AbsNumber)
+        // 7. If intEnd is negative, let to be max(len + intEnd,0); else let to be min(intEnd, len).
+        val to = (intEnd < AbsNumber(0)).map[AbsNumber](
+          thenV = BuiltinHelper.max(len.add(intEnd), AbsNumber(0)),
+          elseV = BuiltinHelper.min(intEnd, len)
+        )(AbsNumber)
+        // 8. Let span be max(to - from, 0).
+        // 9. Return a String containing span consecutive characters from S beginning with the character at position from.
+        val res = (from < to).map[AbsString](
+          thenV = (s.gamma, from.getSingle, to.getSingle) match {
+            case (ConFin(set), ConOne(Num(f)), ConOne(Num(t))) =>
+              set.foldLeft(AbsString.Bot) {
+                case (r, Str(str)) => r + AbsString(str.slice(f.toInt, t.toInt))
+              }
+            case _ => AbsString.Top
+          },
+          elseV = AbsString("")
+        )(AbsString)
+        (st, State.Bot, AbsValue(res))
+      })
     ), T, F, T),
 
     // TODO split
