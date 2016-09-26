@@ -21,9 +21,15 @@ import kr.ac.kaist.safe.util.SystemAddr
 object BuiltinError extends FuncModel(
   name = "Error",
   // 15.11.1 Error(...)
-  code = BasicCode(1, BuiltinErrorHelper.construct),
+  code = BasicCode(
+    1,
+    BuiltinErrorHelper.construct("Error", BuiltinErrorProto.loc)
+  ),
   // 15.11.2 new Error(...)
-  construct = Some(BasicCode(1, BuiltinErrorHelper.construct)),
+  construct = Some(BasicCode(
+    1,
+    BuiltinErrorHelper.construct("Error", BuiltinErrorProto.loc)
+  )),
   // 15.11.3.1 Error.prototype
   protoModel = Some((BuiltinErrorProto, F, F, F)),
   props = List(
@@ -44,61 +50,18 @@ object BuiltinErrorProto extends ObjModel(
     // 15.11.4.4 Error.prototype.toString()
     NormalProp("toString", FuncModel(
       name = "Error.prototype.toString",
-      code = BasicCode(argLen = 0, (args: AbsValue, st: State) => {
-        val thisBinding = st.context.thisBinding
-        // 2. If Type(O) is not Object, throw a TypeError exception.
-        val excSet =
-          if (thisBinding.isBottom) ExcSetEmpty + TypeError
-          else ExcSetEmpty
-        // 3. - 10.
-        thisBinding.foldLeft(AbsString.Bot)((res, loc) => {
-          val O = st.heap.get(loc)
-          val name3 = O.Get("name", st.heap)
-          val nameUndef =
-            if (name3.pvalue.undefval </ AbsUndef.Top) AbsString("Error")
-            else AbsString.Bot
-          val nameNotUndef =
-            if (name3 </ AbsUndef.Top) TypeConversionHelper.ToString(name3)
-            else AbsString.Bot
-          val name4 = nameUndef + nameNotUndef
-          val msg5 = O.Get("message", st.heap)
-          val msgUndef =
-            if (msg5.pvalue.undefval </ AbsUndef.Top) AbsString("")
-            else AbsString.Bot
-          val msgNotUndef =
-            if (msg5 </ AbsUndef.Top) TypeConversionHelper.ToString(msg5)
-            else AbsString.Bot
-          val msg6 = msgUndef + msgNotUndef
-
-          val emptyString = AbsString("")
-          val res8 =
-            if (AbsBool.True <= (name4 === emptyString)) msg6
-            else AbsString.Bot
-          val res9 =
-            if ((AbsBool.False <= (name4 === emptyString))
-              && (AbsBool.True <= (msg6 === emptyString))) name4
-            else AbsString.Bot
-          val res10 =
-            if ((AbsBool.False <= (name4 === emptyString))
-              && (AbsBool.False <= (msg6 === emptyString))) name4.concat(AbsString(":")).concat(msg6)
-            else AbsString.Bot
-          res + (res8 + res9 + res10)
-        })
-        // return value is implementation dependent
-        val result = AbsString.Top
-        (st, st.raiseException(excSet), result)
-      })
+      code = BasicCode(argLen = 0, BuiltinErrorHelper.toString)
     ), T, F, T)
   )
 )
 
 private object BuiltinErrorHelper {
   // 15.11.1.1, 15.11.2.1
-  def construct(args: AbsValue, st: State): (State, State, AbsValue) = {
+  def construct(errorName: String, protoLoc: Loc)(args: AbsValue, st: State): (State, State, AbsValue) = {
     val message = Helper.propLoad(args, Set(AbsString("0")), st.heap)
     val defaultError = AbsObjectUtil.Empty
-      .update(IClass, InternalValueUtil(AbsString("Error")))
-      .update(IPrototype, InternalValueUtil(BuiltinErrorProto.loc))
+      .update(IClass, InternalValueUtil(AbsString(errorName)))
+      .update(IPrototype, InternalValueUtil(protoLoc))
       .update(IExtensible, InternalValueUtil(AbsBool.True))
 
     val undefObject =
@@ -113,12 +76,56 @@ private object BuiltinErrorHelper {
 
     val errorObj = undefObject + notUndefObject
 
-    val errorAddr = SystemAddr("Error<instance>")
+    val errorAddr = SystemAddr(errorName + "<instance>")
     val st1 = st.oldify(errorAddr)
     val errorLoc = Loc(errorAddr, Recent)
     val h2 = st1.heap.update(errorLoc, errorObj)
 
     (State(h2, st1.context), State.Bot, AbsValue(errorLoc))
+  }
+
+  def toString(args: AbsValue, st: State): (State, State, AbsValue) = {
+    val thisBinding = st.context.thisBinding
+    // 2. If Type(O) is not Object, throw a TypeError exception.
+    val excSet =
+      if (thisBinding.isBottom) ExcSetEmpty + TypeError
+      else ExcSetEmpty
+
+    // 3. - 10.
+    val result = thisBinding.foldLeft(AbsString.Bot)((res, loc) => {
+      val O = st.heap.get(loc)
+      val name3 = O.Get("name", st.heap)
+      val nameUndef =
+        if (name3.pvalue.undefval </ AbsUndef.Top) AbsString("Error")
+        else AbsString.Bot
+      val nameNotUndef =
+        if (name3 </ AbsUndef.Top) TypeConversionHelper.ToString(name3)
+        else AbsString.Bot
+      val name4 = nameUndef + nameNotUndef
+      val msg5 = O.Get("message", st.heap)
+      val msgUndef =
+        if (msg5.pvalue.undefval </ AbsUndef.Top) AbsString("")
+        else AbsString.Bot
+      val msgNotUndef =
+        if (msg5 </ AbsUndef.Top) TypeConversionHelper.ToString(msg5)
+        else AbsString.Bot
+      val msg6 = msgUndef + msgNotUndef
+
+      val emptyString = AbsString("")
+      val res8 =
+        if (AbsBool.True <= (name4 === emptyString)) msg6
+        else AbsString.Bot
+      val res9 =
+        if ((AbsBool.False <= (name4 === emptyString))
+          && (AbsBool.True <= (msg6 === emptyString))) name4
+        else AbsString.Bot
+      val res10 =
+        if ((AbsBool.False <= (name4 === emptyString))
+          && (AbsBool.False <= (msg6 === emptyString))) name4.concat(AbsString(": ")).concat(msg6)
+        else AbsString.Bot
+      res + (res8 + res9 + res10)
+    })
+    (st, st.raiseException(excSet), result)
   }
 }
 
@@ -126,16 +133,22 @@ private object BuiltinErrorHelper {
 // Native Errors
 ////////////////////////////////////////////////////////////////////////////////
 
-// EvalError
+// 15.11.6.1 EvalError
 object BuiltinEvalError extends FuncModel(
   name = "EvalError",
-  // TODO @function
-  code = EmptyCode(1),
+  // @function
+  code = BasicCode(
+    1,
+    BuiltinErrorHelper.construct("EvalError", BuiltinEvalErrorProto.loc)
+  ),
   props = List(
     NormalProp("name", PrimModel("EvalError"), T, F, T)
   ),
-  // TODO @construct
-  construct = Some(EmptyCode()),
+  // @construct
+  construct = Some(BasicCode(
+    1,
+    BuiltinErrorHelper.construct("EvalError", BuiltinEvalErrorProto.loc)
+  )),
   protoModel = Some((BuiltinEvalErrorProto, F, F, F))
 )
 
