@@ -11,7 +11,6 @@
 
 package kr.ac.kaist.safe.analyzer.models.builtin
 
-import kr.ac.kaist.safe.analyzer.{ Semantics, Helper }
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.analyzer.models._
