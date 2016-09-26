@@ -426,10 +426,46 @@ object BuiltinStringProto extends ObjModel(
       code = EmptyCode(argLen = 2)
     ), T, F, T),
 
-    // TODO substring
+    // 15.5.4.15 String.prototype.substring (start, end)
     NormalProp("substring", FuncModel(
       name = "String.prototype.substring",
-      code = EmptyCode(argLen = 2)
+      code = BasicCode(argLen = 0, (
+        args: AbsValue, st: State
+      ) => {
+        val h = st.heap
+        // 1. Call CheckObjectCoercible passing the this value as its argument.
+        // 2. Let S be the result of calling ToString, giving it the this value as its argument.
+        val thisV = AbsValue(st.context.thisBinding)
+        val s = TypeConversionHelper.ToString(BuiltinStringHelper.getValue(thisV, h))
+        // 3. Let len be the number of characters in S.
+        val len = s.length
+        // 4. Let intStart be ToInteger(start).
+        val intStart = TypeConversionHelper.ToInteger(Helper.propLoad(args, Set(AbsString("0")), h))
+        // 5. If end is undefined, let intEnd be len; else let intEnd be ToInteger(end).
+        val end = Helper.propLoad(args, Set(AbsString("1")), h)
+        val intEnd = AbsBool(AbsUndef.Top <= end).map[AbsNumber](
+          thenV = len,
+          elseV = TypeConversionHelper.ToInteger(end)
+        )(AbsNumber)
+        // 6. Let finalStart be min(max(intStart, 0), len).
+        val finalStart = BuiltinHelper.min(BuiltinHelper.max(intStart, AbsNumber(0)), len)
+        // 7. Let finalEnd be min(max(intEnd, 0), len).
+        val finalEnd = BuiltinHelper.min(BuiltinHelper.max(intEnd, AbsNumber(0)), len)
+        // 8. Let from be min(finalStart, finalEnd).
+        val from = BuiltinHelper.min(finalStart, finalEnd)
+        // 9. Let to be max(finalStart, finalEnd).
+        val to = BuiltinHelper.max(finalStart, finalEnd)
+        // 10. Return a String whose length is to - from, containing characters from S,
+        //   namely the characters with indices from through to - 1, in ascending order.
+        val res = (s.gamma, from.getSingle, to.getSingle) match {
+          case (ConFin(set), ConOne(Num(f)), ConOne(Num(t))) =>
+            set.foldLeft(AbsString.Bot) {
+              case (r, Str(str)) => r + AbsString(str.substring(f.toInt, t.toInt))
+            }
+          case _ => AbsString.Top
+        }
+        (st, State.Bot, AbsValue(res))
+      })
     ), T, F, T),
 
     // TODO toLowerCase
