@@ -32,10 +32,10 @@ object BuiltinArray extends FuncModel(
   protoModel = Some((BuiltinArrayProto, F, F, F)),
 
   props = List(
-    // TODO isArray
+    // 15.4.3.2 Array.isArray(arg)
     NormalProp("isArray", FuncModel(
       name = "Array.isArray",
-      code = EmptyCode(argLen = 1)
+      code = PureCode(argLen = 1, BuiltinArrayHelper.isArray)
     ), T, F, T)
   )
 )
@@ -245,6 +245,20 @@ object BuiltinArrayHelper {
     val retH = state.heap.update(arrLoc, retObj)
     val excSt = state.raiseException(retExcSet)
     (State(retH, state.context), excSt, AbsLoc(arrLoc))
+  }
+
+  def isArray(args: AbsValue, st: State): AbsValue = {
+    val h = st.heap
+    val arg = Helper.propLoad(args, Set(AbsString("0")), h)
+    // 1. If Type(arg) is not Object, return false.
+    val noObjB =
+      if (arg.pvalue.isBottom) AbsBool.Bot
+      else AbsBool.False
+    val obj = h.get(arg.locset)
+    // 2. If the value of the [[Class]] internal property of arg is "Array", then return true.
+    // 3. Return false.
+    val arrB = obj(IClass).value.pvalue.strval === AbsString("Array")
+    noObjB + arrB
   }
 
   ////////////////////////////////////////////////////////////////
