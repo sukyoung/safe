@@ -11,15 +11,19 @@
 
 package kr.ac.kaist.safe.analyzer.models.builtin
 
-import kr.ac.kaist.safe.analyzer.domain.{ IClass, IPrototype }
+import kr.ac.kaist.safe.analyzer.{ TypeConversionHelper, Helper }
+import kr.ac.kaist.safe.analyzer.domain._
+import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.analyzer.models._
+import kr.ac.kaist.safe.util.SystemAddr
 
+// 15.11 Error Objects
 object BuiltinError extends FuncModel(
   name = "Error",
-  // TODO @function
-  code = EmptyCode(1),
-  // TODO @construct
-  construct = Some(EmptyCode()),
+  // 15.11.1 Error(...)
+  code = BasicCode(1, BuiltinErrorHelper.construct),
+  // 15.11.2 new Error(...)
+  construct = Some(BasicCode(1, BuiltinErrorHelper.construct)),
   protoModel = Some((BuiltinErrorProto, F, F, F))
 )
 
@@ -37,6 +41,36 @@ object BuiltinErrorProto extends ObjModel(
     ), T, F, T)
   )
 )
+
+private object BuiltinErrorHelper {
+  // 15.11.1.1, 15.11.2.1
+  def construct(args: AbsValue, st: State): (State, State, AbsValue) = {
+    val message = Helper.propLoad(args, Set(AbsString("0")), st.heap)
+    val defaultError = AbsObjectUtil.Empty
+      .update(IClass, InternalValueUtil(AbsString("Error")))
+      .update(IPrototype, InternalValueUtil(BuiltinErrorProto.loc))
+      .update(IExtensible, InternalValueUtil(AbsBool.True))
+
+    val undefObject =
+      if (message.pvalue.undefval </ AbsUndef.Bot) defaultError
+      else AbsObjectUtil.Bot
+
+    val notUndefObject =
+      if (message </ AbsUndef.Top) {
+        val msg = TypeConversionHelper.ToString(message)
+        defaultError.update("message", AbsDataProp(msg))
+      } else AbsObjectUtil.Bot
+
+    val errorObj = undefObject + notUndefObject
+
+    val errorAddr = SystemAddr("Error<instance>")
+    val st1 = st.oldify(errorAddr)
+    val errorLoc = Loc(errorAddr, Recent)
+    val h2 = st1.heap.update(errorLoc, errorObj)
+
+    (State(h2, st1.context), State.Bot, AbsValue(errorLoc))
+  }
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // Native Errors
