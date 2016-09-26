@@ -516,10 +516,22 @@ object BuiltinStringProto extends ObjModel(
       code = BuiltinStringHelper.toUpperCase
     ), T, F, T),
 
-    // TODO trim
+    // 15.5.4.20 String.prototype.trim()
     NormalProp("trim", FuncModel(
       name = "String.prototype.trim",
-      code = EmptyCode(argLen = 0)
+      code = BasicCode(argLen = 0, (
+        args: AbsValue, st: State
+      ) => {
+        val h = st.heap
+        // 1. Call CheckObjectCoercible passing the this value as its argument.
+        // 2. Let S be the result of calling ToString, giving it the this value as its argument.
+        val thisV = AbsValue(st.context.thisBinding)
+        // 3. Let T be a String value that is a copy of S with both leading and trailing white space
+        //   removed. The definition of white space is the union of WhiteSpace and LineTerminator.
+        // 4. Return T.
+        val s = TypeConversionHelper.ToString(BuiltinStringHelper.getValue(thisV, h)).trim
+        (st, State.Bot, AbsValue(s))
+      })
     ), T, F, T)
   )
 )
