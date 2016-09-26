@@ -64,10 +64,10 @@ object BuiltinArrayProto extends ObjModel(
       code = EmptyCode(argLen = 1)
     ), T, F, T),
 
-    // TODO join
+    // 15.4.4.5 Array.prototype.join(separator)
     NormalProp("join", FuncModel(
       name = "Array.prototype.join",
-      code = EmptyCode(argLen = 1)
+      code = PureCode(argLen = 1, BuiltinArrayHelper.join)
     ), T, F, T),
 
     // TODO pop
