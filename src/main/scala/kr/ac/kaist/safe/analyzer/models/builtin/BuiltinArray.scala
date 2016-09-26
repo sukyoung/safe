@@ -52,10 +52,11 @@ object BuiltinArrayProto extends ObjModel(
       code = PureCode(argLen = 0, BuiltinArrayHelper.toString)
     ), T, F, T),
 
-    // TODO toLocaleString
+    // 15.4.4.3 Array.prototype.toLocaleString ( )
     NormalProp("toLocaleString", FuncModel(
       name = "Array.prototype.toLocaleString",
-      code = EmptyCode(argLen = 0)
+      // TODO unsound!!: not following ECMAScript spec
+      code = PureCode(argLen = 0, BuiltinArrayHelper.toString)
     ), T, F, T),
 
     // TODO concat
