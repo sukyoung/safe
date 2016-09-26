@@ -88,10 +88,10 @@ object BuiltinArrayProto extends ObjModel(
       code = BasicCode(argLen = 0, BuiltinArrayHelper.shift)
     ), T, F, T),
 
-    // TODO slice
+    // 15.4.4.10 Array.prototype.slice(start, end)
     NormalProp("slice", FuncModel(
       name = "Array.prototype.slice",
-      code = EmptyCode(argLen = 2)
+      code = BasicCode(argLen = 2, BuiltinArrayHelper.slice)
     ), T, F, T),
 
     // TODO sort
@@ -246,5 +246,87 @@ object BuiltinArrayHelper {
     }
     val excSt = st.raiseException(excSet)
     (State(retH, st.context), excSt, retV)
+  }
+
+  def slice(args: AbsValue, st: State): (State, State, AbsValue) = {
+    val h = st.heap
+    val thisLoc = st.context.thisBinding
+    val start = Helper.propLoad(args, Set(AbsString("0")), h)
+    val end = Helper.propLoad(args, Set(AbsString("1")), h)
+
+    // XXX: 1. Let O be the result of calling ToObject passing the this value as the argument.
+    // TODO current "this" value only have location. we should change!
+    val obj = h.get(thisLoc)
+    // 2. Let A be a new array created as if by the expression new Array().
+    val arr = AbsObjectUtil.newArrayObject()
+    // 3. Let lenVal be the result of calling the [[Get]] internal method of O with argument "length".
+    val lenVal = obj.Get("length", h)
+    // 4. Let len be ToUint32(lenVal).
+    val len = TypeConversionHelper.ToUInt32(lenVal)
+    // 5. Let relativeStart be ToInteger(start).
+    val relativeStart = TypeConversionHelper.ToInteger(start)
+    // 6. If end is undefined, let relativeEnd be len; else let relativeEnd be ToInteger(end).
+    val undefLen =
+      if (end.pvalue.undefval.isBottom) AbsNumber.Bot
+      else len
+    val numLen =
+      if (end.pvalue.copyWith(undefval = AbsUndef.Bot).isBottom && end.locset.isBottom) AbsNumber.Bot
+      else TypeConversionHelper.ToInteger(end)
+    val relativeEnd = undefLen + numLen
+    val (retObj: AbsObject, retExcSet: Set[Exception]) = (len.getSingle, relativeStart.getSingle, relativeEnd.getSingle) match {
+      case (ConZero(), _, _) | (_, ConZero(), _) | (_, _, ConZero()) => (AbsObjectUtil.Bot, ExcSetEmpty)
+      case (ConOne(Num(l)), ConOne(Num(from)), ConOne(Num(to))) => {
+        val len = l.toInt
+        val relativeStart = from.toInt
+        val relativeEnd = to.toInt
+        def toU(num: Int): Int =
+          if (num < 0) Math.max((len + num), 0)
+          else Math.min(num, len)
+        // 7. If relativeStart is negative, let k be max((len + relativeStart),0); else let k be min(relativeStart, len).
+        val k = toU(relativeStart)
+        // 8. If relativeEnd is negative, let final be max((len + relativeEnd),0); else let final be min(relativeEnd, len).
+        val finalN = toU(relativeEnd)
+        // 9. Let n be 0.
+        // 10. Repeat, while k < final
+        val start = k
+        // XXX: It is not in the spec: but it is needed because we did not modeling the aliasing of 'length' for Array obects.
+        val length =
+          if (start > finalN) 0
+          else finalN - start
+        val (initArr, _) = arr.Put(AbsString("length"), AbsNumber(length), false, h)
+        (start until finalN).foldLeft((initArr, ExcSetEmpty)) {
+          case ((arr, excSet), k) => {
+            val n = k - start
+            // a. Let Pk be ToString(k).
+            val Pk = AbsString(k.toString)
+            // b. Let kPresent be the result of calling the [[HasProperty]] internal method of O with argument Pk.
+            val kPresent = obj.HasProperty(Pk, h)
+            // c. If kPresent is true, then
+            val (retObj, retExcSet) = if (AbsBool.True <= kPresent) {
+              // i. Let kValue be the result of calling the [[Get]] internal method of O with argument Pk.
+              val kValue = obj.Get(Pk, h)
+              // ii. Call the [[DefineOwnProperty]] internal method of A with arguments ToString(n), Property Descriptor
+              //     {[[Value]]: kValue, [[Writable]]: true, [[Enumerable]]: true, [[Configurable]]: true}, and false.
+              val AT = (AbsBool.True, AbsAbsent.Bot)
+              val desc = AbsDesc((kValue, AbsAbsent.Bot), AT, AT, AT)
+              val (retObj, _, excSet) = arr.DefineOwnProperty(AbsString(n.toString), desc, false)
+              (retObj, excSet)
+            } else (AbsObjectUtil.Bot, ExcSetEmpty)
+            val falseObj = if (AbsBool.False <= kPresent) obj else AbsObjectUtil.Bot
+            // d. Increase k by 1.
+            // e. Increase n by 1.
+            (retObj + falseObj, excSet ++ retExcSet)
+          }
+        }
+      }
+      case _ => (arr.update(AbsString.Top, AbsDataProp.Top), HashSet(TypeError))
+    }
+    // 11. Return A.
+    val arrAddr = SystemAddr("Array.prototype.slice<array>")
+    val state = st.oldify(arrAddr)
+    val arrLoc = Loc(arrAddr, Recent)
+    val retH = state.heap.update(arrLoc, retObj)
+    val excSt = state.raiseException(retExcSet)
+    (State(retH, state.context), excSt, AbsLoc(arrLoc))
   }
 }

@@ -50,7 +50,7 @@ object AbsObjectUtil {
       .update("length", AbsDataProp(absLength, atrue, afalse, atrue))
   }
 
-  def newArrayObject(absLength: AbsNumber): AbsObject = {
+  def newArrayObject(absLength: AbsNumber = AbsNumber(0)): AbsObject = {
     Empty
       .update(IClass, InternalValueUtil(AbsString("Array")))
       .update(IPrototype, InternalValueUtil(BuiltinArrayProto.loc))
