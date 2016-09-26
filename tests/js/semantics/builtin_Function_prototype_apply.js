@@ -34,8 +34,20 @@ var __expect4 = 123;
 var __result5 = arg2.x;
 var __expect5 = "ABC";
 
+// ECMAScript 5.1 section 15.3.4.3 Function.prototype.apply(thisArg, argArray)
+// "NOTE: The thisArg value is passed without modification as the this value. 
+// This is a change from Edition 3, where a undefined or null thisArg is 
+// replaced with the global object and ToObject is applied to all other values 
+// and that result is passed as the this value."
+
+// However, most of the browsers returns the object as ECMAScript 3 spec.
+// The test for function f4 follows the ECMAScript 3 style
+
 function f4() { return this; }
 var y = f4.apply(null);
+var __result6 = y;
+var __expect6 = this;
 
-var __result2 = y;
-var __expect2 = this;  // most browsers work in this way
+var z = f4.apply(10);
+var __result7 = z.valueOf();
+var __expect7 = 10;
