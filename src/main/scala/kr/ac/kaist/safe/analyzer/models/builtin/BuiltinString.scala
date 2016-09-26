@@ -258,10 +258,12 @@ object BuiltinStringProto extends ObjModel(
         // XXX: give up the precision! (Room for the analysis precision improvement!)
         val n = (s.gamma, searchStr.gamma, pos.getSingle) match {
           case (ConFin(thisSet), ConFin(searchSet), ConOne(Num(posN))) =>
-            var num: AbsNumber = AbsNumber.Bot
-            for (thisS <- thisSet) for (searchS <- searchSet)
-              num += AbsNumber(thisS.indexOf(searchS, posN.toInt).toDouble)
-            num
+            thisSet.foldLeft(AbsNumber.Bot) {
+              case (num, Str(thisS)) => searchSet.foldLeft(num) {
+                case (num, Str(searchS)) =>
+                  num + AbsNumber(thisS.indexOf(searchS, posN.toInt).toDouble)
+              }
+            }
           case _ =>
             if (s <= AbsString.Bot || searchStr <= AbsString.Bot || pos <= AbsNumber.Bot)
               AbsNumber.Bot
@@ -306,10 +308,12 @@ object BuiltinStringProto extends ObjModel(
         // XXX: give up the precision! (Room for the analysis precision improvement!)
         val n = (s.gamma, searchStr.gamma, pos.getSingle) match {
           case (ConFin(thisSet), ConFin(searchSet), ConOne(Num(posN))) =>
-            var num: AbsNumber = AbsNumber.Bot
-            for (thisS <- thisSet) for (searchS <- searchSet)
-              num += AbsNumber(thisS.lastIndexOf(searchS, posN.toInt).toDouble)
-            num
+            thisSet.foldLeft(AbsNumber.Bot) {
+              case (num, Str(thisS)) => searchSet.foldLeft(num) {
+                case (num, Str(searchS)) =>
+                  num + AbsNumber(thisS.lastIndexOf(searchS, posN.toInt).toDouble)
+              }
+            }
           case _ =>
             if (s <= AbsString.Bot || searchStr <= AbsString.Bot || pos <= AbsNumber.Bot)
               AbsNumber.Bot
@@ -335,10 +339,12 @@ object BuiltinStringProto extends ObjModel(
         val that = TypeConversionHelper.ToString(Helper.propLoad(args, Set(AbsString("0")), h))
         val n = (s.gamma, that.gamma) match {
           case (ConFin(thisSet), ConFin(thatSet)) =>
-            var num: AbsNumber = AbsNumber.Bot
-            for (thisS <- thisSet) for (thatS <- thatSet)
-              num += AbsNumber(thisS.str.compare(thatS).toDouble)
-            num
+            thisSet.foldLeft(AbsNumber.Bot) {
+              case (num, Str(thisS)) => thatSet.foldLeft(num) {
+                case (num, Str(thatS)) =>
+                  num + AbsNumber(thisS.compare(thatS).toDouble)
+              }
+            }
           case _ =>
             if (s <= AbsString.Bot || that <= AbsString.Bot)
               AbsNumber.Bot
