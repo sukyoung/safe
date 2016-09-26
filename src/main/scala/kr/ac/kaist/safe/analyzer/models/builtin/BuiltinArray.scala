@@ -83,10 +83,10 @@ object BuiltinArrayProto extends ObjModel(
       code = BasicCode(argLen = 1, BuiltinArrayHelper.push)
     ), T, F, T),
 
-    // TODO reverse
+    // 15.4.4.8 Array.prototype.reverse()
     NormalProp("reverse", FuncModel(
       name = "Array.prototype.reverse",
-      code = EmptyCode(argLen = 0)
+      code = BasicCode(argLen = 0, BuiltinArrayHelper.reverse)
     ), T, F, T),
 
     // 15.4.4.9 Array.prototype.shift()
@@ -512,6 +512,56 @@ object BuiltinArrayHelper {
     }
     val excSt = st.raiseException(excSet)
     (State(retH, st.context), excSt, retV)
+  }
+
+  def reverse(args: AbsValue, st: State): (State, State, AbsValue) = {
+    val h = st.heap
+    val thisLoc = st.context.thisBinding
+    val (retH, excSet) = thisLoc.foldLeft((h, ExcSetEmpty)) {
+      case ((h, excSet), loc) => {
+        // XXX: 1. Let O be the result of calling ToObject passing the this value as the argument.
+        // TODO current "this" value only have location. we should change!
+        val arr = h.get(loc)
+        // 2. Let lenVal be the result of calling the [[Get]] internal method of O with argument "length".
+        val lenVal = arr.Get("length", h)
+        // 3. Let len be ToUint32(lenVal).
+        val len = TypeConversionHelper.ToUInt32(lenVal)
+        val (retObj: AbsObject, retExcSet: Set[Exception]) = len.getSingle match {
+          case ConZero() => (AbsObjectUtil.Bot, ExcSetEmpty)
+          case ConOne(Num(n)) => {
+            val length = n.toInt
+            val pairList = (0 until length).foldLeft[List[(AbsValue, AbsBool)]](Nil) {
+              case (lst, k) => {
+                val absK = AbsString(k.toString)
+                val kValue = arr.Get(absK, h)
+                val kHas = arr.HasProperty(absK, h)
+                (kValue, kHas) :: lst
+              }
+            }
+            pairList.zipWithIndex.foldLeft((arr, ExcSetEmpty)) {
+              case ((arr, excSet), ((value, has), idx)) => {
+                val absIdx = AbsString(idx.toString)
+                val delObj =
+                  if (AbsBool.False <= has) {
+                    val (delObj, _) = arr.Delete(absIdx)
+                    delObj
+                  } else AbsObjectUtil.Bot
+                val (putObj, putExcSet) =
+                  if (AbsBool.True <= has) {
+                    arr.Put(absIdx, value, true, h)
+                  } else (AbsObjectUtil.Bot, ExcSetEmpty)
+                (delObj + putObj, excSet ++ putExcSet)
+              }
+            }
+          }
+          case ConMany() => (arr.update(AbsString.Number, AbsDataProp.Top), HashSet(TypeError))
+        }
+        val retH = h.update(loc, retObj)
+        (retH, excSet ++ retExcSet)
+      }
+    }
+    val excSt = st.raiseException(excSet)
+    (State(retH, st.context), excSt, thisLoc)
   }
 
   def shift(args: AbsValue, st: State): (State, State, AbsValue) = {
