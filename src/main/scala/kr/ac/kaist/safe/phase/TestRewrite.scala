@@ -28,7 +28,6 @@ case object TestRewrite extends PhaseObj[Program, TestRewriteConfig, Program] {
     safeConfig: SafeConfig,
     config: TestRewriteConfig
   ): Try[Program] = {
-    // hoist
     val rewriter = new Test262Rewriter(pgm)
     var program = rewriter.result
 

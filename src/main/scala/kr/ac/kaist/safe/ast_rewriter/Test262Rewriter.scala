@@ -11,7 +11,6 @@
 
 package kr.ac.kaist.safe.ast_rewriter
 
-import scala.util.Success
 import kr.ac.kaist.safe.nodes.ast._
 import kr.ac.kaist.safe.util.{ NodeUtil => NU }
 
