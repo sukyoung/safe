@@ -72,7 +72,7 @@ object DefaultNumber extends AbsNumberUtil {
       case UInt => "UInt"
       case NUInt => "NUInt"
       case UIntConst(v) => v.toString
-      case NUIntConst(v) => v.toString
+      case NUIntConst(v) => toString(v)
     }
 
     private def toString(d: Double): String = {
