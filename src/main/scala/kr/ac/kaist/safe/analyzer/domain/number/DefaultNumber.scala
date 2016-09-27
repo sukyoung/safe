@@ -72,9 +72,13 @@ object DefaultNumber extends AbsNumberUtil {
       case UInt => "UInt"
       case NUInt => "NUInt"
       case UIntConst(v) => v.toString
-      case NUIntConst(v) => v.toString
+      case NUIntConst(v) => toString(v)
     }
 
+    private def toString(d: Double): String = {
+      if (Math.floor(d) == d && !d.isInfinity) d.toLong.toString
+      else d.toString
+    }
     def toAbsString: AbsString = this match {
       case Top => AbsString.Number
       case Bot => AbsString.Bot
@@ -85,7 +89,7 @@ object DefaultNumber extends AbsNumberUtil {
       case UInt => AbsString.Number
       case NUInt => AbsString.Number
       case UIntConst(v) => AbsString(v.toString)
-      case NUIntConst(v) => AbsString(v.toString)
+      case NUIntConst(v) => AbsString(toString(v))
     }
 
     def toAbsBoolean: AbsBool = this match {

@@ -113,22 +113,22 @@ object BuiltinArrayProto extends ObjModel(
       code = BasicCode(argLen = 2, BuiltinArrayHelper.splice)
     ), T, F, T),
 
-    // TODO unshift
+    // 15.4.4.13 Array.prototype.unshift([item1[, item2[, ... ]]])
     NormalProp("unshift", FuncModel(
       name = "Array.prototype.unshift",
-      code = EmptyCode(argLen = 1)
+      code = BasicCode(argLen = 1, BuiltinArrayHelper.unshift)
     ), T, F, T),
 
-    // TODO indexOf
+    // 15.4.4.14 Array.prototype.indexOf(searchElement[, fromIndex])
     NormalProp("indexOf", FuncModel(
       name = "Array.prototype.indexOf",
-      code = EmptyCode(argLen = 1)
+      code = PureCode(argLen = 1, BuiltinArrayHelper.indexOf)
     ), T, F, T),
 
-    // TODO lastIndexOf
+    // 15.4.4.15 Array.prototype.lastIndexOf(searchElement[, fromIndex ])
     NormalProp("lastIndexOf", FuncModel(
       name = "Array.prototype.lastIndexOf",
-      code = EmptyCode(argLen = 1)
+      code = PureCode(argLen = 1, BuiltinArrayHelper.lastIndexOf)
     ), T, F, T),
 
     // TODO every
@@ -808,5 +808,210 @@ object BuiltinArrayHelper {
     val finalH = state.heap.update(arrLoc, retArr)
     val excSt = state.raiseException(retExcSet)
     (State(finalH, state.context), excSt, AbsLoc(arrLoc))
+  }
+
+  def unshift(args: AbsValue, st: State): (State, State, AbsValue) = {
+    val h = st.heap
+    val argLoc = args.locset
+    val argObj = h.get(args.locset)
+    val argLen = argObj.Get("length", h).pvalue.numval
+
+    val AT = (AbsBool.True, AbsAbsent.Bot)
+    val thisLoc = st.context.thisBinding
+    val Top = AbsObjectUtil
+      .newArrayObject(AbsNumber.Top)
+      .update(AbsString.Number, AbsDataProp.Top)
+    val (retH: Heap, retV: AbsValue, retExcSet: Set[Exception]) = thisLoc.foldLeft((h, AbsValue.Bot, ExcSetEmpty)) {
+      case ((h, value, excSet), loc) => {
+        val thisObj = h.get(loc)
+        val thisLen = TypeConversionHelper.ToUInt32(thisObj.Get("length", h))
+        val (retObj: AbsObject, retV: AbsValue, retExcSet: Set[Exception]) = (thisLen.getSingle, argLen.getSingle) match {
+          case (ConZero(), _) | (_, ConZero()) => (AbsObjectUtil.Bot, AbsValue.Bot, ExcSetEmpty)
+          case (ConOne(Num(tl)), ConOne(Num(al))) => {
+            val thisLen = tl.toInt
+            val argLen = al.toInt
+
+            val newLen = argLen + thisLen
+            val (pushObj: AbsObject, pushExcSet: Set[Exception]) = (thisLen - 1 to 0 by -1).foldLeft((thisObj, ExcSetEmpty)) {
+              case ((obj, excSet), k) => {
+                val kValue = thisObj.Get(k.toString, h)
+                val (newObj, newExcSet) = obj.Put(AbsString((argLen + k).toString), kValue, true, h)
+                (newObj, excSet ++ newExcSet)
+              }
+            }
+            val (newObj: AbsObject, newExcSet: Set[Exception]) = (0 until argLen).foldLeft((pushObj, pushExcSet)) {
+              case ((obj, excSet), k) => {
+                val kValue = argObj.Get(k.toString, h)
+                val (newObj, newExcSet) = obj.Put(AbsString(k.toString), kValue, true, h)
+                (newObj, excSet ++ newExcSet)
+              }
+            }
+            val newAbsLen = AbsNumber(newLen)
+            val (lenObj, _) = newObj.Put(AbsString("length"), newAbsLen, false, h)
+            (lenObj, AbsValue(newAbsLen), newExcSet)
+          }
+          case _ => (Top, AbsValue.Top, HashSet(TypeError))
+        }
+        val retH = h.update(loc, retObj)
+        (retH, value + retV, excSet ++ retExcSet)
+      }
+    }
+    val excSt = st.raiseException(retExcSet)
+    (State(retH, st.context), excSt, retV)
+  }
+
+  def indexOf(args: AbsValue, st: State): AbsValue = {
+    val h = st.heap
+    val thisLoc = st.context.thisBinding
+    val searchElement = Helper.propLoad(args, Set(AbsString("0")), h)
+    val fromIndex = Helper.propLoad(args, Set(AbsString("1")), h)
+    thisLoc.foldLeft[AbsNumber](AbsNumber.Bot)((num, loc) => {
+      // XXX: 1. Let O be the result of calling ToObject passing the this value as the argument.
+      // TODO current "this" value only have location. we should change!
+      val thisObj = h.get(loc)
+      // 2. Let lenValue be the result of calling the [[Get]] internal method of O with the argument "length".
+      val lenValue = thisObj.Get("length", h)
+      // 3. Let len be ToUint32(lenValue).
+      val len = TypeConversionHelper.ToUInt32(lenValue)
+      val retN: AbsNumber = len.getSingle match {
+        case ConZero() => AbsNumber.Bot
+        // 4. If len is 0, return -1.
+        case ConOne(Num(0)) => AbsNumber(-1)
+        case ConOne(Num(l)) => {
+          val len = l.toInt
+          // 5. If argument fromIndex was passed let n be ToInteger(fromIndex); else let n be 0.
+          val undefN =
+            if (fromIndex.pvalue.undefval.isBottom) AbsNumber.Bot
+            else AbsNumber(0)
+          val otherN =
+            if (fromIndex.pvalue.copyWith(undefval = AbsUndef.Bot).isBottom && fromIndex.locset.isBottom) AbsNumber.Bot
+            else TypeConversionHelper.ToInteger(fromIndex)
+          val n = undefN + otherN
+          n.getSingle match {
+            case ConZero() => AbsNumber.Bot
+            case ConOne(Num(num)) => {
+              val n = num.toInt
+              // 6. If n ≥ len, return -1.
+              if (n >= len) AbsNumber(-1)
+              else {
+                val k =
+                  // 7. If n ≥ 0, then
+                  //   a. Let k be n.
+                  if (n >= 0) n
+                  // 8. Else, n < 0
+                  else {
+                    //   a. Let k be len - abs(n).
+                    val k = len - Math.abs(n)
+                    //   b. If k is less than 0, then let k be 0.
+                    if (k < 0) 0 else k
+                  }
+                // 9. Repeat, while k < len
+                val (retN, retB) = (k until len).foldLeft[(AbsNumber, AbsBool)]((AbsNumber.Bot, AbsBool.False)) {
+                  case ((num, b), k) => {
+                    // a. Let kPresent be the result of calling the [[HasProperty]] internal method of O with argument ToString(k).
+                    val kPresent = thisObj.HasProperty(AbsString(k.toString), h)
+                    // b. If kPresent is true, then
+                    // i. Let elementK be the result of calling the [[Get]] internal method of O with the argument
+                    //    ToString(k).
+                    val elementK = thisObj.Get(k.toString, h)
+                    // ii. Let same be the result of applying the Strict Equality Comparison Algorithm to
+                    //     searchElement and elementK.
+                    // XXX: unsound!: only check between primtive values becuase we do not have any strict equality for (Loc/Obj)
+                    val same = elementK.pvalue === searchElement.pvalue
+                    // iii. If same is true, return k.
+                    val retN = if (AbsBool.False <= b && AbsBool.True <= kPresent && AbsBool.True <= same) {
+                      AbsNumber(k)
+                    } else AbsNumber.Bot
+                    // c. Increase k by 1.
+                    (num + retN, b || same)
+                  }
+                }
+                // 10. Return -1.
+                val notFound =
+                  if (AbsBool.False <= retB) AbsNumber(-1)
+                  else AbsNumber.Bot
+                retN + notFound
+              }
+            }
+            case ConMany() => AbsNumber.Top
+          }
+        }
+        case ConMany() => AbsNumber.Top
+      }
+      num + retN
+    })
+  }
+
+  def lastIndexOf(args: AbsValue, st: State): AbsValue = {
+    val h = st.heap
+    val thisLoc = st.context.thisBinding
+    val searchElement = Helper.propLoad(args, Set(AbsString("0")), h)
+    val fromIndex = Helper.propLoad(args, Set(AbsString("1")), h)
+    thisLoc.foldLeft[AbsNumber](AbsNumber.Bot)((num, loc) => {
+      // XXX: 1. Let O be the result of calling ToObject passing the this value as the argument.
+      // TODO current "this" value only have location. we should change!
+      val thisObj = h.get(loc)
+      // 2. Let lenValue be the result of calling the [[Get]] internal method of O with the argument "length".
+      val lenValue = thisObj.Get("length", h)
+      // 3. Let len be ToUint32(lenValue).
+      val len = TypeConversionHelper.ToUInt32(lenValue)
+      val retN: AbsNumber = len.getSingle match {
+        case ConZero() => AbsNumber.Bot
+        // 4. If len is 0, return -1.
+        case ConOne(Num(0)) => AbsNumber(-1)
+        case ConOne(Num(l)) => {
+          val len = l.toInt
+          // 5. If argument fromIndex was passed let n be ToInteger(fromIndex); else let n be 0.
+          val undefN =
+            if (fromIndex.pvalue.undefval.isBottom) AbsNumber.Bot
+            else AbsNumber(len - 1)
+          val otherN =
+            if (fromIndex.pvalue.copyWith(undefval = AbsUndef.Bot).isBottom && fromIndex.locset.isBottom) AbsNumber.Bot
+            else TypeConversionHelper.ToInteger(fromIndex)
+          val n = undefN + otherN
+          n.getSingle match {
+            case ConZero() => AbsNumber.Bot
+            case ConOne(Num(num)) => {
+              val n = num.toInt
+              val k =
+                // 6. If n ≥ 0,then let k be min(n, len–1).
+                if (n >= 0) Math.min(n, len - 1)
+                // 7. Else, n<0
+                //   a. Let k be len - abs(n).
+                else len - Math.abs(n)
+              // 8. Repeat, while k ≥ 0
+              val (retN, retB) = (k to 0 by -1).foldLeft[(AbsNumber, AbsBool)]((AbsNumber.Bot, AbsBool.False)) {
+                case ((num, b), k) => {
+                  // a. Let kPresent be the result of calling the [[HasProperty]] internal method of O with argument ToString(k).
+                  val kPresent = thisObj.HasProperty(AbsString(k.toString), h)
+                  // b. If kPresent is true, then
+                  // i. Let elementK be the result of calling the [[Get]] internal method of O with the argument
+                  //    ToString(k).
+                  val elementK = thisObj.Get(k.toString, h)
+                  // ii. Let same be the result of applying the Strict Equality Comparison Algorithm to
+                  //     searchElement and elementK.
+                  // XXX: unsound!: only check between primtive values becuase we do not have any strict equality for (Loc/Obj)
+                  val same = elementK.pvalue === searchElement.pvalue
+                  // iii. If same is true, return k.
+                  val retN = if (AbsBool.False <= b && AbsBool.True <= kPresent && AbsBool.True <= same) {
+                    AbsNumber(k)
+                  } else AbsNumber.Bot
+                  // c. Decrease k by 1.
+                  (num + retN, b || same)
+                }
+              }
+              // 9. Return -1.
+              val notFound =
+                if (AbsBool.False <= retB) AbsNumber(-1)
+                else AbsNumber.Bot
+              retN + notFound
+            }
+            case ConMany() => AbsNumber.Top
+          }
+        }
+        case ConMany() => AbsNumber.Top
+      }
+      num + retN
+    })
   }
 }

@@ -192,12 +192,12 @@ object BuiltinRangeErrorProto extends ObjModel(
 )
 
 // ReferenceError
-object BuiltinReferenceError extends FuncModel(
+object BuiltinRefError extends FuncModel(
   name = "ReferenceError",
   // @function
   code = BasicCode(
     1,
-    BuiltinErrorHelper.construct("ReferenceError", BuiltinReferenceErrorProto.loc)
+    BuiltinErrorHelper.construct("ReferenceError", BuiltinRefErrorProto.loc)
   ),
   props = List(
     NormalProp("name", PrimModel("ReferenceError"), T, F, T)
@@ -205,12 +205,12 @@ object BuiltinReferenceError extends FuncModel(
   // @construct
   construct = Some(BasicCode(
     1,
-    BuiltinErrorHelper.construct("ReferenceError", BuiltinReferenceErrorProto.loc)
+    BuiltinErrorHelper.construct("ReferenceError", BuiltinRefErrorProto.loc)
   )),
-  protoModel = Some((BuiltinReferenceErrorProto, F, F, F))
+  protoModel = Some((BuiltinRefErrorProto, F, F, F))
 )
 
-object BuiltinReferenceErrorProto extends ObjModel(
+object BuiltinRefErrorProto extends ObjModel(
   name = "ReferenceError.prototype",
   props = List(
     InternalProp(IClass, PrimModel("Error")),

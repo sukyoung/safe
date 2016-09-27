@@ -29,6 +29,7 @@ trait AbsPValue extends AbsDomain[PValue, AbsPValue] {
   val numval: AbsNumber
   val strval: AbsString
 
+  def ===(that: AbsPValue): AbsBool
   def typeCount: Int
   def typeKinds: String
   def toStringSet: Set[AbsString]
@@ -143,6 +144,15 @@ object DefaultPValue extends AbsPValueUtil {
         case Nil => "⊥(primitive value)"
         case _ => lst.mkString(", ")
       }
+    }
+
+    def ===(that: AbsPValue): AbsBool = {
+      val right = check(that)
+      (this.undefval === right.undefval) +
+        (this.nullval === right.nullval) +
+        (this.boolval === right.boolval) +
+        (this.numval === right.numval) +
+        (this.strval === right.strval)
     }
 
     def typeCount: Int = {

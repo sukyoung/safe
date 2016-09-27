@@ -103,7 +103,7 @@ object BuiltinGlobal extends ObjModel(
     NormalProp("Error", BuiltinError, T, F, T),
     NormalProp("EvalError", BuiltinEvalError, T, F, T),
     NormalProp("RangeError", BuiltinRangeError, T, F, T),
-    NormalProp("ReferenceError", BuiltinReferenceError, T, F, T),
+    NormalProp("ReferenceError", BuiltinRefError, T, F, T),
     NormalProp("SyntaxError", BuiltinSyntaxError, T, F, T),
     NormalProp("TypeError", BuiltinTypeError, T, F, T),
     NormalProp("URIError", BuiltinURIError, T, F, T),
