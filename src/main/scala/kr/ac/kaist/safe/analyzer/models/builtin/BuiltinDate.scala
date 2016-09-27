@@ -11,14 +11,67 @@
 
 package kr.ac.kaist.safe.analyzer.models.builtin
 
-import kr.ac.kaist.safe.analyzer.domain.{ IClass, IPrototype }
+import scala.collection.immutable.HashSet
+import kr.ac.kaist.safe.analyzer.domain.{ IClass, IPrimitiveValue, IPrototype }
+import kr.ac.kaist.safe.analyzer.domain._
+import kr.ac.kaist.safe.analyzer.domain.Utils._
+import kr.ac.kaist.safe.analyzer._
 import kr.ac.kaist.safe.analyzer.models._
+import kr.ac.kaist.safe.util.SystemAddr
 
-// TODO Date
+object BuiltinDateHelper {
+  val constructor = BasicCode(argLen = 1, code = (
+    args: AbsValue, st: State
+  ) => {
+    val h = st.heap
+    val addr = SystemAddr("Date<instance>")
+    val state = st.oldify(addr)
+    val loc = Loc(addr, Recent)
+    val newObj = AbsObjectUtil.newObject(BuiltinDateProto.loc)
+    val argL = Helper.propLoad(args, Set(AbsString("length")), h).pvalue.numval
+    val absNum = argL.getSingle match {
+      // 15.9.3.2 new Date(value)
+      case ConOne(Num(n)) if n == 1 =>
+        // 1. Let v be ToPrimitive(value).
+        val v = TypeConversionHelper.ToPrimitive(Helper.propLoad(args, Set(AbsString("0")), h))
+        // 2. If Type(v) is String, then
+        AbsBool(AbsString("string") <= TypeConversionHelper.typeTag(v, h)).map[AbsNumber](
+          //   a. Parse v as a date, in exactly the same manner as for the parse method (15.9.4.2);
+          //      let V be the time value for this date.
+          // XXX: give up the precision! (Room for the analysis precision improvement!)
+          thenV = AbsNumber.Top,
+          // 3. Else, let V be ToNumber(v).
+          elseV = TypeConversionHelper.ToNumber(v)
+        // 4. Set the [[PrimitiveValue]] internal property of the newly constructed object
+        // to TimeClip(V) and return.
+        )(AbsNumber)
+      // 15.9.3.1 new Date( year, month [, date [, hours [, minutes [, seconds [, ms ]]]]] )
+      // 15.9.3.3 new Date()
+      // XXX: give up the precision! (Room for the analysis precision improvement!)
+      case _ => AbsNumber.Top
+    }
+    val newObj2 = newObj
+      .update(IClass, InternalValueUtil(AbsString("Date")))
+      .update(IPrimitiveValue, InternalValueUtil(absNum))
+    val heap = state.heap.update(loc, newObj2)
+    (State(heap, state.context), State.Bot, AbsValue(loc))
+  })
+}
+
+// 15.9 Date Objects
 object BuiltinDate extends FuncModel(
   name = "Date",
-  // TODO @function
-  code = EmptyCode(7),
+
+  // 15.9.2 The Date Constructor Called as a Function
+  // 15.9.2.1 Date ([year [, month [, date [, hours [, minutes [, seconds [, ms]]]]]]])
+  code = PureCode(argLen = 7, code = (args: AbsValue, st: State) => AbsString.Top),
+
+  // 15.9.2 The Date Constructor
+  construct = Some(BuiltinDateHelper.constructor),
+
+  // 15.9.4.1 Date.prototype
+  protoModel = Some((BuiltinDateProto, F, F, F)),
+
   props = List(
     // TODO parse
     NormalProp("parse", FuncModel(
@@ -32,15 +85,15 @@ object BuiltinDate extends FuncModel(
       code = EmptyCode(argLen = 7)
     ), T, F, T),
 
-    // TODO now
+    // 15.9.4.4 Date.now()
     NormalProp("now", FuncModel(
       name = "Date.now",
-      code = EmptyCode(argLen = 0)
+      code = PureCode(
+        argLen = 0,
+        code = (args: AbsValue, st: State) => AbsNumber.Top
+      )
     ), T, F, T)
-  ),
-  // TODO @construct
-  construct = Some(EmptyCode()),
-  protoModel = Some((BuiltinDateProto, F, F, F))
+  )
 )
 
 object BuiltinDateProto extends ObjModel(
