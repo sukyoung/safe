@@ -98,9 +98,18 @@ object BuiltinDate extends FuncModel(
 
 object BuiltinDateProto extends ObjModel(
   name = "Date.prototype",
+
+  // 15.9.5 Properties of the Date Prototype Object
   props = List(
     InternalProp(IClass, PrimModel("Date")),
-    InternalProp(IPrototype, PrimModel(Double.NaN)),
+
+    InternalProp(IPrimitiveValue, PrimModel(Double.NaN)),
+
+    // 15.9.5.1 Date.prototype.constructor
+    NormalProp("constructor", FuncModel(
+      name = "Date.prototype.constructor",
+      code = BuiltinDateHelper.constructor
+    ), T, F, T),
 
     // TODO toString
     NormalProp("toString", FuncModel(
