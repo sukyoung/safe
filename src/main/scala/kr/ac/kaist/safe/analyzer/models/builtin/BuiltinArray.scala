@@ -107,10 +107,10 @@ object BuiltinArrayProto extends ObjModel(
       code = EmptyCode(argLen = 1)
     ), T, F, T),
 
-    // TODO splice
+    // 15.4.4.12 Array.prototype.splice(start, deleteCount[, item1[, item2[, ... ]]])
     NormalProp("splice", FuncModel(
       name = "Array.prototype.splice",
-      code = EmptyCode(argLen = 2)
+      code = BasicCode(argLen = 2, BuiltinArrayHelper.splice)
     ), T, F, T),
 
     // TODO unshift
@@ -716,5 +716,97 @@ object BuiltinArrayHelper {
     val retH = state.heap.update(arrLoc, retObj)
     val excSt = state.raiseException(retExcSet)
     (State(retH, state.context), excSt, AbsLoc(arrLoc))
+  }
+
+  def splice(args: AbsValue, st: State): (State, State, AbsValue) = {
+    val h = st.heap
+    val start = Helper.propLoad(args, Set(AbsString("0")), h)
+    val deleteCount = Helper.propLoad(args, Set(AbsString("1")), h)
+
+    val argLoc = args.locset
+    val argObj = h.get(args.locset)
+    val argLen = argObj.Get("length", h).pvalue.numval
+
+    val relativeStart = TypeConversionHelper.ToInteger(start)
+    val relativeDeleteCount = TypeConversionHelper.ToInteger(deleteCount)
+
+    val AT = (AbsBool.True, AbsAbsent.Bot)
+    val thisLoc = st.context.thisBinding
+    val Top = AbsObjectUtil
+      .newArrayObject(AbsNumber.Top)
+      .update(AbsString.Number, AbsDataProp.Top)
+    val (retH: Heap, retArr: AbsObject, retExcSet: Set[Exception]) = thisLoc.foldLeft((h, AbsObjectUtil.Bot, ExcSetEmpty)) {
+      case ((h, arr, excSet), loc) => {
+        val thisObj = h.get(loc)
+        val thisLen = TypeConversionHelper.ToUInt32(thisObj.Get("length", h))
+        val (retObj: AbsObject, retArr: AbsObject, retExcSet: Set[Exception]) = (
+          thisLen.getSingle,
+          argLen.getSingle,
+          relativeStart.getSingle,
+          relativeDeleteCount.getSingle
+        ) match {
+            case (ConZero(), _, _, _)
+            | (_, ConZero(), _, _)
+            | (_, _, ConZero(), _)
+            | (_, _, _, ConZero()) => (AbsObjectUtil.Bot, AbsObjectUtil.Bot, ExcSetEmpty)
+            case (ConOne(Num(tl)), ConOne(Num(al)), ConOne(Num(rs)), ConOne(Num(rd))) => {
+              val thisLen = tl.toInt
+              val argLen = al.toInt
+              val relativeStart = rs.toInt
+              val relativeDeleteCount = rd.toInt
+              val actualStart =
+                if (relativeStart < 0) Math.max((thisLen + relativeStart), 0)
+                else Math.min(relativeStart, thisLen)
+              val actualDeleteCount = Math.min(Math.max(relativeDeleteCount, 0), thisLen - actualStart)
+              val arr = AbsObjectUtil.newArrayObject(AbsNumber(actualDeleteCount))
+              val retArr: AbsObject = (0 until actualDeleteCount).foldLeft(arr)((arr, k) => {
+                val kValue = thisObj.Get((actualStart + k).toString, h)
+                val desc = AbsDesc((kValue, AbsAbsent.Bot), AT, AT, AT)
+                val (newArr, _, _) = arr.DefineOwnProperty(AbsString(k.toString), desc, false)
+                newArr
+              })
+              val newLen = Math.max(argLen - 2, 0)
+              val remainFrom = actualStart + actualDeleteCount
+              val remainTo = actualStart + newLen
+              val remainLen = thisLen - (actualStart + actualDeleteCount)
+              val (remainObj: AbsObject, remainExcSet: Set[Exception]) = (0 until remainLen).foldLeft((thisObj, ExcSetEmpty)) {
+                case ((obj, excSet), k) => {
+                  val kValue = thisObj.Get((remainFrom + k).toString, h)
+                  val (newObj, newExcSet) = obj.Put(AbsString((remainTo + k).toString), kValue, true, h)
+                  (newObj, excSet ++ newExcSet)
+                }
+              }
+              val (newObj: AbsObject, newExcSet: Set[Exception]) = (0 until newLen).foldLeft((remainObj, remainExcSet)) {
+                case ((obj, excSet), k) => {
+                  val kValue = argObj.Get((k + 2).toString, h)
+                  val (newObj, newExcSet) = obj.Put(AbsString((actualStart + k).toString), kValue, true, h)
+                  (newObj, excSet ++ newExcSet)
+                }
+              }
+              val length = remainTo + remainLen
+              val delObj: AbsObject =
+                if (length < thisLen) (length until thisLen).foldLeft(newObj) {
+                  case (obj, k) => {
+                    val (delArr, _) = obj.Delete(k.toString) // XXX: missing second argument Throw = true.
+                    delArr
+                  }
+                }
+                else newObj
+              val (lenObj, _) = delObj.Put(AbsString("length"), AbsNumber(length), false, h)
+              (lenObj, retArr, newExcSet)
+            }
+            case _ => (Top, Top, HashSet(TypeError))
+          }
+        val retH = h.update(loc, retObj)
+        (retH, arr + retArr, excSet ++ retExcSet)
+      }
+    }
+    val arrAddr = SystemAddr("Array.prototype.splice<array>")
+    val newSt = State(retH, st.context)
+    val state = newSt.oldify(arrAddr)
+    val arrLoc = Loc(arrAddr, Recent)
+    val finalH = state.heap.update(arrLoc, retArr)
+    val excSt = state.raiseException(retExcSet)
+    (State(finalH, state.context), excSt, AbsLoc(arrLoc))
   }
 }
