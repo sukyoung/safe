@@ -19,6 +19,7 @@ import kr.ac.kaist.safe.analyzer.domain.State
 
 import scala.io.Source
 import scala.util.{ Failure, Success, Try }
+import scala.util.Random.shuffle
 import kr.ac.kaist.safe.analyzer.models.builtin.BuiltinGlobal
 import kr.ac.kaist.safe.nodes.ast.Program
 import kr.ac.kaist.safe.nodes.ir.IRRoot
@@ -34,8 +35,14 @@ object AnalyzeTest extends Tag("AnalyzeTest")
 
 class CoreTest extends FlatSpec {
   val SEP = File.separator
-  val jsDir = BASE_DIR + SEP + "tests/js/success"
-  val resDir = BASE_DIR + SEP + "tests/result/success"
+  val jsDir = BASE_DIR + SEP + "tests/cfg/js/success"
+  val resDir = BASE_DIR + SEP + "tests/cfg/result/success"
+  def walkTree(file: File): Iterable[File] = {
+    val children = new Iterable[File] {
+      def iterator: Iterator[File] = if (file.isDirectory) file.listFiles.iterator else Iterator.empty
+    }
+    Seq(file) ++: children.flatMap(walkTree(_))
+  }
   val jsFilter = new FilenameFilter() {
     def accept(dir: File, name: String): Boolean = name.endsWith(".js")
   }
@@ -144,11 +151,13 @@ class CoreTest extends FlatSpec {
     }
   }
 
-  val analyzerTestDir = BASE_DIR + SEP + "tests/js/semantics"
+  val analyzerTestDir = BASE_DIR + SEP + "tests/semantics/"
   val analyzeConfig = AnalyzeConfig(testMode = true)
-  for (filename <- scala.util.Random.shuffle(new File(analyzerTestDir).list(jsFilter).toSeq)) {
+  val prefixLen = analyzerTestDir.length
+  for (file <- shuffle(walkTree(new File(analyzerTestDir))) if file.getName.endsWith(".js")) {
+    val jsName = file.toString
+    val filename = jsName.substring(prefixLen)
     registerTest("[Analyze]" + filename, AnalyzeTest) {
-      val jsName = analyzerTestDir + SEP + filename
       val safeConfig = SafeConfig(CmdBase, List(jsName))
       val cfg = CmdCFGBuild(List(jsName))
       val analysis = cfg.flatMap(Analyze(_, safeConfig, analyzeConfig))
