@@ -113,10 +113,10 @@ object BuiltinArrayProto extends ObjModel(
       code = BasicCode(argLen = 2, BuiltinArrayHelper.splice)
     ), T, F, T),
 
-    // TODO unshift
+    // 15.4.4.13 Array.prototype.unshift ( [ item1 [ , item2 [ , ... ] ] ] )
     NormalProp("unshift", FuncModel(
       name = "Array.prototype.unshift",
-      code = EmptyCode(argLen = 1)
+      code = BasicCode(argLen = 1, BuiltinArrayHelper.unshift)
     ), T, F, T),
 
     // TODO indexOf
@@ -808,5 +808,55 @@ object BuiltinArrayHelper {
     val finalH = state.heap.update(arrLoc, retArr)
     val excSt = state.raiseException(retExcSet)
     (State(finalH, state.context), excSt, AbsLoc(arrLoc))
+  }
+
+  def unshift(args: AbsValue, st: State): (State, State, AbsValue) = {
+    val h = st.heap
+    val argLoc = args.locset
+    val argObj = h.get(args.locset)
+    val argLen = argObj.Get("length", h).pvalue.numval
+
+    val AT = (AbsBool.True, AbsAbsent.Bot)
+    val thisLoc = st.context.thisBinding
+    val Top = AbsObjectUtil
+      .newArrayObject(AbsNumber.Top)
+      .update(AbsString.Number, AbsDataProp.Top)
+    val (retH: Heap, retV: AbsValue, retExcSet: Set[Exception]) = thisLoc.foldLeft((h, AbsValue.Bot, ExcSetEmpty)) {
+      case ((h, value, excSet), loc) => {
+        val thisObj = h.get(loc)
+        val thisLen = TypeConversionHelper.ToUInt32(thisObj.Get("length", h))
+        val (retObj: AbsObject, retV: AbsValue, retExcSet: Set[Exception]) = (thisLen.getSingle, argLen.getSingle) match {
+          case (ConZero(), _) | (_, ConZero()) => (AbsObjectUtil.Bot, AbsValue.Bot, ExcSetEmpty)
+          case (ConOne(Num(tl)), ConOne(Num(al))) => {
+            val thisLen = tl.toInt
+            val argLen = al.toInt
+
+            val newLen = argLen + thisLen
+            val (pushObj: AbsObject, pushExcSet: Set[Exception]) = (thisLen - 1 to 0 by -1).foldLeft((thisObj, ExcSetEmpty)) {
+              case ((obj, excSet), k) => {
+                val kValue = thisObj.Get(k.toString, h)
+                val (newObj, newExcSet) = obj.Put(AbsString((argLen + k).toString), kValue, true, h)
+                (newObj, excSet ++ newExcSet)
+              }
+            }
+            val (newObj: AbsObject, newExcSet: Set[Exception]) = (0 until argLen).foldLeft((pushObj, pushExcSet)) {
+              case ((obj, excSet), k) => {
+                val kValue = argObj.Get(k.toString, h)
+                val (newObj, newExcSet) = obj.Put(AbsString(k.toString), kValue, true, h)
+                (newObj, excSet ++ newExcSet)
+              }
+            }
+            val newAbsLen = AbsNumber(newLen)
+            val (lenObj, _) = newObj.Put(AbsString("length"), newAbsLen, false, h)
+            (lenObj, AbsValue(newAbsLen), newExcSet)
+          }
+          case _ => (Top, AbsValue.Top, HashSet(TypeError))
+        }
+        val retH = h.update(loc, retObj)
+        (retH, value + retV, excSet ++ retExcSet)
+      }
+    }
+    val excSt = st.raiseException(retExcSet)
+    (State(retH, st.context), excSt, retV)
   }
 }
