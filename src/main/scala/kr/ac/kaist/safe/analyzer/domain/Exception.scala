@@ -31,7 +31,7 @@ sealed abstract class Exception {
       case Error => BuiltinError.loc
       case EvalError => BuiltinEvalError.loc
       case RangeError => BuiltinRangeError.loc
-      case ReferenceError => BuiltinReferenceError.loc
+      case ReferenceError => BuiltinRefError.loc
       case SyntaxError => BuiltinSyntaxError.loc
       case TypeError => BuiltinTypeError.loc
       case URIError => BuiltinURIError.loc
