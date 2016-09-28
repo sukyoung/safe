@@ -31,8 +31,20 @@ var __expect4 = 3
 var __result5 = x4[3]
 var __expect5 = undefined
 
-var x = new Array();
-var __result1 = x.length
+var x5 = new Array();
+var __result1 = x5.length
 var __expect1 = 0
-var __result2 = x[0]
+var __result2 = x5[0]
 var __expect2 = undefined
+
+function f0() {}
+function f1(input) {
+  var w = new Array(input.length / 4);
+  w[0] = new Array();
+  return w[0][0];
+}
+function f2() {
+  return f1(new Array());
+}
+var __result1 = f2();
+var __expect1 = undefined;

@@ -3,15 +3,15 @@ var __result2;
 
 var o;
 if (__TOP) {
-	o = {};
+  o = {};
 } else {
-	o = Object;
+  o = function() {};
 }
 
 try {
-	__result1 = 1 instanceof o;
+  __result1 = 1 instanceof o;
 } catch(e) {
-	__result2 = e;
+  __result2 = e;
 }
 
 var __expect1 = false;

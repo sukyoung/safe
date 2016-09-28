@@ -1,5 +1,5 @@
 function f() {
-    if (Math.random()) aaa = 123;
+  if (__TOP) aaa = 123;
 }
 f();
 

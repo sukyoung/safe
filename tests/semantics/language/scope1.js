@@ -20,7 +20,7 @@ function g() {
 foo = f;
 
 function main() {
-    if (Math.random()) foo();
+    if (__TOP) foo();
 }
 
 main();

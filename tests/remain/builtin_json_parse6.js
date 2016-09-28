@@ -4,7 +4,7 @@ var obj = JSON.parse(data);
 var __result1;
 var __expect1 = "TypeError";
 try {
-	obj.foo();
+  obj.foo();
 } catch(e) {
-	__result1 = e.name;
+  __result1 = e.name;
 }
