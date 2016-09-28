@@ -341,7 +341,8 @@ object Helper {
         (leftNumVal === rightPV.numval)
     }
     val b6 = leftPV.boolval.isBottom match {
-      case true =>
+      case true => AbsBool.Bot
+      case false =>
         val leftNumVal = leftPV.boolval.toAbsNumber
         val b61 = rightPV.numval.fold(AbsBool.Bot)(rightNumVal => {
           (leftNumVal === rightNumVal)
@@ -358,11 +359,11 @@ object Helper {
         val b64 = rightPV.undefval.fold(AbsBool.Bot)(_ => afalse)
         val b65 = rightPV.nullval.fold(AbsBool.Bot)(_ => afalse)
         b61 + b62 + b63 + b64 + b65
-      case false => AbsBool.Bot
     }
 
     val b7 = rightPV.boolval.isBottom match {
-      case true =>
+      case true => AbsBool.Bot
+      case false =>
         val rightNumVal = rightPV.boolval.toAbsNumber
         val b71 = leftPV.numval.fold(AbsBool.Bot)(leftNumVal => {
           (leftNumVal === rightNumVal)
@@ -379,7 +380,6 @@ object Helper {
         val b74 = leftPV.undefval.fold(AbsBool.Bot)(_ => afalse)
         val b75 = leftPV.undefval.fold(AbsBool.Bot)(_ => afalse)
         b71 + b72 + b73 + b74 + b75
-      case false => AbsBool.Bot
     }
 
     val b8 = right.locset.fold(AbsBool.Bot) {
@@ -408,18 +408,21 @@ object Helper {
         b91 + b92
     }
 
-    def testUndefNull(pv: AbsPValue, locset: AbsLoc): Boolean = (pv.undefval.isBottom, pv.nullval.isBottom) match {
-      case (true, true) => false
-      case _ => (pv.numval.isBottom, pv.strval.isBottom, locset.isBottom) match {
-        case (true, true, true) => false
-        case _ => true
-      }
+    def testUndefNull(value: AbsValue): AbsBool = {
+      val pvalue = value.pvalue
+      val locset = value.locset
+      val trueV =
+        if (pvalue.undefval.isTop || pvalue.nullval.isTop) atrue
+        else AbsBool.Bot
+      val falseV =
+        if (!pvalue.copyWith(undefval = AbsUndef.Bot, nullval = AbsNull.Bot).isBottom || !locset.isBottom) afalse
+        else AbsBool.Bot
+      trueV + falseV
     }
 
-    val b10 = (testUndefNull(leftPV, left.locset), testUndefNull(rightPV, right.locset)) match {
-      case (false, false) => AbsBool.Bot
-      case _ => afalse
-    }
+    val b10 =
+      if (AbsBool.True <= (testUndefNull(left) xor testUndefNull(right))) afalse
+      else AbsBool.Bot
 
     AbsValue(b1 + b2 + b3 + b4 + b5 + b6 + b7 + b8 + b9 + b10)
   }

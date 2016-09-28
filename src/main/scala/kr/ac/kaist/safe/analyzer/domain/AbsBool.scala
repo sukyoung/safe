@@ -24,6 +24,7 @@ trait AbsBool extends AbsDomain[Bool, AbsBool] {
   def negate: AbsBool
   def &&(that: AbsBool): AbsBool
   def ||(that: AbsBool): AbsBool
+  def xor(that: AbsBool): AbsBool
 
   def toAbsNumber: AbsNumber
   def toAbsString: AbsString

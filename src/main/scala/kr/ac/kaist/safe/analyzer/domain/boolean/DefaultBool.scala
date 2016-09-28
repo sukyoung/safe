@@ -114,6 +114,13 @@ object DefaultBool extends AbsBoolUtil {
       case _ => Top
     }
 
+    def xor(that: AbsBool): Dom = (this, check(that)) match {
+      case (Bot, _) | (_, Bot) => Bot
+      case (True, False) | (False, True) => True
+      case (False, False) | (True, True) => False
+      case _ => Top
+    }
+
     def map[T <: Domain[T]](
       thenV: => T,
       elseV: => T
