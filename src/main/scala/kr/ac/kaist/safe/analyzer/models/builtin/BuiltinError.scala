@@ -85,7 +85,7 @@ private object BuiltinErrorHelper {
   }
 
   def toString(args: AbsValue, st: State): (State, State, AbsValue) = {
-    val thisBinding = st.context.thisBinding
+    val thisBinding = st.context.thisBinding.locset
     // 2. If Type(O) is not Object, throw a TypeError exception.
     val excSet =
       if (thisBinding.isBottom) ExcSetEmpty + TypeError

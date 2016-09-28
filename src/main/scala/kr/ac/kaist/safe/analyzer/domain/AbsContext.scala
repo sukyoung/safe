@@ -55,11 +55,11 @@ trait AbsContext extends AbsDomain[Context, AbsContext] {
 
   def setOldAddrSet(old: OldAddrSet): AbsContext
 
-  def setThisBinding(thisBinding: AbsLoc): AbsContext
+  def setThisBinding(thisBinding: AbsValue): AbsContext
 
   def old: OldAddrSet
 
-  def thisBinding: AbsLoc
+  def thisBinding: AbsValue
 
   def toStringAll: String
 
@@ -78,7 +78,7 @@ trait AbsContextUtil extends AbsDomainUtil[Context, AbsContext] {
   def apply(
     map: Map[Loc, AbsLexEnv],
     old: OldAddrSet,
-    thisBinding: AbsLoc
+    thisBinding: AbsValue
   ): AbsContext
 }
 
@@ -94,7 +94,7 @@ object DefaultContext extends AbsContextUtil {
     // TODO val varEnv: LexEnv // VariableEnvironment
     val map: Map[Loc, AbsLexEnv],
     override val old: OldAddrSet,
-    override val thisBinding: AbsLoc // ThisBinding
+    override val thisBinding: AbsValue // ThisBinding
   ) extends Dom
   lazy val Empty: AbsContext = CtxMap(EmptyMap, OldAddrSet.Empty, AbsLoc(BuiltinGlobal.loc))
 
@@ -103,7 +103,7 @@ object DefaultContext extends AbsContextUtil {
   def apply(
     map: Map[Loc, AbsLexEnv],
     old: OldAddrSet,
-    thisBinding: AbsLoc
+    thisBinding: AbsValue
   ): AbsContext = CtxMap(map, old, thisBinding)
 
   sealed abstract class Dom extends AbsContext {
@@ -275,7 +275,7 @@ object DefaultContext extends AbsContextUtil {
       case CtxMap(map, _, thisBinding) => CtxMap(map, old, thisBinding)
     }
 
-    def setThisBinding(thisBinding: AbsLoc): AbsContext = this match {
+    def setThisBinding(thisBinding: AbsValue): AbsContext = this match {
       case Bot => Bot
       case Top => Top
       case CtxMap(map, old, _) => CtxMap(map, old, thisBinding)
@@ -287,9 +287,9 @@ object DefaultContext extends AbsContextUtil {
       case CtxMap(_, old, _) => old
     }
 
-    def thisBinding: AbsLoc = this match {
-      case Bot => AbsLoc.Bot
-      case Top => AbsLoc.Top
+    def thisBinding: AbsValue = this match {
+      case Bot => AbsValue.Bot
+      case Top => AbsValue.Top
       case CtxMap(_, _, thisBinding) => thisBinding
     }
 

@@ -269,7 +269,7 @@ object BuiltinArrayHelper {
     val h = st.heap
     // XXX: 1. Let array be the result of calling ToObject on the this value.
     // TODO current "this" value only have location. we should change!
-    val thisLoc = st.context.thisBinding
+    val thisLoc = st.context.thisBinding.locset
     val array = h.get(thisLoc)
     // TODO: it is unsound: we should call locale "join" function instead of Array.prototype.join.
     // 2. Let func be the result of calling the [[Get]] internal method of array with argument "join".
@@ -288,7 +288,7 @@ object BuiltinArrayHelper {
     val h = st.heap
     val argObj = h.get(args.locset)
     val length = Helper.propLoad(args, Set(AbsString("length")), h).pvalue.numval
-    val thisLoc = st.context.thisBinding
+    val thisLoc = st.context.thisBinding.locset
     val thisObj = h.get(thisLoc)
     val AT = (AbsBool.True, AbsAbsent.Bot)
     val Bot = AbsObjectUtil.Bot
@@ -363,7 +363,7 @@ object BuiltinArrayHelper {
 
   def join(args: AbsValue, st: State): AbsValue = {
     val h = st.heap
-    val thisLoc = st.context.thisBinding
+    val thisLoc = st.context.thisBinding.locset
     val separator = Helper.propLoad(args, Set(AbsString("0")), h)
     thisLoc.foldLeft(AbsString.Bot)((str, loc) => {
       // XXX: 1. Let O be the result of calling ToObject passing the this value as the argument.
@@ -422,7 +422,7 @@ object BuiltinArrayHelper {
 
   def pop(args: AbsValue, st: State): (State, State, AbsValue) = {
     val h = st.heap
-    val thisLoc = st.context.thisBinding
+    val thisLoc = st.context.thisBinding.locset
     val (retH, retV, excSet) = thisLoc.foldLeft((h, AbsValue.Bot, ExcSetEmpty)) {
       case ((h, value, excSet), loc) => {
         // XXX: 1. Let O be the result of calling ToObject passing the this value as the argument.
@@ -470,7 +470,7 @@ object BuiltinArrayHelper {
     val h = st.heap
     val argObj = h.get(args.locset)
     val argLen = Helper.propLoad(args, Set(AbsString("length")), h).pvalue.numval
-    val thisLoc = st.context.thisBinding
+    val thisLoc = st.context.thisBinding.locset
     val (retH, retV, excSet) = thisLoc.foldLeft((h, AbsValue.Bot, ExcSetEmpty)) {
       case ((h, value, excSet), loc) => {
         // XXX: 1. Let O be the result of calling ToObject passing the this value as the argument.
@@ -516,7 +516,7 @@ object BuiltinArrayHelper {
 
   def reverse(args: AbsValue, st: State): (State, State, AbsValue) = {
     val h = st.heap
-    val thisLoc = st.context.thisBinding
+    val thisLoc = st.context.thisBinding.locset
     val (retH, excSet) = thisLoc.foldLeft((h, ExcSetEmpty)) {
       case ((h, excSet), loc) => {
         // XXX: 1. Let O be the result of calling ToObject passing the this value as the argument.
@@ -566,7 +566,7 @@ object BuiltinArrayHelper {
 
   def shift(args: AbsValue, st: State): (State, State, AbsValue) = {
     val h = st.heap
-    val thisLoc = st.context.thisBinding
+    val thisLoc = st.context.thisBinding.locset
     val (retH, retV, excSet) = thisLoc.foldLeft((h, AbsValue.Bot, ExcSetEmpty)) {
       case ((h, value, excSet), loc) => {
         // XXX: 1. Let O be the result of calling ToObject passing the this value as the argument.
@@ -638,7 +638,7 @@ object BuiltinArrayHelper {
 
   def slice(args: AbsValue, st: State): (State, State, AbsValue) = {
     val h = st.heap
-    val thisLoc = st.context.thisBinding
+    val thisLoc = st.context.thisBinding.locset
     val start = Helper.propLoad(args, Set(AbsString("0")), h)
     val end = Helper.propLoad(args, Set(AbsString("1")), h)
 
@@ -731,7 +731,7 @@ object BuiltinArrayHelper {
     val relativeDeleteCount = TypeConversionHelper.ToInteger(deleteCount)
 
     val AT = (AbsBool.True, AbsAbsent.Bot)
-    val thisLoc = st.context.thisBinding
+    val thisLoc = st.context.thisBinding.locset
     val Top = AbsObjectUtil
       .newArrayObject(AbsNumber.Top)
       .update(AbsString.Number, AbsDataProp.Top)
@@ -817,7 +817,7 @@ object BuiltinArrayHelper {
     val argLen = argObj.Get("length", h).pvalue.numval
 
     val AT = (AbsBool.True, AbsAbsent.Bot)
-    val thisLoc = st.context.thisBinding
+    val thisLoc = st.context.thisBinding.locset
     val Top = AbsObjectUtil
       .newArrayObject(AbsNumber.Top)
       .update(AbsString.Number, AbsDataProp.Top)
@@ -862,7 +862,7 @@ object BuiltinArrayHelper {
 
   def indexOf(args: AbsValue, st: State): AbsValue = {
     val h = st.heap
-    val thisLoc = st.context.thisBinding
+    val thisLoc = st.context.thisBinding.locset
     val searchElement = Helper.propLoad(args, Set(AbsString("0")), h)
     val fromIndex = Helper.propLoad(args, Set(AbsString("1")), h)
     thisLoc.foldLeft[AbsNumber](AbsNumber.Bot)((num, loc) => {
@@ -944,7 +944,7 @@ object BuiltinArrayHelper {
 
   def lastIndexOf(args: AbsValue, st: State): AbsValue = {
     val h = st.heap
-    val thisLoc = st.context.thisBinding
+    val thisLoc = st.context.thisBinding.locset
     val searchElement = Helper.propLoad(args, Set(AbsString("0")), h)
     val fromIndex = Helper.propLoad(args, Set(AbsString("1")), h)
     thisLoc.foldLeft[AbsNumber](AbsNumber.Bot)((num, loc) => {

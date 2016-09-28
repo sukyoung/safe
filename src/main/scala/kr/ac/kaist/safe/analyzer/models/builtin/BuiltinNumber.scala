@@ -110,7 +110,7 @@ object BuiltinNumberProto extends ObjModel(
         args: AbsValue, st: State
       ) => {
         val h = st.heap
-        val thisV = AbsValue(st.context.thisBinding)
+        val thisV = st.context.thisBinding
         var excSet = BuiltinHelper.checkExn(h, thisV, "Number")
 
         // The optional radix should be an integer value in the inclusive range 2 to 36.
@@ -153,7 +153,7 @@ object BuiltinNumberProto extends ObjModel(
         // Produces a String value that represents this Number value formatted
         // according to the conventions of the host-dependent, and it is permissible,
         // but not encouraged, for it to return the same thing as toString.
-        val thisV = AbsValue(st.context.thisBinding)
+        val thisV = st.context.thisBinding
         val excSet = BuiltinHelper.checkExn(h, thisV, "Number")
         val s = TypeConversionHelper.ToString(BuiltinNumberHelper.getValue(thisV, h))
         (st, st.raiseException(excSet), AbsValue(s))
@@ -169,7 +169,7 @@ object BuiltinNumberProto extends ObjModel(
         val h = st.heap
         // If the "this" value is not a Number or a Number object,
         // throws a TypeError exception.
-        val thisV = AbsValue(st.context.thisBinding)
+        val thisV = st.context.thisBinding
         val excSet = BuiltinHelper.checkExn(h, thisV, "Number")
         // Otherwise, returns the Number value.
         val n = BuiltinNumberHelper.getValue(thisV, h)
@@ -184,7 +184,7 @@ object BuiltinNumberProto extends ObjModel(
         args: AbsValue, st: State
       ) => {
         val h = st.heap
-        val thisV = AbsValue(st.context.thisBinding)
+        val thisV = st.context.thisBinding
         var excSet = BuiltinHelper.checkExn(h, thisV, "Number")
         // 1. Let f be ToInteger(fractionDigits).
         // (If fractionDigits is undefined, this step produces the value 0).
@@ -208,7 +208,7 @@ object BuiltinNumberProto extends ObjModel(
         args: AbsValue, st: State
       ) => {
         val h = st.heap
-        val thisV = AbsValue(st.context.thisBinding)
+        val thisV = st.context.thisBinding
         var excSet = BuiltinHelper.checkExn(h, thisV, "Number")
         // 1. Let x be this Number value.
         val x = BuiltinNumberHelper.getValue(thisV, h)
@@ -233,7 +233,7 @@ object BuiltinNumberProto extends ObjModel(
         args: AbsValue, st: State
       ) => {
         val h = st.heap
-        val thisV = AbsValue(st.context.thisBinding)
+        val thisV = st.context.thisBinding
         var excSet = BuiltinHelper.checkExn(h, thisV, "Number")
         val argV = Helper.propLoad(args, Set(AbsString("0")), h)
         // 3. Let p be ToInteger(precision).
