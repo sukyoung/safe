@@ -156,7 +156,7 @@ class CoreTest extends FlatSpec {
   val prefixLen = analyzerTestDir.length
   for (file <- shuffle(walkTree(new File(analyzerTestDir))) if file.getName.endsWith(".js")) {
     val jsName = file.toString
-    val filename = jsName.substring(prefixLen)
+    val filename = file.getName
     registerTest("[Analyze]" + filename, AnalyzeTest) {
       val safeConfig = SafeConfig(CmdBase, List(jsName))
       val cfg = CmdCFGBuild(List(jsName))
