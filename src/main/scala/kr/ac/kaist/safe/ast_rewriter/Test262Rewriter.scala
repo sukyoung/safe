@@ -19,10 +19,11 @@ import kr.ac.kaist.safe.util.{ NodeUtil => NU }
 class Test262Rewriter(program: Program) extends ASTWalker {
   lazy val result: Program = Test262RewriteWalker.walk(program)
 
+  var count: Int = 0
   def makeId(info: ASTNodeInfo, name: String): Id = Id(info, name, Some(name), false)
-  val resultName = "__result"
+  def resultName(): String = { count += 1; "__result" + count }
   def resultId(info: ASTNodeInfo): Id = makeId(info, resultName)
-  val expectName = "__expect"
+  def expectName(): String = "__expect" + count
   def expectId(info: ASTNodeInfo): Id = makeId(info, expectName)
   def errLoc(info: ASTNodeInfo, exn: String): VarRef = {
     val exnLoc =
