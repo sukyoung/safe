@@ -32,7 +32,7 @@ class Semantics(
   private val AB = AbsBool.Bot
 
   // Interprocedural edges
-  case class EdgeData(old: OldAddrSet, env: AbsLexEnv, thisBinding: AbsLoc) {
+  case class EdgeData(old: OldAddrSet, env: AbsLexEnv, thisBinding: AbsValue) {
     def +(other: EdgeData): EdgeData = EdgeData(
       this.old + other.old,
       this.env + other.env,
@@ -536,12 +536,12 @@ class Semantics(
       case (_: CFGConstruct) => funVal.locset.filter(l => AT <= st1.heap.hasConstruct(l)(AbsBool))
       case (_: CFGCall) => funVal.locset.filter(l => AT <= TypeConversionHelper.IsCallable(l, st1.heap))
     }
-    val (thisVal, _) = V(i.thisArg, st1)
-    val thisLocSet = thisVal.getThis(st1.heap)
+    val (thisV, _) = V(i.thisArg, st1)
+    val thisVal = AbsValue(thisV.getThis(st.heap))
     val (argVal, _) = V(i.arguments, st1)
 
     // XXX: stop if thisArg or arguments is LocSetBot(ValueBot)
-    if (thisLocSet.isBottom || argVal.isBottom) {
+    if (thisVal.isBottom || argVal.isBottom) {
       (st, excSt)
     } else {
       val oldLocalEnv = st1.context.pureLocal
@@ -582,7 +582,7 @@ class Semantics(
               addCallEdge(cp, entryCP, EdgeData(
                 OldAddrSet.Empty,
                 newEnv.copyWith(record = newEnv3),
-                thisLocSet
+                thisVal
               ))
               addReturnEdge(exitCP, cpAfterCall, EdgeData(
                 st1.context.old,

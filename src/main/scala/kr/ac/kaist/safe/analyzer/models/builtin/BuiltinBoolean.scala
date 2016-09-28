@@ -81,7 +81,7 @@ object BuiltinBooleanProto extends ObjModel(
         args: AbsValue, st: State
       ) => {
         val h = st.heap
-        val thisV = AbsValue(st.context.thisBinding)
+        val thisV = st.context.thisBinding
         val excSet = BuiltinHelper.checkExn(h, thisV, "Boolean")
         val b = BuiltinBooleanHelper.getValue(thisV, h)
         val s = TypeConversionHelper.ToString(b)
@@ -96,7 +96,7 @@ object BuiltinBooleanProto extends ObjModel(
         args: AbsValue, st: State
       ) => {
         val h = st.heap
-        val thisV = AbsValue(st.context.thisBinding)
+        val thisV = st.context.thisBinding
         val excSet = BuiltinHelper.checkExn(h, thisV, "Boolean")
         val b = BuiltinBooleanHelper.getValue(thisV, h)
         (st, st.raiseException(excSet), AbsValue(b))

@@ -546,7 +546,7 @@ object BuiltinObjectHelper {
   ////////////////////////////////////////////////////////////////
   def toString(args: AbsValue, st: State): AbsValue = {
     val h = st.heap
-    val thisLoc = st.context.thisBinding
+    val thisLoc = st.context.thisBinding.locset
     // XXX: 1. If the this value is undefined, return "[object Undefined]".
     // XXX: 2. If the this value is null, return "[object Null]".
     // XXX: 3. Let O be the result of calling ToObject passing the this value as the argument.
@@ -560,7 +560,7 @@ object BuiltinObjectHelper {
 
   def valueOf(args: AbsValue, st: State): AbsValue = {
     val h = st.heap
-    val thisLoc = st.context.thisBinding
+    val thisLoc = st.context.thisBinding.locset
     // XXX: 1. Let O be the result of calling ToObject passing the this value as the argument.
     // TODO current "this" value only have location. we should change!
     // 2. Return O.
@@ -570,7 +570,7 @@ object BuiltinObjectHelper {
   def hasOwnProperty(args: AbsValue, st: State): AbsValue = {
     val h = st.heap
     val value = Helper.propLoad(args, Set(AbsString("0")), h)
-    val thisLoc = st.context.thisBinding
+    val thisLoc = st.context.thisBinding.locset
     // 1. Let P be ToString(V).
     val prop = TypeConversionHelper.ToString(value)
     // XXX: 2. Let O be the result of calling ToObject passing the this value as the argument.
@@ -588,7 +588,7 @@ object BuiltinObjectHelper {
   def isPrototypeOf(args: AbsValue, st: State): AbsValue = {
     val h = st.heap
     val value = Helper.propLoad(args, Set(AbsString("0")), h)
-    val thisLoc = st.context.thisBinding
+    val thisLoc = st.context.thisBinding.locset
     // 1. If V is not an object, return false.
     val v1 = value.pvalue.fold(AbsBool.Bot)(_ => AbsBool.False)
     // XXX: 2. Let O be the result of calling ToObject passing the this value as the argument.
@@ -617,7 +617,7 @@ object BuiltinObjectHelper {
   def propertyIsEnumerable(args: AbsValue, st: State): AbsValue = {
     val h = st.heap
     val value = Helper.propLoad(args, Set(AbsString("0")), h)
-    val thisLoc = st.context.thisBinding
+    val thisLoc = st.context.thisBinding.locset
     // 1. Let P be ToString(V).
     val prop = TypeConversionHelper.ToString(value)
     // XXX: 2. Let O be the result of calling ToObject passing the this value as the argument.

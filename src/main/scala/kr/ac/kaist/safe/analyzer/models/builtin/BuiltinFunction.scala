@@ -47,7 +47,7 @@ object BuiltinFunctionProto extends FuncModel(
     NormalProp("toString", FuncModel(
       name = "Function.prototype.toString",
       code = BasicCode(argLen = 0, (args: AbsValue, st: State) => {
-        val thisBinding = st.context.thisBinding
+        val thisBinding = st.context.thisBinding.locset
         val functionClass = AbsString("Function")
         val notAllFunctionClass = thisBinding.exists(loc => {
           val thisClass = st.heap.get(loc)(IClass).value.pvalue.strval
@@ -110,7 +110,7 @@ private object BuiltinFunctionProtoHelper {
 
   // 15.3.4.3 Fucntion.prototype.apply(thisArg, argArray)
   def applyBeforeCall(funcId: CFGId, thisId: CFGId, argsId: CFGId)(args: AbsValue, st: State, addr: Address): (State, State) = {
-    val func = st.context.thisBinding
+    val func = st.context.thisBinding.locset
     val (thisArg, st1, excSet1) = {
       val origThis = Helper.propLoad(args, HashSet(AbsString("0")), st.heap)
 
@@ -194,7 +194,7 @@ private object BuiltinFunctionProtoHelper {
 
   // 15.3.4.4 Function.prototype.call(thisArg [, arg1 [, arg2, ...]])
   def callBeforeCall(funcId: CFGId, thisId: CFGId, argsId: CFGId)(args: AbsValue, st: State, addr: Address): (State, State) = {
-    val func = st.context.thisBinding
+    val func = st.context.thisBinding.locset
     val (thisArg, st1, excSet1) = {
       val origThis = Helper.propLoad(args, HashSet(AbsString("0")), st.heap)
 

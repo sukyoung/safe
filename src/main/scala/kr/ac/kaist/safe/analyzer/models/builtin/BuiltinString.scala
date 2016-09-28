@@ -54,7 +54,7 @@ object BuiltinStringHelper {
     args: AbsValue, st: State
   ) => {
     val h = st.heap
-    val thisV = AbsValue(st.context.thisBinding)
+    val thisV = st.context.thisBinding
     var excSet = BuiltinHelper.checkExn(h, thisV, "String")
     val s = BuiltinStringHelper.getValue(thisV, h)
     (st, st.raiseException(excSet), AbsValue(s))
@@ -70,7 +70,7 @@ object BuiltinStringHelper {
     //   equivalent of the corresponding character of S or the actual corresponding
     //   character of S if no Unicode lowercase equivalent exists.
     // 4. Return L.
-    val thisV = AbsValue(st.context.thisBinding)
+    val thisV = st.context.thisBinding
     val s = TypeConversionHelper.ToString(BuiltinStringHelper.getValue(thisV, h)).toLowerCase
     (st, State.Bot, AbsValue(s))
   })
@@ -79,7 +79,7 @@ object BuiltinStringHelper {
     args: AbsValue, st: State
   ) => {
     val h = st.heap
-    val thisV = AbsValue(st.context.thisBinding)
+    val thisV = st.context.thisBinding
     val s = TypeConversionHelper.ToString(BuiltinStringHelper.getValue(thisV, h)).toUpperCase
     (st, State.Bot, AbsValue(s))
   })
@@ -167,7 +167,7 @@ object BuiltinStringProto extends ObjModel(
         // 1. Call CheckObjectCoercible passing the this value as its argument.
         //   Don't need to check this because <>getBase always returns a location which points to an object.
         // 2. Let S be the result of calling ToString, giving it the this value as its argument.
-        val thisV = AbsValue(st.context.thisBinding)
+        val thisV = st.context.thisBinding
         val s = BuiltinStringHelper.getValue(thisV, h)
         // 3. Let position be ToInteger(pos).
         val argV = Helper.propLoad(args, Set(AbsString("0")), h)
@@ -198,7 +198,7 @@ object BuiltinStringProto extends ObjModel(
         // 1. Call CheckObjectCoercible passing the this value as its argument.
         //   Don't need to check this because <>getBase always returns a location which points to an object.
         // 2. Let S be the result of calling ToString, giving it the this value as its argument.
-        val thisV = AbsValue(st.context.thisBinding)
+        val thisV = st.context.thisBinding
         val s = BuiltinStringHelper.getValue(thisV, h)
         // 3. Let position be ToInteger(pos).
         val argV = Helper.propLoad(args, Set(AbsString("0")), h)
@@ -228,7 +228,7 @@ object BuiltinStringProto extends ObjModel(
         val h = st.heap
         // 1. Call CheckObjectCoercible passing the this value as its argument.
         // 2. Let S be the result of calling ToString, giving it the this value as its argument.
-        val thisV = AbsValue(st.context.thisBinding)
+        val thisV = st.context.thisBinding
         val s = TypeConversionHelper.ToString(BuiltinStringHelper.getValue(thisV, h))
         // 3. Let args be an internal list that is a copy of the argument list passed to this function.
         // 4. Let R be S.
@@ -261,7 +261,7 @@ object BuiltinStringProto extends ObjModel(
         val h = st.heap
         // 1. Call CheckObjectCoercible passing the this value as its argument.
         // 2. Let S be the result of calling ToString, giving it the this value as its argument.
-        val thisV = AbsValue(st.context.thisBinding)
+        val thisV = st.context.thisBinding
         val s = TypeConversionHelper.ToString(BuiltinStringHelper.getValue(thisV, h))
         // 3. Let searchStr be ToString(searchString).
         val searchStr = TypeConversionHelper.ToString(Helper.propLoad(args, Set(AbsString("0")), h))
@@ -307,7 +307,7 @@ object BuiltinStringProto extends ObjModel(
         val h = st.heap
         // 1. Call CheckObjectCoercible passing the this value as its argument.
         // 2. Let S be the result of calling ToString, giving it the this value as its argument.
-        val thisV = AbsValue(st.context.thisBinding)
+        val thisV = st.context.thisBinding
         val s = TypeConversionHelper.ToString(BuiltinStringHelper.getValue(thisV, h))
         // 3. Let searchStr be ToString(searchString).
         val searchStr = TypeConversionHelper.ToString(Helper.propLoad(args, Set(AbsString("0")), h))
@@ -357,7 +357,7 @@ object BuiltinStringProto extends ObjModel(
         val h = st.heap
         // 1. Call CheckObjectCoercible passing the this value as its argument.
         // 2. Let S be the result of calling ToString, giving it the this value as its argument.
-        val thisV = AbsValue(st.context.thisBinding)
+        val thisV = st.context.thisBinding
         val s = TypeConversionHelper.ToString(BuiltinStringHelper.getValue(thisV, h))
         // 3. Let That be ToString(that).
         val that = TypeConversionHelper.ToString(Helper.propLoad(args, Set(AbsString("0")), h))
@@ -406,7 +406,7 @@ object BuiltinStringProto extends ObjModel(
         val h = st.heap
         // 1. Call CheckObjectCoercible passing the this value as its argument.
         // 2. Let S be the result of calling ToString, giving it the this value as its argument.
-        val thisV = AbsValue(st.context.thisBinding)
+        val thisV = st.context.thisBinding
         val s = TypeConversionHelper.ToString(BuiltinStringHelper.getValue(thisV, h))
         // 3. Let len be the number of characters in S.
         val len = s.length
@@ -459,7 +459,7 @@ object BuiltinStringProto extends ObjModel(
         val h = st.heap
         // 1. Call CheckObjectCoercible passing the this value as its argument.
         // 2. Let S be the result of calling ToString, giving it the this value as its argument.
-        val thisV = AbsValue(st.context.thisBinding)
+        val thisV = st.context.thisBinding
         val s = TypeConversionHelper.ToString(BuiltinStringHelper.getValue(thisV, h))
         // 3. Let len be the number of characters in S.
         val len = s.length
@@ -525,7 +525,7 @@ object BuiltinStringProto extends ObjModel(
         val h = st.heap
         // 1. Call CheckObjectCoercible passing the this value as its argument.
         // 2. Let S be the result of calling ToString, giving it the this value as its argument.
-        val thisV = AbsValue(st.context.thisBinding)
+        val thisV = st.context.thisBinding
         // 3. Let T be a String value that is a copy of S with both leading and trailing white space
         //   removed. The definition of white space is the union of WhiteSpace and LineTerminator.
         // 4. Return T.
