@@ -682,7 +682,7 @@ class Semantics(
                     tmpVal2 + Helper.inherit(st.heap, loc1, loc2))
                 })
                 val b2 =
-                  if (!v2.pvalue.isBottom && !locSet4.isBottom) AbsValue(AF)
+                  if (!v1.pvalue.isBottom && !locSet4.isBottom) AbsValue(AF)
                   else AbsValue.Bot
                 val excSet3 =
                   if (!v2.pvalue.isBottom || !locSet5.isBottom || !protoVal.pvalue.isBottom) HashSet(TypeError)
