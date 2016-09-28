@@ -101,10 +101,12 @@ class Test262Rewriter(program: Program) extends ASTWalker {
         ABlock(info, List(stmt1, trueR(info)), false)
 
       // if (e) { $ERROR(message) }
+      // or
+      // if (e) { $FAIL(message) }
       // ==>
       // var __result1 = e
       // var __expect1 = false
-      case s @ If(info, cond, ABlock(_, List(ExprStmt(_, FunApp(_, VarRef(_, Id(_, name, _, _)), _), _)), false), None) if name.equals("$ERROR") =>
+      case s @ If(info, cond, ABlock(_, List(ExprStmt(_, FunApp(_, VarRef(_, Id(_, name, _, _)), _), _)), false), None) if name.equals("$ERROR") || name.equals("$FAIL") =>
         val stmt1 = VarStmt(info, List(VarDecl(info, resultId(info), Some(cond), false)))
         ABlock(info, List(stmt1, falseR(info)), false)
 
