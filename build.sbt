@@ -13,14 +13,6 @@ lazy val cfgBuildTest = taskKey[Unit]("Launch cfg Build tests")
 lazy val analyzeTest = taskKey[Unit]("Launch analyze tests")
 lazy val test262Test = taskKey[Unit]("Launch test262 tests")
 
-parseTest := (testOnly in Test).toTask(s" -- -n ParseTest").value
-astRewriteTest := (testOnly in Test).toTask(s" -- -n ASTRewriteTest").value
-compileTest := (testOnly in Test).toTask(s" -- -n CompileTest").value
-cfgBuildTest := (testOnly in Test).toTask(s" -- -n CFGBuildTest").value
-analyzeTest := (testOnly in Test).toTask(s" -- -n AnalyzeTest").value
-test262Test := (testOnly in Test).toTask(s" -- -n Test262Test").value
-test := (testOnly in Test).toTask(s" -- -l Test262Test").value
-
 lazy val root = (project in file(".")).
   settings(
     name := "SAFE",
@@ -57,7 +49,13 @@ lazy val root = (project in file(".")).
     },
     testOptions in Test += Tests.Argument("-fDG", baseDirectory.value + "/tests/detail"),
     compile <<= (compile in Compile) dependsOn (buildParsers in Compile, checkCopyrights in Compile),
-    test <<= (test in Test) dependsOn compile
+    test <<= (testOnly in Test).toTask(s" -- -l Test262Test") dependsOn compile,
+    parseTest := (testOnly in Test).toTask(s" -- -n ParseTest").value,
+    astRewriteTest := (testOnly in Test).toTask(s" -- -n ASTRewriteTest").value,
+    compileTest := (testOnly in Test).toTask(s" -- -n CompileTest").value,
+    cfgBuildTest := (testOnly in Test).toTask(s" -- -n CFGBuildTest").value,
+    analyzeTest := (testOnly in Test).toTask(s" -- -n AnalyzeTest").value,
+    test262Test := (testOnly in Test).toTask(s" -- -n Test262Test").value
   )
 
 scalacOptions in ThisBuild ++= Seq("-deprecation", "-feature",
