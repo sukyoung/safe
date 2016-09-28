@@ -32,6 +32,7 @@ object ASTRewriteTest extends Tag("ASTRewriteTest")
 object CompileTest extends Tag("CompileTest")
 object CFGBuildTest extends Tag("CFGBuildTest")
 object AnalyzeTest extends Tag("AnalyzeTest")
+object Test262Test extends Tag("Test262Test")
 
 class CoreTest extends FlatSpec {
   val SEP = File.separator
@@ -153,11 +154,22 @@ class CoreTest extends FlatSpec {
 
   val analyzerTestDir = BASE_DIR + SEP + "tests/semantics/"
   val analyzeConfig = AnalyzeConfig(testMode = true)
-  val prefixLen = analyzerTestDir.length
   for (file <- shuffle(walkTree(new File(analyzerTestDir))) if file.getName.endsWith(".js")) {
     val jsName = file.toString
     val filename = file.getName
     registerTest("[Analyze]" + filename, AnalyzeTest) {
+      val safeConfig = SafeConfig(CmdBase, List(jsName))
+      val cfg = CmdCFGBuild(List(jsName))
+      val analysis = cfg.flatMap(Analyze(_, safeConfig, analyzeConfig))
+      analyzeTest(analysis)
+    }
+  }
+
+  val test262TestDir = BASE_DIR + SEP + "tests/test262/"
+  for (file <- shuffle(walkTree(new File(test262TestDir))) if file.getName.endsWith(".js")) {
+    val jsName = file.toString
+    val filename = file.getName
+    registerTest("[Test262]" + filename, Test262Test) {
       val safeConfig = SafeConfig(CmdBase, List(jsName))
       val cfg = CmdCFGBuild(List(jsName))
       val analysis = cfg.flatMap(Analyze(_, safeConfig, analyzeConfig))
