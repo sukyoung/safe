@@ -430,16 +430,32 @@ object BuiltinDateProto extends ObjModel(
       code = BuiltinDateHelper.setNumber(3)
     ), T, F, T),
 
-    // TODO toUTCString
+    // 15.9.5.42 Date.prototype.toUTCString()
     NormalProp("toUTCString", FuncModel(
       name = "Date.prototype.toUTCString",
-      code = EmptyCode(argLen = 0)
+      code = PureCode(
+        argLen = 0,
+        code = (args: AbsValue, st: State) => AbsString.Top
+      )
     ), T, F, T),
 
-    // TODO toISOString
+    // 15.9.5.43 Date.prototype.toISOString()
     NormalProp("toISOString", FuncModel(
       name = "Date.prototype.toISOString",
-      code = EmptyCode(argLen = 0)
+      code = BasicCode(argLen = 0, (
+        args: AbsValue, st: State
+      ) => {
+        val h = st.heap
+        val thisV = st.context.thisBinding
+        var excSet = BuiltinHelper.checkExn(h, thisV, "Date")
+        val v = BuiltinDateHelper.getValue(thisV, h)
+        // If the time value of this object is not a finite Number a RangeError exception is thrown.
+        v.gamma match {
+          case ConInf() => excSet += RangeError
+          case _ =>
+        }
+        (st, st.raiseException(excSet), AbsValue(AbsString.Top))
+      })
     ), T, F, T),
 
     // TODO toJSON
