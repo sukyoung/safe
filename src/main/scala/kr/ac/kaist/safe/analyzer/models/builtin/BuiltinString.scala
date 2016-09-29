@@ -31,7 +31,7 @@ object BuiltinStringHelper {
     TypeConversionHelper.ToString(argV) + emptyS
   }
 
-  def getValue(thisV: AbsValue, h: Heap): AbsString = {
+  def getValueNonGeneric(thisV: AbsValue, h: Heap): AbsString = {
     thisV.pvalue.strval + thisV.locset.foldLeft(AbsString.Bot)((res, loc) => {
       if ((AbsString("String") <= h.get(loc)(IClass).value.pvalue.strval))
         res + h.get(loc)(IPrimitiveValue).value.pvalue.strval
@@ -56,7 +56,7 @@ object BuiltinStringHelper {
     val h = st.heap
     val thisV = st.context.thisBinding
     var excSet = BuiltinHelper.checkExn(h, thisV, "String")
-    val s = BuiltinStringHelper.getValue(thisV, h)
+    val s = BuiltinStringHelper.getValueNonGeneric(thisV, h)
     (st, st.raiseException(excSet), AbsValue(s))
   })
 
@@ -71,7 +71,7 @@ object BuiltinStringHelper {
     //   character of S if no Unicode lowercase equivalent exists.
     // 4. Return L.
     val thisV = st.context.thisBinding
-    val s = TypeConversionHelper.ToString(BuiltinStringHelper.getValue(thisV, h)).toLowerCase
+    val s = TypeConversionHelper.ToString(thisV, h).toLowerCase
     (st, State.Bot, AbsValue(s))
   })
 
@@ -80,7 +80,7 @@ object BuiltinStringHelper {
   ) => {
     val h = st.heap
     val thisV = st.context.thisBinding
-    val s = TypeConversionHelper.ToString(BuiltinStringHelper.getValue(thisV, h)).toUpperCase
+    val s = TypeConversionHelper.ToString(thisV, h).toUpperCase
     (st, State.Bot, AbsValue(s))
   })
 
@@ -168,7 +168,7 @@ object BuiltinStringProto extends ObjModel(
         //   Don't need to check this because <>getBase always returns a location which points to an object.
         // 2. Let S be the result of calling ToString, giving it the this value as its argument.
         val thisV = st.context.thisBinding
-        val s = BuiltinStringHelper.getValue(thisV, h)
+        val s = TypeConversionHelper.ToString(thisV, h)
         // 3. Let position be ToInteger(pos).
         val argV = Helper.propLoad(args, Set(AbsString("0")), h)
         val pos = TypeConversionHelper.ToInteger(argV)
@@ -199,7 +199,7 @@ object BuiltinStringProto extends ObjModel(
         //   Don't need to check this because <>getBase always returns a location which points to an object.
         // 2. Let S be the result of calling ToString, giving it the this value as its argument.
         val thisV = st.context.thisBinding
-        val s = BuiltinStringHelper.getValue(thisV, h)
+        val s = TypeConversionHelper.ToString(thisV, h)
         // 3. Let position be ToInteger(pos).
         val argV = Helper.propLoad(args, Set(AbsString("0")), h)
         val pos = TypeConversionHelper.ToInteger(argV)
@@ -229,7 +229,7 @@ object BuiltinStringProto extends ObjModel(
         // 1. Call CheckObjectCoercible passing the this value as its argument.
         // 2. Let S be the result of calling ToString, giving it the this value as its argument.
         val thisV = st.context.thisBinding
-        val s = TypeConversionHelper.ToString(BuiltinStringHelper.getValue(thisV, h))
+        val s = TypeConversionHelper.ToString(thisV, h)
         // 3. Let args be an internal list that is a copy of the argument list passed to this function.
         // 4. Let R be S.
         // 5. Repeat, while args is not empty
@@ -262,7 +262,7 @@ object BuiltinStringProto extends ObjModel(
         // 1. Call CheckObjectCoercible passing the this value as its argument.
         // 2. Let S be the result of calling ToString, giving it the this value as its argument.
         val thisV = st.context.thisBinding
-        val s = TypeConversionHelper.ToString(BuiltinStringHelper.getValue(thisV, h))
+        val s = TypeConversionHelper.ToString(thisV, h)
         // 3. Let searchStr be ToString(searchString).
         val searchStr = TypeConversionHelper.ToString(Helper.propLoad(args, Set(AbsString("0")), h))
         // 4. Let pos be ToInteger(position). (If position is undefined, this step produces the value 0).
@@ -308,7 +308,7 @@ object BuiltinStringProto extends ObjModel(
         // 1. Call CheckObjectCoercible passing the this value as its argument.
         // 2. Let S be the result of calling ToString, giving it the this value as its argument.
         val thisV = st.context.thisBinding
-        val s = TypeConversionHelper.ToString(BuiltinStringHelper.getValue(thisV, h))
+        val s = TypeConversionHelper.ToString(thisV, h)
         // 3. Let searchStr be ToString(searchString).
         val searchStr = TypeConversionHelper.ToString(Helper.propLoad(args, Set(AbsString("0")), h))
         // 4. Let numPos be ToNumber(position). (If position is undefined, this step produces the value NaN).
@@ -358,7 +358,7 @@ object BuiltinStringProto extends ObjModel(
         // 1. Call CheckObjectCoercible passing the this value as its argument.
         // 2. Let S be the result of calling ToString, giving it the this value as its argument.
         val thisV = st.context.thisBinding
-        val s = TypeConversionHelper.ToString(BuiltinStringHelper.getValue(thisV, h))
+        val s = TypeConversionHelper.ToString(thisV, h)
         // 3. Let That be ToString(that).
         val that = TypeConversionHelper.ToString(Helper.propLoad(args, Set(AbsString("0")), h))
         val n = (s.gamma, that.gamma) match {
@@ -407,7 +407,7 @@ object BuiltinStringProto extends ObjModel(
         // 1. Call CheckObjectCoercible passing the this value as its argument.
         // 2. Let S be the result of calling ToString, giving it the this value as its argument.
         val thisV = st.context.thisBinding
-        val s = TypeConversionHelper.ToString(BuiltinStringHelper.getValue(thisV, h))
+        val s = TypeConversionHelper.ToString(thisV, h)
         // 3. Let len be the number of characters in S.
         val len = s.length
         // 4. Let intStart be ToInteger(start).
@@ -438,7 +438,7 @@ object BuiltinStringProto extends ObjModel(
               }
             case _ => AbsString.Top
           },
-          elseV = AbsString("")
+          elseV = AbsString.Top
         )(AbsString)
         (st, State.Bot, AbsValue(res))
       })
@@ -460,7 +460,7 @@ object BuiltinStringProto extends ObjModel(
         // 1. Call CheckObjectCoercible passing the this value as its argument.
         // 2. Let S be the result of calling ToString, giving it the this value as its argument.
         val thisV = st.context.thisBinding
-        val s = TypeConversionHelper.ToString(BuiltinStringHelper.getValue(thisV, h))
+        val s = TypeConversionHelper.ToString(thisV, h)
         // 3. Let len be the number of characters in S.
         val len = s.length
         // 4. Let intStart be ToInteger(start).
@@ -529,7 +529,7 @@ object BuiltinStringProto extends ObjModel(
         // 3. Let T be a String value that is a copy of S with both leading and trailing white space
         //   removed. The definition of white space is the union of WhiteSpace and LineTerminator.
         // 4. Return T.
-        val s = TypeConversionHelper.ToString(BuiltinStringHelper.getValue(thisV, h)).trim
+        val s = TypeConversionHelper.ToString(thisV, h).trim
         (st, State.Bot, AbsValue(s))
       })
     ), T, F, T)
