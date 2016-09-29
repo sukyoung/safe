@@ -146,7 +146,7 @@ object BuiltinNumberProto extends ObjModel(
     // 15.7.4.3 Number.prototype.toLocaleString()
     NormalProp("toLocaleString", FuncModel(
       name = "Number.prototype.toLocaleString",
-      code = BasicCode(argLen = 1, (
+      code = BasicCode(argLen = 0, (
         args: AbsValue, st: State
       ) => {
         val h = st.heap
@@ -180,7 +180,7 @@ object BuiltinNumberProto extends ObjModel(
     // 15.7.4.5 Number.prototype.toFixed(fractionDigits)
     NormalProp("toFixed", FuncModel(
       name = "Number.prototype.toFixed",
-      code = BasicCode(argLen = 0, (
+      code = BasicCode(argLen = 1, (
         args: AbsValue, st: State
       ) => {
         val h = st.heap
@@ -204,7 +204,7 @@ object BuiltinNumberProto extends ObjModel(
     // 15.7.4.6 Number.prototype.toExponential (fractionDigits)
     NormalProp("toExponential", FuncModel(
       name = "Number.prototype.toExponential",
-      code = BasicCode(argLen = 0, (
+      code = BasicCode(argLen = 1, (
         args: AbsValue, st: State
       ) => {
         val h = st.heap
@@ -229,7 +229,7 @@ object BuiltinNumberProto extends ObjModel(
     // 15.7.4.7 Number.prototype.toPrecision(precision)
     NormalProp("toPrecision", FuncModel(
       name = "Number.prototype.toPrecision",
-      code = BasicCode(argLen = 0, (
+      code = BasicCode(argLen = 1, (
         args: AbsValue, st: State
       ) => {
         val h = st.heap

@@ -50,7 +50,7 @@ object BuiltinStringHelper {
     (State(heap, state.context), State.Bot, AbsValue(loc))
   })
 
-  val valueOf = BasicCode(argLen = 1, (
+  val valueOf = BasicCode(argLen = 0, (
     args: AbsValue, st: State
   ) => {
     val h = st.heap
@@ -106,7 +106,7 @@ object BuiltinString extends FuncModel(
     // 15.5.3.2 String.fromCharCode ([char0 [, char1 [, ...]]])
     NormalProp("fromCharCode", FuncModel(
       name = "String.fromCharCode",
-      code = BasicCode(argLen = 0, (
+      code = BasicCode(argLen = 1, (
         args: AbsValue, st: State
       ) => {
         val h = st.heap
@@ -160,7 +160,7 @@ object BuiltinStringProto extends ObjModel(
     // 15.5.4.4 String.prototype.charAt(pos)
     NormalProp("charAt", FuncModel(
       name = "String.prototype.charAt",
-      code = BasicCode(argLen = 0, (
+      code = BasicCode(argLen = 1, (
         args: AbsValue, st: State
       ) => {
         val h = st.heap
@@ -191,7 +191,7 @@ object BuiltinStringProto extends ObjModel(
     // 15.5.4.5 String.prototype.charCodeAt(pos)
     NormalProp("charCodeAt", FuncModel(
       name = "String.prototype.charCodeAt",
-      code = BasicCode(argLen = 0, (
+      code = BasicCode(argLen = 1, (
         args: AbsValue, st: State
       ) => {
         val h = st.heap
@@ -222,7 +222,7 @@ object BuiltinStringProto extends ObjModel(
     // 15.5.4.6 String.prototype.concat([string1 [, string2 [, ...]]])
     NormalProp("concat", FuncModel(
       name = "String.prototype.concat",
-      code = BasicCode(argLen = 0, (
+      code = BasicCode(argLen = 1, (
         args: AbsValue, st: State
       ) => {
         val h = st.heap
@@ -255,7 +255,7 @@ object BuiltinStringProto extends ObjModel(
     // 15.5.4.7 String.prototype.indexOf(searchString, position)
     NormalProp("indexOf", FuncModel(
       name = "String.prototype.indexOf",
-      code = BasicCode(argLen = 0, (
+      code = BasicCode(argLen = 2, (
         args: AbsValue, st: State
       ) => {
         val h = st.heap
@@ -301,7 +301,7 @@ object BuiltinStringProto extends ObjModel(
     // 15.5.4.8 String.prototype.lastIndexOf(searchString, position)
     NormalProp("lastIndexOf", FuncModel(
       name = "String.prototype.lastIndexOf",
-      code = BasicCode(argLen = 0, (
+      code = BasicCode(argLen = 2, (
         args: AbsValue, st: State
       ) => {
         val h = st.heap
@@ -351,7 +351,7 @@ object BuiltinStringProto extends ObjModel(
     // 15.5.4.9 String.prototype.localeCompare(that)
     NormalProp("localeCompare", FuncModel(
       name = "String.prototype.localeCompare",
-      code = BasicCode(argLen = 0, (
+      code = BasicCode(argLen = 1, (
         args: AbsValue, st: State
       ) => {
         val h = st.heap
@@ -379,19 +379,19 @@ object BuiltinStringProto extends ObjModel(
       })
     ), T, F, T),
 
-    // TODO match
+    // TODO 15.5.4.10 String.prototype.match(regexp)
     NormalProp("match", FuncModel(
       name = "String.prototype.match",
       code = EmptyCode(argLen = 1)
     ), T, F, T),
 
-    // TODO replace
+    // TODO 15.5.4.11 String.prototype.replace(searchValue, replaceValue)
     NormalProp("replace", FuncModel(
       name = "String.prototype.replace",
       code = EmptyCode(argLen = 2)
     ), T, F, T),
 
-    // TODO search
+    // TODO 15.5.4.12 String.prototype.search(regexp)
     NormalProp("search", FuncModel(
       name = "String.prototype.search",
       code = EmptyCode(argLen = 1)
@@ -400,7 +400,7 @@ object BuiltinStringProto extends ObjModel(
     // 15.5.4.13 String.prototype.slice(start, end)
     NormalProp("slice", FuncModel(
       name = "String.prototype.slice",
-      code = BasicCode(argLen = 0, (
+      code = BasicCode(argLen = 2, (
         args: AbsValue, st: State
       ) => {
         val h = st.heap
@@ -444,7 +444,7 @@ object BuiltinStringProto extends ObjModel(
       })
     ), T, F, T),
 
-    // TODO split
+    // TODO 15.5.4.14 String.prototype.split(separator, limit)
     NormalProp("split", FuncModel(
       name = "String.prototype.split",
       code = EmptyCode(argLen = 2)
@@ -453,7 +453,7 @@ object BuiltinStringProto extends ObjModel(
     // 15.5.4.15 String.prototype.substring (start, end)
     NormalProp("substring", FuncModel(
       name = "String.prototype.substring",
-      code = BasicCode(argLen = 0, (
+      code = BasicCode(argLen = 2, (
         args: AbsValue, st: State
       ) => {
         val h = st.heap
