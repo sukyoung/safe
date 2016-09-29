@@ -60,9 +60,8 @@ class Test262Rewriter(program: Program) extends ASTWalker {
       // var __expect = e2
       case s @ ExprStmt(info,
         FunApp(_,
-          Dot(_, VarRef(_, Id(_, obj, _, _)), Id(_, member, _, _)),
-          List(arg1, arg2, _)),
-        _) if obj.equals("assert") && member.equals("sameValue") =>
+          Dot(_, VarRef(_, Id(_, "assert", _, _)), Id(_, "sameValue", _, _)),
+          List(arg1, arg2, _)), _) =>
         val info1 = arg1.info
         val info2 = arg2.info
         val stmt1 = VarStmt(info1, List(VarDecl(info1, resultId(info1), Some(arg1), false)))
@@ -76,10 +75,9 @@ class Test262Rewriter(program: Program) extends ASTWalker {
       // var __expect = __TypeErrLoc
       case s @ ExprStmt(info,
         FunApp(_,
-          Dot(_, VarRef(_, Id(_, obj, _, _)), Id(_, member, _, _)),
+          Dot(_, VarRef(_, Id(_, "assert", _, _)), Id(_, "throws", _, _)),
           List(VarRef(info1, Id(_, exn, _, _)),
-            FunExpr(info2, Functional(_, _, _, SourceElements(_, List(body), _), _, _, _)))),
-        _) if obj.equals("assert") && member.equals("throws") =>
+            FunExpr(info2, Functional(_, _, _, SourceElements(_, List(body), _), _, _, _)))), _) =>
         val stmt1 = VarStmt(info, List(VarDecl(info, resultId(info), None, false)))
         val stmt2 = Try(info2, List(body.asInstanceOf[Stmt]), Some(Catch(info2, exnId(info2), List(handle(info2)))), None)
         val stmt3 = VarStmt(info1, List(VarDecl(info, expectId(info), Some(errLoc(info1, exn)), false)))
@@ -91,9 +89,8 @@ class Test262Rewriter(program: Program) extends ASTWalker {
       // var __expect1 = false
       case s @ ExprStmt(info,
         FunApp(_,
-          Dot(_, VarRef(_, Id(_, obj, _, _)), Id(_, member, _, _)),
-          List(arg1, arg2, _)),
-        _) if obj.equals("assert") && member.equals("notSameValue") =>
+          Dot(_, VarRef(_, Id(_, "assert", _, _)), Id(_, "notSameValue", _, _)),
+          List(arg1, arg2, _)), _) =>
         val info = arg1.info
         val stmt1 =
           VarStmt(info, List(VarDecl(info, resultId(info), Some(InfixOpApp(info, arg1, Op(info, "=="), arg2)), false)))
@@ -103,7 +100,7 @@ class Test262Rewriter(program: Program) extends ASTWalker {
       // ==>
       // var __result1 = e1
       // var __expect1 = true
-      case s @ ExprStmt(info, FunApp(_, VarRef(_, Id(_, fun, _, _)), List(arg1, _)), _) if fun.equals("assert") =>
+      case s @ ExprStmt(info, FunApp(_, VarRef(_, Id(_, "assert", _, _)), List(arg1, _)), _) =>
         val info1 = arg1.info
         val stmt1 = VarStmt(info1, List(VarDecl(info1, resultId(info1), Some(arg1), false)))
         ABlock(info, List(stmt1, trueR(info)), false)

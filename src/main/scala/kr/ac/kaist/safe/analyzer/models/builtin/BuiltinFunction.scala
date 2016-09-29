@@ -20,7 +20,7 @@ import kr.ac.kaist.safe.util.{ Address, SystemAddr }
 
 import scala.collection.immutable.HashSet
 
-// TODO Function
+// 15.3 Function Objects
 object BuiltinFunction extends FuncModel(
   name = "Function",
   // TODO: 15.3.1 Function(...)

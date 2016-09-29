@@ -255,7 +255,7 @@ object BuiltinStringProto extends ObjModel(
     // 15.5.4.7 String.prototype.indexOf(searchString, position)
     NormalProp("indexOf", FuncModel(
       name = "String.prototype.indexOf",
-      code = BasicCode(argLen = 2, (
+      code = BasicCode(argLen = 1, (
         args: AbsValue, st: State
       ) => {
         val h = st.heap
@@ -301,7 +301,7 @@ object BuiltinStringProto extends ObjModel(
     // 15.5.4.8 String.prototype.lastIndexOf(searchString, position)
     NormalProp("lastIndexOf", FuncModel(
       name = "String.prototype.lastIndexOf",
-      code = BasicCode(argLen = 2, (
+      code = BasicCode(argLen = 1, (
         args: AbsValue, st: State
       ) => {
         val h = st.heap

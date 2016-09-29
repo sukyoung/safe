@@ -101,7 +101,7 @@ object BuiltinArrayProto extends ObjModel(
       code = BasicCode(argLen = 2, BuiltinArrayHelper.slice)
     ), T, F, T),
 
-    // TODO sort
+    // TODO 15.4.4.11 Array.prototype.sort(comparefn)
     NormalProp("sort", FuncModel(
       name = "Array.prototype.sort",
       code = EmptyCode(argLen = 1)
@@ -131,43 +131,43 @@ object BuiltinArrayProto extends ObjModel(
       code = PureCode(argLen = 1, BuiltinArrayHelper.lastIndexOf)
     ), T, F, T),
 
-    // TODO every
+    // TODO 15.4.4.16 Array.prototype.every(callbackfn [, thisArg ])
     NormalProp("every", FuncModel(
       name = "Array.prototype.every",
       code = EmptyCode(argLen = 1)
     ), T, F, T),
 
-    // TODO some
+    // TODO 15.4.4.17 Array.prototype.some(callbackfn [, thisArg ])
     NormalProp("some", FuncModel(
       name = "Array.prototype.some",
       code = EmptyCode(argLen = 1)
     ), T, F, T),
 
-    // TODO forEach
+    // TODO 15.4.4.18 Array.prototype.forEach(callbackfn [, thisArg ])
     NormalProp("forEach", FuncModel(
       name = "Array.prototype.forEach",
       code = EmptyCode(argLen = 1)
     ), T, F, T),
 
-    // TODO map
+    // TODO 15.4.4.19 Array.prototype.map(callbackfn [, thisArg ])
     NormalProp("map", FuncModel(
       name = "Array.prototype.map",
       code = EmptyCode(argLen = 1)
     ), T, F, T),
 
-    // TODO filter
+    // TODO 15.4.4.20 Array.prototype.filter(callbackfn [, thisArg ])
     NormalProp("filter", FuncModel(
       name = "Array.prototype.filter",
       code = EmptyCode(argLen = 1)
     ), T, F, T),
 
-    // TODO reduce
+    // TODO 15.4.4.21 Array.prototype.reduce(callbackfn [, initialValue ])
     NormalProp("reduce", FuncModel(
       name = "Array.prototype.reduce",
       code = EmptyCode(argLen = 1)
     ), T, F, T),
 
-    // TODO reduceRight
+    // TODO 15.4.4.22 Array.prototype.reduceRight(callbackfn [, initialValue ])
     NormalProp("reduceRight", FuncModel(
       name = "Array.prototype.reduceRight",
       code = EmptyCode(argLen = 1)
