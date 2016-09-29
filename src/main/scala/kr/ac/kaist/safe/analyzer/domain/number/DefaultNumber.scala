@@ -180,41 +180,6 @@ object DefaultNumber extends AbsNumberUtil {
       else math.signum(y) * result
     }
 
-    def isPositive: Boolean = {
-      this match {
-        case PosInf => true
-        case UIntConst(x) if x > 0 => true
-        case NUIntConst(x) if x > 0 => true
-        case _ => false
-      }
-    }
-
-    def isNegative: Boolean = {
-      this match {
-        case NegInf => true
-        case NUIntConst(x) if x < 0 => true
-        case _ => false
-      }
-    }
-
-    def isZero: Boolean = {
-      isPositiveZero || isNegativeZero
-    }
-
-    def isPositiveZero: Boolean = {
-      this match {
-        case UIntConst(x) if x == 0 => true
-        case _ => false
-      }
-    }
-
-    def isNegativeZero: Boolean = {
-      this match {
-        case NUIntConst(x) if x == 0 => true
-        case _ => false
-      }
-    }
-
     def toInteger: AbsNumber = {
       this match {
         case NaN => alpha(0)
@@ -373,16 +338,43 @@ object DefaultNumber extends AbsNumberUtil {
     def atan2(that: AbsNumber): AbsNumber = (this, check(that)) match {
       case (NaN, _)
         | (_, NaN) => NaN
-      case (_, _) if this.isPositive && that.isZero => alpha(scala.math.Pi / 2)
-      case (_, _) if this.isPositiveZero => {
-        if (that.isPositive || that.isPositiveZero) alpha(0)
-        else alpha(scala.math.Pi)
-      }
-      case (_, _) if this.isNegativeZero => {
-        if (that.isPositive || that.isPositiveZero) alpha(-0.0)
-        else alpha(-scala.math.Pi)
-      }
-      case (_, _) if this.isNegative && that.isZero => alpha(-scala.math.Pi / 2)
+      case (Bot, _) | (_, Bot) => Bot
+      case (Top, _) | (_, Top) => Top
+      // if (this > 0) & (that == + 0 | that == - 0) then PI/2
+      case (UIntConst(x), UIntConst(0)) if x > 0 => alpha(scala.math.Pi / 2)
+      case (UIntConst(x), NUIntConst(-0.0)) if x > 0 => alpha(scala.math.Pi / 2)
+      case (NUIntConst(x), UIntConst(0)) if x > 0 => alpha(scala.math.Pi / 2)
+      case (NUIntConst(x), NUIntConst(-0.0)) if x > 0 => alpha(scala.math.Pi / 2)
+      case (UInt, UIntConst(0)) | (UInt, NUIntConst(-0.0)) => alpha(scala.math.Pi / 2)
+      case (PosInf, UIntConst(0)) | (PosInf, NUIntConst(-0.0)) => alpha(scala.math.Pi / 2)
+      // if (this == + 0) & (that >= + 0) then 0
+      case (UIntConst(0), UIntConst(_)) => alpha(0.0)
+      case (UIntConst(0), NUIntConst(x)) if x > 0 => alpha(0.0)
+      case (UIntConst(0), UInt) => alpha(0.0)
+      case (UIntConst(0), PosInf) => alpha(0.0)
+      // if (this == + 0) & (that <= - 0) then PI
+      case (UIntConst(0), NUIntConst(-0.0)) => alpha(scala.math.Pi)
+      case (UIntConst(0), NUIntConst(x)) if x < 0 => alpha(scala.math.Pi)
+      case (UIntConst(0), NegInf) => alpha(scala.math.Pi)
+      // if (this == + 0) & (that ? 0) then (0 or PI)
+      case (UIntConst(0), NUInt) | (UIntConst(0), Inf) => alpha(0.0) + alpha(scala.math.Pi)
+      // if (this == - 0) & (that >= +0) then - 0
+      case (NUIntConst(-0.0), UIntConst(_)) => alpha(-0.0)
+      case (NUIntConst(-0.0), NUIntConst(x)) if x > 0 => alpha(-0.0)
+      case (NUIntConst(-0.0), UInt) => alpha(-0.0)
+      case (NUIntConst(-0.0), PosInf) => alpha(-0.0)
+      // if (this == - 0) & (that <= - 0) then - PI
+      case (NUIntConst(-0.0), NUIntConst(-0.0)) => alpha(-scala.math.Pi)
+      case (NUIntConst(-0.0), NUIntConst(x)) if x < 0 => alpha(-scala.math.Pi)
+      case (NUIntConst(-0.0), NegInf) => alpha(-scala.math.Pi)
+      // if (this == - 0) & (that ? 0) then (- 0 or - PI)
+      case (NUIntConst(-0.0), NUInt) | (UIntConst(0), Inf) => alpha(-0.0) + alpha(-scala.math.Pi)
+      // if (this < 0) & (that == + 0 | that == - 0) then - PI/2
+      case (NUIntConst(x), UIntConst(0)) if x < 0 => alpha(-scala.math.Pi / 2)
+      case (NUIntConst(x), NUIntConst(-0.0)) if x < 0 => alpha(-scala.math.Pi / 2)
+      case (NegInf, UIntConst(0)) => alpha(-scala.math.Pi / 2)
+      case (NegInf, NUIntConst(-0.0)) => alpha(-scala.math.Pi / 2)
+
       case (UIntConst(y), PosInf) if y > 0 => alpha(0)
       case (NUIntConst(y), PosInf) if y > 0 => alpha(0)
       case (UIntConst(y), NegInf) if y > 0 => alpha(scala.math.Pi)
@@ -434,7 +426,7 @@ object DefaultNumber extends AbsNumberUtil {
       this match {
         case NaN
           | PosInf => this
-        case _ if isZero => alpha(1)
+        case UIntConst(0) | NUIntConst(-0.0) => alpha(1)
         case NegInf => alpha(0)
         case UInt
           | NUInt => NUInt
@@ -458,11 +450,13 @@ object DefaultNumber extends AbsNumberUtil {
       }
     }
 
+    // TODO: Not to use deprecated functions: isNegative, isZero.
     def log: AbsNumber = {
       this match {
         case NaN => this
-        case _ if isNegative => NaN
-        case _ if isZero => NegInf
+        case NegInf => NaN
+        case NUIntConst(x) if x < 0 => NaN
+        case UIntConst(0) | NUIntConst(-0.0) => NegInf
         case PosInf => this
         case UIntConst(n) => alpha(scala.math.log(n))
         case NUIntConst(n) => alpha(scala.math.log(n))

@@ -23,12 +23,6 @@ trait AbsNumber extends AbsDomain[Num, AbsNumber] {
   def ===(that: AbsNumber): AbsBool
   def <(that: AbsNumber): AbsBool
 
-  def isPositive: Boolean
-  def isNegative: Boolean
-  def isZero: Boolean
-  def isPositiveZero: Boolean
-  def isNegativeZero: Boolean
-
   // Abstraction of step 2 - 4 in section 9.5, ECMAScript 5.1
   def toInteger: AbsNumber
   // Abstraction of step 2 - 5 in section 9.6, ECMAScript 5.1
