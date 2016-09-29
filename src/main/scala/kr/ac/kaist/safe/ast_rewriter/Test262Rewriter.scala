@@ -46,6 +46,14 @@ class Test262Rewriter(program: Program) extends ASTWalker {
 
   private object Test262RewriteWalker extends ASTWalker {
     override def walk(node: Stmt): Stmt = node match {
+      // runTestCase(f)
+      // ==>
+      // var __result = f()
+      // var __expect = true
+      case s @ ExprStmt(info, FunApp(_, VarRef(_, Id(_, "runTestCase", _, _)), List(f @ VarRef(fInfo, _))), _) =>
+        val funApp = FunApp(info, f, Nil)
+        val stmt = VarStmt(info, List(VarDecl(info, resultId(info), Some(funApp), false)))
+        ABlock(info, List(stmt, trueR(info)), false)
       // assert.sameValue(e1, e2, e3)
       // ==>
       // var __result = e1

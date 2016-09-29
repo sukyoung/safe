@@ -238,7 +238,9 @@ object BuiltinObjectHelper {
         (str + AbsString(keys), lenSet + keys.size)
       }
     }
-    val max = lenSet.max
+    val maxOpt =
+      if (lenSet.isEmpty) None
+      else Some(lenSet.max)
 
     // 1. If Type(O) is not Object throw a TypeError exception.
     val excSet = objCheck(objV)
@@ -250,24 +252,32 @@ object BuiltinObjectHelper {
     val AT = (AbsBool.True, AbsAbsent.Bot)
     val name = AbsValue(AbsPValue(strval = keyStr))
     val desc = AbsDesc((name, AbsAbsent.Bot), AT, AT, AT)
-    val (retObj, retExcSet) = (0 until max.toInt).foldLeft((array, excSet)) {
-      case ((obj, e), n) => {
-        val prop = AbsString(n.toString)
-        // b. Call the [[DefineOwnProperty]] internal method of array with arguments
-        //    ToString(n), the PropertyDescriptor {[[Value]]: name, [[Writable]]:
-        //    true, [[Enumerable]]: true, [[Configurable]]:true}, and false.
-        val (newObj, _, excSet) = obj.DefineOwnProperty(prop, desc, false)
-        (obj + newObj, e ++ excSet)
+    val (retObj, retExcSet) = maxOpt match {
+      case Some(max) => (0 until max.toInt).foldLeft((array, excSet)) {
+        case ((obj, e), n) => {
+          val prop = AbsString(n.toString)
+          // b. Call the [[DefineOwnProperty]] internal method of array with arguments
+          //    ToString(n), the PropertyDescriptor {[[Value]]: name, [[Writable]]:
+          //    true, [[Enumerable]]: true, [[Configurable]]:true}, and false.
+          val (newObj, _, excSet) = obj.DefineOwnProperty(prop, desc, false)
+          (obj + newObj, e ++ excSet)
+        }
       }
+      case None => (AbsObjectUtil.Bot, excSet)
     }
 
     // 5. Return array.
-    val state = st.oldify(arrAddr)
-    val arrLoc = Loc(arrAddr, Recent)
-    val retHeap = state.heap.update(arrLoc, retObj)
-    val excSt = state.raiseException(retExcSet)
+    retObj.isBottom match {
+      case true => (State.Bot, st.raiseException(retExcSet), AbsValue.Bot)
+      case false => {
+        val state = st.oldify(arrAddr)
+        val arrLoc = Loc(arrAddr, Recent)
+        val retHeap = state.heap.update(arrLoc, retObj)
+        val excSt = state.raiseException(retExcSet)
 
-    (State(retHeap, state.context), excSt, AbsValue(arrLoc))
+        (State(retHeap, state.context), excSt, AbsValue(arrLoc))
+      }
+    }
   }
 
   def create(args: AbsValue, st: State): (State, State, AbsValue) = {
