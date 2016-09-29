@@ -305,7 +305,7 @@ object DefaultNumber extends AbsNumberUtil {
     def negate: AbsNumber = {
       this match {
         case NaN => NaN
-        case UIntConst(0) => this
+        case UIntConst(0) => NUIntConst(-0.0)
         case UIntConst(n) => alpha(-n)
         case NUIntConst(n) => alpha(-n)
         case UInt => NUInt
