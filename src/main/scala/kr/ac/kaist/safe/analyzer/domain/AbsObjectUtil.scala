@@ -135,6 +135,13 @@ object AbsObjectUtil {
     }
   }
 
+  def newErrorObj(errorName: String, protoLoc: Loc): AbsObject = {
+    Empty
+      .update(IClass, InternalValueUtil(AbsString(errorName)))
+      .update(IPrototype, InternalValueUtil(protoLoc))
+      .update(IExtensible, InternalValueUtil(AbsBool.True))
+  }
+
   def defaultValue(locSet: AbsLoc): AbsPValue = {
     if (locSet.isBottom) AbsPValue.Bot
     else AbsPValue.Top

@@ -1,13 +1,12 @@
 var __result1;
-var __expect1 = __RefErrLoc;
+var __expect1 = true;
 
 function foo() {
-	return x;
+    return x;
 }
 
 try {
-	foo();
+    foo();
 } catch(e) {
-	__result1 = e;
+    __result1 = e instanceof __RefErrLoc;
 }
-
