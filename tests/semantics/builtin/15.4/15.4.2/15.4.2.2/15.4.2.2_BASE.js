@@ -4,8 +4,8 @@ var __expect1 = 0
 
 var __result2;
 try { new Array(-1);
-} catch(e) { __result2 = e; }
-var __expect2 = __RangeErrLoc
+} catch(e) { __result2 = e instanceof __RangeErrLoc; }
+var __expect2 = true;
 
 var x2 = new Array("abc");
 var __result3 = x2.length

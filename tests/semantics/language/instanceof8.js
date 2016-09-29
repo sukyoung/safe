@@ -3,17 +3,16 @@ var __result2;
 
 var o;
 if (__TOP) {
-  o = {};
+    o = {};
 } else {
-  o = function() {};
+    o = function() {};
 }
 
 try {
-  __result1 = 1 instanceof o;
+    __result1 = 1 instanceof o;
 } catch(e) {
-  __result2 = e;
+    __result2 = e instanceof __TypeErrLoc;
 }
 
 var __expect1 = false;
-var __expect2 = __TypeErrLoc;
-
+var __expect2 = true;

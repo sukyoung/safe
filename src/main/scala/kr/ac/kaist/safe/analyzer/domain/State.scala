@@ -15,7 +15,7 @@ import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.analyzer.models.PredefLoc
 import kr.ac.kaist.safe.analyzer.models.builtin.BuiltinGlobal
 import kr.ac.kaist.safe.nodes.cfg._
-import kr.ac.kaist.safe.util.Address
+import kr.ac.kaist.safe.util.{ Address, SystemAddr }
 import scala.collection.immutable.{ HashMap }
 
 case class State(heap: Heap, context: AbsContext) {
@@ -40,14 +40,25 @@ case class State(heap: Heap, context: AbsContext) {
   def raiseException(excSet: Set[Exception]): State = {
     if (excSet.isEmpty) State.Bot
     else {
-      val localEnv = context.pureLocal
-      val (oldValue, _) = localEnv.record.decEnvRec.GetBindingValue("@exception_all")
-      val newExcSet = excSet.foldLeft(AbsLoc.Bot)((locSet, exc) => locSet + exc.getLoc)
+      val (oldValue, _) = context.pureLocal.record.decEnvRec.GetBindingValue("@exception_all")
+      val (newSt: State, newExcSet: AbsLoc) = excSet.foldLeft((this, AbsLoc.Bot)) {
+        case ((st, locSet), exc) => {
+          val errModel = exc.getModel
+          val errAddr = SystemAddr(errModel.name + "<instance>")
+          val newSt = st.oldify(errAddr)
+          val loc = Loc(errAddr, Recent)
+          val (protoModel, _, _, _) = errModel.protoModel.get
+          val newErrObj = AbsObjectUtil.newErrorObj(errModel.name, protoModel.loc)
+          val retH = newSt.heap.update(loc, newErrObj)
+          (State(retH, newSt.context), locSet + loc)
+        }
+      }
       val excValue = AbsValue(newExcSet)
-      val (localEnv2, _) = localEnv.record.decEnvRec.SetMutableBinding("@exception", excValue)
-      val (localEnv3, _) = localEnv2.SetMutableBinding("@exception_all", excValue + oldValue)
-      val newCtx = context.subsPureLocal(localEnv.copyWith(record = localEnv3))
-      State(heap, newCtx)
+      val localEnv = newSt.context.pureLocal
+      val (envRec1, _) = localEnv.record.decEnvRec.SetMutableBinding("@exception", excValue)
+      val (envRec2, _) = envRec1.SetMutableBinding("@exception_all", excValue + oldValue)
+      val newCtx = newSt.context.subsPureLocal(localEnv.copyWith(record = envRec2))
+      State(newSt.heap, newCtx)
     }
   }
 
