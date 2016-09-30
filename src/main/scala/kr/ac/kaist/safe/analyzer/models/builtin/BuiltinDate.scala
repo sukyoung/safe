@@ -28,7 +28,7 @@ object BuiltinDateHelper {
     })
   }
 
-  val valueOf = BasicCode(argLen = 1, (
+  val valueOf = BasicCode(argLen = 0, (
     args: AbsValue, st: State
   ) => {
     val h = st.heap
