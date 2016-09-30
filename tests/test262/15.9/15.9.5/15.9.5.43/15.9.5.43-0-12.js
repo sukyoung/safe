@@ -1,4 +1,4 @@
-//  TODO date.prototype.toISOString
+//  TODO date.prototype.toISOString precision
 //  function testcase() 
 //  {
 //    var timeZoneMinutes = new Date().getTimezoneOffset() * (- 1);
