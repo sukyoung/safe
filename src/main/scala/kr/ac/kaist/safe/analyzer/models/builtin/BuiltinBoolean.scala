@@ -72,7 +72,8 @@ object BuiltinBoolean extends FuncModel(
 object BuiltinBooleanProto extends ObjModel(
   name = "Boolean.prototype",
   props = List(
-    InternalProp(IPrototype, BuiltinObjectProto),
+    InternalProp(IPrimitiveValue, PrimModel(false)),
+    InternalProp(IClass, PrimModel("Boolean")),
 
     // 15.6.4.2 Boolean.prototype.toString()
     NormalProp("toString", FuncModel(
