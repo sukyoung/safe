@@ -1,0 +1,33 @@
+//  TODO getter/setter
+// function testcase() 
+// {
+//   var proto = {
+
+//   };
+//   Object.defineProperty(proto, "foo", {
+//     value : 0,
+//     configurable : true
+//   });
+//   var ConstructFun = (function () 
+//   {
+
+//   });
+//   ConstructFun.prototype = proto;
+//   var child = new ConstructFun();
+//   Object.defineProperty(child, "foo", {
+//     get : (function () 
+//     {
+//       return 10;
+//     }),
+//     configurable : true
+//   });
+//   var preCheck = Object.isExtensible(child);
+//   Object.seal(child);
+//   delete child.foo;
+//   return preCheck && child.foo === 10;
+// }
+// {
+//   var __result1 = testcase();
+//   var __expect1 = true;
+// }
+
