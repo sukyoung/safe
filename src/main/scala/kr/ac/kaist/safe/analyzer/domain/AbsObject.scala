@@ -464,26 +464,41 @@ class AbsObject(
       (obj1 + obj2, b1 + b2, excSet1 ++ excSet2)
     } else BotTriple
 
-    val (w, _) = current.writable
-    val (c, _) = current.configurable
+    val (cv, cva) = current.value
+    val (cw, cwa) = current.writable
+    val (ce, cea) = current.enumerable
+    val (cc, cca) = current.configurable
+    val (dv, dva) = Desc.value
+    val (dw, dwa) = Desc.writable
+    val (de, dea) = Desc.enumerable
+    val (dc, dca) = Desc.configurable
+
+    // 5. Return true, if every field in Desc is absent.
+    val (obj5, b5) =
+      if (dva.isTop && dwa.isTop && dea.isTop && dca.isTop) (this, AbsBool.True)
+      else (AbsObjectUtil.Bot, AbsBool.Bot)
+    // 6. Return true, if every field in Desc also occurs in current and same
+    val (obj6, b6) =
+      if ((dva.isTop || (!dv.isBottom && AbsBool.True <= ( /* TODO unsound: we should consider the object sameValue*/ dv.pvalue === cv.pvalue))) &&
+        (dwa.isTop || (!dw.isBottom && AbsBool.True <= (dw === cw))) &&
+        (dea.isTop || (!de.isBottom && AbsBool.True <= (de === ce))) &&
+        (dca.isTop || (!dc.isBottom && AbsBool.True <= (dc === cc)))) (this, AbsBool.True)
+      else (AbsObjectUtil.Bot, AbsBool.Bot)
+
     val (obj2: AbsObject, b2: AbsBool, excSet2: Set[Exception]) =
-      if (AbsBool.False <= c && AbsBool.False <= w) Reject
+      if (AbsBool.False <= cc && AbsBool.False <= cw) Reject
       else BotTriple
 
     val (obj3, b3, excSet3) =
-      if (AbsBool.True <= c || AbsBool.True <= w) {
-        val (v, _) = Desc.value
-        val (w, _) = Desc.writable
-        val (e, _) = Desc.enumerable
-        val (c, _) = Desc.configurable
+      if (AbsBool.True <= cc || AbsBool.True <= cw) {
         var newDP = this(P)
-        if (!v.isBottom) newDP = newDP.copyWith(value = v)
-        if (!w.isBottom) newDP = newDP.copyWith(writable = w)
-        if (!e.isBottom) newDP = newDP.copyWith(enumerable = e)
-        if (!c.isBottom) newDP = newDP.copyWith(configurable = c)
+        if (!dv.isBottom) newDP = newDP.copyWith(value = dv)
+        if (!dw.isBottom) newDP = newDP.copyWith(writable = dw)
+        if (!de.isBottom) newDP = newDP.copyWith(enumerable = de)
+        if (!dc.isBottom) newDP = newDP.copyWith(configurable = dc)
         val changedObj = this.update(P, newDP)
         (changedObj, AbsBool.True, ExcSetEmpty)
       } else BotTriple
-    (obj1 + obj2 + obj3, b1 + b2 + b3, excSet1 ++ excSet2 ++ excSet3)
+    (obj1 + obj2 + obj3 + obj5 + obj6, b1 + b2 + b3 + b5 + b6, excSet1 ++ excSet2 ++ excSet3)
   }
 }
