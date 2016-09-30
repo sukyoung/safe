@@ -76,7 +76,8 @@ object DefaultNumber extends AbsNumberUtil {
     }
 
     private def toString(d: Double): String = {
-      if (Math.floor(d) == d && !d.isInfinity) d.toLong.toString
+      if (d == -0.0) "-0"
+      else if (Math.floor(d) == d && !d.isInfinity) d.toLong.toString
       else d.toString
     }
     def toAbsString: AbsString = this match {
@@ -94,9 +95,8 @@ object DefaultNumber extends AbsNumberUtil {
 
     def toAbsBoolean: AbsBool = this match {
       case Bot => AbsBool.Bot
-      case NaN => AbsBool.False
-      case UIntConst(v) if v == 0 => AbsBool.False
-      case Top | UInt => AbsBool.Top
+      case NaN | UIntConst(0) | NUIntConst(-0.0) => AbsBool.False
+      case Top | UInt | NUInt => AbsBool.Top
       case _ => AbsBool.True
     }
 

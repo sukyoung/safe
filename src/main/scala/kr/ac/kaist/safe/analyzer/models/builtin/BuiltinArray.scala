@@ -504,7 +504,7 @@ object BuiltinArrayHelper {
             // 7. Return n.
             (putObj, AbsValue(n), putExcSet ++ retExcSet)
           }
-          case _ => (arr.update(AbsString.Number, AbsDataProp.Top), AbsNumber.Top, HashSet(TypeError))
+          case _ => (arr.update(AbsString.Number, AbsDataProp.Top), AbsValue(AbsNumber.Top), HashSet(TypeError))
         }
         val retH = h.update(loc, retObj)
         (retH, value + retV, excSet ++ retExcSet)
