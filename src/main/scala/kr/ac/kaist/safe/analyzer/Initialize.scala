@@ -49,7 +49,7 @@ case class Initialize(cfg: CFG) {
     val boolBot = AbsBool.Bot
 
     val testGlobalObj =
-      globalObj.initializeUpdate("__BOT", AbsDataProp.Bot)
+      globalObj.initializeUpdate("__BOT", AbsDataProp(AbsValue.Bot))
         .initializeUpdate("__TOP", AbsDataProp(AbsPValue.Top))
         .initializeUpdate("__UInt", AbsDataProp(AbsNumber.UInt))
         .initializeUpdate("__Global", AbsDataProp(AbsValue(BuiltinGlobal.loc)))

@@ -1,4 +1,4 @@
-//  TODO Date.prototype.toISOString
+//  TODO Date.prototype.toISOString precision
 //  function testcase() 
 //  {
 //    var dateStr = (new Date()).toISOString();
