@@ -72,12 +72,12 @@ object DefaultNumber extends AbsNumberUtil {
       case UInt => "UInt"
       case NUInt => "NUInt"
       case UIntConst(v) => v.toString
+      case NUIntConst(-0.0) => toString(-0)
       case NUIntConst(v) => toString(v)
     }
 
     private def toString(d: Double): String = {
-      if (d == -0.0) "-0"
-      else if (Math.floor(d) == d && !d.isInfinity) d.toLong.toString
+      if (Math.floor(d) == d && !d.isInfinity) d.toLong.toString
       else d.toString
     }
     def toAbsString: AbsString = this match {
