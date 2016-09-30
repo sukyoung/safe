@@ -223,7 +223,7 @@ object DefaultNumber extends AbsNumberUtil {
       def help(n: Double): AbsNumber = {
         val posInt = math.floor(math.abs(n))
         val int32bit = modulo(posInt, 0x100000000L);
-        alpha(int32bit.toInt)
+        alpha(int32bit)
       }
       this match {
         case Bot => Bot
@@ -244,7 +244,7 @@ object DefaultNumber extends AbsNumberUtil {
       def help(n: Double): AbsNumber = {
         val posInt = math.signum(n) * math.floor(math.abs(n))
         val int16bit = modulo(posInt, 0x10000L);
-        alpha(int16bit.toInt)
+        alpha(int16bit)
       }
       this match {
         case Bot => Bot
