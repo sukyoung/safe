@@ -1,4 +1,4 @@
-//  TODO Date.prototype.getNumber is imprecise
+//  TODO Date.prototype.getNumber precision
 //  function testcase() 
 //  {
 //    try

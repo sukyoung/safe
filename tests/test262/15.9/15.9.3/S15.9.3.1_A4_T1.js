@@ -1,4 +1,4 @@
-//  TODO 15.9.3.1 new Date (year, month [, date [, hours [, minutes [, seconds [, ms]]]]])
+//  TODO new Date precision
 //  var myObj = (function (val) 
 //  {
 //    this.value = val;
