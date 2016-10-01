@@ -213,18 +213,19 @@ object BuiltinObjectHelper {
     val obj = h.get(objV.locset)
     val (desc, undef) = obj.GetOwnProperty(name)
     // 4. Return the result of calling FromPropertyDescriptor(desc) (8.10.4).
-    val (retH, retV, excSet2) = if (!desc.isBottom) {
+    val (retSt, retV, excSet2) = if (!desc.isBottom) {
       val (descObj, excSet) = AbsObjectUtil.FromPropertyDescriptor(desc)
       val descAddr = SystemAddr("Object.getOwnPropertyDescriptor<descriptor>")
+      val state = st.oldify(descAddr)
       val descLoc = Loc(descAddr, Recent)
-      val retH = h.update(descLoc, descObj)
+      val retH = state.heap.update(descLoc, descObj)
       val retV = AbsValue(undef, AbsLoc(descLoc))
-      (retH, retV, excSet)
-    } else (h, AbsValue(undef), ExcSetEmpty)
+      (State(retH, state.context), retV, excSet)
+    } else (st, AbsValue(undef), ExcSetEmpty)
 
     val excSt = st.raiseException(excSet1 ++ excSet2)
 
-    (State(retH, st.context), excSt, retV)
+    (retSt, excSt, retV)
   }
 
   def getOwnPropertyNames(args: AbsValue, st: State): (State, State, AbsValue) = {
