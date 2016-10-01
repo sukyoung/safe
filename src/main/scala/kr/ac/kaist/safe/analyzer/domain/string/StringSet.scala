@@ -285,20 +285,6 @@ case class StringSet(maxSetSize: Int) extends AbsStringUtil {
         case Bot => Bot
       }
 
-    def isAllNums: Boolean =
-      this match {
-        case Number => true
-        case StrSet(v) => hasNum(v) && !hasOther(v)
-        case _ => false
-      }
-
-    def isAllOthers: Boolean =
-      this match {
-        case Other => true
-        case StrSet(v) => !hasNum(v) && hasOther(v)
-        case _ => false
-      }
-
     def isArrayIndex: AbsBool = this match {
       case Top | Number => AbsBool.Top
       case Other => AbsBool.False
