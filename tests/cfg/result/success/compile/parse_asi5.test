@@ -1,0 +1,134 @@
+
+var i
+var s
+var x
+var y
+var z
+{
+  <>y<>1 = b
+  <>obj<>2 = <>Global<>toObject(c)
+  <>temp<>3 = d + e
+  <>arguments<>4 = [<>temp<>3, ]
+  <>fun<>5 = <>Global<>getBase(c)
+  <>obj1<>6 = <>obj<>2(<>fun<>5, <>arguments<>4)
+  <>obj<>7 = <>Global<>toObject(<>obj1<>6)
+  <>arguments<>8 = []
+  <>fun<>9 = <>Global<>toObject(<>obj<>7["print"])
+  <>z<>10 = <>fun<>9(<>obj<>7, <>arguments<>8)
+  a = <>y<>1 + <>z<>10
+}
+a = b + c
+{
+  <>obj<>11 = <>Global<>toObject(d + e)
+  <>arguments<>12 = []
+  <>fun<>13 = <>Global<>toObject(<>obj<>11["print"])
+  <>obj1<>14 = <>fun<>13(<>obj<>11, <>arguments<>12)
+  <>obj<>15 = <>Global<>toObject(<>obj1<>14)
+  <>temp<>16 = "January"
+  <>temp<>17 = "Jan"
+  <>temp<>18 = [<>temp<>16, <>temp<>17, ]
+  <>temp<>19 = "February"
+  <>temp<>20 = "Feb"
+  <>temp<>21 = [<>temp<>19, <>temp<>20, ]
+  <>temp<>22 = "March"
+  <>temp<>23 = "Mar"
+  <>temp<>24 = [<>temp<>22, <>temp<>23, ]
+  <>temp<>25 = "April"
+  <>temp<>26 = "Apr"
+  <>temp<>27 = [<>temp<>25, <>temp<>26, ]
+  <>temp<>28 = "May"
+  <>temp<>29 = "May"
+  <>temp<>30 = [<>temp<>28, <>temp<>29, ]
+  <>temp<>31 = "June"
+  <>temp<>32 = "Jun"
+  <>temp<>33 = [<>temp<>31, <>temp<>32, ]
+  <>temp<>34 = "July"
+  <>temp<>35 = "Jul"
+  <>temp<>36 = [<>temp<>34, <>temp<>35, ]
+  <>temp<>37 = "August"
+  <>temp<>38 = "Aug"
+  <>temp<>39 = [<>temp<>37, <>temp<>38, ]
+  <>temp<>40 = "September"
+  <>temp<>41 = "Sep"
+  <>temp<>42 = [<>temp<>40, <>temp<>41, ]
+  <>temp<>43 = "October"
+  <>temp<>44 = "Oct"
+  <>temp<>45 = [<>temp<>43, <>temp<>44, ]
+  <>temp<>46 = "November"
+  <>temp<>47 = "Nov"
+  <>temp<>48 = [<>temp<>46, <>temp<>47, ]
+  <>temp<>49 = "December"
+  <>temp<>50 = "Dec"
+  <>field1<>51 = [<>temp<>49, <>temp<>50, ]
+  <>obj<>52 = <>Global<>toObject(<>obj<>15[<>field1<>51])
+  <>temp<>53 = function <>funexpr@19:11-76<>54(this, <>arguments<>55) 
+  {
+    var <>a<>56
+    <>a<>56 = <>arguments<>55["0"]
+    {
+      <>obj<>57 = <>Global<>toObject(print)
+      <>y<>58 = "The abbreviation of "
+      <>obj<>59 = <>Global<>toObject(<>a<>56)
+      <>y<>60 = <>y<>58 + <>obj<>59[0] + " is "
+      <>obj<>61 = <>Global<>toObject(<>a<>56)
+      <>temp<>62 = <>y<>60 + <>obj<>61[1] + "."
+      <>arguments<>63 = [<>temp<>62, ]
+      <>fun<>64 = <>Global<>getBase(print)
+      <>Global<>ignore4 = <>obj<>57(<>fun<>64, <>arguments<>63)
+    }
+  }
+  <>arguments<>65 = [<>temp<>53, ]
+  <>fun<>66 = <>Global<>toObject(<>obj<>52["forEach"])
+  <>obj1<>67 = <>fun<>66(<>obj<>52, <>arguments<>65)
+  <>obj<>68 = <>Global<>toObject(<>obj1<>67)
+  <>temp<>69 = "/script.js"
+  <>temp<>70 = "/style1.css"
+  <>temp<>71 = "/style2.css"
+  <>obj<>72 = <>Global<>toObject(<>obj<>68["/page1.html"])
+  <>temp<>73 = function <>funexpr@25:11-27:25<>74(this, <>arguments<>75) 
+  {
+    var <>uri<>76
+    <>uri<>76 = <>arguments<>75["0"]
+    {
+      <>obj<>77 = <>Global<>toObject(log)
+      <>temp<>78 = "Looking up and caching " + <>uri<>76
+      <>arguments<>79 = [<>temp<>78, ]
+      <>fun<>80 = <>Global<>getBase(log)
+      <>Global<>ignore5 = <>obj<>77(<>fun<>80, <>arguments<>79)
+    }
+    {
+      <>obj<>81 = <>Global<>toObject(fetch_and_cache)
+      <>temp<>82 = <>uri<>76
+      <>arguments<>83 = [<>temp<>82, ]
+      <>fun<>84 = <>Global<>getBase(fetch_and_cache)
+      <>Global<>ignore6 = <>obj<>81(<>fun<>84, <>arguments<>83)
+    }
+  }
+  <>arguments<>85 = [<>temp<>73, ]
+  <>fun<>86 = <>Global<>toObject(<>obj<>72["forEach"])
+  <>Global<>ignore3 = <>fun<>86(<>obj<>72, <>arguments<>85)
+}
+s = "here is a string"
+{
+  <>y<>87 = 0
+  <>temp<>88 = a - z
+  <>z<>89 = [<>temp<>88, ]
+  <>y<>90 = <>y<>87 / <>z<>89
+  <>obj<>91 = <>Global<>toObject(g)
+  <>temp<>92 = s
+  <>arguments<>93 = [<>temp<>92, ]
+  <>fun<>94 = <>Global<>toObject(<>obj<>91["exec"])
+  <>z<>95 = <>fun<>94(<>obj<>91, <>arguments<>93)
+  i = <>y<>90 / <>z<>95
+}
+x = + y
+y = - y
+{
+  <>obj<>96 = <>Global<>toObject(print)
+  <>temp<>97 = - y
+  <>arguments<>98 = [<>temp<>97, ]
+  <>fun<>99 = <>Global<>getBase(print)
+  <>Global<>ignore11 = <>obj<>96(<>fun<>99, <>arguments<>98)
+}
+<>Global<>ignore13 = + z
+

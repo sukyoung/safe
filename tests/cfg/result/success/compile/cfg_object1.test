@@ -1,0 +1,21 @@
+
+var o
+{
+  <>temp<>1 = {
+    n : 10,
+    m : 593
+  }
+  <>temp<>2 = {
+    a : 3.0,
+    b : "stuv",
+    c : <>temp<>1
+  }
+  <>Global<>ignore1 = {
+    x : 1,
+    y : "abc",
+    z : <>temp<>2,
+    w : null
+  }
+  o = <>Global<>ignore1
+}
+

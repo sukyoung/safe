@@ -1,0 +1,13 @@
+function f(this, <>arguments<>1) 
+{
+  return
+  x = "B"
+}
+var x
+{
+  <>obj<>2 = <>Global<>toObject(f)
+  <>arguments<>3 = []
+  <>fun<>4 = <>Global<>getBase(f)
+  <>Global<>ignore2 = <>obj<>2(<>fun<>4, <>arguments<>3)
+}
+

@@ -1,0 +1,22 @@
+function[0] top-level {
+  Entry[-1] -> [0]
+
+  Block[0] -> Exit, ExitExc
+    [0] noop(StartOfFile)
+    [1] <>temp<>1 := 3
+    [2] <>temp<>2 := 4
+    [3] <>temp<>3 := 5
+    [4] <>temp<>4 := 6
+    [5] <>Global<>ignore1 := allocArray(6) @ #1
+    [6] <>Global<>ignore1["0"] := <>temp<>1
+    [7] <>Global<>ignore1["1"] := <>temp<>2
+    [8] <>Global<>ignore1["4"] := <>temp<>3
+    [9] <>Global<>ignore1["5"] := <>temp<>4
+    [10] noop(EndOfFile)
+
+  Exit[-2]
+
+  ExitExc[-3]
+
+}
+

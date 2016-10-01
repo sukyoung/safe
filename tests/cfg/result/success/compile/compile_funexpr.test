@@ -1,0 +1,54 @@
+function f(this, <>arguments<>1) 
+{
+  var <>a<>2
+  var <>b<>3
+  var <>z<>4
+  <>a<>2 = <>arguments<>1["0"]
+  <>b<>3 = <>arguments<>1["1"]
+  {
+    <>Global<>ignore1 = function <>g<>5(this, <>arguments<>6) 
+    {
+      var <>c<>7
+      <>c<>7 = <>arguments<>6["0"]
+      <>Global<>ignore3 = false
+      <>Global<>ignore5 = this
+      <>Global<>ignore7 = <>c<>7
+    }
+    <>z<>4 = <>Global<>ignore1
+  }
+  return <>z<>4
+}
+var x
+{
+  <>Global<>ignore8 = function x<>funexpr@5:9-35<>8(this, <>arguments<>9) 
+  {
+    var <>x<>10
+    <>x<>10 = <>arguments<>9["0"]
+    return <>x<>10
+  }
+  x = <>Global<>ignore8
+}
+{
+  <>obj1<>11 = function <>h<>12(this, <>arguments<>13) 
+  {
+    var <>n<>14
+    <>n<>14 = <>arguments<>13["0"]
+    if(<>n<>14 == 0)
+      return <>n<>14
+    else
+    {
+      <>obj<>15 = <>Global<>toObject(<>h<>12)
+      <>temp<>16 = <>n<>14 - 1
+      <>arguments<>17 = [<>temp<>16, ]
+      <>fun<>18 = <>Global<>getBase(<>h<>12)
+      <>new1<>19 = <>obj<>15(<>fun<>18, <>arguments<>17)
+      return <>new1<>19
+    }
+  }
+  <>obj<>20 = <>Global<>toObject(<>obj1<>11)
+  <>temp<>21 = 3
+  <>arguments<>22 = [<>temp<>21, ]
+  <>Global<>ignore9 = <>obj<>20(<>Global<>global, <>arguments<>22)
+  y = <>Global<>ignore9
+}
+

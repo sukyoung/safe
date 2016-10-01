@@ -1,0 +1,51 @@
+function[0] top-level {
+  Entry[-1] -> [0]
+
+  Block[0] -> Exit
+    [0] f := function (1) @ #1, #2
+    [1] g := function (2) @ #7, #8
+    [2] noop(StartOfFile)
+    [3] noop(EndOfFile)
+
+  Exit[-2]
+
+  ExitExc[-3]
+
+}
+
+function[1] f {
+  Entry[-1] -> [0]
+
+  Block[0] -> Exit, ExitExc
+    [0] return(1)
+
+  Exit[-2]
+
+  ExitExc[-3]
+
+}
+
+function[2] g {
+  Entry[-1] -> [0]
+
+  Block[0] -> [1], ExitExc
+    [0] <>obj<>3 := <>Global<>toObject(f) @ #3
+    [1] <>arguments<>4 := allocArg(0) @ #4
+    [2] <>fun<>5 := <>Global<>getBase(f)
+
+  Call[1] -> ExitExc
+    [0] call(<>obj<>3, <>fun<>5, <>arguments<>4) @ #5
+
+  AfterCall[2] -> [4]
+
+  AfterCatch[3] -> ExitExc
+
+  Block[4] -> Exit, ExitExc
+    [0] return(<>new1<>6)
+
+  Exit[-2]
+
+  ExitExc[-3]
+
+}
+

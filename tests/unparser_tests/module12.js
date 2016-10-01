@@ -1,5 +1,0 @@
-module counter {
-    var n = 0;
-    export function increment() { return n++ }
-    export function current() { return n }
-}

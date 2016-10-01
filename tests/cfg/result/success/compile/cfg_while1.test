@@ -1,0 +1,10 @@
+
+var x
+<>break<>1 : {
+  while(true)
+  {
+    <>continue<>2 : x = 1
+  }
+}
+x = 2
+

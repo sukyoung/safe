@@ -1,0 +1,38 @@
+function[0] top-level {
+  Entry[-1] -> [0]
+
+  Block[0] -> Exit, ExitExc
+    [0] f := function (1) @ #1, #2
+    [1] g := function (2) @ #3, #4
+    [2] noop(StartOfFile)
+    [3] <>Global<>ignore2 := 3
+    [4] noop(EndOfFile)
+
+  Exit[-2]
+
+  ExitExc[-3]
+
+}
+
+function[1] f {
+  Entry[-1] -> [0]
+
+  Block[0] -> Exit
+
+  Exit[-2]
+
+  ExitExc[-3]
+
+}
+
+function[2] g {
+  Entry[-1] -> [0]
+
+  Block[0] -> Exit
+
+  Exit[-2]
+
+  ExitExc[-3]
+
+}
+

@@ -1,0 +1,24 @@
+
+var foo
+var __expect1
+var __result1
+{
+  <>Global<>ignore1 = function <>foo<>1(this, <>arguments<>2) 
+  {
+    <>foo<>1 = null
+  }
+  foo = <>Global<>ignore1
+}
+{
+  __expect1 = foo
+}
+{
+  <>obj<>3 = <>Global<>toObject(foo)
+  <>arguments<>4 = []
+  <>fun<>5 = <>Global<>getBase(foo)
+  <>Global<>ignore4 = <>obj<>3(<>fun<>5, <>arguments<>4)
+}
+{
+  __result1 = foo
+}
+

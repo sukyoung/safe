@@ -1,0 +1,188 @@
+function[0] top-level {
+  Entry[-1] -> [0]
+
+  Block[0] -> [1], ExitExc
+    [0] noop(StartOfFile)
+    [1] z := 1
+
+  Block[1] -> [5], [4]
+
+  Block[2] -> [8], [7]
+    [0] catch(<>e<>1)
+
+  Block[3] -> [17]
+
+  Block[4] -> [6], [2]
+    [0] assert(true)
+    [1] x := 2
+
+  Block[5] -> [6], [2]
+    [0] assert(! true)
+
+  Block[6] -> [2]
+    [0] <>Global<>ignore8 := alloc() @ #1
+    [1] <>Global<>ignore8["a"] := "A"
+    [2] <>Global<>ignore8["b"] := "B"
+    [3] <>Global<>ignore8["c"] := "C"
+    [4] y := <>Global<>ignore8
+    [5] <>obj<>2 := <>Global<>toObject(y) @ #2
+    [6] throw(<>obj<>2["a"])
+
+  Block[7] -> [9], [37]
+    [0] assert(<>e<>1 == "A")
+    [1] <>Global<>ignore3 := undefined
+
+  Block[8] -> [9], [37]
+    [0] assert(<>e<>1 != "A")
+
+  Block[9] -> [10]
+
+  Block[10] -> [12], [15]
+    [0] <>Global<>ignore4 := function (1) @ #4, #5
+    [1] x := <>Global<>ignore4
+    [2] <>obj<>7 := <>Global<>toObject(x) @ #6
+    [3] <>temp<>8 := 9
+    [4] <>temp<>9 := 6
+    [5] <>temp<>10 := 4
+    [6] <>temp<>11 := 2
+    [7] <>temp<>12 := allocArray(4) @ #7
+    [8] <>temp<>12["0"] := <>temp<>8
+    [9] <>temp<>12["1"] := <>temp<>9
+    [10] <>temp<>12["2"] := <>temp<>10
+    [11] <>temp<>12["3"] := <>temp<>11
+    [12] <>arguments<>13 := allocArg(1) @ #8
+    [13] <>arguments<>13["0"] := <>temp<>12
+    [14] <>fun<>14 := <>Global<>getBase(x)
+
+  Block[11] -> [3], [37]
+    [0] <>obj<>15 := <>Global<>toObject(y) @ #11
+    [1] <>Global<>ignore6 := alloc() @ #12
+    [2] <>Global<>ignore6["test"] := - 23.8
+    [3] <>obj<>15["d"] := <>Global<>ignore6
+
+  Call[12] -> [15]
+    [0] call(<>obj<>7, <>fun<>14, <>arguments<>13) @ #9
+
+  AfterCall[13] -> [11]
+
+  AfterCatch[14] -> [15]
+
+  Block[15] -> [26], [37]
+    [0] <>obj<>15 := <>Global<>toObject(y) @ #13
+    [1] <>Global<>ignore6 := alloc() @ #14
+    [2] <>Global<>ignore6["test"] := - 23.8
+    [3] <>obj<>15["d"] := <>Global<>ignore6
+
+  Block[16] -> [24]
+
+  Block[17] -> [19], [18]
+
+  Block[18] -> [22], [21], ExitExc
+    [0] assert(true)
+    [1] <>old<>16 := x
+    [2] <>new<>17 := <>Global<>toNumber(<>old<>16)
+    [3] x := <>new<>17 - 1
+
+  Block[19] -> [16], ExitExc
+    [0] assert(! true)
+
+  Block[20] -> [17]
+
+  Block[21] -> [16], ExitExc
+    [0] assert(<>new<>17 == 0)
+
+  Block[22] -> [23], ExitExc
+    [0] assert(<>new<>17 != 0)
+
+  Block[23] -> [20]
+
+  Block[24] -> [48]
+
+  Block[25] -> [48], ExitExc
+    [0] catch(<>e<>18)
+    [1] <>Global<>ignore10 := <>e<>18
+
+  Block[26] -> [28]
+
+  Block[27] -> [35]
+
+  Block[28] -> [30], [29]
+
+  Block[29] -> [33], [32], ExitExc
+    [0] assert(true)
+    [1] <>old<>16 := x
+    [2] <>new<>17 := <>Global<>toNumber(<>old<>16)
+    [3] x := <>new<>17 - 1
+
+  Block[30] -> [27], ExitExc
+    [0] assert(! true)
+
+  Block[31] -> [28]
+
+  Block[32] -> [27], ExitExc
+    [0] assert(<>new<>17 == 0)
+
+  Block[33] -> [34], ExitExc
+    [0] assert(<>new<>17 != 0)
+
+  Block[34] -> [31]
+
+  Block[35] -> ExitExc
+
+  Block[36] -> ExitExc, ExitExc
+    [0] catch(<>e<>18)
+    [1] <>Global<>ignore10 := <>e<>18
+
+  Block[37] -> [39]
+
+  Block[38] -> [46]
+
+  Block[39] -> [41], [40]
+
+  Block[40] -> [44], [43], ExitExc
+    [0] assert(true)
+    [1] <>old<>16 := x
+    [2] <>new<>17 := <>Global<>toNumber(<>old<>16)
+    [3] x := <>new<>17 - 1
+
+  Block[41] -> [38], ExitExc
+    [0] assert(! true)
+
+  Block[42] -> [39]
+
+  Block[43] -> [38], ExitExc
+    [0] assert(<>new<>17 == 0)
+
+  Block[44] -> [45], ExitExc
+    [0] assert(<>new<>17 != 0)
+
+  Block[45] -> [42]
+
+  Block[46] -> ExitExc
+
+  Block[47] -> ExitExc, ExitExc
+    [0] catch(<>e<>18)
+    [1] <>Global<>ignore10 := <>e<>18
+
+  Block[48] -> Exit
+    [0] noop(EndOfFile)
+
+  Exit[-2]
+
+  ExitExc[-3]
+
+}
+
+function[1] x<>funexpr@9:9-11:6<> {
+  Entry[-1] -> [0]
+
+  Block[0] -> Exit, ExitExc
+    [0] <>obj<>5 := <>Global<>toObject(<>arg<>3) @ #3
+    [1] return(<>obj<>5[0])
+
+  Exit[-2]
+
+  ExitExc[-3]
+
+}
+

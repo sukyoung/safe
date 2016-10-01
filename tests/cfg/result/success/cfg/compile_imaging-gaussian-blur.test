@@ -1,0 +1,582 @@
+function[0] top-level {
+  Entry[-1] -> [0]
+
+  Block[0] -> [1], ExitExc
+    A LOT!!! 427209 instructions are not printed here.
+
+  Call[1] -> ExitExc
+    [0] call(<>obj<>141, <>fun<>143, <>arguments<>142) @ #123
+
+  AfterCall[2] -> [4]
+
+  AfterCatch[3] -> ExitExc
+
+  Block[4] -> [5], ExitExc
+    [0] width := 400
+    [1] height := 267
+    [2] <>obj<>144 := <>Global<>toObject(gaussianBlur) @ #125
+    [3] <>arguments<>145 := allocArg(0) @ #126
+    [4] <>fun<>146 := <>Global<>getBase(gaussianBlur)
+
+  Call[5] -> ExitExc
+    [0] call(<>obj<>144, <>fun<>146, <>arguments<>145) @ #127
+
+  AfterCall[6] -> [8]
+
+  AfterCatch[7] -> ExitExc
+
+  Block[8] -> Exit
+    [0] noop(EndOfFile)
+
+  Exit[-2]
+
+  ExitExc[-3]
+
+}
+
+function[1] buildKernel {
+  Entry[-1] -> [0]
+
+  Block[0] -> [1], ExitExc
+    [0] <>ss<>1 := sigma * sigma
+    [1] <>y<>7 := 2
+    [2] <>obj<>8 := <>Global<>toObject(Math) @ #1
+    [3] <>factor<>2 := <>y<>7 * <>obj<>8["PI"] * <>ss<>1
+    [4] <>Global<>ignore3 := allocArray(0) @ #2
+    [5] kernel := <>Global<>ignore3
+    [6] <>obj<>9 := <>Global<>toObject(kernel) @ #3
+    [7] <>temp<>10 := allocArray(0) @ #4
+    [8] <>arguments<>11 := allocArg(1) @ #5
+    [9] <>arguments<>11["0"] := <>temp<>10
+    [10] <>fun<>12 := <>Global<>toObject(<>obj<>9["push"]) @ #6
+
+  Call[1] -> ExitExc
+    [0] call(<>fun<>12, <>obj<>9, <>arguments<>11) @ #7
+
+  AfterCall[2] -> [4]
+
+  AfterCatch[3] -> ExitExc
+
+  Block[4] -> [7], ExitExc
+    [0] <>i<>3 := 0
+    [1] <>obj<>13 := <>Global<>toObject(Math) @ #9
+    [2] <>temp<>14 := - <>i<>3 * <>i<>3 / 2 * <>ss<>1
+    [3] <>arguments<>15 := allocArg(1) @ #10
+    [4] <>arguments<>15["0"] := <>temp<>14
+    [5] <>fun<>16 := <>Global<>toObject(<>obj<>13["exp"]) @ #11
+
+  Block[5] -> [34], ExitExc
+    [0] kernelSize := <>i<>3
+    [1] <>j<>4 := 1
+    [2] <>Global<>ignore12 := 1
+
+  Block[6] -> [18]
+
+  Call[7] -> ExitExc
+    [0] call(<>fun<>16, <>obj<>13, <>arguments<>15) @ #12
+
+  AfterCall[8] -> [10]
+
+  AfterCatch[9] -> ExitExc
+
+  Block[10] -> [12], [11], ExitExc
+    [0] <>g<>5 := <>y<>17 / <>factor<>2
+
+  Block[11] -> [5], ExitExc
+    [0] assert(<>g<>5 < 0.001)
+
+  Block[12] -> [13], ExitExc
+    [0] assert(! <>g<>5 < 0.001)
+
+  Block[13] -> [14], ExitExc
+    [0] <>obj<>18 := <>Global<>toObject(kernel) @ #14
+    [1] <>obj<>19 := <>Global<>toObject(<>obj<>18[0]) @ #15
+    [2] <>temp<>20 := <>g<>5
+    [3] <>arguments<>21 := allocArg(1) @ #16
+    [4] <>arguments<>21["0"] := <>temp<>20
+    [5] <>fun<>22 := <>Global<>toObject(<>obj<>19["push"]) @ #17
+
+  Call[14] -> ExitExc
+    [0] call(<>fun<>22, <>obj<>19, <>arguments<>21) @ #18
+
+  AfterCall[15] -> [17]
+
+  AfterCatch[16] -> ExitExc
+
+  Block[17] -> [6], ExitExc
+    [0] <>old<>23 := <>i<>3
+    [1] <>new<>24 := <>Global<>toNumber(<>old<>23)
+    [2] <>i<>3 := <>new<>24 + 1
+    [3] <>Global<>ignore9 := <>new<>24 + 1
+
+  Block[18] -> [20], [19]
+
+  Block[19] -> [22], ExitExc
+    [0] assert(<>i<>3 < 7)
+    [1] <>obj<>13 := <>Global<>toObject(Math) @ #20
+    [2] <>temp<>14 := - <>i<>3 * <>i<>3 / 2 * <>ss<>1
+    [3] <>arguments<>15 := allocArg(1) @ #21
+    [4] <>arguments<>15["0"] := <>temp<>14
+    [5] <>fun<>16 := <>Global<>toObject(<>obj<>13["exp"]) @ #22
+
+  Block[20] -> [5], ExitExc
+    [0] assert(! <>i<>3 < 7)
+
+  Block[21] -> [18]
+
+  Call[22] -> ExitExc
+    [0] call(<>fun<>16, <>obj<>13, <>arguments<>15) @ #23
+
+  AfterCall[23] -> [25]
+
+  AfterCatch[24] -> ExitExc
+
+  Block[25] -> [27], [26], ExitExc
+    [0] <>g<>5 := <>y<>17 / <>factor<>2
+
+  Block[26] -> [5], ExitExc
+    [0] assert(<>g<>5 < 0.001)
+
+  Block[27] -> [28], ExitExc
+    [0] assert(! <>g<>5 < 0.001)
+
+  Block[28] -> [29], ExitExc
+    [0] <>obj<>18 := <>Global<>toObject(kernel) @ #25
+    [1] <>obj<>19 := <>Global<>toObject(<>obj<>18[0]) @ #26
+    [2] <>temp<>20 := <>g<>5
+    [3] <>arguments<>21 := allocArg(1) @ #27
+    [4] <>arguments<>21["0"] := <>temp<>20
+    [5] <>fun<>22 := <>Global<>toObject(<>obj<>19["push"]) @ #28
+
+  Call[29] -> ExitExc
+    [0] call(<>fun<>22, <>obj<>19, <>arguments<>21) @ #29
+
+  AfterCall[30] -> [32]
+
+  AfterCatch[31] -> ExitExc
+
+  Block[32] -> [21], ExitExc
+    [0] <>old<>23 := <>i<>3
+    [1] <>new<>24 := <>Global<>toNumber(<>old<>23)
+    [2] <>i<>3 := <>new<>24 + 1
+    [3] <>Global<>ignore9 := <>new<>24 + 1
+
+  Block[33] -> [55], ExitExc
+    [0] kernelSum := 0
+    [1] <>j<>4 := 1 - kernelSize
+    [2] <>Global<>ignore24 := 1 - kernelSize
+
+  Block[34] -> [36], [35]
+
+  Block[35] -> [38], ExitExc
+    [0] assert(<>j<>4 < kernelSize)
+    [1] <>obj<>25 := <>Global<>toObject(kernel) @ #31
+    [2] <>temp<>26 := allocArray(0) @ #32
+    [3] <>arguments<>27 := allocArg(1) @ #33
+    [4] <>arguments<>27["0"] := <>temp<>26
+    [5] <>fun<>28 := <>Global<>toObject(<>obj<>25["push"]) @ #34
+
+  Block[36] -> [33], ExitExc
+    [0] assert(! <>j<>4 < kernelSize)
+
+  Block[37] -> [34], ExitExc
+    [0] <>old<>41 := <>j<>4
+    [1] <>new<>42 := <>Global<>toNumber(<>old<>41)
+    [2] <>j<>4 := <>new<>42 + 1
+    [3] <>Global<>ignore14 := <>new<>42 + 1
+
+  Call[38] -> ExitExc
+    [0] call(<>fun<>28, <>obj<>25, <>arguments<>27) @ #35
+
+  AfterCall[39] -> [42]
+
+  AfterCatch[40] -> ExitExc
+
+  Block[41] -> [37]
+
+  Block[42] -> [43], ExitExc
+    [0] <>i<>3 := 0
+    [1] <>Global<>ignore17 := 0
+
+  Block[43] -> [45], [44]
+
+  Block[44] -> [47], ExitExc
+    [0] assert(<>i<>3 < kernelSize)
+    [1] <>obj<>29 := <>Global<>toObject(Math) @ #37
+    [2] <>temp<>30 := - <>i<>3 * <>i<>3 + <>j<>4 * <>j<>4 / 2 * <>ss<>1
+    [3] <>arguments<>31 := allocArg(1) @ #38
+    [4] <>arguments<>31["0"] := <>temp<>30
+    [5] <>fun<>32 := <>Global<>toObject(<>obj<>29["exp"]) @ #39
+
+  Block[45] -> [41], ExitExc
+    [0] assert(! <>i<>3 < kernelSize)
+
+  Block[46] -> [43], ExitExc
+    [0] <>old<>39 := <>i<>3
+    [1] <>new<>40 := <>Global<>toNumber(<>old<>39)
+    [2] <>i<>3 := <>new<>40 + 1
+    [3] <>Global<>ignore19 := <>new<>40 + 1
+
+  Call[47] -> ExitExc
+    [0] call(<>fun<>32, <>obj<>29, <>arguments<>31) @ #40
+
+  AfterCall[48] -> [50]
+
+  AfterCatch[49] -> ExitExc
+
+  Block[50] -> [51], ExitExc
+    [0] <>g<>5 := <>y<>33 / <>factor<>2
+    [1] <>obj<>34 := <>Global<>toObject(kernel) @ #42
+    [2] <>obj<>35 := <>Global<>toObject(<>obj<>34[<>j<>4]) @ #43
+    [3] <>temp<>36 := <>g<>5
+    [4] <>arguments<>37 := allocArg(1) @ #44
+    [5] <>arguments<>37["0"] := <>temp<>36
+    [6] <>fun<>38 := <>Global<>toObject(<>obj<>35["push"]) @ #45
+
+  Call[51] -> ExitExc
+    [0] call(<>fun<>38, <>obj<>35, <>arguments<>37) @ #46
+
+  AfterCall[52] -> [46]
+
+  AfterCatch[53] -> ExitExc
+
+  Block[54] -> Exit
+
+  Block[55] -> [57], [56]
+
+  Block[56] -> [60], ExitExc
+    [0] assert(<>j<>4 < kernelSize)
+    [1] <>i<>3 := 1 - kernelSize
+    [2] <>Global<>ignore28 := 1 - kernelSize
+
+  Block[57] -> [54], ExitExc
+    [0] assert(! <>j<>4 < kernelSize)
+
+  Block[58] -> [55], ExitExc
+    [0] <>old<>58 := <>j<>4
+    [1] <>new<>59 := <>Global<>toNumber(<>old<>58)
+    [2] <>j<>4 := <>new<>59 + 1
+    [3] <>Global<>ignore26 := <>new<>59 + 1
+
+  Block[59] -> [58]
+
+  Block[60] -> [62], [61]
+
+  Block[61] -> [64], ExitExc
+    [0] assert(<>i<>3 < kernelSize)
+    [1] <>old<>43 := kernelSum
+    [2] <>obj<>44 := <>Global<>toObject(kernel) @ #48
+    [3] <>obj<>45 := <>Global<>toObject(Math) @ #49
+    [4] <>temp<>46 := <>j<>4
+    [5] <>arguments<>47 := allocArg(1) @ #50
+    [6] <>arguments<>47["0"] := <>temp<>46
+    [7] <>fun<>48 := <>Global<>toObject(<>obj<>45["abs"]) @ #51
+
+  Block[62] -> [59], ExitExc
+    [0] assert(! <>i<>3 < kernelSize)
+
+  Block[63] -> [60], ExitExc
+    [0] <>old<>56 := <>i<>3
+    [1] <>new<>57 := <>Global<>toNumber(<>old<>56)
+    [2] <>i<>3 := <>new<>57 + 1
+    [3] <>Global<>ignore30 := <>new<>57 + 1
+
+  Call[64] -> ExitExc
+    [0] call(<>fun<>48, <>obj<>45, <>arguments<>47) @ #52
+
+  AfterCall[65] -> [67]
+
+  AfterCatch[66] -> ExitExc
+
+  Block[67] -> [68], ExitExc
+    [0] <>obj<>50 := <>Global<>toObject(<>obj<>44[<>field1<>49]) @ #54
+    [1] <>obj<>51 := <>Global<>toObject(Math) @ #55
+    [2] <>temp<>52 := <>i<>3
+    [3] <>arguments<>53 := allocArg(1) @ #56
+    [4] <>arguments<>53["0"] := <>temp<>52
+    [5] <>fun<>54 := <>Global<>toObject(<>obj<>51["abs"]) @ #57
+
+  Call[68] -> ExitExc
+    [0] call(<>fun<>54, <>obj<>51, <>arguments<>53) @ #58
+
+  AfterCall[69] -> [71]
+
+  AfterCatch[70] -> ExitExc
+
+  Block[71] -> [63], ExitExc
+    [0] kernelSum := <>old<>43 + <>obj<>50[<>field1<>55]
+
+  Exit[-2]
+
+  ExitExc[-3]
+
+}
+
+function[2] gaussianBlur {
+  Entry[-1] -> [0]
+
+  Block[0] -> [2], ExitExc
+    [0] <>y<>60 := 0
+
+  Block[1] -> Exit, ExitExc
+    [0] return(squidImageData)
+
+  Block[2] -> [4], [3]
+
+  Block[3] -> [7], ExitExc
+    [0] assert(<>y<>60 < height)
+    [1] <>x<>61 := 0
+
+  Block[4] -> [1], ExitExc
+    [0] assert(! <>y<>60 < height)
+
+  Block[5] -> [2], ExitExc
+    [0] <>old<>139 := <>y<>60
+    [1] <>new<>140 := <>Global<>toNumber(<>old<>139)
+    [2] <>y<>60 := <>new<>140 + 1
+    [3] <>Global<>ignore34 := <>new<>140 + 1
+
+  Block[6] -> [5]
+
+  Block[7] -> [9], [8]
+
+  Block[8] -> [12], ExitExc
+    [0] assert(<>x<>61 < width)
+    [1] <>r<>62 := 0
+    [2] <>g<>63 := 0
+    [3] <>b<>64 := 0
+    [4] <>a<>65 := 0
+    [5] <>j<>66 := 1 - kernelSize
+
+  Block[9] -> [6], ExitExc
+    [0] assert(! <>x<>61 < width)
+
+  Block[10] -> [7], ExitExc
+    [0] <>old<>137 := <>x<>61
+    [1] <>new<>138 := <>Global<>toNumber(<>old<>137)
+    [2] <>x<>61 := <>new<>138 + 1
+    [3] <>Global<>ignore37 := <>new<>138 + 1
+
+  Block[11] -> [10], ExitExc
+    [0] <>obj<>133 := <>Global<>toObject(squidImageData) @ #114
+    [1] <>obj<>133[4 * <>y<>60 * width + <>x<>61 + 0] := <>r<>62 / kernelSum
+    [2] <>obj<>134 := <>Global<>toObject(squidImageData) @ #115
+    [3] <>obj<>134[4 * <>y<>60 * width + <>x<>61 + 1] := <>g<>63 / kernelSum
+    [4] <>obj<>135 := <>Global<>toObject(squidImageData) @ #116
+    [5] <>obj<>135[4 * <>y<>60 * width + <>x<>61 + 2] := <>b<>64 / kernelSum
+    [6] <>obj<>136 := <>Global<>toObject(squidImageData) @ #117
+    [7] <>obj<>136[4 * <>y<>60 * width + <>x<>61 + 3] := <>a<>65 / kernelSum
+
+  Block[12] -> [14], [13]
+
+  Block[13] -> [19], [18], ExitExc
+    [0] assert(<>j<>66 < kernelSize)
+
+  Block[14] -> [11], ExitExc
+    [0] assert(! <>j<>66 < kernelSize)
+
+  Block[15] -> [12], ExitExc
+    [0] <>old<>131 := <>j<>66
+    [1] <>new<>132 := <>Global<>toNumber(<>old<>131)
+    [2] <>j<>66 := <>new<>132 + 1
+    [3] <>Global<>ignore44 := <>new<>132 + 1
+
+  Block[16] -> [25], ExitExc
+    [0] <>i<>67 := 1 - kernelSize
+
+  Block[17] -> [15]
+
+  Block[18] -> [17], ExitExc
+    [0] assert(<>y<>60 + <>j<>66 < 0)
+
+  Block[19] -> [20], ExitExc
+    [0] assert(! <>y<>60 + <>j<>66 < 0)
+
+  Block[20] -> [22], [21]
+
+  Block[21] -> [17], ExitExc
+    [0] assert(<>y<>60 + <>j<>66 >= height)
+
+  Block[22] -> [23], ExitExc
+    [0] assert(! <>y<>60 + <>j<>66 >= height)
+
+  Block[23] -> [16]
+
+  Block[24] -> [15]
+
+  Block[25] -> [27], [26]
+
+  Block[26] -> [32], [31], ExitExc
+    [0] assert(<>i<>67 < kernelSize)
+
+  Block[27] -> [24], ExitExc
+    [0] assert(! <>i<>67 < kernelSize)
+
+  Block[28] -> [25], ExitExc
+    [0] <>old<>129 := <>i<>67
+    [1] <>new<>130 := <>Global<>toNumber(<>old<>129)
+    [2] <>i<>67 := <>new<>130 + 1
+    [3] <>Global<>ignore47 := <>new<>130 + 1
+
+  Block[29] -> [37], ExitExc
+    [0] <>old<>69 := <>r<>62
+    [1] <>obj<>70 := <>Global<>toObject(squidImageData) @ #62
+    [2] <>y<>71 := <>obj<>70[4 * <>y<>60 + <>j<>66 * width + <>x<>61 + <>i<>67 + 0]
+    [3] <>obj<>72 := <>Global<>toObject(kernel) @ #63
+    [4] <>obj<>73 := <>Global<>toObject(Math) @ #64
+    [5] <>temp<>74 := <>j<>66
+    [6] <>arguments<>75 := allocArg(1) @ #65
+    [7] <>arguments<>75["0"] := <>temp<>74
+    [8] <>fun<>76 := <>Global<>toObject(<>obj<>73["abs"]) @ #66
+
+  Block[30] -> [28]
+
+  Block[31] -> [30], ExitExc
+    [0] assert(<>x<>61 + <>i<>67 < 0)
+
+  Block[32] -> [33], ExitExc
+    [0] assert(! <>x<>61 + <>i<>67 < 0)
+
+  Block[33] -> [35], [34]
+
+  Block[34] -> [30], ExitExc
+    [0] assert(<>x<>61 + <>i<>67 >= width)
+
+  Block[35] -> [36], ExitExc
+    [0] assert(! <>x<>61 + <>i<>67 >= width)
+
+  Block[36] -> [29]
+
+  Call[37] -> ExitExc
+    [0] call(<>fun<>76, <>obj<>73, <>arguments<>75) @ #67
+
+  AfterCall[38] -> [40]
+
+  AfterCatch[39] -> ExitExc
+
+  Block[40] -> [41], ExitExc
+    [0] <>obj<>78 := <>Global<>toObject(<>obj<>72[<>field1<>77]) @ #69
+    [1] <>obj<>79 := <>Global<>toObject(Math) @ #70
+    [2] <>temp<>80 := <>i<>67
+    [3] <>arguments<>81 := allocArg(1) @ #71
+    [4] <>arguments<>81["0"] := <>temp<>80
+    [5] <>fun<>82 := <>Global<>toObject(<>obj<>79["abs"]) @ #72
+
+  Call[41] -> ExitExc
+    [0] call(<>fun<>82, <>obj<>79, <>arguments<>81) @ #73
+
+  AfterCall[42] -> [44]
+
+  AfterCatch[43] -> ExitExc
+
+  Block[44] -> [45], ExitExc
+    [0] <>r<>62 := <>old<>69 + <>y<>71 * <>obj<>78[<>field1<>83]
+    [1] <>old<>84 := <>g<>63
+    [2] <>obj<>85 := <>Global<>toObject(squidImageData) @ #75
+    [3] <>y<>86 := <>obj<>85[4 * <>y<>60 + <>j<>66 * width + <>x<>61 + <>i<>67 + 1]
+    [4] <>obj<>87 := <>Global<>toObject(kernel) @ #76
+    [5] <>obj<>88 := <>Global<>toObject(Math) @ #77
+    [6] <>temp<>89 := <>j<>66
+    [7] <>arguments<>90 := allocArg(1) @ #78
+    [8] <>arguments<>90["0"] := <>temp<>89
+    [9] <>fun<>91 := <>Global<>toObject(<>obj<>88["abs"]) @ #79
+
+  Call[45] -> ExitExc
+    [0] call(<>fun<>91, <>obj<>88, <>arguments<>90) @ #80
+
+  AfterCall[46] -> [48]
+
+  AfterCatch[47] -> ExitExc
+
+  Block[48] -> [49], ExitExc
+    [0] <>obj<>93 := <>Global<>toObject(<>obj<>87[<>field1<>92]) @ #82
+    [1] <>obj<>94 := <>Global<>toObject(Math) @ #83
+    [2] <>temp<>95 := <>i<>67
+    [3] <>arguments<>96 := allocArg(1) @ #84
+    [4] <>arguments<>96["0"] := <>temp<>95
+    [5] <>fun<>97 := <>Global<>toObject(<>obj<>94["abs"]) @ #85
+
+  Call[49] -> ExitExc
+    [0] call(<>fun<>97, <>obj<>94, <>arguments<>96) @ #86
+
+  AfterCall[50] -> [52]
+
+  AfterCatch[51] -> ExitExc
+
+  Block[52] -> [53], ExitExc
+    [0] <>g<>63 := <>old<>84 + <>y<>86 * <>obj<>93[<>field1<>98]
+    [1] <>old<>99 := <>b<>64
+    [2] <>obj<>100 := <>Global<>toObject(squidImageData) @ #88
+    [3] <>y<>101 := <>obj<>100[4 * <>y<>60 + <>j<>66 * width + <>x<>61 + <>i<>67 + 2]
+    [4] <>obj<>102 := <>Global<>toObject(kernel) @ #89
+    [5] <>obj<>103 := <>Global<>toObject(Math) @ #90
+    [6] <>temp<>104 := <>j<>66
+    [7] <>arguments<>105 := allocArg(1) @ #91
+    [8] <>arguments<>105["0"] := <>temp<>104
+    [9] <>fun<>106 := <>Global<>toObject(<>obj<>103["abs"]) @ #92
+
+  Call[53] -> ExitExc
+    [0] call(<>fun<>106, <>obj<>103, <>arguments<>105) @ #93
+
+  AfterCall[54] -> [56]
+
+  AfterCatch[55] -> ExitExc
+
+  Block[56] -> [57], ExitExc
+    [0] <>obj<>108 := <>Global<>toObject(<>obj<>102[<>field1<>107]) @ #95
+    [1] <>obj<>109 := <>Global<>toObject(Math) @ #96
+    [2] <>temp<>110 := <>i<>67
+    [3] <>arguments<>111 := allocArg(1) @ #97
+    [4] <>arguments<>111["0"] := <>temp<>110
+    [5] <>fun<>112 := <>Global<>toObject(<>obj<>109["abs"]) @ #98
+
+  Call[57] -> ExitExc
+    [0] call(<>fun<>112, <>obj<>109, <>arguments<>111) @ #99
+
+  AfterCall[58] -> [60]
+
+  AfterCatch[59] -> ExitExc
+
+  Block[60] -> [61], ExitExc
+    [0] <>b<>64 := <>old<>99 + <>y<>101 * <>obj<>108[<>field1<>113]
+    [1] <>old<>114 := <>a<>65
+    [2] <>obj<>115 := <>Global<>toObject(squidImageData) @ #101
+    [3] <>y<>116 := <>obj<>115[4 * <>y<>60 + <>j<>66 * width + <>x<>61 + <>i<>67 + 3]
+    [4] <>obj<>117 := <>Global<>toObject(kernel) @ #102
+    [5] <>obj<>118 := <>Global<>toObject(Math) @ #103
+    [6] <>temp<>119 := <>j<>66
+    [7] <>arguments<>120 := allocArg(1) @ #104
+    [8] <>arguments<>120["0"] := <>temp<>119
+    [9] <>fun<>121 := <>Global<>toObject(<>obj<>118["abs"]) @ #105
+
+  Call[61] -> ExitExc
+    [0] call(<>fun<>121, <>obj<>118, <>arguments<>120) @ #106
+
+  AfterCall[62] -> [64]
+
+  AfterCatch[63] -> ExitExc
+
+  Block[64] -> [65], ExitExc
+    [0] <>obj<>123 := <>Global<>toObject(<>obj<>117[<>field1<>122]) @ #108
+    [1] <>obj<>124 := <>Global<>toObject(Math) @ #109
+    [2] <>temp<>125 := <>i<>67
+    [3] <>arguments<>126 := allocArg(1) @ #110
+    [4] <>arguments<>126["0"] := <>temp<>125
+    [5] <>fun<>127 := <>Global<>toObject(<>obj<>124["abs"]) @ #111
+
+  Call[65] -> ExitExc
+    [0] call(<>fun<>127, <>obj<>124, <>arguments<>126) @ #112
+
+  AfterCall[66] -> [68]
+
+  AfterCatch[67] -> ExitExc
+
+  Block[68] -> [28], ExitExc
+    [0] <>a<>65 := <>old<>114 + <>y<>116 * <>obj<>123[<>field1<>128]
+
+  Exit[-2]
+
+  ExitExc[-3]
+
+}
+

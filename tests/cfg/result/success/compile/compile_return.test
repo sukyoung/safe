@@ -1,0 +1,15 @@
+function f(this, <>arguments<>1) 
+{
+  return
+  return 0
+  return 1.0
+  return "jsaf"
+}
+
+{
+  <>obj<>2 = <>Global<>toObject(f)
+  <>arguments<>3 = []
+  <>fun<>4 = <>Global<>getBase(f)
+  <>Global<>ignore1 = <>obj<>2(<>fun<>4, <>arguments<>3)
+}
+

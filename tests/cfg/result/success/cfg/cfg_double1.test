@@ -1,0 +1,15 @@
+function[0] top-level {
+  Entry[-1] -> [0]
+
+  Block[0] -> Exit, ExitExc
+    [0] noop(StartOfFile)
+    [1] x := 12.34
+    [2] y := 0.123235323
+    [3] noop(EndOfFile)
+
+  Exit[-2]
+
+  ExitExc[-3]
+
+}
+

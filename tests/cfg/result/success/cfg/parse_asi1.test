@@ -1,0 +1,70 @@
+function[0] top-level {
+  Entry[-1] -> [0]
+
+  Block[0] -> [2], [1], ExitExc
+    [0] noop(StartOfFile)
+    [1] <>Global<>ignore2 := 42
+    [2] <>Global<>ignore4 := "hello!"
+    [3] <>Global<>ignore6 := "there!"
+
+  Block[1] -> [3], ExitExc
+    [0] assert(x)
+    [1] <>obj<>1 := <>Global<>toObject(y) @ #1
+    [2] <>arguments<>2 := allocArg(0) @ #2
+    [3] <>fun<>3 := <>Global<>getBase(y)
+
+  Block[2] -> [6], ExitExc
+    [0] assert(! x)
+
+  Call[3] -> ExitExc
+    [0] call(<>obj<>1, <>fun<>3, <>arguments<>2) @ #3
+
+  AfterCall[4] -> [6]
+
+  AfterCatch[5] -> ExitExc
+
+  Block[6] -> [8], ExitExc
+    [0] <>obj<>4 := <>Global<>toObject(getNode) @ #5
+    [1] <>arguments<>5 := allocArg(0) @ #6
+    [2] <>fun<>6 := <>Global<>getBase(getNode)
+
+  Block[7] -> Exit, ExitExc
+    [0] <>Global<>ignore13 := i
+    [1] <>old<>9 := j
+    [2] <>new<>10 := <>Global<>toNumber(<>old<>9)
+    [3] j := <>new<>10 + 1
+    [4] <>Global<>ignore15 := <>new<>10 + 1
+    [5] noop(EndOfFile)
+
+  Call[8] -> ExitExc
+    [0] call(<>obj<>4, <>fun<>6, <>arguments<>5) @ #7
+
+  AfterCall[9] -> [11]
+
+  AfterCatch[10] -> ExitExc
+
+  Block[11] -> [12], ExitExc
+    [0] node := <>Global<>ignore8
+    [1] <>Global<>ignore9 := <>Global<>ignore8
+    [2] <>obj<>7 := <>Global<>toObject(node) @ #9
+
+  Block[12] -> [14], [13]
+
+  Block[13] -> [15], ExitExc
+    [0] assert(<>obj<>7["parent"])
+
+  Block[14] -> [7], ExitExc
+    [0] assert(! <>obj<>7["parent"])
+
+  Block[15] -> [12], ExitExc
+    [0] <>obj<>8 := <>Global<>toObject(node) @ #10
+    [1] node := <>obj<>8["parent"]
+    [2] <>Global<>ignore11 := <>obj<>8["parent"]
+    [3] <>obj<>7 := <>Global<>toObject(node) @ #11
+
+  Exit[-2]
+
+  ExitExc[-3]
+
+}
+

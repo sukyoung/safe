@@ -1,0 +1,14 @@
+
+var x
+var y
+var z
+{
+  y = 0
+}
+{
+  z = "test"
+}
+x = 1 + 2
+y = x / 3
+z = z + y
+

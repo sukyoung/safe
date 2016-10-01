@@ -1,0 +1,24 @@
+function[0] top-level {
+  Entry[-1] -> [0]
+
+  Block[0] -> [2], [1], ExitExc
+    [0] noop(StartOfFile)
+    [1] x := "A"
+
+  Block[1] -> ExitExc
+    [0] assert(true)
+    [1] throw("C")
+
+  Block[2] -> [3], ExitExc
+    [0] assert(! true)
+
+  Block[3] -> Exit, ExitExc
+    [0] x := "D"
+    [1] noop(EndOfFile)
+
+  Exit[-2]
+
+  ExitExc[-3]
+
+}
+

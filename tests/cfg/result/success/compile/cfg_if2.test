@@ -1,0 +1,60 @@
+function pay(this, <>arguments<>1) 
+{
+  var <>budget<>2
+  var <>product<>3
+  <>budget<>2 = <>arguments<>1["0"]
+  <>product<>3 = <>arguments<>1["1"]
+  if(<>budget<>2 <= 0)
+    return <>budget<>2
+  else
+    if(<>product<>3 == "apple")
+    {
+      <>y<>4 = <>budget<>2
+      <>obj<>5 = <>Global<>toObject(productlist)
+      return <>y<>4 - <>obj<>5["apple"]
+    }
+    else
+      if(<>product<>3 == "banana")
+      {
+        <>y<>6 = <>budget<>2
+        <>obj<>7 = <>Global<>toObject(productlist)
+        return <>y<>6 - <>obj<>7["banana"]
+      }
+      else
+        if(<>product<>3 == "melon")
+        {
+          <>y<>8 = <>budget<>2
+          <>obj<>9 = <>Global<>toObject(productlist)
+          return <>y<>8 - <>obj<>9["melon"]
+        }
+        else
+          return <>budget<>2
+}
+var productlist
+var fruit
+var money
+{
+  <>Global<>ignore1 = {
+    apple : 100,
+    banana : 200,
+    melon : 300
+  }
+  productlist = <>Global<>ignore1
+}
+money = 1000
+fruit = "melon"
+{
+  <>obj<>10 = <>Global<>toObject(print)
+  <>y<>11 = "I had " + money + " won. I bought " + fruit + ", and now I have "
+  <>obj<>12 = <>Global<>toObject(pay)
+  <>temp<>13 = money
+  <>temp<>14 = fruit
+  <>arguments<>15 = [<>temp<>13, <>temp<>14, ]
+  <>fun<>16 = <>Global<>getBase(pay)
+  <>z<>17 = <>obj<>12(<>fun<>16, <>arguments<>15)
+  <>temp<>18 = <>y<>11 + <>z<>17 + " won."
+  <>arguments<>19 = [<>temp<>18, ]
+  <>fun<>20 = <>Global<>getBase(print)
+  <>Global<>ignore4 = <>obj<>10(<>fun<>20, <>arguments<>19)
+}
+

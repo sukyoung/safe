@@ -1,0 +1,57 @@
+
+
+{
+  <>label<>1 : {
+    if(true)
+      if(false)
+      {
+        <>Global<>ignore2 = "true"
+        break <>label<>1
+      }
+    <>Global<>ignore4 = "false"
+  }
+}
+{
+  <>label2<>2 : {
+    <>label1<>3 : {
+      if(true)
+        break <>label1<>3
+      if(false)
+        break <>label1<>3
+      <>Global<>ignore6 = "false"
+      break <>label2<>2
+    }
+    <>Global<>ignore8 = "true"
+  }
+}
+{
+  <>label<>4 : {
+    if(true)
+    {
+      if(false)
+      {
+        <>Global<>ignore9 = "true"
+        break <>label<>4
+      }
+    }
+    <>Global<>ignore9 = "false"
+  }
+  x = <>Global<>ignore9
+}
+{
+  <>label2<>5 : {
+    <>label1<>6 : {
+      if(true)
+        break <>label1<>6
+      if(false)
+        break <>label1<>6
+      <>Global<>ignore10 = "false"
+      break <>label2<>5
+    }
+    {
+      <>Global<>ignore10 = "true"
+    }
+  }
+  x = <>Global<>ignore10
+}
+

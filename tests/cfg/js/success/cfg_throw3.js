@@ -1,0 +1,4 @@
+var x;
+x = "A";
+if (true) throw "C";
+x = "D";

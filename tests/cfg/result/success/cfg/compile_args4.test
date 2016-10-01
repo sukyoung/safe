@@ -1,0 +1,38 @@
+function[0] top-level {
+  Entry[-1] -> [0]
+
+  Block[0] -> Exit
+    [0] f011 := function (1) @ #3, #4
+    [1] noop(StartOfFile)
+    [2] noop(EndOfFile)
+
+  Exit[-2]
+
+  ExitExc[-3]
+
+}
+
+function[1] f011 {
+  Entry[-1] -> [0]
+
+  Block[0] -> Exit, ExitExc
+    [0] <>arguments<>2 := function (2) @ #1, #2
+    [1] <>arguments<>2 := 42
+
+  Exit[-2]
+
+  ExitExc[-3]
+
+}
+
+function[2] <>arguments<> {
+  Entry[-1] -> [0]
+
+  Block[0] -> Exit
+
+  Exit[-2]
+
+  ExitExc[-3]
+
+}
+

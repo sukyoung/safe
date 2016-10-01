@@ -1,0 +1,246 @@
+/**
+ * *****************************************************************************
+ * Copyright (c) 2016, KAIST.
+ * All rights reserved.
+ *
+ * Use is subject to license terms.
+ *
+ * This distribution may include materials developed by third parties.
+ * ****************************************************************************
+ */
+
+/*
+ * A.1 Lexical Grammar (Literal)
+ * Definition of JavaScript literal expressions
+ */
+module kr.ac.kaist.safe.parser.Literal(Symbol, Identifier, Keyword, Spacing);
+
+import Symbol;
+import Identifier;
+import Keyword;
+import Spacing;
+
+/*
+ * Literal ::=
+ *   null
+ * | true
+ * | false
+ * | NumericLiteral
+ * | StringLiteral
+ * | RegularExpressionLiteral
+ */
+public Literal Literal =
+     nullL
+     { Span span = createSpan(yyStart,yyCount);
+       yyValue = new Null(NodeUtil.makeASTNodeInfo(span));
+     }
+   / true
+     { Span span = createSpan(yyStart,yyCount);
+       yyValue = new Bool(NodeUtil.makeASTNodeInfo(span), true);
+     }
+   / false
+     { Span span = createSpan(yyStart,yyCount);
+       yyValue = new Bool(NodeUtil.makeASTNodeInfo(span), false);
+     }
+   / NumericLiteral
+   / StringLiteral
+   / RegularExpressionLiteral
+   ;
+
+NumberLiteral NumericLiteral =
+     HexIntegerLiteral !(idrest)
+   // B.1 Additional Syntax
+   // B.1.1 Numeric Literals
+   / OctalIntegerLiteral !(idrest)
+   / DecimalLiteral !(idrest) ;
+
+/*
+ * DecimalLiteral ::=
+ *   DecimalIntegerLiteral . DecimalDigits? ExponentPart?
+ * | DecimalIntegerLiteral ExponentPart?
+ * | . DecimalDigits ExponentPart?
+ *
+ * DecimalIntegerLiteral ::=
+ *   0
+ * | NonZeroDigit DecimalDigits?
+ *
+ * DecimalDigit ::= 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
+ *
+ * NonZeroDigit ::= 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
+ *
+ * ExponentPart ::= (e | E) (+ | -)? DecimalDigit+
+ */
+/*
+ * More syntax checks by NodeUtil.makeNumberLiteral()
+ */
+private NumberLiteral DecimalLiteral =
+    a1:DecimalDigits a2:dot? a3:DecimalDigits? a4:ExponentPart?
+    &{ Character.isDigit(a1.charAt(0)) || a1.charAt(0) == '.' }
+     { Span span = createSpan(yyStart,yyCount);
+       if (a2 == null) a2 = "";
+       if (a3 == null) a3 = "";
+       if (a4 == null) a4 = "";
+       yyValue = makeNumberLiteral(writer, span, a1, a2, a3, a4);
+     }
+  / dot a1:DecimalDigits? a2:ExponentPart?
+    &{ (a1 != null) && (Character.isDigit(a1.charAt(0)) || a1.charAt(0) == '.') }
+     { Span span = createSpan(yyStart,yyCount);
+       if (a1 == null) a1 = "";
+       if (a2 == null) a2 = "";
+       yyValue = makeNumberLiteral(writer, span, "", ".", a1, a2);
+     };
+transient String DecimalDigits = [0-9]+ ;
+
+/*
+ * ExponentPart ::= (e | E) (+ | -)? DecimalDigit+
+ */
+private transient String ExponentPart =
+     ([eE]) a1:('+' / '-')? a2:DecimalDigits
+     { if (a1 == null) yyValue = "e"+a2;
+       else          yyValue = "e"+a1+a2;
+     };
+
+NumberLiteral HexIntegerLiteral =
+     [0] ([x] / [X]) a1:HexDigits
+     { Span span = createSpan(yyStart,yyCount);
+       yyValue = new IntLiteral(NodeUtil.makeASTNodeInfo(span), new BigInteger(a1, 16), 16);
+     };
+
+private transient String HexDigit = [0-9a-fA-F] ;
+private transient String HexDigits = HexDigit+ ;
+
+private NumberLiteral OctalIntegerLiteral =
+     [0] a1:OctalDigits
+     { Span span = createSpan(yyStart,yyCount);
+       yyValue = new IntLiteral(NodeUtil.makeASTNodeInfo(span), new BigInteger(a1, 8), 8);
+     };
+
+private transient String OctalDigit = [0-7] ;
+private transient String OctalDigits = OctalDigit+ ;
+
+transient StringLiteral StringLiteral =
+     ["] a1s:DoubleStringCharacter* ["]
+     { String str = "";
+       for (String c : (List<String>)a1s.list()) str = str.concat(c);
+       yyValue = new StringLiteral(NodeUtil.makeASTNodeInfo(createSpan(yyStart,yyCount+1)), "\"", str, false);
+     }
+   / ['] a1s:SingleStringCharacter* [']
+     { String str = "";
+       for (String c : (List<String>)a1s.list()) str = str.concat(c);
+       yyValue = new StringLiteral(NodeUtil.makeASTNodeInfo(createSpan(yyStart,yyCount+1)), "\'", str, false);
+     };
+
+private transient String DoubleStringCharacter =
+     a1:'\\' a2:EscapeSequence { yyValue = a2; }
+   / LineContinuation
+   / a1:(!NonDoubleStringChar _) { yyValue = String.valueOf(a1); }
+   ;
+
+private transient String EscapeSequence =
+     a1:[btnfrv"'\\]
+     { switch (a1) {
+           case 'b': { yyValue = "\\b"; break; }
+           case 't': { yyValue = "\\t"; break; }
+           case 'n': { yyValue = "\\n"; break; }
+           case 'f': { yyValue = "\\f"; break; }
+           case 'r': { yyValue = "\\r"; break; }
+           case 'v': { yyValue = "\\v"; break; }
+           case '"': { yyValue = "\\\""; break; }
+           case '\'': { yyValue = "\\'"; break; }
+           case '\\': { yyValue = "\\\\"; break; }
+           default : { yyValue = ""; break; }
+       }
+     }
+   / a1:(!EscapeCharOrLT _) { yyValue = "\\"+a1+""; }
+   / [0] !([0-9]) { yyValue = "\\0"; }
+   // B.1 Additional Syntax
+   // B.1.2 String Literals
+   / a1:OctalDigit a2:OctalDigit { yyValue = "\\"+a1+a2; }
+   / a1:OctalDigit { yyValue = "\\"+a1; }
+   / a1:[0-3] a2:OctalDigit a3:OctalDigit { yyValue = "\\"+a1+a2+a3; }
+   / a1:[x] a2:HexDigit a3:HexDigit { yyValue = "\\"+a1+a2+a3; }
+   / a1:[u] a2:HexDigit a3:HexDigit a4:HexDigit a5:HexDigit { yyValue = "\\"+a1+a2+a3+a4+a5; }
+   ;
+
+private transient String EscapeCharOrLT =
+     a1:[0-9xu] { yyValue = a1+""; }
+   / LineTerminator ;
+
+private transient String LineContinuation =
+     a1:'\\' a2:LineTerminatorSequence { yyValue = a1+a2; };
+
+private transient String NonDoubleStringChar =
+     a1:["\\] { yyValue = a1+""; }
+   / LineTerminatorNoMC ;
+
+private transient String SingleStringCharacter =
+     a1:'\\' a2:EscapeSequence { yyValue = a2; }
+   / LineContinuation
+   / a1:(!NonSingleStringChar _) { yyValue = a1+""; }
+   ;
+
+private transient String NonSingleStringChar =
+     a1:['\\] { yyValue = a1+""; } //'
+   / LineTerminatorNoMC ;
+
+private transient RegularExpression RegularExpressionLiteral =
+     "/" a1:RegularExpressionBody "/" a2:RegularExpressionFlags
+     { Span span = createSpan(yyStart,yyCount);
+       yyValue = new RegularExpression(NodeUtil.makeASTNodeInfo(span), a1, a2);
+     };
+
+private transient String RegularExpressionBody =
+     a1:RegularExpressionFirstChar a2s:RegularExpressionChar*
+     { StringBuilder buf = new StringBuilder();
+       buf.append(a1);
+       for (String s : a2s.list()) buf.append(s);
+       yyValue = buf.toString();
+     };
+
+private transient String RegularExpressionFirstChar =
+     RegularExpressionBackslashSequence
+   / s:(!NonRegularExpressionFirstChar _) { yyValue = s+""; }
+   / RegularExpressionClass
+   ;
+
+private transient void NonRegularExpressionFirstChar =
+     LineTerminatorNoMC / "*" / "\\" / "/" / "[" ;
+
+private transient String RegularExpressionChar =
+     RegularExpressionBackslashSequence
+   / s:(!NonRegularExpressionChar _) { yyValue = s+""; }
+   / RegularExpressionClass
+   ;
+
+private transient void NonRegularExpressionChar =
+     LineTerminatorNoMC / "\\" / "/" / "[" ;
+
+private transient String RegularExpressionBackslashSequence =
+     "\\" a1:RegularExpressionNonTerminator { yyValue = "\\"+a1; };
+
+private transient String RegularExpressionNonTerminator =
+     s:(!LineTerminatorNoMC _) { yyValue = s+""; };
+
+private transient String RegularExpressionClass =
+     "[" a1s:RegularExpressionClassChar* "]"
+     { StringBuilder buf = new StringBuilder();
+       buf.append("[");
+       for (String s : a1s.list()) buf.append(s);
+       buf.append("]");
+       yyValue = buf.toString();
+     };
+
+private transient String RegularExpressionClassChar =
+     RegularExpressionBackslashSequence
+   / s:(!NonRegularExpressionClassChar _) { yyValue = s+""; }
+   ;
+
+private transient void NonRegularExpressionClassChar =
+     LineTerminatorNoMC / "]" / "\\" ;
+
+private transient String RegularExpressionFlags =
+     a1s:idrest*
+     { StringBuilder buf = new StringBuilder();
+       for (String s : a1s.list()) buf.append(s);
+       yyValue = buf.toString();
+     };

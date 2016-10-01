@@ -1,0 +1,100 @@
+function[0] top-level {
+  Entry[-1] -> [0]
+
+  Block[0] -> [1], ExitExc
+    [0] say := function (1) @ #3, #4
+    [1] noop(StartOfFile)
+    [2] <>Global<>ignore1 := alloc() @ #5
+    [3] <>Global<>ignore1["girl"] := "Hoo"
+    [4] <>Global<>ignore1["boy"] := "Ha"
+    [5] human := <>Global<>ignore1
+    [6] <>obj<>5 := <>Global<>toObject(print) @ #6
+    [7] <>y<>6 := "Girls say "
+    [8] <>obj<>7 := <>Global<>toObject(say) @ #7
+    [9] <>temp<>8 := "girl"
+    [10] <>arguments<>9 := allocArg(1) @ #8
+    [11] <>arguments<>9["0"] := <>temp<>8
+    [12] <>fun<>10 := <>Global<>getBase(say)
+
+  Call[1] -> ExitExc
+    [0] call(<>obj<>7, <>fun<>10, <>arguments<>9) @ #9
+
+  AfterCall[2] -> [4]
+
+  AfterCatch[3] -> ExitExc
+
+  Block[4] -> [5], ExitExc
+    [0] <>y<>12 := <>y<>6 + <>z<>11 + "! Boys say "
+    [1] <>obj<>13 := <>Global<>toObject(say) @ #11
+    [2] <>temp<>14 := "boy"
+    [3] <>arguments<>15 := allocArg(1) @ #12
+    [4] <>arguments<>15["0"] := <>temp<>14
+    [5] <>fun<>16 := <>Global<>getBase(say)
+
+  Call[5] -> ExitExc
+    [0] call(<>obj<>13, <>fun<>16, <>arguments<>15) @ #13
+
+  AfterCall[6] -> [8]
+
+  AfterCatch[7] -> ExitExc
+
+  Block[8] -> [9], ExitExc
+    [0] <>y<>18 := <>y<>12 + <>z<>17 + "! and I say "
+    [1] <>obj<>19 := <>Global<>toObject(say) @ #15
+    [2] <>temp<>20 := "me"
+    [3] <>arguments<>21 := allocArg(1) @ #16
+    [4] <>arguments<>21["0"] := <>temp<>20
+    [5] <>fun<>22 := <>Global<>getBase(say)
+
+  Call[9] -> ExitExc
+    [0] call(<>obj<>19, <>fun<>22, <>arguments<>21) @ #17
+
+  AfterCall[10] -> [12]
+
+  AfterCatch[11] -> ExitExc
+
+  Block[12] -> [13], ExitExc
+    [0] <>temp<>24 := <>y<>18 + <>z<>23 + "!"
+    [1] <>arguments<>25 := allocArg(1) @ #19
+    [2] <>arguments<>25["0"] := <>temp<>24
+    [3] <>fun<>26 := <>Global<>getBase(print)
+
+  Call[13] -> ExitExc
+    [0] call(<>obj<>5, <>fun<>26, <>arguments<>25) @ #20
+
+  AfterCall[14] -> [16]
+
+  AfterCatch[15] -> ExitExc
+
+  Block[16] -> Exit
+    [0] noop(EndOfFile)
+
+  Exit[-2]
+
+  ExitExc[-3]
+
+}
+
+function[1] say {
+  Entry[-1] -> [0]
+
+  Block[0] -> [2], [1]
+
+  Block[1] -> Exit, ExitExc
+    [0] assert(<>gender<>1 == "girl")
+    [1] <>obj<>3 := <>Global<>toObject(human) @ #1
+    [2] return(<>obj<>3["girl"])
+
+  Block[2] -> Exit, ExitExc
+    [0] assert(<>gender<>1 != "girl")
+    [1] <>obj<>4 := <>Global<>toObject(human) @ #2
+    [2] return(<>obj<>4["boy"])
+
+  Block[3] -> Exit
+
+  Exit[-2]
+
+  ExitExc[-3]
+
+}
+

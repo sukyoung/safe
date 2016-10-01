@@ -1,0 +1,23 @@
+function[0] top-level {
+  Entry[-1] -> [0]
+
+  Block[0] -> [1], ExitExc
+    [0] noop(StartOfFile)
+    [1] x := 5
+
+  Block[1] -> [2], [3]
+    [0] <>Global<>ignore3 := x
+
+  Block[2] -> Exit, ExitExc
+    [0] x := 5
+    [1] noop(EndOfFile)
+
+  Block[3] -> ExitExc, ExitExc
+    [0] x := 5
+
+  Exit[-2]
+
+  ExitExc[-3]
+
+}
+

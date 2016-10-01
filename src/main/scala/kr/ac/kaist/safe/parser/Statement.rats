@@ -1,0 +1,301 @@
+/**
+ * *****************************************************************************
+ * Copyright (c) 2016, KAIST.
+ * All rights reserved.
+ *
+ * Use is subject to license terms.
+ *
+ * This distribution may include materials developed by third parties.
+ * ****************************************************************************
+ */
+
+/*
+ * A.4 Statements
+ * Definition of JavaScript statements
+ */
+module kr.ac.kaist.safe.parser.Statement(Declaration, Expression, ExpressionNoIn,
+                                         Symbol, Identifier, Keyword, Spacing);
+
+import Declaration;
+import Expression;
+import ExpressionNoIn;
+import Symbol;
+import Identifier;
+import Keyword;
+import Spacing;
+
+/*
+ * Statement ::=
+ *   ABlock
+ * | var w VariableDeclarationList w ;
+ * | ;
+ * | [lookahead \not\in {{, function}] Expression w ;
+ * | if w ( w Expression w ) w Statement w (else w Statement)?
+ * | do w Statement w while w ( w Expression w ) w ;
+ * | while w ( w Expression w ) w Statement
+ * | for w ( (w ExpressionNoIn)? w ; (w Expression)? w ; (w Expression)? w ) Statement
+ * | for w ( w var w VariableDeclarationListNoIn w ; (w Expression)? w ; (w Expression)? w ) w Statement
+ * | for w ( w LeftHandSide w in w Expression w ) w Statement
+ * | for w ( w var w VariableDeclarationNoIn w in w Expression w ) w Statement
+ * | continue (s Id)? w ;
+ * | break (s Id)? w ;
+ * | return (s Expression)? w ;
+ * | with w ( w Expression w ) w Statement
+ * | switch w ( w Expression w ) w CaseBlock
+ * | Id w : w Statement
+ * | throw s Expression w ;
+ * | try w ABlock w Catch
+ * | try w ABlock w Finally
+ * | try w ABlock w Catch w Finally
+ * | debugger w ;
+ */
+private transient void NumericLiteral =
+     a1:DecimalDigits !(idrest) { log(writer, a1); } ;
+private transient String DecimalDigits = [0-9]+ ;
+private transient void NumericLiterals =
+     NumericLiteral w (void:comma w NumericLiteral w)+ ;
+
+public Stmt Statement =
+     a1:ABlock
+     { Span span = createSpan(yyStart,yyCount+1);
+       yyValue = new ABlock(NodeUtil.makeASTNodeInfo(span), toList(a1), false);
+     }
+   / ExtendedFunctionDeclaration
+   / var w a1:Id w equals w
+     a2:(opensquare w NumericLiterals closesquare { yyValue = createSpan(yyStart,yyCount+1); }) EOS
+     { Span span = createSpan(yyStart,yyCount);
+       yyValue = makeArrayNumberLiteral(span, a1, (Span)a2);
+     }
+   / var w a1:VariableDeclarationList EOS
+     { Span span = createSpan(yyStart,yyCount);
+       yyValue = new VarStmt(NodeUtil.makeASTNodeInfo(span), toList(a1));
+     }
+   / semicolon
+     { Span span = createSpan(yyStart,yyCount);
+       yyValue = new EmptyStmt(NodeUtil.makeASTNodeInfo(span));
+     }
+// !(opencurly) a1:Expression EOS // !(opencurly / function) a1:Expression EOS
+   / a1:Expression EOS // !(opencurly / function) a1:Expression EOS
+     { Span span = createSpan(yyStart,yyCount);
+       yyValue = new ExprStmt(NodeUtil.makeASTNodeInfo(span), a1, false);
+     }
+   / if w openparen w a1:Expression w closeparen w a2:Statement
+     a3:(w else w Statement)?
+     { Span span = createSpan(yyStart,yyCount);
+       Option<Stmt> elseB;
+       if (a3 == null) elseB = Some.<Stmt>apply(null);
+       else            elseB = Some.<Stmt>apply(a3);
+       yyValue = new If(NodeUtil.makeASTNodeInfo(span), a1, a2, elseB);
+     }
+   / do w a1:Statement w while w openparen w a2:Expression w
+     closeparen EOS
+     { Span span = createSpan(yyStart,yyCount);
+       yyValue = new DoWhile(NodeUtil.makeASTNodeInfo(span), a1, a2);
+     }
+   / while w openparen w a1:Expression w closeparen w a2:Statement
+     { Span span = createSpan(yyStart,yyCount);
+       yyValue = new While(NodeUtil.makeASTNodeInfo(span), a1, a2);
+     }
+   / for w openparen a1:(w ExpressionNoIn)? w semicolon a2:(w Expression)? w
+     semicolon a3:(w Expression)? w closeparen w a4:Statement
+     { Span span = createSpan(yyStart,yyCount);
+       Option<Expr> init;
+       Option<Expr> test;
+       Option<Expr> update;
+       if (a1 == null) init = Some.<Expr>apply(null);
+       else            init = Some.<Expr>apply(a1);
+       if (a2 == null) test = Some.<Expr>apply(null);
+       else            test = Some.<Expr>apply(a2);
+       if (a3 == null) update = Some.<Expr>apply(null);
+       else            update = Some.<Expr>apply(a3);
+       yyValue = new For(NodeUtil.makeASTNodeInfo(span), init, test, update, a4);
+     }
+   / for w openparen w var w a1:VariableDeclarationListNoIn w semicolon
+     a2:(w Expression)? w semicolon a3:(w Expression)? w closeparen w a4:Statement
+     { Span span = createSpan(yyStart,yyCount);
+       Option<Expr> cond;
+       Option<Expr> action;
+       if (a2 == null) cond = Some.<Expr>apply(null);
+       else            cond = Some.<Expr>apply(a2);
+       if (a3 == null) action = Some.<Expr>apply(null);
+       else            action = Some.<Expr>apply(a3);
+       yyValue = new ForVar(NodeUtil.makeASTNodeInfo(span), toList(a1), cond, action, a4);
+     }
+   / for w openparen w a1:LeftHandSide w in w a2:Expression w
+     closeparen w a3:Statement
+     { Span span = createSpan(yyStart,yyCount);
+       yyValue = new ForIn(NodeUtil.makeASTNodeInfo(span), a1, a2, a3);
+     }
+   / for w openparen w var w a1:VariableDeclarationNoIn w in w a2:Expression w
+     closeparen w a3:Statement
+     { Span span = createSpan(yyStart,yyCount);
+       yyValue = new ForVarIn(NodeUtil.makeASTNodeInfo(span), a1, a2, a3);
+     }
+   / continue s a1:Id EOS
+     { Span span = createSpan(yyStart,yyCount);
+       ASTNodeInfo info = NodeUtil.makeASTNodeInfo(span);
+       yyValue = new Continue(info, Some.<Label>apply(new Label(info, a1)));
+     }
+   / continue EOSnoLB
+     { Span span = createSpan(yyStart,yyCount);
+       yyValue = new Continue(NodeUtil.makeASTNodeInfo(span), Some.<Label>apply(null));
+     }
+   / break s a1:Id EOS
+     { Span span = createSpan(yyStart,yyCount);
+       ASTNodeInfo info = NodeUtil.makeASTNodeInfo(span);
+       yyValue = new Break(info, Some.<Label>apply(new Label(info, a1)));
+     }
+   / break EOSnoLB
+     { Span span = createSpan(yyStart,yyCount);
+       yyValue = new Break(NodeUtil.makeASTNodeInfo(span), Some.<Label>apply(null));
+     }
+   / return s a1:Expression EOS
+     { Span span = createSpan(yyStart,yyCount);
+       yyValue = new Return(NodeUtil.makeASTNodeInfo(span), Some.<Expr>apply(a1));
+     }
+   / return EOSnoLB
+     { Span span = createSpan(yyStart,yyCount);
+       yyValue = new Return(NodeUtil.makeASTNodeInfo(span), Some.<Expr>apply(null));
+     }
+   / with w openparen w a1:Expression w closeparen w a2:Statement
+     { Span span = createSpan(yyStart,yyCount);
+       yyValue = new With(NodeUtil.makeASTNodeInfo(span), a1, a2);
+     }
+   / switch w openparen w a1:Expression w closeparen w
+     opencurly a2:(w CaseClauses)? w closecurly
+     { Span span = createSpan(yyStart,yyCount+1);
+       if (a2 == null) a2 = list();
+       yyValue = new Switch(NodeUtil.makeASTNodeInfo(span), a1,
+                            toList(a2), Some.<scala.collection.immutable.List<Stmt>>apply(null),
+                            toList(Collections.<Case>emptyList()));
+     }
+   / switch w openparen w a1:Expression w closeparen w
+     opencurly a2:(w CaseClauses)? w default w colon a3s:(w Statement)*
+     a4:(w CaseClauses)? w closecurly
+     { Span span = createSpan(yyStart,yyCount+1);
+       if (a2 == null) a2 = list();
+       if (a4 == null) a4 = list();
+       yyValue = new Switch(NodeUtil.makeASTNodeInfo(span), a1,
+                            toList(a2),
+                            Some.<scala.collection.immutable.List<Stmt>>apply(toList(a3s.list())),
+                            toList(a4));
+     }
+   / a1:Id w colon w a2:Statement
+     { Span span = createSpan(yyStart,yyCount);
+       ASTNodeInfo info = NodeUtil.makeASTNodeInfo(span);
+       yyValue = new LabelStmt(info, new Label(info, a1), a2);
+     }
+   / throw s a1:Expression EOS
+     { Span span = createSpan(yyStart,yyCount);
+       yyValue = new Throw(NodeUtil.makeASTNodeInfo(span), a1);
+     }
+   / try w a1:ABlock w a2:Catch w a3:Finally
+     { Span span = createSpan(yyStart,yyCount);
+       yyValue = new Try(NodeUtil.makeASTNodeInfo(span), toList(a1),
+                         Some.<Catch>apply(a2), Some.<scala.collection.immutable.List<Stmt>>apply(toList(a3)));
+     }
+   / try w a1:ABlock w a2:Catch
+     { Span span = createSpan(yyStart,yyCount);
+       yyValue = new Try(NodeUtil.makeASTNodeInfo(span), toList(a1),
+                         Some.<Catch>apply(a2), Some.<scala.collection.immutable.List<Stmt>>apply(null));
+     }
+   / try w a1:ABlock w a2:Finally
+     { Span span = createSpan(yyStart,yyCount);
+       yyValue = new Try(NodeUtil.makeASTNodeInfo(span), toList(a1),
+                         Some.<Catch>apply(null), Some.<scala.collection.immutable.List<Stmt>>apply(toList(a2)));
+     }
+   / debugger EOS
+     { Span span = createSpan(yyStart,yyCount);
+       yyValue = new Debugger(NodeUtil.makeASTNodeInfo(span));
+     };
+
+private transient Stmt ExtendedFunctionDeclaration =
+     a1:FunctionDeclaration
+     { //excLog.signal(new Warning(a1.info().span())); "FunctionDeclaration as a Statement is not allowed in ECMAScript."
+       yyValue = a1;
+     };
+
+/*
+ * ABlock ::= { (w Statement)* w }
+ */
+transient List<Stmt> ABlock =
+     opencurly w closecurly
+     { yyValue = list(); }
+   / opencurly w a1:Statement a2s:(w Statement)* w closecurly
+     { Span span = createSpan(yyStart,yyCount+1);
+       yyValue = cons(a1, a2s.list());
+     };
+
+/*
+ * VariableDeclarationList ::=
+ *   VariableDeclaration (w , w VariableDeclaration)*
+ */
+transient List<VarDecl> VariableDeclarationList =
+     a1:VariableDeclaration a2s:(w void:comma w VariableDeclaration)*
+     { yyValue = cons(a1, a2s.list()); };
+
+/*
+ * VariableDeclarationListNoIn ::=
+ *   VariableDeclarationNoIn (w , w VariableDeclarationListNoIn)*
+ */
+private transient List<VarDecl> VariableDeclarationListNoIn =
+     a1:VariableDeclarationNoIn a2s:(w void:comma w VariableDeclarationNoIn)*
+     { yyValue = cons(a1, a2s.list()); };
+
+/*
+ * VariableDeclaration ::=
+ *   Id (w = w Assignment)?
+ */
+transient VarDecl VariableDeclaration =
+     a1:Id a2:(w void:equals w Assignment)?
+     { Span span = createSpan(yyStart,yyCount);
+       Option<Expr> expr;
+       if (a2 == null) expr = Some.<Expr>apply(null);
+       else            expr = Some.<Expr>apply(a2);
+       yyValue = new VarDecl(NodeUtil.makeASTNodeInfo(span), a1, expr, false);
+     };
+
+/*
+ * VariableDeclarationNoIn ::=
+ *   Id (w = w AssignmentNoIn)?
+ */
+transient VarDecl VariableDeclarationNoIn =
+     a1:Id a2:(w void:equals w AssignmentNoIn)?
+     { Span span = createSpan(yyStart,yyCount);
+       Option<Expr> expr;
+       if (a2 == null) expr = Some.<Expr>apply(null);
+       else            expr = Some.<Expr>apply(a2);
+       yyValue = new VarDecl(NodeUtil.makeASTNodeInfo(span), a1, expr, false);
+     };
+
+/*
+ * CaseClauses ::=
+ *   CaseClause (w CaseClause)*
+ */
+private List<Case> CaseClauses =
+     a1:CaseClause a2s:(w CaseClause)*
+     { yyValue = cons(a1, a2s.list()); };
+
+/*
+ * CaseClause ::= case w Expression w : (w Statement)*
+ */
+private transient Case CaseClause =
+     case w a1:Expression w colon a2s:(w Statement)*
+     { Span span = createSpan(yyStart,yyCount);
+       yyValue = new Case(NodeUtil.makeASTNodeInfo(span), a1, toList(a2s.list()));
+     };
+
+/*
+ * Catch ::= catch w ( w Id w ) w ABlock
+ */
+private transient Catch Catch =
+     catch w openparen w a1:Id w closeparen w a2:ABlock
+     { Span span = createSpan(yyStart,yyCount);
+       yyValue = new Catch(NodeUtil.makeASTNodeInfo(span), a1, toList(a2));
+     };
+
+/*
+ * Finally ::= finally w ABlock
+ */
+private transient List<Stmt> Finally =
+     finally w yyValue:ABlock ;

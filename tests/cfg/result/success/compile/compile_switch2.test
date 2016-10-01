@@ -1,0 +1,55 @@
+
+
+lab : <>switch<>1 : {
+  {
+    <>val<>2 = "1"
+  }
+  {
+    <>Case2Label<>3 : {
+      <>Case2Label<>4 : {
+        <>Case2Label<>5 : {
+          <>Case2Label<>6 : {
+            <>default<>7 : {
+              {
+                if(<>val<>2 === 1)
+                  break <>Case2Label<>6
+                else
+                {
+                  if(<>val<>2 === 2)
+                    break <>Case2Label<>5
+                  else
+                  {
+                    if(<>val<>2 === 3)
+                      break <>Case2Label<>4
+                    else
+                    {
+                      if(<>val<>2 === 4)
+                        break <>Case2Label<>3
+                      else
+                        break <>default<>7
+                    }
+                  }
+                }
+              }
+              break <>switch<>1
+            }
+            {
+              <>Global<>ignore2 = "default"
+            }
+          }
+          <>Global<>ignore4 = "1"
+        }
+        <>Global<>ignore6 = "2"
+      }
+      {
+        <>Global<>ignore8 = "3"
+        break <>switch<>1
+      }
+    }
+    {
+      <>Global<>ignore10 = "4"
+      break lab
+    }
+  }
+}
+

@@ -1,0 +1,260 @@
+/**
+ * *****************************************************************************
+ * Copyright (c) 2016, KAIST.
+ * All rights reserved.
+ *
+ * Use is subject to license terms.
+ *
+ * This distribution may include materials developed by third parties.
+ * ****************************************************************************
+ */
+
+/*
+ * A complete JavaScript grammar.
+ */
+module kr.ac.kaist.safe.parser.JS;
+modify kr.ac.kaist.safe.parser.Declaration(Statement, Symbol, Identifier,
+                                           Keyword, Spacing)
+            as Declaration;
+instantiate kr.ac.kaist.safe.parser.Statement(Declaration, Expression,
+                                              ExpressionNoIn, Symbol, Identifier,
+                                              Keyword, Spacing)
+            as Statement;
+instantiate kr.ac.kaist.safe.parser.Expression(Declaration, ExpressionNoIn,
+                                               Literal, Symbol, Identifier,
+                                               Keyword, Spacing)
+            as Expression;
+instantiate kr.ac.kaist.safe.parser.ExpressionNoIn(Declaration, Expression,
+                                                   Literal, Symbol,
+                                                   Identifier, Keyword, Spacing)
+            as ExpressionNoIn;
+instantiate kr.ac.kaist.safe.parser.Literal(Symbol, Identifier, Keyword, Spacing)
+            as Literal;
+instantiate kr.ac.kaist.safe.parser.Identifier(Symbol, Keyword, Unicode)
+            as Identifier;
+instantiate kr.ac.kaist.safe.parser.Symbol(Identifier, Keyword, Spacing)
+            as Symbol;
+instantiate kr.ac.kaist.safe.parser.Spacing(Symbol, Identifier)
+            as Spacing;
+instantiate kr.ac.kaist.safe.parser.Keyword(Identifier)
+            as Keyword;
+instantiate kr.ac.kaist.safe.parser.Unicode
+            as Unicode;
+
+header {
+import java.util.HashMap;
+import kr.ac.kaist.safe.errors.ExcLog;
+import kr.ac.kaist.safe.errors.error.*;
+import kr.ac.kaist.safe.errors.warning.*;
+import kr.ac.kaist.safe.nodes.ast.*;
+import kr.ac.kaist.safe.util.*;
+import xtc.util.Action;
+import java.io.*;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.nio.file.Files;
+import java.util.Collections;
+import java.util.ArrayList;
+import java.util.List;
+import scala.collection.JavaConversions;
+import scala.Option;
+import scala.Some;
+import scala.Tuple2;
+import scala.Tuple3;
+}
+
+body {
+    static final int MAIN = 0;
+    static final int FUNCTION_EXPR = 1;
+
+    static List<SourceElement> nilJSes = Collections.<SourceElement>emptyList();
+    static scala.collection.immutable.List<SourceElement> nilSes = toList(nilJSes);
+    static scala.collection.immutable.List<FunDecl> nilFds = toList(Collections.<FunDecl>emptyList());
+    static scala.collection.immutable.List<VarDecl> nilVds = toList(Collections.<VarDecl>emptyList());
+    static scala.collection.immutable.List<Id> nilIds = toList(Collections.<Id>emptyList());
+    static <T> scala.collection.immutable.List<T> toList(List<T> jList) {
+        return JavaConversions.asScalaBuffer(jList).toList();
+    }
+
+    Span createSpan(int start, int end) {
+        int i = end;
+        while ( i >= 0 && yyData.length > i && yyData[i] == ' ' ) { i--; }
+        if ( i-1 >= start )
+            end = i-1;
+        else
+            end = start;
+        Column s = column(start);
+        Column e = column(end);
+        SourceLoc slStart = new SourceLoc(s.line, s.column, start);
+        SourceLoc slEnd   = new SourceLoc(e.line, e.column, end);
+        if (s.file == e.file) { return new Span(s.file, slStart, slEnd); }
+        else { return NodeUtil.MERGED_SPAN(); }
+    }
+
+    private FileWriter fw;
+    private BufferedWriter writer;
+    private BufferedReader reader;
+    private String logFile = column(0).file + ".log";
+    private boolean keepComments = NodeUtil.keepComments();
+    private ExcLog excLog = new ExcLog(toList(Collections.<SafeError>emptyList()),
+                                       toList(Collections.<SafeWarning>emptyList()));
+
+    public ExcLog excLog() {
+        return excLog;
+    }
+
+    public Result JSmain(final int yyStart) throws IOException {
+        return JSparse(yyStart, MAIN);
+    }
+
+    public Result JSFunctionExpr(final int yyStart) throws IOException {
+        return JSparse(yyStart, FUNCTION_EXPR);
+    }
+
+    private Result JSparse(final int yyStart, final int nonterminal) throws IOException {
+        try {
+            NodeUtil.initComment();
+            Result result = null;
+            if (nonterminal == MAIN) {
+                result = this.pJS$File(yyStart);
+            } else if (nonterminal == FUNCTION_EXPR) {
+                result = this.pJS$FunctionExpr(yyStart);
+            }
+            writer.close();
+            fw.close();
+            Files.deleteIfExists((new File(logFile)).toPath());
+            return result;
+        } finally {
+            writer.close();
+            fw.close();
+        }
+    }
+
+    void initParser() {
+        fw = Useful.fileNameToFileWriter(logFile);
+        writer = new BufferedWriter(fw);
+    }
+
+    private void log(BufferedWriter writer, String msg) throws IOException {
+        writer.write(msg + System.getProperty("line.separator"));
+    }
+
+    /*
+     * DecimalLiteral ::=
+     *   DecimalIntegerLiteral . DecimalDigits? ExponentPart?
+     * | DecimalIntegerLiteral ExponentPart?
+     * | . DecimalDigits ExponentPart?
+     *
+     * DecimalIntegerLiteral ::=
+     *   0
+     * | NonZeroDigit DecimalDigits?
+     *
+     * DecimalDigit ::= 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
+     *
+     * NonZeroDigit ::= 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
+     *
+     * ExponentPart ::= (e | E) (+ | -)? DecimalDigit+
+     */
+    NumberLiteral makeNumberLiteral(BufferedWriter writer, Span span,
+                                    String beforeDot, String dot,
+                                    String afterDot, String exponent) throws IOException {
+        if ((beforeDot + dot).equals("") ||
+            ((beforeDot + afterDot).equals("") && !dot.equals("")) ||
+            (!beforeDot.equals("") && dot.equals("") && !afterDot.equals("")))
+            excLog.signal(new NoNumeralError(beforeDot + dot + afterDot + exponent));
+        if (!beforeDot.equals("") && !beforeDot.equals("0") && beforeDot.charAt(0) == '0')
+            excLog.signal(new NumeralPrefixZeroError());
+        if (dot.equals("")) {
+            if (exponent.equals(""))
+                return new IntLiteral(NodeUtil.makeASTNodeInfo(span), new BigInteger(beforeDot), 10);
+            else {
+                int exp = 0;
+                char second = exponent.charAt(1);
+                if (Character.isDigit(second))
+                    exp = Integer.parseInt(exponent.substring(1));
+                else if (second == '-')
+                    exp = -1 * Integer.parseInt(exponent.substring(2));
+                else exp = Integer.parseInt(exponent.substring(2));
+                if (exp < 0) {
+                    String str = beforeDot + dot + afterDot + exponent;
+                    str = new BigDecimal(str).toString();
+                    return new DoubleLiteral(NodeUtil.makeASTNodeInfo(span), str, Double.valueOf(str));
+                } else
+                    return new IntLiteral(NodeUtil.makeASTNodeInfo(span),
+                                          new BigInteger(beforeDot).multiply(BigInteger.TEN.pow(exp)),
+                                          10);
+            }
+        } else {
+            String str = beforeDot + dot + afterDot + exponent;
+            return new DoubleLiteral(NodeUtil.makeASTNodeInfo(span), str, Double.valueOf(str));
+        }
+    }
+
+    private VarStmt makeArrayNumberLiteral(Span span1, Id name, Span span2) throws IOException {
+        List<Double> result = new ArrayList<Double>();
+        writer.close();
+        fw.close();
+        FileReader fr = new FileReader(logFile);
+        BufferedReader reader = new BufferedReader(fr);
+        String line = reader.readLine();
+        while (line != null) {
+            if (line.equals(""))
+                excLog.signal(new NoNumeralError(line));
+            if (!line.equals("") && !line.equals("0") && line.charAt(0) == '0')
+                excLog.signal(new NumeralPrefixZeroError());
+            Double number = Double.valueOf(line);
+            result.add(number);
+            line = reader.readLine();
+        }
+        reader.close();
+        fr.close();
+        Expr expr;
+        if (result.size() > 1000)
+            expr = new ArrayNumberExpr(NodeUtil.makeASTNodeInfo(span2), toList(result));
+        else {
+            List<Option<Expr>> elems = new ArrayList<Option<Expr>>();
+            for (Double d : result) {
+                String str = d.toString();
+                Expr e;
+                if (str.endsWith(".0"))
+                    e = new IntLiteral(NodeUtil.makeASTNodeInfo(span2),
+                                       new BigInteger(str.substring(0, str.length() - 2), 10),
+                                       10);
+                else e = new DoubleLiteral(NodeUtil.makeASTNodeInfo(span2), str, d);
+                elems.add(Some.<Expr>apply(e));
+            }
+            expr = new ArrayExpr(NodeUtil.makeASTNodeInfo(span2), toList(elems));
+        }
+
+        VarDecl vd = new VarDecl(NodeUtil.makeASTNodeInfo(span1), name, Some.<Expr>apply(expr), false);
+        initParser();
+        return new VarStmt(NodeUtil.makeASTNodeInfo(span1), toList(list(vd)));
+    }
+    
+    private static <T> List<T> list() {
+        return Collections.emptyList();
+    }
+
+
+    public static <T> List<T> list(T x1) {
+        ArrayList<T> result = new ArrayList<T>(1);
+        result.add(x1);
+        return result;
+    }
+
+    public static <U, T extends U> List<U> list(List<T> rest, U last) {
+        List<U> l = new ArrayList<U>();
+        l.addAll(rest);
+        l.add(last);
+        return l;
+    }
+
+    private static <T> List<T> cons(T x, List<T> y) {
+        ArrayList<T> result = new ArrayList<T>(1 + y.size());
+        result.add(x);
+        result.addAll(y);
+        return result;
+    }
+}
+
+option parser(kr.ac.kaist.safe.parser.JS);

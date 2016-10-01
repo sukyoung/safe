@@ -1,0 +1,8 @@
+  function F() 
+  {
+    this.x = 1;
+  }
+  var x;
+  
+  x = new F();
+  

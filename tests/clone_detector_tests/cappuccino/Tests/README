@@ -1,5 +1,0 @@
-Requires objj be installed, as well as ojunit, located at http://github.com/cappuccino/ojunit
-
-Run individual tests using a command similar to the following:
-
-    objj ojunit/OJTestRunnerText.j cappuccino/Tests/Foundation/CPDateTest.j

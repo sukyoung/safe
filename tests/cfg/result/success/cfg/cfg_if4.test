@@ -1,0 +1,78 @@
+function[0] top-level {
+  Entry[-1] -> [0]
+
+  Block[0] -> [2], [1], ExitExc
+    [0] noop(StartOfFile)
+    [1] alphabet := "U"
+
+  Block[1] -> [3], ExitExc
+    [0] assert(alphabet == "A")
+
+  Block[2] -> [3], ExitExc
+    [0] assert(alphabet != "A")
+
+  Block[3] -> [5], [4]
+
+  Block[4] -> [7], [6], ExitExc
+    [0] assert(alphabet == "B")
+
+  Block[5] -> [9], ExitExc
+    [0] assert(alphabet != "B")
+
+  Block[6] -> [8], ExitExc
+    [0] assert(alphabet == "C")
+
+  Block[7] -> [8], ExitExc
+    [0] assert(alphabet != "C")
+
+  Block[8] -> [9]
+
+  Block[9] -> [11], [10]
+
+  Block[10] -> [13], [12], ExitExc
+    [0] assert(alphabet == "D")
+
+  Block[11] -> [21], ExitExc
+    [0] assert(alphabet != "D")
+
+  Block[12] -> [15], [14], ExitExc
+    [0] assert(alphabet == "U")
+
+  Block[13] -> [20], ExitExc
+    [0] assert(alphabet != "U")
+
+  Block[14] -> [17], [16], ExitExc
+    [0] assert(alphabet == "V")
+
+  Block[15] -> [19], ExitExc
+    [0] assert(alphabet != "V")
+
+  Block[16] -> [18], ExitExc
+    [0] assert(alphabet == "W")
+
+  Block[17] -> [18], ExitExc
+    [0] assert(alphabet != "W")
+
+  Block[18] -> [19]
+
+  Block[19] -> [20]
+
+  Block[20] -> [21]
+
+  Block[21] -> [23], [22]
+
+  Block[22] -> [24], ExitExc
+    [0] assert(alphabet == "X")
+
+  Block[23] -> [24], ExitExc
+    [0] assert(alphabet != "X")
+
+  Block[24] -> Exit
+    [0] noop(EndOfFile)
+
+  Exit[-2]
+
+  ExitExc[-3]
+
+}
+

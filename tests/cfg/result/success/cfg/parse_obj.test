@@ -1,0 +1,17 @@
+function[0] top-level {
+  Entry[-1] -> [0]
+
+  Block[0] -> Exit, ExitExc
+    [0] noop(StartOfFile)
+    [1] <>Global<>ignore1 := alloc() @ #1
+    [2] <>Global<>ignore1["x"] := - 42
+    [3] <>Global<>ignore1["y"] := 42
+    [4] x := <>Global<>ignore1
+    [5] noop(EndOfFile)
+
+  Exit[-2]
+
+  ExitExc[-3]
+
+}
+

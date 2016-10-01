@@ -1,1 +1,0 @@
-var w = (function () {})().a

@@ -1,0 +1,153 @@
+/**
+ * *****************************************************************************
+ * Copyright (c) 2016, KAIST.
+ * All rights reserved.
+ *
+ * Use is subject to license terms.
+ *
+ * This distribution may include materials developed by third parties.
+ * ****************************************************************************
+ */
+
+/*
+ * A.5 Functions and Programs
+ * Definition of JavaScript functions and programs
+ */
+module kr.ac.kaist.safe.parser.Declaration(Statement, Symbol, Identifier, Keyword, Spacing);
+
+import Statement;
+import Symbol;
+import Identifier;
+import Keyword;
+import Spacing;
+
+/*
+ * Program ::= w SourceElements? w EndOfFile
+ */
+public Program File =
+     initParser a1:UseStrictDirectives? w a2:TopLevelSourceElements? closeParser
+     { Span span = createSpan(yyStart,yyCount);
+       ASTNodeInfo info = NodeUtil.makeASTNodeInfo(span);
+       scala.collection.immutable.List<SourceElement> ses;
+       if (a2 == null) ses = nilSes;
+       else ses = toList(a2);
+       HashMap<String, Span> map = new HashMap<String, Span>();
+       if (a1 == null)
+           yyValue = new Program(info, new TopLevel(info, nilFds, nilVds,
+                                                    toList(list(new SourceElements(info, ses, false)))));
+       else
+           yyValue = new Program(info, new TopLevel(info, nilFds, nilVds,
+                                                    toList(list(new SourceElements(info, ses, true)))));
+     };
+void initParser = w { initParser(); };
+void closeParser = w EndOfFile
+     { // revert to the original value for NodeUtil.keepComments
+       NodeUtil.setKeepComments(keepComments);
+       writer.close();
+       fw.close();
+     };
+
+private String UseStrictDirectives =
+     yyValue:UseStrictDirective UseStrictDirective+
+     { // ECMAScript 5.1 Section 14.1
+       excLog.signal(new NoMultipleUseStrict(createSpan(yyStart,yyCount)));
+     }
+   / yyValue:UseStrictDirective
+   ;
+
+private String UseStrictDirective =
+     ["] yyValue:"use strict" ["] (w semicolon / w comma)?
+   / ['] yyValue:"use strict" ['] (w semicolon / w comma)?
+   ;
+
+/*
+ * SourceElements ::= SourceElement (w SourceElement)*
+ */
+private List<SourceElement> TopLevelSourceElements =
+     a1:SourceElement a2s:(w SourceElement)*
+     { // Disable recording comments for now for the end of file
+       NodeUtil.setKeepComments(false);
+       yyValue = cons(a1, a2s.list());
+     };
+
+/*
+ * SourceElements ::= SourceElement (w SourceElement)*
+ */
+private List<SourceElement> SourceElements =
+     a1:SourceElement a2s:(w SourceElement)*
+     { yyValue = cons(a1, a2s.list()); };
+
+/*
+ * SourceElement ::=
+ *   FunctionDeclaration
+ * | Statement
+ */
+private SourceElement SourceElement =
+     FunctionDeclaration
+   / Statement ;
+
+/*
+ * FunctionDeclaration ::= function w Id w ( (w Params)? w ) w FunctionBody
+ */
+FunDecl FunctionDeclaration =
+     function w a1:Id w openparen a2:(w Params)? w closeparen w a3:FunctionBody
+     { Span span = createSpan(yyStart,yyCount);
+       ASTNodeInfo info = NodeUtil.makeASTNodeInfo(span);
+       scala.collection.immutable.List<Id> ids;
+       if (a2 == null) ids = nilIds;
+       else ids = toList(a2);
+       yyValue = new FunDecl(info,
+                             new Functional(info, nilFds, nilVds,
+                                            new SourceElements(info, toList(a3._1()), a3._3()),
+                                            a1, ids, a3._2()), false);
+     };
+
+/*
+ * Params ::= Id (w , w Id)*
+ */
+public List<Id> Params =
+     a1:Id a2s:(w void:comma w Id)+
+     { yyValue = cons(a1, a2s.list()); }
+   / a1:Id
+     { yyValue = list(a1); };
+
+/*
+ * FunctionBody ::= { w SourceElement* w }
+ */
+public Tuple3<List<SourceElement>, String, Boolean> FunctionBody =
+     opencurly w a1:UseStrictDirectives? w closecurly
+     { if (a1 == null)
+         yyValue = new Tuple3<List<SourceElement>, String, Boolean>(
+                       nilJSes,
+                       "{}",
+                       Boolean.valueOf(false));
+       else
+         yyValue = new Tuple3<List<SourceElement>, String, Boolean>(
+                       nilJSes,
+                       "{ 'use strict'; }",
+                       Boolean.valueOf(true));
+     }
+   / opencurly w a1:UseStrictDirectives? w a2:SourceElements w closecurly
+     { String str = NodeUtil.prBody(toList(a2));
+       if (a1 == null)
+         yyValue = new Tuple3<List<SourceElement>, String, Boolean>(a2, "{ " + str + " }", Boolean.valueOf(false));
+       else
+         yyValue = new Tuple3<List<SourceElement>, String, Boolean>(a2, "{ 'use strict'; " + str + " }", Boolean.valueOf(true));
+     };
+
+/*
+ * FunctionExpr ::= function (w Id)? w ( (w Params)? w ) w FunctionBody
+ */
+public LHS FunctionExpr =
+     function a1:(w Id)? w openparen a2:(w Params)? w closeparen w a3:FunctionBody
+     { Span span = createSpan(yyStart,yyCount+1);
+       ASTNodeInfo info = NodeUtil.makeASTNodeInfo(span);
+       Id f = (a1 == null) ? new Id(NodeUtil.makeASTNodeInfo(span), "", Some.<String>apply(null), false) : a1;
+       scala.collection.immutable.List<Id> ids;
+       if (a2 == null) ids = nilIds;
+       else ids = toList(a2);
+       yyValue = new FunExpr(info,
+                             new Functional(info, nilFds, nilVds,
+                                            new SourceElements(info, toList(a3._1()), a3._3()),
+                                            f, ids, a3._2()));
+     };

@@ -1,0 +1,57 @@
+function g(this, <>arguments<>1) 
+{
+  var <>x<>2
+  var <>w<>3
+  <>x<>2 = <>arguments<>1["0"]
+  {
+    {
+      <>w<>3 = gen
+    }
+    <>break<>4 : {
+      while(e1)
+      {
+        <>continue<>5 : {
+          
+        }
+      }
+    }
+  }
+  return <>x<>2
+}
+var x
+var v
+<>Global<>ignore3 = 3
+z = 4
+{
+  x = 5
+}
+<>break<>6 : {
+  {
+    <>obj<>7 = y
+    <>iterator<>8 = <>Global<>iteratorInit(<>obj<>7)
+    <>cond1<>9 = <>Global<>iteratorHasNext(<>obj<>7, <>iterator<>8)
+  }
+  while(<>cond1<>9)
+  {
+    <>key<>10 = <>Global<>iteratorNext(<>obj<>7, <>iterator<>8)
+    v = <>key<>10
+    <>continue<>11 : {
+      
+    }
+    {
+      <>cond1<>9 = <>Global<>iteratorHasNext(<>obj<>7, <>iterator<>8)
+    }
+  }
+}
+{
+  <>Global<>ignore6 = function h<>funexpr@10:5-13:2<>12(this, <>arguments<>13) 
+  {
+    var <>t<>14
+    <>Global<>ignore8 = true
+    {
+      <>t<>14 = false
+    }
+  }
+  h = <>Global<>ignore6
+}
+

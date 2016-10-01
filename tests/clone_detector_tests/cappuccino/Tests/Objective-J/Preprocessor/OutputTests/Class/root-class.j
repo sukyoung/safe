@@ -1,5 +1,0 @@
-
-@implementation Class
-{
-}
-@end

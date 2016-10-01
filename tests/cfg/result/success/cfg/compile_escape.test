@@ -1,0 +1,22 @@
+function[0] top-level {
+  Entry[-1] -> [0]
+
+  Block[0] -> Exit, ExitExc
+    [0] noop(StartOfFile)
+    [1] x := "\n"
+    [2] x := "\b"
+    [3] x := "\t"
+    [4] x := "\f"
+    [5] x := "\r"
+    [6] x := "\v"
+    [7] x := "\""
+    [8] x := "'"
+    [9] x := "\"
+    [10] noop(EndOfFile)
+
+  Exit[-2]
+
+  ExitExc[-3]
+
+}
+

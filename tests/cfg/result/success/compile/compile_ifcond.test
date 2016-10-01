@@ -1,0 +1,19 @@
+
+
+if(true)
+{
+  <>Global<>ignore1 = "asdf"
+}
+else
+{
+  <>Global<>ignore1 = 1
+}
+if("1")
+{
+  <>Global<>ignore2 = 1
+}
+else
+{
+  <>Global<>ignore2 = 2
+}
+

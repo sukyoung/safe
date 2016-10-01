@@ -1,0 +1,6 @@
+  function f101(x, arguments, y) 
+  {
+    arguments = "";
+    arguments = 2;
+  }
+  

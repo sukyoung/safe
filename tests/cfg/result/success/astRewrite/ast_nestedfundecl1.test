@@ -1,0 +1,13 @@
+  function f() 
+  {
+    return y;
+  }
+  y = 1;
+  obj = {
+    y : 10
+  };
+  <>alpha<>1 = <>Global<>toObject(obj);
+  alert(f());
+  f();
+  y;
+  

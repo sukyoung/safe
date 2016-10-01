@@ -1,0 +1,28 @@
+
+var x
+var y
+{
+  y = 24
+}
+<>break<>1 : {
+  {
+    x = 0
+    <>Global<>ignore3 = 0
+  }
+  while(x != y)
+  {
+    <>continue<>2 : {
+      <>old<>3 = y
+      <>new<>4 = <>Global<>toNumber(<>old<>3)
+      y = <>new<>4 - 1
+      <>Global<>ignore7 = <>new<>4
+    }
+    {
+      <>old<>5 = x
+      <>new<>6 = <>Global<>toNumber(<>old<>5)
+      x = <>new<>6 + 1
+      <>Global<>ignore5 = <>new<>6
+    }
+  }
+}
+

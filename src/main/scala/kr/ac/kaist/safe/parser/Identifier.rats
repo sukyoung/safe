@@ -1,0 +1,46 @@
+/**
+ * *****************************************************************************
+ * Copyright (c) 2016, KAIST.
+ * All rights reserved.
+ *
+ * Use is subject to license terms.
+ *
+ * This distribution may include materials developed by third parties.
+ * ****************************************************************************
+ */
+
+/*
+ * Definition of JavaScript identifiers.
+ */
+module kr.ac.kaist.safe.parser.Identifier(Symbol, Keyword, Unicode);
+
+import Symbol;
+import Keyword;
+import Unicode;
+
+option setOfString(JAVASCRIPT_RESERVED);
+
+transient String id      = s:(idstart idrest*) &{ !JAVASCRIPT_RESERVED.contains(s) };
+transient String idname  = s:(idstart idrest*);
+transient String idstart = UnicodeLetter / [$] / [_] / [\\] UnicodeEscapeSequence ;
+transient String idrest  = idstart / UnicodeCombiningMark / UnicodeDigit / UnicodeConnectorPunctuation
+                         / [\u200c-\u200d] ; // <ZWNJ> <ZWJ> ;
+transient String UnicodeEscapeSequence = [u] HexDigit HexDigit HexDigit HexDigit;
+transient String HexDigit = [0-9] / [a-f] / [A-F] ;
+
+private String IdText  = a1:id ;
+private String IdTextName  = a1:idname ;
+
+Id Id =
+     a1:"_<>_printIS"
+     { yyValue = new Id(NodeUtil.makeASTNodeInfo(createSpan(yyStart,yyCount+1)), a1, Some.<String>apply(null), false); }
+   / a1:"_<>_print"
+     { yyValue = new Id(NodeUtil.makeASTNodeInfo(createSpan(yyStart,yyCount+1)), a1, Some.<String>apply(null), false); }
+   / a1:"_<>_getTickCount"
+     { yyValue = new Id(NodeUtil.makeASTNodeInfo(createSpan(yyStart,yyCount+1)), a1, Some.<String>apply(null), false); }
+   / a1:IdText
+     { yyValue = new Id(NodeUtil.makeASTNodeInfo(createSpan(yyStart,yyCount)), a1, Some.<String>apply(null), false); };
+
+Id IdName =
+     a1:IdTextName
+     { yyValue = new Id(NodeUtil.makeASTNodeInfo(createSpan(yyStart,yyCount)), a1, Some.<String>apply(null), false); };

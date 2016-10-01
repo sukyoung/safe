@@ -1,0 +1,42 @@
+function[0] top-level {
+  Entry[-1] -> [0]
+
+  Block[0] -> [1], ExitExc
+    [0] noop(StartOfFile)
+    [1] <>fun<>1 := <>Global<>toObject(RegExp) @ #1
+    [2] <>temp<>2 := "[a-zA-Z]*"
+    [3] <>temp<>3 := ""
+    [4] <>arguments<>4 := allocArg(2) @ #2
+    [5] <>arguments<>4["0"] := <>temp<>2
+    [6] <>arguments<>4["1"] := <>temp<>3
+    [7] <>proto<>5 := <>fun<>1["prototype"]
+    [8] <>obj<>6 := alloc(<>proto<>5) @ #3
+
+  Call[1] -> ExitExc
+    [0] construct(<>fun<>1, <>obj<>6, <>arguments<>4) @ #4, #5
+
+  AfterCall[2] -> [4]
+
+  AfterCatch[3] -> ExitExc
+
+  Block[4] -> [6], [5]
+    [0] <>cond<>8 := <>Global<>isObject(<>newObj<>7)
+
+  Block[5] -> [7], ExitExc
+    [0] assert(<>cond<>8)
+    [1] <>Global<>ignore1 := <>newObj<>7
+
+  Block[6] -> [7], ExitExc
+    [0] assert(! <>cond<>8)
+    [1] <>Global<>ignore1 := <>obj<>6
+
+  Block[7] -> Exit, ExitExc
+    [0] patt := <>Global<>ignore1
+    [1] noop(EndOfFile)
+
+  Exit[-2]
+
+  ExitExc[-3]
+
+}
+

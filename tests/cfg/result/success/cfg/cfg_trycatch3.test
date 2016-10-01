@@ -1,0 +1,31 @@
+function[0] top-level {
+  Entry[-1] -> [0]
+
+  Block[0] -> [1]
+    [0] noop(StartOfFile)
+
+  Block[1] -> [4], [3]
+
+  Block[2] -> ExitExc
+    [0] catch(<>e<>1)
+    [1] throw(22)
+
+  Block[3] -> [2]
+    [0] assert(true)
+    [1] throw(11)
+
+  Block[4] -> [5], [2]
+    [0] assert(! true)
+
+  Block[5] -> ExitExc
+    [0] throw(33)
+
+  Block[6] -> Exit
+    [0] noop(EndOfFile)
+
+  Exit[-2]
+
+  ExitExc[-3]
+
+}
+

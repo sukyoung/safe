@@ -1,0 +1,29 @@
+
+var obj1
+var obj2
+{
+  <>Global<>ignore1 = {
+    x : "A",
+    y : "B"
+  }
+  obj1 = <>Global<>ignore1
+}
+{
+  <>Global<>ignore2 = {
+    a : "C",
+    b : "D",
+    c : 3,
+    d : obj1
+  }
+  obj2 = <>Global<>ignore2
+}
+{
+  <>obj<>1 = <>Global<>toObject(obj2)
+  <>Global<>ignore3 = delete <>obj<>1["b"]
+}
+{
+  <>obj<>2 = <>Global<>toObject(obj2)
+  <>obj<>3 = <>Global<>toObject(<>obj<>2["d"])
+  <>Global<>ignore4 = delete <>obj<>3["x"]
+}
+

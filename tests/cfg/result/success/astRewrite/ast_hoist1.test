@@ -1,0 +1,28 @@
+  function f() 
+  {
+    
+  }
+  function g(x) 
+  {
+    function h() 
+    {
+      return false;
+    }
+      var v;
+    
+      true;
+    v = 7;
+    return x;
+  }
+  var x;
+  var b;
+  
+  3;
+  true;
+  {
+    
+  }
+  z = 4;
+  x = 5;
+  b = 3;
+  

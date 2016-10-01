@@ -1,0 +1,30 @@
+function[0] top-level {
+  Entry[-1] -> [0]
+
+  Block[0] -> Exit, ExitExc
+    [0] noop(StartOfFile)
+    [1] <>Global<>ignore2 := 42
+    [2] <>Global<>ignore4 := 4.2
+    [3] <>Global<>ignore6 := 4.2e-9
+    [4] <>Global<>ignore8 := 4.2e-9
+    [5] <>Global<>ignore10 := - 42
+    [6] <>Global<>ignore12 := - 4.2
+    [7] <>Global<>ignore14 := - 4.2e+9
+    [8] <>Global<>ignore16 := - 4.2e+9
+    [9] <>Global<>ignore18 := - 4.2e9
+    [10] <>Global<>ignore20 := - 4.2e9
+    [11] <>Global<>ignore22 := 0
+    [12] <>Global<>ignore24 := - 0
+    [13] <>Global<>ignore26 := 255
+    [14] <>Global<>ignore28 := - 255
+    [15] <>Global<>ignore30 := - 2748
+    [16] <>Global<>ignore32 := 0
+    [17] <>Global<>ignore34 := - 0
+    [18] noop(EndOfFile)
+
+  Exit[-2]
+
+  ExitExc[-3]
+
+}
+

@@ -1,0 +1,24 @@
+  var truck;
+  var x;
+  
+  truck = 10;
+  x = 3;
+  if (truck)
+  {
+    truck -= x--;
+  }
+  if (truck)
+  {
+    
+  }
+  else
+    if (truck)
+    {
+      truck -= x--;
+    }
+    else
+    {
+      truck -= x--;
+    }
+  truck;
+  

@@ -1,0 +1,13 @@
+  function f() 
+  {
+    if (true)
+      return "A";
+    x = "B";
+  }
+  var x;
+  
+  {
+    
+  }
+  f();
+  

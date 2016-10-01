@@ -1,0 +1,10 @@
+
+var x
+{
+  x = 5
+}
+try
+  <>Global<>ignore3 = x
+finally
+  x = 5
+

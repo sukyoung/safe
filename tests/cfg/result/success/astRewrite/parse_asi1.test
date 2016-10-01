@@ -1,0 +1,12 @@
+  42;
+  "hello!";
+  "there!";
+  if (x)
+  {
+    y();
+  }
+  for (node = getNode();node.parent;node = node.parent)
+    ;
+  i;
+  ++ j;
+  

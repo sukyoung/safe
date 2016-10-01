@@ -1,0 +1,9 @@
+
+
+a = 1
+{
+  <>Global<>ignore3 = 3
+  <>Global<>ignore4 = 1
+  <>Global<>ignore5 = <>Global<>referenceError
+}
+

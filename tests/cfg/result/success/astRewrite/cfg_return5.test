@@ -1,0 +1,12 @@
+  function f() 
+  {
+    return;
+    x = "B";
+  }
+  var x;
+  
+  {
+    
+  }
+  f();
+  

@@ -1,0 +1,92 @@
+function[0] top-level {
+  Entry[-1] -> [0]
+
+  Block[0] -> [3], ExitExc
+    [0] noop(StartOfFile)
+    [1] <>temp<>1 := "q"
+    [2] <>temp<>2 := "Q"
+    [3] <>Global<>ignore1 := allocArray(2) @ #1
+    [4] <>Global<>ignore1["0"] := <>temp<>1
+    [5] <>Global<>ignore1["1"] := <>temp<>2
+    [6] quitchars := <>Global<>ignore1
+    [7] <>obj<>3 := <>Global<>toObject(getc) @ #2
+    [8] <>arguments<>4 := allocArg(0) @ #3
+    [9] <>fun<>5 := <>Global<>getBase(getc)
+
+  Block[1] -> Exit
+    [0] noop(EndOfFile)
+
+  Block[2] -> [1]
+
+  Call[3] -> ExitExc
+    [0] call(<>obj<>3, <>fun<>5, <>arguments<>4) @ #4
+
+  AfterCall[4] -> [6]
+
+  AfterCatch[5] -> ExitExc
+
+  Block[6] -> [7], ExitExc
+    [0] c := <>new1<>6
+
+  Block[7] -> [9], [8]
+
+  Block[8] -> [12], ExitExc
+    [0] assert(<>new1<>6)
+    [1] i := 0
+    [2] <>Global<>ignore3 := 0
+    [3] <>y<>7 := i
+    [4] <>obj<>8 := <>Global<>toObject(quitchars) @ #6
+
+  Block[9] -> [2], ExitExc
+    [0] assert(! <>new1<>6)
+
+  Block[10] -> [19], ExitExc
+    [0] <>obj<>3 := <>Global<>toObject(getc) @ #9
+    [1] <>arguments<>4 := allocArg(0) @ #10
+    [2] <>fun<>5 := <>Global<>getBase(getc)
+
+  Block[11] -> [10]
+
+  Block[12] -> [14], [13]
+
+  Block[13] -> [17], [16], ExitExc
+    [0] assert(<>y<>7 < <>obj<>8["length"])
+    [1] <>y<>9 := c
+    [2] <>obj<>10 := <>Global<>toObject(quitchars) @ #7
+
+  Block[14] -> [11], ExitExc
+    [0] assert(! <>y<>7 < <>obj<>8["length"])
+
+  Block[15] -> [12], ExitExc
+    [0] <>old<>11 := i
+    [1] <>new<>12 := <>Global<>toNumber(<>old<>11)
+    [2] i := <>new<>12 + 1
+    [3] <>Global<>ignore5 := <>new<>12
+    [4] <>y<>7 := i
+    [5] <>obj<>8 := <>Global<>toObject(quitchars) @ #8
+
+  Block[16] -> [11], ExitExc
+    [0] assert(<>y<>9 == <>obj<>10[i])
+
+  Block[17] -> [18], ExitExc
+    [0] assert(<>y<>9 != <>obj<>10[i])
+
+  Block[18] -> [15], ExitExc
+    [0] <>Global<>ignore7 := charloop
+
+  Call[19] -> ExitExc
+    [0] call(<>obj<>3, <>fun<>5, <>arguments<>4) @ #11
+
+  AfterCall[20] -> [22]
+
+  AfterCatch[21] -> ExitExc
+
+  Block[22] -> [7], ExitExc
+    [0] c := <>new1<>6
+
+  Exit[-2]
+
+  ExitExc[-3]
+
+}
+

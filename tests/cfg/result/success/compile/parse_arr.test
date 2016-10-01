@@ -1,0 +1,14 @@
+
+
+{
+  <>temp<>1 = 1
+  <>temp<>2 = 2
+  <>temp<>3 = 3
+  <>Global<>ignore1 = [<>temp<>1, <>temp<>2, <>temp<>3, ]
+}
+{
+  <>temp<>4 = "foo"
+  <>temp<>5 = "bar"
+  <>Global<>ignore2 = [<>temp<>4, <>temp<>5, ]
+}
+

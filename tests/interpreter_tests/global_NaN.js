@@ -1,2 +1,0 @@
-var NaN;
-NaN;

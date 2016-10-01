@@ -1,0 +1,19 @@
+function[0] top-level {
+  Entry[-1] -> [0]
+
+  Block[0] -> Exit, ExitExc
+    [0] noop(StartOfFile)
+    [1] <>Global<>ignore2 := "string"
+    [2] <>Global<>ignore4 := "string"
+    [3] <>Global<>ignore6 := "st'ri'ng"
+    [4] <>Global<>ignore8 := "st\"ri\"ng"
+    [5] <>Global<>ignore10 := ""
+    [6] <>Global<>ignore12 := ""
+    [7] noop(EndOfFile)
+
+  Exit[-2]
+
+  ExitExc[-3]
+
+}
+

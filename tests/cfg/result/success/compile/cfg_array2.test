@@ -1,0 +1,44 @@
+
+var a
+var b
+var c
+var d
+var e
+var f
+var g
+{
+  <>Global<>ignore1 = [, ]
+  a = <>Global<>ignore1
+}
+{
+  <>Global<>ignore2 = [, , , ]
+  b = <>Global<>ignore2
+}
+{
+  <>temp<>1 = 1
+  <>Global<>ignore3 = [<>temp<>1, ]
+  c = <>Global<>ignore3
+}
+{
+  <>temp<>2 = 1
+  <>Global<>ignore4 = [<>temp<>2, , , ]
+  d = <>Global<>ignore4
+}
+{
+  <>temp<>3 = 2
+  <>Global<>ignore5 = [, <>temp<>3, ]
+  e = <>Global<>ignore5
+}
+{
+  <>temp<>4 = 4
+  <>Global<>ignore6 = [, , , <>temp<>4, ]
+  f = <>Global<>ignore6
+}
+{
+  <>temp<>5 = 1
+  <>temp<>6 = 3
+  <>temp<>7 = 5
+  <>Global<>ignore7 = [<>temp<>5, , <>temp<>6, , <>temp<>7, ]
+  g = <>Global<>ignore7
+}
+

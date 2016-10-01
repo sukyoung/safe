@@ -1,0 +1,19 @@
+// Math.min
+var __result1 = Math.min(NaN, 1);
+var __expect1 = NaN;
+var __result2 = Math.min(3, NaN);
+var __expect2 = NaN;
+var __result3 = Math.min(4, 6);
+var __expect3 = 4;
+var __result4 = Math.min(-2, 1);
+var __expect4 = -2;
+var __result5 = Math.min(__NumTop, -1);
+var __expect5 = __NumTop;
+var __result6 = Math.min(0, __NumTop);
+var __expect6 = __NumTop;
+var __result7 = Math.min();
+var __expect7 = Infinity;
+var __result8 = Math.min(1,2,3,NaN);
+var __expect8 = NaN;
+var __result9 = Math.min(3,6,9,1,3,4);
+var __expect9 = 1;

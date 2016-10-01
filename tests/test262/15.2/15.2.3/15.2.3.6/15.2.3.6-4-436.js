@@ -1,0 +1,33 @@
+//   TODO getter/setter
+//   function testcase() 
+//   {
+//     var obj = {
+//       
+//     };
+//     var verifySetFunc = "data";
+//     var setFunc = (function (value) 
+//     {
+//       verifySetFunc = value;
+//     });
+//     Object.defineProperty(obj, "prop", {
+//       get : undefined,
+//       set : undefined,
+//       enumerable : true,
+//       configurable : false
+//     });
+//     var desc1 = Object.getOwnPropertyDescriptor(obj, "prop");
+//     try
+// {      Object.defineProperty(obj, "prop", {
+//         set : setFunc
+//       });
+//       return false;}
+//     catch (e)
+// {      var desc2 = Object.getOwnPropertyDescriptor(obj, "prop");
+//       return typeof desc1.set === "undefined" && typeof desc2.set === "undefined" && e instanceof TypeError;}
+// 
+//   }
+//   {
+//     var __result1 = testcase();
+//     var __expect1 = true;
+//   }
+//   

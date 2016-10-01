@@ -1,0 +1,17 @@
+function f(this, <>arguments<>1) 
+{
+  var <>NaN<>2
+  __result1 = <>NaN<>2
+}
+var __result1
+var __expect1
+{
+  __expect1 = undefined
+}
+{
+  <>obj<>3 = <>Global<>toObject(f)
+  <>arguments<>4 = []
+  <>fun<>5 = <>Global<>getBase(f)
+  <>Global<>ignore3 = <>obj<>3(<>fun<>5, <>arguments<>4)
+}
+

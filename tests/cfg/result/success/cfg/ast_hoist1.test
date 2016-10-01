@@ -1,0 +1,58 @@
+function[0] top-level {
+  Entry[-1] -> [0]
+
+  Block[0] -> Exit, ExitExc
+    [0] f := function (1) @ #1, #2
+    [1] g := function (2) @ #5, #6
+    [2] noop(StartOfFile)
+    [3] <>Global<>ignore5 := 3
+    [4] <>Global<>ignore7 := true
+    [5] z := 4
+    [6] x := 5
+    [7] b := 3
+    [8] noop(EndOfFile)
+
+  Exit[-2]
+
+  ExitExc[-3]
+
+}
+
+function[1] f {
+  Entry[-1] -> [0]
+
+  Block[0] -> Exit
+
+  Exit[-2]
+
+  ExitExc[-3]
+
+}
+
+function[2] g {
+  Entry[-1] -> [0]
+
+  Block[0] -> Exit, ExitExc
+    [0] <>h<>3 := function (3) @ #3, #4
+    [1] <>Global<>ignore2 := true
+    [2] <>v<>4 := 7
+    [3] return(<>x<>2)
+
+  Exit[-2]
+
+  ExitExc[-3]
+
+}
+
+function[3] h {
+  Entry[-1] -> [0]
+
+  Block[0] -> Exit, ExitExc
+    [0] return(false)
+
+  Exit[-2]
+
+  ExitExc[-3]
+
+}
+

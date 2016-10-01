@@ -1,0 +1,8 @@
+  var a;
+  var b;
+  
+  a = "asdf" && 1234;
+  b = a || 3456;
+  a = a() | b;
+  a = a.b + b;
+  

@@ -1,0 +1,10 @@
+  {
+    <>alpha<>1 = <>Global<>toObject(1);
+    {
+      2;
+      "jsaf";
+    }
+  }
+  <>alpha<>2 = <>Global<>toObject(true);
+  <>alpha<>3 = <>Global<>toObject("jsaf");
+  

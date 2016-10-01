@@ -1,0 +1,13 @@
+
+var obj
+{
+  <>Global<>ignore1 = {
+    
+  }
+  obj = <>Global<>ignore1
+}
+{
+  <>obj<>1 = <>Global<>toObject(obj)
+  <>obj<>1["x"] = 1
+}
+

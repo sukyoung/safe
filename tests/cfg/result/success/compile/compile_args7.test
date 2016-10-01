@@ -1,0 +1,16 @@
+function f110(this, <>arguments<>1) 
+{
+  function <>arguments<>2(this, <>arguments<>3) 
+  {
+    var <>z<>4
+    <>z<>4 = <>arguments<>3["0"]
+  }
+  var <>x<>5
+  var <>y<>6
+  <>x<>5 = <>arguments<>1["0"]
+  <>arguments<>2 = <>arguments<>1["1"]
+  <>y<>6 = <>arguments<>1["2"]
+  <>arguments<>2 = 2
+}
+
+

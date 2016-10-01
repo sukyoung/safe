@@ -1,0 +1,13 @@
+function f010(this, <>arguments<>1) 
+{
+  function <>arguments<>1(this, <>arguments<>2) 
+  {
+    var <>z<>3
+    <>z<>3 = <>arguments<>2["0"]
+  }
+  var <>y<>4
+  <>y<>4 = <>arguments<>1["0"]
+  <>arguments<>1 = 42
+}
+
+

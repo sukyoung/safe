@@ -1,0 +1,26 @@
+function[0] top-level {
+  Entry[-1] -> [0]
+
+  Block[0] -> Exit, ExitExc
+    [0] noop(StartOfFile)
+    [1] <>temp<>1 := alloc() @ #1
+    [2] <>temp<>1["n"] := 10
+    [3] <>temp<>1["m"] := 593
+    [4] <>temp<>2 := alloc() @ #2
+    [5] <>temp<>2["a"] := 3.0
+    [6] <>temp<>2["b"] := "stuv"
+    [7] <>temp<>2["c"] := <>temp<>1
+    [8] <>Global<>ignore1 := alloc() @ #3
+    [9] <>Global<>ignore1["x"] := 1
+    [10] <>Global<>ignore1["y"] := "abc"
+    [11] <>Global<>ignore1["z"] := <>temp<>2
+    [12] <>Global<>ignore1["w"] := null
+    [13] o := <>Global<>ignore1
+    [14] noop(EndOfFile)
+
+  Exit[-2]
+
+  ExitExc[-3]
+
+}
+
