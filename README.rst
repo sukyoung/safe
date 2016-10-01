@@ -67,9 +67,7 @@ Changes from SAFE 1.0
 * SAFE 2.0 has been tested using `Test262` _ , the official ECMAScript (ECMA-262) conformance suite.
 * SAFE 2.0 now uses **sbt** instead of **ant** to build SAFE.
 * Most Java source files are replaced by Scala code and the only Java source code remained is the generated parser code.
-* Several components from SAFE 1.0 may not be integrated into SAFE 2.0.  Such components include interpreter,
-concolic testing, clone detector, clone refactoring, TypeScript support, Web API misuse detector, and several abstract domains
-like the string automata domain.
+* Several components from SAFE 1.0 may not be integrated into SAFE 2.0.  Such components include interpreter, concolic testing, clone detector, clone refactoring, TypeScript support, Web API misuse detector, and several abstract domains like the string automata domain.
 
 .. _Test262: https://github.com/tc39/test262
 
@@ -78,18 +76,9 @@ SAFE 2.0 Roadmap
 
 * SAFE 2.0 will make monthly updates.
 * The next update will include a SAFE document, browser benchmarks, and more Test262 tests.
-* We plan to support some missing features from SAFE 1.0 incrementally such as
-a bug detector, DOM modeling, and jQuery analysis.
-* SAFE 2.0 is aimed to be a playground for advanced research in JavaScript web applications.
-Thus, we intentionally designed it to be light-weight.
-* Future versions of SAFE 2.0 will address
-various analysis techniques,
-dynamic features of web applications,
-event handling,
-modeling framework,
-compositional analysis, and
-selective sensitivity
-among others.
+* We plan to support some missing features from SAFE 1.0 incrementally such as a bug detector, DOM modeling, and jQuery analysis.
+* SAFE 2.0 is aimed to be a playground for advanced research in JavaScript web applications.  Thus, we intentionally designed it to be light-weight.
+* Future versions of SAFE 2.0 will address various analysis techniques, dynamic features of web applications, event handling, modeling framework, compositional analysis, and selective sensitivity among others.
 
 Publications
 ============
