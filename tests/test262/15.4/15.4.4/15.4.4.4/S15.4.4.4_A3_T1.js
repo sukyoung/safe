@@ -1,3 +1,4 @@
+// XXX
   Array.prototype[1] = 1;
   var x = [0, ];
   x.length = 2;
@@ -14,7 +15,6 @@
     var __result3 = arr.hasOwnProperty('1') !== true;
     var __expect3 = false;
   }
-// TODO: user-defined Object.prototype.concat function is shadowed by the model code 
 //  Object.prototype[1] = 1;
 //  Object.prototype.length = 2;
 //  Object.prototype.concat = Array.prototype.concat;

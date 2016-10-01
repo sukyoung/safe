@@ -1,4 +1,4 @@
-// TODO: user-defined toLocaleString function shadowed by the model code
+// TODO toLocaleString
 //  var n = 0;
 //  var obj = {
 //    toLocaleString : (function () 
