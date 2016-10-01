@@ -499,6 +499,12 @@ class AbsObject(
         val changedObj = this.update(P, newDP)
         (changedObj, AbsBool.True, ExcSetEmpty)
       } else BotTriple
-    (obj1 + obj2 + obj3 + obj5 + obj6, b1 + b2 + b3 + b5 + b6, excSet1 ++ excSet2 ++ excSet3)
+
+    val excSet4 =
+      if (AbsString("Array") <= this(IClass).value.pvalue.strval &&
+        AbsString("length") <= P &&
+        AbsBool.False <= (TypeConversionHelper.ToNumber(dv) === TypeConversionHelper.ToUInt32(dv))) HashSet(RangeError)
+      else ExcSetEmpty
+    (obj1 + obj2 + obj3 + obj5 + obj6, b1 + b2 + b3 + b5 + b6, excSet1 ++ excSet2 ++ excSet3 ++ excSet4)
   }
 }

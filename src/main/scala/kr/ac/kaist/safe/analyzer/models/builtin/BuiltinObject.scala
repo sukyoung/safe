@@ -330,11 +330,11 @@ object BuiltinObjectHelper {
         val (retObj, _, newExcSet) = obj.DefineOwnProperty(name, desc, true)
         // 5. Return O.
         val retH = heap.update(loc, retObj)
-        (retH, e ++ excSet)
+        (retH, e ++ newExcSet)
       }
     }
 
-    val excSt = st.raiseException(excSet)
+    val excSt = st.raiseException(retExcSet)
 
     (State(retH, st.context), excSt, objV.locset)
   }

@@ -177,15 +177,12 @@ sealed abstract class AbsMap(
   /* property write */
   def initializeUpdate(str: String, dp: AbsDataProp): AbsMap = {
     val astr = AbsString(str)
-    val (domIn, writable) =
-      if (this.map.keySet contains astr) (true, AbsBool.True <= this.map(astr).writable)
-      else (false, false)
+    val domIn = this.map.keySet contains astr
 
     this match {
       case AbsMapBot => AbsMapBot
       case _ if !domIn => AbsMapFin(this.map + (astr -> dp), this.defset + str)
-      case _ if domIn && !writable => this
-      case _ if domIn && writable =>
+      case _ if domIn =>
         val old = this.map(astr)
         val newMap = this.map + (astr -> (old + dp))
         AbsMapFin(newMap, this.defset + str)
@@ -195,19 +192,16 @@ sealed abstract class AbsMap(
   def update(str: String, dp: AbsDataProp, weak: Boolean = false): AbsMap = {
     // TODO: add Map[String, AbsDataProp] for performance
     val astr = AbsString(str)
-    val (domIn, writable) =
-      if (this.map.keySet contains astr) (true, AbsBool.True <= this.map(astr).writable)
-      else (false, false)
+    val domIn = this.map.keySet contains astr
 
     this match {
       case AbsMapBot => AbsMapBot
       case _ if dp.isBottom => AbsMapBot
       case _ if !domIn && !weak => AbsMapFin(this.map + (astr -> dp), this.defset + str)
       case _ if !domIn && weak => AbsMapFin(this.map + (astr -> dp), this.defset)
-      case _ if domIn && !writable => this
-      case _ if domIn && writable && !weak => // Strong update
+      case _ if domIn && !weak => // Strong update
         AbsMapFin(this.map + (astr -> dp), this.defset + str)
-      case _ if domIn && writable && weak => // Weak update
+      case _ if domIn && weak => // Weak update
         val old = this.map(astr)
         val newMap = this.map + (astr -> (old + dp))
         AbsMapFin(newMap, this.defset)
@@ -215,9 +209,7 @@ sealed abstract class AbsMap(
   }
 
   def update(astr: AbsString, dp: AbsDataProp): AbsMap = {
-    val (domIn, writable) =
-      if (this.map.keySet contains astr) (true, AbsBool.True <= this.map(astr).writable)
-      else (false, false)
+    val domIn = this.map.keySet contains astr
 
     (this, astr.gamma) match {
       case (AbsMapBot, _) => AbsMapBot
@@ -227,8 +219,7 @@ sealed abstract class AbsMap(
       case (_, ConFin(strSet)) if strSet.size == 1 => this.update(strSet.head, dp)
       case (_, ConFin(strSet)) => strSet.foldLeft(this)((am, str) => am.update(str, dp, true))
       case (_, ConInf()) if !domIn => AbsMapFin(this.map + (astr -> dp), this.defset)
-      case (_, ConInf()) if domIn && !writable => this
-      case (_, ConInf()) if domIn && writable =>
+      case (_, ConInf()) if domIn =>
         val old = this.map(astr)
         val newMap = this.map + (astr -> (old + dp))
         AbsMapFin(newMap, this.defset)
