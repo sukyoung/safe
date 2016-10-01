@@ -1,4 +1,4 @@
-// XXX
+// [[DefaultValue]]
 //  var object = {
 //    valueOf : (function () 
 //    {

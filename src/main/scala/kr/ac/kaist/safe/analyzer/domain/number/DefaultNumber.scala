@@ -222,7 +222,10 @@ object DefaultNumber extends AbsNumberUtil {
     def toUInt32: AbsNumber = {
       def help(n: Double): AbsNumber = {
         val posInt = math.floor(math.abs(n))
-        val int32bit = modulo(posInt, 0x100000000L);
+        val value = modulo(posInt, 0x100000000L);
+        val int32bit =
+          if (n < -0.0) 0x100000000L - value
+          else value
         alpha(int32bit)
       }
       this match {
@@ -242,8 +245,11 @@ object DefaultNumber extends AbsNumberUtil {
 
     def toUInt16: AbsNumber = {
       def help(n: Double): AbsNumber = {
-        val posInt = math.signum(n) * math.floor(math.abs(n))
-        val int16bit = modulo(posInt, 0x10000L);
+        val posInt = math.floor(math.abs(n))
+        val value = modulo(posInt, 0x10000L);
+        val int16bit =
+          if (n < -0.0) 0x10000L - value
+          else value
         alpha(int16bit)
       }
       this match {
