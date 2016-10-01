@@ -1,91 +1,88 @@
-// TODO to Jihyeok
-// function dataPropertyAttributesAreCorrect(obj,
-//                                           name,
-//                                           value,
-//                                           writable,
-//                                           enumerable,
-//                                           configurable) {
-//     var attributesCorrect = true;
+function dataPropertyAttributesAreCorrect(obj,
+                                          name,
+                                          value,
+                                          writable,
+                                          enumerable,
+                                          configurable) {
+    var attributesCorrect = true;
 
-//     if (obj[name] !== value) {
-//         if (typeof obj[name] === "number" &&
-//             isNaN(obj[name]) &&
-//             typeof value === "number" &&
-//             isNaN(value)) {
-//             // keep empty
-//         } else {
-//             attributesCorrect = false;
-//         }
-//     }
+    if (obj[name] !== value) {
+        if (typeof obj[name] === "number" &&
+            isNaN(obj[name]) &&
+            typeof value === "number" &&
+            isNaN(value)) {
+        } else {
+            attributesCorrect = false;
+        }
+    }
 
-//     try {
-//         if (obj[name] === "oldValue") {
-//             obj[name] = "newValue";
-//         } else {
-//             obj[name] = "OldValue";
-//         }
-//     } catch (we) {
-//     }
+    try {
+        if (obj[name] === "oldValue") {
+            obj[name] = "newValue";
+        } else {
+            obj[name] = "OldValue";
+        }
+    } catch (we) {
+    }
 
-//     var overwrited = false;
-//     if (obj[name] !== value) {
-//         if (typeof obj[name] === "number" &&
-//             isNaN(obj[name]) &&
-//             typeof value === "number" &&
-//             isNaN(value)) {
-//             // keep empty
-//         } else {
-//             overwrited = true;
-//         }
-//     }
-//     if (overwrited !== writable) {
-//         attributesCorrect = false;
-//     }
+    var overwrited = false;
+    if (obj[name] !== value) {
+        if (typeof obj[name] === "number" &&
+            isNaN(obj[name]) &&
+            typeof value === "number" &&
+            isNaN(value)) {
+        } else {
+            overwrited = true;
+        }
+    }
+    if (overwrited !== writable) {
+        attributesCorrect = false;
+    }
 
-//     var enumerated = false;
-//     for (var prop in obj) {
-//         if (obj.hasOwnProperty(prop) && prop === name) {
-//             enumerated = true;
-//         }
-//     }
+    var enumerated = false;
+    for (var prop in obj) {
+        if (obj.hasOwnProperty(prop) && prop === name) {
+            enumerated = true;
+        }
+    }
 
-//     if (enumerated !== enumerable) {
-//         attributesCorrect = false;
-//     }
+    if (enumerated !== enumerable) {
+        attributesCorrect = false;
+    }
 
 
-//     var deleted = false;
+    var deleted = false;
 
-//     try {
-//         delete obj[name];
-//     } catch (de) {
-//     }
-//     if (!obj.hasOwnProperty(name)) {
-//         deleted = true;
-//     }
-//     if (deleted !== configurable) {
-//         attributesCorrect = false;
-//     }
+    try {
+        delete obj[name];
+    } catch (de) {
+    }
+    if (!obj.hasOwnProperty(name)) {
+        deleted = true;
+    }
+    if (deleted !== configurable) {
+        attributesCorrect = false;
+    }
 
-//     return attributesCorrect;
-// }
+    return attributesCorrect;
+}
 
-//   function testcase() 
-//   {
-//     var obj = {
-      
-//     };
-//     Object.defineProperty(obj, "foo", {
-//       value : 10,
-//       writable : false,
-//       enumerable : true,
-//       configurable : true
-//     });
-//     Object.freeze(obj);
-//     var desc = Object.getOwnPropertyDescriptor(obj, "foo");
-//     return dataPropertyAttributesAreCorrect(obj, "foo", 10, false, true, false) && desc.configurable === false && desc.writable === false;
-//   }
-//   {
-//     var __result1 = testcase();
-//     var __expect1 = true;
-//   }
+  function testcase() 
+  {
+    var obj = {
+   
+    };
+    Object.defineProperty(obj, "foo", {
+      value : 10,
+      writable : false,
+      enumerable : true,
+      configurable : true
+    });
+    Object.freeze(obj);
+    var desc = Object.getOwnPropertyDescriptor(obj, "foo");
+    return dataPropertyAttributesAreCorrect(obj, "foo", 10, false, true, false) && desc.configurable === false && desc.writable === false;
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
