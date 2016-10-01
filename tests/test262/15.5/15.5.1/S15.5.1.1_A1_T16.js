@@ -1,4 +1,4 @@
-//  TODO Double.toString();
+//  TODO Double.toString()
 // var __str = String(.12345);
 // {
 //   var __result1 = typeof __str !== "string";
