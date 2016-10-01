@@ -34,8 +34,6 @@ trait AbsString extends AbsDomain[Str, AbsString] {
   def toLowerCase: AbsString
   def toUpperCase: AbsString
 
-  def isAllNums: Boolean
-  def isAllOthers: Boolean
   def isArrayIndex: AbsBool
 
   def isRelated(str: String): Boolean
