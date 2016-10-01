@@ -64,7 +64,7 @@ Some of the available commands are as follows:
 Changes from SAFE 1.0
 ============
 
-* SAFE 2.0 has been tested using `Test262` _ , the official ECMAScript (ECMA-262) conformance suite.
+* SAFE 2.0 has been tested using `Test262`_, the official ECMAScript (ECMA-262) conformance suite.
 * SAFE 2.0 now uses **sbt** instead of **ant** to build SAFE.
 * Most Java source files are replaced by Scala code and the only Java source code remained is the generated parser code.
 * Several components from SAFE 1.0 may not be integrated into SAFE 2.0.  Such components include interpreter, concolic testing, clone detector, clone refactoring, TypeScript support, Web API misuse detector, and several abstract domains like the string automata domain.
