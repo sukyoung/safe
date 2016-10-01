@@ -14,6 +14,7 @@ package kr.ac.kaist.safe.analyzer.domain
 import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.analyzer.TypeConversionHelper
+import kr.ac.kaist.safe.util.Address
 
 import scala.collection.immutable.HashSet
 
@@ -98,6 +99,8 @@ class AbsObject(
   // Additional untility functions
   ///////////////////////////////////////////////////////////////
   def isEmpty: Boolean = this.amap.isEmpty && this.imap.isEmpty
+
+  def oldify(addr: Address): AbsObject = subsLoc(Loc(addr, Recent), Loc(addr, Old))
 
   /* substitute locR by locO */
   def subsLoc(locR: Loc, locO: Loc): AbsObject = {
@@ -479,7 +482,7 @@ class AbsObject(
       else (AbsObjectUtil.Bot, AbsBool.Bot)
     // 6. Return true, if every field in Desc also occurs in current and same
     val (obj6, b6) =
-      if ((dva.isTop || (!dv.isBottom && AbsBool.True <= ( /* TODO unsound: we should consider the object sameValue*/ dv.pvalue === cv.pvalue))) &&
+      if ((dva.isTop || (!dv.isBottom && AbsBool.True <= (TypeConversionHelper.SameValue(dv, cv)))) &&
         (dwa.isTop || (!dw.isBottom && AbsBool.True <= (dw === cw))) &&
         (dea.isTop || (!de.isBottom && AbsBool.True <= (de === ce))) &&
         (dca.isTop || (!dc.isBottom && AbsBool.True <= (dc === cc)))) (this, AbsBool.True)

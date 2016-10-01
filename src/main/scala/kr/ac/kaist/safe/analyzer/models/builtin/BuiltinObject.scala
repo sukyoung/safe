@@ -218,7 +218,7 @@ object BuiltinObjectHelper {
       val descAddr = SystemAddr("Object.getOwnPropertyDescriptor<descriptor>")
       val state = st.oldify(descAddr)
       val descLoc = Loc(descAddr, Recent)
-      val retH = state.heap.update(descLoc, descObj)
+      val retH = state.heap.update(descLoc, descObj.oldify(descAddr))
       val retV = AbsValue(undef, AbsLoc(descLoc))
       (State(retH, state.context), retV, excSet)
     } else (st, AbsValue(undef), ExcSetEmpty)
@@ -273,7 +273,7 @@ object BuiltinObjectHelper {
       case false => {
         val state = st.oldify(arrAddr)
         val arrLoc = Loc(arrAddr, Recent)
-        val retHeap = state.heap.update(arrLoc, retObj)
+        val retHeap = state.heap.update(arrLoc, retObj.oldify(arrAddr))
         val excSt = state.raiseException(retExcSet)
 
         (State(retHeap, state.context), excSt, AbsValue(arrLoc))
@@ -300,7 +300,7 @@ object BuiltinObjectHelper {
     val addr = SystemAddr("Object.create<object>")
     val state = st.oldify(addr)
     val loc = Loc(addr, Recent)
-    val newH = h.update(loc, newObj)
+    val newH = state.heap.update(loc, newObj.oldify(addr))
     val retV = AbsLoc(loc)
     val (retSt, e) =
       if (propsV <= AbsUndef.Top) (State(newH, state.context), ExcSetEmpty)
@@ -546,7 +546,7 @@ object BuiltinObjectHelper {
     // 6. Return array.
     val state = st.oldify(arrAddr)
     val arrLoc = Loc(arrAddr, Recent)
-    val retHeap = state.heap.update(arrLoc, retObj)
+    val retHeap = state.heap.update(arrLoc, retObj.oldify(arrAddr))
     val excSt = st.raiseException(retExcSet)
 
     (State(retHeap, state.context), excSt, AbsValue(arrLoc))

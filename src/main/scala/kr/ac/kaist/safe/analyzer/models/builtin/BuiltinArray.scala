@@ -243,7 +243,7 @@ object BuiltinArrayHelper {
     val arrAddr = SystemAddr("Array<instance>")
     val state = st.oldify(arrAddr)
     val arrLoc = Loc(arrAddr, Recent)
-    val retH = state.heap.update(arrLoc, retObj)
+    val retH = state.heap.update(arrLoc, retObj.oldify(arrAddr))
     val excSt = state.raiseException(retExcSet)
     (State(retH, state.context), excSt, AbsLoc(arrLoc))
   }
@@ -357,7 +357,7 @@ object BuiltinArrayHelper {
     val arrAddr = SystemAddr("Array.prototype.concat<array>")
     val state = st.oldify(arrAddr)
     val arrLoc = Loc(arrAddr, Recent)
-    val retH = state.heap.update(arrLoc, retObj)
+    val retH = state.heap.update(arrLoc, retObj.oldify(arrAddr))
     (State(retH, state.context), State.Bot, AbsLoc(arrLoc))
   }
 
@@ -713,7 +713,7 @@ object BuiltinArrayHelper {
     val arrAddr = SystemAddr("Array.prototype.slice<array>")
     val state = st.oldify(arrAddr)
     val arrLoc = Loc(arrAddr, Recent)
-    val retH = state.heap.update(arrLoc, retObj)
+    val retH = state.heap.update(arrLoc, retObj.oldify(arrAddr))
     val excSt = state.raiseException(retExcSet)
     (State(retH, state.context), excSt, AbsLoc(arrLoc))
   }
@@ -805,7 +805,7 @@ object BuiltinArrayHelper {
     val newSt = State(retH, st.context)
     val state = newSt.oldify(arrAddr)
     val arrLoc = Loc(arrAddr, Recent)
-    val finalH = state.heap.update(arrLoc, retArr)
+    val finalH = state.heap.update(arrLoc, retArr.oldify(arrAddr))
     val excSt = state.raiseException(retExcSet)
     (State(finalH, state.context), excSt, AbsLoc(arrLoc))
   }
