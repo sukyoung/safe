@@ -458,7 +458,7 @@ object BuiltinArrayHelper {
           }
           // 5. Else, len > 0
           case ConOne(Num(n)) => {
-            val len = n.toInt
+            val len = n.toLong
             // a. Let indx be ToString(len–1).
             val indx = (len - 1).toString
             // b. Let element be the result of calling the [[Get]] internal method of O with argument indx.
@@ -471,7 +471,7 @@ object BuiltinArrayHelper {
             (putArr, element, excSet)
           }
           // XXX: very imprecise ConMany case
-          case ConMany() => (arr.update(AbsString.Number, AbsDataProp.Top), AbsValue.Top, HashSet(TypeError))
+          case ConMany() => (arr.update(AbsString.Number, AbsDataProp.Top).update(AbsString("length"), AbsDataProp.Top), AbsValue.Top, HashSet(TypeError))
         }
         val retH = h.update(loc, retObj)
         (retH, value + retV, excSet ++ retExcSet)
