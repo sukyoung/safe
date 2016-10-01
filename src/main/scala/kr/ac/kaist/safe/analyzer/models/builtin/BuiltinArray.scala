@@ -299,58 +299,73 @@ object BuiltinArrayHelper {
       case ConZero() => Bot
       case ConOne(Num(n)) => {
         val argLen = n.toInt
-        val thisLength = thisObj.Get("length", h).pvalue.numval
-        thisLength.getSingle match {
-          case ConZero() => Bot
-          case ConOne(Num(n)) => {
-            val thisLen = n.toInt
-            val initList = (0 until thisLen).foldLeft[List[AbsValue]](Nil)((lst, k) => {
-              thisObj.Get(k.toString, h) :: lst
-            })
-            val vlOpt = (0 until argLen).foldLeft[Option[List[AbsValue]]](Some(initList)) {
-              case (None, _) => None
-              case (Some(lst), k) => {
-                val kValue = argObj.Get(k.toString, h)
-                val (normalLoc, arrLoc) = kValue.locset.foldLeft((kValue.locset, AbsLoc.Bot)) {
-                  case ((normal, array), loc) => {
-                    val obj = h.get(loc)
-                    val clsName = obj(IClass).value.pvalue.strval
-                    val isArr = clsName === AbsString("Array")
-                    if (AbsBool.True <= isArr) (normal - loc, array + loc)
-                    else (normal, array)
-                  }
-                }
-                val arrObj = h.get(arrLoc)
-                val subLen = arrObj.Get("length", h).pvalue.numval
-                subLen.getSingle match {
-                  case ConZero() => Some(AbsValue(kValue.pvalue, normalLoc) :: lst)
-                  case ConOne(Num(n)) => if (normalLoc.isBottom && kValue.pvalue.isBottom) {
-                    val subLen = n.toInt
-                    Some((0 until subLen).foldLeft(lst)((lst, k) => {
-                      arrObj.Get(k.toString, h) :: lst
-                    }))
-                  } else None
-                  case ConMany() => None
+        val isArray = AbsString("Array") === thisObj(IClass).value.pvalue.strval
+        val (arrList, arrIsBot): (Option[List[AbsValue]], Boolean) =
+          if (AbsBool.True <= isArray) {
+            val thisLength = thisObj.Get("length", h).pvalue.numval
+            thisLength.getSingle match {
+              case ConZero() => (None, true)
+              case ConOne(Num(n)) => {
+                val thisLen = n.toInt
+                val initList = (0 until thisLen).foldLeft[List[AbsValue]](Nil)((lst, k) => {
+                  thisObj.Get(k.toString, h) :: lst
+                })
+                (Some(initList), false)
+              }
+              case ConMany() => (None, false)
+            }
+          } else { (None, true) }
+        val (objList, objIsBot): (Option[List[AbsValue]], Boolean) =
+          if (AbsBool.False <= isArray) {
+            (Some(List(AbsValue(thisLoc))), false)
+          } else { (None, true) }
+        if (!arrIsBot || !objIsBot) {
+          val initList: Option[List[AbsValue]] =
+            if (arrIsBot) objList
+            else if (objIsBot) arrList
+            else None
+          val vlOpt = (0 until argLen).foldLeft[Option[List[AbsValue]]](initList) {
+            case (None, _) => None
+            case (Some(lst), k) => {
+              val kValue = argObj.Get(k.toString, h)
+              val (normalLoc, arrLoc) = kValue.locset.foldLeft((kValue.locset, AbsLoc.Bot)) {
+                case ((normal, array), loc) => {
+                  val obj = h.get(loc)
+                  val clsName = obj(IClass).value.pvalue.strval
+                  val isArr = clsName === AbsString("Array")
+                  if (AbsBool.True <= isArr) (normal - loc, array + loc)
+                  else (normal, array)
                 }
               }
+              val arrObj = h.get(arrLoc)
+              val subLen = arrObj.Get("length", h).pvalue.numval
+              subLen.getSingle match {
+                case ConZero() => Some(AbsValue(kValue.pvalue, normalLoc) :: lst)
+                case ConOne(Num(n)) => if (normalLoc.isBottom && kValue.pvalue.isBottom) {
+                  val subLen = n.toInt
+                  Some((0 until subLen).foldLeft(lst)((lst, k) => {
+                    arrObj.Get(k.toString, h) :: lst
+                  }))
+                } else None
+                case ConMany() => None
+              }
             }
-            vlOpt match {
-              case None => Top
-              case Some(valueList) => {
-                val finalLen = valueList.length
-                val arr = AbsObjectUtil.newArrayObject(AbsNumber(finalLen))
-                valueList.reverse.zipWithIndex.foldLeft(arr) {
-                  case (arr, (value, idx)) => {
-                    val desc = AbsDesc((value, AbsAbsent.Bot), AT, AT, AT)
-                    val (newArr, _, _) = arr.DefineOwnProperty(AbsString(idx.toString), desc, false)
-                    newArr
-                  }
+          }
+          vlOpt match {
+            case None => Top
+            case Some(valueList) => {
+              val finalLen = valueList.length
+              val arr = AbsObjectUtil.newArrayObject(AbsNumber(finalLen))
+              valueList.reverse.zipWithIndex.foldLeft(arr) {
+                case (arr, (value, idx)) => {
+                  val desc = AbsDesc((value, AbsAbsent.Bot), AT, AT, AT)
+                  val (newArr, _, _) = arr.DefineOwnProperty(AbsString(idx.toString), desc, false)
+                  newArr
                 }
               }
             }
           }
-          case ConMany() => Top
-        }
+        } else Bot
       }
       case ConMany() => Top
     }

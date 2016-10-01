@@ -1,4 +1,4 @@
-// XXX
+// TODO fix thisBinding, Function.prototype.call
 //  function testcase() 
 //  {
 //    try
