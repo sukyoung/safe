@@ -1,9 +1,6 @@
 // math_precision.js
 function getPrecision(num)
 {
-        //TODO: Create a table of prec's,                                                       
-        //      because using Math for testing Math isn't that correct.                         
-
         log2num = Math.log(Math.abs(num))/Math.LN2;
         pernum = Math.ceil(log2num);
         return(2 * Math.pow(2, -52 + pernum));
