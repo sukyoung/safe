@@ -9,7 +9,7 @@ SAFE 2.0 is a scalable and pluggable analysis framework for JavaScript web appli
 
     http://plrg.kaist.ac.kr
 
-Older versions are still available at the safe1.0 branch.
+Older versions are still available at the SAFE1.0 branch.
 
 SAFE has been used by:
 
@@ -55,11 +55,41 @@ or with more explanation: ::
 
 Some of the available commands are as follows:
 
-* `parse` parses a javaScript file.
-* `astRewrite` rewrites a JavaScript AST via Hoister, Disambiguator, and WithRewriter.
-* `compile` translates a JavaScript file to a SAFE intermediate representation.
-* `cfgBuild` builds a control flow graph for a JavaScript file.
-* `analyze` analyzes static properties of JavaScript expressions in a given file.
+* **parse**: parses a JavaScript file.
+* **astRewrite**: rewrites a JavaScript AST via Hoister, Disambiguator, and WithRewriter.
+* **compile**: translates a JavaScript file to a SAFE intermediate representation.
+* **cfgBuild**: builds a control flow graph for a JavaScript file.
+* **analyze**: analyzes static properties of JavaScript expressions in a given file.
+
+Changes from SAFE 1.0
+============
+
+* SAFE 2.0 has been tested using `Test262` _ , the official ECMAScript (ECMA-262) conformance suite.
+* SAFE 2.0 now uses **sbt** instead of **ant** to build SAFE.
+* Most Java source files are replaced by Scala code and the only Java source code remained is the generated parser code.
+* Several components from SAFE 1.0 may not be integrated into SAFE 2.0.  Such components include interpreter,
+concolic testing, clone detector, clone refactoring, TypeScript support, Web API misuse detector, and several abstract domains
+like the string automata domain.
+
+.. _Test262: https://github.com/tc39/test262
+
+SAFE 2.0 Roadmap
+============
+
+* SAFE 2.0 will make monthly updates.
+* The next update will include a SAFE document, browser benchmarks, and more Test262 tests.
+* We plan to support some missing features from SAFE 1.0 incrementally such as
+a bug detector, DOM modeling, and jQuery analysis.
+* SAFE 2.0 is aimed to be a playground for advanced research in JavaScript web applications.
+Thus, we intentionally designed it to be light-weight.
+* Future versions of SAFE 2.0 will address
+various analysis techniques,
+dynamic features of web applications,
+event handling,
+modeling framework,
+compositional analysis, and
+selective sensitivity
+among others.
 
 Publications
 ============
@@ -90,19 +120,18 @@ Authors
 ============
 
 The main developers of SAFE 2.0 are as follows:
-
-* `Jihyeok Park`_ 
-* `Yeonhee Ryou`_ 
-* `Sukyoung Ryu`_ 
+* `Jihyeok Park`_
+* `Yeonhee Ryou`_
+* `Sukyoung Ryu`_
 
 .. _Jihyeok Park: https://github.com/jhnaldo
 .. _Yeonhee Ryou: https://github.com/yeonni
-.. _Sukyoung Ryu:  https://github.com/sukyoung
+.. _Sukyoung Ryou:  https://github.com/sukyoung
 
 and the following people have contributed to the source code:
 
-* `Minsoo Kim`_ (Built-in function modeling)
-* `PLRG @ KAIST`_ and colleagues in S-Core and Samsung Electronics (SAFE 1.0)
+* `Minsoo Kim` (Built-in function modeling)
+* `PLRG @ KAIST` and colleagues in S-Core and Samsung Electronics (SAFE 1.0)
 
 .. _Minsoo Kim: https://github.com/mskim5383
-.. _PLRG @ KAIST: http://plrg.kaist.ac.kr
+.. _PLRG @ KIAST: http://plrg.kaist.ac.kr
