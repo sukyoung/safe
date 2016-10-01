@@ -1,4 +1,4 @@
-//  TODO Double.toString precision
+//  TODO Double.toString()
 //  function testcase() 
 //  {
 //    var obj = {

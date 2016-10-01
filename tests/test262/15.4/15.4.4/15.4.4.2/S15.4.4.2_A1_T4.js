@@ -1,3 +1,4 @@
+// TODO [[DefaultValue]]
   var object = {
     valueOf : (function () 
     {
@@ -106,7 +107,6 @@
       var __expect12 = false;
     } 
 
-// TODO: user-defined toString function shadowed by the model code
 //   try
 // {    var object = {
 //       valueOf : (function () 
