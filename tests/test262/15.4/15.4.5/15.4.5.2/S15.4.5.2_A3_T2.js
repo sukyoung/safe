@@ -1,4 +1,4 @@
-// TODO to Jihyeok
+// TODO [[DefineOwnProperty]] for Array object
 // var x = [];
 // x[1] = 1;
 // x[3] = 3;
