@@ -96,12 +96,12 @@ The main developers of SAFE 2.0 are as follows:
 
 .. _Jihyeok Park: https://github.com/jhnaldo
 .. _Yeonhee Ryou: https://github.com/yeonni
-.. _Sukyoung Ryou:  https://github.com/sukyoung
+.. _Sukyoung Ryu:  https://github.com/sukyoung
 
 and the following people have contributed to the source code:
 
-* `Minsoo Kim` (Built-in function modeling)
-* `PLRG @ KAIST` and colleagues in S-Core and Samsung Electronics (SAFE 1.0)
+* `Minsoo Kim`_ (Built-in function modeling)
+* `PLRG @ KAIST`_ and colleagues in S-Core and Samsung Electronics (SAFE 1.0)
 
 .. _Minsoo Kim: https://github.com/mskim5383
 .. _PLRG @ KIAST: http://plrg.kaist.ac.kr
