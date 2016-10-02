@@ -39,8 +39,10 @@ Id Id =
    / a1:"_<>_getTickCount"
      { yyValue = new Id(NodeUtil.makeASTNodeInfo(createSpan(yyStart,yyCount+1)), a1, Some.<String>apply(null), false); }
    / a1:IdText
-     { yyValue = new Id(NodeUtil.makeASTNodeInfo(createSpan(yyStart,yyCount)), a1, Some.<String>apply(null), false); };
+     { String id = NodeUtil.convertUnicode(a1);
+       yyValue = new Id(NodeUtil.makeASTNodeInfo(createSpan(yyStart,yyCount)), id, Some.<String>apply(null), false); };
 
 Id IdName =
      a1:IdTextName
-     { yyValue = new Id(NodeUtil.makeASTNodeInfo(createSpan(yyStart,yyCount)), a1, Some.<String>apply(null), false); };
+     { String id = NodeUtil.convertUnicode(a1);
+       yyValue = new Id(NodeUtil.makeASTNodeInfo(createSpan(yyStart,yyCount)), id, Some.<String>apply(null), false); };
