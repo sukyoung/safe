@@ -1,4 +1,4 @@
-// TODO eval (rewritten)
+// TODO eval: non-constrant string (rewritten)
 //  x = "5+1|0===0";
 //  __evaluated = eval(x);
 x = 5+1|0===0;
