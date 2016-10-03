@@ -1,4 +1,3 @@
-// XXX
   {
     var __result1 = typeof sinx !== 'undefined';
     var __expect1 = false;
@@ -7,10 +6,7 @@
   {
     return (function (x) 
     {
-/*
       return (f(x + dx) - f(x)) / dx;
-*/
-      return 3;
     });
   })((function sinx(x) 
   {

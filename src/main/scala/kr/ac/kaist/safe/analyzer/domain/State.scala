@@ -144,7 +144,7 @@ case class State(heap: Heap, context: AbsContext) {
           val env = context.getOrElse(loc, AbsLexEnv.Bot).record.decEnvRec
           val (newEnv, _) = env
             .CreateMutableBinding(x).fold(env)((e: AbsDecEnvRec) => e)
-            .SetMutableBinding(x, context.pureLocal.outer)
+            .SetMutableBinding(x, value)
           tmpCtx + context.update(loc, AbsLexEnv(newEnv))
         })
         State(heap, newCtx)
