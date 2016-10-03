@@ -1,4 +1,4 @@
-// XXX
+//  TODO [[DefineOwnProperty]] for Array object
 //  var x = [];
 //  x.length = 4294967295;
 //  var push = x.push();
