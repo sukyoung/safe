@@ -346,7 +346,7 @@ object BuiltinObjectHelper {
     val propsV = Helper.propLoad(args, Set(AbsString("1")), h)
 
     val (retSt, excSet) = defProps(objV, propsV, st)
-    val excSt = st.raiseException(excSet)
+    val excSt = retSt.raiseException(excSet)
 
     (retSt, excSt, objV.locset)
   }

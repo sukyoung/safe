@@ -449,8 +449,8 @@ class AbsObject(
   //Section 8.12.9 [[DefineOwnProperty]](P, Desc, Throw)
   def DefineOwnProperty(P: AbsString, Desc: AbsDesc, Throw: Boolean = true): (AbsObject, AbsBool, Set[Exception]) = {
     val Reject =
-      if (Throw) (AbsObjectUtil.Bot, AbsBool.Bot, HashSet(TypeError))
-      else (AbsObjectUtil.Bot, AbsBool.False, ExcSetEmpty)
+      if (Throw) (this, AbsBool.Bot, HashSet(TypeError))
+      else (this, AbsBool.False, ExcSetEmpty)
     val BotTriple = (AbsObjectUtil.Bot, AbsBool.Bot, ExcSetEmpty)
     val (current, curUndef) = this.GetOwnProperty(P)
     val extensible = this(IExtensible).value.pvalue.boolval
