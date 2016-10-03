@@ -4,10 +4,10 @@
     {
       alert(0);
     }
-      eval("alert(2)");
+      alert(2);
     eval(3);
   }
-  eval("alert(1)");
-  eval("alert(4)");
+  alert(1);
+  alert(4);
   f();
   

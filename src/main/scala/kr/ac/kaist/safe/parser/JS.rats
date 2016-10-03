@@ -66,6 +66,7 @@ import scala.Tuple3;
 body {
     static final int MAIN = 0;
     static final int FUNCTION_EXPR = 1;
+    static final int EXPR = 2;
 
     static List<SourceElement> nilJSes = Collections.<SourceElement>emptyList();
     static scala.collection.immutable.List<SourceElement> nilSes = toList(nilJSes);
@@ -111,6 +112,10 @@ body {
         return JSparse(yyStart, FUNCTION_EXPR);
     }
 
+    public Result JSExpr(final int yyStart) throws IOException {
+        return JSparse(yyStart, EXPR);
+    }
+
     private Result JSparse(final int yyStart, final int nonterminal) throws IOException {
         try {
             NodeUtil.initComment();
@@ -119,14 +124,16 @@ body {
                 result = this.pJS$File(yyStart);
             } else if (nonterminal == FUNCTION_EXPR) {
                 result = this.pJS$FunctionExpr(yyStart);
+            } else if (nonterminal == EXPR) {
+                result = this.pExpression(yyStart);
             }
-            writer.close();
-            fw.close();
+            if (writer != null) writer.close();
+            if (fw != null) fw.close();
             Files.deleteIfExists((new File(logFile)).toPath());
             return result;
         } finally {
-            writer.close();
-            fw.close();
+            if (writer != null) writer.close();
+            if (fw != null) fw.close();
         }
     }
 

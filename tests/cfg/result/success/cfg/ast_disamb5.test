@@ -2,20 +2,48 @@ function[0] top-level {
   Entry[-1] -> [0]
 
   Block[0] -> [1], ExitExc
-    [0] f := function (1) @ #7, #8
+    [0] f := function (1) @ #11, #12
     [1] noop(StartOfFile)
-    [2] <>obj<>9 := <>Global<>toObject(f) @ #9
-    [3] <>arguments<>10 := allocArg(0) @ #10
-    [4] <>fun<>11 := <>Global<>getBase(f)
+    [2] <>obj<>13 := <>Global<>toObject(alert) @ #13
+    [3] <>temp<>14 := 1
+    [4] <>arguments<>15 := allocArg(1) @ #14
+    [5] <>arguments<>15["0"] := <>temp<>14
+    [6] <>fun<>16 := <>Global<>getBase(alert)
 
   Call[1] -> ExitExc
-    [0] call(<>obj<>9, <>fun<>11, <>arguments<>10) @ #11
+    [0] call(<>obj<>13, <>fun<>16, <>arguments<>15) @ #15
 
   AfterCall[2] -> [4]
 
   AfterCatch[3] -> ExitExc
 
-  Block[4] -> Exit
+  Block[4] -> [5], ExitExc
+    [0] <>obj<>17 := <>Global<>toObject(alert) @ #17
+    [1] <>temp<>18 := 4
+    [2] <>arguments<>19 := allocArg(1) @ #18
+    [3] <>arguments<>19["0"] := <>temp<>18
+    [4] <>fun<>20 := <>Global<>getBase(alert)
+
+  Call[5] -> ExitExc
+    [0] call(<>obj<>17, <>fun<>20, <>arguments<>19) @ #19
+
+  AfterCall[6] -> [8]
+
+  AfterCatch[7] -> ExitExc
+
+  Block[8] -> [9], ExitExc
+    [0] <>obj<>21 := <>Global<>toObject(f) @ #21
+    [1] <>arguments<>22 := allocArg(0) @ #22
+    [2] <>fun<>23 := <>Global<>getBase(f)
+
+  Call[9] -> ExitExc
+    [0] call(<>obj<>21, <>fun<>23, <>arguments<>22) @ #23
+
+  AfterCall[10] -> [12]
+
+  AfterCatch[11] -> ExitExc
+
+  Block[12] -> Exit
     [0] noop(EndOfFile)
 
   Exit[-2]
@@ -27,8 +55,20 @@ function[0] top-level {
 function[1] f {
   Entry[-1] -> [0]
 
-  Block[0] -> Exit
+  Block[0] -> [1], ExitExc
     [0] <>eval<>1 := function (2) @ #5, #6
+    [1] <>obj<>9 := <>Global<>toObject(alert) @ #7
+    [2] <>temp<>10 := 2
+    [3] <>arguments<>11 := allocArg(1) @ #8
+    [4] <>arguments<>11["0"] := <>temp<>10
+    [5] <>fun<>12 := <>Global<>getBase(alert)
+
+  Call[1] -> ExitExc
+    [0] call(<>obj<>9, <>fun<>12, <>arguments<>11) @ #9
+
+  AfterCall[2] -> Exit
+
+  AfterCatch[3] -> ExitExc
 
   Exit[-2]
 
@@ -58,4 +98,3 @@ function[2] eval {
   ExitExc[-3]
 
 }
-

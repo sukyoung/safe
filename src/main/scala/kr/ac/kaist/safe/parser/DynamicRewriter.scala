@@ -34,6 +34,19 @@ object DynamicRewriter extends ASTWalker {
   }
 
   private object DynRewriteWalker extends ASTWalker {
+    override def walk(node: Expr): Expr = node match {
+      // eval("e")
+      // ==>
+      // e
+      case n @ FunApp(i1, vr @ VarRef(_, Id(_, "eval", _, _)), List(StringLiteral(_, _, expr, _))) =>
+        Parser.stringToE((n.fileName,
+          (new JInteger(n.line - 1), new JInteger(n.offset - 1)), expr)) match {
+          case Success(result) => result
+          case _ => n
+        }
+      case _ => super.walk(node)
+    }
+
     override def walk(node: LHS): LHS = node match {
       // new Function("x","d",body);
       // ==>

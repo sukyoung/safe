@@ -373,6 +373,11 @@ object NodeUtil {
   object AddLinesWalker extends ASTWalker {
     var line = 0
     var offset = 0
+    def addLines(node: Expr, l: Int, o: Int): Expr = {
+      line = l; offset = o
+      map = new HashMap[String, Span]
+      walk(node)
+    }
     def addLines(node: FunExpr, l: Int, o: Int): FunExpr = {
       line = l; offset = o
       map = new HashMap[String, Span]
