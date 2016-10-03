@@ -1,4 +1,4 @@
-// XXX
+// TODO [[DefineOwnProperty]] for Array object
 //  var obj = {
 //    
 //  };
