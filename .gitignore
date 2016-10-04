@@ -15,6 +15,7 @@
 *.html.html
 src/main/java/kr/ac/kaist/safe/parser/
 tests/detail
+tests/analysis-detail
 project/project/
 project/target/
 target/
