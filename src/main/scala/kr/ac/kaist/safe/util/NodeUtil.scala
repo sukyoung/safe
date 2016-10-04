@@ -215,6 +215,7 @@ object NodeUtil {
     } else new ASTNodeInfo(span, None)
 
   def escape(s: String): String = s.replaceAll("\\\\", "\\\\\\\\")
+  def unescape(s: String): String = s.replaceAll("\\\\", "")
 
   def lineTerminating(c: Char): Boolean =
     List('\u000a', '\u2028', '\u2029', '\u000d').contains(c)
@@ -374,6 +375,11 @@ object NodeUtil {
     var line = 0
     var offset = 0
     def addLines(node: Expr, l: Int, o: Int): Expr = {
+      line = l; offset = o
+      map = new HashMap[String, Span]
+      walk(node)
+    }
+    def addLines(node: LHS, l: Int, o: Int): LHS = {
       line = l; offset = o
       map = new HashMap[String, Span]
       walk(node)

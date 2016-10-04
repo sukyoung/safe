@@ -380,7 +380,7 @@ private transient Expr Postfix =
  *   NewExpr
  * | CallExpr
  */
-LHS LeftHandSide =
+public LHS LeftHandSide =
      CallExpr
    / NewExpr
    ;

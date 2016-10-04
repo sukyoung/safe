@@ -48,6 +48,16 @@ object DynamicRewriter extends ASTWalker {
     }
 
     override def walk(node: LHS): LHS = node match {
+      // eval("e")
+      // ==>
+      // e
+      case n @ FunApp(i1, vr @ VarRef(_, Id(_, "eval", _, _)), List(StringLiteral(_, _, lhs, _))) =>
+        Parser.stringToLHS((n.fileName,
+          (new JInteger(n.line - 1), new JInteger(n.offset - 1)), NU.unescape(lhs))) match {
+          case Success(result) => result
+          case _ => n
+        }
+
       // new Function("x","d",body);
       // ==>
       // function (x,d) body;
@@ -55,15 +65,17 @@ object DynamicRewriter extends ASTWalker {
         val (params, body) = split(args, n)
         Parser.stringToFnE((n.fileName,
           (new JInteger(n.line - 1), new JInteger(n.offset - 1)),
-          "function (" + params + ") {" + body + "};")) match {
+          "function (" + NU.unescape(params) + ") {" + NU.unescape(body) + "};")) match {
           case Success(result) => result
           case _ => n
         }
+
       // Function ("return this")
       // ==>
       // function () { return this }
       case n @ FunApp(i1, VarRef(i2, Id(i3, text, a, b)), args) if allConst(args) && text.equals("Function") =>
         walk(New(i1, FunApp(i1, VarRef(i2, Id(i3, text, a, b)), args)))
+
       // setTimeout("xqzSr()", 1);
       // ==>
       // setTimeout(function(){xqzSr()}, 1);
@@ -71,10 +83,11 @@ object DynamicRewriter extends ASTWalker {
         List(StringLiteral(_, _, body, _), no)) if text.equals("setTimeout") || text.equals("setInterval") =>
         Parser.stringToFnE((n.fileName,
           (new JInteger(n.line - 1), new JInteger(n.offset - 1)),
-          "function () {" + body + "};")) match {
+          "function () {" + NU.unescape(body) + "};")) match {
           case Success(fe) => FunApp(i1, vr, List(fe, no))
           case _ => n
         }
+
       // window.setTimeout("xqzSr()", 1);
       // ==>
       // window.setTimeout(function(){xqzSr()}, 1);
@@ -82,7 +95,7 @@ object DynamicRewriter extends ASTWalker {
         List(StringLiteral(_, _, body, _), no)) if oname.equals("window") && (mname.equals("setTimeout") || mname.equals("setInterval")) =>
         Parser.stringToFnE((n.fileName,
           (new JInteger(n.line - 1), new JInteger(n.offset - 1)),
-          "function () {" + body + "};")) match {
+          "function () {" + NU.unescape(body) + "};")) match {
           case Success(fe) => FunApp(i1, dot, List(fe, no))
           case _ => n
         }
