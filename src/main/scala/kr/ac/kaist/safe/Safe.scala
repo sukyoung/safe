@@ -25,7 +25,7 @@ object Safe {
   def main(tokens: Array[String]): Unit = {
     (tokens.toList match {
       case str :: args => cmdMap.get(str) match {
-        case Some(cmd) => cmd(args)
+        case Some(cmd) => cmd(args, false)
         case None => Failure(NoCmdError(str))
       }
       case Nil => Failure(NoInputError)
@@ -148,5 +148,6 @@ case class SafeConfig(
   var command: Command,
   var fileNames: List[String] = Nil,
   var time: Boolean = false,
-  var verbose: Boolean = false
+  var verbose: Boolean = false,
+  var testMode: Boolean = false
 ) extends Config

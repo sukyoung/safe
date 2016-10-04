@@ -187,7 +187,7 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
     val filename = file.getName
     registerTest("[Test262]" + filename, Test262Test) {
       val safeConfig = SafeConfig(CmdBase, List(jsName))
-      val cfg = CmdCFGBuild(List(jsName))
+      val cfg = CmdCFGBuild(List(jsName), true)
       val analysis = cfg.flatMap(Analyze(_, safeConfig, analyzeConfig))
       totalList ::= relPath
       if (analyzeTest(analysis)) preciseList ::= relPath
