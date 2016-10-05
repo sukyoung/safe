@@ -3,7 +3,6 @@
 here : <>break<>1 : {
   while(true)
   {
-    <>continue<>2 : break here
+    <>continue<>2 : break <>continue<>2
   }
 }
-

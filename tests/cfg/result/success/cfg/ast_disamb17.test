@@ -13,7 +13,7 @@ function[0] top-level {
 
   Block[4] -> [6], [5]
 
-  Block[5] -> [1], ExitExc
+  Block[5] -> [7], ExitExc
     [0] assert(true)
 
   Block[6] -> [3], ExitExc

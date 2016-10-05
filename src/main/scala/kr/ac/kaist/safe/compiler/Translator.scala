@@ -270,6 +270,18 @@ class Translator(program: Program) {
       case Some((_, id)) => id
     }
   }
+  private def getContLabel(env: Env, label: Label): IRId = {
+    val id = label2ir(label)
+    val name = id.uniqueName
+    env.foldLeft[(Option[IRId], Boolean)]((None, false)) {
+      case ((_, false), (CONTINUE_NAME, id)) => (Some(id), false)
+      case ((Some(cont), false), (str, _)) if str == name => (Some(cont), true)
+      case (pair, _) => pair
+    } match {
+      case (Some(cont), true) => cont
+      case _ => id
+    }
+  }
 
   private def funexprId(span: Span, lhs: Option[String]): Id = {
     val uniq = lhs match {
@@ -723,7 +735,7 @@ class Translator(program: Program) {
         case None =>
           IRStmtUnit(s, IRBreak(s, getE(env, CONTINUE_NAME)))
         case Some(x) =>
-          IRStmtUnit(s, IRBreak(s, label2ir(x)))
+          IRStmtUnit(s, IRBreak(s, getContLabel(env, x)))
       }
 
     case Break(_, target) =>
@@ -758,7 +770,10 @@ class Translator(program: Program) {
       )
 
     case LabelStmt(_, label, stmt) =>
-      IRStmtUnit(s, IRLabelStmt(s, label2ir(label), walkStmt(stmt, env)))
+      val id = label2ir(label)
+      val name = id.uniqueName
+      val newEnv = addE(env, name, id)
+      IRStmtUnit(s, IRLabelStmt(s, id, walkStmt(stmt, newEnv)))
 
     case Throw(_, expr) =>
       val new1 = freshId(expr, expr.span, "new1")
