@@ -271,8 +271,44 @@ class WithRewriter(program: Program, forTest: Boolean) {
         Bracket(info, walk(obj, env), walk(index, env))
       case Dot(info, obj, member) =>
         Dot(info, walk(obj, env), member)
-      case New(info, lhs) =>
-        New(info, walk(lhs, env))
+      case New(ninfo, fa @ FunApp(info, fun, args)) =>
+        val mapArgsWalk = args.map(e => walk(e, env))
+        val funAppWalk = New(ninfo, FunApp(info, walk(fun, env), mapArgsWalk))
+        env match {
+          case EmptyEnv => funAppWalk
+          case ConsEnv(withs, names, isNested) => withs match {
+            case Nil =>
+              excLog.signal(NoWithObjError(fa))
+              fa
+            case alpha :: others => fun match {
+              case VarRef(vinfo, id) =>
+                val (first, rest) = splitNames(names)
+                val faMapArgsWalk = New(ninfo, FunApp(vinfo, fun, mapArgsWalk))
+                if (first.contains(id.text)) faMapArgsWalk
+                else {
+                  val lhsInAlpha = InfixOpApp(
+                    vinfo,
+                    StringLiteral(vinfo, "\"", id.text, false),
+                    inOp(vinfo), VarRef(vinfo, alpha)
+                  )
+                  val alphaDotLhs = Dot(vinfo, VarRef(vinfo, alpha), id)
+                  val alphaDotLhsExpr = New(ninfo, FunApp(vinfo, alphaDotLhs, args))
+                  val alphaDotLhsExprWalk = New(ninfo, FunApp(vinfo, alphaDotLhs, mapArgsWalk))
+                  others match {
+                    case Nil =>
+                      if (isNested) paren(Cond(vinfo, lhsInAlpha, alphaDotLhsExpr, fa))
+                      else paren(Cond(vinfo, lhsInAlpha, alphaDotLhsExprWalk, faMapArgsWalk))
+                    case more =>
+                      if (isNested) paren(Cond(vinfo, lhsInAlpha, alphaDotLhsExpr,
+                        walk(fa, new ConsEnv(more, rest, isNested))))
+                      else paren(Cond(vinfo, lhsInAlpha, alphaDotLhsExprWalk,
+                        walk(faMapArgsWalk, new ConsEnv(more, rest, true))))
+                  }
+                }
+              case _ => funAppWalk
+            }
+          }
+        }
       case fa @ FunApp(info, fun, args) =>
         val mapArgsWalk = args.map(e => walk(e, env))
         val funAppWalk = FunApp(info, walk(fun, env), mapArgsWalk)
