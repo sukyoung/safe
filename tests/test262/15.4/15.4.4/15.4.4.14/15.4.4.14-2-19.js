@@ -1,0 +1,16 @@
+// XXX
+//  function testcase() 
+//  {
+//    var obj = (function (a, b) 
+//    {
+//      return a + b;
+//    });
+//    obj[1] = "b";
+//    obj[2] = "c";
+//    return Array.prototype.indexOf.call(obj, obj[1]) === 1 && Array.prototype.indexOf.call(obj, obj[2]) === - 1;
+//  }
+//  {
+//    var __result1 = testcase();
+//    var __expect1 = true;
+//  }
+//  
