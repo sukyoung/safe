@@ -694,7 +694,7 @@ Where $c$ is either $(\expr, \ir{l})$ or $((), \ir{l})$.
 \atoiS\lbr  \verb+continue+ \ l\verb+;+ \rbr(\env)
 &=&\open
 %{\sf break}\ \env(\newvar{continue})
-{\sf break}\ \ir{l}
+{\sf break}\ \env(\ir{l})
 \close\\
 
 
@@ -757,7 +757,7 @@ Where $c$ is either $(\expr, \ir{l})$ or $((), \ir{l})$.
 %% labelled statement
 \atoiS\lbr  l\ \verb+:+\ s \rbr(\env)
 &=& \open
-\ir{l}\ \verb+:+\ \verb+{+\ \atoiSfd{s} \ \verb+}+\close
+\ir{l}\ \verb+:+\ \verb+{+\ \atoiSf{s}{\env;{\inred \ir{l}}} \ \verb+}+\close
 \\
 
 %% throw
