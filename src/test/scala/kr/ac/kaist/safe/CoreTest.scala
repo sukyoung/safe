@@ -56,6 +56,11 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
     normalized(Source.fromFile(filename).getLines.mkString(LINE_SEP))
   }
 
+  def getSafeConfig(filename: String): SafeConfig =
+    SafeConfig(CmdBase, List(filename), silent = true)
+
+  def getCFG(filename: String): Try[CFG] = CmdCFGBuild(List("-silent", filename))
+
   private def parseTest(pgm: Try[Program]): Unit = {
     pgm match {
       case Failure(e) =>
@@ -135,7 +140,7 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
     val name = filename.substring(0, filename.length - 3)
     val jsName = jsDir + filename
 
-    val config = SafeConfig(CmdBase, List(jsName))
+    val config = getSafeConfig(jsName)
 
     lazy val pgm = Parse((), config)
     registerTest("[Parse] " + filename, ParseTest) { parseTest(pgm) }
@@ -171,8 +176,8 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
     val relPath = jsName.substring(BASE_DIR.length)
     val filename = file.getName
     registerTest("[Analyze]" + filename, AnalyzeTest) {
-      val safeConfig = SafeConfig(CmdBase, List(jsName))
-      val cfg = CmdCFGBuild(List(jsName))
+      val safeConfig = getSafeConfig(jsName)
+      val cfg = getCFG(jsName)
       val analysis = cfg.flatMap(Analyze(_, safeConfig, analyzeConfig))
       totalList ::= relPath
       if (analyzeTest(analysis)) preciseList ::= relPath
@@ -186,8 +191,8 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
     val relPath = jsName.substring(BASE_DIR.length)
     val filename = file.getName
     registerTest("[Test262]" + filename, Test262Test) {
-      val safeConfig = SafeConfig(CmdBase, List(jsName))
-      val cfg = CmdCFGBuild(List(jsName))
+      val safeConfig = getSafeConfig(jsName)
+      val cfg = getCFG(jsName)
       val analysis = cfg.flatMap(Analyze(_, safeConfig, analyzeConfig))
       totalList ::= relPath
       if (analyzeTest(analysis)) preciseList ::= relPath

@@ -65,8 +65,8 @@ case object ASTRewrite extends PhaseObj[Program, ASTRewriteConfig, Program] {
 
   def defaultConfig: ASTRewriteConfig = ASTRewriteConfig()
   val options: List[PhaseOption[ASTRewriteConfig]] = List(
-    ("verbose", BoolOption(c => c.verbose = true),
-      "messages during rewriting AST are printed."),
+    ("silent", BoolOption(c => c.silent = true),
+      "messages during rewriting AST are muted."),
     ("out", StrOption((c, s) => c.outFile = Some(s)),
       "the disambiguated AST will be written to the outfile.")
   )
@@ -74,6 +74,6 @@ case object ASTRewrite extends PhaseObj[Program, ASTRewriteConfig, Program] {
 
 // ASTRewrite phase config
 case class ASTRewriteConfig(
-  var verbose: Boolean = false,
+  var silent: Boolean = false,
   var outFile: Option[String] = None
 ) extends Config

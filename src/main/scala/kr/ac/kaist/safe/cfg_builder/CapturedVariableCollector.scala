@@ -161,7 +161,7 @@ class CapturedVariableCollector(
       case IRWhile(_, cond, body) =>
         walk(cond, locals) ++ walk(body, locals)
       case _ =>
-        if (safeConfig.verbose || config.verbose) excLog.signal(IRIgnored(stmt))
+        excLog.signal(IRIgnored(stmt))
         EMPTY
     }
 

@@ -53,7 +53,7 @@ case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, CallContext)] {
       case false => None
     }
     val fixpoint = new Fixpoint(semantics, worklist, consoleOpt)
-    fixpoint.compute()
+    val iters = fixpoint.compute()
 
     val excLog = semantics.excLog
     // Report errors.
@@ -62,7 +62,7 @@ case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, CallContext)] {
       println(excLog)
     }
 
-    if (config.dump || config.dumpAll) {
+    if (!safeConfig.silent && !config.silent) {
       val state = cfg.globalFunc.exit.getState(globalCC)
       val heap = state.heap
       val context = state.context
@@ -75,6 +75,8 @@ case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, CallContext)] {
         LINE_SEP +
         "** old address set **" + LINE_SEP +
         old.toString)
+
+      println(s"# of iteration: $iters")
     }
 
     Success((cfg, globalCC))
@@ -82,10 +84,8 @@ case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, CallContext)] {
 
   def defaultConfig: AnalyzeConfig = AnalyzeConfig()
   val options: List[PhaseOption[AnalyzeConfig]] = List(
-    ("verbose", BoolOption(c => c.verbose = true),
-      "messages during compilation are printed."),
-    ("dump", BoolOption(c => c.dump = true),
-      "dump the state of the exit node of the global function."),
+    ("silent", BoolOption(c => c.silent = true),
+      "messages during compilation are muted."),
     ("dumpAll", BoolOption(c => c.dumpAll = true),
       "dump all locations for the state of the exit node of the global function."),
     ("console", BoolOption(c => c.console = true),
@@ -103,7 +103,7 @@ case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, CallContext)] {
 
 // Analyze phase config
 case class AnalyzeConfig(
-  var verbose: Boolean = false,
+  var silent: Boolean = false,
   var dump: Boolean = false,
   var dumpAll: Boolean = false,
   var console: Boolean = false,

@@ -534,7 +534,7 @@ class DefaultCFGBuilder(
         cfg.addEdge(bs, headBlock)
         (List(loopOutBlock), lm.updated(ThrowLabel, (ThrowLabel of lm) + loopBodyBlock + loopOutBlock))
       case _ => {
-        if (safeConfig.verbose || config.verbose) excLog.signal(IRIgnored(stmt))
+        excLog.signal(IRIgnored(stmt))
         (blocks, lmap)
       }
     }

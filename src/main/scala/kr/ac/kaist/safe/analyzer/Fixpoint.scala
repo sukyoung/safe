@@ -20,8 +20,10 @@ class Fixpoint(
     worklist: Worklist,
     consoleOpt: Option[Console]
 ) {
-  def compute(): Unit = {
+  def compute(): Int = {
+    var iters = 0
     while (!worklist.isEmpty) {
+      iters += 1
       consoleOpt.fold() { _.runFixpoint }
       val cp = worklist.pop
       val st = cp.getState
@@ -31,6 +33,7 @@ class Fixpoint(
       propagateInterProc(cp, nextSt)
     }
     consoleOpt.fold() { _.runFinished }
+    iters
   }
 
   def propagateNormal(cp: ControlPoint, nextSt: State): Unit = {

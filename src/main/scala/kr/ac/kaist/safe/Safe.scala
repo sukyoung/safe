@@ -53,7 +53,7 @@ object Safe {
     val result: Try[Result] = runner(config)
 
     // print the time spent if the time option is set.
-    if (config.time) {
+    if (!config.silent) {
       val duration = System.currentTimeMillis - startTime
       val name = config.command.name
       println(s"Command $name took $duration ms.")
@@ -92,10 +92,8 @@ object Safe {
 
   // global options
   val options: List[PhaseOption[SafeConfig]] = List(
-    ("time", BoolOption(c => c.time = true),
-      ""), // TODO
-    ("verbose", BoolOption(c => c.verbose = true),
-      "") // TODO
+    ("silent", BoolOption(c => c.silent = true),
+      "all messages are muted.")
   )
 
   // print usage message.
@@ -103,7 +101,7 @@ object Safe {
     val s: StringBuilder = new StringBuilder
     s.append("Usage:").append(LINE_SEP)
       .append("  safe {command} [-{option}]* [-{phase}:{option}[={input}]]* {filename}*").append(LINE_SEP)
-      .append("  example: safe analyze -time -astRewrite:verbose cfgBuild:out=out test.js").append(LINE_SEP)
+      .append("  example: safe analyze -astRewrite:silent cfgBuild:out=out test.js").append(LINE_SEP)
       .append(LINE_SEP)
       .append("  command list:").append(LINE_SEP)
     commands foreach (cmd => s.append("    %-15s".format(cmd.name)).append(cmd).append(LINE_SEP))
@@ -147,6 +145,5 @@ object Safe {
 case class SafeConfig(
   var command: Command,
   var fileNames: List[String] = Nil,
-  var time: Boolean = false,
-  var verbose: Boolean = false
+  var silent: Boolean = false
 ) extends Config

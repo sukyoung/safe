@@ -59,8 +59,8 @@ case object CFGBuild extends PhaseObj[IRRoot, CFGBuildConfig, CFG] {
 
   def defaultConfig: CFGBuildConfig = CFGBuildConfig()
   val options: List[PhaseOption[CFGBuildConfig]] = List(
-    ("verbose", BoolOption(c => c.verbose = true),
-      "messages during compilation are printed."),
+    ("silent", BoolOption(c => c.silent = true),
+      "messages during compilation are muted."),
     ("out", StrOption((c, s) => c.outFile = Some(s)),
       "the resulting CFG will be written to the outfile."),
     ("dot", StrOption((c, s) => c.dotName = Some(s)),
@@ -70,7 +70,7 @@ case object CFGBuild extends PhaseObj[IRRoot, CFGBuildConfig, CFG] {
 
 // CFGBuild phase config
 case class CFGBuildConfig(
-  var verbose: Boolean = false,
+  var silent: Boolean = false,
   var outFile: Option[String] = None,
   var dotName: Option[String] = None
 // TODO add option for cfg builder

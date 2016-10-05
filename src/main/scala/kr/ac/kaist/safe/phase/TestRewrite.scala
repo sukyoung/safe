@@ -47,8 +47,8 @@ case object TestRewrite extends PhaseObj[Program, TestRewriteConfig, Program] {
 
   def defaultConfig: TestRewriteConfig = TestRewriteConfig()
   val options: List[PhaseOption[TestRewriteConfig]] = List(
-    ("verbose", BoolOption(c => c.verbose = true),
-      "messages during rewriting AST are printed."),
+    ("silent", BoolOption(c => c.silent = true),
+      "messages during rewriting AST are muted."),
     ("out", StrOption((c, s) => c.outFile = Some(s)),
       "the rewritten AST will be written to the outfile.")
   )
@@ -56,6 +56,6 @@ case object TestRewrite extends PhaseObj[Program, TestRewriteConfig, Program] {
 
 // TestRewrite phase config
 case class TestRewriteConfig(
-  var verbose: Boolean = false,
+  var silent: Boolean = false,
   var outFile: Option[String] = None
 ) extends Config
