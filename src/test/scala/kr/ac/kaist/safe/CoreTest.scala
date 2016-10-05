@@ -170,7 +170,7 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
   val analysisDeatil = BASE_DIR + SEP + "tests" + SEP + "analysis-detail"
 
   val analyzerTestDir = testDir + "semantics"
-  val analyzeConfig = AnalyzeConfig(testMode = true)
+  val analyzeConfig = AnalyzeConfig()
   for (file <- shuffle(walkTree(new File(analyzerTestDir))) if file.getName.endsWith(".js")) {
     val jsName = file.toString
     val relPath = jsName.substring(BASE_DIR.length)

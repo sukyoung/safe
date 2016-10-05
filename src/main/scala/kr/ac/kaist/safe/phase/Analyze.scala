@@ -45,7 +45,7 @@ case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, CallContext)] {
     val semantics = new Semantics(cfg, worklist)
     val init = Initialize(cfg)
     val initSt =
-      if (config.testMode) init.testState
+      if (safeConfig.testMode) init.testState
       else init.state
     cfg.globalFunc.entry.setState(globalCC, initSt)
     val consoleOpt = config.console match {
@@ -95,8 +95,6 @@ case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, CallContext)] {
     ("maxStrSetSize", NumOption((c, n) => if (n > 0) c.AbsString = StringSet(n)),
       "the analyzer will use the AbsString Set domain with given size limit n."),
     ("callsiteSensitivity", NumOption((c, n) => if (n > 0) c.callsiteSensitivity = n),
-      ""), // TODO
-    ("testMode", BoolOption(c => c.testMode = true),
       "") // TODO
   )
 }
@@ -104,7 +102,6 @@ case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, CallContext)] {
 // Analyze phase config
 case class AnalyzeConfig(
   var silent: Boolean = false,
-  var dump: Boolean = false,
   var dumpAll: Boolean = false,
   var console: Boolean = false,
   var outFile: Option[String] = None,
@@ -113,6 +110,5 @@ case class AnalyzeConfig(
   var AbsBool: AbsBoolUtil = DefaultBool,
   var AbsNumber: AbsNumberUtil = DefaultNumber,
   var AbsString: AbsStringUtil = StringSet(0),
-  var callsiteSensitivity: Int = -1,
-  var testMode: Boolean = false
+  var callsiteSensitivity: Int = -1
 ) extends Config
