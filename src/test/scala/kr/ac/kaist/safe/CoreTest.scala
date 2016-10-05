@@ -105,11 +105,16 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
 
   val resultPrefix = "__result"
   val expectPrefix = "__expect"
-  def assertWrap(check: Boolean): Boolean = {
+  def assertWrap(check: Boolean): AnalysisResult = {
     assert(check)
-    check
+    Fail
   }
-  def analyzeTest(analysis: Try[(CFG, Int, CallContext)]): Boolean = {
+  abstract class AnalysisResult
+  case object Precise extends AnalysisResult
+  case object Imprecise extends AnalysisResult
+  case object NoTest extends AnalysisResult
+  case object Fail extends AnalysisResult
+  def analyzeTest(analysis: Try[(CFG, Int, CallContext)]): AnalysisResult = {
     analysis match {
       case Failure(_) => assertWrap(false)
       case Success((cfg, _, globalCallCtx)) =>
@@ -123,13 +128,15 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
             val resultKeySet = globalObj.collectKeySet(resultPrefix)
             val expectKeySet = globalObj.collectKeySet(expectPrefix)
             assert(resultKeySet.size == expectKeySet.size)
-            resultKeySet.foldLeft(true)((b, resultKey) => {
+            if (resultKeySet.size == 0) NoTest
+            else if (resultKeySet.foldLeft(true)((b, resultKey) => {
               val num = resultKey.substring(resultPrefix.length)
               val expectKey = expectPrefix + num
               assert(expectKeySet contains expectKey)
               assert(globalObj(expectKey) <= globalObj(resultKey))
               b && (globalObj(resultKey) <= globalObj(expectKey))
-            })
+            })) Precise
+            else Imprecise
           }
         }
     }
@@ -165,8 +172,9 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
   }
 
   var totalList = List[String]()
-  var impreciseList = List[String]()
   var preciseList = List[String]()
+  var impreciseList = List[String]()
+  var noTestList = List[String]()
   val analysisDeatil = BASE_DIR + SEP + "tests" + SEP + "analysis-detail"
 
   val analyzerTestDir = testDir + "semantics"
@@ -180,8 +188,12 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
       val cfg = getCFG(jsName)
       val analysis = cfg.flatMap(Analyze(_, safeConfig, analyzeConfig))
       totalList ::= relPath
-      if (analyzeTest(analysis)) preciseList ::= relPath
-      else impreciseList ::= relPath
+      analyzeTest(analysis) match {
+        case Precise => preciseList ::= relPath
+        case Imprecise => impreciseList ::= relPath
+        case NoTest => noTestList ::= relPath
+        case Fail => // unreachable
+      }
     }
   }
 
@@ -195,8 +207,12 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
       val cfg = getCFG(jsName)
       val analysis = cfg.flatMap(Analyze(_, safeConfig, analyzeConfig))
       totalList ::= relPath
-      if (analyzeTest(analysis)) preciseList ::= relPath
-      else impreciseList ::= relPath
+      analyzeTest(analysis) match {
+        case Precise => preciseList ::= relPath
+        case Imprecise => impreciseList ::= relPath
+        case NoTest => noTestList ::= relPath
+        case Fail => // unreachable
+      }
     }
   }
 
@@ -206,24 +222,29 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
     val pw = new PrintWriter(bw)
     val pre = preciseList.sorted
     val impre = impreciseList.sorted
-    val fail = (totalList.toSet -- pre.toSet -- impre.toSet).toList.sorted
+    val no = noTestList.sorted
+    val fail = (totalList.toSet -- pre.toSet -- impre.toSet -- no.toSet).toList.sorted
     pw.println("#######################")
     pw.println("# SUMMARY")
     pw.println("#######################")
     pw.println("# TOTAL : " + totalList.length)
     pw.println("# FAIL : " + fail.length)
-    pw.println("# IMPRECISE : " + impre.length)
     pw.println("# PRECISE : " + pre.length)
+    pw.println("# IMPRECISE : " + impre.length)
+    pw.println("# NO-TEST: " + no.length)
     pw.println("#######################")
     pw.println()
-    pw.println("FAILE : " + fail.length)
+    pw.println("FAIL: " + fail.length)
     fail.foreach(fn => pw.println(fn))
     pw.println()
-    pw.println("IMPRECISE : " + impre.length)
+    pw.println("PRECISE: " + pre.length)
+    pre.foreach(fn => pw.println(fn))
+    pw.println()
+    pw.println("IMPRECISE: " + impre.length)
     impre.foreach(fn => pw.println(fn))
     pw.println()
-    pw.println("PRECISE : " + pre.length)
-    pre.foreach(fn => pw.println(fn))
+    pw.println("NO-TEST: " + no.length)
+    no.foreach(fn => pw.println(fn))
     pw.close()
   }
 }
