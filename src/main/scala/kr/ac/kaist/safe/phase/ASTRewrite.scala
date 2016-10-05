@@ -44,7 +44,7 @@ case object ASTRewrite extends PhaseObj[Program, ASTRewriteConfig, Program] {
     excLog += withRewriter.excLog
 
     // Report errors.
-    if (excLog.hasError) {
+    if (excLog.hasError && !safeConfig.testMode) {
       println(program.relFileName + ":")
       println(excLog)
     }

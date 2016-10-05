@@ -57,9 +57,9 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
   }
 
   def getSafeConfig(filename: String): SafeConfig =
-    SafeConfig(CmdBase, List(filename), silent = true)
+    SafeConfig(CmdBase, List(filename), silent = true, testMode = true)
 
-  def getCFG(filename: String): Try[CFG] = CmdCFGBuild(List("-silent", filename))
+  def getCFG(filename: String): Try[CFG] = CmdCFGBuild(List("-silent", filename), testMode = true)
 
   private def parseTest(pgm: Try[Program]): Unit = {
     pgm match {
