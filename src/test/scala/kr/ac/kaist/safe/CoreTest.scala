@@ -109,10 +109,10 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
     assert(check)
     check
   }
-  def analyzeTest(analysis: Try[(CFG, CallContext)]): Boolean = {
+  def analyzeTest(analysis: Try[(CFG, Int, CallContext)]): Boolean = {
     analysis match {
       case Failure(_) => assertWrap(false)
-      case Success((cfg, globalCallCtx)) =>
+      case Success((cfg, _, globalCallCtx)) =>
         val normalSt = cfg.globalFunc.exit.getState(globalCallCtx)
         val excSt = cfg.globalFunc.exitExc.getState(globalCallCtx)
         assert(!normalSt.heap.isBottom)

@@ -11,10 +11,9 @@
 
 package kr.ac.kaist.safe.phase
 
-import kr.ac.kaist.safe.analyzer._
-
 import scala.util.{ Failure, Success, Try }
 import kr.ac.kaist.safe.SafeConfig
+import kr.ac.kaist.safe.analyzer._
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.analyzer.console.Console
 import kr.ac.kaist.safe.LINE_SEP
@@ -22,7 +21,7 @@ import kr.ac.kaist.safe.nodes.cfg.CFG
 import kr.ac.kaist.safe.util._
 
 // Analyze phase
-case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, CallContext)] {
+case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, Int, CallContext)] {
   val name: String = "analyzer"
   val help: String = "Analyze the JavaScript source files."
 
@@ -30,7 +29,7 @@ case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, CallContext)] {
     cfg: CFG,
     safeConfig: SafeConfig,
     config: AnalyzeConfig
-  ): Try[(CFG, CallContext)] = {
+  ): Try[(CFG, Int, CallContext)] = {
     Utils.register(
       config.AbsUndef,
       config.AbsNull,
@@ -62,69 +61,15 @@ case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, CallContext)] {
       println(excLog)
     }
 
-    if (!safeConfig.silent && !config.silent) {
-      val state = cfg.globalFunc.exit.getState(globalCC)
-      val heap = state.heap
-      val context = state.context
-      val old = context.old
-      println("** heap **" + LINE_SEP +
-        (if (config.dumpAll) heap.toStringAll else heap.toString) + LINE_SEP +
-        LINE_SEP +
-        "** context **" + LINE_SEP +
-        context.toString + LINE_SEP +
-        LINE_SEP +
-        "** old address set **" + LINE_SEP +
-        old.toString)
-      println()
-
-      println(s"- # of iteration: $iters")
-      if (config.detail) {
-        // function info.
-        val userFuncs = cfg.getUserFuncs
-        println(s"- # of user functions: ${userFuncs.length}")
-        val unreachableList = userFuncs.filter(_.entry.getState.isEmpty)
-        if (!unreachableList.isEmpty) {
-          println(s"  * There are ${unreachableList.length} unreachable user functions:")
-          unreachableList.foreach(func => {
-            val str = func.name + " @ " + func.span
-            println(s"    $str")
-          })
-        }
-        val modelFuncs = cfg.getAllFuncs.filter(func => {
-          !func.isUser && !func.entry.getState.isEmpty
-        })
-        if (!modelFuncs.isEmpty) {
-          println(s"  * ${modelFuncs.length} modeling functions are used:")
-          modelFuncs.foreach(func => println(s"    ${func.name}"))
-        }
-
-        // block info.
-        val blocks = cfg.getAllBlocks.filter(!_.getState.isEmpty)
-        println(s"- # of touched blocks: ${blocks.length}")
-        val userBlocks = blocks.filter(_.func.isUser)
-        println(s"    user blocks: ${userBlocks.length}")
-        println(s"    modeling blocks: ${blocks.length - userBlocks.length}")
-
-        // instruction info.
-        val insts = blocks.foldLeft(0)(_ + _.getInsts.length)
-        println(s"- # of instructions: $insts")
-        println()
-      }
-    }
-
-    Success((cfg, globalCC))
+    Success((cfg, iters, globalCC))
   }
 
   def defaultConfig: AnalyzeConfig = AnalyzeConfig()
   val options: List[PhaseOption[AnalyzeConfig]] = List(
     ("silent", BoolOption(c => c.silent = true),
       "messages during compilation are muted."),
-    ("dumpAll", BoolOption(c => c.dumpAll = true),
-      "dump all locations for the state of the exit node of the global function."),
-    ("detail", BoolOption(c => c.detail = true),
-      "show detail of analysis result."),
     ("console", BoolOption(c => c.console = true),
-      "you can use REPL-style debugger."),
+      "REPL-style console debugger."),
     ("out", StrOption((c, s) => c.outFile = Some(s)),
       "the analysis results will be written to the outfile."),
     ("maxStrSetSize", NumOption((c, n) => if (n > 0) c.AbsString = StringSet(n)),
@@ -137,8 +82,6 @@ case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, CallContext)] {
 // Analyze phase config
 case class AnalyzeConfig(
   var silent: Boolean = false,
-  var dumpAll: Boolean = false,
-  var detail: Boolean = false,
   var console: Boolean = false,
   var outFile: Option[String] = None,
   var AbsUndef: AbsUndefUtil = DefaultUndef,

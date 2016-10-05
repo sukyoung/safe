@@ -56,7 +56,7 @@ object Safe {
     if (!config.silent) {
       val duration = System.currentTimeMillis - startTime
       val name = config.command.name
-      println(s"Command $name took $duration ms.")
+      println(s"The command '$name' took $duration ms.")
     }
 
     // return result

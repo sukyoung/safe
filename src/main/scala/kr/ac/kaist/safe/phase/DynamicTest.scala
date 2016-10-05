@@ -71,10 +71,10 @@ case object DynamicTest extends PhaseObj[Unit, DynamicTestConfig, Unit] {
     Try(None)
   }
 
-  def analyzeTest(analysis: Try[(CFG, CallContext)]): Unit = {
+  def analyzeTest(analysis: Try[(CFG, Int, CallContext)]): Unit = {
     analysis match {
       case Failure(_) => assert(false)
-      case Success((cfg, globalCallCtx)) =>
+      case Success((cfg, _, globalCallCtx)) =>
         val normalSt = cfg.globalFunc.exit.getState(globalCallCtx)
         val excSt = cfg.globalFunc.exitExc.getState(globalCallCtx)
         assert(!normalSt.heap.isBottom)
