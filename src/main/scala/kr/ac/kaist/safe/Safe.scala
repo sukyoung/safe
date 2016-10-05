@@ -93,7 +93,9 @@ object Safe {
   // global options
   val options: List[PhaseOption[SafeConfig]] = List(
     ("silent", BoolOption(c => c.silent = true),
-      "all messages are muted.")
+      "all messages are muted."),
+    ("testMode", BoolOption(c => c.testMode = true),
+      "switch on the test mode.")
   )
 
   // print usage message.

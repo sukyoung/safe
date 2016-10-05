@@ -75,8 +75,41 @@ case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, CallContext)] {
         LINE_SEP +
         "** old address set **" + LINE_SEP +
         old.toString)
+      println()
 
-      println(s"# of iteration: $iters")
+      println(s"- # of iteration: $iters")
+      if (config.detail) {
+        // function info.
+        val userFuncs = cfg.getUserFuncs
+        println(s"- # of user functions: ${userFuncs.length}")
+        val unreachableList = userFuncs.filter(_.entry.getState.isEmpty)
+        if (!unreachableList.isEmpty) {
+          println(s"  * There are ${unreachableList.length} unreachable user functions:")
+          unreachableList.foreach(func => {
+            val str = func.name + " @ " + func.span
+            println(s"    $str")
+          })
+        }
+        val modelFuncs = cfg.getAllFuncs.filter(func => {
+          !func.isUser && !func.entry.getState.isEmpty
+        })
+        if (!modelFuncs.isEmpty) {
+          println(s"  * ${modelFuncs.length} modeling functions are used:")
+          modelFuncs.foreach(func => println(s"    ${func.name}"))
+        }
+
+        // block info.
+        val blocks = cfg.getAllBlocks.filter(!_.getState.isEmpty)
+        println(s"- # of touched blocks: ${blocks.length}")
+        val userBlocks = blocks.filter(_.func.isUser)
+        println(s"    user blocks: ${userBlocks.length}")
+        println(s"    modeling blocks: ${blocks.length - userBlocks.length}")
+
+        // instruction info.
+        val insts = blocks.foldLeft(0)(_ + _.getInsts.length)
+        println(s"- # of instructions: $insts")
+        println()
+      }
     }
 
     Success((cfg, globalCC))
@@ -88,6 +121,8 @@ case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, CallContext)] {
       "messages during compilation are muted."),
     ("dumpAll", BoolOption(c => c.dumpAll = true),
       "dump all locations for the state of the exit node of the global function."),
+    ("detail", BoolOption(c => c.detail = true),
+      "show detail of analysis result."),
     ("console", BoolOption(c => c.console = true),
       "you can use REPL-style debugger."),
     ("out", StrOption((c, s) => c.outFile = Some(s)),
@@ -103,6 +138,7 @@ case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, CallContext)] {
 case class AnalyzeConfig(
   var silent: Boolean = false,
   var dumpAll: Boolean = false,
+  var detail: Boolean = false,
   var console: Boolean = false,
   var outFile: Option[String] = None,
   var AbsUndef: AbsUndefUtil = DefaultUndef,

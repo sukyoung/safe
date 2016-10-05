@@ -25,12 +25,17 @@ class CFG(
   // cfg id
   val id: Int = CFG.getId
 
-  // all functions / blocks in this cfg
+  // get functions / blocks in this cfg
+  private def getBlocks(funcs: List[CFGFunction]): List[CFGBlock] =
+    funcs.foldRight(List[CFGBlock]())(_.getAllBlocks ++ _)
+
   private var funcs: List[CFGFunction] = Nil
   def getAllFuncs: List[CFGFunction] = funcs
-  def getAllBlocks: List[CFGBlock] = funcs.foldRight(List[CFGBlock]()) {
-    case (func, lst) => func.getAllBlocks ++ lst
-  }
+  def getAllBlocks: List[CFGBlock] = getBlocks(funcs)
+
+  private var userFuncs: List[CFGFunction] = Nil
+  def getUserFuncs: List[CFGFunction] = userFuncs
+  def getUserBlocks: List[CFGBlock] = getBlocks(userFuncs)
 
   // function / block map from id
   private val funMap: MMap[FunctionId, CFGFunction] = MHashMap()
@@ -59,6 +64,7 @@ class CFG(
       new CFGFunction(ir, this, argumentsName, argVars, localVars, name, body, isUser)
     fidCount += 1
     funcs ::= func
+    if (isUser) userFuncs ::= func
     funMap(func.id) = func
     func
   }
