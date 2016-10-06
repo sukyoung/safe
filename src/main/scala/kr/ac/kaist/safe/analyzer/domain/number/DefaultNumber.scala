@@ -72,7 +72,7 @@ object DefaultNumber extends AbsNumberUtil {
       case UInt => "UInt"
       case NUInt => "NUInt"
       case UIntConst(v) => v.toString
-      case NUIntConst(-0.0) => toString(-0)
+      case NUIntConst(-0.0) => "-0"
       case NUIntConst(v) => toString(v)
     }
 
@@ -137,6 +137,7 @@ object DefaultNumber extends AbsNumberUtil {
       case (UIntConst(n1), NUIntConst(n2)) => AbsBool(n1 == n2)
       case (NUIntConst(n1), UIntConst(n2)) => AbsBool(n1 == n2)
       case (NUIntConst(n1), NUIntConst(n2)) => AbsBool(n1 == n2)
+      case (NegInf, NegInf) | (PosInf, PosInf) => AbsBool.True
       case _ =>
         (this <= that, that <= this) match {
           case (false, false) => AbsBool.False
@@ -756,48 +757,46 @@ object DefaultNumber extends AbsNumberUtil {
       /* 11.5.2 first */
       case (NaN, _) | (_, NaN) => NaN
       /* 11.5.2 third */
-      case (PosInf | NegInf | Inf, PosInf | NegInf | Inf) => NaN
+      case (PosInf | NegInf, PosInf | NegInf) => NaN
       /* 11.5.2 fourth */
       case (PosInf, UIntConst(0)) => PosInf
+      case (PosInf, NUIntConst(-0.0)) => NegInf
       case (NegInf, UIntConst(0)) => NegInf
-      case (Inf, UIntConst(0)) => Inf
+      case (NegInf, UIntConst(-0.0)) => PosInf
       /* 11.5.2 fifth */
       case (PosInf, UIntConst(_)) => PosInf
-      case (PosInf, UInt) => PosInf
       case (PosInf, NUIntConst(n)) if n > 0 => PosInf
       case (PosInf, NUIntConst(_)) => NegInf
-      case (PosInf, NUInt) => Inf
       case (NegInf, UIntConst(_)) => NegInf
-      case (NegInf, UInt) => NegInf
       case (NegInf, NUIntConst(n)) if n > 0 => NegInf
       case (NegInf, NUIntConst(_)) => PosInf
-      case (NegInf, NUInt) => Inf
-      case (Inf, _) => Inf
       /* 11.5.2 sixth */
-      case (_, PosInf) => alpha(0)
-      case (_, NegInf) => alpha(0)
-      case (_, Inf) => alpha(0)
+      case (UIntConst(_), PosInf) => alpha(0)
+      case (NUIntConst(n), PosInf) if n > 0 => alpha(0)
+      case (NUIntConst(_), PosInf) => alpha(-0.0)
+      case (UIntConst(_), NegInf) => alpha(-0.0)
+      case (NUIntConst(n), NegInf) if n > 0 => alpha(-0.0)
+      case (NUIntConst(_), NegInf) => alpha(0)
       /* 11.5.2  seventh */
-      case (UIntConst(0), UIntConst(0)) => NaN
-      case (UIntConst(0), _) => alpha(0)
+      case (UIntConst(0) | NUIntConst(-0.0), UIntConst(0) | NUIntConst(0.0)) => NaN
+      case (UIntConst(0), UIntConst(_)) => alpha(0)
+      case (UIntConst(0), NUIntConst(n)) if n > 0 => alpha(0)
+      case (UIntConst(0), NUIntConst(_)) => alpha(-0.0)
+      case (NUIntConst(-0.0), UIntConst(_)) => alpha(-0.0)
+      case (NUIntConst(-0.0), NUIntConst(n)) if n > 0 => alpha(-0.0)
+      case (NUIntConst(-0.0), NUIntConst(_)) => alpha(0)
       /* 11.5.2  eighth */
-      case (UIntConst(n), UIntConst(0)) => PosInf
-      case (UInt, UIntConst(0)) => Top
+      case (UIntConst(_), UIntConst(0)) => PosInf
+      case (UIntConst(_), NUIntConst(-0.0)) => NegInf
       case (NUIntConst(n), UIntConst(0)) if n > 0 => PosInf
-      case (NUIntConst(n), UIntConst(0)) => NegInf
-      case (NUInt, UIntConst(0)) => Inf
+      case (NUIntConst(n), NUIntConst(-0.0)) if n > 0 => NegInf
+      case (NUIntConst(_), UIntConst(0)) => NegInf
+      case (NUIntConst(_), NUIntConst(-0.0)) => PosInf
       /* 11.5.2  ninth */
       case (UIntConst(n1), UIntConst(n2)) => alpha(n1 / n2)
-      case (UIntConst(n1), UInt) => Top
       case (UIntConst(n1), NUIntConst(n2)) => alpha(n1 / n2)
-      case (UIntConst(n1), NUInt) => Top
       case (NUIntConst(n1), UIntConst(n2)) => alpha(n1 / n2)
-      case (NUIntConst(n1), UInt) => Top
       case (NUIntConst(n1), NUIntConst(n2)) => alpha(n1 / n2)
-      case (NUIntConst(n1), NUInt) => Top
-      case (UInt, _) => Top
-      case (NUInt, UIntConst(n2)) => NUInt
-      case (NUInt, _) => Top
       case _ => Top
     }
 
