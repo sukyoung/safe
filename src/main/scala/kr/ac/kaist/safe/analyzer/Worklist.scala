@@ -16,17 +16,19 @@ import kr.ac.kaist.safe.nodes.cfg._
 import scala.collection.immutable.HashMap
 
 object Worklist {
+  def compareNodeType(n1: CFGBlock, n2: CFGBlock): Boolean =
+    (n1, n2) match {
+      case (Entry(_), _) | (Exit(_), ExitExc(_)) => true
+      case (_, Entry(_)) | (ExitExc(_), Exit(_)) => false
+      case (_, Exit(_)) | (_, ExitExc(_)) => true
+      case (Exit(_), _) | (ExitExc(_), _) => false
+      case _ => n1.id < n2.id
+    }
+
   def apply(cfg: CFG): Worklist = {
-    val cfgBlockList: List[CFGBlock] = cfg.getAllBlocks.sortWith((b1, b2) => {
-      if (b1.func.id == b2.func.id) {
-        (b1, b2) match {
-          case (Entry(_), _) | (Exit(_), ExitExc(_)) => true
-          case (_, Entry(_)) | (ExitExc(_), Exit(_)) => false
-          case (_, Exit(_)) | (_, ExitExc(_)) => true
-          case (Exit(_), _) | (ExitExc(_), _) => false
-          case _ => b1.id < b2.id
-        }
-      } else b1.func.id < b2.func.id
+    val cfgBlockList: List[CFGBlock] = cfg.getAllBlocks.sortWith((n1, n2) => {
+      if (n1.func.id == n2.func.id) compareNodeType(n1, n2)
+      else n1.func.id < n2.func.id
     })
     val (orderMap, order) = cfgBlockList.foldLeft((HashMap[CFGBlock, Int](), 0)) {
       case ((tmpMap, tmpOrder), block) =>
@@ -45,7 +47,9 @@ class Worklist(private var orderMap: Map[CFGBlock, Int]) {
   }
 
   def insertWork(i: Int, cp: ControlPoint): Unit = {
-    worklist = (Work(i, cp) :: worklist).sortWith((w1, w2) => w1.order < w2.order)
+    val newWork = Work(i, cp)
+    if (worklist contains newWork) ()
+    else worklist = (newWork :: worklist).sortWith((w1, w2) => w1 < w2)
   }
 
   def isEmpty: Boolean = {
@@ -69,4 +73,15 @@ class Worklist(private var orderMap: Map[CFGBlock, Int]) {
 
 case class Work(order: Int, cp: ControlPoint) {
   override def toString: String = s"(${cp.node.func.id}:${cp.node}, ${cp.callContext})"
+
+  def <(that: Work): Boolean = {
+    // 1. compare node's order
+    if (this.order != that.order) this.order < that.order
+    // 2. compare node's FunctionId
+    else if (this.cp.node.func.id != that.cp.node.func.id) this.cp.node.func.id < that.cp.node.func.id
+    else {
+      // 3. compare node types
+      Worklist.compareNodeType(this.cp.node, that.cp.node)
+    }
+  }
 }

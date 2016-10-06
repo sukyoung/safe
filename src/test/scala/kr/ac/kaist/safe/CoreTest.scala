@@ -114,14 +114,14 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
   case object Imprecise extends AnalysisResult
   case object NoTest extends AnalysisResult
   case object Fail extends AnalysisResult
-  def analyzeTest(analysis: Try[(CFG, Int, CallContext)]): AnalysisResult = {
+  def analyzeTest(analysis: Try[(CFG, Int, CallContext)]): (AnalysisResult, Int) = {
     analysis match {
-      case Failure(_) => assertWrap(false)
-      case Success((cfg, _, globalCallCtx)) =>
+      case Failure(_) => (assertWrap(false), 0)
+      case Success((cfg, iter, globalCallCtx)) =>
         val normalSt = cfg.globalFunc.exit.getState(globalCallCtx)
         val excSt = cfg.globalFunc.exitExc.getState(globalCallCtx)
         assert(!normalSt.heap.isBottom)
-        normalSt.heap(BuiltinGlobal.loc) match {
+        val ar = normalSt.heap(BuiltinGlobal.loc) match {
           case None => assertWrap(false)
           case Some(globalObj) if globalObj.isBottom => assertWrap(false)
           case Some(globalObj) => {
@@ -139,6 +139,7 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
             else Imprecise
           }
         }
+        (ar, iter)
     }
   }
 
@@ -175,6 +176,7 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
   var preciseList = List[String]()
   var impreciseList = List[String]()
   var noTestList = List[String]()
+  var totalIteration = 0
   val analysisDeatil = BASE_DIR + SEP + "tests" + SEP + "analysis-detail"
 
   val analyzerTestDir = testDir + "semantics"
@@ -188,7 +190,9 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
       val cfg = getCFG(jsName)
       val analysis = cfg.flatMap(Analyze(_, safeConfig, analyzeConfig))
       totalList ::= relPath
-      analyzeTest(analysis) match {
+      val (ar, iter) = analyzeTest(analysis)
+      totalIteration += iter
+      ar match {
         case Precise => preciseList ::= relPath
         case Imprecise => impreciseList ::= relPath
         case NoTest => noTestList ::= relPath
@@ -207,7 +211,9 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
       val cfg = getCFG(jsName)
       val analysis = cfg.flatMap(Analyze(_, safeConfig, analyzeConfig))
       totalList ::= relPath
-      analyzeTest(analysis) match {
+      val (ar, iter) = analyzeTest(analysis)
+      totalIteration += iter
+      ar match {
         case Precise => preciseList ::= relPath
         case Imprecise => impreciseList ::= relPath
         case NoTest => noTestList ::= relPath
@@ -232,6 +238,7 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
     pw.println("# PRECISE : " + pre.length)
     pw.println("# IMPRECISE : " + impre.length)
     pw.println("# NO-TEST: " + no.length)
+    pw.println("# TOTAL ITERATION: " + totalIteration.toString)
     pw.println("#######################")
     pw.println()
     pw.println("FAIL: " + fail.length)
