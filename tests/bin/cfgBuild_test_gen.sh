@@ -9,7 +9,7 @@
 #    This distribution may include materials developed by third parties.
 ################################################################################
 
-export WKSPACE=$SAFE_HOME/tests
+export WKSPACE=$SAFE_HOME/tests/cfg
 export JSSPACE=$WKSPACE/js
 export RSSPACE=$WKSPACE/result
 
@@ -27,5 +27,5 @@ do
   cfg_out=$RSSPACE/success/cfg/$name.test
 
   echo "create $cfg_out"
-  safe cfgBuild -cfgBuild:out=$cfg_out $fil
+  safe cfgBuild -silent -cfgBuilder:out=$cfg_out $fil
 done

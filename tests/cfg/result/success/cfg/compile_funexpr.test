@@ -11,9 +11,10 @@ function[0] top-level {
     [6] <>temp<>21 := 3
     [7] <>arguments<>22 := allocArg(1) @ #15
     [8] <>arguments<>22["0"] := <>temp<>21
+    [9] <>this<> := enterCode(<>Global<>global)
 
   Call[1] -> ExitExc
-    [0] call(<>obj<>20, <>Global<>global, <>arguments<>22) @ #16
+    [0] call(<>obj<>20, <>this<>, <>arguments<>22) @ #16
 
   AfterCall[2] -> [4]
 
@@ -85,11 +86,12 @@ function[4] h {
     [3] <>arguments<>16 := allocArg(1) @ #8
     [4] <>arguments<>16["0"] := <>temp<>15
     [5] <>fun<>17 := <>Global<>getBase(<>h<>13)
+    [6] <>this<> := enterCode(<>fun<>17)
 
   Block[3] -> Exit
 
   Call[4] -> ExitExc
-    [0] call(<>obj<>14, <>fun<>17, <>arguments<>16) @ #9
+    [0] call(<>obj<>14, <>this<>, <>arguments<>16) @ #9
 
   AfterCall[5] -> [7]
 

@@ -73,6 +73,16 @@ case class CFGAllocArg(
   override def toString: String = s"$lhs := allocArg($length) @ #$addr"
 }
 
+// this := enterCode(e)
+case class CFGEnterCode(
+    override val ir: IRNode,
+    override val block: NormalBlock,
+    lhs: CFGId,
+    thisExpr: CFGExpr
+) extends CFGNormalInst(ir, block) {
+  override def toString: String = s"$lhs := enterCode($thisExpr)"
+}
+
 // x := e
 case class CFGExprStmt(
     override val ir: IRNode,

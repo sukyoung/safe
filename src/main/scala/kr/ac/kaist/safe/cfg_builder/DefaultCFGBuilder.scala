@@ -403,8 +403,11 @@ class DefaultCFGBuilder(
       /* PEI : call, after-call */
       case IRCall(_, lhs, fun, thisB, args) =>
         val tailBlock: NormalBlock = getTail(blocks, func)
+        val thisId = CFGTempId("<>this<>", PureLocalVar)
+        tailBlock.createInst(CFGEnterCode(stmt, _, thisId, id2cfgExpr(thisB)))
+        val ref = CFGVarRef(stmt, thisId)
         val f = tailBlock.func
-        val call = f.createCall(CFGCall(stmt, _, id2cfgExpr(fun), id2cfgExpr(thisB), id2cfgExpr(args), newAddr, newAddr), id2cfgId(lhs))
+        val call = f.createCall(CFGCall(stmt, _, id2cfgExpr(fun), ref, id2cfgExpr(args), newAddr, newAddr), id2cfgId(lhs))
         cfg.addEdge(tailBlock, call)
 
         (

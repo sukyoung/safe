@@ -21,6 +21,7 @@ function[0] top-level {
     [5] <>obj<>10 := <>Global<>toObject(test) @ #6
     [6] <>arguments<>11 := allocArg(0) @ #7
     [7] <>fun<>12 := <>Global<>getBase(test)
+    [8] <>this<> := enterCode(<>fun<>12)
 
   Block[3] -> [5], [2]
     [0] assert(<>obj<>2["a"] == x)
@@ -57,7 +58,7 @@ function[0] top-level {
   Block[13] -> [10]
 
   Call[14] -> ExitExc
-    [0] call(<>obj<>10, <>fun<>12, <>arguments<>11) @ #8
+    [0] call(<>obj<>10, <>this<>, <>arguments<>11) @ #8
 
   AfterCall[15] -> [17]
 

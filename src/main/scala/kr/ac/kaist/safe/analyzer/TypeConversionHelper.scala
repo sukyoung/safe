@@ -195,7 +195,7 @@ object TypeConversionHelper {
     (obj3 + obj4 + obj5, excSet)
   }
 
-  def ToObject(value: AbsValue, st: State, addr: Address): (AbsValue, State, Set[Exception]) = {
+  def ToObject(value: AbsValue, st: State, addr: Address): (AbsLoc, State, Set[Exception]) = {
     val locSet = value.locset
     val (obj, excSet) = ToObject(value.pvalue)
 
@@ -208,7 +208,7 @@ object TypeConversionHelper {
       if (!locSet.isBottom) (locSet, st.heap)
       else (AbsLoc.Bot, Heap.Bot)
 
-    (AbsValue(locSet1 + locSet2), State(h1 + h2, st.context), excSet)
+    (locSet1 + locSet2, State(h1 + h2, st.context), excSet)
   }
 
   ////////////////////////////////////////////////////////////////

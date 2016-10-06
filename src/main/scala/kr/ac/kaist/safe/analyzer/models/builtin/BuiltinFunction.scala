@@ -111,35 +111,15 @@ private object BuiltinFunctionProtoHelper {
   // 15.3.4.3 Fucntion.prototype.apply(thisArg, argArray)
   def applyBeforeCall(funcId: CFGId, thisId: CFGId, argsId: CFGId)(args: AbsValue, st: State, addr: Address): (State, State) = {
     val func = st.context.thisBinding.locset
-    val (thisArg, st1, excSet1) = {
-      val origThis = Helper.propLoad(args, HashSet(AbsString("0")), st.heap)
-
-      // "NOTE: Edition 3, where a undefined or null thisArg is replaced with the global object
-      // and ToObject is applied to all other values and that result is passed as the this value."
-      // However, most of the browsers returns the object as Edition 3.
-      // Below modeling for thisArg follows the Edition 3.
-      val nullOrUndef = (origThis.pvalue.nullval </ AbsNull.Bot) || (origThis.pvalue.undefval </ AbsUndef.Bot)
-      val thisLoc1 =
-        if (nullOrUndef) AbsValue(BuiltinGlobal.loc)
-        else AbsValue.Bot
-
-      val notNullNorUndef = (origThis </ AbsNull.Top) && (origThis </ AbsUndef.Top)
-      val (thisLoc2, st1, excSet1) =
-        if (notNullNorUndef) {
-          val addr = SystemAddr("Function.prototype.apply<this>")
-          TypeConversionHelper.ToObject(origThis, st, addr)
-        } else (AbsValue.Bot, st, ExcSetEmpty)
-
-      (thisLoc1 + thisLoc2, st1, excSet1)
-    }
-    val heap = st1.heap
+    val thisArg = Helper.propLoad(args, HashSet(AbsString("0")), st.heap)
+    val heap = st.heap
     val argArray = Helper.propLoad(args, HashSet(AbsString("1")), heap)
 
     // 1. If IsCallable(func) is false, then throw a TypeError exception.
     val notAllCallable = func.exists(loc => {
       AbsBool.False <= TypeConversionHelper.IsCallable(loc, heap)
     })
-    val excSet2 =
+    val excSet1 =
       if (notAllCallable) ExcSetEmpty + TypeError
       else ExcSetEmpty
 
@@ -154,7 +134,7 @@ private object BuiltinFunctionProtoHelper {
       else AbsObjectUtil.Bot
 
     // 3. If Type(argArray) is not Object, then throw a TypeError exception.
-    val excSet3 =
+    val excSet2 =
       if (argArray.pvalue </ AbsPValue.Bot) ExcSetEmpty + TypeError
       else ExcSetEmpty
 
@@ -180,49 +160,28 @@ private object BuiltinFunctionProtoHelper {
     })
 
     // 9. [[Call]]
-    val st2 = st1.oldify(addr)
+    val st1 = st.oldify(addr)
     val argsLoc = Loc(addr, Old)
-    val h3 = st2.heap.update(argsLoc, argList1 + argList2)
+    val h3 = st1.heap.update(argsLoc, argList1 + argList2)
     val newState =
-      State(h3, st2.context)
+      State(h3, st1.context)
         .varStore(funcId, callableFunc)
         .varStore(thisId, thisArg)
         .varStore(argsId, AbsValue(argsLoc))
 
-    (newState, st2.raiseException(excSet1 ++ excSet2 ++ excSet3))
+    (newState, st1.raiseException(excSet1 ++ excSet2))
   }
 
   // 15.3.4.4 Function.prototype.call(thisArg [, arg1 [, arg2, ...]])
   def callBeforeCall(funcId: CFGId, thisId: CFGId, argsId: CFGId)(args: AbsValue, st: State, addr: Address): (State, State) = {
     val func = st.context.thisBinding.locset
-    val (thisArg, st1, excSet1) = {
-      val origThis = Helper.propLoad(args, HashSet(AbsString("0")), st.heap)
-
-      // "NOTE: Edition 3, where a undefined or null thisArg is replaced with the global object
-      // and ToObject is applied to all other values and that result is passed as the this value."
-      // However, most of the browsers returns the object as Edition 3.
-      // Below modeling for thisArg follows the Edition 3.
-      val nullOrUndef = (origThis.pvalue.nullval </ AbsNull.Bot) || (origThis.pvalue.undefval </ AbsUndef.Bot)
-      val thisLoc1 =
-        if (nullOrUndef) AbsValue(BuiltinGlobal.loc)
-        else AbsValue.Bot
-
-      val notNullNorUndef = (origThis </ AbsNull.Top) && (origThis </ AbsUndef.Top)
-      val (thisLoc2, st1, excSet1) =
-        if (notNullNorUndef) {
-          val addr = SystemAddr("Function.prototype.apply<this>")
-          TypeConversionHelper.ToObject(origThis, st, addr)
-        } else (AbsValue.Bot, st, ExcSetEmpty)
-
-      (thisLoc1 + thisLoc2, st1, excSet1)
-    }
-
-    val heap = st1.heap
+    val thisArg = Helper.propLoad(args, HashSet(AbsString("0")), st.heap)
+    val heap = st.heap
     // 1. If IsCallable(func) is false, then throw a TypeError exception.
     val notAllCallable = func.exists(loc => {
       AbsBool.False <= TypeConversionHelper.IsCallable(loc, heap)
     })
-    val excSet2 =
+    val excSet1 =
       if (notAllCallable) ExcSetEmpty + TypeError
       else ExcSetEmpty
 
@@ -253,16 +212,16 @@ private object BuiltinFunctionProtoHelper {
     })
 
     // 4. [[Call]]
-    val st2 = st1.oldify(addr)
+    val st1 = st.oldify(addr)
     val argsLoc = Loc(addr, Old)
-    val h3 = st2.heap.update(argsLoc, argList)
+    val h3 = st1.heap.update(argsLoc, argList)
     val newState =
-      State(h3, st2.context)
+      State(h3, st1.context)
         .varStore(funcId, callableFunc)
         .varStore(thisId, thisArg)
         .varStore(argsId, AbsValue(argsLoc))
 
-    (newState, st2.raiseException(excSet1 ++ excSet2))
+    (newState, st1.raiseException(excSet1))
   }
 
   def connectAfterCall(retId: CFGId)(args: AbsValue, st: State): (State, State, AbsValue) = {

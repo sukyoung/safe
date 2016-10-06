@@ -9,9 +9,10 @@ function[0] top-level {
     [4] <>arguments<>15 := allocArg(1) @ #14
     [5] <>arguments<>15["0"] := <>temp<>14
     [6] <>fun<>16 := <>Global<>getBase(alert)
+    [7] <>this<> := enterCode(<>fun<>16)
 
   Call[1] -> ExitExc
-    [0] call(<>obj<>13, <>fun<>16, <>arguments<>15) @ #15
+    [0] call(<>obj<>13, <>this<>, <>arguments<>15) @ #15
 
   AfterCall[2] -> [4]
 
@@ -23,9 +24,10 @@ function[0] top-level {
     [2] <>arguments<>19 := allocArg(1) @ #18
     [3] <>arguments<>19["0"] := <>temp<>18
     [4] <>fun<>20 := <>Global<>getBase(alert)
+    [5] <>this<> := enterCode(<>fun<>20)
 
   Call[5] -> ExitExc
-    [0] call(<>obj<>17, <>fun<>20, <>arguments<>19) @ #19
+    [0] call(<>obj<>17, <>this<>, <>arguments<>19) @ #19
 
   AfterCall[6] -> [8]
 
@@ -35,9 +37,10 @@ function[0] top-level {
     [0] <>obj<>21 := <>Global<>toObject(f) @ #21
     [1] <>arguments<>22 := allocArg(0) @ #22
     [2] <>fun<>23 := <>Global<>getBase(f)
+    [3] <>this<> := enterCode(<>fun<>23)
 
   Call[9] -> ExitExc
-    [0] call(<>obj<>21, <>fun<>23, <>arguments<>22) @ #23
+    [0] call(<>obj<>21, <>this<>, <>arguments<>22) @ #23
 
   AfterCall[10] -> [12]
 
@@ -62,9 +65,10 @@ function[1] f {
     [3] <>arguments<>11 := allocArg(1) @ #8
     [4] <>arguments<>11["0"] := <>temp<>10
     [5] <>fun<>12 := <>Global<>getBase(alert)
+    [6] <>this<> := enterCode(<>fun<>12)
 
   Call[1] -> ExitExc
-    [0] call(<>obj<>9, <>fun<>12, <>arguments<>11) @ #9
+    [0] call(<>obj<>9, <>this<>, <>arguments<>11) @ #9
 
   AfterCall[2] -> Exit
 
@@ -85,9 +89,10 @@ function[2] eval {
     [2] <>arguments<>7 := allocArg(1) @ #2
     [3] <>arguments<>7["0"] := <>temp<>6
     [4] <>fun<>8 := <>Global<>getBase(alert)
+    [5] <>this<> := enterCode(<>fun<>8)
 
   Call[1] -> ExitExc
-    [0] call(<>obj<>5, <>fun<>8, <>arguments<>7) @ #3
+    [0] call(<>obj<>5, <>this<>, <>arguments<>7) @ #3
 
   AfterCall[2] -> Exit
 
@@ -98,3 +103,4 @@ function[2] eval {
   ExitExc[-3]
 
 }
+

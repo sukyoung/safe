@@ -268,6 +268,15 @@ class Semantics(
         val newSt = State(h2, st1.context).varStore(x, AbsValue(locR))
         (newSt, excSt)
       }
+      case CFGEnterCode(_, _, x, e) => {
+        val (v, excSet) = V(e, st)
+        val thisVal = AbsValue(v.getThis(st.heap))
+        val st1 =
+          if (!v.isBottom) st.varStore(x, thisVal)
+          else State.Bot
+        val newExcSt = st.raiseException(excSet)
+        (st1, excSt + newExcSt)
+      }
       case CFGExprStmt(_, _, x, e) => {
         val (v, excSet) = V(e, st)
         val st1 =
@@ -536,8 +545,8 @@ class Semantics(
       case (_: CFGConstruct) => funVal.locset.filter(l => AT <= st1.heap.hasConstruct(l)(AbsBool))
       case (_: CFGCall) => funVal.locset.filter(l => AT <= TypeConversionHelper.IsCallable(l, st1.heap))
     }
-    val (thisV, _) = V(i.thisArg, st1)
-    val thisVal = AbsValue(thisV.getThis(st.heap))
+    val (thisVal, _) = V(i.thisArg, st1)
+    // val thisVal = AbsValue(thisV.getThis(st.heap))
     val (argVal, _) = V(i.arguments, st1)
 
     // XXX: stop if thisArg or arguments is LocSetBot(ValueBot)
