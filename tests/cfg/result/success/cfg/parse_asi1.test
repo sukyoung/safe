@@ -12,12 +12,13 @@ function[0] top-level {
     [1] <>obj<>1 := <>Global<>toObject(y) @ #1
     [2] <>arguments<>2 := allocArg(0) @ #2
     [3] <>fun<>3 := <>Global<>getBase(y)
+    [4] <>this<> := enterCode(<>fun<>3)
 
   Block[2] -> [6], ExitExc
     [0] assert(! x)
 
   Call[3] -> ExitExc
-    [0] call(<>obj<>1, <>fun<>3, <>arguments<>2) @ #3
+    [0] call(<>obj<>1, <>this<>, <>arguments<>2) @ #3
 
   AfterCall[4] -> [6]
 
@@ -27,6 +28,7 @@ function[0] top-level {
     [0] <>obj<>4 := <>Global<>toObject(getNode) @ #5
     [1] <>arguments<>5 := allocArg(0) @ #6
     [2] <>fun<>6 := <>Global<>getBase(getNode)
+    [3] <>this<> := enterCode(<>fun<>6)
 
   Block[7] -> Exit, ExitExc
     [0] <>Global<>ignore13 := i
@@ -37,7 +39,7 @@ function[0] top-level {
     [5] noop(EndOfFile)
 
   Call[8] -> ExitExc
-    [0] call(<>obj<>4, <>fun<>6, <>arguments<>5) @ #7
+    [0] call(<>obj<>4, <>this<>, <>arguments<>5) @ #7
 
   AfterCall[9] -> [11]
 

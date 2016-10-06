@@ -11,9 +11,10 @@ function[0] top-level {
     [6] <>obj<>6 := <>Global<>toObject(<>obj<>5["prototype"]) @ #6
     [7] <>arguments<>7 := allocArg(0) @ #7
     [8] <>fun<>8 := <>Global<>toObject(<>obj<>6["insert"]) @ #8
+    [9] <>this<> := enterCode(<>obj<>6)
 
   Call[1] -> ExitExc
-    [0] call(<>fun<>8, <>obj<>6, <>arguments<>7) @ #9
+    [0] call(<>fun<>8, <>this<>, <>arguments<>7) @ #9
 
   AfterCall[2] -> [4]
 

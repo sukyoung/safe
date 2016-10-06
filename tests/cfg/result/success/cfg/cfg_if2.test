@@ -20,9 +20,10 @@ function[0] top-level {
     [15] <>arguments<>15["0"] := <>temp<>13
     [16] <>arguments<>15["1"] := <>temp<>14
     [17] <>fun<>16 := <>Global<>getBase(pay)
+    [18] <>this<> := enterCode(<>fun<>16)
 
   Call[1] -> ExitExc
-    [0] call(<>obj<>12, <>fun<>16, <>arguments<>15) @ #10
+    [0] call(<>obj<>12, <>this<>, <>arguments<>15) @ #10
 
   AfterCall[2] -> [4]
 
@@ -33,9 +34,10 @@ function[0] top-level {
     [1] <>arguments<>19 := allocArg(1) @ #12
     [2] <>arguments<>19["0"] := <>temp<>18
     [3] <>fun<>20 := <>Global<>getBase(print)
+    [4] <>this<> := enterCode(<>fun<>20)
 
   Call[5] -> ExitExc
-    [0] call(<>obj<>10, <>fun<>20, <>arguments<>19) @ #13
+    [0] call(<>obj<>10, <>this<>, <>arguments<>19) @ #13
 
   AfterCall[6] -> [8]
 

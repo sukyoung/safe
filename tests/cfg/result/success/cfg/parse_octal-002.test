@@ -143,9 +143,10 @@ function[0] top-level {
     [3] <>arguments<>66 := allocArg(1) @ #56
     [4] <>arguments<>66["0"] := <>temp<>65
     [5] <>fun<>67 := <>Global<>getBase(inSection)
+    [6] <>this<> := enterCode(<>fun<>67)
 
   Call[36] -> ExitExc
-    [0] call(<>obj<>64, <>fun<>67, <>arguments<>66) @ #57
+    [0] call(<>obj<>64, <>this<>, <>arguments<>66) @ #57
 
   AfterCall[37] -> [39]
 
@@ -188,9 +189,10 @@ function[0] top-level {
     [4] <>arguments<>79 := allocArg(1) @ #65
     [5] <>arguments<>79["0"] := <>temp<>78
     [6] <>fun<>80 := <>Global<>toObject(<>obj<>77["fromCharCode"]) @ #66
+    [7] <>this<> := enterCode(<>obj<>77)
 
   Call[47] -> ExitExc
-    [0] call(<>fun<>80, <>obj<>77, <>arguments<>79) @ #67
+    [0] call(<>fun<>80, <>this<>, <>arguments<>79) @ #67
 
   AfterCall[48] -> [50]
 
@@ -203,9 +205,10 @@ function[0] top-level {
     [3] <>arguments<>84 := allocArg(1) @ #70
     [4] <>arguments<>84["0"] := <>temp<>83
     [5] <>fun<>85 := <>Global<>toObject(<>obj<>82["match"]) @ #71
+    [6] <>this<> := enterCode(<>obj<>82)
 
   Call[51] -> ExitExc
-    [0] call(<>fun<>85, <>obj<>82, <>arguments<>84) @ #72
+    [0] call(<>fun<>85, <>this<>, <>arguments<>84) @ #72
 
   AfterCall[52] -> [54]
 
@@ -217,9 +220,10 @@ function[0] top-level {
     [2] <>obj<>86 := <>Global<>toObject(addThis) @ #74
     [3] <>arguments<>87 := allocArg(0) @ #75
     [4] <>fun<>88 := <>Global<>getBase(addThis)
+    [5] <>this<> := enterCode(<>fun<>88)
 
   Call[55] -> ExitExc
-    [0] call(<>obj<>86, <>fun<>88, <>arguments<>87) @ #76
+    [0] call(<>obj<>86, <>this<>, <>arguments<>87) @ #76
 
   AfterCall[56] -> [58]
 
@@ -231,9 +235,10 @@ function[0] top-level {
     [2] <>arguments<>91 := allocArg(1) @ #79
     [3] <>arguments<>91["0"] := <>temp<>90
     [4] <>fun<>92 := <>Global<>getBase(inSection)
+    [5] <>this<> := enterCode(<>fun<>92)
 
   Call[59] -> ExitExc
-    [0] call(<>obj<>89, <>fun<>92, <>arguments<>91) @ #80
+    [0] call(<>obj<>89, <>this<>, <>arguments<>91) @ #80
 
   AfterCall[60] -> [62]
 
@@ -276,9 +281,10 @@ function[0] top-level {
     [4] <>arguments<>104 := allocArg(1) @ #88
     [5] <>arguments<>104["0"] := <>temp<>103
     [6] <>fun<>105 := <>Global<>toObject(<>obj<>102["fromCharCode"]) @ #89
+    [7] <>this<> := enterCode(<>obj<>102)
 
   Call[70] -> ExitExc
-    [0] call(<>fun<>105, <>obj<>102, <>arguments<>104) @ #90
+    [0] call(<>fun<>105, <>this<>, <>arguments<>104) @ #90
 
   AfterCall[71] -> [73]
 
@@ -291,9 +297,10 @@ function[0] top-level {
     [3] <>arguments<>109 := allocArg(1) @ #93
     [4] <>arguments<>109["0"] := <>temp<>108
     [5] <>fun<>110 := <>Global<>toObject(<>obj<>107["match"]) @ #94
+    [6] <>this<> := enterCode(<>obj<>107)
 
   Call[74] -> ExitExc
-    [0] call(<>fun<>110, <>obj<>107, <>arguments<>109) @ #95
+    [0] call(<>fun<>110, <>this<>, <>arguments<>109) @ #95
 
   AfterCall[75] -> [77]
 
@@ -306,9 +313,10 @@ function[0] top-level {
     [3] <>arguments<>113 := allocArg(1) @ #98
     [4] <>arguments<>113["0"] := <>temp<>112
     [5] <>fun<>114 := <>Global<>getBase(Array)
+    [6] <>this<> := enterCode(<>fun<>114)
 
   Call[78] -> ExitExc
-    [0] call(<>obj<>111, <>fun<>114, <>arguments<>113) @ #99
+    [0] call(<>obj<>111, <>this<>, <>arguments<>113) @ #99
 
   AfterCall[79] -> [81]
 
@@ -319,9 +327,10 @@ function[0] top-level {
     [1] <>obj<>115 := <>Global<>toObject(addThis) @ #101
     [2] <>arguments<>116 := allocArg(0) @ #102
     [3] <>fun<>117 := <>Global<>getBase(addThis)
+    [4] <>this<> := enterCode(<>fun<>117)
 
   Call[82] -> ExitExc
-    [0] call(<>obj<>115, <>fun<>117, <>arguments<>116) @ #103
+    [0] call(<>obj<>115, <>this<>, <>arguments<>116) @ #103
 
   AfterCall[83] -> [85]
 
@@ -333,9 +342,10 @@ function[0] top-level {
     [2] <>arguments<>120 := allocArg(1) @ #106
     [3] <>arguments<>120["0"] := <>temp<>119
     [4] <>fun<>121 := <>Global<>getBase(inSection)
+    [5] <>this<> := enterCode(<>fun<>121)
 
   Call[86] -> ExitExc
-    [0] call(<>obj<>118, <>fun<>121, <>arguments<>120) @ #107
+    [0] call(<>obj<>118, <>this<>, <>arguments<>120) @ #107
 
   AfterCall[87] -> [89]
 
@@ -378,9 +388,10 @@ function[0] top-level {
     [4] <>arguments<>132 := allocArg(1) @ #115
     [5] <>arguments<>132["0"] := <>temp<>131
     [6] <>fun<>133 := <>Global<>toObject(<>obj<>130["match"]) @ #116
+    [7] <>this<> := enterCode(<>obj<>130)
 
   Call[97] -> ExitExc
-    [0] call(<>fun<>133, <>obj<>130, <>arguments<>132) @ #117
+    [0] call(<>fun<>133, <>this<>, <>arguments<>132) @ #117
 
   AfterCall[98] -> [100]
 
@@ -393,9 +404,10 @@ function[0] top-level {
     [3] <>arguments<>136 := allocArg(1) @ #120
     [4] <>arguments<>136["0"] := <>temp<>135
     [5] <>fun<>137 := <>Global<>getBase(Array)
+    [6] <>this<> := enterCode(<>fun<>137)
 
   Call[101] -> ExitExc
-    [0] call(<>obj<>134, <>fun<>137, <>arguments<>136) @ #121
+    [0] call(<>obj<>134, <>this<>, <>arguments<>136) @ #121
 
   AfterCall[102] -> [104]
 
@@ -406,9 +418,10 @@ function[0] top-level {
     [1] <>obj<>138 := <>Global<>toObject(addThis) @ #123
     [2] <>arguments<>139 := allocArg(0) @ #124
     [3] <>fun<>140 := <>Global<>getBase(addThis)
+    [4] <>this<> := enterCode(<>fun<>140)
 
   Call[105] -> ExitExc
-    [0] call(<>obj<>138, <>fun<>140, <>arguments<>139) @ #125
+    [0] call(<>obj<>138, <>this<>, <>arguments<>139) @ #125
 
   AfterCall[106] -> [108]
 
@@ -420,9 +433,10 @@ function[0] top-level {
     [2] <>arguments<>143 := allocArg(1) @ #128
     [3] <>arguments<>143["0"] := <>temp<>142
     [4] <>fun<>144 := <>Global<>getBase(inSection)
+    [5] <>this<> := enterCode(<>fun<>144)
 
   Call[109] -> ExitExc
-    [0] call(<>obj<>141, <>fun<>144, <>arguments<>143) @ #129
+    [0] call(<>obj<>141, <>this<>, <>arguments<>143) @ #129
 
   AfterCall[110] -> [112]
 
@@ -465,9 +479,10 @@ function[0] top-level {
     [4] <>arguments<>155 := allocArg(1) @ #137
     [5] <>arguments<>155["0"] := <>temp<>154
     [6] <>fun<>156 := <>Global<>toObject(<>obj<>153["match"]) @ #138
+    [7] <>this<> := enterCode(<>obj<>153)
 
   Call[120] -> ExitExc
-    [0] call(<>fun<>156, <>obj<>153, <>arguments<>155) @ #139
+    [0] call(<>fun<>156, <>this<>, <>arguments<>155) @ #139
 
   AfterCall[121] -> [123]
 
@@ -480,9 +495,10 @@ function[0] top-level {
     [3] <>arguments<>159 := allocArg(1) @ #142
     [4] <>arguments<>159["0"] := <>temp<>158
     [5] <>fun<>160 := <>Global<>getBase(Array)
+    [6] <>this<> := enterCode(<>fun<>160)
 
   Call[124] -> ExitExc
-    [0] call(<>obj<>157, <>fun<>160, <>arguments<>159) @ #143
+    [0] call(<>obj<>157, <>this<>, <>arguments<>159) @ #143
 
   AfterCall[125] -> [127]
 
@@ -493,9 +509,10 @@ function[0] top-level {
     [1] <>obj<>161 := <>Global<>toObject(addThis) @ #145
     [2] <>arguments<>162 := allocArg(0) @ #146
     [3] <>fun<>163 := <>Global<>getBase(addThis)
+    [4] <>this<> := enterCode(<>fun<>163)
 
   Call[128] -> ExitExc
-    [0] call(<>obj<>161, <>fun<>163, <>arguments<>162) @ #147
+    [0] call(<>obj<>161, <>this<>, <>arguments<>162) @ #147
 
   AfterCall[129] -> [131]
 
@@ -507,9 +524,10 @@ function[0] top-level {
     [2] <>arguments<>166 := allocArg(1) @ #150
     [3] <>arguments<>166["0"] := <>temp<>165
     [4] <>fun<>167 := <>Global<>getBase(inSection)
+    [5] <>this<> := enterCode(<>fun<>167)
 
   Call[132] -> ExitExc
-    [0] call(<>obj<>164, <>fun<>167, <>arguments<>166) @ #151
+    [0] call(<>obj<>164, <>this<>, <>arguments<>166) @ #151
 
   AfterCall[133] -> [135]
 
@@ -552,9 +570,10 @@ function[0] top-level {
     [4] <>arguments<>178 := allocArg(1) @ #159
     [5] <>arguments<>178["0"] := <>temp<>177
     [6] <>fun<>179 := <>Global<>toObject(<>obj<>176["match"]) @ #160
+    [7] <>this<> := enterCode(<>obj<>176)
 
   Call[143] -> ExitExc
-    [0] call(<>fun<>179, <>obj<>176, <>arguments<>178) @ #161
+    [0] call(<>fun<>179, <>this<>, <>arguments<>178) @ #161
 
   AfterCall[144] -> [146]
 
@@ -567,9 +586,10 @@ function[0] top-level {
     [3] <>arguments<>182 := allocArg(1) @ #164
     [4] <>arguments<>182["0"] := <>temp<>181
     [5] <>fun<>183 := <>Global<>getBase(Array)
+    [6] <>this<> := enterCode(<>fun<>183)
 
   Call[147] -> ExitExc
-    [0] call(<>obj<>180, <>fun<>183, <>arguments<>182) @ #165
+    [0] call(<>obj<>180, <>this<>, <>arguments<>182) @ #165
 
   AfterCall[148] -> [150]
 
@@ -580,9 +600,10 @@ function[0] top-level {
     [1] <>obj<>184 := <>Global<>toObject(addThis) @ #167
     [2] <>arguments<>185 := allocArg(0) @ #168
     [3] <>fun<>186 := <>Global<>getBase(addThis)
+    [4] <>this<> := enterCode(<>fun<>186)
 
   Call[151] -> ExitExc
-    [0] call(<>obj<>184, <>fun<>186, <>arguments<>185) @ #169
+    [0] call(<>obj<>184, <>this<>, <>arguments<>185) @ #169
 
   AfterCall[152] -> [154]
 
@@ -594,9 +615,10 @@ function[0] top-level {
     [2] <>arguments<>189 := allocArg(1) @ #172
     [3] <>arguments<>189["0"] := <>temp<>188
     [4] <>fun<>190 := <>Global<>getBase(inSection)
+    [5] <>this<> := enterCode(<>fun<>190)
 
   Call[155] -> ExitExc
-    [0] call(<>obj<>187, <>fun<>190, <>arguments<>189) @ #173
+    [0] call(<>obj<>187, <>this<>, <>arguments<>189) @ #173
 
   AfterCall[156] -> [158]
 
@@ -639,9 +661,10 @@ function[0] top-level {
     [4] <>arguments<>201 := allocArg(1) @ #181
     [5] <>arguments<>201["0"] := <>temp<>200
     [6] <>fun<>202 := <>Global<>toObject(<>obj<>199["match"]) @ #182
+    [7] <>this<> := enterCode(<>obj<>199)
 
   Call[166] -> ExitExc
-    [0] call(<>fun<>202, <>obj<>199, <>arguments<>201) @ #183
+    [0] call(<>fun<>202, <>this<>, <>arguments<>201) @ #183
 
   AfterCall[167] -> [169]
 
@@ -654,9 +677,10 @@ function[0] top-level {
     [3] <>arguments<>205 := allocArg(1) @ #186
     [4] <>arguments<>205["0"] := <>temp<>204
     [5] <>fun<>206 := <>Global<>getBase(Array)
+    [6] <>this<> := enterCode(<>fun<>206)
 
   Call[170] -> ExitExc
-    [0] call(<>obj<>203, <>fun<>206, <>arguments<>205) @ #187
+    [0] call(<>obj<>203, <>this<>, <>arguments<>205) @ #187
 
   AfterCall[171] -> [173]
 
@@ -667,9 +691,10 @@ function[0] top-level {
     [1] <>obj<>207 := <>Global<>toObject(addThis) @ #189
     [2] <>arguments<>208 := allocArg(0) @ #190
     [3] <>fun<>209 := <>Global<>getBase(addThis)
+    [4] <>this<> := enterCode(<>fun<>209)
 
   Call[174] -> ExitExc
-    [0] call(<>obj<>207, <>fun<>209, <>arguments<>208) @ #191
+    [0] call(<>obj<>207, <>this<>, <>arguments<>208) @ #191
 
   AfterCall[175] -> [177]
 
@@ -681,9 +706,10 @@ function[0] top-level {
     [2] <>arguments<>212 := allocArg(1) @ #194
     [3] <>arguments<>212["0"] := <>temp<>211
     [4] <>fun<>213 := <>Global<>getBase(inSection)
+    [5] <>this<> := enterCode(<>fun<>213)
 
   Call[178] -> ExitExc
-    [0] call(<>obj<>210, <>fun<>213, <>arguments<>212) @ #195
+    [0] call(<>obj<>210, <>this<>, <>arguments<>212) @ #195
 
   AfterCall[179] -> [181]
 
@@ -726,9 +752,10 @@ function[0] top-level {
     [4] <>arguments<>224 := allocArg(1) @ #203
     [5] <>arguments<>224["0"] := <>temp<>223
     [6] <>fun<>225 := <>Global<>toObject(<>obj<>222["match"]) @ #204
+    [7] <>this<> := enterCode(<>obj<>222)
 
   Call[189] -> ExitExc
-    [0] call(<>fun<>225, <>obj<>222, <>arguments<>224) @ #205
+    [0] call(<>fun<>225, <>this<>, <>arguments<>224) @ #205
 
   AfterCall[190] -> [192]
 
@@ -741,9 +768,10 @@ function[0] top-level {
     [3] <>arguments<>228 := allocArg(1) @ #208
     [4] <>arguments<>228["0"] := <>temp<>227
     [5] <>fun<>229 := <>Global<>getBase(Array)
+    [6] <>this<> := enterCode(<>fun<>229)
 
   Call[193] -> ExitExc
-    [0] call(<>obj<>226, <>fun<>229, <>arguments<>228) @ #209
+    [0] call(<>obj<>226, <>this<>, <>arguments<>228) @ #209
 
   AfterCall[194] -> [196]
 
@@ -754,9 +782,10 @@ function[0] top-level {
     [1] <>obj<>230 := <>Global<>toObject(addThis) @ #211
     [2] <>arguments<>231 := allocArg(0) @ #212
     [3] <>fun<>232 := <>Global<>getBase(addThis)
+    [4] <>this<> := enterCode(<>fun<>232)
 
   Call[197] -> ExitExc
-    [0] call(<>obj<>230, <>fun<>232, <>arguments<>231) @ #213
+    [0] call(<>obj<>230, <>this<>, <>arguments<>231) @ #213
 
   AfterCall[198] -> [200]
 
@@ -768,9 +797,10 @@ function[0] top-level {
     [2] <>arguments<>235 := allocArg(1) @ #216
     [3] <>arguments<>235["0"] := <>temp<>234
     [4] <>fun<>236 := <>Global<>getBase(inSection)
+    [5] <>this<> := enterCode(<>fun<>236)
 
   Call[201] -> ExitExc
-    [0] call(<>obj<>233, <>fun<>236, <>arguments<>235) @ #217
+    [0] call(<>obj<>233, <>this<>, <>arguments<>235) @ #217
 
   AfterCall[202] -> [204]
 
@@ -784,9 +814,10 @@ function[0] top-level {
     [4] <>arguments<>240 := allocArg(1) @ #220
     [5] <>arguments<>240["0"] := <>temp<>239
     [6] <>fun<>241 := <>Global<>toObject(<>obj<>238["fromCharCode"]) @ #221
+    [7] <>this<> := enterCode(<>obj<>238)
 
   Call[205] -> ExitExc
-    [0] call(<>fun<>241, <>obj<>238, <>arguments<>240) @ #222
+    [0] call(<>fun<>241, <>this<>, <>arguments<>240) @ #222
 
   AfterCall[206] -> [208]
 
@@ -799,9 +830,10 @@ function[0] top-level {
     [3] <>arguments<>245 := allocArg(1) @ #225
     [4] <>arguments<>245["0"] := <>temp<>244
     [5] <>fun<>246 := <>Global<>getBase(RegExp)
+    [6] <>this<> := enterCode(<>fun<>246)
 
   Call[209] -> ExitExc
-    [0] call(<>obj<>243, <>fun<>246, <>arguments<>245) @ #226
+    [0] call(<>obj<>243, <>this<>, <>arguments<>245) @ #226
 
   AfterCall[210] -> [212]
 
@@ -814,9 +846,10 @@ function[0] top-level {
     [3] <>arguments<>249 := allocArg(1) @ #229
     [4] <>arguments<>249["0"] := <>temp<>248
     [5] <>fun<>250 := <>Global<>toObject(<>obj<>247["match"]) @ #230
+    [6] <>this<> := enterCode(<>obj<>247)
 
   Call[213] -> ExitExc
-    [0] call(<>fun<>250, <>obj<>247, <>arguments<>249) @ #231
+    [0] call(<>fun<>250, <>this<>, <>arguments<>249) @ #231
 
   AfterCall[214] -> [216]
 
@@ -829,9 +862,10 @@ function[0] top-level {
     [3] <>arguments<>253 := allocArg(1) @ #234
     [4] <>arguments<>253["0"] := <>temp<>252
     [5] <>fun<>254 := <>Global<>getBase(Array)
+    [6] <>this<> := enterCode(<>fun<>254)
 
   Call[217] -> ExitExc
-    [0] call(<>obj<>251, <>fun<>254, <>arguments<>253) @ #235
+    [0] call(<>obj<>251, <>this<>, <>arguments<>253) @ #235
 
   AfterCall[218] -> [220]
 
@@ -842,9 +876,10 @@ function[0] top-level {
     [1] <>obj<>255 := <>Global<>toObject(addThis) @ #237
     [2] <>arguments<>256 := allocArg(0) @ #238
     [3] <>fun<>257 := <>Global<>getBase(addThis)
+    [4] <>this<> := enterCode(<>fun<>257)
 
   Call[221] -> ExitExc
-    [0] call(<>obj<>255, <>fun<>257, <>arguments<>256) @ #239
+    [0] call(<>obj<>255, <>this<>, <>arguments<>256) @ #239
 
   AfterCall[222] -> [224]
 
@@ -854,9 +889,10 @@ function[0] top-level {
     [0] <>obj<>258 := <>Global<>toObject(test) @ #241
     [1] <>arguments<>259 := allocArg(0) @ #242
     [2] <>fun<>260 := <>Global<>getBase(test)
+    [3] <>this<> := enterCode(<>fun<>260)
 
   Call[225] -> ExitExc
-    [0] call(<>obj<>258, <>fun<>260, <>arguments<>259) @ #243
+    [0] call(<>obj<>258, <>this<>, <>arguments<>259) @ #243
 
   AfterCall[226] -> [228]
 
@@ -905,9 +941,10 @@ function[2] test {
     [2] <>arguments<>12 := allocArg(1) @ #9
     [3] <>arguments<>12["0"] := <>temp<>11
     [4] <>fun<>13 := <>Global<>getBase(enterFunc)
+    [5] <>this<> := enterCode(<>fun<>13)
 
   Call[1] -> ExitExc
-    [0] call(<>obj<>10, <>fun<>13, <>arguments<>12) @ #10
+    [0] call(<>obj<>10, <>this<>, <>arguments<>12) @ #10
 
   AfterCall[2] -> [4]
 
@@ -919,9 +956,10 @@ function[2] test {
     [2] <>arguments<>16 := allocArg(1) @ #13
     [3] <>arguments<>16["0"] := <>temp<>15
     [4] <>fun<>17 := <>Global<>getBase(printBugNumber)
+    [5] <>this<> := enterCode(<>fun<>17)
 
   Call[5] -> ExitExc
-    [0] call(<>obj<>14, <>fun<>17, <>arguments<>16) @ #14
+    [0] call(<>obj<>14, <>this<>, <>arguments<>16) @ #14
 
   AfterCall[6] -> [8]
 
@@ -933,9 +971,10 @@ function[2] test {
     [2] <>arguments<>20 := allocArg(1) @ #17
     [3] <>arguments<>20["0"] := <>temp<>19
     [4] <>fun<>21 := <>Global<>getBase(printStatus)
+    [5] <>this<> := enterCode(<>fun<>21)
 
   Call[9] -> ExitExc
-    [0] call(<>obj<>18, <>fun<>21, <>arguments<>20) @ #18
+    [0] call(<>obj<>18, <>this<>, <>arguments<>20) @ #18
 
   AfterCall[10] -> [12]
 
@@ -955,9 +994,10 @@ function[2] test {
     [10] <>arguments<>28["3"] := <>temp<>26
     [11] <>arguments<>28["4"] := <>temp<>27
     [12] <>fun<>29 := <>Global<>getBase(testRegExp)
+    [13] <>this<> := enterCode(<>fun<>29)
 
   Call[13] -> ExitExc
-    [0] call(<>obj<>22, <>fun<>29, <>arguments<>28) @ #22
+    [0] call(<>obj<>22, <>this<>, <>arguments<>28) @ #22
 
   AfterCall[14] -> [16]
 
@@ -969,9 +1009,10 @@ function[2] test {
     [2] <>arguments<>32 := allocArg(1) @ #25
     [3] <>arguments<>32["0"] := <>temp<>31
     [4] <>fun<>33 := <>Global<>getBase(exitFunc)
+    [5] <>this<> := enterCode(<>fun<>33)
 
   Call[17] -> ExitExc
-    [0] call(<>obj<>30, <>fun<>33, <>arguments<>32) @ #26
+    [0] call(<>obj<>30, <>this<>, <>arguments<>32) @ #26
 
   AfterCall[18] -> Exit
 

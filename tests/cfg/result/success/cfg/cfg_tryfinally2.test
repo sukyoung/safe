@@ -23,6 +23,7 @@ function[0] top-level {
     [2] <>arguments<>3 := allocArg(1) @ #2
     [3] <>arguments<>3["0"] := <>temp<>2
     [4] <>fun<>4 := <>Global<>getBase(print)
+    [5] <>this<> := enterCode(<>fun<>4)
 
   Block[6] -> Exit, ExitExc
     [0] x := 9
@@ -30,7 +31,7 @@ function[0] top-level {
     [2] noop(EndOfFile)
 
   Call[7] -> [10]
-    [0] call(<>obj<>1, <>fun<>4, <>arguments<>3) @ #3
+    [0] call(<>obj<>1, <>this<>, <>arguments<>3) @ #3
 
   AfterCall[8] -> [6]
 
@@ -48,12 +49,13 @@ function[0] top-level {
     [2] <>arguments<>3 := allocArg(1) @ #6
     [3] <>arguments<>3["0"] := <>temp<>2
     [4] <>fun<>4 := <>Global<>getBase(print)
+    [5] <>this<> := enterCode(<>fun<>4)
 
   Block[13] -> ExitExc, ExitExc
     [0] x := 9
 
   Call[14] -> [17]
-    [0] call(<>obj<>1, <>fun<>4, <>arguments<>3) @ #7
+    [0] call(<>obj<>1, <>this<>, <>arguments<>3) @ #7
 
   AfterCall[15] -> [13]
 
@@ -77,12 +79,13 @@ function[0] top-level {
     [2] <>arguments<>3 := allocArg(1) @ #10
     [3] <>arguments<>3["0"] := <>temp<>2
     [4] <>fun<>4 := <>Global<>getBase(print)
+    [5] <>this<> := enterCode(<>fun<>4)
 
   Block[22] -> ExitExc, ExitExc
     [0] x := 9
 
   Call[23] -> [26]
-    [0] call(<>obj<>1, <>fun<>4, <>arguments<>3) @ #11
+    [0] call(<>obj<>1, <>this<>, <>arguments<>3) @ #11
 
   AfterCall[24] -> [22]
 
@@ -100,12 +103,13 @@ function[0] top-level {
     [2] <>arguments<>3 := allocArg(1) @ #14
     [3] <>arguments<>3["0"] := <>temp<>2
     [4] <>fun<>4 := <>Global<>getBase(print)
+    [5] <>this<> := enterCode(<>fun<>4)
 
   Block[29] -> ExitExc, ExitExc
     [0] x := 9
 
   Call[30] -> [33]
-    [0] call(<>obj<>1, <>fun<>4, <>arguments<>3) @ #15
+    [0] call(<>obj<>1, <>this<>, <>arguments<>3) @ #15
 
   AfterCall[31] -> [29]
 

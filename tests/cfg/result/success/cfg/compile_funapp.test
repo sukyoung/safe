@@ -16,9 +16,10 @@ function[0] top-level {
     [11] <>arguments<>7["0"] := <>temp<>5
     [12] <>arguments<>7["1"] := <>temp<>6
     [13] <>fun<>8 := <>Global<>getBase(f)
+    [14] <>this<> := enterCode(<>fun<>8)
 
   Call[1] -> ExitExc
-    [0] call(<>obj<>4, <>fun<>8, <>arguments<>7) @ #5
+    [0] call(<>obj<>4, <>this<>, <>arguments<>7) @ #5
 
   AfterCall[2] -> [4]
 
@@ -43,3 +44,4 @@ function[1] f {
   ExitExc[-3]
 
 }
+

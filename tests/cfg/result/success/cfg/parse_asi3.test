@@ -12,6 +12,7 @@ function[0] top-level {
     [7] <>obj<>3 := <>Global<>toObject(getc) @ #2
     [8] <>arguments<>4 := allocArg(0) @ #3
     [9] <>fun<>5 := <>Global<>getBase(getc)
+    [10] <>this<> := enterCode(<>fun<>5)
 
   Block[1] -> Exit
     [0] noop(EndOfFile)
@@ -19,7 +20,7 @@ function[0] top-level {
   Block[2] -> [1]
 
   Call[3] -> ExitExc
-    [0] call(<>obj<>3, <>fun<>5, <>arguments<>4) @ #4
+    [0] call(<>obj<>3, <>this<>, <>arguments<>4) @ #4
 
   AfterCall[4] -> [6]
 
@@ -44,6 +45,7 @@ function[0] top-level {
     [0] <>obj<>3 := <>Global<>toObject(getc) @ #9
     [1] <>arguments<>4 := allocArg(0) @ #10
     [2] <>fun<>5 := <>Global<>getBase(getc)
+    [3] <>this<> := enterCode(<>fun<>5)
 
   Block[11] -> [10]
 
@@ -75,7 +77,7 @@ function[0] top-level {
     [0] <>Global<>ignore7 := charloop
 
   Call[19] -> ExitExc
-    [0] call(<>obj<>3, <>fun<>5, <>arguments<>4) @ #11
+    [0] call(<>obj<>3, <>this<>, <>arguments<>4) @ #11
 
   AfterCall[20] -> [22]
 
