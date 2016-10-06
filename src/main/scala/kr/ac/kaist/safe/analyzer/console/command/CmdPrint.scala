@@ -16,7 +16,7 @@ import kr.ac.kaist.safe.analyzer.ControlPoint //, Worklist }
 import kr.ac.kaist.safe.analyzer.console._
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.nodes.cfg._
-import kr.ac.kaist.safe.cfg_builder.DotWriter
+import kr.ac.kaist.safe.cfg_builder.{ DotWriter, HTMLWriter }
 
 // print
 case object CmdPrint extends Command("print", "Print out various information.") {
@@ -161,6 +161,10 @@ case object CmdPrint extends Command("print", "Print out various information.") 
             println(cfg.toString(0))
             DotWriter.spawnDot(cfg, Some(o), Some(cur), Some(blocks))
           }
+          case _ => help
+        }
+        case "html" => rest match {
+          case Nil => HTMLWriter.writeHTMLFile(c.cfg)
           case _ => help
         }
         case _ => help
