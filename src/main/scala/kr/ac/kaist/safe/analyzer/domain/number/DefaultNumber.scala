@@ -104,6 +104,8 @@ object DefaultNumber extends AbsNumberUtil {
       case (Bot, _) => true
       case (_, Top) => true
       case (NaN, NaN) => true
+      case (NaN, _) => false
+      case (_, NaN) => false
       case (PosInf, PosInf) => true
       case (PosInf, Inf) => true
       case (NegInf, NegInf) => true
