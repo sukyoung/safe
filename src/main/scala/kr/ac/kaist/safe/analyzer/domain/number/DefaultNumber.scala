@@ -592,12 +592,13 @@ object DefaultNumber extends AbsNumberUtil {
       left: Dom,
       right: Dom,
       signed: Boolean = true
-    )(op: (Long, Int) => Long): Dom = (left.toUInt32, right.toUInt32) match {
+    )(op: (Int, Int) => Long): Dom = (left.toUInt32, right.toUInt32) match {
       case (UIntConst(l), UIntConst(r)) =>
         val bound = 0x100000000L
+        val l32 = l.toInt
         val r32 = (r & 0x1F).toInt
-        val result = op(l, r32)
-        if (signed && result >= bound / 2) alpha(result - bound)
+        val result = op(l32, r32)
+        if (!signed && result < 0) alpha(bound + result.toLong)
         else alpha(result)
       case _ => Top
     }
