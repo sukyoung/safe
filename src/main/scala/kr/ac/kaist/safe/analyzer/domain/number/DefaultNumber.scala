@@ -702,53 +702,31 @@ object DefaultNumber extends AbsNumberUtil {
       /* 11.5.1 first */
       case (NaN, _) | (_, NaN) => NaN
       /* 11.5.1 third */
-      case (PosInf | NegInf | Inf, UIntConst(0)) => NaN
-      case (UIntConst(0), PosInf | NegInf | Inf) => NaN
+      case (PosInf | NegInf, UIntConst(0) | NUIntConst(-0.0)) => NaN
+      case (UIntConst(0) | NUIntConst(-0.0), PosInf | NegInf) => NaN
       /* 11.5.1 fourth */
-      case (PosInf, PosInf) | (NegInf, NegInf) => PosInf
-      case (PosInf, NegInf) | (NegInf, PosInf) => NegInf
-      case (Inf, PosInf | NegInf) => Inf
-      case (Inf, Inf) => Inf
-      case (PosInf | NegInf, Inf) => Inf
+      case (PosInf, PosInf) => PosInf
+      case (PosInf, NegInf) => NegInf
+      case (NegInf, NegInf) => PosInf
+      case (NegInf, PosInf) => NegInf
       /* 11.5.1 fifth */
       case (PosInf, UIntConst(_)) => PosInf
-      case (PosInf, UInt) | (UInt, PosInf) => Top
       case (PosInf, NUIntConst(n)) if n > 0 => PosInf
-      case (PosInf, NUIntConst(n)) => NegInf
-      case (PosInf, NUInt) | (NUInt, PosInf) => Inf
+      case (PosInf, NUIntConst(_)) => NegInf
+      case (NegInf, UIntConst(_)) => NegInf
+      case (NegInf, NUIntConst(n)) if n > 0 => NegInf
+      case (NegInf, NUIntConst(_)) => PosInf
       case (UIntConst(_), PosInf) => PosInf
       case (NUIntConst(n), PosInf) if n > 0 => PosInf
-      case (NUIntConst(n), PosInf) => NegInf
-      case (NegInf, UIntConst(_)) => NegInf
-      case (NegInf, UInt) | (UInt, NegInf) => Top
-      case (NegInf, NUIntConst(n)) if n > 0 => NegInf
-      case (NegInf, NUIntConst(n)) => PosInf
-      case (NegInf, NUInt) | (NUInt, NegInf) => Inf
+      case (NUIntConst(_), PosInf) => NegInf
       case (UIntConst(_), NegInf) => NegInf
       case (NUIntConst(n), NegInf) if n > 0 => NegInf
       case (NUIntConst(_), NegInf) => PosInf
-      case (Inf, UInt) | (UInt, Inf) => Top
-      case (Inf, UIntConst(_)) => Inf
-      case (Inf, NUIntConst(_)) => Inf
-      case (Inf, NUInt) | (NUInt, Inf) => Inf
-      case (UIntConst(_), Inf) => Inf
-      case (NUIntConst(_), Inf) => Inf
       /* 11.5.1 sixth */
-      case (UIntConst(0), _) => alpha(0)
-      case (_, UIntConst(0)) => alpha(0)
       case (UIntConst(n1), UIntConst(n2)) => alpha(n1 * n2)
-      case (UIntConst(n1), UInt) => UInt
       case (UIntConst(n1), NUIntConst(n2)) => alpha(n1 * n2)
-      case (UIntConst(n1), NUInt) => NUInt
-      case (UInt, UIntConst(n2)) => UInt
-      case (UInt, UInt) => UInt
-      case (UInt, NUIntConst(n2)) => Top
-      case (UInt, NUInt) => Top
       case (NUIntConst(n1), UIntConst(n2)) => alpha(n1 * n2)
-      case (NUIntConst(n1), UInt) => Top
       case (NUIntConst(n1), NUIntConst(n2)) => alpha(n1 * n2)
-      case (NUIntConst(n1), NUInt) => Top
-      case (NUInt, _) => Top
       case _ => Top
     }
 
@@ -805,24 +783,17 @@ object DefaultNumber extends AbsNumberUtil {
       /* 11.5.3 first */
       case (NaN, _) | (_, NaN) => NaN
       /* 11.5.3 third */
-      case (PosInf | NegInf | Inf, _) => NaN
-      case (_, UIntConst(0)) => NaN
-      /* 11.5.3 fifth */
-      case (UIntConst(0), _) => alpha(0)
+      case (PosInf | NegInf, _) => NaN
+      case (_, UIntConst(0) | NUIntConst(-0.0)) => NaN
       /* 11.5.3 fourth */
-      case (_, PosInf | NegInf | Inf) => that
+      case (UIntConst(_) | NUIntConst(_), PosInf | NegInf | Inf) => this
+      /* 11.5.3 fifth */
+      case (UIntConst(0) | NUIntConst(-0.0), UIntConst(_) | NUIntConst(_)) => this
       /* 11.5.3 sixth */
       case (UIntConst(n1), UIntConst(n2)) => alpha(n1 % n2)
-      case (UIntConst(n1), UInt) => Top
       case (UIntConst(n1), NUIntConst(n2)) => alpha(n1 % n2)
-      case (UIntConst(n1), NUInt) => Top
-      case (UInt, UIntConst(n2)) => UInt
-      case (UInt, _) => Top
       case (NUIntConst(n1), UIntConst(n2)) => alpha(n1 % n2)
       case (NUIntConst(n1), NUIntConst(n2)) => alpha(n1 % n2)
-      case (NUIntConst(n1), _) => Top
-      case (NUInt, UIntConst(n2)) => NUInt
-      case (NUInt, _) => Top
       case _ => Top
     }
   }
