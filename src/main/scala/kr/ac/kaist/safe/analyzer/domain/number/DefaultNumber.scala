@@ -72,7 +72,7 @@ object DefaultNumber extends AbsNumberUtil {
       case UInt => "UInt"
       case NUInt => "NUInt"
       case UIntConst(v) => v.toString
-      case NUIntConst(-0.0) => "-0"
+      case NUIntConst(0) => "-0"
       case NUIntConst(v) =>
         if (Math.floor(v) == v && !v.isInfinity) v.toLong.toString
         else v.toString
@@ -136,21 +136,89 @@ object DefaultNumber extends AbsNumberUtil {
     }
 
     /* Operators */
+    private def toString(m: Double): String = {
+      // 5. Otherwise, let n, k, and s be integers such that k >= 1,
+      //    10^(k-1) <= s < 10^k, the Number value for s * 10^(n-k) is m,
+      //    and k is as small as possible.
+      //    Note that k is the number of digits in the decimal representation of s,
+      //    that s is not divisible by 10, and that the least significant digit of s
+      //    is not necessarily uniquely determined by these criteria.
+      var s = BigDecimal(m)
+      var n = 0
+      while (s % 10 == BigDecimal(0) || s % 1 != BigDecimal(0)) {
+        if (s % 10 == BigDecimal(0)) {
+          s /= 10
+          n += 1
+        } else {
+          s *= 10
+          n -= 1
+        }
+      }
+      var sLong = s.toLong
+      var k = 0
+      while (s >= BigDecimal(1)) {
+        s /= 10
+        k += 1
+      }
+      n += k
+      def getStr(number: Long): String = {
+        var str = ""
+        var sLong = number
+        while (sLong > 0) {
+          str += (sLong % 10).toString
+          sLong /= 10
+        }
+        str.reverse
+      }
+      def getSign(n: Int): Char = {
+        if (n - 1 > 0) '+'
+        else '-'
+      }
+      if (k <= n && n <= 21) {
+        // 6. If k <= n <= 21, return the String consisting of the k digits of the decimal representation of s
+        //    (in order, with no leading zeroes), followed by n-k occurrences of the character '0'.
+        getStr(sLong) + ("0" * (n - k))
+      } else if (0 < n && n <= 21) {
+        // 7. If 0 < n <= 21, return the String consisting of the most significant n digits of
+        //    the decimal representation of s, followed by a decimal point '.',
+        //    followed by the remaining k-n digits of the decimal representation of s.
+        val str = getStr(sLong)
+        str.substring(0, n) + '.' + str.substring(n)
+      } else if (-6 < n && n <= 0) {
+        // 8. If -6 < n <= 0, return the String consisting of the character '0', followed by a decimal point '.',
+        //    followed by -n occurrences of the character '0', followed by the k digits of the decimal representation of s.
+        "0." + ("0" * (-n)) + getStr(sLong)
+      } else if (k == 1) {
+        // 9. Otherwise, if k = 1, return the String consisting of the single digit of s,
+        //    followed by lowercase character 'e', followed by a plus sign '+' or minus sign '-'
+        //    according to whether n-1 is positive or negative, followed by the decimal representation of
+        //    the integer abs(n-1) (with no leading zeroes).
+        getStr(sLong) + "e" + getSign(n) + math.abs(n - 1).toString
+      } else {
+        // 10. Return the String consisting of the most significant digit of the decimal representation of s,
+        //     followed by a decimal point '.', followed by the remaining k-1 digits of the decimal representation of s,
+        //     followed by the lowercase character 'e', followed by a plus sign '+' or minus sign '-' according to
+        //     whether n-1 is positive or negative, followed by the decimal representation of the integer abs(n-1) (with no leading zeroes).
+        val str = getStr(sLong)
+        str.substring(0, 1) + '.' + str.substring(1) + 'e' + getSign(n) + math.abs(n - 1).toString
+      }
+    }
+
     // 9.8.1 ToString Applied to the Number Type
     def toAbsString: AbsString = this match {
       case Bot => AbsString.Bot
       // 1. If m is NaN, return the String "NaN".
       case NaN => AbsString("NaN")
       // 2. If m is +0 or -0, return the String "0".
-      case UIntConst(0) | NUIntConst(-0.0) => AbsString("0")
+      case UIntConst(0) | NUIntConst(0) => AbsString("0")
       // 3. If m is less than zero, return the String concatenation of the String "-" and ToString( m).
       case NUIntConst(n) if n < 0 => AbsString("-") concat alpha(-n).toAbsString
       case NegInf => AbsString("-Infinity")
       // 4. If m is infinity, return the String "Infinity".
       case PosInf => AbsString("Infinity")
-      // 5. Otherwise, TODO unsound
-      case UIntConst(n) => AbsString(n.toString)
-      case NUIntConst(n) => AbsString(n.toString)
+      // 5. Otherwise,
+      case UIntConst(n) => AbsString(toString(n.toDouble))
+      case NUIntConst(n) => AbsString(toString(n))
       case _ => AbsString.Number
     }
 
@@ -158,7 +226,7 @@ object DefaultNumber extends AbsNumberUtil {
     def toAbsBoolean: AbsBool = this match {
       case Bot => AbsBool.Bot
       // The result is false if the argument is +0, -0, or NaN;
-      case UIntConst(0) | NUIntConst(-0.0) | NaN => AbsBool.False
+      case UIntConst(0) | NUIntConst(0) | NaN => AbsBool.False
       // otherwise the result is true.
       case UIntConst(_) | NUIntConst(_) | PosInf | NegInf | Inf => AbsBool.True
       // other cases
@@ -171,7 +239,7 @@ object DefaultNumber extends AbsNumberUtil {
       // 2. If number is NaN, return +0.
       case NaN => UIntConst(0)
       // 3. If number is +0, -0, +Infinity, or Infinity, return number.
-      case UIntConst(0) | NUIntConst(-0.0) | PosInf | NegInf | Inf => this
+      case UIntConst(0) | NUIntConst(0) | PosInf | NegInf | Inf => this
       // 4. Return the result of computing sign(number) * floor(abs(number)).
       case UIntConst(_) | UInt => this
       case NUIntConst(n) => alpha(math.signum(n) * math.floor(math.abs(n)))
@@ -200,7 +268,7 @@ object DefaultNumber extends AbsNumberUtil {
       this match {
         case Bot => Bot
         // 2. If number is NaN, +0, -0, +Infinity, or Infinity, return +0.
-        case NaN | UIntConst(0) | NUIntConst(-0.0) | PosInf | NegInf | Inf => UIntConst(0)
+        case NaN | UIntConst(0) | NUIntConst(0) | PosInf | NegInf | Inf => UIntConst(0)
         // by helper
         case UIntConst(n) => alpha(helper(n.toDouble))
         case NUIntConst(n) => alpha(helper(n))
@@ -223,7 +291,7 @@ object DefaultNumber extends AbsNumberUtil {
       this match {
         case Bot => Bot
         // 2. If number is NaN, +0, -0, +Infinity, or Infinity, return +0.
-        case NaN | UIntConst(0) | NUIntConst(-0.0) | PosInf | NegInf | Inf => UIntConst(0)
+        case NaN | UIntConst(0) | NUIntConst(0) | PosInf | NegInf | Inf => UIntConst(0)
         // by helper
         case UIntConst(n) => UIntConst(helper(n.toDouble))
         case NUIntConst(n) => UIntConst(helper(n))
@@ -246,7 +314,7 @@ object DefaultNumber extends AbsNumberUtil {
       this match {
         case Bot => Bot
         // 2. If number is NaN, +0, -0, +Infinity, or Infinity, return +0.
-        case NaN | UIntConst(0) | NUIntConst(-0.0) | PosInf | NegInf | Inf => UIntConst(0)
+        case NaN | UIntConst(0) | NUIntConst(0) | PosInf | NegInf | Inf => UIntConst(0)
         // by helper
         case UIntConst(n) => UIntConst(helper(n.toDouble))
         case NUIntConst(n) => UIntConst(helper(n))
@@ -261,9 +329,9 @@ object DefaultNumber extends AbsNumberUtil {
       // a. If x is NaN and y is NaN, return true.
       case (NaN, NaN) => AbsBool.True
       // b. If x is +0 and y is -0, return false.
-      case (UIntConst(0), NUIntConst(-0.0)) => AbsBool.False
+      case (UIntConst(0), NUIntConst(0)) => AbsBool.False
       // c. If x is -0 and y is +0, return false.
-      case (NUIntConst(-0.0), UIntConst(0)) => AbsBool.False
+      case (NUIntConst(0), UIntConst(0)) => AbsBool.False
       // d. If x is the same Number value as y, return true.
       // e. Return false.
       case (left, right) => left === right
@@ -290,7 +358,7 @@ object DefaultNumber extends AbsNumberUtil {
       // If x is NaN, the result is NaN.
       case NaN => NaN
       // If x is -0, the result is +0.
-      case NUIntConst(-0.0) => UIntConst(0)
+      case NUIntConst(0) => UIntConst(0)
       // If x is -Infinity, the result is +Infinity.
       case NegInf | Inf => PosInf
       // other cases
@@ -352,38 +420,38 @@ object DefaultNumber extends AbsNumberUtil {
       case (Top, _) | (_, Top) => Top
       // if (this > 0) & (that == + 0 | that == - 0) then PI/2
       case (UIntConst(x), UIntConst(0)) if x > 0 => alpha(scala.math.Pi / 2)
-      case (UIntConst(x), NUIntConst(-0.0)) if x > 0 => alpha(scala.math.Pi / 2)
+      case (UIntConst(x), NUIntConst(0)) if x > 0 => alpha(scala.math.Pi / 2)
       case (NUIntConst(x), UIntConst(0)) if x > 0 => alpha(scala.math.Pi / 2)
-      case (NUIntConst(x), NUIntConst(-0.0)) if x > 0 => alpha(scala.math.Pi / 2)
-      case (UInt, UIntConst(0)) | (UInt, NUIntConst(-0.0)) => alpha(scala.math.Pi / 2)
-      case (PosInf, UIntConst(0)) | (PosInf, NUIntConst(-0.0)) => alpha(scala.math.Pi / 2)
+      case (NUIntConst(x), NUIntConst(0)) if x > 0 => alpha(scala.math.Pi / 2)
+      case (UInt, UIntConst(0)) | (UInt, NUIntConst(0)) => alpha(scala.math.Pi / 2)
+      case (PosInf, UIntConst(0)) | (PosInf, NUIntConst(0)) => alpha(scala.math.Pi / 2)
       // if (this == + 0) & (that >= + 0) then 0
       case (UIntConst(0), UIntConst(_)) => alpha(0.0)
       case (UIntConst(0), NUIntConst(x)) if x > 0 => alpha(0.0)
       case (UIntConst(0), UInt) => alpha(0.0)
       case (UIntConst(0), PosInf) => alpha(0.0)
       // if (this == + 0) & (that <= - 0) then PI
-      case (UIntConst(0), NUIntConst(-0.0)) => alpha(scala.math.Pi)
+      case (UIntConst(0), NUIntConst(0)) => alpha(scala.math.Pi)
       case (UIntConst(0), NUIntConst(x)) if x < 0 => alpha(scala.math.Pi)
       case (UIntConst(0), NegInf) => alpha(scala.math.Pi)
       // if (this == + 0) & (that ? 0) then (0 or PI)
       case (UIntConst(0), NUInt) | (UIntConst(0), Inf) => alpha(0.0) + alpha(scala.math.Pi)
       // if (this == - 0) & (that >= +0) then - 0
-      case (NUIntConst(-0.0), UIntConst(_)) => alpha(-0.0)
-      case (NUIntConst(-0.0), NUIntConst(x)) if x > 0 => alpha(-0.0)
-      case (NUIntConst(-0.0), UInt) => alpha(-0.0)
-      case (NUIntConst(-0.0), PosInf) => alpha(-0.0)
+      case (NUIntConst(0), UIntConst(_)) => alpha(-0.0)
+      case (NUIntConst(0), NUIntConst(x)) if x > 0 => alpha(-0.0)
+      case (NUIntConst(0), UInt) => alpha(-0.0)
+      case (NUIntConst(0), PosInf) => alpha(-0.0)
       // if (this == - 0) & (that <= - 0) then - PI
-      case (NUIntConst(-0.0), NUIntConst(-0.0)) => alpha(-scala.math.Pi)
-      case (NUIntConst(-0.0), NUIntConst(x)) if x < 0 => alpha(-scala.math.Pi)
-      case (NUIntConst(-0.0), NegInf) => alpha(-scala.math.Pi)
+      case (NUIntConst(0), NUIntConst(0)) => alpha(-scala.math.Pi)
+      case (NUIntConst(0), NUIntConst(x)) if x < 0 => alpha(-scala.math.Pi)
+      case (NUIntConst(0), NegInf) => alpha(-scala.math.Pi)
       // if (this == - 0) & (that ? 0) then (- 0 or - PI)
-      case (NUIntConst(-0.0), NUInt) | (UIntConst(0), Inf) => alpha(-0.0) + alpha(-scala.math.Pi)
+      case (NUIntConst(0), NUInt) | (UIntConst(0), Inf) => alpha(-0.0) + alpha(-scala.math.Pi)
       // if (this < 0) & (that == + 0 | that == - 0) then - PI/2
       case (NUIntConst(x), UIntConst(0)) if x < 0 => alpha(-scala.math.Pi / 2)
-      case (NUIntConst(x), NUIntConst(-0.0)) if x < 0 => alpha(-scala.math.Pi / 2)
+      case (NUIntConst(x), NUIntConst(0)) if x < 0 => alpha(-scala.math.Pi / 2)
       case (NegInf, UIntConst(0)) => alpha(-scala.math.Pi / 2)
-      case (NegInf, NUIntConst(-0.0)) => alpha(-scala.math.Pi / 2)
+      case (NegInf, NUIntConst(0)) => alpha(-scala.math.Pi / 2)
 
       case (UIntConst(y), PosInf) if y > 0 => alpha(0)
       case (NUIntConst(y), PosInf) if y > 0 => alpha(0)
@@ -439,7 +507,7 @@ object DefaultNumber extends AbsNumberUtil {
       this match {
         case NaN
           | PosInf => this
-        case UIntConst(0) | NUIntConst(-0.0) => alpha(1)
+        case UIntConst(0) | NUIntConst(0) => alpha(1)
         case NegInf => alpha(0)
         case UInt
           | NUInt => NUInt
@@ -470,7 +538,7 @@ object DefaultNumber extends AbsNumberUtil {
         case NaN => this
         case NegInf => NaN
         case NUIntConst(x) if x < 0 => NaN
-        case UIntConst(0) | NUIntConst(-0.0) => NegInf
+        case UIntConst(0) | NUIntConst(0) => NegInf
         case PosInf => this
         case UIntConst(n) => alpha(scala.math.log(n))
         case NUIntConst(n) => alpha(scala.math.log(n))
@@ -623,12 +691,12 @@ object DefaultNumber extends AbsNumberUtil {
       case (NegInf, _) | (_, NegInf) => NegInf
       case (PosInf, _) | (_, PosInf) => PosInf
       // The sum of two negative zeroes is -0.
-      case (NUIntConst(-0.0), NUIntConst(-0.0)) => NUIntConst(-0.0)
+      case (NUIntConst(0), NUIntConst(0)) => NUIntConst(0)
       // The sum of two positive zeroes, or of two zeroes of opposite sign, is +0.
-      case (NUIntConst(-0.0) | UIntConst(0), NUIntConst(-0.0) | UIntConst(0)) => UIntConst(0)
+      case (NUIntConst(0) | UIntConst(0), NUIntConst(0) | UIntConst(0)) => UIntConst(0)
       // The sum of a zero and a nonzero finite value is equal to the nonzero operand.
-      case (NUIntConst(-0.0) | UIntConst(0), right) => right
-      case (left, NUIntConst(-0.0) | UIntConst(0)) => left
+      case (NUIntConst(0) | UIntConst(0), right) => right
+      case (left, NUIntConst(0) | UIntConst(0)) => left
       // The sum of two nonzero finite values of the same magnitude and opposite sign is +0.
       // In the remaining cases, add two numbers.
       case (UIntConst(l), UIntConst(r)) => UIntConst(l + r)
@@ -645,8 +713,8 @@ object DefaultNumber extends AbsNumberUtil {
       /* 11.5.1 first */
       case (NaN, _) | (_, NaN) => NaN
       /* 11.5.1 third */
-      case (PosInf | NegInf, UIntConst(0) | NUIntConst(-0.0)) => NaN
-      case (UIntConst(0) | NUIntConst(-0.0), PosInf | NegInf) => NaN
+      case (PosInf | NegInf, UIntConst(0) | NUIntConst(0)) => NaN
+      case (UIntConst(0) | NUIntConst(0), PosInf | NegInf) => NaN
       /* 11.5.1 fourth */
       case (PosInf, PosInf) => PosInf
       case (PosInf, NegInf) => NegInf
@@ -681,9 +749,9 @@ object DefaultNumber extends AbsNumberUtil {
       case (PosInf | NegInf, PosInf | NegInf) => NaN
       /* 11.5.2 fourth */
       case (PosInf, UIntConst(0)) => PosInf
-      case (PosInf, NUIntConst(-0.0)) => NegInf
+      case (PosInf, NUIntConst(0)) => NegInf
       case (NegInf, UIntConst(0)) => NegInf
-      case (NegInf, UIntConst(-0.0)) => PosInf
+      case (NegInf, NUIntConst(0)) => PosInf
       /* 11.5.2 fifth */
       case (PosInf, UIntConst(_)) => PosInf
       case (PosInf, NUIntConst(n)) if n > 0 => PosInf
@@ -699,20 +767,20 @@ object DefaultNumber extends AbsNumberUtil {
       case (NUIntConst(n), NegInf) if n > 0 => alpha(-0.0)
       case (NUIntConst(_), NegInf) => alpha(0)
       /* 11.5.2  seventh */
-      case (UIntConst(0) | NUIntConst(-0.0), UIntConst(0) | NUIntConst(0.0)) => NaN
+      case (UIntConst(0) | NUIntConst(0), UIntConst(0) | NUIntConst(0.0)) => NaN
       case (UIntConst(0), UIntConst(_)) => alpha(0)
       case (UIntConst(0), NUIntConst(n)) if n > 0 => alpha(0)
       case (UIntConst(0), NUIntConst(_)) => alpha(-0.0)
-      case (NUIntConst(-0.0), UIntConst(_)) => alpha(-0.0)
-      case (NUIntConst(-0.0), NUIntConst(n)) if n > 0 => alpha(-0.0)
-      case (NUIntConst(-0.0), NUIntConst(_)) => alpha(0)
+      case (NUIntConst(0), UIntConst(_)) => alpha(-0.0)
+      case (NUIntConst(0), NUIntConst(n)) if n > 0 => alpha(-0.0)
+      case (NUIntConst(0), NUIntConst(_)) => alpha(0)
       /* 11.5.2  eighth */
       case (UIntConst(_), UIntConst(0)) => PosInf
-      case (UIntConst(_), NUIntConst(-0.0)) => NegInf
+      case (UIntConst(_), NUIntConst(0)) => NegInf
       case (NUIntConst(n), UIntConst(0)) if n > 0 => PosInf
-      case (NUIntConst(n), NUIntConst(-0.0)) if n > 0 => NegInf
+      case (NUIntConst(n), NUIntConst(0)) if n > 0 => NegInf
       case (NUIntConst(_), UIntConst(0)) => NegInf
-      case (NUIntConst(_), NUIntConst(-0.0)) => PosInf
+      case (NUIntConst(_), NUIntConst(0)) => PosInf
       /* 11.5.2  ninth */
       case (UIntConst(n1), UIntConst(n2)) => alpha(n1 / n2)
       case (UIntConst(n1), NUIntConst(n2)) => alpha(n1 / n2)
@@ -727,11 +795,11 @@ object DefaultNumber extends AbsNumberUtil {
       case (NaN, _) | (_, NaN) => NaN
       /* 11.5.3 third */
       case (PosInf | NegInf, _) => NaN
-      case (_, UIntConst(0) | NUIntConst(-0.0)) => NaN
+      case (_, UIntConst(0) | NUIntConst(0)) => NaN
       /* 11.5.3 fourth */
       case (UIntConst(_) | NUIntConst(_), PosInf | NegInf | Inf) => this
       /* 11.5.3 fifth */
-      case (UIntConst(0) | NUIntConst(-0.0), UIntConst(_) | NUIntConst(_)) => this
+      case (UIntConst(0) | NUIntConst(0), UIntConst(_) | NUIntConst(_)) => this
       /* 11.5.3 sixth */
       case (UIntConst(n1), UIntConst(n2)) => alpha(n1 % n2)
       case (UIntConst(n1), NUIntConst(n2)) => alpha(n1 % n2)
