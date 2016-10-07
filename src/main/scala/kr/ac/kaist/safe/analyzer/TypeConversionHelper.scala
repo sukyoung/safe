@@ -199,16 +199,17 @@ object TypeConversionHelper {
     val locSet = value.locset
     val (obj, excSet) = ToObject(value.pvalue)
 
-    val (locSet1, h1) =
+    val (locSet1, st1) =
       if (!obj.isBottom) {
         val loc = Loc(addr, Recent)
-        (AbsLoc(loc), st.oldify(addr).heap.update(loc, obj))
-      } else (AbsLoc.Bot, Heap.Bot)
-    val (locSet2, h2) =
-      if (!locSet.isBottom) (locSet, st.heap)
-      else (AbsLoc.Bot, Heap.Bot)
+        val state = st.oldify(addr)
+        (AbsLoc(loc), State(state.heap.update(loc, obj), state.context))
+      } else (AbsLoc.Bot, State.Bot)
+    val (locSet2, st2) =
+      if (!locSet.isBottom) (locSet, st)
+      else (AbsLoc.Bot, State.Bot)
 
-    (locSet1 + locSet2, State(h1 + h2, st.context), excSet)
+    (locSet1 + locSet2, st1 + st2, excSet)
   }
 
   ////////////////////////////////////////////////////////////////
