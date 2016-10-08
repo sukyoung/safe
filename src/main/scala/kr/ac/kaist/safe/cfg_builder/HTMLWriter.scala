@@ -18,7 +18,7 @@ import kr.ac.kaist.safe.LINE_SEP
 
 object HTMLWriter {
   val EXC_EDGE = ", width: 2, style: 'dashed', arrow: 'triangle', label:'exc'"
-  val CALL_TRIPLE_EDGE = ", width: 1, style: 'dashed', arrow: 'none', label:''"
+  val RELATED_EDGE = ", width: 1, style: 'dashed', arrow: 'none', label:''"
   val FUNC_LABEL_EDGE = ", width: 1, style: 'dashed', arrow: 'none', label:''"
   val NORMAL_EDGE = ", width: 2, style: 'solid', arrow: 'triangle', label:''"
   val UNREACHABLE_COLOR = "#CCCCCC"
@@ -38,13 +38,16 @@ object HTMLWriter {
     }
   }
 
+  private def isReachable(block: CFGBlock): Boolean =
+    !block.getState.isEmpty
+
   def connectEdge(from: CFGBlock, succs: Set[CFGBlock], edgeStyle: String = NORMAL_EDGE): String = {
     val fromId = getId(from)
     val sb = new StringBuilder
     succs.foreach(to => {
       val toId = getId(to)
       val color =
-        if (from.getState.isEmpty || to.getState.isEmpty) UNREACHABLE_COLOR
+        if (!isReachable(from) || !isReachable(to)) UNREACHABLE_COLOR
         else REACHABLE_COLOR
       sb.append(s"""{data: {source: '$fromId', target: '$toId'$edgeStyle, color: '$color'}},""" + LINE_SEP)
     })
@@ -55,7 +58,7 @@ object HTMLWriter {
     val id = getId(block)
     val label = getLabel(block)
     val color =
-      if (block.getState.isEmpty) UNREACHABLE_COLOR
+      if (!isReachable(block)) UNREACHABLE_COLOR
       else REACHABLE_COLOR
     (block match {
       case (entry: Entry) =>
@@ -70,15 +73,18 @@ object HTMLWriter {
   def drawEdge(block: CFGBlock): String = {
     val sb = new StringBuilder
     block match {
-      case (entry: Entry) =>
-        val func = entry.func
+      case entry @ Entry(func) =>
         val id = func.id
         val bid = getId(entry)
         sb.append(s"""{data: {source: '$id', target: '$bid'$FUNC_LABEL_EDGE, color: '$REACHABLE_COLOR'}},""" + LINE_SEP)
+      case exit @ Exit(func) =>
+        val exitExc = func.exitExc
+        sb.append(connectEdge(exit, Set(exitExc), RELATED_EDGE))
+        sb.append(connectEdge(exitExc, Set(exit), RELATED_EDGE))
       case (call: Call) =>
         val acall = call.afterCall
         val acatch = call.afterCatch
-        sb.append(connectEdge(block, Set(acall, acatch), CALL_TRIPLE_EDGE))
+        sb.append(connectEdge(block, Set(acall, acatch), RELATED_EDGE))
       case _ =>
     }
     block.getAllSucc.foreach {
@@ -87,7 +93,11 @@ object HTMLWriter {
       //     case CFGEdgeExc => EXC_EDGE
       //     case _ => NORMAL_EDGE
       //   }))
-      case (CFGEdgeExc, _) =>
+      case (CFGEdgeExc, blocks) =>
+        sb.append(connectEdge(block, blocks.filter(_ match {
+          case ExitExc(_) => false
+          case _ => true
+        }).toSet, EXC_EDGE))
       case (_, blocks) =>
         sb.append(connectEdge(block, blocks.toSet, NORMAL_EDGE))
     }
@@ -98,7 +108,7 @@ object HTMLWriter {
     cfg: CFG
   ): String = {
     // computes reachable fid_set
-    val reachableFunSet = cfg.getAllFuncs.filter(!_.entry.getState.isEmpty)
+    val reachableFunSet = cfg.getAllFuncs.filter(f => isReachable(f.entry))
 
     // dump each function node
     val blocks = reachableFunSet.foldRight(List[CFGBlock]()) {
@@ -154,6 +164,7 @@ $(function(){
         'width': 'data(width)',
         'target-arrow-shape': 'data(arrow)',
         'line-color': 'data(color)',
+        'color': 'data(color)',
         'target-arrow-color': 'data(color)',
         'curve-style': 'bezier',
         'line-style': 'data(style)',
