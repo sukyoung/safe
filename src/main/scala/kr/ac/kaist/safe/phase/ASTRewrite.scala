@@ -21,7 +21,7 @@ import kr.ac.kaist.safe.util._
 case object ASTRewrite extends PhaseObj[Program, ASTRewriteConfig, Program] {
   val name: String = "astRewriter"
   val help: String =
-    "Rewrites AST in JavaScript source files (hoister, disambiguater, withRewriter)"
+    "Rewrites AST in JavaScript source files (hoister, disambiguator, withRewriter)"
 
   def apply(
     pgm: Program,
@@ -68,7 +68,7 @@ case object ASTRewrite extends PhaseObj[Program, ASTRewriteConfig, Program] {
     ("silent", BoolOption(c => c.silent = true),
       "messages during rewriting AST are muted."),
     ("out", StrOption((c, s) => c.outFile = Some(s)),
-      "the disambiguated AST will be written to the outfile.")
+      "the rewritten AST will be written to the outfile.")
   )
 }
 
