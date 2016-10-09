@@ -141,7 +141,7 @@ object HTMLWriter {
         <script src="${base}lib/debugger/cytoscape-dagre.js"></script>
         <script src="${base}lib/debugger/webix.js" type="text/javascript"></script>
         <link rel="stylesheet" href="${base}lib/debugger/css/webix.css" type="text/css">
-        <link rel="stylesheet" href="${base}lib/debugger/css/cy.css" type="text/css">
+        <link rel="stylesheet" href="${base}lib/debugger/css/core.css" type="text/css">
         <script>
 var safe_DB = {
   nodes: [
