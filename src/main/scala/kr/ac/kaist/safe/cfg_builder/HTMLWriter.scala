@@ -111,7 +111,7 @@ object HTMLWriter {
     val func = block.func
     sb.append(s"'$id': [").append(LINE_SEP)
       .append(s"{ kind: 'Block', id: 'block', value: '$label of $func' },").append(LINE_SEP)
-    block.getInsts.foreach(inst => {
+    block.getInsts.reverse.foreach(inst => {
       sb.append(s"{ kind: 'Instruction', value: '$inst' },").append(LINE_SEP)
     })
     sb.append(s"]," + LINE_SEP)
