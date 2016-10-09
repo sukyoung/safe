@@ -11,9 +11,9 @@ SAFE 2.0 is a scalable and pluggable analysis framework for JavaScript web appli
 
 Older versions are still available at the SAFE1.0 branch.
 
-For more information, please check out a `user manual`_.
+For more information, please check out `our user manual`_.
 
-.. _user manual: https://github.com/kaist-plrg/safe/blob/master/manual.pdf
+.. _our user manual: https://github.com/kaist-plrg/safe/blob/master/manual.pdf
 
 Requirements
 ============
