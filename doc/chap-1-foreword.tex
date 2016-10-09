@@ -1,0 +1,107 @@
+%--------------------------------------------------------------------
+% Foreword: audience, authors, license, installation
+%--------------------------------------------------------------------
+\chapter{Foreword}
+\label{c:1:foreword}
+
+\section{Audience}
+This document is for users of \safe (Scalable Analysis Framework for ECMAScript)
+2.0, a scalable and pluggable analysis framework for JavaScript web applications.
+General information on the \safe project is available at an invited talk at ICFP 2016~\cite{safeicfp16}:
+\begin{center}
+  \url{https://www.youtube.com/watch?v=gEU9utf0sxE}
+\end{center}
+and the source code and publications are available at:
+\begin{center}
+  \url{https://github.com/sukyoung/safe}
+\end{center}
+For more information, please contact the main developers of \safe
+at \texttt{safe [at] plrg.kaist.ac.kr}.
+
+SAFE has been used by:
+\begin{itemize}
+\itemsep-.2em
+\item JSAI~\cite{jsai} @ UCSB
+\item ROSAEC~\cite{rosaec} @ Seoul National University
+\item K framework~\cite{kjs} @ UIUC
+\item Ken Cheung~\cite{emse16} @ HKUST
+\item Web-based vulnerability detection~\cite{oracle} @ Oracle
+\item Tizen~\cite{tizen} @ Linux Foundation
+\end{itemize}
+
+\section{Contributors}
+The main developers of SAFE 2.0 are as follows:
+\begin{itemize}
+\itemsep-.2em
+\item Jihyeok Park
+\item Yeonhee Ryou
+\item Sukyoung Ryu
+\end{itemize}
+and the following have contributed to the source code:
+\begin{itemize}
+\itemsep-.1em
+\item Minsoo Kim (Built-in function modeling)
+\item PLRG @ KAIST and our colleagues in S-Core and Samsung Electronics (SAFE 1.0)
+\end{itemize}
+
+
+\section{License}
+The \safe source code is released under the BSD license:
+\begin{center}
+\url{github.com/sukyoung/safe/blob/master/LICENSE}
+\end{center}
+
+
+\section{Installation}
+We assume you are using an operating system with a Unix-style shell
+(for example, Mac OS X, Linux, or Cygwin on Windows).
+Assuming \verb!SAFE_HOME! points to the SAFE directory,
+you will need to have access to the following:
+\begin{itemize}
+\item J2SDK 1.8.  See
+\url{http://java.sun.com/javase/downloads/index.jsp}
+\item Scala 2.12.  See
+\url{http://scala-lang.org/download}
+\item sbt version 0.13.  See
+\url{http://www.scala-sbt.org}
+\item Bash version 2.5, installed at \verb!/bin/bash!.  See
+\url{http://www.gnu.org/software/bash/}
+\end{itemize}
+
+In your shell startup script, add \verb!$SAFE_HOME/bin! to your path.
+The shell scripts in this directory are Bash scripts.
+To run them, you must have Bash accessible in \verb!/bin/bash!.
+
+Type \verb!sbt compile! and then \verb!sbt test! to make sure that
+your installation successfully finishes the tests.
+Two regression test suites are provided with \safe and can be
+analyzed automatically:
+\begin{verbatim}
+$ sbt test
+$ sbt test262Test
+\end{verbatim}
+In addition to the \safe-specific test suite,
+\safe 2.0 has been tested using Test262, the official ECMAScript (ECMA-262) conformance suite:
+\begin{center}
+\url{https://github.com/tc39/test262}
+\end{center}
+Not a single test should end in a failure.
+
+Once you have built the framework, you can call it from any directory,
+on any JavaScript file, simply by typing one of available commands at a command line
+as explained in \cref{3:refman}.
+
+\subsection{IntelliJ configuration}
+IntelliJ users can use IntelliJ 2016.2.4 with the latest Scala plugin as follows:
+\begin{enumerate}
+\item Create a new project from existing sources (aka. \verb!Import project!).
+\item Choose \verb!build.sbt! in the SAFE 2.0 root to import.
+\item Choose JDK 1.8 as the project JDK.
+\item Manually download \verb!xtc.jar! in to \verb!lib/!
+\item Goto \verb!Project Settings! $\rightarrow$ \verb!Modules! $\rightarrow$
+\verb!root (module)! $\rightarrow$ \verb!Dependencies!
+\item Open \verb!SBT:unmanaged-jars! dependencies.
+\item Remove broken entries for \verb!spray-json! and \verb!xtc!.
+\item Add \verb!(+) .jars! for the two libraries above.
+\item Run the \verb!buildParsers! task in SBT.
+\end{enumerate}
