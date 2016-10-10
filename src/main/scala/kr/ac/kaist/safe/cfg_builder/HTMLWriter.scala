@@ -13,7 +13,10 @@ package kr.ac.kaist.safe.cfg_builder
 
 import java.io.{ File, FileWriter, BufferedInputStream }
 import scala.collection.immutable.TreeMap
+import kr.ac.kaist.safe.analyzer.models.builtin._
+import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.nodes.cfg._
+import kr.ac.kaist.safe.util._
 import kr.ac.kaist.safe.{ LINE_SEP, BASE_DIR }
 
 object HTMLWriter {
@@ -118,6 +121,56 @@ object HTMLWriter {
     sb.toString
   }
 
+  def addState(block: CFGBlock): String = {
+    val sb = new StringBuilder
+    val id = getId(block)
+    val label = getLabel(block)
+    val func = block.func
+    if (isReachable(block)) {
+      val (_, st) = block.getState.head // TODO it is working only when for each CFGBlock has only one control point.
+      sb.append(s"'$id': [").append(LINE_SEP)
+      // heap
+      val h = st.heap
+      sb.append("{ value: {value: 'Heap', open: true, id: 'heap'} },").append(LINE_SEP)
+      sb.append("{ value: {value: 'System Locations', id: 'sysLoc'}, parent: 'heap' },").append(LINE_SEP)
+      h.map.toSeq
+        .sortBy { case (loc, _) => loc }
+        .foreach {
+          case (loc, obj) =>
+            val parent = loc match {
+              case BuiltinGlobal.loc => "heap"
+              case Loc(SystemAddr(_), _) => "sysLoc"
+              case _ => "heap"
+            }
+            sb.append(s"{ value: {value: '$loc', id: '$loc'}, parent: '$parent' },").append(LINE_SEP)
+            obj.toString.split(LINE_SEP).foreach(prop => {
+              sb.append(s"{ value: {value: '$prop'}, parent: '$loc' },").append(LINE_SEP)
+            })
+        }
+      // context
+      val ctx = st.context
+      sb.append("{ value: {value: 'Context', open: true, id: 'ctx'} },").append(LINE_SEP)
+      ctx.getMap.toSeq
+        .sortBy { case (loc, _) => loc }
+        .foreach {
+          case (loc, obj) =>
+            sb.append(s"{ value: {value: '$loc', id: '$loc'}, parent: 'ctx' },").append(LINE_SEP)
+            obj.toString.split(LINE_SEP).foreach(prop => {
+              sb.append(s"{ value: {value: '$prop'}, parent: '$loc' },").append(LINE_SEP)
+            })
+        }
+
+      // old address set
+      val old = ctx.old
+      val mayOld = old.mayOld.mkString(", ")
+      val mustOld = old.mustOld.mkString(", ")
+      sb.append(s"{ value: {value: 'mayOld: [$mayOld]'} },").append(LINE_SEP)
+      sb.append(s"{ value: {value: 'mustOld: [$mustOld]'} },").append(LINE_SEP)
+      sb.append(s"],").append(LINE_SEP)
+    }
+    sb.toString
+  }
+
   def drawGraph(
     cfg: CFG
   ): String = {
@@ -135,6 +188,7 @@ object HTMLWriter {
     sb.append(s"""<!DOCTYPE HTML>
 <html>
     <head>
+        <meta charset="UTF-8">
         <script src="${base}lib/debugger/jquery-2.0.3.min.js"></script>
         <script src="${base}lib/debugger/cytoscape.min.js"></script>
         <script src="${base}lib/debugger/dagre.min.js"></script>
@@ -155,6 +209,22 @@ var safe_DB = {
   insts: {
 """)
     blocks.foreach(block => sb.append(addInsts(block)))
+    sb.append("""  },
+  state: {
+""")
+    blocks.foreach(block => sb.append(addState(block)))
+    /*
+    '0:-1': [
+    { value: {value: '#1', id: '#1'}, parent: 'heap' },
+    { value: {value: 'abc -> [ttf] 1'}, parent: '#1' },
+    { value: {value: 'f -> [tft] "2"'}, parent: '#1' },
+    { value: {value: '#2', id: '#2'}, parent: 'ctx' },
+    { value: {value: 'abc -> [ttf] 1'}, parent: '#2' },
+    { value: {value: 'f -> [tft] "2"'}, parent: '#2' },
+    { value: {value: 'mayOld: []', id: 'mayOld'} },
+    { value: {value: 'mustOld: []', id: 'mustOld'} },
+    ]
+    */
     sb.append(s"""  },
 };
         </script>
