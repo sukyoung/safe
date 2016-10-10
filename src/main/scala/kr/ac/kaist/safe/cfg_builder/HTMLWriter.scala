@@ -13,6 +13,7 @@ package kr.ac.kaist.safe.cfg_builder
 
 import java.io.{ File, FileWriter, BufferedInputStream }
 import scala.collection.immutable.TreeMap
+import kr.ac.kaist.safe.analyzer.Worklist
 import kr.ac.kaist.safe.analyzer.models.builtin._
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.nodes.cfg._
@@ -57,9 +58,13 @@ object HTMLWriter {
     sb.toString
   }
 
-  def drawBlock(block: CFGBlock): String = {
+  def drawBlock(block: CFGBlock, wlOpt: Option[Worklist]): String = {
     val id = getId(block)
     val label = getLabel(block)
+    val inWL = wlOpt match {
+      case Some(worklist) => worklist has block
+      case None => false
+    }
     val color =
       if (!isReachable(block)) UNREACHABLE_COLOR
       else REACHABLE_COLOR
@@ -68,9 +73,9 @@ object HTMLWriter {
         val func = entry.func
         val id = func.id
         val label = func.toString
-        s"""{data: {id: '$id', content: '$label', border: 0, color: '$REACHABLE_COLOR'} },""" + LINE_SEP
+        s"""{data: {id: '$id', content: '$label', border: 0, color: '$REACHABLE_COLOR', inWL: $inWL, bc: 'white'} },""" + LINE_SEP
       case _ => ""
-    }) + s"""{data: {id: '$id', content: '$label', border: 2, color: '$color'} },""" + LINE_SEP
+    }) + s"""{data: {id: '$id', content: '$label', border: 2, color: '$color', inWL: $inWL, bc: 'white'} },""" + LINE_SEP
   }
 
   def drawEdge(block: CFGBlock): String = {
@@ -172,7 +177,8 @@ object HTMLWriter {
   }
 
   def drawGraph(
-    cfg: CFG
+    cfg: CFG,
+    wlOpt: Option[Worklist]
   ): String = {
     // computes reachable fid_set
     val reachableFunSet = cfg.getAllFuncs.filter(f => isReachable(f.entry))
@@ -200,7 +206,7 @@ object HTMLWriter {
 var safe_DB = {
   nodes: [
 """)
-    blocks.foreach(block => sb.append(drawBlock(block)))
+    blocks.foreach(block => sb.append(drawBlock(block, wlOpt)))
     sb.append("""  ],
   edges: [
 """)
@@ -213,18 +219,6 @@ var safe_DB = {
   state: {
 """)
     blocks.foreach(block => sb.append(addState(block)))
-    /*
-    '0:-1': [
-    { value: {value: '#1', id: '#1'}, parent: 'heap' },
-    { value: {value: 'abc -> [ttf] 1'}, parent: '#1' },
-    { value: {value: 'f -> [tft] "2"'}, parent: '#1' },
-    { value: {value: '#2', id: '#2'}, parent: 'ctx' },
-    { value: {value: 'abc -> [ttf] 1'}, parent: '#2' },
-    { value: {value: 'f -> [tft] "2"'}, parent: '#2' },
-    { value: {value: 'mayOld: []', id: 'mayOld'} },
-    { value: {value: 'mustOld: []', id: 'mustOld'} },
-    ]
-    */
     sb.append(s"""  },
 };
         </script>
@@ -239,12 +233,13 @@ var safe_DB = {
 
   def writeHTMLFile(
     cfg: CFG,
+    wlOpt: Option[Worklist] = None,
     htmlfile: String = "cfg.html"
   ): Unit = {
     try {
       val f = new File(htmlfile)
       val fw = new FileWriter(f)
-      fw.write(drawGraph(cfg))
+      fw.write(drawGraph(cfg, wlOpt))
       fw.close
     } catch {
       case e: Throwable =>

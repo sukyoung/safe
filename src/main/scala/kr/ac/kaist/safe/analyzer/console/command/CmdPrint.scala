@@ -165,7 +165,7 @@ case object CmdPrint extends Command("print", "Print out various information.") 
           case _ => help
         }
         case "html" => rest match {
-          case Nil => HTMLWriter.writeHTMLFile(c.cfg)
+          case Nil => HTMLWriter.writeHTMLFile(c.cfg, Some(c.worklist))
           case _ => help
         }
         case _ => help

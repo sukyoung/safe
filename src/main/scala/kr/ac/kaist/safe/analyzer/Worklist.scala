@@ -69,6 +69,10 @@ class Worklist(private var orderMap: Map[CFGBlock, Int]) {
   override def toString: String = {
     worklist.map(work => work.toString).reduce((s1, s2) => s1 + ", " + s2)
   }
+
+  def has(block: CFGBlock): Boolean = worklist.exists {
+    case Work(_, cp) => cp.node == block
+  }
 }
 
 case class Work(order: Int, cp: ControlPoint) {

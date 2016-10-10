@@ -64,7 +64,7 @@ case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, Int, CallContext)
 
     // print html file: {htmlName}.html
     config.htmlName.map(name => {
-      HTMLWriter.writeHTMLFile(cfg, s"$name.html")
+      HTMLWriter.writeHTMLFile(cfg, None, s"$name.html")
     })
 
     Success((cfg, iters, globalCC))
