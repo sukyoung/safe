@@ -55,20 +55,26 @@ of the  JavaScript code in a given file.
 
 generates a Control Flow Graph (CFG) of the  JavaScript code in a given file.
 
-If \verb!-cfgBuilder:dot=dot! is given,
+If \verb!-cfgBuilder:dot=name! is given,
 \safe writes the resulting CFG in a graph visualization format
-to file names \verb!dot.gv! and \verb!dot.pdf!.
+to file names \verb!name.gv! and \verb!name.pdf!.
 
 \item \verb!analyze -analyzer:silent!\\
 \hspace*{4.4em}\verb!-analyzer:out={out}!\\
-\hspace*{4.4em}\verb!-analyzer:console!
+\hspace*{4.4em}\verb!-analyzer:console!\\
+\hspace*{4.4em}\verb!-analyzer:html={html}!
 
 analyzes the  JavaScript code in a given file.
 
 If \verb!-analyzer:console! is given,
-\safe enables a user to debug analysis results by navigating the intermediate
+\safe enables a user to debug analysis results by investigating the intermediate
 status of the analysis.
-We describe this facility in the next section.
+
+If \verb!-analyzer:html=name! is given,
+\safe writes the resulting CFG with states that can be investigated to
+file name \verb!name.html!.
+
+We describe these facilities in the next section.
 
 \item \verb!help! shows the usage of \safe commands to the standard output.
 \end{itemize}
@@ -529,4 +535,26 @@ test.js:7:11-20 @Call[1] of function[0] top-level with ()
 
 \medskip\noindent
 \fbox{\texttt{print cfg}}\\[.2em]
-It prints the current CFG as an input file to the \verb!dot! program.
+It prints the current CFG to files \verb!cfg.gv! and \verb!cfg.pdf!.
+
+\medskip\noindent
+\fbox{\texttt{print html}}\\[.2em]
+It prints the current CFG and its state to the \verb!cfg.html! file.
+We describe this facility in the next section.
+
+\subsection{Analyzer debugging with browsing}
+\label{s:3:2:2:refman}
+The \verb!print html! command writes the current status into an HTML file
+so that a user can investigate the analysis status from a browser.
+Consider the following snapshot:
+\begin{figure}[H]
+\includegraphics[width=8.75cm]{htmldebugger.png}
+\end{figure}
+\noindent
+which shows the current CFG in the middle.
+Nodes in black lines denote the blocks that are analyzed,
+those in gray lines denote the blocks not yet being analyzed, and
+colored nodes denote the blocks that are currently in the worklist of the analyzer.
+One can toggle whether to show the nodes in the worklist by the menu button on the top right.
+When a user selects a block from the CFG, the list of the instructions in the block
+and the state just before analyzing the block are displayed on the left.
