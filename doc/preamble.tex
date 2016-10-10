@@ -1,0 +1,170 @@
+% From the MemCAD project
+% https://github.com/Antique-team/memcad
+%
+% Packages
+\RequirePackage[T1]{fontenc}
+\RequirePackage{amsfonts}
+\RequirePackage{amsmath}
+\RequirePackage{amssymb}
+\RequirePackage{amstext}
+\RequirePackage{amsthm}
+\RequirePackage{booktabs}
+\RequirePackage{calc}
+\RequirePackage{color}
+\RequirePackage{fancyhdr}
+\RequirePackage{float}
+\RequirePackage{graphicx}
+% \RequirePackage{hyperref}
+\RequirePackage{listings}
+% \RequirePackage{mathrsfs}
+\RequirePackage{multicol}
+\RequirePackage{multind}
+\RequirePackage{paralist}
+\RequirePackage{relsize}
+\RequirePackage{stmaryrd}
+\RequirePackage{subfigure}
+\RequirePackage{syntax}
+\RequirePackage{tabularx}
+\RequirePackage{url}
+\RequirePackage{xspace}
+
+%-----------------------------------------%
+% Layout                                  %
+%-----------------------------------------%
+% Paper size and page organization
+% Size of the paper
+\setlength{\paperwidth}{210mm}
+\setlength{\paperheight}{297mm}
+% Global layout
+\setlength{\textwidth}{180mm}
+\setlength{\textheight}{235mm}
+\setlength{\hoffset}{-10mm}
+\setlength{\voffset}{-10mm} % was -5mm
+% Margins
+\setlength{\evensidemargin}{0cm}
+\setlength{\oddsidemargin}{0cm}
+% No text in the margins
+\setlength{\marginparsep}{0mm}
+\setlength{\marginparwidth}{0mm}
+\setlength{\marginparpush}{0mm}
+% Headers
+\setlength{\topmargin}{4mm} % {0mm}
+\setlength{\headheight}{15pt}
+\setlength{\headsep}{6mm} % {10mm}
+% Footer
+\setlength{\footskip}{12mm} % {16mm}
+% Starting/ending the multicol mode
+\newcommand{\multibegin}{\begin{multicols}{2}}
+\newcommand{\multiend}{\end{multicols}}
+
+%-----------------------------------------%
+% Typography                              %
+%-----------------------------------------%
+% Abbreviations
+\newcommand{\eg}{e.g.\xspace}
+\newcommand{\ie}{i.e.\xspace}
+% References
+\newcommand{\cref}[1]{Chapter~\ref{c:#1}}
+\newcommand{\sref}[1]{Section~\ref{s:#1}}
+% Fonts for options and such
+\newcommand{\sexec}[1]{\texttt{#1}}
+\newcommand{\sfile}[1]{\texttt{#1}}
+\newcommand{\soption}[1]{\texttt{#1}}
+\newcommand{\scommand}[1]{\texttt{#1}}
+\newcommand{\sfield}[1]{\texttt{#1}}
+\newcommand{\sstmt}[1]{\texttt{#1}}
+\newcommand{\sanalyze}{\sexec{analyze}\xspace}
+\newcommand{\sbatch}{\sexec{batch}\xspace}
+% Definitions, with index entry
+\newcommand{\doption}[1]{\texttt{#1}\index{options}{\texttt{#1}}}
+\newcommand{\dcommand}[1]{\texttt{#1}\index{commands}{\texttt{#1@{#1}}}}
+% Option markers
+\newcommand{\optadv}{\textdagger}
+\newcommand{\optdev}{\textdaggerdbl}
+% Values for options
+\newcommand{\valonoff}{\texttt{[ on | off ]}\xspace}
+\newcommand{\valyesno}{\texttt{[ yes | no ]}\xspace}
+\newcommand{\valint}{\texttt{Integer}\xspace}
+\newcommand{\valstr}{\texttt{String}\xspace}
+\newcommand{\valstrlist}{\texttt{StringList}\xspace}
+
+%-----------------------------------------%
+% Notation for grammars                   %
+%-----------------------------------------%
+% Generic
+\newcommand{\gram}[1]{\underline{\smash{\texttt{#1}}}}
+% Instances
+\newcommand{\grbody}{\gram{body}}
+\newcommand{\grcalloc}{\gram{calloc}}
+\newcommand{\grcnum}{\gram{cnum}}
+\newcommand{\grcset}{\gram{cset}}
+\newcommand{\grdecl}{\gram{decl}}
+\newcommand{\grenum}{\gram{enum}}
+\newcommand{\greset}{\gram{eset}}
+\newcommand{\grfield}{\gram{field}}
+\newcommand{\grind}{\gram{ind}}
+\newcommand{\grindfile}{\gram{indfile}}
+\newcommand{\grintpars}{\gram{intpars}}
+\newcommand{\grloc}{\gram{loc}}
+\newcommand{\grmem}{\gram{mem}}
+\newcommand{\grpars}{\gram{pars}}
+\newcommand{\grpred}{\gram{pred}}
+\newcommand{\grptrpars}{\gram{ptrpars}}
+\newcommand{\grrule}{\gram{rule}}
+\newcommand{\grsetpars}{\gram{setpars}}
+\newcommand{\grside}{\gram{side}}
+\newcommand{\grst}{\gram{st}}
+\newcommand{\grsvars}{\gram{svars}}
+\newcommand{\grtype}{\gram{type}}
+
+%-----------------------------------------%
+% Classical mathematical stuffs           %
+%-----------------------------------------%
+% Logical relations
+\newcommand{\logor}{\mathrel{\vee}}
+\newcommand{\logand}{\mathrel{\wedge}}
+
+% Abstraction
+% Offsets names, fields, etc
+\newcommand{\offset}{\mathbf{offset}}
+\newcommand{\field}[1]{\mathtt{#1}}
+\newcommand{\fldf}{\field{f}}
+\newcommand{\fldg}{\field{g}}
+\newcommand{\flddata}{\field{data}}
+\newcommand{\fldnext}{\field{next}}
+\newcommand{\fldprev}{\field{prev}}
+% Inductive definition names, etc
+\newcommand{\inddef}[1]{\mathtt{#1}}
+\newcommand{\indi}{\iota}
+\newcommand{\indelt}{\inddef{elt}}
+\newcommand{\inddll}{\inddef{dll}}
+\newcommand{\indtree}{\inddef{tree}}
+% Inductive definitions applications
+\newcommand{\icallzz}[1]{#1}
+\newcommand{\icallpz}[2]{#1 \cdot #2}
+\newcommand{\icallzp}[2]{#1( #2 )}
+\newcommand{\icallpp}[3]{#1 \cdot #2( #3 )}
+% Empty region
+\newcommand{\emp}{{\bf emp}}
+% Separating conjuction
+\newcommand{\aster}{\mathbin{\mbox{\relsize{1}\raisebox{-0.1ex}{$\ast$}}}}
+\newcommand{\lsep}{\mathrel{\mathord{\aster}}}
+\newcommand{\clsep}{\mathrel{\mathord{\varoast}}}
+% Points-to edges
+\newcommand{\relpt}[1]{\stackrel{#1}{\mapsto}}
+\newcommand{\pt}{\relpt{}}
+
+% Unsorted macros
+\newcommand{\safe}{SAFE\xspace}
+\newcommand{\memcad}{SAFE\xspace}
+
+% Indexes
+\makeindex{commands}
+\makeindex{options}
+
+
+
+
+%\DeclareMathAlphabet{\mathpzc}{OT1}{pzc}{m}{it}
+
+\newcommand{\commentout}[1]{}

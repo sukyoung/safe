@@ -57,6 +57,8 @@ trait AbsContext extends AbsDomain[Context, AbsContext] {
 
   def setThisBinding(thisBinding: AbsValue): AbsContext
 
+  def getMap: Map[Loc, AbsLexEnv]
+
   def old: OldAddrSet
 
   def thisBinding: AbsValue
@@ -279,6 +281,12 @@ object DefaultContext extends AbsContextUtil {
       case Bot => Bot
       case Top => Top
       case CtxMap(map, old, _) => CtxMap(map, old, thisBinding)
+    }
+
+    def getMap: Map[Loc, AbsLexEnv] = this match {
+      case Bot => HashMap()
+      case Top => HashMap() // TODO it is not sound
+      case CtxMap(map, _, _) => map
     }
 
     def old: OldAddrSet = this match {

@@ -1,0 +1,23 @@
+// XXX
+//  function testcase() 
+//  {
+//    var arr = [];
+//    try
+//{      Array.prototype[0] = false;
+//      Object.defineProperty(arr, "0", {
+//        get : (function () 
+//        {
+//          return true;
+//        }),
+//        configurable : true
+//      });
+//      return 0 === arr.indexOf(true);}
+//    finally
+//{      delete Array.prototype[0];}
+//
+//  }
+//  {
+//    var __result1 = testcase();
+//    var __expect1 = true;
+//  }
+//  

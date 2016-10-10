@@ -19,6 +19,7 @@ function[0] top-level {
     [3] <>arguments<>3 := allocArg(1) @ #2
     [4] <>arguments<>3["0"] := <>temp<>2
     [5] <>fun<>4 := <>Global<>getBase(print)
+    [6] <>this<> := enterCode(<>fun<>4)
 
   Block[4] -> [1], ExitExc
     [0] assert(! "test")
@@ -26,7 +27,7 @@ function[0] top-level {
   Block[5] -> [2]
 
   Call[6] -> ExitExc
-    [0] call(<>obj<>1, <>fun<>4, <>arguments<>3) @ #3
+    [0] call(<>obj<>1, <>this<>, <>arguments<>3) @ #3
 
   AfterCall[7] -> [5]
 

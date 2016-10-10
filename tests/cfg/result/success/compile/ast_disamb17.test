@@ -3,7 +3,6 @@
 lab1 : lab2 : <>break<>1 : {
   while(true)
   {
-    <>continue<>2 : break lab1
+    <>continue<>2 : break <>continue<>2
   }
 }
-

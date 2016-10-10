@@ -1,0 +1,4 @@
+  var object = {
+    null : true
+  };
+  

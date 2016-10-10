@@ -25,7 +25,7 @@ object Safe {
   def main(tokens: Array[String]): Unit = {
     (tokens.toList match {
       case str :: args => cmdMap.get(str) match {
-        case Some(cmd) => cmd(args)
+        case Some(cmd) => cmd(args, false)
         case None => Failure(NoCmdError(str))
       }
       case Nil => Failure(NoInputError)
@@ -53,10 +53,10 @@ object Safe {
     val result: Try[Result] = runner(config)
 
     // print the time spent if the time option is set.
-    if (config.time) {
+    if (!config.silent) {
       val duration = System.currentTimeMillis - startTime
       val name = config.command.name
-      println(s"Command $name took $duration ms.")
+      println(s"The command '$name' took $duration ms.")
     }
 
     // return result
@@ -88,18 +88,18 @@ object Safe {
 
   // global options
   val options: List[PhaseOption[SafeConfig]] = List(
-    ("time", BoolOption(c => c.time = true),
-      ""), // TODO
-    ("verbose", BoolOption(c => c.verbose = true),
-      "") // TODO
+    ("silent", BoolOption(c => c.silent = true),
+      "all messages are muted."),
+    ("testMode", BoolOption(c => c.testMode = true),
+      "switch on the test mode.")
   )
 
   // print usage message.
   val usage: String = {
     val s: StringBuilder = new StringBuilder
     s.append("Usage:").append(LINE_SEP)
-      .append("  safe {command} [-{option}]* [-{phase}:{option}[={input}]]* {filename}*").append(LINE_SEP)
-      .append("  example: safe analyze -time -astRewrite:verbose cfgBuild:out=out test.js").append(LINE_SEP)
+      .append("  safe {command} [-{option}]* [-{phase}:{option}[={input}]]* {filename}+").append(LINE_SEP)
+      .append("  example: safe analyze -astRewriter:silent -cfgBuilder:out=out test.js").append(LINE_SEP)
       .append(LINE_SEP)
       .append("  command list:").append(LINE_SEP)
     commands foreach (cmd => s.append("    %-15s".format(cmd.name)).append(cmd).append(LINE_SEP))
@@ -143,6 +143,6 @@ object Safe {
 case class SafeConfig(
   var command: Command,
   var fileNames: List[String] = Nil,
-  var time: Boolean = false,
-  var verbose: Boolean = false
+  var silent: Boolean = false,
+  var testMode: Boolean = false
 ) extends Config

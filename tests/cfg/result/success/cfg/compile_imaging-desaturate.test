@@ -60,6 +60,7 @@ function[0] top-level {
     [5] <>arguments<>61 := allocArg(1) @ #42
     [6] <>arguments<>61["0"] := <>temp<>60
     [7] <>fun<>62 := <>Global<>toObject(<>obj<>59["process"]) @ #43
+    [8] <>this<> := enterCode(<>obj<>59)
 
   Block[11] -> [8], ExitExc
     [0] assert(! pixcounter < 200)
@@ -71,7 +72,7 @@ function[0] top-level {
     [3] <>Global<>ignore20 := <>new<>64
 
   Call[13] -> ExitExc
-    [0] call(<>fun<>62, <>obj<>59, <>arguments<>61) @ #44
+    [0] call(<>fun<>62, <>this<>, <>arguments<>61) @ #44
 
   AfterCall[14] -> [12]
 

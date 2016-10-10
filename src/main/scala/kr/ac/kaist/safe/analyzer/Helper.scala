@@ -517,7 +517,9 @@ object Helper {
     bopCompareHelp(leftPV, rightPV,
       (leftAbsNum, rightAbsNum) => {
         (leftAbsNum.getSingle, rightAbsNum.getSingle) match {
-          case (ConOne(Num(n1)), ConOne(Num(n2))) if n1.isNaN & n2.isNaN => afalse
+          case (ConOne(Num(n1)), ConOne(Num(n2))) if n1.isNaN || n2.isNaN => afalse
+          case (ConOne(Num(n1)), _) if n1.isNaN => afalse
+          case (_, ConOne(Num(n2))) if n2.isNaN => afalse
           case _ => (rightAbsNum < leftAbsNum).negate
         }
       },
@@ -531,7 +533,9 @@ object Helper {
     bopCompareHelp(leftPV, rightPV,
       (leftAbsNum, rightAbsNum) => {
         (leftAbsNum.getSingle, rightAbsNum.getSingle) match {
-          case (ConOne(Num(n1)), ConOne(Num(n2))) if n1.isNaN & n2.isNaN => afalse
+          case (ConOne(Num(n1)), ConOne(Num(n2))) if n1.isNaN || n2.isNaN => afalse
+          case (ConOne(Num(n1)), _) if n1.isNaN => afalse
+          case (_, ConOne(Num(n2))) if n2.isNaN => afalse
           case _ => (leftAbsNum < rightAbsNum).negate
         }
       },

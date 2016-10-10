@@ -1,0 +1,57 @@
+% Much taken from the MemCAD project:
+%     https://github.com/Antique-team/memcad
+% thanks to Dr. Xavier Rival
+%
+\documentclass[oneside,openany,a4paper,10pt]{book}
+\input{preamble.tex}
+\begin{document}
+%--------------------------------------------------------------------
+% Title and table of contents
+%--------------------------------------------------------------------
+\begin{titlepage}
+    \vspace*{15em}
+    \centering
+    {\bfseries\Huge
+        SAFE 2.0 User Manual\\
+    }    
+        \vskip2cm
+       {\Large
+ Jihyeok Park, Yeonhee Ryou, and Sukyoung Ryu}\\
+~\\
+\large
+\begin{tabular}{c}
+                        \copyright\ KAIST
+\end{tabular}
+\includegraphics[width=2cm]{plrg-logo.png}
+\end{titlepage}
+
+\multibegin
+\raggedcolumns
+
+%--------------------------------------------------------------------
+% Foreword: audience, authors, license, installation
+%--------------------------------------------------------------------
+\input{chap-1-foreword.tex}
+
+%--------------------------------------------------------------------
+% Brief general description of the structure of the analyzer
+%--------------------------------------------------------------------
+\input{chap-2-intro.tex}
+
+%--------------------------------------------------------------------
+% Reference manual with description of the options
+%--------------------------------------------------------------------
+\input{chap-3-refman.tex}
+
+%--------------------------------------------------------------------
+% Appendix
+%--------------------------------------------------------------------
+\input{chap-appendix.tex}
+
+\normalsize
+\bibliographystyle{plain}
+\bibliography{ref}
+
+\multiend
+
+\end{document}

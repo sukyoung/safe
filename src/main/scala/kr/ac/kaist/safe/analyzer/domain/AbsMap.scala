@@ -230,8 +230,8 @@ sealed abstract class AbsMap(
   def delete(str: String): (AbsMap, AbsBool) = {
     val astr = AbsString(str)
     val (domIn, configurable) =
-      if (this.map.keySet contains astr) (true, AbsBool.True <= this.map(astr).configurable)
-      else (false, false)
+      if (this.map.keySet contains astr) (true, this.map(astr).configurable)
+      else (false, AbsBool.Bot)
     val newDefSet = this.defset - str
 
     this match {
@@ -239,17 +239,24 @@ sealed abstract class AbsMap(
       case _ if !domIn =>
         val newAbsMap = AbsMapFin(this.map, newDefSet)
         (newAbsMap, AbsBool.Top)
-      case _ if domIn && !configurable => (this, AbsBool.False)
-      case _ if domIn && configurable =>
-        val newAbsMap = AbsMapFin(this.map - astr, newDefSet)
-        (newAbsMap, AbsBool.True)
+      case _ if domIn => {
+        val (falseMap, falseB) =
+          if (AbsBool.False <= configurable) (this, AbsBool.False)
+          else (AbsMapBot, AbsBool.Bot)
+        val (trueMap, trueB) =
+          if (AbsBool.True <= configurable) {
+            val newAbsMap = AbsMapFin(this.map - astr, newDefSet)
+            (newAbsMap, AbsBool.True)
+          } else (AbsMapBot, AbsBool.Bot)
+        (falseMap + trueMap, falseB + trueB)
+      }
     }
   }
 
   def delete(astr: AbsString): (AbsMap, AbsBool) = {
     val (domIn, configurable) =
-      if (this.map.keySet contains astr) (true, AbsBool.True <= this.map(astr).configurable)
-      else (false, false)
+      if (this.map.keySet contains astr) (true, this.map(astr).configurable)
+      else (false, AbsBool.Bot)
     val defSetEmpty = DefSetFin(HashSet[String]())
 
     (this, astr.gamma) match {
@@ -264,10 +271,17 @@ sealed abstract class AbsMap(
       case (_, ConInf()) if !domIn =>
         val newAbsMap = AbsMapFin(this.map, defSetEmpty)
         (newAbsMap, AbsBool.Top)
-      case (_, ConInf()) if domIn && !configurable => (this, AbsBool.Top)
-      case (_, ConInf()) if domIn && configurable =>
-        val newAbsMap = AbsMapFin(this.map - astr, defSetEmpty)
-        (newAbsMap, AbsBool.Top)
+      case (_, ConInf()) if domIn => {
+        val (falseMap, falseB) =
+          if (AbsBool.False <= configurable) (this, AbsBool.Top)
+          else (AbsMapBot, AbsBool.Bot)
+        val (trueMap, trueB) =
+          if (AbsBool.True <= configurable) {
+            val newAbsMap = AbsMapFin(this.map - astr, defSetEmpty)
+            (newAbsMap, AbsBool.Top)
+          } else (AbsMapBot, AbsBool.Bot)
+        (falseMap + trueMap, falseB + trueB)
+      }
     }
   }
 

@@ -189,8 +189,8 @@ object BuiltinNumberProto extends ObjModel(
         // 1. Let f be ToInteger(fractionDigits).
         // (If fractionDigits is undefined, this step produces the value 0).
         val frac = Helper.propLoad(args, Set(AbsString("0")), h)
-        val argV = (if (AbsUndef.Top <= frac) AbsNumber(0) else AbsNumber.Bot)
-        val f = TypeConversionHelper.ToInteger(argV)
+        val undefV = (if (AbsUndef.Top <= frac) AbsNumber(0) else AbsNumber.Bot)
+        val f = TypeConversionHelper.ToInteger(frac) + undefV
         // 2. If f < 0 or f > 20, throw a RangeError exception.
         if (AbsBool.True <= Helper.bopGreater(f, AbsNumber(20)) ||
           AbsBool.True <= Helper.bopLess(f, AbsNumber(0))) {

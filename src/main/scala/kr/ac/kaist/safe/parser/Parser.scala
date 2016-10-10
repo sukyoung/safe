@@ -36,6 +36,34 @@ object Parser {
     result
   }
 
+  // Used by DynamicRewriter
+  def stringToE(str: (String, (Int, Int), String)): Try[Expr] = {
+    val (fileName, (line, offset), code) = str
+    val sr = new StringReader(code)
+    val in = new BufferedReader(sr)
+    val ast = new JS(in, fileName).JSExpr(0).asInstanceOf[SemanticValue].value.asInstanceOf[Expr]
+    val result = Try(NU.AddLinesWalker.addLines(
+      ast,
+      line - 1, offset - 1
+    ))
+    in.close; sr.close
+    result
+  }
+
+  // Used by DynamicRewriter
+  def stringToLHS(str: (String, (Int, Int), String)): Try[LHS] = {
+    val (fileName, (line, offset), code) = str
+    val sr = new StringReader(code)
+    val in = new BufferedReader(sr)
+    val ast = new JS(in, fileName).JSLHS(0).asInstanceOf[SemanticValue].value.asInstanceOf[LHS]
+    val result = Try(NU.AddLinesWalker.addLines(
+      ast,
+      line - 1, offset - 1
+    ))
+    in.close; sr.close
+    result
+  }
+
   // Used by CoreTest
   def stringToAST(str: String): Try[(Program, ExcLog)] = {
     val sr = new StringReader(str)

@@ -54,8 +54,8 @@ case object Compile extends PhaseObj[Program, CompileConfig, IRRoot] {
 
   def defaultConfig: CompileConfig = CompileConfig()
   val options: List[PhaseOption[CompileConfig]] = List(
-    ("verbose", BoolOption(c => c.verbose = true),
-      "messages during compilation are printed."),
+    ("silent", BoolOption(c => c.silent = true),
+      "messages during compilation are muted."),
     ("out", StrOption((c, s) => c.outFile = Some(s)),
       "the resulting IR will be written to the outfile.")
   )
@@ -63,6 +63,6 @@ case object Compile extends PhaseObj[Program, CompileConfig, IRRoot] {
 
 // Compile phase config
 case class CompileConfig(
-  var verbose: Boolean = false,
+  var silent: Boolean = false,
   var outFile: Option[String] = None
 ) extends Config

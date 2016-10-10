@@ -32,9 +32,10 @@ function[2] g {
     [0] <>obj<>3 := <>Global<>toObject(f) @ #3
     [1] <>arguments<>4 := allocArg(0) @ #4
     [2] <>fun<>5 := <>Global<>getBase(f)
+    [3] <>this<> := enterCode(<>fun<>5)
 
   Call[1] -> ExitExc
-    [0] call(<>obj<>3, <>fun<>5, <>arguments<>4) @ #5
+    [0] call(<>obj<>3, <>this<>, <>arguments<>4) @ #5
 
   AfterCall[2] -> [4]
 

@@ -1,4 +1,4 @@
-//   TODO Double.toString()
+//   TODO getter/setter
 //   function testcase() 
 //   {
 //     var obj = {

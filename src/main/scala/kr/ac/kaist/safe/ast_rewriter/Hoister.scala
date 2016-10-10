@@ -292,12 +292,6 @@ class Hoister(program: Program) {
           case _ =>
         }
 
-      case fa @ FunApp(info, fun, List(StringLiteral(_, _, str, _))) if (fun.isEval) =>
-        Parser.scriptToAST(List(("evalParse", (1, 1), str))) recover {
-          case e => excLog.signal(EvalArgSyntaxError(str, fa))
-        }
-        super.walk(fa)
-
       case _ => super.walk(node)
     }
 

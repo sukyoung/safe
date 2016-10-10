@@ -53,6 +53,7 @@ function[0] top-level {
     [12] <>arguments<>13 := allocArg(1) @ #8
     [13] <>arguments<>13["0"] := <>temp<>12
     [14] <>fun<>14 := <>Global<>getBase(x)
+    [15] <>this<> := enterCode(<>fun<>14)
 
   Block[11] -> [3], [37]
     [0] <>obj<>15 := <>Global<>toObject(y) @ #11
@@ -61,7 +62,7 @@ function[0] top-level {
     [3] <>obj<>15["d"] := <>Global<>ignore6
 
   Call[12] -> [15]
-    [0] call(<>obj<>7, <>fun<>14, <>arguments<>13) @ #9
+    [0] call(<>obj<>7, <>this<>, <>arguments<>13) @ #9
 
   AfterCall[13] -> [11]
 

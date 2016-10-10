@@ -2,10 +2,10 @@ function[0] top-level {
   Entry[-1] -> [0]
 
   Block[0] -> [1], ExitExc
-    A LOT!!! 427209 instructions are not printed here.
+    A LOT!!! 427210 instructions are not printed here.
 
   Call[1] -> ExitExc
-    [0] call(<>obj<>141, <>fun<>143, <>arguments<>142) @ #123
+    [0] call(<>obj<>141, <>this<>, <>arguments<>142) @ #123
 
   AfterCall[2] -> [4]
 
@@ -17,9 +17,10 @@ function[0] top-level {
     [2] <>obj<>144 := <>Global<>toObject(gaussianBlur) @ #125
     [3] <>arguments<>145 := allocArg(0) @ #126
     [4] <>fun<>146 := <>Global<>getBase(gaussianBlur)
+    [5] <>this<> := enterCode(<>fun<>146)
 
   Call[5] -> ExitExc
-    [0] call(<>obj<>144, <>fun<>146, <>arguments<>145) @ #127
+    [0] call(<>obj<>144, <>this<>, <>arguments<>145) @ #127
 
   AfterCall[6] -> [8]
 
@@ -49,9 +50,10 @@ function[1] buildKernel {
     [8] <>arguments<>11 := allocArg(1) @ #5
     [9] <>arguments<>11["0"] := <>temp<>10
     [10] <>fun<>12 := <>Global<>toObject(<>obj<>9["push"]) @ #6
+    [11] <>this<> := enterCode(<>obj<>9)
 
   Call[1] -> ExitExc
-    [0] call(<>fun<>12, <>obj<>9, <>arguments<>11) @ #7
+    [0] call(<>fun<>12, <>this<>, <>arguments<>11) @ #7
 
   AfterCall[2] -> [4]
 
@@ -64,6 +66,7 @@ function[1] buildKernel {
     [3] <>arguments<>15 := allocArg(1) @ #10
     [4] <>arguments<>15["0"] := <>temp<>14
     [5] <>fun<>16 := <>Global<>toObject(<>obj<>13["exp"]) @ #11
+    [6] <>this<> := enterCode(<>obj<>13)
 
   Block[5] -> [34], ExitExc
     [0] kernelSize := <>i<>3
@@ -73,7 +76,7 @@ function[1] buildKernel {
   Block[6] -> [18]
 
   Call[7] -> ExitExc
-    [0] call(<>fun<>16, <>obj<>13, <>arguments<>15) @ #12
+    [0] call(<>fun<>16, <>this<>, <>arguments<>15) @ #12
 
   AfterCall[8] -> [10]
 
@@ -95,9 +98,10 @@ function[1] buildKernel {
     [3] <>arguments<>21 := allocArg(1) @ #16
     [4] <>arguments<>21["0"] := <>temp<>20
     [5] <>fun<>22 := <>Global<>toObject(<>obj<>19["push"]) @ #17
+    [6] <>this<> := enterCode(<>obj<>19)
 
   Call[14] -> ExitExc
-    [0] call(<>fun<>22, <>obj<>19, <>arguments<>21) @ #18
+    [0] call(<>fun<>22, <>this<>, <>arguments<>21) @ #18
 
   AfterCall[15] -> [17]
 
@@ -118,6 +122,7 @@ function[1] buildKernel {
     [3] <>arguments<>15 := allocArg(1) @ #21
     [4] <>arguments<>15["0"] := <>temp<>14
     [5] <>fun<>16 := <>Global<>toObject(<>obj<>13["exp"]) @ #22
+    [6] <>this<> := enterCode(<>obj<>13)
 
   Block[20] -> [5], ExitExc
     [0] assert(! <>i<>3 < 7)
@@ -125,7 +130,7 @@ function[1] buildKernel {
   Block[21] -> [18]
 
   Call[22] -> ExitExc
-    [0] call(<>fun<>16, <>obj<>13, <>arguments<>15) @ #23
+    [0] call(<>fun<>16, <>this<>, <>arguments<>15) @ #23
 
   AfterCall[23] -> [25]
 
@@ -147,9 +152,10 @@ function[1] buildKernel {
     [3] <>arguments<>21 := allocArg(1) @ #27
     [4] <>arguments<>21["0"] := <>temp<>20
     [5] <>fun<>22 := <>Global<>toObject(<>obj<>19["push"]) @ #28
+    [6] <>this<> := enterCode(<>obj<>19)
 
   Call[29] -> ExitExc
-    [0] call(<>fun<>22, <>obj<>19, <>arguments<>21) @ #29
+    [0] call(<>fun<>22, <>this<>, <>arguments<>21) @ #29
 
   AfterCall[30] -> [32]
 
@@ -175,6 +181,7 @@ function[1] buildKernel {
     [3] <>arguments<>27 := allocArg(1) @ #33
     [4] <>arguments<>27["0"] := <>temp<>26
     [5] <>fun<>28 := <>Global<>toObject(<>obj<>25["push"]) @ #34
+    [6] <>this<> := enterCode(<>obj<>25)
 
   Block[36] -> [33], ExitExc
     [0] assert(! <>j<>4 < kernelSize)
@@ -186,7 +193,7 @@ function[1] buildKernel {
     [3] <>Global<>ignore14 := <>new<>42 + 1
 
   Call[38] -> ExitExc
-    [0] call(<>fun<>28, <>obj<>25, <>arguments<>27) @ #35
+    [0] call(<>fun<>28, <>this<>, <>arguments<>27) @ #35
 
   AfterCall[39] -> [42]
 
@@ -207,6 +214,7 @@ function[1] buildKernel {
     [3] <>arguments<>31 := allocArg(1) @ #38
     [4] <>arguments<>31["0"] := <>temp<>30
     [5] <>fun<>32 := <>Global<>toObject(<>obj<>29["exp"]) @ #39
+    [6] <>this<> := enterCode(<>obj<>29)
 
   Block[45] -> [41], ExitExc
     [0] assert(! <>i<>3 < kernelSize)
@@ -218,7 +226,7 @@ function[1] buildKernel {
     [3] <>Global<>ignore19 := <>new<>40 + 1
 
   Call[47] -> ExitExc
-    [0] call(<>fun<>32, <>obj<>29, <>arguments<>31) @ #40
+    [0] call(<>fun<>32, <>this<>, <>arguments<>31) @ #40
 
   AfterCall[48] -> [50]
 
@@ -232,9 +240,10 @@ function[1] buildKernel {
     [4] <>arguments<>37 := allocArg(1) @ #44
     [5] <>arguments<>37["0"] := <>temp<>36
     [6] <>fun<>38 := <>Global<>toObject(<>obj<>35["push"]) @ #45
+    [7] <>this<> := enterCode(<>obj<>35)
 
   Call[51] -> ExitExc
-    [0] call(<>fun<>38, <>obj<>35, <>arguments<>37) @ #46
+    [0] call(<>fun<>38, <>this<>, <>arguments<>37) @ #46
 
   AfterCall[52] -> [46]
 
@@ -271,6 +280,7 @@ function[1] buildKernel {
     [5] <>arguments<>47 := allocArg(1) @ #50
     [6] <>arguments<>47["0"] := <>temp<>46
     [7] <>fun<>48 := <>Global<>toObject(<>obj<>45["abs"]) @ #51
+    [8] <>this<> := enterCode(<>obj<>45)
 
   Block[62] -> [59], ExitExc
     [0] assert(! <>i<>3 < kernelSize)
@@ -282,7 +292,7 @@ function[1] buildKernel {
     [3] <>Global<>ignore30 := <>new<>57 + 1
 
   Call[64] -> ExitExc
-    [0] call(<>fun<>48, <>obj<>45, <>arguments<>47) @ #52
+    [0] call(<>fun<>48, <>this<>, <>arguments<>47) @ #52
 
   AfterCall[65] -> [67]
 
@@ -295,9 +305,10 @@ function[1] buildKernel {
     [3] <>arguments<>53 := allocArg(1) @ #56
     [4] <>arguments<>53["0"] := <>temp<>52
     [5] <>fun<>54 := <>Global<>toObject(<>obj<>51["abs"]) @ #57
+    [6] <>this<> := enterCode(<>obj<>51)
 
   Call[68] -> ExitExc
-    [0] call(<>fun<>54, <>obj<>51, <>arguments<>53) @ #58
+    [0] call(<>fun<>54, <>this<>, <>arguments<>53) @ #58
 
   AfterCall[69] -> [71]
 
@@ -428,6 +439,7 @@ function[2] gaussianBlur {
     [6] <>arguments<>75 := allocArg(1) @ #65
     [7] <>arguments<>75["0"] := <>temp<>74
     [8] <>fun<>76 := <>Global<>toObject(<>obj<>73["abs"]) @ #66
+    [9] <>this<> := enterCode(<>obj<>73)
 
   Block[30] -> [28]
 
@@ -448,7 +460,7 @@ function[2] gaussianBlur {
   Block[36] -> [29]
 
   Call[37] -> ExitExc
-    [0] call(<>fun<>76, <>obj<>73, <>arguments<>75) @ #67
+    [0] call(<>fun<>76, <>this<>, <>arguments<>75) @ #67
 
   AfterCall[38] -> [40]
 
@@ -461,9 +473,10 @@ function[2] gaussianBlur {
     [3] <>arguments<>81 := allocArg(1) @ #71
     [4] <>arguments<>81["0"] := <>temp<>80
     [5] <>fun<>82 := <>Global<>toObject(<>obj<>79["abs"]) @ #72
+    [6] <>this<> := enterCode(<>obj<>79)
 
   Call[41] -> ExitExc
-    [0] call(<>fun<>82, <>obj<>79, <>arguments<>81) @ #73
+    [0] call(<>fun<>82, <>this<>, <>arguments<>81) @ #73
 
   AfterCall[42] -> [44]
 
@@ -480,9 +493,10 @@ function[2] gaussianBlur {
     [7] <>arguments<>90 := allocArg(1) @ #78
     [8] <>arguments<>90["0"] := <>temp<>89
     [9] <>fun<>91 := <>Global<>toObject(<>obj<>88["abs"]) @ #79
+    [10] <>this<> := enterCode(<>obj<>88)
 
   Call[45] -> ExitExc
-    [0] call(<>fun<>91, <>obj<>88, <>arguments<>90) @ #80
+    [0] call(<>fun<>91, <>this<>, <>arguments<>90) @ #80
 
   AfterCall[46] -> [48]
 
@@ -495,9 +509,10 @@ function[2] gaussianBlur {
     [3] <>arguments<>96 := allocArg(1) @ #84
     [4] <>arguments<>96["0"] := <>temp<>95
     [5] <>fun<>97 := <>Global<>toObject(<>obj<>94["abs"]) @ #85
+    [6] <>this<> := enterCode(<>obj<>94)
 
   Call[49] -> ExitExc
-    [0] call(<>fun<>97, <>obj<>94, <>arguments<>96) @ #86
+    [0] call(<>fun<>97, <>this<>, <>arguments<>96) @ #86
 
   AfterCall[50] -> [52]
 
@@ -514,9 +529,10 @@ function[2] gaussianBlur {
     [7] <>arguments<>105 := allocArg(1) @ #91
     [8] <>arguments<>105["0"] := <>temp<>104
     [9] <>fun<>106 := <>Global<>toObject(<>obj<>103["abs"]) @ #92
+    [10] <>this<> := enterCode(<>obj<>103)
 
   Call[53] -> ExitExc
-    [0] call(<>fun<>106, <>obj<>103, <>arguments<>105) @ #93
+    [0] call(<>fun<>106, <>this<>, <>arguments<>105) @ #93
 
   AfterCall[54] -> [56]
 
@@ -529,9 +545,10 @@ function[2] gaussianBlur {
     [3] <>arguments<>111 := allocArg(1) @ #97
     [4] <>arguments<>111["0"] := <>temp<>110
     [5] <>fun<>112 := <>Global<>toObject(<>obj<>109["abs"]) @ #98
+    [6] <>this<> := enterCode(<>obj<>109)
 
   Call[57] -> ExitExc
-    [0] call(<>fun<>112, <>obj<>109, <>arguments<>111) @ #99
+    [0] call(<>fun<>112, <>this<>, <>arguments<>111) @ #99
 
   AfterCall[58] -> [60]
 
@@ -548,9 +565,10 @@ function[2] gaussianBlur {
     [7] <>arguments<>120 := allocArg(1) @ #104
     [8] <>arguments<>120["0"] := <>temp<>119
     [9] <>fun<>121 := <>Global<>toObject(<>obj<>118["abs"]) @ #105
+    [10] <>this<> := enterCode(<>obj<>118)
 
   Call[61] -> ExitExc
-    [0] call(<>fun<>121, <>obj<>118, <>arguments<>120) @ #106
+    [0] call(<>fun<>121, <>this<>, <>arguments<>120) @ #106
 
   AfterCall[62] -> [64]
 
@@ -563,9 +581,10 @@ function[2] gaussianBlur {
     [3] <>arguments<>126 := allocArg(1) @ #110
     [4] <>arguments<>126["0"] := <>temp<>125
     [5] <>fun<>127 := <>Global<>toObject(<>obj<>124["abs"]) @ #111
+    [6] <>this<> := enterCode(<>obj<>124)
 
   Call[65] -> ExitExc
-    [0] call(<>fun<>127, <>obj<>124, <>arguments<>126) @ #112
+    [0] call(<>fun<>127, <>this<>, <>arguments<>126) @ #112
 
   AfterCall[66] -> [68]
 

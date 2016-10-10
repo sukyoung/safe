@@ -121,7 +121,7 @@ object BuiltinObjectProto extends ObjModel(
     // 15.2.4.2 Object.prototype.toString()
     NormalProp("toString", FuncModel(
       name = "Object.prototype.toString",
-      code = PureCode(argLen = 0, BuiltinObjectHelper.toString)
+      code = BasicCode(argLen = 0, BuiltinObjectHelper.toString)
     ), T, F, T),
 
     // 15.2.4.3 Object.prototype.toLocaleString()
@@ -129,31 +129,31 @@ object BuiltinObjectProto extends ObjModel(
       name = "Object.prototype.toLocaleString",
       // TODO unsound: not use locale function.
       // we should fix this unsound manner by using CallCode.
-      code = PureCode(argLen = 0, BuiltinObjectHelper.toString)
+      code = BasicCode(argLen = 0, BuiltinObjectHelper.toString)
     ), T, F, T),
 
     // 15.2.4.4 Object.prototype.valueOf()
     NormalProp("valueOf", FuncModel(
       name = "Object.prototype.valueOf",
-      code = PureCode(argLen = 0, BuiltinObjectHelper.valueOf)
+      code = BasicCode(argLen = 0, BuiltinObjectHelper.valueOf)
     ), T, F, T),
 
     // 15.2.4.5 Object.prototype.hasOwnProperty(V)
     NormalProp("hasOwnProperty", FuncModel(
       name = "Object.prototype.hasOwnProperty",
-      code = PureCode(argLen = 1, BuiltinObjectHelper.hasOwnProperty)
+      code = BasicCode(argLen = 1, BuiltinObjectHelper.hasOwnProperty)
     ), T, F, T),
 
     // 15.2.4.6 Object.prototype.isPrototypeOf(V)
     NormalProp("isPrototypeOf", FuncModel(
       name = "Object.prototype.isPrototypeOf",
-      code = PureCode(argLen = 1, BuiltinObjectHelper.isPrototypeOf)
+      code = BasicCode(argLen = 1, BuiltinObjectHelper.isPrototypeOf)
     ), T, F, T),
 
     // 15.2.4.7 Object.prototype.propertyIsEnumerable(V)
     NormalProp("propertyIsEnumerable", FuncModel(
       name = "Object.prototype.propertyIsEnumerable",
-      code = PureCode(argLen = 1, BuiltinObjectHelper.propertyIsEnumerable)
+      code = BasicCode(argLen = 1, BuiltinObjectHelper.propertyIsEnumerable)
     ), T, F, T)
   )
 )
@@ -171,11 +171,16 @@ object BuiltinObjectHelper {
     //    then, return ToObject(value)
     //    XXX: We do not consider an implementation-dependent actions
     //         for a host objects)
-    val (v2, st2, _) = TypeConversionHelper.ToObject(argV, st, addr)
+    val (v1, st1) =
+      if (argV.pvalue.copyWith(undefval = AbsUndef.Bot, nullval = AbsNull.Bot).isBottom && argV.locset.isBottom) (AbsValue.Bot, State.Bot)
+      else {
+        val (loc, state, _) = TypeConversionHelper.ToObject(argV, st, addr)
+        (AbsValue(loc), state)
+      }
 
     // 2. Else, return a newly created native ECMAScript object.
     val pv = argV.pvalue
-    val (v1, st1) =
+    val (v2, st2) =
       if (pv.undefval.isBottom && pv.nullval.isBottom) (AbsValue.Bot, State.Bot)
       else newObjSt(st, addr)
 
@@ -346,7 +351,7 @@ object BuiltinObjectHelper {
     val propsV = Helper.propLoad(args, Set(AbsString("1")), h)
 
     val (retSt, excSet) = defProps(objV, propsV, st)
-    val excSt = st.raiseException(excSet)
+    val excSt = retSt.raiseException(excSet)
 
     (retSt, excSt, objV.locset)
   }
@@ -555,55 +560,70 @@ object BuiltinObjectHelper {
   ////////////////////////////////////////////////////////////////
   // Object.prototype
   ////////////////////////////////////////////////////////////////
-  def toString(args: AbsValue, st: State): AbsValue = {
+  def toString(args: AbsValue, st: State): (State, State, AbsValue) = {
     val h = st.heap
-    val thisLoc = st.context.thisBinding.locset
-    // XXX: 1. If the this value is undefined, return "[object Undefined]".
-    // XXX: 2. If the this value is null, return "[object Null]".
-    // XXX: 3. Let O be the result of calling ToObject passing the this value as the argument.
-    // TODO current "this" value only have location. we should change!
+    val thisBinding = st.context.thisBinding
+    val thisLoc = thisBinding.locset
+    // 1. If the this value is undefined, return "[object Undefined]".
+    val (checkU, undef) = thisBinding.pvalue.undefval.fold((false, AbsString.Bot))(_ => (true, AbsString("[object Undefined]")))
+    // 2. If the this value is null, return "[object Null]".
+    val (checkN, nu) = thisBinding.pvalue.nullval.fold((false, AbsString.Bot))(_ => (true, AbsString("[object Null]")))
+    // 3. Let O be the result of calling ToObject passing the this value as the argument.
+    val addr = SystemAddr("Object.prototype.toString<object>")
+    val (loc1, st1, _) = TypeConversionHelper.ToObject(thisBinding, st, addr)
+    val obj = st1.heap.get(loc1)
     // 4. Let class be the value of the [[Class]] internal property of O.
-    val obj = h.get(thisLoc)
     val className = obj(IClass).value.pvalue.strval
     // 5. Return the String value that is the result of concatenating the three Strings "[object ", class, and "]".
-    AbsString("[object ") concat className concat AbsString("]")
+    val result = undef + nu + (AbsString("[object ") concat className concat AbsString("]"))
+    val finalSt =
+      if (checkU || checkN) st + st1
+      else st1
+    (finalSt, State.Bot, result)
   }
 
-  def valueOf(args: AbsValue, st: State): AbsValue = {
+  def valueOf(args: AbsValue, st: State): (State, State, AbsValue) = {
     val h = st.heap
-    val thisLoc = st.context.thisBinding.locset
-    // XXX: 1. Let O be the result of calling ToObject passing the this value as the argument.
-    // TODO current "this" value only have location. we should change!
+    val thisBinding = st.context.thisBinding
+    // 1. Let O be the result of calling ToObject passing the this value as the argument.
+    val addr = SystemAddr("Object.prototype.valueOf<object>")
+    val (loc, state, excSet) = TypeConversionHelper.ToObject(thisBinding, st, addr)
+    val excSt = st.raiseException(excSet)
+
     // 2. Return O.
-    thisLoc
+    (state, excSt, AbsValue(loc))
   }
 
-  def hasOwnProperty(args: AbsValue, st: State): AbsValue = {
+  def hasOwnProperty(args: AbsValue, st: State): (State, State, AbsValue) = {
     val h = st.heap
     val value = Helper.propLoad(args, Set(AbsString("0")), h)
-    val thisLoc = st.context.thisBinding.locset
+    val thisBinding = st.context.thisBinding
     // 1. Let P be ToString(V).
     val prop = TypeConversionHelper.ToString(value)
-    // XXX: 2. Let O be the result of calling ToObject passing the this value as the argument.
-    // TODO current "this" value only have location. we should change!
+    // 2. Let O be the result of calling ToObject passing the this value as the argument.
+    val addr = SystemAddr("Object.prototype.hasOwnProperty<object>")
+    val (thisLoc, state, excSet) = TypeConversionHelper.ToObject(thisBinding, st, addr)
     // 3. Let desc be the result of calling the [[GetOwnProperty]] internal method of O passing P as the argument.
-    val obj = h.get(thisLoc)
+    val obj = state.heap.get(thisLoc)
     val (desc, undef) = obj.GetOwnProperty(prop)
     // 4. If desc is undefined, return false.
     val falseV = undef.fold(AbsBool.Bot)(_ => AbsBool.False)
     // 5. Return true.
     val trueV = desc.fold(AbsBool.Bot)(_ => AbsBool.True)
-    falseV + trueV
+    val excSt = st.raiseException(excSet)
+
+    (state, excSt, falseV + trueV)
   }
 
-  def isPrototypeOf(args: AbsValue, st: State): AbsValue = {
-    val h = st.heap
-    val value = Helper.propLoad(args, Set(AbsString("0")), h)
-    val thisLoc = st.context.thisBinding.locset
+  def isPrototypeOf(args: AbsValue, st: State): (State, State, AbsValue) = {
+    val value = Helper.propLoad(args, Set(AbsString("0")), st.heap)
+    val thisBinding = st.context.thisBinding
     // 1. If V is not an object, return false.
     val v1 = value.pvalue.fold(AbsBool.Bot)(_ => AbsBool.False)
-    // XXX: 2. Let O be the result of calling ToObject passing the this value as the argument.
-    // TODO current "this" value only have location. we should change!
+    // 2. Let O be the result of calling ToObject passing the this value as the argument.
+    val addr = SystemAddr("Object.prototype.isPrototypeOf<object>")
+    val (thisLoc, state, excSet) = TypeConversionHelper.ToObject(thisBinding, st, addr)
+    val h = state.heap
     // 3. Repeat
     var visited: Set[Loc] = HashSet()
     def repeat(loc: Loc): AbsBool = {
@@ -622,17 +642,20 @@ object BuiltinObjectHelper {
         value.locset.foldLeft(falseV + trueV)(_ + repeat(_))
       }
     }
-    value.locset.foldLeft(v1)(_ + repeat(_))
+    val result = value.locset.foldLeft(v1)(_ + repeat(_))
+    val excSt = st.raiseException(excSet)
+    (state, excSt, result)
   }
 
-  def propertyIsEnumerable(args: AbsValue, st: State): AbsValue = {
-    val h = st.heap
-    val value = Helper.propLoad(args, Set(AbsString("0")), h)
-    val thisLoc = st.context.thisBinding.locset
+  def propertyIsEnumerable(args: AbsValue, st: State): (State, State, AbsValue) = {
+    val value = Helper.propLoad(args, Set(AbsString("0")), st.heap)
+    val thisBinding = st.context.thisBinding
     // 1. Let P be ToString(V).
     val prop = TypeConversionHelper.ToString(value)
-    // XXX: 2. Let O be the result of calling ToObject passing the this value as the argument.
-    // TODO current "this" value only have location. we should change!
+    // 2. Let O be the result of calling ToObject passing the this value as the argument.
+    val addr = SystemAddr("Object.prototype.propertyIsEnumerable<object>")
+    val (thisLoc, state, excSet) = TypeConversionHelper.ToObject(thisBinding, st, addr)
+    val h = state.heap
     // 3. Let desc be the result of calling the [[GetOwnProperty]] internal method of O passing P as the argument.
     val obj = h.get(thisLoc)
     val (desc, undef) = obj.GetOwnProperty(prop)
@@ -640,7 +663,9 @@ object BuiltinObjectHelper {
     val undefV = undef.fold(AbsBool.Bot)(_ => AbsBool.False)
     // 5. Return the value of desc.[[Enumerable]].
     val (enum, _) = desc.enumerable
-    undefV + enum
+    val result = undefV + enum
+    val excSt = st.raiseException(excSet)
+    (state, excSt, result)
   }
 
   ////////////////////////////////////////////////////////////////
@@ -696,10 +721,10 @@ object BuiltinObjectHelper {
     val excSet = objCheck(objV)
     // 2. Let props be ToObject(Properties).
     val addr = SystemAddr("Object.defineProperties<props>")
-    val (v1, st1, toExcSet) = TypeConversionHelper.ToObject(propsV, st, addr)
+    val (loc1, st1, toExcSet) = TypeConversionHelper.ToObject(propsV, st, addr)
     val h1 = st1.heap
     val ctx1 = st1.context
-    val props = h1.get(v1.locset)
+    val props = h1.get(loc1)
     // 4. For each enumerable property of props whose name String is P
     val keyStrSet = props.amap.abstractKeySet((key, dp) => {
       AbsBool.True <= dp.enumerable

@@ -49,14 +49,14 @@ object BuiltinArrayProto extends ObjModel(
     // 15.4.4.2 Array.prototype.toString()
     NormalProp("toString", FuncModel(
       name = "Array.prototype.toString",
-      code = PureCode(argLen = 0, BuiltinArrayHelper.toString)
+      code = BasicCode(argLen = 0, BuiltinArrayHelper.toString)
     ), T, F, T),
 
     // 15.4.4.3 Array.prototype.toLocaleString()
     NormalProp("toLocaleString", FuncModel(
       name = "Array.prototype.toLocaleString",
       // TODO unsound!!: not following ECMAScript spec
-      code = PureCode(argLen = 0, BuiltinArrayHelper.toString)
+      code = BasicCode(argLen = 0, BuiltinArrayHelper.toString)
     ), T, F, T),
 
     // 15.4.4.4 Array.prototype.concat([item1[, item2[, ... ]]])
@@ -68,7 +68,7 @@ object BuiltinArrayProto extends ObjModel(
     // 15.4.4.5 Array.prototype.join(separator)
     NormalProp("join", FuncModel(
       name = "Array.prototype.join",
-      code = PureCode(argLen = 1, BuiltinArrayHelper.join)
+      code = BasicCode(argLen = 1, BuiltinArrayHelper.join)
     ), T, F, T),
 
     // 15.4.4.6 Array.prototype.pop()
@@ -122,13 +122,13 @@ object BuiltinArrayProto extends ObjModel(
     // 15.4.4.14 Array.prototype.indexOf(searchElement[, fromIndex])
     NormalProp("indexOf", FuncModel(
       name = "Array.prototype.indexOf",
-      code = PureCode(argLen = 1, BuiltinArrayHelper.indexOf)
+      code = BasicCode(argLen = 1, BuiltinArrayHelper.indexOf)
     ), T, F, T),
 
     // 15.4.4.15 Array.prototype.lastIndexOf(searchElement[, fromIndex ])
     NormalProp("lastIndexOf", FuncModel(
       name = "Array.prototype.lastIndexOf",
-      code = PureCode(argLen = 1, BuiltinArrayHelper.lastIndexOf)
+      code = BasicCode(argLen = 1, BuiltinArrayHelper.lastIndexOf)
     ), T, F, T),
 
     // TODO 15.4.4.16 Array.prototype.every(callbackfn [, thisArg ])
@@ -265,11 +265,13 @@ object BuiltinArrayHelper {
   ////////////////////////////////////////////////////////////////
   // Array.prototype
   ////////////////////////////////////////////////////////////////
-  def toString(args: AbsValue, st: State): AbsValue = {
-    val h = st.heap
-    // XXX: 1. Let array be the result of calling ToObject on the this value.
-    // TODO current "this" value only have location. we should change!
-    val thisLoc = st.context.thisBinding.locset
+  def toString(args: AbsValue, st: State): (State, State, AbsValue) = {
+    // 1. Let array be the result of calling ToObject on the this value.
+    val addr = SystemAddr("Array.prototype.toString<object>")
+    val thisBinding = st.context.thisBinding
+    val (thisLoc, state, excSet) = TypeConversionHelper.ToObject(thisBinding, st, addr)
+    val h = state.heap
+
     val array = h.get(thisLoc)
     // TODO: it is unsound: we should call locale "join" function instead of Array.prototype.join.
     // 2. Let func be the result of calling the [[Get]] internal method of array with argument "join".
@@ -280,8 +282,10 @@ object BuiltinArrayHelper {
     val tempLoc = Loc(tempArr, Recent)
     val newArgs = AbsObjectUtil.newArgObject()
     val tempH = h.update(tempLoc, newArgs)
-    val tempSt = State(tempH, st.context)
-    join(AbsLoc(tempLoc), tempSt)
+    val tempSt = State(tempH, state.context)
+    val (joinSt, joinExcSt, joinV) = join(AbsLoc(tempLoc), tempSt)
+    val excSt = st.raiseException(excSet)
+    (joinSt, excSt + joinExcSt, joinV)
   }
 
   def concat(args: AbsValue, st: State): (State, State, AbsValue) = {
@@ -299,58 +303,73 @@ object BuiltinArrayHelper {
       case ConZero() => Bot
       case ConOne(Num(n)) => {
         val argLen = n.toInt
-        val thisLength = thisObj.Get("length", h).pvalue.numval
-        thisLength.getSingle match {
-          case ConZero() => Bot
-          case ConOne(Num(n)) => {
-            val thisLen = n.toInt
-            val initList = (0 until thisLen).foldLeft[List[AbsValue]](Nil)((lst, k) => {
-              thisObj.Get(k.toString, h) :: lst
-            })
-            val vlOpt = (0 until argLen).foldLeft[Option[List[AbsValue]]](Some(initList)) {
-              case (None, _) => None
-              case (Some(lst), k) => {
-                val kValue = argObj.Get(k.toString, h)
-                val (normalLoc, arrLoc) = kValue.locset.foldLeft((kValue.locset, AbsLoc.Bot)) {
-                  case ((normal, array), loc) => {
-                    val obj = h.get(loc)
-                    val clsName = obj(IClass).value.pvalue.strval
-                    val isArr = clsName === AbsString("Array")
-                    if (AbsBool.True <= isArr) (normal - loc, array + loc)
-                    else (normal, array)
-                  }
-                }
-                val arrObj = h.get(arrLoc)
-                val subLen = arrObj.Get("length", h).pvalue.numval
-                subLen.getSingle match {
-                  case ConZero() => Some(AbsValue(kValue.pvalue, normalLoc) :: lst)
-                  case ConOne(Num(n)) => if (normalLoc.isBottom && kValue.pvalue.isBottom) {
-                    val subLen = n.toInt
-                    Some((0 until subLen).foldLeft(lst)((lst, k) => {
-                      arrObj.Get(k.toString, h) :: lst
-                    }))
-                  } else None
-                  case ConMany() => None
+        val isArray = AbsString("Array") === thisObj(IClass).value.pvalue.strval
+        val (arrList, arrIsBot): (Option[List[AbsValue]], Boolean) =
+          if (AbsBool.True <= isArray) {
+            val thisLength = thisObj.Get("length", h).pvalue.numval
+            thisLength.getSingle match {
+              case ConZero() => (None, true)
+              case ConOne(Num(n)) => {
+                val thisLen = n.toInt
+                val initList = (0 until thisLen).foldLeft[List[AbsValue]](Nil)((lst, k) => {
+                  thisObj.Get(k.toString, h) :: lst
+                })
+                (Some(initList), false)
+              }
+              case ConMany() => (None, false)
+            }
+          } else { (None, true) }
+        val (objList, objIsBot): (Option[List[AbsValue]], Boolean) =
+          if (AbsBool.False <= isArray) {
+            (Some(List(AbsValue(thisLoc))), false)
+          } else { (None, true) }
+        if (!arrIsBot || !objIsBot) {
+          val initList: Option[List[AbsValue]] =
+            if (arrIsBot) objList
+            else if (objIsBot) arrList
+            else None
+          val vlOpt = (0 until argLen).foldLeft[Option[List[AbsValue]]](initList) {
+            case (None, _) => None
+            case (Some(lst), k) => {
+              val kValue = argObj.Get(k.toString, h)
+              val (normalLoc, arrLoc) = kValue.locset.foldLeft((kValue.locset, AbsLoc.Bot)) {
+                case ((normal, array), loc) => {
+                  val obj = h.get(loc)
+                  val clsName = obj(IClass).value.pvalue.strval
+                  val isArr = clsName === AbsString("Array")
+                  if (AbsBool.True <= isArr) (normal - loc, array + loc)
+                  else (normal, array)
                 }
               }
+              val arrObj = h.get(arrLoc)
+              val subLen = arrObj.Get("length", h).pvalue.numval
+              subLen.getSingle match {
+                case ConZero() => Some(AbsValue(kValue.pvalue, normalLoc) :: lst)
+                case ConOne(Num(n)) => if (normalLoc.isBottom && kValue.pvalue.isBottom) {
+                  val subLen = n.toInt
+                  Some((0 until subLen).foldLeft(lst)((lst, k) => {
+                    arrObj.Get(k.toString, h) :: lst
+                  }))
+                } else None
+                case ConMany() => None
+              }
             }
-            vlOpt match {
-              case None => Top
-              case Some(valueList) => {
-                val finalLen = valueList.length
-                val arr = AbsObjectUtil.newArrayObject(AbsNumber(finalLen))
-                valueList.reverse.zipWithIndex.foldLeft(arr) {
-                  case (arr, (value, idx)) => {
-                    val desc = AbsDesc((value, AbsAbsent.Bot), AT, AT, AT)
-                    val (newArr, _, _) = arr.DefineOwnProperty(AbsString(idx.toString), desc, false)
-                    newArr
-                  }
+          }
+          vlOpt match {
+            case None => Top
+            case Some(valueList) => {
+              val finalLen = valueList.length
+              val arr = AbsObjectUtil.newArrayObject(AbsNumber(finalLen))
+              valueList.reverse.zipWithIndex.foldLeft(arr) {
+                case (arr, (value, idx)) => {
+                  val desc = AbsDesc((value, AbsAbsent.Bot), AT, AT, AT)
+                  val (newArr, _, _) = arr.DefineOwnProperty(AbsString(idx.toString), desc, false)
+                  newArr
                 }
               }
             }
           }
-          case ConMany() => Top
-        }
+        } else Bot
       }
       case ConMany() => Top
     }
@@ -361,13 +380,14 @@ object BuiltinArrayHelper {
     (State(retH, state.context), State.Bot, AbsLoc(arrLoc))
   }
 
-  def join(args: AbsValue, st: State): AbsValue = {
-    val h = st.heap
-    val thisLoc = st.context.thisBinding.locset
-    val separator = Helper.propLoad(args, Set(AbsString("0")), h)
-    thisLoc.foldLeft(AbsString.Bot)((str, loc) => {
-      // XXX: 1. Let O be the result of calling ToObject passing the this value as the argument.
-      // TODO current "this" value only have location. we should change!
+  def join(args: AbsValue, st: State): (State, State, AbsValue) = {
+    val separator = Helper.propLoad(args, Set(AbsString("0")), st.heap)
+    // 1. Let O be the result of calling ToObject passing the this value as the argument.
+    val addr = SystemAddr("Array.prototype.join<object>")
+    val thisBinding = st.context.thisBinding
+    val (thisLoc, state, excSet) = TypeConversionHelper.ToObject(thisBinding, st, addr)
+    val h = state.heap
+    val result = thisLoc.foldLeft(AbsString.Bot)((str, loc) => {
       val obj = h.get(loc)
       // 2. Let lenVal be the result of calling the [[Get]] internal method of O with argument "length".
       val lenVal = obj.Get("length", h)
@@ -418,15 +438,18 @@ object BuiltinArrayHelper {
         case ConMany() => AbsString.Top
       }
     })
+    val excSt = st.raiseException(excSet)
+    (state, excSt, result)
   }
 
   def pop(args: AbsValue, st: State): (State, State, AbsValue) = {
-    val h = st.heap
-    val thisLoc = st.context.thisBinding.locset
-    val (retH, retV, excSet) = thisLoc.foldLeft((h, AbsValue.Bot, ExcSetEmpty)) {
+    // 1. Let O be the result of calling ToObject passing the this value as the argument.
+    val addr = SystemAddr("Array.prototype.pop<object>")
+    val thisBinding = st.context.thisBinding
+    val (thisLoc, state, es) = TypeConversionHelper.ToObject(thisBinding, st, addr)
+    val h = state.heap
+    val (retH, retV, excSet) = thisLoc.foldLeft((h, AbsValue.Bot, es)) {
       case ((h, value, excSet), loc) => {
-        // XXX: 1. Let O be the result of calling ToObject passing the this value as the argument.
-        // TODO current "this" value only have location. we should change!
         val arr = h.get(loc)
         // 2. Let lenVal be the result of calling the [[Get]] internal method of O with argument "length".
         val lenVal = arr.Get("length", h)
@@ -443,7 +466,7 @@ object BuiltinArrayHelper {
           }
           // 5. Else, len > 0
           case ConOne(Num(n)) => {
-            val len = n.toInt
+            val len = n.toLong
             // a. Let indx be ToString(len–1).
             val indx = (len - 1).toString
             // b. Let element be the result of calling the [[Get]] internal method of O with argument indx.
@@ -456,25 +479,26 @@ object BuiltinArrayHelper {
             (putArr, element, excSet)
           }
           // XXX: very imprecise ConMany case
-          case ConMany() => (arr.update(AbsString.Number, AbsDataProp.Top), AbsValue.Top, HashSet(TypeError))
+          case ConMany() => (arr.update(AbsString.Number, AbsDataProp.Top).update(AbsString("length"), AbsDataProp.Top), AbsValue.Top, HashSet(TypeError))
         }
         val retH = h.update(loc, retObj)
         (retH, value + retV, excSet ++ retExcSet)
       }
     }
     val excSt = st.raiseException(excSet)
-    (State(retH, st.context), excSt, retV)
+    (State(retH, state.context), excSt, retV)
   }
 
   def push(args: AbsValue, st: State): (State, State, AbsValue) = {
-    val h = st.heap
-    val argObj = h.get(args.locset)
-    val argLen = Helper.propLoad(args, Set(AbsString("length")), h).pvalue.numval
-    val thisLoc = st.context.thisBinding.locset
-    val (retH, retV, excSet) = thisLoc.foldLeft((h, AbsValue.Bot, ExcSetEmpty)) {
+    val argObj = st.heap.get(args.locset)
+    val argLen = Helper.propLoad(args, Set(AbsString("length")), st.heap).pvalue.numval
+    // 1. Let O be the result of calling ToObject passing the this value as the argument.
+    val addr = SystemAddr("Array.prototype.push<object>")
+    val thisBinding = st.context.thisBinding
+    val (thisLoc, state, es) = TypeConversionHelper.ToObject(thisBinding, st, addr)
+    val h = state.heap
+    val (retH, retV, excSet) = thisLoc.foldLeft((h, AbsValue.Bot, es)) {
       case ((h, value, excSet), loc) => {
-        // XXX: 1. Let O be the result of calling ToObject passing the this value as the argument.
-        // TODO current "this" value only have location. we should change!
         val arr = h.get(loc)
         // 2. Let lenVal be the result of calling the [[Get]] internal method of O with argument "length".
         val lenVal = arr.Get("length", h)
@@ -511,16 +535,17 @@ object BuiltinArrayHelper {
       }
     }
     val excSt = st.raiseException(excSet)
-    (State(retH, st.context), excSt, retV)
+    (State(retH, state.context), excSt, retV)
   }
 
   def reverse(args: AbsValue, st: State): (State, State, AbsValue) = {
-    val h = st.heap
-    val thisLoc = st.context.thisBinding.locset
-    val (retH, excSet) = thisLoc.foldLeft((h, ExcSetEmpty)) {
+    // 1. Let O be the result of calling ToObject passing the this value as the argument.
+    val addr = SystemAddr("Array.prototype.reverse<object>")
+    val thisBinding = st.context.thisBinding
+    val (thisLoc, state, es) = TypeConversionHelper.ToObject(thisBinding, st, addr)
+    val h = state.heap
+    val (retH, excSet) = thisLoc.foldLeft((h, es)) {
       case ((h, excSet), loc) => {
-        // XXX: 1. Let O be the result of calling ToObject passing the this value as the argument.
-        // TODO current "this" value only have location. we should change!
         val arr = h.get(loc)
         // 2. Let lenVal be the result of calling the [[Get]] internal method of O with argument "length".
         val lenVal = arr.Get("length", h)
@@ -561,16 +586,17 @@ object BuiltinArrayHelper {
       }
     }
     val excSt = st.raiseException(excSet)
-    (State(retH, st.context), excSt, thisLoc)
+    (State(retH, state.context), excSt, thisLoc)
   }
 
   def shift(args: AbsValue, st: State): (State, State, AbsValue) = {
-    val h = st.heap
-    val thisLoc = st.context.thisBinding.locset
-    val (retH, retV, excSet) = thisLoc.foldLeft((h, AbsValue.Bot, ExcSetEmpty)) {
+    // 1. Let O be the result of calling ToObject passing the this value as the argument.
+    val addr = SystemAddr("Array.prototype.shift<object>")
+    val thisBinding = st.context.thisBinding
+    val (thisLoc, state, es) = TypeConversionHelper.ToObject(thisBinding, st, addr)
+    val h = state.heap
+    val (retH, retV, excSet) = thisLoc.foldLeft((h, AbsValue.Bot, es)) {
       case ((h, value, excSet), loc) => {
-        // XXX: 1. Let O be the result of calling ToObject passing the this value as the argument.
-        // TODO current "this" value only have location. we should change!
         // 2. Let lenVal be the result of calling the [[Get]] internal method of O with argument "length".
         val obj = h.get(loc)
         val lenVal = obj.Get("length", h)
@@ -633,17 +659,18 @@ object BuiltinArrayHelper {
       }
     }
     val excSt = st.raiseException(excSet)
-    (State(retH, st.context), excSt, retV)
+    (State(retH, state.context), excSt, retV)
   }
 
   def slice(args: AbsValue, st: State): (State, State, AbsValue) = {
-    val h = st.heap
-    val thisLoc = st.context.thisBinding.locset
-    val start = Helper.propLoad(args, Set(AbsString("0")), h)
-    val end = Helper.propLoad(args, Set(AbsString("1")), h)
+    val start = Helper.propLoad(args, Set(AbsString("0")), st.heap)
+    val end = Helper.propLoad(args, Set(AbsString("1")), st.heap)
 
-    // XXX: 1. Let O be the result of calling ToObject passing the this value as the argument.
-    // TODO current "this" value only have location. we should change!
+    // 1. Let O be the result of calling ToObject passing the this value as the argument.
+    val addr = SystemAddr("Array.prototype.slice<object>")
+    val thisBinding = st.context.thisBinding
+    val (thisLoc, state, es) = TypeConversionHelper.ToObject(thisBinding, st, addr)
+    val h = state.heap
     val obj = h.get(thisLoc)
     // 2. Let A be a new array created as if by the expression new Array().
     val arr = AbsObjectUtil.newArrayObject()
@@ -711,11 +738,11 @@ object BuiltinArrayHelper {
     }
     // 11. Return A.
     val arrAddr = SystemAddr("Array.prototype.slice<array>")
-    val state = st.oldify(arrAddr)
+    val st1 = state.oldify(arrAddr)
     val arrLoc = Loc(arrAddr, Recent)
-    val retH = state.heap.update(arrLoc, retObj.oldify(arrAddr))
-    val excSt = state.raiseException(retExcSet)
-    (State(retH, state.context), excSt, AbsLoc(arrLoc))
+    val retH = st1.heap.update(arrLoc, retObj.oldify(arrAddr))
+    val excSt = st1.raiseException(retExcSet)
+    (State(retH, st1.context), excSt, AbsLoc(arrLoc))
   }
 
   def splice(args: AbsValue, st: State): (State, State, AbsValue) = {
@@ -860,14 +887,15 @@ object BuiltinArrayHelper {
     (State(retH, st.context), excSt, retV)
   }
 
-  def indexOf(args: AbsValue, st: State): AbsValue = {
-    val h = st.heap
-    val thisLoc = st.context.thisBinding.locset
+  def indexOf(args: AbsValue, st: State): (State, State, AbsValue) = {
+    // 1. Let O be the result of calling ToObject passing the this value as the argument.
+    val addr = SystemAddr("Array.prototype.indexOf<object>")
+    val thisBinding = st.context.thisBinding
+    val (thisLoc, state, excSet) = TypeConversionHelper.ToObject(thisBinding, st, addr)
+    val h = state.heap
     val searchElement = Helper.propLoad(args, Set(AbsString("0")), h)
     val fromIndex = Helper.propLoad(args, Set(AbsString("1")), h)
-    thisLoc.foldLeft[AbsNumber](AbsNumber.Bot)((num, loc) => {
-      // XXX: 1. Let O be the result of calling ToObject passing the this value as the argument.
-      // TODO current "this" value only have location. we should change!
+    val result = thisLoc.foldLeft[AbsNumber](AbsNumber.Bot)((num, loc) => {
       val thisObj = h.get(loc)
       // 2. Let lenValue be the result of calling the [[Get]] internal method of O with the argument "length".
       val lenValue = thisObj.Get("length", h)
@@ -940,16 +968,19 @@ object BuiltinArrayHelper {
       }
       num + retN
     })
+    val excSt = st.raiseException(excSet)
+    (state, excSt, result)
   }
 
-  def lastIndexOf(args: AbsValue, st: State): AbsValue = {
-    val h = st.heap
-    val thisLoc = st.context.thisBinding.locset
+  def lastIndexOf(args: AbsValue, st: State): (State, State, AbsValue) = {
+    // 1. Let O be the result of calling ToObject passing the this value as the argument.
+    val addr = SystemAddr("Array.prototype.lastIndexOf<object>")
+    val thisBinding = st.context.thisBinding
+    val (thisLoc, state, excSet) = TypeConversionHelper.ToObject(thisBinding, st, addr)
+    val h = state.heap
     val searchElement = Helper.propLoad(args, Set(AbsString("0")), h)
     val fromIndex = Helper.propLoad(args, Set(AbsString("1")), h)
-    thisLoc.foldLeft[AbsNumber](AbsNumber.Bot)((num, loc) => {
-      // XXX: 1. Let O be the result of calling ToObject passing the this value as the argument.
-      // TODO current "this" value only have location. we should change!
+    val result = thisLoc.foldLeft[AbsNumber](AbsNumber.Bot)((num, loc) => {
       val thisObj = h.get(loc)
       // 2. Let lenValue be the result of calling the [[Get]] internal method of O with the argument "length".
       val lenValue = thisObj.Get("length", h)
@@ -1013,5 +1044,7 @@ object BuiltinArrayHelper {
       }
       num + retN
     })
+    val excSt = st.raiseException(excSet)
+    (state, excSt, result)
   }
 }

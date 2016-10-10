@@ -22,8 +22,7 @@ import kr.ac.kaist.safe.util._
 case object CFGBuild extends PhaseObj[IRRoot, CFGBuildConfig, CFG] {
   val name: String = "cfgBuilder"
   val help: String =
-    "Builds a control flow graph for JavaScript source files." + LINE_SEP +
-      "The files are concatenated in the given order before being parsed."
+    "Builds a control flow graph for JavaScript source files."
   def apply(
     ir: IRRoot,
     safeConfig: SafeConfig,
@@ -59,8 +58,8 @@ case object CFGBuild extends PhaseObj[IRRoot, CFGBuildConfig, CFG] {
 
   def defaultConfig: CFGBuildConfig = CFGBuildConfig()
   val options: List[PhaseOption[CFGBuildConfig]] = List(
-    ("verbose", BoolOption(c => c.verbose = true),
-      "messages during compilation are printed."),
+    ("silent", BoolOption(c => c.silent = true),
+      "messages during CFG building are muted."),
     ("out", StrOption((c, s) => c.outFile = Some(s)),
       "the resulting CFG will be written to the outfile."),
     ("dot", StrOption((c, s) => c.dotName = Some(s)),
@@ -70,7 +69,7 @@ case object CFGBuild extends PhaseObj[IRRoot, CFGBuildConfig, CFG] {
 
 // CFGBuild phase config
 case class CFGBuildConfig(
-  var verbose: Boolean = false,
+  var silent: Boolean = false,
   var outFile: Option[String] = None,
   var dotName: Option[String] = None
 // TODO add option for cfg builder

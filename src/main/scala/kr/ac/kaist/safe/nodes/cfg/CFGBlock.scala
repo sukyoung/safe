@@ -42,7 +42,9 @@ sealed abstract class CFGBlock {
   protected val cpToState: MMap[CallContext, State] = MHashMap()
   def getState(): Map[CallContext, State] = cpToState.toMap
   def getState(callCtx: CallContext): State = cpToState.getOrElse(callCtx, State.Bot)
-  def setState(callCtx: CallContext, state: State): Unit = cpToState(callCtx) = state
+  def setState(callCtx: CallContext, state: State): Unit =
+    if (state.isBottom) cpToState -= callCtx
+    else cpToState(callCtx) = state
 
   // get inst.
   def getInsts: List[CFGInst] = Nil

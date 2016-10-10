@@ -1,0 +1,432 @@
+\newcommand{\newvar}[1]{\ensuremath{\underline{\sf \diamond{#1}}}}
+\newcommand{\newva}{\newvar{new_1}}
+\newcommand{\newvb}{\newvar{new_2}}
+\newcommand{\newvc}{\newvar{new_3}}
+\newcommand{\rulesep}{\quad\quad}
+
+\newcommand{\kold}{{\rm keepOld}}
+\newcommand{\myid}{x}
+\newcommand{\myfn}{f}
+\newcommand{\name}{\alpha}
+\newcommand{\env}{\Sigma}
+\newcommand{\wenv}{\Gamma}
+\newcommand{\open}{{\ingreen\langle}}
+\newcommand{\close}{{\ingreen\rangle}}
+%\newcommand{\emptyenv}{\langle\rangle, \langle\rangle}
+\newcommand{\emptyenv}{\langle\rangle}
+% added commands by changhee
+\newcommand{\nestedname}{\beta}
+\newcommand{\listname}{\phi\;\alpha}
+\newcommand{\namelist}{\phi}
+\newcommand{\emptylist}{\epsilon}
+\newcommand{\emptyval}{{\ingreen\mbox{\tt empty}}}
+\newcommand{\listscope}{\varphi}
+\newcommand{\flag}{{\emph{IsNested}}}
+\newcommand{\trueflag}{{\bold{True}}}
+\newcommand{\falseflag}{{\bold{False}}}
+\newcommand{\argmk}[3]{\langle#1, #2, #3\rangle}
+\newcommand{\rewritearg}{\langle\listname, \listscope, \flag\rangle}
+%\newcommand{\isshadowed}[2]{\ensuremath{\emph{IsShadowed}\lbr#1\mid#2\rbr}}
+\newcommand{\isshadowed}[2]{\ensuremath{#1\in#2}}
+\newcommand{\mylet}{\bold{Let}\ }
+\newcommand{\myif}{\bold{If}\ }
+\newcommand{\mythen}{\bold{Then}\ }
+\newcommand{\myelse}{\bold{Else}\ }
+\newcommand{\myifend}{\bold{EndIf}}
+\newcommand{\myelseend}{\bold{EndElse}}
+\newcommand{\namecheck}[2]{\ensuremath{#1 \equiv #2}}
+\newcommand{\getlocaldecls}{\ensuremath{\emph{LocalDecls}}}
+\newcommand{\pgm}{p}
+\newcommand{\stmt}{s}
+\newcommand{\expr}{e}
+\newcommand{\exprs}{e^+}
+%\newcommand{\topl}{t}
+\newcommand{\fd}{\emph{fd}}
+\newcommand{\vd}{\emph{vd}}
+\newcommand{\cc}{\emph{cc}}
+\newcommand{\me}{\emph{me}}
+\newcommand{\ce}{\emph{ce}}
+\newcommand{\lhs}{\emph{lhs}}
+\newcommand{\lval}{\emph{lval}}
+\newcommand{\prop}{\emph{pr}}
+\renewcommand{\lit}{\emph{lit}}
+\newcommand{\num}{\emph{num}}
+\newcommand{\str}{\emph{str}}
+\newcommand{\reg}{\emph{reg}}
+\newcommand{\member}{\emph{m}}
+\newcommand{\aop}{\ensuremath{\odot}}
+\newcommand{\inop}{\ensuremath{\otimes}}
+\newcommand{\preop}{\ensuremath{\ominus}}
+\newcommand{\postop}{\ensuremath{\oslash}}
+\newcommand{\atoi}{\ensuremath{\emph{ast2ir}}}
+% p::=t*
+\newcommand{\atoiP}{\ensuremath{\atoi_p}}
+\newcommand{\atoiPf}[1]{\ensuremath{\atoiP\lbr#1\rbr}}
+% t::= s | ...
+% \newcommand{\atoiT}{\ensuremath{\atoi_t}}
+% \newcommand{\atoiTf}[2]{\ensuremath{\atoiT\lbr{#1}\rbr(#2)}}
+% \newcommand{\atoiTfd}[1]{\ensuremath\atoiTf{#1}{\env}}
+% s::= {s*} | ...
+\newcommand{\atoiS}{\ensuremath{\atoi_s}}
+\newcommand{\atoiSf}[2]{\ensuremath{\atoiS\lbr#1\rbr(#2)}}
+\newcommand{\atoiSfd}[1]{\atoiSf{#1}{\env}}
+
+\newcommand{\atoiN}{\ensuremath{\atoi_n}}
+\newcommand{\atoiNf}[2]{\ensuremath{\atoiN\lbr#1\rbr(#2)}}
+\newcommand{\atoiNfd}[1]{\atoiNf{#1}{\env}}
+% vd::= id(=e)?
+\newcommand{\atoiVD}{\ensuremath{\atoi_{\emph{vd}}}}
+\newcommand{\atoiVDf}[2]{\ensuremath{\atoiVD\lbr#1\rbr(#2)}}
+% fd
+\newcommand{\atoiFD}{\ensuremath{\atoi_{\emph{fd}}}}
+\newcommand{\atoiFDf}[2]{\ensuremath{\atoiFD\lbr#1\rbr(#2)}}
+\newcommand{\atoiFDfd}[1]{\atoiFDf{#1}{\env}}
+% cc::= case e:s*
+\newcommand{\atoiCC}{\ensuremath{\atoi_{\emph{cc}}}}
+\newcommand{\atoiCCf}[2]{\ensuremath{\atoiCC\lbr#1\rbr(#2)}}
+\newcommand{\atoiCCfd}[1]{\atoiCCf{#1}{\env}}
+% e::= e,e | ...
+\newcommand{\atoiE}{\ensuremath{\atoi_e}}
+\newcommand{\atoiEf}[2]{\ensuremath{\atoiE\lbr#1\rbr(#2)}}
+\newcommand{\atoiEfd}[1]{\atoiEf{#1}{\env}}
+% lhs ::= lit | id | ...
+\newcommand{\atoiLHS}{\ensuremath{\atoi_{\emph{lhs}}}}
+\newcommand{\atoiLHSf}[2]{\ensuremath{\atoiLHS\lbr#1\rbr(#2)}}
+\newcommand{\atoiLHSfd}[1]{\atoiLHSf{#1}{\env}}
+% lval
+\newcommand{\atoiLVAL}{\ensuremath{\atoi_{\emph{lval}}}}
+\newcommand{\atoiLVALf}[2]{\ensuremath{\atoiLVAL\lbr#1\rbr(#2)}}
+\newcommand{\atoiLVALfd}[1]{\atoiLVALf{#1}{\env}}
+% lit ::= this|null|...
+\newcommand{\atoiLIT}{\ensuremath{\atoi_{\emph{lit}}}}
+\newcommand{\atoiLITf}[2]{\ensuremath{\atoiLIT\lbr#1\rbr(#2)}}
+\newcommand{\atoiLITfd}[1]{\atoiLITf{#1}{\env}}
+% m ::= pr:e | get/set
+\newcommand{\atoiM}{\ensuremath{\atoi_m}}
+\newcommand{\atoiMf}[2]{\ensuremath{\atoiM\lbr#1\rbr(#2)}}
+\newcommand{\atoiMfd}[1]{\atoiMf{#1}{\env}}
+% pr ::= id | str | num
+\newcommand{\atoiPR}{\ensuremath{\atoi_{\emph{pr}}}}
+\newcommand{\atoiPRf}[1]{\ensuremath{\atoiPR\lbr#1\rbr}}
+\newcommand{\atoiPRfd}[1]{\atoiPRf{#1}}
+
+\newcommand{\atoiL}{\ensuremath{\atoi_l}}
+\newcommand{\atoiLf}[1]{\ensuremath{\atoiL\lbr#1\rbr}}
+\newcommand{\collectLV}[1]{\ensuremath{\emph{collectLV}(#1)}}
+
+% Add Ast2IR Lit???
+\newcommand{\Field}{\emph{Field}}
+
+
+\newcommand{\atoiLit}{\ensuremath{\atoi_{\emph{lit}}}}
+% \newcommand{\atoiM}{\ensuremath{\atoi_m}}
+\newcommand{\atoiPr}{\ensuremath{\atoi_{\emph{pr}}}}
+\newcommand{\atoiC}{\ensuremath{\atoi_}\emph{case}}
+\newcommand{\atoiSC}{\ensuremath{\atoi_}\emph{scond}}
+\newcommand{\lbr}{\ensuremath{\llbracket}}
+\newcommand{\rbr}{\ensuremath{\rrbracket}}
+\newcommand{\note}[1]{~~{\color{blue}{\emph{#1}}}}
+
+\newcommand{\ir}[1]{\ensuremath{\underline{#1}}}
+\newcommand{\irid}{\ir{x}}
+\newcommand{\irstmt}{\ir{\stmt}}
+\newcommand{\irexpr}{\ir{\expr}}
+
+\newcommand{\mkst}[2]{#1::#2}
+\newcommand{\reject}{\inblue\mbox{if \strict}\ {\tt Throw}(\te)\ \mbox{else}\ {\tt Normal}(v_3)}
+\newcommand{\rejectb}{\inblue\mbox{if}\ b\ \te\ \mbox{else}\ \false}
+\newcommand{\rejectbb}{\inblue\mbox{if}\ b'\ \te\ \mbox{else}\ \false}
+
+\newcommand{\strict}{{\inred\tt strict}}
+\newcommand{\eval}{{\inred\tt eval}}
+\newcommand{\UndefVB}{\emph{UndefVB}}
+\newcommand{\stuck}{{\tt stuck}}
+\newcommand{\nullK}{{\tt null}}
+\newcommand{\nullL}{{\tt \#Null}}
+\newcommand{\undef}{{\tt undefined}}
+\newcommand{\false}{{\tt false}}
+\newcommand{\true}{{\tt true}}
+\newcommand{\er}{\ensuremath{\sigma}}
+\newcommand{\erg}{\ensuremath{\sigma_g}}
+\newcommand{\var}{\emph{Var}}
+\newcommand{\sv}{\emph{StoreValue}}
+\newcommand{\Bool}{\emph{Bool}}
+\newcommand{\tb}{\emph{tb}}
+\newcommand{\ve}{\emph{ValError}}
+\newcommand{\ValError}{\emph{ValError}}
+\newcommand{\Error}{\emph{Error}}
+\newcommand{\err}{\emph{err}}
+\newcommand{\te}{{\tt TypeError}}
+\newcommand{\re}{{\tt ReferenceError}}
+\newcommand{\pval}{\emph{PVal}}
+\newcommand{\pv}{\emph{pv}}
+\newcommand{\pname}{\emph{PName}}
+\newcommand{\pn}{\emph{p}}
+\newcommand{\Type}{\emph{Type}}
+\newcommand{\Val}{\emph{Val}}
+\newcommand{\FVal}{\emph{FVal}}
+\newcommand{\Loc}{\emph{Loc}}
+\newcommand{\Obj}{\emph{Object}}
+\newcommand{\ObjV}{\emph{ObjectValue}}
+\newcommand{\Str}{\emph{Str}}
+\newcommand{\Num}{\emph{Num}}
+\newcommand{\Dom}{\emph{Dom}}
+\newcommand{\Heap}{\emph{Heap}}
+\newcommand{\Prop}{\emph{PName}}
+\newcommand{\State}{\emph{State}}
+\newcommand{\Value}{\emph{Value}}
+\newcommand{\Var}{\emph{Var}}
+\newcommand{\Env}{\emph{Env}}
+\newcommand{\EnvRec}{\emph{EnvRec}}
+\renewcommand{\lg}{{\tt \#Global}}
+\newcommand{\vorempty}{\emph{vt}}
+\newcommand{\ct}{\emph{ct}}
+\newcommand{\ac}{\emph{ac}}
+\newcommand{\nc}{\emph{nc}}
+\newcommand{\dquote}[1]{\text{``}#1\text{''}}
+\newcommand{\squote}[1]{\text{`}#1\text{'}}
+\newcommand{\Label}{\emph{Label}}
+\newcommand{\hf}[1]{\emph{#1}}
+\newcommand{\chf}[1]{\underline{\sf #1}}
+\newcommand{\ifc}[1]{{\rm if}\begin{array}[t]{l}#1\end{array}}
+\newcommand{\none}{\ensuremath{\epsilon}}
+\newcommand{\void}{{\tt Normal}({\tt empty})}
+\newcommand{\nv}[1]{{\tt Normal}(#1)}
+\newcommand{\newl}{\emph{newLocation}}
+\newcommand{\ov}{\emph{ov}}
+\newcommand{\error}{\ensuremath{{\tt Throw}(\err)}}
+\newcommand{\thte}{\ensuremath{{\tt Throw}(\te)}}
+
+
+\newcommand{\state}{\ensuremath{(H,A,\tb)}}
+\newcommand{\statep}{\ensuremath{(H',A',\tb)}}
+\newcommand{\statepp}{\ensuremath{(H'',A'',\tb)}}
+\newcommand{\statel}{\ensuremath{(H,A,\tb)}}
+\newcommand{\statepl}{\ensuremath{(H',A',\tb)}}
+\newcommand{\res}{\ensuremath{(H,A)}}
+\newcommand{\resp}{\ensuremath{(H',A')}}
+\newcommand{\respp}{\ensuremath{(H'',A'')}}
+\newcommand{\resppp}{\ensuremath{(H''',A''')}}
+\newcommand{\evale}{\ensuremath{(H,A,\tb)}}
+
+
+\newcommand{\irif}{\ensuremath{{\sf if} \ {\tt(}\irexpr{\tt)}\ {\sf then} \ \ir{\stmt_1} \ ({\sf else} \ \ir{\stmt_2})^?}}
+\newcommand{\irbin}{\ensuremath{\irid \ {\tt =} \ \ir{y} \ \inop \ir{z}}}
+\newcommand{\irun}{\ensuremath{\irid \ {\tt =} \ \preop \ir\expr}}
+\newcommand{\irdel}{\ensuremath{\irid \ {\tt =} \ {\sf delete}\ \ir{y}}}
+\newcommand{\irdelprop}{\ensuremath{\irid \ {\tt =} \ {\sf delete}\ \ir{y}{\tt[}\ir{z}{\tt]}}}
+\newcommand{\irobj}{\ensuremath{\irid \ {\tt =} \ {\tt\{} (\ir\member{\tt,})^* {\tt\}}}}
+\newcommand{\irarr}{\ensuremath{\irid \ {\tt =} \ {\tt[} (\ir
+{e}{\tt,})^* {\tt]}}}
+\newcommand{\ircall}{\ensuremath{\irid \ {\tt =} \ \ir{y}{\tt(}\ir{z_1}{\tt,}\ir{z_2}{\tt)}}}
+\newcommand{\irnew}{\ensuremath{\irid \ {\tt =} \ {\sf new} \ \ir\expr}}
+\newcommand{\irfv}{\ensuremath{{\sf function} \ \ir{f} {\tt(}\ir{\emph{this}}{\tt,}\ir{\emph{arguments}}{\tt) \{} \ir\stmt {\tt\}}}}
+\newcommand{\irfunexpr}{\ensuremath{\irid \ {\tt =} \ \irfv}}
+\newcommand{\ireval}{\ensuremath{\irid \ {\tt =} \ {\sf eval}{\tt(}\ir\expr{\tt)}}}
+\newcommand{\irbreak}{\ensuremath{{\sf break} \ \irid}}
+\newcommand{\irreturn}{\ensuremath{{\sf return} \ \irid^?}}
+\newcommand{\irwith}{\ensuremath{{\sf with} \ {\tt(}\irid{\tt)} \ \ir\stmt}}
+\newcommand{\irlab}{\ensuremath{\ir{x} {\tt: \{} \ir\stmt {\tt\}}}}
+\newcommand{\irwhile}{\ensuremath{{\sf while} \ {\tt(}\irexpr{\tt)}\ \ir\stmt}}
+\newcommand{\irtry}{\ensuremath{{\sf try} \ {\tt\{} \ir\stmt {\tt\}} \
+({\sf catch} \ {\tt(}\irid{\tt)\{} \ir\stmt {\tt\}})^? \
+({\sf finally} \ {\tt\{} \ir\stmt {\tt\}})^?}}
+\newcommand{\irfield}{\ensuremath{\irid \ {\tt:} \ \ir{y}}}
+% \newcommand{\irget}{\ensuremath{{\tt get}\ \ir{f} {\tt(}\ir{\emph{this}}{\tt,}\ir{\emph{arguments}}{\tt) \{} \ir\stmt\ \ir\stmt\ \ir\stmt\ \ir\stmt {\tt\}}}}
+
+\newcommand{\irget}{\ensuremath{{\tt get}\ \ir{f} {\tt(}\ir{\emph{this}}{\tt,}\ir{\emph{arguments}}{\tt) \{} \ir\stmt {\tt\}}}}
+\newcommand{\irset}{\ensuremath{{\tt set}\ \ir{f} {\tt(}\ir{\emph{this}}{\tt,}\ir{\emph{arguments}}{\tt) \{} \ir\stmt {\tt\}}}}
+\newcommand{\irfndecl}{\ensuremath{{\sf function} \ \ir{f} {\tt(}\ir{\emph{this}}{\tt,}\ir{\emph{arguments}}{\tt) \{} \ir\stmt {\tt\}}}}
+
+\newcommand{\irtryall}{\ensuremath{{\sf try} \ {\tt\{} \ir{\stmt_1} {\tt\}} \
+({\sf catch} \ {\tt(}\irid{\tt)\{} \ir{\stmt_2} {\tt\}})^? \
+({\sf finally} \ {\tt\{} \ir{\stmt_3} {\tt\}})^?}}
+
+\newcommand{\irtrycat}{\ensuremath{{\sf try} \ {\tt\{} \ir{\stmt_1} {\tt\}} \
+{\sf catch} \ {\tt(}\irid{\tt)\{} \ir{\stmt_2} {\tt\}}}}
+
+\newcommand{\irtryfin}{\ensuremath{{\sf try} \ {\tt\{} \ir{\stmt_1} {\tt\}} \
+{\sf finally} \ {\tt\{} \ir{\stmt_2} {\tt\}}}}
+
+\newcommand{\irtrycatfin}{\ensuremath{{\sf try} \ {\tt\{} \ir{\stmt_1} {\tt\}} \
+{\sf catch} \ {\tt(}\irid{\tt)\{} \ir{\stmt_2} {\tt\}} \
+{\sf finally} \ {\tt\{} \ir{\stmt_3} {\tt\}}}}
+
+\def\inred{\color{red}}
+\def\inblue{\color{blue}}
+\def\ingreen{\color{green}}
+\def\inblack{\color{black}}
+
+
+\definecolor{orange}{rgb}{0.9,0.45,0}
+\definecolor{purple}{rgb}{0.5,0,0.5}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\tsf}[1]{\mbox{\scriptsize{\textsf{#1}}}}
+\newcommand{\SF}[1]{\mbox{\textsf{#1}}}
+\newcommand{\RM}[1]{\mbox{\textrm{#1}}}
+\newcommand{\TT}[1]{\mbox{\texttt{#1}}}
+\newcommand{\Command}{\SF{Command}}
+\newcommand{\Instruction}{\SF{Instruction}}
+\newcommand{\Entry}{\TT{entry}}
+\newcommand{\Exit}{\TT{exit}}
+\newcommand{\Exite}{\TT{exit-exc}~}
+\newcommand{\Expression}{\SF{Expression}}
+\newcommand{\Binop}{\SF{Binop}}
+\newcommand{\Unop}{\SF{Unop}}
+\newcommand{\single}{\textsf{single}}
+\newcommand{\ainop}{\hat{\ensuremath{\otimes}}}
+\newcommand{\apreop}{\hat{\ensuremath{\ominus}}}
+\newcommand{\mtt}[1]{\mbox{\tt\footnotesize #1}}
+\newcommand{\cfgnext}{\hookrightarrow}
+\newcommand{\excnext}{\stackrel{\mathsf{exc}}{\hookrightarrow}}
+\newcommand{\ipnext}{\stackrel{\mathsf{ip}}{\hookrightarrow}}
+\newcommand{\comment}[1]{\textit{#1}}
+\newcommand{\wherec}[1]{{\rm where}\begin{array}[t]{l}#1\end{array}}
+\newcommand{\iffc}[1]{{\rm iff}\begin{array}[t]{l}#1\end{array}}
+\newcommand{\owc}{{\rm otherwise}}
+\newcommand{\listd}{\ \SF{list}}
+
+\newcommand{\evalcfg}[1]{\llbracket #1 \rrbracket}
+\newcommand{\Heapcfg}{\SF{Heap}}
+\newcommand{\Loccfg}{\SF{Loc}}
+\newcommand{\Propcfg}{\SF{Prop}}
+\newcommand{\Objcfg}{\SF{Obj}}
+\newcommand{\Statecfg}{\SF{State}}
+\newcommand{\Valuecfg}{\SF{Value}}
+\newcommand{\pgmcfg}{\SF{Program}}
+
+
+\newcommand{\abs}[1]{\widehat{\SF{#1}}}
+\newcommand{\aControlPoint}{\abs{ControlPoint}}
+\newcommand{\aHeap}{\abs{Heap}}
+\newcommand{\aContext}{\abs{Context}}
+\newcommand{\aLoc}{\abs{Loc}}
+\newcommand{\aAddress}{\abs{Address}}
+\newcommand{\aObj}{\abs{Obj}}
+\newcommand{\aState}{\abs{State}}
+\newcommand{\aValue}{\abs{Value}}
+\newcommand{\aAttr}{\abs{aAttr}}
+\newcommand{\finto}{\stackrel{\tiny \SF{fin}}{\rightarrow}}
+\newcommand{\defi}{\stackrel{\tiny \SF{def}}{=}}
+\newcommand{\N}{\mathcal{C}}
+\newcommand{\B}{\mathcal{B}}
+\newcommand{\I}{\mathcal{I}}
+\newcommand{\V}{\mathcal{V}}
+\newcommand{\acp}{\hat{cp}}
+\newcommand{\aE}{\hat{\mathcal{E}}}
+\newcommand{\aC}{\hat{\mathcal{C}}}
+\newcommand{\aB}{\hat{\mathcal{B}}}
+\newcommand{\aI}{\hat{\mathcal{I}}}
+\newcommand{\aCI}{\hat{\mathcal{CI}}}
+\newcommand{\aV}{\hat{\mathcal{V}}}
+\newcommand{\set}[1]{\left\{\begin{array}{l}#1\end{array}\right\}}
+\newcommand{\cfg}{\langle\mathbb{N},\cfgnext,\excnext\rangle}
+\newcommand{\globalfid}{\SF{@globalfid}}
+\newcommand{\powerset}[1]{\wp(#1)}
+\newcommand{\fid}{\SF{FunctionId}}
+\newcommand{\matcher}{\SF{MatcherId}}
+\newcommand{\graph}{\SF{Graph}}
+\newcommand{\args}{\SF{ArgVars}}
+\newcommand{\vars}{\SF{LocalVars}}
+\newcommand{\Edge}{\SF{Edge}}
+\newcommand{\node}{\mathbb{N}}
+\newcommand{\controlpoint}{\mathbb{C}}
+\newcommand{\chfi}[1]{\chf{\ensuremath{\diamond}#1}}
+\newcommand{\ahf}[1]{\widehat{\underline{\sf #1}}}
+\newcommand{\ahfi}[1]{\ahf{\ensuremath{\diamond}#1}}
+\newcommand{\exc}[1]{{\sf #1}}
+\newcommand{\varloc}[1]{\##1}
+\newcommand{\varprop}[1]{@#1}
+\newcommand{\avarloc}[1]{\hat{\##1}}
+\newcommand{\avarprop}[1]{\hat{@#1}}
+\newcommand{\vtrue}{\SF{true}}
+\newcommand{\vfalse}{\SF{false}}
+\newcommand{\rwith}{~{\sf with}~}
+\newcommand{\atrue}{\hat{\SF{true}}}
+\newcommand{\afalse}{\hat{\SF{false}}}
+\newcommand{\aundef}{\hat{\SF{undefined}}}
+\newcommand{\anull}{\hat{\SF{null}}}
+
+%% from ir2cfg.tex
+\newcommand{\transfun}[1]{\ensuremath{\lbr #1 \rbr}}
+\newcommand{\irseq}[1]{\textsf{IRSeq}(#1)}
+\newcommand{\irstmtunit}[1]{\textsf{IRStmtUnit}(#1)}
+\newcommand{\irvar}[1]{\textsf{var} \ #1}
+\newcommand{\irfundecl}[7]{\textsf{function}\ #1(#2,#3)\{#4,#5,#6,#7\}}
+\newcommand{\irfundeclsmall}[7]{
+	\begin{smallmatrix}
+	\textsf{function}\ #1(#2,#3)\\ 
+	\{#4,#5,#6,#7\}
+	\end{smallmatrix}}
+
+%\newcommand{\irfunexpr}[8]{#1 = \textsf{function}\ #2(#3,#4)\{#5,#6,#7,#8\}}
+\newcommand{\irfunexprsmall}[8]{
+	\begin{smallmatrix}
+	#1 = \textsf{function}\ #2(#3,#4)\\ 
+	\{#5,#6,#7,#8\}
+	\end{smallmatrix}}
+\newcommand{\irobject}[2]{#1 = \textsf{\{}#2\textsf{\}}}
+\newcommand{\ircfgfield}[2]{#1 : #2}
+\newcommand{\irarray}[2]{#1 = \textsf{[}#2\textsf{]}}
+\newcommand{\ircfgcall}[3]{#1 = #2\textsf{(}#3\textsf{)}}
+\newcommand{\ircfgnew}[3]{#1 = #2\textsf{(}#3\textsf{)}}
+\newcommand{\ircfgwith}[2]{\textsf{with(}#1\textsf{)} \ #2}
+\newcommand{\ircfgbreak}[1]{\textsf{break} \ #1}
+\newcommand{\irthrow}[1]{\textsf{throw} \ #1}
+\newcommand{\ircfgreturn}[1]{\textsf{return} \ #1}
+\newcommand{\irlabel}[2]{#1:\textsf{\{} #2 \textsf{\}}}
+\newcommand{\irifelse}[3]{\textsf{if(} #1 \textsf{)}\ #2\ \textsf{else}\ #3}
+\newcommand{\ircfgif}[2]{\textsf{if(} #1 \textsf{)}\ #2}
+\newcommand{\ircfgwhile}[2]{\textsf{while(} #1 \textsf{)} \ #2}
+%\newcommand{\irtry}[1]{\textsf{try\{} #1 \textsf{\}}}
+\newcommand{\ircfgtrycat}[3]{\textsf{try\{} #1 \textsf{\} catch(} #2 \textsf{)}\ \{#3\}}
+\newcommand{\ircfgtryfin}[2]{\textsf{try\{} #1 \textsf{\}\ finally}\ \{#2\}}
+\newcommand{\irtryfull}[4]{
+	\begin{smallmatrix}
+	\textsf{try\{} #1 \textsf{\}\ catch(} #2 \textsf{)}\ \{#3\} \\ 
+	\textsf{finally}\ \{#4\}
+	\end{smallmatrix}}
+\newcommand{\ircfgexpr}[2]{#1 = #2}
+\newcommand{\irdelete}[2]{#1 = \textsf{delete}\ #2}
+\newcommand{\irdeleteobj}[3]{#1 = \textsf{delete}\ #2[#3]}
+\newcommand{\irassign}[2]{#1 = #2}
+\newcommand{\irunop}[2]{#1 = \preop\ #2}
+\newcommand{\irbiop}[3]{#1 = #2 \inop #3}
+\newcommand{\irstore}[3]{#1[#2] = #3}
+\newcommand{\irload}[3]{#1 = #2[#3]}
+
+\newcommand{\instlist}[1]{\langle #1 \rangle}
+\newcommand{\letval}{\overset{\emph{let}}{=}}
+
+\newcommand{\FunctionId}{\TT{FunctionId}}
+\newcommand{\ArgVars}{\TT{ArgVars}}
+\newcommand{\LocalVars}{\TT{LocalVars}}
+\newcommand{\argVars}{\emph{argVars}}
+\newcommand{\localVars}{\emph{localVars}}
+\newcommand{\Node}{\TT{Node}}
+\newcommand{\BlockNode}{\TT{BlockNode}}
+\newcommand{\Nodelist}{\TT{Node list}}
+\newcommand{\Nodeset}{\TT{Node set}}
+\newcommand{\Unit}{\TT{Unit}}
+\newcommand{\ControlPoint}{\TT{ControlPoint}}
+%\newcommand{\Label}{\TT{Label}}
+\newcommand{\LEntry}{\SF{LEntry}}
+\newcommand{\LExit}{\SF{LExit}}
+\newcommand{\LExitExc}{\SF{LExitExc}}
+\newcommand{\CFG}{\SF{CFG}}
+\newcommand{\Length}{\emph{Length}}
+\newcommand{\TailOf}{\emph{TailOf}}
+\newcommand{\HeadOf}{\emph{HeadOf}}
+\newcommand{\Fold}{\emph{Fold}}
+\newcommand{\Iter}{\emph{Iter}}
+\newcommand{\GetTail}{\emph{GetTail}}
+\newcommand{\ToString}{\emph{ToString}}
+%\newcommand{\nullK}{{\inred\emph{null}}}
+%\newcommand{\}{\emph{}}
+
+\newcommand{\aD}{\hat{\mathcal{D}}}
+\newcommand{\aU}{\hat{\mathcal{U}}}
+\newcommand{\rel}{\S}
+

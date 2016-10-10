@@ -9,9 +9,10 @@ function[0] top-level {
     [4] <>arguments<>4 := allocArg(1) @ #2
     [5] <>arguments<>4["0"] := <>temp<>3
     [6] <>fun<>5 := <>Global<>toObject(<>obj<>2["exec"]) @ #3
+    [7] <>this<> := enterCode(<>obj<>2)
 
   Call[1] -> ExitExc
-    [0] call(<>fun<>5, <>obj<>2, <>arguments<>4) @ #4
+    [0] call(<>fun<>5, <>this<>, <>arguments<>4) @ #4
 
   AfterCall[2] -> [4]
 
@@ -23,9 +24,10 @@ function[0] top-level {
     [2] <>arguments<>9 := allocArg(1) @ #7
     [3] <>arguments<>9["0"] := <>temp<>8
     [4] <>fun<>10 := <>Global<>toObject(<>obj<>7["map"]) @ #8
+    [5] <>this<> := enterCode(<>obj<>7)
 
   Call[5] -> ExitExc
-    [0] call(<>fun<>10, <>obj<>7, <>arguments<>9) @ #9
+    [0] call(<>fun<>10, <>this<>, <>arguments<>9) @ #9
 
   AfterCall[6] -> [8]
 

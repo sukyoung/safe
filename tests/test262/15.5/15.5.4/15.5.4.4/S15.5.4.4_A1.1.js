@@ -1,4 +1,3 @@
-// TODO eval (rewritten)
 function __FACTORY() 
 {
   this.toString = (function () 
@@ -12,8 +11,7 @@ __instance = new __FACTORY;
 with (__instance)
 {
   {
-//    var __result1 = __instance.charAt(eval("1"), true, null, {
-    var __result1 = __instance.charAt(1, true, null, {
+    var __result1 = __instance.charAt(eval("1"), true, null, {
     }) !== "i";
     var __expect1 = false;
   }

@@ -80,7 +80,9 @@ class ArgParser(cmd: Command, safeConfig: SafeConfig) extends RegexParsers {
 
             phrase(optError) | phrase(simpleOptError) | phrase(fileName)
           }) { case (rule, prev) => phrase(rule) | prev }
-          parse(parser, arg).get
+          parse(parser, arg).get.map(_ => {
+            safeConfig.fileNames = safeConfig.fileNames.reverse
+          })
         }
       }
     }

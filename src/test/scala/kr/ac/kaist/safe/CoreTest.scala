@@ -12,7 +12,7 @@
 package kr.ac.kaist.safe
 
 import org.scalatest._
-import java.io.{ File, FilenameFilter }
+import java.io._
 
 import kr.ac.kaist.safe.analyzer.CallContext
 import kr.ac.kaist.safe.analyzer.domain.State
@@ -34,10 +34,11 @@ object CFGBuildTest extends Tag("CFGBuildTest")
 object AnalyzeTest extends Tag("AnalyzeTest")
 object Test262Test extends Tag("Test262Test")
 
-class CoreTest extends FlatSpec {
+class CoreTest extends FlatSpec with BeforeAndAfterAll {
   val SEP = File.separator
-  val jsDir = BASE_DIR + SEP + "tests/cfg/js/success"
-  val resDir = BASE_DIR + SEP + "tests/cfg/result/success"
+  val testDir = BASE_DIR + SEP + "tests" + SEP
+  val jsDir = testDir + "cfg" + SEP + "js" + SEP + "success" + SEP
+  val resDir = testDir + "cfg" + SEP + "result" + SEP + "success" + SEP
   def walkTree(file: File): Iterable[File] = {
     val children = new Iterable[File] {
       def iterator: Iterator[File] = if (file.isDirectory) file.listFiles.iterator else Iterator.empty
@@ -54,6 +55,11 @@ class CoreTest extends FlatSpec {
     assert(new File(filename).exists)
     normalized(Source.fromFile(filename).getLines.mkString(LINE_SEP))
   }
+
+  def getSafeConfig(filename: String): SafeConfig =
+    SafeConfig(CmdBase, List(filename), silent = true, testMode = true)
+
+  def getCFG(filename: String): Try[CFG] = CmdCFGBuild(List("-silent", filename), testMode = true)
 
   private def parseTest(pgm: Try[Program]): Unit = {
     pgm match {
@@ -99,81 +105,153 @@ class CoreTest extends FlatSpec {
 
   val resultPrefix = "__result"
   val expectPrefix = "__expect"
-  def analyzeTest(analysis: Try[(CFG, CallContext)]): Unit = {
+  def assertWrap(check: Boolean): AnalysisResult = {
+    assert(check)
+    Fail
+  }
+  abstract class AnalysisResult
+  case object Precise extends AnalysisResult
+  case object Imprecise extends AnalysisResult
+  case object NoTest extends AnalysisResult
+  case object Fail extends AnalysisResult
+  def analyzeTest(analysis: Try[(CFG, Int, CallContext)]): (AnalysisResult, Int) = {
     analysis match {
-      case Failure(_) => assert(false)
-      case Success((cfg, globalCallCtx)) =>
+      case Failure(_) => (assertWrap(false), 0)
+      case Success((cfg, iter, globalCallCtx)) =>
         val normalSt = cfg.globalFunc.exit.getState(globalCallCtx)
         val excSt = cfg.globalFunc.exitExc.getState(globalCallCtx)
         assert(!normalSt.heap.isBottom)
-        normalSt.heap(BuiltinGlobal.loc) match {
-          case None => assert(false)
-          case Some(globalObj) if globalObj.isBottom => assert(false)
-          case Some(globalObj) =>
+        val ar = normalSt.heap(BuiltinGlobal.loc) match {
+          case None => assertWrap(false)
+          case Some(globalObj) if globalObj.isBottom => assertWrap(false)
+          case Some(globalObj) => {
             val resultKeySet = globalObj.collectKeySet(resultPrefix)
             val expectKeySet = globalObj.collectKeySet(expectPrefix)
             assert(resultKeySet.size == expectKeySet.size)
-            for (resultKey <- resultKeySet) {
+            if (resultKeySet.size == 0) NoTest
+            else if (resultKeySet.foldLeft(true)((b, resultKey) => {
               val num = resultKey.substring(resultPrefix.length)
               val expectKey = expectPrefix + num
               assert(expectKeySet contains expectKey)
               assert(globalObj(expectKey) <= globalObj(resultKey))
-            }
+              b && (globalObj(resultKey) <= globalObj(expectKey))
+            })) Precise
+            else Imprecise
+          }
         }
+        (ar, iter)
     }
   }
 
   // Permute filenames for randomness
   for (filename <- scala.util.Random.shuffle(new File(jsDir).list(jsFilter).toSeq)) {
     val name = filename.substring(0, filename.length - 3)
-    val jsName = jsDir + SEP + filename
+    val jsName = jsDir + filename
 
-    val config = SafeConfig(CmdBase, List(jsName))
+    val config = getSafeConfig(jsName)
 
     lazy val pgm = Parse((), config)
     registerTest("[Parse] " + filename, ParseTest) { parseTest(pgm) }
 
     lazy val ast = pgm.flatMap(ASTRewrite(_, config))
     registerTest("[ASTRewrite] " + filename, ASTRewriteTest) {
-      val astName = resDir + "/astRewrite/" + name + ".test"
+      val astName = resDir + "astRewrite" + SEP + name + ".test"
       astRewriteTest(ast, astName)
     }
 
     lazy val ir = ast.flatMap(Compile(_, config))
     registerTest("[Compile]" + filename, CompileTest) {
-      val compileName = resDir + "/compile/" + name + ".test"
+      val compileName = resDir + "compile" + SEP + name + ".test"
       compileTest(ir, compileName)
     }
 
     lazy val cfg = ir.flatMap(CFGBuild(_, config))
     registerTest("[CFG]" + filename, CFGBuildTest) {
-      val cfgName = resDir + "/cfg/" + name + ".test"
+      val cfgName = resDir + "cfg" + SEP + name + ".test"
       cfgBuildTest(cfg, cfgName)
     }
   }
 
-  val analyzerTestDir = BASE_DIR + SEP + "tests/semantics/"
-  val analyzeConfig = AnalyzeConfig(testMode = true)
+  var totalList = List[String]()
+  var preciseList = List[String]()
+  var impreciseList = List[String]()
+  var noTestList = List[String]()
+  var totalIteration = 0
+  val analysisDeatil = BASE_DIR + SEP + "tests" + SEP + "analysis-detail"
+
+  val analyzerTestDir = testDir + "semantics"
+  val analyzeConfig = AnalyzeConfig()
   for (file <- shuffle(walkTree(new File(analyzerTestDir))) if file.getName.endsWith(".js")) {
     val jsName = file.toString
+    val relPath = jsName.substring(BASE_DIR.length)
     val filename = file.getName
     registerTest("[Analyze]" + filename, AnalyzeTest) {
-      val safeConfig = SafeConfig(CmdBase, List(jsName))
-      val cfg = CmdCFGBuild(List(jsName))
+      val safeConfig = getSafeConfig(jsName)
+      val cfg = getCFG(jsName)
       val analysis = cfg.flatMap(Analyze(_, safeConfig, analyzeConfig))
-      analyzeTest(analysis)
+      totalList ::= relPath
+      val (ar, iter) = analyzeTest(analysis)
+      totalIteration += iter
+      ar match {
+        case Precise => preciseList ::= relPath
+        case Imprecise => impreciseList ::= relPath
+        case NoTest => noTestList ::= relPath
+        case Fail => // unreachable
+      }
     }
   }
 
-  val test262TestDir = BASE_DIR + SEP + "tests/test262/"
+  val test262TestDir = testDir + "test262"
   for (file <- shuffle(walkTree(new File(test262TestDir))) if file.getName.endsWith(".js")) {
     val jsName = file.toString
+    val relPath = jsName.substring(BASE_DIR.length)
     val filename = file.getName
     registerTest("[Test262]" + filename, Test262Test) {
-      val safeConfig = SafeConfig(CmdBase, List(jsName))
-      val cfg = CmdCFGBuild(List(jsName))
+      val safeConfig = getSafeConfig(jsName)
+      val cfg = getCFG(jsName)
       val analysis = cfg.flatMap(Analyze(_, safeConfig, analyzeConfig))
-      analyzeTest(analysis)
+      totalList ::= relPath
+      val (ar, iter) = analyzeTest(analysis)
+      totalIteration += iter
+      ar match {
+        case Precise => preciseList ::= relPath
+        case Imprecise => impreciseList ::= relPath
+        case NoTest => noTestList ::= relPath
+        case Fail => // unreachable
+      }
     }
+  }
+
+  override def afterAll(): Unit = {
+    val file = new File(analysisDeatil)
+    val bw = new BufferedWriter(new FileWriter(file))
+    val pw = new PrintWriter(bw)
+    val pre = preciseList.sorted
+    val impre = impreciseList.sorted
+    val no = noTestList.sorted
+    val fail = (totalList.toSet -- pre.toSet -- impre.toSet -- no.toSet).toList.sorted
+    pw.println("#######################")
+    pw.println("# SUMMARY")
+    pw.println("#######################")
+    pw.println("# TOTAL : " + totalList.length)
+    pw.println("# FAIL : " + fail.length)
+    pw.println("# PRECISE : " + pre.length)
+    pw.println("# IMPRECISE : " + impre.length)
+    pw.println("# NO-TEST: " + no.length)
+    pw.println("# TOTAL ITERATION: " + totalIteration.toString)
+    pw.println("#######################")
+    pw.println()
+    pw.println("FAIL: " + fail.length)
+    fail.foreach(fn => pw.println(fn))
+    pw.println()
+    pw.println("PRECISE: " + pre.length)
+    pre.foreach(fn => pw.println(fn))
+    pw.println()
+    pw.println("IMPRECISE: " + impre.length)
+    impre.foreach(fn => pw.println(fn))
+    pw.println()
+    pw.println("NO-TEST: " + no.length)
+    no.foreach(fn => pw.println(fn))
+    pw.close()
   }
 }

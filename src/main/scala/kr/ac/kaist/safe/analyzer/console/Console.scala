@@ -97,7 +97,7 @@ class Console(
       case Nil => println(s"* no call-context in function[$fid] $block")
       case cc :: Nil => {
         cur = ControlPoint(block, cc)
-        println(s"* currrent cotrol point changed.")
+        println(s"* current control point changed.")
         this.setPrompt
       }
       case _ => {
@@ -118,7 +118,7 @@ class Console(
             case line => !line.forall(_.isDigit) || (line.toInt match {
               case idx if idx < len => {
                 cur = ControlPoint(block, ccList(idx))
-                println(s"* currrent cotrol point changed.")
+                println(s"* current control point changed.")
                 false
               }
               case _ => println(s"* given index is out of bound $len"); true

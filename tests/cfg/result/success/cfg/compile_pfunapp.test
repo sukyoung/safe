@@ -7,9 +7,10 @@ function[0] top-level {
     [2] <>obj<>1 := <>Global<>toObject(f) @ #1
     [3] <>arguments<>2 := allocArg(0) @ #2
     [4] <>fun<>3 := <>Global<>getBase(f)
+    [5] <>this<> := enterCode(<>fun<>3)
 
   Call[1] -> ExitExc
-    [0] call(<>obj<>1, <>fun<>3, <>arguments<>2) @ #3
+    [0] call(<>obj<>1, <>this<>, <>arguments<>2) @ #3
 
   AfterCall[2] -> [4]
 
@@ -23,9 +24,10 @@ function[0] top-level {
     [4] <>arguments<>7["0"] := <>temp<>5
     [5] <>arguments<>7["1"] := <>temp<>6
     [6] <>fun<>8 := <>Global<>getBase(f)
+    [7] <>this<> := enterCode(<>fun<>8)
 
   Call[5] -> ExitExc
-    [0] call(<>obj<>4, <>fun<>8, <>arguments<>7) @ #7
+    [0] call(<>obj<>4, <>this<>, <>arguments<>7) @ #7
 
   AfterCall[6] -> [8]
 
@@ -35,9 +37,10 @@ function[0] top-level {
     [0] <>obj<>9 := <>Global<>toObject(o) @ #9
     [1] <>arguments<>10 := allocArg(0) @ #10
     [2] <>fun<>11 := <>Global<>toObject(<>obj<>9[f]) @ #11
+    [3] <>this<> := enterCode(<>obj<>9)
 
   Call[9] -> ExitExc
-    [0] call(<>fun<>11, <>obj<>9, <>arguments<>10) @ #12
+    [0] call(<>fun<>11, <>this<>, <>arguments<>10) @ #12
 
   AfterCall[10] -> [12]
 
@@ -47,9 +50,10 @@ function[0] top-level {
     [0] <>obj<>12 := <>Global<>toObject(o) @ #14
     [1] <>arguments<>13 := allocArg(0) @ #15
     [2] <>fun<>14 := <>Global<>toObject(<>obj<>12[f]) @ #16
+    [3] <>this<> := enterCode(<>obj<>12)
 
   Call[13] -> ExitExc
-    [0] call(<>fun<>14, <>obj<>12, <>arguments<>13) @ #17
+    [0] call(<>fun<>14, <>this<>, <>arguments<>13) @ #17
 
   AfterCall[14] -> [16]
 
@@ -59,9 +63,10 @@ function[0] top-level {
     [0] <>obj<>15 := <>Global<>toObject(o) @ #19
     [1] <>arguments<>16 := allocArg(0) @ #20
     [2] <>fun<>17 := <>Global<>toObject(<>obj<>15["g"]) @ #21
+    [3] <>this<> := enterCode(<>obj<>15)
 
   Call[17] -> ExitExc
-    [0] call(<>fun<>17, <>obj<>15, <>arguments<>16) @ #22
+    [0] call(<>fun<>17, <>this<>, <>arguments<>16) @ #22
 
   AfterCall[18] -> [20]
 
@@ -71,9 +76,10 @@ function[0] top-level {
     [0] <>obj<>18 := <>Global<>toObject(o) @ #24
     [1] <>arguments<>19 := allocArg(0) @ #25
     [2] <>fun<>20 := <>Global<>toObject(<>obj<>18["h"]) @ #26
+    [3] <>this<> := enterCode(<>obj<>18)
 
   Call[21] -> ExitExc
-    [0] call(<>fun<>20, <>obj<>18, <>arguments<>19) @ #27
+    [0] call(<>fun<>20, <>this<>, <>arguments<>19) @ #27
 
   AfterCall[22] -> [24]
 

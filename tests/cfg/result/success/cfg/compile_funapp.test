@@ -8,16 +8,18 @@ function[0] top-level {
     [3] <>Global<>ignore4 := 3
     [4] <>Global<>ignore6 := 9.0
     [5] <>Global<>ignore8 := null
-    [6] <>obj<>4 := <>Global<>toObject(f) @ #3
-    [7] <>temp<>5 := 3
-    [8] <>temp<>6 := true
-    [9] <>arguments<>7 := allocArg(2) @ #4
-    [10] <>arguments<>7["0"] := <>temp<>5
-    [11] <>arguments<>7["1"] := <>temp<>6
-    [12] <>fun<>8 := <>Global<>getBase(f)
+    [6] <>Global<>ignore10 := 3
+    [7] <>obj<>4 := <>Global<>toObject(f) @ #3
+    [8] <>temp<>5 := 3
+    [9] <>temp<>6 := true
+    [10] <>arguments<>7 := allocArg(2) @ #4
+    [11] <>arguments<>7["0"] := <>temp<>5
+    [12] <>arguments<>7["1"] := <>temp<>6
+    [13] <>fun<>8 := <>Global<>getBase(f)
+    [14] <>this<> := enterCode(<>fun<>8)
 
   Call[1] -> ExitExc
-    [0] call(<>obj<>4, <>fun<>8, <>arguments<>7) @ #5
+    [0] call(<>obj<>4, <>this<>, <>arguments<>7) @ #5
 
   AfterCall[2] -> [4]
 
