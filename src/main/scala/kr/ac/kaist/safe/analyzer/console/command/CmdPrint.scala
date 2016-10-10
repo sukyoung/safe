@@ -29,6 +29,7 @@ case object CmdPrint extends Command("print", "Print out various information.") 
     println("       " + name + " ipsucc")
     println("       " + name + " trace")
     println("       " + name + " cfg")
+    println("       " + name + " html")
   }
 
   def run(c: Console, args: List[String]): Option[Target] = {
