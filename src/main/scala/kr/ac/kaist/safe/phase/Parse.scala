@@ -12,7 +12,7 @@
 package kr.ac.kaist.safe.phase
 
 import scala.util.{ Try, Failure }
-import kr.ac.kaist.safe.SafeConfig
+import kr.ac.kaist.safe.{ LINE_SEP, SafeConfig }
 import kr.ac.kaist.safe.parser.Parser
 import kr.ac.kaist.safe.nodes.ast.Program
 import kr.ac.kaist.safe.util._
@@ -21,7 +21,8 @@ import kr.ac.kaist.safe.errors.error.NoFileError
 // Parse phase
 case object Parse extends PhaseObj[Unit, ParseConfig, Program] {
   val name = "parser"
-  val help = "Parses files."
+  val help = "Parses files." + LINE_SEP +
+    "If multiple files are given, they are concatenated in the given order before being parsed."
 
   def apply(
     unit: Unit,
@@ -43,7 +44,7 @@ case object Parse extends PhaseObj[Unit, ParseConfig, Program] {
             val (fw, writer) = Useful.fileNameToWriters(out)
             writer.write(program.toString(0))
             writer.close; fw.close
-            println("Dumped parsed AST to " + out)
+            println("Dumped parsed JavaScript code to " + out)
           }
           case None =>
         }
@@ -56,7 +57,7 @@ case object Parse extends PhaseObj[Unit, ParseConfig, Program] {
   def defaultConfig: ParseConfig = ParseConfig()
   val options: List[PhaseOption[ParseConfig]] = List(
     ("out", StrOption((c, s) => c.outFile = Some(s)),
-      "the parsed AST will be written to the outfile.")
+      "the parsed JavaScript code will be written to the outfile.")
   )
 }
 

@@ -67,7 +67,7 @@ case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, Int, CallContext)
   def defaultConfig: AnalyzeConfig = AnalyzeConfig()
   val options: List[PhaseOption[AnalyzeConfig]] = List(
     ("silent", BoolOption(c => c.silent = true),
-      "messages during compilation are muted."),
+      "messages during analysis are muted."),
     ("console", BoolOption(c => c.console = true),
       "REPL-style console debugger."),
     ("out", StrOption((c, s) => c.outFile = Some(s)),

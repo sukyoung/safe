@@ -102,8 +102,8 @@ object Safe {
   val usage: String = {
     val s: StringBuilder = new StringBuilder
     s.append("Usage:").append(LINE_SEP)
-      .append("  safe {command} [-{option}]* [-{phase}:{option}[={input}]]* {filename}*").append(LINE_SEP)
-      .append("  example: safe analyze -astRewrite:silent cfgBuild:out=out test.js").append(LINE_SEP)
+      .append("  safe {command} [-{option}]* [-{phase}:{option}[={input}]]* {filename}+").append(LINE_SEP)
+      .append("  example: safe analyze -astRewriter:silent -cfgBuilder:out=out test.js").append(LINE_SEP)
       .append(LINE_SEP)
       .append("  command list:").append(LINE_SEP)
     commands foreach (cmd => s.append("    %-15s".format(cmd.name)).append(cmd).append(LINE_SEP))
