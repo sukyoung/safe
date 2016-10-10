@@ -73,7 +73,7 @@ object HTMLWriter {
         val func = entry.func
         val id = func.id
         val label = func.toString
-        s"""{data: {id: '$id', content: '$label', border: 0, color: '$REACHABLE_COLOR', inWL: $inWL, bc: 'white'} },""" + LINE_SEP
+        s"""{data: {id: '$id', content: '$label', border: 0, color: '$REACHABLE_COLOR', inWL: false, bc: 'white'} },""" + LINE_SEP
       case _ => ""
     }) + s"""{data: {id: '$id', content: '$label', border: 2, color: '$color', inWL: $inWL, bc: 'white'} },""" + LINE_SEP
   }
@@ -120,7 +120,7 @@ object HTMLWriter {
     sb.append(s"'$id': [").append(LINE_SEP)
       .append(s"{ kind: 'Block', id: 'block', value: '$label of $func' },").append(LINE_SEP)
     block.getInsts.reverse.foreach(inst => {
-      sb.append(s"{ kind: 'Instruction', value: '$inst' },").append(LINE_SEP)
+      sb.append(s"{ kind: 'Instructions', value: '$inst' },").append(LINE_SEP)
     })
     sb.append(s"]," + LINE_SEP)
     sb.toString
