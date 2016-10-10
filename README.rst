@@ -11,21 +11,9 @@ SAFE 2.0 is a scalable and pluggable analysis framework for JavaScript web appli
 
 Older versions are still available at the SAFE1.0 branch.
 
-SAFE has been used by:
+For more information, please check out `our user manual`_.
 
-* `JSAI`_ @ UCSB
-* `ROSAEC`_ @ Seoul National University
-* `K Framework`_ @ University of Illinois at Urbana-Champaign
-* `Ken Cheung`_ @ HKUST
-* `Web-based Vulnerability Detection`_ @ Oracle Labs
-* `Tizen`_ @ Linux Foundation
-
-.. _JSAI: http://www.cs.ucsb.edu/~benh/research/downloads.html
-.. _ROSAEC: http://rosaec.snu.ac.kr
-.. _K Framework: http://www.kframework.org/index.php/Main_Page
-.. _Ken Cheung: http://www.cse.ust.hk/~hunkim
-.. _Web-based Vulnerability Detection: https://labs.oracle.com/pls/apex/f?p=labs:49:::::P49_PROJECT_ID:133
-.. _Tizen: https://www.tizen.org
+.. _our user manual: https://github.com/sukyoung/safe/blob/master/doc/manual.pdf
 
 Requirements
 ============
@@ -66,10 +54,12 @@ Changes from SAFE 1.0
 
 * SAFE 2.0 has been tested using `Test262`_, the official ECMAScript (ECMA-262) conformance suite.
 * SAFE 2.0 now uses **sbt** instead of **ant** to build SAFE.
+* SAFE 2.0 now provides `an HTML-based debugger for its analyzer`_.
 * Most Java source files are replaced by Scala code and the only Java source code remained is the generated parser code.
 * Several components from SAFE 1.0 may not be integrated into SAFE 2.0.  Such components include interpreter, concolic testing, clone detector, clone refactoring, TypeScript support, Web API misuse detector, and several abstract domains like the string automata domain.
 
 .. _Test262: https://github.com/tc39/test262
+.. _an HTML-based debugger for its analyzer: https://github.com/sukyoung/safe/blob/master/doc/htmldebugger.png
 
 SAFE 2.0 Roadmap
 ============
@@ -104,6 +94,25 @@ Details of the SAFE framework are available in our papers:
 .. _All about the ''with'' Statement in JavaScript\: Removing ''with'' Statements in JavaScript Applications: http://plrg.kaist.ac.kr/lib/exe/fetch.php?media=research:publications:dls13.pdf
 .. _Formal Specification of a JavaScript Module System: http://plrg.kaist.ac.kr/lib/exe/fetch.php?media=research:publications:oopsla12.pdf
 .. _SAFE\: Formal Specification and Implementation of a Scalable Analysis Framework for ECMAScript: http://plrg.kaist.ac.kr/lib/exe/fetch.php?media=research:publications:fool2012.pdf
+
+Users
+============
+
+SAFE has been used by:
+
+* `JSAI`_ @ UCSB
+* `ROSAEC`_ @ Seoul National University
+* `K Framework`_ @ University of Illinois at Urbana-Champaign
+* `Ken Cheung`_ @ HKUST
+* `Web-based Vulnerability Detection`_ @ Oracle Labs
+* `Tizen`_ @ Linux Foundation
+
+.. _JSAI: http://www.cs.ucsb.edu/~benh/research/downloads.html
+.. _ROSAEC: http://rosaec.snu.ac.kr
+.. _K Framework: http://www.kframework.org/index.php/Main_Page
+.. _Ken Cheung: http://www.cse.ust.hk/~hunkim
+.. _Web-based Vulnerability Detection: https://labs.oracle.com/pls/apex/f?p=labs:49:::::P49_PROJECT_ID:133
+.. _Tizen: https://www.tizen.org
 
 Authors
 ============
