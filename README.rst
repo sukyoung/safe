@@ -13,7 +13,7 @@ Older versions are still available at the SAFE1.0 branch.
 
 For more information, please check out `our user manual`_.
 
-.. _our user manual: https://github.com/kaist-plrg/safe/blob/master/manual.pdf
+.. _our user manual: https://github.com/kaist-plrg/safe/blob/master/doc/manual.pdf
 
 Requirements
 ============
