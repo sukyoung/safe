@@ -699,7 +699,7 @@ object DefaultNumber extends AbsNumberUtil {
       case (left, NUIntConst(0) | UIntConst(0)) => left
       // The sum of two nonzero finite values of the same magnitude and opposite sign is +0.
       // In the remaining cases, add two numbers.
-      case (UIntConst(l), UIntConst(r)) => UIntConst(l + r)
+      case (UIntConst(l), UIntConst(r)) => alpha(l + r.toDouble)
       case (UIntConst(l), NUIntConst(r)) => alpha(l + r)
       case (NUIntConst(l), UIntConst(r)) => alpha(l + r)
       case (NUIntConst(l), NUIntConst(r)) => alpha(l + r)
@@ -734,7 +734,7 @@ object DefaultNumber extends AbsNumberUtil {
       case (NUIntConst(n), NegInf) if n > 0 => NegInf
       case (NUIntConst(_), NegInf) => PosInf
       /* 11.5.1 sixth */
-      case (UIntConst(n1), UIntConst(n2)) => alpha(n1 * n2)
+      case (UIntConst(n1), UIntConst(n2)) => alpha(n1 * n2.toDouble)
       case (UIntConst(n1), NUIntConst(n2)) => alpha(n1 * n2)
       case (NUIntConst(n1), UIntConst(n2)) => alpha(n1 * n2)
       case (NUIntConst(n1), NUIntConst(n2)) => alpha(n1 * n2)
@@ -782,7 +782,7 @@ object DefaultNumber extends AbsNumberUtil {
       case (NUIntConst(_), UIntConst(0)) => NegInf
       case (NUIntConst(_), NUIntConst(0)) => PosInf
       /* 11.5.2  ninth */
-      case (UIntConst(n1), UIntConst(n2)) => alpha(n1 / n2)
+      case (UIntConst(n1), UIntConst(n2)) => alpha(n1 / n2.toDouble)
       case (UIntConst(n1), NUIntConst(n2)) => alpha(n1 / n2)
       case (NUIntConst(n1), UIntConst(n2)) => alpha(n1 / n2)
       case (NUIntConst(n1), NUIntConst(n2)) => alpha(n1 / n2)
