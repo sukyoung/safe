@@ -38,6 +38,17 @@ object BuiltinDateHelper {
     (st, st.raiseException(excSet), AbsValue(s))
   })
 
+  def timeClip(num: AbsNumber): AbsNumber = num.getSingle match {
+    case ConZero() => AbsNumber.Bot
+    case ConOne(Num(n)) => n match {
+      case n if n.isInfinity || n.isNaN => AbsNumber.NaN
+      case n if math.abs(n) > (8.64 * math.pow(10, 15)) => AbsNumber.NaN
+      // case -0.0 => AbsNumber(0) XXX: implementation-dependent
+      case _ => TypeConversionHelper.ToInteger(num)
+    }
+    case ConMany() => AbsNumber.Top
+  }
+
   val constructor = BasicCode(argLen = 1, code = (
     args: AbsValue, st: State
   ) => {
@@ -59,7 +70,7 @@ object BuiltinDateHelper {
           // XXX: give up the precision! (Room for the analysis precision improvement!)
           thenV = AbsNumber.Top,
           // 3. Else, let V be ToNumber(v).
-          elseV = TypeConversionHelper.ToNumber(v)
+          elseV = timeClip(TypeConversionHelper.ToNumber(v))
         // 4. Set the [[PrimitiveValue]] internal property of the newly constructed object
         // to TimeClip(V) and return.
         )(AbsNumber)
