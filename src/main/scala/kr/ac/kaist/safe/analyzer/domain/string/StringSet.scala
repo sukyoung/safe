@@ -294,7 +294,7 @@ case class StringSet(maxSetSize: Int) extends AbsStringUtil {
           res + AbsBool({
             isNumber(v) && {
               val num = v.toDouble
-              0 <= num && num < upper
+              num % 1 == 0 && 0 <= num && num < upper
             }
           })
         })
