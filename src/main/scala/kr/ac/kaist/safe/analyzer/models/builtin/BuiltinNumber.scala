@@ -46,7 +46,7 @@ object BuiltinNumberHelper {
     val addr = SystemAddr("Number<instance>")
     val state = st.oldify(addr)
     val loc = Loc(addr, Recent)
-    val heap = state.heap.update(loc, AbsObjectUtil.newNumberObj(num))
+    val heap = state.heap.update(loc, AbsObject.newNumberObj(num))
     (State(heap, state.context), State.Bot, AbsValue(loc))
   })
 

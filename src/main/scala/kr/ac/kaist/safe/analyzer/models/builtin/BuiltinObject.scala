@@ -219,7 +219,7 @@ object BuiltinObjectHelper {
     val (desc, undef) = obj.GetOwnProperty(name)
     // 4. Return the result of calling FromPropertyDescriptor(desc) (8.10.4).
     val (retSt, retV, excSet2) = if (!desc.isBottom) {
-      val (descObj, excSet) = AbsObjectUtil.FromPropertyDescriptor(desc)
+      val (descObj, excSet) = AbsObject.FromPropertyDescriptor(desc)
       val descAddr = SystemAddr("Object.getOwnPropertyDescriptor<descriptor>")
       val state = st.oldify(descAddr)
       val descLoc = Loc(descAddr, Recent)
@@ -237,29 +237,38 @@ object BuiltinObjectHelper {
     val h = st.heap
     val objV = Helper.propLoad(args, Set(AbsString("0")), h)
     val arrAddr = SystemAddr("Object.getOwnPropertyNames<array>")
-    val (keyStr, lenSet) = objV.locset.foldLeft((AbsString.Bot, Set[Double]())) {
+    val (keyStr, lenSet) = objV.locset.foldLeft((AbsString.Bot, Set[Option[Int]]())) {
       case ((str, lenSet), loc) => {
         val obj = h.get(loc)
-        val keys = obj.collectKeySet("")
-        (str + AbsString(keys), lenSet + keys.size)
+        val (keys, size) = obj.collectKeySet("") match {
+          case ConInf() => (AbsString.Top, None)
+          case ConFin(set) => (AbsString(set), Some(set.size))
+        }
+        (str + keys, lenSet + size)
       }
     }
-    val maxOpt =
-      if (lenSet.isEmpty) None
-      else Some(lenSet.max)
+    val (maxOpt, len) =
+      if (lenSet.isEmpty) (None, AbsNumber.Bot)
+      else {
+        val (opt, num) = lenSet.foldLeft[(Option[Int], AbsNumber)]((Some(0), AbsNumber.Bot)) {
+          case ((None, _), _) | (_, None) => (None, AbsNumber.Top)
+          case ((Some(k), num), Some(t)) => (Some(math.max(k, t)), num + AbsNumber(t))
+        }
+        (Some(opt), num)
+      }
 
     // 1. If Type(O) is not Object throw a TypeError exception.
     val excSet = objCheck(objV)
     // 2. Let array be the result of creating a new Array object.
     // (XXX: we assign the length of the Array object as the number of properties)
-    val array = AbsObjectUtil.newArrayObject(AbsNumber(lenSet))
+    val array = AbsObject.newArrayObject(len)
     // 3. For each named own property P of O (with index n started from 0)
     //   a. Let name be the String value that is the name of P.
     val AT = (AbsBool.True, AbsAbsent.Bot)
     val name = AbsValue(AbsPValue(strval = keyStr))
     val desc = AbsDesc((name, AbsAbsent.Bot), AT, AT, AT)
     val (retObj, retExcSet) = maxOpt match {
-      case Some(max) => (0 until max.toInt).foldLeft((array, excSet)) {
+      case Some(Some(max)) => (0 until max.toInt).foldLeft((array, excSet)) {
         case ((obj, e), n) => {
           val prop = AbsString(n.toString)
           // b. Call the [[DefineOwnProperty]] internal method of array with arguments
@@ -269,7 +278,8 @@ object BuiltinObjectHelper {
           (obj + newObj, e ++ excSet)
         }
       }
-      case None => (AbsObjectUtil.Bot, excSet)
+      case Some(None) => (AbsObject.Top, excSet + TypeError + RangeError)
+      case None => (AbsObject.Bot, excSet)
     }
 
     // 5. Return array.
@@ -296,7 +306,7 @@ object BuiltinObjectHelper {
       if (objV.pvalue.copyWith(nullval = AbsNull.Bot).isBottom) ExcSetEmpty
       else HashSet(TypeError)
     // 2. Let obj be the result of creating a new object.
-    val obj = AbsObjectUtil.newObject
+    val obj = AbsObject.newObject
     // 3. Set the [[Prototype]] internal property of obj to O.
     val protoV = AbsValue(objV.locset) + objV.pvalue.nullval
     val newObj = obj.update(IPrototype, InternalValueUtil(protoV))
@@ -510,9 +520,12 @@ object BuiltinObjectHelper {
     val objV = Helper.propLoad(args, Set(AbsString("0")), h)
     val arrAddr = SystemAddr("Object.keys<array>")
     val obj = h.get(objV.locset)
-    val keyStr = obj.amap.abstractKeySet((key, dp) => {
+    val keyStr = obj.abstractKeySet((key, dp) => {
       AbsBool.True <= dp.enumerable
-    }).foldLeft(AbsString.Bot)(_ + _)
+    }) match {
+      case ConInf() => AbsString.Top
+      case ConFin(set) => set.foldLeft(AbsString.Bot)(_ + _)
+    }
 
     // 1. If the Type(O) is not Object, throw a TypeError exception.
     val excSet = objCheck(objV)
@@ -521,11 +534,11 @@ object BuiltinObjectHelper {
     val name = AbsValue(AbsPValue(strval = keyStr))
     val desc = AbsDesc((name, AbsAbsent.Bot), AT, AT, AT)
     val (retObj, retExcSet) = keyStr.gamma match {
-      case ConFin(set) if obj.amap.isDefinite(keyStr) => {
+      case ConFin(set) if obj.isDefinite(keyStr) => {
         // 2. Let n be the number of own enumerable properties of O
         val n = set.size
         // 3. Let array be the result of creating a new Object as if by the ex pression new Array(n).
-        val array = AbsObjectUtil.newArrayObject(AbsNumber(n))
+        val array = AbsObject.newArrayObject(AbsNumber(n))
         // 4. For each own enumerable property of O whose name String is P (wiht index 0 until n)
         (0 until n).foldLeft((array, ExcSetEmpty)) {
           case ((arr, e), index) => {
@@ -540,7 +553,7 @@ object BuiltinObjectHelper {
         // 2. Let n be the number of own enumerable properties of O
         val n = AbsNumber.Top
         // 3. Let array be the result of creating a new Object as if by the ex pression new Array(n).
-        val array = AbsObjectUtil.newArrayObject(n)
+        val array = AbsObject.newArrayObject(n)
         // 4. For each own enumerable property of O whose name String is P (wiht index 0 until n)
         //   a. Call the [[DefineOwnProperty]] internal method of array with arguments ToString(index),
         //      the PropertyDescriptor {[[Value]]: P, [[Writable]]: true, [[Enumerable]]: true, [[Configurable]]: true}, and false.
@@ -679,38 +692,42 @@ object BuiltinObjectHelper {
   private def newObjSt(st: State, addr: SystemAddr): (AbsValue, State) = {
     val state = st.oldify(addr)
     val loc = Loc(addr, Recent)
-    val obj = AbsObjectUtil.newObject
+    val obj = AbsObject.newObject
     val heap = state.heap.update(loc, obj)
     (AbsValue(loc), State(heap, state.context))
   }
 
   private def changeProps(obj: AbsObject, f: AbsDesc => AbsDesc): (AbsObject, Set[Exception]) = {
-    val aKeySet = obj.abstractKeySet
     // For each named own property name P of O,
-    aKeySet.foldLeft(obj, ExcSetEmpty) {
-      case ((o, e), key) => {
-        // Let desc be the result of calling the [[GetOwnProperty]] internal method of O with P.
-        val (desc, _) = obj.GetOwnProperty(key)
-        // create new PropertyDescriptor by using f.
-        val newDesc = f(desc)
-        // Call the [[DefineOwnProperty]] internal method of O with P, desc, and true as arguments.
-        val (retObj, _, excSet) = o.DefineOwnProperty(key, newDesc, true)
-        (retObj, e ++ excSet)
+    obj.abstractKeySet match {
+      case ConInf() => (AbsObject.Top, HashSet(TypeError, RangeError))
+      case ConFin(set) => set.foldLeft(obj, ExcSetEmpty) {
+        case ((o, e), key) => {
+          // Let desc be the result of calling the [[GetOwnProperty]] internal method of O with P.
+          val (desc, _) = obj.GetOwnProperty(key)
+          // create new PropertyDescriptor by using f.
+          val newDesc = f(desc)
+          // Call the [[DefineOwnProperty]] internal method of O with P, desc, and true as arguments.
+          val (retObj, _, excSet) = o.DefineOwnProperty(key, newDesc, true)
+          (retObj, e ++ excSet)
+        }
       }
     }
   }
 
   private def forall(obj: AbsObject, f: AbsDesc => AbsBool): AbsBool = {
-    val aKeySet = obj.abstractKeySet
     if (obj.isBottom) AbsBool.Bot
     else {
       // For each named own property name P of O,
-      aKeySet.foldLeft(AbsBool.True) {
-        case (b, key) => {
-          // Let desc be the result of calling the [[GetOwnProperty]] internal method of O with P.
-          val (desc, _) = obj.GetOwnProperty(key)
-          // Check by using f.
-          b && f(desc)
+      obj.abstractKeySet match {
+        case ConInf() => AbsBool.Top
+        case ConFin(set) => set.foldLeft(AbsBool.True) {
+          case (b, key) => {
+            // Let desc be the result of calling the [[GetOwnProperty]] internal method of O with P.
+            val (desc, _) = obj.GetOwnProperty(key)
+            // Check by using f.
+            b && f(desc)
+          }
         }
       }
     }
@@ -726,24 +743,27 @@ object BuiltinObjectHelper {
     val ctx1 = st1.context
     val props = h1.get(loc1)
     // 4. For each enumerable property of props whose name String is P
-    val keyStrSet = props.amap.abstractKeySet((key, dp) => {
+    val keyStrSet = props.abstractKeySet((key, dp) => {
       AbsBool.True <= dp.enumerable
     })
     val (retH, retExcSet) = objV.locset.foldLeft((h1, excSet ++ toExcSet)) {
       case ((heap, e), loc) => {
         val obj = h1.get(loc)
-        val (retObj, excSet) = keyStrSet.foldLeft((obj, e)) {
-          case ((obj, e), astr) => {
-            // a. Let descObj be the result of calling the [[Get]] internal method of props with P as the argument.
-            val descObjLoc = props.Get(astr, h1).locset
-            if (!descObjLoc.isBottom) {
-              val descObj = h1.get(descObjLoc)
-              // b. Let desc be the result of calling ToPropertyDescriptor with descObj as the argument.
-              val desc = AbsDesc.ToPropertyDescriptor(descObj, h1)
-              // c. Call the [[DefineOwnProperty]] internal method of O with arguments P, desc, and true.
-              val (retObj, _, excSet) = obj.DefineOwnProperty(astr, desc, true)
-              (retObj, e ++ excSet)
-            } else (obj, e)
+        val (retObj: AbsObject, excSet: Set[Exception]) = keyStrSet match {
+          case ConInf() => (AbsObject.Top, HashSet(TypeError, RangeError))
+          case ConFin(set) => set.foldLeft((obj, e)) {
+            case ((obj, e), astr) => {
+              // a. Let descObj be the result of calling the [[Get]] internal method of props with P as the argument.
+              val descObjLoc = props.Get(astr, h1).locset
+              if (!descObjLoc.isBottom) {
+                val descObj = h1.get(descObjLoc)
+                // b. Let desc be the result of calling ToPropertyDescriptor with descObj as the argument.
+                val desc = AbsDesc.ToPropertyDescriptor(descObj, h1)
+                // c. Call the [[DefineOwnProperty]] internal method of O with arguments P, desc, and true.
+                val (retObj, _, excSet) = obj.DefineOwnProperty(astr, desc, true)
+                (retObj, e ++ excSet)
+              } else (obj, e)
+            }
           }
         }
         // 5. Return O.

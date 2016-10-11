@@ -46,7 +46,7 @@ object BuiltinBooleanHelper {
     val addr = SystemAddr("Boolean<instance>")
     val state = st.oldify(addr)
     val loc = Loc(addr, Recent)
-    val heap = state.heap.update(loc, AbsObjectUtil.newBooleanObj(bool))
+    val heap = state.heap.update(loc, AbsObject.newBooleanObj(bool))
 
     (State(heap, state.context), State.Bot, AbsValue(loc))
   })

@@ -43,6 +43,7 @@ case object IHasInstance extends InternalName {
 
 object InternalValueUtil {
   val Bot: InternalValue = InternalValue(AbsValue.Bot, FidSetEmpty)
+  val Top: InternalValue = InternalValue(AbsValue.Top, FidSetEmpty) // TODO unsound
 
   // constructor
   def apply(undefval: AbsUndef): InternalValue = InternalValue(AbsValue(undefval), FidSetEmpty)

@@ -56,7 +56,7 @@ class FuncModel(
       val constructIdOpt = construct.map(_.getCFGFunc(cfg, name).id)
       val scope = AbsValue(Null) // TODO get scope as args
       val n = AbsNumber(code.argLen)
-      val funcObj = AbsObjectUtil.newFunctionObject(
+      val funcObj = AbsObject.newFunctionObject(
         fidOpt,
         constructIdOpt,
         scope,

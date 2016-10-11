@@ -58,7 +58,7 @@ private object BuiltinRegExpHelper {
   def newREObject(source: AbsString, g: AbsBool, i: AbsBool, m: AbsBool): AbsObject = {
     val IV = InternalValueUtil
     val afalse = AbsBool.False
-    AbsObjectUtil.Empty
+    AbsObject.Empty
       .update(IClass, IV(AbsString("RegExp")))
       .update(IPrototype, IV(BuiltinRegExpProto.loc))
       .update(IExtensible, IV(AbsBool.True))
@@ -114,7 +114,7 @@ private object BuiltinRegExpHelper {
     val (objOpt, excSet2) =
       (P.gamma, F.gamma) match {
         case (ConFin(patternSet), ConFin(flagsSet)) if patternSet.nonEmpty && flagsSet.nonEmpty =>
-          val (obj, exc) = patternSet.foldLeft((AbsObjectUtil.Bot, ExcSetEmpty))((tpl1, spattern) => {
+          val (obj, exc) = patternSet.foldLeft((AbsObject.Bot, ExcSetEmpty))((tpl1, spattern) => {
             flagsSet.foldLeft(tpl1)((tpl2, sflags) => {
               val (aR, excSet) = tpl2
               val pattern: String =
@@ -201,7 +201,7 @@ private object BuiltinRegExpHelper {
     val (objOpt, excSet2) =
       (P.gamma, F.gamma) match {
         case (ConFin(patternSet), ConFin(flagsSet)) if patternSet.nonEmpty && flagsSet.nonEmpty =>
-          val (obj, exc) = patternSet.foldLeft((AbsObjectUtil.Bot, ExcSetEmpty))((tpl1, spattern) => {
+          val (obj, exc) = patternSet.foldLeft((AbsObject.Bot, ExcSetEmpty))((tpl1, spattern) => {
             flagsSet.foldLeft(tpl1)((tpl2, sflags) => {
               val (aR, excSet) = tpl2
               val pattern: String =

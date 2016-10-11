@@ -246,7 +246,7 @@ class Semantics(
               (v.locset, es)
           }
         }
-        val h2 = st1.heap.update(locR, AbsObjectUtil.newObject(vLocSet))
+        val h2 = st1.heap.update(locR, AbsObject.newObject(vLocSet))
         val newSt = State(h2, st1.context).varStore(x, AbsValue(locR))
         val newExcSt = st.raiseException(excSet)
         val s1 = excSt + newExcSt
@@ -256,7 +256,7 @@ class Semantics(
         val locR = Loc(newAddr, Recent)
         val st1 = st.oldify(newAddr)
         val np = AbsNumber(n.toInt)
-        val h2 = st1.heap.update(locR, AbsObjectUtil.newArrayObject(np))
+        val h2 = st1.heap.update(locR, AbsObject.newArrayObject(np))
         val newSt = State(h2, st1.context).varStore(x, AbsValue(locR))
         (newSt, excSt)
       }
@@ -264,7 +264,7 @@ class Semantics(
         val locR = Loc(newAddr, Recent)
         val st1 = st.oldify(newAddr)
         val absN = AbsNumber(n.toInt)
-        val h2 = st1.heap.update(locR, AbsObjectUtil.newArgObject(absN))
+        val h2 = st1.heap.update(locR, AbsObject.newArgObject(absN))
         val newSt = State(h2, st1.context).varStore(x, AbsValue(locR))
         (newSt, excSt)
       }
@@ -381,11 +381,11 @@ class Semantics(
         val locR2 = Loc(aNew2, Recent)
         val st1 = st.oldify(aNew1)
         val st2 = st1.oldify(aNew2)
-        val oNew = AbsObjectUtil.newObject(BuiltinObjectProto.loc)
+        val oNew = AbsObject.newObject(BuiltinObjectProto.loc)
 
         val n = AbsNumber(f.argVars.length)
         val localEnv = st2.context.pureLocal
-        val h3 = st2.heap.update(locR1, AbsObjectUtil.newFunctionObject(f.id, localEnv.outer, locR2, n))
+        val h3 = st2.heap.update(locR1, AbsObject.newFunctionObject(f.id, localEnv.outer, locR2, n))
 
         val fVal = AbsValue(locR1)
         val h4 = h3.update(locR2, oNew.update("constructor", AbsDataProp(fVal, AT, AF, AT)))
@@ -402,10 +402,10 @@ class Semantics(
         val st2 = st1.oldify(aNew2)
         val st3 = st2.oldify(aNew3)
 
-        val oNew = AbsObjectUtil.newObject(BuiltinObjectProto.loc)
+        val oNew = AbsObject.newObject(BuiltinObjectProto.loc)
         val n = AbsNumber(f.argVars.length)
         val fObjValue = AbsValue(locR3)
-        val h4 = st3.heap.update(locR1, AbsObjectUtil.newFunctionObject(f.id, fObjValue, locR2, n))
+        val h4 = st3.heap.update(locR1, AbsObject.newFunctionObject(f.id, fObjValue, locR2, n))
 
         val fVal = AbsValue(locR1)
         val h5 = h4.update(locR2, oNew.update("constructor", AbsDataProp(fVal, AT, AF, AT)))

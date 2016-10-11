@@ -27,19 +27,19 @@ object TypeConversionHelper {
   // 9.1 ToPrimitive
   ////////////////////////////////////////////////////////////////
   def ToPrimitive(value: AbsValue): AbsPValue =
-    value.pvalue + AbsObjectUtil.defaultValue(value.locset)
+    value.pvalue + AbsObject.defaultValue(value.locset)
 
   def ToPrimitive(value: AbsValue, preferredType: String): AbsPValue =
-    value.pvalue + AbsObjectUtil.defaultValue(value.locset, preferredType)
+    value.pvalue + AbsObject.defaultValue(value.locset, preferredType)
 
   def ToPrimitive(locSet: AbsLoc, preferredType: String): AbsPValue =
-    AbsObjectUtil.defaultValue(locSet, preferredType)
+    AbsObject.defaultValue(locSet, preferredType)
 
   def ToPrimitive(value: AbsValue, h: Heap, preferredType: String = "String"): AbsPValue =
-    value.pvalue + AbsObjectUtil.defaultValue(value.locset, h, preferredType)
+    value.pvalue + AbsObject.defaultValue(value.locset, h, preferredType)
 
   def ToPrimitive(locSet: AbsLoc, h: Heap, preferredType: String): AbsPValue =
-    AbsObjectUtil.defaultValue(locSet, h, preferredType)
+    AbsObject.defaultValue(locSet, h, preferredType)
 
   ////////////////////////////////////////////////////////////////
   // 9.2 ToBoolean
@@ -189,9 +189,9 @@ object TypeConversionHelper {
   ////////////////////////////////////////////////////////////////
   def ToObject(pvalue: AbsPValue): (AbsObject, Set[Exception]) = {
     val excSet = CheckObjectCoercible(pvalue)
-    val obj3 = pvalue.numval.fold(AbsObjectUtil.Bot) { AbsObjectUtil.newNumberObj(_) }
-    val obj4 = pvalue.boolval.fold(AbsObjectUtil.Bot) { AbsObjectUtil.newBooleanObj(_) }
-    val obj5 = pvalue.strval.fold(AbsObjectUtil.Bot) { AbsObjectUtil.newStringObj(_) }
+    val obj3 = pvalue.numval.fold(AbsObject.Bot) { AbsObject.newNumberObj(_) }
+    val obj4 = pvalue.boolval.fold(AbsObject.Bot) { AbsObject.newBooleanObj(_) }
+    val obj5 = pvalue.strval.fold(AbsObject.Bot) { AbsObject.newStringObj(_) }
     (obj3 + obj4 + obj5, excSet)
   }
 

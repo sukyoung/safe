@@ -48,7 +48,7 @@ case class State(heap: Heap, context: AbsContext) {
           val newSt = st.oldify(errAddr)
           val loc = Loc(errAddr, Recent)
           val (protoModel, _, _, _) = errModel.protoModel.get
-          val newErrObj = AbsObjectUtil.newErrorObj(errModel.name, protoModel.loc)
+          val newErrObj = AbsObject.newErrorObj(errModel.name, protoModel.loc)
           val retH = newSt.heap.update(loc, newErrObj)
           (State(retH, newSt.context), locSet + loc)
         }

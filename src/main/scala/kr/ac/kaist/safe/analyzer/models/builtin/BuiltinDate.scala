@@ -56,7 +56,7 @@ object BuiltinDateHelper {
     val addr = SystemAddr("Date<instance>")
     val state = st.oldify(addr)
     val loc = Loc(addr, Recent)
-    val newObj = AbsObjectUtil.newObject(BuiltinDateProto.loc)
+    val newObj = AbsObject.newObject(BuiltinDateProto.loc)
     val argL = Helper.propLoad(args, Set(AbsString("length")), h).pvalue.numval
     val absNum = argL.getSingle match {
       // 15.9.3.2 new Date(value)

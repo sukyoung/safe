@@ -346,15 +346,18 @@ sealed abstract class AbsMap(
     }
   }
 
-  def concreteKeySet: Set[String] =
-    this.map.keySet.foldLeft(HashSet[String]())((keyset, astr) =>
-      astr.gamma match {
-        case conset: ConFin[Str] => keyset ++ conset.values.map(v => v.str)
-        case _ => keyset
-      })
+  def concreteKeySet: ConSet[String] = map.keySet.foldLeft[ConSet[String]](ConFin()) {
+    case (ConInf(), _) => ConInf()
+    case (ConFin(keyset), astr) => astr.gamma match {
+      case ConInf() => ConInf()
+      case ConFin(set) => ConFin(keyset ++ set.map(_.str))
+    }
+  }
 
-  def collectKeySet(prefix: String): Set[String] =
-    concreteKeySet.filter(_.startsWith(prefix))
+  def collectKeySet(prefix: String): ConSet[String] = concreteKeySet match {
+    case ConInf() => ConInf()
+    case ConFin(set) => ConFin(set.filter(_.startsWith(prefix)))
+  }
 
   def isDefinite(str: AbsString): Boolean = str.gamma match {
     case ConFin(set) if set.forall(defset contains _) => true

@@ -46,7 +46,7 @@ object BuiltinStringHelper {
     val addr = SystemAddr("String<instance>")
     val state = st.oldify(addr)
     val loc = Loc(addr, Recent)
-    val heap = state.heap.update(loc, AbsObjectUtil.newStringObj(num))
+    val heap = state.heap.update(loc, AbsObject.newStringObj(num))
     (State(heap, state.context), State.Bot, AbsValue(loc))
   })
 

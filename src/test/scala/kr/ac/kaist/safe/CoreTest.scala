@@ -14,13 +14,13 @@ package kr.ac.kaist.safe
 import org.scalatest._
 import java.io._
 
-import kr.ac.kaist.safe.analyzer.CallContext
-import kr.ac.kaist.safe.analyzer.domain.{ State, StringSet }
-
 import scala.io.Source
 import scala.util.{ Failure, Success, Try }
 import scala.util.Random.shuffle
+import scala.collection.immutable.HashSet
 import kr.ac.kaist.safe.analyzer.models.builtin.BuiltinGlobal
+import kr.ac.kaist.safe.analyzer.CallContext
+import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.nodes.ast.Program
 import kr.ac.kaist.safe.nodes.ir.IRRoot
 import kr.ac.kaist.safe.nodes.cfg.CFG
@@ -125,8 +125,29 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
           case None => assertWrap(false)
           case Some(globalObj) if globalObj.isBottom => assertWrap(false)
           case Some(globalObj) => {
-            val resultKeySet = globalObj.collectKeySet(resultPrefix)
-            val expectKeySet = globalObj.collectKeySet(expectPrefix)
+            def prefixCheck(prefix: String): (AbsString, AbsDataProp) => Boolean = {
+              (str, dp) =>
+                str.getSingle match {
+                  case ConOne(Str(str)) => str.startsWith(prefix)
+                  case _ => false
+                }
+            }
+            val resultKeySet: Set[String] = globalObj.abstractKeySet(prefixCheck(resultPrefix)) match {
+              case ConInf() =>
+                assert(false); HashSet()
+              case ConFin(set) => set.map(_.getSingle match {
+                case ConOne(Str(str)) => str
+                case _ => assert(false); ""
+              })
+            }
+            val expectKeySet: Set[String] = globalObj.abstractKeySet(prefixCheck(expectPrefix)) match {
+              case ConInf() =>
+                assert(false); HashSet()
+              case ConFin(set) => set.map(_.getSingle match {
+                case ConOne(Str(str)) => str
+                case _ => assert(false); ""
+              })
+            }
             assert(resultKeySet.size == expectKeySet.size)
             if (resultKeySet.size == 0) NoTest
             else if (resultKeySet.foldLeft(true)((b, resultKey) => {

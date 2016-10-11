@@ -59,20 +59,20 @@ private object BuiltinErrorHelper {
   // 15.11.1.1, 15.11.2.1
   def construct(errorName: String, protoLoc: Loc)(args: AbsValue, st: State): (State, State, AbsValue) = {
     val message = Helper.propLoad(args, Set(AbsString("0")), st.heap)
-    val defaultError = AbsObjectUtil.Empty
+    val defaultError = AbsObject.Empty
       .update(IClass, InternalValueUtil(AbsString(errorName)))
       .update(IPrototype, InternalValueUtil(protoLoc))
       .update(IExtensible, InternalValueUtil(AbsBool.True))
 
     val undefObject =
       if (message.pvalue.undefval </ AbsUndef.Bot) defaultError
-      else AbsObjectUtil.Bot
+      else AbsObject.Bot
 
     val notUndefObject =
       if (message </ AbsUndef.Top) {
         val msg = TypeConversionHelper.ToString(message)
         defaultError.update("message", AbsDataProp(msg))
-      } else AbsObjectUtil.Bot
+      } else AbsObject.Bot
 
     val errorObj = undefObject + notUndefObject
 

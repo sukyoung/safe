@@ -30,7 +30,7 @@ class ObjModel(
     case Some(_) => h
     case None => {
       cfg.registerSystemAddr(addr)
-      initObj(h, cfg, loc, AbsObjectUtil.newObject, props)
+      initObj(h, cfg, loc, AbsObject.newObject, props)
     }
   }
 

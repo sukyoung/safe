@@ -150,10 +150,10 @@ class DHeap(val map: Map[Loc, AbsObject]) extends Heap {
   def get(loc: Loc): AbsObject =
     this(loc) match {
       case Some(obj) => obj
-      case None => AbsObjectUtil.Bot
+      case None => AbsObject.Bot
     }
 
-  def get(locSet: AbsLoc): AbsObject = locSet.foldLeft(AbsObjectUtil.Bot) {
+  def get(locSet: AbsLoc): AbsObject = locSet.foldLeft(AbsObject.Bot) {
     case (obj, loc) => obj + get(loc)
   }
 
