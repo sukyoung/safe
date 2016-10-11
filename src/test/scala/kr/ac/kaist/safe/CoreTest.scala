@@ -15,7 +15,7 @@ import org.scalatest._
 import java.io._
 
 import kr.ac.kaist.safe.analyzer.CallContext
-import kr.ac.kaist.safe.analyzer.domain.State
+import kr.ac.kaist.safe.analyzer.domain.{ State, StringSet }
 
 import scala.io.Source
 import scala.util.{ Failure, Success, Try }
@@ -180,7 +180,7 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
   val analysisDeatil = BASE_DIR + SEP + "tests" + SEP + "analysis-detail"
 
   val analyzerTestDir = testDir + "semantics"
-  val analyzeConfig = AnalyzeConfig()
+  val analyzeConfig = AnalyzeConfig(AbsString = StringSet(1000))
   for (file <- shuffle(walkTree(new File(analyzerTestDir))) if file.getName.endsWith(".js")) {
     val jsName = file.toString
     val relPath = jsName.substring(BASE_DIR.length)
