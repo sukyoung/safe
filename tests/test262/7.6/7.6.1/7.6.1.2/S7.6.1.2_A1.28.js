@@ -1,0 +1,2 @@
+  var synchronized = 1;
+  

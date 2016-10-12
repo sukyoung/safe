@@ -1,0 +1,6 @@
+// Syntax error
+// "
+// str
+// ing
+// ";
+

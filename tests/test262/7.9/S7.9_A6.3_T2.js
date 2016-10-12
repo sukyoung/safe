@@ -1,0 +1,7 @@
+// Syntax error
+// for(
+//     
+// ) {
+//   break;
+// }
+

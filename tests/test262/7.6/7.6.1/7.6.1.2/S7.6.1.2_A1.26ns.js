@@ -1,0 +1,2 @@
+  var static = 1;
+  

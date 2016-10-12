@@ -1,0 +1,2 @@
+  var class = 1;
+  

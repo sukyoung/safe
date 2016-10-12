@@ -1,0 +1,2 @@
+  var double = 1;
+  
