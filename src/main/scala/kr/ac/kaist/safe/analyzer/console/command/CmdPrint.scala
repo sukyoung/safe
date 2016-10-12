@@ -24,7 +24,7 @@ case object CmdPrint extends Command("print", "Print out various information.") 
     println("usage: " + name + " state(-all) ({keyword})")
     println("       " + name + " block")
     println("       " + name + " loc {LocName} ({keyword})")
-    println("       " + name + " fid {functionID}")
+    println("       " + name + " func ({functionID})")
     println("       " + name + " worklist")
     println("       " + name + " ipsucc")
     println("       " + name + " trace")
@@ -67,7 +67,14 @@ case object CmdPrint extends Command("print", "Print out various information.") 
             }
           case _ => help
         }
-        case "fid" => rest match {
+        case "func" => rest match {
+          case Nil =>
+            c.cfg.getAllFuncs.reverse.foreach {
+              case func =>
+                val fid = func.id
+                val name = func.name
+                println(s"[$fid] $name")
+            }
           case fidStr :: Nil if fidStr.forall(_.isDigit) =>
             val fid = fidStr.toInt
             c.cfg.getFunc(fid) match {
