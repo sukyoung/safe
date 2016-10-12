@@ -24,7 +24,7 @@ object Helper {
   private val afalse = AbsBool.False
   private val atrue = AbsBool.True
 
-  def arrayLenghtStore(heap: Heap, idxAbsStr: AbsString, storeV: AbsValue, l: Loc): (Heap, Set[Exception]) = {
+  def arrayLenghtStore(heap: AbsHeap, idxAbsStr: AbsString, storeV: AbsValue, l: Loc): (AbsHeap, Set[Exception]) = {
     if (AbsString("length") <= idxAbsStr) {
       val nOldLen = heap.get(l)("length").value.pvalue.numval
       val nNewLen = typeHelper.ToUInt32(storeV)
@@ -37,11 +37,11 @@ object Helper {
           && (atrue <= bCanPut))
           heap.propStore(l, AbsString("length"), storeV)
         else
-          Heap.Bot
+          AbsHeap.Bot
 
       val arrLengthHeap3 =
         if (afalse <= bCanPut) heap
-        else Heap.Bot
+        else AbsHeap.Bot
 
       val arrLengthHeap4 =
         if ((atrue <= (nNewLen < nOldLen)) && (atrue <= bCanPut)) {
@@ -52,31 +52,31 @@ object Helper {
                 val (tmpHeap, _) = hj.delete(l, AbsString(i.toString))
                 tmpHeap
               })
-            case (ConZero(), _) | (_, ConZero()) => Heap.Bot
+            case (ConZero(), _) | (_, ConZero()) => AbsHeap.Bot
             case _ =>
               val (tmpHeap, _) = hi.delete(l, AbsString.Number)
               tmpHeap
           }
         } else {
-          Heap.Bot
+          AbsHeap.Bot
         }
 
       val arrLengthHeap1 =
         if (atrue <= (nValue === nNewLen))
           arrLengthHeap2 + arrLengthHeap3 + arrLengthHeap4
         else
-          Heap.Bot
+          AbsHeap.Bot
 
       val lenExcSet1 =
         if (afalse <= (nValue === nNewLen)) HashSet[Exception](RangeError)
         else ExcSetEmpty
       (arrLengthHeap1, lenExcSet1)
     } else {
-      (Heap.Bot, ExcSetEmpty)
+      (AbsHeap.Bot, ExcSetEmpty)
     }
   }
 
-  def arrayIdxStore(heap: Heap, idxAbsStr: AbsString, storeV: AbsValue, l: Loc): Heap = {
+  def arrayIdxStore(heap: AbsHeap, idxAbsStr: AbsString, storeV: AbsValue, l: Loc): AbsHeap = {
     if (atrue <= idxAbsStr.isArrayIndex) {
       val nOldLen = heap.get(l)("length").value.pvalue.numval
       val num = typeHelper.ToNumber(idxAbsStr)
@@ -87,12 +87,12 @@ object Helper {
       // 4.b
       val arrIndexHeap1 =
         if (bGtEq && afalse <= bCanPutLen) heap
-        else Heap.Bot
+        else AbsHeap.Bot
       // 4.c
       val arrIndexHeap2 =
         if (atrue <= (nIndex < nOldLen))
           heap.propStore(l, idxAbsStr, storeV)
-        else Heap.Bot
+        else AbsHeap.Bot
       // 4.e
       val arrIndexHeap3 =
         if (bGtEq && atrue <= bCanPutLen) {
@@ -100,13 +100,13 @@ object Helper {
           val idxVal = AbsValue(nIndex)
           val vNewIndex = bopPlus(idxVal, AbsValue(1))
           hi.propStore(l, AbsString("length"), vNewIndex)
-        } else Heap.Bot
+        } else AbsHeap.Bot
       arrIndexHeap1 + arrIndexHeap2 + arrIndexHeap3
     } else
-      Heap.Bot
+      AbsHeap.Bot
   }
 
-  def storeHelp(objLocSet: AbsLoc, idxAbsStr: AbsString, storeV: AbsValue, heap: Heap): (Heap, Set[Exception]) = {
+  def storeHelp(objLocSet: AbsLoc, idxAbsStr: AbsString, storeV: AbsValue, heap: AbsHeap): (AbsHeap, Set[Exception]) = {
     // non-array objects
     val locSetNArr = objLocSet.filter(l =>
       (afalse <= heap.isArray(l)) && atrue <= heap.get(l).CanPut(idxAbsStr, heap))
@@ -117,15 +117,15 @@ object Helper {
     // can not store
     val cantPutHeap =
       if (objLocSet.exists((l) => afalse <= heap.get(l).CanPut(idxAbsStr, heap))) heap
-      else Heap.Bot
+      else AbsHeap.Bot
 
     // store for non-array object
-    val nArrHeap = locSetNArr.foldLeft(Heap.Bot)((iHeap, l) => {
+    val nArrHeap = locSetNArr.foldLeft(AbsHeap.Bot)((iHeap, l) => {
       iHeap + heap.propStore(l, idxAbsStr, storeV)
     })
 
     // 15.4.5.1 [[DefineOwnProperty]] of Array
-    val (arrHeap, arrExcSet) = locSetArr.foldLeft((Heap.Bot, ExcSetEmpty))((res2, l) => {
+    val (arrHeap, arrExcSet) = locSetArr.foldLeft((AbsHeap.Bot, ExcSetEmpty))((res2, l) => {
       // 3. s is length
       val (lengthHeap, lengthExcSet) = arrayLenghtStore(heap, idxAbsStr, storeV, l)
       // 4. s is array index
@@ -136,7 +136,7 @@ object Helper {
         if (idxAbsStr != AbsString("length") && afalse <= idxAbsStr.isArrayIndex)
           heap.propStore(l, idxAbsStr, storeV)
         else
-          Heap.Bot
+          AbsHeap.Bot
       val (tmpHeap2, tmpExcSet2) = res2
       (tmpHeap2 + lengthHeap + arrIndexHeap + otherHeap, tmpExcSet2 ++ lengthExcSet)
     })
@@ -144,7 +144,7 @@ object Helper {
     (cantPutHeap + nArrHeap + arrHeap, arrExcSet)
   }
 
-  def inherit(h: Heap, loc1: Loc, loc2: Loc): AbsValue = {
+  def inherit(h: AbsHeap, loc1: Loc, loc2: Loc): AbsValue = {
     var visited = AbsLoc.Bot
     val locVal2 = AbsValue(loc2)
     val boolBotVal = AbsValue(AbsPValue.Bot)
@@ -183,7 +183,7 @@ object Helper {
     AbsValue(typeHelper.ToNumber(value).negate)
 
   /* - */
-  def uopMinusBetter(h: Heap, value: AbsValue): AbsValue =
+  def uopMinusBetter(h: AbsHeap, value: AbsValue): AbsValue =
     AbsValue(typeHelper.ToNumber(value, h).negate)
 
   /* ~ */
@@ -427,7 +427,7 @@ object Helper {
     AbsValue(b1 + b2 + b3 + b4 + b5 + b6 + b7 + b8 + b9 + b10)
   }
 
-  def bopEqBetter(h: Heap, left: AbsValue, right: AbsValue): AbsValue = {
+  def bopEqBetter(h: AbsHeap, left: AbsValue, right: AbsValue): AbsValue = {
     bopEqHelp(left, right, (value, hint) => typeHelper.ToPrimitive(value.locset, h, hint))
   }
 
@@ -542,7 +542,7 @@ object Helper {
       (leftAbsStr, rightAbsStr) => (leftAbsStr < rightAbsStr).negate)
   }
 
-  def propLoad(objV: AbsValue, absStrSet: Set[AbsString], h: Heap): AbsValue = {
+  def propLoad(objV: AbsValue, absStrSet: Set[AbsString], h: AbsHeap): AbsValue = {
     val objLocSet = objV.locset
     val v1 = objLocSet.foldLeft(AbsValue.Bot)((tmpVal1, loc) => {
       val tmpObj = h.get(loc)

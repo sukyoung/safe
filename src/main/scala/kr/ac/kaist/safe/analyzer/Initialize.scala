@@ -24,7 +24,7 @@ case class Initialize(cfg: CFG) {
   def state: State = {
     val globalLocSet = AbsLoc(BuiltinGlobal.loc)
     val globalPureLocalEnv = AbsLexEnv.newPureLocal(globalLocSet)
-    val initHeap = Heap(HashMap(
+    val initHeap = AbsHeap(HashMap(
       SystemLoc("Dummy", Old) -> AbsObject.Bot // TODO If delete, not working because not allowed update to bottom heap
     ))
 
@@ -41,10 +41,8 @@ case class Initialize(cfg: CFG) {
 
   def testState: State = {
     val st = state
-    val globalObj = st.heap(BuiltinGlobal.loc) match {
-      case Some(obj) => obj
-      case None => AbsObject.Empty
-    }
+    val globalObj = st.heap.get(BuiltinGlobal.loc)
+      .fold(AbsObject.Empty)(obj => obj)
 
     val boolBot = AbsBool.Bot
 

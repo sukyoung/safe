@@ -35,10 +35,10 @@ object TypeConversionHelper {
   def ToPrimitive(locSet: AbsLoc, preferredType: String): AbsPValue =
     AbsObject.defaultValue(locSet, preferredType)
 
-  def ToPrimitive(value: AbsValue, h: Heap, preferredType: String = "String"): AbsPValue =
+  def ToPrimitive(value: AbsValue, h: AbsHeap, preferredType: String = "String"): AbsPValue =
     value.pvalue + AbsObject.defaultValue(value.locset, h, preferredType)
 
-  def ToPrimitive(locSet: AbsLoc, h: Heap, preferredType: String): AbsPValue =
+  def ToPrimitive(locSet: AbsLoc, h: AbsHeap, preferredType: String): AbsPValue =
     AbsObject.defaultValue(locSet, h, preferredType)
 
   ////////////////////////////////////////////////////////////////
@@ -80,7 +80,7 @@ object TypeConversionHelper {
     ToNumber(value.pvalue) + anum6
   }
 
-  def ToNumber(value: AbsValue, h: Heap): AbsNumber = {
+  def ToNumber(value: AbsValue, h: AbsHeap): AbsNumber = {
     val anum6 = ToNumber(ToPrimitive(value.locset, h, preferredType = "Number"))
     ToNumber(value.pvalue) + anum6
   }
@@ -112,7 +112,7 @@ object TypeConversionHelper {
   def ToInteger(value: AbsValue): AbsNumber =
     ToNumber(value).toInteger
 
-  def ToInteger(value: AbsValue, h: Heap): AbsNumber =
+  def ToInteger(value: AbsValue, h: AbsHeap): AbsNumber =
     ToNumber(value, h).toInteger
 
   ////////////////////////////////////////////////////////////////
@@ -123,7 +123,7 @@ object TypeConversionHelper {
   def ToInt32(value: AbsValue): AbsNumber =
     ToNumber(value).toInt32
 
-  def ToInt32(value: AbsValue, h: Heap): AbsNumber =
+  def ToInt32(value: AbsValue, h: AbsHeap): AbsNumber =
     ToNumber(value, h).toInt32
 
   ////////////////////////////////////////////////////////////////
@@ -134,7 +134,7 @@ object TypeConversionHelper {
   def ToUInt32(value: AbsValue): AbsNumber =
     ToNumber(value).toUInt32
 
-  def ToUInt32(value: AbsValue, h: Heap): AbsNumber =
+  def ToUInt32(value: AbsValue, h: AbsHeap): AbsNumber =
     ToNumber(value, h).toUInt32
 
   ////////////////////////////////////////////////////////////////
@@ -145,7 +145,7 @@ object TypeConversionHelper {
   def ToUInt16(value: AbsValue): AbsNumber =
     ToNumber(value).toUInt16
 
-  def ToUInt16(value: AbsValue, h: Heap): AbsNumber =
+  def ToUInt16(value: AbsValue, h: AbsHeap): AbsNumber =
     ToNumber(value, h).toUInt16
 
   ////////////////////////////////////////////////////////////////
@@ -158,7 +158,7 @@ object TypeConversionHelper {
     ToString(value.pvalue) + astr6
   }
 
-  def ToString(value: AbsValue, h: Heap): AbsString = {
+  def ToString(value: AbsValue, h: AbsHeap): AbsString = {
     val astr6 = ToString(ToPrimitive(value.locset, h, preferredType = "String"))
     ToString(value.pvalue) + astr6
   }
@@ -238,7 +238,7 @@ object TypeConversionHelper {
     abool1 + abool2 + abool3 + abool4 + abool5 + abool6
   }
 
-  def IsCallable(value: AbsValue, h: Heap): AbsBool = {
+  def IsCallable(value: AbsValue, h: AbsHeap): AbsBool = {
     val abool1 = value.pvalue.undefval.fold(AbsBool.Bot) { _ => AbsBool.False }
     val abool2 = value.pvalue.nullval.fold(AbsBool.Bot) { _ => AbsBool.False }
     val abool3 = value.pvalue.boolval.fold(AbsBool.Bot) { _ => AbsBool.False }
@@ -249,8 +249,8 @@ object TypeConversionHelper {
     abool1 + abool2 + abool3 + abool4 + abool5 + abool6
   }
 
-  def IsCallable(loc: Loc, h: Heap): AbsBool = {
-    val isDomIn = h.getOrElse(loc)(AbsBool.False) { obj => (obj contains ICall) }
+  def IsCallable(loc: Loc, h: AbsHeap): AbsBool = {
+    val isDomIn = h.get(loc).fold(AbsBool.False) { obj => (obj contains ICall) }
     val b1 =
       if (AbsBool.True <= isDomIn) AbsBool.True
       else AbsBool.Bot
@@ -291,7 +291,7 @@ object TypeConversionHelper {
   ////////////////////////////////////////////////////////////////
   // Additional type-related helper functions
   ////////////////////////////////////////////////////////////////
-  def typeTag(value: AbsValue, h: Heap): AbsString = {
+  def typeTag(value: AbsValue, h: AbsHeap): AbsString = {
     val s1 = value.pvalue.undefval.fold(AbsString.Bot)(_ => {
       AbsString("undefined")
     })

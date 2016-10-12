@@ -315,7 +315,7 @@ class Semantics(
         val absStrSet =
           if (v.isBottom) HashSet[AbsString]()
           else TypeConversionHelper.ToPrimitive(v, st.heap).toStringSet
-        val (h1, b) = locSet.foldLeft[(Heap, AbsBool)](Heap.Bot, AB)((res1, l) => {
+        val (h1, b) = locSet.foldLeft[(AbsHeap, AbsBool)](AbsHeap.Bot, AB)((res1, l) => {
           val (tmpHeap1, tmpB1) = res1
           absStrSet.foldLeft((tmpHeap1, tmpB1))((res2, s) => {
             val (tmpHeap2, tmpB2) = res2
@@ -342,12 +342,12 @@ class Semantics(
 
         val (heap1, excSet1) =
           (idxV, vRhs) match {
-            case (v, _) if v.isBottom => (Heap.Bot, excSetIdx)
-            case (_, v) if v.isBottom => (Heap.Bot, excSetIdx ++ esRhs)
+            case (v, _) if v.isBottom => (AbsHeap.Bot, excSetIdx)
+            case (_, v) if v.isBottom => (AbsHeap.Bot, excSetIdx ++ esRhs)
             case _ =>
               // iterate over set of strings for index
               val absStrSet = TypeConversionHelper.ToPrimitive(idxV, st.heap).toStringSet
-              absStrSet.foldLeft((Heap.Bot, excSetIdx ++ esRhs))((res1, absStr) => {
+              absStrSet.foldLeft((AbsHeap.Bot, excSetIdx ++ esRhs))((res1, absStr) => {
                 val (tmpHeap1, tmpExcSet1) = res1
                 val (tmpHeap2, tmpExcSet2) = Helper.storeHelp(locSet, absStr, vRhs, st.heap)
                 (tmpHeap1 + tmpHeap2, tmpExcSet1 ++ tmpExcSet2)
@@ -365,7 +365,7 @@ class Semantics(
 
         val (heap1, excSet1) =
           (strIdx, vRhs) match {
-            case (_, v) if v.isBottom => (Heap.Bot, esRhs)
+            case (_, v) if v.isBottom => (AbsHeap.Bot, esRhs)
             case (EJSString(str), v) =>
               val absStr = AbsString(str)
               val (tmpHeap2, tmpExcSet2) = Helper.storeHelp(locSet, absStr, vRhs, st.heap)
@@ -542,7 +542,7 @@ class Semantics(
     val st1 = st.oldify(i.addr1)
     val (funVal, funExcSet) = V(i.fun, st1)
     val funLocSet = i match {
-      case (_: CFGConstruct) => funVal.locset.filter(l => AT <= st1.heap.hasConstruct(l)(AbsBool))
+      case (_: CFGConstruct) => funVal.locset.filter(l => AT <= st1.heap.hasConstruct(l))
       case (_: CFGCall) => funVal.locset.filter(l => AT <= TypeConversionHelper.IsCallable(l, st1.heap))
     }
     val (thisVal, _) = V(i.thisArg, st1)
@@ -609,14 +609,14 @@ class Semantics(
         })
       })
 
-      val h2 = argVal.locset.foldLeft(Heap.Bot)((tmpHeap, l) => {
+      val h2 = argVal.locset.foldLeft(AbsHeap.Bot)((tmpHeap, l) => {
         val argObj = st1.heap.get(l)
         tmpHeap + st1.heap.update(l, argObj.update("callee", AbsDataProp(funLocSet, AT, AF, AT)))
       })
 
       // exception handling
       val typeExcSet1 = i match {
-        case _: CFGConstruct if funVal.locset.exists(l => AF <= st1.heap.hasConstruct(l)(AbsBool)) => HashSet(TypeError)
+        case _: CFGConstruct if funVal.locset.exists(l => AF <= st1.heap.hasConstruct(l)) => HashSet(TypeError)
         case _: CFGCall if funVal.locset.exists(l => AF <= TypeConversionHelper.IsCallable(l, st1.heap)) => HashSet(TypeError)
         case _ => ExcSetEmpty
       }
@@ -629,7 +629,7 @@ class Semantics(
 
       val h3 =
         if (!funLocSet.isBottom) h2
-        else Heap.Bot
+        else AbsHeap.Bot
 
       val newSt = State(h3, st1.context)
       (newSt, excSt + newExcSt)
@@ -680,12 +680,12 @@ class Semantics(
               case "instanceof" =>
                 val locSet1 = v1.locset
                 val locSet2 = v2.locset
-                val locSet3 = locSet2.filter((l) => AT <= st.heap.hasInstance(l)(AbsBool))
+                val locSet3 = locSet2.filter((l) => AT <= st.heap.hasInstance(l))
                 val protoVal = locSet3.foldLeft(AbsValue.Bot)((v, l) => {
                   v + st.heap.get(l).Get("prototype", st.heap)
                 })
                 val locSet4 = protoVal.locset
-                val locSet5 = locSet2.filter((l) => AF <= st.heap.hasInstance(l)(AbsBool))
+                val locSet5 = locSet2.filter((l) => AF <= st.heap.hasInstance(l))
                 val b1 = locSet1.foldLeft[AbsValue](AbsValue.Bot)((tmpVal1, loc1) => {
                   locSet4.foldLeft[AbsValue](tmpVal1)((tmpVal2, loc2) =>
                     tmpVal2 + Helper.inherit(st.heap, loc1, loc2))

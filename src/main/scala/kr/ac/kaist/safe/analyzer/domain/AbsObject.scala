@@ -67,30 +67,30 @@ trait AbsObject extends AbsDomain[Object, AbsObject] {
   def GetOwnProperty(P: AbsString): (AbsDesc, AbsUndef)
 
   // Section 8.12.2 [[GetProperty]](P)
-  def GetProperty(P: String, h: Heap): (AbsDesc, AbsUndef)
-  def GetProperty(P: AbsString, h: Heap): (AbsDesc, AbsUndef)
+  def GetProperty(P: String, h: AbsHeap): (AbsDesc, AbsUndef)
+  def GetProperty(P: AbsString, h: AbsHeap): (AbsDesc, AbsUndef)
 
   // Section 8.12.3 [[Get]](P)
-  def Get(str: String, h: Heap): AbsValue
-  def Get(astr: AbsString, h: Heap): AbsValue
+  def Get(str: String, h: AbsHeap): AbsValue
+  def Get(astr: AbsString, h: AbsHeap): AbsValue
 
   // Section 8.12.4 [[CanPut]](P)
-  def CanPut(P: String, h: Heap): AbsBool
-  def CanPut(P: AbsString, h: Heap): AbsBool
+  def CanPut(P: String, h: AbsHeap): AbsBool
+  def CanPut(P: AbsString, h: AbsHeap): AbsBool
 
   // Section 8.12.5 [[Put]](P, V, Throw)
-  def Put(P: AbsString, V: AbsValue, Throw: Boolean = true, h: Heap): (AbsObject, Set[Exception])
+  def Put(P: AbsString, V: AbsValue, Throw: Boolean = true, h: AbsHeap): (AbsObject, Set[Exception])
 
   // Section 8.12.6 [[HasProperty]](P)
-  def HasProperty(P: AbsString, h: Heap): AbsBool
+  def HasProperty(P: AbsString, h: AbsHeap): AbsBool
 
   // Section 8.12.7 [[Delete]](P, Throw)
   def Delete(str: String): (AbsObject, AbsBool)
   def Delete(astr: AbsString): (AbsObject, AbsBool)
 
   // Section 8.12.8 [[DefaultValue]](hint)
-  def DefaultValue(hint: String, h: Heap): AbsPValue
-  def DefaultValue(h: Heap): AbsPValue
+  def DefaultValue(hint: String, h: AbsHeap): AbsPValue
+  def DefaultValue(h: AbsHeap): AbsPValue
 
   //Section 8.12.9 [[DefineOwnProperty]](P, Desc, Throw)
   def DefineOwnProperty(P: AbsString, Desc: AbsDesc, Throw: Boolean = true): (AbsObject, AbsBool, Set[Exception])
@@ -124,14 +124,14 @@ trait AbsObjectUtil extends AbsDomainUtil[Object, AbsObject] {
 
   def defaultValue(locSet: AbsLoc): AbsPValue
   def defaultValue(locSet: AbsLoc, preferredType: String): AbsPValue
-  def defaultValue(locSet: AbsLoc, h: Heap, preferredType: String): AbsPValue
+  def defaultValue(locSet: AbsLoc, h: AbsHeap, preferredType: String): AbsPValue
 
   // 8.10.4 FromPropertyDescriptor ( Desc )
   def FromPropertyDescriptor(desc: AbsDesc): (AbsObject, Set[Exception])
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// default execution context abstract domain
+// default object abstract domain
 ////////////////////////////////////////////////////////////////////////////////
 object DefaultObject extends AbsObjectUtil {
   private lazy val atrue = AbsBool.True
@@ -377,10 +377,10 @@ object DefaultObject extends AbsObjectUtil {
     }
 
     // Section 8.12.2 [[GetProperty]](P)
-    def GetProperty(P: String, h: Heap): (AbsDesc, AbsUndef) =
+    def GetProperty(P: String, h: AbsHeap): (AbsDesc, AbsUndef) =
       GetProperty(AbsString(P), h)
 
-    def GetProperty(P: AbsString, h: Heap): (AbsDesc, AbsUndef) = this match {
+    def GetProperty(P: AbsString, h: AbsHeap): (AbsDesc, AbsUndef) = this match {
       case Top => (AbsDesc.Top, AbsUndef.Top)
       case obj @ ObjMap(amap, imap) =>
         var visited = HashSet[Loc]()
@@ -410,7 +410,7 @@ object DefaultObject extends AbsObjectUtil {
     }
 
     // Section 8.12.3 [[Get]](P)
-    def Get(str: String, h: Heap): AbsValue = this match {
+    def Get(str: String, h: AbsHeap): AbsValue = this match {
       case Top => AbsValue.Top
       case obj @ ObjMap(amap, imap) =>
         var visited = HashSet[Loc]()
@@ -439,7 +439,7 @@ object DefaultObject extends AbsObjectUtil {
         visit(obj)
     }
 
-    def Get(astr: AbsString, h: Heap): AbsValue = this match {
+    def Get(astr: AbsString, h: AbsHeap): AbsValue = this match {
       case Top => AbsValue.Top
       case obj @ ObjMap(amap, imap) =>
         var visited = HashSet[Loc]()
@@ -469,9 +469,9 @@ object DefaultObject extends AbsObjectUtil {
     }
 
     // Section 8.12.4 [[CanPut]](P)
-    def CanPut(P: String, h: Heap): AbsBool = CanPut(AbsString(P), h)
+    def CanPut(P: String, h: AbsHeap): AbsBool = CanPut(AbsString(P), h)
 
-    def CanPut(P: AbsString, h: Heap): AbsBool = this match {
+    def CanPut(P: AbsString, h: AbsHeap): AbsBool = this match {
       case Top => AbsBool.Top
       case obj @ ObjMap(amap, imap) =>
         val (desc, undef) = GetOwnProperty(P)
@@ -504,7 +504,7 @@ object DefaultObject extends AbsObjectUtil {
     }
 
     // Section 8.12.5 [[Put]](P, V, Throw)
-    def Put(P: AbsString, V: AbsValue, Throw: Boolean = true, h: Heap): (AbsObject, Set[Exception]) = this match {
+    def Put(P: AbsString, V: AbsValue, Throw: Boolean = true, h: AbsHeap): (AbsObject, Set[Exception]) = this match {
       case Top => (Top, HashSet(TypeError, RangeError))
       case obj @ ObjMap(amap, imap) =>
         val canPut = CanPut(P, h)
@@ -542,7 +542,7 @@ object DefaultObject extends AbsObjectUtil {
     }
 
     // Section 8.12.6 [[HasProperty]](P)
-    def HasProperty(P: AbsString, h: Heap): AbsBool = this match {
+    def HasProperty(P: AbsString, h: AbsHeap): AbsBool = this match {
       case Top => AbsBool.Top
       case obj @ ObjMap(amap, imap) =>
         var visited = AbsLoc.Bot
@@ -589,7 +589,7 @@ object DefaultObject extends AbsObjectUtil {
     }
 
     // Section 8.12.8 [[DefaultValue]](hint)
-    def DefaultValue(hint: String, h: Heap): AbsPValue = {
+    def DefaultValue(hint: String, h: AbsHeap): AbsPValue = {
       hint match {
         case "String" => DefaultValueAsString(h)
         case "Number" => DefaultValueAsNumber(h)
@@ -597,7 +597,7 @@ object DefaultObject extends AbsObjectUtil {
       }
     }
 
-    def DefaultValue(h: Heap): AbsPValue = this match {
+    def DefaultValue(h: AbsHeap): AbsPValue = this match {
       case Top => AbsPValue(numval = AbsNumber.Top, strval = AbsString.Top)
       case obj @ ObjMap(amap, imap) =>
         val className = obj(IClass)
@@ -605,7 +605,7 @@ object DefaultObject extends AbsObjectUtil {
         isDateClass.map(DefaultValueAsString(h), DefaultValueAsNumber(h))(AbsPValue)
     }
 
-    private def DefaultValueAsString(h: Heap): AbsPValue = this match {
+    private def DefaultValueAsString(h: AbsHeap): AbsPValue = this match {
       case Top => AbsString.Top
       case ObjMap(_, _) =>
         val toString = Get("toString", h)
@@ -622,7 +622,7 @@ object DefaultObject extends AbsObjectUtil {
         } else str
     }
 
-    private def DefaultValueAsNumber(h: Heap): AbsPValue = this match {
+    private def DefaultValueAsNumber(h: AbsHeap): AbsPValue = this match {
       case Top => AbsNumber.Top
       case ObjMap(_, _) =>
         val valueOf = Get("valueOf", h)
@@ -837,7 +837,7 @@ object DefaultObject extends AbsObjectUtil {
     }
   }
 
-  def defaultValue(locSet: AbsLoc, h: Heap, preferredType: String): AbsPValue = {
+  def defaultValue(locSet: AbsLoc, h: AbsHeap, preferredType: String): AbsPValue = {
     if (locSet.isBottom) AbsPValue.Bot
     else locSet.foldLeft(AbsPValue.Bot)((pv, loc) => h.get(loc).DefaultValue(preferredType, h))
   }

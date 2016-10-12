@@ -23,24 +23,23 @@ class ObjModel(
 ) extends Model {
   val addr: Address = SystemAddr(name)
   val loc: Loc = Loc(addr, Recent)
-  def init(h: Heap, cfg: CFG): (Heap, AbsValue) =
+  def init(h: AbsHeap, cfg: CFG): (AbsHeap, AbsValue) =
     (initHeap(h, cfg), AbsValue(loc))
 
-  def initHeap(h: Heap, cfg: CFG): Heap = h(loc) match {
-    case Some(_) => h
-    case None => {
+  def initHeap(h: AbsHeap, cfg: CFG): AbsHeap = {
+    if (h.get(loc).isBottom) {
       cfg.registerSystemAddr(addr)
       initObj(h, cfg, loc, AbsObject.newObject, props)
-    }
+    } else h
   }
 
   protected def initObj(
-    h: Heap,
+    h: AbsHeap,
     cfg: CFG,
     loc: Loc,
     obj: AbsObject,
     ps: List[PropDesc]
-  ): Heap = {
+  ): AbsHeap = {
     ps.foldLeft((h, obj)) {
       case ((heap, obj), NormalProp(name, model, writable, enumerable, configurable)) => {
         (model match {

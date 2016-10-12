@@ -121,10 +121,9 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
         val normalSt = cfg.globalFunc.exit.getState(globalCallCtx)
         val excSt = cfg.globalFunc.exitExc.getState(globalCallCtx)
         assert(!normalSt.heap.isBottom)
-        val ar = normalSt.heap(BuiltinGlobal.loc) match {
-          case None => assertWrap(false)
-          case Some(globalObj) if globalObj.isBottom => assertWrap(false)
-          case Some(globalObj) => {
+        val ar = normalSt.heap.get(BuiltinGlobal.loc) match {
+          case globalObj if globalObj.isBottom => assertWrap(false)
+          case globalObj => {
             def prefixCheck(prefix: String): (AbsString, AbsDataProp) => Boolean = {
               (str, dp) =>
                 str.getSingle match {

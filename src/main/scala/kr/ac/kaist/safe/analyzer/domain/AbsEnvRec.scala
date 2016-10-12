@@ -29,34 +29,34 @@ trait AbsEnvRec extends AbsDomain[EnvRec, AbsEnvRec] {
   val globalEnvRec: AbsGlobalEnvRec
 
   // 10.2.1.2.1 HasBinding(N)
-  def HasBinding(name: String)(heap: Heap): AbsBool
+  def HasBinding(name: String)(heap: AbsHeap): AbsBool
 
   // 10.2.1.2.2 CreateMutableBinding(N, D)
   def CreateMutableBinding(
     name: String,
     del: Boolean
-  )(heap: Heap): (AbsEnvRec, Heap, Set[Exception])
+  )(heap: AbsHeap): (AbsEnvRec, AbsHeap, Set[Exception])
 
   // 10.2.1.2.3 SetMutableBinding(N, V, S)
   def SetMutableBinding(
     name: String,
     v: AbsValue,
     strict: Boolean
-  )(heap: Heap): (AbsEnvRec, Heap, Set[Exception])
+  )(heap: AbsHeap): (AbsEnvRec, AbsHeap, Set[Exception])
 
   // 10.2.1.2.4 GetBindingValue(N, S)
   def GetBindingValue(
     name: String,
     strict: Boolean
-  )(heap: Heap): (AbsValue, Set[Exception])
+  )(heap: AbsHeap): (AbsValue, Set[Exception])
 
   // 10.2.1.2.5 DeleteBinding(N)
   def DeleteBinding(
     name: String
-  )(heap: Heap): (AbsEnvRec, Heap, AbsBool)
+  )(heap: AbsHeap): (AbsEnvRec, AbsHeap, AbsBool)
 
   // 10.2.1.2.6 ImplicitThisValue()
-  def ImplicitThisValue(heap: Heap): AbsValue
+  def ImplicitThisValue(heap: AbsHeap): AbsValue
 
   // substitute locR by locO
   def subsLoc(locR: Loc, locO: Loc): AbsEnvRec
@@ -127,14 +127,14 @@ object DefaultEnvRec extends AbsEnvRecUtil {
     }
 
     // 10.2.1.2.1 HasBinding(N)
-    def HasBinding(name: String)(heap: Heap): AbsBool =
+    def HasBinding(name: String)(heap: AbsHeap): AbsBool =
       decEnvRec.HasBinding(name) + globalEnvRec.HasBinding(name)(heap)
 
     // 10.2.1.2.2 CreateMutableBinding(N, D)
     def CreateMutableBinding(
       name: String,
       del: Boolean
-    )(heap: Heap): (AbsEnvRec, Heap, Set[Exception]) = {
+    )(heap: AbsHeap): (AbsEnvRec, AbsHeap, Set[Exception]) = {
       val newD = decEnvRec.CreateMutableBinding(name, del)
       val (newG, newH, excSet) = globalEnvRec.CreateMutableBinding(name, del)(heap)
       (Dom(newD, newG), newH, excSet)
@@ -145,7 +145,7 @@ object DefaultEnvRec extends AbsEnvRecUtil {
       name: String,
       v: AbsValue,
       strict: Boolean
-    )(heap: Heap): (AbsEnvRec, Heap, Set[Exception]) = {
+    )(heap: AbsHeap): (AbsEnvRec, AbsHeap, Set[Exception]) = {
       val (newD, excSet1) = decEnvRec.SetMutableBinding(name, v, strict)
       val (newG, newH, excSet2) = globalEnvRec.SetMutableBinding(name, v, strict)(heap)
       (Dom(newD, newG), newH, excSet1 ++ excSet2)
@@ -155,7 +155,7 @@ object DefaultEnvRec extends AbsEnvRecUtil {
     def GetBindingValue(
       name: String,
       strict: Boolean
-    )(heap: Heap): (AbsValue, Set[Exception]) = {
+    )(heap: AbsHeap): (AbsValue, Set[Exception]) = {
       val (v1, excSet1) = decEnvRec.GetBindingValue(name, strict)
       val (v2, excSet2) = globalEnvRec.GetBindingValue(name, strict)(heap)
       (v1 + v2, excSet1 ++ excSet2)
@@ -164,14 +164,14 @@ object DefaultEnvRec extends AbsEnvRecUtil {
     // 10.2.1.2.5 DeleteBinding(N)
     def DeleteBinding(
       name: String
-    )(heap: Heap): (AbsEnvRec, Heap, AbsBool) = {
+    )(heap: AbsHeap): (AbsEnvRec, AbsHeap, AbsBool) = {
       val (newD, b1) = decEnvRec.DeleteBinding(name)
       val (newG, newH, b2) = globalEnvRec.DeleteBinding(name)(heap)
       (Dom(newD, newG), newH, b1 + b2)
     }
 
     // 10.2.1.2.6 ImplicitThisValue()
-    def ImplicitThisValue(heap: Heap): AbsValue =
+    def ImplicitThisValue(heap: AbsHeap): AbsValue =
       decEnvRec.ImplicitThisValue + globalEnvRec.ImplicitThisValue(heap)
 
     def subsLoc(locR: Loc, locO: Loc): AbsEnvRec =

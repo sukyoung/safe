@@ -78,10 +78,9 @@ case object DynamicTest extends PhaseObj[Unit, DynamicTestConfig, Unit] {
         val normalSt = cfg.globalFunc.exit.getState(globalCallCtx)
         val excSt = cfg.globalFunc.exitExc.getState(globalCallCtx)
         assert(!normalSt.heap.isBottom)
-        normalSt.heap(BuiltinGlobal.loc) match {
-          case None => assert(false)
-          case Some(globalObj) if globalObj.isBottom => assert(false)
-          case Some(globalObj) =>
+        normalSt.heap.get(BuiltinGlobal.loc) match {
+          case globalObj if globalObj.isBottom => assert(false)
+          case globalObj =>
             assert(globalObj("__expect1") <= globalObj("__result1"))
         }
     }

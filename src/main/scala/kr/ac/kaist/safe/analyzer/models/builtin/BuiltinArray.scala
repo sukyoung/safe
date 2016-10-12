@@ -765,7 +765,7 @@ object BuiltinArrayHelper {
     val Top = AbsObject
       .newArrayObject(AbsNumber.Top)
       .update(AbsString.Number, AbsDataProp.Top)
-    val (retH: Heap, retArr: AbsObject, retExcSet: Set[Exception]) = thisLoc.foldLeft((h, AbsObject.Bot, ExcSetEmpty)) {
+    val (retH: AbsHeap, retArr: AbsObject, retExcSet: Set[Exception]) = thisLoc.foldLeft((h, AbsObject.Bot, ExcSetEmpty)) {
       case ((h, arr, excSet), loc) => {
         val thisObj = h.get(loc)
         val thisLen = TypeConversionHelper.ToUInt32(thisObj.Get("length", h))
@@ -851,7 +851,7 @@ object BuiltinArrayHelper {
     val Top = AbsObject
       .newArrayObject(AbsNumber.Top)
       .update(AbsString.Number, AbsDataProp.Top)
-    val (retH: Heap, retV: AbsValue, retExcSet: Set[Exception]) = thisLoc.foldLeft((h, AbsValue.Bot, ExcSetEmpty)) {
+    val (retH: AbsHeap, retV: AbsValue, retExcSet: Set[Exception]) = thisLoc.foldLeft((h, AbsValue.Bot, ExcSetEmpty)) {
       case ((h, value, excSet), loc) => {
         val thisObj = h.get(loc)
         val thisLen = TypeConversionHelper.ToUInt32(thisObj.Get("length", h))

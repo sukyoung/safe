@@ -137,21 +137,26 @@ object HTMLWriter {
       // heap
       val h = st.heap
       sb.append("{ value: {value: 'Heap', open: true, id: 'heap'} },").append(LINE_SEP)
-      sb.append("{ value: {value: 'System Locations', id: 'sysLoc'}, parent: 'heap' },").append(LINE_SEP)
-      h.map.toSeq
-        .sortBy { case (loc, _) => loc }
-        .foreach {
-          case (loc, obj) =>
-            val parent = loc match {
-              case BuiltinGlobal.loc => "heap"
-              case Loc(SystemAddr(_), _) => "sysLoc"
-              case _ => "heap"
+      h.getMap match {
+        case None => sb.append("{ value: 'Top' }")
+        case Some(map) => {
+          sb.append("{ value: {value: 'System Locations', id: 'sysLoc'}, parent: 'heap' },").append(LINE_SEP)
+          map.toSeq
+            .sortBy { case (loc, _) => loc }
+            .foreach {
+              case (loc, obj) =>
+                val parent = loc match {
+                  case BuiltinGlobal.loc => "heap"
+                  case Loc(SystemAddr(_), _) => "sysLoc"
+                  case _ => "heap"
+                }
+                sb.append(s"{ value: {value: '$loc', id: '$loc'}, parent: '$parent' },").append(LINE_SEP)
+                obj.toString.split(LINE_SEP).foreach(prop => {
+                  sb.append(s"{ value: {value: '$prop'}, parent: '$loc' },").append(LINE_SEP)
+                })
             }
-            sb.append(s"{ value: {value: '$loc', id: '$loc'}, parent: '$parent' },").append(LINE_SEP)
-            obj.toString.split(LINE_SEP).foreach(prop => {
-              sb.append(s"{ value: {value: '$prop'}, parent: '$loc' },").append(LINE_SEP)
-            })
         }
+      }
       // context
       val ctx = st.context
       sb.append("{ value: {value: 'Context', open: true, id: 'ctx'} },").append(LINE_SEP)

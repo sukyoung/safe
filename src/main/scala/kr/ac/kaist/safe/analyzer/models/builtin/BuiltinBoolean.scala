@@ -31,7 +31,7 @@ object BuiltinBooleanHelper {
     TypeConversionHelper.ToBoolean(argV) + emptyB
   }
 
-  def getValue(thisV: AbsValue, h: Heap): AbsBool = {
+  def getValue(thisV: AbsValue, h: AbsHeap): AbsBool = {
     thisV.pvalue.boolval + thisV.locset.foldLeft(AbsBool.Bot)((res, loc) => {
       if ((AbsString("Boolean") <= h.get(loc)(IClass).value.pvalue.strval))
         res + h.get(loc)(IPrimitiveValue).value.pvalue.boolval

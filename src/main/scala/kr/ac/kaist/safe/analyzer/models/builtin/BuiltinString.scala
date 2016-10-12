@@ -31,7 +31,7 @@ object BuiltinStringHelper {
     TypeConversionHelper.ToString(argV) + emptyS
   }
 
-  def getValueNonGeneric(thisV: AbsValue, h: Heap): AbsString = {
+  def getValueNonGeneric(thisV: AbsValue, h: AbsHeap): AbsString = {
     thisV.pvalue.strval + thisV.locset.foldLeft(AbsString.Bot)((res, loc) => {
       if ((AbsString("String") <= h.get(loc)(IClass).value.pvalue.strval))
         res + h.get(loc)(IPrimitiveValue).value.pvalue.strval

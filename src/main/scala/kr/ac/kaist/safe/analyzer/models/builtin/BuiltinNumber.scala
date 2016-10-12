@@ -31,7 +31,7 @@ object BuiltinNumberHelper {
     TypeConversionHelper.ToNumber(argV) + emptyN
   }
 
-  def getValue(thisV: AbsValue, h: Heap): AbsNumber = {
+  def getValue(thisV: AbsValue, h: AbsHeap): AbsNumber = {
     thisV.pvalue.numval + thisV.locset.foldLeft(AbsNumber.Bot)((res, loc) => {
       if ((AbsString("Number") <= h.get(loc)(IClass).value.pvalue.strval))
         res + h.get(loc)(IPrimitiveValue).value.pvalue.numval

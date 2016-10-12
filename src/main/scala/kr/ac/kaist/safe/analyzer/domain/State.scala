@@ -18,7 +18,7 @@ import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.util.{ Address, SystemAddr }
 import scala.collection.immutable.{ HashMap }
 
-case class State(heap: Heap, context: AbsContext) {
+case class State(heap: AbsHeap, context: AbsContext) {
   /* partial order */
   def <=(that: State): Boolean =
     this.heap <= that.heap && this.context <= that.context
@@ -177,5 +177,5 @@ case class State(heap: Heap, context: AbsContext) {
 }
 
 object State {
-  val Bot: State = State(Heap.Bot, AbsContext.Bot)
+  val Bot: State = State(AbsHeap.Bot, AbsContext.Bot)
 }

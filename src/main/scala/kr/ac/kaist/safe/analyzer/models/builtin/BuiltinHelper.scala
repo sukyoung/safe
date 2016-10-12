@@ -21,7 +21,7 @@ import kr.ac.kaist.safe.analyzer.models._
 import kr.ac.kaist.safe.util.SystemAddr
 
 object BuiltinHelper {
-  def checkExn(h: Heap, absValue: AbsValue, clsName: String): HashSet[Exception] = {
+  def checkExn(h: AbsHeap, absValue: AbsValue, clsName: String): HashSet[Exception] = {
     val exist = absValue.locset.foldLeft(AbsBool.Bot)((b, loc) => {
       val clsStr = h.get(loc)(IClass).value.pvalue.strval
       b + (clsStr === AbsString(clsName))

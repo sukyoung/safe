@@ -62,6 +62,9 @@ object Utils {
   // object
   var AbsObject: AbsObjectUtil = DefaultObject
 
+  // heap
+  var AbsHeap: AbsHeapUtil = DefaultHeap
+
   // concrete domains
   def ConSingle[T]: ConSingleUtil[T] = ConSingleUtil[T]
   def ConSet[T]: ConSetUtil[T] = ConSetUtil[T]

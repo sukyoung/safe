@@ -32,7 +32,7 @@ trait AbsValue extends AbsDomain[Value, AbsValue] {
   /* weakly substitute locR by locO, that is keep locR together */
   def weakSubsLoc(locR: Loc, locO: Loc): AbsValue
   // TODO working but a more simple way exists with modifying getBase
-  def getThis(h: Heap): AbsLoc
+  def getThis(h: AbsHeap): AbsLoc
 
   def typeCount: Int
   def typeKinds: String
@@ -127,7 +127,7 @@ object DefaultValue extends AbsValueUtil {
       sb.toString
     }
 
-    def getThis(h: Heap): AbsLoc = {
+    def getThis(h: AbsHeap): AbsLoc = {
       val locSet1 = (pvalue.nullval.isBottom, pvalue.undefval.isBottom) match {
         case (true, true) => AbsLoc.Bot
         case _ => AbsLoc(BuiltinGlobal.loc)

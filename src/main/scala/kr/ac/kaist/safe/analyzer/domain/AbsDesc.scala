@@ -62,7 +62,7 @@ trait AbsDescUtil extends AbsDomainUtil[Desc, AbsDesc] {
   ): AbsDesc
 
   // 8.10.5 ToPropertyDescriptor ( Obj )
-  def ToPropertyDescriptor(obj: AbsObject, h: Heap): AbsDesc
+  def ToPropertyDescriptor(obj: AbsObject, h: AbsHeap): AbsDesc
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -201,7 +201,7 @@ object DefaultDesc extends AbsDescUtil {
       IsDataDescriptor.negate
   }
 
-  def ToPropertyDescriptor(obj: AbsObject, h: Heap): AbsDesc = {
+  def ToPropertyDescriptor(obj: AbsObject, h: AbsHeap): AbsDesc = {
     def get(str: String): (AbsValue, AbsAbsent) = {
       val has = obj.HasProperty(AbsString(str), h)
       val v =
