@@ -70,7 +70,7 @@ private object BuiltinRegExpHelper {
   }
 
   // 15.10.3.1 RegExp(pattern, flags)
-  def function(args: AbsValue, st: State): (State, State, AbsValue) = {
+  def function(args: AbsValue, st: AbsState): (AbsState, AbsState, AbsValue) = {
     val heap = st.heap
     val pattern = Helper.propLoad(args, HashSet(AbsString("0")), heap)
     val flags = Helper.propLoad(args, HashSet(AbsString("1")), heap)
@@ -139,7 +139,7 @@ private object BuiltinRegExpHelper {
         val st1 = st.oldify(addr)
         val loc = Loc(addr, Recent)
         val h2 = st1.heap.update(loc, obj)
-        (State(h2, st1.context), AbsValue(loc))
+        (AbsState(h2, st1.context), AbsValue(loc))
       case None => (st, AbsValue.Bot)
     }
 
@@ -151,7 +151,7 @@ private object BuiltinRegExpHelper {
   }
 
   // 15.10.4.1 new RegExp(pattern, flags)
-  def construct(args: AbsValue, st: State): (State, State, AbsValue) = {
+  def construct(args: AbsValue, st: AbsState): (AbsState, AbsState, AbsValue) = {
     val heap = st.heap
     val pattern = Helper.propLoad(args, HashSet(AbsString("0")), heap)
     val flags = Helper.propLoad(args, HashSet(AbsString("1")), heap)
@@ -226,7 +226,7 @@ private object BuiltinRegExpHelper {
         val st1 = st.oldify(addr)
         val loc = Loc(addr, Recent)
         val h2 = st1.heap.update(loc, obj)
-        (State(h2, st1.context), AbsValue(loc))
+        (AbsState(h2, st1.context), AbsValue(loc))
       case None => (st, AbsValue.Bot)
     }
 

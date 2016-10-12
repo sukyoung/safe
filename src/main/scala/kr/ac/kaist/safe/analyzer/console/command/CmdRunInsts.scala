@@ -14,6 +14,7 @@ package kr.ac.kaist.safe.analyzer.console.command
 import jline.console.ConsoleReader
 import kr.ac.kaist.safe.analyzer.console._
 import kr.ac.kaist.safe.analyzer.domain._
+import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.nodes.cfg.{ CFGCallInst, CFGNormalInst }
 
@@ -32,7 +33,7 @@ case object CmdRunInsts extends Command("run_insts", "Run instruction by instruc
           case Nil => println("* no instructions")
           case _ => println(c.getCurCP.node.toString(0))
         }
-        val (resSt, resExcSt, _) = insts.foldLeft((st, State.Bot, true)) {
+        val (resSt, resExcSt, _) = insts.foldLeft((st, AbsState.Bot, true)) {
           case ((oldSt, oldExcSt, true), inst) =>
             println
             reader.setPrompt(

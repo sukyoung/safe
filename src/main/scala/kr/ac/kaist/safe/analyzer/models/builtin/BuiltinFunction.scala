@@ -46,7 +46,7 @@ object BuiltinFunctionProto extends FuncModel(
     // 15.3.4.2 Function.prototype.toString()
     NormalProp("toString", FuncModel(
       name = "Function.prototype.toString",
-      code = BasicCode(argLen = 0, (args: AbsValue, st: State) => {
+      code = BasicCode(argLen = 0, (args: AbsValue, st: AbsState) => {
         val thisBinding = st.context.thisBinding.locset
         val functionClass = AbsString("Function")
         val notAllFunctionClass = thisBinding.exists(loc => {
@@ -109,7 +109,7 @@ private object BuiltinFunctionProtoHelper {
   val atrue = AbsBool.True
 
   // 15.3.4.3 Fucntion.prototype.apply(thisArg, argArray)
-  def applyBeforeCall(funcId: CFGId, thisId: CFGId, argsId: CFGId)(args: AbsValue, st: State, addr: Address): (State, State) = {
+  def applyBeforeCall(funcId: CFGId, thisId: CFGId, argsId: CFGId)(args: AbsValue, st: AbsState, addr: Address): (AbsState, AbsState) = {
     val func = st.context.thisBinding.locset
     val thisArg = Helper.propLoad(args, HashSet(AbsString("0")), st.heap)
     val heap = st.heap
@@ -164,7 +164,7 @@ private object BuiltinFunctionProtoHelper {
     val argsLoc = Loc(addr, Old)
     val h3 = st1.heap.update(argsLoc, argList1 + argList2)
     val newState =
-      State(h3, st1.context)
+      AbsState(h3, st1.context)
         .varStore(funcId, callableFunc)
         .varStore(thisId, thisArg)
         .varStore(argsId, AbsValue(argsLoc))
@@ -173,7 +173,7 @@ private object BuiltinFunctionProtoHelper {
   }
 
   // 15.3.4.4 Function.prototype.call(thisArg [, arg1 [, arg2, ...]])
-  def callBeforeCall(funcId: CFGId, thisId: CFGId, argsId: CFGId)(args: AbsValue, st: State, addr: Address): (State, State) = {
+  def callBeforeCall(funcId: CFGId, thisId: CFGId, argsId: CFGId)(args: AbsValue, st: AbsState, addr: Address): (AbsState, AbsState) = {
     val func = st.context.thisBinding.locset
     val thisArg = Helper.propLoad(args, HashSet(AbsString("0")), st.heap)
     val heap = st.heap
@@ -216,7 +216,7 @@ private object BuiltinFunctionProtoHelper {
     val argsLoc = Loc(addr, Old)
     val h3 = st1.heap.update(argsLoc, argList)
     val newState =
-      State(h3, st1.context)
+      AbsState(h3, st1.context)
         .varStore(funcId, callableFunc)
         .varStore(thisId, thisArg)
         .varStore(argsId, AbsValue(argsLoc))
@@ -224,7 +224,7 @@ private object BuiltinFunctionProtoHelper {
     (newState, st1.raiseException(excSet1))
   }
 
-  def connectAfterCall(retId: CFGId)(args: AbsValue, st: State): (State, State, AbsValue) = {
+  def connectAfterCall(retId: CFGId)(args: AbsValue, st: AbsState): (AbsState, AbsState, AbsValue) = {
     val (retVal, excSet) = st.lookup(retId)
     (st, st.raiseException(excSet), retVal)
   }

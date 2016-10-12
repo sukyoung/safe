@@ -11,10 +11,10 @@
 
 package kr.ac.kaist.safe.analyzer
 
-import kr.ac.kaist.safe.analyzer.domain.State
+import kr.ac.kaist.safe.analyzer.domain.AbsState
 
 package object models {
-  type SemanticFun = State => (State, State)
+  type SemanticFun = AbsState => (AbsState, AbsState)
   val T = true
   val F = false
 }

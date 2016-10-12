@@ -57,7 +57,7 @@ object BuiltinErrorProto extends ObjModel(
 
 private object BuiltinErrorHelper {
   // 15.11.1.1, 15.11.2.1
-  def construct(errorName: String, protoLoc: Loc)(args: AbsValue, st: State): (State, State, AbsValue) = {
+  def construct(errorName: String, protoLoc: Loc)(args: AbsValue, st: AbsState): (AbsState, AbsState, AbsValue) = {
     val message = Helper.propLoad(args, Set(AbsString("0")), st.heap)
     val defaultError = AbsObject.Empty
       .update(IClass, InternalValueUtil(AbsString(errorName)))
@@ -81,10 +81,10 @@ private object BuiltinErrorHelper {
     val errorLoc = Loc(errorAddr, Recent)
     val h2 = st1.heap.update(errorLoc, errorObj)
 
-    (State(h2, st1.context), State.Bot, AbsValue(errorLoc))
+    (AbsState(h2, st1.context), AbsState.Bot, AbsValue(errorLoc))
   }
 
-  def toString(args: AbsValue, st: State): (State, State, AbsValue) = {
+  def toString(args: AbsValue, st: AbsState): (AbsState, AbsState, AbsValue) = {
     val thisBinding = st.context.thisBinding.locset
     // 2. If Type(O) is not Object, throw a TypeError exception.
     val excSet =

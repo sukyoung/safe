@@ -11,7 +11,8 @@
 
 package kr.ac.kaist.safe.analyzer
 
-import kr.ac.kaist.safe.analyzer.domain.State
+import kr.ac.kaist.safe.analyzer.domain.Utils._
+import kr.ac.kaist.safe.analyzer.domain.AbsState
 import kr.ac.kaist.safe.analyzer.console.Console
 import kr.ac.kaist.safe.nodes.cfg.{ CFGEdgeExc, CFGEdgeNormal }
 
@@ -36,7 +37,7 @@ class Fixpoint(
     iters
   }
 
-  def propagateNormal(cp: ControlPoint, nextSt: State): Unit = {
+  def propagateNormal(cp: ControlPoint, nextSt: AbsState): Unit = {
     // Propagate normal output state (outS) along normal edges.
     cp.node.getSucc(CFGEdgeNormal) match {
       case Nil => ()
@@ -55,7 +56,7 @@ class Fixpoint(
     }
   }
 
-  def propagateException(cp: ControlPoint, nextExcSt: State): Unit = {
+  def propagateException(cp: ControlPoint, nextExcSt: AbsState): Unit = {
     // Propagate exception output state (outES) along exception edges.
     // 1) If successor is catch, current exception value is assigned to catch variable and
     //    previous exception values are restored.
@@ -75,7 +76,7 @@ class Fixpoint(
     }
   }
 
-  def propagateInterProc(cp: ControlPoint, nextSt: State): Unit = {
+  def propagateInterProc(cp: ControlPoint, nextSt: AbsState): Unit = {
     // Propagate along inter-procedural edges
     // This step must be performed after evaluating abstract transfer function
     // because 'call' instruction can add inter-procedural edges.

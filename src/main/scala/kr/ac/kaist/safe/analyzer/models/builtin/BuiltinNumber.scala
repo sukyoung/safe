@@ -21,7 +21,7 @@ import kr.ac.kaist.safe.analyzer.models._
 import kr.ac.kaist.safe.util.SystemAddr
 
 object BuiltinNumberHelper {
-  def typeConvert(args: AbsValue, st: State): AbsNumber = {
+  def typeConvert(args: AbsValue, st: AbsState): AbsNumber = {
     val h = st.heap
     val argV = Helper.propLoad(args, Set(AbsString("0")), h)
     val argL = Helper.propLoad(args, Set(AbsString("length")), h).pvalue.numval
@@ -40,14 +40,14 @@ object BuiltinNumberHelper {
   }
 
   val constructor = BasicCode(argLen = 1, code = (
-    args: AbsValue, st: State
+    args: AbsValue, st: AbsState
   ) => {
     val num = typeConvert(args, st)
     val addr = SystemAddr("Number<instance>")
     val state = st.oldify(addr)
     val loc = Loc(addr, Recent)
     val heap = state.heap.update(loc, AbsObject.newNumberObj(num))
-    (State(heap, state.context), State.Bot, AbsValue(loc))
+    (AbsState(heap, state.context), AbsState.Bot, AbsValue(loc))
   })
 
   val typeConversion = PureCode(argLen = 1, code = typeConvert)
@@ -107,7 +107,7 @@ object BuiltinNumberProto extends ObjModel(
     NormalProp("toString", FuncModel(
       name = "Number.prototype.toString",
       code = BasicCode(argLen = 1, (
-        args: AbsValue, st: State
+        args: AbsValue, st: AbsState
       ) => {
         val h = st.heap
         val thisV = st.context.thisBinding
@@ -147,7 +147,7 @@ object BuiltinNumberProto extends ObjModel(
     NormalProp("toLocaleString", FuncModel(
       name = "Number.prototype.toLocaleString",
       code = BasicCode(argLen = 0, (
-        args: AbsValue, st: State
+        args: AbsValue, st: AbsState
       ) => {
         val h = st.heap
         // Produces a String value that represents this Number value formatted
@@ -164,7 +164,7 @@ object BuiltinNumberProto extends ObjModel(
     NormalProp("valueOf", FuncModel(
       name = "Number.prototype.valueOf",
       code = BasicCode(argLen = 0, (
-        args: AbsValue, st: State
+        args: AbsValue, st: AbsState
       ) => {
         val h = st.heap
         // If the "this" value is not a Number or a Number object,
@@ -181,7 +181,7 @@ object BuiltinNumberProto extends ObjModel(
     NormalProp("toFixed", FuncModel(
       name = "Number.prototype.toFixed",
       code = BasicCode(argLen = 1, (
-        args: AbsValue, st: State
+        args: AbsValue, st: AbsState
       ) => {
         val h = st.heap
         val thisV = st.context.thisBinding
@@ -205,7 +205,7 @@ object BuiltinNumberProto extends ObjModel(
     NormalProp("toExponential", FuncModel(
       name = "Number.prototype.toExponential",
       code = BasicCode(argLen = 1, (
-        args: AbsValue, st: State
+        args: AbsValue, st: AbsState
       ) => {
         val h = st.heap
         val thisV = st.context.thisBinding
@@ -230,7 +230,7 @@ object BuiltinNumberProto extends ObjModel(
     NormalProp("toPrecision", FuncModel(
       name = "Number.prototype.toPrecision",
       code = BasicCode(argLen = 1, (
-        args: AbsValue, st: State
+        args: AbsValue, st: AbsState
       ) => {
         val h = st.heap
         val thisV = st.context.thisBinding

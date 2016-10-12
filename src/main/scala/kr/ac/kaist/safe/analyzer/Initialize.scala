@@ -21,7 +21,7 @@ import scala.collection.immutable.{ HashMap }
 
 case class Initialize(cfg: CFG) {
   private val AT = AbsBool.True
-  def state: State = {
+  def state: AbsState = {
     val globalLocSet = AbsLoc(BuiltinGlobal.loc)
     val globalPureLocalEnv = AbsLexEnv.newPureLocal(globalLocSet)
     val initHeap = AbsHeap(HashMap(
@@ -36,10 +36,10 @@ case class Initialize(cfg: CFG) {
 
     val modeledHeap = BuiltinGlobal.initHeap(initHeap, cfg)
 
-    State(modeledHeap, initCtx)
+    AbsState(modeledHeap, initCtx)
   }
 
-  def testState: State = {
+  def testState: AbsState = {
     val st = state
     val globalObj = st.heap.get(BuiltinGlobal.loc)
       .fold(AbsObject.Empty)(obj => obj)
@@ -71,6 +71,6 @@ case class Initialize(cfg: CFG) {
         .initializeUpdate("__ArrayConstLoc", AbsDataProp(AbsValue(BuiltinArray.loc)))
 
     val testHeap = st.heap.update(BuiltinGlobal.loc, testGlobalObj)
-    State(testHeap, st.context)
+    AbsState(testHeap, st.context)
   }
 }

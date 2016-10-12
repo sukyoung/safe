@@ -162,7 +162,7 @@ object BuiltinObjectHelper {
   ////////////////////////////////////////////////////////////////
   // Object
   ////////////////////////////////////////////////////////////////
-  def construct(args: AbsValue, st: State): (State, State, AbsValue) = {
+  def construct(args: AbsValue, st: AbsState): (AbsState, AbsState, AbsValue) = {
     val h = st.heap
     val argV = Helper.propLoad(args, Set(AbsString("0")), h)
     val addr = SystemAddr("Object<instance>")
@@ -172,7 +172,7 @@ object BuiltinObjectHelper {
     //    XXX: We do not consider an implementation-dependent actions
     //         for a host objects)
     val (v1, st1) =
-      if (argV.pvalue.copyWith(undefval = AbsUndef.Bot, nullval = AbsNull.Bot).isBottom && argV.locset.isBottom) (AbsValue.Bot, State.Bot)
+      if (argV.pvalue.copyWith(undefval = AbsUndef.Bot, nullval = AbsNull.Bot).isBottom && argV.locset.isBottom) (AbsValue.Bot, AbsState.Bot)
       else {
         val (loc, state, _) = TypeConversionHelper.ToObject(argV, st, addr)
         (AbsValue(loc), state)
@@ -181,13 +181,13 @@ object BuiltinObjectHelper {
     // 2. Else, return a newly created native ECMAScript object.
     val pv = argV.pvalue
     val (v2, st2) =
-      if (pv.undefval.isBottom && pv.nullval.isBottom) (AbsValue.Bot, State.Bot)
+      if (pv.undefval.isBottom && pv.nullval.isBottom) (AbsValue.Bot, AbsState.Bot)
       else newObjSt(st, addr)
 
-    (st1 + st2, State.Bot, v1 + v2)
+    (st1 + st2, AbsState.Bot, v1 + v2)
   }
 
-  def getPrototypeOf(args: AbsValue, st: State): (State, State, AbsValue) = {
+  def getPrototypeOf(args: AbsValue, st: AbsState): (AbsState, AbsState, AbsValue) = {
     val h = st.heap
     val argV = Helper.propLoad(args, Set(AbsString("0")), h)
 
@@ -204,7 +204,7 @@ object BuiltinObjectHelper {
     (st, excSt, protoV)
   }
 
-  def getOwnPropertyDescriptor(args: AbsValue, st: State): (State, State, AbsValue) = {
+  def getOwnPropertyDescriptor(args: AbsValue, st: AbsState): (AbsState, AbsState, AbsValue) = {
     val h = st.heap
     val objV = Helper.propLoad(args, Set(AbsString("0")), h)
     val propV = Helper.propLoad(args, Set(AbsString("1")), h)
@@ -225,7 +225,7 @@ object BuiltinObjectHelper {
       val descLoc = Loc(descAddr, Recent)
       val retH = state.heap.update(descLoc, descObj.oldify(descAddr))
       val retV = AbsValue(undef, AbsLoc(descLoc))
-      (State(retH, state.context), retV, excSet)
+      (AbsState(retH, state.context), retV, excSet)
     } else (st, AbsValue(undef), ExcSetEmpty)
 
     val excSt = st.raiseException(excSet1 ++ excSet2)
@@ -233,7 +233,7 @@ object BuiltinObjectHelper {
     (retSt, excSt, retV)
   }
 
-  def getOwnPropertyNames(args: AbsValue, st: State): (State, State, AbsValue) = {
+  def getOwnPropertyNames(args: AbsValue, st: AbsState): (AbsState, AbsState, AbsValue) = {
     val h = st.heap
     val objV = Helper.propLoad(args, Set(AbsString("0")), h)
     val arrAddr = SystemAddr("Object.getOwnPropertyNames<array>")
@@ -284,19 +284,19 @@ object BuiltinObjectHelper {
 
     // 5. Return array.
     retObj.isBottom match {
-      case true => (State.Bot, st.raiseException(retExcSet), AbsValue.Bot)
+      case true => (AbsState.Bot, st.raiseException(retExcSet), AbsValue.Bot)
       case false => {
         val state = st.oldify(arrAddr)
         val arrLoc = Loc(arrAddr, Recent)
         val retHeap = state.heap.update(arrLoc, retObj.oldify(arrAddr))
         val excSt = state.raiseException(retExcSet)
 
-        (State(retHeap, state.context), excSt, AbsValue(arrLoc))
+        (AbsState(retHeap, state.context), excSt, AbsValue(arrLoc))
       }
     }
   }
 
-  def create(args: AbsValue, st: State): (State, State, AbsValue) = {
+  def create(args: AbsValue, st: AbsState): (AbsState, AbsState, AbsValue) = {
     val h = st.heap
     val objV = Helper.propLoad(args, Set(AbsString("0")), h)
     val propsV = Helper.propLoad(args, Set(AbsString("1")), h)
@@ -318,15 +318,15 @@ object BuiltinObjectHelper {
     val newH = state.heap.update(loc, newObj.oldify(addr))
     val retV = AbsLoc(loc)
     val (retSt, e) =
-      if (propsV <= AbsUndef.Top) (State(newH, state.context), ExcSetEmpty)
-      else defProps(retV, propsV, State(newH, state.context))
+      if (propsV <= AbsUndef.Top) (AbsState(newH, state.context), ExcSetEmpty)
+      else defProps(retV, propsV, AbsState(newH, state.context))
     // 5. Return obj.
     val excSt = state.raiseException(excSet ++ e)
 
     (retSt, excSt, retV)
   }
 
-  def defineProperty(args: AbsValue, st: State): (State, State, AbsValue) = {
+  def defineProperty(args: AbsValue, st: AbsState): (AbsState, AbsState, AbsValue) = {
     val h = st.heap
     val objV = Helper.propLoad(args, Set(AbsString("0")), h)
     val propV = Helper.propLoad(args, Set(AbsString("1")), h)
@@ -352,10 +352,10 @@ object BuiltinObjectHelper {
 
     val excSt = st.raiseException(retExcSet)
 
-    (State(retH, st.context), excSt, objV.locset)
+    (AbsState(retH, st.context), excSt, objV.locset)
   }
 
-  def defineProperties(args: AbsValue, st: State): (State, State, AbsValue) = {
+  def defineProperties(args: AbsValue, st: AbsState): (AbsState, AbsState, AbsValue) = {
     val h = st.heap
     val objV = Helper.propLoad(args, Set(AbsString("0")), h)
     val propsV = Helper.propLoad(args, Set(AbsString("1")), h)
@@ -366,7 +366,7 @@ object BuiltinObjectHelper {
     (retSt, excSt, objV.locset)
   }
 
-  def seal(args: AbsValue, st: State): (State, State, AbsValue) = {
+  def seal(args: AbsValue, st: AbsState): (AbsState, AbsState, AbsValue) = {
     val h = st.heap
     val objV = Helper.propLoad(args, Set(AbsString("0")), h)
 
@@ -395,10 +395,10 @@ object BuiltinObjectHelper {
 
     val excSt = st.raiseException(retExcSet)
 
-    (State(retH, st.context), excSt, objV.locset)
+    (AbsState(retH, st.context), excSt, objV.locset)
   }
 
-  def freeze(args: AbsValue, st: State): (State, State, AbsValue) = {
+  def freeze(args: AbsValue, st: AbsState): (AbsState, AbsState, AbsValue) = {
     val h = st.heap
     val objV = Helper.propLoad(args, Set(AbsString("0")), h)
 
@@ -432,10 +432,10 @@ object BuiltinObjectHelper {
 
     val excSt = st.raiseException(retExcSet)
 
-    (State(retH, st.context), excSt, objV.locset)
+    (AbsState(retH, st.context), excSt, objV.locset)
   }
 
-  def preventExtensions(args: AbsValue, st: State): (State, State, AbsValue) = {
+  def preventExtensions(args: AbsValue, st: AbsState): (AbsState, AbsState, AbsValue) = {
     val h = st.heap
     val objV = Helper.propLoad(args, Set(AbsString("0")), h)
 
@@ -453,10 +453,10 @@ object BuiltinObjectHelper {
 
     val excSt = st.raiseException(excSet)
 
-    (State(retH, st.context), excSt, objV.locset)
+    (AbsState(retH, st.context), excSt, objV.locset)
   }
 
-  def isSealed(args: AbsValue, st: State): (State, State, AbsValue) = {
+  def isSealed(args: AbsValue, st: AbsState): (AbsState, AbsState, AbsValue) = {
     val h = st.heap
     val objV = Helper.propLoad(args, Set(AbsString("0")), h)
 
@@ -478,7 +478,7 @@ object BuiltinObjectHelper {
     (st, excSt, retB)
   }
 
-  def isFrozen(args: AbsValue, st: State): (State, State, AbsValue) = {
+  def isFrozen(args: AbsValue, st: AbsState): (AbsState, AbsState, AbsValue) = {
     val h = st.heap
     val objV = Helper.propLoad(args, Set(AbsString("0")), h)
 
@@ -502,7 +502,7 @@ object BuiltinObjectHelper {
     (st, excSt, retB)
   }
 
-  def isExtensible(args: AbsValue, st: State): (State, State, AbsValue) = {
+  def isExtensible(args: AbsValue, st: AbsState): (AbsState, AbsState, AbsValue) = {
     val h = st.heap
     val objV = Helper.propLoad(args, Set(AbsString("0")), h)
 
@@ -515,7 +515,7 @@ object BuiltinObjectHelper {
     (st, excSt, retB)
   }
 
-  def keys(args: AbsValue, st: State): (State, State, AbsValue) = {
+  def keys(args: AbsValue, st: AbsState): (AbsState, AbsState, AbsValue) = {
     val h = st.heap
     val objV = Helper.propLoad(args, Set(AbsString("0")), h)
     val arrAddr = SystemAddr("Object.keys<array>")
@@ -567,13 +567,13 @@ object BuiltinObjectHelper {
     val retHeap = state.heap.update(arrLoc, retObj.oldify(arrAddr))
     val excSt = st.raiseException(retExcSet)
 
-    (State(retHeap, state.context), excSt, AbsValue(arrLoc))
+    (AbsState(retHeap, state.context), excSt, AbsValue(arrLoc))
   }
 
   ////////////////////////////////////////////////////////////////
   // Object.prototype
   ////////////////////////////////////////////////////////////////
-  def toString(args: AbsValue, st: State): (State, State, AbsValue) = {
+  def toString(args: AbsValue, st: AbsState): (AbsState, AbsState, AbsValue) = {
     val h = st.heap
     val thisBinding = st.context.thisBinding
     val thisLoc = thisBinding.locset
@@ -592,10 +592,10 @@ object BuiltinObjectHelper {
     val finalSt =
       if (checkU || checkN) st + st1
       else st1
-    (finalSt, State.Bot, result)
+    (finalSt, AbsState.Bot, result)
   }
 
-  def valueOf(args: AbsValue, st: State): (State, State, AbsValue) = {
+  def valueOf(args: AbsValue, st: AbsState): (AbsState, AbsState, AbsValue) = {
     val h = st.heap
     val thisBinding = st.context.thisBinding
     // 1. Let O be the result of calling ToObject passing the this value as the argument.
@@ -607,7 +607,7 @@ object BuiltinObjectHelper {
     (state, excSt, AbsValue(loc))
   }
 
-  def hasOwnProperty(args: AbsValue, st: State): (State, State, AbsValue) = {
+  def hasOwnProperty(args: AbsValue, st: AbsState): (AbsState, AbsState, AbsValue) = {
     val h = st.heap
     val value = Helper.propLoad(args, Set(AbsString("0")), h)
     val thisBinding = st.context.thisBinding
@@ -628,7 +628,7 @@ object BuiltinObjectHelper {
     (state, excSt, falseV + trueV)
   }
 
-  def isPrototypeOf(args: AbsValue, st: State): (State, State, AbsValue) = {
+  def isPrototypeOf(args: AbsValue, st: AbsState): (AbsState, AbsState, AbsValue) = {
     val value = Helper.propLoad(args, Set(AbsString("0")), st.heap)
     val thisBinding = st.context.thisBinding
     // 1. If V is not an object, return false.
@@ -660,7 +660,7 @@ object BuiltinObjectHelper {
     (state, excSt, result)
   }
 
-  def propertyIsEnumerable(args: AbsValue, st: State): (State, State, AbsValue) = {
+  def propertyIsEnumerable(args: AbsValue, st: AbsState): (AbsState, AbsState, AbsValue) = {
     val value = Helper.propLoad(args, Set(AbsString("0")), st.heap)
     val thisBinding = st.context.thisBinding
     // 1. Let P be ToString(V).
@@ -689,12 +689,12 @@ object BuiltinObjectHelper {
     else HashSet(TypeError)
   }
 
-  private def newObjSt(st: State, addr: SystemAddr): (AbsValue, State) = {
+  private def newObjSt(st: AbsState, addr: SystemAddr): (AbsValue, AbsState) = {
     val state = st.oldify(addr)
     val loc = Loc(addr, Recent)
     val obj = AbsObject.newObject
     val heap = state.heap.update(loc, obj)
-    (AbsValue(loc), State(heap, state.context))
+    (AbsValue(loc), AbsState(heap, state.context))
   }
 
   private def changeProps(obj: AbsObject, f: AbsDesc => AbsDesc): (AbsObject, Set[Exception]) = {
@@ -733,7 +733,7 @@ object BuiltinObjectHelper {
     }
   }
 
-  private def defProps(objV: AbsValue, propsV: AbsValue, st: State): (State, Set[Exception]) = {
+  private def defProps(objV: AbsValue, propsV: AbsValue, st: AbsState): (AbsState, Set[Exception]) = {
     // 1. If Type(O) is not Object throw a TypeError exception.
     val excSet = objCheck(objV)
     // 2. Let props be ToObject(Properties).
@@ -771,6 +771,6 @@ object BuiltinObjectHelper {
         (retH, excSet)
       }
     }
-    (State(retH, ctx1), retExcSet)
+    (AbsState(retH, ctx1), retExcSet)
   }
 }

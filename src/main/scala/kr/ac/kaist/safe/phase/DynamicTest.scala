@@ -15,7 +15,6 @@ import scala.io.Source
 import scala.util.{ Try, Failure, Success }
 import kr.ac.kaist.safe.{ BASE_DIR, CmdAnalyze, SafeConfig }
 import kr.ac.kaist.safe.analyzer.CallContext
-import kr.ac.kaist.safe.analyzer.domain.State
 import kr.ac.kaist.safe.analyzer.models.builtin.BuiltinGlobal
 import kr.ac.kaist.safe.nodes.cfg.CFG
 
