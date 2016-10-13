@@ -3,6 +3,5 @@
     delete a;
     return a;
   }
-  if (f1(1) !== 1)
-    $ERROR('#1: Function parameter was deleted');
-  
+var __result1 = f1(1) !== 1;
+var __expect1 = false;

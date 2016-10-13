@@ -4,13 +4,12 @@
     this.constructor.prototype.arguments = ARG_STRING;
     return arguments;
   }
-  if ((new f1(1, 2, 3, 4, 5)).length !== 5)
-    $ERROR('#1: (new f1(1,2,3,4,5)).length===5, where f1 returns "arguments" that is set to "' + ARG_STRING + '"');
-  if ((new f1(1, 2, 3, 4, 5))[3] !== 4)
-    $ERROR('#2: (new f1(1,2,3,4,5))[3]===4, where f1 returns "arguments" that is set to "' + ARG_STRING + '"');
+var __result1 = (new f1(1, 2, 3, 4, 5)).length !== 5;
+var __expect1 = false;
+var __result2 = (new f1(1, 2, 3, 4, 5))[3] !== 4;
+var __expect2 = false;
   var x = new f1(1, 2, 3, 4, 5);
-  if (delete x[3] !== true)
-    $ERROR('#3.1: Function parameters have attribute {DontDelete}');
-  if (x[3] === 4)
-    $ERROR('#3.2: Function parameters have attribute {DontDelete}');
-  
+var __result3 = delete x[3] !== true;
+var __expect3 = false;
+var __result4 = x[3] === 4;
+var __expect4 = false;

@@ -2,6 +2,5 @@
   {
     return 1;
   });
-  if (typeof (x.constructor) !== "function")
-    $ERROR('#1: typeof(x.constructor)!=="function"');
-  
+var __result1 = typeof (x.constructor) !== "function";
+var __expect1 = false;

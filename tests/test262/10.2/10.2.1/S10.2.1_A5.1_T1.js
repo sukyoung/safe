@@ -3,17 +3,12 @@
     var x;
     return typeof x;
   }
-  if (! (f1() === "undefined"))
-  {
-    $PRINT('#1: f1() === "undefined"');
-  }
+var __result1 = ! (f1() === "undefined");
+var __expect1 = false;
   function f2() 
   {
     var x;
     return x;
   }
-  if (! (f2() === undefined))
-  {
-    $PRINT('#1: f2() === undefined');
-  }
-  
+var __result2 = ! (f2() === undefined);
+var __expect2 = false;

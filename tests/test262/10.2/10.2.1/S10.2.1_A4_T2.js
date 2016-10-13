@@ -7,10 +7,8 @@
       return 7;
     }
   }
-  if (! (f1().constructor.prototype === Function.prototype))
-  {
-    $PRINT('#1: f1() returns function');
-  }
+var __result1 = ! (f1().constructor.prototype === Function.prototype);
+var __expect1 = false;
   function f2() 
   {
     var x;
@@ -20,8 +18,5 @@
       return 7;
     }
   }
-  if (! (f2() === "function"))
-  {
-    $PRINT('#2: f2() === "function"');
-  }
-  
+var __result2 = ! (f2() === "function");
+var __expect2 = false;
