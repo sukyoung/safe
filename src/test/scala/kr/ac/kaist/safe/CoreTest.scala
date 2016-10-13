@@ -112,7 +112,6 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
   abstract class AnalysisResult
   case object Precise extends AnalysisResult
   case object Imprecise extends AnalysisResult
-  case object NoTest extends AnalysisResult
   case object Fail extends AnalysisResult
   def analyzeTest(analysis: Try[(CFG, Int, CallContext)]): (AnalysisResult, Int) = {
     analysis match {
@@ -147,9 +146,9 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
                 case _ => assert(false); ""
               })
             }
+            assert(resultKeySet.size != 0)
             assert(resultKeySet.size == expectKeySet.size)
-            if (resultKeySet.size == 0) NoTest
-            else if (resultKeySet.foldLeft(true)((b, resultKey) => {
+            if (resultKeySet.foldLeft(true)((b, resultKey) => {
               val num = resultKey.substring(resultPrefix.length)
               val expectKey = expectPrefix + num
               assert(expectKeySet contains expectKey)
@@ -160,6 +159,31 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
           }
         }
         (ar, iter)
+    }
+  }
+
+  def analyzeHelper(prefix: String, tag: Tag, file: File): Unit = {
+    val filename = file.getName
+    val name = file.toString
+    val relPath = name.substring(BASE_DIR.length)
+    if (filename.endsWith(".js")) {
+      registerTest(prefix + filename, tag) {
+        val safeConfig = getSafeConfig(name)
+        val cfg = getCFG(name)
+        val analysis = cfg.flatMap(Analyze(_, safeConfig, analyzeConfig))
+        testList ::= relPath
+        val (ar, iter) = analyzeTest(analysis)
+        totalIteration += iter
+        ar match {
+          case Precise => preciseList ::= relPath
+          case Imprecise => impreciseList ::= relPath
+          case Fail => // unreachable
+        }
+      }
+    } else if (filename.endsWith(".js.todo")) {
+      todoList ::= relPath
+    } else if (filename.endsWith(".js.err")) {
+      // TODO
     }
   }
 
@@ -192,55 +216,21 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
     }
   }
 
-  var totalList = List[String]()
+  var testList = List[String]()
   var preciseList = List[String]()
   var impreciseList = List[String]()
-  var noTestList = List[String]()
+  var todoList = List[String]()
   var totalIteration = 0
   val analysisDeatil = BASE_DIR + SEP + "tests" + SEP + "analysis-detail"
 
   val analyzerTestDir = testDir + "semantics"
   val analyzeConfig = AnalyzeConfig(AbsString = StringSet(1000))
-  for (file <- shuffle(walkTree(new File(analyzerTestDir))) if file.getName.endsWith(".js")) {
-    val jsName = file.toString
-    val relPath = jsName.substring(BASE_DIR.length)
-    val filename = file.getName
-    registerTest("[Analyze]" + filename, AnalyzeTest) {
-      val safeConfig = getSafeConfig(jsName)
-      val cfg = getCFG(jsName)
-      val analysis = cfg.flatMap(Analyze(_, safeConfig, analyzeConfig))
-      totalList ::= relPath
-      val (ar, iter) = analyzeTest(analysis)
-      totalIteration += iter
-      ar match {
-        case Precise => preciseList ::= relPath
-        case Imprecise => impreciseList ::= relPath
-        case NoTest => noTestList ::= relPath
-        case Fail => // unreachable
-      }
-    }
-  }
+  for (file <- shuffle(walkTree(new File(analyzerTestDir))))
+    analyzeHelper("[Analyze]", AnalyzeTest, file)
 
   val test262TestDir = testDir + "test262"
-  for (file <- shuffle(walkTree(new File(test262TestDir))) if file.getName.endsWith(".js")) {
-    val jsName = file.toString
-    val relPath = jsName.substring(BASE_DIR.length)
-    val filename = file.getName
-    registerTest("[Test262]" + filename, Test262Test) {
-      val safeConfig = getSafeConfig(jsName)
-      val cfg = getCFG(jsName)
-      val analysis = cfg.flatMap(Analyze(_, safeConfig, analyzeConfig))
-      totalList ::= relPath
-      val (ar, iter) = analyzeTest(analysis)
-      totalIteration += iter
-      ar match {
-        case Precise => preciseList ::= relPath
-        case Imprecise => impreciseList ::= relPath
-        case NoTest => noTestList ::= relPath
-        case Fail => // unreachable
-      }
-    }
-  }
+  for (file <- shuffle(walkTree(new File(test262TestDir))))
+    analyzeHelper("[Test262]", Test262Test, file)
 
   override def afterAll(): Unit = {
     val file = new File(analysisDeatil)
@@ -248,16 +238,16 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
     val pw = new PrintWriter(bw)
     val pre = preciseList.sorted
     val impre = impreciseList.sorted
-    val no = noTestList.sorted
-    val fail = (totalList.toSet -- pre.toSet -- impre.toSet -- no.toSet).toList.sorted
+    val todo = todoList.sorted
+    val fail = (testList.toSet -- pre.toSet -- impre.toSet).toList.sorted
     pw.println("#######################")
     pw.println("# SUMMARY")
     pw.println("#######################")
-    pw.println("# TOTAL : " + totalList.length)
+    pw.println("# TOTAL : " + (testList.length + todo.length))
     pw.println("# FAIL : " + fail.length)
     pw.println("# PRECISE : " + pre.length)
     pw.println("# IMPRECISE : " + impre.length)
-    pw.println("# NO-TEST: " + no.length)
+    pw.println("# TODO : " + todo.length)
     pw.println("# TOTAL ITERATION: " + totalIteration.toString)
     pw.println("#######################")
     pw.println()
@@ -270,8 +260,8 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
     pw.println("IMPRECISE: " + impre.length)
     impre.foreach(fn => pw.println(fn))
     pw.println()
-    pw.println("NO-TEST: " + no.length)
-    no.foreach(fn => pw.println(fn))
+    pw.println("TODO: " + todo.length)
+    todo.foreach(fn => pw.println(fn))
     pw.close()
   }
 }
