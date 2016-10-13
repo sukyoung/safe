@@ -1,0 +1,6 @@
+  __executed = /b{8,}c/.test("aaabbbbcccddeeeefffff");
+  {
+    var __result1 = __executed;
+    var __expect1 = false;
+  }
+  

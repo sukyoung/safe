@@ -1,0 +1,20 @@
+  function testcase() 
+  {
+    fnGlobalObject().f = (function () 
+    {
+      return this !== undefined;
+    });
+    return (function () 
+    {
+      return (function () 
+      {
+      "use strict";
+        return f();
+      })();
+    })();
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

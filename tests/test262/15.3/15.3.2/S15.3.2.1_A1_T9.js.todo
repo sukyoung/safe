@@ -1,0 +1,13 @@
+  var f = (function () 
+  {
+    return arguments[0];
+  });
+  {
+    var __result1 = ! (f instanceof Function);
+    var __expect1 = false;
+  }
+  {
+    var __result2 = f("A") !== "A";
+    var __expect2 = false;
+  }
+  

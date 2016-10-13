@@ -1,0 +1,28 @@
+  var __obj = {
+    toString : (function () 
+    {
+      return {
+        
+      };
+    }),
+    valueOf : (function () 
+    {
+      return 1;
+    })
+  };
+  var __obj2 = {
+    toString : (function () 
+    {
+      throw "inreplaceValue";
+    })
+  };
+  try
+{    var x = "ABB\u0041BABAB\u0031BBAA".replace(__obj, __obj2);
+    $FAIL('#1: var x = "ABB\\u0041BABAB\\u0031BBAA".replace(__obj,__obj2) lead to throwing exception');}
+  catch (e)
+{    {
+      var __result1 = e !== "inreplaceValue";
+      var __expect1 = false;
+    }}
+
+  

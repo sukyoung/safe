@@ -1,0 +1,18 @@
+  var obj = Function.prototype;
+  Function.prototype = (function () 
+  {
+    return "shifted";
+  });
+  {
+    var __result1 = Function.prototype !== obj;
+    var __expect1 = false;
+  }
+  try
+{    {
+      var __result2 = Function.prototype() !== undefined;
+      var __expect2 = false;
+    }}
+  catch (e)
+{    $ERROR('#2.1: the Function.prototype property has the attributes ReadOnly: ' + e);}
+
+  

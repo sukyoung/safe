@@ -1,0 +1,6 @@
+  __executed = /ab[erst]de/.test("abcde");
+  {
+    var __result1 = __executed;
+    var __expect1 = false;
+  }
+  

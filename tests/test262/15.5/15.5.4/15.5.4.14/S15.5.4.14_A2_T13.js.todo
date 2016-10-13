@@ -1,0 +1,19 @@
+  var __string = new String("one-1 two-2 four-4");
+  var __split = __string.split("-4");
+  {
+    var __result1 = __split.constructor !== Array;
+    var __expect1 = false;
+  }
+  {
+    var __result2 = __split.length !== 2;
+    var __expect2 = false;
+  }
+  {
+    var __result3 = __split[0] !== "one-1 two-2 four";
+    var __expect3 = false;
+  }
+  {
+    var __result4 = __split[1] !== "";
+    var __expect4 = false;
+  }
+  

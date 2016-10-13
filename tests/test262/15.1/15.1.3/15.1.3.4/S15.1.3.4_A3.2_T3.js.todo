@@ -1,0 +1,10 @@
+  uriMark = ["-", "_", ".", "!", "~", "*", "'", "(", ")", ];
+  for (indexC = 0;indexC < uriMark.length;indexC++)
+  {
+    var str = uriMark[indexC];
+    {
+      var __result1 = encodeURIComponent(str) !== str;
+      var __expect1 = false;
+    }
+  }
+  

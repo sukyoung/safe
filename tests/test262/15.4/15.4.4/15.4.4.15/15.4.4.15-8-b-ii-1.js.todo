@@ -1,0 +1,9 @@
+  function testcase() 
+  {
+    return ["true", ].lastIndexOf(true) === - 1 && ["0", ].lastIndexOf(0) === - 1 && [false, ].lastIndexOf(0) === - 1 && [undefined, ].lastIndexOf(0) === - 1 && [null, ].lastIndexOf(0) === - 1 && [[], ].lastIndexOf(0) === - 1;
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

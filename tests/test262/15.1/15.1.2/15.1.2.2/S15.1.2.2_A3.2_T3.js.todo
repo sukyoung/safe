@@ -1,0 +1,17 @@
+  {
+    var __result1 = parseInt("11", 4294967298) !== parseInt("11", 2);
+    var __expect1 = false;
+  }
+  {
+    var __result2 = parseInt("11", 4294967296) !== parseInt("11", 10);
+    var __expect2 = false;
+  }
+  {
+    var __result3 = isNaN(parseInt("11", - 2147483650)) !== true;
+    var __expect3 = false;
+  }
+  {
+    var __result4 = parseInt("11", - 4294967294) !== parseInt("11", 2);
+    var __expect4 = false;
+  }
+  

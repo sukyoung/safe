@@ -1,0 +1,25 @@
+  var i = 0;
+  var p = {
+    toString : (function () 
+    {
+      return "a" + (++ i);
+    })
+  };
+  var obj = {
+    
+  };
+  new Function(p, p, p, "this.shifted=a3+a2+a1.length;").call(obj, (function () 
+  {
+    return arguments;
+  })("a", "b", "c", "d"), 
+  "", 
+  2);
+  {
+    var __result1 = obj["shifted"] !== "24";
+    var __expect1 = false;
+  }
+  {
+    var __result2 = typeof this["shifted"] !== "undefined";
+    var __expect2 = false;
+  }
+  

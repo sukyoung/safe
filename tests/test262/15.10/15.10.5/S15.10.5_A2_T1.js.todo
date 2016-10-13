@@ -1,0 +1,5 @@
+  {
+    var __result1 = Function.prototype.isPrototypeOf(RegExp) !== true;
+    var __expect1 = false;
+  }
+  

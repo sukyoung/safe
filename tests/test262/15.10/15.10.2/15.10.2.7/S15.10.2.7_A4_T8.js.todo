@@ -1,0 +1,6 @@
+  __executed = /["'][^"']*["']/.test('alice cries out: don\'t');
+  {
+    var __result1 = __executed;
+    var __expect1 = false;
+  }
+  

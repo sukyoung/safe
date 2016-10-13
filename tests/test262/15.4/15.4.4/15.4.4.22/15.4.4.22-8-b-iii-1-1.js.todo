@@ -1,0 +1,23 @@
+  function testcase() 
+  {
+    var testResult = false;
+    function callbackfn(prevVal, curVal, idx, obj) 
+    {
+      if (idx === 0)
+      {
+        testResult = (prevVal === 1);
+      }
+    }
+    var obj = {
+      0 : 0,
+      1 : 1,
+      length : 2
+    };
+    Array.prototype.reduceRight.call(obj, callbackfn);
+    return testResult;
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

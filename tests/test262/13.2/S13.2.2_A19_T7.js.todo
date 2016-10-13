@@ -1,0 +1,28 @@
+  var a = 1;
+  var __obj = {
+    a : 2
+  };
+  with (__obj)
+  {
+    var __func = (function () 
+    {
+      return a;
+    });
+  }
+  {
+    var __result1 = __obj.hasOwnProperty('__func');
+    var __expect1 = false;
+  }
+  {
+    var __result2 = ! (this.hasOwnProperty('__func'));
+    var __expect2 = false;
+  }
+  {
+    var __result3 = __func in __obj;
+    var __expect3 = false;
+  }
+  {
+    var __result4 = this.__func === undefined;
+    var __expect4 = false;
+  }
+  

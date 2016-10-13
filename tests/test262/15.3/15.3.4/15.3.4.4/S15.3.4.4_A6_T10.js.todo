@@ -1,0 +1,19 @@
+  var obj = {
+    
+  };
+  (function () 
+  {
+    (function (a1, a2, a3) 
+    {
+      this.shifted = a1.length + a2 + a3;
+    }).call(obj, arguments, "", "2");
+  })("", 4, 2, "a");
+  {
+    var __result1 = obj["shifted"] !== "42";
+    var __expect1 = false;
+  }
+  {
+    var __result2 = typeof this["shifted"] !== "undefined";
+    var __expect2 = false;
+  }
+  

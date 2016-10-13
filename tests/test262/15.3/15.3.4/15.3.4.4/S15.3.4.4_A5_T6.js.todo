@@ -1,0 +1,10 @@
+  var obj = new String("soap");
+  (function () 
+  {
+    this.touched = true;
+  }).call(obj);
+  {
+    var __result1 = ! (obj.touched);
+    var __expect1 = false;
+  }
+  

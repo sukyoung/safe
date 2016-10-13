@@ -1,0 +1,9 @@
+  {
+    var __result1 = parseInt("11", new Boolean(false)) !== parseInt("11", false);
+    var __expect1 = false;
+  }
+  {
+    var __result2 = isNaN(parseInt("11", new Boolean(true))) !== true;
+    var __expect2 = false;
+  }
+  

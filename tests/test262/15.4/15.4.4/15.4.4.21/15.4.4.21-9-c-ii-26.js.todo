@@ -1,0 +1,20 @@
+  function testcase() 
+  {
+    var objArray = new Array(10);
+    var accessed = false;
+    function callbackfn(prevVal, curVal, idx, obj) 
+    {
+      accessed = true;
+      return prevVal === objArray;
+    }
+    var obj = {
+      0 : 11,
+      length : 1
+    };
+    return Array.prototype.reduce.call(obj, callbackfn, objArray) === true && accessed;
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

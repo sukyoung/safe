@@ -1,0 +1,10 @@
+  FACTORY = (function (name) 
+  {
+    this.name = name;
+  });
+  {
+    var __result1 = (x instanceof FACTORY) !== false;
+    var __expect1 = false;
+  }
+  var x;
+  

@@ -1,0 +1,7 @@
+  var f = new Function("\"use strict\";\nreturn gNonStrict();");
+  f();
+  function gNonStrict() 
+  {
+    return gNonStrict.caller || gNonStrict.caller.throwTypeError;
+  }
+  

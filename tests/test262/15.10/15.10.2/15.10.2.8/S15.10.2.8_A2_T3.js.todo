@@ -1,0 +1,6 @@
+  __executed = /Java(?!Script)([A-Z]\w*)/.test("using of Java language");
+  {
+    var __result1 = __executed;
+    var __expect1 = false;
+  }
+  

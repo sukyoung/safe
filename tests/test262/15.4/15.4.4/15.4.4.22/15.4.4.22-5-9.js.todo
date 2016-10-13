@@ -1,0 +1,13 @@
+  function testcase() 
+  {
+    var initialValue = 10;
+    return initialValue === [].reduceRight((function () 
+    {
+      
+    }), initialValue);
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

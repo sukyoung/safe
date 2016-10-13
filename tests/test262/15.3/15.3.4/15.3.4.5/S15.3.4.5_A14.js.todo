@@ -1,0 +1,4 @@
+  Function.prototype.bind.call(null, {
+    
+  });
+  

@@ -1,0 +1,18 @@
+  function testcase() 
+  {
+    function callbackfn(prevVal, curVal, idx, obj) 
+    {
+      return (curVal === 11 && idx === 1);
+    }
+    var obj = {
+      1 : 11,
+      2 : 9,
+      length : 2
+    };
+    return Array.prototype.reduce.call(obj, callbackfn, 1) === true;
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

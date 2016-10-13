@@ -1,0 +1,8 @@
+  __replaced = "To sign up click |here|https:www.xxxx.org/subscribe.htm|".replace(/(\|)([\w\x81-\xff ]*)(\|)([\/a-z][\w:\/\.]*\.[a-z]{3,4})(\|)/ig, 
+  '<a href="$4">$2</a>');
+  __expected = 'To sign up click <a href="https:www.xxxx.org/subscribe.htm">here</a>';
+  {
+    var __result1 = __replaced !== __expected;
+    var __expect1 = false;
+  }
+  

@@ -1,0 +1,13 @@
+  function testcase() 
+  {
+    var a = new Array(0, 1, 1);
+    if (a.lastIndexOf(1, "1") === 1 && a.lastIndexOf(1, "one") === - 1)
+    {
+      return true;
+    }
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

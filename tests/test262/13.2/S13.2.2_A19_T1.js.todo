@@ -1,0 +1,17 @@
+  var a = 1;
+  var __func = (function () 
+  {
+    return a;
+  });
+  var __obj = {
+    a : 2
+  };
+  with (__obj)
+  {
+    result = __func();
+  }
+  {
+    var __result1 = result !== 1;
+    var __expect1 = false;
+  }
+  

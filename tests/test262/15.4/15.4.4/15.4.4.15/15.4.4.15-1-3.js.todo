@@ -1,0 +1,16 @@
+  function testcase() 
+  {
+    try
+{      Boolean.prototype[1] = true;
+      Boolean.prototype.length = 2;
+      return 1 === Array.prototype.lastIndexOf.call(true, true);}
+    finally
+{      delete Boolean.prototype[1];
+      delete Boolean.prototype.length;}
+
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

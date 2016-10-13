@@ -1,0 +1,25 @@
+  function testcase() 
+  {
+    var accessed = false;
+    function callbackfn(val, idx, obj) 
+    {
+      accessed = true;
+      return typeof val === "undefined";
+    }
+    var obj = {
+      length : 2
+    };
+    Object.defineProperty(obj, "1", {
+      set : (function () 
+      {
+        
+      }),
+      configurable : true
+    });
+    return Array.prototype.every.call(obj, callbackfn) && accessed;
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

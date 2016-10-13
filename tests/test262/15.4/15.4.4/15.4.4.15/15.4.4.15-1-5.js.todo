@@ -1,0 +1,16 @@
+  function testcase() 
+  {
+    try
+{      Number.prototype[1] = isNaN;
+      Number.prototype.length = 2;
+      return 1 === Array.prototype.lastIndexOf.call(5, isNaN);}
+    finally
+{      delete Number.prototype[1];
+      delete Number.prototype.length;}
+
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

@@ -1,0 +1,22 @@
+  __CUBE = "cube";
+  __FACTORY = (function () 
+  {
+    
+  });
+  __FACTORY.prototype = {
+    shape : __CUBE,
+    printShape : (function () 
+    {
+      return this.shape;
+    })
+  };
+  __device = new __FACTORY();
+  {
+    var __result1 = __device.printShape === undefined;
+    var __expect1 = false;
+  }
+  {
+    var __result2 = __device.printShape() !== __CUBE;
+    var __expect2 = false;
+  }
+  

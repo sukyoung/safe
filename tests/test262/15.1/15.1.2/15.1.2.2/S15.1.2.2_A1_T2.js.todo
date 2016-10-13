@@ -1,0 +1,24 @@
+  {
+    var __result1 = parseInt(- 1) !== parseInt("-1");
+    var __expect1 = false;
+  }
+  {
+    var __result2 = String(parseInt(Infinity)) !== "NaN";
+    var __expect2 = false;
+  }
+  {
+    var __result3 = String(parseInt(NaN)) !== "NaN";
+    var __expect3 = false;
+  }
+  if (parseInt(- 0) !== 0)
+  {
+    $ERROR('#4: parseInt(-0) === 0. Actual: ' + (parseInt(- 0)));
+  }
+  else
+  {
+    {
+      var __result4 = 1 / parseInt(- 0) !== Number.POSITIVE_INFINITY;
+      var __expect4 = false;
+    }
+  }
+  

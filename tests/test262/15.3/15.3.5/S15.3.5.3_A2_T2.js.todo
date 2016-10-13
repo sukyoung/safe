@@ -1,0 +1,15 @@
+  FACTORY = new Function;
+  FACTORY.prototype = undefined;
+  obj = {
+    
+  };
+  try
+{    obj instanceof FACTORY;
+    $FAIL('#1: O is not an object, throw a TypeError exception');}
+  catch (e)
+{    {
+      var __result1 = ! (e instanceof TypeError);
+      var __expect1 = false;
+    }}
+
+  

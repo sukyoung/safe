@@ -1,0 +1,31 @@
+  function testcase() 
+  {
+    var testResult = false;
+    function callbackfn(prevVal, curVal, idx, obj) 
+    {
+      if (idx === 1)
+      {
+        testResult = (typeof curVal === "undefined");
+      }
+    }
+    try
+{      Array.prototype[1] = 1;
+      var arr = [0, , 2, ];
+      Object.defineProperty(arr, "1", {
+        set : (function () 
+        {
+          
+        }),
+        configurable : true
+      });
+      arr.reduceRight(callbackfn, "initialValue");
+      return testResult;}
+    finally
+{      delete Array.prototype[1];}
+
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

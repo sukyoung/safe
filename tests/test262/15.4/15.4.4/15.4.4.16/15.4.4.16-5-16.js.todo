@@ -1,0 +1,16 @@
+  function testcase() 
+  {
+    var accessed = false;
+    var objRegExp = new RegExp();
+    function callbackfn(val, idx, obj) 
+    {
+      accessed = true;
+      return this === objRegExp;
+    }
+    return [11, ].every(callbackfn, objRegExp) && accessed;
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

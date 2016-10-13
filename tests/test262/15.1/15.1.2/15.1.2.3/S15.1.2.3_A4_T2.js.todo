@@ -1,0 +1,21 @@
+  {
+    var __result1 = parseFloat("1ex") !== 1;
+    var __expect1 = false;
+  }
+  {
+    var __result2 = parseFloat("1e-x") !== 1;
+    var __expect2 = false;
+  }
+  {
+    var __result3 = parseFloat("1e1x") !== 10;
+    var __expect3 = false;
+  }
+  {
+    var __result4 = parseFloat("1e-1x") !== 0.1;
+    var __expect4 = false;
+  }
+  {
+    var __result5 = parseFloat("0.1e-1x") !== 0.01;
+    var __expect5 = false;
+  }
+  

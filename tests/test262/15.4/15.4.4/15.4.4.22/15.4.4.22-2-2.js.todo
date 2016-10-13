@@ -1,0 +1,15 @@
+  function testcase() 
+  {
+    var accessed = false;
+    function callbackfn(prevVal, curVal, idx, obj) 
+    {
+      accessed = true;
+      return obj.length === 2;
+    }
+    return [12, 11, ].reduceRight(callbackfn, 11) && accessed;
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

@@ -1,0 +1,14 @@
+  {
+    var __result1 = eval.hasOwnProperty('length') !== true;
+    var __expect1 = false;
+  }
+  delete eval.length;
+  {
+    var __result2 = eval.hasOwnProperty('length') !== true;
+    var __expect2 = false;
+  }
+  {
+    var __result3 = eval.length === undefined;
+    var __expect3 = false;
+  }
+  

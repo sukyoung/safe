@@ -1,0 +1,11 @@
+  var body = "return true;";
+  try
+{    var f = new Function(null, body);
+    $FAIL('#1: If P is not parsable as a FormalParameterList_opt then throw a SyntaxError exception');}
+  catch (e)
+{    {
+      var __result1 = ! (e instanceof SyntaxError);
+      var __expect1 = false;
+    }}
+
+  

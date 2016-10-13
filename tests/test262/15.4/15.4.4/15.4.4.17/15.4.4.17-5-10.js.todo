@@ -1,0 +1,14 @@
+  function testcase() 
+  {
+    var objArray = [];
+    function callbackfn(val, idx, obj) 
+    {
+      return this === objArray;
+    }
+    return [11, ].some(callbackfn, objArray);
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

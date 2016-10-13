@@ -1,0 +1,13 @@
+  {
+    var __result1 = parseFloat("\u000A1.1") !== parseFloat("1.1");
+    var __expect1 = false;
+  }
+  {
+    var __result2 = parseFloat("\u000A\u000A-1.1") !== parseFloat("-1.1");
+    var __expect2 = false;
+  }
+  {
+    var __result3 = isNaN(parseFloat("\u000A")) !== true;
+    var __expect3 = false;
+  }
+  

@@ -1,0 +1,18 @@
+  var __obj = {
+    toString : (function () 
+    {
+      return /77/;
+    })
+  };
+  var __instance = new Object(1100.00777001);
+  Object.prototype.replace = String.prototype.replace;
+  try
+{    var x = __instance.replace(__obj, 1) === "1100.0017001";
+    $FAIL('#1.0: x = __instance.replace(__obj, 1) === "1100.0017001" lead to throwing exception');}
+  catch (e)
+{    {
+      var __result1 = ! (e instanceof TypeError);
+      var __expect1 = false;
+    }}
+
+  

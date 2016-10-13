@@ -1,0 +1,9 @@
+  {
+    var __result1 = parseInt("11", undefined) !== parseInt("11", 10);
+    var __expect1 = false;
+  }
+  {
+    var __result2 = parseInt("11", null) !== parseInt("11", 10);
+    var __expect2 = false;
+  }
+  

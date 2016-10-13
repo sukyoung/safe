@@ -1,0 +1,19 @@
+  function testcase() 
+  {
+    var o = {
+      
+    };
+    Object.defineProperty(o, "foo", {
+      get : (function () 
+      {
+      "use strict";
+        return this;
+      })
+    });
+    return o.foo === o;
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

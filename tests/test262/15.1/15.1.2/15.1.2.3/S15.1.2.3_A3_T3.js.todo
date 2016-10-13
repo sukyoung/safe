@@ -1,0 +1,33 @@
+  {
+    var __result1 = isNaN(parseFloat(".x")) !== true;
+    var __expect1 = false;
+  }
+  {
+    var __result2 = isNaN(parseFloat("+x")) !== true;
+    var __expect2 = false;
+  }
+  {
+    var __result3 = isNaN(parseFloat("infinity")) !== true;
+    var __expect3 = false;
+  }
+  {
+    var __result4 = isNaN(parseFloat("A")) !== true;
+    var __expect4 = false;
+  }
+  {
+    var __result5 = String(parseFloat(".s")) !== "NaN";
+    var __expect5 = false;
+  }
+  {
+    var __result6 = String(parseFloat("+x")) !== "NaN";
+    var __expect6 = false;
+  }
+  {
+    var __result7 = String(parseFloat("infinity")) !== "NaN";
+    var __expect7 = false;
+  }
+  {
+    var __result8 = String(parseFloat("A")) !== "NaN";
+    var __expect8 = false;
+  }
+  

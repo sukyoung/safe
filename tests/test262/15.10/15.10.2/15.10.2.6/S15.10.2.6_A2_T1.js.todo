@@ -1,0 +1,6 @@
+  __executed = /^m/.test("pairs\nmakes\tdouble");
+  {
+    var __result1 = __executed;
+    var __expect1 = false;
+  }
+  

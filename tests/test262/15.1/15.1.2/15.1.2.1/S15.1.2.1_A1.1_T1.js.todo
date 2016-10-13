@@ -1,0 +1,22 @@
+  var x = 1;
+  {
+    var __result1 = eval(x) !== x;
+    var __expect1 = false;
+  }
+  {
+    var __result2 = eval(1) !== 1;
+    var __expect2 = false;
+  }
+  {
+    var __result3 = eval(true) !== true;
+    var __expect3 = false;
+  }
+  {
+    var __result4 = eval(null) !== null;
+    var __expect4 = false;
+  }
+  {
+    var __result5 = eval(undefined) !== undefined;
+    var __expect5 = false;
+  }
+  

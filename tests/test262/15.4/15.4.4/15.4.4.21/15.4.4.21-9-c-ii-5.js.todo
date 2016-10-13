@@ -1,0 +1,29 @@
+  function testcase() 
+  {
+    var result = true;
+    var kIndex = [];
+    var called = 0;
+    function callbackfn(prevVal, curVal, idx, obj) 
+    {
+      called++;
+      if (typeof kIndex[idx] === "undefined")
+      {
+        if (idx !== 0 && typeof kIndex[idx - 1] === "undefined")
+        {
+          result = false;
+        }
+        kIndex[idx] = 1;
+      }
+      else
+      {
+        result = false;
+      }
+    }
+    [11, 12, 13, 14, ].reduce(callbackfn, 1);
+    return result && called === 4;
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

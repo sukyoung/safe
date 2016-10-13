@@ -1,0 +1,524 @@
+  var i0 = "";
+  for(var j = 0;j < 1024;j++)
+    i0 += String.fromCharCode(j);
+  var o0 = "\u0009\u000A\u000B\u000C\u000D\u0020\u00A0";
+  {
+    var __result1 = i0.replace(/\S+/g, "") !== o0;
+    var __expect1 = false;
+  }
+  var i1 = "";
+  for(var j = 1024;j < 2048;j++)
+    i1 += String.fromCharCode(j);
+  var o1 = "";
+  {
+    var __result2 = i1.replace(/\S+/g, "") !== o1;
+    var __expect2 = false;
+  }
+  var i2 = "";
+  for(var j = 2048;j < 3072;j++)
+    i2 += String.fromCharCode(j);
+  var o2 = "";
+  {
+    var __result3 = i2.replace(/\S+/g, "") !== o2;
+    var __expect3 = false;
+  }
+  var i3 = "";
+  for(var j = 3072;j < 4096;j++)
+    i3 += String.fromCharCode(j);
+  var o3 = "";
+  {
+    var __result4 = i3.replace(/\S+/g, "") !== o3;
+    var __expect4 = false;
+  }
+  var i4 = "";
+  for(var j = 4096;j < 5120;j++)
+    i4 += String.fromCharCode(j);
+  var o4 = "";
+  {
+    var __result5 = i4.replace(/\S+/g, "") !== o4;
+    var __expect5 = false;
+  }
+  var i5 = "";
+  for(var j = 5120;j < 6144;j++)
+    i5 += String.fromCharCode(j);
+  var o5 = "\u1680";
+  {
+    var __result6 = i5.replace(/\S+/g, "") !== o5;
+    var __expect6 = false;
+  }
+  var i6 = "";
+  for(var j = 6144;j < 7168;j++)
+    i6 += String.fromCharCode(j);
+  var o6 = "\u180E";
+  {
+    var __result7 = i6.replace(/\S+/g, "") !== o6;
+    var __expect7 = false;
+  }
+  var i7 = "";
+  for(var j = 7168;j < 8192;j++)
+    i7 += String.fromCharCode(j);
+  var o7 = "";
+  {
+    var __result8 = i7.replace(/\S+/g, "") !== o7;
+    var __expect8 = false;
+  }
+  var i8 = "";
+  for(var j = 8192;j < 9216;j++)
+    i8 += String.fromCharCode(j);
+  var o8 = "\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u2028\u2029\u202F\u205F";
+  {
+    var __result9 = i8.replace(/\S+/g, "") !== o8;
+    var __expect9 = false;
+  }
+  var i9 = "";
+  for(var j = 9216;j < 10240;j++)
+    i9 += String.fromCharCode(j);
+  var o9 = "";
+  {
+    var __result10 = i9.replace(/\S+/g, "") !== o9;
+    var __expect10 = false;
+  }
+  var i10 = "";
+  for(var j = 10240;j < 11264;j++)
+    i10 += String.fromCharCode(j);
+  var o10 = "";
+  {
+    var __result11 = i10.replace(/\S+/g, "") !== o10;
+    var __expect11 = false;
+  }
+  var i11 = "";
+  for(var j = 11264;j < 12288;j++)
+    i11 += String.fromCharCode(j);
+  var o11 = "";
+  {
+    var __result12 = i11.replace(/\S+/g, "") !== o11;
+    var __expect12 = false;
+  }
+  var i12 = "";
+  for(var j = 12288;j < 13312;j++)
+    i12 += String.fromCharCode(j);
+  var o12 = "\u3000";
+  {
+    var __result13 = i12.replace(/\S+/g, "") !== o12;
+    var __expect13 = false;
+  }
+  var i13 = "";
+  for(var j = 13312;j < 14336;j++)
+    i13 += String.fromCharCode(j);
+  var o13 = "";
+  {
+    var __result14 = i13.replace(/\S+/g, "") !== o13;
+    var __expect14 = false;
+  }
+  var i14 = "";
+  for(var j = 14336;j < 15360;j++)
+    i14 += String.fromCharCode(j);
+  var o14 = "";
+  {
+    var __result15 = i14.replace(/\S+/g, "") !== o14;
+    var __expect15 = false;
+  }
+  var i15 = "";
+  for(var j = 15360;j < 16384;j++)
+    i15 += String.fromCharCode(j);
+  var o15 = "";
+  {
+    var __result16 = i15.replace(/\S+/g, "") !== o15;
+    var __expect16 = false;
+  }
+  var i16 = "";
+  for(var j = 16384;j < 17408;j++)
+    i16 += String.fromCharCode(j);
+  var o16 = "";
+  {
+    var __result17 = i16.replace(/\S+/g, "") !== o16;
+    var __expect17 = false;
+  }
+  var i17 = "";
+  for(var j = 17408;j < 18432;j++)
+    i17 += String.fromCharCode(j);
+  var o17 = "";
+  {
+    var __result18 = i17.replace(/\S+/g, "") !== o17;
+    var __expect18 = false;
+  }
+  var i18 = "";
+  for(var j = 18432;j < 19456;j++)
+    i18 += String.fromCharCode(j);
+  var o18 = "";
+  {
+    var __result19 = i18.replace(/\S+/g, "") !== o18;
+    var __expect19 = false;
+  }
+  var i19 = "";
+  for(var j = 19456;j < 20480;j++)
+    i19 += String.fromCharCode(j);
+  var o19 = "";
+  {
+    var __result20 = i19.replace(/\S+/g, "") !== o19;
+    var __expect20 = false;
+  }
+  var i20 = "";
+  for(var j = 20480;j < 21504;j++)
+    i20 += String.fromCharCode(j);
+  var o20 = "";
+  {
+    var __result21 = i20.replace(/\S+/g, "") !== o20;
+    var __expect21 = false;
+  }
+  var i21 = "";
+  for(var j = 21504;j < 22528;j++)
+    i21 += String.fromCharCode(j);
+  var o21 = "";
+  {
+    var __result22 = i21.replace(/\S+/g, "") !== o21;
+    var __expect22 = false;
+  }
+  var i22 = "";
+  for(var j = 22528;j < 23552;j++)
+    i22 += String.fromCharCode(j);
+  var o22 = "";
+  {
+    var __result23 = i22.replace(/\S+/g, "") !== o22;
+    var __expect23 = false;
+  }
+  var i23 = "";
+  for(var j = 23552;j < 24576;j++)
+    i23 += String.fromCharCode(j);
+  var o23 = "";
+  {
+    var __result24 = i23.replace(/\S+/g, "") !== o23;
+    var __expect24 = false;
+  }
+  var i24 = "";
+  for(var j = 24576;j < 25600;j++)
+    i24 += String.fromCharCode(j);
+  var o24 = "";
+  {
+    var __result25 = i24.replace(/\S+/g, "") !== o24;
+    var __expect25 = false;
+  }
+  var i25 = "";
+  for(var j = 25600;j < 26624;j++)
+    i25 += String.fromCharCode(j);
+  var o25 = "";
+  {
+    var __result26 = i25.replace(/\S+/g, "") !== o25;
+    var __expect26 = false;
+  }
+  var i26 = "";
+  for(var j = 26624;j < 27648;j++)
+    i26 += String.fromCharCode(j);
+  var o26 = "";
+  {
+    var __result27 = i26.replace(/\S+/g, "") !== o26;
+    var __expect27 = false;
+  }
+  var i27 = "";
+  for(var j = 27648;j < 28672;j++)
+    i27 += String.fromCharCode(j);
+  var o27 = "";
+  {
+    var __result28 = i27.replace(/\S+/g, "") !== o27;
+    var __expect28 = false;
+  }
+  var i28 = "";
+  for(var j = 28672;j < 29696;j++)
+    i28 += String.fromCharCode(j);
+  var o28 = "";
+  {
+    var __result29 = i28.replace(/\S+/g, "") !== o28;
+    var __expect29 = false;
+  }
+  var i29 = "";
+  for(var j = 29696;j < 30720;j++)
+    i29 += String.fromCharCode(j);
+  var o29 = "";
+  {
+    var __result30 = i29.replace(/\S+/g, "") !== o29;
+    var __expect30 = false;
+  }
+  var i30 = "";
+  for(var j = 30720;j < 31744;j++)
+    i30 += String.fromCharCode(j);
+  var o30 = "";
+  {
+    var __result31 = i30.replace(/\S+/g, "") !== o30;
+    var __expect31 = false;
+  }
+  var i31 = "";
+  for(var j = 31744;j < 32768;j++)
+    i31 += String.fromCharCode(j);
+  var o31 = "";
+  {
+    var __result32 = i31.replace(/\S+/g, "") !== o31;
+    var __expect32 = false;
+  }
+  var i32 = "";
+  for(var j = 32768;j < 33792;j++)
+    i32 += String.fromCharCode(j);
+  var o32 = "";
+  {
+    var __result33 = i32.replace(/\S+/g, "") !== o32;
+    var __expect33 = false;
+  }
+  var i33 = "";
+  for(var j = 33792;j < 34816;j++)
+    i33 += String.fromCharCode(j);
+  var o33 = "";
+  {
+    var __result34 = i33.replace(/\S+/g, "") !== o33;
+    var __expect34 = false;
+  }
+  var i34 = "";
+  for(var j = 34816;j < 35840;j++)
+    i34 += String.fromCharCode(j);
+  var o34 = "";
+  {
+    var __result35 = i34.replace(/\S+/g, "") !== o34;
+    var __expect35 = false;
+  }
+  var i35 = "";
+  for(var j = 35840;j < 36864;j++)
+    i35 += String.fromCharCode(j);
+  var o35 = "";
+  {
+    var __result36 = i35.replace(/\S+/g, "") !== o35;
+    var __expect36 = false;
+  }
+  var i36 = "";
+  for(var j = 36864;j < 37888;j++)
+    i36 += String.fromCharCode(j);
+  var o36 = "";
+  {
+    var __result37 = i36.replace(/\S+/g, "") !== o36;
+    var __expect37 = false;
+  }
+  var i37 = "";
+  for(var j = 37888;j < 38912;j++)
+    i37 += String.fromCharCode(j);
+  var o37 = "";
+  {
+    var __result38 = i37.replace(/\S+/g, "") !== o37;
+    var __expect38 = false;
+  }
+  var i38 = "";
+  for(var j = 38912;j < 39936;j++)
+    i38 += String.fromCharCode(j);
+  var o38 = "";
+  {
+    var __result39 = i38.replace(/\S+/g, "") !== o38;
+    var __expect39 = false;
+  }
+  var i39 = "";
+  for(var j = 39936;j < 40960;j++)
+    i39 += String.fromCharCode(j);
+  var o39 = "";
+  {
+    var __result40 = i39.replace(/\S+/g, "") !== o39;
+    var __expect40 = false;
+  }
+  var i40 = "";
+  for(var j = 40960;j < 41984;j++)
+    i40 += String.fromCharCode(j);
+  var o40 = "";
+  {
+    var __result41 = i40.replace(/\S+/g, "") !== o40;
+    var __expect41 = false;
+  }
+  var i41 = "";
+  for(var j = 41984;j < 43008;j++)
+    i41 += String.fromCharCode(j);
+  var o41 = "";
+  {
+    var __result42 = i41.replace(/\S+/g, "") !== o41;
+    var __expect42 = false;
+  }
+  var i42 = "";
+  for(var j = 43008;j < 44032;j++)
+    i42 += String.fromCharCode(j);
+  var o42 = "";
+  {
+    var __result43 = i42.replace(/\S+/g, "") !== o42;
+    var __expect43 = false;
+  }
+  var i43 = "";
+  for(var j = 44032;j < 45056;j++)
+    i43 += String.fromCharCode(j);
+  var o43 = "";
+  {
+    var __result44 = i43.replace(/\S+/g, "") !== o43;
+    var __expect44 = false;
+  }
+  var i44 = "";
+  for(var j = 45056;j < 46080;j++)
+    i44 += String.fromCharCode(j);
+  var o44 = "";
+  {
+    var __result45 = i44.replace(/\S+/g, "") !== o44;
+    var __expect45 = false;
+  }
+  var i45 = "";
+  for(var j = 46080;j < 47104;j++)
+    i45 += String.fromCharCode(j);
+  var o45 = "";
+  {
+    var __result46 = i45.replace(/\S+/g, "") !== o45;
+    var __expect46 = false;
+  }
+  var i46 = "";
+  for(var j = 47104;j < 48128;j++)
+    i46 += String.fromCharCode(j);
+  var o46 = "";
+  {
+    var __result47 = i46.replace(/\S+/g, "") !== o46;
+    var __expect47 = false;
+  }
+  var i47 = "";
+  for(var j = 48128;j < 49152;j++)
+    i47 += String.fromCharCode(j);
+  var o47 = "";
+  {
+    var __result48 = i47.replace(/\S+/g, "") !== o47;
+    var __expect48 = false;
+  }
+  var i48 = "";
+  for(var j = 49152;j < 50176;j++)
+    i48 += String.fromCharCode(j);
+  var o48 = "";
+  {
+    var __result49 = i48.replace(/\S+/g, "") !== o48;
+    var __expect49 = false;
+  }
+  var i49 = "";
+  for(var j = 50176;j < 51200;j++)
+    i49 += String.fromCharCode(j);
+  var o49 = "";
+  {
+    var __result50 = i49.replace(/\S+/g, "") !== o49;
+    var __expect50 = false;
+  }
+  var i50 = "";
+  for(var j = 51200;j < 52224;j++)
+    i50 += String.fromCharCode(j);
+  var o50 = "";
+  {
+    var __result51 = i50.replace(/\S+/g, "") !== o50;
+    var __expect51 = false;
+  }
+  var i51 = "";
+  for(var j = 52224;j < 53248;j++)
+    i51 += String.fromCharCode(j);
+  var o51 = "";
+  {
+    var __result52 = i51.replace(/\S+/g, "") !== o51;
+    var __expect52 = false;
+  }
+  var i52 = "";
+  for(var j = 53248;j < 54272;j++)
+    i52 += String.fromCharCode(j);
+  var o52 = "";
+  {
+    var __result53 = i52.replace(/\S+/g, "") !== o52;
+    var __expect53 = false;
+  }
+  var i53 = "";
+  for(var j = 54272;j < 55296;j++)
+    i53 += String.fromCharCode(j);
+  var o53 = "";
+  {
+    var __result54 = i53.replace(/\S+/g, "") !== o53;
+    var __expect54 = false;
+  }
+  var i54 = "";
+  for(var j = 55296;j < 56320;j++)
+    i54 += String.fromCharCode(j);
+  var o54 = "";
+  {
+    var __result55 = i54.replace(/\S+/g, "") !== o54;
+    var __expect55 = false;
+  }
+  var i55 = "";
+  for(var j = 56320;j < 57344;j++)
+    i55 += String.fromCharCode(j);
+  var o55 = "";
+  {
+    var __result56 = i55.replace(/\S+/g, "") !== o55;
+    var __expect56 = false;
+  }
+  var i56 = "";
+  for(var j = 57344;j < 58368;j++)
+    i56 += String.fromCharCode(j);
+  var o56 = "";
+  {
+    var __result57 = i56.replace(/\S+/g, "") !== o56;
+    var __expect57 = false;
+  }
+  var i57 = "";
+  for(var j = 58368;j < 59392;j++)
+    i57 += String.fromCharCode(j);
+  var o57 = "";
+  {
+    var __result58 = i57.replace(/\S+/g, "") !== o57;
+    var __expect58 = false;
+  }
+  var i58 = "";
+  for(var j = 59392;j < 60416;j++)
+    i58 += String.fromCharCode(j);
+  var o58 = "";
+  {
+    var __result59 = i58.replace(/\S+/g, "") !== o58;
+    var __expect59 = false;
+  }
+  var i59 = "";
+  for(var j = 60416;j < 61440;j++)
+    i59 += String.fromCharCode(j);
+  var o59 = "";
+  {
+    var __result60 = i59.replace(/\S+/g, "") !== o59;
+    var __expect60 = false;
+  }
+  var i60 = "";
+  for(var j = 61440;j < 62464;j++)
+    i60 += String.fromCharCode(j);
+  var o60 = "";
+  {
+    var __result61 = i60.replace(/\S+/g, "") !== o60;
+    var __expect61 = false;
+  }
+  var i61 = "";
+  for(var j = 62464;j < 63488;j++)
+    i61 += String.fromCharCode(j);
+  var o61 = "";
+  {
+    var __result62 = i61.replace(/\S+/g, "") !== o61;
+    var __expect62 = false;
+  }
+  var i62 = "";
+  for(var j = 63488;j < 64512;j++)
+    i62 += String.fromCharCode(j);
+  var o62 = "";
+  {
+    var __result63 = i62.replace(/\S+/g, "") !== o62;
+    var __expect63 = false;
+  }
+  var i63 = "";
+  for(var j = 64512;j < 65536;j++)
+  {
+    if (j === 65279)
+    {
+      continue;
+    }
+    i63 += String.fromCharCode(j);
+  }
+  var o63 = "";
+  {
+    var __result64 = i63.replace(/\S+/g, "") !== o63;
+    var __expect64 = false;
+  }
+  var i64 = String.fromCharCode(65279);
+  {
+    var __result65 = i64.replace(/\S/g, "") === "";
+    var __expect65 = false;
+  }
+  

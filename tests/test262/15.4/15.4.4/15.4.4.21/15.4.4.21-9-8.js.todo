@@ -1,0 +1,30 @@
+  function testcase() 
+  {
+    var accessed = false;
+    var callbackAccessed = false;
+    function callbackfn() 
+    {
+      callbackAccessed = true;
+    }
+    var obj = {
+      length : 0
+    };
+    Object.defineProperty(obj, "0", {
+      get : (function () 
+      {
+        accessed = true;
+        return 10;
+      }),
+      configurable : true
+    });
+    Array.prototype.reduce.call(obj, (function () 
+    {
+      
+    }), "initialValue");
+    return ! accessed && ! callbackAccessed;
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

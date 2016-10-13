@@ -1,0 +1,23 @@
+  function testcase() 
+  {
+    function callbackfn1(val, idx, obj) 
+    {
+      return parseInt(val, 10) > 1;
+    }
+    function callbackfn2(val, idx, obj) 
+    {
+      return parseInt(val, 10) > 2;
+    }
+    var str = new String("432");
+    try
+{      String.prototype[3] = "1";
+      return Array.prototype.every.call(str, callbackfn1) && ! Array.prototype.every.call(str, callbackfn2);}
+    finally
+{      delete String.prototype[3];}
+
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

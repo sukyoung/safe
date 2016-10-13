@@ -1,0 +1,14 @@
+  var __matches = ["ab", "cd", ];
+  var __string = "123456abcde7890";
+  {
+    var __result1 = __string.match(/\D{2}/g).length !== 2;
+    var __expect1 = false;
+  }
+  for(var mi = 0;mi < __matches.length;mi++)
+  {
+    {
+      var __result2 = __string.match(/\D{2}/g)[mi] !== __matches[mi];
+      var __expect2 = false;
+    }
+  }
+  

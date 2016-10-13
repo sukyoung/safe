@@ -1,0 +1,10 @@
+"use strict";
+  var that = (function () 
+  {
+    return this;
+  })();
+  {
+    var __result1 = that !== undefined;
+    var __expect1 = false;
+  }
+  

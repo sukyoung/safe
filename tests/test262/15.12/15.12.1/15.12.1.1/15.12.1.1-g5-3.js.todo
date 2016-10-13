@@ -1,0 +1,13 @@
+  function testcase() 
+  {
+    try
+{      JSON.parse('"\\u0X50"');}
+    catch (e)
+{      return e.name === 'SyntaxError';}
+
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

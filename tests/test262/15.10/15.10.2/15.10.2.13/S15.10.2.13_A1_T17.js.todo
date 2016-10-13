@@ -1,0 +1,6 @@
+  __executed = /[]/.exec("a[b\n[]\tc]d");
+  {
+    var __result1 = __executed !== null;
+    var __expect1 = false;
+  }
+  

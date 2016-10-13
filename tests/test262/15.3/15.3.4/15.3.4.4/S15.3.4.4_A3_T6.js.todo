@@ -1,0 +1,18 @@
+  function FACTORY() 
+  {
+    (function () 
+    {
+      this.feat = "kamon beyba";
+    }).call(null);
+  }
+  ;
+  var obj = new FACTORY;
+  {
+    var __result1 = this["feat"] !== "kamon beyba";
+    var __expect1 = false;
+  }
+  {
+    var __result2 = typeof obj.feat !== "undefined";
+    var __expect2 = false;
+  }
+  

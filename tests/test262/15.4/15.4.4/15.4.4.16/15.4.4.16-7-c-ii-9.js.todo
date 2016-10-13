@@ -1,0 +1,15 @@
+  function testcase() 
+  {
+    var called = 0;
+    function callbackfn() 
+    {
+      called++;
+      return true;
+    }
+    return [11, 12, ].every(callbackfn) && 2 === called;
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

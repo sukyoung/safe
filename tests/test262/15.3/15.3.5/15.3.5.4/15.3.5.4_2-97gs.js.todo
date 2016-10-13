@@ -1,0 +1,12 @@
+  var gNonStrict = gNonStrictBindee.bind(null);
+  function f() 
+  {
+  "use strict";
+    return gNonStrict();
+  }
+  f();
+  function gNonStrictBindee() 
+  {
+    return gNonStrictBindee.caller || gNonStrictBindee.caller.throwTypeError;
+  }
+  

@@ -1,0 +1,13 @@
+  function testcase() 
+  {
+    function callbackfn() 
+    {
+      return arguments[2][arguments[1]] === arguments[0];
+    }
+    return [9, 12, ].some(callbackfn);
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

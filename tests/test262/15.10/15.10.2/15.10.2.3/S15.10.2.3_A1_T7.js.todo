@@ -1,0 +1,6 @@
+  __executed = /ab|cd|ef/.test("AEKFCD");
+  {
+    var __result1 = __executed;
+    var __expect1 = false;
+  }
+  

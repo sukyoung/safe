@@ -1,0 +1,11 @@
+  var body = "var 1=1;";
+  try
+{    var f = new Function(body);
+    $FAIL('#1: If body is not parsable as FunctionBody then throw a SyntaxError exception');}
+  catch (e)
+{    {
+      var __result1 = ! (e instanceof SyntaxError);
+      var __expect1 = false;
+    }}
+
+  

@@ -1,0 +1,31 @@
+  __executed = /[a-z]n/.exec((function () 
+  {
+    
+  })());
+  __expected = ["un", ];
+  __expected.index = 0;
+  __expected.input = "undefined";
+  {
+    var __result1 = (__executed instanceof Array) !== true;
+    var __expect1 = false;
+  }
+  {
+    var __result2 = __executed.length !== __expected.length;
+    var __expect2 = false;
+  }
+  {
+    var __result3 = __executed.index !== __expected.index;
+    var __expect3 = false;
+  }
+  {
+    var __result4 = __executed.input !== __expected.input;
+    var __expect4 = false;
+  }
+  for(var index = 0;index < __expected.length;index++)
+  {
+    {
+      var __result5 = __executed[index] !== __expected[index];
+      var __expect5 = false;
+    }
+  }
+  

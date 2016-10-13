@@ -1,0 +1,21 @@
+  function testcase() 
+  {
+    var accessed = false;
+    var str = new String("432");
+    function callbackfn(preVal, curVal, idx, obj) 
+    {
+      accessed = true;
+      return obj.length === 3;
+    }
+    try
+{      String.prototype[3] = "1";
+      return Array.prototype.reduceRight.call(str, callbackfn, 111) && accessed;}
+    finally
+{      delete String.prototype[3];}
+
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

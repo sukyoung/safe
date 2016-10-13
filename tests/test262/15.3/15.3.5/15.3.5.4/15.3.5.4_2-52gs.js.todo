@@ -1,0 +1,16 @@
+"use strict";
+  var o = {
+    
+  };
+  Object.defineProperty(o, "foo", {
+    get : (function () 
+    {
+      return gNonStrict();
+    })
+  });
+  o.foo;
+  function gNonStrict() 
+  {
+    return gNonStrict.caller;
+  }
+  

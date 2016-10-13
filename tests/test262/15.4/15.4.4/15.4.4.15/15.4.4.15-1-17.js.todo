@@ -1,0 +1,18 @@
+  function testcase() 
+  {
+    var targetObj = ["global", ];
+    try
+{      var oldLen = fnGlobalObject().length;
+      fnGlobalObject()[1] = targetObj;
+      fnGlobalObject().length = 3;
+      return 1 === Array.prototype.lastIndexOf.call(fnGlobalObject(), targetObj);}
+    finally
+{      delete fnGlobalObject()[1];
+      fnGlobalObject().length = oldLen;}
+
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

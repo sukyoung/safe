@@ -1,0 +1,14 @@
+  try
+{    $ERROR('#1.1: /[a-z]/.exec({toString:function(){throw "intostr"}}) throw "intostr". Actual: ' + (/[a-z]/.exec({
+      toString : (function () 
+      {
+        throw "intostr";
+      })
+    })));}
+  catch (e)
+{    {
+      var __result1 = e !== "intostr";
+      var __expect1 = false;
+    }}
+
+  

@@ -1,0 +1,11 @@
+  __FACTORY = RegExp.prototype.exec;
+  try
+{    __instance = new __FACTORY;
+    $ERROR('#1.1: __FACTORY = RegExp.prototype.exec throw TypeError. Actual: ' + (__instance));}
+  catch (e)
+{    {
+      var __result1 = (e instanceof TypeError) !== true;
+      var __expect1 = false;
+    }}
+
+  

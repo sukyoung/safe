@@ -1,0 +1,15 @@
+  function testcase() 
+  {
+    if (JSON.parse('\t1234') !== 1234)
+      return false;
+    try
+{      JSON.parse('12\t34');}
+    catch (e)
+{      return true;}
+
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

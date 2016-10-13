@@ -1,0 +1,6 @@
+"use strict";
+  if (this !== fnGlobalObject())
+  {
+    throw "'this' had incorrect value!";
+  }
+  

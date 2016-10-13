@@ -1,0 +1,15 @@
+  function testcase() 
+  {
+    function callbackfn(prevVal, curVal, idx, obj) 
+    {
+      
+    }
+    var arr = new Array(10);
+    if (arr.reduce(callbackfn, 5) === 5)
+      return true;
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

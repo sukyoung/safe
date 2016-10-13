@@ -1,0 +1,73 @@
+  {
+    var __result1 = parseInt("0X0", 0) !== parseInt("0", 16);
+    var __expect1 = false;
+  }
+  {
+    var __result2 = parseInt("0X1") !== parseInt("1", 16);
+    var __expect2 = false;
+  }
+  {
+    var __result3 = parseInt("0X2") !== parseInt("2", 16);
+    var __expect3 = false;
+  }
+  {
+    var __result4 = parseInt("0X3") !== parseInt("3", 16);
+    var __expect4 = false;
+  }
+  {
+    var __result5 = parseInt("0X4") !== parseInt("4", 16);
+    var __expect5 = false;
+  }
+  {
+    var __result6 = parseInt("0X5") !== parseInt("5", 16);
+    var __expect6 = false;
+  }
+  {
+    var __result7 = parseInt("0X6") !== parseInt("6", 16);
+    var __expect7 = false;
+  }
+  {
+    var __result8 = parseInt("0X7") !== parseInt("7", 16);
+    var __expect8 = false;
+  }
+  {
+    var __result9 = parseInt("0X8") !== parseInt("8", 16);
+    var __expect9 = false;
+  }
+  {
+    var __result10 = parseInt("0X9") !== parseInt("9", 16);
+    var __expect10 = false;
+  }
+  {
+    var __result11 = parseInt("0XA") !== parseInt("A", 16);
+    var __expect11 = false;
+  }
+  {
+    var __result12 = parseInt("0XB") !== parseInt("B", 16);
+    var __expect12 = false;
+  }
+  {
+    var __result13 = parseInt("0XC") !== parseInt("C", 16);
+    var __expect13 = false;
+  }
+  {
+    var __result14 = parseInt("0XD") !== parseInt("D", 16);
+    var __expect14 = false;
+  }
+  {
+    var __result15 = parseInt("0XE") !== parseInt("E", 16);
+    var __expect15 = false;
+  }
+  {
+    var __result16 = parseInt("0XF") !== parseInt("F", 16);
+    var __expect16 = false;
+  }
+  {
+    var __result17 = parseInt("0XE") !== parseInt("E", 16);
+    var __expect17 = false;
+  }
+  {
+    var __result18 = parseInt("0XABCDEF") !== parseInt("ABCDEF", 16);
+    var __expect18 = false;
+  }
+  

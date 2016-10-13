@@ -1,0 +1,18 @@
+  function testcase() 
+  {
+    var callCnt = 0;
+    function callbackfn(prevVal, curVal, idx, obj) 
+    {
+      callCnt++;
+      return curVal;
+    }
+    var arr = new Array(10);
+    arr[0] = arr[1] = undefined;
+    if (arr.reduce(callbackfn) === undefined && callCnt === 1)
+      return true;
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

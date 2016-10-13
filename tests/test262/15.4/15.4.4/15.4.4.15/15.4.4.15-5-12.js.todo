@@ -1,0 +1,11 @@
+  function testcase() 
+  {
+    var arr = [];
+    arr[Math.pow(2, 32) - 2] = null;
+    return arr.lastIndexOf(null, Infinity) === (Math.pow(2, 32) - 2);
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

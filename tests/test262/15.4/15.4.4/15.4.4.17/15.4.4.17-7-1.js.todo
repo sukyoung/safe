@@ -1,0 +1,19 @@
+  function testcase() 
+  {
+    var calledForThree = false;
+    function callbackfn(val, idx, obj) 
+    {
+      arr[2] = 3;
+      if (val !== 3)
+        calledForThree = true;
+      return false;
+    }
+    var arr = [1, 2, , 4, 5, ];
+    var val = arr.some(callbackfn);
+    return calledForThree;
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

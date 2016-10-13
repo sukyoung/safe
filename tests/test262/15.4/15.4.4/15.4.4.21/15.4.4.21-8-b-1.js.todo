@@ -1,0 +1,29 @@
+  function testcase() 
+  {
+    var accessed = false;
+    var obj = {
+      length : 0
+    };
+    Object.defineProperty(obj, "0", {
+      get : (function () 
+      {
+        accessed = true;
+        return 10;
+      }),
+      configurable : true
+    });
+    try
+{      Array.prototype.reduce.call(obj, (function () 
+      {
+        
+      }));
+      return false;}
+    catch (ex)
+{      return ! accessed;}
+
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

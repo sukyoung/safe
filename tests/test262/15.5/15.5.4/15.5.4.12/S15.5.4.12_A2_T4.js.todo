@@ -1,0 +1,7 @@
+  var bString = new String("one two three four five");
+  var regExp = /Four/;
+  {
+    var __result1 = bString.search(regExp) !== - 1;
+    var __expect1 = false;
+  }
+  

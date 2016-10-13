@@ -1,0 +1,26 @@
+  function testcase() 
+  {
+    var kValue = "abc";
+    function callbackfn(val, idx, obj) 
+    {
+      if (idx === 10)
+      {
+        return val === kValue;
+      }
+      return false;
+    }
+    var arr = [];
+    Object.defineProperty(arr, "10", {
+      get : (function () 
+      {
+        return kValue;
+      }),
+      configurable : true
+    });
+    return arr.some(callbackfn);
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

@@ -1,0 +1,12 @@
+  __re = /(z)((a+)?(b+)?(c))*/;
+  {
+    var __result1 = __re.test((function () 
+    {
+      return "zaacbbbcac";
+    })()) !== (__re.exec((function () 
+    {
+      return "zaacbbbcac";
+    })()) !== null);
+    var __expect1 = false;
+  }
+  

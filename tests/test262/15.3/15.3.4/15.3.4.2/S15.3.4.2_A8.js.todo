@@ -1,0 +1,14 @@
+  {
+    var __result1 = ! (Function.prototype.toString.hasOwnProperty('length'));
+    var __expect1 = false;
+  }
+  {
+    var __result2 = Function.prototype.toString.propertyIsEnumerable('length');
+    var __expect2 = false;
+  }
+  for (p in Function.prototype.toString)
+  {
+    if (p === "length")
+      $ERROR('#2: the Function.prototype.toString.length property has the attributes DontEnum');
+  }
+  

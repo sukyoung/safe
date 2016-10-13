@@ -1,0 +1,28 @@
+  var a = 1;
+  var __obj = {
+    a : 2,
+    __obj : {
+      a : 3
+    }
+  };
+  try
+{    with (__obj)
+    {
+      with (__obj)
+      {
+        var __func = (function () 
+        {
+          return a;
+        });
+        throw 5;
+      }
+    }}
+  catch (e)
+{    ;}
+
+  result = __func();
+  {
+    var __result1 = result !== 3;
+    var __expect1 = false;
+  }
+  

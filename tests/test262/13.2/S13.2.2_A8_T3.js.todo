@@ -1,0 +1,23 @@
+  var __FRST = "one";
+  var __SCND = "two";
+  var __func = (function (arg1, arg2) 
+  {
+    this.first = arg1;
+    var __gunc = Function.call(this, "arg", "return ++arg;");
+    __gunc.prop = arg2;
+    return __gunc;
+  });
+  var __instance = new __func(__FRST, __SCND);
+  {
+    var __result1 = __instance.first !== undefined;
+    var __expect1 = false;
+  }
+  {
+    var __result2 = __instance.prop !== __SCND;
+    var __expect2 = false;
+  }
+  {
+    var __result3 = __instance(1) !== 2;
+    var __expect3 = false;
+  }
+  

@@ -1,0 +1,23 @@
+  var a = 1;
+  var __obj = {
+    a : 2
+  };
+  with (__obj)
+  {
+    try
+{      var __func = (function () 
+      {
+        return a;
+      });
+      throw 3;}
+    catch (e)
+{      ;}
+
+  }
+  delete __obj;
+  result = __func();
+  {
+    var __result1 = result !== 2;
+    var __expect1 = false;
+  }
+  

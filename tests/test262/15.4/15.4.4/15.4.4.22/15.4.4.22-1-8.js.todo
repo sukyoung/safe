@@ -1,0 +1,16 @@
+  function testcase() 
+  {
+    var obj = new String("hello\nworld\\!");
+    var accessed = false;
+    function callbackfn(prevVal, curVal, idx, o) 
+    {
+      accessed = true;
+      return o instanceof String;
+    }
+    return Array.prototype.reduceRight.call(obj, callbackfn, "h") && accessed;
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

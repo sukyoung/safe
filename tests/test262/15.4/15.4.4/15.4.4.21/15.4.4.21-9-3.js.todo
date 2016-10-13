@@ -1,0 +1,17 @@
+  function testcase() 
+  {
+    function callbackfn(prevVal, curVal, idx, obj) 
+    {
+      delete arr[3];
+      delete arr[4];
+      return prevVal + curVal;
+    }
+    var arr = ['1', 2, 3, 4, 5, ];
+    if (arr.reduce(callbackfn) === "123")
+      return true;
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

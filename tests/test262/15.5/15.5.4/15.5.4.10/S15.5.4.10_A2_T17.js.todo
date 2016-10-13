@@ -1,0 +1,20 @@
+  var __re = /0./;
+  var __num = 10203040506070809000;
+  Number.prototype.match = String.prototype.match;
+  {
+    var __result1 = __num.match(__re)[0] !== "02";
+    var __expect1 = false;
+  }
+  {
+    var __result2 = __num.match(__re).length !== 1;
+    var __expect2 = false;
+  }
+  {
+    var __result3 = __num.match(__re).index !== 1;
+    var __expect3 = false;
+  }
+  {
+    var __result4 = __num.match(__re).input !== String(__num);
+    var __expect4 = false;
+  }
+  

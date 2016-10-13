@@ -1,0 +1,22 @@
+  function testcase() 
+  {
+    var accessed = false;
+    function callbackfn(prevVal, curVal, idx, obj) 
+    {
+      accessed = true;
+      return obj instanceof Number;
+    }
+    try
+{      Number.prototype[0] = 1;
+      Number.prototype.length = 1;
+      return Array.prototype.reduceRight.call(2.5, callbackfn, 1) && accessed;}
+    finally
+{      delete Number.prototype[0];
+      delete Number.prototype.length;}
+
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

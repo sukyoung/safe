@@ -1,0 +1,11 @@
+  var arr = /\0/.exec("\u0000");
+  {
+    var __result1 = (arr === null) || (arr[0] !== "\u0000");
+    var __expect1 = false;
+  }
+  var arr = (new RegExp("\\0")).exec("\u0000");
+  {
+    var __result2 = (arr === null) || (arr[0] !== "\u0000");
+    var __expect2 = false;
+  }
+  

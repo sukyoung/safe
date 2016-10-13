@@ -1,0 +1,17 @@
+  function testcase() 
+  {
+    function callbackfn(val, idx, obj) 
+    {
+      return obj instanceof Date;
+    }
+    var obj = new Date();
+    obj.length = 2;
+    obj[0] = 11;
+    obj[1] = 9;
+    return Array.prototype.some.call(obj, callbackfn);
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

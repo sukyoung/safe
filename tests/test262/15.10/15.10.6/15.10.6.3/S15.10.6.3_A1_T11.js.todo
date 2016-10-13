@@ -1,0 +1,7 @@
+  var __string = new Number(1.012);
+  __re = /2|12/;
+  {
+    var __result1 = __re.test(__string) !== (__re.exec(__string) !== null);
+    var __expect1 = false;
+  }
+  

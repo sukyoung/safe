@@ -1,0 +1,18 @@
+  function testcase() 
+  {
+    function callbackfn(val, idx, obj) 
+    {
+      return this.valueOf() === "hello!";
+    }
+    var obj = {
+      0 : 11,
+      1 : 9,
+      length : 2
+    };
+    return Array.prototype.some.call(obj, callbackfn, "hello!");
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

@@ -1,0 +1,15 @@
+  var myComparefn = (function (x, y) 
+  {
+    throw "error";
+  });
+  var x = [1, 0, ];
+  try
+{    x.sort(myComparefn);
+    $ERROR('#1.1: Array.sort should not eat exceptions');}
+  catch (e)
+{    {
+      var __result1 = e !== "error";
+      var __expect1 = false;
+    }}
+
+  

@@ -1,0 +1,16 @@
+  function testcase() 
+  {
+    var obj1 = {
+      
+    };
+    var obj2 = {
+      
+    };
+    var obj3 = obj2;
+    return [obj2, obj1, ].lastIndexOf(obj3) === 0;
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

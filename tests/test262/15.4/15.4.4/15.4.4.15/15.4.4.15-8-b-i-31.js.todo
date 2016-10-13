@@ -1,0 +1,33 @@
+  function testcase() 
+  {
+    var accessed = false;
+    var obj = {
+      length : 3
+    };
+    Object.defineProperty(obj, "2", {
+      get : (function () 
+      {
+        throw new TypeError();
+      }),
+      configurable : true
+    });
+    Object.defineProperty(obj, "1", {
+      get : (function () 
+      {
+        accessed = true;
+        return true;
+      }),
+      configurable : true
+    });
+    try
+{      Array.prototype.lastIndexOf.call(obj, true);
+      return false;}
+    catch (e)
+{      return (e instanceof TypeError) && ! accessed;}
+
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

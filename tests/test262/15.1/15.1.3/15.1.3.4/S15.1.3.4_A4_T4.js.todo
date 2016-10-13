@@ -1,0 +1,17 @@
+  {
+    var __result1 = encodeURIComponent("") !== "";
+    var __expect1 = false;
+  }
+  {
+    var __result2 = encodeURIComponent("http://unipro.ru") !== "http%3A%2F%2Funipro.ru";
+    var __expect2 = false;
+  }
+  {
+    var __result3 = encodeURIComponent("http://www.google.ru/support/jobs/bin/static.py?page=why-ru.html&sid=liveandwork") !== "http%3A%2F%2Fwww.google.ru%2Fsupport%2Fjobs%2Fbin%2Fstatic.py%3Fpage%3Dwhy-ru.html%26sid%3Dliveandwork";
+    var __expect3 = false;
+  }
+  {
+    var __result4 = encodeURIComponent("http://en.wikipedia.org/wiki/UTF-8#Description") !== "http%3A%2F%2Fen.wikipedia.org%2Fwiki%2FUTF-8%23Description";
+    var __expect4 = false;
+  }
+  

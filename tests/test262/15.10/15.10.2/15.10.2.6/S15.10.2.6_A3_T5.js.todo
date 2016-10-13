@@ -1,0 +1,6 @@
+  __executed = /so\b/.test("pilot\nsoviet robot\topenoffice");
+  {
+    var __result1 = __executed;
+    var __expect1 = false;
+  }
+  

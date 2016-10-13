@@ -1,0 +1,11 @@
+  function testcase() 
+  {
+  "use strict";
+    var my_eval = eval;
+    return my_eval("this") === fnGlobalObject();
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

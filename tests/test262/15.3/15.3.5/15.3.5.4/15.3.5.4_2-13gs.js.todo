@@ -1,0 +1,8 @@
+"use strict";
+  var my_eval = eval;
+  my_eval("gNonStrict();");
+  function gNonStrict() 
+  {
+    return gNonStrict.caller;
+  }
+  

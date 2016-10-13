@@ -1,0 +1,16 @@
+  var __obj = {
+    toString : (function () 
+    {
+      return "\u0041B";
+    })
+  };
+  var __str = "ABB\u0041BABAB";
+  with (__str)
+  {
+    {
+      var __result1 = match(__obj)[0] !== "AB";
+      var __expect1 = false;
+    }
+  }
+  var x;
+  

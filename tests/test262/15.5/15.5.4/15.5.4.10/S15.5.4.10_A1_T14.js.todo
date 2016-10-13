@@ -1,0 +1,6 @@
+  var __reg = new RegExp("77");
+  {
+    var __result1 = "ABB\u0041BABAB\u0037\u0037BBAA".match(__reg)[0] !== "77";
+    var __expect1 = false;
+  }
+  

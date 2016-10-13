@@ -1,0 +1,4 @@
+  Function.prototype.call.call(undefined, {
+    
+  });
+  

@@ -1,0 +1,13 @@
+  function testcase() 
+  {
+    function callbackfn() 
+    {
+      return arguments[0] === 100 && arguments[3][arguments[2]] === arguments[1];
+    }
+    return [11, ].reduceRight(callbackfn, 100) === true;
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

@@ -1,0 +1,15 @@
+  function f() 
+  {
+  "use strict";
+    return gNonStrict();
+  }
+  ;
+  var o = {
+    
+  };
+  f.bind(o)();
+  function gNonStrict() 
+  {
+    return gNonStrict.caller || gNonStrict.caller.throwTypeError;
+  }
+  

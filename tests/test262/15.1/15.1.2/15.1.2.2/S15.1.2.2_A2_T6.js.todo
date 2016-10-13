@@ -1,0 +1,13 @@
+  {
+    var __result1 = parseInt("\u000D1") !== parseInt("1");
+    var __expect1 = false;
+  }
+  {
+    var __result2 = parseInt("\u000D\u000D-1") !== parseInt("-1");
+    var __expect2 = false;
+  }
+  {
+    var __result3 = isNaN(parseInt("\u000D")) !== true;
+    var __expect3 = false;
+  }
+  

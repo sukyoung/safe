@@ -1,0 +1,10 @@
+  var x = JSON.parse('{"__proto__":[]}');
+  {
+    var __result1 = Object.getPrototypeOf(x) !== Object.prototype;
+    var __expect1 = false;
+  }
+  {
+    var __result2 = ! Array.isArray(x.__proto__);
+    var __expect2 = false;
+  }
+  

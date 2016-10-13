@@ -1,0 +1,9 @@
+  (function () 
+  {
+    this.field = "battle";
+  }).call(void 0);
+  {
+    var __result1 = this["field"] !== "battle";
+    var __expect1 = false;
+  }
+  

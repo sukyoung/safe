@@ -1,0 +1,9 @@
+  try
+{    $ERROR('#1.1: /[d-G\\c0001]/.exec("1") throw SyntaxError. Actual: ' + (new RegExp("[d-G\\c0001]").exec("1")));}
+  catch (e)
+{    {
+      var __result1 = (e instanceof SyntaxError) !== true;
+      var __expect1 = false;
+    }}
+
+  

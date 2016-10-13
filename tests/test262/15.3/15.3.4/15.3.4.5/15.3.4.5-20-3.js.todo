@@ -1,0 +1,21 @@
+  function testcase() 
+  {
+    function foo() 
+    {
+      
+    }
+    var obj = foo.bind({
+      
+    });
+    try
+{      obj.caller = 12;
+      return false;}
+    catch (ex)
+{      return (ex instanceof TypeError);}
+
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

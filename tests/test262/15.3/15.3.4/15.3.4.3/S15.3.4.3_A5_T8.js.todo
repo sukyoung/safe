@@ -1,0 +1,14 @@
+  var obj = (function () 
+  {
+    
+  });
+  (function () 
+  {
+    this.touched = true;
+    return this;
+  }).apply(obj);
+  {
+    var __result1 = ! (obj.touched);
+    var __expect1 = false;
+  }
+  

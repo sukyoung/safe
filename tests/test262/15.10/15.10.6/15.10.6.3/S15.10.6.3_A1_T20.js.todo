@@ -1,0 +1,7 @@
+  __re = /[a-f]d/;
+  {
+    var __result1 = __re.test(x) !== (__re.exec(x) !== null);
+    var __expect1 = false;
+  }
+  var x;
+  

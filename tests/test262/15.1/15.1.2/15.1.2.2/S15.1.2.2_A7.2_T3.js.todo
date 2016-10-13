@@ -1,0 +1,81 @@
+  {
+    var __result1 = parseInt("0x1", 16) !== 1;
+    var __expect1 = false;
+  }
+  {
+    var __result2 = parseInt("0X10", 16) !== 16;
+    var __expect2 = false;
+  }
+  {
+    var __result3 = parseInt("0x100", 16) !== 256;
+    var __expect3 = false;
+  }
+  {
+    var __result4 = parseInt("0X1000", 16) !== 4096;
+    var __expect4 = false;
+  }
+  {
+    var __result5 = parseInt("0x10000", 16) !== 65536;
+    var __expect5 = false;
+  }
+  {
+    var __result6 = parseInt("0X100000", 16) !== 1048576;
+    var __expect6 = false;
+  }
+  {
+    var __result7 = parseInt("0x1000000", 16) !== 16777216;
+    var __expect7 = false;
+  }
+  {
+    var __result8 = parseInt("0x10000000", 16) !== 268435456;
+    var __expect8 = false;
+  }
+  {
+    var __result9 = parseInt("0x100000000", 16) !== 4294967296;
+    var __expect9 = false;
+  }
+  {
+    var __result10 = parseInt("0x1000000000", 16) !== 68719476736;
+    var __expect10 = false;
+  }
+  {
+    var __result11 = parseInt("0x10000000000", 16) !== 1099511627776;
+    var __expect11 = false;
+  }
+  {
+    var __result12 = parseInt("0x100000000000", 16) !== 17592186044416;
+    var __expect12 = false;
+  }
+  {
+    var __result13 = parseInt("0x1000000000000", 16) !== 281474976710656;
+    var __expect13 = false;
+  }
+  {
+    var __result14 = parseInt("0x10000000000000", 16) !== 4503599627370496;
+    var __expect14 = false;
+  }
+  {
+    var __result15 = parseInt("0x100000000000000", 16) !== 72057594037927936;
+    var __expect15 = false;
+  }
+  {
+    var __result16 = parseInt("0x1000000000000000", 16) !== 1152921504606846976;
+    var __expect16 = false;
+  }
+  {
+    var __result17 = parseInt("0x10000000000000000", 16) !== 18446744073709551616;
+    var __expect17 = false;
+  }
+  {
+    var __result18 = parseInt("0x100000000000000000", 16) !== 295147905179352825856;
+    var __expect18 = false;
+  }
+  {
+    var __result19 = parseInt("0x1000000000000000000", 16) !== 4722366482869645213696;
+    var __expect19 = false;
+  }
+  {
+    var __result20 = parseInt("0x10000000000000000000", 16) !== 75557863725914323419136;
+    var __expect20 = false;
+  }
+  

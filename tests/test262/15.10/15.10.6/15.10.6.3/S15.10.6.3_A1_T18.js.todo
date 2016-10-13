@@ -1,0 +1,6 @@
+  __re = /nd|ne/;
+  {
+    var __result1 = __re.test(undefined) !== (__re.exec(undefined) !== null);
+    var __expect1 = false;
+  }
+  

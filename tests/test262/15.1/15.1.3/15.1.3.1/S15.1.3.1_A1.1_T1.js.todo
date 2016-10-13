@@ -1,0 +1,42 @@
+  var result = true;
+  try
+{    decodeURI("%");
+    result = false;}
+  catch (e)
+{    if ((e instanceof URIError) !== true)
+    {
+      result = false;
+    }}
+
+  try
+{    decodeURI("%A");
+    result = false;}
+  catch (e)
+{    if ((e instanceof URIError) !== true)
+    {
+      result = false;
+    }}
+
+  try
+{    decodeURI("%1");
+    result = false;}
+  catch (e)
+{    if ((e instanceof URIError) !== true)
+    {
+      result = false;
+    }}
+
+  try
+{    decodeURI("% ");
+    result = false;}
+  catch (e)
+{    if ((e instanceof URIError) !== true)
+    {
+      result = false;
+    }}
+
+  {
+    var __result1 = result !== true;
+    var __expect1 = false;
+  }
+  

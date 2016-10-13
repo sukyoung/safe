@@ -1,0 +1,37 @@
+  var x = [];
+  x.length = true;
+  {
+    var __result1 = x.length !== 1;
+    var __expect1 = false;
+  }
+  x = [0, ];
+  x.length = null;
+  {
+    var __result2 = x.length !== 0;
+    var __expect2 = false;
+  }
+  x = [0, ];
+  x.length = new Boolean(false);
+  {
+    var __result3 = x.length !== 0;
+    var __expect3 = false;
+  }
+  x = [];
+  x.length = new Number(1);
+  {
+    var __result4 = x.length !== 1;
+    var __expect4 = false;
+  }
+  x = [];
+  x.length = "1";
+  {
+    var __result5 = x.length !== 1;
+    var __expect5 = false;
+  }
+  x = [];
+  x.length = new String("1");
+  {
+    var __result6 = x.length !== 1;
+    var __expect6 = false;
+  }
+  

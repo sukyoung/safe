@@ -1,0 +1,5 @@
+  {
+    var __result1 = encodeURI("#") !== "#";
+    var __expect1 = false;
+  }
+  

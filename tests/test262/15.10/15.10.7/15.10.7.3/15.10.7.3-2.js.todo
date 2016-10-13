@@ -1,0 +1,13 @@
+  function testcase() 
+  {
+    var d = Object.getOwnPropertyDescriptor(RegExp.prototype, 'ignoreCase');
+    if (d.writable === false && d.enumerable === false && d.configurable === false)
+    {
+      return true;
+    }
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

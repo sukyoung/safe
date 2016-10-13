@@ -1,0 +1,11 @@
+  var __instance = new Boolean;
+  __instance.replace = String.prototype.replace;
+  {
+    var __result1 = __instance.replace((function () 
+    {
+      return false;
+    })(), x) !== "undefined";
+    var __expect1 = false;
+  }
+  var x;
+  

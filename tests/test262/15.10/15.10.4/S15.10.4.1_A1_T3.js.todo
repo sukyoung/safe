@@ -1,0 +1,19 @@
+  __pattern = /[a-b]/g;
+  __re = new RegExp(__pattern, void 0);
+  {
+    var __result1 = __re.source !== __pattern.source;
+    var __expect1 = false;
+  }
+  {
+    var __result2 = __re.multiline !== __pattern.multiline;
+    var __expect2 = false;
+  }
+  {
+    var __result3 = __re.global !== __pattern.global;
+    var __expect3 = false;
+  }
+  {
+    var __result4 = __re.ignoreCase !== __pattern.ignoreCase;
+    var __expect4 = false;
+  }
+  

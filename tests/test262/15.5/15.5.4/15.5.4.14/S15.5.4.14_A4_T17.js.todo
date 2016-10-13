@@ -1,0 +1,20 @@
+  var __string = new String("hello");
+  var __re = new RegExp;
+  var __split = __string.split(__re, undefined);
+  var __expected = ["h", "e", "l", "l", "o", ];
+  {
+    var __result1 = __split.constructor !== Array;
+    var __expect1 = false;
+  }
+  {
+    var __result2 = __split.length !== __expected.length;
+    var __expect2 = false;
+  }
+  for(var index = 0;index < __expected.length;index++)
+  {
+    {
+      var __result3 = __split[index] !== __expected[index];
+      var __expect3 = false;
+    }
+  }
+  

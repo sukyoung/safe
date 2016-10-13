@@ -1,0 +1,49 @@
+  __re = /(?:ab|cd)\d?/g;
+  __executed = __re.exec("aacd2233ab12nm444ab42");
+  __expected = ["cd2", ];
+  __expected.index = 2;
+  __expected.input = "aacd2233ab12nm444ab42";
+  {
+    var __result1 = __executed.length !== __expected.length;
+    var __expect1 = false;
+  }
+  {
+    var __result2 = __executed.index !== __expected.index;
+    var __expect2 = false;
+  }
+  {
+    var __result3 = __executed.input !== __expected.input;
+    var __expect3 = false;
+  }
+  for(var index = 0;index < __expected.length;index++)
+  {
+    {
+      var __result4 = __executed[index] !== __expected[index];
+      var __expect4 = false;
+    }
+  }
+  __re.lastIndex = Math.NaN;
+  __executed = __re.exec("aacd2233ab12nm444ab42");
+  __expected = ["cd2", ];
+  __expected.index = 2;
+  __expected.input = "aacd2233ab12nm444ab42";
+  {
+    var __result5 = __executed.length !== __expected.length;
+    var __expect5 = false;
+  }
+  {
+    var __result6 = __executed.index !== __expected.index;
+    var __expect6 = false;
+  }
+  {
+    var __result7 = __executed.input !== __expected.input;
+    var __expect7 = false;
+  }
+  for(var index = 0;index < __expected.length;index++)
+  {
+    {
+      var __result8 = __executed[index] !== __expected[index];
+      var __expect8 = false;
+    }
+  }
+  

@@ -1,0 +1,22 @@
+  function testcase() 
+  {
+    var accessed = false;
+    function callbackfn(val, idx, obj) 
+    {
+      accessed = true;
+      return obj instanceof Boolean;
+    }
+    try
+{      Boolean.prototype[0] = 1;
+      Boolean.prototype.length = 1;
+      return Array.prototype.every.call(false, callbackfn) && accessed;}
+    finally
+{      delete Boolean.prototype[0];
+      delete Boolean.prototype.length;}
+
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

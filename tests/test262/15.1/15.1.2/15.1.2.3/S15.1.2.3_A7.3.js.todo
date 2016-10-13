@@ -1,0 +1,7 @@
+  var x = parseFloat.length;
+  parseFloat.length = Infinity;
+  {
+    var __result1 = parseFloat.length !== x;
+    var __expect1 = false;
+  }
+  

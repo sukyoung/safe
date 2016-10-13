@@ -1,0 +1,15 @@
+  {
+    var __result1 = Function.propertyIsEnumerable('prototype');
+    var __expect1 = false;
+  }
+  var count = 0;
+  for (p in Function)
+  {
+    if (p === "prototype")
+      count++;
+  }
+  {
+    var __result2 = count !== 0;
+    var __expect2 = false;
+  }
+  

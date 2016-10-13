@@ -1,0 +1,18 @@
+  var __string = new String("one-1 two-2 three-3");
+  var __split = __string.split('');
+  {
+    var __result1 = __split.constructor !== Array;
+    var __expect1 = false;
+  }
+  {
+    var __result2 = __split.length !== __string.length;
+    var __expect2 = false;
+  }
+  for(var i = 0;i < __string.length;i++)
+  {
+    {
+      var __result3 = __split[i] !== __string.charAt(i);
+      var __expect3 = false;
+    }
+  }
+  

@@ -1,0 +1,9 @@
+  {
+    var __result1 = parseInt("11", new String("2")) !== parseInt("11", 2);
+    var __expect1 = false;
+  }
+  {
+    var __result2 = parseInt("11", new String("Infinity")) !== parseInt("11", Infinity);
+    var __expect2 = false;
+  }
+  

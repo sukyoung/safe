@@ -1,0 +1,14 @@
+  function testcase() 
+  {
+    function callbackfn(val, idx, obj) 
+    {
+      return ! (obj instanceof String);
+    }
+    var obj = new String("hello\nworld\\!");
+    return ! Array.prototype.every.call(obj, callbackfn);
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

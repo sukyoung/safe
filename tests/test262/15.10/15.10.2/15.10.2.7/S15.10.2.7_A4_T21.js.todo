@@ -1,0 +1,6 @@
+  __executed = /[xyz]*1/.test('a0.b2.c3');
+  {
+    var __result1 = __executed;
+    var __expect1 = false;
+  }
+  

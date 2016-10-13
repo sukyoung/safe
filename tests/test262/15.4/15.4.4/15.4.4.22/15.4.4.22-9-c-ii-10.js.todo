@@ -1,0 +1,15 @@
+  function testcase() 
+  {
+    var called = 0;
+    function callbackfn(prevVal) 
+    {
+      called++;
+      return prevVal;
+    }
+    return [11, 12, ].reduceRight(callbackfn, 100) === 100 && 2 === called;
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

@@ -1,0 +1,14 @@
+  function testcase() 
+  {
+    var targetObj = new String("123abc123");
+    var obj = {
+      0 : targetObj,
+      length : "123abc123"
+    };
+    return Array.prototype.lastIndexOf.call(obj, targetObj) === - 1;
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

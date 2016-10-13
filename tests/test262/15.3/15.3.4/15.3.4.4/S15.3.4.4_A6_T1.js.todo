@@ -1,0 +1,17 @@
+  (function (a1, a2, a3) 
+  {
+    this.shifted = a1;
+  }).call(null, [1, ]);
+  {
+    var __result1 = this["shifted"].constructor !== Array;
+    var __expect1 = false;
+  }
+  {
+    var __result2 = this["shifted"].length !== 1;
+    var __expect2 = false;
+  }
+  {
+    var __result3 = this["shifted"][0] !== 1;
+    var __expect3 = false;
+  }
+  

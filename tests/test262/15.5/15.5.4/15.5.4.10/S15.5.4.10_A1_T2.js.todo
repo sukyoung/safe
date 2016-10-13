@@ -1,0 +1,10 @@
+  var __instance = new Boolean;
+  __instance.match = String.prototype.match;
+  {
+    var __result1 = __instance.match((function () 
+    {
+      return false;
+    })())[0] !== "false";
+    var __expect1 = false;
+  }
+  

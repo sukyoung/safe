@@ -1,0 +1,9 @@
+  function testcase() 
+  {
+    return JSON.parse('"\\u0058"') === 'X';
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

@@ -1,0 +1,40 @@
+  function testcase() 
+  {
+    function callbackfn(val, idx, obj) 
+    {
+      return val === 9 && idx === 1;
+    }
+    var preIterVisible = false;
+    var obj = {
+      length : 2
+    };
+    Object.defineProperty(obj, "0", {
+      get : (function () 
+      {
+        preIterVisible = true;
+        return 11;
+      }),
+      configurable : true
+    });
+    Object.defineProperty(obj, "1", {
+      get : (function () 
+      {
+        if (preIterVisible)
+        {
+          return 9;
+        }
+        else
+        {
+          return 13;
+        }
+      }),
+      configurable : true
+    });
+    var newArr = Array.prototype.filter.call(obj, callbackfn);
+    return newArr.length === 1 && newArr[0] === 9;
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

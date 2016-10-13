@@ -1,0 +1,14 @@
+  function testcase() 
+  {
+  "use strict";
+    function fun() 
+    {
+      return (this instanceof Number);
+    }
+    return ! fun.call(- 12);
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

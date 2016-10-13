@@ -1,0 +1,26 @@
+  function testcase() 
+  {
+    var accessed = false;
+    function callbackfn(val, idx, obj) 
+    {
+      accessed = true;
+      return val > 10;
+    }
+    var obj = {
+      0 : 9,
+      1 : 8
+    };
+    Object.defineProperty(obj, "length", {
+      set : (function () 
+      {
+        
+      }),
+      configurable : true
+    });
+    return Array.prototype.every.call(obj, callbackfn) && ! accessed;
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

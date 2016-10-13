@@ -1,0 +1,14 @@
+  function testcase() 
+  {
+    try
+{      [].length = 4294967297;}
+    catch (e)
+{      if (e instanceof RangeError)
+        return true;}
+
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

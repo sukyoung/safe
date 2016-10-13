@@ -1,0 +1,12 @@
+  function testcase() 
+  {
+    var obj = new RegExp("afdasf");
+    obj.length = 100;
+    obj[1] = "afdasf";
+    return Array.prototype.lastIndexOf.call(obj, "afdasf") === 1;
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

@@ -1,0 +1,14 @@
+  {
+    var __result1 = isFinite.hasOwnProperty('length') !== true;
+    var __expect1 = false;
+  }
+  delete isFinite.length;
+  {
+    var __result2 = isFinite.hasOwnProperty('length') !== true;
+    var __expect2 = false;
+  }
+  {
+    var __result3 = isFinite.length === undefined;
+    var __expect3 = false;
+  }
+  

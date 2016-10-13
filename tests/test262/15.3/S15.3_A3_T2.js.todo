@@ -1,0 +1,13 @@
+  this.color = "red";
+  var name = "mars";
+  var f = Function.call("blablastring", "return this.color;");
+  {
+    var __result1 = f() !== "red";
+    var __expect1 = false;
+  }
+  var g = Function.call(null, "return this.name;");
+  {
+    var __result2 = g() !== "mars";
+    var __expect2 = false;
+  }
+  

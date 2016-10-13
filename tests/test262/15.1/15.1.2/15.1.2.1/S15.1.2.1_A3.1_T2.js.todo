@@ -1,0 +1,13 @@
+  var x = {
+    
+  };
+  var y;
+  {
+    var __result1 = y = x !== x;
+    var __expect1 = false;
+  }
+  {
+    var __result2 = x !== x;
+    var __expect2 = false;
+  }
+  

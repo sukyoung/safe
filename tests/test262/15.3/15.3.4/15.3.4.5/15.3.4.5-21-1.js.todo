@@ -1,0 +1,16 @@
+  function testcase() 
+  {
+    function foo() 
+    {
+      
+    }
+    var obj = foo.bind({
+      
+    });
+    return obj.hasOwnProperty("arguments");
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

@@ -1,0 +1,17 @@
+  FAKEFACTORY = (function () 
+  {
+    
+  });
+  fakeinstance = {
+    
+  };
+  {
+    var __result1 = fakeinstance instanceof FAKEFACTORY;
+    var __expect1 = false;
+  }
+  FAKEFACTORY.prototype = Object.prototype;
+  {
+    var __result2 = ! (fakeinstance instanceof FAKEFACTORY);
+    var __expect2 = false;
+  }
+  

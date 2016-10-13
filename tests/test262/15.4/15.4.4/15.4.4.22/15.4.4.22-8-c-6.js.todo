@@ -1,0 +1,34 @@
+  function testcase() 
+  {
+    var obj = {
+      
+    };
+    var accessed = false;
+    Object.defineProperty(obj, "length", {
+      get : (function () 
+      {
+        return {
+          toString : (function () 
+          {
+            accessed = true;
+            return "2";
+          })
+        };
+      }),
+      configurable : true
+    });
+    try
+{      Array.prototype.reduceRight.call(obj, (function () 
+      {
+        
+      }));
+      return false;}
+    catch (ex)
+{      return (ex instanceof TypeError) && accessed;}
+
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

@@ -1,0 +1,11 @@
+  function testcase() 
+  {
+    var a = [];
+    a.length = 4294967295;
+    return a.length === 4294967295;
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

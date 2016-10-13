@@ -1,0 +1,14 @@
+  function testcase() 
+  {
+    var objRegExp = new RegExp();
+    function callbackfn(val, idx, obj) 
+    {
+      return this === objRegExp;
+    }
+    return [11, ].some(callbackfn, objRegExp);
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

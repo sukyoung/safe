@@ -1,0 +1,15 @@
+  function testcase() 
+  {
+    function f() 
+    {
+    "use strict";
+      return this === undefined;
+    }
+    ;
+    return f.call(undefined);
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

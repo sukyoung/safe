@@ -1,0 +1,65 @@
+  {
+    var __result1 = parseFloat("0x0") !== 0;
+    var __expect1 = false;
+  }
+  {
+    var __result2 = parseFloat("0x1") !== 0;
+    var __expect2 = false;
+  }
+  {
+    var __result3 = parseFloat("0x2") !== 0;
+    var __expect3 = false;
+  }
+  {
+    var __result4 = parseFloat("0x3") !== 0;
+    var __expect4 = false;
+  }
+  {
+    var __result5 = parseFloat("0x4") !== 0;
+    var __expect5 = false;
+  }
+  {
+    var __result6 = parseFloat("0x5") !== 0;
+    var __expect6 = false;
+  }
+  {
+    var __result7 = parseFloat("0x6") !== 0;
+    var __expect7 = false;
+  }
+  {
+    var __result8 = parseFloat("0x7") !== 0;
+    var __expect8 = false;
+  }
+  {
+    var __result9 = parseFloat("0x8") !== 0;
+    var __expect9 = false;
+  }
+  {
+    var __result10 = parseFloat("0x9") !== 0;
+    var __expect10 = false;
+  }
+  {
+    var __result11 = parseFloat("0xA") !== 0;
+    var __expect11 = false;
+  }
+  {
+    var __result12 = parseFloat("0xB") !== 0;
+    var __expect12 = false;
+  }
+  {
+    var __result13 = parseFloat("0xC") !== 0;
+    var __expect13 = false;
+  }
+  {
+    var __result14 = parseFloat("0xD") !== 0;
+    var __expect14 = false;
+  }
+  {
+    var __result15 = parseFloat("0xE") !== 0;
+    var __expect15 = false;
+  }
+  {
+    var __result16 = parseFloat("0xF") !== 0;
+    var __expect16 = false;
+  }
+  

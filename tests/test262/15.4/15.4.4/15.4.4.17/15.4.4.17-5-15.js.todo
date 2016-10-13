@@ -1,0 +1,14 @@
+  function testcase() 
+  {
+    var objDate = new Date();
+    function callbackfn(val, idx, obj) 
+    {
+      return this === objDate;
+    }
+    return [11, ].some(callbackfn, objDate);
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

@@ -1,0 +1,14 @@
+  var __matches = ["12", "34", "56", "78", "90", ];
+  var __string = "123456abcde7890";
+  {
+    var __result1 = __string.match(/\d{2}/g).length !== 5;
+    var __expect1 = false;
+  }
+  for(var mi = 0;mi < __matches.length;mi++)
+  {
+    {
+      var __result2 = __string.match(/\d{2}/g)[mi] !== __matches[mi];
+      var __expect2 = false;
+    }
+  }
+  

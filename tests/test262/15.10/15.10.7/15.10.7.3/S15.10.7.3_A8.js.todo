@@ -1,0 +1,20 @@
+  __re = new RegExp("[|||||||]", "");
+  {
+    var __result1 = __re.hasOwnProperty('ignoreCase') !== true;
+    var __expect1 = false;
+  }
+  {
+    var __result2 = __re.propertyIsEnumerable('ignoreCase') !== false;
+    var __expect2 = false;
+  }
+  count = 0;
+  for (p in __re)
+  {
+    if (p === "ignoreCase")
+      count++;
+  }
+  {
+    var __result3 = count !== 0;
+    var __expect3 = false;
+  }
+  

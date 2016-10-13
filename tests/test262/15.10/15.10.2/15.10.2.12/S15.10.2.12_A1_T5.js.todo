@@ -1,0 +1,17 @@
+  var non_s = "0123456789_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ~`!@#$%^&*()-+={[}]|\\:;'<,>./?" + '"';
+  {
+    var __result1 = /\s/.exec(non_s) !== null;
+    var __expect1 = false;
+  }
+  var non_S = '\f\n\r\t\v ';
+  var regexp_s = /\s/g;
+  var k = 0;
+  while (regexp_s.exec(non_S) !== null)
+  {
+    k++;
+  }
+  {
+    var __result2 = non_S.length !== k;
+    var __expect2 = false;
+  }
+  

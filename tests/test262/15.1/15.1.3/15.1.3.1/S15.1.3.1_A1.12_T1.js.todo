@@ -1,0 +1,22 @@
+  var result = true;
+  var interval = [[0x0, 0x29, ], [0x40, 0x40, ], [0x47, 0x60, ], [0x67, 0xffff, ], ];
+  for(var indexI = 0;indexI < interval.length;indexI++)
+  {
+    for(var indexJ = interval[indexI][0];indexJ <= interval[indexI][1];indexJ++)
+    {
+      try
+{        decodeURI("%F0%" + String.fromCharCode(indexJ, indexJ) + "%A0%A0");
+        result = false;}
+      catch (e)
+{        if ((e instanceof URIError) !== true)
+        {
+          result = false;
+        }}
+
+    }
+  }
+  {
+    var __result1 = result !== true;
+    var __expect1 = false;
+  }
+  

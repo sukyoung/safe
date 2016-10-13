@@ -1,0 +1,15 @@
+  function testcase() 
+  {
+    var result = false;
+    function callbackfn() 
+    {
+      result = (arguments[0] === 1 && arguments[3][arguments[2]] === arguments[1]);
+    }
+    [11, ].reduce(callbackfn, 1);
+    return result;
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

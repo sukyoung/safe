@@ -1,0 +1,14 @@
+  function testcase() 
+  {
+    try
+{      var regExpObj = new RegExp('abc', 'gim');
+      return true;}
+    catch (e)
+{      return false;}
+
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

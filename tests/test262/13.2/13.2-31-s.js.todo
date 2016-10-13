@@ -1,0 +1,14 @@
+  function testcase() 
+  {
+    return ! Object.getOwnPropertyDescriptor((function () 
+    {
+    "use strict";
+      
+    }), 
+    "caller").configurable;
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

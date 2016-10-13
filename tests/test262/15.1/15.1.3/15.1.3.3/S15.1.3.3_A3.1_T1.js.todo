@@ -1,0 +1,10 @@
+  uriReserved = [";", "/", "?", ":", "@", "&", "=", "+", "$", ",", ];
+  for (indexC = 0;indexC < uriReserved.length;indexC++)
+  {
+    var str = uriReserved[indexC];
+    {
+      var __result1 = encodeURI(str) !== str;
+      var __expect1 = false;
+    }
+  }
+  

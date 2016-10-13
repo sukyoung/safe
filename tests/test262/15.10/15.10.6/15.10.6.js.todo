@@ -1,0 +1,10 @@
+  function testcase() 
+  {
+    var s = Object.prototype.toString.call(RegExp.prototype);
+    return s === '[object RegExp]';
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

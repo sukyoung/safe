@@ -1,0 +1,17 @@
+  __instance.exec = RegExp.prototype.exec;
+  try
+{    with (__instance)
+      exec("message to investigate");
+    $ERROR('#1.1: __instance.exec = RegExp.prototype.exec; with(__instance) exec("message to investigate"); function __instance(){}');}
+  catch (e)
+{    {
+      var __result1 = (e instanceof TypeError) !== true;
+      var __expect1 = false;
+    }}
+
+  function __instance() 
+  {
+    
+  }
+  ;
+  

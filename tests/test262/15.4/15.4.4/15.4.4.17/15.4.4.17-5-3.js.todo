@@ -1,0 +1,18 @@
+  function testcase() 
+  {
+    var res = false;
+    var a = new Array();
+    a.res = true;
+    function callbackfn(val, idx, obj) 
+    {
+      return this.res;
+    }
+    var arr = [1, ];
+    if (arr.some(callbackfn, a) === true)
+      return true;
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

@@ -1,0 +1,21 @@
+  var arr = /\s/.exec("\u000A");
+  {
+    var __result1 = (arr === null) || (arr[0] !== "\u000A");
+    var __expect1 = false;
+  }
+  var arr = /\s/.exec("\u000D");
+  {
+    var __result2 = (arr === null) || (arr[0] !== "\u000D");
+    var __expect2 = false;
+  }
+  var arr = /\s/.exec("\u2028");
+  {
+    var __result3 = (arr === null) || (arr[0] !== "\u2028");
+    var __expect3 = false;
+  }
+  var arr = /\s/.exec("\u2029");
+  {
+    var __result4 = (arr === null) || (arr[0] !== "\u2029");
+    var __expect4 = false;
+  }
+  

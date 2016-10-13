@@ -1,0 +1,10 @@
+  try
+{    new parseFloat();
+    $ERROR('#1.1: new parseFloat() throw TypeError. Actual: ' + (new parseFloat()));}
+  catch (e)
+{    {
+      var __result1 = (e instanceof TypeError) !== true;
+      var __expect1 = false;
+    }}
+
+  

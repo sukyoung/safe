@@ -1,0 +1,12 @@
+  __re = /a|b|c/;
+  {
+    var __result1 = __re.hasOwnProperty('ignoreCase') !== true;
+    var __expect1 = false;
+  }
+  __obj = __re.ignoreCase;
+  __re.ignoreCase = "shifted";
+  {
+    var __result2 = __re.ignoreCase !== __obj;
+    var __expect2 = false;
+  }
+  

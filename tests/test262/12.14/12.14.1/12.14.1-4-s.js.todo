@@ -1,0 +1,15 @@
+  function testcase() 
+  {
+  "use strict";
+    try
+{      throw new Error("...");
+      return false;}
+    catch (EVAL)
+{      return EVAL instanceof Error;}
+
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

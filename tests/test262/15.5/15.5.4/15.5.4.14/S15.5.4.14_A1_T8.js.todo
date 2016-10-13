@@ -1,0 +1,24 @@
+  var __obj = {
+    toString : (function () 
+    {
+      
+    })
+  };
+  var __split = String(__obj).split(void 0);
+  {
+    var __result1 = typeof __split !== "object";
+    var __expect1 = false;
+  }
+  {
+    var __result2 = __split.constructor !== Array;
+    var __expect2 = false;
+  }
+  {
+    var __result3 = __split.length !== 1;
+    var __expect3 = false;
+  }
+  {
+    var __result4 = __split[0] !== "undefined";
+    var __expect4 = false;
+  }
+  

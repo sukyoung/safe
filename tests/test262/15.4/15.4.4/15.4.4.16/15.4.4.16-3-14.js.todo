@@ -1,0 +1,27 @@
+  function testcase() 
+  {
+    var accessed = false;
+    function callbackfn(val, idx, obj) 
+    {
+      accessed = true;
+      return val > 10;
+    }
+    var objOne = {
+      0 : 9,
+      length : "Infinity"
+    };
+    var objTwo = {
+      0 : 9,
+      length : "+Infinity"
+    };
+    var objThree = {
+      0 : 9,
+      length : "-Infinity"
+    };
+    return Array.prototype.every.call(objOne, callbackfn) && Array.prototype.every.call(objTwo, callbackfn) && Array.prototype.every.call(objThree, callbackfn) && ! accessed;
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

@@ -1,0 +1,134 @@
+  var object = {
+    valueOf : (function () 
+    {
+      return "%5E";
+    })
+  };
+  {
+    var __result1 = decodeURIComponent(object) !== "[object Object]";
+    var __expect1 = false;
+  }
+  var object = {
+    valueOf : (function () 
+    {
+      return "";
+    }),
+    toString : (function () 
+    {
+      return "%5E";
+    })
+  };
+  {
+    var __result2 = decodeURIComponent(object) !== "^";
+    var __expect2 = false;
+  }
+  var object = {
+    valueOf : (function () 
+    {
+      return "%5E";
+    }),
+    toString : (function () 
+    {
+      return {
+        
+      };
+    })
+  };
+  {
+    var __result3 = decodeURIComponent(object) !== "^";
+    var __expect3 = false;
+  }
+  try
+{    var object = {
+      valueOf : (function () 
+      {
+        throw "error";
+      }),
+      toString : (function () 
+      {
+        return "%5E";
+      })
+    };
+    {
+      var __result4 = decodeURIComponent(object) !== "^";
+      var __expect4 = false;
+    }}
+  catch (e)
+{    if (e === "error")
+    {
+      $ERROR('#4.2: var object = {valueOf: function() {throw "error"}, toString: function() {return "%5E"}}; decodeURIComponent(object) not throw "error"');
+    }
+    else
+    {
+      $ERROR('#4.3: var object = {valueOf: function() {throw "error"}, toString: function() {return "%5E"}}; decodeURIComponent(object) not throw Error. Actual: ' + (e));
+    }}
+
+  var object = {
+    toString : (function () 
+    {
+      return "%5E";
+    })
+  };
+  {
+    var __result5 = decodeURIComponent(object) !== "^";
+    var __expect5 = false;
+  }
+  var object = {
+    valueOf : (function () 
+    {
+      return {
+        
+      };
+    }),
+    toString : (function () 
+    {
+      return "%5E";
+    })
+  };
+  {
+    var __result6 = decodeURIComponent(object) !== "^";
+    var __expect6 = false;
+  }
+  try
+{    var object = {
+      valueOf : (function () 
+      {
+        return "%5E";
+      }),
+      toString : (function () 
+      {
+        throw "error";
+      })
+    };
+    decodeURIComponent(object);
+    $ERROR('#7.1: var object = {valueOf: function() {return "%5E"}, toString: function() {throw "error"}}; decodeURIComponent(object) throw "error". Actual: ' + (decodeURIComponent(object)));}
+  catch (e)
+{    {
+      var __result7 = e !== "error";
+      var __expect7 = false;
+    }}
+
+  try
+{    var object = {
+      valueOf : (function () 
+      {
+        return {
+          
+        };
+      }),
+      toString : (function () 
+      {
+        return {
+          
+        };
+      })
+    };
+    decodeURIComponent(object);
+    $ERROR('#8.1: var object = {valueOf: function() {return {}}, toString: function() {return {}}}; decodeURIComponent(object) throw TypeError. Actual: ' + (decodeURIComponent(object)));}
+  catch (e)
+{    {
+      var __result8 = (e instanceof TypeError) !== true;
+      var __expect8 = false;
+    }}
+
+  

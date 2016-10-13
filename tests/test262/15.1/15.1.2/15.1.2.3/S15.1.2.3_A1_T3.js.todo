@@ -1,0 +1,17 @@
+  {
+    var __result1 = ! (isNaN(parseFloat(undefined)) && isNaN(parseFloat("NaN")));
+    var __expect1 = false;
+  }
+  {
+    var __result2 = ! (isNaN(parseFloat(null)) && isNaN(parseFloat("NaN")));
+    var __expect2 = false;
+  }
+  {
+    var __result3 = String(parseFloat(undefined)) !== "NaN";
+    var __expect3 = false;
+  }
+  {
+    var __result4 = String(parseFloat(null)) !== "NaN";
+    var __expect4 = false;
+  }
+  

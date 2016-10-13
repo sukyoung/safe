@@ -1,0 +1,17 @@
+  {
+    var __result1 = this.propertyIsEnumerable('encodeURI') !== false;
+    var __expect1 = false;
+  }
+  result = true;
+  for (p in this)
+  {
+    if (p === "encodeURI")
+    {
+      result = false;
+    }
+  }
+  {
+    var __result2 = result !== true;
+    var __expect2 = false;
+  }
+  
