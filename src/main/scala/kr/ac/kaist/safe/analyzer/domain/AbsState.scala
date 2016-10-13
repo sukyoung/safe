@@ -179,27 +179,29 @@ object DefaultState extends AbsStateUtil {
         case PureLocalVar =>
           val env = context.pureLocal
           val envRec = env.record.decEnvRec
-          val (newEnv, _) = envRec
+          val (newEnvRec, _) = envRec
             .CreateMutableBinding(x).fold(envRec)((e: AbsDecEnvRec) => e)
             .SetMutableBinding(x, value)
-          Dom(heap, context.subsPureLocal(env.copyWith(record = newEnv)))
+          Dom(heap, context.subsPureLocal(env.copyWith(record = newEnvRec)))
         case CapturedVar =>
           val bind = AbsBinding(value)
           val newCtx = context.pureLocal.outer.foldLeft(AbsContext.Bot)((tmpCtx, loc) => {
-            val env = context.getOrElse(loc, AbsLexEnv.Bot).record.decEnvRec
-            val (newEnv, _) = env
-              .CreateMutableBinding(x).fold(env)((e: AbsDecEnvRec) => e)
+            val env = context.getOrElse(loc, AbsLexEnv.Bot)
+            val envRec = env.record.decEnvRec
+            val (newEnvRec, _) = envRec
+              .CreateMutableBinding(x).fold(envRec)((e: AbsDecEnvRec) => e)
               .SetMutableBinding(x, value)
-            tmpCtx + context.update(loc, AbsLexEnv(newEnv))
+            tmpCtx + context.update(loc, env.copyWith(record = newEnvRec))
           })
           Dom(heap, newCtx)
         case CapturedCatchVar =>
           val collapsedLoc = PredefLoc.COLLAPSED
-          val env = context.getOrElse(collapsedLoc, AbsLexEnv.Bot).record.decEnvRec
-          val (newEnv, _) = env
-            .CreateMutableBinding(x).fold(env)((e: AbsDecEnvRec) => e)
+          val env = context.getOrElse(collapsedLoc, AbsLexEnv.Bot)
+          val envRec = env.record.decEnvRec
+          val (newEnvRec, _) = envRec
+            .CreateMutableBinding(x).fold(envRec)((e: AbsDecEnvRec) => e)
             .SetMutableBinding(x, value)
-          Dom(heap, context.update(collapsedLoc, AbsLexEnv(newEnv)))
+          Dom(heap, context.update(collapsedLoc, env.copyWith(record = newEnvRec)))
         case GlobalVar =>
           val globalLoc = BuiltinGlobal.loc
           val objV = AbsDataProp(value, AbsBool.True, AbsBool.True, AbsBool.False)
