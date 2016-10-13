@@ -70,7 +70,6 @@ object Safe {
     CmdCompile,
     CmdCFGBuild,
     CmdAnalyze,
-    CmdDynamicTest,
     CmdTestRewrite,
     CmdHelp
   )
@@ -85,7 +84,6 @@ object Safe {
     Compile,
     CFGBuild,
     Analyze,
-    DynamicTest,
     TestRewrite,
     Help
   )
@@ -110,12 +108,12 @@ object Safe {
       .append("  example: safe analyze -silent -cfgBuilder:out=out test.js").append(LINE_SEP)
       .append(LINE_SEP)
       .append("* command list:").append(LINE_SEP)
-      .append("    Each command consists of following phases.").append(LINE_SEP)
+      .append("    Each command consists of the following phases.").append(LINE_SEP)
       .append("    format: {command} {phase} [>> {phase}]*").append(LINE_SEP).append(LINE_SEP)
     commands foreach (cmd => s.append(s"    %-${INDENT}s".format(cmd.name)).append(cmd).append(LINE_SEP))
     s.append(LINE_SEP)
       .append("* phase list:").append(LINE_SEP)
-      .append("    Each phase has following options.").append(LINE_SEP)
+      .append("    Each phase has the following options.").append(LINE_SEP)
       .append("    format: {phase} [-{phase}:{option}[={input}]]*").append(LINE_SEP).append(LINE_SEP)
     phases foreach (phase => {
       s.append(s"    %-${INDENT}s".format(phase.name))
@@ -125,7 +123,7 @@ object Safe {
       s.append(LINE_SEP)
     })
     s.append(LINE_SEP)
-      .append("* global option:")
+      .append("* global options:")
       .append(options.map { case (opt, kind, _) => s"-${opt}${kind.postfix}" }
         .mkString(" " * 3, LINE_SEP + prefix, LINE_SEP))
     s.toString

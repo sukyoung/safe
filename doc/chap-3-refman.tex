@@ -17,7 +17,7 @@ For example, the following command analyzes JavaScript code stored in a file nam
 from the \verb!astRewriter! phase but printing the result of the \verb!cfgBuilder!
 phase into a file name ``{out}'':
 \begin{verbatim}
-safe analyze -astRewriter:silent
+safe analyze -silent
              -cfgBuilder:out=out sample.js
 \end{verbatim}
 
@@ -33,6 +33,7 @@ Each command has its own available options.  The most common options are as foll
 % \item[\doption{-{phase}:out={out}}]: \\
 %   \safe writes the result of the phase to a file name \verb!out!.
 \end{itemize}
+and the global options are \verb!-silent! and \verb!-testMode!.
 
 The currently supported commands and their options are as follows:
 \begin{itemize}
