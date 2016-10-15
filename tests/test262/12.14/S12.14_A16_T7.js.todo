@@ -1,5 +1,0 @@
-// Syntax error
-// try{}
-// catch(){
-
-

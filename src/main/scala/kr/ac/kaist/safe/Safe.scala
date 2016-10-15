@@ -33,7 +33,6 @@ object Safe {
       // SafeException: print the usage message.
       case ex: SafeException =>
         Console.err.println(ex.getMessage)
-        println(usage)
       // Unexpected: print the stack trace.
       case ex =>
         Console.err.println("* Unexpected error occurred.")
@@ -43,6 +42,7 @@ object Safe {
   }
 
   def apply[Result](
+    command: CommandObj[Result],
     runner: SafeConfig => Try[Result],
     config: SafeConfig
   ): Try[Result] = {
@@ -52,8 +52,13 @@ object Safe {
     // execute the command.
     val result: Try[Result] = runner(config)
 
-    // print the time spent if the time option is set.
     if (!config.silent) {
+      result.map(res => {
+        // display the result.
+        command.display(res)
+      })
+
+      // display the time.
       val duration = System.currentTimeMillis - startTime
       val name = config.command.name
       println(s"The command '$name' took $duration ms.")

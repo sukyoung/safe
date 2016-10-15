@@ -21,6 +21,7 @@ import scala.collection.immutable.HashSet
 import kr.ac.kaist.safe.analyzer.models.builtin.BuiltinGlobal
 import kr.ac.kaist.safe.analyzer.CallContext
 import kr.ac.kaist.safe.analyzer.domain._
+import kr.ac.kaist.safe.errors.error.ParserError
 import kr.ac.kaist.safe.nodes.ast.Program
 import kr.ac.kaist.safe.nodes.ir.IRRoot
 import kr.ac.kaist.safe.nodes.cfg.CFG
@@ -112,6 +113,7 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
   abstract class AnalysisResult
   case object Precise extends AnalysisResult
   case object Imprecise extends AnalysisResult
+  case object ParseError extends AnalysisResult
   case object Fail extends AnalysisResult
   def analyzeTest(analysis: Try[(CFG, Int, CallContext)]): (AnalysisResult, Int) = {
     analysis match {
@@ -183,7 +185,14 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
     } else if (filename.endsWith(".js.todo")) {
       todoList ::= relPath
     } else if (filename.endsWith(".js.err")) {
-      // TODO
+      registerTest(prefix + filename, tag) {
+        val safeConfig = getSafeConfig(name)
+        testList ::= relPath
+        CmdParse(List("-silent", name), testMode = true) match {
+          case Failure(ParserError(_, _)) => preciseList ::= relPath
+          case e => assert(false)
+        }
+      }
     }
   }
 
@@ -244,11 +253,12 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
     pw.println("# SUMMARY")
     pw.println("#######################")
     pw.println("# TOTAL : " + (testList.length + todo.length))
-    pw.println("# FAIL : " + fail.length)
-    pw.println("# PRECISE : " + pre.length)
-    pw.println("# IMPRECISE : " + impre.length)
+    pw.println("# TEST : " + testList.length)
+    pw.println("# - FAIL : " + fail.length)
+    pw.println("# - PRECISE : " + pre.length)
+    pw.println("# - IMPRECISE : " + impre.length)
+    pw.println("# - TOTAL ITERATION: " + totalIteration.toString)
     pw.println("# TODO : " + todo.length)
-    pw.println("# TOTAL ITERATION: " + totalIteration.toString)
     pw.println("#######################")
     pw.println()
     pw.println("FAIL: " + fail.length)
