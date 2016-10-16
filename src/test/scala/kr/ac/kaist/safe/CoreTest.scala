@@ -34,6 +34,7 @@ object CompileTest extends Tag("CompileTest")
 object CFGBuildTest extends Tag("CFGBuildTest")
 object AnalyzeTest extends Tag("AnalyzeTest")
 object Test262Test extends Tag("Test262Test")
+object BenchTest extends Tag("BenchTest")
 
 class CoreTest extends FlatSpec with BeforeAndAfterAll {
   val SEP = File.separator
@@ -114,10 +115,15 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
   case object Precise extends AnalysisResult
   case object Imprecise extends AnalysisResult
   case object ParseError extends AnalysisResult
+  case object Benchmark extends AnalysisResult
   case object Fail extends AnalysisResult
-  def analyzeTest(analysis: Try[(CFG, Int, CallContext)]): (AnalysisResult, Int) = {
+  def analyzeTest(analysis: Try[(CFG, Int, CallContext)], tag: Tag): (AnalysisResult, Int) = {
     analysis match {
       case Failure(_) => (assertWrap(false), 0)
+      case Success((cfg, iter, globalCallCtx)) if tag == BenchTest =>
+        val normalSt = cfg.globalFunc.exit.getState(globalCallCtx)
+        assert(!normalSt.heap.isBottom)
+        (Benchmark, iter)
       case Success((cfg, iter, globalCallCtx)) =>
         val normalSt = cfg.globalFunc.exit.getState(globalCallCtx)
         val excSt = cfg.globalFunc.exitExc.getState(globalCallCtx)
@@ -174,16 +180,19 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
         val cfg = getCFG(name)
         val analysis = cfg.flatMap(Analyze(_, safeConfig, analyzeConfig))
         testList ::= relPath
-        val (ar, iter) = analyzeTest(analysis)
+        val (ar, iter) = analyzeTest(analysis, tag)
         totalIteration += iter
         ar match {
           case Precise => preciseList ::= relPath
           case Imprecise => impreciseList ::= relPath
+          case Benchmark => // Not yet decided what to do
           case Fail => // unreachable
         }
       }
     } else if (filename.endsWith(".js.todo")) {
       todoList ::= relPath
+    } else if (filename.endsWith(".js.slow")) {
+      slowList ::= relPath
     } else if (filename.endsWith(".js.err")) {
       registerTest(prefix + filename, tag) {
         val safeConfig = getSafeConfig(name)
@@ -229,6 +238,7 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
   var preciseList = List[String]()
   var impreciseList = List[String]()
   var todoList = List[String]()
+  var slowList = List[String]()
   var totalIteration = 0
   val analysisDeatil = BASE_DIR + SEP + "tests" + SEP + "analysis-detail"
 
@@ -241,6 +251,10 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
   for (file <- shuffle(walkTree(new File(test262TestDir))))
     analyzeHelper("[Test262]", Test262Test, file)
 
+  val benchTestDir = testDir + "benchmarks"
+  for (file <- shuffle(walkTree(new File(benchTestDir))))
+    analyzeHelper("[Benchmarks]", BenchTest, file)
+
   override def afterAll(): Unit = {
     val file = new File(analysisDeatil)
     val bw = new BufferedWriter(new FileWriter(file))
@@ -248,17 +262,19 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
     val pre = preciseList.sorted
     val impre = impreciseList.sorted
     val todo = todoList.sorted
+    val slow = slowList.sorted
     val fail = (testList.toSet -- pre.toSet -- impre.toSet).toList.sorted
     pw.println("#######################")
     pw.println("# SUMMARY")
     pw.println("#######################")
-    pw.println("# TOTAL : " + (testList.length + todo.length))
+    pw.println("# TOTAL : " + (testList.length + todo.length + slow.length))
     pw.println("# TEST : " + testList.length)
     pw.println("# - FAIL : " + fail.length)
     pw.println("# - PRECISE : " + pre.length)
     pw.println("# - IMPRECISE : " + impre.length)
     pw.println("# - TOTAL ITERATION: " + totalIteration.toString)
     pw.println("# TODO : " + todo.length)
+    pw.println("# SLOW : " + slow.length)
     pw.println("#######################")
     pw.println()
     pw.println("FAIL: " + fail.length)
@@ -272,6 +288,8 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
     pw.println()
     pw.println("TODO: " + todo.length)
     todo.foreach(fn => pw.println(fn))
+    pw.println("SLOW: " + slow.length)
+    slow.foreach(fn => pw.println(fn))
     pw.close()
   }
 }
