@@ -104,11 +104,20 @@ object Parser {
   ): Try[(T, ExcLog)] = {
     doit(parser) match {
       case (result: ParseError) =>
-        val span = Span() // TODO more exact span info
-        Failure(ParserError(result.msg, Span()))
+        val span = decodeSpan(parser.format(result))
+        Failure(ParserError(result.msg, span))
       case (semV: SemanticValue) => Try((semV.value.asInstanceOf[T], parser.excLog))
       case _ => Failure(new Error()) // TODO more exact error type
     }
+  }
+
+  // xtc.parser.ParserBase
+  // public final String format(ParseError error) throws IOException
+  private def decodeSpan(formatted: String): Span = {
+    val array = formatted.split(":")
+    val (file, line, column) = (array(0), array(1).toInt, array(2).toInt)
+    val loc = new SourceLoc(line, column, 0)
+    new Span(file, loc, loc)
   }
 
   private def fileToStmts(f: String): Try[(SourceElements, ExcLog)] = {
