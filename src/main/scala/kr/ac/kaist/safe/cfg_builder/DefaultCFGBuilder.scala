@@ -147,9 +147,8 @@ class DefaultCFGBuilder(
       // TODO: reorder to make argumentsName to the top
       val argumentsName: String = id2cfgId(params(1)).toString
       val nameStr: String = name.originalName
-      val bodyStr: String = functional.ast.body
 
-      val newFunc: CFGFunction = cfg.createFunction(argumentsName, argVars, localVars, nameStr, functional, bodyStr, true)
+      val newFunc: CFGFunction = cfg.createFunction(argumentsName, argVars, localVars, nameStr, functional, true)
       val oldFunc: CFGFunction = currentFunc
       currentFunc = newFunc
 

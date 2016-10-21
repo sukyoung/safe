@@ -1,133 +1,124 @@
 \chapter{CFG}
-\[
-\begin{array}{rllll}
-cfg & \in & \SF{CFG} & = & \SF{CFGFunction} \\
-f,\ \langle \mathbb{N},\ \hookrightarrow,\ \mathbb{C} \rangle & \in & \SF{CFGFunction} & = & \powerset{\SF{CFGNode}} \times \powerset{\SF{CFGEdge}} \times \powerset{\SF{CFGCallTriple}} \\
-& & \SF{CFGNode} & = & \SF{Entry} \mid \SF{Exit} \mid \SF{ExitExc} \mid \SF{Call} \mid \SF{AfterCall} \mid \SF{AfterCatch} \mid \SF{Block} \\
-& & \SF{Block} & = & \SF{Instruction}^+ \\
-& & \SF{CFGEdge} & = & \SF{CFGNode} \times \SF{CFGNode} \\
-& & \SF{CFGCallTriple} & = & \SF{Call} \times \SF{AfterCall} \times \SF{AfterCatch}\\
-\end{array}
-\]
 
-\section{Syntax of $\SF{Instruction}$}
 
+\section{Syntax of $\CFG$}
 \[
-\begin{array}{r@{~~}r@{~~}lll}
-i \in \Instruction & ::= & 
-x~\verb+:=+~\TT{alloc}\verb+(+ e^{?} \verb+)+
-& \mbox{\tt\inblue CFGAlloc}
+\begin{array}{r@{~~}r@{~~}l@{}ll}
+cfg \in \CFG & = & \powerset{\CFGFunction} & \\
+f,\ \langle B,\ \hookrightarrow,\ C \rangle \in \CFGFunction & = & \powerset{\CFGBlock} \times \powerset{\CFGEdge} \times \powerset{\CFGCallTriple} & \\
+b \in \CFGBlock & = & \multicolumn{2}{@{}l}{\Entry \mid \Exit \mid \ExitExc \mid \Call \mid \AfterCall \mid \AfterCatch \mid \NormalBlock \mid \ModelBlock} \\
+\NormalBlock & = & \CFGInst^+ & \\
+\CFGEdge & = & \CFGBlock \times \CFGBlock \times \EdgeType & \\
+\EdgeType & = & \EdgeNormal \mid \EdgeExc & \\
+\CFGCallTriple & = & \Call \times \AfterCall \times \AfterCatch & \\
+
+i \in \CFGInst & = & \CFGNormalInst \mid \CFGCallInst &
 \\
 
-& \mid & x~\verb+:=+~\TT{allocArray}\verb+(+n\verb+)+
- & \mbox{\tt\inblue CFGAllocArray}
+\CFGNormalInst & ::= &
+x~\verb+:=+~\TT{alloc}\verb+(+ e^{?} \verb+)+ @ a
+& \SF{CFGAlloc}
 \\
 
-& \mid & x~\verb+:=+~\TT{allocArg}\verb+(+n\verb+)+
- & \mbox{\tt\inblue CFGAllocArg}
+& \mid & x~\verb+:=+~\TT{allocArray}\verb+(+n\verb+)+ @ a
+ & \SF{CFGAllocArray}
+\\
+
+& \mid & x~\verb+:=+~\TT{allocArg}\verb+(+n\verb+)+ @ a
+ & \SF{CFGAllocArg}
+\\
+
+& \mid & x~\verb+:=+~\TT{enterCode}\verb+(+e\verb+)+
+ & \SF{CFGEnterCode}
 \\
 
 & \mid & x ~\verb+:=+~ e
- & \mbox{\tt\inblue CFGExprStmt}
+ & \SF{CFGExprStmt}
 \\
 
 & \mid & x ~\verb+:=+~ \TT{delete}\verb+(+e\verb+)+
- & \mbox{\tt\inblue CFGDelete}
+ & \SF{CFGDelete}
 \\
 
 & \mid & x ~\verb+:=+~ \TT{delete}\verb+(+e_1,e_2\verb+)+
- & \mbox{\tt\inblue CFGDeleteProp}
+ & \SF{CFGDeleteProp}
 \\
 
-& \mid & e\verb+[+e\verb+]+ ~\verb+:=+~ e 
- & \mbox{\tt\inblue CFGStore}
+& \mid & e_1\verb+[+e_2\verb+]+ ~\verb+:=+~ e_3
+ & \SF{CFGStore}
 \\
 
-& \mid & x_1 ~\verb+:=+~ \TT{function} ~x_2^{?}\verb+(+f\verb+)+
- & \mbox{\tt\inblue CFGFunExpr}
+& \mid & e_1\verb+[+s\verb+]+ ~\verb+:=+~ e_2
+ & \SF{CFGStoreStringIdx}
 \\
 
-& \mid & \TT{assert}\verb+(+e\inop e\verb+)+ 
- & \mbox{\tt\inblue CFGAssert}
+& \mid & x_1 ~\verb+:=+~ \TT{function} ~x_2^{?}\verb+(+f\verb+)+ @ a_1, a_2, a_3^{?}
+ & \SF{CFGFunExpr}
 \\
 
-% & \mid & \TT{cond}\verb+(+x\verb+)+
-%  & \mbox{\tt\inblue CFGCond}
-% \\
+& \mid & \TT{assert}\verb+(+e)+
+ & \SF{CFGAssert}
+\\
 
 & \mid & \TT{catch}\verb+(+x\verb+)+
- & \mbox{\tt\inblue CFGCatch}
+ & \SF{CFGCatch}
 \\
 
 & \mid & \TT{return}\verb+(+e^{?}\verb+)+ 
- & \mbox{\tt\inblue CFGReturn}
+ & \SF{CFGReturn}
 \\
 
 & \mid & \TT{throw}\verb+(+e\verb+)+
- & \mbox{\tt\inblue CFGThrow}
+ & \SF{CFGThrow}
 \\
 
 & \mid & \TT{noop}
- & \mbox{\tt\inblue CFGNoOp}
+ & \SF{CFGNoOp}
 \\
 
-& \mid & x ~\verb+:=+~\ensuremath{\diamond}x\verb+(+x^{*}\verb+)+
- & \mbox{\tt\inblue CFGInternalCall}
+& \mid & x_1 ~\verb+:=+~\ensuremath{\diamond}x_2\verb+(+e^{*}\verb+)+ @ a^{?}
+ & \SF{CFGInternalCall}
 \\
 
-ci \in \SF{CallInstruction}& ::= & \TT{call}\verb+(+e_1,e_2,e_3\verb+)+
- & \mbox{\tt\inblue CFGCall}
+\CFGCallInst & ::= & \TT{call}\verb+(+e_1,e_2,e_3\verb+)+ @ a_1, a_2
+ & \SF{CFGCall}
 \\
 
-& \mid & \TT{construct}\verb+(+e_1,e_2,e_3\verb+)+
- & \mbox{\tt\inblue CFGConstruct}
+& \mid & \TT{construct}\verb+(+e_1,e_2,e_3\verb+)+ @ a_1, a_2
+ & \SF{CFGConstruct}
 \\
 
-e \in \Expression & ::= & x
- & \mbox{\tt\inblue CFGVarRef}
+e \in \CFGExpr & ::= & x
+ & \SF{CFGVarRef}
 \\
 
 & \mid & e \inop e 
- & \mbox{\tt\inblue CFGBin}
+ & \SF{CFGBin}
 \\
 
 & \mid & \preop e
- & \mbox{\tt\inblue CFGUn}
+ & \SF{CFGUn}
 \\
 
 & \mid & e\verb+[+e\verb+]+
- & \mbox{\tt\inblue CFGLoad}
+ & \SF{CFGLoad}
 \\
 
 & \mid & \TT{this}
- & \mbox{\tt\inblue CFGThis}
+ & \SF{CFGThis}
 \\
 
-& \mid & n & \mbox{\tt\inblue CFGNumber}
-&\comment{Number, double}
-\\
-
-& \mid & ``s"
- & \mbox{\tt\inblue CFGString}
-& \comment{String}
-\\
-
-& \mid & \TT{true}, \TT{false}
- & \mbox{\tt\inblue CFGBool}
-& \comment{Boolean}
-\\
-
-& \mid & \TT{null}
- & \mbox{\tt\inblue CFGNull}
+& \mid & v
+ & \SF{CFGVal}
 \\
 
  \preop & ::= &
-\multicolumn{3}{l}{
+\multicolumn{2}{@{} l}{
  \TT{void} \mid \TT{typeof} \mid \TT{+} \mid \TT{-} \mid \TT{\~} \mid \TT{!}}
 \\
 
  \inop & ::= &
-\multicolumn{3}{l}{
+\multicolumn{2}{@{} l}{
  \TT{instanceof} \mid \TT{in} \mid \TT{|} \mid \TT{\&}
                \mid \TT{\^} \mid \TT{<<} \mid \TT{>>} \mid \TT{>>>}
 \mid \TT{+} \mid \TT{-} \mid \TT{*} \mid \TT{/} \mid \TT{\%} \mid \TT{==} \mid \TT{!=}
@@ -135,61 +126,295 @@ e \in \Expression & ::= & x
 &\mid& \TT{!==} \mid \TT{<} \mid \TT{>} \mid \TT{<=} \mid \TT{>=}
 \\
 
-x \in \SF{CFGId} & = & \SF{String} \times \TT{VarKind}
-& \mbox{\tt\inblue CFGId}
+x \in \CFGId & = & \String \times \SF{VarKind} &
 \\
 
-\TT{VarKind} & ::= &
-\multicolumn{3}{l}{
+a \in \SF{Address} & = & \SF{Integer} &
+\\
+
+v \in \SF{EJSVal} & = &
+\multicolumn{2}{@{} l}{
+ \SF{Number} \mid \String \mid \SF{Boolean} \mid \SF{Null} \mid \SF{Undefined}
+}\\
+
+\SF{VarKind} & ::= &
+\multicolumn{2}{@{} l}{
 \TT{GlobalVar} \mid \TT{PureLocalVar} \mid \TT{CapturedVar} \mid \TT{CapturedCatchVar}}
 \\
+
+s \in \String &&&\\
 
 \end{array}
 \]
 \newpage
 
-\section{Constraints}
 \begin{itemize}
-\item \SF{Entry}, \SF{Exit}, and \SF{ExitExc} nodes always uniquely exist for each \SF{CFGFunction},
-and an \SF{Entry} node has no predecessor, \SF{Exit} and \SF{ExitExc} nodes have no successor.
+\item \Entry, \Exit, and \ExitExc blocks always uniquely exist for each \CFGFunction,
+and an \Entry block has no predecessor, \Exit and \ExitExc block have no successor.
 \begin{itemize}
-\item $\forall \langle \mathbb{N},\ \_,\ \_ \rangle \in \SF{CFGFunction}.\ (\exists! n \in \SF{Entry} \cap \mathbb{N}), (\exists! n \in \SF{Exit} \cap \mathbb{N}), (\exists! n \in \SF{ExitExc} \cap \mathbb{N})$
-\item $\forall \langle \mathbb{N},\ \hookrightarrow,\ \_ \rangle \in \SF{CFGFunction}.\ \nexists n \in \mathbb{N}.$
-s.t. $(n \hookrightarrow entry) \vee (exit \hookrightarrow n) \vee (exitexc \hookrightarrow n)$
-where $entry \in \SF{Entry},\ exit \in \SF{Exit},\ exitexc \in \SF{ExitExc}$
+\item $\forall \langle B,\ \_,\ \_ \rangle \in \CFGFunction.\ (\exists! \entry \in \Entry \cap B), (\exists! \exit \in \Exit \cap B),
+(\exists! \exitExc \in \ExitExc \cap B)$
+\item $\forall \langle B,\ \hookrightarrow,\ \_ \rangle \in \CFGFunction.\ \nexists b \in B.$
+s.t. $(b \hookrightarrow \entry) \vee (\exit \hookrightarrow b) \vee (\exitExc \hookrightarrow b)$
+where $\entry \in \Entry,\ \exit \in \Exit,\ \exitExc \in \ExitExc$
 \end{itemize}
 
-\item \SF{Call}, \SF{AfterCall}, and \SF{AfterCatch} nodes must be recorded in $\mathbb{C}$ without edges between them, and the triple between them is unique.
+\item Edges always connect 2 blocks in the same \CFGFunction.
 \begin{itemize}
-\item $\forall \langle \mathbb{N},\ \_,\ \mathbb{C} \rangle \in \SF{CFGFunction}.\ $
-$\forall call \in \SF{Call} \cap \mathbb{N}.\ $
-$\forall acall \in \SF{AfterCall} \cap \mathbb{N}.\ $
-$\forall acatch \in \SF{AfterCatch} \cap \mathbb{N}.\ $
-$(call, \_, \_),\ (\_, acall, \_),\ (\_, \_, acatch) \in \mathbb{C}$
-\item $\forall \langle \_,\ \_,\ \mathbb{C} \rangle \in \SF{CFGFunction}.\ \forall (call, acall, acatch),\ (call', acall', acatch') \in \mathbb{C}.\ call = call' \Leftrightarrow acall = acall' \Leftrightarrow acatch = acatch'$
+\item $\forall \langle B,\ \hookrightarrow,\ \_ \rangle \in \CFGFunction.\ \hookrightarrow \subseteq B \times B$
 \end{itemize}
 
-\item There is no instruction after \TT{return} in a node. There is no instruction before \TT{catch} in a node.
+\item \Call, \AfterCall, and \AfterCatch blocks must be recorded in $C$ without edges between them, and the triple between them is unique.
 \begin{itemize}
-\item $\forall n \in \SF{Block}.\ (i_k \in n \wedge (i_k = \TT{return})) \rightarrow (\nexists i_{k'} \in n.\ k < k')$
-\item $\forall n \in \SF{Block}.\ (i_k \in n \wedge (i_k = \TT{catch}) \rightarrow (\nexists i_{k'} \in n.\ k > k')$
+\item $\forall \langle B,\ \_,\ C \rangle \in \CFGFunction.\ $
+$\forall \call \in \Call \cap B.\ $
+$\forall \acall \in \AfterCall \cap B.\ $
+$\forall \acatch \in \AfterCatch \cap B.\ $
+$(\call, \_, \_),\ (\_, \acall, \_),\ (\_, \_, \acatch) \in C$
+\item $\forall \langle \_,\ \_,\ C \rangle \in \CFGFunction.\ \forall (\call, \acall, \acatch),\ (\call', \acall', \acatch') \in C.\ \call = \call' \Leftrightarrow \acall = \acall' \Leftrightarrow \acatch = \acatch'$
+\end{itemize}
+
+\item There is no instruction after \TT{return} in a block. There is no instruction before \TT{catch} in a block.
+\begin{itemize}
+\item $\forall b \in \NormalBlock.\ (i_k \in b \wedge (i_k = \TT{return})) \rightarrow (\nexists i_{k'} \in b.\ k < k')$
+\item $\forall b \in \NormalBlock.\ (i_k \in b \wedge (i_k = \TT{catch}) \rightarrow (\nexists i_{k'} \in b.\ k > k')$
 \end{itemize}
 
 \end{itemize}
+\newpage
 
-%\section{Helper Functions}\label{sec:abs-helper}
-%
-%\[
-%\begin{array}{lcl}
-%\chf{getVarKind}_{cfg} & : & \SF{String} \rightarrow \SF{VarKind} \\
-%\chf{getCmd}_{cfg} & : & \SF{Node} \rightarrow \Command \\
-%\chf{getArgVars}_{cfg} & : & \fid \rightarrow \args \\
-%\chf{getLocalVars}_{cfg} & : & \fid \rightarrow \vars \\
-%\chf{getCallFromAftercall}_{cfg} & : & \SF{Node} \rightarrow \SF{Node} \\
-%\chf{getAftercallFromCall}_{cfg} & : & \SF{Node} \rightarrow \SF{Node} \\
-%\chf{getExcSucc}_{cfg} & : & \SF{Node} \rightarrow \SF{Node} \\
-%\chf{getArgumentsName}_{cfg} & : & \fid \rightarrow \SF{String} \\
-%\chf{getReturnVar}_{cfg} & : & \SF{Node} \rightarrow \SF{String} \\
-%\chf{isUserFunction}_{cfg} & : & \SF{FunctionId} \rightarrow \SF{Boolean} \\
-%\end{array}
-%\]
+
+\section{Data Type}
+\[
+\begin{array}{@{~}r@{~}l@{}l@{~}l}
+\new & \CFG & : & \CFGId^{*} \rightarrow \CFG \\
+& \CFG & : &
+\begin{Bmatrix}
+\emph{globalFunc} & : & \SF{CFGFunction} \\
+\emph{createFunction} & : & \String \times \CFGId^{*} \times \CFGId^{*} \times \String \rightarrow \CFGFunction \\
+\emph{addEdge} & : & \powerset{\CFGBlock} \times \powerset{\CFGBlock} \times \EdgeType \rightarrow \Unit \\
+\end{Bmatrix}\\
+&&&\\
+
+\new & \CFGFunction & : & \CFG \times \String \times \CFGId^{*} \times \CFGId^{*} \times \String \rightarrow \CFGFunction \\
+& \CFGFunction & : &
+\begin{Bmatrix}
+\emph{cfg} & : & \CFG \\
+\emph{argumentsName} & : & \String \\
+\emph{argVars} & : & \CFGId^{*} \\
+\emph{localVars} & : & \CFGId^{*} \\
+\emph{entry} & : & \Entry \\
+\emph{exit} & : & \Exit \\
+\emph{exitExc} & : & \ExitExc \\
+\emph{blocks} & : & \powerset{\CFGBlock}\\
+\emph{captured} & : & \powerset{\CFGId} \\
+\emph{createCall} & : & \CFGCallInst \times \CFGId \rightarrow \Call \\
+\emph{createBlock} & : & \Unit \rightarrow \CFGBlock \\
+\emph{createModelBlock} & : & \Any \rightarrow \ModelBlock \\
+\end{Bmatrix}\\
+&&&\\
+
+\new & \CFGBlock & : & \CFGFunction \rightarrow \CFGBlock \\
+& \CFGBlock & : &
+\begin{Bmatrix}
+\emph{func} & : & \CFGFunction \\
+\emph{succs} & : & \EdgeType \mapsto \powerset{\CFGBlock} \\
+\emph{preds} & : & \EdgeType \mapsto \powerset{\CFGBlock} \\
+\end{Bmatrix}\\
+&&&\\
+
+\new & \Call & : & \CFGFunction \times \CFGCallInst \times \CFGId \rightarrow \Call \\
+& \Call & : &
+\begin{Bmatrix}
+\emph{afterCall} & : & \AfterCall\\
+\emph{afterCatch} & : & \AfterCatch\\
+\emph{callInst} & : & \CFGCallInst\\
+\end{Bmatrix}\\
+&&&\\
+
+\new & \AfterCall & : & \CFGFunction \times \Call \times \CFGId \rightarrow \AfterCall \\
+& \AfterCall & : &
+\begin{Bmatrix}
+\emph{call} & : & \Call \\
+\emph{retVar} & : & \CFGId \\
+\end{Bmatrix}\\
+&&&\\
+
+\new & \AfterCatch & : & \CFGFunction \times \Call \rightarrow \AfterCatch \\
+& \AfterCatch & : &
+\begin{Bmatrix}
+\emph{call} & : & \Call \\
+\end{Bmatrix}\\
+&&&\\
+
+\new & \NormalBlock & : & \CFGFunction \rightarrow \NormalBlock\\
+& \NormalBlock & : &
+\begin{Bmatrix}
+\emph{insts} & : & \CFGInst^{*} \\
+\emph{createInst} & : & \CFGInst \rightarrow \Unit \\
+\end{Bmatrix}\\
+&&&\\
+
+\new & \ModelBlock & : & \CFGFunction \times \Any \rightarrow \ModelBlock\\
+& \ModelBlock & : &
+\begin{Bmatrix}
+\emph{data} & : & \Any \\
+\end{Bmatrix}\\
+&&& \\
+
+\new & \CFGId & : & \String \times \VarKind \rightarrow \CFGId\\
+& \CFGId & : &
+\begin{Bmatrix}
+\emph{name} & : & \String\\
+\emph{kind} & : & \VarKind\\
+\end{Bmatrix}\\
+\end{array}
+\]
+\newpage
+
+
+\section{Methods}
+\subsection{Helper Functions}
+\[
+\begin{array}{l@{}l@{~}l}
+\toSeq(S) & : & \powerset{\Any} \rightarrow \Any^{*}\\
+& = & \text{convert a set of any elements into a sequence of them by an arbitrary order.}\\
+& & \\
+
+\fold(A)(b)(f) & : & \Any^{*} \times \Any' \times (\Any \times \Any' \rightarrow \Any') \rightarrow \Any'\\
+& = & \mbox{if}\ (\length(A) = 0)\ \mbox{then}\ b \\
+& & \mbox{else}\ \fold(\tailOf(A))(f(\headOf(A),b))(f)\\
+& & \\
+
+\iter(A)(f) & : & \Any^{*} \times (\Any \rightarrow \Unit) \rightarrow \Unit\\
+& = & \mbox{if}\ (\length(A) = 0)\ \mbox{then}\ \Unit \\
+& & \mbox{else}\ f(\headOf(A))\\
+& & \phantom{else} \iter(\tailOf(A))(f)\\
+& & \\
+
+\iter(A)(idx)(f) & : & \Any^{*} \times (\Any \rightarrow \Unit) \rightarrow \Unit\\
+& = & \mbox{if}\ (\length(A) = 0)\ \mbox{then}\ \Unit \\
+& & \mbox{else}\ f(\headOf(A), idx)\\
+& & \phantom{else} \iter(\tailOf(A))(idx+1)(f)\\
+& & \\
+
+\getTail(\emph{cfg}, B, \emph{f})\ & : & \CFG \times \CFGFunction \times \CFGBlock^{*} \rightarrow \CFGBlock \\
+& = & \mbox{if}\ (\length(B) = 0)\ \mbox{then}\\
+& & \phantom{else} f.\emph{createBlock}\\
+& & \mbox{else}\ \mbox{if}\ (\length(B) = 1)\ \mbox{then}\\
+& & \phantom{else} \headOf(B) \\
+& & \mbox{else}\ b \letval f.\emph{createBlock}\\
+& & \phantom{else} \emph{cfg}.\emph{addEdge}(B, b)\\
+& & \phantom{else} b\\
+\end{array}
+\]
+
+\subsection{$\CFG$ Methods}
+\[
+\begin{array}{l@{}l@{~}l}
+\new\ \CFG(\emph{globalVars})
+& = & \text{let } \emph{cfg} \text{ be a new } \CFG\\
+& & \emph{cfg}.\emph{globalFunc} \leftarrow \new\ \CFGFunction(``", \Nil, \emph{globalVars}, ``\text{top-level}")\\
+& & \emph{cfg}\\
+& & \\
+
+\CFG.\emph{createFunction}(\emph{argsName}, \emph{argVars}, \emph{localVars}, \emph{name})
+& = & \new\ \CFGFunction(\this, \emph{argsName}, \emph{argVars}, \emph{localVars}, \emph{name})\\
+& & \\
+
+\CFG.\emph{addEdge}(B_1, B_2, \emph{ty} = \EdgeNormal)
+& = & \iter(toSeq(B_1))(\lambda(b_1) \Rightarrow iter(toSeq(B_2))(\lambda(b_2) \Rightarrow \\
+& & \quad b_1.\emph{succs}(\emph{ty}) \leftarrow b_1.\emph{succs}(\emph{ty}) \cup \{b_2\} \\
+& & \quad b_2.\emph{preds}(\emph{ty}) \leftarrow b_2.\emph{preds}(\emph{ty}) \cup \{b_1\} \\
+& & )) \\
+\end{array}
+\]
+
+\subsection{$\CFGFunction$ Methods}
+\[
+\begin{array}{l@{}l@{~}l}
+\new\ \CFGFunction(\emph{cfg}, \emph{argsName}, \emph{argVars}, \emph{localVars}, \emph{name})
+& = & \text{let } \emph{func} \text{ be a new } \CFGFunction\\
+& & \emph{entry} \leftarrow \new\ \Entry\\
+& & \emph{exitExc} \leftarrow \new\ \ExitExc\\
+& & \emph{exit} \leftarrow \new\ \Exit\\
+& & \emph{func}.\emph{cfg} \leftarrow \emph{cfg} \\
+& & \emph{func}.\emph{argumentsName} \leftarrow \emph{argsName} \\
+& & \emph{func}.\emph{argVars} \leftarrow \emph{argVars}\\
+& & \emph{func}.\emph{localVars} \leftarrow \emph{localVars}\\
+& & \emph{func}.\emph{entry} \leftarrow \emph{entry}\\
+& & \emph{func}.\emph{exit} \leftarrow \emph{exit}\\
+& & \emph{func}.\emph{exitExc} \leftarrow \emph{exitExc}\\
+& & \emph{func}.\emph{blocks} \leftarrow \{ \emph{entry}, \emph{exit}, \emph{exitExc} \}\\
+& & \emph{func}.\emph{captured} \leftarrow \emptyset\\
+& & \emph{func}\\
+& & \\
+
+\CFGFunction.\emph{createCall}(\emph{callInst}, \emph{retVar})
+& = & \new\ \Call(\this, \emph{callInst}, \emph{retVar})\\
+& & \\
+
+\CFGFunction.\emph{createBlock}
+& = & \new\ \NormalBlock(\this)\\
+& & \\
+
+\CFGFunction.\emph{createModelBlock}(\emph{data})
+& = & \new\ \ModelBlock(\this, \emph{data})\\
+\end{array}
+\]
+
+\subsection{$\CFGBlock$ Methods}
+\[
+\begin{array}{l@{}l@{~}l}
+\new\ \CFGBlock(\emph{func})
+& = & \text{let } \emph{b} \text{ be a new } \CFGBlock\\
+& & \emph{b}.\emph{func} \leftarrow \emph{func}\\
+& & \emph{b}.\emph{succs} \leftarrow \emptyset\\
+& & \emph{b}.\emph{preds} \leftarrow \emptyset\\
+& & \emph{b}\\
+& & \\
+
+\new\ \Call(\emph{func}, \emph{callInst}, \emph{retVar})
+& = & \text{let } \emph{call} \text{ be a new } \Call \text{ initializing with } \new\ \CFGBlock(\emph{func})\\
+& & \emph{call}.\emph{afterCall} \leftarrow \new\ \AfterCall(\emph{call}, \emph{retVar})\\
+& & \emph{call}.\emph{afterCatch} \leftarrow \new\ \AfterCatch(\emph{call})\\
+& & \emph{call}.\emph{callInst} \leftarrow \emph{callInst}\\
+& & \emph{call}\\
+& & \\
+
+\new\ \AfterCall(\emph{func}, \emph{call}, \emph{retVar})
+& = & \text{let } \emph{acall} \text{ be a new } \AfterCall \text{ initializing with } \new\ \CFGBlock(\emph{func})\\
+& & \emph{acall}.\emph{call} \leftarrow \emph{call}\\
+& & \emph{acall}.\emph{retVar} \leftarrow \emph{retVar}\\
+& & \emph{acall}\\
+& & \\
+
+\new\ \AfterCatch(\emph{func}, \emph{call})
+& = & \text{let } \emph{acatch} \text{ be a new } \AfterCatch \text{ initializing with } \new\ \CFGBlock(\emph{func})\\
+& & \emph{acatch}.\emph{call} \leftarrow \emph{call}\\
+& & \emph{acatch}\\
+& & \\
+
+\new\ \NormalBlock(\emph{func})
+& = & \text{let } \emph{b} \text{ be a new } \NormalBlock \text{ initializing with } \new\ \CFGBlock(\emph{func})\\
+& & \emph{b}.\emph{insts} \leftarrow \Nil \\
+& & \emph{b}\\
+& & \\
+
+\NormalBlock.\emph{createInst}(\emph{inst})
+& = & \this.\emph{insts} \leftarrow \this.\emph{insts} :: \emph{inst}\\
+& & \\
+
+\new\ \ModelBlock(\emph{func}, \emph{data})
+& = & \text{let } \emph{modelB} \text{ be a new } \ModelBlock \text{ initializing with } \new\ \CFGBlock(\emph{func})\\
+& & \emph{modelB}.\emph{data} \leftarrow \emph{data} \\
+& & \emph{modelB}\\
+& & \\
+
+\new\ \CFGId(\emph{name}, \emph{kind})
+& = & \text{let } \emph{id} \text{ be a new } \CFGId\\
+& & \emph{id}.\emph{name} \leftarrow \emph{name} \\
+& & \emph{id}.\emph{kind} \leftarrow \emph{kind} \\
+& & \emph{id}\\
+\end{array}
+\]

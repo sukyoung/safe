@@ -48,7 +48,7 @@ class CFG(
 
   // global function
   lazy val globalFunc: CFGFunction =
-    createFunction("", Nil, globalVars, "top-level", ir, "", true)
+    createFunction("", Nil, globalVars, "top-level", ir, true)
 
   // create function
   def createFunction(
@@ -57,11 +57,10 @@ class CFG(
     localVars: List[CFGId],
     name: String,
     ir: IRNode,
-    body: String,
     isUser: Boolean
   ): CFGFunction = {
     val func: CFGFunction =
-      new CFGFunction(ir, this, argumentsName, argVars, localVars, name, body, isUser)
+      new CFGFunction(ir, this, argumentsName, argVars, localVars, name, isUser)
     fidCount += 1
     funcs ::= func
     if (isUser) userFuncs ::= func

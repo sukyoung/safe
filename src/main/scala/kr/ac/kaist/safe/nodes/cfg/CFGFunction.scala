@@ -24,7 +24,6 @@ class CFGFunction(
     val argVars: List[CFGId],
     val localVars: List[CFGId],
     val name: String,
-    val body: String,
     val isUser: Boolean
 ) extends CFGNode(ir) {
   val id: FunctionId = cfg.getFId

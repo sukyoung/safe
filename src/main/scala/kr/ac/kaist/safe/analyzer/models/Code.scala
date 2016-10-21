@@ -29,7 +29,7 @@ abstract class Code {
     val argsName: String = s"<>arguments<>$funName"
     val ir: IRModelFunc = IRModelFunc(ModelFunc(ASTNodeInfo(Span(funName))))
     val func: CFGFunction =
-      cfg.createFunction(argsName, Nil, Nil, funName, ir, "", false)
+      cfg.createFunction(argsName, Nil, Nil, funName, ir, false)
     (funName, argsName, func)
   }
 }
