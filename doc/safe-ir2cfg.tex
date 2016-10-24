@@ -21,7 +21,7 @@
 \end{array}
 \]
 
-We used following global variables for describing the translation from IR to CFG:
+We use the following global variables for describing the translation from IR to CFG:
 \[
 \begin{array}{lll}
 *\ \emph{catchVars} &: \powerset{\String} & \text{ initializing with } \emptyset\\
@@ -346,7 +346,7 @@ To distinguish global variables, we use the prefix ``(global)'' and ``$\leftarro
 & & \emph{cfg}.\emph{addEdge}(\emph{head}, \emph{out})\\
 & & (B', L') \letval \transfun{s}_{\emph{stmt}}(\emph{cfg}, f, [\emph{body}], L)\\
 & & \emph{cfg}.\emph{addEdge}(B', \emph{head})\\
-& & (\emph{out}, L'[\ThrowLabel \mapsto L'(\ThrowLabel) \cup \{ \emph{body},\ \emph{out} \}) \\
+& & (\emph{out}, L'[\ThrowLabel \mapsto L'(\ThrowLabel) \cup \{ \emph{body},\ \emph{out} \}]) \\
 & & \\
 
 \transfun{\emph{stmts}}_{\emph{stmt}^{*}}(f, B, L)

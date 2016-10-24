@@ -40,23 +40,23 @@ x~\verb+:=+~\TT{alloc}\verb+(+ e^{?} \verb+)+ @ a
  & \SF{CFGDelete}
 \\
 
-& \mid & x ~\verb+:=+~ \TT{delete}\verb+(+e_1,e_2\verb+)+
+& \mid & x ~\verb+:=+~ \TT{delete}\verb+(+e,e\verb+)+
  & \SF{CFGDeleteProp}
 \\
 
-& \mid & e_1\verb+[+e_2\verb+]+ ~\verb+:=+~ e_3
+& \mid & e\verb+[+e\verb+]+ ~\verb+:=+~ e
  & \SF{CFGStore}
 \\
 
-& \mid & e_1\verb+[+s\verb+]+ ~\verb+:=+~ e_2
+& \mid & e\verb+[+s\verb+]+ ~\verb+:=+~ e
  & \SF{CFGStoreStringIdx}
 \\
 
-& \mid & x_1 ~\verb+:=+~ \TT{function} ~x_2^{?}\verb+(+f\verb+)+ @ a_1, a_2, a_3^{?}
+& \mid & x ~\verb+:=+~ \TT{function} ~x^{?}\verb+(+f\verb+)+ @ a, a, a^{?}
  & \SF{CFGFunExpr}
 \\
 
-& \mid & \TT{assert}\verb+(+e)+
+& \mid & \TT{assert}\verb+(+e\verb+)+
  & \SF{CFGAssert}
 \\
 
@@ -76,15 +76,16 @@ x~\verb+:=+~\TT{alloc}\verb+(+ e^{?} \verb+)+ @ a
  & \SF{CFGNoOp}
 \\
 
-& \mid & x_1 ~\verb+:=+~\ensuremath{\diamond}x_2\verb+(+e^{*}\verb+)+ @ a^{?}
+%& \mid & x ~\verb+:=+~\ensuremath{\diamond}x\verb+(+e^{*}\verb+)+ @ a^{?}
+& \mid & x ~\verb+:=+~x\verb+(+e^{*}\verb+)+ @ a^{?}
  & \SF{CFGInternalCall}
 \\
 
-\CFGCallInst & ::= & \TT{call}\verb+(+e_1,e_2,e_3\verb+)+ @ a_1, a_2
+\CFGCallInst & ::= & \TT{call}\verb+(+e,e,e\verb+)+ @ a, a
  & \SF{CFGCall}
 \\
 
-& \mid & \TT{construct}\verb+(+e_1,e_2,e_3\verb+)+ @ a_1, a_2
+& \mid & \TT{construct}\verb+(+e,e,e\verb+)+ @ a, a
  & \SF{CFGConstruct}
 \\
 
@@ -150,21 +151,22 @@ s \in \String &&&\\
 
 \begin{itemize}
 \item \Entry, \Exit, and \ExitExc blocks always uniquely exist for each \CFGFunction,
-and an \Entry block has no predecessor, \Exit and \ExitExc block have no successor.
+and an \Entry block has no predecessor, \Exit and \ExitExc blocks have no successor.
 \begin{itemize}
-\item $\forall \langle B,\ \_,\ \_ \rangle \in \CFGFunction.\ (\exists! \entry \in \Entry \cap B), (\exists! \exit \in \Exit \cap B),
-(\exists! \exitExc \in \ExitExc \cap B)$
+\item $\forall \langle B,\ \_,\ \_ \rangle \in \CFGFunction.\ (\nexists \entry \in \Entry \cap B), (\nexists \exit \in \Exit \cap B),
+(\nexists \exitExc \in \ExitExc \cap B)$
 \item $\forall \langle B,\ \hookrightarrow,\ \_ \rangle \in \CFGFunction.\ \nexists b \in B.$
 s.t. $(b \hookrightarrow \entry) \vee (\exit \hookrightarrow b) \vee (\exitExc \hookrightarrow b)$
 where $\entry \in \Entry,\ \exit \in \Exit,\ \exitExc \in \ExitExc$
 \end{itemize}
 
-\item Edges always connect 2 blocks in the same \CFGFunction.
+\item Each edge connects 2 blocks in the same \CFGFunction.
 \begin{itemize}
 \item $\forall \langle B,\ \hookrightarrow,\ \_ \rangle \in \CFGFunction.\ \hookrightarrow \subseteq B \times B$
 \end{itemize}
 
-\item \Call, \AfterCall, and \AfterCatch blocks must be recorded in $C$ without edges between them, and the triple between them is unique.
+\item \Call, \AfterCall, and \AfterCatch blocks must be recorded in $C$ without any edges
+between them, and the triple consisting of them is unique.
 \begin{itemize}
 \item $\forall \langle B,\ \_,\ C \rangle \in \CFGFunction.\ $
 $\forall \call \in \Call \cap B.\ $
