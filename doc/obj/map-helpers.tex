@@ -101,7 +101,7 @@ $\begin{array}{l}
 \end{array} \right. \vspace{1mm}\\
 
 & \emph{defset} = \left \{ \begin{array}{ll}
-\Defset(\hat{m}) \cup \gamma_k(\hat{k}) & \textrm{if} ~ \emph{exact?} \land \hat{k}\in \Dom(\hat{m}) \\
+\Defset(\hat{m}) \cup \gamma_k(\hat{k}) & \textrm{if} ~ \emph{exact?} \\
 \Defset(\hat{m}) & \textrm{otherwise}\\
 \end{array} \right. \vspace{1mm}\\
 
@@ -232,6 +232,130 @@ $\exists \hat{k}_2 \in \AKey \cdot k_1 \in \gamma_k(\hat{k}_2)$,
 and $\exists \hat{v}_2 \in \AVal \cdot v_1 \in \gamma_v(\hat{v}_2)$,
 then $\textsf{update}(m_1,\ k_1,\ v_1) \in \gamma_m(\wsf{update}(\hat{m}_2,\ \hat{k}_2,\ \hat{v}_2))$.
 \end{thm}
+\textbf{Proof } $\forall m_1 \in \CMap, k_1 \in \CKey$, 
+let $\hat{m}_2 \in \AMap \cdot m_1 \in \gamma_m(\hat{m}_2)$,
+$\hat{k}_2 \in \AKey \cdot k_1 \in \gamma_k(\hat{k}_2)$,
+and $\hat{v}_2 \in \AVal \cdot v_1 \in \gamma_v(\hat{v}_2)$.\\
+Let $\hat{m}_1 = \alpha_m(\{ m_1 \})$,
+$\hat{k}_1 = \alpha_k(\{ k_1 \})$,
+$\hat{v}_1 = \alpha_v(\{ v_1 \})$,
+then $\hat{m}_1 \po_m \hat{m}_2$,
+$\hat{k}_1 \po_k \hat{k}_2$,
+and $\hat{v}_1 \po_v \hat{v}_2$.\\
+For $\hat{m}_2' = \wsf{update}(\hat{m}_2, \hat{k}_2, \hat{v}_2)$,
+and $\emph{mset} = \{ \textsf{update}(m_1, k_1, v_1) \}$, \\
+if $\alpha_m(\emph{mset}) \po_m \hat{m}_2'$
+then $\textsf{update}(m_1, k_1, v_1) \in \gamma_m(\hat{m}_2')$
+by definition of $\gamma_m$.\\
+To show $\alpha_m(\emph{mset}) \po_m \hat{m}_2'$, we need to prove 2 things:
+\begin{enumerate}[label=({\arabic*})]
+\item $\forall \hat{k} \in \Map(\alpha_m(\emph{mset})) \cdot
+\exists \hat{k}' \in \Dom(\hat{m}_2'):
+\hat{k} \po_k \hat{k}' \land \Map(\alpha_m(\emph{mset}))(\hat{k}) \po_v \Map(\hat{m}_2')(\hat{k}')$
+\item $\Defset(\hat{m}_2') \subseteq \Defset(\alpha_m(\emph{mset}))$
+\end{enumerate}
+\begin{itemize}
+\item If $k_1 \not\in \Dom(m_1)$, 
+then $\emph{mset} = \{ m_1 \cup \{[k_1 \mapsto v_1]\} \}$.\\
+$\alpha_m(\emph{mset}) = 
+\langle \{ [\alpha_k(\{ k \}) \mapsto \alpha_v(\{ m_1(k) \} )] \mid k \in \Dom(m_1) \}
+\cup \{ [ \hat{k}_1 \mapsto \hat{v}_1 ] \},\
+\Dom(m_1) \cup \{ k_1 \} \rangle$\\
+$= \langle \{ [ \hat{k} \mapsto \Map(\hat{m}_1)(\hat{k}) ] \mid \hat{k} \in \Dom(\hat{m}_1) \}
+\cup \{ [ \hat{k}_1 \mapsto \hat{v}_1 ] \},\
+\Dom(m_1) \cup \{ k_1 \} \rangle$
+by definition of $\alpha_m$.
+
+Prove (1). \\
+$\forall \hat{k} \in \Dom(\hat{m}_1) \cdot \exists \hat{k}' \in \Dom(\hat{m}_2):
+\hat{k} \po_k \hat{k}' \land \Map(\hat{m}_1)(\hat{k}) \po_v \Map(\hat{m}_2)(\hat{k}')$
+since $\hat{m}_1 \po_m \hat{m}_2$.
+
+$\Dom(\alpha_m(\emph{mset})) = \Dom(\hat{m}_1) \cup \{ \hat{k}_1 \} $ 
+by definition of $\alpha_m$. For same reason, \\
+$\forall \hat{k} \in \Dom(\hat{m}_1) \cdot
+\Map(\alpha_m(\emph{mset}))(\hat{k}) = \Map(\hat{m}_1)(\hat{k})$,
+and $\Map(\alpha_m(\emph{mset}))(\hat{k}_1) = \hat{v}_1$.
+
+Also, $\Dom(\hat{m}_2') = \Dom(\hat{m}_2) \cup \{ \hat{k}_2 \}$
+by definition of $\wsf{update}$. For same reason, \\
+$\forall \hat{k} \in (\Dom(\hat{m}_2) \setminus \{ \hat{k}_2 \}) \cdot
+\Map(\hat{m}_2)(\hat{k}) \po_v \Map(\hat{m}_2')(\hat{k})$,
+and $\hat{v}_2 \po_v \Map(\hat{m}_2')(\hat{k}_2)$.
+
+For $\hat{k}_1$, $\exists \hat{k}_2 \in \Dom(\hat{m}_2')$
+such that $\hat{k}_1 \po_k \hat{k}_2 \land 
+\Map(\alpha_m(\emph{mset}))(\hat{k}_1) \po_v \hat{v}_2 \po_v \Map(\hat{m}_2')(\hat{k}_2)$.\\
+For $\hat{k} \in \Dom(\hat{m}_1)$,
+there exists $\hat{k}' \in \Dom(\hat{m}_2') \cdot 
+\hat{k} \po_k \hat{k}' \land \Map(\hat{m}_1)(\hat{k}) \po_v \Map(\hat{m}_2')(\hat{k}')$.
+
+Prove (2).\\
+\textbf{Case} if $\mid \gamma_k(\hat{k}_2) \mid = 1$, then $\gamma_k(\hat{k}_2) = \{ k_1 \}$.\\
+$\Defset(\hat{m}_2') = \Defset(\hat{m}_2) \cup \gamma_k(\hat{k}_2)
+= \Defset(\hat{m}_2) \cup \{ k_1 \}$ by definition of $\wsf{update}$.\\
+However, $\Defset(\hat{m}_2) \subseteq \Defset(\hat{m}_1)$ as $\hat{m}_1 \po_m \hat{m}_2$.\\
+Also, $\Defset(\hat{m}_1) = \Dom(m_1)$ by definition of $\alpha_m$.\\
+Therefore, $\Defset(\hat{m}_2') = 
+\Defset(\hat{m}_2) \cup \gamma_k(\hat{k}_2) \subseteq \Dom(m_1) \cup \{ k_1 \}
+= \Defset(\alpha_m(\emph{mset}))$.
+
+\textbf{Case} if $\mid \gamma_k(\hat{k}_2) \mid > 1$.\\
+$\Defset(\hat{m}_2') = \Defset(\hat{m}_2)$ by definition of $\wsf{update}$.\\
+However, $\Defset(\hat{m}_2) \subseteq \Dom(m_1)$,
+thus $\Defset(\hat{m}_2) \subseteq \Dom(m_1) \cup \{ k_1 \}
+= \Defset(\alpha_m(\emph{mset}))$.
+Therefore $\Defset(\hat{m}_2') \subseteq \Defset(\alpha_m(\emph{mset}))$.
+
+\item If $k_1 \in \Dom(m_1)$, 
+then $\emph{mset} = \{ (m_1 \setminus \{ [ k_1 \mapsto m_1(k_1)] \}) \cup \{ [k_1 \mapsto v_1]\} \}$.\\
+$\alpha_m(\emph{mset}) = 
+\langle \{ [\alpha_k(\{ k \}) \mapsto \alpha_v(\{ m_1(k) \} )] \mid 
+k \in (\Dom(m_1) \setminus \{ k_1 \})\}
+\cup \{ [ \hat{k}_1 \mapsto \hat{v}_1 ] \},\ \Dom(m_1) \rangle$\\
+$= \langle \{ [ \hat{k} \mapsto \Map(\hat{m}_1)(\hat{k}) ] \mid 
+\hat{k} \in (\Dom(\hat{m}_1) \setminus \{ \hat{k}_1 \}) \}
+\cup \{ [ \hat{k}_1 \mapsto \hat{v}_1 ] \},\ \Dom(m_1) \rangle$
+by definition of $\alpha_m$.
+
+Prove (1). \\
+$\forall \hat{k} \in \Dom(\hat{m}_1) \cdot \exists \hat{k}' \in \Dom(\hat{m}_2):
+\hat{k} \po_k \hat{k}' \land \Map(\hat{m}_1)(\hat{k}) \po_v \Map(\hat{m}_2)(\hat{k}')$
+since $\hat{m}_1 \po_m \hat{m}_2$.
+
+$\Dom(\alpha_m(\emph{mset})) = \Dom(\hat{m}_1)$ 
+by definition of $\alpha_m$. For same reason, \\
+$\forall \hat{k} \in (\Dom(\hat{m}_1) \setminus \{ \hat{k}_1 \}) \cdot
+\Map(\alpha_m(\emph{mset}))(\hat{k}) = \Map(\hat{m}_1)(\hat{k})$,
+and $\Map(\alpha_m(\emph{mset}))(\hat{k}_1) = \hat{v}_1$.
+
+Also, $\Dom(\hat{m}_2') = \Dom(\hat{m}_2) \cup \{ \hat{k}_2 \}$
+by definition of $\wsf{update}$. For same reason, \\
+$\forall \hat{k} \in (\Dom(\hat{m}_2) \setminus \{ \hat{k}_2 \}) \cdot
+\Map(\hat{m}_2)(\hat{k}) \po_v \Map(\hat{m}_2')(\hat{k})$,
+and $\hat{v}_2 \po_v \Map(\hat{m}_2')(\hat{k}_2)$.
+
+For $\hat{k}_1$, $\exists \hat{k}_2 \in \Dom(\hat{m}_2')$
+such that $\hat{k}_1 \po_k \hat{k}_2 \land 
+\Map(\alpha_m(\emph{mset}))(\hat{k}_1) \po_v \hat{v}_2 \po_v \Map(\hat{m}_2')(\hat{k}_2)$.\\
+For $\hat{k} \in \Dom(\hat{m}_1)$,
+there exists $\hat{k}' \in \Dom(\hat{m}_2') \cdot 
+\hat{k} \po_k \hat{k}' \land \Map(\hat{m}_1)(\hat{k}) \po_v \Map(\hat{m}_2')(\hat{k}')$.
+
+Prove (2).\\
+\textbf{Case} if $\mid \gamma_k(\hat{k}_2) \mid = 1$, then $\gamma_k(\hat{k}_2) = \{ k_1 \}$.\\
+$\Defset(\hat{m}_2') = \Defset(\hat{m}_2) \cup \gamma_k(\hat{k}_2)
+= \Defset(\hat{m}_2) \cup \{ k_1 \}$ by definition of $\wsf{update}$.\\
+However, $\Defset(\hat{m}_2) \subseteq \Defset(\hat{m}_1)$ as $\hat{m}_1 \po_m \hat{m}_2$.\\
+Also, $\Defset(\hat{m}_1) = \Dom(m_1)$ by definition of $\alpha_m$.\\
+Moreover, $\Dom(m_1) \cup \{ k_1 \} = \Dom(m_1)$ as $k_1 \in \Dom(m_1)$ \\
+Therefore $\Defset(\hat{m}_2') \subseteq \Dom(m_1) = \Defset(\alpha_m(\emph{mset}))$.
+
+\textbf{Case} if $\mid \gamma_k(\hat{k}_2) \mid > 1$.\\
+$\Defset(\hat{m}_2') = \Defset(\hat{m}_2)$ by definition of $\wsf{update}$.\\
+However, $\Defset(\hat{m}_2) \subseteq \Dom(m_1) = \Defset(\alpha_m(\emph{mset}))$.
+Therefore $\Defset(\hat{m}_2') \subseteq \Defset(\alpha_m(\emph{mset}))$.
+\end{itemize}
 
 
 \begin{thm} \normalfont
