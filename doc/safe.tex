@@ -1,71 +1,30 @@
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%   Copyright 2016, KAIST.
-%   All rights reserved.
+% Much taken from the MemCAD project:
+%     https://github.com/Antique-team/memcad
+% thanks to Dr. Xavier Rival
 %
-%   Use is subject to license terms.
-%
-%   This distribution may include materials developed by third parties.
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\documentclass[oneside,openany]{book}
-\usepackage{url, amssymb, amsmath, amsthm, stmaryrd, xspace}
-\usepackage{amsfonts, graphicx, fullpage, times, wrapfig}
-\usepackage{hyperref, array, color,anysize,ifpdf,tikz}
-
-\newif\ifrelease
-\ifx\release\undefined
-  \releasefalse
-\else
-  \releasetrue
-\fi
-
-% Please uncomment the following line for a release version.
-% -- Sukyoung
-%\releasetrue
-
-\parskip = 7pt plus 2pt minus 1pt
-\makeatletter
-\setlength\partopsep{4\p@ \@plus 1\p@}
-\def\@listi{\leftmargin\leftmargini
-            \parsep\parskip
-            \topsep 0\p@
-            \itemsep\topsep}
-\let\@listI\@listi
-\@listi
-\def\@listii {\leftmargin\leftmarginii
-              \labelwidth\leftmarginii
-              \advance\labelwidth-\labelsep}
-\def\@listiii{\leftmargin\leftmarginiii
-              \labelwidth\leftmarginiii
-              \advance\labelwidth-\labelsep}
-\makeatother
-\parindent = 0pt
-
-\setcounter{tocdepth}{1}
-
-\ifpdf
-  \usepackage{epic,eepicemu}
-\else
-  \usepackage{epic,eepic}
-\fi
-
-\newcommand{\lit}{lit}
-\newcommand{\safe}{SAFE\xspace}
+\documentclass[oneside,openany,a4paper,10pt]{book}
+\input{preamble.tex}
 \input{macros}
-
-\title{{\huge The SAFE Specification}
-\\[1em] {\fbox{\LARGE\it Working Draft}}
-\\ {\large Version 2.0}
-}
-\author
-{
-\begin{tabular}{c}
-PLRG @ KAIST
-\end{tabular}
-}
-
 \begin{document}
-\maketitle
+\begin{titlepage}
+    \vspace*{15em}
+    \centering
+    {\bfseries\Huge
+        SAFE 2.0 Specification\\
+    }    
+        \vskip2cm
+       {\Large
+ Jihyeok Park, Yeonhee Ryou, and Sukyoung Ryu}\\
+~\\
+\large
+\begin{tabular}{c}
+                        \copyright\ KAIST
+\end{tabular}
+\includegraphics[width=2cm]{plrg-logo.png}
+\end{titlepage}
+
+\multibegin
+\raggedcolumns
 
 \tableofcontents
 \input{overview}
@@ -74,7 +33,10 @@ PLRG @ KAIST
 \input{safe-ast2ir}
 \input{safe-cfg}
 \input{safe-ir2cfg}
-\input{safe-cfg-collecting}
-\input{safe-cfg-abstract}
 
+\normalsize
+\bibliographystyle{plain}
+\bibliography{ref}
+
+\multiend
 \end{document}
