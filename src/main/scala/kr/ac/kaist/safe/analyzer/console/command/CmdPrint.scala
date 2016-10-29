@@ -28,8 +28,8 @@ case object CmdPrint extends Command("print", "Print out various information.") 
     println("       " + name + " worklist")
     println("       " + name + " ipsucc")
     println("       " + name + " trace")
-    println("       " + name + " cfg")
-    println("       " + name + " html")
+    println("       " + name + " cfg {name}")
+    println("       " + name + " html {name}")
   }
 
   def run(c: Console, args: List[String]): Option[Target] = {
@@ -146,7 +146,7 @@ case object CmdPrint extends Command("print", "Print out various information.") 
             case _ => help
           }
         case "cfg" => rest match {
-          case Nil => {
+          case name :: Nil => {
             // computes reachable fid_set
             val cfg = c.cfg
             val sem = c.semantics
@@ -167,12 +167,12 @@ case object CmdPrint extends Command("print", "Print out various information.") 
               case (func, lst) => func.getAllBlocks ++ lst
             }.reverse
             println(cfg.toString(0))
-            DotWriter.spawnDot(cfg, Some(o), Some(cur), Some(blocks))
+            DotWriter.spawnDot(cfg, Some(o), Some(cur), Some(blocks), s"$name.gv", s"$name.pdf")
           }
           case _ => help
         }
         case "html" => rest match {
-          case Nil => HTMLWriter.writeHTMLFile(c.cfg, Some(c.worklist))
+          case name :: Nil => HTMLWriter.writeHTMLFile(c.cfg, Some(c.worklist), s"$name.html")
           case _ => help
         }
         case _ => help
