@@ -16,7 +16,7 @@ import kr.ac.kaist.safe.SafeConfig
 import kr.ac.kaist.safe.analyzer._
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.analyzer.console.Console
-import kr.ac.kaist.safe.cfg_builder.HTMLWriter
+import kr.ac.kaist.safe.analyzer.html_debugger.HTMLWriter
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.nodes.cfg.CFG
 import kr.ac.kaist.safe.util._

@@ -9,7 +9,7 @@
  * ****************************************************************************
  */
 
-package kr.ac.kaist.safe.cfg_builder
+package kr.ac.kaist.safe.analyzer.html_debugger
 
 import java.io.{ File, FileWriter, BufferedInputStream }
 import scala.collection.immutable.TreeMap
