@@ -1,0 +1,11 @@
+  (/foo/).test('xfoox');
+  var match = new RegExp('(.|\r|\n)*', '').exec()[0];
+  {
+    var __result1 = match === 'xfoox';
+    var __expect1 = false;
+  }
+  {
+    var __result2 = match !== 'undefined';
+    var __expect2 = false;
+  }
+  

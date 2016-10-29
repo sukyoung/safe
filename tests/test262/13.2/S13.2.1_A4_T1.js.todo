@@ -1,0 +1,13 @@
+  function __func(__arg) 
+  {
+    __arg.foo = 7;
+  }
+  var __obj = {
+    
+  };
+  __func(__obj);
+  {
+    var __result1 = __obj.foo !== 7;
+    var __expect1 = false;
+  }
+  

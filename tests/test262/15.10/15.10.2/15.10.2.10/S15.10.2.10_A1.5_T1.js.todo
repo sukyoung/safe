@@ -1,0 +1,11 @@
+  var arr = /\r/.exec("\u000D");
+  {
+    var __result1 = (arr === null) || (arr[0] !== "\u000D");
+    var __expect1 = false;
+  }
+  var arr = /\r\r/.exec("a\u000D\u000Db");
+  {
+    var __result2 = (arr === null) || (arr[0] !== "\u000D\u000D");
+    var __expect2 = false;
+  }
+  

@@ -1,0 +1,9 @@
+  try
+{    $ERROR('#1.1: new RegExp(null,"migg") throw SyntaxError. Actual: ' + (new RegExp(null, "migg")));}
+  catch (e)
+{    {
+      var __result1 = (e instanceof SyntaxError) !== true;
+      var __expect1 = false;
+    }}
+
+  

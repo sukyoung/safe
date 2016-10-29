@@ -23,7 +23,7 @@ abstract class Command(
   def run(c: Console, args: List[String]): Option[Target]
   def help: Unit
 
-  protected def showState(c: Console, state: State, all: Boolean = false): String = {
+  protected def showState(c: Console, state: AbsState, all: Boolean = false): String = {
     val heap = state.heap
     val context = state.context
     val old = context.old

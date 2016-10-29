@@ -1,0 +1,5 @@
+  {
+    var __result1 = RegExp.prototype.test.prototype !== undefined;
+    var __expect1 = false;
+  }
+  

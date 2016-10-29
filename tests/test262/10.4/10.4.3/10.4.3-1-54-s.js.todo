@@ -1,0 +1,16 @@
+  function testcase() 
+  {
+  "use strict";
+    var o = {
+      get foo()
+      {
+        return this;
+      }
+    };
+    return o.foo === o;
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

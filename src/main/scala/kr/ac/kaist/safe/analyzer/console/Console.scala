@@ -19,7 +19,6 @@ import scala.collection.JavaConverters._
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.analyzer.{ Worklist, Semantics, ControlPoint, CallContext }
 import kr.ac.kaist.safe.analyzer.console.command._
-import kr.ac.kaist.safe.analyzer.domain.State
 import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.util.Span
 

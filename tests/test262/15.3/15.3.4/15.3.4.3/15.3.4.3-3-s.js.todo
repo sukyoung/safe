@@ -1,0 +1,14 @@
+  function testcase() 
+  {
+  "use strict";
+    function fun() 
+    {
+      return (this instanceof Boolean);
+    }
+    return ! fun.apply(false, Array);
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

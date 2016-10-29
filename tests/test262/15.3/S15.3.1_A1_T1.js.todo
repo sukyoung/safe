@@ -1,0 +1,29 @@
+  var f = (function () 
+  {
+    return arguments[0];
+  });
+  {
+    var __result1 = ! (f instanceof Function);
+    var __expect1 = false;
+  }
+  {
+    var __result2 = f(1) !== 1;
+    var __expect2 = false;
+  }
+  var g = (function () 
+  {
+    return arguments[0];
+  });
+  {
+    var __result3 = ! (g instanceof Function);
+    var __expect3 = false;
+  }
+  {
+    var __result4 = g("A") !== "A";
+    var __expect4 = false;
+  }
+  {
+    var __result5 = g("A") !== f("A");
+    var __expect5 = false;
+  }
+  

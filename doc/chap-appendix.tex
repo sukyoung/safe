@@ -1870,3 +1870,973 @@ optimization.
 )
 \end{array}
 \]
+
+\section{CFG}
+This section describes each construct of the \safe CFG
+in both the BNF notation and its corresponding implementation.
+The implementation of CFG nodes is available at:
+\begin{verbatim}
+$SAFE_HOME/src/main/scala/kr/ac/kaist/safe/nodes/cfg/
+\end{verbatim}
+
+\subsection{Syntax of \CFG}
+\small
+\[
+\begin{array}{r@{~~}r@{~~}l@{}ll}
+\embox{cfg} \in \CFG & = & \powerset{\CFGFunction} & \\
+\multicolumn{3}{l}{f,\ \langle B, \hookrightarrow, C \rangle \in \CFGFunction \ =}\\
+\multicolumn{3}{r}{
+ \powerset{\CFGBlock} \times \powerset{\CFGEdge}
+\times \powerset{\CFGCallTriple}} & \\
+b \in \CFGBlock & = & \multicolumn{2}{@{}l}{\Entry \mid \Exit \mid \ExitExc \mid \Call \mid \AfterCall}\\
+&\mid& \multicolumn{2}{@{}l}{\AfterCatch \mid \NormalBlock \mid \ModelBlock} \\
+\NormalBlock & = & \CFGInst^+ & \\
+\CFGEdge & = & \CFGBlock \times \CFGBlock \times \EdgeType & \\
+\EdgeType & = & \EdgeNormal \mid \EdgeExc & \\
+C \in \CFGCallTriple & = & \Call \times \AfterCall \times \AfterCatch & \\
+
+i \in \CFGInst & = & \CFGNormalInst \mid \CFGCallInst &
+\\
+
+x \in \CFGId & = & \String \times \SF{VarKind} &
+\\
+
+s \in \String &&&\\
+
+\SF{VarKind} & ::= &
+\multicolumn{2}{@{} l}{
+\TT{GlobalVar} \mid \TT{PureLocalVar}}\\
+&  \mid & \TT{CapturedVar} \mid \TT{CapturedCatchVar}
+\\
+
+a \in \SF{Address} & = & \SF{Integer} &
+\\
+
+v \in \SF{EJSVal} & = &
+\multicolumn{2}{@{} l}{
+ \SF{Number} \mid \String \mid \SF{Boolean} \mid \SF{Null}}\\
+& \mid &\SF{Undefined}
+\end{array}
+\]
+
+\[
+\begin{array}{r@{~~}l@{~}l}
+\lefteqn{\!\!\!\!\!\!\!\!\!\!\!\!
+\CFGNormalInst}\\
+ ::= &
+x~\verb+:=+~\TT{alloc}\verb+(+ e^{?} \verb+)+ @ a
+& \SF{CFGAlloc}
+\\
+
+\mid & x~\verb+:=+~\TT{allocArray}\verb+(+n\verb+)+ @ a
+ & \SF{CFGAllocArray}
+\\
+
+\mid & x~\verb+:=+~\TT{allocArg}\verb+(+n\verb+)+ @ a
+ & \SF{CFGAllocArg}
+\\
+
+\mid & x~\verb+:=+~\TT{enterCode}\verb+(+e\verb+)+
+ & \SF{CFGEnterCode}
+\\
+
+\mid & x ~\verb+:=+~ e
+ & \SF{CFGExprStmt}
+\\
+
+\mid & x ~\verb+:=+~ \TT{delete}\verb+(+e\verb+)+
+ & \SF{CFGDelete}
+\\
+
+\mid & x ~\verb+:=+~ \TT{delete}\verb+(+e,e\verb+)+
+ & \SF{CFGDeleteProp}
+\\
+
+\mid & e\verb+[+e\verb+]+ ~\verb+:=+~ e
+ & \SF{CFGStore}
+\\
+
+\mid & e\verb+[+s\verb+]+ ~\verb+:=+~ e
+ & \SF{CFGStoreStringIdx}
+\\
+
+\mid & x ~\verb+:=+~ \TT{function} ~x^{?}\verb+(+f\verb+)+ @ \verb+(+a, a(, a)^{?}\verb+)+
+ & \SF{CFGFunExpr}
+\\
+
+\mid & \TT{assert}\verb+(+e\verb+)+
+ & \SF{CFGAssert}
+\\
+
+\mid & \TT{catch}\verb+(+x\verb+)+
+ & \SF{CFGCatch}
+\\
+
+\mid & \TT{return}\verb+(+e^{?}\verb+)+ 
+ & \SF{CFGReturn}
+\\
+
+\mid & \TT{throw}\verb+(+e\verb+)+
+ & \SF{CFGThrow}
+\\
+
+\mid & \TT{noop}
+ & \SF{CFGNoOp}
+\\
+
+%\mid & x ~\verb+:=+~\ensuremath{\diamond}x\verb+(+e^{*}\verb+)+ @ a^{?}
+\mid & x ~\verb+:=+~x\verb+(+e^{*}\verb+)+ (@ a)^{?}
+ & \SF{CFGInternalCall}
+\\\\
+
+\lefteqn{\!\!\!\!\!\!\!\!\!\!\!\!
+\CFGCallInst}\\
+::= & \TT{call}\verb+(+e,e,e\verb+)+ @ \verb+(+a, a\verb+)+ & \SF{CFGCall}\\
+\mid & \TT{construct}\verb+(+e,e,e\verb+)+ @ \verb+(+a, a\verb+)+ & \SF{CFGConstruct}
+\\\\
+
+\lefteqn{\!\!\!\!\!\!\!\!\!\!\!\!
+e \in \CFGExpr}\\
+::= & x & \SF{CFGVarRef}\\
+\mid & e \inop e & \SF{CFGBin}\\
+\mid & \preop e & \SF{CFGUn}\\
+\mid & e\verb+[+e\verb+]+ & \SF{CFGLoad}\\
+\mid & \TT{this} & \SF{CFGThis}\\
+\mid & v  & \SF{CFGVal}
+\\\\
+
+\preop ::= & \multicolumn{2}{@{} l}{
+ \TT{void} \mid \TT{typeof} \mid \TT{+} \mid \TT{-} \mid \TT{\~} \mid \TT{!}}
+\\
+\inop ::= &
+\multicolumn{2}{@{} l}{
+ \TT{instanceof} \mid \TT{in} \mid \TT{|} \mid \TT{\&}
+               \mid \TT{\^} \mid \TT{<<} \mid \TT{>>} \mid \TT{>>>}
+\mid \TT{+} \mid \TT{-} \mid \TT{*} \mid \TT{/} \mid \TT{\%}}\\
+\mid & \multicolumn{2}{@{} l}{
+\TT{==} \mid \TT{!=} \mid \TT{===}
+\TT{!==} \mid \TT{<} \mid \TT{>} \mid \TT{<=} \mid \TT{>=}}
+\end{array}
+\]
+
+\begin{itemize}
+\item \Entry, \Exit, and \ExitExc blocks always uniquely exist for each \CFGFunction,
+and an \Entry block has no predecessor, \Exit and \ExitExc blocks have no successor.
+\begin{itemize}
+\item $\forall \langle B, \_, \_ \rangle \in \CFGFunction.$
+
+$\quad(\nexists\ \entry \in\Entry\cap B)$,
+
+$\quad(\nexists\ \exit \in \Exit \cap B)$,
+
+$\quad(\nexists\ \exitExc \in \ExitExc \cap B)$
+\item $\forall \langle B, \hookrightarrow, \_ \rangle \in \CFGFunction.$
+$\nexists b \in B.$ s.t.
+
+$(b \hookrightarrow \entry) \vee (\exit \hookrightarrow b) \vee (\exitExc \hookrightarrow b)$
+where $\entry \in \Entry,\ \exit \in \Exit,\ \exitExc \in \ExitExc$
+\end{itemize}
+
+\item Each edge connects 2 blocks in the same \CFGFunction.
+\begin{itemize}
+\item $\forall \langle B, \hookrightarrow, \_ \rangle \in \CFGFunction.\ \hookrightarrow\ \subseteq B \times B$
+\end{itemize}
+
+\item Each \CFGFunction records \Call, \AfterCall, and \AfterCatch
+without any edges between them, and the triple consisting of them is unique.
+\begin{itemize}
+\item $\forall \langle B, \_, C \rangle \in \CFGFunction.$
+
+$\forall \call \in \Call \cap B.\ $
+
+$\forall \acall \in \AfterCall \cap B.\ $
+
+$\forall \acatch \in \AfterCatch \cap B.\ $
+
+$\quad(\call, \_, \_),\ (\_, \acall, \_),\ (\_, \_, \acatch) \in C$
+\item $\forall \langle \_, \_, C \rangle \in \CFGFunction.$
+
+\mbox{$\forall (\call, \acall, \acatch), (\call', \acall', \acatch') \in C.$}
+
+$\quad\call = \call' \Leftrightarrow \acall = \acall'$
+
+$\phantom{\quad\call = \call' }\Leftrightarrow \acatch = \acatch'$
+\end{itemize}
+
+\item There is no instruction after \TT{return} in a block. There is no instruction before \TT{catch} in a block.
+\begin{itemize}
+\item $\forall b \in \NormalBlock.$
+
+$\quad(i_k \in b \wedge (i_k = \TT{return})) \rightarrow (\nexists i_{k'} \in b.\ k < k')$
+\item $\forall b \in \NormalBlock.$
+
+$\quad(i_k \in b \wedge (i_k = \TT{catch})) \rightarrow (\nexists i_{k'} \in b.\ k > k')$
+\end{itemize}
+\end{itemize}
+
+\subsection{\CFG Implementation}
+When a function $f$ expects a collection $B$ and we pass a singleton set $\{b\}$
+as its argument, we abuse the notation and simply write $f(b)$ instead of $f(\{b\})$.
+
+\subsubsection{Helper Functions}
+\[
+\begin{array}{l@{}l@{~}l}
+\toSeq(S) & : & \powerset{\Any} \rightarrow \Any^{*}\\
+& = & \text{convert a set of any elements into}\\
+& & \text{a sequence of them by an arbitrary order.}\\
+& & \\
+
+\fold(A)(b)(f) & : & \Any^{*} \times \Any' \times (\Any \times \Any' \rightarrow \Any') \rightarrow \Any'\\
+& = & \mbox{if}\ (\length(A) = 0)\ \mbox{then}\ b \\
+& & \mbox{else}\ \fold(\tailOf(A))(f(\headOf(A),b))(f)\\
+& & \\
+
+\iter(A)(f) & : & \Any^{*} \times (\Any \rightarrow \Unit) \rightarrow \Unit\\
+& = & \mbox{if}\ (\length(A) = 0)\ \mbox{then}\ \Unit \\
+& & \mbox{else}\ f(\headOf(A))\\
+& & \phantom{else} \iter(\tailOf(A))(f)\\
+\end{array}
+\]
+
+\vspace*{-2em}
+\[
+\begin{array}{l@{}l@{~}l}
+\iter(A)(idx)(f) & : & \Any^{*} \times \Integer \times (\Any \times \Integer \rightarrow \Unit)\\
+&& \rightarrow \Unit\\
+& = & \mbox{if}\ (\length(A) = 0)\ \mbox{then}\ \Unit \\
+& & \mbox{else}\ f(\headOf(A), idx)\\
+& & \phantom{else} \iter(\tailOf(A))(idx+1)(f)\\
+& & \\
+
+\getTail(B, \emph{f})\ & : & \CFGBlock^{*} \times  \CFGFunction \rightarrow \CFGBlock \\
+& = & \mbox{if}\ (\length(B) = 0)\ \mbox{then}\\
+& & \phantom{else} f.\emph{createBlock}\\
+& & \mbox{else}\ \mbox{if}\ (\length(B) = 1)\ \mbox{then}\\
+& & \phantom{else} \headOf(B) \\
+& & \mbox{else}\ b \letval f.\emph{createBlock}\\
+& & \phantom{else} \emph{cfg}.\emph{addEdge}(B, b)\\
+& & \phantom{else} b\\
+\end{array}
+\]
+
+\subsubsection{$\CFG$}
+\[
+\begin{array}{l@{}l@{~}l}
+\lefteqn{\new\ \CFG \ : \ \CFGId^{*} \rightarrow \CFG} \\
+\lefteqn{\new\ \CFG(\emph{globalVars})}\\
+& = & \text{let } \emph{cfg} \text{ be a new } \CFG\\
+& & \emph{cfg}.\emph{globalFunc} \\
+& & \quad \leftarrow \new\ \CFGFunction(\emph{cfg}, ``", \Nil, \emph{globalVars}, ``\text{top-level}")\\
+& & \emph{cfg}\\
+& & \\
+\end{array}
+\]
+\[
+\begin{array}{@{~}r@{~}l@{}l@{~}l}
+& \CFG & : &
+\begin{Bmatrix*}[l]
+\emph{globalFunc} & : & \SF{CFGFunction}\\
+\emph{createFunction} & : & \String \times \CFGId^{*} \times \CFGId^{*} \\
+&&\times\ \String \rightarrow \CFGFunction \\
+\emph{addEdge} & : & \powerset{\CFGBlock} \times \powerset{\CFGBlock}\\
+&& \times\ \EdgeType \rightarrow \Unit
+\end{Bmatrix*}
+\end{array}
+\]
+
+\[
+\begin{array}{l@{}l@{~}l}
+\lefteqn{\CFG.\emph{createFunction}(\emph{argsName}, \emph{argVars}, \emph{localVars}, \emph{name})}\\
+& = & \new\ \CFGFunction(\this, \emph{argsName}, \emph{argVars}, \emph{localVars}, \emph{name})\\
+& & \\
+
+\lefteqn{\CFG.\emph{addEdge}(B_1, B_2, \emph{ty} = \EdgeNormal)}\\
+& = & \iter(toSeq(B_1))(\lambda(b_1) \Rightarrow iter(toSeq(B_2))(\lambda(b_2) \Rightarrow \\
+& & \quad b_1.\emph{succs}(\emph{ty}) \leftarrow b_1.\emph{succs}(\emph{ty}) \cup \{b_2\} \\
+& & \quad b_2.\emph{preds}(\emph{ty}) \leftarrow b_2.\emph{preds}(\emph{ty}) \cup \{b_1\} \\
+& & )) \\
+\end{array}
+\]
+
+\subsubsection{$\CFGFunction$}
+\[
+\begin{array}{l@{}l@{~}l}
+\lefteqn{\new \ \CFGFunction \ : \ \CFG \times \String \times \CFGId^{*} \times \CFGId^{*} \times \String}\\
+\lefteqn{\phantom{\new \ \CFGFunction \ : \ }\rightarrow \CFGFunction}\\
+\lefteqn{\new\ \CFGFunction(\emph{cfg}, \emph{argsName}, \emph{argVars}, \emph{localVars}, \emph{name})}\\
+& = & \text{let } \emph{func} \text{ be a new } \CFGFunction\\
+& & \emph{entry} \leftarrow \new\ \Entry\\
+& & \emph{exitExc} \leftarrow \new\ \ExitExc\\
+& & \emph{exit} \leftarrow \new\ \Exit\\
+& & \emph{func}.\emph{cfg} \leftarrow \emph{cfg} \\
+& & \emph{func}.\emph{argumentsName} \leftarrow \emph{argsName} \\
+& & \emph{func}.\emph{argVars} \leftarrow \emph{argVars}\\
+& & \emph{func}.\emph{localVars} \leftarrow \emph{localVars}\\
+& & \emph{func}.\emph{entry} \leftarrow \emph{entry}\\
+& & \emph{func}.\emph{exit} \leftarrow \emph{exit}\\
+& & \emph{func}.\emph{exitExc} \leftarrow \emph{exitExc}\\
+& & \emph{func}.\emph{blocks} \leftarrow \{ \emph{entry}, \emph{exit}, \emph{exitExc} \}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~\\
+& & \emph{func}.\emph{captured} \leftarrow \emptyset\\
+& & \emph{func}\\
+\end{array}
+\]
+
+\vspace*{-2em}
+\[
+\begin{array}{@{~}r@{~}l@{}l@{~}l}
+& \CFGFunction & : &
+\begin{Bmatrix*}[l]
+\emph{cfg}  & : & \CFG \\
+\lefteqn{\emph{argumentsName} \ : \ \String} \\
+\emph{argVars} & : & \CFGId^{*} \\
+\emph{localVars} & : & \CFGId^{*} \\
+\emph{entry} & : & \Entry \\
+\emph{exit} & : & \Exit \\
+\emph{exitExc} & : & \ExitExc \\
+\emph{blocks} & : & \powerset{\CFGBlock}
+~~~~~~~~~~~~~~~~~\\
+\emph{captured} & : & \powerset{\CFGId} \\
+\lefteqn{\emph{createCall} \ : \ \CFGCallInst \times \CFGId \rightarrow \Call} \\
+\lefteqn{\emph{createBlock} \ : \ \Unit \rightarrow \CFGBlock} \\
+\lefteqn{\emph{createModelBlock} \ : \ \Any \rightarrow \ModelBlock} \\
+\end{Bmatrix*}
+\end{array}
+\]
+
+\hspace*{-2em}
+$
+\begin{array}{l}
+\CFGFunction.\emph{createCall}(\emph{callInst}, \emph{retVar})\\
+= \ \new\ \Call(\this, \emph{callInst}, \emph{retVar})\\\\
+
+\CFGFunction.\emph{createBlock}\\
+= \ \new\ \NormalBlock(\this)\\\\
+
+\CFGFunction.\emph{createModelBlock}(\emph{data})\\
+= \ \new\ \ModelBlock(\this, \emph{data})\\
+\end{array}
+$
+
+\subsubsection{$\CFGBlock$}
+$
+\begin{array}{l@{}l@{~}l}
+\lefteqn{\new \ \CFGBlock \ : \ \CFGFunction \rightarrow \CFGBlock} \\
+\new\ \CFGBlock(\emph{func})
+& = & \text{let } \emph{b} \text{ be a new } \CFGBlock\\
+& & \emph{b}.\emph{func} \leftarrow \emph{func}\\
+& & \emph{b}.\emph{succs} \leftarrow \emptyset\\
+& & \emph{b}.\emph{preds} \leftarrow \emptyset\\
+& & \emph{b}\\
+\end{array}
+$
+
+\hspace*{-2em}
+$\begin{array}{@{~}r@{~}l@{}l@{~}l}
+& \CFGBlock & : &
+\begin{Bmatrix*}[l]
+\emph{func} & : & \CFGFunction \\
+\emph{succs} & : & \EdgeType \mapsto \powerset{\CFGBlock} \\
+\emph{preds} & : & \EdgeType \mapsto \powerset{\CFGBlock} \\
+\end{Bmatrix*}\\
+\end{array}
+$
+
+\subsubsection{$\Call$}
+\[
+\begin{array}{l@{}l@{~}l}
+\lefteqn{\new \ \Call \ : \ \CFGFunction \times \CFGCallInst \times \CFGId \rightarrow \Call} \\
+\lefteqn{\new\ \Call(\emph{func}, \emph{callInst}, \emph{retVar})}\\
+& = & \text{let } \emph{call} \text{ be a new } \Call \text{ initialized to } \new\ \CFGBlock(\emph{func})\\
+& & \emph{call}.\emph{afterCall} \leftarrow \new\ \AfterCall(\emph{func}, \emph{call}, \emph{retVar})\\
+& & \emph{call}.\emph{afterCatch} \leftarrow \new\ \AfterCatch(\emph{func}, \emph{call})\\
+& & \emph{call}.\emph{callInst} \leftarrow \emph{callInst}\\
+& & \emph{call}\\\\
+\lefteqn{ \Call \ : \
+\begin{Bmatrix*}[l]
+\emph{afterCall} & : & \AfterCall\\
+\emph{afterCatch} & : & \AfterCatch\\
+\emph{callInst} & : & \CFGCallInst\\
+\end{Bmatrix*}
+}
+\end{array}
+\]
+
+\subsubsection{$\AfterCall$}
+$
+\begin{array}{l@{}l@{~}l}
+\lefteqn{\new \ \AfterCall \ : \ \CFGFunction \times \Call \times \CFGId \rightarrow \AfterCall} \\
+\lefteqn{\new\ \AfterCall(\emph{func}, \emph{call}, \emph{retVar})}\\
+& = & \text{let } \emph{acall} \text{ be a new } \AfterCall \text{ initialized to}\\
+&& \quad\ \ \new\ \CFGBlock(\emph{func})\\
+& & \emph{acall}.\emph{call} \leftarrow \emph{call}\\
+& & \emph{acall}.\emph{retVar} \leftarrow \emph{retVar}\\
+& & \emph{acall}\\\\
+\lefteqn{\AfterCall \ : \
+\begin{Bmatrix*}[l]
+\emph{call} & : & \Call \\
+\emph{retVar} & : & \CFGId \\
+\end{Bmatrix*}}
+\end{array}
+$
+
+\subsubsection{$\AfterCatch$}
+$
+\begin{array}{l@{}l@{~}l}
+\lefteqn{\new \ \AfterCatch \ : \ \CFGFunction \times \Call \rightarrow \AfterCatch}\\
+\lefteqn{\new\ \AfterCatch(\emph{func}, \emph{call})}\\
+& = & \text{let } \emph{acatch} \text{ be a new } \AfterCatch \text{ initialized to }\\
+& & \quad\ \ \new\ \CFGBlock(\emph{func})\\
+& & \emph{acatch}.\emph{call} \leftarrow \emph{call}\\
+& & \emph{acatch}\\
+\end{array}
+$
+
+\noindent
+$
+\begin{array}{@{~}r@{~}l@{}l@{~}l}
+\\
+& \AfterCatch & : &
+\begin{Bmatrix*}[l]
+\emph{call} & : & \Call \\
+\end{Bmatrix*}\\
+\end{array}
+$
+
+\subsubsection{$\NormalBlock$}
+$
+\begin{array}{l@{}l@{~}l}
+\lefteqn{\new \ \NormalBlock \ : \ \CFGFunction \rightarrow \NormalBlock}\\
+\lefteqn{\new\ \NormalBlock(\emph{func})}\\
+& = & \text{let } \emph{b} \text{ be a new } \NormalBlock \text{ initialized to }\\
+& & \quad\ \ \new\ \CFGBlock(\emph{func})\\
+& & \emph{b}.\emph{insts} \leftarrow \Nil \\
+& & \emph{b}\\
+\end{array}
+$
+
+\noindent
+$
+\begin{array}{@{~}r@{~}l@{}l@{~}l}
+\\
+& \NormalBlock & : &
+\begin{Bmatrix*}[l]
+\emph{insts} & : & \CFGInst^{*} \\
+\emph{createInst} & : & \CFGInst \rightarrow \Unit \\
+\end{Bmatrix*}\\
+\end{array}
+$
+
+\noindent
+$
+\begin{array}{l}
+\\
+\NormalBlock.\emph{createInst}(\emph{inst})\\
+= \ \this.\emph{insts} \leftarrow \this.\emph{insts} :: \emph{inst}\\
+\end{array}
+$
+
+\subsubsection{$\ModelBlock$}
+$
+\begin{array}{l@{}l@{~}l}
+\lefteqn{\new \ \ModelBlock \ : \ \CFGFunction \times \Any \rightarrow \ModelBlock}\\
+\lefteqn{\new\ \ModelBlock(\emph{func}, \emph{data})}\\
+& = & \text{let } \emph{modelB} \text{ be a new } \ModelBlock \text{ initialized to }\\
+& & \quad\ \ \new\ \CFGBlock(\emph{func})\\
+& & \emph{modelB}.\emph{data} \leftarrow \emph{data} \\
+& & \emph{modelB}\\
+\end{array}
+$
+
+\noindent
+$
+\begin{array}{@{~}r@{~}l@{}l@{~}l}
+\\
+& \ModelBlock & : &
+\begin{Bmatrix*}[l]
+\emph{data} & : & \Any \\
+\end{Bmatrix*}\\
+\end{array}
+$
+
+\subsubsection{$\CFGId$}
+$
+\begin{array}{l@{}l@{~}l}
+\lefteqn{\new \ \CFGId \ : \ \String \times \VarKind \rightarrow \CFGId}\\
+\lefteqn{\new\ \CFGId(\emph{name}, \emph{kind})}\\
+& = & \text{let } \emph{id} \text{ be a new } \CFGId\\
+& & \emph{id}.\emph{name} \leftarrow \emph{name} \\
+& & \emph{id}.\emph{kind} \leftarrow \emph{kind} \\
+& & \emph{id}\\
+\end{array}
+$
+
+\noindent
+$
+\begin{array}{@{~}r@{~}l@{}l@{~}l}
+& \CFGId & : &
+\begin{Bmatrix*}[l]
+\emph{name} & : & \String\\
+\emph{kind} & : & \VarKind\\
+\end{Bmatrix*}\\
+\end{array}
+$
+
+\section{IR to CFG}
+This section describes the \safe translation rules from IR to CFG,
+whose implementation is available at:
+\begin{verbatim}
+$SAFE_HOME/src/main/scala/kr/ac/kaist/safe/cfg_builder/
+           CFGBuilder.scala
+\end{verbatim}
+
+\noindent
+$
+\begin{array}{l@{~~}l}
+\LabelMap &: \JSLabel \mapsto \powerset{\CFGBlock}\\
+\JSLabel &= \RetLabel \mid \ThrowLabel \mid \ThrowEndLabel \\
+& \ \ \mid \AfterCatchLabel \mid \UserLabel\\
+\UserLabel &= \String\\
+\end{array}
+$
+
+\[
+\begin{array}{l@{~~}l}
+\transfun{-}_{\emph{root}} &: \IRRoot \rightarrow \CFG \\
+\transfun{-}_{\emph{fdvars}} &: \IRFunDecl^{*} \rightarrow \CFGId^{*} \\
+\transfun{-}_{\emph{vds}} &: \IRVarStmt^{*} \rightarrow \CFGId^{*} \\
+\transfun{-}_{\emph{args}} &: \IRStmt^{*} \rightarrow \CFGId^{*} \\
+\transfun{-}_{\emph{functional}} &: \IRFunctional \rightarrow \CFGFunction \\
+\transfun{-}_{\emph{fd}} &: \IRFunDecl \times \CFGFunction \times \NormalBlock \rightarrow \Unit \\
+\transfun{-}_{\emph{fd}^{*}} &: \IRFunDecl^{*} \times \CFGFunction \times \NormalBlock \rightarrow \Unit \\
+\transfun{-}_{\emph{stmt}} &: \IRStmt \times \CFGFunction \times \CFGBlock^{*} \times \LabelMap\\
+& \rightarrow \CFGBlock^{*} \times \LabelMap\\
+\transfun{-}_{\emph{stmt}^{*}} &: \IRStmt^{*} \times \CFGFunction \times \CFGBlock^{*} \times \LabelMap\\
+& \rightarrow \CFGBlock^{*} \times \LabelMap\\
+\transfun{-}_{\emph{mem}} &: \IRField \times \NormalBlock \times \IRId \rightarrow \Unit \\
+\transfun{-}_{\emph{elem}} &: \IRExpr \times \NormalBlock \times \IRId \times \Integer \rightarrow \Unit \\
+\transfun{-}_{\emph{expr}} &: \IRExpr \rightarrow \CFGExpr \\
+\transfun{-}_{\emph{id}} &: \IRId \rightarrow \CFGId \\
+\end{array}
+\]
+
+We use the following global variables for describing the translation from IR to CFG:
+\[
+\begin{array}{lll}
+*\ \emph{catchVars} &: \powerset{\String} & \text{ initialized to } \emptyset\\
+*\ \emph{cfg} &: \CFG &\\
+*\ \emph{cfgIdMap} &: \String \mapsto \CFGId & \text{ initialized to } [\ ]\\
+*\ \emph{currentFunc} &: \CFGFunction & \\
+\end{array}
+\]
+
+\[
+\begin{array}{l@{}l@{~}l}
+\lefteqn{\transfun{\IRRoot(\emph{fds}, \emph{vds}, \emph{stmts})}_{\emph{root}}}\\
+& = & \emph{globalVars} \letval \transfun{\emph{fds}}_{\emph{fdvars}} ~\emph{++}~ \transfun{\emph{vds}}_{\emph{vds}} \\
+& & \emph{cfg} \leftarrow \new\ \CFG(\emph{globalVars})\\
+& & \emph{globalFunc} \letval \emph{cfg}.\emph{globalFunc}\\
+& & \emph{currentFunc} \leftarrow \emph{globalFunc}\\
+& & \emph{startBlock} \letval \emph{globalFunc}.\emph{createBlock}\\
+& & \emph{cfg}.\emph{addEdge}(\emph{globalFunc}.\emph{entry}, \emph{startBlock})\\
+& & \transfun{\emph{fds}}_{\emph{fd}^*}(\emph{globalFunc}, \emph{startBlock})\\
+& & (B, L) \letval \transfun{\emph{stmts}}_{\emph{stmt}^{*}}(\emph{globalFunc}, \emph{startBlock}, [\ ])\\
+& & \emph{cfg}.\emph{addEdge}(B, \emph{globalFunc}.\emph{exit})\\
+& & \emph{cfg}.\emph{addEdge}(L(\TT{ThrowLabel}), \emph{globalFunc}.\emph{exitExc}, \EdgeExc)\\
+& & \emph{cfg}.\emph{addEdge}(L(\TT{ThrowEndLabel}), \emph{globalFunc}.\emph{exitExc})\\
+& & \emph{cfg}.\emph{addEdge}(L(\TT{AfterCatchLabel}), \emph{globalFunc}.\emph{exitExc})\\
+& & \emph{cfg}\\
+& & \\
+\lefteqn{\transfun{\emph{fds}}_{\emph{fdvars}}}\\
+ & = &
+\fold(\emph{fds})(\Nil)(\lambda(\emph{vars}, \irfundeclsmall{f}{\_}{\_}{\_}{\_}{\_}{\_} \Rightarrow \emph{vars} :: \transfun{f}_{\emph{id}})\\
+& & \\
+
+\lefteqn{\transfun{\emph{vds}}_{\emph{vds}}}\\
+ & = &
+\fold(\emph{vds})(\Nil)(\lambda(\emph{vars}, \irvar{x})\Rightarrow \emph{vars} :: \transfun{x}_{\emph{id}})\\
+& & \\
+
+\lefteqn{\transfun{\emph{args}}_{\emph{args}}}\\
+ & = &
+\fold(\emph{args})(\Nil)(\lambda(\emph{args}, x = \emph{arguments}[i]) \Rightarrow \emph{args} :: \transfun{x}_{\emph{id}})\\
+& & \\
+\end{array}
+\]
+
+\[
+\begin{array}{l@{}l@{~}l}
+\lefteqn{\transfun{\irfunctionalsmall{\_}{\emph{name}}{\emph{params}}{\emph{args}}{\emph{fds}}{\emph{vds}}{\emph{body}}}_{\emph{functional}}}\\
+& = & \emph{argVars} \letval \transfun{\emph{args}}_{\emph{args}}\\
+& & \emph{localVars} \letval \transfun{\emph{fds}}_{\emph{fdvars}} \emph{++} \transfun{\emph{vds}}_{\emph{vds}}\\
+& & \emph{argumentsName} \letval \headOf(\emph{params}).\emph{name}\\
+& & \emph{nameStr} \letval \emph{name}.\emph{name}\\
+& & \emph{newFunc} \letval \emph{cfg}.\emph{createFunction}(\emph{argumentsName}, \emph{argVars},\\
+& & \emph{localVars}, \emph{nameStr})\\
+& & \emph{oldFunc} \letval \emph{currentFunc}\\
+& & \emph{currentFunc} \leftarrow \emph{newFunc}\\
+& & \emph{startBlock} \letval \emph{newFunc}.\emph{createBlock}\\
+& & \emph{cfg}.\emph{addEdge}(\emph{newFunc}.\emph{entry}, \emph{startBlock})\\
+& & \transfun{\emph{fds}}_{\emph{fd}^{*}}(\emph{newFunc}, \emph{startBlock})\\
+& & (B, L) \letval \transfun{\emph{body}}_{\emph{stmt}^{*}}(\emph{newFunc}, \emph{startBlock}, [\ ])\\
+& & \emph{cfg}.\emph{addEdge}(B, \emph{newFunc}.\emph{exit})\\
+& & \emph{cfg}.\emph{addEdge}(L(\TT{RetLabel}), \emph{newFunc}.\emph{exit})\\
+& & \emph{cfg}.\emph{addEdge}(L(\TT{ThrowLabel}), \emph{newFunc}.\emph{exitExc}, \EdgeExc)\\
+& & \emph{cfg}.\emph{addEdge}(L(\TT{ThrowEndLabel}), \emph{newFunc}.\emph{exitExc})\\
+& & \emph{cfg}.\emph{addEdge}(L(\TT{AfterCatchLabel}), \emph{newFunc}.\emph{exitExc})\\
+& & \emph{currentFunc} \leftarrow \emph{oldFunc}\\
+& & \emph{newFunc}\\
+& & \\
+\lefteqn{\transfun{\IRFunDecl(\emph{functional})}_{\emph{fd}}(\emph{func}, \emph{block})}\\
+& = & \emph{lhs} \letval \transfun{\emph{functional}.\emph{name}}_{\emph{id}}\\
+& & \emph{newFunc} \letval \transfun{\emph{functional}}_{\emph{functional}}\\
+& & (\emph{addr1}, \emph{addr2}) \letval (\new\ \Address,\ \new\ \Address)\\
+& & \emph{block}.\emph{createInst}(\emph{lhs} := \TT{function}\ (\emph{newFunc}) ~@~
+\TT{(}\emph{addr1},\ \emph{addr2}\TT{)})\\
+& & \\
+
+\lefteqn{\transfun{\emph{fds}}_{\emph{fd}^{*}}(\emph{func}, \emph{block})}\\
+& = & \iter(\emph{fds})(\lambda(\emph{fd}) \Rightarrow \transfun{fd}_{\emph{fd}}(\emph{func}, \emph{block}))\\
+& & \\
+
+\lefteqn{\transfun{\irstmtunit{\emph{stmts}}}_{\emph{stmt}}(f, B, L)}\\
+ & = &
+\transfun{\emph{stmts}}_{\emph{stmt}^{*}}(f, B, L)\\
+& & \\
+
+\lefteqn{\transfun{\irseq{\emph{stmts}}}_{\emph{stmt}}(f, B, L)}\\
+ & = &
+\transfun{\emph{stmts}}_{\emph{stmt}^{*}}(f, B, L)\\
+& & \\
+
+\lefteqn{\transfun{\SF{IRFunExpr}(\emph{lhs}, \emph{functional})}_{\emph{stmt}}(f, B, L)}\\
+& = & \emph{newFunc} \letval \transfun{\emph{functional}}_{\emph{functional}}\\
+& & (\emph{addr1}, \emph{addr2}, \emph{addr3}) \letval (\new\ \Address,\ \new\ \Address,\\
+& & \phantom{(\emph{addr1}, \emph{addr2}, \emph{addr3}) \letval (}\new\ \Address)\\
+& & \emph{name} \letval \transfun{\emph{functional}.\emph{name}}_{\emph{id}}\\
+& & \emph{tailBlock} \letval \getTail(B, f)\\
+& & if\ (\emph{name}.\emph{kind} = \TT{CapturedVar}) \\
+& & \phantom{if} \emph{tailBlock}.\emph{createInst}(\emph{lhs} := \TT{function}\ \emph{name}\ (\emph{newFunc}) \\
+& & \phantom{if \emph{tailBlock}.\emph{createInst}(\emph{lhs} :=}
+~@~ \TT{(}\emph{addr1},\ \emph{addr2}, \emph{addr3}\TT{)})\\
+& & else\\
+& & \phantom{if} \emph{tailBlock}.\emph{createInst}(\emph{lhs} := \TT{function}\ (\emph{newFunc}) ~@~
+\TT{(} \emph{addr1},\\
+& & \phantom{if \emph{tailBlock}.\emph{createInst}(\emph{lhs} := \TT{function}\ (\emph{newFunc}) ~@~ \TT{(}}\emph{addr2}\TT{)})\\
+& & (\emph{tailBlock}, L)\\
+& & \\
+\end{array}
+\]
+
+\vspace*{-2em}
+\[
+\begin{array}{l@{}l@{~}l}
+\lefteqn{\transfun{\irobject{x}{\emph{members}}}_{\emph{stmt}}(f, B, L)}\\
+& = & \emph{tailBlock} \letval \getTail(B, f)\\
+& & \emph{addr1} \letval \new\ \Address\\
+& & \emph{tailBlock}.\emph{createInst}(x := \TT{alloc}() ~@~ \emph{addr1})\\
+& & iter(\emph{members})(\lambda(m) \Rightarrow \transfun{m}_{\emph{mem}}(tailBlock, x))\\
+& & (\emph{tailBlock}, L[\ThrowLabel \mapsto \emph{tailBlock} \cup L(\ThrowLabel)])\\
+& & \\
+
+\lefteqn{\transfun{\irobject{x}{\emph{members}, \emph{proto}}}_{\emph{stmt}}(f, B, L)}\\
+& = & \emph{tailBlock} \letval \getTail(B, f)\\
+& & \emph{protoId} \letval \transfun{\emph{proto}}_{\emph{expr}}\\
+& & \emph{addr1} \letval \new\ \Address\\
+& & \emph{tailBlock}.\emph{createInst}(x := \TT{alloc}(\emph{protoId}) ~@~ \emph{addr1})\\
+& & iter(\emph{members})(\lambda(m) \Rightarrow \transfun{m}_{\emph{mem}}(tailBlock, x))\\
+& & (\emph{tailBlock}, L[\ThrowLabel \mapsto \emph{tailBlock} \cup L(\ThrowLabel)])\\
+& & \\
+
+\lefteqn{\transfun{\ircfgtrycat{\emph{body}}{x}{\emph{catIR}}}_{\emph{stmt}}(f, B, L)}\\
+& = & \emph{catchVars} \leftarrow \emph{catchVars} \cup \{ x.\emph{name} \}\\
+& & \emph{tryB} \letval f.\emph{createBlock}\\
+& & \emph{cfg}.\emph{addEdge}(B, \emph{tryB})\\
+& & \emph{catB} \letval f.\emph{createBlock}\\
+& & \emph{catB}.\emph{createInst}(\TT{catch}(\transfun{x}_{\emph{id}}))\\
+& & (\emph{trybs}, \emph{trylmap}) \letval \transfun{\emph{body}}_{\emph{stmt}}(f, \emph{tryB}, [\ ])\\
+& & \emph{cfg}.\emph{addEdge}(\emph{trylmap}(\ThrowLabel), \emph{catB}, \EdgeExc)\\
+& & \emph{cfg}.\emph{addEdge}(\emph{trylmap}(\ThrowEndLabel), \emph{catB})\\
+& & \emph{cfg}.\emph{addEdge}(\emph{trylmap}(\AfterCatchLabel), \emph{catB})\\
+& & \emph{tmplmap} \letval \emph{trylmap} - \ThrowLabel - \ThrowEndLabel\\
+&& \phantom{\emph{tmplmap} \letval} - \AfterCatchLabel\\
+& & (\emph{catchbs}, \emph{catchlamp}) \letval \transfun{\emph{catIR}}_{\emph{stmt}}(f, \emph{catB}, \emph{tmplmap})\\
+& & (\emph{trybs} ~\emph{++}~ \emph{catchbs}, L ~\emph{++}~ \emph{catchlmap})\\
+& & \\
+
+\lefteqn{\transfun{\ircfgtryfin{\emph{body}}{\emph{finIR}}}_{\emph{stmt}}(f, B, L)}\\
+& = & \emph{tryB} \letval f.\emph{createBlock}\\
+& & \emph{cfg}.\emph{addEdge}(B, \emph{tryB})\\
+& & \emph{finB} \letval f.\emph{createBlock}\\
+& & (\emph{trybs}, \emph{trylmap}) \letval \transfun{\emph{body}}_{\emph{stmt}}(f, \emph{tryB}, [\ ])\\
+& & (\emph{finbs}, \emph{finlamp}) \letval \transfun{\emph{finIR}}_{\emph{stmt}}(f, \emph{finB}, L)\\
+& & \emph{cfg}.\emph{addEdge}(\emph{trybs}, \emph{finB})\\
+& & \emph{reslmap} \letval \fold(\emph{trylmap} - \AfterCatchLabel)\\
+& & \phantom{\emph{reslmap} \letval \fold}(\emph{finlmap})
+(\lambda((l, B'), L') \Rightarrow \\
+& & \quad \emph{dupB} \letval f.\emph{createBlock}\\
+& & \quad (B'', L'') \letval \transfun{\emph{finIR}}_{\emph{stmt}}(f, \emph{dupB}, L')\\
+& & \quad if\ (l = \ThrowLabel)\\
+& & \quad \phantom{if} \emph{cfg}.\emph{addEdge}(\emph{trylmap}(\AfterCatchLabel),\ \emph{dupB})\\
+& & \quad \phantom{if} \emph{cfg}.\emph{addEdge}(B', \emph{dupB}, \EdgeExc)\\
+& & \quad \phantom{if} L''[\ThrowEndLabel \mapsto (L''(\ThrowEndLabel) ~\emph{++}~ B'')]
+~~~~~~~~~~~~~~~~\\
+& & \quad else\\
+& & \quad \phantom{if} \emph{cfg}.\emph{addEdge}(B', \emph{dupB}, \EdgeExc)\\
+& & \quad \phantom{if} L''[l \mapsto (L''(l) ~\emph{++}~ B'')]\\
+& & )\\
+& & (\emph{finbs}, \emph{reslmap})\\
+& & \\
+
+\end{array}
+\]
+
+\vspace*{-2em}
+\[
+\begin{array}{l@{}l@{~}l}
+\lefteqn{\transfun{\irtryfull{\emph{body}}{x}{\emph{catIR}}{\emph{finIR}}}_{\emph{stmt}}(f, B, L)}\\
+& = & \emph{catchVars} \leftarrow \emph{catchVars} \cup \{ x.\emph{name} \}\\
+& & \emph{tryB} \letval f.\emph{createBlock}\\
+& & \emph{cfg}.\emph{addEdge}(B, \emph{tryB})\\
+& & \emph{catB} \letval f.\emph{createBlock}\\
+& & \emph{catB}.\emph{createInst}(\TT{catch}(\transfun{x}_{\emph{id}}))\\
+& & \emph{finB} \letval f.\emph{createBlock}\\
+& & (\emph{trybs}, \emph{trylmap}) \letval \transfun{\emph{body}}_{\emph{stmt}}(f, \emph{tryB}, [\ ])\\
+& & \emph{cfg}.\emph{addEdge}(\emph{trylmap}(\ThrowLabel), \emph{catB}, \EdgeExc)\\
+& & \emph{cfg}.\emph{addEdge}(\emph{trylmap}(\ThrowEndLabel), \emph{catB})\\
+& & \emph{cfg}.\emph{addEdge}(\emph{trylmap}(\AfterCatchLabel), \emph{catB})\\
+& & \emph{tmplmap} \letval \emph{trylmap} - \ThrowLabel - \ThrowEndLabel\\
+&& \phantom{\emph{tmplmap} \letval} - \AfterCatchLabel\\
+& & (\emph{catchbs}, \emph{catchlamp}) \letval \transfun{\emph{catIR}}_{\emph{stmt}}(f, \emph{catB}, \emph{tmplmap})\\
+& & (\emph{finbs}, \emph{finlamp}) \letval \transfun{\emph{finIR}}_{\emph{stmt}}(f, \emph{finB}, L)\\
+& & \emph{cfg}.\emph{addEdge}(\emph{trybs} ~\emph{++}~ \emph{catchbs}, \emph{finB})\\
+& & \emph{reslmap} \letval \fold(\emph{catchlmap} - \AfterCatchLabel)\\
+& & \phantom{\emph{reslmap} \letval \fold}(\emph{finlmap})
+(\lambda((l, B'), L') \Rightarrow \\
+& & \quad \emph{dupB} \letval f.\emph{createBlock}\\
+& & \quad (B'', L'') \letval \transfun{\emph{finIR}}_{\emph{stmt}}(f, \emph{dupB}, L')\\
+& & \quad if\ (l = \ThrowLabel)\\
+& & \quad \phantom{if} \emph{cfg}.\emph{addEdge}(\emph{catchlmap}(\AfterCatchLabel), \emph{dupB})\\
+& & \quad \phantom{if} \emph{cfg}.\emph{addEdge}(B', \emph{dupB}, \EdgeExc)\\
+& & \quad \phantom{if} L''[\ThrowEndLabel \mapsto (L''(\ThrowEndLabel) ~\emph{++}~ B'')]\\
+& & \quad else\\
+& & \quad \phantom{if} \emph{cfg}.\emph{addEdge}(B', \emph{dupB}, \EdgeExc)\\
+& & \quad \phantom{if} L''[l \mapsto (L''(l) ~\emph{++}~ B'')]\\
+& & )\\
+& & (\emph{finbs}, \emph{reslmap})\\
+& & \\
+
+\lefteqn{\transfun{\irarray{x}{\emph{elems}}}_{\emph{stmt}}(f, B, L)\qquad \mbox{for \mtt{IRArgs}}}\\
+& = & \emph{tailBlock} \letval \getTail(B, f)\\
+& & \emph{addr} \letval \new\ \Address\\
+& & \emph{tailBlock}.\emph{createInst}(x := \TT{allocArg}(\length(\emph{elems})) ~@~ \emph{addr})\\
+& & \iter(\emph{elems})(0)(\lambda(e,k) \Rightarrow \transfun{e}_{\emph{elem}}(\emph{tailBlock}, x, k))\\
+& & (\emph{tailBlock}, L[\ThrowLabel \mapsto L(\ThrowLabel) \cup \{ \emph{tailBlock} \})\\
+& & \\
+
+\lefteqn{\transfun{\irarray{x}{\emph{elems}}}_{\emph{stmt}}(f, B, L)\qquad \mbox{for \mtt{IRArray}}}\\
+& = & \emph{tailBlock} \letval \getTail(B, f)\\
+& & \emph{addr} \letval \new\ \Address\\
+& & \emph{tailBlock}.\emph{createInst}(x :=\TT{allocArray}(\length(\emph{elems})) ~@~ \emph{addr})\\
+& & \iter(\emph{elems})(0)(\lambda(e,k) \Rightarrow \transfun{e}_{\emph{elem}}(\emph{tailBlock}, x, k))\\
+& & (\emph{tailBlock}, L[\ThrowLabel \mapsto L(\ThrowLabel) \cup \{ \emph{tailBlock} \})\\
+& & \\
+
+% TODO IRInternalCall
+
+\lefteqn{\transfun{\ircfgcall{x}{\emph{fun}}{\emph{thisB}, \emph{args}}}_{\emph{stmt}}(f, B, L)}\\
+& = & \emph{tailBlock} \letval \getTail(B, f)\\
+& & \emph{this} \letval \mbox{a CFG local variable of name \TT{"<>this<>"}}\\
+& & \emph{tailBlock}.\emph{createInst}(\emph{this} := \TT{enterCode}(\transfun{\emph{thisB}}_{\emph{expr}}))\\
+& & (\emph{addr1}, \emph{addr2}) \letval (\new\ \Address,\ \new\ \Address)\\
+& & \emph{call} \letval \emph{tailBlock}.\emph{func}.\emph{createCall}(\TT{call}(\transfun{\emph{fun}}_{\emph{expr}}, \emph{this}, \transfun{\emph{args}}_{\emph{expr}})\\
+&& \phantom{\emph{call} \letval }
+ ~@~ \TT{(}\emph{addr1},\ \emph{addr2}\TT{)}, \transfun{x}_{\emph{id}})\\
+& & \emph{cfg}.\emph{addEdge}(\emph{tailBlock}, \emph{call})\\
+& & (\emph{call}.\emph{afterCall}, L[\\
+& & \quad \ThrowLabel \mapsto L(\ThrowLabel) \cup \{ \emph{call}, \emph{tailBlock} \},\\
+& & \quad \AfterCatchLabel \mapsto L(\AfterCatchLabel)\\
+& & \quad \phantom{\AfterCatchLabel \mapsto} \cup \{ \emph{call}.\emph{afterCatch} \}\\
+& & ])\\
+\end{array}
+\]
+
+\[
+\begin{array}{l@{}l@{~}l}
+\lefteqn{\transfun{{\sf break}\ \emph{label}}_{\emph{stmt}}(f, B, L)}\\
+& = & \emph{key} \letval \emph{label}.\emph{name}\\
+& & \emph{bs} \letval L(\emph{key}) \cup B\\
+& & (\emptyset, L[\emph{key} \mapsto \emph{bs}])\\
+& & \\
+
+\lefteqn{\transfun{\ircfgnew{x_1}{{\sf new}\ x_2}{\emph{args}}}_{\emph{stmt}}(f, B, L)}\\
+& = & \emph{tailBlock} \letval \getTail(B, f)\\
+& & (\emph{addr1}, \emph{addr2}) \letval (\new\ \Address,\ \new\ \Address) \\
+& & \emph{call} \letval \emph{tailBlock}.\emph{func}.\emph{createCall}(\\
+& & \quad \TT{construct}(\transfun{x_2}_{\emph{expr}}, \transfun{\emph{args}(0)}_{\emph{expr}}, \transfun{\emph{args}(1)}_{\emph{expr}})\\
+& & \phantom{\quad }
+@~ \TT{(}\emph{addr1}, \emph{addr2}\TT{)}, \transfun{x_1}_{\emph{id}}\\
+& & )\\
+& & \emph{cfg}.\emph{addEdge}(\emph{tailBlock}, \emph{call})\\
+& & (\emph{call}.\emph{afterCall}, L[\\
+& & \quad \ThrowLabel \mapsto L(\ThrowLabel) \cup \{ \emph{call}, \emph{tailBlock} \},\\
+& & \quad \AfterCatchLabel \mapsto L(\AfterCatchLabel)\\
+& & \phantom{\quad \AfterCatchLabel \mapsto}
+\cup \{ \emph{call}.\emph{afterCatch} \}\\
+& & ])\\
+& & \\
+
+\lefteqn{\transfun{\irdelete{x}{e}}_{\emph{stmt}}(f, B, L)}\\
+& = & \emph{tailBlock} \letval \getTail(B, f)\\
+& & \emph{tailBlock}.\emph{createInst}(\transfun{x}_{\emph{id}} := \TT{delete}(\transfun{e}_{\emph{expr}}))\\
+& & (\emph{tailBlock}, L[\ThrowLabel \mapsto L(\ThrowLabel) \cup \{ \emph{tailBlock} \}])\\
+& & \\
+
+\lefteqn{\transfun{\irdeleteobj{x}{e_1}{e_2}}_{\emph{stmt}}(f, B, L)}\\
+& = & \emph{tailBlock} \letval \getTail(B, f)\\
+& & \emph{tailBlock}.\emph{createInst}(\transfun{x}_{\emph{id}} := \TT{delete}(\transfun{e_1}_{\emph{expr}}, \transfun{e_2}_{\emph{expr}}))\\
+& & (\emph{tailBlock}, L[\ThrowLabel \mapsto L(\ThrowLabel) \cup \{ \emph{tailBlock} \}])\\
+& & \\
+
+\lefteqn{\transfun{\ircfgexpr{x}{e}}_{\emph{stmt}}(f, B, L)}\\
+& = & \emph{tailBlock} \letval \getTail(B, f)\\
+& & \emph{tailBlock}.\emph{createInst}(\transfun{x}_{\emph{id}} := \transfun{e}_{\emph{expr}})\\
+& & (\emph{tailBlock}, L[\ThrowLabel \mapsto L(\ThrowLabel) \cup \{ \emph{tailBlock} \}])\\
+& & \\
+
+\lefteqn{\transfun{\ircfgif{\emph{cond}}{\emph{trueIR}}}_{\emph{stmt}}(f, B, L)}\\
+& = & \emph{trueB} \letval f.\emph{createBlock}\\
+& & \emph{cfg}.\emph{addEdge}(B, \emph{trueB})\\
+& & \emph{falseB} \letval f.\emph{createBlock}\\
+& & \emph{cfg}.\emph{addEdge}(B, \emph{falseB})\\
+& & \emph{cfgCond} \letval \transfun{\emph{cond}}_{\emph{expr}}\\
+& & \emph{trueB}.\emph{createInst}(\TT{assert}(\emph{cfgCond}))\\
+& & \emph{falseB}.\emph{createInst}(\TT{assert}(\neg \emph{cfgCond}))\\
+& & (B', L') \letval \transfun{\emph{trueIR}}_{\emph{stmt}}(f, trueB, L)\\
+& & \emph{endB} \letval f.\emph{createBlock}\\
+& & \emph{cfg}.\emph{addEdge}(\{ \emph{falseB},\ B' \}, \emph{endB})\\
+& & (\emph{endB}, L'[\ThrowLabel \mapsto L'(\ThrowLabel)\\
+& & \phantom{(\emph{endB}, L'[\ThrowLabel \mapsto}
+ \cup \{ \emph{trueB},\ \emph{falseB} \}])\\
+
+\end{array}
+\]
+
+\[
+\begin{array}{l@{}l@{~}l}
+\lefteqn{\transfun{\irifelse{\emph{cond}}{\emph{trueIR}}{\emph{falseIR}}}_{\emph{stmt}}(f, B, L)}\\
+& = & \emph{trueB} \letval f.\emph{createBlock}\\
+& & \emph{cfg}.\emph{addEdge}(B, \emph{trueB})\\
+& & \emph{falseB} \letval f.\emph{createBlock}\\
+& & \emph{cfg}.\emph{addEdge}(B, \emph{falseB})\\
+& & \emph{cfgCond} \letval \transfun{\emph{cond}}_{\emph{expr}}\\
+& & \emph{trueB}.\emph{createInst}(\TT{assert}(\emph{cfgCond}))\\
+& & \emph{falseB}.\emph{createInst}(\TT{assert}(\neg \emph{cfgCond}))\\
+& & (B', L') \letval \transfun{\emph{trueIR}}_{\emph{stmt}}(f, trueB, L)\\
+& & \emph{endB} \letval f.\emph{createBlock}\\
+& & (B'', L'') \letval \transfun{\emph{falseIR}}_{\emph{stmt}}(f, falseB, L')\\
+& & \emph{cfg}.\emph{addEdge}(B' ~\emph{++}~ B'', \emph{endB})\\
+& & (\emph{endB}, L''[\ThrowLabel \mapsto L''(\ThrowLabel)\\
+& & \phantom{(\emph{endB}, L''[\ThrowLabel \mapsto}
+\cup \{ \emph{trueB},\ \emph{falseB} \}])\\
+& & \\
+
+\lefteqn{\transfun{\irlabel{l}{s}}_{\emph{stmt}}(f, B, L)}\\
+& = & b \letval f.\emph{createBlock}\\
+& & (B', L') \letval \transfun{s}_{\emph{stmt}}(f, B, L)\\
+& & \emph{label} \letval l.\emph{name}\\
+& & \emph{cfg}.\emph{addEdge}(B', b)\\
+& & \emph{cfg}.\emph{addEdge}(L'(\emph{label}), b)\\
+& & (b, L' - l)\\
+& & \\
+
+\lefteqn{\transfun{\mbox{\sf return}}_{\emph{stmt}}(f, B, L)}\\
+& = & \emph{tailBlock} \letval \getTail(B, f)\\
+& & \emph{tailBlock}.\emph{createInst}(\TT{return}())\\
+& & (\emptyset, L[\RetLabel \mapsto L(\RetLabel) \cup \{ \emph{tailBlock}\}])\\
+& & \\
+
+\lefteqn{\transfun{\ircfgreturn{e}}_{\emph{stmt}}(f, B, L)}\\
+& = & \emph{tailBlock} \letval \getTail(B, f)\\
+& & \emph{tailBlock}.\emph{createInst}(\TT{return}(\transfun{e}_{\emph{expr}}))\\
+& & (\emptyset, L[\RetLabel \mapsto L(\RetLabel) \cup \{ \emph{tailBlock}\}])\\
+& & \\
+
+\lefteqn{\transfun{\irstore{x_1}{x_2}{e}}_{\emph{stmt}}(f, B, L)}\\
+& = & \emph{tailBlock} \letval \getTail(B, f)\\
+& & \emph{tailBlock}.\emph{createInst}(\transfun{x_1}_{\emph{expr}}[\transfun{x_2}_{\emph{expr}}] := \transfun{e}_{\emph{expr}})\\
+& & (\emph{tailBlock}, L[\ThrowLabel \mapsto L(\ThrowLabel) \cup \{ \emph{tailBlock} \}])\\
+& & \\
+
+\lefteqn{\transfun{\irthrow{e}}_{\emph{stmt}}(f, B, L)}\\
+& = & \emph{tailBlock} \letval \getTail(B, f)\\
+& & \emph{tailBlock}.\emph{createInst}(\TT{throw}(\transfun{e}_{\emph{expr}}))\\
+& & (\emptyset, L[\ThrowLabel \mapsto L(\ThrowLabel) \cup \{ \emph{tailBlock} \}])\\
+
+\end{array}
+\]
+
+\[
+\begin{array}{l@{}l@{~}l}
+\lefteqn{\transfun{\ircfgwhile{e}{s}}_{\emph{stmt}}(f, B, L)}\\
+& = & \emph{tailBlock} \letval \getTail(B, f)\\
+& & \emph{head} \letval f.\emph{createBlock}\\
+& & \emph{body} \letval f.\emph{createBlock}\\
+& & \emph{out} \letval f.\emph{createBlock}\\
+& & \emph{cfgCond} \letval \transfun{\emph{e}}_{\emph{expr}}\\
+& & \emph{body}.createInst(\TT{assert}(\emph{cfgCond}))\\
+& & \emph{out}.createInst(\TT{assert}(\neg \emph{cfgCond}))\\
+& & \emph{cfg}.\emph{addEdge}(\emph{tailBlock}, \emph{head})\\
+& & \emph{cfg}.\emph{addEdge}(\emph{head}, \emph{body})\\
+& & \emph{cfg}.\emph{addEdge}(\emph{head}, \emph{out})\\
+& & (B', L') \letval \transfun{s}_{\emph{stmt}}(f, [\emph{body}], L)\\
+& & \emph{cfg}.\emph{addEdge}(B', \emph{head})\\
+& & (\emph{out}, L'[\ThrowLabel \mapsto L'(\ThrowLabel)\\
+& & \phantom{(\emph{out}, L'[\ThrowLabel \mapsto } \cup \{ \emph{body},\ \emph{out} \}]) \\
+& & \\
+
+\lefteqn{\transfun{\emph{stmts}}_{\emph{stmt}^{*}}(f, B, L)}\\
+& = & \fold(\emph{stmts})((B, L))(\lambda((B', L'), \emph{stmt}) \Rightarrow\\
+&& \phantom{\fold(\emph{stmts})((B, L))(} \transfun{\emph{stmt}}_{\emph{stmt}}(f, B', L'))\\
+& & \\
+
+\lefteqn{\transfun{\emph{mem}}_{\emph{mem}}(b, x)}\\
+& = & \emph{lhs} \letval \transfun{x}_{\emph{expr}}\\
+& & \emph{str} \letval \emph{mem}.\emph{prop}.\emph{name}\\
+& & \emph{expr} \letval \transfun{\emph{mem}.\emph{expr}}_{\emph{expr}}\\
+& & b.\emph{createInst}(\emph{lhs}[\emph{str}] := \emph{expr})\\
+& & \\
+
+\lefteqn{\transfun{e}_{\emph{elem}}(b, x, k)}\\
+& = & \emph{lhs} \letval \transfun{x}_{\emph{expr}}\\
+& & \emph{expr} \letval \transfun{e}_{\emph{expr}}\\
+& & b.\emph{createInst}(\emph{lhs} [``k"] := \emph{expr})\\
+& & \\
+
+\transfun{x}_{\emph{expr}} & = & x\\
+& & \\
+
+\transfun{e_1 \inop e_2}_{\emph{expr}}
+& = & \transfun{e_1}_{\emph{expr}} \inop \transfun{e_2}_{\emph{expr}}\\
+& & \\
+
+\transfun{\preop e}_{\emph{expr}}
+& = & \preop \transfun{e}_{\emph{expr}}\\
+& & \\
+
+\transfun{x [e]}_{\emph{expr}}
+ & = & \transfun{x}_{\emph{expr}} [ \transfun{e}_{\emph{expr}} ]\\
+& & \\
+
+\transfun{\this}_{\emph{expr}} & = & \this\\
+& & \\
+
+\transfun{v}_{\emph{expr}} & = & v\\
+& & \\
+
+\transfun{x}_{\emph{id}}
+& = & \text{let }\emph{kind} \text{ be a } \VarKind \text{ based on the information}\\
+& & \text{from } \TT{CapturedVariableCollector}\\
+& & \new\ \CFGId(x.\emph{name}, \emph{kind})\\
+\end{array}
+\]

@@ -1,0 +1,12 @@
+  var __string;
+  __re = /1|12/;
+  {
+    var __result1 = __re.exec(__string) !== null;
+    var __expect1 = false;
+  }
+  function __string() 
+  {
+    
+  }
+  ;
+  

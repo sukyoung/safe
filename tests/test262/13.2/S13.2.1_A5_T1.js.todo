@@ -1,0 +1,21 @@
+  var __arr = [4, 3, 2, 1, 4, 3, 2, 1, 4, 3, 2, 1, ];
+  __arr.sort((function (x, y) 
+  {
+    if (x > y)
+    {
+      return - 1;
+    }
+    if (x < y)
+    {
+      return 1;
+    }
+    if (x == y)
+    {
+      return 0;
+    }
+  }));
+  {
+    var __result1 = __arr.toString() !== [4, 4, 4, 3, 3, 3, 2, 2, 2, 1, 1, 1, ].toString();
+    var __expect1 = false;
+  }
+  

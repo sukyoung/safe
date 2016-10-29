@@ -1,0 +1,6 @@
+  var aString = new String("power of the power of the power of the power of the power of the power of the great sword");
+  {
+    var __result1 = aString.search(/the/) !== aString.search(/the/g);
+    var __expect1 = false;
+  }
+  

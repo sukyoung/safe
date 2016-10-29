@@ -1,0 +1,7 @@
+  __executed = /a[]/.test("\0a\0a");
+  ;
+  {
+    var __result1 = __executed;
+    var __expect1 = false;
+  }
+  

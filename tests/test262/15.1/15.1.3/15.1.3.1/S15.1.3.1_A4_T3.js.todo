@@ -1,0 +1,17 @@
+  {
+    var __result1 = decodeURI("http://unipro.ru/%0Aabout") !== "http://unipro.ru/\nabout";
+    var __expect1 = false;
+  }
+  {
+    var __result2 = decodeURI("http://unipro.ru/%0Babout") !== "http://unipro.ru/\vabout";
+    var __expect2 = false;
+  }
+  {
+    var __result3 = decodeURI("http://unipro.ru/%0Cabout") !== "http://unipro.ru/\fabout";
+    var __expect3 = false;
+  }
+  {
+    var __result4 = decodeURI("http://unipro.ru/%0Dabout") !== "http://unipro.ru/\rabout";
+    var __expect4 = false;
+  }
+  

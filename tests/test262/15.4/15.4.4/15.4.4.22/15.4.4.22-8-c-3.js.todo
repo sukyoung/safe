@@ -1,0 +1,24 @@
+  function testcase() 
+  {
+    function callbackfn(prevVal, curVal, idx, obj) 
+    {
+      
+    }
+    var arr = [1, 2, 3, 4, 5, ];
+    delete arr[0];
+    delete arr[1];
+    delete arr[2];
+    delete arr[3];
+    delete arr[4];
+    try
+{      arr.reduceRight(callbackfn);}
+    catch (e)
+{      if (e instanceof TypeError)
+        return true;}
+
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

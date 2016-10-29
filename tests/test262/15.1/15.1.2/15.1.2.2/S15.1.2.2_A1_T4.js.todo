@@ -1,0 +1,9 @@
+  {
+    var __result1 = ! (isNaN(parseInt(new Boolean(true))) && isNaN(parseInt("NaN")));
+    var __expect1 = false;
+  }
+  {
+    var __result2 = String(parseInt(new Boolean(false))) !== "NaN";
+    var __expect2 = false;
+  }
+  

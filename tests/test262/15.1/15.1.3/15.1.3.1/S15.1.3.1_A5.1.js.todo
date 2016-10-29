@@ -1,0 +1,17 @@
+  {
+    var __result1 = decodeURI.propertyIsEnumerable('length') !== false;
+    var __expect1 = false;
+  }
+  result = true;
+  for (p in decodeURI)
+  {
+    if (p === "length")
+    {
+      result = false;
+    }
+  }
+  {
+    var __result2 = result !== true;
+    var __expect2 = false;
+  }
+  

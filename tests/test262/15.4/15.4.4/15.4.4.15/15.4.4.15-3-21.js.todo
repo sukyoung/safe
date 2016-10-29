@@ -1,0 +1,29 @@
+  function testcase() 
+  {
+    var toStringAccessed = false;
+    var valueOfAccessed = false;
+    var targetObj = this;
+    var obj = {
+      1 : targetObj,
+      length : {
+        toString : (function () 
+        {
+          toStringAccessed = true;
+          return '3';
+        }),
+        valueOf : (function () 
+        {
+          valueOfAccessed = true;
+          return {
+            
+          };
+        })
+      }
+    };
+    return Array.prototype.lastIndexOf.call(obj, targetObj) === 1 && toStringAccessed && valueOfAccessed;
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

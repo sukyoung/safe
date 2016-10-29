@@ -1,0 +1,26 @@
+  function testcase() 
+  {
+    var obj = {
+      toString : (function () 
+      {
+        return undefined;
+      })
+    };
+    var _undefined1 = undefined;
+    var _undefined2;
+    var a = new Array(_undefined1, _undefined2, undefined, true, 0, false, 
+    null, 
+    1, 
+    "undefined", 
+    obj, 
+    1);
+    if (a.lastIndexOf(undefined) === 2)
+    {
+      return true;
+    }
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

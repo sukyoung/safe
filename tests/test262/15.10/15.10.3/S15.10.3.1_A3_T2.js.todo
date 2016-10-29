@@ -1,0 +1,16 @@
+  __instance = RegExp({
+    toString : (function () 
+    {
+      return "[a-c]*";
+    })
+  }, 
+  "gm");
+  {
+    var __result1 = __instance.constructor !== RegExp;
+    var __expect1 = false;
+  }
+  {
+    var __result2 = __instance.source !== "[a-c]*";
+    var __expect2 = false;
+  }
+  

@@ -1,0 +1,10 @@
+  var __instance = new Boolean;
+  __instance.search = String.prototype.search;
+  {
+    var __result1 = __instance.search((function () 
+    {
+      return false;
+    })()) !== 0;
+    var __expect1 = false;
+  }
+  

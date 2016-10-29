@@ -1,0 +1,12 @@
+  function testcase() 
+  {
+    var targetObj = {
+      
+    };
+    return [0, targetObj, true, ].lastIndexOf(targetObj, - 2.5) === 1 && [0, true, targetObj, ].lastIndexOf(targetObj, - 2.5) === - 1;
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

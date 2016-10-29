@@ -1,0 +1,13 @@
+  function testcase() 
+  {
+    var str = "Hello World!";
+    var regObj = new RegExp("World");
+    var result = false;
+    result = regObj.exec(str).toString() === "World";
+    return result;
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

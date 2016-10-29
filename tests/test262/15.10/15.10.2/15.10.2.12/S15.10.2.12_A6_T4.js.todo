@@ -1,0 +1,17 @@
+  var non_d = "_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ\f\n\r\t\v~`!@#$%^&*()-+={[}]|\\:;'<,>./? " + '"';
+  var regexp_D = /\D/g;
+  var k = 0;
+  while (regexp_D.exec(non_d) !== null)
+  {
+    k++;
+  }
+  {
+    var __result1 = non_d.length !== k;
+    var __expect1 = false;
+  }
+  var non_d = '0123456789';
+  {
+    var __result2 = /\D/.exec(non_d) !== null;
+    var __expect2 = false;
+  }
+  

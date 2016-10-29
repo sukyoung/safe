@@ -1,0 +1,16 @@
+  function __func() 
+  {
+    var x = 1;
+    throw ("Catch Me If You Can");
+    return x;
+  }
+  try
+{    var x = __func();
+    $ERROR('#0: var x=__func() lead to throwing exception');}
+  catch (e)
+{    {
+      var __result1 = e !== "Catch Me If You Can";
+      var __expect1 = false;
+    }}
+
+  

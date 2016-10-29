@@ -1,0 +1,15 @@
+  var obj = true;
+  var retobj = (function () 
+  {
+    this.touched = true;
+    return this;
+  }).call(obj);
+  {
+    var __result1 = typeof obj.touched !== "undefined";
+    var __expect1 = false;
+  }
+  {
+    var __result2 = ! (retobj["touched"]);
+    var __expect2 = false;
+  }
+  

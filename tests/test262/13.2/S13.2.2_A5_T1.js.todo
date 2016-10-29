@@ -1,0 +1,42 @@
+  __VOLUME = 8;
+  __RED = "red";
+  __ID = 12342;
+  __TOP = 1.1;
+  __BOTTOM = 0.0;
+  __LEFT = 0.0;
+  function __FACTORY(arg1, arg2) 
+  {
+    this.volume = __VOLUME;
+    color = __RED;
+    this.id = arg1;
+    top = arg2;
+    this.bottom = arguments[3];
+    left = arguments[4];
+  }
+  ;
+  __device = new __FACTORY(__ID, __TOP, __BOTTOM, __LEFT);
+  {
+    var __result1 = __device.color !== undefined;
+    var __expect1 = false;
+  }
+  {
+    var __result2 = __device.volume !== __VOLUME;
+    var __expect2 = false;
+  }
+  {
+    var __result3 = __device.top !== undefined;
+    var __expect3 = false;
+  }
+  {
+    var __result4 = __device.id !== __ID;
+    var __expect4 = false;
+  }
+  {
+    var __result5 = __device.left !== undefined;
+    var __expect5 = false;
+  }
+  {
+    var __result6 = __device.bottom !== __BOTTOM;
+    var __expect6 = false;
+  }
+  

@@ -1,0 +1,13 @@
+"use strict";
+  var o = {
+    set foo(stuff) 
+    {
+      return gNonStrict();
+    }
+  };
+  o.foo = 7;
+  function gNonStrict() 
+  {
+    return gNonStrict.caller;
+  }
+  

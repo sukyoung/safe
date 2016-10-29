@@ -19,7 +19,7 @@ import kr.ac.kaist.safe.nodes.cfg.CFG
 class PrimModel(
     val pvalue: AbsPValue
 ) extends Model {
-  def init(h: Heap, cfg: CFG): (Heap, AbsValue) = (h, AbsValue(pvalue))
+  def init(h: AbsHeap, cfg: CFG): (AbsHeap, AbsValue) = (h, AbsValue(pvalue))
 }
 
 object PrimModel {

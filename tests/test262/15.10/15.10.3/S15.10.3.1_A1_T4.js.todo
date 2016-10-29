@@ -1,0 +1,8 @@
+  __re = RegExp();
+  __instance = RegExp(__re, void 0);
+  __re.indicator = 1;
+  {
+    var __result1 = __instance.indicator !== 1;
+    var __expect1 = false;
+  }
+  

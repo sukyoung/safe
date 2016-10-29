@@ -1,0 +1,9 @@
+  (function () 
+  {
+    this.field = "strawberry";
+  }).apply();
+  {
+    var __result1 = this["field"] !== "strawberry";
+    var __expect1 = false;
+  }
+  

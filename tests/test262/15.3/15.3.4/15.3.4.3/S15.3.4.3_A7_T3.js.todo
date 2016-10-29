@@ -1,0 +1,20 @@
+  i = 0;
+  p = {
+    toString : (function () 
+    {
+      return "a" + (++ i);
+    })
+  };
+  obj = {
+    
+  };
+  Function(p, "a2,a3", "this.shifted=a1;").apply(obj, new Array("nine", "inch", "nails"));
+  {
+    var __result1 = obj["shifted"] !== "nine";
+    var __expect1 = false;
+  }
+  {
+    var __result2 = typeof this["shifted"] !== "undefined";
+    var __expect2 = false;
+  }
+  

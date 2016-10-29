@@ -1,0 +1,34 @@
+  function testcase() 
+  {
+    var testResult = false;
+    function callbackfn(prevVal, curVal, idx, obj) 
+    {
+      if (idx === 2 && curVal === "unconfigurable")
+      {
+        testResult = true;
+      }
+    }
+    var arr = [0, 1, 2, 3, ];
+    Object.defineProperty(arr, "2", {
+      get : (function () 
+      {
+        return "unconfigurable";
+      }),
+      configurable : false
+    });
+    Object.defineProperty(arr, "3", {
+      get : (function () 
+      {
+        arr.length = 2;
+        return 1;
+      }),
+      configurable : true
+    });
+    arr.reduceRight(callbackfn);
+    return testResult;
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

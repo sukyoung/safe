@@ -1,0 +1,22 @@
+  var p = {
+    toString : (function () 
+    {
+      throw 1;
+    })
+  };
+  var body = {
+    toString : (function () 
+    {
+      throw "body";
+    })
+  };
+  try
+{    var f = new Function(p, body);
+    $FAIL('#1: test failed');}
+  catch (e)
+{    {
+      var __result1 = e !== 1;
+      var __expect1 = false;
+    }}
+
+  

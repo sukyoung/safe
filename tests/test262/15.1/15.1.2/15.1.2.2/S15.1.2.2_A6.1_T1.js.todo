@@ -1,0 +1,8 @@
+  for(var i = 2;i <= 36;i++)
+  {
+    {
+      var __result1 = parseInt("10$1", i) !== i;
+      var __expect1 = false;
+    }
+  }
+  

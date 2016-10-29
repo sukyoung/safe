@@ -21,7 +21,7 @@ import kr.ac.kaist.safe.analyzer.models._
 import kr.ac.kaist.safe.util.SystemAddr
 
 object BuiltinBooleanHelper {
-  def typeConvert(args: AbsValue, st: State): AbsBool = {
+  def typeConvert(args: AbsValue, st: AbsState): AbsBool = {
     val h = st.heap
     val argV = Helper.propLoad(args, Set(AbsString("0")), h)
     val argL = Helper.propLoad(args, Set(AbsString("length")), h).pvalue.numval
@@ -31,7 +31,7 @@ object BuiltinBooleanHelper {
     TypeConversionHelper.ToBoolean(argV) + emptyB
   }
 
-  def getValue(thisV: AbsValue, h: Heap): AbsBool = {
+  def getValue(thisV: AbsValue, h: AbsHeap): AbsBool = {
     thisV.pvalue.boolval + thisV.locset.foldLeft(AbsBool.Bot)((res, loc) => {
       if ((AbsString("Boolean") <= h.get(loc)(IClass).value.pvalue.strval))
         res + h.get(loc)(IPrimitiveValue).value.pvalue.boolval
@@ -40,15 +40,15 @@ object BuiltinBooleanHelper {
   }
 
   val constructor = BasicCode(argLen = 1, code = (
-    args: AbsValue, st: State
+    args: AbsValue, st: AbsState
   ) => {
     val bool = typeConvert(args, st)
     val addr = SystemAddr("Boolean<instance>")
     val state = st.oldify(addr)
     val loc = Loc(addr, Recent)
-    val heap = state.heap.update(loc, AbsObjectUtil.newBooleanObj(bool))
+    val heap = state.heap.update(loc, AbsObject.newBooleanObj(bool))
 
-    (State(heap, state.context), State.Bot, AbsValue(loc))
+    (AbsState(heap, state.context), AbsState.Bot, AbsValue(loc))
   })
 
   val typeConversion = PureCode(argLen = 1, code = typeConvert)
@@ -79,7 +79,7 @@ object BuiltinBooleanProto extends ObjModel(
     NormalProp("toString", FuncModel(
       name = "Boolean.prototype.toString",
       code = BasicCode(argLen = 1, (
-        args: AbsValue, st: State
+        args: AbsValue, st: AbsState
       ) => {
         val h = st.heap
         val thisV = st.context.thisBinding
@@ -94,7 +94,7 @@ object BuiltinBooleanProto extends ObjModel(
     NormalProp("valueOf", FuncModel(
       name = "Boolean.prototype.valueOf",
       code = BasicCode(argLen = 1, (
-        args: AbsValue, st: State
+        args: AbsValue, st: AbsState
       ) => {
         val h = st.heap
         val thisV = st.context.thisBinding

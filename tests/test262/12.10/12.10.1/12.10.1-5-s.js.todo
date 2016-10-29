@@ -1,0 +1,14 @@
+  function testcase() 
+  {
+    (function () 
+    {
+    "use strict";
+      var f1 = Function("var o = {}; with (o) {};");
+    });
+    return true;
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

@@ -1,0 +1,23 @@
+  i = 0;
+  p = {
+    toString : (function () 
+    {
+      return "a" + (++ i);
+    })
+  };
+  obj = {
+    
+  };
+  new Function(p, p, p, "this.shifted=a3;").apply(obj, (function () 
+  {
+    return arguments;
+  })("a", "b", "c"));
+  {
+    var __result1 = obj["shifted"] !== "c";
+    var __expect1 = false;
+  }
+  {
+    var __result2 = typeof this["shifted"] !== "undefined";
+    var __expect2 = false;
+  }
+  

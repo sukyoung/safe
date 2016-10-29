@@ -1,0 +1,21 @@
+  var __ROBOT = "C3PO";
+  function __FUNC() 
+  {
+    function __GUNC() 
+    {
+      return arguments[0];
+    }
+    ;
+    function __HUNC() 
+    {
+      return __GUNC;
+    }
+    ;
+    return __HUNC;
+  }
+  ;
+  {
+    var __result1 = __FUNC()()(__ROBOT) !== __ROBOT;
+    var __expect1 = false;
+  }
+  

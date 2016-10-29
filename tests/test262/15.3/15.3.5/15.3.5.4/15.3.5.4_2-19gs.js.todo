@@ -1,0 +1,10 @@
+"use strict";
+  var obj = new (function () 
+  {
+    return gNonStrict();
+  });
+  function gNonStrict() 
+  {
+    return gNonStrict.caller;
+  }
+  

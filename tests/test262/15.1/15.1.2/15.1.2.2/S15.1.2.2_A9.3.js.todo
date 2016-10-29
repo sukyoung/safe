@@ -1,0 +1,7 @@
+  x = parseInt.length;
+  parseInt.length = Infinity;
+  {
+    var __result1 = parseInt.length !== x;
+    var __expect1 = false;
+  }
+  

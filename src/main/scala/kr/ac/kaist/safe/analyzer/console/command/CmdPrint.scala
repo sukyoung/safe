@@ -14,9 +14,10 @@ package kr.ac.kaist.safe.analyzer.console.command
 import scala.util.{ Success, Failure }
 import kr.ac.kaist.safe.analyzer.ControlPoint //, Worklist }
 import kr.ac.kaist.safe.analyzer.console._
+import kr.ac.kaist.safe.analyzer.html_debugger._
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.nodes.cfg._
-import kr.ac.kaist.safe.cfg_builder.{ DotWriter, HTMLWriter }
+import kr.ac.kaist.safe.cfg_builder.DotWriter
 
 // print
 case object CmdPrint extends Command("print", "Print out various information.") {
@@ -24,12 +25,12 @@ case object CmdPrint extends Command("print", "Print out various information.") 
     println("usage: " + name + " state(-all) ({keyword})")
     println("       " + name + " block")
     println("       " + name + " loc {LocName} ({keyword})")
-    println("       " + name + " fid {functionID}")
+    println("       " + name + " func ({functionID})")
     println("       " + name + " worklist")
     println("       " + name + " ipsucc")
     println("       " + name + " trace")
-    println("       " + name + " cfg")
-    println("       " + name + " html")
+    println("       " + name + " cfg {name}")
+    println("       " + name + " html {name}")
   }
 
   def run(c: Console, args: List[String]): Option[Target] = {
@@ -67,7 +68,14 @@ case object CmdPrint extends Command("print", "Print out various information.") 
             }
           case _ => help
         }
-        case "fid" => rest match {
+        case "func" => rest match {
+          case Nil =>
+            c.cfg.getAllFuncs.reverse.foreach {
+              case func =>
+                val fid = func.id
+                val name = func.name
+                println(s"[$fid] $name")
+            }
           case fidStr :: Nil if fidStr.forall(_.isDigit) =>
             val fid = fidStr.toInt
             c.cfg.getFunc(fid) match {
@@ -139,7 +147,7 @@ case object CmdPrint extends Command("print", "Print out various information.") 
             case _ => help
           }
         case "cfg" => rest match {
-          case Nil => {
+          case name :: Nil => {
             // computes reachable fid_set
             val cfg = c.cfg
             val sem = c.semantics
@@ -160,12 +168,12 @@ case object CmdPrint extends Command("print", "Print out various information.") 
               case (func, lst) => func.getAllBlocks ++ lst
             }.reverse
             println(cfg.toString(0))
-            DotWriter.spawnDot(cfg, Some(o), Some(cur), Some(blocks))
+            DotWriter.spawnDot(cfg, Some(o), Some(cur), Some(blocks), s"$name.gv", s"$name.pdf")
           }
           case _ => help
         }
         case "html" => rest match {
-          case Nil => HTMLWriter.writeHTMLFile(c.cfg, Some(c.worklist))
+          case name :: Nil => HTMLWriter.writeHTMLFile(c.cfg, Some(c.worklist), s"$name.html")
           case _ => help
         }
         case _ => help

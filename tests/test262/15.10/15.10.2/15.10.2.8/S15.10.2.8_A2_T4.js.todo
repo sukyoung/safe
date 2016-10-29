@@ -1,0 +1,6 @@
+  __executed = /Java(?!Script)([A-Z]\w*)/.test("i'm a JavaScripter ");
+  {
+    var __result1 = __executed;
+    var __expect1 = false;
+  }
+  

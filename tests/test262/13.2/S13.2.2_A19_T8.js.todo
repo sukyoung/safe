@@ -1,0 +1,51 @@
+  {
+    var __result1 = typeof __func !== "undefined";
+    var __expect1 = false;
+  }
+  var a = 1, b = "a";
+  var __obj = {
+    a : 2
+  };
+  with (__obj)
+  {
+    while (1)
+    {
+      var __func = (function () 
+      {
+        return a;
+      });
+      break;
+    }
+  }
+  delete __obj;
+  {
+    var __result2 = __func() !== 2;
+    var __expect2 = false;
+  }
+  var __obj = {
+    a : 3,
+    b : "b"
+  };
+  with (__obj)
+  {
+    var __func = (function () 
+    {
+      return b;
+    });
+  }
+  delete __obj;
+  {
+    var __result3 = __func() !== "b";
+    var __expect3 = false;
+  }
+  with ({
+    a : 99,
+    b : "c"
+  })
+  {
+    {
+      var __result4 = __func() !== "b";
+      var __expect4 = false;
+    }
+  }
+  

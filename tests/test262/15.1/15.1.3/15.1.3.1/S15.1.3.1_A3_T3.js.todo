@@ -1,0 +1,9 @@
+  {
+    var __result1 = decodeURI("%3B%2F%3F%3A%40%26%3D%2B%24%2C%23") !== "%3B%2F%3F%3A%40%26%3D%2B%24%2C%23";
+    var __expect1 = false;
+  }
+  {
+    var __result2 = decodeURI("%3b%2f%3f%3a%40%26%3d%2b%24%2c%23") !== "%3b%2f%3f%3a%40%26%3d%2b%24%2c%23";
+    var __expect2 = false;
+  }
+  

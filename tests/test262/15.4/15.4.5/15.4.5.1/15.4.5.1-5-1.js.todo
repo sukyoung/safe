@@ -1,0 +1,11 @@
+  function testcase() 
+  {
+    var a = [];
+    a[4294967295] = "not an array element";
+    return a[4294967295] === "not an array element";
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

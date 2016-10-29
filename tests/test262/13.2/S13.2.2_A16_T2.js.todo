@@ -1,0 +1,17 @@
+  {
+    var __result1 = typeof __func !== "undefined";
+    var __expect1 = false;
+  }
+  var __obj = new (function __func(arg) 
+  {
+    this.prop = arg;
+  })(5);
+  {
+    var __result2 = __obj.prop !== 5;
+    var __expect2 = false;
+  }
+  {
+    var __result3 = typeof __func !== "undefined";
+    var __expect3 = false;
+  }
+  

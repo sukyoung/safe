@@ -1,0 +1,13 @@
+  function testcase() 
+  {
+    var obj = {
+      0 : null,
+      1 : undefined
+    };
+    return Array.prototype.lastIndexOf.call(obj, null) === - 1;
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

@@ -1,0 +1,43 @@
+% Much taken from the MemCAD project:
+%     https://github.com/Antique-team/memcad
+% thanks to Dr. Xavier Rival
+%
+\documentclass[oneside,openany,a4paper,10pt]{book}
+\input{preamble.tex}
+\input{macros}
+\begin{document}
+\begin{titlepage}
+    \vspace*{15em}
+    \centering
+    {\bfseries\Huge
+        SAFE 2.0 Specification\\
+    }    
+        \vskip2cm
+       {\Large
+ Jihyeok Park, Yeonhee Ryou, and Sukyoung Ryu}\\
+~\\
+\large
+\begin{tabular}{c}
+                        \copyright\ KAIST
+\end{tabular}
+\includegraphics[width=2cm]{plrg-logo.png}
+\end{titlepage}
+
+\tableofcontents
+
+\newpage
+\multibegin
+\raggedcolumns
+\input{safe-overview}
+\input{safe-ast}
+\input{safe-ir}
+\input{safe-ast2ir}
+\input{safe-cfg}
+\input{safe-ir2cfg}
+
+\normalsize
+\bibliographystyle{plain}
+\bibliography{ref}
+
+\multiend
+\end{document}

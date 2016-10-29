@@ -1,0 +1,15 @@
+  function testcase() 
+  {
+    function f() 
+    {
+    "use strict";
+      return this;
+    }
+    ;
+    return f.apply(fnGlobalObject()) === fnGlobalObject();
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

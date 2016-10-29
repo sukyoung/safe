@@ -1,0 +1,9 @@
+  (function () 
+  {
+    this.field = "oil";
+  }).call(undefined);
+  {
+    var __result1 = this["field"] !== "oil";
+    var __expect1 = false;
+  }
+  

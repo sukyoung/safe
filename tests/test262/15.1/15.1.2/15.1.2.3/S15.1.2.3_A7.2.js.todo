@@ -1,0 +1,14 @@
+  {
+    var __result1 = parseFloat.hasOwnProperty('length') !== true;
+    var __expect1 = false;
+  }
+  delete parseFloat.length;
+  {
+    var __result2 = parseFloat.hasOwnProperty('length') !== true;
+    var __expect2 = false;
+  }
+  {
+    var __result3 = parseFloat.length === undefined;
+    var __expect3 = false;
+  }
+  

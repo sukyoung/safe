@@ -1,0 +1,1520 @@
+\chapter{AST to IR}
+This section describes the \safe translation rules from AST to IR,
+whose implementation is available at:
+\begin{verbatim}
+$SAFE_HOME/src/main/scala/kr/ac/kaist/safe/compiler/
+           Translator.scala
+\end{verbatim}
+
+\begin{itemize}
+\item We use $\env$ to disambiguate the generated labels and temporary variables in the AST to IR translation.
+For the presentation brevity, we simply add the newly generated names to $\env$.
+\begin{itemize}
+\item In the actual implementation, we need to create a unique id for each generated name and
+add the binding information from the general name to the unique id to $\env$.
+For example, when we say ``$\env; \newvar{break}$'',
+we actually create a unique id for $\newvar{break}$, say $\newvar{break}_{42}$, and add it to $\env$ as $\env; \newvar{break} \mapsto \newvar{break}_{42}$.
+When we look up the environment by $\env(\newvar{break})$, the unique $\newvar{break}_{42}$ is returned.
+\item In the scope when the generated name is created, we don't add it to the environment but use the unique id instead of the general name.
+For example, when we say ``$\newvar{eq}\ \verb+=+\ \env(\newvar{val}) \verb+===+ \newvar{break};$'',
+we create a unique id for \newvar{eq}, say $\newvar{eq}_{910157}$, and it is acually
+``$\newvar{eq}_{910157}\ \verb+=+\ \env(\newvar{val}) \verb+===+ \newvar{break}_{42};$''.
+\item To be clear, we use blue for the binding sites of such names and red for the use sites of such names.
+\end{itemize}
+\item We denote a fresh variable name as $\newvar{}$ and its variants.
+\item We use the following:\\
+\verb+===+, {\sf \ensuremath{\diamond}toObject}, {\sf \ensuremath{\diamond}toNumber}, {\sf \ensuremath{\diamond}isObject},
+{\sf \ensuremath{\diamond}iteratorInit}, {\sf \ensuremath{\diamond}iteratorHasNext}, {\sf \ensuremath{\diamond}iteratorNext},
+% {\sf startsWith},
+{\sf \ensuremath{\diamond}global}, {\sf \ensuremath{\diamond}getBase}
+\item To reduce the number of temporary variables, we use global variables to denote constants such as {\sf 1} and
+{\sf true} which is represented in green {\ingreen\sf 1} and  {\ingreen\sf true} in this document.
+\item We wrap a possibly identical assignment with a box so that the actual implementation, {\tt Translator}, can eliminate identical assignments.
+\end{itemize}
+
+Here are the types of the environment used to disambiguate the generated labels and
+temporary variables and the translation functions for different language constructs:
+
+\medskip
+\small
+\begin{tabular}{lll}
+$\env$\ :\  \verb+Env+\\
+$\atoiP$\ :\\
+\verb+Program -> IRRoot+\\
+$\atoiFD$\ :\\
+\verb+FunDecl -> Env -> IRFunDecl+\\
+$\atoiVD$\ :\\
+\verb+VarDecl -> Env -> IRVarStmt+\\
+$\atoiS$\ :\\
+\verb+Stmt -> Env -> IRStmt+\\
+$\atoiC$\ :\\
+\verb!List[Case] * Option[List[Stmt]] * List[Case]!\\
+\verb+     -> Env ->List[Option[Expr] * IRId] -> IRStmt+\\
+$\atoiSC$\ :\\
+ \verb+List[Option[Expr] * IRId] -> Env -> IRStmt+\\
+$\atoiLVAL$\ :\\
+\verb+Expr -> Env -> List[IRStmt] -> IRExpr -> boolean+\\
+\verb+     -> List[IRStmt] * IRExpr+\\
+$\atoiE$\ :\\
+\verb+Expr -> Env -> IRId -> List[IRStmt] * IRExpr+\\
+$\atoiLHS$\ :\\
+\verb+LHS -> Env -> IRId -> List[IRStmt] * IRExpr+\\
+$\atoiLIT$\ :\\
+\verb+LIT -> Env -> IRId -> List[IRStmt] * IRExpr+\\
+$\atoiM$\ :\\
+\verb+Member -> Env -> IRId -> List[IRStmt] * IRMember+\\
+$\atoiPR$\ :\\
+\verb+Property -> IRId+
+\end{tabular}
+
+\[
+\begin{array}{lll@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l}
+\aop &::=&
+\verb+*+ & \mid &
+\verb+/+ & \mid &
+\verb+%+ & \mid &
+\verb!+! & \mid &
+\verb+-+ & \mid &
+\verb+[[+ & \mid &
+\verb+>>+ & \mid &
+\verb+>>>+ & \mid &
+\verb+&+ & \mid &
+\verb+^+ & \mid &
+\verb+|+
+\\
+
+\preop &::=& \verb+~+ & \mid & \verb+!+ & \mid & \verb!+! & \mid & \verb+-+ & \mid &
+\lefteqn{
+ {\tt delete} \ \mid \ {\tt void} \ \mid \ {\tt typeof} }\\
+
+\inop &::=& \verb+|+ & \mid & \verb+&+ & \mid & \verb+^+ & \mid & \verb+[[+ & \mid & \verb+>>+ & \mid & \verb+>>>+ 
+ & \mid & \verb!+! & \mid & \verb+-+ & \mid & \verb+*+ & \mid & \verb+/+ & \mid & \verb+%+
+&\mid& \verb+==+\\
+& \mid & \verb+!=+ 
+& \mid & \verb+===+ & \mid & \verb+!==+ & \mid & \verb+[+ & \mid & \verb+>+ & \mid & \verb+[=+
+ & \mid & \verb+>=+ & \mid & \lefteqn{ {\tt instanceof} \ \mid \ {\tt in}}
+\end{array}
+\]
+
+\[
+\begin{array}{l}
+\atoiPf{\fd^*\ \vd^*\ \stmt^*}\ =\\
+\langle (\atoiFDf{\fd}{\emptyenv})^*\ (\atoiVDf{\vd}{\emptyenv})^*\ (\atoiSf{\stmt}{\emptyenv})^* \rangle
+\\[1em]
+
+\atoiFD\lbr{ {\tt function} \ f \verb+(+(x\verb+,+)^*\verb+)+ \ \verb+{+ \fd^* \vd^* \stmt^* \verb+}+}\rbr(\env)\ =\\
+{\sf function} \ \ir{f} \verb+(+{\inblue\newvar{this}}\verb+,+\ {\inblue\newvar{arguments}}\verb+)+
+\verb+{+\\
+\quad
+(\atoiFDfd{\fd})^*\\
+\quad
+({\sf var}\ \ir{x_i})^*\\
+\quad
+(\atoiVDf{\vd}\env)^*\\
+\quad
+(\ir{x_i} = {\inred\newvar{arguments}}\verb+["i"]+)^*\\
+\note{where \ir{x_i} is not the name of any of \mbox{fd}}\\
+\quad
+(\atoiSf{\stmt}{\env; {\inred\newvar{this}}; {\inred\newvar{arguments}}})^*
+\verb+}+
+\\
+\note{
+A function always receives explicit ``this'' and ``arguments''}\\
+\note{arguments so that the desugaring of {\tt this} and {\tt arguments}}\\
+\note{is correct.  Currently, ``arguments'' denotes copies of the}\\
+\note{arguments instead of their aliases.}\\[1em]
+
+% var
+\atoiVD\lbr {\tt var} \ x \rbr(\env)\ =\\
+ {\sf var}\ \ir{x}\\[1em]
+
+% block
+\atoiS\lbr \verb+{+\stmt^*\verb+}+ \rbr(\env)
+\ =\\ \open(\atoiSfd{\stmt})^*\close\\[.5em]
+
+% empty
+\atoiS\lbr \verb+;+ \rbr(\env)
+\ =\\ \open \close\\[.5em]
+\end{array}
+\]
+
+\[
+\begin{array}{lll}
+% expr stmt
+\atoiS\lbr e\verb+;+ \rbr(\env)
+\ =\\
+\mbox{LET\ } (\ir\stmt^*, \ir\expr) = \atoiEfd{e}({\inred\newvar{\_}})\\
+\mbox{IN}\hspace*{1.2em}
+\open\ir\stmt^*\verb+;+\ \fbox{{\inred\newvar{\_}}\ {\tt =} \ \irexpr}\close\\[1em]
+
+%\open\atoiEfd{e}({\inblue\newvar{\_}})\close
+
+% % if &&
+% \emph{\inblue Candidate for optimization}
+% \\
+% \atoiS\lbr {\inblue\verb+if+ \ \verb+(+e_1 \verb+&&+ e_2\verb+)+\ s_1\ (\verb+else+\ s_2)^? }\rbr(\env)
+% &=& \mbox{LET\ } (\irstmt_1^*, \irexpr_1) = \atoiEfd{e_1}({\inblue\newva})\\
+% & & \phantom{\mbox{LET\ }} (\irstmt_2^*, \irexpr_2) = \atoiEfd{e_2}({\inblue\newvb})\\
+% & & \mbox{IN}\hspace*{1.2em}
+% \open\irstmt_1^*\verb+;+\
+% \\
+% & & \phantom{\mbox{IN}\hspace*{1.2em}\open}
+% {\inblue \newvar{label}} \; \verb+:+ \; \verb+{+\\
+% & & \phantom{\mbox{IN}\hspace*{1.2em}\open}\quad
+% {\sf if\ (}{\irexpr_1}{\sf )}
+% \\
+% & & \phantom{\mbox{IN}\hspace*{1.2em}\open}\quad
+% {\sf then}\ \langle \irstmt_2^*\verb+;+\
+% {\sf if\ (} {\irexpr_2} {\sf )\ then\ } \verb+{+\atoiSfd{s_1}\verb+;+\
+% {\sf break}\ {\inred\newvar{label}}\verb+}+\rangle\verb+;+
+% \\
+% & & \phantom{\mbox{IN}\hspace*{1.2em}\open}\quad
+% (\atoiSfd{s_2})^?
+% \verb+}+\close\\
+
+% % label : {
+% %   if (e1) {
+% %     if (e2) {
+% %       s_1
+% %       break label
+% %     }
+% %   }
+% %   s_2
+% % }
+
+% if &&
+%\emph{\inblue Candidate for optimization}\\
+\atoiS\lbr {\inblue\verb+if+ \ \verb+(+e_1 \verb+&&+ \cdots \verb+&&+ e_n\verb+)+\ s_1\ (\verb+else+\ s_2)^? }\rbr(\env)
+\ =\\ \mbox{LET\ } (\irstmt_i^*, \irexpr_i) = \atoiEfd{e_i}({\inblue\newvar{new_i}})
+\quad\note{where $1 \le i \le n$}\\
+%& & \phantom{\mbox{LET\ }} (\irstmt_2^*, \irexpr_2) = \atoiEfd{e_2}({\inblue\newvb})\\
+\mbox{IN}\hspace*{1.2em}
+\open\irstmt_1^*\verb+;+\
+\\
+\phantom{\mbox{IN}\hspace*{1.2em}\open}
+{\inblue \newvar{label}} \; \verb+:+ \; \verb+{+\\
+\phantom{\mbox{IN}\hspace*{1.2em}\open}\quad
+{\sf if\ (}{\irexpr_1}{\sf )}\\
+%
+\phantom{\mbox{IN}\hspace*{1.2em}\open}\quad
+{\sf then}\ \langle \irstmt_2^*\verb+;+\ \cdots\ \verb+;+\\
+\phantom{\mbox{IN}\hspace*{1.2em}\open\quad{\sf then}\ \langle }
+{\sf if\ (} {\irexpr_{n-1}} {\sf )}\\
+\phantom{\mbox{IN}\hspace*{1.2em}\open\quad{\sf then}\ \langle }
+{\sf then}\ \langle \irstmt_n^*\verb+;+\\
+\phantom{\mbox{IN}\hspace*{1.2em}\open\quad{\sf then}\ \langle {\sf then}\ \langle}
+{\sf if\ (} {\irexpr_{n}} {\sf )}
+\\
+\phantom{\mbox{IN}\hspace*{1.2em}\open\quad{\sf then}\ \langle {\sf then}\ \langle}
+{\sf then\ } \verb+{+\atoiSfd{s_1}\verb+;+\
+{\sf break}\ {\inred\newvar{label}}\verb+}+\rangle\cdots\rangle\verb+;+
+\\
+%
+\phantom{\mbox{IN}\hspace*{1.2em}\open}\quad
+(\atoiSfd{s_2})^?
+\verb+}+\close\\[1em]
+
+% label : {
+%   if (e1) {
+%     if (e2) {
+%       s_1
+%       break label
+%     }
+%   }
+%   s_2
+% }
+
+% if ||
+\emph{\inblue Candidate for optimization}
+\\
+\atoiS\lbr {\inblue\verb+if+ \ \verb+(+e_1 \verb+||+ e_2\verb+)+\ s_1\ (\verb+else+\ s_2)^? }\rbr(\env)
+\ =\\ \mbox{LET\ } (\irstmt_1^*, \irexpr_1) = \atoiEfd{e_1}({\inblue\newva})\\
+\phantom{\mbox{LET\ }} (\irstmt_2^*, \irexpr_2) = \atoiEfd{e_2}({\inblue\newvb})\\
+\mbox{IN}\hspace*{1.2em}
+\open\irstmt_1^*\verb+;+\
+\\
+\phantom{\mbox{IN}\hspace*{1.2em}\open}
+{\inblue \newvar{label_2}} \; \verb+:+ \; \verb+{+\\
+\phantom{\mbox{IN}\hspace*{1.2em}\open}\quad
+{\inblue \newvar{label_1}} \; \verb+:+ \; \verb+{+\\
+\phantom{\mbox{IN}\hspace*{1.2em}\open}\quad\quad
+{\sf if\ (}{\irexpr_1}{\sf )}\\
+\phantom{\mbox{IN}\hspace*{1.2em}\open}\quad\quad
+{\sf then\ break}\ {\inred\newvar{label_1}}\verb+;+\ \irstmt_2^*\verb+;+\\
+\phantom{\mbox{IN}\hspace*{1.2em}\open}\quad\quad
+{\sf if\ (} {\irexpr_2} {\sf )\ then\ } {\sf break}\ {\inred\newvar{label_1}}\verb+;+\\
+\phantom{\mbox{IN}\hspace*{1.2em}\open}\quad\quad
+(\atoiSfd{s_2}\verb+;+\ {\sf break})^?\ {\inred\newvar{label_2}}\\
+\phantom{\mbox{IN}\hspace*{1.2em}\open}\quad
+\verb+};+\ \atoiSfd{s_1}\verb+}+\close\\[1em]
+
+% label2: {
+%   label1: {
+%     if (e1) {
+%       break label1
+%     }
+%     if (e2) {
+%       break label1
+%     }
+%     s_2
+%     break label2
+%   }
+%   s_1
+% }
+
+% if
+\atoiS\lbr \verb+if+ \ \verb+(+e \verb+)+\ s_1\ (\verb+else+\ s_2)^? \rbr(\env)
+\ =\\
+\mbox{LET\ } (\irstmt^*, \irexpr) = \atoiEfd{e}({\inblue\newvar{new}})\\
+ \mbox{IN}\hspace*{1.2em}
+\open\irstmt^*\verb+;+\
+{\sf if\ (} {\irexpr} {\sf )\ then\ } \atoiSfd{s_1}\ ({\sf else\ } \atoiSfd{s_2})^?
+\close\\[1em]
+
+% \open
+% \atoiEfd{e}({\inblue\newva})\\
+% &&
+% \phantom{\langle}
+% {\inblue\newvb}\ \verb+=+\ {\sf \ensuremath{\diamond}toBoolean({\inred\newva});}
+% \\
+% &&
+% \phantom{\langle}
+% {\sf if (} {\inred\newvb} {\sf )\ then\ } {\sf IRSeq(}\ \atoiSfd{s_1}\ {\sf )}\
+% ({\sf else\ } {\sf IRSeq(}\ \atoiSfd{s_2}\ {\sf )})^?
+% \close
+% \\
+
+%% 2nd trial
+%%
+% %% switch
+% \atoiS\lbr \verb+switch(+e \verb+){+\cc_1^*\ (\verb+default:+s)^?\ \cc_2^* \verb+}+ \rbr(\env)
+% &=&\langle
+% {\inblue\newvar{break}} \; \verb+:+ \; \verb+{+ \ {\sf IRSeq(} \langle
+% \\&&
+% \quad
+% \atoiEfd{e}({\inblue\newvar{val}}) \verb+;+\
+% {\inblue\newvar{found}}\ \verb+=+ \ {\sf false} \verb+;+\
+% {\inblue\newvar{default}}\ \verb+=+ \ {\sf false} \verb+;+
+% \\&&
+% \quad
+% (\atoiCCf{\cc_1}{\env; \newvar{break}; \newvar{val}; \newvar{found}; \newvar{default}})^*
+% \\&&
+% \quad
+% (
+% {\sf if\ (} {\inred\newvar{found}} {\sf )\ then}\ {\sf IRSeq(} \langle
+% \atoiSf{\stmt}{\env; \newvar{break}}\verb+;+\
+% {\inred\newvar{default}}\ \verb+=+ \ {\sf true}
+% \rangle{\sf)})^?
+% \\&&\quad
+% (\atoiCCf{\cc_2}{\env; \newvar{break}; \newvar{val}; \newvar{found}; \newvar{default}})^*
+% \\&&
+% \quad
+% {\inblue\newvar{cond}}\ \verb+=+ \ {\inred\newvar{default}}\ \verb+||+ {\inred\newvar{found}}\verb+;+
+% \\&&
+% \quad
+% (
+% {\sf if\ (} {\inred\newvar{cond}} {\sf )\ then}\ {\sf IRSeq(} \emptyenv{\sf)}
+% \\&&\quad\phantom{(}
+% {\sf else\ IRSeq(} \langle
+% \atoiSf{\stmt}{\env; \newvar{break}}\verb+;+\
+% {\inred\newvar{default}}\ \verb+=+ \ {\sf true}\verb+;+
+% \\&&\quad\phantom{({\sf else\ IRSeq(} \langle}
+% (\atoiCCf{\cc_2}{\env; \newvar{break}; \newvar{val}; \newvar{found}; \newvar{default}})^*
+% \rangle{\sf)})^?
+% \\&&
+% \rangle
+% {\sf )}\verb+}+\rangle
+% \\
+
+% \atoiCC\lbr {\tt case} \ \expr \; \verb+:+ \; \stmt^{*} \rbr(\env)
+% &=&\langle
+% {\inblue\newvar{cond_1}}\ \verb+=+ \ \env(\newvar{default})\ \verb+||+ \env(\newvar{found})\verb+;+
+% \\&&\phantom{\langle}
+% {\sf if\ (}{\inred\newvar{cond_1}}{\sf)\ then\ IRSeq(}\emptyenv{\sf)}\\
+% &&\phantom{\langle}
+% {\sf else\ IRSeq(}\langle\ \atoiEfd{\expr}({\inblue\newvar{cond_2}})\verb+;+\\
+% &&\phantom{\langle{\sf else\ IRSeq(}\langle\ }
+% {\inblue\newvar{eq}}\ \verb+=+\ \env(\newvar{val}) \verb+===+ {\inred\newvar{cond_2}}\verb+;+\\
+% &&\phantom{\langle{\sf else\ IRSeq(}\langle\ }
+% {\sf if\ ({\inred\newvar{eq}})\ then}\ \env(\newvar{found}) \verb+=+ {\sf true}\ \rangle{\sf)}\verb+;+\\
+% &&\phantom{\langle}
+% {\inred\newvar{cond_1}}\ \verb+=+ \ \env(\newvar{default})\ \verb+||+ \env(\newvar{found})\verb+;+
+% \\&&\phantom{\langle}
+% {\sf if\ (}{\inred\newvar{cond_1}}{\sf)\ then\ IRSeq(}\langle\
+% (\atoiSfd{\stmt})^*\ \rangle{\sf )}\rangle
+% \\
+
+
+%% 1st trial
+%%
+% switch
+% \atoiS\lbr \verb+switch(+e \verb+){+\cc_1^*\ (\verb+default:+s)^?\ \cc_2^* \verb+}+ \rbr(\env)
+% &=&\langle
+% {\inblue\newvar{break}} \; \verb+:+ \; \verb+{+ \ {\sf IRSeq(} \langle
+% \\&&
+% \quad
+% \atoiEfd{e}({\inblue\newvar{val}}) \verb+;+
+% {\inblue\newvar{testing}}\ \verb+=+ \ {\sf true} \verb+;+
+% {\inblue\newvar{keepgoing}}\ \verb+=+ \ {\sf true} \verb+;+
+% \\&&
+% \quad
+% (\atoiCCf{\cc_1}{\env; \newvar{break}; \newvar{val}; \newvar{testing}})^*
+% \\&&
+% \quad
+% ({\sf while\ (} {\inred\newvar{keepgoing}} {\sf )}
+% \\&&
+% \quad\quad
+% {\sf IRSeq(}\langle\
+%   {\sf if\ (} {\inred\newvar{testing}} {\sf )\ then}\
+%   {\inblue\newvar{\_}}\; \verb+=+ \; {\tt undefined}\
+%   {\sf else}\ {\sf IRSeq(}\ \atoiSfd{s}\ {\sf )}
+% \verb+;+
+% \\&&
+% \quad\quad\quad\quad\quad
+% \phantom{\langle}
+%   (\atoiCCf{\cc_2}{\env; \newvar{break}; \newvar{val}; \newvar{testing}})^*
+% \\&&
+% \quad\quad\quad\quad\quad
+% \phantom{\langle}
+%   {\sf if\ (} {\inred\newvar{testing}} {\sf )\ then}\
+%   {\inred\newvar{testing}}\; \verb+=+ \; {\sf false}\
+%   {\sf else}\ {\inred\newvar{keepgoing}}\ \verb+=+ {\sf false}
+% \rangle
+% {\sf )}
+% )^?
+% \\&&
+% \rangle
+% {\sf )}\verb+}+\rangle
+% \\
+
+
+% \atoiCC\lbr {\tt case} \ \expr \; \verb+:+ \; \stmt^{*} \rbr(\env)
+% &=&
+% \langle
+% {\sf if\ (}\env(\newvar{testing}){\sf)}\\
+% &&
+% \phantom{\langle}
+% {\sf then\ IRSeq(}\langle
+% \atoiEfd{\expr}({\inblue\newvar{cond}});\\
+% &&
+% \phantom{\langle{\sf then\ IRSeq(}\langle}
+% {\inblue\newvar{eq}}\ \verb+=+\ \env(\newvar{val}) \verb+===+ {\inred\newvar{cond}};\\
+% &&
+% \phantom{\langle{\sf then\ IRSeq(}\langle}
+% {\sf if\ ({\inred\newvar{eq}})\ then\ \env(\newvar{testing}) \verb+=+ false} \rangle{\sf);}\\
+% &&
+% \phantom{\langle}
+% {\sf if\ (}\env(\newvar{testing}){\sf)\ then\ {\inblue\newvar{\_}} \verb+=+ undefined\
+% else\ IRSeq(}\ (\atoiSfd{\stmt})^*\ {\sf )}
+% \rangle
+% \\
+
+% \lefteqn{\note{
+% We introduce one label \newvar{break} and two variables, \newvar{testing} and \newvar{keepgoing},
+% to denote the current status.}}\\
+% \lefteqn{\note{
+% Initially \newvar{testing} is {\sf true} meaning that the conditions are to be
+% evaluated,}}\\
+% \lefteqn{\note{
+% and \newvar{keepgoing} is also {\sf true} meaning that the {\tt default}
+% case is to be evaluated.
+% }}\\
+% \lefteqn{\note{
+% \newvar{testing} is set to {\sf false} when a matching case is found, or no matching case is found
+% after the lexically last case.
+% }}\\
+% \lefteqn{\note{
+% In the latter case, the control flow moves back to the start of the {\tt default} case, if any,
+% via {\sf while}.
+% }}\\
+% \lefteqn{\note{
+% When \newvar{testing} is {\sf false} and the control flow reaches the end of {\tt switch},
+% \newvar{keepgoing} is set to {\sf false} so that the {\sf while} loop terminates.
+% }}\\
+
+%% switch
+\atoiS\lbr \verb+switch (+e \verb+) {+\cc_1^*\ (\verb+default:+s^*)^?\ \cc_2^* \verb+}+ \rbr(\env)
+\ =\\ \mbox{LET\ } (\irstmt^*, \irexpr) = \atoiEfd{e}({\inblue\newvar{val}})\\
+\mbox{IN}\hspace*{1.2em}
+\open
+{\inblue\newvar{break}} \; \verb+:+ \; \verb+{+\\
+\phantom{\mbox{IN}\hspace*{1.2em}\open\quad}
+\irstmt^*\verb+;+\ \fbox{{\inred\newvar{val}} \; {\tt =} \; \irexpr{\tt;}}
+\\
+\phantom{\mbox{IN}\hspace*{1.2em}\open\quad}
+ \atoiC\lbr({\sf rev}\ \cc_2^*) (s^*)^? ({\sf rev}\  \cc_1^*)\rbr
+({\env; {\inred\newvar{break}}; {\inred\newvar{val}}})\verb+}+\close
+\\[1em]
+
+%% case
+\atoiC \lbr ({\tt case} \ \expr \; \verb+:+ \; \stmt_1^{*})::cc_2^{*} \ (\stmt_2^*)^?\  cc_1^{*} \rbr
+(\env)(c^{*})
+\ =\\
+\langle
+{\inblue \newvar{label}} \; \verb+:+ \; \verb+{+
+  \atoiC \lbr cc_2^{*} \ (\stmt_2^*)^{?}\  cc_1^{*} \rbr(\env)(({e,\inred \newvar{label}})::c^{*}) \verb+};+\\
+\phantom{\langle}
+ (\atoiS\lbr \stmt_1 \rbr(\env))^{*}
+\rangle
+\\[1em]
+\atoiC \lbr () \ (\stmt^{*})^{?}\  cc_1^{*} \rbr(\env)(c^{*})
+\ =\\
+\langle
+{\inblue \newvar{label}} \; \verb+:+ \; \verb+{+
+  \atoiC \lbr () \ ()\  cc_1^{*} \rbr(\env)(c^{*}@[({(),\inred \newvar{label}})])\verb+};+
+\\
+\phantom{\langle}
+ ((\atoiS\lbr \stmt \rbr(\env))^{*})^{?}
+\rangle
+\\[1em]
+
+\atoiC \lbr () \ () \ ({\tt case} \ \expr \; \verb+:+ \; \stmt^{*})::cc_1^{*} \rbr(\env)(c^{*})
+\ =\\
+\langle
+{\inblue \newvar{label}} \; \verb+:+ \; \verb+{+
+  \atoiC \lbr () \ ()\  cc_1^{*} \rbr(\env)(({e,\inred \newvar{label}})::c^{*}) \verb+};+
+\\
+\phantom{\langle}
+ (\atoiS\lbr \stmt \rbr(\env))^{*}
+\rangle
+\\[1em]
+
+\atoiC \lbr () \ () \ () \rbr(\env)((e, \ir{l})^{*})
+\ =\\
+\langle
+  \atoiSC \lbr (e,\ir{l})^{*} \rbr(\env)\verb+;+
+\\
+\phantom{\langle}
+   {\sf break}\ \env(\newvar{break})
+ \rangle\\[1em]
+
+\atoiSC \lbr (e,\ir{l})::(c^{*}) \rbr(\env)
+\ =\\
+\mbox{LET\ } (\irstmt^*, \irexpr) = \atoiEfd{e}({\inblue\newvar{cond}})\\
+\mbox{IN}\hspace*{1.2em}
+\langle\irstmt^*\verb+;+\
+\\
+\phantom{\mbox{IN}\hspace*{1.2em}\open}
+ {\sf if\ (}\env(\newvar{val}) \; \verb+===+ \; \irexpr
+{\sf)\ then\ break}\ \ir{l}\ {\sf else\ }\atoiSC\lbr c^{*}\rbr(\env)\rangle
+\end{array}
+\]
+
+\[
+\begin{array}{lll}
+\atoiSC \lbr [((),\ir{l})] \rbr(\env)
+\ =\\
+\langle
+ {\sf break}\ \ir{l}\rangle\\[1em]
+
+\atoiSC \lbr () \rbr(\env)
+\ =\\
+\langle\rangle
+\\
+\lefteqn{\note{
+Where $c$ is either $(\expr, \ir{l})$ or $((), \ir{l})$.
+}}\\[1em]
+
+%% do-while
+\atoiS\lbr \verb+do+\ s\  \verb+while (+ e \verb+);+ \rbr(\env)
+\ =\\ \mbox{LET\ } (\irstmt^*, \irexpr) = \atoiEfd{e}({\inblue\newva})\\
+\mbox{IN}\hspace*{1.2em}
+\open
+{\inblue\newvar{break}} \; \verb+:+ \; \verb+{+
+\\
+% &&
+% \qquad\qquad
+% {\inblue\newvar{cond}}\ \verb+=+\ {\sf true;}
+% \\
+\qquad\qquad
+{\inblue\newvar{continue}} \; \verb+:+ \;
+\verb+{+ \atoiSf{s}{\env;{\inred\newvar{break}};{\inred\newvar{continue}}} \verb+};+
+\\
+\qquad\qquad
+\irstmt^*\verb+;+
+%\fbox{{\inred\newva} {\tt =} \irexpr}
+\\
+\qquad\qquad
+{\sf while\ (}\irexpr{)}\ \verb+{+
+\\
+\qquad\qquad\quad
+{\inblue\newvar{continue}} \; \verb+:+ \;
+\verb+{+ \atoiSf{s}{\env;{\inred\newvar{break}};{\inred\newvar{continue}}} \verb+};+
+\\
+\qquad\qquad\quad
+\irstmt^*\verb+;+
+%\fbox{{\inred\newva} {\tt =} \irexpr}
+\\
+\qquad\qquad
+\verb+}+
+\\\phantom{\mbox{IN}\hspace*{1.2em}\open}
+\verb+}+\close
+\\[1em]
+
+%% while
+\atoiS\lbr  \verb+while (+ \expr \verb+)+\ s\rbr(\env)
+\ =\\
+\mbox{LET\ } (\irstmt^*, \irexpr) = \atoiEfd{e}({\inblue\newva})\\
+\mbox{IN}\hspace*{1.2em}
+\open
+{\inblue\newvar{break}} \; \verb+:+ \; \verb+{+
+\\
+\qquad\qquad
+\irstmt^*\verb+;+
+%%%\fbox{{\inred\newva} {\tt =} \irexpr}
+%\atoiEfd{\expr}({\inblue\newva}) \verb+;+
+% \\&&\quad
+% {\inblue\newvb}\ \verb+=+\ {\sf \ensuremath{\diamond}toBoolean({\inred\newva});}
+\\
+\qquad\qquad
+{\sf while\ (}\irexpr{)} \;\verb+{+
+\\
+\qquad\qquad\quad
+{\inblue\newvar{continue}} \; \verb+:+ \;
+\verb+{+ \atoiSf{s}{\env;{\inred\newvar{break}};{\inred\newvar{continue}}}\verb+};+
+\\
+\qquad\qquad\quad
+\irstmt^*\verb+;+
+%%%\fbox{{\inred\newva} {\tt =} \irexpr}
+% \\&&
+% \qquad\qquad\quad
+% \atoiEfd{e}({\inred\newva}) \verb+;+
+% \\&&\quad\quad
+% {\inred\newvb}\ \verb+=+\ {\sf \ensuremath{\diamond}toBoolean({\inred\newva})}
+\\
+\qquad\qquad\verb+}+
+\\\phantom{\mbox{IN}\hspace*{1.2em}\open}
+\verb+}+\close
+\\[1em]
+
+%% for-none
+\atoiS\lbr  \verb+for (+ e_1^? \verb+;+ \verb+;+e_3^? \verb+)+\ s\rbr(\env)
+\ =\\ \mbox{LET\ } ((\irstmt_1^*, \irexpr_1) = \atoiEfd{e_1}({\inred\newvar{\_}}))^?\\
+\phantom{\mbox{LET\ }} ((\irstmt_3^*, \irexpr_3) = \atoiEfd{e_3}({\inred\newvar{\_}}))^?\\
+\mbox{IN}\hspace*{1.2em}
+\open
+{\inblue\newvar{break}} \; \verb+:+ \; \verb+{+
+\\
+\qquad\qquad
+(\irstmt_1^*\verb+;+
+\fbox{{\inred\newvar{\_}} {\tt =} $\irexpr_1$})^?
+\\
+\qquad\qquad
+{\sf while\ ({\ingreen true})} \; \verb+{+
+\\
+\qquad\qquad\quad
+{\inblue\newvar{continue}} \; \verb+:+ \;
+\verb+{+ \atoiSf{s}{\env;{\inred\newvar{break}};{\inred\newvar{continue}}}\verb+};+
+\\
+\qquad\qquad\quad
+(\irstmt_3^*\verb+;+
+\fbox{{\inred\newvar{\_}} {\tt =} $\irexpr_3$})^?
+%(\atoiEfd{e_3}({\inblue\newvar{\_}}) \verb+;+)^?
+\\\qquad\qquad
+\verb+}+
+\\\phantom{\mbox{IN}\hspace*{1.2em}\open}
+\verb+}+\close
+\\[1em]
+
+%% for-some
+\atoiS\lbr  \verb+for (+ e_1^? \verb+;+e_2 \verb+;+e_3^? \verb+)+\ s\rbr(\env)
+\ =\\ \mbox{LET\ } ((\irstmt_1^*, \irexpr_1) = \atoiEfd{e_1}({\inred\newvar{\_}}))^?\\
+\phantom{\mbox{LET\ }} (\irstmt_2^*, \irexpr_2) = \atoiEfd{e_2}({\inblue\newvb})\\
+\phantom{\mbox{LET\ }} ((\irstmt_3^*, \irexpr_3) = \atoiEfd{e_3}({\inred\newvar{\_}}))^?\\
+\mbox{IN}\hspace*{1.2em}
+\open
+{\inblue\newvar{break}} \; \verb+:+ \; \verb+{+
+\\
+\qquad\qquad
+(\irstmt_1^*\verb+;+
+\fbox{{\inred\newvar{\_}} {\tt =} $\irexpr_1$})^?
+\\
+\qquad\qquad
+\irstmt_2^*\verb+;+
+%%%\fbox{{\inred\newvb} {\tt =} $\irexpr_2$}\verb+;+
+%\atoiEfd{e_2}({\inblue\newvb}) \verb+;+
+% \\&&\quad
+% {\inblue\newvc}\ \verb+=+\ {\sf \ensuremath{\diamond}toBoolean({\inred\newvb});}
+\\
+\qquad\qquad
+{\sf while\ (}\irexpr_2{)} \; \verb+{+
+\\
+\qquad\qquad\quad
+{\inblue\newvar{continue}} \; \verb+:+ \;
+\verb+{+ \atoiSf{s}{\env;{\inred\newvar{break}};{\inred\newvar{continue}}} \verb+};+
+\\
+\qquad\qquad\quad
+(\irstmt_3^*\verb+;+
+\fbox{{\inred\newvar{\_}} {\tt =} $\irexpr_3$})^?
+%(\atoiEfd{e_3}({\inblue\newvc}) \verb+;+)^?
+\\
+\qquad\qquad\quad
+\irstmt_2^*\verb+;+
+%%%\fbox{{\inred\newvb} {\tt =} $\irexpr_2$}\verb+;+
+%\atoiEfd{e_2}({\inred\newvb}) \verb+;+
+% \\&&\quad\quad
+% {\inred\newvc}\ \verb+=+\ {\sf \ensuremath{\diamond}toBoolean({\inred\newvb});}
+\\
+\qquad\qquad
+\verb+}+
+\\\phantom{\mbox{IN}\hspace*{1.2em}\open}
+\verb+}+\close
+\end{array}
+\]
+
+\[
+\begin{array}{l@{}l@{~}l}
+%% for-in
+\atoiS\lbr  \verb+for (+ \lhs\ \verb+in+\ e \verb+)+\ s\rbr(\env)
+\ =\\
+ \mbox{LET\ } (\irstmt^*, \irexpr) = \atoiEfd{e}({\inblue\newva})\\
+\mbox{IN}\hspace*{1.2em}
+\open
+{\inblue\newvar{break}} \; \verb+:+ \; \verb+{+
+\\\qquad\qquad
+\irstmt^*\verb+;+
+%%%\fbox{{\inred\newva} {\tt =} \irexpr}
+\\\qquad\qquad
+  {\inblue\newvar{obj}} \ \verb+=+\ {\sf \ensuremath{\diamond}toObject}\verb+(+\irexpr\verb+)+\verb+;+\\
+\qquad\qquad
+  {\inblue\newvar{iterator}} \ \verb+=+ \ {\sf \ensuremath{\diamond}iteratorInit(}{\inred\newvar{obj}}{\sf)}\verb+;+
+\\\qquad\qquad
+  {\inblue\newvar{cond_1}} \ \verb+=+ \ {\sf \ensuremath{\diamond}iteratorHasNext(}{\inred\newvar{obj}}\verb+,+ {\inred\newvar{iterator}}{\sf)}\verb+;+
+\\
+\qquad\qquad
+  {\sf while} \ \verb+(+{\inred\newvar{cond_1}}\verb+) {+\\
+\qquad\qquad\quad
+    {\inblue\newvar{key}} \ \verb+=+ \ {\sf \ensuremath{\diamond}iteratorNext(}{\inred\newvar{obj}}\verb+,+ {\inred\newvar{iterator}}{\sf)}\verb+;+
+\\\qquad\qquad\quad
+      \atoiLVALf{\lhs}{\env}(;\ {\inred\newvar{key}})({\rm false}).\_1\verb+;+\\
+\qquad\qquad\quad
+      {\inblue\newvar{continue}}\verb+:{+ \atoiSf{\stmt}{\env;{\inred\newvar{break}};{\inred\newvar{continue}}} \verb+};+\\
+\qquad\qquad\quad
+  {\inred\newvar{cond_1}} \ \verb+=+ \ {\sf \ensuremath{\diamond}iteratorHasNext(}{\inred\newvar{obj}}\verb+,+ {\inred\newvar{iterator}}{\sf)}\verb+;+
+\\
+\qquad\qquad
+\verb+}+
+\\\phantom{\mbox{IN}\hspace*{1.2em}\open}
+\verb+}+\close
+\\[1em]
+
+% 
+% \atoiS\lbr  \verb+for (var+ \ (vd,)^*\verb+,+e_1^? \verb+,+e_2^? \verb+)+\ s\rbr(\env)
+% &=&
+% 
+% \langle
+% (\atoiVDfd{vd})^*\verb+;+\
+% \atoiS\lbr  \verb+for (+ \verb+,+e_1^? \verb+,+e_2^? \verb+)+\ s\rbr(\env)
+% \rangle
+% \\
+
+
+% \atoiS\lbr
+% \verb+for (var+ \ x \ \verb+in+ \ \expr \verb+)+ \ \stmt
+% \rbr(\env)
+% &=&
+% \atoiS\lbr
+% \verb+for (+ x \ \verb+in+ \ \expr \verb+)+ \ \stmt
+% \rbr(\env)
+% \\
+
+% \atoiS\lbr
+% \verb+for (var+ \ x \ \verb+=+ \ \expr \ \verb+in+ \ \expr' \verb+)+ \ \stmt
+% \rbr(\env)
+% &=&
+% \atoiS\lbr
+% \verb+{+ \
+% x \ \verb+=+ \ \expr \verb+;+ \
+% \verb+for (+ x \ \verb+in+ \ \expr' \verb+)+ \ \stmt
+% \ \verb+}+
+% \rbr(\env)
+% \\
+
+% continue 1
+\atoiS\lbr  \verb+continue;+ \rbr(\env)
+\ =\\\open
+{\sf break}\ \env(\newvar{continue})
+\close\\[1em]
+
+% continue 2
+\atoiS\lbr  \verb+continue+ \ l\verb+;+ \rbr(\env)
+\ =\\\open
+%{\sf break}\ \env(\newvar{continue})
+{\sf break}\ \env(\ir{l})
+\close\\[1em]
+
+%% break 1
+\atoiS\lbr  \verb+break;+\rbr(\env)
+\ =\\\open
+{\sf break}\ \env(\newvar{break})
+\close\\[1em]
+
+%% break 2
+\atoiS\lbr  \verb+break+ \ l\verb+;+ \rbr(\env)
+\ =\\\open
+{\sf break}\ \ir{l}
+\close\\[1em]
+
+%% return 1
+\atoiS\lbr  \verb+return;+ \rbr(\env)
+\ =\\\open
+{\sf return}
+\close\\[1em]
+
+%% return 2
+\atoiS\lbr  \verb+return+ \ e \verb+;+ \rbr(\env)
+\ =\\ \mbox{LET\ } (\irstmt^*, \irexpr) = \atoiEfd{e}({\inblue\newva})\\
+\mbox{IN}\hspace*{1.2em}
+\langle\irstmt^*\verb+;+\
+{\sf return}\ \irexpr
+\close\\[1em]
+
+%
+% \atoiS\lbr  \verb+with(+ e \verb+)+\ s \rbr(\env)
+% &=&\langle
+% \atoiEfd{e}(\newva) \verb+;+
+% \\&&
+% \phantom{\langle}
+% \newvb\ \verb+=+\ {\sf \ensuremath{\diamond}toObject(\newva);}
+% \\&&
+% \phantom{\langle}
+% \atoiS\lbr s\rbr(\env\verb+;+\;\newvb)\rangle
+% \\
+
+%% with
+\atoiS\lbr  \verb+with (+ e \verb+)+\ s \rbr(\env)
+\ =\\ \mbox{LET\ } (\ir\stmt^*, \ir\expr) = \atoiEfd{e}({\inblue\newva})\\
+\mbox{IN}\hspace*{1.2em}
+\open\ir\stmt^*\verb+;+\
+\\ \phantom{\mbox{IN}\hspace*{1.2em}\open}
+{\inblue\newvb}\ \verb+=+\ {\sf \ensuremath{\diamond}toObject(}\irexpr{\sf);}
+\\ \phantom{\mbox{IN}\hspace*{1.2em}\open}
+{\sf with\ (}{\inred\newvb}{\sf)}\
+\atoiS\lbr s\rbr(\env)
+\close
+\\[1em]
+
+%% labelled statement
+\atoiS\lbr  l\ \verb+:+\ s \rbr(\env)
+\ =\\ \open
+\ir{l}\ \verb+:+\ \verb+{+\ \atoiSf{s}{\env;{\inred \ir{l}}} \ \verb+}+\close
+\\[1em]
+
+%% throw
+\atoiS\lbr \verb+throw+\ e \verb+;+ \rbr(\env)
+\ =\\ \mbox{LET\ } (\irstmt^*, \ir\expr) = \atoiEfd{e}({\inblue\newva})\\
+\mbox{IN}\hspace*{1.2em}
+\open\ir\stmt^*\verb+;+\
+{\sf throw}\ \irexpr
+\close
+\\[1em]
+
+%% try
+\atoiS\lbr \verb+try {+s_1^* \verb+}+\
+  (\verb+catch(+x \verb+){+s_2^* \verb+}+)^?
+  (\verb+finally {+s_3^* \verb+}+)^? \rbr(\env)
+\ =\\\open
+{\sf try} \ \verb+{+ (\atoiSfd{s_1})^* \verb+}+
+\\\phantom{\langle}
+(\verb+catch(+\ir{x} \verb+){+ (\atoiSfd{s_2})^* \verb+}+)^?
+\\\phantom{\langle}
+(\verb+finally {+ (\atoiSfd{s_3})^* \verb+}+)^?
+\close
+\\[1em]
+
+\atoiS\lbr \verb+debugger;+ \rbr(\env)
+\ =\\\langle\rangle
+\end{array}
+\]
+
+\[
+\begin{array}{l@{}l@{~}l}
+%%% Definitions of LVAL
+\atoiLVAL\lbr \verb+(+\expr\verb+)+\rbr(\env)(\ir{\stmt}^*; \ir{\expr}')(\kold)
+\ =\\
+\atoiLVAL\lbr \expr\rbr(\env)(\ir{\stmt}^*; \ir{\expr}')(\kold)
+\\[1em]
+
+\atoiLVAL\lbr x \rbr(\env)(\ir{\stmt}^*; \ir{\expr})(\kold)
+\ =\\\mbox{IF keepOld THEN\ }
+(\langle
+{\inblue\newvar{old}}\ \verb+=+\ \ir{x}\verb+;+\
+\ir{\stmt}^*\verb+;+\
+\ir{x}\ \verb+=+\ \ir{\expr}
+\rangle, \ir{x})
+\\
+\mbox{ELSE\ }
+\langle
+\ir{\stmt}^*\verb+;+\
+\ir{x}\ \verb+=+\ \ir{\expr}
+\rangle
+\\[1em]
+
+\atoiLVAL\lbr \lhs\verb+.+x \rbr(\env)(\ir{\stmt}^*; \ir{\expr})(\kold)
+\ =\\
+\atoiLVAL\lbr \lhs\verb+["+x\verb+"]+ \rbr(\env)(\ir{\stmt}^*; \ir{\expr})(\kold)
+\\[1em]
+
+%% LVAL Load
+\atoiLVAL\lbr \lhs\verb+[+\expr\verb+]+ \rbr(\env)(\ir{\stmt}^*; \ir{\expr}')(\kold)
+\ =\\ \mbox{LET\ } (\irstmt_1^*, \irexpr_1) = \atoiLHSfd{\lhs}({\inblue\newvar{obj_1}})\\
+\phantom{\mbox{LET\ }} (\irstmt_2^*, \irexpr_2) = \atoiEfd{e}({\inblue\newvar{field_1}})\\
+\mbox{IN}\hspace*{1.2em}
+\mbox{IF keepOld}\\
+\phantom{\mbox{IN}\hspace*{1.2em}}
+\mbox{THEN\ }
+(\langle
+\irstmt_1^*\verb+;+{\inblue\newvar{obj}}\ \verb+=+\ {\sf \ensuremath{\diamond}toObject(}\irexpr_1{\sf)} \verb+;+
+\irstmt_2^*\verb+;+
+\\ \phantom{\mbox{IN}\hspace*{1.2em}\mbox{THEN\ }(\langle}
+%%{\inblue\newvar{val}}\ \verb+=+\ \ir{\expr}'\verb+;+\
+ {\inblue{\newvar{old}}}\ \verb+=+\ {\inred\newvar{obj}}\verb+[+\irexpr_2\verb+];+
+\ir{\stmt}^*\verb+;+
+{\inred\newvar{obj}}\verb+[+\irexpr_2\verb+] =+\ \ir{\expr}'
+\rangle, 
+\\
+\phantom{\mbox{IN}\hspace*{1.2em}\mbox{THEN\ }\langle}
+{\inred\newvar{obj}}\verb+[+\irexpr_2\verb+]+)
+\\
+ \phantom{\mbox{IN}\hspace*{1.2em}}
+\mbox{ELSE\ }
+(\langle
+\irstmt_1^*\verb+;+{\inblue\newvar{obj}}\ \verb+=+\ {\sf \ensuremath{\diamond}toObject(}\irexpr_1{\sf)} \verb+;+
+ \irstmt_2^*\verb+;+\\
+%{\inblue\newvar{field}}\ \verb+=+\ {\sf \ensuremath{\diamond}toString(}\irexpr_2{\sf)} \verb+;+\\
+ \phantom{\mbox{IN}\hspace*{1.2em}\mbox{ELSE\ }(\langle}
+\ir{\stmt}^*\verb+;+
+{\inred\newvar{obj}}\verb+[+\irexpr_2\verb+] =+\ \ir{\expr}'
+\rangle,
+ {\inred\newvar{obj}}\verb+[+\irexpr_2\verb+]+)
+\\[1em]
+
+\atoiLVAL\lbr \expr \rbr(\env)(\ir{\stmt}^*; \ir{\expr})(\kold)
+\ =\\ \mbox{\inred Warning: ReferenceError!}
+\\[1em]
+
+%% expression sequence
+\atoiE\lbr e_1\verb+,+\ e_2 \rbr(\env)(\ir{x})
+\ =\\ \mbox{LET\ } (\irstmt_1^*, \irexpr_1) = \atoiEfd{e_1}({\inblue\newvar{y}})\\
+\phantom{\mbox{LET\ }} (\irstmt_2^*, \irexpr_2) = \atoiEfd{e_2}(\ir{x})\\
+\mbox{IN}\hspace*{1.2em}
+(\irstmt_1^*\verb+;+
+{\inred\newvar{y}}\ \verb+=+\ \irexpr_1\verb+;+
+\irstmt_2^*, \irexpr_2)
+%\open\ir\stmt^*\verb+;+\ \fbox{{\inred\newvar{\_}}\ {\tt =} \ \irexpr}\close
+\\[1em]
+
+%% ternary &&
+\emph{\inblue Candidate for optimization}
+\\
+\atoiE\lbr {\inblue e_a \verb+&&+ e_b\ \verb+?+\ e_2\ \verb+:+\ e_3}\rbr(\env)(\ir{x})
+\ =\\ \mbox{LET\ } (\irstmt_a^*, \irexpr_a) = \atoiEfd{e_a}({\inblue\newvar{new_a}})\\
+\phantom{\mbox{LET\ }} (\irstmt_b^*, \irexpr_b) = \atoiEfd{e_b}({\inblue\newvar{new_b}})\\
+\phantom{\mbox{LET\ }} (\irstmt_2^*, \irexpr_2) = \atoiEfd{e_2}(\ir{x})\\
+\phantom{\mbox{LET\ }} (\irstmt_3^*, \irexpr_3) = \atoiEfd{e_3}(\ir{x})\\
+\mbox{IN}\hspace*{1.2em}
+(\irstmt_a^*\verb+;+\
+% \irstmt_b^*\verb+;+
+\\
+\phantom{\mbox{IN}\hspace*{1.2em}\open}
+{\inblue \newvar{label}} \; \verb+:+ \; \verb+{+\\
+\phantom{\mbox{IN}\hspace*{1.2em}\open}\quad
+{\sf if\ (}\irexpr_a{\sf )}\\
+\phantom{\mbox{IN}\hspace*{1.2em}\open}\quad
+{\sf then}\
+\langle\irstmt_b^*\verb+;+\
+{\sf if\ (} {\irexpr_b} {\sf )\ then\ }
+\verb+{+\irstmt_2^*\verb+;+ \ \fbox{\ir{x} {\tt =} $\irexpr_2$}\verb+;+\
+{\sf break}\ {\inred\newvar{label}}\verb+}+\rangle\verb+;+
+\\
+\phantom{\mbox{IN}\hspace*{1.2em}\open}\quad
+\irstmt_3^*\verb+;+ \ \fbox{\ir{x} {\tt =} $\irexpr_3$} \verb+}+,\ir{x})
+\\[1em]
+
+%% ternary ||
+\emph{\inblue Candidate for optimization}
+\\
+\atoiE\lbr {\inblue e_a \verb+||+ e_b\ \verb+?+\ e_2\ \verb+:+\ e_3}\rbr(\env)(\ir{x})
+\ =\\ \mbox{LET\ } (\irstmt_a^*, \irexpr_a) = \atoiEfd{e_a}({\inblue\newvar{new_a}})\\
+ \phantom{\mbox{LET\ }} (\irstmt_b^*, \irexpr_b) = \atoiEfd{e_b}({\inblue\newvar{new_b}})\\
+ \phantom{\mbox{LET\ }} (\irstmt_2^*, \irexpr_2) = \atoiEfd{e_2}(\ir{x})\\
+ \phantom{\mbox{LET\ }} (\irstmt_3^*, \irexpr_3) = \atoiEfd{e_3}(\ir{x})\\
+ \mbox{IN}\hspace*{1.2em}
+(\irstmt_a^*\verb+;+\
+\\
+ \phantom{\mbox{IN}\hspace*{1.2em}\open}
+{\inblue \newvar{label_2}} \; \verb+:+ \; \verb+{+\\
+ \phantom{\mbox{IN}\hspace*{1.2em}\open}\quad
+{\inblue \newvar{label_1}} \; \verb+:+ \; \verb+{+\\
+ \phantom{\mbox{IN}\hspace*{1.2em}\open}\quad\quad
+{\sf if\ (}\irexpr_a{\sf )}
+\\
+ \phantom{\mbox{IN}\hspace*{1.2em}\open}\quad\quad
+{\sf then\ break}\ {\inred\newvar{label_1}}\verb+;+ \irstmt_b^*\verb+;+\\
+ \phantom{\mbox{IN}\hspace*{1.2em}\open}\quad\quad
+{\sf if\ (} {\irexpr_b} {\sf )\ then\ } {\sf break}\ {\inred\newvar{label_1}}\verb+;+\\
+ \phantom{\mbox{IN}\hspace*{1.2em}\open}\quad\quad
+\irstmt_3^*\verb+;+ \ \fbox{\ir{x} {\tt =} $\irexpr_3$}\verb+;+\
+{\sf break}\ {\inred\newvar{label_2}}\\
+ \phantom{\mbox{IN}\hspace*{1.2em}\open}\quad
+\verb+};+\ \irstmt_2^*\verb+;+ \ \fbox{\ir{x} {\tt =} $\irexpr_2$}\verb+}+,\ir{x})
+\end{array}
+\]
+
+\[
+\begin{array}{l@{~}l@{~}l}
+%% ternary
+\atoiE\lbr e_1\ \verb+?+\ e_2\ \verb+:+\ e_3\rbr(\env)(\ir{x})
+\ =\\ \mbox{LET\ } (\irstmt_1^*, \irexpr_1) = \atoiEfd{e_1}({\inblue\newva})\\
+ \phantom{\mbox{LET\ }} (\irstmt_2^*, \irexpr_2) = \atoiEfd{e_2}(\ir{x})\\
+ \phantom{\mbox{LET\ }} (\irstmt_3^*, \irexpr_3) = \atoiEfd{e_3}(\ir{x})\\
+ \mbox{IN}\hspace*{1.2em}
+(\irstmt_1^*\verb+;+
+{\sf if} \ \verb+(+{\irexpr_1}\verb+)+ \
+{\sf then} \ \verb+{+\irstmt_2^*\verb+;+ \ \fbox{\ir{x} {\tt =} $\irexpr_2$} \verb+}+\
+{\sf else} \ \verb+{+\irstmt_3^*\verb+;+ \ \fbox{\ir{x} {\tt =} $\irexpr_3$} \verb+}+,
+\ir{x})
+\\[1em]
+
+\atoiE\lbr\lhs\ \verb+=+\ \expr\rbr(\env)(\ir{x})
+\ =\\ \mbox{LET\ } (\irstmt^*, \irexpr) = \atoiEfd{e}(\ir{x})\\
+ \mbox{IN}\hspace*{1.2em}
+\mbox{IF\ $\irexpr$ contains $\lhs$}\\
+ \phantom{\mbox{IN}\hspace*{1.2em}}
+\mbox{THEN\ }
+    \atoiLVALf{\lhs}{\env}(\ \irstmt^*;\ \irexpr \ )({\rm false})
+\\
+ \phantom{\mbox{IN}\hspace*{1.2em}}
+\mbox{ELSE\ }
+    (\atoiLVALf{\lhs}{\env}(\ \irstmt^*;\ \irexpr \ )({\rm false}).\_1, \irexpr)
+\\[1em]
+
+\atoiE\lbr{\lhs \aop\verb+=+\ \expr}\rbr(\env)(\ir{x})
+\ =\\ \mbox{LET\ } (\irstmt^*, \irexpr) = \atoiEfd{e}({\inblue\newvar{y}})\\
+% & & \mbox{IN}\hspace*{1.2em}
+%     (\atoiLVALf{\lhs}{\env}(\ \irstmt^*;\ {\inblue{\newvar{new}}}\ \verb+=+\ {\inred{\newvar{old}}} \inop \irexpr;\ {\inred\newvar{new}})\verb+;+
+%      \ir{x} \; {\tt =} \; {\inred\newvar{new}}, \ir{x})
+% \\
+ \mbox{IN}\hspace*{1.2em}
+    (\atoiLVALf{\lhs}{\env}(\ \irstmt^*;\ {\inred{\newvar{old}}} \aop \irexpr)({\rm true}).\_1,
+{\inred{\newvar{old}}} \aop \irexpr)
+\\[1em]
+
+\atoiE\lbr{\verb!++! \expr}\rbr(\env)(\ir{x})
+% &=&
+% (\atoiLVAL\lbr \expr \rbr(\env)(
+% {\inblue\newvar{new}}\ \verb+=+\ {\sf \ensuremath{\diamond}toNumber(}{\inred\newvar{old}}{\sf)};\
+% {\inblue\newvar{new_2}}\ \verb+=+\ {\inred{\newvar{new}}}\ \verb!+! {\sf\ingreen 1};\ {\inred\newvar{new_2}})\verb+;+
+% \ir{x} \; {\tt =} \; {\inred\newvar{new_2}}, \ir{x})
+% \\
+\ =\\
+(\atoiLVAL\lbr \expr \rbr(\env)(
+{\inblue\newvar{new}}\ \verb+=+\ {\sf \ensuremath{\diamond}toNumber(}{\inred\newvar{old}}{\sf)};\\
+\phantom{(\atoiLVAL\lbr \expr \rbr(\env)(}
+{\inred{\newvar{new}}}\ \verb!+! {\sf\ingreen 1})({\rm true}).\_1,
+{\inred{\newvar{new}}}\ \verb!+! {\sf\ingreen 1})
+% ;\
+% {\inred{\newvar{old}}}\ \verb!+! {\sf\ingreen 1})({\rm true}).\_1,
+% {\inred{\newvar{old}}}\ \verb!+! {\sf\ingreen 1})
+\\[1em]
+
+\atoiE\lbr{\verb!--! \expr}\rbr(\env)(\ir{x})
+\ =\\
+(\atoiLVAL\lbr \expr \rbr(\env)(
+{\inblue\newvar{new}}\ \verb+=+\ {\sf \ensuremath{\diamond}toNumber(}{\inred\newvar{old}}{\sf)};\\
+\phantom{(\atoiLVAL\lbr \expr \rbr(\env)(}
+{\inred{\newvar{new}}}\ \verb!-! {\sf\ingreen 1})({\rm true}).\_1,
+{\inred{\newvar{new}}}\ \verb!-! {\sf\ingreen 1})
+% ;\
+% {\inred{\newvar{old}}}\ \verb!-! {\sf\ingreen 1})({\rm true}).\_1,
+% {\inred{\newvar{old}}}\ \verb!-! {\sf\ingreen 1})
+\\[1em]
+% &=& (\atoiLVAL\lbr \expr \rbr(\env)(
+% {\inblue\newvar{new}}\ \verb+=+\ {\sf \ensuremath{\diamond}toNumber(}{\inred\newvar{old}}{\sf)};\
+% {\inblue\newvar{new_2}}\ \verb+=+\ {\inred{\newvar{new}}}\ \verb!-! {\sf\ingreen 1};\ {\inred\newvar{new_2}})\verb+;+
+% \ir{x} \; {\tt =} \; {\inred\newvar{new_2}}, \ir{x})
+% \\
+
+\atoiE\lbr{\sf delete}\ x\rbr(\env)(\ir{y})
+\ =\\(\langle\ir{y}\ \verb+= + {\sf delete}\ x\rangle, \ir{y})\\[1em]
+
+\atoiE\lbr{\sf delete}\ \verb+(+x\verb+)+\rbr(\env)(\ir{y})
+\ =\\(\langle\ir{y}\ \verb+= + {\sf delete}\ x\rangle, \ir{y})\\[1em]
+
+\atoiE\lbr{\sf delete}\ \lhs\verb+.+x\rbr(\env)(\ir{y})
+\ =\\ \atoiE\lbr{\sf delete}\ \lhs\verb+["+x\verb+"]+\rbr(\env)(\ir{y})
+\\[1em]
+
+\atoiE\lbr{\sf delete}\ \lhs\verb+[+e\verb+]+\rbr(\env)(\ir{x})
+\ =\\ \mbox{LET\ } (\irstmt_1^*, \irexpr_1) = \atoiLHSfd{\lhs}({\inblue\newvar{obj_1}})\\
+ \phantom{\mbox{LET\ }} (\irstmt_2^*, \irexpr_2) = \atoiEfd{e}({\inblue\newvar{field_1}})\\
+ \mbox{IN}\hspace*{1.2em}
+(\irstmt_1^*\verb+;+{\inblue\newvar{obj}}\ \verb+=+\ {\sf \ensuremath{\diamond}toObject(}\irexpr_1{\sf)} \verb+;+
+\irstmt_2^*\verb+;+
+%{\inblue\newvar{field}}\ \verb+=+\ {\sf \ensuremath{\diamond}toString(}\irexpr_2{\sf)} \verb+;+
+\\
+ \phantom{\mbox{IN}\hspace*{1.2em}(}
+ \ir{x}\ \verb+= + {\sf delete}\ {\inred\newvar{obj}}\verb+[+\irexpr_2\verb+]+, \ir{x})
+\\[1em]
+
+\atoiE\lbr{\sf delete}\ e\rbr(\env)(\ir{x})
+\ =\\ \mbox{LET\ } (\irstmt^*, \irexpr) = \atoiEfd{e}({\inblue\newvar{y}})\\
+ \mbox{IN}\hspace*{1.2em}
+(\irstmt^*\verb+;+
+{\inred\newvar{\_}}\ \verb+= + \ir{e}, {\sf true})
+\\[1em]
+
+\atoiEfd{\preop e}(\ir{x})
+\ =\\ \mbox{LET\ } (\irstmt^*, \irexpr) = \atoiEfd{e}({\inblue\newvar{y}})\\
+ \mbox{IN}\hspace*{1.2em}
+% (\irstmt^*\verb+;+\ \ir{x} \ \verb+=+ \ \preop \irexpr, \ir{x})
+(\irstmt^*, \preop \irexpr)
+\\[1em]
+
+\atoiE\lbr \lhs \verb!++!\rbr(\env)(\ir{x})
+\ =\\
+(\atoiLVAL\lbr \lhs \rbr(\env)(
+{\inblue\newvar{new}}\ \verb+=+\ {\sf \ensuremath{\diamond}toNumber(}{\inred\newvar{old}}{\sf)};\\
+\phantom{(\atoiLVAL\lbr \lhs \rbr(\env)(}
+{\inred{\newvar{new}}}\ \verb!+! {\sf\ingreen 1})({\rm true}).\_1,
+{\inred\newvar{new}})
+% ;\
+% {\inred{\newvar{old}}}\ \verb!+! {\sf\ingreen 1})({\rm true}).\_1,
+% {\inred\newvar{old}})
+\\[1em]
+% (\atoiLVAL\lbr \lhs \rbr(\env)(
+% {\inblue\newvar{new}}\ \verb+=+\ {\sf \ensuremath{\diamond}toNumber(}{\inred\newvar{old}}{\sf)};\
+% {\inblue\newvar{new_2}}\ \verb+=+\ {\inred{\newvar{new}}}\ \verb!+! {\sf\ingreen 1};\ {\inred\newvar{new_2}})\verb+;+
+% \ir{x} \; {\tt =} \; {\inred\newvar{new}}, \ir{x})
+% \\
+
+\atoiE\lbr \lhs \verb!--!\rbr(\env)(\ir{x})
+\ =\\
+(\atoiLVAL\lbr \lhs \rbr(\env)(
+{\inblue\newvar{new}}\ \verb+=+\ {\sf \ensuremath{\diamond}toNumber(}{\inred\newvar{old}}{\sf)};\\
+\phantom{(\atoiLVAL\lbr \lhs \rbr(\env)(}
+{\inred{\newvar{new}}}\ \verb!-! {\sf\ingreen 1})({\rm true}).\_1,
+{\inred\newvar{new}})
+% ;\
+% {\inred{\newvar{old}}}\ \verb!-! {\sf\ingreen 1})({\rm true}).\_1,
+% {\inred\newvar{old}})
+\\
+% (\atoiLVAL\lbr \lhs \rbr(\env)(
+% {\inblue\newvar{new}}\ \verb+=+\ {\sf \ensuremath{\diamond}toNumber(}{\inred\newvar{old}}{\sf)};\
+% {\inblue\newvar{new_2}}\ \verb+=+\ {\inred{\newvar{new}}}\ \verb!-! {\sf\ingreen 1};\ {\inred\newvar{new_2}})\verb+;+
+% \ir{x} \; {\tt =} \; {\inred\newvar{new}}, \ir{x})
+% \\
+\end{array}
+\]
+
+\[
+\begin{array}{l@{~}l@{~}l}
+% binary operation &&
+\emph{\inblue Candidate for optimization}
+\\
+ \atoiE\lbr{{\inblue e_1 \verb+&&+ e_2}}\rbr(\env)(\ir{x})
+\ =\\ \mbox{LET\ } (\irstmt_1^*, \irexpr_1) = \atoiEfd{e_1}({\inblue\newvar{y}})\\
+ \phantom{\mbox{LET\ }} (\irstmt_2^*, \irexpr_2) = \atoiEfd{e_2}({\inblue\newvar{z}})\\
+ \mbox{IN}\hspace*{1.2em}
+(\irstmt_1^*\verb+;+
+{\sf if\ (}\irexpr_1)\
+{\sf then\ }\irstmt_2^*\verb+;+\ \ir{x}\ \verb+=+\ {\irexpr_2}\
+{\sf else\ }\ir{x}\ \verb+=+\ {\irexpr_1},
+\ir{x})
+\\[1em]
+
+ % &=& \langle
+ % \atoiEfd{e_1}({\inblue\ir{y}})\verb+;+\\
+ % &&\phantom{\langle}
+ % {\inblue\newvar{y_1}}\ \verb+=+\ {\sf \ensuremath{\diamond}toBoolean(}{\inred\ir{y}}{\sf)}\verb+;+\\
+ % &&\phantom{\langle}
+
+% binary operation ||
+\emph{\inblue Candidate for optimization}
+\\
+ \atoiE\lbr{{\inblue e_1 \verb+||+ e_2}}\rbr(\env)(\ir{x})
+\ =\\ \mbox{LET\ } (\irstmt_1^*, \irexpr_1) = \atoiEfd{e_1}({\inblue\newvar{y}})\\
+ \phantom{\mbox{LET\ }} (\irstmt_2^*, \irexpr_2) = \atoiEfd{e_2}({\inblue\newvar{z}})\\
+ \mbox{IN}\hspace*{1.2em}
+(\irstmt_1^*\verb+;+
+{\sf if\ (}\irexpr_1)\
+{\sf then\ }\ir{x}\ \verb+=+\ {\irexpr_1}
+{\sf else\ }\irstmt_2^*\verb+;+\ \ir{x}\ \verb+=+\ {\irexpr_2},
+\ir{x})
+\\[1em]
+
+ % &=& \langle
+ % \atoiEfd{e_1}({\inblue\ir{y}})\verb+;+\\
+ % &&\phantom{\langle}
+ % {\inblue\newvar{y_1}}\ \verb+=+\ {\sf \ensuremath{\diamond}toBoolean(}{\inred\ir{y}}{\sf)}\verb+;+\\
+ % &&\phantom{\langle}
+ % {\sf if\ ({\inred{\newvar{y_1}}})\ then}\
+ % {\sf IRSeq(}\langle\ \ir{x}\ \verb+=+\ {\inred\ir{y}}\verb+;+ \rangle{\sf)}\
+ % {\sf else}\
+ % \atoiEfd{e_2}({\ir{x}})\rangle\\
+
+% ast2ir_e[e1&&e2])(sigma)(x) = [ast2ir_e[e1](sigma)(y); y1=\ensuremath{\diamond}toBoolean(y); if y1 then x=y else ast2ir_e[e2](sigma)(x)>
+% ast2ir_e[e1||e2])(sigma)(x) = [ast2ir_e[e1](sigma)(y); y1=\ensuremath{\diamond}toBoolean(y); if y1 then ast2ir_e[e2](sigma)(x) else x=y >
+
+\note{
+In order to preserve the semantics when the evaluation}\\
+\note{
+of $\irexpr_1$ throws an exception,
+we force to evaluate $\irexpr_1$ before}\\
+\note{
+evaluating $\irstmt_2^*$ by introducing an assignment ``{\inred$\newvar{new_1}$}\ {\tt =} $\irexpr_1$''}\\
+\note{
+to avoid any side effects by $\irstmt_2^*$.
+Note that we add the}\\
+\note{
+assignment only when $\irstmt_2^*$ is not empty for a simple}\\
+\note{
+optimization.
+}\\[1em]
+
+% binary operation
+\emph{\inblue Candidate for optimization}
+\\
+\atoiEfd{{\inblue e_1 \inop e_2}}(\ir{x})
+\ =\\ \mbox{LET\ } (\irstmt_1^*, \irexpr_1) = \atoiEfd{e_1}({\inblue\newvar{y}})\\
+ \phantom{\mbox{LET\ }} (\irstmt_2^*, \irexpr_2) = \atoiEfd{e_2}({\inblue\newvar{z}})\\
+ \mbox{IN}\hspace*{1.2em}
+%(\irstmt_1^*\verb+;+\irstmt_2^*, \irexpr_1 \inop \irexpr_2)
+\mbox{IF\ $\irstmt_2^*$ is empty}\\
+ \phantom{\mbox{IN}\hspace*{1.2em}}
+\mbox{THEN\ }(\irstmt_1^*, \irexpr_1 \inop \irexpr_2)
+\\
+ \phantom{\mbox{IN}\hspace*{1.2em}}
+\mbox{ELSE\ }(\irstmt_1^*\verb+;+\
+{\inred\newvar{y}}\ \verb+=+\ \irexpr_1\verb+;+\
+\irstmt_2^*, {\inred\newvar{y}} \inop \irexpr_2)
+\\[1em]
+
+%% lhs
+\atoiEfd{\lhs}(\ir{x})
+\ =\\ \atoiLHSfd{\lhs}(\ir{x})
+\\[1em]
+
+%% literal
+\atoiLHSfd{lit}(\ir{x})
+\ =\\ \atoiLITfd{lit}(\ir{x})
+\\[1em]
+
+%% arguments
+\atoiLHS\lbr\verb+arguments+\rbr(\env)(\ir{x})
+\ =\\ (\emptyenv, \env(\newvar{arguments}))
+\\[1em]
+
+%% variable reference
+\atoiLHSfd{x}(\ir{y})
+\ =\\ (\langle\rangle, \ir{x})\\[1em]
+
+%% array expression
+\emph{\inblue Candidate for optimization}
+\\
+\atoiLHS \lbr{\inblue \verb+[+(e^?\verb+,+)^* \verb+]+ }\rbr(\env)(\ir{x})
+\ =\\
+\mbox{LET\ } ((\irstmt^*, \irexpr) = \atoiEfd{e}({\inblue\newvar{elem}}))^*
+\\
+ \mbox{IN}\hspace*{1.2em}
+((\ir{s}^*\verb+;+\ {\inred\newvar{elem}}\ \verb+=+\ \irexpr)^* \verb+;+\
+\irid \ \verb+=+ \ \verb+[+ ({\inred\newvar{elem}}\verb+,+)^* \verb+]+, \ir{x})
+\\[1em]
+
+%% object expressions
+\atoiLHS \lbr \verb+{+(m\verb+,+)^* \verb+}+ \rbr(\env)(\ir{x})
+\ =\\
+\mbox{LET\ } ((\irstmt^*, \ir{\emph mem}) = \atoiMfd{m}({\inblue\newvar{member}}))^*
+\\
+ \mbox{IN}\hspace*{1.2em}
+((\ir{s}^*)^* \verb+;+\
+\irid \ \verb+=+ \ \verb+{+ (\ir{\emph mem}\verb+,+)^* \verb+}+, \ir{x})
+\\[1em]
+
+%% parenthesized expression
+\atoiLHS \lbr \verb+(+e \verb+)+ \rbr(\env)(\ir{x})
+\ =\\ \atoiEfd{e}(\ir{x})
+\\[1em]
+
+%% function expression
+\atoiLHS\lbr{ {\tt function} \ f^? \verb+(+(x\verb+,+)^*\verb+)+ \ \verb+{+ \fd^* \vd^* \stmt^* \verb+}+}\rbr(\env)(\ir{y})
+\ =\\
+(\langle\ir{y}\ \verb+=+\
+{\sf function} \ \ir{f}^? \verb+(+{\inblue\newvar{this}}\verb+,+\ {\inblue\newvar{arguments}}\verb+)+
+\verb+{+\\
+\quad\quad\quad(\atoiFDfd{\fd})^*\\
+\quad\quad\quad
+({\sf var}\ \ir{x_i})^*\\
+\quad\quad\quad(\atoiVDf{\vd}\env)^*\\
+\quad\quad\quad
+(\ir{x_i} = {\inred\newvar{arguments}}\verb+["i"]+)^*\\
+\quad\quad\note{where \ir{x_i} is not the name of any of \mbox{fd}}\\
+\quad\quad\quad(\atoiSf{\stmt}{\env; {\inred\newvar{this}}; {\inred\newvar{arguments}}})^*
+\verb+}+\rangle,
+\ir{y})
+\end{array}
+\]
+
+\[
+\begin{array}{l@{~}l@{~}l}
+\atoiLHS \lbr \lhs\verb+.+x \rbr(\env)(\ir{y})
+\ =\\ \atoiLHS \lbr \lhs\verb+["+x\verb+"]+ \rbr(\env)(\ir{y})
+\\[1em]
+
+%% property access by string
+\atoiLHS \lbr \lhs\verb+["+x \verb+"]+ \rbr(\env)(\ir{y})
+\ =\\ \mbox{LET\ } (\irstmt_1^*, \irexpr_1) = \atoiLHSfd{\lhs}({\inblue\newvar{obj_1}})\\
+ \mbox{IN}\hspace*{1.2em}
+(\irstmt_1^*\verb+;+
+{\inblue\newvar{obj}}\ \verb+=+\ {\sf \ensuremath{\diamond}toObject(}\irexpr_1{\sf)},
+{\inred\newvar{obj}}\verb+["x"]+)
+\\[1em]
+
+%% property access
+\atoiLHS \lbr \lhs\verb+[+e \verb+]+ \rbr(\env)(\ir{x})
+\ =\\ \mbox{LET\ } (\irstmt_1^*, \irexpr_1) = \atoiLHSfd{\lhs}({\inblue\newvar{obj_1}})\\
+ \phantom{\mbox{LET\ }} (\irstmt_2^*, \irexpr_2) = \atoiEfd{\expr}({\inblue\newvar{field_1}})\\
+ \mbox{IN}\hspace*{1.2em}
+(\irstmt_1^*\verb+;+
+{\inblue\newvar{obj}}\ \verb+=+\ {\sf \ensuremath{\diamond}toObject(}\irexpr_1{\sf)} \verb+;+
+\irstmt_2^*,
+%{\inblue\newvar{field}}\ \verb+=+\ {\sf \ensuremath{\diamond}toString(}\irexpr_2{\sf)}
+{\inred\newvar{obj}}\verb+[+\irexpr_2\verb+]+)
+\\[1em]
+
+%% new fun app
+\emph{\inblue Candidate for optimization}
+\\
+\atoiLHS \lbr {\inblue \verb+new+\ \lhs\verb+(+(e,)^* \verb+)+} \rbr(\env)(\ir{x})
+\ =\\ \mbox{LET\ } (\irstmt_l^*, \irexpr_l) = \atoiLHSfd{\lhs}({\inblue\newvar{fun_1}})\\
+ \phantom{\mbox{LET\ }} ((\irstmt^*, \irexpr) = \atoiEfd{\expr}({\inblue\newvar{y}}))^*\\
+ \mbox{IN}\hspace*{1.2em}
+(\irstmt_l^*\verb+;+
+{\inblue\newvar{fun}}\ \verb+=+\ {\sf \ensuremath{\diamond}toObject(}\irexpr_l{\sf)} \verb+;+\
+%(\irstmt^*)^*\verb+;+
+(\irstmt^*\verb+;+\ {\inred\newvar{y}}\ \verb+=+\ \irexpr)^*\verb+;+
+\\
+\phantom{\mbox{IN}\hspace*{1.2em}(}
+{\inblue\newvar{arguments}}\ \verb+= [+({\inred\newvar{y_i}}\verb+,+)^*\verb+];+
+\\\phantom{\mbox{IN}\hspace*{1.2em}(}
+% %%%%%%%
+% % proto = fun["prototype"]
+{\inblue\newvar{proto}} = {\inred\newvar{fun}}\verb+["prototype"];+
+\\\phantom{\mbox{IN}\hspace*{1.2em}(}
+{\inblue\newvar{obj}}\ \verb+= {[[Prototype]] = +{\inred\newvar{proto}}\verb+};+
+\\\phantom{\mbox{IN}\hspace*{1.2em}(}
+{\inblue\newvar{newObj}}\ \verb+=+\
+{\sf new}\
+{\inred\newvar{fun}}\verb+(+{\inred\newvar{obj}}\verb+, + {\inred\newvar{arguments}}\verb+);+
+\\\phantom{\mbox{IN}\hspace*{1.2em}(}
+{\inblue\newvar{cond}}\ \verb+=+\ {\sf \ensuremath{\diamond}isObject({\inred\newvar{newObj}})}\verb+;+
+\\\phantom{\mbox{IN}\hspace*{1.2em}(}
+{\sf if (} {\inred\newvar{cond}} {\sf )\ then}\
+\ir{x}\ \verb+=+\ {\inred\newvar{newObj}}\ {\sf \ else}\
+\ir{x}\ \verb+=+\ {\inred\newvar{obj}}, \ir{x})
+\\[1em]
+
+%% new
+\atoiLHS \lbr \verb+new+\ \lhs \rbr(\env)(\ir{x})
+\ =\\ \mbox{LET\ } (\irstmt^*, \irexpr) = \atoiLHSfd{\lhs}({\inblue\newvar{fun_1}})\\
+ \mbox{IN}\hspace*{1.2em}
+(\irstmt^*\verb+;+
+{\inblue\newvar{fun}}\ \verb+=+\ {\sf \ensuremath{\diamond}toObject(}\irexpr{\sf)} \verb+;+\\
+\phantom{\mbox{IN}\hspace*{1.2em}(}
+{\inblue\newvar{arguments}}\ \verb+= [];+
+\\\phantom{\mbox{IN}\hspace*{1.2em}(}
+% %%%%%%%
+% % proto = fun["prototype"]
+{\inblue\newvar{proto}} = {\inred\newvar{fun}}\verb+["prototype"];+
+\\\phantom{\mbox{IN}\hspace*{1.2em}(}
+{\inblue\newvar{obj}}\ \verb+= {[[Prototype]] = +{\inred\newvar{proto}}\verb+};+
+\\\phantom{\mbox{IN}\hspace*{1.2em}(}
+{\inblue\newvar{newObj}}\ \verb+=+\
+{\sf new}\
+{\inred\newvar{fun}}\verb+(+{\inred\newvar{obj}}\verb+, + {\inred\newvar{arguments}}\verb+);+
+\\\phantom{\mbox{IN}\hspace*{1.2em}(}
+{\inblue\newvar{cond}}\ \verb+=+\ {\sf \ensuremath{\diamond}isObject({\inred\newvar{newObj}})}\verb+;+
+\\\phantom{\mbox{IN}\hspace*{1.2em}(}
+{\sf if (} {\inred\newvar{cond}} {\sf )\ then}\
+\ir{x}\ \verb+=+\ {\inred\newvar{newObj}}\ {\sf \ else}\
+\ir{x}\ \verb+=+\ {\inred\newvar{obj}}, \ir{x})
+\\[1em]
+
+%% eval
+\atoiLHS \lbr {\emph eval} \verb+(+e \verb+)+ \rbr(\env)(\ir{x})
+\ =\\ \mbox{LET\ } (\irstmt^*, \irexpr) = \atoiEfd{\expr}({\inblue\newva})\\
+ \mbox{IN}\hspace*{1.2em}
+(\irstmt^*\verb+;+
+\irid \ \verb+=+ \ {\sf eval}\verb+(+\irexpr\verb+)+, \irid)
+\\[1em]
+
+\atoiLHS \lbr \verb+(+f \verb+)(+(e,)^* \verb+)+ \rbr(\env)(\ir{x})
+\ =\\
+\atoiLHS \lbr f \verb+(+(e,)^* \verb+)+ \rbr(\env)(\ir{x})
+\\[1em]
+
+\emph{\inblue Candidate for optimization}
+\\
+%% function id call
+\atoiLHS \lbr {\inblue f \verb+(+(e,)^* \verb+)+} \rbr(\env)(\ir{x})
+\ =\\ \mbox{LET\ } ((\irstmt^*, \irexpr) = \atoiEfd{\expr}({\inblue\newvar{y}}))^*\\
+ \mbox{IN}\hspace*{1.2em}
+({\inblue\newvar{obj}}\ \verb+=+\ {\sf \ensuremath{\diamond}toObject(}\ir{f}{\sf)} \verb+;+\
+(\irstmt^*\verb+;+\ {\inred\newvar{y}}\ \verb+=+\ \irexpr)^*\verb+;+
+%(\irstmt^*)^*\verb+;+
+\\\phantom{\mbox{IN}\hspace*{1.2em}(}
+{\inblue\newvar{arguments}}\ \verb+= [+({\inred\newvar{y_i}}\verb+,+)^*\verb+];+
+\\\phantom{\mbox{IN}\hspace*{1.2em}(}
+{\inblue\newvar{fun}}\ \verb+=+\ \newvar{getBase}\verb+(+\ir{f}\verb+);+
+\\\phantom{\mbox{IN}\hspace*{1.2em}(}
+\ir{x}\ \verb+=+\ {\inred\newvar{obj}}\verb+(+{\inred\newvar{fun}}, {\inred\newvar{arguments}}\verb+)+,
+\ir{x})
+\\[1em]
+
+%% property access call
+\atoiLHS \lbr \verb+(+\lhs\verb+.+x \verb+)(+(e,)^* \verb+)+ \rbr(\env)(\ir{y})
+\ =\\ \atoiLHS \lbr \lhs\verb+["+x\verb+"]+\verb+(+(e,)^* \verb+)+ \rbr(\env)(\ir{y})
+\\[1em]
+
+\atoiLHS \lbr \lhs\verb+.+x \verb+(+(e,)^* \verb+)+ \rbr(\env)(\ir{y})
+\ =\\ \atoiLHS \lbr \lhs\verb+["+x\verb+"]+\verb+(+(e,)^* \verb+)+ \rbr(\env)(\ir{y})
+\\[1em]
+
+% \atoiLHSfd{\lhs}(\newvar{constr}) \verb+;+
+% \\
+% &&\phantom{\langle}
+% (\atoiEfd{\expr}(\ir{y}))^*
+% \\
+% &&\phantom{\langle}
+% \newvar{arguments}\ \verb+= {+(\verb+"i" : +\ir{y_i})^*\verb+};+
+% \\
+% &&\phantom{\langle}
+% \newvar{obj}\ \verb+= {+ \newvar{proto}\verb+:+ \newvar{constr}\verb+["prototype"]}+
+% \\
+% &&\phantom{\langle}
+% \ir{x}\ \verb+=+\ \newvar{constr}\verb+(+\newvar{obj}\verb+, + \newvar{arguments}\verb+);+
+% \\
+% &&\phantom{\langle}
+% \newvar{obj}
+% \\
+
+\atoiLHS \lbr \verb+(+\lhs\verb+[+e' \verb+])+\verb+(+(e,)^* \verb+)+ \rbr(\env)(\ir{x})
+\ =\\
+\atoiLHS \lbr \lhs\verb+[+e' \verb+]+\verb+(+(e,)^* \verb+)+ \rbr(\env)(\ir{x})
+\end{array}
+\]
+
+\[
+\begin{array}{l@{~}l@{~}l}
+%% property access call
+\emph{\inblue Candidate for optimization}
+\\
+\atoiLHS \lbr {\inblue\lhs\verb+[+e' \verb+]+\verb+(+(e,)^* \verb+)+} \rbr(\env)(\ir{x})
+\ =\\ \mbox{LET\ } (\irstmt_l^*, \irexpr_l) = \atoiLHSfd{\lhs}({\inblue\newvar{obj_1}})\\
+ \phantom{\mbox{LET\ }} (\irstmt'^*, \irexpr') = \atoiEfd{\expr'}({\inblue\newvar{field_1}})\\
+ \phantom{\mbox{LET\ }} ((\irstmt^*, \irexpr) = \atoiEfd{\expr}({\inblue\newvar{y}}))^*\\
+ \mbox{IN}\hspace*{1.2em}
+(\irstmt_l^*\verb+;+
+{\inblue\newvar{obj}}\ \verb+=+\ {\sf \ensuremath{\diamond}toObject(}\irexpr_l{\sf)} \verb+;+
+\irstmt'^*\verb+;+
+\\
+\phantom{\mbox{IN}\hspace*{1.2em}(}
+%{\inblue\newvar{field}}\ \verb+=+\ {\sf \ensuremath{\diamond}toString(}\irexpr'{)} \verb+;+\
+(\irstmt^*\verb+;+\ {\inred\newvar{y}}\ \verb+=+\ \irexpr)^*\verb+;+
+%(\irstmt^*)^*\verb+;+
+\\
+\phantom{\mbox{IN}\hspace*{1.2em}(}
+{\inblue\newvar{arguments}}\ \verb+= [+({\inred\newvar{y_i}}\verb+,+)^*\verb+];+
+\\
+\phantom{\mbox{IN}\hspace*{1.2em}(}
+{\inblue\newvar{fun}}\ \verb+=+\ {\sf \ensuremath{\diamond}toObject(}{\inred\newvar{obj}}\verb+[+\irexpr'\verb+]+{\sf)} \verb+;+
+\\
+\phantom{\mbox{IN}\hspace*{1.2em}(}
+\ir{x}\ \verb+=+\ {\inred\newvar{fun}}\verb+(+{\inred\newvar{obj}}\verb+, + {\inred\newvar{arguments}}\verb+)+,
+\ir{x})
+\\[1em]
+
+%% function call
+\emph{\inblue Candidate for optimization}
+\\
+\atoiLHS \lbr {\inblue\lhs \verb+(+(e,)^* \verb+)+} \rbr(\env)(\ir{x})
+\ =\\ \mbox{LET\ } (\irstmt_l^*, \irexpr_l) = \atoiLHSfd{\lhs}({\inblue\newvar{obj_1}})\\
+ \phantom{\mbox{LET\ }} ((\irstmt^*, \irexpr) = \atoiEfd{\expr}({\inblue\newvar{y}}))^*\\
+ \mbox{IN}\hspace*{1.2em}
+(\irstmt_l^*\verb+;+
+{\inblue\newvar{obj}}\ \verb+=+\ {\sf \ensuremath{\diamond}toObject(}\irexpr_l{\sf)} \verb+;+\
+(\irstmt^*\verb+;+\ {\inred\newvar{y}}\ \verb+=+\ \irexpr)^*\verb+;+
+%(\irstmt^*)^*\verb+;+
+\\
+\phantom{\mbox{IN}\hspace*{1.2em}(}
+{\inblue\newvar{arguments}}\ \verb+= [+({\inred\newvar{y_i}}\verb+,+)^*\verb+];+
+\\
+\phantom{\mbox{IN}\hspace*{1.2em}(}
+\ir{x}\ \verb+=+\ {\inred\newvar{obj}}\verb+(+\newvar{global}\verb+, + {\inred\newvar{arguments}}\verb+)+, \ir{x})
+\\[1em]
+
+\atoiLITfd {{\tt this}}(\ir{x})
+\ =\\
+(\emptyenv, \env(\newvar{this}))\\[1em]
+
+\atoiLITfd{{\tt null}}(\ir{x})
+\ =\\
+(\emptyenv, {\sf null})\\[1em]
+
+\atoiLITfd{{\tt true}}(\ir{x})
+\ =\\
+(\emptyenv, {\sf true})\\[1em]
+
+\atoiLITfd{{\tt false}}(\ir{x})
+\ =\\
+(\emptyenv, {\sf false})\\[1em]
+
+\atoiLITfd{num}(\ir{x})
+\ =\\ 
+(\emptyenv, \ir\num)\\[1em]
+
+\atoiLITfd {str}(\ir{x})
+\ =\\ 
+(\emptyenv, \ir\str)\\[1em]
+
+\inred\atoiLITfd { reg }\\
+\mbox{\inred Regular expressions are desugared into construction of}\\
+\mbox{\inred {\tt RegExp} objects by {\tt Disambiguator}}
+\\[1em]
+
+\atoiM\lbr {\prop \ \verb+:+ \ \expr}  \rbr(\env)(\ir{y})
+\ =\\ \mbox{LET\ } (\irstmt^*, \irexpr) = \atoiEfd{\expr}(\ir{y})\\
+ \mbox{IN}\hspace*{1.2em}
+(\irstmt^*, \atoiPRfd{\prop} \ \verb+:+ \ \irexpr)
+\\[1em]
+
+\atoiM\lbr {\tt get} \ \prop \verb+(){+ \fd^* \vd^* \stmt^* \verb+}+  \rbr(\env)(\ir{x})
+\ =\\ (
+\langle\rangle,
+
+{\sf get} \ \atoiPRfd{\prop} \verb+(+{\inblue\newvar{this}}\verb+,+\ {\inblue\newvar{arguments}}\verb+)+
+\verb+{+\\
+\quad\quad\quad(\atoiFDfd{\fd})^*\\
+\quad\quad\quad(\atoiVDf{\vd}\env)^*\\
+\quad\quad\quad(\atoiSf{\stmt}{\env; {\inred\newvar{this}}; {\inred\newvar{arguments}}})^*
+\verb+}+
+)
+\\[1em]
+
+\atoiM\lbr {\tt set} \ \prop \verb+(+x \verb+){+ \fd^* \vd^* \stmt^* \verb+}+  \rbr(\env)(\ir{y})
+\ =\\ (
+\langle\rangle,
+
+{\sf set} \ \atoiPRfd{\prop} \verb+(+{\inblue\newvar{this}}\verb+,+\ {\inblue\newvar{arguments}}\verb+)+
+\verb+{+\\
+\quad\quad\quad(\atoiFDfd{\fd})^*\\
+\quad\quad\quad{\sf var}\ \ir{x}\\
+\quad\quad\quad(\atoiVDf{\vd}\env)^*\\
+\quad\quad\quad
+\ir{x} = {\inred\newvar{arguments}}\verb+["0"];+\\
+\quad\quad\note{where \ir{x} is not the name of any of \mbox{fd}}\\
+\quad\quad\quad(\atoiSf{\stmt}{\env; {\inred\newvar{this}}; {\inred\newvar{arguments}}})^*
+\verb+}+
+)
+\end{array}
+\]

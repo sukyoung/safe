@@ -1,0 +1,16 @@
+  obj = {
+    
+  };
+  try
+{    (function () 
+    {
+      
+    }).apply(obj, "1,3,4");
+    $FAIL('#1: if argArray is neither an array nor an arguments object (see 10.1.8), a TypeError exception is thrown');}
+  catch (e)
+{    {
+      var __result1 = ! (e instanceof TypeError);
+      var __expect1 = false;
+    }}
+
+  

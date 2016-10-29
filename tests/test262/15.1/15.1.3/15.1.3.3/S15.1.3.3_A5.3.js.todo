@@ -1,0 +1,7 @@
+  x = encodeURI.length;
+  encodeURI.length = Infinity;
+  {
+    var __result1 = encodeURI.length !== x;
+    var __expect1 = false;
+  }
+  

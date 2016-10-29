@@ -1,0 +1,11 @@
+  __instance = new Number(1.0);
+  __instance.exec = RegExp.prototype.exec;
+  try
+{    $ERROR('#1.1: __instance = new Number(1.0); __instance.exec = RegExp.prototype.exec; __instance["exec"]("message to investigate"). Actual: ' + (__instance["exec"]("message to investigate")));}
+  catch (e)
+{    {
+      var __result1 = (e instanceof TypeError) !== true;
+      var __expect1 = false;
+    }}
+
+  

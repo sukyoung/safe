@@ -1,0 +1,21 @@
+  {
+    var __result1 = isNaN(parseInt("$0x")) !== true;
+    var __expect1 = false;
+  }
+  {
+    var __result2 = isNaN(parseInt("$0X")) !== true;
+    var __expect2 = false;
+  }
+  {
+    var __result3 = isNaN(parseInt("$$$")) !== true;
+    var __expect3 = false;
+  }
+  {
+    var __result4 = isNaN(parseInt("")) !== true;
+    var __expect4 = false;
+  }
+  {
+    var __result5 = isNaN(parseInt(" ")) !== true;
+    var __expect5 = false;
+  }
+  

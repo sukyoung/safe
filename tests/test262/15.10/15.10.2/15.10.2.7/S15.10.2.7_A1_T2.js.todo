@@ -1,0 +1,6 @@
+  __executed = /\d{2,4}/.test("the 7 movie");
+  {
+    var __result1 = __executed;
+    var __expect1 = false;
+  }
+  

@@ -1,0 +1,6 @@
+  __executed = /\be/.test("pilot\nsoviet robot\topenoffic\u0065");
+  {
+    var __result1 = __executed;
+    var __expect1 = false;
+  }
+  

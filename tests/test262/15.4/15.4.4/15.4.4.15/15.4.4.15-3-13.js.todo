@@ -1,0 +1,14 @@
+  function testcase() 
+  {
+    var obj = {
+      4 : 4,
+      5 : 5,
+      length : "5.512345"
+    };
+    return Array.prototype.lastIndexOf.call(obj, 4) === 4 && Array.prototype.lastIndexOf.call(obj, 5) === - 1;
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

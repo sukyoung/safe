@@ -1,0 +1,13 @@
+  {
+    var __result1 = encodeURI("http://unipro.ru/0123456789") !== "http://unipro.ru/0123456789";
+    var __expect1 = false;
+  }
+  {
+    var __result2 = encodeURI("aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXyYzZ") !== "aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXyYzZ";
+    var __expect2 = false;
+  }
+  {
+    var __result3 = encodeURI("aA_bB-cC.dD!eE~fF*gG'hH(iI)jJ;kK/lL?mM:nN@oO&pP=qQ+rR$sS,tT9uU8vV7wW6xX5yY4zZ") !== "aA_bB-cC.dD!eE~fF*gG'hH(iI)jJ;kK/lL?mM:nN@oO&pP=qQ+rR$sS,tT9uU8vV7wW6xX5yY4zZ";
+    var __expect3 = false;
+  }
+  

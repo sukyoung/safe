@@ -1,0 +1,31 @@
+  function testcase() 
+  {
+    var called = 0;
+    function callbackfn(val, idx, obj) 
+    {
+      called++;
+      if (idx === 0)
+      {
+        return val === 11;
+      }
+      else
+        if (idx === 1)
+        {
+          return val === 9;
+        }
+        else
+        {
+          return false;
+        }
+    }
+    var func = (function (a, b) 
+    {
+      return Array.prototype.every.call(arguments, callbackfn);
+    });
+    return func(11, 9) && called === 2;
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

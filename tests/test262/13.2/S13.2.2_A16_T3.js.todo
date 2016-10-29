@@ -1,0 +1,24 @@
+  {
+    var __result1 = typeof __func !== "undefined";
+    var __expect1 = false;
+  }
+  var __obj = new (function __func(arg) 
+  {
+    this.prop = arg;
+    return {
+      feat : ++ arg
+    };
+  })(5);
+  {
+    var __result2 = __obj.prop !== undefined;
+    var __expect2 = false;
+  }
+  {
+    var __result3 = __obj.feat !== 6;
+    var __expect3 = false;
+  }
+  {
+    var __result4 = typeof __func !== "undefined";
+    var __expect4 = false;
+  }
+  

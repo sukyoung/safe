@@ -1,0 +1,23 @@
+  function testcase() 
+  {
+    var obj = {
+      toString : (function () 
+      {
+        return "false";
+      })
+    };
+    var szFalse = "false";
+    var a = new Array(szFalse, "false", "false1", undefined, 0, false, null, 
+    1, 
+    obj, 
+    0);
+    if (a.lastIndexOf("false") === 1)
+    {
+      return true;
+    }
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

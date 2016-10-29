@@ -1,0 +1,37 @@
+  function testcase() 
+  {
+    var accessed = false;
+    function callbackfn(prevVal, curVal, idx, obj) 
+    {
+      accessed = true;
+      return typeof obj.length === "undefined";
+    }
+    try
+{      Object.defineProperty(Object.prototype, "length", {
+        get : (function () 
+        {
+          return 2;
+        }),
+        configurable : true
+      });
+      var obj = {
+        0 : 12,
+        1 : 13
+      };
+      Object.defineProperty(obj, "length", {
+        set : (function () 
+        {
+          
+        }),
+        configurable : true
+      });
+      return Array.prototype.reduceRight.call(obj, callbackfn, 11) === 11 && ! accessed;}
+    finally
+{      delete Object.prototype.length;}
+
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

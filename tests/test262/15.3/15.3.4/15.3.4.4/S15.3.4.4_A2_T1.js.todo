@@ -1,0 +1,13 @@
+  {
+    var __result1 = typeof Function.prototype.call !== "function";
+    var __expect1 = false;
+  }
+  {
+    var __result2 = typeof Function.prototype.call.length === "undefined";
+    var __expect2 = false;
+  }
+  {
+    var __result3 = Function.prototype.call.length !== 1;
+    var __expect3 = false;
+  }
+  

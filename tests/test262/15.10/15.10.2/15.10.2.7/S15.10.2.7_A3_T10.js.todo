@@ -1,0 +1,6 @@
+  __executed = /o+/.test("abcdefg");
+  {
+    var __result1 = __executed;
+    var __expect1 = false;
+  }
+  

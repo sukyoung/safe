@@ -1,0 +1,10 @@
+  var arr = /\1(A)/.exec("AA");
+  {
+    var __result1 = (arr === null) || (arr[0] !== "A");
+    var __expect1 = false;
+  }
+  {
+    var __result2 = (arr === null) || (arr[1] !== "A");
+    var __expect2 = false;
+  }
+  

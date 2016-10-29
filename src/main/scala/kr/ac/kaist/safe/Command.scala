@@ -32,15 +32,11 @@ sealed abstract class CommandObj[Result](
   def apply(args: List[String], testMode: Boolean = false): Try[Result] = {
     val safeConfig = SafeConfig(this, testMode = testMode)
     val parser = new ArgParser(this, safeConfig)
-    val result = pList.getRunner(parser).flatMap {
+    pList.getRunner(parser).flatMap {
       case runner => parser(args).flatMap {
-        case _ => Safe(runner(_), safeConfig)
+        case _ => Safe(this, runner(_), safeConfig)
       }
     }
-    result.map(res => {
-      if (!safeConfig.silent) display(res)
-      res
-    })
   }
 
   def display(res: Result): Unit = ()

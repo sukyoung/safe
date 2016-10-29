@@ -1,0 +1,29 @@
+  var result = true;
+  for (alpha = 0x410;alpha <= 0x42f;alpha++)
+  {
+    str = String.fromCharCode(alpha % 32);
+    arr = (new RegExp("\\c" + String.fromCharCode(alpha))).exec(str);
+    if (arr !== null)
+    {
+      result = false;
+    }
+  }
+  {
+    var __result1 = result !== true;
+    var __expect1 = false;
+  }
+  var result = true;
+  for (alpha = 0x430;alpha <= 0x44f;alpha++)
+  {
+    str = String.fromCharCode(alpha % 32);
+    arr = (new RegExp("\\c" + String.fromCharCode(alpha))).exec(str);
+    if (arr !== null)
+    {
+      result = false;
+    }
+  }
+  {
+    var __result2 = result !== true;
+    var __expect2 = false;
+  }
+  

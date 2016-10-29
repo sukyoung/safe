@@ -1,0 +1,19 @@
+  function testcase() 
+  {
+    var arr = [];
+    arr[10] = "10";
+    arr.length = 20;
+    var fromIndex = {
+      valueOf : (function () 
+      {
+        delete arr[10];
+        return 11;
+      })
+    };
+    return - 1 === arr.lastIndexOf("10", fromIndex);
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

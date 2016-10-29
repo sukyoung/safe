@@ -1,0 +1,13 @@
+  function __func() 
+  {
+    arguments[0]["PI"] = 3.14;
+  }
+  var __obj = {
+    
+  };
+  __func(__obj);
+  {
+    var __result1 = __obj.PI !== 3.14;
+    var __expect1 = false;
+  }
+  

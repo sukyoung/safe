@@ -1,0 +1,2 @@
+  var float = 1;
+  

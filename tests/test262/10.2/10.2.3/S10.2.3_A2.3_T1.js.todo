@@ -1,0 +1,3 @@
+  var evalStr = '//CHECK#1\n' + 'for (var x in this) {\n' + '  if ( x === \'NaN\' ) {\n' + '    $ERROR("#1: \'NaN\' have attribute DontEnum");\n' + '  } else if ( x === \'Infinity\' ) {\n' + '    $ERROR("#1: \'Infinity\' have attribute DontEnum");\n' + '  } else if ( x === \'undefined\' ) {\n' + '    $ERROR("#1: \'undefined\' have attribute DontEnum");\n' + '  }\n' + '}\n';
+  eval(evalStr);
+  

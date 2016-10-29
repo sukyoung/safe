@@ -1,0 +1,22 @@
+  function testcase() 
+  {
+    function foo() 
+    {
+    "use strict";
+      return typeof (this);
+    }
+    function bar() 
+    {
+      return typeof (this);
+    }
+    function foobar() 
+    {
+      
+    }
+    return foo.call(foobar) === 'function' && bar.call(foobar) === 'function';
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

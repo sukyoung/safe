@@ -1,0 +1,24 @@
+  var i = 0;
+  var p = {
+    toString : (function () 
+    {
+      return "a" + (++ i);
+    })
+  };
+  var obj = {
+    
+  };
+  Function(p, "a2,a3", "this.shifted=a1;").call(obj, new Array("nine", "inch", "nails"));
+  {
+    var __result1 = obj["shifted"].length !== 3;
+    var __expect1 = false;
+  }
+  {
+    var __result2 = (obj["shifted"][0] !== "nine") || (obj["shifted"][1] !== "inch") || (obj["shifted"][2] !== "nails");
+    var __expect2 = false;
+  }
+  {
+    var __result3 = typeof this["shifted"] !== "undefined";
+    var __expect3 = false;
+  }
+  

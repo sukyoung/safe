@@ -1,0 +1,14 @@
+  function testcase() 
+  {
+    try
+{      JSON.parse('12\t\r\n 34');}
+    catch (e)
+{      if (e.name === 'SyntaxError')
+        return true;}
+
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

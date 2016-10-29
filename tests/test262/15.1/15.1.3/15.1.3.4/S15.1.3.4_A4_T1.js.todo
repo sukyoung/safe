@@ -1,0 +1,13 @@
+  {
+    var __result1 = encodeURIComponent("http://unipro.ru/0123456789") !== "http%3A%2F%2Funipro.ru%2F0123456789";
+    var __expect1 = false;
+  }
+  {
+    var __result2 = encodeURIComponent("aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXyYzZ") !== "aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXyYzZ";
+    var __expect2 = false;
+  }
+  {
+    var __result3 = encodeURIComponent(";/?:@&=+$,") !== "%3B%2F%3F%3A%40%26%3D%2B%24%2C";
+    var __expect3 = false;
+  }
+  

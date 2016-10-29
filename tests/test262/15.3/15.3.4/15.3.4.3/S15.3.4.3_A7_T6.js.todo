@@ -1,0 +1,17 @@
+  function FACTORY() 
+  {
+    (function (a1, a2, a3) 
+    {
+      this.shifted = a1 + a2 + a3;
+    }).apply(this, arguments);
+  }
+  obj = new FACTORY("", 4, 2);
+  {
+    var __result1 = obj["shifted"] !== "42";
+    var __expect1 = false;
+  }
+  {
+    var __result2 = typeof this["shifted"] !== "undefined";
+    var __expect2 = false;
+  }
+  

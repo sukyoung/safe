@@ -1,0 +1,2 @@
+  var native = 1;
+  

@@ -1,0 +1,12 @@
+  __re = /(?:ab|cd)\d?/g;
+  __re.lastIndex = 100;
+  __executed = __re.exec("aacd22 ");
+  {
+    var __result1 = __executed;
+    var __expect1 = false;
+  }
+  {
+    var __result2 = __re.lastIndex !== 0;
+    var __expect2 = false;
+  }
+  

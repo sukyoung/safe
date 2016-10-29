@@ -1,0 +1,13 @@
+  function testcase() 
+  {
+  "use strict";
+    return (function () 
+    {
+      return typeof this;
+    })() === "undefined";
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

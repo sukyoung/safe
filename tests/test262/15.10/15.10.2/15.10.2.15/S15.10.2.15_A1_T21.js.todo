@@ -1,0 +1,9 @@
+  try
+{    $ERROR('#1.1: /[\\ad-G]/.exec("a") throw SyntaxError. Actual: ' + (new RegExp("[\\ad-G]").exec("a")));}
+  catch (e)
+{    {
+      var __result1 = (e instanceof SyntaxError) !== true;
+      var __expect1 = false;
+    }}
+
+  

@@ -1,0 +1,30 @@
+  var regexp_W = /\W/;
+  var result = true;
+  for (alpha = 0x410;alpha <= 0x42f;alpha++)
+  {
+    str = String.fromCharCode(alpha);
+    arr = regexp_W.exec(str);
+    if ((arr === null) || (arr[0] !== str))
+    {
+      result = false;
+    }
+  }
+  {
+    var __result1 = result !== true;
+    var __expect1 = false;
+  }
+  var result = true;
+  for (alpha = 0x430;alpha <= 0x44f;alpha++)
+  {
+    str = String.fromCharCode(alpha);
+    arr = regexp_W.exec(str);
+    if ((arr === null) || (arr[0] !== str))
+    {
+      result = false;
+    }
+  }
+  {
+    var __result2 = result !== true;
+    var __expect2 = false;
+  }
+  

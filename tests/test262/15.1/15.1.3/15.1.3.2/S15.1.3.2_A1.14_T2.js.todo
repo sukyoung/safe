@@ -1,0 +1,113 @@
+  errorCount = 0;
+  count = 0;
+  var indexP;
+  var indexO = 0;
+  for (indexB = 0xe0;indexB <= 0xef;indexB++)
+  {
+    count++;
+    hexB = decimalToHexString(indexB);
+    result = true;
+    for (indexC = 0x0;indexC <= 0x7f;indexC++)
+    {
+      hexC = decimalToHexString(indexC);
+      try
+{        decodeURIComponent("%" + hexB.substring(2) + "%A0" + "%" + hexC.substring(2));}
+      catch (e)
+{        if ((e instanceof URIError) === true)
+          continue;}
+
+      result = false;
+    }
+    if (result !== true)
+    {
+      if (indexO === 0)
+      {
+        indexO = indexB;
+      }
+      else
+      {
+        if ((indexB - indexP) !== 1)
+        {
+          if ((indexP - indexO) !== 0)
+          {
+            var hexP = decimalToHexString(indexP);
+            var hexO = decimalToHexString(indexO);
+            $ERROR('#' + hexO + '-' + hexP + ' ');
+          }
+          else
+          {
+            var hexP = decimalToHexString(indexP);
+            $ERROR('#' + hexP + ' ');
+          }
+          indexO = indexB;
+        }
+      }
+      indexP = indexB;
+      errorCount++;
+    }
+  }
+  if (errorCount > 0)
+  {
+    if ((indexP - indexO) !== 0)
+    {
+      var hexP = decimalToHexString(indexP);
+      var hexO = decimalToHexString(indexO);
+      $ERROR('#' + hexO + '-' + hexP + ' ');
+    }
+    else
+    {
+      var hexP = decimalToHexString(indexP);
+      $ERROR('#' + hexP + ' ');
+    }
+    $ERROR('Total error: ' + errorCount + ' bad Unicode character in ' + count + ' ');
+  }
+  function decimalToHexString(n) 
+  {
+    n = Number(n);
+    var h = "";
+    for(var i = 3;i >= 0;i--)
+    {
+      if (n >= Math.pow(16, i))
+      {
+        var t = Math.floor(n / Math.pow(16, i));
+        n -= t * Math.pow(16, i);
+        if (t >= 10)
+        {
+          if (t == 10)
+          {
+            h += "A";
+          }
+          if (t == 11)
+          {
+            h += "B";
+          }
+          if (t == 12)
+          {
+            h += "C";
+          }
+          if (t == 13)
+          {
+            h += "D";
+          }
+          if (t == 14)
+          {
+            h += "E";
+          }
+          if (t == 15)
+          {
+            h += "F";
+          }
+        }
+        else
+        {
+          h += String(t);
+        }
+      }
+      else
+      {
+        h += "0";
+      }
+    }
+    return h;
+  }
+  

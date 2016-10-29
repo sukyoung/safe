@@ -1,0 +1,33 @@
+  function testcase() 
+  {
+    var testResult = false;
+    function callbackfn(prevVal, curVal, idx, obj) 
+    {
+      if (idx === 1)
+      {
+        testResult = (prevVal === "20");
+      }
+    }
+    var proto = {
+      0 : 0,
+      1 : 1,
+      2 : 2,
+      length : 2
+    };
+    var Con = (function () 
+    {
+      
+    });
+    Con.prototype = proto;
+    var child = new Con();
+    child[1] = "10";
+    child[2] = "20";
+    child.length = 3;
+    Array.prototype.reduceRight.call(child, callbackfn);
+    return testResult;
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

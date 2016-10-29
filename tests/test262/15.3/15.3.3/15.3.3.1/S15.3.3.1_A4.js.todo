@@ -1,0 +1,14 @@
+  function foo() 
+  {
+    
+  }
+  Object.defineProperty(foo, 'prototype', {
+    value : {
+      
+    }
+  });
+  {
+    var __result1 = foo.prototype !== Object.getOwnPropertyDescriptor(foo, 'prototype').value;
+    var __expect1 = false;
+  }
+  

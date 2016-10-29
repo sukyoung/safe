@@ -1,0 +1,20 @@
+  FACTORY = (function () 
+  {
+    var x = 1;
+    this.y = 2;
+    return "OK";
+  });
+  obj = new FACTORY;
+  {
+    var __result1 = typeof obj !== "object";
+    var __expect1 = false;
+  }
+  {
+    var __result2 = obj.constructor !== FACTORY;
+    var __expect2 = false;
+  }
+  {
+    var __result3 = obj.y !== 2;
+    var __expect3 = false;
+  }
+  

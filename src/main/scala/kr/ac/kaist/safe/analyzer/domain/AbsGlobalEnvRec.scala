@@ -32,34 +32,34 @@ case object GlobalEnvRec extends GlobalEnvRec
 ////////////////////////////////////////////////////////////////////////////////
 trait AbsGlobalEnvRec extends AbsDomain[GlobalEnvRec, AbsGlobalEnvRec] {
   // 10.2.1.2.1 HasBinding(N)
-  def HasBinding(name: String)(heap: Heap): AbsBool
+  def HasBinding(name: String)(heap: AbsHeap): AbsBool
 
   // 10.2.1.2.2 CreateMutableBinding(N, D)
   def CreateMutableBinding(
     name: String,
     del: Boolean
-  )(heap: Heap): (AbsGlobalEnvRec, Heap, Set[Exception])
+  )(heap: AbsHeap): (AbsGlobalEnvRec, AbsHeap, Set[Exception])
 
   // 10.2.1.2.3 SetMutableBinding(N, V, S)
   def SetMutableBinding(
     name: String,
     v: AbsValue,
     strict: Boolean
-  )(heap: Heap): (AbsGlobalEnvRec, Heap, Set[Exception])
+  )(heap: AbsHeap): (AbsGlobalEnvRec, AbsHeap, Set[Exception])
 
   // 10.2.1.2.4 GetBindingValue(N, S)
   def GetBindingValue(
     name: String,
     strict: Boolean
-  )(heap: Heap): (AbsValue, Set[Exception])
+  )(heap: AbsHeap): (AbsValue, Set[Exception])
 
   // 10.2.1.2.5 DeleteBinding(N)
   def DeleteBinding(
     name: String
-  )(heap: Heap): (AbsGlobalEnvRec, Heap, AbsBool)
+  )(heap: AbsHeap): (AbsGlobalEnvRec, AbsHeap, AbsBool)
 
   // 10.2.1.2.6 ImplicitThisValue()
-  def ImplicitThisValue(heap: Heap): AbsValue
+  def ImplicitThisValue(heap: AbsHeap): AbsValue
 }
 
 trait AbsGlobalEnvRecUtil extends AbsDomainUtil[GlobalEnvRec, AbsGlobalEnvRec]
@@ -108,7 +108,7 @@ object DefaultGlobalEnvRec extends AbsGlobalEnvRecUtil {
     }
 
     // 10.2.1.2.1 HasBinding(N)
-    def HasBinding(name: String)(heap: Heap): AbsBool = {
+    def HasBinding(name: String)(heap: AbsHeap): AbsBool = {
       // 1. Let envRec be the object environment record for
       //    which the method was invoked.
       // 2. Let bindings be the binding object for envRec.
@@ -122,8 +122,8 @@ object DefaultGlobalEnvRec extends AbsGlobalEnvRecUtil {
     def CreateMutableBinding(
       name: String,
       del: Boolean
-    )(heap: Heap): (AbsGlobalEnvRec, Heap, Set[Exception]) = this match {
-      case Bot => (Bot, Heap.Bot, ExcSetEmpty)
+    )(heap: AbsHeap): (AbsGlobalEnvRec, AbsHeap, Set[Exception]) = this match {
+      case Bot => (Bot, AbsHeap.Bot, ExcSetEmpty)
       case Top =>
         // 1. Let envRec be the object environment record for
         //    which the method was invoked.
@@ -145,7 +145,7 @@ object DefaultGlobalEnvRec extends AbsGlobalEnvRecUtil {
             true
           )
           (this, heap.update(BuiltinGlobal.loc, newObj), excSet)
-        } else { (Bot, Heap.Bot, ExcSetEmpty) }
+        } else { (Bot, AbsHeap.Bot, ExcSetEmpty) }
     }
 
     // 10.2.1.2.3 SetMutableBinding(N, V, S)
@@ -153,8 +153,8 @@ object DefaultGlobalEnvRec extends AbsGlobalEnvRecUtil {
       name: String,
       v: AbsValue,
       strict: Boolean
-    )(heap: Heap): (AbsGlobalEnvRec, Heap, Set[Exception]) = this match {
-      case Bot => (Bot, Heap.Bot, ExcSetEmpty)
+    )(heap: AbsHeap): (AbsGlobalEnvRec, AbsHeap, Set[Exception]) = this match {
+      case Bot => (Bot, AbsHeap.Bot, ExcSetEmpty)
       case Top =>
         // 1. Let envRec be the object environment record for
         //    which the method was invoked.
@@ -174,7 +174,7 @@ object DefaultGlobalEnvRec extends AbsGlobalEnvRecUtil {
     def GetBindingValue(
       name: String,
       strict: Boolean
-    )(heap: Heap): (AbsValue, Set[Exception]) = this match {
+    )(heap: AbsHeap): (AbsValue, Set[Exception]) = this match {
       case Bot => (AbsValue.Bot, ExcSetEmpty)
       case Top =>
         // 1. Let envRec be the object environment record for
@@ -202,8 +202,8 @@ object DefaultGlobalEnvRec extends AbsGlobalEnvRecUtil {
     // 10.2.1.2.5 DeleteBinding(N)
     def DeleteBinding(
       name: String
-    )(heap: Heap): (AbsGlobalEnvRec, Heap, AbsBool) = this match {
-      case Bot => (Bot, Heap.Bot, AbsBool.Bot)
+    )(heap: AbsHeap): (AbsGlobalEnvRec, AbsHeap, AbsBool) = this match {
+      case Bot => (Bot, AbsHeap.Bot, AbsBool.Bot)
       case Top =>
         // 1. Let envRec be the object environment record for
         //    which the method was invoked.
@@ -216,7 +216,7 @@ object DefaultGlobalEnvRec extends AbsGlobalEnvRecUtil {
     }
 
     // 10.2.1.2.6 ImplicitThisValue()
-    def ImplicitThisValue(heap: Heap): AbsValue = this match {
+    def ImplicitThisValue(heap: AbsHeap): AbsValue = this match {
       case Bot => AbsValue.Bot
       case Top =>
         // 1. Let envRec be the object environment record for
@@ -230,8 +230,8 @@ object DefaultGlobalEnvRec extends AbsGlobalEnvRecUtil {
     }
 
     private val GLOBAL_LOC: Loc = BuiltinGlobal.loc
-    private def getGlobalObj(heap: Heap): AbsObject =
-      // TODO refactoring after defining getter of Heap.
+    private def getGlobalObj(heap: AbsHeap): AbsObject =
+      // TODO refactoring after defining getter of AbsHeap.
       heap.get(GLOBAL_LOC)
   }
 }

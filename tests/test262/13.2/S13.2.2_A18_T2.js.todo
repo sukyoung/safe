@@ -1,0 +1,33 @@
+  this.callee = 0;
+  var b;
+  __obj = {
+    callee : "a"
+  };
+  function f() 
+  {
+    with (arguments)
+    {
+      callee = 1;
+      b = true;
+      return arguments;
+    }
+  }
+  ;
+  result = f(__obj);
+  {
+    var __result1 = callee !== 0;
+    var __expect1 = false;
+  }
+  {
+    var __result2 = __obj.callee !== "a";
+    var __expect2 = false;
+  }
+  {
+    var __result3 = result.callee !== 1;
+    var __expect3 = false;
+  }
+  {
+    var __result4 = ! (this.b);
+    var __expect4 = false;
+  }
+  

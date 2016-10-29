@@ -83,7 +83,7 @@ public Stmt Statement =
      a3:(w else w Statement)?
      { Span span = createSpan(yyStart,yyCount);
        Option<Stmt> elseB;
-       if (a3 == null) elseB = Some.<Stmt>apply(null);
+       if (a3 == null) elseB = Option.<Stmt>apply(null);
        else            elseB = Some.<Stmt>apply(a3);
        yyValue = new If(NodeUtil.makeASTNodeInfo(span), a1, a2, elseB);
      }
@@ -102,11 +102,11 @@ public Stmt Statement =
        Option<Expr> init;
        Option<Expr> test;
        Option<Expr> update;
-       if (a1 == null) init = Some.<Expr>apply(null);
+       if (a1 == null) init = Option.<Expr>apply(null);
        else            init = Some.<Expr>apply(a1);
-       if (a2 == null) test = Some.<Expr>apply(null);
+       if (a2 == null) test = Option.<Expr>apply(null);
        else            test = Some.<Expr>apply(a2);
-       if (a3 == null) update = Some.<Expr>apply(null);
+       if (a3 == null) update = Option.<Expr>apply(null);
        else            update = Some.<Expr>apply(a3);
        yyValue = new For(NodeUtil.makeASTNodeInfo(span), init, test, update, a4);
      }
@@ -115,9 +115,9 @@ public Stmt Statement =
      { Span span = createSpan(yyStart,yyCount);
        Option<Expr> cond;
        Option<Expr> action;
-       if (a2 == null) cond = Some.<Expr>apply(null);
+       if (a2 == null) cond = Option.<Expr>apply(null);
        else            cond = Some.<Expr>apply(a2);
-       if (a3 == null) action = Some.<Expr>apply(null);
+       if (a3 == null) action = Option.<Expr>apply(null);
        else            action = Some.<Expr>apply(a3);
        yyValue = new ForVar(NodeUtil.makeASTNodeInfo(span), toList(a1), cond, action, a4);
      }
@@ -138,7 +138,7 @@ public Stmt Statement =
      }
    / continue EOSnoLB
      { Span span = createSpan(yyStart,yyCount);
-       yyValue = new Continue(NodeUtil.makeASTNodeInfo(span), Some.<Label>apply(null));
+       yyValue = new Continue(NodeUtil.makeASTNodeInfo(span), Option.<Label>apply(null));
      }
    / break s a1:Id EOS
      { Span span = createSpan(yyStart,yyCount);
@@ -147,7 +147,7 @@ public Stmt Statement =
      }
    / break EOSnoLB
      { Span span = createSpan(yyStart,yyCount);
-       yyValue = new Break(NodeUtil.makeASTNodeInfo(span), Some.<Label>apply(null));
+       yyValue = new Break(NodeUtil.makeASTNodeInfo(span), Option.<Label>apply(null));
      }
    / return s a1:Expression EOS
      { Span span = createSpan(yyStart,yyCount);
@@ -155,7 +155,7 @@ public Stmt Statement =
      }
    / return EOSnoLB
      { Span span = createSpan(yyStart,yyCount);
-       yyValue = new Return(NodeUtil.makeASTNodeInfo(span), Some.<Expr>apply(null));
+       yyValue = new Return(NodeUtil.makeASTNodeInfo(span), Option.<Expr>apply(null));
      }
    / with w openparen w a1:Expression w closeparen w a2:Statement
      { Span span = createSpan(yyStart,yyCount);
@@ -166,7 +166,7 @@ public Stmt Statement =
      { Span span = createSpan(yyStart,yyCount+1);
        if (a2 == null) a2 = list();
        yyValue = new Switch(NodeUtil.makeASTNodeInfo(span), a1,
-                            toList(a2), Some.<scala.collection.immutable.List<Stmt>>apply(null),
+                            toList(a2), Option.<scala.collection.immutable.List<Stmt>>apply(null),
                             toList(Collections.<Case>emptyList()));
      }
    / switch w openparen w a1:Expression w closeparen w
@@ -197,12 +197,12 @@ public Stmt Statement =
    / try w a1:ABlock w a2:Catch
      { Span span = createSpan(yyStart,yyCount);
        yyValue = new Try(NodeUtil.makeASTNodeInfo(span), toList(a1),
-                         Some.<Catch>apply(a2), Some.<scala.collection.immutable.List<Stmt>>apply(null));
+                         Some.<Catch>apply(a2), Option.<scala.collection.immutable.List<Stmt>>apply(null));
      }
    / try w a1:ABlock w a2:Finally
      { Span span = createSpan(yyStart,yyCount);
        yyValue = new Try(NodeUtil.makeASTNodeInfo(span), toList(a1),
-                         Some.<Catch>apply(null), Some.<scala.collection.immutable.List<Stmt>>apply(toList(a2)));
+                         Option.<Catch>apply(null), Some.<scala.collection.immutable.List<Stmt>>apply(toList(a2)));
      }
    / debugger EOS
      { Span span = createSpan(yyStart,yyCount);
@@ -250,7 +250,7 @@ transient VarDecl VariableDeclaration =
      a1:Id a2:(w void:equals w Assignment)?
      { Span span = createSpan(yyStart,yyCount);
        Option<Expr> expr;
-       if (a2 == null) expr = Some.<Expr>apply(null);
+       if (a2 == null) expr = Option.<Expr>apply(null);
        else            expr = Some.<Expr>apply(a2);
        yyValue = new VarDecl(NodeUtil.makeASTNodeInfo(span), a1, expr, false);
      };
@@ -263,7 +263,7 @@ transient VarDecl VariableDeclarationNoIn =
      a1:Id a2:(w void:equals w AssignmentNoIn)?
      { Span span = createSpan(yyStart,yyCount);
        Option<Expr> expr;
-       if (a2 == null) expr = Some.<Expr>apply(null);
+       if (a2 == null) expr = Option.<Expr>apply(null);
        else            expr = Some.<Expr>apply(a2);
        yyValue = new VarDecl(NodeUtil.makeASTNodeInfo(span), a1, expr, false);
      };

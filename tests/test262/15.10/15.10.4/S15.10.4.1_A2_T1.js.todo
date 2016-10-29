@@ -1,0 +1,9 @@
+  try
+{    $ERROR('#1.1: new RegExp(/\\u0042/i, "i") throw TypeError. Actual: ' + (new RegExp(/\u0042/i, "i")));}
+  catch (e)
+{    {
+      var __result1 = (e instanceof TypeError) !== true;
+      var __expect1 = false;
+    }}
+
+  

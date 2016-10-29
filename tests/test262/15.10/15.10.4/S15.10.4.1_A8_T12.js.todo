@@ -1,0 +1,15 @@
+  try
+{    $ERROR('#1.1: new RegExp("\\u0042", {toString:void 0, valueOf:function(){throw "invalof";}}) throw "invalof". Actual: ' + (new RegExp("\u0042", {
+      toString : void 0,
+      valueOf : (function () 
+      {
+        throw "invalof";
+      })
+    })));}
+  catch (e)
+{    {
+      var __result1 = e !== "invalof";
+      var __expect1 = false;
+    }}
+
+  

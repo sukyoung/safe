@@ -1,0 +1,14 @@
+  function testcase() 
+  {
+    var obj = {
+      99 : true,
+      100 : 100,
+      length : 100
+    };
+    return Array.prototype.lastIndexOf.call(obj, true) === 99 && Array.prototype.lastIndexOf.call(obj, 100) === - 1;
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

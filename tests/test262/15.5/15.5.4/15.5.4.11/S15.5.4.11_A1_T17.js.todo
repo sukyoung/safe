@@ -1,0 +1,9 @@
+  var __re = new RegExp(x, "g");
+  var __instance = String("asdf");
+  var __str = "1";
+  {
+    var __result1 = __instance.replace(__re, __str) !== "1a1s1d1f1";
+    var __expect1 = false;
+  }
+  var x;
+  

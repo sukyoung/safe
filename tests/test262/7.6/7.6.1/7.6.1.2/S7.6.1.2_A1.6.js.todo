@@ -1,0 +1,2 @@
+  var const = 1;
+  

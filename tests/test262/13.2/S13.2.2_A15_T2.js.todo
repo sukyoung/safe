@@ -1,0 +1,24 @@
+  var __obj = new __FACTORY();
+  {
+    var __result1 = obj.prop !== "A";
+    var __expect1 = false;
+  }
+  {
+    var __result2 = __obj.prop !== "A";
+    var __expect2 = false;
+  }
+  {
+    var __result3 = __obj.slot.prop !== 1;
+    var __expect3 = false;
+  }
+  function __FACTORY() 
+  {
+    this.prop = 1;
+    obj = {
+      
+    };
+    obj.prop = "A";
+    obj.slot = this;
+    return obj;
+  }
+  

@@ -1,0 +1,17 @@
+  {
+    var __result1 = parseInt(new String("-1")) !== parseInt("-1");
+    var __expect1 = false;
+  }
+  {
+    var __result2 = String(parseInt(new String("Infinity"))) !== "NaN";
+    var __expect2 = false;
+  }
+  {
+    var __result3 = String(parseInt(new String("NaN"))) !== "NaN";
+    var __expect3 = false;
+  }
+  {
+    var __result4 = String(parseInt(new String("false"))) !== "NaN";
+    var __expect4 = false;
+  }
+  

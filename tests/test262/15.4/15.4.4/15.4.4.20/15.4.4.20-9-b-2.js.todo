@@ -1,0 +1,25 @@
+  function testcase() 
+  {
+    function callbackfn(val, idx, obj) 
+    {
+      return true;
+    }
+    var obj = {
+      
+    };
+    Object.defineProperty(obj, "length", {
+      get : (function () 
+      {
+        obj[2] = "length";
+        return 3;
+      }),
+      configurable : true
+    });
+    var newArr = Array.prototype.filter.call(obj, callbackfn);
+    return newArr.length === 1 && newArr[0] === "length";
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

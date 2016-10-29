@@ -1,0 +1,21 @@
+  function testcase() 
+  {
+  "use strict";
+    var _13_1_14_s = {
+      
+    };
+    try
+{      _13_1_14_s.x = (function arguments() 
+      {
+        
+      });
+      return false;}
+    catch (e)
+{      return e instanceof SyntaxError;}
+
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

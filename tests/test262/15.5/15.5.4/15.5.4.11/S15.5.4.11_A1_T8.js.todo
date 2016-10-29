@@ -1,0 +1,11 @@
+  var __obj = {
+    toString : (function () 
+    {
+      
+    })
+  };
+  {
+    var __result1 = String(__obj).replace(/e/g, void 0) !== "undundefinedfinundefinedd";
+    var __expect1 = false;
+  }
+  

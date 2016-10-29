@@ -1,0 +1,13 @@
+  (function (a1, a2, a3) 
+  {
+    this.shifted = a1;
+  }).call(null, [3, 2, 1, ]);
+  {
+    var __result1 = this["shifted"].length !== 3;
+    var __expect1 = false;
+  }
+  {
+    var __result2 = (this["shifted"][0] !== 3) || (this["shifted"][1] !== 2) || (this["shifted"][2] !== 1);
+    var __expect2 = false;
+  }
+  

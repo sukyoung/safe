@@ -46,7 +46,7 @@ object BuiltinFunctionProto extends FuncModel(
     // 15.3.4.2 Function.prototype.toString()
     NormalProp("toString", FuncModel(
       name = "Function.prototype.toString",
-      code = BasicCode(argLen = 0, (args: AbsValue, st: State) => {
+      code = BasicCode(argLen = 0, (args: AbsValue, st: AbsState) => {
         val thisBinding = st.context.thisBinding.locset
         val functionClass = AbsString("Function")
         val notAllFunctionClass = thisBinding.exists(loc => {
@@ -109,7 +109,7 @@ private object BuiltinFunctionProtoHelper {
   val atrue = AbsBool.True
 
   // 15.3.4.3 Fucntion.prototype.apply(thisArg, argArray)
-  def applyBeforeCall(funcId: CFGId, thisId: CFGId, argsId: CFGId)(args: AbsValue, st: State, addr: Address): (State, State) = {
+  def applyBeforeCall(funcId: CFGId, thisId: CFGId, argsId: CFGId)(args: AbsValue, st: AbsState, addr: Address): (AbsState, AbsState) = {
     val func = st.context.thisBinding.locset
     val thisArg = Helper.propLoad(args, HashSet(AbsString("0")), st.heap)
     val heap = st.heap
@@ -130,8 +130,8 @@ private object BuiltinFunctionProtoHelper {
     // 2. If argArray is null or undefined, then
     val nullOrUndef = (argArray.pvalue.nullval </ AbsNull.Bot) || (argArray.pvalue.undefval </ AbsUndef.Bot)
     val argList1 =
-      if (nullOrUndef) AbsObjectUtil.newArgObject(AbsNumber(0.0))
-      else AbsObjectUtil.Bot
+      if (nullOrUndef) AbsObject.newArgObject(AbsNumber(0.0))
+      else AbsObject.Bot
 
     // 3. If Type(argArray) is not Object, then throw a TypeError exception.
     val excSet2 =
@@ -139,7 +139,7 @@ private object BuiltinFunctionProtoHelper {
       else ExcSetEmpty
 
     // 4. - 8.
-    val argList2 = argArray.locset.foldLeft(AbsObjectUtil.Bot)((aobj, loc) => {
+    val argList2 = argArray.locset.foldLeft(AbsObject.Bot)((aobj, loc) => {
       val argObj = heap.get(loc)
       val len = argObj.Get("length", heap)
       val n = TypeConversionHelper.ToUInt32(len)
@@ -147,10 +147,10 @@ private object BuiltinFunctionProtoHelper {
         case ConInf() =>
           val indexName = AbsString.Number
           val nextArg = argObj.Get(indexName, heap)
-          aobj + AbsObjectUtil.newArgObject(n).update(indexName, AbsDataProp(nextArg, atrue, atrue, atrue))
+          aobj + AbsObject.newArgObject(n).update(indexName, AbsDataProp(nextArg, atrue, atrue, atrue))
         case ConFin(values) =>
           values.foldLeft(aobj)((aobj2, num) => {
-            (0 until num.toInt).foldLeft(AbsObjectUtil.newArgObject(n))((tmpArg, i) => {
+            (0 until num.toInt).foldLeft(AbsObject.newArgObject(n))((tmpArg, i) => {
               val indexName = AbsNumber(i).toAbsString
               val nextArg = argObj.Get(indexName, heap)
               tmpArg.update(indexName, AbsDataProp(nextArg, atrue, atrue, atrue))
@@ -164,7 +164,7 @@ private object BuiltinFunctionProtoHelper {
     val argsLoc = Loc(addr, Old)
     val h3 = st1.heap.update(argsLoc, argList1 + argList2)
     val newState =
-      State(h3, st1.context)
+      AbsState(h3, st1.context)
         .varStore(funcId, callableFunc)
         .varStore(thisId, thisArg)
         .varStore(argsId, AbsValue(argsLoc))
@@ -173,7 +173,7 @@ private object BuiltinFunctionProtoHelper {
   }
 
   // 15.3.4.4 Function.prototype.call(thisArg [, arg1 [, arg2, ...]])
-  def callBeforeCall(funcId: CFGId, thisId: CFGId, argsId: CFGId)(args: AbsValue, st: State, addr: Address): (State, State) = {
+  def callBeforeCall(funcId: CFGId, thisId: CFGId, argsId: CFGId)(args: AbsValue, st: AbsState, addr: Address): (AbsState, AbsState) = {
     val func = st.context.thisBinding.locset
     val thisArg = Helper.propLoad(args, HashSet(AbsString("0")), st.heap)
     val heap = st.heap
@@ -194,16 +194,16 @@ private object BuiltinFunctionProtoHelper {
       val origLength = Helper.propLoad(args, HashSet(AbsString("length")), heap)
       Helper.bopMinus(origLength, AbsNumber(1.0)).pvalue.numval
     }
-    val argList = args.locset.foldLeft(AbsObjectUtil.Bot)((aobj, loc) => {
+    val argList = args.locset.foldLeft(AbsObject.Bot)((aobj, loc) => {
       val argObj = heap.get(loc)
       len.gamma match {
         case ConInf() =>
           val indexName = AbsString.Number
           val nextArg = argObj.Get(indexName, heap)
-          AbsObjectUtil.newArgObject(len).update(indexName, AbsDataProp(nextArg, atrue, atrue, atrue))
+          AbsObject.newArgObject(len).update(indexName, AbsDataProp(nextArg, atrue, atrue, atrue))
         case ConFin(values) =>
           values.foldLeft(aobj)((aobj2, num) => {
-            (0 until num.toInt).foldLeft(AbsObjectUtil.newArgObject(len))((tmpArg, i) => {
+            (0 until num.toInt).foldLeft(AbsObject.newArgObject(len))((tmpArg, i) => {
               val nextArg = argObj.Get(AbsNumber(i + 1).toAbsString, heap)
               tmpArg.update(AbsNumber(i).toAbsString, AbsDataProp(nextArg, atrue, atrue, atrue))
             }) + aobj2
@@ -216,7 +216,7 @@ private object BuiltinFunctionProtoHelper {
     val argsLoc = Loc(addr, Old)
     val h3 = st1.heap.update(argsLoc, argList)
     val newState =
-      State(h3, st1.context)
+      AbsState(h3, st1.context)
         .varStore(funcId, callableFunc)
         .varStore(thisId, thisArg)
         .varStore(argsId, AbsValue(argsLoc))
@@ -224,7 +224,7 @@ private object BuiltinFunctionProtoHelper {
     (newState, st1.raiseException(excSet1))
   }
 
-  def connectAfterCall(retId: CFGId)(args: AbsValue, st: State): (State, State, AbsValue) = {
+  def connectAfterCall(retId: CFGId)(args: AbsValue, st: AbsState): (AbsState, AbsState, AbsValue) = {
     val (retVal, excSet) = st.lookup(retId)
     (st, st.raiseException(excSet), retVal)
   }

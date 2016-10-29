@@ -1,0 +1,6 @@
+  __re = /undefined/.exec()[0];
+  {
+    var __result1 = __re !== "undefined";
+    var __expect1 = false;
+  }
+  

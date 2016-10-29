@@ -1,0 +1,5 @@
+  {
+    var __result1 = Function.prototype.apply.prototype !== undefined;
+    var __expect1 = false;
+  }
+  

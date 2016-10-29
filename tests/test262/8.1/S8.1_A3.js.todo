@@ -1,0 +1,2 @@
+  var undefined = 1;
+  

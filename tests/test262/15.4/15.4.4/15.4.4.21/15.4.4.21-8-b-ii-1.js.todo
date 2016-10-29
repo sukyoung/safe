@@ -1,0 +1,23 @@
+  function testcase() 
+  {
+    var obj = {
+      
+    };
+    Object.defineProperty(obj, "length", {
+      get : (function () 
+      {
+        obj[1] = "accumulator";
+        return 3;
+      }),
+      configurable : true
+    });
+    return Array.prototype.reduce.call(obj, (function () 
+    {
+      
+    })) === "accumulator";
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

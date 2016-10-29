@@ -1,0 +1,10 @@
+  exec = RegExp.prototype.exec;
+  try
+{    $ERROR('#1.1: exec = RegExp.prototype.exec; exec("message to investigate"). Actual: ' + (exec("message to investigate")));}
+  catch (e)
+{    {
+      var __result1 = (e instanceof TypeError) !== true;
+      var __expect1 = false;
+    }}
+
+  

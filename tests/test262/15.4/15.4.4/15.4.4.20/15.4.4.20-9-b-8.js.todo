@@ -1,0 +1,34 @@
+  function testcase() 
+  {
+    var accessed = false;
+    var obj = {
+      length : 2
+    };
+    function callbackfn(val, idx, o) 
+    {
+      accessed = true;
+      return true;
+    }
+    Object.defineProperty(obj, "1", {
+      get : (function () 
+      {
+        return 6.99;
+      }),
+      configurable : true
+    });
+    Object.defineProperty(obj, "0", {
+      get : (function () 
+      {
+        delete obj[1];
+        return 0;
+      }),
+      configurable : true
+    });
+    var newArr = Array.prototype.filter.call(obj, callbackfn);
+    return newArr.length === 1 && newArr[0] === 0;
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

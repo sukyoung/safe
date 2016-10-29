@@ -1,0 +1,18 @@
+  __FOO = "fooValue";
+  __BAR = "barValue";
+  __func = (function (arg) 
+  {
+    this.foo = arg;
+    return 0;
+    this.bar = arguments[1];
+  });
+  __obj = new __func(__FOO, __BAR);
+  {
+    var __result1 = __obj.foo !== __FOO;
+    var __expect1 = false;
+  }
+  {
+    var __result2 = __obj.bar !== undefined;
+    var __expect2 = false;
+  }
+  

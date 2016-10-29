@@ -1,0 +1,11 @@
+  __re = "d+";
+  __instance = RegExp(__re, "i");
+  {
+    var __result1 = __instance.constructor !== RegExp;
+    var __expect1 = false;
+  }
+  {
+    var __result2 = __instance.source !== __re;
+    var __expect2 = false;
+  }
+  

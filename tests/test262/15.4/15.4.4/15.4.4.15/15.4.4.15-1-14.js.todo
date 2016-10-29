@@ -1,0 +1,12 @@
+  function testcase() 
+  {
+    var obj = new SyntaxError();
+    obj.length = 2;
+    obj[1] = Infinity;
+    return Array.prototype.lastIndexOf.call(obj, Infinity) === 1;
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

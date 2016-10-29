@@ -1,0 +1,42 @@
+  result = true;
+  try
+{    decodeURIComponent("%");
+    result = false;}
+  catch (e)
+{    if ((e instanceof URIError) !== true)
+    {
+      result = false;
+    }}
+
+  try
+{    decodeURIComponent("%A");
+    result = false;}
+  catch (e)
+{    if ((e instanceof URIError) !== true)
+    {
+      result = false;
+    }}
+
+  try
+{    decodeURIComponent("%1");
+    result = false;}
+  catch (e)
+{    if ((e instanceof URIError) !== true)
+    {
+      result = false;
+    }}
+
+  try
+{    decodeURIComponent("% ");
+    result = false;}
+  catch (e)
+{    if ((e instanceof URIError) !== true)
+    {
+      result = false;
+    }}
+
+  {
+    var __result1 = result !== true;
+    var __expect1 = false;
+  }
+  

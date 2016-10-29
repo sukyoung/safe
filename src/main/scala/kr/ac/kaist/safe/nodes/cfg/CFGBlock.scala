@@ -12,7 +12,8 @@
 package kr.ac.kaist.safe.nodes.cfg
 
 import scala.collection.mutable.{ HashMap => MHashMap, Map => MMap }
-import kr.ac.kaist.safe.analyzer.domain.State
+import kr.ac.kaist.safe.analyzer.domain.AbsState
+import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.analyzer.CallContext
 import kr.ac.kaist.safe.analyzer.models.SemanticFun
 import kr.ac.kaist.safe.{ LINE_SEP, MAX_INST_PRINT_SIZE }
@@ -39,10 +40,10 @@ sealed abstract class CFGBlock {
   def addPred(edgeType: CFGEdgeType, node: CFGBlock): Unit = preds(edgeType) = node :: preds.getOrElse(edgeType, Nil)
 
   // control point maps to state
-  protected val cpToState: MMap[CallContext, State] = MHashMap()
-  def getState(): Map[CallContext, State] = cpToState.toMap
-  def getState(callCtx: CallContext): State = cpToState.getOrElse(callCtx, State.Bot)
-  def setState(callCtx: CallContext, state: State): Unit =
+  protected val cpToState: MMap[CallContext, AbsState] = MHashMap()
+  def getState(): Map[CallContext, AbsState] = cpToState.toMap
+  def getState(callCtx: CallContext): AbsState = cpToState.getOrElse(callCtx, AbsState.Bot)
+  def setState(callCtx: CallContext, state: AbsState): Unit =
     if (state.isBottom) cpToState -= callCtx
     else cpToState(callCtx) = state
 

@@ -1,0 +1,2 @@
+  var boolean = 1;
+  

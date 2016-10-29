@@ -1,0 +1,13 @@
+  var o = {
+    set foo(stuff) 
+    {
+    "use strict";
+      return gNonStrict();
+    }
+  };
+  o.foo = 8;
+  function gNonStrict() 
+  {
+    return gNonStrict.caller || gNonStrict.caller.throwTypeError;
+  }
+  

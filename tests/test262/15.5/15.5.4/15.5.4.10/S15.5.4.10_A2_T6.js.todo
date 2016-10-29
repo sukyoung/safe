@@ -1,0 +1,26 @@
+  var __string = "Boston, Mass. 02134";
+  {
+    var __result1 = __string.match(/([\d]{5})([-\ ]?[\d]{4})?$/)[0] !== "02134";
+    var __expect1 = false;
+  }
+  {
+    var __result2 = __string.match(/([\d]{5})([-\ ]?[\d]{4})?$/)[1] !== "02134";
+    var __expect2 = false;
+  }
+  {
+    var __result3 = __string.match(/([\d]{5})([-\ ]?[\d]{4})?$/)[2] !== void 0;
+    var __expect3 = false;
+  }
+  {
+    var __result4 = __string.match(/([\d]{5})([-\ ]?[\d]{4})?$/).length !== 3;
+    var __expect4 = false;
+  }
+  {
+    var __result5 = __string.match(/([\d]{5})([-\ ]?[\d]{4})?$/).index !== 14;
+    var __expect5 = false;
+  }
+  {
+    var __result6 = __string.match(/([\d]{5})([-\ ]?[\d]{4})?$/).input !== __string;
+    var __expect6 = false;
+  }
+  

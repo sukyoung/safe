@@ -1,0 +1,33 @@
+  __body = "";
+  __body += '<body onXXX="alert(event.type);">\n';
+  __body += '<p>Kibology for all<\/p>\n';
+  __body += '<p>All for Kibology<\/p>\n';
+  __body += '<\/body>';
+  __html = "";
+  __html += '<html>\n';
+  __html += __body;
+  __html += '\n<\/html>';
+  __executed = /<body.*>((.*\n?)*?)<\/body>/i.exec(__html);
+  __expected = [__body, '\n<p>Kibology for all</p>\n<p>All for Kibology</p>\n', '<p>All for Kibology</p>\n', ];
+  __expected.index = 7;
+  __expected.input = __html;
+  {
+    var __result1 = __executed.length !== __expected.length;
+    var __expect1 = false;
+  }
+  {
+    var __result2 = __executed.index !== __expected.index;
+    var __expect2 = false;
+  }
+  {
+    var __result3 = __executed.input !== __expected.input;
+    var __expect3 = false;
+  }
+  for(var index = 0;index < __expected.length;index++)
+  {
+    {
+      var __result4 = __executed[index] !== __expected[index];
+      var __expect4 = false;
+    }
+  }
+  

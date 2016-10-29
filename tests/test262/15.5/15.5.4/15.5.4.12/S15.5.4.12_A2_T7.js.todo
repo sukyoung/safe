@@ -1,0 +1,6 @@
+  var aString = new String("test string probe");
+  {
+    var __result1 = aString.search("string pro") !== 5;
+    var __expect1 = false;
+  }
+  

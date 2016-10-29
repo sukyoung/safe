@@ -1,0 +1,16 @@
+  function testcase() 
+  {
+    function callbackfn(prevVal, curVal, idx, obj) 
+    {
+      delete o.arr;
+      return prevVal + curVal;
+    }
+    var o = new Object();
+    o.arr = ['1', 2, 3, 4, 5, ];
+    return o.arr.reduceRight(callbackfn) === "141" && ! o.hasOwnProperty("arr");
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

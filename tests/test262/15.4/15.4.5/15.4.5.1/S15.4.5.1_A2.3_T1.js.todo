@@ -1,0 +1,12 @@
+  var x = Array(100);
+  x[100] = 1;
+  {
+    var __result1 = x.length !== 101;
+    var __expect1 = false;
+  }
+  x[199] = 1;
+  {
+    var __result2 = x.length !== 200;
+    var __expect2 = false;
+  }
+  

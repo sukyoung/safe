@@ -1,0 +1,15 @@
+  var result = true;
+  for (alpha = 0x61;alpha <= 0x7a;alpha++)
+  {
+    str = String.fromCharCode(alpha % 32);
+    arr = (new RegExp("\\c" + String.fromCharCode(alpha))).exec(str);
+    if ((arr === null) || (arr[0] !== str))
+    {
+      result = false;
+    }
+  }
+  {
+    var __result1 = result !== true;
+    var __expect1 = false;
+  }
+  

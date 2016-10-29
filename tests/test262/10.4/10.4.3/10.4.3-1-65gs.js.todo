@@ -1,0 +1,14 @@
+  function f() 
+  {
+  "use strict";
+    return this === undefined;
+  }
+  ;
+  if (! (function () 
+  {
+    return f();
+  })())
+  {
+    throw "'this' had incorrect value!";
+  }
+  

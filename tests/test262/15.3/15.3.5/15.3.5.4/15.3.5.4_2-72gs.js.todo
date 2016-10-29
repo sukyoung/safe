@@ -1,0 +1,12 @@
+  function f() 
+  {
+  "use strict";
+    return gNonStrict();
+  }
+  ;
+  f.bind(undefined)();
+  function gNonStrict() 
+  {
+    return gNonStrict.caller || gNonStrict.caller.throwTypeError;
+  }
+  

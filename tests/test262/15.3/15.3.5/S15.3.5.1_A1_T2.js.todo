@@ -1,0 +1,10 @@
+  f = Function("arg1,arg2,arg3", "arg4,arg5", null);
+  {
+    var __result1 = ! (f.hasOwnProperty('length'));
+    var __expect1 = false;
+  }
+  {
+    var __result2 = f.length !== 5;
+    var __expect2 = false;
+  }
+  

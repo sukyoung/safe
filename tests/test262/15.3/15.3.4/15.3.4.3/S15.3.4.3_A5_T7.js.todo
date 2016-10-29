@@ -1,0 +1,10 @@
+  var obj = new Number(1);
+  (function () 
+  {
+    this.touched = true;
+  }).apply(obj);
+  {
+    var __result1 = ! (obj.touched);
+    var __expect1 = false;
+  }
+  

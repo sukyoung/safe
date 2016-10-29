@@ -1,0 +1,12 @@
+  var non_ident = "~`!@#$%^&*()-+={[}]|\\:;'<,>./?" + '"';
+  var k = - 1;
+  do
+  {
+    k++;
+    arr = new RegExp("\\" + non_ident[k], "g").exec(non_ident);
+  }while ((arr !== null) && (arr[0] === non_ident[k]));
+  {
+    var __result1 = non_ident.length !== k;
+    var __expect1 = false;
+  }
+  

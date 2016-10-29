@@ -1,0 +1,19 @@
+  function testcase() 
+  {
+    function callbackfn(val, Idx, obj) 
+    {
+      arr.length = 3;
+      if (val < 4)
+        return true;
+      else
+        return false;
+    }
+    var arr = [1, 2, 3, 4, 6, ];
+    if (arr.every(callbackfn) === true)
+      return true;
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

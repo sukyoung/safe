@@ -1,0 +1,6 @@
+  __executed = /([Jj]ava([Ss]cript)?)\sis\s(fun\w*)/.test("Developing with JavaScript is dangerous, do not try it without assistance");
+  {
+    var __result1 = __executed;
+    var __expect1 = false;
+  }
+  

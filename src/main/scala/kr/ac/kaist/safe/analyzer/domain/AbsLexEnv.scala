@@ -57,7 +57,7 @@ trait AbsLexEnvUtil extends AbsDomainUtil[LexEnv, AbsLexEnv] {
     locSet: AbsLoc,
     name: String,
     strict: Boolean
-  )(st: State): AbsValue
+  )(st: AbsState): AbsValue
 
   // 10.2.2.1 GetIdentifierReference(lex, name, strict)
   // + 8.7.1 GetValue(V)
@@ -65,7 +65,7 @@ trait AbsLexEnvUtil extends AbsDomainUtil[LexEnv, AbsLexEnv] {
     locSet: AbsLoc,
     name: String,
     strict: Boolean
-  )(st: State): (AbsValue, Set[Exception])
+  )(st: AbsState): (AbsValue, Set[Exception])
 
   // 10.2.2.1 GetIdentifierReference(lex, name, strict)
   // + 8.7.2 PutValue(V, W)
@@ -74,7 +74,7 @@ trait AbsLexEnvUtil extends AbsDomainUtil[LexEnv, AbsLexEnv] {
     name: String,
     value: AbsValue,
     strict: Boolean
-  )(st: State): (State, Set[Exception])
+  )(st: AbsState): (AbsState, Set[Exception])
 
   // 10.2.2.2 NewDeclarativeEnvironment(E)
   def NewDeclarativeEnvironment(locSet: AbsLoc): AbsLexEnv
@@ -168,7 +168,7 @@ object DefaultLexEnv extends AbsLexEnvUtil {
     locSet: AbsLoc,
     name: String,
     strict: Boolean
-  )(st: State): AbsValue = {
+  )(st: AbsState): AbsValue = {
     var visited = AbsLoc.Bot
     val heap = st.heap
     val ctx = st.context
@@ -200,7 +200,7 @@ object DefaultLexEnv extends AbsLexEnvUtil {
     locSet: AbsLoc,
     name: String,
     strict: Boolean
-  )(st: State): (AbsValue, Set[Exception]) = {
+  )(st: AbsState): (AbsValue, Set[Exception]) = {
     var visited = AbsLoc.Bot
     val heap = st.heap
     val ctx = st.context
@@ -235,7 +235,7 @@ object DefaultLexEnv extends AbsLexEnvUtil {
     name: String,
     value: AbsValue,
     strict: Boolean
-  )(st: State): (State, Set[Exception]) = {
+  )(st: AbsState): (AbsState, Set[Exception]) = {
     var visited = AbsLoc.Bot
     var newH = st.heap
     var newCtx = st.context
@@ -267,7 +267,7 @@ object DefaultLexEnv extends AbsLexEnvUtil {
       })(AbsAbsent)
     }
     locSet.foreach(visit(_))
-    (State(newH, newCtx), excSet)
+    (AbsState(newH, newCtx), excSet)
   }
 
   def NewDeclarativeEnvironment(outer: AbsLoc): AbsLexEnv =

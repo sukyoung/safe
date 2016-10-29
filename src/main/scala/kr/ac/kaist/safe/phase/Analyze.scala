@@ -16,7 +16,7 @@ import kr.ac.kaist.safe.SafeConfig
 import kr.ac.kaist.safe.analyzer._
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.analyzer.console.Console
-import kr.ac.kaist.safe.cfg_builder.HTMLWriter
+import kr.ac.kaist.safe.analyzer.html_debugger.HTMLWriter
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.nodes.cfg.CFG
 import kr.ac.kaist.safe.util._
@@ -81,9 +81,9 @@ case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, Int, CallContext)
     ("maxStrSetSize", NumOption((c, n) => if (n > 0) c.AbsString = StringSet(n)),
       "the analyzer will use the AbsString Set domain with given size limit n."),
     ("callsiteSensitivity", NumOption((c, n) => if (n > 0) c.callsiteSensitivity = n),
-      ""), // TODO
+      "{number}-depth callsite-sensitive analysis will be executed."),
     ("html", StrOption((c, s) => c.htmlName = Some(s)),
-      "the resulting CFG with states will be drawn to the {name}.html")
+      "the resulting CFG with states will be drawn to the {string}.html")
   )
 }
 

@@ -27,19 +27,19 @@ object TypeConversionHelper {
   // 9.1 ToPrimitive
   ////////////////////////////////////////////////////////////////
   def ToPrimitive(value: AbsValue): AbsPValue =
-    value.pvalue + AbsObjectUtil.defaultValue(value.locset)
+    value.pvalue + AbsObject.defaultValue(value.locset)
 
   def ToPrimitive(value: AbsValue, preferredType: String): AbsPValue =
-    value.pvalue + AbsObjectUtil.defaultValue(value.locset, preferredType)
+    value.pvalue + AbsObject.defaultValue(value.locset, preferredType)
 
   def ToPrimitive(locSet: AbsLoc, preferredType: String): AbsPValue =
-    AbsObjectUtil.defaultValue(locSet, preferredType)
+    AbsObject.defaultValue(locSet, preferredType)
 
-  def ToPrimitive(value: AbsValue, h: Heap, preferredType: String = "String"): AbsPValue =
-    value.pvalue + AbsObjectUtil.defaultValue(value.locset, h, preferredType)
+  def ToPrimitive(value: AbsValue, h: AbsHeap, preferredType: String = "String"): AbsPValue =
+    value.pvalue + AbsObject.defaultValue(value.locset, h, preferredType)
 
-  def ToPrimitive(locSet: AbsLoc, h: Heap, preferredType: String): AbsPValue =
-    AbsObjectUtil.defaultValue(locSet, h, preferredType)
+  def ToPrimitive(locSet: AbsLoc, h: AbsHeap, preferredType: String): AbsPValue =
+    AbsObject.defaultValue(locSet, h, preferredType)
 
   ////////////////////////////////////////////////////////////////
   // 9.2 ToBoolean
@@ -80,7 +80,7 @@ object TypeConversionHelper {
     ToNumber(value.pvalue) + anum6
   }
 
-  def ToNumber(value: AbsValue, h: Heap): AbsNumber = {
+  def ToNumber(value: AbsValue, h: AbsHeap): AbsNumber = {
     val anum6 = ToNumber(ToPrimitive(value.locset, h, preferredType = "Number"))
     ToNumber(value.pvalue) + anum6
   }
@@ -112,7 +112,7 @@ object TypeConversionHelper {
   def ToInteger(value: AbsValue): AbsNumber =
     ToNumber(value).toInteger
 
-  def ToInteger(value: AbsValue, h: Heap): AbsNumber =
+  def ToInteger(value: AbsValue, h: AbsHeap): AbsNumber =
     ToNumber(value, h).toInteger
 
   ////////////////////////////////////////////////////////////////
@@ -123,7 +123,7 @@ object TypeConversionHelper {
   def ToInt32(value: AbsValue): AbsNumber =
     ToNumber(value).toInt32
 
-  def ToInt32(value: AbsValue, h: Heap): AbsNumber =
+  def ToInt32(value: AbsValue, h: AbsHeap): AbsNumber =
     ToNumber(value, h).toInt32
 
   ////////////////////////////////////////////////////////////////
@@ -134,7 +134,7 @@ object TypeConversionHelper {
   def ToUInt32(value: AbsValue): AbsNumber =
     ToNumber(value).toUInt32
 
-  def ToUInt32(value: AbsValue, h: Heap): AbsNumber =
+  def ToUInt32(value: AbsValue, h: AbsHeap): AbsNumber =
     ToNumber(value, h).toUInt32
 
   ////////////////////////////////////////////////////////////////
@@ -145,7 +145,7 @@ object TypeConversionHelper {
   def ToUInt16(value: AbsValue): AbsNumber =
     ToNumber(value).toUInt16
 
-  def ToUInt16(value: AbsValue, h: Heap): AbsNumber =
+  def ToUInt16(value: AbsValue, h: AbsHeap): AbsNumber =
     ToNumber(value, h).toUInt16
 
   ////////////////////////////////////////////////////////////////
@@ -158,7 +158,7 @@ object TypeConversionHelper {
     ToString(value.pvalue) + astr6
   }
 
-  def ToString(value: AbsValue, h: Heap): AbsString = {
+  def ToString(value: AbsValue, h: AbsHeap): AbsString = {
     val astr6 = ToString(ToPrimitive(value.locset, h, preferredType = "String"))
     ToString(value.pvalue) + astr6
   }
@@ -189,13 +189,13 @@ object TypeConversionHelper {
   ////////////////////////////////////////////////////////////////
   def ToObject(pvalue: AbsPValue): (AbsObject, Set[Exception]) = {
     val excSet = CheckObjectCoercible(pvalue)
-    val obj3 = pvalue.numval.fold(AbsObjectUtil.Bot) { AbsObjectUtil.newNumberObj(_) }
-    val obj4 = pvalue.boolval.fold(AbsObjectUtil.Bot) { AbsObjectUtil.newBooleanObj(_) }
-    val obj5 = pvalue.strval.fold(AbsObjectUtil.Bot) { AbsObjectUtil.newStringObj(_) }
+    val obj3 = pvalue.numval.fold(AbsObject.Bot) { AbsObject.newNumberObj(_) }
+    val obj4 = pvalue.boolval.fold(AbsObject.Bot) { AbsObject.newBooleanObj(_) }
+    val obj5 = pvalue.strval.fold(AbsObject.Bot) { AbsObject.newStringObj(_) }
     (obj3 + obj4 + obj5, excSet)
   }
 
-  def ToObject(value: AbsValue, st: State, addr: Address): (AbsLoc, State, Set[Exception]) = {
+  def ToObject(value: AbsValue, st: AbsState, addr: Address): (AbsLoc, AbsState, Set[Exception]) = {
     val locSet = value.locset
     val (obj, excSet) = ToObject(value.pvalue)
 
@@ -203,11 +203,11 @@ object TypeConversionHelper {
       if (!obj.isBottom) {
         val loc = Loc(addr, Recent)
         val state = st.oldify(addr)
-        (AbsLoc(loc), State(state.heap.update(loc, obj), state.context))
-      } else (AbsLoc.Bot, State.Bot)
+        (AbsLoc(loc), AbsState(state.heap.update(loc, obj), state.context))
+      } else (AbsLoc.Bot, AbsState.Bot)
     val (locSet2, st2) =
       if (!locSet.isBottom) (locSet, st)
-      else (AbsLoc.Bot, State.Bot)
+      else (AbsLoc.Bot, AbsState.Bot)
 
     (locSet1 + locSet2, st1 + st2, excSet)
   }
@@ -238,7 +238,7 @@ object TypeConversionHelper {
     abool1 + abool2 + abool3 + abool4 + abool5 + abool6
   }
 
-  def IsCallable(value: AbsValue, h: Heap): AbsBool = {
+  def IsCallable(value: AbsValue, h: AbsHeap): AbsBool = {
     val abool1 = value.pvalue.undefval.fold(AbsBool.Bot) { _ => AbsBool.False }
     val abool2 = value.pvalue.nullval.fold(AbsBool.Bot) { _ => AbsBool.False }
     val abool3 = value.pvalue.boolval.fold(AbsBool.Bot) { _ => AbsBool.False }
@@ -249,8 +249,8 @@ object TypeConversionHelper {
     abool1 + abool2 + abool3 + abool4 + abool5 + abool6
   }
 
-  def IsCallable(loc: Loc, h: Heap): AbsBool = {
-    val isDomIn = h.getOrElse(loc)(AbsBool.False) { obj => (obj contains ICall) }
+  def IsCallable(loc: Loc, h: AbsHeap): AbsBool = {
+    val isDomIn = h.get(loc).fold(AbsBool.False) { obj => (obj contains ICall) }
     val b1 =
       if (AbsBool.True <= isDomIn) AbsBool.True
       else AbsBool.Bot
@@ -291,7 +291,7 @@ object TypeConversionHelper {
   ////////////////////////////////////////////////////////////////
   // Additional type-related helper functions
   ////////////////////////////////////////////////////////////////
-  def typeTag(value: AbsValue, h: Heap): AbsString = {
+  def typeTag(value: AbsValue, h: AbsHeap): AbsString = {
     val s1 = value.pvalue.undefval.fold(AbsString.Bot)(_ => {
       AbsString("undefined")
     })

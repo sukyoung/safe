@@ -1,0 +1,26 @@
+  function testcase() 
+  {
+    var arrProtoLen = 0;
+    function callbackfn1(val, idx, obj) 
+    {
+      return val > 10;
+    }
+    function callbackfn2(val, idx, obj) 
+    {
+      return val > 11;
+    }
+    try
+{      arrProtoLen = Array.prototype.length;
+      Array.prototype.length = 0;
+      Array.prototype[2] = 12;
+      return [9, 11, ].some(callbackfn1) && ! [9, 11, ].some(callbackfn2);}
+    finally
+{      Array.prototype.length = arrProtoLen;
+      delete Array.prototype[2];}
+
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

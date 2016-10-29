@@ -1,0 +1,28 @@
+  var __MONSTER = "monster";
+  var __PREDATOR = "predator";
+  function __PROTO() 
+  {
+    
+  }
+  ;
+  try
+{    __PROTO.type = __MONSTER;}
+  catch (e)
+{    $ERROR('#0: __PROTO.type=__MONSTER does not lead to throwing exception');}
+
+  function __FACTORY() 
+  {
+    this.name = __PREDATOR;
+  }
+  ;
+  __FACTORY.prototype = __PROTO;
+  var __monster = new __FACTORY();
+  {
+    var __result1 = ! (__PROTO.isPrototypeOf(__monster));
+    var __expect1 = false;
+  }
+  {
+    var __result2 = __monster.type !== __MONSTER;
+    var __expect2 = false;
+  }
+  

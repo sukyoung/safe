@@ -1,0 +1,2 @@
+  var abstract = 1;
+  

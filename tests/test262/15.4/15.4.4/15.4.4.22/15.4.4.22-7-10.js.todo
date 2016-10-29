@@ -1,0 +1,13 @@
+  function testcase() 
+  {
+    var str = "initialValue is present";
+    return str === [].reduceRight((function () 
+    {
+      
+    }), str);
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

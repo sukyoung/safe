@@ -1,0 +1,10 @@
+  function __func() 
+  {
+    
+  }
+  ;
+  {
+    var __result1 = __func.prototype === undefined;
+    var __expect1 = false;
+  }
+  

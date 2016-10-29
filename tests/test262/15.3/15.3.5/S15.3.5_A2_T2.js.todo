@@ -1,0 +1,18 @@
+  {
+    var __result1 = (function (arg1, arg2) 
+    {
+      var x = arg1;
+      this.y = arg2;
+      return arg1 + arg2;
+    })("1", 2) !== "12";
+    var __expect1 = false;
+  }
+  {
+    var __result2 = typeof x !== "undefined";
+    var __expect2 = false;
+  }
+  {
+    var __result3 = y !== 2;
+    var __expect3 = false;
+  }
+  

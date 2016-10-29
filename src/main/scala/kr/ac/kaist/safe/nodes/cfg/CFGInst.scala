@@ -165,16 +165,6 @@ case class CFGAssert(
   override def toString: String = s"assert($expr)"
 }
 
-// cond(x)
-case class CFGCond(
-    override val ir: IRNode,
-    override val block: NormalBlock,
-    expr: CFGExpr,
-    isEvent: Boolean = false
-) extends CFGNormalInst(ir, block) {
-  override def toString: String = s"cond($expr)"
-}
-
 // catch(x)
 case class CFGCatch(
     override val ir: IRNode,
@@ -278,7 +268,7 @@ case class CFGCall(
     override val addr1: Address,
     override val addr2: Address
 ) extends CFGCallInst(ir, block, fun, thisArg, arguments, addr1, addr2) {
-  override def toString: String = s"call($fun, $thisArg, $arguments) @ #$addr1"
+  override def toString: String = s"call($fun, $thisArg, $arguments) @ #$addr1" // TODO #$addr2
 }
 
 // construct(e1, e2, e3)

@@ -1,0 +1,26 @@
+  function testcase() 
+  {
+    var arr = [0, 1, 2, ];
+    var lastIdx = 0;
+    var result = true;
+    var accessed = false;
+    function callbackfn(prevVal, curVal, idx, obj) 
+    {
+      accessed = true;
+      if (lastIdx !== idx)
+      {
+        result = false;
+      }
+      else
+      {
+        lastIdx++;
+      }
+    }
+    arr.reduce(callbackfn, 11);
+    return result && accessed;
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

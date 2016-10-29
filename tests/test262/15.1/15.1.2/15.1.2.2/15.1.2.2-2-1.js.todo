@@ -1,0 +1,9 @@
+  function testcase() 
+  {
+    return isNaN(parseInt("")) && parseInt("") !== parseInt("");
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

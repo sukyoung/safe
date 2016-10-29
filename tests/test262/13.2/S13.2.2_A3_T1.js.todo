@@ -1,0 +1,16 @@
+  function __FACTORY() 
+  {
+    
+  }
+  ;
+  __FACTORY.prototype = 1;
+  {
+    var __result1 = typeof __FACTORY.prototype !== 'number';
+    var __expect1 = false;
+  }
+  var __device = new __FACTORY();
+  {
+    var __result2 = ! (Object.prototype.isPrototypeOf(__device));
+    var __expect2 = false;
+  }
+  

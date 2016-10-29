@@ -1,0 +1,15 @@
+  function testcase() 
+  {
+  "use strict";
+    var f = (function () 
+    {
+      eval = 42;
+    });
+    f();
+    return true;
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

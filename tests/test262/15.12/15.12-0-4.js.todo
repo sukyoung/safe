@@ -1,0 +1,18 @@
+  function testcase() 
+  {
+    var o = JSON;
+    var i = 0;
+    for(var p in o)
+    {
+      i++;
+    }
+    if (i === 0)
+    {
+      return true;
+    }
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

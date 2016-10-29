@@ -1,0 +1,12 @@
+  function f() 
+  {
+  "use strict";
+    return gNonStrict();
+  }
+  ;
+  f.apply(fnGlobalObject());
+  function gNonStrict() 
+  {
+    return gNonStrict.caller || gNonStrict.caller.throwTypeError;
+  }
+  

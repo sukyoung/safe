@@ -1,0 +1,513 @@
+\chapter{CFG}
+This section describes each construct of the \safe CFG
+in both the BNF notation and its corresponding implementation.
+The implementation of CFG nodes is available at:
+\begin{verbatim}
+$SAFE_HOME/src/main/scala/kr/ac/kaist/safe/nodes/cfg/
+\end{verbatim}
+
+\section{Syntax of \CFG}
+\small
+\[
+\begin{array}{r@{~~}r@{~~}l@{}ll}
+\embox{cfg} \in \CFG & = & \powerset{\CFGFunction} & \\
+\multicolumn{3}{l}{f,\ \langle B, \hookrightarrow, C \rangle \in \CFGFunction \ =}\\
+\multicolumn{3}{r}{
+ \powerset{\CFGBlock} \times \powerset{\CFGEdge}
+\times \powerset{\CFGCallTriple}} & \\
+b \in \CFGBlock & = & \multicolumn{2}{@{}l}{\Entry \mid \Exit \mid \ExitExc \mid \Call \mid \AfterCall}\\
+&\mid& \multicolumn{2}{@{}l}{\AfterCatch \mid \NormalBlock \mid \ModelBlock} \\
+\NormalBlock & = & \CFGInst^+ & \\
+\CFGEdge & = & \CFGBlock \times \CFGBlock \times \EdgeType & \\
+\EdgeType & = & \EdgeNormal \mid \EdgeExc & \\
+C \in \CFGCallTriple & = & \Call \times \AfterCall \times \AfterCatch & \\
+
+i \in \CFGInst & = & \CFGNormalInst \mid \CFGCallInst &
+\\
+
+x \in \CFGId & = & \String \times \SF{VarKind} &
+\\
+
+s \in \String &&&\\
+
+\SF{VarKind} & ::= &
+\multicolumn{2}{@{} l}{
+\TT{GlobalVar} \mid \TT{PureLocalVar}}\\
+&  \mid & \TT{CapturedVar} \mid \TT{CapturedCatchVar}
+\\
+
+a \in \SF{Address} & = & \SF{Integer} &
+\\
+
+v \in \SF{EJSVal} & = &
+\multicolumn{2}{@{} l}{
+ \SF{Number} \mid \String \mid \SF{Boolean} \mid \SF{Null}}\\
+& \mid &\SF{Undefined}
+\end{array}
+\]
+
+\[
+\begin{array}{r@{~~}l@{~}l}
+\lefteqn{\!\!\!\!\!\!\!\!\!\!\!\!
+\CFGNormalInst}\\
+ ::= &
+x~\verb+:=+~\TT{alloc}\verb+(+ e^{?} \verb+)+ @ a
+& \SF{CFGAlloc}
+\\
+
+\mid & x~\verb+:=+~\TT{allocArray}\verb+(+n\verb+)+ @ a
+ & \SF{CFGAllocArray}
+\\
+
+\mid & x~\verb+:=+~\TT{allocArg}\verb+(+n\verb+)+ @ a
+ & \SF{CFGAllocArg}
+\\
+
+\mid & x~\verb+:=+~\TT{enterCode}\verb+(+e\verb+)+
+ & \SF{CFGEnterCode}
+\\
+
+\mid & x ~\verb+:=+~ e
+ & \SF{CFGExprStmt}
+\\
+
+\mid & x ~\verb+:=+~ \TT{delete}\verb+(+e\verb+)+
+ & \SF{CFGDelete}
+\\
+
+\mid & x ~\verb+:=+~ \TT{delete}\verb+(+e,e\verb+)+
+ & \SF{CFGDeleteProp}
+\\
+
+\mid & e\verb+[+e\verb+]+ ~\verb+:=+~ e
+ & \SF{CFGStore}
+\\
+
+\mid & e\verb+[+s\verb+]+ ~\verb+:=+~ e
+ & \SF{CFGStoreStringIdx}
+\\
+
+\mid & x ~\verb+:=+~ \TT{function} ~x^{?}\verb+(+f\verb+)+ @ \verb+(+a, a(, a)^{?}\verb+)+
+ & \SF{CFGFunExpr}
+\\
+
+\mid & \TT{assert}\verb+(+e\verb+)+
+ & \SF{CFGAssert}
+\\
+
+\mid & \TT{catch}\verb+(+x\verb+)+
+ & \SF{CFGCatch}
+\\
+
+\mid & \TT{return}\verb+(+e^{?}\verb+)+ 
+ & \SF{CFGReturn}
+\\
+
+\mid & \TT{throw}\verb+(+e\verb+)+
+ & \SF{CFGThrow}
+\\
+
+\mid & \TT{noop}
+ & \SF{CFGNoOp}
+\\
+
+%\mid & x ~\verb+:=+~\ensuremath{\diamond}x\verb+(+e^{*}\verb+)+ @ a^{?}
+\mid & x ~\verb+:=+~x\verb+(+e^{*}\verb+)+ (@ a)^{?}
+ & \SF{CFGInternalCall}
+\end{array}
+\]
+
+\[
+\begin{array}{r@{~~}l@{~}l}
+\lefteqn{\!\!\!\!\!\!\!\!\!\!\!\!
+\CFGCallInst}\\
+::= & \TT{call}\verb+(+e,e,e\verb+)+ @ \verb+(+a, a\verb+)+ & \SF{CFGCall}\\
+\mid & \TT{construct}\verb+(+e,e,e\verb+)+ @ \verb+(+a, a\verb+)+ & \SF{CFGConstruct}
+\\\\
+
+\lefteqn{\!\!\!\!\!\!\!\!\!\!\!\!
+e \in \CFGExpr}\\
+::= & x & \SF{CFGVarRef}\\
+\mid & e \inop e & \SF{CFGBin}\\
+\mid & \preop e & \SF{CFGUn}\\
+\mid & e\verb+[+e\verb+]+ & \SF{CFGLoad}\\
+\mid & \TT{this} & \SF{CFGThis}\\
+\mid & v  & \SF{CFGVal}
+\\\\
+
+\preop ::= & \multicolumn{2}{@{} l}{
+ \TT{void} \mid \TT{typeof} \mid \TT{+} \mid \TT{-} \mid \TT{\~} \mid \TT{!}}
+\\
+\inop ::= &
+\multicolumn{2}{@{} l}{
+ \TT{instanceof} \mid \TT{in} \mid \TT{|} \mid \TT{\&}
+               \mid \TT{\^} \mid \TT{<<} \mid \TT{>>} \mid \TT{>>>}
+\mid \TT{+} \mid \TT{-} \mid \TT{*} \mid \TT{/} \mid \TT{\%}}\\
+\mid & \multicolumn{2}{@{} l}{
+\TT{==} \mid \TT{!=} \mid \TT{===}
+\TT{!==} \mid \TT{<} \mid \TT{>} \mid \TT{<=} \mid \TT{>=}}
+\end{array}
+\]
+
+\begin{itemize}
+\item \Entry, \Exit, and \ExitExc blocks always uniquely exist for each \CFGFunction,
+and an \Entry block has no predecessor, \Exit and \ExitExc blocks have no successor.
+\begin{itemize}
+\item $\forall \langle B, \_, \_ \rangle \in \CFGFunction.$
+
+$\quad(\nexists\ \entry \in\Entry\cap B)$,
+
+$\quad(\nexists\ \exit \in \Exit \cap B)$,
+
+$\quad(\nexists\ \exitExc \in \ExitExc \cap B)$
+\item $\forall \langle B, \hookrightarrow, \_ \rangle \in \CFGFunction.$
+$\nexists b \in B.$ s.t.
+
+$(b \hookrightarrow \entry) \vee (\exit \hookrightarrow b) \vee (\exitExc \hookrightarrow b)$
+where $\entry \in \Entry,\ \exit \in \Exit,\ \exitExc \in \ExitExc$
+\end{itemize}
+
+\item Each edge connects 2 blocks in the same \CFGFunction.
+\begin{itemize}
+\item $\forall \langle B, \hookrightarrow, \_ \rangle \in \CFGFunction.\ \hookrightarrow\ \subseteq B \times B$
+\end{itemize}
+
+\item Each \CFGFunction records \Call, \AfterCall, and \AfterCatch
+without any edges between them, and the triple consisting of them is unique.
+\begin{itemize}
+\item $\forall \langle B, \_, C \rangle \in \CFGFunction.$
+
+$\forall \call \in \Call \cap B.\ $
+
+$\forall \acall \in \AfterCall \cap B.\ $
+
+$\forall \acatch \in \AfterCatch \cap B.\ $
+
+$\quad(\call, \_, \_),\ (\_, \acall, \_),\ (\_, \_, \acatch) \in C$
+\item $\forall \langle \_, \_, C \rangle \in \CFGFunction.$
+
+\mbox{$\forall (\call, \acall, \acatch), (\call', \acall', \acatch') \in C.$}
+
+$\quad\call = \call' \Leftrightarrow \acall = \acall'$
+
+$\phantom{\quad\call = \call' }\Leftrightarrow \acatch = \acatch'$
+\end{itemize}
+
+\item There is no instruction after \TT{return} in a block. There is no instruction before \TT{catch} in a block.
+\begin{itemize}
+\item $\forall b \in \NormalBlock.$
+
+$\quad(i_k \in b \wedge (i_k = \TT{return})) \rightarrow (\nexists i_{k'} \in b.\ k < k')$
+\item $\forall b \in \NormalBlock.$
+
+$\quad(i_k \in b \wedge (i_k = \TT{catch})) \rightarrow (\nexists i_{k'} \in b.\ k > k')$
+\end{itemize}
+\end{itemize}
+
+\section{\CFG Implementation}
+When a function $f$ expects a collection $B$ and we pass a singleton set $\{b\}$
+as its argument, we abuse the notation and simply write $f(b)$ instead of $f(\{b\})$.
+
+\subsection{Helper Functions}
+\[
+\begin{array}{l@{}l@{~}l}
+\toSeq(S) & : & \powerset{\Any} \rightarrow \Any^{*}\\
+& = & \text{convert a set of any elements into}\\
+& & \text{a sequence of them by an arbitrary order.}\\
+& & \\
+
+\fold(A)(b)(f) & : & \Any^{*} \times \Any' \times (\Any \times \Any' \rightarrow \Any') \rightarrow \Any'\\
+& = & \mbox{if}\ (\length(A) = 0)\ \mbox{then}\ b \\
+& & \mbox{else}\ \fold(\tailOf(A))(f(\headOf(A),b))(f)\\
+& & \\
+
+\iter(A)(f) & : & \Any^{*} \times (\Any \rightarrow \Unit) \rightarrow \Unit\\
+& = & \mbox{if}\ (\length(A) = 0)\ \mbox{then}\ \Unit \\
+& & \mbox{else}\ f(\headOf(A))\\
+& & \phantom{else} \iter(\tailOf(A))(f)\\
+\end{array}
+\]
+
+\vspace*{-2em}
+\[
+\begin{array}{l@{}l@{~}l}
+\iter(A)(idx)(f) & : & \Any^{*} \times \Integer \times (\Any \times \Integer \rightarrow \Unit)\\
+&& \rightarrow \Unit\\
+& = & \mbox{if}\ (\length(A) = 0)\ \mbox{then}\ \Unit \\
+& & \mbox{else}\ f(\headOf(A), idx)\\
+& & \phantom{else} \iter(\tailOf(A))(idx+1)(f)\\
+& & \\
+
+\getTail(B, \emph{f})\ & : & \CFGBlock^{*} \times  \CFGFunction \rightarrow \CFGBlock \\
+& = & \mbox{if}\ (\length(B) = 0)\ \mbox{then}\\
+& & \phantom{else} f.\emph{createBlock}\\
+& & \mbox{else}\ \mbox{if}\ (\length(B) = 1)\ \mbox{then}\\
+& & \phantom{else} \headOf(B) \\
+& & \mbox{else}\ b \letval f.\emph{createBlock}\\
+& & \phantom{else} \emph{cfg}.\emph{addEdge}(B, b)\\
+& & \phantom{else} b\\
+\end{array}
+\]
+
+\subsection{$\CFG$}
+\[
+\begin{array}{l@{}l@{~}l}
+\lefteqn{\new\ \CFG \ : \ \CFGId^{*} \rightarrow \CFG} \\
+\lefteqn{\new\ \CFG(\emph{globalVars})}\\
+& = & \text{let } \emph{cfg} \text{ be a new } \CFG\\
+& & \emph{cfg}.\emph{globalFunc} \\
+& & \quad \leftarrow \new\ \CFGFunction(\emph{cfg}, ``", \Nil, \emph{globalVars}, ``\text{top-level}")\\
+& & \emph{cfg}\\
+& & \\
+\end{array}
+\]
+\[
+\begin{array}{@{~}r@{~}l@{}l@{~}l}
+& \CFG & : &
+\begin{Bmatrix*}[l]
+\emph{globalFunc} & : & \SF{CFGFunction}\\
+\emph{createFunction} & : & \String \times \CFGId^{*} \times \CFGId^{*} \\
+&&\times\ \String \rightarrow \CFGFunction \\
+\emph{addEdge} & : & \powerset{\CFGBlock} \times \powerset{\CFGBlock}\\
+&& \times\ \EdgeType \rightarrow \Unit
+\end{Bmatrix*}
+\end{array}
+\]
+
+\[
+\begin{array}{l@{}l@{~}l}
+\lefteqn{\CFG.\emph{createFunction}(\emph{argsName}, \emph{argVars}, \emph{localVars}, \emph{name})}\\
+& = & \new\ \CFGFunction(\this, \emph{argsName}, \emph{argVars}, \emph{localVars}, \emph{name})\\
+& & \\
+
+\lefteqn{\CFG.\emph{addEdge}(B_1, B_2, \emph{ty} = \EdgeNormal)}\\
+& = & \iter(toSeq(B_1))(\lambda(b_1) \Rightarrow iter(toSeq(B_2))(\lambda(b_2) \Rightarrow \\
+& & \quad b_1.\emph{succs}(\emph{ty}) \leftarrow b_1.\emph{succs}(\emph{ty}) \cup \{b_2\} \\
+& & \quad b_2.\emph{preds}(\emph{ty}) \leftarrow b_2.\emph{preds}(\emph{ty}) \cup \{b_1\} \\
+& & )) \\
+\end{array}
+\]
+
+\subsection{$\CFGFunction$}
+\[
+\begin{array}{l@{}l@{~}l}
+\lefteqn{\new \ \CFGFunction \ : \ \CFG \times \String \times \CFGId^{*} \times \CFGId^{*} \times \String}\\
+\lefteqn{\phantom{\new \ \CFGFunction \ : \ }\rightarrow \CFGFunction}\\
+\lefteqn{\new\ \CFGFunction(\emph{cfg}, \emph{argsName}, \emph{argVars}, \emph{localVars}, \emph{name})}\\
+& = & \text{let } \emph{func} \text{ be a new } \CFGFunction\\
+& & \emph{entry} \leftarrow \new\ \Entry\\
+& & \emph{exitExc} \leftarrow \new\ \ExitExc\\
+& & \emph{exit} \leftarrow \new\ \Exit\\
+& & \emph{func}.\emph{cfg} \leftarrow \emph{cfg} \\
+& & \emph{func}.\emph{argumentsName} \leftarrow \emph{argsName} \\
+& & \emph{func}.\emph{argVars} \leftarrow \emph{argVars}\\
+& & \emph{func}.\emph{localVars} \leftarrow \emph{localVars}\\
+& & \emph{func}.\emph{entry} \leftarrow \emph{entry}\\
+& & \emph{func}.\emph{exit} \leftarrow \emph{exit}\\
+& & \emph{func}.\emph{exitExc} \leftarrow \emph{exitExc}\\
+& & \emph{func}.\emph{blocks} \leftarrow \{ \emph{entry}, \emph{exit}, \emph{exitExc} \}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~\\
+& & \emph{func}.\emph{captured} \leftarrow \emptyset\\
+& & \emph{func}\\
+\end{array}
+\]
+
+\vspace*{-2em}
+\[
+\begin{array}{@{~}r@{~}l@{}l@{~}l}
+& \CFGFunction & : &
+\begin{Bmatrix*}[l]
+\emph{cfg}  & : & \CFG \\
+\lefteqn{\emph{argumentsName} \ : \ \String} \\
+\emph{argVars} & : & \CFGId^{*} \\
+\emph{localVars} & : & \CFGId^{*} \\
+\emph{entry} & : & \Entry \\
+\emph{exit} & : & \Exit \\
+\emph{exitExc} & : & \ExitExc \\
+\emph{blocks} & : & \powerset{\CFGBlock}
+~~~~~~~~~~~~~~~~~\\
+\emph{captured} & : & \powerset{\CFGId} \\
+\lefteqn{\emph{createCall} \ : \ \CFGCallInst \times \CFGId \rightarrow \Call} \\
+\lefteqn{\emph{createBlock} \ : \ \Unit \rightarrow \CFGBlock} \\
+\lefteqn{\emph{createModelBlock} \ : \ \Any \rightarrow \ModelBlock} \\
+\end{Bmatrix*}
+\end{array}
+\]
+
+\hspace*{-2em}
+$
+\begin{array}{l}
+\CFGFunction.\emph{createCall}(\emph{callInst}, \emph{retVar})\\
+= \ \new\ \Call(\this, \emph{callInst}, \emph{retVar})\\\\
+
+\CFGFunction.\emph{createBlock}\\
+= \ \new\ \NormalBlock(\this)\\\\
+
+\CFGFunction.\emph{createModelBlock}(\emph{data})\\
+= \ \new\ \ModelBlock(\this, \emph{data})\\
+\end{array}
+$
+
+\subsection{$\CFGBlock$}
+$
+\begin{array}{l@{}l@{~}l}
+\lefteqn{\new \ \CFGBlock \ : \ \CFGFunction \rightarrow \CFGBlock} \\
+\new\ \CFGBlock(\emph{func})
+& = & \text{let } \emph{b} \text{ be a new } \CFGBlock\\
+& & \emph{b}.\emph{func} \leftarrow \emph{func}\\
+& & \emph{b}.\emph{succs} \leftarrow \emptyset\\
+& & \emph{b}.\emph{preds} \leftarrow \emptyset\\
+& & \emph{b}\\
+\end{array}
+$
+
+\hspace*{-2em}
+$\begin{array}{@{~}r@{~}l@{}l@{~}l}
+& \CFGBlock & : &
+\begin{Bmatrix*}[l]
+\emph{func} & : & \CFGFunction \\
+\emph{succs} & : & \EdgeType \mapsto \powerset{\CFGBlock} \\
+\emph{preds} & : & \EdgeType \mapsto \powerset{\CFGBlock} \\
+\end{Bmatrix*}\\
+\end{array}
+$
+
+\subsection{$\Call$}
+\[
+\begin{array}{l@{}l@{~}l}
+\lefteqn{\new \ \Call \ : \ \CFGFunction \times \CFGCallInst \times \CFGId \rightarrow \Call} \\
+\lefteqn{\new\ \Call(\emph{func}, \emph{callInst}, \emph{retVar})}\\
+& = & \text{let } \emph{call} \text{ be a new } \Call \text{ initialized to } \new\ \CFGBlock(\emph{func})\\
+& & \emph{call}.\emph{afterCall} \leftarrow \new\ \AfterCall(\emph{func}, \emph{call}, \emph{retVar})\\
+& & \emph{call}.\emph{afterCatch} \leftarrow \new\ \AfterCatch(\emph{func}, \emph{call})\\
+& & \emph{call}.\emph{callInst} \leftarrow \emph{callInst}\\
+& & \emph{call}\\\\
+\lefteqn{ \Call \ : \
+\begin{Bmatrix*}[l]
+\emph{afterCall} & : & \AfterCall\\
+\emph{afterCatch} & : & \AfterCatch\\
+\emph{callInst} & : & \CFGCallInst\\
+\end{Bmatrix*}
+}
+\end{array}
+\]
+
+\subsection{$\AfterCall$}
+$
+\begin{array}{l@{}l@{~}l}
+\lefteqn{\new \ \AfterCall \ : \ \CFGFunction \times \Call \times \CFGId \rightarrow \AfterCall} \\
+\lefteqn{\new\ \AfterCall(\emph{func}, \emph{call}, \emph{retVar})}\\
+& = & \text{let } \emph{acall} \text{ be a new } \AfterCall \text{ initialized to}\\
+&& \quad\ \ \new\ \CFGBlock(\emph{func})\\
+& & \emph{acall}.\emph{call} \leftarrow \emph{call}\\
+& & \emph{acall}.\emph{retVar} \leftarrow \emph{retVar}\\
+& & \emph{acall}\\\\
+\lefteqn{\AfterCall \ : \
+\begin{Bmatrix*}[l]
+\emph{call} & : & \Call \\
+\emph{retVar} & : & \CFGId \\
+\end{Bmatrix*}}
+\end{array}
+$
+
+\subsection{$\AfterCatch$}
+$
+\begin{array}{l@{}l@{~}l}
+\lefteqn{\new \ \AfterCatch \ : \ \CFGFunction \times \Call \rightarrow \AfterCatch}\\
+\lefteqn{\new\ \AfterCatch(\emph{func}, \emph{call})}\\
+& = & \text{let } \emph{acatch} \text{ be a new } \AfterCatch \text{ initialized to }\\
+& & \quad\ \ \new\ \CFGBlock(\emph{func})\\
+& & \emph{acatch}.\emph{call} \leftarrow \emph{call}\\
+& & \emph{acatch}\\
+\end{array}
+$
+
+\noindent
+$
+\begin{array}{@{~}r@{~}l@{}l@{~}l}
+\\
+& \AfterCatch & : &
+\begin{Bmatrix*}[l]
+\emph{call} & : & \Call \\
+\end{Bmatrix*}\\
+\end{array}
+$
+
+\subsection{$\NormalBlock$}
+$
+\begin{array}{l@{}l@{~}l}
+\lefteqn{\new \ \NormalBlock \ : \ \CFGFunction \rightarrow \NormalBlock}\\
+\lefteqn{\new\ \NormalBlock(\emph{func})}\\
+& = & \text{let } \emph{b} \text{ be a new } \NormalBlock \text{ initialized to }\\
+& & \quad\ \ \new\ \CFGBlock(\emph{func})\\
+& & \emph{b}.\emph{insts} \leftarrow \Nil \\
+& & \emph{b}\\
+\end{array}
+$
+
+\noindent
+$
+\begin{array}{@{~}r@{~}l@{}l@{~}l}
+\\
+& \NormalBlock & : &
+\begin{Bmatrix*}[l]
+\emph{insts} & : & \CFGInst^{*} \\
+\emph{createInst} & : & \CFGInst \rightarrow \Unit \\
+\end{Bmatrix*}\\
+\end{array}
+$
+
+\noindent
+$
+\begin{array}{l}
+\\
+\NormalBlock.\emph{createInst}(\emph{inst})\\
+= \ \this.\emph{insts} \leftarrow \this.\emph{insts} :: \emph{inst}\\
+\end{array}
+$
+
+\subsection{$\ModelBlock$}
+$
+\begin{array}{l@{}l@{~}l}
+\lefteqn{\new \ \ModelBlock \ : \ \CFGFunction \times \Any \rightarrow \ModelBlock}\\
+\lefteqn{\new\ \ModelBlock(\emph{func}, \emph{data})}\\
+& = & \text{let } \emph{modelB} \text{ be a new } \ModelBlock \text{ initialized to }\\
+& & \quad\ \ \new\ \CFGBlock(\emph{func})\\
+& & \emph{modelB}.\emph{data} \leftarrow \emph{data} \\
+& & \emph{modelB}\\
+\end{array}
+$
+
+\noindent
+$
+\begin{array}{@{~}r@{~}l@{}l@{~}l}
+\\
+& \ModelBlock & : &
+\begin{Bmatrix*}[l]
+\emph{data} & : & \Any \\
+\end{Bmatrix*}\\
+\end{array}
+$
+
+\subsection{$\CFGId$}
+$
+\begin{array}{l@{}l@{~}l}
+\lefteqn{\new \ \CFGId \ : \ \String \times \VarKind \rightarrow \CFGId}\\
+\lefteqn{\new\ \CFGId(\emph{name}, \emph{kind})}\\
+& = & \text{let } \emph{id} \text{ be a new } \CFGId\\
+& & \emph{id}.\emph{name} \leftarrow \emph{name} \\
+& & \emph{id}.\emph{kind} \leftarrow \emph{kind} \\
+& & \emph{id}\\
+\end{array}
+$
+
+\noindent
+$
+\begin{array}{@{~}r@{~}l@{}l@{~}l}
+& \CFGId & : &
+\begin{Bmatrix*}[l]
+\emph{name} & : & \String\\
+\emph{kind} & : & \VarKind\\
+\end{Bmatrix*}\\
+\end{array}
+$

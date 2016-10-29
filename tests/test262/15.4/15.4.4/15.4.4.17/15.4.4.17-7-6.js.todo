@@ -1,0 +1,22 @@
+  function testcase() 
+  {
+    function callbackfn(val, idx, obj) 
+    {
+      delete arr[4];
+      if (val < 5)
+        return false;
+      else
+        return true;
+    }
+    Array.prototype[4] = 5;
+    var arr = [1, 2, 3, 4, 5, ];
+    var res = arr.some(callbackfn);
+    delete Array.prototype[4];
+    if (res === true)
+      return true;
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

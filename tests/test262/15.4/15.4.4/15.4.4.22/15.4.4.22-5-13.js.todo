@@ -1,0 +1,33 @@
+  function testcase() 
+  {
+    var obj = {
+      0 : 11,
+      1 : 12
+    };
+    Object.defineProperty(obj, "length", {
+      get : (function () 
+      {
+        return {
+          toString : (function () 
+          {
+            throw new SyntaxError();
+          })
+        };
+      }),
+      configurable : true
+    });
+    try
+{      Array.prototype.reduceRight.call(obj, (function () 
+      {
+        
+      }));
+      return false;}
+    catch (ex)
+{      return ! (ex instanceof TypeError);}
+
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

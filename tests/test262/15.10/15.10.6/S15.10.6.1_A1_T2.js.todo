@@ -1,0 +1,11 @@
+  __FACTORY = RegExp.prototype.constructor;
+  __instance = new __FACTORY;
+  {
+    var __result1 = (__instance instanceof RegExp) !== true;
+    var __expect1 = false;
+  }
+  {
+    var __result2 = __instance.constructor !== RegExp;
+    var __expect2 = false;
+  }
+  

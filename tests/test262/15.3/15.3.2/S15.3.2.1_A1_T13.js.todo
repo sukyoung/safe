@@ -1,0 +1,12 @@
+  try
+{    var f = new Function({
+      
+    });
+    $FAIL('#1: test failed with error ' + e);}
+  catch (e)
+{    {
+      var __result1 = ! (e instanceof SyntaxError);
+      var __expect1 = false;
+    }}
+
+  

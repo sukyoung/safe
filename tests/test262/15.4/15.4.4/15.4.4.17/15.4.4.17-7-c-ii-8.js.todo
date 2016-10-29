@@ -1,0 +1,22 @@
+  function testcase() 
+  {
+    function callbackfn(val, idx, obj) 
+    {
+      if (idx === 0)
+      {
+        obj[idx + 1] = 11;
+      }
+      return val > 10;
+    }
+    var obj = {
+      0 : 9,
+      1 : 8,
+      length : 2
+    };
+    return Array.prototype.some.call(obj, callbackfn);
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

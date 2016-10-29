@@ -1,0 +1,6 @@
+  var aString = new String("test string");
+  {
+    var __result1 = aString.search("String") !== - 1;
+    var __expect1 = false;
+  }
+  

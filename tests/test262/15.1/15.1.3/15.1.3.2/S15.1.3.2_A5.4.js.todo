@@ -1,0 +1,5 @@
+  {
+    var __result1 = decodeURIComponent.length !== 1;
+    var __expect1 = false;
+  }
+  

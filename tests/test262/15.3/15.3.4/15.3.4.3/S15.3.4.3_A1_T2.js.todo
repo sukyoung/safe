@@ -1,0 +1,21 @@
+  function FACTORY() 
+  {
+    
+  }
+  ;
+  FACTORY.prototype = Function.prototype;
+  var obj = new FACTORY;
+  {
+    var __result1 = typeof obj.apply !== "function";
+    var __expect1 = false;
+  }
+  try
+{    obj.apply();
+    $FAIL('#2: If the object does not have a [[Call]] property, a TypeError exception is thrown');}
+  catch (e)
+{    {
+      var __result2 = ! (e instanceof TypeError);
+      var __expect2 = false;
+    }}
+
+  

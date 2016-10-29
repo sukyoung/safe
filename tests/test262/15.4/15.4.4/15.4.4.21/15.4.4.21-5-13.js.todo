@@ -1,0 +1,34 @@
+  function testcase() 
+  {
+    function callbackfn(prevVal, curVal, idx, obj) 
+    {
+      return (curVal > 10);
+    }
+    var obj = {
+      0 : 11,
+      1 : 12
+    };
+    Object.defineProperty(obj, "length", {
+      get : (function () 
+      {
+        return {
+          toString : (function () 
+          {
+            throw new SyntaxError();
+          })
+        };
+      }),
+      configurable : true
+    });
+    try
+{      Array.prototype.reduce.call(obj, callbackfn);
+      return false;}
+    catch (ex)
+{      return ! (ex instanceof TypeError);}
+
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

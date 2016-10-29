@@ -1,0 +1,14 @@
+  {
+    var __result1 = encodeURIComponent.hasOwnProperty('length') !== true;
+    var __expect1 = false;
+  }
+  delete encodeURIComponent.length;
+  {
+    var __result2 = encodeURIComponent.hasOwnProperty('length') !== true;
+    var __expect2 = false;
+  }
+  {
+    var __result3 = encodeURIComponent.length === undefined;
+    var __expect3 = false;
+  }
+  

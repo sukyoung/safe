@@ -1,0 +1,13 @@
+  var __string = "Boston, MA 02134";
+  var __matches = ["02134", ];
+  var __re = /([\d]{5})([-\ ]?[\d]{4})?$/g;
+  __re.lastIndex = __string.lastIndexOf("0");
+  {
+    var __result1 = __string.match(__re).length !== __matches.length;
+    var __expect1 = false;
+  }
+  {
+    var __result2 = __string.match(__re)[0] !== __matches[0];
+    var __expect2 = false;
+  }
+  

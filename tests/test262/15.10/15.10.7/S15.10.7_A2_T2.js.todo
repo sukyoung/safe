@@ -1,0 +1,9 @@
+  try
+{    $ERROR('#1.1: new new RegExp throw TypeError. Actual: ' + (new new RegExp));}
+  catch (e)
+{    {
+      var __result1 = (e instanceof TypeError) !== true;
+      var __expect1 = false;
+    }}
+
+  

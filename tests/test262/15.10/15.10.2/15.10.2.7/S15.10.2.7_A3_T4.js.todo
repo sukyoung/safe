@@ -1,0 +1,6 @@
+  __executed = /\s+java\s+/.test("java\n\nobject");
+  {
+    var __result1 = __executed;
+    var __expect1 = false;
+  }
+  

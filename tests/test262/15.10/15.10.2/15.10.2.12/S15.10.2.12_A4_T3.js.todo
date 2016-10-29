@@ -1,0 +1,23 @@
+  var regexp_W = /\W/;
+  var result = true;
+  for (alpha = 0x30;alpha <= 0x39;alpha++)
+  {
+    if (regexp_W.exec(String.fromCharCode(alpha)) !== null)
+    {
+      result = false;
+    }
+  }
+  {
+    var __result1 = result !== true;
+    var __expect1 = false;
+  }
+  {
+    var __result2 = regexp_W.exec("_") !== null;
+    var __expect2 = false;
+  }
+  var arr = regexp_W.exec(" ");
+  {
+    var __result3 = (arr === null) || (arr[0] !== "\u0020");
+    var __expect3 = false;
+  }
+  

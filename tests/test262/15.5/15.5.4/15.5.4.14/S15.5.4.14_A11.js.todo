@@ -1,0 +1,9 @@
+  {
+    var __result1 = ! (String.prototype.split.hasOwnProperty("length"));
+    var __expect1 = false;
+  }
+  {
+    var __result2 = String.prototype.split.length !== 2;
+    var __expect2 = false;
+  }
+  

@@ -1,0 +1,199 @@
+\chapter{AST}
+This section describes each construct of the JavaScript language
+in both the BNF notation and its corresponding implementation.
+The implementation of AST nodes is available at:
+\begin{verbatim}
+$SAFE_HOME/src/main/scala/kr/ac/kaist/safe/nodes/
+           ast/
+\end{verbatim}
+\small
+\[
+\begin{array}{llll}
+\pgm & ::=  & \fd^*\ \vd^*\ \stmt^* \\
+&& \mtt{Program(body:~TopLevel)}\\
+    &&\mtt{TopLevel(fds:~List[FunDecl], vds:~List[VarDecl],}\\
+&&\mtt{\phantom{TopLevel(}stmts:~List[SourceElements])}\\\\
+
+\fd &::=& {\tt function} \ f \verb+(+(x\verb+,+)^*\verb+)+ \ \verb+{+\fd^*\ \vd^*\ \stmt^*\verb+}+\\
+&& \mtt{FunDecl(ftn:~Functional, strict:~Boolean)}\\
+&& \mtt{Functional(fds:~List[FunDecl],}\\
+&&\mtt{\phantom{Functional(}vds:~List[VarDecl],}\\
+&&\mtt{\phantom{Functional(}stmts:~SourceElements, name:~Id,}\\
+&&\mtt{\phantom{Functional(}params:~List[Id], body:~String)}\\\\
+
+\vd &::=& x \ ({\tt =} \ \expr)^? \\
+&& \mtt{VarDecl(name:~Id, expr:~Option[Expr],}\\
+&& \mtt{\phantom{VarDecl(}strict:~Boolean)}\\\\
+
+\stmt &::=& \verb+{+\stmt^*\verb+}+ \\
+&& \mtt{ABlock(stmts:~List[Stmt], internal:~Boolean)}\\
+& \mid & {\tt var} \ \vd(\verb+,+ \vd)^* \verb+;+ \\
+&& \mtt{VarStmt(vds:~List[VarDecl])}\\
+& \mid & \verb+;+ \\
+&& \mtt{EmptyStmt()}\\
+& \mid & \expr \verb+;+ \\
+&& \mtt{ExprStmt(expr:~Expr, internal:~Boolean)}\\
+& \mid & {\tt if} \ \verb+(+\expr\verb+)+ \ \stmt \ ({\tt else} \ \stmt)^?\\
+&& \mtt{If(cond:~Expr, trueBranch:~Stmt,}\\
+&&\mtt{\phantom{If(}falseBranch:~Option[Stmt])}\\
+& \mid &  {\tt switch} \ \verb+(+\expr\verb+)+ \ \verb+{+\cc^* \ ({\tt default} \verb+:+ \stmt^{*})^? \ \cc^* \verb+}+\\
+&& \mtt{Switch(cond:~Expr, frontCases:~List[Case],}\\
+&&\mtt{\phantom{Switch(}defopt:~Option[List[Stmt]],}\\
+&&\mtt{\phantom{Switch(}backCases:~List[Case])}\\
+& \mid & {\tt do} \ \stmt \ {\tt while} \ \verb+(+\expr\verb+)+ \verb+;+ \\
+&& \mtt{DoWhile(body:~Stmt, cond:~Expr)}\\
+  &\mid& {\tt while} \ \verb+(+\expr\verb+)+ \ \stmt \\
+&& \mtt{While(cond:~Expr, body:~Stmt)}\\
+\end{array}
+\]
+
+\[
+\begin{array}{llll}
+  &\mid& {\tt for} \ \verb+(+\expr^?\verb+;+ \expr^?\verb+;+ \expr^? \verb+)+ \ \stmt\\
+&& \mtt{For(init:~Option[Expr], cond:~Option[Expr],}\\
+&&\mtt{\phantom{For(}action:~Option[Expr], body:~Stmt)}\\
+  &\mid& {\tt for} \ \verb+(+ \lhs \ {\tt in} \ \expr \verb+)+ \ \stmt \\
+&&\mtt{ForIn(lhs:~LHS, expr:~Expr, body:~Stmt)}\\
+  &\mid& {\tt for} \ \verb+(+{\tt var} \ \vd(\verb+,+ \vd)^*\verb+;+ \expr^?\verb+;+ \expr^?\verb+)+ \ \stmt\\
+&& \mtt{ForVar(vars:~List[VarDecl], cond:~Option[Expr],}\\
+&&\mtt{\phantom{ForVar(}action:~Option[Expr], body:~Stmt)}\\
+&\mid& {\tt for} \ \verb+(+{\tt var} \ \vd \ {\tt in} \ \expr \verb+)+ \ \stmt \\
+&& \mtt{ForVarIn(vd:~VarDecl, expr:~Expr, body:~Stmt)}\\
+& \mid & {\tt continue} \  \myid^{?} \verb+;+ \\
+&& \mtt{Continue(target:~Option[Label])}\\
+& \mid & {\tt break} \  \myid^{?} \verb+;+ \\
+&& \mtt{Break(target:~Option[Label])}\\
+& \mid & {\tt return} \ \expr^? \verb+;+ \\
+&& \mtt{Return(expr:~Option[Expr])}\\
+& \mid & {\tt with} \ \verb+(+\expr\verb+)+ \ \stmt \\
+&& \mtt{With(expr:~Expr, stmt:~Stmt)}\\
+& \mid & l \; \verb+:+ \; \stmt \\
+&& \mtt{LabelStmt(label:~Label, stmt:~Stmt)}\\
+& \mid & {\tt throw} \ \expr \verb+;+ \\
+&& \mtt{Throw(expr:~Expr)}\\
+
+& \mid &
+{\tt try} \verb+{+\stmt^*\verb+}+ ({\tt catch} \verb+(+\myid\verb+)+ \verb+{+\stmt^*\verb+}+)^? ({\tt finally} \verb+{+\stmt^*\verb+}+)^?\\
+&& \mtt{Try(body:~List[Stmt], catchBlock:~Option[Catch],}\\
+&& \mtt{\phantom{Try(}fin:~Option[List[Stmt]])}\\
+&& \mtt{Catch(id:~Id, body:~List[Stmt])}\\
+& \mid & {\tt debugger} \verb+;+ \\
+&& \mtt{Debugger()}\\\\
+
+\cc &::=& {\tt case} \ \expr \; \verb+:+ \; \stmt^{*} \\
+&& \mtt{Case(cond:~Expr, body:~List[Stmt])}\\\\
+
+\expr &::=& \expr\verb+,+ \ \expr \\
+&& \mtt{ExprList(exprs:~List[Expr])}\\
+  &\mid& \expr \ \verb+?+ \ \expr \ \verb+:+ \ \expr \\
+&& \mtt{Cond(cond:~Expr, trueBranch:~Expr,}\\
+&& \mtt{\phantom{Cond(}falseBranch:~Expr)}\\
+  &\mid& \expr \ \inop \ \expr \\
+&& \mtt{InfixOpApp(left:~Expr, op:~Op, right:~Expr)}\\
+  &\mid& \preop \ \expr \\
+&& \mtt{PrefixOpApp(op:~Op, right:~Expr)}\\
+  &\mid& \lhs \ \postop \\
+&& \mtt{UnaryAssignOpApp(lhs:~LHS, op:~Op)}\\
+  &\mid& \lhs \ \aop \ \expr \\
+&& \mtt{AssignOpApp(lhs:~LHS, op:~Op, right:~Expr)}\\
+  &\mid& \lhs \\
+&& \mtt{LHS()}\\\\
+\lhs &::=& \lit \\
+&& \mtt{Literal()}\\
+ &\mid& \myid \\
+&& \mtt{VarRef(id:~Id)}\\
+ &\mid& \verb+[+ (\expr^?\verb+,+)^* \ \verb+]+ \\
+&& \mtt{ArrayExpr(elements:~List[Option[Expr]])}\\
+ &\mid& \verb+{+ (\member\verb+,+)^* \verb+}+ \\
+&& \mtt{ObjectExpr(members:~List[Member]}\\
+ &\mid& \verb+(+ \expr \verb+)+ \\
+&& \mtt{Parenthesized(expr:~Expr)}\\
+\end{array}
+\]
+
+\[
+\begin{array}{llll}
+ & \mid & {\tt function} \ \myid^?  \verb+(+(\myid\verb+,+)^*\verb+)+ \ \verb+{+\fd^*\ \vd^*\ \stmt^*\verb+}+ \\
+&&\mtt{FunExpr(ftn:~Functional)}\\
+ &\mid& \lhs \verb+[+ \expr \verb+]+ \\
+&& \mtt{Bracket(obj:~LHS, index:~Expr)}\\
+ &\mid& \lhs \verb+.+ \myid \\
+&& \mtt{Dot(obj:~LHS, member:~Id)}\\
+ &\mid& {\tt new} \ \lhs \\
+&& \mtt{New(lhs:~LHS)}\\
+ &\mid& \lhs \verb+(+ (\expr\verb+,+)^* \verb+)+ \\
+&& \mtt{FunApp(fun:~LHS, args:~List[Expr])} \\ \\
+\lit &::=& {\tt this} \\
+&& \mtt{This()}\\
+ &\mid& {\tt null} \\
+&& \mtt{Null()}\\
+ &\mid& {\tt true} \\
+&& \mtt{Bool(bool:~Boolean)}\\
+ &\mid& {\tt false} \\
+&& \mtt{Bool(bool:~Boolean)}\\
+ &\mid& \num \\
+&& \mtt{DoubleLiteral(text:~String, num:~Double)}\\
+&&\mtt{IntLiteral(intVal:~BigInteger, radix:~Integer)}\\
+ &\mid& \str \\
+&& \mtt{StringLiteral(quote:~String, escaped:~String)}\\
+ &\mid& \reg \\
+&& \mtt{RegularExpression(body:~String, flag:~String)}\\ \\
+
+\member &::=& \prop \ \verb+:+ \ \expr \\
+&& \mtt{Field(prop:~Property, expr:~Expr)}\\
+ &\mid& {\tt get}\ \prop \verb+() {+ \fd^*\ \vd^*\ \stmt^* \verb+}+ \\
+&& \mtt{GetProp(prop:~Property, ftn:~Functional)}\\
+ &\mid& {\tt set}\ \prop \verb+(+ \myid \verb+) {+ \fd^*\ \vd^*\ \stmt^* \verb+}+\\
+&& \mtt{SetProp(prop:~Property, ftn:~Functional)}\\ \\
+
+\prop &::= & \myid \\
+&& \mtt{PropId(id:~Id)}\\
+ &\mid& \str \\
+&& \mtt{PropStr(str:~String)}\\
+ &\mid& \num \\
+&& \mtt{PropNum(num:~NumberLiteral)}\\
+\end{array}
+\]
+
+\[
+\begin{array}{l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l@{\;}l}
+\aop &::=&
+\verb+=+ & \mid &
+\verb+*=+ & \mid &
+\verb+/=+ & \mid &
+\verb+%=+ & \mid &
+\verb!+=! & \mid &
+\verb+-=+ & \mid &
+\verb+[[=+ & \mid &
+\verb+>>=+ & \mid &
+\verb+>>>=+ & \mid &
+\verb+&=+ & \mid &
+\verb+^=+ & \mid &
+\verb+|=+
+\\
+
+\inop &::=& \verb+&&+ & \mid & \verb+||+ & \mid & \verb+|+ & \mid & \verb+&+ & \mid & \verb+^+ & \mid & \verb+[[+ & \mid & \verb+>>+ & \mid & \verb+>>>+ 
+ & \mid & \verb!+! & \mid & \verb+-+ & \mid & \verb+*+ & \mid & \verb+/+ \\
+ & \mid & \verb+%+
+ &\mid& \verb+==+ & \mid & \verb+!=+ & \mid & \verb+===+ & \mid & \verb+!==+ & \mid & \verb+[+ & \mid & \verb+>+ & \mid & \verb+[=+
+ & \mid & \verb+>=+ \\
+ & \mid &
+\lefteqn{
+ {\tt instanceof} \ \mid \ {\tt in} }\\
+
+\preop &::=& \verb!++! & \mid & \verb+--+ & \mid & \verb+~+ & \mid & \verb+!+ & \mid & \verb!+! & \mid & \verb+-+ & \mid &
+\lefteqn{
+ {\tt delete} \ \mid \ {\tt void} \ \mid \ {\tt typeof} }\\
+
+\postop &::=& \verb!++! & \mid & \verb+--+\\[1em]
+
+\end{array}
+\]
+
+Note that after the \verb!Hoister! transformation of the \verb!astRewriter! phase,
+ASTs should have the following invariants:
+\begin{itemize}
+\item The {\tt expr} field of {\tt VarDecl} should be {\tt None}.
+\item {\tt VarStmt}, {\tt ForVar}, and {\tt ForVarIn} should be removed.
+\item {\tt StmtUnit} is an internally generated statement unit.
+\end{itemize}

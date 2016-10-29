@@ -1,0 +1,9 @@
+  var f = (function () 
+  {
+    
+  });
+  {
+    var __result1 = Object.prototype.toString.call(f) !== "[object Function]";
+    var __expect1 = false;
+  }
+  

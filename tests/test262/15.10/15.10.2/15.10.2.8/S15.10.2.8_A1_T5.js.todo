@@ -1,0 +1,6 @@
+  __executed = /[Jj]ava([Ss]cript)?(?=\:)/.test("rhino is JavaScript engine");
+  {
+    var __result1 = __executed;
+    var __expect1 = false;
+  }
+  

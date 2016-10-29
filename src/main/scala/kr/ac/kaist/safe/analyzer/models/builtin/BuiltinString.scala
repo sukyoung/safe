@@ -21,7 +21,7 @@ import kr.ac.kaist.safe.analyzer.models._
 import kr.ac.kaist.safe.util.SystemAddr
 
 object BuiltinStringHelper {
-  def typeConvert(args: AbsValue, st: State): AbsString = {
+  def typeConvert(args: AbsValue, st: AbsState): AbsString = {
     val h = st.heap
     val argV = Helper.propLoad(args, Set(AbsString("0")), h)
     val argL = Helper.propLoad(args, Set(AbsString("length")), h).pvalue.numval
@@ -31,7 +31,7 @@ object BuiltinStringHelper {
     TypeConversionHelper.ToString(argV) + emptyS
   }
 
-  def getValueNonGeneric(thisV: AbsValue, h: Heap): AbsString = {
+  def getValueNonGeneric(thisV: AbsValue, h: AbsHeap): AbsString = {
     thisV.pvalue.strval + thisV.locset.foldLeft(AbsString.Bot)((res, loc) => {
       if ((AbsString("String") <= h.get(loc)(IClass).value.pvalue.strval))
         res + h.get(loc)(IPrimitiveValue).value.pvalue.strval
@@ -40,18 +40,18 @@ object BuiltinStringHelper {
   }
 
   val constructor = BasicCode(argLen = 1, code = (
-    args: AbsValue, st: State
+    args: AbsValue, st: AbsState
   ) => {
     val num = typeConvert(args, st)
     val addr = SystemAddr("String<instance>")
     val state = st.oldify(addr)
     val loc = Loc(addr, Recent)
-    val heap = state.heap.update(loc, AbsObjectUtil.newStringObj(num))
-    (State(heap, state.context), State.Bot, AbsValue(loc))
+    val heap = state.heap.update(loc, AbsObject.newStringObj(num))
+    (AbsState(heap, state.context), AbsState.Bot, AbsValue(loc))
   })
 
   val valueOf = BasicCode(argLen = 0, (
-    args: AbsValue, st: State
+    args: AbsValue, st: AbsState
   ) => {
     val h = st.heap
     val thisV = st.context.thisBinding
@@ -61,7 +61,7 @@ object BuiltinStringHelper {
   })
 
   val toLowerCase = BasicCode(argLen = 0, (
-    args: AbsValue, st: State
+    args: AbsValue, st: AbsState
   ) => {
     val h = st.heap
     // 1. Call CheckObjectCoercible passing the this value as its argument.
@@ -72,16 +72,16 @@ object BuiltinStringHelper {
     // 4. Return L.
     val thisV = st.context.thisBinding
     val s = TypeConversionHelper.ToString(thisV, h).toLowerCase
-    (st, State.Bot, AbsValue(s))
+    (st, AbsState.Bot, AbsValue(s))
   })
 
   val toUpperCase = BasicCode(argLen = 0, (
-    args: AbsValue, st: State
+    args: AbsValue, st: AbsState
   ) => {
     val h = st.heap
     val thisV = st.context.thisBinding
     val s = TypeConversionHelper.ToString(thisV, h).toUpperCase
-    (st, State.Bot, AbsValue(s))
+    (st, AbsState.Bot, AbsValue(s))
   })
 
   val typeConversion = PureCode(argLen = 1, code = typeConvert)
@@ -107,7 +107,7 @@ object BuiltinString extends FuncModel(
     NormalProp("fromCharCode", FuncModel(
       name = "String.fromCharCode",
       code = BasicCode(argLen = 1, (
-        args: AbsValue, st: State
+        args: AbsValue, st: AbsState
       ) => {
         val h = st.heap
         val argL = Helper.propLoad(args, Set(AbsString("length")), h).pvalue.numval
@@ -124,7 +124,7 @@ object BuiltinString extends FuncModel(
           // XXX: give up the precision! (Room for the analysis precision improvement!)
           case _ => AbsString.Top
         })
-        (st, State.Bot, AbsValue(s))
+        (st, AbsState.Bot, AbsValue(s))
       })
     ), T, F, T)
   )
@@ -161,7 +161,7 @@ object BuiltinStringProto extends ObjModel(
     NormalProp("charAt", FuncModel(
       name = "String.prototype.charAt",
       code = BasicCode(argLen = 1, (
-        args: AbsValue, st: State
+        args: AbsValue, st: AbsState
       ) => {
         val h = st.heap
         // 1. Call CheckObjectCoercible passing the this value as its argument.
@@ -184,7 +184,7 @@ object BuiltinStringProto extends ObjModel(
         // namely the character at position position, where the first (leftmost) character
         // in S is considered to be at position 0, the next one at position 1, and so on.
         val res = emptyS + s.charAt(pos)
-        (st, State.Bot, AbsValue(res))
+        (st, AbsState.Bot, AbsValue(res))
       })
     ), T, F, T),
 
@@ -192,7 +192,7 @@ object BuiltinStringProto extends ObjModel(
     NormalProp("charCodeAt", FuncModel(
       name = "String.prototype.charCodeAt",
       code = BasicCode(argLen = 1, (
-        args: AbsValue, st: State
+        args: AbsValue, st: AbsState
       ) => {
         val h = st.heap
         // 1. Call CheckObjectCoercible passing the this value as its argument.
@@ -215,7 +215,7 @@ object BuiltinStringProto extends ObjModel(
         // the character at position position in the String S, where the first (leftmost)
         // character in S is considered to be at position 0, the next one at position 1, and so on.
         val res = emptyN + s.charCodeAt(pos)
-        (st, State.Bot, AbsValue(res))
+        (st, AbsState.Bot, AbsValue(res))
       })
     ), T, F, T),
 
@@ -223,7 +223,7 @@ object BuiltinStringProto extends ObjModel(
     NormalProp("concat", FuncModel(
       name = "String.prototype.concat",
       code = BasicCode(argLen = 1, (
-        args: AbsValue, st: State
+        args: AbsValue, st: AbsState
       ) => {
         val h = st.heap
         // 1. Call CheckObjectCoercible passing the this value as its argument.
@@ -248,7 +248,7 @@ object BuiltinStringProto extends ObjModel(
           // XXX: give up the precision! (Room for the analysis precision improvement!)
           case _ => AbsString.Top
         }
-        (st, State.Bot, AbsValue(res))
+        (st, AbsState.Bot, AbsValue(res))
       })
     ), T, F, T),
 
@@ -256,7 +256,7 @@ object BuiltinStringProto extends ObjModel(
     NormalProp("indexOf", FuncModel(
       name = "String.prototype.indexOf",
       code = BasicCode(argLen = 1, (
-        args: AbsValue, st: State
+        args: AbsValue, st: AbsState
       ) => {
         val h = st.heap
         // 1. Call CheckObjectCoercible passing the this value as its argument.
@@ -294,7 +294,7 @@ object BuiltinStringProto extends ObjModel(
             else
               AbsNumber.Top
         }
-        (st, State.Bot, AbsValue(n))
+        (st, AbsState.Bot, AbsValue(n))
       })
     ), T, F, T),
 
@@ -302,7 +302,7 @@ object BuiltinStringProto extends ObjModel(
     NormalProp("lastIndexOf", FuncModel(
       name = "String.prototype.lastIndexOf",
       code = BasicCode(argLen = 1, (
-        args: AbsValue, st: State
+        args: AbsValue, st: AbsState
       ) => {
         val h = st.heap
         // 1. Call CheckObjectCoercible passing the this value as its argument.
@@ -344,7 +344,7 @@ object BuiltinStringProto extends ObjModel(
             else
               AbsNumber.Top
         }
-        (st, State.Bot, AbsValue(n))
+        (st, AbsState.Bot, AbsValue(n))
       })
     ), T, F, T),
 
@@ -352,7 +352,7 @@ object BuiltinStringProto extends ObjModel(
     NormalProp("localeCompare", FuncModel(
       name = "String.prototype.localeCompare",
       code = BasicCode(argLen = 1, (
-        args: AbsValue, st: State
+        args: AbsValue, st: AbsState
       ) => {
         val h = st.heap
         // 1. Call CheckObjectCoercible passing the this value as its argument.
@@ -375,7 +375,7 @@ object BuiltinStringProto extends ObjModel(
             else
               AbsNumber.Top
         }
-        (st, State.Bot, AbsValue(n))
+        (st, AbsState.Bot, AbsValue(n))
       })
     ), T, F, T),
 
@@ -401,7 +401,7 @@ object BuiltinStringProto extends ObjModel(
     NormalProp("slice", FuncModel(
       name = "String.prototype.slice",
       code = BasicCode(argLen = 2, (
-        args: AbsValue, st: State
+        args: AbsValue, st: AbsState
       ) => {
         val h = st.heap
         // 1. Call CheckObjectCoercible passing the this value as its argument.
@@ -440,7 +440,7 @@ object BuiltinStringProto extends ObjModel(
           },
           elseV = AbsString.Top
         )(AbsString)
-        (st, State.Bot, AbsValue(res))
+        (st, AbsState.Bot, AbsValue(res))
       })
     ), T, F, T),
 
@@ -454,7 +454,7 @@ object BuiltinStringProto extends ObjModel(
     NormalProp("substring", FuncModel(
       name = "String.prototype.substring",
       code = BasicCode(argLen = 2, (
-        args: AbsValue, st: State
+        args: AbsValue, st: AbsState
       ) => {
         val h = st.heap
         // 1. Call CheckObjectCoercible passing the this value as its argument.
@@ -488,7 +488,7 @@ object BuiltinStringProto extends ObjModel(
             }
           case _ => AbsString.Top
         }
-        (st, State.Bot, AbsValue(res))
+        (st, AbsState.Bot, AbsValue(res))
       })
     ), T, F, T),
 
@@ -520,7 +520,7 @@ object BuiltinStringProto extends ObjModel(
     NormalProp("trim", FuncModel(
       name = "String.prototype.trim",
       code = BasicCode(argLen = 0, (
-        args: AbsValue, st: State
+        args: AbsValue, st: AbsState
       ) => {
         val h = st.heap
         // 1. Call CheckObjectCoercible passing the this value as its argument.
@@ -530,7 +530,7 @@ object BuiltinStringProto extends ObjModel(
         //   removed. The definition of white space is the union of WhiteSpace and LineTerminator.
         // 4. Return T.
         val s = TypeConversionHelper.ToString(thisV, h).trim
-        (st, State.Bot, AbsValue(s))
+        (st, AbsState.Bot, AbsValue(s))
       })
     ), T, F, T)
   )

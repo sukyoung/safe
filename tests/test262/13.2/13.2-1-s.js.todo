@@ -1,0 +1,15 @@
+  function testcase() 
+  {
+  "use strict";
+    var foo = (function () 
+    {
+      this.caller = 12;
+    });
+    var obj = new foo();
+    return obj.caller === 12;
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

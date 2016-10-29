@@ -17,6 +17,7 @@
 % \RequirePackage{hyperref}
 \RequirePackage{listings}
 % \RequirePackage{mathrsfs}
+\RequirePackage{mathtools}
 \RequirePackage{multicol}
 \RequirePackage{multind}
 \RequirePackage{paralist}
@@ -156,7 +157,6 @@
 
 % Unsorted macros
 \newcommand{\safe}{SAFE\xspace}
-\newcommand{\memcad}{SAFE\xspace}
 
 % Indexes
 \makeindex{commands}
@@ -168,3 +168,5 @@
 %\DeclareMathAlphabet{\mathpzc}{OT1}{pzc}{m}{it}
 
 \newcommand{\commentout}[1]{}
+
+\newcommand{\embox}[1]{\ensuremath{\mbox{\emph{#1}}}}

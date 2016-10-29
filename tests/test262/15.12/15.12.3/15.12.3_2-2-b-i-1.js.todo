@@ -1,0 +1,16 @@
+  function testcase() 
+  {
+    var obj = {
+      prop : 42,
+      toJSON : (function () 
+      {
+        return 'fortytwo objects';
+      })
+    };
+    return JSON.stringify([obj, ]) === '["fortytwo objects"]';
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

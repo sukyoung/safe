@@ -1,0 +1,11 @@
+  var f = Function.call(this, "return this.planet;");
+  {
+    var __result1 = f() !== undefined;
+    var __expect1 = false;
+  }
+  var planet = "mars";
+  {
+    var __result2 = f() !== "mars";
+    var __expect2 = false;
+  }
+  

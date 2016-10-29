@@ -1,0 +1,19 @@
+  function FACTORY() 
+  {
+    this.id = 0;
+    this.id = func();
+    function func() 
+    {
+      return "id_string";
+    }
+  }
+  try
+{    var obj = new FACTORY();}
+  catch (e)
+{    $ERROR('#1: var obj = new FACTORY() does not lead to throwing exception. Actual: Exception is ' + e);}
+
+  {
+    var __result1 = obj.id !== "id_string";
+    var __expect1 = false;
+  }
+  

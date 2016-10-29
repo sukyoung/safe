@@ -1,0 +1,11 @@
+  {
+    var __result1 = (function () 
+    {
+      return "gnulluna";
+    })().replace(null, (function () 
+    {
+      
+    })) !== "gundefineduna";
+    var __expect1 = false;
+  }
+  

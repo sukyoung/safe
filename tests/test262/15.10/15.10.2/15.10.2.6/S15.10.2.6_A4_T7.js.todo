@@ -1,0 +1,6 @@
+  __executed = /\B\[^z]{4}\B/.test("devil arise\tforzzx\nevils");
+  {
+    var __result1 = __executed;
+    var __expect1 = false;
+  }
+  

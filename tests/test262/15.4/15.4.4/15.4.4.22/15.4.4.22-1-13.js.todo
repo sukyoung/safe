@@ -1,0 +1,22 @@
+  function testcase() 
+  {
+    var accessed = false;
+    function callbackfn(prevVal, curVal, idx, obj) 
+    {
+      accessed = true;
+      return ('[object JSON]' === Object.prototype.toString.call(obj));
+    }
+    try
+{      JSON.length = 1;
+      JSON[0] = 1;
+      return Array.prototype.reduceRight.call(JSON, callbackfn, 1) && accessed;}
+    finally
+{      delete JSON.length;
+      delete JSON[0];}
+
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

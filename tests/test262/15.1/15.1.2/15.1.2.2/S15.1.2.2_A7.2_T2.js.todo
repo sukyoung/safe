@@ -1,0 +1,81 @@
+  {
+    var __result1 = parseInt("1", 2) !== 1;
+    var __expect1 = false;
+  }
+  {
+    var __result2 = parseInt("11", 2) !== 3;
+    var __expect2 = false;
+  }
+  {
+    var __result3 = parseInt("111", 2) !== 7;
+    var __expect3 = false;
+  }
+  {
+    var __result4 = parseInt("1111", 2) !== 15;
+    var __expect4 = false;
+  }
+  {
+    var __result5 = parseInt("11111", 2) !== 31;
+    var __expect5 = false;
+  }
+  {
+    var __result6 = parseInt("111111", 2) !== 63;
+    var __expect6 = false;
+  }
+  {
+    var __result7 = parseInt("1111111", 2) !== 127;
+    var __expect7 = false;
+  }
+  {
+    var __result8 = parseInt("11111111", 2) !== 255;
+    var __expect8 = false;
+  }
+  {
+    var __result9 = parseInt("111111111", 2) !== 511;
+    var __expect9 = false;
+  }
+  {
+    var __result10 = parseInt("1111111111", 2) !== 1023;
+    var __expect10 = false;
+  }
+  {
+    var __result11 = parseInt("11111111111", 2) !== 2047;
+    var __expect11 = false;
+  }
+  {
+    var __result12 = parseInt("111111111111", 2) !== 4095;
+    var __expect12 = false;
+  }
+  {
+    var __result13 = parseInt("1111111111111", 2) !== 8191;
+    var __expect13 = false;
+  }
+  {
+    var __result14 = parseInt("11111111111111", 2) !== 16383;
+    var __expect14 = false;
+  }
+  {
+    var __result15 = parseInt("111111111111111", 2) !== 32767;
+    var __expect15 = false;
+  }
+  {
+    var __result16 = parseInt("1111111111111111", 2) !== 65535;
+    var __expect16 = false;
+  }
+  {
+    var __result17 = parseInt("11111111111111111", 2) !== 131071;
+    var __expect17 = false;
+  }
+  {
+    var __result18 = parseInt("111111111111111111", 2) !== 262143;
+    var __expect18 = false;
+  }
+  {
+    var __result19 = parseInt("1111111111111111111", 2) !== 524287;
+    var __expect19 = false;
+  }
+  {
+    var __result20 = parseInt("11111111111111111111", 2) !== 1048575;
+    var __expect20 = false;
+  }
+  

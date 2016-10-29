@@ -1,0 +1,14 @@
+  try
+{    var f = new Function(void 0);}
+  catch (e)
+{    $FAIL('#1: test failed with error ' + e);}
+
+  {
+    var __result1 = f.constructor !== Function;
+    var __expect1 = false;
+  }
+  {
+    var __result2 = f() !== undefined;
+    var __expect2 = false;
+  }
+  

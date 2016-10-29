@@ -1,0 +1,21 @@
+  FACTORY = (function () 
+  {
+    this.prop = 1;
+  });
+  FACTORY.prototype.name = "fairy";
+  instance = new FACTORY;
+  FACTORY.prototype = void 0;
+  try
+{    instance instanceof FACTORY;
+    $FAIL('#1: O is not an object, throw a TypeError exception');}
+  catch (e)
+{    {
+      var __result1 = ! (e instanceof TypeError);
+      var __expect1 = false;
+    }}
+
+  {
+    var __result2 = (instance.constructor !== FACTORY) || (instance.name !== "fairy");
+    var __expect2 = false;
+  }
+  

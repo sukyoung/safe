@@ -1,0 +1,17 @@
+  var CATCH_ME_IF_YOU_CAN = true;
+  var __func = (function (message) 
+  {
+    var x = 1;
+    throw (message);
+    return x;
+  });
+  try
+{    var x = __func(CATCH_ME_IF_YOU_CAN);
+    $ERROR('#0: var x=__func(CATCH_ME_IF_YOU_CAN) lead to throwing exception');}
+  catch (e)
+{    {
+      var __result1 = ! e;
+      var __expect1 = false;
+    }}
+
+  

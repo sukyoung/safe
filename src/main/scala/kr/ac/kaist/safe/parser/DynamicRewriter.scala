@@ -41,7 +41,7 @@ object DynamicRewriter extends ASTWalker {
       case n @ FunApp(i1, vr @ VarRef(_, Id(_, "eval", _, _)), List(StringLiteral(_, _, expr, _))) =>
         Parser.stringToE((n.fileName,
           (new JInteger(n.line - 1), new JInteger(n.offset - 1)), expr)) match {
-          case Success(result) => result
+          case Success((result, _)) => result
           case _ => n
         }
       case _ => super.walk(node)
@@ -54,7 +54,7 @@ object DynamicRewriter extends ASTWalker {
       case n @ FunApp(i1, vr @ VarRef(_, Id(_, "eval", _, _)), List(StringLiteral(_, _, lhs, _))) =>
         Parser.stringToLHS((n.fileName,
           (new JInteger(n.line - 1), new JInteger(n.offset - 1)), NU.unescape(lhs))) match {
-          case Success(result) => result
+          case Success((result, _)) => result
           case _ => n
         }
 
@@ -66,7 +66,7 @@ object DynamicRewriter extends ASTWalker {
         Parser.stringToFnE((n.fileName,
           (new JInteger(n.line - 1), new JInteger(n.offset - 1)),
           "function (" + NU.unescape(params) + ") {" + NU.unescape(body) + "};")) match {
-          case Success(result) => result
+          case Success((result, _)) => result
           case _ => n
         }
 
@@ -84,7 +84,7 @@ object DynamicRewriter extends ASTWalker {
         Parser.stringToFnE((n.fileName,
           (new JInteger(n.line - 1), new JInteger(n.offset - 1)),
           "function () {" + NU.unescape(body) + "};")) match {
-          case Success(fe) => FunApp(i1, vr, List(fe, no))
+          case Success((fe, _)) => FunApp(i1, vr, List(fe, no))
           case _ => n
         }
 
@@ -96,7 +96,7 @@ object DynamicRewriter extends ASTWalker {
         Parser.stringToFnE((n.fileName,
           (new JInteger(n.line - 1), new JInteger(n.offset - 1)),
           "function () {" + NU.unescape(body) + "};")) match {
-          case Success(fe) => FunApp(i1, dot, List(fe, no))
+          case Success((fe, _)) => FunApp(i1, dot, List(fe, no))
           case _ => n
         }
       case _ => super.walk(node)

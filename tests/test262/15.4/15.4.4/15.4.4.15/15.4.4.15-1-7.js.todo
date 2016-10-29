@@ -1,0 +1,9 @@
+  function testcase() 
+  {
+    return Array.prototype.lastIndexOf.call("abc", "c") === 2;
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

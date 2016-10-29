@@ -23,9 +23,8 @@ class FuncModel(
     val construct: Option[Code] = None,
     val protoModel: Option[(ObjModel, Boolean, Boolean, Boolean)] = None
 ) extends ObjModel(name, props) {
-  override def initHeap(h: Heap, cfg: CFG): Heap = h(loc) match {
-    case Some(_) => h
-    case None => {
+  override def initHeap(h: AbsHeap, cfg: CFG): AbsHeap = {
+    if (h.get(loc).isBottom) {
       val AT = AbsBool.True
       val AF = AbsBool.False
       val AB = AbsBool.Bot
@@ -34,18 +33,16 @@ class FuncModel(
       // [model].prototype object
       val (h1, protoOpt, writable, enumerable, configurable) = protoModel match {
         case Some((objModel, writable, enumerable, configurable)) => {
-          (h(objModel.loc) match {
-            case Some(_) => h
-            case None => {
-              val heap = objModel.initHeap(h, cfg)
-              heap.getOrElse(objModel.loc)(Heap.Bot)(obj => {
-                heap.update(objModel.loc, obj.update(
-                  "constructor",
-                  AbsDataProp(AbsValue(loc), AT, AF, AT)
-                ))
-              })
-            }
-          }, Some(objModel.loc), toAB(writable), toAB(enumerable), toAB(configurable))
+          val heap = if (h.get(objModel.loc).isBottom) {
+            val heap = objModel.initHeap(h, cfg)
+            heap.get(objModel.loc).fold(AbsHeap.Bot)(obj => {
+              heap.update(objModel.loc, obj.update(
+                "constructor",
+                AbsDataProp(AbsValue(loc), AT, AF, AT)
+              ))
+            })
+          } else h
+          (heap, Some(objModel.loc), toAB(writable), toAB(enumerable), toAB(configurable))
         }
         case None => (h, None, AB, AB, AB)
       }
@@ -56,7 +53,7 @@ class FuncModel(
       val constructIdOpt = construct.map(_.getCFGFunc(cfg, name).id)
       val scope = AbsValue(Null) // TODO get scope as args
       val n = AbsNumber(code.argLen)
-      val funcObj = AbsObjectUtil.newFunctionObject(
+      val funcObj = AbsObject.newFunctionObject(
         fidOpt,
         constructIdOpt,
         scope,
@@ -67,7 +64,7 @@ class FuncModel(
         n
       )
       initObj(h1, cfg, loc, funcObj, props)
-    }
+    } else h
   }
 }
 

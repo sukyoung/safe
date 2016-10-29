@@ -1,0 +1,16 @@
+  var __instance = new Object(true);
+  __instance.split = String.prototype.split;
+  var __split = __instance.split(true, false);
+  {
+    var __result1 = typeof __split !== "object";
+    var __expect1 = false;
+  }
+  {
+    var __result2 = __split.constructor !== Array;
+    var __expect2 = false;
+  }
+  {
+    var __result3 = __split.length !== 0;
+    var __expect3 = false;
+  }
+  

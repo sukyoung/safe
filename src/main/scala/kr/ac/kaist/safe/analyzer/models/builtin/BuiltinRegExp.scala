@@ -58,7 +58,7 @@ private object BuiltinRegExpHelper {
   def newREObject(source: AbsString, g: AbsBool, i: AbsBool, m: AbsBool): AbsObject = {
     val IV = InternalValueUtil
     val afalse = AbsBool.False
-    AbsObjectUtil.Empty
+    AbsObject.Empty
       .update(IClass, IV(AbsString("RegExp")))
       .update(IPrototype, IV(BuiltinRegExpProto.loc))
       .update(IExtensible, IV(AbsBool.True))
@@ -70,7 +70,7 @@ private object BuiltinRegExpHelper {
   }
 
   // 15.10.3.1 RegExp(pattern, flags)
-  def function(args: AbsValue, st: State): (State, State, AbsValue) = {
+  def function(args: AbsValue, st: AbsState): (AbsState, AbsState, AbsValue) = {
     val heap = st.heap
     val pattern = Helper.propLoad(args, HashSet(AbsString("0")), heap)
     val flags = Helper.propLoad(args, HashSet(AbsString("1")), heap)
@@ -114,7 +114,7 @@ private object BuiltinRegExpHelper {
     val (objOpt, excSet2) =
       (P.gamma, F.gamma) match {
         case (ConFin(patternSet), ConFin(flagsSet)) if patternSet.nonEmpty && flagsSet.nonEmpty =>
-          val (obj, exc) = patternSet.foldLeft((AbsObjectUtil.Bot, ExcSetEmpty))((tpl1, spattern) => {
+          val (obj, exc) = patternSet.foldLeft((AbsObject.Bot, ExcSetEmpty))((tpl1, spattern) => {
             flagsSet.foldLeft(tpl1)((tpl2, sflags) => {
               val (aR, excSet) = tpl2
               val pattern: String =
@@ -139,7 +139,7 @@ private object BuiltinRegExpHelper {
         val st1 = st.oldify(addr)
         val loc = Loc(addr, Recent)
         val h2 = st1.heap.update(loc, obj)
-        (State(h2, st1.context), AbsValue(loc))
+        (AbsState(h2, st1.context), AbsValue(loc))
       case None => (st, AbsValue.Bot)
     }
 
@@ -151,7 +151,7 @@ private object BuiltinRegExpHelper {
   }
 
   // 15.10.4.1 new RegExp(pattern, flags)
-  def construct(args: AbsValue, st: State): (State, State, AbsValue) = {
+  def construct(args: AbsValue, st: AbsState): (AbsState, AbsState, AbsValue) = {
     val heap = st.heap
     val pattern = Helper.propLoad(args, HashSet(AbsString("0")), heap)
     val flags = Helper.propLoad(args, HashSet(AbsString("1")), heap)
@@ -201,7 +201,7 @@ private object BuiltinRegExpHelper {
     val (objOpt, excSet2) =
       (P.gamma, F.gamma) match {
         case (ConFin(patternSet), ConFin(flagsSet)) if patternSet.nonEmpty && flagsSet.nonEmpty =>
-          val (obj, exc) = patternSet.foldLeft((AbsObjectUtil.Bot, ExcSetEmpty))((tpl1, spattern) => {
+          val (obj, exc) = patternSet.foldLeft((AbsObject.Bot, ExcSetEmpty))((tpl1, spattern) => {
             flagsSet.foldLeft(tpl1)((tpl2, sflags) => {
               val (aR, excSet) = tpl2
               val pattern: String =
@@ -226,7 +226,7 @@ private object BuiltinRegExpHelper {
         val st1 = st.oldify(addr)
         val loc = Loc(addr, Recent)
         val h2 = st1.heap.update(loc, obj)
-        (State(h2, st1.context), AbsValue(loc))
+        (AbsState(h2, st1.context), AbsValue(loc))
       case None => (st, AbsValue.Bot)
     }
 

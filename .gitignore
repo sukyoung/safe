@@ -1,4 +1,7 @@
 *.DS_Store
+*.bbl
+*.blg
+*.idx
 *.aux
 *.log
 *.swp

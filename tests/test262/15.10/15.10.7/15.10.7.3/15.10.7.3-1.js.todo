@@ -1,0 +1,9 @@
+  function testcase() 
+  {
+    return (typeof (RegExp.prototype.ignoreCase)) === 'boolean';
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

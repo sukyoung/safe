@@ -20,7 +20,7 @@ import kr.ac.kaist.safe.analyzer.models._
 import kr.ac.kaist.safe.util.SystemAddr
 
 object BuiltinDateHelper {
-  def getValue(thisV: AbsValue, h: Heap): AbsNumber = {
+  def getValue(thisV: AbsValue, h: AbsHeap): AbsNumber = {
     thisV.pvalue.numval + thisV.locset.foldLeft(AbsNumber.Bot)((res, loc) => {
       if ((AbsString("Date") <= h.get(loc)(IClass).value.pvalue.strval)) {
         res + h.get(loc)(IPrimitiveValue).value.pvalue.numval
@@ -29,7 +29,7 @@ object BuiltinDateHelper {
   }
 
   val valueOf = BasicCode(argLen = 0, (
-    args: AbsValue, st: State
+    args: AbsValue, st: AbsState
   ) => {
     val h = st.heap
     val thisV = st.context.thisBinding
@@ -38,14 +38,25 @@ object BuiltinDateHelper {
     (st, st.raiseException(excSet), AbsValue(s))
   })
 
+  def timeClip(num: AbsNumber): AbsNumber = num.getSingle match {
+    case ConZero() => AbsNumber.Bot
+    case ConOne(Num(n)) => n match {
+      case n if n.isInfinity || n.isNaN => AbsNumber.NaN
+      case n if math.abs(n) > (8.64 * math.pow(10, 15)) => AbsNumber.NaN
+      // case -0.0 => AbsNumber(0) XXX: implementation-dependent
+      case _ => TypeConversionHelper.ToInteger(num)
+    }
+    case ConMany() => AbsNumber.Top
+  }
+
   val constructor = BasicCode(argLen = 1, code = (
-    args: AbsValue, st: State
+    args: AbsValue, st: AbsState
   ) => {
     val h = st.heap
     val addr = SystemAddr("Date<instance>")
     val state = st.oldify(addr)
     val loc = Loc(addr, Recent)
-    val newObj = AbsObjectUtil.newObject(BuiltinDateProto.loc)
+    val newObj = AbsObject.newObject(BuiltinDateProto.loc)
     val argL = Helper.propLoad(args, Set(AbsString("length")), h).pvalue.numval
     val absNum = argL.getSingle match {
       // 15.9.3.2 new Date(value)
@@ -59,7 +70,7 @@ object BuiltinDateHelper {
           // XXX: give up the precision! (Room for the analysis precision improvement!)
           thenV = AbsNumber.Top,
           // 3. Else, let V be ToNumber(v).
-          elseV = TypeConversionHelper.ToNumber(v)
+          elseV = timeClip(TypeConversionHelper.ToNumber(v))
         // 4. Set the [[PrimitiveValue]] internal property of the newly constructed object
         // to TimeClip(V) and return.
         )(AbsNumber)
@@ -72,11 +83,11 @@ object BuiltinDateHelper {
       .update(IClass, InternalValueUtil(AbsString("Date")))
       .update(IPrimitiveValue, InternalValueUtil(absNum))
     val heap = state.heap.update(loc, newObj2)
-    (State(heap, state.context), State.Bot, AbsValue(loc))
+    (AbsState(heap, state.context), AbsState.Bot, AbsValue(loc))
   })
 
   val getNumber = BasicCode(argLen = 0, (
-    args: AbsValue, st: State
+    args: AbsValue, st: AbsState
   ) => {
     val h = st.heap
     val thisV = st.context.thisBinding
@@ -94,7 +105,7 @@ object BuiltinDateHelper {
   })
 
   def setNumber(n: Int): BasicCode = BasicCode(argLen = n, (
-    args: AbsValue, st: State
+    args: AbsValue, st: AbsState
   ) => {
     val h = st.heap
     val addr = SystemAddr("Date<instance>")
@@ -106,7 +117,7 @@ object BuiltinDateHelper {
     // Set the [[PrimitiveValue]] internal property of this Date object to v.
     val v = AbsNumber.Top
     val retH = h.update(loc, h.get(loc).update(IPrimitiveValue, InternalValueUtil(v)))
-    (State(retH, state.context), state.raiseException(excSet), AbsValue(v))
+    (AbsState(retH, state.context), state.raiseException(excSet), AbsValue(v))
   })
 }
 
@@ -116,7 +127,7 @@ object BuiltinDate extends FuncModel(
 
   // 15.9.2 The Date Constructor Called as a Function
   // 15.9.2.1 Date ([year [, month [, date [, hours [, minutes [, seconds [, ms]]]]]]])
-  code = PureCode(argLen = 7, code = (args: AbsValue, st: State) => AbsString.Top),
+  code = PureCode(argLen = 7, code = (args: AbsValue, st: AbsState) => AbsString.Top),
 
   // 15.9.2 The Date Constructor
   construct = Some(BuiltinDateHelper.constructor),
@@ -131,7 +142,7 @@ object BuiltinDate extends FuncModel(
       name = "Date.parse",
       code = PureCode(
         argLen = 1,
-        code = (args: AbsValue, st: State) => AbsNumber.Top
+        code = (args: AbsValue, st: AbsState) => AbsNumber.Top
       )
     ), T, F, T),
 
@@ -141,7 +152,7 @@ object BuiltinDate extends FuncModel(
       name = "Date.UTC",
       code = PureCode(
         argLen = 7,
-        code = (args: AbsValue, st: State) => AbsNumber.Top
+        code = (args: AbsValue, st: AbsState) => AbsNumber.Top
       )
     ), T, F, T),
 
@@ -151,7 +162,7 @@ object BuiltinDate extends FuncModel(
       name = "Date.now",
       code = PureCode(
         argLen = 0,
-        code = (args: AbsValue, st: State) => AbsNumber.Top
+        code = (args: AbsValue, st: AbsState) => AbsNumber.Top
       )
     ), T, F, T)
   )
@@ -177,7 +188,7 @@ object BuiltinDateProto extends ObjModel(
       name = "Date.prototype.toString",
       code = PureCode(
         argLen = 0,
-        code = (args: AbsValue, st: State) => AbsString.Top
+        code = (args: AbsValue, st: AbsState) => AbsString.Top
       )
     ), T, F, T),
 
@@ -186,7 +197,7 @@ object BuiltinDateProto extends ObjModel(
       name = "Date.prototype.toDateString",
       code = PureCode(
         argLen = 0,
-        code = (args: AbsValue, st: State) => AbsString.Top
+        code = (args: AbsValue, st: AbsState) => AbsString.Top
       )
     ), T, F, T),
 
@@ -195,7 +206,7 @@ object BuiltinDateProto extends ObjModel(
       name = "Date.prototype.toTimeString",
       code = PureCode(
         argLen = 0,
-        code = (args: AbsValue, st: State) => AbsString.Top
+        code = (args: AbsValue, st: AbsState) => AbsString.Top
       )
     ), T, F, T),
 
@@ -204,7 +215,7 @@ object BuiltinDateProto extends ObjModel(
       name = "Date.prototype.toLocaleString",
       code = PureCode(
         argLen = 0,
-        code = (args: AbsValue, st: State) => AbsString.Top
+        code = (args: AbsValue, st: AbsState) => AbsString.Top
       )
     ), T, F, T),
 
@@ -213,7 +224,7 @@ object BuiltinDateProto extends ObjModel(
       name = "Date.prototype.toLocaleDateString",
       code = PureCode(
         argLen = 0,
-        code = (args: AbsValue, st: State) => AbsString.Top
+        code = (args: AbsValue, st: AbsState) => AbsString.Top
       )
     ), T, F, T),
 
@@ -222,7 +233,7 @@ object BuiltinDateProto extends ObjModel(
       name = "Date.prototype.toLocaleTimeString",
       code = PureCode(
         argLen = 0,
-        code = (args: AbsValue, st: State) => AbsString.Top
+        code = (args: AbsValue, st: AbsState) => AbsString.Top
       )
     ), T, F, T),
 
@@ -435,7 +446,7 @@ object BuiltinDateProto extends ObjModel(
       name = "Date.prototype.toUTCString",
       code = PureCode(
         argLen = 0,
-        code = (args: AbsValue, st: State) => AbsString.Top
+        code = (args: AbsValue, st: AbsState) => AbsString.Top
       )
     ), T, F, T),
 
@@ -443,7 +454,7 @@ object BuiltinDateProto extends ObjModel(
     NormalProp("toISOString", FuncModel(
       name = "Date.prototype.toISOString",
       code = BasicCode(argLen = 0, (
-        args: AbsValue, st: State
+        args: AbsValue, st: AbsState
       ) => {
         val h = st.heap
         val thisV = st.context.thisBinding

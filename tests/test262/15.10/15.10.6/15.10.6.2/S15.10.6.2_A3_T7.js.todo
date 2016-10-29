@@ -1,0 +1,27 @@
+  __re = /\d+/;
+  __matched = [];
+  __expected = ["123", "123", "123", "123", "123", "123", "123", "123", "123", "123", ];
+  do
+  {
+    __executed = __re.exec("123 456 789");
+    if (__executed !== null)
+    {
+      __matched.push(__executed[0]);
+    }
+    else
+    {
+      break;
+    }
+  }while (__matched.length < 10);
+  {
+    var __result1 = __expected.length !== __matched.length;
+    var __expect1 = false;
+  }
+  for(var index = 0;index < __expected.length;index++)
+  {
+    {
+      var __result2 = __expected[index] !== __matched[index];
+      var __expect2 = false;
+    }
+  }
+  

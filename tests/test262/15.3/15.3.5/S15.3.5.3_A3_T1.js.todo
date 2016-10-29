@@ -1,0 +1,11 @@
+  FACTORY = (function () 
+  {
+    this.name = "root";
+  });
+  FACTORY.prototype.type = 1;
+  instance = new FACTORY;
+  {
+    var __result1 = ! (instance instanceof FACTORY);
+    var __expect1 = false;
+  }
+  

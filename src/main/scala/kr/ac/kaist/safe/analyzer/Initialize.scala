@@ -21,11 +21,11 @@ import scala.collection.immutable.{ HashMap }
 
 case class Initialize(cfg: CFG) {
   private val AT = AbsBool.True
-  def state: State = {
+  def state: AbsState = {
     val globalLocSet = AbsLoc(BuiltinGlobal.loc)
     val globalPureLocalEnv = AbsLexEnv.newPureLocal(globalLocSet)
-    val initHeap = Heap(HashMap(
-      SystemLoc("Dummy", Old) -> AbsObjectUtil.Bot // TODO If delete, not working because not allowed update to bottom heap
+    val initHeap = AbsHeap(HashMap(
+      SystemLoc("Dummy", Old) -> AbsObject.Bot // TODO If delete, not working because not allowed update to bottom heap
     ))
 
     val initCtx = AbsContext(HashMap[Loc, AbsLexEnv](
@@ -36,15 +36,13 @@ case class Initialize(cfg: CFG) {
 
     val modeledHeap = BuiltinGlobal.initHeap(initHeap, cfg)
 
-    State(modeledHeap, initCtx)
+    AbsState(modeledHeap, initCtx)
   }
 
-  def testState: State = {
+  def testState: AbsState = {
     val st = state
-    val globalObj = st.heap(BuiltinGlobal.loc) match {
-      case Some(obj) => obj
-      case None => AbsObjectUtil.Empty
-    }
+    val globalObj = st.heap.get(BuiltinGlobal.loc)
+      .fold(AbsObject.Empty)(obj => obj)
 
     val boolBot = AbsBool.Bot
 
@@ -73,6 +71,6 @@ case class Initialize(cfg: CFG) {
         .initializeUpdate("__ArrayConstLoc", AbsDataProp(AbsValue(BuiltinArray.loc)))
 
     val testHeap = st.heap.update(BuiltinGlobal.loc, testGlobalObj)
-    State(testHeap, st.context)
+    AbsState(testHeap, st.context)
   }
 }

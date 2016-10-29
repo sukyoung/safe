@@ -1,0 +1,6 @@
+  __executed = /^..^e/.test("ab\ncde");
+  {
+    var __result1 = __executed;
+    var __expect1 = false;
+  }
+  

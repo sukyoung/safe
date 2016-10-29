@@ -1,0 +1,24 @@
+  function __func() 
+  {
+    
+  }
+  ;
+  {
+    var __result1 = typeof __func.prototype !== 'object';
+    var __expect1 = false;
+  }
+  {
+    var __result2 = __func.prototype.constructor !== __func;
+    var __expect2 = false;
+  }
+  var __constructor_was__enumed;
+  for (__prop in __func.prototype)
+  {
+    if (__prop === 'constructor')
+      __constructor_was__enumed = true;
+  }
+  {
+    var __result3 = __constructor_was__enumed;
+    var __expect3 = false;
+  }
+  

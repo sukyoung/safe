@@ -1,0 +1,4 @@
+  Function.prototype.toString.call({
+    
+  });
+  

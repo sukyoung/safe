@@ -1,0 +1,21 @@
+  {
+    var __result1 = parseInt("11", NaN) !== parseInt("11", 10);
+    var __expect1 = false;
+  }
+  {
+    var __result2 = parseInt("11", + 0) !== parseInt("11", 10);
+    var __expect2 = false;
+  }
+  {
+    var __result3 = parseInt("11", - 0) !== parseInt("11", 10);
+    var __expect3 = false;
+  }
+  {
+    var __result4 = parseInt("11", Number.POSITIVE_INFINITY) !== parseInt("11", 10);
+    var __expect4 = false;
+  }
+  {
+    var __result5 = parseInt("11", Number.NEGATIVE_INFINITY) !== parseInt("11", 10);
+    var __expect5 = false;
+  }
+  

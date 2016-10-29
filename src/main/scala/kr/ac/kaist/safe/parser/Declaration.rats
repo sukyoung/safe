@@ -142,7 +142,7 @@ public LHS FunctionExpr =
      function a1:(w Id)? w openparen a2:(w Params)? w closeparen w a3:FunctionBody
      { Span span = createSpan(yyStart,yyCount+1);
        ASTNodeInfo info = NodeUtil.makeASTNodeInfo(span);
-       Id f = (a1 == null) ? new Id(NodeUtil.makeASTNodeInfo(span), "", Some.<String>apply(null), false) : a1;
+       Id f = (a1 == null) ? new Id(NodeUtil.makeASTNodeInfo(span), "", Option.<String>apply(null), false) : a1;
        scala.collection.immutable.List<Id> ids;
        if (a2 == null) ids = nilIds;
        else ids = toList(a2);

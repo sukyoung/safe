@@ -1,0 +1,8 @@
+  {
+    var __result1 = (function () 
+    {
+      return "gnulluna";
+    })().match(null)[0] !== "null";
+    var __expect1 = false;
+  }
+  

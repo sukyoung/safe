@@ -1,0 +1,6 @@
+  __re = /ll|l/;
+  {
+    var __result1 = __re.test(null) !== (__re.exec(null) !== null);
+    var __expect1 = false;
+  }
+  

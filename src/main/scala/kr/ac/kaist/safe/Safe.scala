@@ -33,7 +33,6 @@ object Safe {
       // SafeException: print the usage message.
       case ex: SafeException =>
         Console.err.println(ex.getMessage)
-        println(usage)
       // Unexpected: print the stack trace.
       case ex =>
         Console.err.println("* Unexpected error occurred.")
@@ -43,6 +42,7 @@ object Safe {
   }
 
   def apply[Result](
+    command: CommandObj[Result],
     runner: SafeConfig => Try[Result],
     config: SafeConfig
   ): Try[Result] = {
@@ -52,8 +52,13 @@ object Safe {
     // execute the command.
     val result: Try[Result] = runner(config)
 
-    // print the time spent if the time option is set.
     if (!config.silent) {
+      result.map(res => {
+        // display the result.
+        command.display(res)
+      })
+
+      // display the time.
       val duration = System.currentTimeMillis - startTime
       val name = config.command.name
       println(s"The command '$name' took $duration ms.")
@@ -94,24 +99,36 @@ object Safe {
       "switch on the test mode.")
   )
 
+  // indentation 
+  private val INDENT = 15
+
   // print usage message.
   val usage: String = {
     val s: StringBuilder = new StringBuilder
+    val prefix = " " * (INDENT + 4)
     s.append("Usage:").append(LINE_SEP)
       .append("  safe {command} [-{option}]* [-{phase}:{option}[={input}]]* {filename}+").append(LINE_SEP)
-      .append("  example: safe analyze -astRewriter:silent -cfgBuilder:out=out test.js").append(LINE_SEP)
+      .append("  example: safe analyze -silent -cfgBuilder:out=out test.js").append(LINE_SEP)
       .append(LINE_SEP)
-      .append("  command list:").append(LINE_SEP)
-    commands foreach (cmd => s.append("    %-15s".format(cmd.name)).append(cmd).append(LINE_SEP))
+      .append("* command list:").append(LINE_SEP)
+      .append("    Each command consists of the following phases.").append(LINE_SEP)
+      .append("    format: {command} {phase} [>> {phase}]*").append(LINE_SEP).append(LINE_SEP)
+    commands foreach (cmd => s.append(s"    %-${INDENT}s".format(cmd.name)).append(cmd).append(LINE_SEP))
     s.append(LINE_SEP)
-      .append("  phase list:").append(LINE_SEP)
+      .append("* phase list:").append(LINE_SEP)
+      .append("    Each phase has the following options.").append(LINE_SEP)
+      .append("    format: {phase} [-{phase}:{option}[={input}]]*").append(LINE_SEP).append(LINE_SEP)
     phases foreach (phase => {
-      s.append("    %-15s".format(phase.name))
+      s.append(s"    %-${INDENT}s".format(phase.name))
       val names = phase.getOptShapes
-      s.append(names.slice(0, 3).mkString(", "))
-        .append(if (names.size > 3) ", ..." else "")
+      val len = names.length
+      s.append(names.mkString(LINE_SEP + prefix))
       s.append(LINE_SEP)
     })
+    s.append(LINE_SEP)
+      .append("* global options:")
+      .append(options.map { case (opt, kind, _) => s"-${opt}${kind.postfix}" }
+        .mkString(" " * 3, LINE_SEP + prefix, LINE_SEP))
     s.toString
   }
 
@@ -121,13 +138,17 @@ object Safe {
     s.append("Invoked as script: safe args").append(LINE_SEP)
       .append("Invoked by java: java ... kr.ac.kaist.safe.Safe args").append(LINE_SEP)
       .append(LINE_SEP)
-      .append("command list:").append(LINE_SEP)
-    commands foreach (cmd => s.append("  %-15s".format(cmd.name)).append(cmd).append(LINE_SEP))
+      .append("* command list:").append(LINE_SEP)
+      .append("    Each command consists of following phases.").append(LINE_SEP)
+      .append("    format: {command} {phase} [>> {phase}]*").append(LINE_SEP).append(LINE_SEP)
+    commands foreach (cmd => s.append(s"    %-${INDENT}s".format(cmd.name)).append(cmd).append(LINE_SEP))
     s.append(LINE_SEP)
-      .append("phase list:").append(LINE_SEP)
+      .append("* phase list:").append(LINE_SEP)
+      .append("    Each phase has following options.").append(LINE_SEP)
+      .append("    format: {phase} [-{phase}:{option}[={input}]]*").append(LINE_SEP).append(LINE_SEP)
     phases foreach (phase => {
-      s.append("  %-15s".format(phase.name))
-      Useful.indentation(s, phase.help, 17)
+      s.append(s"    %-${INDENT}s".format(phase.name))
+      Useful.indentation(s, phase.help, INDENT + 4)
       s.append(LINE_SEP)
         .append(LINE_SEP)
       phase.getOptDescs foreach {
@@ -136,6 +157,12 @@ object Safe {
       }
       s.append(LINE_SEP)
     })
+    s.append("* global option:").append(LINE_SEP).append(LINE_SEP)
+    options.foreach {
+      case (opt, kind, desc) =>
+        val name = s"-${opt}${kind.postfix}"
+        s.append(s"    If $name is given, $desc").append(LINE_SEP)
+    }
     s.toString
   }
 }

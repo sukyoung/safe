@@ -1,0 +1,8 @@
+  var FACTORY = Function.prototype.toString;
+  try
+{    var instance = new FACTORY;
+    $FAIL('#1: Function.prototype.toString can\'t be used as constructor');}
+  catch (e)
+{    $PRINT(e);}
+
+  

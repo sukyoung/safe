@@ -1,0 +1,12 @@
+  __re = /[a-z]n/;
+  {
+    var __result1 = __re.test((function () 
+    {
+      
+    })()) !== (__re.exec((function () 
+    {
+      
+    })()) !== null);
+    var __expect1 = false;
+  }
+  

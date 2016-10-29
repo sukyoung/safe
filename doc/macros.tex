@@ -263,18 +263,66 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\newcommand{\tsf}[1]{\mbox{\scriptsize{\textsf{#1}}}}
-\newcommand{\SF}[1]{\mbox{\textsf{#1}}}
-\newcommand{\RM}[1]{\mbox{\textrm{#1}}}
-\newcommand{\TT}[1]{\mbox{\texttt{#1}}}
+\newcommand{\tsf}[1]{\mbox{\scriptsize{\textsf{#1}}}\xspace}
+\newcommand{\SF}[1]{\mbox{\textsf{#1}}\xspace}
+\newcommand{\RM}[1]{\mbox{\textrm{#1}}\xspace}
+\newcommand{\TT}[1]{\mbox{\texttt{#1}}\xspace}
 \newcommand{\Command}{\SF{Command}}
-\newcommand{\Instruction}{\SF{Instruction}}
-\newcommand{\Entry}{\TT{entry}}
-\newcommand{\Exit}{\TT{exit}}
-\newcommand{\Exite}{\TT{exit-exc}~}
-\newcommand{\Expression}{\SF{Expression}}
+\newcommand{\JSLabel}{\SF{JSLabel}}
+\newcommand{\RetLabel}{\TT{RetLabel}}
+\newcommand{\ThrowLabel}{\TT{ThrowLabel}}
+\newcommand{\ThrowEndLabel}{\TT{ThrowEndLabel}}
+\newcommand{\AfterCatchLabel}{\TT{AfterCatchLabel}}
+\newcommand{\UserLabel}{\SF{UserLabel}}
+\newcommand{\IRNode}{\SF{IRNode}}
+\newcommand{\IRRoot}{\SF{IRRoot}}
+\newcommand{\IRVarStmt}{\SF{IRVarStmt}}
+\newcommand{\IRStmt}{\SF{IRStmt}}
+\newcommand{\IRFunctional}{\SF{IRFunctional}}
+\newcommand{\IRFunDecl}{\SF{IRFunDecl}}
+\newcommand{\IRField}{\SF{IRField}}
+\newcommand{\IRExpr}{\SF{IRExpr}}
+\newcommand{\IRId}{\SF{IRId}}
+
+\newcommand{\CFG}{\ensuremath{\SF{CFG}}\xspace}
+\newcommand{\CFGFunction}{\SF{CFGFunction}}
+\newcommand{\CFGBlock}{\SF{CFGBlock}}
+\newcommand{\Entry}{\SF{Entry}}
+\newcommand{\Exit}{\SF{Exit}}
+\newcommand{\ExitExc}{\SF{ExitExc}}
+\newcommand{\Call}{\SF{Call}}
+\newcommand{\AfterCall}{\SF{AfterCall}}
+\newcommand{\AfterCatch}{\SF{AfterCatch}}
+\newcommand{\entry}{\TT{entry}}
+\newcommand{\exit}{\TT{exit}}
+\newcommand{\exitExc}{\TT{exitExc}}
+\newcommand{\call}{\TT{call}}
+\newcommand{\acall}{\TT{acall}}
+\newcommand{\acatch}{\TT{acatch}}
+\newcommand{\NormalBlock}{\SF{NormalBlock}}
+\newcommand{\ModelBlock}{\SF{ModelBlock}}
+\newcommand{\CFGEdge}{\SF{CFGEdge}}
+\newcommand{\EdgeType}{\SF{EdgeType}}
+\newcommand{\EdgeNormal}{\TT{EdgeNormal}}
+\newcommand{\EdgeExc}{\TT{EdgeExc}}
+\newcommand{\CFGCallTriple}{\SF{CFGCallTriple}}
+\newcommand{\CFGInst}{\SF{CFGInst}}
+\newcommand{\CFGNormalInst}{\SF{CFGNormalInst}}
+\newcommand{\CFGCallInst}{\SF{CFGCallInst}}
+\newcommand{\CFGExpr}{\SF{CFGExpr}}
+\newcommand{\CFGId}{\SF{CFGId}}
+\newcommand{\VarKind}{\SF{VarKind}}
 \newcommand{\Binop}{\SF{Binop}}
 \newcommand{\Unop}{\SF{Unop}}
+\newcommand{\Any}{\SF{Any}}
+\newcommand{\String}{\SF{String}}
+\newcommand{\Address}{\SF{Address}}
+\newcommand{\Number}{\SF{Number}}
+\newcommand{\Integer}{\SF{Integer}}
+\newcommand{\Unit}{\SF{Unit}}
+\newcommand{\Nil}{\SF{Nil}}
+\newcommand{\this}{\SF{this}}
+\newcommand{\LabelMap}{\SF{LabelMap}}
 \newcommand{\single}{\textsf{single}}
 \newcommand{\ainop}{\hat{\ensuremath{\otimes}}}
 \newcommand{\apreop}{\hat{\ensuremath{\ominus}}}
@@ -331,8 +379,8 @@
 \newcommand{\args}{\SF{ArgVars}}
 \newcommand{\vars}{\SF{LocalVars}}
 \newcommand{\Edge}{\SF{Edge}}
-\newcommand{\node}{\mathbb{N}}
-\newcommand{\controlpoint}{\mathbb{C}}
+\newcommand{\blocks}{\mathbb{B}}
+\newcommand{\cps}{\mathbb{C}}
 \newcommand{\chfi}[1]{\chf{\ensuremath{\diamond}#1}}
 \newcommand{\ahf}[1]{\widehat{\underline{\sf #1}}}
 \newcommand{\ahfi}[1]{\ahf{\ensuremath{\diamond}#1}}
@@ -355,6 +403,11 @@
 \newcommand{\irstmtunit}[1]{\textsf{IRStmtUnit}(#1)}
 \newcommand{\irvar}[1]{\textsf{var} \ #1}
 \newcommand{\irfundecl}[7]{\textsf{function}\ #1(#2,#3)\{#4,#5,#6,#7\}}
+\newcommand{\irfunctionalsmall}[7]{
+	\begin{smallmatrix}
+	\textsf{IRFunctional}(#1, #2, #3, \\
+	#4, #5, #6, #7)
+	\end{smallmatrix}}
 \newcommand{\irfundeclsmall}[7]{
 	\begin{smallmatrix}
 	\textsf{function}\ #1(#2,#3)\\ 
@@ -400,29 +453,22 @@
 \newcommand{\instlist}[1]{\langle #1 \rangle}
 \newcommand{\letval}{\overset{\emph{let}}{=}}
 
+\newcommand{\new}{\TT{new}}
 \newcommand{\FunctionId}{\TT{FunctionId}}
 \newcommand{\ArgVars}{\TT{ArgVars}}
 \newcommand{\LocalVars}{\TT{LocalVars}}
 \newcommand{\argVars}{\emph{argVars}}
 \newcommand{\localVars}{\emph{localVars}}
-\newcommand{\Node}{\TT{Node}}
-\newcommand{\BlockNode}{\TT{BlockNode}}
-\newcommand{\Nodelist}{\TT{Node list}}
-\newcommand{\Nodeset}{\TT{Node set}}
-\newcommand{\Unit}{\TT{Unit}}
 \newcommand{\ControlPoint}{\TT{ControlPoint}}
 %\newcommand{\Label}{\TT{Label}}
-\newcommand{\LEntry}{\SF{LEntry}}
-\newcommand{\LExit}{\SF{LExit}}
-\newcommand{\LExitExc}{\SF{LExitExc}}
-\newcommand{\CFG}{\SF{CFG}}
-\newcommand{\Length}{\emph{Length}}
-\newcommand{\TailOf}{\emph{TailOf}}
-\newcommand{\HeadOf}{\emph{HeadOf}}
-\newcommand{\Fold}{\emph{Fold}}
-\newcommand{\Iter}{\emph{Iter}}
-\newcommand{\GetTail}{\emph{GetTail}}
-\newcommand{\ToString}{\emph{ToString}}
+\newcommand{\length}{\emph{length}}
+\newcommand{\tailOf}{\emph{tailOf}}
+\newcommand{\headOf}{\emph{headOf}}
+\newcommand{\toSeq}{\emph{toSeq}}
+\newcommand{\fold}{\emph{fold}}
+\newcommand{\iter}{\emph{iter}}
+\newcommand{\getTail}{\emph{getTail}}
+\newcommand{\toString}{\emph{toString}}
 %\newcommand{\nullK}{{\inred\emph{null}}}
 %\newcommand{\}{\emph{}}
 

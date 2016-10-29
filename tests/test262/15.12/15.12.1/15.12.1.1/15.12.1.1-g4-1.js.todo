@@ -1,0 +1,13 @@
+  function testcase() 
+  {
+    try
+{      JSON.parse('"\u0000\u0001\u0002\u0003\u0004\u0005\u0006\u0007"');}
+    catch (e)
+{      return true;}
+
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

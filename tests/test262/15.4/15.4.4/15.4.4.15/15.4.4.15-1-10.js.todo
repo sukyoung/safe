@@ -1,0 +1,16 @@
+  function testcase() 
+  {
+    try
+{      Math.length = 2;
+      Math[1] = 100;
+      return 1 === Array.prototype.lastIndexOf.call(Math, 100);}
+    finally
+{      delete Math.length;
+      delete Math[1];}
+
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

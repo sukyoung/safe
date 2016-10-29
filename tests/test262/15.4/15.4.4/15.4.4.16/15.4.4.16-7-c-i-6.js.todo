@@ -1,0 +1,26 @@
+  function testcase() 
+  {
+    var accessed = false;
+    function callbackfn(val, idx, obj) 
+    {
+      accessed = true;
+      return val === 11;
+    }
+    try
+{      Object.defineProperty(Array.prototype, "0", {
+        get : (function () 
+        {
+          return 9;
+        }),
+        configurable : true
+      });
+      return [11, ].every(callbackfn) && accessed;}
+    finally
+{      delete Array.prototype[0];}
+
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

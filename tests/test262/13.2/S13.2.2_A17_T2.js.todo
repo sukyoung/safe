@@ -1,0 +1,50 @@
+  this.p1 = "alert";
+  __obj = {
+    p1 : 1,
+    getRight : (function () 
+    {
+      return "right";
+    })
+  };
+  getRight = (function () 
+  {
+    return "napravo";
+  });
+  try
+{    (function () 
+    {
+      with (__obj)
+      {
+        p1 = "w1";
+        getRight = (function () 
+        {
+          return false;
+        });
+        throw p1;
+      }
+    })();}
+  catch (e)
+{    resukt = p1;}
+
+  {
+    var __result1 = p1 !== "alert";
+    var __expect1 = false;
+  }
+  {
+    var __result2 = getRight() !== "napravo";
+    var __expect2 = false;
+  }
+  {
+    var __result3 = __obj.p1 !== "w1";
+    var __expect3 = false;
+  }
+  {
+    var __result4 = __obj.getRight() !== false;
+    var __expect4 = false;
+  }
+  {
+    var __result5 = resukt !== "alert";
+    var __expect5 = false;
+  }
+  var resukt;
+  

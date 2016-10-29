@@ -1,0 +1,148 @@
+\chapter{IR}
+This section describes each construct of the \safe IR
+in both the BNF notation and its corresponding implementation.
+The implementation of IR nodes is available at:
+\begin{verbatim}
+$SAFE_HOME/src/main/scala/kr/ac/kaist/safe/nodes/ir/
+\end{verbatim}
+\small
+\[
+\begin{array}{llll}
+\ir\pgm & ::= & \ir\stmt^* \\
+&& \mtt{IRRoot(val fds:~List[IRFunDecl],}\\
+&&\mtt{\phantom{IRRoot(}val vds:~List[IRVarStmt],}\\
+&&\mtt{\phantom{IRRoot(}val irs:~List[IRStmt])}\\\\
+
+\ir\stmt & ::= & \irid \ \verb+=+ \ \ir\expr \\
+&& \mtt{IRExprStmt(val lhs:~IRId, val right:~IRExpr,}\\
+&&\mtt{\phantom{IRExprStmt(}val ref:~Boolean)}\\
+&\mid& \irid \ \verb+=+ \ {\sf delete}\ \irid\\
+&& \mtt{IRDelete(val lhs:~IRId, val id:~IRId)}\\
+&\mid& \irid \ \verb+=+ \ {\sf delete}\ \irid\verb+[+\irid\verb+]+\\
+&& \mtt{IRDeleteProp(val lhs:~IRId, val obj:~IRId,}\\
+&&\mtt{\phantom{IRDeleteProp(}val index:~IRExpr)}\\
+&\mid& \irid\verb+[+\irid\verb+] =+ \ \irexpr \\
+&& \mtt{IRStore(val obj:~IRId, val index:~IRExpr,}\\
+&&\mtt{\phantom{IRStore(}val rhs:~IRExpr)}\\
+ &\mid& \irid \ \verb+=+ \ \verb+{+ (\ir\member\verb+,+)^* \verb+}+\\
+&& \mtt{IRObject(val lhs:~IRId, val members:~List[IRMember],}\\
+&&\mtt{\phantom{IRObject(}val proto:~Option[IRId])}\\
+ &\mid& \irid \ \verb+=+ \ \verb+[+ (\irexpr\verb+,+)^* \verb+]+ \\
+&& \mtt{IRArray(val lhs:~IRId,}\\
+&&\mtt{\phantom{IRArray(}val elements:~List[Option[IRExpr]])}\\
+&&\mtt{IRArgs(val lhs:~IRId,}\\
+&&\mtt{\phantom{IRArray(}val elements:~List[Option[IRExpr]])}\\
+ &\mid& \irid \ \verb+=+ \ \irid\verb+(+\irid\verb+,+\irid\verb+)+\\
+&& \mtt{IRCall(val lhs:~IRId, val fun:~IRId,}\\
+&&\mtt{\phantom{IRCall(}val thisB:~IRId, val args:~IRId)}\\
+ &\mid& \irid \ \verb+=+ \ \irid\verb+(+\irid(\verb+,+\irid)^?\verb+)+\\
+&& \mtt{IRInternalCall(val lhs:~IRId, val fun:~IRId,}\\
+&&\mtt{\phantom{IRInternalCall(}val first:~IRExpr,}\\
+&&\mtt{\phantom{IRInternalCall(}val second:~Option[IRId])}\\
+&&{\inblue \mtt{toObject}, \mtt{toNumber}, \mtt{isObject},
+\mtt{getBase}, \mtt{iteratorInit},}\\
+&&{\inblue \mtt{iteratorHasNext}, \mtt{iteratorKey}}\\
+
+ &\mid& \irid \ \verb+=+ \ {\sf new}\ \irid\verb+(+(\irid\verb+,+)^*\verb+)+\\
+&& \mtt{IRNew(val lhs:~IRId, val fun:~IRId,}\\
+&&\mtt{\phantom{IRNew(}val args:~List[IRId])}\\
+\end{array}
+\]
+
+\[
+\begin{array}{llll}
+ &\mid& \irid \ \verb+=+ \ {\sf function} \ \ir{f} \verb+(+\irid\verb+,+\irid\verb+) {+ \ir\stmt^* \verb+}+\\
+&& \mtt{IRFunExpr(val lhs:~IRId, val fun:~IRFunctional)}\\
+&&\mtt{IRFunctional(val fromSource:~Boolean,}\\
+&&\mtt{\phantom{IRFunctional(}val name:~IRId,}\\
+&&\mtt{\phantom{IRFunctional(}val params:~List[IRId],}\\
+&&\mtt{\phantom{IRFunctional(}val args:~List[IRStmt],}\\
+&&\mtt{\phantom{IRFunctional(}val fds:~List[IRFunDecl],}\\
+&&\mtt{\phantom{IRFunctional(}val vds:~List[IRVarStmt],}\\
+&&\mtt{\phantom{IRFunctional(}val body:~List[IRStmt])}\\
+ &\mid& {\sf function} \ \ir{f} \verb+(+\irid\verb+,+\irid\verb+) {+ \ir\stmt^* \verb+}+\\
+&& \mtt{IRFunDecl(val ftn:~IRFunctional)}\\
+ &\mid& \irid \ \verb+=+ \ {\sf eval}\verb+(+\ir\expr\verb+)+ \\
+&& \mtt{IREval(val lhs:~IRId, val arg:~IRExpr)}\\
+ &\mid& {\sf break} \ \irid \\
+&& \mtt{IRBreak(val label:~IRId)}\\
+ &\mid& {\sf return} \ \irexpr^?\\
+&& \mtt{IRReturn(val expr:~Option[IRExpr])}\\
+ &\mid& {\sf with} \ \verb+(+\irid\verb+)+ \ \ir\stmt\\
+&& \mtt{IRWith(val id:~IRId, val stmt:~IRStmt)}\\
+ & \mid & \ir{l} \; \verb+: {+ \; \ir\stmt \; \verb+}+\\
+ && \mtt{IRLabelStmt(val label:~IRId, val stmt:~IRStmt)}\\
+ &\mid& {\sf var} \ \irid\\
+&& \mtt{IRVarStmt(val lhs:~IRId, val fromParam:~Boolean)}\\
+ &\mid& {\sf throw} \ \irexpr\\
+&& \mtt{IRThrow(val expr:~IRExpr)}\\
+ &\mid& {\ir\stmt}^*\\
+&& \mtt{IRSeq(val stmts:~List[IRStmt])}\\
+ &\mid& {\sf if} \ \verb+(+\irexpr\verb+)+\ {\sf then} \ \ir\stmt \ ({\sf else} \ \ir\stmt)^?\\
+&& \mtt{IRIf(val expr:~IRExpr, val trueB:~IRStmt,}\\
+&&\mtt{\phantom{IRIf(}val falseb:~Option[IRStmt])}\\
+ &\mid& {\sf while} \ \verb+(+\irexpr\verb+)+\ \ir\stmt\\
+&& \mtt{IRWhile(val cond:~IRExpr, val body:~IRStmt)}\\
+%
+ &\mid& {\sf try} \ \verb+{+ \ir\stmt \verb+}+ \
+({\sf catch} \ \verb+(+\irid\verb+){+ \ir\stmt \verb+}+)^? ({\sf finally} \ \verb+{+ \ir\stmt \verb+}+)^?\\
+&& \mtt{IRTry(val body:~IRStmt, val name:~Option[IRId],}\\
+&&\mtt{\phantom{IRTry(}val catchB:~Option[IRStmt],}\\
+&&\mtt{\phantom{IRTry(}finallyB:~Option[IRStmt])}\\
+&\mid& \open {\ir\stmt}^* \close\\
+&& \mtt{IRStmtUnit(List[IRStmt] stmts)}\\\\
+\ir\expr &::=&
+ \irexpr \ \inop \irexpr \\
+&& \mtt{IRBin(val first:~IRExpr, val op:~IROp,}\\
+&& \mtt{\phantom{IRBin(}val second:~IRExpr)}\\
+ &\mid& \preop \irexpr \\
+&& \mtt{IRUn(val op:~IROp, val expr:~IRExpr)}\\
+ &\mid& \irid\verb+[+\ir\expr\verb+]+ \\
+&& \mtt{IRLoad(val obj:~IRId, val index:~IRExpr)}\\
+ &\mid& \irid\\
+&& \mtt{IRUserId(val global:~Boolean, val isWith:~Boolean)}\\
+ &\mid& \newvar{x}\\
+&& \mtt{IRTmpId(val global:~Boolean)}\\
+ &\mid& \ir\num \\
+&& \mtt{IRNumber(val text:~String, val num:~Double)}\\
+ &\mid& \ir\str \\
+&& \mtt{IRString(val str:~String)}\\
+ &\mid& {\sf true} \\
+&& \mtt{IRBool(val bool:~Boolean)}\\
+ &\mid& {\sf false} \\
+&& \mtt{IRBool(val bool:~Boolean)}\\
+\end{array}
+\]
+
+\[
+\begin{array}{llll}
+ &\mid& {\sf undefined} \\
+&& \mtt{IRUndef()}\\
+ &\mid& {\sf null} \\
+&& \mtt{IRNull()}\\
+ &\mid& {\sf this} \\
+&& \mtt{IRThis()}\\\\
+
+\ir\member &::=& \irid \ \verb+:+ \ \irexpr\\
+&& \mtt{IRField(val prop:~IRId, val expr:~IRExpr)}\\
+ &\mid& {\tt get}\ \ir{f} \verb+(+\irid\verb+,+\irid\verb+) {+ \ir\stmt^* \verb+}+\\
+&&\mtt{IRGetProp(val ftn:~IRFunctional)}\\
+ &\mid& {\tt set}\ \ir{f} \verb+(+\irid\verb+,+\irid\verb+) {+ \ir\stmt^* \verb+}+\\
+&&\mtt{IRSetProp(val ftn:~IRFunctional)}\\
+\end{array}
+\]
+
+The \safe IR has the following assumptions and notations:
+\begin{itemize}
+\item We denote a list as a possibly empty, semicolon-separated sequence, enclosed by $\langle$ and $\rangle$.
+\item We denote a series of list appends as superscripted $*$ such as $\stmt^*$.
+\item We abuse our notations by interchanging semicolon-separated sequences and lists.
+\item To denote an AST-level statement granularity in the translated IR statements,
+we use {\tt IRStmtUnit} which is represented as green angle brackets {\ingreen $\open\ \close$} in this document.
+\item Declarations of functions and variables are hoisted to their closest enclosing functions
+or the top level via the \verb!Hoister! transformation of the \verb!astRewriter! phase.
+\item Identifiers and labels that exist in the source program,
+except when they appear at top level or within the {\tt with} statement,
+are already disambiguated via the \verb!Disambiguator! transformation of the \verb!astRewriter! phase
+so that they have unique names.
+\end{itemize}

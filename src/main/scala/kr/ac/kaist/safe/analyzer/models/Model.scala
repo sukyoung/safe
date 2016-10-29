@@ -16,7 +16,7 @@ import kr.ac.kaist.safe.nodes.cfg.CFG
 
 // Model
 abstract class Model {
-  def init(h: Heap, cfg: CFG): (Heap, AbsValue)
+  def init(h: AbsHeap, cfg: CFG): (AbsHeap, AbsValue)
 }
 
 sealed abstract class PropDesc

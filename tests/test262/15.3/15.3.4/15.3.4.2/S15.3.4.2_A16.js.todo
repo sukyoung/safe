@@ -1,0 +1,5 @@
+  var obj = {
+    toString : Function.prototype.toString
+  };
+  String(obj);
+  

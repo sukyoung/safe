@@ -17,7 +17,7 @@ For example, the following command analyzes JavaScript code stored in a file nam
 from the \verb!astRewriter! phase but printing the result of the \verb!cfgBuilder!
 phase into a file name ``{out}'':
 \begin{verbatim}
-safe analyze -astRewriter:silent
+safe analyze -silent
              -cfgBuilder:out=out sample.js
 \end{verbatim}
 
@@ -33,6 +33,7 @@ Each command has its own available options.  The most common options are as foll
 % \item[\doption{-{phase}:out={out}}]: \\
 %   \safe writes the result of the phase to a file name \verb!out!.
 \end{itemize}
+and the global options are \verb!-silent! and \verb!-testMode!.
 
 The currently supported commands and their options are as follows:
 \begin{itemize}
@@ -195,7 +196,7 @@ Iter[0] > help print
 usage: print state(-all) ({keyword})
        print block
        print loc {LocName} ({keyword})
-       print fid {functionID}
+       print func {functionID}
        print worklist
        print ipsucc
        print trace
@@ -475,13 +476,14 @@ Iter[12] > print loc #1
 }
 
 \medskip\noindent
-\fbox{\texttt{print fid \{functionID\}}}\\[.2em]
-It displays the name and the span information of
-a given function id.  For example:
+\fbox{\texttt{print func (\{functionID\})}}\\[.2em]
+It displays the list of functions.
+If a function id is given, it displays the name and the span of it.
+For example:
 {\small
 \begin{verbatim}
 <function[0] top-level: ExitExc[-3], ()> @test.js:21:1
-Iter[12] > print fid 0
+Iter[12] > print func 0
 * function name: top-level
 * span info.   : test.js:1:1-21:1
 \end{verbatim}
@@ -534,12 +536,12 @@ test.js:7:11-20 @Call[1] of function[0] top-level with ()
 }
 
 \medskip\noindent
-\fbox{\texttt{print cfg}}\\[.2em]
-It prints the current CFG to files \verb!cfg.gv! and \verb!cfg.pdf!.
+\fbox{\texttt{print cfg \{name\}}}\\[.2em]
+It prints the current CFG to files \verb!name.gv! and \verb!name.pdf!.
 
 \medskip\noindent
-\fbox{\texttt{print html}}\\[.2em]
-It prints the current CFG and its state to the \verb!cfg.html! file.
+\fbox{\texttt{print html \{name\}}}\\[.2em]
+It prints the current CFG and its state to the \verb!name.html! file.
 We describe this facility in the next section.
 
 \subsection{Analyzer debugging with browsing}

@@ -1,0 +1,13 @@
+  {
+    var __result1 = parseFloat("+.1string") !== 0.1;
+    var __expect1 = false;
+  }
+  {
+    var __result2 = parseFloat(".01string") !== 0.01;
+    var __expect2 = false;
+  }
+  {
+    var __result3 = parseFloat("+.22e-1string") !== 0.022;
+    var __expect3 = false;
+  }
+  

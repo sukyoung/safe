@@ -1,0 +1,5 @@
+  {
+    var __result1 = String.prototype.search.prototype !== undefined;
+    var __expect1 = false;
+  }
+  
