@@ -114,10 +114,18 @@ sealed abstract class AbsMap(
       case _ if that.defset subsetOf this.defset =>
         this.map.forall(kv1 => {
           val (key1, value1) = kv1
-          that.map.exists(kv2 => {
+          val test = that.map.exists(kv2 => {
             val (key2, value2) = kv2
             (key1 <= key2) && (value1 <= value2)
           })
+          if (!test) {
+            val value2 = that.map.foldLeft(AbsDataProp.Bot)((adp, kv2) => {
+              val (key2, value2) = kv2
+              if (key1 isRelated key2) adp + value2
+              else adp
+            })
+            value1 <= value2
+          } else test
         })
     }
 
