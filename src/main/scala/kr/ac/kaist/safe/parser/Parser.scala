@@ -86,16 +86,16 @@ object Parser {
       }.map { case (s, e) => (Program(NU.MERGED_SOURCE_INFO, s), e) }
   }
 
-  // Used by ast_rewriter/Hoister.scala
-  def scriptToAST(ss: List[(String, (Int, Int), String)]): Try[(Program, ExcLog)] = ss match {
+  // Used by parser/JSFromHTML.scala
+  def scriptToAST(ss: List[(String, (Int, Int), String)]): Try[(SourceElements, ExcLog)] = ss match {
     case List(script) =>
-      scriptToStmts(script).map { case (s, e) => (Program(s.info, List(s)), e) }
+      scriptToStmts(script)
     case scripts =>
-      scripts.foldLeft(Try((List[SourceElements](), new ExcLog))) {
+      scripts.foldLeft(Try((List[SourceElement](), new ExcLog))) {
         case (res, s) => scriptToStmts(s).flatMap {
-          case (ss, ee) => res.flatMap { case (l, ex) => Try((l ++ List(ss), ex + ee)) }
+          case (ss, ee) => res.flatMap { case (l, ex) => Try((l ++ ss.body, ex + ee)) }
         }
-      }.map { case (s, e) => (Program(NU.MERGED_SOURCE_INFO, s), e) }
+      }.map { case (s, e) => (SourceElements(NU.MERGED_SOURCE_INFO, s, false), e) }
   }
 
   private def resultToAST[T <: ASTNode](
@@ -126,15 +126,17 @@ object Parser {
       // convert path string to linux style for windows
       fileName = fileName.charAt(0).toLower + fileName.replace('\\', '/').substring(1)
     }
-    if (!fileName.endsWith(".js") && !fileName.endsWith(".js.err"))
-      Failure(NotJSFileError(fileName))
-    else {
+    if (fileName.endsWith(".js") || fileName.endsWith(".js.err")) {
       val fs = new FileInputStream(new File(f))
       val sr = new InputStreamReader(fs, Charset.forName("UTF-8"))
       val in = new BufferedReader(sr)
       val pair = parsePgm(in, fileName, 0).flatMap { case (p, e) => getInfoStmts(p).map { (_, e) } }
       in.close; sr.close; fs.close
       pair
+    } else if (fileName.endsWith(".html") || fileName.endsWith(".xhtml") || fileName.endsWith(".htm")) {
+      new JSFromHTML(fileName).parseScripts
+    } else {
+      Failure(NotJSFileError(fileName))
     }
   }
 

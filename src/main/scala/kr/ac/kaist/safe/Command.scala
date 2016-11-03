@@ -69,6 +69,7 @@ case object CmdCFGBuild extends CommandObj("cfgBuild", CmdCompile >> CFGBuild) {
   override def display(cfg: CFG): Unit = println(cfg.toString(0))
 }
 
+// analyze
 case object CmdAnalyze extends CommandObj("analyze", CmdCFGBuild >> Analyze) {
   override def display(result: (CFG, Int, CallContext)): Unit = {
     val (cfg, iters, globalCC) = result
@@ -117,6 +118,11 @@ case object CmdAnalyze extends CommandObj("analyze", CmdCFGBuild >> Analyze) {
     val insts = blocks.foldLeft(0)(_ + _.getInsts.length)
     println(s"- # of instructions: $insts")
   }
+}
+
+// bugDetect
+case object CmdBugDetect extends CommandObj("bugDetect", CmdAnalyze >> BugDetect) {
+  override def display(cfg: CFG): Unit = println(cfg.toString(0))
 }
 
 case object CmdTestRewrite extends CommandObj("testRewrite", CmdParse >> TestRewrite)

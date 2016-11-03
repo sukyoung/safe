@@ -24,7 +24,7 @@ import kr.ac.kaist.safe.util._
 // Analyze phase
 case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, Int, CallContext)] {
   val name: String = "analyzer"
-  val help: String = "Analyze the JavaScript source files."
+  val help: String = "Analyze JavaScript source files."
 
   def apply(
     cfg: CFG,

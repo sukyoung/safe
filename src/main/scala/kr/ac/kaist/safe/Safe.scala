@@ -75,6 +75,7 @@ object Safe {
     CmdCompile,
     CmdCFGBuild,
     CmdAnalyze,
+    CmdBugDetect,
     CmdTestRewrite,
     CmdHelp
   )
@@ -89,6 +90,7 @@ object Safe {
     Compile,
     CFGBuild,
     Analyze,
+    BugDetect,
     TestRewrite,
     Help
   )
