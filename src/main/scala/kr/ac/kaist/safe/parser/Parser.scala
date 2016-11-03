@@ -134,7 +134,7 @@ object Parser {
       in.close; sr.close; fs.close
       pair
     } else if (fileName.endsWith(".html") || fileName.endsWith(".xhtml") || fileName.endsWith(".htm")) {
-      new JSFromHTML(fileName).parseScripts
+      JSFromHTML.parseScripts(fileName)
     } else {
       Failure(NotJSFileError(fileName))
     }
