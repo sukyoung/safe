@@ -35,8 +35,16 @@ case class NoCmdError(str: String) extends ArgParseError({
   s"Command '$str' does not exist."
 })
 
+case class NoPhaseError(str: String) extends ArgParseError({
+  s"Phase '$str' does not exist."
+})
+
 case object NoInputError extends ArgParseError({
   "Please input a command."
+})
+
+case class NoObjError(str: String) extends ArgParseError({
+  s"The json '$str' should be an object type."
 })
 
 case class NoOptError(str: String, cmd: Command) extends ArgParseError({
