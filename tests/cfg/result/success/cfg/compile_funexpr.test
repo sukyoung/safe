@@ -6,15 +6,15 @@ function[0] top-level {
     [1] noop(StartOfFile)
     [2] <>Global<>ignore8 := function (3) @ #5, #6
     [3] x := <>Global<>ignore8
-    [4] <>obj1<>19 := function <>h<>13(4) @ #11, #12, #13
-    [5] <>obj<>20 := <>Global<>toObject(<>obj1<>19) @ #14
+    [4] <>obj1<>19 := function <>h<>13(4) @ #10, #11, #12
+    [5] <>obj<>20 := <>Global<>toObject(<>obj1<>19) @ #13
     [6] <>temp<>21 := 3
-    [7] <>arguments<>22 := allocArg(1) @ #15
+    [7] <>arguments<>22 := allocArg(1) @ #14
     [8] <>arguments<>22["0"] := <>temp<>21
     [9] <>this<> := enterCode(<>Global<>global)
 
   Call[1] -> ExitExc
-    [0] call(<>obj<>20, <>this<>, <>arguments<>22) @ #16
+    [0] call(<>obj<>20, <>this<>, <>arguments<>22) @ #15
 
   AfterCall[2] -> [4]
 

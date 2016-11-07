@@ -538,8 +538,8 @@ class Semantics(
 
   def CI(cp: ControlPoint, i: CFGCallInst, st: AbsState, excSt: AbsState): (AbsState, AbsState) = {
     // cons, thisArg and arguments must not be bottom
-    val locR = Loc(i.addr1, Recent)
-    val st1 = st.oldify(i.addr1)
+    val locR = Loc(i.addr, Recent)
+    val st1 = st.oldify(i.addr)
     val (funVal, funExcSet) = V(i.fun, st1)
     val funLocSet = i match {
       case (_: CFGConstruct) => funVal.locset.filter(l => AT <= st1.heap.hasConstruct(l))

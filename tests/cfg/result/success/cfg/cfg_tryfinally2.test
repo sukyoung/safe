@@ -44,9 +44,9 @@ function[0] top-level {
     [0] x := 10
 
   Block[12] -> [14], [17]
-    [0] <>obj<>1 := <>Global<>toObject(print) @ #5
+    [0] <>obj<>1 := <>Global<>toObject(print) @ #4
     [1] <>temp<>2 := x
-    [2] <>arguments<>3 := allocArg(1) @ #6
+    [2] <>arguments<>3 := allocArg(1) @ #5
     [3] <>arguments<>3["0"] := <>temp<>2
     [4] <>fun<>4 := <>Global<>getBase(print)
     [5] <>this<> := enterCode(<>fun<>4)
@@ -55,7 +55,7 @@ function[0] top-level {
     [0] x := 9
 
   Call[14] -> [17]
-    [0] call(<>obj<>1, <>this<>, <>arguments<>3) @ #7
+    [0] call(<>obj<>1, <>this<>, <>arguments<>3) @ #6
 
   AfterCall[15] -> [13]
 
@@ -74,9 +74,9 @@ function[0] top-level {
     [0] x := 10
 
   Block[21] -> [23], [26]
-    [0] <>obj<>1 := <>Global<>toObject(print) @ #9
+    [0] <>obj<>1 := <>Global<>toObject(print) @ #7
     [1] <>temp<>2 := x
-    [2] <>arguments<>3 := allocArg(1) @ #10
+    [2] <>arguments<>3 := allocArg(1) @ #8
     [3] <>arguments<>3["0"] := <>temp<>2
     [4] <>fun<>4 := <>Global<>getBase(print)
     [5] <>this<> := enterCode(<>fun<>4)
@@ -85,7 +85,7 @@ function[0] top-level {
     [0] x := 9
 
   Call[23] -> [26]
-    [0] call(<>obj<>1, <>this<>, <>arguments<>3) @ #11
+    [0] call(<>obj<>1, <>this<>, <>arguments<>3) @ #9
 
   AfterCall[24] -> [22]
 
@@ -98,9 +98,9 @@ function[0] top-level {
     [0] x := 10
 
   Block[28] -> [30], [33]
-    [0] <>obj<>1 := <>Global<>toObject(print) @ #13
+    [0] <>obj<>1 := <>Global<>toObject(print) @ #10
     [1] <>temp<>2 := x
-    [2] <>arguments<>3 := allocArg(1) @ #14
+    [2] <>arguments<>3 := allocArg(1) @ #11
     [3] <>arguments<>3["0"] := <>temp<>2
     [4] <>fun<>4 := <>Global<>getBase(print)
     [5] <>this<> := enterCode(<>fun<>4)
@@ -109,7 +109,7 @@ function[0] top-level {
     [0] x := 9
 
   Call[30] -> [33]
-    [0] call(<>obj<>1, <>this<>, <>arguments<>3) @ #15
+    [0] call(<>obj<>1, <>this<>, <>arguments<>3) @ #12
 
   AfterCall[31] -> [29]
 

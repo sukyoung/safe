@@ -254,8 +254,7 @@ sealed abstract class CFGCallInst(
   val fun: CFGExpr,
   val thisArg: CFGExpr,
   val arguments: CFGExpr,
-  val addr1: Address,
-  val addr2: Address
+  val addr: Address
 ) extends CFGInst(ir, block)
 
 // call(e1, e2, e3)
@@ -265,10 +264,9 @@ case class CFGCall(
     override val fun: CFGExpr,
     override val thisArg: CFGExpr,
     override val arguments: CFGExpr,
-    override val addr1: Address,
-    override val addr2: Address
-) extends CFGCallInst(ir, block, fun, thisArg, arguments, addr1, addr2) {
-  override def toString: String = s"call($fun, $thisArg, $arguments) @ #$addr1" // TODO #$addr2
+    override val addr: Address
+) extends CFGCallInst(ir, block, fun, thisArg, arguments, addr) {
+  override def toString: String = s"call($fun, $thisArg, $arguments) @ #$addr"
 }
 
 // construct(e1, e2, e3)
@@ -278,8 +276,7 @@ case class CFGConstruct(
     override val fun: CFGExpr,
     override val thisArg: CFGExpr,
     override val arguments: CFGExpr,
-    override val addr1: Address,
-    override val addr2: Address
-) extends CFGCallInst(ir, block, fun, thisArg, arguments, addr1, addr2) {
-  override def toString: String = s"construct($fun, $thisArg, $arguments) @ #$addr1, #$addr2"
+    override val addr: Address
+) extends CFGCallInst(ir, block, fun, thisArg, arguments, addr) {
+  override def toString: String = s"construct($fun, $thisArg, $arguments) @ #$addr"
 }

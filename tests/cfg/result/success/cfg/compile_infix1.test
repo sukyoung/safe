@@ -48,7 +48,7 @@ function[0] top-level {
 
   Block[13] -> Exit, ExitExc
     [0] a := <>y<>4 | b
-    [1] <>obj<>5 := <>Global<>toObject(a) @ #5
+    [1] <>obj<>5 := <>Global<>toObject(a) @ #4
     [2] a := <>obj<>5["b"] + b
     [3] noop(EndOfFile)
 

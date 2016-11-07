@@ -3,7 +3,7 @@ function[0] top-level {
 
   Block[0] -> Exit
     [0] f := function (1) @ #1, #2
-    [1] g := function (2) @ #7, #8
+    [1] g := function (2) @ #6, #7
     [2] noop(StartOfFile)
     [3] noop(EndOfFile)
 

@@ -10,7 +10,7 @@ function[0] top-level {
     [5] <>obj<>6 := alloc(<>proto<>5) @ #6
 
   Call[1] -> ExitExc
-    [0] construct(<>fun<>3, <>obj<>6, <>arguments<>4) @ #7, #8
+    [0] construct(<>fun<>3, <>obj<>6, <>arguments<>4) @ #7
 
   AfterCall[2] -> [4]
 

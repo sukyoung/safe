@@ -26,15 +26,15 @@ function[0] top-level {
 
   Block[4] -> [5], ExitExc
     [0] <>y<>12 := <>y<>6 + <>z<>11 + "! Boys say "
-    [1] <>obj<>13 := <>Global<>toObject(say) @ #11
+    [1] <>obj<>13 := <>Global<>toObject(say) @ #10
     [2] <>temp<>14 := "boy"
-    [3] <>arguments<>15 := allocArg(1) @ #12
+    [3] <>arguments<>15 := allocArg(1) @ #11
     [4] <>arguments<>15["0"] := <>temp<>14
     [5] <>fun<>16 := <>Global<>getBase(say)
     [6] <>this<> := enterCode(<>fun<>16)
 
   Call[5] -> ExitExc
-    [0] call(<>obj<>13, <>this<>, <>arguments<>15) @ #13
+    [0] call(<>obj<>13, <>this<>, <>arguments<>15) @ #12
 
   AfterCall[6] -> [8]
 
@@ -42,15 +42,15 @@ function[0] top-level {
 
   Block[8] -> [9], ExitExc
     [0] <>y<>18 := <>y<>12 + <>z<>17 + "! and I say "
-    [1] <>obj<>19 := <>Global<>toObject(say) @ #15
+    [1] <>obj<>19 := <>Global<>toObject(say) @ #13
     [2] <>temp<>20 := "me"
-    [3] <>arguments<>21 := allocArg(1) @ #16
+    [3] <>arguments<>21 := allocArg(1) @ #14
     [4] <>arguments<>21["0"] := <>temp<>20
     [5] <>fun<>22 := <>Global<>getBase(say)
     [6] <>this<> := enterCode(<>fun<>22)
 
   Call[9] -> ExitExc
-    [0] call(<>obj<>19, <>this<>, <>arguments<>21) @ #17
+    [0] call(<>obj<>19, <>this<>, <>arguments<>21) @ #15
 
   AfterCall[10] -> [12]
 
@@ -58,13 +58,13 @@ function[0] top-level {
 
   Block[12] -> [13], ExitExc
     [0] <>temp<>24 := <>y<>18 + <>z<>23 + "!"
-    [1] <>arguments<>25 := allocArg(1) @ #19
+    [1] <>arguments<>25 := allocArg(1) @ #16
     [2] <>arguments<>25["0"] := <>temp<>24
     [3] <>fun<>26 := <>Global<>getBase(print)
     [4] <>this<> := enterCode(<>fun<>26)
 
   Call[13] -> ExitExc
-    [0] call(<>obj<>5, <>this<>, <>arguments<>25) @ #20
+    [0] call(<>obj<>5, <>this<>, <>arguments<>25) @ #17
 
   AfterCall[14] -> [16]
 

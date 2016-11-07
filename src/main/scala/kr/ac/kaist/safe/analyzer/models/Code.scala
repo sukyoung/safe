@@ -92,7 +92,7 @@ class CallCode(
     val beforeBlock: ModelBlock = func.createModelBlock(beforeSem)
 
     val callBlock: Call = func.createCall(
-      CFGCall(func.ir, _, CFGVarRef(func.ir, funcId), CFGVarRef(func.ir, thisId), CFGVarRef(func.ir, argsId), SystemAddr(name + "<BuiltinCall>1"), SystemAddr(name + "<BuiltinCall>2")),
+      CFGCall(func.ir, _, CFGVarRef(func.ir, funcId), CFGVarRef(func.ir, thisId), CFGVarRef(func.ir, argsId), SystemAddr("Function.prototype.call<env>")),
       retId
     )
 

@@ -406,7 +406,7 @@ class DefaultCFGBuilder(
         tailBlock.createInst(CFGEnterCode(stmt, _, thisId, id2cfgExpr(thisB)))
         val ref = CFGVarRef(stmt, thisId)
         val f = tailBlock.func
-        val call = f.createCall(CFGCall(stmt, _, id2cfgExpr(fun), ref, id2cfgExpr(args), newAddr, newAddr), id2cfgId(lhs))
+        val call = f.createCall(CFGCall(stmt, _, id2cfgExpr(fun), ref, id2cfgExpr(args), newAddr), id2cfgId(lhs))
         cfg.addEdge(tailBlock, call)
 
         (
@@ -418,7 +418,7 @@ class DefaultCFGBuilder(
       case IRNew(_, lhs, cons, args) if (args.length == 2) =>
         val tailBlock: NormalBlock = getTail(blocks, func)
         val f = tailBlock.func
-        val call = f.createCall(CFGConstruct(stmt, _, id2cfgExpr(cons), id2cfgExpr(args(0)), id2cfgExpr(args(1)), newAddr, newAddr), id2cfgId(lhs))
+        val call = f.createCall(CFGConstruct(stmt, _, id2cfgExpr(cons), id2cfgExpr(args(0)), id2cfgExpr(args(1)), newAddr), id2cfgId(lhs))
         cfg.addEdge(tailBlock, call)
 
         (
