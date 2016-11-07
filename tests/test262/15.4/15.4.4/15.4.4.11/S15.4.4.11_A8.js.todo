@@ -1,0 +1,16 @@
+// TODO strict
+  var global = this;
+  [2, 3, ].sort((function (x, y) 
+  {
+  "use strict";
+    {
+      var __result1 = this === global;
+      var __expect1 = false;
+    }
+    {
+      var __result2 = this !== undefined;
+      var __expect2 = false;
+    }
+    return x - y;
+  }));
+  

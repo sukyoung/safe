@@ -22,6 +22,16 @@ import kr.ac.kaist.safe.util.{ NodeUtil => NU, SourceLoc, Span }
 import kr.ac.kaist.safe.BASE_DIR
 
 object Parser {
+  // For modeling in JavaScript
+  val base = BASE_DIR + "/src/main/resources/jsModels/"
+  val jsModels: List[String] =
+    List[String](base + "__builtin__.js")
+  /*
+                 base + "__dom__.js",
+                 base + "__input__.js").filter(f => new File(f).exists())
+    */
+  private def isModeled(node: ASTNode): Boolean =
+    node.info.span.fileName.contains("jsModels")
 
   // Used by DynamicRewriter
   def stringToFnE(str: (String, (Int, Int), String)): Try[(FunExpr, ExcLog)] = {
@@ -76,17 +86,19 @@ object Parser {
   }
 
   // Used by phase/Parse.scala
-  def fileToAST(fs: List[String]): Try[(Program, ExcLog)] = fileToAST(fs, false)
+  def fileToAST(fs: List[String]): Try[(Program, ExcLog)] =
+    fileToAST(fs, false)
 
-  private def jsModelFileToAST(fs: List[String]): Try[(Program, ExcLog)] = fileToAST(fs, true)
+  private def jsModelFileToAST(fs: List[String]): Try[(Program, ExcLog)] =
+    fileToAST(fs, true)
 
-  private def fileToAST(fs: List[String], isJSModel: Boolean): Try[(Program, ExcLog)] = fs match {
+  private def fileToAST(fs: List[String], woJSModel: Boolean): Try[(Program, ExcLog)] = fs match {
     case List(file) =>
-      fileToStmts(file).map {
+      fileToStmts(file).flatMap {
         case (s, e) =>
           {
             val program = Program(s.info, List(s))
-            if (isJSModel) (program, e) else addJSModel(program, e)
+            if (woJSModel) Try(program, e) else addJSModel(program, e)
           }
       }
     case files =>
@@ -94,10 +106,10 @@ object Parser {
         case (res, f) => fileToStmts(f).flatMap {
           case (ss, ee) => res.flatMap { case (l, ex) => Try((l ++ List(ss), ex + ee)) }
         }
-      }.map {
+      }.flatMap {
         case (s, e) => {
           val program = Program(NU.MERGED_SOURCE_INFO, s)
-          if (isJSModel) (program, e) else addJSModel(program, e)
+          if (woJSModel) Try(program, e) else addJSModel(program, e)
         }
       }
   }
@@ -115,23 +127,31 @@ object Parser {
   }
 
   // concatenate ASTs modeled in JavaScript
-  private def addJSModel(program: Program, excLog: ExcLog): (Program, ExcLog) = {
-    val base = BASE_DIR + "/src/main/resources/jsModels/"
-    val jsModels: List[String] =
-      List[String](base + "__builtin__.js")
-    /*
-                   base + "__dom__.js",
-                   base + "__input__.js").filter(f => new File(f).exists())
-      */
+  private def addJSModel(program: Program, excLog: ExcLog): Try[(Program, ExcLog)] = {
     jsModelFileToAST(jsModels).map {
       case (p, e) =>
         (p, program) match {
           case (Program(_, TopLevel(_, fds0, vds0, body0)), Program(info, TopLevel(_, fds1, vds1, body1))) =>
-            (Program(info, TopLevel(info, fds0 ++ fds1, vds0 ++ vds1, body0 ++ body1)), e + excLog)
+            (Program(info, TopLevel(info, fds0 ++ fds1, vds0 ++ vds1, body0 ++ body1)),
+              e + excLog)
         }
     }
-    (program, excLog)
   }
+
+  // remove ASTs modeled in JavaScript
+  def removeJSModel(program: Program): Program = program match {
+    case Program(info1, TopLevel(info2, fds, vds, body)) =>
+      Program(info1, TopLevel(info2, removeJSModelFds(fds), removeJSModelVds(vds), removeJSModelSes(body)))
+  }
+
+  private def removeJSModelFds(list: List[FunDecl]): List[FunDecl] =
+    list.foldLeft(List[FunDecl]())((r, fd) => if (isModeled(fd)) r else r ++ List(fd))
+
+  private def removeJSModelVds(list: List[VarDecl]): List[VarDecl] =
+    list.foldLeft(List[VarDecl]())((r, vd) => if (isModeled(vd)) r else r ++ List(vd))
+
+  private def removeJSModelSes(list: List[SourceElements]): List[SourceElements] =
+    list.foldLeft(List[SourceElements]())((r, se) => if (isModeled(se)) r else r ++ List(se))
 
   private def resultToAST[T <: ASTNode](
     parser: JS,

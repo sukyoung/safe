@@ -101,11 +101,14 @@ object BuiltinArrayProto extends ObjModel(
       code = BasicCode(argLen = 2, BuiltinArrayHelper.slice)
     ), T, F, T),
 
-    // TODO 15.4.4.11 Array.prototype.sort(comparefn)
+    // 15.4.4.11 Array.prototype.sort(comparefn)
+    // Modeled in src/main/resources/jsModels/__builtin__.js
+    /*
     NormalProp("sort", FuncModel(
       name = "Array.prototype.sort",
       code = EmptyCode(argLen = 1)
     ), T, F, T),
+    */
 
     // 15.4.4.12 Array.prototype.splice(start, deleteCount[, item1[, item2[, ... ]]])
     NormalProp("splice", FuncModel(

@@ -212,7 +212,7 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
 
     val config = getSafeConfig(jsName)
 
-    lazy val pgm = Parse((), config)
+    lazy val pgm = Parse((), config).map(Parser.removeJSModel)
     registerTest("[Parse] " + filename, ParseTest) { parseTest(pgm) }
 
     lazy val ast = pgm.flatMap(ASTRewrite(_, config))
