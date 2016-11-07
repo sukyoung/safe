@@ -97,6 +97,8 @@ object Safe {
 
   // global options
   val options: List[PhaseOption[SafeConfig]] = List(
+    ("json", StrOption((c, str) => ()),
+      "set options by using a JSON file."),
     ("silent", BoolOption(c => c.silent = true),
       "all messages are muted."),
     ("testMode", BoolOption(c => c.testMode = true),
