@@ -19,6 +19,7 @@ import kr.ac.kaist.safe.errors.ExcLog
 import kr.ac.kaist.safe.errors.error.{ ParserError, NotJSFileError, AlreadyMergedSourceError }
 import kr.ac.kaist.safe.nodes.ast._
 import kr.ac.kaist.safe.util.{ NodeUtil => NU, SourceLoc, Span }
+import kr.ac.kaist.safe.BASE_DIR
 
 object Parser {
 
@@ -75,15 +76,30 @@ object Parser {
   }
 
   // Used by phase/Parse.scala
-  def fileToAST(fs: List[String]): Try[(Program, ExcLog)] = fs match {
+  def fileToAST(fs: List[String]): Try[(Program, ExcLog)] = fileToAST(fs, false)
+
+  private def jsModelFileToAST(fs: List[String]): Try[(Program, ExcLog)] = fileToAST(fs, true)
+
+  private def fileToAST(fs: List[String], isJSModel: Boolean): Try[(Program, ExcLog)] = fs match {
     case List(file) =>
-      fileToStmts(file).map { case (s, e) => (Program(s.info, List(s)), e) }
+      fileToStmts(file).map {
+        case (s, e) =>
+          {
+            val program = Program(s.info, List(s))
+            if (isJSModel) (program, e) else addJSModel(program, e)
+          }
+      }
     case files =>
       files.foldLeft(Try((List[SourceElements](), new ExcLog))) {
         case (res, f) => fileToStmts(f).flatMap {
           case (ss, ee) => res.flatMap { case (l, ex) => Try((l ++ List(ss), ex + ee)) }
         }
-      }.map { case (s, e) => (Program(NU.MERGED_SOURCE_INFO, s), e) }
+      }.map {
+        case (s, e) => {
+          val program = Program(NU.MERGED_SOURCE_INFO, s)
+          if (isJSModel) (program, e) else addJSModel(program, e)
+        }
+      }
   }
 
   // Used by parser/JSFromHTML.scala
@@ -96,6 +112,25 @@ object Parser {
           case (ss, ee) => res.flatMap { case (l, ex) => Try((l ++ ss.body, ex + ee)) }
         }
       }.map { case (s, e) => (SourceElements(NU.MERGED_SOURCE_INFO, s, false), e) }
+  }
+
+  // concatenate ASTs modeled in JavaScript
+  private def addJSModel(program: Program, excLog: ExcLog): (Program, ExcLog) = {
+    val base = BASE_DIR + "/src/main/resources/jsModels/"
+    val jsModels: List[String] =
+      List[String](base + "__builtin__.js")
+    /*
+                   base + "__dom__.js",
+                   base + "__input__.js").filter(f => new File(f).exists())
+      */
+    jsModelFileToAST(jsModels).map {
+      case (p, e) =>
+        (p, program) match {
+          case (Program(_, TopLevel(_, fds0, vds0, body0)), Program(info, TopLevel(_, fds1, vds1, body1))) =>
+            (Program(info, TopLevel(info, fds0 ++ fds1, vds0 ++ vds1, body0 ++ body1)), e + excLog)
+        }
+    }
+    (program, excLog)
   }
 
   private def resultToAST[T <: ASTNode](
