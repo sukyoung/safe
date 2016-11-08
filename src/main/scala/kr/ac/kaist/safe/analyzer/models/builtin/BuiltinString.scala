@@ -22,6 +22,8 @@ import kr.ac.kaist.safe.util.SystemAddr
 
 object BuiltinStringHelper {
   val instanceAddr = SystemAddr("String<instance>")
+  val matchObjAddr = SystemAddr("String.prototype.match<object>")
+
   def typeConvert(args: AbsValue, st: AbsState): AbsString = {
     val h = st.heap
     val argV = Helper.propLoad(args, Set(AbsString("0")), h)
@@ -50,6 +52,18 @@ object BuiltinStringHelper {
       val loc = Loc(addr, Recent)
       val heap = state.heap.update(loc, AbsObject.newStringObj(num))
       (AbsState(heap, state.context), AbsState.Bot, AbsValue(loc))
+    }
+  )
+
+  val matchFunc = BasicCode(
+    argLen = 1,
+    addrSet = HashSet(matchObjAddr),
+    code = (args: AbsValue, st: AbsState) => {
+      val addr = matchObjAddr
+      val state = st.oldify(addr)
+      val loc = Loc(addr, Recent)
+      val heap = state.heap.update(loc, AbsObject.Top)
+      (AbsState(heap, state.context), AbsState.Bot, AbsValue(Null, loc))
     }
   )
 
@@ -382,10 +396,10 @@ object BuiltinStringProto extends ObjModel(
       })
     ), T, F, T),
 
-    // TODO 15.5.4.10 String.prototype.match(regexp)
+    // 15.5.4.10 String.prototype.match(regexp)
     NormalProp("match", FuncModel(
       name = "String.prototype.match",
-      code = EmptyCode(argLen = 1)
+      code = BuiltinStringHelper.matchFunc
     ), T, F, T),
 
     // TODO 15.5.4.11 String.prototype.replace(searchValue, replaceValue)
