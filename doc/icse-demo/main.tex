@@ -12,7 +12,7 @@
 \newcommand{\mtt}[1]{\texttt{\small #1}}
 \newcommand{\msf}[1]{{\sf\small #1}}
 \newcommand{\oldsafe}{{SAFE 1.0}\xspace}
-\newcommand{\safe}{{SAFE 2.0}\xspace}
+\newcommand{\safe}{{SAFE~2.0}\xspace}
 \newcommand{\htmldebug}{{\sf\small HTML Debugger}\xspace}
 
 \hyphenation{op-tical net-works semi-conduc-tor}
@@ -46,11 +46,11 @@ However, because JavaScript and web environments are
 extremely dynamic, JavaScript web applications are often
 vulnerable to type-related errors and security attacks.
 To lessen the problem, researchers have developed various analysis
-techniques in different analyzers, but they are not especially
-aimed for usability.  In this paper, we present \safe, a scalable
-analysis framework for ECMAScript especially aimed to be a playground
-for advanced research in JavaScript web applications.  \safe is designed
-to be light-weight, which supports configurability, extensibility, and
+techniques in different analyzers, but such analyzers are not especially
+aimed for ease of use by analysis developers.  In this paper, we present \safe, a scalable
+analysis framework for ECMAScript especially designed as a playground
+for advanced research in JavaScript web applications.  \safe is
+light-weight, which supports configurability, extensibility, and
 debuggability.
 \end{abstract}
 
@@ -78,10 +78,11 @@ is a scalable analysis framework for ECMAScript, and it has adopted recent resea
 While more analysis techniques make SAFE more featureful,
 they make the code base of SAFE large and complex, which makes it
 difficult for new users to understand the code base.
-TAJS\footnote{\url{https://github.com/cs-au-dk/TAJS}}~\cite{TAJSDETER})
+TAJS\footnote{\url{https://github.com/cs-au-dk/TAJS}}~\cite{TAJSDETER}
 is a dataflow analysis for JavaScript that infers type information and call graphs.
-It also provides analysis techniques published by the TAJS team with options;
-for example, the {\tt -determinacy} option enables the techniques described in~\cite{TAJSDETER}.
+It provides an analysis technique as a whole with an option instead of as
+configurable components;
+for example, the \mtt{-determinacy} option enables the techniques described in~\cite{TAJSDETER}.
 WALA\footnote{\url{http://wala.sourceforge.net/wiki/index.php}}~\cite{Schafer13}
 was originally developed for pointer analysis of Java programs, and it
 also supports flow-insensitive pointer analysis of JavaScript programs.
@@ -89,8 +90,8 @@ Because WALA aims to support analysis of multiple programming languages,
 the source code repository is huge with many packages.
 While SAFE, TAJS, and WALA are mainly static analyzers possibly using dynamic information,
 Jalangi\footnote{\url{https://github.com/SRA-SiliconValley/jalangi}}~\cite{Sen13}
-is a dynamic analysis framework for JavaScript, which provides simple
-traditional dynamic analyzers like a taint analyzer as example uses of the framework.
+is a dynamic analysis framework for JavaScript, which may miss many execution flows.
+It provides simple dynamic analyzers like a taint analyzer as example uses of the framework.
 
 
 Let us consider SAFE more closely.  It was first designed to analyze pure
@@ -98,7 +99,7 @@ JavaScript benchmarks~\cite{Lee12}.  It provides a default static analyzer
 based on the abstract interpretation framework, and it supports
 flow-sensitive and context-sensitive analyses of stand-alone JavaScript
 programs.  It performs several preprocessing steps on JavaScript code to
-address some quirky semantics of JavaScript such as the {\tt with}
+address some quirky semantics of JavaScript such as the \mtt{with}
 statement~\cite{dls13}.
 %, and that part has been used by other researchers~\cite{jsai,kjs}.
 It was then extended to model web application execution environments
@@ -129,7 +130,7 @@ var phases: List[Phase] = List(Parse, ASTRewrite, Compile, CFGBuild, Analyze, Bu
 \end{minipage}
 \\[1.5em]
 {\small (a) Add a new command and a new phase to the lists of available
-commands and phases, respectively, in {\tt Safe.scala}}
+commands and phases, respectively, in \mtt{Safe.scala}}
 \\[1em]
 \begin{minipage}{.95\textwidth}
 \footnotesize
@@ -140,7 +141,7 @@ case object CmdBugDetect extends CommandObj("bugDetect", CmdAnalyze >> BugDetect
 \end{verbatim}
 \end{minipage}
 \\[1em]
-{\small (b) Add the new command by specifying its name and phases in {\tt Command.scala}}
+{\small (b) Add the new command by specifying its name and phases in \mtt{Command.scala}}
 \\[1em]
 \begin{minipage}{.95\textwidth}
 \footnotesize
@@ -375,7 +376,7 @@ specification~\cite{ECMA}.  Our regression test suite checks
 whether the analysis results soundly approximate their corresponding
 concrete values.  It also measures how many tests are being analyzed
 precisely.  This test infrastructure with Test262 will aid \safe users
-who build new analysis techniques to ``test'' the soundness of their
+who build new analysis techniques to ``test'' the soundness and precision of their
 new analysis implementation.
 
 
