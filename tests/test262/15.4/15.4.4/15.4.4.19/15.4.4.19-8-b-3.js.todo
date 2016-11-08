@@ -1,0 +1,34 @@
+// TODO getters/setters
+  function testcase() 
+  {
+    function callbackfn(val, idx, obj) 
+    {
+      if (idx === 2)
+      {
+        return false;
+      }
+      else
+      {
+        return true;
+      }
+    }
+    var obj = {
+      2 : 6.99,
+      8 : 19
+    };
+    Object.defineProperty(obj, "length", {
+      get : (function () 
+      {
+        delete obj[2];
+        return 10;
+      }),
+      configurable : true
+    });
+    var testResult = Array.prototype.map.call(obj, callbackfn);
+    return typeof testResult[2] === "undefined";
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

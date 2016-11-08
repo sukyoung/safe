@@ -1,0 +1,23 @@
+// TODO getters/setters
+  function testcase() 
+  {
+    function callbackfn(val, idx, obj) 
+    {
+      return undefined === val && idx === 0;
+    }
+    var arr = [];
+    Object.defineProperty(arr, "0", {
+      set : (function () 
+      {
+        
+      }),
+      configurable : true
+    });
+    var newArr = arr.filter(callbackfn);
+    return newArr.length === 1 && newArr[0] === undefined;
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  
