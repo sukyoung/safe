@@ -1,0 +1,18 @@
+  function testcase() 
+  {
+    this._15_4_4_18_5_1 = false;
+    var _15_4_4_18_5_1 = true;
+    var result;
+    function callbackfn(val, idx, obj) 
+    {
+      result = this._15_4_4_18_5_1;
+    }
+    var arr = [1, ];
+    arr.forEach(callbackfn);
+    return ! result;
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

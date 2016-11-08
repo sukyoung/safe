@@ -1,0 +1,3 @@
+// TODO Array.prototype.forEach.length
+var __result1 = Array.prototype.forEach.length;
+var __expect1 = 1;

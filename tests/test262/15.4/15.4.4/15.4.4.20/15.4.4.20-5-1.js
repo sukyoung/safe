@@ -1,0 +1,17 @@
+  function testcase() 
+  {
+    this._15_4_4_20_5_1 = false;
+    var _15_4_4_20_5_1 = true;
+    function callbackfn(val, idx, obj) 
+    {
+      return this._15_4_4_20_5_1;
+    }
+    var srcArr = [1, ];
+    var resArr = srcArr.filter(callbackfn);
+    return resArr.length === 0;
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  

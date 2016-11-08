@@ -1,0 +1,38 @@
+// TODO getters/setters
+  function testcase() 
+  {
+    var accessed = false;
+    function callbackfn(val, idx, obj) 
+    {
+      accessed = true;
+    }
+    try
+{      Object.defineProperty(Object.prototype, "length", {
+        get : (function () 
+        {
+          return 2;
+        }),
+        configurable : true
+      });
+      var obj = {
+        0 : 12,
+        1 : 11
+      };
+      Object.defineProperty(obj, "length", {
+        set : (function () 
+        {
+          
+        }),
+        configurable : true
+      });
+      Array.prototype.forEach.call(obj, callbackfn);
+      return ! accessed;}
+    finally
+{      delete Object.prototype.length;}
+
+  }
+  {
+    var __result1 = testcase();
+    var __expect1 = true;
+  }
+  
