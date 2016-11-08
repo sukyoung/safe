@@ -94,17 +94,18 @@ is a dynamic analysis framework for JavaScript, which may miss many execution fl
 It provides simple dynamic analyzers like a taint analyzer as example uses of the framework.
 
 
-Let us consider SAFE more closely.  It was first designed to analyze pure
+Let us consider SAFE more closely\footnote{
+Note that one of the authors is a main developer of SAFE.}.  It was first designed to analyze pure
 JavaScript benchmarks~\cite{Lee12}.  It provides a default static analyzer
 based on the abstract interpretation framework, and it supports
-flow-sensitive and context-sensitive analyses of stand-alone JavaScript
+flow-sensitive and context-sensitive analyses of JavaScript
 programs.  It performs several preprocessing steps on JavaScript code to
-address some quirky semantics of JavaScript such as the \mtt{with}
+address quirky semantics of JavaScript such as the \mtt{with}
 statement~\cite{dls13}.
 %, and that part has been used by other researchers~\cite{jsai,kjs}.
 It was then extended to model web application execution environments
 of various browsers~\cite{safewapp} with HTML/DOM tree abstraction,
-and it supports analysis of interactions between JavaScript applications
+and it supports analysis of interactions between JavaScript code
 and native functions in platform-specific libraries by using automatic
 modeling of library functions from API specifications~\cite{SAFEWAPI}.
 Recent extensions of SAFE include aggressive integration of
