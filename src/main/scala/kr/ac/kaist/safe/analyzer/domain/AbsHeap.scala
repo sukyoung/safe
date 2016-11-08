@@ -21,7 +21,7 @@ import kr.ac.kaist.safe.nodes.cfg._
 ////////////////////////////////////////////////////////////////////////////////
 // concrete heap type
 ////////////////////////////////////////////////////////////////////////////////
-trait Heap // TODO
+case class Heap(map: Map[Loc, Object])
 
 ////////////////////////////////////////////////////////////////////////////////
 // heap abstract domain
@@ -82,7 +82,12 @@ object DefaultHeap extends AbsHeapUtil {
   ) extends Dom
   lazy val Bot: AbsHeap = HeapMap()
 
-  def alpha(heap: Heap): AbsHeap = Top // TODO more precise
+  def alpha(heap: Heap): AbsHeap = {
+    val map = heap.map.foldLeft[Map[Loc, AbsObject]](HashMap()) {
+      case (map, (loc, obj)) => map + (loc -> AbsObject(obj))
+    }
+    HeapMap(map)
+  }
 
   def apply(map: Map[Loc, AbsObject]): AbsHeap = HeapMap(map)
 
