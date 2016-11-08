@@ -20,6 +20,8 @@ import kr.ac.kaist.safe.analyzer.models._
 import kr.ac.kaist.safe.util.SystemAddr
 
 object BuiltinDateHelper {
+  val instanceAddr = SystemAddr("Date<instance>")
+
   def getValue(thisV: AbsValue, h: AbsHeap): AbsNumber = {
     thisV.pvalue.numval + thisV.locset.foldLeft(AbsNumber.Bot)((res, loc) => {
       if ((AbsString("Date") <= h.get(loc)(IClass).value.pvalue.strval)) {
@@ -28,7 +30,7 @@ object BuiltinDateHelper {
     })
   }
 
-  val valueOf = BasicCode(argLen = 0, (
+  val valueOf = BasicCode(argLen = 0, code = (
     args: AbsValue, st: AbsState
   ) => {
     val h = st.heap
@@ -49,44 +51,46 @@ object BuiltinDateHelper {
     case ConMany() => AbsNumber.Top
   }
 
-  val constructor = BasicCode(argLen = 1, code = (
-    args: AbsValue, st: AbsState
-  ) => {
-    val h = st.heap
-    val addr = SystemAddr("Date<instance>")
-    val state = st.oldify(addr)
-    val loc = Loc(addr, Recent)
-    val newObj = AbsObject.newObject(BuiltinDateProto.loc)
-    val argL = Helper.propLoad(args, Set(AbsString("length")), h).pvalue.numval
-    val absNum = argL.getSingle match {
-      // 15.9.3.2 new Date(value)
-      case ConOne(Num(n)) if n == 1 =>
-        // 1. Let v be ToPrimitive(value).
-        val v = TypeConversionHelper.ToPrimitive(Helper.propLoad(args, Set(AbsString("0")), h))
-        // 2. If Type(v) is String, then
-        AbsBool(AbsString("string") <= TypeConversionHelper.typeTag(v, h)).map[AbsNumber](
-          //   a. Parse v as a date, in exactly the same manner as for the parse method (15.9.4.2);
-          //      let V be the time value for this date.
-          // XXX: give up the precision! (Room for the analysis precision improvement!)
-          thenV = AbsNumber.Top,
-          // 3. Else, let V be ToNumber(v).
-          elseV = timeClip(TypeConversionHelper.ToNumber(v))
-        // 4. Set the [[PrimitiveValue]] internal property of the newly constructed object
-        // to TimeClip(V) and return.
-        )(AbsNumber)
-      // 15.9.3.1 new Date( year, month [, date [, hours [, minutes [, seconds [, ms ]]]]] )
-      // 15.9.3.3 new Date()
-      // XXX: give up the precision! (Room for the analysis precision improvement!)
-      case _ => AbsNumber.Top
+  val constructor = BasicCode(
+    argLen = 1,
+    addrSet = HashSet(instanceAddr),
+    code = (args: AbsValue, st: AbsState) => {
+      val h = st.heap
+      val addr = instanceAddr
+      val state = st.oldify(addr)
+      val loc = Loc(addr, Recent)
+      val newObj = AbsObject.newObject(BuiltinDateProto.loc)
+      val argL = Helper.propLoad(args, Set(AbsString("length")), h).pvalue.numval
+      val absNum = argL.getSingle match {
+        // 15.9.3.2 new Date(value)
+        case ConOne(Num(n)) if n == 1 =>
+          // 1. Let v be ToPrimitive(value).
+          val v = TypeConversionHelper.ToPrimitive(Helper.propLoad(args, Set(AbsString("0")), h))
+          // 2. If Type(v) is String, then
+          AbsBool(AbsString("string") <= TypeConversionHelper.typeTag(v, h)).map[AbsNumber](
+            //   a. Parse v as a date, in exactly the same manner as for the parse method (15.9.4.2);
+            //      let V be the time value for this date.
+            // XXX: give up the precision! (Room for the analysis precision improvement!)
+            thenV = AbsNumber.Top,
+            // 3. Else, let V be ToNumber(v).
+            elseV = timeClip(TypeConversionHelper.ToNumber(v))
+          // 4. Set the [[PrimitiveValue]] internal property of the newly constructed object
+          // to TimeClip(V) and return.
+          )(AbsNumber)
+        // 15.9.3.1 new Date( year, month [, date [, hours [, minutes [, seconds [, ms ]]]]] )
+        // 15.9.3.3 new Date()
+        // XXX: give up the precision! (Room for the analysis precision improvement!)
+        case _ => AbsNumber.Top
+      }
+      val newObj2 = newObj
+        .update(IClass, InternalValueUtil(AbsString("Date")))
+        .update(IPrimitiveValue, InternalValueUtil(absNum))
+      val heap = state.heap.update(loc, newObj2)
+      (AbsState(heap, state.context), AbsState.Bot, AbsValue(loc))
     }
-    val newObj2 = newObj
-      .update(IClass, InternalValueUtil(AbsString("Date")))
-      .update(IPrimitiveValue, InternalValueUtil(absNum))
-    val heap = state.heap.update(loc, newObj2)
-    (AbsState(heap, state.context), AbsState.Bot, AbsValue(loc))
-  })
+  )
 
-  val getNumber = BasicCode(argLen = 0, (
+  val getNumber = BasicCode(argLen = 0, code = (
     args: AbsValue, st: AbsState
   ) => {
     val h = st.heap
@@ -104,21 +108,23 @@ object BuiltinDateHelper {
     (st, st.raiseException(excSet), AbsValue(res))
   })
 
-  def setNumber(n: Int): BasicCode = BasicCode(argLen = n, (
-    args: AbsValue, st: AbsState
-  ) => {
-    val h = st.heap
-    val addr = SystemAddr("Date<instance>")
-    val state = st.oldify(addr)
-    val loc = Loc(addr, Recent)
-    val thisV = state.context.thisBinding
-    var excSet = BuiltinHelper.checkExn(h, thisV, "Date")
-    // XXX: give up the precision! (Room for the analysis precision improvement!)
-    // Set the [[PrimitiveValue]] internal property of this Date object to v.
-    val v = AbsNumber.Top
-    val retH = h.update(loc, h.get(loc).update(IPrimitiveValue, InternalValueUtil(v)))
-    (AbsState(retH, state.context), state.raiseException(excSet), AbsValue(v))
-  })
+  def setNumber(n: Int): BasicCode = BasicCode(
+    argLen = n,
+    addrSet = HashSet(instanceAddr),
+    code = (args: AbsValue, st: AbsState) => {
+      val h = st.heap
+      val addr = instanceAddr
+      val state = st.oldify(addr)
+      val loc = Loc(addr, Recent)
+      val thisV = state.context.thisBinding
+      var excSet = BuiltinHelper.checkExn(h, thisV, "Date")
+      // XXX: give up the precision! (Room for the analysis precision improvement!)
+      // Set the [[PrimitiveValue]] internal property of this Date object to v.
+      val v = AbsNumber.Top
+      val retH = h.update(loc, h.get(loc).update(IPrimitiveValue, InternalValueUtil(v)))
+      (AbsState(retH, state.context), state.raiseException(excSet), AbsValue(v))
+    }
+  )
 }
 
 // 15.9 Date Objects
@@ -453,7 +459,7 @@ object BuiltinDateProto extends ObjModel(
     // 15.9.5.43 Date.prototype.toISOString()
     NormalProp("toISOString", FuncModel(
       name = "Date.prototype.toISOString",
-      code = BasicCode(argLen = 0, (
+      code = BasicCode(argLen = 0, code = (
         args: AbsValue, st: AbsState
       ) => {
         val h = st.heap

@@ -20,7 +20,6 @@ import kr.ac.kaist.safe.util._
 import scala.collection.immutable.{ HashMap }
 
 case class Initialize(cfg: CFG) {
-  private val AT = AbsBool.True
   def state: AbsState = {
     val globalLocSet = AbsLoc(BuiltinGlobal.loc)
     val globalPureLocalEnv = AbsLexEnv.newPureLocal(globalLocSet)

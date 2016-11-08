@@ -17,10 +17,12 @@ import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.nodes.ir.IRModelFunc
 import kr.ac.kaist.safe.nodes.ast.{ ASTNodeInfo, ModelFunc }
 import kr.ac.kaist.safe.util.{ Address, Span, SystemAddr }
+import scala.collection.immutable.HashSet
 
 abstract class Code {
   val argLen: Int = 0
   def getCFGFunc(cfg: CFG, name: String): CFGFunction
+  def getAllAddrSet: Set[Address] = HashSet()
   protected def createCFGFunc(
     cfg: CFG,
     name: String
@@ -49,8 +51,10 @@ object EmptyCode {
 
 class BasicCode(
     override val argLen: Int = 0,
+    addrSet: Set[Address] = HashSet(),
     code: (AbsValue, AbsState) => (AbsState, AbsState, AbsValue)
 ) extends Code {
+  override def getAllAddrSet: Set[Address] = addrSet
   def getCFGFunc(cfg: CFG, name: String): CFGFunction = {
     val (funName, argsName, func) = createCFGFunc(cfg, name)
     val sem: SemanticFun = createSemanticFunc(argsName)
@@ -76,8 +80,9 @@ class BasicCode(
 object BasicCode {
   def apply(
     argLen: Int = 0,
+    addrSet: Set[Address] = HashSet(),
     code: (AbsValue, AbsState) => (AbsState, AbsState, AbsValue)
-  ): BasicCode = new BasicCode(argLen, code)
+  ): BasicCode = new BasicCode(argLen, addrSet, code)
 }
 
 class CallCode(
@@ -86,13 +91,15 @@ class CallCode(
     beforeCallCode: (AbsValue, AbsState, Address) => (AbsState, AbsState),
     afterCallCode: (AbsValue, AbsState) => (AbsState, AbsState, AbsValue)
 ) extends Code {
+  val callEnvAddr = SystemAddr("Function.prototype.call<env>")
+  override def getAllAddrSet: Set[Address] = HashSet(callEnvAddr)
   def getCFGFunc(cfg: CFG, name: String): CFGFunction = {
     val (funName, argsName, func) = createCFGFunc(cfg, name)
     val beforeSem: SemanticFun = createBeforeFunc(argsName, cfg.newProgramAddr)
     val beforeBlock: ModelBlock = func.createModelBlock(beforeSem)
 
     val callBlock: Call = func.createCall(
-      CFGCall(func.ir, _, CFGVarRef(func.ir, funcId), CFGVarRef(func.ir, thisId), CFGVarRef(func.ir, argsId), SystemAddr("Function.prototype.call<env>")),
+      CFGCall(func.ir, _, CFGVarRef(func.ir, funcId), CFGVarRef(func.ir, thisId), CFGVarRef(func.ir, argsId), callEnvAddr),
       retId
     )
 
@@ -140,7 +147,7 @@ object CallCode {
 class PureCode(
   override val argLen: Int = 0,
   code: (AbsValue, AbsState) => AbsValue
-) extends BasicCode(argLen, (v: AbsValue, st: AbsState) => {
+) extends BasicCode(argLen, HashSet(), (v: AbsValue, st: AbsState) => {
   (st, AbsState.Bot, code(v, st))
 })
 object PureCode {

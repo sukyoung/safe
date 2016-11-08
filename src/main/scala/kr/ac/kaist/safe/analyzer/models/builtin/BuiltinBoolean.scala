@@ -21,6 +21,8 @@ import kr.ac.kaist.safe.analyzer.models._
 import kr.ac.kaist.safe.util.SystemAddr
 
 object BuiltinBooleanHelper {
+  val instanceAddr = SystemAddr("Boolean<instance>")
+
   def typeConvert(args: AbsValue, st: AbsState): AbsBool = {
     val h = st.heap
     val argV = Helper.propLoad(args, Set(AbsString("0")), h)
@@ -39,17 +41,19 @@ object BuiltinBooleanHelper {
     })
   }
 
-  val constructor = BasicCode(argLen = 1, code = (
-    args: AbsValue, st: AbsState
-  ) => {
-    val bool = typeConvert(args, st)
-    val addr = SystemAddr("Boolean<instance>")
-    val state = st.oldify(addr)
-    val loc = Loc(addr, Recent)
-    val heap = state.heap.update(loc, AbsObject.newBooleanObj(bool))
+  val constructor = BasicCode(
+    argLen = 1,
+    addrSet = HashSet(instanceAddr),
+    code = (args: AbsValue, st: AbsState) => {
+      val bool = typeConvert(args, st)
+      val addr = instanceAddr
+      val state = st.oldify(addr)
+      val loc = Loc(addr, Recent)
+      val heap = state.heap.update(loc, AbsObject.newBooleanObj(bool))
 
-    (AbsState(heap, state.context), AbsState.Bot, AbsValue(loc))
-  })
+      (AbsState(heap, state.context), AbsState.Bot, AbsValue(loc))
+    }
+  )
 
   val typeConversion = PureCode(argLen = 1, code = typeConvert)
 }
@@ -78,7 +82,7 @@ object BuiltinBooleanProto extends ObjModel(
     // 15.6.4.2 Boolean.prototype.toString()
     NormalProp("toString", FuncModel(
       name = "Boolean.prototype.toString",
-      code = BasicCode(argLen = 1, (
+      code = BasicCode(argLen = 1, code = (
         args: AbsValue, st: AbsState
       ) => {
         val h = st.heap
@@ -93,7 +97,7 @@ object BuiltinBooleanProto extends ObjModel(
     // 15.6.4.3 Boolean.prototype.valueOf()
     NormalProp("valueOf", FuncModel(
       name = "Boolean.prototype.valueOf",
-      code = BasicCode(argLen = 1, (
+      code = BasicCode(argLen = 1, code = (
         args: AbsValue, st: AbsState
       ) => {
         val h = st.heap

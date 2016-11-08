@@ -12,6 +12,7 @@
 package kr.ac.kaist.safe.analyzer.domain
 
 import kr.ac.kaist.safe.errors.error.{ NoRecencyTag, NoLoc }
+import kr.ac.kaist.safe.nodes.cfg.CFG
 import kr.ac.kaist.safe.util._
 import scala.util.{ Try, Success, Failure }
 import scala.collection.immutable.HashSet
@@ -88,7 +89,7 @@ trait AbsLocUtil extends AbsDomainUtil[Loc, AbsLoc]
 ////////////////////////////////////////////////////////////////////////////////
 // default location abstract domain
 ////////////////////////////////////////////////////////////////////////////////
-object DefaultLoc extends AbsLocUtil {
+case class DefaultLoc(cfg: CFG) extends AbsLocUtil {
   case object Top extends Dom
   case class LocSet(set: Set[Loc]) extends Dom
   object LocSet {
@@ -96,12 +97,16 @@ object DefaultLoc extends AbsLocUtil {
   }
   lazy val Bot: Dom = LocSet()
 
+  lazy val locSet: Set[Loc] = cfg.getAllAddrSet.foldLeft(HashSet[Loc]()) {
+    case (set, addr) => set + Loc(addr, Recent) + Loc(addr, Old)
+  }
+
   def alpha(loc: Loc): AbsLoc = LocSet(loc)
   override def alpha(locset: Set[Loc]): AbsLoc = LocSet(locset)
 
   sealed abstract class Dom extends AbsLoc {
     def gamma: ConSet[Loc] = this match {
-      case Top => ConInf()
+      case Top => ConFin(locSet)
       case LocSet(set) => ConFin(set)
     }
 
@@ -148,22 +153,22 @@ object DefaultLoc extends AbsLocUtil {
     }
 
     def filter(f: Loc => Boolean): AbsLoc = this match {
-      case Top => Top
+      case Top => LocSet(locSet.filter(f))
       case LocSet(set) => LocSet(set.filter(f))
     }
 
     def foreach(f: Loc => Unit): Unit = this match {
-      case Top => // TODO unsound
+      case Top => locSet.foreach(f)
       case LocSet(set) => set.foreach(f)
     }
 
     def foldLeft[T](initial: T)(f: (T, Loc) => T): T = this match {
-      case Top => initial // TODO unsound
+      case Top => locSet.foldLeft(initial)(f)
       case LocSet(set) => set.foldLeft(initial)(f)
     }
 
     def map[T](f: Loc => T): Set[T] = this match {
-      case Top => HashSet()
+      case Top => locSet.map(f)
       case LocSet(set) => set.map(f)
     }
 
@@ -178,12 +183,12 @@ object DefaultLoc extends AbsLocUtil {
     }
 
     def -(loc: Loc): AbsLoc = this match {
-      case Top => Top
+      case Top => LocSet(locSet - loc)
       case LocSet(set) => LocSet(set - loc)
     }
 
     def subsLoc(locR: Loc, locO: Loc): AbsLoc = this match {
-      case Top => Top
+      case Top => LocSet(locSet - locR + locO)
       case LocSet(set) =>
         if (set contains locR) LocSet(set - locR + locO)
         else this

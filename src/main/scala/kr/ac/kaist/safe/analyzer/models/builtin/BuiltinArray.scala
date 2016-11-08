@@ -22,11 +22,19 @@ object BuiltinArray extends FuncModel(
   name = "Array",
 
   // 15.4.1.1 Array([item1[, item2[, ... ]]])
-  code = BasicCode(argLen = 1, BuiltinArrayHelper.construct),
+  code = BasicCode(
+    argLen = 1,
+    addrSet = HashSet(BuiltinArrayHelper.arrInstanceAddr),
+    code = BuiltinArrayHelper.construct
+  ),
 
   // 15.4.2.1 new Array([item0[, item1[, ... ]]])
   // 15.4.2.2 new Array(len)
-  construct = Some(BasicCode(argLen = 1, BuiltinArrayHelper.construct)),
+  construct = Some(BasicCode(
+    argLen = 1,
+    addrSet = HashSet(BuiltinArrayHelper.arrInstanceAddr),
+    code = BuiltinArrayHelper.construct
+  )),
 
   // 15.4.3.1 Array.prototype
   protoModel = Some((BuiltinArrayProto, F, F, F)),
@@ -35,7 +43,7 @@ object BuiltinArray extends FuncModel(
     // 15.4.3.2 Array.isArray(arg)
     NormalProp("isArray", FuncModel(
       name = "Array.isArray",
-      code = PureCode(argLen = 1, BuiltinArrayHelper.isArray)
+      code = PureCode(argLen = 1, code = BuiltinArrayHelper.isArray)
     ), T, F, T)
   )
 )
@@ -49,56 +57,94 @@ object BuiltinArrayProto extends ObjModel(
     // 15.4.4.2 Array.prototype.toString()
     NormalProp("toString", FuncModel(
       name = "Array.prototype.toString",
-      code = BasicCode(argLen = 0, BuiltinArrayHelper.toString)
+      code = BasicCode(
+        argLen = 0,
+        addrSet = HashSet(
+          BuiltinArrayHelper.toStringObjAddr,
+          BuiltinArrayHelper.tempAddr
+        ),
+        code = BuiltinArrayHelper.toString
+      )
     ), T, F, T),
 
     // 15.4.4.3 Array.prototype.toLocaleString()
     NormalProp("toLocaleString", FuncModel(
       name = "Array.prototype.toLocaleString",
       // TODO unsound!!: not following ECMAScript spec
-      code = BasicCode(argLen = 0, BuiltinArrayHelper.toString)
+      code = BasicCode(argLen = 0, code = BuiltinArrayHelper.toString)
     ), T, F, T),
 
     // 15.4.4.4 Array.prototype.concat([item1[, item2[, ... ]]])
     NormalProp("concat", FuncModel(
       name = "Array.prototype.concat",
-      code = BasicCode(argLen = 1, BuiltinArrayHelper.concat)
+      code = BasicCode(
+        argLen = 1,
+        addrSet = HashSet(BuiltinArrayHelper.concatArrAddr),
+        code = BuiltinArrayHelper.concat
+      )
     ), T, F, T),
 
     // 15.4.4.5 Array.prototype.join(separator)
     NormalProp("join", FuncModel(
       name = "Array.prototype.join",
-      code = BasicCode(argLen = 1, BuiltinArrayHelper.join)
+      code = BasicCode(
+        argLen = 1,
+        addrSet = HashSet(BuiltinArrayHelper.joinObjAddr),
+        code = BuiltinArrayHelper.join
+      )
     ), T, F, T),
 
     // 15.4.4.6 Array.prototype.pop()
     NormalProp("pop", FuncModel(
       name = "Array.prototype.pop",
-      code = BasicCode(argLen = 0, BuiltinArrayHelper.pop)
+      code = BasicCode(
+        argLen = 0,
+        addrSet = HashSet(BuiltinArrayHelper.popObjAddr),
+        code = BuiltinArrayHelper.pop
+      )
     ), T, F, T),
 
     // 15.4.4.7 Array.prototype.push([item1[, item2[, ... ]]])
     NormalProp("push", FuncModel(
       name = "Array.prototype.push",
-      code = BasicCode(argLen = 1, BuiltinArrayHelper.push)
+      code = BasicCode(
+        argLen = 1,
+        addrSet = HashSet(BuiltinArrayHelper.pushObjAddr),
+        code = BuiltinArrayHelper.push
+      )
     ), T, F, T),
 
     // 15.4.4.8 Array.prototype.reverse()
     NormalProp("reverse", FuncModel(
       name = "Array.prototype.reverse",
-      code = BasicCode(argLen = 0, BuiltinArrayHelper.reverse)
+      code = BasicCode(
+        argLen = 0,
+        addrSet = HashSet(BuiltinArrayHelper.reverseObjAddr),
+        code = BuiltinArrayHelper.reverse
+      )
     ), T, F, T),
 
     // 15.4.4.9 Array.prototype.shift()
     NormalProp("shift", FuncModel(
       name = "Array.prototype.shift",
-      code = BasicCode(argLen = 0, BuiltinArrayHelper.shift)
+      code = BasicCode(
+        argLen = 0,
+        addrSet = HashSet(BuiltinArrayHelper.shiftObjAddr),
+        code = BuiltinArrayHelper.shift
+      )
     ), T, F, T),
 
     // 15.4.4.10 Array.prototype.slice(start, end)
     NormalProp("slice", FuncModel(
       name = "Array.prototype.slice",
-      code = BasicCode(argLen = 2, BuiltinArrayHelper.slice)
+      code = BasicCode(
+        argLen = 2,
+        addrSet = HashSet(
+          BuiltinArrayHelper.sliceObjAddr,
+          BuiltinArrayHelper.sliceArrAddr
+        ),
+        code = BuiltinArrayHelper.slice
+      )
     ), T, F, T),
 
     // TODO 15.4.4.11 Array.prototype.sort(comparefn)
@@ -110,25 +156,37 @@ object BuiltinArrayProto extends ObjModel(
     // 15.4.4.12 Array.prototype.splice(start, deleteCount[, item1[, item2[, ... ]]])
     NormalProp("splice", FuncModel(
       name = "Array.prototype.splice",
-      code = BasicCode(argLen = 2, BuiltinArrayHelper.splice)
+      code = BasicCode(
+        argLen = 2,
+        addrSet = HashSet(BuiltinArrayHelper.spliceArrAddr),
+        code = BuiltinArrayHelper.splice
+      )
     ), T, F, T),
 
     // 15.4.4.13 Array.prototype.unshift([item1[, item2[, ... ]]])
     NormalProp("unshift", FuncModel(
       name = "Array.prototype.unshift",
-      code = BasicCode(argLen = 1, BuiltinArrayHelper.unshift)
+      code = BasicCode(argLen = 1, code = BuiltinArrayHelper.unshift)
     ), T, F, T),
 
     // 15.4.4.14 Array.prototype.indexOf(searchElement[, fromIndex])
     NormalProp("indexOf", FuncModel(
       name = "Array.prototype.indexOf",
-      code = BasicCode(argLen = 1, BuiltinArrayHelper.indexOf)
+      code = BasicCode(
+        argLen = 1,
+        addrSet = HashSet(BuiltinArrayHelper.indexOfObjAddr),
+        code = BuiltinArrayHelper.indexOf
+      )
     ), T, F, T),
 
     // 15.4.4.15 Array.prototype.lastIndexOf(searchElement[, fromIndex ])
     NormalProp("lastIndexOf", FuncModel(
       name = "Array.prototype.lastIndexOf",
-      code = BasicCode(argLen = 1, BuiltinArrayHelper.lastIndexOf)
+      code = BasicCode(
+        argLen = 1,
+        addrSet = HashSet(BuiltinArrayHelper.lastIndexOfObjAddr),
+        code = BuiltinArrayHelper.lastIndexOf
+      )
     ), T, F, T),
 
     // TODO 15.4.4.16 Array.prototype.every(callbackfn [, thisArg ])
@@ -176,6 +234,24 @@ object BuiltinArrayProto extends ObjModel(
 )
 
 object BuiltinArrayHelper {
+  ////////////////////////////////////////////////////////////////
+  // System Addresses
+  ////////////////////////////////////////////////////////////////
+  val arrInstanceAddr = SystemAddr("Array<instance>")
+  val toStringObjAddr = SystemAddr("Array.prototype.toString<object>")
+  val tempAddr = SystemAddr("<temp>")
+  val concatArrAddr = SystemAddr("Array.prototype.concat<array>")
+  val joinObjAddr = SystemAddr("Array.prototype.join<object>")
+  val popObjAddr = SystemAddr("Array.prototype.pop<object>")
+  val pushObjAddr = SystemAddr("Array.prototype.push<object>")
+  val reverseObjAddr = SystemAddr("Array.prototype.reverse<object>")
+  val shiftObjAddr = SystemAddr("Array.prototype.shift<object>")
+  val sliceObjAddr = SystemAddr("Array.prototype.slice<object>")
+  val sliceArrAddr = SystemAddr("Array.prototype.slice<array>")
+  val spliceArrAddr = SystemAddr("Array.prototype.splice<array>")
+  val indexOfObjAddr = SystemAddr("Array.prototype.indexOf<object>")
+  val lastIndexOfObjAddr = SystemAddr("Array.prototype.lastIndexOf<object>")
+
   ////////////////////////////////////////////////////////////////
   // Array
   ////////////////////////////////////////////////////////////////
@@ -243,7 +319,7 @@ object BuiltinArrayHelper {
         (arrObj, HashSet(RangeError))
       }
     }
-    val arrAddr = SystemAddr("Array<instance>")
+    val arrAddr = arrInstanceAddr
     val state = st.oldify(arrAddr)
     val arrLoc = Loc(arrAddr, Recent)
     val retH = state.heap.update(arrLoc, retObj.oldify(arrAddr))
@@ -270,7 +346,7 @@ object BuiltinArrayHelper {
   ////////////////////////////////////////////////////////////////
   def toString(args: AbsValue, st: AbsState): (AbsState, AbsState, AbsValue) = {
     // 1. Let array be the result of calling ToObject on the this value.
-    val addr = SystemAddr("Array.prototype.toString<object>")
+    val addr = toStringObjAddr
     val thisBinding = st.context.thisBinding
     val (thisLoc, state, excSet) = TypeConversionHelper.ToObject(thisBinding, st, addr)
     val h = state.heap
@@ -281,7 +357,7 @@ object BuiltinArrayHelper {
     // 3. If IsCallable(func) is false, then let func be the standard built-in method Object.prototype.toString (15.2.4.2).
     // 4. Return the result of calling the [[Call]] internal method of func providing array as the this value and an
     //    empty arguments list.
-    val tempArr = SystemAddr("<temp>")
+    val tempArr = tempAddr
     val tempLoc = Loc(tempArr, Recent)
     val newArgs = AbsObject.newArgObject()
     val tempH = h.update(tempLoc, newArgs)
@@ -376,7 +452,7 @@ object BuiltinArrayHelper {
       }
       case ConMany() => Top
     }
-    val arrAddr = SystemAddr("Array.prototype.concat<array>")
+    val arrAddr = concatArrAddr
     val state = st.oldify(arrAddr)
     val arrLoc = Loc(arrAddr, Recent)
     val retH = state.heap.update(arrLoc, retObj.oldify(arrAddr))
@@ -386,7 +462,7 @@ object BuiltinArrayHelper {
   def join(args: AbsValue, st: AbsState): (AbsState, AbsState, AbsValue) = {
     val separator = Helper.propLoad(args, Set(AbsString("0")), st.heap)
     // 1. Let O be the result of calling ToObject passing the this value as the argument.
-    val addr = SystemAddr("Array.prototype.join<object>")
+    val addr = joinObjAddr
     val thisBinding = st.context.thisBinding
     val (thisLoc, state, excSet) = TypeConversionHelper.ToObject(thisBinding, st, addr)
     val h = state.heap
@@ -447,7 +523,7 @@ object BuiltinArrayHelper {
 
   def pop(args: AbsValue, st: AbsState): (AbsState, AbsState, AbsValue) = {
     // 1. Let O be the result of calling ToObject passing the this value as the argument.
-    val addr = SystemAddr("Array.prototype.pop<object>")
+    val addr = popObjAddr
     val thisBinding = st.context.thisBinding
     val (thisLoc, state, es) = TypeConversionHelper.ToObject(thisBinding, st, addr)
     val h = state.heap
@@ -496,7 +572,7 @@ object BuiltinArrayHelper {
     val argObj = st.heap.get(args.locset)
     val argLen = Helper.propLoad(args, Set(AbsString("length")), st.heap).pvalue.numval
     // 1. Let O be the result of calling ToObject passing the this value as the argument.
-    val addr = SystemAddr("Array.prototype.push<object>")
+    val addr = pushObjAddr
     val thisBinding = st.context.thisBinding
     val (thisLoc, state, es) = TypeConversionHelper.ToObject(thisBinding, st, addr)
     val h = state.heap
@@ -543,7 +619,7 @@ object BuiltinArrayHelper {
 
   def reverse(args: AbsValue, st: AbsState): (AbsState, AbsState, AbsValue) = {
     // 1. Let O be the result of calling ToObject passing the this value as the argument.
-    val addr = SystemAddr("Array.prototype.reverse<object>")
+    val addr = reverseObjAddr
     val thisBinding = st.context.thisBinding
     val (thisLoc, state, es) = TypeConversionHelper.ToObject(thisBinding, st, addr)
     val h = state.heap
@@ -594,7 +670,7 @@ object BuiltinArrayHelper {
 
   def shift(args: AbsValue, st: AbsState): (AbsState, AbsState, AbsValue) = {
     // 1. Let O be the result of calling ToObject passing the this value as the argument.
-    val addr = SystemAddr("Array.prototype.shift<object>")
+    val addr = shiftObjAddr
     val thisBinding = st.context.thisBinding
     val (thisLoc, state, es) = TypeConversionHelper.ToObject(thisBinding, st, addr)
     val h = state.heap
@@ -670,7 +746,7 @@ object BuiltinArrayHelper {
     val end = Helper.propLoad(args, Set(AbsString("1")), st.heap)
 
     // 1. Let O be the result of calling ToObject passing the this value as the argument.
-    val addr = SystemAddr("Array.prototype.slice<object>")
+    val addr = sliceObjAddr
     val thisBinding = st.context.thisBinding
     val (thisLoc, state, es) = TypeConversionHelper.ToObject(thisBinding, st, addr)
     val h = state.heap
@@ -740,7 +816,7 @@ object BuiltinArrayHelper {
       case _ => (arr.update(AbsString.Top, AbsDataProp.Top), HashSet(TypeError))
     }
     // 11. Return A.
-    val arrAddr = SystemAddr("Array.prototype.slice<array>")
+    val arrAddr = sliceArrAddr
     val st1 = state.oldify(arrAddr)
     val arrLoc = Loc(arrAddr, Recent)
     val retH = st1.heap.update(arrLoc, retObj.oldify(arrAddr))
@@ -831,7 +907,7 @@ object BuiltinArrayHelper {
         (retH, arr + retArr, excSet ++ retExcSet)
       }
     }
-    val arrAddr = SystemAddr("Array.prototype.splice<array>")
+    val arrAddr = spliceArrAddr
     val newSt = AbsState(retH, st.context)
     val state = newSt.oldify(arrAddr)
     val arrLoc = Loc(arrAddr, Recent)
@@ -892,7 +968,7 @@ object BuiltinArrayHelper {
 
   def indexOf(args: AbsValue, st: AbsState): (AbsState, AbsState, AbsValue) = {
     // 1. Let O be the result of calling ToObject passing the this value as the argument.
-    val addr = SystemAddr("Array.prototype.indexOf<object>")
+    val addr = indexOfObjAddr
     val thisBinding = st.context.thisBinding
     val (thisLoc, state, excSet) = TypeConversionHelper.ToObject(thisBinding, st, addr)
     val h = state.heap
@@ -977,7 +1053,7 @@ object BuiltinArrayHelper {
 
   def lastIndexOf(args: AbsValue, st: AbsState): (AbsState, AbsState, AbsValue) = {
     // 1. Let O be the result of calling ToObject passing the this value as the argument.
-    val addr = SystemAddr("Array.prototype.lastIndexOf<object>")
+    val addr = lastIndexOfObjAddr
     val thisBinding = st.context.thisBinding
     val (thisLoc, state, excSet) = TypeConversionHelper.ToObject(thisBinding, st, addr)
     val h = state.heap

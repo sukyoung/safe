@@ -21,6 +21,8 @@ import kr.ac.kaist.safe.analyzer.models._
 import kr.ac.kaist.safe.util.SystemAddr
 
 object BuiltinNumberHelper {
+  val instanceAddr = SystemAddr("Number<instance>")
+
   def typeConvert(args: AbsValue, st: AbsState): AbsNumber = {
     val h = st.heap
     val argV = Helper.propLoad(args, Set(AbsString("0")), h)
@@ -39,16 +41,18 @@ object BuiltinNumberHelper {
     })
   }
 
-  val constructor = BasicCode(argLen = 1, code = (
-    args: AbsValue, st: AbsState
-  ) => {
-    val num = typeConvert(args, st)
-    val addr = SystemAddr("Number<instance>")
-    val state = st.oldify(addr)
-    val loc = Loc(addr, Recent)
-    val heap = state.heap.update(loc, AbsObject.newNumberObj(num))
-    (AbsState(heap, state.context), AbsState.Bot, AbsValue(loc))
-  })
+  val constructor = BasicCode(
+    argLen = 1,
+    addrSet = HashSet(instanceAddr),
+    code = (args: AbsValue, st: AbsState) => {
+      val num = typeConvert(args, st)
+      val addr = instanceAddr
+      val state = st.oldify(addr)
+      val loc = Loc(addr, Recent)
+      val heap = state.heap.update(loc, AbsObject.newNumberObj(num))
+      (AbsState(heap, state.context), AbsState.Bot, AbsValue(loc))
+    }
+  )
 
   val typeConversion = PureCode(argLen = 1, code = typeConvert)
 }
@@ -106,7 +110,7 @@ object BuiltinNumberProto extends ObjModel(
     // 15.7.4.2 Number.prototype.toString ( [ radix ] )
     NormalProp("toString", FuncModel(
       name = "Number.prototype.toString",
-      code = BasicCode(argLen = 1, (
+      code = BasicCode(argLen = 1, code = (
         args: AbsValue, st: AbsState
       ) => {
         val h = st.heap
@@ -146,7 +150,7 @@ object BuiltinNumberProto extends ObjModel(
     // 15.7.4.3 Number.prototype.toLocaleString()
     NormalProp("toLocaleString", FuncModel(
       name = "Number.prototype.toLocaleString",
-      code = BasicCode(argLen = 0, (
+      code = BasicCode(argLen = 0, code = (
         args: AbsValue, st: AbsState
       ) => {
         val h = st.heap
@@ -163,7 +167,7 @@ object BuiltinNumberProto extends ObjModel(
     // 15.7.4.4 Number.prototype.valueOf()
     NormalProp("valueOf", FuncModel(
       name = "Number.prototype.valueOf",
-      code = BasicCode(argLen = 0, (
+      code = BasicCode(argLen = 0, code = (
         args: AbsValue, st: AbsState
       ) => {
         val h = st.heap
@@ -180,7 +184,7 @@ object BuiltinNumberProto extends ObjModel(
     // 15.7.4.5 Number.prototype.toFixed(fractionDigits)
     NormalProp("toFixed", FuncModel(
       name = "Number.prototype.toFixed",
-      code = BasicCode(argLen = 1, (
+      code = BasicCode(argLen = 1, code = (
         args: AbsValue, st: AbsState
       ) => {
         val h = st.heap
@@ -204,7 +208,7 @@ object BuiltinNumberProto extends ObjModel(
     // 15.7.4.6 Number.prototype.toExponential (fractionDigits)
     NormalProp("toExponential", FuncModel(
       name = "Number.prototype.toExponential",
-      code = BasicCode(argLen = 1, (
+      code = BasicCode(argLen = 1, code = (
         args: AbsValue, st: AbsState
       ) => {
         val h = st.heap
@@ -216,9 +220,11 @@ object BuiltinNumberProto extends ObjModel(
         val argV = Helper.propLoad(args, Set(AbsString("0")), h)
         val f = TypeConversionHelper.ToInteger(argV)
         // 7. If fractionDigits is not undefined and (f < 0 or f > 20), throw a RangeError exception.
-        if (!(AbsUndef.Top <= argV ||
-          (AbsBool.True <= Helper.bopLessEq(f, AbsNumber(20)) &&
-            AbsBool.True <= Helper.bopGreaterEq(f, AbsNumber(0)))))
+        if ((!argV.locset.isBottom || !argV.pvalue.copyWith(undefval = AbsUndef.Bot).isBottom) &&
+          (AbsBool.True <= (
+            Helper.bopLess(f, AbsNumber(0)).pvalue.boolval ||
+            Helper.bopGreater(f, AbsNumber(20)).pvalue.boolval
+          )))
           excSet += RangeError
 
         // XXX: give up the precision! (Room for the analysis precision improvement!)
@@ -229,7 +235,7 @@ object BuiltinNumberProto extends ObjModel(
     // 15.7.4.7 Number.prototype.toPrecision(precision)
     NormalProp("toPrecision", FuncModel(
       name = "Number.prototype.toPrecision",
-      code = BasicCode(argLen = 1, (
+      code = BasicCode(argLen = 1, code = (
         args: AbsValue, st: AbsState
       ) => {
         val h = st.heap

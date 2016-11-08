@@ -31,23 +31,26 @@ case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, Int, CallContext)
     safeConfig: SafeConfig,
     config: AnalyzeConfig
   ): Try[(CFG, Int, CallContext)] = {
+    // Initialization
     Utils.register(
       config.AbsUndef,
       config.AbsNull,
       config.AbsBool,
       config.AbsNumber,
-      config.AbsString
+      config.AbsString,
+      DefaultLoc(cfg)
     )
-    val globalCC = CallContextManager().globalCallContext
-
-    val worklist = Worklist(cfg)
-    worklist.add(ControlPoint(cfg.globalFunc.entry, globalCC))
-    val semantics = new Semantics(cfg, worklist)
     val init = Initialize(cfg)
     val initSt =
       if (safeConfig.testMode) init.testState
       else init.state
+
+    val globalCC = CallContextManager(config.callsiteSensitivity).globalCallContext
     cfg.globalFunc.entry.setState(globalCC, initSt)
+
+    val worklist = Worklist(cfg)
+    worklist.add(ControlPoint(cfg.globalFunc.entry, globalCC))
+    val semantics = new Semantics(cfg, worklist)
     val consoleOpt = config.console match {
       case true => Some(new Console(cfg, worklist, semantics))
       case false => None
@@ -80,7 +83,7 @@ case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, Int, CallContext)
       "the analysis results will be written to the outfile."),
     ("maxStrSetSize", NumOption((c, n) => if (n > 0) c.AbsString = StringSet(n)),
       "the analyzer will use the AbsString Set domain with given size limit n."),
-    ("callsiteSensitivity", NumOption((c, n) => if (n > 0) c.callsiteSensitivity = n),
+    ("callsiteSensitivity", NumOption((c, n) => if (n >= 0) c.callsiteSensitivity = n),
       "{number}-depth callsite-sensitive analysis will be executed."),
     ("html", StrOption((c, s) => c.htmlName = Some(s)),
       "the resulting CFG with states will be drawn to the {string}.html")
@@ -97,6 +100,6 @@ case class AnalyzeConfig(
   var AbsBool: AbsBoolUtil = DefaultBool,
   var AbsNumber: AbsNumberUtil = DefaultNumber,
   var AbsString: AbsStringUtil = StringSet(0),
-  var callsiteSensitivity: Int = -1,
+  var callsiteSensitivity: Int = 0,
   var htmlName: Option[String] = None
 ) extends Config

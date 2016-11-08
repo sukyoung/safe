@@ -12,6 +12,7 @@
 package kr.ac.kaist.safe.analyzer.domain
 
 import kr.ac.kaist.safe.nodes.cfg.CFG
+import scala.collection.immutable.HashSet
 
 object Utils {
   def register(
@@ -19,25 +20,27 @@ object Utils {
     absNull: AbsNullUtil,
     absBool: AbsBoolUtil,
     absNumber: AbsNumberUtil,
-    absString: AbsStringUtil
+    absString: AbsStringUtil,
+    absLoc: AbsLocUtil
   ): Unit = {
     AbsUndef = absUndef
     AbsNull = absNull
     AbsBool = absBool
     AbsNumber = absNumber
     AbsString = absString
+    AbsLoc = absLoc
   }
 
   // primitive values
-  var AbsUndef: AbsUndefUtil = null
-  var AbsNull: AbsNullUtil = null
-  var AbsBool: AbsBoolUtil = null
-  var AbsNumber: AbsNumberUtil = null
-  var AbsString: AbsStringUtil = null
+  var AbsUndef: AbsUndefUtil = _
+  var AbsNull: AbsNullUtil = _
+  var AbsBool: AbsBoolUtil = _
+  var AbsNumber: AbsNumberUtil = _
+  var AbsString: AbsStringUtil = _
   var AbsPValue: AbsPValueUtil = DefaultPValue
 
   // location
-  var AbsLoc: AbsLocUtil = DefaultLoc
+  var AbsLoc: AbsLocUtil = _
 
   // value
   var AbsValue: AbsValueUtil = DefaultValue

@@ -23,10 +23,18 @@ object BuiltinObject extends FuncModel(
   name = "Object",
 
   // 15.2.1 The Object Constructor Called as a Function: Object([value])
-  code = BasicCode(argLen = 1, BuiltinObjectHelper.construct),
+  code = BasicCode(
+    argLen = 1,
+    addrSet = HashSet(BuiltinObjectHelper.instanceAddr),
+    code = BuiltinObjectHelper.construct
+  ),
 
   // 15.2.2 The Object Constructor: new Object([value])
-  construct = Some(BasicCode(argLen = 1, BuiltinObjectHelper.construct)),
+  construct = Some(BasicCode(
+    argLen = 1,
+    addrSet = HashSet(BuiltinObjectHelper.instanceAddr),
+    code = BuiltinObjectHelper.construct
+  )),
 
   // 15.2.3.1 Object.prototype
   protoModel = Some((BuiltinObjectProto, F, F, F)),
@@ -35,79 +43,102 @@ object BuiltinObject extends FuncModel(
     // 15.2.3.2 Object.getPrototypeOf(O)
     NormalProp("getPrototypeOf", FuncModel(
       name = "Object.getPrototypeOf",
-      code = BasicCode(argLen = 1, BuiltinObjectHelper.getPrototypeOf)
+      code = BasicCode(argLen = 1, code = BuiltinObjectHelper.getPrototypeOf)
     ), T, F, T),
 
     // 15.2.3.3 getOwnPropertyDescriptor(O, P)
     NormalProp("getOwnPropertyDescriptor", FuncModel(
       name = "Object.getOwnPropertyDescriptor",
-      code = BasicCode(argLen = 2, BuiltinObjectHelper.getOwnPropertyDescriptor)
+      code = BasicCode(
+        argLen = 2,
+        addrSet = HashSet(BuiltinObjectHelper.getOPDDescAddr),
+        code = BuiltinObjectHelper.getOwnPropertyDescriptor
+      )
     ), T, F, T),
 
     // 15.2.3.4 Object.getOwnPropertyNames(O)
     NormalProp("getOwnPropertyNames", FuncModel(
       name = "Object.getOwnPropertyNames",
-      code = BasicCode(argLen = 1, BuiltinObjectHelper.getOwnPropertyNames)
+      code = BasicCode(
+        argLen = 1,
+        addrSet = HashSet(BuiltinObjectHelper.getOPNArrAddr),
+        code = BuiltinObjectHelper.getOwnPropertyNames
+      )
     ), T, F, T),
 
     // 15.2.3.5 Object.create(O [, Properties])
     NormalProp("create", FuncModel(
       name = "Object.create",
-      code = BasicCode(argLen = 2, BuiltinObjectHelper.create)
+      code = BasicCode(
+        argLen = 2,
+        addrSet = HashSet(
+          BuiltinObjectHelper.createObjAddr,
+          BuiltinObjectHelper.definePropsObjAddr
+        ),
+        code = BuiltinObjectHelper.create
+      )
     ), T, F, T),
 
     // 15.2.3.6 Object.defineProperty(O, P, Attributes)
     NormalProp("defineProperty", FuncModel(
       name = "Object.defineProperty",
-      code = BasicCode(argLen = 3, BuiltinObjectHelper.defineProperty)
+      code = BasicCode(argLen = 3, code = BuiltinObjectHelper.defineProperty)
     ), T, F, T),
 
     // 15.2.3.7 Object.defineProperties(O, Properties)
     NormalProp("defineProperties", FuncModel(
       name = "Object.defineProperties",
-      code = BasicCode(argLen = 2, BuiltinObjectHelper.defineProperties)
+      code = BasicCode(
+        argLen = 2,
+        addrSet = HashSet(BuiltinObjectHelper.definePropsObjAddr),
+        code = BuiltinObjectHelper.defineProperties
+      )
     ), T, F, T),
 
     // 15.2.3.8 Object.seal(O)
     NormalProp("seal", FuncModel(
       name = "Object.seal",
-      code = BasicCode(argLen = 1, BuiltinObjectHelper.seal)
+      code = BasicCode(argLen = 1, code = BuiltinObjectHelper.seal)
     ), T, F, T),
 
     // 15.2.3.9 Object.freeze(O)
     NormalProp("freeze", FuncModel(
       name = "Object.freeze",
-      code = BasicCode(argLen = 1, BuiltinObjectHelper.freeze)
+      code = BasicCode(argLen = 1, code = BuiltinObjectHelper.freeze)
     ), T, F, T),
 
     // 15.2.3.10 Object.preventExtensions(O)
     NormalProp("preventExtensions", FuncModel(
       name = "Object.preventExtensions",
-      code = BasicCode(argLen = 1, BuiltinObjectHelper.preventExtensions)
+      code = BasicCode(argLen = 1, code = BuiltinObjectHelper.preventExtensions)
     ), T, F, T),
 
     // 15.2.3.11 Object.isSealed(O)
     NormalProp("isSealed", FuncModel(
       name = "Object.isSealed",
-      code = BasicCode(argLen = 1, BuiltinObjectHelper.isSealed)
+      code = BasicCode(argLen = 1, code = BuiltinObjectHelper.isSealed)
     ), T, F, T),
 
     // 15.2.3.12 Object.isFrozen(O)
     NormalProp("isFrozen", FuncModel(
       name = "Object.isFrozen",
-      code = BasicCode(argLen = 1, BuiltinObjectHelper.isFrozen)
+      code = BasicCode(argLen = 1, code = BuiltinObjectHelper.isFrozen)
     ), T, F, T),
 
     // 15.2.3.13 Object.isExtensible(O)
     NormalProp("isExtensible", FuncModel(
       name = "Object.isExtensible",
-      code = BasicCode(argLen = 1, BuiltinObjectHelper.isExtensible)
+      code = BasicCode(argLen = 1, code = BuiltinObjectHelper.isExtensible)
     ), T, F, T),
 
     // 15.2.3.14 Object.keys(O)
     NormalProp("keys", FuncModel(
       name = "Object.keys",
-      code = BasicCode(argLen = 1, BuiltinObjectHelper.keys)
+      code = BasicCode(
+        argLen = 1,
+        addrSet = HashSet(BuiltinObjectHelper.keysArrAddr),
+        code = BuiltinObjectHelper.keys
+      )
     ), T, F, T)
   )
 )
@@ -121,7 +152,11 @@ object BuiltinObjectProto extends ObjModel(
     // 15.2.4.2 Object.prototype.toString()
     NormalProp("toString", FuncModel(
       name = "Object.prototype.toString",
-      code = BasicCode(argLen = 0, BuiltinObjectHelper.toString)
+      code = BasicCode(
+        argLen = 0,
+        addrSet = HashSet(BuiltinObjectHelper.toStringObjAddr),
+        code = BuiltinObjectHelper.toString
+      )
     ), T, F, T),
 
     // 15.2.4.3 Object.prototype.toLocaleString()
@@ -129,43 +164,78 @@ object BuiltinObjectProto extends ObjModel(
       name = "Object.prototype.toLocaleString",
       // TODO unsound: not use locale function.
       // we should fix this unsound manner by using CallCode.
-      code = BasicCode(argLen = 0, BuiltinObjectHelper.toString)
+      code = BasicCode(
+        argLen = 0,
+        addrSet = HashSet(BuiltinObjectHelper.toStringObjAddr),
+        code = BuiltinObjectHelper.toString
+      )
     ), T, F, T),
 
     // 15.2.4.4 Object.prototype.valueOf()
     NormalProp("valueOf", FuncModel(
       name = "Object.prototype.valueOf",
-      code = BasicCode(argLen = 0, BuiltinObjectHelper.valueOf)
+      code = BasicCode(
+        argLen = 0,
+        addrSet = HashSet(BuiltinObjectHelper.valueOfObjAddr),
+        code = BuiltinObjectHelper.valueOf
+      )
     ), T, F, T),
 
     // 15.2.4.5 Object.prototype.hasOwnProperty(V)
     NormalProp("hasOwnProperty", FuncModel(
       name = "Object.prototype.hasOwnProperty",
-      code = BasicCode(argLen = 1, BuiltinObjectHelper.hasOwnProperty)
+      code = BasicCode(
+        argLen = 1,
+        addrSet = HashSet(BuiltinObjectHelper.hasOPObjAddr),
+        code = BuiltinObjectHelper.hasOwnProperty
+      )
     ), T, F, T),
 
     // 15.2.4.6 Object.prototype.isPrototypeOf(V)
     NormalProp("isPrototypeOf", FuncModel(
       name = "Object.prototype.isPrototypeOf",
-      code = BasicCode(argLen = 1, BuiltinObjectHelper.isPrototypeOf)
+      code = BasicCode(
+        argLen = 1,
+        addrSet = HashSet(BuiltinObjectHelper.isPObjAddr),
+        code = BuiltinObjectHelper.isPrototypeOf
+      )
     ), T, F, T),
 
     // 15.2.4.7 Object.prototype.propertyIsEnumerable(V)
     NormalProp("propertyIsEnumerable", FuncModel(
       name = "Object.prototype.propertyIsEnumerable",
-      code = BasicCode(argLen = 1, BuiltinObjectHelper.propertyIsEnumerable)
+      code = BasicCode(
+        argLen = 1,
+        addrSet = HashSet(BuiltinObjectHelper.propIsEObjAddr),
+        code = BuiltinObjectHelper.propertyIsEnumerable
+      )
     ), T, F, T)
   )
 )
 
 object BuiltinObjectHelper {
   ////////////////////////////////////////////////////////////////
+  // System Addresses
+  ////////////////////////////////////////////////////////////////
+  val instanceAddr = SystemAddr("Object<instance>")
+  val getOPDDescAddr = SystemAddr("Object.getOwnPropertyDescriptor<descriptor>")
+  val getOPNArrAddr = SystemAddr("Object.getOwnPropertyNames<array>")
+  val createObjAddr = SystemAddr("Object.create<object>")
+  val keysArrAddr = SystemAddr("Object.keys<array>")
+  val toStringObjAddr = SystemAddr("Object.prototype.toString<object>")
+  val valueOfObjAddr = SystemAddr("Object.prototype.valueOf<object>")
+  val hasOPObjAddr = SystemAddr("Object.prototype.hasOwnProperty<object>")
+  val isPObjAddr = SystemAddr("Object.prototype.isPrototypeOf<object>")
+  val propIsEObjAddr = SystemAddr("Object.prototype.propertyIsEnumerable<object>")
+  val definePropsObjAddr = SystemAddr("Object.defineProperties<object>")
+
+  ////////////////////////////////////////////////////////////////
   // Object
   ////////////////////////////////////////////////////////////////
   def construct(args: AbsValue, st: AbsState): (AbsState, AbsState, AbsValue) = {
     val h = st.heap
     val argV = Helper.propLoad(args, Set(AbsString("0")), h)
-    val addr = SystemAddr("Object<instance>")
+    val addr = instanceAddr
 
     // 1. If value is supplied and it is not null or undefined,
     //    then, return ToObject(value)
@@ -220,7 +290,7 @@ object BuiltinObjectHelper {
     // 4. Return the result of calling FromPropertyDescriptor(desc) (8.10.4).
     val (retSt, retV, excSet2) = if (!desc.isBottom) {
       val (descObj, excSet) = AbsObject.FromPropertyDescriptor(desc)
-      val descAddr = SystemAddr("Object.getOwnPropertyDescriptor<descriptor>")
+      val descAddr = getOPDDescAddr
       val state = st.oldify(descAddr)
       val descLoc = Loc(descAddr, Recent)
       val retH = state.heap.update(descLoc, descObj.oldify(descAddr))
@@ -236,7 +306,7 @@ object BuiltinObjectHelper {
   def getOwnPropertyNames(args: AbsValue, st: AbsState): (AbsState, AbsState, AbsValue) = {
     val h = st.heap
     val objV = Helper.propLoad(args, Set(AbsString("0")), h)
-    val arrAddr = SystemAddr("Object.getOwnPropertyNames<array>")
+    val arrAddr = getOPNArrAddr
     val (keyStr, lenSet) = objV.locset.foldLeft((AbsString.Bot, Set[Option[Int]]())) {
       case ((str, lenSet), loc) => {
         val obj = h.get(loc)
@@ -312,7 +382,7 @@ object BuiltinObjectHelper {
     val newObj = obj.update(IPrototype, InternalValueUtil(protoV))
     // 4. If the argument Properties is present and not undefined, add own properties to obj as if by calling the
     //    standard built-in function Object.defineProperties with arguments obj and Properties.
-    val addr = SystemAddr("Object.create<object>")
+    val addr = createObjAddr
     val state = st.oldify(addr)
     val loc = Loc(addr, Recent)
     val newH = state.heap.update(loc, newObj.oldify(addr))
@@ -518,7 +588,7 @@ object BuiltinObjectHelper {
   def keys(args: AbsValue, st: AbsState): (AbsState, AbsState, AbsValue) = {
     val h = st.heap
     val objV = Helper.propLoad(args, Set(AbsString("0")), h)
-    val arrAddr = SystemAddr("Object.keys<array>")
+    val arrAddr = keysArrAddr
     val obj = h.get(objV.locset)
     val keyStr = obj.abstractKeySet((key, dp) => {
       AbsBool.True <= dp.enumerable
@@ -582,7 +652,7 @@ object BuiltinObjectHelper {
     // 2. If the this value is null, return "[object Null]".
     val (checkN, nu) = thisBinding.pvalue.nullval.fold((false, AbsString.Bot))(_ => (true, AbsString("[object Null]")))
     // 3. Let O be the result of calling ToObject passing the this value as the argument.
-    val addr = SystemAddr("Object.prototype.toString<object>")
+    val addr = toStringObjAddr
     val (loc1, st1, _) = TypeConversionHelper.ToObject(thisBinding, st, addr)
     val obj = st1.heap.get(loc1)
     // 4. Let class be the value of the [[Class]] internal property of O.
@@ -599,7 +669,7 @@ object BuiltinObjectHelper {
     val h = st.heap
     val thisBinding = st.context.thisBinding
     // 1. Let O be the result of calling ToObject passing the this value as the argument.
-    val addr = SystemAddr("Object.prototype.valueOf<object>")
+    val addr = valueOfObjAddr
     val (loc, state, excSet) = TypeConversionHelper.ToObject(thisBinding, st, addr)
     val excSt = st.raiseException(excSet)
 
@@ -614,7 +684,7 @@ object BuiltinObjectHelper {
     // 1. Let P be ToString(V).
     val prop = TypeConversionHelper.ToString(value)
     // 2. Let O be the result of calling ToObject passing the this value as the argument.
-    val addr = SystemAddr("Object.prototype.hasOwnProperty<object>")
+    val addr = hasOPObjAddr
     val (thisLoc, state, excSet) = TypeConversionHelper.ToObject(thisBinding, st, addr)
     // 3. Let desc be the result of calling the [[GetOwnProperty]] internal method of O passing P as the argument.
     val obj = state.heap.get(thisLoc)
@@ -634,7 +704,7 @@ object BuiltinObjectHelper {
     // 1. If V is not an object, return false.
     val v1 = value.pvalue.fold(AbsBool.Bot)(_ => AbsBool.False)
     // 2. Let O be the result of calling ToObject passing the this value as the argument.
-    val addr = SystemAddr("Object.prototype.isPrototypeOf<object>")
+    val addr = isPObjAddr
     val (thisLoc, state, excSet) = TypeConversionHelper.ToObject(thisBinding, st, addr)
     val h = state.heap
     // 3. Repeat
@@ -666,7 +736,7 @@ object BuiltinObjectHelper {
     // 1. Let P be ToString(V).
     val prop = TypeConversionHelper.ToString(value)
     // 2. Let O be the result of calling ToObject passing the this value as the argument.
-    val addr = SystemAddr("Object.prototype.propertyIsEnumerable<object>")
+    val addr = propIsEObjAddr
     val (thisLoc, state, excSet) = TypeConversionHelper.ToObject(thisBinding, st, addr)
     val h = state.heap
     // 3. Let desc be the result of calling the [[GetOwnProperty]] internal method of O passing P as the argument.
@@ -737,7 +807,7 @@ object BuiltinObjectHelper {
     // 1. If Type(O) is not Object throw a TypeError exception.
     val excSet = objCheck(objV)
     // 2. Let props be ToObject(Properties).
-    val addr = SystemAddr("Object.defineProperties<props>")
+    val addr = definePropsObjAddr
     val (loc1, st1, toExcSet) = TypeConversionHelper.ToObject(propsV, st, addr)
     val h1 = st1.heap
     val ctx1 = st1.context

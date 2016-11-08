@@ -80,12 +80,14 @@ case class Work(order: Int, cp: ControlPoint) {
 
   def <(that: Work): Boolean = {
     // 1. compare node's order
-    if (this.order != that.order) this.order < that.order
+    if (this.order != that.order)
+      this.order < that.order
     // 2. compare node's FunctionId
-    else if (this.cp.node.func.id != that.cp.node.func.id) this.cp.node.func.id < that.cp.node.func.id
-    else {
-      // 3. compare node types
+    else if (this.cp.node.func.id != that.cp.node.func.id)
+      this.cp.node.func.id < that.cp.node.func.id
+    // 3. compare node types
+    else if (this.cp.node != that.cp.node)
       Worklist.compareNodeType(this.cp.node, that.cp.node)
-    }
+    else false
   }
 }
