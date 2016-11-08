@@ -419,7 +419,7 @@ class Semantics(
         val newSt = AbsState(h5, newCtx).varStore(lhs, fVal)
         (newSt, excSt)
       }
-      case CFGAssert(_, _, expr, _) => B(expr, st, excSt, i, cfg)
+      case CFGAssert(_, _, expr, _) => B(expr, st, excSt)
       case CFGCatch(_, _, x) => {
         val localEnv = st.context.pureLocal
         val (excSetV, _) = localEnv.record.decEnvRec.GetBindingValue("@exception_all")
@@ -749,7 +749,7 @@ class Semantics(
     }
   }
 
-  def B(expr: CFGExpr, st: AbsState, excSt: AbsState, inst: CFGInst, cfg: CFG): (AbsState, AbsState) = {
+  def B(expr: CFGExpr, st: AbsState, excSt: AbsState): (AbsState, AbsState) = {
     val st1 = st //TODO should be the pruned state
 
     val (v, excSet) = V(expr, st)

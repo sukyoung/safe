@@ -171,9 +171,10 @@ of Use</A> | <A
 href="http://wikimediafoundation.org/wiki/Privacy_policy">Privacy 
 Policy</A></DIV>
 <SCRIPT type="text/javascript">
+var uiLang = "en";
+
 function setLang(lang) 
 {
-  var uiLang = navigator.language || navigator.userLanguage, 
   date = new Date();
   if (uiLang.match(/^\w+/) === lang)
   {
@@ -186,10 +187,10 @@ function setLang(lang)
   document.cookie = "searchLang=" + lang + ";expires=" + date.toUTCString() + ";";
 }
 
+setLang("ko");
+
 if (window.chrome && window.chrome.i18n && window.chrome.i18n.getMessage) {
   window.getMessage = chrome.i18n.getMessage;
 }
-
-setLang("ko");
 </SCRIPT>
  </BODY></HTML>

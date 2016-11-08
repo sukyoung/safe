@@ -26,7 +26,7 @@ import kr.ac.kaist.safe.util._
 import spray.json._
 
 // Analyze phase
-case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, Int, CallContext)] {
+case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, Int, CallContext, Semantics)] {
   val name: String = "analyzer"
   val help: String = "Analyze JavaScript source files."
 
@@ -34,7 +34,7 @@ case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, Int, CallContext)
     cfg: CFG,
     safeConfig: SafeConfig,
     config: AnalyzeConfig
-  ): Try[(CFG, Int, CallContext)] = {
+  ): Try[(CFG, Int, CallContext, Semantics)] = {
     // Initialization
     Utils.register(
       config.AbsUndef,
@@ -83,7 +83,7 @@ case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, Int, CallContext)
       HTMLWriter.writeHTMLFile(cfg, None, s"$name.html")
     })
 
-    Success((cfg, iters, globalCC))
+    Success((cfg, iters, globalCC, semantics))
   }
 
   def defaultConfig: AnalyzeConfig = AnalyzeConfig()
