@@ -19,20 +19,8 @@ import kr.ac.kaist.safe.errors.ExcLog
 import kr.ac.kaist.safe.errors.error.{ ParserError, NotJSFileError, AlreadyMergedSourceError }
 import kr.ac.kaist.safe.nodes.ast._
 import kr.ac.kaist.safe.util.{ NodeUtil => NU, SourceLoc, Span }
-import kr.ac.kaist.safe.BASE_DIR
 
 object Parser {
-  // For modeling in JavaScript
-  val base = BASE_DIR + "/src/main/resources/jsModels/"
-  val jsModels: List[String] =
-    List[String](base + "__builtin__.js")
-  /*
-                 base + "__dom__.js",
-                 base + "__input__.js").filter(f => new File(f).exists())
-    */
-  private def isModeled(node: ASTNode): Boolean =
-    node.info.span.fileName.contains("jsModels")
-
   // Used by DynamicRewriter
   def stringToFnE(str: (String, (Int, Int), String)): Try[(FunExpr, ExcLog)] = {
     val (fileName, (line, offset), code) = str
@@ -128,7 +116,7 @@ object Parser {
 
   // concatenate ASTs modeled in JavaScript
   private def addJSModel(program: Program, excLog: ExcLog): Try[(Program, ExcLog)] = {
-    jsModelFileToAST(jsModels).map {
+    jsModelFileToAST(NU.jsModels).map {
       case (p, e) =>
         (p, program) match {
           case (Program(_, TopLevel(_, fds0, vds0, body0)), Program(info, TopLevel(_, fds1, vds1, body1))) =>
@@ -145,13 +133,13 @@ object Parser {
   }
 
   private def removeJSModelFds(list: List[FunDecl]): List[FunDecl] =
-    list.foldLeft(List[FunDecl]())((r, fd) => if (isModeled(fd)) r else r ++ List(fd))
+    list.foldLeft(List[FunDecl]())((r, fd) => if (NU.isModeled(fd)) r else r ++ List(fd))
 
   private def removeJSModelVds(list: List[VarDecl]): List[VarDecl] =
-    list.foldLeft(List[VarDecl]())((r, vd) => if (isModeled(vd)) r else r ++ List(vd))
+    list.foldLeft(List[VarDecl]())((r, vd) => if (NU.isModeled(vd)) r else r ++ List(vd))
 
   private def removeJSModelSes(list: List[SourceElements]): List[SourceElements] =
-    list.foldLeft(List[SourceElements]())((r, se) => if (isModeled(se)) r else r ++ List(se))
+    list.foldLeft(List[SourceElements]())((r, se) => if (NU.isModeled(se)) r else r ++ List(se))
 
   private def resultToAST[T <: ASTNode](
     parser: JS,
