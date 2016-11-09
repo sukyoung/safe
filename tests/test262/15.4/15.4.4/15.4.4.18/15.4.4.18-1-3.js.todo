@@ -8,6 +8,7 @@
     try
 {      Boolean.prototype[0] = true;
       Boolean.prototype.length = 1;
+// TODO: add ToObject to javascript modeling
       Array.prototype.forEach.call(false, callbackfn);
       return result;}
     finally
