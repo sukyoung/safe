@@ -25,7 +25,6 @@ object DefaultNumber extends AbsNumberUtil {
   case object NUInt extends Dom
   case class UIntConst(value: Long) extends Dom
   case class NUIntConst(value: Double) extends Dom
-  val NatNum: Dom = UInt
 
   def alpha(num: Num): Dom = num.num match {
     case num if num.isNaN => NaN

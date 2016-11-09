@@ -76,5 +76,4 @@ trait AbsNumberUtil extends AbsDomainUtil[Num, AbsNumber] {
   val NaN: AbsNumber
   val UInt: AbsNumber
   val NUInt: AbsNumber
-  val NatNum: AbsNumber
 }

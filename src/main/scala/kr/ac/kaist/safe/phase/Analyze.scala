@@ -20,6 +20,7 @@ import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.analyzer.console.Console
 import kr.ac.kaist.safe.analyzer.html_debugger.HTMLWriter
+import kr.ac.kaist.safe.errors.error.NoChoiceError
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.nodes.cfg.CFG
 import kr.ac.kaist.safe.util._
@@ -101,6 +102,12 @@ case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, Int, CallContext)
     ("html", StrOption((c, s) => c.htmlName = Some(s)),
       "the resulting CFG with states will be drawn to the {string}.html"),
     ("snapshot", StrOption((c, s) => c.snapshot = Some(s)),
+      "analysis with an initial heap generated from a dynamic snapshot(*.json)."),
+    ("number", StrOption((c, s) => s match {
+      case "default" => c.AbsNumber = DefaultNumber
+      case "flat" => c.AbsNumber = FlatNumber
+      case str => throw NoChoiceError(s"there is no abstract number domain with name '$str'.")
+    }),
       "analysis with an initial heap generated from a dynamic snapshot(*.json).")
   )
 }
