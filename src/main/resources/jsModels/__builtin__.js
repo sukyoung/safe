@@ -78,6 +78,7 @@
 
   // ECMAScript 5.1 Section 15.4.4.18
   Array.prototype.forEach = function(callbackfn, thisArg) {
+  // TODO: var O = ToObject(this);
     var O = this;
     var len = O.length;
     var T;
@@ -88,6 +89,8 @@
       var kPresent = (k in O);
       if(kPresent) {
         var kValue = O[k];
+        // TODO: insert CFGEnterCode
+        // callbackfn.call != callbackfn.[[Call]]
         callbackfn.call(T, kValue, k, O);
       }
       k = k+1;
@@ -96,6 +99,7 @@
 
   // ECMAScript 5.1 Section 15.4.4.19
   Array.prototype.map = function(callbackfn, thisArg) {
+  // TODO: var O = ToObject(this);
     var O = this;
     var len = O.length;
     var T;
@@ -107,6 +111,8 @@
       var kPresent = (k in O);
       if(kPresent) {
         var kValue = O[k];
+        // TODO: insert CFGEnterCode
+        // callbackfn.call != callbackfn.[[Call]]
         var mappedValue = callbackfn.call(T, kValue, k, O);
         A[k] = mappedValue;
       }

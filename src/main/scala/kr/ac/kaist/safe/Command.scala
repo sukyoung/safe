@@ -71,8 +71,8 @@ case object CmdCFGBuild extends CommandObj("cfgBuild", CmdCompile >> CFGBuild) {
 
 // analyze
 case object CmdAnalyze extends CommandObj("analyze", CmdCFGBuild >> Analyze) {
-  override def display(result: (CFG, Int, CallContext)): Unit = {
-    val (cfg, iters, globalCC) = result
+  override def display(result: (CFG, Int, CallContext, Semantics)): Unit = {
+    val (cfg, iters, globalCC, _) = result
     val state = cfg.globalFunc.exit.getState(globalCC)
     val heap = state.heap
     val context = state.context
@@ -122,7 +122,7 @@ case object CmdAnalyze extends CommandObj("analyze", CmdCFGBuild >> Analyze) {
 
 // bugDetect
 case object CmdBugDetect extends CommandObj("bugDetect", CmdAnalyze >> BugDetect) {
-  override def display(cfg: CFG): Unit = println(cfg.toString(0))
+  override def display(cfg: CFG): Unit = ()
 }
 
 case object CmdTestRewrite extends CommandObj("testRewrite", CmdParse >> TestRewrite)

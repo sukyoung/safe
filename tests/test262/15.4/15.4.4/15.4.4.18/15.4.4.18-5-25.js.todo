@@ -10,6 +10,7 @@
         result = this._15_4_4_18_5_25;
       }
       var arr = [1, ];
+// TODO: add CFGEnterCode to javascript modeling
       arr.forEach(callbackfn);
       this.retVal = ! result;
     }

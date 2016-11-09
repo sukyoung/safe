@@ -7,6 +7,7 @@
     try
 {      Boolean.prototype[0] = true;
       Boolean.prototype.length = 1;
+// TODO: add ToObject to javascript modeling
       var testResult = Array.prototype.map.call(false, callbackfn);
       return testResult[0] === true;}
     finally

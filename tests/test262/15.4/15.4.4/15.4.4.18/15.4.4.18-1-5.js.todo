@@ -8,6 +8,7 @@
     try
 {      Number.prototype[0] = 1;
       Number.prototype.length = 1;
+// TODO: add ToObject to javascript modeling
       Array.prototype.forEach.call(2.5, callbackfn);
       return result;}
     finally

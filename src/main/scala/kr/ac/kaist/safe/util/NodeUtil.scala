@@ -14,6 +14,8 @@ package kr.ac.kaist.safe.util
 import kr.ac.kaist.safe.nodes.Node
 import kr.ac.kaist.safe.nodes.ast._
 import kr.ac.kaist.safe.nodes.ir._
+import kr.ac.kaist.safe.nodes.cfg._
+import kr.ac.kaist.safe.BASE_DIR
 import kr.ac.kaist.safe.LINE_SEP
 import java.io.BufferedWriter
 import java.io.IOException
@@ -56,6 +58,25 @@ object NodeUtil {
   ////////////////////////////////////////////////////////////////
   // For all AST, IR, and CFG
   ////////////////////////////////////////////////////////////////
+
+  // Models //////////////////////////////////////////////////////
+
+  // For modeling in JavaScript
+  val jsModelsName = "jsModels"
+  val jsModelsBase = BASE_DIR + "/src/main/resources/" + jsModelsName + "/"
+  val jsModels: List[String] =
+    List[String](
+      jsModelsBase + "__builtin__.js",
+      jsModelsBase + "__dom__.js"
+    )
+  /*
+      jsModelsBase + "__input__.js")
+   */
+
+  def isModeled(node: ASTNode): Boolean =
+    node.info.span.fileName.contains(jsModelsName)
+  def isModeled(block: CFGBlock): Boolean =
+    block.span.fileName.contains(jsModelsName)
 
   // Names ///////////////////////////////////////////////////////
   // unique name generation

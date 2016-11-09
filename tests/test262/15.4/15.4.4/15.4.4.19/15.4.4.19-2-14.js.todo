@@ -8,6 +8,7 @@
       0 : 11,
       1 : 12
     };
+// TODO: add CFGEnterCode to javascript modeling
     var testResult = Array.prototype.map.call(obj, callbackfn);
     return 0 === testResult.length;
   }

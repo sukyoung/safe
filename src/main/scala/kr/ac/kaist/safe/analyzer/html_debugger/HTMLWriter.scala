@@ -171,6 +171,8 @@ object HTMLWriter {
             })
         }
 
+      val thisBinding = ctx.thisBinding
+      sb.append(s"{ value: {value: 'this: $thisBinding'} },").append(LINE_SEP)
       // old address set
       val old = ctx.old
       val mayOld = old.mayOld.mkString(", ")
