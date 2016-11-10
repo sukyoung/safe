@@ -11,11 +11,9 @@
 
 package kr.ac.kaist.safe.phase
 
-import scala.io.Source
 import scala.util.{ Failure, Success, Try }
 import kr.ac.kaist.safe.SafeConfig
 import kr.ac.kaist.safe.analyzer._
-import kr.ac.kaist.safe.analyzer.HeapParser._
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.analyzer.console.Console
@@ -24,7 +22,6 @@ import kr.ac.kaist.safe.errors.error.NoChoiceError
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.nodes.cfg.CFG
 import kr.ac.kaist.safe.util._
-import spray.json._
 
 // Analyze phase
 case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, Int, CallContext, Semantics)] {
@@ -36,7 +33,7 @@ case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, Int, CallContext,
     safeConfig: SafeConfig,
     config: AnalyzeConfig
   ): Try[(CFG, Int, CallContext, Semantics)] = {
-    // Initialization
+    // initialization
     Utils.register(
       config.AbsUndef,
       config.AbsNull,
@@ -45,19 +42,16 @@ case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, Int, CallContext,
       config.AbsString,
       DefaultLoc(cfg)
     )
-    val init = Initialize(cfg)
-    val basicSt =
-      if (safeConfig.testMode) init.testState
-      else init.state
+    var initSt = Initialize(cfg)
 
-    val initSt = config.snapshot match {
-      case Some(fileName) => {
-        val jsonInput = Source.fromFile(fileName)("UTF-8").mkString.parseJson
-        val heap = AbsHeap(jsonInput.convertTo)
-        AbsState(basicSt.heap + heap, basicSt.context)
-      }
-      case None => basicSt
-    }
+    // handling test mode
+    if (safeConfig.testMode) initSt = Initialize.addTest(initSt)
+
+    // handling snapshot mode
+    config.snapshot.map(str => initSt = Initialize.addSnapshot(initSt, str))
+
+    // handling HTML DOM modeling mode
+    if (config.domModel) initSt = Initialize.addDOM(initSt, cfg)
 
     val globalCC = CallContextManager(config.callsiteSensitivity).globalCallContext
     cfg.globalFunc.entry.setState(globalCC, initSt)
@@ -108,7 +102,9 @@ case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, Int, CallContext,
       case "flat" => c.AbsNumber = FlatNumber
       case str => throw NoChoiceError(s"there is no abstract number domain with name '$str'.")
     }),
-      "analysis with an initial heap generated from a dynamic snapshot(*.json).")
+      "analysis with a selected number domain."),
+    ("domModel", BoolOption(c => c.domModel = true),
+      "analysis with HTML DOM modelings.")
   )
 }
 
@@ -124,5 +120,6 @@ case class AnalyzeConfig(
   var AbsString: AbsStringUtil = StringSet(0),
   var callsiteSensitivity: Int = 0,
   var htmlName: Option[String] = None,
-  var snapshot: Option[String] = None
+  var snapshot: Option[String] = None,
+  var domModel: Boolean = false
 ) extends Config

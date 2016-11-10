@@ -13,14 +13,17 @@ package kr.ac.kaist.safe.analyzer
 
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.analyzer.domain.Utils._
+import kr.ac.kaist.safe.analyzer.HeapParser._
 import kr.ac.kaist.safe.analyzer.models._
 import kr.ac.kaist.safe.analyzer.models.builtin._
 import kr.ac.kaist.safe.nodes.cfg.CFG
 import kr.ac.kaist.safe.util._
+import scala.io.Source
 import scala.collection.immutable.{ HashMap }
+import spray.json._
 
-case class Initialize(cfg: CFG) {
-  def state: AbsState = {
+object Initialize {
+  def apply(cfg: CFG): AbsState = {
     val globalLocSet = AbsLoc(BuiltinGlobal.loc)
     val globalPureLocalEnv = AbsLexEnv.newPureLocal(globalLocSet)
     val initHeap = AbsHeap(HashMap(
@@ -38,15 +41,13 @@ case class Initialize(cfg: CFG) {
     AbsState(modeledHeap, initCtx)
   }
 
-  def testState: AbsState = {
-    val st = state
+  def addTest(st: AbsState): AbsState = {
     val globalObj = st.heap.get(BuiltinGlobal.loc)
       .fold(AbsObject.Empty)(obj => obj)
 
-    val boolBot = AbsBool.Bot
-
     val testGlobalObj =
-      globalObj.initializeUpdate("__BOT", AbsDataProp(AbsValue.Bot))
+      globalObj
+        .initializeUpdate("__BOT", AbsDataProp(AbsValue.Bot))
         .initializeUpdate("__TOP", AbsDataProp(AbsPValue.Top))
         .initializeUpdate("__UInt", AbsDataProp(AbsNumber.UInt))
         .initializeUpdate("__Global", AbsDataProp(AbsValue(BuiltinGlobal.loc)))
@@ -71,5 +72,26 @@ case class Initialize(cfg: CFG) {
 
     val testHeap = st.heap.update(BuiltinGlobal.loc, testGlobalObj)
     AbsState(testHeap, st.context)
+  }
+
+  def addSnapshot(st: AbsState, fileName: String): AbsState = {
+    val jsonInput = Source.fromFile(fileName)("UTF-8").mkString.parseJson
+    val heap = AbsHeap(jsonInput.convertTo)
+    AbsState(st.heap + heap, st.context)
+  }
+
+  def addDOM(st: AbsState, cfg: CFG): AbsState = {
+    val globalObj = st.heap.get(BuiltinGlobal.loc)
+      .fold(AbsObject.Empty)(obj => obj)
+
+    val domGlobalObj =
+      globalObj
+        .initializeUpdate("window", AbsDataProp(AbsValue(BuiltinGlobal.loc)))
+        .initializeUpdate("document", AbsDataProp(AbsValue(Document.loc)))
+
+    val domHeap = Document
+      .initHeap(st.heap, cfg)
+      .update(BuiltinGlobal.loc, domGlobalObj)
+    AbsState(domHeap, st.context)
   }
 }
