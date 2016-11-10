@@ -1,0 +1,12 @@
+{
+    "silent": true,
+    "parser": {
+        "jsModel": true
+    },
+    "analyzer": {
+        "console": true,
+        "number": "flat",
+        "maxStrSetSize": 10
+    },
+    "file": ["wikipedia.org.htm"]
+}
