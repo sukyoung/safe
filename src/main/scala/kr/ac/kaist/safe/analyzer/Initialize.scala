@@ -13,14 +13,11 @@ package kr.ac.kaist.safe.analyzer
 
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.analyzer.domain.Utils._
-import kr.ac.kaist.safe.analyzer.HeapParser._
 import kr.ac.kaist.safe.analyzer.models._
 import kr.ac.kaist.safe.analyzer.models.builtin._
 import kr.ac.kaist.safe.nodes.cfg.CFG
 import kr.ac.kaist.safe.util._
-import scala.io.Source
 import scala.collection.immutable.{ HashMap }
-import spray.json._
 
 object Initialize {
   def apply(cfg: CFG): AbsState = {
@@ -75,8 +72,8 @@ object Initialize {
   }
 
   def addSnapshot(st: AbsState, fileName: String): AbsState = {
-    val jsonInput = Source.fromFile(fileName)("UTF-8").mkString.parseJson
-    val heap = AbsHeap(jsonInput.convertTo)
+    val concreteHeap = Heap.parse(fileName)
+    val heap = AbsHeap.alpha(concreteHeap)
     AbsState(st.heap + heap, st.context)
   }
 

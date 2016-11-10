@@ -1,0 +1,15 @@
+{
+  "#Global": {
+    "chrome": {
+      "value": "#Chrome",
+      "writable": true,
+      "enumerable": true,
+      "configurable": false
+    }
+  },
+  "#Chrome": {
+    "[[Extensible]]": true,
+    "[[Prototype]]": "#Object.prototype",
+    "[[Class]]": "Object"
+  }
+}

@@ -12,16 +12,23 @@
 package kr.ac.kaist.safe.analyzer.domain
 
 import scala.collection.immutable.{ HashMap }
+import scala.io.Source
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.analyzer.domain.Utils._
+import kr.ac.kaist.safe.analyzer.HeapParser._
 import kr.ac.kaist.safe.analyzer.models.builtin.BuiltinGlobal
 import kr.ac.kaist.safe.util._
 import kr.ac.kaist.safe.nodes.cfg._
+import spray.json._
 
 ////////////////////////////////////////////////////////////////////////////////
 // concrete heap type
 ////////////////////////////////////////////////////////////////////////////////
 case class Heap(map: Map[Loc, Object])
+object Heap {
+  def parse(fileName: String): Heap =
+    Source.fromFile(fileName)("UTF-8").mkString.parseJson.convertTo
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // heap abstract domain
