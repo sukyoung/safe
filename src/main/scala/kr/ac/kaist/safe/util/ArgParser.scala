@@ -63,43 +63,57 @@ class ArgParser(cmd: Command, safeConfig: SafeConfig) extends RegexParsers {
   // Parsing arguments.
   def apply(args: List[String]): Try[Unit] = {
     var jsonArgs: List[String] = Nil
+    val str = ".*".r ^^ { s => s }
+
+    // add arguments from JSON
+    def addArg(prefix: String, value: (String, JsValue)): Unit = value match {
+      case (opt, JsBoolean(true)) => jsonArgs ::= s"-$prefix$opt"
+      case (opt, JsBoolean(false)) =>
+      case (opt, JsNumber(num)) => jsonArgs ::= s"-$prefix$opt=$num"
+      case (opt, JsString(str)) => jsonArgs ::= s"-$prefix$opt=$str"
+      // TODO case (opt, JsArray(lst)) =>
+      case (opt, jsValue) => NoSupportError(jsValue.toString)
+    }
+
+    // setting options using a JSON file.
+    lazy val json: Parser[Try[Unit]] = ("-json=" ~> str) ^^ {
+      case fileName => Try({
+        Source.fromFile(fileName)("UTF-8").mkString.parseJson match {
+          case (obj: JsObject) => obj.fields.foreach {
+            case (phase, value: JsObject) => {
+              if (Safe.phases.map(_.name).contains(phase))
+                value.fields.foreach(addArg(s"$phase:", _))
+              else throw NoPhaseError(phase)
+            }
+            case ("file", JsArray(lst)) => lst.foreach {
+              case JsString(fileName) => jsonArgs ::= fileName
+              case value => throw NoFileName(value.toString)
+            }
+            case ("file", value) => throw NoFileList(value.toString)
+            case pair => addArg("", pair)
+          }
+          case value => throw NoObjError(value.toString)
+        }
+      })
+    }
+
+    // no option error
+    lazy val optError: Parser[Try[Unit]] = ("-" ~> "[^=]+".r <~ "=") ~ str ^^ {
+      case o ~ s => Fail(NoOptError(o, cmd))
+    }
+    lazy val simpleOptError: Parser[Try[Unit]] = ("-" ~> str) ^^ {
+      o => Fail(NoOptError(o, cmd))
+    }
+
+    // a filename list
+    lazy val fileName: Parser[Try[Unit]] = str ^^ {
+      s => safeConfig.fileNames = s :: safeConfig.fileNames; success
+    }
 
     // Generate a parser.
-    val parser: Parser[Try[Unit]] = ruleList.foldRight({
-      val str = ".*".r ^^ { s => s }
-
-      lazy val json: Parser[Try[Unit]] = ("-json=" ~> str) ^^ {
-        case fileName => Try({
-          Source.fromFile(fileName)("UTF-8").mkString.parseJson match {
-            case (obj: JsObject) => obj.fields.foreach {
-              case (phase, value: JsObject) =>
-                if (Safe.phases.map(_.name).contains(phase)) value.fields.foreach {
-                  case (opt, JsBoolean(true)) => jsonArgs ::= s"-$phase:$opt"
-                  case (opt, JsBoolean(false)) =>
-                  case (opt, value) => jsonArgs ::= s"-$phase:$opt=$value"
-                }
-                else throw NoPhaseError(phase)
-              case (_, value) => throw NoObjError(value.toString)
-            }
-            case value => throw NoObjError(value.toString)
-          }
-        })
-      }
-
-      lazy val optError: Parser[Try[Unit]] = ("-" ~> "[^=]+".r <~ "=") ~ str ^^ {
-        case o ~ s => Fail(NoOptError(o, cmd))
-      }
-
-      lazy val simpleOptError: Parser[Try[Unit]] = ("-" ~> str) ^^ {
-        o => Fail(NoOptError(o, cmd))
-      }
-
-      lazy val fileName: Parser[Try[Unit]] = str ^^ {
-        s => safeConfig.fileNames = s :: safeConfig.fileNames; success
-      }
-
-      phrase(json) | phrase(optError) | phrase(simpleOptError) | phrase(fileName)
-    }) { case (rule, prev) => phrase(rule) | prev }
+    val parser: Parser[Try[Unit]] = phrase(json) | ruleList.foldRight(
+      phrase(optError) | phrase(simpleOptError) | phrase(fileName)
+    ) { case (rule, prev) => phrase(rule) | prev }
 
     var result = success
     result = args.foldLeft[Try[Unit]](success) {
