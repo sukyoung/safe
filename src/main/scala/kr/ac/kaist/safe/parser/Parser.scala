@@ -74,19 +74,14 @@ object Parser {
   }
 
   // Used by phase/Parse.scala
-  def fileToAST(fs: List[String]): Try[(Program, ExcLog)] =
-    fileToAST(fs, false)
-
-  private def jsModelFileToAST(fs: List[String]): Try[(Program, ExcLog)] =
-    fileToAST(fs, true)
-
-  private def fileToAST(fs: List[String], woJSModel: Boolean): Try[(Program, ExcLog)] = fs match {
+  def fileToAST(fs: List[String], jsModel: Boolean): Try[(Program, ExcLog)] = fs match {
     case List(file) =>
       fileToStmts(file).flatMap {
         case (s, e) =>
           {
             val program = Program(s.info, List(s))
-            if (woJSModel) Try(program, e) else addJSModel(program, e)
+            if (jsModel) addJSModel(program, e)
+            else Try(program, e)
           }
       }
     case files =>
@@ -97,7 +92,8 @@ object Parser {
       }.flatMap {
         case (s, e) => {
           val program = Program(NU.MERGED_SOURCE_INFO, s)
-          if (woJSModel) Try(program, e) else addJSModel(program, e)
+          if (jsModel) addJSModel(program, e)
+          else Try(program, e)
         }
       }
   }
@@ -116,7 +112,7 @@ object Parser {
 
   // concatenate ASTs modeled in JavaScript
   private def addJSModel(program: Program, excLog: ExcLog): Try[(Program, ExcLog)] = {
-    jsModelFileToAST(NU.jsModels).map {
+    fileToAST(NU.jsModels, false).map {
       case (p, e) =>
         (p, program) match {
           case (Program(_, TopLevel(_, fds0, vds0, body0)), Program(info, TopLevel(_, fds1, vds1, body1))) =>

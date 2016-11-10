@@ -30,7 +30,7 @@ case object Parse extends PhaseObj[Unit, ParseConfig, Program] {
     config: ParseConfig
   ): Try[Program] = safeConfig.fileNames match {
     case Nil => Failure(NoFileError("parse"))
-    case _ => Parser.fileToAST(safeConfig.fileNames).map {
+    case _ => Parser.fileToAST(safeConfig.fileNames, config.jsModel).map {
       case (program, excLog) => {
         // Report errors.
         if (excLog.hasError) {
@@ -57,11 +57,14 @@ case object Parse extends PhaseObj[Unit, ParseConfig, Program] {
   def defaultConfig: ParseConfig = ParseConfig()
   val options: List[PhaseOption[ParseConfig]] = List(
     ("out", StrOption((c, s) => c.outFile = Some(s)),
-      "the parsed JavaScript code will be written to the outfile.")
+      "the parsed JavaScript code will be written to the outfile."),
+    ("jsModel", BoolOption(c => c.jsModel = true),
+      "JavaScript code with JavaScript modelings.")
   )
 }
 
 // Parse phase config
 case class ParseConfig(
-  var outFile: Option[String] = None
+  var outFile: Option[String] = None,
+  var jsModel: Boolean = false
 ) extends Config

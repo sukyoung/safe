@@ -62,7 +62,7 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
   def getSafeConfig(filename: String): SafeConfig =
     SafeConfig(CmdBase, List(filename), silent = true, testMode = true)
 
-  def getCFG(filename: String): Try[CFG] = CmdCFGBuild(List("-silent", filename), testMode = true)
+  def getCFG(filename: String): Try[CFG] = CmdCFGBuild(List("-parser:jsModel", "-silent", filename), testMode = true)
 
   private def parseTest(pgm: Try[Program]): Unit = {
     pgm match {
@@ -213,7 +213,7 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
 
     val config = getSafeConfig(jsName)
 
-    lazy val pgm = Parse((), config).map(Parser.removeJSModel)
+    lazy val pgm = Parse((), config)
     registerTest("[Parse] " + filename, ParseTest) { parseTest(pgm) }
 
     lazy val ast = pgm.flatMap(ASTRewrite(_, config))
