@@ -18,7 +18,7 @@ import xtc.parser.{ Result, ParseError, SemanticValue }
 import kr.ac.kaist.safe.errors.ExcLog
 import kr.ac.kaist.safe.errors.error.{ ParserError, NotJSFileError, AlreadyMergedSourceError }
 import kr.ac.kaist.safe.nodes.ast._
-import kr.ac.kaist.safe.util.{ NodeUtil => NU, SourceLoc, Span }
+import kr.ac.kaist.safe.util.{ NodeUtil => NU, _ }
 
 object Parser {
   // Used by DynamicRewriter
@@ -165,17 +165,19 @@ object Parser {
       // convert path string to linux style for windows
       fileName = fileName.charAt(0).toLower + fileName.replace('\\', '/').substring(1)
     }
-    if (fileName.endsWith(".js") || fileName.endsWith(".js.err")) {
-      val fs = new FileInputStream(new File(f))
-      val sr = new InputStreamReader(fs, Charset.forName("UTF-8"))
-      val in = new BufferedReader(sr)
-      val pair = parsePgm(in, fileName, 0).flatMap { case (p, e) => getInfoStmts(p).map { (_, e) } }
-      in.close; sr.close; fs.close
-      pair
-    } else if (fileName.endsWith(".html") || fileName.endsWith(".xhtml") || fileName.endsWith(".htm")) {
-      JSFromHTML.parseScripts(fileName)
-    } else {
-      Failure(NotJSFileError(fileName))
+    FileKind(fileName) match {
+      case JSFile | JSErrFile => {
+        val fs = new FileInputStream(new File(f))
+        val sr = new InputStreamReader(fs, Charset.forName("UTF-8"))
+        val in = new BufferedReader(sr)
+        val pair = parsePgm(in, fileName, 0).flatMap {
+          case (p, e) => getInfoStmts(p).map((_, e))
+        }
+        in.close; sr.close; fs.close
+        pair
+      }
+      case HTMLFile => JSFromHTML.parseScripts(fileName)
+      case JSTodoFile | NormalFile => Failure(NotJSFileError(fileName))
     }
   }
 

@@ -45,13 +45,16 @@ case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, Int, CallContext,
     var initSt = Initialize(cfg)
 
     // handling test mode
-    if (safeConfig.testMode) initSt = Initialize.addTest(initSt)
+    if (safeConfig.testMode)
+      initSt = Initialize.addTest(initSt)
 
     // handling snapshot mode
-    config.snapshot.map(str => initSt = Initialize.addSnapshot(initSt, str))
+    config.snapshot.map(str =>
+      initSt = Initialize.addSnapshot(initSt, str))
 
     // handling HTML DOM modeling mode
-    if (config.domModel) initSt = Initialize.addDOM(initSt, cfg)
+    if (safeConfig.html || config.domModel)
+      initSt = Initialize.addDOM(initSt, cfg)
 
     val globalCC = CallContextManager(config.callsiteSensitivity).globalCallContext
     cfg.globalFunc.entry.setState(globalCC, initSt)

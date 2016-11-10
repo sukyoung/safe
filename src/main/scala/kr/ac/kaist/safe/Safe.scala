@@ -177,5 +177,6 @@ case class SafeConfig(
   var command: Command,
   var fileNames: List[String] = Nil,
   var silent: Boolean = false,
-  var testMode: Boolean = false
+  var testMode: Boolean = false,
+  var html: Boolean = false // only turn on when HTML files are given.
 ) extends Config

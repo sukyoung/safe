@@ -116,6 +116,9 @@ class ArgParser(cmd: Command, safeConfig: SafeConfig) extends RegexParsers {
 
     safeConfig.fileNames = safeConfig.fileNames.reverse
 
+    if (safeConfig.fileNames.map(FileKind(_)).exists(_ == HTMLFile))
+      safeConfig.html = true
+
     result
   }
 }
