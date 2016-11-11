@@ -27,9 +27,9 @@ case object BugDetect extends PhaseObj[(CFG, Int, CallContext, Semantics), BugDe
 
   // Generators of bug detector messages
   def always(expr: CFGExpr, cond: Boolean): String =
-    expr.ir.span.toString + ": [Warning] The conditional expression is always " + cond + "."
-  def absentProp(expr: CFGExpr, name: AbsString): String =
-    expr.ir.span.toString + ": [Warning] The property " + name + " is absent."
+    expr.ir.span.toString + ":\n    [Warning] The conditional expression \"" + expr.ir.ast.toString(0) + "\" is always " + cond + "."
+  def absentProp(expr: CFGExpr, name: AbsString, obj: CFGExpr): String =
+    expr.ir.span.toString + ":\n    [Warning] The property " + name + " of the object \"" + obj.ir.ast.toString(0) + "\" is absent."
 
   // Move to CFGBlock?  Copied from HTMLWriter.
   private def isReachableUserCode(block: CFGBlock): Boolean =
@@ -52,9 +52,11 @@ case object BugDetect extends PhaseObj[(CFG, Int, CallContext, Semantics), BugDe
   }
 
   // Check expression-level rules: AbsentPropertyRead
-  private def checkExpr(expr: CFGExpr, state: AbsState, semantics: Semantics): List[String] = expr match {
+  private def checkExpr(expr: CFGExpr, state: AbsState,
+    semantics: Semantics): List[String] = expr match {
     // Don't check if this instruction is "LHS = <>fun<>["prototype"]".
-    case CFGLoad(_, CFGVarRef(_, CFGTempId(name, _)), CFGVal(EJSString("prototype"))) if name.startsWith("<>fun<>") =>
+    case CFGLoad(_, CFGVarRef(_, CFGTempId(name, _)),
+      CFGVal(EJSString("prototype"))) if name.startsWith("<>fun<>") =>
       List[String]()
     case CFGLoad(_, obj, index) =>
       val (objV, _) = semantics.V(obj, state)
@@ -66,7 +68,7 @@ case object BugDetect extends PhaseObj[(CFG, Int, CallContext, Semantics), BugDe
           val heap = state.heap
           val propExist = heap.get(objLoc).HasProperty(propStr, heap)
           if (!propExist.isBottom && propExist <= AbsBool.False)
-            absentProp(expr, propStr) :: bugs
+            absentProp(expr, propStr, obj) :: bugs
           else bugs
         } else bugs
       })
