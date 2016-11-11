@@ -81,6 +81,23 @@ case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, Int, CallContext,
       HTMLWriter.writeHTMLFile(cfg, None, s"$name.html")
     })
 
+    // dump exit state
+    if (config.exitDump) {
+      val state = cfg.globalFunc.exit.getState(globalCC)
+      val heap = state.heap
+      val context = state.context
+      val old = context.old
+      println("** heap **" + LINE_SEP +
+        heap.toString + LINE_SEP +
+        LINE_SEP +
+        "** context **" + LINE_SEP +
+        context.toString + LINE_SEP +
+        LINE_SEP +
+        "** old address set **" + LINE_SEP +
+        old.toString)
+      println()
+    }
+
     Success((cfg, iters, globalCC, semantics))
   }
 
@@ -90,6 +107,8 @@ case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, Int, CallContext,
       "messages during analysis are muted."),
     ("console", BoolOption(c => c.console = true),
       "REPL-style console debugger."),
+    ("exitDump", BoolOption(c => c.exitDump = true),
+      "dump the state of the exit state of a given CFG"),
     ("out", StrOption((c, s) => c.outFile = Some(s)),
       "the analysis results will be written to the outfile."),
     ("maxStrSetSize", NumOption((c, n) => if (n > 0) c.AbsString = StringSet(n)),
@@ -115,6 +134,7 @@ case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, Int, CallContext,
 case class AnalyzeConfig(
   var silent: Boolean = false,
   var console: Boolean = false,
+  var exitDump: Boolean = false,
   var outFile: Option[String] = None,
   var AbsUndef: AbsUndefUtil = DefaultUndef,
   var AbsNull: AbsNullUtil = DefaultNull,
