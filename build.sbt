@@ -27,8 +27,19 @@ lazy val root = (project in file(".")).
       }
     },
     buildParsers in Compile := {
+      // xtc
       val xtcFile = new File("./lib/xtc.jar")
-      if (!xtcFile.exists) IO.download(new URL("http://cs.nyu.edu/rgrimm/xtc/xtc.jar"), xtcFile)
+      if (!xtcFile.exists)
+        IO.download(new URL("http://cs.nyu.edu/rgrimm/xtc/xtc.jar"), xtcFile)
+
+      // webix
+      val webixJsFile = new File("./lib/debugger/webix.js")
+      val webixCssFile = new File("./lib/debugger/css/webix.css")
+      if (!webixJsFile.exists)
+        IO.download(new URL("http://cdn.webix.com/edge/webix.js"), webixJsFile)
+      if (!webixCssFile.exists)
+        IO.download(new URL("http://cdn.webix.com/edge/webix.css"), webixCssFile)
+
       val options = ForkOptions(bootJars = Seq(xtcFile))
       val srcDir = baseDirectory.value + "/src/main"
       val inDir = srcDir + "/scala/kr/ac/kaist/safe/parser/"
