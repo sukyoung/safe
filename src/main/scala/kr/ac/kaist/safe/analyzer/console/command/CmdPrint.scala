@@ -23,6 +23,8 @@ import kr.ac.kaist.safe.cfg_builder.DotWriter
 case object CmdPrint extends Command("print", "Print out various information.") {
   def help: Unit = {
     println("usage: " + name + " state(-all) ({keyword})")
+    println("       " + name + " heap(-all) ({keyword})")
+    println("       " + name + " context ({keyword})")
     println("       " + name + " block")
     println("       " + name + " loc {LocName} ({keyword})")
     println("       " + name + " func ({functionID})")
@@ -46,6 +48,27 @@ case object CmdPrint extends Command("print", "Print out various information.") 
           }
         case "state-all" =>
           val res = showState(c, c.getCurCP.getState, true)
+          rest match {
+            case Nil => println(res)
+            case key :: Nil => println(grep(key, res))
+            case _ => help
+          }
+        case "heap" =>
+          val res = c.getCurCP.getState.heap.toString
+          rest match {
+            case Nil => println(res)
+            case key :: Nil => println(grep(key, res))
+            case _ => help
+          }
+        case "heap-all" =>
+          val res = c.getCurCP.getState.heap.toStringAll
+          rest match {
+            case Nil => println(res)
+            case key :: Nil => println(grep(key, res))
+            case _ => help
+          }
+        case "context" =>
+          val res = c.getCurCP.getState.context.toString
           rest match {
             case Nil => println(res)
             case key :: Nil => println(grep(key, res))
