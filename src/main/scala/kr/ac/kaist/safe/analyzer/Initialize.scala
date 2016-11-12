@@ -71,10 +71,10 @@ object Initialize {
     AbsState(testHeap, st.context)
   }
 
-  def addSnapshot(st: AbsState, fileName: String): AbsState = {
-    val concreteHeap = Heap.parse(fileName)
-    val heap = AbsHeap.alpha(concreteHeap)
-    AbsState(st.heap + heap, st.context)
+  def addSnapshot(st: AbsState, snapshot: String): AbsState = {
+    val concreteHeap = Heap.parse(snapshot)
+    val abstractHeap = AbsHeap.alpha(concreteHeap)
+    AbsState(st.heap + abstractHeap, st.context)
   }
 
   def addDOM(st: AbsState, cfg: CFG): AbsState = {
