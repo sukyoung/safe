@@ -70,7 +70,7 @@ class ArgParser(cmd: Command, safeConfig: SafeConfig) extends RegexParsers {
       case (opt, JsBoolean(true)) => jsonArgs ::= s"-$prefix$opt"
       case (opt, JsBoolean(false)) =>
       case (opt, JsNumber(num)) => jsonArgs ::= s"-$prefix$opt=$num"
-      case (opt, JsString(str)) => jsonArgs ::= s"-$prefix$opt=$str"
+      case (opt, JsString(str)) if !str.isEmpty => jsonArgs ::= s"-$prefix$opt=$str"
       // TODO case (opt, JsArray(lst)) =>
       case (opt, jsValue) => NoSupportError(jsValue.toString)
     }
