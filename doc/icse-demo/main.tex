@@ -52,6 +52,8 @@ analysis framework for ECMAScript especially designed as a playground
 for advanced research in JavaScript web applications.  \safe is
 light-weight, which supports pluggability, extensibility, and
 debuggability.
+
+Demo video: \url{http://youtu.be/x7Jr_gyyHD0}
 \end{abstract}
 
 
@@ -143,9 +145,7 @@ commands and phases, respectively, in \mtt{Safe.scala}}
 \begin{minipage}{.95\textwidth}
 \footnotesize
 \begin{verbatim}
-case object CmdBugDetect extends CommandObj("bugDetect", CmdAnalyze >> BugDetect) {
-  override def display(cfg: CFG): Unit = println(cfg.toString(0))
-}
+case object CmdBugDetect extends CommandObj("bugDetect", CmdAnalyze >> BugDetect)
 \end{verbatim}
 \end{minipage}
 \\[1em]
@@ -157,6 +157,11 @@ case object CmdBugDetect extends CommandObj("bugDetect", CmdAnalyze >> BugDetect
 case object BugDetect extends PhaseObj[(CFG, Int, CallContext), BugDetectConfig, CFG] {
   val name: String = "bugDetector"
   val help: String = "Detect possible bugs in JavaScript source files."
+  def defaultConfig: BugDetectConfig = BugDetectConfig()
+  val options: List[PhaseOption[BugDetectConfig]] = List(
+    ("silent", BoolOption(c => c.silent = true), "messages during analysis are muted.")
+  )
+
   def apply(in: (CFG, Int, CallContext), safeConfig: SafeConfig, config: BugDetectConfig): Try[CFG] = {
     val (cfg, _, _) = in
 \end{verbatim}
@@ -166,14 +171,9 @@ case object BugDetect extends PhaseObj[(CFG, Int, CallContext), BugDetectConfig,
 \begin{verbatim}
     Success(cfg)
   }
-  def defaultConfig: BugDetectConfig = BugDetectConfig()
-  val options: List[PhaseOption[BugDetectConfig]] = List(
-    ("silent", BoolOption(c => c.silent = true), "messages during analysis are muted.")
-  )
 }
 
 case class BugDetectConfig(var silent: Boolean = false) extends Config
-
 \end{verbatim}
 \end{minipage}
 \\
@@ -235,8 +235,8 @@ We call SAFE ``\oldsafe'' from now on to distinguish it from \safe.
 }.  We designed it to be light-weight, highly parametric,
 and modular.  \safe has the following main features:
 \begin{itemize}
-\item Pluggability: To help analysis developers experiment with
-various analysis techniques easily, \safe enables analysis sensitivities
+\item Pluggability: To help developers experiment with
+analysis techniques easily, \safe enables analysis sensitivities
 and even abstract domains to be selected at run time.
 
 \item Extensibility: In order for researchers to implement their
@@ -438,7 +438,7 @@ to the existing analysis by simply adding one option.
 
 \begin{figure*}[t]
 \centering
-\includegraphics[width=.7\textwidth]{htmldebugger.png}
+\includegraphics[width=.68\textwidth]{htmldebugger.png}
 \caption{\htmldebug}\label{fig:htmldebug}
 \end{figure*}
 
