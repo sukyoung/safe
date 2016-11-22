@@ -63,8 +63,6 @@ trait AbsContext extends AbsDomain[Context, AbsContext] {
 
   def thisBinding: AbsValue
 
-  def toStringAll: String
-
   def toStringLoc(loc: Loc): Option[String]
 
   // delete
@@ -302,10 +300,6 @@ object DefaultContext extends AbsContextUtil {
     }
 
     override def toString: String = {
-      buildString(_ => true).toString
-    }
-
-    def toStringAll: String = {
       buildString(_ => true).toString
     }
 

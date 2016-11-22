@@ -84,18 +84,7 @@ case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, Int, CallContext,
     // dump exit state
     if (config.exitDump) {
       val state = cfg.globalFunc.exit.getState(globalCC)
-      val heap = state.heap
-      val context = state.context
-      val old = context.old
-      println("** heap **" + LINE_SEP +
-        heap.toString + LINE_SEP +
-        LINE_SEP +
-        "** context **" + LINE_SEP +
-        context.toString + LINE_SEP +
-        LINE_SEP +
-        "** old address set **" + LINE_SEP +
-        old.toString)
-      println()
+      println(state.toString)
     }
 
     Success((cfg, iters, globalCC, semantics))

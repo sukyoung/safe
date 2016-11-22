@@ -40,14 +40,14 @@ case object CmdPrint extends Command("print", "Print out various information.") 
       case Nil => help
       case subcmd :: rest => subcmd match {
         case "state" =>
-          val res = showState(c, c.getCurCP.getState)
+          val res = c.getCurCP.getState.toString
           rest match {
             case Nil => println(res)
             case key :: Nil => println(grep(key, res))
             case _ => help
           }
         case "state-all" =>
-          val res = showState(c, c.getCurCP.getState, true)
+          val res = c.getCurCP.getState.toStringAll
           rest match {
             case Nil => println(res)
             case key :: Nil => println(grep(key, res))
