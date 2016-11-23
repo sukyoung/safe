@@ -17,8 +17,11 @@
       length : 20
     };
     try
-{      Array.prototype.filter.call(obj, callbackfn);
-      return false;}
+{      
+// TODO: add CFGEnterCode to javascript modeling	
+	Array.prototype.filter.call(obj, callbackfn);
+    return false;
+}
     catch (ex)
 {      return 1 === called && ex instanceof Error;}
 

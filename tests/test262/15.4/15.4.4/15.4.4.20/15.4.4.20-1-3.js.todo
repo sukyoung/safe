@@ -7,6 +7,7 @@
     try
 {      Boolean.prototype[0] = true;
       Boolean.prototype.length = 1;
+// TODO: add ToObject to javascript modeling
       var newArr = Array.prototype.filter.call(false, callbackfn);
       return newArr[0] === true;}
     finally
