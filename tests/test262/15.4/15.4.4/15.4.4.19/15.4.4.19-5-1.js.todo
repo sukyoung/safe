@@ -12,6 +12,8 @@ function fnGlobalObject() {
         return this._15_4_4_19_5_1;
       }
       var srcArr = [1, ];
+// TODO: add ToObject to javascript modeling
+// TODO: add CFGEnterCode to javascript modeling
       var resArr = srcArr.map(callbackfn);
       if (resArr[0] === true)
         return true;
