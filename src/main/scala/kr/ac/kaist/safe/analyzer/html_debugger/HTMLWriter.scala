@@ -11,7 +11,7 @@
 
 package kr.ac.kaist.safe.analyzer.html_debugger
 
-import java.io.{ File, FileWriter, BufferedInputStream }
+import java.io.{ File, FileWriter }
 import org.apache.commons.io.FileUtils
 import scala.collection.immutable.TreeMap
 import kr.ac.kaist.safe.analyzer.Worklist

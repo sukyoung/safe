@@ -11,7 +11,7 @@
 
 package kr.ac.kaist.safe.cfg_builder
 
-import java.io.{ File, FileWriter, BufferedInputStream }
+import java.io.{ File, FileWriter }
 import scala.collection.immutable.TreeMap
 import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.LINE_SEP
