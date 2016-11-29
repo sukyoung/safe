@@ -4,6 +4,7 @@
     {
       return obj instanceof String;
     }
+// TODO: add ToObject to javascript modeling
     var testResult = Array.prototype.map.call("abc", callbackfn);
     return testResult[0] === true && testResult[1] === true && testResult[2] === true;
   }

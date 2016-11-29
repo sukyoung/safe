@@ -306,6 +306,7 @@ case class StringSet(maxSetSize: Int) extends AbsStringUtil {
       (this, check(that)) match {
         case (Top, _) | (_, Top) => true
         case (Bot, _) | (_, Bot) => false
+        case (left, right) if left == right => true
         case (Number, StrSet(v)) if v.exists(str => isNumber(str)) => true
         case (StrSet(v), Number) if v.exists(str => isNumber(str)) => true
         case (Other, StrSet(v)) if v.exists(str => !isNumber(str)) => true

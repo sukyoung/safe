@@ -2,15 +2,15 @@ function[0] top-level {
   Entry[-1] -> [0]
 
   Block[0] -> [1], ExitExc
-    [0] f := function (1) @ #13, #14
+    [0] f := function (1) @ #11, #12
     [1] noop(StartOfFile)
-    [2] <>obj<>20 := <>Global<>toObject(f) @ #15
-    [3] <>arguments<>21 := allocArg(0) @ #16
+    [2] <>obj<>20 := <>Global<>toObject(f) @ #13
+    [3] <>arguments<>21 := allocArg(0) @ #14
     [4] <>fun<>22 := <>Global<>getBase(f)
     [5] <>this<> := enterCode(<>fun<>22)
 
   Call[1] -> ExitExc
-    [0] call(<>obj<>20, <>this<>, <>arguments<>21) @ #17
+    [0] call(<>obj<>20, <>this<>, <>arguments<>21) @ #15
 
   AfterCall[2] -> [4]
 
@@ -29,7 +29,7 @@ function[1] f {
   Entry[-1] -> [0]
 
   Block[0] -> Exit, ExitExc
-    [0] <>Global<>ignore1 := function (2) @ #11, #12
+    [0] <>Global<>ignore1 := function (2) @ #9, #10
     [1] <>y<>1 := <>Global<>ignore1
 
   Exit[-2]
@@ -68,17 +68,17 @@ function[2] g {
   AfterCatch[6] -> ExitExc
 
   Block[7] -> [8], ExitExc
-    [0] <>Global<>ignore5 := function (3) @ #5, #6
+    [0] <>Global<>ignore5 := function (3) @ #4, #5
     [1] <>w<>6 := <>Global<>ignore5
-    [2] <>obj<>15 := <>Global<>toObject(<>w<>6) @ #7
+    [2] <>obj<>15 := <>Global<>toObject(<>w<>6) @ #6
     [3] <>temp<>16 := 3
-    [4] <>arguments<>17 := allocArg(1) @ #8
+    [4] <>arguments<>17 := allocArg(1) @ #7
     [5] <>arguments<>17["0"] := <>temp<>16
     [6] <>fun<>18 := <>Global<>getBase(<>w<>6)
     [7] <>this<> := enterCode(<>fun<>18)
 
   Call[8] -> ExitExc
-    [0] call(<>obj<>15, <>this<>, <>arguments<>17) @ #9
+    [0] call(<>obj<>15, <>this<>, <>arguments<>17) @ #8
 
   AfterCall[9] -> [3]
 

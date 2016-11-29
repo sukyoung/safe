@@ -47,10 +47,10 @@ case object CmdRunInsts extends Command("run_insts", "Run instruction by instruc
               line match {
                 case "s" => {
                   println("*** state ***")
-                  println(showState(c, oldSt))
+                  println(oldSt.toString)
                   println
                   println("*** exception state ***")
-                  println(showState(c, oldExcSt))
+                  println(oldExcSt.toString)
                   true
                 }
                 case "d" => true // TODO diff
@@ -71,10 +71,10 @@ case object CmdRunInsts extends Command("run_insts", "Run instruction by instruc
           case (old @ (_, _, false), inst) => old
         }
         println("*** state ***")
-        println(showState(c, resSt))
+        println(resSt.toString)
         println
         println("*** exception state ***")
-        println(showState(c, resExcSt))
+        println(resExcSt.toString)
       }
       case _ => help
     }

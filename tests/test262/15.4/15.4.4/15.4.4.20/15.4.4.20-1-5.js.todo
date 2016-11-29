@@ -7,6 +7,7 @@
     try
 {      Number.prototype[0] = 1;
       Number.prototype.length = 1;
+// TODO: add ToObject to javascript modeling
       var newArr = Array.prototype.filter.call(2.5, callbackfn);
       return newArr[0] === 1;}
     finally

@@ -13,6 +13,7 @@
     Foo.prototype = [1, 2, 3, ];
     var obj = new Foo();
     obj.length = '0';
+// TODO: add CFGEnterCode to javascript modeling
     var testResult = Array.prototype.map.call(obj, callbackfn);
     return testResult.length === 0;
   }

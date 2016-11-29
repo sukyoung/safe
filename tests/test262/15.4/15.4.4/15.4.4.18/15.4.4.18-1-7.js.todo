@@ -5,6 +5,7 @@
     {
       result = obj instanceof String;
     }
+// TODO: add ToObject to javascript modeling
     Array.prototype.forEach.call("abc", callbackfn);
     return result;
   }

@@ -19,15 +19,15 @@ function[0] top-level {
   AfterCatch[3] -> ExitExc
 
   Block[4] -> [5], ExitExc
-    [0] <>obj<>7 := <>Global<>toObject(<>obj1<>6) @ #6
+    [0] <>obj<>7 := <>Global<>toObject(<>obj1<>6) @ #5
     [1] <>temp<>8 := d
-    [2] <>arguments<>9 := allocArg(1) @ #7
+    [2] <>arguments<>9 := allocArg(1) @ #6
     [3] <>arguments<>9["0"] := <>temp<>8
-    [4] <>fun<>10 := <>Global<>toObject(<>obj<>7["map"]) @ #8
+    [4] <>fun<>10 := <>Global<>toObject(<>obj<>7["map"]) @ #7
     [5] <>this<> := enterCode(<>obj<>7)
 
   Call[5] -> ExitExc
-    [0] call(<>fun<>10, <>this<>, <>arguments<>9) @ #9
+    [0] call(<>fun<>10, <>this<>, <>arguments<>9) @ #8
 
   AfterCall[6] -> [8]
 

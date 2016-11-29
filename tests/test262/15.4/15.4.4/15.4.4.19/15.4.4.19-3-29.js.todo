@@ -9,6 +9,7 @@
       1 : 9,
       length : 4294967297
     };
+// TODO: add CFGEnterCode to javascript modeling
     var newArr = Array.prototype.map.call(obj, callbackfn);
     return newArr.length === 1;
   }

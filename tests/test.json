@@ -1,0 +1,14 @@
+{
+  "testMode": true,
+  "silent": true,
+  "analyzer": {
+    "console": false,
+    "exitDump": false,
+    "out": false,
+    "number": "default",
+    "maxStrSetSize": 1000,
+    "callsiteSensitivity": 0,
+    "html": "",
+    "domModel": false
+  }
+}

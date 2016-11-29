@@ -36,10 +36,13 @@ case object CmdPrintResult extends Command("result", "Print out various informat
       case Nil => help
       case subcmd :: rest => subcmd match {
         case stPattern(exc, all) =>
-          val res = showState(c, exc match {
+          val state = exc match {
             case "exc-" => resExcSt
             case _ => resSt
-          }, all == "-all")
+          }
+          val res =
+            if (all == "-all") state.toStringAll
+            else state.toString
           rest match {
             case Nil => println(res)
             case key :: Nil => println(grep(key, res))

@@ -12,16 +12,23 @@
 package kr.ac.kaist.safe.analyzer.domain
 
 import scala.collection.immutable.{ HashMap }
+import scala.io.Source
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.analyzer.domain.Utils._
+import kr.ac.kaist.safe.analyzer.HeapParser._
 import kr.ac.kaist.safe.analyzer.models.builtin.BuiltinGlobal
 import kr.ac.kaist.safe.util._
 import kr.ac.kaist.safe.nodes.cfg._
+import spray.json._
 
 ////////////////////////////////////////////////////////////////////////////////
 // concrete heap type
 ////////////////////////////////////////////////////////////////////////////////
-trait Heap // TODO
+case class Heap(map: Map[Loc, Object])
+object Heap {
+  def parse(fileName: String): Heap =
+    Source.fromFile(fileName)("UTF-8").mkString.parseJson.convertTo
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // heap abstract domain
@@ -82,7 +89,12 @@ object DefaultHeap extends AbsHeapUtil {
   ) extends Dom
   lazy val Bot: AbsHeap = HeapMap()
 
-  def alpha(heap: Heap): AbsHeap = Top // TODO more precise
+  def alpha(heap: Heap): AbsHeap = {
+    val map = heap.map.foldLeft[Map[Loc, AbsObject]](HashMap()) {
+      case (map, (loc, obj)) => map + (loc -> AbsObject(obj))
+    }
+    HeapMap(map)
+  }
 
   def apply(map: Map[Loc, AbsObject]): AbsHeap = HeapMap(map)
 

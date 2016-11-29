@@ -25,8 +25,8 @@ function[0] top-level {
   AfterCatch[5] -> ExitExc
 
   Block[6] -> [8], ExitExc
-    [0] <>obj<>4 := <>Global<>toObject(getNode) @ #5
-    [1] <>arguments<>5 := allocArg(0) @ #6
+    [0] <>obj<>4 := <>Global<>toObject(getNode) @ #4
+    [1] <>arguments<>5 := allocArg(0) @ #5
     [2] <>fun<>6 := <>Global<>getBase(getNode)
     [3] <>this<> := enterCode(<>fun<>6)
 
@@ -39,7 +39,7 @@ function[0] top-level {
     [5] noop(EndOfFile)
 
   Call[8] -> ExitExc
-    [0] call(<>obj<>4, <>this<>, <>arguments<>5) @ #7
+    [0] call(<>obj<>4, <>this<>, <>arguments<>5) @ #6
 
   AfterCall[9] -> [11]
 
@@ -48,7 +48,7 @@ function[0] top-level {
   Block[11] -> [12], ExitExc
     [0] node := <>Global<>ignore8
     [1] <>Global<>ignore9 := <>Global<>ignore8
-    [2] <>obj<>7 := <>Global<>toObject(node) @ #9
+    [2] <>obj<>7 := <>Global<>toObject(node) @ #7
 
   Block[12] -> [14], [13]
 
@@ -59,10 +59,10 @@ function[0] top-level {
     [0] assert(! <>obj<>7["parent"])
 
   Block[15] -> [12], ExitExc
-    [0] <>obj<>8 := <>Global<>toObject(node) @ #10
+    [0] <>obj<>8 := <>Global<>toObject(node) @ #8
     [1] node := <>obj<>8["parent"]
     [2] <>Global<>ignore11 := <>obj<>8["parent"]
-    [3] <>obj<>7 := <>Global<>toObject(node) @ #11
+    [3] <>obj<>7 := <>Global<>toObject(node) @ #9
 
   Exit[-2]
 

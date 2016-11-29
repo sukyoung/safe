@@ -1,3 +1,7 @@
+var __globalObject = __Global;
+function fnGlobalObject() {
+	return __globalObject;
+}
   function testcase() 
   {
     function callbackfn(val, idx, obj) 

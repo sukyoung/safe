@@ -194,7 +194,8 @@ object Console {
     CmdRun,
     CmdBreak,
     CmdBreakList,
-    CmdBreakRemove
+    CmdBreakRemove,
+    CmdFindBot
   )
   val cmdMap: Map[String, Command] = commands.foldLeft(
     Map[String, Command]()

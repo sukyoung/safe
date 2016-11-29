@@ -1,17 +1,16 @@
+var __globalObject = __Global;
+function fnGlobalObject() {
+	return __globalObject;
+}
   function testcase() 
   {
     var accessed = false;
-    var arg;
     function callbackfn(val, idx, obj) 
     {
       accessed = true;
-      return this === arg;
+      return this === fnGlobalObject();
     }
-    (function fun() 
-    {
-      arg = arguments;
-    })(1, 2, 3);
-    var newArr = [11, ].filter(callbackfn, arg);
+    var newArr = [11, ].filter(callbackfn, fnGlobalObject());
     return newArr[0] === 11 && accessed;
   }
   {

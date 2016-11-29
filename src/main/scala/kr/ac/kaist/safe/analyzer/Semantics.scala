@@ -419,7 +419,7 @@ class Semantics(
         val newSt = AbsState(h5, newCtx).varStore(lhs, fVal)
         (newSt, excSt)
       }
-      case CFGAssert(_, _, expr, _) => B(expr, st, excSt, i, cfg)
+      case CFGAssert(_, _, expr, _) => B(expr, st, excSt)
       case CFGCatch(_, _, x) => {
         val localEnv = st.context.pureLocal
         val (excSetV, _) = localEnv.record.decEnvRec.GetBindingValue("@exception_all")
@@ -538,8 +538,8 @@ class Semantics(
 
   def CI(cp: ControlPoint, i: CFGCallInst, st: AbsState, excSt: AbsState): (AbsState, AbsState) = {
     // cons, thisArg and arguments must not be bottom
-    val locR = Loc(i.addr1, Recent)
-    val st1 = st.oldify(i.addr1)
+    val locR = Loc(i.addr, Recent)
+    val st1 = st.oldify(i.addr)
     val (funVal, funExcSet) = V(i.fun, st1)
     val funLocSet = i match {
       case (_: CFGConstruct) => funVal.locset.filter(l => AT <= st1.heap.hasConstruct(l))
@@ -749,7 +749,7 @@ class Semantics(
     }
   }
 
-  def B(expr: CFGExpr, st: AbsState, excSt: AbsState, inst: CFGInst, cfg: CFG): (AbsState, AbsState) = {
+  def B(expr: CFGExpr, st: AbsState, excSt: AbsState): (AbsState, AbsState) = {
     val st1 = st //TODO should be the pruned state
 
     val (v, excSet) = V(expr, st)

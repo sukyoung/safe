@@ -11,7 +11,8 @@
 
 package kr.ac.kaist.safe.analyzer.html_debugger
 
-import java.io.{ File, FileWriter, BufferedInputStream }
+import java.io.{ File, FileWriter }
+import org.apache.commons.io.FileUtils
 import scala.collection.immutable.TreeMap
 import kr.ac.kaist.safe.analyzer.Worklist
 import kr.ac.kaist.safe.analyzer.models.builtin._
@@ -170,6 +171,8 @@ object HTMLWriter {
             })
         }
 
+      val thisBinding = ctx.thisBinding
+      sb.append(s"{ value: {value: 'this: $thisBinding'} },").append(LINE_SEP)
       // old address set
       val old = ctx.old
       val mayOld = old.mayOld.mkString(", ")
@@ -193,20 +196,18 @@ object HTMLWriter {
       case (func, lst) => func.getAllBlocks ++ lst
     }.reverse
 
-    val base = BASE_DIR + File.separator
-
     val sb = new StringBuilder
     sb.append(s"""<!DOCTYPE HTML>
 <html>
     <head>
         <meta charset="UTF-8">
-        <script src="${base}lib/debugger/jquery-2.0.3.min.js"></script>
-        <script src="${base}lib/debugger/cytoscape.min.js"></script>
-        <script src="${base}lib/debugger/dagre.min.js"></script>
-        <script src="${base}lib/debugger/cytoscape-dagre.js"></script>
-        <script src="${base}lib/debugger/webix.js" type="text/javascript"></script>
-        <link rel="stylesheet" href="${base}lib/debugger/css/webix.css" type="text/css">
-        <link rel="stylesheet" href="${base}lib/debugger/css/core.css" type="text/css">
+        <script src="jquery-2.0.3.min.js"></script>
+        <script src="cytoscape.min.js"></script>
+        <script src="dagre.min.js"></script>
+        <script src="cytoscape-dagre.js"></script>
+        <script src="webix.js" type="text/javascript"></script>
+        <link rel="stylesheet" href="css/webix.css" type="text/css">
+        <link rel="stylesheet" href="css/core.css" type="text/css">
         <script>
 var safe_DB = {
   nodes: [
@@ -227,7 +228,7 @@ var safe_DB = {
     sb.append(s"""  },
 };
         </script>
-        <script src="${base}lib/debugger/core.js" type="text/javascript"></script>
+        <script src="core.js" type="text/javascript"></script>
     </head>
     <body>
         <div id='cy'></div>
@@ -242,15 +243,23 @@ var safe_DB = {
     htmlfile: String = "cfg.html"
   ): Unit = {
     try {
-      val f = new File(htmlfile)
+      // copy libraries
+      val SEP = File.separator
+      val base = BASE_DIR + SEP
+      val src = new File(base + "lib" + SEP + "debugger")
+      val dest = new File("debugger")
+      FileUtils.copyDirectory(src, dest)
+      println("* copy debugger libraries.")
+
+      val f = new File("debugger" + SEP + htmlfile)
       val fw = new FileWriter(f)
       fw.write(drawGraph(cfg, wlOpt))
       fw.close
+      println(s"* success writing HTML file $htmlfile.")
     } catch {
       case e: Throwable =>
+        println(e)
         println(s"* error writing HTML file $htmlfile.")
-    } finally {
-      println(s"* success writing HTML file $htmlfile.")
     }
   }
 }

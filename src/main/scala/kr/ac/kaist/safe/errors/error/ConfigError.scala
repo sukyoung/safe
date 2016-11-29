@@ -20,3 +20,7 @@ case class OptAlreadyExistError(name: String) extends ConfigError({
 case object OptConflictError extends ConfigError({
   s"The option list have same options."
 })
+
+case class NoChoiceError(msg: String) extends ConfigError(
+  s"[NoChoiceError]: $msg"
+)

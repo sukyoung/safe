@@ -27,8 +27,19 @@ lazy val root = (project in file(".")).
       }
     },
     buildParsers in Compile := {
+      // xtc
       val xtcFile = new File("./lib/xtc.jar")
-      if (!xtcFile.exists) IO.download(new URL("http://cs.nyu.edu/rgrimm/xtc/xtc.jar"), xtcFile)
+      if (!xtcFile.exists)
+        IO.download(new URL("http://cs.nyu.edu/rgrimm/xtc/xtc.jar"), xtcFile)
+
+      // webix
+      val webixJsFile = new File("./lib/debugger/webix.js")
+      val webixCssFile = new File("./lib/debugger/css/webix.css")
+      if (!webixJsFile.exists)
+        IO.download(new URL("http://cdn.webix.com/edge/webix.js"), webixJsFile)
+      if (!webixCssFile.exists)
+        IO.download(new URL("http://cdn.webix.com/edge/webix.css"), webixCssFile)
+
       val options = ForkOptions(bootJars = Seq(xtcFile))
       val srcDir = baseDirectory.value + "/src/main"
       val inDir = srcDir + "/scala/kr/ac/kaist/safe/parser/"
@@ -64,12 +75,11 @@ scalacOptions in ThisBuild ++= Seq("-deprecation", "-feature",
                                    "-language:postfixOps",
                                    "-language:implicitConversions")
 
-unmanagedJars in Compile ++= Seq(file("lib/xtc.jar"), file("lib/jline-2.12.jar"), file("lib/spray-json_2.11-1.3.2.jar"))
+unmanagedJars in Compile ++= Seq(file("lib/xtc.jar"), file("lib/jline-2.12.jar"), file("lib/spray-json_2.11-1.3.2.jar"), file("lib/jericho-html-3.3.jar"))
 cleanFiles ++= Seq(file("src/main/java/kr/ac/kaist/safe/parser/"))
 
 libraryDependencies ++= Seq(
-  "org.scalatest" % "scalatest_2.12.0-M5" % "3.0.0" % "test" withSources,
-  "org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.4" withSources
+  "org.scalatest" % "scalatest_2.12.0-M5" % "3.0.0" % "test" withSources
 )
 
 javacOptions ++= Seq("-encoding", "UTF-8")

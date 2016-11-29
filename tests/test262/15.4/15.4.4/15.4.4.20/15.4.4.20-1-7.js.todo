@@ -4,6 +4,7 @@
     {
       return obj instanceof String;
     }
+// TODO: add ToObject to javascript modeling
     var newArr = Array.prototype.filter.call("abc", callbackfn);
     return newArr[0] === "a";
   }

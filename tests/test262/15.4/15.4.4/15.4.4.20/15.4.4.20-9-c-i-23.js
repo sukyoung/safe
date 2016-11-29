@@ -1,21 +1,21 @@
+var __globalObject = __Global;
+function fnGlobalObject() {
+	return __globalObject;
+}
   function testcase() 
   {
     function callbackfn(val, idx, obj) 
     {
-      return obj.length === 2;
+      return idx === 0 && val === 11;
     }
     try
 {      var oldLen = fnGlobalObject().length;
-      fnGlobalObject()[0] = 12;
-      fnGlobalObject()[1] = 11;
-      fnGlobalObject()[2] = 9;
-      fnGlobalObject().length = 2;
+      fnGlobalObject()[0] = 11;
+      fnGlobalObject().length = 1;
       var newArr = Array.prototype.filter.call(fnGlobalObject(), callbackfn);
-      return newArr.length === 2;}
+      return newArr.length === 1 && newArr[0] === 11;}
     finally
 {      delete fnGlobalObject()[0];
-      delete fnGlobalObject()[1];
-      delete fnGlobalObject()[2];
       fnGlobalObject().length = oldLen;}
 
   }

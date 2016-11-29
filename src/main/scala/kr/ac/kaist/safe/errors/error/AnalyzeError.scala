@@ -42,5 +42,9 @@ case class SemanticsNotYetImplementedError(ir: IRNode) extends AnalyzeIRNodeErro
 
 // other errors
 case class ContextAssertionError(funName: String, msg: String) extends AnalyzeError(
-  s"[Assert:funName]: $msg"
+  s"[Assert:$funName]: $msg"
+)
+
+case class HeapParseError(msg: String) extends AnalyzeError(
+  s"[HeapParseError]: $msg"
 )

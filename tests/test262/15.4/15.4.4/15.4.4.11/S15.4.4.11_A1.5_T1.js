@@ -8,6 +8,7 @@
     var __result2 = x[0] !== 0;
     var __expect2 = false;
   }
+/*
   {
     var __result3 = x[1] !== 1;
     var __expect3 = false;
@@ -26,4 +27,4 @@
     var __result6 = x[1] !== 1;
     var __expect6 = false;
   }
-  
+  */

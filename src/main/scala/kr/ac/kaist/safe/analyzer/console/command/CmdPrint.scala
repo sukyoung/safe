@@ -23,6 +23,8 @@ import kr.ac.kaist.safe.cfg_builder.DotWriter
 case object CmdPrint extends Command("print", "Print out various information.") {
   def help: Unit = {
     println("usage: " + name + " state(-all) ({keyword})")
+    println("       " + name + " heap(-all) ({keyword})")
+    println("       " + name + " context ({keyword})")
     println("       " + name + " block")
     println("       " + name + " loc {LocName} ({keyword})")
     println("       " + name + " func ({functionID})")
@@ -38,14 +40,35 @@ case object CmdPrint extends Command("print", "Print out various information.") 
       case Nil => help
       case subcmd :: rest => subcmd match {
         case "state" =>
-          val res = showState(c, c.getCurCP.getState)
+          val res = c.getCurCP.getState.toString
           rest match {
             case Nil => println(res)
             case key :: Nil => println(grep(key, res))
             case _ => help
           }
         case "state-all" =>
-          val res = showState(c, c.getCurCP.getState, true)
+          val res = c.getCurCP.getState.toStringAll
+          rest match {
+            case Nil => println(res)
+            case key :: Nil => println(grep(key, res))
+            case _ => help
+          }
+        case "heap" =>
+          val res = c.getCurCP.getState.heap.toString
+          rest match {
+            case Nil => println(res)
+            case key :: Nil => println(grep(key, res))
+            case _ => help
+          }
+        case "heap-all" =>
+          val res = c.getCurCP.getState.heap.toStringAll
+          rest match {
+            case Nil => println(res)
+            case key :: Nil => println(grep(key, res))
+            case _ => help
+          }
+        case "context" =>
+          val res = c.getCurCP.getState.context.toString
           rest match {
             case Nil => println(res)
             case key :: Nil => println(grep(key, res))
@@ -59,10 +82,14 @@ case object CmdPrint extends Command("print", "Print out various information.") 
           case locStr :: rest if rest.length <= 1 =>
             Loc.parse(locStr) match {
               case Success(loc) =>
-                val heap = c.getCurCP.getState.heap
-                heap.toStringLoc(loc) match {
+                val state = c.getCurCP.getState
+                val heap = state.heap
+                state.heap.toStringLoc(loc) match {
                   case Some(res) => println(res)
-                  case None => println(s"* not in heap : $locStr")
+                  case None => state.context.toStringLoc(loc) match {
+                    case Some(res) => println(res)
+                    case None => println(s"* not in state : $locStr")
+                  }
                 }
               case Failure(_) => println(s"* cannot find: $locStr")
             }

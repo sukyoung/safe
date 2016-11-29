@@ -23,20 +23,6 @@ abstract class Command(
   def run(c: Console, args: List[String]): Option[Target]
   def help: Unit
 
-  protected def showState(c: Console, state: AbsState, all: Boolean = false): String = {
-    val heap = state.heap
-    val context = state.context
-    val old = context.old
-    "** heap **" + LINE_SEP +
-      (if (all) heap.toStringAll else heap.toString) + LINE_SEP +
-      LINE_SEP +
-      "** context **" + LINE_SEP +
-      context.toString + LINE_SEP +
-      LINE_SEP +
-      "** old address set **" + LINE_SEP +
-      old.toString
-  }
-
   protected def grep(key: String, str: String): String = {
     str.split(LINE_SEP)
       .filter(_.contains(key))

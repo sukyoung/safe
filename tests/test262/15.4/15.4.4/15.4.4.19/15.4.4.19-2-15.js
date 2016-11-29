@@ -1,9 +1,12 @@
+var __globalObject = __Global;
+function fnGlobalObject() {
+	return __globalObject;
+}
   function testcase() 
   {
-    var result = false;
     function callbackfn(val, idx, obj) 
     {
-      result = (obj.length === 2);
+      return val > 10;
     }
     try
 {      var oldLen = fnGlobalObject().length;
@@ -11,8 +14,8 @@
       fnGlobalObject()[1] = 11;
       fnGlobalObject()[2] = 9;
       fnGlobalObject().length = 2;
-      Array.prototype.forEach.call(fnGlobalObject(), callbackfn);
-      return result;}
+      var testResult = Array.prototype.map.call(fnGlobalObject(), callbackfn);
+      return testResult.length === 2;}
     finally
 {      delete fnGlobalObject()[0];
       delete fnGlobalObject()[1];

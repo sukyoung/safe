@@ -47,6 +47,9 @@ class FuncModel(
         case None => (h, None, AB, AB, AB)
       }
 
+      // register address set
+      code.getAllAddrSet.foreach(cfg.registerSystemAddr(_))
+
       // [model] function object
       val func = code.getCFGFunc(cfg, name)
       val fidOpt = Some(func.id)

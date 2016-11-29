@@ -1,3 +1,8 @@
+var __globalObject = __Global;
+function fnGlobalObject() {
+	return __globalObject;
+}
+
   function testcase() 
   {
     var result = false;

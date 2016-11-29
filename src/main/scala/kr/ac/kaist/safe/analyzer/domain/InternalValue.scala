@@ -38,7 +38,7 @@ case object IScope extends InternalName {
   override def toString: String = s"[[Scope]]"
 }
 case object IHasInstance extends InternalName {
-  override def toString: String = s"@hasinstance" // TODO
+  override def toString: String = s"[[HasInstance]]" // TODO
 }
 
 object InternalValueUtil {

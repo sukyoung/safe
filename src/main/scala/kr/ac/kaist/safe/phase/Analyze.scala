@@ -15,39 +15,49 @@ import scala.util.{ Failure, Success, Try }
 import kr.ac.kaist.safe.SafeConfig
 import kr.ac.kaist.safe.analyzer._
 import kr.ac.kaist.safe.analyzer.domain._
+import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.analyzer.console.Console
 import kr.ac.kaist.safe.analyzer.html_debugger.HTMLWriter
+import kr.ac.kaist.safe.errors.error.NoChoiceError
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.nodes.cfg.CFG
 import kr.ac.kaist.safe.util._
 
 // Analyze phase
-case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, Int, CallContext)] {
+case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, Int, CallContext, Semantics)] {
   val name: String = "analyzer"
-  val help: String = "Analyze the JavaScript source files."
+  val help: String = "Analyze JavaScript source files."
 
   def apply(
     cfg: CFG,
     safeConfig: SafeConfig,
     config: AnalyzeConfig
-  ): Try[(CFG, Int, CallContext)] = {
+  ): Try[(CFG, Int, CallContext, Semantics)] = {
+    // initialization
     Utils.register(
       config.AbsUndef,
       config.AbsNull,
       config.AbsBool,
       config.AbsNumber,
-      config.AbsString
+      config.AbsString,
+      DefaultLoc(cfg)
     )
-    val globalCC = CallContextManager().globalCallContext
+    var initSt = Initialize(cfg)
+
+    // handling test mode
+    if (safeConfig.testMode)
+      initSt = Initialize.addTest(initSt)
+
+    // handling HTML DOM modeling mode
+    if (safeConfig.html || config.domModel)
+      initSt = Initialize.addDOM(initSt, cfg)
+
+    val globalCC = CallContextManager(config.callsiteSensitivity).globalCallContext
+    cfg.globalFunc.entry.setState(globalCC, initSt)
 
     val worklist = Worklist(cfg)
     worklist.add(ControlPoint(cfg.globalFunc.entry, globalCC))
     val semantics = new Semantics(cfg, worklist)
-    val init = Initialize(cfg)
-    val initSt =
-      if (safeConfig.testMode) init.testState
-      else init.state
-    cfg.globalFunc.entry.setState(globalCC, initSt)
     val consoleOpt = config.console match {
       case true => Some(new Console(cfg, worklist, semantics))
       case false => None
@@ -67,7 +77,13 @@ case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, Int, CallContext)
       HTMLWriter.writeHTMLFile(cfg, None, s"$name.html")
     })
 
-    Success((cfg, iters, globalCC))
+    // dump exit state
+    if (config.exitDump) {
+      val state = cfg.globalFunc.exit.getState(globalCC)
+      println(state.toString)
+    }
+
+    Success((cfg, iters, globalCC, semantics))
   }
 
   def defaultConfig: AnalyzeConfig = AnalyzeConfig()
@@ -76,14 +92,24 @@ case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, Int, CallContext)
       "messages during analysis are muted."),
     ("console", BoolOption(c => c.console = true),
       "REPL-style console debugger."),
+    ("exitDump", BoolOption(c => c.exitDump = true),
+      "dump the state of the exit state of a given CFG"),
     ("out", StrOption((c, s) => c.outFile = Some(s)),
       "the analysis results will be written to the outfile."),
     ("maxStrSetSize", NumOption((c, n) => if (n > 0) c.AbsString = StringSet(n)),
       "the analyzer will use the AbsString Set domain with given size limit n."),
-    ("callsiteSensitivity", NumOption((c, n) => if (n > 0) c.callsiteSensitivity = n),
+    ("callsiteSensitivity", NumOption((c, n) => if (n >= 0) c.callsiteSensitivity = n),
       "{number}-depth callsite-sensitive analysis will be executed."),
     ("html", StrOption((c, s) => c.htmlName = Some(s)),
-      "the resulting CFG with states will be drawn to the {string}.html")
+      "the resulting CFG with states will be drawn to the {string}.html"),
+    ("number", StrOption((c, s) => s match {
+      case "default" => c.AbsNumber = DefaultNumber
+      case "flat" => c.AbsNumber = FlatNumber
+      case str => throw NoChoiceError(s"there is no abstract number domain with name '$str'.")
+    }),
+      "analysis with a selected number domain."),
+    ("domModel", BoolOption(c => c.domModel = true),
+      "analysis with HTML DOM modelings.")
   )
 }
 
@@ -91,12 +117,14 @@ case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, Int, CallContext)
 case class AnalyzeConfig(
   var silent: Boolean = false,
   var console: Boolean = false,
+  var exitDump: Boolean = false,
   var outFile: Option[String] = None,
   var AbsUndef: AbsUndefUtil = DefaultUndef,
   var AbsNull: AbsNullUtil = DefaultNull,
   var AbsBool: AbsBoolUtil = DefaultBool,
   var AbsNumber: AbsNumberUtil = DefaultNumber,
   var AbsString: AbsStringUtil = StringSet(0),
-  var callsiteSensitivity: Int = -1,
-  var htmlName: Option[String] = None
+  var callsiteSensitivity: Int = 0,
+  var htmlName: Option[String] = None,
+  var domModel: Boolean = false
 ) extends Config

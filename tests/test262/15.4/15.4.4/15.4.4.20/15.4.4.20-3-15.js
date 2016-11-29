@@ -1,10 +1,16 @@
+// TODO Array.prototype.filter
   function testcase() 
   {
     function callbackfn(val, idx, obj) 
     {
-      return arguments;
+      return true;
     }
-    var newArr = [11, ].filter(callbackfn);
+    var obj = {
+      1 : 11,
+      2 : 9,
+      length : "2E0"
+    };
+    var newArr = Array.prototype.filter.call(obj, callbackfn);
     return newArr.length === 1 && newArr[0] === 11;
   }
   {

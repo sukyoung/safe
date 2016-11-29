@@ -56,8 +56,8 @@ function[0] top-level {
     [15] <>this<> := enterCode(<>fun<>14)
 
   Block[11] -> [3], [37]
-    [0] <>obj<>15 := <>Global<>toObject(y) @ #11
-    [1] <>Global<>ignore6 := alloc() @ #12
+    [0] <>obj<>15 := <>Global<>toObject(y) @ #10
+    [1] <>Global<>ignore6 := alloc() @ #11
     [2] <>Global<>ignore6["test"] := - 23.8
     [3] <>obj<>15["d"] := <>Global<>ignore6
 
@@ -69,8 +69,8 @@ function[0] top-level {
   AfterCatch[14] -> [15]
 
   Block[15] -> [26], [37]
-    [0] <>obj<>15 := <>Global<>toObject(y) @ #13
-    [1] <>Global<>ignore6 := alloc() @ #14
+    [0] <>obj<>15 := <>Global<>toObject(y) @ #12
+    [1] <>Global<>ignore6 := alloc() @ #13
     [2] <>Global<>ignore6["test"] := - 23.8
     [3] <>obj<>15["d"] := <>Global<>ignore6
 

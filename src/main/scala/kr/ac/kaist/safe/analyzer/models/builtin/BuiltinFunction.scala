@@ -16,7 +16,7 @@ import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.analyzer.models._
 import kr.ac.kaist.safe.nodes.cfg._
-import kr.ac.kaist.safe.util.{ Address, SystemAddr }
+import kr.ac.kaist.safe.util.Address
 
 import scala.collection.immutable.HashSet
 
@@ -46,7 +46,7 @@ object BuiltinFunctionProto extends FuncModel(
     // 15.3.4.2 Function.prototype.toString()
     NormalProp("toString", FuncModel(
       name = "Function.prototype.toString",
-      code = BasicCode(argLen = 0, (args: AbsValue, st: AbsState) => {
+      code = BasicCode(argLen = 0, code = (args: AbsValue, st: AbsState) => {
         val thisBinding = st.context.thisBinding.locset
         val functionClass = AbsString("Function")
         val notAllFunctionClass = thisBinding.exists(loc => {

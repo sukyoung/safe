@@ -20,6 +20,7 @@ import scala.util.Random.shuffle
 import scala.collection.immutable.HashSet
 import kr.ac.kaist.safe.analyzer.models.builtin.BuiltinGlobal
 import kr.ac.kaist.safe.analyzer.CallContext
+import kr.ac.kaist.safe.analyzer.Semantics
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.errors.error.ParserError
 import kr.ac.kaist.safe.nodes.ast.Program
@@ -27,6 +28,7 @@ import kr.ac.kaist.safe.nodes.ir.IRRoot
 import kr.ac.kaist.safe.nodes.cfg.CFG
 import kr.ac.kaist.safe.parser.Parser
 import kr.ac.kaist.safe.phase._
+import kr.ac.kaist.safe.util.ArgParser
 
 object ParseTest extends Tag("ParseTest")
 object ASTRewriteTest extends Tag("ASTRewriteTest")
@@ -58,10 +60,7 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
     normalized(Source.fromFile(filename).getLines.mkString(LINE_SEP))
   }
 
-  def getSafeConfig(filename: String): SafeConfig =
-    SafeConfig(CmdBase, List(filename), silent = true, testMode = true)
-
-  def getCFG(filename: String): Try[CFG] = CmdCFGBuild(List("-silent", filename), testMode = true)
+  def getCFG(filename: String): Try[CFG] = CmdCFGBuild(List("-parser:jsModel", "-silent", filename), testMode = true)
 
   private def parseTest(pgm: Try[Program]): Unit = {
     pgm match {
@@ -117,14 +116,14 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
   case object ParseError extends AnalysisResult
   case object Benchmark extends AnalysisResult
   case object Fail extends AnalysisResult
-  def analyzeTest(analysis: Try[(CFG, Int, CallContext)], tag: Tag): (AnalysisResult, Int) = {
+  def analyzeTest(analysis: Try[(CFG, Int, CallContext, Semantics)], tag: Tag): (AnalysisResult, Int) = {
     analysis match {
       case Failure(_) => (assertWrap(false), 0)
-      case Success((cfg, iter, globalCallCtx)) if tag == BenchTest =>
+      case Success((cfg, iter, globalCallCtx, _)) if tag == BenchTest =>
         val normalSt = cfg.globalFunc.exit.getState(globalCallCtx)
         assert(!normalSt.heap.isBottom)
         (Benchmark, iter)
-      case Success((cfg, iter, globalCallCtx)) =>
+      case Success((cfg, iter, globalCallCtx, _)) =>
         val normalSt = cfg.globalFunc.exit.getState(globalCallCtx)
         val excSt = cfg.globalFunc.exitExc.getState(globalCallCtx)
         assert(!normalSt.heap.isBottom)
@@ -176,7 +175,7 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
     val relPath = name.substring(BASE_DIR.length)
     if (filename.endsWith(".js")) {
       registerTest(prefix + filename, tag) {
-        val safeConfig = getSafeConfig(name)
+        val safeConfig = testSafeConfig.copy(fileNames = List(name))
         val cfg = getCFG(name)
         val analysis = cfg.flatMap(Analyze(_, safeConfig, analyzeConfig))
         testList ::= relPath
@@ -195,7 +194,7 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
       slowList ::= relPath
     } else if (filename.endsWith(".js.err")) {
       registerTest(prefix + filename, tag) {
-        val safeConfig = getSafeConfig(name)
+        val safeConfig = testSafeConfig.copy(fileNames = List(name))
         testList ::= relPath
         CmdParse(List("-silent", name), testMode = true) match {
           case Failure(ParserError(_, _)) => preciseList ::= relPath
@@ -205,12 +204,14 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
     }
   }
 
+  val testSafeConfig: SafeConfig = SafeConfig(CmdBase, Nil)
+
   // Permute filenames for randomness
   for (filename <- scala.util.Random.shuffle(new File(jsDir).list(jsFilter).toSeq)) {
     val name = filename.substring(0, filename.length - 3)
     val jsName = jsDir + filename
 
-    val config = getSafeConfig(jsName)
+    val config = testSafeConfig.copy(fileNames = List(jsName))
 
     lazy val pgm = Parse((), config)
     registerTest("[Parse] " + filename, ParseTest) { parseTest(pgm) }
@@ -240,10 +241,16 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
   var todoList = List[String]()
   var slowList = List[String]()
   var totalIteration = 0
+
   val analysisDeatil = BASE_DIR + SEP + "tests" + SEP + "analysis-detail"
+  val testJSON = BASE_DIR + SEP + "tests" + SEP + "test.json"
+
+  val parser = new ArgParser(CmdBase, testSafeConfig)
+  val analyzeConfig = Analyze.defaultConfig
+  parser.addRule(analyzeConfig, Analyze.name, Analyze.options)
+  parser(List(s"-json=$testJSON"))
 
   val analyzerTestDir = testDir + "semantics"
-  val analyzeConfig = AnalyzeConfig(AbsString = StringSet(1000))
   for (file <- shuffle(walkTree(new File(analyzerTestDir))))
     analyzeHelper("[Analyze]", AnalyzeTest, file)
 

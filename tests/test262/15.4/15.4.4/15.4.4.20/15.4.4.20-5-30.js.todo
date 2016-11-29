@@ -9,6 +9,8 @@
         return this._15_4_4_20_5_30;
       }
       var srcArr = [1, ];
+// TODO: add ToObject to javascript modeling
+// TODO: add CFGEnterCode to javascript modeling
       var resArr = srcArr.filter(callbackfn);
       this.retVal = resArr.length === 0;
     }

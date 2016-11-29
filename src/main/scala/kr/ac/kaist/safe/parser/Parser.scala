@@ -18,10 +18,9 @@ import xtc.parser.{ Result, ParseError, SemanticValue }
 import kr.ac.kaist.safe.errors.ExcLog
 import kr.ac.kaist.safe.errors.error.{ ParserError, NotJSFileError, AlreadyMergedSourceError }
 import kr.ac.kaist.safe.nodes.ast._
-import kr.ac.kaist.safe.util.{ NodeUtil => NU, SourceLoc, Span }
+import kr.ac.kaist.safe.util.{ NodeUtil => NU, _ }
 
 object Parser {
-
   // Used by DynamicRewriter
   def stringToFnE(str: (String, (Int, Int), String)): Try[(FunExpr, ExcLog)] = {
     val (fileName, (line, offset), code) = str
@@ -75,28 +74,68 @@ object Parser {
   }
 
   // Used by phase/Parse.scala
-  def fileToAST(fs: List[String]): Try[(Program, ExcLog)] = fs match {
+  def fileToAST(fs: List[String], jsModel: Boolean): Try[(Program, ExcLog)] = fs match {
     case List(file) =>
-      fileToStmts(file).map { case (s, e) => (Program(s.info, List(s)), e) }
+      fileToStmts(file).flatMap {
+        case (s, e) =>
+          {
+            val program = Program(s.info, List(s))
+            if (jsModel) addJSModel(program, e)
+            else Try(program, e)
+          }
+      }
     case files =>
       files.foldLeft(Try((List[SourceElements](), new ExcLog))) {
         case (res, f) => fileToStmts(f).flatMap {
           case (ss, ee) => res.flatMap { case (l, ex) => Try((l ++ List(ss), ex + ee)) }
         }
-      }.map { case (s, e) => (Program(NU.MERGED_SOURCE_INFO, s), e) }
+      }.flatMap {
+        case (s, e) => {
+          val program = Program(NU.MERGED_SOURCE_INFO, s)
+          if (jsModel) addJSModel(program, e)
+          else Try(program, e)
+        }
+      }
   }
 
-  // Used by ast_rewriter/Hoister.scala
-  def scriptToAST(ss: List[(String, (Int, Int), String)]): Try[(Program, ExcLog)] = ss match {
+  // Used by parser/JSFromHTML.scala
+  def scriptToAST(ss: List[(String, (Int, Int), String)]): Try[(SourceElements, ExcLog)] = ss match {
     case List(script) =>
-      scriptToStmts(script).map { case (s, e) => (Program(s.info, List(s)), e) }
+      scriptToStmts(script)
     case scripts =>
-      scripts.foldLeft(Try((List[SourceElements](), new ExcLog))) {
+      scripts.foldLeft(Try((List[SourceElement](), new ExcLog))) {
         case (res, s) => scriptToStmts(s).flatMap {
-          case (ss, ee) => res.flatMap { case (l, ex) => Try((l ++ List(ss), ex + ee)) }
+          case (ss, ee) => res.flatMap { case (l, ex) => Try((l ++ ss.body, ex + ee)) }
         }
-      }.map { case (s, e) => (Program(NU.MERGED_SOURCE_INFO, s), e) }
+      }.map { case (s, e) => (SourceElements(NU.MERGED_SOURCE_INFO, s, false), e) }
   }
+
+  // concatenate ASTs modeled in JavaScript
+  private def addJSModel(program: Program, excLog: ExcLog): Try[(Program, ExcLog)] = {
+    fileToAST(NU.jsModels, false).map {
+      case (p, e) =>
+        (p, program) match {
+          case (Program(_, TopLevel(_, fds0, vds0, body0)), Program(info, TopLevel(_, fds1, vds1, body1))) =>
+            (Program(info, TopLevel(info, fds0 ++ fds1, vds0 ++ vds1, body0 ++ body1)),
+              e + excLog)
+        }
+    }
+  }
+
+  // remove ASTs modeled in JavaScript
+  def removeJSModel(program: Program): Program = program match {
+    case Program(info1, TopLevel(info2, fds, vds, body)) =>
+      Program(info1, TopLevel(info2, removeJSModelFds(fds), removeJSModelVds(vds), removeJSModelSes(body)))
+  }
+
+  private def removeJSModelFds(list: List[FunDecl]): List[FunDecl] =
+    list.foldLeft(List[FunDecl]())((r, fd) => if (NU.isModeled(fd)) r else r ++ List(fd))
+
+  private def removeJSModelVds(list: List[VarDecl]): List[VarDecl] =
+    list.foldLeft(List[VarDecl]())((r, vd) => if (NU.isModeled(vd)) r else r ++ List(vd))
+
+  private def removeJSModelSes(list: List[SourceElements]): List[SourceElements] =
+    list.foldLeft(List[SourceElements]())((r, se) => if (NU.isModeled(se)) r else r ++ List(se))
 
   private def resultToAST[T <: ASTNode](
     parser: JS,
@@ -126,15 +165,19 @@ object Parser {
       // convert path string to linux style for windows
       fileName = fileName.charAt(0).toLower + fileName.replace('\\', '/').substring(1)
     }
-    if (!fileName.endsWith(".js") && !fileName.endsWith(".js.err"))
-      Failure(NotJSFileError(fileName))
-    else {
-      val fs = new FileInputStream(new File(f))
-      val sr = new InputStreamReader(fs, Charset.forName("UTF-8"))
-      val in = new BufferedReader(sr)
-      val pair = parsePgm(in, fileName, 0).flatMap { case (p, e) => getInfoStmts(p).map { (_, e) } }
-      in.close; sr.close; fs.close
-      pair
+    FileKind(fileName) match {
+      case JSFile | JSErrFile => {
+        val fs = new FileInputStream(new File(f))
+        val sr = new InputStreamReader(fs, Charset.forName("UTF-8"))
+        val in = new BufferedReader(sr)
+        val pair = parsePgm(in, fileName, 0).flatMap {
+          case (p, e) => getInfoStmts(p).map((_, e))
+        }
+        in.close; sr.close; fs.close
+        pair
+      }
+      case HTMLFile => JSFromHTML.parseScripts(fileName)
+      case JSTodoFile | NormalFile => Failure(NotJSFileError(fileName))
     }
   }
 

@@ -75,6 +75,7 @@ object Safe {
     CmdCompile,
     CmdCFGBuild,
     CmdAnalyze,
+    CmdBugDetect,
     CmdHelp
   )
   val cmdMap = commands.foldLeft[Map[String, Command]](HashMap()) {
@@ -88,11 +89,14 @@ object Safe {
     Compile,
     CFGBuild,
     Analyze,
+    BugDetect,
     Help
   )
 
   // global options
   val options: List[PhaseOption[SafeConfig]] = List(
+    ("json", StrOption((c, str) => ()),
+      "set options by using a JSON file."),
     ("silent", BoolOption(c => c.silent = true),
       "all messages are muted."),
     ("testMode", BoolOption(c => c.testMode = true),
@@ -171,5 +175,6 @@ case class SafeConfig(
   var command: Command,
   var fileNames: List[String] = Nil,
   var silent: Boolean = false,
-  var testMode: Boolean = false
+  var testMode: Boolean = false,
+  var html: Boolean = false // only turn on when HTML files are given.
 ) extends Config

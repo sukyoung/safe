@@ -1,3 +1,4 @@
+// TODO ToUint32
   var obj = {
     
   };
@@ -15,6 +16,10 @@
     var __expect2 = false;
   }
   {
+    var __result3 = obj[0];
+    var __expect3 = "y";
+  }
+  {
     var __result3 = obj[0] !== "y";
     var __expect3 = false;
   }
@@ -26,4 +31,3 @@
     var __result5 = obj[2] !== "x";
     var __expect5 = false;
   }
-  

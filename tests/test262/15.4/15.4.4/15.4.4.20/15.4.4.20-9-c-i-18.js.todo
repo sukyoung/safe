@@ -1,3 +1,4 @@
+// TODO getters/setters
   function testcase() 
   {
     function callbackfn(val, idx, obj) 

@@ -23,9 +23,17 @@ import scala.collection.immutable.HashSet
 object BuiltinRegExp extends FuncModel(
   name = "RegExp",
   // TODO 15.10.3.1 RegExp(pattern, flags)
-  code = BasicCode(2, BuiltinRegExpHelper.function),
+  code = BasicCode(
+    argLen = 2,
+    addrSet = HashSet(BuiltinRegExpHelper.instanceAddr),
+    code = BuiltinRegExpHelper.function
+  ),
   // TODO 15.10.4.1 new RegExp(pattern, flags)
-  construct = Some(BasicCode(2, BuiltinRegExpHelper.construct)),
+  construct = Some(BasicCode(
+    argLen = 2,
+    addrSet = HashSet(BuiltinRegExpHelper.instanceAddr),
+    code = BuiltinRegExpHelper.construct
+  )),
   protoModel = Some((BuiltinRegExpProto, F, F, F))
 )
 
@@ -55,6 +63,8 @@ object BuiltinRegExpProto extends ObjModel(
 )
 
 private object BuiltinRegExpHelper {
+  val instanceAddr = SystemAddr("RegExp<instance>")
+
   def newREObject(source: AbsString, g: AbsBool, i: AbsBool, m: AbsBool): AbsObject = {
     val IV = InternalValueUtil
     val afalse = AbsBool.False
@@ -135,7 +145,7 @@ private object BuiltinRegExpHelper {
 
     val (st2, result1) = objOpt match {
       case Some(obj) =>
-        val addr = SystemAddr("RegExp<instance>")
+        val addr = instanceAddr
         val st1 = st.oldify(addr)
         val loc = Loc(addr, Recent)
         val h2 = st1.heap.update(loc, obj)
@@ -222,7 +232,7 @@ private object BuiltinRegExpHelper {
 
     val (st2, result1) = objOpt match {
       case Some(obj) =>
-        val addr = SystemAddr("RegExp<instance>")
+        val addr = instanceAddr
         val st1 = st.oldify(addr)
         val loc = Loc(addr, Recent)
         val h2 = st1.heap.update(loc, obj)

@@ -6,6 +6,8 @@
       accessed = true;
       return this.valueOf() === false;
     }
+// TODO: add ToObject to javascript modeling
+// TODO: add CFGEnterCode to javascript modeling
     var newArr = [11, ].filter(callbackfn, false);
     return newArr[0] === 11 && accessed;
   }

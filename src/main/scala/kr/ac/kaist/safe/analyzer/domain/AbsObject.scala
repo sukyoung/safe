@@ -24,7 +24,7 @@ import scala.collection.immutable.HashSet
 ////////////////////////////////////////////////////////////////////////////////
 // concrete object type
 ////////////////////////////////////////////////////////////////////////////////
-trait Object // TODO
+case class Object(amap: Map[String, DataProp], imap: Map[InternalName, Value])
 
 ////////////////////////////////////////////////////////////////////////////////
 // object abstract domain
@@ -145,7 +145,16 @@ object DefaultObject extends AbsObjectUtil {
   lazy val Bot: AbsObject = ObjMap(AbsMapBot)
   lazy val Empty: AbsObject = ObjMap(AbsMapEmpty)
 
-  def alpha(ctx: Object): AbsObject = Top // TODO more precise
+  def alpha(obj: Object): Dom = {
+    val amap: AbsMap = obj.amap.foldLeft[AbsMap](AbsMapEmpty) {
+      case (map, (key, dp)) => map.update(key, AbsDataProp(dp))
+    }
+    val imap: ObjInternalMap = obj.imap.foldLeft[ObjInternalMap](ObjEmptyIMap) {
+      case (map, (iname, value)) =>
+        map + (iname -> InternalValue(AbsValue(value), HashSet()))
+    }
+    ObjMap(amap, imap)
+  }
 
   sealed abstract class Dom extends AbsObject {
     def gamma: ConSet[Object] = ConInf() // TODO more precise

@@ -4,6 +4,8 @@
     {
       return this.valueOf() === false;
     }
+// TODO: add ToObject to javascript modeling
+// TODO: add CFGEnterCode to javascript modeling
     var testResult = [11, ].map(callbackfn, false);
     return testResult[0] === true;
   }

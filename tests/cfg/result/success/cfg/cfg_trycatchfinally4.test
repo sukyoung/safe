@@ -65,7 +65,7 @@ function[0] top-level {
   AfterCatch[16] -> ExitExc
 
   Block[17] -> Exit, ExitExc
-    [0] <>Global<>ignore4 := allocArray(3) @ #10
+    [0] <>Global<>ignore4 := allocArray(3) @ #9
     [1] <>Global<>ignore4["0"] := <>temp<>8
     [2] <>Global<>ignore4["1"] := <>temp<>9
     [3] <>Global<>ignore4["2"] := <>temp<>13

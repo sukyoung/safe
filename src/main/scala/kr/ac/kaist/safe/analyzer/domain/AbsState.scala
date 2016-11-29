@@ -14,6 +14,7 @@ package kr.ac.kaist.safe.analyzer.domain
 import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.analyzer.models.PredefLoc
 import kr.ac.kaist.safe.analyzer.models.builtin.BuiltinGlobal
+import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.util.{ Address, SystemAddr }
 import scala.collection.immutable.{ HashMap }
@@ -45,6 +46,10 @@ trait AbsState extends AbsDomain[State, AbsState] {
 
   // delete
   def delete(loc: Loc, str: String): (AbsState, AbsBool)
+
+  // toString
+  def toStringAll: String
+  def toStringLoc(loc: Loc): Option[String]
 }
 
 trait AbsStateUtil extends AbsDomainUtil[State, AbsState] {
@@ -220,6 +225,26 @@ object DefaultState extends AbsStateUtil {
       val (newHeap, b1) = heap.delete(loc, absStr)
       val (newCtx, b2) = context.delete(loc, str)
       (Dom(newHeap, newCtx), b1 + b2)
+    }
+
+    override def toString: String = toString(false)
+
+    def toStringAll: String = toString(true)
+
+    def toStringLoc(loc: Loc): Option[String] = heap.toStringLoc(loc) match {
+      case None => context.toStringLoc(loc)
+      case some => some
+    }
+
+    private def toString(all: Boolean): String = {
+      "** heap **" + LINE_SEP +
+        (if (all) heap.toStringAll else heap.toString) + LINE_SEP +
+        LINE_SEP +
+        "** context **" + LINE_SEP +
+        context.toString + LINE_SEP +
+        LINE_SEP +
+        "** old address set **" + LINE_SEP +
+        context.old.toString
     }
   }
 }
