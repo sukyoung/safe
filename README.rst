@@ -117,7 +117,7 @@ SAFE has been used by:
 Authors
 ============
 
-The main developers of SAFE 2.0 are as follows:
+The current developers of SAFE 2.0 are as follows:
 
 * `Jihyeok Park`_ 
 * `Yeonhee Ryou`_ 
