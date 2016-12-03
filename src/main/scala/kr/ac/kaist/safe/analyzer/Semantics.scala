@@ -16,6 +16,7 @@ import kr.ac.kaist.safe.errors.error._
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.analyzer.models.builtin._
+import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.util._
 
@@ -463,77 +464,71 @@ class Semantics(
 
         (AbsState.Bot, excSt + AbsState(st.heap, ctx1) + newExcSt)
       }
-      case CFGInternalCall(ir, info, lhs, fun, arguments, loc) =>
-        (fun.toString, arguments, loc) match {
-          case ("<>Global<>toObject", List(expr), Some(aNew)) => {
-            val (v, excSet1) = V(expr, st)
-            val (newSt, newExcSet) =
-              if (v.isBottom) {
-                (AbsState.Bot, excSet1)
-              } else {
-                val (v1, st1, excSet2) = TypeConversionHelper.ToObject(v, st, aNew)
-                val st2 =
-                  if (!v1.isBottom) st1.varStore(lhs, v1)
-                  else AbsState.Bot
-                (st2, excSet1 ++ excSet2)
-              }
-            val newExcSt = st.raiseException(newExcSet)
-            (newSt, excSt + newExcSt)
-          }
-          case ("<>Global<>isObject", List(expr), None) => {
-            val (v, excSet) = V(expr, st)
-            val st1 =
-              if (!v.isBottom) {
-                val b1 =
-                  if (!v.locset.isBottom) AT
-                  else AB
-                val b2 =
-                  if (!v.pvalue.isBottom) AF
-                  else AB
-                val boolVal = AbsValue(b1 + b2)
-                st.varStore(lhs, boolVal)
-              } else {
-                AbsState.Bot
-              }
-            val newExcSt = st.raiseException(excSet)
-            (st1, excSt + newExcSt)
-          }
-          case ("<>Global<>toNumber", List(expr), None) => {
-            val (v, excSet) = V(expr, st)
-            val st1 =
-              if (!v.isBottom) st.varStore(lhs, AbsValue(TypeConversionHelper.ToNumber(v, st.heap)))
-              else AbsState.Bot
-
-            val newExcSt = st.raiseException(excSet)
-            (st1, excSt + newExcSt)
-          }
-          case ("<>Global<>toBoolean", List(expr), None) => {
-            val (v, excSet) = V(expr, st)
-            val st1 =
-              if (!v.isBottom) st.varStore(lhs, AbsValue(TypeConversionHelper.ToBoolean(v)))
-              else AbsState.Bot
-
-            val newExcSt = st.raiseException(excSet)
-            (st1, excSt + newExcSt)
-          }
-          case ("<>Global<>getBase", List(CFGVarRef(_, x2)), None) => {
-            val baseV = st.lookupBase(x2)
-            val st1 = st.varStore(lhs, baseV)
-            (st1, excSt)
-          }
-          case ("<>Global<>iteratorInit", List(expr), Some(aNew)) => (st, excSt)
-          case ("<>Global<>iteratorHasNext", List(expr2, expr3), None) =>
-            val st1 = st.varStore(lhs, AbsBool.Top)
-            (st1, excSt)
-          case ("<>Global<>iteratorNext", List(expr2, expr3), None) =>
-            val st1 = st.varStore(lhs, AbsString.Top)
-            (st1, excSt)
-          case _ =>
-            excLog.signal(SemanticsNotYetImplementedError(ir))
-            (AbsState.Bot, AbsState.Bot)
-        }
+      case CFGInternalCall(ir, _, lhs, fun, arguments, loc) =>
+        IC(ir, lhs, fun, arguments, loc, st, excSt)
       case CFGNoOp(_, _, _) => (st, excSt)
     }
+  }
+
+  // CFGInternalCall(ir, _, lhs, fun, arguments, loc)
+  def IC(ir: IRNode, lhs: CFGId, fun: CFGId, args: List[CFGExpr], loc: Option[Address], st: AbsState, excSt: AbsState): (AbsState, AbsState) = (fun.toString, args, loc) match {
+    case (NodeUtil.TO_OBJ_NAME, List(expr), Some(aNew)) => {
+      val (v, excSet1) = V(expr, st)
+      val (newSt, newExcSet) =
+        if (v.isBottom) {
+          (AbsState.Bot, excSet1)
+        } else {
+          val (v1, st1, excSet2) = TypeConversionHelper.ToObject(v, st, aNew)
+          val st2 =
+            if (!v1.isBottom) st1.varStore(lhs, v1)
+            else AbsState.Bot
+          (st2, excSet1 ++ excSet2)
+        }
+      val newExcSt = st.raiseException(newExcSet)
+      (newSt, excSt + newExcSt)
+    }
+    case (NodeUtil.IS_OBJ_NAME, List(expr), None) => {
+      val (v, excSet) = V(expr, st)
+      val st1 =
+        if (!v.isBottom) {
+          val b1 =
+            if (!v.locset.isBottom) AT
+            else AB
+          val b2 =
+            if (!v.pvalue.isBottom) AF
+            else AB
+          val boolVal = AbsValue(b1 + b2)
+          st.varStore(lhs, boolVal)
+        } else {
+          AbsState.Bot
+        }
+      val newExcSt = st.raiseException(excSet)
+      (st1, excSt + newExcSt)
+    }
+    case (NodeUtil.TO_NUM_NAME, List(expr), None) => {
+      val (v, excSet) = V(expr, st)
+      val st1 =
+        if (!v.isBottom) st.varStore(lhs, AbsValue(TypeConversionHelper.ToNumber(v, st.heap)))
+        else AbsState.Bot
+
+      val newExcSt = st.raiseException(excSet)
+      (st1, excSt + newExcSt)
+    }
+    case (NodeUtil.GET_BASE_NAME, List(CFGVarRef(_, x2)), None) => {
+      val baseV = st.lookupBase(x2)
+      val st1 = st.varStore(lhs, baseV)
+      (st1, excSt)
+    }
+    case (NodeUtil.ITER_INIT_NAME, List(expr), Some(aNew)) => (st, excSt)
+    case (NodeUtil.HAS_NEXT_NAME, List(expr2, expr3), None) =>
+      val st1 = st.varStore(lhs, AbsBool.Top)
+      (st1, excSt)
+    case (NodeUtil.ITER_NEXT_NAME, List(expr2, expr3), None) =>
+      val st1 = st.varStore(lhs, AbsString.Top)
+      (st1, excSt)
+    case _ =>
+      excLog.signal(SemanticsNotYetImplementedError(ir))
+      (AbsState.Bot, AbsState.Bot)
   }
 
   def CI(cp: ControlPoint, i: CFGCallInst, st: AbsState, excSt: AbsState): (AbsState, AbsState) = {

@@ -42,6 +42,12 @@ object NodeUtil {
   val VAR_TRUE = freshGlobalName("true")
   val VAR_ONE = freshGlobalName("one")
   val TO_OBJ_NAME = freshGlobalName("toObject")
+  val IS_OBJ_NAME = freshGlobalName("isObject")
+  val TO_NUM_NAME = freshGlobalName("toNumber")
+  val GET_BASE_NAME = freshGlobalName("getBase")
+  val ITER_INIT_NAME = freshGlobalName("iteratorInit")
+  val HAS_NEXT_NAME = freshGlobalName("iteratorHasNext")
+  val ITER_NEXT_NAME = freshGlobalName("iteratorNext")
   val IGNORE_NAME = freshGlobalName("ignore")
   val GLOBAL_NAME = freshGlobalName("global")
   val REF_ERR_NAME = freshGlobalName("referenceError")
@@ -54,6 +60,14 @@ object NodeUtil {
   val TEMP_IR = IRNoOp(TEMP_AST, "defaultIR")
 
   val PRINT_WIDTH = 50
+
+  val internalCall: Map[String, String] = HashMap(
+    INTERNAL_PRINT_IS -> "printIS",
+    INTERNAL_GET_TICK_COUNT -> "getTickCount",
+    INTERNAL_PRINT -> "print",
+    TO_OBJ_NAME -> "toObject"
+  )
+  def isInternalCall(id: String): Boolean = internalCall.keySet.contains(id)
 
   ////////////////////////////////////////////////////////////////
   // For all AST, IR, and CFG
