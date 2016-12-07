@@ -1,7 +1,7 @@
 
 var myfunction
 {
-  <>fun<>1 = <>Global<>toObject(Date)
+  <>fun<>1 = @ToObject(Date)
   <>arguments<>2 = []
   <>proto<>3 = <>fun<>1["prototype"]
   <>obj<>4 = {
@@ -16,11 +16,11 @@ var myfunction
   gCurrentTestStop = <>Global<>ignore1
 }
 {
-  <>obj<>7 = <>Global<>toObject(win)
-  <>fun<>8 = <>Global<>toObject(<>obj<>7["TestCase"])
-  <>obj<>9 = <>Global<>toObject(win)
+  <>obj<>7 = @ToObject(win)
+  <>fun<>8 = @ToObject(<>obj<>7["TestCase"])
+  <>obj<>9 = @ToObject(win)
   <>temp<>10 = <>obj<>9["gTestFile"]
-  <>obj<>11 = <>Global<>toObject(win)
+  <>obj<>11 = @ToObject(win)
   <>temp<>12 = <>obj<>11["summary"]
   <>temp<>13 = "Unknown"
   <>arguments<>14 = [<>temp<>10, <>temp<>12, <>temp<>13, ]
@@ -36,7 +36,7 @@ var myfunction
     <>Global<>ignore2 = <>obj<>16
 }
 {
-  <>fun<>19 = <>Global<>toObject(TypeError)
+  <>fun<>19 = @ToObject(TypeError)
   <>temp<>20 = "here"
   <>arguments<>21 = [<>temp<>20, ]
   <>proto<>22 = <>fun<>19["prototype"]
@@ -55,7 +55,7 @@ var myfunction
   <>fun1<>27 = function <>funexpr@4:22-10:2<>28(this, <>arguments<>29) 
   {
     {
-      <>obj<>30 = <>Global<>toObject(this)
+      <>obj<>30 = @ToObject(this)
       <>Global<>ignore4 = function this.valueOf<>funexpr@6:18-9:4<>31(this, <>arguments<>32) 
       {
         {
@@ -66,7 +66,7 @@ var myfunction
       <>obj<>30["valueOf"] = <>Global<>ignore4
     }
   }
-  <>fun<>34 = <>Global<>toObject(<>fun1<>27)
+  <>fun<>34 = @ToObject(<>fun1<>27)
   <>arguments<>35 = []
   <>proto<>36 = <>fun<>34["prototype"]
   <>obj<>37 = {

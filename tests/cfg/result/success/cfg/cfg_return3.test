@@ -4,7 +4,7 @@ function[0] top-level {
   Block[0] -> [1], ExitExc
     [0] f := function (1) @ #11, #12
     [1] noop(StartOfFile)
-    [2] <>obj<>20 := <>Global<>toObject(f) @ #13
+    [2] <>obj<>20 := @ToObject(f) @ #13
     [3] <>arguments<>21 := allocArg(0) @ #14
     [4] <>fun<>22 := <>Global<>getBase(f)
     [5] <>this<> := enterCode(<>fun<>22)
@@ -51,7 +51,7 @@ function[2] g {
   Block[2] -> [4], ExitExc
     [0] assert(! <>y<>1)
     [1] <>z<>5 := 678
-    [2] <>obj<>8 := <>Global<>toObject(print) @ #1
+    [2] <>obj<>8 := @ToObject(print) @ #1
     [3] <>temp<>9 := "in"
     [4] <>arguments<>10 := allocArg(1) @ #2
     [5] <>arguments<>10["0"] := <>temp<>9
@@ -70,7 +70,7 @@ function[2] g {
   Block[7] -> [8], ExitExc
     [0] <>Global<>ignore5 := function (3) @ #4, #5
     [1] <>w<>6 := <>Global<>ignore5
-    [2] <>obj<>15 := <>Global<>toObject(<>w<>6) @ #6
+    [2] <>obj<>15 := @ToObject(<>w<>6) @ #6
     [3] <>temp<>16 := 3
     [4] <>arguments<>17 := allocArg(1) @ #7
     [5] <>arguments<>17["0"] := <>temp<>16

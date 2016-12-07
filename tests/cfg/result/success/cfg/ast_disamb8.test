@@ -18,7 +18,7 @@ function[1] f {
   Block[0] -> Exit, ExitExc
     [0] <>g<>1 := function (2) @ #1, #2
     [1] <>h<>2 := function (3) @ #3, #4
-    [2] <>obj<>7 := <>Global<>toObject(<>arguments<>3) @ #5
+    [2] <>obj<>7 := @ToObject(<>arguments<>3) @ #5
     [3] <>Global<>ignore10 := <>obj<>7[1]
     [4] <>Global<>ignore12 := this
 

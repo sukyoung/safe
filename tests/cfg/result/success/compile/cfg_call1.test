@@ -18,7 +18,7 @@ function f(this, <>arguments<>1)
     <>temp<>8 = <>y<>6 + <>z<>7
   }
   {
-    <>obj<>9 = <>Global<>toObject(<>g<>2)
+    <>obj<>9 = @ToObject(<>g<>2)
     <>temp<>10 = <>temp<>8
     <>arguments<>11 = [<>temp<>10, ]
     <>fun<>12 = <>Global<>getBase(<>g<>2)
@@ -28,7 +28,7 @@ function f(this, <>arguments<>1)
 }
 var x
 {
-  <>obj<>14 = <>Global<>toObject(f)
+  <>obj<>14 = @ToObject(f)
   <>temp<>15 = 1
   <>temp<>16 = 2
   <>temp<>17 = 3

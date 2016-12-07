@@ -9,7 +9,7 @@ function[0] top-level {
     [4] <>Global<>ignore6 := 9.0
     [5] <>Global<>ignore8 := null
     [6] <>Global<>ignore10 := 3
-    [7] <>obj<>4 := <>Global<>toObject(f) @ #3
+    [7] <>obj<>4 := @ToObject(f) @ #3
     [8] <>temp<>5 := 3
     [9] <>temp<>6 := true
     [10] <>arguments<>7 := allocArg(2) @ #4

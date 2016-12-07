@@ -31,6 +31,7 @@ case class IRRoot(
     s.append(indentString).append(NodeUtil.join(indent, vds, LINE_SEP + indentString, new StringBuilder("")))
     s.append(LINE_SEP)
     s.append(indentString).append(NodeUtil.join(indent, irs, LINE_SEP + indentString, new StringBuilder("")))
+    s.append(LINE_SEP)
     s.toString
   }
 }

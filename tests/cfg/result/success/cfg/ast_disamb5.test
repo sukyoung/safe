@@ -4,7 +4,7 @@ function[0] top-level {
   Block[0] -> [1], ExitExc
     [0] f := function (1) @ #9, #10
     [1] noop(StartOfFile)
-    [2] <>obj<>13 := <>Global<>toObject(alert) @ #11
+    [2] <>obj<>13 := @ToObject(alert) @ #11
     [3] <>temp<>14 := 1
     [4] <>arguments<>15 := allocArg(1) @ #12
     [5] <>arguments<>15["0"] := <>temp<>14
@@ -19,7 +19,7 @@ function[0] top-level {
   AfterCatch[3] -> ExitExc
 
   Block[4] -> [5], ExitExc
-    [0] <>obj<>17 := <>Global<>toObject(alert) @ #14
+    [0] <>obj<>17 := @ToObject(alert) @ #14
     [1] <>temp<>18 := 4
     [2] <>arguments<>19 := allocArg(1) @ #15
     [3] <>arguments<>19["0"] := <>temp<>18
@@ -34,7 +34,7 @@ function[0] top-level {
   AfterCatch[7] -> ExitExc
 
   Block[8] -> [9], ExitExc
-    [0] <>obj<>21 := <>Global<>toObject(f) @ #17
+    [0] <>obj<>21 := @ToObject(f) @ #17
     [1] <>arguments<>22 := allocArg(0) @ #18
     [2] <>fun<>23 := <>Global<>getBase(f)
     [3] <>this<> := enterCode(<>fun<>23)
@@ -60,7 +60,7 @@ function[1] f {
 
   Block[0] -> [1], ExitExc
     [0] <>eval<>1 := function (2) @ #4, #5
-    [1] <>obj<>9 := <>Global<>toObject(alert) @ #6
+    [1] <>obj<>9 := @ToObject(alert) @ #6
     [2] <>temp<>10 := 2
     [3] <>arguments<>11 := allocArg(1) @ #7
     [4] <>arguments<>11["0"] := <>temp<>10
@@ -84,7 +84,7 @@ function[2] eval {
   Entry[-1] -> [0]
 
   Block[0] -> [1], ExitExc
-    [0] <>obj<>5 := <>Global<>toObject(alert) @ #1
+    [0] <>obj<>5 := @ToObject(alert) @ #1
     [1] <>temp<>6 := 0
     [2] <>arguments<>7 := allocArg(1) @ #2
     [3] <>arguments<>7["0"] := <>temp<>6

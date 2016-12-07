@@ -9,12 +9,12 @@ y = 1
 }
 {
   {
-    <>Global<>ignore3 = <>Global<>toObject(obj)
+    <>Global<>ignore3 = @ToObject(obj)
     <>alpha<>1 = <>Global<>ignore3
   }
   if("y" in <>alpha<>1)
   {
-    <>obj<>2 = <>Global<>toObject(<>alpha<>1)
+    <>obj<>2 = @ToObject(<>alpha<>1)
     <>Global<>ignore4 = <>obj<>2["y"]
   }
   else

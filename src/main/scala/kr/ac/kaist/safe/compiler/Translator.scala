@@ -179,7 +179,7 @@ class Translator(program: Program) {
   }
 
   private def toObject(ast: ASTNode, lhs: IRId, arg: IRExpr): IRInternalCall =
-    IRInternalCall(ast, lhs, makeTId(ast, NU.TO_OBJ_NAME, true), arg, None)
+    IRInternalCall(ast, lhs, makeTId(ast, NU.INTERNAL_TO_OBJ, true), arg, None)
 
   private def toNumber(ast: ASTNode, lhs: IRId, id: IRId): IRInternalCall =
     IRInternalCall(ast, lhs, makeTId(ast, NU.TO_NUM_NAME, true), id, None)
@@ -1138,7 +1138,7 @@ class Translator(program: Program) {
     case FunApp(_, VarRef(_, Id(_, fun, _, _)), args) if (NU.isInternalCall(fun)) => args match {
       case Nil =>
         (List(IRInternalCall(e, res,
-          makeTId(e, NU.internalCallMap(fun), true), res, None)), res)
+          makeTId(e, fun, true), res, None)), res)
       case _ =>
         val last = args.last
         val front = args.take(args.length - 1)
@@ -1147,7 +1147,7 @@ class Translator(program: Program) {
         val ss1 = results.foldLeft(List[IRStmt]()) { case (l, (newArg, (stmts, expr))) => l ++ stmts :+ (mkExprS(e, newArg, expr)) }
         val (ss2, r) = walkExpr(last, env, freshId(last, last.span, "new" + args.length))
         (ss1 ++ ss2 :+ IRInternalCall(e, res,
-          makeTId(e, NU.internalCallMap(fun), true), r, None), res)
+          makeTId(e, fun, true), r, None), res)
     }
 
     case FunApp(_, fun, List(arg)) if (fun.isEval) =>

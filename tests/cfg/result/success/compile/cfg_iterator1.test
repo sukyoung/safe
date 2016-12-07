@@ -17,7 +17,7 @@ var obj
     <>key<>5 = <>Global<>iteratorNext(<>obj<>2, <>iterator<>3)
     x = <>key<>5
     <>continue<>6 : {
-      <>obj<>7 = <>Global<>toObject(obj)
+      <>obj<>7 = @ToObject(obj)
       <>obj<>7[x] = 1
     }
     {

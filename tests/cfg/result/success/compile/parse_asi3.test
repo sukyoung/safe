@@ -11,7 +11,7 @@ var quitchars
 }
 charloop : <>break<>3 : {
   {
-    <>obj<>4 = <>Global<>toObject(getc)
+    <>obj<>4 = @ToObject(getc)
     <>arguments<>5 = []
     <>fun<>6 = <>Global<>getBase(getc)
     <>new1<>7 = <>obj<>4(<>fun<>6, <>arguments<>5)
@@ -24,14 +24,14 @@ charloop : <>break<>3 : {
         i = 0
         <>Global<>ignore3 = 0
         <>y<>10 = i
-        <>obj<>11 = <>Global<>toObject(quitchars)
+        <>obj<>11 = @ToObject(quitchars)
       }
       while(<>y<>10 < <>obj<>11["length"])
       {
         <>continue<>12 : {
           {
             <>y<>13 = c
-            <>obj<>14 = <>Global<>toObject(quitchars)
+            <>obj<>14 = @ToObject(quitchars)
             if(<>y<>13 == <>obj<>14[i])
               break <>break<>9
           }
@@ -43,12 +43,12 @@ charloop : <>break<>3 : {
           i = <>new<>16 + 1
           <>Global<>ignore5 = <>new<>16
           <>y<>10 = i
-          <>obj<>11 = <>Global<>toObject(quitchars)
+          <>obj<>11 = @ToObject(quitchars)
         }
       }
     }
     {
-      <>obj<>4 = <>Global<>toObject(getc)
+      <>obj<>4 = @ToObject(getc)
       <>arguments<>5 = []
       <>fun<>6 = <>Global<>getBase(getc)
       <>new1<>7 = <>obj<>4(<>fun<>6, <>arguments<>5)

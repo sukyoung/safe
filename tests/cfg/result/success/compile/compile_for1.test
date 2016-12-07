@@ -21,7 +21,7 @@ var d
   while("test")
   {
     <>continue<>2 : {
-      <>obj<>3 = <>Global<>toObject(print)
+      <>obj<>3 = @ToObject(print)
       <>temp<>4 = 7
       <>arguments<>5 = [<>temp<>4, ]
       <>fun<>6 = <>Global<>getBase(print)

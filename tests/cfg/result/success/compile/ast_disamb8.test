@@ -13,7 +13,7 @@ function f(this, <>arguments<>1)
     <>Global<>ignore8 = this
   }
   {
-    <>obj<>7 = <>Global<>toObject(<>arguments<>1)
+    <>obj<>7 = @ToObject(<>arguments<>1)
     <>Global<>ignore10 = <>obj<>7[1]
   }
   <>Global<>ignore12 = this

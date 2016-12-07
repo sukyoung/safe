@@ -14,7 +14,7 @@ function[0] top-level {
 
   Block[3] -> [6], ExitExc
     [0] assert("test")
-    [1] <>obj<>1 := <>Global<>toObject(print) @ #1
+    [1] <>obj<>1 := @ToObject(print) @ #1
     [2] <>temp<>2 := 7
     [3] <>arguments<>3 := allocArg(1) @ #2
     [4] <>arguments<>3["0"] := <>temp<>2

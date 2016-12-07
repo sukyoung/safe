@@ -5,7 +5,7 @@
   a = <>old<>1 + 1
 }
 {
-  <>obj<>2 = <>Global<>toObject(b)
+  <>obj<>2 = @ToObject(b)
   <>old<>3 = <>obj<>2[c]
   <>obj<>2[c] = <>old<>3 / 1
 }

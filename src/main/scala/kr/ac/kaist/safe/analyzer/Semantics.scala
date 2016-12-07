@@ -472,7 +472,7 @@ class Semantics(
 
   // CFGInternalCall(ir, _, lhs, fun, arguments, loc)
   def IC(ir: IRNode, lhs: CFGId, fun: CFGId, args: List[CFGExpr], loc: Option[Address], st: AbsState, excSt: AbsState): (AbsState, AbsState) = (fun.toString, args, loc) match {
-    case (NodeUtil.TO_OBJ_NAME, List(expr), Some(aNew)) => {
+    case (NodeUtil.INTERNAL_TO_OBJ, List(expr), Some(aNew)) => {
       val (v, excSet1) = V(expr, st)
       val (newSt, newExcSet) =
         if (v.isBottom) {
@@ -731,11 +731,12 @@ class Semantics(
           }
       }
     }
-    case CFGInternalValue(_, NodeUtil.INTERNAL_TOP) => (AbsValue.Top, ExcSetEmpty)
-    case CFGInternalValue(_, NodeUtil.INTERNAL_UINT) => (AbsNumber.UInt, ExcSetEmpty)
-    case CFGInternalValue(ir, _) =>
-      excLog.signal(SemanticsNotYetImplementedError(ir))
-      (AbsValue.Bot, ExcSetEmpty)
+    case CFGInternalValue(ir, name) => internalValueMap.get(name) match {
+      case Some(value) => (value, ExcSetEmpty)
+      case None =>
+        excLog.signal(SemanticsNotYetImplementedError(ir))
+        (AbsValue.Bot, ExcSetEmpty)
+    }
     case CFGVal(ejsVal) =>
       val pvalue: AbsPValue = ejsVal match {
         case EJSNumber(_, num) => AbsPValue(num)

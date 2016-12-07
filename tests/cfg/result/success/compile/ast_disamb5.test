@@ -5,7 +5,7 @@ function f(this, <>arguments<>1)
     var <>x<>4
     <>x<>4 = <>arguments<>3["0"]
     {
-      <>obj<>5 = <>Global<>toObject(alert)
+      <>obj<>5 = @ToObject(alert)
       <>temp<>6 = 0
       <>arguments<>7 = [<>temp<>6, ]
       <>fun<>8 = <>Global<>getBase(alert)
@@ -13,7 +13,7 @@ function f(this, <>arguments<>1)
     }
   }
   {
-    <>obj<>9 = <>Global<>toObject(alert)
+    <>obj<>9 = @ToObject(alert)
     <>temp<>10 = 2
     <>arguments<>11 = [<>temp<>10, ]
     <>fun<>12 = <>Global<>getBase(alert)
@@ -23,22 +23,23 @@ function f(this, <>arguments<>1)
 }
 
 {
-  <>obj<>13 = <>Global<>toObject(alert)
+  <>obj<>13 = @ToObject(alert)
   <>temp<>14 = 1
   <>arguments<>15 = [<>temp<>14, ]
   <>fun<>16 = <>Global<>getBase(alert)
   <>Global<>ignore4 = <>obj<>13(<>fun<>16, <>arguments<>15)
 }
 {
-  <>obj<>17 = <>Global<>toObject(alert)
+  <>obj<>17 = @ToObject(alert)
   <>temp<>18 = 4
   <>arguments<>19 = [<>temp<>18, ]
   <>fun<>20 = <>Global<>getBase(alert)
   <>Global<>ignore5 = <>obj<>17(<>fun<>20, <>arguments<>19)
 }
 {
-  <>obj<>21 = <>Global<>toObject(f)
+  <>obj<>21 = @ToObject(f)
   <>arguments<>22 = []
   <>fun<>23 = <>Global<>getBase(f)
   <>Global<>ignore6 = <>obj<>21(<>fun<>23, <>arguments<>22)
 }
+

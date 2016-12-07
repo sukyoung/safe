@@ -1,13 +1,13 @@
 function F(this, <>arguments<>1) 
 {
   {
-    <>obj<>2 = <>Global<>toObject(this)
+    <>obj<>2 = @ToObject(this)
     <>obj<>2["x"] = 1
   }
 }
 var x
 {
-  <>fun<>3 = <>Global<>toObject(F)
+  <>fun<>3 = @ToObject(F)
   <>arguments<>4 = []
   <>proto<>5 = <>fun<>3["prototype"]
   <>obj<>6 = {

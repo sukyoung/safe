@@ -1,7 +1,7 @@
 
 var patt
 {
-  <>fun<>1 = <>Global<>toObject(RegExp)
+  <>fun<>1 = @ToObject(RegExp)
   <>temp<>2 = "[^\\\\]"
   <>temp<>3 = ""
   <>arguments<>4 = [<>temp<>2, <>temp<>3, ]

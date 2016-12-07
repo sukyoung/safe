@@ -38,13 +38,6 @@ object NodeUtil {
 
   val VAR_TRUE = freshGlobalName("true")
   val VAR_ONE = freshGlobalName("one")
-  val TO_OBJ_NAME = freshGlobalName("toObject")
-  val IS_OBJ_NAME = freshGlobalName("isObject")
-  val TO_NUM_NAME = freshGlobalName("toNumber")
-  val GET_BASE_NAME = freshGlobalName("getBase")
-  val ITER_INIT_NAME = freshGlobalName("iteratorInit")
-  val HAS_NEXT_NAME = freshGlobalName("iteratorHasNext")
-  val ITER_NEXT_NAME = freshGlobalName("iteratorNext")
   val IGNORE_NAME = freshGlobalName("ignore")
   val GLOBAL_NAME = freshGlobalName("global")
   val REF_ERR_NAME = freshGlobalName("referenceError")
@@ -63,11 +56,18 @@ object NodeUtil {
   def internalAPIName(name: String): String = INTERNAL_API_PREFIX + name
 
   // internal API call
+  val IS_OBJ_NAME = freshGlobalName("isObject")
+  val TO_NUM_NAME = freshGlobalName("toNumber")
+  val GET_BASE_NAME = freshGlobalName("getBase")
+  val ITER_INIT_NAME = freshGlobalName("iteratorInit")
+  val HAS_NEXT_NAME = freshGlobalName("iteratorHasNext")
+  val ITER_NEXT_NAME = freshGlobalName("iteratorNext")
+
   val INTERNAL_TO_OBJ = internalAPIName("ToObject")
-  val internalCallMap: Map[String, String] = HashMap(
-    INTERNAL_TO_OBJ -> TO_OBJ_NAME
+  val internalCallSet: Set[String] = HashSet(
+    INTERNAL_TO_OBJ
   )
-  def isInternalCall(id: String): Boolean = internalCallMap.keySet.contains(id)
+  def isInternalCall(id: String): Boolean = internalCallSet.contains(id)
 
   // internal API value
   val INTERNAL_TOP = internalAPIName("Top")

@@ -2,7 +2,7 @@
 
 {
   {
-    <>Global<>ignore1 = <>Global<>toObject(1)
+    <>Global<>ignore1 = @ToObject(1)
     <>alpha<>1 = <>Global<>ignore1
   }
   {
@@ -11,11 +11,11 @@
   }
 }
 {
-  <>Global<>ignore6 = <>Global<>toObject(true)
+  <>Global<>ignore6 = @ToObject(true)
   <>alpha<>2 = <>Global<>ignore6
 }
 {
-  <>Global<>ignore7 = <>Global<>toObject("jsaf")
+  <>Global<>ignore7 = @ToObject("jsaf")
   <>alpha<>3 = <>Global<>ignore7
 }
 

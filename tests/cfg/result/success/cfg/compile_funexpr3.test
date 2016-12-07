@@ -3,14 +3,14 @@ function[0] top-level {
 
   Block[0] -> [1], ExitExc
     [0] noop(StartOfFile)
-    [1] <>obj<>1 := <>Global<>toObject(SplayTree) @ #1
-    [2] <>obj<>2 := <>Global<>toObject(<>obj<>1["prototype"]) @ #2
+    [1] <>obj<>1 := @ToObject(SplayTree) @ #1
+    [2] <>obj<>2 := @ToObject(<>obj<>1["prototype"]) @ #2
     [3] <>Global<>ignore1 := function (1) @ #3, #4
     [4] <>obj<>2["insert"] := <>Global<>ignore1
-    [5] <>obj<>5 := <>Global<>toObject(SplayTree) @ #5
-    [6] <>obj<>6 := <>Global<>toObject(<>obj<>5["prototype"]) @ #6
+    [5] <>obj<>5 := @ToObject(SplayTree) @ #5
+    [6] <>obj<>6 := @ToObject(<>obj<>5["prototype"]) @ #6
     [7] <>arguments<>7 := allocArg(0) @ #7
-    [8] <>fun<>8 := <>Global<>toObject(<>obj<>6["insert"]) @ #8
+    [8] <>fun<>8 := @ToObject(<>obj<>6["insert"]) @ #8
     [9] <>this<> := enterCode(<>obj<>6)
 
   Call[1] -> ExitExc

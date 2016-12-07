@@ -18,7 +18,7 @@ function[0] top-level {
     [0] assert(<>cond1<>3)
     [1] <>key<>4 := <>Global<>iteratorNext(<>obj<>1, <>iterator<>2)
     [2] x := <>key<>4
-    [3] <>obj<>5 := <>Global<>toObject(obj) @ #3
+    [3] <>obj<>5 := @ToObject(obj) @ #3
     [4] <>obj<>5[x] := 1
 
   Block[4] -> [1], ExitExc

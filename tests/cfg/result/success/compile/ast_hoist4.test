@@ -13,7 +13,7 @@ var g
   g = 42
 }
 {
-  <>obj<>2 = <>Global<>toObject(f)
+  <>obj<>2 = @ToObject(f)
   <>arguments<>3 = []
   <>fun<>4 = <>Global<>getBase(f)
   <>Global<>ignore4 = <>obj<>2(<>fun<>4, <>arguments<>3)

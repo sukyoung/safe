@@ -34,7 +34,7 @@ function[1] f {
   Entry[-1] -> [0]
 
   Block[0] -> Exit, ExitExc
-    [0] <>obj<>4 := <>Global<>toObject(<>a<>1) @ #1
+    [0] <>obj<>4 := @ToObject(<>a<>1) @ #1
     [1] <>Global<>ignore2 := <>obj<>4[<>b<>2]
 
   Exit[-2]

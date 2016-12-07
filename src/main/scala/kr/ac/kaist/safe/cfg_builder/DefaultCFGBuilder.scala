@@ -20,6 +20,7 @@ import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.phase.CFGBuildConfig
 import kr.ac.kaist.safe.util._
+import kr.ac.kaist.safe.util.NodeUtil._
 
 // default CFG builder
 class DefaultCFGBuilder(
@@ -386,11 +387,11 @@ class DefaultCFGBuilder(
         val key: String = label.uniqueName
         val bs: Set[CFGBlock] = lmap.getOrElse(UserLabel(key), HashSet()) ++ blocks.toSet
         (Nil, lmap.updated(UserLabel(key), bs))
-      /* PEI : fun == "<>toObject" */
+      /* PEI : fun == "@toObject" */
       case IRInternalCall(_, lhs, fun @ (IRTmpId(_, originalName, uniqueName, _)), arg1, arg2) =>
         val tailBlock: NormalBlock = getTail(blocks, func)
         val (addr: Option[Address], lm: LabelMap) = uniqueName match {
-          case "<>Global<>toObject" | "<>Global<>iteratorInit" => (Some(newAddr), lmap.updated(ThrowLabel, (ThrowLabel of lmap) + tailBlock))
+          case INTERNAL_TO_OBJ | ITER_INIT_NAME => (Some(newAddr), lmap.updated(ThrowLabel, (ThrowLabel of lmap) + tailBlock))
           case _ => (None, lmap)
         }
         val argList: List[CFGExpr] = arg2 match {
@@ -502,7 +503,7 @@ class DefaultCFGBuilder(
         // TODO: Need to find a more graceful way.
         val bForin: Boolean = body match {
           case IRSeq(_, stmts) if stmts.size > 0 => stmts(0) match {
-            case IRInternalCall(_, _, fun @ (IRTmpId(_, _, "<>Global<>iteratorNext", _)), _, _) => true
+            case IRInternalCall(_, _, fun @ (IRTmpId(_, _, ITER_NEXT_NAME, _)), _, _) => true
             case _ => false
           }
           case _ => false

@@ -18,7 +18,7 @@ function[0] top-level {
     [0] x := 10
 
   Block[5] -> [7], [10]
-    [0] <>obj<>1 := <>Global<>toObject(print) @ #1
+    [0] <>obj<>1 := @ToObject(print) @ #1
     [1] <>temp<>2 := x
     [2] <>arguments<>3 := allocArg(1) @ #2
     [3] <>arguments<>3["0"] := <>temp<>2
@@ -44,7 +44,7 @@ function[0] top-level {
     [0] x := 10
 
   Block[12] -> [14], [17]
-    [0] <>obj<>1 := <>Global<>toObject(print) @ #4
+    [0] <>obj<>1 := @ToObject(print) @ #4
     [1] <>temp<>2 := x
     [2] <>arguments<>3 := allocArg(1) @ #5
     [3] <>arguments<>3["0"] := <>temp<>2
@@ -74,7 +74,7 @@ function[0] top-level {
     [0] x := 10
 
   Block[21] -> [23], [26]
-    [0] <>obj<>1 := <>Global<>toObject(print) @ #7
+    [0] <>obj<>1 := @ToObject(print) @ #7
     [1] <>temp<>2 := x
     [2] <>arguments<>3 := allocArg(1) @ #8
     [3] <>arguments<>3["0"] := <>temp<>2
@@ -98,7 +98,7 @@ function[0] top-level {
     [0] x := 10
 
   Block[28] -> [30], [33]
-    [0] <>obj<>1 := <>Global<>toObject(print) @ #10
+    [0] <>obj<>1 := @ToObject(print) @ #10
     [1] <>temp<>2 := x
     [2] <>arguments<>3 := allocArg(1) @ #11
     [3] <>arguments<>3["0"] := <>temp<>2
