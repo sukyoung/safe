@@ -1,7 +1,7 @@
 var x;
 x = 1;
 
-if (__TOP)
+if (@Top)
 	delete x;
 
 x = 2;

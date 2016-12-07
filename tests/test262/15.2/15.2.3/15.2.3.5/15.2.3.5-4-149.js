@@ -4,7 +4,7 @@
       
     }, {
       prop : {
-        configurable : __Global
+        configurable : @Global
       }
     });
     var beforeDeleted = newObj.hasOwnProperty("prop");

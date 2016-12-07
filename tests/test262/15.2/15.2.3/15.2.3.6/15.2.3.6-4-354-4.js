@@ -1,6 +1,6 @@
   function testcase() 
   {
-    var obj = __Global;
+    var obj = @Global;
     try
 {      Object.defineProperty(obj, "property", {
         value : 1001,

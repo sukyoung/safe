@@ -10,7 +10,7 @@ var __result3;
 try {
     __result2 = x;
 } catch(e) {
-    __result3 = e instanceof __RefErrLoc;
+    __result3 = e instanceof @RefErr;
 }
 
 var __expect2 = "bot";

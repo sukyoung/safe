@@ -4,16 +4,16 @@
       
     };
     try
-{      __Global.configurable = true;
+{      @Global.configurable = true;
       Object.defineProperties(obj, {
-        prop : __Global
+        prop : @Global
       });
       var result1 = obj.hasOwnProperty("prop");
       delete obj.prop;
       var result2 = obj.hasOwnProperty("prop");
       return result1 === true && result2 === false;}
     finally
-{      delete __Global.configurable;}
+{      delete @Global.configurable;}
 
   }
   {

@@ -11,7 +11,7 @@ var v;
 var o2 = new RegExp("abc");
 o2.lastIndex = 1;
 
-if (__BoolTop) {
+if (@BoolTop) {
 	v = "^(?:\\s*(<[\\w]+>)[^>]*|#([\\w-]*))$";
 } else {
 	v = o2;

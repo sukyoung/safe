@@ -1,20 +1,20 @@
   function testcase() 
   {
     try
-{      Object.defineProperty(__Global, "prop", {
+{      Object.defineProperty(@Global, "prop", {
         value : 11,
         writable : true,
         enumerable : true,
         configurable : true
       });
-      Object.defineProperties(__Global, {
+      Object.defineProperties(@Global, {
         prop : {
           value : 12
         }
       });
-      return dataPropertyAttributesAreCorrect(__Global, "prop", 12, true, true, true);}
+      return dataPropertyAttributesAreCorrect(@Global, "prop", 12, true, true, true);}
     finally
-{      delete __Global.prop;}
+{      delete @Global.prop;}
 
   }
   {

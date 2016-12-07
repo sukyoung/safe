@@ -1,7 +1,7 @@
 var x = 123;
 
 function f() {
-	if(__TOP)
+	if(@Top)
 		x = 456;
 	else
 		return;

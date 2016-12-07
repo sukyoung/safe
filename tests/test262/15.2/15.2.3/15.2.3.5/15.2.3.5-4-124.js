@@ -1,18 +1,18 @@
   function testcase() 
   {
     try
-{      __Global.configurable = true;
+{      @Global.configurable = true;
       var newObj = Object.create({
         
       }, {
-        prop : __Global
+        prop : @Global
       });
       var result1 = newObj.hasOwnProperty("prop");
       delete newObj.prop;
       var result2 = newObj.hasOwnProperty("prop");
       return result1 === true && result2 === false;}
     finally
-{      delete __Global.configurable;}
+{      delete @Global.configurable;}
 
   }
   {

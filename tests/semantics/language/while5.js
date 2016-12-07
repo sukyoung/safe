@@ -1,8 +1,8 @@
 var x = 123;
 
-while(__TOP) {
+while(@Top) {
 	x = 456;
-	while(__TOP) {
+	while(@Top) {
 		x = 789;
 		break;
 		x = -1;

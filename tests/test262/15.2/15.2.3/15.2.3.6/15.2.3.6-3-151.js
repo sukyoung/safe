@@ -4,11 +4,11 @@
       
     };
     try
-{      __Global.value = "global";
-      Object.defineProperty(obj, "property", __Global);
+{      @Global.value = "global";
+      Object.defineProperty(obj, "property", @Global);
       return obj.property === "global";}
     finally
-{      delete __Global.value;}
+{      delete @Global.value;}
 
   }
   {

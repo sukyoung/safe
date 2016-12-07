@@ -5,6 +5,6 @@ try {
     var o = {};
     var x = new o();
 } catch(e) {
-    __result1 = e instanceof __TypeErrLoc;
+    __result1 = e instanceof @TypeErr;
 }
 

@@ -1,5 +1,5 @@
 function f() {
-  if (__TOP) aaa = 123;
+  if (@Top) aaa = 123;
 }
 f();
 

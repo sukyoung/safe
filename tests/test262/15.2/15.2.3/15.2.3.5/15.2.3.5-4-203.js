@@ -1,18 +1,18 @@
   function testcase() 
   {
     try
-{      __Global.writable = true;
+{      @Global.writable = true;
       var newObj = Object.create({
         
       }, {
-        prop : __Global
+        prop : @Global
       });
       var beforeWrite = (newObj.hasOwnProperty("prop") && typeof (newObj.prop) === "undefined");
       newObj.prop = "isWritable";
       var afterWrite = (newObj.prop === "isWritable");
       return beforeWrite === true && afterWrite === true;}
     finally
-{      delete __Global.writable;}
+{      delete @Global.writable;}
 
   }
   {

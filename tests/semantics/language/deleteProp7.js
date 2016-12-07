@@ -4,7 +4,7 @@ var o3 = {1:123, x: 456};
 var o4 = {1:123, x: 456, 2:789};
 var p;
 
-if (__TOP)
+if (@Top)
 	p = "1" 
 else
 	p = "x"

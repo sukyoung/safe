@@ -44,10 +44,6 @@ case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, Int, CallContext,
     )
     var initSt = Initialize(cfg)
 
-    // handling test mode
-    if (safeConfig.testMode)
-      initSt = Initialize.addTest(initSt)
-
     // handling snapshot mode
     config.snapshot.map(str =>
       initSt = Initialize.addSnapshot(initSt, str))

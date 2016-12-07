@@ -1,7 +1,7 @@
 //  TODO getter/setter
 //  function testcase() 
 //  {
-//    __Global.get = (function () 
+//    @Global.get = (function () 
 //    {
 //      return "VerifyGlobalObject";
 //    });
@@ -9,11 +9,11 @@
 //{      var newObj = Object.create({
 //        
 //      }, {
-//        prop : __Global
+//        prop : @Global
 //      });
 //      return newObj.prop === "VerifyGlobalObject";}
 //    finally
-//{      delete __Global.get;}
+//{      delete @Global.get;}
 //
 //  }
 //  {

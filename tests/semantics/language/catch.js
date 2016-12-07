@@ -2,7 +2,7 @@ try {
     y = {z:3}
 	throw "asdf"
 } catch(E) {
-	if(__NumTop > 5) {
+	if(@NumTop > 5) {
 		y.x = 1;
 	}
 	else {

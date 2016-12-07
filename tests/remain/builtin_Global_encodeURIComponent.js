@@ -6,7 +6,7 @@ var __expect1 = e1;
 
 var __result2;
 try { encodeURIComponent('\uD800'); } catch(e) { __result2 = e; }
-var __expect2 = __URIErrLoc;
+var __expect2 = @URIErr;
 
 var __result3 = encodeURIComponent('\uD7FF');
 var __expect3 = "%ED%9F%BF";
@@ -16,9 +16,9 @@ var __expect4 = "%F0%90%80%80";
 
 var __result5;
 try { encodeURIComponent('\uD800\uDBFF'); } catch(e) { __result5 = e; }
-var __expect5 = __URIErrLoc;
+var __expect5 = @URIErr;
 
 var __result6;
 try { encodeURIComponent('\uDFFF'); } catch(e) { __result6 = e; }
-var __expect6 = __URIErrLoc;
+var __expect6 = @URIErr;
 

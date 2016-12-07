@@ -2,7 +2,7 @@ var o1 = {a:1};
 var o2;
 
 
-if (__TOP) o2 = o1; else o2 = {a:2};
+if (@Top) o2 = o1; else o2 = {a:2};
 
 var __result1 = o1 == o2;
 var __expect1 = true;

@@ -7,7 +7,7 @@ var __expect1 = true;
 try {
     receiver();
 } catch (e) {
-    __result1 = e instanceof __TypeErrLoc;
+    __result1 = e instanceof @TypeErr;
 }
 
 var __result2 = f.toString();

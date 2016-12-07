@@ -1,6 +1,6 @@
   function testcase() 
   {
-    var global = __Global;
+    var global = @Global;
     var desc = Object.getOwnPropertyDescriptor(global, "isFinite");
     if (desc.value === global.isFinite && desc.writable === true && desc.enumerable === false && desc.configurable === true)
     {

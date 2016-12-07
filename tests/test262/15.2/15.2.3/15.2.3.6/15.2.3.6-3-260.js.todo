@@ -6,15 +6,15 @@
 //     };
 //     var data = "data";
 //     try
-// {      __Global.set = (function (value) 
+// {      @Global.set = (function (value) 
 //       {
 //         data = value;
 //       });
-//       Object.defineProperty(obj, "property", __Global);
+//       Object.defineProperty(obj, "property", @Global);
 //       obj.property = "overrideData";
 //       return obj.hasOwnProperty("property") && data === "overrideData";}
 //     finally
-// {      delete __Global.set;}
+// {      delete @Global.set;}
 // 
 //   }
 //   {

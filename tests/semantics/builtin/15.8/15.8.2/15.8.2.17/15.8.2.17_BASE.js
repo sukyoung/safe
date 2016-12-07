@@ -9,5 +9,5 @@ var __result4 = Math.sqrt(0);
 var __expect4 = 0;
 var __result5 = Math.sqrt(9);
 var __expect5 = 3;
-var __result6 = Math.sqrt(__NumTop);
-var __expect6 = __NumTop;
+var __result6 = Math.sqrt(@NumTop);
+var __expect6 = @NumTop;

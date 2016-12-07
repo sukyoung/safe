@@ -4,14 +4,14 @@
       
     };
     try
-{      __Global.writable = true;
-      Object.defineProperty(obj, "property", __Global);
+{      @Global.writable = true;
+      Object.defineProperty(obj, "property", @Global);
       var beforeWrite = obj.hasOwnProperty("property");
       obj.property = "isWritable";
       var afterWrite = (obj.property === "isWritable");
       return beforeWrite === true && afterWrite === true;}
     finally
-{      delete __Global.writable;}
+{      delete @Global.writable;}
 
   }
   {

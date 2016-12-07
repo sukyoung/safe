@@ -9,7 +9,7 @@
 
 var o;
 var p, f;
-if (__BoolTop) {
+if (@BoolTop) {
 	p = "(aaa)|(abc)";
 	f = "";
 } else {

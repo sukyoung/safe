@@ -2,7 +2,7 @@ var o1 = {p1:123};
 var o2 = {p1:456};
 var o3;
 
-if (__TOP) {
+if (@Top) {
 	o3 = o1; 
 } else {
 	o3 = o2;

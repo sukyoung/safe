@@ -13,5 +13,5 @@ var __result6 = Math.pow(3, 4);
 var __expect6 = 81;
 var __result7 = Math.pow(3, 2.1);
 var __expect7 = 10.04510856630514;
-var __result8 = Math.pow(__NumTop, 3);
-var __expect8 = __NumTop;
+var __result8 = Math.pow(@NumTop, 3);
+var __expect8 = @NumTop;

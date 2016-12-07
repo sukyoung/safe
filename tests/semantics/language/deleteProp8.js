@@ -1,6 +1,6 @@
 var o = {};
 
-if (__TOP) {
+if (@Top) {
 	o.x = 1;
 }
 

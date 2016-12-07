@@ -1,13 +1,13 @@
 var x;
-if (__TOP) 
+if (@Top) 
 	x = undefined;
-else if (__TOP) 
+else if (@Top) 
 	x = null;
-else if (__TOP) 
+else if (@Top) 
 	x = true;
-else if (__TOP) 
+else if (@Top) 
 	x = 1;
-else if (__TOP)
+else if (@Top)
 	x = "str";
 else
 	x = {};

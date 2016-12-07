@@ -1,6 +1,6 @@
 // Math.floor
-var __result52 = Math.floor(__NumTop);
-var __expect52 = __NumTop;
+var __result52 = Math.floor(@NumTop);
+var __expect52 = @NumTop;
 var __result53 = Math.floor(3);
 var __expect53 = 3;
 var __result54 = Math.floor(-1.3);
