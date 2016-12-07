@@ -101,6 +101,7 @@ trait IRGeneralWalker[Result] {
       walk(id)
     case IRThis(ast) =>
       walk(ast)
+    case IRInternalValue(ast, name) => walk(ast)
     case IRVal(value) => walk(NodeUtil.TEMP_AST)
   }
 

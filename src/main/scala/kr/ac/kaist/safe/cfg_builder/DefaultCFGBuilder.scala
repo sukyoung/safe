@@ -573,7 +573,6 @@ class DefaultCFGBuilder(
     ()
   }
 
-  private def isInternalCall(fname: String): Boolean = NodeUtil.isGlobalName(fname)
   private def ir2cfgExpr(expr: IRExpr): CFGExpr = {
     expr match {
       /* PEI : id lookup */
@@ -587,6 +586,7 @@ class DefaultCFGBuilder(
         CFGUn(expr, op.kind, ir2cfgExpr(expr))
       case id: IRId => CFGVarRef(id, id2cfgId(id))
       case IRThis(_) => CFGThis(expr)
+      case IRInternalValue(_, n) => CFGInternalValue(expr, n)
       case IRVal(v) => CFGVal(v)
     }
   }

@@ -19,7 +19,7 @@ import kr.ac.kaist.safe.BASE_DIR
 import kr.ac.kaist.safe.LINE_SEP
 import java.io.BufferedWriter
 import java.io.IOException
-import scala.collection.immutable.HashMap
+import scala.collection.immutable.{ HashMap, HashSet }
 
 object NodeUtil {
   ////////////////////////////////////////////////////////////////
@@ -49,10 +49,6 @@ object NodeUtil {
   val GLOBAL_NAME = freshGlobalName("global")
   val REF_ERR_NAME = freshGlobalName("referenceError")
 
-  val INTERNAL_API_PREFIX = "@"
-  def internalAPI(name: String): String = INTERNAL_API_PREFIX + name
-  val INTERNAL_TO_OBJ = internalAPI("ToObject")
-
   val MERGED_FILE_NAME = freshFile("Merged")
   val MERGED_SPAN = Span(MERGED_FILE_NAME)
   val MERGED_SOURCE_INFO = new ASTNodeInfo(MERGED_SPAN)
@@ -62,10 +58,25 @@ object NodeUtil {
 
   val PRINT_WIDTH = 50
 
-  val internalCall: Map[String, String] = HashMap(
+  // internal API
+  val INTERNAL_API_PREFIX = "@"
+  def internalAPIName(name: String): String = INTERNAL_API_PREFIX + name
+
+  // internal API call
+  val INTERNAL_TO_OBJ = internalAPIName("ToObject")
+  val internalCallMap: Map[String, String] = HashMap(
     INTERNAL_TO_OBJ -> TO_OBJ_NAME
   )
-  def isInternalCall(id: String): Boolean = internalCall.keySet.contains(id)
+  def isInternalCall(id: String): Boolean = internalCallMap.keySet.contains(id)
+
+  // internal API value
+  val INTERNAL_TOP = internalAPIName("Top")
+  val INTERNAL_UINT = internalAPIName("UInt")
+  val internalValueSet: Set[String] = HashSet(
+    INTERNAL_TOP,
+    INTERNAL_UINT
+  )
+  def isInternalValue(id: String): Boolean = internalValueSet.contains(id)
 
   ////////////////////////////////////////////////////////////////
   // For all AST, IR, and CFG
