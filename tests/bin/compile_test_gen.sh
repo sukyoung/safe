@@ -9,7 +9,7 @@
 #    This distribution may include materials developed by third parties.
 ################################################################################
 
-export WKSPACE=$SAFE_HOME/tests
+export WKSPACE=$SAFE_HOME/tests/cfg
 export JSSPACE=$WKSPACE/js
 export RSSPACE=$WKSPACE/result
 
@@ -27,5 +27,5 @@ do
   com_out=$RSSPACE/success/compile/$name.test
 
   echo "create $com_out"
-  $SAFE_HOME/bin/safe compile -compile:out=$com_out $fil
+  $SAFE_HOME/bin/safe compile -compiler:out=$com_out $fil
 done
