@@ -81,9 +81,47 @@ object NodeUtil {
   // internal API value
   val INTERNAL_TOP = internalAPIName("Top")
   val INTERNAL_UINT = internalAPIName("UInt")
+  val INTERNAL_GLOBAL = internalAPIName("Global")
+  val INTERNAL_BOOL_TOP = internalAPIName("BoolTop")
+  val INTERNAL_NUM_TOP = internalAPIName("NumTop")
+  val INTERNAL_STR_TOP = internalAPIName("StrTop")
+  val INTERNAL_EVAL_ERR = internalAPIName("EvalErr")
+  val INTERNAL_RANGE_ERR = internalAPIName("RangeErr")
+  val INTERNAL_REF_ERR = internalAPIName("RefErr")
+  val INTERNAL_SYNTAX_ERR = internalAPIName("SyntaxErr")
+  val INTERNAL_TYPE_ERR = internalAPIName("TypeErr")
+  val INTERNAL_URI_ERR = internalAPIName("URIErr")
+  val INTERNAL_EVAL_ERR_PROTO = internalAPIName("EvalErrProto")
+  val INTERNAL_RANGE_ERR_PROTO = internalAPIName("RangeErrProto")
+  val INTERNAL_REF_ERR_PROTO = internalAPIName("RefErrProto")
+  val INTERNAL_SYNTAX_ERR_PROTO = internalAPIName("SyntaxErrProto")
+  val INTERNAL_TYPE_ERR_PROTO = internalAPIName("TypeErrProto")
+  val INTERNAL_URI_ERR_PROTO = internalAPIName("URIErrProto")
+  val INTERNAL_ERR_PROTO = internalAPIName("ErrProto")
+  val INTERNAL_OBJ_CONST = internalAPIName("ObjConst")
+  val INTERNAL_ARRAY_CONST = internalAPIName("ArrayConst")
   val internalValueSet: Set[String] = HashSet(
     INTERNAL_TOP,
-    INTERNAL_UINT
+    INTERNAL_UINT,
+    INTERNAL_GLOBAL,
+    INTERNAL_BOOL_TOP,
+    INTERNAL_NUM_TOP,
+    INTERNAL_STR_TOP,
+    INTERNAL_EVAL_ERR,
+    INTERNAL_RANGE_ERR,
+    INTERNAL_REF_ERR,
+    INTERNAL_SYNTAX_ERR,
+    INTERNAL_TYPE_ERR,
+    INTERNAL_URI_ERR,
+    INTERNAL_EVAL_ERR_PROTO,
+    INTERNAL_RANGE_ERR_PROTO,
+    INTERNAL_REF_ERR_PROTO,
+    INTERNAL_SYNTAX_ERR_PROTO,
+    INTERNAL_TYPE_ERR_PROTO,
+    INTERNAL_URI_ERR_PROTO,
+    INTERNAL_ERR_PROTO,
+    INTERNAL_OBJ_CONST,
+    INTERNAL_ARRAY_CONST
   )
   def isInternalValue(id: String): Boolean = internalValueSet.contains(id)
 
