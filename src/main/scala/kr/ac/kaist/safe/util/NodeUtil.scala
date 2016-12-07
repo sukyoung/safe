@@ -33,9 +33,6 @@ object NodeUtil {
   private var comment: Option[Comment] = None
 
   val INTERNAL_SYMBOL = "<>"
-  val INTERNAL_PRINT = "_<>_print"
-  val INTERNAL_PRINT_IS = "_<>_printIS"
-  val INTERNAL_GET_TICK_COUNT = "_<>_getTickCount"
   val GLOBAL_PREFIX = "<>Global<>"
   val GENERATED_STR = "<>generated String Literal"
 
@@ -52,6 +49,10 @@ object NodeUtil {
   val GLOBAL_NAME = freshGlobalName("global")
   val REF_ERR_NAME = freshGlobalName("referenceError")
 
+  val INTERNAL_API_PREFIX = "@"
+  def internalAPI(name: String): String = INTERNAL_API_PREFIX + name
+  val INTERNAL_TO_OBJ = internalAPI("ToObject")
+
   val MERGED_FILE_NAME = freshFile("Merged")
   val MERGED_SPAN = Span(MERGED_FILE_NAME)
   val MERGED_SOURCE_INFO = new ASTNodeInfo(MERGED_SPAN)
@@ -62,10 +63,7 @@ object NodeUtil {
   val PRINT_WIDTH = 50
 
   val internalCall: Map[String, String] = HashMap(
-    INTERNAL_PRINT_IS -> "printIS",
-    INTERNAL_GET_TICK_COUNT -> "getTickCount",
-    INTERNAL_PRINT -> "print",
-    TO_OBJ_NAME -> "toObject"
+    INTERNAL_TO_OBJ -> TO_OBJ_NAME
   )
   def isInternalCall(id: String): Boolean = internalCall.keySet.contains(id)
 

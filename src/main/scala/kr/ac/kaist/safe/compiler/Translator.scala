@@ -1136,7 +1136,7 @@ class Translator(program: Program) {
     case FunApp(_, VarRef(_, Id(_, fun, _, _)), args) if (NU.isInternalCall(fun)) => args match {
       case Nil =>
         (List(IRInternalCall(e, res,
-          makeTId(e, NU.freshGlobalName(NU.internalCall(fun)), true), res, None)), res)
+          makeTId(e, NU.internalCall(fun), true), res, None)), res)
       case _ =>
         val last = args.last
         val front = args.take(args.length - 1)
@@ -1145,7 +1145,7 @@ class Translator(program: Program) {
         val ss1 = results.foldLeft(List[IRStmt]()) { case (l, (newArg, (stmts, expr))) => l ++ stmts :+ (mkExprS(e, newArg, expr)) }
         val (ss2, r) = walkExpr(last, env, freshId(last, last.span, "new" + args.length))
         (ss1 ++ ss2 :+ IRInternalCall(e, res,
-          makeTId(e, NU.freshGlobalName(NU.internalCall(fun)), true), r, None), res)
+          makeTId(e, NU.internalCall(fun), true), r, None), res)
     }
 
     case FunApp(_, fun, List(arg)) if (fun.isEval) =>
