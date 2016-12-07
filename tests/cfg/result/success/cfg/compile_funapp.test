@@ -15,7 +15,7 @@ function[0] top-level {
     [10] <>arguments<>7 := allocArg(2) @ #4
     [11] <>arguments<>7["0"] := <>temp<>5
     [12] <>arguments<>7["1"] := <>temp<>6
-    [13] <>fun<>8 := <>Global<>getBase(f)
+    [13] <>fun<>8 := @GetBase(f)
     [14] <>this<> := enterCode(<>fun<>8)
 
   Call[1] -> ExitExc

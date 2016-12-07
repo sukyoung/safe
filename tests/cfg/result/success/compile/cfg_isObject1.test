@@ -14,7 +14,7 @@ var x
     [[Prototype]]=<>proto<>5
   }
   <>newObj<>7 = new <>fun<>3(<>obj<>6, <>arguments<>4)
-  <>cond<>8 = <>Global<>isObject(<>newObj<>7)
+  <>cond<>8 = @isObject(<>newObj<>7)
   if(<>cond<>8)
     <>Global<>ignore2 = <>newObj<>7
   else

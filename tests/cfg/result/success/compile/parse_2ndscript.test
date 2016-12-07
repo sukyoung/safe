@@ -31,7 +31,7 @@ function _gjuc(this, <>arguments<>1)
             [[Prototype]]=<>proto<>19
           }
           <>newObj<>21 = new <>fun<>15(<>obj<>20, <>arguments<>18)
-          <>cond<>22 = <>Global<>isObject(<>newObj<>21)
+          <>cond<>22 = @isObject(<>newObj<>21)
           if(<>cond<>22)
             <>obj1<>23 = <>newObj<>21
           else
@@ -60,7 +60,7 @@ function _gjuc(this, <>arguments<>1)
                 [[Prototype]]=<>proto<>39
               }
               <>newObj<>41 = new <>fun<>35(<>obj<>40, <>arguments<>38)
-              <>cond<>42 = <>Global<>isObject(<>newObj<>41)
+              <>cond<>42 = @isObject(<>newObj<>41)
               if(<>cond<>42)
                 <>obj1<>43 = <>newObj<>41
               else
@@ -98,7 +98,7 @@ function _gjuc(this, <>arguments<>1)
             [[Prototype]]=<>proto<>57
           }
           <>newObj<>59 = new <>fun<>53(<>obj<>58, <>arguments<>56)
-          <>cond<>60 = <>Global<>isObject(<>newObj<>59)
+          <>cond<>60 = @isObject(<>newObj<>59)
           if(<>cond<>60)
             <>temp<>61 = <>newObj<>59
           else
@@ -148,7 +148,7 @@ function _gjp(this, <>arguments<>71)
       <>temp<>80 = _gjp
       <>temp<>81 = 500
       <>arguments<>82 = [<>temp<>80, <>temp<>81, ]
-      <>fun<>83 = <>Global<>getBase(setTimeout)
+      <>fun<>83 = @GetBase(setTimeout)
       <>z<>84 = <>obj<>79(<>fun<>83, <>arguments<>82)
       <>Global<>ignore2 = <>z<>84
     }
@@ -201,7 +201,7 @@ var _gjwl
         <>temp<>107 = <>a<>103
         <>temp<>108 = 10
         <>arguments<>109 = [<>temp<>107, <>temp<>108, ]
-        <>fun<>110 = <>Global<>getBase(parseInt)
+        <>fun<>110 = @GetBase(parseInt)
         <>Global<>ignore6 = <>obj<>106(<>fun<>110, <>arguments<>109)
         <>c<>105 = <>Global<>ignore6
       }
@@ -209,7 +209,7 @@ var _gjwl
         <>obj<>111 = @ToObject(isNaN)
         <>temp<>112 = <>c<>105
         <>arguments<>113 = [<>temp<>112, ]
-        <>fun<>114 = <>Global<>getBase(isNaN)
+        <>fun<>114 = @GetBase(isNaN)
         <>new1<>115 = <>obj<>111(<>fun<>114, <>arguments<>113)
         if(<>new1<>115)
         {
@@ -233,7 +233,7 @@ var _gjwl
         <>obj<>122 = @ToObject(parseFloat)
         <>temp<>123 = <>a<>119
         <>arguments<>124 = [<>temp<>123, ]
-        <>fun<>125 = <>Global<>getBase(parseFloat)
+        <>fun<>125 = @GetBase(parseFloat)
         <>Global<>ignore7 = <>obj<>122(<>fun<>125, <>arguments<>124)
         <>c<>121 = <>Global<>ignore7
       }
@@ -241,7 +241,7 @@ var _gjwl
         <>obj<>126 = @ToObject(isNaN)
         <>temp<>127 = <>c<>121
         <>arguments<>128 = [<>temp<>127, ]
-        <>fun<>129 = <>Global<>getBase(isNaN)
+        <>fun<>129 = @GetBase(isNaN)
         <>new1<>130 = <>obj<>126(<>fun<>129, <>arguments<>128)
         if(<>new1<>130)
         {
@@ -403,7 +403,7 @@ var _gjwl
         {
           {
             <>old<>195 = <>Aa<>194
-            <>new<>196 = <>Global<>toNumber(<>old<>195)
+            <>new<>196 = @ToNumber(<>old<>195)
             <>Aa<>194 = <>new<>196 + 1
             <>Global<>ignore17 = <>new<>196
           }
@@ -438,7 +438,7 @@ var _gjwl
                 [[Prototype]]=<>proto<>201
               }
               <>newObj<>203 = new <>fun<>199(<>obj<>202, <>arguments<>200)
-              <>cond<>204 = <>Global<>isObject(<>newObj<>203)
+              <>cond<>204 = @isObject(<>newObj<>203)
               if(<>cond<>204)
                 <>obj1<>205 = <>newObj<>203
               else
@@ -451,13 +451,13 @@ var _gjwl
               <>obj<>211 = @ToObject(<>f<>188)
               <>temp<>212 = "37102"
               <>arguments<>213 = [<>temp<>212, ]
-              <>fun<>214 = <>Global<>getBase(<>f<>188)
+              <>fun<>214 = @GetBase(<>f<>188)
               <>temp<>215 = <>obj<>211(<>fun<>214, <>arguments<>213)
               <>temp<>216 = "&srcpg="
               <>obj<>217 = @ToObject(<>f<>188)
               <>temp<>218 = "prop=1"
               <>arguments<>219 = [<>temp<>218, ]
-              <>fun<>220 = <>Global<>getBase(<>f<>188)
+              <>fun<>220 = @GetBase(<>f<>188)
               <>temp<>221 = <>obj<>217(<>fun<>220, <>arguments<>219)
               <>temp<>222 = "&jsr="
               <>obj<>223 = @ToObject(Math)
@@ -469,7 +469,7 @@ var _gjwl
               <>obj<>230 = @ToObject(<>f<>188)
               <>temp<>231 = "ykHWUcqSK8uplQXv-YCQDQ"
               <>arguments<>232 = [<>temp<>231, ]
-              <>fun<>233 = <>Global<>getBase(<>f<>188)
+              <>fun<>233 = @GetBase(<>f<>188)
               <>temp<>234 = <>obj<>230(<>fun<>233, <>arguments<>232)
               <>temp<>235 = "&ogf="
               <>obj<>236 = @ToObject(<>n<>141)
@@ -479,13 +479,13 @@ var _gjwl
               <>obj<>240 = @ToObject(<>f<>188)
               <>temp<>241 = ""
               <>arguments<>242 = [<>temp<>241, ]
-              <>fun<>243 = <>Global<>getBase(<>f<>188)
+              <>fun<>243 = @GetBase(<>f<>188)
               <>temp<>244 = <>obj<>240(<>fun<>243, <>arguments<>242)
               <>temp<>245 = "&ogv="
               <>obj<>246 = @ToObject(<>f<>188)
               <>temp<>247 = "1372717546.1372341082"
               <>arguments<>248 = [<>temp<>247, ]
-              <>fun<>249 = <>Global<>getBase(<>f<>188)
+              <>fun<>249 = @GetBase(<>f<>188)
               <>temp<>250 = <>obj<>246(<>fun<>249, <>arguments<>248)
               if(<>m<>189)
               {
@@ -493,7 +493,7 @@ var _gjwl
                 <>obj<>252 = @ToObject(<>f<>188)
                 <>temp<>253 = <>m<>189
                 <>arguments<>254 = [<>temp<>253, ]
-                <>fun<>255 = <>Global<>getBase(<>f<>188)
+                <>fun<>255 = @GetBase(<>f<>188)
                 <>z<>256 = <>obj<>252(<>fun<>255, <>arguments<>254)
                 <>temp<>257 = <>y<>251 + <>z<>256
               }
@@ -505,13 +505,13 @@ var _gjwl
               <>obj<>259 = @ToObject(<>f<>188)
               <>temp<>260 = "com"
               <>arguments<>261 = [<>temp<>260, ]
-              <>fun<>262 = <>Global<>getBase(<>f<>188)
+              <>fun<>262 = @GetBase(<>f<>188)
               <>temp<>263 = <>obj<>259(<>fun<>262, <>arguments<>261)
               <>temp<>264 = "&ogl="
               <>obj<>265 = @ToObject(<>f<>188)
               <>temp<>266 = "ko"
               <>arguments<>267 = [<>temp<>266, ]
-              <>fun<>268 = <>Global<>getBase(<>f<>188)
+              <>fun<>268 = @GetBase(<>f<>188)
               <>temp<>269 = <>obj<>265(<>fun<>268, <>arguments<>267)
               <>Global<>ignore22 = [<>temp<>198, <>temp<>209, <>temp<>210, <>temp<>215, <>temp<>216, <>temp<>221, <>temp<>222, <>temp<>228, <>temp<>229, <>temp<>234, <>temp<>235, <>temp<>238, <>temp<>239, <>temp<>244, <>temp<>245, <>temp<>250, <>temp<>257, <>temp<>258, <>temp<>263, <>temp<>264, <>temp<>269, ]
               <>l<>190 = <>Global<>ignore22
@@ -536,12 +536,12 @@ var _gjwl
           <>break<>274 : {
             {
               <>obj<>275 = <>g<>187
-              <>iterator<>276 = <>Global<>iteratorInit(<>obj<>275)
-              <>cond1<>277 = <>Global<>iteratorHasNext(<>obj<>275, <>iterator<>276)
+              <>iterator<>276 = @iteratorInit(<>obj<>275)
+              <>cond1<>277 = @iteratorHasNext(<>obj<>275, <>iterator<>276)
             }
             while(<>cond1<>277)
             {
-              <>key<>278 = <>Global<>iteratorNext(<>obj<>275, <>iterator<>276)
+              <>key<>278 = @iteratorNext(<>obj<>275, <>iterator<>276)
               <>p<>191 = <>key<>278
               <>continue<>279 : {
                 <>obj<>280 = @ToObject(<>l<>190)
@@ -553,7 +553,7 @@ var _gjwl
                 <>obj<>286 = @ToObject(<>f<>188)
                 <>temp<>287 = <>p<>191
                 <>arguments<>288 = [<>temp<>287, ]
-                <>fun<>289 = <>Global<>getBase(<>f<>188)
+                <>fun<>289 = @GetBase(<>f<>188)
                 <>temp<>290 = <>obj<>286(<>fun<>289, <>arguments<>288)
                 <>arguments<>291 = [<>temp<>290, ]
                 <>fun<>292 = @ToObject(<>obj<>285["push"])
@@ -568,14 +568,14 @@ var _gjwl
                 <>obj<>301 = @ToObject(<>g<>187)
                 <>temp<>302 = <>obj<>301[<>p<>191]
                 <>arguments<>303 = [<>temp<>302, ]
-                <>fun<>304 = <>Global<>getBase(<>f<>188)
+                <>fun<>304 = @GetBase(<>f<>188)
                 <>temp<>305 = <>obj<>300(<>fun<>304, <>arguments<>303)
                 <>arguments<>306 = [<>temp<>305, ]
                 <>fun<>307 = @ToObject(<>obj<>299["push"])
                 <>Global<>ignore24 = <>fun<>307(<>obj<>299, <>arguments<>306)
               }
               {
-                <>cond1<>277 = <>Global<>iteratorHasNext(<>obj<>275, <>iterator<>276)
+                <>cond1<>277 = @iteratorHasNext(<>obj<>275, <>iterator<>276)
               }
             }
           }
@@ -594,7 +594,7 @@ var _gjwl
             <>obj<>316 = @ToObject(<>d<>186)
             <>temp<>317 = <>y<>315 + <>obj<>316["message"]
             <>arguments<>318 = [<>temp<>317, ]
-            <>fun<>319 = <>Global<>getBase(<>f<>188)
+            <>fun<>319 = @GetBase(<>f<>188)
             <>temp<>320 = <>obj<>313(<>fun<>319, <>arguments<>318)
             <>arguments<>321 = [<>temp<>320, ]
             <>fun<>322 = @ToObject(<>obj<>312["push"])
@@ -612,7 +612,7 @@ var _gjwl
             <>obj<>327 = @ToObject(<>Ba<>328)
             <>temp<>329 = <>s<>192
             <>arguments<>330 = [<>temp<>329, ]
-            <>fun<>331 = <>Global<>getBase(<>Ba<>328)
+            <>fun<>331 = @GetBase(<>Ba<>328)
             <>new0<>332 = <>obj<>327(<>fun<>331, <>arguments<>330)
             if(<>new0<>332)
             {
@@ -647,7 +647,7 @@ var _gjwl
             <>obj<>346 = @ToObject(<>w<>347)
             <>temp<>348 = <>B<>193
             <>arguments<>349 = [<>temp<>348, ]
-            <>fun<>350 = <>Global<>getBase(<>w<>347)
+            <>fun<>350 = @GetBase(<>w<>347)
             <>Global<>ignore31 = <>obj<>346(<>fun<>350, <>arguments<>349)
           }
         }
@@ -667,7 +667,7 @@ var _gjwl
         <>temp<>358 = <>Ba<>328
         <>temp<>359 = <>x<>360
         <>arguments<>361 = [<>temp<>357, <>temp<>358, <>temp<>359, ]
-        <>fun<>362 = <>Global<>getBase(<>r<>135)
+        <>fun<>362 = @GetBase(<>r<>135)
         <>Global<>ignore33 = <>obj<>356(<>fun<>362, <>arguments<>361)
       }
       {
@@ -676,7 +676,7 @@ var _gjwl
         <>temp<>365 = <>Da<>366
         <>temp<>367 = <>x<>360
         <>arguments<>368 = [<>temp<>364, <>temp<>365, <>temp<>367, ]
-        <>fun<>369 = <>Global<>getBase(<>r<>135)
+        <>fun<>369 = @GetBase(<>r<>135)
         <>Global<>ignore34 = <>obj<>363(<>fun<>369, <>arguments<>368)
       }
       {
@@ -685,7 +685,7 @@ var _gjwl
         <>temp<>372 = <>u<>355
         <>temp<>373 = <>x<>360
         <>arguments<>374 = [<>temp<>371, <>temp<>372, <>temp<>373, ]
-        <>fun<>375 = <>Global<>getBase(<>r<>135)
+        <>fun<>375 = @GetBase(<>r<>135)
         <>Global<>ignore35 = <>obj<>370(<>fun<>375, <>arguments<>374)
       }
       {
@@ -725,7 +725,7 @@ var _gjwl
               [[Prototype]]=<>proto<>392
             }
             <>newObj<>394 = new <>fun<>388(<>obj<>393, <>arguments<>391)
-            <>cond<>395 = <>Global<>isObject(<>newObj<>394)
+            <>cond<>395 = @isObject(<>newObj<>394)
             if(<>cond<>395)
               <>temp<>396 = <>newObj<>394
             else
@@ -738,10 +738,10 @@ var _gjwl
               <>obj<>400 = @ToObject(encodeURIComponent)
               <>obj<>401 = @ToObject(<>N<>381)
               <>arguments<>402 = []
-              <>fun<>403 = <>Global<>getBase(<>N<>381)
+              <>fun<>403 = @GetBase(<>N<>381)
               <>temp<>404 = <>obj<>401(<>fun<>403, <>arguments<>402)
               <>arguments<>405 = [<>temp<>404, ]
-              <>fun<>406 = <>Global<>getBase(encodeURIComponent)
+              <>fun<>406 = @GetBase(encodeURIComponent)
               <>new2<>407 = <>obj<>400(<>fun<>406, <>arguments<>405)
               <>Global<>ignore39 = <>new2<>407
             }
@@ -774,7 +774,7 @@ var _gjwl
             [[Prototype]]=<>proto<>415
           }
           <>newObj<>417 = new <>fun<>411(<>obj<>416, <>arguments<>414)
-          <>cond<>418 = <>Global<>isObject(<>newObj<>417)
+          <>cond<>418 = @isObject(<>newObj<>417)
           if(<>cond<>418)
             <>temp<>419 = <>newObj<>417
           else
@@ -854,7 +854,7 @@ var _gjwl
               [[Prototype]]=<>proto<>452
             }
             <>newObj<>454 = new <>fun<>448(<>obj<>453, <>arguments<>451)
-            <>cond<>455 = <>Global<>isObject(<>newObj<>454)
+            <>cond<>455 = @isObject(<>newObj<>454)
             if(<>cond<>455)
               <>temp<>456 = <>newObj<>454
             else
@@ -876,7 +876,7 @@ var _gjwl
                 <>obj<>464 = @ToObject(encodeURIComponent)
                 <>temp<>465 = <>b<>439
                 <>arguments<>466 = [<>temp<>465, ]
-                <>fun<>467 = <>Global<>getBase(encodeURIComponent)
+                <>fun<>467 = @GetBase(encodeURIComponent)
                 <>z<>468 = <>obj<>464(<>fun<>467, <>arguments<>466)
                 return <>y<>463 + <>z<>468
               }
@@ -901,7 +901,7 @@ var _gjwl
           <>temp<>476 = "sb"
           <>temp<>477 = "pq"
           <>arguments<>478 = [<>temp<>475, <>temp<>476, <>temp<>477, ]
-          <>fun<>479 = <>Global<>getBase(<>t<>474)
+          <>fun<>479 = @GetBase(<>t<>474)
           <>Global<>ignore42 = <>obj<>473(<>fun<>479, <>arguments<>478)
         }
     }
@@ -947,7 +947,7 @@ var _gjwl
         <>temp<>496 = 1
         <>temp<>497 = ""
         <>arguments<>498 = [<>temp<>496, <>temp<>497, ]
-        <>fun<>499 = <>Global<>getBase(<>b<>483)
+        <>fun<>499 = @GetBase(<>b<>483)
         <>Global<>ignore48 = <>obj<>495(<>fun<>499, <>arguments<>498)
       }
       {
@@ -955,7 +955,7 @@ var _gjwl
         <>temp<>501 = 2
         <>temp<>502 = ""
         <>arguments<>503 = [<>temp<>501, <>temp<>502, ]
-        <>fun<>504 = <>Global<>getBase(<>b<>483)
+        <>fun<>504 = @GetBase(<>b<>483)
         <>Global<>ignore49 = <>obj<>500(<>fun<>504, <>arguments<>503)
       }
       {
@@ -963,7 +963,7 @@ var _gjwl
         <>temp<>506 = 4
         <>temp<>507 = ""
         <>arguments<>508 = [<>temp<>506, <>temp<>507, ]
-        <>fun<>509 = <>Global<>getBase(<>b<>483)
+        <>fun<>509 = @GetBase(<>b<>483)
         <>Global<>ignore50 = <>obj<>505(<>fun<>509, <>arguments<>508)
       }
       {
@@ -971,7 +971,7 @@ var _gjwl
         <>temp<>511 = 8
         <>temp<>512 = ""
         <>arguments<>513 = [<>temp<>511, <>temp<>512, ]
-        <>fun<>514 = <>Global<>getBase(<>b<>483)
+        <>fun<>514 = @GetBase(<>b<>483)
         <>Global<>ignore51 = <>obj<>510(<>fun<>514, <>arguments<>513)
       }
       return <>a<>482
@@ -1028,7 +1028,7 @@ var _gjwl
               }
               {
                 <>old<>536 = <>f<>522
-                <>new<>537 = <>Global<>toNumber(<>old<>536)
+                <>new<>537 = @ToNumber(<>old<>536)
                 <>f<>522 = <>new<>537 + 1
                 <>Global<>ignore58 = <>new<>537
                 <>y<>529 = <>f<>522
@@ -1087,7 +1087,7 @@ var _gjwl
             [[Prototype]]=<>proto<>550
           }
           <>newObj<>552 = new <>fun<>548(<>obj<>551, <>arguments<>549)
-          <>cond<>553 = <>Global<>isObject(<>newObj<>552)
+          <>cond<>553 = @isObject(<>newObj<>552)
           if(<>cond<>553)
             <>obj1<>554 = <>newObj<>552
           else
@@ -1102,13 +1102,13 @@ var _gjwl
           <>obj<>562 = @ToObject(<>d<>520)
           <>temp<>563 = "37102"
           <>arguments<>564 = [<>temp<>563, ]
-          <>fun<>565 = <>Global<>getBase(<>d<>520)
+          <>fun<>565 = @GetBase(<>d<>520)
           <>temp<>566 = <>obj<>562(<>fun<>565, <>arguments<>564)
           <>temp<>567 = "&ogev="
           <>obj<>568 = @ToObject(<>d<>520)
           <>temp<>569 = "ykHWUcqSK8uplQXv-YCQDQ"
           <>arguments<>570 = [<>temp<>569, ]
-          <>fun<>571 = <>Global<>getBase(<>d<>520)
+          <>fun<>571 = @GetBase(<>d<>520)
           <>temp<>572 = <>obj<>568(<>fun<>571, <>arguments<>570)
           <>temp<>573 = "&ogf="
           <>obj<>574 = @ToObject(<>n<>141)
@@ -1118,13 +1118,13 @@ var _gjwl
           <>obj<>578 = @ToObject(<>d<>520)
           <>temp<>579 = "1"
           <>arguments<>580 = [<>temp<>579, ]
-          <>fun<>581 = <>Global<>getBase(<>d<>520)
+          <>fun<>581 = @GetBase(<>d<>520)
           <>temp<>582 = <>obj<>578(<>fun<>581, <>arguments<>580)
           <>temp<>583 = "&ogrp="
           <>obj<>584 = @ToObject(<>d<>520)
           <>temp<>585 = <>f<>522
           <>arguments<>586 = [<>temp<>585, ]
-          <>fun<>587 = <>Global<>getBase(<>d<>520)
+          <>fun<>587 = @GetBase(<>d<>520)
           <>temp<>588 = <>obj<>584(<>fun<>587, <>arguments<>586)
           <>temp<>589 = "&ogsr="
           <>obj<>590 = @ToObject(Math)
@@ -1136,7 +1136,7 @@ var _gjwl
           <>obj<>596 = @ToObject(<>d<>520)
           <>temp<>597 = "1372717546.1372341082"
           <>arguments<>598 = [<>temp<>597, ]
-          <>fun<>599 = <>Global<>getBase(<>d<>520)
+          <>fun<>599 = @GetBase(<>d<>520)
           <>temp<>600 = <>obj<>596(<>fun<>599, <>arguments<>598)
           if(<>g<>521)
           {
@@ -1144,7 +1144,7 @@ var _gjwl
             <>obj<>602 = @ToObject(<>d<>520)
             <>temp<>603 = <>g<>521
             <>arguments<>604 = [<>temp<>603, ]
-            <>fun<>605 = <>Global<>getBase(<>d<>520)
+            <>fun<>605 = @GetBase(<>d<>520)
             <>z<>606 = <>obj<>602(<>fun<>605, <>arguments<>604)
             <>temp<>607 = <>y<>601 + <>z<>606
           }
@@ -1156,18 +1156,18 @@ var _gjwl
           <>obj<>609 = @ToObject(<>d<>520)
           <>temp<>610 = "com"
           <>arguments<>611 = [<>temp<>610, ]
-          <>fun<>612 = <>Global<>getBase(<>d<>520)
+          <>fun<>612 = @GetBase(<>d<>520)
           <>temp<>613 = <>obj<>609(<>fun<>612, <>arguments<>611)
           <>temp<>614 = "&ogl="
           <>obj<>615 = @ToObject(<>d<>520)
           <>temp<>616 = "ko"
           <>arguments<>617 = [<>temp<>616, ]
-          <>fun<>618 = <>Global<>getBase(<>d<>520)
+          <>fun<>618 = @GetBase(<>d<>520)
           <>temp<>619 = <>obj<>615(<>fun<>618, <>arguments<>617)
           <>temp<>620 = "&ogus="
           <>obj<>621 = @ToObject(<>Ib<>480)
           <>arguments<>622 = []
-          <>fun<>623 = <>Global<>getBase(<>Ib<>480)
+          <>fun<>623 = @GetBase(<>Ib<>480)
           <>temp<>624 = <>obj<>621(<>fun<>623, <>arguments<>622)
           <>Global<>ignore66 = [<>temp<>547, <>temp<>558, <>temp<>559, <>temp<>560, <>temp<>561, <>temp<>566, <>temp<>567, <>temp<>572, <>temp<>573, <>temp<>576, <>temp<>577, <>temp<>582, <>temp<>583, <>temp<>588, <>temp<>589, <>temp<>594, <>temp<>595, <>temp<>600, <>temp<>607, <>temp<>608, <>temp<>613, <>temp<>614, <>temp<>619, <>temp<>620, <>temp<>624, ]
           <>c<>519 = <>Global<>ignore66
@@ -1202,12 +1202,12 @@ var _gjwl
           <>break<>634 : {
             {
               <>obj<>635 = <>g<>521
-              <>iterator<>636 = <>Global<>iteratorInit(<>obj<>635)
-              <>cond1<>637 = <>Global<>iteratorHasNext(<>obj<>635, <>iterator<>636)
+              <>iterator<>636 = @iteratorInit(<>obj<>635)
+              <>cond1<>637 = @iteratorHasNext(<>obj<>635, <>iterator<>636)
             }
             while(<>cond1<>637)
             {
-              <>key<>638 = <>Global<>iteratorNext(<>obj<>635, <>iterator<>636)
+              <>key<>638 = @iteratorNext(<>obj<>635, <>iterator<>636)
               <>l<>524 = <>key<>638
               <>continue<>639 : {
                 {
@@ -1232,7 +1232,7 @@ var _gjwl
                 <>obj<>649 = @ToObject(<>Kb<>650)
                 <>temp<>651 = <>l<>524
                 <>arguments<>652 = [<>temp<>651, ]
-                <>fun<>653 = <>Global<>getBase(<>Kb<>650)
+                <>fun<>653 = @GetBase(<>Kb<>650)
                 <>temp<>654 = <>obj<>649(<>fun<>653, <>arguments<>652)
                 <>arguments<>655 = [<>temp<>654, ]
                 <>fun<>656 = @ToObject(<>obj<>648["push"])
@@ -1247,14 +1247,14 @@ var _gjwl
                 <>obj<>665 = @ToObject(<>g<>521)
                 <>temp<>666 = <>obj<>665[<>l<>524]
                 <>arguments<>667 = [<>temp<>666, ]
-                <>fun<>668 = <>Global<>getBase(<>Kb<>650)
+                <>fun<>668 = @GetBase(<>Kb<>650)
                 <>temp<>669 = <>obj<>664(<>fun<>668, <>arguments<>667)
                 <>arguments<>670 = [<>temp<>669, ]
                 <>fun<>671 = @ToObject(<>obj<>663["push"])
                 <>Global<>ignore70 = <>fun<>671(<>obj<>663, <>arguments<>670)
               }
               {
-                <>cond1<>637 = <>Global<>iteratorHasNext(<>obj<>635, <>iterator<>636)
+                <>cond1<>637 = @iteratorHasNext(<>obj<>635, <>iterator<>636)
               }
             }
           }
@@ -1278,7 +1278,7 @@ var _gjwl
               <>obj<>682 = @ToObject(<>d<>520)
               <>temp<>683 = <>l<>524
               <>arguments<>684 = [<>temp<>683, ]
-              <>fun<>685 = <>Global<>getBase(<>d<>520)
+              <>fun<>685 = @GetBase(<>d<>520)
               <>temp<>686 = <>obj<>682(<>fun<>685, <>arguments<>684)
               <>arguments<>687 = [<>temp<>686, ]
               <>fun<>688 = @ToObject(<>obj<>681["push"])
@@ -1300,7 +1300,7 @@ var _gjwl
           <>fun<>694 = @ToObject(<>obj<>691["join"])
           <>temp<>695 = <>fun<>694(<>obj<>691, <>arguments<>693)
           <>arguments<>696 = [<>temp<>695, ]
-          <>fun<>697 = <>Global<>getBase(<>w<>347)
+          <>fun<>697 = @GetBase(<>w<>347)
           <>Global<>ignore73 = <>obj<>690(<>fun<>697, <>arguments<>696)
         }
       }
@@ -1355,7 +1355,7 @@ var _gjwl
             {
               <>obj<>719 = @ToObject(<>f<>720)
               <>old<>721 = <>m<>722
-              <>new<>723 = <>Global<>toNumber(<>old<>721)
+              <>new<>723 = @ToNumber(<>old<>721)
               <>m<>722 = <>new<>723 + 1
               <>b<>717 = <>obj<>719[<>new<>723]
               if(<>obj<>719[<>new<>723])
@@ -1388,7 +1388,7 @@ var _gjwl
               {
                 <>obj<>719 = @ToObject(<>f<>720)
                 <>old<>721 = <>m<>722
-                <>new<>723 = <>Global<>toNumber(<>old<>721)
+                <>new<>723 = @ToNumber(<>old<>721)
                 <>m<>722 = <>new<>723 + 1
                 <>b<>717 = <>obj<>719[<>new<>723]
                 if(<>obj<>719[<>new<>723])
@@ -1422,7 +1422,7 @@ var _gjwl
             <>obj<>734 = @ToObject(<>b<>717)
             <>temp<>735 = <>obj<>734[0]
             <>arguments<>736 = [<>temp<>733, <>temp<>735, ]
-            <>fun<>737 = <>Global<>getBase(<>E<>732)
+            <>fun<>737 = @GetBase(<>E<>732)
             <>temp<>738 = <>obj<>731(<>fun<>737, <>arguments<>736)
             {
               <>obj<>739 = @ToObject(<>b<>717)
@@ -1436,7 +1436,7 @@ var _gjwl
                 <>obj<>746 = @ToObject(<>b<>717)
                 <>temp<>747 = <>obj<>746[0]
                 <>arguments<>748 = [<>temp<>745, <>temp<>747, ]
-                <>fun<>749 = <>Global<>getBase(<>pa<>742)
+                <>fun<>749 = @GetBase(<>pa<>742)
                 <>new1<>750 = <>obj<>741(<>fun<>749, <>arguments<>748)
                 <>temp<>751 = <>new1<>750
               }
@@ -1458,7 +1458,7 @@ var _gjwl
                   <>obj<>757 = @ToObject(<>obj<>756[1])
                   <>temp<>758 = <>obj<>757["libs"]
                   <>arguments<>759 = [<>temp<>758, ]
-                  <>fun<>760 = <>Global<>getBase(<>F<>754)
+                  <>fun<>760 = @GetBase(<>F<>754)
                   <>new2<>761 = <>obj<>755(<>fun<>760, <>arguments<>759)
                   <>new1<>762 = <>new2<>761
                 }
@@ -1491,7 +1491,7 @@ var _gjwl
             <>temp<>766 = <>a<>715
             <>temp<>767 = 0
             <>arguments<>768 = [<>temp<>766, <>temp<>767, ]
-            <>fun<>769 = <>Global<>getBase(setTimeout)
+            <>fun<>769 = @GetBase(setTimeout)
             <>new1<>770 = <>obj<>765(<>fun<>769, <>arguments<>768)
             <>Global<>ignore76 = <>new1<>770
           }
@@ -1507,7 +1507,7 @@ var _gjwl
         {
           <>y<>773 = 0
           <>old<>774 = <>g<>775
-          <>new<>776 = <>Global<>toNumber(<>old<>774)
+          <>new<>776 = @ToNumber(<>old<>774)
           <>g<>775 = <>new<>776 - 1
           if(<>y<>773 < <>new<>776)
           {
@@ -1515,14 +1515,14 @@ var _gjwl
             <>temp<>778 = <>b<>771
             <>temp<>779 = 0
             <>arguments<>780 = [<>temp<>778, <>temp<>779, ]
-            <>fun<>781 = <>Global<>getBase(setTimeout)
+            <>fun<>781 = @GetBase(setTimeout)
             <>Global<>ignore77 = <>obj<>777(<>fun<>781, <>arguments<>780)
           }
           else
           {
             <>obj<>782 = @ToObject(<>a<>715)
             <>arguments<>783 = []
-            <>fun<>784 = <>Global<>getBase(<>a<>715)
+            <>fun<>784 = @GetBase(<>a<>715)
             <>Global<>ignore77 = <>obj<>782(<>fun<>784, <>arguments<>783)
           }
         }
@@ -1569,7 +1569,7 @@ var _gjwl
           {
             <>obj<>798 = @ToObject(<>l<>787)
             <>arguments<>799 = []
-            <>fun<>800 = <>Global<>getBase(<>l<>787)
+            <>fun<>800 = @GetBase(<>l<>787)
             <>Global<>ignore85 = <>obj<>798(<>fun<>800, <>arguments<>799)
           }
         catch(<>p<>801)
@@ -1579,7 +1579,7 @@ var _gjwl
             <>temp<>804 = "ml"
             <>temp<>805 = "or"
             <>arguments<>806 = [<>temp<>803, <>temp<>804, <>temp<>805, ]
-            <>fun<>807 = <>Global<>getBase(<>t<>474)
+            <>fun<>807 = @GetBase(<>t<>474)
             <>Global<>ignore84 = <>obj<>802(<>fun<>807, <>arguments<>806)
           }
       if(<>d<>786)
@@ -1588,7 +1588,7 @@ var _gjwl
         <>temp<>809 = "ldb"
         <>temp<>810 = <>a<>715
         <>arguments<>811 = [<>temp<>809, <>temp<>810, ]
-        <>fun<>812 = <>Global<>getBase(<>r<>135)
+        <>fun<>812 = @GetBase(<>r<>135)
         <>Global<>ignore86 = <>obj<>808(<>fun<>812, <>arguments<>811)
       }
       else
@@ -1600,14 +1600,14 @@ var _gjwl
           <>temp<>815 = "load"
           <>temp<>816 = <>b<>771
           <>arguments<>817 = [<>temp<>814, <>temp<>815, <>temp<>816, ]
-          <>fun<>818 = <>Global<>getBase(<>da<>143)
+          <>fun<>818 = @GetBase(<>da<>143)
           <>Global<>ignore86 = <>obj<>813(<>fun<>818, <>arguments<>817)
         }
         else
         {
           <>obj<>819 = @ToObject(<>b<>771)
           <>arguments<>820 = []
-          <>fun<>821 = <>Global<>getBase(<>b<>771)
+          <>fun<>821 = @GetBase(<>b<>771)
           <>Global<>ignore86 = <>obj<>819(<>fun<>821, <>arguments<>820)
         }
       }
@@ -1865,13 +1865,13 @@ var _gjwl
         <>temp<>970 = "2"
         <>temp<>971 = 0
         <>arguments<>972 = [<>temp<>970, <>temp<>971, ]
-        <>fun<>973 = <>Global<>getBase(<>_tvn<>101)
+        <>fun<>973 = @GetBase(<>_tvn<>101)
         <>temp<>974 = <>obj<>969(<>fun<>973, <>arguments<>972)
         <>obj<>975 = @ToObject(<>_tvn<>101)
         <>temp<>976 = "2"
         <>temp<>977 = 1
         <>arguments<>978 = [<>temp<>976, <>temp<>977, ]
-        <>fun<>979 = <>Global<>getBase(<>_tvn<>101)
+        <>fun<>979 = @GetBase(<>_tvn<>101)
         <>temp<>980 = <>obj<>975(<>fun<>979, <>arguments<>978)
         <>Global<>ignore97 = {
           n : <>temp<>974,
@@ -1909,7 +1909,7 @@ var _gjwl
           <>obj<>989 = @ToObject(<>ea<>825)
           <>temp<>990 = 1
           <>arguments<>991 = [<>temp<>990, ]
-          <>fun<>992 = <>Global<>getBase(<>ea<>825)
+          <>fun<>992 = @GetBase(<>ea<>825)
           <>Global<>ignore99 = <>obj<>989(<>fun<>992, <>arguments<>991)
           <>fa<>826 = <>Global<>ignore99
         }
@@ -1917,7 +1917,7 @@ var _gjwl
           <>obj<>993 = @ToObject(<>ea<>825)
           <>temp<>994 = 2
           <>arguments<>995 = [<>temp<>994, ]
-          <>fun<>996 = <>Global<>getBase(<>ea<>825)
+          <>fun<>996 = @GetBase(<>ea<>825)
           <>Global<>ignore100 = <>obj<>993(<>fun<>996, <>arguments<>995)
           <>ga<>827 = <>Global<>ignore100
         }
@@ -1927,7 +1927,7 @@ var _gjwl
         <>temp<>998 = "sb"
         <>temp<>999 = <>fa<>826
         <>arguments<>1000 = [<>temp<>998, <>temp<>999, ]
-        <>fun<>1001 = <>Global<>getBase(<>r<>135)
+        <>fun<>1001 = @GetBase(<>r<>135)
         <>Global<>ignore101 = <>obj<>997(<>fun<>1001, <>arguments<>1000)
       }
       {
@@ -1935,7 +1935,7 @@ var _gjwl
         <>temp<>1003 = "kn"
         <>temp<>1004 = <>ga<>827
         <>arguments<>1005 = [<>temp<>1003, <>temp<>1004, ]
-        <>fun<>1006 = <>Global<>getBase(<>r<>135)
+        <>fun<>1006 = @GetBase(<>r<>135)
         <>Global<>ignore102 = <>obj<>1002(<>fun<>1006, <>arguments<>1005)
       }
       {
@@ -1991,7 +1991,7 @@ var _gjwl
                   [[Prototype]]=<>proto<>1025
                 }
                 <>newObj<>1027 = new <>fun<>1023(<>obj<>1026, <>arguments<>1024)
-                <>cond<>1028 = <>Global<>isObject(<>newObj<>1027)
+                <>cond<>1028 = @isObject(<>newObj<>1027)
                 if(<>cond<>1028)
                   <>Global<>ignore111 = <>newObj<>1027
                 else
@@ -2051,7 +2051,7 @@ var _gjwl
           log : <>w<>347
         }
         <>arguments<>1041 = [<>temp<>1039, <>temp<>1040, ]
-        <>fun<>1042 = <>Global<>getBase(<>r<>135)
+        <>fun<>1042 = @GetBase(<>r<>135)
         <>Global<>ignore120 = <>obj<>1038(<>fun<>1042, <>arguments<>1041)
       }
       {
@@ -2182,7 +2182,7 @@ var _gjwl
               <>temp<>1089 = "m"
               <>temp<>1090 = <>a<>1087
               <>arguments<>1091 = [<>temp<>1089, <>temp<>1090, ]
-              <>fun<>1092 = <>Global<>getBase(<>C<>838)
+              <>fun<>1092 = @GetBase(<>C<>838)
               <>Global<>ignore137 = <>obj<>1088(<>fun<>1092, <>arguments<>1091)
             }
           }
@@ -2238,10 +2238,10 @@ var _gjwl
                     }
                     <>temp<>1117 = <>y<>1115 + <>z<>1116 + " url=" + <>a<>1095
                     <>arguments<>1118 = [<>temp<>1117, ]
-                    <>fun<>1119 = <>Global<>getBase(Error)
+                    <>fun<>1119 = @GetBase(Error)
                     <>temp<>1120 = <>obj<>1114(<>fun<>1119, <>arguments<>1118)
                     <>arguments<>1121 = [<>temp<>1120, ]
-                    <>fun<>1122 = <>Global<>getBase(<>u<>355)
+                    <>fun<>1122 = @GetBase(<>u<>355)
                     <>Global<>ignore144 = <>obj<>1113(<>fun<>1122, <>arguments<>1121)
                   }
                 }
@@ -2311,7 +2311,7 @@ var _gjwl
                   }
                   {
                     <>old<>1144 = <>b<>1137
-                    <>new<>1145 = <>Global<>toNumber(<>old<>1144)
+                    <>new<>1145 = @ToNumber(<>old<>1144)
                     <>b<>1137 = <>new<>1145 + 1
                     <>Global<>ignore149 = <>new<>1145 + 1
                     {
@@ -2351,7 +2351,7 @@ var _gjwl
                     <>temp<>1154 = 2
                     <>temp<>1155 = <>a<>1136
                     <>arguments<>1156 = [<>temp<>1154, <>temp<>1155, ]
-                    <>fun<>1157 = <>Global<>getBase(<>E<>732)
+                    <>fun<>1157 = @GetBase(<>E<>732)
                     <>temp<>1158 = <>obj<>1153(<>fun<>1157, <>arguments<>1156)
                     {
                       <>obj<>1159 = @ToObject(<>c<>1138)
@@ -2364,7 +2364,7 @@ var _gjwl
                         <>temp<>1164 = <>obj<>1163["url"]
                         <>temp<>1165 = <>a<>1136
                         <>arguments<>1166 = [<>temp<>1164, <>temp<>1165, ]
-                        <>fun<>1167 = <>Global<>getBase(<>pa<>742)
+                        <>fun<>1167 = @GetBase(<>pa<>742)
                         <>new1<>1168 = <>obj<>1161(<>fun<>1167, <>arguments<>1166)
                         <>temp<>1169 = <>new1<>1168
                       }
@@ -2386,7 +2386,7 @@ var _gjwl
                           <>obj<>1174 = @ToObject(<>obj<>1173[1])
                           <>temp<>1175 = <>obj<>1174["libs"]
                           <>arguments<>1176 = [<>temp<>1175, ]
-                          <>fun<>1177 = <>Global<>getBase(<>F<>754)
+                          <>fun<>1177 = @GetBase(<>F<>754)
                           <>new2<>1178 = <>obj<>1172(<>fun<>1177, <>arguments<>1176)
                           <>new3<>1179 = <>new2<>1178
                         }
@@ -2435,7 +2435,7 @@ var _gjwl
               <>temp<>1184 = "gc"
               <>temp<>1185 = <>a<>1182
               <>arguments<>1186 = [<>temp<>1184, <>temp<>1185, ]
-              <>fun<>1187 = <>Global<>getBase(<>C<>838)
+              <>fun<>1187 = @GetBase(<>C<>838)
               <>Global<>ignore152 = <>obj<>1183(<>fun<>1187, <>arguments<>1186)
             }
           }
@@ -2476,12 +2476,12 @@ var _gjwl
                 <>break<>1197 : {
                   {
                     <>obj<>1198 = <>c<>1195
-                    <>iterator<>1199 = <>Global<>iteratorInit(<>obj<>1198)
-                    <>cond1<>1200 = <>Global<>iteratorHasNext(<>obj<>1198, <>iterator<>1199)
+                    <>iterator<>1199 = @iteratorInit(<>obj<>1198)
+                    <>cond1<>1200 = @iteratorHasNext(<>obj<>1198, <>iterator<>1199)
                   }
                   while(<>cond1<>1200)
                   {
-                    <>key<>1201 = <>Global<>iteratorNext(<>obj<>1198, <>iterator<>1199)
+                    <>key<>1201 = @iteratorNext(<>obj<>1198, <>iterator<>1199)
                     <>d<>1196 = <>key<>1201
                     <>continue<>1202 : {
                       <>obj<>1203 = @ToObject(<>a<>1193)
@@ -2489,7 +2489,7 @@ var _gjwl
                       <>obj<>1203[<>d<>1196] = <>obj<>1204[<>d<>1196]
                     }
                     {
-                      <>cond1<>1200 = <>Global<>iteratorHasNext(<>obj<>1198, <>iterator<>1199)
+                      <>cond1<>1200 = @iteratorHasNext(<>obj<>1198, <>iterator<>1199)
                     }
                   }
                 }
@@ -2498,7 +2498,7 @@ var _gjwl
                   <>obj<>1205 = @ToObject(<>H<>842)
                   <>temp<>1206 = <>a<>1193
                   <>arguments<>1207 = [<>temp<>1206, ]
-                  <>fun<>1208 = <>Global<>getBase(<>H<>842)
+                  <>fun<>1208 = @GetBase(<>H<>842)
                   <>Global<>ignore159 = <>obj<>1205(<>fun<>1208, <>arguments<>1207)
                 }
               catch(<>g<>1209)
@@ -2515,7 +2515,7 @@ var _gjwl
         <>temp<>1211 = "mdc"
         <>temp<>1212 = <>y<>377
         <>arguments<>1213 = [<>temp<>1211, <>temp<>1212, ]
-        <>fun<>1214 = <>Global<>getBase(<>r<>135)
+        <>fun<>1214 = @GetBase(<>r<>135)
         <>Global<>ignore160 = <>obj<>1210(<>fun<>1214, <>arguments<>1213)
       }
       {
@@ -2523,7 +2523,7 @@ var _gjwl
         <>temp<>1216 = "mdi"
         <>temp<>1217 = <>ja<>831
         <>arguments<>1218 = [<>temp<>1216, <>temp<>1217, ]
-        <>fun<>1219 = <>Global<>getBase(<>r<>135)
+        <>fun<>1219 = @GetBase(<>r<>135)
         <>Global<>ignore161 = <>obj<>1215(<>fun<>1219, <>arguments<>1218)
       }
       {
@@ -2531,7 +2531,7 @@ var _gjwl
         <>temp<>1221 = "bnc"
         <>temp<>1222 = <>z<>796
         <>arguments<>1223 = [<>temp<>1221, <>temp<>1222, ]
-        <>fun<>1224 = <>Global<>getBase(<>r<>135)
+        <>fun<>1224 = @GetBase(<>r<>135)
         <>Global<>ignore162 = <>obj<>1220(<>fun<>1224, <>arguments<>1223)
       }
       {
@@ -2539,7 +2539,7 @@ var _gjwl
         <>temp<>1226 = "qGC"
         <>temp<>1227 = <>qa<>841
         <>arguments<>1228 = [<>temp<>1226, <>temp<>1227, ]
-        <>fun<>1229 = <>Global<>getBase(<>r<>135)
+        <>fun<>1229 = @GetBase(<>r<>135)
         <>Global<>ignore163 = <>obj<>1225(<>fun<>1229, <>arguments<>1228)
       }
       {
@@ -2547,7 +2547,7 @@ var _gjwl
         <>temp<>1231 = "qm"
         <>temp<>1232 = <>D<>839
         <>arguments<>1233 = [<>temp<>1231, <>temp<>1232, ]
-        <>fun<>1234 = <>Global<>getBase(<>r<>135)
+        <>fun<>1234 = @GetBase(<>r<>135)
         <>Global<>ignore164 = <>obj<>1230(<>fun<>1234, <>arguments<>1233)
       }
       {
@@ -2555,7 +2555,7 @@ var _gjwl
         <>temp<>1236 = "qd"
         <>temp<>1237 = <>A<>837
         <>arguments<>1238 = [<>temp<>1236, <>temp<>1237, ]
-        <>fun<>1239 = <>Global<>getBase(<>r<>135)
+        <>fun<>1239 = @GetBase(<>r<>135)
         <>Global<>ignore165 = <>obj<>1235(<>fun<>1239, <>arguments<>1238)
       }
       {
@@ -2563,7 +2563,7 @@ var _gjwl
         <>temp<>1241 = "lb"
         <>temp<>1242 = <>G<>840
         <>arguments<>1243 = [<>temp<>1241, <>temp<>1242, ]
-        <>fun<>1244 = <>Global<>getBase(<>r<>135)
+        <>fun<>1244 = @GetBase(<>r<>135)
         <>Global<>ignore166 = <>obj<>1240(<>fun<>1244, <>arguments<>1243)
       }
       {
@@ -2571,7 +2571,7 @@ var _gjwl
         <>temp<>1246 = "mcf"
         <>temp<>1247 = <>na<>835
         <>arguments<>1248 = [<>temp<>1246, <>temp<>1247, ]
-        <>fun<>1249 = <>Global<>getBase(<>r<>135)
+        <>fun<>1249 = @GetBase(<>r<>135)
         <>Global<>ignore167 = <>obj<>1245(<>fun<>1249, <>arguments<>1248)
       }
       {
@@ -2579,7 +2579,7 @@ var _gjwl
         <>temp<>1251 = "bcf"
         <>temp<>1252 = <>ma<>834
         <>arguments<>1253 = [<>temp<>1251, <>temp<>1252, ]
-        <>fun<>1254 = <>Global<>getBase(<>r<>135)
+        <>fun<>1254 = @GetBase(<>r<>135)
         <>Global<>ignore168 = <>obj<>1250(<>fun<>1254, <>arguments<>1253)
       }
       {
@@ -2587,7 +2587,7 @@ var _gjwl
         <>temp<>1256 = "aq"
         <>temp<>1257 = <>C<>838
         <>arguments<>1258 = [<>temp<>1256, <>temp<>1257, ]
-        <>fun<>1259 = <>Global<>getBase(<>r<>135)
+        <>fun<>1259 = @GetBase(<>r<>135)
         <>Global<>ignore169 = <>obj<>1255(<>fun<>1259, <>arguments<>1258)
       }
       {
@@ -2595,7 +2595,7 @@ var _gjwl
         <>temp<>1261 = "mdd"
         <>temp<>1262 = ""
         <>arguments<>1263 = [<>temp<>1261, <>temp<>1262, ]
-        <>fun<>1264 = <>Global<>getBase(<>r<>135)
+        <>fun<>1264 = @GetBase(<>r<>135)
         <>Global<>ignore170 = <>obj<>1260(<>fun<>1264, <>arguments<>1263)
       }
       {
@@ -2603,7 +2603,7 @@ var _gjwl
         <>temp<>1266 = "has"
         <>temp<>1267 = <>oa<>836
         <>arguments<>1268 = [<>temp<>1266, <>temp<>1267, ]
-        <>fun<>1269 = <>Global<>getBase(<>r<>135)
+        <>fun<>1269 = @GetBase(<>r<>135)
         <>Global<>ignore171 = <>obj<>1265(<>fun<>1269, <>arguments<>1268)
       }
       {
@@ -2611,7 +2611,7 @@ var _gjwl
         <>temp<>1271 = "trh"
         <>temp<>1272 = <>ra<>843
         <>arguments<>1273 = [<>temp<>1271, <>temp<>1272, ]
-        <>fun<>1274 = <>Global<>getBase(<>r<>135)
+        <>fun<>1274 = @GetBase(<>r<>135)
         <>Global<>ignore172 = <>obj<>1270(<>fun<>1274, <>arguments<>1273)
       }
       {
@@ -2619,7 +2619,7 @@ var _gjwl
         <>temp<>1276 = "tev"
         <>temp<>1277 = <>E<>732
         <>arguments<>1278 = [<>temp<>1276, <>temp<>1277, ]
-        <>fun<>1279 = <>Global<>getBase(<>r<>135)
+        <>fun<>1279 = @GetBase(<>r<>135)
         <>Global<>ignore173 = <>obj<>1275(<>fun<>1279, <>arguments<>1278)
       }
       {
@@ -2690,7 +2690,7 @@ var _gjwl
                   <>obj<>1310 = @ToObject(<>D<>839)
                   <>temp<>1311 = <>c<>1302
                   <>arguments<>1312 = [<>temp<>1311, ]
-                  <>fun<>1313 = <>Global<>getBase(<>D<>839)
+                  <>fun<>1313 = @GetBase(<>D<>839)
                   <>Global<>ignore181 = <>obj<>1310(<>fun<>1313, <>arguments<>1312)
                 }
                 else
@@ -2699,12 +2699,12 @@ var _gjwl
                   <>temp<>1315 = "gl"
                   <>temp<>1316 = <>c<>1302
                   <>arguments<>1317 = [<>temp<>1315, <>temp<>1316, ]
-                  <>fun<>1318 = <>Global<>getBase(<>C<>838)
+                  <>fun<>1318 = @GetBase(<>C<>838)
                   <>temp<>1319 = <>obj<>1314(<>fun<>1318, <>arguments<>1317)
                   <>obj<>1320 = @ToObject(<>G<>840)
                   <>temp<>1321 = "gl"
                   <>arguments<>1322 = [<>temp<>1321, ]
-                  <>fun<>1323 = <>Global<>getBase(<>G<>840)
+                  <>fun<>1323 = @GetBase(<>G<>840)
                   <>Global<>ignore181 = <>obj<>1320(<>fun<>1323, <>arguments<>1322)
                 }
               }
@@ -2815,7 +2815,7 @@ var _gjwl
                         }
                         {
                           <>old<>1356 = <>d<>1345
-                          <>new<>1357 = <>Global<>toNumber(<>old<>1356)
+                          <>new<>1357 = @ToNumber(<>old<>1356)
                           <>d<>1345 = <>new<>1357 + 1
                           <>Global<>ignore189 = <>new<>1357 + 1
                           <>obj<>1353 = @ToObject(<>b<>1344)
@@ -2851,7 +2851,7 @@ var _gjwl
                                 <>obj<>1366 = @ToObject(<>xa<>850)
                                 <>temp<>1367 = <>g<>1346
                                 <>arguments<>1368 = [<>temp<>1367, ]
-                                <>fun<>1369 = <>Global<>getBase(<>xa<>850)
+                                <>fun<>1369 = @GetBase(<>xa<>850)
                                 <>new3<>1370 = <>obj<>1366(<>fun<>1369, <>arguments<>1368)
                                 if(<>new3<>1370)
                                 {
@@ -2888,7 +2888,7 @@ var _gjwl
                       }
                       {
                         <>old<>1375 = <>b<>1344
-                        <>new<>1376 = <>Global<>toNumber(<>old<>1375)
+                        <>new<>1376 = @ToNumber(<>old<>1375)
                         <>b<>1344 = <>new<>1376 + 1
                         <>Global<>ignore194 = <>new<>1376 + 1
                         <>obj<>1359 = @ToObject(<>z<>796)
@@ -2969,7 +2969,7 @@ var _gjwl
             <>temp<>1397 = <>va<>848
             <>temp<>1398 = <>ua<>847
             <>arguments<>1399 = [<>temp<>1396, <>temp<>1397, <>temp<>1398, ]
-            <>fun<>1400 = <>Global<>getBase(<>r<>135)
+            <>fun<>1400 = @GetBase(<>r<>135)
             <>Global<>ignore205 = <>obj<>1395(<>fun<>1400, <>arguments<>1399)
           }
           {
@@ -2977,7 +2977,7 @@ var _gjwl
             <>temp<>1402 = "dgl"
             <>temp<>1403 = <>va<>848
             <>arguments<>1404 = [<>temp<>1402, <>temp<>1403, ]
-            <>fun<>1405 = <>Global<>getBase(<>r<>135)
+            <>fun<>1405 = @GetBase(<>r<>135)
             <>Global<>ignore206 = <>obj<>1401(<>fun<>1405, <>arguments<>1404)
           }
           {
@@ -2985,7 +2985,7 @@ var _gjwl
             <>temp<>1407 = "agl"
             <>temp<>1408 = <>xa<>850
             <>arguments<>1409 = [<>temp<>1407, <>temp<>1408, ]
-            <>fun<>1410 = <>Global<>getBase(<>r<>135)
+            <>fun<>1410 = @GetBase(<>r<>135)
             <>Global<>ignore207 = <>obj<>1406(<>fun<>1410, <>arguments<>1409)
           }
           {
@@ -3059,7 +3059,7 @@ var _gjwl
             throw <>a<>1435
           }
           <>arguments<>1436 = [<>temp<>1432, ]
-          <>fun<>1437 = <>Global<>getBase(<>Ga<>352)
+          <>fun<>1437 = @GetBase(<>Ga<>352)
           <>Global<>ignore213 = <>obj<>1431(<>fun<>1437, <>arguments<>1436)
         }
         else
@@ -3081,7 +3081,7 @@ var _gjwl
                 <>obj<>1447 = @ToObject(<>Ga<>352)
                 <>temp<>1448 = <>_mlToken<>181
                 <>arguments<>1449 = [<>temp<>1448, ]
-                <>fun<>1450 = <>Global<>getBase(<>Ga<>352)
+                <>fun<>1450 = @GetBase(<>Ga<>352)
                 <>new2<>1451 = <>obj<>1447(<>fun<>1450, <>arguments<>1449)
                 <>Global<>ignore213 = <>new2<>1451
               }
@@ -3120,7 +3120,7 @@ var _gjwl
               <>temp<>1459 = <>a<>1454
               <>temp<>1460 = <>b<>1455
               <>arguments<>1461 = [<>temp<>1459, <>temp<>1460, ]
-              <>fun<>1462 = <>Global<>getBase(<>K<>856)
+              <>fun<>1462 = @GetBase(<>K<>856)
               <>y<>1463 = <>obj<>1458(<>fun<>1462, <>arguments<>1461)
               if(<>y<>1463)
                 <>Global<>ignore217 = <>y<>1463
@@ -3161,7 +3161,7 @@ var _gjwl
                 <>obj<>1474 = @ToObject(RegExp)
                 <>temp<>1475 = "\\s?\\b" + <>b<>1470 + "\\b"
                 <>arguments<>1476 = [<>temp<>1475, ]
-                <>fun<>1477 = <>Global<>getBase(RegExp)
+                <>fun<>1477 = @GetBase(RegExp)
                 <>Global<>ignore220 = <>obj<>1474(<>fun<>1477, <>arguments<>1476)
                 <>d<>1472 = <>Global<>ignore220
               }
@@ -3215,7 +3215,7 @@ var _gjwl
                 <>obj<>1496 = @ToObject(RegExp)
                 <>temp<>1497 = "\\b" + <>b<>1493 + "\\b"
                 <>arguments<>1498 = [<>temp<>1497, ]
-                <>fun<>1499 = <>Global<>getBase(RegExp)
+                <>fun<>1499 = @GetBase(RegExp)
                 <>Global<>ignore223 = <>obj<>1496(<>fun<>1499, <>arguments<>1498)
                 <>c<>1494 = <>Global<>ignore223
               }
@@ -3253,7 +3253,7 @@ var _gjwl
               <>temp<>1512 = <>a<>1509
               <>temp<>1513 = <>b<>1510
               <>arguments<>1514 = [<>temp<>1512, <>temp<>1513, ]
-              <>fun<>1515 = <>Global<>getBase(<>K<>856)
+              <>fun<>1515 = @GetBase(<>K<>856)
               <>new1<>1516 = <>obj<>1511(<>fun<>1515, <>arguments<>1514)
               if(<>new1<>1516)
               {
@@ -3261,7 +3261,7 @@ var _gjwl
                 <>temp<>1518 = <>a<>1509
                 <>temp<>1519 = <>b<>1510
                 <>arguments<>1520 = [<>temp<>1518, <>temp<>1519, ]
-                <>fun<>1521 = <>Global<>getBase(<>M<>855)
+                <>fun<>1521 = @GetBase(<>M<>855)
                 <>Global<>ignore226 = <>obj<>1517(<>fun<>1521, <>arguments<>1520)
               }
               else
@@ -3270,7 +3270,7 @@ var _gjwl
                 <>temp<>1523 = <>a<>1509
                 <>temp<>1524 = <>b<>1510
                 <>arguments<>1525 = [<>temp<>1523, <>temp<>1524, ]
-                <>fun<>1526 = <>Global<>getBase(<>L<>854)
+                <>fun<>1526 = @GetBase(<>L<>854)
                 <>Global<>ignore226 = <>obj<>1522(<>fun<>1526, <>arguments<>1525)
               }
             }
@@ -3283,7 +3283,7 @@ var _gjwl
         <>temp<>1528 = "ca"
         <>temp<>1529 = <>L<>854
         <>arguments<>1530 = [<>temp<>1528, <>temp<>1529, ]
-        <>fun<>1531 = <>Global<>getBase(<>r<>135)
+        <>fun<>1531 = @GetBase(<>r<>135)
         <>Global<>ignore227 = <>obj<>1527(<>fun<>1531, <>arguments<>1530)
       }
       {
@@ -3291,7 +3291,7 @@ var _gjwl
         <>temp<>1533 = "cr"
         <>temp<>1534 = <>M<>855
         <>arguments<>1535 = [<>temp<>1533, <>temp<>1534, ]
-        <>fun<>1536 = <>Global<>getBase(<>r<>135)
+        <>fun<>1536 = @GetBase(<>r<>135)
         <>Global<>ignore228 = <>obj<>1532(<>fun<>1536, <>arguments<>1535)
       }
       {
@@ -3299,7 +3299,7 @@ var _gjwl
         <>temp<>1538 = "cc"
         <>temp<>1539 = <>K<>856
         <>arguments<>1540 = [<>temp<>1538, <>temp<>1539, ]
-        <>fun<>1541 = <>Global<>getBase(<>r<>135)
+        <>fun<>1541 = @GetBase(<>r<>135)
         <>Global<>ignore229 = <>obj<>1537(<>fun<>1541, <>arguments<>1540)
       }
       {
@@ -3384,7 +3384,7 @@ var _gjwl
                   }
                   {
                     <>old<>1566 = <>b<>1551
-                    <>new<>1567 = <>Global<>toNumber(<>old<>1566)
+                    <>new<>1567 = @ToNumber(<>old<>1566)
                     <>b<>1551 = <>new<>1567 + 1
                     <>Global<>ignore239 = <>new<>1567 + 1
                     <>obj<>1554 = @ToObject(<>Ia<>858)
@@ -3404,7 +3404,7 @@ var _gjwl
             {
               <>obj<>1571 = @ToObject(<>Na<>859)
               <>arguments<>1572 = []
-              <>fun<>1573 = <>Global<>getBase(<>Na<>859)
+              <>fun<>1573 = @GetBase(<>Na<>859)
               <>Global<>ignore242 = <>obj<>1571(<>fun<>1573, <>arguments<>1572)
               <>a<>1570 = <>Global<>ignore242
             }
@@ -3495,13 +3495,13 @@ var _gjwl
                 <>temp<>1601 = <>c<>1589
                 <>temp<>1602 = "gbpdjs"
                 <>arguments<>1603 = [<>temp<>1601, <>temp<>1602, ]
-                <>fun<>1604 = <>Global<>getBase(<>L<>854)
+                <>fun<>1604 = @GetBase(<>L<>854)
                 <>Global<>ignore252 = <>obj<>1600(<>fun<>1604, <>arguments<>1603)
               }
               {
                 <>obj<>1605 = @ToObject(<>S<>890)
                 <>arguments<>1606 = []
-                <>fun<>1607 = <>Global<>getBase(<>S<>890)
+                <>fun<>1607 = @GetBase(<>S<>890)
                 <>Global<>ignore253 = <>obj<>1605(<>fun<>1607, <>arguments<>1606)
               }
               {
@@ -3512,7 +3512,7 @@ var _gjwl
                 <>fun<>1612 = @ToObject(<>obj<>1609["getElementById"])
                 <>temp<>1613 = <>fun<>1612(<>obj<>1609, <>arguments<>1611)
                 <>arguments<>1614 = [<>temp<>1613, ]
-                <>fun<>1615 = <>Global<>getBase(<>Ra<>870)
+                <>fun<>1615 = @GetBase(<>Ra<>870)
                 <>new0<>1616 = <>obj<>1608(<>fun<>1615, <>arguments<>1614)
                 if(<>new0<>1616)
                 {
@@ -3520,7 +3520,7 @@ var _gjwl
                   <>temp<>1618 = <>c<>1589
                   <>temp<>1619 = "gbrtl"
                   <>arguments<>1620 = [<>temp<>1618, <>temp<>1619, ]
-                  <>fun<>1621 = <>Global<>getBase(<>L<>854)
+                  <>fun<>1621 = @GetBase(<>L<>854)
                   <>new1<>1622 = <>obj<>1617(<>fun<>1621, <>arguments<>1620)
                   <>Global<>ignore254 = <>new1<>1622
                 }
@@ -3571,7 +3571,7 @@ var _gjwl
                               <>temp<>1637 = <>f<>1592
                               <>temp<>1638 = "gbto"
                               <>arguments<>1639 = [<>temp<>1637, <>temp<>1638, ]
-                              <>fun<>1640 = <>Global<>getBase(<>M<>855)
+                              <>fun<>1640 = @GetBase(<>M<>855)
                               <>Global<>ignore258 = <>obj<>1636(<>fun<>1640, <>arguments<>1639)
                             }
                             else
@@ -3624,7 +3624,7 @@ var _gjwl
                                                   <>temp<>1659 = <>obj<>1658["parentNode"]
                                                   <>temp<>1660 = "gbto"
                                                   <>arguments<>1661 = [<>temp<>1659, <>temp<>1660, ]
-                                                  <>fun<>1662 = <>Global<>getBase(<>M<>855)
+                                                  <>fun<>1662 = @GetBase(<>M<>855)
                                                   <>new2<>1663 = <>obj<>1657(<>fun<>1662, <>arguments<>1661)
                                                   <>Global<>ignore262 = <>new2<>1663
                                                 }
@@ -3652,14 +3652,14 @@ var _gjwl
                                 <>obj<>1664 = @ToObject(<>Sa<>889)
                                 <>temp<>1665 = <>g<>1591
                                 <>arguments<>1666 = [<>temp<>1665, ]
-                                <>fun<>1667 = <>Global<>getBase(<>Sa<>889)
+                                <>fun<>1667 = @GetBase(<>Sa<>889)
                                 <>new0<>1668 = <>obj<>1664(<>fun<>1667, <>arguments<>1666)
                                 if(<>new0<>1668)
                                 {
                                   <>obj<>1669 = @ToObject(<>Ta<>884)
                                   <>temp<>1670 = <>g<>1591
                                   <>arguments<>1671 = [<>temp<>1670, ]
-                                  <>fun<>1672 = <>Global<>getBase(<>Ta<>884)
+                                  <>fun<>1672 = @GetBase(<>Ta<>884)
                                   <>new1<>1673 = <>obj<>1669(<>fun<>1672, <>arguments<>1671)
                                   <>Global<>ignore263 = <>new1<>1673
                                 }
@@ -3675,7 +3675,7 @@ var _gjwl
                                 <>temp<>1675 = <>f<>1592
                                 <>temp<>1676 = "gbto"
                                 <>arguments<>1677 = [<>temp<>1675, <>temp<>1676, ]
-                                <>fun<>1678 = <>Global<>getBase(<>L<>854)
+                                <>fun<>1678 = @GetBase(<>L<>854)
                                 <>Global<>ignore265 = <>obj<>1674(<>fun<>1678, <>arguments<>1677)
                               }
                             }
@@ -3702,14 +3702,14 @@ var _gjwl
                   }
                 }
                 <>arguments<>1689 = [<>temp<>1680, ]
-                <>fun<>1690 = <>Global<>getBase(<>D<>839)
+                <>fun<>1690 = @GetBase(<>D<>839)
                 <>Global<>ignore266 = <>obj<>1679(<>fun<>1690, <>arguments<>1689)
               }
               {
                 <>obj<>1691 = @ToObject(<>Ua<>882)
                 <>temp<>1692 = <>a<>1587
                 <>arguments<>1693 = [<>temp<>1692, ]
-                <>fun<>1694 = <>Global<>getBase(<>Ua<>882)
+                <>fun<>1694 = @GetBase(<>Ua<>882)
                 <>Global<>ignore268 = <>obj<>1691(<>fun<>1694, <>arguments<>1693)
               }
             }
@@ -3720,7 +3720,7 @@ var _gjwl
                 <>temp<>1698 = "sb"
                 <>temp<>1699 = "tg"
                 <>arguments<>1700 = [<>temp<>1697, <>temp<>1698, <>temp<>1699, ]
-                <>fun<>1701 = <>Global<>getBase(<>t<>474)
+                <>fun<>1701 = @GetBase(<>t<>474)
                 <>Global<>ignore250 = <>obj<>1696(<>fun<>1701, <>arguments<>1700)
               }
           }
@@ -3744,7 +3744,7 @@ var _gjwl
                 }
               }
               <>arguments<>1713 = [<>temp<>1706, ]
-              <>fun<>1714 = <>Global<>getBase(<>D<>839)
+              <>fun<>1714 = @GetBase(<>D<>839)
               <>Global<>ignore270 = <>obj<>1705(<>fun<>1714, <>arguments<>1713)
             }
           }
@@ -3768,7 +3768,7 @@ var _gjwl
                 }
               }
               <>arguments<>1726 = [<>temp<>1719, ]
-              <>fun<>1727 = <>Global<>getBase(<>D<>839)
+              <>fun<>1727 = @GetBase(<>D<>839)
               <>Global<>ignore273 = <>obj<>1718(<>fun<>1727, <>arguments<>1726)
             }
           }
@@ -3983,7 +3983,7 @@ var _gjwl
                                             <>temp<>1811 = <>obj<>1810[<>d<>1754]
                                             <>temp<>1812 = <>$<>1763
                                             <>arguments<>1813 = [<>temp<>1811, <>temp<>1812, ]
-                                            <>fun<>1814 = <>Global<>getBase(<>K<>856)
+                                            <>fun<>1814 = @GetBase(<>K<>856)
                                             <>new1<>1815 = <>obj<>1808(<>fun<>1814, <>arguments<>1813)
                                             <>new2<>1816 = <>new1<>1815
                                           }
@@ -3998,7 +3998,7 @@ var _gjwl
                                       {
                                         <>continue<>1817 : {
                                           <>old<>1818 = <>d<>1754
-                                          <>new<>1819 = <>Global<>toNumber(<>old<>1818)
+                                          <>new<>1819 = @ToNumber(<>old<>1818)
                                           <>d<>1754 = <>new<>1819 + 1
                                           <>Global<>ignore301 = <>new<>1819
                                         }
@@ -4012,7 +4012,7 @@ var _gjwl
                                               <>temp<>1811 = <>obj<>1810[<>d<>1754]
                                               <>temp<>1812 = <>$<>1763
                                               <>arguments<>1813 = [<>temp<>1811, <>temp<>1812, ]
-                                              <>fun<>1814 = <>Global<>getBase(<>K<>856)
+                                              <>fun<>1814 = @GetBase(<>K<>856)
                                               <>new1<>1815 = <>obj<>1808(<>fun<>1814, <>arguments<>1813)
                                               <>new2<>1816 = <>new1<>1815
                                             }
@@ -4048,7 +4048,7 @@ var _gjwl
                                   }
                                   {
                                     <>old<>1827 = <>Y<>1762
-                                    <>new<>1828 = <>Global<>toNumber(<>old<>1827)
+                                    <>new<>1828 = @ToNumber(<>old<>1827)
                                     <>Y<>1762 = <>new<>1828 + 1
                                     <>Global<>ignore299 = <>new<>1828
                                     <>obj<>1805 = @ToObject(<>B<>1761)
@@ -4075,7 +4075,7 @@ var _gjwl
                                       <>temp<>1836 = <>obj<>1835["firstChild"]
                                       <>temp<>1837 = "gbmh"
                                       <>arguments<>1838 = [<>temp<>1836, <>temp<>1837, ]
-                                      <>fun<>1839 = <>Global<>getBase(<>K<>856)
+                                      <>fun<>1839 = @GetBase(<>K<>856)
                                       <>y<>1840 = <>obj<>1834(<>fun<>1839, <>arguments<>1838)
                                       if(! <>y<>1840)
                                       {
@@ -4083,7 +4083,7 @@ var _gjwl
                                         <>temp<>1842 = <>Ca<>1764
                                         <>temp<>1843 = <>B<>1761
                                         <>arguments<>1844 = [<>temp<>1842, <>temp<>1843, ]
-                                        <>fun<>1845 = <>Global<>getBase(<>Ya<>872)
+                                        <>fun<>1845 = @GetBase(<>Ya<>872)
                                         <>y<>1846 = <>obj<>1841(<>fun<>1845, <>arguments<>1844)
                                         if(! <>y<>1846)
                                         {
@@ -4117,7 +4117,7 @@ var _gjwl
                                         <>temp<>1851 = <>obj<>1850["firstChild"]
                                         <>temp<>1852 = "gbmh"
                                         <>arguments<>1853 = [<>temp<>1851, <>temp<>1852, ]
-                                        <>fun<>1854 = <>Global<>getBase(<>K<>856)
+                                        <>fun<>1854 = @GetBase(<>K<>856)
                                         <>y<>1855 = <>obj<>1849(<>fun<>1854, <>arguments<>1853)
                                         if(! <>y<>1855)
                                         {
@@ -4125,7 +4125,7 @@ var _gjwl
                                           <>temp<>1857 = <>Ea<>1765
                                           <>temp<>1858 = <>B<>1761
                                           <>arguments<>1859 = [<>temp<>1857, <>temp<>1858, ]
-                                          <>fun<>1860 = <>Global<>getBase(<>Ya<>872)
+                                          <>fun<>1860 = @GetBase(<>Ya<>872)
                                           <>y<>1861 = <>obj<>1856(<>fun<>1860, <>arguments<>1859)
                                           if(! <>y<>1861)
                                           {
@@ -4154,7 +4154,7 @@ var _gjwl
                                   if(<>d<>1754 + 1 < <>l<>1758)
                                   {
                                     <>old<>1862 = <>d<>1754
-                                    <>new<>1863 = <>Global<>toNumber(<>old<>1862)
+                                    <>new<>1863 = @ToNumber(<>old<>1862)
                                     <>d<>1754 = <>new<>1863 + 1
                                     <>Global<>ignore308 = <>new<>1863
                                   }
@@ -4173,7 +4173,7 @@ var _gjwl
                             }
                             {
                               <>old<>1864 = <>s<>1760
-                              <>new<>1865 = <>Global<>toNumber(<>old<>1864)
+                              <>new<>1865 = @ToNumber(<>old<>1864)
                               <>s<>1760 = <>new<>1865 + 1
                               <>Global<>ignore296 = <>new<>1865
                               <>obj<>1802 = @ToObject(<>c<>1753)
@@ -4264,7 +4264,7 @@ var _gjwl
                   <>temp<>1900 = "sb"
                   <>temp<>1901 = "al"
                   <>arguments<>1902 = [<>temp<>1899, <>temp<>1900, <>temp<>1901, ]
-                  <>fun<>1903 = <>Global<>getBase(<>t<>474)
+                  <>fun<>1903 = @GetBase(<>t<>474)
                   <>Global<>ignore280 = <>obj<>1898(<>fun<>1903, <>arguments<>1902)
                 }
           }
@@ -4298,14 +4298,14 @@ var _gjwl
                     <>obj<>1915 = @ToObject(<>b<>1907)
                     <>temp<>1916 = <>obj<>1915[<>d<>1909]
                     <>arguments<>1917 = [<>temp<>1914, <>temp<>1916, ]
-                    <>fun<>1918 = <>Global<>getBase(<>K<>856)
+                    <>fun<>1918 = @GetBase(<>K<>856)
                     <>new<>1919 = <>obj<>1913(<>fun<>1918, <>arguments<>1917)
                     if(<>new<>1919)
                       return <>e<>535
                   }
                   {
                     <>old<>1920 = <>d<>1909
-                    <>new<>1921 = <>Global<>toNumber(<>old<>1920)
+                    <>new<>1921 = @ToNumber(<>old<>1920)
                     <>d<>1909 = <>new<>1921 + 1
                     <>Global<>ignore321 = <>new<>1921
                   }
@@ -4331,7 +4331,7 @@ var _gjwl
               <>temp<>1929 = <>b<>1925
               <>temp<>1930 = <>c<>1926
               <>arguments<>1931 = [<>temp<>1928, <>temp<>1929, <>temp<>1930, ]
-              <>fun<>1932 = <>Global<>getBase(<>Za<>871)
+              <>fun<>1932 = @GetBase(<>Za<>871)
               <>Global<>ignore323 = <>obj<>1927(<>fun<>1932, <>arguments<>1931)
             }
           }
@@ -4350,7 +4350,7 @@ var _gjwl
               <>temp<>1939 = "gbe"
               <>temp<>1940 = <>b<>1936
               <>arguments<>1941 = [<>temp<>1938, <>temp<>1939, <>temp<>1940, ]
-              <>fun<>1942 = <>Global<>getBase(<>Za<>871)
+              <>fun<>1942 = @GetBase(<>Za<>871)
               <>Global<>ignore325 = <>obj<>1937(<>fun<>1942, <>arguments<>1941)
             }
           }
@@ -4381,7 +4381,7 @@ var _gjwl
                 }
               }
               <>arguments<>1954 = [<>temp<>1946, ]
-              <>fun<>1955 = <>Global<>getBase(<>D<>839)
+              <>fun<>1955 = @GetBase(<>D<>839)
               <>Global<>ignore327 = <>obj<>1945(<>fun<>1955, <>arguments<>1954)
             }
           }
@@ -4412,7 +4412,7 @@ var _gjwl
                 }
               }
               <>arguments<>1967 = [<>temp<>1959, ]
-              <>fun<>1968 = <>Global<>getBase(<>D<>839)
+              <>fun<>1968 = @GetBase(<>D<>839)
               <>Global<>ignore330 = <>obj<>1958(<>fun<>1968, <>arguments<>1967)
             }
           }
@@ -4473,7 +4473,7 @@ var _gjwl
                 }
               }
               <>arguments<>2000 = [<>temp<>1982, ]
-              <>fun<>2001 = <>Global<>getBase(<>D<>839)
+              <>fun<>2001 = @GetBase(<>D<>839)
               <>Global<>ignore333 = <>obj<>1981(<>fun<>2001, <>arguments<>2000)
             }
           }
@@ -4630,7 +4630,7 @@ var _gjwl
             {
               <>obj<>2059 = @ToObject(<>S<>890)
               <>arguments<>2060 = []
-              <>fun<>2061 = <>Global<>getBase(<>S<>890)
+              <>fun<>2061 = @GetBase(<>S<>890)
               <>Global<>ignore352 = <>obj<>2059(<>fun<>2061, <>arguments<>2060)
             }
             if(<>a<>2055)
@@ -4640,7 +4640,7 @@ var _gjwl
                 <>temp<>2063 = <>a<>2055
                 <>temp<>2064 = "여는 중&hellip;"
                 <>arguments<>2065 = [<>temp<>2063, <>temp<>2064, ]
-                <>fun<>2066 = <>Global<>getBase(<>jb<>887)
+                <>fun<>2066 = @GetBase(<>jb<>887)
                 <>Global<>ignore353 = <>obj<>2062(<>fun<>2066, <>arguments<>2065)
               }
               {
@@ -4648,7 +4648,7 @@ var _gjwl
                 <>temp<>2068 = <>a<>2055
                 <>temp<>2069 = <>e<>535
                 <>arguments<>2070 = [<>temp<>2068, <>temp<>2069, ]
-                <>fun<>2071 = <>Global<>getBase(<>T<>888)
+                <>fun<>2071 = @GetBase(<>T<>888)
                 <>Global<>ignore354 = <>obj<>2067(<>fun<>2071, <>arguments<>2070)
               }
               {
@@ -4670,7 +4670,7 @@ var _gjwl
                       <>obj<>2074 = @ToObject(<>kb<>886)
                       <>temp<>2075 = <>a<>2055
                       <>arguments<>2076 = [<>temp<>2075, ]
-                      <>fun<>2077 = <>Global<>getBase(<>kb<>886)
+                      <>fun<>2077 = @GetBase(<>kb<>886)
                       <>Global<>ignore357 = <>obj<>2074(<>fun<>2077, <>arguments<>2076)
                     }
                   }
@@ -4698,7 +4698,7 @@ var _gjwl
             {
               <>obj<>2086 = @ToObject(<>S<>890)
               <>arguments<>2087 = []
-              <>fun<>2088 = <>Global<>getBase(<>S<>890)
+              <>fun<>2088 = @GetBase(<>S<>890)
               <>Global<>ignore360 = <>obj<>2086(<>fun<>2088, <>arguments<>2087)
             }
             {
@@ -4708,13 +4708,13 @@ var _gjwl
                 <>temp<>2090 = <>a<>2085
                 <>temp<>2091 = <>k<>155
                 <>arguments<>2092 = [<>temp<>2090, <>temp<>2091, ]
-                <>fun<>2093 = <>Global<>getBase(<>T<>888)
+                <>fun<>2093 = @GetBase(<>T<>888)
                 <>temp<>2094 = <>obj<>2089(<>fun<>2093, <>arguments<>2092)
                 <>obj<>2095 = @ToObject(<>jb<>887)
                 <>temp<>2096 = <>a<>2085
                 <>temp<>2097 = ""
                 <>arguments<>2098 = [<>temp<>2096, <>temp<>2097, ]
-                <>fun<>2099 = <>Global<>getBase(<>jb<>887)
+                <>fun<>2099 = @GetBase(<>jb<>887)
                 <>new1<>2100 = <>obj<>2095(<>fun<>2099, <>arguments<>2098)
                 <>Global<>ignore361 = <>new1<>2100
               }
@@ -4738,7 +4738,7 @@ var _gjwl
               {
                 <>obj<>2105 = @ToObject(<>S<>890)
                 <>arguments<>2106 = []
-                <>fun<>2107 = <>Global<>getBase(<>S<>890)
+                <>fun<>2107 = @GetBase(<>S<>890)
                 <>Global<>ignore364 = <>obj<>2105(<>fun<>2107, <>arguments<>2106)
               }
               {
@@ -4763,13 +4763,13 @@ var _gjwl
                   <>temp<>2115 = "이 서비스는 현재 사용할 수 없습니다.%1$s나중에 다시 시도해 주세요."
                   <>temp<>2116 = "%1$s"
                   <>arguments<>2117 = [<>temp<>2114, <>temp<>2115, <>temp<>2116, ]
-                  <>fun<>2118 = <>Global<>getBase(<>jb<>887)
+                  <>fun<>2118 = @GetBase(<>jb<>887)
                   <>temp<>2119 = <>obj<>2113(<>fun<>2118, <>arguments<>2117)
                   <>obj<>2120 = @ToObject(<>T<>888)
                   <>temp<>2121 = <>b<>2104
                   <>temp<>2122 = <>e<>535
                   <>arguments<>2123 = [<>temp<>2121, <>temp<>2122, ]
-                  <>fun<>2124 = <>Global<>getBase(<>T<>888)
+                  <>fun<>2124 = @GetBase(<>T<>888)
                   <>new1<>2125 = <>obj<>2120(<>fun<>2124, <>arguments<>2123)
                   <>Global<>ignore366 = <>new1<>2125
                 }
@@ -4787,7 +4787,7 @@ var _gjwl
                 <>temp<>2129 = "sb"
                 <>temp<>2130 = "sdhe"
                 <>arguments<>2131 = [<>temp<>2128, <>temp<>2129, <>temp<>2130, ]
-                <>fun<>2132 = <>Global<>getBase(<>t<>474)
+                <>fun<>2132 = @GetBase(<>t<>474)
                 <>Global<>ignore363 = <>obj<>2127(<>fun<>2132, <>arguments<>2131)
               }
           }
@@ -4814,7 +4814,7 @@ var _gjwl
                       <>obj<>2142 = @ToObject(<>Sa<>889)
                       <>temp<>2143 = <>a<>2135
                       <>arguments<>2144 = [<>temp<>2143, ]
-                      <>fun<>2145 = <>Global<>getBase(<>Sa<>889)
+                      <>fun<>2145 = @GetBase(<>Sa<>889)
                       <>Global<>ignore368 = <>obj<>2142(<>fun<>2145, <>arguments<>2144)
                       <>d<>2138 = <>Global<>ignore368
                     }
@@ -4865,7 +4865,7 @@ var _gjwl
                             }
                             {
                               <>old<>2163 = <>c<>2137
-                              <>new<>2164 = <>Global<>toNumber(<>old<>2163)
+                              <>new<>2164 = @ToNumber(<>old<>2163)
                               <>c<>2137 = <>new<>2164 + 1
                               <>Global<>ignore373 = <>new<>2164
                               <>obj<>2152 = @ToObject(<>b<>2136)
@@ -4884,7 +4884,7 @@ var _gjwl
                         <>temp<>2167 = <>a<>2135
                         <>temp<>2168 = <>e<>535
                         <>arguments<>2169 = [<>temp<>2167, <>temp<>2168, ]
-                        <>fun<>2170 = <>Global<>getBase(<>T<>888)
+                        <>fun<>2170 = @GetBase(<>T<>888)
                         <>Global<>ignore378 = <>obj<>2166(<>fun<>2170, <>arguments<>2169)
                       }
                     }
@@ -4920,7 +4920,7 @@ var _gjwl
               <>temp<>2177 = <>a<>2173
               <>temp<>2178 = "gbmsgo"
               <>arguments<>2179 = [<>temp<>2177, <>temp<>2178, ]
-              <>fun<>2180 = <>Global<>getBase(<>L<>854)
+              <>fun<>2180 = @GetBase(<>L<>854)
               <>Global<>ignore381 = <>obj<>2176(<>fun<>2180, <>arguments<>2179)
             }
             else
@@ -4929,7 +4929,7 @@ var _gjwl
               <>temp<>2182 = <>a<>2173
               <>temp<>2183 = "gbmsgo"
               <>arguments<>2184 = [<>temp<>2182, <>temp<>2183, ]
-              <>fun<>2185 = <>Global<>getBase(<>M<>855)
+              <>fun<>2185 = @GetBase(<>M<>855)
               <>Global<>ignore381 = <>obj<>2181(<>fun<>2185, <>arguments<>2184)
             }
           }
@@ -4959,14 +4959,14 @@ var _gjwl
                     <>temp<>2196 = <>c<>2190
                     <>temp<>2197 = "gbmsg"
                     <>arguments<>2198 = [<>temp<>2196, <>temp<>2197, ]
-                    <>fun<>2199 = <>Global<>getBase(<>K<>856)
+                    <>fun<>2199 = @GetBase(<>K<>856)
                     <>new<>2200 = <>obj<>2195(<>fun<>2199, <>arguments<>2198)
                     if(<>new<>2200)
                       return <>c<>2190
                   }
                   {
                     <>old<>2201 = <>b<>2189
-                    <>new<>2202 = <>Global<>toNumber(<>old<>2201)
+                    <>new<>2202 = @ToNumber(<>old<>2201)
                     <>b<>2189 = <>new<>2202 + 1
                     <>Global<>ignore385 = <>new<>2202
                     <>obj<>2192 = @ToObject(<>a<>2188)
@@ -5062,7 +5062,7 @@ var _gjwl
         <>temp<>2228 = "so"
         <>temp<>2229 = <>Oa<>860
         <>arguments<>2230 = [<>temp<>2228, <>temp<>2229, ]
-        <>fun<>2231 = <>Global<>getBase(<>r<>135)
+        <>fun<>2231 = @GetBase(<>r<>135)
         <>Global<>ignore393 = <>obj<>2227(<>fun<>2231, <>arguments<>2230)
       }
       {
@@ -5070,7 +5070,7 @@ var _gjwl
         <>temp<>2233 = "sos"
         <>temp<>2234 = <>Na<>859
         <>arguments<>2235 = [<>temp<>2233, <>temp<>2234, ]
-        <>fun<>2236 = <>Global<>getBase(<>r<>135)
+        <>fun<>2236 = @GetBase(<>r<>135)
         <>Global<>ignore394 = <>obj<>2232(<>fun<>2236, <>arguments<>2235)
       }
       {
@@ -5078,7 +5078,7 @@ var _gjwl
         <>temp<>2238 = "si"
         <>temp<>2239 = <>Pa<>861
         <>arguments<>2240 = [<>temp<>2238, <>temp<>2239, ]
-        <>fun<>2241 = <>Global<>getBase(<>r<>135)
+        <>fun<>2241 = @GetBase(<>r<>135)
         <>Global<>ignore395 = <>obj<>2237(<>fun<>2241, <>arguments<>2240)
       }
       {
@@ -5086,7 +5086,7 @@ var _gjwl
         <>temp<>2243 = "tg"
         <>temp<>2244 = <>Va<>867
         <>arguments<>2245 = [<>temp<>2243, <>temp<>2244, ]
-        <>fun<>2246 = <>Global<>getBase(<>r<>135)
+        <>fun<>2246 = @GetBase(<>r<>135)
         <>Global<>ignore396 = <>obj<>2242(<>fun<>2246, <>arguments<>2245)
       }
       {
@@ -5094,7 +5094,7 @@ var _gjwl
         <>temp<>2248 = "close"
         <>temp<>2249 = <>Wa<>868
         <>arguments<>2250 = [<>temp<>2248, <>temp<>2249, ]
-        <>fun<>2251 = <>Global<>getBase(<>r<>135)
+        <>fun<>2251 = @GetBase(<>r<>135)
         <>Global<>ignore397 = <>obj<>2247(<>fun<>2251, <>arguments<>2250)
       }
       {
@@ -5102,7 +5102,7 @@ var _gjwl
         <>temp<>2253 = "rdd"
         <>temp<>2254 = <>Xa<>869
         <>arguments<>2255 = [<>temp<>2253, <>temp<>2254, ]
-        <>fun<>2256 = <>Global<>getBase(<>r<>135)
+        <>fun<>2256 = @GetBase(<>r<>135)
         <>Global<>ignore398 = <>obj<>2252(<>fun<>2256, <>arguments<>2255)
       }
       {
@@ -5110,7 +5110,7 @@ var _gjwl
         <>temp<>2258 = "addLink"
         <>temp<>2259 = <>$a<>873
         <>arguments<>2260 = [<>temp<>2258, <>temp<>2259, ]
-        <>fun<>2261 = <>Global<>getBase(<>r<>135)
+        <>fun<>2261 = @GetBase(<>r<>135)
         <>Global<>ignore399 = <>obj<>2257(<>fun<>2261, <>arguments<>2260)
       }
       {
@@ -5118,7 +5118,7 @@ var _gjwl
         <>temp<>2263 = "addExtraLink"
         <>temp<>2264 = <>ab<>874
         <>arguments<>2265 = [<>temp<>2263, <>temp<>2264, ]
-        <>fun<>2266 = <>Global<>getBase(<>r<>135)
+        <>fun<>2266 = @GetBase(<>r<>135)
         <>Global<>ignore400 = <>obj<>2262(<>fun<>2266, <>arguments<>2265)
       }
       {
@@ -5126,7 +5126,7 @@ var _gjwl
         <>temp<>2268 = "pcm"
         <>temp<>2269 = <>bb<>875
         <>arguments<>2270 = [<>temp<>2268, <>temp<>2269, ]
-        <>fun<>2271 = <>Global<>getBase(<>r<>135)
+        <>fun<>2271 = @GetBase(<>r<>135)
         <>Global<>ignore401 = <>obj<>2267(<>fun<>2271, <>arguments<>2270)
       }
       {
@@ -5134,7 +5134,7 @@ var _gjwl
         <>temp<>2273 = "pca"
         <>temp<>2274 = <>cb<>876
         <>arguments<>2275 = [<>temp<>2273, <>temp<>2274, ]
-        <>fun<>2276 = <>Global<>getBase(<>r<>135)
+        <>fun<>2276 = @GetBase(<>r<>135)
         <>Global<>ignore402 = <>obj<>2272(<>fun<>2276, <>arguments<>2275)
       }
       {
@@ -5142,7 +5142,7 @@ var _gjwl
         <>temp<>2278 = "paa"
         <>temp<>2279 = <>db<>877
         <>arguments<>2280 = [<>temp<>2278, <>temp<>2279, ]
-        <>fun<>2281 = <>Global<>getBase(<>r<>135)
+        <>fun<>2281 = @GetBase(<>r<>135)
         <>Global<>ignore403 = <>obj<>2277(<>fun<>2281, <>arguments<>2280)
       }
       {
@@ -5150,7 +5150,7 @@ var _gjwl
         <>temp<>2283 = "ddld"
         <>temp<>2284 = <>Ta<>884
         <>arguments<>2285 = [<>temp<>2283, <>temp<>2284, ]
-        <>fun<>2286 = <>Global<>getBase(<>r<>135)
+        <>fun<>2286 = @GetBase(<>r<>135)
         <>Global<>ignore404 = <>obj<>2282(<>fun<>2286, <>arguments<>2285)
       }
       {
@@ -5158,7 +5158,7 @@ var _gjwl
         <>temp<>2288 = "ddrd"
         <>temp<>2289 = <>lb<>885
         <>arguments<>2290 = [<>temp<>2288, <>temp<>2289, ]
-        <>fun<>2291 = <>Global<>getBase(<>r<>135)
+        <>fun<>2291 = @GetBase(<>r<>135)
         <>Global<>ignore405 = <>obj<>2287(<>fun<>2291, <>arguments<>2290)
       }
       {
@@ -5166,7 +5166,7 @@ var _gjwl
         <>temp<>2293 = "dderr"
         <>temp<>2294 = <>kb<>886
         <>arguments<>2295 = [<>temp<>2293, <>temp<>2294, ]
-        <>fun<>2296 = <>Global<>getBase(<>r<>135)
+        <>fun<>2296 = @GetBase(<>r<>135)
         <>Global<>ignore406 = <>obj<>2292(<>fun<>2296, <>arguments<>2295)
       }
       {
@@ -5174,7 +5174,7 @@ var _gjwl
         <>temp<>2298 = "rtl"
         <>temp<>2299 = <>Ra<>870
         <>arguments<>2300 = [<>temp<>2298, <>temp<>2299, ]
-        <>fun<>2301 = <>Global<>getBase(<>r<>135)
+        <>fun<>2301 = @GetBase(<>r<>135)
         <>Global<>ignore407 = <>obj<>2297(<>fun<>2301, <>arguments<>2300)
       }
       {
@@ -5182,7 +5182,7 @@ var _gjwl
         <>temp<>2303 = "op"
         <>temp<>2304 = <>ob<>893
         <>arguments<>2305 = [<>temp<>2303, <>temp<>2304, ]
-        <>fun<>2306 = <>Global<>getBase(<>r<>135)
+        <>fun<>2306 = @GetBase(<>r<>135)
         <>Global<>ignore408 = <>obj<>2302(<>fun<>2306, <>arguments<>2305)
       }
       {
@@ -5190,7 +5190,7 @@ var _gjwl
         <>temp<>2308 = "bh"
         <>temp<>2309 = <>O<>862
         <>arguments<>2310 = [<>temp<>2308, <>temp<>2309, ]
-        <>fun<>2311 = <>Global<>getBase(<>r<>135)
+        <>fun<>2311 = @GetBase(<>r<>135)
         <>Global<>ignore409 = <>obj<>2307(<>fun<>2311, <>arguments<>2310)
       }
       {
@@ -5198,7 +5198,7 @@ var _gjwl
         <>temp<>2313 = "abh"
         <>temp<>2314 = <>eb<>878
         <>arguments<>2315 = [<>temp<>2313, <>temp<>2314, ]
-        <>fun<>2316 = <>Global<>getBase(<>r<>135)
+        <>fun<>2316 = @GetBase(<>r<>135)
         <>Global<>ignore410 = <>obj<>2312(<>fun<>2316, <>arguments<>2315)
       }
       {
@@ -5206,7 +5206,7 @@ var _gjwl
         <>temp<>2318 = "dh"
         <>temp<>2319 = <>P<>863
         <>arguments<>2320 = [<>temp<>2318, <>temp<>2319, ]
-        <>fun<>2321 = <>Global<>getBase(<>r<>135)
+        <>fun<>2321 = @GetBase(<>r<>135)
         <>Global<>ignore411 = <>obj<>2317(<>fun<>2321, <>arguments<>2320)
       }
       {
@@ -5214,7 +5214,7 @@ var _gjwl
         <>temp<>2323 = "adh"
         <>temp<>2324 = <>fb<>879
         <>arguments<>2325 = [<>temp<>2323, <>temp<>2324, ]
-        <>fun<>2326 = <>Global<>getBase(<>r<>135)
+        <>fun<>2326 = @GetBase(<>r<>135)
         <>Global<>ignore412 = <>obj<>2322(<>fun<>2326, <>arguments<>2325)
       }
       {
@@ -5222,7 +5222,7 @@ var _gjwl
         <>temp<>2328 = "ch"
         <>temp<>2329 = <>Q<>865
         <>arguments<>2330 = [<>temp<>2328, <>temp<>2329, ]
-        <>fun<>2331 = <>Global<>getBase(<>r<>135)
+        <>fun<>2331 = @GetBase(<>r<>135)
         <>Global<>ignore413 = <>obj<>2327(<>fun<>2331, <>arguments<>2330)
       }
       {
@@ -5230,7 +5230,7 @@ var _gjwl
         <>temp<>2333 = "ach"
         <>temp<>2334 = <>hb<>881
         <>arguments<>2335 = [<>temp<>2333, <>temp<>2334, ]
-        <>fun<>2336 = <>Global<>getBase(<>r<>135)
+        <>fun<>2336 = @GetBase(<>r<>135)
         <>Global<>ignore414 = <>obj<>2332(<>fun<>2336, <>arguments<>2335)
       }
       {
@@ -5238,7 +5238,7 @@ var _gjwl
         <>temp<>2338 = "eh"
         <>temp<>2339 = <>Qa<>864
         <>arguments<>2340 = [<>temp<>2338, <>temp<>2339, ]
-        <>fun<>2341 = <>Global<>getBase(<>r<>135)
+        <>fun<>2341 = @GetBase(<>r<>135)
         <>Global<>ignore415 = <>obj<>2337(<>fun<>2341, <>arguments<>2340)
       }
       {
@@ -5246,7 +5246,7 @@ var _gjwl
         <>temp<>2343 = "aeh"
         <>temp<>2344 = <>gb<>880
         <>arguments<>2345 = [<>temp<>2343, <>temp<>2344, ]
-        <>fun<>2346 = <>Global<>getBase(<>r<>135)
+        <>fun<>2346 = @GetBase(<>r<>135)
         <>Global<>ignore416 = <>obj<>2342(<>fun<>2346, <>arguments<>2345)
       }
       {
@@ -5270,7 +5270,7 @@ var _gjwl
         <>temp<>2353 = "qs"
         <>temp<>2354 = <>ca<>824
         <>arguments<>2355 = [<>temp<>2353, <>temp<>2354, ]
-        <>fun<>2356 = <>Global<>getBase(<>r<>135)
+        <>fun<>2356 = @GetBase(<>r<>135)
         <>Global<>ignore418 = <>obj<>2352(<>fun<>2356, <>arguments<>2355)
       }
       {
@@ -5278,7 +5278,7 @@ var _gjwl
         <>temp<>2358 = "setContinueCb"
         <>temp<>2359 = <>Ja<>378
         <>arguments<>2360 = [<>temp<>2358, <>temp<>2359, ]
-        <>fun<>2361 = <>Global<>getBase(<>r<>135)
+        <>fun<>2361 = @GetBase(<>r<>135)
         <>Global<>ignore419 = <>obj<>2357(<>fun<>2361, <>arguments<>2360)
       }
       {
@@ -5286,7 +5286,7 @@ var _gjwl
         <>temp<>2363 = "pc"
         <>temp<>2364 = <>Ka<>382
         <>arguments<>2365 = [<>temp<>2363, <>temp<>2364, ]
-        <>fun<>2366 = <>Global<>getBase(<>r<>135)
+        <>fun<>2366 = @GetBase(<>r<>135)
         <>Global<>ignore420 = <>obj<>2362(<>fun<>2366, <>arguments<>2365)
       }
       {
@@ -5294,7 +5294,7 @@ var _gjwl
         <>temp<>2368 = "bsy"
         <>temp<>2369 = <>nb<>892
         <>arguments<>2370 = [<>temp<>2368, <>temp<>2369, ]
-        <>fun<>2371 = <>Global<>getBase(<>r<>135)
+        <>fun<>2371 = @GetBase(<>r<>135)
         <>Global<>ignore421 = <>obj<>2367(<>fun<>2371, <>arguments<>2370)
       }
       {
@@ -5343,7 +5343,7 @@ var _gjwl
           rg : <>temp<>2384
         }
         <>arguments<>2386 = [<>temp<>2383, <>temp<>2385, ]
-        <>fun<>2387 = <>Global<>getBase(<>r<>135)
+        <>fun<>2387 = @GetBase(<>r<>135)
         <>Global<>ignore428 = <>obj<>2382(<>fun<>2387, <>arguments<>2386)
       }
       {
@@ -5465,7 +5465,7 @@ var _gjwl
                         {
                           <>obj<>2448 = @ToObject(<>a<>2444)
                           <>arguments<>2449 = []
-                          <>fun<>2450 = <>Global<>getBase(<>a<>2444)
+                          <>fun<>2450 = @GetBase(<>a<>2444)
                           <>new1<>2451 = <>obj<>2448(<>fun<>2450, <>arguments<>2449)
                           <>Global<>ignore438 = <>new1<>2451
                         }
@@ -5484,7 +5484,7 @@ var _gjwl
                       <>obj<>2452 = @ToObject(<>qa<>841)
                       <>temp<>2453 = <>a<>2444
                       <>arguments<>2454 = [<>temp<>2453, ]
-                      <>fun<>2455 = <>Global<>getBase(<>qa<>841)
+                      <>fun<>2455 = @GetBase(<>qa<>841)
                       <>new1<>2456 = <>obj<>2452(<>fun<>2455, <>arguments<>2454)
                       <>temp<>2457 = <>new1<>2456
                     }
@@ -5497,7 +5497,7 @@ var _gjwl
                   <>obj<>2458 = @ToObject(<>G<>840)
                   <>temp<>2459 = "gc"
                   <>arguments<>2460 = [<>temp<>2459, ]
-                  <>fun<>2461 = <>Global<>getBase(<>G<>840)
+                  <>fun<>2461 = @GetBase(<>G<>840)
                   <>Global<>ignore438 = <>obj<>2458(<>fun<>2461, <>arguments<>2460)
                 }
               }
@@ -5509,7 +5509,7 @@ var _gjwl
             <>temp<>2463 = "lGC"
             <>temp<>2464 = <>ub<>899
             <>arguments<>2465 = [<>temp<>2463, <>temp<>2464, ]
-            <>fun<>2466 = <>Global<>getBase(<>r<>135)
+            <>fun<>2466 = @GetBase(<>r<>135)
             <>Global<>ignore439 = <>obj<>2462(<>fun<>2466, <>arguments<>2465)
           }
           {
@@ -5524,7 +5524,7 @@ var _gjwl
               <>temp<>2473 = "lPWF"
               <>temp<>2474 = <>ub<>899
               <>arguments<>2475 = [<>temp<>2473, <>temp<>2474, ]
-              <>fun<>2476 = <>Global<>getBase(<>r<>135)
+              <>fun<>2476 = @GetBase(<>r<>135)
               <>new1<>2477 = <>obj<>2472(<>fun<>2476, <>arguments<>2475)
               <>Global<>ignore440 = <>new1<>2477
             }
@@ -5573,19 +5573,19 @@ var _gjwl
                         <>temp<>2498 = "pw"
                         <>temp<>2499 = <>a<>2492
                         <>arguments<>2500 = [<>temp<>2498, <>temp<>2499, ]
-                        <>fun<>2501 = <>Global<>getBase(<>C<>838)
+                        <>fun<>2501 = @GetBase(<>C<>838)
                         <>Global<>ignore444 = <>obj<>2497(<>fun<>2501, <>arguments<>2500)
                       }
                       {
                         <>obj<>2502 = @ToObject(<>G<>840)
                         <>temp<>2503 = "pw"
                         <>arguments<>2504 = [<>temp<>2503, ]
-                        <>fun<>2505 = <>Global<>getBase(<>G<>840)
+                        <>fun<>2505 = @GetBase(<>G<>840)
                         <>Global<>ignore445 = <>obj<>2502(<>fun<>2505, <>arguments<>2504)
                       }
                     }
                     <>arguments<>2506 = [<>temp<>2494, ]
-                    <>fun<>2507 = <>Global<>getBase(<>ub<>899)
+                    <>fun<>2507 = @GetBase(<>ub<>899)
                     <>Global<>ignore443 = <>obj<>2493(<>fun<>2507, <>arguments<>2506)
                   }
                 }
@@ -5596,7 +5596,7 @@ var _gjwl
                 <>temp<>2509 = "lPW"
                 <>temp<>2510 = <>vb<>900
                 <>arguments<>2511 = [<>temp<>2509, <>temp<>2510, ]
-                <>fun<>2512 = <>Global<>getBase(<>r<>135)
+                <>fun<>2512 = @GetBase(<>r<>135)
                 <>Global<>ignore446 = <>obj<>2508(<>fun<>2512, <>arguments<>2511)
               }
               {
@@ -5656,7 +5656,7 @@ var _gjwl
                       <>temp<>2531 = <>a<>2525
                       <>temp<>2532 = <>c<>2527
                       <>arguments<>2533 = [<>temp<>2531, <>temp<>2532, ]
-                      <>fun<>2534 = <>Global<>getBase(<>u<>355)
+                      <>fun<>2534 = @GetBase(<>u<>355)
                       <>Global<>ignore454 = <>obj<>2530(<>fun<>2534, <>arguments<>2533)
                     }
                   }
@@ -5670,7 +5670,7 @@ var _gjwl
                     [[Prototype]]=<>proto<>2537
                   }
                   <>newObj<>2539 = new <>fun<>2535(<>obj<>2538, <>arguments<>2536)
-                  <>cond<>2540 = <>Global<>isObject(<>newObj<>2539)
+                  <>cond<>2540 = @isObject(<>newObj<>2539)
                   if(<>cond<>2540)
                     <>obj1<>2541 = <>newObj<>2539
                   else
@@ -5751,7 +5751,7 @@ var _gjwl
                                     }
                                     {
                                       <>old<>2575 = <>d<>2568
-                                      <>new<>2576 = <>Global<>toNumber(<>old<>2575)
+                                      <>new<>2576 = @ToNumber(<>old<>2575)
                                       <>d<>2568 = <>new<>2576 + 1
                                       <>Global<>ignore466 = <>new<>2576 + 1
                                     }
@@ -5770,7 +5770,7 @@ var _gjwl
                               }
                             }
                             <>arguments<>2584 = [<>temp<>2564, ]
-                            <>fun<>2585 = <>Global<>getBase(<>a<>2549)
+                            <>fun<>2585 = @GetBase(<>a<>2549)
                             <>Global<>ignore461 = <>obj<>2563(<>fun<>2585, <>arguments<>2584)
                           }
                         }
@@ -5809,7 +5809,7 @@ var _gjwl
                         }
                         {
                           <>old<>2594 = <>f<>2554
-                          <>new<>2595 = <>Global<>toNumber(<>old<>2594)
+                          <>new<>2595 = @ToNumber(<>old<>2594)
                           <>f<>2554 = <>new<>2595 + 1
                           <>Global<>ignore473 = <>new<>2595 + 1
                         }
@@ -5830,7 +5830,7 @@ var _gjwl
                 <>temp<>2599 = <>vb<>900
                 <>temp<>2600 = "pw.clk"
                 <>arguments<>2601 = [<>temp<>2599, <>temp<>2600, ]
-                <>fun<>2602 = <>Global<>getBase(<>Bb<>905)
+                <>fun<>2602 = @GetBase(<>Bb<>905)
                 <>Global<>ignore475 = <>obj<>2598(<>fun<>2602, <>arguments<>2601)
               }
               {
@@ -5838,7 +5838,7 @@ var _gjwl
                 <>temp<>2604 = <>vb<>900
                 <>temp<>2605 = "pw.hvr"
                 <>arguments<>2606 = [<>temp<>2604, <>temp<>2605, ]
-                <>fun<>2607 = <>Global<>getBase(<>Bb<>905)
+                <>fun<>2607 = @GetBase(<>Bb<>905)
                 <>Global<>ignore476 = <>obj<>2603(<>fun<>2607, <>arguments<>2606)
               }
               {
@@ -5848,7 +5848,7 @@ var _gjwl
                 <>obj<>2611 = @ToObject(<>n<>141)
                 <>temp<>2612 = <>obj<>2611["pw"]
                 <>arguments<>2613 = [<>temp<>2609, <>temp<>2610, <>temp<>2612, ]
-                <>fun<>2614 = <>Global<>getBase(<>r<>135)
+                <>fun<>2614 = @GetBase(<>r<>135)
                 <>Global<>ignore477 = <>obj<>2608(<>fun<>2614, <>arguments<>2613)
               }
             }
@@ -5973,7 +5973,7 @@ var _gjwl
         <>temp<>2659 = <>v<>828
         <>temp<>2660 = <>x<>360
         <>arguments<>2661 = [<>temp<>2658, <>temp<>2659, <>temp<>2660, ]
-        <>fun<>2662 = <>Global<>getBase(<>r<>135)
+        <>fun<>2662 = @GetBase(<>r<>135)
         <>Global<>ignore488 = <>obj<>2657(<>fun<>2662, <>arguments<>2661)
       }
       {
@@ -6032,7 +6032,7 @@ var _gjwl
                 }
               }
               <>arguments<>2693 = [<>temp<>2677, ]
-              <>fun<>2694 = <>Global<>getBase(<>D<>839)
+              <>fun<>2694 = @GetBase(<>D<>839)
               <>Global<>ignore492 = <>obj<>2676(<>fun<>2694, <>arguments<>2693)
             }
           }
@@ -6053,7 +6053,7 @@ var _gjwl
                 }
               }
               <>arguments<>2704 = [<>temp<>2698, ]
-              <>fun<>2705 = <>Global<>getBase(<>D<>839)
+              <>fun<>2705 = @GetBase(<>D<>839)
               <>Global<>ignore495 = <>obj<>2697(<>fun<>2705, <>arguments<>2704)
             }
           }
@@ -6077,7 +6077,7 @@ var _gjwl
                 }
               }
               <>arguments<>2717 = [<>temp<>2710, ]
-              <>fun<>2718 = <>Global<>getBase(<>D<>839)
+              <>fun<>2718 = @GetBase(<>D<>839)
               <>Global<>ignore498 = <>obj<>2709(<>fun<>2718, <>arguments<>2717)
             }
           }
@@ -6101,7 +6101,7 @@ var _gjwl
                 }
               }
               <>arguments<>2730 = [<>temp<>2723, ]
-              <>fun<>2731 = <>Global<>getBase(<>D<>839)
+              <>fun<>2731 = @GetBase(<>D<>839)
               <>Global<>ignore501 = <>obj<>2722(<>fun<>2731, <>arguments<>2730)
             }
           }
@@ -6125,7 +6125,7 @@ var _gjwl
                 }
               }
               <>arguments<>2743 = [<>temp<>2736, ]
-              <>fun<>2744 = <>Global<>getBase(<>D<>839)
+              <>fun<>2744 = @GetBase(<>D<>839)
               <>Global<>ignore504 = <>obj<>2735(<>fun<>2744, <>arguments<>2743)
             }
           }
@@ -6173,7 +6173,7 @@ var _gjwl
                 }
               }
               <>arguments<>2759 = [<>temp<>2753, ]
-              <>fun<>2760 = <>Global<>getBase(<>D<>839)
+              <>fun<>2760 = @GetBase(<>D<>839)
               <>Global<>ignore509 = <>obj<>2752(<>fun<>2760, <>arguments<>2759)
             }
           }
@@ -6185,7 +6185,7 @@ var _gjwl
         <>temp<>2762 = "spn"
         <>temp<>2763 = <>Ob<>910
         <>arguments<>2764 = [<>temp<>2762, <>temp<>2763, ]
-        <>fun<>2765 = <>Global<>getBase(<>r<>135)
+        <>fun<>2765 = @GetBase(<>r<>135)
         <>Global<>ignore511 = <>obj<>2761(<>fun<>2765, <>arguments<>2764)
       }
       {
@@ -6193,7 +6193,7 @@ var _gjwl
         <>temp<>2767 = "spp"
         <>temp<>2768 = <>Qb<>912
         <>arguments<>2769 = [<>temp<>2767, <>temp<>2768, ]
-        <>fun<>2770 = <>Global<>getBase(<>r<>135)
+        <>fun<>2770 = @GetBase(<>r<>135)
         <>Global<>ignore512 = <>obj<>2766(<>fun<>2770, <>arguments<>2769)
       }
       {
@@ -6201,7 +6201,7 @@ var _gjwl
         <>temp<>2772 = "sps"
         <>temp<>2773 = <>Pb<>911
         <>arguments<>2774 = [<>temp<>2772, <>temp<>2773, ]
-        <>fun<>2775 = <>Global<>getBase(<>r<>135)
+        <>fun<>2775 = @GetBase(<>r<>135)
         <>Global<>ignore513 = <>obj<>2771(<>fun<>2775, <>arguments<>2774)
       }
       {
@@ -6209,7 +6209,7 @@ var _gjwl
         <>temp<>2777 = "spd"
         <>temp<>2778 = <>Tb<>915
         <>arguments<>2779 = [<>temp<>2777, <>temp<>2778, ]
-        <>fun<>2780 = <>Global<>getBase(<>r<>135)
+        <>fun<>2780 = @GetBase(<>r<>135)
         <>Global<>ignore514 = <>obj<>2776(<>fun<>2780, <>arguments<>2779)
       }
       {
@@ -6217,7 +6217,7 @@ var _gjwl
         <>temp<>2782 = "paa"
         <>temp<>2783 = <>Mb<>908
         <>arguments<>2784 = [<>temp<>2782, <>temp<>2783, ]
-        <>fun<>2785 = <>Global<>getBase(<>r<>135)
+        <>fun<>2785 = @GetBase(<>r<>135)
         <>Global<>ignore515 = <>obj<>2781(<>fun<>2785, <>arguments<>2784)
       }
       {
@@ -6225,7 +6225,7 @@ var _gjwl
         <>temp<>2787 = "prm"
         <>temp<>2788 = <>Nb<>909
         <>arguments<>2789 = [<>temp<>2787, <>temp<>2788, ]
-        <>fun<>2790 = <>Global<>getBase(<>r<>135)
+        <>fun<>2790 = @GetBase(<>r<>135)
         <>Global<>ignore516 = <>obj<>2786(<>fun<>2790, <>arguments<>2789)
       }
       {
@@ -6233,7 +6233,7 @@ var _gjwl
         <>temp<>2792 = "gbd4"
         <>temp<>2793 = <>Nb<>909
         <>arguments<>2794 = [<>temp<>2792, <>temp<>2793, ]
-        <>fun<>2795 = <>Global<>getBase(<>eb<>878)
+        <>fun<>2795 = @GetBase(<>eb<>878)
         <>Global<>ignore517 = <>obj<>2791(<>fun<>2795, <>arguments<>2794)
       }
       {
@@ -6385,7 +6385,7 @@ var _gjwl
                 }
                 {
                   <>old<>2859 = <>c<>2831
-                  <>new<>2860 = <>Global<>toNumber(<>old<>2859)
+                  <>new<>2860 = @ToNumber(<>old<>2859)
                   <>c<>2831 = <>new<>2860 + 1
                   <>Global<>ignore525 = <>new<>2860
                   <>y<>2854 = <>c<>2831
@@ -6410,7 +6410,7 @@ var _gjwl
               <>temp<>2867 = <>a<>2863
               <>temp<>2868 = <>X<>921
               <>arguments<>2869 = [<>temp<>2867, <>temp<>2868, ]
-              <>fun<>2870 = <>Global<>getBase(<>Xb<>922)
+              <>fun<>2870 = @GetBase(<>Xb<>922)
               <>z<>2871 = <>obj<>2866(<>fun<>2870, <>arguments<>2869)
               if(<>y<>2865 == <>z<>2871)
               {
@@ -6418,12 +6418,12 @@ var _gjwl
                 <>obj<>2873 = @ToObject(Error)
                 <>temp<>2874 = <>X<>921 + "_" + <>b<>2864
                 <>arguments<>2875 = [<>temp<>2874, ]
-                <>fun<>2876 = <>Global<>getBase(Error)
+                <>fun<>2876 = @GetBase(Error)
                 <>temp<>2877 = <>obj<>2873(<>fun<>2876, <>arguments<>2875)
                 <>temp<>2878 = "up"
                 <>temp<>2879 = "caa"
                 <>arguments<>2880 = [<>temp<>2877, <>temp<>2878, <>temp<>2879, ]
-                <>fun<>2881 = <>Global<>getBase(<>t<>474)
+                <>fun<>2881 = @GetBase(<>t<>474)
                 <>temp<>2882 = <>obj<>2872(<>fun<>2881, <>arguments<>2880)
                 <>new1<>2883 = <>k<>155
               }
@@ -6450,7 +6450,7 @@ var _gjwl
               <>temp<>2891 = [<>temp<>2889, <>temp<>2890, ]
               <>temp<>2892 = "r"
               <>arguments<>2893 = [<>temp<>2891, <>temp<>2892, ]
-              <>fun<>2894 = <>Global<>getBase(<>Z<>923)
+              <>fun<>2894 = @GetBase(<>Z<>923)
               <>new0<>2895 = <>obj<>2888(<>fun<>2894, <>arguments<>2893)
               if(<>new0<>2895)
               {
@@ -6482,10 +6482,10 @@ var _gjwl
                         <>obj<>2911 = @ToObject(<>Yb<>928)
                         <>temp<>2912 = <>a<>2886
                         <>arguments<>2913 = [<>temp<>2912, ]
-                        <>fun<>2914 = <>Global<>getBase(<>Yb<>928)
+                        <>fun<>2914 = @GetBase(<>Yb<>928)
                         <>temp<>2915 = <>obj<>2911(<>fun<>2914, <>arguments<>2913)
                         <>arguments<>2916 = [<>temp<>2915, ]
-                        <>fun<>2917 = <>Global<>getBase(<>b<>2887)
+                        <>fun<>2917 = @GetBase(<>b<>2887)
                         <>Global<>ignore529 = <>obj<>2910(<>fun<>2917, <>arguments<>2916)
                       }
                     }
@@ -6528,7 +6528,7 @@ var _gjwl
               <>temp<>2931 = [<>temp<>2930, ]
               <>temp<>2932 = "nap"
               <>arguments<>2933 = [<>temp<>2931, <>temp<>2932, ]
-              <>fun<>2934 = <>Global<>getBase(<>Z<>923)
+              <>fun<>2934 = @GetBase(<>Z<>923)
               <>new0<>2935 = <>obj<>2929(<>fun<>2934, <>arguments<>2933)
               <>label<>2936 : if(<>new0<>2935)
                 if(<>c<>2927)
@@ -6551,7 +6551,7 @@ var _gjwl
                         }
                         {
                           <>old<>2943 = <>d<>2928
-                          <>new<>2944 = <>Global<>toNumber(<>old<>2943)
+                          <>new<>2944 = @ToNumber(<>old<>2943)
                           <>d<>2928 = <>new<>2944 + 1
                           <>Global<>ignore533 = <>new<>2944
                           <>y<>2938 = <>d<>2928
@@ -6593,7 +6593,7 @@ var _gjwl
               <>temp<>2961 = [<>temp<>2960, ]
               <>temp<>2962 = "aop"
               <>arguments<>2963 = [<>temp<>2961, <>temp<>2962, ]
-              <>fun<>2964 = <>Global<>getBase(<>Z<>923)
+              <>fun<>2964 = @GetBase(<>Z<>923)
               <>new0<>2965 = <>obj<>2959(<>fun<>2964, <>arguments<>2963)
               <>label<>2966 : if(<>new0<>2965)
                 if(<>c<>2957)
@@ -6603,12 +6603,12 @@ var _gjwl
                       <>break<>2967 : {
                         {
                           <>obj<>2968 = <>W<>919
-                          <>iterator<>2969 = <>Global<>iteratorInit(<>obj<>2968)
-                          <>cond1<>2970 = <>Global<>iteratorHasNext(<>obj<>2968, <>iterator<>2969)
+                          <>iterator<>2969 = @iteratorInit(<>obj<>2968)
+                          <>cond1<>2970 = @iteratorHasNext(<>obj<>2968, <>iterator<>2969)
                         }
                         while(<>cond1<>2970)
                         {
-                          <>key<>2971 = <>Global<>iteratorNext(<>obj<>2968, <>iterator<>2969)
+                          <>key<>2971 = @iteratorNext(<>obj<>2968, <>iterator<>2969)
                           <>d<>2958 = <>key<>2971
                           <>continue<>2972 : {
                             <>obj<>2973 = @ToObject(<>W<>919)
@@ -6621,7 +6621,7 @@ var _gjwl
                                 <>temp<>2977 = <>c<>2957
                                 <>temp<>2978 = <>d<>2958
                                 <>arguments<>2979 = [<>temp<>2977, <>temp<>2978, ]
-                                <>fun<>2980 = <>Global<>getBase(<>Xb<>922)
+                                <>fun<>2980 = @GetBase(<>Xb<>922)
                                 <>z<>2981 = <>obj<>2976(<>fun<>2980, <>arguments<>2979)
                                 <>Global<>ignore537 = <>y<>2975 != <>z<>2981
                               }
@@ -6634,7 +6634,7 @@ var _gjwl
                             <>obj<>2973[<>d<>2958] = <>Global<>ignore537
                           }
                           {
-                            <>cond1<>2970 = <>Global<>iteratorHasNext(<>obj<>2968, <>iterator<>2969)
+                            <>cond1<>2970 = @iteratorHasNext(<>obj<>2968, <>iterator<>2969)
                           }
                         }
                       }
@@ -6662,7 +6662,7 @@ var _gjwl
                           }
                           {
                             <>old<>2988 = <>d<>2958
-                            <>new<>2989 = <>Global<>toNumber(<>old<>2988)
+                            <>new<>2989 = @ToNumber(<>old<>2988)
                             <>d<>2958 = <>new<>2989 + 1
                             <>Global<>ignore542 = <>new<>2989
                             <>y<>2983 = <>d<>2958
@@ -6705,12 +6705,12 @@ var _gjwl
                   <>break<>3004 : {
                     {
                       <>obj<>3005 = <>V<>917
-                      <>iterator<>3006 = <>Global<>iteratorInit(<>obj<>3005)
-                      <>cond1<>3007 = <>Global<>iteratorHasNext(<>obj<>3005, <>iterator<>3006)
+                      <>iterator<>3006 = @iteratorInit(<>obj<>3005)
+                      <>cond1<>3007 = @iteratorHasNext(<>obj<>3005, <>iterator<>3006)
                     }
                     while(<>cond1<>3007)
                     {
-                      <>key<>3008 = <>Global<>iteratorNext(<>obj<>3005, <>iterator<>3006)
+                      <>key<>3008 = @iteratorNext(<>obj<>3005, <>iterator<>3006)
                       <>a<>3000 = <>key<>3008
                       <>continue<>3009 : {
                         {
@@ -6735,7 +6735,7 @@ var _gjwl
                                 <>obj<>3016 = @ToObject(<>Yb<>928)
                                 <>temp<>3017 = <>a<>3000
                                 <>arguments<>3018 = [<>temp<>3017, ]
-                                <>fun<>3019 = <>Global<>getBase(<>Yb<>928)
+                                <>fun<>3019 = @GetBase(<>Yb<>928)
                                 <>temp<>3020 = <>obj<>3016(<>fun<>3019, <>arguments<>3018)
                                 <>arguments<>3021 = [<>temp<>3020, ]
                                 <>fun<>3022 = @ToObject(<>obj<>3015[<>c<>3002])
@@ -6748,12 +6748,12 @@ var _gjwl
                                 <>temp<>3026 = "up"
                                 <>temp<>3027 = "tp"
                                 <>arguments<>3028 = [<>temp<>3025, <>temp<>3026, <>temp<>3027, ]
-                                <>fun<>3029 = <>Global<>getBase(<>t<>474)
+                                <>fun<>3029 = @GetBase(<>t<>474)
                                 <>Global<>ignore552 = <>obj<>3024(<>fun<>3029, <>arguments<>3028)
                               }
                             {
                               <>old<>3030 = <>c<>3002
-                              <>new<>3031 = <>Global<>toNumber(<>old<>3030)
+                              <>new<>3031 = @ToNumber(<>old<>3030)
                               <>c<>3002 = <>new<>3031 + 1
                               <>Global<>ignore551 = <>new<>3031
                               <>y<>3012 = <>c<>3002
@@ -6763,7 +6763,7 @@ var _gjwl
                         }
                       }
                       {
-                        <>cond1<>3007 = <>Global<>iteratorHasNext(<>obj<>3005, <>iterator<>3006)
+                        <>cond1<>3007 = @iteratorHasNext(<>obj<>3005, <>iterator<>3006)
                       }
                     }
                   }
@@ -6776,7 +6776,7 @@ var _gjwl
                 <>temp<>3035 = "up"
                 <>temp<>3036 = "mtp"
                 <>arguments<>3037 = [<>temp<>3034, <>temp<>3035, <>temp<>3036, ]
-                <>fun<>3038 = <>Global<>getBase(<>t<>474)
+                <>fun<>3038 = @GetBase(<>t<>474)
                 <>Global<>ignore546 = <>obj<>3033(<>fun<>3038, <>arguments<>3037)
               }
           }
@@ -6794,7 +6794,7 @@ var _gjwl
               <>temp<>3045 = [<>temp<>3044, ]
               <>temp<>3046 = "ssp"
               <>arguments<>3047 = [<>temp<>3045, <>temp<>3046, ]
-              <>fun<>3048 = <>Global<>getBase(<>Z<>923)
+              <>fun<>3048 = @GetBase(<>Z<>923)
               <>new<>3049 = <>obj<>3043(<>fun<>3048, <>arguments<>3047)
               if(<>new<>3049)
               {
@@ -6958,7 +6958,7 @@ var _gjwl
                 <>obj<>3081 = @ToObject(<>cc<>929)
                 <>temp<>3082 = document
                 <>arguments<>3083 = [<>temp<>3082, ]
-                <>fun<>3084 = <>Global<>getBase(<>cc<>929)
+                <>fun<>3084 = @GetBase(<>cc<>929)
                 <>y<>3085 = <>obj<>3081(<>fun<>3084, <>arguments<>3083)
                 if(<>y<>3085)
                   <>Global<>ignore569 = <>y<>3085
@@ -6973,7 +6973,7 @@ var _gjwl
                   }
                   <>obj<>3087 = @ToObject(<>dc<>930)
                   <>arguments<>3088 = []
-                  <>fun<>3089 = <>Global<>getBase(<>dc<>930)
+                  <>fun<>3089 = @GetBase(<>dc<>930)
                   <>new1<>3090 = <>obj<>3087(<>fun<>3089, <>arguments<>3088)
                   if(<>new1<>3090)
                   {
@@ -6991,7 +6991,7 @@ var _gjwl
                       <>obj<>3098 = @ToObject(<>ec<>931)
                       <>temp<>3099 = <>a<>3077
                       <>arguments<>3100 = [<>temp<>3099, ]
-                      <>fun<>3101 = <>Global<>getBase(<>ec<>931)
+                      <>fun<>3101 = @GetBase(<>ec<>931)
                       <>new0<>3102 = <>obj<>3098(<>fun<>3101, <>arguments<>3100)
                       if(<>new0<>3102)
                       {
@@ -7031,7 +7031,7 @@ var _gjwl
                   <>temp<>3121 = "up"
                   <>temp<>3122 = "spd"
                   <>arguments<>3123 = [<>temp<>3120, <>temp<>3121, <>temp<>3122, ]
-                  <>fun<>3124 = <>Global<>getBase(<>t<>474)
+                  <>fun<>3124 = @GetBase(<>t<>474)
                   <>new1<>3125 = <>obj<>3119(<>fun<>3124, <>arguments<>3123)
                   <>Global<>ignore568 = <>new1<>3125
                 }
@@ -7059,7 +7059,7 @@ var _gjwl
                 <>obj<>3131 = @ToObject(<>cc<>929)
                 <>temp<>3132 = document
                 <>arguments<>3133 = [<>temp<>3132, ]
-                <>fun<>3134 = <>Global<>getBase(<>cc<>929)
+                <>fun<>3134 = @GetBase(<>cc<>929)
                 <>new<>3135 = <>obj<>3131(<>fun<>3134, <>arguments<>3133)
                 if(<>new<>3135)
                   return ""
@@ -7074,7 +7074,7 @@ var _gjwl
               {
                 <>obj<>3136 = @ToObject(<>dc<>930)
                 <>arguments<>3137 = []
-                <>fun<>3138 = <>Global<>getBase(<>dc<>930)
+                <>fun<>3138 = @GetBase(<>dc<>930)
                 <>new<>3139 = <>obj<>3136(<>fun<>3138, <>arguments<>3137)
                 if(<>new<>3139)
                 {
@@ -7091,7 +7091,7 @@ var _gjwl
                 <>obj<>3146 = @ToObject(<>ec<>931)
                 <>temp<>3147 = <>a<>3128
                 <>arguments<>3148 = [<>temp<>3147, ]
-                <>fun<>3149 = <>Global<>getBase(<>ec<>931)
+                <>fun<>3149 = @GetBase(<>ec<>931)
                 <>new<>3150 = <>obj<>3146(<>fun<>3149, <>arguments<>3148)
                 if(<>new<>3150)
                 {
@@ -7122,7 +7122,7 @@ var _gjwl
                   <>temp<>3168 = "up"
                   <>temp<>3169 = "gpd"
                   <>arguments<>3170 = [<>temp<>3167, <>temp<>3168, <>temp<>3169, ]
-                  <>fun<>3171 = <>Global<>getBase(<>t<>474)
+                  <>fun<>3171 = @GetBase(<>t<>474)
                   <>new1<>3172 = <>obj<>3166(<>fun<>3171, <>arguments<>3170)
                   <>Global<>ignore571 = <>new1<>3172
                 }
@@ -7226,7 +7226,7 @@ var _gjwl
                   }
                   {
                     <>old<>3203 = <>b<>3195
-                    <>new<>3204 = <>Global<>toNumber(<>old<>3203)
+                    <>new<>3204 = @ToNumber(<>old<>3203)
                     <>b<>3195 = <>new<>3204 + 1
                     <>Global<>ignore578 = <>new<>3204
                     <>obj<>3199 = @ToObject(<>a<>3194)
@@ -7255,7 +7255,7 @@ var _gjwl
           aal : <>ic<>935
         }
         <>arguments<>3208 = [<>temp<>3206, <>temp<>3207, ]
-        <>fun<>3209 = <>Global<>getBase(<>r<>135)
+        <>fun<>3209 = @GetBase(<>r<>135)
         <>Global<>ignore581 = <>obj<>3205(<>fun<>3209, <>arguments<>3208)
       }
       {
@@ -7305,7 +7305,7 @@ var _gjwl
         <>temp<>3233 = <>obj<>3232["up"]
         <>temp<>3234 = "sl"
         <>arguments<>3235 = [<>temp<>3233, <>temp<>3234, ]
-        <>fun<>3236 = <>Global<>getBase(<>jc<>936)
+        <>fun<>3236 = @GetBase(<>jc<>936)
         <>Global<>ignore587 = <>obj<>3231(<>fun<>3236, <>arguments<>3235)
       }
       {
@@ -7314,7 +7314,7 @@ var _gjwl
         <>temp<>3239 = <>obj<>3238["up"]
         <>temp<>3240 = "si"
         <>arguments<>3241 = [<>temp<>3239, <>temp<>3240, ]
-        <>fun<>3242 = <>Global<>getBase(<>jc<>936)
+        <>fun<>3242 = @GetBase(<>jc<>936)
         <>Global<>ignore588 = <>obj<>3237(<>fun<>3242, <>arguments<>3241)
       }
       {
@@ -7323,7 +7323,7 @@ var _gjwl
         <>temp<>3245 = <>obj<>3244["up"]
         <>temp<>3246 = "spl"
         <>arguments<>3247 = [<>temp<>3245, <>temp<>3246, ]
-        <>fun<>3248 = <>Global<>getBase(<>jc<>936)
+        <>fun<>3248 = @GetBase(<>jc<>936)
         <>Global<>ignore589 = <>obj<>3243(<>fun<>3248, <>arguments<>3247)
       }
       {
@@ -7352,7 +7352,7 @@ var _gjwl
         <>temp<>3261 = "rdl"
         <>temp<>3262 = <>kc<>713
         <>arguments<>3263 = [<>temp<>3261, <>temp<>3262, ]
-        <>fun<>3264 = <>Global<>getBase(<>r<>135)
+        <>fun<>3264 = @GetBase(<>r<>135)
         <>Global<>ignore591 = <>obj<>3260(<>fun<>3264, <>arguments<>3263)
       }
     }
@@ -7572,7 +7572,7 @@ var _gjwl
               <>temp<>3403 = "es"
               <>temp<>3404 = <>d<>3400
               <>arguments<>3405 = [<>temp<>3402, <>temp<>3403, <>temp<>3404, ]
-              <>fun<>3406 = <>Global<>getBase(<>aa<>3302)
+              <>fun<>3406 = @GetBase(<>aa<>3302)
               <>Global<>ignore602 = <>obj<>3401(<>fun<>3406, <>arguments<>3405)
             }
           }
@@ -8343,7 +8343,7 @@ var _gjwl
                 <>obj<>3773 = @ToObject(<>V<>3388)
                 <>temp<>3774 = "gbexxl"
                 <>arguments<>3775 = [<>temp<>3774, ]
-                <>fun<>3776 = <>Global<>getBase(<>V<>3388)
+                <>fun<>3776 = @GetBase(<>V<>3388)
                 <>temp<>3777 = <>obj<>3773(<>fun<>3776, <>arguments<>3775)
                 <>obj<>3778 = @ToObject(<>e<>3304)
                 <>temp<>3779 = "27"
@@ -8359,7 +8359,7 @@ var _gjwl
                   <>obj<>3782 = @ToObject(<>V<>3388)
                   <>temp<>3783 = "gbexl"
                   <>arguments<>3784 = [<>temp<>3783, ]
-                  <>fun<>3785 = <>Global<>getBase(<>V<>3388)
+                  <>fun<>3785 = @GetBase(<>V<>3388)
                   <>temp<>3786 = <>obj<>3782(<>fun<>3785, <>arguments<>3784)
                   <>obj<>3787 = @ToObject(<>e<>3304)
                   <>temp<>3788 = "27"
@@ -8375,7 +8375,7 @@ var _gjwl
                     <>obj<>3791 = @ToObject(<>V<>3388)
                     <>temp<>3792 = ""
                     <>arguments<>3793 = [<>temp<>3792, ]
-                    <>fun<>3794 = <>Global<>getBase(<>V<>3388)
+                    <>fun<>3794 = @GetBase(<>V<>3388)
                     <>temp<>3795 = <>obj<>3791(<>fun<>3794, <>arguments<>3793)
                     <>obj<>3796 = @ToObject(<>e<>3304)
                     <>temp<>3797 = "27"
@@ -8391,7 +8391,7 @@ var _gjwl
                       <>obj<>3800 = @ToObject(<>V<>3388)
                       <>temp<>3801 = "gbem"
                       <>arguments<>3802 = [<>temp<>3801, ]
-                      <>fun<>3803 = <>Global<>getBase(<>V<>3388)
+                      <>fun<>3803 = @GetBase(<>V<>3388)
                       <>temp<>3804 = <>obj<>3800(<>fun<>3803, <>arguments<>3802)
                       <>obj<>3805 = @ToObject(<>e<>3304)
                       <>temp<>3806 = "27"
@@ -8407,7 +8407,7 @@ var _gjwl
                         <>obj<>3809 = @ToObject(<>V<>3388)
                         <>temp<>3810 = "gbes"
                         <>arguments<>3811 = [<>temp<>3810, ]
-                        <>fun<>3812 = <>Global<>getBase(<>V<>3388)
+                        <>fun<>3812 = @GetBase(<>V<>3388)
                         <>Global<>ignore696 = <>obj<>3809(<>fun<>3812, <>arguments<>3811)
                       }
                       else
@@ -8417,7 +8417,7 @@ var _gjwl
                           <>obj<>3813 = @ToObject(<>V<>3388)
                           <>temp<>3814 = "gbet"
                           <>arguments<>3815 = [<>temp<>3814, ]
-                          <>fun<>3816 = <>Global<>getBase(<>V<>3388)
+                          <>fun<>3816 = @GetBase(<>V<>3388)
                           <>Global<>ignore696 = <>obj<>3813(<>fun<>3816, <>arguments<>3815)
                         }
                         else
@@ -8428,7 +8428,7 @@ var _gjwl
                               <>obj<>3817 = @ToObject(<>V<>3388)
                               <>temp<>3818 = "gbeu"
                               <>arguments<>3819 = [<>temp<>3818, ]
-                              <>fun<>3820 = <>Global<>getBase(<>V<>3388)
+                              <>fun<>3820 = @GetBase(<>V<>3388)
                               <>new1<>3821 = <>obj<>3817(<>fun<>3820, <>arguments<>3819)
                               <>Global<>ignore696 = <>new1<>3821
                             }
@@ -8465,7 +8465,7 @@ var _gjwl
                           <>obj<>3827 = @ToObject(<>M<>3365)
                           <>temp<>3828 = <>obj<>3827[<>b<>3761]
                           <>arguments<>3829 = [<>temp<>3828, ]
-                          <>fun<>3830 = <>Global<>getBase(<>v<>3308)
+                          <>fun<>3830 = @GetBase(<>v<>3308)
                           <>Global<>ignore702 = <>obj<>3826(<>fun<>3830, <>arguments<>3829)
                           <>c<>3764 = <>Global<>ignore702
                         }
@@ -8496,7 +8496,7 @@ var _gjwl
                       }
                       {
                         <>old<>3840 = <>b<>3761
-                        <>new<>3841 = <>Global<>toNumber(<>old<>3840)
+                        <>new<>3841 = @ToNumber(<>old<>3840)
                         <>b<>3761 = <>new<>3841 + 1
                         <>Global<>ignore701 = <>new<>3841
                       }
@@ -8518,7 +8518,7 @@ var _gjwl
                 <>temp<>3848 = <>r<>3846
                 <>temp<>3849 = "stem"
                 <>arguments<>3850 = [<>temp<>3848, <>temp<>3849, ]
-                <>fun<>3851 = <>Global<>getBase(<>u<>3307)
+                <>fun<>3851 = @GetBase(<>u<>3307)
                 <>Global<>ignore693 = <>obj<>3847(<>fun<>3851, <>arguments<>3850)
               }
           }
@@ -8529,7 +8529,7 @@ var _gjwl
           <>temp<>3853 = <>W<>3370
           <>temp<>3854 = "xxl"
           <>arguments<>3855 = [<>temp<>3853, <>temp<>3854, ]
-          <>fun<>3856 = <>Global<>getBase(<>w<>3309)
+          <>fun<>3856 = @GetBase(<>w<>3309)
           <>Global<>ignore708 = <>obj<>3852(<>fun<>3856, <>arguments<>3855)
           <>Ya<>3371 = <>Global<>ignore708
         }
@@ -8538,7 +8538,7 @@ var _gjwl
           <>temp<>3858 = <>W<>3370
           <>temp<>3859 = "xl"
           <>arguments<>3860 = [<>temp<>3858, <>temp<>3859, ]
-          <>fun<>3861 = <>Global<>getBase(<>w<>3309)
+          <>fun<>3861 = @GetBase(<>w<>3309)
           <>Global<>ignore709 = <>obj<>3857(<>fun<>3861, <>arguments<>3860)
           <>Za<>3372 = <>Global<>ignore709
         }
@@ -8547,7 +8547,7 @@ var _gjwl
           <>temp<>3863 = <>W<>3370
           <>temp<>3864 = "lg"
           <>arguments<>3865 = [<>temp<>3863, <>temp<>3864, ]
-          <>fun<>3866 = <>Global<>getBase(<>w<>3309)
+          <>fun<>3866 = @GetBase(<>w<>3309)
           <>Global<>ignore710 = <>obj<>3862(<>fun<>3866, <>arguments<>3865)
           <>$a<>3373 = <>Global<>ignore710
         }
@@ -8556,7 +8556,7 @@ var _gjwl
           <>temp<>3868 = <>W<>3370
           <>temp<>3869 = "md"
           <>arguments<>3870 = [<>temp<>3868, <>temp<>3869, ]
-          <>fun<>3871 = <>Global<>getBase(<>w<>3309)
+          <>fun<>3871 = @GetBase(<>w<>3309)
           <>Global<>ignore711 = <>obj<>3867(<>fun<>3871, <>arguments<>3870)
           <>ab<>3374 = <>Global<>ignore711
         }
@@ -8565,7 +8565,7 @@ var _gjwl
           <>temp<>3873 = <>W<>3370
           <>temp<>3874 = "sm"
           <>arguments<>3875 = [<>temp<>3873, <>temp<>3874, ]
-          <>fun<>3876 = <>Global<>getBase(<>w<>3309)
+          <>fun<>3876 = @GetBase(<>w<>3309)
           <>Global<>ignore712 = <>obj<>3872(<>fun<>3876, <>arguments<>3875)
           <>bb<>3375 = <>Global<>ignore712
         }
@@ -8574,7 +8574,7 @@ var _gjwl
           <>temp<>3878 = <>W<>3370
           <>temp<>3879 = "ty"
           <>arguments<>3880 = [<>temp<>3878, <>temp<>3879, ]
-          <>fun<>3881 = <>Global<>getBase(<>w<>3309)
+          <>fun<>3881 = @GetBase(<>w<>3309)
           <>Global<>ignore713 = <>obj<>3877(<>fun<>3881, <>arguments<>3880)
           <>cb<>3376 = <>Global<>ignore713
         }
@@ -8583,7 +8583,7 @@ var _gjwl
           <>temp<>3883 = <>W<>3370
           <>temp<>3884 = "ut"
           <>arguments<>3885 = [<>temp<>3883, <>temp<>3884, ]
-          <>fun<>3886 = <>Global<>getBase(<>w<>3309)
+          <>fun<>3886 = @GetBase(<>w<>3309)
           <>Global<>ignore714 = <>obj<>3882(<>fun<>3886, <>arguments<>3885)
           <>db<>3377 = <>Global<>ignore714
         }
@@ -8601,7 +8601,7 @@ var _gjwl
                 <>obj<>3893 = @ToObject(<>W<>3370)
                 <>temp<>3894 = <>b<>3889
                 <>arguments<>3895 = [<>temp<>3894, ]
-                <>fun<>3896 = <>Global<>getBase(<>W<>3370)
+                <>fun<>3896 = @GetBase(<>W<>3370)
                 <>Global<>ignore717 = <>obj<>3893(<>fun<>3896, <>arguments<>3895)
               }
               {
@@ -8717,13 +8717,13 @@ var _gjwl
                 <>temp<>3917 = <>b<>3889
                 <>temp<>3918 = <>c<>3892
                 <>arguments<>3919 = [<>temp<>3915, <>temp<>3916, <>temp<>3917, <>temp<>3918, ]
-                <>fun<>3920 = <>Global<>getBase(<>eb<>3384)
+                <>fun<>3920 = @GetBase(<>eb<>3384)
                 <>Global<>ignore728 = <>obj<>3914(<>fun<>3920, <>arguments<>3919)
               }
               {
                 <>obj<>3921 = @ToObject(<>X<>3383)
                 <>arguments<>3922 = []
-                <>fun<>3923 = <>Global<>getBase(<>X<>3383)
+                <>fun<>3923 = @GetBase(<>X<>3383)
                 <>Global<>ignore729 = <>obj<>3921(<>fun<>3923, <>arguments<>3922)
               }
             }
@@ -8733,7 +8733,7 @@ var _gjwl
                 <>temp<>3926 = <>q<>3924
                 <>temp<>3927 = "seme"
                 <>arguments<>3928 = [<>temp<>3926, <>temp<>3927, ]
-                <>fun<>3929 = <>Global<>getBase(<>u<>3307)
+                <>fun<>3929 = @GetBase(<>u<>3307)
                 <>Global<>ignore716 = <>obj<>3925(<>fun<>3929, <>arguments<>3928)
               }
           }
@@ -8758,7 +8758,7 @@ var _gjwl
                 <>temp<>3939 = <>d<>3937
                 <>temp<>3940 = "roec"
                 <>arguments<>3941 = [<>temp<>3939, <>temp<>3940, ]
-                <>fun<>3942 = <>Global<>getBase(<>u<>3307)
+                <>fun<>3942 = @GetBase(<>u<>3307)
                 <>Global<>ignore731 = <>obj<>3938(<>fun<>3942, <>arguments<>3941)
               }
           }
@@ -8786,12 +8786,12 @@ var _gjwl
                         <>obj<>3950 = @ToObject(<>d<>3946)
                         <>temp<>3951 = <>k<>3305
                         <>arguments<>3952 = [<>temp<>3951, ]
-                        <>fun<>3953 = <>Global<>getBase(<>d<>3946)
+                        <>fun<>3953 = @GetBase(<>d<>3946)
                         <>Global<>ignore738 = <>obj<>3950(<>fun<>3953, <>arguments<>3952)
                       }
                       {
                         <>old<>3954 = <>b<>3945
-                        <>new<>3955 = <>Global<>toNumber(<>old<>3954)
+                        <>new<>3955 = @ToNumber(<>old<>3954)
                         <>b<>3945 = <>new<>3955 + 1
                         <>Global<>ignore737 = <>new<>3955 + 1
                         <>obj<>3948 = @ToObject(<>R<>3368)
@@ -8806,7 +8806,7 @@ var _gjwl
                   <>temp<>3958 = <>f<>3956
                   <>temp<>3959 = "eoec"
                   <>arguments<>3960 = [<>temp<>3958, <>temp<>3959, ]
-                  <>fun<>3961 = <>Global<>getBase(<>u<>3307)
+                  <>fun<>3961 = @GetBase(<>u<>3307)
                   <>Global<>ignore734 = <>obj<>3957(<>fun<>3961, <>arguments<>3960)
                 }
           }
@@ -8828,7 +8828,7 @@ var _gjwl
                 <>temp<>3967 = <>d<>3965
                 <>temp<>3968 = "ear"
                 <>arguments<>3969 = [<>temp<>3967, <>temp<>3968, ]
-                <>fun<>3970 = <>Global<>getBase(<>u<>3307)
+                <>fun<>3970 = @GetBase(<>u<>3307)
                 <>Global<>ignore740 = <>obj<>3966(<>fun<>3970, <>arguments<>3969)
               }
           }
@@ -9003,7 +9003,7 @@ var _gjwl
               <>temp<>4002 = <>c<>3976
               <>temp<>4003 = <>f<>3975
               <>arguments<>4004 = [<>temp<>4000, <>temp<>4001, <>temp<>4002, <>temp<>4003, ]
-              <>fun<>4005 = <>Global<>getBase(<>eb<>3384)
+              <>fun<>4005 = @GetBase(<>eb<>3384)
               <>Global<>ignore755 = <>obj<>3999(<>fun<>4005, <>arguments<>4004)
             }
             return <>c<>3976
@@ -9046,7 +9046,7 @@ var _gjwl
                 <>obj<>4035 = @ToObject(<>v<>3308)
                 <>temp<>4036 = "gbx1"
                 <>arguments<>4037 = [<>temp<>4036, ]
-                <>fun<>4038 = <>Global<>getBase(<>v<>3308)
+                <>fun<>4038 = @GetBase(<>v<>3308)
                 <>Global<>ignore758 = <>obj<>4035(<>fun<>4038, <>arguments<>4037)
                 <>b<>4008 = <>Global<>ignore758
               }
@@ -9058,7 +9058,7 @@ var _gjwl
                     <>obj<>4040 = @ToObject(<>v<>3308)
                     <>temp<>4041 = "gb"
                     <>arguments<>4042 = [<>temp<>4041, ]
-                    <>fun<>4043 = <>Global<>getBase(<>v<>3308)
+                    <>fun<>4043 = @GetBase(<>v<>3308)
                     <>temp<>4044 = <>obj<>4040(<>fun<>4043, <>arguments<>4042)
                     <>arguments<>4045 = [<>temp<>4044, ]
                     <>fun<>4046 = @ToObject(<>obj<>4039["rtl"])
@@ -9076,7 +9076,7 @@ var _gjwl
                     <>obj<>4048 = @ToObject(<>v<>3308)
                     <>temp<>4049 = "gb_70"
                     <>arguments<>4050 = [<>temp<>4049, ]
-                    <>fun<>4051 = <>Global<>getBase(<>v<>3308)
+                    <>fun<>4051 = @GetBase(<>v<>3308)
                     <>Global<>ignore762 = <>obj<>4048(<>fun<>4051, <>arguments<>4050)
                     <>c<>4011 = <>Global<>ignore762
                   }
@@ -9084,7 +9084,7 @@ var _gjwl
                     <>obj<>4052 = @ToObject(<>v<>3308)
                     <>temp<>4053 = "gbg4"
                     <>arguments<>4054 = [<>temp<>4053, ]
-                    <>fun<>4055 = <>Global<>getBase(<>v<>3308)
+                    <>fun<>4055 = @GetBase(<>v<>3308)
                     <>Global<>ignore763 = <>obj<>4052(<>fun<>4055, <>arguments<>4054)
                     <>q<>4012 = <>Global<>ignore763
                   }
@@ -9092,7 +9092,7 @@ var _gjwl
                     <>obj<>4056 = @ToObject(<>v<>3308)
                     <>temp<>4057 = "gbg6"
                     <>arguments<>4058 = [<>temp<>4057, ]
-                    <>fun<>4059 = <>Global<>getBase(<>v<>3308)
+                    <>fun<>4059 = @GetBase(<>v<>3308)
                     <>y<>4060 = <>obj<>4056(<>fun<>4059, <>arguments<>4058)
                     if(<>y<>4060)
                       <>Global<>ignore764 = <>y<>4060
@@ -9123,7 +9123,7 @@ var _gjwl
                     <>obj<>4063 = @ToObject(<>v<>3308)
                     <>temp<>4064 = "gbg3"
                     <>arguments<>4065 = [<>temp<>4064, ]
-                    <>fun<>4066 = <>Global<>getBase(<>v<>3308)
+                    <>fun<>4066 = @GetBase(<>v<>3308)
                     <>Global<>ignore767 = <>obj<>4063(<>fun<>4066, <>arguments<>4065)
                     <>s<>4014 = <>Global<>ignore767
                   }
@@ -9284,7 +9284,7 @@ var _gjwl
                     <>obj<>4086 = @ToObject(<>v<>3308)
                     <>temp<>4087 = "gbg1"
                     <>arguments<>4088 = [<>temp<>4087, ]
-                    <>fun<>4089 = <>Global<>getBase(<>v<>3308)
+                    <>fun<>4089 = @GetBase(<>v<>3308)
                     <>Global<>ignore793 = <>obj<>4086(<>fun<>4089, <>arguments<>4088)
                     <>z<>4020 = <>Global<>ignore793
                   }
@@ -9307,7 +9307,7 @@ var _gjwl
                   <>obj<>4092 = @ToObject(<>v<>3308)
                   <>temp<>4093 = "gbg3"
                   <>arguments<>4094 = [<>temp<>4093, ]
-                  <>fun<>4095 = <>Global<>getBase(<>v<>3308)
+                  <>fun<>4095 = @GetBase(<>v<>3308)
                   <>new0<>4096 = <>obj<>4092(<>fun<>4095, <>arguments<>4094)
                   <>s<>4014 = <>new0<>4096
                   if(<>new0<>4096)
@@ -9326,7 +9326,7 @@ var _gjwl
                   <>obj<>4098 = @ToObject(<>v<>3308)
                   <>temp<>4099 = "gbgs4dn"
                   <>arguments<>4100 = [<>temp<>4099, ]
-                  <>fun<>4101 = <>Global<>getBase(<>v<>3308)
+                  <>fun<>4101 = @GetBase(<>v<>3308)
                   <>Global<>ignore796 = <>obj<>4098(<>fun<>4101, <>arguments<>4100)
                   <>S<>4021 = <>Global<>ignore796
                 }
@@ -9357,7 +9357,7 @@ var _gjwl
                     <>obj<>4104 = @ToObject(<>v<>3308)
                     <>temp<>4105 = "gbd4"
                     <>arguments<>4106 = [<>temp<>4105, ]
-                    <>fun<>4107 = <>Global<>getBase(<>v<>3308)
+                    <>fun<>4107 = @GetBase(<>v<>3308)
                     <>Global<>ignore798 = <>obj<>4104(<>fun<>4107, <>arguments<>4106)
                     <>da<>4022 = <>Global<>ignore798
                   }
@@ -9365,7 +9365,7 @@ var _gjwl
                     <>obj<>4108 = @ToObject(<>v<>3308)
                     <>temp<>4109 = "gb_71"
                     <>arguments<>4110 = [<>temp<>4109, ]
-                    <>fun<>4111 = <>Global<>getBase(<>v<>3308)
+                    <>fun<>4111 = @GetBase(<>v<>3308)
                     <>Global<>ignore799 = <>obj<>4108(<>fun<>4111, <>arguments<>4110)
                     <>T<>4023 = <>Global<>ignore799
                   }
@@ -9410,7 +9410,7 @@ var _gjwl
                     <>obj<>4120 = @ToObject(<>v<>3308)
                     <>temp<>4121 = "gbqfbw"
                     <>arguments<>4122 = [<>temp<>4121, ]
-                    <>fun<>4123 = <>Global<>getBase(<>v<>3308)
+                    <>fun<>4123 = @GetBase(<>v<>3308)
                     <>Global<>ignore803 = <>obj<>4120(<>fun<>4123, <>arguments<>4122)
                     <>O<>4024 = <>Global<>ignore803
                   }
@@ -9418,7 +9418,7 @@ var _gjwl
                     <>obj<>4124 = @ToObject(<>v<>3308)
                     <>temp<>4125 = "gbq4"
                     <>arguments<>4126 = [<>temp<>4125, ]
-                    <>fun<>4127 = <>Global<>getBase(<>v<>3308)
+                    <>fun<>4127 = @GetBase(<>v<>3308)
                     <>Global<>ignore804 = <>obj<>4124(<>fun<>4127, <>arguments<>4126)
                     <>I<>4025 = <>Global<>ignore804
                   }
@@ -9463,7 +9463,7 @@ var _gjwl
                     <>obj<>4135 = @ToObject(<>v<>3308)
                     <>temp<>4136 = "gbqf"
                     <>arguments<>4137 = [<>temp<>4136, ]
-                    <>fun<>4138 = <>Global<>getBase(<>v<>3308)
+                    <>fun<>4138 = @GetBase(<>v<>3308)
                     <>Global<>ignore808 = <>obj<>4135(<>fun<>4138, <>arguments<>4137)
                     <>ea<>4026 = <>Global<>ignore808
                   }
@@ -9471,7 +9471,7 @@ var _gjwl
                     <>obj<>4139 = @ToObject(<>v<>3308)
                     <>temp<>4140 = "gbqff"
                     <>arguments<>4141 = [<>temp<>4140, ]
-                    <>fun<>4142 = <>Global<>getBase(<>v<>3308)
+                    <>fun<>4142 = @GetBase(<>v<>3308)
                     <>Global<>ignore809 = <>obj<>4139(<>fun<>4142, <>arguments<>4141)
                     <>fa<>4027 = <>Global<>ignore809
                   }
@@ -9665,7 +9665,7 @@ var _gjwl
                   <>obj<>4212 = @ToObject(<>v<>3308)
                   <>temp<>4213 = "gbgs3"
                   <>arguments<>4214 = [<>temp<>4213, ]
-                  <>fun<>4215 = <>Global<>getBase(<>v<>3308)
+                  <>fun<>4215 = @GetBase(<>v<>3308)
                   <>Global<>ignore824 = <>obj<>4212(<>fun<>4215, <>arguments<>4214)
                   <>g<>4029 = <>Global<>ignore824
                 }
@@ -9835,7 +9835,7 @@ var _gjwl
                       <>obj<>4255 = @ToObject(<>v<>3308)
                       <>temp<>4256 = "gbi4t"
                       <>arguments<>4257 = [<>temp<>4256, ]
-                      <>fun<>4258 = <>Global<>getBase(<>v<>3308)
+                      <>fun<>4258 = @GetBase(<>v<>3308)
                       <>z<>4259 = <>obj<>4255(<>fun<>4258, <>arguments<>4257)
                       <>Global<>ignore834 = <>z<>4259
                     }
@@ -9895,7 +9895,7 @@ var _gjwl
                             <>obj<>4272 = @ToObject(<>v<>3308)
                             <>temp<>4273 = "gbgs4d"
                             <>arguments<>4274 = [<>temp<>4273, ]
-                            <>fun<>4275 = <>Global<>getBase(<>v<>3308)
+                            <>fun<>4275 = @GetBase(<>v<>3308)
                             <>Global<>ignore837 = <>obj<>4272(<>fun<>4275, <>arguments<>4274)
                             <>ha<>4032 = <>Global<>ignore837
                           }
@@ -10050,7 +10050,7 @@ var _gjwl
                     <>obj<>4297 = @ToObject(<>v<>3308)
                     <>temp<>4298 = "gbu"
                     <>arguments<>4299 = [<>temp<>4298, ]
-                    <>fun<>4300 = <>Global<>getBase(<>v<>3308)
+                    <>fun<>4300 = @GetBase(<>v<>3308)
                     <>Global<>ignore847 = <>obj<>4297(<>fun<>4300, <>arguments<>4299)
                     <>L<>4033 = <>Global<>ignore847
                   }
@@ -10118,7 +10118,7 @@ var _gjwl
                 <>temp<>4324 = <>mb<>4322
                 <>temp<>4325 = "cb"
                 <>arguments<>4326 = [<>temp<>4324, <>temp<>4325, ]
-                <>fun<>4327 = <>Global<>getBase(<>u<>3307)
+                <>fun<>4327 = @GetBase(<>u<>3307)
                 <>Global<>ignore757 = <>obj<>4323(<>fun<>4327, <>arguments<>4326)
               }
           }
@@ -10162,7 +10162,7 @@ var _gjwl
               {
                 <>obj<>4338 = @ToObject(<>gb<>3380)
                 <>arguments<>4339 = []
-                <>fun<>4340 = <>Global<>getBase(<>gb<>3380)
+                <>fun<>4340 = @GetBase(<>gb<>3380)
                 <>temp<>4341 = <>obj<>4338(<>fun<>4340, <>arguments<>4339)
                 {
                   <>obj<>4342 = @ToObject(<>e<>3304)
@@ -10257,7 +10257,7 @@ var _gjwl
                 {
                   <>obj<>4372 = @ToObject(<>ib<>3382)
                   <>arguments<>4373 = []
-                  <>fun<>4374 = <>Global<>getBase(<>ib<>3382)
+                  <>fun<>4374 = @GetBase(<>ib<>3382)
                   <>Global<>ignore870 = <>obj<>4372(<>fun<>4374, <>arguments<>4373)
                   <>n<>3306 = <>Global<>ignore870
                 }
@@ -10311,7 +10311,7 @@ var _gjwl
                                     {
                                       <>obj<>4384 = @ToObject(<>db<>3377)
                                       <>arguments<>4385 = []
-                                      <>fun<>4386 = <>Global<>getBase(<>db<>3377)
+                                      <>fun<>4386 = @GetBase(<>db<>3377)
                                       <>Global<>ignore871 = <>obj<>4384(<>fun<>4386, <>arguments<>4385)
                                     }
                                     break <>switch<>4375
@@ -10321,7 +10321,7 @@ var _gjwl
                                   {
                                     <>obj<>4387 = @ToObject(<>cb<>3376)
                                     <>arguments<>4388 = []
-                                    <>fun<>4389 = <>Global<>getBase(<>cb<>3376)
+                                    <>fun<>4389 = @GetBase(<>cb<>3376)
                                     <>Global<>ignore872 = <>obj<>4387(<>fun<>4389, <>arguments<>4388)
                                   }
                                   break <>switch<>4375
@@ -10331,7 +10331,7 @@ var _gjwl
                                 {
                                   <>obj<>4390 = @ToObject(<>bb<>3375)
                                   <>arguments<>4391 = []
-                                  <>fun<>4392 = <>Global<>getBase(<>bb<>3375)
+                                  <>fun<>4392 = @GetBase(<>bb<>3375)
                                   <>Global<>ignore873 = <>obj<>4390(<>fun<>4392, <>arguments<>4391)
                                 }
                                 break <>switch<>4375
@@ -10341,7 +10341,7 @@ var _gjwl
                               {
                                 <>obj<>4393 = @ToObject(<>ab<>3374)
                                 <>arguments<>4394 = []
-                                <>fun<>4395 = <>Global<>getBase(<>ab<>3374)
+                                <>fun<>4395 = @GetBase(<>ab<>3374)
                                 <>Global<>ignore874 = <>obj<>4393(<>fun<>4395, <>arguments<>4394)
                               }
                               break <>switch<>4375
@@ -10351,7 +10351,7 @@ var _gjwl
                             {
                               <>obj<>4396 = @ToObject(<>Za<>3372)
                               <>arguments<>4397 = []
-                              <>fun<>4398 = <>Global<>getBase(<>Za<>3372)
+                              <>fun<>4398 = @GetBase(<>Za<>3372)
                               <>Global<>ignore875 = <>obj<>4396(<>fun<>4398, <>arguments<>4397)
                             }
                             break <>switch<>4375
@@ -10361,7 +10361,7 @@ var _gjwl
                           {
                             <>obj<>4399 = @ToObject(<>Ya<>3371)
                             <>arguments<>4400 = []
-                            <>fun<>4401 = <>Global<>getBase(<>Ya<>3371)
+                            <>fun<>4401 = @GetBase(<>Ya<>3371)
                             <>Global<>ignore876 = <>obj<>4399(<>fun<>4401, <>arguments<>4400)
                           }
                           break <>switch<>4375
@@ -10371,7 +10371,7 @@ var _gjwl
                         {
                           <>obj<>4402 = @ToObject(<>$a<>3373)
                           <>arguments<>4403 = []
-                          <>fun<>4404 = <>Global<>getBase(<>$a<>3373)
+                          <>fun<>4404 = @GetBase(<>$a<>3373)
                           <>Global<>ignore877 = <>obj<>4402(<>fun<>4404, <>arguments<>4403)
                         }
                       }
@@ -10381,14 +10381,14 @@ var _gjwl
               {
                 <>obj<>4405 = @ToObject(<>X<>3383)
                 <>arguments<>4406 = []
-                <>fun<>4407 = <>Global<>getBase(<>X<>3383)
+                <>fun<>4407 = @GetBase(<>X<>3383)
                 <>Global<>ignore878 = <>obj<>4405(<>fun<>4407, <>arguments<>4406)
               }
               {
                 <>obj<>4408 = @ToObject(<>v<>3308)
                 <>temp<>4409 = "gb"
                 <>arguments<>4410 = [<>temp<>4409, ]
-                <>fun<>4411 = <>Global<>getBase(<>v<>3308)
+                <>fun<>4411 = @GetBase(<>v<>3308)
                 <>Global<>ignore879 = <>obj<>4408(<>fun<>4411, <>arguments<>4410)
                 <>d<>4370 = <>Global<>ignore879
               }
@@ -10419,7 +10419,7 @@ var _gjwl
                     }
                     {
                       <>old<>4421 = <>b<>4369
-                      <>new<>4422 = <>Global<>toNumber(<>old<>4421)
+                      <>new<>4422 = @ToNumber(<>old<>4421)
                       <>b<>4369 = <>new<>4422 + 1
                       <>Global<>ignore885 = <>new<>4422
                     }
@@ -10438,7 +10438,7 @@ var _gjwl
                 <>temp<>4427 = <>c<>4425
                 <>temp<>4428 = "sem"
                 <>arguments<>4429 = [<>temp<>4427, <>temp<>4428, ]
-                <>fun<>4430 = <>Global<>getBase(<>u<>3307)
+                <>fun<>4430 = @GetBase(<>u<>3307)
                 <>Global<>ignore868 = <>obj<>4426(<>fun<>4430, <>arguments<>4429)
               }
           }
@@ -10456,7 +10456,7 @@ var _gjwl
               <>obj<>4437 = @ToObject(<>v<>3308)
               <>temp<>4438 = "gb"
               <>arguments<>4439 = [<>temp<>4438, ]
-              <>fun<>4440 = <>Global<>getBase(<>v<>3308)
+              <>fun<>4440 = @GetBase(<>v<>3308)
               <>Global<>ignore889 = <>obj<>4437(<>fun<>4440, <>arguments<>4439)
               <>d<>4434 = <>Global<>ignore889
             }
@@ -10471,7 +10471,7 @@ var _gjwl
                 <>fun<>4446 = @ToObject(<>obj<>4443["split"])
                 <>temp<>4447 = <>fun<>4446(<>obj<>4443, <>arguments<>4445)
                 <>arguments<>4448 = [<>temp<>4442, <>temp<>4447, ]
-                <>fun<>4449 = <>Global<>getBase(<>Z<>3389)
+                <>fun<>4449 = @GetBase(<>Z<>3389)
                 <>new1<>4450 = <>obj<>4441(<>fun<>4449, <>arguments<>4448)
                 <>Global<>ignore890 = <>new1<>4450
               }
@@ -10502,7 +10502,7 @@ var _gjwl
                     <>obj<>4454 = @ToObject(<>v<>3308)
                     <>temp<>4455 = <>c<>4436
                     <>arguments<>4456 = [<>temp<>4455, ]
-                    <>fun<>4457 = <>Global<>getBase(<>v<>3308)
+                    <>fun<>4457 = @GetBase(<>v<>3308)
                     <>new<>4458 = <>obj<>4454(<>fun<>4457, <>arguments<>4456)
                     <>c<>4436 = <>new<>4458
                     if(<>new<>4458)
@@ -10569,7 +10569,7 @@ var _gjwl
                                           <>fun<>4473 = @ToObject(<>obj<>4470["split"])
                                           <>temp<>4474 = <>fun<>4473(<>obj<>4470, <>arguments<>4472)
                                           <>arguments<>4475 = [<>temp<>4469, <>temp<>4474, ]
-                                          <>fun<>4476 = <>Global<>getBase(<>Z<>3389)
+                                          <>fun<>4476 = @GetBase(<>Z<>3389)
                                           <>Global<>ignore895 = <>obj<>4468(<>fun<>4476, <>arguments<>4475)
                                         }
                                         {
@@ -10593,7 +10593,7 @@ var _gjwl
                                         <>fun<>4487 = @ToObject(<>obj<>4484["split"])
                                         <>temp<>4488 = <>fun<>4487(<>obj<>4484, <>arguments<>4486)
                                         <>arguments<>4489 = [<>temp<>4483, <>temp<>4488, ]
-                                        <>fun<>4490 = <>Global<>getBase(<>Z<>3389)
+                                        <>fun<>4490 = @GetBase(<>Z<>3389)
                                         <>Global<>ignore897 = <>obj<>4482(<>fun<>4490, <>arguments<>4489)
                                       }
                                       {
@@ -10617,7 +10617,7 @@ var _gjwl
                                       <>fun<>4501 = @ToObject(<>obj<>4498["split"])
                                       <>temp<>4502 = <>fun<>4501(<>obj<>4498, <>arguments<>4500)
                                       <>arguments<>4503 = [<>temp<>4497, <>temp<>4502, ]
-                                      <>fun<>4504 = <>Global<>getBase(<>Z<>3389)
+                                      <>fun<>4504 = @GetBase(<>Z<>3389)
                                       <>Global<>ignore899 = <>obj<>4496(<>fun<>4504, <>arguments<>4503)
                                     }
                                     {
@@ -10641,7 +10641,7 @@ var _gjwl
                                     <>fun<>4515 = @ToObject(<>obj<>4512["split"])
                                     <>temp<>4516 = <>fun<>4515(<>obj<>4512, <>arguments<>4514)
                                     <>arguments<>4517 = [<>temp<>4511, <>temp<>4516, ]
-                                    <>fun<>4518 = <>Global<>getBase(<>Z<>3389)
+                                    <>fun<>4518 = @GetBase(<>Z<>3389)
                                     <>Global<>ignore901 = <>obj<>4510(<>fun<>4518, <>arguments<>4517)
                                   }
                                   {
@@ -10665,7 +10665,7 @@ var _gjwl
                                   <>fun<>4529 = @ToObject(<>obj<>4526["split"])
                                   <>temp<>4530 = <>fun<>4529(<>obj<>4526, <>arguments<>4528)
                                   <>arguments<>4531 = [<>temp<>4525, <>temp<>4530, ]
-                                  <>fun<>4532 = <>Global<>getBase(<>Z<>3389)
+                                  <>fun<>4532 = @GetBase(<>Z<>3389)
                                   <>Global<>ignore903 = <>obj<>4524(<>fun<>4532, <>arguments<>4531)
                                 }
                                 {
@@ -10689,7 +10689,7 @@ var _gjwl
                                 <>fun<>4543 = @ToObject(<>obj<>4540["split"])
                                 <>temp<>4544 = <>fun<>4543(<>obj<>4540, <>arguments<>4542)
                                 <>arguments<>4545 = [<>temp<>4539, <>temp<>4544, ]
-                                <>fun<>4546 = <>Global<>getBase(<>Z<>3389)
+                                <>fun<>4546 = @GetBase(<>Z<>3389)
                                 <>Global<>ignore905 = <>obj<>4538(<>fun<>4546, <>arguments<>4545)
                               }
                               {
@@ -10712,7 +10712,7 @@ var _gjwl
                             <>fun<>4557 = @ToObject(<>obj<>4554["split"])
                             <>temp<>4558 = <>fun<>4557(<>obj<>4554, <>arguments<>4556)
                             <>arguments<>4559 = [<>temp<>4553, <>temp<>4558, ]
-                            <>fun<>4560 = <>Global<>getBase(<>Z<>3389)
+                            <>fun<>4560 = @GetBase(<>Z<>3389)
                             <>temp<>4561 = <>obj<>4552(<>fun<>4560, <>arguments<>4559)
                             <>obj<>4562 = @ToObject(<>a<>3303)
                             <>temp<>4563 = <>c<>4436
@@ -10734,7 +10734,7 @@ var _gjwl
                   }
                   {
                     <>old<>4571 = <>f<>4435
-                    <>new<>4572 = <>Global<>toNumber(<>old<>4571)
+                    <>new<>4572 = @ToNumber(<>old<>4571)
                     <>f<>4435 = <>new<>4572 + 1
                     <>Global<>ignore894 = <>new<>4572
                     <>obj<>4452 = @ToObject(<>Wa<>3364)
@@ -10790,7 +10790,7 @@ var _gjwl
                   }
                   {
                     <>old<>4590 = <>f<>4577
-                    <>new<>4591 = <>Global<>toNumber(<>old<>4590)
+                    <>new<>4591 = @ToNumber(<>old<>4590)
                     <>f<>4577 = <>new<>4591 + 1
                     <>Global<>ignore913 = <>new<>4591 + 1
                   }
@@ -10810,7 +10810,7 @@ var _gjwl
                   {
                     <>obj<>4595 = @ToObject(<>ib<>3382)
                     <>arguments<>4596 = []
-                    <>fun<>4597 = <>Global<>getBase(<>ib<>3382)
+                    <>fun<>4597 = @GetBase(<>ib<>3382)
                     <>val<>4598 = <>obj<>4595(<>fun<>4597, <>arguments<>4596)
                   }
                   {
@@ -10859,7 +10859,7 @@ var _gjwl
                                     <>obj<>4606 = @ToObject(<>$<>3391)
                                     <>temp<>4607 = "gbeui"
                                     <>arguments<>4608 = [<>temp<>4607, ]
-                                    <>fun<>4609 = <>Global<>getBase(<>$<>3391)
+                                    <>fun<>4609 = @GetBase(<>$<>3391)
                                     <>Global<>ignore917 = <>obj<>4606(<>fun<>4609, <>arguments<>4608)
                                   }
                                   break <>switch<>4594
@@ -10870,7 +10870,7 @@ var _gjwl
                                   <>obj<>4610 = @ToObject(<>$<>3391)
                                   <>temp<>4611 = "gbeti"
                                   <>arguments<>4612 = [<>temp<>4611, ]
-                                  <>fun<>4613 = <>Global<>getBase(<>$<>3391)
+                                  <>fun<>4613 = @GetBase(<>$<>3391)
                                   <>Global<>ignore918 = <>obj<>4610(<>fun<>4613, <>arguments<>4612)
                                 }
                                 break <>switch<>4594
@@ -10881,7 +10881,7 @@ var _gjwl
                                 <>obj<>4614 = @ToObject(<>$<>3391)
                                 <>temp<>4615 = "gbesi"
                                 <>arguments<>4616 = [<>temp<>4615, ]
-                                <>fun<>4617 = <>Global<>getBase(<>$<>3391)
+                                <>fun<>4617 = @GetBase(<>$<>3391)
                                 <>Global<>ignore919 = <>obj<>4614(<>fun<>4617, <>arguments<>4616)
                               }
                               break <>switch<>4594
@@ -10892,7 +10892,7 @@ var _gjwl
                               <>obj<>4618 = @ToObject(<>$<>3391)
                               <>temp<>4619 = "gbemi"
                               <>arguments<>4620 = [<>temp<>4619, ]
-                              <>fun<>4621 = <>Global<>getBase(<>$<>3391)
+                              <>fun<>4621 = @GetBase(<>$<>3391)
                               <>Global<>ignore920 = <>obj<>4618(<>fun<>4621, <>arguments<>4620)
                             }
                             break <>switch<>4594
@@ -10903,7 +10903,7 @@ var _gjwl
                             <>obj<>4622 = @ToObject(<>$<>3391)
                             <>temp<>4623 = "gbexli"
                             <>arguments<>4624 = [<>temp<>4623, ]
-                            <>fun<>4625 = <>Global<>getBase(<>$<>3391)
+                            <>fun<>4625 = @GetBase(<>$<>3391)
                             <>Global<>ignore921 = <>obj<>4622(<>fun<>4625, <>arguments<>4624)
                           }
                           break <>switch<>4594
@@ -10914,7 +10914,7 @@ var _gjwl
                           <>obj<>4626 = @ToObject(<>$<>3391)
                           <>temp<>4627 = "gbexxli"
                           <>arguments<>4628 = [<>temp<>4627, ]
-                          <>fun<>4629 = <>Global<>getBase(<>$<>3391)
+                          <>fun<>4629 = @GetBase(<>$<>3391)
                           <>Global<>ignore922 = <>obj<>4626(<>fun<>4629, <>arguments<>4628)
                         }
                         break <>switch<>4594
@@ -10925,7 +10925,7 @@ var _gjwl
                         <>obj<>4630 = @ToObject(<>$<>3391)
                         <>temp<>4631 = ""
                         <>arguments<>4632 = [<>temp<>4631, ]
-                        <>fun<>4633 = <>Global<>getBase(<>$<>3391)
+                        <>fun<>4633 = @GetBase(<>$<>3391)
                         <>Global<>ignore923 = <>obj<>4630(<>fun<>4633, <>arguments<>4632)
                       }
                     }
@@ -10934,7 +10934,7 @@ var _gjwl
               {
                 <>obj<>4634 = @ToObject(<>X<>3383)
                 <>arguments<>4635 = []
-                <>fun<>4636 = <>Global<>getBase(<>X<>3383)
+                <>fun<>4636 = @GetBase(<>X<>3383)
                 <>Global<>ignore924 = <>obj<>4634(<>fun<>4636, <>arguments<>4635)
               }
             }
@@ -10944,7 +10944,7 @@ var _gjwl
                 <>temp<>4639 = <>b<>4637
                 <>temp<>4640 = "semol"
                 <>arguments<>4641 = [<>temp<>4639, <>temp<>4640, ]
-                <>fun<>4642 = <>Global<>getBase(<>u<>3307)
+                <>fun<>4642 = @GetBase(<>u<>3307)
                 <>Global<>ignore916 = <>obj<>4638(<>fun<>4642, <>arguments<>4641)
               }
           }
@@ -10960,7 +10960,7 @@ var _gjwl
               <>obj<>4647 = @ToObject(<>v<>3308)
               <>temp<>4648 = "gb"
               <>arguments<>4649 = [<>temp<>4648, ]
-              <>fun<>4650 = <>Global<>getBase(<>v<>3308)
+              <>fun<>4650 = @GetBase(<>v<>3308)
               <>Global<>ignore926 = <>obj<>4647(<>fun<>4650, <>arguments<>4649)
               <>d<>4646 = <>Global<>ignore926
             }
@@ -10999,7 +10999,7 @@ var _gjwl
         <>temp<>4661 = <>Y<>3378
         <>temp<>4662 = "xxl"
         <>arguments<>4663 = [<>temp<>4661, <>temp<>4662, ]
-        <>fun<>4664 = <>Global<>getBase(<>w<>3309)
+        <>fun<>4664 = @GetBase(<>w<>3309)
         <>Global<>ignore930 = <>obj<>4660(<>fun<>4664, <>arguments<>4663)
         <>obj<>4659["elxxl"] = <>Global<>ignore930
       }
@@ -11009,7 +11009,7 @@ var _gjwl
         <>temp<>4667 = <>Y<>3378
         <>temp<>4668 = "xl"
         <>arguments<>4669 = [<>temp<>4667, <>temp<>4668, ]
-        <>fun<>4670 = <>Global<>getBase(<>w<>3309)
+        <>fun<>4670 = @GetBase(<>w<>3309)
         <>Global<>ignore931 = <>obj<>4666(<>fun<>4670, <>arguments<>4669)
         <>obj<>4665["elxl"] = <>Global<>ignore931
       }
@@ -11019,7 +11019,7 @@ var _gjwl
         <>temp<>4673 = <>Y<>3378
         <>temp<>4674 = "lg"
         <>arguments<>4675 = [<>temp<>4673, <>temp<>4674, ]
-        <>fun<>4676 = <>Global<>getBase(<>w<>3309)
+        <>fun<>4676 = @GetBase(<>w<>3309)
         <>Global<>ignore932 = <>obj<>4672(<>fun<>4676, <>arguments<>4675)
         <>obj<>4671["ell"] = <>Global<>ignore932
       }
@@ -11029,7 +11029,7 @@ var _gjwl
         <>temp<>4679 = <>Y<>3378
         <>temp<>4680 = "md"
         <>arguments<>4681 = [<>temp<>4679, <>temp<>4680, ]
-        <>fun<>4682 = <>Global<>getBase(<>w<>3309)
+        <>fun<>4682 = @GetBase(<>w<>3309)
         <>Global<>ignore933 = <>obj<>4678(<>fun<>4682, <>arguments<>4681)
         <>obj<>4677["elm"] = <>Global<>ignore933
       }
@@ -11039,7 +11039,7 @@ var _gjwl
         <>temp<>4685 = <>Y<>3378
         <>temp<>4686 = "sm"
         <>arguments<>4687 = [<>temp<>4685, <>temp<>4686, ]
-        <>fun<>4688 = <>Global<>getBase(<>w<>3309)
+        <>fun<>4688 = @GetBase(<>w<>3309)
         <>Global<>ignore934 = <>obj<>4684(<>fun<>4688, <>arguments<>4687)
         <>obj<>4683["els"] = <>Global<>ignore934
       }
@@ -11073,7 +11073,7 @@ var _gjwl
         <>temp<>4697 = <>Y<>3378
         <>temp<>4698 = "lg"
         <>arguments<>4699 = [<>temp<>4697, <>temp<>4698, ]
-        <>fun<>4700 = <>Global<>getBase(<>w<>3309)
+        <>fun<>4700 = @GetBase(<>w<>3309)
         <>Global<>ignore941 = <>obj<>4696(<>fun<>4700, <>arguments<>4699)
         <>obj<>4695["upel"] = <>Global<>ignore941
       }
@@ -11083,7 +11083,7 @@ var _gjwl
         <>temp<>4703 = <>Y<>3378
         <>temp<>4704 = "md"
         <>arguments<>4705 = [<>temp<>4703, <>temp<>4704, ]
-        <>fun<>4706 = <>Global<>getBase(<>w<>3309)
+        <>fun<>4706 = @GetBase(<>w<>3309)
         <>Global<>ignore942 = <>obj<>4702(<>fun<>4706, <>arguments<>4705)
         <>obj<>4701["upes"] = <>Global<>ignore942
       }
@@ -11093,20 +11093,20 @@ var _gjwl
         <>temp<>4709 = <>Y<>3378
         <>temp<>4710 = "sm"
         <>arguments<>4711 = [<>temp<>4709, <>temp<>4710, ]
-        <>fun<>4712 = <>Global<>getBase(<>w<>3309)
+        <>fun<>4712 = @GetBase(<>w<>3309)
         <>Global<>ignore943 = <>obj<>4708(<>fun<>4712, <>arguments<>4711)
         <>obj<>4707["upet"] = <>Global<>ignore943
       }
       {
         <>obj<>4713 = @ToObject(<>ob<>3390)
         <>arguments<>4714 = []
-        <>fun<>4715 = <>Global<>getBase(<>ob<>3390)
+        <>fun<>4715 = @GetBase(<>ob<>3390)
         <>Global<>ignore944 = <>obj<>4713(<>fun<>4715, <>arguments<>4714)
       }
       {
         <>obj<>4716 = @ToObject(<>nb<>3387)
         <>arguments<>4717 = []
-        <>fun<>4718 = <>Global<>getBase(<>nb<>3387)
+        <>fun<>4718 = @GetBase(<>nb<>3387)
         <>Global<>ignore945 = <>obj<>4716(<>fun<>4718, <>arguments<>4717)
       }
       {
@@ -11255,7 +11255,7 @@ var _gjwl
             {
               <>obj<>4789 = @ToObject(<>m<>4746)
               <>arguments<>4790 = []
-              <>fun<>4791 = <>Global<>getBase(<>m<>4746)
+              <>fun<>4791 = @GetBase(<>m<>4746)
               <>Global<>ignore957 = <>obj<>4789(<>fun<>4791, <>arguments<>4790)
             }
           }
@@ -11285,7 +11285,7 @@ var _gjwl
             {
               <>obj<>4804 = @ToObject(<>m<>4746)
               <>arguments<>4805 = []
-              <>fun<>4806 = <>Global<>getBase(<>m<>4746)
+              <>fun<>4806 = @GetBase(<>m<>4746)
               <>Global<>ignore961 = <>obj<>4804(<>fun<>4806, <>arguments<>4805)
             }
           }
@@ -11635,7 +11635,7 @@ var _gjwl
                     }
                     {
                       <>old<>4932 = <>b<>4916
-                      <>new<>4933 = <>Global<>toNumber(<>old<>4932)
+                      <>new<>4933 = @ToNumber(<>old<>4932)
                       <>b<>4916 = <>new<>4933 + 1
                       <>Global<>ignore994 = <>new<>4933
                       <>obj<>4920 = @ToObject(<>f<>4882)
@@ -11664,7 +11664,7 @@ var _gjwl
                 <>obj<>4939 = @ToObject(<>h<>4883)
                 <>temp<>4940 = ! 0
                 <>arguments<>4941 = [<>temp<>4940, ]
-                <>fun<>4942 = <>Global<>getBase(<>h<>4883)
+                <>fun<>4942 = @GetBase(<>h<>4883)
                 <>Global<>ignore998 = <>obj<>4939(<>fun<>4942, <>arguments<>4941)
               }
             }
@@ -11675,7 +11675,7 @@ var _gjwl
                 <>temp<>4946 = "gas"
                 <>temp<>4947 = "ahcc"
                 <>arguments<>4948 = [<>temp<>4945, <>temp<>4946, <>temp<>4947, ]
-                <>fun<>4949 = <>Global<>getBase(<>c<>4880)
+                <>fun<>4949 = @GetBase(<>c<>4880)
                 <>Global<>ignore991 = <>obj<>4944(<>fun<>4949, <>arguments<>4948)
               }
           }
@@ -11729,7 +11729,7 @@ var _gjwl
                     }
                     {
                       <>old<>4968 = <>b<>4952
-                      <>new<>4969 = <>Global<>toNumber(<>old<>4968)
+                      <>new<>4969 = @ToNumber(<>old<>4968)
                       <>b<>4952 = <>new<>4969 + 1
                       <>Global<>ignore1003 = <>new<>4969
                       <>obj<>4956 = @ToObject(<>f<>4882)
@@ -11758,7 +11758,7 @@ var _gjwl
                 <>obj<>4975 = @ToObject(<>h<>4883)
                 <>temp<>4976 = ! 1
                 <>arguments<>4977 = [<>temp<>4976, ]
-                <>fun<>4978 = <>Global<>getBase(<>h<>4883)
+                <>fun<>4978 = @GetBase(<>h<>4883)
                 <>Global<>ignore1007 = <>obj<>4975(<>fun<>4978, <>arguments<>4977)
               }
             }
@@ -11769,7 +11769,7 @@ var _gjwl
                 <>temp<>4982 = "gas"
                 <>temp<>4983 = "rhcc"
                 <>arguments<>4984 = [<>temp<>4981, <>temp<>4982, <>temp<>4983, ]
-                <>fun<>4985 = <>Global<>getBase(<>c<>4880)
+                <>fun<>4985 = @GetBase(<>c<>4880)
                 <>Global<>ignore1000 = <>obj<>4980(<>fun<>4985, <>arguments<>4984)
               }
           }
@@ -11818,7 +11818,7 @@ var _gjwl
                 <>temp<>5004 = "gas"
                 <>temp<>5005 = "ih"
                 <>arguments<>5006 = [<>temp<>5003, <>temp<>5004, <>temp<>5005, ]
-                <>fun<>5007 = <>Global<>getBase(<>c<>4880)
+                <>fun<>5007 = @GetBase(<>c<>4880)
                 <>Global<>ignore1009 = <>obj<>5002(<>fun<>5007, <>arguments<>5006)
               }
           }
@@ -11936,7 +11936,7 @@ var _gjwl
               <>temp<>5053 = "omas"
               <>temp<>5054 = "aomc"
               <>arguments<>5055 = [<>temp<>5052, <>temp<>5053, <>temp<>5054, ]
-              <>fun<>5056 = <>Global<>getBase(<>b<>5026)
+              <>fun<>5056 = @GetBase(<>b<>5026)
               <>Global<>ignore1019 = <>obj<>5051(<>fun<>5056, <>arguments<>5055)
             }
         }
@@ -12146,7 +12146,7 @@ var _gjwl
             [[Prototype]]=<>proto<>5141
           }
           <>newObj<>5143 = new <>fun<>5137(<>obj<>5142, <>arguments<>5140)
-          <>cond<>5144 = <>Global<>isObject(<>newObj<>5143)
+          <>cond<>5144 = @isObject(<>newObj<>5143)
           if(<>cond<>5144)
             <>Global<>ignore1037 = <>newObj<>5143
           else
@@ -12248,7 +12248,7 @@ var _gjwl
                 <>temp<>5185 = "sj"
                 <>temp<>5186 = "ssp"
                 <>arguments<>5187 = [<>temp<>5184, <>temp<>5185, <>temp<>5186, ]
-                <>fun<>5188 = <>Global<>getBase(<>d<>5117)
+                <>fun<>5188 = @GetBase(<>d<>5117)
                 <>Global<>ignore1039 = <>obj<>5183(<>fun<>5188, <>arguments<>5187)
               }
             <>g<>5120 = <>a<>5147
@@ -12284,7 +12284,7 @@ var _gjwl
                   [[Prototype]]=<>proto<>5203
                 }
                 <>newObj<>5205 = new <>fun<>5199(<>obj<>5204, <>arguments<>5202)
-                <>cond<>5206 = <>Global<>isObject(<>newObj<>5205)
+                <>cond<>5206 = @isObject(<>newObj<>5205)
                 if(<>cond<>5206)
                   <>temp<>5207 = <>newObj<>5205
                 else
@@ -12299,7 +12299,7 @@ var _gjwl
                 <>obj<>5212 = @ToObject(RegExp)
                 <>temp<>5213 = "^" + <>c<>5194 + "/search\\?"
                 <>arguments<>5214 = [<>temp<>5213, ]
-                <>fun<>5215 = <>Global<>getBase(RegExp)
+                <>fun<>5215 = @GetBase(RegExp)
                 <>Global<>ignore1049 = <>obj<>5212(<>fun<>5215, <>arguments<>5214)
                 <>c<>5194 = <>Global<>ignore1049
               }
@@ -12322,7 +12322,7 @@ var _gjwl
                   [[Prototype]]=<>proto<>5226
                 }
                 <>newObj<>5228 = new <>fun<>5222(<>obj<>5227, <>arguments<>5225)
-                <>cond<>5229 = <>Global<>isObject(<>newObj<>5228)
+                <>cond<>5229 = @isObject(<>newObj<>5228)
                 if(<>cond<>5229)
                   <>obj1<>5230 = <>newObj<>5228
                 else
@@ -12370,14 +12370,14 @@ var _gjwl
               <>obj<>5247 = @ToObject(<>m<>5123)
               <>temp<>5248 = <>a<>5246
               <>arguments<>5249 = [<>temp<>5248, ]
-              <>fun<>5250 = <>Global<>getBase(<>m<>5123)
+              <>fun<>5250 = @GetBase(<>m<>5123)
               <>Global<>ignore1052 = <>obj<>5247(<>fun<>5250, <>arguments<>5249)
             }
             {
               <>obj<>5251 = @ToObject(<>n<>5124)
               <>temp<>5252 = <>a<>5246
               <>arguments<>5253 = [<>temp<>5252, ]
-              <>fun<>5254 = <>Global<>getBase(<>n<>5124)
+              <>fun<>5254 = @GetBase(<>n<>5124)
               <>Global<>ignore1053 = <>obj<>5251(<>fun<>5254, <>arguments<>5253)
             }
           }
@@ -12406,7 +12406,7 @@ var _gjwl
                         [[Prototype]]=<>proto<>5266
                       }
                       <>newObj<>5268 = new <>fun<>5262(<>obj<>5267, <>arguments<>5265)
-                      <>cond<>5269 = <>Global<>isObject(<>newObj<>5268)
+                      <>cond<>5269 = @isObject(<>newObj<>5268)
                       if(<>cond<>5269)
                         <>Global<>ignore1055 = <>newObj<>5268
                       else

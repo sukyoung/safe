@@ -22,7 +22,7 @@ function[0] top-level {
     [1] <>temp<>2 := x
     [2] <>arguments<>3 := allocArg(1) @ #2
     [3] <>arguments<>3["0"] := <>temp<>2
-    [4] <>fun<>4 := <>Global<>getBase(print)
+    [4] <>fun<>4 := @GetBase(print)
     [5] <>this<> := enterCode(<>fun<>4)
 
   Block[6] -> Exit, ExitExc
@@ -48,7 +48,7 @@ function[0] top-level {
     [1] <>temp<>2 := x
     [2] <>arguments<>3 := allocArg(1) @ #5
     [3] <>arguments<>3["0"] := <>temp<>2
-    [4] <>fun<>4 := <>Global<>getBase(print)
+    [4] <>fun<>4 := @GetBase(print)
     [5] <>this<> := enterCode(<>fun<>4)
 
   Block[13] -> ExitExc, ExitExc
@@ -78,7 +78,7 @@ function[0] top-level {
     [1] <>temp<>2 := x
     [2] <>arguments<>3 := allocArg(1) @ #8
     [3] <>arguments<>3["0"] := <>temp<>2
-    [4] <>fun<>4 := <>Global<>getBase(print)
+    [4] <>fun<>4 := @GetBase(print)
     [5] <>this<> := enterCode(<>fun<>4)
 
   Block[22] -> ExitExc, ExitExc
@@ -102,7 +102,7 @@ function[0] top-level {
     [1] <>temp<>2 := x
     [2] <>arguments<>3 := allocArg(1) @ #11
     [3] <>arguments<>3["0"] := <>temp<>2
-    [4] <>fun<>4 := <>Global<>getBase(print)
+    [4] <>fun<>4 := @GetBase(print)
     [5] <>this<> := enterCode(<>fun<>4)
 
   Block[29] -> ExitExc, ExitExc

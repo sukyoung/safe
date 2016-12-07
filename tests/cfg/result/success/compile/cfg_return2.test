@@ -8,7 +8,7 @@ var x
 {
   <>obj<>2 = @ToObject(f)
   <>arguments<>3 = []
-  <>fun<>4 = <>Global<>getBase(f)
+  <>fun<>4 = @GetBase(f)
   <>Global<>ignore2 = <>obj<>2(<>fun<>4, <>arguments<>3)
 }
 

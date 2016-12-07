@@ -12,7 +12,7 @@ function[0] top-level {
     [7] <>arguments<>18["0"] := <>temp<>15
     [8] <>arguments<>18["1"] := <>temp<>16
     [9] <>arguments<>18["2"] := <>temp<>17
-    [10] <>fun<>19 := <>Global<>getBase(f)
+    [10] <>fun<>19 := @GetBase(f)
     [11] <>this<> := enterCode(<>fun<>19)
 
   Call[1] -> ExitExc
@@ -42,7 +42,7 @@ function[1] f {
     [3] <>temp<>10 := <>temp<>5
     [4] <>arguments<>11 := allocArg(1) @ #4
     [5] <>arguments<>11["0"] := <>temp<>10
-    [6] <>fun<>12 := <>Global<>getBase(<>g<>4)
+    [6] <>fun<>12 := @GetBase(<>g<>4)
     [7] <>this<> := enterCode(<>fun<>12)
 
   Call[1] -> ExitExc

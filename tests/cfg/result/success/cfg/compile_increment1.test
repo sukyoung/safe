@@ -4,19 +4,19 @@ function[0] top-level {
   Block[0] -> Exit, ExitExc
     [0] noop(StartOfFile)
     [1] <>old<>1 := a
-    [2] <>new<>2 := <>Global<>toNumber(<>old<>1)
+    [2] <>new<>2 := @ToNumber(<>old<>1)
     [3] a := <>new<>2 + 1
     [4] b := <>new<>2
     [5] <>old<>3 := a
-    [6] <>new<>4 := <>Global<>toNumber(<>old<>3)
+    [6] <>new<>4 := @ToNumber(<>old<>3)
     [7] a := <>new<>4 + 1
     [8] a := <>new<>4
     [9] <>old<>5 := a
-    [10] <>new<>6 := <>Global<>toNumber(<>old<>5)
+    [10] <>new<>6 := @ToNumber(<>old<>5)
     [11] a := <>new<>6 + 1
     [12] b := <>new<>6 + 1
     [13] <>old<>7 := a
-    [14] <>new<>8 := <>Global<>toNumber(<>old<>7)
+    [14] <>new<>8 := @ToNumber(<>old<>7)
     [15] a := <>new<>8 + 1
     [16] a := <>new<>8 + 1
     [17] noop(EndOfFile)

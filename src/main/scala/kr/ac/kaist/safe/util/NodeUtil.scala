@@ -56,16 +56,25 @@ object NodeUtil {
   def internalAPIName(name: String): String = INTERNAL_API_PREFIX + name
 
   // internal API call
-  val IS_OBJ_NAME = freshGlobalName("isObject")
-  val TO_NUM_NAME = freshGlobalName("toNumber")
-  val GET_BASE_NAME = freshGlobalName("getBase")
-  val ITER_INIT_NAME = freshGlobalName("iteratorInit")
-  val HAS_NEXT_NAME = freshGlobalName("iteratorHasNext")
-  val ITER_NEXT_NAME = freshGlobalName("iteratorNext")
-
+  // 9.3 ToNumber
+  val INTERNAL_TO_NUM = internalAPIName("ToNumber")
+  // 9.9 ToObject
   val INTERNAL_TO_OBJ = internalAPIName("ToObject")
+  // 8.7 The Reference Specification Type
+  val INTERNAL_GET_BASE = internalAPIName("GetBase")
+  // Other helpers
+  val INTERNAL_IS_OBJ = internalAPIName("isObject")
+  val INTERNAL_ITER_INIT = internalAPIName("iteratorInit")
+  val INTERNAL_HAS_NEXT = internalAPIName("iteratorHasNext")
+  val INTERNAL_ITER_NEXT = internalAPIName("iteratorNext")
   val internalCallSet: Set[String] = HashSet(
-    INTERNAL_TO_OBJ
+    INTERNAL_TO_NUM,
+    INTERNAL_TO_OBJ,
+    INTERNAL_GET_BASE,
+    INTERNAL_IS_OBJ,
+    INTERNAL_ITER_INIT,
+    INTERNAL_HAS_NEXT,
+    INTERNAL_ITER_NEXT
   )
   def isInternalCall(id: String): Boolean = internalCallSet.contains(id)
 

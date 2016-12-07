@@ -182,22 +182,22 @@ class Translator(program: Program) {
     IRInternalCall(ast, lhs, makeTId(ast, NU.INTERNAL_TO_OBJ, true), arg, None)
 
   private def toNumber(ast: ASTNode, lhs: IRId, id: IRId): IRInternalCall =
-    IRInternalCall(ast, lhs, makeTId(ast, NU.TO_NUM_NAME, true), id, None)
+    IRInternalCall(ast, lhs, makeTId(ast, NU.INTERNAL_TO_NUM, true), id, None)
 
   private def getBase(ast: ASTNode, lhs: IRId, f: IRId): IRInternalCall =
-    IRInternalCall(ast, lhs, makeTId(ast, NU.GET_BASE_NAME, true), f, None)
+    IRInternalCall(ast, lhs, makeTId(ast, NU.INTERNAL_GET_BASE, true), f, None)
 
   private def iteratorInit(ast: ASTNode, iterator: IRId, obj: IRId): IRInternalCall =
-    IRInternalCall(ast, iterator, makeTId(ast, NU.ITER_INIT_NAME, true), obj, None)
+    IRInternalCall(ast, iterator, makeTId(ast, NU.INTERNAL_ITER_INIT, true), obj, None)
 
   private def iteratorHasNext(ast: ASTNode, cond: IRId, obj: IRId, iterator: IRId): IRInternalCall =
-    IRInternalCall(ast, cond, makeTId(ast, NU.HAS_NEXT_NAME, true), obj, Some(iterator))
+    IRInternalCall(ast, cond, makeTId(ast, NU.INTERNAL_HAS_NEXT, true), obj, Some(iterator))
 
   private def iteratorKey(ast: ASTNode, key: IRId, obj: IRId, iterator: IRId): IRInternalCall =
-    IRInternalCall(ast, key, makeTId(ast, NU.ITER_NEXT_NAME, true), obj, Some(iterator))
+    IRInternalCall(ast, key, makeTId(ast, NU.INTERNAL_ITER_NEXT, true), obj, Some(iterator))
 
   private def isObject(ast: ASTNode, lhs: IRId, id: IRId): IRInternalCall =
-    IRInternalCall(ast, lhs, makeTId(ast, NU.IS_OBJ_NAME, true), id, None)
+    IRInternalCall(ast, lhs, makeTId(ast, NU.INTERNAL_IS_OBJ, true), id, None)
 
   private def unescapeJava(s: String, e: StringLiteral): String =
     if (-1 == s.indexOf('\\')) s

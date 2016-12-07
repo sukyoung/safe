@@ -12,7 +12,7 @@ function[0] top-level {
   AfterCatch[3] -> ExitExc
 
   Block[4] -> [6], [5]
-    [0] <>cond<>6 := <>Global<>isObject(<>newObj<>5)
+    [0] <>cond<>6 := @isObject(<>newObj<>5)
 
   Block[5] -> [7], ExitExc
     [0] assert(<>cond<>6)
@@ -67,7 +67,7 @@ function[0] top-level {
 
   Block[12] -> [9], ExitExc
     [0] <>old<>63 := pixcounter
-    [1] <>new<>64 := <>Global<>toNumber(<>old<>63)
+    [1] <>new<>64 := @ToNumber(<>old<>63)
     [2] pixcounter := <>new<>64 + 1
     [3] <>Global<>ignore20 := <>new<>64
 
@@ -127,13 +127,13 @@ function[1] <>funexpr@24:15-42:6<> {
   Block[7] -> [10], ExitExc
     [0] assert(<>useAverage<>11)
     [1] <>old<>31 := <>p<>16
-    [2] <>new<>32 := <>Global<>toNumber(<>old<>31)
+    [2] <>new<>32 := @ToNumber(<>old<>31)
     [3] <>p<>16 := <>new<>32 - 1
 
   Block[8] -> [16], ExitExc
     [0] assert(! <>useAverage<>11)
     [1] <>old<>42 := <>p<>16
-    [2] <>new<>43 := <>Global<>toNumber(<>old<>42)
+    [2] <>new<>43 := @ToNumber(<>old<>42)
     [3] <>p<>16 := <>new<>43 - 1
 
   Block[9] -> [14]
@@ -163,7 +163,7 @@ function[1] <>funexpr@24:15-42:6<> {
 
   Block[13] -> [10], ExitExc
     [0] <>old<>31 := <>p<>16
-    [1] <>new<>32 := <>Global<>toNumber(<>old<>31)
+    [1] <>new<>32 := @ToNumber(<>old<>31)
     [2] <>p<>16 := <>new<>32 - 1
 
   Block[14] -> Exit, ExitExc
@@ -196,7 +196,7 @@ function[1] <>funexpr@24:15-42:6<> {
 
   Block[19] -> [16], ExitExc
     [0] <>old<>42 := <>p<>16
-    [1] <>new<>43 := <>Global<>toNumber(<>old<>42)
+    [1] <>new<>43 := @ToNumber(<>old<>42)
     [2] <>p<>16 := <>new<>43 - 1
 
   Exit[-2]

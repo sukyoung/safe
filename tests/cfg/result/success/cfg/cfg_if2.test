@@ -19,7 +19,7 @@ function[0] top-level {
     [14] <>arguments<>15 := allocArg(2) @ #9
     [15] <>arguments<>15["0"] := <>temp<>13
     [16] <>arguments<>15["1"] := <>temp<>14
-    [17] <>fun<>16 := <>Global<>getBase(pay)
+    [17] <>fun<>16 := @GetBase(pay)
     [18] <>this<> := enterCode(<>fun<>16)
 
   Call[1] -> ExitExc
@@ -33,7 +33,7 @@ function[0] top-level {
     [0] <>temp<>18 := <>y<>11 + <>z<>17 + " won."
     [1] <>arguments<>19 := allocArg(1) @ #11
     [2] <>arguments<>19["0"] := <>temp<>18
-    [3] <>fun<>20 := <>Global<>getBase(print)
+    [3] <>fun<>20 := @GetBase(print)
     [4] <>this<> := enterCode(<>fun<>20)
 
   Call[5] -> ExitExc

@@ -5,14 +5,14 @@ var x
 }
 {
   <>old<>1 = x
-  <>new<>2 = <>Global<>toNumber(<>old<>1)
+  <>new<>2 = @ToNumber(<>old<>1)
   x = <>new<>2 + 1
   x = <>new<>2 + 1
 }
 {
   <>old<>3 = x
   <>old<>4 = x
-  <>new<>5 = <>Global<>toNumber(<>old<>4)
+  <>new<>5 = @ToNumber(<>old<>4)
   x = <>new<>5 - 1
   x = <>old<>3 / <>new<>5
 }

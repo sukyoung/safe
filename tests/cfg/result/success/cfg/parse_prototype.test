@@ -71,7 +71,7 @@ function[0] top-level {
   AfterCatch[15] -> ExitExc
 
   Block[16] -> [18], [17]
-    [0] <>cond<>201 := <>Global<>isObject(<>newObj<>200)
+    [0] <>cond<>201 := @isObject(<>newObj<>200)
 
   Block[17] -> [19], ExitExc
     [0] assert(<>cond<>201)
@@ -314,7 +314,7 @@ function[0] top-level {
   AfterCatch[65] -> ExitExc
 
   Block[66] -> [68], [67]
-    [0] <>cond<>2233 := <>Global<>isObject(<>newObj<>2232)
+    [0] <>cond<>2233 := @isObject(<>newObj<>2232)
 
   Block[67] -> [69], ExitExc
     [0] assert(<>cond<>2233)
@@ -1030,7 +1030,7 @@ function[0] top-level {
     [14] <>temp<>6589 := "colSpan rowSpan vAlign dateTime accessKey tabIndex " + "encType maxLength readOnly longDesc frameBorder"
     [15] <>arguments<>6590 := allocArg(1) @ #4812
     [16] <>arguments<>6590["0"] := <>temp<>6589
-    [17] <>fun<>6591 := <>Global<>getBase($w)
+    [17] <>fun<>6591 := @GetBase($w)
     [18] <>this<> := enterCode(<>fun<>6591)
 
   Call[175] -> ExitExc
@@ -1122,7 +1122,7 @@ function[0] top-level {
   AfterCatch[199] -> ExitExc
 
   Block[200] -> [202], [201]
-    [0] <>cond<>6727 := <>Global<>isObject(<>newObj<>6726)
+    [0] <>cond<>6727 := @isObject(<>newObj<>6726)
 
   Block[201] -> [203], ExitExc
     [0] assert(<>cond<>6727)
@@ -1759,7 +1759,7 @@ function[0] top-level {
   AfterCatch[306] -> ExitExc
 
   Block[307] -> [309], [308]
-    [0] <>cond<>13585 := <>Global<>isObject(<>newObj<>13584)
+    [0] <>cond<>13585 := @isObject(<>newObj<>13584)
 
   Block[308] -> [310], ExitExc
     [0] assert(<>cond<>13585)
@@ -1920,7 +1920,7 @@ function[1] $A {
     [2] <>temp<>8 := <>iterable<>1
     [3] <>arguments<>9 := allocArg(1) @ #3
     [4] <>arguments<>9["0"] := <>temp<>8
-    [5] <>fun<>10 := <>Global<>getBase(Object)
+    [5] <>fun<>10 := @GetBase(Object)
     [6] <>this<> := enterCode(<>fun<>10)
 
   Call[4] -> ExitExc
@@ -1978,7 +1978,7 @@ function[1] $A {
   AfterCatch[19] -> ExitExc
 
   Block[20] -> [22], [21]
-    [0] <>cond<>23 := <>Global<>isObject(<>newObj<>22)
+    [0] <>cond<>23 := @isObject(<>newObj<>22)
 
   Block[21] -> [23], ExitExc
     [0] assert(<>cond<>23)
@@ -1991,7 +1991,7 @@ function[1] $A {
   Block[23] -> [25], ExitExc
     [0] <>results<>3 := <>Global<>ignore2
     [1] <>old<>24 := <>length<>2
-    [2] <>new<>25 := <>Global<>toNumber(<>old<>24)
+    [2] <>new<>25 := @ToNumber(<>old<>24)
     [3] <>length<>2 := <>new<>25 - 1
 
   Block[24] -> Exit, ExitExc
@@ -2010,7 +2010,7 @@ function[1] $A {
 
   Block[28] -> [25], ExitExc
     [0] <>old<>24 := <>length<>2
-    [1] <>new<>25 := <>Global<>toNumber(<>old<>24)
+    [1] <>new<>25 := @ToNumber(<>old<>24)
     [2] <>length<>2 := <>new<>25 - 1
 
   Exit[-2]
@@ -2085,7 +2085,7 @@ function[2] $w {
   AfterCatch[15] -> ExitExc
 
   Block[16] -> [18], [17]
-    [0] <>cond<>47 := <>Global<>isObject(<>newObj<>46)
+    [0] <>cond<>47 := @isObject(<>newObj<>46)
 
   Block[17] -> [19], ExitExc
     [0] assert(<>cond<>47)
@@ -2136,7 +2136,7 @@ function[3] $H {
   AfterCatch[3] -> ExitExc
 
   Block[4] -> [6], [5]
-    [0] <>cond<>60 := <>Global<>isObject(<>newObj<>59)
+    [0] <>cond<>60 := @isObject(<>newObj<>59)
 
   Block[5] -> [7], ExitExc
     [0] assert(<>cond<>60)
@@ -2178,7 +2178,7 @@ function[4] $R {
   AfterCatch[3] -> ExitExc
 
   Block[4] -> [6], [5]
-    [0] <>cond<>74 := <>Global<>isObject(<>newObj<>73)
+    [0] <>cond<>74 := @isObject(<>newObj<>73)
 
   Block[5] -> [7], ExitExc
     [0] assert(<>cond<>74)
@@ -2227,7 +2227,7 @@ function[5] $ {
     [4] <>temp<>86 := <>obj<>85[<>i<>77]
     [5] <>arguments<>87 := allocArg(1) @ #56
     [6] <>arguments<>87["0"] := <>temp<>86
-    [7] <>fun<>88 := <>Global<>getBase($)
+    [7] <>fun<>88 := @GetBase($)
     [8] <>this<> := enterCode(<>fun<>88)
 
   Block[6] -> [3], ExitExc
@@ -2235,7 +2235,7 @@ function[5] $ {
 
   Block[7] -> [4], ExitExc
     [0] <>old<>92 := <>i<>77
-    [1] <>new<>93 := <>Global<>toNumber(<>old<>92)
+    [1] <>new<>93 := @ToNumber(<>old<>92)
     [2] <>i<>77 := <>new<>93 + 1
     [3] <>Global<>ignore9 := <>new<>93
 
@@ -2444,7 +2444,7 @@ function[6] <>funexpr@13:13-23:4<> {
   AfterCatch[30] -> ExitExc
 
   Block[31] -> [33], [32]
-    [0] <>cond<>145 := <>Global<>isObject(<>newObj<>144)
+    [0] <>cond<>145 := @isObject(<>newObj<>144)
 
   Block[32] -> [34], ExitExc
     [0] assert(<>cond<>145)
@@ -2655,14 +2655,14 @@ function[11] <>funexpr@68:10-80:4<> {
 
   Block[5] -> [2], ExitExc
     [0] <>old<>225 := <>i<>215
-    [1] <>new<>226 := <>Global<>toNumber(<>old<>225)
+    [1] <>new<>226 := @ToNumber(<>old<>225)
     [2] <>i<>215 := <>new<>226 + 1
     [3] <>Global<>ignore27 := <>new<>226
 
   Block[6] -> [8], [7]
     [0] <>obj<>222 := @ToObject(<>lambda<>217) @ #154
     [1] <>arguments<>223 := allocArg(0) @ #155
-    [2] <>fun<>224 := <>Global<>getBase(<>lambda<>217)
+    [2] <>fun<>224 := @GetBase(<>lambda<>217)
     [3] <>this<> := enterCode(<>fun<>224)
 
   Block[7] -> [5]
@@ -2739,7 +2739,7 @@ function[14] create {
     [3] <>temp<>249 := <>arguments<>240
     [4] <>arguments<>250 := allocArg(1) @ #170
     [5] <>arguments<>250["0"] := <>temp<>249
-    [6] <>fun<>251 := <>Global<>getBase($A)
+    [6] <>fun<>251 := @GetBase($A)
     [7] <>this<> := enterCode(<>fun<>251)
 
   Call[1] -> ExitExc
@@ -2833,7 +2833,7 @@ function[14] create {
   AfterCatch[23] -> ExitExc
 
   Block[24] -> [26], [25]
-    [0] <>cond<>277 := <>Global<>isObject(<>newObj<>276)
+    [0] <>cond<>277 := @isObject(<>newObj<>276)
 
   Block[25] -> [27], ExitExc
     [0] assert(<>cond<>277)
@@ -2886,7 +2886,7 @@ function[14] create {
 
   Block[36] -> [33], ExitExc
     [0] <>old<>289 := <>i<>238
-    [1] <>new<>290 := <>Global<>toNumber(<>old<>289)
+    [1] <>new<>290 := @ToNumber(<>old<>289)
     [2] <>i<>238 := <>new<>290 + 1
     [3] <>Global<>ignore44 := <>new<>290
 
@@ -3068,7 +3068,7 @@ function[16] addMethods {
 
   Block[30] -> [27], ExitExc
     [0] <>old<>379 := <>i<>301
-    [1] <>new<>380 := <>Global<>toNumber(<>old<>379)
+    [1] <>new<>380 := @ToNumber(<>old<>379)
     [2] <>i<>301 := <>new<>380 + 1
     [3] <>Global<>ignore55 := <>new<>380
 
@@ -3252,8 +3252,8 @@ function[19] <>funexpr@87:28-92:4<> {
     [0] <>new1<>383 := alloc() @ #281
     [1] <>new1<>383["toString"] := 1
     [2] <>obj<>384 := <>new1<>383
-    [3] <>iterator<>385 := <>Global<>iteratorInit(<>obj<>384) @ #282
-    [4] <>cond1<>386 := <>Global<>iteratorHasNext(<>obj<>384, <>iterator<>385)
+    [3] <>iterator<>385 := @iteratorInit(<>obj<>384) @ #282
+    [4] <>cond1<>386 := @iteratorHasNext(<>obj<>384, <>iterator<>385)
 
   Block[1] -> Exit, ExitExc
     [0] return(true)
@@ -3262,14 +3262,14 @@ function[19] <>funexpr@87:28-92:4<> {
 
   Block[3] -> [7], [6], ExitExc
     [0] assert(<>cond1<>386)
-    [1] <>key<>387 := <>Global<>iteratorNext(<>obj<>384, <>iterator<>385)
+    [1] <>key<>387 := @iteratorNext(<>obj<>384, <>iterator<>385)
     [2] <>p<>381 := <>key<>387
 
   Block[4] -> [1], ExitExc
     [0] assert(! <>cond1<>386)
 
   Block[5] -> [2]
-    [0] <>cond1<>386 := <>Global<>iteratorHasNext(<>obj<>384, <>iterator<>385)
+    [0] <>cond1<>386 := @iteratorHasNext(<>obj<>384, <>iterator<>385)
 
   Block[6] -> Exit, ExitExc
     [0] assert(<>p<>381 === "toString")
@@ -3531,7 +3531,7 @@ function[20] <>funexpr@160:2-364:2<> {
     [17] <>arguments<>744 := allocArg(2) @ #524
     [18] <>arguments<>744["0"] := <>temp<>739
     [19] <>arguments<>744["1"] := <>temp<>743
-    [20] <>fun<>745 := <>Global<>getBase(<>extend<>399)
+    [20] <>fun<>745 := @GetBase(<>extend<>399)
     [21] <>this<> := enterCode(<>fun<>745)
 
   Call[54] -> ExitExc
@@ -3626,8 +3626,8 @@ function[22] extend {
 
   Block[0] -> [2], ExitExc
     [0] <>obj<>442 := <>source<>439
-    [1] <>iterator<>443 := <>Global<>iteratorInit(<>obj<>442) @ #297
-    [2] <>cond1<>444 := <>Global<>iteratorHasNext(<>obj<>442, <>iterator<>443)
+    [1] <>iterator<>443 := @iteratorInit(<>obj<>442) @ #297
+    [2] <>cond1<>444 := @iteratorHasNext(<>obj<>442, <>iterator<>443)
 
   Block[1] -> Exit, ExitExc
     [0] return(<>destination<>438)
@@ -3636,7 +3636,7 @@ function[22] extend {
 
   Block[3] -> [5], ExitExc
     [0] assert(<>cond1<>444)
-    [1] <>key<>445 := <>Global<>iteratorNext(<>obj<>442, <>iterator<>443)
+    [1] <>key<>445 := @iteratorNext(<>obj<>442, <>iterator<>443)
     [2] <>property<>440 := <>key<>445
     [3] <>obj<>446 := @ToObject(<>destination<>438) @ #298
     [4] <>obj<>447 := @ToObject(<>source<>439) @ #299
@@ -3646,7 +3646,7 @@ function[22] extend {
     [0] assert(! <>cond1<>444)
 
   Block[5] -> [2]
-    [0] <>cond1<>444 := <>Global<>iteratorHasNext(<>obj<>442, <>iterator<>443)
+    [0] <>cond1<>444 := @iteratorHasNext(<>obj<>442, <>iterator<>443)
 
   Exit[-2]
 
@@ -3664,7 +3664,7 @@ function[23] inspect {
     [1] <>temp<>452 := <>object<>448
     [2] <>arguments<>453 := allocArg(1) @ #303
     [3] <>arguments<>453["0"] := <>temp<>452
-    [4] <>fun<>454 := <>Global<>getBase(<>isUndefined<>416)
+    [4] <>fun<>454 := @GetBase(<>isUndefined<>416)
     [5] <>this<> := enterCode(<>fun<>454)
 
   Block[2] -> [22], [21]
@@ -3709,7 +3709,7 @@ function[23] inspect {
     [2] <>temp<>462 := <>object<>448
     [3] <>arguments<>463 := allocArg(1) @ #311
     [4] <>arguments<>463["0"] := <>temp<>462
-    [5] <>fun<>464 := <>Global<>getBase(String)
+    [5] <>fun<>464 := @GetBase(String)
     [6] <>this<> := enterCode(<>fun<>464)
 
   Call[14] -> [2]
@@ -3758,7 +3758,7 @@ function[24] toJSON {
     [6] <>arguments<>471["0"] := <>temp<>468
     [7] <>arguments<>471["1"] := <>temp<>469
     [8] <>arguments<>471["2"] := <>temp<>470
-    [9] <>fun<>472 := <>Global<>getBase(<>Str<>402)
+    [9] <>fun<>472 := @GetBase(<>Str<>402)
     [10] <>this<> := enterCode(<>fun<>472)
 
   Call[1] -> ExitExc
@@ -3788,7 +3788,7 @@ function[25] Str {
     [4] <>temp<>488 := <>value<>477
     [5] <>arguments<>489 := allocArg(1) @ #324
     [6] <>arguments<>489["0"] := <>temp<>488
-    [7] <>fun<>490 := <>Global<>getBase(<>Type<>398)
+    [7] <>fun<>490 := @GetBase(<>Type<>398)
     [8] <>this<> := enterCode(<>fun<>490)
 
   Call[1] -> ExitExc
@@ -3955,7 +3955,7 @@ function[25] Str {
     [1] <>temp<>514 := <>value<>477
     [2] <>arguments<>515 := allocArg(1) @ #344
     [3] <>arguments<>515["0"] := <>temp<>514
-    [4] <>fun<>516 := <>Global<>getBase(isFinite)
+    [4] <>fun<>516 := @GetBase(isFinite)
     [5] <>this<> := enterCode(<>fun<>516)
 
   Block[54] -> [64], ExitExc
@@ -4013,7 +4013,7 @@ function[25] Str {
     [2] <>temp<>519 := <>value<>477
     [3] <>arguments<>520 := allocArg(1) @ #347
     [4] <>arguments<>520["0"] := <>temp<>519
-    [5] <>fun<>521 := <>Global<>getBase(String)
+    [5] <>fun<>521 := @GetBase(String)
     [6] <>this<> := enterCode(<>fun<>521)
 
   Block[72] -> [76], ExitExc
@@ -4049,7 +4049,7 @@ function[25] Str {
 
   Block[81] -> [78], ExitExc
     [0] <>old<>532 := <>i<>480
-    [1] <>new<>533 := <>Global<>toNumber(<>old<>532)
+    [1] <>new<>533 := @ToNumber(<>old<>532)
     [2] <>i<>480 := <>new<>533 + 1
     [3] <>Global<>ignore76 := <>new<>533
 
@@ -4071,7 +4071,7 @@ function[25] Str {
   AfterCatch[86] -> ExitExc
 
   Block[87] -> [89], [88]
-    [0] <>cond<>530 := <>Global<>isObject(<>newObj<>529)
+    [0] <>cond<>530 := @isObject(<>newObj<>529)
 
   Block[88] -> [90], ExitExc
     [0] assert(<>cond<>530)
@@ -4133,7 +4133,7 @@ function[25] Str {
     [6] <>arguments<>543["0"] := <>temp<>540
     [7] <>arguments<>543["1"] := <>temp<>541
     [8] <>arguments<>543["2"] := <>temp<>542
-    [9] <>fun<>544 := <>Global<>getBase(<>Str<>402)
+    [9] <>fun<>544 := @GetBase(<>Str<>402)
     [10] <>this<> := enterCode(<>fun<>544)
 
   Block[101] -> [98], ExitExc
@@ -4141,7 +4141,7 @@ function[25] Str {
 
   Block[102] -> [99], ExitExc
     [0] <>old<>549 := <>i<>480
-    [1] <>new<>550 := <>Global<>toNumber(<>old<>549)
+    [1] <>new<>550 := @ToNumber(<>old<>549)
     [2] <>i<>480 := <>new<>550 + 1
     [3] <>Global<>ignore82 := <>new<>550
 
@@ -4229,7 +4229,7 @@ function[25] Str {
     [8] <>arguments<>567["0"] := <>temp<>564
     [9] <>arguments<>567["1"] := <>temp<>565
     [10] <>arguments<>567["2"] := <>temp<>566
-    [11] <>fun<>568 := <>Global<>getBase(<>Str<>402)
+    [11] <>fun<>568 := @GetBase(<>Str<>402)
     [12] <>this<> := enterCode(<>fun<>568)
 
   Block[125] -> [122], ExitExc
@@ -4237,7 +4237,7 @@ function[25] Str {
 
   Block[126] -> [123], ExitExc
     [0] <>old<>578 := <>i<>480
-    [1] <>new<>579 := <>Global<>toNumber(<>old<>578)
+    [1] <>new<>579 := @ToNumber(<>old<>578)
     [2] <>i<>480 := <>new<>579 + 1
     [3] <>Global<>ignore90 := <>new<>579
 
@@ -4348,7 +4348,7 @@ function[27] toQueryString {
     [1] <>temp<>599 := <>object<>596
     [2] <>arguments<>600 := allocArg(1) @ #406
     [3] <>arguments<>600["0"] := <>temp<>599
-    [4] <>fun<>601 := <>Global<>getBase($H)
+    [4] <>fun<>601 := @GetBase($H)
     [5] <>this<> := enterCode(<>fun<>601)
 
   Call[1] -> ExitExc
@@ -4443,7 +4443,7 @@ function[29] keys {
     [1] <>temp<>623 := <>object<>618
     [2] <>arguments<>624 := allocArg(1) @ #426
     [3] <>arguments<>624["0"] := <>temp<>623
-    [4] <>fun<>625 := <>Global<>getBase(<>Type<>398)
+    [4] <>fun<>625 := @GetBase(<>Type<>398)
     [5] <>this<> := enterCode(<>fun<>625)
 
   Call[1] -> ExitExc
@@ -4471,7 +4471,7 @@ function[29] keys {
   AfterCatch[8] -> ExitExc
 
   Block[9] -> [11], [10]
-    [0] <>cond<>632 := <>Global<>isObject(<>newObj<>631)
+    [0] <>cond<>632 := @isObject(<>newObj<>631)
 
   Block[10] -> [12], ExitExc
     [0] assert(<>cond<>632)
@@ -4488,8 +4488,8 @@ function[29] keys {
     [0] <>Global<>ignore96 := allocArray(0) @ #432
     [1] <>results<>619 := <>Global<>ignore96
     [2] <>obj<>634 := <>object<>618
-    [3] <>iterator<>635 := <>Global<>iteratorInit(<>obj<>634) @ #433
-    [4] <>cond1<>636 := <>Global<>iteratorHasNext(<>obj<>634, <>iterator<>635)
+    [3] <>iterator<>635 := @iteratorInit(<>obj<>634) @ #433
+    [4] <>cond1<>636 := @iteratorHasNext(<>obj<>634, <>iterator<>635)
 
   Block[14] -> Exit, ExitExc
     [0] return(<>results<>619)
@@ -4498,7 +4498,7 @@ function[29] keys {
 
   Block[16] -> [19], ExitExc
     [0] assert(<>cond1<>636)
-    [1] <>key<>637 := <>Global<>iteratorNext(<>obj<>634, <>iterator<>635)
+    [1] <>key<>637 := @iteratorNext(<>obj<>634, <>iterator<>635)
     [2] <>property<>620 := <>key<>637
     [3] <>obj<>638 := @ToObject(<>object<>618) @ #434
     [4] <>temp<>639 := <>property<>620
@@ -4511,7 +4511,7 @@ function[29] keys {
     [0] assert(! <>cond1<>636)
 
   Block[18] -> [15]
-    [0] <>cond1<>636 := <>Global<>iteratorHasNext(<>obj<>634, <>iterator<>635)
+    [0] <>cond1<>636 := @iteratorHasNext(<>obj<>634, <>iterator<>635)
 
   Call[19] -> ExitExc
     [0] call(<>fun<>641, <>this<>, <>arguments<>640) @ #437
@@ -4554,8 +4554,8 @@ function[30] values {
     [0] <>Global<>ignore98 := allocArray(0) @ #444
     [1] <>results<>648 := <>Global<>ignore98
     [2] <>obj<>651 := <>object<>647
-    [3] <>iterator<>652 := <>Global<>iteratorInit(<>obj<>651) @ #445
-    [4] <>cond1<>653 := <>Global<>iteratorHasNext(<>obj<>651, <>iterator<>652)
+    [3] <>iterator<>652 := @iteratorInit(<>obj<>651) @ #445
+    [4] <>cond1<>653 := @iteratorHasNext(<>obj<>651, <>iterator<>652)
 
   Block[1] -> Exit, ExitExc
     [0] return(<>results<>648)
@@ -4564,7 +4564,7 @@ function[30] values {
 
   Block[3] -> [6], ExitExc
     [0] assert(<>cond1<>653)
-    [1] <>key<>654 := <>Global<>iteratorNext(<>obj<>651, <>iterator<>652)
+    [1] <>key<>654 := @iteratorNext(<>obj<>651, <>iterator<>652)
     [2] <>property<>649 := <>key<>654
     [3] <>obj<>655 := @ToObject(<>results<>648) @ #446
     [4] <>obj<>656 := @ToObject(<>object<>647) @ #447
@@ -4578,7 +4578,7 @@ function[30] values {
     [0] assert(! <>cond1<>653)
 
   Block[5] -> [2]
-    [0] <>cond1<>653 := <>Global<>iteratorHasNext(<>obj<>651, <>iterator<>652)
+    [0] <>cond1<>653 := @iteratorHasNext(<>obj<>651, <>iterator<>652)
 
   Call[6] -> ExitExc
     [0] call(<>fun<>659, <>this<>, <>arguments<>658) @ #450
@@ -4603,7 +4603,7 @@ function[31] clone {
     [3] <>arguments<>665 := allocArg(2) @ #455
     [4] <>arguments<>665["0"] := <>temp<>663
     [5] <>arguments<>665["1"] := <>temp<>664
-    [6] <>fun<>666 := <>Global<>getBase(<>extend<>399)
+    [6] <>fun<>666 := @GetBase(<>extend<>399)
     [7] <>this<> := enterCode(<>fun<>666)
 
   Call[1] -> ExitExc
@@ -4856,7 +4856,7 @@ function[41] update {
     [2] <>obj<>771 := @ToObject(<>args<>766) @ #534
     [3] <>length<>768 := <>obj<>771["length"]
     [4] <>old<>772 := <>length<>768
-    [5] <>new<>773 := <>Global<>toNumber(<>old<>772)
+    [5] <>new<>773 := @ToNumber(<>old<>772)
     [6] <>length<>768 := <>new<>773 - 1
 
   Block[1] -> Exit, ExitExc
@@ -4875,7 +4875,7 @@ function[41] update {
 
   Block[5] -> [2], ExitExc
     [0] <>old<>772 := <>length<>768
-    [1] <>new<>773 := <>Global<>toNumber(<>old<>772)
+    [1] <>new<>773 := @ToNumber(<>old<>772)
     [2] <>length<>768 := <>new<>773 - 1
 
   Exit[-2]
@@ -4912,7 +4912,7 @@ function[42] merge {
     [4] <>arguments<>787 := allocArg(2) @ #544
     [5] <>arguments<>787["0"] := <>temp<>785
     [6] <>arguments<>787["1"] := <>temp<>786
-    [7] <>fun<>788 := <>Global<>getBase(<>update<>753)
+    [7] <>fun<>788 := @GetBase(<>update<>753)
     [8] <>this<> := enterCode(<>fun<>788)
 
   Call[5] -> ExitExc
@@ -4966,7 +4966,7 @@ function[43] argumentNames {
   AfterCatch[7] -> ExitExc
 
   Block[8] -> [10], [9]
-    [0] <>cond<>804 := <>Global<>isObject(<>newObj<>803)
+    [0] <>cond<>804 := @isObject(<>newObj<>803)
 
   Block[9] -> [11], ExitExc
     [0] assert(<>cond<>804)
@@ -5009,7 +5009,7 @@ function[43] argumentNames {
   AfterCatch[18] -> ExitExc
 
   Block[19] -> [21], [20]
-    [0] <>cond<>818 := <>Global<>isObject(<>newObj<>817)
+    [0] <>cond<>818 := @isObject(<>newObj<>817)
 
   Block[20] -> [22], ExitExc
     [0] assert(<>cond<>818)
@@ -5053,7 +5053,7 @@ function[43] argumentNames {
   AfterCatch[29] -> ExitExc
 
   Block[30] -> [32], [31]
-    [0] <>cond<>832 := <>Global<>isObject(<>newObj<>831)
+    [0] <>cond<>832 := @isObject(<>newObj<>831)
 
   Block[31] -> [33], ExitExc
     [0] assert(<>cond<>832)
@@ -5212,7 +5212,7 @@ function[45] <>funexpr@389:12-392:6<> {
     [3] <>arguments<>867 := allocArg(2) @ #597
     [4] <>arguments<>867["0"] := <>temp<>865
     [5] <>arguments<>867["1"] := <>temp<>866
-    [6] <>fun<>868 := <>Global<>getBase(<>merge<>754)
+    [6] <>fun<>868 := @GetBase(<>merge<>754)
     [7] <>this<> := enterCode(<>fun<>868)
 
   Call[1] -> ExitExc
@@ -5303,7 +5303,7 @@ function[47] <>funexpr@397:12-400:6<> {
     [3] <>arguments<>894 := allocArg(2) @ #614
     [4] <>arguments<>894["0"] := <>temp<>892
     [5] <>arguments<>894["1"] := <>temp<>893
-    [6] <>fun<>895 := <>Global<>getBase(<>update<>753)
+    [6] <>fun<>895 := @GetBase(<>update<>753)
     [7] <>this<> := enterCode(<>fun<>895)
 
   Call[4] -> ExitExc
@@ -5392,7 +5392,7 @@ function[49] <>funexpr@406:12-409:6<> {
     [3] <>arguments<>918 := allocArg(2) @ #630
     [4] <>arguments<>918["0"] := <>temp<>916
     [5] <>arguments<>918["1"] := <>temp<>917
-    [6] <>fun<>919 := <>Global<>getBase(<>merge<>754)
+    [6] <>fun<>919 := @GetBase(<>merge<>754)
     [7] <>this<> := enterCode(<>fun<>919)
 
   Call[1] -> ExitExc
@@ -5519,7 +5519,7 @@ function[52] defer {
     [5] <>arguments<>957 := allocArg(2) @ #658
     [6] <>arguments<>957["0"] := <>temp<>955
     [7] <>arguments<>957["1"] := <>temp<>956
-    [8] <>fun<>958 := <>Global<>getBase(<>update<>753)
+    [8] <>fun<>958 := @GetBase(<>update<>753)
     [9] <>this<> := enterCode(<>fun<>958)
 
   Call[1] -> ExitExc
@@ -5597,7 +5597,7 @@ function[54] <>funexpr@427:12-430:6<> {
     [3] <>arguments<>979 := allocArg(2) @ #673
     [4] <>arguments<>979["0"] := <>temp<>977
     [5] <>arguments<>979["1"] := <>temp<>978
-    [6] <>fun<>980 := <>Global<>getBase(<>update<>753)
+    [6] <>fun<>980 := @GetBase(<>update<>753)
     [7] <>this<> := enterCode(<>fun<>980)
 
   Call[5] -> ExitExc
@@ -5673,7 +5673,7 @@ function[56] this._methodized<>funexpr@436:31-439:6<> {
     [5] <>arguments<>1000 := allocArg(2) @ #688
     [6] <>arguments<>1000["0"] := <>temp<>998
     [7] <>arguments<>1000["1"] := <>temp<>999
-    [8] <>fun<>1001 := <>Global<>getBase(<>update<>753)
+    [8] <>fun<>1001 := @GetBase(<>update<>753)
     [9] <>this<> := enterCode(<>fun<>1001)
 
   Call[1] -> ExitExc
@@ -5948,7 +5948,7 @@ function[60] RegExp.escape<>funexpr@481:17-483:2<> {
     [1] <>temp<>1102 := <>str<>1099
     [2] <>arguments<>1103 := allocArg(1) @ #777
     [3] <>arguments<>1103["0"] := <>temp<>1102
-    [4] <>fun<>1104 := <>Global<>getBase(String)
+    [4] <>fun<>1104 := @GetBase(String)
     [5] <>this<> := enterCode(<>fun<>1104)
 
   Call[1] -> ExitExc
@@ -5977,7 +5977,7 @@ function[60] RegExp.escape<>funexpr@481:17-483:2<> {
   AfterCatch[7] -> ExitExc
 
   Block[8] -> [10], [9]
-    [0] <>cond<>1114 := <>Global<>isObject(<>newObj<>1113)
+    [0] <>cond<>1114 := @isObject(<>newObj<>1113)
 
   Block[9] -> [11], ExitExc
     [0] assert(<>cond<>1114)
@@ -6066,7 +6066,7 @@ function[62] <>funexpr@493:21-495:4<> {
     [2] <>arguments<>1144 := allocArg(2) @ #807
     [3] <>arguments<>1144["0"] := <>temp<>1141
     [4] <>arguments<>1144["1"] := <>temp<>1143
-    [5] <>fun<>1145 := <>Global<>getBase(setInterval)
+    [5] <>fun<>1145 := @GetBase(setInterval)
     [6] <>this<> := enterCode(<>fun<>1145)
 
   Call[5] -> ExitExc
@@ -6128,7 +6128,7 @@ function[64] <>funexpr@501:9-505:4<> {
     [2] <>temp<>1159 := <>obj<>1158["timer"]
     [3] <>arguments<>1160 := allocArg(1) @ #820
     [4] <>arguments<>1160["0"] := <>temp<>1159
-    [5] <>fun<>1161 := <>Global<>getBase(clearInterval)
+    [5] <>fun<>1161 := @GetBase(clearInterval)
     [6] <>this<> := enterCode(<>fun<>1161)
 
   Call[4] -> ExitExc
@@ -6210,7 +6210,7 @@ function[66] <>funexpr@521:14-523:4<> {
     [2] <>temp<>1185 := <>value<>1181
     [3] <>arguments<>1186 := allocArg(1) @ #841
     [4] <>arguments<>1186["0"] := <>temp<>1185
-    [5] <>fun<>1187 := <>Global<>getBase(String)
+    [5] <>fun<>1187 := @GetBase(String)
     [6] <>this<> := enterCode(<>fun<>1187)
 
   Block[3] -> Exit, ExitExc
@@ -6422,7 +6422,7 @@ function[68] prepareReplacement {
   AfterCatch[9] -> ExitExc
 
   Block[10] -> [12], [11]
-    [0] <>cond<>1244 := <>Global<>isObject(<>newObj<>1243)
+    [0] <>cond<>1244 := @isObject(<>newObj<>1243)
 
   Block[11] -> [13], ExitExc
     [0] assert(<>cond<>1244)
@@ -6480,7 +6480,7 @@ function[70] gsub {
     [3] <>temp<>1261 := <>replacement<>1255
     [4] <>arguments<>1262 := allocArg(1) @ #869
     [5] <>arguments<>1262["0"] := <>temp<>1261
-    [6] <>fun<>1263 := <>Global<>getBase(<>prepareReplacement<>1197)
+    [6] <>fun<>1263 := @GetBase(<>prepareReplacement<>1197)
     [7] <>this<> := enterCode(<>fun<>1263)
 
   Call[1] -> ExitExc
@@ -6548,7 +6548,7 @@ function[70] gsub {
     [2] <>temp<>1277 := ""
     [3] <>arguments<>1278 := allocArg(1) @ #882
     [4] <>arguments<>1278["0"] := <>temp<>1277
-    [5] <>fun<>1279 := <>Global<>getBase(<>replacement<>1255)
+    [5] <>fun<>1279 := @GetBase(<>replacement<>1255)
     [6] <>this<> := enterCode(<>fun<>1279)
 
   Block[19] -> [32], ExitExc
@@ -6665,7 +6665,7 @@ function[70] gsub {
     [4] <>temp<>1308 := <>match<>1258
     [5] <>arguments<>1309 := allocArg(1) @ #904
     [6] <>arguments<>1309["0"] := <>temp<>1308
-    [7] <>fun<>1310 := <>Global<>getBase(<>replacement<>1255)
+    [7] <>fun<>1310 := @GetBase(<>replacement<>1255)
     [8] <>this<> := enterCode(<>fun<>1310)
 
   Call[48] -> ExitExc
@@ -6727,7 +6727,7 @@ function[71] sub {
     [1] <>temp<>1330 := <>replacement<>1326
     [2] <>arguments<>1331 := allocArg(1) @ #920
     [3] <>arguments<>1331["0"] := <>temp<>1330
-    [4] <>fun<>1332 := <>Global<>getBase(<>prepareReplacement<>1197)
+    [4] <>fun<>1332 := @GetBase(<>prepareReplacement<>1197)
     [5] <>this<> := enterCode(<>fun<>1332)
 
   Call[1] -> ExitExc
@@ -6793,7 +6793,7 @@ function[72] <>funexpr@573:31-576:6<> {
 
   Block[0] -> [2], [1], ExitExc
     [0] <>old<>1342 := <>count<>1327
-    [1] <>new<>1343 := <>Global<>toNumber(<>old<>1342)
+    [1] <>new<>1343 := @ToNumber(<>old<>1342)
     [2] <>count<>1327 := <>new<>1343 - 1
 
   Block[1] -> Exit, ExitExc
@@ -6809,7 +6809,7 @@ function[72] <>funexpr@573:31-576:6<> {
     [1] <>temp<>1346 := <>match<>1340
     [2] <>arguments<>1347 := allocArg(1) @ #929
     [3] <>arguments<>1347["0"] := <>temp<>1346
-    [4] <>fun<>1348 := <>Global<>getBase(<>replacement<>1326)
+    [4] <>fun<>1348 := @GetBase(<>replacement<>1326)
     [5] <>this<> := enterCode(<>fun<>1348)
 
   Call[4] -> ExitExc
@@ -6853,7 +6853,7 @@ function[73] scan {
     [1] <>temp<>1364 := this
     [2] <>arguments<>1365 := allocArg(1) @ #943
     [3] <>arguments<>1365["0"] := <>temp<>1364
-    [4] <>fun<>1366 := <>Global<>getBase(String)
+    [4] <>fun<>1366 := @GetBase(String)
     [5] <>this<> := enterCode(<>fun<>1366)
 
   Call[5] -> ExitExc
@@ -6932,7 +6932,7 @@ function[74] truncate {
     [2] <>temp<>1387 := this
     [3] <>arguments<>1388 := allocArg(1) @ #958
     [4] <>arguments<>1388["0"] := <>temp<>1387
-    [5] <>fun<>1389 := <>Global<>getBase(String)
+    [5] <>fun<>1389 := @GetBase(String)
     [6] <>this<> := enterCode(<>fun<>1389)
 
   Call[12] -> ExitExc
@@ -6983,7 +6983,7 @@ function[75] strip {
   AfterCatch[3] -> ExitExc
 
   Block[4] -> [6], [5]
-    [0] <>cond<>1399 := <>Global<>isObject(<>newObj<>1398)
+    [0] <>cond<>1399 := @isObject(<>newObj<>1398)
 
   Block[5] -> [7], ExitExc
     [0] assert(<>cond<>1399)
@@ -7027,7 +7027,7 @@ function[75] strip {
   AfterCatch[14] -> ExitExc
 
   Block[15] -> [17], [16]
-    [0] <>cond<>1413 := <>Global<>isObject(<>newObj<>1412)
+    [0] <>cond<>1413 := @isObject(<>newObj<>1412)
 
   Block[16] -> [18], ExitExc
     [0] assert(<>cond<>1413)
@@ -7083,7 +7083,7 @@ function[76] stripTags {
   AfterCatch[3] -> ExitExc
 
   Block[4] -> [6], [5]
-    [0] <>cond<>1428 := <>Global<>isObject(<>newObj<>1427)
+    [0] <>cond<>1428 := @isObject(<>newObj<>1427)
 
   Block[5] -> [7], ExitExc
     [0] assert(<>cond<>1428)
@@ -7140,7 +7140,7 @@ function[77] stripScripts {
   AfterCatch[3] -> ExitExc
 
   Block[4] -> [6], [5]
-    [0] <>cond<>1444 := <>Global<>isObject(<>newObj<>1443)
+    [0] <>cond<>1444 := @isObject(<>newObj<>1443)
 
   Block[5] -> [7], ExitExc
     [0] assert(<>cond<>1444)
@@ -7196,7 +7196,7 @@ function[78] extractScripts {
   AfterCatch[3] -> ExitExc
 
   Block[4] -> [6], [5]
-    [0] <>cond<>1461 := <>Global<>isObject(<>newObj<>1460)
+    [0] <>cond<>1461 := @isObject(<>newObj<>1460)
 
   Block[5] -> [7], ExitExc
     [0] assert(<>cond<>1461)
@@ -7226,7 +7226,7 @@ function[78] extractScripts {
   AfterCatch[10] -> ExitExc
 
   Block[11] -> [13], [12]
-    [0] <>cond<>1470 := <>Global<>isObject(<>newObj<>1469)
+    [0] <>cond<>1470 := @isObject(<>newObj<>1469)
 
   Block[12] -> [14], ExitExc
     [0] assert(<>cond<>1470)
@@ -7400,7 +7400,7 @@ function[82] escapeHTML {
   AfterCatch[3] -> ExitExc
 
   Block[4] -> [6], [5]
-    [0] <>cond<>1519 := <>Global<>isObject(<>newObj<>1518)
+    [0] <>cond<>1519 := @isObject(<>newObj<>1518)
 
   Block[5] -> [7], ExitExc
     [0] assert(<>cond<>1519)
@@ -7444,7 +7444,7 @@ function[82] escapeHTML {
   AfterCatch[14] -> ExitExc
 
   Block[15] -> [17], [16]
-    [0] <>cond<>1533 := <>Global<>isObject(<>newObj<>1532)
+    [0] <>cond<>1533 := @isObject(<>newObj<>1532)
 
   Block[16] -> [18], ExitExc
     [0] assert(<>cond<>1533)
@@ -7488,7 +7488,7 @@ function[82] escapeHTML {
   AfterCatch[25] -> ExitExc
 
   Block[26] -> [28], [27]
-    [0] <>cond<>1547 := <>Global<>isObject(<>newObj<>1546)
+    [0] <>cond<>1547 := @isObject(<>newObj<>1546)
 
   Block[27] -> [29], ExitExc
     [0] assert(<>cond<>1547)
@@ -7557,7 +7557,7 @@ function[83] unescapeHTML {
   AfterCatch[7] -> ExitExc
 
   Block[8] -> [10], [9]
-    [0] <>cond<>1566 := <>Global<>isObject(<>newObj<>1565)
+    [0] <>cond<>1566 := @isObject(<>newObj<>1565)
 
   Block[9] -> [11], ExitExc
     [0] assert(<>cond<>1566)
@@ -7601,7 +7601,7 @@ function[83] unescapeHTML {
   AfterCatch[18] -> ExitExc
 
   Block[19] -> [21], [20]
-    [0] <>cond<>1580 := <>Global<>isObject(<>newObj<>1579)
+    [0] <>cond<>1580 := @isObject(<>newObj<>1579)
 
   Block[20] -> [22], ExitExc
     [0] assert(<>cond<>1580)
@@ -7645,7 +7645,7 @@ function[83] unescapeHTML {
   AfterCatch[29] -> ExitExc
 
   Block[30] -> [32], [31]
-    [0] <>cond<>1594 := <>Global<>isObject(<>newObj<>1593)
+    [0] <>cond<>1594 := @isObject(<>newObj<>1593)
 
   Block[31] -> [33], ExitExc
     [0] assert(<>cond<>1594)
@@ -7714,7 +7714,7 @@ function[84] toQueryParams {
   AfterCatch[7] -> ExitExc
 
   Block[8] -> [10], [9]
-    [0] <>cond<>1615 := <>Global<>isObject(<>newObj<>1614)
+    [0] <>cond<>1615 := @isObject(<>newObj<>1614)
 
   Block[9] -> [11], ExitExc
     [0] assert(<>cond<>1615)
@@ -7842,7 +7842,7 @@ function[85] <>funexpr@628:57-642:6<> {
   Block[10] -> [11], ExitExc
     [0] <>arguments<>1644 := allocArg(1) @ #1128
     [1] <>arguments<>1644["0"] := <>temp<>1643
-    [2] <>fun<>1645 := <>Global<>getBase(decodeURIComponent)
+    [2] <>fun<>1645 := @GetBase(decodeURIComponent)
     [3] <>this<> := enterCode(<>fun<>1645)
 
   Call[11] -> ExitExc
@@ -7886,7 +7886,7 @@ function[85] <>funexpr@628:57-642:6<> {
     [2] <>temp<>1653 := <>value<>1631
     [3] <>arguments<>1654 := allocArg(1) @ #1137
     [4] <>arguments<>1654["0"] := <>temp<>1653
-    [5] <>fun<>1655 := <>Global<>getBase(decodeURIComponent)
+    [5] <>fun<>1655 := @GetBase(decodeURIComponent)
     [6] <>this<> := enterCode(<>fun<>1655)
 
   Block[22] -> [27], ExitExc
@@ -8082,7 +8082,7 @@ function[88] times {
   AfterCatch[6] -> ExitExc
 
   Block[7] -> [9], [8]
-    [0] <>cond<>1710 := <>Global<>isObject(<>newObj<>1709)
+    [0] <>cond<>1710 := @isObject(<>newObj<>1709)
 
   Block[8] -> [10], ExitExc
     [0] assert(<>cond<>1710)
@@ -8135,7 +8135,7 @@ function[89] camelize {
   AfterCatch[3] -> ExitExc
 
   Block[4] -> [6], [5]
-    [0] <>cond<>1725 := <>Global<>isObject(<>newObj<>1724)
+    [0] <>cond<>1725 := @isObject(<>newObj<>1724)
 
   Block[5] -> [7], ExitExc
     [0] assert(<>cond<>1725)
@@ -8291,7 +8291,7 @@ function[92] underscore {
   AfterCatch[3] -> ExitExc
 
   Block[4] -> [6], [5]
-    [0] <>cond<>1767 := <>Global<>isObject(<>newObj<>1766)
+    [0] <>cond<>1767 := @isObject(<>newObj<>1766)
 
   Block[5] -> [7], ExitExc
     [0] assert(<>cond<>1767)
@@ -8335,7 +8335,7 @@ function[92] underscore {
   AfterCatch[14] -> ExitExc
 
   Block[15] -> [17], [16]
-    [0] <>cond<>1781 := <>Global<>isObject(<>newObj<>1780)
+    [0] <>cond<>1781 := @isObject(<>newObj<>1780)
 
   Block[16] -> [18], ExitExc
     [0] assert(<>cond<>1781)
@@ -8379,7 +8379,7 @@ function[92] underscore {
   AfterCatch[25] -> ExitExc
 
   Block[26] -> [28], [27]
-    [0] <>cond<>1795 := <>Global<>isObject(<>newObj<>1794)
+    [0] <>cond<>1795 := @isObject(<>newObj<>1794)
 
   Block[27] -> [29], ExitExc
     [0] assert(<>cond<>1795)
@@ -8423,7 +8423,7 @@ function[92] underscore {
   AfterCatch[36] -> ExitExc
 
   Block[37] -> [39], [38]
-    [0] <>cond<>1809 := <>Global<>isObject(<>newObj<>1808)
+    [0] <>cond<>1809 := @isObject(<>newObj<>1808)
 
   Block[38] -> [40], ExitExc
     [0] assert(<>cond<>1809)
@@ -8492,7 +8492,7 @@ function[93] dasherize {
   AfterCatch[3] -> ExitExc
 
   Block[4] -> [6], [5]
-    [0] <>cond<>1828 := <>Global<>isObject(<>newObj<>1827)
+    [0] <>cond<>1828 := @isObject(<>newObj<>1827)
 
   Block[5] -> [7], ExitExc
     [0] assert(<>cond<>1828)
@@ -8548,7 +8548,7 @@ function[94] inspect {
   AfterCatch[3] -> ExitExc
 
   Block[4] -> [6], [5]
-    [0] <>cond<>1845 := <>Global<>isObject(<>newObj<>1844)
+    [0] <>cond<>1845 := @isObject(<>newObj<>1844)
 
   Block[5] -> [7], ExitExc
     [0] assert(<>cond<>1845)
@@ -8600,7 +8600,7 @@ function[94] inspect {
   AfterCatch[16] -> ExitExc
 
   Block[17] -> [19], [18]
-    [0] <>cond<>1877 := <>Global<>isObject(<>newObj<>1876)
+    [0] <>cond<>1877 := @isObject(<>newObj<>1876)
 
   Block[18] -> [20], ExitExc
     [0] assert(<>cond<>1877)
@@ -8648,7 +8648,7 @@ function[94] inspect {
   AfterCatch[28] -> ExitExc
 
   Block[29] -> [31], [30]
-    [0] <>cond<>1892 := <>Global<>isObject(<>newObj<>1891)
+    [0] <>cond<>1892 := @isObject(<>newObj<>1891)
 
   Block[30] -> [32], ExitExc
     [0] assert(<>cond<>1892)
@@ -8820,7 +8820,7 @@ function[97] isJSON {
   AfterCatch[9] -> ExitExc
 
   Block[10] -> [12], [11]
-    [0] <>cond<>1921 := <>Global<>isObject(<>newObj<>1920)
+    [0] <>cond<>1921 := @isObject(<>newObj<>1920)
 
   Block[11] -> [13], ExitExc
     [0] assert(<>cond<>1921)
@@ -8865,7 +8865,7 @@ function[97] isJSON {
   AfterCatch[20] -> ExitExc
 
   Block[21] -> [23], [22]
-    [0] <>cond<>1934 := <>Global<>isObject(<>newObj<>1933)
+    [0] <>cond<>1934 := @isObject(<>newObj<>1933)
 
   Block[22] -> [24], ExitExc
     [0] assert(<>cond<>1934)
@@ -8910,7 +8910,7 @@ function[97] isJSON {
   AfterCatch[31] -> ExitExc
 
   Block[32] -> [34], [33]
-    [0] <>cond<>1947 := <>Global<>isObject(<>newObj<>1946)
+    [0] <>cond<>1947 := @isObject(<>newObj<>1946)
 
   Block[33] -> [35], ExitExc
     [0] assert(<>cond<>1947)
@@ -8954,7 +8954,7 @@ function[97] isJSON {
   AfterCatch[42] -> ExitExc
 
   Block[43] -> [45], [44]
-    [0] <>cond<>1959 := <>Global<>isObject(<>newObj<>1958)
+    [0] <>cond<>1959 := @isObject(<>newObj<>1958)
 
   Block[44] -> [46], ExitExc
     [0] assert(<>cond<>1959)
@@ -9023,7 +9023,7 @@ function[98] evalJSON {
   AfterCatch[7] -> ExitExc
 
   Block[8] -> [10], [9]
-    [0] <>cond<>1980 := <>Global<>isObject(<>newObj<>1979)
+    [0] <>cond<>1980 := @isObject(<>newObj<>1979)
 
   Block[9] -> [11], ExitExc
     [0] assert(<>cond<>1980)
@@ -9142,7 +9142,7 @@ function[98] evalJSON {
   AfterCatch[42] -> ExitExc
 
   Block[43] -> [45], [44]
-    [0] <>cond<>2028 := <>Global<>isObject(<>newObj<>2027)
+    [0] <>cond<>2028 := @isObject(<>newObj<>2027)
 
   Block[44] -> [46], ExitExc
     [0] assert(<>cond<>2028)
@@ -9402,7 +9402,7 @@ function[105] blank {
   AfterCatch[3] -> ExitExc
 
   Block[4] -> [6], [5]
-    [0] <>cond<>2077 := <>Global<>isObject(<>newObj<>2076)
+    [0] <>cond<>2077 := @isObject(<>newObj<>2076)
 
   Block[5] -> [7], ExitExc
     [0] assert(<>cond<>2077)
@@ -9457,7 +9457,7 @@ function[106] interpolate {
   AfterCatch[3] -> ExitExc
 
   Block[4] -> [6], [5]
-    [0] <>cond<>2094 := <>Global<>isObject(<>newObj<>2093)
+    [0] <>cond<>2094 := @isObject(<>newObj<>2093)
 
   Block[5] -> [7], ExitExc
     [0] assert(<>cond<>2094)
@@ -9663,7 +9663,7 @@ function[109] <>funexpr@792:45-813:6<> {
   AfterCatch[12] -> ExitExc
 
   Block[13] -> [15], [14]
-    [0] <>cond<>2166 := <>Global<>isObject(<>newObj<>2165)
+    [0] <>cond<>2166 := @isObject(<>newObj<>2165)
 
   Block[14] -> [16], ExitExc
     [0] assert(<>cond<>2166)
@@ -9760,7 +9760,7 @@ function[109] <>funexpr@792:45-813:6<> {
   AfterCatch[36] -> ExitExc
 
   Block[37] -> [39], [38]
-    [0] <>cond<>2186 := <>Global<>isObject(<>newObj<>2185)
+    [0] <>cond<>2186 := @isObject(<>newObj<>2185)
 
   Block[38] -> [40], ExitExc
     [0] assert(<>cond<>2186)
@@ -9990,7 +9990,7 @@ function[112] <>funexpr@824:18-826:8<> {
     [1] <>temp<>2266 := <>context<>2258
     [2] <>temp<>2267 := <>value<>2263
     [3] <>old<>2268 := <>index<>2259
-    [4] <>new<>2269 := <>Global<>toNumber(<>old<>2268)
+    [4] <>new<>2269 := @ToNumber(<>old<>2268)
     [5] <>index<>2259 := <>new<>2269 + 1
     [6] <>temp<>2270 := <>new<>2269
     [7] <>arguments<>2271 := allocArg(3) @ #1559
@@ -10588,7 +10588,7 @@ function[124] grep {
   AfterCatch[15] -> ExitExc
 
   Block[16] -> [18], [17]
-    [0] <>cond<>2431 := <>Global<>isObject(<>newObj<>2430)
+    [0] <>cond<>2431 := @isObject(<>newObj<>2430)
 
   Block[17] -> [19], ExitExc
     [0] assert(<>cond<>2431)
@@ -10941,7 +10941,7 @@ function[132] invoke {
     [1] <>temp<>2521 := <>arguments<>2519
     [2] <>arguments<>2522 := allocArg(1) @ #1745
     [3] <>arguments<>2522["0"] := <>temp<>2521
-    [4] <>fun<>2523 := <>Global<>getBase($A)
+    [4] <>fun<>2523 := @GetBase($A)
     [5] <>this<> := enterCode(<>fun<>2523)
 
   Call[1] -> ExitExc
@@ -11595,7 +11595,7 @@ function[148] zip {
     [3] <>temp<>2699 := <>arguments<>2696
     [4] <>arguments<>2700 := allocArg(1) @ #1874
     [5] <>arguments<>2700["0"] := <>temp<>2699
-    [6] <>fun<>2701 := <>Global<>getBase($A)
+    [6] <>fun<>2701 := @GetBase($A)
     [7] <>this<> := enterCode(<>fun<>2701)
 
   Call[1] -> ExitExc
@@ -11733,7 +11733,7 @@ function[149] <>funexpr@1011:21-1013:6<> {
   Block[4] -> [5], ExitExc
     [0] <>arguments<>2734 := allocArg(1) @ #1903
     [1] <>arguments<>2734["0"] := <>temp<>2733
-    [2] <>fun<>2735 := <>Global<>getBase(<>iterator<>2693)
+    [2] <>fun<>2735 := @GetBase(<>iterator<>2693)
     [3] <>this<> := enterCode(<>fun<>2735)
 
   Call[5] -> ExitExc
@@ -11989,7 +11989,7 @@ function[153] each {
 
   Block[5] -> [2], ExitExc
     [0] <>old<>2799 := <>i<>2787
-    [1] <>new<>2800 := <>Global<>toNumber(<>old<>2799)
+    [1] <>new<>2800 := @ToNumber(<>old<>2799)
     [2] <>i<>2787 := <>new<>2800 + 1
     [3] <>Global<>ignore279 := <>new<>2800
 
@@ -12647,7 +12647,7 @@ function[172] indexOf {
 
   Block[11] -> [8], ExitExc
     [0] <>old<>2952 := <>i<>2947
-    [1] <>new<>2953 := <>Global<>toNumber(<>old<>2952)
+    [1] <>new<>2953 := @ToNumber(<>old<>2952)
     [2] <>i<>2947 := <>new<>2953 + 1
     [3] <>Global<>ignore289 := <>new<>2953
 
@@ -12674,7 +12674,7 @@ function[173] lastIndexOf {
     [1] <>temp<>2959 := <>i<>2955
     [2] <>arguments<>2960 := allocArg(1) @ #2077
     [3] <>arguments<>2960["0"] := <>temp<>2959
-    [4] <>fun<>2961 := <>Global<>getBase(isNaN)
+    [4] <>fun<>2961 := @GetBase(isNaN)
     [5] <>this<> := enterCode(<>fun<>2961)
 
   Call[1] -> ExitExc
@@ -12817,7 +12817,7 @@ function[174] concat {
 
   Block[9] -> [6], ExitExc
     [0] <>old<>3012 := <>i<>2983
-    [1] <>new<>3013 := <>Global<>toNumber(<>old<>3012)
+    [1] <>new<>3013 := @ToNumber(<>old<>3012)
     [2] <>i<>2983 := <>new<>3013 + 1
     [3] <>Global<>ignore296 := <>new<>3013
 
@@ -12864,7 +12864,7 @@ function[174] concat {
 
   Block[22] -> [19], ExitExc
     [0] <>old<>3006 := <>j<>2985
-    [1] <>new<>3007 := <>Global<>toNumber(<>old<>3006)
+    [1] <>new<>3007 := @ToNumber(<>old<>3006)
     [2] <>j<>2985 := <>new<>3007 + 1
     [3] <>Global<>ignore301 := <>new<>3007
 
@@ -13036,8 +13036,8 @@ function[178] _each {
   Block[0] -> [2], ExitExc
     [0] <>obj<>3092 := @ToObject(this) @ #2170
     [1] <>obj<>3093 := <>obj<>3092["_object"]
-    [2] <>iterator<>3094 := <>Global<>iteratorInit(<>obj<>3093) @ #2171
-    [3] <>cond1<>3095 := <>Global<>iteratorHasNext(<>obj<>3093, <>iterator<>3094)
+    [2] <>iterator<>3094 := @iteratorInit(<>obj<>3093) @ #2171
+    [3] <>cond1<>3095 := @iteratorHasNext(<>obj<>3093, <>iterator<>3094)
 
   Block[1] -> Exit
 
@@ -13045,7 +13045,7 @@ function[178] _each {
 
   Block[3] -> [6], ExitExc
     [0] assert(<>cond1<>3095)
-    [1] <>key<>3096 := <>Global<>iteratorNext(<>obj<>3093, <>iterator<>3094)
+    [1] <>key<>3096 := @iteratorNext(<>obj<>3093, <>iterator<>3094)
     [2] <>key<>3088 := <>key<>3096
     [3] <>obj<>3097 := @ToObject(this) @ #2172
     [4] <>obj<>3098 := @ToObject(<>obj<>3097["_object"]) @ #2173
@@ -13064,14 +13064,14 @@ function[178] _each {
     [17] <>temp<>3104 := <>pair<>3090
     [18] <>arguments<>3105 := allocArg(1) @ #2178
     [19] <>arguments<>3105["0"] := <>temp<>3104
-    [20] <>fun<>3106 := <>Global<>getBase(<>iterator<>3087)
+    [20] <>fun<>3106 := @GetBase(<>iterator<>3087)
     [21] <>this<> := enterCode(<>fun<>3106)
 
   Block[4] -> [1], ExitExc
     [0] assert(! <>cond1<>3095)
 
   Block[5] -> [2]
-    [0] <>cond1<>3095 := <>Global<>iteratorHasNext(<>obj<>3093, <>iterator<>3094)
+    [0] <>cond1<>3095 := @iteratorHasNext(<>obj<>3093, <>iterator<>3094)
 
   Call[6] -> ExitExc
     [0] call(<>obj<>3103, <>this<>, <>arguments<>3105) @ #2179
@@ -13348,7 +13348,7 @@ function[188] update {
   AfterCatch[3] -> ExitExc
 
   Block[4] -> [6], [5]
-    [0] <>cond<>3179 := <>Global<>isObject(<>newObj<>3178)
+    [0] <>cond<>3179 := @isObject(<>newObj<>3178)
 
   Block[5] -> [7], ExitExc
     [0] assert(<>cond<>3179)
@@ -13460,7 +13460,7 @@ function[190] toQueryPair {
   Block[10] -> [11], ExitExc
     [0] <>arguments<>3213 := allocArg(1) @ #2266
     [1] <>arguments<>3213["0"] := <>temp<>3212
-    [2] <>fun<>3214 := <>Global<>getBase(encodeURIComponent)
+    [2] <>fun<>3214 := @GetBase(encodeURIComponent)
     [3] <>this<> := enterCode(<>fun<>3214)
 
   Call[11] -> ExitExc
@@ -13532,7 +13532,7 @@ function[192] <>funexpr@1294:28-1308:6<> {
     [2] <>temp<>3230 := <>obj<>3229["key"]
     [3] <>arguments<>3231 := allocArg(1) @ #2274
     [4] <>arguments<>3231["0"] := <>temp<>3230
-    [5] <>fun<>3232 := <>Global<>getBase(encodeURIComponent)
+    [5] <>fun<>3232 := @GetBase(encodeURIComponent)
     [6] <>this<> := enterCode(<>fun<>3232)
 
   Call[1] -> ExitExc
@@ -13607,7 +13607,7 @@ function[192] <>funexpr@1294:28-1308:6<> {
     [7] <>arguments<>3245 := allocArg(2) @ #2286
     [8] <>arguments<>3245["0"] := <>temp<>3243
     [9] <>arguments<>3245["1"] := <>temp<>3244
-    [10] <>fun<>3246 := <>Global<>getBase(<>toQueryPair<>3067)
+    [10] <>fun<>3246 := @GetBase(<>toQueryPair<>3067)
     [11] <>this<> := enterCode(<>fun<>3246)
 
   Block[18] -> [15], ExitExc
@@ -13615,7 +13615,7 @@ function[192] <>funexpr@1294:28-1308:6<> {
 
   Block[19] -> [16], ExitExc
     [0] <>old<>3250 := <>i<>3224
-    [1] <>new<>3251 := <>Global<>toNumber(<>old<>3250)
+    [1] <>new<>3251 := @ToNumber(<>old<>3250)
     [2] <>i<>3224 := <>new<>3251 + 1
     [3] <>Global<>ignore332 := <>new<>3251
 
@@ -13661,7 +13661,7 @@ function[192] <>funexpr@1294:28-1308:6<> {
     [4] <>arguments<>3261 := allocArg(2) @ #2297
     [5] <>arguments<>3261["0"] := <>temp<>3259
     [6] <>arguments<>3261["1"] := <>temp<>3260
-    [7] <>fun<>3262 := <>Global<>getBase(<>toQueryPair<>3067)
+    [7] <>fun<>3262 := @GetBase(<>toQueryPair<>3067)
     [8] <>this<> := enterCode(<>fun<>3262)
 
   Call[34] -> ExitExc
@@ -13795,7 +13795,7 @@ function[195] clone {
   AfterCatch[3] -> ExitExc
 
   Block[4] -> [6], [5]
-    [0] <>cond<>3309 := <>Global<>isObject(<>newObj<>3308)
+    [0] <>cond<>3309 := @isObject(<>newObj<>3308)
 
   Block[5] -> [7], ExitExc
     [0] assert(<>cond<>3309)
@@ -13896,7 +13896,7 @@ function[199] times {
     [5] <>arguments<>3347["0"] := <>temp<>3344
     [6] <>arguments<>3347["1"] := <>temp<>3345
     [7] <>arguments<>3347["2"] := <>temp<>3346
-    [8] <>fun<>3348 := <>Global<>getBase($R)
+    [8] <>fun<>3348 := @GetBase($R)
     [9] <>this<> := enterCode(<>fun<>3348)
 
   Call[1] -> ExitExc
@@ -14162,7 +14162,7 @@ function[207] _each {
     [2] <>temp<>3425 := <>value<>3416
     [3] <>arguments<>3426 := allocArg(1) @ #2425
     [4] <>arguments<>3426["0"] := <>temp<>3425
-    [5] <>fun<>3427 := <>Global<>getBase(<>iterator<>3415)
+    [5] <>fun<>3427 := @GetBase(<>iterator<>3415)
     [6] <>this<> := enterCode(<>fun<>3427)
 
   Block[8] -> [1], ExitExc
@@ -14305,7 +14305,7 @@ function[210] <>funexpr@1428:7-47<> {
   AfterCatch[3] -> ExitExc
 
   Block[4] -> [6], [5]
-    [0] <>cond<>3456 := <>Global<>isObject(<>newObj<>3455)
+    [0] <>cond<>3456 := @isObject(<>newObj<>3455)
 
   Block[5] -> [7], ExitExc
     [0] assert(<>cond<>3456)
@@ -14343,7 +14343,7 @@ function[211] <>funexpr@1429:7-62<> {
   AfterCatch[3] -> ExitExc
 
   Block[4] -> [6], [5]
-    [0] <>cond<>3467 := <>Global<>isObject(<>newObj<>3466)
+    [0] <>cond<>3467 := @isObject(<>newObj<>3466)
 
   Block[5] -> [7], ExitExc
     [0] assert(<>cond<>3467)
@@ -14381,7 +14381,7 @@ function[212] <>funexpr@1430:7-65<> {
   AfterCatch[3] -> ExitExc
 
   Block[4] -> [6], [5]
-    [0] <>cond<>3478 := <>Global<>isObject(<>newObj<>3477)
+    [0] <>cond<>3478 := @isObject(<>newObj<>3477)
 
   Block[5] -> [7], ExitExc
     [0] assert(<>cond<>3478)
@@ -14590,7 +14590,7 @@ function[218] <>funexpr@1467:15-55<> {
   Block[0] -> Exit, ExitExc
     [0] <>obj<>3562 := @ToObject(Ajax) @ #2532
     [1] <>old<>3563 := <>obj<>3562["activeRequestCount"]
-    [2] <>new<>3564 := <>Global<>toNumber(<>old<>3563)
+    [2] <>new<>3564 := @ToNumber(<>old<>3563)
     [3] <>obj<>3562["activeRequestCount"] := <>new<>3564 + 1
     [4] <>Global<>ignore357 := <>new<>3564
 
@@ -14606,7 +14606,7 @@ function[219] <>funexpr@1468:15-55<> {
   Block[0] -> Exit, ExitExc
     [0] <>obj<>3568 := @ToObject(Ajax) @ #2535
     [1] <>old<>3569 := <>obj<>3568["activeRequestCount"]
-    [2] <>new<>3570 := <>Global<>toNumber(<>old<>3569)
+    [2] <>new<>3570 := @ToNumber(<>old<>3569)
     [3] <>obj<>3568["activeRequestCount"] := <>new<>3570 - 1
     [4] <>Global<>ignore359 := <>new<>3570
 
@@ -14732,7 +14732,7 @@ function[221] <>funexpr@1492:15-1496:4<> {
     [1] <>temp<>3623 := <>options<>3620
     [2] <>arguments<>3624 := allocArg(1) @ #2584
     [3] <>arguments<>3624["0"] := <>temp<>3623
-    [4] <>fun<>3625 := <>Global<>getBase(<>$super<>3618)
+    [4] <>fun<>3625 := @GetBase(<>$super<>3618)
     [5] <>this<> := enterCode(<>fun<>3625)
 
   Call[1] -> ExitExc
@@ -14961,7 +14961,7 @@ function[222] <>funexpr@1498:12-1540:4<> {
   AfterCatch[40] -> [37]
 
   Block[41] -> [43], [42]
-    [0] <>cond<>3695 := <>Global<>isObject(<>newObj<>3694)
+    [0] <>cond<>3695 := @isObject(<>newObj<>3694)
 
   Block[42] -> [44], [37]
     [0] assert(<>cond<>3695)
@@ -15354,7 +15354,7 @@ function[224] <>funexpr@1548:22-1580:4<> {
   AfterCatch[11] -> ExitExc
 
   Block[12] -> [14], [13]
-    [0] <>cond<>3813 := <>Global<>isObject(<>newObj<>3812)
+    [0] <>cond<>3813 := @isObject(<>newObj<>3812)
 
   Block[13] -> [15], ExitExc
     [0] assert(<>cond<>3813)
@@ -15444,7 +15444,7 @@ function[224] <>funexpr@1548:22-1580:4<> {
     [2] <>temp<>3840 := <>extras<>3785
     [3] <>arguments<>3841 := allocArg(1) @ #2760
     [4] <>arguments<>3841["0"] := <>temp<>3840
-    [5] <>fun<>3842 := <>Global<>getBase($H)
+    [5] <>fun<>3842 := @GetBase($H)
     [6] <>this<> := enterCode(<>fun<>3842)
 
   Block[34] -> [39]
@@ -15492,8 +15492,8 @@ function[224] <>funexpr@1548:22-1580:4<> {
 
   Block[47] -> [49], ExitExc
     [0] <>obj<>3854 := <>headers<>3784
-    [1] <>iterator<>3855 := <>Global<>iteratorInit(<>obj<>3854) @ #2771
-    [2] <>cond1<>3856 := <>Global<>iteratorHasNext(<>obj<>3854, <>iterator<>3855)
+    [1] <>iterator<>3855 := @iteratorInit(<>obj<>3854) @ #2771
+    [2] <>cond1<>3856 := @iteratorHasNext(<>obj<>3854, <>iterator<>3855)
 
   Block[48] -> Exit
 
@@ -15501,7 +15501,7 @@ function[224] <>funexpr@1548:22-1580:4<> {
 
   Block[50] -> [53], ExitExc
     [0] assert(<>cond1<>3856)
-    [1] <>key<>3857 := <>Global<>iteratorNext(<>obj<>3854, <>iterator<>3855)
+    [1] <>key<>3857 := @iteratorNext(<>obj<>3854, <>iterator<>3855)
     [2] <>name<>3788 := <>key<>3857
     [3] <>obj<>3858 := @ToObject(this) @ #2772
     [4] <>obj<>3859 := @ToObject(<>obj<>3858["transport"]) @ #2773
@@ -15518,7 +15518,7 @@ function[224] <>funexpr@1548:22-1580:4<> {
     [0] assert(! <>cond1<>3856)
 
   Block[52] -> [49]
-    [0] <>cond1<>3856 := <>Global<>iteratorHasNext(<>obj<>3854, <>iterator<>3855)
+    [0] <>cond1<>3856 := @iteratorHasNext(<>obj<>3854, <>iterator<>3855)
 
   Call[53] -> ExitExc
     [0] call(<>fun<>3864, <>this<>, <>arguments<>3863) @ #2777
@@ -15678,7 +15678,7 @@ function[228] <>funexpr@1594:24-1624:4<> {
   AfterCatch[3] -> ExitExc
 
   Block[4] -> [6], [5]
-    [0] <>cond<>3901 := <>Global<>isObject(<>newObj<>3900)
+    [0] <>cond<>3901 := @isObject(<>newObj<>3900)
 
   Block[5] -> [7], ExitExc
     [0] assert(<>cond<>3901)
@@ -15865,7 +15865,7 @@ function[228] <>funexpr@1594:24-1624:4<> {
   AfterCatch[51] -> ExitExc
 
   Block[52] -> [54], [53]
-    [0] <>cond<>3948 := <>Global<>isObject(<>newObj<>3947)
+    [0] <>cond<>3948 := @isObject(<>newObj<>3947)
 
   Block[53] -> [55], ExitExc
     [0] assert(<>cond<>3948)
@@ -16054,7 +16054,7 @@ function[229] <>funexpr@1626:17-1633:4<> {
   AfterCatch[3] -> ExitExc
 
   Block[4] -> [6], [5]
-    [0] <>cond<>3996 := <>Global<>isObject(<>newObj<>3995)
+    [0] <>cond<>3996 := @isObject(<>newObj<>3995)
 
   Block[5] -> [7], ExitExc
     [0] assert(<>cond<>3996)
@@ -16611,7 +16611,7 @@ function[238] <>funexpr@1713:19-1723:4<> {
     [2] <>temp<>4166 := <>json<>4158
     [3] <>arguments<>4167 := allocArg(1) @ #3004
     [4] <>arguments<>4167["0"] := <>temp<>4166
-    [5] <>fun<>4168 := <>Global<>getBase(escape)
+    [5] <>fun<>4168 := @GetBase(escape)
     [6] <>this<> := enterCode(<>fun<>4168)
 
   Call[8] -> ExitExc
@@ -16624,7 +16624,7 @@ function[238] <>funexpr@1713:19-1723:4<> {
   Block[11] -> [12], ExitExc
     [0] <>arguments<>4170 := allocArg(1) @ #3006
     [1] <>arguments<>4170["0"] := <>temp<>4169
-    [2] <>fun<>4171 := <>Global<>getBase(decodeURIComponent)
+    [2] <>fun<>4171 := @GetBase(decodeURIComponent)
     [3] <>this<> := enterCode(<>fun<>4171)
 
   Call[12] -> ExitExc
@@ -16964,7 +16964,7 @@ function[240] <>funexpr@1741:15-1755:4<> {
     [4] <>arguments<>4290 := allocArg(2) @ #3099
     [5] <>arguments<>4290["0"] := <>temp<>4288
     [6] <>arguments<>4290["1"] := <>temp<>4289
-    [7] <>fun<>4291 := <>Global<>getBase(<>$super<>4244)
+    [7] <>fun<>4291 := @GetBase(<>$super<>4244)
     [8] <>this<> := enterCode(<>fun<>4291)
 
   Call[18] -> ExitExc
@@ -17022,7 +17022,7 @@ function[241] <>funexpr@1749:27-1752:6<> {
     [4] <>arguments<>4279 := allocArg(2) @ #3090
     [5] <>arguments<>4279["0"] := <>temp<>4277
     [6] <>arguments<>4279["1"] := <>temp<>4278
-    [7] <>fun<>4280 := <>Global<>getBase(<>onComplete<>4248)
+    [7] <>fun<>4280 := @GetBase(<>onComplete<>4248)
     [8] <>this<> := enterCode(<>fun<>4280)
 
   Block[9] -> [13], ExitExc
@@ -17100,7 +17100,7 @@ function[242] <>funexpr@1757:18-1773:4<> {
     [1] <>temp<>4312 := <>receiver<>4295
     [2] <>arguments<>4313 := allocArg(1) @ #3116
     [3] <>arguments<>4313["0"] := <>temp<>4312
-    [4] <>fun<>4314 := <>Global<>getBase($)
+    [4] <>fun<>4314 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>4314)
 
   Call[14] -> ExitExc
@@ -17212,7 +17212,7 @@ function[243] <>funexpr@1777:15-1789:4<> {
     [1] <>temp<>4353 := <>options<>4350
     [2] <>arguments<>4354 := allocArg(1) @ #3149
     [3] <>arguments<>4354["0"] := <>temp<>4353
-    [4] <>fun<>4355 := <>Global<>getBase(<>$super<>4347)
+    [4] <>fun<>4355 := @GetBase(<>$super<>4347)
     [5] <>this<> := enterCode(<>fun<>4355)
 
   Call[1] -> ExitExc
@@ -17334,7 +17334,7 @@ function[245] <>funexpr@1796:9-1800:4<> {
     [6] <>temp<>4392 := <>obj<>4391["timer"]
     [7] <>arguments<>4393 := allocArg(1) @ #3188
     [8] <>arguments<>4393["0"] := <>temp<>4392
-    [9] <>fun<>4394 := <>Global<>getBase(clearTimeout)
+    [9] <>fun<>4394 := @GetBase(clearTimeout)
     [10] <>this<> := enterCode(<>fun<>4394)
 
   Call[1] -> ExitExc
@@ -17486,7 +17486,7 @@ function[247] <>funexpr@1812:17-1814:4<> {
   AfterCatch[3] -> ExitExc
 
   Block[4] -> [6], [5]
-    [0] <>cond<>4449 := <>Global<>isObject(<>newObj<>4448)
+    [0] <>cond<>4449 := @isObject(<>newObj<>4448)
 
   Block[5] -> [7], ExitExc
     [0] assert(<>cond<>4449)
@@ -17517,7 +17517,7 @@ function[248] document._getElementsByXPath<>funexpr@1830:34-1837:4<> {
     [5] <>temp<>4468 := <>parentElement<>4459
     [6] <>arguments<>4469 := allocArg(1) @ #3243
     [7] <>arguments<>4469["0"] := <>temp<>4468
-    [8] <>fun<>4470 := <>Global<>getBase($)
+    [8] <>fun<>4470 := @GetBase($)
     [9] <>this<> := enterCode(<>fun<>4470)
 
   Call[1] -> ExitExc
@@ -17583,7 +17583,7 @@ function[248] document._getElementsByXPath<>funexpr@1830:34-1837:4<> {
 
   Block[15] -> [12], ExitExc
     [0] <>old<>4492 := <>i<>4462
-    [1] <>new<>4493 := <>Global<>toNumber(<>old<>4492)
+    [1] <>new<>4493 := @ToNumber(<>old<>4492)
     [2] <>i<>4462 := <>new<>4493 + 1
     [3] <>Global<>ignore474 := <>new<>4493
 
@@ -17925,7 +17925,7 @@ function[252] global.Element<>funexpr@1882:20-1899:4<> {
     [3] <>arguments<>4566 := allocArg(2) @ #3318
     [4] <>arguments<>4566["0"] := <>temp<>4564
     [5] <>arguments<>4566["1"] := <>temp<>4565
-    [6] <>fun<>4567 := <>Global<>getBase(<>shouldUseCache<>4502)
+    [6] <>fun<>4567 := @GetBase(<>shouldUseCache<>4502)
     [7] <>this<> := enterCode(<>fun<>4567)
 
   Call[34] -> ExitExc
@@ -18044,7 +18044,7 @@ function[254] <>funexpr@1919:12-1921:4<> {
     [1] <>temp<>4619 := <>element<>4616
     [2] <>arguments<>4620 := allocArg(1) @ #3365
     [3] <>arguments<>4620["0"] := <>temp<>4619
-    [4] <>fun<>4621 := <>Global<>getBase($)
+    [4] <>fun<>4621 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>4621)
 
   Call[1] -> ExitExc
@@ -18073,7 +18073,7 @@ function[255] <>funexpr@1923:11-1927:4<> {
     [1] <>temp<>4630 := <>element<>4627
     [2] <>arguments<>4631 := allocArg(1) @ #3372
     [3] <>arguments<>4631["0"] := <>temp<>4630
-    [4] <>fun<>4632 := <>Global<>getBase($)
+    [4] <>fun<>4632 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>4632)
 
   Call[1] -> ExitExc
@@ -18139,7 +18139,7 @@ function[256] <>funexpr@1929:9-1933:4<> {
     [1] <>temp<>4648 := <>element<>4645
     [2] <>arguments<>4649 := allocArg(1) @ #3385
     [3] <>arguments<>4649["0"] := <>temp<>4648
-    [4] <>fun<>4650 := <>Global<>getBase($)
+    [4] <>fun<>4650 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>4650)
 
   Call[1] -> ExitExc
@@ -18170,7 +18170,7 @@ function[257] <>funexpr@1935:9-1939:4<> {
     [1] <>temp<>4658 := <>element<>4655
     [2] <>arguments<>4659 := allocArg(1) @ #3392
     [3] <>arguments<>4659["0"] := <>temp<>4658
-    [4] <>fun<>4660 := <>Global<>getBase($)
+    [4] <>fun<>4660 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>4660)
 
   Call[1] -> ExitExc
@@ -18201,7 +18201,7 @@ function[258] <>funexpr@1941:11-1945:4<> {
     [1] <>temp<>4668 := <>element<>4665
     [2] <>arguments<>4669 := allocArg(1) @ #3399
     [3] <>arguments<>4669["0"] := <>temp<>4668
-    [4] <>fun<>4670 := <>Global<>getBase($)
+    [4] <>fun<>4670 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>4670)
 
   Call[1] -> ExitExc
@@ -18335,7 +18335,7 @@ function[260] update {
     [1] <>temp<>4694 := <>element<>4685
     [2] <>arguments<>4695 := allocArg(1) @ #3409
     [3] <>arguments<>4695["0"] := <>temp<>4694
-    [4] <>fun<>4696 := <>Global<>getBase($)
+    [4] <>fun<>4696 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>4696)
 
   Call[1] -> ExitExc
@@ -18368,7 +18368,7 @@ function[260] update {
     [1] <>obj<>4702 := @ToObject(<>descendants<>4688) @ #3416
     [2] <>i<>4689 := <>obj<>4702["length"]
     [3] <>old<>4703 := <>i<>4689
-    [4] <>new<>4704 := <>Global<>toNumber(<>old<>4703)
+    [4] <>new<>4704 := @ToNumber(<>old<>4703)
     [5] <>i<>4689 := <>new<>4704 - 1
 
   Block[9] -> [19], [18]
@@ -18382,7 +18382,7 @@ function[260] update {
     [3] <>temp<>4707 := <>obj<>4706[<>i<>4689]
     [4] <>arguments<>4708 := allocArg(1) @ #3419
     [5] <>arguments<>4708["0"] := <>temp<>4707
-    [6] <>fun<>4709 := <>Global<>getBase(<>purgeElement<>4687)
+    [6] <>fun<>4709 := @GetBase(<>purgeElement<>4687)
     [7] <>this<> := enterCode(<>fun<>4709)
 
   Block[12] -> [9], ExitExc
@@ -18390,7 +18390,7 @@ function[260] update {
 
   Block[13] -> [10], ExitExc
     [0] <>old<>4703 := <>i<>4689
-    [1] <>new<>4704 := <>Global<>toNumber(<>old<>4703)
+    [1] <>new<>4704 := @ToNumber(<>old<>4703)
     [2] <>i<>4689 := <>new<>4704 - 1
 
   Call[14] -> ExitExc
@@ -19150,7 +19150,7 @@ function[267] <>funexpr@2058:12-2070:4<> {
     [1] <>temp<>4909 := <>element<>4904
     [2] <>arguments<>4910 := allocArg(1) @ #3601
     [3] <>arguments<>4910["0"] := <>temp<>4909
-    [4] <>fun<>4911 := <>Global<>getBase($)
+    [4] <>fun<>4911 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>4911)
 
   Call[1] -> ExitExc
@@ -19353,7 +19353,7 @@ function[268] <>funexpr@2072:11-2106:4<> {
     [1] <>temp<>4966 := <>element<>4957
     [2] <>arguments<>4967 := allocArg(1) @ #3650
     [3] <>arguments<>4967["0"] := <>temp<>4966
-    [4] <>fun<>4968 := <>Global<>getBase($)
+    [4] <>fun<>4968 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>4968)
 
   Call[1] -> ExitExc
@@ -19431,8 +19431,8 @@ function[268] <>funexpr@2072:11-2106:4<> {
 
   Block[22] -> [40], ExitExc
     [0] <>obj<>4990 := <>insertions<>4958
-    [1] <>iterator<>4991 := <>Global<>iteratorInit(<>obj<>4990) @ #3667
-    [2] <>cond1<>4992 := <>Global<>iteratorHasNext(<>obj<>4990, <>iterator<>4991)
+    [1] <>iterator<>4991 := @iteratorInit(<>obj<>4990) @ #3667
+    [2] <>cond1<>4992 := @iteratorHasNext(<>obj<>4990, <>iterator<>4991)
 
   Block[23] -> [22], ExitExc
     [0] <>Global<>ignore560 := alloc() @ #3666
@@ -19493,7 +19493,7 @@ function[268] <>funexpr@2072:11-2106:4<> {
 
   Block[41] -> [44], ExitExc
     [0] assert(<>cond1<>4992)
-    [1] <>key<>4993 := <>Global<>iteratorNext(<>obj<>4990, <>iterator<>4991)
+    [1] <>key<>4993 := @iteratorNext(<>obj<>4990, <>iterator<>4991)
     [2] <>position<>4963 := <>key<>4993
     [3] <>obj<>4994 := @ToObject(<>insertions<>4958) @ #3668
     [4] <>content<>4959 := <>obj<>4994[<>position<>4963]
@@ -19506,7 +19506,7 @@ function[268] <>funexpr@2072:11-2106:4<> {
     [0] assert(! <>cond1<>4992)
 
   Block[43] -> [40]
-    [0] <>cond1<>4992 := <>Global<>iteratorHasNext(<>obj<>4990, <>iterator<>4991)
+    [0] <>cond1<>4992 := @iteratorHasNext(<>obj<>4990, <>iterator<>4991)
 
   Call[44] -> ExitExc
     [0] call(<>fun<>4997, <>this<>, <>arguments<>4996) @ #3672
@@ -19575,7 +19575,7 @@ function[268] <>funexpr@2072:11-2106:4<> {
     [4] <>arguments<>5012 := allocArg(2) @ #3685
     [5] <>arguments<>5012["0"] := <>temp<>5010
     [6] <>arguments<>5012["1"] := <>temp<>5011
-    [7] <>fun<>5013 := <>Global<>getBase(<>insert<>4960)
+    [7] <>fun<>5013 := @GetBase(<>insert<>4960)
     [8] <>this<> := enterCode(<>fun<>5013)
 
   Block[63] -> [67], ExitExc
@@ -19775,7 +19775,7 @@ function[269] <>funexpr@2108:9-2118:4<> {
     [1] <>temp<>5059 := <>element<>5054
     [2] <>arguments<>5060 := allocArg(1) @ #3729
     [3] <>arguments<>5060["0"] := <>temp<>5059
-    [4] <>fun<>5061 := <>Global<>getBase($)
+    [4] <>fun<>5061 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>5061)
 
   Call[1] -> ExitExc
@@ -19807,7 +19807,7 @@ function[269] <>funexpr@2108:9-2118:4<> {
     [2] <>temp<>5068 := <>wrapper<>5055
     [3] <>arguments<>5069 := allocArg(1) @ #3736
     [4] <>arguments<>5069["0"] := <>temp<>5068
-    [5] <>fun<>5070 := <>Global<>getBase($)
+    [5] <>fun<>5070 := @GetBase($)
     [6] <>this<> := enterCode(<>fun<>5070)
 
   Block[9] -> [21], ExitExc
@@ -19891,7 +19891,7 @@ function[269] <>funexpr@2108:9-2118:4<> {
   AfterCatch[28] -> ExitExc
 
   Block[29] -> [31], [30]
-    [0] <>cond<>5089 := <>Global<>isObject(<>newObj<>5088)
+    [0] <>cond<>5089 := @isObject(<>newObj<>5088)
 
   Block[30] -> [32], ExitExc
     [0] assert(<>cond<>5089)
@@ -19914,7 +19914,7 @@ function[269] <>funexpr@2108:9-2118:4<> {
   AfterCatch[36] -> ExitExc
 
   Block[37] -> [39], [38]
-    [0] <>cond<>5097 := <>Global<>isObject(<>newObj<>5096)
+    [0] <>cond<>5097 := @isObject(<>newObj<>5096)
 
   Block[38] -> [40], ExitExc
     [0] assert(<>cond<>5097)
@@ -19981,7 +19981,7 @@ function[270] <>funexpr@2120:12-2130:4<> {
     [1] <>temp<>5115 := <>element<>5111
     [2] <>arguments<>5116 := allocArg(1) @ #3768
     [3] <>arguments<>5116["0"] := <>temp<>5115
-    [4] <>fun<>5117 := <>Global<>getBase($)
+    [4] <>fun<>5117 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>5117)
 
   Call[1] -> ExitExc
@@ -20015,7 +20015,7 @@ function[270] <>funexpr@2120:12-2130:4<> {
     [4] <>temp<>5125["className"] := "class"
     [5] <>arguments<>5126 := allocArg(1) @ #3777
     [6] <>arguments<>5126["0"] := <>temp<>5125
-    [7] <>fun<>5127 := <>Global<>getBase($H)
+    [7] <>fun<>5127 := @GetBase($H)
     [8] <>this<> := enterCode(<>fun<>5127)
 
   Call[9] -> ExitExc
@@ -20147,7 +20147,7 @@ function[272] <>funexpr@2132:23-2145:4<> {
     [1] <>temp<>5165 := <>element<>5159
     [2] <>arguments<>5166 := allocArg(1) @ #3805
     [3] <>arguments<>5166["0"] := <>temp<>5165
-    [4] <>fun<>5167 := <>Global<>getBase($)
+    [4] <>fun<>5167 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>5167)
 
   Call[1] -> ExitExc
@@ -20307,7 +20307,7 @@ function[275] <>funexpr@2155:20-2159:4<> {
     [1] <>temp<>5204 := <>element<>5201
     [2] <>arguments<>5205 := allocArg(1) @ #3835
     [3] <>arguments<>5205["0"] := <>temp<>5204
-    [4] <>fun<>5206 := <>Global<>getBase($)
+    [4] <>fun<>5206 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>5206)
 
   Call[1] -> ExitExc
@@ -20326,7 +20326,7 @@ function[275] <>funexpr@2155:20-2159:4<> {
     [1] <>temp<>5213 := <>element<>5201
     [2] <>arguments<>5214 := allocArg(1) @ #3842
     [3] <>arguments<>5214["0"] := <>temp<>5213
-    [4] <>fun<>5215 := <>Global<>getBase($)
+    [4] <>fun<>5215 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>5215)
 
   Block[6] -> [8], ExitExc
@@ -20407,7 +20407,7 @@ function[276] <>funexpr@2161:25-2170:4<> {
     [3] <>temp<>5224 := <>element<>5219
     [4] <>arguments<>5225 := allocArg(1) @ #3848
     [5] <>arguments<>5225["0"] := <>temp<>5224
-    [6] <>fun<>5226 := <>Global<>getBase($)
+    [6] <>fun<>5226 := @GetBase($)
     [7] <>this<> := enterCode(<>fun<>5226)
 
   Call[1] -> ExitExc
@@ -20544,7 +20544,7 @@ function[279] <>funexpr@2180:13-2184:4<> {
     [1] <>temp<>5265 := <>element<>5262
     [2] <>arguments<>5266 := allocArg(1) @ #3876
     [3] <>arguments<>5266["0"] := <>temp<>5265
-    [4] <>fun<>5267 := <>Global<>getBase($)
+    [4] <>fun<>5267 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>5267)
 
   Call[1] -> ExitExc
@@ -20629,7 +20629,7 @@ function[280] <>funexpr@2186:10-2191:4<> {
     [1] <>temp<>5292 := <>element<>5288
     [2] <>arguments<>5293 := allocArg(1) @ #3897
     [3] <>arguments<>5293["0"] := <>temp<>5292
-    [4] <>fun<>5294 := <>Global<>getBase($)
+    [4] <>fun<>5294 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>5294)
 
   Call[1] -> ExitExc
@@ -20712,7 +20712,7 @@ function[281] <>funexpr@2193:7-2199:4<> {
     [1] <>temp<>5320 := <>element<>5314
     [2] <>arguments<>5321 := allocArg(1) @ #3915
     [3] <>arguments<>5321["0"] := <>temp<>5320
-    [4] <>fun<>5322 := <>Global<>getBase($)
+    [4] <>fun<>5322 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>5322)
 
   Call[1] -> ExitExc
@@ -20733,7 +20733,7 @@ function[281] <>funexpr@2193:7-2199:4<> {
     [3] <>temp<>5326 := <>obj<>5325["parentNode"]
     [4] <>arguments<>5327 := allocArg(1) @ #3920
     [5] <>arguments<>5327["0"] := <>temp<>5326
-    [6] <>fun<>5328 := <>Global<>getBase($)
+    [6] <>fun<>5328 := @GetBase($)
     [7] <>this<> := enterCode(<>fun<>5328)
 
   Block[6] -> [11], ExitExc
@@ -20823,7 +20823,7 @@ function[282] <>funexpr@2201:9-2206:4<> {
     [1] <>temp<>5355 := <>element<>5350
     [2] <>arguments<>5356 := allocArg(1) @ #3939
     [3] <>arguments<>5356["0"] := <>temp<>5355
-    [4] <>fun<>5357 := <>Global<>getBase($)
+    [4] <>fun<>5357 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>5357)
 
   Call[1] -> ExitExc
@@ -20943,7 +20943,7 @@ function[283] <>funexpr@2208:13-2218:4<> {
     [1] <>temp<>5391 := <>element<>5386
     [2] <>arguments<>5392 := allocArg(1) @ #3963
     [3] <>arguments<>5392["0"] := <>temp<>5391
-    [4] <>fun<>5393 := <>Global<>getBase($)
+    [4] <>fun<>5393 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>5393)
 
   Call[1] -> ExitExc
@@ -21077,7 +21077,7 @@ function[284] <>funexpr@2220:9-2231:4<> {
     [1] <>temp<>5431 := <>element<>5425
     [2] <>arguments<>5432 := allocArg(1) @ #3990
     [3] <>arguments<>5432["0"] := <>temp<>5431
-    [4] <>fun<>5433 := <>Global<>getBase($)
+    [4] <>fun<>5433 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>5433)
 
   Call[1] -> ExitExc
@@ -21235,7 +21235,7 @@ function[285] <>funexpr@2234:11-2238:4<> {
     [1] <>temp<>5474 := <>element<>5470
     [2] <>arguments<>5475 := allocArg(1) @ #4021
     [3] <>arguments<>5475["0"] := <>temp<>5474
-    [4] <>fun<>5476 := <>Global<>getBase($)
+    [4] <>fun<>5476 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>5476)
 
   Call[1] -> ExitExc
@@ -21316,7 +21316,7 @@ function[286] <>funexpr@2240:13-2244:4<> {
     [1] <>temp<>5502 := <>element<>5498
     [2] <>arguments<>5503 := allocArg(1) @ #4041
     [3] <>arguments<>5503["0"] := <>temp<>5502
-    [4] <>fun<>5504 := <>Global<>getBase($)
+    [4] <>fun<>5504 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>5504)
 
   Call[1] -> ExitExc
@@ -21413,7 +21413,7 @@ function[287] <>funexpr@2246:13-2253:4<> {
     [1] <>temp<>5536 := <>element<>5532
     [2] <>arguments<>5537 := allocArg(1) @ #4066
     [3] <>arguments<>5537["0"] := <>temp<>5536
-    [4] <>fun<>5538 := <>Global<>getBase($)
+    [4] <>fun<>5538 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>5538)
 
   Call[1] -> ExitExc
@@ -21455,7 +21455,7 @@ function[287] <>funexpr@2246:13-2253:4<> {
     [0] <>y<>5544 := "anonymous_element_"
     [1] <>obj<>5545 := @ToObject(Element) @ #4072
     [2] <>old<>5546 := <>obj<>5545["idCounter"]
-    [3] <>new<>5547 := <>Global<>toNumber(<>old<>5546)
+    [3] <>new<>5547 := @ToNumber(<>old<>5546)
     [4] <>obj<>5545["idCounter"] := <>new<>5547 + 1
     [5] <>id<>5533 := <>y<>5544 + <>new<>5547
 
@@ -21476,7 +21476,7 @@ function[287] <>funexpr@2246:13-2253:4<> {
     [1] <>temp<>5549 := <>id<>5533
     [2] <>arguments<>5550 := allocArg(1) @ #4074
     [3] <>arguments<>5550["0"] := <>temp<>5549
-    [4] <>fun<>5551 := <>Global<>getBase($)
+    [4] <>fun<>5551 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>5551)
 
   Call[14] -> ExitExc
@@ -21495,7 +21495,7 @@ function[287] <>funexpr@2246:13-2253:4<> {
     [1] <>y<>5544 := "anonymous_element_"
     [2] <>obj<>5545 := @ToObject(Element) @ #4076
     [3] <>old<>5546 := <>obj<>5545["idCounter"]
-    [4] <>new<>5547 := <>Global<>toNumber(<>old<>5546)
+    [4] <>new<>5547 := @ToNumber(<>old<>5546)
     [5] <>obj<>5545["idCounter"] := <>new<>5547 + 1
     [6] <>id<>5533 := <>y<>5544 + <>new<>5547
 
@@ -21507,7 +21507,7 @@ function[287] <>funexpr@2246:13-2253:4<> {
     [1] <>temp<>5549 := <>id<>5533
     [2] <>arguments<>5550 := allocArg(1) @ #4078
     [3] <>arguments<>5550["0"] := <>temp<>5549
-    [4] <>fun<>5551 := <>Global<>getBase($)
+    [4] <>fun<>5551 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>5551)
 
   Call[22] -> ExitExc
@@ -21541,7 +21541,7 @@ function[288] <>funexpr@2255:18-2267:4<> {
     [1] <>temp<>5566 := <>element<>5561
     [2] <>arguments<>5567 := allocArg(1) @ #4087
     [3] <>arguments<>5567["0"] := <>temp<>5566
-    [4] <>fun<>5568 := <>Global<>getBase($)
+    [4] <>fun<>5568 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>5568)
 
   Call[1] -> ExitExc
@@ -21689,7 +21689,7 @@ function[289] <>funexpr@2269:19-2287:4<> {
     [1] <>temp<>5613 := <>element<>5605
     [2] <>arguments<>5614 := allocArg(1) @ #4121
     [3] <>arguments<>5614["0"] := <>temp<>5613
-    [4] <>fun<>5615 := <>Global<>getBase($)
+    [4] <>fun<>5615 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>5615)
 
   Call[1] -> ExitExc
@@ -21723,8 +21723,8 @@ function[289] <>funexpr@2269:19-2287:4<> {
 
   Block[7] -> [15], ExitExc
     [0] <>obj<>5624 := <>attributes<>5608
-    [1] <>iterator<>5625 := <>Global<>iteratorInit(<>obj<>5624) @ #4131
-    [2] <>cond1<>5626 := <>Global<>iteratorHasNext(<>obj<>5624, <>iterator<>5625)
+    [1] <>iterator<>5625 := @iteratorInit(<>obj<>5624) @ #4131
+    [2] <>cond1<>5626 := @iteratorHasNext(<>obj<>5624, <>iterator<>5625)
 
   Call[8] -> ExitExc
     [0] call(<>fun<>5622, <>this<>, <>arguments<>5621) @ #4130
@@ -21751,7 +21751,7 @@ function[289] <>funexpr@2269:19-2287:4<> {
 
   Block[16] -> [20], [19], ExitExc
     [0] assert(<>cond1<>5626)
-    [1] <>key<>5627 := <>Global<>iteratorNext(<>obj<>5624, <>iterator<>5625)
+    [1] <>key<>5627 := @iteratorNext(<>obj<>5624, <>iterator<>5625)
     [2] <>attr<>5610 := <>key<>5627
     [3] <>obj<>5628 := @ToObject(<>t<>5609) @ #4132
     [4] <>obj<>5629 := @ToObject(<>obj<>5628["names"]) @ #4133
@@ -21760,7 +21760,7 @@ function[289] <>funexpr@2269:19-2287:4<> {
     [0] assert(! <>cond1<>5626)
 
   Block[18] -> [15]
-    [0] <>cond1<>5626 := <>Global<>iteratorHasNext(<>obj<>5624, <>iterator<>5625)
+    [0] <>cond1<>5626 := @iteratorHasNext(<>obj<>5624, <>iterator<>5625)
 
   Block[19] -> [21], ExitExc
     [0] assert(<>obj<>5629[<>attr<>5610])
@@ -21957,7 +21957,7 @@ function[292] <>funexpr@2297:15-2299:4<> {
   AfterCatch[3] -> ExitExc
 
   Block[4] -> [6], [5]
-    [0] <>cond<>5684 := <>Global<>isObject(<>newObj<>5683)
+    [0] <>cond<>5684 := @isObject(<>newObj<>5683)
 
   Block[5] -> [7], ExitExc
     [0] assert(<>cond<>5684)
@@ -21984,7 +21984,7 @@ function[293] <>funexpr@2301:17-2306:4<> {
     [1] <>temp<>5693 := <>element<>5688
     [2] <>arguments<>5694 := allocArg(1) @ #4178
     [3] <>arguments<>5694["0"] := <>temp<>5693
-    [4] <>fun<>5695 := <>Global<>getBase($)
+    [4] <>fun<>5695 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>5695)
 
   Call[1] -> ExitExc
@@ -22039,7 +22039,7 @@ function[293] <>funexpr@2301:17-2306:4<> {
   AfterCatch[15] -> ExitExc
 
   Block[16] -> [18], [17]
-    [0] <>cond<>5706 := <>Global<>isObject(<>newObj<>5705)
+    [0] <>cond<>5706 := @isObject(<>newObj<>5705)
 
   Block[17] -> [19], ExitExc
     [0] assert(<>cond<>5706)
@@ -22094,7 +22094,7 @@ function[294] <>funexpr@2308:17-2313:4<> {
     [1] <>temp<>5720 := <>element<>5716
     [2] <>arguments<>5721 := allocArg(1) @ #4193
     [3] <>arguments<>5721["0"] := <>temp<>5720
-    [4] <>fun<>5722 := <>Global<>getBase($)
+    [4] <>fun<>5722 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>5722)
 
   Call[1] -> ExitExc
@@ -22168,7 +22168,7 @@ function[295] <>funexpr@2315:20-2320:4<> {
     [1] <>temp<>5740 := <>element<>5736
     [2] <>arguments<>5741 := allocArg(1) @ #4204
     [3] <>arguments<>5741["0"] := <>temp<>5740
-    [4] <>fun<>5742 := <>Global<>getBase($)
+    [4] <>fun<>5742 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>5742)
 
   Call[1] -> ExitExc
@@ -22207,7 +22207,7 @@ function[295] <>funexpr@2315:20-2320:4<> {
   AfterCatch[10] -> ExitExc
 
   Block[11] -> [13], [12]
-    [0] <>cond<>5753 := <>Global<>isObject(<>newObj<>5752)
+    [0] <>cond<>5753 := @isObject(<>newObj<>5752)
 
   Block[12] -> [14], ExitExc
     [0] assert(<>cond<>5753)
@@ -22263,7 +22263,7 @@ function[296] <>funexpr@2322:20-2326:4<> {
     [1] <>temp<>5768 := <>element<>5764
     [2] <>arguments<>5769 := allocArg(1) @ #4223
     [3] <>arguments<>5769["0"] := <>temp<>5768
-    [4] <>fun<>5770 := <>Global<>getBase($)
+    [4] <>fun<>5770 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>5770)
 
   Call[1] -> ExitExc
@@ -22342,7 +22342,7 @@ function[297] <>funexpr@2328:20-2338:4<> {
     [1] <>temp<>5792 := <>element<>5787
     [2] <>arguments<>5793 := allocArg(1) @ #4236
     [3] <>arguments<>5793["0"] := <>temp<>5792
-    [4] <>fun<>5794 := <>Global<>getBase($)
+    [4] <>fun<>5794 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>5794)
 
   Call[1] -> ExitExc
@@ -22395,7 +22395,7 @@ function[297] <>funexpr@2328:20-2338:4<> {
   AfterCatch[14] -> ExitExc
 
   Block[15] -> [17], [16]
-    [0] <>cond<>5805 := <>Global<>isObject(<>newObj<>5804)
+    [0] <>cond<>5805 := @isObject(<>newObj<>5804)
 
   Block[16] -> [18], ExitExc
     [0] assert(<>cond<>5805)
@@ -22472,7 +22472,7 @@ function[298] <>funexpr@2340:10-2342:4<> {
     [1] <>temp<>5823 := <>element<>5820
     [2] <>arguments<>5824 := allocArg(1) @ #4257
     [3] <>arguments<>5824["0"] := <>temp<>5823
-    [4] <>fun<>5825 := <>Global<>getBase($)
+    [4] <>fun<>5825 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>5825)
 
   Call[1] -> ExitExc
@@ -22513,7 +22513,7 @@ function[299] <>funexpr@2344:17-2357:4<> {
     [1] <>temp<>5838 := <>element<>5834
     [2] <>arguments<>5839 := allocArg(1) @ #4267
     [3] <>arguments<>5839["0"] := <>temp<>5838
-    [4] <>fun<>5840 := <>Global<>getBase($)
+    [4] <>fun<>5840 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>5840)
 
   Call[1] -> ExitExc
@@ -22529,7 +22529,7 @@ function[299] <>funexpr@2344:17-2357:4<> {
     [2] <>temp<>5843 := <>ancestor<>5835
     [3] <>arguments<>5844 := allocArg(1) @ #4270
     [4] <>arguments<>5844["0"] := <>temp<>5843
-    [5] <>fun<>5845 := <>Global<>getBase($)
+    [5] <>fun<>5845 := @GetBase($)
     [6] <>this<> := enterCode(<>fun<>5845)
 
   Call[5] -> ExitExc
@@ -22649,7 +22649,7 @@ function[300] <>funexpr@2359:13-2364:4<> {
     [1] <>temp<>5866 := <>element<>5862
     [2] <>arguments<>5867 := allocArg(1) @ #4287
     [3] <>arguments<>5867["0"] := <>temp<>5866
-    [4] <>fun<>5868 := <>Global<>getBase($)
+    [4] <>fun<>5868 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>5868)
 
   Call[1] -> ExitExc
@@ -22712,7 +22712,7 @@ function[301] <>funexpr@2366:13-2376:4<> {
     [1] <>temp<>5888 := <>element<>5882
     [2] <>arguments<>5889 := allocArg(1) @ #4302
     [3] <>arguments<>5889["0"] := <>temp<>5888
-    [4] <>fun<>5890 := <>Global<>getBase($)
+    [4] <>fun<>5890 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>5890)
 
   Call[1] -> ExitExc
@@ -22812,7 +22812,7 @@ function[301] <>funexpr@2366:13-2376:4<> {
     [2] <>temp<>5904 := <>value<>5884
     [3] <>arguments<>5905 := allocArg(1) @ #4317
     [4] <>arguments<>5905["0"] := <>temp<>5904
-    [5] <>fun<>5906 := <>Global<>getBase(parseFloat)
+    [5] <>fun<>5906 := @GetBase(parseFloat)
     [6] <>this<> := enterCode(<>fun<>5906)
 
   Block[29] -> [33], ExitExc
@@ -22856,7 +22856,7 @@ function[302] <>funexpr@2378:15-2380:4<> {
     [1] <>temp<>5914 := <>element<>5911
     [2] <>arguments<>5915 := allocArg(1) @ #4322
     [3] <>arguments<>5915["0"] := <>temp<>5914
-    [4] <>fun<>5916 := <>Global<>getBase($)
+    [4] <>fun<>5916 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>5916)
 
   Call[1] -> ExitExc
@@ -22898,7 +22898,7 @@ function[303] <>funexpr@2382:13-2398:4<> {
     [1] <>temp<>5932 := <>element<>5925
     [2] <>arguments<>5933 := allocArg(1) @ #4331
     [3] <>arguments<>5933["0"] := <>temp<>5932
-    [4] <>fun<>5934 := <>Global<>getBase($)
+    [4] <>fun<>5934 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>5934)
 
   Call[1] -> ExitExc
@@ -22974,7 +22974,7 @@ function[303] <>funexpr@2382:13-2398:4<> {
   AfterCatch[17] -> ExitExc
 
   Block[18] -> [20], [19]
-    [0] <>cond<>5958 := <>Global<>isObject(<>newObj<>5957)
+    [0] <>cond<>5958 := @isObject(<>newObj<>5957)
 
   Block[19] -> [21], ExitExc
     [0] assert(<>cond<>5958)
@@ -23017,8 +23017,8 @@ function[303] <>funexpr@2382:13-2398:4<> {
 
   Block[30] -> [32], ExitExc
     [0] <>obj<>5968 := <>styles<>5926
-    [1] <>iterator<>5969 := <>Global<>iteratorInit(<>obj<>5968) @ #4357
-    [2] <>cond1<>5970 := <>Global<>iteratorHasNext(<>obj<>5968, <>iterator<>5969)
+    [1] <>iterator<>5969 := @iteratorInit(<>obj<>5968) @ #4357
+    [2] <>cond1<>5970 := @iteratorHasNext(<>obj<>5968, <>iterator<>5969)
 
   Block[31] -> Exit, ExitExc
     [0] return(<>element<>5925)
@@ -23027,14 +23027,14 @@ function[303] <>funexpr@2382:13-2398:4<> {
 
   Block[33] -> [37], [36], ExitExc
     [0] assert(<>cond1<>5970)
-    [1] <>key<>5971 := <>Global<>iteratorNext(<>obj<>5968, <>iterator<>5969)
+    [1] <>key<>5971 := @iteratorNext(<>obj<>5968, <>iterator<>5969)
     [2] <>property<>5929 := <>key<>5971
 
   Block[34] -> [31], ExitExc
     [0] assert(! <>cond1<>5970)
 
   Block[35] -> [32]
-    [0] <>cond1<>5970 := <>Global<>iteratorHasNext(<>obj<>5968, <>iterator<>5969)
+    [0] <>cond1<>5970 := @iteratorHasNext(<>obj<>5968, <>iterator<>5969)
 
   Block[36] -> [38], ExitExc
     [0] assert(<>property<>5929 == "opacity")
@@ -23120,7 +23120,7 @@ function[304] <>funexpr@2400:15-2405:4<> {
     [1] <>temp<>5992 := <>element<>5988
     [2] <>arguments<>5993 := allocArg(1) @ #4373
     [3] <>arguments<>5993["0"] := <>temp<>5992
-    [4] <>fun<>5994 := <>Global<>getBase($)
+    [4] <>fun<>5994 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>5994)
 
   Call[1] -> ExitExc
@@ -23182,7 +23182,7 @@ function[305] <>funexpr@2407:19-2419:4<> {
     [1] <>temp<>6003 := <>element<>5999
     [2] <>arguments<>6004 := allocArg(1) @ #4380
     [3] <>arguments<>6004["0"] := <>temp<>6003
-    [4] <>fun<>6005 := <>Global<>getBase($)
+    [4] <>fun<>6005 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>6005)
 
   Call[1] -> ExitExc
@@ -23269,7 +23269,7 @@ function[306] <>funexpr@2421:19-2432:4<> {
     [1] <>temp<>6025 := <>element<>6022
     [2] <>arguments<>6026 := allocArg(1) @ #4398
     [3] <>arguments<>6026["0"] := <>temp<>6025
-    [4] <>fun<>6027 := <>Global<>getBase($)
+    [4] <>fun<>6027 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>6027)
 
   Call[1] -> ExitExc
@@ -23323,7 +23323,7 @@ function[307] <>funexpr@2434:17-2441:4<> {
     [1] <>temp<>6045 := <>element<>6042
     [2] <>arguments<>6046 := allocArg(1) @ #4415
     [3] <>arguments<>6046["0"] := <>temp<>6045
-    [4] <>fun<>6047 := <>Global<>getBase($)
+    [4] <>fun<>6047 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>6047)
 
   Call[1] -> ExitExc
@@ -23400,7 +23400,7 @@ function[308] <>funexpr@2443:17-2449:4<> {
     [1] <>temp<>6064 := <>element<>6061
     [2] <>arguments<>6065 := allocArg(1) @ #4429
     [3] <>arguments<>6065["0"] := <>temp<>6064
-    [4] <>fun<>6066 := <>Global<>getBase($)
+    [4] <>fun<>6066 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>6066)
 
   Call[1] -> ExitExc
@@ -23490,7 +23490,7 @@ function[309] <>funexpr@2451:18-2481:4<> {
     [2] <>temp<>6090 := <>source<>6076
     [3] <>arguments<>6091 := allocArg(1) @ #4447
     [4] <>arguments<>6091["0"] := <>temp<>6090
-    [5] <>fun<>6092 := <>Global<>getBase($)
+    [5] <>fun<>6092 := @GetBase($)
     [6] <>this<> := enterCode(<>fun<>6092)
 
   Call[8] -> ExitExc
@@ -23529,7 +23529,7 @@ function[309] <>funexpr@2451:18-2481:4<> {
     [9] <>temp<>6100 := <>element<>6075
     [10] <>arguments<>6101 := allocArg(1) @ #4455
     [11] <>arguments<>6101["0"] := <>temp<>6100
-    [12] <>fun<>6102 := <>Global<>getBase($)
+    [12] <>fun<>6102 := @GetBase($)
     [13] <>this<> := enterCode(<>fun<>6102)
 
   Call[16] -> ExitExc
@@ -23699,7 +23699,7 @@ function[310] <>funexpr@2502:5-2527:6<> {
     [3] <>arguments<>6238 := allocArg(2) @ #4551
     [4] <>arguments<>6238["0"] := <>temp<>6236
     [5] <>arguments<>6238["1"] := <>temp<>6237
-    [6] <>fun<>6239 := <>Global<>getBase(<>proceed<>6174)
+    [6] <>fun<>6239 := @GetBase(<>proceed<>6174)
     [7] <>this<> := enterCode(<>fun<>6239)
 
   Block[3] -> [11], ExitExc
@@ -23750,7 +23750,7 @@ function[310] <>funexpr@2502:5-2527:6<> {
     [4] <>arguments<>6190 := allocArg(2) @ #4527
     [5] <>arguments<>6190["0"] := <>temp<>6188
     [6] <>arguments<>6190["1"] := <>temp<>6189
-    [7] <>fun<>6191 := <>Global<>getBase(<>proceed<>6174)
+    [7] <>fun<>6191 := @GetBase(<>proceed<>6174)
     [8] <>this<> := enterCode(<>fun<>6191)
 
   Call[17] -> ExitExc
@@ -23765,7 +23765,7 @@ function[310] <>funexpr@2502:5-2527:6<> {
     [1] <>arguments<>6194 := allocArg(2) @ #4529
     [2] <>arguments<>6194["0"] := <>temp<>6192
     [3] <>arguments<>6194["1"] := <>temp<>6193
-    [4] <>fun<>6195 := <>Global<>getBase(parseInt)
+    [4] <>fun<>6195 := @GetBase(parseInt)
     [5] <>this<> := enterCode(<>fun<>6195)
 
   Call[21] -> ExitExc
@@ -23873,7 +23873,7 @@ function[311] <>funexpr@2521:41-2524:12<> {
     [3] <>arguments<>6220 := allocArg(2) @ #4540
     [4] <>arguments<>6220["0"] := <>temp<>6218
     [5] <>arguments<>6220["1"] := <>temp<>6219
-    [6] <>fun<>6221 := <>Global<>getBase(<>proceed<>6174)
+    [6] <>fun<>6221 := @GetBase(<>proceed<>6174)
     [7] <>this<> := enterCode(<>fun<>6221)
 
   Call[1] -> ExitExc
@@ -23899,7 +23899,7 @@ function[311] <>funexpr@2521:41-2524:12<> {
     [5] <>arguments<>6227 := allocArg(2) @ #4543
     [6] <>arguments<>6227["0"] := <>temp<>6225
     [7] <>arguments<>6227["1"] := <>temp<>6226
-    [8] <>fun<>6228 := <>Global<>getBase(parseInt)
+    [8] <>fun<>6228 := @GetBase(parseInt)
     [9] <>this<> := enterCode(<>fun<>6228)
 
   Block[7] -> Exit, ExitExc
@@ -23941,7 +23941,7 @@ function[312] <>funexpr@2531:5-2534:6<> {
     [3] <>arguments<>6258 := allocArg(2) @ #4565
     [4] <>arguments<>6258["0"] := <>temp<>6256
     [5] <>arguments<>6258["1"] := <>temp<>6257
-    [6] <>fun<>6259 := <>Global<>getBase(<>proceed<>6250)
+    [6] <>fun<>6259 := @GetBase(<>proceed<>6250)
     [7] <>this<> := enterCode(<>fun<>6259)
 
   Call[4] -> ExitExc
@@ -23968,7 +23968,7 @@ function[313] Element.Methods.getStyle<>funexpr@2539:30-2557:4<> {
     [1] <>temp<>6274 := <>element<>6269
     [2] <>arguments<>6275 := allocArg(1) @ #4577
     [3] <>arguments<>6275["0"] := <>temp<>6274
-    [4] <>fun<>6276 := <>Global<>getBase($)
+    [4] <>fun<>6276 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>6276)
 
   Call[1] -> ExitExc
@@ -24085,7 +24085,7 @@ function[313] Element.Methods.getStyle<>funexpr@2539:30-2557:4<> {
   AfterCatch[33] -> ExitExc
 
   Block[34] -> [36], [35]
-    [0] <>cond<>6299 := <>Global<>isObject(<>newObj<>6298)
+    [0] <>cond<>6299 := @isObject(<>newObj<>6298)
 
   Block[35] -> [37], ExitExc
     [0] assert(<>cond<>6299)
@@ -24125,7 +24125,7 @@ function[313] Element.Methods.getStyle<>funexpr@2539:30-2557:4<> {
     [3] <>temp<>6307 := <>obj<>6306[1]
     [4] <>arguments<>6308 := allocArg(1) @ #4603
     [5] <>arguments<>6308["0"] := <>temp<>6307
-    [6] <>fun<>6309 := <>Global<>getBase(parseFloat)
+    [6] <>fun<>6309 := @GetBase(parseFloat)
     [7] <>this<> := enterCode(<>fun<>6309)
 
   Block[45] -> [50], ExitExc
@@ -24241,7 +24241,7 @@ function[314] Element.Methods.setOpacity<>funexpr@2559:32-2578:4<> {
     [2] <>temp<>6351 := <>element<>6327
     [3] <>arguments<>6352 := allocArg(1) @ #4629
     [4] <>arguments<>6352["0"] := <>temp<>6351
-    [5] <>fun<>6353 := <>Global<>getBase($)
+    [5] <>fun<>6353 := @GetBase($)
     [6] <>this<> := enterCode(<>fun<>6353)
 
   Call[1] -> ExitExc
@@ -24344,7 +24344,7 @@ function[314] Element.Methods.setOpacity<>funexpr@2559:32-2578:4<> {
     [2] <>temp<>6379 := <>filter<>6331
     [3] <>arguments<>6380 := allocArg(1) @ #4652
     [4] <>arguments<>6380["0"] := <>temp<>6379
-    [5] <>fun<>6381 := <>Global<>getBase(<>stripAlpha<>6329)
+    [5] <>fun<>6381 := @GetBase(<>stripAlpha<>6329)
     [6] <>this<> := enterCode(<>fun<>6381)
 
   Block[30] -> [40], ExitExc
@@ -24352,7 +24352,7 @@ function[314] Element.Methods.setOpacity<>funexpr@2559:32-2578:4<> {
     [1] <>temp<>6368 := <>filter<>6331
     [2] <>arguments<>6369 := allocArg(1) @ #4643
     [3] <>arguments<>6369["0"] := <>temp<>6368
-    [4] <>fun<>6370 := <>Global<>getBase(<>stripAlpha<>6329)
+    [4] <>fun<>6370 := @GetBase(<>stripAlpha<>6329)
     [5] <>this<> := enterCode(<>fun<>6370)
 
   Block[31] -> [30], ExitExc
@@ -24454,7 +24454,7 @@ function[315] stripAlpha {
   AfterCatch[3] -> ExitExc
 
   Block[4] -> [6], [5]
-    [0] <>cond<>6344 := <>Global<>isObject(<>newObj<>6343)
+    [0] <>cond<>6344 := @isObject(<>newObj<>6343)
 
   Block[5] -> [7], ExitExc
     [0] assert(<>cond<>6344)
@@ -24817,7 +24817,7 @@ function[320] <>funexpr@2625:20-2650:12<> {
     [2] <>temp<>6470 := <>value<>6457
     [3] <>arguments<>6471 := allocArg(1) @ #4716
     [4] <>arguments<>6471["0"] := <>temp<>6470
-    [5] <>fun<>6472 := <>Global<>getBase(String)
+    [5] <>fun<>6472 := @GetBase(String)
     [6] <>this<> := enterCode(<>fun<>6472)
 
   Call[9] -> ExitExc
@@ -25026,7 +25026,7 @@ function[323] <>funexpr@2651:18-2653:12<> {
     [1] <>temp<>6527 := <>element<>6523
     [2] <>arguments<>6528 := allocArg(1) @ #4762
     [3] <>arguments<>6528["0"] := <>temp<>6527
-    [4] <>fun<>6529 := <>Global<>getBase($)
+    [4] <>fun<>6529 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>6529)
 
   Call[1] -> ExitExc
@@ -25325,7 +25325,7 @@ function[331] _descendants {
 
   Block[9] -> [6], ExitExc
     [0] <>old<>6676 := <>i<>6663
-    [1] <>new<>6677 := <>Global<>toNumber(<>old<>6676)
+    [1] <>new<>6677 := @ToNumber(<>old<>6676)
     [2] <>i<>6663 := <>new<>6677 + 1
     [3] <>Global<>ignore745 := <>new<>6677
     [4] <>obj<>6670 := @ToObject(<>nodes<>6661) @ #4887
@@ -25366,7 +25366,7 @@ function[332] Element.Methods.down<>funexpr@2730:30-2735:8<> {
     [1] <>temp<>6685 := <>element<>6680
     [2] <>arguments<>6686 := allocArg(1) @ #4893
     [3] <>arguments<>6686["0"] := <>temp<>6685
-    [4] <>fun<>6687 := <>Global<>getBase($)
+    [4] <>fun<>6687 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>6687)
 
   Call[1] -> ExitExc
@@ -25421,7 +25421,7 @@ function[332] Element.Methods.down<>funexpr@2730:30-2735:8<> {
     [2] <>temp<>6699 := <>element<>6680
     [3] <>arguments<>6700 := allocArg(1) @ #4905
     [4] <>arguments<>6700["0"] := <>temp<>6699
-    [5] <>fun<>6701 := <>Global<>getBase(<>_descendants<>6658)
+    [5] <>fun<>6701 := @GetBase(<>_descendants<>6658)
     [6] <>this<> := enterCode(<>fun<>6701)
 
   Block[16] -> [22], ExitExc
@@ -25484,7 +25484,7 @@ function[333] Element.Methods.setOpacity<>funexpr@2742:32-2747:4<> {
     [1] <>temp<>6741 := <>element<>6737
     [2] <>arguments<>6742 := allocArg(1) @ #4934
     [3] <>arguments<>6742["0"] := <>temp<>6741
-    [4] <>fun<>6743 := <>Global<>getBase($)
+    [4] <>fun<>6743 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>6743)
 
   Call[1] -> ExitExc
@@ -25543,7 +25543,7 @@ function[334] Element.Methods.setOpacity<>funexpr@2751:32-2766:4<> {
     [1] <>temp<>6756 := <>element<>6751
     [2] <>arguments<>6757 := allocArg(1) @ #4945
     [3] <>arguments<>6757["0"] := <>temp<>6756
-    [4] <>fun<>6758 := <>Global<>getBase($)
+    [4] <>fun<>6758 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>6758)
 
   Call[1] -> ExitExc
@@ -25632,12 +25632,12 @@ function[334] Element.Methods.setOpacity<>funexpr@2751:32-2766:4<> {
     [0] assert(<>new<>6767)
     [1] <>obj<>6768 := @ToObject(<>element<>6751) @ #4955
     [2] <>old<>6769 := <>obj<>6768["width"]
-    [3] <>new<>6770 := <>Global<>toNumber(<>old<>6769)
+    [3] <>new<>6770 := @ToNumber(<>old<>6769)
     [4] <>obj<>6768["width"] := <>new<>6770 + 1
     [5] <>Global<>ignore756 := <>new<>6770
     [6] <>obj<>6771 := @ToObject(<>element<>6751) @ #4956
     [7] <>old<>6772 := <>obj<>6771["width"]
-    [8] <>new<>6773 := <>Global<>toNumber(<>old<>6772)
+    [8] <>new<>6773 := @ToNumber(<>old<>6772)
     [9] <>obj<>6771["width"] := <>new<>6773 - 1
     [10] <>Global<>ignore758 := <>new<>6773
 
@@ -25712,7 +25712,7 @@ function[335] Element.Methods.replace<>funexpr@2770:29-2795:4<> {
     [1] <>temp<>6800 := <>element<>6792
     [2] <>arguments<>6801 := allocArg(1) @ #4975
     [3] <>arguments<>6801["0"] := <>temp<>6800
-    [4] <>fun<>6802 := <>Global<>getBase($)
+    [4] <>fun<>6802 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>6802)
 
   Call[1] -> ExitExc
@@ -26075,7 +26075,7 @@ function[339] Element._getContentFromAnonymousElement<>funexpr@2805:43-2827:2<> 
   AfterCatch[3] -> ExitExc
 
   Block[4] -> [6], [5]
-    [0] <>cond<>6907 := <>Global<>isObject(<>newObj<>6906)
+    [0] <>cond<>6907 := @isObject(<>newObj<>6906)
 
   Block[5] -> [7], ExitExc
     [0] assert(<>cond<>6907)
@@ -26151,7 +26151,7 @@ function[339] Element._getContentFromAnonymousElement<>funexpr@2805:43-2827:2<> 
     [0] <>obj<>6924 := @ToObject(<>t<>6897) @ #5079
     [1] <>i<>6899 := <>obj<>6924[2]
     [2] <>old<>6925 := <>i<>6899
-    [3] <>new<>6926 := <>Global<>toNumber(<>old<>6925)
+    [3] <>new<>6926 := @ToNumber(<>old<>6925)
     [4] <>i<>6899 := <>new<>6926 - 1
 
   Block[20] -> [25]
@@ -26168,7 +26168,7 @@ function[339] Element._getContentFromAnonymousElement<>funexpr@2805:43-2827:2<> 
 
   Block[24] -> [21], ExitExc
     [0] <>old<>6925 := <>i<>6899
-    [1] <>new<>6926 := <>Global<>toNumber(<>old<>6925)
+    [1] <>new<>6926 := @ToNumber(<>old<>6925)
     [2] <>i<>6899 := <>new<>6926 - 1
 
   Block[25] -> [26], ExitExc
@@ -26177,7 +26177,7 @@ function[339] Element._getContentFromAnonymousElement<>funexpr@2805:43-2827:2<> 
     [2] <>temp<>6931 := <>obj<>6930["childNodes"]
     [3] <>arguments<>6932 := allocArg(1) @ #5084
     [4] <>arguments<>6932["0"] := <>temp<>6931
-    [5] <>fun<>6933 := <>Global<>getBase($A)
+    [5] <>fun<>6933 := @GetBase($A)
     [6] <>this<> := enterCode(<>fun<>6933)
 
   Call[26] -> ExitExc
@@ -26359,7 +26359,7 @@ function[345] <>funexpr@2861:17-2865:4<> {
     [2] <>temp<>7027 := <>element<>7019
     [3] <>arguments<>7028 := allocArg(1) @ #5145
     [4] <>arguments<>7028["0"] := <>temp<>7027
-    [5] <>fun<>7029 := <>Global<>getBase($)
+    [5] <>fun<>7029 := @GetBase($)
     [6] <>this<> := enterCode(<>fun<>7029)
 
   Call[4] -> ExitExc
@@ -26467,7 +26467,7 @@ function[347] <>funexpr@2884:19-2956:2<> {
     [3] <>temp<>7121 := "object"
     [4] <>arguments<>7122 := allocArg(1) @ #5217
     [5] <>arguments<>7122["0"] := <>temp<>7121
-    [6] <>fun<>7123 := <>Global<>getBase(<>checkDeficiency<>7068)
+    [6] <>fun<>7123 := @GetBase(<>checkDeficiency<>7068)
     [7] <>this<> := enterCode(<>fun<>7123)
 
   Call[1] -> ExitExc
@@ -26638,8 +26638,8 @@ function[349] extendElementWith {
 
   Block[0] -> [2], ExitExc
     [0] <>obj<>7106 := <>methods<>7102
-    [1] <>iterator<>7107 := <>Global<>iteratorInit(<>obj<>7106) @ #5203
-    [2] <>cond1<>7108 := <>Global<>iteratorHasNext(<>obj<>7106, <>iterator<>7107)
+    [1] <>iterator<>7107 := @iteratorInit(<>obj<>7106) @ #5203
+    [2] <>cond1<>7108 := @iteratorHasNext(<>obj<>7106, <>iterator<>7107)
 
   Block[1] -> Exit
 
@@ -26647,7 +26647,7 @@ function[349] extendElementWith {
 
   Block[3] -> [6], ExitExc
     [0] assert(<>cond1<>7108)
-    [1] <>key<>7109 := <>Global<>iteratorNext(<>obj<>7106, <>iterator<>7107)
+    [1] <>key<>7109 := @iteratorNext(<>obj<>7106, <>iterator<>7107)
     [2] <>property<>7103 := <>key<>7109
     [3] <>obj<>7110 := @ToObject(<>methods<>7102) @ #5204
     [4] <>value<>7104 := <>obj<>7110[<>property<>7103]
@@ -26662,7 +26662,7 @@ function[349] extendElementWith {
     [0] assert(! <>cond1<>7108)
 
   Block[5] -> [2]
-    [0] <>cond1<>7108 := <>Global<>iteratorHasNext(<>obj<>7106, <>iterator<>7107)
+    [0] <>cond1<>7108 := @iteratorHasNext(<>obj<>7106, <>iterator<>7107)
 
   Call[6] -> ExitExc
     [0] call(<>fun<>7114, <>this<>, <>arguments<>7113) @ #5208
@@ -26757,7 +26757,7 @@ function[350] <>funexpr@2914:14-2924:8<> {
   AfterCatch[11] -> ExitExc
 
   Block[12] -> [14], [13]
-    [0] <>cond<>7138 := <>Global<>isObject(<>newObj<>7137)
+    [0] <>cond<>7138 := @isObject(<>newObj<>7137)
 
   Block[13] -> [15], ExitExc
     [0] assert(<>cond<>7138)
@@ -26791,7 +26791,7 @@ function[350] <>funexpr@2914:14-2924:8<> {
     [5] <>arguments<>7149 := allocArg(2) @ #5233
     [6] <>arguments<>7149["0"] := <>temp<>7146
     [7] <>arguments<>7149["1"] := <>temp<>7148
-    [8] <>fun<>7150 := <>Global<>getBase(<>extendElementWith<>7069)
+    [8] <>fun<>7150 := @GetBase(<>extendElementWith<>7069)
     [9] <>this<> := enterCode(<>fun<>7150)
 
   Block[20] -> [36], ExitExc
@@ -26813,7 +26813,7 @@ function[350] <>funexpr@2914:14-2924:8<> {
     [5] <>arguments<>7156 := allocArg(2) @ #5238
     [6] <>arguments<>7156["0"] := <>temp<>7152
     [7] <>arguments<>7156["1"] := <>temp<>7155
-    [8] <>fun<>7157 := <>Global<>getBase(<>extendElementWith<>7069)
+    [8] <>fun<>7157 := @GetBase(<>extendElementWith<>7069)
     [9] <>this<> := enterCode(<>fun<>7157)
 
   Call[25] -> ExitExc
@@ -26846,7 +26846,7 @@ function[350] <>funexpr@2914:14-2924:8<> {
     [1] <>arguments<>7168 := allocArg(2) @ #5248
     [2] <>arguments<>7168["0"] := <>temp<>7159
     [3] <>arguments<>7168["1"] := <>temp<>7167
-    [4] <>fun<>7169 := <>Global<>getBase(<>extendElementWith<>7069)
+    [4] <>fun<>7169 := @GetBase(<>extendElementWith<>7069)
     [5] <>this<> := enterCode(<>fun<>7169)
 
   Call[33] -> ExitExc
@@ -26979,7 +26979,7 @@ function[351] <>funexpr@2931:30-2945:4<> {
     [3] <>arguments<>7202 := allocArg(2) @ #5275
     [4] <>arguments<>7202["0"] := <>temp<>7200
     [5] <>arguments<>7202["1"] := <>temp<>7201
-    [6] <>fun<>7203 := <>Global<>getBase(<>extendElementWith<>7069)
+    [6] <>fun<>7203 := @GetBase(<>extendElementWith<>7069)
     [7] <>this<> := enterCode(<>fun<>7203)
 
   Call[29] -> ExitExc
@@ -27324,7 +27324,7 @@ function[354] Element.addMethods<>funexpr@2967:22-3058:2<> {
     [2] <>temp<>7407 := <>tagName<>7259
     [3] <>arguments<>7408 := allocArg(1) @ #5446
     [4] <>arguments<>7408["0"] := <>temp<>7407
-    [5] <>fun<>7409 := <>Global<>getBase(<>extend<>7254)
+    [5] <>fun<>7409 := @GetBase(<>extend<>7254)
     [6] <>this<> := enterCode(<>fun<>7409)
 
   Call[52] -> ExitExc
@@ -27366,7 +27366,7 @@ function[354] Element.addMethods<>funexpr@2967:22-3058:2<> {
     [5] <>arguments<>7418 := allocArg(2) @ #5454
     [6] <>arguments<>7418["0"] := <>temp<>7416
     [7] <>arguments<>7418["1"] := <>temp<>7417
-    [8] <>fun<>7419 := <>Global<>getBase(<>copy<>7255)
+    [8] <>fun<>7419 := @GetBase(<>copy<>7255)
     [9] <>this<> := enterCode(<>fun<>7419)
 
   Block[63] -> [71], ExitExc
@@ -27390,7 +27390,7 @@ function[354] Element.addMethods<>funexpr@2967:22-3058:2<> {
     [7] <>arguments<>7426["0"] := <>temp<>7423
     [8] <>arguments<>7426["1"] := <>temp<>7424
     [9] <>arguments<>7426["2"] := <>temp<>7425
-    [10] <>fun<>7427 := <>Global<>getBase(<>copy<>7255)
+    [10] <>fun<>7427 := @GetBase(<>copy<>7255)
     [11] <>this<> := enterCode(<>fun<>7427)
 
   Call[68] -> ExitExc
@@ -27408,8 +27408,8 @@ function[354] Element.addMethods<>funexpr@2967:22-3058:2<> {
     [1] <>obj<>7429 := @ToObject(Element) @ #5462
     [2] <>obj<>7430 := @ToObject(<>obj<>7429["Methods"]) @ #5463
     [3] <>obj<>7431 := <>obj<>7430["ByTag"]
-    [4] <>iterator<>7432 := <>Global<>iteratorInit(<>obj<>7431) @ #5464
-    [5] <>cond1<>7433 := <>Global<>iteratorHasNext(<>obj<>7431, <>iterator<>7432)
+    [4] <>iterator<>7432 := @iteratorInit(<>obj<>7431) @ #5464
+    [5] <>cond1<>7433 := @iteratorHasNext(<>obj<>7431, <>iterator<>7432)
 
   Block[73] -> [92], ExitExc
     [0] assert(! <>obj<>7428["SpecificElementExtensions"])
@@ -27420,20 +27420,20 @@ function[354] Element.addMethods<>funexpr@2967:22-3058:2<> {
 
   Block[76] -> [79], ExitExc
     [0] assert(<>cond1<>7433)
-    [1] <>key<>7434 := <>Global<>iteratorNext(<>obj<>7431, <>iterator<>7432)
+    [1] <>key<>7434 := @iteratorNext(<>obj<>7431, <>iterator<>7432)
     [2] <>tag<>7261 := <>key<>7434
     [3] <>obj<>7435 := @ToObject(<>findDOMClass<>7256) @ #5465
     [4] <>temp<>7436 := <>tag<>7261
     [5] <>arguments<>7437 := allocArg(1) @ #5466
     [6] <>arguments<>7437["0"] := <>temp<>7436
-    [7] <>fun<>7438 := <>Global<>getBase(<>findDOMClass<>7256)
+    [7] <>fun<>7438 := @GetBase(<>findDOMClass<>7256)
     [8] <>this<> := enterCode(<>fun<>7438)
 
   Block[77] -> [74], ExitExc
     [0] assert(! <>cond1<>7433)
 
   Block[78] -> [75]
-    [0] <>cond1<>7433 := <>Global<>iteratorHasNext(<>obj<>7431, <>iterator<>7432)
+    [0] <>cond1<>7433 := @iteratorHasNext(<>obj<>7431, <>iterator<>7432)
 
   Call[79] -> ExitExc
     [0] call(<>obj<>7435, <>this<>, <>arguments<>7437) @ #5467
@@ -27473,7 +27473,7 @@ function[354] Element.addMethods<>funexpr@2967:22-3058:2<> {
     [5] <>arguments<>7449 := allocArg(2) @ #5475
     [6] <>arguments<>7449["0"] := <>temp<>7446
     [7] <>arguments<>7449["1"] := <>temp<>7448
-    [8] <>fun<>7450 := <>Global<>getBase(<>copy<>7255)
+    [8] <>fun<>7450 := @GetBase(<>copy<>7255)
     [9] <>this<> := enterCode(<>fun<>7450)
 
   Call[89] -> ExitExc
@@ -27611,8 +27611,8 @@ function[356] copy {
   Block[3] -> [5], ExitExc
     [0] <>onlyIfAbsent<>7285 := <>Global<>ignore844
     [1] <>obj<>7289 := <>methods<>7283
-    [2] <>iterator<>7290 := <>Global<>iteratorInit(<>obj<>7289) @ #5343
-    [3] <>cond1<>7291 := <>Global<>iteratorHasNext(<>obj<>7289, <>iterator<>7290)
+    [2] <>iterator<>7290 := @iteratorInit(<>obj<>7289) @ #5343
+    [3] <>cond1<>7291 := @iteratorHasNext(<>obj<>7289, <>iterator<>7290)
 
   Block[4] -> Exit
 
@@ -27620,7 +27620,7 @@ function[356] copy {
 
   Block[6] -> [9], ExitExc
     [0] assert(<>cond1<>7291)
-    [1] <>key<>7292 := <>Global<>iteratorNext(<>obj<>7289, <>iterator<>7290)
+    [1] <>key<>7292 := @iteratorNext(<>obj<>7289, <>iterator<>7290)
     [2] <>property<>7286 := <>key<>7292
     [3] <>obj<>7293 := @ToObject(<>methods<>7283) @ #5344
     [4] <>value<>7287 := <>obj<>7293[<>property<>7286]
@@ -27635,7 +27635,7 @@ function[356] copy {
     [0] assert(! <>cond1<>7291)
 
   Block[8] -> [5]
-    [0] <>cond1<>7291 := <>Global<>iteratorHasNext(<>obj<>7289, <>iterator<>7290)
+    [0] <>cond1<>7291 := @iteratorHasNext(<>obj<>7289, <>iterator<>7290)
 
   Call[9] -> ExitExc
     [0] call(<>fun<>7297, <>this<>, <>arguments<>7296) @ #5348
@@ -28089,7 +28089,7 @@ function[362] define {
     [0] assert(! <>element<>7505)
     [1] <>obj<>7525 := @ToObject(<>getRootElement<>7501) @ #5539
     [2] <>arguments<>7526 := allocArg(0) @ #5540
-    [3] <>fun<>7527 := <>Global<>getBase(<>getRootElement<>7501)
+    [3] <>fun<>7527 := @GetBase(<>getRootElement<>7501)
     [4] <>this<> := enterCode(<>fun<>7527)
 
   Block[2] -> [7], ExitExc
@@ -28154,7 +28154,7 @@ function[364] <>funexpr@3107:15-3123:4<> {
     [1] <>temp<>7561 := <>element<>7557
     [2] <>arguments<>7562 := allocArg(1) @ #5576
     [3] <>arguments<>7562["0"] := <>temp<>7561
-    [4] <>fun<>7563 := <>Global<>getBase($)
+    [4] <>fun<>7563 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>7563)
 
   Call[1] -> ExitExc
@@ -28194,7 +28194,7 @@ function[364] <>funexpr@3107:15-3123:4<> {
     [2] <>obj<>7567 := @ToObject(Element) @ #5580
     [3] <>obj<>7568 := @ToObject(<>obj<>7567["Storage"]) @ #5581
     [4] <>old<>7569 := <>obj<>7568["UID"]
-    [5] <>new<>7570 := <>Global<>toNumber(<>old<>7569)
+    [5] <>new<>7570 := @ToNumber(<>old<>7569)
     [6] <>obj<>7568["UID"] := <>new<>7570 + 1
     [7] <>obj<>7566["_prototypeUID"] := <>new<>7570
 
@@ -28211,7 +28211,7 @@ function[364] <>funexpr@3107:15-3123:4<> {
     [2] <>obj<>7575 := @ToObject(<>obj<>7574["Storage"]) @ #5586
     [3] <>obj<>7576 := @ToObject($H) @ #5587
     [4] <>arguments<>7577 := allocArg(0) @ #5588
-    [5] <>fun<>7578 := <>Global<>getBase($H)
+    [5] <>fun<>7578 := @GetBase($H)
     [6] <>this<> := enterCode(<>fun<>7578)
 
   Block[15] -> [20], ExitExc
@@ -28246,7 +28246,7 @@ function[365] <>funexpr@3125:10-3135:4<> {
     [1] <>temp<>7588 := <>element<>7583
     [2] <>arguments<>7589 := allocArg(1) @ #5595
     [3] <>arguments<>7589["0"] := <>temp<>7588
-    [4] <>fun<>7590 := <>Global<>getBase($)
+    [4] <>fun<>7590 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>7590)
 
   Call[1] -> ExitExc
@@ -28350,7 +28350,7 @@ function[366] <>funexpr@3137:13-3147:4<> {
     [1] <>temp<>7621 := <>element<>7614
     [2] <>arguments<>7622 := allocArg(1) @ #5617
     [3] <>arguments<>7622["0"] := <>temp<>7621
-    [4] <>fun<>7623 := <>Global<>getBase($)
+    [4] <>fun<>7623 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>7623)
 
   Call[1] -> ExitExc
@@ -28458,7 +28458,7 @@ function[367] <>funexpr@3149:10-3161:4<> {
     [1] <>temp<>7652 := <>element<>7645
     [2] <>arguments<>7653 := allocArg(1) @ #5638
     [3] <>arguments<>7653["0"] := <>temp<>7652
-    [4] <>fun<>7654 := <>Global<>getBase($)
+    [4] <>fun<>7654 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>7654)
 
   Call[1] -> ExitExc
@@ -28524,7 +28524,7 @@ function[367] <>funexpr@3149:10-3161:4<> {
     [1] <>obj<>7666 := @ToObject(<>descendants<>7648) @ #5649
     [2] <>i<>7649 := <>obj<>7666["length"]
     [3] <>old<>7667 := <>i<>7649
-    [4] <>new<>7668 := <>Global<>toNumber(<>old<>7667)
+    [4] <>new<>7668 := @ToNumber(<>old<>7667)
     [5] <>i<>7649 := <>new<>7668 - 1
 
   Block[18] -> [23]
@@ -28542,7 +28542,7 @@ function[367] <>funexpr@3149:10-3161:4<> {
 
   Block[22] -> [19], ExitExc
     [0] <>old<>7667 := <>i<>7649
-    [1] <>new<>7668 := <>Global<>toNumber(<>old<>7667)
+    [1] <>new<>7668 := @ToNumber(<>old<>7667)
     [2] <>i<>7649 := <>new<>7668 - 1
 
   Block[23] -> [24], ExitExc
@@ -28577,7 +28577,7 @@ function[368] <>funexpr@3163:10-3175:4<> {
     [1] <>temp<>7684 := <>element<>7678
     [2] <>arguments<>7685 := allocArg(1) @ #5659
     [3] <>arguments<>7685["0"] := <>temp<>7684
-    [4] <>fun<>7686 := <>Global<>getBase($)
+    [4] <>fun<>7686 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>7686)
 
   Call[1] -> ExitExc
@@ -28604,7 +28604,7 @@ function[368] <>funexpr@3163:10-3175:4<> {
     [3] <>temp<>7690 := <>element<>7678
     [4] <>arguments<>7691 := allocArg(1) @ #5663
     [5] <>arguments<>7691["0"] := <>temp<>7690
-    [6] <>fun<>7692 := <>Global<>getBase(<>purgeElement<>7679)
+    [6] <>fun<>7692 := @GetBase(<>purgeElement<>7679)
     [7] <>this<> := enterCode(<>fun<>7692)
 
   Call[8] -> ExitExc
@@ -28634,7 +28634,7 @@ function[368] <>funexpr@3163:10-3175:4<> {
     [1] <>obj<>7697 := @ToObject(<>descendants<>7680) @ #5669
     [2] <>i<>7681 := <>obj<>7697["length"]
     [3] <>old<>7698 := <>i<>7681
-    [4] <>new<>7699 := <>Global<>toNumber(<>old<>7698)
+    [4] <>new<>7699 := @ToNumber(<>old<>7698)
     [5] <>i<>7681 := <>new<>7699 - 1
 
   Block[16] -> Exit, ExitExc
@@ -28649,7 +28649,7 @@ function[368] <>funexpr@3163:10-3175:4<> {
     [3] <>temp<>7702 := <>obj<>7701[<>i<>7681]
     [4] <>arguments<>7703 := allocArg(1) @ #5672
     [5] <>arguments<>7703["0"] := <>temp<>7702
-    [6] <>fun<>7704 := <>Global<>getBase(<>purgeElement<>7679)
+    [6] <>fun<>7704 := @GetBase(<>purgeElement<>7679)
     [7] <>this<> := enterCode(<>fun<>7704)
 
   Block[19] -> [16], ExitExc
@@ -28657,7 +28657,7 @@ function[368] <>funexpr@3163:10-3175:4<> {
 
   Block[20] -> [17], ExitExc
     [0] <>old<>7698 := <>i<>7681
-    [1] <>new<>7699 := <>Global<>toNumber(<>old<>7698)
+    [1] <>new<>7699 := @ToNumber(<>old<>7698)
     [2] <>i<>7681 := <>new<>7699 - 1
 
   Call[21] -> ExitExc
@@ -28758,7 +28758,7 @@ function[369] <>funexpr@3178:2-3920:2<> {
     [5] <>temp<>8740 := "height width top left right bottom border-left border-right border-top border-bottom padding-left padding-right padding-top padding-bottom margin-top margin-bottom margin-left margin-right padding-box-width padding-box-height border-box-width border-box-height margin-box-width margin-box-height"
     [6] <>arguments<>8741 := allocArg(1) @ #6438
     [7] <>arguments<>8741["0"] := <>temp<>8740
-    [8] <>fun<>8742 := <>Global<>getBase($w)
+    [8] <>fun<>8742 := @GetBase($w)
     [9] <>this<> := enterCode(<>fun<>8742)
 
   Call[8] -> ExitExc
@@ -28773,7 +28773,7 @@ function[369] <>funexpr@3178:2-3920:2<> {
     [1] <>temp<>8745 := "padding-box-width padding-box-height margin-box-width margin-box-height border-box-width border-box-height"
     [2] <>arguments<>8746 := allocArg(1) @ #6441
     [3] <>arguments<>8746["0"] := <>temp<>8745
-    [4] <>fun<>8747 := <>Global<>getBase($w)
+    [4] <>fun<>8747 := @GetBase($w)
     [5] <>this<> := enterCode(<>fun<>8747)
 
   Call[12] -> ExitExc
@@ -29042,7 +29042,7 @@ function[370] toDecimal {
   AfterCatch[3] -> ExitExc
 
   Block[4] -> [6], [5]
-    [0] <>cond<>7742 := <>Global<>isObject(<>newObj<>7741)
+    [0] <>cond<>7742 := @isObject(<>newObj<>7741)
 
   Block[5] -> [7], ExitExc
     [0] assert(<>cond<>7742)
@@ -29081,7 +29081,7 @@ function[370] toDecimal {
     [2] <>temp<>7748 := <>obj<>7747[1]
     [3] <>arguments<>7749 := allocArg(1) @ #5690
     [4] <>arguments<>7749["0"] := <>temp<>7748
-    [5] <>fun<>7750 := <>Global<>getBase(Number)
+    [5] <>fun<>7750 := @GetBase(Number)
     [6] <>this<> := enterCode(<>fun<>7750)
 
   Call[15] -> ExitExc
@@ -29169,7 +29169,7 @@ function[371] getPixelValue {
   AfterCatch[16] -> ExitExc
 
   Block[17] -> [19], [18]
-    [0] <>cond<>7782 := <>Global<>isObject(<>newObj<>7781)
+    [0] <>cond<>7782 := @isObject(<>newObj<>7781)
 
   Block[18] -> [20], ExitExc
     [0] assert(<>cond<>7782)
@@ -29253,7 +29253,7 @@ function[371] getPixelValue {
   AfterCatch[37] -> ExitExc
 
   Block[38] -> [40], [39]
-    [0] <>cond<>7807 := <>Global<>isObject(<>newObj<>7806)
+    [0] <>cond<>7807 := @isObject(<>newObj<>7806)
 
   Block[39] -> [41], ExitExc
     [0] assert(<>cond<>7807)
@@ -29396,7 +29396,7 @@ function[371] getPixelValue {
     [2] <>temp<>7834 := <>value<>7752
     [3] <>arguments<>7835 := allocArg(1) @ #5746
     [4] <>arguments<>7835["0"] := <>temp<>7834
-    [5] <>fun<>7836 := <>Global<>getBase(<>toDecimal<>7710)
+    [5] <>fun<>7836 := @GetBase(<>toDecimal<>7710)
     [6] <>this<> := enterCode(<>fun<>7836)
 
   Call[75] -> ExitExc
@@ -29616,7 +29616,7 @@ function[371] getPixelValue {
     [2] <>temp<>7884 := <>context<>7754
     [3] <>arguments<>7885 := allocArg(1) @ #5788
     [4] <>arguments<>7885["0"] := <>temp<>7884
-    [5] <>fun<>7886 := <>Global<>getBase($)
+    [5] <>fun<>7886 := @GetBase($)
     [6] <>this<> := enterCode(<>fun<>7886)
 
   Block[135] -> [146], [145], ExitExc
@@ -29655,7 +29655,7 @@ function[371] getPixelValue {
     [2] <>temp<>7893 := <>context<>7754
     [3] <>arguments<>7894 := allocArg(1) @ #5795
     [4] <>arguments<>7894["0"] := <>temp<>7893
-    [5] <>fun<>7895 := <>Global<>getBase($)
+    [5] <>fun<>7895 := @GetBase($)
     [6] <>this<> := enterCode(<>fun<>7895)
 
   Block[146] -> [155], ExitExc
@@ -29834,7 +29834,7 @@ function[373] isDisplayed {
     [2] <>temp<>7926 := <>obj<>7925["parentNode"]
     [3] <>arguments<>7927 := allocArg(1) @ #5820
     [4] <>arguments<>7927["0"] := <>temp<>7926
-    [5] <>fun<>7928 := <>Global<>getBase($)
+    [5] <>fun<>7928 := @GetBase($)
     [6] <>this<> := enterCode(<>fun<>7928)
 
   Call[19] -> ExitExc
@@ -29942,7 +29942,7 @@ function[375] getLayout {
   AfterCatch[3] -> ExitExc
 
   Block[4] -> [6], [5]
-    [0] <>cond<>7951 := <>Global<>isObject(<>newObj<>7950)
+    [0] <>cond<>7951 := @isObject(<>newObj<>7950)
 
   Block[5] -> [7], ExitExc
     [0] assert(<>cond<>7951)
@@ -29969,7 +29969,7 @@ function[376] measure {
     [1] <>temp<>7957 := <>element<>7953
     [2] <>arguments<>7958 := allocArg(1) @ #5843
     [3] <>arguments<>7958["0"] := <>temp<>7957
-    [4] <>fun<>7959 := <>Global<>getBase($)
+    [4] <>fun<>7959 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>7959)
 
   Call[1] -> ExitExc
@@ -30024,7 +30024,7 @@ function[377] getDimensions {
     [1] <>temp<>7978 := <>element<>7970
     [2] <>arguments<>7979 := allocArg(1) @ #5856
     [3] <>arguments<>7979["0"] := <>temp<>7978
-    [4] <>fun<>7980 := <>Global<>getBase($)
+    [4] <>fun<>7980 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>7980)
 
   Call[1] -> ExitExc
@@ -30159,7 +30159,7 @@ function[378] getOffsetParent {
     [1] <>temp<>8011 := <>element<>8007
     [2] <>arguments<>8012 := allocArg(1) @ #5887
     [3] <>arguments<>8012["0"] := <>temp<>8011
-    [4] <>fun<>8013 := <>Global<>getBase($)
+    [4] <>fun<>8013 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>8013)
 
   Call[1] -> ExitExc
@@ -30175,7 +30175,7 @@ function[378] getOffsetParent {
     [2] <>temp<>8015 := <>element<>8007
     [3] <>arguments<>8016 := allocArg(1) @ #5890
     [4] <>arguments<>8016["0"] := <>temp<>8015
-    [5] <>fun<>8017 := <>Global<>getBase(<>isDocument<>7727)
+    [5] <>fun<>8017 := @GetBase(<>isDocument<>7727)
     [6] <>this<> := enterCode(<>fun<>8017)
 
   Call[5] -> ExitExc
@@ -30195,7 +30195,7 @@ function[378] getOffsetParent {
     [2] <>temp<>8021 := <>element<>8007
     [3] <>arguments<>8022 := allocArg(1) @ #5893
     [4] <>arguments<>8022["0"] := <>temp<>8021
-    [5] <>fun<>8023 := <>Global<>getBase(<>isDetached<>7728)
+    [5] <>fun<>8023 := @GetBase(<>isDetached<>7728)
     [6] <>this<> := enterCode(<>fun<>8023)
 
   Block[10] -> [16], [15]
@@ -30220,7 +30220,7 @@ function[378] getOffsetParent {
     [2] <>temp<>8027 := <>element<>8007
     [3] <>arguments<>8028 := allocArg(1) @ #5896
     [4] <>arguments<>8028["0"] := <>temp<>8027
-    [5] <>fun<>8029 := <>Global<>getBase(<>isBody<>7725)
+    [5] <>fun<>8029 := @GetBase(<>isBody<>7725)
     [6] <>this<> := enterCode(<>fun<>8029)
 
   Block[17] -> [25], [24]
@@ -30251,7 +30251,7 @@ function[378] getOffsetParent {
     [2] <>temp<>8038 := <>obj<>8037["body"]
     [3] <>arguments<>8039 := allocArg(1) @ #5903
     [4] <>arguments<>8039["0"] := <>temp<>8038
-    [5] <>fun<>8040 := <>Global<>getBase($)
+    [5] <>fun<>8040 := @GetBase($)
     [6] <>this<> := enterCode(<>fun<>8040)
 
   Block[24] -> [23], ExitExc
@@ -30265,7 +30265,7 @@ function[378] getOffsetParent {
     [1] <>temp<>8032 := <>element<>8007
     [2] <>arguments<>8033 := allocArg(1) @ #5899
     [3] <>arguments<>8033["0"] := <>temp<>8032
-    [4] <>fun<>8034 := <>Global<>getBase(<>isHtml<>7726)
+    [4] <>fun<>8034 := @GetBase(<>isHtml<>7726)
     [5] <>this<> := enterCode(<>fun<>8034)
 
   Call[27] -> ExitExc
@@ -30321,7 +30321,7 @@ function[378] getOffsetParent {
     [3] <>temp<>8051 := <>obj<>8050["offsetParent"]
     [4] <>arguments<>8052 := allocArg(1) @ #5912
     [5] <>arguments<>8052["0"] := <>temp<>8051
-    [6] <>fun<>8053 := <>Global<>getBase($)
+    [6] <>fun<>8053 := @GetBase($)
     [7] <>this<> := enterCode(<>fun<>8053)
 
   Block[45] -> [50], ExitExc
@@ -30347,7 +30347,7 @@ function[378] getOffsetParent {
     [2] <>temp<>8082 := <>obj<>8081["body"]
     [3] <>arguments<>8083 := allocArg(1) @ #5934
     [4] <>arguments<>8083["0"] := <>temp<>8082
-    [5] <>fun<>8084 := <>Global<>getBase($)
+    [5] <>fun<>8084 := @GetBase($)
     [6] <>this<> := enterCode(<>fun<>8084)
 
   Block[53] -> [55], ExitExc
@@ -30404,7 +30404,7 @@ function[378] getOffsetParent {
     [2] <>temp<>8066 := <>element<>8007
     [3] <>arguments<>8067 := allocArg(1) @ #5921
     [4] <>arguments<>8067["0"] := <>temp<>8066
-    [5] <>fun<>8068 := <>Global<>getBase(<>isHtml<>7726)
+    [5] <>fun<>8068 := @GetBase(<>isHtml<>7726)
     [6] <>this<> := enterCode(<>fun<>8068)
 
   Block[67] -> [80], ExitExc
@@ -30424,7 +30424,7 @@ function[378] getOffsetParent {
     [3] <>temp<>8072 := <>obj<>8071["body"]
     [4] <>arguments<>8073 := allocArg(1) @ #5925
     [5] <>arguments<>8073["0"] := <>temp<>8072
-    [6] <>fun<>8074 := <>Global<>getBase($)
+    [6] <>fun<>8074 := @GetBase($)
     [7] <>this<> := enterCode(<>fun<>8074)
 
   Block[72] -> [77], ExitExc
@@ -30433,7 +30433,7 @@ function[378] getOffsetParent {
     [2] <>temp<>8077 := <>element<>8007
     [3] <>arguments<>8078 := allocArg(1) @ #5928
     [4] <>arguments<>8078["0"] := <>temp<>8077
-    [5] <>fun<>8079 := <>Global<>getBase($)
+    [5] <>fun<>8079 := @GetBase($)
     [6] <>this<> := enterCode(<>fun<>8079)
 
   Call[73] -> ExitExc
@@ -30500,7 +30500,7 @@ function[379] cumulativeOffset {
     [1] <>temp<>8091 := <>element<>8086
     [2] <>arguments<>8092 := allocArg(1) @ #5939
     [3] <>arguments<>8092["0"] := <>temp<>8091
-    [4] <>fun<>8093 := <>Global<>getBase($)
+    [4] <>fun<>8093 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>8093)
 
   Call[1] -> ExitExc
@@ -30611,7 +30611,7 @@ function[379] cumulativeOffset {
   AfterCatch[28] -> ExitExc
 
   Block[29] -> [31], [30]
-    [0] <>cond<>8110 := <>Global<>isObject(<>newObj<>8109)
+    [0] <>cond<>8110 := @isObject(<>newObj<>8109)
 
   Block[30] -> [32], ExitExc
     [0] assert(<>cond<>8110)
@@ -30638,7 +30638,7 @@ function[380] positionedOffset {
     [1] <>temp<>8119 := <>element<>8112
     [2] <>arguments<>8120 := allocArg(1) @ #5956
     [3] <>arguments<>8120["0"] := <>temp<>8119
-    [4] <>fun<>8121 := <>Global<>getBase($)
+    [4] <>fun<>8121 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>8121)
 
   Call[1] -> ExitExc
@@ -30712,7 +30712,7 @@ function[380] positionedOffset {
     [2] <>temp<>8133 := <>element<>8112
     [3] <>arguments<>8134 := allocArg(1) @ #5966
     [4] <>arguments<>8134["0"] := <>temp<>8133
-    [5] <>fun<>8135 := <>Global<>getBase(<>isBody<>7725)
+    [5] <>fun<>8135 := @GetBase(<>isBody<>7725)
     [6] <>this<> := enterCode(<>fun<>8135)
 
   Block[18] -> [32], ExitExc
@@ -30805,7 +30805,7 @@ function[380] positionedOffset {
     [2] <>temp<>8133 := <>element<>8112
     [3] <>arguments<>8134 := allocArg(1) @ #5976
     [4] <>arguments<>8134["0"] := <>temp<>8133
-    [5] <>fun<>8135 := <>Global<>getBase(<>isBody<>7725)
+    [5] <>fun<>8135 := @GetBase(<>isBody<>7725)
     [6] <>this<> := enterCode(<>fun<>8135)
 
   Block[44] -> [58], ExitExc
@@ -30898,7 +30898,7 @@ function[380] positionedOffset {
   AfterCatch[69] -> ExitExc
 
   Block[70] -> [72], [71]
-    [0] <>cond<>8162 := <>Global<>isObject(<>newObj<>8161)
+    [0] <>cond<>8162 := @isObject(<>newObj<>8161)
 
   Block[71] -> [73], ExitExc
     [0] assert(<>cond<>8162)
@@ -31011,7 +31011,7 @@ function[381] cumulativeScrollOffset {
   AfterCatch[21] -> ExitExc
 
   Block[22] -> [24], [23]
-    [0] <>cond<>8183 := <>Global<>isObject(<>newObj<>8182)
+    [0] <>cond<>8183 := @isObject(<>newObj<>8182)
 
   Block[23] -> [25], ExitExc
     [0] assert(<>cond<>8183)
@@ -31038,7 +31038,7 @@ function[382] viewportOffset {
     [1] <>temp<>8192 := <>element<>8189
     [2] <>arguments<>8193 := allocArg(1) @ #6011
     [3] <>arguments<>8193["0"] := <>temp<>8192
-    [4] <>fun<>8194 := <>Global<>getBase($)
+    [4] <>fun<>8194 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>8194)
 
   Call[1] -> ExitExc
@@ -31320,7 +31320,7 @@ function[382] viewportOffset {
   AfterCatch[75] -> ExitExc
 
   Block[76] -> [78], [77]
-    [0] <>cond<>8226 := <>Global<>isObject(<>newObj<>8225)
+    [0] <>cond<>8226 := @isObject(<>newObj<>8225)
 
   Block[77] -> [79], ExitExc
     [0] assert(<>cond<>8226)
@@ -31347,7 +31347,7 @@ function[383] absolutize {
     [1] <>temp<>8236 := <>element<>8228
     [2] <>arguments<>8237 := allocArg(1) @ #6044
     [3] <>arguments<>8237["0"] := <>temp<>8236
-    [4] <>fun<>8238 := <>Global<>getBase($)
+    [4] <>fun<>8238 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>8238)
 
   Call[1] -> ExitExc
@@ -31387,7 +31387,7 @@ function[383] absolutize {
     [1] <>temp<>8246 := <>element<>8228
     [2] <>arguments<>8247 := allocArg(1) @ #6051
     [3] <>arguments<>8247["0"] := <>temp<>8246
-    [4] <>fun<>8248 := <>Global<>getBase(<>getOffsetParent<>7718)
+    [4] <>fun<>8248 := @GetBase(<>getOffsetParent<>7718)
     [5] <>this<> := enterCode(<>fun<>8248)
 
   Call[11] -> ExitExc
@@ -31606,7 +31606,7 @@ function[384] relativize {
     [1] <>temp<>8307 := <>element<>8303
     [2] <>arguments<>8308 := allocArg(1) @ #6108
     [3] <>arguments<>8308["0"] := <>temp<>8307
-    [4] <>fun<>8309 := <>Global<>getBase($)
+    [4] <>fun<>8309 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>8309)
 
   Call[1] -> ExitExc
@@ -31836,7 +31836,7 @@ function[390] <>funexpr@3281:17-3296:6<> {
   Block[0] -> [1], ExitExc
     [0] <>obj<>8372 := @ToObject(<>$super<>8368) @ #6160
     [1] <>arguments<>8373 := allocArg(0) @ #6161
-    [2] <>fun<>8374 := <>Global<>getBase(<>$super<>8368)
+    [2] <>fun<>8374 := @GetBase(<>$super<>8368)
     [3] <>this<> := enterCode(<>fun<>8374)
 
   Call[1] -> ExitExc
@@ -31852,7 +31852,7 @@ function[390] <>funexpr@3281:17-3296:6<> {
     [2] <>temp<>8377 := <>element<>8369
     [3] <>arguments<>8378 := allocArg(1) @ #6165
     [4] <>arguments<>8378["0"] := <>temp<>8377
-    [5] <>fun<>8379 := <>Global<>getBase($)
+    [5] <>fun<>8379 := @GetBase($)
     [6] <>this<> := enterCode(<>fun<>8379)
 
   Call[5] -> ExitExc
@@ -32025,7 +32025,7 @@ function[394] <>funexpr@3306:10-3309:6<> {
     [1] <>temp<>8437 := <>property<>8433
     [2] <>arguments<>8438 := allocArg(1) @ #6209
     [3] <>arguments<>8438["0"] := <>temp<>8437
-    [4] <>fun<>8439 := <>Global<>getBase(<>$super<>8432)
+    [4] <>fun<>8439 := @GetBase(<>$super<>8432)
     [5] <>this<> := enterCode(<>fun<>8439)
 
   Call[1] -> ExitExc
@@ -32087,7 +32087,7 @@ function[395] <>funexpr@3311:13-3368:6<> {
     [3] <>temp<>8460 := <>element<>8447
     [4] <>arguments<>8461 := allocArg(1) @ #6220
     [5] <>arguments<>8461["0"] := <>temp<>8460
-    [6] <>fun<>8462 := <>Global<>getBase(<>isDisplayed<>7713)
+    [6] <>fun<>8462 := @GetBase(<>isDisplayed<>7713)
     [7] <>this<> := enterCode(<>fun<>8462)
 
   Call[4] -> ExitExc
@@ -32322,7 +32322,7 @@ function[395] <>funexpr@3311:13-3368:6<> {
     [6] <>arguments<>8510["0"] := <>temp<>8507
     [7] <>arguments<>8510["1"] := <>temp<>8508
     [8] <>arguments<>8510["2"] := <>temp<>8509
-    [9] <>fun<>8511 := <>Global<>getBase(<>getPixelValue<>7711)
+    [9] <>fun<>8511 := @GetBase(<>getPixelValue<>7711)
     [10] <>this<> := enterCode(<>fun<>8511)
 
   Block[61] -> [66], ExitExc
@@ -32353,7 +32353,7 @@ function[395] <>funexpr@3311:13-3368:6<> {
     [5] <>arguments<>8565["0"] := <>temp<>8562
     [6] <>arguments<>8565["1"] := <>temp<>8563
     [7] <>arguments<>8565["2"] := <>temp<>8564
-    [8] <>fun<>8566 := <>Global<>getBase(<>getPixelValue<>7711)
+    [8] <>fun<>8566 := @GetBase(<>getPixelValue<>7711)
     [9] <>this<> := enterCode(<>fun<>8566)
 
   Block[70] -> [69], ExitExc
@@ -32377,7 +32377,7 @@ function[395] <>funexpr@3311:13-3368:6<> {
     [3] <>temp<>8514 := <>parent<>8454
     [4] <>arguments<>8515 := allocArg(1) @ #6266
     [5] <>arguments<>8515["0"] := <>temp<>8514
-    [6] <>fun<>8516 := <>Global<>getBase($)
+    [6] <>fun<>8516 := @GetBase($)
     [7] <>this<> := enterCode(<>fun<>8516)
 
   Call[76] -> ExitExc
@@ -32671,7 +32671,7 @@ function[398] <>funexpr@3387:15-3398:6<> {
     [1] <>temp<>8619 := <>arguments<>8617
     [2] <>arguments<>8620 := allocArg(1) @ #6342
     [3] <>arguments<>8620["0"] := <>temp<>8619
-    [4] <>fun<>8621 := <>Global<>getBase($A)
+    [4] <>fun<>8621 := @GetBase($A)
     [5] <>this<> := enterCode(<>fun<>8621)
 
   Call[1] -> ExitExc
@@ -32850,7 +32850,7 @@ function[400] <>funexpr@3400:13-3403:6<> {
   AfterCatch[7] -> ExitExc
 
   Block[8] -> [10], [9]
-    [0] <>cond<>8671 := <>Global<>isObject(<>newObj<>8670)
+    [0] <>cond<>8671 := @isObject(<>newObj<>8670)
 
   Block[9] -> [11], ExitExc
     [0] assert(<>cond<>8671)
@@ -32877,7 +32877,7 @@ function[401] <>funexpr@3405:12-3419:6<> {
     [1] <>temp<>8680 := <>arguments<>8678
     [2] <>arguments<>8681 := allocArg(1) @ #6387
     [3] <>arguments<>8681["0"] := <>temp<>8680
-    [4] <>fun<>8682 := <>Global<>getBase($A)
+    [4] <>fun<>8682 := @GetBase($A)
     [5] <>this<> := enterCode(<>fun<>8682)
 
   Call[1] -> ExitExc
@@ -33033,7 +33033,7 @@ function[402] <>funexpr@3411:18-3417:8<> {
     [3] <>temp<>8719 := <>key<>8696
     [4] <>arguments<>8720 := allocArg(1) @ #6420
     [5] <>arguments<>8720["0"] := <>temp<>8719
-    [6] <>fun<>8721 := <>Global<>getBase(<>cssNameFor<>7714)
+    [6] <>fun<>8721 := @GetBase(<>cssNameFor<>7714)
     [7] <>this<> := enterCode(<>fun<>8721)
 
   Block[18] -> [23], ExitExc
@@ -33969,7 +33969,7 @@ function[416] <>funexpr@3552:22-3554:8<> {
     [3] <>arguments<>9006 := allocArg(2) @ #6652
     [4] <>arguments<>9006["0"] := <>temp<>9004
     [5] <>arguments<>9006["1"] := <>temp<>9005
-    [6] <>fun<>9007 := <>Global<>getBase(<>getPixelValue<>7711)
+    [6] <>fun<>9007 := @GetBase(<>getPixelValue<>7711)
     [7] <>this<> := enterCode(<>fun<>9007)
 
   Call[1] -> ExitExc
@@ -33998,7 +33998,7 @@ function[417] <>funexpr@3556:25-3558:8<> {
     [3] <>arguments<>9016 := allocArg(2) @ #6657
     [4] <>arguments<>9016["0"] := <>temp<>9014
     [5] <>arguments<>9016["1"] := <>temp<>9015
-    [6] <>fun<>9017 := <>Global<>getBase(<>getPixelValue<>7711)
+    [6] <>fun<>9017 := @GetBase(<>getPixelValue<>7711)
     [7] <>this<> := enterCode(<>fun<>9017)
 
   Call[1] -> ExitExc
@@ -34027,7 +34027,7 @@ function[418] <>funexpr@3560:23-3562:8<> {
     [3] <>arguments<>9026 := allocArg(2) @ #6662
     [4] <>arguments<>9026["0"] := <>temp<>9024
     [5] <>arguments<>9026["1"] := <>temp<>9025
-    [6] <>fun<>9027 := <>Global<>getBase(<>getPixelValue<>7711)
+    [6] <>fun<>9027 := @GetBase(<>getPixelValue<>7711)
     [7] <>this<> := enterCode(<>fun<>9027)
 
   Call[1] -> ExitExc
@@ -34056,7 +34056,7 @@ function[419] <>funexpr@3564:24-3566:8<> {
     [3] <>arguments<>9036 := allocArg(2) @ #6667
     [4] <>arguments<>9036["0"] := <>temp<>9034
     [5] <>arguments<>9036["1"] := <>temp<>9035
-    [6] <>fun<>9037 := <>Global<>getBase(<>getPixelValue<>7711)
+    [6] <>fun<>9037 := @GetBase(<>getPixelValue<>7711)
     [7] <>this<> := enterCode(<>fun<>9037)
 
   Call[1] -> ExitExc
@@ -34085,7 +34085,7 @@ function[420] <>funexpr@3568:21-3570:8<> {
     [3] <>arguments<>9046 := allocArg(2) @ #6672
     [4] <>arguments<>9046["0"] := <>temp<>9044
     [5] <>arguments<>9046["1"] := <>temp<>9045
-    [6] <>fun<>9047 := <>Global<>getBase(<>getPixelValue<>7711)
+    [6] <>fun<>9047 := @GetBase(<>getPixelValue<>7711)
     [7] <>this<> := enterCode(<>fun<>9047)
 
   Call[1] -> ExitExc
@@ -34114,7 +34114,7 @@ function[421] <>funexpr@3572:24-3574:8<> {
     [3] <>arguments<>9056 := allocArg(2) @ #6677
     [4] <>arguments<>9056["0"] := <>temp<>9054
     [5] <>arguments<>9056["1"] := <>temp<>9055
-    [6] <>fun<>9057 := <>Global<>getBase(<>getPixelValue<>7711)
+    [6] <>fun<>9057 := @GetBase(<>getPixelValue<>7711)
     [7] <>this<> := enterCode(<>fun<>9057)
 
   Call[1] -> ExitExc
@@ -34143,7 +34143,7 @@ function[422] <>funexpr@3576:22-3578:8<> {
     [3] <>arguments<>9066 := allocArg(2) @ #6682
     [4] <>arguments<>9066["0"] := <>temp<>9064
     [5] <>arguments<>9066["1"] := <>temp<>9065
-    [6] <>fun<>9067 := <>Global<>getBase(<>getPixelValue<>7711)
+    [6] <>fun<>9067 := @GetBase(<>getPixelValue<>7711)
     [7] <>this<> := enterCode(<>fun<>9067)
 
   Call[1] -> ExitExc
@@ -34172,7 +34172,7 @@ function[423] <>funexpr@3580:23-3582:8<> {
     [3] <>arguments<>9076 := allocArg(2) @ #6687
     [4] <>arguments<>9076["0"] := <>temp<>9074
     [5] <>arguments<>9076["1"] := <>temp<>9075
-    [6] <>fun<>9077 := <>Global<>getBase(<>getPixelValue<>7711)
+    [6] <>fun<>9077 := @GetBase(<>getPixelValue<>7711)
     [7] <>this<> := enterCode(<>fun<>9077)
 
   Call[1] -> ExitExc
@@ -34201,7 +34201,7 @@ function[424] <>funexpr@3584:21-3586:8<> {
     [3] <>arguments<>9086 := allocArg(2) @ #6692
     [4] <>arguments<>9086["0"] := <>temp<>9084
     [5] <>arguments<>9086["1"] := <>temp<>9085
-    [6] <>fun<>9087 := <>Global<>getBase(<>getPixelValue<>7711)
+    [6] <>fun<>9087 := @GetBase(<>getPixelValue<>7711)
     [7] <>this<> := enterCode(<>fun<>9087)
 
   Call[1] -> ExitExc
@@ -34230,7 +34230,7 @@ function[425] <>funexpr@3588:24-3590:8<> {
     [3] <>arguments<>9096 := allocArg(2) @ #6697
     [4] <>arguments<>9096["0"] := <>temp<>9094
     [5] <>arguments<>9096["1"] := <>temp<>9095
-    [6] <>fun<>9097 := <>Global<>getBase(<>getPixelValue<>7711)
+    [6] <>fun<>9097 := @GetBase(<>getPixelValue<>7711)
     [7] <>this<> := enterCode(<>fun<>9097)
 
   Call[1] -> ExitExc
@@ -34259,7 +34259,7 @@ function[426] <>funexpr@3592:22-3594:8<> {
     [3] <>arguments<>9106 := allocArg(2) @ #6702
     [4] <>arguments<>9106["0"] := <>temp<>9104
     [5] <>arguments<>9106["1"] := <>temp<>9105
-    [6] <>fun<>9107 := <>Global<>getBase(<>getPixelValue<>7711)
+    [6] <>fun<>9107 := @GetBase(<>getPixelValue<>7711)
     [7] <>this<> := enterCode(<>fun<>9107)
 
   Call[1] -> ExitExc
@@ -34288,7 +34288,7 @@ function[427] <>funexpr@3596:23-3598:8<> {
     [3] <>arguments<>9116 := allocArg(2) @ #6707
     [4] <>arguments<>9116["0"] := <>temp<>9114
     [5] <>arguments<>9116["1"] := <>temp<>9115
-    [6] <>fun<>9117 := <>Global<>getBase(<>getPixelValue<>7711)
+    [6] <>fun<>9117 := @GetBase(<>getPixelValue<>7711)
     [7] <>this<> := enterCode(<>fun<>9117)
 
   Call[1] -> ExitExc
@@ -34327,7 +34327,7 @@ function[428] <>funexpr@3604:16-3610:8<> {
   Block[4] -> [5], ExitExc
     [0] <>arguments<>9141 := allocArg(1) @ #6725
     [1] <>arguments<>9141["0"] := <>temp<>9140
-    [2] <>fun<>9142 := <>Global<>getBase(<>hasLayout<>7729)
+    [2] <>fun<>9142 := @GetBase(<>hasLayout<>7729)
     [3] <>this<> := enterCode(<>fun<>9142)
 
   Call[5] -> ExitExc
@@ -34411,7 +34411,7 @@ function[429] <>funexpr@3612:17-3618:8<> {
   Block[4] -> [5], ExitExc
     [0] <>arguments<>9168 := allocArg(1) @ #6748
     [1] <>arguments<>9168["0"] := <>temp<>9167
-    [2] <>fun<>9169 := <>Global<>getBase(<>hasLayout<>7729)
+    [2] <>fun<>9169 := @GetBase(<>hasLayout<>7729)
     [3] <>this<> := enterCode(<>fun<>9169)
 
   Call[5] -> ExitExc
@@ -34550,7 +34550,7 @@ function[431] <>funexpr@3631:17-3636:6<> {
   AfterCatch[3] -> ExitExc
 
   Block[4] -> [6], [5]
-    [0] <>cond<>9223 := <>Global<>isObject(<>newObj<>9222)
+    [0] <>cond<>9223 := @isObject(<>newObj<>9222)
 
   Block[5] -> [7], ExitExc
     [0] assert(<>cond<>9223)
@@ -34650,7 +34650,7 @@ function[435] <>funexpr@3828:7-3841:8<> {
     [1] <>temp<>9263 := <>element<>9258
     [2] <>arguments<>9264 := allocArg(1) @ #6824
     [3] <>arguments<>9264["0"] := <>temp<>9263
-    [4] <>fun<>9265 := <>Global<>getBase($)
+    [4] <>fun<>9265 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>9265)
 
   Call[1] -> ExitExc
@@ -34666,7 +34666,7 @@ function[435] <>funexpr@3828:7-3841:8<> {
     [2] <>temp<>9267 := <>element<>9258
     [3] <>arguments<>9268 := allocArg(1) @ #6827
     [4] <>arguments<>9268["0"] := <>temp<>9267
-    [5] <>fun<>9269 := <>Global<>getBase(<>isDocument<>7727)
+    [5] <>fun<>9269 := @GetBase(<>isDocument<>7727)
     [6] <>this<> := enterCode(<>fun<>9269)
 
   Call[5] -> ExitExc
@@ -34686,7 +34686,7 @@ function[435] <>funexpr@3828:7-3841:8<> {
     [2] <>temp<>9273 := <>element<>9258
     [3] <>arguments<>9274 := allocArg(1) @ #6830
     [4] <>arguments<>9274["0"] := <>temp<>9273
-    [5] <>fun<>9275 := <>Global<>getBase(<>isDetached<>7728)
+    [5] <>fun<>9275 := @GetBase(<>isDetached<>7728)
     [6] <>this<> := enterCode(<>fun<>9275)
 
   Block[10] -> [16], [15]
@@ -34711,7 +34711,7 @@ function[435] <>funexpr@3828:7-3841:8<> {
     [2] <>temp<>9279 := <>element<>9258
     [3] <>arguments<>9280 := allocArg(1) @ #6833
     [4] <>arguments<>9280["0"] := <>temp<>9279
-    [5] <>fun<>9281 := <>Global<>getBase(<>isBody<>7725)
+    [5] <>fun<>9281 := @GetBase(<>isBody<>7725)
     [6] <>this<> := enterCode(<>fun<>9281)
 
   Block[17] -> [25], [24]
@@ -34740,7 +34740,7 @@ function[435] <>funexpr@3828:7-3841:8<> {
     [2] <>temp<>9290 := <>obj<>9289["body"]
     [3] <>arguments<>9291 := allocArg(1) @ #6840
     [4] <>arguments<>9291["0"] := <>temp<>9290
-    [5] <>fun<>9292 := <>Global<>getBase($)
+    [5] <>fun<>9292 := @GetBase($)
     [6] <>this<> := enterCode(<>fun<>9292)
 
   Block[24] -> [23], ExitExc
@@ -34754,7 +34754,7 @@ function[435] <>funexpr@3828:7-3841:8<> {
     [1] <>temp<>9284 := <>element<>9258
     [2] <>arguments<>9285 := allocArg(1) @ #6836
     [3] <>arguments<>9285["0"] := <>temp<>9284
-    [4] <>fun<>9286 := <>Global<>getBase(<>isHtml<>7726)
+    [4] <>fun<>9286 := @GetBase(<>isHtml<>7726)
     [5] <>this<> := enterCode(<>fun<>9286)
 
   Call[27] -> ExitExc
@@ -34798,7 +34798,7 @@ function[435] <>funexpr@3828:7-3841:8<> {
     [2] <>temp<>9299 := <>element<>9258
     [3] <>arguments<>9300 := allocArg(1) @ #6847
     [4] <>arguments<>9300["0"] := <>temp<>9299
-    [5] <>fun<>9301 := <>Global<>getBase(<>proceed<>9257)
+    [5] <>fun<>9301 := @GetBase(<>proceed<>9257)
     [6] <>this<> := enterCode(<>fun<>9301)
 
   Block[42] -> [47], ExitExc
@@ -34835,7 +34835,7 @@ function[435] <>funexpr@3828:7-3841:8<> {
     [1] <>temp<>9308 := <>element<>9258
     [2] <>arguments<>9309 := allocArg(1) @ #6855
     [3] <>arguments<>9309["0"] := <>temp<>9308
-    [4] <>fun<>9310 := <>Global<>getBase(<>proceed<>9257)
+    [4] <>fun<>9310 := @GetBase(<>proceed<>9257)
     [5] <>this<> := enterCode(<>fun<>9310)
 
   Call[52] -> ExitExc
@@ -34879,7 +34879,7 @@ function[436] <>funexpr@3844:46-3858:6<> {
     [1] <>temp<>9327 := <>element<>9321
     [2] <>arguments<>9328 := allocArg(1) @ #6869
     [3] <>arguments<>9328["0"] := <>temp<>9327
-    [4] <>fun<>9329 := <>Global<>getBase($)
+    [4] <>fun<>9329 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>9329)
 
   Call[1] -> ExitExc
@@ -34916,7 +34916,7 @@ function[436] <>funexpr@3844:46-3858:6<> {
   AfterCatch[9] -> ExitExc
 
   Block[10] -> [12], [11]
-    [0] <>cond<>9339 := <>Global<>isObject(<>newObj<>9338)
+    [0] <>cond<>9339 := @isObject(<>newObj<>9338)
 
   Block[11] -> [13], ExitExc
     [0] assert(<>cond<>9339)
@@ -34953,7 +34953,7 @@ function[436] <>funexpr@3844:46-3858:6<> {
     [2] <>temp<>9346 := <>element<>9321
     [3] <>arguments<>9347 := allocArg(1) @ #6882
     [4] <>arguments<>9347["0"] := <>temp<>9346
-    [5] <>fun<>9348 := <>Global<>getBase(<>proceed<>9320)
+    [5] <>fun<>9348 := @GetBase(<>proceed<>9320)
     [6] <>this<> := enterCode(<>fun<>9348)
 
   Block[20] -> [25], ExitExc
@@ -35019,7 +35019,7 @@ function[436] <>funexpr@3844:46-3858:6<> {
     [2] <>temp<>9359 := <>offsetParent<>9323
     [3] <>arguments<>9360 := allocArg(1) @ #6893
     [4] <>arguments<>9360["0"] := <>temp<>9359
-    [5] <>fun<>9361 := <>Global<>getBase(<>hasLayout<>7729)
+    [5] <>fun<>9361 := @GetBase(<>hasLayout<>7729)
     [6] <>this<> := enterCode(<>fun<>9361)
 
   Block[37] -> [41], ExitExc
@@ -35048,7 +35048,7 @@ function[436] <>funexpr@3844:46-3858:6<> {
     [1] <>temp<>9367 := <>element<>9321
     [2] <>arguments<>9368 := allocArg(1) @ #6901
     [3] <>arguments<>9368["0"] := <>temp<>9367
-    [4] <>fun<>9369 := <>Global<>getBase(<>proceed<>9320)
+    [4] <>fun<>9369 := @GetBase(<>proceed<>9320)
     [5] <>this<> := enterCode(<>fun<>9369)
 
   Call[47] -> ExitExc
@@ -35092,7 +35092,7 @@ function[437] cumulativeOffset<>funexpr@3860:24-3873:6<> {
     [1] <>temp<>9385 := <>element<>9380
     [2] <>arguments<>9386 := allocArg(1) @ #6916
     [3] <>arguments<>9386["0"] := <>temp<>9385
-    [4] <>fun<>9387 := <>Global<>getBase($)
+    [4] <>fun<>9387 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>9387)
 
   Call[1] -> ExitExc
@@ -35262,7 +35262,7 @@ function[437] cumulativeOffset<>funexpr@3860:24-3873:6<> {
   AfterCatch[43] -> ExitExc
 
   Block[44] -> [46], [45]
-    [0] <>cond<>9412 := <>Global<>isObject(<>newObj<>9411)
+    [0] <>cond<>9412 := @isObject(<>newObj<>9411)
 
   Block[45] -> [47], ExitExc
     [0] assert(<>cond<>9412)
@@ -35289,7 +35289,7 @@ function[438] <>funexpr@3909:23-3917:8<> {
     [1] <>temp<>9427 := <>element<>9422
     [2] <>arguments<>9428 := allocArg(1) @ #6951
     [3] <>arguments<>9428["0"] := <>temp<>9427
-    [4] <>fun<>9429 := <>Global<>getBase($)
+    [4] <>fun<>9429 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>9429)
 
   Call[1] -> ExitExc
@@ -35305,7 +35305,7 @@ function[438] <>funexpr@3909:23-3917:8<> {
     [2] <>temp<>9431 := <>element<>9422
     [3] <>arguments<>9432 := allocArg(1) @ #6954
     [4] <>arguments<>9432["0"] := <>temp<>9431
-    [5] <>fun<>9433 := <>Global<>getBase(<>isDetached<>7728)
+    [5] <>fun<>9433 := @GetBase(<>isDetached<>7728)
     [6] <>this<> := enterCode(<>fun<>9433)
 
   Call[5] -> ExitExc
@@ -35338,7 +35338,7 @@ function[438] <>funexpr@3909:23-3917:8<> {
   AfterCatch[12] -> ExitExc
 
   Block[13] -> [15], [14]
-    [0] <>cond<>9443 := <>Global<>isObject(<>newObj<>9442)
+    [0] <>cond<>9443 := @isObject(<>newObj<>9442)
 
   Block[14] -> [16], ExitExc
     [0] assert(<>cond<>9443)
@@ -35392,7 +35392,7 @@ function[438] <>funexpr@3909:23-3917:8<> {
   AfterCatch[24] -> ExitExc
 
   Block[25] -> [27], [26]
-    [0] <>cond<>9463 := <>Global<>isObject(<>newObj<>9462)
+    [0] <>cond<>9463 := @isObject(<>newObj<>9462)
 
   Block[26] -> [28], ExitExc
     [0] assert(<>cond<>9463)
@@ -35419,7 +35419,7 @@ function[439] window.$$<>funexpr@3921:13-3924:2<> {
     [1] <>temp<>9478 := <>arguments<>9476
     [2] <>arguments<>9479 := allocArg(1) @ #6988
     [3] <>arguments<>9479["0"] := <>temp<>9478
-    [4] <>fun<>9480 := <>Global<>getBase($A)
+    [4] <>fun<>9480 := @GetBase($A)
     [5] <>this<> := enterCode(<>fun<>9480)
 
   Call[1] -> ExitExc
@@ -35527,7 +35527,7 @@ function[441] select {
   AfterCatch[3] -> ExitExc
 
   Block[4] -> [6], [5]
-    [0] <>cond<>9508 := <>Global<>isObject(<>newObj<>9507)
+    [0] <>cond<>9508 := @isObject(<>newObj<>9507)
 
   Block[5] -> [7], ExitExc
     [0] assert(<>cond<>9508)
@@ -35565,7 +35565,7 @@ function[442] match {
   AfterCatch[3] -> ExitExc
 
   Block[4] -> [6], [5]
-    [0] <>cond<>9517 := <>Global<>isObject(<>newObj<>9516)
+    [0] <>cond<>9517 := @isObject(<>newObj<>9516)
 
   Block[5] -> [7], ExitExc
     [0] assert(<>cond<>9517)
@@ -35621,7 +35621,7 @@ function[443] find {
     [5] <>arguments<>9534 := allocArg(2) @ #7019
     [6] <>arguments<>9534["0"] := <>temp<>9532
     [7] <>arguments<>9534["1"] := <>temp<>9533
-    [8] <>fun<>9535 := <>Global<>getBase(<>match<>9522)
+    [8] <>fun<>9535 := @GetBase(<>match<>9522)
     [9] <>this<> := enterCode(<>fun<>9535)
 
   Block[7] -> [4], ExitExc
@@ -35629,7 +35629,7 @@ function[443] find {
 
   Block[8] -> [5], ExitExc
     [0] <>old<>9546 := <>i<>9525
-    [1] <>new<>9547 := <>Global<>toNumber(<>old<>9546)
+    [1] <>new<>9547 := @ToNumber(<>old<>9546)
     [2] <>i<>9525 := <>new<>9547 + 1
     [3] <>Global<>ignore1130 := <>new<>9547
 
@@ -35646,7 +35646,7 @@ function[443] find {
     [0] assert(<>new0<>9536)
     [1] <>y<>9537 := <>index<>9521
     [2] <>old<>9538 := <>matchIndex<>9524
-    [3] <>new<>9539 := <>Global<>toNumber(<>old<>9538)
+    [3] <>new<>9539 := @ToNumber(<>old<>9538)
     [4] <>matchIndex<>9524 := <>new<>9539 + 1
 
   Block[14] -> [22], ExitExc
@@ -35713,7 +35713,7 @@ function[444] extendElements {
 
   Block[5] -> [2], ExitExc
     [0] <>old<>9558 := <>i<>9549
-    [1] <>new<>9559 := <>Global<>toNumber(<>old<>9558)
+    [1] <>new<>9559 := @ToNumber(<>old<>9558)
     [2] <>i<>9549 := <>new<>9559 + 1
     [3] <>Global<>ignore1134 := <>new<>9559
 
@@ -35753,7 +35753,7 @@ function[445] <>funexpr@3972:2-4942:2<> {
   AfterCatch[3] -> ExitExc
 
   Block[4] -> [6], [5]
-    [0] <>cond<>9661 := <>Global<>isObject(<>newObj<>9660)
+    [0] <>cond<>9661 := @isObject(<>newObj<>9660)
 
   Block[5] -> [7], ExitExc
     [0] assert(<>cond<>9661)
@@ -35830,7 +35830,7 @@ function[445] <>funexpr@3972:2-4942:2<> {
   AfterCatch[14] -> ExitExc
 
   Block[15] -> [17], [16]
-    [0] <>cond<>10125 := <>Global<>isObject(<>newObj<>10124)
+    [0] <>cond<>10125 := @isObject(<>newObj<>10124)
 
   Block[16] -> [18], ExitExc
     [0] assert(<>cond<>10125)
@@ -35858,7 +35858,7 @@ function[445] <>funexpr@3972:2-4942:2<> {
   AfterCatch[21] -> ExitExc
 
   Block[22] -> [24], [23]
-    [0] <>cond<>10134 := <>Global<>isObject(<>newObj<>10133)
+    [0] <>cond<>10134 := @isObject(<>newObj<>10133)
 
   Block[23] -> [25], ExitExc
     [0] assert(<>cond<>10134)
@@ -35886,7 +35886,7 @@ function[445] <>funexpr@3972:2-4942:2<> {
   AfterCatch[28] -> ExitExc
 
   Block[29] -> [31], [30]
-    [0] <>cond<>10143 := <>Global<>isObject(<>newObj<>10142)
+    [0] <>cond<>10143 := @isObject(<>newObj<>10142)
 
   Block[30] -> [32], ExitExc
     [0] assert(<>cond<>10143)
@@ -35914,7 +35914,7 @@ function[445] <>funexpr@3972:2-4942:2<> {
   AfterCatch[35] -> ExitExc
 
   Block[36] -> [38], [37]
-    [0] <>cond<>10152 := <>Global<>isObject(<>newObj<>10151)
+    [0] <>cond<>10152 := @isObject(<>newObj<>10151)
 
   Block[37] -> [39], ExitExc
     [0] assert(<>cond<>10152)
@@ -35942,7 +35942,7 @@ function[445] <>funexpr@3972:2-4942:2<> {
   AfterCatch[42] -> ExitExc
 
   Block[43] -> [45], [44]
-    [0] <>cond<>10161 := <>Global<>isObject(<>newObj<>10160)
+    [0] <>cond<>10161 := @isObject(<>newObj<>10160)
 
   Block[44] -> [46], ExitExc
     [0] assert(<>cond<>10161)
@@ -35970,7 +35970,7 @@ function[445] <>funexpr@3972:2-4942:2<> {
   AfterCatch[49] -> ExitExc
 
   Block[50] -> [52], [51]
-    [0] <>cond<>10170 := <>Global<>isObject(<>newObj<>10169)
+    [0] <>cond<>10170 := @isObject(<>newObj<>10169)
 
   Block[51] -> [53], ExitExc
     [0] assert(<>cond<>10170)
@@ -35998,7 +35998,7 @@ function[445] <>funexpr@3972:2-4942:2<> {
   AfterCatch[56] -> ExitExc
 
   Block[57] -> [59], [58]
-    [0] <>cond<>10179 := <>Global<>isObject(<>newObj<>10178)
+    [0] <>cond<>10179 := @isObject(<>newObj<>10178)
 
   Block[58] -> [60], ExitExc
     [0] assert(<>cond<>10179)
@@ -36026,7 +36026,7 @@ function[445] <>funexpr@3972:2-4942:2<> {
   AfterCatch[63] -> ExitExc
 
   Block[64] -> [66], [65]
-    [0] <>cond<>10188 := <>Global<>isObject(<>newObj<>10187)
+    [0] <>cond<>10188 := @isObject(<>newObj<>10187)
 
   Block[65] -> [67], ExitExc
     [0] assert(<>cond<>10188)
@@ -36172,8 +36172,8 @@ function[445] <>funexpr@3972:2-4942:2<> {
     [132] <>origPOS<>9580 := <>obj<>11080["POS"]
     [133] <>obj<>11081 := @ToObject(<>Expr<>9579) @ #7966
     [134] <>obj<>11082 := <>obj<>11081["match"]
-    [135] <>iterator<>11083 := <>Global<>iteratorInit(<>obj<>11082) @ #7967
-    [136] <>cond1<>11084 := <>Global<>iteratorHasNext(<>obj<>11082, <>iterator<>11083)
+    [135] <>iterator<>11083 := @iteratorInit(<>obj<>11082) @ #7967
+    [136] <>cond1<>11084 := @iteratorHasNext(<>obj<>11082, <>iterator<>11083)
 
   Block[68] -> [101], ExitExc
     [0] <>Global<>ignore1361 := function (502) @ #8007, #8008
@@ -36183,7 +36183,7 @@ function[445] <>funexpr@3972:2-4942:2<> {
 
   Block[70] -> [73], ExitExc
     [0] assert(<>cond1<>11084)
-    [1] <>key<>11085 := <>Global<>iteratorNext(<>obj<>11082, <>iterator<>11083)
+    [1] <>key<>11085 := @iteratorNext(<>obj<>11082, <>iterator<>11083)
     [2] <>type<>9581 := <>key<>11085
     [3] <>obj<>11086 := @ToObject(<>Expr<>9579) @ #7968
     [4] <>obj<>11087 := @ToObject(<>obj<>11086["match"]) @ #7969
@@ -36205,7 +36205,7 @@ function[445] <>funexpr@3972:2-4942:2<> {
     [0] assert(! <>cond1<>11084)
 
   Block[72] -> [69]
-    [0] <>cond1<>11084 := <>Global<>iteratorHasNext(<>obj<>11082, <>iterator<>11083)
+    [0] <>cond1<>11084 := @iteratorHasNext(<>obj<>11082, <>iterator<>11083)
 
   Call[73] -> ExitExc
     [0] construct(<>fun<>11093, <>obj<>11098, <>arguments<>11096) @ #7977
@@ -36215,7 +36215,7 @@ function[445] <>funexpr@3972:2-4942:2<> {
   AfterCatch[75] -> ExitExc
 
   Block[76] -> [78], [77]
-    [0] <>cond<>11100 := <>Global<>isObject(<>newObj<>11099)
+    [0] <>cond<>11100 := @isObject(<>newObj<>11099)
 
   Block[77] -> [79], ExitExc
     [0] assert(<>cond<>11100)
@@ -36241,7 +36241,7 @@ function[445] <>funexpr@3972:2-4942:2<> {
   AfterCatch[82] -> ExitExc
 
   Block[83] -> [85], [84]
-    [0] <>cond<>11108 := <>Global<>isObject(<>newObj<>11107)
+    [0] <>cond<>11108 := @isObject(<>newObj<>11107)
 
   Block[84] -> [86], ExitExc
     [0] assert(<>cond<>11108)
@@ -36273,7 +36273,7 @@ function[445] <>funexpr@3972:2-4942:2<> {
   AfterCatch[89] -> ExitExc
 
   Block[90] -> [92], [91]
-    [0] <>cond<>11119 := <>Global<>isObject(<>newObj<>11118)
+    [0] <>cond<>11119 := @isObject(<>newObj<>11118)
 
   Block[91] -> [93], ExitExc
     [0] assert(<>cond<>11119)
@@ -36303,7 +36303,7 @@ function[445] <>funexpr@3972:2-4942:2<> {
   AfterCatch[96] -> ExitExc
 
   Block[97] -> [99], [98]
-    [0] <>cond<>11131 := <>Global<>isObject(<>newObj<>11130)
+    [0] <>cond<>11131 := @isObject(<>newObj<>11130)
 
   Block[98] -> [100], ExitExc
     [0] assert(<>cond<>11131)
@@ -36523,7 +36523,7 @@ function[446] dirNodeCheck {
 
   Block[11] -> [8], ExitExc
     [0] <>old<>9616 := <>i<>9595
-    [1] <>new<>9617 := <>Global<>toNumber(<>old<>9616)
+    [1] <>new<>9617 := @ToNumber(<>old<>9616)
     [2] <>i<>9595 := <>new<>9617 + 1
     [3] <>Global<>ignore1143 := <>new<>9617
 
@@ -36679,7 +36679,7 @@ function[447] dirCheck {
 
   Block[11] -> [8], ExitExc
     [0] <>old<>9652 := <>i<>9625
-    [1] <>new<>9653 := <>Global<>toNumber(<>old<>9652)
+    [1] <>new<>9653 := @ToNumber(<>old<>9652)
     [2] <>i<>9625 := <>new<>9653 + 1
     [3] <>Global<>ignore1159 := <>new<>9653
 
@@ -36899,7 +36899,7 @@ function[449] Sizzle<>funexpr@3985:14-4101:2<> {
     [4] <>temp<>9699 := <>context<>9674
     [5] <>arguments<>9700 := allocArg(1) @ #7105
     [6] <>arguments<>9700["0"] := <>temp<>9699
-    [7] <>fun<>9701 := <>Global<>getBase(<>isXML<>9585)
+    [7] <>fun<>9701 := @GetBase(<>isXML<>9585)
     [8] <>this<> := enterCode(<>fun<>9701)
 
   Block[17] -> Exit, ExitExc
@@ -37110,7 +37110,7 @@ function[449] Sizzle<>funexpr@3985:14-4101:2<> {
     [7] <>arguments<>9738 := allocArg(2) @ #7143
     [8] <>arguments<>9738["0"] := <>temp<>9736
     [9] <>arguments<>9738["1"] := <>temp<>9737
-    [10] <>fun<>9739 := <>Global<>getBase(<>posProcess<>9586)
+    [10] <>fun<>9739 := @GetBase(<>posProcess<>9586)
     [11] <>this<> := enterCode(<>fun<>9739)
 
   Block[75] -> [82], [81], ExitExc
@@ -37161,7 +37161,7 @@ function[449] Sizzle<>funexpr@3985:14-4101:2<> {
     [1] <>arguments<>9750 := allocArg(2) @ #7154
     [2] <>arguments<>9750["0"] := <>temp<>9748
     [3] <>arguments<>9750["1"] := <>temp<>9749
-    [4] <>fun<>9751 := <>Global<>getBase(<>Sizzle<>9578)
+    [4] <>fun<>9751 := @GetBase(<>Sizzle<>9578)
     [5] <>this<> := enterCode(<>fun<>9751)
 
   Call[88] -> ExitExc
@@ -37228,7 +37228,7 @@ function[449] Sizzle<>funexpr@3985:14-4101:2<> {
     [3] <>arguments<>9766 := allocArg(2) @ #7168
     [4] <>arguments<>9766["0"] := <>temp<>9764
     [5] <>arguments<>9766["1"] := <>temp<>9765
-    [6] <>fun<>9767 := <>Global<>getBase(<>posProcess<>9586)
+    [6] <>fun<>9767 := @GetBase(<>posProcess<>9586)
     [7] <>this<> := enterCode(<>fun<>9767)
 
   Call[107] -> ExitExc
@@ -37481,7 +37481,7 @@ function[449] Sizzle<>funexpr@3985:14-4101:2<> {
     [1] <>temp<>9814 := <>seed<>9676
     [2] <>arguments<>9815 := allocArg(1) @ #7211
     [3] <>arguments<>9815["0"] := <>temp<>9814
-    [4] <>fun<>9816 := <>Global<>getBase(<>makeArray<>9582)
+    [4] <>fun<>9816 := @GetBase(<>makeArray<>9582)
     [5] <>this<> := enterCode(<>fun<>9816)
 
   Call[175] -> ExitExc
@@ -37612,7 +37612,7 @@ function[449] Sizzle<>funexpr@3985:14-4101:2<> {
     [2] <>temp<>9845 := <>set<>9680
     [3] <>arguments<>9846 := allocArg(1) @ #7237
     [4] <>arguments<>9846["0"] := <>temp<>9845
-    [5] <>fun<>9847 := <>Global<>getBase(<>makeArray<>9582)
+    [5] <>fun<>9847 := @GetBase(<>makeArray<>9582)
     [6] <>this<> := enterCode(<>fun<>9847)
 
   Block[210] -> [215], ExitExc
@@ -37767,7 +37767,7 @@ function[449] Sizzle<>funexpr@3985:14-4101:2<> {
     [4] <>arguments<>9913 := allocArg(2) @ #7293
     [5] <>arguments<>9913["0"] := <>temp<>9911
     [6] <>arguments<>9913["1"] := <>temp<>9912
-    [7] <>fun<>9914 := <>Global<>getBase(<>makeArray<>9582)
+    [7] <>fun<>9914 := @GetBase(<>makeArray<>9582)
     [8] <>this<> := enterCode(<>fun<>9914)
 
   Block[253] -> [255], ExitExc
@@ -37824,7 +37824,7 @@ function[449] Sizzle<>funexpr@3985:14-4101:2<> {
 
   Block[268] -> [265], ExitExc
     [0] <>old<>9897 := <>i<>9691
-    [1] <>new<>9898 := <>Global<>toNumber(<>old<>9897)
+    [1] <>new<>9898 := @ToNumber(<>old<>9897)
     [2] <>i<>9691 := <>new<>9898 + 1
     [3] <>Global<>ignore1211 := <>new<>9898
     [4] <>obj<>9878 := @ToObject(<>checkSet<>9681) @ #7281
@@ -37858,7 +37858,7 @@ function[449] Sizzle<>funexpr@3985:14-4101:2<> {
     [5] <>arguments<>9888 := allocArg(2) @ #7274
     [6] <>arguments<>9888["0"] := <>temp<>9885
     [7] <>arguments<>9888["1"] := <>temp<>9887
-    [8] <>fun<>9889 := <>Global<>getBase(<>contains<>9584)
+    [8] <>fun<>9889 := @GetBase(<>contains<>9584)
     [9] <>this<> := enterCode(<>fun<>9889)
 
   Block[276] -> [283], [282], ExitExc
@@ -37930,7 +37930,7 @@ function[449] Sizzle<>funexpr@3985:14-4101:2<> {
 
   Block[298] -> [295], ExitExc
     [0] <>old<>9908 := <>i<>9691
-    [1] <>new<>9909 := <>Global<>toNumber(<>old<>9908)
+    [1] <>new<>9909 := @ToNumber(<>old<>9908)
     [2] <>i<>9691 := <>new<>9909 + 1
     [3] <>Global<>ignore1215 := <>new<>9909
     [4] <>obj<>9899 := @ToObject(<>checkSet<>9681) @ #7291
@@ -37990,7 +37990,7 @@ function[449] Sizzle<>funexpr@3985:14-4101:2<> {
     [8] <>arguments<>9920["1"] := <>temp<>9917
     [9] <>arguments<>9920["2"] := <>temp<>9918
     [10] <>arguments<>9920["3"] := <>temp<>9919
-    [11] <>fun<>9921 := <>Global<>getBase(<>Sizzle<>9578)
+    [11] <>fun<>9921 := @GetBase(<>Sizzle<>9578)
     [12] <>this<> := enterCode(<>fun<>9921)
 
   Block[314] -> [322], ExitExc
@@ -38076,7 +38076,7 @@ function[450] Sizzle.uniqueSort<>funexpr@4103:21-4118:2<> {
 
   Block[12] -> [9], ExitExc
     [0] <>old<>9947 := <>i<>9929
-    [1] <>new<>9948 := <>Global<>toNumber(<>old<>9947)
+    [1] <>new<>9948 := @ToNumber(<>old<>9947)
     [2] <>i<>9929 := <>new<>9948 + 1
     [3] <>Global<>ignore1225 := <>new<>9948
     [4] <>y<>9935 := <>i<>9929
@@ -38086,7 +38086,7 @@ function[450] Sizzle.uniqueSort<>funexpr@4103:21-4118:2<> {
     [0] assert(<>y<>9938 === <>obj<>9939[<>i<>9929 - 1])
     [1] <>obj<>9940 := @ToObject(<>results<>9928) @ #7312
     [2] <>old<>9941 := <>i<>9929
-    [3] <>new<>9942 := <>Global<>toNumber(<>old<>9941)
+    [3] <>new<>9942 := @ToNumber(<>old<>9941)
     [4] <>i<>9929 := <>new<>9942 - 1
     [5] <>temp<>9943 := <>new<>9942
     [6] <>temp<>9944 := 1
@@ -38133,7 +38133,7 @@ function[451] Sizzle.matches<>funexpr@4120:18-4122:2<> {
     [7] <>arguments<>9959["1"] := <>temp<>9956
     [8] <>arguments<>9959["2"] := <>temp<>9957
     [9] <>arguments<>9959["3"] := <>temp<>9958
-    [10] <>fun<>9960 := <>Global<>getBase(<>Sizzle<>9578)
+    [10] <>fun<>9960 := @GetBase(<>Sizzle<>9578)
     [11] <>this<> := enterCode(<>fun<>9960)
 
   Call[1] -> ExitExc
@@ -38194,7 +38194,7 @@ function[452] Sizzle.find<>funexpr@4124:15-4154:2<> {
 
   Block[8] -> [5], ExitExc
     [0] <>old<>10028 := <>i<>9969
-    [1] <>new<>10029 := <>Global<>toNumber(<>old<>10028)
+    [1] <>new<>10029 := @ToNumber(<>old<>10028)
     [2] <>i<>9969 := <>new<>10029 + 1
     [3] <>Global<>ignore1232 := <>new<>10029
 
@@ -38282,7 +38282,7 @@ function[452] Sizzle.find<>funexpr@4124:15-4154:2<> {
   AfterCatch[29] -> ExitExc
 
   Block[30] -> [32], [31]
-    [0] <>cond<>10009 := <>Global<>isObject(<>newObj<>10008)
+    [0] <>cond<>10009 := @isObject(<>newObj<>10008)
 
   Block[31] -> [33], ExitExc
     [0] assert(<>cond<>10009)
@@ -38420,7 +38420,7 @@ function[453] Sizzle.filter<>funexpr@4156:17-4228:2<> {
     [3] <>temp<>10057 := <>obj<>10056[0]
     [4] <>arguments<>10058 := allocArg(1) @ #7380
     [5] <>arguments<>10058["0"] := <>temp<>10057
-    [6] <>fun<>10059 := <>Global<>getBase(<>isXML<>9585)
+    [6] <>fun<>10059 := @GetBase(<>isXML<>9585)
     [7] <>this<> := enterCode(<>fun<>10059)
 
   Block[4] -> [11], [10], ExitExc
@@ -38490,8 +38490,8 @@ function[453] Sizzle.filter<>funexpr@4156:17-4228:2<> {
     [0] assert(<>new1<>10062)
     [1] <>obj<>10063 := @ToObject(<>Expr<>9579) @ #7383
     [2] <>obj<>10064 := <>obj<>10063["filter"]
-    [3] <>iterator<>10065 := <>Global<>iteratorInit(<>obj<>10064) @ #7384
-    [4] <>cond1<>10066 := <>Global<>iteratorHasNext(<>obj<>10064, <>iterator<>10065)
+    [3] <>iterator<>10065 := @iteratorInit(<>obj<>10064) @ #7384
+    [4] <>cond1<>10066 := @iteratorHasNext(<>obj<>10064, <>iterator<>10065)
 
   Block[26] -> [17], ExitExc
     [0] assert(! <>new1<>10062)
@@ -38504,7 +38504,7 @@ function[453] Sizzle.filter<>funexpr@4156:17-4228:2<> {
 
   Block[30] -> [33], ExitExc
     [0] assert(<>cond1<>10066)
-    [1] <>key<>10067 := <>Global<>iteratorNext(<>obj<>10064, <>iterator<>10065)
+    [1] <>key<>10067 := @iteratorNext(<>obj<>10064, <>iterator<>10065)
     [2] <>type<>10047 := <>key<>10067
     [3] <>obj<>10068 := @ToObject(<>Expr<>9579) @ #7385
     [4] <>obj<>10069 := @ToObject(<>obj<>10068["match"]) @ #7386
@@ -38519,7 +38519,7 @@ function[453] Sizzle.filter<>funexpr@4156:17-4228:2<> {
     [0] assert(! <>cond1<>10066)
 
   Block[32] -> [29]
-    [0] <>cond1<>10066 := <>Global<>iteratorHasNext(<>obj<>10064, <>iterator<>10065)
+    [0] <>cond1<>10066 := @iteratorHasNext(<>obj<>10064, <>iterator<>10065)
 
   Call[33] -> ExitExc
     [0] call(<>fun<>10073, <>this<>, <>arguments<>10072) @ #7390
@@ -38627,7 +38627,7 @@ function[453] Sizzle.filter<>funexpr@4156:17-4228:2<> {
 
   Block[61] -> [58], ExitExc
     [0] <>old<>10102 := <>i<>10051
-    [1] <>new<>10103 := <>Global<>toNumber(<>old<>10102)
+    [1] <>new<>10103 := @ToNumber(<>old<>10102)
     [2] <>i<>10051 := <>new<>10103 + 1
     [3] <>Global<>ignore1252 := <>new<>10103
     [4] <>obj<>10089 := @ToObject(<>curLoop<>10043) @ #7410
@@ -38645,7 +38645,7 @@ function[453] Sizzle.filter<>funexpr@4156:17-4228:2<> {
     [8] <>arguments<>10095["1"] := <>temp<>10092
     [9] <>arguments<>10095["2"] := <>temp<>10093
     [10] <>arguments<>10095["3"] := <>temp<>10094
-    [11] <>fun<>10096 := <>Global<>getBase(<>filter<>10048)
+    [11] <>fun<>10096 := @GetBase(<>filter<>10048)
     [12] <>this<> := enterCode(<>fun<>10096)
 
   Block[63] -> [85], ExitExc
@@ -38867,7 +38867,7 @@ function[455] <>funexpr@4253:21-4275:17<> {
   AfterCatch[5] -> ExitExc
 
   Block[6] -> [8], [7]
-    [0] <>cond<>10220 := <>Global<>isObject(<>newObj<>10219)
+    [0] <>cond<>10220 := @isObject(<>newObj<>10219)
 
   Block[7] -> [9], ExitExc
     [0] assert(<>cond<>10220)
@@ -38977,7 +38977,7 @@ function[455] <>funexpr@4253:21-4275:17<> {
 
   Block[39] -> [36], ExitExc
     [0] <>old<>10238 := <>i<>10209
-    [1] <>new<>10239 := <>Global<>toNumber(<>old<>10238)
+    [1] <>new<>10239 := @ToNumber(<>old<>10238)
     [2] <>i<>10209 := <>new<>10239 + 1
     [3] <>Global<>ignore1270 := <>new<>10239
 
@@ -39159,7 +39159,7 @@ function[456] <>funexpr@4276:21-4303:17<> {
   AfterCatch[6] -> ExitExc
 
   Block[7] -> [9], [8]
-    [0] <>cond<>10264 := <>Global<>isObject(<>newObj<>10263)
+    [0] <>cond<>10264 := @isObject(<>newObj<>10263)
 
   Block[8] -> [10], ExitExc
     [0] assert(<>cond<>10264)
@@ -39228,7 +39228,7 @@ function[456] <>funexpr@4276:21-4303:17<> {
 
   Block[26] -> [23], ExitExc
     [0] <>old<>10279 := <>i<>10252
-    [1] <>new<>10280 := <>Global<>toNumber(<>old<>10279)
+    [1] <>new<>10280 := @ToNumber(<>old<>10279)
     [2] <>i<>10252 := <>new<>10280 + 1
     [3] <>Global<>ignore1278 := <>new<>10280
 
@@ -39276,7 +39276,7 @@ function[456] <>funexpr@4276:21-4303:17<> {
 
   Block[39] -> [36], ExitExc
     [0] <>old<>10286 := <>i<>10252
-    [1] <>new<>10287 := <>Global<>toNumber(<>old<>10286)
+    [1] <>new<>10287 := @ToNumber(<>old<>10286)
     [2] <>i<>10252 := <>new<>10287 + 1
     [3] <>Global<>ignore1285 := <>new<>10287
 
@@ -39338,7 +39338,7 @@ function[457] <>funexpr@4304:20-4313:17<> {
 
   Block[0] -> [1], ExitExc
     [0] <>old<>10303 := <>done<>9574
-    [1] <>new<>10304 := <>Global<>toNumber(<>old<>10303)
+    [1] <>new<>10304 := @ToNumber(<>old<>10303)
     [2] <>done<>9574 := <>new<>10304 + 1
     [3] <>doneName<>10299 := <>new<>10304
     [4] <>checkFn<>10300 := <>dirCheck<>9572
@@ -39359,7 +39359,7 @@ function[457] <>funexpr@4304:20-4313:17<> {
   AfterCatch[3] -> ExitExc
 
   Block[4] -> [6], [5]
-    [0] <>cond<>10312 := <>Global<>isObject(<>newObj<>10311)
+    [0] <>cond<>10312 := @isObject(<>newObj<>10311)
 
   Block[5] -> [7], ExitExc
     [0] assert(<>cond<>10312)
@@ -39428,7 +39428,7 @@ function[457] <>funexpr@4304:20-4313:17<> {
     [11] <>arguments<>10329["3"] := <>temp<>10326
     [12] <>arguments<>10329["4"] := <>temp<>10327
     [13] <>arguments<>10329["5"] := <>temp<>10328
-    [14] <>fun<>10330 := <>Global<>getBase(<>checkFn<>10300)
+    [14] <>fun<>10330 := @GetBase(<>checkFn<>10300)
     [15] <>this<> := enterCode(<>fun<>10330)
 
   Call[20] -> ExitExc
@@ -39449,7 +39449,7 @@ function[458] <>funexpr@4314:21-4323:17<> {
 
   Block[0] -> [2], [1], ExitExc
     [0] <>old<>10340 := <>done<>9574
-    [1] <>new<>10341 := <>Global<>toNumber(<>old<>10340)
+    [1] <>new<>10341 := @ToNumber(<>old<>10340)
     [2] <>done<>9574 := <>new<>10341 + 1
     [3] <>doneName<>10336 := <>new<>10341
     [4] <>checkFn<>10337 := <>dirCheck<>9572
@@ -39476,7 +39476,7 @@ function[458] <>funexpr@4314:21-4323:17<> {
   AfterCatch[5] -> ExitExc
 
   Block[6] -> [8], [7]
-    [0] <>cond<>10349 := <>Global<>isObject(<>newObj<>10348)
+    [0] <>cond<>10349 := @isObject(<>newObj<>10348)
 
   Block[7] -> [9], ExitExc
     [0] assert(<>cond<>10349)
@@ -39560,7 +39560,7 @@ function[458] <>funexpr@4314:21-4323:17<> {
     [11] <>arguments<>10367["3"] := <>temp<>10364
     [12] <>arguments<>10367["4"] := <>temp<>10365
     [13] <>arguments<>10367["5"] := <>temp<>10366
-    [14] <>fun<>10368 := <>Global<>getBase(<>checkFn<>10337)
+    [14] <>fun<>10368 := @GetBase(<>checkFn<>10337)
     [15] <>this<> := enterCode(<>fun<>10368)
 
   Call[27] -> ExitExc
@@ -39699,7 +39699,7 @@ function[460] <>funexpr@4332:22-4344:17<> {
 
   Block[11] -> [8], ExitExc
     [0] <>old<>10415 := <>i<>10393
-    [1] <>new<>10416 := <>Global<>toNumber(<>old<>10415)
+    [1] <>new<>10416 := @ToNumber(<>old<>10415)
     [2] <>i<>10393 := <>new<>10416 + 1
     [3] <>Global<>ignore1305 := <>new<>10416
 
@@ -39806,7 +39806,7 @@ function[462] <>funexpr@4350:23-4369:17<> {
   AfterCatch[3] -> ExitExc
 
   Block[4] -> [6], [5]
-    [0] <>cond<>10452 := <>Global<>isObject(<>newObj<>10451)
+    [0] <>cond<>10452 := @isObject(<>newObj<>10451)
 
   Block[5] -> [7], ExitExc
     [0] assert(<>cond<>10452)
@@ -39859,7 +39859,7 @@ function[462] <>funexpr@4350:23-4369:17<> {
 
   Block[19] -> [16], ExitExc
     [0] <>old<>10474 := <>i<>10439
-    [1] <>new<>10475 := <>Global<>toNumber(<>old<>10474)
+    [1] <>new<>10475 := @ToNumber(<>old<>10474)
     [2] <>i<>10439 := <>new<>10475 + 1
     [3] <>Global<>ignore1310 := <>new<>10475
     [4] <>obj<>10458 := @ToObject(<>curLoop<>10434) @ #7615
@@ -39979,7 +39979,7 @@ function[463] <>funexpr@4370:20-4372:17<> {
   AfterCatch[3] -> ExitExc
 
   Block[4] -> [6], [5]
-    [0] <>cond<>10489 := <>Global<>isObject(<>newObj<>10488)
+    [0] <>cond<>10489 := @isObject(<>newObj<>10488)
 
   Block[5] -> [7], ExitExc
     [0] assert(<>cond<>10489)
@@ -40033,7 +40033,7 @@ function[464] <>funexpr@4373:21-4376:17<> {
 
   Block[5] -> [2], ExitExc
     [0] <>old<>10502 := <>i<>10499
-    [1] <>new<>10503 := <>Global<>toNumber(<>old<>10502)
+    [1] <>new<>10503 := @ToNumber(<>old<>10502)
     [2] <>i<>10499 := <>new<>10503 + 1
     [3] <>Global<>ignore1315 := <>new<>10503
     [4] <>obj<>10501 := @ToObject(<>curLoop<>10498) @ #7630
@@ -40048,7 +40048,7 @@ function[464] <>funexpr@4373:21-4376:17<> {
     [3] <>temp<>10507 := <>obj<>10506[<>i<>10499]
     [4] <>arguments<>10508 := allocArg(1) @ #7634
     [5] <>arguments<>10508["0"] := <>temp<>10507
-    [6] <>fun<>10509 := <>Global<>getBase(<>isXML<>9585)
+    [6] <>fun<>10509 := @GetBase(<>isXML<>9585)
     [7] <>this<> := enterCode(<>fun<>10509)
 
   Block[8] -> [15], ExitExc
@@ -40119,7 +40119,7 @@ function[465] <>funexpr@4377:23-4390:17<> {
   AfterCatch[5] -> ExitExc
 
   Block[6] -> [8], [7]
-    [0] <>cond<>10530 := <>Global<>isObject(<>newObj<>10529)
+    [0] <>cond<>10530 := @isObject(<>newObj<>10529)
 
   Block[7] -> [9], ExitExc
     [0] assert(<>cond<>10530)
@@ -40207,7 +40207,7 @@ function[465] <>funexpr@4377:23-4390:17<> {
   AfterCatch[30] -> ExitExc
 
   Block[31] -> [33], [32]
-    [0] <>cond<>10546 := <>Global<>isObject(<>newObj<>10545)
+    [0] <>cond<>10546 := @isObject(<>newObj<>10545)
 
   Block[32] -> [34], ExitExc
     [0] assert(<>cond<>10546)
@@ -40301,7 +40301,7 @@ function[465] <>funexpr@4377:23-4390:17<> {
   Block[54] -> Exit, ExitExc
     [0] <>obj<>10568 := @ToObject(<>match<>10519) @ #7671
     [1] <>old<>10569 := <>done<>9574
-    [2] <>new<>10570 := <>Global<>toNumber(<>old<>10569)
+    [2] <>new<>10570 := @ToNumber(<>old<>10569)
     [3] <>done<>9574 := <>new<>10570 + 1
     [4] <>obj<>10568[0] := <>new<>10570
     [5] return(<>match<>10519)
@@ -40335,7 +40335,7 @@ function[466] <>funexpr@4391:22-4403:17<> {
   AfterCatch[3] -> ExitExc
 
   Block[4] -> [6], [5]
-    [0] <>cond<>10590 := <>Global<>isObject(<>newObj<>10589)
+    [0] <>cond<>10590 := @isObject(<>newObj<>10589)
 
   Block[5] -> [7], ExitExc
     [0] assert(<>cond<>10590)
@@ -40468,7 +40468,7 @@ function[467] <>funexpr@4404:24-4420:17<> {
     [9] <>arguments<>10658["1"] := <>temp<>10655
     [10] <>arguments<>10658["2"] := <>temp<>10656
     [11] <>arguments<>10658["3"] := <>temp<>10657
-    [12] <>fun<>10659 := <>Global<>getBase(<>Sizzle<>9578)
+    [12] <>fun<>10659 := @GetBase(<>Sizzle<>9578)
     [13] <>this<> := enterCode(<>fun<>10659)
 
   Block[11] -> [10], ExitExc
@@ -40495,7 +40495,7 @@ function[467] <>funexpr@4404:24-4420:17<> {
   AfterCatch[16] -> ExitExc
 
   Block[17] -> [19], [18]
-    [0] <>cond<>10629 := <>Global<>isObject(<>newObj<>10628)
+    [0] <>cond<>10629 := @isObject(<>newObj<>10628)
 
   Block[18] -> [20], ExitExc
     [0] assert(<>cond<>10629)
@@ -40779,7 +40779,7 @@ function[475] <>funexpr@4446:21-4448:17<> {
     [4] <>arguments<>10729 := allocArg(2) @ #7770
     [5] <>arguments<>10729["0"] := <>temp<>10727
     [6] <>arguments<>10729["1"] := <>temp<>10728
-    [7] <>fun<>10730 := <>Global<>getBase(<>Sizzle<>9578)
+    [7] <>fun<>10730 := @GetBase(<>Sizzle<>9578)
     [8] <>this<> := enterCode(<>fun<>10730)
 
   Call[1] -> ExitExc
@@ -40820,7 +40820,7 @@ function[476] <>funexpr@4449:24-4451:17<> {
   AfterCatch[3] -> ExitExc
 
   Block[4] -> [6], [5]
-    [0] <>cond<>10744 := <>Global<>isObject(<>newObj<>10743)
+    [0] <>cond<>10744 := @isObject(<>newObj<>10743)
 
   Block[5] -> [7], ExitExc
     [0] assert(<>cond<>10744)
@@ -41026,7 +41026,7 @@ function[486] <>funexpr@4479:23-4481:17<> {
   AfterCatch[3] -> ExitExc
 
   Block[4] -> [6], [5]
-    [0] <>cond<>10823 := <>Global<>isObject(<>newObj<>10822)
+    [0] <>cond<>10823 := @isObject(<>newObj<>10822)
 
   Block[5] -> [7], ExitExc
     [0] assert(<>cond<>10823)
@@ -41187,7 +41187,7 @@ function[495] <>funexpr@4510:24-4528:17<> {
     [8] <>arguments<>10906["1"] := <>temp<>10903
     [9] <>arguments<>10906["2"] := <>temp<>10904
     [10] <>arguments<>10906["3"] := <>temp<>10905
-    [11] <>fun<>10907 := <>Global<>getBase(<>filter<>10894)
+    [11] <>fun<>10907 := @GetBase(<>filter<>10894)
     [12] <>this<> := enterCode(<>fun<>10907)
 
   Block[2] -> [9], [8], ExitExc
@@ -41277,7 +41277,7 @@ function[495] <>funexpr@4510:24-4528:17<> {
 
   Block[27] -> [24], ExitExc
     [0] <>old<>10922 := <>i<>10891
-    [1] <>new<>10923 := <>Global<>toNumber(<>old<>10922)
+    [1] <>new<>10923 := @ToNumber(<>old<>10922)
     [2] <>i<>10891 := <>new<>10923 + 1
     [3] <>Global<>ignore1335 := <>new<>10923
 
@@ -41502,7 +41502,7 @@ function[496] <>funexpr@4529:23-4571:17<> {
     [0] assert(<>obj<>10952["nodeType"] === 1)
     [1] <>obj<>10953 := @ToObject(<>node<>10929) @ #7885
     [2] <>old<>10954 := <>count<>10934
-    [3] <>new<>10955 := <>Global<>toNumber(<>old<>10954)
+    [3] <>new<>10955 := @ToNumber(<>old<>10954)
     [4] <>count<>10934 := <>new<>10955 + 1
     [5] <>obj<>10953["nodeIndex"] := <>new<>10955 + 1
 
@@ -41974,7 +41974,7 @@ function[501] <>funexpr@4613:21-4619:17<> {
     [8] <>arguments<>11073["1"] := <>temp<>11070
     [9] <>arguments<>11073["2"] := <>temp<>11071
     [10] <>arguments<>11073["3"] := <>temp<>11072
-    [11] <>fun<>11074 := <>Global<>getBase(<>filter<>11063)
+    [11] <>fun<>11074 := @GetBase(<>filter<>11063)
     [12] <>this<> := enterCode(<>fun<>11074)
 
   Block[2] -> [7], ExitExc
@@ -42144,7 +42144,7 @@ function[503] makeArray<>funexpr@4645:20-4663:9<> {
 
   Block[19] -> [16], ExitExc
     [0] <>old<>11185 := <>i<>11162
-    [1] <>new<>11186 := <>Global<>toNumber(<>old<>11185)
+    [1] <>new<>11186 := @ToNumber(<>old<>11185)
     [2] <>i<>11162 := <>new<>11186 + 1
     [3] <>Global<>ignore1370 := <>new<>11186
 
@@ -42176,7 +42176,7 @@ function[503] makeArray<>funexpr@4645:20-4663:9<> {
 
   Block[28] -> [25], ExitExc
     [0] <>old<>11193 := <>i<>11162
-    [1] <>new<>11194 := <>Global<>toNumber(<>old<>11193)
+    [1] <>new<>11194 := @ToNumber(<>old<>11193)
     [2] <>i<>11162 := <>new<>11194 + 1
     [3] <>Global<>ignore1374 := <>new<>11194
     [4] <>obj<>11187 := @ToObject(<>array<>11159) @ #8041
@@ -42541,7 +42541,7 @@ function[507] <>funexpr@4720:2-4744:2<> {
   AfterCatch[7] -> ExitExc
 
   Block[8] -> [10], [9]
-    [0] <>cond<>11280 := <>Global<>isObject(<>newObj<>11279)
+    [0] <>cond<>11280 := @isObject(<>newObj<>11279)
 
   Block[9] -> [11], ExitExc
     [0] assert(<>cond<>11280)
@@ -43062,7 +43062,7 @@ function[511] Expr.find.TAG<>funexpr@4752:32-4768:17<> {
 
   Block[11] -> [8], ExitExc
     [0] <>old<>11395 := <>i<>11379
-    [1] <>new<>11396 := <>Global<>toNumber(<>old<>11395)
+    [1] <>new<>11396 := @ToNumber(<>old<>11395)
     [2] <>i<>11379 := <>new<>11396 + 1
     [3] <>Global<>ignore1415 := <>new<>11396
     [4] <>obj<>11387 := @ToObject(<>results<>11377) @ #8195
@@ -43156,8 +43156,8 @@ function[513] <>funexpr@4782:35-4807:2<> {
     [0] <>Global<>ignore1425 := function (514) @ #8246, #8247
     [1] <>Sizzle<>9578 := <>Global<>ignore1425
     [2] <>obj<>11473 := <>oldSizzle<>11425
-    [3] <>iterator<>11474 := <>Global<>iteratorInit(<>obj<>11473) @ #8248
-    [4] <>cond1<>11475 := <>Global<>iteratorHasNext(<>obj<>11473, <>iterator<>11474)
+    [3] <>iterator<>11474 := @iteratorInit(<>obj<>11473) @ #8248
+    [4] <>cond1<>11475 := @iteratorHasNext(<>obj<>11473, <>iterator<>11474)
 
   Block[6] -> [8], ExitExc
     [0] assert(<>obj<>11434["querySelectorAll"])
@@ -43199,7 +43199,7 @@ function[513] <>funexpr@4782:35-4807:2<> {
 
   Block[18] -> [20], ExitExc
     [0] assert(<>cond1<>11475)
-    [1] <>key<>11476 := <>Global<>iteratorNext(<>obj<>11473, <>iterator<>11474)
+    [1] <>key<>11476 := @iteratorNext(<>obj<>11473, <>iterator<>11474)
     [2] <>prop<>11427 := <>key<>11476
     [3] <>obj<>11477 := @ToObject(<>Sizzle<>9578) @ #8249
     [4] <>obj<>11478 := @ToObject(<>oldSizzle<>11425) @ #8250
@@ -43209,7 +43209,7 @@ function[513] <>funexpr@4782:35-4807:2<> {
     [0] assert(! <>cond1<>11475)
 
   Block[20] -> [17]
-    [0] <>cond1<>11475 := <>Global<>iteratorHasNext(<>obj<>11473, <>iterator<>11474)
+    [0] <>cond1<>11475 := @iteratorHasNext(<>obj<>11473, <>iterator<>11474)
 
   Exit[-2]
 
@@ -43246,7 +43246,7 @@ function[514] Sizzle<>funexpr@4790:17-4800:9<> {
     [2] <>temp<>11448 := <>context<>11442
     [3] <>arguments<>11449 := allocArg(1) @ #8234
     [4] <>arguments<>11449["0"] := <>temp<>11448
-    [5] <>fun<>11450 := <>Global<>getBase(<>isXML<>9585)
+    [5] <>fun<>11450 := @GetBase(<>isXML<>9585)
     [6] <>this<> := enterCode(<>fun<>11450)
 
   Block[7] -> [14], [13], ExitExc
@@ -43316,7 +43316,7 @@ function[514] Sizzle<>funexpr@4790:17-4800:9<> {
     [1] <>arguments<>11461 := allocArg(2) @ #8241
     [2] <>arguments<>11461["0"] := <>temp<>11459
     [3] <>arguments<>11461["1"] := <>temp<>11460
-    [4] <>fun<>11462 := <>Global<>getBase(<>makeArray<>9582)
+    [4] <>fun<>11462 := @GetBase(<>makeArray<>9582)
     [5] <>this<> := enterCode(<>fun<>11462)
 
   Call[28] -> [23]
@@ -43340,7 +43340,7 @@ function[514] Sizzle<>funexpr@4790:17-4800:9<> {
     [7] <>arguments<>11469["1"] := <>temp<>11466
     [8] <>arguments<>11469["2"] := <>temp<>11467
     [9] <>arguments<>11469["3"] := <>temp<>11468
-    [10] <>fun<>11470 := <>Global<>getBase(<>oldSizzle<>11425)
+    [10] <>fun<>11470 := @GetBase(<>oldSizzle<>11425)
     [11] <>this<> := enterCode(<>fun<>11470)
 
   Call[33] -> ExitExc
@@ -43802,7 +43802,7 @@ function[520] posProcess<>funexpr@4921:18-4937:2<> {
     [7] <>arguments<>11602["0"] := <>temp<>11598
     [8] <>arguments<>11602["1"] := <>temp<>11600
     [9] <>arguments<>11602["2"] := <>temp<>11601
-    [10] <>fun<>11603 := <>Global<>getBase(<>Sizzle<>9578)
+    [10] <>fun<>11603 := @GetBase(<>Sizzle<>9578)
     [11] <>this<> := enterCode(<>fun<>11603)
 
   Block[27] -> [24], ExitExc
@@ -43810,7 +43810,7 @@ function[520] posProcess<>funexpr@4921:18-4937:2<> {
 
   Block[28] -> [25], ExitExc
     [0] <>old<>11604 := <>i<>11573
-    [1] <>new<>11605 := <>Global<>toNumber(<>old<>11604)
+    [1] <>new<>11605 := @ToNumber(<>old<>11604)
     [2] <>i<>11573 := <>new<>11605 + 1
     [3] <>Global<>ignore1448 := <>new<>11605
 
@@ -43882,7 +43882,7 @@ function[522] select {
     [0] <>arguments<>11630 := allocArg(2) @ #8362
     [1] <>arguments<>11630["0"] := <>temp<>11628
     [2] <>arguments<>11630["1"] := <>temp<>11629
-    [3] <>fun<>11631 := <>Global<>getBase(<>engine<>11618)
+    [3] <>fun<>11631 := @GetBase(<>engine<>11618)
     [4] <>this<> := enterCode(<>fun<>11631)
 
   Call[4] -> ExitExc
@@ -43895,7 +43895,7 @@ function[522] select {
   Block[7] -> [8], ExitExc
     [0] <>arguments<>11633 := allocArg(1) @ #8364
     [1] <>arguments<>11633["0"] := <>temp<>11632
-    [2] <>fun<>11634 := <>Global<>getBase(<>extendElements<>11621)
+    [2] <>fun<>11634 := @GetBase(<>extendElements<>11621)
     [3] <>this<> := enterCode(<>fun<>11634)
 
   Call[8] -> ExitExc
@@ -43954,7 +43954,7 @@ function[524] <>funexpr@4964:10-4968:4<> {
     [1] <>temp<>11666 := <>form<>11663
     [2] <>arguments<>11667 := allocArg(1) @ #8393
     [3] <>arguments<>11667["0"] := <>temp<>11666
-    [4] <>fun<>11668 := <>Global<>getBase($)
+    [4] <>fun<>11668 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>11668)
 
   Call[1] -> ExitExc
@@ -44154,7 +44154,7 @@ function[527] accumulator<>funexpr@4986:21-4988:8<> {
     [2] <>temp<>11720 := <>key<>11713
     [3] <>arguments<>11721 := allocArg(1) @ #8428
     [4] <>arguments<>11721["0"] := <>temp<>11720
-    [5] <>fun<>11722 := <>Global<>getBase(encodeURIComponent)
+    [5] <>fun<>11722 := @GetBase(encodeURIComponent)
     [6] <>this<> := enterCode(<>fun<>11722)
 
   Call[4] -> ExitExc
@@ -44170,7 +44170,7 @@ function[527] accumulator<>funexpr@4986:21-4988:8<> {
     [2] <>temp<>11726 := <>value<>11714
     [3] <>arguments<>11727 := allocArg(1) @ #8431
     [4] <>arguments<>11727["0"] := <>temp<>11726
-    [5] <>fun<>11728 := <>Global<>getBase(encodeURIComponent)
+    [5] <>fun<>11728 := @GetBase(encodeURIComponent)
     [6] <>this<> := enterCode(<>fun<>11728)
 
   Call[8] -> ExitExc
@@ -44213,7 +44213,7 @@ function[528] <>funexpr@4991:37-5000:6<> {
     [4] <>temp<>11740 := <>element<>11734
     [5] <>arguments<>11741 := allocArg(1) @ #8440
     [6] <>arguments<>11741["0"] := <>temp<>11740
-    [7] <>fun<>11742 := <>Global<>getBase($)
+    [7] <>fun<>11742 := @GetBase($)
     [8] <>this<> := enterCode(<>fun<>11742)
 
   Block[5] -> [57], ExitExc
@@ -44367,7 +44367,7 @@ function[528] <>funexpr@4991:37-5000:6<> {
     [6] <>arguments<>11757["0"] := <>temp<>11754
     [7] <>arguments<>11757["1"] := <>temp<>11755
     [8] <>arguments<>11757["2"] := <>temp<>11756
-    [9] <>fun<>11758 := <>Global<>getBase(<>accumulator<>11680)
+    [9] <>fun<>11758 := @GetBase(<>accumulator<>11680)
     [10] <>this<> := enterCode(<>fun<>11758)
 
   Block[51] -> [56], ExitExc
@@ -44446,7 +44446,7 @@ function[530] <>funexpr@5009:16-5022:4<> {
     [1] <>temp<>11790 := <>form<>11782
     [2] <>arguments<>11791 := allocArg(1) @ #8471
     [3] <>arguments<>11791["0"] := <>temp<>11790
-    [4] <>fun<>11792 := <>Global<>getBase($)
+    [4] <>fun<>11792 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>11792)
 
   Call[1] -> ExitExc
@@ -44508,7 +44508,7 @@ function[530] <>funexpr@5009:16-5022:4<> {
 
   Block[13] -> [10], ExitExc
     [0] <>old<>11805 := <>i<>11787
-    [1] <>new<>11806 := <>Global<>toNumber(<>old<>11805)
+    [1] <>new<>11806 := @ToNumber(<>old<>11805)
     [2] <>i<>11787 := <>new<>11806 + 1
     [3] <>Global<>ignore1481 := <>new<>11806
     [4] <>obj<>11800 := @ToObject(<>elements<>11783) @ #8485
@@ -44605,7 +44605,7 @@ function[532] <>funexpr@5024:14-5038:4<> {
     [1] <>temp<>11843 := <>form<>11833
     [2] <>arguments<>11844 := allocArg(1) @ #8510
     [3] <>arguments<>11844["0"] := <>temp<>11843
-    [4] <>fun<>11845 := <>Global<>getBase($)
+    [4] <>fun<>11845 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>11845)
 
   Call[1] -> ExitExc
@@ -44653,7 +44653,7 @@ function[532] <>funexpr@5024:14-5038:4<> {
     [2] <>temp<>11851 := <>inputs<>11836
     [3] <>arguments<>11852 := allocArg(1) @ #8517
     [4] <>arguments<>11852["0"] := <>temp<>11851
-    [5] <>fun<>11853 := <>Global<>getBase($A)
+    [5] <>fun<>11853 := @GetBase($A)
     [6] <>this<> := enterCode(<>fun<>11853)
 
   Block[13] -> [22], ExitExc
@@ -44704,7 +44704,7 @@ function[532] <>funexpr@5024:14-5038:4<> {
 
   Block[28] -> [25], ExitExc
     [0] <>old<>11875 := <>i<>11837
-    [1] <>new<>11876 := <>Global<>toNumber(<>old<>11875)
+    [1] <>new<>11876 := @ToNumber(<>old<>11875)
     [2] <>i<>11837 := <>new<>11876 + 1
     [3] <>Global<>ignore1490 := <>new<>11876
 
@@ -44809,7 +44809,7 @@ function[533] <>funexpr@5040:12-5044:4<> {
     [1] <>temp<>11882 := <>form<>11879
     [2] <>arguments<>11883 := allocArg(1) @ #8540
     [3] <>arguments<>11883["0"] := <>temp<>11882
-    [4] <>fun<>11884 := <>Global<>getBase($)
+    [4] <>fun<>11884 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>11884)
 
   Call[1] -> ExitExc
@@ -44867,7 +44867,7 @@ function[534] <>funexpr@5046:11-5050:4<> {
     [1] <>temp<>11899 := <>form<>11896
     [2] <>arguments<>11900 := allocArg(1) @ #8553
     [3] <>arguments<>11900["0"] := <>temp<>11899
-    [4] <>fun<>11901 := <>Global<>getBase($)
+    [4] <>fun<>11901 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>11901)
 
   Call[1] -> ExitExc
@@ -44925,7 +44925,7 @@ function[535] <>funexpr@5052:21-5063:4<> {
     [1] <>temp<>11918 := <>form<>11913
     [2] <>arguments<>11919 := allocArg(1) @ #8566
     [3] <>arguments<>11919["0"] := <>temp<>11918
-    [4] <>fun<>11920 := <>Global<>getBase($)
+    [4] <>fun<>11920 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>11920)
 
   Call[1] -> ExitExc
@@ -45152,7 +45152,7 @@ function[539] <>funexpr@5060:56-5062:6<> {
   AfterCatch[3] -> ExitExc
 
   Block[4] -> [6], [5]
-    [0] <>cond<>11975 := <>Global<>isObject(<>newObj<>11974)
+    [0] <>cond<>11975 := @isObject(<>newObj<>11974)
 
   Block[5] -> [7], ExitExc
     [0] assert(<>cond<>11975)
@@ -45195,7 +45195,7 @@ function[540] <>funexpr@5065:22-5070:4<> {
     [1] <>temp<>11993 := <>form<>11989
     [2] <>arguments<>11994 := allocArg(1) @ #8620
     [3] <>arguments<>11994["0"] := <>temp<>11993
-    [4] <>fun<>11995 := <>Global<>getBase($)
+    [4] <>fun<>11995 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>11995)
 
   Call[1] -> ExitExc
@@ -45256,7 +45256,7 @@ function[541] <>funexpr@5072:12-5088:4<> {
     [1] <>temp<>12010 := <>form<>12004
     [2] <>arguments<>12011 := allocArg(1) @ #8633
     [3] <>arguments<>12011["0"] := <>temp<>12010
-    [4] <>fun<>12012 := <>Global<>getBase($)
+    [4] <>fun<>12012 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>12012)
 
   Call[1] -> ExitExc
@@ -45471,7 +45471,7 @@ function[541] <>funexpr@5072:12-5088:4<> {
   AfterCatch[56] -> ExitExc
 
   Block[57] -> [59], [58]
-    [0] <>cond<>12066 := <>Global<>isObject(<>newObj<>12065)
+    [0] <>cond<>12066 := @isObject(<>newObj<>12065)
 
   Block[58] -> [60], ExitExc
     [0] assert(<>cond<>12066)
@@ -45498,7 +45498,7 @@ function[542] <>funexpr@5095:10-5098:4<> {
     [1] <>temp<>12074 := <>element<>12071
     [2] <>arguments<>12075 := allocArg(1) @ #8686
     [3] <>arguments<>12075["0"] := <>temp<>12074
-    [4] <>fun<>12076 := <>Global<>getBase($)
+    [4] <>fun<>12076 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>12076)
 
   Call[1] -> ExitExc
@@ -45538,7 +45538,7 @@ function[543] <>funexpr@5100:11-5103:4<> {
     [1] <>temp<>12086 := <>element<>12083
     [2] <>arguments<>12087 := allocArg(1) @ #8695
     [3] <>arguments<>12087["0"] := <>temp<>12086
-    [4] <>fun<>12088 := <>Global<>getBase($)
+    [4] <>fun<>12088 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>12088)
 
   Call[1] -> ExitExc
@@ -45578,7 +45578,7 @@ function[544] <>funexpr@5108:14-5119:4<> {
     [1] <>temp<>12102 := <>element<>12097
     [2] <>arguments<>12103 := allocArg(1) @ #8707
     [3] <>arguments<>12103["0"] := <>temp<>12102
-    [4] <>fun<>12104 := <>Global<>getBase($)
+    [4] <>fun<>12104 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>12104)
 
   Call[1] -> ExitExc
@@ -45669,7 +45669,7 @@ function[545] <>funexpr@5121:13-5125:4<> {
     [1] <>temp<>12123 := <>element<>12119
     [2] <>arguments<>12124 := allocArg(1) @ #8725
     [3] <>arguments<>12124["0"] := <>temp<>12123
-    [4] <>fun<>12125 := <>Global<>getBase($)
+    [4] <>fun<>12125 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>12125)
 
   Call[1] -> ExitExc
@@ -45729,7 +45729,7 @@ function[546] <>funexpr@5127:13-5132:4<> {
     [1] <>temp<>12144 := <>element<>12139
     [2] <>arguments<>12145 := allocArg(1) @ #8741
     [3] <>arguments<>12145["0"] := <>temp<>12144
-    [4] <>fun<>12146 := <>Global<>getBase($)
+    [4] <>fun<>12146 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>12146)
 
   Call[1] -> ExitExc
@@ -45791,7 +45791,7 @@ function[547] <>funexpr@5134:10-5137:4<> {
     [1] <>temp<>12163 := <>element<>12160
     [2] <>arguments<>12164 := allocArg(1) @ #8757
     [3] <>arguments<>12164["0"] := <>temp<>12163
-    [4] <>fun<>12165 := <>Global<>getBase($)
+    [4] <>fun<>12165 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>12165)
 
   Call[1] -> ExitExc
@@ -45820,7 +45820,7 @@ function[548] <>funexpr@5139:12-5141:4<> {
     [1] <>temp<>12173 := <>element<>12170
     [2] <>arguments<>12174 := allocArg(1) @ #8763
     [3] <>arguments<>12174["0"] := <>temp<>12173
-    [4] <>fun<>12175 := <>Global<>getBase($)
+    [4] <>fun<>12175 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>12175)
 
   Call[1] -> ExitExc
@@ -45848,7 +45848,7 @@ function[549] <>funexpr@5143:13-5152:4<> {
     [1] <>temp<>12183 := <>element<>12180
     [2] <>arguments<>12184 := allocArg(1) @ #8769
     [3] <>arguments<>12184["0"] := <>temp<>12183
-    [4] <>fun<>12185 := <>Global<>getBase($)
+    [4] <>fun<>12185 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>12185)
 
   Call[1] -> ExitExc
@@ -45925,7 +45925,7 @@ function[549] <>funexpr@5143:13-5152:4<> {
   AfterCatch[22] -> [6]
 
   Block[23] -> [25], [24]
-    [0] <>cond<>12204 := <>Global<>isObject(<>newObj<>12203)
+    [0] <>cond<>12204 := @isObject(<>newObj<>12203)
 
   Block[24] -> [26], [6]
     [0] assert(<>cond<>12204)
@@ -45992,7 +45992,7 @@ function[550] <>funexpr@5154:12-5158:4<> {
     [1] <>temp<>12220 := <>element<>12217
     [2] <>arguments<>12221 := allocArg(1) @ #8797
     [3] <>arguments<>12221["0"] := <>temp<>12220
-    [4] <>fun<>12222 := <>Global<>getBase($)
+    [4] <>fun<>12222 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>12222)
 
   Call[1] -> ExitExc
@@ -46022,7 +46022,7 @@ function[551] <>funexpr@5160:11-5164:4<> {
     [1] <>temp<>12229 := <>element<>12226
     [2] <>arguments<>12230 := allocArg(1) @ #8803
     [3] <>arguments<>12230["0"] := <>temp<>12229
-    [4] <>fun<>12231 := <>Global<>getBase($)
+    [4] <>fun<>12231 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>12231)
 
   Call[1] -> ExitExc
@@ -46098,7 +46098,7 @@ function[553] input {
     [3] <>arguments<>12266 := allocArg(2) @ #8824
     [4] <>arguments<>12266["0"] := <>temp<>12264
     [5] <>arguments<>12266["1"] := <>temp<>12265
-    [6] <>fun<>12267 := <>Global<>getBase(<>valueSelector<>12243)
+    [6] <>fun<>12267 := @GetBase(<>valueSelector<>12243)
     [7] <>this<> := enterCode(<>fun<>12267)
 
   Block[6] -> [14], ExitExc
@@ -46108,7 +46108,7 @@ function[553] input {
     [3] <>arguments<>12260 := allocArg(2) @ #8821
     [4] <>arguments<>12260["0"] := <>temp<>12258
     [5] <>arguments<>12260["1"] := <>temp<>12259
-    [6] <>fun<>12261 := <>Global<>getBase(<>inputSelector<>12242)
+    [6] <>fun<>12261 := @GetBase(<>inputSelector<>12242)
     [7] <>this<> := enterCode(<>fun<>12261)
 
   Block[7] -> [6]
@@ -46330,7 +46330,7 @@ function[556] select {
 
   Block[22] -> [19], ExitExc
     [0] <>old<>12328 := <>i<>12296
-    [1] <>new<>12329 := <>Global<>toNumber(<>old<>12328)
+    [1] <>new<>12329 := @ToNumber(<>old<>12328)
     [2] <>i<>12296 := <>new<>12329 + 1
     [3] <>Global<>ignore1540 := <>new<>12329
 
@@ -46401,7 +46401,7 @@ function[557] selectOne {
     [4] <>temp<>12337 := <>obj<>12336[<>index<>12331]
     [5] <>arguments<>12338 := allocArg(1) @ #8876
     [6] <>arguments<>12338["0"] := <>temp<>12337
-    [7] <>fun<>12339 := <>Global<>getBase(<>optionValue<>12247)
+    [7] <>fun<>12339 := @GetBase(<>optionValue<>12247)
     [8] <>this<> := enterCode(<>fun<>12339)
 
   Block[2] -> [6], ExitExc
@@ -46460,7 +46460,7 @@ function[558] selectMany {
 
   Block[8] -> [5], ExitExc
     [0] <>old<>12359 := <>i<>12344
-    [1] <>new<>12360 := <>Global<>toNumber(<>old<>12359)
+    [1] <>new<>12360 := @ToNumber(<>old<>12359)
     [2] <>i<>12344 := <>new<>12360 + 1
     [3] <>Global<>ignore1550 := <>new<>12360
 
@@ -46471,7 +46471,7 @@ function[558] selectMany {
     [3] <>temp<>12353 := <>opt<>12345
     [4] <>arguments<>12354 := allocArg(1) @ #8887
     [5] <>arguments<>12354["0"] := <>temp<>12353
-    [6] <>fun<>12355 := <>Global<>getBase(<>optionValue<>12247)
+    [6] <>fun<>12355 := @GetBase(<>optionValue<>12247)
     [7] <>this<> := enterCode(<>fun<>12355)
 
   Block[10] -> [18], ExitExc
@@ -46554,7 +46554,7 @@ function[560] <>funexpr@5251:15-5255:4<> {
     [3] <>arguments<>12388 := allocArg(2) @ #8911
     [4] <>arguments<>12388["0"] := <>temp<>12386
     [5] <>arguments<>12388["1"] := <>temp<>12387
-    [6] <>fun<>12389 := <>Global<>getBase(<>$super<>12380)
+    [6] <>fun<>12389 := @GetBase(<>$super<>12380)
     [7] <>this<> := enterCode(<>fun<>12389)
 
   Call[1] -> ExitExc
@@ -46570,7 +46570,7 @@ function[560] <>funexpr@5251:15-5255:4<> {
     [2] <>temp<>12392 := <>element<>12381
     [3] <>arguments<>12393 := allocArg(1) @ #8915
     [4] <>arguments<>12393["0"] := <>temp<>12392
-    [5] <>fun<>12394 := <>Global<>getBase($)
+    [5] <>fun<>12394 := @GetBase($)
     [6] <>this<> := enterCode(<>fun<>12394)
 
   Call[5] -> ExitExc
@@ -46674,7 +46674,7 @@ function[561] <>funexpr@5257:12-5264:4<> {
     [2] <>temp<>12421 := <>obj<>12420["lastValue"]
     [3] <>arguments<>12422 := allocArg(1) @ #8940
     [4] <>arguments<>12422["0"] := <>temp<>12421
-    [5] <>fun<>12423 := <>Global<>getBase(String)
+    [5] <>fun<>12423 := @GetBase(String)
     [6] <>this<> := enterCode(<>fun<>12423)
 
   Call[18] -> ExitExc
@@ -46689,7 +46689,7 @@ function[561] <>funexpr@5257:12-5264:4<> {
     [1] <>temp<>12426 := <>value<>12401
     [2] <>arguments<>12427 := allocArg(1) @ #8943
     [3] <>arguments<>12427["0"] := <>temp<>12426
-    [4] <>fun<>12428 := <>Global<>getBase(String)
+    [4] <>fun<>12428 := @GetBase(String)
     [5] <>this<> := enterCode(<>fun<>12428)
 
   Call[22] -> ExitExc
@@ -46802,7 +46802,7 @@ function[564] <>funexpr@5282:15-5291:4<> {
     [2] <>temp<>12483 := <>element<>12478
     [3] <>arguments<>12484 := allocArg(1) @ #8991
     [4] <>arguments<>12484["0"] := <>temp<>12483
-    [5] <>fun<>12485 := <>Global<>getBase($)
+    [5] <>fun<>12485 := @GetBase($)
     [6] <>this<> := enterCode(<>fun<>12485)
 
   Call[1] -> ExitExc
@@ -47823,7 +47823,7 @@ function[574] isLeftClick {
     [3] <>arguments<>12668 := allocArg(2) @ #9119
     [4] <>arguments<>12668["0"] := <>temp<>12666
     [5] <>arguments<>12668["1"] := <>temp<>12667
-    [6] <>fun<>12669 := <>Global<>getBase(<>_isButton<>12629)
+    [6] <>fun<>12669 := @GetBase(<>_isButton<>12629)
     [7] <>this<> := enterCode(<>fun<>12669)
 
   Call[1] -> ExitExc
@@ -47852,7 +47852,7 @@ function[575] isMiddleClick {
     [3] <>arguments<>12676 := allocArg(2) @ #9124
     [4] <>arguments<>12676["0"] := <>temp<>12674
     [5] <>arguments<>12676["1"] := <>temp<>12675
-    [6] <>fun<>12677 := <>Global<>getBase(<>_isButton<>12629)
+    [6] <>fun<>12677 := @GetBase(<>_isButton<>12629)
     [7] <>this<> := enterCode(<>fun<>12677)
 
   Call[1] -> ExitExc
@@ -47881,7 +47881,7 @@ function[576] isRightClick {
     [3] <>arguments<>12684 := allocArg(2) @ #9129
     [4] <>arguments<>12684["0"] := <>temp<>12682
     [5] <>arguments<>12684["1"] := <>temp<>12683
-    [6] <>fun<>12685 := <>Global<>getBase(<>_isButton<>12629)
+    [6] <>fun<>12685 := @GetBase(<>_isButton<>12629)
     [7] <>this<> := enterCode(<>fun<>12685)
 
   Call[1] -> ExitExc
@@ -48183,7 +48183,7 @@ function[579] pointer {
     [1] <>temp<>12746 := <>event<>12743
     [2] <>arguments<>12747 := allocArg(1) @ #9177
     [3] <>arguments<>12747["0"] := <>temp<>12746
-    [4] <>fun<>12748 := <>Global<>getBase(<>pointerX<>12615)
+    [4] <>fun<>12748 := @GetBase(<>pointerX<>12615)
     [5] <>this<> := enterCode(<>fun<>12748)
 
   Call[1] -> ExitExc
@@ -48198,7 +48198,7 @@ function[579] pointer {
     [1] <>temp<>12751 := <>event<>12743
     [2] <>arguments<>12752 := allocArg(1) @ #9180
     [3] <>arguments<>12752["0"] := <>temp<>12751
-    [4] <>fun<>12753 := <>Global<>getBase(<>pointerY<>12616)
+    [4] <>fun<>12753 := @GetBase(<>pointerY<>12616)
     [5] <>this<> := enterCode(<>fun<>12753)
 
   Call[5] -> ExitExc
@@ -48543,7 +48543,7 @@ function[584] _createResponder {
     [2] <>temp<>12838 := "prototype_event_registry"
     [3] <>obj<>12839 := @ToObject($H) @ #9242
     [4] <>arguments<>12840 := allocArg(0) @ #9243
-    [5] <>fun<>12841 := <>Global<>getBase($H)
+    [5] <>fun<>12841 := @GetBase($H)
     [6] <>this<> := enterCode(<>fun<>12841)
 
   Call[14] -> ExitExc
@@ -49023,7 +49023,7 @@ function[588] _destroyCache {
 
   Block[5] -> [2], ExitExc
     [0] <>old<>12941 := <>i<>12931
-    [1] <>new<>12942 := <>Global<>toNumber(<>old<>12941)
+    [1] <>new<>12942 := @ToNumber(<>old<>12941)
     [2] <>i<>12931 := <>new<>12942 + 1
     [3] <>Global<>ignore1618 := <>new<>12942
 
@@ -49052,7 +49052,7 @@ function[589] observe {
     [1] <>temp<>12950 := <>element<>12943
     [2] <>arguments<>12951 := allocArg(1) @ #9328
     [3] <>arguments<>12951["0"] := <>temp<>12950
-    [4] <>fun<>12952 := <>Global<>getBase($)
+    [4] <>fun<>12952 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>12952)
 
   Call[1] -> ExitExc
@@ -49072,7 +49072,7 @@ function[589] observe {
     [6] <>arguments<>12957["0"] := <>temp<>12954
     [7] <>arguments<>12957["1"] := <>temp<>12955
     [8] <>arguments<>12957["2"] := <>temp<>12956
-    [9] <>fun<>12958 := <>Global<>getBase(<>_createResponder<>12619)
+    [9] <>fun<>12958 := @GetBase(<>_createResponder<>12619)
     [10] <>this<> := enterCode(<>fun<>12958)
 
   Call[5] -> ExitExc
@@ -49117,7 +49117,7 @@ function[589] observe {
     [2] <>temp<>12982 := <>eventName<>12944
     [3] <>arguments<>12983 := allocArg(1) @ #9351
     [4] <>arguments<>12983["0"] := <>temp<>12982
-    [5] <>fun<>12984 := <>Global<>getBase(<>_getDOMEventName<>12634)
+    [5] <>fun<>12984 := @GetBase(<>_getDOMEventName<>12634)
     [6] <>this<> := enterCode(<>fun<>12984)
 
   Block[17] -> [19], ExitExc
@@ -49245,7 +49245,7 @@ function[590] stopObserving {
     [1] <>temp<>13007 := <>element<>12997
     [2] <>arguments<>13008 := allocArg(1) @ #9365
     [3] <>arguments<>13008["0"] := <>temp<>13007
-    [4] <>fun<>13009 := <>Global<>getBase($)
+    [4] <>fun<>13009 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>13009)
 
   Call[1] -> ExitExc
@@ -49360,7 +49360,7 @@ function[590] stopObserving {
     [0] <>obj<>13047 := @ToObject(<>responders<>13001) @ #9395
     [1] <>i<>13002 := <>obj<>13047["length"]
     [2] <>old<>13048 := <>i<>13002
-    [3] <>new<>13049 := <>Global<>toNumber(<>old<>13048)
+    [3] <>new<>13049 := @ToNumber(<>old<>13048)
     [4] <>i<>13002 := <>new<>13049 - 1
 
   Block[33] -> [42], [41]
@@ -49377,7 +49377,7 @@ function[590] stopObserving {
 
   Block[37] -> [34], ExitExc
     [0] <>old<>13048 := <>i<>13002
-    [1] <>new<>13049 := <>Global<>toNumber(<>old<>13048)
+    [1] <>new<>13049 := @ToNumber(<>old<>13048)
     [2] <>i<>13002 := <>new<>13049 - 1
 
   Block[38] -> [33], ExitExc
@@ -49422,7 +49422,7 @@ function[590] stopObserving {
     [2] <>temp<>13076 := <>eventName<>12998
     [3] <>arguments<>13077 := allocArg(1) @ #9417
     [4] <>arguments<>13077["0"] := <>temp<>13076
-    [5] <>fun<>13078 := <>Global<>getBase(<>_getDOMEventName<>12634)
+    [5] <>fun<>13078 := @GetBase(<>_getDOMEventName<>12634)
     [6] <>this<> := enterCode(<>fun<>13078)
 
   Block[49] -> [51], ExitExc
@@ -49585,7 +49585,7 @@ function[591] <>funexpr@5666:22-5669:8<> {
     [5] <>arguments<>13023 := allocArg(2) @ #9374
     [6] <>arguments<>13023["0"] := <>temp<>13021
     [7] <>arguments<>13023["1"] := <>temp<>13022
-    [8] <>fun<>13024 := <>Global<>getBase(<>stopObserving<>12622)
+    [8] <>fun<>13024 := @GetBase(<>stopObserving<>12622)
     [9] <>this<> := enterCode(<>fun<>13024)
 
   Call[1] -> ExitExc
@@ -49614,7 +49614,7 @@ function[592] <>funexpr@5677:23-5679:8<> {
     [6] <>arguments<>13041["0"] := <>temp<>13037
     [7] <>arguments<>13041["1"] := <>temp<>13038
     [8] <>arguments<>13041["2"] := <>temp<>13040
-    [9] <>fun<>13042 := <>Global<>getBase(<>stopObserving<>12622)
+    [9] <>fun<>13042 := @GetBase(<>stopObserving<>12622)
     [10] <>this<> := enterCode(<>fun<>13042)
 
   Call[1] -> ExitExc
@@ -49638,7 +49638,7 @@ function[593] fire {
     [1] <>temp<>13107 := <>element<>13100
     [2] <>arguments<>13108 := allocArg(1) @ #9439
     [3] <>arguments<>13108["0"] := <>temp<>13107
-    [4] <>fun<>13109 := <>Global<>getBase($)
+    [4] <>fun<>13109 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>13109)
 
   Call[1] -> ExitExc
@@ -49873,7 +49873,7 @@ function[594] on {
     [1] <>temp<>13159 := <>element<>13153
     [2] <>arguments<>13160 := allocArg(1) @ #9482
     [3] <>arguments<>13160["0"] := <>temp<>13159
-    [4] <>fun<>13161 := <>Global<>getBase($)
+    [4] <>fun<>13161 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>13161)
 
   Call[1] -> ExitExc
@@ -49955,7 +49955,7 @@ function[594] on {
   AfterCatch[20] -> ExitExc
 
   Block[21] -> [23], [22]
-    [0] <>cond<>13183 := <>Global<>isObject(<>newObj<>13182)
+    [0] <>cond<>13183 := @isObject(<>newObj<>13182)
 
   Block[22] -> [24], ExitExc
     [0] assert(<>cond<>13183)
@@ -50033,7 +50033,7 @@ function[598] _isButton<>funexpr@5394:19-5397:8<> {
     [1] <>temp<>13210 := <>event<>13206
     [2] <>arguments<>13211 := allocArg(1) @ #9519
     [3] <>arguments<>13211["0"] := <>temp<>13210
-    [4] <>fun<>13212 := <>Global<>getBase(<>isIELegacyEvent<>12628)
+    [4] <>fun<>13212 := @GetBase(<>isIELegacyEvent<>12628)
     [5] <>this<> := enterCode(<>fun<>13212)
 
   Call[1] -> ExitExc
@@ -50051,7 +50051,7 @@ function[598] _isButton<>funexpr@5394:19-5397:8<> {
     [4] <>arguments<>13217 := allocArg(2) @ #9522
     [5] <>arguments<>13217["0"] := <>temp<>13215
     [6] <>arguments<>13217["1"] := <>temp<>13216
-    [7] <>fun<>13218 := <>Global<>getBase(<>_isButtonForLegacyEvents<>12607)
+    [7] <>fun<>13218 := @GetBase(<>_isButtonForLegacyEvents<>12607)
     [8] <>this<> := enterCode(<>fun<>13218)
 
   Block[5] -> [10], ExitExc
@@ -50062,7 +50062,7 @@ function[598] _isButton<>funexpr@5394:19-5397:8<> {
     [4] <>arguments<>13223 := allocArg(2) @ #9525
     [5] <>arguments<>13223["0"] := <>temp<>13221
     [6] <>arguments<>13223["1"] := <>temp<>13222
-    [7] <>fun<>13224 := <>Global<>getBase(<>_isButtonForDOMEvents<>12606)
+    [7] <>fun<>13224 := @GetBase(<>_isButtonForDOMEvents<>12606)
     [8] <>this<> := enterCode(<>fun<>13224)
 
   Call[6] -> ExitExc
@@ -50172,7 +50172,7 @@ function[603] Event.extend<>funexpr@5518:20-5539:6<> {
     [1] <>temp<>13268 := <>event<>13263
     [2] <>arguments<>13269 := allocArg(1) @ #9564
     [3] <>arguments<>13269["0"] := <>temp<>13268
-    [4] <>fun<>13270 := <>Global<>getBase(<>isIELegacyEvent<>12628)
+    [4] <>fun<>13270 := @GetBase(<>isIELegacyEvent<>12628)
     [5] <>this<> := enterCode(<>fun<>13270)
 
   Call[4] -> ExitExc
@@ -50236,7 +50236,7 @@ function[603] Event.extend<>funexpr@5518:20-5539:6<> {
     [1] <>temp<>13284 := <>event<>13263
     [2] <>arguments<>13285 := allocArg(1) @ #9576
     [3] <>arguments<>13285["0"] := <>temp<>13284
-    [4] <>fun<>13286 := <>Global<>getBase(<>_relatedTarget<>12618)
+    [4] <>fun<>13286 := @GetBase(<>_relatedTarget<>12618)
     [5] <>this<> := enterCode(<>fun<>13286)
 
   Call[20] -> ExitExc
@@ -50342,7 +50342,7 @@ function[605] <>funexpr@5742:17-5748:6<> {
     [2] <>temp<>13353 := <>element<>13346
     [3] <>arguments<>13354 := allocArg(1) @ #9633
     [4] <>arguments<>13354["0"] := <>temp<>13353
-    [5] <>fun<>13355 := <>Global<>getBase($)
+    [5] <>fun<>13355 := @GetBase($)
     [6] <>this<> := enterCode(<>fun<>13355)
 
   Call[1] -> ExitExc
@@ -50691,7 +50691,7 @@ function[611] checkReadyState {
   Block[6] -> [7], ExitExc
     [0] <>obj<>13484 := @ToObject(<>fireContentLoadedEvent<>13461) @ #9746
     [1] <>arguments<>13485 := allocArg(0) @ #9747
-    [2] <>fun<>13486 := <>Global<>getBase(<>fireContentLoadedEvent<>13461)
+    [2] <>fun<>13486 := @GetBase(<>fireContentLoadedEvent<>13461)
     [3] <>this<> := enterCode(<>fun<>13486)
 
   Call[7] -> ExitExc
@@ -50751,7 +50751,7 @@ function[612] pollDoScroll {
   Block[10] -> [11], ExitExc
     [0] <>obj<>13497 := @ToObject(<>fireContentLoadedEvent<>13461) @ #9760
     [1] <>arguments<>13498 := allocArg(0) @ #9761
-    [2] <>fun<>13499 := <>Global<>getBase(<>fireContentLoadedEvent<>13461)
+    [2] <>fun<>13499 := @GetBase(<>fireContentLoadedEvent<>13461)
     [3] <>this<> := enterCode(<>fun<>13499)
 
   Call[11] -> ExitExc
@@ -51523,7 +51523,7 @@ function[626] <>funexpr@5965:3-5969:4<> {
   AfterCatch[11] -> ExitExc
 
   Block[12] -> [14], [13]
-    [0] <>cond<>13792 := <>Global<>isObject(<>newObj<>13791)
+    [0] <>cond<>13792 := @isObject(<>newObj<>13791)
 
   Block[13] -> [15], ExitExc
     [0] assert(<>cond<>13792)
@@ -51554,7 +51554,7 @@ function[626] <>funexpr@5965:3-5969:4<> {
     [2] <>temp<>13800 := <>className<>13775
     [3] <>arguments<>13801 := allocArg(1) @ #9979
     [4] <>arguments<>13801["0"] := <>temp<>13800
-    [5] <>fun<>13802 := <>Global<>getBase($w)
+    [5] <>fun<>13802 := @GetBase($w)
     [6] <>this<> := enterCode(<>fun<>13802)
 
   Block[20] -> [33], ExitExc
@@ -51563,7 +51563,7 @@ function[626] <>funexpr@5965:3-5969:4<> {
     [2] <>temp<>13814 := <>className<>13775
     [3] <>arguments<>13815 := allocArg(1) @ #9990
     [4] <>arguments<>13815["0"] := <>temp<>13814
-    [5] <>fun<>13816 := <>Global<>getBase(<>iter<>13762)
+    [5] <>fun<>13816 := @GetBase(<>iter<>13762)
     [6] <>this<> := enterCode(<>fun<>13816)
 
   Call[21] -> ExitExc
@@ -51694,7 +51694,7 @@ function[627] <>funexpr@5969:7-5985:4<> {
   AfterCatch[11] -> ExitExc
 
   Block[12] -> [14], [13]
-    [0] <>cond<>13847 := <>Global<>isObject(<>newObj<>13846)
+    [0] <>cond<>13847 := @isObject(<>newObj<>13846)
 
   Block[13] -> [15], ExitExc
     [0] assert(<>cond<>13847)
@@ -51725,7 +51725,7 @@ function[627] <>funexpr@5969:7-5985:4<> {
     [2] <>temp<>13855 := <>className<>13825
     [3] <>arguments<>13856 := allocArg(1) @ #10017
     [4] <>arguments<>13856["0"] := <>temp<>13855
-    [5] <>fun<>13857 := <>Global<>getBase($w)
+    [5] <>fun<>13857 := @GetBase($w)
     [6] <>this<> := enterCode(<>fun<>13857)
 
   Block[20] -> [24], ExitExc
@@ -51747,7 +51747,7 @@ function[627] <>funexpr@5969:7-5985:4<> {
     [1] <>temp<>13859 := <>element<>13824
     [2] <>arguments<>13860 := allocArg(1) @ #10020
     [3] <>arguments<>13860["0"] := <>temp<>13859
-    [4] <>fun<>13861 := <>Global<>getBase($)
+    [4] <>fun<>13861 := @GetBase($)
     [5] <>this<> := enterCode(<>fun<>13861)
 
   Block[26] -> [29], [28], ExitExc
@@ -51810,7 +51810,7 @@ function[627] <>funexpr@5969:7-5985:4<> {
 
   Block[44] -> [41], ExitExc
     [0] <>old<>13908 := <>i<>13829
-    [1] <>new<>13909 := <>Global<>toNumber(<>old<>13908)
+    [1] <>new<>13909 := @ToNumber(<>old<>13908)
     [2] <>i<>13829 := <>new<>13909 + 1
     [3] <>Global<>ignore1751 := <>new<>13909
     [4] <>obj<>13867 := @ToObject(<>nodes<>13828) @ #10059
@@ -52023,7 +52023,7 @@ function[629] <>funexpr@5987:10-5989:4<> {
   Block[3] -> [4], ExitExc
     [0] <>arguments<>13917 := allocArg(1) @ #10064
     [1] <>arguments<>13917["0"] := <>temp<>13915
-    [2] <>fun<>13918 := <>Global<>getBase($)
+    [2] <>fun<>13918 := @GetBase($)
     [3] <>this<> := enterCode(<>fun<>13918)
 
   Call[4] -> ExitExc
@@ -52066,7 +52066,7 @@ function[630] <>funexpr@5996:15-5998:4<> {
     [2] <>temp<>13943 := <>element<>13939
     [3] <>arguments<>13944 := allocArg(1) @ #10087
     [4] <>arguments<>13944["0"] := <>temp<>13943
-    [5] <>fun<>13945 := <>Global<>getBase($)
+    [5] <>fun<>13945 := @GetBase($)
     [6] <>this<> := enterCode(<>fun<>13945)
 
   Call[1] -> ExitExc
@@ -52109,7 +52109,7 @@ function[631] <>funexpr@6000:10-6004:4<> {
   AfterCatch[3] -> ExitExc
 
   Block[4] -> [6], [5]
-    [0] <>cond<>13960 := <>Global<>isObject(<>newObj<>13959)
+    [0] <>cond<>13960 := @isObject(<>newObj<>13959)
 
   Block[5] -> [7], ExitExc
     [0] assert(<>cond<>13960)
@@ -52226,7 +52226,7 @@ function[634] <>funexpr@6010:8-6013:4<> {
     [2] <>temp<>13995 := this
     [3] <>arguments<>13996 := allocArg(1) @ #10124
     [4] <>arguments<>13996["0"] := <>temp<>13995
-    [5] <>fun<>13997 := <>Global<>getBase($A)
+    [5] <>fun<>13997 := @GetBase($A)
     [6] <>this<> := enterCode(<>fun<>13997)
 
   Call[7] -> ExitExc
@@ -52316,7 +52316,7 @@ function[635] <>funexpr@6015:11-6018:4<> {
     [2] <>temp<>14022 := this
     [3] <>arguments<>14023 := allocArg(1) @ #10145
     [4] <>arguments<>14023["0"] := <>temp<>14022
-    [5] <>fun<>14024 := <>Global<>getBase($A)
+    [5] <>fun<>14024 := @GetBase($A)
     [6] <>this<> := enterCode(<>fun<>14024)
 
   Call[7] -> ExitExc
@@ -52383,7 +52383,7 @@ function[636] <>funexpr@6020:13-6022:4<> {
     [1] <>temp<>14042 := this
     [2] <>arguments<>14043 := allocArg(1) @ #10161
     [3] <>arguments<>14043["0"] := <>temp<>14042
-    [4] <>fun<>14044 := <>Global<>getBase($A)
+    [4] <>fun<>14044 := @GetBase($A)
     [5] <>this<> := enterCode(<>fun<>14044)
 
   Call[1] -> ExitExc
@@ -52619,7 +52619,7 @@ function[643] <>funexpr@6053:20-6064:6<> {
     [6] <>arguments<>14124 := allocArg(2) @ #10218
     [7] <>arguments<>14124["0"] := <>temp<>14122
     [8] <>arguments<>14124["1"] := <>temp<>14123
-    [9] <>fun<>14125 := <>Global<>getBase(<>match<>14111)
+    [9] <>fun<>14125 := @GetBase(<>match<>14111)
     [10] <>this<> := enterCode(<>fun<>14125)
 
   Block[4] -> [1], ExitExc
@@ -52627,7 +52627,7 @@ function[643] <>funexpr@6053:20-6064:6<> {
 
   Block[5] -> [2], ExitExc
     [0] <>old<>14135 := <>i<>14113
-    [1] <>new<>14136 := <>Global<>toNumber(<>old<>14135)
+    [1] <>new<>14136 := @ToNumber(<>old<>14135)
     [2] <>i<>14113 := <>new<>14136 + 1
     [3] <>Global<>ignore1770 := <>new<>14136
 
@@ -52722,7 +52722,7 @@ function[644] <>funexpr@6066:18-6075:6<> {
 
   Block[8] -> [5], ExitExc
     [0] <>old<>14164 := <>i<>14144
-    [1] <>new<>14165 := <>Global<>toNumber(<>old<>14164)
+    [1] <>new<>14165 := @ToNumber(<>old<>14164)
     [2] <>i<>14144 := <>new<>14165 + 1
     [3] <>Global<>ignore1778 := <>new<>14165
 
@@ -52739,7 +52739,7 @@ function[644] <>funexpr@6066:18-6075:6<> {
     [0] assert(<>new0<>14155)
     [1] <>y<>14156 := <>index<>14141
     [2] <>old<>14157 := <>matchIndex<>14142
-    [3] <>new<>14158 := <>Global<>toNumber(<>old<>14157)
+    [3] <>new<>14158 := @ToNumber(<>old<>14157)
     [4] <>matchIndex<>14142 := <>new<>14158 + 1
 
   Block[14] -> [22], ExitExc

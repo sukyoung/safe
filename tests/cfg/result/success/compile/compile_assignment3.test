@@ -3,7 +3,7 @@
 {
   <>obj<>1 = @ToObject(f)
   <>arguments<>2 = []
-  <>fun<>3 = <>Global<>getBase(f)
+  <>fun<>3 = @GetBase(f)
   <>Global<>ignore1 = <>obj<>1(<>fun<>3, <>arguments<>2)
   y = <>Global<>ignore1
   x = <>Global<>ignore1

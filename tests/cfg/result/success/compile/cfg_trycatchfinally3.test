@@ -48,7 +48,7 @@ catch(<>e<>2)
       <>temp<>11 = 2
       <>temp<>12 = [<>temp<>8, <>temp<>9, <>temp<>10, <>temp<>11, ]
       <>arguments<>13 = [<>temp<>12, ]
-      <>fun<>14 = <>Global<>getBase(x)
+      <>fun<>14 = @GetBase(x)
       <>Global<>ignore5 = <>obj<>7(<>fun<>14, <>arguments<>13)
     }
   }
@@ -68,7 +68,7 @@ finally
     {
       <>continue<>17 : {
         <>old<>18 = x
-        <>new<>19 = <>Global<>toNumber(<>old<>18)
+        <>new<>19 = @ToNumber(<>old<>18)
         x = <>new<>19 - 1
         if(<>new<>19 == 0)
           break <>break<>16

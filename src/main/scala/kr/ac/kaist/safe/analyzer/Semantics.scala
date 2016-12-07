@@ -472,6 +472,15 @@ class Semantics(
 
   // CFGInternalCall(ir, _, lhs, fun, arguments, loc)
   def IC(ir: IRNode, lhs: CFGId, fun: CFGId, args: List[CFGExpr], loc: Option[Address], st: AbsState, excSt: AbsState): (AbsState, AbsState) = (fun.toString, args, loc) match {
+    case (NodeUtil.INTERNAL_TO_NUM, List(expr), None) => {
+      val (v, excSet) = V(expr, st)
+      val st1 =
+        if (!v.isBottom) st.varStore(lhs, AbsValue(TypeConversionHelper.ToNumber(v, st.heap)))
+        else AbsState.Bot
+
+      val newExcSt = st.raiseException(excSet)
+      (st1, excSt + newExcSt)
+    }
     case (NodeUtil.INTERNAL_TO_OBJ, List(expr), Some(aNew)) => {
       val (v, excSet1) = V(expr, st)
       val (newSt, newExcSet) =
@@ -487,7 +496,12 @@ class Semantics(
       val newExcSt = st.raiseException(newExcSet)
       (newSt, excSt + newExcSt)
     }
-    case (NodeUtil.IS_OBJ_NAME, List(expr), None) => {
+    case (NodeUtil.INTERNAL_GET_BASE, List(CFGVarRef(_, x2)), None) => {
+      val baseV = st.lookupBase(x2)
+      val st1 = st.varStore(lhs, baseV)
+      (st1, excSt)
+    }
+    case (NodeUtil.INTERNAL_IS_OBJ, List(expr), None) => {
       val (v, excSet) = V(expr, st)
       val st1 =
         if (!v.isBottom) {
@@ -505,25 +519,11 @@ class Semantics(
       val newExcSt = st.raiseException(excSet)
       (st1, excSt + newExcSt)
     }
-    case (NodeUtil.TO_NUM_NAME, List(expr), None) => {
-      val (v, excSet) = V(expr, st)
-      val st1 =
-        if (!v.isBottom) st.varStore(lhs, AbsValue(TypeConversionHelper.ToNumber(v, st.heap)))
-        else AbsState.Bot
-
-      val newExcSt = st.raiseException(excSet)
-      (st1, excSt + newExcSt)
-    }
-    case (NodeUtil.GET_BASE_NAME, List(CFGVarRef(_, x2)), None) => {
-      val baseV = st.lookupBase(x2)
-      val st1 = st.varStore(lhs, baseV)
-      (st1, excSt)
-    }
-    case (NodeUtil.ITER_INIT_NAME, List(expr), Some(aNew)) => (st, excSt)
-    case (NodeUtil.HAS_NEXT_NAME, List(expr2, expr3), None) =>
+    case (NodeUtil.INTERNAL_ITER_INIT, List(expr), Some(aNew)) => (st, excSt)
+    case (NodeUtil.INTERNAL_HAS_NEXT, List(expr2, expr3), None) =>
       val st1 = st.varStore(lhs, AbsBool.Top)
       (st1, excSt)
-    case (NodeUtil.ITER_NEXT_NAME, List(expr2, expr3), None) =>
+    case (NodeUtil.INTERNAL_ITER_NEXT, List(expr2, expr3), None) =>
       val st1 = st.varStore(lhs, AbsString.Top)
       (st1, excSt)
     case _ =>

@@ -13,7 +13,7 @@ function[0] top-level {
     [8] <>obj<>3 := @ToObject(alert) @ #5
     [9] <>obj<>4 := @ToObject(f) @ #6
     [10] <>arguments<>5 := allocArg(0) @ #7
-    [11] <>fun<>6 := <>Global<>getBase(f)
+    [11] <>fun<>6 := @GetBase(f)
     [12] <>this<> := enterCode(<>fun<>6)
 
   Call[1] -> ExitExc
@@ -26,7 +26,7 @@ function[0] top-level {
   Block[4] -> [5], ExitExc
     [0] <>arguments<>8 := allocArg(1) @ #9
     [1] <>arguments<>8["0"] := <>temp<>7
-    [2] <>fun<>9 := <>Global<>getBase(alert)
+    [2] <>fun<>9 := @GetBase(alert)
     [3] <>this<> := enterCode(<>fun<>9)
 
   Call[5] -> ExitExc
@@ -39,7 +39,7 @@ function[0] top-level {
   Block[8] -> [9], ExitExc
     [0] <>obj<>10 := @ToObject(f) @ #11
     [1] <>arguments<>11 := allocArg(0) @ #12
-    [2] <>fun<>12 := <>Global<>getBase(f)
+    [2] <>fun<>12 := @GetBase(f)
     [3] <>this<> := enterCode(<>fun<>12)
 
   Call[9] -> ExitExc

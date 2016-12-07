@@ -15,7 +15,7 @@ function[0] top-level {
   Block[3] -> [5], ExitExc
     [0] assert(x != y)
     [1] <>old<>1 := y
-    [2] <>new<>2 := <>Global<>toNumber(<>old<>1)
+    [2] <>new<>2 := @ToNumber(<>old<>1)
     [3] y := <>new<>2 - 1
     [4] <>Global<>ignore7 := <>new<>2
 
@@ -24,7 +24,7 @@ function[0] top-level {
 
   Block[5] -> [2], ExitExc
     [0] <>old<>3 := x
-    [1] <>new<>4 := <>Global<>toNumber(<>old<>3)
+    [1] <>new<>4 := @ToNumber(<>old<>3)
     [2] x := <>new<>4 + 1
     [3] <>Global<>ignore5 := <>new<>4
 

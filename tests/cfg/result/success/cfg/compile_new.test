@@ -16,7 +16,7 @@ function[0] top-level {
   AfterCatch[3] -> ExitExc
 
   Block[4] -> [6], [5]
-    [0] <>cond<>6 := <>Global<>isObject(<>newObj<>5)
+    [0] <>cond<>6 := @isObject(<>newObj<>5)
 
   Block[5] -> [7], ExitExc
     [0] assert(<>cond<>6)
@@ -50,7 +50,7 @@ function[0] top-level {
   AfterCatch[10] -> ExitExc
 
   Block[11] -> [13], [12]
-    [0] <>cond<>18 := <>Global<>isObject(<>newObj<>17)
+    [0] <>cond<>18 := @isObject(<>newObj<>17)
 
   Block[12] -> [14], ExitExc
     [0] assert(<>cond<>18)
@@ -76,7 +76,7 @@ function[0] top-level {
   AfterCatch[17] -> ExitExc
 
   Block[18] -> [20], [19]
-    [0] <>cond<>25 := <>Global<>isObject(<>newObj<>24)
+    [0] <>cond<>25 := @isObject(<>newObj<>24)
 
   Block[19] -> [21], ExitExc
     [0] assert(<>cond<>25)
@@ -104,7 +104,7 @@ function[0] top-level {
   AfterCatch[25] -> ExitExc
 
   Block[26] -> [28], [27]
-    [0] <>cond<>39 := <>Global<>isObject(<>newObj<>38)
+    [0] <>cond<>39 := @isObject(<>newObj<>38)
 
   Block[27] -> [29], ExitExc
     [0] assert(<>cond<>39)

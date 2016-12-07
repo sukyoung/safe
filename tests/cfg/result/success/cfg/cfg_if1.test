@@ -14,7 +14,7 @@ function[0] top-level {
     [9] <>temp<>8 := "girl"
     [10] <>arguments<>9 := allocArg(1) @ #8
     [11] <>arguments<>9["0"] := <>temp<>8
-    [12] <>fun<>10 := <>Global<>getBase(say)
+    [12] <>fun<>10 := @GetBase(say)
     [13] <>this<> := enterCode(<>fun<>10)
 
   Call[1] -> ExitExc
@@ -30,7 +30,7 @@ function[0] top-level {
     [2] <>temp<>14 := "boy"
     [3] <>arguments<>15 := allocArg(1) @ #11
     [4] <>arguments<>15["0"] := <>temp<>14
-    [5] <>fun<>16 := <>Global<>getBase(say)
+    [5] <>fun<>16 := @GetBase(say)
     [6] <>this<> := enterCode(<>fun<>16)
 
   Call[5] -> ExitExc
@@ -46,7 +46,7 @@ function[0] top-level {
     [2] <>temp<>20 := "me"
     [3] <>arguments<>21 := allocArg(1) @ #14
     [4] <>arguments<>21["0"] := <>temp<>20
-    [5] <>fun<>22 := <>Global<>getBase(say)
+    [5] <>fun<>22 := @GetBase(say)
     [6] <>this<> := enterCode(<>fun<>22)
 
   Call[9] -> ExitExc
@@ -60,7 +60,7 @@ function[0] top-level {
     [0] <>temp<>24 := <>y<>18 + <>z<>23 + "!"
     [1] <>arguments<>25 := allocArg(1) @ #16
     [2] <>arguments<>25["0"] := <>temp<>24
-    [3] <>fun<>26 := <>Global<>getBase(print)
+    [3] <>fun<>26 := @GetBase(print)
     [4] <>this<> := enterCode(<>fun<>26)
 
   Call[13] -> ExitExc

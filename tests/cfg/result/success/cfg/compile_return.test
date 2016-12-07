@@ -6,7 +6,7 @@ function[0] top-level {
     [1] noop(StartOfFile)
     [2] <>obj<>2 := @ToObject(f) @ #3
     [3] <>arguments<>3 := allocArg(0) @ #4
-    [4] <>fun<>4 := <>Global<>getBase(f)
+    [4] <>fun<>4 := @GetBase(f)
     [5] <>this<> := enterCode(<>fun<>4)
 
   Call[1] -> ExitExc

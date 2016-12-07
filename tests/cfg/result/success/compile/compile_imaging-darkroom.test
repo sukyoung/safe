@@ -24,7 +24,7 @@ function FastBias(this, <>arguments<>9)
     <>obj<>14 = @ToObject(FastLog2)
     <>temp<>15 = <>b<>10
     <>arguments<>16 = [<>temp<>15, ]
-    <>fun<>17 = <>Global<>getBase(FastLog2)
+    <>fun<>17 = @GetBase(FastLog2)
     <>y<>18 = <>obj<>14(<>fun<>17, <>arguments<>16)
     <>temp<>19 = <>y<>18 / LOG2_HALF
     <>arguments<>20 = [<>temp<>13, <>temp<>19, ]
@@ -46,7 +46,7 @@ function FastGain(this, <>arguments<>23)
       <>temp<>27 = 1.0 - <>g<>24
       <>temp<>28 = 2.0 * <>x<>25
       <>arguments<>29 = [<>temp<>27, <>temp<>28, ]
-      <>fun<>30 = <>Global<>getBase(FastBias)
+      <>fun<>30 = @GetBase(FastBias)
       <>y<>31 = <>obj<>26(<>fun<>30, <>arguments<>29)
       <>new1<>32 = <>y<>31 * 0.5
     }
@@ -57,7 +57,7 @@ function FastGain(this, <>arguments<>23)
       <>temp<>35 = 1.0 - <>g<>24
       <>temp<>36 = 2.0 - 2.0 * <>x<>25
       <>arguments<>37 = [<>temp<>35, <>temp<>36, ]
-      <>fun<>38 = <>Global<>getBase(FastBias)
+      <>fun<>38 = @GetBase(FastBias)
       <>y<>39 = <>obj<>34(<>fun<>38, <>arguments<>37)
       <>new1<>32 = <>y<>33 - <>y<>39 * 0.5
     }
@@ -235,10 +235,10 @@ function ProcessImageData(this, <>arguments<>43)
             <>obj<>90 = @ToObject(Clamp)
             <>temp<>91 = <>y<>67
             <>arguments<>92 = [<>temp<>91, ]
-            <>fun<>93 = <>Global<>getBase(Clamp)
+            <>fun<>93 = @GetBase(Clamp)
             <>temp<>94 = <>obj<>90(<>fun<>93, <>arguments<>92)
             <>arguments<>95 = [<>temp<>89, <>temp<>94, ]
-            <>fun<>96 = <>Global<>getBase(FastGain)
+            <>fun<>96 = @GetBase(FastGain)
             <>Global<>ignore41 = <>obj<>88(<>fun<>96, <>arguments<>95)
             <>y<>67 = <>Global<>ignore41
           }
@@ -264,7 +264,7 @@ function ProcessImageData(this, <>arguments<>43)
         }
         {
           <>old<>100 = <>j<>63
-          <>new<>101 = <>Global<>toNumber(<>old<>100)
+          <>new<>101 = @ToNumber(<>old<>100)
           <>j<>63 = <>new<>101 + 1
           <>Global<>ignore27 = <>new<>101
         }
@@ -562,7 +562,7 @@ var data
   <>obj<>120 = @ToObject(FastLog2)
   <>temp<>121 = 0.5
   <>arguments<>122 = [<>temp<>121, ]
-  <>fun<>123 = <>Global<>getBase(FastLog2)
+  <>fun<>123 = @GetBase(FastLog2)
   <>Global<>ignore52 = <>obj<>120(<>fun<>123, <>arguments<>122)
   LOG2_HALF = <>Global<>ignore52
 }
@@ -597,14 +597,14 @@ var data
           <>obj<>132 = @ToObject(paramArray)
           <>temp<>133 = <>obj<>132[index]
           <>arguments<>134 = [<>temp<>129, <>temp<>130, <>temp<>131, <>temp<>133, ]
-          <>fun<>135 = <>Global<>getBase(ProcessImageData)
+          <>fun<>135 = @GetBase(ProcessImageData)
           <>Global<>ignore59 = <>obj<>128(<>fun<>135, <>arguments<>134)
           data = <>Global<>ignore59
         }
       }
       {
         <>old<>136 = index
-        <>new<>137 = <>Global<>toNumber(<>old<>136)
+        <>new<>137 = @ToNumber(<>old<>136)
         index = <>new<>137 + 1
         <>Global<>ignore57 = <>new<>137
         <>y<>125 = index

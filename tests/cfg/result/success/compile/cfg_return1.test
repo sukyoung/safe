@@ -6,7 +6,7 @@ var x
 {
   <>obj<>2 = @ToObject(f)
   <>arguments<>3 = []
-  <>fun<>4 = <>Global<>getBase(f)
+  <>fun<>4 = @GetBase(f)
   <>Global<>ignore1 = <>obj<>2(<>fun<>4, <>arguments<>3)
   x = <>Global<>ignore1
 }

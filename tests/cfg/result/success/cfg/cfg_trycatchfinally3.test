@@ -52,7 +52,7 @@ function[0] top-level {
     [11] <>temp<>12["3"] := <>temp<>11
     [12] <>arguments<>13 := allocArg(1) @ #8
     [13] <>arguments<>13["0"] := <>temp<>12
-    [14] <>fun<>14 := <>Global<>getBase(x)
+    [14] <>fun<>14 := @GetBase(x)
     [15] <>this<> := enterCode(<>fun<>14)
 
   Block[11] -> [3], [37]
@@ -81,7 +81,7 @@ function[0] top-level {
   Block[18] -> [22], [21], ExitExc
     [0] assert(true)
     [1] <>old<>16 := x
-    [2] <>new<>17 := <>Global<>toNumber(<>old<>16)
+    [2] <>new<>17 := @ToNumber(<>old<>16)
     [3] x := <>new<>17 - 1
 
   Block[19] -> [16], ExitExc
@@ -112,7 +112,7 @@ function[0] top-level {
   Block[29] -> [33], [32], ExitExc
     [0] assert(true)
     [1] <>old<>16 := x
-    [2] <>new<>17 := <>Global<>toNumber(<>old<>16)
+    [2] <>new<>17 := @ToNumber(<>old<>16)
     [3] x := <>new<>17 - 1
 
   Block[30] -> [27], ExitExc
@@ -143,7 +143,7 @@ function[0] top-level {
   Block[40] -> [44], [43], ExitExc
     [0] assert(true)
     [1] <>old<>16 := x
-    [2] <>new<>17 := <>Global<>toNumber(<>old<>16)
+    [2] <>new<>17 := @ToNumber(<>old<>16)
     [3] x := <>new<>17 - 1
 
   Block[41] -> [38], ExitExc

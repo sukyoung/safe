@@ -8,7 +8,7 @@ function[0] top-level {
     [3] <>temp<>14 := 1
     [4] <>arguments<>15 := allocArg(1) @ #12
     [5] <>arguments<>15["0"] := <>temp<>14
-    [6] <>fun<>16 := <>Global<>getBase(alert)
+    [6] <>fun<>16 := @GetBase(alert)
     [7] <>this<> := enterCode(<>fun<>16)
 
   Call[1] -> ExitExc
@@ -23,7 +23,7 @@ function[0] top-level {
     [1] <>temp<>18 := 4
     [2] <>arguments<>19 := allocArg(1) @ #15
     [3] <>arguments<>19["0"] := <>temp<>18
-    [4] <>fun<>20 := <>Global<>getBase(alert)
+    [4] <>fun<>20 := @GetBase(alert)
     [5] <>this<> := enterCode(<>fun<>20)
 
   Call[5] -> ExitExc
@@ -36,7 +36,7 @@ function[0] top-level {
   Block[8] -> [9], ExitExc
     [0] <>obj<>21 := @ToObject(f) @ #17
     [1] <>arguments<>22 := allocArg(0) @ #18
-    [2] <>fun<>23 := <>Global<>getBase(f)
+    [2] <>fun<>23 := @GetBase(f)
     [3] <>this<> := enterCode(<>fun<>23)
 
   Call[9] -> ExitExc
@@ -64,7 +64,7 @@ function[1] f {
     [2] <>temp<>10 := 2
     [3] <>arguments<>11 := allocArg(1) @ #7
     [4] <>arguments<>11["0"] := <>temp<>10
-    [5] <>fun<>12 := <>Global<>getBase(alert)
+    [5] <>fun<>12 := @GetBase(alert)
     [6] <>this<> := enterCode(<>fun<>12)
 
   Call[1] -> ExitExc
@@ -88,7 +88,7 @@ function[2] eval {
     [1] <>temp<>6 := 0
     [2] <>arguments<>7 := allocArg(1) @ #2
     [3] <>arguments<>7["0"] := <>temp<>6
-    [4] <>fun<>8 := <>Global<>getBase(alert)
+    [4] <>fun<>8 := @GetBase(alert)
     [5] <>this<> := enterCode(<>fun<>8)
 
   Call[1] -> ExitExc

@@ -11,7 +11,7 @@ function[0] top-level {
     [0] assert(x)
     [1] <>obj<>1 := @ToObject(y) @ #1
     [2] <>arguments<>2 := allocArg(0) @ #2
-    [3] <>fun<>3 := <>Global<>getBase(y)
+    [3] <>fun<>3 := @GetBase(y)
     [4] <>this<> := enterCode(<>fun<>3)
 
   Block[2] -> [6], ExitExc
@@ -27,13 +27,13 @@ function[0] top-level {
   Block[6] -> [8], ExitExc
     [0] <>obj<>4 := @ToObject(getNode) @ #4
     [1] <>arguments<>5 := allocArg(0) @ #5
-    [2] <>fun<>6 := <>Global<>getBase(getNode)
+    [2] <>fun<>6 := @GetBase(getNode)
     [3] <>this<> := enterCode(<>fun<>6)
 
   Block[7] -> Exit, ExitExc
     [0] <>Global<>ignore13 := i
     [1] <>old<>9 := j
-    [2] <>new<>10 := <>Global<>toNumber(<>old<>9)
+    [2] <>new<>10 := @ToNumber(<>old<>9)
     [3] j := <>new<>10 + 1
     [4] <>Global<>ignore15 := <>new<>10 + 1
     [5] noop(EndOfFile)

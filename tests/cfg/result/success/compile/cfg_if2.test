@@ -50,11 +50,11 @@ fruit = "melon"
   <>temp<>13 = money
   <>temp<>14 = fruit
   <>arguments<>15 = [<>temp<>13, <>temp<>14, ]
-  <>fun<>16 = <>Global<>getBase(pay)
+  <>fun<>16 = @GetBase(pay)
   <>z<>17 = <>obj<>12(<>fun<>16, <>arguments<>15)
   <>temp<>18 = <>y<>11 + <>z<>17 + " won."
   <>arguments<>19 = [<>temp<>18, ]
-  <>fun<>20 = <>Global<>getBase(print)
+  <>fun<>20 = @GetBase(print)
   <>Global<>ignore4 = <>obj<>10(<>fun<>20, <>arguments<>19)
 }
 

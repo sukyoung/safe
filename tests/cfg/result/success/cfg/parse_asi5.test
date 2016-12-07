@@ -8,7 +8,7 @@ function[0] top-level {
     [3] <>temp<>3 := d + e
     [4] <>arguments<>4 := allocArg(1) @ #2
     [5] <>arguments<>4["0"] := <>temp<>3
-    [6] <>fun<>5 := <>Global<>getBase(c)
+    [6] <>fun<>5 := @GetBase(c)
     [7] <>this<> := enterCode(<>fun<>5)
 
   Call[1] -> ExitExc
@@ -170,7 +170,7 @@ function[0] top-level {
     [4] <>temp<>97 := - y
     [5] <>arguments<>98 := allocArg(1) @ #55
     [6] <>arguments<>98["0"] := <>temp<>97
-    [7] <>fun<>99 := <>Global<>getBase(print)
+    [7] <>fun<>99 := @GetBase(print)
     [8] <>this<> := enterCode(<>fun<>99)
 
   Call[25] -> ExitExc
@@ -202,7 +202,7 @@ function[1] <>funexpr@19:11-76<> {
     [5] <>temp<>60 := <>y<>58 + <>obj<>59[1] + "."
     [6] <>arguments<>61 := allocArg(1) @ #29
     [7] <>arguments<>61["0"] := <>temp<>60
-    [8] <>fun<>62 := <>Global<>getBase(print)
+    [8] <>fun<>62 := @GetBase(print)
     [9] <>this<> := enterCode(<>fun<>62)
 
   Call[1] -> ExitExc
@@ -226,7 +226,7 @@ function[2] <>funexpr@25:11-27:25<> {
     [1] <>temp<>76 := "Looking up and caching " + <>uri<>73
     [2] <>arguments<>77 := allocArg(1) @ #39
     [3] <>arguments<>77["0"] := <>temp<>76
-    [4] <>fun<>78 := <>Global<>getBase(log)
+    [4] <>fun<>78 := @GetBase(log)
     [5] <>this<> := enterCode(<>fun<>78)
 
   Call[1] -> ExitExc
@@ -241,7 +241,7 @@ function[2] <>funexpr@25:11-27:25<> {
     [1] <>temp<>80 := <>uri<>73
     [2] <>arguments<>81 := allocArg(1) @ #42
     [3] <>arguments<>81["0"] := <>temp<>80
-    [4] <>fun<>82 := <>Global<>getBase(fetch_and_cache)
+    [4] <>fun<>82 := @GetBase(fetch_and_cache)
     [5] <>this<> := enterCode(<>fun<>82)
 
   Call[5] -> ExitExc

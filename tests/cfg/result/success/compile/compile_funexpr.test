@@ -40,7 +40,7 @@ var x
       <>obj<>15 = @ToObject(<>h<>12)
       <>temp<>16 = <>n<>14 - 1
       <>arguments<>17 = [<>temp<>16, ]
-      <>fun<>18 = <>Global<>getBase(<>h<>12)
+      <>fun<>18 = @GetBase(<>h<>12)
       <>new1<>19 = <>obj<>15(<>fun<>18, <>arguments<>17)
       return <>new1<>19
     }

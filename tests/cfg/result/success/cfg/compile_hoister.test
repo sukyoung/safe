@@ -7,7 +7,7 @@ function[0] top-level {
     [2] __expect1 := undefined
     [3] <>obj<>3 := @ToObject(f) @ #3
     [4] <>arguments<>4 := allocArg(0) @ #4
-    [5] <>fun<>5 := <>Global<>getBase(f)
+    [5] <>fun<>5 := @GetBase(f)
     [6] <>this<> := enterCode(<>fun<>5)
 
   Call[1] -> ExitExc

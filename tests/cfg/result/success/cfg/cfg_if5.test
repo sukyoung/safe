@@ -10,7 +10,7 @@ function[0] top-level {
     [0] assert(truck)
     [1] <>old<>1 := truck
     [2] <>old<>2 := x
-    [3] <>new<>3 := <>Global<>toNumber(<>old<>2)
+    [3] <>new<>3 := @ToNumber(<>old<>2)
     [4] x := <>new<>3 - 1
     [5] truck := <>old<>1 - <>new<>3
 
@@ -33,7 +33,7 @@ function[0] top-level {
     [0] assert(truck)
     [1] <>old<>4 := truck
     [2] <>old<>5 := x
-    [3] <>new<>6 := <>Global<>toNumber(<>old<>5)
+    [3] <>new<>6 := @ToNumber(<>old<>5)
     [4] x := <>new<>6 - 1
     [5] truck := <>old<>4 - <>new<>6
 
@@ -41,7 +41,7 @@ function[0] top-level {
     [0] assert(! truck)
     [1] <>old<>7 := truck
     [2] <>old<>8 := x
-    [3] <>new<>9 := <>Global<>toNumber(<>old<>8)
+    [3] <>new<>9 := @ToNumber(<>old<>8)
     [4] x := <>new<>9 - 1
     [5] truck := <>old<>7 - <>new<>9
 

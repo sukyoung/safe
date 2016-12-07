@@ -26,7 +26,7 @@ var pixcounter
     [[Prototype]]=<>proto<>3
   }
   <>newObj<>5 = new <>fun<>1(<>obj<>4, <>arguments<>2)
-  <>cond<>6 = <>Global<>isObject(<>newObj<>5)
+  <>cond<>6 = @isObject(<>newObj<>5)
   if(<>cond<>6)
     <>Global<>ignore4 = <>newObj<>5
   else
@@ -107,7 +107,7 @@ var pixcounter
       <>break<>33 : {
         {
           <>old<>34 = <>p<>19
-          <>new<>35 = <>Global<>toNumber(<>old<>34)
+          <>new<>35 = @ToNumber(<>old<>34)
           <>p<>19 = <>new<>35 - 1
         }
         while(<>new<>35)
@@ -131,7 +131,7 @@ var pixcounter
           }
           {
             <>old<>34 = <>p<>19
-            <>new<>35 = <>Global<>toNumber(<>old<>34)
+            <>new<>35 = @ToNumber(<>old<>34)
             <>p<>19 = <>new<>35 - 1
           }
         }
@@ -140,7 +140,7 @@ var pixcounter
       <>break<>46 : {
         {
           <>old<>47 = <>p<>19
-          <>new<>48 = <>Global<>toNumber(<>old<>47)
+          <>new<>48 = @ToNumber(<>old<>47)
           <>p<>19 = <>new<>48 - 1
         }
         while(<>new<>48)
@@ -164,7 +164,7 @@ var pixcounter
           }
           {
             <>old<>47 = <>p<>19
-            <>new<>48 = <>Global<>toNumber(<>old<>47)
+            <>new<>48 = @ToNumber(<>old<>47)
             <>p<>19 = <>new<>48 - 1
           }
         }
@@ -208,7 +208,7 @@ var pixcounter
       }
       {
         <>old<>69 = pixcounter
-        <>new<>70 = <>Global<>toNumber(<>old<>69)
+        <>new<>70 = @ToNumber(<>old<>69)
         pixcounter = <>new<>70 + 1
         <>Global<>ignore20 = <>new<>70
       }

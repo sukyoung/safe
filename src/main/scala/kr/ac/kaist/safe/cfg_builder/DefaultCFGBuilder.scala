@@ -391,7 +391,7 @@ class DefaultCFGBuilder(
       case IRInternalCall(_, lhs, fun @ (IRTmpId(_, originalName, uniqueName, _)), arg1, arg2) =>
         val tailBlock: NormalBlock = getTail(blocks, func)
         val (addr: Option[Address], lm: LabelMap) = uniqueName match {
-          case INTERNAL_TO_OBJ | ITER_INIT_NAME => (Some(newAddr), lmap.updated(ThrowLabel, (ThrowLabel of lmap) + tailBlock))
+          case INTERNAL_TO_OBJ | INTERNAL_ITER_INIT => (Some(newAddr), lmap.updated(ThrowLabel, (ThrowLabel of lmap) + tailBlock))
           case _ => (None, lmap)
         }
         val argList: List[CFGExpr] = arg2 match {
@@ -503,7 +503,7 @@ class DefaultCFGBuilder(
         // TODO: Need to find a more graceful way.
         val bForin: Boolean = body match {
           case IRSeq(_, stmts) if stmts.size > 0 => stmts(0) match {
-            case IRInternalCall(_, _, fun @ (IRTmpId(_, _, ITER_NEXT_NAME, _)), _, _) => true
+            case IRInternalCall(_, _, fun @ (IRTmpId(_, _, INTERNAL_ITER_NEXT, _)), _, _) => true
             case _ => false
           }
           case _ => false

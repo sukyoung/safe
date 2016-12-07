@@ -9,7 +9,7 @@ var z
   <>obj<>2 = @ToObject(c)
   <>temp<>3 = d + e
   <>arguments<>4 = [<>temp<>3, ]
-  <>fun<>5 = <>Global<>getBase(c)
+  <>fun<>5 = @GetBase(c)
   <>obj1<>6 = <>obj<>2(<>fun<>5, <>arguments<>4)
   <>obj<>7 = @ToObject(<>obj1<>6)
   <>arguments<>8 = []
@@ -73,7 +73,7 @@ a = b + c
       <>obj<>61 = @ToObject(<>a<>56)
       <>temp<>62 = <>y<>60 + <>obj<>61[1] + "."
       <>arguments<>63 = [<>temp<>62, ]
-      <>fun<>64 = <>Global<>getBase(print)
+      <>fun<>64 = @GetBase(print)
       <>Global<>ignore4 = <>obj<>57(<>fun<>64, <>arguments<>63)
     }
   }
@@ -93,14 +93,14 @@ a = b + c
       <>obj<>77 = @ToObject(log)
       <>temp<>78 = "Looking up and caching " + <>uri<>76
       <>arguments<>79 = [<>temp<>78, ]
-      <>fun<>80 = <>Global<>getBase(log)
+      <>fun<>80 = @GetBase(log)
       <>Global<>ignore5 = <>obj<>77(<>fun<>80, <>arguments<>79)
     }
     {
       <>obj<>81 = @ToObject(fetch_and_cache)
       <>temp<>82 = <>uri<>76
       <>arguments<>83 = [<>temp<>82, ]
-      <>fun<>84 = <>Global<>getBase(fetch_and_cache)
+      <>fun<>84 = @GetBase(fetch_and_cache)
       <>Global<>ignore6 = <>obj<>81(<>fun<>84, <>arguments<>83)
     }
   }
@@ -127,7 +127,7 @@ y = - y
   <>obj<>96 = @ToObject(print)
   <>temp<>97 = - y
   <>arguments<>98 = [<>temp<>97, ]
-  <>fun<>99 = <>Global<>getBase(print)
+  <>fun<>99 = @GetBase(print)
   <>Global<>ignore11 = <>obj<>96(<>fun<>99, <>arguments<>98)
 }
 <>Global<>ignore13 = + z

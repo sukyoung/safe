@@ -416,7 +416,7 @@ function[1] _gjuc {
   AfterCatch[14] -> ExitExc
 
   Block[15] -> [17], [16]
-    [0] <>cond<>21 := <>Global<>isObject(<>newObj<>20)
+    [0] <>cond<>21 := @isObject(<>newObj<>20)
 
   Block[16] -> [18], ExitExc
     [0] assert(<>cond<>21)
@@ -483,7 +483,7 @@ function[1] _gjuc {
   AfterCatch[31] -> ExitExc
 
   Block[32] -> [34], [33]
-    [0] <>cond<>41 := <>Global<>isObject(<>newObj<>40)
+    [0] <>cond<>41 := @isObject(<>newObj<>40)
 
   Block[33] -> [35], ExitExc
     [0] assert(<>cond<>41)
@@ -560,7 +560,7 @@ function[1] _gjuc {
   AfterCatch[52] -> ExitExc
 
   Block[53] -> [55], [54]
-    [0] <>cond<>59 := <>Global<>isObject(<>newObj<>58)
+    [0] <>cond<>59 := @isObject(<>newObj<>58)
 
   Block[54] -> [56], ExitExc
     [0] assert(<>cond<>59)
@@ -664,7 +664,7 @@ function[2] _gjp {
     [4] <>arguments<>81 := allocArg(2) @ #52
     [5] <>arguments<>81["0"] := <>temp<>79
     [6] <>arguments<>81["1"] := <>temp<>80
-    [7] <>fun<>82 := <>Global<>getBase(setTimeout)
+    [7] <>fun<>82 := @GetBase(setTimeout)
     [8] <>this<> := enterCode(<>fun<>82)
 
   Block[13] -> Exit
@@ -766,7 +766,7 @@ function[4] <>funexpr@3:2-26:620<> {
     [6] <>arguments<>962 := allocArg(2) @ #513
     [7] <>arguments<>962["0"] := <>temp<>960
     [8] <>arguments<>962["1"] := <>temp<>961
-    [9] <>fun<>963 := <>Global<>getBase(<>_tvn<>97)
+    [9] <>fun<>963 := @GetBase(<>_tvn<>97)
     [10] <>this<> := enterCode(<>fun<>963)
 
   Call[9] -> [2]
@@ -783,7 +783,7 @@ function[4] <>funexpr@3:2-26:620<> {
     [3] <>arguments<>968 := allocArg(2) @ #516
     [4] <>arguments<>968["0"] := <>temp<>966
     [5] <>arguments<>968["1"] := <>temp<>967
-    [6] <>fun<>969 := <>Global<>getBase(<>_tvn<>97)
+    [6] <>fun<>969 := @GetBase(<>_tvn<>97)
     [7] <>this<> := enterCode(<>fun<>969)
 
   Call[13] -> [2]
@@ -807,7 +807,7 @@ function[4] <>funexpr@3:2-26:620<> {
     [10] <>temp<>980 := 1
     [11] <>arguments<>981 := allocArg(1) @ #526
     [12] <>arguments<>981["0"] := <>temp<>980
-    [13] <>fun<>982 := <>Global<>getBase(<>ea<>119)
+    [13] <>fun<>982 := @GetBase(<>ea<>119)
     [14] <>this<> := enterCode(<>fun<>982)
 
   Call[17] -> [2]
@@ -823,7 +823,7 @@ function[4] <>funexpr@3:2-26:620<> {
     [2] <>temp<>984 := 2
     [3] <>arguments<>985 := allocArg(1) @ #529
     [4] <>arguments<>985["0"] := <>temp<>984
-    [5] <>fun<>986 := <>Global<>getBase(<>ea<>119)
+    [5] <>fun<>986 := @GetBase(<>ea<>119)
     [6] <>this<> := enterCode(<>fun<>986)
 
   Call[21] -> [2]
@@ -841,7 +841,7 @@ function[4] <>funexpr@3:2-26:620<> {
     [4] <>arguments<>990 := allocArg(2) @ #532
     [5] <>arguments<>990["0"] := <>temp<>988
     [6] <>arguments<>990["1"] := <>temp<>989
-    [7] <>fun<>991 := <>Global<>getBase(<>r<>100)
+    [7] <>fun<>991 := @GetBase(<>r<>100)
     [8] <>this<> := enterCode(<>fun<>991)
 
   Call[25] -> [2]
@@ -858,7 +858,7 @@ function[4] <>funexpr@3:2-26:620<> {
     [3] <>arguments<>995 := allocArg(2) @ #535
     [4] <>arguments<>995["0"] := <>temp<>993
     [5] <>arguments<>995["1"] := <>temp<>994
-    [6] <>fun<>996 := <>Global<>getBase(<>r<>100)
+    [6] <>fun<>996 := @GetBase(<>r<>100)
     [7] <>this<> := enterCode(<>fun<>996)
 
   Call[29] -> [2]
@@ -899,7 +899,7 @@ function[4] <>funexpr@3:2-26:620<> {
     [27] <>arguments<>1031 := allocArg(2) @ #565
     [28] <>arguments<>1031["0"] := <>temp<>1029
     [29] <>arguments<>1031["1"] := <>temp<>1030
-    [30] <>fun<>1032 := <>Global<>getBase(<>r<>100)
+    [30] <>fun<>1032 := @GetBase(<>r<>100)
     [31] <>this<> := enterCode(<>fun<>1032)
 
   Call[33] -> [2]
@@ -984,7 +984,7 @@ function[4] <>funexpr@3:2-26:620<> {
     [27] <>arguments<>1199 := allocArg(2) @ #685
     [28] <>arguments<>1199["0"] := <>temp<>1197
     [29] <>arguments<>1199["1"] := <>temp<>1198
-    [30] <>fun<>1200 := <>Global<>getBase(<>r<>100)
+    [30] <>fun<>1200 := @GetBase(<>r<>100)
     [31] <>this<> := enterCode(<>fun<>1200)
 
   Call[45] -> [2]
@@ -1001,7 +1001,7 @@ function[4] <>funexpr@3:2-26:620<> {
     [3] <>arguments<>1204 := allocArg(2) @ #688
     [4] <>arguments<>1204["0"] := <>temp<>1202
     [5] <>arguments<>1204["1"] := <>temp<>1203
-    [6] <>fun<>1205 := <>Global<>getBase(<>r<>100)
+    [6] <>fun<>1205 := @GetBase(<>r<>100)
     [7] <>this<> := enterCode(<>fun<>1205)
 
   Call[49] -> [2]
@@ -1018,7 +1018,7 @@ function[4] <>funexpr@3:2-26:620<> {
     [3] <>arguments<>1209 := allocArg(2) @ #691
     [4] <>arguments<>1209["0"] := <>temp<>1207
     [5] <>arguments<>1209["1"] := <>temp<>1208
-    [6] <>fun<>1210 := <>Global<>getBase(<>r<>100)
+    [6] <>fun<>1210 := @GetBase(<>r<>100)
     [7] <>this<> := enterCode(<>fun<>1210)
 
   Call[53] -> [2]
@@ -1035,7 +1035,7 @@ function[4] <>funexpr@3:2-26:620<> {
     [3] <>arguments<>1214 := allocArg(2) @ #694
     [4] <>arguments<>1214["0"] := <>temp<>1212
     [5] <>arguments<>1214["1"] := <>temp<>1213
-    [6] <>fun<>1215 := <>Global<>getBase(<>r<>100)
+    [6] <>fun<>1215 := @GetBase(<>r<>100)
     [7] <>this<> := enterCode(<>fun<>1215)
 
   Call[57] -> [2]
@@ -1052,7 +1052,7 @@ function[4] <>funexpr@3:2-26:620<> {
     [3] <>arguments<>1219 := allocArg(2) @ #697
     [4] <>arguments<>1219["0"] := <>temp<>1217
     [5] <>arguments<>1219["1"] := <>temp<>1218
-    [6] <>fun<>1220 := <>Global<>getBase(<>r<>100)
+    [6] <>fun<>1220 := @GetBase(<>r<>100)
     [7] <>this<> := enterCode(<>fun<>1220)
 
   Call[61] -> [2]
@@ -1069,7 +1069,7 @@ function[4] <>funexpr@3:2-26:620<> {
     [3] <>arguments<>1224 := allocArg(2) @ #700
     [4] <>arguments<>1224["0"] := <>temp<>1222
     [5] <>arguments<>1224["1"] := <>temp<>1223
-    [6] <>fun<>1225 := <>Global<>getBase(<>r<>100)
+    [6] <>fun<>1225 := @GetBase(<>r<>100)
     [7] <>this<> := enterCode(<>fun<>1225)
 
   Call[65] -> [2]
@@ -1086,7 +1086,7 @@ function[4] <>funexpr@3:2-26:620<> {
     [3] <>arguments<>1229 := allocArg(2) @ #703
     [4] <>arguments<>1229["0"] := <>temp<>1227
     [5] <>arguments<>1229["1"] := <>temp<>1228
-    [6] <>fun<>1230 := <>Global<>getBase(<>r<>100)
+    [6] <>fun<>1230 := @GetBase(<>r<>100)
     [7] <>this<> := enterCode(<>fun<>1230)
 
   Call[69] -> [2]
@@ -1103,7 +1103,7 @@ function[4] <>funexpr@3:2-26:620<> {
     [3] <>arguments<>1234 := allocArg(2) @ #706
     [4] <>arguments<>1234["0"] := <>temp<>1232
     [5] <>arguments<>1234["1"] := <>temp<>1233
-    [6] <>fun<>1235 := <>Global<>getBase(<>r<>100)
+    [6] <>fun<>1235 := @GetBase(<>r<>100)
     [7] <>this<> := enterCode(<>fun<>1235)
 
   Call[73] -> [2]
@@ -1120,7 +1120,7 @@ function[4] <>funexpr@3:2-26:620<> {
     [3] <>arguments<>1239 := allocArg(2) @ #709
     [4] <>arguments<>1239["0"] := <>temp<>1237
     [5] <>arguments<>1239["1"] := <>temp<>1238
-    [6] <>fun<>1240 := <>Global<>getBase(<>r<>100)
+    [6] <>fun<>1240 := @GetBase(<>r<>100)
     [7] <>this<> := enterCode(<>fun<>1240)
 
   Call[77] -> [2]
@@ -1137,7 +1137,7 @@ function[4] <>funexpr@3:2-26:620<> {
     [3] <>arguments<>1244 := allocArg(2) @ #712
     [4] <>arguments<>1244["0"] := <>temp<>1242
     [5] <>arguments<>1244["1"] := <>temp<>1243
-    [6] <>fun<>1245 := <>Global<>getBase(<>r<>100)
+    [6] <>fun<>1245 := @GetBase(<>r<>100)
     [7] <>this<> := enterCode(<>fun<>1245)
 
   Call[81] -> [2]
@@ -1154,7 +1154,7 @@ function[4] <>funexpr@3:2-26:620<> {
     [3] <>arguments<>1249 := allocArg(2) @ #715
     [4] <>arguments<>1249["0"] := <>temp<>1247
     [5] <>arguments<>1249["1"] := <>temp<>1248
-    [6] <>fun<>1250 := <>Global<>getBase(<>r<>100)
+    [6] <>fun<>1250 := @GetBase(<>r<>100)
     [7] <>this<> := enterCode(<>fun<>1250)
 
   Call[85] -> [2]
@@ -1171,7 +1171,7 @@ function[4] <>funexpr@3:2-26:620<> {
     [3] <>arguments<>1254 := allocArg(2) @ #718
     [4] <>arguments<>1254["0"] := <>temp<>1252
     [5] <>arguments<>1254["1"] := <>temp<>1253
-    [6] <>fun<>1255 := <>Global<>getBase(<>r<>100)
+    [6] <>fun<>1255 := @GetBase(<>r<>100)
     [7] <>this<> := enterCode(<>fun<>1255)
 
   Call[89] -> [2]
@@ -1188,7 +1188,7 @@ function[4] <>funexpr@3:2-26:620<> {
     [3] <>arguments<>1259 := allocArg(2) @ #721
     [4] <>arguments<>1259["0"] := <>temp<>1257
     [5] <>arguments<>1259["1"] := <>temp<>1258
-    [6] <>fun<>1260 := <>Global<>getBase(<>r<>100)
+    [6] <>fun<>1260 := @GetBase(<>r<>100)
     [7] <>this<> := enterCode(<>fun<>1260)
 
   Call[93] -> [2]
@@ -1205,7 +1205,7 @@ function[4] <>funexpr@3:2-26:620<> {
     [3] <>arguments<>1264 := allocArg(2) @ #724
     [4] <>arguments<>1264["0"] := <>temp<>1262
     [5] <>arguments<>1264["1"] := <>temp<>1263
-    [6] <>fun<>1265 := <>Global<>getBase(<>r<>100)
+    [6] <>fun<>1265 := @GetBase(<>r<>100)
     [7] <>this<> := enterCode(<>fun<>1265)
 
   Call[97] -> [2]
@@ -1343,7 +1343,7 @@ function[4] <>funexpr@3:2-26:620<> {
     [12] <>arguments<>1379["0"] := <>temp<>1376
     [13] <>arguments<>1379["1"] := <>temp<>1377
     [14] <>arguments<>1379["2"] := <>temp<>1378
-    [15] <>fun<>1380 := <>Global<>getBase(<>r<>100)
+    [15] <>fun<>1380 := @GetBase(<>r<>100)
     [16] <>this<> := enterCode(<>fun<>1380)
 
   Call[121] -> [2]
@@ -1370,7 +1370,7 @@ function[4] <>funexpr@3:2-26:620<> {
     [3] <>arguments<>1384 := allocArg(2) @ #825
     [4] <>arguments<>1384["0"] := <>temp<>1382
     [5] <>arguments<>1384["1"] := <>temp<>1383
-    [6] <>fun<>1385 := <>Global<>getBase(<>r<>100)
+    [6] <>fun<>1385 := @GetBase(<>r<>100)
     [7] <>this<> := enterCode(<>fun<>1385)
 
   Call[129] -> [2]
@@ -1387,7 +1387,7 @@ function[4] <>funexpr@3:2-26:620<> {
     [3] <>arguments<>1389 := allocArg(2) @ #828
     [4] <>arguments<>1389["0"] := <>temp<>1387
     [5] <>arguments<>1389["1"] := <>temp<>1388
-    [6] <>fun<>1390 := <>Global<>getBase(<>r<>100)
+    [6] <>fun<>1390 := @GetBase(<>r<>100)
     [7] <>this<> := enterCode(<>fun<>1390)
 
   Call[133] -> [2]
@@ -1445,7 +1445,7 @@ function[4] <>funexpr@3:2-26:620<> {
     [2] <>temp<>1415 := function (50) @ #845, #846
     [3] <>arguments<>1416 := allocArg(1) @ #847
     [4] <>arguments<>1416["0"] := <>temp<>1415
-    [5] <>fun<>1417 := <>Global<>getBase(<>Ga<>103)
+    [5] <>fun<>1417 := @GetBase(<>Ga<>103)
     [6] <>this<> := enterCode(<>fun<>1417)
 
   Block[146] -> [151], [2]
@@ -1480,7 +1480,7 @@ function[4] <>funexpr@3:2-26:620<> {
     [12] <>arguments<>1510 := allocArg(2) @ #904
     [13] <>arguments<>1510["0"] := <>temp<>1508
     [14] <>arguments<>1510["1"] := <>temp<>1509
-    [15] <>fun<>1511 := <>Global<>getBase(<>r<>100)
+    [15] <>fun<>1511 := @GetBase(<>r<>100)
     [16] <>this<> := enterCode(<>fun<>1511)
 
   Call[151] -> [2]
@@ -1513,7 +1513,7 @@ function[4] <>funexpr@3:2-26:620<> {
     [2] <>temp<>1428 := <>_mlToken<>102
     [3] <>arguments<>1429 := allocArg(1) @ #858
     [4] <>arguments<>1429["0"] := <>temp<>1428
-    [5] <>fun<>1430 := <>Global<>getBase(<>Ga<>103)
+    [5] <>fun<>1430 := @GetBase(<>Ga<>103)
     [6] <>this<> := enterCode(<>fun<>1430)
 
   Block[160] -> [167], [166], [2]
@@ -1567,7 +1567,7 @@ function[4] <>funexpr@3:2-26:620<> {
     [3] <>arguments<>1515 := allocArg(2) @ #907
     [4] <>arguments<>1515["0"] := <>temp<>1513
     [5] <>arguments<>1515["1"] := <>temp<>1514
-    [6] <>fun<>1516 := <>Global<>getBase(<>r<>100)
+    [6] <>fun<>1516 := @GetBase(<>r<>100)
     [7] <>this<> := enterCode(<>fun<>1516)
 
   Call[177] -> [2]
@@ -1584,7 +1584,7 @@ function[4] <>funexpr@3:2-26:620<> {
     [3] <>arguments<>1520 := allocArg(2) @ #910
     [4] <>arguments<>1520["0"] := <>temp<>1518
     [5] <>arguments<>1520["1"] := <>temp<>1519
-    [6] <>fun<>1521 := <>Global<>getBase(<>r<>100)
+    [6] <>fun<>1521 := @GetBase(<>r<>100)
     [7] <>this<> := enterCode(<>fun<>1521)
 
   Call[181] -> [2]
@@ -1683,7 +1683,7 @@ function[4] <>funexpr@3:2-26:620<> {
     [85] <>arguments<>2191 := allocArg(2) @ #1370
     [86] <>arguments<>2191["0"] := <>temp<>2189
     [87] <>arguments<>2191["1"] := <>temp<>2190
-    [88] <>fun<>2192 := <>Global<>getBase(<>r<>100)
+    [88] <>fun<>2192 := @GetBase(<>r<>100)
     [89] <>this<> := enterCode(<>fun<>2192)
 
   Call[185] -> [2]
@@ -1700,7 +1700,7 @@ function[4] <>funexpr@3:2-26:620<> {
     [3] <>arguments<>2196 := allocArg(2) @ #1373
     [4] <>arguments<>2196["0"] := <>temp<>2194
     [5] <>arguments<>2196["1"] := <>temp<>2195
-    [6] <>fun<>2197 := <>Global<>getBase(<>r<>100)
+    [6] <>fun<>2197 := @GetBase(<>r<>100)
     [7] <>this<> := enterCode(<>fun<>2197)
 
   Call[189] -> [2]
@@ -1717,7 +1717,7 @@ function[4] <>funexpr@3:2-26:620<> {
     [3] <>arguments<>2201 := allocArg(2) @ #1376
     [4] <>arguments<>2201["0"] := <>temp<>2199
     [5] <>arguments<>2201["1"] := <>temp<>2200
-    [6] <>fun<>2202 := <>Global<>getBase(<>r<>100)
+    [6] <>fun<>2202 := @GetBase(<>r<>100)
     [7] <>this<> := enterCode(<>fun<>2202)
 
   Call[193] -> [2]
@@ -1734,7 +1734,7 @@ function[4] <>funexpr@3:2-26:620<> {
     [3] <>arguments<>2206 := allocArg(2) @ #1379
     [4] <>arguments<>2206["0"] := <>temp<>2204
     [5] <>arguments<>2206["1"] := <>temp<>2205
-    [6] <>fun<>2207 := <>Global<>getBase(<>r<>100)
+    [6] <>fun<>2207 := @GetBase(<>r<>100)
     [7] <>this<> := enterCode(<>fun<>2207)
 
   Call[197] -> [2]
@@ -1751,7 +1751,7 @@ function[4] <>funexpr@3:2-26:620<> {
     [3] <>arguments<>2211 := allocArg(2) @ #1382
     [4] <>arguments<>2211["0"] := <>temp<>2209
     [5] <>arguments<>2211["1"] := <>temp<>2210
-    [6] <>fun<>2212 := <>Global<>getBase(<>r<>100)
+    [6] <>fun<>2212 := @GetBase(<>r<>100)
     [7] <>this<> := enterCode(<>fun<>2212)
 
   Call[201] -> [2]
@@ -1768,7 +1768,7 @@ function[4] <>funexpr@3:2-26:620<> {
     [3] <>arguments<>2216 := allocArg(2) @ #1385
     [4] <>arguments<>2216["0"] := <>temp<>2214
     [5] <>arguments<>2216["1"] := <>temp<>2215
-    [6] <>fun<>2217 := <>Global<>getBase(<>r<>100)
+    [6] <>fun<>2217 := @GetBase(<>r<>100)
     [7] <>this<> := enterCode(<>fun<>2217)
 
   Call[205] -> [2]
@@ -1785,7 +1785,7 @@ function[4] <>funexpr@3:2-26:620<> {
     [3] <>arguments<>2221 := allocArg(2) @ #1388
     [4] <>arguments<>2221["0"] := <>temp<>2219
     [5] <>arguments<>2221["1"] := <>temp<>2220
-    [6] <>fun<>2222 := <>Global<>getBase(<>r<>100)
+    [6] <>fun<>2222 := @GetBase(<>r<>100)
     [7] <>this<> := enterCode(<>fun<>2222)
 
   Call[209] -> [2]
@@ -1802,7 +1802,7 @@ function[4] <>funexpr@3:2-26:620<> {
     [3] <>arguments<>2226 := allocArg(2) @ #1391
     [4] <>arguments<>2226["0"] := <>temp<>2224
     [5] <>arguments<>2226["1"] := <>temp<>2225
-    [6] <>fun<>2227 := <>Global<>getBase(<>r<>100)
+    [6] <>fun<>2227 := @GetBase(<>r<>100)
     [7] <>this<> := enterCode(<>fun<>2227)
 
   Call[213] -> [2]
@@ -1819,7 +1819,7 @@ function[4] <>funexpr@3:2-26:620<> {
     [3] <>arguments<>2231 := allocArg(2) @ #1394
     [4] <>arguments<>2231["0"] := <>temp<>2229
     [5] <>arguments<>2231["1"] := <>temp<>2230
-    [6] <>fun<>2232 := <>Global<>getBase(<>r<>100)
+    [6] <>fun<>2232 := @GetBase(<>r<>100)
     [7] <>this<> := enterCode(<>fun<>2232)
 
   Call[217] -> [2]
@@ -1836,7 +1836,7 @@ function[4] <>funexpr@3:2-26:620<> {
     [3] <>arguments<>2236 := allocArg(2) @ #1397
     [4] <>arguments<>2236["0"] := <>temp<>2234
     [5] <>arguments<>2236["1"] := <>temp<>2235
-    [6] <>fun<>2237 := <>Global<>getBase(<>r<>100)
+    [6] <>fun<>2237 := @GetBase(<>r<>100)
     [7] <>this<> := enterCode(<>fun<>2237)
 
   Call[221] -> [2]
@@ -1853,7 +1853,7 @@ function[4] <>funexpr@3:2-26:620<> {
     [3] <>arguments<>2241 := allocArg(2) @ #1400
     [4] <>arguments<>2241["0"] := <>temp<>2239
     [5] <>arguments<>2241["1"] := <>temp<>2240
-    [6] <>fun<>2242 := <>Global<>getBase(<>r<>100)
+    [6] <>fun<>2242 := @GetBase(<>r<>100)
     [7] <>this<> := enterCode(<>fun<>2242)
 
   Call[225] -> [2]
@@ -1870,7 +1870,7 @@ function[4] <>funexpr@3:2-26:620<> {
     [3] <>arguments<>2246 := allocArg(2) @ #1403
     [4] <>arguments<>2246["0"] := <>temp<>2244
     [5] <>arguments<>2246["1"] := <>temp<>2245
-    [6] <>fun<>2247 := <>Global<>getBase(<>r<>100)
+    [6] <>fun<>2247 := @GetBase(<>r<>100)
     [7] <>this<> := enterCode(<>fun<>2247)
 
   Call[229] -> [2]
@@ -1887,7 +1887,7 @@ function[4] <>funexpr@3:2-26:620<> {
     [3] <>arguments<>2251 := allocArg(2) @ #1406
     [4] <>arguments<>2251["0"] := <>temp<>2249
     [5] <>arguments<>2251["1"] := <>temp<>2250
-    [6] <>fun<>2252 := <>Global<>getBase(<>r<>100)
+    [6] <>fun<>2252 := @GetBase(<>r<>100)
     [7] <>this<> := enterCode(<>fun<>2252)
 
   Call[233] -> [2]
@@ -1904,7 +1904,7 @@ function[4] <>funexpr@3:2-26:620<> {
     [3] <>arguments<>2256 := allocArg(2) @ #1409
     [4] <>arguments<>2256["0"] := <>temp<>2254
     [5] <>arguments<>2256["1"] := <>temp<>2255
-    [6] <>fun<>2257 := <>Global<>getBase(<>r<>100)
+    [6] <>fun<>2257 := @GetBase(<>r<>100)
     [7] <>this<> := enterCode(<>fun<>2257)
 
   Call[237] -> [2]
@@ -1921,7 +1921,7 @@ function[4] <>funexpr@3:2-26:620<> {
     [3] <>arguments<>2261 := allocArg(2) @ #1412
     [4] <>arguments<>2261["0"] := <>temp<>2259
     [5] <>arguments<>2261["1"] := <>temp<>2260
-    [6] <>fun<>2262 := <>Global<>getBase(<>r<>100)
+    [6] <>fun<>2262 := @GetBase(<>r<>100)
     [7] <>this<> := enterCode(<>fun<>2262)
 
   Call[241] -> [2]
@@ -1938,7 +1938,7 @@ function[4] <>funexpr@3:2-26:620<> {
     [3] <>arguments<>2266 := allocArg(2) @ #1415
     [4] <>arguments<>2266["0"] := <>temp<>2264
     [5] <>arguments<>2266["1"] := <>temp<>2265
-    [6] <>fun<>2267 := <>Global<>getBase(<>r<>100)
+    [6] <>fun<>2267 := @GetBase(<>r<>100)
     [7] <>this<> := enterCode(<>fun<>2267)
 
   Call[245] -> [2]
@@ -1955,7 +1955,7 @@ function[4] <>funexpr@3:2-26:620<> {
     [3] <>arguments<>2271 := allocArg(2) @ #1418
     [4] <>arguments<>2271["0"] := <>temp<>2269
     [5] <>arguments<>2271["1"] := <>temp<>2270
-    [6] <>fun<>2272 := <>Global<>getBase(<>r<>100)
+    [6] <>fun<>2272 := @GetBase(<>r<>100)
     [7] <>this<> := enterCode(<>fun<>2272)
 
   Call[249] -> [2]
@@ -1972,7 +1972,7 @@ function[4] <>funexpr@3:2-26:620<> {
     [3] <>arguments<>2276 := allocArg(2) @ #1421
     [4] <>arguments<>2276["0"] := <>temp<>2274
     [5] <>arguments<>2276["1"] := <>temp<>2275
-    [6] <>fun<>2277 := <>Global<>getBase(<>r<>100)
+    [6] <>fun<>2277 := @GetBase(<>r<>100)
     [7] <>this<> := enterCode(<>fun<>2277)
 
   Call[253] -> [2]
@@ -1989,7 +1989,7 @@ function[4] <>funexpr@3:2-26:620<> {
     [3] <>arguments<>2281 := allocArg(2) @ #1424
     [4] <>arguments<>2281["0"] := <>temp<>2279
     [5] <>arguments<>2281["1"] := <>temp<>2280
-    [6] <>fun<>2282 := <>Global<>getBase(<>r<>100)
+    [6] <>fun<>2282 := @GetBase(<>r<>100)
     [7] <>this<> := enterCode(<>fun<>2282)
 
   Call[257] -> [2]
@@ -2006,7 +2006,7 @@ function[4] <>funexpr@3:2-26:620<> {
     [3] <>arguments<>2286 := allocArg(2) @ #1427
     [4] <>arguments<>2286["0"] := <>temp<>2284
     [5] <>arguments<>2286["1"] := <>temp<>2285
-    [6] <>fun<>2287 := <>Global<>getBase(<>r<>100)
+    [6] <>fun<>2287 := @GetBase(<>r<>100)
     [7] <>this<> := enterCode(<>fun<>2287)
 
   Call[261] -> [2]
@@ -2023,7 +2023,7 @@ function[4] <>funexpr@3:2-26:620<> {
     [3] <>arguments<>2291 := allocArg(2) @ #1430
     [4] <>arguments<>2291["0"] := <>temp<>2289
     [5] <>arguments<>2291["1"] := <>temp<>2290
-    [6] <>fun<>2292 := <>Global<>getBase(<>r<>100)
+    [6] <>fun<>2292 := @GetBase(<>r<>100)
     [7] <>this<> := enterCode(<>fun<>2292)
 
   Call[265] -> [2]
@@ -2040,7 +2040,7 @@ function[4] <>funexpr@3:2-26:620<> {
     [3] <>arguments<>2296 := allocArg(2) @ #1433
     [4] <>arguments<>2296["0"] := <>temp<>2294
     [5] <>arguments<>2296["1"] := <>temp<>2295
-    [6] <>fun<>2297 := <>Global<>getBase(<>r<>100)
+    [6] <>fun<>2297 := @GetBase(<>r<>100)
     [7] <>this<> := enterCode(<>fun<>2297)
 
   Call[269] -> [2]
@@ -2057,7 +2057,7 @@ function[4] <>funexpr@3:2-26:620<> {
     [3] <>arguments<>2301 := allocArg(2) @ #1436
     [4] <>arguments<>2301["0"] := <>temp<>2299
     [5] <>arguments<>2301["1"] := <>temp<>2300
-    [6] <>fun<>2302 := <>Global<>getBase(<>r<>100)
+    [6] <>fun<>2302 := @GetBase(<>r<>100)
     [7] <>this<> := enterCode(<>fun<>2302)
 
   Call[273] -> [2]
@@ -2074,7 +2074,7 @@ function[4] <>funexpr@3:2-26:620<> {
     [3] <>arguments<>2306 := allocArg(2) @ #1439
     [4] <>arguments<>2306["0"] := <>temp<>2304
     [5] <>arguments<>2306["1"] := <>temp<>2305
-    [6] <>fun<>2307 := <>Global<>getBase(<>r<>100)
+    [6] <>fun<>2307 := @GetBase(<>r<>100)
     [7] <>this<> := enterCode(<>fun<>2307)
 
   Call[277] -> [2]
@@ -2115,7 +2115,7 @@ function[4] <>funexpr@3:2-26:620<> {
     [4] <>arguments<>2316 := allocArg(2) @ #1446
     [5] <>arguments<>2316["0"] := <>temp<>2314
     [6] <>arguments<>2316["1"] := <>temp<>2315
-    [7] <>fun<>2317 := <>Global<>getBase(<>r<>100)
+    [7] <>fun<>2317 := @GetBase(<>r<>100)
     [8] <>this<> := enterCode(<>fun<>2317)
 
   Call[287] -> [2]
@@ -2132,7 +2132,7 @@ function[4] <>funexpr@3:2-26:620<> {
     [3] <>arguments<>2321 := allocArg(2) @ #1449
     [4] <>arguments<>2321["0"] := <>temp<>2319
     [5] <>arguments<>2321["1"] := <>temp<>2320
-    [6] <>fun<>2322 := <>Global<>getBase(<>r<>100)
+    [6] <>fun<>2322 := @GetBase(<>r<>100)
     [7] <>this<> := enterCode(<>fun<>2322)
 
   Call[291] -> [2]
@@ -2149,7 +2149,7 @@ function[4] <>funexpr@3:2-26:620<> {
     [3] <>arguments<>2326 := allocArg(2) @ #1452
     [4] <>arguments<>2326["0"] := <>temp<>2324
     [5] <>arguments<>2326["1"] := <>temp<>2325
-    [6] <>fun<>2327 := <>Global<>getBase(<>r<>100)
+    [6] <>fun<>2327 := @GetBase(<>r<>100)
     [7] <>this<> := enterCode(<>fun<>2327)
 
   Call[295] -> [2]
@@ -2166,7 +2166,7 @@ function[4] <>funexpr@3:2-26:620<> {
     [3] <>arguments<>2331 := allocArg(2) @ #1455
     [4] <>arguments<>2331["0"] := <>temp<>2329
     [5] <>arguments<>2331["1"] := <>temp<>2330
-    [6] <>fun<>2332 := <>Global<>getBase(<>r<>100)
+    [6] <>fun<>2332 := @GetBase(<>r<>100)
     [7] <>this<> := enterCode(<>fun<>2332)
 
   Call[299] -> [2]
@@ -2217,7 +2217,7 @@ function[4] <>funexpr@3:2-26:620<> {
     [9] <>arguments<>2347 := allocArg(2) @ #1472
     [10] <>arguments<>2347["0"] := <>temp<>2344
     [11] <>arguments<>2347["1"] := <>temp<>2346
-    [12] <>fun<>2348 := <>Global<>getBase(<>r<>100)
+    [12] <>fun<>2348 := @GetBase(<>r<>100)
     [13] <>this<> := enterCode(<>fun<>2348)
 
   Call[307] -> [2]
@@ -2416,7 +2416,7 @@ function[4] <>funexpr@3:2-26:620<> {
     [12] <>arguments<>2425 := allocArg(2) @ #1532
     [13] <>arguments<>2425["0"] := <>temp<>2423
     [14] <>arguments<>2425["1"] := <>temp<>2424
-    [15] <>fun<>2426 := <>Global<>getBase(<>r<>100)
+    [15] <>fun<>2426 := @GetBase(<>r<>100)
     [16] <>this<> := enterCode(<>fun<>2426)
 
   Call[348] -> [2]
@@ -2449,7 +2449,7 @@ function[4] <>funexpr@3:2-26:620<> {
     [4] <>arguments<>2435 := allocArg(2) @ #1539
     [5] <>arguments<>2435["0"] := <>temp<>2433
     [6] <>arguments<>2435["1"] := <>temp<>2434
-    [7] <>fun<>2436 := <>Global<>getBase(<>r<>100)
+    [7] <>fun<>2436 := @GetBase(<>r<>100)
     [8] <>this<> := enterCode(<>fun<>2436)
 
   Block[356] -> [363], [362], [2]
@@ -2583,7 +2583,7 @@ function[4] <>funexpr@3:2-26:620<> {
     [6] <>arguments<>2470 := allocArg(2) @ #1564
     [7] <>arguments<>2470["0"] := <>temp<>2468
     [8] <>arguments<>2470["1"] := <>temp<>2469
-    [9] <>fun<>2471 := <>Global<>getBase(<>r<>100)
+    [9] <>fun<>2471 := @GetBase(<>r<>100)
     [10] <>this<> := enterCode(<>fun<>2471)
 
   Block[376] -> [407], [2]
@@ -2636,7 +2636,7 @@ function[4] <>funexpr@3:2-26:620<> {
   AfterCatch[387] -> [2]
 
   Block[388] -> [390], [389]
-    [0] <>cond<>2499 := <>Global<>isObject(<>newObj<>2498)
+    [0] <>cond<>2499 := @isObject(<>newObj<>2498)
 
   Block[389] -> [391], [2]
     [0] assert(<>cond<>2499)
@@ -2676,7 +2676,7 @@ function[4] <>funexpr@3:2-26:620<> {
     [13] <>arguments<>2556 := allocArg(2) @ #1624
     [14] <>arguments<>2556["0"] := <>temp<>2554
     [15] <>arguments<>2556["1"] := <>temp<>2555
-    [16] <>fun<>2557 := <>Global<>getBase(<>Bb<>213)
+    [16] <>fun<>2557 := @GetBase(<>Bb<>213)
     [17] <>this<> := enterCode(<>fun<>2557)
 
   Call[396] -> [2]
@@ -2693,7 +2693,7 @@ function[4] <>funexpr@3:2-26:620<> {
     [3] <>arguments<>2561 := allocArg(2) @ #1627
     [4] <>arguments<>2561["0"] := <>temp<>2559
     [5] <>arguments<>2561["1"] := <>temp<>2560
-    [6] <>fun<>2562 := <>Global<>getBase(<>Bb<>213)
+    [6] <>fun<>2562 := @GetBase(<>Bb<>213)
     [7] <>this<> := enterCode(<>fun<>2562)
 
   Call[400] -> [2]
@@ -2713,7 +2713,7 @@ function[4] <>funexpr@3:2-26:620<> {
     [6] <>arguments<>2568["0"] := <>temp<>2564
     [7] <>arguments<>2568["1"] := <>temp<>2565
     [8] <>arguments<>2568["2"] := <>temp<>2567
-    [9] <>fun<>2569 := <>Global<>getBase(<>r<>100)
+    [9] <>fun<>2569 := @GetBase(<>r<>100)
     [10] <>this<> := enterCode(<>fun<>2569)
 
   Call[404] -> [2]
@@ -2841,7 +2841,7 @@ function[4] <>funexpr@3:2-26:620<> {
     [7] <>arguments<>2616["0"] := <>temp<>2613
     [8] <>arguments<>2616["1"] := <>temp<>2614
     [9] <>arguments<>2616["2"] := <>temp<>2615
-    [10] <>fun<>2617 := <>Global<>getBase(<>r<>100)
+    [10] <>fun<>2617 := @GetBase(<>r<>100)
     [11] <>this<> := enterCode(<>fun<>2617)
 
   Call[439] -> [2]
@@ -2881,7 +2881,7 @@ function[4] <>funexpr@3:2-26:620<> {
     [26] <>arguments<>2719 := allocArg(2) @ #1726
     [27] <>arguments<>2719["0"] := <>temp<>2717
     [28] <>arguments<>2719["1"] := <>temp<>2718
-    [29] <>fun<>2720 := <>Global<>getBase(<>r<>100)
+    [29] <>fun<>2720 := @GetBase(<>r<>100)
     [30] <>this<> := enterCode(<>fun<>2720)
 
   Call[443] -> [2]
@@ -2898,7 +2898,7 @@ function[4] <>funexpr@3:2-26:620<> {
     [3] <>arguments<>2724 := allocArg(2) @ #1729
     [4] <>arguments<>2724["0"] := <>temp<>2722
     [5] <>arguments<>2724["1"] := <>temp<>2723
-    [6] <>fun<>2725 := <>Global<>getBase(<>r<>100)
+    [6] <>fun<>2725 := @GetBase(<>r<>100)
     [7] <>this<> := enterCode(<>fun<>2725)
 
   Call[447] -> [2]
@@ -2915,7 +2915,7 @@ function[4] <>funexpr@3:2-26:620<> {
     [3] <>arguments<>2729 := allocArg(2) @ #1732
     [4] <>arguments<>2729["0"] := <>temp<>2727
     [5] <>arguments<>2729["1"] := <>temp<>2728
-    [6] <>fun<>2730 := <>Global<>getBase(<>r<>100)
+    [6] <>fun<>2730 := @GetBase(<>r<>100)
     [7] <>this<> := enterCode(<>fun<>2730)
 
   Call[451] -> [2]
@@ -2932,7 +2932,7 @@ function[4] <>funexpr@3:2-26:620<> {
     [3] <>arguments<>2734 := allocArg(2) @ #1735
     [4] <>arguments<>2734["0"] := <>temp<>2732
     [5] <>arguments<>2734["1"] := <>temp<>2733
-    [6] <>fun<>2735 := <>Global<>getBase(<>r<>100)
+    [6] <>fun<>2735 := @GetBase(<>r<>100)
     [7] <>this<> := enterCode(<>fun<>2735)
 
   Call[455] -> [2]
@@ -2949,7 +2949,7 @@ function[4] <>funexpr@3:2-26:620<> {
     [3] <>arguments<>2739 := allocArg(2) @ #1738
     [4] <>arguments<>2739["0"] := <>temp<>2737
     [5] <>arguments<>2739["1"] := <>temp<>2738
-    [6] <>fun<>2740 := <>Global<>getBase(<>r<>100)
+    [6] <>fun<>2740 := @GetBase(<>r<>100)
     [7] <>this<> := enterCode(<>fun<>2740)
 
   Call[459] -> [2]
@@ -2966,7 +2966,7 @@ function[4] <>funexpr@3:2-26:620<> {
     [3] <>arguments<>2744 := allocArg(2) @ #1741
     [4] <>arguments<>2744["0"] := <>temp<>2742
     [5] <>arguments<>2744["1"] := <>temp<>2743
-    [6] <>fun<>2745 := <>Global<>getBase(<>r<>100)
+    [6] <>fun<>2745 := @GetBase(<>r<>100)
     [7] <>this<> := enterCode(<>fun<>2745)
 
   Call[463] -> [2]
@@ -2983,7 +2983,7 @@ function[4] <>funexpr@3:2-26:620<> {
     [3] <>arguments<>2749 := allocArg(2) @ #1744
     [4] <>arguments<>2749["0"] := <>temp<>2747
     [5] <>arguments<>2749["1"] := <>temp<>2748
-    [6] <>fun<>2750 := <>Global<>getBase(<>eb<>186)
+    [6] <>fun<>2750 := @GetBase(<>eb<>186)
     [7] <>this<> := enterCode(<>fun<>2750)
 
   Call[467] -> [2]
@@ -3159,7 +3159,7 @@ function[4] <>funexpr@3:2-26:620<> {
     [48] <>arguments<>3147 := allocArg(2) @ #1988
     [49] <>arguments<>3147["0"] := <>temp<>3145
     [50] <>arguments<>3147["1"] := <>temp<>3146
-    [51] <>fun<>3148 := <>Global<>getBase(<>r<>100)
+    [51] <>fun<>3148 := @GetBase(<>r<>100)
     [52] <>this<> := enterCode(<>fun<>3148)
 
   Call[497] -> [2]
@@ -3179,7 +3179,7 @@ function[4] <>funexpr@3:2-26:620<> {
     [6] <>arguments<>3174 := allocArg(2) @ #2008
     [7] <>arguments<>3174["0"] := <>temp<>3172
     [8] <>arguments<>3174["1"] := <>temp<>3173
-    [9] <>fun<>3175 := <>Global<>getBase(<>jc<>250)
+    [9] <>fun<>3175 := @GetBase(<>jc<>250)
     [10] <>this<> := enterCode(<>fun<>3175)
 
   Call[501] -> [2]
@@ -3197,7 +3197,7 @@ function[4] <>funexpr@3:2-26:620<> {
     [4] <>arguments<>3180 := allocArg(2) @ #2012
     [5] <>arguments<>3180["0"] := <>temp<>3178
     [6] <>arguments<>3180["1"] := <>temp<>3179
-    [7] <>fun<>3181 := <>Global<>getBase(<>jc<>250)
+    [7] <>fun<>3181 := @GetBase(<>jc<>250)
     [8] <>this<> := enterCode(<>fun<>3181)
 
   Call[505] -> [2]
@@ -3215,7 +3215,7 @@ function[4] <>funexpr@3:2-26:620<> {
     [4] <>arguments<>3186 := allocArg(2) @ #2016
     [5] <>arguments<>3186["0"] := <>temp<>3184
     [6] <>arguments<>3186["1"] := <>temp<>3185
-    [7] <>fun<>3187 := <>Global<>getBase(<>jc<>250)
+    [7] <>fun<>3187 := @GetBase(<>jc<>250)
     [8] <>this<> := enterCode(<>fun<>3187)
 
   Call[509] -> [2]
@@ -3269,7 +3269,7 @@ function[4] <>funexpr@3:2-26:620<> {
     [3] <>arguments<>3202 := allocArg(2) @ #2028
     [4] <>arguments<>3202["0"] := <>temp<>3200
     [5] <>arguments<>3202["1"] := <>temp<>3201
-    [6] <>fun<>3203 := <>Global<>getBase(<>r<>100)
+    [6] <>fun<>3203 := @GetBase(<>r<>100)
     [7] <>this<> := enterCode(<>fun<>3203)
 
   Call[521] -> [2]
@@ -3352,7 +3352,7 @@ function[5] _tvn {
     [3] <>arguments<>259 := allocArg(2) @ #60
     [4] <>arguments<>259["0"] := <>temp<>257
     [5] <>arguments<>259["1"] := <>temp<>258
-    [6] <>fun<>260 := <>Global<>getBase(parseInt)
+    [6] <>fun<>260 := @GetBase(parseInt)
     [7] <>this<> := enterCode(<>fun<>260)
 
   Call[1] -> ExitExc
@@ -3368,7 +3368,7 @@ function[5] _tvn {
     [2] <>temp<>262 := <>c<>254
     [3] <>arguments<>263 := allocArg(1) @ #63
     [4] <>arguments<>263["0"] := <>temp<>262
-    [5] <>fun<>264 := <>Global<>getBase(isNaN)
+    [5] <>fun<>264 := @GetBase(isNaN)
     [6] <>this<> := enterCode(<>fun<>264)
 
   Call[5] -> ExitExc
@@ -3403,7 +3403,7 @@ function[6] _tvf {
     [1] <>temp<>272 := <>a<>267
     [2] <>arguments<>273 := allocArg(1) @ #68
     [3] <>arguments<>273["0"] := <>temp<>272
-    [4] <>fun<>274 := <>Global<>getBase(parseFloat)
+    [4] <>fun<>274 := @GetBase(parseFloat)
     [5] <>this<> := enterCode(<>fun<>274)
 
   Call[1] -> ExitExc
@@ -3419,7 +3419,7 @@ function[6] _tvf {
     [2] <>temp<>276 := <>c<>269
     [3] <>arguments<>277 := allocArg(1) @ #71
     [4] <>arguments<>277["0"] := <>temp<>276
-    [5] <>fun<>278 := <>Global<>getBase(isNaN)
+    [5] <>fun<>278 := @GetBase(isNaN)
     [6] <>this<> := enterCode(<>fun<>278)
 
   Call[5] -> ExitExc
@@ -3646,7 +3646,7 @@ function[11] _mlToken {
   Block[3] -> [6], [5], [2]
     [0] assert(1 > <>Aa<>157)
     [1] <>old<>338 := <>Aa<>157
-    [2] <>new<>339 := <>Global<>toNumber(<>old<>338)
+    [2] <>new<>339 := @ToNumber(<>old<>338)
     [3] <>Aa<>157 := <>new<>339 + 1
     [4] <>Global<>ignore17 := <>new<>339
     [5] <>d<>328 := <>a<>325
@@ -3681,7 +3681,7 @@ function[11] _mlToken {
   AfterCatch[10] -> [2]
 
   Block[11] -> [13], [12]
-    [0] <>cond<>347 := <>Global<>isObject(<>newObj<>346)
+    [0] <>cond<>347 := @isObject(<>newObj<>346)
 
   Block[12] -> [14], [2]
     [0] assert(<>cond<>347)
@@ -3710,7 +3710,7 @@ function[11] _mlToken {
     [2] <>temp<>355 := "37102"
     [3] <>arguments<>356 := allocArg(1) @ #114
     [4] <>arguments<>356["0"] := <>temp<>355
-    [5] <>fun<>357 := <>Global<>getBase(<>f<>330)
+    [5] <>fun<>357 := @GetBase(<>f<>330)
     [6] <>this<> := enterCode(<>fun<>357)
 
   Call[19] -> [2]
@@ -3726,7 +3726,7 @@ function[11] _mlToken {
     [2] <>temp<>361 := "prop=1"
     [3] <>arguments<>362 := allocArg(1) @ #117
     [4] <>arguments<>362["0"] := <>temp<>361
-    [5] <>fun<>363 := <>Global<>getBase(<>f<>330)
+    [5] <>fun<>363 := @GetBase(<>f<>330)
     [6] <>this<> := enterCode(<>fun<>363)
 
   Call[23] -> [2]
@@ -3758,7 +3758,7 @@ function[11] _mlToken {
     [2] <>temp<>373 := "ykHWUcqSK8uplQXv-YCQDQ"
     [3] <>arguments<>374 := allocArg(1) @ #124
     [4] <>arguments<>374["0"] := <>temp<>373
-    [5] <>fun<>375 := <>Global<>getBase(<>f<>330)
+    [5] <>fun<>375 := @GetBase(<>f<>330)
     [6] <>this<> := enterCode(<>fun<>375)
 
   Call[31] -> [2]
@@ -3778,7 +3778,7 @@ function[11] _mlToken {
     [6] <>temp<>383 := ""
     [7] <>arguments<>384 := allocArg(1) @ #129
     [8] <>arguments<>384["0"] := <>temp<>383
-    [9] <>fun<>385 := <>Global<>getBase(<>f<>330)
+    [9] <>fun<>385 := @GetBase(<>f<>330)
     [10] <>this<> := enterCode(<>fun<>385)
 
   Call[35] -> [2]
@@ -3794,7 +3794,7 @@ function[11] _mlToken {
     [2] <>temp<>389 := "1372717546.1372341082"
     [3] <>arguments<>390 := allocArg(1) @ #132
     [4] <>arguments<>390["0"] := <>temp<>389
-    [5] <>fun<>391 := <>Global<>getBase(<>f<>330)
+    [5] <>fun<>391 := @GetBase(<>f<>330)
     [6] <>this<> := enterCode(<>fun<>391)
 
   Call[39] -> [2]
@@ -3811,7 +3811,7 @@ function[11] _mlToken {
     [3] <>temp<>395 := <>m<>331
     [4] <>arguments<>396 := allocArg(1) @ #135
     [5] <>arguments<>396["0"] := <>temp<>395
-    [6] <>fun<>397 := <>Global<>getBase(<>f<>330)
+    [6] <>fun<>397 := @GetBase(<>f<>330)
     [7] <>this<> := enterCode(<>fun<>397)
 
   Block[43] -> [48], [2]
@@ -3834,7 +3834,7 @@ function[11] _mlToken {
     [2] <>temp<>402 := "com"
     [3] <>arguments<>403 := allocArg(1) @ #138
     [4] <>arguments<>403["0"] := <>temp<>402
-    [5] <>fun<>404 := <>Global<>getBase(<>f<>330)
+    [5] <>fun<>404 := @GetBase(<>f<>330)
     [6] <>this<> := enterCode(<>fun<>404)
 
   Call[49] -> [2]
@@ -3850,7 +3850,7 @@ function[11] _mlToken {
     [2] <>temp<>408 := "ko"
     [3] <>arguments<>409 := allocArg(1) @ #141
     [4] <>arguments<>409["0"] := <>temp<>408
-    [5] <>fun<>410 := <>Global<>getBase(<>f<>330)
+    [5] <>fun<>410 := @GetBase(<>f<>330)
     [6] <>this<> := enterCode(<>fun<>410)
 
   Call[53] -> [2]
@@ -3899,8 +3899,8 @@ function[11] _mlToken {
 
   Block[59] -> [64], [2]
     [0] <>obj<>416 := <>g<>329
-    [1] <>iterator<>417 := <>Global<>iteratorInit(<>obj<>416) @ #147
-    [2] <>cond1<>418 := <>Global<>iteratorHasNext(<>obj<>416, <>iterator<>417)
+    [1] <>iterator<>417 := @iteratorInit(<>obj<>416) @ #147
+    [2] <>cond1<>418 := @iteratorHasNext(<>obj<>416, <>iterator<>417)
 
   Block[60] -> [62], [2]
     [0] assert(typeof <>obj<>412["_sn"] == "boolean")
@@ -3924,7 +3924,7 @@ function[11] _mlToken {
 
   Block[65] -> [68], [2]
     [0] assert(<>cond1<>418)
-    [1] <>key<>419 := <>Global<>iteratorNext(<>obj<>416, <>iterator<>417)
+    [1] <>key<>419 := @iteratorNext(<>obj<>416, <>iterator<>417)
     [2] <>p<>333 := <>key<>419
     [3] <>obj<>420 := @ToObject(<>l<>332) @ #148
     [4] <>temp<>421 := "&"
@@ -3937,7 +3937,7 @@ function[11] _mlToken {
     [0] assert(! <>cond1<>418)
 
   Block[67] -> [64]
-    [0] <>cond1<>418 := <>Global<>iteratorHasNext(<>obj<>416, <>iterator<>417)
+    [0] <>cond1<>418 := @iteratorHasNext(<>obj<>416, <>iterator<>417)
 
   Call[68] -> [2]
     [0] call(<>fun<>423, <>this<>, <>arguments<>422) @ #151
@@ -3952,7 +3952,7 @@ function[11] _mlToken {
     [2] <>temp<>427 := <>p<>333
     [3] <>arguments<>428 := allocArg(1) @ #154
     [4] <>arguments<>428["0"] := <>temp<>427
-    [5] <>fun<>429 := <>Global<>getBase(<>f<>330)
+    [5] <>fun<>429 := @GetBase(<>f<>330)
     [6] <>this<> := enterCode(<>fun<>429)
 
   Call[72] -> [2]
@@ -3997,7 +3997,7 @@ function[11] _mlToken {
     [3] <>temp<>442 := <>obj<>441[<>p<>333]
     [4] <>arguments<>443 := allocArg(1) @ #166
     [5] <>arguments<>443["0"] := <>temp<>442
-    [6] <>fun<>444 := <>Global<>getBase(<>f<>330)
+    [6] <>fun<>444 := @GetBase(<>f<>330)
     [7] <>this<> := enterCode(<>fun<>444)
 
   Call[84] -> [2]
@@ -4036,7 +4036,7 @@ function[11] _mlToken {
     [5] <>temp<>457 := <>y<>455 + <>obj<>456["message"]
     [6] <>arguments<>458 := allocArg(1) @ #179
     [7] <>arguments<>458["0"] := <>temp<>457
-    [8] <>fun<>459 := <>Global<>getBase(<>f<>330)
+    [8] <>fun<>459 := @GetBase(<>f<>330)
     [9] <>this<> := enterCode(<>fun<>459)
 
   Call[95] -> [2]
@@ -4080,7 +4080,7 @@ function[11] _mlToken {
     [2] <>temp<>468 := <>s<>334
     [3] <>arguments<>469 := allocArg(1) @ #189
     [4] <>arguments<>469["0"] := <>temp<>468
-    [5] <>fun<>470 := <>Global<>getBase(<>Ba<>158)
+    [5] <>fun<>470 := @GetBase(<>Ba<>158)
     [6] <>this<> := enterCode(<>fun<>470)
 
   Call[107] -> [2]
@@ -4151,7 +4151,7 @@ function[11] _mlToken {
     [2] <>temp<>486 := <>B<>335
     [3] <>arguments<>487 := allocArg(1) @ #202
     [4] <>arguments<>487["0"] := <>temp<>486
-    [5] <>fun<>488 := <>Global<>getBase(<>w<>125)
+    [5] <>fun<>488 := @GetBase(<>w<>125)
     [6] <>this<> := enterCode(<>fun<>488)
 
   Call[124] -> [2]
@@ -4182,7 +4182,7 @@ function[12] Ga {
     [6] <>arguments<>495["0"] := <>temp<>492
     [7] <>arguments<>495["1"] := <>temp<>493
     [8] <>arguments<>495["2"] := <>temp<>494
-    [9] <>fun<>496 := <>Global<>getBase(<>r<>100)
+    [9] <>fun<>496 := @GetBase(<>r<>100)
     [10] <>this<> := enterCode(<>fun<>496)
 
   Call[1] -> ExitExc
@@ -4201,7 +4201,7 @@ function[12] Ga {
     [5] <>arguments<>501["0"] := <>temp<>498
     [6] <>arguments<>501["1"] := <>temp<>499
     [7] <>arguments<>501["2"] := <>temp<>500
-    [8] <>fun<>502 := <>Global<>getBase(<>r<>100)
+    [8] <>fun<>502 := @GetBase(<>r<>100)
     [9] <>this<> := enterCode(<>fun<>502)
 
   Call[5] -> ExitExc
@@ -4220,7 +4220,7 @@ function[12] Ga {
     [5] <>arguments<>507["0"] := <>temp<>504
     [6] <>arguments<>507["1"] := <>temp<>505
     [7] <>arguments<>507["2"] := <>temp<>506
-    [8] <>fun<>508 := <>Global<>getBase(<>r<>100)
+    [8] <>fun<>508 := @GetBase(<>r<>100)
     [9] <>this<> := enterCode(<>fun<>508)
 
   Call[9] -> ExitExc
@@ -4283,7 +4283,7 @@ function[14] Ka {
   AfterCatch[5] -> ExitExc
 
   Block[6] -> [8], [7]
-    [0] <>cond<>524 := <>Global<>isObject(<>newObj<>523)
+    [0] <>cond<>524 := @isObject(<>newObj<>523)
 
   Block[7] -> [9], ExitExc
     [0] assert(<>cond<>524)
@@ -4311,7 +4311,7 @@ function[14] Ka {
     [1] <>obj<>529 := @ToObject(encodeURIComponent) @ #230
     [2] <>obj<>530 := @ToObject(<>N<>166) @ #231
     [3] <>arguments<>531 := allocArg(0) @ #232
-    [4] <>fun<>532 := <>Global<>getBase(<>N<>166)
+    [4] <>fun<>532 := @GetBase(<>N<>166)
     [5] <>this<> := enterCode(<>fun<>532)
 
   Block[14] -> [25], [24], ExitExc
@@ -4327,7 +4327,7 @@ function[14] Ka {
   Block[18] -> [19], ExitExc
     [0] <>arguments<>534 := allocArg(1) @ #234
     [1] <>arguments<>534["0"] := <>temp<>533
-    [2] <>fun<>535 := <>Global<>getBase(encodeURIComponent)
+    [2] <>fun<>535 := @GetBase(encodeURIComponent)
     [3] <>this<> := enterCode(<>fun<>535)
 
   Call[19] -> ExitExc
@@ -4390,7 +4390,7 @@ function[14] Ka {
   AfterCatch[35] -> ExitExc
 
   Block[36] -> [38], [37]
-    [0] <>cond<>547 := <>Global<>isObject(<>newObj<>546)
+    [0] <>cond<>547 := @isObject(<>newObj<>546)
 
   Block[37] -> [39], ExitExc
     [0] assert(<>cond<>547)
@@ -4507,7 +4507,7 @@ function[16] Ma {
     [6] <>arguments<>604["0"] := <>temp<>601
     [7] <>arguments<>604["1"] := <>temp<>602
     [8] <>arguments<>604["2"] := <>temp<>603
-    [9] <>fun<>605 := <>Global<>getBase(<>t<>122)
+    [9] <>fun<>605 := @GetBase(<>t<>122)
     [10] <>this<> := enterCode(<>fun<>605)
 
   Block[3] -> [5], [2]
@@ -4547,7 +4547,7 @@ function[16] Ma {
   AfterCatch[10] -> [2]
 
   Block[11] -> [13], [12]
-    [0] <>cond<>583 := <>Global<>isObject(<>newObj<>582)
+    [0] <>cond<>583 := @isObject(<>newObj<>582)
 
   Block[12] -> [14], [2]
     [0] assert(<>cond<>583)
@@ -4620,7 +4620,7 @@ function[17] <>funexpr@8:1163-1219<> {
     [2] <>temp<>591 := <>b<>565
     [3] <>arguments<>592 := allocArg(1) @ #270
     [4] <>arguments<>592["0"] := <>temp<>591
-    [5] <>fun<>593 := <>Global<>getBase(encodeURIComponent)
+    [5] <>fun<>593 := @GetBase(encodeURIComponent)
     [6] <>this<> := enterCode(<>fun<>593)
 
   Call[4] -> ExitExc
@@ -4652,7 +4652,7 @@ function[18] Ib {
     [6] <>arguments<>622 := allocArg(2) @ #289
     [7] <>arguments<>622["0"] := <>temp<>620
     [8] <>arguments<>622["1"] := <>temp<>621
-    [9] <>fun<>623 := <>Global<>getBase(<>b<>607)
+    [9] <>fun<>623 := @GetBase(<>b<>607)
     [10] <>this<> := enterCode(<>fun<>623)
 
   Call[1] -> ExitExc
@@ -4669,7 +4669,7 @@ function[18] Ib {
     [3] <>arguments<>627 := allocArg(2) @ #292
     [4] <>arguments<>627["0"] := <>temp<>625
     [5] <>arguments<>627["1"] := <>temp<>626
-    [6] <>fun<>628 := <>Global<>getBase(<>b<>607)
+    [6] <>fun<>628 := @GetBase(<>b<>607)
     [7] <>this<> := enterCode(<>fun<>628)
 
   Call[5] -> ExitExc
@@ -4686,7 +4686,7 @@ function[18] Ib {
     [3] <>arguments<>632 := allocArg(2) @ #295
     [4] <>arguments<>632["0"] := <>temp<>630
     [5] <>arguments<>632["1"] := <>temp<>631
-    [6] <>fun<>633 := <>Global<>getBase(<>b<>607)
+    [6] <>fun<>633 := @GetBase(<>b<>607)
     [7] <>this<> := enterCode(<>fun<>633)
 
   Call[9] -> ExitExc
@@ -4703,7 +4703,7 @@ function[18] Ib {
     [3] <>arguments<>637 := allocArg(2) @ #298
     [4] <>arguments<>637["0"] := <>temp<>635
     [5] <>arguments<>637["1"] := <>temp<>636
-    [6] <>fun<>638 := <>Global<>getBase(<>b<>607)
+    [6] <>fun<>638 := @GetBase(<>b<>607)
     [7] <>this<> := enterCode(<>fun<>638)
 
   Call[13] -> ExitExc
@@ -4802,7 +4802,7 @@ function[20] Jb {
 
   Block[7] -> [4], ExitExc
     [0] <>old<>652 := <>f<>644
-    [1] <>new<>653 := <>Global<>toNumber(<>old<>652)
+    [1] <>new<>653 := @ToNumber(<>old<>652)
     [2] <>f<>644 := <>new<>653 + 1
     [3] <>Global<>ignore58 := <>new<>653
     [4] <>y<>648 := <>f<>644
@@ -4881,7 +4881,7 @@ function[20] Jb {
   AfterCatch[26] -> ExitExc
 
   Block[27] -> [29], [28]
-    [0] <>cond<>667 := <>Global<>isObject(<>newObj<>666)
+    [0] <>cond<>667 := @isObject(<>newObj<>666)
 
   Block[28] -> [30], ExitExc
     [0] assert(<>cond<>667)
@@ -4912,7 +4912,7 @@ function[20] Jb {
     [4] <>temp<>677 := "37102"
     [5] <>arguments<>678 := allocArg(1) @ #322
     [6] <>arguments<>678["0"] := <>temp<>677
-    [7] <>fun<>679 := <>Global<>getBase(<>d<>642)
+    [7] <>fun<>679 := @GetBase(<>d<>642)
     [8] <>this<> := enterCode(<>fun<>679)
 
   Call[35] -> ExitExc
@@ -4928,7 +4928,7 @@ function[20] Jb {
     [2] <>temp<>683 := "ykHWUcqSK8uplQXv-YCQDQ"
     [3] <>arguments<>684 := allocArg(1) @ #325
     [4] <>arguments<>684["0"] := <>temp<>683
-    [5] <>fun<>685 := <>Global<>getBase(<>d<>642)
+    [5] <>fun<>685 := @GetBase(<>d<>642)
     [6] <>this<> := enterCode(<>fun<>685)
 
   Call[39] -> ExitExc
@@ -4948,7 +4948,7 @@ function[20] Jb {
     [6] <>temp<>693 := "1"
     [7] <>arguments<>694 := allocArg(1) @ #330
     [8] <>arguments<>694["0"] := <>temp<>693
-    [9] <>fun<>695 := <>Global<>getBase(<>d<>642)
+    [9] <>fun<>695 := @GetBase(<>d<>642)
     [10] <>this<> := enterCode(<>fun<>695)
 
   Call[43] -> ExitExc
@@ -4964,7 +4964,7 @@ function[20] Jb {
     [2] <>temp<>699 := <>f<>644
     [3] <>arguments<>700 := allocArg(1) @ #333
     [4] <>arguments<>700["0"] := <>temp<>699
-    [5] <>fun<>701 := <>Global<>getBase(<>d<>642)
+    [5] <>fun<>701 := @GetBase(<>d<>642)
     [6] <>this<> := enterCode(<>fun<>701)
 
   Call[47] -> ExitExc
@@ -4996,7 +4996,7 @@ function[20] Jb {
     [2] <>temp<>711 := "1372717546.1372341082"
     [3] <>arguments<>712 := allocArg(1) @ #340
     [4] <>arguments<>712["0"] := <>temp<>711
-    [5] <>fun<>713 := <>Global<>getBase(<>d<>642)
+    [5] <>fun<>713 := @GetBase(<>d<>642)
     [6] <>this<> := enterCode(<>fun<>713)
 
   Call[55] -> ExitExc
@@ -5013,7 +5013,7 @@ function[20] Jb {
     [3] <>temp<>717 := <>g<>643
     [4] <>arguments<>718 := allocArg(1) @ #343
     [5] <>arguments<>718["0"] := <>temp<>717
-    [6] <>fun<>719 := <>Global<>getBase(<>d<>642)
+    [6] <>fun<>719 := @GetBase(<>d<>642)
     [7] <>this<> := enterCode(<>fun<>719)
 
   Block[59] -> [64], ExitExc
@@ -5036,7 +5036,7 @@ function[20] Jb {
     [2] <>temp<>724 := "com"
     [3] <>arguments<>725 := allocArg(1) @ #346
     [4] <>arguments<>725["0"] := <>temp<>724
-    [5] <>fun<>726 := <>Global<>getBase(<>d<>642)
+    [5] <>fun<>726 := @GetBase(<>d<>642)
     [6] <>this<> := enterCode(<>fun<>726)
 
   Call[65] -> ExitExc
@@ -5052,7 +5052,7 @@ function[20] Jb {
     [2] <>temp<>730 := "ko"
     [3] <>arguments<>731 := allocArg(1) @ #349
     [4] <>arguments<>731["0"] := <>temp<>730
-    [5] <>fun<>732 := <>Global<>getBase(<>d<>642)
+    [5] <>fun<>732 := @GetBase(<>d<>642)
     [6] <>this<> := enterCode(<>fun<>732)
 
   Call[69] -> ExitExc
@@ -5066,7 +5066,7 @@ function[20] Jb {
     [0] <>temp<>734 := "&ogus="
     [1] <>obj<>735 := @ToObject(<>Ib<>108) @ #351
     [2] <>arguments<>736 := allocArg(0) @ #352
-    [3] <>fun<>737 := <>Global<>getBase(<>Ib<>108)
+    [3] <>fun<>737 := @GetBase(<>Ib<>108)
     [4] <>this<> := enterCode(<>fun<>737)
 
   Call[73] -> ExitExc
@@ -5142,8 +5142,8 @@ function[20] Jb {
     [1] <>Global<>ignore69 := allocArray(0) @ #361
     [2] <>f<>644 := <>Global<>ignore69
     [3] <>obj<>748 := <>g<>643
-    [4] <>iterator<>749 := <>Global<>iteratorInit(<>obj<>748) @ #362
-    [5] <>cond1<>750 := <>Global<>iteratorHasNext(<>obj<>748, <>iterator<>749)
+    [4] <>iterator<>749 := @iteratorInit(<>obj<>748) @ #362
+    [5] <>cond1<>750 := @iteratorHasNext(<>obj<>748, <>iterator<>749)
 
   Block[86] -> [88], ExitExc
     [0] assert(typeof "ogw" in <>b<>640 == "boolean")
@@ -5167,7 +5167,7 @@ function[20] Jb {
 
   Block[91] -> [95], [94], ExitExc
     [0] assert(<>cond1<>750)
-    [1] <>key<>751 := <>Global<>iteratorNext(<>obj<>748, <>iterator<>749)
+    [1] <>key<>751 := @iteratorNext(<>obj<>748, <>iterator<>749)
     [2] <>l<>646 := <>key<>751
     [3] <>y<>752 := 0
     [4] <>obj<>753 := @ToObject(<>f<>644) @ #363
@@ -5176,7 +5176,7 @@ function[20] Jb {
     [0] assert(! <>cond1<>750)
 
   Block[93] -> [90]
-    [0] <>cond1<>750 := <>Global<>iteratorHasNext(<>obj<>748, <>iterator<>749)
+    [0] <>cond1<>750 := @iteratorHasNext(<>obj<>748, <>iterator<>749)
 
   Block[94] -> [96], ExitExc
     [0] assert(<>y<>752 != <>obj<>753["length"])
@@ -5206,7 +5206,7 @@ function[20] Jb {
     [2] <>temp<>762 := <>l<>646
     [3] <>arguments<>763 := allocArg(1) @ #370
     [4] <>arguments<>763["0"] := <>temp<>762
-    [5] <>fun<>764 := <>Global<>getBase(<>Kb<>110)
+    [5] <>fun<>764 := @GetBase(<>Kb<>110)
     [6] <>this<> := enterCode(<>fun<>764)
 
   Block[101] -> [103], ExitExc
@@ -5261,7 +5261,7 @@ function[20] Jb {
     [3] <>temp<>777 := <>obj<>776[<>l<>646]
     [4] <>arguments<>778 := allocArg(1) @ #382
     [5] <>arguments<>778["0"] := <>temp<>777
-    [6] <>fun<>779 := <>Global<>getBase(<>Kb<>110)
+    [6] <>fun<>779 := @GetBase(<>Kb<>110)
     [7] <>this<> := enterCode(<>fun<>779)
 
   Call[116] -> ExitExc
@@ -5319,7 +5319,7 @@ function[20] Jb {
     [2] <>temp<>794 := <>l<>646
     [3] <>arguments<>795 := allocArg(1) @ #397
     [4] <>arguments<>795["0"] := <>temp<>794
-    [5] <>fun<>796 := <>Global<>getBase(<>d<>642)
+    [5] <>fun<>796 := @GetBase(<>d<>642)
     [6] <>this<> := enterCode(<>fun<>796)
 
   Call[133] -> ExitExc
@@ -5376,7 +5376,7 @@ function[20] Jb {
   Block[149] -> [150], ExitExc
     [0] <>arguments<>807 := allocArg(1) @ #407
     [1] <>arguments<>807["0"] := <>temp<>806
-    [2] <>fun<>808 := <>Global<>getBase(<>w<>125)
+    [2] <>fun<>808 := @GetBase(<>w<>125)
     [3] <>this<> := enterCode(<>fun<>808)
 
   Call[150] -> ExitExc
@@ -5521,7 +5521,7 @@ function[22] kc {
   Block[11] -> [13], [12]
     [0] <>obj<>903 := @ToObject(<>l<>831) @ #471
     [1] <>arguments<>904 := allocArg(0) @ #472
-    [2] <>fun<>905 := <>Global<>getBase(<>l<>831)
+    [2] <>fun<>905 := @GetBase(<>l<>831)
     [3] <>this<> := enterCode(<>fun<>905)
 
   Block[12] -> [16], ExitExc
@@ -5534,7 +5534,7 @@ function[22] kc {
     [6] <>arguments<>910["0"] := <>temp<>907
     [7] <>arguments<>910["1"] := <>temp<>908
     [8] <>arguments<>910["2"] := <>temp<>909
-    [9] <>fun<>911 := <>Global<>getBase(<>t<>122)
+    [9] <>fun<>911 := @GetBase(<>t<>122)
     [10] <>this<> := enterCode(<>fun<>911)
 
   Call[13] -> [12]
@@ -5561,7 +5561,7 @@ function[22] kc {
     [4] <>arguments<>915 := allocArg(2) @ #478
     [5] <>arguments<>915["0"] := <>temp<>913
     [6] <>arguments<>915["1"] := <>temp<>914
-    [7] <>fun<>916 := <>Global<>getBase(<>r<>100)
+    [7] <>fun<>916 := @GetBase(<>r<>100)
     [8] <>this<> := enterCode(<>fun<>916)
 
   Block[21] -> [27], [26], ExitExc
@@ -5586,14 +5586,14 @@ function[22] kc {
     [6] <>arguments<>921["0"] := <>temp<>918
     [7] <>arguments<>921["1"] := <>temp<>919
     [8] <>arguments<>921["2"] := <>temp<>920
-    [9] <>fun<>922 := <>Global<>getBase(<>da<>101)
+    [9] <>fun<>922 := @GetBase(<>da<>101)
     [10] <>this<> := enterCode(<>fun<>922)
 
   Block[27] -> [32], ExitExc
     [0] assert(! <>c<>826)
     [1] <>obj<>923 := @ToObject(<>b<>825) @ #483
     [2] <>arguments<>924 := allocArg(0) @ #484
-    [3] <>fun<>925 := <>Global<>getBase(<>b<>825)
+    [3] <>fun<>925 := @GetBase(<>b<>825)
     [4] <>this<> := enterCode(<>fun<>925)
 
   Call[28] -> ExitExc
@@ -5624,7 +5624,7 @@ function[23] a {
   Block[0] -> [3], [2], ExitExc
     [0] <>obj<>835 := @ToObject(<>f<>829) @ #421
     [1] <>old<>836 := <>m<>830
-    [2] <>new<>837 := <>Global<>toNumber(<>old<>836)
+    [2] <>new<>837 := @ToNumber(<>old<>836)
     [3] <>m<>830 := <>new<>837 + 1
     [4] <>b<>833 := <>obj<>835[<>new<>837]
 
@@ -5674,7 +5674,7 @@ function[23] a {
   Block[14] -> [16], [15], ExitExc
     [0] <>obj<>835 := @ToObject(<>f<>829) @ #425
     [1] <>old<>836 := <>m<>830
-    [2] <>new<>837 := <>Global<>toNumber(<>old<>836)
+    [2] <>new<>837 := @ToNumber(<>old<>836)
     [3] <>m<>830 := <>new<>837 + 1
     [4] <>b<>833 := <>obj<>835[<>new<>837]
 
@@ -5720,7 +5720,7 @@ function[23] a {
     [5] <>arguments<>848 := allocArg(2) @ #431
     [6] <>arguments<>848["0"] := <>temp<>845
     [7] <>arguments<>848["1"] := <>temp<>847
-    [8] <>fun<>849 := <>Global<>getBase(<>E<>145)
+    [8] <>fun<>849 := @GetBase(<>E<>145)
     [9] <>this<> := enterCode(<>fun<>849)
 
   Block[25] -> [58], [57], ExitExc
@@ -5748,7 +5748,7 @@ function[23] a {
     [7] <>arguments<>859 := allocArg(2) @ #439
     [8] <>arguments<>859["0"] := <>temp<>856
     [9] <>arguments<>859["1"] := <>temp<>858
-    [10] <>fun<>860 := <>Global<>getBase(<>pa<>140)
+    [10] <>fun<>860 := @GetBase(<>pa<>140)
     [11] <>this<> := enterCode(<>fun<>860)
 
   Block[31] -> [38], [37], ExitExc
@@ -5792,7 +5792,7 @@ function[23] a {
     [4] <>temp<>868 := <>obj<>867["libs"]
     [5] <>arguments<>869 := allocArg(1) @ #446
     [6] <>arguments<>869["0"] := <>temp<>868
-    [7] <>fun<>870 := <>Global<>getBase(<>F<>153)
+    [7] <>fun<>870 := @GetBase(<>F<>153)
     [8] <>this<> := enterCode(<>fun<>870)
 
   Block[43] -> [50], [49], ExitExc
@@ -5855,7 +5855,7 @@ function[23] a {
     [4] <>arguments<>878 := allocArg(2) @ #450
     [5] <>arguments<>878["0"] := <>temp<>876
     [6] <>arguments<>878["1"] := <>temp<>877
-    [7] <>fun<>879 := <>Global<>getBase(setTimeout)
+    [7] <>fun<>879 := @GetBase(setTimeout)
     [8] <>this<> := enterCode(<>fun<>879)
 
   Block[61] -> [68], [67], ExitExc
@@ -5895,7 +5895,7 @@ function[24] b {
   Block[0] -> [2], [1], ExitExc
     [0] <>y<>882 := 0
     [1] <>old<>883 := <>g<>828
-    [2] <>new<>884 := <>Global<>toNumber(<>old<>883)
+    [2] <>new<>884 := @ToNumber(<>old<>883)
     [3] <>g<>828 := <>new<>884 - 1
 
   Block[1] -> [3], ExitExc
@@ -5906,14 +5906,14 @@ function[24] b {
     [4] <>arguments<>888 := allocArg(2) @ #455
     [5] <>arguments<>888["0"] := <>temp<>886
     [6] <>arguments<>888["1"] := <>temp<>887
-    [7] <>fun<>889 := <>Global<>getBase(setTimeout)
+    [7] <>fun<>889 := @GetBase(setTimeout)
     [8] <>this<> := enterCode(<>fun<>889)
 
   Block[2] -> [7], ExitExc
     [0] assert(! <>y<>882 < <>new<>884)
     [1] <>obj<>890 := @ToObject(<>a<>824) @ #457
     [2] <>arguments<>891 := allocArg(0) @ #458
-    [3] <>fun<>892 := <>Global<>getBase(<>a<>824)
+    [3] <>fun<>892 := @GetBase(<>a<>824)
     [4] <>this<> := enterCode(<>fun<>892)
 
   Call[3] -> ExitExc
@@ -6068,7 +6068,7 @@ function[30] w<>funexpr@4:436-561<> {
   AfterCatch[3] -> ExitExc
 
   Block[4] -> [6], [5]
-    [0] <>cond<>1017 := <>Global<>isObject(<>newObj<>1016)
+    [0] <>cond<>1017 := @isObject(<>newObj<>1016)
 
   Block[5] -> [7], ExitExc
     [0] assert(<>cond<>1017)
@@ -6222,7 +6222,7 @@ function[36] D<>funexpr@4:820-841<> {
     [3] <>arguments<>1080 := allocArg(2) @ #604
     [4] <>arguments<>1080["0"] := <>temp<>1078
     [5] <>arguments<>1080["1"] := <>temp<>1079
-    [6] <>fun<>1081 := <>Global<>getBase(<>C<>138)
+    [6] <>fun<>1081 := @GetBase(<>C<>138)
     [7] <>this<> := enterCode(<>fun<>1081)
 
   Call[1] -> ExitExc
@@ -6361,7 +6361,7 @@ function[38] c.onerror<>funexpr@4:946-1028<> {
     [0] <>temp<>1104 := <>y<>1102 + <>z<>1103 + " url=" + <>a<>1083
     [1] <>arguments<>1105 := allocArg(1) @ #622
     [2] <>arguments<>1105["0"] := <>temp<>1104
-    [3] <>fun<>1106 := <>Global<>getBase(Error)
+    [3] <>fun<>1106 := @GetBase(Error)
     [4] <>this<> := enterCode(<>fun<>1106)
 
   Call[4] -> ExitExc
@@ -6374,7 +6374,7 @@ function[38] c.onerror<>funexpr@4:946-1028<> {
   Block[7] -> [8], ExitExc
     [0] <>arguments<>1108 := allocArg(1) @ #624
     [1] <>arguments<>1108["0"] := <>temp<>1107
-    [2] <>fun<>1109 := <>Global<>getBase(<>u<>123)
+    [2] <>fun<>1109 := @GetBase(<>u<>123)
     [3] <>this<> := enterCode(<>fun<>1109)
 
   Call[8] -> ExitExc
@@ -6430,7 +6430,7 @@ function[39] G<>funexpr@5:3-145<> {
 
   Block[11] -> [13], [12], ExitExc
     [0] <>old<>1131 := <>b<>1125
-    [1] <>new<>1132 := <>Global<>toNumber(<>old<>1131)
+    [1] <>new<>1132 := @ToNumber(<>old<>1131)
     [2] <>b<>1125 := <>new<>1132 + 1
     [3] <>Global<>ignore149 := <>new<>1132 + 1
     [4] <>obj<>1128 := @ToObject(<>z<>131) @ #641
@@ -6484,7 +6484,7 @@ function[39] G<>funexpr@5:3-145<> {
     [8] <>arguments<>1143 := allocArg(2) @ #650
     [9] <>arguments<>1143["0"] := <>temp<>1141
     [10] <>arguments<>1143["1"] := <>temp<>1142
-    [11] <>fun<>1144 := <>Global<>getBase(<>E<>145)
+    [11] <>fun<>1144 := @GetBase(<>E<>145)
     [12] <>this<> := enterCode(<>fun<>1144)
 
   Block[23] -> [56], [55], ExitExc
@@ -6511,7 +6511,7 @@ function[39] G<>funexpr@5:3-145<> {
     [6] <>arguments<>1153 := allocArg(2) @ #657
     [7] <>arguments<>1153["0"] := <>temp<>1151
     [8] <>arguments<>1153["1"] := <>temp<>1152
-    [9] <>fun<>1154 := <>Global<>getBase(<>pa<>140)
+    [9] <>fun<>1154 := @GetBase(<>pa<>140)
     [10] <>this<> := enterCode(<>fun<>1154)
 
   Block[29] -> [36], [35], ExitExc
@@ -6555,7 +6555,7 @@ function[39] G<>funexpr@5:3-145<> {
     [4] <>temp<>1162 := <>obj<>1161["libs"]
     [5] <>arguments<>1163 := allocArg(1) @ #664
     [6] <>arguments<>1163["0"] := <>temp<>1162
-    [7] <>fun<>1164 := <>Global<>getBase(<>F<>153)
+    [7] <>fun<>1164 := @GetBase(<>F<>153)
     [8] <>this<> := enterCode(<>fun<>1164)
 
   Block[41] -> [48], [47], ExitExc
@@ -6648,7 +6648,7 @@ function[40] qa<>funexpr@5:149-171<> {
     [3] <>arguments<>1173 := allocArg(2) @ #669
     [4] <>arguments<>1173["0"] := <>temp<>1171
     [5] <>arguments<>1173["1"] := <>temp<>1172
-    [6] <>fun<>1174 := <>Global<>getBase(<>C<>138)
+    [6] <>fun<>1174 := @GetBase(<>C<>138)
     [7] <>this<> := enterCode(<>fun<>1174)
 
   Call[1] -> ExitExc
@@ -6694,8 +6694,8 @@ function[42] E<>funexpr@5:198-283<> {
   Block[3] -> [6], ExitExc
     [0] assert(<>c<>1181)
     [1] <>obj<>1184 := <>c<>1181
-    [2] <>iterator<>1185 := <>Global<>iteratorInit(<>obj<>1184) @ #676
-    [3] <>cond1<>1186 := <>Global<>iteratorHasNext(<>obj<>1184, <>iterator<>1185)
+    [2] <>iterator<>1185 := @iteratorInit(<>obj<>1184) @ #676
+    [3] <>cond1<>1186 := @iteratorHasNext(<>obj<>1184, <>iterator<>1185)
 
   Block[4] -> [10], ExitExc
     [0] assert(! <>c<>1181)
@@ -6706,7 +6706,7 @@ function[42] E<>funexpr@5:198-283<> {
 
   Block[7] -> [9], ExitExc
     [0] assert(<>cond1<>1186)
-    [1] <>key<>1187 := <>Global<>iteratorNext(<>obj<>1184, <>iterator<>1185)
+    [1] <>key<>1187 := @iteratorNext(<>obj<>1184, <>iterator<>1185)
     [2] <>d<>1182 := <>key<>1187
     [3] <>obj<>1188 := @ToObject(<>a<>1179) @ #677
     [4] <>obj<>1189 := @ToObject(<>c<>1181) @ #678
@@ -6716,7 +6716,7 @@ function[42] E<>funexpr@5:198-283<> {
     [0] assert(! <>cond1<>1186)
 
   Block[9] -> [6]
-    [0] <>cond1<>1186 := <>Global<>iteratorHasNext(<>obj<>1184, <>iterator<>1185)
+    [0] <>cond1<>1186 := @iteratorHasNext(<>obj<>1184, <>iterator<>1185)
 
   Block[10] -> [11]
 
@@ -6725,7 +6725,7 @@ function[42] E<>funexpr@5:198-283<> {
     [1] <>temp<>1192 := <>a<>1179
     [2] <>arguments<>1193 := allocArg(1) @ #680
     [3] <>arguments<>1193["0"] := <>temp<>1192
-    [4] <>fun<>1194 := <>Global<>getBase(<>H<>143)
+    [4] <>fun<>1194 := @GetBase(<>H<>143)
     [5] <>this<> := enterCode(<>fun<>1194)
 
   Block[12] -> [16]
@@ -6759,7 +6759,7 @@ function[43] va<>funexpr@5:512-582<> {
     [2] <>temp<>1296 := <>c<>1286
     [3] <>arguments<>1297 := allocArg(1) @ #751
     [4] <>arguments<>1297["0"] := <>temp<>1296
-    [5] <>fun<>1298 := <>Global<>getBase(<>D<>139)
+    [5] <>fun<>1298 := @GetBase(<>D<>139)
     [6] <>this<> := enterCode(<>fun<>1298)
 
   Block[2] -> [7], ExitExc
@@ -6770,7 +6770,7 @@ function[43] va<>funexpr@5:512-582<> {
     [4] <>arguments<>1302 := allocArg(2) @ #754
     [5] <>arguments<>1302["0"] := <>temp<>1300
     [6] <>arguments<>1302["1"] := <>temp<>1301
-    [7] <>fun<>1303 := <>Global<>getBase(<>C<>138)
+    [7] <>fun<>1303 := @GetBase(<>C<>138)
     [8] <>this<> := enterCode(<>fun<>1303)
 
   Call[3] -> ExitExc
@@ -6794,7 +6794,7 @@ function[43] va<>funexpr@5:512-582<> {
     [1] <>temp<>1306 := "gl"
     [2] <>arguments<>1307 := allocArg(1) @ #757
     [3] <>arguments<>1307["0"] := <>temp<>1306
-    [4] <>fun<>1308 := <>Global<>getBase(<>G<>141)
+    [4] <>fun<>1308 := @GetBase(<>G<>141)
     [5] <>this<> := enterCode(<>fun<>1308)
 
   Call[11] -> ExitExc
@@ -7013,7 +7013,7 @@ function[47] b {
 
   Block[9] -> [6], ExitExc
     [0] <>old<>1337 := <>d<>1328
-    [1] <>new<>1338 := <>Global<>toNumber(<>old<>1337)
+    [1] <>new<>1338 := @ToNumber(<>old<>1337)
     [2] <>d<>1328 := <>new<>1338 + 1
     [3] <>Global<>ignore189 := <>new<>1338 + 1
     [4] <>obj<>1335 := @ToObject(<>b<>1327) @ #784
@@ -7036,7 +7036,7 @@ function[47] b {
 
   Block[14] -> [11], ExitExc
     [0] <>old<>1354 := <>b<>1327
-    [1] <>new<>1355 := <>Global<>toNumber(<>old<>1354)
+    [1] <>new<>1355 := @ToNumber(<>old<>1354)
     [2] <>b<>1327 := <>new<>1355 + 1
     [3] <>Global<>ignore194 := <>new<>1355 + 1
     [4] <>obj<>1339 := @ToObject(<>z<>131) @ #797
@@ -7062,7 +7062,7 @@ function[47] b {
     [2] <>temp<>1346 := <>g<>1329
     [3] <>arguments<>1347 := allocArg(1) @ #791
     [4] <>arguments<>1347["0"] := <>temp<>1346
-    [5] <>fun<>1348 := <>Global<>getBase(<>xa<>152)
+    [5] <>fun<>1348 := @GetBase(<>xa<>152)
     [6] <>this<> := enterCode(<>fun<>1348)
 
   Block[20] -> [36], [35], ExitExc
@@ -7199,7 +7199,7 @@ function[51] L<>funexpr@8:423-495<> {
     [5] <>arguments<>1440 := allocArg(2) @ #862
     [6] <>arguments<>1440["0"] := <>temp<>1438
     [7] <>arguments<>1440["1"] := <>temp<>1439
-    [8] <>fun<>1441 := <>Global<>getBase(<>K<>163)
+    [8] <>fun<>1441 := @GetBase(<>K<>163)
     [9] <>this<> := enterCode(<>fun<>1441)
 
   Call[1] -> ExitExc
@@ -7248,7 +7248,7 @@ function[52] M<>funexpr@8:498-603<> {
     [3] <>temp<>1454 := "\s?\b" + <>b<>1448 + "\b"
     [4] <>arguments<>1455 := allocArg(1) @ #869
     [5] <>arguments<>1455["0"] := <>temp<>1454
-    [6] <>fun<>1456 := <>Global<>getBase(RegExp)
+    [6] <>fun<>1456 := @GetBase(RegExp)
     [7] <>this<> := enterCode(<>fun<>1456)
 
   Call[1] -> ExitExc
@@ -7344,7 +7344,7 @@ function[53] K<>funexpr@8:606-687<> {
     [1] <>temp<>1476 := "\b" + <>b<>1471 + "\b"
     [2] <>arguments<>1477 := allocArg(1) @ #883
     [3] <>arguments<>1477["0"] := <>temp<>1476
-    [4] <>fun<>1478 := <>Global<>getBase(RegExp)
+    [4] <>fun<>1478 := @GetBase(RegExp)
     [5] <>this<> := enterCode(<>fun<>1478)
 
   Call[1] -> ExitExc
@@ -7401,7 +7401,7 @@ function[54] Ha<>funexpr@8:691-726<> {
     [3] <>arguments<>1493 := allocArg(2) @ #893
     [4] <>arguments<>1493["0"] := <>temp<>1491
     [5] <>arguments<>1493["1"] := <>temp<>1492
-    [6] <>fun<>1494 := <>Global<>getBase(<>K<>163)
+    [6] <>fun<>1494 := @GetBase(<>K<>163)
     [7] <>this<> := enterCode(<>fun<>1494)
 
   Call[1] -> ExitExc
@@ -7419,7 +7419,7 @@ function[54] Ha<>funexpr@8:691-726<> {
     [4] <>arguments<>1499 := allocArg(2) @ #896
     [5] <>arguments<>1499["0"] := <>temp<>1497
     [6] <>arguments<>1499["1"] := <>temp<>1498
-    [7] <>fun<>1500 := <>Global<>getBase(<>M<>162)
+    [7] <>fun<>1500 := @GetBase(<>M<>162)
     [8] <>this<> := enterCode(<>fun<>1500)
 
   Block[5] -> [10], ExitExc
@@ -7430,7 +7430,7 @@ function[54] Ha<>funexpr@8:691-726<> {
     [4] <>arguments<>1504 := allocArg(2) @ #899
     [5] <>arguments<>1504["0"] := <>temp<>1502
     [6] <>arguments<>1504["1"] := <>temp<>1503
-    [7] <>fun<>1505 := <>Global<>getBase(<>L<>161)
+    [7] <>fun<>1505 := @GetBase(<>L<>161)
     [8] <>this<> := enterCode(<>fun<>1505)
 
   Call[6] -> ExitExc
@@ -7484,7 +7484,7 @@ function[55] Na<>funexpr@9:8-101<> {
 
   Block[5] -> [2], ExitExc
     [0] <>old<>1543 := <>b<>1529
-    [1] <>new<>1544 := <>Global<>toNumber(<>old<>1543)
+    [1] <>new<>1544 := @ToNumber(<>old<>1543)
     [2] <>b<>1529 := <>new<>1544 + 1
     [3] <>Global<>ignore239 := <>new<>1544 + 1
     [4] <>obj<>1532 := @ToObject(<>Ia<>165) @ #927
@@ -7546,7 +7546,7 @@ function[56] Oa<>funexpr@9:105-152<> {
   Block[0] -> [1], ExitExc
     [0] <>obj<>1548 := @ToObject(<>Na<>167) @ #930
     [1] <>arguments<>1549 := allocArg(0) @ #931
-    [2] <>fun<>1550 := <>Global<>getBase(<>Na<>167)
+    [2] <>fun<>1550 := @GetBase(<>Na<>167)
     [3] <>this<> := enterCode(<>fun<>1550)
 
   Call[1] -> ExitExc
@@ -7629,7 +7629,7 @@ function[58] Va<>funexpr@9:241-10:292<> {
     [6] <>arguments<>1675["0"] := <>temp<>1672
     [7] <>arguments<>1675["1"] := <>temp<>1673
     [8] <>arguments<>1675["2"] := <>temp<>1674
-    [9] <>fun<>1676 := <>Global<>getBase(<>t<>122)
+    [9] <>fun<>1676 := @GetBase(<>t<>122)
     [10] <>this<> := enterCode(<>fun<>1676)
 
   Call[3] -> [2]
@@ -7647,7 +7647,7 @@ function[58] Va<>funexpr@9:241-10:292<> {
     [4] <>arguments<>1581 := allocArg(2) @ #952
     [5] <>arguments<>1581["0"] := <>temp<>1579
     [6] <>arguments<>1581["1"] := <>temp<>1580
-    [7] <>fun<>1582 := <>Global<>getBase(<>L<>161)
+    [7] <>fun<>1582 := @GetBase(<>L<>161)
     [8] <>this<> := enterCode(<>fun<>1582)
 
   Call[7] -> [2]
@@ -7660,7 +7660,7 @@ function[58] Va<>funexpr@9:241-10:292<> {
   Block[10] -> [11], [2]
     [0] <>obj<>1583 := @ToObject(<>S<>198) @ #954
     [1] <>arguments<>1584 := allocArg(0) @ #955
-    [2] <>fun<>1585 := <>Global<>getBase(<>S<>198)
+    [2] <>fun<>1585 := @GetBase(<>S<>198)
     [3] <>this<> := enterCode(<>fun<>1585)
 
   Call[11] -> [2]
@@ -7689,7 +7689,7 @@ function[58] Va<>funexpr@9:241-10:292<> {
   Block[18] -> [19], [2]
     [0] <>arguments<>1592 := allocArg(1) @ #962
     [1] <>arguments<>1592["0"] := <>temp<>1591
-    [2] <>fun<>1593 := <>Global<>getBase(<>Ra<>178)
+    [2] <>fun<>1593 := @GetBase(<>Ra<>178)
     [3] <>this<> := enterCode(<>fun<>1593)
 
   Call[19] -> [2]
@@ -7707,7 +7707,7 @@ function[58] Va<>funexpr@9:241-10:292<> {
     [4] <>arguments<>1598 := allocArg(2) @ #965
     [5] <>arguments<>1598["0"] := <>temp<>1596
     [6] <>arguments<>1598["1"] := <>temp<>1597
-    [7] <>fun<>1599 := <>Global<>getBase(<>L<>161)
+    [7] <>fun<>1599 := @GetBase(<>L<>161)
     [8] <>this<> := enterCode(<>fun<>1599)
 
   Block[23] -> [30], [29], [2]
@@ -7740,7 +7740,7 @@ function[58] Va<>funexpr@9:241-10:292<> {
     [1] <>temp<>1664 := function (59) @ #1014, #1015
     [2] <>arguments<>1665 := allocArg(1) @ #1016
     [3] <>arguments<>1665["0"] := <>temp<>1664
-    [4] <>fun<>1666 := <>Global<>getBase(<>D<>139)
+    [4] <>fun<>1666 := @GetBase(<>D<>139)
     [5] <>this<> := enterCode(<>fun<>1666)
 
   Block[33] -> [36], [35], [2]
@@ -7813,7 +7813,7 @@ function[58] Va<>funexpr@9:241-10:292<> {
     [6] <>arguments<>1616 := allocArg(2) @ #979
     [7] <>arguments<>1616["0"] := <>temp<>1614
     [8] <>arguments<>1616["1"] := <>temp<>1615
-    [9] <>fun<>1617 := <>Global<>getBase(<>M<>162)
+    [9] <>fun<>1617 := @GetBase(<>M<>162)
     [10] <>this<> := enterCode(<>fun<>1617)
 
   Block[50] -> [56], [55], [2]
@@ -7920,7 +7920,7 @@ function[58] Va<>funexpr@9:241-10:292<> {
     [5] <>arguments<>1637 := allocArg(2) @ #998
     [6] <>arguments<>1637["0"] := <>temp<>1635
     [7] <>arguments<>1637["1"] := <>temp<>1636
-    [8] <>fun<>1638 := <>Global<>getBase(<>M<>162)
+    [8] <>fun<>1638 := @GetBase(<>M<>162)
     [9] <>this<> := enterCode(<>fun<>1638)
 
   Block[79] -> [86], [85], [2]
@@ -7971,7 +7971,7 @@ function[58] Va<>funexpr@9:241-10:292<> {
     [1] <>temp<>1641 := <>g<>1567
     [2] <>arguments<>1642 := allocArg(1) @ #1001
     [3] <>arguments<>1642["0"] := <>temp<>1641
-    [4] <>fun<>1643 := <>Global<>getBase(<>Sa<>197)
+    [4] <>fun<>1643 := @GetBase(<>Sa<>197)
     [5] <>this<> := enterCode(<>fun<>1643)
 
   Call[96] -> [2]
@@ -7987,7 +7987,7 @@ function[58] Va<>funexpr@9:241-10:292<> {
     [2] <>temp<>1646 := <>g<>1567
     [3] <>arguments<>1647 := allocArg(1) @ #1004
     [4] <>arguments<>1647["0"] := <>temp<>1646
-    [5] <>fun<>1648 := <>Global<>getBase(<>Ta<>192)
+    [5] <>fun<>1648 := @GetBase(<>Ta<>192)
     [6] <>this<> := enterCode(<>fun<>1648)
 
   Block[100] -> [107], [106], [2]
@@ -8011,7 +8011,7 @@ function[58] Va<>funexpr@9:241-10:292<> {
     [4] <>arguments<>1653 := allocArg(2) @ #1007
     [5] <>arguments<>1653["0"] := <>temp<>1651
     [6] <>arguments<>1653["1"] := <>temp<>1652
-    [7] <>fun<>1654 := <>Global<>getBase(<>L<>161)
+    [7] <>fun<>1654 := @GetBase(<>L<>161)
     [8] <>this<> := enterCode(<>fun<>1654)
 
   Block[106] -> [108], [2]
@@ -8051,7 +8051,7 @@ function[58] Va<>funexpr@9:241-10:292<> {
     [1] <>temp<>1668 := <>a<>1563
     [2] <>arguments<>1669 := allocArg(1) @ #1019
     [3] <>arguments<>1669["0"] := <>temp<>1668
-    [4] <>fun<>1670 := <>Global<>getBase(<>Ua<>190)
+    [4] <>fun<>1670 := @GetBase(<>Ua<>190)
     [5] <>this<> := enterCode(<>fun<>1670)
 
   Call[120] -> [2]
@@ -8110,7 +8110,7 @@ function[60] Wa<>funexpr@10:296-334<> {
     [1] <>temp<>1687 := function (61) @ #1031, #1032
     [2] <>arguments<>1688 := allocArg(1) @ #1033
     [3] <>arguments<>1688["0"] := <>temp<>1687
-    [4] <>fun<>1689 := <>Global<>getBase(<>D<>139)
+    [4] <>fun<>1689 := @GetBase(<>D<>139)
     [5] <>this<> := enterCode(<>fun<>1689)
 
   Call[1] -> ExitExc
@@ -8158,7 +8158,7 @@ function[62] Xa<>funexpr@10:338-374<> {
     [1] <>temp<>1700 := function (63) @ #1042, #1043
     [2] <>arguments<>1701 := allocArg(1) @ #1044
     [3] <>arguments<>1701["0"] := <>temp<>1700
-    [4] <>fun<>1702 := <>Global<>getBase(<>D<>139)
+    [4] <>fun<>1702 := @GetBase(<>D<>139)
     [5] <>this<> := enterCode(<>fun<>1702)
 
   Call[1] -> ExitExc
@@ -8316,7 +8316,7 @@ function[65] Za<>funexpr@11:49-12:454<> {
     [6] <>arguments<>1870["0"] := <>temp<>1867
     [7] <>arguments<>1870["1"] := <>temp<>1868
     [8] <>arguments<>1870["2"] := <>temp<>1869
-    [9] <>fun<>1871 := <>Global<>getBase(<>t<>122)
+    [9] <>fun<>1871 := @GetBase(<>t<>122)
     [10] <>this<> := enterCode(<>fun<>1871)
 
   Call[5] -> [4]
@@ -8445,7 +8445,7 @@ function[65] Za<>funexpr@11:49-12:454<> {
 
   Block[28] -> [25], [4]
     [0] <>old<>1833 := <>s<>1733
-    [1] <>new<>1834 := <>Global<>toNumber(<>old<>1833)
+    [1] <>new<>1834 := @ToNumber(<>old<>1833)
     [2] <>s<>1733 := <>new<>1834 + 1
     [3] <>Global<>ignore296 := <>new<>1834
     [4] <>obj<>1776 := @ToObject(<>c<>1726) @ #1129
@@ -8463,7 +8463,7 @@ function[65] Za<>funexpr@11:49-12:454<> {
 
   Block[33] -> [30], [4]
     [0] <>old<>1796 := <>Y<>1735
-    [1] <>new<>1797 := <>Global<>toNumber(<>old<>1796)
+    [1] <>new<>1797 := @ToNumber(<>old<>1796)
     [2] <>Y<>1735 := <>new<>1797 + 1
     [3] <>Global<>ignore299 := <>new<>1797
     [4] <>obj<>1777 := @ToObject(<>B<>1734) @ #1108
@@ -8481,7 +8481,7 @@ function[65] Za<>funexpr@11:49-12:454<> {
     [6] <>arguments<>1783 := allocArg(2) @ #1095
     [7] <>arguments<>1783["0"] := <>temp<>1781
     [8] <>arguments<>1783["1"] := <>temp<>1782
-    [9] <>fun<>1784 := <>Global<>getBase(<>K<>163)
+    [9] <>fun<>1784 := @GetBase(<>K<>163)
     [10] <>this<> := enterCode(<>fun<>1784)
 
   Block[36] -> [43], [42], [4]
@@ -8514,7 +8514,7 @@ function[65] Za<>funexpr@11:49-12:454<> {
   Block[46] -> [48], [4]
     [0] assert(<>new2<>1786)
     [1] <>old<>1787 := <>d<>1727
-    [2] <>new<>1788 := <>Global<>toNumber(<>old<>1787)
+    [2] <>new<>1788 := @ToNumber(<>old<>1787)
     [3] <>d<>1727 := <>new<>1788 + 1
     [4] <>Global<>ignore301 := <>new<>1788
 
@@ -8533,7 +8533,7 @@ function[65] Za<>funexpr@11:49-12:454<> {
     [6] <>arguments<>1783 := allocArg(2) @ #1100
     [7] <>arguments<>1783["0"] := <>temp<>1781
     [8] <>arguments<>1783["1"] := <>temp<>1782
-    [9] <>fun<>1784 := <>Global<>getBase(<>K<>163)
+    [9] <>fun<>1784 := @GetBase(<>K<>163)
     [10] <>this<> := enterCode(<>fun<>1784)
 
   Block[50] -> [57], [56], [4]
@@ -8619,7 +8619,7 @@ function[65] Za<>funexpr@11:49-12:454<> {
     [8] <>arguments<>1807 := allocArg(2) @ #1115
     [9] <>arguments<>1807["0"] := <>temp<>1805
     [10] <>arguments<>1807["1"] := <>temp<>1806
-    [11] <>fun<>1808 := <>Global<>getBase(<>K<>163)
+    [11] <>fun<>1808 := @GetBase(<>K<>163)
     [12] <>this<> := enterCode(<>fun<>1808)
 
   Block[72] -> [93], [92], [4]
@@ -8640,7 +8640,7 @@ function[65] Za<>funexpr@11:49-12:454<> {
     [4] <>arguments<>1813 := allocArg(2) @ #1118
     [5] <>arguments<>1813["0"] := <>temp<>1811
     [6] <>arguments<>1813["1"] := <>temp<>1812
-    [7] <>fun<>1814 := <>Global<>getBase(<>Ya<>180)
+    [7] <>fun<>1814 := @GetBase(<>Ya<>180)
     [8] <>this<> := enterCode(<>fun<>1814)
 
   Block[77] -> [89], [88], [4]
@@ -8699,7 +8699,7 @@ function[65] Za<>funexpr@11:49-12:454<> {
     [8] <>arguments<>1822 := allocArg(2) @ #1124
     [9] <>arguments<>1822["0"] := <>temp<>1820
     [10] <>arguments<>1822["1"] := <>temp<>1821
-    [11] <>fun<>1823 := <>Global<>getBase(<>K<>163)
+    [11] <>fun<>1823 := @GetBase(<>K<>163)
     [12] <>this<> := enterCode(<>fun<>1823)
 
   Block[93] -> [112], [4]
@@ -8720,7 +8720,7 @@ function[65] Za<>funexpr@11:49-12:454<> {
     [4] <>arguments<>1828 := allocArg(2) @ #1127
     [5] <>arguments<>1828["0"] := <>temp<>1826
     [6] <>arguments<>1828["1"] := <>temp<>1827
-    [7] <>fun<>1829 := <>Global<>getBase(<>Ya<>180)
+    [7] <>fun<>1829 := @GetBase(<>Ya<>180)
     [8] <>this<> := enterCode(<>fun<>1829)
 
   Block[98] -> [110], [109], [4]
@@ -8778,7 +8778,7 @@ function[65] Za<>funexpr@11:49-12:454<> {
   Block[116] -> [118], [4]
     [0] assert(<>d<>1727 + 1 < <>l<>1731)
     [1] <>old<>1831 := <>d<>1727
-    [2] <>new<>1832 := <>Global<>toNumber(<>old<>1831)
+    [2] <>new<>1832 := @ToNumber(<>old<>1831)
     [3] <>d<>1727 := <>new<>1832 + 1
     [4] <>Global<>ignore308 := <>new<>1832
 
@@ -8968,7 +8968,7 @@ function[66] Ya<>funexpr@12:458-13:25<> {
     [5] <>arguments<>1883 := allocArg(2) @ #1167
     [6] <>arguments<>1883["0"] := <>temp<>1880
     [7] <>arguments<>1883["1"] := <>temp<>1882
-    [8] <>fun<>1884 := <>Global<>getBase(<>K<>163)
+    [8] <>fun<>1884 := @GetBase(<>K<>163)
     [9] <>this<> := enterCode(<>fun<>1884)
 
   Block[4] -> [1], ExitExc
@@ -8976,7 +8976,7 @@ function[66] Ya<>funexpr@12:458-13:25<> {
 
   Block[5] -> [2], ExitExc
     [0] <>old<>1886 := <>d<>1876
-    [1] <>new<>1887 := <>Global<>toNumber(<>old<>1886)
+    [1] <>new<>1887 := @ToNumber(<>old<>1886)
     [2] <>d<>1876 := <>new<>1887 + 1
     [3] <>Global<>ignore321 := <>new<>1887
 
@@ -9014,7 +9014,7 @@ function[67] $a<>funexpr@13:29-55<> {
     [5] <>arguments<>1897["0"] := <>temp<>1894
     [6] <>arguments<>1897["1"] := <>temp<>1895
     [7] <>arguments<>1897["2"] := <>temp<>1896
-    [8] <>fun<>1898 := <>Global<>getBase(<>Za<>179)
+    [8] <>fun<>1898 := @GetBase(<>Za<>179)
     [9] <>this<> := enterCode(<>fun<>1898)
 
   Call[1] -> ExitExc
@@ -9042,7 +9042,7 @@ function[68] ab<>funexpr@13:59-87<> {
     [5] <>arguments<>1907["0"] := <>temp<>1904
     [6] <>arguments<>1907["1"] := <>temp<>1905
     [7] <>arguments<>1907["2"] := <>temp<>1906
-    [8] <>fun<>1908 := <>Global<>getBase(<>Za<>179)
+    [8] <>fun<>1908 := @GetBase(<>Za<>179)
     [9] <>this<> := enterCode(<>fun<>1908)
 
   Call[1] -> ExitExc
@@ -9066,7 +9066,7 @@ function[69] bb<>funexpr@13:91-132<> {
     [1] <>temp<>1919 := function (70) @ #1187, #1188
     [2] <>arguments<>1920 := allocArg(1) @ #1189
     [3] <>arguments<>1920["0"] := <>temp<>1919
-    [4] <>fun<>1921 := <>Global<>getBase(<>D<>139)
+    [4] <>fun<>1921 := @GetBase(<>D<>139)
     [5] <>this<> := enterCode(<>fun<>1921)
 
   Call[1] -> ExitExc
@@ -9134,7 +9134,7 @@ function[71] cb<>funexpr@13:136-177<> {
     [1] <>temp<>1932 := function (72) @ #1199, #1200
     [2] <>arguments<>1933 := allocArg(1) @ #1201
     [3] <>arguments<>1933["0"] := <>temp<>1932
-    [4] <>fun<>1934 := <>Global<>getBase(<>D<>139)
+    [4] <>fun<>1934 := @GetBase(<>D<>139)
     [5] <>this<> := enterCode(<>fun<>1934)
 
   Call[1] -> ExitExc
@@ -9202,7 +9202,7 @@ function[73] db<>funexpr@13:181-260<> {
     [1] <>temp<>1965 := function (74) @ #1211, #1212
     [2] <>arguments<>1966 := allocArg(1) @ #1213
     [3] <>arguments<>1966["0"] := <>temp<>1965
-    [4] <>fun<>1967 := <>Global<>getBase(<>D<>139)
+    [4] <>fun<>1967 := @GetBase(<>D<>139)
     [5] <>this<> := enterCode(<>fun<>1967)
 
   Call[1] -> ExitExc
@@ -9466,7 +9466,7 @@ function[80] Ta<>funexpr@14:12-145<> {
   Block[0] -> [1], ExitExc
     [0] <>obj<>2025 := @ToObject(<>S<>198) @ #1259
     [1] <>arguments<>2026 := allocArg(0) @ #1260
-    [2] <>fun<>2027 := <>Global<>getBase(<>S<>198)
+    [2] <>fun<>2027 := @GetBase(<>S<>198)
     [3] <>this<> := enterCode(<>fun<>2027)
 
   Call[1] -> ExitExc
@@ -9484,7 +9484,7 @@ function[80] Ta<>funexpr@14:12-145<> {
     [4] <>arguments<>2031 := allocArg(2) @ #1263
     [5] <>arguments<>2031["0"] := <>temp<>2029
     [6] <>arguments<>2031["1"] := <>temp<>2030
-    [7] <>fun<>2032 := <>Global<>getBase(<>jb<>195)
+    [7] <>fun<>2032 := @GetBase(<>jb<>195)
     [8] <>this<> := enterCode(<>fun<>2032)
 
   Block[5] -> [20], ExitExc
@@ -9504,7 +9504,7 @@ function[80] Ta<>funexpr@14:12-145<> {
     [3] <>arguments<>2036 := allocArg(2) @ #1266
     [4] <>arguments<>2036["0"] := <>temp<>2034
     [5] <>arguments<>2036["1"] := <>temp<>2035
-    [6] <>fun<>2037 := <>Global<>getBase(<>T<>196)
+    [6] <>fun<>2037 := @GetBase(<>T<>196)
     [7] <>this<> := enterCode(<>fun<>2037)
 
   Call[10] -> ExitExc
@@ -9561,7 +9561,7 @@ function[81] d<>funexpr@14:100-117<> {
     [1] <>temp<>2040 := <>a<>2020
     [2] <>arguments<>2041 := allocArg(1) @ #1269
     [3] <>arguments<>2041["0"] := <>temp<>2040
-    [4] <>fun<>2042 := <>Global<>getBase(<>kb<>194)
+    [4] <>fun<>2042 := @GetBase(<>kb<>194)
     [5] <>this<> := enterCode(<>fun<>2042)
 
   Call[1] -> ExitExc
@@ -9583,7 +9583,7 @@ function[82] lb<>funexpr@14:149-186<> {
   Block[0] -> [1], ExitExc
     [0] <>obj<>2052 := @ToObject(<>S<>198) @ #1279
     [1] <>arguments<>2053 := allocArg(0) @ #1280
-    [2] <>fun<>2054 := <>Global<>getBase(<>S<>198)
+    [2] <>fun<>2054 := @GetBase(<>S<>198)
     [3] <>this<> := enterCode(<>fun<>2054)
 
   Call[1] -> ExitExc
@@ -9601,7 +9601,7 @@ function[82] lb<>funexpr@14:149-186<> {
     [4] <>arguments<>2058 := allocArg(2) @ #1283
     [5] <>arguments<>2058["0"] := <>temp<>2056
     [6] <>arguments<>2058["1"] := <>temp<>2057
-    [7] <>fun<>2059 := <>Global<>getBase(<>T<>196)
+    [7] <>fun<>2059 := @GetBase(<>T<>196)
     [8] <>this<> := enterCode(<>fun<>2059)
 
   Block[5] -> [16], [15], ExitExc
@@ -9621,7 +9621,7 @@ function[82] lb<>funexpr@14:149-186<> {
     [3] <>arguments<>2064 := allocArg(2) @ #1286
     [4] <>arguments<>2064["0"] := <>temp<>2062
     [5] <>arguments<>2064["1"] := <>temp<>2063
-    [6] <>fun<>2065 := <>Global<>getBase(<>jb<>195)
+    [6] <>fun<>2065 := @GetBase(<>jb<>195)
     [7] <>this<> := enterCode(<>fun<>2065)
 
   Call[10] -> ExitExc
@@ -9660,7 +9660,7 @@ function[83] kb<>funexpr@14:190-341<> {
   Block[1] -> [3], [2]
     [0] <>obj<>2072 := @ToObject(<>S<>198) @ #1290
     [1] <>arguments<>2073 := allocArg(0) @ #1291
-    [2] <>fun<>2074 := <>Global<>getBase(<>S<>198)
+    [2] <>fun<>2074 := @GetBase(<>S<>198)
     [3] <>this<> := enterCode(<>fun<>2074)
 
   Block[2] -> [27], ExitExc
@@ -9673,7 +9673,7 @@ function[83] kb<>funexpr@14:190-341<> {
     [6] <>arguments<>2097["0"] := <>temp<>2094
     [7] <>arguments<>2097["1"] := <>temp<>2095
     [8] <>arguments<>2097["2"] := <>temp<>2096
-    [9] <>fun<>2098 := <>Global<>getBase(<>t<>122)
+    [9] <>fun<>2098 := @GetBase(<>t<>122)
     [10] <>this<> := enterCode(<>fun<>2098)
 
   Call[3] -> [2]
@@ -9719,7 +9719,7 @@ function[83] kb<>funexpr@14:190-341<> {
     [6] <>arguments<>2084["0"] := <>temp<>2081
     [7] <>arguments<>2084["1"] := <>temp<>2082
     [8] <>arguments<>2084["2"] := <>temp<>2083
-    [9] <>fun<>2085 := <>Global<>getBase(<>jb<>195)
+    [9] <>fun<>2085 := @GetBase(<>jb<>195)
     [10] <>this<> := enterCode(<>fun<>2085)
 
   Block[14] -> [25], [24], [2]
@@ -9739,7 +9739,7 @@ function[83] kb<>funexpr@14:190-341<> {
     [3] <>arguments<>2090 := allocArg(2) @ #1301
     [4] <>arguments<>2090["0"] := <>temp<>2088
     [5] <>arguments<>2090["1"] := <>temp<>2089
-    [6] <>fun<>2091 := <>Global<>getBase(<>T<>196)
+    [6] <>fun<>2091 := @GetBase(<>T<>196)
     [7] <>this<> := enterCode(<>fun<>2091)
 
   Call[19] -> [2]
@@ -9796,7 +9796,7 @@ function[84] jb<>funexpr@14:345-15:47<> {
     [2] <>temp<>2108 := <>a<>2100
     [3] <>arguments<>2109 := allocArg(1) @ #1309
     [4] <>arguments<>2109["0"] := <>temp<>2108
-    [5] <>fun<>2110 := <>Global<>getBase(<>Sa<>197)
+    [5] <>fun<>2110 := @GetBase(<>Sa<>197)
     [6] <>this<> := enterCode(<>fun<>2110)
 
   Block[5] -> [35], ExitExc
@@ -9865,7 +9865,7 @@ function[84] jb<>funexpr@14:345-15:47<> {
 
   Block[22] -> [19], ExitExc
     [0] <>old<>2126 := <>c<>2102
-    [1] <>new<>2127 := <>Global<>toNumber(<>old<>2126)
+    [1] <>new<>2127 := @ToNumber(<>old<>2126)
     [2] <>c<>2102 := <>new<>2127 + 1
     [3] <>Global<>ignore373 := <>new<>2127
     [4] <>obj<>2116 := @ToObject(<>b<>2101) @ #1326
@@ -9903,7 +9903,7 @@ function[84] jb<>funexpr@14:345-15:47<> {
     [3] <>arguments<>2132 := allocArg(2) @ #1329
     [4] <>arguments<>2132["0"] := <>temp<>2130
     [5] <>arguments<>2132["1"] := <>temp<>2131
-    [6] <>fun<>2133 := <>Global<>getBase(<>T<>196)
+    [6] <>fun<>2133 := @GetBase(<>T<>196)
     [7] <>this<> := enterCode(<>fun<>2133)
 
   Call[31] -> ExitExc
@@ -9949,7 +9949,7 @@ function[85] T<>funexpr@15:50-115<> {
     [4] <>arguments<>2142 := allocArg(2) @ #1334
     [5] <>arguments<>2142["0"] := <>temp<>2140
     [6] <>arguments<>2142["1"] := <>temp<>2141
-    [7] <>fun<>2143 := <>Global<>getBase(<>L<>161)
+    [7] <>fun<>2143 := @GetBase(<>L<>161)
     [8] <>this<> := enterCode(<>fun<>2143)
 
   Block[5] -> [10], ExitExc
@@ -9960,7 +9960,7 @@ function[85] T<>funexpr@15:50-115<> {
     [4] <>arguments<>2147 := allocArg(2) @ #1337
     [5] <>arguments<>2147["0"] := <>temp<>2145
     [6] <>arguments<>2147["1"] := <>temp<>2146
-    [7] <>fun<>2148 := <>Global<>getBase(<>M<>162)
+    [7] <>fun<>2148 := @GetBase(<>M<>162)
     [8] <>this<> := enterCode(<>fun<>2148)
 
   Call[6] -> ExitExc
@@ -10006,7 +10006,7 @@ function[86] Sa<>funexpr@15:119-192<> {
     [4] <>arguments<>2159 := allocArg(2) @ #1344
     [5] <>arguments<>2159["0"] := <>temp<>2157
     [6] <>arguments<>2159["1"] := <>temp<>2158
-    [7] <>fun<>2160 := <>Global<>getBase(<>K<>163)
+    [7] <>fun<>2160 := @GetBase(<>K<>163)
     [8] <>this<> := enterCode(<>fun<>2160)
 
   Block[4] -> [1], ExitExc
@@ -10014,7 +10014,7 @@ function[86] Sa<>funexpr@15:119-192<> {
 
   Block[5] -> [2], ExitExc
     [0] <>old<>2162 := <>b<>2151
-    [1] <>new<>2163 := <>Global<>toNumber(<>old<>2162)
+    [1] <>new<>2163 := @ToNumber(<>old<>2162)
     [2] <>b<>2151 := <>new<>2163 + 1
     [3] <>Global<>ignore385 := <>new<>2163
     [4] <>obj<>2154 := @ToObject(<>a<>2150) @ #1346
@@ -10187,7 +10187,7 @@ function[91] ub<>funexpr@16:859-931<> {
     [0] assert(<>a<>2403)
     [1] <>obj<>2407 := @ToObject(<>a<>2403) @ #1520
     [2] <>arguments<>2408 := allocArg(0) @ #1521
-    [3] <>fun<>2409 := <>Global<>getBase(<>a<>2403)
+    [3] <>fun<>2409 := @GetBase(<>a<>2403)
     [4] <>this<> := enterCode(<>fun<>2409)
 
   Block[7] -> [14], [13], ExitExc
@@ -10225,7 +10225,7 @@ function[91] ub<>funexpr@16:859-931<> {
     [2] <>temp<>2412 := <>a<>2403
     [3] <>arguments<>2413 := allocArg(1) @ #1524
     [4] <>arguments<>2413["0"] := <>temp<>2412
-    [5] <>fun<>2414 := <>Global<>getBase(<>qa<>142)
+    [5] <>fun<>2414 := @GetBase(<>qa<>142)
     [6] <>this<> := enterCode(<>fun<>2414)
 
   Block[19] -> [26], [25], ExitExc
@@ -10246,7 +10246,7 @@ function[91] ub<>funexpr@16:859-931<> {
     [1] <>temp<>2418 := "gc"
     [2] <>arguments<>2419 := allocArg(1) @ #1527
     [3] <>arguments<>2419["0"] := <>temp<>2418
-    [4] <>fun<>2420 := <>Global<>getBase(<>G<>141)
+    [4] <>fun<>2420 := @GetBase(<>G<>141)
     [5] <>this<> := enterCode(<>fun<>2420)
 
   Block[25] -> [27], ExitExc
@@ -10280,7 +10280,7 @@ function[92] vb<>funexpr@16:1014-1060<> {
     [1] <>temp<>2463 := function (93) @ #1557, #1558
     [2] <>arguments<>2464 := allocArg(1) @ #1559
     [3] <>arguments<>2464["0"] := <>temp<>2463
-    [4] <>fun<>2465 := <>Global<>getBase(<>ub<>207)
+    [4] <>fun<>2465 := @GetBase(<>ub<>207)
     [5] <>this<> := enterCode(<>fun<>2465)
 
   Call[1] -> ExitExc
@@ -10306,7 +10306,7 @@ function[93] <>funexpr@16:1029-1058<> {
     [3] <>arguments<>2456 := allocArg(2) @ #1552
     [4] <>arguments<>2456["0"] := <>temp<>2454
     [5] <>arguments<>2456["1"] := <>temp<>2455
-    [6] <>fun<>2457 := <>Global<>getBase(<>C<>138)
+    [6] <>fun<>2457 := @GetBase(<>C<>138)
     [7] <>this<> := enterCode(<>fun<>2457)
 
   Call[1] -> ExitExc
@@ -10321,7 +10321,7 @@ function[93] <>funexpr@16:1029-1058<> {
     [1] <>temp<>2459 := "pw"
     [2] <>arguments<>2460 := allocArg(1) @ #1555
     [3] <>arguments<>2460["0"] := <>temp<>2459
-    [4] <>fun<>2461 := <>Global<>getBase(<>G<>141)
+    [4] <>fun<>2461 := @GetBase(<>G<>141)
     [5] <>this<> := enterCode(<>fun<>2461)
 
   Call[5] -> ExitExc
@@ -10374,7 +10374,7 @@ function[95] zb<>funexpr@16:1201-1245<> {
     [6] <>arguments<>2491 := allocArg(2) @ #1579
     [7] <>arguments<>2491["0"] := <>temp<>2489
     [8] <>arguments<>2491["1"] := <>temp<>2490
-    [9] <>fun<>2492 := <>Global<>getBase(<>u<>123)
+    [9] <>fun<>2492 := @GetBase(<>u<>123)
     [10] <>this<> := enterCode(<>fun<>2492)
 
   Call[4] -> ExitExc
@@ -10437,7 +10437,7 @@ function[96] Bb<>funexpr@16:1352-17:46<> {
 
   Block[9] -> [6], ExitExc
     [0] <>old<>2548 := <>f<>2511
-    [1] <>new<>2549 := <>Global<>toNumber(<>old<>2548)
+    [1] <>new<>2549 := @ToNumber(<>old<>2548)
     [2] <>f<>2511 := <>new<>2549 + 1
     [3] <>Global<>ignore473 := <>new<>2549 + 1
 
@@ -10469,7 +10469,7 @@ function[97] d<>funexpr@16:1391-1499<> {
     [2] <>temp<>2538 := function (98) @ #1607, #1608
     [3] <>arguments<>2539 := allocArg(1) @ #1609
     [4] <>arguments<>2539["0"] := <>temp<>2538
-    [5] <>fun<>2540 := <>Global<>getBase(<>a<>2506)
+    [5] <>fun<>2540 := @GetBase(<>a<>2506)
     [6] <>this<> := enterCode(<>fun<>2540)
 
   Call[1] -> ExitExc
@@ -10519,7 +10519,7 @@ function[98] <>funexpr@16:1420-1497<> {
 
   Block[5] -> [2], ExitExc
     [0] <>old<>2528 := <>d<>2522
-    [1] <>new<>2529 := <>Global<>toNumber(<>old<>2528)
+    [1] <>new<>2529 := @ToNumber(<>old<>2528)
     [2] <>d<>2522 := <>new<>2529 + 1
     [3] <>Global<>ignore466 := <>new<>2529 + 1
 
@@ -10544,7 +10544,7 @@ function[99] Mb<>funexpr@19:435-507<> {
     [1] <>temp<>2646 := function (100) @ #1660, #1661
     [2] <>arguments<>2647 := allocArg(1) @ #1662
     [3] <>arguments<>2647["0"] := <>temp<>2646
-    [4] <>fun<>2648 := <>Global<>getBase(<>D<>139)
+    [4] <>fun<>2648 := @GetBase(<>D<>139)
     [5] <>this<> := enterCode(<>fun<>2648)
 
   Call[1] -> ExitExc
@@ -10610,7 +10610,7 @@ function[101] Nb<>funexpr@19:511-545<> {
     [1] <>temp<>2657 := function (102) @ #1671, #1672
     [2] <>arguments<>2658 := allocArg(1) @ #1673
     [3] <>arguments<>2658["0"] := <>temp<>2657
-    [4] <>fun<>2659 := <>Global<>getBase(<>D<>139)
+    [4] <>fun<>2659 := @GetBase(<>D<>139)
     [5] <>this<> := enterCode(<>fun<>2659)
 
   Call[1] -> ExitExc
@@ -10656,7 +10656,7 @@ function[103] Ob<>funexpr@19:549-585<> {
     [1] <>temp<>2670 := function (104) @ #1682, #1683
     [2] <>arguments<>2671 := allocArg(1) @ #1684
     [3] <>arguments<>2671["0"] := <>temp<>2670
-    [4] <>fun<>2672 := <>Global<>getBase(<>D<>139)
+    [4] <>fun<>2672 := @GetBase(<>D<>139)
     [5] <>this<> := enterCode(<>fun<>2672)
 
   Call[1] -> ExitExc
@@ -10704,7 +10704,7 @@ function[105] Pb<>funexpr@19:589-625<> {
     [1] <>temp<>2683 := function (106) @ #1693, #1694
     [2] <>arguments<>2684 := allocArg(1) @ #1695
     [3] <>arguments<>2684["0"] := <>temp<>2683
-    [4] <>fun<>2685 := <>Global<>getBase(<>D<>139)
+    [4] <>fun<>2685 := @GetBase(<>D<>139)
     [5] <>this<> := enterCode(<>fun<>2685)
 
   Call[1] -> ExitExc
@@ -10752,7 +10752,7 @@ function[107] Qb<>funexpr@19:629-665<> {
     [1] <>temp<>2696 := function (108) @ #1704, #1705
     [2] <>arguments<>2697 := allocArg(1) @ #1706
     [3] <>arguments<>2697["0"] := <>temp<>2696
-    [4] <>fun<>2698 := <>Global<>getBase(<>D<>139)
+    [4] <>fun<>2698 := @GetBase(<>D<>139)
     [5] <>this<> := enterCode(<>fun<>2698)
 
   Call[1] -> ExitExc
@@ -10824,7 +10824,7 @@ function[110] Tb<>funexpr@20:4-38<> {
     [1] <>temp<>2712 := function (111) @ #1719, #1720
     [2] <>arguments<>2713 := allocArg(1) @ #1721
     [3] <>arguments<>2713["0"] := <>temp<>2712
-    [4] <>fun<>2714 := <>Global<>getBase(<>D<>139)
+    [4] <>fun<>2714 := @GetBase(<>D<>139)
     [5] <>this<> := enterCode(<>fun<>2714)
 
   Call[1] -> ExitExc
@@ -10974,7 +10974,7 @@ function[112] Xb<>funexpr@22:32-223<> {
 
   Block[28] -> [25], ExitExc
     [0] <>old<>2811 := <>c<>2784
-    [1] <>new<>2812 := <>Global<>toNumber(<>old<>2811)
+    [1] <>new<>2812 := @ToNumber(<>old<>2811)
     [2] <>c<>2784 := <>new<>2812 + 1
     [3] <>Global<>ignore525 := <>new<>2812
     [4] <>y<>2807 := <>c<>2784
@@ -11026,7 +11026,7 @@ function[113] Z<>funexpr@22:226-293<> {
     [4] <>arguments<>2821 := allocArg(2) @ #1793
     [5] <>arguments<>2821["0"] := <>temp<>2819
     [6] <>arguments<>2821["1"] := <>temp<>2820
-    [7] <>fun<>2822 := <>Global<>getBase(<>Xb<>236)
+    [7] <>fun<>2822 := @GetBase(<>Xb<>236)
     [8] <>this<> := enterCode(<>fun<>2822)
 
   Call[1] -> ExitExc
@@ -11043,7 +11043,7 @@ function[113] Z<>funexpr@22:226-293<> {
     [3] <>temp<>2826 := <>X<>235 + "_" + <>b<>2815
     [4] <>arguments<>2827 := allocArg(1) @ #1797
     [5] <>arguments<>2827["0"] := <>temp<>2826
-    [6] <>fun<>2828 := <>Global<>getBase(Error)
+    [6] <>fun<>2828 := @GetBase(Error)
     [7] <>this<> := enterCode(<>fun<>2828)
 
   Block[5] -> [14], ExitExc
@@ -11064,7 +11064,7 @@ function[113] Z<>funexpr@22:226-293<> {
     [3] <>arguments<>2832["0"] := <>temp<>2829
     [4] <>arguments<>2832["1"] := <>temp<>2830
     [5] <>arguments<>2832["2"] := <>temp<>2831
-    [6] <>fun<>2833 := <>Global<>getBase(<>t<>122)
+    [6] <>fun<>2833 := @GetBase(<>t<>122)
     [7] <>this<> := enterCode(<>fun<>2833)
 
   Call[10] -> ExitExc
@@ -11100,7 +11100,7 @@ function[114] Zb<>funexpr@22:297-402<> {
     [7] <>arguments<>2845 := allocArg(2) @ #1805
     [8] <>arguments<>2845["0"] := <>temp<>2843
     [9] <>arguments<>2845["1"] := <>temp<>2844
-    [10] <>fun<>2846 := <>Global<>getBase(<>Z<>237)
+    [10] <>fun<>2846 := @GetBase(<>Z<>237)
     [11] <>this<> := enterCode(<>fun<>2846)
 
   Call[1] -> ExitExc
@@ -11209,7 +11209,7 @@ function[115] <>funexpr@22:377-397<> {
     [2] <>temp<>2862 := <>a<>2837
     [3] <>arguments<>2863 := allocArg(1) @ #1818
     [4] <>arguments<>2863["0"] := <>temp<>2862
-    [5] <>fun<>2864 := <>Global<>getBase(<>Yb<>242)
+    [5] <>fun<>2864 := @GetBase(<>Yb<>242)
     [6] <>this<> := enterCode(<>fun<>2864)
 
   Call[1] -> ExitExc
@@ -11222,7 +11222,7 @@ function[115] <>funexpr@22:377-397<> {
   Block[4] -> [5], ExitExc
     [0] <>arguments<>2866 := allocArg(1) @ #1820
     [1] <>arguments<>2866["0"] := <>temp<>2865
-    [2] <>fun<>2867 := <>Global<>getBase(<>b<>2838)
+    [2] <>fun<>2867 := @GetBase(<>b<>2838)
     [3] <>this<> := enterCode(<>fun<>2867)
 
   Call[5] -> ExitExc
@@ -11250,7 +11250,7 @@ function[116] $b<>funexpr@22:406-503<> {
     [5] <>arguments<>2885 := allocArg(2) @ #1831
     [6] <>arguments<>2885["0"] := <>temp<>2883
     [7] <>arguments<>2885["1"] := <>temp<>2884
-    [8] <>fun<>2886 := <>Global<>getBase(<>Z<>237)
+    [8] <>fun<>2886 := @GetBase(<>Z<>237)
     [9] <>this<> := enterCode(<>fun<>2886)
 
   Call[1] -> ExitExc
@@ -11305,7 +11305,7 @@ function[116] $b<>funexpr@22:406-503<> {
 
   Block[13] -> [10], ExitExc
     [0] <>old<>2892 := <>d<>2879
-    [1] <>new<>2893 := <>Global<>toNumber(<>old<>2892)
+    [1] <>new<>2893 := @ToNumber(<>old<>2892)
     [2] <>d<>2879 := <>new<>2893 + 1
     [3] <>Global<>ignore533 := <>new<>2893
     [4] <>y<>2888 := <>d<>2879
@@ -11340,7 +11340,7 @@ function[117] ac<>funexpr@22:507-23:135<> {
     [5] <>arguments<>2912 := allocArg(2) @ #1846
     [6] <>arguments<>2912["0"] := <>temp<>2910
     [7] <>arguments<>2912["1"] := <>temp<>2911
-    [8] <>fun<>2913 := <>Global<>getBase(<>Z<>237)
+    [8] <>fun<>2913 := @GetBase(<>Z<>237)
     [9] <>this<> := enterCode(<>fun<>2913)
 
   Call[1] -> ExitExc
@@ -11367,8 +11367,8 @@ function[117] ac<>funexpr@22:507-23:135<> {
   Block[9] -> [12], ExitExc
     [0] assert(<>W<>233)
     [1] <>obj<>2915 := <>W<>233
-    [2] <>iterator<>2916 := <>Global<>iteratorInit(<>obj<>2915) @ #1848
-    [3] <>cond1<>2917 := <>Global<>iteratorHasNext(<>obj<>2915, <>iterator<>2916)
+    [2] <>iterator<>2916 := @iteratorInit(<>obj<>2915) @ #1848
+    [3] <>cond1<>2917 := @iteratorHasNext(<>obj<>2915, <>iterator<>2916)
 
   Block[10] -> [28], ExitExc
     [0] assert(! <>W<>233)
@@ -11385,7 +11385,7 @@ function[117] ac<>funexpr@22:507-23:135<> {
 
   Block[13] -> [17], [16], ExitExc
     [0] assert(<>cond1<>2917)
-    [1] <>key<>2918 := <>Global<>iteratorNext(<>obj<>2915, <>iterator<>2916)
+    [1] <>key<>2918 := @iteratorNext(<>obj<>2915, <>iterator<>2916)
     [2] <>d<>2906 := <>key<>2918
     [3] <>obj<>2919 := @ToObject(<>W<>233) @ #1849
     [4] <>obj<>2920 := @ToObject(<>W<>233) @ #1850
@@ -11394,7 +11394,7 @@ function[117] ac<>funexpr@22:507-23:135<> {
     [0] assert(! <>cond1<>2917)
 
   Block[15] -> [12]
-    [0] <>cond1<>2917 := <>Global<>iteratorHasNext(<>obj<>2915, <>iterator<>2916)
+    [0] <>cond1<>2917 := @iteratorHasNext(<>obj<>2915, <>iterator<>2916)
 
   Block[16] -> [18], ExitExc
     [0] assert(<>obj<>2920[<>d<>2906])
@@ -11405,7 +11405,7 @@ function[117] ac<>funexpr@22:507-23:135<> {
     [5] <>arguments<>2925 := allocArg(2) @ #1852
     [6] <>arguments<>2925["0"] := <>temp<>2923
     [7] <>arguments<>2925["1"] := <>temp<>2924
-    [8] <>fun<>2926 := <>Global<>getBase(<>Xb<>236)
+    [8] <>fun<>2926 := @GetBase(<>Xb<>236)
     [9] <>this<> := enterCode(<>fun<>2926)
 
   Block[17] -> [24], [23], ExitExc
@@ -11464,7 +11464,7 @@ function[117] ac<>funexpr@22:507-23:135<> {
 
   Block[31] -> [28], ExitExc
     [0] <>old<>2932 := <>d<>2906
-    [1] <>new<>2933 := <>Global<>toNumber(<>old<>2932)
+    [1] <>new<>2933 := @ToNumber(<>old<>2932)
     [2] <>d<>2906 := <>new<>2933 + 1
     [3] <>Global<>ignore542 := <>new<>2933
     [4] <>y<>2928 := <>d<>2906
@@ -11506,15 +11506,15 @@ function[118] bc<>funexpr@23:139-288<> {
     [6] <>arguments<>2977["0"] := <>temp<>2974
     [7] <>arguments<>2977["1"] := <>temp<>2975
     [8] <>arguments<>2977["2"] := <>temp<>2976
-    [9] <>fun<>2978 := <>Global<>getBase(<>t<>122)
+    [9] <>fun<>2978 := @GetBase(<>t<>122)
     [10] <>this<> := enterCode(<>fun<>2978)
 
   Block[3] -> [6], [2]
     [0] assert(! <>Wb<>234)
     [1] <>Wb<>234 := <>e<>112
     [2] <>obj<>2949 := <>V<>231
-    [3] <>iterator<>2950 := <>Global<>iteratorInit(<>obj<>2949) @ #1866
-    [4] <>cond1<>2951 := <>Global<>iteratorHasNext(<>obj<>2949, <>iterator<>2950)
+    [3] <>iterator<>2950 := @iteratorInit(<>obj<>2949) @ #1866
+    [4] <>cond1<>2951 := @iteratorHasNext(<>obj<>2949, <>iterator<>2950)
 
   Block[4] -> [27], [2]
     [0] assert(! ! <>Wb<>234)
@@ -11525,7 +11525,7 @@ function[118] bc<>funexpr@23:139-288<> {
 
   Block[7] -> [11], [2]
     [0] assert(<>cond1<>2951)
-    [1] <>key<>2952 := <>Global<>iteratorNext(<>obj<>2949, <>iterator<>2950)
+    [1] <>key<>2952 := @iteratorNext(<>obj<>2949, <>iterator<>2950)
     [2] <>a<>2943 := <>key<>2952
     [3] <>obj<>2953 := @ToObject(<>V<>231) @ #1867
     [4] <>b<>2944 := <>obj<>2953[<>a<>2943]
@@ -11537,7 +11537,7 @@ function[118] bc<>funexpr@23:139-288<> {
     [0] assert(! <>cond1<>2951)
 
   Block[9] -> [6]
-    [0] <>cond1<>2951 := <>Global<>iteratorHasNext(<>obj<>2949, <>iterator<>2950)
+    [0] <>cond1<>2951 := @iteratorHasNext(<>obj<>2949, <>iterator<>2950)
 
   Block[10] -> [9]
 
@@ -11551,7 +11551,7 @@ function[118] bc<>funexpr@23:139-288<> {
 
   Block[14] -> [11], [2]
     [0] <>old<>2971 := <>c<>2945
-    [1] <>new<>2972 := <>Global<>toNumber(<>old<>2971)
+    [1] <>new<>2972 := @ToNumber(<>old<>2971)
     [2] <>c<>2945 := <>new<>2972 + 1
     [3] <>Global<>ignore551 := <>new<>2972
     [4] <>y<>2954 := <>c<>2945
@@ -11563,7 +11563,7 @@ function[118] bc<>funexpr@23:139-288<> {
     [2] <>temp<>2959 := <>a<>2943
     [3] <>arguments<>2960 := allocArg(1) @ #1871
     [4] <>arguments<>2960["0"] := <>temp<>2959
-    [5] <>fun<>2961 := <>Global<>getBase(<>Yb<>242)
+    [5] <>fun<>2961 := @GetBase(<>Yb<>242)
     [6] <>this<> := enterCode(<>fun<>2961)
 
   Block[16] -> [24], [2]
@@ -11576,7 +11576,7 @@ function[118] bc<>funexpr@23:139-288<> {
     [6] <>arguments<>2969["0"] := <>temp<>2966
     [7] <>arguments<>2969["1"] := <>temp<>2967
     [8] <>arguments<>2969["2"] := <>temp<>2968
-    [9] <>fun<>2970 := <>Global<>getBase(<>t<>122)
+    [9] <>fun<>2970 := @GetBase(<>t<>122)
     [10] <>this<> := enterCode(<>fun<>2970)
 
   Call[17] -> [16]
@@ -11633,7 +11633,7 @@ function[119] Yb<>funexpr@23:292-361<> {
     [5] <>arguments<>2987 := allocArg(2) @ #1887
     [6] <>arguments<>2987["0"] := <>temp<>2985
     [7] <>arguments<>2987["1"] := <>temp<>2986
-    [8] <>fun<>2988 := <>Global<>getBase(<>Z<>237)
+    [8] <>fun<>2988 := @GetBase(<>Z<>237)
     [9] <>this<> := enterCode(<>fun<>2988)
 
   Call[1] -> ExitExc
@@ -11844,7 +11844,7 @@ function[123] fc<>funexpr@24:248-451<> {
     [1] <>temp<>3023 := document
     [2] <>arguments<>3024 := allocArg(1) @ #1909
     [3] <>arguments<>3024["0"] := <>temp<>3023
-    [4] <>fun<>3025 := <>Global<>getBase(<>cc<>243)
+    [4] <>fun<>3025 := @GetBase(<>cc<>243)
     [5] <>this<> := enterCode(<>fun<>3025)
 
   Block[2] -> [39], [38], ExitExc
@@ -11881,7 +11881,7 @@ function[123] fc<>funexpr@24:248-451<> {
   Block[11] -> [12], [2]
     [0] <>obj<>3028 := @ToObject(<>dc<>244) @ #1911
     [1] <>arguments<>3029 := allocArg(0) @ #1912
-    [2] <>fun<>3030 := <>Global<>getBase(<>dc<>244)
+    [2] <>fun<>3030 := @GetBase(<>dc<>244)
     [3] <>this<> := enterCode(<>fun<>3030)
 
   Call[12] -> [2]
@@ -11909,7 +11909,7 @@ function[123] fc<>funexpr@24:248-451<> {
     [2] <>temp<>3040 := <>a<>3016
     [3] <>arguments<>3041 := allocArg(1) @ #1920
     [4] <>arguments<>3041["0"] := <>temp<>3040
-    [5] <>fun<>3042 := <>Global<>getBase(<>ec<>245)
+    [5] <>fun<>3042 := @GetBase(<>ec<>245)
     [6] <>this<> := enterCode(<>fun<>3042)
 
   Call[17] -> [2]
@@ -11991,7 +11991,7 @@ function[123] fc<>funexpr@24:248-451<> {
     [6] <>arguments<>3063["0"] := <>temp<>3060
     [7] <>arguments<>3063["1"] := <>temp<>3061
     [8] <>arguments<>3063["2"] := <>temp<>3062
-    [9] <>fun<>3064 := <>Global<>getBase(<>t<>122)
+    [9] <>fun<>3064 := @GetBase(<>t<>122)
     [10] <>this<> := enterCode(<>fun<>3064)
 
   Block[39] -> [46], [45], ExitExc
@@ -12035,7 +12035,7 @@ function[124] gc<>funexpr@24:455-25:184<> {
     [1] <>temp<>3073 := document
     [2] <>arguments<>3074 := allocArg(1) @ #1939
     [3] <>arguments<>3074["0"] := <>temp<>3073
-    [4] <>fun<>3075 := <>Global<>getBase(<>cc<>243)
+    [4] <>fun<>3075 := @GetBase(<>cc<>243)
     [5] <>this<> := enterCode(<>fun<>3075)
 
   Block[2] -> [37], [36], ExitExc
@@ -12072,7 +12072,7 @@ function[124] gc<>funexpr@24:455-25:184<> {
   Block[11] -> [12], [2]
     [0] <>obj<>3077 := @ToObject(<>dc<>244) @ #1941
     [1] <>arguments<>3078 := allocArg(0) @ #1942
-    [2] <>fun<>3079 := <>Global<>getBase(<>dc<>244)
+    [2] <>fun<>3079 := @GetBase(<>dc<>244)
     [3] <>this<> := enterCode(<>fun<>3079)
 
   Call[12] -> [2]
@@ -12110,7 +12110,7 @@ function[124] gc<>funexpr@24:455-25:184<> {
     [1] <>temp<>3088 := <>a<>3067
     [2] <>arguments<>3089 := allocArg(1) @ #1950
     [3] <>arguments<>3089["0"] := <>temp<>3088
-    [4] <>fun<>3090 := <>Global<>getBase(<>ec<>245)
+    [4] <>fun<>3090 := @GetBase(<>ec<>245)
     [5] <>this<> := enterCode(<>fun<>3090)
 
   Call[22] -> [2]
@@ -12170,7 +12170,7 @@ function[124] gc<>funexpr@24:455-25:184<> {
     [6] <>arguments<>3110["0"] := <>temp<>3107
     [7] <>arguments<>3110["1"] := <>temp<>3108
     [8] <>arguments<>3110["2"] := <>temp<>3109
-    [9] <>fun<>3111 := <>Global<>getBase(<>t<>122)
+    [9] <>fun<>3111 := @GetBase(<>t<>122)
     [10] <>this<> := enterCode(<>fun<>3111)
 
   Block[37] -> [44], [43], ExitExc
@@ -12304,7 +12304,7 @@ function[126] ic<>funexpr@25:292-380<> {
 
   Block[5] -> [2], ExitExc
     [0] <>old<>3141 := <>b<>3134
-    [1] <>new<>3142 := <>Global<>toNumber(<>old<>3141)
+    [1] <>new<>3142 := @ToNumber(<>old<>3141)
     [2] <>b<>3134 := <>new<>3142 + 1
     [3] <>Global<>ignore578 := <>new<>3142
     [4] <>obj<>3138 := @ToObject(<>a<>3133) @ #1983
@@ -13728,7 +13728,7 @@ function[131] <>funexpr@28:2-45:482<> {
     [9] <>arguments<>3792 := allocArg(2) @ #2489
     [10] <>arguments<>3792["0"] := <>temp<>3790
     [11] <>arguments<>3792["1"] := <>temp<>3791
-    [12] <>fun<>3793 := <>Global<>getBase(<>w<>3246)
+    [12] <>fun<>3793 := @GetBase(<>w<>3246)
     [13] <>this<> := enterCode(<>fun<>3793)
 
   Call[291] -> [2]
@@ -13746,7 +13746,7 @@ function[131] <>funexpr@28:2-45:482<> {
     [4] <>arguments<>3797 := allocArg(2) @ #2492
     [5] <>arguments<>3797["0"] := <>temp<>3795
     [6] <>arguments<>3797["1"] := <>temp<>3796
-    [7] <>fun<>3798 := <>Global<>getBase(<>w<>3246)
+    [7] <>fun<>3798 := @GetBase(<>w<>3246)
     [8] <>this<> := enterCode(<>fun<>3798)
 
   Call[295] -> [2]
@@ -13764,7 +13764,7 @@ function[131] <>funexpr@28:2-45:482<> {
     [4] <>arguments<>3802 := allocArg(2) @ #2495
     [5] <>arguments<>3802["0"] := <>temp<>3800
     [6] <>arguments<>3802["1"] := <>temp<>3801
-    [7] <>fun<>3803 := <>Global<>getBase(<>w<>3246)
+    [7] <>fun<>3803 := @GetBase(<>w<>3246)
     [8] <>this<> := enterCode(<>fun<>3803)
 
   Call[299] -> [2]
@@ -13782,7 +13782,7 @@ function[131] <>funexpr@28:2-45:482<> {
     [4] <>arguments<>3807 := allocArg(2) @ #2498
     [5] <>arguments<>3807["0"] := <>temp<>3805
     [6] <>arguments<>3807["1"] := <>temp<>3806
-    [7] <>fun<>3808 := <>Global<>getBase(<>w<>3246)
+    [7] <>fun<>3808 := @GetBase(<>w<>3246)
     [8] <>this<> := enterCode(<>fun<>3808)
 
   Call[303] -> [2]
@@ -13800,7 +13800,7 @@ function[131] <>funexpr@28:2-45:482<> {
     [4] <>arguments<>3812 := allocArg(2) @ #2501
     [5] <>arguments<>3812["0"] := <>temp<>3810
     [6] <>arguments<>3812["1"] := <>temp<>3811
-    [7] <>fun<>3813 := <>Global<>getBase(<>w<>3246)
+    [7] <>fun<>3813 := @GetBase(<>w<>3246)
     [8] <>this<> := enterCode(<>fun<>3813)
 
   Call[307] -> [2]
@@ -13818,7 +13818,7 @@ function[131] <>funexpr@28:2-45:482<> {
     [4] <>arguments<>3817 := allocArg(2) @ #2504
     [5] <>arguments<>3817["0"] := <>temp<>3815
     [6] <>arguments<>3817["1"] := <>temp<>3816
-    [7] <>fun<>3818 := <>Global<>getBase(<>w<>3246)
+    [7] <>fun<>3818 := @GetBase(<>w<>3246)
     [8] <>this<> := enterCode(<>fun<>3818)
 
   Call[311] -> [2]
@@ -13836,7 +13836,7 @@ function[131] <>funexpr@28:2-45:482<> {
     [4] <>arguments<>3822 := allocArg(2) @ #2507
     [5] <>arguments<>3822["0"] := <>temp<>3820
     [6] <>arguments<>3822["1"] := <>temp<>3821
-    [7] <>fun<>3823 := <>Global<>getBase(<>w<>3246)
+    [7] <>fun<>3823 := @GetBase(<>w<>3246)
     [8] <>this<> := enterCode(<>fun<>3823)
 
   Call[315] -> [2]
@@ -13887,7 +13887,7 @@ function[131] <>funexpr@28:2-45:482<> {
     [37] <>arguments<>4537 := allocArg(2) @ #2990
     [38] <>arguments<>4537["0"] := <>temp<>4535
     [39] <>arguments<>4537["1"] := <>temp<>4536
-    [40] <>fun<>4538 := <>Global<>getBase(<>w<>3246)
+    [40] <>fun<>4538 := @GetBase(<>w<>3246)
     [41] <>this<> := enterCode(<>fun<>4538)
 
   Call[319] -> [2]
@@ -13906,7 +13906,7 @@ function[131] <>funexpr@28:2-45:482<> {
     [5] <>arguments<>4543 := allocArg(2) @ #2994
     [6] <>arguments<>4543["0"] := <>temp<>4541
     [7] <>arguments<>4543["1"] := <>temp<>4542
-    [8] <>fun<>4544 := <>Global<>getBase(<>w<>3246)
+    [8] <>fun<>4544 := @GetBase(<>w<>3246)
     [9] <>this<> := enterCode(<>fun<>4544)
 
   Call[323] -> [2]
@@ -13925,7 +13925,7 @@ function[131] <>funexpr@28:2-45:482<> {
     [5] <>arguments<>4549 := allocArg(2) @ #2998
     [6] <>arguments<>4549["0"] := <>temp<>4547
     [7] <>arguments<>4549["1"] := <>temp<>4548
-    [8] <>fun<>4550 := <>Global<>getBase(<>w<>3246)
+    [8] <>fun<>4550 := @GetBase(<>w<>3246)
     [9] <>this<> := enterCode(<>fun<>4550)
 
   Call[327] -> [2]
@@ -13944,7 +13944,7 @@ function[131] <>funexpr@28:2-45:482<> {
     [5] <>arguments<>4555 := allocArg(2) @ #3002
     [6] <>arguments<>4555["0"] := <>temp<>4553
     [7] <>arguments<>4555["1"] := <>temp<>4554
-    [8] <>fun<>4556 := <>Global<>getBase(<>w<>3246)
+    [8] <>fun<>4556 := @GetBase(<>w<>3246)
     [9] <>this<> := enterCode(<>fun<>4556)
 
   Call[331] -> [2]
@@ -13963,7 +13963,7 @@ function[131] <>funexpr@28:2-45:482<> {
     [5] <>arguments<>4561 := allocArg(2) @ #3006
     [6] <>arguments<>4561["0"] := <>temp<>4559
     [7] <>arguments<>4561["1"] := <>temp<>4560
-    [8] <>fun<>4562 := <>Global<>getBase(<>w<>3246)
+    [8] <>fun<>4562 := @GetBase(<>w<>3246)
     [9] <>this<> := enterCode(<>fun<>4562)
 
   Call[335] -> [2]
@@ -13994,7 +13994,7 @@ function[131] <>funexpr@28:2-45:482<> {
     [17] <>arguments<>4573 := allocArg(2) @ #3016
     [18] <>arguments<>4573["0"] := <>temp<>4571
     [19] <>arguments<>4573["1"] := <>temp<>4572
-    [20] <>fun<>4574 := <>Global<>getBase(<>w<>3246)
+    [20] <>fun<>4574 := @GetBase(<>w<>3246)
     [21] <>this<> := enterCode(<>fun<>4574)
 
   Call[339] -> [2]
@@ -14013,7 +14013,7 @@ function[131] <>funexpr@28:2-45:482<> {
     [5] <>arguments<>4579 := allocArg(2) @ #3020
     [6] <>arguments<>4579["0"] := <>temp<>4577
     [7] <>arguments<>4579["1"] := <>temp<>4578
-    [8] <>fun<>4580 := <>Global<>getBase(<>w<>3246)
+    [8] <>fun<>4580 := @GetBase(<>w<>3246)
     [9] <>this<> := enterCode(<>fun<>4580)
 
   Call[343] -> [2]
@@ -14032,7 +14032,7 @@ function[131] <>funexpr@28:2-45:482<> {
     [5] <>arguments<>4585 := allocArg(2) @ #3024
     [6] <>arguments<>4585["0"] := <>temp<>4583
     [7] <>arguments<>4585["1"] := <>temp<>4584
-    [8] <>fun<>4586 := <>Global<>getBase(<>w<>3246)
+    [8] <>fun<>4586 := @GetBase(<>w<>3246)
     [9] <>this<> := enterCode(<>fun<>4586)
 
   Call[347] -> [2]
@@ -14046,7 +14046,7 @@ function[131] <>funexpr@28:2-45:482<> {
     [0] <>obj<>4581["upet"] := <>Global<>ignore943
     [1] <>obj<>4587 := @ToObject(<>ob<>3327) @ #3026
     [2] <>arguments<>4588 := allocArg(0) @ #3027
-    [3] <>fun<>4589 := <>Global<>getBase(<>ob<>3327)
+    [3] <>fun<>4589 := @GetBase(<>ob<>3327)
     [4] <>this<> := enterCode(<>fun<>4589)
 
   Call[351] -> [2]
@@ -14059,7 +14059,7 @@ function[131] <>funexpr@28:2-45:482<> {
   Block[354] -> [355], [2]
     [0] <>obj<>4590 := @ToObject(<>nb<>3324) @ #3029
     [1] <>arguments<>4591 := allocArg(0) @ #3030
-    [2] <>fun<>4592 := <>Global<>getBase(<>nb<>3324)
+    [2] <>fun<>4592 := @GetBase(<>nb<>3324)
     [3] <>this<> := enterCode(<>fun<>4592)
 
   Call[355] -> [2]
@@ -14161,7 +14161,7 @@ function[132] u<>funexpr@28:82-109<> {
     [5] <>arguments<>3343["0"] := <>temp<>3340
     [6] <>arguments<>3343["1"] := <>temp<>3341
     [7] <>arguments<>3343["2"] := <>temp<>3342
-    [8] <>fun<>3344 := <>Global<>getBase(<>aa<>3239)
+    [8] <>fun<>3344 := @GetBase(<>aa<>3239)
     [9] <>this<> := enterCode(<>fun<>3344)
 
   Call[1] -> ExitExc
@@ -14321,7 +14321,7 @@ function[136] W<>funexpr@35:207-36:284<> {
     [4] <>arguments<>3786 := allocArg(2) @ #2484
     [5] <>arguments<>3786["0"] := <>temp<>3784
     [6] <>arguments<>3786["1"] := <>temp<>3785
-    [7] <>fun<>3787 := <>Global<>getBase(<>u<>3244)
+    [7] <>fun<>3787 := @GetBase(<>u<>3244)
     [8] <>this<> := enterCode(<>fun<>3787)
 
   Call[3] -> [2]
@@ -14355,7 +14355,7 @@ function[136] W<>funexpr@35:207-36:284<> {
     [2] <>temp<>3713 := "gbexxl"
     [3] <>arguments<>3714 := allocArg(1) @ #2430
     [4] <>arguments<>3714["0"] := <>temp<>3713
-    [5] <>fun<>3715 := <>Global<>getBase(<>V<>3325)
+    [5] <>fun<>3715 := @GetBase(<>V<>3325)
     [6] <>this<> := enterCode(<>fun<>3715)
 
   Block[12] -> [23], [22], [2]
@@ -14395,7 +14395,7 @@ function[136] W<>funexpr@35:207-36:284<> {
     [2] <>temp<>3722 := "gbexl"
     [3] <>arguments<>3723 := allocArg(1) @ #2437
     [4] <>arguments<>3723["0"] := <>temp<>3722
-    [5] <>fun<>3724 := <>Global<>getBase(<>V<>3325)
+    [5] <>fun<>3724 := @GetBase(<>V<>3325)
     [6] <>this<> := enterCode(<>fun<>3724)
 
   Block[23] -> [34], [33], [2]
@@ -14434,7 +14434,7 @@ function[136] W<>funexpr@35:207-36:284<> {
     [2] <>temp<>3731 := ""
     [3] <>arguments<>3732 := allocArg(1) @ #2444
     [4] <>arguments<>3732["0"] := <>temp<>3731
-    [5] <>fun<>3733 := <>Global<>getBase(<>V<>3325)
+    [5] <>fun<>3733 := @GetBase(<>V<>3325)
     [6] <>this<> := enterCode(<>fun<>3733)
 
   Block[34] -> [45], [44], [2]
@@ -14473,7 +14473,7 @@ function[136] W<>funexpr@35:207-36:284<> {
     [2] <>temp<>3740 := "gbem"
     [3] <>arguments<>3741 := allocArg(1) @ #2451
     [4] <>arguments<>3741["0"] := <>temp<>3740
-    [5] <>fun<>3742 := <>Global<>getBase(<>V<>3325)
+    [5] <>fun<>3742 := @GetBase(<>V<>3325)
     [6] <>this<> := enterCode(<>fun<>3742)
 
   Block[45] -> [56], [55], [2]
@@ -14512,7 +14512,7 @@ function[136] W<>funexpr@35:207-36:284<> {
     [2] <>temp<>3749 := "gbes"
     [3] <>arguments<>3750 := allocArg(1) @ #2458
     [4] <>arguments<>3750["0"] := <>temp<>3749
-    [5] <>fun<>3751 := <>Global<>getBase(<>V<>3325)
+    [5] <>fun<>3751 := @GetBase(<>V<>3325)
     [6] <>this<> := enterCode(<>fun<>3751)
 
   Block[56] -> [62], [61], [2]
@@ -14533,7 +14533,7 @@ function[136] W<>funexpr@35:207-36:284<> {
     [2] <>temp<>3753 := "gbet"
     [3] <>arguments<>3754 := allocArg(1) @ #2461
     [4] <>arguments<>3754["0"] := <>temp<>3753
-    [5] <>fun<>3755 := <>Global<>getBase(<>V<>3325)
+    [5] <>fun<>3755 := @GetBase(<>V<>3325)
     [6] <>this<> := enterCode(<>fun<>3755)
 
   Block[62] -> [68], [67], [2]
@@ -14554,7 +14554,7 @@ function[136] W<>funexpr@35:207-36:284<> {
     [2] <>temp<>3757 := "gbeu"
     [3] <>arguments<>3758 := allocArg(1) @ #2464
     [4] <>arguments<>3758["0"] := <>temp<>3757
-    [5] <>fun<>3759 := <>Global<>getBase(<>V<>3325)
+    [5] <>fun<>3759 := @GetBase(<>V<>3325)
     [6] <>this<> := enterCode(<>fun<>3759)
 
   Block[68] -> [75], [74], [2]
@@ -14603,7 +14603,7 @@ function[136] W<>funexpr@35:207-36:284<> {
     [3] <>temp<>3765 := <>obj<>3764[<>b<>3698]
     [4] <>arguments<>3766 := allocArg(1) @ #2470
     [5] <>arguments<>3766["0"] := <>temp<>3765
-    [6] <>fun<>3767 := <>Global<>getBase(<>v<>3245)
+    [6] <>fun<>3767 := @GetBase(<>v<>3245)
     [7] <>this<> := enterCode(<>fun<>3767)
 
   Block[82] -> [79], [2]
@@ -14611,7 +14611,7 @@ function[136] W<>funexpr@35:207-36:284<> {
 
   Block[83] -> [80], [2]
     [0] <>old<>3777 := <>b<>3698
-    [1] <>new<>3778 := <>Global<>toNumber(<>old<>3777)
+    [1] <>new<>3778 := @ToNumber(<>old<>3777)
     [2] <>b<>3698 := <>new<>3778 + 1
     [3] <>Global<>ignore701 := <>new<>3778
 
@@ -14684,7 +14684,7 @@ function[137] Y<>funexpr@36:379-37:188<> {
     [1] <>temp<>3831 := <>b<>3824
     [2] <>arguments<>3832 := allocArg(1) @ #2510
     [3] <>arguments<>3832["0"] := <>temp<>3831
-    [4] <>fun<>3833 := <>Global<>getBase(<>W<>3307)
+    [4] <>fun<>3833 := @GetBase(<>W<>3307)
     [5] <>this<> := enterCode(<>fun<>3833)
 
   Block[2] -> [51], ExitExc
@@ -14695,7 +14695,7 @@ function[137] Y<>funexpr@36:379-37:188<> {
     [4] <>arguments<>3856 := allocArg(2) @ #2527
     [5] <>arguments<>3856["0"] := <>temp<>3854
     [6] <>arguments<>3856["1"] := <>temp<>3855
-    [7] <>fun<>3857 := <>Global<>getBase(<>u<>3244)
+    [7] <>fun<>3857 := @GetBase(<>u<>3244)
     [8] <>this<> := enterCode(<>fun<>3857)
 
   Call[3] -> [2]
@@ -14752,7 +14752,7 @@ function[137] Y<>funexpr@36:379-37:188<> {
     [7] <>arguments<>3848["1"] := <>temp<>3845
     [8] <>arguments<>3848["2"] := <>temp<>3846
     [9] <>arguments<>3848["3"] := <>temp<>3847
-    [10] <>fun<>3849 := <>Global<>getBase(<>eb<>3321)
+    [10] <>fun<>3849 := @GetBase(<>eb<>3321)
     [11] <>this<> := enterCode(<>fun<>3849)
 
   Block[16] -> [15], [2]
@@ -14842,7 +14842,7 @@ function[137] Y<>funexpr@36:379-37:188<> {
   Block[47] -> [48], [2]
     [0] <>obj<>3850 := @ToObject(<>X<>3320) @ #2523
     [1] <>arguments<>3851 := allocArg(0) @ #2524
-    [2] <>fun<>3852 := <>Global<>getBase(<>X<>3320)
+    [2] <>fun<>3852 := @GetBase(<>X<>3320)
     [3] <>this<> := enterCode(<>fun<>3852)
 
   Call[48] -> [2]
@@ -14886,7 +14886,7 @@ function[138] fb<>funexpr@37:192-240<> {
     [4] <>arguments<>3869 := allocArg(2) @ #2536
     [5] <>arguments<>3869["0"] := <>temp<>3867
     [6] <>arguments<>3869["1"] := <>temp<>3868
-    [7] <>fun<>3870 := <>Global<>getBase(<>u<>3244)
+    [7] <>fun<>3870 := @GetBase(<>u<>3244)
     [8] <>this<> := enterCode(<>fun<>3870)
 
   Call[3] -> [2]
@@ -14933,7 +14933,7 @@ function[139] gb<>funexpr@37:244-316<> {
     [4] <>arguments<>3886 := allocArg(2) @ #2546
     [5] <>arguments<>3886["0"] := <>temp<>3884
     [6] <>arguments<>3886["1"] := <>temp<>3885
-    [7] <>fun<>3887 := <>Global<>getBase(<>u<>3244)
+    [7] <>fun<>3887 := @GetBase(<>u<>3244)
     [8] <>this<> := enterCode(<>fun<>3887)
 
   Block[5] -> [16]
@@ -14946,7 +14946,7 @@ function[139] gb<>funexpr@37:244-316<> {
     [2] <>temp<>3878 := <>k<>3242
     [3] <>arguments<>3879 := allocArg(1) @ #2542
     [4] <>arguments<>3879["0"] := <>temp<>3878
-    [5] <>fun<>3880 := <>Global<>getBase(<>d<>3873)
+    [5] <>fun<>3880 := @GetBase(<>d<>3873)
     [6] <>this<> := enterCode(<>fun<>3880)
 
   Block[8] -> [5], [4]
@@ -14954,7 +14954,7 @@ function[139] gb<>funexpr@37:244-316<> {
 
   Block[9] -> [6], [4]
     [0] <>old<>3881 := <>b<>3872
-    [1] <>new<>3882 := <>Global<>toNumber(<>old<>3881)
+    [1] <>new<>3882 := @ToNumber(<>old<>3881)
     [2] <>b<>3872 := <>new<>3882 + 1
     [3] <>Global<>ignore737 := <>new<>3882 + 1
     [4] <>obj<>3876 := @ToObject(<>R<>3305) @ #2544
@@ -14999,7 +14999,7 @@ function[140] hb<>funexpr@37:320-368<> {
     [4] <>arguments<>3895 := allocArg(2) @ #2551
     [5] <>arguments<>3895["0"] := <>temp<>3893
     [6] <>arguments<>3895["1"] := <>temp<>3894
-    [7] <>fun<>3896 := <>Global<>getBase(<>u<>3244)
+    [7] <>fun<>3896 := @GetBase(<>u<>3244)
     [8] <>this<> := enterCode(<>fun<>3896)
 
   Call[3] -> ExitExc
@@ -15262,7 +15262,7 @@ function[141] ib<>funexpr@37:372-38:113<> {
     [7] <>arguments<>3926["1"] := <>temp<>3923
     [8] <>arguments<>3926["2"] := <>temp<>3924
     [9] <>arguments<>3926["3"] := <>temp<>3925
-    [10] <>fun<>3927 := <>Global<>getBase(<>eb<>3321)
+    [10] <>fun<>3927 := @GetBase(<>eb<>3321)
     [11] <>this<> := enterCode(<>fun<>3927)
 
   Block[70] -> [72], ExitExc
@@ -15301,7 +15301,7 @@ function[142] X<>funexpr@38:116-42:153<> {
     [1] <>temp<>3959 := "gbx1"
     [2] <>arguments<>3960 := allocArg(1) @ #2569
     [3] <>arguments<>3960["0"] := <>temp<>3959
-    [4] <>fun<>3961 := <>Global<>getBase(<>v<>3245)
+    [4] <>fun<>3961 := @GetBase(<>v<>3245)
     [5] <>this<> := enterCode(<>fun<>3961)
 
   Block[2] -> [461], ExitExc
@@ -15312,7 +15312,7 @@ function[142] X<>funexpr@38:116-42:153<> {
     [4] <>arguments<>4229 := allocArg(2) @ #2765
     [5] <>arguments<>4229["0"] := <>temp<>4227
     [6] <>arguments<>4229["1"] := <>temp<>4228
-    [7] <>fun<>4230 := <>Global<>getBase(<>u<>3244)
+    [7] <>fun<>4230 := @GetBase(<>u<>3244)
     [8] <>this<> := enterCode(<>fun<>4230)
 
   Call[3] -> [2]
@@ -15332,7 +15332,7 @@ function[142] X<>funexpr@38:116-42:153<> {
     [3] <>temp<>3964 := "gb"
     [4] <>arguments<>3965 := allocArg(1) @ #2573
     [5] <>arguments<>3965["0"] := <>temp<>3964
-    [6] <>fun<>3966 := <>Global<>getBase(<>v<>3245)
+    [6] <>fun<>3966 := @GetBase(<>v<>3245)
     [7] <>this<> := enterCode(<>fun<>3966)
 
   Block[8] -> [460], [2]
@@ -15367,7 +15367,7 @@ function[142] X<>funexpr@38:116-42:153<> {
     [5] <>temp<>3972 := "gb_70"
     [6] <>arguments<>3973 := allocArg(1) @ #2580
     [7] <>arguments<>3973["0"] := <>temp<>3972
-    [8] <>fun<>3974 := <>Global<>getBase(<>v<>3245)
+    [8] <>fun<>3974 := @GetBase(<>v<>3245)
     [9] <>this<> := enterCode(<>fun<>3974)
 
   Call[17] -> [2]
@@ -15383,7 +15383,7 @@ function[142] X<>funexpr@38:116-42:153<> {
     [2] <>temp<>3976 := "gbg4"
     [3] <>arguments<>3977 := allocArg(1) @ #2583
     [4] <>arguments<>3977["0"] := <>temp<>3976
-    [5] <>fun<>3978 := <>Global<>getBase(<>v<>3245)
+    [5] <>fun<>3978 := @GetBase(<>v<>3245)
     [6] <>this<> := enterCode(<>fun<>3978)
 
   Call[21] -> [2]
@@ -15399,7 +15399,7 @@ function[142] X<>funexpr@38:116-42:153<> {
     [2] <>temp<>3980 := "gbg6"
     [3] <>arguments<>3981 := allocArg(1) @ #2586
     [4] <>arguments<>3981["0"] := <>temp<>3980
-    [5] <>fun<>3982 := <>Global<>getBase(<>v<>3245)
+    [5] <>fun<>3982 := @GetBase(<>v<>3245)
     [6] <>this<> := enterCode(<>fun<>3982)
 
   Call[25] -> [2]
@@ -15455,7 +15455,7 @@ function[142] X<>funexpr@38:116-42:153<> {
     [2] <>temp<>3987 := "gbg3"
     [3] <>arguments<>3988 := allocArg(1) @ #2591
     [4] <>arguments<>3988["0"] := <>temp<>3987
-    [5] <>fun<>3989 := <>Global<>getBase(<>v<>3245)
+    [5] <>fun<>3989 := @GetBase(<>v<>3245)
     [6] <>this<> := enterCode(<>fun<>3989)
 
   Block[41] -> [52], [2]
@@ -15634,7 +15634,7 @@ function[142] X<>funexpr@38:116-42:153<> {
     [2] <>temp<>4002 := "gbg1"
     [3] <>arguments<>4003 := allocArg(1) @ #2601
     [4] <>arguments<>4003["0"] := <>temp<>4002
-    [5] <>fun<>4004 := <>Global<>getBase(<>v<>3245)
+    [5] <>fun<>4004 := @GetBase(<>v<>3245)
     [6] <>this<> := enterCode(<>fun<>4004)
 
   Block[92] -> [94], [2]
@@ -15672,7 +15672,7 @@ function[142] X<>funexpr@38:116-42:153<> {
     [1] <>temp<>4008 := "gbg3"
     [2] <>arguments<>4009 := allocArg(1) @ #2605
     [3] <>arguments<>4009["0"] := <>temp<>4008
-    [4] <>fun<>4010 := <>Global<>getBase(<>v<>3245)
+    [4] <>fun<>4010 := @GetBase(<>v<>3245)
     [5] <>this<> := enterCode(<>fun<>4010)
 
   Block[102] -> [104], [2]
@@ -15709,7 +15709,7 @@ function[142] X<>funexpr@38:116-42:153<> {
     [1] <>temp<>4014 := "gbgs4dn"
     [2] <>arguments<>4015 := allocArg(1) @ #2608
     [3] <>arguments<>4015["0"] := <>temp<>4014
-    [4] <>fun<>4016 := <>Global<>getBase(<>v<>3245)
+    [4] <>fun<>4016 := @GetBase(<>v<>3245)
     [5] <>this<> := enterCode(<>fun<>4016)
 
   Block[112] -> [114], [2]
@@ -15765,7 +15765,7 @@ function[142] X<>funexpr@38:116-42:153<> {
     [1] <>temp<>4020 := "gbd4"
     [2] <>arguments<>4021 := allocArg(1) @ #2612
     [3] <>arguments<>4021["0"] := <>temp<>4020
-    [4] <>fun<>4022 := <>Global<>getBase(<>v<>3245)
+    [4] <>fun<>4022 := @GetBase(<>v<>3245)
     [5] <>this<> := enterCode(<>fun<>4022)
 
   Block[128] -> [130], [2]
@@ -15791,7 +15791,7 @@ function[142] X<>funexpr@38:116-42:153<> {
     [2] <>temp<>4024 := "gb_71"
     [3] <>arguments<>4025 := allocArg(1) @ #2615
     [4] <>arguments<>4025["0"] := <>temp<>4024
-    [5] <>fun<>4026 := <>Global<>getBase(<>v<>3245)
+    [5] <>fun<>4026 := @GetBase(<>v<>3245)
     [6] <>this<> := enterCode(<>fun<>4026)
 
   Call[135] -> [2]
@@ -15867,7 +15867,7 @@ function[142] X<>funexpr@38:116-42:153<> {
     [4] <>temp<>4036 := "gbqfbw"
     [5] <>arguments<>4037 := allocArg(1) @ #2623
     [6] <>arguments<>4037["0"] := <>temp<>4036
-    [7] <>fun<>4038 := <>Global<>getBase(<>v<>3245)
+    [7] <>fun<>4038 := @GetBase(<>v<>3245)
     [8] <>this<> := enterCode(<>fun<>4038)
 
   Call[155] -> [2]
@@ -15883,7 +15883,7 @@ function[142] X<>funexpr@38:116-42:153<> {
     [2] <>temp<>4040 := "gbq4"
     [3] <>arguments<>4041 := allocArg(1) @ #2626
     [4] <>arguments<>4041["0"] := <>temp<>4040
-    [5] <>fun<>4042 := <>Global<>getBase(<>v<>3245)
+    [5] <>fun<>4042 := @GetBase(<>v<>3245)
     [6] <>this<> := enterCode(<>fun<>4042)
 
   Call[159] -> [2]
@@ -15938,7 +15938,7 @@ function[142] X<>funexpr@38:116-42:153<> {
     [2] <>temp<>4051 := "gbqf"
     [3] <>arguments<>4052 := allocArg(1) @ #2633
     [4] <>arguments<>4052["0"] := <>temp<>4051
-    [5] <>fun<>4053 := <>Global<>getBase(<>v<>3245)
+    [5] <>fun<>4053 := @GetBase(<>v<>3245)
     [6] <>this<> := enterCode(<>fun<>4053)
 
   Block[172] -> [174], [2]
@@ -15964,7 +15964,7 @@ function[142] X<>funexpr@38:116-42:153<> {
     [2] <>temp<>4055 := "gbqff"
     [3] <>arguments<>4056 := allocArg(1) @ #2636
     [4] <>arguments<>4056["0"] := <>temp<>4055
-    [5] <>fun<>4057 := <>Global<>getBase(<>v<>3245)
+    [5] <>fun<>4057 := @GetBase(<>v<>3245)
     [6] <>this<> := enterCode(<>fun<>4057)
 
   Call[179] -> [2]
@@ -16016,7 +16016,7 @@ function[142] X<>funexpr@38:116-42:153<> {
     [1] <>temp<>4121 := "gbgs3"
     [2] <>arguments<>4122 := allocArg(1) @ #2688
     [3] <>arguments<>4122["0"] := <>temp<>4121
-    [4] <>fun<>4123 := <>Global<>getBase(<>v<>3245)
+    [4] <>fun<>4123 := @GetBase(<>v<>3245)
     [5] <>this<> := enterCode(<>fun<>4123)
 
   Block[194] -> [197], [196], [2]
@@ -16581,7 +16581,7 @@ function[142] X<>funexpr@38:116-42:153<> {
     [2] <>temp<>4163 := "gbi4t"
     [3] <>arguments<>4164 := allocArg(1) @ #2719
     [4] <>arguments<>4164["0"] := <>temp<>4163
-    [5] <>fun<>4165 := <>Global<>getBase(<>v<>3245)
+    [5] <>fun<>4165 := @GetBase(<>v<>3245)
     [6] <>this<> := enterCode(<>fun<>4165)
 
   Block[347] -> [354], [353], [2]
@@ -16666,7 +16666,7 @@ function[142] X<>funexpr@38:116-42:153<> {
     [1] <>temp<>4178 := "gbgs4d"
     [2] <>arguments<>4179 := allocArg(1) @ #2730
     [3] <>arguments<>4179["0"] := <>temp<>4178
-    [4] <>fun<>4180 := <>Global<>getBase(<>v<>3245)
+    [4] <>fun<>4180 := @GetBase(<>v<>3245)
     [5] <>this<> := enterCode(<>fun<>4180)
 
   Block[370] -> [372], [2]
@@ -16904,7 +16904,7 @@ function[142] X<>funexpr@38:116-42:153<> {
     [2] <>temp<>4202 := "gbu"
     [3] <>arguments<>4203 := allocArg(1) @ #2746
     [4] <>arguments<>4203["0"] := <>temp<>4202
-    [5] <>fun<>4204 := <>Global<>getBase(<>v<>3245)
+    [5] <>fun<>4204 := @GetBase(<>v<>3245)
     [6] <>this<> := enterCode(<>fun<>4204)
 
   Call[437] -> [2]
@@ -17034,7 +17034,7 @@ function[143] eb<>funexpr@42:157-232<> {
     [0] assert(<>f<>4234 != <>n<>3243)
     [1] <>obj<>4241 := @ToObject(<>gb<>3317) @ #2774
     [2] <>arguments<>4242 := allocArg(0) @ #2775
-    [3] <>fun<>4243 := <>Global<>getBase(<>gb<>3317)
+    [3] <>fun<>4243 := @GetBase(<>gb<>3317)
     [4] <>this<> := enterCode(<>fun<>4243)
 
   Block[2] -> [19], [18], ExitExc
@@ -17160,7 +17160,7 @@ function[146] nb<>funexpr@42:325-43:164<> {
     [4] <>arguments<>4322 := allocArg(2) @ #2833
     [5] <>arguments<>4322["0"] := <>temp<>4320
     [6] <>arguments<>4322["1"] := <>temp<>4321
-    [7] <>fun<>4323 := <>Global<>getBase(<>u<>3244)
+    [7] <>fun<>4323 := @GetBase(<>u<>3244)
     [8] <>this<> := enterCode(<>fun<>4323)
 
   Block[3] -> [5], [2]
@@ -17168,7 +17168,7 @@ function[146] nb<>funexpr@42:325-43:164<> {
     [1] <>b<>4271 := <>n<>3243
     [2] <>obj<>4276 := @ToObject(<>ib<>3319) @ #2795
     [3] <>arguments<>4277 := allocArg(0) @ #2796
-    [4] <>fun<>4278 := <>Global<>getBase(<>ib<>3319)
+    [4] <>fun<>4278 := @GetBase(<>ib<>3319)
     [5] <>this<> := enterCode(<>fun<>4278)
 
   Block[4] -> [59], [2]
@@ -17196,43 +17196,43 @@ function[146] nb<>funexpr@42:325-43:164<> {
   Block[12] -> [55], [2]
     [0] <>obj<>4298 := @ToObject(<>$a<>3310) @ #2816
     [1] <>arguments<>4299 := allocArg(0) @ #2817
-    [2] <>fun<>4300 := <>Global<>getBase(<>$a<>3310)
+    [2] <>fun<>4300 := @GetBase(<>$a<>3310)
     [3] <>this<> := enterCode(<>fun<>4300)
 
   Block[13] -> [52], [2]
     [0] <>obj<>4295 := @ToObject(<>Ya<>3308) @ #2813
     [1] <>arguments<>4296 := allocArg(0) @ #2814
-    [2] <>fun<>4297 := <>Global<>getBase(<>Ya<>3308)
+    [2] <>fun<>4297 := @GetBase(<>Ya<>3308)
     [3] <>this<> := enterCode(<>fun<>4297)
 
   Block[14] -> [49], [2]
     [0] <>obj<>4292 := @ToObject(<>Za<>3309) @ #2810
     [1] <>arguments<>4293 := allocArg(0) @ #2811
-    [2] <>fun<>4294 := <>Global<>getBase(<>Za<>3309)
+    [2] <>fun<>4294 := @GetBase(<>Za<>3309)
     [3] <>this<> := enterCode(<>fun<>4294)
 
   Block[15] -> [46], [2]
     [0] <>obj<>4289 := @ToObject(<>ab<>3311) @ #2807
     [1] <>arguments<>4290 := allocArg(0) @ #2808
-    [2] <>fun<>4291 := <>Global<>getBase(<>ab<>3311)
+    [2] <>fun<>4291 := @GetBase(<>ab<>3311)
     [3] <>this<> := enterCode(<>fun<>4291)
 
   Block[16] -> [43], [2]
     [0] <>obj<>4286 := @ToObject(<>bb<>3312) @ #2804
     [1] <>arguments<>4287 := allocArg(0) @ #2805
-    [2] <>fun<>4288 := <>Global<>getBase(<>bb<>3312)
+    [2] <>fun<>4288 := @GetBase(<>bb<>3312)
     [3] <>this<> := enterCode(<>fun<>4288)
 
   Block[17] -> [40], [2]
     [0] <>obj<>4283 := @ToObject(<>cb<>3313) @ #2801
     [1] <>arguments<>4284 := allocArg(0) @ #2802
-    [2] <>fun<>4285 := <>Global<>getBase(<>cb<>3313)
+    [2] <>fun<>4285 := @GetBase(<>cb<>3313)
     [3] <>this<> := enterCode(<>fun<>4285)
 
   Block[18] -> [37], [2]
     [0] <>obj<>4280 := @ToObject(<>db<>3314) @ #2798
     [1] <>arguments<>4281 := allocArg(0) @ #2799
-    [2] <>fun<>4282 := <>Global<>getBase(<>db<>3314)
+    [2] <>fun<>4282 := @GetBase(<>db<>3314)
     [3] <>this<> := enterCode(<>fun<>4282)
 
   Block[19] -> [18], [2]
@@ -17337,7 +17337,7 @@ function[146] nb<>funexpr@42:325-43:164<> {
   Block[59] -> [60], [2]
     [0] <>obj<>4301 := @ToObject(<>X<>3320) @ #2819
     [1] <>arguments<>4302 := allocArg(0) @ #2820
-    [2] <>fun<>4303 := <>Global<>getBase(<>X<>3320)
+    [2] <>fun<>4303 := @GetBase(<>X<>3320)
     [3] <>this<> := enterCode(<>fun<>4303)
 
   Call[60] -> [2]
@@ -17352,7 +17352,7 @@ function[146] nb<>funexpr@42:325-43:164<> {
     [1] <>temp<>4305 := "gb"
     [2] <>arguments<>4306 := allocArg(1) @ #2823
     [3] <>arguments<>4306["0"] := <>temp<>4305
-    [4] <>fun<>4307 := <>Global<>getBase(<>v<>3245)
+    [4] <>fun<>4307 := @GetBase(<>v<>3245)
     [5] <>this<> := enterCode(<>fun<>4307)
 
   Call[64] -> [2]
@@ -17398,7 +17398,7 @@ function[146] nb<>funexpr@42:325-43:164<> {
 
   Block[74] -> [71], [2]
     [0] <>old<>4315 := <>b<>4271
-    [1] <>new<>4316 := <>Global<>toNumber(<>old<>4315)
+    [1] <>new<>4316 := @ToNumber(<>old<>4315)
     [2] <>b<>4271 := <>new<>4316 + 1
     [3] <>Global<>ignore885 := <>new<>4316
 
@@ -17425,7 +17425,7 @@ function[147] V<>funexpr@43:167-44:330<> {
     [1] <>temp<>4331 := "gb"
     [2] <>arguments<>4332 := allocArg(1) @ #2838
     [3] <>arguments<>4332["0"] := <>temp<>4331
-    [4] <>fun<>4333 := <>Global<>getBase(<>v<>3245)
+    [4] <>fun<>4333 := @GetBase(<>v<>3245)
     [5] <>this<> := enterCode(<>fun<>4333)
 
   Call[1] -> ExitExc
@@ -17463,7 +17463,7 @@ function[147] V<>funexpr@43:167-44:330<> {
     [0] <>arguments<>4341 := allocArg(2) @ #2845
     [1] <>arguments<>4341["0"] := <>temp<>4335
     [2] <>arguments<>4341["1"] := <>temp<>4340
-    [3] <>fun<>4342 := <>Global<>getBase(<>Z<>3326)
+    [3] <>fun<>4342 := @GetBase(<>Z<>3326)
     [4] <>this<> := enterCode(<>fun<>4342)
 
   Call[11] -> ExitExc
@@ -17504,7 +17504,7 @@ function[147] V<>funexpr@43:167-44:330<> {
     [2] <>temp<>4346 := <>c<>4328
     [3] <>arguments<>4347 := allocArg(1) @ #2850
     [4] <>arguments<>4347["0"] := <>temp<>4346
-    [5] <>fun<>4348 := <>Global<>getBase(<>v<>3245)
+    [5] <>fun<>4348 := @GetBase(<>v<>3245)
     [6] <>this<> := enterCode(<>fun<>4348)
 
   Block[22] -> [19], ExitExc
@@ -17512,7 +17512,7 @@ function[147] V<>funexpr@43:167-44:330<> {
 
   Block[23] -> [20], ExitExc
     [0] <>old<>4454 := <>f<>4327
-    [1] <>new<>4455 := <>Global<>toNumber(<>old<>4454)
+    [1] <>new<>4455 := @ToNumber(<>old<>4454)
     [2] <>f<>4327 := <>new<>4455 + 1
     [3] <>Global<>ignore894 := <>new<>4455
     [4] <>obj<>4344 := @ToObject(<>Wa<>3301) @ #2933
@@ -17680,7 +17680,7 @@ function[147] V<>funexpr@43:167-44:330<> {
     [0] <>arguments<>4358 := allocArg(2) @ #2857
     [1] <>arguments<>4358["0"] := <>temp<>4352
     [2] <>arguments<>4358["1"] := <>temp<>4357
-    [3] <>fun<>4359 := <>Global<>getBase(<>Z<>3326)
+    [3] <>fun<>4359 := @GetBase(<>Z<>3326)
     [4] <>this<> := enterCode(<>fun<>4359)
 
   Call[63] -> ExitExc
@@ -17718,7 +17718,7 @@ function[147] V<>funexpr@43:167-44:330<> {
     [0] <>arguments<>4372 := allocArg(2) @ #2868
     [1] <>arguments<>4372["0"] := <>temp<>4366
     [2] <>arguments<>4372["1"] := <>temp<>4371
-    [3] <>fun<>4373 := <>Global<>getBase(<>Z<>3326)
+    [3] <>fun<>4373 := @GetBase(<>Z<>3326)
     [4] <>this<> := enterCode(<>fun<>4373)
 
   Call[74] -> ExitExc
@@ -17756,7 +17756,7 @@ function[147] V<>funexpr@43:167-44:330<> {
     [0] <>arguments<>4386 := allocArg(2) @ #2879
     [1] <>arguments<>4386["0"] := <>temp<>4380
     [2] <>arguments<>4386["1"] := <>temp<>4385
-    [3] <>fun<>4387 := <>Global<>getBase(<>Z<>3326)
+    [3] <>fun<>4387 := @GetBase(<>Z<>3326)
     [4] <>this<> := enterCode(<>fun<>4387)
 
   Call[85] -> ExitExc
@@ -17794,7 +17794,7 @@ function[147] V<>funexpr@43:167-44:330<> {
     [0] <>arguments<>4400 := allocArg(2) @ #2890
     [1] <>arguments<>4400["0"] := <>temp<>4394
     [2] <>arguments<>4400["1"] := <>temp<>4399
-    [3] <>fun<>4401 := <>Global<>getBase(<>Z<>3326)
+    [3] <>fun<>4401 := @GetBase(<>Z<>3326)
     [4] <>this<> := enterCode(<>fun<>4401)
 
   Call[96] -> ExitExc
@@ -17832,7 +17832,7 @@ function[147] V<>funexpr@43:167-44:330<> {
     [0] <>arguments<>4414 := allocArg(2) @ #2901
     [1] <>arguments<>4414["0"] := <>temp<>4408
     [2] <>arguments<>4414["1"] := <>temp<>4413
-    [3] <>fun<>4415 := <>Global<>getBase(<>Z<>3326)
+    [3] <>fun<>4415 := @GetBase(<>Z<>3326)
     [4] <>this<> := enterCode(<>fun<>4415)
 
   Call[107] -> ExitExc
@@ -17870,7 +17870,7 @@ function[147] V<>funexpr@43:167-44:330<> {
     [0] <>arguments<>4428 := allocArg(2) @ #2912
     [1] <>arguments<>4428["0"] := <>temp<>4422
     [2] <>arguments<>4428["1"] := <>temp<>4427
-    [3] <>fun<>4429 := <>Global<>getBase(<>Z<>3326)
+    [3] <>fun<>4429 := @GetBase(<>Z<>3326)
     [4] <>this<> := enterCode(<>fun<>4429)
 
   Call[118] -> ExitExc
@@ -17908,7 +17908,7 @@ function[147] V<>funexpr@43:167-44:330<> {
     [0] <>arguments<>4442 := allocArg(2) @ #2923
     [1] <>arguments<>4442["0"] := <>temp<>4436
     [2] <>arguments<>4442["1"] := <>temp<>4441
-    [3] <>fun<>4443 := <>Global<>getBase(<>Z<>3326)
+    [3] <>fun<>4443 := @GetBase(<>Z<>3326)
     [4] <>this<> := enterCode(<>fun<>4443)
 
   Call[129] -> ExitExc
@@ -17971,7 +17971,7 @@ function[148] Z<>funexpr@44:333-397<> {
 
   Block[5] -> [2], ExitExc
     [0] <>old<>4471 := <>f<>4459
-    [1] <>new<>4472 := <>Global<>toNumber(<>old<>4471)
+    [1] <>new<>4472 := @ToNumber(<>old<>4471)
     [2] <>f<>4459 := <>new<>4472 + 1
     [3] <>Global<>ignore913 := <>new<>4472 + 1
 
@@ -18033,14 +18033,14 @@ function[149] ob<>funexpr@44:401-45:133<> {
     [4] <>arguments<>4514 := allocArg(2) @ #2973
     [5] <>arguments<>4514["0"] := <>temp<>4512
     [6] <>arguments<>4514["1"] := <>temp<>4513
-    [7] <>fun<>4515 := <>Global<>getBase(<>u<>3244)
+    [7] <>fun<>4515 := @GetBase(<>u<>3244)
     [8] <>this<> := enterCode(<>fun<>4515)
 
   Block[3] -> [6], [2]
     [0] assert(! 0 == <>U<>3306)
     [1] <>obj<>4476 := @ToObject(<>ib<>3319) @ #2945
     [2] <>arguments<>4477 := allocArg(0) @ #2946
-    [3] <>fun<>4478 := <>Global<>getBase(<>ib<>3319)
+    [3] <>fun<>4478 := @GetBase(<>ib<>3319)
     [4] <>this<> := enterCode(<>fun<>4478)
 
   Block[4] -> [55], [2]
@@ -18060,7 +18060,7 @@ function[149] ob<>funexpr@44:401-45:133<> {
     [1] <>temp<>4505 := ""
     [2] <>arguments<>4506 := allocArg(1) @ #2967
     [3] <>arguments<>4506["0"] := <>temp<>4505
-    [4] <>fun<>4507 := <>Global<>getBase(<>$<>3328)
+    [4] <>fun<>4507 := @GetBase(<>$<>3328)
     [5] <>this<> := enterCode(<>fun<>4507)
 
   Block[10] -> [49], [2]
@@ -18068,7 +18068,7 @@ function[149] ob<>funexpr@44:401-45:133<> {
     [1] <>temp<>4501 := "gbexxli"
     [2] <>arguments<>4502 := allocArg(1) @ #2964
     [3] <>arguments<>4502["0"] := <>temp<>4501
-    [4] <>fun<>4503 := <>Global<>getBase(<>$<>3328)
+    [4] <>fun<>4503 := @GetBase(<>$<>3328)
     [5] <>this<> := enterCode(<>fun<>4503)
 
   Block[11] -> [46], [2]
@@ -18076,7 +18076,7 @@ function[149] ob<>funexpr@44:401-45:133<> {
     [1] <>temp<>4497 := "gbexli"
     [2] <>arguments<>4498 := allocArg(1) @ #2961
     [3] <>arguments<>4498["0"] := <>temp<>4497
-    [4] <>fun<>4499 := <>Global<>getBase(<>$<>3328)
+    [4] <>fun<>4499 := @GetBase(<>$<>3328)
     [5] <>this<> := enterCode(<>fun<>4499)
 
   Block[12] -> [43], [2]
@@ -18084,7 +18084,7 @@ function[149] ob<>funexpr@44:401-45:133<> {
     [1] <>temp<>4493 := "gbemi"
     [2] <>arguments<>4494 := allocArg(1) @ #2958
     [3] <>arguments<>4494["0"] := <>temp<>4493
-    [4] <>fun<>4495 := <>Global<>getBase(<>$<>3328)
+    [4] <>fun<>4495 := @GetBase(<>$<>3328)
     [5] <>this<> := enterCode(<>fun<>4495)
 
   Block[13] -> [40], [2]
@@ -18092,7 +18092,7 @@ function[149] ob<>funexpr@44:401-45:133<> {
     [1] <>temp<>4489 := "gbesi"
     [2] <>arguments<>4490 := allocArg(1) @ #2955
     [3] <>arguments<>4490["0"] := <>temp<>4489
-    [4] <>fun<>4491 := <>Global<>getBase(<>$<>3328)
+    [4] <>fun<>4491 := @GetBase(<>$<>3328)
     [5] <>this<> := enterCode(<>fun<>4491)
 
   Block[14] -> [37], [2]
@@ -18100,7 +18100,7 @@ function[149] ob<>funexpr@44:401-45:133<> {
     [1] <>temp<>4485 := "gbeti"
     [2] <>arguments<>4486 := allocArg(1) @ #2952
     [3] <>arguments<>4486["0"] := <>temp<>4485
-    [4] <>fun<>4487 := <>Global<>getBase(<>$<>3328)
+    [4] <>fun<>4487 := @GetBase(<>$<>3328)
     [5] <>this<> := enterCode(<>fun<>4487)
 
   Block[15] -> [34], [2]
@@ -18108,7 +18108,7 @@ function[149] ob<>funexpr@44:401-45:133<> {
     [1] <>temp<>4481 := "gbeui"
     [2] <>arguments<>4482 := allocArg(1) @ #2949
     [3] <>arguments<>4482["0"] := <>temp<>4481
-    [4] <>fun<>4483 := <>Global<>getBase(<>$<>3328)
+    [4] <>fun<>4483 := @GetBase(<>$<>3328)
     [5] <>this<> := enterCode(<>fun<>4483)
 
   Block[16] -> [15], [2]
@@ -18211,7 +18211,7 @@ function[149] ob<>funexpr@44:401-45:133<> {
   Block[55] -> [56], [2]
     [0] <>obj<>4508 := @ToObject(<>X<>3320) @ #2969
     [1] <>arguments<>4509 := allocArg(0) @ #2970
-    [2] <>fun<>4510 := <>Global<>getBase(<>X<>3320)
+    [2] <>fun<>4510 := @GetBase(<>X<>3320)
     [3] <>this<> := enterCode(<>fun<>4510)
 
   Call[56] -> [2]
@@ -18242,7 +18242,7 @@ function[150] $<>funexpr@45:136-175<> {
     [1] <>temp<>4521 := "gb"
     [2] <>arguments<>4522 := allocArg(1) @ #2978
     [3] <>arguments<>4522["0"] := <>temp<>4521
-    [4] <>fun<>4523 := <>Global<>getBase(<>v<>3245)
+    [4] <>fun<>4523 := @GetBase(<>v<>3245)
     [5] <>this<> := enterCode(<>fun<>4523)
 
   Call[1] -> ExitExc
@@ -18552,7 +18552,7 @@ function[156] n<>funexpr@46:257-330<> {
   Block[8] -> [9], ExitExc
     [0] <>obj<>4662 := @ToObject(<>m<>4618) @ #3083
     [1] <>arguments<>4663 := allocArg(0) @ #3084
-    [2] <>fun<>4664 := <>Global<>getBase(<>m<>4618)
+    [2] <>fun<>4664 := @GetBase(<>m<>4618)
     [3] <>this<> := enterCode(<>fun<>4664)
 
   Call[9] -> ExitExc
@@ -18605,7 +18605,7 @@ function[157] p<>funexpr@46:333-406<> {
   Block[8] -> [9], ExitExc
     [0] <>obj<>4677 := @ToObject(<>m<>4618) @ #3096
     [1] <>arguments<>4678 := allocArg(0) @ #3097
-    [2] <>fun<>4679 := <>Global<>getBase(<>m<>4618)
+    [2] <>fun<>4679 := @GetBase(<>m<>4618)
     [3] <>this<> := enterCode(<>fun<>4679)
 
   Call[9] -> ExitExc
@@ -19073,7 +19073,7 @@ function[163] k<>funexpr@48:273-415<> {
     [6] <>arguments<>4816["0"] := <>temp<>4813
     [7] <>arguments<>4816["1"] := <>temp<>4814
     [8] <>arguments<>4816["2"] := <>temp<>4815
-    [9] <>fun<>4817 := <>Global<>getBase(<>c<>4750)
+    [9] <>fun<>4817 := @GetBase(<>c<>4750)
     [10] <>this<> := enterCode(<>fun<>4817)
 
   Block[3] -> [23], [22], [2]
@@ -19095,7 +19095,7 @@ function[163] k<>funexpr@48:273-415<> {
 
   Block[7] -> [4], [2]
     [0] <>old<>4801 := <>b<>4785
-    [1] <>new<>4802 := <>Global<>toNumber(<>old<>4801)
+    [1] <>new<>4802 := @ToNumber(<>old<>4801)
     [2] <>b<>4785 := <>new<>4802 + 1
     [3] <>Global<>ignore994 := <>new<>4802
     [4] <>obj<>4790 := @ToObject(<>f<>4752) @ #3193
@@ -19172,7 +19172,7 @@ function[163] k<>funexpr@48:273-415<> {
     [1] <>temp<>4809 := ! 0
     [2] <>arguments<>4810 := allocArg(1) @ #3200
     [3] <>arguments<>4810["0"] := <>temp<>4809
-    [4] <>fun<>4811 := <>Global<>getBase(<>h<>4753)
+    [4] <>fun<>4811 := @GetBase(<>h<>4753)
     [5] <>this<> := enterCode(<>fun<>4811)
 
   Block[29] -> [31], [2]
@@ -19225,7 +19225,7 @@ function[164] l<>funexpr@48:418-560<> {
     [6] <>arguments<>4850["0"] := <>temp<>4847
     [7] <>arguments<>4850["1"] := <>temp<>4848
     [8] <>arguments<>4850["2"] := <>temp<>4849
-    [9] <>fun<>4851 := <>Global<>getBase(<>c<>4750)
+    [9] <>fun<>4851 := @GetBase(<>c<>4750)
     [10] <>this<> := enterCode(<>fun<>4851)
 
   Block[3] -> [23], [22], [2]
@@ -19247,7 +19247,7 @@ function[164] l<>funexpr@48:418-560<> {
 
   Block[7] -> [4], [2]
     [0] <>old<>4835 := <>b<>4819
-    [1] <>new<>4836 := <>Global<>toNumber(<>old<>4835)
+    [1] <>new<>4836 := @ToNumber(<>old<>4835)
     [2] <>b<>4819 := <>new<>4836 + 1
     [3] <>Global<>ignore1003 := <>new<>4836
     [4] <>obj<>4824 := @ToObject(<>f<>4752) @ #3216
@@ -19324,7 +19324,7 @@ function[164] l<>funexpr@48:418-560<> {
     [1] <>temp<>4843 := ! 1
     [2] <>arguments<>4844 := allocArg(1) @ #3223
     [3] <>arguments<>4844["0"] := <>temp<>4843
-    [4] <>fun<>4845 := <>Global<>getBase(<>h<>4753)
+    [4] <>fun<>4845 := @GetBase(<>h<>4753)
     [5] <>this<> := enterCode(<>fun<>4845)
 
   Block[29] -> [31], [2]
@@ -19381,7 +19381,7 @@ function[165] m<>funexpr@49:3-106<> {
     [6] <>arguments<>4872["0"] := <>temp<>4869
     [7] <>arguments<>4872["1"] := <>temp<>4870
     [8] <>arguments<>4872["2"] := <>temp<>4871
-    [9] <>fun<>4873 := <>Global<>getBase(<>c<>4750)
+    [9] <>fun<>4873 := @GetBase(<>c<>4750)
     [10] <>this<> := enterCode(<>fun<>4873)
 
   Call[3] -> [2]
@@ -19553,7 +19553,7 @@ function[167] f<>funexpr@50:63-180<> {
     [6] <>arguments<>4921["0"] := <>temp<>4918
     [7] <>arguments<>4921["1"] := <>temp<>4919
     [8] <>arguments<>4921["2"] := <>temp<>4920
-    [9] <>fun<>4922 := <>Global<>getBase(<>b<>4891)
+    [9] <>fun<>4922 := @GetBase(<>b<>4891)
     [10] <>this<> := enterCode(<>fun<>4922)
 
   Call[3] -> [2]
@@ -19864,7 +19864,7 @@ function[170] <>funexpr@53:2-54:226<> {
   AfterCatch[9] -> [2]
 
   Block[10] -> [12], [11]
-    [0] <>cond<>5011 := <>Global<>isObject(<>newObj<>5010)
+    [0] <>cond<>5011 := @isObject(<>newObj<>5010)
 
   Block[11] -> [13], [2]
     [0] assert(<>cond<>5011)
@@ -19983,7 +19983,7 @@ function[171] k<>funexpr@53:99-310<> {
     [6] <>arguments<>5053["0"] := <>temp<>5050
     [7] <>arguments<>5053["1"] := <>temp<>5051
     [8] <>arguments<>5053["2"] := <>temp<>5052
-    [9] <>fun<>5054 := <>Global<>getBase(<>d<>4982)
+    [9] <>fun<>5054 := @GetBase(<>d<>4982)
     [10] <>this<> := enterCode(<>fun<>5054)
 
   Call[3] -> [2]
@@ -20172,7 +20172,7 @@ function[172] n<>funexpr@53:320-528<> {
   AfterCatch[3] -> ExitExc
 
   Block[4] -> [6], [5]
-    [0] <>cond<>5072 := <>Global<>isObject(<>newObj<>5071)
+    [0] <>cond<>5072 := @isObject(<>newObj<>5071)
 
   Block[5] -> [7], ExitExc
     [0] assert(<>cond<>5072)
@@ -20202,7 +20202,7 @@ function[172] n<>funexpr@53:320-528<> {
     [3] <>temp<>5079 := "^" + <>c<>5059 + "/search\?"
     [4] <>arguments<>5080 := allocArg(1) @ #3391
     [5] <>arguments<>5080["0"] := <>temp<>5079
-    [6] <>fun<>5081 := <>Global<>getBase(RegExp)
+    [6] <>fun<>5081 := @GetBase(RegExp)
     [7] <>this<> := enterCode(<>fun<>5081)
 
   Call[12] -> ExitExc
@@ -20255,7 +20255,7 @@ function[172] n<>funexpr@53:320-528<> {
   AfterCatch[25] -> ExitExc
 
   Block[26] -> [28], [27]
-    [0] <>cond<>5094 := <>Global<>isObject(<>newObj<>5093)
+    [0] <>cond<>5094 := @isObject(<>newObj<>5093)
 
   Block[27] -> [29], ExitExc
     [0] assert(<>cond<>5094)
@@ -20331,7 +20331,7 @@ function[173] p<>funexpr@53:531-54:6<> {
     [1] <>temp<>5112 := <>a<>5109
     [2] <>arguments<>5113 := allocArg(1) @ #3413
     [3] <>arguments<>5113["0"] := <>temp<>5112
-    [4] <>fun<>5114 := <>Global<>getBase(<>m<>4988)
+    [4] <>fun<>5114 := @GetBase(<>m<>4988)
     [5] <>this<> := enterCode(<>fun<>5114)
 
   Call[1] -> ExitExc
@@ -20346,7 +20346,7 @@ function[173] p<>funexpr@53:531-54:6<> {
     [1] <>temp<>5116 := <>a<>5109
     [2] <>arguments<>5117 := allocArg(1) @ #3416
     [3] <>arguments<>5117["0"] := <>temp<>5116
-    [4] <>fun<>5118 := <>Global<>getBase(<>n<>4989)
+    [4] <>fun<>5118 := @GetBase(<>n<>4989)
     [5] <>this<> := enterCode(<>fun<>5118)
 
   Call[5] -> ExitExc
@@ -20401,7 +20401,7 @@ function[174] q<>funexpr@54:9-120<> {
   AfterCatch[8] -> ExitExc
 
   Block[9] -> [11], [10]
-    [0] <>cond<>5132 := <>Global<>isObject(<>newObj<>5131)
+    [0] <>cond<>5132 := @isObject(<>newObj<>5131)
 
   Block[10] -> [12], ExitExc
     [0] assert(<>cond<>5132)

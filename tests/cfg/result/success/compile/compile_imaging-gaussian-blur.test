@@ -50,7 +50,7 @@ function buildKernel(this, <>arguments<>1)
         }
         {
           <>old<>25 = <>i<>4
-          <>new<>26 = <>Global<>toNumber(<>old<>25)
+          <>new<>26 = @ToNumber(<>old<>25)
           <>i<>4 = <>new<>26 + 1
           <>Global<>ignore9 = <>new<>26 + 1
         }
@@ -79,7 +79,7 @@ function buildKernel(this, <>arguments<>1)
         }
         {
           <>old<>25 = <>i<>4
-          <>new<>26 = <>Global<>toNumber(<>old<>25)
+          <>new<>26 = @ToNumber(<>old<>25)
           <>i<>4 = <>new<>26 + 1
           <>Global<>ignore9 = <>new<>26 + 1
         }
@@ -129,7 +129,7 @@ function buildKernel(this, <>arguments<>1)
             }
             {
               <>old<>45 = <>i<>4
-              <>new<>46 = <>Global<>toNumber(<>old<>45)
+              <>new<>46 = @ToNumber(<>old<>45)
               <>i<>4 = <>new<>46 + 1
               <>Global<>ignore19 = <>new<>46 + 1
             }
@@ -138,7 +138,7 @@ function buildKernel(this, <>arguments<>1)
       }
       {
         <>old<>47 = <>j<>5
-        <>new<>48 = <>Global<>toNumber(<>old<>47)
+        <>new<>48 = @ToNumber(<>old<>47)
         <>j<>5 = <>new<>48 + 1
         <>Global<>ignore14 = <>new<>48 + 1
       }
@@ -177,7 +177,7 @@ function buildKernel(this, <>arguments<>1)
           }
           {
             <>old<>66 = <>i<>4
-            <>new<>67 = <>Global<>toNumber(<>old<>66)
+            <>new<>67 = @ToNumber(<>old<>66)
             <>i<>4 = <>new<>67 + 1
             <>Global<>ignore30 = <>new<>67 + 1
           }
@@ -185,7 +185,7 @@ function buildKernel(this, <>arguments<>1)
       }
       {
         <>old<>68 = <>j<>5
-        <>new<>69 = <>Global<>toNumber(<>old<>68)
+        <>new<>69 = @ToNumber(<>old<>68)
         <>j<>5 = <>new<>69 + 1
         <>Global<>ignore26 = <>new<>69 + 1
       }
@@ -346,7 +346,7 @@ function gaussianBlur(this, <>arguments<>70)
                               }
                               {
                                 <>old<>151 = <>i<>78
-                                <>new<>152 = <>Global<>toNumber(<>old<>151)
+                                <>new<>152 = @ToNumber(<>old<>151)
                                 <>i<>78 = <>new<>152 + 1
                                 <>Global<>ignore47 = <>new<>152 + 1
                               }
@@ -356,7 +356,7 @@ function gaussianBlur(this, <>arguments<>70)
                       }
                       {
                         <>old<>153 = <>j<>77
-                        <>new<>154 = <>Global<>toNumber(<>old<>153)
+                        <>new<>154 = @ToNumber(<>old<>153)
                         <>j<>77 = <>new<>154 + 1
                         <>Global<>ignore44 = <>new<>154 + 1
                       }
@@ -382,7 +382,7 @@ function gaussianBlur(this, <>arguments<>70)
               }
               {
                 <>old<>159 = <>x<>72
-                <>new<>160 = <>Global<>toNumber(<>old<>159)
+                <>new<>160 = @ToNumber(<>old<>159)
                 <>x<>72 = <>new<>160 + 1
                 <>Global<>ignore37 = <>new<>160 + 1
               }
@@ -391,7 +391,7 @@ function gaussianBlur(this, <>arguments<>70)
         }
         {
           <>old<>161 = <>y<>71
-          <>new<>162 = <>Global<>toNumber(<>old<>161)
+          <>new<>162 = @ToNumber(<>old<>161)
           <>y<>71 = <>new<>162 + 1
           <>Global<>ignore34 = <>new<>162 + 1
         }
@@ -417,7 +417,7 @@ var height
 {
   <>obj<>163 = @ToObject(buildKernel)
   <>arguments<>164 = []
-  <>fun<>165 = <>Global<>getBase(buildKernel)
+  <>fun<>165 = @GetBase(buildKernel)
   <>Global<>ignore58 = <>obj<>163(<>fun<>165, <>arguments<>164)
 }
 {
@@ -431,7 +431,7 @@ var height
 {
   <>obj<>166 = @ToObject(gaussianBlur)
   <>arguments<>167 = []
-  <>fun<>168 = <>Global<>getBase(gaussianBlur)
+  <>fun<>168 = @GetBase(gaussianBlur)
   <>Global<>ignore61 = <>obj<>166(<>fun<>168, <>arguments<>167)
 }
 
