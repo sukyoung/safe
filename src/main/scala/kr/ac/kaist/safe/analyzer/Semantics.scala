@@ -470,6 +470,32 @@ class Semantics(
     }
   }
 
+  // internal API value
+  lazy val internalValueMap: Map[String, AbsValue] = HashMap(
+    NodeUtil.INTERNAL_TOP -> AbsValue.Top,
+    NodeUtil.INTERNAL_UINT -> AbsNumber.UInt,
+    NodeUtil.INTERNAL_GLOBAL -> AbsValue(BuiltinGlobal.loc),
+    NodeUtil.INTERNAL_BOOL_TOP -> AbsBool.Top,
+    NodeUtil.INTERNAL_NUM_TOP -> AbsNumber.Top,
+    NodeUtil.INTERNAL_STR_TOP -> AbsString.Top,
+    NodeUtil.INTERNAL_EVAL_ERR -> AbsValue(BuiltinEvalError.loc),
+    NodeUtil.INTERNAL_RANGE_ERR -> AbsValue(BuiltinRangeError.loc),
+    NodeUtil.INTERNAL_REF_ERR -> AbsValue(BuiltinRefError.loc),
+    NodeUtil.INTERNAL_SYNTAX_ERR -> AbsValue(BuiltinSyntaxError.loc),
+    NodeUtil.INTERNAL_TYPE_ERR -> AbsValue(BuiltinTypeError.loc),
+    NodeUtil.INTERNAL_URI_ERR -> AbsValue(BuiltinURIError.loc),
+    NodeUtil.INTERNAL_EVAL_ERR_PROTO -> AbsValue(BuiltinEvalErrorProto.loc),
+    NodeUtil.INTERNAL_RANGE_ERR_PROTO -> AbsValue(BuiltinRangeErrorProto.loc),
+    NodeUtil.INTERNAL_REF_ERR_PROTO -> AbsValue(BuiltinRefErrorProto.loc),
+    NodeUtil.INTERNAL_SYNTAX_ERR_PROTO -> AbsValue(BuiltinSyntaxErrorProto.loc),
+    NodeUtil.INTERNAL_TYPE_ERR_PROTO -> AbsValue(BuiltinTypeErrorProto.loc),
+    NodeUtil.INTERNAL_URI_ERR_PROTO -> AbsValue(BuiltinURIErrorProto.loc),
+    NodeUtil.INTERNAL_ERR_PROTO -> AbsValue(BuiltinErrorProto.loc),
+    NodeUtil.INTERNAL_OBJ_CONST -> AbsValue(BuiltinObject.loc),
+    NodeUtil.INTERNAL_ARRAY_CONST -> AbsValue(BuiltinArray.loc)
+  )
+
+  // internal API call
   // CFGInternalCall(ir, _, lhs, fun, arguments, loc)
   def IC(ir: IRNode, lhs: CFGId, fun: CFGId, args: List[CFGExpr], loc: Option[Address], st: AbsState, excSt: AbsState): (AbsState, AbsState) = (fun.toString, args, loc) match {
     case (NodeUtil.INTERNAL_TO_NUM, List(expr), None) => {
