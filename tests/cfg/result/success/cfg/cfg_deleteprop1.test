@@ -13,10 +13,10 @@ function[0] top-level {
     [8] <>Global<>ignore2["c"] := 3
     [9] <>Global<>ignore2["d"] := obj1
     [10] obj2 := <>Global<>ignore2
-    [11] <>obj<>1 := <>Global<>toObject(obj2) @ #3
+    [11] <>obj<>1 := @ToObject(obj2) @ #3
     [12] <>Global<>ignore3 := delete(<>obj<>1, "b")
-    [13] <>obj<>2 := <>Global<>toObject(obj2) @ #4
-    [14] <>obj<>3 := <>Global<>toObject(<>obj<>2["d"]) @ #5
+    [13] <>obj<>2 := @ToObject(obj2) @ #4
+    [14] <>obj<>3 := @ToObject(<>obj<>2["d"]) @ #5
     [15] <>Global<>ignore4 := delete(<>obj<>3, "x")
     [16] noop(EndOfFile)
 

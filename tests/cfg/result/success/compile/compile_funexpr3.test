@@ -1,8 +1,8 @@
 
 
 {
-  <>obj<>1 = <>Global<>toObject(SplayTree)
-  <>obj<>2 = <>Global<>toObject(<>obj<>1["prototype"])
+  <>obj<>1 = @ToObject(SplayTree)
+  <>obj<>2 = @ToObject(<>obj<>1["prototype"])
   <>Global<>ignore1 = function SplayTree.prototype.insert<>funexpr@1:30-54<>3(this, <>arguments<>4) 
   {
     return 0
@@ -10,10 +10,10 @@
   <>obj<>2["insert"] = <>Global<>ignore1
 }
 {
-  <>obj<>5 = <>Global<>toObject(SplayTree)
-  <>obj<>6 = <>Global<>toObject(<>obj<>5["prototype"])
+  <>obj<>5 = @ToObject(SplayTree)
+  <>obj<>6 = @ToObject(<>obj<>5["prototype"])
   <>arguments<>7 = []
-  <>fun<>8 = <>Global<>toObject(<>obj<>6["insert"])
+  <>fun<>8 = @ToObject(<>obj<>6["insert"])
   <>Global<>ignore2 = <>fun<>8(<>obj<>6, <>arguments<>7)
 }
 

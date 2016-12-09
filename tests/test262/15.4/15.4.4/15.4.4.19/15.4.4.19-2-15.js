@@ -1,4 +1,4 @@
-var __globalObject = __Global;
+var __globalObject = @Global;
 function fnGlobalObject() {
 	return __globalObject;
 }

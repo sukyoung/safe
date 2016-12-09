@@ -5,20 +5,20 @@
 <>Global<>ignore6 = "there!"
 if(x)
   {
-    <>obj<>1 = <>Global<>toObject(y)
+    <>obj<>1 = @ToObject(y)
     <>arguments<>2 = []
-    <>fun<>3 = <>Global<>getBase(y)
+    <>fun<>3 = @GetBase(y)
     <>Global<>ignore7 = <>obj<>1(<>fun<>3, <>arguments<>2)
   }
 <>break<>4 : {
   {
-    <>obj<>5 = <>Global<>toObject(getNode)
+    <>obj<>5 = @ToObject(getNode)
     <>arguments<>6 = []
-    <>fun<>7 = <>Global<>getBase(getNode)
+    <>fun<>7 = @GetBase(getNode)
     <>Global<>ignore8 = <>obj<>5(<>fun<>7, <>arguments<>6)
     node = <>Global<>ignore8
     <>Global<>ignore9 = <>Global<>ignore8
-    <>obj<>8 = <>Global<>toObject(node)
+    <>obj<>8 = @ToObject(node)
   }
   while(<>obj<>8["parent"])
   {
@@ -26,17 +26,17 @@ if(x)
       
     }
     {
-      <>obj<>10 = <>Global<>toObject(node)
+      <>obj<>10 = @ToObject(node)
       node = <>obj<>10["parent"]
       <>Global<>ignore11 = <>obj<>10["parent"]
-      <>obj<>8 = <>Global<>toObject(node)
+      <>obj<>8 = @ToObject(node)
     }
   }
 }
 <>Global<>ignore13 = i
 {
   <>old<>11 = j
-  <>new<>12 = <>Global<>toNumber(<>old<>11)
+  <>new<>12 = @ToNumber(<>old<>11)
   j = <>new<>12 + 1
   <>Global<>ignore15 = <>new<>12 + 1
 }

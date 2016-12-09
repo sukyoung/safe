@@ -5,14 +5,14 @@
 //       
 //     };
 //     try
-// {      __Global.get = (function () 
+// {      @Global.get = (function () 
 //       {
 //         return "globalGetProperty";
 //       });
-//       Object.defineProperty(obj, "property", __Global);
+//       Object.defineProperty(obj, "property", @Global);
 //       return obj.property === "globalGetProperty";}
 //     finally
-// {      delete __Global.get;}
+// {      delete @Global.get;}
 // 
 //   }
 //   {

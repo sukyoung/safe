@@ -8,8 +8,8 @@ function[0] top-level {
     [3] z := 4
     [4] x := 5
     [5] <>obj<>4 := y
-    [6] <>iterator<>5 := <>Global<>iteratorInit(<>obj<>4) @ #3
-    [7] <>cond1<>6 := <>Global<>iteratorHasNext(<>obj<>4, <>iterator<>5)
+    [6] <>iterator<>5 := @iteratorInit(<>obj<>4) @ #3
+    [7] <>cond1<>6 := @iteratorHasNext(<>obj<>4, <>iterator<>5)
 
   Block[1] -> Exit, ExitExc
     [0] <>Global<>ignore6 := function (2) @ #4, #5
@@ -20,14 +20,14 @@ function[0] top-level {
 
   Block[3] -> [5], ExitExc
     [0] assert(<>cond1<>6)
-    [1] <>key<>7 := <>Global<>iteratorNext(<>obj<>4, <>iterator<>5)
+    [1] <>key<>7 := @iteratorNext(<>obj<>4, <>iterator<>5)
     [2] v := <>key<>7
 
   Block[4] -> [1], ExitExc
     [0] assert(! <>cond1<>6)
 
   Block[5] -> [2]
-    [0] <>cond1<>6 := <>Global<>iteratorHasNext(<>obj<>4, <>iterator<>5)
+    [0] <>cond1<>6 := @iteratorHasNext(<>obj<>4, <>iterator<>5)
 
   Exit[-2]
 

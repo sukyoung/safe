@@ -6,7 +6,7 @@
   obj = {
     y : 10
   };
-  <>alpha<>1 = <>Global<>toObject(obj);
+  <>alpha<>1 = @ToObject(obj);
   alert(f());
   f();
   y;

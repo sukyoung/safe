@@ -5,7 +5,7 @@
       
     }, {
       prop : {
-        enumerable : __Global
+        enumerable : @Global
       }
     });
     for(var property in newObj)

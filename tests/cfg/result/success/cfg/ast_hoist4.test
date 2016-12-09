@@ -7,9 +7,9 @@ function[0] top-level {
     [2] f := 3
     [3] f := 5
     [4] g := 42
-    [5] <>obj<>2 := <>Global<>toObject(f) @ #3
+    [5] <>obj<>2 := @ToObject(f) @ #3
     [6] <>arguments<>3 := allocArg(0) @ #4
-    [7] <>fun<>4 := <>Global<>getBase(f)
+    [7] <>fun<>4 := @GetBase(f)
     [8] <>this<> := enterCode(<>fun<>4)
 
   Call[1] -> ExitExc

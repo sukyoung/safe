@@ -9,9 +9,9 @@ var __expect1
   __expect1 = undefined
 }
 {
-  <>obj<>3 = <>Global<>toObject(f)
+  <>obj<>3 = @ToObject(f)
   <>arguments<>4 = []
-  <>fun<>5 = <>Global<>getBase(f)
+  <>fun<>5 = @GetBase(f)
   <>Global<>ignore3 = <>obj<>3(<>fun<>5, <>arguments<>4)
 }
 

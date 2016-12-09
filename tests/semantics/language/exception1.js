@@ -5,6 +5,6 @@ try {
   o instanceof 1;
 }
 catch (e) {
-  __result1 = e instanceof __TypeErrLoc;
+  __result1 = e instanceof @TypeErr;
 }
 

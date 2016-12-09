@@ -1,6 +1,6 @@
 var x = 123;
 
-while(__TOP) {
+while(@Top) {
 	x = 456;
 	break;
 	x = 789;

@@ -6,3 +6,4 @@ lab1 : lab2 : <>break<>1 : {
     <>continue<>2 : break <>continue<>2
   }
 }
+

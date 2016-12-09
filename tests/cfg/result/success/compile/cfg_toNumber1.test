@@ -2,7 +2,7 @@
 var x
 {
   <>old<>1 = x
-  <>new<>2 = <>Global<>toNumber(<>old<>1)
+  <>new<>2 = @ToNumber(<>old<>1)
   x = <>new<>2 + 1
   <>Global<>ignore2 = <>new<>2
 }

@@ -4,9 +4,9 @@ function[0] top-level {
   Block[0] -> [1], ExitExc
     [0] f := function (1) @ #1, #2
     [1] noop(StartOfFile)
-    [2] <>obj<>2 := <>Global<>toObject(f) @ #3
+    [2] <>obj<>2 := @ToObject(f) @ #3
     [3] <>arguments<>3 := allocArg(0) @ #4
-    [4] <>fun<>4 := <>Global<>getBase(f)
+    [4] <>fun<>4 := @GetBase(f)
     [5] <>this<> := enterCode(<>fun<>4)
 
   Call[1] -> ExitExc

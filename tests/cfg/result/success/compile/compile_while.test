@@ -19,18 +19,18 @@ var z
     <>continue<>2 : {
       {
         <>old<>3 = x
-        <>new<>4 = <>Global<>toNumber(<>old<>3)
+        <>new<>4 = @ToNumber(<>old<>3)
         x = <>new<>4 - 1
         <>Global<>ignore5 = <>new<>4
       }
       {
         <>old<>5 = y
-        <>new<>6 = <>Global<>toNumber(<>old<>5)
+        <>new<>6 = @ToNumber(<>old<>5)
         y = <>new<>6 + 1
         if(<>new<>6 == x)
         {
           <>old<>7 = z
-          <>new<>8 = <>Global<>toNumber(<>old<>7)
+          <>new<>8 = @ToNumber(<>old<>7)
           z = <>new<>8 - 1
           <>Global<>ignore7 = <>new<>8
         }

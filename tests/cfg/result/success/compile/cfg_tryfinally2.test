@@ -15,10 +15,10 @@ finally
     x = 10
     try
       {
-        <>obj<>1 = <>Global<>toObject(print)
+        <>obj<>1 = @ToObject(print)
         <>temp<>2 = x
         <>arguments<>3 = [<>temp<>2, ]
-        <>fun<>4 = <>Global<>getBase(print)
+        <>fun<>4 = @GetBase(print)
         <>Global<>ignore7 = <>obj<>1(<>fun<>4, <>arguments<>3)
       }
     finally

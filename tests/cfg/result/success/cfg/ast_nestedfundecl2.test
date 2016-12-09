@@ -7,12 +7,12 @@ function[0] top-level {
     [2] <>Global<>ignore2 := alloc() @ #1
     [3] <>Global<>ignore2["y"] := 10
     [4] obj := <>Global<>ignore2
-    [5] <>Global<>ignore3 := <>Global<>toObject(obj) @ #2
+    [5] <>Global<>ignore3 := @ToObject(obj) @ #2
     [6] <>alpha<>1 := <>Global<>ignore3
 
   Block[1] -> [3], ExitExc
     [0] assert("y" in <>alpha<>1)
-    [1] <>obj<>2 := <>Global<>toObject(<>alpha<>1) @ #3
+    [1] <>obj<>2 := @ToObject(<>alpha<>1) @ #3
     [2] <>Global<>ignore4 := <>obj<>2["y"]
 
   Block[2] -> [3], ExitExc

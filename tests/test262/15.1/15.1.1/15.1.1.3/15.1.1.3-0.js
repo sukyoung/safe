@@ -1,4 +1,4 @@
-var desc = Object.getOwnPropertyDescriptor(__Global, 'undefined');
+var desc = Object.getOwnPropertyDescriptor(@Global, 'undefined');
 var __result1 = desc.writable;
 var __expect1 = false;
 var __result2 = desc.enumerable;

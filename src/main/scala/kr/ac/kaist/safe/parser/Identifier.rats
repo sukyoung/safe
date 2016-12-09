@@ -20,24 +20,22 @@ import Unicode;
 
 option setOfString(JAVASCRIPT_RESERVED);
 
-transient String id      = s:(idstart idrest*) &{ !JAVASCRIPT_RESERVED.contains(s) };
-transient String idname  = s:(idstart idrest*);
-transient String idstart = UnicodeLetter / [$] / [_] / [\\] UnicodeEscapeSequence ;
-transient String idrest  = idstart / UnicodeCombiningMark / UnicodeDigit / UnicodeConnectorPunctuation
+transient String internal = s:("@" id) &{ NodeUtil.isInternalCall(s) || NodeUtil.isInternalValue(s)};
+transient String id       = s:(idstart idrest*) &{ !JAVASCRIPT_RESERVED.contains(s) };
+transient String idname   = s:(idstart idrest*);
+transient String idstart  = UnicodeLetter / [$] / [_] / [\\] UnicodeEscapeSequence ;
+transient String idrest   = idstart / UnicodeCombiningMark / UnicodeDigit / UnicodeConnectorPunctuation
                          / [\u200c-\u200d] ; // <ZWNJ> <ZWJ> ;
 transient String UnicodeEscapeSequence = [u] HexDigit HexDigit HexDigit HexDigit;
 transient String HexDigit = [0-9] / [a-f] / [A-F] ;
 
+private String IdInternal  = a1:internal ;
 private String IdText  = a1:id ;
 private String IdTextName  = a1:idname ;
 
 Id Id =
-     a1:"_<>_printIS"
-     { yyValue = new Id(NodeUtil.makeASTNodeInfo(createSpan(yyStart,yyCount+1)), a1, Option.<String>apply(null), false); }
-   / a1:"_<>_print"
-     { yyValue = new Id(NodeUtil.makeASTNodeInfo(createSpan(yyStart,yyCount+1)), a1, Option.<String>apply(null), false); }
-   / a1:"_<>_getTickCount"
-     { yyValue = new Id(NodeUtil.makeASTNodeInfo(createSpan(yyStart,yyCount+1)), a1, Option.<String>apply(null), false); }
+     a1:IdInternal
+     { yyValue = new Id(NodeUtil.makeASTNodeInfo(createSpan(yyStart,yyCount)), a1, Option.<String>apply(null), false); }
    / a1:IdText
      { String id = NodeUtil.convertUnicode(a1);
        yyValue = new Id(NodeUtil.makeASTNodeInfo(createSpan(yyStart,yyCount)), id, Option.<String>apply(null), false); };

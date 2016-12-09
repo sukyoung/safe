@@ -1,6 +1,6 @@
 var x;
 
-if (__TOP)
+if (@Top)
 	x = [1];
 else
 	x = {"0":1};

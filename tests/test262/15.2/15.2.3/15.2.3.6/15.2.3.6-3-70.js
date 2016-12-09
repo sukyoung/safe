@@ -5,7 +5,7 @@
     };
     var accessed = false;
     Object.defineProperty(obj, "property", {
-      enumerable : __Global
+      enumerable : @Global
     });
     for(var prop in obj)
     {

@@ -1,7 +1,7 @@
 var __result1 = typeof aaa;
 var __expect1 = "undefined";
 
-if (__TOP) bbb = "Hello";
+if (@Top) bbb = "Hello";
 
 var __result2 = typeof bbb;
 var __expect2 = "string";

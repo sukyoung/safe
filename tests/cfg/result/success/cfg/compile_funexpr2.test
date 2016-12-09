@@ -5,9 +5,9 @@ function[0] top-level {
     [0] noop(StartOfFile)
     [1] <>Global<>ignore1 := function (1) @ #1, #2
     [2] functionName := <>Global<>ignore1
-    [3] <>obj<>3 := <>Global<>toObject(functionName) @ #3
+    [3] <>obj<>3 := @ToObject(functionName) @ #3
     [4] <>arguments<>4 := allocArg(0) @ #4
-    [5] <>fun<>5 := <>Global<>getBase(functionName)
+    [5] <>fun<>5 := @GetBase(functionName)
     [6] <>this<> := enterCode(<>fun<>5)
 
   Call[1] -> ExitExc

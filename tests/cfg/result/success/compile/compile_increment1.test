@@ -3,25 +3,25 @@ var a
 var b
 {
   <>old<>1 = a
-  <>new<>2 = <>Global<>toNumber(<>old<>1)
+  <>new<>2 = @ToNumber(<>old<>1)
   a = <>new<>2 + 1
   b = <>new<>2
 }
 {
   <>old<>3 = a
-  <>new<>4 = <>Global<>toNumber(<>old<>3)
+  <>new<>4 = @ToNumber(<>old<>3)
   a = <>new<>4 + 1
   a = <>new<>4
 }
 {
   <>old<>5 = a
-  <>new<>6 = <>Global<>toNumber(<>old<>5)
+  <>new<>6 = @ToNumber(<>old<>5)
   a = <>new<>6 + 1
   b = <>new<>6 + 1
 }
 {
   <>old<>7 = a
-  <>new<>8 = <>Global<>toNumber(<>old<>7)
+  <>new<>8 = @ToNumber(<>old<>7)
   a = <>new<>8 + 1
   a = <>new<>8 + 1
 }

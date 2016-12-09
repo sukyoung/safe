@@ -8,9 +8,9 @@
   functionName = <>Global<>ignore1
 }
 {
-  <>obj<>3 = <>Global<>toObject(functionName)
+  <>obj<>3 = @ToObject(functionName)
   <>arguments<>4 = []
-  <>fun<>5 = <>Global<>getBase(functionName)
+  <>fun<>5 = @GetBase(functionName)
   <>Global<>ignore2 = <>obj<>3(<>fun<>5, <>arguments<>4)
 }
 

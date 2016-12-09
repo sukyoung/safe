@@ -1,9 +1,9 @@
 var x;
 
-if (__TOP) {
+if (@Top) {
 	x = 1;
 }
-else if (__TOP) {
+else if (@Top) {
 	x = true;
 }
 else {

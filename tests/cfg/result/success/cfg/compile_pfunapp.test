@@ -4,9 +4,9 @@ function[0] top-level {
   Block[0] -> [1], ExitExc
     [0] noop(StartOfFile)
     [1] o := 3
-    [2] <>obj<>1 := <>Global<>toObject(f) @ #1
+    [2] <>obj<>1 := @ToObject(f) @ #1
     [3] <>arguments<>2 := allocArg(0) @ #2
-    [4] <>fun<>3 := <>Global<>getBase(f)
+    [4] <>fun<>3 := @GetBase(f)
     [5] <>this<> := enterCode(<>fun<>3)
 
   Call[1] -> ExitExc
@@ -17,13 +17,13 @@ function[0] top-level {
   AfterCatch[3] -> ExitExc
 
   Block[4] -> [5], ExitExc
-    [0] <>obj<>4 := <>Global<>toObject(f) @ #4
+    [0] <>obj<>4 := @ToObject(f) @ #4
     [1] <>temp<>5 := 3
     [2] <>temp<>6 := true
     [3] <>arguments<>7 := allocArg(2) @ #5
     [4] <>arguments<>7["0"] := <>temp<>5
     [5] <>arguments<>7["1"] := <>temp<>6
-    [6] <>fun<>8 := <>Global<>getBase(f)
+    [6] <>fun<>8 := @GetBase(f)
     [7] <>this<> := enterCode(<>fun<>8)
 
   Call[5] -> ExitExc
@@ -34,9 +34,9 @@ function[0] top-level {
   AfterCatch[7] -> ExitExc
 
   Block[8] -> [9], ExitExc
-    [0] <>obj<>9 := <>Global<>toObject(o) @ #7
+    [0] <>obj<>9 := @ToObject(o) @ #7
     [1] <>arguments<>10 := allocArg(0) @ #8
-    [2] <>fun<>11 := <>Global<>toObject(<>obj<>9[f]) @ #9
+    [2] <>fun<>11 := @ToObject(<>obj<>9[f]) @ #9
     [3] <>this<> := enterCode(<>obj<>9)
 
   Call[9] -> ExitExc
@@ -47,9 +47,9 @@ function[0] top-level {
   AfterCatch[11] -> ExitExc
 
   Block[12] -> [13], ExitExc
-    [0] <>obj<>12 := <>Global<>toObject(o) @ #11
+    [0] <>obj<>12 := @ToObject(o) @ #11
     [1] <>arguments<>13 := allocArg(0) @ #12
-    [2] <>fun<>14 := <>Global<>toObject(<>obj<>12[f]) @ #13
+    [2] <>fun<>14 := @ToObject(<>obj<>12[f]) @ #13
     [3] <>this<> := enterCode(<>obj<>12)
 
   Call[13] -> ExitExc
@@ -60,9 +60,9 @@ function[0] top-level {
   AfterCatch[15] -> ExitExc
 
   Block[16] -> [17], ExitExc
-    [0] <>obj<>15 := <>Global<>toObject(o) @ #15
+    [0] <>obj<>15 := @ToObject(o) @ #15
     [1] <>arguments<>16 := allocArg(0) @ #16
-    [2] <>fun<>17 := <>Global<>toObject(<>obj<>15["g"]) @ #17
+    [2] <>fun<>17 := @ToObject(<>obj<>15["g"]) @ #17
     [3] <>this<> := enterCode(<>obj<>15)
 
   Call[17] -> ExitExc
@@ -73,9 +73,9 @@ function[0] top-level {
   AfterCatch[19] -> ExitExc
 
   Block[20] -> [21], ExitExc
-    [0] <>obj<>18 := <>Global<>toObject(o) @ #19
+    [0] <>obj<>18 := @ToObject(o) @ #19
     [1] <>arguments<>19 := allocArg(0) @ #20
-    [2] <>fun<>20 := <>Global<>toObject(<>obj<>18["h"]) @ #21
+    [2] <>fun<>20 := @ToObject(<>obj<>18["h"]) @ #21
     [3] <>this<> := enterCode(<>obj<>18)
 
   Call[21] -> ExitExc

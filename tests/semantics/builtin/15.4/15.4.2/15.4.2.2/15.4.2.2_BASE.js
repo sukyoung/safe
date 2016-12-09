@@ -4,7 +4,7 @@ var __expect1 = 0
 
 var __result2;
 try { new Array(-1);
-} catch(e) { __result2 = e instanceof __RangeErrLoc; }
+} catch(e) { __result2 = e instanceof @RangeErr; }
 var __expect2 = true;
 
 var x2 = new Array("abc");

@@ -1,20 +1,20 @@
 function F(this, <>arguments<>1) 
 {
   {
-    <>obj<>2 = <>Global<>toObject(this)
+    <>obj<>2 = @ToObject(this)
     <>obj<>2["x"] = 1
   }
 }
 var x
 {
-  <>fun<>3 = <>Global<>toObject(F)
+  <>fun<>3 = @ToObject(F)
   <>arguments<>4 = []
   <>proto<>5 = <>fun<>3["prototype"]
   <>obj<>6 = {
     [[Prototype]]=<>proto<>5
   }
   <>newObj<>7 = new <>fun<>3(<>obj<>6, <>arguments<>4)
-  <>cond<>8 = <>Global<>isObject(<>newObj<>7)
+  <>cond<>8 = @isObject(<>newObj<>7)
   if(<>cond<>8)
     <>Global<>ignore2 = <>newObj<>7
   else

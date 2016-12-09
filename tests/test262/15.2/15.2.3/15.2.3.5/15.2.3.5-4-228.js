@@ -4,7 +4,7 @@
       
     }, {
       prop : {
-        writable : __Global
+        writable : @Global
       }
     });
     var hasProperty = newObj.hasOwnProperty("prop");

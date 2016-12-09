@@ -3,38 +3,38 @@
 {
   <>temp<>1 = 5
   <>obj1<>2 = [, <>temp<>1, ]
-  <>obj<>3 = <>Global<>toObject(<>obj1<>2)
+  <>obj<>3 = @ToObject(<>obj1<>2)
   <>Global<>ignore2 = <>obj<>3["length"]
 }
 {
   <>temp<>4 = 5
   <>obj1<>5 = [, , <>temp<>4, ]
-  <>obj<>6 = <>Global<>toObject(<>obj1<>5)
+  <>obj<>6 = @ToObject(<>obj1<>5)
   <>Global<>ignore4 = <>obj<>6["length"]
 }
 {
   <>temp<>7 = 5
   <>obj1<>8 = [, , <>temp<>7, ]
-  <>obj<>9 = <>Global<>toObject(<>obj1<>8)
+  <>obj<>9 = @ToObject(<>obj1<>8)
   <>Global<>ignore6 = <>obj<>9["length"]
 }
 {
   <>temp<>10 = 5
   <>obj1<>11 = [, , <>temp<>10, , ]
-  <>obj<>12 = <>Global<>toObject(<>obj1<>11)
+  <>obj<>12 = @ToObject(<>obj1<>11)
   <>Global<>ignore8 = <>obj<>12["length"]
 }
 {
   <>temp<>13 = 5
   <>obj1<>14 = [, , <>temp<>13, , , ]
-  <>obj<>15 = <>Global<>toObject(<>obj1<>14)
+  <>obj<>15 = @ToObject(<>obj1<>14)
   <>Global<>ignore10 = <>obj<>15["length"]
 }
 {
   <>temp<>16 = 5
   <>temp<>17 = 6
   <>obj1<>18 = [, <>temp<>16, , <>temp<>17, , ]
-  <>obj<>19 = <>Global<>toObject(<>obj1<>18)
+  <>obj<>19 = @ToObject(<>obj1<>18)
   <>Global<>ignore12 = <>obj<>19["length"]
 }
 

@@ -2,9 +2,9 @@
 
 {
   <>old<>1 = a
-  <>new<>2 = <>Global<>toNumber(<>old<>1)
+  <>new<>2 = @ToNumber(<>old<>1)
   a = <>new<>2 + 1
-  <>new<>3 = <>Global<>toNumber(<>old<>4)
+  <>new<>3 = @ToNumber(<>old<>4)
   <>Global<>ignore2 = <>new<>2
   <>Global<>ignore3 = <>new<>3 + 1
   <>Global<>ignore4 = <>Global<>referenceError

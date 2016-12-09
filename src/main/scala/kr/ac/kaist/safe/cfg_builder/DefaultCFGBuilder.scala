@@ -20,6 +20,7 @@ import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.phase.CFGBuildConfig
 import kr.ac.kaist.safe.util._
+import kr.ac.kaist.safe.util.NodeUtil._
 
 // default CFG builder
 class DefaultCFGBuilder(
@@ -386,11 +387,11 @@ class DefaultCFGBuilder(
         val key: String = label.uniqueName
         val bs: Set[CFGBlock] = lmap.getOrElse(UserLabel(key), HashSet()) ++ blocks.toSet
         (Nil, lmap.updated(UserLabel(key), bs))
-      /* PEI : fun == "<>toObject" */
+      /* PEI : fun == "@toObject" */
       case IRInternalCall(_, lhs, fun @ (IRTmpId(_, originalName, uniqueName, _)), arg1, arg2) =>
         val tailBlock: NormalBlock = getTail(blocks, func)
         val (addr: Option[Address], lm: LabelMap) = uniqueName match {
-          case "<>Global<>toObject" | "<>Global<>iteratorInit" => (Some(newAddr), lmap.updated(ThrowLabel, (ThrowLabel of lmap) + tailBlock))
+          case INTERNAL_TO_OBJ | INTERNAL_ITER_INIT => (Some(newAddr), lmap.updated(ThrowLabel, (ThrowLabel of lmap) + tailBlock))
           case _ => (None, lmap)
         }
         val argList: List[CFGExpr] = arg2 match {
@@ -502,7 +503,7 @@ class DefaultCFGBuilder(
         // TODO: Need to find a more graceful way.
         val bForin: Boolean = body match {
           case IRSeq(_, stmts) if stmts.size > 0 => stmts(0) match {
-            case IRInternalCall(_, _, fun @ (IRTmpId(_, _, "<>Global<>iteratorNext", _)), _, _) => true
+            case IRInternalCall(_, _, fun @ (IRTmpId(_, _, INTERNAL_ITER_NEXT, _)), _, _) => true
             case _ => false
           }
           case _ => false
@@ -573,7 +574,6 @@ class DefaultCFGBuilder(
     ()
   }
 
-  private def isInternalCall(fname: String): Boolean = NodeUtil.isGlobalName(fname)
   private def ir2cfgExpr(expr: IRExpr): CFGExpr = {
     expr match {
       /* PEI : id lookup */
@@ -587,6 +587,7 @@ class DefaultCFGBuilder(
         CFGUn(expr, op.kind, ir2cfgExpr(expr))
       case id: IRId => CFGVarRef(id, id2cfgId(id))
       case IRThis(_) => CFGThis(expr)
+      case IRInternalValue(_, n) => CFGInternalValue(expr, n)
       case IRVal(v) => CFGVal(v)
     }
   }

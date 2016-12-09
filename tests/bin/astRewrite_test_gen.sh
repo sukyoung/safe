@@ -9,7 +9,7 @@
 #    This distribution may include materials developed by third parties.
 ################################################################################
 
-export WKSPACE=$SAFE_HOME/tests
+export WKSPACE=$SAFE_HOME/tests/cfg
 export JSSPACE=$WKSPACE/js
 export RSSPACE=$WKSPACE/result
 
@@ -27,5 +27,5 @@ do
   ast_out=$RSSPACE/success/astRewrite/$name.test
 
   echo "create $ast_out"
-  safe astRewrite -astRewrite:out=$ast_out $fil
+  $SAFE_HOME/bin/safe astRewrite -silent -astRewriter:out=$ast_out $fil
 done

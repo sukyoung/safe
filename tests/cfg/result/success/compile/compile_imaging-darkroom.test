@@ -1,277 +1,277 @@
 function FastLog2(this, <>arguments<>1) 
 {
- var <>x<>2
- <>x<>2 = <>arguments<>1["0"]
- {
-  <>obj<>3 = <>Global<>toObject(Math)
-  <>temp<>4 = <>x<>2
-  <>arguments<>5 = [<>temp<>4, ]
-  <>fun<>6 = <>Global<>toObject(<>obj<>3["log"])
-  <>y<>7 = <>fun<>6(<>obj<>3, <>arguments<>5)
-  <>obj<>8 = <>Global<>toObject(Math)
-  return <>y<>7 / <>obj<>8["LN2"]
- }
+  var <>x<>2
+  <>x<>2 = <>arguments<>1["0"]
+  {
+    <>obj<>3 = @ToObject(Math)
+    <>temp<>4 = <>x<>2
+    <>arguments<>5 = [<>temp<>4, ]
+    <>fun<>6 = @ToObject(<>obj<>3["log"])
+    <>y<>7 = <>fun<>6(<>obj<>3, <>arguments<>5)
+    <>obj<>8 = @ToObject(Math)
+    return <>y<>7 / <>obj<>8["LN2"]
+  }
 }
 function FastBias(this, <>arguments<>9) 
 {
- var <>b<>10
- var <>x<>11
- <>b<>10 = <>arguments<>9["0"]
- <>x<>11 = <>arguments<>9["1"]
- {
-  <>obj<>12 = <>Global<>toObject(Math)
-  <>temp<>13 = <>x<>11
-  <>obj<>14 = <>Global<>toObject(FastLog2)
-  <>temp<>15 = <>b<>10
-  <>arguments<>16 = [<>temp<>15, ]
-  <>fun<>17 = <>Global<>getBase(FastLog2)
-  <>y<>18 = <>obj<>14(<>fun<>17, <>arguments<>16)
-  <>temp<>19 = <>y<>18 / LOG2_HALF
-  <>arguments<>20 = [<>temp<>13, <>temp<>19, ]
-  <>fun<>21 = <>Global<>toObject(<>obj<>12["pow"])
-  <>new1<>22 = <>fun<>21(<>obj<>12, <>arguments<>20)
-  return <>new1<>22
- }
+  var <>b<>10
+  var <>x<>11
+  <>b<>10 = <>arguments<>9["0"]
+  <>x<>11 = <>arguments<>9["1"]
+  {
+    <>obj<>12 = @ToObject(Math)
+    <>temp<>13 = <>x<>11
+    <>obj<>14 = @ToObject(FastLog2)
+    <>temp<>15 = <>b<>10
+    <>arguments<>16 = [<>temp<>15, ]
+    <>fun<>17 = @GetBase(FastLog2)
+    <>y<>18 = <>obj<>14(<>fun<>17, <>arguments<>16)
+    <>temp<>19 = <>y<>18 / LOG2_HALF
+    <>arguments<>20 = [<>temp<>13, <>temp<>19, ]
+    <>fun<>21 = @ToObject(<>obj<>12["pow"])
+    <>new1<>22 = <>fun<>21(<>obj<>12, <>arguments<>20)
+    return <>new1<>22
+  }
 }
 function FastGain(this, <>arguments<>23) 
 {
- var <>g<>24
- var <>x<>25
- <>g<>24 = <>arguments<>23["0"]
- <>x<>25 = <>arguments<>23["1"]
- {
-  if(<>x<>25 < 0.5)
+  var <>g<>24
+  var <>x<>25
+  <>g<>24 = <>arguments<>23["0"]
+  <>x<>25 = <>arguments<>23["1"]
   {
-   <>obj<>26 = <>Global<>toObject(FastBias)
-   <>temp<>27 = 1.0 - <>g<>24
-   <>temp<>28 = 2.0 * <>x<>25
-   <>arguments<>29 = [<>temp<>27, <>temp<>28, ]
-   <>fun<>30 = <>Global<>getBase(FastBias)
-   <>y<>31 = <>obj<>26(<>fun<>30, <>arguments<>29)
-   <>new1<>32 = <>y<>31 * 0.5
+    if(<>x<>25 < 0.5)
+    {
+      <>obj<>26 = @ToObject(FastBias)
+      <>temp<>27 = 1.0 - <>g<>24
+      <>temp<>28 = 2.0 * <>x<>25
+      <>arguments<>29 = [<>temp<>27, <>temp<>28, ]
+      <>fun<>30 = @GetBase(FastBias)
+      <>y<>31 = <>obj<>26(<>fun<>30, <>arguments<>29)
+      <>new1<>32 = <>y<>31 * 0.5
+    }
+    else
+    {
+      <>y<>33 = 1.0
+      <>obj<>34 = @ToObject(FastBias)
+      <>temp<>35 = 1.0 - <>g<>24
+      <>temp<>36 = 2.0 - 2.0 * <>x<>25
+      <>arguments<>37 = [<>temp<>35, <>temp<>36, ]
+      <>fun<>38 = @GetBase(FastBias)
+      <>y<>39 = <>obj<>34(<>fun<>38, <>arguments<>37)
+      <>new1<>32 = <>y<>33 - <>y<>39 * 0.5
+    }
+    return <>new1<>32
   }
-  else
-  {
-   <>y<>33 = 1.0
-   <>obj<>34 = <>Global<>toObject(FastBias)
-   <>temp<>35 = 1.0 - <>g<>24
-   <>temp<>36 = 2.0 - 2.0 * <>x<>25
-   <>arguments<>37 = [<>temp<>35, <>temp<>36, ]
-   <>fun<>38 = <>Global<>getBase(FastBias)
-   <>y<>39 = <>obj<>34(<>fun<>38, <>arguments<>37)
-   <>new1<>32 = <>y<>33 - <>y<>39 * 0.5
-  }
-  return <>new1<>32
- }
 }
 function Clamp(this, <>arguments<>40) 
 {
- var <>x<>41
- <>x<>41 = <>arguments<>40["0"]
- {
-  if(<>x<>41 < 0.0)
+  var <>x<>41
+  <>x<>41 = <>arguments<>40["0"]
   {
-   <>new1<>42 = 0.0
+    if(<>x<>41 < 0.0)
+    {
+      <>new1<>42 = 0.0
+    }
+    else
+    {
+      if(<>x<>41 > 1.0)
+      {
+        <>new1<>42 = 1.0
+      }
+      else
+      {
+        <>new1<>42 = <>x<>41
+      }
+    }
+    return <>new1<>42
   }
-  else
-  {
-   if(<>x<>41 > 1.0)
-   {
-    <>new1<>42 = 1.0
-   }
-   else
-   {
-    <>new1<>42 = <>x<>41
-   }
-  }
-  return <>new1<>42
- }
 }
 function ProcessImageData(this, <>arguments<>43) 
 {
- var <>data<>44
- var <>width<>45
- var <>height<>46
- var <>params<>47
- var <>saturation<>48
- var <>contrast<>49
- var <>brightness<>50
- var <>blackPoint<>51
- var <>fill<>52
- var <>temperature<>53
- var <>shadowsHue<>54
- var <>shadowsSaturation<>55
- var <>highlightsHue<>56
- var <>highlightsSaturation<>57
- var <>splitPoint<>58
- var <>brightness_a<>59
- var <>brightness_b<>60
- var <>oo255<>61
- var <>sz<>62
- var <>j<>63
- var <>r<>64
- var <>g<>65
- var <>b<>66
- var <>y<>67
- var <>i<>68
- var <>q<>69
- <>data<>44 = <>arguments<>43["0"]
- <>width<>45 = <>arguments<>43["1"]
- <>height<>46 = <>arguments<>43["2"]
- <>params<>47 = <>arguments<>43["3"]
- {
-  <>obj<>70 = <>Global<>toObject(<>params<>47)
-  <>saturation<>48 = <>obj<>70["saturation"]
- }
- {
-  <>obj<>71 = <>Global<>toObject(<>params<>47)
-  <>contrast<>49 = <>obj<>71["contrast"]
- }
- {
-  <>obj<>72 = <>Global<>toObject(<>params<>47)
-  <>brightness<>50 = <>obj<>72["brightness"]
- }
- {
-  <>obj<>73 = <>Global<>toObject(<>params<>47)
-  <>blackPoint<>51 = <>obj<>73["blackPoint"]
- }
- {
-  <>obj<>74 = <>Global<>toObject(<>params<>47)
-  <>fill<>52 = <>obj<>74["fill"]
- }
- {
-  <>obj<>75 = <>Global<>toObject(<>params<>47)
-  <>temperature<>53 = <>obj<>75["temperature"]
- }
- {
-  <>obj<>76 = <>Global<>toObject(<>params<>47)
-  <>shadowsHue<>54 = <>obj<>76["shadowsHue"]
- }
- {
-  <>obj<>77 = <>Global<>toObject(<>params<>47)
-  <>shadowsSaturation<>55 = <>obj<>77["shadowsSaturation"]
- }
- {
-  <>obj<>78 = <>Global<>toObject(<>params<>47)
-  <>highlightsHue<>56 = <>obj<>78["highlightsHue"]
- }
- {
-  <>obj<>79 = <>Global<>toObject(<>params<>47)
-  <>highlightsSaturation<>57 = <>obj<>79["highlightsSaturation"]
- }
- {
-  <>obj<>80 = <>Global<>toObject(<>params<>47)
-  <>splitPoint<>58 = <>obj<>80["splitPoint"]
- }
- {
-  <>oo255<>61 = 1.0 / 255.0
- }
- {
-  <>old<>81 = <>fill<>52
-  <>fill<>52 = <>old<>81 * 0.2
- }
- <>brightness<>50 = <>brightness<>50 - 1.0 * 0.75 + 1.0
- if(<>brightness<>50 < 1.0)
- {
-  <>brightness_a<>59 = <>brightness<>50
-  <>brightness_b<>60 = 0.0
- }
- else
- {
-  <>brightness_b<>60 = <>brightness<>50 - 1.0
-  <>brightness_a<>59 = 1.0 - <>brightness_b<>60
- }
- <>contrast<>49 = <>contrast<>49 * 0.5
- <>contrast<>49 = <>contrast<>49 - 0.5 * 0.75 + 0.5
- <>temperature<>53 = <>temperature<>53 / 2000.0 * 0.1
- if(<>temperature<>53 > 0.0)
- {
-  <>old<>82 = <>temperature<>53
-  <>temperature<>53 = <>old<>82 * 2.0
- }
- <>splitPoint<>58 = <>splitPoint<>58 + 1.0 * 0.5
- {
-  <>sz<>62 = <>width<>45 * <>height<>46
- }
- {
+  var <>data<>44
+  var <>width<>45
+  var <>height<>46
+  var <>params<>47
+  var <>saturation<>48
+  var <>contrast<>49
+  var <>brightness<>50
+  var <>blackPoint<>51
+  var <>fill<>52
+  var <>temperature<>53
+  var <>shadowsHue<>54
+  var <>shadowsSaturation<>55
+  var <>highlightsHue<>56
+  var <>highlightsSaturation<>57
+  var <>splitPoint<>58
+  var <>brightness_a<>59
+  var <>brightness_b<>60
+  var <>oo255<>61
+  var <>sz<>62
+  var <>j<>63
+  var <>r<>64
+  var <>g<>65
+  var <>b<>66
+  var <>y<>67
+  var <>i<>68
+  var <>q<>69
+  <>data<>44 = <>arguments<>43["0"]
+  <>width<>45 = <>arguments<>43["1"]
+  <>height<>46 = <>arguments<>43["2"]
+  <>params<>47 = <>arguments<>43["3"]
   {
-   <>j<>63 = 0
+    <>obj<>70 = @ToObject(<>params<>47)
+    <>saturation<>48 = <>obj<>70["saturation"]
   }
-  <>break<>83 : {
-   while(<>j<>63 < <>sz<>62)
-   {
-    <>continue<>84 : {
-     {
-      <>obj<>85 = <>Global<>toObject(<>data<>44)
-      <>r<>64 = <>obj<>85[<>j<>63 * 4 + 0] * <>oo255<>61
-     }
-     {
-      <>obj<>86 = <>Global<>toObject(<>data<>44)
-      <>g<>65 = <>obj<>86[<>j<>63 * 4 + 1] * <>oo255<>61
-     }
-     {
-      <>obj<>87 = <>Global<>toObject(<>data<>44)
-      <>b<>66 = <>obj<>87[<>j<>63 * 4 + 2] * <>oo255<>61
-     }
-     {
-      <>y<>67 = 0.299 * <>r<>64 + 0.587 * <>g<>65 + 0.114 * <>b<>66
-     }
-     {
-      <>i<>68 = 0.596 * <>r<>64 - 0.275 * <>g<>65 - 0.321 * <>b<>66
-     }
-     {
-      <>q<>69 = 0.212 * <>r<>64 - 0.523 * <>g<>65 + 0.311 * <>b<>66
-     }
-     <>i<>68 = <>i<>68 + <>temperature<>53
-     <>q<>69 = <>q<>69 - <>temperature<>53
-     <>i<>68 = <>i<>68 * <>saturation<>48
-     <>q<>69 = <>q<>69 * <>saturation<>48
-     <>y<>67 = 1.0 + <>blackPoint<>51 * <>y<>67 - <>blackPoint<>51
-     <>y<>67 = <>y<>67 + <>fill<>52
-     <>y<>67 = <>y<>67 * <>brightness_a<>59 + <>brightness_b<>60
-     {
-      <>obj<>88 = <>Global<>toObject(FastGain)
-      <>temp<>89 = <>contrast<>49
-      <>obj<>90 = <>Global<>toObject(Clamp)
-      <>temp<>91 = <>y<>67
-      <>arguments<>92 = [<>temp<>91, ]
-      <>fun<>93 = <>Global<>getBase(Clamp)
-      <>temp<>94 = <>obj<>90(<>fun<>93, <>arguments<>92)
-      <>arguments<>95 = [<>temp<>89, <>temp<>94, ]
-      <>fun<>96 = <>Global<>getBase(FastGain)
-      <>Global<>ignore41 = <>obj<>88(<>fun<>96, <>arguments<>95)
-      <>y<>67 = <>Global<>ignore41
-     }
-     if(<>y<>67 < <>splitPoint<>58)
-      <>q<>69 = <>q<>69 + <>shadowsHue<>54 * <>shadowsSaturation<>55 * <>splitPoint<>58 - <>y<>67
-     else
-      <>i<>68 = <>i<>68 + <>highlightsHue<>56 * <>highlightsSaturation<>57 * <>y<>67 - <>splitPoint<>58
-     <>r<>64 = <>y<>67 + 0.956 * <>i<>68 + 0.621 * <>q<>69
-     <>g<>65 = <>y<>67 - 0.272 * <>i<>68 - 0.647 * <>q<>69
-     <>b<>66 = <>y<>67 - 1.105 * <>i<>68 + 1.702 * <>q<>69
-     {
-      <>obj<>97 = <>Global<>toObject(<>data<>44)
-      <>obj<>97[<>j<>63 * 4 + 0] = <>r<>64 * 255.0
-     }
-     {
-      <>obj<>98 = <>Global<>toObject(<>data<>44)
-      <>obj<>98[<>j<>63 * 4 + 1] = <>g<>65 * 255.0
-     }
-     {
-      <>obj<>99 = <>Global<>toObject(<>data<>44)
-      <>obj<>99[<>j<>63 * 4 + 2] = <>b<>66 * 255.0
-     }
-    }
+  {
+    <>obj<>71 = @ToObject(<>params<>47)
+    <>contrast<>49 = <>obj<>71["contrast"]
+  }
+  {
+    <>obj<>72 = @ToObject(<>params<>47)
+    <>brightness<>50 = <>obj<>72["brightness"]
+  }
+  {
+    <>obj<>73 = @ToObject(<>params<>47)
+    <>blackPoint<>51 = <>obj<>73["blackPoint"]
+  }
+  {
+    <>obj<>74 = @ToObject(<>params<>47)
+    <>fill<>52 = <>obj<>74["fill"]
+  }
+  {
+    <>obj<>75 = @ToObject(<>params<>47)
+    <>temperature<>53 = <>obj<>75["temperature"]
+  }
+  {
+    <>obj<>76 = @ToObject(<>params<>47)
+    <>shadowsHue<>54 = <>obj<>76["shadowsHue"]
+  }
+  {
+    <>obj<>77 = @ToObject(<>params<>47)
+    <>shadowsSaturation<>55 = <>obj<>77["shadowsSaturation"]
+  }
+  {
+    <>obj<>78 = @ToObject(<>params<>47)
+    <>highlightsHue<>56 = <>obj<>78["highlightsHue"]
+  }
+  {
+    <>obj<>79 = @ToObject(<>params<>47)
+    <>highlightsSaturation<>57 = <>obj<>79["highlightsSaturation"]
+  }
+  {
+    <>obj<>80 = @ToObject(<>params<>47)
+    <>splitPoint<>58 = <>obj<>80["splitPoint"]
+  }
+  {
+    <>oo255<>61 = 1.0 / 255.0
+  }
+  {
+    <>old<>81 = <>fill<>52
+    <>fill<>52 = <>old<>81 * 0.2
+  }
+  <>brightness<>50 = <>brightness<>50 - 1.0 * 0.75 + 1.0
+  if(<>brightness<>50 < 1.0)
+  {
+    <>brightness_a<>59 = <>brightness<>50
+    <>brightness_b<>60 = 0.0
+  }
+  else
+  {
+    <>brightness_b<>60 = <>brightness<>50 - 1.0
+    <>brightness_a<>59 = 1.0 - <>brightness_b<>60
+  }
+  <>contrast<>49 = <>contrast<>49 * 0.5
+  <>contrast<>49 = <>contrast<>49 - 0.5 * 0.75 + 0.5
+  <>temperature<>53 = <>temperature<>53 / 2000.0 * 0.1
+  if(<>temperature<>53 > 0.0)
+  {
+    <>old<>82 = <>temperature<>53
+    <>temperature<>53 = <>old<>82 * 2.0
+  }
+  <>splitPoint<>58 = <>splitPoint<>58 + 1.0 * 0.5
+  {
+    <>sz<>62 = <>width<>45 * <>height<>46
+  }
+  {
     {
-     <>old<>100 = <>j<>63
-     <>new<>101 = <>Global<>toNumber(<>old<>100)
-     <>j<>63 = <>new<>101 + 1
-     <>Global<>ignore27 = <>new<>101
+      <>j<>63 = 0
     }
-   }
+    <>break<>83 : {
+      while(<>j<>63 < <>sz<>62)
+      {
+        <>continue<>84 : {
+          {
+            <>obj<>85 = @ToObject(<>data<>44)
+            <>r<>64 = <>obj<>85[<>j<>63 * 4 + 0] * <>oo255<>61
+          }
+          {
+            <>obj<>86 = @ToObject(<>data<>44)
+            <>g<>65 = <>obj<>86[<>j<>63 * 4 + 1] * <>oo255<>61
+          }
+          {
+            <>obj<>87 = @ToObject(<>data<>44)
+            <>b<>66 = <>obj<>87[<>j<>63 * 4 + 2] * <>oo255<>61
+          }
+          {
+            <>y<>67 = 0.299 * <>r<>64 + 0.587 * <>g<>65 + 0.114 * <>b<>66
+          }
+          {
+            <>i<>68 = 0.596 * <>r<>64 - 0.275 * <>g<>65 - 0.321 * <>b<>66
+          }
+          {
+            <>q<>69 = 0.212 * <>r<>64 - 0.523 * <>g<>65 + 0.311 * <>b<>66
+          }
+          <>i<>68 = <>i<>68 + <>temperature<>53
+          <>q<>69 = <>q<>69 - <>temperature<>53
+          <>i<>68 = <>i<>68 * <>saturation<>48
+          <>q<>69 = <>q<>69 * <>saturation<>48
+          <>y<>67 = 1.0 + <>blackPoint<>51 * <>y<>67 - <>blackPoint<>51
+          <>y<>67 = <>y<>67 + <>fill<>52
+          <>y<>67 = <>y<>67 * <>brightness_a<>59 + <>brightness_b<>60
+          {
+            <>obj<>88 = @ToObject(FastGain)
+            <>temp<>89 = <>contrast<>49
+            <>obj<>90 = @ToObject(Clamp)
+            <>temp<>91 = <>y<>67
+            <>arguments<>92 = [<>temp<>91, ]
+            <>fun<>93 = @GetBase(Clamp)
+            <>temp<>94 = <>obj<>90(<>fun<>93, <>arguments<>92)
+            <>arguments<>95 = [<>temp<>89, <>temp<>94, ]
+            <>fun<>96 = @GetBase(FastGain)
+            <>Global<>ignore41 = <>obj<>88(<>fun<>96, <>arguments<>95)
+            <>y<>67 = <>Global<>ignore41
+          }
+          if(<>y<>67 < <>splitPoint<>58)
+            <>q<>69 = <>q<>69 + <>shadowsHue<>54 * <>shadowsSaturation<>55 * <>splitPoint<>58 - <>y<>67
+          else
+            <>i<>68 = <>i<>68 + <>highlightsHue<>56 * <>highlightsSaturation<>57 * <>y<>67 - <>splitPoint<>58
+          <>r<>64 = <>y<>67 + 0.956 * <>i<>68 + 0.621 * <>q<>69
+          <>g<>65 = <>y<>67 - 0.272 * <>i<>68 - 0.647 * <>q<>69
+          <>b<>66 = <>y<>67 - 1.105 * <>i<>68 + 1.702 * <>q<>69
+          {
+            <>obj<>97 = @ToObject(<>data<>44)
+            <>obj<>97[<>j<>63 * 4 + 0] = <>r<>64 * 255.0
+          }
+          {
+            <>obj<>98 = @ToObject(<>data<>44)
+            <>obj<>98[<>j<>63 * 4 + 1] = <>g<>65 * 255.0
+          }
+          {
+            <>obj<>99 = @ToObject(<>data<>44)
+            <>obj<>99[<>j<>63 * 4 + 2] = <>b<>66 * 255.0
+          }
+        }
+        {
+          <>old<>100 = <>j<>63
+          <>new<>101 = @ToNumber(<>old<>100)
+          <>j<>63 = <>new<>101 + 1
+          <>Global<>ignore27 = <>new<>101
+        }
+      }
+    }
   }
- }
- return <>data<>44
+  return <>data<>44
 }
 var squidImageData
 var paramArray
@@ -281,335 +281,336 @@ var height
 var index
 var data
 {
- <>Global<>ignore50 = [A LOT!!! 427200 elements are not printed here.]
- squidImageData = <>Global<>ignore50
+  <>Global<>ignore50 = [A LOT!!! 427200 elements are not printed here.]
+  squidImageData = <>Global<>ignore50
 }
 {
- <>temp<>102 = {
-  "blackPoint" : 0,
-  "fill" : 0,
-  "brightness" : 1,
-  "contrast" : 1,
-  "saturation" : 1,
-  "temperature" : - 2000,
-  "splitPoint" : 0,
-  "shadowsHue" : 0.5,
-  "shadowsSaturation" : 0,
-  "highlightsHue" : 0.5,
-  "highlightsSaturation" : 0,
-  "angle" : 0.5,
-  "fineangle" : 0.5
- }
- <>temp<>103 = {
-  "blackPoint" : 0,
-  "fill" : 0,
-  "brightness" : 1.626,
-  "contrast" : 1.777,
-  "saturation" : 1,
-  "temperature" : 2000,
-  "splitPoint" : 0,
-  "shadowsHue" : 0.5,
-  "shadowsSaturation" : 0,
-  "highlightsHue" : 0.5,
-  "highlightsSaturation" : 0,
-  "angle" : 0.5,
-  "fineangle" : 0.5
- }
- <>temp<>104 = {
-  "blackPoint" : 0.2,
-  "fill" : 0.606,
-  "brightness" : 0.588,
-  "contrast" : 1.916,
-  "saturation" : 1.838,
-  "temperature" : - 1332,
-  "splitPoint" : 0,
-  "shadowsHue" : 0.5,
-  "shadowsSaturation" : 0,
-  "highlightsHue" : 0.5,
-  "highlightsSaturation" : 0,
-  "angle" : 0.5,
-  "fineangle" : 0.5
- }
- <>temp<>105 = {
-  "blackPoint" : 0,
-  "fill" : 0,
-  "brightness" : 1,
-  "contrast" : 1,
-  "saturation" : 0,
-  "temperature" : 0,
-  "splitPoint" : 0,
-  "shadowsHue" : 0.5,
-  "shadowsSaturation" : 0,
-  "highlightsHue" : 0.5,
-  "highlightsSaturation" : 0,
-  "angle" : 0.5,
-  "fineangle" : 0.5
- }
- <>temp<>106 = {
-  "blackPoint" : 0,
-  "fill" : 0,
-  "brightness" : 1.488,
-  "contrast" : 1.026,
-  "saturation" : 1.61,
-  "temperature" : 0,
-  "splitPoint" : - 0.6619999999999999,
-  "shadowsHue" : 0.5,
-  "shadowsSaturation" : 0.625,
-  "highlightsHue" : 0.166,
-  "highlightsSaturation" : 0,
-  "angle" : 0.5,
-  "fineangle" : 0.5
- }
- <>temp<>107 = {
-  "blackPoint" : 0.181,
-  "fill" : 0.622,
-  "brightness" : 0.384,
-  "contrast" : 2,
-  "saturation" : 1.638,
-  "temperature" : 0,
-  "splitPoint" : - 0.6759999999999999,
-  "shadowsHue" : 0.209,
-  "shadowsSaturation" : 0,
-  "highlightsHue" : 0.191,
-  "highlightsSaturation" : 0,
-  "angle" : 0.5,
-  "fineangle" : 0.5
- }
- <>temp<>108 = {
-  "blackPoint" : 0,
-  "fill" : 0,
-  "brightness" : 1,
-  "contrast" : 1,
-  "saturation" : 1,
-  "temperature" : - 2000,
-  "splitPoint" : 0,
-  "shadowsHue" : 0.5,
-  "shadowsSaturation" : 0,
-  "highlightsHue" : 0.5,
-  "highlightsSaturation" : 0,
-  "angle" : 0.5,
-  "fineangle" : 0.5
- }
- <>temp<>109 = {
-  "blackPoint" : 0,
-  "fill" : 0,
-  "brightness" : 1.626,
-  "contrast" : 1.777,
-  "saturation" : 1,
-  "temperature" : 2000,
-  "splitPoint" : 0,
-  "shadowsHue" : 0.5,
-  "shadowsSaturation" : 0,
-  "highlightsHue" : 0.5,
-  "highlightsSaturation" : 0,
-  "angle" : 0.5,
-  "fineangle" : 0.5
- }
- <>temp<>110 = {
-  "blackPoint" : 0.2,
-  "fill" : 0.606,
-  "brightness" : 0.588,
-  "contrast" : 1.916,
-  "saturation" : 1.838,
-  "temperature" : - 1332,
-  "splitPoint" : 0,
-  "shadowsHue" : 0.5,
-  "shadowsSaturation" : 0,
-  "highlightsHue" : 0.5,
-  "highlightsSaturation" : 0,
-  "angle" : 0.5,
-  "fineangle" : 0.5
- }
- <>temp<>111 = {
-  "blackPoint" : 0,
-  "fill" : 0,
-  "brightness" : 1,
-  "contrast" : 1,
-  "saturation" : 0,
-  "temperature" : 0,
-  "splitPoint" : 0,
-  "shadowsHue" : 0.5,
-  "shadowsSaturation" : 0,
-  "highlightsHue" : 0.5,
-  "highlightsSaturation" : 0,
-  "angle" : 0.5,
-  "fineangle" : 0.5
- }
- <>temp<>112 = {
-  "blackPoint" : 0,
-  "fill" : 0,
-  "brightness" : 1.488,
-  "contrast" : 1.026,
-  "saturation" : 1.61,
-  "temperature" : 0,
-  "splitPoint" : - 0.6619999999999999,
-  "shadowsHue" : 0.5,
-  "shadowsSaturation" : 0.625,
-  "highlightsHue" : 0.166,
-  "highlightsSaturation" : 0,
-  "angle" : 0.5,
-  "fineangle" : 0.5
- }
- <>temp<>113 = {
-  "blackPoint" : 0.181,
-  "fill" : 0.622,
-  "brightness" : 0.384,
-  "contrast" : 2,
-  "saturation" : 1.638,
-  "temperature" : 0,
-  "splitPoint" : - 0.6759999999999999,
-  "shadowsHue" : 0.209,
-  "shadowsSaturation" : 0,
-  "highlightsHue" : 0.191,
-  "highlightsSaturation" : 0,
-  "angle" : 0.5,
-  "fineangle" : 0.5
- }
- <>temp<>114 = {
-  "blackPoint" : 0,
-  "fill" : 0,
-  "brightness" : 1,
-  "contrast" : 1,
-  "saturation" : 1,
-  "temperature" : - 2000,
-  "splitPoint" : 0,
-  "shadowsHue" : 0.5,
-  "shadowsSaturation" : 0,
-  "highlightsHue" : 0.5,
-  "highlightsSaturation" : 0,
-  "angle" : 0.5,
-  "fineangle" : 0.5
- }
- <>temp<>115 = {
-  "blackPoint" : 0,
-  "fill" : 0,
-  "brightness" : 1.626,
-  "contrast" : 1.777,
-  "saturation" : 1,
-  "temperature" : 2000,
-  "splitPoint" : 0,
-  "shadowsHue" : 0.5,
-  "shadowsSaturation" : 0,
-  "highlightsHue" : 0.5,
-  "highlightsSaturation" : 0,
-  "angle" : 0.5,
-  "fineangle" : 0.5
- }
- <>temp<>116 = {
-  "blackPoint" : 0.2,
-  "fill" : 0.606,
-  "brightness" : 0.588,
-  "contrast" : 1.916,
-  "saturation" : 1.838,
-  "temperature" : - 1332,
-  "splitPoint" : 0,
-  "shadowsHue" : 0.5,
-  "shadowsSaturation" : 0,
-  "highlightsHue" : 0.5,
-  "highlightsSaturation" : 0,
-  "angle" : 0.5,
-  "fineangle" : 0.5
- }
- <>temp<>117 = {
-  "blackPoint" : 0,
-  "fill" : 0,
-  "brightness" : 1,
-  "contrast" : 1,
-  "saturation" : 0,
-  "temperature" : 0,
-  "splitPoint" : 0,
-  "shadowsHue" : 0.5,
-  "shadowsSaturation" : 0,
-  "highlightsHue" : 0.5,
-  "highlightsSaturation" : 0,
-  "angle" : 0.5,
-  "fineangle" : 0.5
- }
- <>temp<>118 = {
-  "blackPoint" : 0,
-  "fill" : 0,
-  "brightness" : 1.488,
-  "contrast" : 1.026,
-  "saturation" : 1.61,
-  "temperature" : 0,
-  "splitPoint" : - 0.6619999999999999,
-  "shadowsHue" : 0.5,
-  "shadowsSaturation" : 0.625,
-  "highlightsHue" : 0.166,
-  "highlightsSaturation" : 0,
-  "angle" : 0.5,
-  "fineangle" : 0.5
- }
- <>temp<>119 = {
-  "blackPoint" : 0.181,
-  "fill" : 0.622,
-  "brightness" : 0.384,
-  "contrast" : 2,
-  "saturation" : 1.638,
-  "temperature" : 0,
-  "splitPoint" : - 0.6759999999999999,
-  "shadowsHue" : 0.209,
-  "shadowsSaturation" : 0,
-  "highlightsHue" : 0.191,
-  "highlightsSaturation" : 0,
-  "angle" : 0.5,
-  "fineangle" : 0.5
- }
- <>Global<>ignore51 = [<>temp<>102, <>temp<>103, <>temp<>104, <>temp<>105, <>temp<>106, <>temp<>107, <>temp<>108, <>temp<>109, <>temp<>110, <>temp<>111, <>temp<>112, <>temp<>113, <>temp<>114, <>temp<>115, <>temp<>116, <>temp<>117, <>temp<>118, <>temp<>119, ]
- paramArray = <>Global<>ignore51
-}
-{
- <>obj<>120 = <>Global<>toObject(FastLog2)
- <>temp<>121 = 0.5
- <>arguments<>122 = [<>temp<>121, ]
- <>fun<>123 = <>Global<>getBase(FastLog2)
- <>Global<>ignore52 = <>obj<>120(<>fun<>123, <>arguments<>122)
- LOG2_HALF = <>Global<>ignore52
-}
-{
- {
-  width = 400
- }
- {
-  height = 267
- }
-}
-{
- {
-  index = 0
- }
- <>break<>124 : {
-  {
-   <>y<>125 = index
-   <>obj<>126 = <>Global<>toObject(paramArray)
+  <>temp<>102 = {
+    "blackPoint" : 0,
+    "fill" : 0,
+    "brightness" : 1,
+    "contrast" : 1,
+    "saturation" : 1,
+    "temperature" : - 2000,
+    "splitPoint" : 0,
+    "shadowsHue" : 0.5,
+    "shadowsSaturation" : 0,
+    "highlightsHue" : 0.5,
+    "highlightsSaturation" : 0,
+    "angle" : 0.5,
+    "fineangle" : 0.5
   }
-  while(<>y<>125 < <>obj<>126["length"])
-  {
-   <>continue<>127 : {
-    {
-     data = squidImageData
-    }
-    {
-     <>obj<>128 = <>Global<>toObject(ProcessImageData)
-     <>temp<>129 = data
-     <>temp<>130 = width
-     <>temp<>131 = height
-     <>obj<>132 = <>Global<>toObject(paramArray)
-     <>temp<>133 = <>obj<>132[index]
-     <>arguments<>134 = [<>temp<>129, <>temp<>130, <>temp<>131, <>temp<>133, ]
-     <>fun<>135 = <>Global<>getBase(ProcessImageData)
-     <>Global<>ignore59 = <>obj<>128(<>fun<>135, <>arguments<>134)
-     data = <>Global<>ignore59
-    }
-   }
-   {
-    <>old<>136 = index
-    <>new<>137 = <>Global<>toNumber(<>old<>136)
-    index = <>new<>137 + 1
-    <>Global<>ignore57 = <>new<>137
-    <>y<>125 = index
-    <>obj<>126 = <>Global<>toObject(paramArray)
-   }
+  <>temp<>103 = {
+    "blackPoint" : 0,
+    "fill" : 0,
+    "brightness" : 1.626,
+    "contrast" : 1.777,
+    "saturation" : 1,
+    "temperature" : 2000,
+    "splitPoint" : 0,
+    "shadowsHue" : 0.5,
+    "shadowsSaturation" : 0,
+    "highlightsHue" : 0.5,
+    "highlightsSaturation" : 0,
+    "angle" : 0.5,
+    "fineangle" : 0.5
   }
- }
+  <>temp<>104 = {
+    "blackPoint" : 0.2,
+    "fill" : 0.606,
+    "brightness" : 0.588,
+    "contrast" : 1.916,
+    "saturation" : 1.838,
+    "temperature" : - 1332,
+    "splitPoint" : 0,
+    "shadowsHue" : 0.5,
+    "shadowsSaturation" : 0,
+    "highlightsHue" : 0.5,
+    "highlightsSaturation" : 0,
+    "angle" : 0.5,
+    "fineangle" : 0.5
+  }
+  <>temp<>105 = {
+    "blackPoint" : 0,
+    "fill" : 0,
+    "brightness" : 1,
+    "contrast" : 1,
+    "saturation" : 0,
+    "temperature" : 0,
+    "splitPoint" : 0,
+    "shadowsHue" : 0.5,
+    "shadowsSaturation" : 0,
+    "highlightsHue" : 0.5,
+    "highlightsSaturation" : 0,
+    "angle" : 0.5,
+    "fineangle" : 0.5
+  }
+  <>temp<>106 = {
+    "blackPoint" : 0,
+    "fill" : 0,
+    "brightness" : 1.488,
+    "contrast" : 1.026,
+    "saturation" : 1.61,
+    "temperature" : 0,
+    "splitPoint" : - 0.6619999999999999,
+    "shadowsHue" : 0.5,
+    "shadowsSaturation" : 0.625,
+    "highlightsHue" : 0.166,
+    "highlightsSaturation" : 0,
+    "angle" : 0.5,
+    "fineangle" : 0.5
+  }
+  <>temp<>107 = {
+    "blackPoint" : 0.181,
+    "fill" : 0.622,
+    "brightness" : 0.384,
+    "contrast" : 2,
+    "saturation" : 1.638,
+    "temperature" : 0,
+    "splitPoint" : - 0.6759999999999999,
+    "shadowsHue" : 0.209,
+    "shadowsSaturation" : 0,
+    "highlightsHue" : 0.191,
+    "highlightsSaturation" : 0,
+    "angle" : 0.5,
+    "fineangle" : 0.5
+  }
+  <>temp<>108 = {
+    "blackPoint" : 0,
+    "fill" : 0,
+    "brightness" : 1,
+    "contrast" : 1,
+    "saturation" : 1,
+    "temperature" : - 2000,
+    "splitPoint" : 0,
+    "shadowsHue" : 0.5,
+    "shadowsSaturation" : 0,
+    "highlightsHue" : 0.5,
+    "highlightsSaturation" : 0,
+    "angle" : 0.5,
+    "fineangle" : 0.5
+  }
+  <>temp<>109 = {
+    "blackPoint" : 0,
+    "fill" : 0,
+    "brightness" : 1.626,
+    "contrast" : 1.777,
+    "saturation" : 1,
+    "temperature" : 2000,
+    "splitPoint" : 0,
+    "shadowsHue" : 0.5,
+    "shadowsSaturation" : 0,
+    "highlightsHue" : 0.5,
+    "highlightsSaturation" : 0,
+    "angle" : 0.5,
+    "fineangle" : 0.5
+  }
+  <>temp<>110 = {
+    "blackPoint" : 0.2,
+    "fill" : 0.606,
+    "brightness" : 0.588,
+    "contrast" : 1.916,
+    "saturation" : 1.838,
+    "temperature" : - 1332,
+    "splitPoint" : 0,
+    "shadowsHue" : 0.5,
+    "shadowsSaturation" : 0,
+    "highlightsHue" : 0.5,
+    "highlightsSaturation" : 0,
+    "angle" : 0.5,
+    "fineangle" : 0.5
+  }
+  <>temp<>111 = {
+    "blackPoint" : 0,
+    "fill" : 0,
+    "brightness" : 1,
+    "contrast" : 1,
+    "saturation" : 0,
+    "temperature" : 0,
+    "splitPoint" : 0,
+    "shadowsHue" : 0.5,
+    "shadowsSaturation" : 0,
+    "highlightsHue" : 0.5,
+    "highlightsSaturation" : 0,
+    "angle" : 0.5,
+    "fineangle" : 0.5
+  }
+  <>temp<>112 = {
+    "blackPoint" : 0,
+    "fill" : 0,
+    "brightness" : 1.488,
+    "contrast" : 1.026,
+    "saturation" : 1.61,
+    "temperature" : 0,
+    "splitPoint" : - 0.6619999999999999,
+    "shadowsHue" : 0.5,
+    "shadowsSaturation" : 0.625,
+    "highlightsHue" : 0.166,
+    "highlightsSaturation" : 0,
+    "angle" : 0.5,
+    "fineangle" : 0.5
+  }
+  <>temp<>113 = {
+    "blackPoint" : 0.181,
+    "fill" : 0.622,
+    "brightness" : 0.384,
+    "contrast" : 2,
+    "saturation" : 1.638,
+    "temperature" : 0,
+    "splitPoint" : - 0.6759999999999999,
+    "shadowsHue" : 0.209,
+    "shadowsSaturation" : 0,
+    "highlightsHue" : 0.191,
+    "highlightsSaturation" : 0,
+    "angle" : 0.5,
+    "fineangle" : 0.5
+  }
+  <>temp<>114 = {
+    "blackPoint" : 0,
+    "fill" : 0,
+    "brightness" : 1,
+    "contrast" : 1,
+    "saturation" : 1,
+    "temperature" : - 2000,
+    "splitPoint" : 0,
+    "shadowsHue" : 0.5,
+    "shadowsSaturation" : 0,
+    "highlightsHue" : 0.5,
+    "highlightsSaturation" : 0,
+    "angle" : 0.5,
+    "fineangle" : 0.5
+  }
+  <>temp<>115 = {
+    "blackPoint" : 0,
+    "fill" : 0,
+    "brightness" : 1.626,
+    "contrast" : 1.777,
+    "saturation" : 1,
+    "temperature" : 2000,
+    "splitPoint" : 0,
+    "shadowsHue" : 0.5,
+    "shadowsSaturation" : 0,
+    "highlightsHue" : 0.5,
+    "highlightsSaturation" : 0,
+    "angle" : 0.5,
+    "fineangle" : 0.5
+  }
+  <>temp<>116 = {
+    "blackPoint" : 0.2,
+    "fill" : 0.606,
+    "brightness" : 0.588,
+    "contrast" : 1.916,
+    "saturation" : 1.838,
+    "temperature" : - 1332,
+    "splitPoint" : 0,
+    "shadowsHue" : 0.5,
+    "shadowsSaturation" : 0,
+    "highlightsHue" : 0.5,
+    "highlightsSaturation" : 0,
+    "angle" : 0.5,
+    "fineangle" : 0.5
+  }
+  <>temp<>117 = {
+    "blackPoint" : 0,
+    "fill" : 0,
+    "brightness" : 1,
+    "contrast" : 1,
+    "saturation" : 0,
+    "temperature" : 0,
+    "splitPoint" : 0,
+    "shadowsHue" : 0.5,
+    "shadowsSaturation" : 0,
+    "highlightsHue" : 0.5,
+    "highlightsSaturation" : 0,
+    "angle" : 0.5,
+    "fineangle" : 0.5
+  }
+  <>temp<>118 = {
+    "blackPoint" : 0,
+    "fill" : 0,
+    "brightness" : 1.488,
+    "contrast" : 1.026,
+    "saturation" : 1.61,
+    "temperature" : 0,
+    "splitPoint" : - 0.6619999999999999,
+    "shadowsHue" : 0.5,
+    "shadowsSaturation" : 0.625,
+    "highlightsHue" : 0.166,
+    "highlightsSaturation" : 0,
+    "angle" : 0.5,
+    "fineangle" : 0.5
+  }
+  <>temp<>119 = {
+    "blackPoint" : 0.181,
+    "fill" : 0.622,
+    "brightness" : 0.384,
+    "contrast" : 2,
+    "saturation" : 1.638,
+    "temperature" : 0,
+    "splitPoint" : - 0.6759999999999999,
+    "shadowsHue" : 0.209,
+    "shadowsSaturation" : 0,
+    "highlightsHue" : 0.191,
+    "highlightsSaturation" : 0,
+    "angle" : 0.5,
+    "fineangle" : 0.5
+  }
+  <>Global<>ignore51 = [<>temp<>102, <>temp<>103, <>temp<>104, <>temp<>105, <>temp<>106, <>temp<>107, <>temp<>108, <>temp<>109, <>temp<>110, <>temp<>111, <>temp<>112, <>temp<>113, <>temp<>114, <>temp<>115, <>temp<>116, <>temp<>117, <>temp<>118, <>temp<>119, ]
+  paramArray = <>Global<>ignore51
 }
+{
+  <>obj<>120 = @ToObject(FastLog2)
+  <>temp<>121 = 0.5
+  <>arguments<>122 = [<>temp<>121, ]
+  <>fun<>123 = @GetBase(FastLog2)
+  <>Global<>ignore52 = <>obj<>120(<>fun<>123, <>arguments<>122)
+  LOG2_HALF = <>Global<>ignore52
+}
+{
+  {
+    width = 400
+  }
+  {
+    height = 267
+  }
+}
+{
+  {
+    index = 0
+  }
+  <>break<>124 : {
+    {
+      <>y<>125 = index
+      <>obj<>126 = @ToObject(paramArray)
+    }
+    while(<>y<>125 < <>obj<>126["length"])
+    {
+      <>continue<>127 : {
+        {
+          data = squidImageData
+        }
+        {
+          <>obj<>128 = @ToObject(ProcessImageData)
+          <>temp<>129 = data
+          <>temp<>130 = width
+          <>temp<>131 = height
+          <>obj<>132 = @ToObject(paramArray)
+          <>temp<>133 = <>obj<>132[index]
+          <>arguments<>134 = [<>temp<>129, <>temp<>130, <>temp<>131, <>temp<>133, ]
+          <>fun<>135 = @GetBase(ProcessImageData)
+          <>Global<>ignore59 = <>obj<>128(<>fun<>135, <>arguments<>134)
+          data = <>Global<>ignore59
+        }
+      }
+      {
+        <>old<>136 = index
+        <>new<>137 = @ToNumber(<>old<>136)
+        index = <>new<>137 + 1
+        <>Global<>ignore57 = <>new<>137
+        <>y<>125 = index
+        <>obj<>126 = @ToObject(paramArray)
+      }
+    }
+  }
+}
+

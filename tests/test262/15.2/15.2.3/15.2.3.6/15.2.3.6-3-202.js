@@ -4,7 +4,7 @@
       
     };
     Object.defineProperty(obj, "property", {
-      writable : __Global
+      writable : @Global
     });
     var beforeWrite = obj.hasOwnProperty("property");
     obj.property = "isWritable";

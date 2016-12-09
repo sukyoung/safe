@@ -9,7 +9,7 @@
 
 var v;
 var o = RegExp("^(?:\\s*(<[\\w\\W]+>)[^>]*|#([\\w-]*))$", "gim");
-if (__BoolTop) {
+if (@BoolTop) {
 	v = "^(?:\\s*(<[\\w]+>)[^>]*|#([\\w-]*))$";
 } else {
 	v = o;

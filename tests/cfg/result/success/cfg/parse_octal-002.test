@@ -9,7 +9,7 @@ function[0] top-level {
     [4] bug := 141078
     [5] summary := "Testing regexps containing octal escape sequences"
     [6] status := ""
-    [7] <>fun<>34 := <>Global<>toObject(Array) @ #25
+    [7] <>fun<>34 := @ToObject(Array) @ #25
     [8] <>arguments<>35 := allocArg(0) @ #26
     [9] <>proto<>36 := <>fun<>34["prototype"]
     [10] <>obj<>37 := alloc(<>proto<>36) @ #27
@@ -22,7 +22,7 @@ function[0] top-level {
   AfterCatch[3] -> ExitExc
 
   Block[4] -> [6], [5]
-    [0] <>cond<>39 := <>Global<>isObject(<>newObj<>38)
+    [0] <>cond<>39 := @isObject(<>newObj<>38)
 
   Block[5] -> [7], ExitExc
     [0] assert(<>cond<>39)
@@ -35,7 +35,7 @@ function[0] top-level {
   Block[7] -> [8], ExitExc
     [0] statusmessages := <>Global<>ignore17
     [1] pattern := ""
-    [2] <>fun<>40 := <>Global<>toObject(Array) @ #29
+    [2] <>fun<>40 := @ToObject(Array) @ #29
     [3] <>arguments<>41 := allocArg(0) @ #30
     [4] <>proto<>42 := <>fun<>40["prototype"]
     [5] <>obj<>43 := alloc(<>proto<>42) @ #31
@@ -48,7 +48,7 @@ function[0] top-level {
   AfterCatch[10] -> ExitExc
 
   Block[11] -> [13], [12]
-    [0] <>cond<>45 := <>Global<>isObject(<>newObj<>44)
+    [0] <>cond<>45 := @isObject(<>newObj<>44)
 
   Block[12] -> [14], ExitExc
     [0] assert(<>cond<>45)
@@ -61,7 +61,7 @@ function[0] top-level {
   Block[14] -> [15], ExitExc
     [0] patterns := <>Global<>ignore19
     [1] string := ""
-    [2] <>fun<>46 := <>Global<>toObject(Array) @ #33
+    [2] <>fun<>46 := @ToObject(Array) @ #33
     [3] <>arguments<>47 := allocArg(0) @ #34
     [4] <>proto<>48 := <>fun<>46["prototype"]
     [5] <>obj<>49 := alloc(<>proto<>48) @ #35
@@ -74,7 +74,7 @@ function[0] top-level {
   AfterCatch[17] -> ExitExc
 
   Block[18] -> [20], [19]
-    [0] <>cond<>51 := <>Global<>isObject(<>newObj<>50)
+    [0] <>cond<>51 := @isObject(<>newObj<>50)
 
   Block[19] -> [21], ExitExc
     [0] assert(<>cond<>51)
@@ -87,7 +87,7 @@ function[0] top-level {
   Block[21] -> [22], ExitExc
     [0] strings := <>Global<>ignore21
     [1] actualmatch := ""
-    [2] <>fun<>52 := <>Global<>toObject(Array) @ #37
+    [2] <>fun<>52 := @ToObject(Array) @ #37
     [3] <>arguments<>53 := allocArg(0) @ #38
     [4] <>proto<>54 := <>fun<>52["prototype"]
     [5] <>obj<>55 := alloc(<>proto<>54) @ #39
@@ -100,7 +100,7 @@ function[0] top-level {
   AfterCatch[24] -> ExitExc
 
   Block[25] -> [27], [26]
-    [0] <>cond<>57 := <>Global<>isObject(<>newObj<>56)
+    [0] <>cond<>57 := @isObject(<>newObj<>56)
 
   Block[26] -> [28], ExitExc
     [0] assert(<>cond<>57)
@@ -113,7 +113,7 @@ function[0] top-level {
   Block[28] -> [29], ExitExc
     [0] actualmatches := <>Global<>ignore23
     [1] expectedmatch := ""
-    [2] <>fun<>58 := <>Global<>toObject(Array) @ #41
+    [2] <>fun<>58 := @ToObject(Array) @ #41
     [3] <>arguments<>59 := allocArg(0) @ #42
     [4] <>proto<>60 := <>fun<>58["prototype"]
     [5] <>obj<>61 := alloc(<>proto<>60) @ #43
@@ -126,7 +126,7 @@ function[0] top-level {
   AfterCatch[31] -> ExitExc
 
   Block[32] -> [34], [33]
-    [0] <>cond<>63 := <>Global<>isObject(<>newObj<>62)
+    [0] <>cond<>63 := @isObject(<>newObj<>62)
 
   Block[33] -> [35], ExitExc
     [0] assert(<>cond<>63)
@@ -138,11 +138,11 @@ function[0] top-level {
 
   Block[35] -> [36], ExitExc
     [0] expectedmatches := <>Global<>ignore25
-    [1] <>obj<>64 := <>Global<>toObject(inSection) @ #45
+    [1] <>obj<>64 := @ToObject(inSection) @ #45
     [2] <>temp<>65 := 1
     [3] <>arguments<>66 := allocArg(1) @ #46
     [4] <>arguments<>66["0"] := <>temp<>65
-    [5] <>fun<>67 := <>Global<>getBase(inSection)
+    [5] <>fun<>67 := @GetBase(inSection)
     [6] <>this<> := enterCode(<>fun<>67)
 
   Call[36] -> ExitExc
@@ -154,7 +154,7 @@ function[0] top-level {
 
   Block[39] -> [40], ExitExc
     [0] status := <>Global<>ignore26
-    [1] <>fun<>68 := <>Global<>toObject(RegExp) @ #48
+    [1] <>fun<>68 := @ToObject(RegExp) @ #48
     [2] <>temp<>69 := ".\011"
     [3] <>temp<>70 := ""
     [4] <>arguments<>71 := allocArg(2) @ #49
@@ -171,7 +171,7 @@ function[0] top-level {
   AfterCatch[42] -> ExitExc
 
   Block[43] -> [45], [44]
-    [0] <>cond<>75 := <>Global<>isObject(<>newObj<>74)
+    [0] <>cond<>75 := @isObject(<>newObj<>74)
 
   Block[44] -> [46], ExitExc
     [0] assert(<>cond<>75)
@@ -184,11 +184,11 @@ function[0] top-level {
   Block[46] -> [47], ExitExc
     [0] pattern := <>Global<>ignore27
     [1] <>y<>76 := "a"
-    [2] <>obj<>77 := <>Global<>toObject(String) @ #52
+    [2] <>obj<>77 := @ToObject(String) @ #52
     [3] <>temp<>78 := 0
     [4] <>arguments<>79 := allocArg(1) @ #53
     [5] <>arguments<>79["0"] := <>temp<>78
-    [6] <>fun<>80 := <>Global<>toObject(<>obj<>77["fromCharCode"]) @ #54
+    [6] <>fun<>80 := @ToObject(<>obj<>77["fromCharCode"]) @ #54
     [7] <>this<> := enterCode(<>obj<>77)
 
   Call[47] -> ExitExc
@@ -200,11 +200,11 @@ function[0] top-level {
 
   Block[50] -> [51], ExitExc
     [0] string := <>y<>76 + <>z<>81 + "11"
-    [1] <>obj<>82 := <>Global<>toObject(string) @ #56
+    [1] <>obj<>82 := @ToObject(string) @ #56
     [2] <>temp<>83 := pattern
     [3] <>arguments<>84 := allocArg(1) @ #57
     [4] <>arguments<>84["0"] := <>temp<>83
-    [5] <>fun<>85 := <>Global<>toObject(<>obj<>82["match"]) @ #58
+    [5] <>fun<>85 := @ToObject(<>obj<>82["match"]) @ #58
     [6] <>this<> := enterCode(<>obj<>82)
 
   Call[51] -> ExitExc
@@ -217,9 +217,9 @@ function[0] top-level {
   Block[54] -> [55], ExitExc
     [0] actualmatch := <>Global<>ignore29
     [1] expectedmatch := null
-    [2] <>obj<>86 := <>Global<>toObject(addThis) @ #60
+    [2] <>obj<>86 := @ToObject(addThis) @ #60
     [3] <>arguments<>87 := allocArg(0) @ #61
-    [4] <>fun<>88 := <>Global<>getBase(addThis)
+    [4] <>fun<>88 := @GetBase(addThis)
     [5] <>this<> := enterCode(<>fun<>88)
 
   Call[55] -> ExitExc
@@ -230,11 +230,11 @@ function[0] top-level {
   AfterCatch[57] -> ExitExc
 
   Block[58] -> [59], ExitExc
-    [0] <>obj<>89 := <>Global<>toObject(inSection) @ #63
+    [0] <>obj<>89 := @ToObject(inSection) @ #63
     [1] <>temp<>90 := 2
     [2] <>arguments<>91 := allocArg(1) @ #64
     [3] <>arguments<>91["0"] := <>temp<>90
-    [4] <>fun<>92 := <>Global<>getBase(inSection)
+    [4] <>fun<>92 := @GetBase(inSection)
     [5] <>this<> := enterCode(<>fun<>92)
 
   Call[59] -> ExitExc
@@ -246,7 +246,7 @@ function[0] top-level {
 
   Block[62] -> [63], ExitExc
     [0] status := <>Global<>ignore32
-    [1] <>fun<>93 := <>Global<>toObject(RegExp) @ #66
+    [1] <>fun<>93 := @ToObject(RegExp) @ #66
     [2] <>temp<>94 := ".\0xx"
     [3] <>temp<>95 := ""
     [4] <>arguments<>96 := allocArg(2) @ #67
@@ -263,7 +263,7 @@ function[0] top-level {
   AfterCatch[65] -> ExitExc
 
   Block[66] -> [68], [67]
-    [0] <>cond<>100 := <>Global<>isObject(<>newObj<>99)
+    [0] <>cond<>100 := @isObject(<>newObj<>99)
 
   Block[67] -> [69], ExitExc
     [0] assert(<>cond<>100)
@@ -276,11 +276,11 @@ function[0] top-level {
   Block[69] -> [70], ExitExc
     [0] pattern := <>Global<>ignore33
     [1] <>y<>101 := "a"
-    [2] <>obj<>102 := <>Global<>toObject(String) @ #70
+    [2] <>obj<>102 := @ToObject(String) @ #70
     [3] <>temp<>103 := 0
     [4] <>arguments<>104 := allocArg(1) @ #71
     [5] <>arguments<>104["0"] := <>temp<>103
-    [6] <>fun<>105 := <>Global<>toObject(<>obj<>102["fromCharCode"]) @ #72
+    [6] <>fun<>105 := @ToObject(<>obj<>102["fromCharCode"]) @ #72
     [7] <>this<> := enterCode(<>obj<>102)
 
   Call[70] -> ExitExc
@@ -292,11 +292,11 @@ function[0] top-level {
 
   Block[73] -> [74], ExitExc
     [0] string := <>y<>101 + <>z<>106 + "xx"
-    [1] <>obj<>107 := <>Global<>toObject(string) @ #74
+    [1] <>obj<>107 := @ToObject(string) @ #74
     [2] <>temp<>108 := pattern
     [3] <>arguments<>109 := allocArg(1) @ #75
     [4] <>arguments<>109["0"] := <>temp<>108
-    [5] <>fun<>110 := <>Global<>toObject(<>obj<>107["match"]) @ #76
+    [5] <>fun<>110 := @ToObject(<>obj<>107["match"]) @ #76
     [6] <>this<> := enterCode(<>obj<>107)
 
   Call[74] -> ExitExc
@@ -308,11 +308,11 @@ function[0] top-level {
 
   Block[77] -> [78], ExitExc
     [0] actualmatch := <>Global<>ignore35
-    [1] <>obj<>111 := <>Global<>toObject(Array) @ #78
+    [1] <>obj<>111 := @ToObject(Array) @ #78
     [2] <>temp<>112 := string
     [3] <>arguments<>113 := allocArg(1) @ #79
     [4] <>arguments<>113["0"] := <>temp<>112
-    [5] <>fun<>114 := <>Global<>getBase(Array)
+    [5] <>fun<>114 := @GetBase(Array)
     [6] <>this<> := enterCode(<>fun<>114)
 
   Call[78] -> ExitExc
@@ -324,9 +324,9 @@ function[0] top-level {
 
   Block[81] -> [82], ExitExc
     [0] expectedmatch := <>Global<>ignore36
-    [1] <>obj<>115 := <>Global<>toObject(addThis) @ #81
+    [1] <>obj<>115 := @ToObject(addThis) @ #81
     [2] <>arguments<>116 := allocArg(0) @ #82
-    [3] <>fun<>117 := <>Global<>getBase(addThis)
+    [3] <>fun<>117 := @GetBase(addThis)
     [4] <>this<> := enterCode(<>fun<>117)
 
   Call[82] -> ExitExc
@@ -337,11 +337,11 @@ function[0] top-level {
   AfterCatch[84] -> ExitExc
 
   Block[85] -> [86], ExitExc
-    [0] <>obj<>118 := <>Global<>toObject(inSection) @ #84
+    [0] <>obj<>118 := @ToObject(inSection) @ #84
     [1] <>temp<>119 := 3
     [2] <>arguments<>120 := allocArg(1) @ #85
     [3] <>arguments<>120["0"] := <>temp<>119
-    [4] <>fun<>121 := <>Global<>getBase(inSection)
+    [4] <>fun<>121 := @GetBase(inSection)
     [5] <>this<> := enterCode(<>fun<>121)
 
   Call[86] -> ExitExc
@@ -353,7 +353,7 @@ function[0] top-level {
 
   Block[89] -> [90], ExitExc
     [0] status := <>Global<>ignore38
-    [1] <>fun<>122 := <>Global<>toObject(RegExp) @ #87
+    [1] <>fun<>122 := @ToObject(RegExp) @ #87
     [2] <>temp<>123 := ".\0xx"
     [3] <>temp<>124 := ""
     [4] <>arguments<>125 := allocArg(2) @ #88
@@ -370,7 +370,7 @@ function[0] top-level {
   AfterCatch[92] -> ExitExc
 
   Block[93] -> [95], [94]
-    [0] <>cond<>129 := <>Global<>isObject(<>newObj<>128)
+    [0] <>cond<>129 := @isObject(<>newObj<>128)
 
   Block[94] -> [96], ExitExc
     [0] assert(<>cond<>129)
@@ -383,11 +383,11 @@ function[0] top-level {
   Block[96] -> [97], ExitExc
     [0] pattern := <>Global<>ignore39
     [1] string := "a0xx"
-    [2] <>obj<>130 := <>Global<>toObject(string) @ #91
+    [2] <>obj<>130 := @ToObject(string) @ #91
     [3] <>temp<>131 := pattern
     [4] <>arguments<>132 := allocArg(1) @ #92
     [5] <>arguments<>132["0"] := <>temp<>131
-    [6] <>fun<>133 := <>Global<>toObject(<>obj<>130["match"]) @ #93
+    [6] <>fun<>133 := @ToObject(<>obj<>130["match"]) @ #93
     [7] <>this<> := enterCode(<>obj<>130)
 
   Call[97] -> ExitExc
@@ -399,11 +399,11 @@ function[0] top-level {
 
   Block[100] -> [101], ExitExc
     [0] actualmatch := <>Global<>ignore41
-    [1] <>obj<>134 := <>Global<>toObject(Array) @ #95
+    [1] <>obj<>134 := @ToObject(Array) @ #95
     [2] <>temp<>135 := string
     [3] <>arguments<>136 := allocArg(1) @ #96
     [4] <>arguments<>136["0"] := <>temp<>135
-    [5] <>fun<>137 := <>Global<>getBase(Array)
+    [5] <>fun<>137 := @GetBase(Array)
     [6] <>this<> := enterCode(<>fun<>137)
 
   Call[101] -> ExitExc
@@ -415,9 +415,9 @@ function[0] top-level {
 
   Block[104] -> [105], ExitExc
     [0] expectedmatch := <>Global<>ignore42
-    [1] <>obj<>138 := <>Global<>toObject(addThis) @ #98
+    [1] <>obj<>138 := @ToObject(addThis) @ #98
     [2] <>arguments<>139 := allocArg(0) @ #99
-    [3] <>fun<>140 := <>Global<>getBase(addThis)
+    [3] <>fun<>140 := @GetBase(addThis)
     [4] <>this<> := enterCode(<>fun<>140)
 
   Call[105] -> ExitExc
@@ -428,11 +428,11 @@ function[0] top-level {
   AfterCatch[107] -> ExitExc
 
   Block[108] -> [109], ExitExc
-    [0] <>obj<>141 := <>Global<>toObject(inSection) @ #101
+    [0] <>obj<>141 := @ToObject(inSection) @ #101
     [1] <>temp<>142 := 4
     [2] <>arguments<>143 := allocArg(1) @ #102
     [3] <>arguments<>143["0"] := <>temp<>142
-    [4] <>fun<>144 := <>Global<>getBase(inSection)
+    [4] <>fun<>144 := @GetBase(inSection)
     [5] <>this<> := enterCode(<>fun<>144)
 
   Call[109] -> ExitExc
@@ -444,7 +444,7 @@ function[0] top-level {
 
   Block[112] -> [113], ExitExc
     [0] status := <>Global<>ignore44
-    [1] <>fun<>145 := <>Global<>toObject(RegExp) @ #104
+    [1] <>fun<>145 := @ToObject(RegExp) @ #104
     [2] <>temp<>146 := ".\011"
     [3] <>temp<>147 := ""
     [4] <>arguments<>148 := allocArg(2) @ #105
@@ -461,7 +461,7 @@ function[0] top-level {
   AfterCatch[115] -> ExitExc
 
   Block[116] -> [118], [117]
-    [0] <>cond<>152 := <>Global<>isObject(<>newObj<>151)
+    [0] <>cond<>152 := @isObject(<>newObj<>151)
 
   Block[117] -> [119], ExitExc
     [0] assert(<>cond<>152)
@@ -474,11 +474,11 @@ function[0] top-level {
   Block[119] -> [120], ExitExc
     [0] pattern := <>Global<>ignore45
     [1] string := "a011"
-    [2] <>obj<>153 := <>Global<>toObject(string) @ #108
+    [2] <>obj<>153 := @ToObject(string) @ #108
     [3] <>temp<>154 := pattern
     [4] <>arguments<>155 := allocArg(1) @ #109
     [5] <>arguments<>155["0"] := <>temp<>154
-    [6] <>fun<>156 := <>Global<>toObject(<>obj<>153["match"]) @ #110
+    [6] <>fun<>156 := @ToObject(<>obj<>153["match"]) @ #110
     [7] <>this<> := enterCode(<>obj<>153)
 
   Call[120] -> ExitExc
@@ -490,11 +490,11 @@ function[0] top-level {
 
   Block[123] -> [124], ExitExc
     [0] actualmatch := <>Global<>ignore47
-    [1] <>obj<>157 := <>Global<>toObject(Array) @ #112
+    [1] <>obj<>157 := @ToObject(Array) @ #112
     [2] <>temp<>158 := string
     [3] <>arguments<>159 := allocArg(1) @ #113
     [4] <>arguments<>159["0"] := <>temp<>158
-    [5] <>fun<>160 := <>Global<>getBase(Array)
+    [5] <>fun<>160 := @GetBase(Array)
     [6] <>this<> := enterCode(<>fun<>160)
 
   Call[124] -> ExitExc
@@ -506,9 +506,9 @@ function[0] top-level {
 
   Block[127] -> [128], ExitExc
     [0] expectedmatch := <>Global<>ignore48
-    [1] <>obj<>161 := <>Global<>toObject(addThis) @ #115
+    [1] <>obj<>161 := @ToObject(addThis) @ #115
     [2] <>arguments<>162 := allocArg(0) @ #116
-    [3] <>fun<>163 := <>Global<>getBase(addThis)
+    [3] <>fun<>163 := @GetBase(addThis)
     [4] <>this<> := enterCode(<>fun<>163)
 
   Call[128] -> ExitExc
@@ -519,11 +519,11 @@ function[0] top-level {
   AfterCatch[130] -> ExitExc
 
   Block[131] -> [132], ExitExc
-    [0] <>obj<>164 := <>Global<>toObject(inSection) @ #118
+    [0] <>obj<>164 := @ToObject(inSection) @ #118
     [1] <>temp<>165 := 5
     [2] <>arguments<>166 := allocArg(1) @ #119
     [3] <>arguments<>166["0"] := <>temp<>165
-    [4] <>fun<>167 := <>Global<>getBase(inSection)
+    [4] <>fun<>167 := @GetBase(inSection)
     [5] <>this<> := enterCode(<>fun<>167)
 
   Call[132] -> ExitExc
@@ -535,7 +535,7 @@ function[0] top-level {
 
   Block[135] -> [136], ExitExc
     [0] status := <>Global<>ignore50
-    [1] <>fun<>168 := <>Global<>toObject(RegExp) @ #121
+    [1] <>fun<>168 := @ToObject(RegExp) @ #121
     [2] <>temp<>169 := ".\011"
     [3] <>temp<>170 := ""
     [4] <>arguments<>171 := allocArg(2) @ #122
@@ -552,7 +552,7 @@ function[0] top-level {
   AfterCatch[138] -> ExitExc
 
   Block[139] -> [141], [140]
-    [0] <>cond<>175 := <>Global<>isObject(<>newObj<>174)
+    [0] <>cond<>175 := @isObject(<>newObj<>174)
 
   Block[140] -> [142], ExitExc
     [0] assert(<>cond<>175)
@@ -565,11 +565,11 @@ function[0] top-level {
   Block[142] -> [143], ExitExc
     [0] pattern := <>Global<>ignore51
     [1] string := "a\t"
-    [2] <>obj<>176 := <>Global<>toObject(string) @ #125
+    [2] <>obj<>176 := @ToObject(string) @ #125
     [3] <>temp<>177 := pattern
     [4] <>arguments<>178 := allocArg(1) @ #126
     [5] <>arguments<>178["0"] := <>temp<>177
-    [6] <>fun<>179 := <>Global<>toObject(<>obj<>176["match"]) @ #127
+    [6] <>fun<>179 := @ToObject(<>obj<>176["match"]) @ #127
     [7] <>this<> := enterCode(<>obj<>176)
 
   Call[143] -> ExitExc
@@ -581,11 +581,11 @@ function[0] top-level {
 
   Block[146] -> [147], ExitExc
     [0] actualmatch := <>Global<>ignore53
-    [1] <>obj<>180 := <>Global<>toObject(Array) @ #129
+    [1] <>obj<>180 := @ToObject(Array) @ #129
     [2] <>temp<>181 := string
     [3] <>arguments<>182 := allocArg(1) @ #130
     [4] <>arguments<>182["0"] := <>temp<>181
-    [5] <>fun<>183 := <>Global<>getBase(Array)
+    [5] <>fun<>183 := @GetBase(Array)
     [6] <>this<> := enterCode(<>fun<>183)
 
   Call[147] -> ExitExc
@@ -597,9 +597,9 @@ function[0] top-level {
 
   Block[150] -> [151], ExitExc
     [0] expectedmatch := <>Global<>ignore54
-    [1] <>obj<>184 := <>Global<>toObject(addThis) @ #132
+    [1] <>obj<>184 := @ToObject(addThis) @ #132
     [2] <>arguments<>185 := allocArg(0) @ #133
-    [3] <>fun<>186 := <>Global<>getBase(addThis)
+    [3] <>fun<>186 := @GetBase(addThis)
     [4] <>this<> := enterCode(<>fun<>186)
 
   Call[151] -> ExitExc
@@ -610,11 +610,11 @@ function[0] top-level {
   AfterCatch[153] -> ExitExc
 
   Block[154] -> [155], ExitExc
-    [0] <>obj<>187 := <>Global<>toObject(inSection) @ #135
+    [0] <>obj<>187 := @ToObject(inSection) @ #135
     [1] <>temp<>188 := 6
     [2] <>arguments<>189 := allocArg(1) @ #136
     [3] <>arguments<>189["0"] := <>temp<>188
-    [4] <>fun<>190 := <>Global<>getBase(inSection)
+    [4] <>fun<>190 := @GetBase(inSection)
     [5] <>this<> := enterCode(<>fun<>190)
 
   Call[155] -> ExitExc
@@ -626,7 +626,7 @@ function[0] top-level {
 
   Block[158] -> [159], ExitExc
     [0] status := <>Global<>ignore56
-    [1] <>fun<>191 := <>Global<>toObject(RegExp) @ #138
+    [1] <>fun<>191 := @ToObject(RegExp) @ #138
     [2] <>temp<>192 := ".\011"
     [3] <>temp<>193 := ""
     [4] <>arguments<>194 := allocArg(2) @ #139
@@ -643,7 +643,7 @@ function[0] top-level {
   AfterCatch[161] -> ExitExc
 
   Block[162] -> [164], [163]
-    [0] <>cond<>198 := <>Global<>isObject(<>newObj<>197)
+    [0] <>cond<>198 := @isObject(<>newObj<>197)
 
   Block[163] -> [165], ExitExc
     [0] assert(<>cond<>198)
@@ -656,11 +656,11 @@ function[0] top-level {
   Block[165] -> [166], ExitExc
     [0] pattern := <>Global<>ignore57
     [1] string := "a\t"
-    [2] <>obj<>199 := <>Global<>toObject(string) @ #142
+    [2] <>obj<>199 := @ToObject(string) @ #142
     [3] <>temp<>200 := pattern
     [4] <>arguments<>201 := allocArg(1) @ #143
     [5] <>arguments<>201["0"] := <>temp<>200
-    [6] <>fun<>202 := <>Global<>toObject(<>obj<>199["match"]) @ #144
+    [6] <>fun<>202 := @ToObject(<>obj<>199["match"]) @ #144
     [7] <>this<> := enterCode(<>obj<>199)
 
   Call[166] -> ExitExc
@@ -672,11 +672,11 @@ function[0] top-level {
 
   Block[169] -> [170], ExitExc
     [0] actualmatch := <>Global<>ignore59
-    [1] <>obj<>203 := <>Global<>toObject(Array) @ #146
+    [1] <>obj<>203 := @ToObject(Array) @ #146
     [2] <>temp<>204 := string
     [3] <>arguments<>205 := allocArg(1) @ #147
     [4] <>arguments<>205["0"] := <>temp<>204
-    [5] <>fun<>206 := <>Global<>getBase(Array)
+    [5] <>fun<>206 := @GetBase(Array)
     [6] <>this<> := enterCode(<>fun<>206)
 
   Call[170] -> ExitExc
@@ -688,9 +688,9 @@ function[0] top-level {
 
   Block[173] -> [174], ExitExc
     [0] expectedmatch := <>Global<>ignore60
-    [1] <>obj<>207 := <>Global<>toObject(addThis) @ #149
+    [1] <>obj<>207 := @ToObject(addThis) @ #149
     [2] <>arguments<>208 := allocArg(0) @ #150
-    [3] <>fun<>209 := <>Global<>getBase(addThis)
+    [3] <>fun<>209 := @GetBase(addThis)
     [4] <>this<> := enterCode(<>fun<>209)
 
   Call[174] -> ExitExc
@@ -701,11 +701,11 @@ function[0] top-level {
   AfterCatch[176] -> ExitExc
 
   Block[177] -> [178], ExitExc
-    [0] <>obj<>210 := <>Global<>toObject(inSection) @ #152
+    [0] <>obj<>210 := @ToObject(inSection) @ #152
     [1] <>temp<>211 := 7
     [2] <>arguments<>212 := allocArg(1) @ #153
     [3] <>arguments<>212["0"] := <>temp<>211
-    [4] <>fun<>213 := <>Global<>getBase(inSection)
+    [4] <>fun<>213 := @GetBase(inSection)
     [5] <>this<> := enterCode(<>fun<>213)
 
   Call[178] -> ExitExc
@@ -717,7 +717,7 @@ function[0] top-level {
 
   Block[181] -> [182], ExitExc
     [0] status := <>Global<>ignore62
-    [1] <>fun<>214 := <>Global<>toObject(RegExp) @ #155
+    [1] <>fun<>214 := @ToObject(RegExp) @ #155
     [2] <>temp<>215 := ".\011"
     [3] <>temp<>216 := ""
     [4] <>arguments<>217 := allocArg(2) @ #156
@@ -734,7 +734,7 @@ function[0] top-level {
   AfterCatch[184] -> ExitExc
 
   Block[185] -> [187], [186]
-    [0] <>cond<>221 := <>Global<>isObject(<>newObj<>220)
+    [0] <>cond<>221 := @isObject(<>newObj<>220)
 
   Block[186] -> [188], ExitExc
     [0] assert(<>cond<>221)
@@ -747,11 +747,11 @@ function[0] top-level {
   Block[188] -> [189], ExitExc
     [0] pattern := <>Global<>ignore63
     [1] string := "a\t"
-    [2] <>obj<>222 := <>Global<>toObject(string) @ #159
+    [2] <>obj<>222 := @ToObject(string) @ #159
     [3] <>temp<>223 := pattern
     [4] <>arguments<>224 := allocArg(1) @ #160
     [5] <>arguments<>224["0"] := <>temp<>223
-    [6] <>fun<>225 := <>Global<>toObject(<>obj<>222["match"]) @ #161
+    [6] <>fun<>225 := @ToObject(<>obj<>222["match"]) @ #161
     [7] <>this<> := enterCode(<>obj<>222)
 
   Call[189] -> ExitExc
@@ -763,11 +763,11 @@ function[0] top-level {
 
   Block[192] -> [193], ExitExc
     [0] actualmatch := <>Global<>ignore65
-    [1] <>obj<>226 := <>Global<>toObject(Array) @ #163
+    [1] <>obj<>226 := @ToObject(Array) @ #163
     [2] <>temp<>227 := string
     [3] <>arguments<>228 := allocArg(1) @ #164
     [4] <>arguments<>228["0"] := <>temp<>227
-    [5] <>fun<>229 := <>Global<>getBase(Array)
+    [5] <>fun<>229 := @GetBase(Array)
     [6] <>this<> := enterCode(<>fun<>229)
 
   Call[193] -> ExitExc
@@ -779,9 +779,9 @@ function[0] top-level {
 
   Block[196] -> [197], ExitExc
     [0] expectedmatch := <>Global<>ignore66
-    [1] <>obj<>230 := <>Global<>toObject(addThis) @ #166
+    [1] <>obj<>230 := @ToObject(addThis) @ #166
     [2] <>arguments<>231 := allocArg(0) @ #167
-    [3] <>fun<>232 := <>Global<>getBase(addThis)
+    [3] <>fun<>232 := @GetBase(addThis)
     [4] <>this<> := enterCode(<>fun<>232)
 
   Call[197] -> ExitExc
@@ -792,11 +792,11 @@ function[0] top-level {
   AfterCatch[199] -> ExitExc
 
   Block[200] -> [201], ExitExc
-    [0] <>obj<>233 := <>Global<>toObject(inSection) @ #169
+    [0] <>obj<>233 := @ToObject(inSection) @ #169
     [1] <>temp<>234 := 8
     [2] <>arguments<>235 := allocArg(1) @ #170
     [3] <>arguments<>235["0"] := <>temp<>234
-    [4] <>fun<>236 := <>Global<>getBase(inSection)
+    [4] <>fun<>236 := @GetBase(inSection)
     [5] <>this<> := enterCode(<>fun<>236)
 
   Call[201] -> ExitExc
@@ -809,11 +809,11 @@ function[0] top-level {
   Block[204] -> [205], ExitExc
     [0] status := <>Global<>ignore68
     [1] <>y<>237 := "a"
-    [2] <>obj<>238 := <>Global<>toObject(String) @ #172
+    [2] <>obj<>238 := @ToObject(String) @ #172
     [3] <>temp<>239 := 0
     [4] <>arguments<>240 := allocArg(1) @ #173
     [5] <>arguments<>240["0"] := <>temp<>239
-    [6] <>fun<>241 := <>Global<>toObject(<>obj<>238["fromCharCode"]) @ #174
+    [6] <>fun<>241 := @ToObject(<>obj<>238["fromCharCode"]) @ #174
     [7] <>this<> := enterCode(<>obj<>238)
 
   Call[205] -> ExitExc
@@ -825,11 +825,11 @@ function[0] top-level {
 
   Block[208] -> [209], ExitExc
     [0] string := <>y<>237 + <>z<>242 + "11"
-    [1] <>obj<>243 := <>Global<>toObject(RegExp) @ #176
+    [1] <>obj<>243 := @ToObject(RegExp) @ #176
     [2] <>temp<>244 := string
     [3] <>arguments<>245 := allocArg(1) @ #177
     [4] <>arguments<>245["0"] := <>temp<>244
-    [5] <>fun<>246 := <>Global<>getBase(RegExp)
+    [5] <>fun<>246 := @GetBase(RegExp)
     [6] <>this<> := enterCode(<>fun<>246)
 
   Call[209] -> ExitExc
@@ -841,11 +841,11 @@ function[0] top-level {
 
   Block[212] -> [213], ExitExc
     [0] pattern := <>Global<>ignore70
-    [1] <>obj<>247 := <>Global<>toObject(string) @ #179
+    [1] <>obj<>247 := @ToObject(string) @ #179
     [2] <>temp<>248 := pattern
     [3] <>arguments<>249 := allocArg(1) @ #180
     [4] <>arguments<>249["0"] := <>temp<>248
-    [5] <>fun<>250 := <>Global<>toObject(<>obj<>247["match"]) @ #181
+    [5] <>fun<>250 := @ToObject(<>obj<>247["match"]) @ #181
     [6] <>this<> := enterCode(<>obj<>247)
 
   Call[213] -> ExitExc
@@ -857,11 +857,11 @@ function[0] top-level {
 
   Block[216] -> [217], ExitExc
     [0] actualmatch := <>Global<>ignore71
-    [1] <>obj<>251 := <>Global<>toObject(Array) @ #183
+    [1] <>obj<>251 := @ToObject(Array) @ #183
     [2] <>temp<>252 := string
     [3] <>arguments<>253 := allocArg(1) @ #184
     [4] <>arguments<>253["0"] := <>temp<>252
-    [5] <>fun<>254 := <>Global<>getBase(Array)
+    [5] <>fun<>254 := @GetBase(Array)
     [6] <>this<> := enterCode(<>fun<>254)
 
   Call[217] -> ExitExc
@@ -873,9 +873,9 @@ function[0] top-level {
 
   Block[220] -> [221], ExitExc
     [0] expectedmatch := <>Global<>ignore72
-    [1] <>obj<>255 := <>Global<>toObject(addThis) @ #186
+    [1] <>obj<>255 := @ToObject(addThis) @ #186
     [2] <>arguments<>256 := allocArg(0) @ #187
-    [3] <>fun<>257 := <>Global<>getBase(addThis)
+    [3] <>fun<>257 := @GetBase(addThis)
     [4] <>this<> := enterCode(<>fun<>257)
 
   Call[221] -> ExitExc
@@ -886,9 +886,9 @@ function[0] top-level {
   AfterCatch[223] -> ExitExc
 
   Block[224] -> [225], ExitExc
-    [0] <>obj<>258 := <>Global<>toObject(test) @ #189
+    [0] <>obj<>258 := @ToObject(test) @ #189
     [1] <>arguments<>259 := allocArg(0) @ #190
-    [2] <>fun<>260 := <>Global<>getBase(test)
+    [2] <>fun<>260 := @GetBase(test)
     [3] <>this<> := enterCode(<>fun<>260)
 
   Call[225] -> ExitExc
@@ -911,18 +911,18 @@ function[1] addThis {
   Entry[-1] -> [0]
 
   Block[0] -> Exit, ExitExc
-    [0] <>obj<>2 := <>Global<>toObject(statusmessages) @ #1
+    [0] <>obj<>2 := @ToObject(statusmessages) @ #1
     [1] <>obj<>2[i] := status
-    [2] <>obj<>3 := <>Global<>toObject(patterns) @ #2
+    [2] <>obj<>3 := @ToObject(patterns) @ #2
     [3] <>obj<>3[i] := pattern
-    [4] <>obj<>4 := <>Global<>toObject(strings) @ #3
+    [4] <>obj<>4 := @ToObject(strings) @ #3
     [5] <>obj<>4[i] := string
-    [6] <>obj<>5 := <>Global<>toObject(actualmatches) @ #4
+    [6] <>obj<>5 := @ToObject(actualmatches) @ #4
     [7] <>obj<>5[i] := actualmatch
-    [8] <>obj<>6 := <>Global<>toObject(expectedmatches) @ #5
+    [8] <>obj<>6 := @ToObject(expectedmatches) @ #5
     [9] <>obj<>6[i] := expectedmatch
     [10] <>old<>7 := i
-    [11] <>new<>8 := <>Global<>toNumber(<>old<>7)
+    [11] <>new<>8 := @ToNumber(<>old<>7)
     [12] i := <>new<>8 + 1
     [13] <>Global<>ignore7 := <>new<>8
 
@@ -936,11 +936,11 @@ function[2] test {
   Entry[-1] -> [0]
 
   Block[0] -> [1], ExitExc
-    [0] <>obj<>10 := <>Global<>toObject(enterFunc) @ #8
+    [0] <>obj<>10 := @ToObject(enterFunc) @ #8
     [1] <>temp<>11 := "test"
     [2] <>arguments<>12 := allocArg(1) @ #9
     [3] <>arguments<>12["0"] := <>temp<>11
-    [4] <>fun<>13 := <>Global<>getBase(enterFunc)
+    [4] <>fun<>13 := @GetBase(enterFunc)
     [5] <>this<> := enterCode(<>fun<>13)
 
   Call[1] -> ExitExc
@@ -951,11 +951,11 @@ function[2] test {
   AfterCatch[3] -> ExitExc
 
   Block[4] -> [5], ExitExc
-    [0] <>obj<>14 := <>Global<>toObject(printBugNumber) @ #11
+    [0] <>obj<>14 := @ToObject(printBugNumber) @ #11
     [1] <>temp<>15 := bug
     [2] <>arguments<>16 := allocArg(1) @ #12
     [3] <>arguments<>16["0"] := <>temp<>15
-    [4] <>fun<>17 := <>Global<>getBase(printBugNumber)
+    [4] <>fun<>17 := @GetBase(printBugNumber)
     [5] <>this<> := enterCode(<>fun<>17)
 
   Call[5] -> ExitExc
@@ -966,11 +966,11 @@ function[2] test {
   AfterCatch[7] -> ExitExc
 
   Block[8] -> [9], ExitExc
-    [0] <>obj<>18 := <>Global<>toObject(printStatus) @ #14
+    [0] <>obj<>18 := @ToObject(printStatus) @ #14
     [1] <>temp<>19 := summary
     [2] <>arguments<>20 := allocArg(1) @ #15
     [3] <>arguments<>20["0"] := <>temp<>19
-    [4] <>fun<>21 := <>Global<>getBase(printStatus)
+    [4] <>fun<>21 := @GetBase(printStatus)
     [5] <>this<> := enterCode(<>fun<>21)
 
   Call[9] -> ExitExc
@@ -981,7 +981,7 @@ function[2] test {
   AfterCatch[11] -> ExitExc
 
   Block[12] -> [13], ExitExc
-    [0] <>obj<>22 := <>Global<>toObject(testRegExp) @ #17
+    [0] <>obj<>22 := @ToObject(testRegExp) @ #17
     [1] <>temp<>23 := statusmessages
     [2] <>temp<>24 := patterns
     [3] <>temp<>25 := strings
@@ -993,7 +993,7 @@ function[2] test {
     [9] <>arguments<>28["2"] := <>temp<>25
     [10] <>arguments<>28["3"] := <>temp<>26
     [11] <>arguments<>28["4"] := <>temp<>27
-    [12] <>fun<>29 := <>Global<>getBase(testRegExp)
+    [12] <>fun<>29 := @GetBase(testRegExp)
     [13] <>this<> := enterCode(<>fun<>29)
 
   Call[13] -> ExitExc
@@ -1004,11 +1004,11 @@ function[2] test {
   AfterCatch[15] -> ExitExc
 
   Block[16] -> [17], ExitExc
-    [0] <>obj<>30 := <>Global<>toObject(exitFunc) @ #20
+    [0] <>obj<>30 := @ToObject(exitFunc) @ #20
     [1] <>temp<>31 := "test"
     [2] <>arguments<>32 := allocArg(1) @ #21
     [3] <>arguments<>32["0"] := <>temp<>31
-    [4] <>fun<>33 := <>Global<>getBase(exitFunc)
+    [4] <>fun<>33 := @GetBase(exitFunc)
     [5] <>this<> := enterCode(<>fun<>33)
 
   Call[17] -> ExitExc

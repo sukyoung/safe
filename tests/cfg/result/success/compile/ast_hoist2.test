@@ -28,18 +28,18 @@ z = 4
 <>break<>6 : {
   {
     <>obj<>7 = y
-    <>iterator<>8 = <>Global<>iteratorInit(<>obj<>7)
-    <>cond1<>9 = <>Global<>iteratorHasNext(<>obj<>7, <>iterator<>8)
+    <>iterator<>8 = @iteratorInit(<>obj<>7)
+    <>cond1<>9 = @iteratorHasNext(<>obj<>7, <>iterator<>8)
   }
   while(<>cond1<>9)
   {
-    <>key<>10 = <>Global<>iteratorNext(<>obj<>7, <>iterator<>8)
+    <>key<>10 = @iteratorNext(<>obj<>7, <>iterator<>8)
     v = <>key<>10
     <>continue<>11 : {
       
     }
     {
-      <>cond1<>9 = <>Global<>iteratorHasNext(<>obj<>7, <>iterator<>8)
+      <>cond1<>9 = @iteratorHasNext(<>obj<>7, <>iterator<>8)
     }
   }
 }

@@ -34,9 +34,9 @@ function[0] top-level {
 
   Block[9] -> [10], ExitExc
     [0] b := <>Global<>ignore2
-    [1] <>obj<>1 := <>Global<>toObject(a) @ #1
+    [1] <>obj<>1 := @ToObject(a) @ #1
     [2] <>arguments<>2 := allocArg(0) @ #2
-    [3] <>fun<>3 := <>Global<>getBase(a)
+    [3] <>fun<>3 := @GetBase(a)
     [4] <>this<> := enterCode(<>fun<>3)
 
   Call[10] -> ExitExc
@@ -48,7 +48,7 @@ function[0] top-level {
 
   Block[13] -> Exit, ExitExc
     [0] a := <>y<>4 | b
-    [1] <>obj<>5 := <>Global<>toObject(a) @ #4
+    [1] <>obj<>5 := @ToObject(a) @ #4
     [2] a := <>obj<>5["b"] + b
     [3] noop(EndOfFile)
 

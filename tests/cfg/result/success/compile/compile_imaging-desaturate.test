@@ -19,14 +19,14 @@ var pixcounter
   }
 }
 {
-  <>fun<>1 = <>Global<>toObject(Date)
+  <>fun<>1 = @ToObject(Date)
   <>arguments<>2 = []
   <>proto<>3 = <>fun<>1["prototype"]
   <>obj<>4 = {
     [[Prototype]]=<>proto<>3
   }
   <>newObj<>5 = new <>fun<>1(<>obj<>4, <>arguments<>2)
-  <>cond<>6 = <>Global<>isObject(<>newObj<>5)
+  <>cond<>6 = @isObject(<>newObj<>5)
   if(<>cond<>6)
     <>Global<>ignore4 = <>newObj<>5
   else
@@ -40,15 +40,15 @@ var pixcounter
   Pixastic = <>Global<>ignore5
 }
 {
-  <>obj<>7 = <>Global<>toObject(Pixastic)
+  <>obj<>7 = @ToObject(Pixastic)
   <>Global<>ignore6 = {
     
   }
   <>obj<>7["Actions"] = <>Global<>ignore6
 }
 {
-  <>obj<>8 = <>Global<>toObject(Pixastic)
-  <>obj<>9 = <>Global<>toObject(<>obj<>8["Actions"])
+  <>obj<>8 = @ToObject(Pixastic)
+  <>obj<>9 = @ToObject(<>obj<>8["Actions"])
   <>temp<>10 = function <>funexpr@24:15-42:6<>11(this, <>arguments<>12) 
   {
     var <>params<>13
@@ -64,12 +64,12 @@ var pixcounter
     <>params<>13 = <>arguments<>12["0"]
     {
       {
-        <>obj<>23 = <>Global<>toObject(<>params<>13)
-        <>obj<>24 = <>Global<>toObject(<>obj<>23["options"])
+        <>obj<>23 = @ToObject(<>params<>13)
+        <>obj<>24 = @ToObject(<>obj<>23["options"])
         if(<>obj<>24["average"])
         {
-          <>obj<>25 = <>Global<>toObject(<>params<>13)
-          <>obj<>26 = <>Global<>toObject(<>obj<>25["options"])
+          <>obj<>25 = @ToObject(<>params<>13)
+          <>obj<>26 = @ToObject(<>obj<>25["options"])
           <>y<>27 = <>obj<>26["average"] != "false"
         }
         else
@@ -81,20 +81,20 @@ var pixcounter
       <>useAverage<>14 = ! ! <>y<>27
     }
     {
-      <>obj<>28 = <>Global<>toObject(<>params<>13)
+      <>obj<>28 = @ToObject(<>params<>13)
       <>data<>15 = <>obj<>28["data"]
     }
     {
-      <>obj<>29 = <>Global<>toObject(<>params<>13)
-      <>obj<>30 = <>Global<>toObject(<>obj<>29["options"])
+      <>obj<>29 = @ToObject(<>params<>13)
+      <>obj<>30 = @ToObject(<>obj<>29["options"])
       <>rect<>16 = <>obj<>30["rect"]
     }
     {
-      <>obj<>31 = <>Global<>toObject(<>rect<>16)
+      <>obj<>31 = @ToObject(<>rect<>16)
       <>w<>17 = <>obj<>31["width"]
     }
     {
-      <>obj<>32 = <>Global<>toObject(<>rect<>16)
+      <>obj<>32 = @ToObject(<>rect<>16)
       <>h<>18 = <>obj<>32["height"]
     }
     {
@@ -107,31 +107,31 @@ var pixcounter
       <>break<>33 : {
         {
           <>old<>34 = <>p<>19
-          <>new<>35 = <>Global<>toNumber(<>old<>34)
+          <>new<>35 = @ToNumber(<>old<>34)
           <>p<>19 = <>new<>35 - 1
         }
         while(<>new<>35)
         {
           <>continue<>36 : {
-            <>obj<>37 = <>Global<>toObject(<>data<>15)
+            <>obj<>37 = @ToObject(<>data<>15)
             <>old<>38 = <>pix<>20
             <>pix<>20 = <>old<>38 - 4
-            <>obj<>39 = <>Global<>toObject(<>data<>15)
+            <>obj<>39 = @ToObject(<>data<>15)
             <>pix1<>21 = <>pix<>20 + 1
-            <>obj<>40 = <>Global<>toObject(<>data<>15)
+            <>obj<>40 = @ToObject(<>data<>15)
             <>pix2<>22 = <>pix<>20 + 2
-            <>obj<>41 = <>Global<>toObject(<>data<>15)
+            <>obj<>41 = @ToObject(<>data<>15)
             <>y<>42 = <>obj<>41[<>pix<>20]
-            <>obj<>43 = <>Global<>toObject(<>data<>15)
+            <>obj<>43 = @ToObject(<>data<>15)
             <>y<>44 = <>y<>42 + <>obj<>43[<>pix1<>21]
-            <>obj<>45 = <>Global<>toObject(<>data<>15)
+            <>obj<>45 = @ToObject(<>data<>15)
             <>obj<>40[<>pix<>20 + 2] = <>y<>44 + <>obj<>45[<>pix2<>22] / 3
             <>obj<>39[<>pix<>20 + 1] = <>obj<>40[<>pix<>20 + 2]
             <>obj<>37[<>old<>38 - 4] = <>obj<>39[<>pix<>20 + 1]
           }
           {
             <>old<>34 = <>p<>19
-            <>new<>35 = <>Global<>toNumber(<>old<>34)
+            <>new<>35 = @ToNumber(<>old<>34)
             <>p<>19 = <>new<>35 - 1
           }
         }
@@ -140,31 +140,31 @@ var pixcounter
       <>break<>46 : {
         {
           <>old<>47 = <>p<>19
-          <>new<>48 = <>Global<>toNumber(<>old<>47)
+          <>new<>48 = @ToNumber(<>old<>47)
           <>p<>19 = <>new<>48 - 1
         }
         while(<>new<>48)
         {
           <>continue<>49 : {
-            <>obj<>50 = <>Global<>toObject(<>data<>15)
+            <>obj<>50 = @ToObject(<>data<>15)
             <>old<>51 = <>pix<>20
             <>pix<>20 = <>old<>51 - 4
-            <>obj<>52 = <>Global<>toObject(<>data<>15)
+            <>obj<>52 = @ToObject(<>data<>15)
             <>pix1<>21 = <>pix<>20 + 1
-            <>obj<>53 = <>Global<>toObject(<>data<>15)
+            <>obj<>53 = @ToObject(<>data<>15)
             <>pix2<>22 = <>pix<>20 + 2
-            <>obj<>54 = <>Global<>toObject(<>data<>15)
+            <>obj<>54 = @ToObject(<>data<>15)
             <>y<>55 = <>obj<>54[<>pix<>20] * 0.3
-            <>obj<>56 = <>Global<>toObject(<>data<>15)
+            <>obj<>56 = @ToObject(<>data<>15)
             <>y<>57 = <>y<>55 + <>obj<>56[<>pix1<>21] * 0.59
-            <>obj<>58 = <>Global<>toObject(<>data<>15)
+            <>obj<>58 = @ToObject(<>data<>15)
             <>obj<>53[<>pix<>20 + 2] = <>y<>57 + <>obj<>58[<>pix2<>22] * 0.11
             <>obj<>52[<>pix<>20 + 1] = <>obj<>53[<>pix<>20 + 2]
             <>obj<>50[<>old<>51 - 4] = <>obj<>52[<>pix<>20 + 1]
           }
           {
             <>old<>47 = <>p<>19
-            <>new<>48 = <>Global<>toNumber(<>old<>47)
+            <>new<>48 = @ToNumber(<>old<>47)
             <>p<>19 = <>new<>48 - 1
           }
         }
@@ -198,17 +198,17 @@ var pixcounter
     while(pixcounter < 200)
     {
       <>continue<>62 : {
-        <>obj<>63 = <>Global<>toObject(Pixastic)
-        <>obj<>64 = <>Global<>toObject(<>obj<>63["Actions"])
-        <>obj<>65 = <>Global<>toObject(<>obj<>64["desaturate"])
+        <>obj<>63 = @ToObject(Pixastic)
+        <>obj<>64 = @ToObject(<>obj<>63["Actions"])
+        <>obj<>65 = @ToObject(<>obj<>64["desaturate"])
         <>temp<>66 = params
         <>arguments<>67 = [<>temp<>66, ]
-        <>fun<>68 = <>Global<>toObject(<>obj<>65["process"])
+        <>fun<>68 = @ToObject(<>obj<>65["process"])
         <>Global<>ignore21 = <>fun<>68(<>obj<>65, <>arguments<>67)
       }
       {
         <>old<>69 = pixcounter
-        <>new<>70 = <>Global<>toNumber(<>old<>69)
+        <>new<>70 = @ToNumber(<>old<>69)
         pixcounter = <>new<>70 + 1
         <>Global<>ignore20 = <>new<>70
       }

@@ -14,7 +14,7 @@ function f(this, <>arguments<>1)
   <>a<>5 = <>arguments<>1["0"]
   <>b<>6 = <>arguments<>1["1"]
   {
-    <>obj<>8 = <>Global<>toObject(<>a<>5)
+    <>obj<>8 = @ToObject(<>a<>5)
     <>Global<>ignore8 = <>obj<>8[<>b<>6]
   }
 }

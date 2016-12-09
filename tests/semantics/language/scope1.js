@@ -20,7 +20,7 @@ function g() {
 foo = f;
 
 function main() {
-    if (__TOP) foo();
+    if (@Top) foo();
 }
 
 main();

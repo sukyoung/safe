@@ -61,6 +61,13 @@ case class CFGUn(
   override def toString: String = s"$op $expr"
 }
 
+case class CFGInternalValue(
+    override val ir: IRNode,
+    name: String
+) extends CFGExpr(ir) {
+  override def toString: String = s"<>$name<>"
+}
+
 case class CFGVal(
     value: EJSVal
 ) extends CFGExpr(NodeUtil.TEMP_IR) {
@@ -71,4 +78,3 @@ object CFGVal {
   def apply(str: String): CFGVal = CFGVal(EJSString(str))
   def apply(bool: Boolean): CFGVal = CFGVal(EJSBool(bool))
 }
-

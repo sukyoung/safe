@@ -17,7 +17,7 @@ function[0] top-level {
     [2] height := 267
     [3] index := 0
     [4] <>y<>122 := index
-    [5] <>obj<>123 := <>Global<>toObject(paramArray) @ #75
+    [5] <>obj<>123 := @ToObject(paramArray) @ #75
 
   Block[5] -> Exit
     [0] noop(EndOfFile)
@@ -27,18 +27,18 @@ function[0] top-level {
   Block[7] -> [10], ExitExc
     [0] assert(<>y<>122 < <>obj<>123["length"])
     [1] data := squidImageData
-    [2] <>obj<>124 := <>Global<>toObject(ProcessImageData) @ #76
+    [2] <>obj<>124 := @ToObject(ProcessImageData) @ #76
     [3] <>temp<>125 := data
     [4] <>temp<>126 := width
     [5] <>temp<>127 := height
-    [6] <>obj<>128 := <>Global<>toObject(paramArray) @ #77
+    [6] <>obj<>128 := @ToObject(paramArray) @ #77
     [7] <>temp<>129 := <>obj<>128[index]
     [8] <>arguments<>130 := allocArg(4) @ #78
     [9] <>arguments<>130["0"] := <>temp<>125
     [10] <>arguments<>130["1"] := <>temp<>126
     [11] <>arguments<>130["2"] := <>temp<>127
     [12] <>arguments<>130["3"] := <>temp<>129
-    [13] <>fun<>131 := <>Global<>getBase(ProcessImageData)
+    [13] <>fun<>131 := @GetBase(ProcessImageData)
     [14] <>this<> := enterCode(<>fun<>131)
 
   Block[8] -> [5], ExitExc
@@ -46,11 +46,11 @@ function[0] top-level {
 
   Block[9] -> [6], ExitExc
     [0] <>old<>132 := index
-    [1] <>new<>133 := <>Global<>toNumber(<>old<>132)
+    [1] <>new<>133 := @ToNumber(<>old<>132)
     [2] index := <>new<>133 + 1
     [3] <>Global<>ignore57 := <>new<>133
     [4] <>y<>122 := index
-    [5] <>obj<>123 := <>Global<>toObject(paramArray) @ #80
+    [5] <>obj<>123 := @ToObject(paramArray) @ #80
 
   Call[10] -> ExitExc
     [0] call(<>obj<>124, <>this<>, <>arguments<>130) @ #79
@@ -72,11 +72,11 @@ function[1] FastLog2 {
   Entry[-1] -> [0]
 
   Block[0] -> [1], ExitExc
-    [0] <>obj<>3 := <>Global<>toObject(Math) @ #1
+    [0] <>obj<>3 := @ToObject(Math) @ #1
     [1] <>temp<>4 := <>x<>1
     [2] <>arguments<>5 := allocArg(1) @ #2
     [3] <>arguments<>5["0"] := <>temp<>4
-    [4] <>fun<>6 := <>Global<>toObject(<>obj<>3["log"]) @ #3
+    [4] <>fun<>6 := @ToObject(<>obj<>3["log"]) @ #3
     [5] <>this<> := enterCode(<>obj<>3)
 
   Call[1] -> ExitExc
@@ -87,7 +87,7 @@ function[1] FastLog2 {
   AfterCatch[3] -> ExitExc
 
   Block[4] -> Exit, ExitExc
-    [0] <>obj<>8 := <>Global<>toObject(Math) @ #5
+    [0] <>obj<>8 := @ToObject(Math) @ #5
     [1] return(<>y<>7 / <>obj<>8["LN2"])
 
   Exit[-2]
@@ -100,13 +100,13 @@ function[2] FastBias {
   Entry[-1] -> [0]
 
   Block[0] -> [1], ExitExc
-    [0] <>obj<>12 := <>Global<>toObject(Math) @ #8
+    [0] <>obj<>12 := @ToObject(Math) @ #8
     [1] <>temp<>13 := <>x<>10
-    [2] <>obj<>14 := <>Global<>toObject(FastLog2) @ #9
+    [2] <>obj<>14 := @ToObject(FastLog2) @ #9
     [3] <>temp<>15 := <>b<>9
     [4] <>arguments<>16 := allocArg(1) @ #10
     [5] <>arguments<>16["0"] := <>temp<>15
-    [6] <>fun<>17 := <>Global<>getBase(FastLog2)
+    [6] <>fun<>17 := @GetBase(FastLog2)
     [7] <>this<> := enterCode(<>fun<>17)
 
   Call[1] -> ExitExc
@@ -121,7 +121,7 @@ function[2] FastBias {
     [1] <>arguments<>20 := allocArg(2) @ #12
     [2] <>arguments<>20["0"] := <>temp<>13
     [3] <>arguments<>20["1"] := <>temp<>19
-    [4] <>fun<>21 := <>Global<>toObject(<>obj<>12["pow"]) @ #13
+    [4] <>fun<>21 := @ToObject(<>obj<>12["pow"]) @ #13
     [5] <>this<> := enterCode(<>obj<>12)
 
   Call[5] -> ExitExc
@@ -147,25 +147,25 @@ function[3] FastGain {
 
   Block[1] -> [3], ExitExc
     [0] assert(<>x<>24 < 0.5)
-    [1] <>obj<>26 := <>Global<>toObject(FastBias) @ #17
+    [1] <>obj<>26 := @ToObject(FastBias) @ #17
     [2] <>temp<>27 := 1.0 - <>g<>23
     [3] <>temp<>28 := 2.0 * <>x<>24
     [4] <>arguments<>29 := allocArg(2) @ #18
     [5] <>arguments<>29["0"] := <>temp<>27
     [6] <>arguments<>29["1"] := <>temp<>28
-    [7] <>fun<>30 := <>Global<>getBase(FastBias)
+    [7] <>fun<>30 := @GetBase(FastBias)
     [8] <>this<> := enterCode(<>fun<>30)
 
   Block[2] -> [8], ExitExc
     [0] assert(! <>x<>24 < 0.5)
     [1] <>y<>33 := 1.0
-    [2] <>obj<>34 := <>Global<>toObject(FastBias) @ #20
+    [2] <>obj<>34 := @ToObject(FastBias) @ #20
     [3] <>temp<>35 := 1.0 - <>g<>23
     [4] <>temp<>36 := 2.0 - 2.0 * <>x<>24
     [5] <>arguments<>37 := allocArg(2) @ #21
     [6] <>arguments<>37["0"] := <>temp<>35
     [7] <>arguments<>37["1"] := <>temp<>36
-    [8] <>fun<>38 := <>Global<>getBase(FastBias)
+    [8] <>fun<>38 := @GetBase(FastBias)
     [9] <>this<> := enterCode(<>fun<>38)
 
   Call[3] -> ExitExc
@@ -232,27 +232,27 @@ function[5] ProcessImageData {
   Entry[-1] -> [0]
 
   Block[0] -> [2], [1], ExitExc
-    [0] <>obj<>70 := <>Global<>toObject(<>params<>46) @ #27
+    [0] <>obj<>70 := @ToObject(<>params<>46) @ #27
     [1] <>saturation<>47 := <>obj<>70["saturation"]
-    [2] <>obj<>71 := <>Global<>toObject(<>params<>46) @ #28
+    [2] <>obj<>71 := @ToObject(<>params<>46) @ #28
     [3] <>contrast<>48 := <>obj<>71["contrast"]
-    [4] <>obj<>72 := <>Global<>toObject(<>params<>46) @ #29
+    [4] <>obj<>72 := @ToObject(<>params<>46) @ #29
     [5] <>brightness<>49 := <>obj<>72["brightness"]
-    [6] <>obj<>73 := <>Global<>toObject(<>params<>46) @ #30
+    [6] <>obj<>73 := @ToObject(<>params<>46) @ #30
     [7] <>blackPoint<>50 := <>obj<>73["blackPoint"]
-    [8] <>obj<>74 := <>Global<>toObject(<>params<>46) @ #31
+    [8] <>obj<>74 := @ToObject(<>params<>46) @ #31
     [9] <>fill<>51 := <>obj<>74["fill"]
-    [10] <>obj<>75 := <>Global<>toObject(<>params<>46) @ #32
+    [10] <>obj<>75 := @ToObject(<>params<>46) @ #32
     [11] <>temperature<>52 := <>obj<>75["temperature"]
-    [12] <>obj<>76 := <>Global<>toObject(<>params<>46) @ #33
+    [12] <>obj<>76 := @ToObject(<>params<>46) @ #33
     [13] <>shadowsHue<>53 := <>obj<>76["shadowsHue"]
-    [14] <>obj<>77 := <>Global<>toObject(<>params<>46) @ #34
+    [14] <>obj<>77 := @ToObject(<>params<>46) @ #34
     [15] <>shadowsSaturation<>54 := <>obj<>77["shadowsSaturation"]
-    [16] <>obj<>78 := <>Global<>toObject(<>params<>46) @ #35
+    [16] <>obj<>78 := @ToObject(<>params<>46) @ #35
     [17] <>highlightsHue<>55 := <>obj<>78["highlightsHue"]
-    [18] <>obj<>79 := <>Global<>toObject(<>params<>46) @ #36
+    [18] <>obj<>79 := @ToObject(<>params<>46) @ #36
     [19] <>highlightsSaturation<>56 := <>obj<>79["highlightsSaturation"]
-    [20] <>obj<>80 := <>Global<>toObject(<>params<>46) @ #37
+    [20] <>obj<>80 := @ToObject(<>params<>46) @ #37
     [21] <>splitPoint<>57 := <>obj<>80["splitPoint"]
     [22] <>oo255<>60 := 1.0 / 255.0
     [23] <>old<>81 := <>fill<>51
@@ -294,11 +294,11 @@ function[5] ProcessImageData {
 
   Block[9] -> [12], ExitExc
     [0] assert(<>j<>62 < <>sz<>61)
-    [1] <>obj<>83 := <>Global<>toObject(<>data<>43) @ #38
+    [1] <>obj<>83 := @ToObject(<>data<>43) @ #38
     [2] <>r<>63 := <>obj<>83[<>j<>62 * 4 + 0] * <>oo255<>60
-    [3] <>obj<>84 := <>Global<>toObject(<>data<>43) @ #39
+    [3] <>obj<>84 := @ToObject(<>data<>43) @ #39
     [4] <>g<>64 := <>obj<>84[<>j<>62 * 4 + 1] * <>oo255<>60
-    [5] <>obj<>85 := <>Global<>toObject(<>data<>43) @ #40
+    [5] <>obj<>85 := @ToObject(<>data<>43) @ #40
     [6] <>b<>65 := <>obj<>85[<>j<>62 * 4 + 2] * <>oo255<>60
     [7] <>y<>66 := 0.299 * <>r<>63 + 0.587 * <>g<>64 + 0.114 * <>b<>65
     [8] <>i<>67 := 0.596 * <>r<>63 - 0.275 * <>g<>64 - 0.321 * <>b<>65
@@ -310,13 +310,13 @@ function[5] ProcessImageData {
     [14] <>y<>66 := 1.0 + <>blackPoint<>50 * <>y<>66 - <>blackPoint<>50
     [15] <>y<>66 := <>y<>66 + <>fill<>51
     [16] <>y<>66 := <>y<>66 * <>brightness_a<>58 + <>brightness_b<>59
-    [17] <>obj<>86 := <>Global<>toObject(FastGain) @ #41
+    [17] <>obj<>86 := @ToObject(FastGain) @ #41
     [18] <>temp<>87 := <>contrast<>48
-    [19] <>obj<>88 := <>Global<>toObject(Clamp) @ #42
+    [19] <>obj<>88 := @ToObject(Clamp) @ #42
     [20] <>temp<>89 := <>y<>66
     [21] <>arguments<>90 := allocArg(1) @ #43
     [22] <>arguments<>90["0"] := <>temp<>89
-    [23] <>fun<>91 := <>Global<>getBase(Clamp)
+    [23] <>fun<>91 := @GetBase(Clamp)
     [24] <>this<> := enterCode(<>fun<>91)
 
   Block[10] -> [7], ExitExc
@@ -324,7 +324,7 @@ function[5] ProcessImageData {
 
   Block[11] -> [8], ExitExc
     [0] <>old<>98 := <>j<>62
-    [1] <>new<>99 := <>Global<>toNumber(<>old<>98)
+    [1] <>new<>99 := @ToNumber(<>old<>98)
     [2] <>j<>62 := <>new<>99 + 1
     [3] <>Global<>ignore27 := <>new<>99
 
@@ -339,7 +339,7 @@ function[5] ProcessImageData {
     [0] <>arguments<>93 := allocArg(2) @ #45
     [1] <>arguments<>93["0"] := <>temp<>87
     [2] <>arguments<>93["1"] := <>temp<>92
-    [3] <>fun<>94 := <>Global<>getBase(FastGain)
+    [3] <>fun<>94 := @GetBase(FastGain)
     [4] <>this<> := enterCode(<>fun<>94)
 
   Call[16] -> ExitExc
@@ -364,11 +364,11 @@ function[5] ProcessImageData {
     [0] <>r<>63 := <>y<>66 + 0.956 * <>i<>67 + 0.621 * <>q<>68
     [1] <>g<>64 := <>y<>66 - 0.272 * <>i<>67 - 0.647 * <>q<>68
     [2] <>b<>65 := <>y<>66 - 1.105 * <>i<>67 + 1.702 * <>q<>68
-    [3] <>obj<>95 := <>Global<>toObject(<>data<>43) @ #47
+    [3] <>obj<>95 := @ToObject(<>data<>43) @ #47
     [4] <>obj<>95[<>j<>62 * 4 + 0] := <>r<>63 * 255.0
-    [5] <>obj<>96 := <>Global<>toObject(<>data<>43) @ #48
+    [5] <>obj<>96 := @ToObject(<>data<>43) @ #48
     [6] <>obj<>96[<>j<>62 * 4 + 1] := <>g<>64 * 255.0
-    [7] <>obj<>97 := <>Global<>toObject(<>data<>43) @ #49
+    [7] <>obj<>97 := @ToObject(<>data<>43) @ #49
     [8] <>obj<>97[<>j<>62 * 4 + 2] := <>b<>65 * 255.0
 
   Exit[-2]

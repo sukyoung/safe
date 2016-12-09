@@ -5,7 +5,7 @@
     };
     Object.defineProperties(obj, {
       property : {
-        writable : __Global
+        writable : @Global
       }
     });
     obj.property = "isWritable";

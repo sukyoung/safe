@@ -14,9 +14,9 @@ function[0] top-level {
   Block[4] -> [5], ExitExc
     [0] width := 400
     [1] height := 267
-    [2] <>obj<>144 := <>Global<>toObject(gaussianBlur) @ #106
+    [2] <>obj<>144 := @ToObject(gaussianBlur) @ #106
     [3] <>arguments<>145 := allocArg(0) @ #107
-    [4] <>fun<>146 := <>Global<>getBase(gaussianBlur)
+    [4] <>fun<>146 := @GetBase(gaussianBlur)
     [5] <>this<> := enterCode(<>fun<>146)
 
   Call[5] -> ExitExc
@@ -41,15 +41,15 @@ function[1] buildKernel {
   Block[0] -> [1], ExitExc
     [0] <>ss<>1 := sigma * sigma
     [1] <>y<>7 := 2
-    [2] <>obj<>8 := <>Global<>toObject(Math) @ #1
+    [2] <>obj<>8 := @ToObject(Math) @ #1
     [3] <>factor<>2 := <>y<>7 * <>obj<>8["PI"] * <>ss<>1
     [4] <>Global<>ignore3 := allocArray(0) @ #2
     [5] kernel := <>Global<>ignore3
-    [6] <>obj<>9 := <>Global<>toObject(kernel) @ #3
+    [6] <>obj<>9 := @ToObject(kernel) @ #3
     [7] <>temp<>10 := allocArray(0) @ #4
     [8] <>arguments<>11 := allocArg(1) @ #5
     [9] <>arguments<>11["0"] := <>temp<>10
-    [10] <>fun<>12 := <>Global<>toObject(<>obj<>9["push"]) @ #6
+    [10] <>fun<>12 := @ToObject(<>obj<>9["push"]) @ #6
     [11] <>this<> := enterCode(<>obj<>9)
 
   Call[1] -> ExitExc
@@ -61,11 +61,11 @@ function[1] buildKernel {
 
   Block[4] -> [7], ExitExc
     [0] <>i<>3 := 0
-    [1] <>obj<>13 := <>Global<>toObject(Math) @ #8
+    [1] <>obj<>13 := @ToObject(Math) @ #8
     [2] <>temp<>14 := - <>i<>3 * <>i<>3 / 2 * <>ss<>1
     [3] <>arguments<>15 := allocArg(1) @ #9
     [4] <>arguments<>15["0"] := <>temp<>14
-    [5] <>fun<>16 := <>Global<>toObject(<>obj<>13["exp"]) @ #10
+    [5] <>fun<>16 := @ToObject(<>obj<>13["exp"]) @ #10
     [6] <>this<> := enterCode(<>obj<>13)
 
   Block[5] -> [34], ExitExc
@@ -92,12 +92,12 @@ function[1] buildKernel {
     [0] assert(! <>g<>5 < 0.001)
 
   Block[13] -> [14], ExitExc
-    [0] <>obj<>18 := <>Global<>toObject(kernel) @ #12
-    [1] <>obj<>19 := <>Global<>toObject(<>obj<>18[0]) @ #13
+    [0] <>obj<>18 := @ToObject(kernel) @ #12
+    [1] <>obj<>19 := @ToObject(<>obj<>18[0]) @ #13
     [2] <>temp<>20 := <>g<>5
     [3] <>arguments<>21 := allocArg(1) @ #14
     [4] <>arguments<>21["0"] := <>temp<>20
-    [5] <>fun<>22 := <>Global<>toObject(<>obj<>19["push"]) @ #15
+    [5] <>fun<>22 := @ToObject(<>obj<>19["push"]) @ #15
     [6] <>this<> := enterCode(<>obj<>19)
 
   Call[14] -> ExitExc
@@ -109,7 +109,7 @@ function[1] buildKernel {
 
   Block[17] -> [6], ExitExc
     [0] <>old<>23 := <>i<>3
-    [1] <>new<>24 := <>Global<>toNumber(<>old<>23)
+    [1] <>new<>24 := @ToNumber(<>old<>23)
     [2] <>i<>3 := <>new<>24 + 1
     [3] <>Global<>ignore9 := <>new<>24 + 1
 
@@ -117,11 +117,11 @@ function[1] buildKernel {
 
   Block[19] -> [22], ExitExc
     [0] assert(<>i<>3 < 7)
-    [1] <>obj<>13 := <>Global<>toObject(Math) @ #17
+    [1] <>obj<>13 := @ToObject(Math) @ #17
     [2] <>temp<>14 := - <>i<>3 * <>i<>3 / 2 * <>ss<>1
     [3] <>arguments<>15 := allocArg(1) @ #18
     [4] <>arguments<>15["0"] := <>temp<>14
-    [5] <>fun<>16 := <>Global<>toObject(<>obj<>13["exp"]) @ #19
+    [5] <>fun<>16 := @ToObject(<>obj<>13["exp"]) @ #19
     [6] <>this<> := enterCode(<>obj<>13)
 
   Block[20] -> [5], ExitExc
@@ -146,12 +146,12 @@ function[1] buildKernel {
     [0] assert(! <>g<>5 < 0.001)
 
   Block[28] -> [29], ExitExc
-    [0] <>obj<>18 := <>Global<>toObject(kernel) @ #21
-    [1] <>obj<>19 := <>Global<>toObject(<>obj<>18[0]) @ #22
+    [0] <>obj<>18 := @ToObject(kernel) @ #21
+    [1] <>obj<>19 := @ToObject(<>obj<>18[0]) @ #22
     [2] <>temp<>20 := <>g<>5
     [3] <>arguments<>21 := allocArg(1) @ #23
     [4] <>arguments<>21["0"] := <>temp<>20
-    [5] <>fun<>22 := <>Global<>toObject(<>obj<>19["push"]) @ #24
+    [5] <>fun<>22 := @ToObject(<>obj<>19["push"]) @ #24
     [6] <>this<> := enterCode(<>obj<>19)
 
   Call[29] -> ExitExc
@@ -163,7 +163,7 @@ function[1] buildKernel {
 
   Block[32] -> [21], ExitExc
     [0] <>old<>23 := <>i<>3
-    [1] <>new<>24 := <>Global<>toNumber(<>old<>23)
+    [1] <>new<>24 := @ToNumber(<>old<>23)
     [2] <>i<>3 := <>new<>24 + 1
     [3] <>Global<>ignore9 := <>new<>24 + 1
 
@@ -176,11 +176,11 @@ function[1] buildKernel {
 
   Block[35] -> [38], ExitExc
     [0] assert(<>j<>4 < kernelSize)
-    [1] <>obj<>25 := <>Global<>toObject(kernel) @ #26
+    [1] <>obj<>25 := @ToObject(kernel) @ #26
     [2] <>temp<>26 := allocArray(0) @ #27
     [3] <>arguments<>27 := allocArg(1) @ #28
     [4] <>arguments<>27["0"] := <>temp<>26
-    [5] <>fun<>28 := <>Global<>toObject(<>obj<>25["push"]) @ #29
+    [5] <>fun<>28 := @ToObject(<>obj<>25["push"]) @ #29
     [6] <>this<> := enterCode(<>obj<>25)
 
   Block[36] -> [33], ExitExc
@@ -188,7 +188,7 @@ function[1] buildKernel {
 
   Block[37] -> [34], ExitExc
     [0] <>old<>41 := <>j<>4
-    [1] <>new<>42 := <>Global<>toNumber(<>old<>41)
+    [1] <>new<>42 := @ToNumber(<>old<>41)
     [2] <>j<>4 := <>new<>42 + 1
     [3] <>Global<>ignore14 := <>new<>42 + 1
 
@@ -209,11 +209,11 @@ function[1] buildKernel {
 
   Block[44] -> [47], ExitExc
     [0] assert(<>i<>3 < kernelSize)
-    [1] <>obj<>29 := <>Global<>toObject(Math) @ #31
+    [1] <>obj<>29 := @ToObject(Math) @ #31
     [2] <>temp<>30 := - <>i<>3 * <>i<>3 + <>j<>4 * <>j<>4 / 2 * <>ss<>1
     [3] <>arguments<>31 := allocArg(1) @ #32
     [4] <>arguments<>31["0"] := <>temp<>30
-    [5] <>fun<>32 := <>Global<>toObject(<>obj<>29["exp"]) @ #33
+    [5] <>fun<>32 := @ToObject(<>obj<>29["exp"]) @ #33
     [6] <>this<> := enterCode(<>obj<>29)
 
   Block[45] -> [41], ExitExc
@@ -221,7 +221,7 @@ function[1] buildKernel {
 
   Block[46] -> [43], ExitExc
     [0] <>old<>39 := <>i<>3
-    [1] <>new<>40 := <>Global<>toNumber(<>old<>39)
+    [1] <>new<>40 := @ToNumber(<>old<>39)
     [2] <>i<>3 := <>new<>40 + 1
     [3] <>Global<>ignore19 := <>new<>40 + 1
 
@@ -234,12 +234,12 @@ function[1] buildKernel {
 
   Block[50] -> [51], ExitExc
     [0] <>g<>5 := <>y<>33 / <>factor<>2
-    [1] <>obj<>34 := <>Global<>toObject(kernel) @ #35
-    [2] <>obj<>35 := <>Global<>toObject(<>obj<>34[<>j<>4]) @ #36
+    [1] <>obj<>34 := @ToObject(kernel) @ #35
+    [2] <>obj<>35 := @ToObject(<>obj<>34[<>j<>4]) @ #36
     [3] <>temp<>36 := <>g<>5
     [4] <>arguments<>37 := allocArg(1) @ #37
     [5] <>arguments<>37["0"] := <>temp<>36
-    [6] <>fun<>38 := <>Global<>toObject(<>obj<>35["push"]) @ #38
+    [6] <>fun<>38 := @ToObject(<>obj<>35["push"]) @ #38
     [7] <>this<> := enterCode(<>obj<>35)
 
   Call[51] -> ExitExc
@@ -263,7 +263,7 @@ function[1] buildKernel {
 
   Block[58] -> [55], ExitExc
     [0] <>old<>58 := <>j<>4
-    [1] <>new<>59 := <>Global<>toNumber(<>old<>58)
+    [1] <>new<>59 := @ToNumber(<>old<>58)
     [2] <>j<>4 := <>new<>59 + 1
     [3] <>Global<>ignore26 := <>new<>59 + 1
 
@@ -274,12 +274,12 @@ function[1] buildKernel {
   Block[61] -> [64], ExitExc
     [0] assert(<>i<>3 < kernelSize)
     [1] <>old<>43 := kernelSum
-    [2] <>obj<>44 := <>Global<>toObject(kernel) @ #40
-    [3] <>obj<>45 := <>Global<>toObject(Math) @ #41
+    [2] <>obj<>44 := @ToObject(kernel) @ #40
+    [3] <>obj<>45 := @ToObject(Math) @ #41
     [4] <>temp<>46 := <>j<>4
     [5] <>arguments<>47 := allocArg(1) @ #42
     [6] <>arguments<>47["0"] := <>temp<>46
-    [7] <>fun<>48 := <>Global<>toObject(<>obj<>45["abs"]) @ #43
+    [7] <>fun<>48 := @ToObject(<>obj<>45["abs"]) @ #43
     [8] <>this<> := enterCode(<>obj<>45)
 
   Block[62] -> [59], ExitExc
@@ -287,7 +287,7 @@ function[1] buildKernel {
 
   Block[63] -> [60], ExitExc
     [0] <>old<>56 := <>i<>3
-    [1] <>new<>57 := <>Global<>toNumber(<>old<>56)
+    [1] <>new<>57 := @ToNumber(<>old<>56)
     [2] <>i<>3 := <>new<>57 + 1
     [3] <>Global<>ignore30 := <>new<>57 + 1
 
@@ -299,12 +299,12 @@ function[1] buildKernel {
   AfterCatch[66] -> ExitExc
 
   Block[67] -> [68], ExitExc
-    [0] <>obj<>50 := <>Global<>toObject(<>obj<>44[<>field1<>49]) @ #45
-    [1] <>obj<>51 := <>Global<>toObject(Math) @ #46
+    [0] <>obj<>50 := @ToObject(<>obj<>44[<>field1<>49]) @ #45
+    [1] <>obj<>51 := @ToObject(Math) @ #46
     [2] <>temp<>52 := <>i<>3
     [3] <>arguments<>53 := allocArg(1) @ #47
     [4] <>arguments<>53["0"] := <>temp<>52
-    [5] <>fun<>54 := <>Global<>toObject(<>obj<>51["abs"]) @ #48
+    [5] <>fun<>54 := @ToObject(<>obj<>51["abs"]) @ #48
     [6] <>this<> := enterCode(<>obj<>51)
 
   Call[68] -> ExitExc
@@ -343,7 +343,7 @@ function[2] gaussianBlur {
 
   Block[5] -> [2], ExitExc
     [0] <>old<>139 := <>y<>60
-    [1] <>new<>140 := <>Global<>toNumber(<>old<>139)
+    [1] <>new<>140 := @ToNumber(<>old<>139)
     [2] <>y<>60 := <>new<>140 + 1
     [3] <>Global<>ignore34 := <>new<>140 + 1
 
@@ -364,18 +364,18 @@ function[2] gaussianBlur {
 
   Block[10] -> [7], ExitExc
     [0] <>old<>137 := <>x<>61
-    [1] <>new<>138 := <>Global<>toNumber(<>old<>137)
+    [1] <>new<>138 := @ToNumber(<>old<>137)
     [2] <>x<>61 := <>new<>138 + 1
     [3] <>Global<>ignore37 := <>new<>138 + 1
 
   Block[11] -> [10], ExitExc
-    [0] <>obj<>133 := <>Global<>toObject(squidImageData) @ #96
+    [0] <>obj<>133 := @ToObject(squidImageData) @ #96
     [1] <>obj<>133[4 * <>y<>60 * width + <>x<>61 + 0] := <>r<>62 / kernelSum
-    [2] <>obj<>134 := <>Global<>toObject(squidImageData) @ #97
+    [2] <>obj<>134 := @ToObject(squidImageData) @ #97
     [3] <>obj<>134[4 * <>y<>60 * width + <>x<>61 + 1] := <>g<>63 / kernelSum
-    [4] <>obj<>135 := <>Global<>toObject(squidImageData) @ #98
+    [4] <>obj<>135 := @ToObject(squidImageData) @ #98
     [5] <>obj<>135[4 * <>y<>60 * width + <>x<>61 + 2] := <>b<>64 / kernelSum
-    [6] <>obj<>136 := <>Global<>toObject(squidImageData) @ #99
+    [6] <>obj<>136 := @ToObject(squidImageData) @ #99
     [7] <>obj<>136[4 * <>y<>60 * width + <>x<>61 + 3] := <>a<>65 / kernelSum
 
   Block[12] -> [14], [13]
@@ -388,7 +388,7 @@ function[2] gaussianBlur {
 
   Block[15] -> [12], ExitExc
     [0] <>old<>131 := <>j<>66
-    [1] <>new<>132 := <>Global<>toNumber(<>old<>131)
+    [1] <>new<>132 := @ToNumber(<>old<>131)
     [2] <>j<>66 := <>new<>132 + 1
     [3] <>Global<>ignore44 := <>new<>132 + 1
 
@@ -425,20 +425,20 @@ function[2] gaussianBlur {
 
   Block[28] -> [25], ExitExc
     [0] <>old<>129 := <>i<>67
-    [1] <>new<>130 := <>Global<>toNumber(<>old<>129)
+    [1] <>new<>130 := @ToNumber(<>old<>129)
     [2] <>i<>67 := <>new<>130 + 1
     [3] <>Global<>ignore47 := <>new<>130 + 1
 
   Block[29] -> [37], ExitExc
     [0] <>old<>69 := <>r<>62
-    [1] <>obj<>70 := <>Global<>toObject(squidImageData) @ #52
+    [1] <>obj<>70 := @ToObject(squidImageData) @ #52
     [2] <>y<>71 := <>obj<>70[4 * <>y<>60 + <>j<>66 * width + <>x<>61 + <>i<>67 + 0]
-    [3] <>obj<>72 := <>Global<>toObject(kernel) @ #53
-    [4] <>obj<>73 := <>Global<>toObject(Math) @ #54
+    [3] <>obj<>72 := @ToObject(kernel) @ #53
+    [4] <>obj<>73 := @ToObject(Math) @ #54
     [5] <>temp<>74 := <>j<>66
     [6] <>arguments<>75 := allocArg(1) @ #55
     [7] <>arguments<>75["0"] := <>temp<>74
-    [8] <>fun<>76 := <>Global<>toObject(<>obj<>73["abs"]) @ #56
+    [8] <>fun<>76 := @ToObject(<>obj<>73["abs"]) @ #56
     [9] <>this<> := enterCode(<>obj<>73)
 
   Block[30] -> [28]
@@ -467,12 +467,12 @@ function[2] gaussianBlur {
   AfterCatch[39] -> ExitExc
 
   Block[40] -> [41], ExitExc
-    [0] <>obj<>78 := <>Global<>toObject(<>obj<>72[<>field1<>77]) @ #58
-    [1] <>obj<>79 := <>Global<>toObject(Math) @ #59
+    [0] <>obj<>78 := @ToObject(<>obj<>72[<>field1<>77]) @ #58
+    [1] <>obj<>79 := @ToObject(Math) @ #59
     [2] <>temp<>80 := <>i<>67
     [3] <>arguments<>81 := allocArg(1) @ #60
     [4] <>arguments<>81["0"] := <>temp<>80
-    [5] <>fun<>82 := <>Global<>toObject(<>obj<>79["abs"]) @ #61
+    [5] <>fun<>82 := @ToObject(<>obj<>79["abs"]) @ #61
     [6] <>this<> := enterCode(<>obj<>79)
 
   Call[41] -> ExitExc
@@ -485,14 +485,14 @@ function[2] gaussianBlur {
   Block[44] -> [45], ExitExc
     [0] <>r<>62 := <>old<>69 + <>y<>71 * <>obj<>78[<>field1<>83]
     [1] <>old<>84 := <>g<>63
-    [2] <>obj<>85 := <>Global<>toObject(squidImageData) @ #63
+    [2] <>obj<>85 := @ToObject(squidImageData) @ #63
     [3] <>y<>86 := <>obj<>85[4 * <>y<>60 + <>j<>66 * width + <>x<>61 + <>i<>67 + 1]
-    [4] <>obj<>87 := <>Global<>toObject(kernel) @ #64
-    [5] <>obj<>88 := <>Global<>toObject(Math) @ #65
+    [4] <>obj<>87 := @ToObject(kernel) @ #64
+    [5] <>obj<>88 := @ToObject(Math) @ #65
     [6] <>temp<>89 := <>j<>66
     [7] <>arguments<>90 := allocArg(1) @ #66
     [8] <>arguments<>90["0"] := <>temp<>89
-    [9] <>fun<>91 := <>Global<>toObject(<>obj<>88["abs"]) @ #67
+    [9] <>fun<>91 := @ToObject(<>obj<>88["abs"]) @ #67
     [10] <>this<> := enterCode(<>obj<>88)
 
   Call[45] -> ExitExc
@@ -503,12 +503,12 @@ function[2] gaussianBlur {
   AfterCatch[47] -> ExitExc
 
   Block[48] -> [49], ExitExc
-    [0] <>obj<>93 := <>Global<>toObject(<>obj<>87[<>field1<>92]) @ #69
-    [1] <>obj<>94 := <>Global<>toObject(Math) @ #70
+    [0] <>obj<>93 := @ToObject(<>obj<>87[<>field1<>92]) @ #69
+    [1] <>obj<>94 := @ToObject(Math) @ #70
     [2] <>temp<>95 := <>i<>67
     [3] <>arguments<>96 := allocArg(1) @ #71
     [4] <>arguments<>96["0"] := <>temp<>95
-    [5] <>fun<>97 := <>Global<>toObject(<>obj<>94["abs"]) @ #72
+    [5] <>fun<>97 := @ToObject(<>obj<>94["abs"]) @ #72
     [6] <>this<> := enterCode(<>obj<>94)
 
   Call[49] -> ExitExc
@@ -521,14 +521,14 @@ function[2] gaussianBlur {
   Block[52] -> [53], ExitExc
     [0] <>g<>63 := <>old<>84 + <>y<>86 * <>obj<>93[<>field1<>98]
     [1] <>old<>99 := <>b<>64
-    [2] <>obj<>100 := <>Global<>toObject(squidImageData) @ #74
+    [2] <>obj<>100 := @ToObject(squidImageData) @ #74
     [3] <>y<>101 := <>obj<>100[4 * <>y<>60 + <>j<>66 * width + <>x<>61 + <>i<>67 + 2]
-    [4] <>obj<>102 := <>Global<>toObject(kernel) @ #75
-    [5] <>obj<>103 := <>Global<>toObject(Math) @ #76
+    [4] <>obj<>102 := @ToObject(kernel) @ #75
+    [5] <>obj<>103 := @ToObject(Math) @ #76
     [6] <>temp<>104 := <>j<>66
     [7] <>arguments<>105 := allocArg(1) @ #77
     [8] <>arguments<>105["0"] := <>temp<>104
-    [9] <>fun<>106 := <>Global<>toObject(<>obj<>103["abs"]) @ #78
+    [9] <>fun<>106 := @ToObject(<>obj<>103["abs"]) @ #78
     [10] <>this<> := enterCode(<>obj<>103)
 
   Call[53] -> ExitExc
@@ -539,12 +539,12 @@ function[2] gaussianBlur {
   AfterCatch[55] -> ExitExc
 
   Block[56] -> [57], ExitExc
-    [0] <>obj<>108 := <>Global<>toObject(<>obj<>102[<>field1<>107]) @ #80
-    [1] <>obj<>109 := <>Global<>toObject(Math) @ #81
+    [0] <>obj<>108 := @ToObject(<>obj<>102[<>field1<>107]) @ #80
+    [1] <>obj<>109 := @ToObject(Math) @ #81
     [2] <>temp<>110 := <>i<>67
     [3] <>arguments<>111 := allocArg(1) @ #82
     [4] <>arguments<>111["0"] := <>temp<>110
-    [5] <>fun<>112 := <>Global<>toObject(<>obj<>109["abs"]) @ #83
+    [5] <>fun<>112 := @ToObject(<>obj<>109["abs"]) @ #83
     [6] <>this<> := enterCode(<>obj<>109)
 
   Call[57] -> ExitExc
@@ -557,14 +557,14 @@ function[2] gaussianBlur {
   Block[60] -> [61], ExitExc
     [0] <>b<>64 := <>old<>99 + <>y<>101 * <>obj<>108[<>field1<>113]
     [1] <>old<>114 := <>a<>65
-    [2] <>obj<>115 := <>Global<>toObject(squidImageData) @ #85
+    [2] <>obj<>115 := @ToObject(squidImageData) @ #85
     [3] <>y<>116 := <>obj<>115[4 * <>y<>60 + <>j<>66 * width + <>x<>61 + <>i<>67 + 3]
-    [4] <>obj<>117 := <>Global<>toObject(kernel) @ #86
-    [5] <>obj<>118 := <>Global<>toObject(Math) @ #87
+    [4] <>obj<>117 := @ToObject(kernel) @ #86
+    [5] <>obj<>118 := @ToObject(Math) @ #87
     [6] <>temp<>119 := <>j<>66
     [7] <>arguments<>120 := allocArg(1) @ #88
     [8] <>arguments<>120["0"] := <>temp<>119
-    [9] <>fun<>121 := <>Global<>toObject(<>obj<>118["abs"]) @ #89
+    [9] <>fun<>121 := @ToObject(<>obj<>118["abs"]) @ #89
     [10] <>this<> := enterCode(<>obj<>118)
 
   Call[61] -> ExitExc
@@ -575,12 +575,12 @@ function[2] gaussianBlur {
   AfterCatch[63] -> ExitExc
 
   Block[64] -> [65], ExitExc
-    [0] <>obj<>123 := <>Global<>toObject(<>obj<>117[<>field1<>122]) @ #91
-    [1] <>obj<>124 := <>Global<>toObject(Math) @ #92
+    [0] <>obj<>123 := @ToObject(<>obj<>117[<>field1<>122]) @ #91
+    [1] <>obj<>124 := @ToObject(Math) @ #92
     [2] <>temp<>125 := <>i<>67
     [3] <>arguments<>126 := allocArg(1) @ #93
     [4] <>arguments<>126["0"] := <>temp<>125
-    [5] <>fun<>127 := <>Global<>toObject(<>obj<>124["abs"]) @ #94
+    [5] <>fun<>127 := @ToObject(<>obj<>124["abs"]) @ #94
     [6] <>this<> := enterCode(<>obj<>124)
 
   Call[65] -> ExitExc

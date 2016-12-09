@@ -12,7 +12,7 @@ function[0] top-level {
   AfterCatch[3] -> ExitExc
 
   Block[4] -> [6], [5]
-    [0] <>cond<>6 := <>Global<>isObject(<>newObj<>5)
+    [0] <>cond<>6 := @isObject(<>newObj<>5)
 
   Block[5] -> [7], ExitExc
     [0] assert(<>cond<>6)
@@ -26,11 +26,11 @@ function[0] top-level {
     [0] _sunSpiderStartDate := <>Global<>ignore4
     [1] <>Global<>ignore5 := alloc() @ #6
     [2] Pixastic := <>Global<>ignore5
-    [3] <>obj<>7 := <>Global<>toObject(Pixastic) @ #7
+    [3] <>obj<>7 := @ToObject(Pixastic) @ #7
     [4] <>Global<>ignore6 := alloc() @ #8
     [5] <>obj<>7["Actions"] := <>Global<>ignore6
-    [6] <>obj<>8 := <>Global<>toObject(Pixastic) @ #9
-    [7] <>obj<>9 := <>Global<>toObject(<>obj<>8["Actions"]) @ #10
+    [6] <>obj<>8 := @ToObject(Pixastic) @ #9
+    [7] <>obj<>9 := @ToObject(<>obj<>8["Actions"]) @ #10
     [8] <>temp<>54 := function (1) @ #32, #33
     [9] <>Global<>ignore7 := alloc() @ #34
     [10] <>Global<>ignore7["process"] := <>temp<>54
@@ -53,13 +53,13 @@ function[0] top-level {
 
   Block[10] -> [13], ExitExc
     [0] assert(pixcounter < 200)
-    [1] <>obj<>57 := <>Global<>toObject(Pixastic) @ #38
-    [2] <>obj<>58 := <>Global<>toObject(<>obj<>57["Actions"]) @ #39
-    [3] <>obj<>59 := <>Global<>toObject(<>obj<>58["desaturate"]) @ #40
+    [1] <>obj<>57 := @ToObject(Pixastic) @ #38
+    [2] <>obj<>58 := @ToObject(<>obj<>57["Actions"]) @ #39
+    [3] <>obj<>59 := @ToObject(<>obj<>58["desaturate"]) @ #40
     [4] <>temp<>60 := params
     [5] <>arguments<>61 := allocArg(1) @ #41
     [6] <>arguments<>61["0"] := <>temp<>60
-    [7] <>fun<>62 := <>Global<>toObject(<>obj<>59["process"]) @ #42
+    [7] <>fun<>62 := @ToObject(<>obj<>59["process"]) @ #42
     [8] <>this<> := enterCode(<>obj<>59)
 
   Block[11] -> [8], ExitExc
@@ -67,7 +67,7 @@ function[0] top-level {
 
   Block[12] -> [9], ExitExc
     [0] <>old<>63 := pixcounter
-    [1] <>new<>64 := <>Global<>toNumber(<>old<>63)
+    [1] <>new<>64 := @ToNumber(<>old<>63)
     [2] pixcounter := <>new<>64 + 1
     [3] <>Global<>ignore20 := <>new<>64
 
@@ -88,13 +88,13 @@ function[1] <>funexpr@24:15-42:6<> {
   Entry[-1] -> [0]
 
   Block[0] -> [2], [1], ExitExc
-    [0] <>obj<>21 := <>Global<>toObject(<>params<>10) @ #11
-    [1] <>obj<>22 := <>Global<>toObject(<>obj<>21["options"]) @ #12
+    [0] <>obj<>21 := @ToObject(<>params<>10) @ #11
+    [1] <>obj<>22 := @ToObject(<>obj<>21["options"]) @ #12
 
   Block[1] -> [3], ExitExc
     [0] assert(<>obj<>22["average"])
-    [1] <>obj<>23 := <>Global<>toObject(<>params<>10) @ #13
-    [2] <>obj<>24 := <>Global<>toObject(<>obj<>23["options"]) @ #14
+    [1] <>obj<>23 := @ToObject(<>params<>10) @ #13
+    [2] <>obj<>24 := @ToObject(<>obj<>23["options"]) @ #14
     [3] <>y<>25 := <>obj<>24["average"] != "false"
 
   Block[2] -> [5], [4], ExitExc
@@ -102,14 +102,14 @@ function[1] <>funexpr@24:15-42:6<> {
 
   Block[3] -> [8], [7], ExitExc
     [0] <>useAverage<>11 := ! ! <>y<>25
-    [1] <>obj<>26 := <>Global<>toObject(<>params<>10) @ #15
+    [1] <>obj<>26 := @ToObject(<>params<>10) @ #15
     [2] <>data<>12 := <>obj<>26["data"]
-    [3] <>obj<>27 := <>Global<>toObject(<>params<>10) @ #16
-    [4] <>obj<>28 := <>Global<>toObject(<>obj<>27["options"]) @ #17
+    [3] <>obj<>27 := @ToObject(<>params<>10) @ #16
+    [4] <>obj<>28 := @ToObject(<>obj<>27["options"]) @ #17
     [5] <>rect<>13 := <>obj<>28["rect"]
-    [6] <>obj<>29 := <>Global<>toObject(<>rect<>13) @ #18
+    [6] <>obj<>29 := @ToObject(<>rect<>13) @ #18
     [7] <>w<>14 := <>obj<>29["width"]
-    [8] <>obj<>30 := <>Global<>toObject(<>rect<>13) @ #19
+    [8] <>obj<>30 := @ToObject(<>rect<>13) @ #19
     [9] <>h<>15 := <>obj<>30["height"]
     [10] <>p<>16 := <>w<>14 * <>h<>15
     [11] <>pix<>17 := <>p<>16 * 4
@@ -127,13 +127,13 @@ function[1] <>funexpr@24:15-42:6<> {
   Block[7] -> [10], ExitExc
     [0] assert(<>useAverage<>11)
     [1] <>old<>31 := <>p<>16
-    [2] <>new<>32 := <>Global<>toNumber(<>old<>31)
+    [2] <>new<>32 := @ToNumber(<>old<>31)
     [3] <>p<>16 := <>new<>32 - 1
 
   Block[8] -> [16], ExitExc
     [0] assert(! <>useAverage<>11)
     [1] <>old<>42 := <>p<>16
-    [2] <>new<>43 := <>Global<>toNumber(<>old<>42)
+    [2] <>new<>43 := @ToNumber(<>old<>42)
     [3] <>p<>16 := <>new<>43 - 1
 
   Block[9] -> [14]
@@ -142,18 +142,18 @@ function[1] <>funexpr@24:15-42:6<> {
 
   Block[11] -> [13], ExitExc
     [0] assert(<>new<>32)
-    [1] <>obj<>33 := <>Global<>toObject(<>data<>12) @ #20
+    [1] <>obj<>33 := @ToObject(<>data<>12) @ #20
     [2] <>old<>34 := <>pix<>17
     [3] <>pix<>17 := <>old<>34 - 4
-    [4] <>obj<>35 := <>Global<>toObject(<>data<>12) @ #21
+    [4] <>obj<>35 := @ToObject(<>data<>12) @ #21
     [5] <>pix1<>18 := <>pix<>17 + 1
-    [6] <>obj<>36 := <>Global<>toObject(<>data<>12) @ #22
+    [6] <>obj<>36 := @ToObject(<>data<>12) @ #22
     [7] <>pix2<>19 := <>pix<>17 + 2
-    [8] <>obj<>37 := <>Global<>toObject(<>data<>12) @ #23
+    [8] <>obj<>37 := @ToObject(<>data<>12) @ #23
     [9] <>y<>38 := <>obj<>37[<>pix<>17]
-    [10] <>obj<>39 := <>Global<>toObject(<>data<>12) @ #24
+    [10] <>obj<>39 := @ToObject(<>data<>12) @ #24
     [11] <>y<>40 := <>y<>38 + <>obj<>39[<>pix1<>18]
-    [12] <>obj<>41 := <>Global<>toObject(<>data<>12) @ #25
+    [12] <>obj<>41 := @ToObject(<>data<>12) @ #25
     [13] <>obj<>36[<>pix<>17 + 2] := <>y<>40 + <>obj<>41[<>pix2<>19] / 3
     [14] <>obj<>35[<>pix<>17 + 1] := <>obj<>36[<>pix<>17 + 2]
     [15] <>obj<>33[<>old<>34 - 4] := <>obj<>35[<>pix<>17 + 1]
@@ -163,7 +163,7 @@ function[1] <>funexpr@24:15-42:6<> {
 
   Block[13] -> [10], ExitExc
     [0] <>old<>31 := <>p<>16
-    [1] <>new<>32 := <>Global<>toNumber(<>old<>31)
+    [1] <>new<>32 := @ToNumber(<>old<>31)
     [2] <>p<>16 := <>new<>32 - 1
 
   Block[14] -> Exit, ExitExc
@@ -175,18 +175,18 @@ function[1] <>funexpr@24:15-42:6<> {
 
   Block[17] -> [19], ExitExc
     [0] assert(<>new<>43)
-    [1] <>obj<>44 := <>Global<>toObject(<>data<>12) @ #26
+    [1] <>obj<>44 := @ToObject(<>data<>12) @ #26
     [2] <>old<>45 := <>pix<>17
     [3] <>pix<>17 := <>old<>45 - 4
-    [4] <>obj<>46 := <>Global<>toObject(<>data<>12) @ #27
+    [4] <>obj<>46 := @ToObject(<>data<>12) @ #27
     [5] <>pix1<>18 := <>pix<>17 + 1
-    [6] <>obj<>47 := <>Global<>toObject(<>data<>12) @ #28
+    [6] <>obj<>47 := @ToObject(<>data<>12) @ #28
     [7] <>pix2<>19 := <>pix<>17 + 2
-    [8] <>obj<>48 := <>Global<>toObject(<>data<>12) @ #29
+    [8] <>obj<>48 := @ToObject(<>data<>12) @ #29
     [9] <>y<>49 := <>obj<>48[<>pix<>17] * 0.3
-    [10] <>obj<>50 := <>Global<>toObject(<>data<>12) @ #30
+    [10] <>obj<>50 := @ToObject(<>data<>12) @ #30
     [11] <>y<>51 := <>y<>49 + <>obj<>50[<>pix1<>18] * 0.59
-    [12] <>obj<>52 := <>Global<>toObject(<>data<>12) @ #31
+    [12] <>obj<>52 := @ToObject(<>data<>12) @ #31
     [13] <>obj<>47[<>pix<>17 + 2] := <>y<>51 + <>obj<>52[<>pix2<>19] * 0.11
     [14] <>obj<>46[<>pix<>17 + 1] := <>obj<>47[<>pix<>17 + 2]
     [15] <>obj<>44[<>old<>45 - 4] := <>obj<>46[<>pix<>17 + 1]
@@ -196,7 +196,7 @@ function[1] <>funexpr@24:15-42:6<> {
 
   Block[19] -> [16], ExitExc
     [0] <>old<>42 := <>p<>16
-    [1] <>new<>43 := <>Global<>toNumber(<>old<>42)
+    [1] <>new<>43 := @ToNumber(<>old<>42)
     [2] <>p<>16 := <>new<>43 - 1
 
   Exit[-2]

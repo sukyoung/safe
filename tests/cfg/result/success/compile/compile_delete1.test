@@ -1,17 +1,17 @@
 
 var a
 {
-  <>obj<>1 = <>Global<>toObject(a)
+  <>obj<>1 = @ToObject(a)
   <>Global<>ignore1 = delete <>obj<>1["b"]
 }
 {
-  <>obj<>2 = <>Global<>toObject(a)
-  <>obj<>3 = <>Global<>toObject(<>obj<>2["b"])
+  <>obj<>2 = @ToObject(a)
+  <>obj<>3 = @ToObject(<>obj<>2["b"])
   <>Global<>ignore2 = delete <>obj<>3["c"]
 }
 {
-  <>obj<>4 = <>Global<>toObject(a)
-  <>obj<>5 = <>Global<>toObject(<>obj<>4["b"])
+  <>obj<>4 = @ToObject(a)
+  <>obj<>5 = @ToObject(<>obj<>4["b"])
   <>Global<>ignore3 = delete <>obj<>5["c"]
 }
 

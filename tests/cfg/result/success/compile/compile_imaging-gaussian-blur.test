@@ -10,7 +10,7 @@ function buildKernel(this, <>arguments<>1)
   }
   {
     <>y<>7 = 2
-    <>obj<>8 = <>Global<>toObject(Math)
+    <>obj<>8 = @ToObject(Math)
     <>factor<>3 = <>y<>7 * <>obj<>8["PI"] * <>ss<>2
   }
   {
@@ -18,10 +18,10 @@ function buildKernel(this, <>arguments<>1)
     kernel = <>Global<>ignore3
   }
   {
-    <>obj<>9 = <>Global<>toObject(kernel)
+    <>obj<>9 = @ToObject(kernel)
     <>temp<>10 = []
     <>arguments<>11 = [<>temp<>10, ]
-    <>fun<>12 = <>Global<>toObject(<>obj<>9["push"])
+    <>fun<>12 = @ToObject(<>obj<>9["push"])
     <>Global<>ignore4 = <>fun<>12(<>obj<>9, <>arguments<>11)
   }
   {
@@ -31,26 +31,26 @@ function buildKernel(this, <>arguments<>1)
     {
       <>continue<>14 : {
         {
-          <>obj<>15 = <>Global<>toObject(Math)
+          <>obj<>15 = @ToObject(Math)
           <>temp<>16 = - <>i<>4 * <>i<>4 / 2 * <>ss<>2
           <>arguments<>17 = [<>temp<>16, ]
-          <>fun<>18 = <>Global<>toObject(<>obj<>15["exp"])
+          <>fun<>18 = @ToObject(<>obj<>15["exp"])
           <>y<>19 = <>fun<>18(<>obj<>15, <>arguments<>17)
           <>g<>6 = <>y<>19 / <>factor<>3
         }
         if(<>g<>6 < 0.001)
           break <>break<>13
         {
-          <>obj<>20 = <>Global<>toObject(kernel)
-          <>obj<>21 = <>Global<>toObject(<>obj<>20[0])
+          <>obj<>20 = @ToObject(kernel)
+          <>obj<>21 = @ToObject(<>obj<>20[0])
           <>temp<>22 = <>g<>6
           <>arguments<>23 = [<>temp<>22, ]
-          <>fun<>24 = <>Global<>toObject(<>obj<>21["push"])
+          <>fun<>24 = @ToObject(<>obj<>21["push"])
           <>Global<>ignore7 = <>fun<>24(<>obj<>21, <>arguments<>23)
         }
         {
           <>old<>25 = <>i<>4
-          <>new<>26 = <>Global<>toNumber(<>old<>25)
+          <>new<>26 = @ToNumber(<>old<>25)
           <>i<>4 = <>new<>26 + 1
           <>Global<>ignore9 = <>new<>26 + 1
         }
@@ -60,26 +60,26 @@ function buildKernel(this, <>arguments<>1)
     {
       <>continue<>14 : {
         {
-          <>obj<>15 = <>Global<>toObject(Math)
+          <>obj<>15 = @ToObject(Math)
           <>temp<>16 = - <>i<>4 * <>i<>4 / 2 * <>ss<>2
           <>arguments<>17 = [<>temp<>16, ]
-          <>fun<>18 = <>Global<>toObject(<>obj<>15["exp"])
+          <>fun<>18 = @ToObject(<>obj<>15["exp"])
           <>y<>19 = <>fun<>18(<>obj<>15, <>arguments<>17)
           <>g<>6 = <>y<>19 / <>factor<>3
         }
         if(<>g<>6 < 0.001)
           break <>break<>13
         {
-          <>obj<>20 = <>Global<>toObject(kernel)
-          <>obj<>21 = <>Global<>toObject(<>obj<>20[0])
+          <>obj<>20 = @ToObject(kernel)
+          <>obj<>21 = @ToObject(<>obj<>20[0])
           <>temp<>22 = <>g<>6
           <>arguments<>23 = [<>temp<>22, ]
-          <>fun<>24 = <>Global<>toObject(<>obj<>21["push"])
+          <>fun<>24 = @ToObject(<>obj<>21["push"])
           <>Global<>ignore7 = <>fun<>24(<>obj<>21, <>arguments<>23)
         }
         {
           <>old<>25 = <>i<>4
-          <>new<>26 = <>Global<>toNumber(<>old<>25)
+          <>new<>26 = @ToNumber(<>old<>25)
           <>i<>4 = <>new<>26 + 1
           <>Global<>ignore9 = <>new<>26 + 1
         }
@@ -96,10 +96,10 @@ function buildKernel(this, <>arguments<>1)
     {
       <>continue<>28 : {
         {
-          <>obj<>29 = <>Global<>toObject(kernel)
+          <>obj<>29 = @ToObject(kernel)
           <>temp<>30 = []
           <>arguments<>31 = [<>temp<>30, ]
-          <>fun<>32 = <>Global<>toObject(<>obj<>29["push"])
+          <>fun<>32 = @ToObject(<>obj<>29["push"])
           <>Global<>ignore15 = <>fun<>32(<>obj<>29, <>arguments<>31)
         }
         <>break<>33 : {
@@ -111,25 +111,25 @@ function buildKernel(this, <>arguments<>1)
           {
             <>continue<>34 : {
               {
-                <>obj<>35 = <>Global<>toObject(Math)
+                <>obj<>35 = @ToObject(Math)
                 <>temp<>36 = - <>i<>4 * <>i<>4 + <>j<>5 * <>j<>5 / 2 * <>ss<>2
                 <>arguments<>37 = [<>temp<>36, ]
-                <>fun<>38 = <>Global<>toObject(<>obj<>35["exp"])
+                <>fun<>38 = @ToObject(<>obj<>35["exp"])
                 <>y<>39 = <>fun<>38(<>obj<>35, <>arguments<>37)
                 <>g<>6 = <>y<>39 / <>factor<>3
               }
               {
-                <>obj<>40 = <>Global<>toObject(kernel)
-                <>obj<>41 = <>Global<>toObject(<>obj<>40[<>j<>5])
+                <>obj<>40 = @ToObject(kernel)
+                <>obj<>41 = @ToObject(<>obj<>40[<>j<>5])
                 <>temp<>42 = <>g<>6
                 <>arguments<>43 = [<>temp<>42, ]
-                <>fun<>44 = <>Global<>toObject(<>obj<>41["push"])
+                <>fun<>44 = @ToObject(<>obj<>41["push"])
                 <>Global<>ignore21 = <>fun<>44(<>obj<>41, <>arguments<>43)
               }
             }
             {
               <>old<>45 = <>i<>4
-              <>new<>46 = <>Global<>toNumber(<>old<>45)
+              <>new<>46 = @ToNumber(<>old<>45)
               <>i<>4 = <>new<>46 + 1
               <>Global<>ignore19 = <>new<>46 + 1
             }
@@ -138,7 +138,7 @@ function buildKernel(this, <>arguments<>1)
       }
       {
         <>old<>47 = <>j<>5
-        <>new<>48 = <>Global<>toNumber(<>old<>47)
+        <>new<>48 = @ToNumber(<>old<>47)
         <>j<>5 = <>new<>48 + 1
         <>Global<>ignore14 = <>new<>48 + 1
       }
@@ -161,23 +161,23 @@ function buildKernel(this, <>arguments<>1)
         {
           <>continue<>52 : {
             <>old<>53 = kernelSum
-            <>obj<>54 = <>Global<>toObject(kernel)
-            <>obj<>55 = <>Global<>toObject(Math)
+            <>obj<>54 = @ToObject(kernel)
+            <>obj<>55 = @ToObject(Math)
             <>temp<>56 = <>j<>5
             <>arguments<>57 = [<>temp<>56, ]
-            <>fun<>58 = <>Global<>toObject(<>obj<>55["abs"])
+            <>fun<>58 = @ToObject(<>obj<>55["abs"])
             <>field1<>59 = <>fun<>58(<>obj<>55, <>arguments<>57)
-            <>obj<>60 = <>Global<>toObject(<>obj<>54[<>field1<>59])
-            <>obj<>61 = <>Global<>toObject(Math)
+            <>obj<>60 = @ToObject(<>obj<>54[<>field1<>59])
+            <>obj<>61 = @ToObject(Math)
             <>temp<>62 = <>i<>4
             <>arguments<>63 = [<>temp<>62, ]
-            <>fun<>64 = <>Global<>toObject(<>obj<>61["abs"])
+            <>fun<>64 = @ToObject(<>obj<>61["abs"])
             <>field1<>65 = <>fun<>64(<>obj<>61, <>arguments<>63)
             kernelSum = <>old<>53 + <>obj<>60[<>field1<>65]
           }
           {
             <>old<>66 = <>i<>4
-            <>new<>67 = <>Global<>toNumber(<>old<>66)
+            <>new<>67 = @ToNumber(<>old<>66)
             <>i<>4 = <>new<>67 + 1
             <>Global<>ignore30 = <>new<>67 + 1
           }
@@ -185,7 +185,7 @@ function buildKernel(this, <>arguments<>1)
       }
       {
         <>old<>68 = <>j<>5
-        <>new<>69 = <>Global<>toNumber(<>old<>68)
+        <>new<>69 = @ToNumber(<>old<>68)
         <>j<>5 = <>new<>69 + 1
         <>Global<>ignore26 = <>new<>69 + 1
       }
@@ -273,80 +273,80 @@ function gaussianBlur(this, <>arguments<>70)
                                 }
                                 {
                                   <>old<>91 = <>r<>73
-                                  <>obj<>92 = <>Global<>toObject(squidImageData)
+                                  <>obj<>92 = @ToObject(squidImageData)
                                   <>y<>93 = <>obj<>92[4 * <>y<>71 + <>j<>77 * width + <>x<>72 + <>i<>78 + 0]
-                                  <>obj<>94 = <>Global<>toObject(kernel)
-                                  <>obj<>95 = <>Global<>toObject(Math)
+                                  <>obj<>94 = @ToObject(kernel)
+                                  <>obj<>95 = @ToObject(Math)
                                   <>temp<>96 = <>j<>77
                                   <>arguments<>97 = [<>temp<>96, ]
-                                  <>fun<>98 = <>Global<>toObject(<>obj<>95["abs"])
+                                  <>fun<>98 = @ToObject(<>obj<>95["abs"])
                                   <>field1<>99 = <>fun<>98(<>obj<>95, <>arguments<>97)
-                                  <>obj<>100 = <>Global<>toObject(<>obj<>94[<>field1<>99])
-                                  <>obj<>101 = <>Global<>toObject(Math)
+                                  <>obj<>100 = @ToObject(<>obj<>94[<>field1<>99])
+                                  <>obj<>101 = @ToObject(Math)
                                   <>temp<>102 = <>i<>78
                                   <>arguments<>103 = [<>temp<>102, ]
-                                  <>fun<>104 = <>Global<>toObject(<>obj<>101["abs"])
+                                  <>fun<>104 = @ToObject(<>obj<>101["abs"])
                                   <>field1<>105 = <>fun<>104(<>obj<>101, <>arguments<>103)
                                   <>r<>73 = <>old<>91 + <>y<>93 * <>obj<>100[<>field1<>105]
                                 }
                                 {
                                   <>old<>106 = <>g<>74
-                                  <>obj<>107 = <>Global<>toObject(squidImageData)
+                                  <>obj<>107 = @ToObject(squidImageData)
                                   <>y<>108 = <>obj<>107[4 * <>y<>71 + <>j<>77 * width + <>x<>72 + <>i<>78 + 1]
-                                  <>obj<>109 = <>Global<>toObject(kernel)
-                                  <>obj<>110 = <>Global<>toObject(Math)
+                                  <>obj<>109 = @ToObject(kernel)
+                                  <>obj<>110 = @ToObject(Math)
                                   <>temp<>111 = <>j<>77
                                   <>arguments<>112 = [<>temp<>111, ]
-                                  <>fun<>113 = <>Global<>toObject(<>obj<>110["abs"])
+                                  <>fun<>113 = @ToObject(<>obj<>110["abs"])
                                   <>field1<>114 = <>fun<>113(<>obj<>110, <>arguments<>112)
-                                  <>obj<>115 = <>Global<>toObject(<>obj<>109[<>field1<>114])
-                                  <>obj<>116 = <>Global<>toObject(Math)
+                                  <>obj<>115 = @ToObject(<>obj<>109[<>field1<>114])
+                                  <>obj<>116 = @ToObject(Math)
                                   <>temp<>117 = <>i<>78
                                   <>arguments<>118 = [<>temp<>117, ]
-                                  <>fun<>119 = <>Global<>toObject(<>obj<>116["abs"])
+                                  <>fun<>119 = @ToObject(<>obj<>116["abs"])
                                   <>field1<>120 = <>fun<>119(<>obj<>116, <>arguments<>118)
                                   <>g<>74 = <>old<>106 + <>y<>108 * <>obj<>115[<>field1<>120]
                                 }
                                 {
                                   <>old<>121 = <>b<>75
-                                  <>obj<>122 = <>Global<>toObject(squidImageData)
+                                  <>obj<>122 = @ToObject(squidImageData)
                                   <>y<>123 = <>obj<>122[4 * <>y<>71 + <>j<>77 * width + <>x<>72 + <>i<>78 + 2]
-                                  <>obj<>124 = <>Global<>toObject(kernel)
-                                  <>obj<>125 = <>Global<>toObject(Math)
+                                  <>obj<>124 = @ToObject(kernel)
+                                  <>obj<>125 = @ToObject(Math)
                                   <>temp<>126 = <>j<>77
                                   <>arguments<>127 = [<>temp<>126, ]
-                                  <>fun<>128 = <>Global<>toObject(<>obj<>125["abs"])
+                                  <>fun<>128 = @ToObject(<>obj<>125["abs"])
                                   <>field1<>129 = <>fun<>128(<>obj<>125, <>arguments<>127)
-                                  <>obj<>130 = <>Global<>toObject(<>obj<>124[<>field1<>129])
-                                  <>obj<>131 = <>Global<>toObject(Math)
+                                  <>obj<>130 = @ToObject(<>obj<>124[<>field1<>129])
+                                  <>obj<>131 = @ToObject(Math)
                                   <>temp<>132 = <>i<>78
                                   <>arguments<>133 = [<>temp<>132, ]
-                                  <>fun<>134 = <>Global<>toObject(<>obj<>131["abs"])
+                                  <>fun<>134 = @ToObject(<>obj<>131["abs"])
                                   <>field1<>135 = <>fun<>134(<>obj<>131, <>arguments<>133)
                                   <>b<>75 = <>old<>121 + <>y<>123 * <>obj<>130[<>field1<>135]
                                 }
                                 {
                                   <>old<>136 = <>a<>76
-                                  <>obj<>137 = <>Global<>toObject(squidImageData)
+                                  <>obj<>137 = @ToObject(squidImageData)
                                   <>y<>138 = <>obj<>137[4 * <>y<>71 + <>j<>77 * width + <>x<>72 + <>i<>78 + 3]
-                                  <>obj<>139 = <>Global<>toObject(kernel)
-                                  <>obj<>140 = <>Global<>toObject(Math)
+                                  <>obj<>139 = @ToObject(kernel)
+                                  <>obj<>140 = @ToObject(Math)
                                   <>temp<>141 = <>j<>77
                                   <>arguments<>142 = [<>temp<>141, ]
-                                  <>fun<>143 = <>Global<>toObject(<>obj<>140["abs"])
+                                  <>fun<>143 = @ToObject(<>obj<>140["abs"])
                                   <>field1<>144 = <>fun<>143(<>obj<>140, <>arguments<>142)
-                                  <>obj<>145 = <>Global<>toObject(<>obj<>139[<>field1<>144])
-                                  <>obj<>146 = <>Global<>toObject(Math)
+                                  <>obj<>145 = @ToObject(<>obj<>139[<>field1<>144])
+                                  <>obj<>146 = @ToObject(Math)
                                   <>temp<>147 = <>i<>78
                                   <>arguments<>148 = [<>temp<>147, ]
-                                  <>fun<>149 = <>Global<>toObject(<>obj<>146["abs"])
+                                  <>fun<>149 = @ToObject(<>obj<>146["abs"])
                                   <>field1<>150 = <>fun<>149(<>obj<>146, <>arguments<>148)
                                   <>a<>76 = <>old<>136 + <>y<>138 * <>obj<>145[<>field1<>150]
                                 }
                               }
                               {
                                 <>old<>151 = <>i<>78
-                                <>new<>152 = <>Global<>toNumber(<>old<>151)
+                                <>new<>152 = @ToNumber(<>old<>151)
                                 <>i<>78 = <>new<>152 + 1
                                 <>Global<>ignore47 = <>new<>152 + 1
                               }
@@ -356,7 +356,7 @@ function gaussianBlur(this, <>arguments<>70)
                       }
                       {
                         <>old<>153 = <>j<>77
-                        <>new<>154 = <>Global<>toNumber(<>old<>153)
+                        <>new<>154 = @ToNumber(<>old<>153)
                         <>j<>77 = <>new<>154 + 1
                         <>Global<>ignore44 = <>new<>154 + 1
                       }
@@ -364,25 +364,25 @@ function gaussianBlur(this, <>arguments<>70)
                   }
                 }
                 {
-                  <>obj<>155 = <>Global<>toObject(squidImageData)
+                  <>obj<>155 = @ToObject(squidImageData)
                   <>obj<>155[4 * <>y<>71 * width + <>x<>72 + 0] = <>r<>73 / kernelSum
                 }
                 {
-                  <>obj<>156 = <>Global<>toObject(squidImageData)
+                  <>obj<>156 = @ToObject(squidImageData)
                   <>obj<>156[4 * <>y<>71 * width + <>x<>72 + 1] = <>g<>74 / kernelSum
                 }
                 {
-                  <>obj<>157 = <>Global<>toObject(squidImageData)
+                  <>obj<>157 = @ToObject(squidImageData)
                   <>obj<>157[4 * <>y<>71 * width + <>x<>72 + 2] = <>b<>75 / kernelSum
                 }
                 {
-                  <>obj<>158 = <>Global<>toObject(squidImageData)
+                  <>obj<>158 = @ToObject(squidImageData)
                   <>obj<>158[4 * <>y<>71 * width + <>x<>72 + 3] = <>a<>76 / kernelSum
                 }
               }
               {
                 <>old<>159 = <>x<>72
-                <>new<>160 = <>Global<>toNumber(<>old<>159)
+                <>new<>160 = @ToNumber(<>old<>159)
                 <>x<>72 = <>new<>160 + 1
                 <>Global<>ignore37 = <>new<>160 + 1
               }
@@ -391,7 +391,7 @@ function gaussianBlur(this, <>arguments<>70)
         }
         {
           <>old<>161 = <>y<>71
-          <>new<>162 = <>Global<>toNumber(<>old<>161)
+          <>new<>162 = @ToNumber(<>old<>161)
           <>y<>71 = <>new<>162 + 1
           <>Global<>ignore34 = <>new<>162 + 1
         }
@@ -415,9 +415,9 @@ var height
   sigma = 10
 }
 {
-  <>obj<>163 = <>Global<>toObject(buildKernel)
+  <>obj<>163 = @ToObject(buildKernel)
   <>arguments<>164 = []
-  <>fun<>165 = <>Global<>getBase(buildKernel)
+  <>fun<>165 = @GetBase(buildKernel)
   <>Global<>ignore58 = <>obj<>163(<>fun<>165, <>arguments<>164)
 }
 {
@@ -429,9 +429,9 @@ var height
   }
 }
 {
-  <>obj<>166 = <>Global<>toObject(gaussianBlur)
+  <>obj<>166 = @ToObject(gaussianBlur)
   <>arguments<>167 = []
-  <>fun<>168 = <>Global<>getBase(gaussianBlur)
+  <>fun<>168 = @GetBase(gaussianBlur)
   <>Global<>ignore61 = <>obj<>166(<>fun<>168, <>arguments<>167)
 }
 

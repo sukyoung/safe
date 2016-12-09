@@ -4,6 +4,6 @@ var __expect1 = true;
 try {
     var o = new true;
 } catch(e) {
-    __result1 = e instanceof __TypeErrLoc;
+    __result1 = e instanceof @TypeErr;
 }
 

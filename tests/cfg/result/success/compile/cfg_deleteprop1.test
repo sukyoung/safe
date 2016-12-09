@@ -18,12 +18,12 @@ var obj2
   obj2 = <>Global<>ignore2
 }
 {
-  <>obj<>1 = <>Global<>toObject(obj2)
+  <>obj<>1 = @ToObject(obj2)
   <>Global<>ignore3 = delete <>obj<>1["b"]
 }
 {
-  <>obj<>2 = <>Global<>toObject(obj2)
-  <>obj<>3 = <>Global<>toObject(<>obj<>2["d"])
+  <>obj<>2 = @ToObject(obj2)
+  <>obj<>3 = @ToObject(<>obj<>2["d"])
   <>Global<>ignore4 = delete <>obj<>3["x"]
 }
 

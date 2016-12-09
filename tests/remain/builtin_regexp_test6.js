@@ -9,7 +9,7 @@
 
 var o;
 var p, f;
-if (__BoolTop) {
+if (@BoolTop) {
 	o = new RegExp("(aaa)|(abc)");
 } else {
 	o = new RegExp("(aaa)|(abc)", "g");

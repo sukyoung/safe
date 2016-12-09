@@ -3,7 +3,7 @@ function Foo() {
 }
 
 var con;
-if (__TOP) 
+if (@Top) 
 	con = Foo;
 else
 	con = 1;

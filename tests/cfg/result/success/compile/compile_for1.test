@@ -21,10 +21,10 @@ var d
   while("test")
   {
     <>continue<>2 : {
-      <>obj<>3 = <>Global<>toObject(print)
+      <>obj<>3 = @ToObject(print)
       <>temp<>4 = 7
       <>arguments<>5 = [<>temp<>4, ]
-      <>fun<>6 = <>Global<>getBase(print)
+      <>fun<>6 = @GetBase(print)
       <>Global<>ignore6 = <>obj<>3(<>fun<>6, <>arguments<>5)
     }
   }
@@ -35,7 +35,7 @@ var d
     <>continue<>8 : <>Global<>ignore10 = c
     {
       <>old<>9 = c
-      <>new<>10 = <>Global<>toNumber(<>old<>9)
+      <>new<>10 = @ToNumber(<>old<>9)
       c = <>new<>10 + 1
       <>Global<>ignore8 = <>new<>10
     }
@@ -46,13 +46,13 @@ var d
   {
     <>continue<>12 : {
       <>old<>13 = b
-      <>new<>14 = <>Global<>toNumber(<>old<>13)
+      <>new<>14 = @ToNumber(<>old<>13)
       b = <>new<>14 + 1
       <>Global<>ignore14 = <>new<>14
     }
     {
       <>old<>15 = b
-      <>new<>16 = <>Global<>toNumber(<>old<>15)
+      <>new<>16 = @ToNumber(<>old<>15)
       b = <>new<>16 - 1
       <>Global<>ignore12 = <>new<>16
     }

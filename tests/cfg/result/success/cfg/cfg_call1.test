@@ -4,7 +4,7 @@ function[0] top-level {
   Block[0] -> [1], ExitExc
     [0] f := function (1) @ #6, #7
     [1] noop(StartOfFile)
-    [2] <>obj<>14 := <>Global<>toObject(f) @ #8
+    [2] <>obj<>14 := @ToObject(f) @ #8
     [3] <>temp<>15 := 1
     [4] <>temp<>16 := 2
     [5] <>temp<>17 := 3
@@ -12,7 +12,7 @@ function[0] top-level {
     [7] <>arguments<>18["0"] := <>temp<>15
     [8] <>arguments<>18["1"] := <>temp<>16
     [9] <>arguments<>18["2"] := <>temp<>17
-    [10] <>fun<>19 := <>Global<>getBase(f)
+    [10] <>fun<>19 := @GetBase(f)
     [11] <>this<> := enterCode(<>fun<>19)
 
   Call[1] -> ExitExc
@@ -38,11 +38,11 @@ function[1] f {
   Block[0] -> [1], ExitExc
     [0] <>g<>4 := function (2) @ #1, #2
     [1] <>temp<>5 := <>y<>2 + <>z<>3
-    [2] <>obj<>9 := <>Global<>toObject(<>g<>4) @ #3
+    [2] <>obj<>9 := @ToObject(<>g<>4) @ #3
     [3] <>temp<>10 := <>temp<>5
     [4] <>arguments<>11 := allocArg(1) @ #4
     [5] <>arguments<>11["0"] := <>temp<>10
-    [6] <>fun<>12 := <>Global<>getBase(<>g<>4)
+    [6] <>fun<>12 := @GetBase(<>g<>4)
     [7] <>this<> := enterCode(<>fun<>12)
 
   Call[1] -> ExitExc
