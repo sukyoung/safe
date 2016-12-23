@@ -105,3 +105,14 @@ IntelliJ users can use IntelliJ 2016.2.4 with the latest Scala plugin as follows
 \item Add \verb!(+) .jars! for the two libraries above.
 \item Run the \verb!buildParsers! task in SBT.
 \end{enumerate}
+
+For debugging purpose, you can first add a configuration like this:
+
+\begin{enumerate}
+\item Go to \verb!Run -> Edit Configurations!
+\item Click the ``+'' button on the left to add a new configuration, select ``Remote'' in the drop-down menu
+\item Name the configuration something like ``remote-debugging'', then it should work out of box (you can check that the port is 5005 though)
+\item Save the configuration by clicking ``OK''
+\end{enumerate}
+
+Now you can debug by first launching SAFE with a \verb!-debug! flag as the first argument, then following your other options. For example, \verb!./bin/safe -debug analyze something.js!. Your application is supposed to wait for connection from debugger once started, then you can start the debugging configuration we just created in IntelliJ.
