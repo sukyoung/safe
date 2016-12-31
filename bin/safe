@@ -35,7 +35,7 @@ if [ -z "$JAVA_FLAGS" ] ; then
 fi
 
 # remote debugging
-if [ $1 == "-debug" ] ; then
+if [ "$1" == "-debug" ] ; then
     JAVA_FLAGS="-Xdebug -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005 $JAVA_FLAGS"
     shift
 fi
