@@ -1,6 +1,6 @@
   function testcase() 
   {
-    var global = __Global;
+    var global = @Global;
     var desc = Object.getOwnPropertyDescriptor(global, "decodeURI");
     if (desc.value === global.decodeURI && desc.writable === true && desc.enumerable === false && desc.configurable === true)
     {

@@ -3,26 +3,26 @@ function[0] top-level {
 
   Block[0] -> Exit, ExitExc
     [0] noop(StartOfFile)
-    [1] <>obj<>1 := <>Global<>toObject(a) @ #1
-    [2] <>obj<>2 := <>Global<>toObject(<>obj<>1["b"]) @ #2
-    [3] <>obj<>3 := <>Global<>toObject(g) @ #3
-    [4] <>obj<>4 := <>Global<>toObject(<>obj<>2[<>obj<>3["c"]]) @ #4
+    [1] <>obj<>1 := @ToObject(a) @ #1
+    [2] <>obj<>2 := @ToObject(<>obj<>1["b"]) @ #2
+    [3] <>obj<>3 := @ToObject(g) @ #3
+    [4] <>obj<>4 := @ToObject(<>obj<>2[<>obj<>3["c"]]) @ #4
     [5] <>obj<>4["d"] := 1
-    [6] <>obj<>5 := <>Global<>toObject(a) @ #5
-    [7] <>obj<>6 := <>Global<>toObject(<>obj<>5["b"]) @ #6
-    [8] <>obj<>7 := <>Global<>toObject(<>obj<>6["c"]) @ #7
-    [9] <>obj<>8 := <>Global<>toObject(g) @ #8
-    [10] <>obj<>9 := <>Global<>toObject(<>obj<>8["h"]) @ #9
-    [11] <>obj<>10 := <>Global<>toObject(<>obj<>9["i"]) @ #10
+    [6] <>obj<>5 := @ToObject(a) @ #5
+    [7] <>obj<>6 := @ToObject(<>obj<>5["b"]) @ #6
+    [8] <>obj<>7 := @ToObject(<>obj<>6["c"]) @ #7
+    [9] <>obj<>8 := @ToObject(g) @ #8
+    [10] <>obj<>9 := @ToObject(<>obj<>8["h"]) @ #9
+    [11] <>obj<>10 := @ToObject(<>obj<>9["i"]) @ #10
     [12] <>obj<>7["d"] := <>obj<>10["j"]
-    [13] <>obj<>11 := <>Global<>toObject(a) @ #11
-    [14] <>obj<>12 := <>Global<>toObject(g) @ #12
-    [15] <>obj<>13 := <>Global<>toObject(g) @ #13
+    [13] <>obj<>11 := @ToObject(a) @ #11
+    [14] <>obj<>12 := @ToObject(g) @ #12
+    [15] <>obj<>13 := @ToObject(g) @ #13
     [16] <>obj<>11[<>obj<>12["c"]] := <>obj<>13["asd"]
-    [17] <>obj<>14 := <>Global<>toObject(a) @ #14
+    [17] <>obj<>14 := @ToObject(a) @ #14
     [18] <>Global<>ignore5 := <>obj<>14["b"]
     [19] a := 1
-    [20] <>obj<>15 := <>Global<>toObject(a) @ #15
+    [20] <>obj<>15 := @ToObject(a) @ #15
     [21] <>obj<>15["b"] := 1
     [22] noop(EndOfFile)
 

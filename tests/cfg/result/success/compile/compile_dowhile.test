@@ -5,7 +5,7 @@ function f(this, <>arguments<>1)
   <>a<>2 = <>arguments<>1["0"]
   <>b<>3 = <>arguments<>1["1"]
   {
-    <>obj<>4 = <>Global<>toObject(<>a<>2)
+    <>obj<>4 = @ToObject(<>a<>2)
     <>Global<>ignore2 = <>obj<>4[<>b<>3]
   }
 }

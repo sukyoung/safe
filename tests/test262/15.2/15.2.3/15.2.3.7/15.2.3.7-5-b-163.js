@@ -4,14 +4,14 @@
       
     };
     try
-{      __Global.writable = false;
+{      @Global.writable = false;
       Object.defineProperties(obj, {
-        property : __Global
+        property : @Global
       });
       obj.property = "isWritable";
       return obj.hasOwnProperty("property") && typeof (obj.property) === "undefined";}
     finally
-{      delete __Global.writable;}
+{      delete @Global.writable;}
 
   }
   {

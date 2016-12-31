@@ -9,6 +9,7 @@
     "maxStrSetSize": 1000,
     "callsiteSensitivity": 0,
     "html": "",
+    "snapshot": "",
     "domModel": false
   }
 }

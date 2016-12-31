@@ -1,6 +1,6 @@
 var x = 123;
 
-if(__TOP)
+if(@Top)
 	x = 456;
 
 var __result1 = x;

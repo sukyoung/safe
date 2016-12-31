@@ -3,7 +3,7 @@ function f() { return {};}
 var x = f();
 var y;
 
-while(__TOP) {
+while(@Top) {
 	y = x;
 	x = f();  // x is recent, y is old
 	x.p = 1;  // strong update

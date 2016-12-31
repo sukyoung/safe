@@ -12,10 +12,11 @@ function f(this, <>arguments<>1)
 <>Global<>ignore8 = null
 <>Global<>ignore10 = 3
 {
-  <>obj<>4 = <>Global<>toObject(f)
+  <>obj<>4 = @ToObject(f)
   <>temp<>5 = 3
   <>temp<>6 = true
   <>arguments<>7 = [<>temp<>5, <>temp<>6, ]
-  <>fun<>8 = <>Global<>getBase(f)
+  <>fun<>8 = @GetBase(f)
   <>Global<>ignore11 = <>obj<>4(<>fun<>8, <>arguments<>7)
 }
+

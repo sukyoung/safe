@@ -6,8 +6,8 @@ function[0] top-level {
     [1] <>Global<>ignore1 := alloc() @ #1
     [2] obj := <>Global<>ignore1
     [3] <>obj<>1 := obj
-    [4] <>iterator<>2 := <>Global<>iteratorInit(<>obj<>1) @ #2
-    [5] <>cond1<>3 := <>Global<>iteratorHasNext(<>obj<>1, <>iterator<>2)
+    [4] <>iterator<>2 := @iteratorInit(<>obj<>1) @ #2
+    [5] <>cond1<>3 := @iteratorHasNext(<>obj<>1, <>iterator<>2)
 
   Block[1] -> Exit
     [0] noop(EndOfFile)
@@ -16,16 +16,16 @@ function[0] top-level {
 
   Block[3] -> [5], ExitExc
     [0] assert(<>cond1<>3)
-    [1] <>key<>4 := <>Global<>iteratorNext(<>obj<>1, <>iterator<>2)
+    [1] <>key<>4 := @iteratorNext(<>obj<>1, <>iterator<>2)
     [2] x := <>key<>4
-    [3] <>obj<>5 := <>Global<>toObject(obj) @ #3
+    [3] <>obj<>5 := @ToObject(obj) @ #3
     [4] <>obj<>5[x] := 1
 
   Block[4] -> [1], ExitExc
     [0] assert(! <>cond1<>3)
 
   Block[5] -> [2]
-    [0] <>cond1<>3 := <>Global<>iteratorHasNext(<>obj<>1, <>iterator<>2)
+    [0] <>cond1<>3 := @iteratorHasNext(<>obj<>1, <>iterator<>2)
 
   Exit[-2]
 

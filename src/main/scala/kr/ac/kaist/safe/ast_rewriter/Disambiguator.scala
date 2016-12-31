@@ -57,8 +57,7 @@ class Disambiguator(program: Program) {
   private val EMPTY_LABEL = ("empty", "empty")
   private var env: Env = PRED_VARS.map(v => (v, v)) ++
     PRED_FUNS.map(f => (f, f)) ++ List(
-      ("alert", "alert"),
-      (NU.INTERNAL_PRINT, NU.INTERNAL_PRINT)
+      ("alert", "alert")
     )
 
   // label environment

@@ -11,7 +11,7 @@ if(truck)
   {
     <>old<>1 = truck
     <>old<>2 = x
-    <>new<>3 = <>Global<>toNumber(<>old<>2)
+    <>new<>3 = @ToNumber(<>old<>2)
     x = <>new<>3 - 1
     truck = <>old<>1 - <>new<>3
   }
@@ -24,7 +24,7 @@ else
     {
       <>old<>4 = truck
       <>old<>5 = x
-      <>new<>6 = <>Global<>toNumber(<>old<>5)
+      <>new<>6 = @ToNumber(<>old<>5)
       x = <>new<>6 - 1
       truck = <>old<>4 - <>new<>6
     }
@@ -32,7 +32,7 @@ else
     {
       <>old<>7 = truck
       <>old<>8 = x
-      <>new<>9 = <>Global<>toNumber(<>old<>8)
+      <>new<>9 = @ToNumber(<>old<>8)
       x = <>new<>9 - 1
       truck = <>old<>7 - <>new<>9
     }

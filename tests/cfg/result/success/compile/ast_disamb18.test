@@ -13,9 +13,9 @@ var __result1
   __expect1 = foo
 }
 {
-  <>obj<>3 = <>Global<>toObject(foo)
+  <>obj<>3 = @ToObject(foo)
   <>arguments<>4 = []
-  <>fun<>5 = <>Global<>getBase(foo)
+  <>fun<>5 = @GetBase(foo)
   <>Global<>ignore4 = <>obj<>3(<>fun<>5, <>arguments<>4)
 }
 {

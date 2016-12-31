@@ -25,7 +25,7 @@ function[0] top-level {
     [2] <>Global<>ignore8["b"] := "B"
     [3] <>Global<>ignore8["c"] := "C"
     [4] y := <>Global<>ignore8
-    [5] <>obj<>2 := <>Global<>toObject(y) @ #2
+    [5] <>obj<>2 := @ToObject(y) @ #2
     [6] throw(<>obj<>2["a"])
 
   Block[7] -> [9], [37]
@@ -40,7 +40,7 @@ function[0] top-level {
   Block[10] -> [12], [15]
     [0] <>Global<>ignore4 := function (1) @ #4, #5
     [1] x := <>Global<>ignore4
-    [2] <>obj<>7 := <>Global<>toObject(x) @ #6
+    [2] <>obj<>7 := @ToObject(x) @ #6
     [3] <>temp<>8 := 9
     [4] <>temp<>9 := 6
     [5] <>temp<>10 := 4
@@ -52,11 +52,11 @@ function[0] top-level {
     [11] <>temp<>12["3"] := <>temp<>11
     [12] <>arguments<>13 := allocArg(1) @ #8
     [13] <>arguments<>13["0"] := <>temp<>12
-    [14] <>fun<>14 := <>Global<>getBase(x)
+    [14] <>fun<>14 := @GetBase(x)
     [15] <>this<> := enterCode(<>fun<>14)
 
   Block[11] -> [3], [37]
-    [0] <>obj<>15 := <>Global<>toObject(y) @ #10
+    [0] <>obj<>15 := @ToObject(y) @ #10
     [1] <>Global<>ignore6 := alloc() @ #11
     [2] <>Global<>ignore6["test"] := - 23.8
     [3] <>obj<>15["d"] := <>Global<>ignore6
@@ -69,7 +69,7 @@ function[0] top-level {
   AfterCatch[14] -> [15]
 
   Block[15] -> [26], [37]
-    [0] <>obj<>15 := <>Global<>toObject(y) @ #12
+    [0] <>obj<>15 := @ToObject(y) @ #12
     [1] <>Global<>ignore6 := alloc() @ #13
     [2] <>Global<>ignore6["test"] := - 23.8
     [3] <>obj<>15["d"] := <>Global<>ignore6
@@ -81,7 +81,7 @@ function[0] top-level {
   Block[18] -> [22], [21], ExitExc
     [0] assert(true)
     [1] <>old<>16 := x
-    [2] <>new<>17 := <>Global<>toNumber(<>old<>16)
+    [2] <>new<>17 := @ToNumber(<>old<>16)
     [3] x := <>new<>17 - 1
 
   Block[19] -> [16], ExitExc
@@ -112,7 +112,7 @@ function[0] top-level {
   Block[29] -> [33], [32], ExitExc
     [0] assert(true)
     [1] <>old<>16 := x
-    [2] <>new<>17 := <>Global<>toNumber(<>old<>16)
+    [2] <>new<>17 := @ToNumber(<>old<>16)
     [3] x := <>new<>17 - 1
 
   Block[30] -> [27], ExitExc
@@ -143,7 +143,7 @@ function[0] top-level {
   Block[40] -> [44], [43], ExitExc
     [0] assert(true)
     [1] <>old<>16 := x
-    [2] <>new<>17 := <>Global<>toNumber(<>old<>16)
+    [2] <>new<>17 := @ToNumber(<>old<>16)
     [3] x := <>new<>17 - 1
 
   Block[41] -> [38], ExitExc
@@ -178,7 +178,7 @@ function[1] x<>funexpr@9:9-11:6<> {
   Entry[-1] -> [0]
 
   Block[0] -> Exit, ExitExc
-    [0] <>obj<>5 := <>Global<>toObject(<>arg<>3) @ #3
+    [0] <>obj<>5 := @ToObject(<>arg<>3) @ #3
     [1] return(<>obj<>5[0])
 
   Exit[-2]

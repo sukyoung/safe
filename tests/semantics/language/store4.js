@@ -1,7 +1,7 @@
 var o1,o2,o3;
 o1 = { };
 o2 = { };
-if (__TOP) {
+if (@Top) {
     o3 = o1;
 } else {
     o3 = o2;

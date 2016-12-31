@@ -3,7 +3,7 @@ function[0] top-level {
 
   Block[0] -> [1], ExitExc
     [0] noop(StartOfFile)
-    [1] <>fun<>1 := <>Global<>toObject(RegExp) @ #1
+    [1] <>fun<>1 := @ToObject(RegExp) @ #1
     [2] <>temp<>2 := "[a-zA-Z]*"
     [3] <>temp<>3 := ""
     [4] <>arguments<>4 := allocArg(2) @ #2
@@ -20,7 +20,7 @@ function[0] top-level {
   AfterCatch[3] -> ExitExc
 
   Block[4] -> [6], [5]
-    [0] <>cond<>8 := <>Global<>isObject(<>newObj<>7)
+    [0] <>cond<>8 := @isObject(<>newObj<>7)
 
   Block[5] -> [7], ExitExc
     [0] assert(<>cond<>8)

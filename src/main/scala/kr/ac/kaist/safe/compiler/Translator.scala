@@ -179,30 +179,25 @@ class Translator(program: Program) {
   }
 
   private def toObject(ast: ASTNode, lhs: IRId, arg: IRExpr): IRInternalCall =
-    IRInternalCall(ast, lhs, makeTId(ast, NU.TO_OBJ_NAME, true), arg, None)
+    IRInternalCall(ast, lhs, makeTId(ast, NU.INTERNAL_TO_OBJ, true), arg, None)
 
   private def toNumber(ast: ASTNode, lhs: IRId, id: IRId): IRInternalCall =
-    IRInternalCall(ast, lhs, makeTId(ast, NU.freshGlobalName("toNumber"), true), id, None)
+    IRInternalCall(ast, lhs, makeTId(ast, NU.INTERNAL_TO_NUM, true), id, None)
 
   private def getBase(ast: ASTNode, lhs: IRId, f: IRId): IRInternalCall =
-    IRInternalCall(ast, lhs, makeTId(ast, NU.freshGlobalName("getBase"), true), f, None)
+    IRInternalCall(ast, lhs, makeTId(ast, NU.INTERNAL_GET_BASE, true), f, None)
 
   private def iteratorInit(ast: ASTNode, iterator: IRId, obj: IRId): IRInternalCall =
-    IRInternalCall(ast, iterator,
-      makeTId(ast, NU.freshGlobalName("iteratorInit"), true), obj, None)
+    IRInternalCall(ast, iterator, makeTId(ast, NU.INTERNAL_ITER_INIT, true), obj, None)
 
   private def iteratorHasNext(ast: ASTNode, cond: IRId, obj: IRId, iterator: IRId): IRInternalCall =
-    IRInternalCall(ast, cond,
-      makeTId(ast, NU.freshGlobalName("iteratorHasNext"), true),
-      obj, Some(iterator))
+    IRInternalCall(ast, cond, makeTId(ast, NU.INTERNAL_HAS_NEXT, true), obj, Some(iterator))
 
   private def iteratorKey(ast: ASTNode, key: IRId, obj: IRId, iterator: IRId): IRInternalCall =
-    IRInternalCall(ast, key,
-      makeTId(ast, NU.freshGlobalName("iteratorNext"), true),
-      obj, Some(iterator))
+    IRInternalCall(ast, key, makeTId(ast, NU.INTERNAL_ITER_NEXT, true), obj, Some(iterator))
 
   private def isObject(ast: ASTNode, lhs: IRId, id: IRId): IRInternalCall =
-    IRInternalCall(ast, lhs, makeTId(ast, NU.freshGlobalName("isObject"), true), id, None)
+    IRInternalCall(ast, lhs, makeTId(ast, NU.INTERNAL_IS_OBJ, true), id, None)
 
   private def unescapeJava(s: String, e: StringLiteral): String =
     if (-1 == s.indexOf('\\')) s
@@ -385,25 +380,6 @@ class Translator(program: Program) {
     case IRLoad(_, _: IRUserId, _) => true
     case IRLoad(_, _, index) => containsUserId(index)
     case _: IRUserId => true
-    case _ => false
-  }
-
-  private def isIgnore(id: IRId): Boolean = id.uniqueName.startsWith(NU.IGNORE_NAME)
-
-  private def isPrint(n: Expr): Boolean = n match {
-    case VarRef(_, Id(_, id, _, _)) => id.equals(NU.INTERNAL_PRINT)
-    case _ => false
-  }
-  private def isPrintIS(n: Expr): Boolean = n match {
-    case VarRef(_, Id(_, id, _, _)) => id.equals(NU.INTERNAL_PRINT_IS)
-    case _ => false
-  }
-  private def isGetTickCount(n: Expr): Boolean = n match {
-    case VarRef(_, Id(_, id, _, _)) => id.equals(NU.INTERNAL_GET_TICK_COUNT)
-    case _ => false
-  }
-  private def isToObject(n: Expr): Boolean = n match {
-    case VarRef(_, Id(_, id, _, _)) => id.equals(NU.TO_OBJ_NAME)
     case _ => false
   }
 
@@ -1053,6 +1029,8 @@ class Translator(program: Program) {
           ((ss1 :+ mkExprS(left, y, r1)) ++ ss2, IRBin(e, y, IROp(NU.TEMP_AST, EJSOp(op.text)), r2))
       }
 
+    case VarRef(_, id @ Id(_, name, _, _)) if NU.isInternalValue(name) =>
+      (List(), IRInternalValue(id, name))
     case VarRef(_, id) => (List(), id2ir(env, id))
 
     case ArrayNumberExpr(_, elements) =>
@@ -1157,31 +1135,25 @@ class Translator(program: Program) {
             Some(mkExprS(e, res, obj)))
         ), res)
 
-    case FunApp(_, fun, List(arg)) if (isToObject(fun)) =>
-      val (ss, r) = walkExpr(arg, env, freshId(arg, arg.span, "new1"))
-      (ss :+ toObject(fun, res, r), res)
+    case FunApp(_, VarRef(_, Id(_, fun, _, _)), args) if (NU.isInternalCall(fun)) => args match {
+      case Nil =>
+        (List(IRInternalCall(e, res,
+          makeTId(e, fun, true), res, None)), res)
+      case _ =>
+        val last = args.last
+        val front = args.take(args.length - 1)
+        val newArgs = front.zipWithIndex.map { case (arg, index) => freshId(arg, arg.span, "new" + index) }
+        val results = front.zip(newArgs).map { case (arg, newArg) => (newArg, walkExpr(arg, env, newArg)) }
+        val ss1 = results.foldLeft(List[IRStmt]()) { case (l, (newArg, (stmts, expr))) => l ++ stmts :+ (mkExprS(e, newArg, expr)) }
+        val (ss2, r) = walkExpr(last, env, freshId(last, last.span, "new" + args.length))
+        (ss1 ++ ss2 :+ IRInternalCall(e, res,
+          makeTId(e, fun, true), r, None), res)
+    }
 
     case FunApp(_, fun, List(arg)) if (fun.isEval) =>
       val newone = freshId(arg, arg.span, "new1")
       val (ss, r) = walkExpr(arg, env, newone)
       (ss :+ IREval(e, res, r), res)
-
-    // _<>_print()
-    case FunApp(_, fun, List(arg)) if (isPrint(fun)) =>
-      val newone = freshId(arg, arg.span, "new1")
-      val (ss, r) = walkExpr(arg, env, newone)
-      (ss :+ IRInternalCall(e, res,
-        makeGId(e, NU.freshGlobalName("print")), r, None), res)
-
-    // _<>_printIS()
-    case FunApp(_, fun, Nil) if (isPrintIS(fun)) =>
-      (List(IRInternalCall(e, res,
-        makeGId(e, NU.freshGlobalName("printIS")), res, None)), res)
-
-    // _<>_getTickCount()
-    case FunApp(_, fun, Nil) if (isGetTickCount(fun)) =>
-      (List(IRInternalCall(e, res,
-        makeGId(e, NU.freshGlobalName("getTickCount")), res, None)), res)
 
     case FunApp(info, Parenthesized(_, e), args) if e.isInstanceOf[LHS] =>
       walkExpr(FunApp(info, e.asInstanceOf[LHS], args), env, res)

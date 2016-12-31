@@ -3,7 +3,7 @@ var o2 = [123];
 var o3 = [123,456];
 var p;
 
-if (__TOP)
+if (@Top)
 	p = "0" 
 else
 	p = "1"

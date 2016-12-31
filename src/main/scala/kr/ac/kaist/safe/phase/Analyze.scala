@@ -44,9 +44,9 @@ case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, Int, CallContext,
     )
     var initSt = Initialize(cfg)
 
-    // handling test mode
-    if (safeConfig.testMode)
-      initSt = Initialize.addTest(initSt)
+    // handling snapshot mode
+    config.snapshot.map(str =>
+      initSt = Initialize.addSnapshot(initSt, str))
 
     // handling HTML DOM modeling mode
     if (safeConfig.html || config.domModel)
@@ -102,6 +102,8 @@ case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, Int, CallContext,
       "{number}-depth callsite-sensitive analysis will be executed."),
     ("html", StrOption((c, s) => c.htmlName = Some(s)),
       "the resulting CFG with states will be drawn to the {string}.html"),
+    ("snapshot", StrOption((c, s) => c.snapshot = Some(s)),
+      "analysis with an initial heap generated from a dynamic snapshot(*.json)."),
     ("number", StrOption((c, s) => s match {
       case "default" => c.AbsNumber = DefaultNumber
       case "flat" => c.AbsNumber = FlatNumber
@@ -126,5 +128,6 @@ case class AnalyzeConfig(
   var AbsString: AbsStringUtil = StringSet(0),
   var callsiteSensitivity: Int = 0,
   var htmlName: Option[String] = None,
+  var snapshot: Option[String] = None,
   var domModel: Boolean = false
 ) extends Config

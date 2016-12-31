@@ -117,20 +117,22 @@ SAFE has been used by:
 Authors
 ============
 
-The main developers of SAFE 2.0 are as follows:
+The current developers of SAFE 2.0 are as follows:
 
 * `Jihyeok Park`_ 
-* `Yeonhee Ryou`_ 
+* `Joonyoung Park`_
 * `Sukyoung Ryu`_ 
 
 .. _Jihyeok Park: https://github.com/jhnaldo
-.. _Yeonhee Ryou: https://github.com/yeonni
+.. _Joonyoung Park: https://github.com/GMBale
 .. _Sukyoung Ryu:  https://github.com/sukyoung
 
 and the following people have contributed to the source code:
 
+* `Yeonhee Ryou`_ (SAFE 2.0 core)
 * `Minsoo Kim`_ (Built-in function modeling)
 * `PLRG @ KAIST`_ and colleagues in S-Core and Samsung Electronics (SAFE 1.0)
 
+.. _Yeonhee Ryou: https://github.com/yeonni
 .. _Minsoo Kim: https://github.com/mskim5383
 .. _PLRG @ KAIST: http://plrg.kaist.ac.kr

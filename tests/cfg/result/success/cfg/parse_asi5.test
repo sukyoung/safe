@@ -4,11 +4,11 @@ function[0] top-level {
   Block[0] -> [1], ExitExc
     [0] noop(StartOfFile)
     [1] <>y<>1 := b
-    [2] <>obj<>2 := <>Global<>toObject(c) @ #1
+    [2] <>obj<>2 := @ToObject(c) @ #1
     [3] <>temp<>3 := d + e
     [4] <>arguments<>4 := allocArg(1) @ #2
     [5] <>arguments<>4["0"] := <>temp<>3
-    [6] <>fun<>5 := <>Global<>getBase(c)
+    [6] <>fun<>5 := @GetBase(c)
     [7] <>this<> := enterCode(<>fun<>5)
 
   Call[1] -> ExitExc
@@ -19,9 +19,9 @@ function[0] top-level {
   AfterCatch[3] -> ExitExc
 
   Block[4] -> [5], ExitExc
-    [0] <>obj<>7 := <>Global<>toObject(<>obj1<>6) @ #4
+    [0] <>obj<>7 := @ToObject(<>obj1<>6) @ #4
     [1] <>arguments<>8 := allocArg(0) @ #5
-    [2] <>fun<>9 := <>Global<>toObject(<>obj<>7["print"]) @ #6
+    [2] <>fun<>9 := @ToObject(<>obj<>7["print"]) @ #6
     [3] <>this<> := enterCode(<>obj<>7)
 
   Call[5] -> ExitExc
@@ -34,9 +34,9 @@ function[0] top-level {
   Block[8] -> [9], ExitExc
     [0] a := <>y<>1 + <>z<>10
     [1] a := b + c
-    [2] <>obj<>11 := <>Global<>toObject(d + e) @ #8
+    [2] <>obj<>11 := @ToObject(d + e) @ #8
     [3] <>arguments<>12 := allocArg(0) @ #9
-    [4] <>fun<>13 := <>Global<>toObject(<>obj<>11["print"]) @ #10
+    [4] <>fun<>13 := @ToObject(<>obj<>11["print"]) @ #10
     [5] <>this<> := enterCode(<>obj<>11)
 
   Call[9] -> ExitExc
@@ -47,7 +47,7 @@ function[0] top-level {
   AfterCatch[11] -> ExitExc
 
   Block[12] -> [13], ExitExc
-    [0] <>obj<>15 := <>Global<>toObject(<>obj1<>14) @ #12
+    [0] <>obj<>15 := @ToObject(<>obj1<>14) @ #12
     [1] <>temp<>16 := "January"
     [2] <>temp<>17 := "Jan"
     [3] <>temp<>18 := allocArray(2) @ #13
@@ -108,11 +108,11 @@ function[0] top-level {
     [58] <>field1<>51 := allocArray(2) @ #24
     [59] <>field1<>51["0"] := <>temp<>49
     [60] <>field1<>51["1"] := <>temp<>50
-    [61] <>obj<>52 := <>Global<>toObject(<>obj<>15[<>field1<>51]) @ #25
+    [61] <>obj<>52 := @ToObject(<>obj<>15[<>field1<>51]) @ #25
     [62] <>temp<>64 := function (1) @ #31, #32
     [63] <>arguments<>65 := allocArg(1) @ #33
     [64] <>arguments<>65["0"] := <>temp<>64
-    [65] <>fun<>66 := <>Global<>toObject(<>obj<>52["forEach"]) @ #34
+    [65] <>fun<>66 := @ToObject(<>obj<>52["forEach"]) @ #34
     [66] <>this<> := enterCode(<>obj<>52)
 
   Call[13] -> ExitExc
@@ -123,15 +123,15 @@ function[0] top-level {
   AfterCatch[15] -> ExitExc
 
   Block[16] -> [17], ExitExc
-    [0] <>obj<>68 := <>Global<>toObject(<>obj1<>67) @ #36
+    [0] <>obj<>68 := @ToObject(<>obj1<>67) @ #36
     [1] <>temp<>69 := "/script.js"
     [2] <>temp<>70 := "/style1.css"
     [3] <>temp<>71 := "/style2.css"
-    [4] <>obj<>72 := <>Global<>toObject(<>obj<>68["/page1.html"]) @ #37
+    [4] <>obj<>72 := @ToObject(<>obj<>68["/page1.html"]) @ #37
     [5] <>temp<>84 := function (2) @ #44, #45
     [6] <>arguments<>85 := allocArg(1) @ #46
     [7] <>arguments<>85["0"] := <>temp<>84
-    [8] <>fun<>86 := <>Global<>toObject(<>obj<>72["forEach"]) @ #47
+    [8] <>fun<>86 := @ToObject(<>obj<>72["forEach"]) @ #47
     [9] <>this<> := enterCode(<>obj<>72)
 
   Call[17] -> ExitExc
@@ -148,11 +148,11 @@ function[0] top-level {
     [3] <>z<>89 := allocArray(1) @ #49
     [4] <>z<>89["0"] := <>temp<>88
     [5] <>y<>90 := <>y<>87 / <>z<>89
-    [6] <>obj<>91 := <>Global<>toObject(g) @ #50
+    [6] <>obj<>91 := @ToObject(g) @ #50
     [7] <>temp<>92 := s
     [8] <>arguments<>93 := allocArg(1) @ #51
     [9] <>arguments<>93["0"] := <>temp<>92
-    [10] <>fun<>94 := <>Global<>toObject(<>obj<>91["exec"]) @ #52
+    [10] <>fun<>94 := @ToObject(<>obj<>91["exec"]) @ #52
     [11] <>this<> := enterCode(<>obj<>91)
 
   Call[21] -> ExitExc
@@ -166,11 +166,11 @@ function[0] top-level {
     [0] i := <>y<>90 / <>z<>95
     [1] x := + y
     [2] y := - y
-    [3] <>obj<>96 := <>Global<>toObject(print) @ #54
+    [3] <>obj<>96 := @ToObject(print) @ #54
     [4] <>temp<>97 := - y
     [5] <>arguments<>98 := allocArg(1) @ #55
     [6] <>arguments<>98["0"] := <>temp<>97
-    [7] <>fun<>99 := <>Global<>getBase(print)
+    [7] <>fun<>99 := @GetBase(print)
     [8] <>this<> := enterCode(<>fun<>99)
 
   Call[25] -> ExitExc
@@ -194,15 +194,15 @@ function[1] <>funexpr@19:11-76<> {
   Entry[-1] -> [0]
 
   Block[0] -> [1], ExitExc
-    [0] <>obj<>55 := <>Global<>toObject(print) @ #26
+    [0] <>obj<>55 := @ToObject(print) @ #26
     [1] <>y<>56 := "The abbreviation of "
-    [2] <>obj<>57 := <>Global<>toObject(<>a<>53) @ #27
+    [2] <>obj<>57 := @ToObject(<>a<>53) @ #27
     [3] <>y<>58 := <>y<>56 + <>obj<>57[0] + " is "
-    [4] <>obj<>59 := <>Global<>toObject(<>a<>53) @ #28
+    [4] <>obj<>59 := @ToObject(<>a<>53) @ #28
     [5] <>temp<>60 := <>y<>58 + <>obj<>59[1] + "."
     [6] <>arguments<>61 := allocArg(1) @ #29
     [7] <>arguments<>61["0"] := <>temp<>60
-    [8] <>fun<>62 := <>Global<>getBase(print)
+    [8] <>fun<>62 := @GetBase(print)
     [9] <>this<> := enterCode(<>fun<>62)
 
   Call[1] -> ExitExc
@@ -222,11 +222,11 @@ function[2] <>funexpr@25:11-27:25<> {
   Entry[-1] -> [0]
 
   Block[0] -> [1], ExitExc
-    [0] <>obj<>75 := <>Global<>toObject(log) @ #38
+    [0] <>obj<>75 := @ToObject(log) @ #38
     [1] <>temp<>76 := "Looking up and caching " + <>uri<>73
     [2] <>arguments<>77 := allocArg(1) @ #39
     [3] <>arguments<>77["0"] := <>temp<>76
-    [4] <>fun<>78 := <>Global<>getBase(log)
+    [4] <>fun<>78 := @GetBase(log)
     [5] <>this<> := enterCode(<>fun<>78)
 
   Call[1] -> ExitExc
@@ -237,11 +237,11 @@ function[2] <>funexpr@25:11-27:25<> {
   AfterCatch[3] -> ExitExc
 
   Block[4] -> [5], ExitExc
-    [0] <>obj<>79 := <>Global<>toObject(fetch_and_cache) @ #41
+    [0] <>obj<>79 := @ToObject(fetch_and_cache) @ #41
     [1] <>temp<>80 := <>uri<>73
     [2] <>arguments<>81 := allocArg(1) @ #42
     [3] <>arguments<>81["0"] := <>temp<>80
-    [4] <>fun<>82 := <>Global<>getBase(fetch_and_cache)
+    [4] <>fun<>82 := @GetBase(fetch_and_cache)
     [5] <>this<> := enterCode(<>fun<>82)
 
   Call[5] -> ExitExc

@@ -1,14 +1,14 @@
 
 var myfunction
 {
-  <>fun<>1 = <>Global<>toObject(Date)
+  <>fun<>1 = @ToObject(Date)
   <>arguments<>2 = []
   <>proto<>3 = <>fun<>1["prototype"]
   <>obj<>4 = {
     [[Prototype]]=<>proto<>3
   }
   <>newObj<>5 = new <>fun<>1(<>obj<>4, <>arguments<>2)
-  <>cond<>6 = <>Global<>isObject(<>newObj<>5)
+  <>cond<>6 = @isObject(<>newObj<>5)
   if(<>cond<>6)
     <>Global<>ignore1 = <>newObj<>5
   else
@@ -16,11 +16,11 @@ var myfunction
   gCurrentTestStop = <>Global<>ignore1
 }
 {
-  <>obj<>7 = <>Global<>toObject(win)
-  <>fun<>8 = <>Global<>toObject(<>obj<>7["TestCase"])
-  <>obj<>9 = <>Global<>toObject(win)
+  <>obj<>7 = @ToObject(win)
+  <>fun<>8 = @ToObject(<>obj<>7["TestCase"])
+  <>obj<>9 = @ToObject(win)
   <>temp<>10 = <>obj<>9["gTestFile"]
-  <>obj<>11 = <>Global<>toObject(win)
+  <>obj<>11 = @ToObject(win)
   <>temp<>12 = <>obj<>11["summary"]
   <>temp<>13 = "Unknown"
   <>arguments<>14 = [<>temp<>10, <>temp<>12, <>temp<>13, ]
@@ -29,14 +29,14 @@ var myfunction
     [[Prototype]]=<>proto<>15
   }
   <>newObj<>17 = new <>fun<>8(<>obj<>16, <>arguments<>14)
-  <>cond<>18 = <>Global<>isObject(<>newObj<>17)
+  <>cond<>18 = @isObject(<>newObj<>17)
   if(<>cond<>18)
     <>Global<>ignore2 = <>newObj<>17
   else
     <>Global<>ignore2 = <>obj<>16
 }
 {
-  <>fun<>19 = <>Global<>toObject(TypeError)
+  <>fun<>19 = @ToObject(TypeError)
   <>temp<>20 = "here"
   <>arguments<>21 = [<>temp<>20, ]
   <>proto<>22 = <>fun<>19["prototype"]
@@ -44,7 +44,7 @@ var myfunction
     [[Prototype]]=<>proto<>22
   }
   <>newObj<>24 = new <>fun<>19(<>obj<>23, <>arguments<>21)
-  <>cond<>25 = <>Global<>isObject(<>newObj<>24)
+  <>cond<>25 = @isObject(<>newObj<>24)
   if(<>cond<>25)
     <>new1<>26 = <>newObj<>24
   else
@@ -55,7 +55,7 @@ var myfunction
   <>fun1<>27 = function <>funexpr@4:22-10:2<>28(this, <>arguments<>29) 
   {
     {
-      <>obj<>30 = <>Global<>toObject(this)
+      <>obj<>30 = @ToObject(this)
       <>Global<>ignore4 = function this.valueOf<>funexpr@6:18-9:4<>31(this, <>arguments<>32) 
       {
         {
@@ -66,14 +66,14 @@ var myfunction
       <>obj<>30["valueOf"] = <>Global<>ignore4
     }
   }
-  <>fun<>34 = <>Global<>toObject(<>fun1<>27)
+  <>fun<>34 = @ToObject(<>fun1<>27)
   <>arguments<>35 = []
   <>proto<>36 = <>fun<>34["prototype"]
   <>obj<>37 = {
     [[Prototype]]=<>proto<>36
   }
   <>newObj<>38 = new <>fun<>34(<>obj<>37, <>arguments<>35)
-  <>cond<>39 = <>Global<>isObject(<>newObj<>38)
+  <>cond<>39 = @isObject(<>newObj<>38)
   if(<>cond<>39)
     <>Global<>ignore3 = <>newObj<>38
   else

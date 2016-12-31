@@ -4,7 +4,7 @@ function[0] top-level {
   Block[0] -> [1], ExitExc
     [0] noop(StartOfFile)
     [1] <>obj1<>1237 := function (1) @ #791, #792
-    [2] <>obj<>1238 := <>Global<>toObject(<>obj1<>1237) @ #793
+    [2] <>obj<>1238 := @ToObject(<>obj1<>1237) @ #793
     [3] <>arguments<>1239 := allocArg(0) @ #794
     [4] <>this<> := enterCode(<>Global<>global)
 
@@ -43,11 +43,11 @@ function[1] <>funexpr@1:2-17:208<> {
     [12] <>G<>13 := function (14) @ #553, #554
     [13] <>H<>14 := function (16) @ #559, #560
     [14] <>I<>15 := function (17) @ #576, #577
-    [15] <>obj<>932 := <>Global<>toObject(parseFloat) @ #578
+    [15] <>obj<>932 := @ToObject(parseFloat) @ #578
     [16] <>temp<>933 := "0.01"
     [17] <>arguments<>934 := allocArg(1) @ #579
     [18] <>arguments<>934["0"] := <>temp<>933
-    [19] <>fun<>935 := <>Global<>getBase(parseFloat)
+    [19] <>fun<>935 := @GetBase(parseFloat)
     [20] <>this<> := enterCode(<>fun<>935)
 
   Call[1] -> ExitExc
@@ -59,11 +59,11 @@ function[1] <>funexpr@1:2-17:208<> {
 
   Block[4] -> [5], ExitExc
     [0] <>f<>16 := <>Global<>ignore72
-    [1] <>obj<>936 := <>Global<>toObject(isNaN) @ #581
+    [1] <>obj<>936 := @ToObject(isNaN) @ #581
     [2] <>temp<>937 := <>f<>16
     [3] <>arguments<>938 := allocArg(1) @ #582
     [4] <>arguments<>938["0"] := <>temp<>937
-    [5] <>fun<>939 := <>Global<>getBase(isNaN)
+    [5] <>fun<>939 := @GetBase(isNaN)
     [6] <>this<> := enterCode(<>fun<>939)
 
   Call[5] -> ExitExc
@@ -91,22 +91,22 @@ function[1] <>funexpr@1:2-17:208<> {
     [4] <>l<>19 := <>Global<>ignore76
     [5] <>Global<>ignore84 := function (21) @ #641, #642
     [6] <>n<>20 := <>Global<>ignore84
-    [7] <>obj<>1028 := <>Global<>toObject(<>l<>19) @ #643
-    [8] <>obj<>1029 := <>Global<>toObject(<>obj<>1028["prototype"]) @ #644
+    [7] <>obj<>1028 := @ToObject(<>l<>19) @ #643
+    [8] <>obj<>1029 := @ToObject(<>obj<>1028["prototype"]) @ #644
     [9] <>Global<>ignore89 := function (22) @ #652, #653
     [10] <>obj<>1029["c"] := <>Global<>ignore89
-    [11] <>obj<>1042 := <>Global<>toObject(<>l<>19) @ #654
-    [12] <>obj<>1043 := <>Global<>toObject(<>obj<>1042["prototype"]) @ #655
-    [13] <>obj<>1044 := <>Global<>toObject(<>l<>19) @ #656
-    [14] <>obj<>1045 := <>Global<>toObject(<>obj<>1044["prototype"]) @ #657
+    [11] <>obj<>1042 := @ToObject(<>l<>19) @ #654
+    [12] <>obj<>1043 := @ToObject(<>obj<>1042["prototype"]) @ #655
+    [13] <>obj<>1044 := @ToObject(<>l<>19) @ #656
+    [14] <>obj<>1045 := @ToObject(<>obj<>1044["prototype"]) @ #657
     [15] <>obj<>1043["geil"] := <>obj<>1045["c"]
     [16] <>Global<>ignore91 := function (23) @ #690, #691
     [17] <>p<>21 := <>Global<>ignore91
-    [18] <>obj<>1093 := <>Global<>toObject("google_conversion_id google_conversion_format google_conversion_type google_conversion_order_id google_conversion_language google_conversion_value google_conversion_domain google_conversion_label google_conversion_color google_disable_viewthrough google_remarketing_only google_remarketing_for_search google_conversion_items google_custom_params google_conversion_date google_conversion_time google_conversion_js_version onload_callback opt_image_generator google_is_call google_conversion_page_url") @ #692
+    [18] <>obj<>1093 := @ToObject("google_conversion_id google_conversion_format google_conversion_type google_conversion_order_id google_conversion_language google_conversion_value google_conversion_domain google_conversion_label google_conversion_color google_disable_viewthrough google_remarketing_only google_remarketing_for_search google_conversion_items google_custom_params google_conversion_date google_conversion_time google_conversion_js_version onload_callback opt_image_generator google_is_call google_conversion_page_url") @ #692
     [19] <>temp<>1094 := " "
     [20] <>arguments<>1095 := allocArg(1) @ #693
     [21] <>arguments<>1095["0"] := <>temp<>1094
-    [22] <>fun<>1096 := <>Global<>toObject(<>obj<>1093["split"]) @ #694
+    [22] <>fun<>1096 := @ToObject(<>obj<>1093["split"]) @ #694
     [23] <>this<> := enterCode(<>obj<>1093)
 
   Block[12] -> [11], ExitExc
@@ -143,7 +143,7 @@ function[1] <>funexpr@1:2-17:208<> {
   Block[23] -> [25], ExitExc
     [0] assert(<>E<>24)
     [1] <>y<>1097 := null
-    [2] <>fun<>1098 := <>Global<>toObject(RegExp) @ #696
+    [2] <>fun<>1098 := @ToObject(RegExp) @ #696
     [3] <>temp<>1099 := "[\?&;]google_debug"
     [4] <>temp<>1100 := ""
     [5] <>arguments<>1101 := allocArg(2) @ #697
@@ -163,7 +163,7 @@ function[1] <>funexpr@1:2-17:208<> {
   AfterCatch[27] -> ExitExc
 
   Block[28] -> [30], [29]
-    [0] <>cond<>1105 := <>Global<>isObject(<>newObj<>1104)
+    [0] <>cond<>1105 := @isObject(<>newObj<>1104)
 
   Block[29] -> [31], ExitExc
     [0] assert(<>cond<>1105)
@@ -174,12 +174,12 @@ function[1] <>funexpr@1:2-17:208<> {
     [1] <>obj1<>1106 := <>obj<>1103
 
   Block[31] -> [32], ExitExc
-    [0] <>obj<>1107 := <>Global<>toObject(<>obj1<>1106) @ #700
-    [1] <>obj<>1108 := <>Global<>toObject(document) @ #701
+    [0] <>obj<>1107 := @ToObject(<>obj1<>1106) @ #700
+    [1] <>obj<>1108 := @ToObject(document) @ #701
     [2] <>temp<>1109 := <>obj<>1108["URL"]
     [3] <>arguments<>1110 := allocArg(1) @ #702
     [4] <>arguments<>1110["0"] := <>temp<>1109
-    [5] <>fun<>1111 := <>Global<>toObject(<>obj<>1107["exec"]) @ #703
+    [5] <>fun<>1111 := @ToObject(<>obj<>1107["exec"]) @ #703
     [6] <>this<> := enterCode(<>obj<>1107)
 
   Call[32] -> ExitExc
@@ -192,11 +192,11 @@ function[1] <>funexpr@1:2-17:208<> {
   Block[35] -> [37], ExitExc
     [0] assert(<>y<>1097 != <>z<>1112)
     [1] <>J<>25 := <>E<>24
-    [2] <>obj<>1113 := <>Global<>toObject(document) @ #705
+    [2] <>obj<>1113 := @ToObject(document) @ #705
     [3] <>temp<>1114 := "head"
     [4] <>arguments<>1115 := allocArg(1) @ #706
     [5] <>arguments<>1115["0"] := <>temp<>1114
-    [6] <>fun<>1116 := <>Global<>toObject(<>obj<>1113["getElementsByTagName"]) @ #707
+    [6] <>fun<>1116 := @ToObject(<>obj<>1113["getElementsByTagName"]) @ #707
     [7] <>this<> := enterCode(<>obj<>1113)
 
   Block[36] -> [76], ExitExc
@@ -210,7 +210,7 @@ function[1] <>funexpr@1:2-17:208<> {
   AfterCatch[39] -> ExitExc
 
   Block[40] -> [42], [41], ExitExc
-    [0] <>obj<>1118 := <>Global<>toObject(<>obj1<>1117) @ #709
+    [0] <>obj<>1118 := @ToObject(<>obj1<>1117) @ #709
     [1] <>K<>26 := <>obj<>1118[0]
 
   Block[41] -> [43], ExitExc
@@ -219,19 +219,19 @@ function[1] <>funexpr@1:2-17:208<> {
 
   Block[42] -> [44], ExitExc
     [0] assert(! <>K<>26)
-    [1] <>obj<>1119 := <>Global<>toObject(document) @ #710
+    [1] <>obj<>1119 := @ToObject(document) @ #710
     [2] <>temp<>1120 := "head"
     [3] <>arguments<>1121 := allocArg(1) @ #711
     [4] <>arguments<>1121["0"] := <>temp<>1120
-    [5] <>fun<>1122 := <>Global<>toObject(<>obj<>1119["createElement"]) @ #712
+    [5] <>fun<>1122 := @ToObject(<>obj<>1119["createElement"]) @ #712
     [6] <>this<> := enterCode(<>obj<>1119)
 
   Block[43] -> [60], ExitExc
-    [0] <>obj<>1142 := <>Global<>toObject(document) @ #728
+    [0] <>obj<>1142 := @ToObject(document) @ #728
     [1] <>temp<>1143 := "script"
     [2] <>arguments<>1144 := allocArg(1) @ #729
     [3] <>arguments<>1144["0"] := <>temp<>1143
-    [4] <>fun<>1145 := <>Global<>toObject(<>obj<>1142["createElement"]) @ #730
+    [4] <>fun<>1145 := @ToObject(<>obj<>1142["createElement"]) @ #730
     [5] <>this<> := enterCode(<>obj<>1142)
 
   Call[44] -> ExitExc
@@ -243,11 +243,11 @@ function[1] <>funexpr@1:2-17:208<> {
 
   Block[47] -> [48], ExitExc
     [0] <>K<>26 := <>temp<>1123
-    [1] <>obj<>1124 := <>Global<>toObject(document) @ #714
+    [1] <>obj<>1124 := @ToObject(document) @ #714
     [2] <>temp<>1125 := "html"
     [3] <>arguments<>1126 := allocArg(1) @ #715
     [4] <>arguments<>1126["0"] := <>temp<>1125
-    [5] <>fun<>1127 := <>Global<>toObject(<>obj<>1124["getElementsByTagName"]) @ #716
+    [5] <>fun<>1127 := @ToObject(<>obj<>1124["getElementsByTagName"]) @ #716
     [6] <>this<> := enterCode(<>obj<>1124)
 
   Call[48] -> ExitExc
@@ -258,14 +258,14 @@ function[1] <>funexpr@1:2-17:208<> {
   AfterCatch[50] -> ExitExc
 
   Block[51] -> [52], ExitExc
-    [0] <>obj<>1129 := <>Global<>toObject(<>obj1<>1128) @ #718
-    [1] <>obj<>1130 := <>Global<>toObject(<>obj<>1129[0]) @ #719
+    [0] <>obj<>1129 := @ToObject(<>obj1<>1128) @ #718
+    [1] <>obj<>1130 := @ToObject(<>obj<>1129[0]) @ #719
     [2] <>temp<>1131 := <>K<>26
-    [3] <>obj<>1132 := <>Global<>toObject(document) @ #720
+    [3] <>obj<>1132 := @ToObject(document) @ #720
     [4] <>temp<>1133 := "body"
     [5] <>arguments<>1134 := allocArg(1) @ #721
     [6] <>arguments<>1134["0"] := <>temp<>1133
-    [7] <>fun<>1135 := <>Global<>toObject(<>obj<>1132["getElementsByTagName"]) @ #722
+    [7] <>fun<>1135 := @ToObject(<>obj<>1132["getElementsByTagName"]) @ #722
     [8] <>this<> := enterCode(<>obj<>1132)
 
   Call[52] -> ExitExc
@@ -276,12 +276,12 @@ function[1] <>funexpr@1:2-17:208<> {
   AfterCatch[54] -> ExitExc
 
   Block[55] -> [56], ExitExc
-    [0] <>obj<>1137 := <>Global<>toObject(<>obj1<>1136) @ #724
+    [0] <>obj<>1137 := @ToObject(<>obj1<>1136) @ #724
     [1] <>temp<>1138 := <>obj<>1137[0]
     [2] <>arguments<>1139 := allocArg(2) @ #725
     [3] <>arguments<>1139["0"] := <>temp<>1131
     [4] <>arguments<>1139["1"] := <>temp<>1138
-    [5] <>fun<>1140 := <>Global<>toObject(<>obj<>1130["insertBefore"]) @ #726
+    [5] <>fun<>1140 := @ToObject(<>obj<>1130["insertBefore"]) @ #726
     [6] <>this<> := enterCode(<>obj<>1130)
 
   Call[56] -> ExitExc
@@ -303,12 +303,12 @@ function[1] <>funexpr@1:2-17:208<> {
 
   Block[63] -> [64], ExitExc
     [0] <>L<>27 := <>Global<>ignore101
-    [1] <>obj<>1146 := <>Global<>toObject(<>L<>27) @ #732
-    [2] <>obj<>1147 := <>Global<>toObject(<>A<>9) @ #733
+    [1] <>obj<>1146 := @ToObject(<>L<>27) @ #732
+    [2] <>obj<>1147 := @ToObject(<>A<>9) @ #733
     [3] <>temp<>1148 := window
     [4] <>arguments<>1149 := allocArg(1) @ #734
     [5] <>arguments<>1149["0"] := <>temp<>1148
-    [6] <>fun<>1150 := <>Global<>getBase(<>A<>9)
+    [6] <>fun<>1150 := @GetBase(<>A<>9)
     [7] <>this<> := enterCode(<>fun<>1150)
 
   Call[64] -> ExitExc
@@ -320,11 +320,11 @@ function[1] <>funexpr@1:2-17:208<> {
 
   Block[67] -> [68], ExitExc
     [0] <>y<>1152 := <>y<>1151 + "//"
-    [1] <>obj<>1153 := <>Global<>toObject(<>B<>10) @ #736
+    [1] <>obj<>1153 := @ToObject(<>B<>10) @ #736
     [2] <>temp<>1154 := <>J<>25
     [3] <>arguments<>1155 := allocArg(1) @ #737
     [4] <>arguments<>1155["0"] := <>temp<>1154
-    [5] <>fun<>1156 := <>Global<>getBase(<>B<>10)
+    [5] <>fun<>1156 := @GetBase(<>B<>10)
     [6] <>this<> := enterCode(<>fun<>1156)
 
   Call[68] -> ExitExc
@@ -336,11 +336,11 @@ function[1] <>funexpr@1:2-17:208<> {
 
   Block[71] -> [72], ExitExc
     [0] <>obj<>1146["src"] := <>y<>1152 + <>z<>1157 + "/pagead/conversion_debug_overlay.js"
-    [1] <>obj<>1158 := <>Global<>toObject(<>K<>26) @ #739
+    [1] <>obj<>1158 := @ToObject(<>K<>26) @ #739
     [2] <>temp<>1159 := <>L<>27
     [3] <>arguments<>1160 := allocArg(1) @ #740
     [4] <>arguments<>1160["0"] := <>temp<>1159
-    [5] <>fun<>1161 := <>Global<>toObject(<>obj<>1158["appendChild"]) @ #741
+    [5] <>fun<>1161 := @ToObject(<>obj<>1158["appendChild"]) @ #741
     [6] <>this<> := enterCode(<>obj<>1158)
 
   Call[72] -> ExitExc
@@ -355,7 +355,7 @@ function[1] <>funexpr@1:2-17:208<> {
   Block[76] -> [79], [78], [77]
     [0] <>N<>29 := <>E<>24
     [1] <>y<>1163 := "landing"
-    [2] <>obj<>1164 := <>Global<>toObject(<>N<>29) @ #743
+    [2] <>obj<>1164 := @ToObject(<>N<>29) @ #743
 
   Block[77] -> [174]
     [0] catch(<>O<>1162)
@@ -366,7 +366,7 @@ function[1] <>funexpr@1:2-17:208<> {
 
   Block[79] -> [80], [77]
     [0] assert(<>y<>1163 != <>obj<>1164["google_conversion_type"])
-    [1] <>obj<>1166 := <>Global<>toObject(<>N<>29) @ #744
+    [1] <>obj<>1166 := @ToObject(<>N<>29) @ #744
     [2] <>newa<>1165 := ! <>obj<>1166["google_conversion_id"]
 
   Block[80] -> [84], [83]
@@ -384,11 +384,11 @@ function[1] <>funexpr@1:2-17:208<> {
     [0] assert(! <>newa<>1165)
 
   Block[85] -> [87], [86], [77]
-    [0] <>obj<>1167 := <>Global<>toObject(<>N<>29) @ #745
+    [0] <>obj<>1167 := @ToObject(<>N<>29) @ #745
 
   Block[86] -> [88], [77]
     [0] assert(<>obj<>1167["google_remarketing_only"])
-    [1] <>obj<>1168 := <>Global<>toObject(<>N<>29) @ #746
+    [1] <>obj<>1168 := @ToObject(<>N<>29) @ #746
     [2] <>newb<>1169 := <>obj<>1168["google_disable_viewthrough"]
 
   Block[87] -> [90], [89], [77]
@@ -413,8 +413,8 @@ function[1] <>funexpr@1:2-17:208<> {
     [0] assert(! <>newb<>1169)
 
   Block[94] -> [95], [77]
-    [0] <>obj<>1170 := <>Global<>toObject(<>N<>29) @ #747
-    [1] <>fun<>1171 := <>Global<>toObject(Date) @ #748
+    [0] <>obj<>1170 := @ToObject(<>N<>29) @ #747
+    [1] <>fun<>1171 := @ToObject(Date) @ #748
     [2] <>arguments<>1172 := allocArg(0) @ #749
     [3] <>proto<>1173 := <>fun<>1171["prototype"]
     [4] <>obj<>1174 := alloc(<>proto<>1173) @ #750
@@ -427,7 +427,7 @@ function[1] <>funexpr@1:2-17:208<> {
   AfterCatch[97] -> [77]
 
   Block[98] -> [100], [99]
-    [0] <>cond<>1176 := <>Global<>isObject(<>newObj<>1175)
+    [0] <>cond<>1176 := @isObject(<>newObj<>1175)
 
   Block[99] -> [101], [77]
     [0] assert(<>cond<>1176)
@@ -440,11 +440,11 @@ function[1] <>funexpr@1:2-17:208<> {
   Block[101] -> [102], [77]
     [0] <>obj<>1170["google_conversion_date"] := <>temp<>1177
     [1] <>temp<>1177 := <>obj<>1170["google_conversion_date"]
-    [2] <>obj<>1178 := <>Global<>toObject(<>N<>29) @ #752
-    [3] <>obj<>1179 := <>Global<>toObject(<>N<>29) @ #753
-    [4] <>obj<>1180 := <>Global<>toObject(<>obj<>1179["google_conversion_date"]) @ #754
+    [2] <>obj<>1178 := @ToObject(<>N<>29) @ #752
+    [3] <>obj<>1179 := @ToObject(<>N<>29) @ #753
+    [4] <>obj<>1180 := @ToObject(<>obj<>1179["google_conversion_date"]) @ #754
     [5] <>arguments<>1181 := allocArg(0) @ #755
-    [6] <>fun<>1182 := <>Global<>toObject(<>obj<>1180["getTime"]) @ #756
+    [6] <>fun<>1182 := @ToObject(<>obj<>1180["getTime"]) @ #756
     [7] <>this<> := enterCode(<>obj<>1180)
 
   Call[102] -> [77]
@@ -457,27 +457,27 @@ function[1] <>funexpr@1:2-17:208<> {
   Block[105] -> [108], [107], [77]
     [0] <>obj<>1178["google_conversion_time"] := <>temp<>1183
     [1] <>temp<>1183 := <>obj<>1178["google_conversion_time"]
-    [2] <>obj<>1184 := <>Global<>toObject(<>N<>29) @ #758
+    [2] <>obj<>1184 := @ToObject(<>N<>29) @ #758
     [3] <>y<>1185 := "number"
-    [4] <>obj<>1186 := <>Global<>toObject(<>N<>29) @ #759
+    [4] <>obj<>1186 := @ToObject(<>N<>29) @ #759
 
   Block[106] -> [114], [113], [77]
     [0] <>obj<>1184["google_conversion_snippets"] := <>temp<>1190
     [1] <>temp<>1190 := <>obj<>1184["google_conversion_snippets"]
     [2] <>y<>1191 := "number"
-    [3] <>obj<>1192 := <>Global<>toObject(<>N<>29) @ #762
+    [3] <>obj<>1192 := @ToObject(<>N<>29) @ #762
 
   Block[107] -> [110], [109], [77]
     [0] assert(<>y<>1185 == typeof <>obj<>1186["google_conversion_snippets"])
     [1] <>y<>1187 := 0
-    [2] <>obj<>1188 := <>Global<>toObject(<>N<>29) @ #760
+    [2] <>obj<>1188 := @ToObject(<>N<>29) @ #760
 
   Block[108] -> [112], [77]
     [0] assert(<>y<>1185 != typeof <>obj<>1186["google_conversion_snippets"])
 
   Block[109] -> [106], [77]
     [0] assert(<>y<>1187 < <>obj<>1188["google_conversion_snippets"])
-    [1] <>obj<>1189 := <>Global<>toObject(<>N<>29) @ #761
+    [1] <>obj<>1189 := @ToObject(<>N<>29) @ #761
     [2] <>temp<>1190 := <>obj<>1189["google_conversion_snippets"] + 1
 
   Block[110] -> [111], [77]
@@ -490,8 +490,8 @@ function[1] <>funexpr@1:2-17:208<> {
 
   Block[113] -> [115], [77]
     [0] assert(<>y<>1191 != typeof <>obj<>1192["google_conversion_first_time"])
-    [1] <>obj<>1193 := <>Global<>toObject(<>N<>29) @ #763
-    [2] <>obj<>1194 := <>Global<>toObject(<>N<>29) @ #764
+    [1] <>obj<>1193 := @ToObject(<>N<>29) @ #763
+    [2] <>obj<>1194 := @ToObject(<>N<>29) @ #764
     [3] <>obj<>1193["google_conversion_first_time"] := <>obj<>1194["google_conversion_time"]
     [4] <>temp<>1195 := <>obj<>1193["google_conversion_first_time"]
 
@@ -499,11 +499,11 @@ function[1] <>funexpr@1:2-17:208<> {
     [0] assert(<>y<>1191 == typeof <>obj<>1192["google_conversion_first_time"])
 
   Block[115] -> [120], [119], [77]
-    [0] <>obj<>1196 := <>Global<>toObject(<>N<>29) @ #765
+    [0] <>obj<>1196 := @ToObject(<>N<>29) @ #765
     [1] <>obj<>1196["google_conversion_js_version"] := "7"
     [2] <>temp<>1197 := <>obj<>1196["google_conversion_js_version"]
     [3] <>y<>1198 := 0
-    [4] <>obj<>1199 := <>Global<>toObject(<>N<>29) @ #766
+    [4] <>obj<>1199 := @ToObject(<>N<>29) @ #766
 
   Block[116] -> [118], [77]
     [0] assert(typeof <>y<>1191 != typeof <>obj<>1192["google_conversion_first_time"] == "boolean")
@@ -518,7 +518,7 @@ function[1] <>funexpr@1:2-17:208<> {
   Block[119] -> [122], [121], [77]
     [0] assert(<>y<>1198 != <>obj<>1199["google_conversion_format"])
     [1] <>y<>1200 := 1
-    [2] <>obj<>1201 := <>Global<>toObject(<>N<>29) @ #767
+    [2] <>obj<>1201 := @ToObject(<>N<>29) @ #767
 
   Block[120] -> [141], [140], [77]
     [0] assert(<>y<>1198 == <>obj<>1199["google_conversion_format"])
@@ -526,7 +526,7 @@ function[1] <>funexpr@1:2-17:208<> {
   Block[121] -> [124], [123], [77]
     [0] assert(<>y<>1200 != <>obj<>1201["google_conversion_format"])
     [1] <>y<>1202 := 2
-    [2] <>obj<>1203 := <>Global<>toObject(<>N<>29) @ #768
+    [2] <>obj<>1203 := @ToObject(<>N<>29) @ #768
 
   Block[122] -> [137], [136], [77]
     [0] assert(<>y<>1200 == <>obj<>1201["google_conversion_format"])
@@ -534,14 +534,14 @@ function[1] <>funexpr@1:2-17:208<> {
   Block[123] -> [126], [125], [77]
     [0] assert(<>y<>1202 != <>obj<>1203["google_conversion_format"])
     [1] <>y<>1204 := 3
-    [2] <>obj<>1205 := <>Global<>toObject(<>N<>29) @ #769
+    [2] <>obj<>1205 := @ToObject(<>N<>29) @ #769
 
   Block[124] -> [133], [132], [77]
     [0] assert(<>y<>1202 == <>obj<>1203["google_conversion_format"])
 
   Block[125] -> [127], [77]
     [0] assert(<>y<>1204 != <>obj<>1205["google_conversion_format"])
-    [1] <>obj<>1206 := <>Global<>toObject(<>N<>29) @ #770
+    [1] <>obj<>1206 := @ToObject(<>N<>29) @ #770
     [2] <>obj<>1206["google_conversion_format"] := 1
     [3] <>temp<>1207 := <>obj<>1206["google_conversion_format"]
 
@@ -585,7 +585,7 @@ function[1] <>funexpr@1:2-17:208<> {
   Block[138] -> [135]
 
   Block[139] -> [143], [77]
-    [0] <>fun<>1208 := <>Global<>toObject(<>l<>19) @ #771
+    [0] <>fun<>1208 := @ToObject(<>l<>19) @ #771
     [1] <>temp<>1209 := 1
     [2] <>arguments<>1210 := allocArg(1) @ #772
     [3] <>arguments<>1210["0"] := <>temp<>1209
@@ -610,7 +610,7 @@ function[1] <>funexpr@1:2-17:208<> {
   AfterCatch[145] -> [77]
 
   Block[146] -> [148], [147]
-    [0] <>cond<>1214 := <>Global<>isObject(<>newObj<>1213)
+    [0] <>cond<>1214 := @isObject(<>newObj<>1213)
 
   Block[147] -> [149], [77]
     [0] assert(<>cond<>1214)
@@ -629,10 +629,10 @@ function[1] <>funexpr@1:2-17:208<> {
 
   Block[151] -> [153], [77]
     [0] assert(<>M<>28)
-    [1] <>obj<>1216 := <>Global<>toObject(document) @ #775
-    [2] <>obj<>1217 := <>Global<>toObject(<>G<>13) @ #776
+    [1] <>obj<>1216 := @ToObject(document) @ #775
+    [2] <>obj<>1217 := @ToObject(<>G<>13) @ #776
     [3] <>arguments<>1218 := allocArg(0) @ #777
-    [4] <>fun<>1219 := <>Global<>getBase(<>G<>13)
+    [4] <>fun<>1219 := @GetBase(<>G<>13)
     [5] <>this<> := enterCode(<>fun<>1219)
 
   Block[152] -> [173], [77]
@@ -648,7 +648,7 @@ function[1] <>funexpr@1:2-17:208<> {
   Block[156] -> [157], [77]
     [0] <>arguments<>1221 := allocArg(1) @ #779
     [1] <>arguments<>1221["0"] := <>temp<>1220
-    [2] <>fun<>1222 := <>Global<>toObject(<>obj<>1216["write"]) @ #780
+    [2] <>fun<>1222 := @ToObject(<>obj<>1216["write"]) @ #780
     [3] <>this<> := enterCode(<>obj<>1216)
 
   Call[157] -> [77]
@@ -659,11 +659,11 @@ function[1] <>funexpr@1:2-17:208<> {
   AfterCatch[159] -> [77]
 
   Block[160] -> [162], [161], [77]
-    [0] <>obj<>1224 := <>Global<>toObject(<>E<>24) @ #782
+    [0] <>obj<>1224 := @ToObject(<>E<>24) @ #782
 
   Block[161] -> [163], [77]
     [0] assert(<>obj<>1224["google_remarketing_for_search"])
-    [1] <>obj<>1225 := <>Global<>toObject(<>E<>24) @ #783
+    [1] <>obj<>1225 := @ToObject(<>E<>24) @ #783
     [2] <>new1<>1226 := ! <>obj<>1225["google_conversion_domain"]
 
   Block[162] -> [165], [164], [77]
@@ -684,9 +684,9 @@ function[1] <>funexpr@1:2-17:208<> {
   Block[167] -> [169], [77]
     [0] assert(<>new1<>1226)
     [1] <>F<>30 := <>E<>24
-    [2] <>obj<>1227 := <>Global<>toObject(<>I<>15) @ #784
+    [2] <>obj<>1227 := @ToObject(<>I<>15) @ #784
     [3] <>arguments<>1228 := allocArg(0) @ #785
-    [4] <>fun<>1229 := <>Global<>getBase(<>I<>15)
+    [4] <>fun<>1229 := @GetBase(<>I<>15)
     [5] <>this<> := enterCode(<>fun<>1229)
 
   Block[168] -> [172], [77]
@@ -707,7 +707,7 @@ function[1] <>funexpr@1:2-17:208<> {
     [0] <>P<>31 := <>E<>24
     [1] <>Q<>32 := 0
     [2] <>y<>1230 := <>Q<>32
-    [3] <>obj<>1231 := <>Global<>toObject(<>q<>23) @ #787
+    [3] <>obj<>1231 := @ToObject(<>q<>23) @ #787
 
   Block[175] -> [75]
 
@@ -715,8 +715,8 @@ function[1] <>funexpr@1:2-17:208<> {
 
   Block[177] -> [179], ExitExc
     [0] assert(<>y<>1230 < <>obj<>1231["length"])
-    [1] <>obj<>1232 := <>Global<>toObject(<>P<>31) @ #788
-    [2] <>obj<>1233 := <>Global<>toObject(<>q<>23) @ #789
+    [1] <>obj<>1232 := @ToObject(<>P<>31) @ #788
+    [2] <>obj<>1233 := @ToObject(<>q<>23) @ #789
     [3] <>obj<>1232[<>obj<>1233[<>Q<>32]] := null
 
   Block[178] -> [175], ExitExc
@@ -724,11 +724,11 @@ function[1] <>funexpr@1:2-17:208<> {
 
   Block[179] -> [176], ExitExc
     [0] <>old<>1234 := <>Q<>32
-    [1] <>new<>1235 := <>Global<>toNumber(<>old<>1234)
+    [1] <>new<>1235 := @ToNumber(<>old<>1234)
     [2] <>Q<>32 := <>new<>1235 + 1
     [3] <>Global<>ignore111 := <>new<>1235
     [4] <>y<>1230 := <>Q<>32
-    [5] <>obj<>1231 := <>Global<>toObject(<>q<>23) @ #790
+    [5] <>obj<>1231 := @ToObject(<>q<>23) @ #790
 
   Block[180] -> Exit
 
@@ -745,10 +745,10 @@ function[2] r {
 
   Block[1] -> [3], ExitExc
     [0] assert(null != <>a<>34)
-    [1] <>obj<>36 := <>Global<>toObject(escape) @ #1
-    [2] <>obj<>37 := <>Global<>toObject(<>a<>34) @ #2
+    [1] <>obj<>36 := @ToObject(escape) @ #1
+    [2] <>obj<>37 := @ToObject(<>a<>34) @ #2
     [3] <>arguments<>38 := allocArg(0) @ #3
-    [4] <>fun<>39 := <>Global<>toObject(<>obj<>37["toString"]) @ #4
+    [4] <>fun<>39 := @ToObject(<>obj<>37["toString"]) @ #4
     [5] <>this<> := enterCode(<>obj<>37)
 
   Block[2] -> [10], ExitExc
@@ -765,7 +765,7 @@ function[2] r {
   Block[6] -> [7], ExitExc
     [0] <>arguments<>41 := allocArg(1) @ #6
     [1] <>arguments<>41["0"] := <>temp<>40
-    [2] <>fun<>42 := <>Global<>getBase(escape)
+    [2] <>fun<>42 := @GetBase(escape)
     [3] <>this<> := enterCode(<>fun<>42)
 
   Call[7] -> ExitExc
@@ -788,11 +788,11 @@ function[3] s {
   Entry[-1] -> [0]
 
   Block[0] -> [1], ExitExc
-    [0] <>obj<>49 := <>Global<>toObject(<>r<>1) @ #10
+    [0] <>obj<>49 := @ToObject(<>r<>1) @ #10
     [1] <>temp<>50 := <>b<>45
     [2] <>arguments<>51 := allocArg(1) @ #11
     [3] <>arguments<>51["0"] := <>temp<>50
-    [4] <>fun<>52 := <>Global<>getBase(<>r<>1)
+    [4] <>fun<>52 := @GetBase(<>r<>1)
     [5] <>this<> := enterCode(<>fun<>52)
 
   Call[1] -> ExitExc
@@ -807,11 +807,11 @@ function[3] s {
 
   Block[5] -> [7], ExitExc
     [0] assert("" != <>d<>46)
-    [1] <>obj<>53 := <>Global<>toObject(<>r<>1) @ #13
+    [1] <>obj<>53 := @ToObject(<>r<>1) @ #13
     [2] <>temp<>54 := <>a<>44
     [3] <>arguments<>55 := allocArg(1) @ #14
     [4] <>arguments<>55["0"] := <>temp<>54
-    [5] <>fun<>56 := <>Global<>getBase(<>r<>1)
+    [5] <>fun<>56 := @GetBase(<>r<>1)
     [6] <>this<> := enterCode(<>fun<>56)
 
   Block[6] -> [18], ExitExc
@@ -829,7 +829,7 @@ function[3] s {
 
   Block[11] -> [13], ExitExc
     [0] assert("" != <>c<>47)
-    [1] <>obj<>57 := <>Global<>toObject("&") @ #16
+    [1] <>obj<>57 := @ToObject("&") @ #16
     [2] <>temp<>58 := <>c<>47
     [3] <>temp<>59 := "="
     [4] <>temp<>60 := <>d<>46
@@ -837,7 +837,7 @@ function[3] s {
     [6] <>arguments<>61["0"] := <>temp<>58
     [7] <>arguments<>61["1"] := <>temp<>59
     [8] <>arguments<>61["2"] := <>temp<>60
-    [9] <>fun<>62 := <>Global<>toObject(<>obj<>57["concat"]) @ #18
+    [9] <>fun<>62 := @ToObject(<>obj<>57["concat"]) @ #18
     [10] <>this<> := enterCode(<>obj<>57)
 
   Block[12] -> [17], ExitExc
@@ -901,11 +901,11 @@ function[4] t {
     [0] assert("function" != <>b<>65)
 
   Block[11] -> [12], ExitExc
-    [0] <>obj<>68 := <>Global<>toObject(String) @ #22
+    [0] <>obj<>68 := @ToObject(String) @ #22
     [1] <>temp<>69 := <>a<>64
     [2] <>arguments<>70 := allocArg(1) @ #23
     [3] <>arguments<>70["0"] := <>temp<>69
-    [4] <>fun<>71 := <>Global<>getBase(String)
+    [4] <>fun<>71 := @GetBase(String)
     [5] <>this<> := enterCode(<>fun<>71)
 
   Call[12] -> ExitExc
@@ -916,8 +916,8 @@ function[4] t {
   AfterCatch[14] -> ExitExc
 
   Block[15] -> [16], ExitExc
-    [0] <>obj<>73 := <>Global<>toObject(<>obj1<>72) @ #25
-    [1] <>fun<>74 := <>Global<>toObject(RegExp) @ #26
+    [0] <>obj<>73 := @ToObject(<>obj1<>72) @ #25
+    [1] <>fun<>74 := @ToObject(RegExp) @ #26
     [2] <>temp<>75 := ","
     [3] <>temp<>76 := "g"
     [4] <>arguments<>77 := allocArg(2) @ #27
@@ -934,7 +934,7 @@ function[4] t {
   AfterCatch[18] -> ExitExc
 
   Block[19] -> [21], [20]
-    [0] <>cond<>81 := <>Global<>isObject(<>newObj<>80)
+    [0] <>cond<>81 := @isObject(<>newObj<>80)
 
   Block[20] -> [22], ExitExc
     [0] assert(<>cond<>81)
@@ -949,7 +949,7 @@ function[4] t {
     [1] <>arguments<>84 := allocArg(2) @ #30
     [2] <>arguments<>84["0"] := <>temp<>82
     [3] <>arguments<>84["1"] := <>temp<>83
-    [4] <>fun<>85 := <>Global<>toObject(<>obj<>73["replace"]) @ #31
+    [4] <>fun<>85 := @ToObject(<>obj<>73["replace"]) @ #31
     [5] <>this<> := enterCode(<>obj<>73)
 
   Call[23] -> ExitExc
@@ -960,8 +960,8 @@ function[4] t {
   AfterCatch[25] -> ExitExc
 
   Block[26] -> [27], ExitExc
-    [0] <>obj<>87 := <>Global<>toObject(<>obj1<>86) @ #33
-    [1] <>fun<>88 := <>Global<>toObject(RegExp) @ #34
+    [0] <>obj<>87 := @ToObject(<>obj1<>86) @ #33
+    [1] <>fun<>88 := @ToObject(RegExp) @ #34
     [2] <>temp<>89 := ";"
     [3] <>temp<>90 := "g"
     [4] <>arguments<>91 := allocArg(2) @ #35
@@ -978,7 +978,7 @@ function[4] t {
   AfterCatch[29] -> ExitExc
 
   Block[30] -> [32], [31]
-    [0] <>cond<>95 := <>Global<>isObject(<>newObj<>94)
+    [0] <>cond<>95 := @isObject(<>newObj<>94)
 
   Block[31] -> [33], ExitExc
     [0] assert(<>cond<>95)
@@ -993,7 +993,7 @@ function[4] t {
     [1] <>arguments<>98 := allocArg(2) @ #38
     [2] <>arguments<>98["0"] := <>temp<>96
     [3] <>arguments<>98["1"] := <>temp<>97
-    [4] <>fun<>99 := <>Global<>toObject(<>obj<>87["replace"]) @ #39
+    [4] <>fun<>99 := @ToObject(<>obj<>87["replace"]) @ #39
     [5] <>this<> := enterCode(<>obj<>87)
 
   Call[34] -> ExitExc
@@ -1004,8 +1004,8 @@ function[4] t {
   AfterCatch[36] -> ExitExc
 
   Block[37] -> [38], ExitExc
-    [0] <>obj<>101 := <>Global<>toObject(<>obj1<>100) @ #41
-    [1] <>fun<>102 := <>Global<>toObject(RegExp) @ #42
+    [0] <>obj<>101 := @ToObject(<>obj1<>100) @ #41
+    [1] <>fun<>102 := @ToObject(RegExp) @ #42
     [2] <>temp<>103 := "="
     [3] <>temp<>104 := "g"
     [4] <>arguments<>105 := allocArg(2) @ #43
@@ -1022,7 +1022,7 @@ function[4] t {
   AfterCatch[40] -> ExitExc
 
   Block[41] -> [43], [42]
-    [0] <>cond<>109 := <>Global<>isObject(<>newObj<>108)
+    [0] <>cond<>109 := @isObject(<>newObj<>108)
 
   Block[42] -> [44], ExitExc
     [0] assert(<>cond<>109)
@@ -1037,7 +1037,7 @@ function[4] t {
     [1] <>arguments<>112 := allocArg(2) @ #46
     [2] <>arguments<>112["0"] := <>temp<>110
     [3] <>arguments<>112["1"] := <>temp<>111
-    [4] <>fun<>113 := <>Global<>toObject(<>obj<>101["replace"]) @ #47
+    [4] <>fun<>113 := @ToObject(<>obj<>101["replace"]) @ #47
     [5] <>this<> := enterCode(<>obj<>101)
 
   Call[45] -> ExitExc
@@ -1057,7 +1057,7 @@ function[5] u {
   Entry[-1] -> [0]
 
   Block[0] -> [2], [1], ExitExc
-    [0] <>obj<>123 := <>Global<>toObject(<>a<>115) @ #51
+    [0] <>obj<>123 := @ToObject(<>a<>115) @ #51
     [1] <>a<>115 := <>obj<>123["google_custom_params"]
 
   Block[1] -> [4], [3], ExitExc
@@ -1069,7 +1069,7 @@ function[5] u {
   Block[3] -> [5], ExitExc
     [0] assert("object" == typeof <>a<>115)
     [1] <>y<>124 := "function"
-    [2] <>obj<>125 := <>Global<>toObject(<>a<>115) @ #52
+    [2] <>obj<>125 := @ToObject(<>a<>115) @ #52
     [3] <>new<>126 := <>y<>124 != typeof <>obj<>125["join"]
 
   Block[4] -> [7], [6], ExitExc
@@ -1104,43 +1104,43 @@ function[5] u {
     [1] <>Global<>ignore5 := allocArray(0) @ #53
     [2] <>d<>117 := <>Global<>ignore5
     [3] <>obj<>127 := <>a<>115
-    [4] <>iterator<>128 := <>Global<>iteratorInit(<>obj<>127) @ #54
-    [5] <>cond1<>129 := <>Global<>iteratorHasNext(<>obj<>127, <>iterator<>128)
+    [4] <>iterator<>128 := @iteratorInit(<>obj<>127) @ #54
+    [5] <>cond1<>129 := @iteratorHasNext(<>obj<>127, <>iterator<>128)
 
   Block[14] -> [86], ExitExc
     [0] assert(! <>new<>126)
     [1] <>b<>116 := ""
 
   Block[15] -> [82], ExitExc
-    [0] <>obj<>176 := <>Global<>toObject(<>d<>117) @ #89
+    [0] <>obj<>176 := @ToObject(<>d<>117) @ #89
     [1] <>temp<>177 := ";"
     [2] <>arguments<>178 := allocArg(1) @ #90
     [3] <>arguments<>178["0"] := <>temp<>177
-    [4] <>fun<>179 := <>Global<>toObject(<>obj<>176["join"]) @ #91
+    [4] <>fun<>179 := @ToObject(<>obj<>176["join"]) @ #91
     [5] <>this<> := enterCode(<>obj<>176)
 
   Block[16] -> [18], [17]
 
   Block[17] -> [20], ExitExc
     [0] assert(<>cond1<>129)
-    [1] <>key<>130 := <>Global<>iteratorNext(<>obj<>127, <>iterator<>128)
+    [1] <>key<>130 := @iteratorNext(<>obj<>127, <>iterator<>128)
     [2] <>b<>116 := <>key<>130
-    [3] <>obj<>131 := <>Global<>toObject(Object) @ #55
-    [4] <>obj<>132 := <>Global<>toObject(<>obj<>131["prototype"]) @ #56
-    [5] <>obj<>133 := <>Global<>toObject(<>obj<>132["hasOwnProperty"]) @ #57
+    [3] <>obj<>131 := @ToObject(Object) @ #55
+    [4] <>obj<>132 := @ToObject(<>obj<>131["prototype"]) @ #56
+    [5] <>obj<>133 := @ToObject(<>obj<>132["hasOwnProperty"]) @ #57
     [6] <>temp<>134 := <>a<>115
     [7] <>temp<>135 := <>b<>116
     [8] <>arguments<>136 := allocArg(2) @ #58
     [9] <>arguments<>136["0"] := <>temp<>134
     [10] <>arguments<>136["1"] := <>temp<>135
-    [11] <>fun<>137 := <>Global<>toObject(<>obj<>133["call"]) @ #59
+    [11] <>fun<>137 := @ToObject(<>obj<>133["call"]) @ #59
     [12] <>this<> := enterCode(<>obj<>133)
 
   Block[18] -> [15], ExitExc
     [0] assert(! <>cond1<>129)
 
   Block[19] -> [16]
-    [0] <>cond1<>129 := <>Global<>iteratorHasNext(<>obj<>127, <>iterator<>128)
+    [0] <>cond1<>129 := @iteratorHasNext(<>obj<>127, <>iterator<>128)
 
   Call[20] -> ExitExc
     [0] call(<>fun<>137, <>this<>, <>arguments<>136) @ #60
@@ -1151,24 +1151,24 @@ function[5] u {
 
   Block[23] -> [27], [26], ExitExc
     [0] assert(<>new<>138)
-    [1] <>obj<>139 := <>Global<>toObject(<>a<>115) @ #61
+    [1] <>obj<>139 := @ToObject(<>a<>115) @ #61
     [2] <>c<>118 := <>obj<>139[<>b<>116]
 
   Block[24] -> [81], ExitExc
     [0] assert(! <>new<>138)
 
   Block[25] -> [61], ExitExc
-    [0] <>obj<>166 := <>Global<>toObject(<>t<>3) @ #82
+    [0] <>obj<>166 := @ToObject(<>t<>3) @ #82
     [1] <>temp<>167 := <>b<>116
     [2] <>arguments<>168 := allocArg(1) @ #83
     [3] <>arguments<>168["0"] := <>temp<>167
-    [4] <>fun<>169 := <>Global<>getBase(<>t<>3)
+    [4] <>fun<>169 := @GetBase(<>t<>3)
     [5] <>this<> := enterCode(<>fun<>169)
 
   Block[26] -> [29], [28], ExitExc
     [0] assert(<>c<>118)
     [1] <>y<>140 := "function"
-    [2] <>obj<>141 := <>Global<>toObject(<>c<>118) @ #62
+    [2] <>obj<>141 := @ToObject(<>c<>118) @ #62
 
   Block[27] -> [56], ExitExc
     [0] assert(! <>c<>118)
@@ -1179,25 +1179,25 @@ function[5] u {
     [2] <>e<>119 := <>Global<>ignore7
     [3] <>g<>120 := 0
     [4] <>y<>142 := <>g<>120
-    [5] <>obj<>143 := <>Global<>toObject(<>c<>118) @ #64
+    [5] <>obj<>143 := @ToObject(<>c<>118) @ #64
 
   Block[29] -> [55], ExitExc
     [0] assert(<>y<>140 != typeof <>obj<>141["join"])
 
   Block[30] -> [50], [49], ExitExc
     [0] <>y<>156 := 0
-    [1] <>obj<>157 := <>Global<>toObject(<>e<>119) @ #74
+    [1] <>obj<>157 := @ToObject(<>e<>119) @ #74
 
   Block[31] -> [33], [32]
 
   Block[32] -> [35], ExitExc
     [0] assert(<>y<>142 < <>obj<>143["length"])
-    [1] <>obj<>144 := <>Global<>toObject(<>t<>3) @ #65
-    [2] <>obj<>145 := <>Global<>toObject(<>c<>118) @ #66
+    [1] <>obj<>144 := @ToObject(<>t<>3) @ #65
+    [2] <>obj<>145 := @ToObject(<>c<>118) @ #66
     [3] <>temp<>146 := <>obj<>145[<>g<>120]
     [4] <>arguments<>147 := allocArg(1) @ #67
     [5] <>arguments<>147["0"] := <>temp<>146
-    [6] <>fun<>148 := <>Global<>getBase(<>t<>3)
+    [6] <>fun<>148 := @GetBase(<>t<>3)
     [7] <>this<> := enterCode(<>fun<>148)
 
   Block[33] -> [30], ExitExc
@@ -1205,11 +1205,11 @@ function[5] u {
 
   Block[34] -> [31], ExitExc
     [0] <>old<>154 := <>g<>120
-    [1] <>new<>155 := <>Global<>toNumber(<>old<>154)
+    [1] <>new<>155 := @ToNumber(<>old<>154)
     [2] <>g<>120 := <>new<>155 + 1
     [3] <>Global<>ignore10 := <>new<>155 + 1
     [4] <>y<>142 := <>g<>120
-    [5] <>obj<>143 := <>Global<>toObject(<>c<>118) @ #73
+    [5] <>obj<>143 := @ToObject(<>c<>118) @ #73
 
   Call[35] -> ExitExc
     [0] call(<>obj<>144, <>this<>, <>arguments<>147) @ #68
@@ -1223,11 +1223,11 @@ function[5] u {
 
   Block[39] -> [41], ExitExc
     [0] assert(null != <>x<>121)
-    [1] <>obj<>149 := <>Global<>toObject(<>e<>119) @ #69
+    [1] <>obj<>149 := @ToObject(<>e<>119) @ #69
     [2] <>temp<>150 := <>x<>121
     [3] <>arguments<>151 := allocArg(1) @ #70
     [4] <>arguments<>151["0"] := <>temp<>150
-    [5] <>fun<>152 := <>Global<>toObject(<>obj<>149["push"]) @ #71
+    [5] <>fun<>152 := @ToObject(<>obj<>149["push"]) @ #71
     [6] <>this<> := enterCode(<>obj<>149)
 
   Block[40] -> [47], [46], ExitExc
@@ -1261,11 +1261,11 @@ function[5] u {
 
   Block[50] -> [52], ExitExc
     [0] assert(<>y<>156 != <>obj<>157["length"])
-    [1] <>obj<>158 := <>Global<>toObject(<>e<>119) @ #75
+    [1] <>obj<>158 := @ToObject(<>e<>119) @ #75
     [2] <>temp<>159 := ","
     [3] <>arguments<>160 := allocArg(1) @ #76
     [4] <>arguments<>160["0"] := <>temp<>159
-    [5] <>fun<>161 := <>Global<>toObject(<>obj<>158["join"]) @ #77
+    [5] <>fun<>161 := @ToObject(<>obj<>158["join"]) @ #77
     [6] <>this<> := enterCode(<>obj<>158)
 
   Block[51] -> [25], ExitExc
@@ -1281,11 +1281,11 @@ function[5] u {
   Block[55] -> [56]
 
   Block[56] -> [57], ExitExc
-    [0] <>obj<>162 := <>Global<>toObject(<>t<>3) @ #79
+    [0] <>obj<>162 := @ToObject(<>t<>3) @ #79
     [1] <>temp<>163 := <>c<>118
     [2] <>arguments<>164 := allocArg(1) @ #80
     [3] <>arguments<>164["0"] := <>temp<>163
-    [4] <>fun<>165 := <>Global<>getBase(<>t<>3)
+    [4] <>fun<>165 := @GetBase(<>t<>3)
     [5] <>this<> := enterCode(<>fun<>165)
 
   Call[57] -> ExitExc
@@ -1316,11 +1316,11 @@ function[5] u {
 
   Block[67] -> [69], ExitExc
     [0] assert(null != <>c<>118)
-    [1] <>obj<>171 := <>Global<>toObject(<>d<>117) @ #85
+    [1] <>obj<>171 := @ToObject(<>d<>117) @ #85
     [2] <>temp<>172 := <>e<>119 + "=" + <>c<>118
     [3] <>arguments<>173 := allocArg(1) @ #86
     [4] <>arguments<>173["0"] := <>temp<>172
-    [5] <>fun<>174 := <>Global<>toObject(<>obj<>171["push"]) @ #87
+    [5] <>fun<>174 := @ToObject(<>obj<>171["push"]) @ #87
     [6] <>this<> := enterCode(<>obj<>171)
 
   Block[68] -> [75], [74], ExitExc
@@ -1380,13 +1380,13 @@ function[5] u {
 
   Block[88] -> [90], ExitExc
     [0] assert("" != <>b<>116)
-    [1] <>obj<>181 := <>Global<>toObject("&") @ #93
+    [1] <>obj<>181 := @ToObject("&") @ #93
     [2] <>temp<>182 := "data="
-    [3] <>obj<>183 := <>Global<>toObject(encodeURIComponent) @ #94
+    [3] <>obj<>183 := @ToObject(encodeURIComponent) @ #94
     [4] <>temp<>184 := <>b<>116
     [5] <>arguments<>185 := allocArg(1) @ #95
     [6] <>arguments<>185["0"] := <>temp<>184
-    [7] <>fun<>186 := <>Global<>getBase(encodeURIComponent)
+    [7] <>fun<>186 := @GetBase(encodeURIComponent)
     [8] <>this<> := enterCode(<>fun<>186)
 
   Block[89] -> Exit, ExitExc
@@ -1403,7 +1403,7 @@ function[5] u {
     [0] <>arguments<>188 := allocArg(2) @ #97
     [1] <>arguments<>188["0"] := <>temp<>182
     [2] <>arguments<>188["1"] := <>temp<>187
-    [3] <>fun<>189 := <>Global<>toObject(<>obj<>181["concat"]) @ #98
+    [3] <>fun<>189 := @ToObject(<>obj<>181["concat"]) @ #98
     [4] <>this<> := enterCode(<>obj<>181)
 
   Call[94] -> ExitExc
@@ -1443,10 +1443,10 @@ function[6] v {
   Block[6] -> [7]
 
   Block[7] -> [8], ExitExc
-    [0] <>obj<>193 := <>Global<>toObject(<>r<>1) @ #102
-    [1] <>obj<>194 := <>Global<>toObject(<>a<>190) @ #103
+    [0] <>obj<>193 := @ToObject(<>r<>1) @ #102
+    [1] <>obj<>194 := @ToObject(<>a<>190) @ #103
     [2] <>arguments<>195 := allocArg(0) @ #104
-    [3] <>fun<>196 := <>Global<>toObject(<>obj<>194["toString"]) @ #105
+    [3] <>fun<>196 := @ToObject(<>obj<>194["toString"]) @ #105
     [4] <>this<> := enterCode(<>obj<>194)
 
   Call[8] -> ExitExc
@@ -1459,7 +1459,7 @@ function[6] v {
   Block[11] -> [12], ExitExc
     [0] <>arguments<>198 := allocArg(1) @ #107
     [1] <>arguments<>198["0"] := <>temp<>197
-    [2] <>fun<>199 := <>Global<>getBase(<>r<>1)
+    [2] <>fun<>199 := @GetBase(<>r<>1)
     [3] <>this<> := enterCode(<>fun<>199)
 
   Call[12] -> ExitExc
@@ -1488,7 +1488,7 @@ function[7] w {
     [0] assert(! ! <>a<>200)
 
   Block[3] -> [5], [4], ExitExc
-    [0] <>obj<>207 := <>Global<>toObject(<>a<>200) @ #111
+    [0] <>obj<>207 := @ToObject(<>a<>200) @ #111
     [1] <>a<>200 := <>obj<>207["google_conversion_items"]
 
   Block[4] -> Exit, ExitExc
@@ -1502,18 +1502,18 @@ function[7] w {
     [0] <>Global<>ignore19 := allocArray(0) @ #112
     [1] <>b<>201 := <>Global<>ignore19
     [2] <>d<>202 := 0
-    [3] <>obj<>208 := <>Global<>toObject(<>a<>200) @ #113
+    [3] <>obj<>208 := @ToObject(<>a<>200) @ #113
     [4] <>c<>203 := <>obj<>208["length"]
 
   Block[7] -> [67], [66], ExitExc
     [0] <>y<>273 := 0
-    [1] <>obj<>274 := <>Global<>toObject(<>b<>201) @ #164
+    [1] <>obj<>274 := @ToObject(<>b<>201) @ #164
 
   Block[8] -> [10], [9]
 
   Block[9] -> [13], [12], ExitExc
     [0] assert(<>d<>202 < <>c<>203)
-    [1] <>obj<>209 := <>Global<>toObject(<>a<>200) @ #114
+    [1] <>obj<>209 := @ToObject(<>a<>200) @ #114
     [2] <>e<>204 := <>obj<>209[<>d<>202]
     [3] <>Global<>ignore25 := allocArray(0) @ #115
     [4] <>g<>205 := <>Global<>ignore25
@@ -1523,19 +1523,19 @@ function[7] w {
 
   Block[11] -> [8], ExitExc
     [0] <>old<>271 := <>d<>202
-    [1] <>new<>272 := <>Global<>toNumber(<>old<>271)
+    [1] <>new<>272 := @ToNumber(<>old<>271)
     [2] <>d<>202 := <>new<>272 + 1
     [3] <>Global<>ignore23 := <>new<>272
 
   Block[12] -> [14], ExitExc
     [0] assert(<>e<>204)
-    [1] <>obj<>210 := <>Global<>toObject(<>g<>205) @ #116
-    [2] <>obj<>211 := <>Global<>toObject(<>v<>5) @ #117
-    [3] <>obj<>212 := <>Global<>toObject(<>e<>204) @ #118
+    [1] <>obj<>210 := @ToObject(<>g<>205) @ #116
+    [2] <>obj<>211 := @ToObject(<>v<>5) @ #117
+    [3] <>obj<>212 := @ToObject(<>e<>204) @ #118
     [4] <>temp<>213 := <>obj<>212["value"]
     [5] <>arguments<>214 := allocArg(1) @ #119
     [6] <>arguments<>214["0"] := <>temp<>213
-    [7] <>fun<>215 := <>Global<>getBase(<>v<>5)
+    [7] <>fun<>215 := @GetBase(<>v<>5)
     [8] <>this<> := enterCode(<>fun<>215)
 
   Block[13] -> [64], [63], ExitExc
@@ -1551,7 +1551,7 @@ function[7] w {
   Block[17] -> [18], ExitExc
     [0] <>arguments<>217 := allocArg(1) @ #121
     [1] <>arguments<>217["0"] := <>temp<>216
-    [2] <>fun<>218 := <>Global<>toObject(<>obj<>210["push"]) @ #122
+    [2] <>fun<>218 := @ToObject(<>obj<>210["push"]) @ #122
     [3] <>this<> := enterCode(<>obj<>210)
 
   Call[18] -> ExitExc
@@ -1562,13 +1562,13 @@ function[7] w {
   AfterCatch[20] -> ExitExc
 
   Block[21] -> [22], ExitExc
-    [0] <>obj<>220 := <>Global<>toObject(<>g<>205) @ #124
-    [1] <>obj<>221 := <>Global<>toObject(<>v<>5) @ #125
-    [2] <>obj<>222 := <>Global<>toObject(<>e<>204) @ #126
+    [0] <>obj<>220 := @ToObject(<>g<>205) @ #124
+    [1] <>obj<>221 := @ToObject(<>v<>5) @ #125
+    [2] <>obj<>222 := @ToObject(<>e<>204) @ #126
     [3] <>temp<>223 := <>obj<>222["quantity"]
     [4] <>arguments<>224 := allocArg(1) @ #127
     [5] <>arguments<>224["0"] := <>temp<>223
-    [6] <>fun<>225 := <>Global<>getBase(<>v<>5)
+    [6] <>fun<>225 := @GetBase(<>v<>5)
     [7] <>this<> := enterCode(<>fun<>225)
 
   Call[22] -> ExitExc
@@ -1581,7 +1581,7 @@ function[7] w {
   Block[25] -> [26], ExitExc
     [0] <>arguments<>227 := allocArg(1) @ #129
     [1] <>arguments<>227["0"] := <>temp<>226
-    [2] <>fun<>228 := <>Global<>toObject(<>obj<>220["push"]) @ #130
+    [2] <>fun<>228 := @ToObject(<>obj<>220["push"]) @ #130
     [3] <>this<> := enterCode(<>obj<>220)
 
   Call[26] -> ExitExc
@@ -1592,13 +1592,13 @@ function[7] w {
   AfterCatch[28] -> ExitExc
 
   Block[29] -> [30], ExitExc
-    [0] <>obj<>230 := <>Global<>toObject(<>g<>205) @ #132
-    [1] <>obj<>231 := <>Global<>toObject(<>v<>5) @ #133
-    [2] <>obj<>232 := <>Global<>toObject(<>e<>204) @ #134
+    [0] <>obj<>230 := @ToObject(<>g<>205) @ #132
+    [1] <>obj<>231 := @ToObject(<>v<>5) @ #133
+    [2] <>obj<>232 := @ToObject(<>e<>204) @ #134
     [3] <>temp<>233 := <>obj<>232["item_id"]
     [4] <>arguments<>234 := allocArg(1) @ #135
     [5] <>arguments<>234["0"] := <>temp<>233
-    [6] <>fun<>235 := <>Global<>getBase(<>v<>5)
+    [6] <>fun<>235 := @GetBase(<>v<>5)
     [7] <>this<> := enterCode(<>fun<>235)
 
   Call[30] -> ExitExc
@@ -1611,7 +1611,7 @@ function[7] w {
   Block[33] -> [34], ExitExc
     [0] <>arguments<>237 := allocArg(1) @ #137
     [1] <>arguments<>237["0"] := <>temp<>236
-    [2] <>fun<>238 := <>Global<>toObject(<>obj<>230["push"]) @ #138
+    [2] <>fun<>238 := @ToObject(<>obj<>230["push"]) @ #138
     [3] <>this<> := enterCode(<>obj<>230)
 
   Call[34] -> ExitExc
@@ -1622,13 +1622,13 @@ function[7] w {
   AfterCatch[36] -> ExitExc
 
   Block[37] -> [38], ExitExc
-    [0] <>obj<>240 := <>Global<>toObject(<>g<>205) @ #140
-    [1] <>obj<>241 := <>Global<>toObject(<>v<>5) @ #141
-    [2] <>obj<>242 := <>Global<>toObject(<>e<>204) @ #142
+    [0] <>obj<>240 := @ToObject(<>g<>205) @ #140
+    [1] <>obj<>241 := @ToObject(<>v<>5) @ #141
+    [2] <>obj<>242 := @ToObject(<>e<>204) @ #142
     [3] <>temp<>243 := <>obj<>242["adwords_grouping"]
     [4] <>arguments<>244 := allocArg(1) @ #143
     [5] <>arguments<>244["0"] := <>temp<>243
-    [6] <>fun<>245 := <>Global<>getBase(<>v<>5)
+    [6] <>fun<>245 := @GetBase(<>v<>5)
     [7] <>this<> := enterCode(<>fun<>245)
 
   Call[38] -> ExitExc
@@ -1641,7 +1641,7 @@ function[7] w {
   Block[41] -> [42], ExitExc
     [0] <>arguments<>247 := allocArg(1) @ #145
     [1] <>arguments<>247["0"] := <>temp<>246
-    [2] <>fun<>248 := <>Global<>toObject(<>obj<>240["push"]) @ #146
+    [2] <>fun<>248 := @ToObject(<>obj<>240["push"]) @ #146
     [3] <>this<> := enterCode(<>obj<>240)
 
   Call[42] -> ExitExc
@@ -1652,13 +1652,13 @@ function[7] w {
   AfterCatch[44] -> ExitExc
 
   Block[45] -> [46], ExitExc
-    [0] <>obj<>250 := <>Global<>toObject(<>g<>205) @ #148
-    [1] <>obj<>251 := <>Global<>toObject(<>v<>5) @ #149
-    [2] <>obj<>252 := <>Global<>toObject(<>e<>204) @ #150
+    [0] <>obj<>250 := @ToObject(<>g<>205) @ #148
+    [1] <>obj<>251 := @ToObject(<>v<>5) @ #149
+    [2] <>obj<>252 := @ToObject(<>e<>204) @ #150
     [3] <>temp<>253 := <>obj<>252["sku"]
     [4] <>arguments<>254 := allocArg(1) @ #151
     [5] <>arguments<>254["0"] := <>temp<>253
-    [6] <>fun<>255 := <>Global<>getBase(<>v<>5)
+    [6] <>fun<>255 := @GetBase(<>v<>5)
     [7] <>this<> := enterCode(<>fun<>255)
 
   Call[46] -> ExitExc
@@ -1671,7 +1671,7 @@ function[7] w {
   Block[49] -> [50], ExitExc
     [0] <>arguments<>257 := allocArg(1) @ #153
     [1] <>arguments<>257["0"] := <>temp<>256
-    [2] <>fun<>258 := <>Global<>toObject(<>obj<>250["push"]) @ #154
+    [2] <>fun<>258 := @ToObject(<>obj<>250["push"]) @ #154
     [3] <>this<> := enterCode(<>obj<>250)
 
   Call[50] -> ExitExc
@@ -1682,13 +1682,13 @@ function[7] w {
   AfterCatch[52] -> ExitExc
 
   Block[53] -> [54], ExitExc
-    [0] <>obj<>260 := <>Global<>toObject(<>b<>201) @ #156
+    [0] <>obj<>260 := @ToObject(<>b<>201) @ #156
     [1] <>y<>261 := "("
-    [2] <>obj<>262 := <>Global<>toObject(<>g<>205) @ #157
+    [2] <>obj<>262 := @ToObject(<>g<>205) @ #157
     [3] <>temp<>263 := "*"
     [4] <>arguments<>264 := allocArg(1) @ #158
     [5] <>arguments<>264["0"] := <>temp<>263
-    [6] <>fun<>265 := <>Global<>toObject(<>obj<>262["join"]) @ #159
+    [6] <>fun<>265 := @ToObject(<>obj<>262["join"]) @ #159
     [7] <>this<> := enterCode(<>obj<>262)
 
   Call[54] -> ExitExc
@@ -1702,7 +1702,7 @@ function[7] w {
     [0] <>temp<>267 := <>y<>261 + <>z<>266 + ")"
     [1] <>arguments<>268 := allocArg(1) @ #161
     [2] <>arguments<>268["0"] := <>temp<>267
-    [3] <>fun<>269 := <>Global<>toObject(<>obj<>260["push"]) @ #162
+    [3] <>fun<>269 := @ToObject(<>obj<>260["push"]) @ #162
     [4] <>this<> := enterCode(<>obj<>260)
 
   Call[58] -> ExitExc
@@ -1730,11 +1730,11 @@ function[7] w {
   Block[66] -> [68], ExitExc
     [0] assert(<>y<>273 < <>obj<>274["length"])
     [1] <>y<>275 := "&item="
-    [2] <>obj<>276 := <>Global<>toObject(<>b<>201) @ #165
+    [2] <>obj<>276 := @ToObject(<>b<>201) @ #165
     [3] <>temp<>277 := ""
     [4] <>arguments<>278 := allocArg(1) @ #166
     [5] <>arguments<>278["0"] := <>temp<>277
-    [6] <>fun<>279 := <>Global<>toObject(<>obj<>276["join"]) @ #167
+    [6] <>fun<>279 := @ToObject(<>obj<>276["join"]) @ #167
     [7] <>this<> := enterCode(<>obj<>276)
 
   Block[67] -> [72], ExitExc
@@ -1769,7 +1769,7 @@ function[8] y {
 
   Block[1] -> [4], [3], ExitExc
     [0] assert(<>a<>282)
-    [1] <>obj<>288 := <>Global<>toObject(<>a<>282) @ #172
+    [1] <>obj<>288 := @ToObject(<>a<>282) @ #172
     [2] <>e<>286 := <>obj<>288["screen"]
 
   Block[2] -> [63], ExitExc
@@ -1777,15 +1777,15 @@ function[8] y {
 
   Block[3] -> [5], ExitExc
     [0] assert(<>e<>286)
-    [1] <>obj<>289 := <>Global<>toObject(<>c<>285) @ #173
-    [2] <>obj<>290 := <>Global<>toObject(<>s<>2) @ #174
+    [1] <>obj<>289 := @ToObject(<>c<>285) @ #173
+    [2] <>obj<>290 := @ToObject(<>s<>2) @ #174
     [3] <>temp<>291 := "u_h"
-    [4] <>obj<>292 := <>Global<>toObject(<>e<>286) @ #175
+    [4] <>obj<>292 := @ToObject(<>e<>286) @ #175
     [5] <>temp<>293 := <>obj<>292["height"]
     [6] <>arguments<>294 := allocArg(2) @ #176
     [7] <>arguments<>294["0"] := <>temp<>291
     [8] <>arguments<>294["1"] := <>temp<>293
-    [9] <>fun<>295 := <>Global<>getBase(<>s<>2)
+    [9] <>fun<>295 := @GetBase(<>s<>2)
     [10] <>this<> := enterCode(<>fun<>295)
 
   Block[4] -> [47], [46], ExitExc
@@ -1801,7 +1801,7 @@ function[8] y {
   Block[8] -> [9], ExitExc
     [0] <>arguments<>297 := allocArg(1) @ #178
     [1] <>arguments<>297["0"] := <>temp<>296
-    [2] <>fun<>298 := <>Global<>toObject(<>obj<>289["push"]) @ #179
+    [2] <>fun<>298 := @ToObject(<>obj<>289["push"]) @ #179
     [3] <>this<> := enterCode(<>obj<>289)
 
   Call[9] -> ExitExc
@@ -1812,15 +1812,15 @@ function[8] y {
   AfterCatch[11] -> ExitExc
 
   Block[12] -> [13], ExitExc
-    [0] <>obj<>300 := <>Global<>toObject(<>c<>285) @ #181
-    [1] <>obj<>301 := <>Global<>toObject(<>s<>2) @ #182
+    [0] <>obj<>300 := @ToObject(<>c<>285) @ #181
+    [1] <>obj<>301 := @ToObject(<>s<>2) @ #182
     [2] <>temp<>302 := "u_w"
-    [3] <>obj<>303 := <>Global<>toObject(<>e<>286) @ #183
+    [3] <>obj<>303 := @ToObject(<>e<>286) @ #183
     [4] <>temp<>304 := <>obj<>303["width"]
     [5] <>arguments<>305 := allocArg(2) @ #184
     [6] <>arguments<>305["0"] := <>temp<>302
     [7] <>arguments<>305["1"] := <>temp<>304
-    [8] <>fun<>306 := <>Global<>getBase(<>s<>2)
+    [8] <>fun<>306 := @GetBase(<>s<>2)
     [9] <>this<> := enterCode(<>fun<>306)
 
   Call[13] -> ExitExc
@@ -1833,7 +1833,7 @@ function[8] y {
   Block[16] -> [17], ExitExc
     [0] <>arguments<>308 := allocArg(1) @ #186
     [1] <>arguments<>308["0"] := <>temp<>307
-    [2] <>fun<>309 := <>Global<>toObject(<>obj<>300["push"]) @ #187
+    [2] <>fun<>309 := @ToObject(<>obj<>300["push"]) @ #187
     [3] <>this<> := enterCode(<>obj<>300)
 
   Call[17] -> ExitExc
@@ -1844,15 +1844,15 @@ function[8] y {
   AfterCatch[19] -> ExitExc
 
   Block[20] -> [21], ExitExc
-    [0] <>obj<>311 := <>Global<>toObject(<>c<>285) @ #189
-    [1] <>obj<>312 := <>Global<>toObject(<>s<>2) @ #190
+    [0] <>obj<>311 := @ToObject(<>c<>285) @ #189
+    [1] <>obj<>312 := @ToObject(<>s<>2) @ #190
     [2] <>temp<>313 := "u_ah"
-    [3] <>obj<>314 := <>Global<>toObject(<>e<>286) @ #191
+    [3] <>obj<>314 := @ToObject(<>e<>286) @ #191
     [4] <>temp<>315 := <>obj<>314["availHeight"]
     [5] <>arguments<>316 := allocArg(2) @ #192
     [6] <>arguments<>316["0"] := <>temp<>313
     [7] <>arguments<>316["1"] := <>temp<>315
-    [8] <>fun<>317 := <>Global<>getBase(<>s<>2)
+    [8] <>fun<>317 := @GetBase(<>s<>2)
     [9] <>this<> := enterCode(<>fun<>317)
 
   Call[21] -> ExitExc
@@ -1865,7 +1865,7 @@ function[8] y {
   Block[24] -> [25], ExitExc
     [0] <>arguments<>319 := allocArg(1) @ #194
     [1] <>arguments<>319["0"] := <>temp<>318
-    [2] <>fun<>320 := <>Global<>toObject(<>obj<>311["push"]) @ #195
+    [2] <>fun<>320 := @ToObject(<>obj<>311["push"]) @ #195
     [3] <>this<> := enterCode(<>obj<>311)
 
   Call[25] -> ExitExc
@@ -1876,15 +1876,15 @@ function[8] y {
   AfterCatch[27] -> ExitExc
 
   Block[28] -> [29], ExitExc
-    [0] <>obj<>322 := <>Global<>toObject(<>c<>285) @ #197
-    [1] <>obj<>323 := <>Global<>toObject(<>s<>2) @ #198
+    [0] <>obj<>322 := @ToObject(<>c<>285) @ #197
+    [1] <>obj<>323 := @ToObject(<>s<>2) @ #198
     [2] <>temp<>324 := "u_aw"
-    [3] <>obj<>325 := <>Global<>toObject(<>e<>286) @ #199
+    [3] <>obj<>325 := @ToObject(<>e<>286) @ #199
     [4] <>temp<>326 := <>obj<>325["availWidth"]
     [5] <>arguments<>327 := allocArg(2) @ #200
     [6] <>arguments<>327["0"] := <>temp<>324
     [7] <>arguments<>327["1"] := <>temp<>326
-    [8] <>fun<>328 := <>Global<>getBase(<>s<>2)
+    [8] <>fun<>328 := @GetBase(<>s<>2)
     [9] <>this<> := enterCode(<>fun<>328)
 
   Call[29] -> ExitExc
@@ -1897,7 +1897,7 @@ function[8] y {
   Block[32] -> [33], ExitExc
     [0] <>arguments<>330 := allocArg(1) @ #202
     [1] <>arguments<>330["0"] := <>temp<>329
-    [2] <>fun<>331 := <>Global<>toObject(<>obj<>322["push"]) @ #203
+    [2] <>fun<>331 := @ToObject(<>obj<>322["push"]) @ #203
     [3] <>this<> := enterCode(<>obj<>322)
 
   Call[33] -> ExitExc
@@ -1908,15 +1908,15 @@ function[8] y {
   AfterCatch[35] -> ExitExc
 
   Block[36] -> [37], ExitExc
-    [0] <>obj<>333 := <>Global<>toObject(<>c<>285) @ #205
-    [1] <>obj<>334 := <>Global<>toObject(<>s<>2) @ #206
+    [0] <>obj<>333 := @ToObject(<>c<>285) @ #205
+    [1] <>obj<>334 := @ToObject(<>s<>2) @ #206
     [2] <>temp<>335 := "u_cd"
-    [3] <>obj<>336 := <>Global<>toObject(<>e<>286) @ #207
+    [3] <>obj<>336 := @ToObject(<>e<>286) @ #207
     [4] <>temp<>337 := <>obj<>336["colorDepth"]
     [5] <>arguments<>338 := allocArg(2) @ #208
     [6] <>arguments<>338["0"] := <>temp<>335
     [7] <>arguments<>338["1"] := <>temp<>337
-    [8] <>fun<>339 := <>Global<>getBase(<>s<>2)
+    [8] <>fun<>339 := @GetBase(<>s<>2)
     [9] <>this<> := enterCode(<>fun<>339)
 
   Call[37] -> ExitExc
@@ -1929,7 +1929,7 @@ function[8] y {
   Block[40] -> [41], ExitExc
     [0] <>arguments<>341 := allocArg(1) @ #210
     [1] <>arguments<>341["0"] := <>temp<>340
-    [2] <>fun<>342 := <>Global<>toObject(<>obj<>333["push"]) @ #211
+    [2] <>fun<>342 := @ToObject(<>obj<>333["push"]) @ #211
     [3] <>this<> := enterCode(<>obj<>333)
 
   Call[41] -> ExitExc
@@ -1943,7 +1943,7 @@ function[8] y {
     [0] <>Global<>ignore29 := <>new1<>343
 
   Block[45] -> [50], [49], ExitExc
-    [0] <>obj<>344 := <>Global<>toObject(<>a<>282) @ #213
+    [0] <>obj<>344 := @ToObject(<>a<>282) @ #213
 
   Block[46] -> [48], ExitExc
     [0] assert(typeof <>e<>286 == "boolean")
@@ -1957,16 +1957,16 @@ function[8] y {
 
   Block[49] -> [51], ExitExc
     [0] assert(<>obj<>344["history"])
-    [1] <>obj<>345 := <>Global<>toObject(<>c<>285) @ #214
-    [2] <>obj<>346 := <>Global<>toObject(<>s<>2) @ #215
+    [1] <>obj<>345 := @ToObject(<>c<>285) @ #214
+    [2] <>obj<>346 := @ToObject(<>s<>2) @ #215
     [3] <>temp<>347 := "u_his"
-    [4] <>obj<>348 := <>Global<>toObject(<>a<>282) @ #216
-    [5] <>obj<>349 := <>Global<>toObject(<>obj<>348["history"]) @ #217
+    [4] <>obj<>348 := @ToObject(<>a<>282) @ #216
+    [5] <>obj<>349 := @ToObject(<>obj<>348["history"]) @ #217
     [6] <>temp<>350 := <>obj<>349["length"]
     [7] <>arguments<>351 := allocArg(2) @ #218
     [8] <>arguments<>351["0"] := <>temp<>347
     [9] <>arguments<>351["1"] := <>temp<>350
-    [10] <>fun<>352 := <>Global<>getBase(<>s<>2)
+    [10] <>fun<>352 := @GetBase(<>s<>2)
     [11] <>this<> := enterCode(<>fun<>352)
 
   Block[50] -> [61], [60], ExitExc
@@ -1982,7 +1982,7 @@ function[8] y {
   Block[54] -> [55], ExitExc
     [0] <>arguments<>354 := allocArg(1) @ #220
     [1] <>arguments<>354["0"] := <>temp<>353
-    [2] <>fun<>355 := <>Global<>toObject(<>obj<>345["push"]) @ #221
+    [2] <>fun<>355 := @ToObject(<>obj<>345["push"]) @ #221
     [3] <>this<> := enterCode(<>obj<>345)
 
   Call[55] -> ExitExc
@@ -2012,19 +2012,19 @@ function[8] y {
   Block[64] -> [67], [66], ExitExc
     [0] assert(<>d<>284)
     [1] <>y<>357 := "function"
-    [2] <>obj<>358 := <>Global<>toObject(<>d<>284) @ #223
+    [2] <>obj<>358 := @ToObject(<>d<>284) @ #223
 
   Block[65] -> [86], [85], ExitExc
     [0] assert(! <>d<>284)
 
   Block[66] -> [68], ExitExc
     [0] assert(<>y<>357 == typeof <>obj<>358["getTimezoneOffset"])
-    [1] <>obj<>359 := <>Global<>toObject(<>c<>285) @ #224
-    [2] <>obj<>360 := <>Global<>toObject(<>s<>2) @ #225
+    [1] <>obj<>359 := @ToObject(<>c<>285) @ #224
+    [2] <>obj<>360 := @ToObject(<>s<>2) @ #225
     [3] <>temp<>361 := "u_tz"
-    [4] <>obj<>362 := <>Global<>toObject(<>d<>284) @ #226
+    [4] <>obj<>362 := @ToObject(<>d<>284) @ #226
     [5] <>arguments<>363 := allocArg(0) @ #227
-    [6] <>fun<>364 := <>Global<>toObject(<>obj<>362["getTimezoneOffset"]) @ #228
+    [6] <>fun<>364 := @ToObject(<>obj<>362["getTimezoneOffset"]) @ #228
     [7] <>this<> := enterCode(<>obj<>362)
 
   Block[67] -> [82], [81], ExitExc
@@ -2042,7 +2042,7 @@ function[8] y {
     [1] <>arguments<>367 := allocArg(2) @ #230
     [2] <>arguments<>367["0"] := <>temp<>361
     [3] <>arguments<>367["1"] := <>temp<>366
-    [4] <>fun<>368 := <>Global<>getBase(<>s<>2)
+    [4] <>fun<>368 := @GetBase(<>s<>2)
     [5] <>this<> := enterCode(<>fun<>368)
 
   Call[72] -> ExitExc
@@ -2055,7 +2055,7 @@ function[8] y {
   Block[75] -> [76], ExitExc
     [0] <>arguments<>370 := allocArg(1) @ #232
     [1] <>arguments<>370["0"] := <>temp<>369
-    [2] <>fun<>371 := <>Global<>toObject(<>obj<>359["push"]) @ #233
+    [2] <>fun<>371 := @ToObject(<>obj<>359["push"]) @ #233
     [3] <>this<> := enterCode(<>obj<>359)
 
   Call[76] -> ExitExc
@@ -2095,19 +2095,19 @@ function[8] y {
   Block[88] -> [91], [90], ExitExc
     [0] assert(<>b<>283)
     [1] <>y<>373 := "function"
-    [2] <>obj<>374 := <>Global<>toObject(<>b<>283) @ #235
+    [2] <>obj<>374 := @ToObject(<>b<>283) @ #235
 
   Block[89] -> [138], [137], ExitExc
     [0] assert(! <>b<>283)
 
   Block[90] -> [92], ExitExc
     [0] assert(<>y<>373 == typeof <>obj<>374["javaEnabled"])
-    [1] <>obj<>375 := <>Global<>toObject(<>c<>285) @ #236
-    [2] <>obj<>376 := <>Global<>toObject(<>s<>2) @ #237
+    [1] <>obj<>375 := @ToObject(<>c<>285) @ #236
+    [2] <>obj<>376 := @ToObject(<>s<>2) @ #237
     [3] <>temp<>377 := "u_java"
-    [4] <>obj<>378 := <>Global<>toObject(<>b<>283) @ #238
+    [4] <>obj<>378 := @ToObject(<>b<>283) @ #238
     [5] <>arguments<>379 := allocArg(0) @ #239
-    [6] <>fun<>380 := <>Global<>toObject(<>obj<>378["javaEnabled"]) @ #240
+    [6] <>fun<>380 := @ToObject(<>obj<>378["javaEnabled"]) @ #240
     [7] <>this<> := enterCode(<>obj<>378)
 
   Block[91] -> [106], [105], ExitExc
@@ -2124,7 +2124,7 @@ function[8] y {
     [0] <>arguments<>382 := allocArg(2) @ #242
     [1] <>arguments<>382["0"] := <>temp<>377
     [2] <>arguments<>382["1"] := <>temp<>381
-    [3] <>fun<>383 := <>Global<>getBase(<>s<>2)
+    [3] <>fun<>383 := @GetBase(<>s<>2)
     [4] <>this<> := enterCode(<>fun<>383)
 
   Call[96] -> ExitExc
@@ -2137,7 +2137,7 @@ function[8] y {
   Block[99] -> [100], ExitExc
     [0] <>arguments<>385 := allocArg(1) @ #244
     [1] <>arguments<>385["0"] := <>temp<>384
-    [2] <>fun<>386 := <>Global<>toObject(<>obj<>375["push"]) @ #245
+    [2] <>fun<>386 := @ToObject(<>obj<>375["push"]) @ #245
     [3] <>this<> := enterCode(<>obj<>375)
 
   Call[100] -> ExitExc
@@ -2151,7 +2151,7 @@ function[8] y {
     [0] <>temp<>388 := <>new1<>387
 
   Block[104] -> [109], [108], ExitExc
-    [0] <>obj<>389 := <>Global<>toObject(<>b<>283) @ #247
+    [0] <>obj<>389 := @ToObject(<>b<>283) @ #247
 
   Block[105] -> [107], ExitExc
     [0] assert(typeof <>y<>373 == typeof <>obj<>374["javaEnabled"] == "boolean")
@@ -2165,16 +2165,16 @@ function[8] y {
 
   Block[108] -> [110], ExitExc
     [0] assert(<>obj<>389["plugins"])
-    [1] <>obj<>390 := <>Global<>toObject(<>c<>285) @ #248
-    [2] <>obj<>391 := <>Global<>toObject(<>s<>2) @ #249
+    [1] <>obj<>390 := @ToObject(<>c<>285) @ #248
+    [2] <>obj<>391 := @ToObject(<>s<>2) @ #249
     [3] <>temp<>392 := "u_nplug"
-    [4] <>obj<>393 := <>Global<>toObject(<>b<>283) @ #250
-    [5] <>obj<>394 := <>Global<>toObject(<>obj<>393["plugins"]) @ #251
+    [4] <>obj<>393 := @ToObject(<>b<>283) @ #250
+    [5] <>obj<>394 := @ToObject(<>obj<>393["plugins"]) @ #251
     [6] <>temp<>395 := <>obj<>394["length"]
     [7] <>arguments<>396 := allocArg(2) @ #252
     [8] <>arguments<>396["0"] := <>temp<>392
     [9] <>arguments<>396["1"] := <>temp<>395
-    [10] <>fun<>397 := <>Global<>getBase(<>s<>2)
+    [10] <>fun<>397 := @GetBase(<>s<>2)
     [11] <>this<> := enterCode(<>fun<>397)
 
   Block[109] -> [120], [119], ExitExc
@@ -2190,7 +2190,7 @@ function[8] y {
   Block[113] -> [114], ExitExc
     [0] <>arguments<>399 := allocArg(1) @ #254
     [1] <>arguments<>399["0"] := <>temp<>398
-    [2] <>fun<>400 := <>Global<>toObject(<>obj<>390["push"]) @ #255
+    [2] <>fun<>400 := @ToObject(<>obj<>390["push"]) @ #255
     [3] <>this<> := enterCode(<>obj<>390)
 
   Call[114] -> ExitExc
@@ -2204,7 +2204,7 @@ function[8] y {
     [0] <>temp<>402 := <>new1<>401
 
   Block[118] -> [123], [122], ExitExc
-    [0] <>obj<>403 := <>Global<>toObject(<>b<>283) @ #257
+    [0] <>obj<>403 := @ToObject(<>b<>283) @ #257
 
   Block[119] -> [121], ExitExc
     [0] assert(typeof <>obj<>389["plugins"] == "boolean")
@@ -2218,16 +2218,16 @@ function[8] y {
 
   Block[122] -> [124], ExitExc
     [0] assert(<>obj<>403["mimeTypes"])
-    [1] <>obj<>404 := <>Global<>toObject(<>c<>285) @ #258
-    [2] <>obj<>405 := <>Global<>toObject(<>s<>2) @ #259
+    [1] <>obj<>404 := @ToObject(<>c<>285) @ #258
+    [2] <>obj<>405 := @ToObject(<>s<>2) @ #259
     [3] <>temp<>406 := "u_nmime"
-    [4] <>obj<>407 := <>Global<>toObject(<>b<>283) @ #260
-    [5] <>obj<>408 := <>Global<>toObject(<>obj<>407["mimeTypes"]) @ #261
+    [4] <>obj<>407 := @ToObject(<>b<>283) @ #260
+    [5] <>obj<>408 := @ToObject(<>obj<>407["mimeTypes"]) @ #261
     [6] <>temp<>409 := <>obj<>408["length"]
     [7] <>arguments<>410 := allocArg(2) @ #262
     [8] <>arguments<>410["0"] := <>temp<>406
     [9] <>arguments<>410["1"] := <>temp<>409
-    [10] <>fun<>411 := <>Global<>getBase(<>s<>2)
+    [10] <>fun<>411 := @GetBase(<>s<>2)
     [11] <>this<> := enterCode(<>fun<>411)
 
   Block[123] -> [134], [133], ExitExc
@@ -2243,7 +2243,7 @@ function[8] y {
   Block[127] -> [128], ExitExc
     [0] <>arguments<>413 := allocArg(1) @ #264
     [1] <>arguments<>413["0"] := <>temp<>412
-    [2] <>fun<>414 := <>Global<>toObject(<>obj<>404["push"]) @ #265
+    [2] <>fun<>414 := @ToObject(<>obj<>404["push"]) @ #265
     [3] <>this<> := enterCode(<>obj<>404)
 
   Call[128] -> ExitExc
@@ -2270,11 +2270,11 @@ function[8] y {
   Block[135] -> [132]
 
   Block[136] -> [140], ExitExc
-    [0] <>obj<>417 := <>Global<>toObject(<>c<>285) @ #267
+    [0] <>obj<>417 := @ToObject(<>c<>285) @ #267
     [1] <>temp<>418 := ""
     [2] <>arguments<>419 := allocArg(1) @ #268
     [3] <>arguments<>419["0"] := <>temp<>418
-    [4] <>fun<>420 := <>Global<>toObject(<>obj<>417["join"]) @ #269
+    [4] <>fun<>420 := @ToObject(<>obj<>417["join"]) @ #269
     [5] <>this<> := enterCode(<>obj<>417)
 
   Block[137] -> [139], ExitExc
@@ -2312,20 +2312,20 @@ function[9] z {
   Block[1] -> [4], [3], ExitExc
     [0] assert(<>b<>423)
     [1] <>y<>428 := <>c<>425
-    [2] <>obj<>429 := <>Global<>toObject(<>s<>2) @ #273
+    [2] <>obj<>429 := @ToObject(<>s<>2) @ #273
     [3] <>temp<>430 := "ref"
     [4] <>y<>431 := null
-    [5] <>obj<>432 := <>Global<>toObject(<>b<>423) @ #274
+    [5] <>obj<>432 := @ToObject(<>b<>423) @ #274
 
   Block[2] -> [59], ExitExc
     [0] assert(! <>b<>423)
 
   Block[3] -> [5], ExitExc
     [0] assert(<>y<>431 != <>obj<>432["referrer"])
-    [1] <>obj<>433 := <>Global<>toObject(<>b<>423) @ #275
-    [2] <>obj<>434 := <>Global<>toObject(<>obj<>433["referrer"]) @ #276
+    [1] <>obj<>433 := @ToObject(<>b<>423) @ #275
+    [2] <>obj<>434 := @ToObject(<>obj<>433["referrer"]) @ #276
     [3] <>arguments<>435 := allocArg(0) @ #277
-    [4] <>fun<>436 := <>Global<>toObject(<>obj<>434["toString"]) @ #278
+    [4] <>fun<>436 := @ToObject(<>obj<>434["toString"]) @ #278
     [5] <>this<> := enterCode(<>obj<>434)
 
   Block[4] -> [12], ExitExc
@@ -2340,13 +2340,13 @@ function[9] z {
   AfterCatch[7] -> ExitExc
 
   Block[8] -> [9], ExitExc
-    [0] <>obj<>438 := <>Global<>toObject(<>obj1<>437) @ #280
+    [0] <>obj<>438 := @ToObject(<>obj1<>437) @ #280
     [1] <>temp<>439 := 0
     [2] <>temp<>440 := 256
     [3] <>arguments<>441 := allocArg(2) @ #281
     [4] <>arguments<>441["0"] := <>temp<>439
     [5] <>arguments<>441["1"] := <>temp<>440
-    [6] <>fun<>442 := <>Global<>toObject(<>obj<>438["substring"]) @ #282
+    [6] <>fun<>442 := @ToObject(<>obj<>438["substring"]) @ #282
     [7] <>this<> := enterCode(<>obj<>438)
 
   Call[9] -> ExitExc
@@ -2360,7 +2360,7 @@ function[9] z {
     [0] <>arguments<>444 := allocArg(2) @ #284
     [1] <>arguments<>444["0"] := <>temp<>430
     [2] <>arguments<>444["1"] := <>temp<>443
-    [3] <>fun<>445 := <>Global<>getBase(<>s<>2)
+    [3] <>fun<>445 := @GetBase(<>s<>2)
     [4] <>this<> := enterCode(<>fun<>445)
 
   Call[13] -> ExitExc
@@ -2372,7 +2372,7 @@ function[9] z {
 
   Block[16] -> [18], [17], ExitExc
     [0] <>c<>425 := <>y<>428 + <>z<>446
-    [1] <>obj<>447 := <>Global<>toObject(<>a<>422) @ #286
+    [1] <>obj<>447 := @ToObject(<>a<>422) @ #286
 
   Block[17] -> [19], ExitExc
     [0] assert(<>obj<>447["top"] == <>a<>422)
@@ -2380,8 +2380,8 @@ function[9] z {
 
   Block[18] -> [21], [20], ExitExc
     [0] assert(<>obj<>447["top"] != <>a<>422)
-    [1] <>obj<>448 := <>Global<>toObject(<>a<>422) @ #287
-    [2] <>obj<>449 := <>Global<>toObject(<>obj<>448["location"]) @ #288
+    [1] <>obj<>448 := @ToObject(<>a<>422) @ #287
+    [2] <>obj<>449 := @ToObject(<>obj<>448["location"]) @ #288
     [3] <>b<>423 := <>obj<>449["ancestorOrigins"]
 
   Block[19] -> [36], [35], ExitExc
@@ -2389,15 +2389,15 @@ function[9] z {
 
   Block[20] -> [23], [22], ExitExc
     [0] assert(<>obj<>449["ancestorOrigins"])
-    [1] <>obj<>450 := <>Global<>toObject(<>b<>423) @ #289
-    [2] <>obj<>451 := <>Global<>toObject(<>b<>423) @ #290
+    [1] <>obj<>450 := @ToObject(<>b<>423) @ #289
+    [2] <>obj<>451 := @ToObject(<>b<>423) @ #290
     [3] <>y<>452 := <>obj<>450[<>obj<>451["length"] - 1]
-    [4] <>obj<>453 := <>Global<>toObject(<>a<>422) @ #291
-    [5] <>obj<>454 := <>Global<>toObject(<>obj<>453["location"]) @ #292
+    [4] <>obj<>453 := @ToObject(<>a<>422) @ #291
+    [5] <>obj<>454 := @ToObject(<>obj<>453["location"]) @ #292
 
   Block[21] -> [26], ExitExc
     [0] assert(! <>obj<>449["ancestorOrigins"])
-    [1] <>obj<>455 := <>Global<>toObject(<>a<>422) @ #293
+    [1] <>obj<>455 := @ToObject(<>a<>422) @ #293
     [2] <>b<>423 := <>obj<>455["top"]
 
   Block[22] -> [24], ExitExc
@@ -2414,8 +2414,8 @@ function[9] z {
   Block[25] -> [19]
 
   Block[26] -> [29], [28], [27]
-    [0] <>obj<>457 := <>Global<>toObject(<>b<>423) @ #294
-    [1] <>obj<>458 := <>Global<>toObject(<>obj<>457["location"]) @ #295
+    [0] <>obj<>457 := @ToObject(<>b<>423) @ #294
+    [1] <>obj<>458 := @ToObject(<>obj<>457["location"]) @ #295
 
   Block[27] -> [31], ExitExc
     [0] catch(<>g<>456)
@@ -2428,8 +2428,8 @@ function[9] z {
   Block[29] -> [30], [27]
     [0] assert(! ! ! <>obj<>458["href"])
     [1] <>y<>459 := ""
-    [2] <>obj<>460 := <>Global<>toObject(<>b<>423) @ #296
-    [3] <>obj<>461 := <>Global<>toObject(<>obj<>460["location"]) @ #297
+    [2] <>obj<>460 := @ToObject(<>b<>423) @ #296
+    [3] <>obj<>461 := @ToObject(<>obj<>460["location"]) @ #297
     [4] <>Global<>ignore39 := <>y<>459 === <>obj<>461["href"]
 
   Block[30] -> [31], [27]
@@ -2458,29 +2458,29 @@ function[9] z {
   Block[37] -> [42], [41], ExitExc
     [0] <>b<>423 := <>Global<>ignore42
     [1] <>old<>467 := <>c<>425
-    [2] <>obj<>468 := <>Global<>toObject(<>s<>2) @ #303
+    [2] <>obj<>468 := @ToObject(<>s<>2) @ #303
     [3] <>temp<>469 := "url"
 
   Block[38] -> [40], ExitExc
     [0] assert(1 == <>e<>426)
-    [1] <>obj<>462 := <>Global<>toObject(<>a<>422) @ #298
-    [2] <>obj<>463 := <>Global<>toObject(<>obj<>462["top"]) @ #299
-    [3] <>obj<>464 := <>Global<>toObject(<>obj<>463["location"]) @ #300
+    [1] <>obj<>462 := @ToObject(<>a<>422) @ #298
+    [2] <>obj<>463 := @ToObject(<>obj<>462["top"]) @ #299
+    [3] <>obj<>464 := @ToObject(<>obj<>463["location"]) @ #300
     [4] <>Global<>ignore42 := <>obj<>464["href"]
 
   Block[39] -> [40], ExitExc
     [0] assert(1 != <>e<>426)
-    [1] <>obj<>465 := <>Global<>toObject(<>a<>422) @ #301
-    [2] <>obj<>466 := <>Global<>toObject(<>obj<>465["location"]) @ #302
+    [1] <>obj<>465 := @ToObject(<>a<>422) @ #301
+    [2] <>obj<>466 := @ToObject(<>obj<>465["location"]) @ #302
     [3] <>Global<>ignore42 := <>obj<>466["href"]
 
   Block[40] -> [37]
 
   Block[41] -> [43], ExitExc
     [0] assert(null != <>b<>423)
-    [1] <>obj<>470 := <>Global<>toObject(<>b<>423) @ #304
+    [1] <>obj<>470 := @ToObject(<>b<>423) @ #304
     [2] <>arguments<>471 := allocArg(0) @ #305
-    [3] <>fun<>472 := <>Global<>toObject(<>obj<>470["toString"]) @ #306
+    [3] <>fun<>472 := @ToObject(<>obj<>470["toString"]) @ #306
     [4] <>this<> := enterCode(<>obj<>470)
 
   Block[42] -> [50], ExitExc
@@ -2495,13 +2495,13 @@ function[9] z {
   AfterCatch[45] -> ExitExc
 
   Block[46] -> [47], ExitExc
-    [0] <>obj<>474 := <>Global<>toObject(<>obj1<>473) @ #308
+    [0] <>obj<>474 := @ToObject(<>obj1<>473) @ #308
     [1] <>temp<>475 := 0
     [2] <>temp<>476 := 256
     [3] <>arguments<>477 := allocArg(2) @ #309
     [4] <>arguments<>477["0"] := <>temp<>475
     [5] <>arguments<>477["1"] := <>temp<>476
-    [6] <>fun<>478 := <>Global<>toObject(<>obj<>474["substring"]) @ #310
+    [6] <>fun<>478 := @ToObject(<>obj<>474["substring"]) @ #310
     [7] <>this<> := enterCode(<>obj<>474)
 
   Call[47] -> ExitExc
@@ -2515,7 +2515,7 @@ function[9] z {
     [0] <>arguments<>480 := allocArg(2) @ #312
     [1] <>arguments<>480["0"] := <>temp<>469
     [2] <>arguments<>480["1"] := <>temp<>479
-    [3] <>fun<>481 := <>Global<>getBase(<>s<>2)
+    [3] <>fun<>481 := @GetBase(<>s<>2)
     [4] <>this<> := enterCode(<>fun<>481)
 
   Call[51] -> ExitExc
@@ -2528,13 +2528,13 @@ function[9] z {
   Block[54] -> [55], ExitExc
     [0] <>c<>425 := <>old<>467 + <>y<>482
     [1] <>old<>483 := <>c<>425
-    [2] <>obj<>484 := <>Global<>toObject(<>s<>2) @ #314
+    [2] <>obj<>484 := @ToObject(<>s<>2) @ #314
     [3] <>temp<>485 := "frm"
     [4] <>temp<>486 := <>e<>426
     [5] <>arguments<>487 := allocArg(2) @ #315
     [6] <>arguments<>487["0"] := <>temp<>485
     [7] <>arguments<>487["1"] := <>temp<>486
-    [8] <>fun<>488 := <>Global<>getBase(<>s<>2)
+    [8] <>fun<>488 := @GetBase(<>s<>2)
     [9] <>this<> := enterCode(<>fun<>488)
 
   Call[55] -> ExitExc
@@ -2563,15 +2563,15 @@ function[10] A {
 
   Block[1] -> [4], [3], ExitExc
     [0] assert(<>a<>490)
-    [1] <>obj<>492 := <>Global<>toObject(<>a<>490) @ #319
+    [1] <>obj<>492 := @ToObject(<>a<>490) @ #319
 
   Block[2] -> [11], [10], ExitExc
     [0] assert(! <>a<>490)
 
   Block[3] -> [5], ExitExc
     [0] assert(<>obj<>492["location"])
-    [1] <>obj<>493 := <>Global<>toObject(<>a<>490) @ #320
-    [2] <>obj<>494 := <>Global<>toObject(<>obj<>493["location"]) @ #321
+    [1] <>obj<>493 := @ToObject(<>a<>490) @ #320
+    [2] <>obj<>494 := @ToObject(<>obj<>493["location"]) @ #321
     [3] <>newa<>495 := <>obj<>494["protocol"]
 
   Block[4] -> [7], [6], ExitExc
@@ -2607,11 +2607,11 @@ function[10] A {
   Block[14] -> [16], ExitExc
     [0] assert(<>newa<>495)
     [1] <>y<>496 := "https:"
-    [2] <>obj<>497 := <>Global<>toObject(<>a<>490) @ #322
-    [3] <>obj<>498 := <>Global<>toObject(<>obj<>497["location"]) @ #323
-    [4] <>obj<>499 := <>Global<>toObject(<>obj<>498["protocol"]) @ #324
+    [2] <>obj<>497 := @ToObject(<>a<>490) @ #322
+    [3] <>obj<>498 := @ToObject(<>obj<>497["location"]) @ #323
+    [4] <>obj<>499 := @ToObject(<>obj<>498["protocol"]) @ #324
     [5] <>arguments<>500 := allocArg(0) @ #325
-    [6] <>fun<>501 := <>Global<>toObject(<>obj<>499["toString"]) @ #326
+    [6] <>fun<>501 := @ToObject(<>obj<>499["toString"]) @ #326
     [7] <>this<> := enterCode(<>obj<>499)
 
   Block[15] -> [26], ExitExc
@@ -2625,9 +2625,9 @@ function[10] A {
   AfterCatch[18] -> ExitExc
 
   Block[19] -> [20], ExitExc
-    [0] <>obj<>503 := <>Global<>toObject(<>obj1<>502) @ #328
+    [0] <>obj<>503 := @ToObject(<>obj1<>502) @ #328
     [1] <>arguments<>504 := allocArg(0) @ #329
-    [2] <>fun<>505 := <>Global<>toObject(<>obj<>503["toLowerCase"]) @ #330
+    [2] <>fun<>505 := @ToObject(<>obj<>503["toLowerCase"]) @ #330
     [3] <>this<> := enterCode(<>obj<>503)
 
   Call[20] -> ExitExc
@@ -2659,7 +2659,7 @@ function[11] B {
   Entry[-1] -> [0]
 
   Block[0] -> [2], [1], ExitExc
-    [0] <>obj<>510 := <>Global<>toObject(<>a<>508) @ #334
+    [0] <>obj<>510 := @ToObject(<>a<>508) @ #334
 
   Block[1] -> [3], ExitExc
     [0] assert(<>obj<>510["google_remarketing_only"])
@@ -2667,7 +2667,7 @@ function[11] B {
 
   Block[2] -> [5], [4], ExitExc
     [0] assert(! <>obj<>510["google_remarketing_only"])
-    [1] <>obj<>512 := <>Global<>toObject(<>a<>508) @ #335
+    [1] <>obj<>512 := @ToObject(<>a<>508) @ #335
 
   Block[3] -> Exit, ExitExc
     [0] return(<>new1<>511)
@@ -2694,7 +2694,7 @@ function[12] C {
   Block[0] -> [2], [1], ExitExc
     [0] <>e<>517 := "/?"
     [1] <>y<>520 := "landing"
-    [2] <>obj<>521 := <>Global<>toObject(<>c<>516) @ #338
+    [2] <>obj<>521 := @ToObject(<>c<>516) @ #338
 
   Block[1] -> [3], ExitExc
     [0] assert(<>y<>520 == <>obj<>521["google_conversion_type"])
@@ -2705,11 +2705,11 @@ function[12] C {
     [0] assert(<>y<>520 != <>obj<>521["google_conversion_type"])
 
   Block[3] -> [7], ExitExc
-    [0] <>obj<>522 := <>Global<>toObject(<>A<>9) @ #339
+    [0] <>obj<>522 := @ToObject(<>A<>9) @ #339
     [1] <>temp<>523 := <>a<>513
     [2] <>arguments<>524 := allocArg(1) @ #340
     [3] <>arguments<>524["0"] := <>temp<>523
-    [4] <>fun<>525 := <>Global<>getBase(<>A<>9)
+    [4] <>fun<>525 := @GetBase(<>A<>9)
     [5] <>this<> := enterCode(<>fun<>525)
 
   Block[4] -> [6], ExitExc
@@ -2731,11 +2731,11 @@ function[12] C {
 
   Block[10] -> [11], ExitExc
     [0] <>y<>527 := <>y<>526 + "//"
-    [1] <>obj<>528 := <>Global<>toObject(<>B<>10) @ #342
+    [1] <>obj<>528 := @ToObject(<>B<>10) @ #342
     [2] <>temp<>529 := <>c<>516
     [3] <>arguments<>530 := allocArg(1) @ #343
     [4] <>arguments<>530["0"] := <>temp<>529
-    [5] <>fun<>531 := <>Global<>getBase(<>B<>10)
+    [5] <>fun<>531 := @GetBase(<>B<>10)
     [6] <>this<> := enterCode(<>fun<>531)
 
   Call[11] -> ExitExc
@@ -2747,7 +2747,7 @@ function[12] C {
 
   Block[14] -> [16], [15], ExitExc
     [0] <>y<>533 := <>y<>527 + <>z<>532 + "/pagead/"
-    [1] <>obj<>534 := <>Global<>toObject(<>c<>516) @ #345
+    [1] <>obj<>534 := @ToObject(<>c<>516) @ #345
 
   Block[15] -> [17], ExitExc
     [0] assert(<>obj<>534["google_remarketing_only"])
@@ -2758,12 +2758,12 @@ function[12] C {
     [1] <>temp<>535 := "conversion/"
 
   Block[17] -> [18], ExitExc
-    [0] <>obj<>536 := <>Global<>toObject(<>r<>1) @ #346
-    [1] <>obj<>537 := <>Global<>toObject(<>c<>516) @ #347
+    [0] <>obj<>536 := @ToObject(<>r<>1) @ #346
+    [1] <>obj<>537 := @ToObject(<>c<>516) @ #347
     [2] <>temp<>538 := <>obj<>537["google_conversion_id"]
     [3] <>arguments<>539 := allocArg(1) @ #348
     [4] <>arguments<>539["0"] := <>temp<>538
-    [5] <>fun<>540 := <>Global<>getBase(<>r<>1)
+    [5] <>fun<>540 := @GetBase(<>r<>1)
     [6] <>this<> := enterCode(<>fun<>540)
 
   Call[18] -> ExitExc
@@ -2776,12 +2776,12 @@ function[12] C {
   Block[21] -> [22], ExitExc
     [0] <>temp<>542 := <>e<>517
     [1] <>temp<>543 := "random="
-    [2] <>obj<>544 := <>Global<>toObject(<>r<>1) @ #350
-    [3] <>obj<>545 := <>Global<>toObject(<>c<>516) @ #351
+    [2] <>obj<>544 := @ToObject(<>r<>1) @ #350
+    [3] <>obj<>545 := @ToObject(<>c<>516) @ #351
     [4] <>temp<>546 := <>obj<>545["google_conversion_time"]
     [5] <>arguments<>547 := allocArg(1) @ #352
     [6] <>arguments<>547["0"] := <>temp<>546
-    [7] <>fun<>548 := <>Global<>getBase(<>r<>1)
+    [7] <>fun<>548 := @GetBase(<>r<>1)
     [8] <>this<> := enterCode(<>fun<>548)
 
   Call[22] -> ExitExc
@@ -2798,11 +2798,11 @@ function[12] C {
     [3] <>obj1<>550["2"] := <>temp<>542
     [4] <>obj1<>550["3"] := <>temp<>543
     [5] <>obj1<>550["4"] := <>temp<>549
-    [6] <>obj<>551 := <>Global<>toObject(<>obj1<>550) @ #355
+    [6] <>obj<>551 := @ToObject(<>obj1<>550) @ #355
     [7] <>temp<>552 := ""
     [8] <>arguments<>553 := allocArg(1) @ #356
     [9] <>arguments<>553["0"] := <>temp<>552
-    [10] <>fun<>554 := <>Global<>toObject(<>obj<>551["join"]) @ #357
+    [10] <>fun<>554 := @ToObject(<>obj<>551["join"]) @ #357
     [11] <>this<> := enterCode(<>obj<>551)
 
   Call[26] -> ExitExc
@@ -2814,26 +2814,26 @@ function[12] C {
 
   Block[29] -> [32], [31], ExitExc
     [0] <>e<>517 := <>y<>533 + <>z<>555
-    [1] <>obj<>556 := <>Global<>toObject(<>c<>516) @ #359
+    [1] <>obj<>556 := @ToObject(<>c<>516) @ #359
     [2] <>g<>518 := <>obj<>556["google_conversion_language"]
 
   Block[30] -> [64], ExitExc
     [0] <>old<>591 := <>e<>517
-    [1] <>obj<>592 := <>Global<>toObject(<>s<>2) @ #383
+    [1] <>obj<>592 := @ToObject(<>s<>2) @ #383
     [2] <>temp<>593 := "cv"
-    [3] <>obj<>594 := <>Global<>toObject(<>c<>516) @ #384
+    [3] <>obj<>594 := @ToObject(<>c<>516) @ #384
     [4] <>temp<>595 := <>obj<>594["google_conversion_js_version"]
     [5] <>arguments<>596 := allocArg(2) @ #385
     [6] <>arguments<>596["0"] := <>temp<>593
     [7] <>arguments<>596["1"] := <>temp<>595
-    [8] <>fun<>597 := <>Global<>getBase(<>s<>2)
+    [8] <>fun<>597 := @GetBase(<>s<>2)
     [9] <>this<> := enterCode(<>fun<>597)
 
   Block[31] -> [33], ExitExc
     [0] assert(null != <>g<>518)
-    [1] <>obj<>557 := <>Global<>toObject(<>g<>518) @ #360
+    [1] <>obj<>557 := @ToObject(<>g<>518) @ #360
     [2] <>arguments<>558 := allocArg(0) @ #361
-    [3] <>fun<>559 := <>Global<>toObject(<>obj<>557["toString"]) @ #362
+    [3] <>fun<>559 := @ToObject(<>obj<>557["toString"]) @ #362
     [4] <>this<> := enterCode(<>obj<>557)
 
   Block[32] -> [63], ExitExc
@@ -2849,17 +2849,17 @@ function[12] C {
   Block[36] -> [38], [37], ExitExc
     [0] <>g<>518 := <>Global<>ignore49
     [1] <>y<>560 := 2
-    [2] <>obj<>561 := <>Global<>toObject(<>g<>518) @ #364
+    [2] <>obj<>561 := @ToObject(<>g<>518) @ #364
 
   Block[37] -> [39], ExitExc
     [0] assert(<>y<>560 == <>obj<>561["length"])
-    [1] <>obj<>562 := <>Global<>toObject(<>s<>2) @ #365
+    [1] <>obj<>562 := @ToObject(<>s<>2) @ #365
     [2] <>temp<>563 := "hl"
     [3] <>temp<>564 := <>g<>518
     [4] <>arguments<>565 := allocArg(2) @ #366
     [5] <>arguments<>565["0"] := <>temp<>563
     [6] <>arguments<>565["1"] := <>temp<>564
-    [7] <>fun<>566 := <>Global<>getBase(<>s<>2)
+    [7] <>fun<>566 := @GetBase(<>s<>2)
     [8] <>this<> := enterCode(<>fun<>566)
 
   Block[38] -> [43], ExitExc
@@ -2877,19 +2877,19 @@ function[12] C {
 
   Block[43] -> [45], [44], ExitExc
     [0] <>y<>567 := 5
-    [1] <>obj<>568 := <>Global<>toObject(<>g<>518) @ #368
+    [1] <>obj<>568 := @ToObject(<>g<>518) @ #368
 
   Block[44] -> [46], ExitExc
     [0] assert(<>y<>567 == <>obj<>568["length"])
-    [1] <>obj<>569 := <>Global<>toObject(<>s<>2) @ #369
+    [1] <>obj<>569 := @ToObject(<>s<>2) @ #369
     [2] <>temp<>570 := "hl"
-    [3] <>obj<>571 := <>Global<>toObject(<>g<>518) @ #370
+    [3] <>obj<>571 := @ToObject(<>g<>518) @ #370
     [4] <>temp<>572 := 0
     [5] <>temp<>573 := 2
     [6] <>arguments<>574 := allocArg(2) @ #371
     [7] <>arguments<>574["0"] := <>temp<>572
     [8] <>arguments<>574["1"] := <>temp<>573
-    [9] <>fun<>575 := <>Global<>toObject(<>obj<>571["substring"]) @ #372
+    [9] <>fun<>575 := @ToObject(<>obj<>571["substring"]) @ #372
     [10] <>this<> := enterCode(<>obj<>571)
 
   Block[45] -> [62], ExitExc
@@ -2906,7 +2906,7 @@ function[12] C {
     [0] <>arguments<>577 := allocArg(2) @ #374
     [1] <>arguments<>577["0"] := <>temp<>570
     [2] <>arguments<>577["1"] := <>temp<>576
-    [3] <>fun<>578 := <>Global<>getBase(<>s<>2)
+    [3] <>fun<>578 := @GetBase(<>s<>2)
     [4] <>this<> := enterCode(<>fun<>578)
 
   Call[50] -> ExitExc
@@ -2917,15 +2917,15 @@ function[12] C {
   AfterCatch[52] -> ExitExc
 
   Block[53] -> [54], ExitExc
-    [0] <>obj<>580 := <>Global<>toObject(<>s<>2) @ #376
+    [0] <>obj<>580 := @ToObject(<>s<>2) @ #376
     [1] <>temp<>581 := "gl"
-    [2] <>obj<>582 := <>Global<>toObject(<>g<>518) @ #377
+    [2] <>obj<>582 := @ToObject(<>g<>518) @ #377
     [3] <>temp<>583 := 3
     [4] <>temp<>584 := 5
     [5] <>arguments<>585 := allocArg(2) @ #378
     [6] <>arguments<>585["0"] := <>temp<>583
     [7] <>arguments<>585["1"] := <>temp<>584
-    [8] <>fun<>586 := <>Global<>toObject(<>obj<>582["substring"]) @ #379
+    [8] <>fun<>586 := @ToObject(<>obj<>582["substring"]) @ #379
     [9] <>this<> := enterCode(<>obj<>582)
 
   Call[54] -> ExitExc
@@ -2939,7 +2939,7 @@ function[12] C {
     [0] <>arguments<>588 := allocArg(2) @ #381
     [1] <>arguments<>588["0"] := <>temp<>581
     [2] <>arguments<>588["1"] := <>temp<>587
-    [3] <>fun<>589 := <>Global<>getBase(<>s<>2)
+    [3] <>fun<>589 := @GetBase(<>s<>2)
     [4] <>this<> := enterCode(<>fun<>589)
 
   Call[58] -> ExitExc
@@ -2965,14 +2965,14 @@ function[12] C {
   AfterCatch[66] -> ExitExc
 
   Block[67] -> [68], ExitExc
-    [0] <>obj<>599 := <>Global<>toObject(<>s<>2) @ #387
+    [0] <>obj<>599 := @ToObject(<>s<>2) @ #387
     [1] <>temp<>600 := "fst"
-    [2] <>obj<>601 := <>Global<>toObject(<>c<>516) @ #388
+    [2] <>obj<>601 := @ToObject(<>c<>516) @ #388
     [3] <>temp<>602 := <>obj<>601["google_conversion_first_time"]
     [4] <>arguments<>603 := allocArg(2) @ #389
     [5] <>arguments<>603["0"] := <>temp<>600
     [6] <>arguments<>603["1"] := <>temp<>602
-    [7] <>fun<>604 := <>Global<>getBase(<>s<>2)
+    [7] <>fun<>604 := @GetBase(<>s<>2)
     [8] <>this<> := enterCode(<>fun<>604)
 
   Call[68] -> ExitExc
@@ -2983,14 +2983,14 @@ function[12] C {
   AfterCatch[70] -> ExitExc
 
   Block[71] -> [72], ExitExc
-    [0] <>obj<>606 := <>Global<>toObject(<>s<>2) @ #391
+    [0] <>obj<>606 := @ToObject(<>s<>2) @ #391
     [1] <>temp<>607 := "num"
-    [2] <>obj<>608 := <>Global<>toObject(<>c<>516) @ #392
+    [2] <>obj<>608 := @ToObject(<>c<>516) @ #392
     [3] <>temp<>609 := <>obj<>608["google_conversion_snippets"]
     [4] <>arguments<>610 := allocArg(2) @ #393
     [5] <>arguments<>610["0"] := <>temp<>607
     [6] <>arguments<>610["1"] := <>temp<>609
-    [7] <>fun<>611 := <>Global<>getBase(<>s<>2)
+    [7] <>fun<>611 := @GetBase(<>s<>2)
     [8] <>this<> := enterCode(<>fun<>611)
 
   Call[72] -> ExitExc
@@ -3001,14 +3001,14 @@ function[12] C {
   AfterCatch[74] -> ExitExc
 
   Block[75] -> [76], ExitExc
-    [0] <>obj<>613 := <>Global<>toObject(<>s<>2) @ #395
+    [0] <>obj<>613 := @ToObject(<>s<>2) @ #395
     [1] <>temp<>614 := "fmt"
-    [2] <>obj<>615 := <>Global<>toObject(<>c<>516) @ #396
+    [2] <>obj<>615 := @ToObject(<>c<>516) @ #396
     [3] <>temp<>616 := <>obj<>615["google_conversion_format"]
     [4] <>arguments<>617 := allocArg(2) @ #397
     [5] <>arguments<>617["0"] := <>temp<>614
     [6] <>arguments<>617["1"] := <>temp<>616
-    [7] <>fun<>618 := <>Global<>getBase(<>s<>2)
+    [7] <>fun<>618 := @GetBase(<>s<>2)
     [8] <>this<> := enterCode(<>fun<>618)
 
   Call[76] -> ExitExc
@@ -3019,14 +3019,14 @@ function[12] C {
   AfterCatch[78] -> ExitExc
 
   Block[79] -> [80], ExitExc
-    [0] <>obj<>620 := <>Global<>toObject(<>s<>2) @ #399
+    [0] <>obj<>620 := @ToObject(<>s<>2) @ #399
     [1] <>temp<>621 := "value"
-    [2] <>obj<>622 := <>Global<>toObject(<>c<>516) @ #400
+    [2] <>obj<>622 := @ToObject(<>c<>516) @ #400
     [3] <>temp<>623 := <>obj<>622["google_conversion_value"]
     [4] <>arguments<>624 := allocArg(2) @ #401
     [5] <>arguments<>624["0"] := <>temp<>621
     [6] <>arguments<>624["1"] := <>temp<>623
-    [7] <>fun<>625 := <>Global<>getBase(<>s<>2)
+    [7] <>fun<>625 := @GetBase(<>s<>2)
     [8] <>this<> := enterCode(<>fun<>625)
 
   Call[80] -> ExitExc
@@ -3037,14 +3037,14 @@ function[12] C {
   AfterCatch[82] -> ExitExc
 
   Block[83] -> [84], ExitExc
-    [0] <>obj<>627 := <>Global<>toObject(<>s<>2) @ #403
+    [0] <>obj<>627 := @ToObject(<>s<>2) @ #403
     [1] <>temp<>628 := "label"
-    [2] <>obj<>629 := <>Global<>toObject(<>c<>516) @ #404
+    [2] <>obj<>629 := @ToObject(<>c<>516) @ #404
     [3] <>temp<>630 := <>obj<>629["google_conversion_label"]
     [4] <>arguments<>631 := allocArg(2) @ #405
     [5] <>arguments<>631["0"] := <>temp<>628
     [6] <>arguments<>631["1"] := <>temp<>630
-    [7] <>fun<>632 := <>Global<>getBase(<>s<>2)
+    [7] <>fun<>632 := @GetBase(<>s<>2)
     [8] <>this<> := enterCode(<>fun<>632)
 
   Call[84] -> ExitExc
@@ -3055,14 +3055,14 @@ function[12] C {
   AfterCatch[86] -> ExitExc
 
   Block[87] -> [88], ExitExc
-    [0] <>obj<>634 := <>Global<>toObject(<>s<>2) @ #407
+    [0] <>obj<>634 := @ToObject(<>s<>2) @ #407
     [1] <>temp<>635 := "oid"
-    [2] <>obj<>636 := <>Global<>toObject(<>c<>516) @ #408
+    [2] <>obj<>636 := @ToObject(<>c<>516) @ #408
     [3] <>temp<>637 := <>obj<>636["google_conversion_order_id"]
     [4] <>arguments<>638 := allocArg(2) @ #409
     [5] <>arguments<>638["0"] := <>temp<>635
     [6] <>arguments<>638["1"] := <>temp<>637
-    [7] <>fun<>639 := <>Global<>getBase(<>s<>2)
+    [7] <>fun<>639 := @GetBase(<>s<>2)
     [8] <>this<> := enterCode(<>fun<>639)
 
   Call[88] -> ExitExc
@@ -3073,14 +3073,14 @@ function[12] C {
   AfterCatch[90] -> ExitExc
 
   Block[91] -> [92], ExitExc
-    [0] <>obj<>641 := <>Global<>toObject(<>s<>2) @ #411
+    [0] <>obj<>641 := @ToObject(<>s<>2) @ #411
     [1] <>temp<>642 := "bg"
-    [2] <>obj<>643 := <>Global<>toObject(<>c<>516) @ #412
+    [2] <>obj<>643 := @ToObject(<>c<>516) @ #412
     [3] <>temp<>644 := <>obj<>643["google_conversion_color"]
     [4] <>arguments<>645 := allocArg(2) @ #413
     [5] <>arguments<>645["0"] := <>temp<>642
     [6] <>arguments<>645["1"] := <>temp<>644
-    [7] <>fun<>646 := <>Global<>getBase(<>s<>2)
+    [7] <>fun<>646 := @GetBase(<>s<>2)
     [8] <>this<> := enterCode(<>fun<>646)
 
   Call[92] -> ExitExc
@@ -3092,13 +3092,13 @@ function[12] C {
 
   Block[95] -> [96], ExitExc
     [0] <>temp<>648 := <>g<>518
-    [1] <>obj<>649 := <>Global<>toObject(<>s<>2) @ #415
+    [1] <>obj<>649 := @ToObject(<>s<>2) @ #415
     [2] <>temp<>650 := "guid"
     [3] <>temp<>651 := "ON"
     [4] <>arguments<>652 := allocArg(2) @ #416
     [5] <>arguments<>652["0"] := <>temp<>650
     [6] <>arguments<>652["1"] := <>temp<>651
-    [7] <>fun<>653 := <>Global<>getBase(<>s<>2)
+    [7] <>fun<>653 := @GetBase(<>s<>2)
     [8] <>this<> := enterCode(<>fun<>653)
 
   Call[96] -> ExitExc
@@ -3109,14 +3109,14 @@ function[12] C {
   AfterCatch[98] -> ExitExc
 
   Block[99] -> [100], ExitExc
-    [0] <>obj<>655 := <>Global<>toObject(<>s<>2) @ #418
+    [0] <>obj<>655 := @ToObject(<>s<>2) @ #418
     [1] <>temp<>656 := "disvt"
-    [2] <>obj<>657 := <>Global<>toObject(<>c<>516) @ #419
+    [2] <>obj<>657 := @ToObject(<>c<>516) @ #419
     [3] <>temp<>658 := <>obj<>657["google_disable_viewthrough"]
     [4] <>arguments<>659 := allocArg(2) @ #420
     [5] <>arguments<>659["0"] := <>temp<>656
     [6] <>arguments<>659["1"] := <>temp<>658
-    [7] <>fun<>660 := <>Global<>getBase(<>s<>2)
+    [7] <>fun<>660 := @GetBase(<>s<>2)
     [8] <>this<> := enterCode(<>fun<>660)
 
   Call[100] -> ExitExc
@@ -3127,14 +3127,14 @@ function[12] C {
   AfterCatch[102] -> ExitExc
 
   Block[103] -> [104], ExitExc
-    [0] <>obj<>662 := <>Global<>toObject(<>s<>2) @ #422
+    [0] <>obj<>662 := @ToObject(<>s<>2) @ #422
     [1] <>temp<>663 := "is_call"
-    [2] <>obj<>664 := <>Global<>toObject(<>c<>516) @ #423
+    [2] <>obj<>664 := @ToObject(<>c<>516) @ #423
     [3] <>temp<>665 := <>obj<>664["google_is_call"]
     [4] <>arguments<>666 := allocArg(2) @ #424
     [5] <>arguments<>666["0"] := <>temp<>663
     [6] <>arguments<>666["1"] := <>temp<>665
-    [7] <>fun<>667 := <>Global<>getBase(<>s<>2)
+    [7] <>fun<>667 := @GetBase(<>s<>2)
     [8] <>this<> := enterCode(<>fun<>667)
 
   Call[104] -> ExitExc
@@ -3145,11 +3145,11 @@ function[12] C {
   AfterCatch[106] -> ExitExc
 
   Block[107] -> [108], ExitExc
-    [0] <>obj<>669 := <>Global<>toObject(<>w<>6) @ #426
+    [0] <>obj<>669 := @ToObject(<>w<>6) @ #426
     [1] <>temp<>670 := <>c<>516
     [2] <>arguments<>671 := allocArg(1) @ #427
     [3] <>arguments<>671["0"] := <>temp<>670
-    [4] <>fun<>672 := <>Global<>getBase(<>w<>6)
+    [4] <>fun<>672 := @GetBase(<>w<>6)
     [5] <>this<> := enterCode(<>fun<>672)
 
   Call[108] -> ExitExc
@@ -3160,16 +3160,16 @@ function[12] C {
   AfterCatch[110] -> ExitExc
 
   Block[111] -> [112], ExitExc
-    [0] <>obj<>674 := <>Global<>toObject(<>y<>7) @ #429
+    [0] <>obj<>674 := @ToObject(<>y<>7) @ #429
     [1] <>temp<>675 := <>a<>513
     [2] <>temp<>676 := <>b<>514
-    [3] <>obj<>677 := <>Global<>toObject(<>c<>516) @ #430
+    [3] <>obj<>677 := @ToObject(<>c<>516) @ #430
     [4] <>temp<>678 := <>obj<>677["google_conversion_date"]
     [5] <>arguments<>679 := allocArg(3) @ #431
     [6] <>arguments<>679["0"] := <>temp<>675
     [7] <>arguments<>679["1"] := <>temp<>676
     [8] <>arguments<>679["2"] := <>temp<>678
-    [9] <>fun<>680 := <>Global<>getBase(<>y<>7)
+    [9] <>fun<>680 := @GetBase(<>y<>7)
     [10] <>this<> := enterCode(<>fun<>680)
 
   Call[112] -> ExitExc
@@ -3180,16 +3180,16 @@ function[12] C {
   AfterCatch[114] -> ExitExc
 
   Block[115] -> [116], ExitExc
-    [0] <>obj<>682 := <>Global<>toObject(<>z<>8) @ #433
+    [0] <>obj<>682 := @ToObject(<>z<>8) @ #433
     [1] <>temp<>683 := <>a<>513
     [2] <>temp<>684 := <>d<>515
-    [3] <>obj<>685 := <>Global<>toObject(<>c<>516) @ #434
+    [3] <>obj<>685 := @ToObject(<>c<>516) @ #434
     [4] <>temp<>686 := <>obj<>685["google_conversion_page_url"]
     [5] <>arguments<>687 := allocArg(3) @ #435
     [6] <>arguments<>687["0"] := <>temp<>683
     [7] <>arguments<>687["1"] := <>temp<>684
     [8] <>arguments<>687["2"] := <>temp<>686
-    [9] <>fun<>688 := <>Global<>getBase(<>z<>8)
+    [9] <>fun<>688 := @GetBase(<>z<>8)
     [10] <>this<> := enterCode(<>fun<>688)
 
   Call[116] -> ExitExc
@@ -3200,11 +3200,11 @@ function[12] C {
   AfterCatch[118] -> ExitExc
 
   Block[119] -> [120], ExitExc
-    [0] <>obj<>690 := <>Global<>toObject(<>u<>4) @ #437
+    [0] <>obj<>690 := @ToObject(<>u<>4) @ #437
     [1] <>temp<>691 := <>c<>516
     [2] <>arguments<>692 := allocArg(1) @ #438
     [3] <>arguments<>692["0"] := <>temp<>691
-    [4] <>fun<>693 := <>Global<>getBase(<>u<>4)
+    [4] <>fun<>693 := @GetBase(<>u<>4)
     [5] <>this<> := enterCode(<>fun<>693)
 
   Call[120] -> ExitExc
@@ -3215,19 +3215,19 @@ function[12] C {
   AfterCatch[122] -> ExitExc
 
   Block[123] -> [126], [125], ExitExc
-    [0] <>obj<>695 := <>Global<>toObject(<>c<>516) @ #440
+    [0] <>obj<>695 := @ToObject(<>c<>516) @ #440
 
   Block[124] -> [131], ExitExc
-    [0] <>obj<>698 := <>Global<>toObject(<>s<>2) @ #442
+    [0] <>obj<>698 := @ToObject(<>s<>2) @ #442
     [1] <>temp<>699 := "eid"
-    [2] <>obj<>700 := <>Global<>toObject(<>p<>21) @ #443
+    [2] <>obj<>700 := @ToObject(<>p<>21) @ #443
     [3] <>arguments<>701 := allocArg(0) @ #444
-    [4] <>fun<>702 := <>Global<>getBase(<>p<>21)
+    [4] <>fun<>702 := @GetBase(<>p<>21)
     [5] <>this<> := enterCode(<>fun<>702)
 
   Block[125] -> [128], [127], ExitExc
     [0] assert(<>obj<>695["google_remarketing_for_search"])
-    [1] <>obj<>696 := <>Global<>toObject(<>c<>516) @ #441
+    [1] <>obj<>696 := @ToObject(<>c<>516) @ #441
 
   Block[126] -> [130], ExitExc
     [0] assert(! <>obj<>695["google_remarketing_for_search"])
@@ -3255,7 +3255,7 @@ function[12] C {
     [0] <>arguments<>704 := allocArg(2) @ #446
     [1] <>arguments<>704["0"] := <>temp<>699
     [2] <>arguments<>704["1"] := <>temp<>703
-    [3] <>fun<>705 := <>Global<>getBase(<>s<>2)
+    [3] <>fun<>705 := @GetBase(<>s<>2)
     [4] <>this<> := enterCode(<>fun<>705)
 
   Call[135] -> ExitExc
@@ -3285,11 +3285,11 @@ function[12] C {
     [16] <>obj1<>707["15"] := <>temp<>694
     [17] <>obj1<>707["16"] := <>temp<>697
     [18] <>obj1<>707["17"] := <>temp<>706
-    [19] <>obj<>708 := <>Global<>toObject(<>obj1<>707) @ #449
+    [19] <>obj<>708 := @ToObject(<>obj1<>707) @ #449
     [20] <>temp<>709 := ""
     [21] <>arguments<>710 := allocArg(1) @ #450
     [22] <>arguments<>710["0"] := <>temp<>709
-    [23] <>fun<>711 := <>Global<>toObject(<>obj<>708["join"]) @ #451
+    [23] <>fun<>711 := @ToObject(<>obj<>708["join"]) @ #451
     [24] <>this<> := enterCode(<>obj<>708)
 
   Call[139] -> ExitExc
@@ -3315,11 +3315,11 @@ function[13] D {
   Block[0] -> [1], ExitExc
     [0] <>a<>713 := <>E<>24
     [1] <>b<>714 := <>F<>30
-    [2] <>obj<>717 := <>Global<>toObject(<>A<>9) @ #455
+    [2] <>obj<>717 := @ToObject(<>A<>9) @ #455
     [3] <>temp<>718 := <>a<>713
     [4] <>arguments<>719 := allocArg(1) @ #456
     [5] <>arguments<>719["0"] := <>temp<>718
-    [6] <>fun<>720 := <>Global<>getBase(<>A<>9)
+    [6] <>fun<>720 := @GetBase(<>A<>9)
     [7] <>this<> := enterCode(<>fun<>720)
 
   Call[1] -> ExitExc
@@ -3331,12 +3331,12 @@ function[13] D {
 
   Block[4] -> [5], ExitExc
     [0] <>y<>722 := <>y<>721 + "//www.google.com/ads/user-lists/"
-    [1] <>obj<>723 := <>Global<>toObject(<>r<>1) @ #458
-    [2] <>obj<>724 := <>Global<>toObject(<>b<>714) @ #459
+    [1] <>obj<>723 := @ToObject(<>r<>1) @ #458
+    [2] <>obj<>724 := @ToObject(<>b<>714) @ #459
     [3] <>temp<>725 := <>obj<>724["google_conversion_id"]
     [4] <>arguments<>726 := allocArg(1) @ #460
     [5] <>arguments<>726["0"] := <>temp<>725
-    [6] <>fun<>727 := <>Global<>getBase(<>r<>1)
+    [6] <>fun<>727 := @GetBase(<>r<>1)
     [7] <>this<> := enterCode(<>fun<>727)
 
   Call[5] -> ExitExc
@@ -3348,11 +3348,11 @@ function[13] D {
 
   Block[8] -> [9], ExitExc
     [0] <>temp<>729 := "/?random="
-    [1] <>obj<>730 := <>Global<>toObject(Math) @ #462
+    [1] <>obj<>730 := @ToObject(Math) @ #462
     [2] <>y<>731 := 1000000000
-    [3] <>obj<>732 := <>Global<>toObject(Math) @ #463
+    [3] <>obj<>732 := @ToObject(Math) @ #463
     [4] <>arguments<>733 := allocArg(0) @ #464
-    [5] <>fun<>734 := <>Global<>toObject(<>obj<>732["random"]) @ #465
+    [5] <>fun<>734 := @ToObject(<>obj<>732["random"]) @ #465
     [6] <>this<> := enterCode(<>obj<>732)
 
   Call[9] -> ExitExc
@@ -3366,7 +3366,7 @@ function[13] D {
     [0] <>temp<>736 := <>y<>731 * <>z<>735
     [1] <>arguments<>737 := allocArg(1) @ #467
     [2] <>arguments<>737["0"] := <>temp<>736
-    [3] <>fun<>738 := <>Global<>toObject(<>obj<>730["floor"]) @ #468
+    [3] <>fun<>738 := @ToObject(<>obj<>730["floor"]) @ #468
     [4] <>this<> := enterCode(<>obj<>730)
 
   Call[13] -> ExitExc
@@ -3381,11 +3381,11 @@ function[13] D {
     [1] <>obj1<>740["0"] := <>temp<>728
     [2] <>obj1<>740["1"] := <>temp<>729
     [3] <>obj1<>740["2"] := <>temp<>739
-    [4] <>obj<>741 := <>Global<>toObject(<>obj1<>740) @ #471
+    [4] <>obj<>741 := @ToObject(<>obj1<>740) @ #471
     [5] <>temp<>742 := ""
     [6] <>arguments<>743 := allocArg(1) @ #472
     [7] <>arguments<>743["0"] := <>temp<>742
-    [8] <>fun<>744 := <>Global<>toObject(<>obj<>741["join"]) @ #473
+    [8] <>fun<>744 := @ToObject(<>obj<>741["join"]) @ #473
     [9] <>this<> := enterCode(<>obj<>741)
 
   Call[17] -> ExitExc
@@ -3398,14 +3398,14 @@ function[13] D {
   Block[20] -> [21], ExitExc
     [0] <>d<>715 := <>y<>722 + <>z<>745
     [1] <>old<>746 := <>d<>715
-    [2] <>obj<>747 := <>Global<>toObject(<>s<>2) @ #475
+    [2] <>obj<>747 := @ToObject(<>s<>2) @ #475
     [3] <>temp<>748 := "label"
-    [4] <>obj<>749 := <>Global<>toObject(<>b<>714) @ #476
+    [4] <>obj<>749 := @ToObject(<>b<>714) @ #476
     [5] <>temp<>750 := <>obj<>749["google_conversion_label"]
     [6] <>arguments<>751 := allocArg(2) @ #477
     [7] <>arguments<>751["0"] := <>temp<>748
     [8] <>arguments<>751["1"] := <>temp<>750
-    [9] <>fun<>752 := <>Global<>getBase(<>s<>2)
+    [9] <>fun<>752 := @GetBase(<>s<>2)
     [10] <>this<> := enterCode(<>fun<>752)
 
   Call[21] -> ExitExc
@@ -3416,13 +3416,13 @@ function[13] D {
   AfterCatch[23] -> ExitExc
 
   Block[24] -> [25], ExitExc
-    [0] <>obj<>754 := <>Global<>toObject(<>s<>2) @ #479
+    [0] <>obj<>754 := @ToObject(<>s<>2) @ #479
     [1] <>temp<>755 := "fmt"
     [2] <>temp<>756 := "3"
     [3] <>arguments<>757 := allocArg(2) @ #480
     [4] <>arguments<>757["0"] := <>temp<>755
     [5] <>arguments<>757["1"] := <>temp<>756
-    [6] <>fun<>758 := <>Global<>getBase(<>s<>2)
+    [6] <>fun<>758 := @GetBase(<>s<>2)
     [7] <>this<> := enterCode(<>fun<>758)
 
   Call[25] -> ExitExc
@@ -3433,16 +3433,16 @@ function[13] D {
   AfterCatch[27] -> ExitExc
 
   Block[28] -> [29], ExitExc
-    [0] <>obj<>760 := <>Global<>toObject(<>z<>8) @ #482
+    [0] <>obj<>760 := @ToObject(<>z<>8) @ #482
     [1] <>temp<>761 := <>a<>713
     [2] <>temp<>762 := document
-    [3] <>obj<>763 := <>Global<>toObject(<>b<>714) @ #483
+    [3] <>obj<>763 := @ToObject(<>b<>714) @ #483
     [4] <>temp<>764 := <>obj<>763["google_conversion_page_url"]
     [5] <>arguments<>765 := allocArg(3) @ #484
     [6] <>arguments<>765["0"] := <>temp<>761
     [7] <>arguments<>765["1"] := <>temp<>762
     [8] <>arguments<>765["2"] := <>temp<>764
-    [9] <>fun<>766 := <>Global<>getBase(<>z<>8)
+    [9] <>fun<>766 := @GetBase(<>z<>8)
     [10] <>this<> := enterCode(<>fun<>766)
 
   Call[29] -> ExitExc
@@ -3457,11 +3457,11 @@ function[13] D {
     [1] <>obj1<>768["0"] := <>temp<>753
     [2] <>obj1<>768["1"] := <>temp<>759
     [3] <>obj1<>768["2"] := <>temp<>767
-    [4] <>obj<>769 := <>Global<>toObject(<>obj1<>768) @ #487
+    [4] <>obj<>769 := @ToObject(<>obj1<>768) @ #487
     [5] <>temp<>770 := ""
     [6] <>arguments<>771 := allocArg(1) @ #488
     [7] <>arguments<>771["0"] := <>temp<>770
-    [8] <>fun<>772 := <>Global<>toObject(<>obj<>769["join"]) @ #489
+    [8] <>fun<>772 := @ToObject(<>obj<>769["join"]) @ #489
     [9] <>this<> := enterCode(<>obj<>769)
 
   Call[33] -> ExitExc
@@ -3490,7 +3490,7 @@ function[14] G {
     [2] <>d<>776 := document
     [3] <>c<>777 := <>E<>24
     [4] <>y<>780 := 3
-    [5] <>obj<>781 := <>Global<>toObject(<>c<>777) @ #493
+    [5] <>obj<>781 := @ToObject(<>c<>777) @ #493
 
   Block[1] -> [3], ExitExc
     [0] assert(<>y<>780 != <>obj<>781["google_conversion_format"])
@@ -3498,7 +3498,7 @@ function[14] G {
 
   Block[2] -> [5], [4], ExitExc
     [0] assert(<>y<>780 == <>obj<>781["google_conversion_format"])
-    [1] <>obj<>783 := <>Global<>toObject(<>c<>777) @ #494
+    [1] <>obj<>783 := @ToObject(<>c<>777) @ #494
 
   Block[3] -> [8], [7]
 
@@ -3508,7 +3508,7 @@ function[14] G {
 
   Block[5] -> [6], ExitExc
     [0] assert(! <>obj<>783["google_remarketing_only"])
-    [1] <>obj<>785 := <>Global<>toObject(<>c<>777) @ #495
+    [1] <>obj<>785 := @ToObject(<>c<>777) @ #495
     [2] <>z<>784 := <>obj<>785["google_conversion_domain"]
 
   Block[6] -> [3], ExitExc
@@ -3525,9 +3525,9 @@ function[14] G {
 
   Block[10] -> [12], ExitExc
     [0] assert(<>m<>22)
-    [1] <>obj<>786 := <>Global<>toObject(<>n<>20) @ #496
+    [1] <>obj<>786 := @ToObject(<>n<>20) @ #496
     [2] <>arguments<>787 := allocArg(0) @ #497
-    [3] <>fun<>788 := <>Global<>getBase(<>n<>20)
+    [3] <>fun<>788 := @GetBase(<>n<>20)
     [4] <>this<> := enterCode(<>fun<>788)
 
   Block[11] -> [18], [17], ExitExc
@@ -3558,11 +3558,11 @@ function[14] G {
 
   Block[20] -> [22], ExitExc
     [0] assert(<>m<>22)
-    [1] <>obj<>791 := <>Global<>toObject(<>m<>22) @ #499
+    [1] <>obj<>791 := @ToObject(<>m<>22) @ #499
     [2] <>temp<>792 := 1
     [3] <>arguments<>793 := allocArg(1) @ #500
     [4] <>arguments<>793["0"] := <>temp<>792
-    [5] <>fun<>794 := <>Global<>toObject(<>obj<>791["c"]) @ #501
+    [5] <>fun<>794 := @ToObject(<>obj<>791["c"]) @ #501
     [6] <>this<> := enterCode(<>obj<>791)
 
   Block[21] -> [25], ExitExc
@@ -3578,7 +3578,7 @@ function[14] G {
 
   Block[25] -> [26], ExitExc
     [0] <>e<>778 := <>Global<>ignore61
-    [1] <>obj<>795 := <>Global<>toObject(<>C<>11) @ #503
+    [1] <>obj<>795 := @ToObject(<>C<>11) @ #503
     [2] <>temp<>796 := <>a<>774
     [3] <>temp<>797 := <>b<>775
     [4] <>temp<>798 := <>d<>776
@@ -3588,7 +3588,7 @@ function[14] G {
     [8] <>arguments<>800["1"] := <>temp<>797
     [9] <>arguments<>800["2"] := <>temp<>798
     [10] <>arguments<>800["3"] := <>temp<>799
-    [11] <>fun<>801 := <>Global<>getBase(<>C<>11)
+    [11] <>fun<>801 := @GetBase(<>C<>11)
     [12] <>this<> := enterCode(<>fun<>801)
 
   Call[26] -> ExitExc
@@ -3603,7 +3603,7 @@ function[14] G {
     [1] <>Global<>ignore63 := function (15) @ #506, #507
     [2] <>d<>776 := <>Global<>ignore63
     [3] <>y<>807 := 0
-    [4] <>obj<>808 := <>Global<>toObject(<>c<>777) @ #508
+    [4] <>obj<>808 := @ToObject(<>c<>777) @ #508
 
   Block[30] -> Exit, ExitExc
     [0] return(<>new1<>838)
@@ -3611,7 +3611,7 @@ function[14] G {
   Block[31] -> [34], [33], ExitExc
     [0] assert(<>y<>807 == <>obj<>808["google_conversion_format"])
     [1] <>y<>809 := null
-    [2] <>obj<>810 := <>Global<>toObject(<>c<>777) @ #509
+    [2] <>obj<>810 := @ToObject(<>c<>777) @ #509
 
   Block[32] -> [51], ExitExc
     [0] assert(<>y<>807 != <>obj<>808["google_conversion_format"])
@@ -3619,11 +3619,11 @@ function[14] G {
   Block[33] -> [35], ExitExc
     [0] assert(<>y<>809 == <>obj<>810["google_conversion_domain"])
     [1] <>y<>811 := "<a href=\""
-    [2] <>obj<>812 := <>Global<>toObject(<>A<>9) @ #510
+    [2] <>obj<>812 := @ToObject(<>A<>9) @ #510
     [3] <>temp<>813 := <>a<>774
     [4] <>arguments<>814 := allocArg(1) @ #511
     [5] <>arguments<>814["0"] := <>temp<>813
-    [6] <>fun<>815 := <>Global<>getBase(<>A<>9)
+    [6] <>fun<>815 := @GetBase(<>A<>9)
     [7] <>this<> := enterCode(<>fun<>815)
 
   Block[34] -> [50], ExitExc
@@ -3679,12 +3679,12 @@ function[14] G {
     [39] <>obj1<>818["vi"] := 1
     [40] <>obj1<>818["zh_CN"] := 1
     [41] <>obj1<>818["zh_TW"] := 1
-    [42] <>obj<>819 := <>Global<>toObject(<>obj1<>818) @ #514
-    [43] <>obj<>820 := <>Global<>toObject(<>c<>777) @ #515
+    [42] <>obj<>819 := @ToObject(<>obj1<>818) @ #514
+    [43] <>obj<>820 := @ToObject(<>c<>777) @ #515
 
   Block[39] -> [41], ExitExc
     [0] assert(<>obj<>819[<>obj<>820["google_conversion_language"]])
-    [1] <>obj<>821 := <>Global<>toObject(<>c<>777) @ #516
+    [1] <>obj<>821 := @ToObject(<>c<>777) @ #516
     [2] <>z<>822 := <>obj<>821["google_conversion_language"] + ".html"
 
   Block[40] -> [41], ExitExc
@@ -3693,12 +3693,12 @@ function[14] G {
 
   Block[41] -> [42], ExitExc
     [0] <>y<>823 := <>y<>817 + <>z<>822 + "?cid="
-    [1] <>obj<>824 := <>Global<>toObject(<>r<>1) @ #517
-    [2] <>obj<>825 := <>Global<>toObject(<>c<>777) @ #518
+    [1] <>obj<>824 := @ToObject(<>r<>1) @ #517
+    [2] <>obj<>825 := @ToObject(<>c<>777) @ #518
     [3] <>temp<>826 := <>obj<>825["google_conversion_id"]
     [4] <>arguments<>827 := allocArg(1) @ #519
     [5] <>arguments<>827["0"] := <>temp<>826
-    [6] <>fun<>828 := <>Global<>getBase(<>r<>1)
+    [6] <>fun<>828 := @GetBase(<>r<>1)
     [7] <>this<> := enterCode(<>fun<>828)
 
   Call[42] -> ExitExc
@@ -3710,7 +3710,7 @@ function[14] G {
 
   Block[45] -> [46], ExitExc
     [0] <>y<>830 := <>y<>811 + <>y<>823 + <>z<>829 + "\" target=\"_blank\">"
-    [1] <>obj<>831 := <>Global<>toObject(<>d<>776) @ #521
+    [1] <>obj<>831 := @ToObject(<>d<>776) @ #521
     [2] <>temp<>832 := <>b<>775
     [3] <>temp<>833 := 135
     [4] <>temp<>834 := 27
@@ -3718,7 +3718,7 @@ function[14] G {
     [6] <>arguments<>835["0"] := <>temp<>832
     [7] <>arguments<>835["1"] := <>temp<>833
     [8] <>arguments<>835["2"] := <>temp<>834
-    [9] <>fun<>836 := <>Global<>getBase(<>d<>776)
+    [9] <>fun<>836 := @GetBase(<>d<>776)
     [10] <>this<> := enterCode(<>fun<>836)
 
   Call[46] -> ExitExc
@@ -3735,7 +3735,7 @@ function[14] G {
 
   Block[51] -> [55], [54], ExitExc
     [0] <>y<>839 := 1
-    [1] <>obj<>840 := <>Global<>toObject(<>c<>777) @ #524
+    [1] <>obj<>840 := @ToObject(<>c<>777) @ #524
 
   Block[52] -> [30]
 
@@ -3749,7 +3749,7 @@ function[14] G {
 
   Block[56] -> [58], [57], ExitExc
     [0] <>y<>841 := 3
-    [1] <>obj<>842 := <>Global<>toObject(<>c<>777) @ #525
+    [1] <>obj<>842 := @ToObject(<>c<>777) @ #525
 
   Block[57] -> [53], ExitExc
     [0] assert(<>y<>841 == <>obj<>842["google_conversion_format"])
@@ -3760,7 +3760,7 @@ function[14] G {
   Block[59] -> [61], [60], ExitExc
     [0] <>y<>843 := "<iframe name=\"google_conversion_frame\" width=\""
     [1] <>y<>844 := 2
-    [2] <>obj<>845 := <>Global<>toObject(<>c<>777) @ #526
+    [2] <>obj<>845 := @ToObject(<>c<>777) @ #526
 
   Block[60] -> [62], ExitExc
     [0] assert(<>y<>844 == <>obj<>845["google_conversion_format"])
@@ -3773,7 +3773,7 @@ function[14] G {
   Block[62] -> [64], [63], ExitExc
     [0] <>y<>847 := <>y<>843 + <>z<>846 + "\" height=\""
     [1] <>y<>848 := 2
-    [2] <>obj<>849 := <>Global<>toObject(<>c<>777) @ #527
+    [2] <>obj<>849 := @ToObject(<>c<>777) @ #527
 
   Block[63] -> [65], ExitExc
     [0] assert(<>y<>848 == <>obj<>849["google_conversion_format"])
@@ -3785,9 +3785,9 @@ function[14] G {
 
   Block[65] -> [66], ExitExc
     [0] <>y<>851 := <>y<>847 + <>z<>850 + "\" src=\"" + <>b<>775 + "\" frameborder=\"0\" marginwidth=\"0\" marginheight=\"0\" vspace=\"0\" hspace=\"0\" allowtransparency=\"true\" scrolling=\"no\">"
-    [1] <>obj<>852 := <>Global<>toObject(<>d<>776) @ #528
-    [2] <>obj<>853 := <>Global<>toObject(<>b<>775) @ #529
-    [3] <>fun<>854 := <>Global<>toObject(RegExp) @ #530
+    [1] <>obj<>852 := @ToObject(<>d<>776) @ #528
+    [2] <>obj<>853 := @ToObject(<>b<>775) @ #529
+    [3] <>fun<>854 := @ToObject(RegExp) @ #530
     [4] <>temp<>855 := "\?random="
     [5] <>temp<>856 := ""
     [6] <>arguments<>857 := allocArg(2) @ #531
@@ -3804,7 +3804,7 @@ function[14] G {
   AfterCatch[68] -> ExitExc
 
   Block[69] -> [71], [70]
-    [0] <>cond<>861 := <>Global<>isObject(<>newObj<>860)
+    [0] <>cond<>861 := @isObject(<>newObj<>860)
 
   Block[70] -> [72], ExitExc
     [0] assert(<>cond<>861)
@@ -3819,7 +3819,7 @@ function[14] G {
     [1] <>arguments<>864 := allocArg(2) @ #534
     [2] <>arguments<>864["0"] := <>temp<>862
     [3] <>arguments<>864["1"] := <>temp<>863
-    [4] <>fun<>865 := <>Global<>toObject(<>obj<>853["replace"]) @ #535
+    [4] <>fun<>865 := @ToObject(<>obj<>853["replace"]) @ #535
     [5] <>this<> := enterCode(<>obj<>853)
 
   Call[73] -> ExitExc
@@ -3836,7 +3836,7 @@ function[14] G {
     [3] <>arguments<>869["0"] := <>temp<>866
     [4] <>arguments<>869["1"] := <>temp<>867
     [5] <>arguments<>869["2"] := <>temp<>868
-    [6] <>fun<>870 := <>Global<>getBase(<>d<>776)
+    [6] <>fun<>870 := @GetBase(<>d<>776)
     [7] <>this<> := enterCode(<>fun<>870)
 
   Call[77] -> ExitExc
@@ -3851,7 +3851,7 @@ function[14] G {
 
   Block[81] -> [83], ExitExc
     [0] assert("317150501" == <>e<>778)
-    [1] <>obj<>872 := <>Global<>toObject(<>d<>776) @ #539
+    [1] <>obj<>872 := @ToObject(<>d<>776) @ #539
     [2] <>temp<>873 := <>b<>775
     [3] <>temp<>874 := 1
     [4] <>temp<>875 := 1
@@ -3859,12 +3859,12 @@ function[14] G {
     [6] <>arguments<>876["0"] := <>temp<>873
     [7] <>arguments<>876["1"] := <>temp<>874
     [8] <>arguments<>876["2"] := <>temp<>875
-    [9] <>fun<>877 := <>Global<>getBase(<>d<>776)
+    [9] <>fun<>877 := @GetBase(<>d<>776)
     [10] <>this<> := enterCode(<>fun<>877)
 
   Block[82] -> [99], ExitExc
     [0] assert("317150501" != <>e<>778)
-    [1] <>obj<>894 := <>Global<>toObject(<>d<>776) @ #550
+    [1] <>obj<>894 := @ToObject(<>d<>776) @ #550
     [2] <>temp<>895 := <>b<>775
     [3] <>temp<>896 := 1
     [4] <>temp<>897 := 1
@@ -3872,7 +3872,7 @@ function[14] G {
     [6] <>arguments<>898["0"] := <>temp<>895
     [7] <>arguments<>898["1"] := <>temp<>896
     [8] <>arguments<>898["2"] := <>temp<>897
-    [9] <>fun<>899 := <>Global<>getBase(<>d<>776)
+    [9] <>fun<>899 := @GetBase(<>d<>776)
     [10] <>this<> := enterCode(<>fun<>899)
 
   Call[83] -> ExitExc
@@ -3884,8 +3884,8 @@ function[14] G {
 
   Block[86] -> [87], ExitExc
     [0] <>y<>879 := "<script src=\""
-    [1] <>obj<>880 := <>Global<>toObject(<>b<>775) @ #542
-    [2] <>fun<>881 := <>Global<>toObject(RegExp) @ #543
+    [1] <>obj<>880 := @ToObject(<>b<>775) @ #542
+    [2] <>fun<>881 := @ToObject(RegExp) @ #543
     [3] <>temp<>882 := "(&|\?)fmt=3(&|$)"
     [4] <>temp<>883 := ""
     [5] <>arguments<>884 := allocArg(2) @ #544
@@ -3902,7 +3902,7 @@ function[14] G {
   AfterCatch[89] -> ExitExc
 
   Block[90] -> [92], [91]
-    [0] <>cond<>888 := <>Global<>isObject(<>newObj<>887)
+    [0] <>cond<>888 := @isObject(<>newObj<>887)
 
   Block[91] -> [93], ExitExc
     [0] assert(<>cond<>888)
@@ -3917,7 +3917,7 @@ function[14] G {
     [1] <>arguments<>891 := allocArg(2) @ #547
     [2] <>arguments<>891["0"] := <>temp<>889
     [3] <>arguments<>891["1"] := <>temp<>890
-    [4] <>fun<>892 := <>Global<>toObject(<>obj<>880["replace"]) @ #548
+    [4] <>fun<>892 := @ToObject(<>obj<>880["replace"]) @ #548
     [5] <>this<> := enterCode(<>obj<>880)
 
   Call[94] -> ExitExc
@@ -3961,7 +3961,7 @@ function[16] H {
   Entry[-1] -> [0]
 
   Block[0] -> [1], ExitExc
-    [0] <>fun<>901 := <>Global<>toObject(Image) @ #555
+    [0] <>fun<>901 := @ToObject(Image) @ #555
     [1] <>arguments<>902 := allocArg(0) @ #556
     [2] <>proto<>903 := <>fun<>901["prototype"]
     [3] <>obj<>904 := alloc(<>proto<>903) @ #557
@@ -3974,7 +3974,7 @@ function[16] H {
   AfterCatch[3] -> ExitExc
 
   Block[4] -> [6], [5]
-    [0] <>cond<>906 := <>Global<>isObject(<>newObj<>905)
+    [0] <>cond<>906 := @isObject(<>newObj<>905)
 
   Block[5] -> [7], ExitExc
     [0] assert(<>cond<>906)
@@ -3998,9 +3998,9 @@ function[17] I {
 
   Block[0] -> [1], ExitExc
     [0] <>a<>908 := <>F<>30
-    [1] <>obj<>912 := <>Global<>toObject(<>D<>12) @ #561
+    [1] <>obj<>912 := @ToObject(<>D<>12) @ #561
     [2] <>arguments<>913 := allocArg(0) @ #562
-    [3] <>fun<>914 := <>Global<>getBase(<>D<>12)
+    [3] <>fun<>914 := @GetBase(<>D<>12)
     [4] <>this<> := enterCode(<>fun<>914)
 
   Call[1] -> ExitExc
@@ -4014,11 +4014,11 @@ function[17] I {
     [0] <>b<>909 := <>Global<>ignore65
     [1] <>d<>910 := <>H<>14
     [2] <>y<>915 := "function"
-    [3] <>obj<>916 := <>Global<>toObject(<>a<>908) @ #564
+    [3] <>obj<>916 := @ToObject(<>a<>908) @ #564
 
   Block[5] -> [7], ExitExc
     [0] assert(<>y<>915 === typeof <>obj<>916["opt_image_generator"])
-    [1] <>obj<>917 := <>Global<>toObject(<>a<>908) @ #565
+    [1] <>obj<>917 := @ToObject(<>a<>908) @ #565
     [2] <>d<>910 := <>obj<>917["opt_image_generator"]
     [3] <>Global<>ignore67 := <>obj<>917["opt_image_generator"]
 
@@ -4026,9 +4026,9 @@ function[17] I {
     [0] assert(<>y<>915 !== typeof <>obj<>916["opt_image_generator"])
 
   Block[7] -> [11], ExitExc
-    [0] <>obj<>918 := <>Global<>toObject(<>d<>910) @ #566
+    [0] <>obj<>918 := @ToObject(<>d<>910) @ #566
     [1] <>arguments<>919 := allocArg(0) @ #567
-    [2] <>fun<>920 := <>Global<>getBase(<>d<>910)
+    [2] <>fun<>920 := @GetBase(<>d<>910)
     [3] <>this<> := enterCode(<>fun<>920)
 
   Block[8] -> [10], ExitExc
@@ -4051,13 +4051,13 @@ function[17] I {
   Block[14] -> [15], ExitExc
     [0] <>a<>908 := <>Global<>ignore68
     [1] <>old<>921 := <>b<>909
-    [2] <>obj<>922 := <>Global<>toObject(<>s<>2) @ #569
+    [2] <>obj<>922 := @ToObject(<>s<>2) @ #569
     [3] <>temp<>923 := "async"
     [4] <>temp<>924 := "1"
     [5] <>arguments<>925 := allocArg(2) @ #570
     [6] <>arguments<>925["0"] := <>temp<>923
     [7] <>arguments<>925["1"] := <>temp<>924
-    [8] <>fun<>926 := <>Global<>getBase(<>s<>2)
+    [8] <>fun<>926 := @GetBase(<>s<>2)
     [9] <>this<> := enterCode(<>fun<>926)
 
   Call[15] -> ExitExc
@@ -4069,9 +4069,9 @@ function[17] I {
 
   Block[18] -> Exit, ExitExc
     [0] <>b<>909 := <>old<>921 + <>y<>927
-    [1] <>obj<>928 := <>Global<>toObject(<>a<>908) @ #572
+    [1] <>obj<>928 := @ToObject(<>a<>908) @ #572
     [2] <>obj<>928["src"] := <>b<>909
-    [3] <>obj<>929 := <>Global<>toObject(<>a<>908) @ #573
+    [3] <>obj<>929 := @ToObject(<>a<>908) @ #573
     [4] <>Global<>ignore71 := function (18) @ #574, #575
     [5] <>obj<>929["onload"] := <>Global<>ignore71
 
@@ -4097,8 +4097,8 @@ function[19] k<>funexpr@1:69-163<> {
 
   Block[0] -> [2], ExitExc
     [0] <>obj<>946 := <>a<>942
-    [1] <>iterator<>947 := <>Global<>iteratorInit(<>obj<>946) @ #584
-    [2] <>cond1<>948 := <>Global<>iteratorHasNext(<>obj<>946, <>iterator<>947)
+    [1] <>iterator<>947 := @iteratorInit(<>obj<>946) @ #584
+    [2] <>cond1<>948 := @iteratorHasNext(<>obj<>946, <>iterator<>947)
 
   Block[1] -> Exit
 
@@ -4106,24 +4106,24 @@ function[19] k<>funexpr@1:69-163<> {
 
   Block[3] -> [6], ExitExc
     [0] assert(<>cond1<>948)
-    [1] <>key<>949 := <>Global<>iteratorNext(<>obj<>946, <>iterator<>947)
+    [1] <>key<>949 := @iteratorNext(<>obj<>946, <>iterator<>947)
     [2] <>d<>944 := <>key<>949
-    [3] <>obj<>950 := <>Global<>toObject(Object) @ #585
-    [4] <>obj<>951 := <>Global<>toObject(<>obj<>950["prototype"]) @ #586
-    [5] <>obj<>952 := <>Global<>toObject(<>obj<>951["hasOwnProperty"]) @ #587
+    [3] <>obj<>950 := @ToObject(Object) @ #585
+    [4] <>obj<>951 := @ToObject(<>obj<>950["prototype"]) @ #586
+    [5] <>obj<>952 := @ToObject(<>obj<>951["hasOwnProperty"]) @ #587
     [6] <>temp<>953 := <>a<>942
     [7] <>temp<>954 := <>d<>944
     [8] <>arguments<>955 := allocArg(2) @ #588
     [9] <>arguments<>955["0"] := <>temp<>953
     [10] <>arguments<>955["1"] := <>temp<>954
-    [11] <>fun<>956 := <>Global<>toObject(<>obj<>952["call"]) @ #589
+    [11] <>fun<>956 := @ToObject(<>obj<>952["call"]) @ #589
     [12] <>this<> := enterCode(<>obj<>952)
 
   Block[4] -> [1], ExitExc
     [0] assert(! <>cond1<>948)
 
   Block[5] -> [2]
-    [0] <>cond1<>948 := <>Global<>iteratorHasNext(<>obj<>946, <>iterator<>947)
+    [0] <>cond1<>948 := @iteratorHasNext(<>obj<>946, <>iterator<>947)
 
   Call[6] -> ExitExc
     [0] call(<>fun<>956, <>this<>, <>arguments<>955) @ #590
@@ -4134,9 +4134,9 @@ function[19] k<>funexpr@1:69-163<> {
 
   Block[9] -> [11], ExitExc
     [0] assert(<>new0<>957)
-    [1] <>obj<>958 := <>Global<>toObject(<>b<>943) @ #591
+    [1] <>obj<>958 := @ToObject(<>b<>943) @ #591
     [2] <>temp<>959 := null
-    [3] <>obj<>960 := <>Global<>toObject(<>a<>942) @ #592
+    [3] <>obj<>960 := @ToObject(<>a<>942) @ #592
     [4] <>temp<>961 := <>obj<>960[<>d<>944]
     [5] <>temp<>962 := <>d<>944
     [6] <>temp<>963 := <>a<>942
@@ -4145,7 +4145,7 @@ function[19] k<>funexpr@1:69-163<> {
     [9] <>arguments<>964["1"] := <>temp<>961
     [10] <>arguments<>964["2"] := <>temp<>962
     [11] <>arguments<>964["3"] := <>temp<>963
-    [12] <>fun<>965 := <>Global<>toObject(<>obj<>958["call"]) @ #594
+    [12] <>fun<>965 := @ToObject(<>obj<>958["call"]) @ #594
     [13] <>this<> := enterCode(<>obj<>958)
 
   Block[10] -> [17], [16], ExitExc
@@ -4183,14 +4183,14 @@ function[20] l<>funexpr@1:170-265<> {
   Entry[-1] -> [0]
 
   Block[0] -> [2], ExitExc
-    [0] <>obj<>972 := <>Global<>toObject(this) @ #598
+    [0] <>obj<>972 := @ToObject(this) @ #598
     [1] <>Global<>ignore77 := allocArray(0) @ #599
     [2] <>obj<>972["b"] := <>Global<>ignore77
-    [3] <>obj<>973 := <>Global<>toObject(this) @ #600
+    [3] <>obj<>973 := @ToObject(this) @ #600
     [4] <>Global<>ignore78 := alloc() @ #601
     [5] <>obj<>973["a"] := <>Global<>ignore78
     [6] <>b<>969 := 0
-    [7] <>obj<>974 := <>Global<>toObject(<>arguments<>971) @ #602
+    [7] <>obj<>974 := @ToObject(<>arguments<>971) @ #602
     [8] <>d<>970 := <>obj<>974["length"]
 
   Block[1] -> Exit
@@ -4199,9 +4199,9 @@ function[20] l<>funexpr@1:170-265<> {
 
   Block[3] -> [5], ExitExc
     [0] assert(<>b<>969 < <>d<>970)
-    [1] <>obj<>975 := <>Global<>toObject(this) @ #603
-    [2] <>obj<>976 := <>Global<>toObject(<>obj<>975["a"]) @ #604
-    [3] <>obj<>977 := <>Global<>toObject(<>arguments<>971) @ #605
+    [1] <>obj<>975 := @ToObject(this) @ #603
+    [2] <>obj<>976 := @ToObject(<>obj<>975["a"]) @ #604
+    [3] <>obj<>977 := @ToObject(<>arguments<>971) @ #605
     [4] <>obj<>976[<>obj<>977[<>b<>969]] := ""
 
   Block[4] -> [1], ExitExc
@@ -4209,7 +4209,7 @@ function[20] l<>funexpr@1:170-265<> {
 
   Block[5] -> [2], ExitExc
     [0] <>old<>978 := <>b<>969
-    [1] <>new<>979 := <>Global<>toNumber(<>old<>978)
+    [1] <>new<>979 := @ToNumber(<>old<>978)
     [2] <>b<>969 := <>new<>979 + 1
     [3] <>Global<>ignore82 := <>new<>979 + 1
 
@@ -4230,12 +4230,12 @@ function[21] n<>funexpr@1:268-483<> {
     [4] <>Global<>ignore86["0"] := <>temp<>985
     [5] <>Global<>ignore86["1"] := <>temp<>986
     [6] <>b<>982 := <>Global<>ignore86
-    [7] <>obj<>987 := <>Global<>toObject(<>a<>981) @ #609
-    [8] <>obj<>988 := <>Global<>toObject(<>obj<>987["a"]) @ #610
+    [7] <>obj<>987 := @ToObject(<>a<>981) @ #609
+    [8] <>obj<>988 := @ToObject(<>obj<>987["a"]) @ #610
     [9] <>temp<>989 := 1
     [10] <>arguments<>990 := allocArg(1) @ #611
     [11] <>arguments<>990["0"] := <>temp<>989
-    [12] <>fun<>991 := <>Global<>toObject(<>obj<>988["hasOwnProperty"]) @ #612
+    [12] <>fun<>991 := @ToObject(<>obj<>988["hasOwnProperty"]) @ #612
     [13] <>this<> := enterCode(<>obj<>988)
 
   Call[1] -> ExitExc
@@ -4248,8 +4248,8 @@ function[21] n<>funexpr@1:268-483<> {
   Block[4] -> [6], ExitExc
     [0] assert(<>new0<>992)
     [1] <>y<>993 := ""
-    [2] <>obj<>994 := <>Global<>toObject(<>a<>981) @ #614
-    [3] <>obj<>995 := <>Global<>toObject(<>obj<>994["a"]) @ #615
+    [2] <>obj<>994 := @ToObject(<>a<>981) @ #614
+    [3] <>obj<>995 := @ToObject(<>obj<>994["a"]) @ #615
     [4] <>new<>996 := <>y<>993 == <>obj<>995[1]
 
   Block[5] -> [8], [7], ExitExc
@@ -4271,9 +4271,9 @@ function[21] n<>funexpr@1:268-483<> {
   Block[10] -> [12], ExitExc
     [0] assert(<>new<>996)
     [1] <>y<>997 := 0.0001
-    [2] <>obj<>998 := <>Global<>toObject(Math) @ #616
+    [2] <>obj<>998 := @ToObject(Math) @ #616
     [3] <>arguments<>999 := allocArg(0) @ #617
-    [4] <>fun<>1000 := <>Global<>toObject(<>obj<>998["random"]) @ #618
+    [4] <>fun<>1000 := @ToObject(<>obj<>998["random"]) @ #618
     [5] <>this<> := enterCode(<>obj<>998)
 
   Block[11] -> [25], ExitExc
@@ -4288,9 +4288,9 @@ function[21] n<>funexpr@1:268-483<> {
 
   Block[15] -> [17], ExitExc
     [0] assert(! <>y<>997 > <>z<>1001)
-    [1] <>obj<>1002 := <>Global<>toObject(Math) @ #620
+    [1] <>obj<>1002 := @ToObject(Math) @ #620
     [2] <>arguments<>1003 := allocArg(0) @ #621
-    [3] <>fun<>1004 := <>Global<>toObject(<>obj<>1002["random"]) @ #622
+    [3] <>fun<>1004 := @ToObject(<>obj<>1002["random"]) @ #622
     [4] <>this<> := enterCode(<>obj<>1002)
 
   Block[16] -> [23], [22], ExitExc
@@ -4323,11 +4323,11 @@ function[21] n<>funexpr@1:268-483<> {
 
   Block[26] -> [28], ExitExc
     [0] assert(<>d<>983)
-    [1] <>obj<>1006 := <>Global<>toObject(<>b<>982) @ #624
-    [2] <>obj<>1007 := <>Global<>toObject(Math) @ #625
-    [3] <>obj<>1008 := <>Global<>toObject(Math) @ #626
+    [1] <>obj<>1006 := @ToObject(<>b<>982) @ #624
+    [2] <>obj<>1007 := @ToObject(Math) @ #625
+    [3] <>obj<>1008 := @ToObject(Math) @ #626
     [4] <>arguments<>1009 := allocArg(0) @ #627
-    [5] <>fun<>1010 := <>Global<>toObject(<>obj<>1008["random"]) @ #628
+    [5] <>fun<>1010 := @ToObject(<>obj<>1008["random"]) @ #628
     [6] <>this<> := enterCode(<>obj<>1008)
 
   Block[27] -> [53], [52], ExitExc
@@ -4341,11 +4341,11 @@ function[21] n<>funexpr@1:268-483<> {
   AfterCatch[30] -> ExitExc
 
   Block[31] -> [32], ExitExc
-    [0] <>obj<>1012 := <>Global<>toObject(<>b<>982) @ #630
+    [0] <>obj<>1012 := @ToObject(<>b<>982) @ #630
     [1] <>temp<>1013 := <>y<>1011 * <>obj<>1012["length"]
     [2] <>arguments<>1014 := allocArg(1) @ #631
     [3] <>arguments<>1014["0"] := <>temp<>1013
-    [4] <>fun<>1015 := <>Global<>toObject(<>obj<>1007["floor"]) @ #632
+    [4] <>fun<>1015 := @ToObject(<>obj<>1007["floor"]) @ #632
     [5] <>this<> := enterCode(<>obj<>1007)
 
   Call[32] -> ExitExc
@@ -4361,12 +4361,12 @@ function[21] n<>funexpr@1:268-483<> {
 
   Block[36] -> [38], ExitExc
     [0] assert("" != <>b<>982)
-    [1] <>obj<>1018 := <>Global<>toObject(<>a<>981) @ #634
-    [2] <>obj<>1019 := <>Global<>toObject(<>obj<>1018["a"]) @ #635
+    [1] <>obj<>1018 := @ToObject(<>a<>981) @ #634
+    [2] <>obj<>1019 := @ToObject(<>obj<>1018["a"]) @ #635
     [3] <>temp<>1020 := 1
     [4] <>arguments<>1021 := allocArg(1) @ #636
     [5] <>arguments<>1021["0"] := <>temp<>1020
-    [6] <>fun<>1022 := <>Global<>toObject(<>obj<>1019["hasOwnProperty"]) @ #637
+    [6] <>fun<>1022 := @ToObject(<>obj<>1019["hasOwnProperty"]) @ #637
     [7] <>this<> := enterCode(<>obj<>1019)
 
   Block[37] -> [49], [48], ExitExc
@@ -4381,8 +4381,8 @@ function[21] n<>funexpr@1:268-483<> {
 
   Block[41] -> [43], ExitExc
     [0] assert(<>new1<>1023)
-    [1] <>obj<>1024 := <>Global<>toObject(<>a<>981) @ #639
-    [2] <>obj<>1025 := <>Global<>toObject(<>obj<>1024["a"]) @ #640
+    [1] <>obj<>1024 := @ToObject(<>a<>981) @ #639
+    [2] <>obj<>1025 := @ToObject(<>obj<>1024["a"]) @ #640
     [3] <>obj<>1025[1] := <>b<>982
     [4] <>new1<>1026 := <>obj<>1025[1]
 
@@ -4436,12 +4436,12 @@ function[22] l.prototype.c<>funexpr@1:498-555<> {
   Entry[-1] -> [0]
 
   Block[0] -> [1], ExitExc
-    [0] <>obj<>1032 := <>Global<>toObject(this) @ #645
-    [1] <>obj<>1033 := <>Global<>toObject(<>obj<>1032["a"]) @ #646
+    [0] <>obj<>1032 := @ToObject(this) @ #645
+    [1] <>obj<>1033 := @ToObject(<>obj<>1032["a"]) @ #646
     [2] <>temp<>1034 := <>a<>1030
     [3] <>arguments<>1035 := allocArg(1) @ #647
     [4] <>arguments<>1035["0"] := <>temp<>1034
-    [5] <>fun<>1036 := <>Global<>toObject(<>obj<>1033["hasOwnProperty"]) @ #648
+    [5] <>fun<>1036 := @ToObject(<>obj<>1033["hasOwnProperty"]) @ #648
     [6] <>this<> := enterCode(<>obj<>1033)
 
   Call[1] -> ExitExc
@@ -4453,8 +4453,8 @@ function[22] l.prototype.c<>funexpr@1:498-555<> {
 
   Block[4] -> [6], ExitExc
     [0] assert(<>new1<>1037)
-    [1] <>obj<>1038 := <>Global<>toObject(this) @ #650
-    [2] <>obj<>1039 := <>Global<>toObject(<>obj<>1038["a"]) @ #651
+    [1] <>obj<>1038 := @ToObject(this) @ #650
+    [2] <>obj<>1039 := @ToObject(<>obj<>1038["a"]) @ #651
     [3] <>new1<>1040 := <>obj<>1039[<>a<>1030]
 
   Block[5] -> [6], ExitExc
@@ -4477,14 +4477,14 @@ function[23] p<>funexpr@2:7-156<> {
     [0] <>a<>1046 := <>m<>22
     [1] <>Global<>ignore93 := allocArray(0) @ #658
     [2] <>b<>1047 := <>Global<>ignore93
-    [3] <>obj<>1049 := <>Global<>toObject(<>k<>18) @ #659
-    [4] <>obj<>1050 := <>Global<>toObject(<>a<>1046) @ #660
+    [3] <>obj<>1049 := @ToObject(<>k<>18) @ #659
+    [4] <>obj<>1050 := @ToObject(<>a<>1046) @ #660
     [5] <>temp<>1051 := <>obj<>1050["a"]
     [6] <>temp<>1060 := function (24) @ #665, #666
     [7] <>arguments<>1061 := allocArg(2) @ #667
     [8] <>arguments<>1061["0"] := <>temp<>1051
     [9] <>arguments<>1061["1"] := <>temp<>1060
-    [10] <>fun<>1062 := <>Global<>getBase(<>k<>18)
+    [10] <>fun<>1062 := @GetBase(<>k<>18)
     [11] <>this<> := enterCode(<>fun<>1062)
 
   Call[1] -> ExitExc
@@ -4496,8 +4496,8 @@ function[23] p<>funexpr@2:7-156<> {
 
   Block[4] -> [7], [6], ExitExc
     [0] <>y<>1063 := 0
-    [1] <>obj<>1064 := <>Global<>toObject(<>a<>1046) @ #669
-    [2] <>obj<>1065 := <>Global<>toObject(<>obj<>1064["b"]) @ #670
+    [1] <>obj<>1064 := @ToObject(<>a<>1046) @ #669
+    [2] <>obj<>1065 := @ToObject(<>obj<>1064["b"]) @ #670
 
   Block[5] -> Exit, ExitExc
     [0] return(<>new1<>1080)
@@ -4505,19 +4505,19 @@ function[23] p<>funexpr@2:7-156<> {
   Block[6] -> [9], [8], ExitExc
     [0] assert(<>y<>1063 < <>obj<>1065["length"])
     [1] <>y<>1066 := 0
-    [2] <>obj<>1067 := <>Global<>toObject(<>b<>1047) @ #671
+    [2] <>obj<>1067 := @ToObject(<>b<>1047) @ #671
 
   Block[7] -> [19], ExitExc
     [0] assert(! <>y<>1063 < <>obj<>1065["length"])
 
   Block[8] -> [10], ExitExc
     [0] assert(<>y<>1066 < <>obj<>1067["length"])
-    [1] <>obj<>1068 := <>Global<>toObject(<>a<>1046) @ #672
-    [2] <>obj<>1069 := <>Global<>toObject(<>obj<>1068["b"]) @ #673
+    [1] <>obj<>1068 := @ToObject(<>a<>1046) @ #672
+    [2] <>obj<>1069 := @ToObject(<>obj<>1068["b"]) @ #673
     [3] <>temp<>1070 := ","
     [4] <>arguments<>1071 := allocArg(1) @ #674
     [5] <>arguments<>1071["0"] := <>temp<>1070
-    [6] <>fun<>1072 := <>Global<>toObject(<>obj<>1069["join"]) @ #675
+    [6] <>fun<>1072 := @ToObject(<>obj<>1069["join"]) @ #675
     [7] <>this<> := enterCode(<>obj<>1069)
 
   Block[9] -> [18], ExitExc
@@ -4532,11 +4532,11 @@ function[23] p<>funexpr@2:7-156<> {
 
   Block[13] -> [14], ExitExc
     [0] <>y<>1074 := <>y<>1073 + ","
-    [1] <>obj<>1075 := <>Global<>toObject(<>b<>1047) @ #677
+    [1] <>obj<>1075 := @ToObject(<>b<>1047) @ #677
     [2] <>temp<>1076 := ","
     [3] <>arguments<>1077 := allocArg(1) @ #678
     [4] <>arguments<>1077["0"] := <>temp<>1076
-    [5] <>fun<>1078 := <>Global<>toObject(<>obj<>1075["join"]) @ #679
+    [5] <>fun<>1078 := @ToObject(<>obj<>1075["join"]) @ #679
     [6] <>this<> := enterCode(<>obj<>1075)
 
   Call[14] -> ExitExc
@@ -4552,12 +4552,12 @@ function[23] p<>funexpr@2:7-156<> {
   Block[18] -> [19]
 
   Block[19] -> [20], ExitExc
-    [0] <>obj<>1081 := <>Global<>toObject(<>a<>1046) @ #681
-    [1] <>obj<>1082 := <>Global<>toObject(<>obj<>1081["b"]) @ #682
+    [0] <>obj<>1081 := @ToObject(<>a<>1046) @ #681
+    [1] <>obj<>1082 := @ToObject(<>obj<>1081["b"]) @ #682
     [2] <>temp<>1083 := ","
     [3] <>arguments<>1084 := allocArg(1) @ #683
     [4] <>arguments<>1084["0"] := <>temp<>1083
-    [5] <>fun<>1085 := <>Global<>toObject(<>obj<>1082["join"]) @ #684
+    [5] <>fun<>1085 := @ToObject(<>obj<>1082["join"]) @ #684
     [6] <>this<> := enterCode(<>obj<>1082)
 
   Call[20] -> ExitExc
@@ -4568,11 +4568,11 @@ function[23] p<>funexpr@2:7-156<> {
   AfterCatch[22] -> ExitExc
 
   Block[23] -> [24], ExitExc
-    [0] <>obj<>1087 := <>Global<>toObject(<>b<>1047) @ #686
+    [0] <>obj<>1087 := @ToObject(<>b<>1047) @ #686
     [1] <>temp<>1088 := ","
     [2] <>arguments<>1089 := allocArg(1) @ #687
     [3] <>arguments<>1089["0"] := <>temp<>1088
-    [4] <>fun<>1090 := <>Global<>toObject(<>obj<>1087["join"]) @ #688
+    [4] <>fun<>1090 := @ToObject(<>obj<>1087["join"]) @ #688
     [5] <>this<> := enterCode(<>obj<>1087)
 
   Call[24] -> ExitExc
@@ -4598,11 +4598,11 @@ function[24] <>funexpr@2:37-66<> {
 
   Block[1] -> [3], ExitExc
     [0] assert("" != <>a<>1052)
-    [1] <>obj<>1054 := <>Global<>toObject(<>b<>1047) @ #661
+    [1] <>obj<>1054 := @ToObject(<>b<>1047) @ #661
     [2] <>temp<>1055 := <>a<>1052
     [3] <>arguments<>1056 := allocArg(1) @ #662
     [4] <>arguments<>1056["0"] := <>temp<>1055
-    [5] <>fun<>1057 := <>Global<>toObject(<>obj<>1054["push"]) @ #663
+    [5] <>fun<>1057 := @ToObject(<>obj<>1054["push"]) @ #663
     [6] <>this<> := enterCode(<>obj<>1054)
 
   Block[2] -> [9], [8], ExitExc

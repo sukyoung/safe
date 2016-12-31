@@ -139,6 +139,14 @@ case class IRThis(
   override def toString(indent: Int): String = "this"
 }
 
+// internal value
+case class IRInternalValue(
+    override val ast: ASTNode,
+    name: String
+) extends IRExpr(ast) {
+  override def toString(indent: Int): String = s"<>$name<>"
+}
+
 // Value
 case class IRVal(
     value: EJSVal

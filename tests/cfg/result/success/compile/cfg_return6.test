@@ -10,9 +10,9 @@ function f(this, <>arguments<>1)
 }
 var x
 {
-  <>obj<>4 = <>Global<>toObject(f)
+  <>obj<>4 = @ToObject(f)
   <>arguments<>5 = []
-  <>fun<>6 = <>Global<>getBase(f)
+  <>fun<>6 = @GetBase(f)
   <>Global<>ignore2 = <>obj<>4(<>fun<>6, <>arguments<>5)
 }
 

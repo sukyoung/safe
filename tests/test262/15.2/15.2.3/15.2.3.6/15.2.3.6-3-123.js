@@ -4,7 +4,7 @@
       
     };
     var attr = {
-      configurable : __Global
+      configurable : @Global
     };
     Object.defineProperty(obj, "property", attr);
     var beforeDeleted = obj.hasOwnProperty("property");

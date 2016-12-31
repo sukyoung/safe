@@ -37,15 +37,15 @@ var x
       return <>n<>14
     else
     {
-      <>obj<>15 = <>Global<>toObject(<>h<>12)
+      <>obj<>15 = @ToObject(<>h<>12)
       <>temp<>16 = <>n<>14 - 1
       <>arguments<>17 = [<>temp<>16, ]
-      <>fun<>18 = <>Global<>getBase(<>h<>12)
+      <>fun<>18 = @GetBase(<>h<>12)
       <>new1<>19 = <>obj<>15(<>fun<>18, <>arguments<>17)
       return <>new1<>19
     }
   }
-  <>obj<>20 = <>Global<>toObject(<>obj1<>11)
+  <>obj<>20 = @ToObject(<>obj1<>11)
   <>temp<>21 = 3
   <>arguments<>22 = [<>temp<>21, ]
   <>Global<>ignore9 = <>obj<>20(<>Global<>global, <>arguments<>22)

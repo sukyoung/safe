@@ -3,9 +3,9 @@
 var window = {}
 function print() {}
 
-var TopString = __StrTop
-var TopNum = __NumTop
-var TopBool = __BoolTop
+var TopString = @StrTop
+var TopNum = @NumTop
+var TopBool = @BoolTop
 
 var globalFuncList = [];
 
@@ -309,6 +309,6 @@ document.addEventListener("command", one, false);
 
 print("Before event loop");
 
-while (__BoolTop) {
+while (@BoolTop) {
   globalFuncList[TopNum]();
 }

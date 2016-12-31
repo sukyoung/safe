@@ -1,7 +1,7 @@
 
 var patt
 {
-  <>fun<>1 = <>Global<>toObject(RegExp)
+  <>fun<>1 = @ToObject(RegExp)
   <>temp<>2 = "\\a"
   <>temp<>3 = ""
   <>arguments<>4 = [<>temp<>2, <>temp<>3, ]
@@ -10,7 +10,7 @@ var patt
     [[Prototype]]=<>proto<>5
   }
   <>newObj<>7 = new <>fun<>1(<>obj<>6, <>arguments<>4)
-  <>cond<>8 = <>Global<>isObject(<>newObj<>7)
+  <>cond<>8 = @isObject(<>newObj<>7)
   if(<>cond<>8)
     <>Global<>ignore1 = <>newObj<>7
   else

@@ -1,13 +1,13 @@
   function testcase() 
   {
     try
-{      Object.defineProperty(__Global, "foo", {
+{      Object.defineProperty(@Global, "foo", {
         value : 12,
         configurable : true
       });
-      return dataPropertyAttributesAreCorrect(__Global, "foo", 12, false, false, true);}
+      return dataPropertyAttributesAreCorrect(@Global, "foo", 12, false, false, true);}
     finally
-{      delete __Global.foo;}
+{      delete @Global.foo;}
 
   }
   {

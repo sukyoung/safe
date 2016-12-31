@@ -1,15 +1,15 @@
   function testcase() 
   {
     try
-{      __Global.value = "GlobalValue";
+{      @Global.value = "GlobalValue";
       var newObj = Object.create({
         
       }, {
-        prop : __Global
+        prop : @Global
       });
       return newObj.prop === "GlobalValue";}
     finally
-{      delete __Global.value;}
+{      delete @Global.value;}
 
   }
   {

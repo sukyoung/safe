@@ -19,7 +19,7 @@ import kr.ac.kaist.safe.BASE_DIR
 import kr.ac.kaist.safe.LINE_SEP
 import java.io.BufferedWriter
 import java.io.IOException
-import scala.collection.immutable.HashMap
+import scala.collection.immutable.{ HashMap, HashSet }
 
 object NodeUtil {
   ////////////////////////////////////////////////////////////////
@@ -33,15 +33,11 @@ object NodeUtil {
   private var comment: Option[Comment] = None
 
   val INTERNAL_SYMBOL = "<>"
-  val INTERNAL_PRINT = "_<>_print"
-  val INTERNAL_PRINT_IS = "_<>_printIS"
-  val INTERNAL_GET_TICK_COUNT = "_<>_getTickCount"
   val GLOBAL_PREFIX = "<>Global<>"
   val GENERATED_STR = "<>generated String Literal"
 
   val VAR_TRUE = freshGlobalName("true")
   val VAR_ONE = freshGlobalName("one")
-  val TO_OBJ_NAME = freshGlobalName("toObject")
   val IGNORE_NAME = freshGlobalName("ignore")
   val GLOBAL_NAME = freshGlobalName("global")
   val REF_ERR_NAME = freshGlobalName("referenceError")
@@ -54,6 +50,80 @@ object NodeUtil {
   val TEMP_IR = IRNoOp(TEMP_AST, "defaultIR")
 
   val PRINT_WIDTH = 50
+
+  // internal API
+  val INTERNAL_API_PREFIX = "@"
+  def internalAPIName(name: String): String = INTERNAL_API_PREFIX + name
+
+  // internal API call
+  // 9.3 ToNumber
+  val INTERNAL_TO_NUM = internalAPIName("ToNumber")
+  // 9.9 ToObject
+  val INTERNAL_TO_OBJ = internalAPIName("ToObject")
+  // 8.7 The Reference Specification Type
+  val INTERNAL_GET_BASE = internalAPIName("GetBase")
+  // Other helpers
+  val INTERNAL_IS_OBJ = internalAPIName("isObject")
+  val INTERNAL_ITER_INIT = internalAPIName("iteratorInit")
+  val INTERNAL_HAS_NEXT = internalAPIName("iteratorHasNext")
+  val INTERNAL_ITER_NEXT = internalAPIName("iteratorNext")
+  val internalCallSet: Set[String] = HashSet(
+    INTERNAL_TO_NUM,
+    INTERNAL_TO_OBJ,
+    INTERNAL_GET_BASE,
+    INTERNAL_IS_OBJ,
+    INTERNAL_ITER_INIT,
+    INTERNAL_HAS_NEXT,
+    INTERNAL_ITER_NEXT
+  )
+  def isInternalCall(id: String): Boolean = internalCallSet.contains(id)
+
+  // internal API value
+  val INTERNAL_TOP = internalAPIName("Top")
+  val INTERNAL_UINT = internalAPIName("UInt")
+  val INTERNAL_GLOBAL = internalAPIName("Global")
+  val INTERNAL_BOOL_TOP = internalAPIName("BoolTop")
+  val INTERNAL_NUM_TOP = internalAPIName("NumTop")
+  val INTERNAL_STR_TOP = internalAPIName("StrTop")
+  val INTERNAL_EVAL_ERR = internalAPIName("EvalErr")
+  val INTERNAL_RANGE_ERR = internalAPIName("RangeErr")
+  val INTERNAL_REF_ERR = internalAPIName("RefErr")
+  val INTERNAL_SYNTAX_ERR = internalAPIName("SyntaxErr")
+  val INTERNAL_TYPE_ERR = internalAPIName("TypeErr")
+  val INTERNAL_URI_ERR = internalAPIName("URIErr")
+  val INTERNAL_EVAL_ERR_PROTO = internalAPIName("EvalErrProto")
+  val INTERNAL_RANGE_ERR_PROTO = internalAPIName("RangeErrProto")
+  val INTERNAL_REF_ERR_PROTO = internalAPIName("RefErrProto")
+  val INTERNAL_SYNTAX_ERR_PROTO = internalAPIName("SyntaxErrProto")
+  val INTERNAL_TYPE_ERR_PROTO = internalAPIName("TypeErrProto")
+  val INTERNAL_URI_ERR_PROTO = internalAPIName("URIErrProto")
+  val INTERNAL_ERR_PROTO = internalAPIName("ErrProto")
+  val INTERNAL_OBJ_CONST = internalAPIName("ObjConst")
+  val INTERNAL_ARRAY_CONST = internalAPIName("ArrayConst")
+  val internalValueSet: Set[String] = HashSet(
+    INTERNAL_TOP,
+    INTERNAL_UINT,
+    INTERNAL_GLOBAL,
+    INTERNAL_BOOL_TOP,
+    INTERNAL_NUM_TOP,
+    INTERNAL_STR_TOP,
+    INTERNAL_EVAL_ERR,
+    INTERNAL_RANGE_ERR,
+    INTERNAL_REF_ERR,
+    INTERNAL_SYNTAX_ERR,
+    INTERNAL_TYPE_ERR,
+    INTERNAL_URI_ERR,
+    INTERNAL_EVAL_ERR_PROTO,
+    INTERNAL_RANGE_ERR_PROTO,
+    INTERNAL_REF_ERR_PROTO,
+    INTERNAL_SYNTAX_ERR_PROTO,
+    INTERNAL_TYPE_ERR_PROTO,
+    INTERNAL_URI_ERR_PROTO,
+    INTERNAL_ERR_PROTO,
+    INTERNAL_OBJ_CONST,
+    INTERNAL_ARRAY_CONST
+  )
+  def isInternalValue(id: String): Boolean = internalValueSet.contains(id)
 
   ////////////////////////////////////////////////////////////////
   // For all AST, IR, and CFG

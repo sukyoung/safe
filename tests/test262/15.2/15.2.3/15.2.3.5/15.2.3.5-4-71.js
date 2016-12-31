@@ -2,11 +2,11 @@
   {
     var accessed = false;
     try
-{      __Global.enumerable = true;
+{      @Global.enumerable = true;
       var newObj = Object.create({
         
       }, {
-        prop : __Global
+        prop : @Global
       });
       for(var property in newObj)
       {
@@ -17,7 +17,7 @@
       }
       return accessed;}
     finally
-{      delete __Global.enumerable;}
+{      delete @Global.enumerable;}
 
   }
   {

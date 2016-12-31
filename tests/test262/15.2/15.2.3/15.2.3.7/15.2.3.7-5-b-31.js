@@ -5,9 +5,9 @@
     };
     var accessed = false;
     try
-{      __Global.enumerable = true;
+{      @Global.enumerable = true;
       Object.defineProperties(obj, {
-        prop : __Global
+        prop : @Global
       });
       for(var property in obj)
       {
@@ -18,7 +18,7 @@
       }
       return accessed;}
     finally
-{      delete __Global.enumerable;}
+{      delete @Global.enumerable;}
 
   }
   {

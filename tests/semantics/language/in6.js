@@ -3,7 +3,7 @@ var o2 = [1];
 var o3 = [1,2];
 var p;
 
-if (__TOP)
+if (@Top)
 	p = "0" 
 else
 	p = "1"

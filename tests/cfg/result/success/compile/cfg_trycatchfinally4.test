@@ -16,10 +16,10 @@ var arr
 try
 {
   {
-    <>obj<>1 = <>Global<>toObject(obj)
+    <>obj<>1 = @ToObject(obj)
     if(<>obj<>1["a"] == x)
     {
-      <>obj<>2 = <>Global<>toObject(obj)
+      <>obj<>2 = @ToObject(obj)
       <>Global<>ignore7 = delete <>obj<>2["b"]
     }
     else
@@ -28,7 +28,7 @@ try
         {
           <>continue<>4 : {
             <>old<>5 = x
-            <>new<>6 = <>Global<>toNumber(<>old<>5)
+            <>new<>6 = @ToNumber(<>old<>5)
             x = <>new<>6 - 1
             if(<>new<>6)
               break <>break<>3
@@ -50,9 +50,9 @@ catch(<>e<>7)
   {
     <>temp<>10 = 4
     <>temp<>11 = 2
-    <>obj<>12 = <>Global<>toObject(test)
+    <>obj<>12 = @ToObject(test)
     <>arguments<>13 = []
-    <>fun<>14 = <>Global<>getBase(test)
+    <>fun<>14 = @GetBase(test)
     <>temp<>15 = <>obj<>12(<>fun<>14, <>arguments<>13)
     <>Global<>ignore4 = [<>temp<>10, <>temp<>11, <>temp<>15, ]
     arr = <>Global<>ignore4

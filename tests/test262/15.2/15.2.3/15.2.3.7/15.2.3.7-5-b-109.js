@@ -5,7 +5,7 @@
     };
     Object.defineProperties(obj, {
       property : {
-        configurable : __Global
+        configurable : @Global
       }
     });
     var preCheck = obj.hasOwnProperty("property");

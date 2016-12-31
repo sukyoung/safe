@@ -1,6 +1,6 @@
 // Math.round
-var __result1 = Math.round(__NumTop);
-var __expect1 = __NumTop;
+var __result1 = Math.round(@NumTop);
+var __expect1 = @NumTop;
 var __result2 = Math.round(3);
 var __expect2 = 3;
 var __result3 = Math.round(0.1);

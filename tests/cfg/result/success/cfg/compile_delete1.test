@@ -3,13 +3,13 @@ function[0] top-level {
 
   Block[0] -> Exit, ExitExc
     [0] noop(StartOfFile)
-    [1] <>obj<>1 := <>Global<>toObject(a) @ #1
+    [1] <>obj<>1 := @ToObject(a) @ #1
     [2] <>Global<>ignore1 := delete(<>obj<>1, "b")
-    [3] <>obj<>2 := <>Global<>toObject(a) @ #2
-    [4] <>obj<>3 := <>Global<>toObject(<>obj<>2["b"]) @ #3
+    [3] <>obj<>2 := @ToObject(a) @ #2
+    [4] <>obj<>3 := @ToObject(<>obj<>2["b"]) @ #3
     [5] <>Global<>ignore2 := delete(<>obj<>3, "c")
-    [6] <>obj<>4 := <>Global<>toObject(a) @ #4
-    [7] <>obj<>5 := <>Global<>toObject(<>obj<>4["b"]) @ #5
+    [6] <>obj<>4 := @ToObject(a) @ #4
+    [7] <>obj<>5 := @ToObject(<>obj<>4["b"]) @ #5
     [8] <>Global<>ignore3 := delete(<>obj<>5, "c")
     [9] noop(EndOfFile)
 

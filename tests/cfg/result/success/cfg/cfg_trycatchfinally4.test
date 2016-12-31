@@ -10,7 +10,7 @@ function[0] top-level {
     [5] obj := <>Global<>ignore2
 
   Block[1] -> [4], [3], [2]
-    [0] <>obj<>2 := <>Global<>toObject(obj) @ #2
+    [0] <>obj<>2 := @ToObject(obj) @ #2
 
   Block[2] -> [14], ExitExc
     [0] catch(<>e<>1)
@@ -18,14 +18,14 @@ function[0] top-level {
     [2] value := <>Global<>ignore3
     [3] <>temp<>8 := 4
     [4] <>temp<>9 := 2
-    [5] <>obj<>10 := <>Global<>toObject(test) @ #6
+    [5] <>obj<>10 := @ToObject(test) @ #6
     [6] <>arguments<>11 := allocArg(0) @ #7
-    [7] <>fun<>12 := <>Global<>getBase(test)
+    [7] <>fun<>12 := @GetBase(test)
     [8] <>this<> := enterCode(<>fun<>12)
 
   Block[3] -> [5], [2]
     [0] assert(<>obj<>2["a"] == x)
-    [1] <>obj<>3 := <>Global<>toObject(obj) @ #3
+    [1] <>obj<>3 := @ToObject(obj) @ #3
     [2] <>Global<>ignore7 := delete(<>obj<>3, "b")
 
   Block[4] -> [7], [2]
@@ -41,7 +41,7 @@ function[0] top-level {
   Block[8] -> [12], [11], [2]
     [0] assert(true)
     [1] <>old<>4 := x
-    [2] <>new<>5 := <>Global<>toNumber(<>old<>4)
+    [2] <>new<>5 := @ToNumber(<>old<>4)
     [3] x := <>new<>5 - 1
 
   Block[9] -> [6], [2]

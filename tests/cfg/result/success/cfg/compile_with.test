@@ -3,13 +3,13 @@ function[0] top-level {
 
   Block[0] -> Exit, ExitExc
     [0] noop(StartOfFile)
-    [1] <>Global<>ignore1 := <>Global<>toObject(1) @ #1
+    [1] <>Global<>ignore1 := @ToObject(1) @ #1
     [2] <>alpha<>1 := <>Global<>ignore1
     [3] <>Global<>ignore3 := 2
     [4] <>Global<>ignore5 := "jsaf"
-    [5] <>Global<>ignore6 := <>Global<>toObject(true) @ #2
+    [5] <>Global<>ignore6 := @ToObject(true) @ #2
     [6] <>alpha<>2 := <>Global<>ignore6
-    [7] <>Global<>ignore7 := <>Global<>toObject("jsaf") @ #3
+    [7] <>Global<>ignore7 := @ToObject("jsaf") @ #3
     [8] <>alpha<>3 := <>Global<>ignore7
     [9] noop(EndOfFile)
 

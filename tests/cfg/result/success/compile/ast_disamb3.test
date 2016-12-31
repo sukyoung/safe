@@ -7,18 +7,18 @@ var v
 <>break<>1 : {
   {
     <>obj<>2 = collection
-    <>iterator<>3 = <>Global<>iteratorInit(<>obj<>2)
-    <>cond1<>4 = <>Global<>iteratorHasNext(<>obj<>2, <>iterator<>3)
+    <>iterator<>3 = @iteratorInit(<>obj<>2)
+    <>cond1<>4 = @iteratorHasNext(<>obj<>2, <>iterator<>3)
   }
   while(<>cond1<>4)
   {
-    <>key<>5 = <>Global<>iteratorNext(<>obj<>2, <>iterator<>3)
+    <>key<>5 = @iteratorNext(<>obj<>2, <>iterator<>3)
     x = <>key<>5
     <>continue<>6 : {
       
     }
     {
-      <>cond1<>4 = <>Global<>iteratorHasNext(<>obj<>2, <>iterator<>3)
+      <>cond1<>4 = @iteratorHasNext(<>obj<>2, <>iterator<>3)
     }
   }
 }
@@ -29,18 +29,18 @@ var v
   <>break<>7 : {
     {
       <>obj<>8 = collection
-      <>iterator<>9 = <>Global<>iteratorInit(<>obj<>8)
-      <>cond1<>10 = <>Global<>iteratorHasNext(<>obj<>8, <>iterator<>9)
+      <>iterator<>9 = @iteratorInit(<>obj<>8)
+      <>cond1<>10 = @iteratorHasNext(<>obj<>8, <>iterator<>9)
     }
     while(<>cond1<>10)
     {
-      <>key<>11 = <>Global<>iteratorNext(<>obj<>8, <>iterator<>9)
+      <>key<>11 = @iteratorNext(<>obj<>8, <>iterator<>9)
       y = <>key<>11
       <>continue<>12 : {
         
       }
       {
-        <>cond1<>10 = <>Global<>iteratorHasNext(<>obj<>8, <>iterator<>9)
+        <>cond1<>10 = @iteratorHasNext(<>obj<>8, <>iterator<>9)
       }
     }
   }
@@ -53,7 +53,7 @@ var v
     }
     {
       <>old<>15 = z
-      <>new<>16 = <>Global<>toNumber(<>old<>15)
+      <>new<>16 = @ToNumber(<>old<>15)
       z = <>new<>16 + 1
       <>Global<>ignore3 = <>new<>16
     }
@@ -71,7 +71,7 @@ var v
       }
       {
         <>old<>19 = v
-        <>new<>20 = <>Global<>toNumber(<>old<>19)
+        <>new<>20 = @ToNumber(<>old<>19)
         v = <>new<>20 + 1
         <>Global<>ignore6 = <>new<>20
       }

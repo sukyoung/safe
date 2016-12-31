@@ -4,7 +4,7 @@ function[0] top-level {
   Block[0] -> [1], ExitExc
     [0] F := function (1) @ #2, #3
     [1] noop(StartOfFile)
-    [2] <>fun<>3 := <>Global<>toObject(F) @ #4
+    [2] <>fun<>3 := @ToObject(F) @ #4
     [3] <>arguments<>4 := allocArg(0) @ #5
     [4] <>proto<>5 := <>fun<>3["prototype"]
     [5] <>obj<>6 := alloc(<>proto<>5) @ #6
@@ -17,7 +17,7 @@ function[0] top-level {
   AfterCatch[3] -> ExitExc
 
   Block[4] -> [6], [5]
-    [0] <>cond<>8 := <>Global<>isObject(<>newObj<>7)
+    [0] <>cond<>8 := @isObject(<>newObj<>7)
 
   Block[5] -> [7], ExitExc
     [0] assert(<>cond<>8)
@@ -41,7 +41,7 @@ function[1] F {
   Entry[-1] -> [0]
 
   Block[0] -> Exit, ExitExc
-    [0] <>obj<>2 := <>Global<>toObject(this) @ #1
+    [0] <>obj<>2 := @ToObject(this) @ #1
     [1] <>obj<>2["x"] := 1
 
   Exit[-2]

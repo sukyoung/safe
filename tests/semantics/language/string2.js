@@ -1,6 +1,6 @@
 var x;
 
-if(__TOP)
+if(@Top)
 	x = "111"
 else
 	x = "str"

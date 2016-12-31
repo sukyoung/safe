@@ -6,7 +6,7 @@
 //        
 //      }, {
 //        prop : {
-//          set : __Global
+//          set : @Global
 //        }
 //      });
 //      return false;}

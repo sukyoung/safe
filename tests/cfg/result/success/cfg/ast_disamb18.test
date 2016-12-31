@@ -6,9 +6,9 @@ function[0] top-level {
     [1] <>Global<>ignore1 := function <>foo<>2(1) @ #1, #2, #3
     [2] foo := <>Global<>ignore1
     [3] __expect1 := foo
-    [4] <>obj<>3 := <>Global<>toObject(foo) @ #4
+    [4] <>obj<>3 := @ToObject(foo) @ #4
     [5] <>arguments<>4 := allocArg(0) @ #5
-    [6] <>fun<>5 := <>Global<>getBase(foo)
+    [6] <>fun<>5 := @GetBase(foo)
     [7] <>this<> := enterCode(<>fun<>5)
 
   Call[1] -> ExitExc

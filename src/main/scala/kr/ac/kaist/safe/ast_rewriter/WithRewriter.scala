@@ -95,7 +95,7 @@ class WithRewriter(program: Program, forTest: Boolean) {
       val name = NU.freshName("alpha")
       Id(info, name, Some(name), true)
     }
-    def toObjectId(info: ASTNodeInfo): Id = Id(info, NU.TO_OBJ_NAME, Some(NU.TO_OBJ_NAME), false)
+    def toObjectId(info: ASTNodeInfo): Id = Id(info, NU.INTERNAL_TO_OBJ, Some(NU.INTERNAL_TO_OBJ), false)
     def assignOp(info: ASTNodeInfo): Op = Op(info, "=")
     def inOp(info: ASTNodeInfo): Op = Op(info, "in")
     def paren(expr: Expr): Parenthesized = Parenthesized(expr.info, expr)

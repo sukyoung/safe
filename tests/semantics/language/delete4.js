@@ -1,6 +1,6 @@
 x = 1;
 
-if (__TOP) {
+if (@Top) {
 	var __result1 = delete x;
 	var __expect1 = true;
 } else {

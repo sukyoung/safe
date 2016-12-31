@@ -20,10 +20,10 @@ function f(this, <>arguments<>1)
           <>z<>7 = 678
         }
         {
-          <>obj<>9 = <>Global<>toObject(print)
+          <>obj<>9 = @ToObject(print)
           <>temp<>10 = "in"
           <>arguments<>11 = [<>temp<>10, ]
-          <>fun<>12 = <>Global<>getBase(print)
+          <>fun<>12 = @GetBase(print)
           <>Global<>ignore4 = <>obj<>9(<>fun<>12, <>arguments<>11)
         }
         {
@@ -36,10 +36,10 @@ function f(this, <>arguments<>1)
           <>w<>8 = <>Global<>ignore5
         }
         {
-          <>obj<>16 = <>Global<>toObject(<>w<>8)
+          <>obj<>16 = @ToObject(<>w<>8)
           <>temp<>17 = 3
           <>arguments<>18 = [<>temp<>17, ]
-          <>fun<>19 = <>Global<>getBase(<>w<>8)
+          <>fun<>19 = @GetBase(<>w<>8)
           <>Global<>ignore6 = <>obj<>16(<>fun<>19, <>arguments<>18)
         }
       }
@@ -49,9 +49,9 @@ function f(this, <>arguments<>1)
 }
 var x
 {
-  <>obj<>20 = <>Global<>toObject(f)
+  <>obj<>20 = @ToObject(f)
   <>arguments<>21 = []
-  <>fun<>22 = <>Global<>getBase(f)
+  <>fun<>22 = @GetBase(f)
   <>Global<>ignore7 = <>obj<>20(<>fun<>22, <>arguments<>21)
 }
 

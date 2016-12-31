@@ -1,28 +1,28 @@
 function addThis(this, <>arguments<>1) 
 {
   {
-    <>obj<>2 = <>Global<>toObject(statusmessages)
+    <>obj<>2 = @ToObject(statusmessages)
     <>obj<>2[i] = status
   }
   {
-    <>obj<>3 = <>Global<>toObject(patterns)
+    <>obj<>3 = @ToObject(patterns)
     <>obj<>3[i] = pattern
   }
   {
-    <>obj<>4 = <>Global<>toObject(strings)
+    <>obj<>4 = @ToObject(strings)
     <>obj<>4[i] = string
   }
   {
-    <>obj<>5 = <>Global<>toObject(actualmatches)
+    <>obj<>5 = @ToObject(actualmatches)
     <>obj<>5[i] = actualmatch
   }
   {
-    <>obj<>6 = <>Global<>toObject(expectedmatches)
+    <>obj<>6 = @ToObject(expectedmatches)
     <>obj<>6[i] = expectedmatch
   }
   {
     <>old<>7 = i
-    <>new<>8 = <>Global<>toNumber(<>old<>7)
+    <>new<>8 = @ToNumber(<>old<>7)
     i = <>new<>8 + 1
     <>Global<>ignore7 = <>new<>8
   }
@@ -30,42 +30,42 @@ function addThis(this, <>arguments<>1)
 function test(this, <>arguments<>9) 
 {
   {
-    <>obj<>10 = <>Global<>toObject(enterFunc)
+    <>obj<>10 = @ToObject(enterFunc)
     <>temp<>11 = "test"
     <>arguments<>12 = [<>temp<>11, ]
-    <>fun<>13 = <>Global<>getBase(enterFunc)
+    <>fun<>13 = @GetBase(enterFunc)
     <>Global<>ignore8 = <>obj<>10(<>fun<>13, <>arguments<>12)
   }
   {
-    <>obj<>14 = <>Global<>toObject(printBugNumber)
+    <>obj<>14 = @ToObject(printBugNumber)
     <>temp<>15 = bug
     <>arguments<>16 = [<>temp<>15, ]
-    <>fun<>17 = <>Global<>getBase(printBugNumber)
+    <>fun<>17 = @GetBase(printBugNumber)
     <>Global<>ignore9 = <>obj<>14(<>fun<>17, <>arguments<>16)
   }
   {
-    <>obj<>18 = <>Global<>toObject(printStatus)
+    <>obj<>18 = @ToObject(printStatus)
     <>temp<>19 = summary
     <>arguments<>20 = [<>temp<>19, ]
-    <>fun<>21 = <>Global<>getBase(printStatus)
+    <>fun<>21 = @GetBase(printStatus)
     <>Global<>ignore10 = <>obj<>18(<>fun<>21, <>arguments<>20)
   }
   {
-    <>obj<>22 = <>Global<>toObject(testRegExp)
+    <>obj<>22 = @ToObject(testRegExp)
     <>temp<>23 = statusmessages
     <>temp<>24 = patterns
     <>temp<>25 = strings
     <>temp<>26 = actualmatches
     <>temp<>27 = expectedmatches
     <>arguments<>28 = [<>temp<>23, <>temp<>24, <>temp<>25, <>temp<>26, <>temp<>27, ]
-    <>fun<>29 = <>Global<>getBase(testRegExp)
+    <>fun<>29 = @GetBase(testRegExp)
     <>Global<>ignore11 = <>obj<>22(<>fun<>29, <>arguments<>28)
   }
   {
-    <>obj<>30 = <>Global<>toObject(exitFunc)
+    <>obj<>30 = @ToObject(exitFunc)
     <>temp<>31 = "test"
     <>arguments<>32 = [<>temp<>31, ]
-    <>fun<>33 = <>Global<>getBase(exitFunc)
+    <>fun<>33 = @GetBase(exitFunc)
     <>Global<>ignore12 = <>obj<>30(<>fun<>33, <>arguments<>32)
   }
 }
@@ -95,14 +95,14 @@ var expectedmatches
   status = ""
 }
 {
-  <>fun<>34 = <>Global<>toObject(Array)
+  <>fun<>34 = @ToObject(Array)
   <>arguments<>35 = []
   <>proto<>36 = <>fun<>34["prototype"]
   <>obj<>37 = {
     [[Prototype]]=<>proto<>36
   }
   <>newObj<>38 = new <>fun<>34(<>obj<>37, <>arguments<>35)
-  <>cond<>39 = <>Global<>isObject(<>newObj<>38)
+  <>cond<>39 = @isObject(<>newObj<>38)
   if(<>cond<>39)
     <>Global<>ignore17 = <>newObj<>38
   else
@@ -113,14 +113,14 @@ var expectedmatches
   pattern = ""
 }
 {
-  <>fun<>40 = <>Global<>toObject(Array)
+  <>fun<>40 = @ToObject(Array)
   <>arguments<>41 = []
   <>proto<>42 = <>fun<>40["prototype"]
   <>obj<>43 = {
     [[Prototype]]=<>proto<>42
   }
   <>newObj<>44 = new <>fun<>40(<>obj<>43, <>arguments<>41)
-  <>cond<>45 = <>Global<>isObject(<>newObj<>44)
+  <>cond<>45 = @isObject(<>newObj<>44)
   if(<>cond<>45)
     <>Global<>ignore19 = <>newObj<>44
   else
@@ -131,14 +131,14 @@ var expectedmatches
   string = ""
 }
 {
-  <>fun<>46 = <>Global<>toObject(Array)
+  <>fun<>46 = @ToObject(Array)
   <>arguments<>47 = []
   <>proto<>48 = <>fun<>46["prototype"]
   <>obj<>49 = {
     [[Prototype]]=<>proto<>48
   }
   <>newObj<>50 = new <>fun<>46(<>obj<>49, <>arguments<>47)
-  <>cond<>51 = <>Global<>isObject(<>newObj<>50)
+  <>cond<>51 = @isObject(<>newObj<>50)
   if(<>cond<>51)
     <>Global<>ignore21 = <>newObj<>50
   else
@@ -149,14 +149,14 @@ var expectedmatches
   actualmatch = ""
 }
 {
-  <>fun<>52 = <>Global<>toObject(Array)
+  <>fun<>52 = @ToObject(Array)
   <>arguments<>53 = []
   <>proto<>54 = <>fun<>52["prototype"]
   <>obj<>55 = {
     [[Prototype]]=<>proto<>54
   }
   <>newObj<>56 = new <>fun<>52(<>obj<>55, <>arguments<>53)
-  <>cond<>57 = <>Global<>isObject(<>newObj<>56)
+  <>cond<>57 = @isObject(<>newObj<>56)
   if(<>cond<>57)
     <>Global<>ignore23 = <>newObj<>56
   else
@@ -167,14 +167,14 @@ var expectedmatches
   expectedmatch = ""
 }
 {
-  <>fun<>58 = <>Global<>toObject(Array)
+  <>fun<>58 = @ToObject(Array)
   <>arguments<>59 = []
   <>proto<>60 = <>fun<>58["prototype"]
   <>obj<>61 = {
     [[Prototype]]=<>proto<>60
   }
   <>newObj<>62 = new <>fun<>58(<>obj<>61, <>arguments<>59)
-  <>cond<>63 = <>Global<>isObject(<>newObj<>62)
+  <>cond<>63 = @isObject(<>newObj<>62)
   if(<>cond<>63)
     <>Global<>ignore25 = <>newObj<>62
   else
@@ -182,15 +182,15 @@ var expectedmatches
   expectedmatches = <>Global<>ignore25
 }
 {
-  <>obj<>64 = <>Global<>toObject(inSection)
+  <>obj<>64 = @ToObject(inSection)
   <>temp<>65 = 1
   <>arguments<>66 = [<>temp<>65, ]
-  <>fun<>67 = <>Global<>getBase(inSection)
+  <>fun<>67 = @GetBase(inSection)
   <>Global<>ignore26 = <>obj<>64(<>fun<>67, <>arguments<>66)
   status = <>Global<>ignore26
 }
 {
-  <>fun<>68 = <>Global<>toObject(RegExp)
+  <>fun<>68 = @ToObject(RegExp)
   <>temp<>69 = ".\\011"
   <>temp<>70 = ""
   <>arguments<>71 = [<>temp<>69, <>temp<>70, ]
@@ -199,7 +199,7 @@ var expectedmatches
     [[Prototype]]=<>proto<>72
   }
   <>newObj<>74 = new <>fun<>68(<>obj<>73, <>arguments<>71)
-  <>cond<>75 = <>Global<>isObject(<>newObj<>74)
+  <>cond<>75 = @isObject(<>newObj<>74)
   if(<>cond<>75)
     <>Global<>ignore27 = <>newObj<>74
   else
@@ -208,38 +208,38 @@ var expectedmatches
 }
 {
   <>y<>76 = "a"
-  <>obj<>77 = <>Global<>toObject(String)
+  <>obj<>77 = @ToObject(String)
   <>temp<>78 = 0
   <>arguments<>79 = [<>temp<>78, ]
-  <>fun<>80 = <>Global<>toObject(<>obj<>77["fromCharCode"])
+  <>fun<>80 = @ToObject(<>obj<>77["fromCharCode"])
   <>z<>81 = <>fun<>80(<>obj<>77, <>arguments<>79)
   string = <>y<>76 + <>z<>81 + "11"
 }
 {
-  <>obj<>82 = <>Global<>toObject(string)
+  <>obj<>82 = @ToObject(string)
   <>temp<>83 = pattern
   <>arguments<>84 = [<>temp<>83, ]
-  <>fun<>85 = <>Global<>toObject(<>obj<>82["match"])
+  <>fun<>85 = @ToObject(<>obj<>82["match"])
   <>Global<>ignore29 = <>fun<>85(<>obj<>82, <>arguments<>84)
   actualmatch = <>Global<>ignore29
 }
 expectedmatch = null
 {
-  <>obj<>86 = <>Global<>toObject(addThis)
+  <>obj<>86 = @ToObject(addThis)
   <>arguments<>87 = []
-  <>fun<>88 = <>Global<>getBase(addThis)
+  <>fun<>88 = @GetBase(addThis)
   <>Global<>ignore31 = <>obj<>86(<>fun<>88, <>arguments<>87)
 }
 {
-  <>obj<>89 = <>Global<>toObject(inSection)
+  <>obj<>89 = @ToObject(inSection)
   <>temp<>90 = 2
   <>arguments<>91 = [<>temp<>90, ]
-  <>fun<>92 = <>Global<>getBase(inSection)
+  <>fun<>92 = @GetBase(inSection)
   <>Global<>ignore32 = <>obj<>89(<>fun<>92, <>arguments<>91)
   status = <>Global<>ignore32
 }
 {
-  <>fun<>93 = <>Global<>toObject(RegExp)
+  <>fun<>93 = @ToObject(RegExp)
   <>temp<>94 = ".\\0xx"
   <>temp<>95 = ""
   <>arguments<>96 = [<>temp<>94, <>temp<>95, ]
@@ -248,7 +248,7 @@ expectedmatch = null
     [[Prototype]]=<>proto<>97
   }
   <>newObj<>99 = new <>fun<>93(<>obj<>98, <>arguments<>96)
-  <>cond<>100 = <>Global<>isObject(<>newObj<>99)
+  <>cond<>100 = @isObject(<>newObj<>99)
   if(<>cond<>100)
     <>Global<>ignore33 = <>newObj<>99
   else
@@ -257,45 +257,45 @@ expectedmatch = null
 }
 {
   <>y<>101 = "a"
-  <>obj<>102 = <>Global<>toObject(String)
+  <>obj<>102 = @ToObject(String)
   <>temp<>103 = 0
   <>arguments<>104 = [<>temp<>103, ]
-  <>fun<>105 = <>Global<>toObject(<>obj<>102["fromCharCode"])
+  <>fun<>105 = @ToObject(<>obj<>102["fromCharCode"])
   <>z<>106 = <>fun<>105(<>obj<>102, <>arguments<>104)
   string = <>y<>101 + <>z<>106 + "xx"
 }
 {
-  <>obj<>107 = <>Global<>toObject(string)
+  <>obj<>107 = @ToObject(string)
   <>temp<>108 = pattern
   <>arguments<>109 = [<>temp<>108, ]
-  <>fun<>110 = <>Global<>toObject(<>obj<>107["match"])
+  <>fun<>110 = @ToObject(<>obj<>107["match"])
   <>Global<>ignore35 = <>fun<>110(<>obj<>107, <>arguments<>109)
   actualmatch = <>Global<>ignore35
 }
 {
-  <>obj<>111 = <>Global<>toObject(Array)
+  <>obj<>111 = @ToObject(Array)
   <>temp<>112 = string
   <>arguments<>113 = [<>temp<>112, ]
-  <>fun<>114 = <>Global<>getBase(Array)
+  <>fun<>114 = @GetBase(Array)
   <>Global<>ignore36 = <>obj<>111(<>fun<>114, <>arguments<>113)
   expectedmatch = <>Global<>ignore36
 }
 {
-  <>obj<>115 = <>Global<>toObject(addThis)
+  <>obj<>115 = @ToObject(addThis)
   <>arguments<>116 = []
-  <>fun<>117 = <>Global<>getBase(addThis)
+  <>fun<>117 = @GetBase(addThis)
   <>Global<>ignore37 = <>obj<>115(<>fun<>117, <>arguments<>116)
 }
 {
-  <>obj<>118 = <>Global<>toObject(inSection)
+  <>obj<>118 = @ToObject(inSection)
   <>temp<>119 = 3
   <>arguments<>120 = [<>temp<>119, ]
-  <>fun<>121 = <>Global<>getBase(inSection)
+  <>fun<>121 = @GetBase(inSection)
   <>Global<>ignore38 = <>obj<>118(<>fun<>121, <>arguments<>120)
   status = <>Global<>ignore38
 }
 {
-  <>fun<>122 = <>Global<>toObject(RegExp)
+  <>fun<>122 = @ToObject(RegExp)
   <>temp<>123 = ".\\0xx"
   <>temp<>124 = ""
   <>arguments<>125 = [<>temp<>123, <>temp<>124, ]
@@ -304,7 +304,7 @@ expectedmatch = null
     [[Prototype]]=<>proto<>126
   }
   <>newObj<>128 = new <>fun<>122(<>obj<>127, <>arguments<>125)
-  <>cond<>129 = <>Global<>isObject(<>newObj<>128)
+  <>cond<>129 = @isObject(<>newObj<>128)
   if(<>cond<>129)
     <>Global<>ignore39 = <>newObj<>128
   else
@@ -313,37 +313,37 @@ expectedmatch = null
 }
 string = "a0xx"
 {
-  <>obj<>130 = <>Global<>toObject(string)
+  <>obj<>130 = @ToObject(string)
   <>temp<>131 = pattern
   <>arguments<>132 = [<>temp<>131, ]
-  <>fun<>133 = <>Global<>toObject(<>obj<>130["match"])
+  <>fun<>133 = @ToObject(<>obj<>130["match"])
   <>Global<>ignore41 = <>fun<>133(<>obj<>130, <>arguments<>132)
   actualmatch = <>Global<>ignore41
 }
 {
-  <>obj<>134 = <>Global<>toObject(Array)
+  <>obj<>134 = @ToObject(Array)
   <>temp<>135 = string
   <>arguments<>136 = [<>temp<>135, ]
-  <>fun<>137 = <>Global<>getBase(Array)
+  <>fun<>137 = @GetBase(Array)
   <>Global<>ignore42 = <>obj<>134(<>fun<>137, <>arguments<>136)
   expectedmatch = <>Global<>ignore42
 }
 {
-  <>obj<>138 = <>Global<>toObject(addThis)
+  <>obj<>138 = @ToObject(addThis)
   <>arguments<>139 = []
-  <>fun<>140 = <>Global<>getBase(addThis)
+  <>fun<>140 = @GetBase(addThis)
   <>Global<>ignore43 = <>obj<>138(<>fun<>140, <>arguments<>139)
 }
 {
-  <>obj<>141 = <>Global<>toObject(inSection)
+  <>obj<>141 = @ToObject(inSection)
   <>temp<>142 = 4
   <>arguments<>143 = [<>temp<>142, ]
-  <>fun<>144 = <>Global<>getBase(inSection)
+  <>fun<>144 = @GetBase(inSection)
   <>Global<>ignore44 = <>obj<>141(<>fun<>144, <>arguments<>143)
   status = <>Global<>ignore44
 }
 {
-  <>fun<>145 = <>Global<>toObject(RegExp)
+  <>fun<>145 = @ToObject(RegExp)
   <>temp<>146 = ".\\011"
   <>temp<>147 = ""
   <>arguments<>148 = [<>temp<>146, <>temp<>147, ]
@@ -352,7 +352,7 @@ string = "a0xx"
     [[Prototype]]=<>proto<>149
   }
   <>newObj<>151 = new <>fun<>145(<>obj<>150, <>arguments<>148)
-  <>cond<>152 = <>Global<>isObject(<>newObj<>151)
+  <>cond<>152 = @isObject(<>newObj<>151)
   if(<>cond<>152)
     <>Global<>ignore45 = <>newObj<>151
   else
@@ -361,37 +361,37 @@ string = "a0xx"
 }
 string = "a011"
 {
-  <>obj<>153 = <>Global<>toObject(string)
+  <>obj<>153 = @ToObject(string)
   <>temp<>154 = pattern
   <>arguments<>155 = [<>temp<>154, ]
-  <>fun<>156 = <>Global<>toObject(<>obj<>153["match"])
+  <>fun<>156 = @ToObject(<>obj<>153["match"])
   <>Global<>ignore47 = <>fun<>156(<>obj<>153, <>arguments<>155)
   actualmatch = <>Global<>ignore47
 }
 {
-  <>obj<>157 = <>Global<>toObject(Array)
+  <>obj<>157 = @ToObject(Array)
   <>temp<>158 = string
   <>arguments<>159 = [<>temp<>158, ]
-  <>fun<>160 = <>Global<>getBase(Array)
+  <>fun<>160 = @GetBase(Array)
   <>Global<>ignore48 = <>obj<>157(<>fun<>160, <>arguments<>159)
   expectedmatch = <>Global<>ignore48
 }
 {
-  <>obj<>161 = <>Global<>toObject(addThis)
+  <>obj<>161 = @ToObject(addThis)
   <>arguments<>162 = []
-  <>fun<>163 = <>Global<>getBase(addThis)
+  <>fun<>163 = @GetBase(addThis)
   <>Global<>ignore49 = <>obj<>161(<>fun<>163, <>arguments<>162)
 }
 {
-  <>obj<>164 = <>Global<>toObject(inSection)
+  <>obj<>164 = @ToObject(inSection)
   <>temp<>165 = 5
   <>arguments<>166 = [<>temp<>165, ]
-  <>fun<>167 = <>Global<>getBase(inSection)
+  <>fun<>167 = @GetBase(inSection)
   <>Global<>ignore50 = <>obj<>164(<>fun<>167, <>arguments<>166)
   status = <>Global<>ignore50
 }
 {
-  <>fun<>168 = <>Global<>toObject(RegExp)
+  <>fun<>168 = @ToObject(RegExp)
   <>temp<>169 = ".\\011"
   <>temp<>170 = ""
   <>arguments<>171 = [<>temp<>169, <>temp<>170, ]
@@ -400,7 +400,7 @@ string = "a011"
     [[Prototype]]=<>proto<>172
   }
   <>newObj<>174 = new <>fun<>168(<>obj<>173, <>arguments<>171)
-  <>cond<>175 = <>Global<>isObject(<>newObj<>174)
+  <>cond<>175 = @isObject(<>newObj<>174)
   if(<>cond<>175)
     <>Global<>ignore51 = <>newObj<>174
   else
@@ -409,37 +409,37 @@ string = "a011"
 }
 string = "a\t"
 {
-  <>obj<>176 = <>Global<>toObject(string)
+  <>obj<>176 = @ToObject(string)
   <>temp<>177 = pattern
   <>arguments<>178 = [<>temp<>177, ]
-  <>fun<>179 = <>Global<>toObject(<>obj<>176["match"])
+  <>fun<>179 = @ToObject(<>obj<>176["match"])
   <>Global<>ignore53 = <>fun<>179(<>obj<>176, <>arguments<>178)
   actualmatch = <>Global<>ignore53
 }
 {
-  <>obj<>180 = <>Global<>toObject(Array)
+  <>obj<>180 = @ToObject(Array)
   <>temp<>181 = string
   <>arguments<>182 = [<>temp<>181, ]
-  <>fun<>183 = <>Global<>getBase(Array)
+  <>fun<>183 = @GetBase(Array)
   <>Global<>ignore54 = <>obj<>180(<>fun<>183, <>arguments<>182)
   expectedmatch = <>Global<>ignore54
 }
 {
-  <>obj<>184 = <>Global<>toObject(addThis)
+  <>obj<>184 = @ToObject(addThis)
   <>arguments<>185 = []
-  <>fun<>186 = <>Global<>getBase(addThis)
+  <>fun<>186 = @GetBase(addThis)
   <>Global<>ignore55 = <>obj<>184(<>fun<>186, <>arguments<>185)
 }
 {
-  <>obj<>187 = <>Global<>toObject(inSection)
+  <>obj<>187 = @ToObject(inSection)
   <>temp<>188 = 6
   <>arguments<>189 = [<>temp<>188, ]
-  <>fun<>190 = <>Global<>getBase(inSection)
+  <>fun<>190 = @GetBase(inSection)
   <>Global<>ignore56 = <>obj<>187(<>fun<>190, <>arguments<>189)
   status = <>Global<>ignore56
 }
 {
-  <>fun<>191 = <>Global<>toObject(RegExp)
+  <>fun<>191 = @ToObject(RegExp)
   <>temp<>192 = ".\\011"
   <>temp<>193 = ""
   <>arguments<>194 = [<>temp<>192, <>temp<>193, ]
@@ -448,7 +448,7 @@ string = "a\t"
     [[Prototype]]=<>proto<>195
   }
   <>newObj<>197 = new <>fun<>191(<>obj<>196, <>arguments<>194)
-  <>cond<>198 = <>Global<>isObject(<>newObj<>197)
+  <>cond<>198 = @isObject(<>newObj<>197)
   if(<>cond<>198)
     <>Global<>ignore57 = <>newObj<>197
   else
@@ -457,37 +457,37 @@ string = "a\t"
 }
 string = "a\t"
 {
-  <>obj<>199 = <>Global<>toObject(string)
+  <>obj<>199 = @ToObject(string)
   <>temp<>200 = pattern
   <>arguments<>201 = [<>temp<>200, ]
-  <>fun<>202 = <>Global<>toObject(<>obj<>199["match"])
+  <>fun<>202 = @ToObject(<>obj<>199["match"])
   <>Global<>ignore59 = <>fun<>202(<>obj<>199, <>arguments<>201)
   actualmatch = <>Global<>ignore59
 }
 {
-  <>obj<>203 = <>Global<>toObject(Array)
+  <>obj<>203 = @ToObject(Array)
   <>temp<>204 = string
   <>arguments<>205 = [<>temp<>204, ]
-  <>fun<>206 = <>Global<>getBase(Array)
+  <>fun<>206 = @GetBase(Array)
   <>Global<>ignore60 = <>obj<>203(<>fun<>206, <>arguments<>205)
   expectedmatch = <>Global<>ignore60
 }
 {
-  <>obj<>207 = <>Global<>toObject(addThis)
+  <>obj<>207 = @ToObject(addThis)
   <>arguments<>208 = []
-  <>fun<>209 = <>Global<>getBase(addThis)
+  <>fun<>209 = @GetBase(addThis)
   <>Global<>ignore61 = <>obj<>207(<>fun<>209, <>arguments<>208)
 }
 {
-  <>obj<>210 = <>Global<>toObject(inSection)
+  <>obj<>210 = @ToObject(inSection)
   <>temp<>211 = 7
   <>arguments<>212 = [<>temp<>211, ]
-  <>fun<>213 = <>Global<>getBase(inSection)
+  <>fun<>213 = @GetBase(inSection)
   <>Global<>ignore62 = <>obj<>210(<>fun<>213, <>arguments<>212)
   status = <>Global<>ignore62
 }
 {
-  <>fun<>214 = <>Global<>toObject(RegExp)
+  <>fun<>214 = @ToObject(RegExp)
   <>temp<>215 = ".\\011"
   <>temp<>216 = ""
   <>arguments<>217 = [<>temp<>215, <>temp<>216, ]
@@ -496,7 +496,7 @@ string = "a\t"
     [[Prototype]]=<>proto<>218
   }
   <>newObj<>220 = new <>fun<>214(<>obj<>219, <>arguments<>217)
-  <>cond<>221 = <>Global<>isObject(<>newObj<>220)
+  <>cond<>221 = @isObject(<>newObj<>220)
   if(<>cond<>221)
     <>Global<>ignore63 = <>newObj<>220
   else
@@ -505,78 +505,78 @@ string = "a\t"
 }
 string = "a\t"
 {
-  <>obj<>222 = <>Global<>toObject(string)
+  <>obj<>222 = @ToObject(string)
   <>temp<>223 = pattern
   <>arguments<>224 = [<>temp<>223, ]
-  <>fun<>225 = <>Global<>toObject(<>obj<>222["match"])
+  <>fun<>225 = @ToObject(<>obj<>222["match"])
   <>Global<>ignore65 = <>fun<>225(<>obj<>222, <>arguments<>224)
   actualmatch = <>Global<>ignore65
 }
 {
-  <>obj<>226 = <>Global<>toObject(Array)
+  <>obj<>226 = @ToObject(Array)
   <>temp<>227 = string
   <>arguments<>228 = [<>temp<>227, ]
-  <>fun<>229 = <>Global<>getBase(Array)
+  <>fun<>229 = @GetBase(Array)
   <>Global<>ignore66 = <>obj<>226(<>fun<>229, <>arguments<>228)
   expectedmatch = <>Global<>ignore66
 }
 {
-  <>obj<>230 = <>Global<>toObject(addThis)
+  <>obj<>230 = @ToObject(addThis)
   <>arguments<>231 = []
-  <>fun<>232 = <>Global<>getBase(addThis)
+  <>fun<>232 = @GetBase(addThis)
   <>Global<>ignore67 = <>obj<>230(<>fun<>232, <>arguments<>231)
 }
 {
-  <>obj<>233 = <>Global<>toObject(inSection)
+  <>obj<>233 = @ToObject(inSection)
   <>temp<>234 = 8
   <>arguments<>235 = [<>temp<>234, ]
-  <>fun<>236 = <>Global<>getBase(inSection)
+  <>fun<>236 = @GetBase(inSection)
   <>Global<>ignore68 = <>obj<>233(<>fun<>236, <>arguments<>235)
   status = <>Global<>ignore68
 }
 {
   <>y<>237 = "a"
-  <>obj<>238 = <>Global<>toObject(String)
+  <>obj<>238 = @ToObject(String)
   <>temp<>239 = 0
   <>arguments<>240 = [<>temp<>239, ]
-  <>fun<>241 = <>Global<>toObject(<>obj<>238["fromCharCode"])
+  <>fun<>241 = @ToObject(<>obj<>238["fromCharCode"])
   <>z<>242 = <>fun<>241(<>obj<>238, <>arguments<>240)
   string = <>y<>237 + <>z<>242 + "11"
 }
 {
-  <>obj<>243 = <>Global<>toObject(RegExp)
+  <>obj<>243 = @ToObject(RegExp)
   <>temp<>244 = string
   <>arguments<>245 = [<>temp<>244, ]
-  <>fun<>246 = <>Global<>getBase(RegExp)
+  <>fun<>246 = @GetBase(RegExp)
   <>Global<>ignore70 = <>obj<>243(<>fun<>246, <>arguments<>245)
   pattern = <>Global<>ignore70
 }
 {
-  <>obj<>247 = <>Global<>toObject(string)
+  <>obj<>247 = @ToObject(string)
   <>temp<>248 = pattern
   <>arguments<>249 = [<>temp<>248, ]
-  <>fun<>250 = <>Global<>toObject(<>obj<>247["match"])
+  <>fun<>250 = @ToObject(<>obj<>247["match"])
   <>Global<>ignore71 = <>fun<>250(<>obj<>247, <>arguments<>249)
   actualmatch = <>Global<>ignore71
 }
 {
-  <>obj<>251 = <>Global<>toObject(Array)
+  <>obj<>251 = @ToObject(Array)
   <>temp<>252 = string
   <>arguments<>253 = [<>temp<>252, ]
-  <>fun<>254 = <>Global<>getBase(Array)
+  <>fun<>254 = @GetBase(Array)
   <>Global<>ignore72 = <>obj<>251(<>fun<>254, <>arguments<>253)
   expectedmatch = <>Global<>ignore72
 }
 {
-  <>obj<>255 = <>Global<>toObject(addThis)
+  <>obj<>255 = @ToObject(addThis)
   <>arguments<>256 = []
-  <>fun<>257 = <>Global<>getBase(addThis)
+  <>fun<>257 = @GetBase(addThis)
   <>Global<>ignore73 = <>obj<>255(<>fun<>257, <>arguments<>256)
 }
 {
-  <>obj<>258 = <>Global<>toObject(test)
+  <>obj<>258 = @ToObject(test)
   <>arguments<>259 = []
-  <>fun<>260 = <>Global<>getBase(test)
+  <>fun<>260 = @GetBase(test)
   <>Global<>ignore74 = <>obj<>258(<>fun<>260, <>arguments<>259)
 }
 

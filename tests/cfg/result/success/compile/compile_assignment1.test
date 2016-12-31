@@ -2,34 +2,34 @@
 var a
 var g
 {
-  <>obj<>1 = <>Global<>toObject(a)
-  <>obj<>2 = <>Global<>toObject(<>obj<>1["b"])
-  <>obj<>3 = <>Global<>toObject(g)
-  <>obj<>4 = <>Global<>toObject(<>obj<>2[<>obj<>3["c"]])
+  <>obj<>1 = @ToObject(a)
+  <>obj<>2 = @ToObject(<>obj<>1["b"])
+  <>obj<>3 = @ToObject(g)
+  <>obj<>4 = @ToObject(<>obj<>2[<>obj<>3["c"]])
   <>obj<>4["d"] = 1
 }
 {
-  <>obj<>5 = <>Global<>toObject(a)
-  <>obj<>6 = <>Global<>toObject(<>obj<>5["b"])
-  <>obj<>7 = <>Global<>toObject(<>obj<>6["c"])
-  <>obj<>8 = <>Global<>toObject(g)
-  <>obj<>9 = <>Global<>toObject(<>obj<>8["h"])
-  <>obj<>10 = <>Global<>toObject(<>obj<>9["i"])
+  <>obj<>5 = @ToObject(a)
+  <>obj<>6 = @ToObject(<>obj<>5["b"])
+  <>obj<>7 = @ToObject(<>obj<>6["c"])
+  <>obj<>8 = @ToObject(g)
+  <>obj<>9 = @ToObject(<>obj<>8["h"])
+  <>obj<>10 = @ToObject(<>obj<>9["i"])
   <>obj<>7["d"] = <>obj<>10["j"]
 }
 {
-  <>obj<>11 = <>Global<>toObject(a)
-  <>obj<>12 = <>Global<>toObject(g)
-  <>obj<>13 = <>Global<>toObject(g)
+  <>obj<>11 = @ToObject(a)
+  <>obj<>12 = @ToObject(g)
+  <>obj<>13 = @ToObject(g)
   <>obj<>11[<>obj<>12["c"]] = <>obj<>13["asd"]
 }
 {
-  <>obj<>14 = <>Global<>toObject(a)
+  <>obj<>14 = @ToObject(a)
   <>Global<>ignore5 = <>obj<>14["b"]
 }
 a = 1
 {
-  <>obj<>15 = <>Global<>toObject(a)
+  <>obj<>15 = @ToObject(a)
   <>obj<>15["b"] = 1
 }
 

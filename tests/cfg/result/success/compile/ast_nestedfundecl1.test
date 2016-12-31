@@ -11,23 +11,23 @@ y = 1
   obj = <>Global<>ignore2
 }
 {
-  <>Global<>ignore3 = <>Global<>toObject(obj)
+  <>Global<>ignore3 = @ToObject(obj)
   <>alpha<>2 = <>Global<>ignore3
 }
 {
-  <>obj<>3 = <>Global<>toObject(alert)
-  <>obj<>4 = <>Global<>toObject(f)
+  <>obj<>3 = @ToObject(alert)
+  <>obj<>4 = @ToObject(f)
   <>arguments<>5 = []
-  <>fun<>6 = <>Global<>getBase(f)
+  <>fun<>6 = @GetBase(f)
   <>temp<>7 = <>obj<>4(<>fun<>6, <>arguments<>5)
   <>arguments<>8 = [<>temp<>7, ]
-  <>fun<>9 = <>Global<>getBase(alert)
+  <>fun<>9 = @GetBase(alert)
   <>Global<>ignore4 = <>obj<>3(<>fun<>9, <>arguments<>8)
 }
 {
-  <>obj<>10 = <>Global<>toObject(f)
+  <>obj<>10 = @ToObject(f)
   <>arguments<>11 = []
-  <>fun<>12 = <>Global<>getBase(f)
+  <>fun<>12 = @GetBase(f)
   <>Global<>ignore5 = <>obj<>10(<>fun<>12, <>arguments<>11)
 }
 <>Global<>ignore7 = y

@@ -18,7 +18,7 @@ try
     y = <>Global<>ignore8
   }
   {
-    <>obj<>1 = <>Global<>toObject(y)
+    <>obj<>1 = @ToObject(y)
     throw <>obj<>1["a"]
   }
 }
@@ -34,27 +34,27 @@ catch(<>e<>2)
         var <>arg<>5
         <>arg<>5 = <>arguments<>4["0"]
         {
-          <>obj<>6 = <>Global<>toObject(<>arg<>5)
+          <>obj<>6 = @ToObject(<>arg<>5)
           return <>obj<>6[0]
         }
       }
       x = <>Global<>ignore4
     }
     {
-      <>obj<>7 = <>Global<>toObject(x)
+      <>obj<>7 = @ToObject(x)
       <>temp<>8 = 9
       <>temp<>9 = 6
       <>temp<>10 = 4
       <>temp<>11 = 2
       <>temp<>12 = [<>temp<>8, <>temp<>9, <>temp<>10, <>temp<>11, ]
       <>arguments<>13 = [<>temp<>12, ]
-      <>fun<>14 = <>Global<>getBase(x)
+      <>fun<>14 = @GetBase(x)
       <>Global<>ignore5 = <>obj<>7(<>fun<>14, <>arguments<>13)
     }
   }
   finally
     {
-      <>obj<>15 = <>Global<>toObject(y)
+      <>obj<>15 = @ToObject(y)
       <>Global<>ignore6 = {
         test : - 23.8
       }
@@ -68,7 +68,7 @@ finally
     {
       <>continue<>17 : {
         <>old<>18 = x
-        <>new<>19 = <>Global<>toNumber(<>old<>18)
+        <>new<>19 = @ToNumber(<>old<>18)
         x = <>new<>19 - 1
         if(<>new<>19 == 0)
           break <>break<>16

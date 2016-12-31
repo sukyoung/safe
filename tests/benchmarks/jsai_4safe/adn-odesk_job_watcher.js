@@ -4,9 +4,9 @@
 var window = {}
 function print() {}
 
-var TopString = __StrTop
-var TopNum = __NumTop
-var TopBool = __BoolTop
+var TopString = @StrTop
+var TopNum = @NumTop
+var TopBool = @BoolTop
 
 var globalFuncList = [];
 
@@ -210,6 +210,6 @@ globalFuncList.push(function() { jobwatcherodesk.startup(); } );
 globalFuncList.push(function() { jobwatcherodesk.shutdown(); } );
 globalFuncList.push(function() { jobwatcherodesk.LoadJob(); } );
 
-while (__BoolTop) {
+while (@BoolTop) {
   globalFuncList[TopNum]();
 }
