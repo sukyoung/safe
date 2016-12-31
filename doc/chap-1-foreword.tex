@@ -20,7 +20,7 @@ at \texttt{safe [at] plrg.kaist.ac.kr}.
 
 SAFE has been used by:
 \begin{itemize}
-\itemsep-.2em
+\itemsep-.1em
 \item JSAI~\cite{jsai} @ UCSB
 \item ROSAEC~\cite{rosaec} @ Seoul National University
 \item K framework~\cite{kjs} @ UIUC
@@ -30,16 +30,17 @@ SAFE has been used by:
 \end{itemize}
 
 \section{Contributors}
-The main developers of SAFE 2.0 are as follows:
+The current developers of SAFE 2.0 are as follows:
 \begin{itemize}
-\itemsep-.2em
+\itemsep-.1em
 \item Jihyeok Park
-\item Yeonhee Ryou
+\item Joonyoung Park
 \item Sukyoung Ryu
 \end{itemize}
 and the following have contributed to the source code:
 \begin{itemize}
 \itemsep-.1em
+\item Yeonhee Ryou (SAFE 2.0 core)
 \item Minsoo Kim (Built-in function modeling)
 \item PLRG @ KAIST and our colleagues in S-Core and Samsung Electronics (SAFE 1.0)
 \end{itemize}
@@ -92,16 +93,40 @@ on any JavaScript file, simply by typing one of available commands at a command 
 as explained in \cref{3:refman}.
 
 \subsection{IntelliJ configuration}
+[\emph{Thanks to Alexander Jordan @ Oracle Labs in Australia}]
+\smallskip
+
 IntelliJ users can use IntelliJ 2016.2.4 with the latest Scala plugin as follows:
 \begin{enumerate}
 \item Create a new project from existing sources (aka. \verb!Import project!).
 \item Choose \verb!build.sbt! in the SAFE 2.0 root to import.
 \item Choose JDK 1.8 as the project JDK.
-\item Manually download \verb!xtc.jar! in to \verb!lib/!
+\item Manually download \verb!xtc.jar! in to \verb!lib/!.
 \item Goto \verb!Project Settings! $\rightarrow$ \verb!Modules! $\rightarrow$
-\verb!root (module)! $\rightarrow$ \verb!Dependencies!
+\verb!root (module)! $\rightarrow$ \verb!Dependencies!.
 \item Open \verb!SBT:unmanaged-jars! dependencies.
 \item Remove broken entries for \verb!spray-json! and \verb!xtc!.
 \item Add \verb!(+) .jars! for the two libraries above.
 \item Run the \verb!buildParsers! task in SBT.
 \end{enumerate}
+
+\noindent
+[\emph{Thanks to Zhen Zhang @ USTC in China}]
+\smallskip
+
+For debugging purpose, one can first add a configuration as follows:
+
+\begin{enumerate}
+\item Go to \verb!Run! $\rightarrow$ \verb!Edit Configurations!.
+\item Click the \verb!+! button on the left to add a new configuration.
+\item Choose \verb!Remote! in the drop-down menu.
+\item Name the configuration something like \verb!remote-debugging!.
+(It should work out of box and the port should be 5005.)
+\item Save the configuration by clicking \verb!OK!.
+\end{enumerate}
+
+In order to debug \verb!something.js! for example,
+launch \safe first with the \verb!-debug! flag as the first argument:
+\verb!safe -debug analyze something.js!.
+The application waits for a connection from the debugger once started,
+and users can start the debugging configuration created in IntelliJ.

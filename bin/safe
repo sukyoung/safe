@@ -34,7 +34,13 @@ if [ -z "$JAVA_FLAGS" ] ; then
   JAVA_FLAGS="-Xmx30g -Xss32m -Dfile.encoding=utf8"
 fi
 
-"$JAVACMD" $JAVA_FLAGS -cp "$CP" kr.ac.kaist.safe.Safe "$@"
+# remote debugging
+if [ "$1" == "-debug" ] ; then
+    JAVA_FLAGS="-Xdebug -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005 $JAVA_FLAGS"
+    shift
+fi
+
+"$JAVACMD" $JAVA_OPTS $JAVA_FLAGS -cp "$CP" kr.ac.kaist.safe.Safe "$@"
 EXIT_CODE=$?
 wait $!
 if [ $EXIT_CODE -ne 0 ] ; then
