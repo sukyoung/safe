@@ -58,6 +58,10 @@ object NodeUtil {
   // internal API call
   // 9.3 ToNumber
   val INTERNAL_TO_NUM = internalAPIName("ToNumber")
+  // 9.6 ToUint32: (Unsigned 32 Bit Integer)
+  val INTERNAL_TO_UINT = internalAPIName("ToUint32")
+  // 9.8 ToString
+  val INTERNAL_TO_STR = internalAPIName("ToString")
   // 9.9 ToObject
   val INTERNAL_TO_OBJ = internalAPIName("ToObject")
   // 8.7 The Reference Specification Type
@@ -69,6 +73,8 @@ object NodeUtil {
   val INTERNAL_ITER_NEXT = internalAPIName("iteratorNext")
   val internalCallSet: Set[String] = HashSet(
     INTERNAL_TO_NUM,
+    INTERNAL_TO_UINT,
+    INTERNAL_TO_STR,
     INTERNAL_TO_OBJ,
     INTERNAL_GET_BASE,
     INTERNAL_IS_OBJ,
