@@ -83,8 +83,8 @@ object BuiltinDateHelper {
         case _ => AbsNumber.Top
       }
       val newObj2 = newObj
-        .update(IClass, InternalValueUtil(AbsString("Date")))
-        .update(IPrimitiveValue, InternalValueUtil(absNum))
+        .update(IClass, AbsIValueUtil(AbsString("Date")))
+        .update(IPrimitiveValue, AbsIValueUtil(absNum))
       val heap = state.heap.update(loc, newObj2)
       (AbsState(heap, state.context), AbsState.Bot, AbsValue(loc))
     }
@@ -121,7 +121,7 @@ object BuiltinDateHelper {
       // XXX: give up the precision! (Room for the analysis precision improvement!)
       // Set the [[PrimitiveValue]] internal property of this Date object to v.
       val v = AbsNumber.Top
-      val retH = h.update(loc, h.get(loc).update(IPrimitiveValue, InternalValueUtil(v)))
+      val retH = h.update(loc, h.get(loc).update(IPrimitiveValue, AbsIValueUtil(v)))
       (AbsState(retH, state.context), state.raiseException(excSet), AbsValue(v))
     }
   )

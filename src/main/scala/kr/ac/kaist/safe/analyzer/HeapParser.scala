@@ -24,7 +24,7 @@ object HeapParser extends DefaultJsonProtocol {
           val map = objs.foldLeft[Map[Loc, Object]](HashMap()) {
             case (map, (loc, JsObject(props))) => {
               type AMap = Map[String, DataProp]
-              type IMap = Map[InternalName, Value]
+              type IMap = Map[IName, Value]
               val (amap, imap) = props.foldLeft[(AMap, IMap)]((HashMap(), HashMap())) {
                 case ((am, im), (key, value)) => key match {
                   case "[[Prototype]]" => (am, im + (IPrototype -> readValue(value)))

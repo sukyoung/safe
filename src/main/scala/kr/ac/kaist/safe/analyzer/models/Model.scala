@@ -21,4 +21,4 @@ abstract class Model {
 
 sealed abstract class PropDesc
 case class NormalProp(name: String, key: Model, w: Boolean, e: Boolean, c: Boolean) extends PropDesc
-case class InternalProp(name: InternalName, key: Model) extends PropDesc
+case class InternalProp(name: IName, key: Model) extends PropDesc

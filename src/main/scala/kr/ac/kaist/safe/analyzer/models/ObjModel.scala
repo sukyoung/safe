@@ -64,7 +64,7 @@ class ObjModel(
         }) match {
           case (heap, value) => (heap, obj.update(
             name,
-            InternalValueUtil(value)
+            AbsIValueUtil(value)
           ))
         }
       }

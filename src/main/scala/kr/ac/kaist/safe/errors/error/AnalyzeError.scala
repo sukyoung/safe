@@ -48,3 +48,7 @@ case class ContextAssertionError(funName: String, msg: String) extends AnalyzeEr
 case class HeapParseError(msg: String) extends AnalyzeError(
   s"[HeapParseError]: $msg"
 )
+
+case class ModelParseError(msg: String) extends AnalyzeError(
+  s"[ModelParseError]: $msg"
+)

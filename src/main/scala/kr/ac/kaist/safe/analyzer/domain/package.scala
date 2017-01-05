@@ -24,8 +24,8 @@ package object domain {
 
   val FidSetEmpty: Set[FunctionId] = HashSet[FunctionId]()
 
-  type ObjInternalMap = Map[InternalName, InternalValue]
-  val ObjEmptyIMap: ObjInternalMap = HashMap[InternalName, InternalValue]()
+  type ObjInternalMap = Map[IName, AbsIValue]
+  val ObjEmptyIMap: ObjInternalMap = HashMap[IName, AbsIValue]()
 
   ////////////////////////////////////////////////////////////////
   // constant values
