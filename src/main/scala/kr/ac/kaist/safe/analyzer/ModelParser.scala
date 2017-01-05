@@ -11,16 +11,21 @@
 
 package kr.ac.kaist.safe.analyzer
 
-// Rename Success and Failure to avoid name conflicts with ParseResult
+import kr.ac.kaist.safe.parser.{ Parser => JSParser }
+import kr.ac.kaist.safe.nodes.ast.FunExpr
 import kr.ac.kaist.safe.errors.error.ModelParseError
 import kr.ac.kaist.safe.analyzer.domain._
+import java.io._
 import scala.collection.immutable.HashMap
+// Rename Success and Failure to avoid name conflicts with ParseResult
 import scala.util.{ Try, Success => Succ, Failure => Fail }
 import scala.util.parsing.combinator._
 
+case class JSModel(heap: Heap, funMap: Map[Int, FunExpr])
+
 // Argument parser by using Scala RegexParsers.
 object ModelParser extends RegexParsers with JavaTokenParsers {
-  def apply(model: String): ParseResult[Heap] = parse(jsHeap, model)
+  def apply(reader: String): ParseResult[JSModel] = parse(jsModel, reader)
 
   // repeat rules
   def emptyList[T]: Parser[List[T]] = success(Nil)
@@ -37,6 +42,7 @@ object ModelParser extends RegexParsers with JavaTokenParsers {
   lazy val T: Parser[Boolean] = "T" ^^^ { true }
   lazy val F: Parser[Boolean] = "F" ^^^ { false }
   lazy val shortBool: Parser[Boolean] = T | F
+  lazy val any: Parser[String] = """[^\\]*""".r
 
   // JavaScript primitive value
   lazy val jsNum: Parser[Num] = num ^^ { Num(_) }
@@ -113,5 +119,34 @@ object ModelParser extends RegexParsers with JavaTokenParsers {
         }
         Heap(map)
       }
+    }
+
+  // JavaScript function
+  lazy val jsFun: Parser[FunExpr] = """[\\""" ~> any <~ """\\]""" ^^ {
+    case fun => {
+      JSParser.strToFnE(fun) match {
+        case Succ((funE, log)) =>
+          if (log.hasError) println(log)
+          funE
+        case Fail(e) => throw ModelParseError(e.toString)
+      }
+    }
+  }
+  lazy val jsFunMap: Parser[Map[Int, FunExpr]] = "{" ~> (
+    repsepE((int <~ ":") ~! jsFun, ",")
+  ) <~ "}" ^^ {
+      case lst => {
+        lst.foldLeft(HashMap[Int, FunExpr]()) {
+          case (map, id ~ fun) => {
+            map + (id -> fun)
+          }
+        }
+      }
+    }
+
+  // JavaScript model
+  lazy val jsModel: Parser[JSModel] =
+    ("Heap" ~> ":" ~> jsHeap) ~! ("Function" ~> ":" ~> jsFunMap) ^^ {
+      case heap ~ funMap => JSModel(heap, funMap)
     }
 }

@@ -21,6 +21,15 @@ import kr.ac.kaist.safe.nodes.ast._
 import kr.ac.kaist.safe.util.{ NodeUtil => NU, _ }
 
 object Parser {
+  // Used by ModelParser
+  def strToFnE(code: String): Try[(FunExpr, ExcLog)] = {
+    val sr = new StringReader(code)
+    val in = new BufferedReader(sr)
+    val result = resultToAST[FunExpr](new JS(in, "stringParse"), _.JSFunctionExpr(0))
+    in.close(); sr.close()
+    result
+  }
+
   // Used by DynamicRewriter
   def stringToFnE(str: (String, (Int, Int), String)): Try[(FunExpr, ExcLog)] = {
     val (fileName, (line, offset), code) = str
