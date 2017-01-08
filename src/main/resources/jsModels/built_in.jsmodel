@@ -1,0 +1,250 @@
+Heap: {
+  #Global: {
+    [[Class]]: "Object",
+    [[Prototype]]: #Object.prototype,
+    [[Extensible]]: true,
+    "NaN": <NaN, F, F, F>,
+    "Infinity": <Infinity, F, F, F>,
+    "undefined": <undefined, F, F, F>,
+    "eval": <#Global.eval, T, F, T>,
+    "parseInt": <#Global.parseInt, T, F, T>,
+    "parseFloat": <#Global.parseFloat, T, F, T>,
+    "isNaN": <#Global.isNaN, T, F, T>,
+    "isFinite": <#Global.isFinite, T, F, T>,
+    "decodeURI": <#Global.decodeURI, T, F, T>,
+    "decodeURIComponent": <#Global.decodeURIComponent, T, F, T>,
+    "encodeURI": <#Global.encodeURI, T, F, T>,
+    "encodeURIComponent": <#Global.encodeURIComponent, T, F, T>,
+    "Object": <#Object, T, F, T>,
+    "Function": <#Function, T, F, T>,
+    "Array": <#Array, T, F, T>,
+    "String": <#String, T, F, T>,
+    "Boolean": <#Boolean, T, F, T>,
+    "Number": <#Number, T, F, T>,
+    "Date": <#Date, T, F, T>,
+    "RegExp": <#RegExp, T, F, T>,
+    "Error": <#Error, T, F, T>,
+    "EvalError": <#EvalError, T, F, T>,
+    "RangeError": <#RangeError, T, F, T>,
+    "ReferenceError": <#ReferenceError, T, F, T>,
+    "SyntaxError": <#SyntaxError, T, F, T>,
+    "TypeError": <#TypeError, T, F, T>,
+    "URIError": <#URIError, T, F, T>,
+    "Math": <#Math, T, F, T>,
+    "JSON": <#JSON, T, F, T>
+  },
+  #Global.eval: {
+  },
+  #Global.parseInt: {
+  },
+  #Global.parseFloat: {
+  },
+  #Global.isNaN: {
+  },
+  #Global.isFinite: {
+  },
+  #Global.decodeURI: {
+  },
+  #Global.decodeURIComponent: {
+  },
+  #Global.encodeURI: {
+  },
+  #Global.encodeURIComponent: {
+  },
+  #Object: {
+    "prototype": <#Object.prototype, T, F, T>
+  },
+  #Object.prototype: {
+    "constructor": <#Object, T, F, T>
+  },
+  #Function: {
+  },
+  #Array: {
+    "prototype": <#Array.prototype, F, F, F>,
+    "isArray": <#Array.isArray, T, F, T>
+  },
+  #Array.prototype: {
+    [[Class]]: "Array",
+    "length": <0, T, F, T>,
+    "toString": <#Array.prototype.toString, T, F, T>,
+    "toLocaleString": <#Array.prototype.toLocaleString, T, F, T>,
+    "concat": <#Array.prototype.concat, T, F, T>,
+    "join": <#Array.prototype.join, T, F, T>,
+    "pop": <#Array.prototype.pop, T, F, T>,
+    "push": <#Array.prototype.push, T, F, T>,
+    "reverse": <#Array.prototype.reverse, T, F, T>,
+    "shift": <#Array.prototype.shift, T, F, T>,
+    "slice": <#Array.prototype.slice, T, F, T>,
+    "sort": <#Array.prototype.sort, T, F, T>,
+    "splice": <#Array.prototype.splice, T, F, T>,
+    "unshift": <#Array.prototype.unshift, T, F, T>,
+    "indexOf": <#Array.prototype.indexOf, T, F, T>,
+    "lastIndexOf": <#Array.prototype.lastIndexOf, T, F, T>,
+    "every": <#Array.prototype.every, T, F, T>,
+    "some": <#Array.prototype.some, T, F, T>,
+    "forEach": <#Array.prototype.forEach, T, F, T>,
+    "map": <#Array.prototype.map, T, F, T>,
+    "filter": <#Array.prototype.filter, T, F, T>,
+    "reduce": <#Array.prototype.reduce, T, F, T>,
+    "reduceRight": <#Array.prototype.reduceRight, T, F, T>
+  },
+  #Array.prototype.toString: {
+  },
+  #Array.prototype.toLocaleString: {
+  },
+  #Array.prototype.concat: {
+  },
+  #Array.prototype.join: {
+  },
+  #Array.prototype.pop: {
+  },
+  #Array.prototype.push: {
+  },
+  #Array.prototype.reverse: {
+  },
+  #Array.prototype.shift: {
+  },
+  #Array.prototype.slice: {
+  },
+  #Array.prototype.sort: {
+  },
+  #Array.prototype.splice: {
+  },
+  #Array.prototype.unshift: {
+  },
+  #Array.prototype.indexOf: {
+  },
+  #Array.prototype.lastIndexOf: {
+  },
+  #Array.prototype.every: {
+  },
+  #Array.prototype.some: {
+  },
+  #Array.prototype.forEach: {
+  },
+  #Array.prototype.map: {
+    [[Call]]: fun(0)
+  },
+  #Array.prototype.filter: {
+  },
+  #Array.prototype.reduce: {
+  },
+  #Array.prototype.reduceRight: {
+  },
+  #String: {
+  },
+  #Boolean: {
+  },
+  #Number: {
+    "E": <2.7182818284590452354, F, F, F>,
+    "LN10": <2.302585092994046, F, F, F>,
+    "LN2": <0.6931471805599453, F, F, F>,
+    "LOG2E": <1.4426950408889634, F, F, F>,
+    "LOG10E": <0.4342944819032518, F, F, F>,
+    "PI": <3.1415926535897932, F, F, F>,
+    "SQRT1_2": <0.7071067811865476, F, F, F>,
+    "SQRT2": <1.4142135623730951, F, F, F>,
+    "abs": <#Math.abs, T, F, T>,
+    "acos": <#Math.acos, T, F, T>,
+    "asin": <#Math.asin, T, F, T>,
+    "atan": <#Math.atan, T, F, T>,
+    "atan2": <#Math.atan2, T, F, T>,
+    "ceil": <#Math.ceil, T, F, T>,
+    "cos": <#Math.cos, T, F, T>,
+    "exp": <#Math.exp, T, F, T>,
+    "floor": <#Math.floor, T, F, T>,
+    "log": <#Math.log, T, F, T>,
+    "max": <#Math.max, T, F, T>,
+    "min": <#Math.min, T, F, T>,
+    "pow": <#Math.pow, T, F, T>,
+    "random": <#Math.random, T, F, T>,
+    "round": <#Math.round, T, F, T>,
+    "sin": <#Math.sin, T, F, T>,
+    "sqrt": <#Math.sqrt, T, F, T>,
+    "tan": <#Math.tan, T, F, T>
+  },
+  #Math.abs: {
+  },
+  #Math.acos: {
+  },
+  #Math.asin: {
+  },
+  #Math.atan: {
+  },
+  #Math.atan2: {
+  },
+  #Math.ceil: {
+  },
+  #Math.cos: {
+  },
+  #Math.exp: {
+  },
+  #Math.floor: {
+  },
+  #Math.log: {
+  },
+  #Math.max: {
+  },
+  #Math.min: {
+  },
+  #Math.pow: {
+  },
+  #Math.random: {
+  },
+  #Math.round: {
+  },
+  #Math.sin: {
+  },
+  #Math.sqrt: {
+  },
+  #Math.tan: {
+  },
+  #Date: {
+  },
+  #RegExp: {
+  },
+  #Error: {
+  },
+  #EvalError: {
+  },
+  #RangeError: {
+  },
+  #ReferenceError: {
+  },
+  #SyntaxError: {
+  },
+  #TypeError: {
+  },
+  #URIError: {
+  },
+  #Math: {
+  },
+  #JSON: {
+  }
+}
+
+Function: {
+  0: [\\
+  function map (callbackfn, thisArg) {
+    var O = this;
+    var len = O.length;
+    var T;
+    if(thisArg)
+      T = thisArg
+    var A = new Array(len);
+    var k = 0;
+    while(k<len) {
+      var kPresent = (k in O);
+      if(kPresent) {
+        var kValue = O[k];
+        // TODO: insert CFGEnterCode
+        // callbackfn.call != callbackfn.[[Call]]
+        var mappedValue = callbackfn.call(T, kValue, k, O);
+        A[k] = mappedValue;
+      }
+      k = k+1;
+    }
+    return A;
+  };
+  \\]
+}
