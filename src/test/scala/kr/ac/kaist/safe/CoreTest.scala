@@ -60,7 +60,7 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
     normalized(Source.fromFile(filename).getLines.mkString(LINE_SEP))
   }
 
-  def getCFG(filename: String): Try[CFG] = CmdCFGBuild(List("-parser:jsModel", "-silent", filename), testMode = true)
+  def getCFG(filename: String): Try[CFG] = CmdCFGBuild(List("-silent", filename), testMode = true)
 
   private def parseTest(pgm: Try[Program]): Unit = {
     pgm match {
@@ -106,10 +106,6 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
 
   val resultPrefix = "__result"
   val expectPrefix = "__expect"
-  def assertWrap(check: Boolean): AnalysisResult = {
-    assert(check)
-    Fail
-  }
   abstract class AnalysisResult
   case object Precise extends AnalysisResult
   case object Imprecise extends AnalysisResult
@@ -118,7 +114,9 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
   case object Fail extends AnalysisResult
   def analyzeTest(analysis: Try[(CFG, Int, CallContext, Semantics)], tag: Tag): (AnalysisResult, Int) = {
     analysis match {
-      case Failure(_) => (assertWrap(false), 0)
+      case Failure(_) =>
+        assert(false)
+        (Fail, 0)
       case Success((cfg, iter, globalCallCtx, _)) if tag == BenchTest =>
         val normalSt = cfg.globalFunc.exit.getState(globalCallCtx)
         assert(!normalSt.heap.isBottom)
@@ -128,7 +126,9 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
         val excSt = cfg.globalFunc.exitExc.getState(globalCallCtx)
         assert(!normalSt.heap.isBottom)
         val ar = normalSt.heap.get(BuiltinGlobal.loc) match {
-          case globalObj if globalObj.isBottom => assertWrap(false)
+          case globalObj if globalObj.isBottom =>
+            assert(false)
+            Fail
           case globalObj => {
             def prefixCheck(prefix: String): (AbsString, AbsDataProp) => Boolean = {
               (str, dp) =>

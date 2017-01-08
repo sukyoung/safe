@@ -83,14 +83,13 @@ object Parser {
   }
 
   // Used by phase/Parse.scala
-  def fileToAST(fs: List[String], jsModel: Boolean): Try[(Program, ExcLog)] = fs match {
+  def fileToAST(fs: List[String]): Try[(Program, ExcLog)] = fs match {
     case List(file) =>
       fileToStmts(file).flatMap {
         case (s, e) =>
           {
             val program = Program(s.info, List(s))
-            if (jsModel) addJSModel(program, e)
-            else Try(program, e)
+            Try(program, e)
           }
       }
     case files =>
@@ -101,8 +100,7 @@ object Parser {
       }.flatMap {
         case (s, e) => {
           val program = Program(NU.MERGED_SOURCE_INFO, s)
-          if (jsModel) addJSModel(program, e)
-          else Try(program, e)
+          Try(program, e)
         }
       }
   }
@@ -118,33 +116,6 @@ object Parser {
         }
       }.map { case (s, e) => (SourceElements(NU.MERGED_SOURCE_INFO, s, false), e) }
   }
-
-  // concatenate ASTs modeled in JavaScript
-  private def addJSModel(program: Program, excLog: ExcLog): Try[(Program, ExcLog)] = {
-    fileToAST(NU.jsModels, false).map {
-      case (p, e) =>
-        (p, program) match {
-          case (Program(_, TopLevel(_, fds0, vds0, body0)), Program(info, TopLevel(_, fds1, vds1, body1))) =>
-            (Program(info, TopLevel(info, fds0 ++ fds1, vds0 ++ vds1, body0 ++ body1)),
-              e + excLog)
-        }
-    }
-  }
-
-  // remove ASTs modeled in JavaScript
-  def removeJSModel(program: Program): Program = program match {
-    case Program(info1, TopLevel(info2, fds, vds, body)) =>
-      Program(info1, TopLevel(info2, removeJSModelFds(fds), removeJSModelVds(vds), removeJSModelSes(body)))
-  }
-
-  private def removeJSModelFds(list: List[FunDecl]): List[FunDecl] =
-    list.foldLeft(List[FunDecl]())((r, fd) => if (NU.isModeled(fd)) r else r ++ List(fd))
-
-  private def removeJSModelVds(list: List[VarDecl]): List[VarDecl] =
-    list.foldLeft(List[VarDecl]())((r, vd) => if (NU.isModeled(vd)) r else r ++ List(vd))
-
-  private def removeJSModelSes(list: List[SourceElements]): List[SourceElements] =
-    list.foldLeft(List[SourceElements]())((r, se) => if (NU.isModeled(se)) r else r ++ List(se))
 
   private def resultToAST[T <: ASTNode](
     parser: JS,

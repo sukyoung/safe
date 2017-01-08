@@ -42,7 +42,7 @@ case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, Int, CallContext,
       config.AbsString,
       DefaultLoc(cfg)
     )
-    var initSt = Initialize(cfg)
+    var initSt = Initialize(cfg, config.jsModel)
 
     // handling snapshot mode
     config.snapshot.map(str =>
@@ -111,7 +111,9 @@ case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, Int, CallContext,
     }),
       "analysis with a selected number domain."),
     ("domModel", BoolOption(c => c.domModel = true),
-      "analysis with HTML DOM modelings.")
+      "analysis with HTML DOM modelings."),
+    ("jsModel", BoolOption(c => c.jsModel = true),
+      "analysis with JavaScript models.")
   )
 }
 
@@ -129,5 +131,6 @@ case class AnalyzeConfig(
   var callsiteSensitivity: Int = 0,
   var htmlName: Option[String] = None,
   var snapshot: Option[String] = None,
-  var domModel: Boolean = false
+  var domModel: Boolean = false,
+  var jsModel: Boolean = false
 ) extends Config

@@ -26,23 +26,23 @@ case class JSModel(heap: Heap, funMap: Map[Int, FunExpr])
 
 // Argument parser by using Scala RegexParsers.
 object ModelParser extends RegexParsers with JavaTokenParsers {
-  def apply(str: String): ParseResult[JSModel] = parse(jsModel, str)
-  def parseFile(fileName: String): ParseResult[JSModel] = {
+  def apply(str: String): Try[JSModel] = convert(parse(jsModel, str))
+  def parseFile(fileName: String): Try[JSModel] = {
     val fs = new FileInputStream(new File(fileName))
     val sr = new InputStreamReader(fs, Charset.forName("UTF-8"))
     val in = new BufferedReader(sr)
     val result = parse(jsModel, in)
     in.close; sr.close; fs.close
-    result
+    convert(result)
   }
 
   //////////////////////////////////////////////////////////////////////////
   // Private Helper Functions
   //////////////////////////////////////////////////////////////////////////
   // parse
-  private def parse(str: String): Try[JSModel] = parse(jsModel, str) match {
+  private def convert(result: ParseResult[JSModel]): Try[JSModel] = result match {
     case Success(result, _) => Succ(result)
-    case NoSuccess(f, _) => Fail(ModelParseError(f.toString))
+    case NoSuccess(_, _) => Fail(ModelParseError(result.toString))
   }
   // repeat rules
   private def emptyList[T]: Parser[List[T]] = success(Nil)
@@ -50,9 +50,13 @@ object ModelParser extends RegexParsers with JavaTokenParsers {
     p ~! (("," ~> repsepE(p, sep)) | emptyList) ^^ { case x ~ xs => x :: xs } | emptyList
 
   // primitive parser
-  private lazy val num: Parser[Double] = floatingPointNumber ^^ { _.toDouble }
+  private lazy val num: Parser[Double] =
+    floatingPointNumber ^^ { _.toDouble } |
+      "NaN" ^^^ Double.NaN |
+      "Infinity" ^^^ Double.PositiveInfinity |
+      "-Infinity" ^^^ -Double.NegativeInfinity
   private lazy val int: Parser[Int] = wholeNumber ^^ { _.toInt }
-  private lazy val str: Parser[String] = stringLiteral
+  private lazy val str: Parser[String] = "\"" ~> "[^\"]*".r <~ "\""
   private lazy val t: Parser[Boolean] = "true" ^^^ { true }
   private lazy val f: Parser[Boolean] = "false" ^^^ { false }
   private lazy val bool: Parser[Boolean] = t | f

@@ -140,14 +140,6 @@ object NodeUtil {
   // For modeling in JavaScript
   val jsModelsName = "jsModels"
   val jsModelsBase = BASE_DIR + "/src/main/resources/" + jsModelsName + "/"
-  val jsModels: List[String] =
-    List[String](
-      jsModelsBase + "__builtin__.js",
-      jsModelsBase + "__dom__.js"
-    )
-  /*
-      jsModelsBase + "__input__.js")
-   */
 
   def isModeled(node: ASTNode): Boolean =
     node.info.span.fileName.contains(jsModelsName)

@@ -147,14 +147,11 @@ object BuiltinArrayProto extends ObjModel(
       )
     ), T, F, T),
 
-    // 15.4.4.11 Array.prototype.sort(comparefn)
-    // Modeled in src/main/resources/jsModels/__builtin__.js
-    /*
+    // TODO 15.4.4.11 Array.prototype.sort(comparefn)
     NormalProp("sort", FuncModel(
       name = "Array.prototype.sort",
       code = EmptyCode(argLen = 1)
     ), T, F, T),
-    */
 
     // 15.4.4.12 Array.prototype.splice(start, deleteCount[, item1[, item2[, ... ]]])
     NormalProp("splice", FuncModel(
@@ -204,32 +201,23 @@ object BuiltinArrayProto extends ObjModel(
       code = EmptyCode(argLen = 1)
     ), T, F, T),
 
-    // 15.4.4.18 Array.prototype.forEach(callbackfn [, thisArg ])
-    // Modeled in src/main/resources/jsModels/__builtin__.js
-    /*
+    // TODO 15.4.4.18 Array.prototype.forEach(callbackfn [, thisArg ])
     NormalProp("forEach", FuncModel(
       name = "Array.prototype.forEach",
       code = EmptyCode(argLen = 1)
     ), T, F, T),
-    */
 
-    // 15.4.4.19 Array.prototype.map(callbackfn [, thisArg ])
-    // Modeled in src/main/resources/jsModels/__builtin__.js
-    /*
+    // TODO 15.4.4.19 Array.prototype.map(callbackfn [, thisArg ])
     NormalProp("map", FuncModel(
       name = "Array.prototype.map",
       code = EmptyCode(argLen = 1)
     ), T, F, T),
-    */
 
-    // 15.4.4.20 Array.prototype.filter(callbackfn [, thisArg ])
-    // Modeled in src/main/resources/jsModels/__builtin__.js
-    /*
+    // TODO 15.4.4.20 Array.prototype.filter(callbackfn [, thisArg ])
     NormalProp("filter", FuncModel(
       name = "Array.prototype.filter",
       code = EmptyCode(argLen = 1)
     ), T, F, T),
-    */
 
     // TODO 15.4.4.21 Array.prototype.reduce(callbackfn [, initialValue ])
     NormalProp("reduce", FuncModel(

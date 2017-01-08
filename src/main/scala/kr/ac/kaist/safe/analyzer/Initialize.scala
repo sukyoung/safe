@@ -20,7 +20,7 @@ import kr.ac.kaist.safe.util._
 import scala.collection.immutable.{ HashMap }
 
 object Initialize {
-  def apply(cfg: CFG): AbsState = {
+  def apply(cfg: CFG, jsModel: Boolean): AbsState = {
     val globalLocSet = AbsLoc(BuiltinGlobal.loc)
     val globalPureLocalEnv = AbsLexEnv.newPureLocal(globalLocSet)
     val initHeap = AbsHeap(HashMap(
@@ -33,7 +33,11 @@ object Initialize {
       PredefLoc.COLLAPSED -> AbsLexEnv(AbsDecEnvRec.Empty)
     ), OldAddrSet.Empty, globalLocSet)
 
-    val modeledHeap = BuiltinGlobal.initHeap(initHeap, cfg)
+    val modeledHeap: AbsHeap =
+      if (jsModel) {
+        val model = ModelParser.parseFile(NodeUtil.jsModelsBase + "built_in.jsmodel").get
+        AbsHeap(model.heap)
+      } else BuiltinGlobal.initHeap(initHeap, cfg)
 
     AbsState(modeledHeap, initCtx)
   }
