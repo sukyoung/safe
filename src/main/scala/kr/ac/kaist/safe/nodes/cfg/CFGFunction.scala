@@ -19,14 +19,14 @@ import kr.ac.kaist.safe.analyzer.models.SemanticFun
 
 class CFGFunction(
     override val ir: IRNode,
-    val cfg: CFG,
+    var cfg: CFG, // XXX should be a value but for JS model for a while.
     val argumentsName: String,
     val argVars: List[CFGId],
     val localVars: List[CFGId],
     val name: String,
     val isUser: Boolean
 ) extends CFGNode(ir) {
-  val id: FunctionId = cfg.getFId
+  var id: FunctionId = cfg.getFId // XXX should be a value but for JS model for a while.
 
   val entry = Entry(this)
   val exit = Exit(this)

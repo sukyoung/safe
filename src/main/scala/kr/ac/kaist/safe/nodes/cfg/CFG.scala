@@ -68,6 +68,17 @@ class CFG(
     func
   }
 
+  // add JS model
+  def addJSModel(
+    func: CFGFunction
+  ): Unit = {
+    func.cfg = this
+    func.id = fidCount
+    funcs ::= func
+    funMap(func.id) = func
+    fidCount += 1
+  }
+
   // add edge
   def addEdge(
     fromList: List[CFGBlock],
