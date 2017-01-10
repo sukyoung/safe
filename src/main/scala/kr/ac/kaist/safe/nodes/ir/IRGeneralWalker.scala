@@ -50,8 +50,8 @@ trait IRGeneralWalker[Result] {
       join(walk(ast) :: walk(lhs) :: elements.flatMap(walkOpt): _*)
     case IRCall(ast, lhs, fun, thisB, args) =>
       join(walk(ast), walk(lhs), walk(fun), walk(thisB), walk(args))
-    case IRInternalCall(ast, lhs, fun, first, second) =>
-      join(walk(ast) :: walk(lhs) :: walk(fun) :: walk(first) :: walkOpt(second): _*)
+    case IRInternalCall(ast, lhs, name, args) =>
+      join(walk(ast) :: walk(lhs) :: args.map(walk): _*)
     case IRNew(ast, lhs, fun, args) =>
       join(walk(ast) :: walk(lhs) :: walk(fun) :: args.map(walk): _*)
     case IRFunExpr(ast, lhs, ftn) =>

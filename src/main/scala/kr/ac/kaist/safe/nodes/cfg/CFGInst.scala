@@ -209,13 +209,13 @@ case class CFGInternalCall(
     override val ir: IRNode,
     override val block: NormalBlock,
     lhs: CFGId,
-    fun: CFGId,
+    name: String,
     arguments: List[CFGExpr],
     addrOpt: Option[Address]
 ) extends CFGNormalInst(ir, block) {
   override def toString: String = {
     val arg = arguments.mkString(", ")
-    s"$lhs := $fun($arg)"
+    s"$lhs := $name($arg)"
   } + (addrOpt match {
     case Some(addr) => s" @ #$addr"
     case None => ""
