@@ -540,6 +540,17 @@ class Semantics(
       val newExcSt = st.raiseException(newExcSet)
       (newSt, excSt + newExcSt)
     }
+    case (NodeUtil.INTERNAL_SAME_VALUE, List(left, right), None) => {
+      val (l, excSet1) = V(left, st)
+      val (r, excSet2) = V(right, st)
+      val st1 =
+        if (!l.isBottom && !r.isBottom) {
+          st.varStore(lhs, AbsValue(TypeConversionHelper.SameValue(l, r)))
+        } else AbsState.Bot
+
+      val newExcSt = st.raiseException(excSet1 ++ excSet2)
+      (st1, excSt + newExcSt)
+    }
     case (NodeUtil.INTERNAL_GET_BASE, List(CFGVarRef(_, x2)), None) => {
       val baseV = st.lookupBase(x2)
       val st1 = st.varStore(lhs, baseV)
