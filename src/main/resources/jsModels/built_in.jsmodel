@@ -1,147 +1,941 @@
 Heap: {
+  #Array: {
+    [[Call]]: fun(59),
+    [[Class]]: "Function",
+    [[Construct]]: fun(60),
+    [[Extensible]]: true,
+    [[HasInstance]]: null,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "isArray": <#Array.isArray, T, F, T>,
+    "length": <1, F, F, F>,
+    "prototype": <#Array.prototype, F, F, F>
+  },
+  #Array.isArray: {
+    [[Call]]: fun(61),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
+  },
+  #Array.prototype: {
+    [[Class]]: "Array",
+    [[Extensible]]: true,
+    [[Prototype]]: #Object.prototype,
+    "concat": <#Array.prototype.concat, T, F, T>,
+    "constructor": <#Array, T, F, T>,
+    "every": <#Array.prototype.every, T, F, T>,
+    "filter": <#Array.prototype.filter, T, F, T>,
+    "forEach": <#Array.prototype.forEach, T, F, T>,
+    "indexOf": <#Array.prototype.indexOf, T, F, T>,
+    "join": <#Array.prototype.join, T, F, T>,
+    "lastIndexOf": <#Array.prototype.lastIndexOf, T, F, T>,
+    "length": <0, T, F, T>,
+    "map": <#Array.prototype.map, T, F, T>,
+    "pop": <#Array.prototype.pop, T, F, T>,
+    "push": <#Array.prototype.push, T, F, T>,
+    "reduce": <#Array.prototype.reduce, T, F, T>,
+    "reduceRight": <#Array.prototype.reduceRight, T, F, T>,
+    "reverse": <#Array.prototype.reverse, T, F, T>,
+    "shift": <#Array.prototype.shift, T, F, T>,
+    "slice": <#Array.prototype.slice, T, F, T>,
+    "some": <#Array.prototype.some, T, F, T>,
+    "sort": <#Array.prototype.sort, T, F, T>,
+    "splice": <#Array.prototype.splice, T, F, T>,
+    "toLocaleString": <#Array.prototype.toLocaleString, T, F, T>,
+    "toString": <#Array.prototype.toString, T, F, T>,
+    "unshift": <#Array.prototype.unshift, T, F, T>
+  },
+  #Array.prototype.concat: {
+    [[Call]]: fun(40),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
+  },
+  #Array.prototype.every: {
+    [[Call]]: fun(52),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
+  },
+  #Array.prototype.filter: {
+    [[Call]]: fun(56),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
+  },
+  #Array.prototype.forEach: {
+    [[Call]]: fun(54),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
+  },
+  #Array.prototype.indexOf: {
+    [[Call]]: fun(50),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
+  },
+  #Array.prototype.join: {
+    [[Call]]: fun(41),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
+  },
+  #Array.prototype.lastIndexOf: {
+    [[Call]]: fun(51),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
+  },
+  #Array.prototype.map: {
+    [[Call]]: fun(55),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
+  },
+  #Array.prototype.pop: {
+    [[Call]]: fun(42),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <0, F, F, F>
+  },
+  #Array.prototype.push: {
+    [[Call]]: fun(43),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
+  },
+  #Array.prototype.reduce: {
+    [[Call]]: fun(57),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
+  },
+  #Array.prototype.reduceRight: {
+    [[Call]]: fun(58),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
+  },
+  #Array.prototype.reverse: {
+    [[Call]]: fun(44),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <0, F, F, F>
+  },
+  #Array.prototype.shift: {
+    [[Call]]: fun(45),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <0, F, F, F>
+  },
+  #Array.prototype.slice: {
+    [[Call]]: fun(46),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <2, F, F, F>
+  },
+  #Array.prototype.some: {
+    [[Call]]: fun(53),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
+  },
+  #Array.prototype.sort: {
+    [[Call]]: fun(47),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
+  },
+  #Array.prototype.splice: {
+    [[Call]]: fun(48),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <2, F, F, F>
+  },
+  #Array.prototype.toLocaleString: {
+    [[Call]]: fun(39),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <0, F, F, F>
+  },
+  #Array.prototype.toString: {
+    [[Call]]: fun(38),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <0, F, F, F>
+  },
+  #Array.prototype.unshift: {
+    [[Call]]: fun(49),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
+  },
+  #Boolean: {
+    [[Call]]: fun(87),
+    [[Class]]: "Function",
+    [[Construct]]: fun(88),
+    [[Extensible]]: true,
+    [[HasInstance]]: null,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>,
+    "prototype": <#Boolean.prototype, F, F, F>
+  },
+  #Boolean.prototype: {
+    [[Class]]: "Boolean",
+    [[Extensible]]: true,
+    [[PrimitiveValue]]: false,
+    [[Prototype]]: #Object.prototype,
+    "constructor": <#Boolean, T, F, T>,
+    "toString": <#Boolean.prototype.toString, T, F, T>,
+    "valueOf": <#Boolean.prototype.valueOf, T, F, T>
+  },
+  #Boolean.prototype.toString: {
+    [[Call]]: fun(85),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
+  },
+  #Boolean.prototype.valueOf: {
+    [[Call]]: fun(86),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
+  },
+  #Date: {
+    [[Call]]: fun(142),
+    [[Class]]: "Function",
+    [[Construct]]: fun(143),
+    [[Extensible]]: true,
+    [[HasInstance]]: null,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "UTC": <#Date.UTC, T, F, T>,
+    "length": <7, F, F, F>,
+    "now": <#Date.now, T, F, T>,
+    "parse": <#Date.parse, T, F, T>,
+    "prototype": <#Date.prototype, F, F, F>
+  },
+  #Date.UTC: {
+    [[Call]]: fun(145),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <7, F, F, F>
+  },
+  #Date.now: {
+    [[Call]]: fun(146),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <0, F, F, F>
+  },
+  #Date.parse: {
+    [[Call]]: fun(144),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
+  },
+  #Date.prototype: {
+    [[Class]]: "Date",
+    [[Extensible]]: true,
+    [[PrimitiveValue]]: NaN,
+    [[Prototype]]: #Object.prototype,
+    "constructor": <#Date, T, F, T>,
+    "getDate": <#Date.prototype.getDate, T, F, T>,
+    "getDay": <#Date.prototype.getDay, T, F, T>,
+    "getFullYear": <#Date.prototype.getFullYear, T, F, T>,
+    "getHours": <#Date.prototype.getHours, T, F, T>,
+    "getMilliseconds": <#Date.prototype.getMilliseconds, T, F, T>,
+    "getMinutes": <#Date.prototype.getMinutes, T, F, T>,
+    "getMonth": <#Date.prototype.getMonth, T, F, T>,
+    "getSeconds": <#Date.prototype.getSeconds, T, F, T>,
+    "getTime": <#Date.prototype.getTime, T, F, T>,
+    "getTimezoneOffset": <#Date.prototype.getTimezoneOffset, T, F, T>,
+    "getUTCDate": <#Date.prototype.getUTCDate, T, F, T>,
+    "getUTCDay": <#Date.prototype.getUTCDay, T, F, T>,
+    "getUTCFullYear": <#Date.prototype.getUTCFullYear, T, F, T>,
+    "getUTCHours": <#Date.prototype.getUTCHours, T, F, T>,
+    "getUTCMilliseconds": <#Date.prototype.getUTCMilliseconds, T, F, T>,
+    "getUTCMinutes": <#Date.prototype.getUTCMinutes, T, F, T>,
+    "getUTCMonth": <#Date.prototype.getUTCMonth, T, F, T>,
+    "getUTCSeconds": <#Date.prototype.getUTCSeconds, T, F, T>,
+    "setDate": <#Date.prototype.setDate, T, F, T>,
+    "setFullYear": <#Date.prototype.setFullYear, T, F, T>,
+    "setHours": <#Date.prototype.setHours, T, F, T>,
+    "setMilliseconds": <#Date.prototype.setMilliseconds, T, F, T>,
+    "setMinutes": <#Date.prototype.setMinutes, T, F, T>,
+    "setMonth": <#Date.prototype.setMonth, T, F, T>,
+    "setSeconds": <#Date.prototype.setSeconds, T, F, T>,
+    "setTime": <#Date.prototype.setTime, T, F, T>,
+    "setUTCDate": <#Date.prototype.setUTCDate, T, F, T>,
+    "setUTCFullYear": <#Date.prototype.setUTCFullYear, T, F, T>,
+    "setUTCHours": <#Date.prototype.setUTCHours, T, F, T>,
+    "setUTCMilliseconds": <#Date.prototype.setUTCMilliseconds, T, F, T>,
+    "setUTCMinutes": <#Date.prototype.setUTCMinutes, T, F, T>,
+    "setUTCMonth": <#Date.prototype.setUTCMonth, T, F, T>,
+    "setUTCSeconds": <#Date.prototype.setUTCSeconds, T, F, T>,
+    "toDateString": <#Date.prototype.toDateString, T, F, T>,
+    "toISOString": <#Date.prototype.toISOString, T, F, T>,
+    "toJSON": <#Date.prototype.toJSON, T, F, T>,
+    "toLocaleDateString": <#Date.prototype.toLocaleDateString, T, F, T>,
+    "toLocaleString": <#Date.prototype.toLocaleString, T, F, T>,
+    "toLocaleTimeString": <#Date.prototype.toLocaleTimeString, T, F, T>,
+    "toString": <#Date.prototype.toString, T, F, T>,
+    "toTimeString": <#Date.prototype.toTimeString, T, F, T>,
+    "toUTCString": <#Date.prototype.toUTCString, T, F, T>,
+    "valueOf": <#Date.prototype.valueOf, T, F, T>
+  },
+  #Date.prototype.constructor: {
+    [[Call]]: fun(98),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
+  },
+  #Date.prototype.getDate: {
+    [[Call]]: fun(111),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <0, F, F, F>
+  },
+  #Date.prototype.getDay: {
+    [[Call]]: fun(113),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <0, F, F, F>
+  },
+  #Date.prototype.getFullYear: {
+    [[Call]]: fun(107),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <0, F, F, F>
+  },
+  #Date.prototype.getHours: {
+    [[Call]]: fun(115),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <0, F, F, F>
+  },
+  #Date.prototype.getMilliseconds: {
+    [[Call]]: fun(121),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <0, F, F, F>
+  },
+  #Date.prototype.getMinutes: {
+    [[Call]]: fun(117),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <0, F, F, F>
+  },
+  #Date.prototype.getMonth: {
+    [[Call]]: fun(109),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <0, F, F, F>
+  },
+  #Date.prototype.getSeconds: {
+    [[Call]]: fun(119),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <0, F, F, F>
+  },
+  #Date.prototype.getTime: {
+    [[Call]]: fun(106),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <0, F, F, F>
+  },
+  #Date.prototype.getTimezoneOffset: {
+    [[Call]]: fun(123),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <0, F, F, F>
+  },
+  #Date.prototype.getUTCDate: {
+    [[Call]]: fun(112),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <0, F, F, F>
+  },
+  #Date.prototype.getUTCDay: {
+    [[Call]]: fun(114),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <0, F, F, F>
+  },
+  #Date.prototype.getUTCFullYear: {
+    [[Call]]: fun(108),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <0, F, F, F>
+  },
+  #Date.prototype.getUTCHours: {
+    [[Call]]: fun(116),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <0, F, F, F>
+  },
+  #Date.prototype.getUTCMilliseconds: {
+    [[Call]]: fun(122),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <0, F, F, F>
+  },
+  #Date.prototype.getUTCMinutes: {
+    [[Call]]: fun(118),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <0, F, F, F>
+  },
+  #Date.prototype.getUTCMonth: {
+    [[Call]]: fun(110),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <0, F, F, F>
+  },
+  #Date.prototype.getUTCSeconds: {
+    [[Call]]: fun(120),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <0, F, F, F>
+  },
+  #Date.prototype.setDate: {
+    [[Call]]: fun(133),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
+  },
+  #Date.prototype.setFullYear: {
+    [[Call]]: fun(137),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <3, F, F, F>
+  },
+  #Date.prototype.setHours: {
+    [[Call]]: fun(131),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <4, F, F, F>
+  },
+  #Date.prototype.setMilliseconds: {
+    [[Call]]: fun(125),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
+  },
+  #Date.prototype.setMinutes: {
+    [[Call]]: fun(129),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <3, F, F, F>
+  },
+  #Date.prototype.setMonth: {
+    [[Call]]: fun(135),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <2, F, F, F>
+  },
+  #Date.prototype.setSeconds: {
+    [[Call]]: fun(127),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <2, F, F, F>
+  },
+  #Date.prototype.setTime: {
+    [[Call]]: fun(124),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
+  },
+  #Date.prototype.setUTCDate: {
+    [[Call]]: fun(134),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
+  },
+  #Date.prototype.setUTCFullYear: {
+    [[Call]]: fun(138),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <3, F, F, F>
+  },
+  #Date.prototype.setUTCHours: {
+    [[Call]]: fun(132),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <4, F, F, F>
+  },
+  #Date.prototype.setUTCMilliseconds: {
+    [[Call]]: fun(126),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
+  },
+  #Date.prototype.setUTCMinutes: {
+    [[Call]]: fun(130),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <3, F, F, F>
+  },
+  #Date.prototype.setUTCMonth: {
+    [[Call]]: fun(136),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <2, F, F, F>
+  },
+  #Date.prototype.setUTCSeconds: {
+    [[Call]]: fun(128),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <2, F, F, F>
+  },
+  #Date.prototype.toDateString: {
+    [[Call]]: fun(100),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <0, F, F, F>
+  },
+  #Date.prototype.toISOString: {
+    [[Call]]: fun(140),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <0, F, F, F>
+  },
+  #Date.prototype.toJSON: {
+    [[Call]]: fun(141),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
+  },
+  #Date.prototype.toLocaleDateString: {
+    [[Call]]: fun(103),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <0, F, F, F>
+  },
+  #Date.prototype.toLocaleString: {
+    [[Call]]: fun(102),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <0, F, F, F>
+  },
+  #Date.prototype.toLocaleTimeString: {
+    [[Call]]: fun(104),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <0, F, F, F>
+  },
+  #Date.prototype.toString: {
+    [[Call]]: fun(99),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <0, F, F, F>
+  },
+  #Date.prototype.toTimeString: {
+    [[Call]]: fun(101),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <0, F, F, F>
+  },
+  #Date.prototype.toUTCString: {
+    [[Call]]: fun(139),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <0, F, F, F>
+  },
+  #Date.prototype.valueOf: {
+    [[Call]]: fun(105),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <0, F, F, F>
+  },
+  #Error: {
+    [[Call]]: fun(153),
+    [[Class]]: "Function",
+    [[Construct]]: fun(154),
+    [[Extensible]]: true,
+    [[HasInstance]]: null,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>,
+    "prototype": <#Error.prototype, F, F, F>
+  },
+  #Error.prototype: {
+    [[Class]]: "Error",
+    [[Extensible]]: true,
+    [[Prototype]]: #Object.prototype,
+    "constructor": <#Error, T, F, T>,
+    "message": <"", T, F, T>,
+    "name": <"Error", T, F, T>,
+    "toString": <#Error.prototype.toString, T, F, T>
+  },
+  #Error.prototype.toString: {
+    [[Call]]: fun(152),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <0, F, F, F>
+  },
+  #EvalError: {
+    [[Call]]: fun(155),
+    [[Class]]: "Function",
+    [[Construct]]: fun(156),
+    [[Extensible]]: true,
+    [[HasInstance]]: null,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>,
+    "name": <"EvalError", T, F, T>,
+    "prototype": <#EvalError.prototype, F, F, F>
+  },
+  #EvalError.prototype: {
+    [[Class]]: "Error",
+    [[Extensible]]: true,
+    [[Prototype]]: #Error.prototype,
+    "constructor": <#EvalError, T, F, T>,
+    "message": <"", T, F, T>,
+    "name": <"EvalError", T, F, T>
+  },
+  #Function: {
+    [[Call]]: fun(36),
+    [[Class]]: "Function",
+    [[Construct]]: fun(37),
+    [[Extensible]]: true,
+    [[HasInstance]]: null,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>,
+    "prototype": <#Function.prototype, F, F, F>
+  },
+  #Function.prototype: {
+    [[Call]]: fun(31),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Object.prototype,
+    [[Scope]]: null,
+    "apply": <#Function.prototype.apply, T, F, T>,
+    "bind": <#Function.prototype.bind, T, F, T>,
+    "call": <#Function.prototype.call, T, F, T>,
+    "constructor": <#Function, T, F, T>,
+    "length": <0, F, F, F>,
+    "toString": <#Function.prototype.toString, T, F, T>
+  },
+  #Function.prototype.apply: {
+    [[Call]]: fun(33),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <2, F, F, F>
+  },
+  #Function.prototype.bind: {
+    [[Call]]: fun(35),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
+  },
+  #Function.prototype.call: {
+    [[Call]]: fun(34),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
+  },
+  #Function.prototype.toString: {
+    [[Call]]: fun(32),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <0, F, F, F>
+  },
   #Global: {
     [[Class]]: "Object",
-    [[Prototype]]: #Object.prototype,
     [[Extensible]]: true,
-    "NaN": <NaN, F, F, F>,
+    [[Prototype]]: #Object.prototype,
+    "<>Global<>global": <#Global, F, F, F>,
+    "<>Global<>true": <true, F, F, F>,
+    "Array": <#Array, T, F, T>,
+    "Boolean": <#Boolean, T, F, T>,
+    "Date": <#Date, T, F, T>,
+    "Error": <#Error, T, F, T>,
+    "EvalError": <#EvalError, T, F, T>,
+    "Function": <#Function, T, F, T>,
     "Infinity": <Infinity, F, F, F>,
-    "undefined": <undefined, F, F, F>,
-    "eval": <#Global.eval, T, F, T>,
-    "parseInt": <#Global.parseInt, T, F, T>,
-    "parseFloat": <#Global.parseFloat, T, F, T>,
-    "isNaN": <#Global.isNaN, T, F, T>,
-    "isFinite": <#Global.isFinite, T, F, T>,
+    "JSON": <#JSON, T, F, T>,
+    "Math": <#Math, T, F, T>,
+    "NaN": <NaN, F, F, F>,
+    "Number": <#Number, T, F, T>,
+    "Object": <#Object, T, F, T>,
+    "RangeError": <#RangeError, T, F, T>,
+    "ReferenceError": <#ReferenceError, T, F, T>,
+    "RegExp": <#RegExp, T, F, T>,
+    "String": <#String, T, F, T>,
+    "SyntaxError": <#SyntaxError, T, F, T>,
+    "TypeError": <#TypeError, T, F, T>,
+    "URIError": <#URIError, T, F, T>,
     "decodeURI": <#Global.decodeURI, T, F, T>,
     "decodeURIComponent": <#Global.decodeURIComponent, T, F, T>,
     "encodeURI": <#Global.encodeURI, T, F, T>,
     "encodeURIComponent": <#Global.encodeURIComponent, T, F, T>,
-    "Object": <#Object, T, F, T>,
-    "Function": <#Function, T, F, T>,
-    "Array": <#Array, T, F, T>,
-    "String": <#String, T, F, T>,
-    "Boolean": <#Boolean, T, F, T>,
-    "Number": <#Number, T, F, T>,
-    "Date": <#Date, T, F, T>,
-    "RegExp": <#RegExp, T, F, T>,
-    "Error": <#Error, T, F, T>,
-    "EvalError": <#EvalError, T, F, T>,
-    "RangeError": <#RangeError, T, F, T>,
-    "ReferenceError": <#ReferenceError, T, F, T>,
-    "SyntaxError": <#SyntaxError, T, F, T>,
-    "TypeError": <#TypeError, T, F, T>,
-    "URIError": <#URIError, T, F, T>,
-    "Math": <#Math, T, F, T>,
-    "JSON": <#JSON, T, F, T>
-  },
-  #Global.eval: {
-  },
-  #Global.parseInt: {
-  },
-  #Global.parseFloat: {
-  },
-  #Global.isNaN: {
-  },
-  #Global.isFinite: {
+    "eval": <#Global.eval, T, F, T>,
+    "isFinite": <#Global.isFinite, T, F, T>,
+    "isNaN": <#Global.isNaN, T, F, T>,
+    "parseFloat": <#Global.parseFloat, T, F, T>,
+    "parseInt": <#Global.parseInt, T, F, T>,
+    "undefined": <undefined, F, F, F>
   },
   #Global.decodeURI: {
+    [[Call]]: fun(6),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
   },
   #Global.decodeURIComponent: {
+    [[Call]]: fun(7),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
   },
   #Global.encodeURI: {
+    [[Call]]: fun(8),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
   },
   #Global.encodeURIComponent: {
+    [[Call]]: fun(9),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
   },
-  #Object: {
-    "prototype": <#Object.prototype, T, F, T>
+  #Global.eval: {
+    [[Call]]: fun(1),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
   },
-  #Object.prototype: {
-    "constructor": <#Object, T, F, T>
+  #Global.isFinite: {
+    [[Call]]: fun(5),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
   },
-  #Function: {
+  #Global.isNaN: {
+    [[Call]]: fun(4),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
   },
-  #Array: {
-    "prototype": <#Array.prototype, F, F, F>,
-    "isArray": <#Array.isArray, T, F, T>
+  #Global.parseFloat: {
+    [[Call]]: fun(3),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
   },
-  #Array.prototype: {
-    [[Class]]: "Array",
-    "length": <0, T, F, T>,
-    "toString": <#Array.prototype.toString, T, F, T>,
-    "toLocaleString": <#Array.prototype.toLocaleString, T, F, T>,
-    "concat": <#Array.prototype.concat, T, F, T>,
-    "join": <#Array.prototype.join, T, F, T>,
-    "pop": <#Array.prototype.pop, T, F, T>,
-    "push": <#Array.prototype.push, T, F, T>,
-    "reverse": <#Array.prototype.reverse, T, F, T>,
-    "shift": <#Array.prototype.shift, T, F, T>,
-    "slice": <#Array.prototype.slice, T, F, T>,
-    "sort": <#Array.prototype.sort, T, F, T>,
-    "splice": <#Array.prototype.splice, T, F, T>,
-    "unshift": <#Array.prototype.unshift, T, F, T>,
-    "indexOf": <#Array.prototype.indexOf, T, F, T>,
-    "lastIndexOf": <#Array.prototype.lastIndexOf, T, F, T>,
-    "every": <#Array.prototype.every, T, F, T>,
-    "some": <#Array.prototype.some, T, F, T>,
-    "forEach": <#Array.prototype.forEach, T, F, T>,
-    "map": <#Array.prototype.map, T, F, T>,
-    "filter": <#Array.prototype.filter, T, F, T>,
-    "reduce": <#Array.prototype.reduce, T, F, T>,
-    "reduceRight": <#Array.prototype.reduceRight, T, F, T>
+  #Global.parseInt: {
+    [[Call]]: fun(2),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <2, F, F, F>
   },
-  #Array.prototype.toString: {
+  #JSON: {
+    [[Class]]: "JSON",
+    [[Extensible]]: true,
+    [[Prototype]]: #Object.prototype,
+    "parse": <#JSON.parse, T, F, T>,
+    "stringify": <#JSON.stringify, T, F, T>
   },
-  #Array.prototype.toLocaleString: {
+  #JSON.parse: {
+    [[Call]]: fun(185),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <2, F, F, F>
   },
-  #Array.prototype.concat: {
+  #JSON.stringify: {
+    [[Call]]: fun(186),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <3, F, F, F>
   },
-  #Array.prototype.join: {
-  },
-  #Array.prototype.pop: {
-  },
-  #Array.prototype.push: {
-  },
-  #Array.prototype.reverse: {
-  },
-  #Array.prototype.shift: {
-  },
-  #Array.prototype.slice: {
-  },
-  #Array.prototype.sort: {
-  },
-  #Array.prototype.splice: {
-  },
-  #Array.prototype.unshift: {
-  },
-  #Array.prototype.indexOf: {
-  },
-  #Array.prototype.lastIndexOf: {
-  },
-  #Array.prototype.every: {
-  },
-  #Array.prototype.some: {
-  },
-  #Array.prototype.forEach: {
-  },
-  #Array.prototype.map: {
-    [[Call]]: fun(0)
-  },
-  #Array.prototype.filter: {
-  },
-  #Array.prototype.reduce: {
-  },
-  #Array.prototype.reduceRight: {
-  },
-  #String: {
-  },
-  #Boolean: {
-  },
-  #Number: {
-    "E": <2.7182818284590452354, F, F, F>,
+  #Math: {
+    [[Class]]: "Math",
+    [[Extensible]]: true,
+    [[Prototype]]: #Object.prototype,
+    "E": <2.718281828459045, F, F, F>,
     "LN10": <2.302585092994046, F, F, F>,
     "LN2": <0.6931471805599453, F, F, F>,
-    "LOG2E": <1.4426950408889634, F, F, F>,
     "LOG10E": <0.4342944819032518, F, F, F>,
-    "PI": <3.1415926535897932, F, F, F>,
+    "LOG2E": <1.4426950408889634, F, F, F>,
+    "PI": <3.141592653589793, F, F, F>,
     "SQRT1_2": <0.7071067811865476, F, F, F>,
     "SQRT2": <1.4142135623730951, F, F, F>,
     "abs": <#Math.abs, T, F, T>,
@@ -164,87 +958,1517 @@ Heap: {
     "tan": <#Math.tan, T, F, T>
   },
   #Math.abs: {
+    [[Call]]: fun(167),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
   },
   #Math.acos: {
+    [[Call]]: fun(168),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
   },
   #Math.asin: {
+    [[Call]]: fun(169),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
   },
   #Math.atan: {
+    [[Call]]: fun(170),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
   },
   #Math.atan2: {
+    [[Call]]: fun(171),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <2, F, F, F>
   },
   #Math.ceil: {
+    [[Call]]: fun(172),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
   },
   #Math.cos: {
+    [[Call]]: fun(173),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
   },
   #Math.exp: {
+    [[Call]]: fun(174),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
   },
   #Math.floor: {
+    [[Call]]: fun(175),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
   },
   #Math.log: {
+    [[Call]]: fun(176),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
   },
   #Math.max: {
+    [[Call]]: fun(177),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <2, F, F, F>
   },
   #Math.min: {
+    [[Call]]: fun(178),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <2, F, F, F>
   },
   #Math.pow: {
+    [[Call]]: fun(179),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <2, F, F, F>
   },
   #Math.random: {
+    [[Call]]: fun(180),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <0, F, F, F>
   },
   #Math.round: {
+    [[Call]]: fun(181),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
   },
   #Math.sin: {
+    [[Call]]: fun(182),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
   },
   #Math.sqrt: {
+    [[Call]]: fun(183),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
   },
   #Math.tan: {
+    [[Call]]: fun(184),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
   },
-  #Date: {
+  #Number: {
+    [[Call]]: fun(96),
+    [[Class]]: "Function",
+    [[Construct]]: fun(97),
+    [[Extensible]]: true,
+    [[HasInstance]]: null,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "MAX_VALUE": <9223372036854775807, F, F, F>,
+    "MIN_VALUE": <4.9E-324, F, F, F>,
+    "NEGATIVE_INFINITY": <-Infinity, F, F, F>,
+    "NaN": <NaN, F, F, F>,
+    "POSITIVE_INFINITY": <Infinity, F, F, F>,
+    "length": <1, F, F, F>,
+    "prototype": <#Number.prototype, F, F, F>
   },
-  #RegExp: {
+  #Number.prototype: {
+    [[Class]]: "Number",
+    [[Extensible]]: true,
+    [[PrimitiveValue]]: 0,
+    [[Prototype]]: #Object.prototype,
+    "constructor": <#Number, T, F, T>,
+    "toExponential": <#Number.prototype.toExponential, T, F, T>,
+    "toFixed": <#Number.prototype.toFixed, T, F, T>,
+    "toLocaleString": <#Number.prototype.toLocaleString, T, F, T>,
+    "toPrecision": <#Number.prototype.toPrecision, T, F, T>,
+    "toString": <#Number.prototype.toString, T, F, T>,
+    "valueOf": <#Number.prototype.valueOf, T, F, T>
   },
-  #Error: {
+  #Number.prototype.constructor: {
+    [[Call]]: fun(89),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
   },
-  #EvalError: {
+  #Number.prototype.toExponential: {
+    [[Call]]: fun(94),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
+  },
+  #Number.prototype.toFixed: {
+    [[Call]]: fun(93),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
+  },
+  #Number.prototype.toLocaleString: {
+    [[Call]]: fun(91),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <0, F, F, F>
+  },
+  #Number.prototype.toPrecision: {
+    [[Call]]: fun(95),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
+  },
+  #Number.prototype.toString: {
+    [[Call]]: fun(90),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
+  },
+  #Number.prototype.valueOf: {
+    [[Call]]: fun(92),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <0, F, F, F>
+  },
+  #Object: {
+    [[Call]]: fun(16),
+    [[Class]]: "Function",
+    [[Construct]]: fun(17),
+    [[Extensible]]: true,
+    [[HasInstance]]: null,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "create": <#Object.create, T, F, T>,
+    "defineProperties": <#Object.defineProperties, T, F, T>,
+    "defineProperty": <#Object.defineProperty, T, F, T>,
+    "freeze": <#Object.freeze, T, F, T>,
+    "getOwnPropertyDescriptor": <#Object.getOwnPropertyDescriptor, T, F, T>,
+    "getOwnPropertyNames": <#Object.getOwnPropertyNames, T, F, T>,
+    "getPrototypeOf": <#Object.getPrototypeOf, T, F, T>,
+    "isExtensible": <#Object.isExtensible, T, F, T>,
+    "isFrozen": <#Object.isFrozen, T, F, T>,
+    "isSealed": <#Object.isSealed, T, F, T>,
+    "keys": <#Object.keys, T, F, T>,
+    "length": <1, F, F, F>,
+    "preventExtensions": <#Object.preventExtensions, T, F, T>,
+    "prototype": <#Object.prototype, F, F, F>,
+    "seal": <#Object.seal, T, F, T>
+  },
+  #Object.create: {
+    [[Call]]: fun(21),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <2, F, F, F>
+  },
+  #Object.defineProperties: {
+    [[Call]]: fun(23),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <2, F, F, F>
+  },
+  #Object.defineProperty: {
+    [[Call]]: fun(22),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <3, F, F, F>
+  },
+  #Object.freeze: {
+    [[Call]]: fun(25),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
+  },
+  #Object.getOwnPropertyDescriptor: {
+    [[Call]]: fun(19),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <2, F, F, F>
+  },
+  #Object.getOwnPropertyNames: {
+    [[Call]]: fun(20),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
+  },
+  #Object.getPrototypeOf: {
+    [[Call]]: fun(18),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
+  },
+  #Object.isExtensible: {
+    [[Call]]: fun(29),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
+  },
+  #Object.isFrozen: {
+    [[Call]]: fun(28),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
+  },
+  #Object.isSealed: {
+    [[Call]]: fun(27),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
+  },
+  #Object.keys: {
+    [[Call]]: fun(30),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
+  },
+  #Object.preventExtensions: {
+    [[Call]]: fun(26),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
+  },
+  #Object.prototype: {
+    [[Class]]: "Object",
+    [[Extensible]]: true,
+    [[Prototype]]: null,
+    "constructor": <#Object, T, F, T>,
+    "hasOwnProperty": <#Object.prototype.hasOwnProperty, T, F, T>,
+    "isPrototypeOf": <#Object.prototype.isPrototypeOf, T, F, T>,
+    "propertyIsEnumerable": <#Object.prototype.propertyIsEnumerable, T, F, T>,
+    "toLocaleString": <#Object.prototype.toLocaleString, T, F, T>,
+    "toString": <#Object.prototype.toString, T, F, T>,
+    "valueOf": <#Object.prototype.valueOf, T, F, T>
+  },
+  #Object.prototype.hasOwnProperty: {
+    [[Call]]: fun(13),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
+  },
+  #Object.prototype.isPrototypeOf: {
+    [[Call]]: fun(14),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
+  },
+  #Object.prototype.propertyIsEnumerable: {
+    [[Call]]: fun(15),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
+  },
+  #Object.prototype.toLocaleString: {
+    [[Call]]: fun(11),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <0, F, F, F>
+  },
+  #Object.prototype.toString: {
+    [[Call]]: fun(10),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <0, F, F, F>
+  },
+  #Object.prototype.valueOf: {
+    [[Call]]: fun(12),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <0, F, F, F>
+  },
+  #Object.seal: {
+    [[Call]]: fun(24),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
   },
   #RangeError: {
+    [[Call]]: fun(157),
+    [[Class]]: "Function",
+    [[Construct]]: fun(158),
+    [[Extensible]]: true,
+    [[HasInstance]]: null,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>,
+    "name": <"RangeError", T, F, T>,
+    "prototype": <#RangeError.prototype, F, F, F>
+  },
+  #RangeError.prototype: {
+    [[Class]]: "Error",
+    [[Extensible]]: true,
+    [[Prototype]]: #Error.prototype,
+    "constructor": <#RangeError, T, F, T>,
+    "message": <"", T, F, T>,
+    "name": <"RangeError", T, F, T>
   },
   #ReferenceError: {
+    [[Call]]: fun(159),
+    [[Class]]: "Function",
+    [[Construct]]: fun(160),
+    [[Extensible]]: true,
+    [[HasInstance]]: null,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>,
+    "name": <"ReferenceError", T, F, T>,
+    "prototype": <#ReferenceError.prototype, F, F, F>
+  },
+  #ReferenceError.prototype: {
+    [[Class]]: "Error",
+    [[Extensible]]: true,
+    [[Prototype]]: #Error.prototype,
+    "constructor": <#ReferenceError, T, F, T>,
+    "message": <"", T, F, T>,
+    "name": <"ReferenceError", T, F, T>
+  },
+  #RegExp: {
+    [[Call]]: fun(150),
+    [[Class]]: "Function",
+    [[Construct]]: fun(151),
+    [[Extensible]]: true,
+    [[HasInstance]]: null,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <2, F, F, F>,
+    "prototype": <#RegExp.prototype, F, F, F>
+  },
+  #RegExp.prototype: {
+    [[Class]]: "RegExp",
+    [[Extensible]]: true,
+    [[Prototype]]: #Object.prototype,
+    "constructor": <#RegExp, T, F, T>,
+    "exec": <#RegExp.prototype.exec, T, F, T>,
+    "test": <#RegExp.prototype.test, T, F, T>,
+    "toString": <#RegExp.prototype.toString, T, F, T>
+  },
+  #RegExp.prototype.exec: {
+    [[Call]]: fun(147),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
+  },
+  #RegExp.prototype.test: {
+    [[Call]]: fun(148),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
+  },
+  #RegExp.prototype.toString: {
+    [[Call]]: fun(149),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <0, F, F, F>
+  },
+  #String: {
+    [[Call]]: fun(82),
+    [[Class]]: "Function",
+    [[Construct]]: fun(83),
+    [[Extensible]]: true,
+    [[HasInstance]]: null,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "fromCharCode": <#String.fromCharCode, T, F, T>,
+    "length": <1, F, F, F>,
+    "prototype": <#String.prototype, F, F, F>
+  },
+  #String.fromCharCode: {
+    [[Call]]: fun(84),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
+  },
+  #String.prototype: {
+    [[Class]]: "String",
+    [[Extensible]]: true,
+    [[PrimitiveValue]]: "",
+    [[Prototype]]: #Object.prototype,
+    "charAt": <#String.prototype.charAt, T, F, T>,
+    "charCodeAt": <#String.prototype.charCodeAt, T, F, T>,
+    "concat": <#String.prototype.concat, T, F, T>,
+    "constructor": <#String, T, F, T>,
+    "indexOf": <#String.prototype.indexOf, T, F, T>,
+    "lastIndexOf": <#String.prototype.lastIndexOf, T, F, T>,
+    "localeCompare": <#String.prototype.localeCompare, T, F, T>,
+    "match": <#String.prototype.match, T, F, T>,
+    "replace": <#String.prototype.replace, T, F, T>,
+    "search": <#String.prototype.search, T, F, T>,
+    "slice": <#String.prototype.slice, T, F, T>,
+    "split": <#String.prototype.split, T, F, T>,
+    "substring": <#String.prototype.substring, T, F, T>,
+    "toLocaleLowerCase": <#String.prototype.toLocaleLowerCase, T, F, T>,
+    "toLocaleUpperCase": <#String.prototype.toLocaleUpperCase, T, F, T>,
+    "toLowerCase": <#String.prototype.toLowerCase, T, F, T>,
+    "toString": <#String.prototype.toString, T, F, T>,
+    "toUpperCase": <#String.prototype.toUpperCase, T, F, T>,
+    "trim": <#String.prototype.trim, T, F, T>,
+    "valueOf": <#String.prototype.valueOf, T, F, T>
+  },
+  #String.prototype.charAt: {
+    [[Call]]: fun(65),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
+  },
+  #String.prototype.charCodeAt: {
+    [[Call]]: fun(66),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
+  },
+  #String.prototype.concat: {
+    [[Call]]: fun(67),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
+  },
+  #String.prototype.constructor: {
+    [[Call]]: fun(62),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
+  },
+  #String.prototype.indexOf: {
+    [[Call]]: fun(68),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
+  },
+  #String.prototype.lastIndexOf: {
+    [[Call]]: fun(69),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
+  },
+  #String.prototype.localeCompare: {
+    [[Call]]: fun(70),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
+  },
+  #String.prototype.match: {
+    [[Call]]: fun(71),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
+  },
+  #String.prototype.replace: {
+    [[Call]]: fun(72),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <2, F, F, F>
+  },
+  #String.prototype.search: {
+    [[Call]]: fun(73),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
+  },
+  #String.prototype.slice: {
+    [[Call]]: fun(74),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <2, F, F, F>
+  },
+  #String.prototype.split: {
+    [[Call]]: fun(75),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <2, F, F, F>
+  },
+  #String.prototype.substring: {
+    [[Call]]: fun(76),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <2, F, F, F>
+  },
+  #String.prototype.toLocaleLowerCase: {
+    [[Call]]: fun(78),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <0, F, F, F>
+  },
+  #String.prototype.toLocaleUpperCase: {
+    [[Call]]: fun(80),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <0, F, F, F>
+  },
+  #String.prototype.toLowerCase: {
+    [[Call]]: fun(77),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <0, F, F, F>
+  },
+  #String.prototype.toString: {
+    [[Call]]: fun(63),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <0, F, F, F>
+  },
+  #String.prototype.toUpperCase: {
+    [[Call]]: fun(79),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <0, F, F, F>
+  },
+  #String.prototype.trim: {
+    [[Call]]: fun(81),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <0, F, F, F>
+  },
+  #String.prototype.valueOf: {
+    [[Call]]: fun(64),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <0, F, F, F>
   },
   #SyntaxError: {
+    [[Call]]: fun(161),
+    [[Class]]: "Function",
+    [[Construct]]: fun(162),
+    [[Extensible]]: true,
+    [[HasInstance]]: null,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>,
+    "name": <"SyntaxError", T, F, T>,
+    "prototype": <#SyntaxError.prototype, F, F, F>
+  },
+  #SyntaxError.prototype: {
+    [[Class]]: "Error",
+    [[Extensible]]: true,
+    [[Prototype]]: #Error.prototype,
+    "constructor": <#SyntaxError, T, F, T>,
+    "message": <"", T, F, T>,
+    "name": <"SyntaxError", T, F, T>
   },
   #TypeError: {
+    [[Call]]: fun(163),
+    [[Class]]: "Function",
+    [[Construct]]: fun(164),
+    [[Extensible]]: true,
+    [[HasInstance]]: null,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>,
+    "name": <"TypeError", T, F, T>,
+    "prototype": <#TypeError.prototype, F, F, F>
+  },
+  #TypeError.prototype: {
+    [[Class]]: "Error",
+    [[Extensible]]: true,
+    [[Prototype]]: #Error.prototype,
+    "constructor": <#TypeError, T, F, T>,
+    "message": <"", T, F, T>,
+    "name": <"TypeError", T, F, T>
   },
   #URIError: {
+    [[Call]]: fun(165),
+    [[Class]]: "Function",
+    [[Construct]]: fun(166),
+    [[Extensible]]: true,
+    [[HasInstance]]: null,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>,
+    "name": <"URIError", T, F, T>,
+    "prototype": <#URIError.prototype, F, F, F>
   },
-  #Math: {
-  },
-  #JSON: {
-  }
+  #URIError.prototype: {
+    [[Class]]: "Error",
+    [[Extensible]]: true,
+    [[Prototype]]: #Error.prototype,
+    "constructor": <#URIError, T, F, T>,
+    "message": <"", T, F, T>,
+    "name": <"URIError", T, F, T>,
+	}
 }
 
 Function: {
-  0: [\\
-  function map (callbackfn, thisArg) {
-    var O = this;
-    var len = O.length;
-    var T;
-    if(thisArg)
-      T = thisArg
-    var A = new Array(len);
-    var k = 0;
-    while(k<len) {
-      var kPresent = (k in O);
-      if(kPresent) {
-        var kValue = O[k];
-        // TODO: insert CFGEnterCode
-        // callbackfn.call != callbackfn.[[Call]]
-        var mappedValue = callbackfn.call(T, kValue, k, O);
-        A[k] = mappedValue;
-      }
-      k = k+1;
-    }
-    return A;
-  };
+  1: [\\
+  function () {
+  }
+  \\],
+  2: [\\
+  function () {
+  }
+  \\],
+  3: [\\
+  function () {
+  }
+  \\],
+  4: [\\
+  function () {
+  }
+  \\],
+  5: [\\
+  function () {
+  }
+  \\],
+  6: [\\
+  function () {
+  }
+  \\],
+  7: [\\
+  function () {
+  }
+  \\],
+  8: [\\
+  function () {
+  }
+  \\],
+  9: [\\
+  function () {
+  }
+  \\],
+  10: [\\
+  function () {
+  }
+  \\],
+  11: [\\
+  function () {
+  }
+  \\],
+  12: [\\
+  function () {
+  }
+  \\],
+  13: [\\
+  function () {
+  }
+  \\],
+  14: [\\
+  function () {
+  }
+  \\],
+  15: [\\
+  function () {
+  }
+  \\],
+  16: [\\
+  function () {
+  }
+  \\],
+  17: [\\
+  function () {
+  }
+  \\],
+  18: [\\
+  function () {
+  }
+  \\],
+  19: [\\
+  function () {
+  }
+  \\],
+  20: [\\
+  function () {
+  }
+  \\],
+  21: [\\
+  function () {
+  }
+  \\],
+  22: [\\
+  function () {
+  }
+  \\],
+  23: [\\
+  function () {
+  }
+  \\],
+  24: [\\
+  function () {
+  }
+  \\],
+  25: [\\
+  function () {
+  }
+  \\],
+  26: [\\
+  function () {
+  }
+  \\],
+  27: [\\
+  function () {
+  }
+  \\],
+  28: [\\
+  function () {
+  }
+  \\],
+  29: [\\
+  function () {
+  }
+  \\],
+  30: [\\
+  function () {
+  }
+  \\],
+  31: [\\
+  function () {
+  }
+  \\],
+  32: [\\
+  function () {
+  }
+  \\],
+  33: [\\
+  function () {
+  }
+  \\],
+  34: [\\
+  function () {
+  }
+  \\],
+  35: [\\
+  function () {
+  }
+  \\],
+  36: [\\
+  function () {
+  }
+  \\],
+  37: [\\
+  function () {
+  }
+  \\],
+  38: [\\
+  function () {
+  }
+  \\],
+  39: [\\
+  function () {
+  }
+  \\],
+  40: [\\
+  function () {
+  }
+  \\],
+  41: [\\
+  function () {
+  }
+  \\],
+  42: [\\
+  function () {
+  }
+  \\],
+  43: [\\
+  function () {
+  }
+  \\],
+  44: [\\
+  function () {
+  }
+  \\],
+  45: [\\
+  function () {
+  }
+  \\],
+  46: [\\
+  function () {
+  }
+  \\],
+  47: [\\
+  function () {
+  }
+  \\],
+  48: [\\
+  function () {
+  }
+  \\],
+  49: [\\
+  function () {
+  }
+  \\],
+  50: [\\
+  function () {
+  }
+  \\],
+  51: [\\
+  function () {
+  }
+  \\],
+  52: [\\
+  function () {
+  }
+  \\],
+  53: [\\
+  function () {
+  }
+  \\],
+  54: [\\
+  function () {
+  }
+  \\],
+  55: [\\
+  function () {
+  }
+  \\],
+  56: [\\
+  function () {
+  }
+  \\],
+  57: [\\
+  function () {
+  }
+  \\],
+  58: [\\
+  function () {
+  }
+  \\],
+  59: [\\
+  function () {
+  }
+  \\],
+  60: [\\
+  function () {
+  }
+  \\],
+  61: [\\
+  function () {
+  }
+  \\],
+  62: [\\
+  function () {
+  }
+  \\],
+  63: [\\
+  function () {
+  }
+  \\],
+  64: [\\
+  function () {
+  }
+  \\],
+  65: [\\
+  function () {
+  }
+  \\],
+  66: [\\
+  function () {
+  }
+  \\],
+  67: [\\
+  function () {
+  }
+  \\],
+  68: [\\
+  function () {
+  }
+  \\],
+  69: [\\
+  function () {
+  }
+  \\],
+  70: [\\
+  function () {
+  }
+  \\],
+  71: [\\
+  function () {
+  }
+  \\],
+  72: [\\
+  function () {
+  }
+  \\],
+  73: [\\
+  function () {
+  }
+  \\],
+  74: [\\
+  function () {
+  }
+  \\],
+  75: [\\
+  function () {
+  }
+  \\],
+  76: [\\
+  function () {
+  }
+  \\],
+  77: [\\
+  function () {
+  }
+  \\],
+  78: [\\
+  function () {
+  }
+  \\],
+  79: [\\
+  function () {
+  }
+  \\],
+  80: [\\
+  function () {
+  }
+  \\],
+  81: [\\
+  function () {
+  }
+  \\],
+  82: [\\
+  function () {
+  }
+  \\],
+  83: [\\
+  function () {
+  }
+  \\],
+  84: [\\
+  function () {
+  }
+  \\],
+  85: [\\
+  function () {
+  }
+  \\],
+  86: [\\
+  function () {
+  }
+  \\],
+  87: [\\
+  function () {
+  }
+  \\],
+  88: [\\
+  function () {
+  }
+  \\],
+  89: [\\
+  function () {
+  }
+  \\],
+  90: [\\
+  function () {
+  }
+  \\],
+  91: [\\
+  function () {
+  }
+  \\],
+  92: [\\
+  function () {
+  }
+  \\],
+  93: [\\
+  function () {
+  }
+  \\],
+  94: [\\
+  function () {
+  }
+  \\],
+  95: [\\
+  function () {
+  }
+  \\],
+  96: [\\
+  function () {
+  }
+  \\],
+  97: [\\
+  function () {
+  }
+  \\],
+  98: [\\
+  function () {
+  }
+  \\],
+  99: [\\
+  function () {
+  }
+  \\],
+  100: [\\
+  function () {
+  }
+  \\],
+  101: [\\
+  function () {
+  }
+  \\],
+  102: [\\
+  function () {
+  }
+  \\],
+  103: [\\
+  function () {
+  }
+  \\],
+  104: [\\
+  function () {
+  }
+  \\],
+  105: [\\
+  function () {
+  }
+  \\],
+  106: [\\
+  function () {
+  }
+  \\],
+  107: [\\
+  function () {
+  }
+  \\],
+  108: [\\
+  function () {
+  }
+  \\],
+  109: [\\
+  function () {
+  }
+  \\],
+  110: [\\
+  function () {
+  }
+  \\],
+  111: [\\
+  function () {
+  }
+  \\],
+  112: [\\
+  function () {
+  }
+  \\],
+  113: [\\
+  function () {
+  }
+  \\],
+  114: [\\
+  function () {
+  }
+  \\],
+  115: [\\
+  function () {
+  }
+  \\],
+  116: [\\
+  function () {
+  }
+  \\],
+  117: [\\
+  function () {
+  }
+  \\],
+  118: [\\
+  function () {
+  }
+  \\],
+  119: [\\
+  function () {
+  }
+  \\],
+  120: [\\
+  function () {
+  }
+  \\],
+  121: [\\
+  function () {
+  }
+  \\],
+  122: [\\
+  function () {
+  }
+  \\],
+  123: [\\
+  function () {
+  }
+  \\],
+  124: [\\
+  function () {
+  }
+  \\],
+  125: [\\
+  function () {
+  }
+  \\],
+  126: [\\
+  function () {
+  }
+  \\],
+  127: [\\
+  function () {
+  }
+  \\],
+  128: [\\
+  function () {
+  }
+  \\],
+  129: [\\
+  function () {
+  }
+  \\],
+  130: [\\
+  function () {
+  }
+  \\],
+  131: [\\
+  function () {
+  }
+  \\],
+  132: [\\
+  function () {
+  }
+  \\],
+  133: [\\
+  function () {
+  }
+  \\],
+  134: [\\
+  function () {
+  }
+  \\],
+  135: [\\
+  function () {
+  }
+  \\],
+  136: [\\
+  function () {
+  }
+  \\],
+  137: [\\
+  function () {
+  }
+  \\],
+  138: [\\
+  function () {
+  }
+  \\],
+  139: [\\
+  function () {
+  }
+  \\],
+  140: [\\
+  function () {
+  }
+  \\],
+  141: [\\
+  function () {
+  }
+  \\],
+  142: [\\
+  function () {
+  }
+  \\],
+  143: [\\
+  function () {
+  }
+  \\],
+  144: [\\
+  function () {
+  }
+  \\],
+  145: [\\
+  function () {
+  }
+  \\],
+  146: [\\
+  function () {
+  }
+  \\],
+  147: [\\
+  function () {
+  }
+  \\],
+  148: [\\
+  function () {
+  }
+  \\],
+  149: [\\
+  function () {
+  }
+  \\],
+  150: [\\
+  function () {
+  }
+  \\],
+  151: [\\
+  function () {
+  }
+  \\],
+  152: [\\
+  function () {
+  }
+  \\],
+  153: [\\
+  function () {
+  }
+  \\],
+  154: [\\
+  function () {
+  }
+  \\],
+  155: [\\
+  function () {
+  }
+  \\],
+  156: [\\
+  function () {
+  }
+  \\],
+  157: [\\
+  function () {
+  }
+  \\],
+  158: [\\
+  function () {
+  }
+  \\],
+  159: [\\
+  function () {
+  }
+  \\],
+  160: [\\
+  function () {
+  }
+  \\],
+  161: [\\
+  function () {
+  }
+  \\],
+  162: [\\
+  function () {
+  }
+  \\],
+  163: [\\
+  function () {
+  }
+  \\],
+  164: [\\
+  function () {
+  }
+  \\],
+  165: [\\
+  function () {
+  }
+  \\],
+  166: [\\
+  function () {
+  }
+  \\],
+  167: [\\
+  function () {
+  }
+  \\],
+  168: [\\
+  function () {
+  }
+  \\],
+  169: [\\
+  function () {
+  }
+  \\],
+  170: [\\
+  function () {
+  }
+  \\],
+  171: [\\
+  function () {
+  }
+  \\],
+  172: [\\
+  function () {
+  }
+  \\],
+  173: [\\
+  function () {
+  }
+  \\],
+  174: [\\
+  function () {
+  }
+  \\],
+  175: [\\
+  function () {
+  }
+  \\],
+  176: [\\
+  function () {
+  }
+  \\],
+  177: [\\
+  function () {
+  }
+  \\],
+  178: [\\
+  function () {
+  }
+  \\],
+  179: [\\
+  function () {
+  }
+  \\],
+  180: [\\
+  function () {
+  }
+  \\],
+  181: [\\
+  function () {
+  }
+  \\],
+  182: [\\
+  function () {
+  }
+  \\],
+  183: [\\
+  function () {
+  }
+  \\],
+  184: [\\
+  function () {
+  }
+  \\],
+  185: [\\
+  function () {
+  }
+  \\],
+  186: [\\
+  function () {
+  }
   \\]
 }
