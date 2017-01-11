@@ -595,6 +595,17 @@ class Semantics(
       val newExcSt = st.raiseException(excSet)
       (st1, excSt + newExcSt)
     }
+    case (NodeUtil.INTERNAL_PROTO, List(expr), None) => {
+      val (v, excSet) = V(expr, st)
+      val obj = st.heap.get(v.locset)
+      val value = obj(IPrototype).value
+      val st1 =
+        if (!v.isBottom) st.varStore(lhs, value)
+        else AbsState.Bot
+
+      val newExcSt = st.raiseException(excSet)
+      (st1, excSt + newExcSt)
+    }
     case (NodeUtil.INTERNAL_GET_BASE, List(CFGVarRef(_, x2)), None) => {
       val baseV = st.lookupBase(x2)
       val st1 = st.varStore(lhs, baseV)
