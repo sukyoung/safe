@@ -66,6 +66,8 @@ object NodeUtil {
   val INTERNAL_TO_OBJ = internalAPIName("ToObject")
   // 9.12 The SameValue Algorithm
   val INTERNAL_SAME_VALUE = internalAPIName("SameValue")
+  // 8.6.2 Object Internal Properties and Methods
+  val INTERNAL_CLASS = internalAPIName("Class")
   // 8.7 The Reference Specification Type
   val INTERNAL_GET_BASE = internalAPIName("GetBase")
   // Other helpers
@@ -79,6 +81,7 @@ object NodeUtil {
     INTERNAL_TO_STR,
     INTERNAL_TO_OBJ,
     INTERNAL_SAME_VALUE,
+    INTERNAL_CLASS,
     INTERNAL_GET_BASE,
     INTERNAL_IS_OBJ,
     INTERNAL_ITER_INIT,
