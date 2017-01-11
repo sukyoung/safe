@@ -64,7 +64,7 @@ object Initialize {
             // TODO is system address good? how about incremental program address?
             def mutate(addr: Address): SystemAddr = addr match {
               case ProgramAddr(id) =>
-                SystemAddr(s"JSModel<${func.id}, $addr>")
+                SystemAddr(s"JSModel<${func.id},$addr>")
               case sys: SystemAddr => sys
             }
             func.getAllBlocks.foreach(_.getInsts.foreach {
@@ -72,6 +72,7 @@ object Initialize {
               case i: CFGAllocArray => i.addr = mutate(i.addr)
               case i: CFGAllocArg => i.addr = mutate(i.addr)
               case i: CFGCallInst => i.addr = mutate(i.addr)
+              case i: CFGInternalCall => i.addrOpt = i.addrOpt.map(mutate(_))
               case _ =>
             })
             map + (fid -> func.id)

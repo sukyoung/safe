@@ -211,7 +211,7 @@ case class CFGInternalCall(
     lhs: CFGId,
     name: String,
     arguments: List[CFGExpr],
-    addrOpt: Option[Address]
+    var addrOpt: Option[Address] // XXX should be a value but for JS model for a while.
 ) extends CFGNormalInst(ir, block) {
   override def toString: String = {
     val arg = arguments.mkString(", ")

@@ -58,6 +58,7 @@ object NodeUtil {
   // internal API call
   // 8.6.2 Object Internal Properties and Methods
   val INTERNAL_CLASS = internalAPIName("Class")
+  val INTERNAL_PRIM_VAL = internalAPIName("PrimitiveValue")
   // 8.7 The Reference Specification Type
   val INTERNAL_GET_BASE = internalAPIName("GetBase")
   // 9.2 ToBoolean
@@ -88,6 +89,7 @@ object NodeUtil {
     INTERNAL_SAME_VALUE,
     INTERNAL_BOOL_OBJ,
     INTERNAL_CLASS,
+    INTERNAL_PRIM_VAL,
     INTERNAL_GET_BASE,
     INTERNAL_IS_OBJ,
     INTERNAL_ITER_INIT,
