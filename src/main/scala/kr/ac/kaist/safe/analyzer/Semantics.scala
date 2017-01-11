@@ -568,7 +568,7 @@ class Semantics(
       val heap = st1.heap.update(loc, AbsObject.newBooleanObj(bool))
       val st2 = AbsState(heap, st1.context)
       val st3 =
-        if (!v.isBottom) st2.varStore(lhs, v)
+        if (!v.isBottom) st2.varStore(lhs, AbsValue(loc))
         else AbsState.Bot
       val newExcSt = st.raiseException(excSet)
       (st3, newExcSt)
@@ -579,6 +579,17 @@ class Semantics(
       val className = obj(IClass).value
       val st1 =
         if (!v.isBottom) st.varStore(lhs, className)
+        else AbsState.Bot
+
+      val newExcSt = st.raiseException(excSet)
+      (st1, excSt + newExcSt)
+    }
+    case (NodeUtil.INTERNAL_PRIM_VAL, List(expr), None) => {
+      val (v, excSet) = V(expr, st)
+      val obj = st.heap.get(v.locset)
+      val value = obj(IPrimitiveValue).value
+      val st1 =
+        if (!v.isBottom) st.varStore(lhs, value)
         else AbsState.Bot
 
       val newExcSt = st.raiseException(excSet)
