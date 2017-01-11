@@ -516,6 +516,15 @@ class Semantics(
       val newExcSt = st.raiseException(excSet)
       (st1, excSt + newExcSt)
     }
+    case (NodeUtil.INTERNAL_TO_INT, List(expr), None) => {
+      val (v, excSet) = V(expr, st)
+      val st1 =
+        if (!v.isBottom) st.varStore(lhs, AbsValue(TypeConversionHelper.ToInteger(v, st.heap)))
+        else AbsState.Bot
+
+      val newExcSt = st.raiseException(excSet)
+      (st1, excSt + newExcSt)
+    }
     case (NodeUtil.INTERNAL_TO_UINT, List(expr), None) => {
       val (v, excSet) = V(expr, st)
       val st1 =
@@ -588,6 +597,17 @@ class Semantics(
       val (v, excSet) = V(expr, st)
       val obj = st.heap.get(v.locset)
       val value = obj(IPrimitiveValue).value
+      val st1 =
+        if (!v.isBottom) st.varStore(lhs, value)
+        else AbsState.Bot
+
+      val newExcSt = st.raiseException(excSet)
+      (st1, excSt + newExcSt)
+    }
+    case (NodeUtil.INTERNAL_PROTO, List(expr), None) => {
+      val (v, excSet) = V(expr, st)
+      val obj = st.heap.get(v.locset)
+      val value = obj(IPrototype).value
       val st1 =
         if (!v.isBottom) st.varStore(lhs, value)
         else AbsState.Bot

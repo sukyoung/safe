@@ -59,12 +59,15 @@ object NodeUtil {
   // 8.6.2 Object Internal Properties and Methods
   val INTERNAL_CLASS = internalAPIName("Class")
   val INTERNAL_PRIM_VAL = internalAPIName("PrimitiveValue")
+  val INTERNAL_PROTO = internalAPIName("Prototype")
   // 8.7 The Reference Specification Type
   val INTERNAL_GET_BASE = internalAPIName("GetBase")
   // 9.2 ToBoolean
   val INTERNAL_TO_BOOL = internalAPIName("ToBoolean")
   // 9.3 ToNumber
   val INTERNAL_TO_NUM = internalAPIName("ToNumber")
+  // 9.4 ToInteger
+  val INTERNAL_TO_INT = internalAPIName("ToInteger")
   // 9.6 ToUint32: (Unsigned 32 Bit Integer)
   val INTERNAL_TO_UINT = internalAPIName("ToUint32")
   // 9.8 ToString
@@ -83,6 +86,7 @@ object NodeUtil {
   val internalCallSet: Set[String] = HashSet(
     INTERNAL_TO_BOOL,
     INTERNAL_TO_NUM,
+    INTERNAL_TO_INT,
     INTERNAL_TO_UINT,
     INTERNAL_TO_STR,
     INTERNAL_TO_OBJ,
@@ -90,6 +94,7 @@ object NodeUtil {
     INTERNAL_BOOL_OBJ,
     INTERNAL_CLASS,
     INTERNAL_PRIM_VAL,
+    INTERNAL_PROTO,
     INTERNAL_GET_BASE,
     INTERNAL_IS_OBJ,
     INTERNAL_ITER_INIT,
