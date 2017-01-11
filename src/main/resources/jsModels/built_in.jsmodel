@@ -1797,11 +1797,15 @@ Function: {
   }
   \\],
   16: [\\
-  function () {
+  function Object (value) {
+    if (value === null || value === undefined) return {};
+    else return @ToObject(value);
   }
   \\],
   17: [\\
-  function () {
+  function Object (value) {
+    if (value === null || value === undefined) return {};
+    else return @ToObject(value);
   }
   \\],
   18: [\\
