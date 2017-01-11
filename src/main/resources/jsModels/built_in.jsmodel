@@ -1906,7 +1906,7 @@ Function: {
     // 3. Let len be ToUint32(lenVal).
     var len = @ToUint32(lenVal);
     // 4. If len is zero,
-    if (len === 0) {
+    if (@SameValue(len,0)) {
       // a. Call the [[Put]] internal method of O with arguments "length", 0, and true.
       O.length = 0;
       // b. Return undefined.
@@ -2154,11 +2154,17 @@ Function: {
   }
   \\],
   92: [\\
-  function () {
+  function valueOf () {
+    // The valueOf function is not generic; it throws a TypeError exception if its this value is not a Number or a Number object. Therefore, it cannot be transferred to other kinds of objects for use as a method.
+    if(!@SameValue((typeof this),"number")){
+      throw @TypeErr();
+    }
+    // Returns this Number value.
+    return this;
   }
   \\],
   93: [\\
-  function () {
+  function (){
   }
   \\],
   94: [\\
