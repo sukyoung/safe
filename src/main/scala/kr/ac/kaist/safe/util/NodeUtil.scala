@@ -56,6 +56,10 @@ object NodeUtil {
   def internalAPIName(name: String): String = INTERNAL_API_PREFIX + name
 
   // internal API call
+  // 8.6.2 Object Internal Properties and Methods
+  val INTERNAL_CLASS = internalAPIName("Class")
+  // 8.7 The Reference Specification Type
+  val INTERNAL_GET_BASE = internalAPIName("GetBase")
   // 9.2 ToBoolean
   val INTERNAL_TO_BOOL = internalAPIName("ToBoolean")
   // 9.3 ToNumber
@@ -68,10 +72,8 @@ object NodeUtil {
   val INTERNAL_TO_OBJ = internalAPIName("ToObject")
   // 9.12 The SameValue Algorithm
   val INTERNAL_SAME_VALUE = internalAPIName("SameValue")
-  // 8.6.2 Object Internal Properties and Methods
-  val INTERNAL_CLASS = internalAPIName("Class")
-  // 8.7 The Reference Specification Type
-  val INTERNAL_GET_BASE = internalAPIName("GetBase")
+  // 15.6.2.1 new Boolean (value)
+  val INTERNAL_BOOL_OBJ = internalAPIName("BoolObj")
   // Other helpers
   val INTERNAL_IS_OBJ = internalAPIName("isObject")
   val INTERNAL_ITER_INIT = internalAPIName("iteratorInit")
@@ -84,6 +86,7 @@ object NodeUtil {
     INTERNAL_TO_STR,
     INTERNAL_TO_OBJ,
     INTERNAL_SAME_VALUE,
+    INTERNAL_BOOL_OBJ,
     INTERNAL_CLASS,
     INTERNAL_GET_BASE,
     INTERNAL_IS_OBJ,
