@@ -56,6 +56,8 @@ object NodeUtil {
   def internalAPIName(name: String): String = INTERNAL_API_PREFIX + name
 
   // internal API call
+  // 9.2 ToBoolean
+  val INTERNAL_TO_BOOL = internalAPIName("ToBoolean")
   // 9.3 ToNumber
   val INTERNAL_TO_NUM = internalAPIName("ToNumber")
   // 9.6 ToUint32: (Unsigned 32 Bit Integer)
@@ -76,6 +78,7 @@ object NodeUtil {
   val INTERNAL_HAS_NEXT = internalAPIName("iteratorHasNext")
   val INTERNAL_ITER_NEXT = internalAPIName("iteratorNext")
   val internalCallSet: Set[String] = HashSet(
+    INTERNAL_TO_BOOL,
     INTERNAL_TO_NUM,
     INTERNAL_TO_UINT,
     INTERNAL_TO_STR,
