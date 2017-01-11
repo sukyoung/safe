@@ -2132,11 +2132,13 @@ Function: {
   }
   \\],
   87: [\\
-  function () {
+  function Boolean (value) {
+    return @ToBoolean(value);
   }
   \\],
   88: [\\
-  function () {
+  function Boolean (value) {
+    return @BoolObj(value);
   }
   \\],
   89: [\\

@@ -498,6 +498,15 @@ class Semantics(
   // internal API call
   // CFGInternalCall(ir, _, lhs, name, arguments, loc)
   def IC(ir: IRNode, lhs: CFGId, name: String, args: List[CFGExpr], loc: Option[Address], st: AbsState, excSt: AbsState): (AbsState, AbsState) = (name, args, loc) match {
+    case (NodeUtil.INTERNAL_TO_BOOL, List(expr), None) => {
+      val (v, excSet) = V(expr, st)
+      val st1 =
+        if (!v.isBottom) st.varStore(lhs, AbsValue(TypeConversionHelper.ToBoolean(v)))
+        else AbsState.Bot
+
+      val newExcSt = st.raiseException(excSet)
+      (st1, excSt + newExcSt)
+    }
     case (NodeUtil.INTERNAL_TO_NUM, List(expr), None) => {
       val (v, excSet) = V(expr, st)
       val st1 =
@@ -550,6 +559,19 @@ class Semantics(
 
       val newExcSt = st.raiseException(excSet1 ++ excSet2)
       (st1, excSt + newExcSt)
+    }
+    case (NodeUtil.INTERNAL_BOOL_OBJ, List(expr), Some(aNew)) => {
+      val (v, excSet) = V(expr, st)
+      val bool = TypeConversionHelper.ToBoolean(v)
+      val st1 = st.oldify(aNew)
+      val loc = Loc(aNew, Recent)
+      val heap = st1.heap.update(loc, AbsObject.newBooleanObj(bool))
+      val st2 = AbsState(heap, st1.context)
+      val st3 =
+        if (!v.isBottom) st2.varStore(lhs, v)
+        else AbsState.Bot
+      val newExcSt = st.raiseException(excSet)
+      (st3, newExcSt)
     }
     case (NodeUtil.INTERNAL_CLASS, List(expr), None) => {
       val (v, excSet) = V(expr, st)

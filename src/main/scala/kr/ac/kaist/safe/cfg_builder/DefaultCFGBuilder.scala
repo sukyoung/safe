@@ -391,7 +391,9 @@ class DefaultCFGBuilder(
       case IRInternalCall(_, lhs, name, args) =>
         val tailBlock: NormalBlock = getTail(blocks, func)
         val (addr: Option[Address], lm: LabelMap) = name match {
-          case INTERNAL_TO_OBJ | INTERNAL_ITER_INIT => (Some(newAddr), lmap.updated(ThrowLabel, (ThrowLabel of lmap) + tailBlock))
+          case INTERNAL_BOOL_OBJ => (Some(newAddr), lmap)
+          case INTERNAL_TO_OBJ => (Some(newAddr), lmap.updated(ThrowLabel, (ThrowLabel of lmap) + tailBlock))
+          case INTERNAL_ITER_INIT => (Some(newAddr), lmap.updated(ThrowLabel, (ThrowLabel of lmap) + tailBlock))
           case _ => (None, lmap)
         }
         val argList: List[CFGExpr] = args.map(ir2cfgExpr)
