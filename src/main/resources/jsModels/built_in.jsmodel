@@ -2055,9 +2055,11 @@ Function: {
   \\],
   63: [\\
   function toString () {
+    // it throws a TypeError exception if its this value is not a String or a String object. 
     if(!@SameValue(typeof this,"string")){
       throw @TypeErr();
     }
+    // Returns this String value.
     return this;
   }
   \\],
@@ -2072,7 +2074,23 @@ Function: {
   }
   \\],
   65: [\\
-  function () {
+  function charAt (pos) {
+    // 1. Call CheckObjectCoercible passing the this value as its argument.
+    if((@SameValue(undefined,this)) || (@SameValue(null,this))){
+      throw @TypeErr();
+    }
+    // 2. Let S be the result of calling ToString, giving it the this value as its argument.
+    var S = @ToString(this);
+    // 3. Let position be ToInteger(pos).
+    var position = @ToInteger(pos);  
+    // 4. Let size be the number of characters in S.
+    var size = S.length;
+    // 5. If position < 0 or position ≥ size, return NaN.
+    if((position<0) || (position>=size)){
+      return NaN;
+    }
+    //6. Return a value of Number type, whose value is the code unit value of the character at position position in the String S, where the first (leftmost) character in S is considered to be at position 0, the next one at position 1, and so on.
+    return S[position];
   }
   \\],
   66: [\\
