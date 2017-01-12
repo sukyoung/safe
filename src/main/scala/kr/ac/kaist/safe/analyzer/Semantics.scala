@@ -498,6 +498,62 @@ class Semantics(
   // internal API call
   // CFGInternalCall(ir, _, lhs, name, arguments, loc)
   def IC(ir: IRNode, lhs: CFGId, name: String, args: List[CFGExpr], loc: Option[Address], st: AbsState, excSt: AbsState): (AbsState, AbsState) = (name, args, loc) match {
+    case (NodeUtil.INTERNAL_CLASS, List(expr), None) => {
+      val (v, excSet) = V(expr, st)
+      val obj = st.heap.get(v.locset)
+      val className = obj(IClass).value
+      val st1 =
+        if (!v.isBottom) st.varStore(lhs, className)
+        else AbsState.Bot
+
+      val newExcSt = st.raiseException(excSet)
+      (st1, excSt + newExcSt)
+    }
+    case (NodeUtil.INTERNAL_PRIM_VAL, List(expr), None) => {
+      val (v, excSet) = V(expr, st)
+      val obj = st.heap.get(v.locset)
+      val value = obj(IPrimitiveValue).value
+      val st1 =
+        if (!v.isBottom) st.varStore(lhs, value)
+        else AbsState.Bot
+
+      val newExcSt = st.raiseException(excSet)
+      (st1, excSt + newExcSt)
+    }
+    case (NodeUtil.INTERNAL_PROTO, List(expr), None) => {
+      val (v, excSet) = V(expr, st)
+      val obj = st.heap.get(v.locset)
+      val value = obj(IPrototype).value
+      val st1 =
+        if (!v.isBottom) st.varStore(lhs, value)
+        else AbsState.Bot
+
+      val newExcSt = st.raiseException(excSet)
+      (st1, excSt + newExcSt)
+    }
+    case (NodeUtil.INTERNAL_GET_OWN_PROP, List(exprO, exprP), Some(aNew)) => {
+      val (v, excSetO) = V(exprO, st)
+      val (p, excSetP) = V(exprP, st)
+      val obj = st.heap.get(v.locset)
+      val name = TypeConversionHelper.ToString(p)
+      val (desc, undef) = obj.GetOwnProperty(name)
+      val (retSt, retV, excSet) = if (!desc.isBottom) {
+        val (descObj, excSet) = AbsObject.FromPropertyDescriptor(desc)
+        val state = st.oldify(aNew)
+        val descLoc = Loc(aNew, Recent)
+        val retH = state.heap.update(descLoc, descObj.oldify(aNew))
+        val retV = AbsValue(undef, AbsLoc(descLoc))
+        (AbsState(retH, state.context), retV, excSet)
+      } else (st, AbsValue(undef), ExcSetEmpty)
+      val newSt = retSt.varStore(lhs, retV)
+      val newExcSt = st.raiseException(excSetO ++ excSetP ++ excSet)
+      (newSt, excSt + newExcSt)
+    }
+    case (NodeUtil.INTERNAL_GET_BASE, List(CFGVarRef(_, x2)), None) => {
+      val baseV = st.lookupBase(x2)
+      val st1 = st.varStore(lhs, baseV)
+      (st1, excSt)
+    }
     case (NodeUtil.INTERNAL_TO_BOOL, List(expr), None) => {
       val (v, excSet) = V(expr, st)
       val st1 =
@@ -735,44 +791,6 @@ class Semantics(
 
       val newExcSt = st.raiseException(excSet)
       (st1, excSt + newExcSt)
-    }
-    case (NodeUtil.INTERNAL_CLASS, List(expr), None) => {
-      val (v, excSet) = V(expr, st)
-      val obj = st.heap.get(v.locset)
-      val className = obj(IClass).value
-      val st1 =
-        if (!v.isBottom) st.varStore(lhs, className)
-        else AbsState.Bot
-
-      val newExcSt = st.raiseException(excSet)
-      (st1, excSt + newExcSt)
-    }
-    case (NodeUtil.INTERNAL_PRIM_VAL, List(expr), None) => {
-      val (v, excSet) = V(expr, st)
-      val obj = st.heap.get(v.locset)
-      val value = obj(IPrimitiveValue).value
-      val st1 =
-        if (!v.isBottom) st.varStore(lhs, value)
-        else AbsState.Bot
-
-      val newExcSt = st.raiseException(excSet)
-      (st1, excSt + newExcSt)
-    }
-    case (NodeUtil.INTERNAL_PROTO, List(expr), None) => {
-      val (v, excSet) = V(expr, st)
-      val obj = st.heap.get(v.locset)
-      val value = obj(IPrototype).value
-      val st1 =
-        if (!v.isBottom) st.varStore(lhs, value)
-        else AbsState.Bot
-
-      val newExcSt = st.raiseException(excSet)
-      (st1, excSt + newExcSt)
-    }
-    case (NodeUtil.INTERNAL_GET_BASE, List(CFGVarRef(_, x2)), None) => {
-      val baseV = st.lookupBase(x2)
-      val st1 = st.varStore(lhs, baseV)
-      (st1, excSt)
     }
     case (NodeUtil.INTERNAL_IS_OBJ, List(expr), None) => {
       val (v, excSet) = V(expr, st)

@@ -392,6 +392,7 @@ class DefaultCFGBuilder(
         val tailBlock: NormalBlock = getTail(blocks, func)
         val (addr: Option[Address], lm: LabelMap) = name match {
           case INTERNAL_BOOL_OBJ => (Some(newAddr), lmap)
+          case INTERNAL_GET_OWN_PROP => (Some(newAddr), lmap)
           case INTERNAL_TO_OBJ => (Some(newAddr), lmap.updated(ThrowLabel, (ThrowLabel of lmap) + tailBlock))
           case INTERNAL_ITER_INIT => (Some(newAddr), lmap.updated(ThrowLabel, (ThrowLabel of lmap) + tailBlock))
           case _ => (None, lmap)

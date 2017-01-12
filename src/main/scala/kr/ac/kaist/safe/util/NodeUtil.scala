@@ -60,6 +60,8 @@ object NodeUtil {
   val INTERNAL_CLASS = internalAPIName("Class")
   val INTERNAL_PRIM_VAL = internalAPIName("PrimitiveValue")
   val INTERNAL_PROTO = internalAPIName("Prototype")
+  // 8.12.1 [[GetOwnProperty]] (P)
+  val INTERNAL_GET_OWN_PROP = internalAPIName("GetOwnProperty")
   // 8.7 The Reference Specification Type
   val INTERNAL_GET_BASE = internalAPIName("GetBase")
   // 9.2 ToBoolean
@@ -121,6 +123,7 @@ object NodeUtil {
     INTERNAL_CLASS,
     INTERNAL_PRIM_VAL,
     INTERNAL_PROTO,
+    INTERNAL_GET_OWN_PROP,
     INTERNAL_GET_BASE,
     INTERNAL_TO_BOOL,
     INTERNAL_TO_NUM,
