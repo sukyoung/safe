@@ -327,10 +327,15 @@ object DefaultNumber extends AbsNumberUtil {
       case (Bot, _) | (_, Bot) => AbsBool.Bot
       // a. If x is NaN and y is NaN, return true.
       case (NaN, NaN) => AbsBool.True
+      case (NaN, Top) | (Top, NaN) => AbsBool.Top
       // b. If x is +0 and y is -0, return false.
       case (UIntConst(0), NUIntConst(0)) => AbsBool.False
+      case (UIntConst(0), NUInt) | (UIntConst(0), Top) => AbsBool.Top
+      case (UInt, NUIntConst(0)) | (Top, NUIntConst(0)) => AbsBool.Top
       // c. If x is -0 and y is +0, return false.
       case (NUIntConst(0), UIntConst(0)) => AbsBool.False
+      case (NUIntConst(0), UInt) | (NUIntConst(0), Top) => AbsBool.Top
+      case (NUInt, UIntConst(0)) | (Top, UIntConst(0)) => AbsBool.Top
       // d. If x is the same Number value as y, return true.
       // e. Return false.
       case (left, right) => left === right
