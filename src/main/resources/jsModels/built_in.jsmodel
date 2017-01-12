@@ -1740,7 +1740,10 @@ Function: {
   }
   \\],
   4: [\\
-  function () {
+  function isNaN (number) {
+    // 1. If ToNumber(number) is NaN, return true.
+    // 2. Otherwise, return false.
+    return @SameValue(@ToNumber(number), NaN);
   }
   \\],
   5: [\\
@@ -1812,15 +1815,23 @@ Function: {
   }
   \\],
   16: [\\
-  function () {
+  function Object (value) {
+    if (value === null || value === undefined) return {};
+    else return @ToObject(value);
   }
   \\],
   17: [\\
-  function () {
+  function Object (value) {
+    if (value === null || value === undefined) return {};
+    else return @ToObject(value);
   }
   \\],
   18: [\\
-  function () {
+  function getPrototypeOf (O) {
+    // 1. If Type(O) is not Object throw a TypeError exception.
+    if (typeof O !== 'object' || O === null) throw new TypeError();
+    // 2. Return the value of the [[Prototype]] internal property of O.
+    return @Prototype(O);
   }
   \\],
   19: [\\
@@ -2042,7 +2053,7 @@ Function: {
   61: [\\
   function isArray (arg) {
     // 1. If Type(arg) is not Object, return false.
-    if (!@SameValue(typeof arg, "object")) return false;
+    if (typeof arg !== "object" || arg === null) return false;
     // 2. If the value of the [[Class]] internal property of arg is "Array", then return true.
     if (@SameValue(@Class(arg), "Array")) return true;
     // 3. Return false.
@@ -2089,27 +2100,29 @@ Function: {
     if((position<0) || (position>=size)){
       return NaN;
     }
-    //6. Return a value of Number type, whose value is the code unit value of the character at position position in the String S, where the first (leftmost) character in S is considered to be at position 0, the next one at position 1, and so on.
+    // 6. Return a value of Number type, whose value is the code unit value of the character at position position in the String S, where the first (leftmost) character in S is considered to be at position 0, the next one at position 1, and so on.
     return S[position];
   }
   \\],
   66: [\\
   function charCodeAt (pos) {
-    //1. Call CheckObjectCoercible passing the this value as its argument.
+    // 1. Call CheckObjectCoercible passing the this value as its argument.
     if((@SameValue(undefined,this)) || (@SameValue(null,this))){
       throw @TypeErr();
     }
-    //2. Let S be the result of calling ToString, giving it the this value as its argument.
+    // 2. Let S be the result of calling ToString, giving it the this value as its argument.
     var S = @ToString(this); 
-    //3. Let position be ToInteger(pos).
+    // 3. Let position be ToInteger(pos).
     var position = @ToInteger(pos);
-    //4. Let size be the number of characters in S.
+    // 4. Let size be the number of characters in S.
     var size = S.length;
-    //5. If position < 0 or position ≥ size, return NaN.
+    // 5. If position < 0 or position ≥ size, return NaN.
     if((position<0) || (position>=size)){
       return NaN;
     }
-    //6. Return a value of Number type, whose value is the code unit value of the character at position position in the String S, where the first (leftmost) character in S is considered to be at position 0, the next one at position 1, and so on.
+    // 6. Return a value of Number type, whose value is the code unit value of the character at position position in the String S, where the first (leftmost) character in S is considered to be at position 0, the next one at position 1, and so on.
+    // TODO implement @ToUint16
+    // return @ToUint16(S[position]);
     return @ToNumber(S[position]);
   }
   \\],
@@ -2192,11 +2205,36 @@ Function: {
   }
   \\],
   85: [\\
-  function () {
+  function toString () {
+    // 1. Let B be the this value.
+    var B = this;
+    var b;
+    // 2. If Type(B) is Boolean, then let b be B.
+    if (typeof B === "Boolean") b = B;
+    // 3. Else if Type(B) is Object and the value of the [[Class]] internal property of B is "Boolean",
+    //    then let b be the value of the [[PrimitiveValue]] internal property of B.
+    else if (typeof B === "object" && B !== null && @Class(B) === "Boolean") b = @PrimitiveValue(B);
+    // 4. Else throw a TypeError exception.
+    else throw new TypeError();
+    // 5. If b is true, then return "true"; else return "false".
+    if (b) return "true";
+    else return "false";
   }
   \\],
   86: [\\
-  function () {
+  function valueOf () {
+    // 1. Let B be the this value.
+    var B = this;
+    var b;
+    // 2. If Type(B) is Boolean, then let b be B.
+    if (typeof B === "boolean") b = B;
+    // 3. Else if Type(B) is Object and the value of the [[Class]] internal property of B is "Boolean",
+    //    then let b be the value of the [[PrimitiveValue]] internal property of B.
+    else if (typeof B === "object" && B !== null && @Class(B) === "Boolean") b = @PrimitiveValue(B);
+    // 4. Else throw a TypeError exception.
+    else throw new TypeError();
+    // 5. Return b.
+    return b;
   }
   \\],
   87: [\\
