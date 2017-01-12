@@ -176,7 +176,9 @@ object HTMLWriter {
       // old address set
       val old = ctx.old
       val mayOld = old.mayOld.mkString(", ")
-      val mustOld = old.mustOld.mkString(", ")
+      val mustOld =
+        if (old.mustOld == null) "bottom"
+        else old.mustOld.mkString(", ")
       sb.append(s"{ value: {value: 'mayOld: [$mayOld]'} },").append(LINE_SEP)
       sb.append(s"{ value: {value: 'mustOld: [$mustOld]'} },").append(LINE_SEP)
       sb.append(s"],").append(LINE_SEP)
@@ -258,8 +260,8 @@ var safe_DB = {
       println(s"* success writing HTML file $htmlfile.")
     } catch {
       case e: Throwable =>
-        println(e)
         println(s"* error writing HTML file $htmlfile.")
+        throw e
     }
   }
 }
