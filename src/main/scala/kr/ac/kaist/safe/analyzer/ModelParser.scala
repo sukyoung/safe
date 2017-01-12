@@ -63,7 +63,7 @@ object ModelParser extends RegexParsers with JavaTokenParsers {
     floatingPointNumber ^^ { _.toDouble } |
       "NaN" ^^^ Double.NaN |
       "Infinity" ^^^ Double.PositiveInfinity |
-      "-Infinity" ^^^ -Double.NegativeInfinity
+      "-Infinity" ^^^ Double.NegativeInfinity
   private lazy val int: Parser[Int] = wholeNumber ^^ { _.toInt }
   private lazy val str: Parser[String] = "\"" ~> "[^\"]*".r <~ "\""
   private lazy val t: Parser[Boolean] = "true" ^^^ { true }

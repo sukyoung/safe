@@ -1794,23 +1794,15 @@ Function: {
   }
   \\],
   16: [\\
-  function Object (value) {
-    if (value === null || value === undefined) return {};
-    else return @ToObject(value);
+  function () {
   }
   \\],
   17: [\\
-  function Object (value) {
-    if (value === null || value === undefined) return {};
-    else return @ToObject(value);
+  function () {
   }
   \\],
   18: [\\
-  function getPrototypeOf (O) {
-    // 1. If Type(O) is not Object throw a TypeError exception.
-    if (typeof O !== 'object' || O === null) throw new TypeError();
-    // 2. Return the value of the [[Prototype]] internal property of O.
-    return @Prototype(O);
+  function () {
   }
   \\],
   19: [\\
@@ -2048,7 +2040,13 @@ Function: {
   }
   \\],
   64: [\\
-  function () {
+  function valueOf () {
+    // it throws a TypeError exception if its this value is not a String or String object. 
+    if(!@SameValue(typeof this, "string")){
+      throw @TypeErr();
+    }
+    // Returns this String value.
+    return this;
   }
   \\],
   65: [\\
@@ -2120,7 +2118,13 @@ Function: {
   }
   \\],
   82: [\\
-  function () {
+  function String(value) {
+    // Returns a String value (not a String object) computed by ToString(value). If value is not supplied, the empty String "" is returned.
+    if(arguments.length === 0){
+      return "";
+    }else{
+      return @ToString(value);
+    }
   }
   \\],
   83: [\\
