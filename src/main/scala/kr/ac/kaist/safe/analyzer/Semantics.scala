@@ -582,6 +582,160 @@ class Semantics(
       val newExcSt = st.raiseException(excSet)
       (st3, newExcSt)
     }
+    case (NodeUtil.INTERNAL_ABS, List(expr), None) => {
+      val (v, excSet) = V(expr, st)
+      val resV = AbsValue(TypeConversionHelper.ToNumber(v, st.heap).abs)
+      val st1 =
+        if (!v.isBottom) st.varStore(lhs, resV)
+        else AbsState.Bot
+
+      val newExcSt = st.raiseException(excSet)
+      (st1, excSt + newExcSt)
+    }
+    case (NodeUtil.INTERNAL_ACOS, List(expr), None) => {
+      val (v, excSet) = V(expr, st)
+      val resV = AbsValue(TypeConversionHelper.ToNumber(v, st.heap).acos)
+      val st1 =
+        if (!v.isBottom) st.varStore(lhs, resV)
+        else AbsState.Bot
+
+      val newExcSt = st.raiseException(excSet)
+      (st1, excSt + newExcSt)
+    }
+    case (NodeUtil.INTERNAL_ASIN, List(expr), None) => {
+      val (v, excSet) = V(expr, st)
+      val resV = AbsValue(TypeConversionHelper.ToNumber(v, st.heap).asin)
+      val st1 =
+        if (!v.isBottom) st.varStore(lhs, resV)
+        else AbsState.Bot
+
+      val newExcSt = st.raiseException(excSet)
+      (st1, excSt + newExcSt)
+    }
+    case (NodeUtil.INTERNAL_ATAN, List(expr), None) => {
+      val (v, excSet) = V(expr, st)
+      val resV = AbsValue(TypeConversionHelper.ToNumber(v, st.heap).atan)
+      val st1 =
+        if (!v.isBottom) st.varStore(lhs, resV)
+        else AbsState.Bot
+
+      val newExcSt = st.raiseException(excSet)
+      (st1, excSt + newExcSt)
+    }
+    case (NodeUtil.INTERNAL_ATAN_TWO, List(exprY, exprX), None) => {
+      val (y, excSetY) = V(exprY, st)
+      val (x, excSetX) = V(exprX, st)
+      val resV = AbsValue(TypeConversionHelper.ToNumber(y, st.heap)
+        .atan2(TypeConversionHelper.ToNumber(x, st.heap)))
+      val st1 =
+        if (!y.isBottom && !x.isBottom) st.varStore(lhs, resV)
+        else AbsState.Bot
+
+      val newExcSt = st.raiseException(excSetX ++ excSetY)
+      (st1, excSt + newExcSt)
+    }
+    case (NodeUtil.INTERNAL_CEIL, List(expr), None) => {
+      val (v, excSet) = V(expr, st)
+      val resV = AbsValue(TypeConversionHelper.ToNumber(v, st.heap).ceil)
+      val st1 =
+        if (!v.isBottom) st.varStore(lhs, resV)
+        else AbsState.Bot
+
+      val newExcSt = st.raiseException(excSet)
+      (st1, excSt + newExcSt)
+    }
+    case (NodeUtil.INTERNAL_COS, List(expr), None) => {
+      val (v, excSet) = V(expr, st)
+      val resV = AbsValue(TypeConversionHelper.ToNumber(v, st.heap).cos)
+      val st1 =
+        if (!v.isBottom) st.varStore(lhs, resV)
+        else AbsState.Bot
+
+      val newExcSt = st.raiseException(excSet)
+      (st1, excSt + newExcSt)
+    }
+    case (NodeUtil.INTERNAL_EXP, List(expr), None) => {
+      val (v, excSet) = V(expr, st)
+      val resV = AbsValue(TypeConversionHelper.ToNumber(v, st.heap).exp)
+      val st1 =
+        if (!v.isBottom) st.varStore(lhs, resV)
+        else AbsState.Bot
+
+      val newExcSt = st.raiseException(excSet)
+      (st1, excSt + newExcSt)
+    }
+    case (NodeUtil.INTERNAL_FLOOR, List(expr), None) => {
+      val (v, excSet) = V(expr, st)
+      val resV = AbsValue(TypeConversionHelper.ToNumber(v, st.heap).floor)
+      val st1 =
+        if (!v.isBottom) st.varStore(lhs, resV)
+        else AbsState.Bot
+
+      val newExcSt = st.raiseException(excSet)
+      (st1, excSt + newExcSt)
+    }
+    case (NodeUtil.INTERNAL_LOG, List(expr), None) => {
+      val (v, excSet) = V(expr, st)
+      val resV = AbsValue(TypeConversionHelper.ToNumber(v, st.heap).log)
+      val st1 =
+        if (!v.isBottom) st.varStore(lhs, resV)
+        else AbsState.Bot
+
+      val newExcSt = st.raiseException(excSet)
+      (st1, excSt + newExcSt)
+    }
+    case (NodeUtil.INTERNAL_POW, List(exprX, exprY), None) => {
+      val (x, excSetX) = V(exprX, st)
+      val (y, excSetY) = V(exprY, st)
+      val resV = AbsValue(TypeConversionHelper.ToNumber(x, st.heap)
+        .pow(TypeConversionHelper.ToNumber(y, st.heap)))
+      val st1 =
+        if (!x.isBottom && !y.isBottom) st.varStore(lhs, resV)
+        else AbsState.Bot
+
+      val newExcSt = st.raiseException(excSetX ++ excSetY)
+      (st1, excSt + newExcSt)
+    }
+    case (NodeUtil.INTERNAL_ROUND, List(expr), None) => {
+      val (v, excSet) = V(expr, st)
+      val resV = AbsValue(TypeConversionHelper.ToNumber(v, st.heap).round)
+      val st1 =
+        if (!v.isBottom) st.varStore(lhs, resV)
+        else AbsState.Bot
+
+      val newExcSt = st.raiseException(excSet)
+      (st1, excSt + newExcSt)
+    }
+    case (NodeUtil.INTERNAL_SIN, List(expr), None) => {
+      val (v, excSet) = V(expr, st)
+      val resV = AbsValue(TypeConversionHelper.ToNumber(v, st.heap).sin)
+      val st1 =
+        if (!v.isBottom) st.varStore(lhs, resV)
+        else AbsState.Bot
+
+      val newExcSt = st.raiseException(excSet)
+      (st1, excSt + newExcSt)
+    }
+    case (NodeUtil.INTERNAL_SQRT, List(expr), None) => {
+      val (v, excSet) = V(expr, st)
+      val resV = AbsValue(TypeConversionHelper.ToNumber(v, st.heap).sqrt)
+      val st1 =
+        if (!v.isBottom) st.varStore(lhs, resV)
+        else AbsState.Bot
+
+      val newExcSt = st.raiseException(excSet)
+      (st1, excSt + newExcSt)
+    }
+    case (NodeUtil.INTERNAL_TAN, List(expr), None) => {
+      val (v, excSet) = V(expr, st)
+      val resV = AbsValue(TypeConversionHelper.ToNumber(v, st.heap).tan)
+      val st1 =
+        if (!v.isBottom) st.varStore(lhs, resV)
+        else AbsState.Bot
+
+      val newExcSt = st.raiseException(excSet)
+      (st1, excSt + newExcSt)
+    }
     case (NodeUtil.INTERNAL_CLASS, List(expr), None) => {
       val (v, excSet) = V(expr, st)
       val obj = st.heap.get(v.locset)

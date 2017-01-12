@@ -78,12 +78,50 @@ object NodeUtil {
   val INTERNAL_SAME_VALUE = internalAPIName("SameValue")
   // 15.6.2.1 new Boolean (value)
   val INTERNAL_BOOL_OBJ = internalAPIName("BoolObj")
+  // 15.8.2.1 abs (x)
+  val INTERNAL_ABS = internalAPIName("abs")
+  // 15.8.2.2 acos (x)
+  val INTERNAL_ACOS = internalAPIName("acos")
+  // 15.8.2.3 asin (x)
+  val INTERNAL_ASIN = internalAPIName("asin")
+  // 15.8.2.4 atan (x)
+  val INTERNAL_ATAN = internalAPIName("atan")
+  // 15.8.2.5 atan2 (y, x)
+  val INTERNAL_ATAN_TWO = internalAPIName("atan2")
+  // 15.8.2.6 ceil (x)
+  val INTERNAL_CEIL = internalAPIName("ceil")
+  // 15.8.2.7 cos (x)
+  val INTERNAL_COS = internalAPIName("cos")
+  // 15.8.2.8 exp (x)
+  val INTERNAL_EXP = internalAPIName("exp")
+  // 15.8.2.9 floor (x)
+  val INTERNAL_FLOOR = internalAPIName("floor")
+  // 15.8.2.10 log (x)
+  val INTERNAL_LOG = internalAPIName("log")
+  // 15.8.2.11 max ( [ value1 [ , value2 [ , ... ] ] ] )
+  val INTERNAL_MAX = internalAPIName("max")
+  // 15.8.2.12 min ( [ value1 [ , value2 [ , ... ] ] ] )
+  val INTERNAL_MIN = internalAPIName("min")
+  // 15.8.2.13 pow (x, y)
+  val INTERNAL_POW = internalAPIName("pow")
+  // 15.8.2.15 round (x)
+  val INTERNAL_ROUND = internalAPIName("round")
+  // 15.8.2.16 sin (x)
+  val INTERNAL_SIN = internalAPIName("sin")
+  // 15.8.2.17 sqrt (x)
+  val INTERNAL_SQRT = internalAPIName("sqrt")
+  // 15.8.2.18 tan (x)
+  val INTERNAL_TAN = internalAPIName("tan")
   // Other helpers
   val INTERNAL_IS_OBJ = internalAPIName("isObject")
   val INTERNAL_ITER_INIT = internalAPIName("iteratorInit")
   val INTERNAL_HAS_NEXT = internalAPIName("iteratorHasNext")
   val INTERNAL_ITER_NEXT = internalAPIName("iteratorNext")
   val internalCallSet: Set[String] = HashSet(
+    INTERNAL_CLASS,
+    INTERNAL_PRIM_VAL,
+    INTERNAL_PROTO,
+    INTERNAL_GET_BASE,
     INTERNAL_TO_BOOL,
     INTERNAL_TO_NUM,
     INTERNAL_TO_INT,
@@ -92,10 +130,23 @@ object NodeUtil {
     INTERNAL_TO_OBJ,
     INTERNAL_SAME_VALUE,
     INTERNAL_BOOL_OBJ,
-    INTERNAL_CLASS,
-    INTERNAL_PRIM_VAL,
-    INTERNAL_PROTO,
-    INTERNAL_GET_BASE,
+    INTERNAL_ABS,
+    INTERNAL_ACOS,
+    INTERNAL_ASIN,
+    INTERNAL_ATAN,
+    INTERNAL_ATAN_TWO,
+    INTERNAL_CEIL,
+    INTERNAL_COS,
+    INTERNAL_EXP,
+    INTERNAL_FLOOR,
+    INTERNAL_LOG,
+    INTERNAL_MAX,
+    INTERNAL_MIN,
+    INTERNAL_POW,
+    INTERNAL_ROUND,
+    INTERNAL_SIN,
+    INTERNAL_SQRT,
+    INTERNAL_TAN,
     INTERNAL_IS_OBJ,
     INTERNAL_ITER_INIT,
     INTERNAL_HAS_NEXT,
