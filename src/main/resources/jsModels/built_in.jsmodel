@@ -2571,55 +2571,82 @@ Function: {
   }
   \\],
   167: [\\
-  function () {
+  function abs (x) {
+    return @abs(x);
   }
   \\],
   168: [\\
-  function () {
+  function acos (x) {
+    return @acos(x);
   }
   \\],
   169: [\\
-  function () {
+  function asin (x) {
+    return @asin(x);
   }
   \\],
   170: [\\
-  function () {
+  function atan (x) {
+    return @atan(x);
   }
   \\],
   171: [\\
-  function () {
+  function atan2 (x, y) {
+    return @atan2(x, y);
   }
   \\],
   172: [\\
-  function () {
+  function ceil (x) {
+    return @ceil(x);
   }
   \\],
   173: [\\
-  function () {
+  function cos (x) {
+    return @cos(x);
   }
   \\],
   174: [\\
-  function () {
+  function exp (x) {
+    return @exp(x);
   }
   \\],
   175: [\\
-  function () {
+  function floor (x) {
+    return @floor(x);
   }
   \\],
   176: [\\
-  function () {
+  function log (x) {
+    return @log(x);
   }
   \\],
   177: [\\
-  function () {
+  function max () {
+    var i, n = arguments.length, v = -Infinity;
+    for (i = 0; i < n; i++) {
+      var cur = @ToNumber(arguments[i])
+      if (@SameValue(cur, NaN)) return NaN;
+      if (v < cur) v = cur;
+      if (@SameValue(v, -0) && @SameValue(cur, +0)) v = +0;
+    }
+    return v;
   }
   \\],
   178: [\\
-  function () {
+  function min () {
+    var i, n = arguments.length, v = Infinity;
+    for (i = 0; i < n; i++) {
+      var cur = @ToNumber(arguments[i])
+      if (@SameValue(cur, NaN)) return NaN;
+      if (v > cur) v = cur;
+      if (@SameValue(v, +0) && @SameValue(cur, -0)) v = -0;
+    }
+    return v;
   }
   \\],
   179: [\\
-  function () {
+  function pow (x, y) {
+    return @pow(x, y);
   }
   \\],
   180: [\\
@@ -2628,19 +2655,23 @@ Function: {
   }
   \\],
   181: [\\
-  function () {
+  function round (x) {
+    return @round(x);
   }
   \\],
   182: [\\
-  function () {
+  function sin (x) {
+    return @sin(x);
   }
   \\],
   183: [\\
-  function () {
+  function sqrt (x) {
+    return @sqrt(x);
   }
   \\],
   184: [\\
-  function () {
+  function tan (x) {
+    return @tan(x);
   }
   \\],
   185: [\\
