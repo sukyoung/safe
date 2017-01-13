@@ -2075,7 +2075,7 @@ Function: {
   function toString () {
     // it throws a TypeError exception if its this value is not a String or a String object. 
     if(!@SameValue(typeof this,"string")){
-      throw @TypeErr();
+      throw new TypeError();
     }
     // Returns this String value.
     return this;
@@ -2085,7 +2085,7 @@ Function: {
   function valueOf () {
     // it throws a TypeError exception if its this value is not a String or String object. 
     if(!@SameValue(typeof this, "string")){
-      throw @TypeErr();
+      throw new TypeError();
     }
     // Returns this String value.
     return this;
@@ -2095,7 +2095,7 @@ Function: {
   function charAt (pos) {
     // 1. Call CheckObjectCoercible passing the this value as its argument.
     if((@SameValue(undefined,this)) || (@SameValue(null,this))){
-      throw @TypeErr();
+      throw new TypeError();
     }
     // 2. Let S be the result of calling ToString, giving it the this value as its argument.
     var S = @ToString(this);
@@ -2115,7 +2115,7 @@ Function: {
   function charCodeAt (pos) {
     // 1. Call CheckObjectCoercible passing the this value as its argument.
     if((@SameValue(undefined,this)) || (@SameValue(null,this))){
-      throw @TypeErr();
+      throw new TypeError();
     }
     // 2. Let S be the result of calling ToString, giving it the this value as its argument.
     var S = @ToString(this); 
@@ -2270,7 +2270,7 @@ Function: {
   function valueOf () {
     // The valueOf function is not generic; it throws a TypeError exception if its this value is not a Number or a Number object. Therefore, it cannot be transferred to other kinds of objects for use as a method.
     if(!@SameValue((typeof this),"number")){
-      throw @TypeErr();
+      throw new TypeError();
     }
     // Returns this Number value.
     return this;
