@@ -520,6 +520,20 @@ class Semantics(
       val newExcSt = st.raiseException(excSet)
       (st1, excSt + newExcSt)
     }
+    case (NodeUtil.INTERNAL_PROTO, List(exprO, exprP), None) => {
+      val (v, excSetO) = V(exprO, st)
+      val (p, excSetP) = V(exprP, st)
+      val newH = v.locset.foldLeft(st.heap) {
+        case (h, loc) => {
+          val obj = st.heap.get(loc)
+          val newObj = obj.update(IPrototype, AbsIValueUtil(p))
+          h.update(loc, newObj)
+        }
+      }
+      val newSt = AbsState(newH, st.context).varStore(lhs, p)
+      val newExcSt = st.raiseException(excSetO ++ excSetP)
+      (newSt, excSt + newExcSt)
+    }
     case (NodeUtil.INTERNAL_PROTO, List(expr), None) => {
       val (v, excSet) = V(expr, st)
       val obj = st.heap.get(v.locset)
@@ -530,6 +544,36 @@ class Semantics(
 
       val newExcSt = st.raiseException(excSet)
       (st1, excSt + newExcSt)
+    }
+    case (NodeUtil.INTERNAL_EXTENSIBLE, List(exprO, exprP), None) => {
+      val (v, excSetO) = V(exprO, st)
+      val (p, excSetP) = V(exprP, st)
+      val newH = v.locset.foldLeft(st.heap) {
+        case (h, loc) => {
+          val obj = st.heap.get(loc)
+          val newObj = obj.update(IExtensible, AbsIValueUtil(p))
+          h.update(loc, newObj)
+        }
+      }
+      val newSt = AbsState(newH, st.context).varStore(lhs, p)
+      val newExcSt = st.raiseException(excSetO ++ excSetP)
+      (newSt, excSt + newExcSt)
+    }
+    case (NodeUtil.INTERNAL_EXTENSIBLE, List(expr), None) => {
+      val (v, excSet) = V(expr, st)
+      val obj = st.heap.get(v.locset)
+      val value = obj(IExtensible).value
+      val st1 =
+        if (!v.isBottom) st.varStore(lhs, value)
+        else AbsState.Bot
+
+      val newExcSt = st.raiseException(excSet)
+      (st1, excSt + newExcSt)
+    }
+    case (NodeUtil.INTERNAL_GET_BASE, List(CFGVarRef(_, x2)), None) => {
+      val baseV = st.lookupBase(x2)
+      val st1 = st.varStore(lhs, baseV)
+      (st1, excSt)
     }
     case (NodeUtil.INTERNAL_GET_OWN_PROP, List(exprO, exprP), Some(aNew)) => {
       val (v, excSetO) = V(exprO, st)
@@ -549,10 +593,26 @@ class Semantics(
       val newExcSt = st.raiseException(excSetO ++ excSetP ++ excSet)
       (newSt, excSt + newExcSt)
     }
-    case (NodeUtil.INTERNAL_GET_BASE, List(CFGVarRef(_, x2)), None) => {
-      val baseV = st.lookupBase(x2)
-      val st1 = st.varStore(lhs, baseV)
-      (st1, excSt)
+    case (NodeUtil.INTERNAL_DEF_OWN_PROP, List(exprO, exprP, exprA), None) => {
+      val h = st.heap
+      val (objV, excSetO) = V(exprO, st)
+      val (propV, excSetP) = V(exprP, st)
+      val (attrV, excSetA) = V(exprA, st)
+
+      val name = propV.pvalue.strval
+      val attr = h.get(attrV.locset)
+      val desc = AbsDesc.ToPropertyDescriptor(attr, h)
+      val (retH, retExcSet) = objV.locset.foldLeft((h, excSetO ++ excSetP ++ excSetA)) {
+        case ((heap, e), loc) => {
+          val obj = heap.get(loc)
+          val (retObj, _, newExcSet) = obj.DefineOwnProperty(name, desc, true)
+          val retH = heap.update(loc, retObj)
+          (retH, e ++ newExcSet)
+        }
+      }
+      val retSt = AbsState(retH, st.context).varStore(lhs, AbsValue(objV.locset))
+      val excSt = st.raiseException(retExcSet)
+      (retSt, excSt)
     }
     case (NodeUtil.INTERNAL_TO_BOOL, List(expr), None) => {
       val (v, excSet) = V(expr, st)
@@ -624,6 +684,74 @@ class Semantics(
 
       val newExcSt = st.raiseException(excSet1 ++ excSet2)
       (st1, excSt + newExcSt)
+    }
+    case (NodeUtil.INTERNAL_GET_OWN_PROP_NAMES, List(expr), Some(aNew)) => {
+      val h = st.heap
+      val (objV, excSet1) = V(expr, st)
+      val arrAddr = aNew
+      val (keyStr, lenSet) = objV.locset.foldLeft((AbsString.Bot, Set[Option[Int]]())) {
+        case ((str, lenSet), loc) => {
+          val obj = h.get(loc)
+          val (keys, size) = obj.collectKeySet("") match {
+            case ConInf() => (AbsString.Top, None)
+            case ConFin(set) => (AbsString(set), Some(set.size))
+          }
+          (str + keys, lenSet + size)
+        }
+      }
+      val (maxOpt, len) =
+        if (lenSet.isEmpty) (None, AbsNumber.Bot)
+        else {
+          val (opt, num) = lenSet.foldLeft[(Option[Int], AbsNumber)]((Some(0), AbsNumber.Bot)) {
+            case ((None, _), _) | (_, None) => (None, AbsNumber.Top)
+            case ((Some(k), num), Some(t)) => (Some(math.max(k, t)), num + AbsNumber(t))
+          }
+          (Some(opt), num)
+        }
+
+      // 1. If Type(O) is not Object throw a TypeError exception.
+      val excSet2: Set[Exception] =
+        if (objV.pvalue.isBottom) ExcSetEmpty
+        else HashSet(TypeError)
+      // 2. Let array be the result of creating a new Array object.
+      // (XXX: we assign the length of the Array object as the number of properties)
+      val array = AbsObject.newArrayObject(len)
+      // 3. For each named own property P of O (with index n started from 0)
+      //   a. Let name be the String value that is the name of P.
+      val AT = (AbsBool.True, AbsAbsent.Bot)
+      val name = AbsValue(AbsPValue(strval = keyStr))
+      val desc = AbsDesc((name, AbsAbsent.Bot), AT, AT, AT)
+      val (retObj, retExcSet) = maxOpt match {
+        case Some(Some(max)) => (0 until max.toInt).foldLeft((array, excSet2)) {
+          case ((obj, e), n) => {
+            val prop = AbsString(n.toString)
+            // b. Call the [[DefineOwnProperty]] internal method of array with arguments
+            //    ToString(n), the PropertyDescriptor {[[Value]]: name, [[Writable]]:
+            //    true, [[Enumerable]]: true, [[Configurable]]:true}, and false.
+            val (newObj, _, excSet) = obj.DefineOwnProperty(prop, desc, false)
+            (obj + newObj, e ++ excSet)
+          }
+        }
+        case Some(None) => (AbsObject.Top, excSet2 + TypeError + RangeError)
+        case None => (AbsObject.Bot, excSet2)
+      }
+
+      val excSt = st.raiseException(excSet1 ++ retExcSet)
+
+      // 5. Return array.
+      retObj.isBottom match {
+        case true => (AbsState.Bot, excSt)
+        case false => {
+          val state = st.oldify(arrAddr)
+          val arrLoc = Loc(arrAddr, Recent)
+          val retHeap = state.heap.update(arrLoc, retObj.oldify(arrAddr))
+          val excSt = state.raiseException(retExcSet)
+          val st2 = AbsState(retHeap, state.context)
+          val retSt = st2.varStore(lhs, AbsValue(arrLoc))
+
+          (retSt, excSt)
+        }
+      }
     }
     case (NodeUtil.INTERNAL_BOOL_OBJ, List(expr), Some(aNew)) => {
       val (v, excSet) = V(expr, st)
