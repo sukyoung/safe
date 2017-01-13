@@ -2643,11 +2643,43 @@ Function: {
   }
   \\],
   59: [\\
-  function () {
+  function Array (len) {
+    var arr = [];
+    if (arguments.length === 1) {
+      if (typeof len === 'number') {
+        if (@SameValue(@ToUint32(len), len)) arr.length = len;
+        else throw new RangeError();
+      } else {
+        arr.length = 1;
+        arr[0] = len;
+      }
+    } else {
+      for (var i = 0; i < arguments.length; i++) {
+        arr[i] = arguments[i];
+      }
+      arr.length = arguments.length;
+    }
+    return arr;
   }
   \\],
   60: [\\
-  function () {
+  function Array () {
+    var arr = [];
+    if (arguments.length === 1) {
+      if (typeof len === 'number') {
+        if (@SameValue(@ToUint32(len), len)) arr.length = len;
+        else throw new RangeError();
+      } else {
+        arr.length = 1;
+        arr[0] = len;
+      }
+    } else {
+      for (var i = 0; i < arguments.length; i++) {
+        arr[i] = arguments[i];
+      }
+      arr.length = arguments.length;
+    }
+    return arr;
   }
   \\],
   61: [\\
@@ -2970,7 +3002,12 @@ Function: {
   }
   \\],
   83: [\\
-  function () {
+  function String (value) {
+    if (arguments.length === 0) {
+      return @StrObj("");
+    } else {
+      return @StrObj(value);
+    }
   }
   \\],
   84: [\\
@@ -3098,7 +3135,12 @@ Function: {
   }
   \\],
   97: [\\
-  function () {
+  function Number (value) {
+    if (arguments.length === 0) {
+      return @NumObj(+0);
+    } else {
+      return @NumObj(value);
+    }
   }
   \\],
   98: [\\

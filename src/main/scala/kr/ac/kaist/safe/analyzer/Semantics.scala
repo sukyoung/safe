@@ -753,12 +753,38 @@ class Semantics(
         }
       }
     }
+    case (NodeUtil.INTERNAL_STR_OBJ, List(expr), Some(aNew)) => {
+      val (v, excSet) = V(expr, st)
+      val str = TypeConversionHelper.ToString(v)
+      val st1 = st.oldify(aNew)
+      val loc = Loc(aNew, Recent)
+      val heap = st1.heap.update(loc, AbsObject.newStringObj(str))
+      val st2 = AbsState(heap, st1.context)
+      val st3 =
+        if (!v.isBottom) st2.varStore(lhs, AbsValue(loc))
+        else AbsState.Bot
+      val newExcSt = st.raiseException(excSet)
+      (st3, newExcSt)
+    }
     case (NodeUtil.INTERNAL_BOOL_OBJ, List(expr), Some(aNew)) => {
       val (v, excSet) = V(expr, st)
       val bool = TypeConversionHelper.ToBoolean(v)
       val st1 = st.oldify(aNew)
       val loc = Loc(aNew, Recent)
       val heap = st1.heap.update(loc, AbsObject.newBooleanObj(bool))
+      val st2 = AbsState(heap, st1.context)
+      val st3 =
+        if (!v.isBottom) st2.varStore(lhs, AbsValue(loc))
+        else AbsState.Bot
+      val newExcSt = st.raiseException(excSet)
+      (st3, newExcSt)
+    }
+    case (NodeUtil.INTERNAL_NUM_OBJ, List(expr), Some(aNew)) => {
+      val (v, excSet) = V(expr, st)
+      val num = TypeConversionHelper.ToNumber(v)
+      val st1 = st.oldify(aNew)
+      val loc = Loc(aNew, Recent)
+      val heap = st1.heap.update(loc, AbsObject.newNumberObj(num))
       val st2 = AbsState(heap, st1.context)
       val st3 =
         if (!v.isBottom) st2.varStore(lhs, AbsValue(loc))

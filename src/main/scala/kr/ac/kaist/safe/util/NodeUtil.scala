@@ -83,8 +83,12 @@ object NodeUtil {
   val INTERNAL_SAME_VALUE = internalAPIName("SameValue")
   // 15.2.3.4 Object.getOwnPropertyNames ( O )
   val INTERNAL_GET_OWN_PROP_NAMES = internalAPIName("getOwnPropertyNames")
+  // 15.5.2.1 new String (value)
+  val INTERNAL_STR_OBJ = internalAPIName("StrObj")
   // 15.6.2.1 new Boolean (value)
   val INTERNAL_BOOL_OBJ = internalAPIName("BoolObj")
+  // 15.7.2.1 new Number (value)
+  val INTERNAL_NUM_OBJ = internalAPIName("NumObj")
   // 15.8.2.1 abs (x)
   val INTERNAL_ABS = internalAPIName("abs")
   // 15.8.2.2 acos (x)
@@ -140,7 +144,9 @@ object NodeUtil {
     INTERNAL_TO_OBJ,
     INTERNAL_SAME_VALUE,
     INTERNAL_GET_OWN_PROP_NAMES,
+    INTERNAL_STR_OBJ,
     INTERNAL_BOOL_OBJ,
+    INTERNAL_NUM_OBJ,
     INTERNAL_ABS,
     INTERNAL_ACOS,
     INTERNAL_ASIN,
