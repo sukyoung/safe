@@ -2092,7 +2092,9 @@ Function: {
   }
   \\],
   32: [\\
-  function () {
+  function toString() {
+    if (typeof this !== 'function') throw new TypeError();
+    return @StrTop;
   }
   \\],
   33: [\\
