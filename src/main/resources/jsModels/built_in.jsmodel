@@ -2728,7 +2728,12 @@ Function: {
   }
   \\],
   83: [\\
-  function () {
+  function String (value) {
+    if (arguments.length === 0) {
+      return @StrObj("");
+    } else {
+      return @StrObj(value);
+    }
   }
   \\],
   84: [\\
@@ -2822,7 +2827,12 @@ Function: {
   }
   \\],
   97: [\\
-  function () {
+  function Number (value) {
+    if (arguments.length === 0) {
+      return @NumObj(+0);
+    } else {
+      return @NumObj(value);
+    }
   }
   \\],
   98: [\\
