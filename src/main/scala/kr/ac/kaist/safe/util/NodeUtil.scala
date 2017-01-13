@@ -60,10 +60,12 @@ object NodeUtil {
   val INTERNAL_CLASS = internalAPIName("Class")
   val INTERNAL_PRIM_VAL = internalAPIName("PrimitiveValue")
   val INTERNAL_PROTO = internalAPIName("Prototype")
-  // 8.12.1 [[GetOwnProperty]] (P)
-  val INTERNAL_GET_OWN_PROP = internalAPIName("GetOwnProperty")
   // 8.7 The Reference Specification Type
   val INTERNAL_GET_BASE = internalAPIName("GetBase")
+  // 8.12.1 [[GetOwnProperty]] (P)
+  val INTERNAL_GET_OWN_PROP = internalAPIName("GetOwnProperty")
+  // 8.12.9 [[DefineOwnProperty]] (P, Desc, Throw)
+  val INTERNAL_DEF_OWN_PROP = internalAPIName("DefineOwnProperty")
   // 9.2 ToBoolean
   val INTERNAL_TO_BOOL = internalAPIName("ToBoolean")
   // 9.3 ToNumber
@@ -78,6 +80,8 @@ object NodeUtil {
   val INTERNAL_TO_OBJ = internalAPIName("ToObject")
   // 9.12 The SameValue Algorithm
   val INTERNAL_SAME_VALUE = internalAPIName("SameValue")
+  // 15.2.3.4 Object.getOwnPropertyNames ( O )
+  val INTERNAL_GET_OWN_PROP_NAMES = internalAPIName("getOwnPropertyNames")
   // 15.6.2.1 new Boolean (value)
   val INTERNAL_BOOL_OBJ = internalAPIName("BoolObj")
   // 15.8.2.1 abs (x)
@@ -123,8 +127,9 @@ object NodeUtil {
     INTERNAL_CLASS,
     INTERNAL_PRIM_VAL,
     INTERNAL_PROTO,
-    INTERNAL_GET_OWN_PROP,
     INTERNAL_GET_BASE,
+    INTERNAL_GET_OWN_PROP,
+    INTERNAL_DEF_OWN_PROP,
     INTERNAL_TO_BOOL,
     INTERNAL_TO_NUM,
     INTERNAL_TO_INT,
@@ -132,6 +137,7 @@ object NodeUtil {
     INTERNAL_TO_STR,
     INTERNAL_TO_OBJ,
     INTERNAL_SAME_VALUE,
+    INTERNAL_GET_OWN_PROP_NAMES,
     INTERNAL_BOOL_OBJ,
     INTERNAL_ABS,
     INTERNAL_ACOS,
