@@ -2350,6 +2350,107 @@ Function: {
   \\],
   48: [\\
   function () {
+    // 1. Let O be the result of calling ToObject passing the this value as the argument.
+   
+    // 2. Let A be a new array created as if by the expression new Array()where Array is the standard built-in constructor with that name.
+    
+    // 3. Let lenVal be the result of calling the [[Get]] internal method of O with argument "length".
+      
+    // 4. Let len be ToUint32(lenVal).
+      
+    // 5. Let relativeStart be ToInteger(start).
+      
+    // 6. If relativeStart is negative, let actualStart be max((len + relativeStart),0); else let actualStart be min(relativeStart, len).
+      
+    // 7. Let actualDeleteCount be min(max(ToInteger(deleteCount),0), len – actualStart).
+      
+    // 8. Let k be 0.
+      
+    // 9. Repeat, while k < actualDeleteCount
+      
+    // a. Let from be ToString(actualStart+k).
+      
+    // b. Let fromPresent be the result of calling the [[HasProperty]] internal method of O with argument from.
+      
+    // c. If fromPresent is true, then
+      
+    // i. Let fromValue be the result of calling the [[Get]] internal method of O with argument from.
+      
+    // ii. Call the [[DefineOwnProperty]] internal method of A with arguments ToString(k), Property Descriptor {[[Value]]: fromValue, [[Writable]]: true, [[Enumerable]]: true, [[Configurable]]: true}, and false.
+          
+    // d. Increment k by 1.
+          
+    // 10. Let items be an internal List whose elements are, in left to right order, the portion of the actual argument list starting with item1. The list will be empty if no such items are present.
+          
+    // 11. Let itemCount be the number of elements in items.
+          
+    // 12. If itemCount < actualDeleteCount, then
+       
+    // a. Let k be actualStart.
+       
+    // b. Repeat, while k < (len – actualDeleteCount)
+       
+    // i. Let from be ToString(k+actualDeleteCount).
+       
+    // ii. Let to be ToString(k+itemCount).
+       
+    // iii. Let fromPresent be the result of calling the [[HasProperty]] internal method of O with argument from.
+       
+    // iv. If fromPresent is true, then
+       
+    // 1. Let fromValue be the result of calling the [[Get]] internal method of O with argument from.
+          
+    // 2. Call the [[Put]] internal method of O with arguments to, fromValue, and true.
+       
+    // v. Else, fromPresent is false
+       
+    // 1. Call the [[Delete]] internal method of O with arguments to and true.
+       
+    // vi. Increase k by 1. c. Let k be len.
+       
+    // d. Repeat, while k > (len – actualDeleteCount + itemCount)
+       
+    // i. Call the [[Delete]] internal method of O with arguments ToString(k–1) and true.
+       
+    // ii. Decrease k by 1.
+       
+    // 13. Else if itemCount > actualDeleteCount, then
+       
+    // a. Let k be (len – actualDeleteCount).
+       
+    // b. Repeat, while k > actualStart
+       
+    // i. Let from be ToString(k + actualDeleteCount – 1).
+          
+    // ii. Let to be ToString(k + itemCount – 1)
+       
+    // iii. Let fromPresent be the result of calling the [[HasProperty]] internal method of O with argument from.
+       
+    // iv. If fromPresent is true, then
+       
+    // 1. Let fromValue be the result of calling the [[Get]] internal method of O with argument from.
+          
+    // 2. Call the [[Put]] internal method of O with arguments to, fromValue, and true.
+       
+    // v. Else, fromPresent is false
+       
+    // 1. Call the [[Delete]] internal method of O with argument to and true.
+  
+    // vi. Decrease k by 1.
+    
+    // 14. Let k be actualStart.
+    
+    // 15. Repeat, while items is not empty
+    
+    // a. Remove the first element from items and let E be the value of that element.
+    
+    // b. Call the [[Put]] internal method of O with arguments ToString(k), E, and true.
+    
+    // c. Increase k by 1.
+    
+    // 16. Call the [[Put]] internal method of O with arguments "length", (len – actualDeleteCount + itemCount), and true.
+    
+    // 17. Return A.
   }
   \\],
   49: [\\
@@ -2924,7 +3025,41 @@ Function: {
   }
   \\],
   90: [\\
-  function () {
+  function toString (radix) {
+    // The toString function is not generic; it throws a TypeError exception if its this value is not a Number or a Number object.
+    if (!@SameValue(typeof this,'number')){
+      throw new TypeError();
+    }
+    // If radix not present or is undefined the Number 10 is used as the value of radix.
+    if (arguments.length === 0 || @SameValue(radix,undefined)){
+      var radix = 10;
+    }
+    else {
+      radix = @ToInteger(radix);
+    }
+    // If ToInteger(radix) is the Number 10 then this Number value is given as an argument to the ToString abstract operation; the resulting String value is returned.
+    if (radix === 10) {
+      return @ToString(this);
+    }
+    // If ToInteger(radix) is not an integer between 2 and 36 inclusive throw a RangeError exception.
+    else if (radix < 2 || radix > 36){
+      throw new RangeError();
+    }
+    // If ToInteger(radix) is an integer from 2 to 36, but not 10, the result is a String representation of this Number value using the specified radix. Letters a-z are used for digits with values 10 through 35. The precise algorithm is implementation-dependent if the radix is not 10, however the algorithm should be a generalisation of that specified in 9.8.1.
+    else if (radix >= 2 || radix <= 36) {      
+      var S = "";
+      var n = this;
+      var alpha = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"];
+      while (n > 0){
+        if(n%radix >= 10){
+          S = alpha[n%radix - 10] + S;
+        }else {
+          S = @ToString(n%radix) + S;
+        }
+        n = Math.floor(n / radix);
+      }
+      return S;
+    }
   }
   \\],
   91: [\\
