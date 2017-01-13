@@ -1904,31 +1904,120 @@ Function: {
   }
   \\],
   24: [\\
-  function () {
+  function seal (O) {
+    // 1. If Type(O) is not Object throw a TypeError exception.
+    if (typeof O !== 'object' || O === null) throw new TypeError();
+    // 2. For each named own property name P of O,
+    var names = @getOwnPropertyNames(O)
+    for (var i = 0; i < names.length; i++) {
+      var P = names[i];
+      // a. Let desc be the result of calling the [[GetOwnProperty]] internal method of O with P.
+      var desc = @GetOwnProperty(O, P);
+      // b. If desc.[[Configurable]] is true, set desc.[[Configurable]] to false.
+      if (desc.configurable) desc.configurable = false;
+      // c. Call the [[DefineOwnProperty]] internal method of O with P, desc, and true as arguments.
+      @DefineOwnProperty(O, P, desc);
+    }
+    // 3. Set the [[Extensible]] internal property of O to false.
+    @Extensible(O, false);
+    // 4. Return O.
+    return O;
   }
   \\],
   25: [\\
-  function () {
+  function freeze (O) {
+    // 1. If Type(O) is not Object throw a TypeError exception.
+    if (typeof O !== 'object' || O === null) throw new TypeError();
+    // 2. For each named own property name P of O,
+    var names = @getOwnPropertyNames(O);
+    for (var i = 0; i < names.length; i++) {
+      var P = names[i];
+      // a. Let desc be the result of calling the [[GetOwnProperty]] internal method of O with P.
+      var desc = @GetOwnProperty(O, P);
+      // b. If IsDataDescriptor(desc) is true, then
+      // i. If desc.[[Writable]] is true, set desc.[[Writable]] to false.
+      desc.writable = false;
+      // c. If desc.[[Configurable]] is true, set desc.[[Configurable]] to false.
+      desc.configurable = false;
+      // d. Call the [[DefineOwnProperty]] internal method of O with P, desc, and true as arguments.
+      @DefineOwnProperty(O, P, desc);
+    }
+    // 3. Set the [[Extensible]] internal property of O to false.
+    @Extensible(O, false);
+    // 4. Return O.
+    return O;
   }
   \\],
   26: [\\
-  function () {
+  function preventExtensions (O) {
+    // 1. If Type(O) is not Object throw a TypeError exception.
+    if (typeof O !== 'object' || O === null) throw new TypeError();
+    // 2. Set the [[Extensible]] internal property of O to false.
+    @Extensible(O, false);
+    // 3. Return O.
+    return O;
   }
   \\],
   27: [\\
-  function () {
+  function isSealed (O) {
+    // 1. If Type(O) is not Object throw a TypeError exception.
+    if (typeof O !== 'object' || O === null) throw new TypeError();
+    // 2. For each named own property name P of O,
+    var names = @getOwnPropertyNames(O);
+    for (var i = 0; i < names.length; i++) {
+      var P = names[i];
+      // a. Let desc be the result of calling the [[GetOwnProperty]] internal method of O with P.
+      var desc = @GetOwnProperty(O, P);
+      // b. If desc.[[Configurable]] is true, then return false.
+      if (desc.configurable) return false;
+    }
+    // 3. If the [[Extensible]] internal property of O is false, then return true.
+    if (@Extensible(O) === false) return true;
+    // 4. Otherwise, return false.
+    else return false;
   }
   \\],
   28: [\\
-  function () {
+  function isFrozen (O) {
+    // 1. If Type(O) is not Object throw a TypeError exception.
+    if (typeof O !== 'object' || O === null) throw new TypeError();
+    // 2. For each named own property name P of O,
+    var names = @getOwnPropertyNames(O);
+    for (var i = 0; i < names.length; i++) {
+      var P = names[i];
+      // a. Let desc be the result of calling the [[GetOwnProperty]] internal method of O with P.
+      var desc = @GetOwnProperty(O, P);
+      // b. If IsDataDescriptor(desc) is true then
+      // i. If desc.[[Writable]] is true, return false. c. If desc.[[Configurable]] is true, then return false.
+      if (desc.writable || desc.configurable) return false;
+    }
+    // 3. If the [[Extensible]] internal property of O is false, then return true.
+    if (@Extensible(O) === false) return true;
+    // 4. Otherwise, return false.
+    else return false;
   }
   \\],
   29: [\\
-  function () {
+  function isExtensible (O) {
+    // 1. If Type(O) is not Object throw a TypeError exception.
+    if (typeof O !== 'object' || O === null) throw new TypeError();
+    // 2. Return the Boolean value of the [[Extensible]] internal property of O.
+    return @Extensible(O);
   }
   \\],
   30: [\\
-  function () {
+  function keys (O) {
+    // 1. If the Type(O) is not Object, throw a TypeError exception.
+    if (typeof O !== 'object' || O === null) throw new TypeError();
+    // 2. Let n be the number of own enumerable properties of O
+    // 3. Let array be the result of creating a new Object as if by the expression new Array(n) where Array is
+    //    the standard built-in constructor with that name.
+    var array = [];
+    // 4. Let index be 0.
+    // 5. For each own enumerable property of O whose name String is P
+    // a. Call the [[DefineOwnProperty]] internal method of array with arguments ToString(index), the PropertyDescriptor {[[Value]]: P, [[Writable]]: true, [[Enumerable]]: true, [[Configurable]]: true}, and false.
+    // b. Increment index by 1.
+    // 6. Return array.
   }
   \\],
   31: [\\
