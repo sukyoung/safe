@@ -674,6 +674,15 @@ class Semantics(
       val newExcSt = st.raiseException(newExcSet)
       (newSt, excSt + newExcSt)
     }
+    case (NodeUtil.INTERNAL_IS_CALLABLE, List(expr), None) => {
+      val (v, excSet) = V(expr, st)
+      val st1 =
+        if (!v.isBottom) st.varStore(lhs, AbsValue(TypeConversionHelper.IsCallable(v, st.heap)))
+        else AbsState.Bot
+
+      val newExcSt = st.raiseException(excSet)
+      (st1, excSt + newExcSt)
+    }
     case (NodeUtil.INTERNAL_SAME_VALUE, List(left, right), None) => {
       val (l, excSet1) = V(left, st)
       val (r, excSet2) = V(right, st)

@@ -61,6 +61,7 @@ object NodeUtil {
   val INTERNAL_PRIM_VAL = internalAPIName("PrimitiveValue")
   val INTERNAL_PROTO = internalAPIName("Prototype")
   val INTERNAL_EXTENSIBLE = internalAPIName("Extensible")
+  val INTERNAL_CALL = internalAPIName("Call")
   // 8.7 The Reference Specification Type
   val INTERNAL_GET_BASE = internalAPIName("GetBase")
   // 8.12.1 [[GetOwnProperty]] (P)
@@ -79,6 +80,8 @@ object NodeUtil {
   val INTERNAL_TO_STR = internalAPIName("ToString")
   // 9.9 ToObject
   val INTERNAL_TO_OBJ = internalAPIName("ToObject")
+  // 9.11 IsCallable
+  val INTERNAL_IS_CALLABLE = internalAPIName("IsCallable")
   // 9.12 The SameValue Algorithm
   val INTERNAL_SAME_VALUE = internalAPIName("SameValue")
   // 15.2.3.4 Object.getOwnPropertyNames ( O )
@@ -133,6 +136,7 @@ object NodeUtil {
     INTERNAL_PRIM_VAL,
     INTERNAL_PROTO,
     INTERNAL_EXTENSIBLE,
+    INTERNAL_CALL,
     INTERNAL_GET_BASE,
     INTERNAL_GET_OWN_PROP,
     INTERNAL_DEF_OWN_PROP,
@@ -142,6 +146,7 @@ object NodeUtil {
     INTERNAL_TO_UINT,
     INTERNAL_TO_STR,
     INTERNAL_TO_OBJ,
+    INTERNAL_IS_CALLABLE,
     INTERNAL_SAME_VALUE,
     INTERNAL_GET_OWN_PROP_NAMES,
     INTERNAL_STR_OBJ,
