@@ -2174,23 +2174,23 @@ Function: {
     // 4. If separator is undefined, let separator be the single-character String ",".
     if (arguments.length === 0){
         var separator = ",";
-    }      
+    }
     // 5. Let sep be ToString(separator).
-    var sep = @ToString(separator); 
+    var sep = @ToString(separator);
     // 6. If len is zero, return the empty String.
     if (len === 0){
-        return ""; 
-    }      
+        return "";
+    }
     // 7. Let element0 be the result of calling the [[Get]] internal method of O with argument "0".
-    var element0 = O[0]; 
+    var element0 = O[0];
     // 8. If element0 is undefined or null, let R be the empty String; otherwise, Let R be ToString(element0).
     if (@SameValue(element0,undefined) || @SameValue(element0,null)){
         var R = "";
     }else {
         var R = @ToString(element0);
-    }      
+    }
     // 9. Let k be 1.
-    var k = 1; 
+    var k = 1;
     // 10. Repeat, while k < len
     while (k < len) {
       // a. Let S be the String value produced by concatenating R and sep.
@@ -2202,7 +2202,7 @@ Function: {
         var next = "";
       }else {
         var next = @ToString(element);
-      }      
+      }
       // d. Let R be a String value produced by concatenating S and next.
       var R = S + next;
       // e. Increase k by 1.
@@ -2225,7 +2225,7 @@ Function: {
       // a. Call the [[Put]] internal method of O with arguments "length", 0, and true.
       O.length = 0;
       // b. Return undefined.
-      return undefined;  
+      return undefined;
     }
     // 5. Else, len > 0
     else {
@@ -2324,7 +2324,7 @@ Function: {
     }
     // 7. Return O .
     return O;
-  }  
+  }
   \\],
   45: [\\
   function shift () {
@@ -2337,7 +2337,7 @@ Function: {
     // 4. If len is zero, then
     if(@SameValue(len,0)){
       // a. Call the [[Put]] internal method of O with arguments "length", 0, and true.
-      O.length = 0; 
+      O.length = 0;
       // b. Return undefined.
       return undefined;
     }
@@ -2387,105 +2387,105 @@ Function: {
   48: [\\
   function () {
     // 1. Let O be the result of calling ToObject passing the this value as the argument.
-   
+
     // 2. Let A be a new array created as if by the expression new Array()where Array is the standard built-in constructor with that name.
-    
+
     // 3. Let lenVal be the result of calling the [[Get]] internal method of O with argument "length".
-      
+
     // 4. Let len be ToUint32(lenVal).
-      
+
     // 5. Let relativeStart be ToInteger(start).
-      
+
     // 6. If relativeStart is negative, let actualStart be max((len + relativeStart),0); else let actualStart be min(relativeStart, len).
-      
+
     // 7. Let actualDeleteCount be min(max(ToInteger(deleteCount),0), len – actualStart).
-      
+
     // 8. Let k be 0.
-      
+
     // 9. Repeat, while k < actualDeleteCount
-      
+
     // a. Let from be ToString(actualStart+k).
-      
+
     // b. Let fromPresent be the result of calling the [[HasProperty]] internal method of O with argument from.
-      
+
     // c. If fromPresent is true, then
-      
+
     // i. Let fromValue be the result of calling the [[Get]] internal method of O with argument from.
-      
+
     // ii. Call the [[DefineOwnProperty]] internal method of A with arguments ToString(k), Property Descriptor {[[Value]]: fromValue, [[Writable]]: true, [[Enumerable]]: true, [[Configurable]]: true}, and false.
-          
+
     // d. Increment k by 1.
-          
+
     // 10. Let items be an internal List whose elements are, in left to right order, the portion of the actual argument list starting with item1. The list will be empty if no such items are present.
-          
+
     // 11. Let itemCount be the number of elements in items.
-          
+
     // 12. If itemCount < actualDeleteCount, then
-       
+
     // a. Let k be actualStart.
-       
+
     // b. Repeat, while k < (len – actualDeleteCount)
-       
+
     // i. Let from be ToString(k+actualDeleteCount).
-       
+
     // ii. Let to be ToString(k+itemCount).
-       
+
     // iii. Let fromPresent be the result of calling the [[HasProperty]] internal method of O with argument from.
-       
+
     // iv. If fromPresent is true, then
-       
+
     // 1. Let fromValue be the result of calling the [[Get]] internal method of O with argument from.
-          
+
     // 2. Call the [[Put]] internal method of O with arguments to, fromValue, and true.
-       
+
     // v. Else, fromPresent is false
-       
+
     // 1. Call the [[Delete]] internal method of O with arguments to and true.
-       
+
     // vi. Increase k by 1. c. Let k be len.
-       
+
     // d. Repeat, while k > (len – actualDeleteCount + itemCount)
-       
+
     // i. Call the [[Delete]] internal method of O with arguments ToString(k–1) and true.
-       
+
     // ii. Decrease k by 1.
-       
+
     // 13. Else if itemCount > actualDeleteCount, then
-       
+
     // a. Let k be (len – actualDeleteCount).
-       
+
     // b. Repeat, while k > actualStart
-       
+
     // i. Let from be ToString(k + actualDeleteCount – 1).
-          
+
     // ii. Let to be ToString(k + itemCount – 1)
-       
+
     // iii. Let fromPresent be the result of calling the [[HasProperty]] internal method of O with argument from.
-       
+
     // iv. If fromPresent is true, then
-       
+
     // 1. Let fromValue be the result of calling the [[Get]] internal method of O with argument from.
-          
+
     // 2. Call the [[Put]] internal method of O with arguments to, fromValue, and true.
-       
+
     // v. Else, fromPresent is false
-       
+
     // 1. Call the [[Delete]] internal method of O with argument to and true.
-  
+
     // vi. Decrease k by 1.
-    
+
     // 14. Let k be actualStart.
-    
+
     // 15. Repeat, while items is not empty
-    
+
     // a. Remove the first element from items and let E be the value of that element.
-    
+
     // b. Call the [[Put]] internal method of O with arguments ToString(k), E, and true.
-    
+
     // c. Increase k by 1.
-    
+
     // 16. Call the [[Put]] internal method of O with arguments "length", (len – actualDeleteCount + itemCount), and true.
-    
+
     // 17. Return A.
   }
   \\],
@@ -2499,7 +2499,7 @@ Function: {
     var len = @ToUint32(lenVal);
     // 4. Let argCount be the number of actual arguments.
     var argCount = arguments.length;
-    // 5. Let k be len. 
+    // 5. Let k be len.
     var k = len;
     // 6. Repeat, while k > 0,
     while (k > 0) {
@@ -2571,7 +2571,7 @@ Function: {
       var k = n;
     }
     // 8. Else, n<0
-    else{ 
+    else{
       // a. Let k be len - abs(n).
       var k = len - Math.abs(n);
       // b. If k is less than 0,then let k be 0.
@@ -2734,7 +2734,7 @@ Function: {
   \\],
   63: [\\
   function toString () {
-    // it throws a TypeError exception if its this value is not a String or a String object. 
+    // it throws a TypeError exception if its this value is not a String or a String object.
     if(!@SameValue(typeof this,"string")){
       throw new TypeError();
     }
@@ -2744,7 +2744,7 @@ Function: {
   \\],
   64: [\\
   function valueOf () {
-    // it throws a TypeError exception if its this value is not a String or String object. 
+    // it throws a TypeError exception if its this value is not a String or String object.
     if(!@SameValue(typeof this, "string")){
       throw new TypeError();
     }
@@ -2761,7 +2761,7 @@ Function: {
     // 2. Let S be the result of calling ToString, giving it the this value as its argument.
     var S = @ToString(this);
     // 3. Let position be ToInteger(pos).
-    var position = @ToInteger(pos);  
+    var position = @ToInteger(pos);
     // 4. Let size be the number of characters in S.
     var size = S.length;
     // 5. If position < 0 or position ≥ size, return NaN.
@@ -2779,7 +2779,7 @@ Function: {
       throw new TypeError();
     }
     // 2. Let S be the result of calling ToString, giving it the this value as its argument.
-    var S = @ToString(this); 
+    var S = @ToString(this);
     // 3. Let position be ToInteger(pos).
     var position = @ToInteger(pos);
     // 4. Let size be the number of characters in S.
@@ -2902,10 +2902,10 @@ Function: {
       throw new TypeError();
     }
     // 2. Let S be the result of calling ToString, giving it the this value as its argument.
-    var S = @ToString(this); 
+    var S = @ToString(this);
     // 3. Let That be ToString(that).
     var that = @ToString(that);
-    
+
     for (var i = 0; i < S.length; i++) {
     */
   }
@@ -3131,7 +3131,7 @@ Function: {
       throw new RangeError();
     }
     // If ToInteger(radix) is an integer from 2 to 36, but not 10, the result is a String representation of this Number value using the specified radix. Letters a-z are used for digits with values 10 through 35. The precise algorithm is implementation-dependent if the radix is not 10, however the algorithm should be a generalisation of that specified in 9.8.1.
-    else if (radix >= 2 || radix <= 36) {      
+    else if (radix >= 2 || radix <= 36) {
       var S = "";
       var n = this;
       var alpha = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"];
@@ -3172,25 +3172,25 @@ Function: {
     // 3. Let x be this Number value.
     var x = this;
     // 4. If x is NaN, return the String "NaN".
-    if (@SameValue(x,NaN)) { 
+    if (@SameValue(x,NaN)) {
       return "NaN";
     }
     // 5. Let s be the empty String.
-    var s = ""; 
+    var s = "";
     // 6. Ifx<0,then
     if ( x < 0) {
       // a. Let s be "-".
       var s = "-";
-      // b. Letx=–x. 
+      // b. Letx=–x.
       x = -x;
     }
     // 7. If x >= 10^21, then
-    if (x >= 10e+21) { 
+    if (x >= 10e+21) {
       // a. Let m = ToString(x).
       var m = @ToString(x);
     }
     // 8. Else, x < 10^21
-    else { 
+    else {
       // a. Let n be an integer for which the exact mathematical value of n/10^f – x is as close to zero as possible. If there are two such n, pick the larger n.
       var diff = Infinity;
       var pre_diff = Infinity;
@@ -3225,7 +3225,7 @@ Function: {
         }
         // iii. Let a be the first k–f characters of m, and let b be the remaining f characters of m.
         var a = m.slice(0,k-f);
-        var b = m.slice(k-f); 
+        var b = m.slice(k-f);
         // iv. Let m be the concatenation of the three Strings a, ".", and b.
         var m = a + "." + b;
       }
