@@ -2152,7 +2152,15 @@ Function: {
   }
   \\],
   38: [\\
-  function () {
+  function toString() {
+    // 1. Let array be the result of calling ToObject on the this value.
+    var array = @ToObject(this);
+    // 2. Let func be the result of calling the [[Get]] internal method of array with argument "join".
+    var func = array.join;
+    // 3. If IsCallable(func) is false, then let func be the standard built-in method Object.prototype.toString (15.2.4.2).
+    if (!@IsCallable(func)) func = Object.prototype.toString;
+    // 4. Return the result of calling the [[Call]] internal method of func providing array as the this value and an empty arguments list.
+    return @Call(func, array, []);
   }
   \\],
   39: [\\
@@ -2167,6 +2175,26 @@ Function: {
     var A = new Array();
     //3. Let n be 0.
     var n = 0;
+    // for O
+    var E = O;
+    if(typeof E === 'object' && E !== null && @Class(E) === "Array"){
+      var k = 0;
+      var len = E.length;
+      while(k<len){
+        var P = @ToString(k);
+        var exists = (P in E);
+        if (exists) {
+          var subElement = E[P];
+          @DefineOwnProperty(A,@ToString(n),{value:subElement, writable:true, enumerable:true,       configurable:true});
+        }
+        n += 1;
+        k += 1;
+      }
+    }
+    else {
+      Object.defineProperty(A,@ToString(n),{value:E,writable:true,enumerable:true,configurable:      true});
+      n += 1;
+    }
     // 4. Let items be an internal List whose first element is O and whose subsequent elements are, in left to right order, the arguments that were passed to this function invocation.
     var items = arguments;
     // 5. Repeat, while items is not empty
@@ -2174,8 +2202,7 @@ Function: {
       // a. Remove the first element from items and let E be the value of the element.
       var E = items[i];
       // b. If the value of the [[Class]] internal property of E is "Array", then
-      E.getClass = Object.prototype.toString;
-      if(E.getClass() === "[object Array]"){
+      if(typeof E === 'object' && E !== null && @Class(E) === "Array"){
         // i. Let k be 0.
         var k = 0;
         // ii. Let len be the result of calling the [[Get]] internal method of E with argument "length".
@@ -2207,6 +2234,7 @@ Function: {
         n += 1;
       }
     }
+    A.length = n;
     // 6. Return A.
     return A;
   }
@@ -2474,6 +2502,7 @@ Function: {
       // e. Increase n by 1.
       n += 1;
     }
+    A.length = n;
     // 11. Return A.
     return A;
   }
@@ -2496,7 +2525,7 @@ Function: {
     var relativeStart = @ToInteger(start);
     // 6. If relativeStart is negative, let actualStart be max((len + relativeStart),0); else let actualStart be min(relativeStart, len).
     if (relativeStart < 0) {
-      var actualStart = Math.max(len + relatveStart, 0);
+      var actualStart = Math.max(len + relativeStart, 0);
     }else {
       var actualStart = Math.min(relativeStart, len);
     }
@@ -2521,7 +2550,10 @@ Function: {
       k += 1;
     }
     // 10. Let items be an internal List whose elements are, in left to right order, the portion of    the actual argument list starting with item1. The list will be empty if no such items are present.
-    var items = arguments.slice(2);
+    items = new Array();
+    for (var i = 0;i < arguments.length - 2;i++) {
+      items[i] = arguments[i+2];
+    }
     // 11. Let itemCount be the number of elements in items.
     var itemCount = items.length;
     // 12. If itemCount < actualDeleteCount, then
@@ -2602,6 +2634,7 @@ Function: {
     }
     // 16. Call the [[Put]] internal method of O with arguments "length", (len – actualDeleteCount +   itemCount), and true.
     O.length = len - actualDeleteCount + itemCount;
+    A.length = actualDeleteCount;
     // 17. Return A.
     return A;
   }
