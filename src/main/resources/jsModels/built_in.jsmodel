@@ -1775,7 +1775,7 @@ Function: {
   10: [\\
   function toString () {
     // 1. If the this value is undefined, return "[object Undefined]".
-    if (this === undefined) return '[object Undefined';
+    if (this === undefined) return '[object Undefined]';
     // 2. If the this value is null, return "[object Null]".
     if (this === null) return '[object Null]';
     // 3. Let O be the result of calling ToObject passing the this value as the argument.
@@ -2735,21 +2735,18 @@ Function: {
   63: [\\
   function toString () {
     // it throws a TypeError exception if its this value is not a String or a String object.
-    if(!@SameValue(typeof this,"string")){
-      throw new TypeError();
-    }
-    // Returns this String value.
-    return this;
+    if (typeof this === "string") return this;
+    else if (typeof this === "object" && this !== null && @Class(this) === "String") return @PrimitiveValue(this);
+    else throw new TypeError();
   }
   \\],
   64: [\\
   function valueOf () {
     // it throws a TypeError exception if its this value is not a String or String object.
-    if(!@SameValue(typeof this, "string")){
-      throw new TypeError();
-    }
     // Returns this String value.
-    return this;
+    if (typeof this === "string") return this;
+    else if (typeof this === "object" && this !== null && @Class(this) === "String") return @PrimitiveValue(this);
+    else throw new TypeError();
   }
   \\],
   65: [\\
@@ -3112,7 +3109,7 @@ Function: {
   90: [\\
   function toString (radix) {
     // The toString function is not generic; it throws a TypeError exception if its this value is not a Number or a Number object.
-    if (!@SameValue(typeof this,'number')){
+    if (!@SameValue(typeof this,'number') && !@SameValue(@Class(this), 'Number')){
       throw new TypeError();
     }
     // If radix not present or is undefined the Number 10 is used as the value of radix.
@@ -3154,11 +3151,9 @@ Function: {
   92: [\\
   function valueOf () {
     // The valueOf function is not generic; it throws a TypeError exception if its this value is not a Number or a Number object. Therefore, it cannot be transferred to other kinds of objects for use as a method.
-    if(!@SameValue((typeof this),"number")){
-      throw new TypeError();
-    }
-    // Returns this Number value.
-    return this;
+    if (typeof this === "number") return this;
+    else if (typeof this === "object" && this !== null && @Class(this) === "Number") return @PrimitiveValue(this);
+    else throw new TypeError();
   }
   \\],
   93: [\\
@@ -3308,7 +3303,7 @@ Function: {
       else {
         // i. Lete,n,andfbeintegerssuchthatf 0,10f  n<10f+1,thenumbervalueforn 10e–f is x,and f is as small as possible. Note that the decimal representation of n has f+1 digits, n is not divisible by 10, and the least significant digit of n is not necessarily uniquely determined by these criteria.
         x_num = @ToString(x);
-        if (num_x[0] === 0) {
+        if (x_num[0] === 0) {
           var i = 2;
           while (x_num[i] === "0") {
             i += 1;
