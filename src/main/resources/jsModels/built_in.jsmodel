@@ -2816,7 +2816,7 @@ Function: {
   }
   \\],
   60: [\\
-  function Array () {
+  function Array (len) {
     var arr = [];
     if (arguments.length === 1) {
       if (typeof len === 'number') {
@@ -3397,14 +3397,14 @@ Function: {
           while (x_num[i] === "0") {
             i += 1;
           }
-          var e = i - 1;
+          var e = -i + 1;
         }
         else {
           var i = 0;
           while (x[i] !== "."){
             i += 1;
           }
-          e = -i + 1;
+          e = i - 1;
         }
         var diff = Infinity;
         var pre_diff = Infinity;
@@ -3434,14 +3434,14 @@ Function: {
           while (x_num[i] === "0") {
             i += 1;
           }
-          var e = i - 1;
+          var e = -i + 1;
         }
         else {
           var i = 0;
           while (x[i] !== "."){
             i += 1;
           }
-          e = -i + 1;
+          e = i - 1;
         }
         var diff = Infinity;
         var pre_diff = Infinity;
