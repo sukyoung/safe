@@ -3173,11 +3173,11 @@ Function: {
     var S = @ToString(this);
     // 3. Let T be a String value that is a copy of S with both leading and trailing white space removed. The definition of white space is the union of WhiteSpace and LineTerminator.
     var f = 0;
-    while (S[f] !== " "){
+    while (S[f] === " "){
       f += 1;
     }
     var t = S.length - 1;
-    while (S[t] !== " "){
+    while (S[t] === " "){
       t -= 1;
     }
     t +=1;
@@ -3278,7 +3278,7 @@ Function: {
       throw new RangeError();
     }
     // If ToInteger(radix) is an integer from 2 to 36, but not 10, the result is a String representation of this Number value using the specified radix. Letters a-z are used for digits with values 10 through 35. The precise algorithm is implementation-dependent if the radix is not 10, however the algorithm should be a generalisation of that specified in 9.8.1.
-    else if (radix >= 2 || radix <= 36) {
+    else if (radix >= 2 && radix <= 36) {
       var S = "";
       var n = this;
       var alpha = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"];
