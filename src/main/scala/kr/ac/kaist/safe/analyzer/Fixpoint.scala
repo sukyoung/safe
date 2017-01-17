@@ -39,13 +39,13 @@ class Fixpoint(
 
   def propagateNormal(cp: ControlPoint, nextSt: AbsState): Unit = {
     // Propagate normal output state (outS) along normal edges.
-    cp.node.getSucc(CFGEdgeNormal) match {
+    cp.block.getSucc(CFGEdgeNormal) match {
       case Nil => ()
-      case lst => lst.foreach(node => {
-        val succCP = ControlPoint(node, cp.callContext)
+      case lst => lst.foreach(block => {
+        val succCP = ControlPoint(block, cp.tracePartition)
         val oldSt = succCP.getState
         if (!(nextSt <= oldSt)) {
-          val allPredEdges = node.getPred(CFGEdgeNormal) ++ node.getPred(CFGEdgeExc)
+          val allPredEdges = block.getPred(CFGEdgeNormal) ++ block.getPred(CFGEdgeExc)
           val newSt =
             if (allPredEdges.size <= 1) nextSt
             else oldSt + nextSt
@@ -62,10 +62,10 @@ class Fixpoint(
     //    previous exception values are restored.
     // 2) If successor is finally, current exception value is propagated further along
     //    finally block's "normal" edges.
-    cp.node.getSucc(CFGEdgeExc) match {
+    cp.block.getSucc(CFGEdgeExc) match {
       case Nil => ()
-      case lst => lst.foreach(node => {
-        val excSuccCP = ControlPoint(node, cp.callContext)
+      case lst => lst.foreach(block => {
+        val excSuccCP = ControlPoint(block, cp.tracePartition)
         val oldExcSt = excSuccCP.getState
         if (!(nextExcSt <= oldExcSt)) {
           val newExcSet = oldExcSt + nextExcSt

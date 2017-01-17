@@ -27,7 +27,7 @@ case object CmdFindBot extends Command("find-bot", "Find the instruction whose r
       case Nil => {
         val cp = c.getCurCP
         val st = cp.getState
-        val block = cp.node
+        val block = cp.block
         val insts = block.getInsts.reverse
         if (st.isBottom) println("This block has bottom state.")
         else {

@@ -17,7 +17,7 @@ import java.io.PrintWriter
 import scala.collection.immutable.{ HashMap, TreeSet }
 import scala.collection.JavaConverters._
 import kr.ac.kaist.safe.LINE_SEP
-import kr.ac.kaist.safe.analyzer.{ Worklist, Semantics, ControlPoint, CallContext }
+import kr.ac.kaist.safe.analyzer.{ Worklist, Semantics, ControlPoint, TracePartition }
 import kr.ac.kaist.safe.analyzer.console.command._
 import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.util.Span
@@ -49,7 +49,7 @@ class Console(
     iter += 1
     cur = worklist.head
     home = cur
-    val (block, cc) = (cur.node, cur.callContext)
+    val block = cur.block
     val find = (target match {
       case TargetIter(k) => iter == k
       case TargetBlock(b) => b == block
@@ -87,22 +87,22 @@ class Console(
     }
   }
   def moveCurCP(block: CFGBlock): Unit = {
-    val ccList: List[CallContext] = block.getState().toList.map {
-      case (cc, _) => cc
+    val tpList: List[TracePartition] = block.getState().toList.map {
+      case (tp, _) => tp
     }
-    val len: Int = ccList.length
+    val len: Int = tpList.length
     val fid: Int = block.func.id
-    ccList match {
+    tpList match {
       case Nil => println(s"* no call-context in function[$fid] $block")
-      case cc :: Nil => {
-        cur = ControlPoint(block, cc)
+      case tp :: Nil => {
+        cur = ControlPoint(block, tp)
         println(s"* current control point changed.")
         this.setPrompt
       }
       case _ => {
         reader.setPrompt(
-          ccList.zipWithIndex.map {
-            case (cc, idx) => s"[$idx] $cc" + LINE_SEP
+          tpList.zipWithIndex.map {
+            case (tp, idx) => s"[$idx] $tp" + LINE_SEP
           }.mkString + s"select call context index > "
         )
         while ({
@@ -116,7 +116,7 @@ class Console(
             case "" => true
             case line => !line.forall(_.isDigit) || (line.toInt match {
               case idx if idx < len => {
-                cur = ControlPoint(block, ccList(idx))
+                cur = ControlPoint(block, tpList(idx))
                 println(s"* current control point changed.")
                 false
               }
@@ -166,11 +166,11 @@ class Console(
   }
 
   private def toString(cp: ControlPoint): String = {
-    val block = cp.node
+    val block = cp.block
     val func = block.func
     val span = block.span
-    val cc = cp.callContext
-    s"<$func: $block, $cc> @${span.toString}"
+    val tp = cp.tracePartition
+    s"<$func: $block, $tp> @${span.toString}"
   }
 
   private def setPrompt: Unit = {
