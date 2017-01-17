@@ -11,10 +11,10 @@ var __result5 = x4[3]
 var __expect5 = undefined
 
 var x5 = new Array();
-var __result1 = x5.length
-var __expect1 = 0
-var __result2 = x5[0]
-var __expect2 = undefined
+var __result6 = x5.length
+var __expect6 = 0
+var __result7 = x5[0]
+var __expect7 = undefined
 
 function f0() {}
 function f1(input) {
@@ -25,5 +25,5 @@ function f1(input) {
 function f2() {
   return f1(new Array());
 }
-var __result1 = f2();
-var __expect1 = undefined;
+var __result8 = f2();
+var __expect8 = undefined;
