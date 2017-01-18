@@ -42,13 +42,10 @@ class Fixpoint(
     cp.block.getSucc(CFGEdgeNormal) match {
       case Nil => ()
       case lst => lst.foreach(block => {
-        val succCP = ControlPoint(block, cp.tracePartition)
+        val succCP = cp.next(block, CFGEdgeNormal)
         val oldSt = succCP.getState
         if (!(nextSt <= oldSt)) {
-          val allPredEdges = block.getPred(CFGEdgeNormal) ++ block.getPred(CFGEdgeExc)
-          val newSt =
-            if (allPredEdges.size <= 1) nextSt
-            else oldSt + nextSt
+          val newSt = oldSt + nextSt
           succCP.setState(newSt)
           worklist.add(succCP)
         }
@@ -65,7 +62,7 @@ class Fixpoint(
     cp.block.getSucc(CFGEdgeExc) match {
       case Nil => ()
       case lst => lst.foreach(block => {
-        val excSuccCP = ControlPoint(block, cp.tracePartition)
+        val excSuccCP = cp.next(block, CFGEdgeExc)
         val oldExcSt = excSuccCP.getState
         if (!(nextExcSt <= oldExcSt)) {
           val newExcSet = oldExcSt + nextExcSt

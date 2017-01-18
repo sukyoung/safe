@@ -39,83 +39,32 @@ class Semantics(
       this.env + other.env,
       this.thisBinding + other.thisBinding
     )
+    def <=(other: EdgeData): Boolean = {
+      this.old <= other.old &&
+        this.env <= other.env &&
+        this.thisBinding <= other.thisBinding
+    }
+    def </(other: EdgeData): Boolean = !(this <= other)
   }
   type IPSucc = Map[ControlPoint, EdgeData]
-  type IPPred = Set[ControlPoint]
   type IPSuccMap = Map[ControlPoint, IPSucc]
-  type IPPredMap = Map[ControlPoint, IPPred]
   private var ipSuccMap: IPSuccMap = HashMap()
-  private var ipPredMap: IPPredMap = HashMap()
   def getAllIPSucc: IPSuccMap = ipSuccMap
-  def getAllIPPred: IPPredMap = ipPredMap
   def getInterProcSucc(cp: ControlPoint): Option[IPSucc] = ipSuccMap.get(cp)
-  def getInterProcPred(cp: ControlPoint): Option[IPPred] = ipPredMap.get(cp)
 
   // Adds inter-procedural call edge from call-block cp1 to entry-block cp2.
   // Edge label ctx records callee context, which is joined if the edge existed already.
-  def addCallEdge(cp1: ControlPoint, cp2: ControlPoint, data: EdgeData): Unit = {
+  def addIPEdge(cp1: ControlPoint, cp2: ControlPoint, data: EdgeData): Unit = {
     val updatedSuccMap = ipSuccMap.get(cp1) match {
       case None => HashMap(cp2 -> data)
-      case Some(map2) =>
-        map2.get(cp2) match {
-          case None =>
-            map2 + (cp2 -> data)
-          case Some(oldData) =>
-            map2 + (cp2 -> (data + oldData))
-        }
-    }
-    ipSuccMap += (cp1 -> updatedSuccMap)
-
-    val updatedPredSet = ipPredMap.get(cp2) match {
-      case None => HashSet(cp1)
-      case Some(cpSet) => cpSet + cp1
-    }
-    ipPredMap += (cp2 -> updatedPredSet)
-  }
-
-  // Adds inter-procedural return edge from exit or exit-exc block cp1 to after-call block cp2.
-  // Edge label ctx records caller context, which is joined if the edge existed already.
-  // If change occurs, cp1 is added to worklist as side-effect.
-  def addReturnEdge(cp1: ControlPoint, cp2: ControlPoint, data: EdgeData): Unit = {
-    val updatedSuccMap = ipSuccMap.get(cp1) match {
-      case None => {
-        worklist.add(cp1)
-        HashMap(cp2 -> data)
+      case Some(map2) => map2.get(cp2) match {
+        case None =>
+          map2 + (cp2 -> data)
+        case Some(oldData) =>
+          map2 + (cp2 -> (data + oldData))
       }
-      case Some(map2) =>
-        map2.get(cp2) match {
-          case None => {
-            worklist.add(cp1)
-            map2 + (cp2 -> data)
-          }
-          case Some(oldData) =>
-            val oldChanged = !(data.old <= oldData.old)
-            val newOld =
-              if (oldChanged) data.old + oldData.old
-              else oldData.old
-            val envChanged = !(data.env <= oldData.env)
-            val newEnv =
-              if (envChanged) data.env + oldData.env
-              else oldData.env
-            val thisChanged = !(data.thisBinding <= oldData.thisBinding)
-            val newThis =
-              if (thisChanged) data.thisBinding + oldData.thisBinding
-              else oldData.thisBinding
-            if (oldChanged || envChanged || thisChanged) {
-              worklist.add(cp1)
-              map2 + (cp2 -> EdgeData(newOld, newEnv, newThis))
-            } else {
-              map2
-            }
-        }
     }
     ipSuccMap += (cp1 -> updatedSuccMap)
-
-    val updatedPredSet = ipPredMap.get(cp2) match {
-      case None => HashSet(cp1)
-      case Some(cpSet) => cpSet + cp1
-    }
-    ipPredMap += (cp2 -> updatedPredSet)
   }
 
   def E(cp1: ControlPoint, cp2: ControlPoint, data: EdgeData, st: AbsState): AbsState = {
@@ -1004,12 +953,7 @@ class Semantics(
     } else {
       val oldLocalEnv = st1.context.pureLocal
       val tp = cp.tracePartition
-      val nCall = cp.block match {
-        case callBlock: Call => callBlock
-        case _ =>
-          excLog.signal(NoAfterCallAfterCatchError(i.ir))
-          i.block
-      }
+      val nCall = i.block
       val cpAfterCall = ControlPoint(nCall.afterCall, tp)
       val cpAfterCatch = ControlPoint(nCall.afterCatch, tp)
 
@@ -1023,31 +967,31 @@ class Semantics(
             funObj(ICall).fidset
         }
         fidSet.foreach((fid) => {
-          val newEnv = AbsLexEnv.newPureLocal(AbsLoc(locR))
-          val newCallCtx = tp.next(i.block)
           cfg.getFunc(fid) match {
             case Some(funCFG) => {
               val scopeValue = funObj(IScope).value
-              val (newEnv2, _) = newEnv.record.decEnvRec
+              val newEnv = AbsLexEnv.newPureLocal(AbsLoc(locR))
+              val (newRec, _) = newEnv.record.decEnvRec
                 .CreateMutableBinding(funCFG.argumentsName)
                 .SetMutableBinding(funCFG.argumentsName, argVal)
-              val (newEnv3, _) = newEnv2
+              val (newRec2, _) = newRec
                 .CreateMutableBinding("@scope")
                 .SetMutableBinding("@scope", scopeValue)
-              val entryCP = ControlPoint(funCFG.entry, newCallCtx)
-              val exitCP = ControlPoint(funCFG.exit, newCallCtx)
-              val exitExcCP = ControlPoint(funCFG.exitExc, newCallCtx)
-              addCallEdge(cp, entryCP, EdgeData(
+              val entryCP = cp.next(funCFG.entry, CFGEdgeCall)
+              val newTP = entryCP.tracePartition
+              val exitCP = ControlPoint(funCFG.exit, newTP)
+              val exitExcCP = ControlPoint(funCFG.exitExc, newTP)
+              addIPEdge(cp, entryCP, EdgeData(
                 OldAddrSet.Empty,
-                newEnv.copyWith(record = newEnv3),
+                newEnv.copyWith(record = newRec2),
                 thisVal
               ))
-              addReturnEdge(exitCP, cpAfterCall, EdgeData(
+              addIPEdge(exitCP, cpAfterCall, EdgeData(
                 st1.context.old,
                 oldLocalEnv,
                 st1.context.thisBinding
               ))
-              addReturnEdge(exitExcCP, cpAfterCatch, EdgeData(
+              addIPEdge(exitExcCP, cpAfterCatch, EdgeData(
                 st1.context.old,
                 oldLocalEnv,
                 st1.context.thisBinding

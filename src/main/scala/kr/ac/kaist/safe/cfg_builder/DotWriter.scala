@@ -22,12 +22,8 @@ object DotWriter {
   val NormalBlockShape: String = "shape=record, fontsize=11"
   val NormalEdgeStyle: String = "style=solid"
   val ExcEdgeStyle: String = "style=dashed,label=\"exc\""
-  val LoopEdgeStyle: String = "style=solid,label=\"loop\""
-  val LoopIterEdgeStyle: String = "style=solid,label=\"loop_iter\""
-  val LoopOutEdgeStyle: String = "style=solid,label=\"loop_out\""
-  val LoopCondEdgeStyle: String = "style=solid,label=\"loop_cond\""
-  val LoopBreakEdgeStyle: String = "style=solid,label=\"loop_break\""
-  val LoopReturnEdgeStyle: String = "style=solid,label=\"loop_ret\""
+  val CallEdgeStyle: String = "style=solid,label=\"call\""
+  val RetEdgeStyle: String = "style=solid,label=\"ret\""
   val call2AftcallEdgeStyle: String = "style=dotted,color=gray,dir=none"
   val exit2ExcExitEdgeStyle: String = "style=invis,dir=none"
   val newLine = ";\n"
@@ -146,12 +142,8 @@ object DotWriter {
           .append(connectEdge(getLabel(block), blocks.toSet, typ match {
             case CFGEdgeNormal => NormalEdgeStyle
             case CFGEdgeExc => ExcEdgeStyle
-            case CFGEdgeLoop => LoopEdgeStyle
-            case CFGEdgeLoopIter => LoopIterEdgeStyle
-            case CFGEdgeLoopOut => LoopOutEdgeStyle
-            case CFGEdgeLoopCond => LoopCondEdgeStyle
-            case CFGEdgeLoopBreak => LoopBreakEdgeStyle
-            case CFGEdgeLoopReturn => LoopReturnEdgeStyle
+            case CFGEdgeCall => CallEdgeStyle
+            case CFGEdgeRet => RetEdgeStyle
           })).append(newLine)
     }
     sb.toString()
