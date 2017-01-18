@@ -26,12 +26,12 @@ case object CmdRunInsts extends Command("run_insts", "Run instruction by instruc
       case Nil => {
         val cp = c.getCurCP
         val st = cp.getState
-        val block = cp.node
+        val block = cp.block
         val insts = block.getInsts.reverse
         val reader = new ConsoleReader()
         insts match {
           case Nil => println("* no instructions")
-          case _ => println(c.getCurCP.node.toString(0))
+          case _ => println(c.getCurCP.block.toString(0))
         }
         val (resSt, resExcSt, _) = insts.foldLeft((st, AbsState.Bot, true)) {
           case ((oldSt, oldExcSt, true), inst) =>

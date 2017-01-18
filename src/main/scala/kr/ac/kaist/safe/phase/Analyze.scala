@@ -52,7 +52,7 @@ case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, Int, CallContext,
     if (safeConfig.html || config.domModel)
       initSt = Initialize.addDOM(initSt, cfg)
 
-    val globalCC = CallContextManager(config.callsiteSensitivity).globalCallContext
+    val globalCC = CallContext(config.callsiteSensitivity, Nil)
     cfg.globalFunc.entry.setState(globalCC, initSt)
 
     val worklist = Worklist(cfg)

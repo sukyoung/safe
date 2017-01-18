@@ -51,7 +51,7 @@ class Semantics(
   def getInterProcSucc(cp: ControlPoint): Option[IPSucc] = ipSuccMap.get(cp)
   def getInterProcPred(cp: ControlPoint): Option[IPPred] = ipPredMap.get(cp)
 
-  // Adds inter-procedural call edge from call-node cp1 to entry-node cp2.
+  // Adds inter-procedural call edge from call-block cp1 to entry-block cp2.
   // Edge label ctx records callee context, which is joined if the edge existed already.
   def addCallEdge(cp1: ControlPoint, cp2: ControlPoint, data: EdgeData): Unit = {
     val updatedSuccMap = ipSuccMap.get(cp1) match {
@@ -73,7 +73,7 @@ class Semantics(
     ipPredMap += (cp2 -> updatedPredSet)
   }
 
-  // Adds inter-procedural return edge from exit or exit-exc node cp1 to after-call node cp2.
+  // Adds inter-procedural return edge from exit or exit-exc block cp1 to after-call block cp2.
   // Edge label ctx records caller context, which is joined if the edge existed already.
   // If change occurs, cp1 is added to worklist as side-effect.
   def addReturnEdge(cp1: ControlPoint, cp2: ControlPoint, data: EdgeData): Unit = {
@@ -119,7 +119,7 @@ class Semantics(
   }
 
   def E(cp1: ControlPoint, cp2: ControlPoint, data: EdgeData, st: AbsState): AbsState = {
-    (cp1.node, cp2.node) match {
+    (cp1.block, cp2.block) match {
       case (_, Entry(f)) => st.context match {
         case _ if st.context.isBottom => AbsState.Bot
         case ctx1: AbsContext => {
@@ -194,9 +194,9 @@ class Semantics(
       val h = st.heap
       val ctx = st.context
       val old = ctx.old
-      cp.node match {
+      cp.block match {
         case Entry(_) => {
-          val fun = cp.node.func
+          val fun = cp.block.func
           val xArgVars = fun.argVars
           val xLocalVars = fun.localVars
           val localEnv = ctx.pureLocal
@@ -1003,15 +1003,15 @@ class Semantics(
       (st, excSt)
     } else {
       val oldLocalEnv = st1.context.pureLocal
-      val callerCallCtx = cp.callContext
-      val nCall = cp.node match {
+      val tp = cp.tracePartition
+      val nCall = cp.block match {
         case callBlock: Call => callBlock
         case _ =>
           excLog.signal(NoAfterCallAfterCatchError(i.ir))
           i.block
       }
-      val cpAfterCall = ControlPoint(nCall.afterCall, callerCallCtx)
-      val cpAfterCatch = ControlPoint(nCall.afterCatch, callerCallCtx)
+      val cpAfterCall = ControlPoint(nCall.afterCall, tp)
+      val cpAfterCatch = ControlPoint(nCall.afterCatch, tp)
 
       // Draw call/return edges
       funLocSet.foreach((fLoc) => {
@@ -1024,7 +1024,7 @@ class Semantics(
         }
         fidSet.foreach((fid) => {
           val newEnv = AbsLexEnv.newPureLocal(AbsLoc(locR))
-          val newCallCtx = callerCallCtx.newCallContext(cfg, fid, locR)
+          val newCallCtx = tp.next(i.block)
           cfg.getFunc(fid) match {
             case Some(funCFG) => {
               val scopeValue = funObj(IScope).value

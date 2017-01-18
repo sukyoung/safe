@@ -13,26 +13,29 @@ package kr.ac.kaist.safe.analyzer
 
 import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.analyzer.domain._
-import kr.ac.kaist.safe.nodes.cfg.CFGBlock
+import kr.ac.kaist.safe.nodes.cfg.{ CFGBlock, Call }
 
-trait ControlPoint {
-  val node: CFGBlock
-  val callContext: CallContext
-  def getState: AbsState
-  def setState(s: AbsState): Unit
+case class ControlPoint(
+    block: CFGBlock,
+    tracePartition: TracePartition
+) {
+  def getState: AbsState = block.getState(tracePartition)
+  def setState(st: AbsState): Unit = block.setState(tracePartition, st)
+  override def toString: String = {
+    val fid = block.func.id
+    s"($fid:$block, $tracePartition)"
+  }
 }
 
-object ControlPoint {
-  type CP = FlowSensitiveCP
-  def apply(node: CFGBlock, callContext: CallContext): ControlPoint = new CP(node, callContext)
+sealed abstract class TracePartition {
+  def next(block: CFGBlock): TracePartition
 }
 
-case class FlowSensitiveCP(node: CFGBlock, callContext: CallContext) extends ControlPoint {
-  def getState: AbsState = this.node.getState(this.callContext)
-  def setState(st: AbsState): Unit = this.node.setState(this.callContext, st)
-}
+case class CallContext(depth: Int, callsiteList: List[Call]) extends TracePartition {
+  def next(block: CFGBlock): TracePartition = block match {
+    case call @ Call(_) => CallContext(depth, (call :: callsiteList).take(depth))
+    case _ => this
+  }
 
-case class FlowInsensitiveCP(node: CFGBlock, callContext: CallContext) extends ControlPoint {
-  def getState: AbsState = AbsState.Bot /* Global AbsState */
-  def setState(s: AbsState): Unit = {} /* Global AbsState = s */
+  override def toString: String = callsiteList.mkString(", ")
 }

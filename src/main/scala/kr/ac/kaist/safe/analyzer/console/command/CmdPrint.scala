@@ -75,7 +75,7 @@ case object CmdPrint extends Command("print", "Print out various information.") 
             case _ => help
           }
         case "block" => rest match {
-          case Nil => println(c.getCurCP.node.toString(0))
+          case Nil => println(c.getCurCP.block.toString(0))
           case _ => help
         }
         case "loc" => rest match {
@@ -144,15 +144,15 @@ case object CmdPrint extends Command("print", "Print out various information.") 
             case Nil =>
               // function info.
               def f(level: Int, cp: ControlPoint): Unit = {
-                val block = cp.node
+                val block = cp.block
                 val func = block.func
-                val cc = cp.callContext
-                println(s"$block of $func with $cc")
+                val tp = cp.tracePartition
+                println(s"$block of $func with $tp")
 
                 // Follow up the trace (Call relation "1(callee) : n(caller)" is possible)
-                val entryCP = ControlPoint(func.entry, cc)
+                val entryCP = ControlPoint(func.entry, tp)
                 c.semantics.getInterProcPred(entryCP) match {
-                  case Some(cpSet) => cpSet.foreach(predCP => predCP.node match {
+                  case Some(cpSet) => cpSet.foreach(predCP => predCP.block match {
                     case call @ Call(_) => i(level + 1, call, predCP)
                     case _ =>
                   })
@@ -181,13 +181,13 @@ case object CmdPrint extends Command("print", "Print out various information.") 
             val reachableFunSet = sem.getAllIPSucc.foldLeft(Set[CFGFunction]()) {
               case (set, (caller, calleeMap)) => {
                 set ++ (calleeMap.toSeq.map {
-                  case (callee, _) => callee.node.func
+                  case (callee, _) => callee.block.func
                 }).toSet
               }
             } + cfg.globalFunc
-            val cur = c.getCurCP.node
+            val cur = c.getCurCP.block
 
-            // dump each function node
+            // dump each function block
             val reachableUserFunSet = reachableFunSet.filter(func => func.isUser)
             val wo = c.worklist
             val o = wo.getOrderMap
