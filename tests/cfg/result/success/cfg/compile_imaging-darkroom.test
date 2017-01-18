@@ -22,7 +22,7 @@ function[0] top-level {
   Block[5] -> Exit
     [0] noop(EndOfFile)
 
-  Block[6] -> [8], [7]
+  LoopHead[6] -> [8], [7]
 
   Block[7] -> [10], ExitExc
     [0] assert(<>y<>122 < <>obj<>123["length"])
@@ -290,7 +290,7 @@ function[5] ProcessImageData {
   Block[7] -> Exit, ExitExc
     [0] return(<>data<>43)
 
-  Block[8] -> [10], [9]
+  LoopHead[8] -> [10], [9]
 
   Block[9] -> [12], ExitExc
     [0] assert(<>j<>62 < <>sz<>61)

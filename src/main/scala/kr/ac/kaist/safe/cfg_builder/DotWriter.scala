@@ -75,6 +75,7 @@ object DotWriter {
     case AfterCall(_, _, _) => "AfterCall"
     case AfterCatch(_, _) => "AfterCatch"
     case NormalBlock(_) => "Block"
+    case LoopHead(_) => "LoopHead"
     case ModelBlock(_, _) => "Model"
   }
 

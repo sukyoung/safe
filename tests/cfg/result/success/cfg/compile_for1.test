@@ -10,7 +10,7 @@ function[0] top-level {
 
   Block[1] -> [10]
 
-  Block[2] -> [4], [3]
+  LoopHead[2] -> [4], [3]
 
   Block[3] -> [6], ExitExc
     [0] assert("test")
@@ -35,7 +35,7 @@ function[0] top-level {
 
   Block[9] -> [15]
 
-  Block[10] -> [12], [11]
+  LoopHead[10] -> [12], [11]
 
   Block[11] -> [13], ExitExc
     [0] assert(null)
@@ -53,7 +53,7 @@ function[0] top-level {
   Block[14] -> [20], ExitExc
     [0] <>Global<>ignore16 := "for"
 
-  Block[15] -> [17], [16]
+  LoopHead[15] -> [17], [16]
 
   Block[16] -> [18], ExitExc
     [0] assert(true)
@@ -73,7 +73,7 @@ function[0] top-level {
 
   Block[19] -> [25]
 
-  Block[20] -> [22], [21]
+  LoopHead[20] -> [22], [21]
 
   Block[21] -> [19], ExitExc
     [0] assert(12)
@@ -87,7 +87,7 @@ function[0] top-level {
   Block[24] -> Exit
     [0] noop(EndOfFile)
 
-  Block[25] -> [27], [26]
+  LoopHead[25] -> [27], [26]
 
   Block[26] -> [28], ExitExc
     [0] assert(true)

@@ -29,7 +29,7 @@ function[0] top-level {
   Block[6] -> [7], ExitExc
     [0] c := <>new1<>6
 
-  Block[7] -> [9], [8]
+  LoopHead[7] -> [9], [8]
 
   Block[8] -> [12], ExitExc
     [0] assert(<>new1<>6)
@@ -49,7 +49,7 @@ function[0] top-level {
 
   Block[11] -> [10]
 
-  Block[12] -> [14], [13]
+  LoopHead[12] -> [14], [13]
 
   Block[13] -> [17], [16], ExitExc
     [0] assert(<>y<>7 < <>obj<>8["length"])

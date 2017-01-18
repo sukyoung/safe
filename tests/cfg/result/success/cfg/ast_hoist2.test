@@ -16,7 +16,7 @@ function[0] top-level {
     [1] h := <>Global<>ignore6
     [2] noop(EndOfFile)
 
-  Block[2] -> [4], [3]
+  LoopHead[2] -> [4], [3]
 
   Block[3] -> [5], ExitExc
     [0] assert(<>cond1<>6)
@@ -44,7 +44,7 @@ function[1] g {
   Block[1] -> Exit, ExitExc
     [0] return(<>x<>1)
 
-  Block[2] -> [4], [3]
+  LoopHead[2] -> [4], [3]
 
   Block[3] -> [5], ExitExc
     [0] assert(e1)

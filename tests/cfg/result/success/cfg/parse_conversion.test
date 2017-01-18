@@ -711,7 +711,7 @@ function[1] <>funexpr@1:2-17:208<> {
 
   Block[175] -> [75]
 
-  Block[176] -> [178], [177]
+  LoopHead[176] -> [178], [177]
 
   Block[177] -> [179], ExitExc
     [0] assert(<>y<>1230 < <>obj<>1231["length"])
@@ -1119,7 +1119,7 @@ function[5] u {
     [4] <>fun<>179 := @ToObject(<>obj<>176["join"]) @ #91
     [5] <>this<> := enterCode(<>obj<>176)
 
-  Block[16] -> [18], [17]
+  LoopHead[16] -> [18], [17]
 
   Block[17] -> [20], ExitExc
     [0] assert(<>cond1<>129)
@@ -1188,7 +1188,7 @@ function[5] u {
     [0] <>y<>156 := 0
     [1] <>obj<>157 := @ToObject(<>e<>119) @ #74
 
-  Block[31] -> [33], [32]
+  LoopHead[31] -> [33], [32]
 
   Block[32] -> [35], ExitExc
     [0] assert(<>y<>142 < <>obj<>143["length"])
@@ -1509,7 +1509,7 @@ function[7] w {
     [0] <>y<>273 := 0
     [1] <>obj<>274 := @ToObject(<>b<>201) @ #164
 
-  Block[8] -> [10], [9]
+  LoopHead[8] -> [10], [9]
 
   Block[9] -> [13], [12], ExitExc
     [0] assert(<>d<>202 < <>c<>203)
@@ -4102,7 +4102,7 @@ function[19] k<>funexpr@1:69-163<> {
 
   Block[1] -> Exit
 
-  Block[2] -> [4], [3]
+  LoopHead[2] -> [4], [3]
 
   Block[3] -> [6], ExitExc
     [0] assert(<>cond1<>948)
@@ -4195,7 +4195,7 @@ function[20] l<>funexpr@1:170-265<> {
 
   Block[1] -> Exit
 
-  Block[2] -> [4], [3]
+  LoopHead[2] -> [4], [3]
 
   Block[3] -> [5], ExitExc
     [0] assert(<>b<>969 < <>d<>970)

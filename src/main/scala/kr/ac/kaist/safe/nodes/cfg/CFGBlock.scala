@@ -204,6 +204,32 @@ case class NormalBlock(func: CFGFunction) extends CFGBlock {
   }
 }
 
+// loop head
+case class LoopHead(func: CFGFunction) extends CFGBlock {
+  // block id
+  val id: BlockId = func.getBId
+
+  // inst list
+  override def getInsts: List[CFGNormalInst] = Nil
+
+  // toString
+  override def toString: String = s"LoopHead[$id]"
+  override def toString(indent: Int): String = {
+    val pre = "  " * indent
+    val s: StringBuilder = new StringBuilder
+    s.append(pre).append(toString)
+    s.append(getSuccsStr).append(LINE_SEP)
+    s.toString
+  }
+
+  // span
+  def span: Span = {
+    val fileName = func.span.fileName
+    val (begin, end) = (SourceLoc(), SourceLoc()) // TODO return correct span
+    Span(fileName, begin, end)
+  }
+}
+
 case class ModelBlock(func: CFGFunction, sem: SemanticFun) extends CFGBlock {
   val id: BlockId = func.getBId
   override def toString: String = s"Model[$id]"

@@ -3920,7 +3920,7 @@ function[11] _mlToken {
     [4] <>fun<>451 := @ToObject(<>obj<>448["push"]) @ #173
     [5] <>this<> := enterCode(<>obj<>448)
 
-  Block[64] -> [66], [65]
+  LoopHead[64] -> [66], [65]
 
   Block[65] -> [68], [2]
     [0] assert(<>cond1<>418)
@@ -4788,7 +4788,7 @@ function[20] Jb {
 
   Block[3] -> [8]
 
-  Block[4] -> [6], [5]
+  LoopHead[4] -> [6], [5]
 
   Block[5] -> [7], ExitExc
     [0] assert(<>y<>648 < <>obj<>649["length"])
@@ -5163,7 +5163,7 @@ function[20] Jb {
     [4] <>fun<>786 := @ToObject(<>obj<>783["join"]) @ #389
     [5] <>this<> := enterCode(<>obj<>783)
 
-  Block[90] -> [92], [91]
+  LoopHead[90] -> [92], [91]
 
   Block[91] -> [95], [94], ExitExc
     [0] assert(<>cond1<>750)
@@ -5663,7 +5663,7 @@ function[23] a {
 
   Block[10] -> [7]
 
-  Block[11] -> [13], [12]
+  LoopHead[11] -> [13], [12]
 
   Block[12] -> [14], ExitExc
     [0] assert(<>new2<>843)
@@ -6420,7 +6420,7 @@ function[39] G<>funexpr@5:3-145<> {
 
   Block[7] -> [4]
 
-  Block[8] -> [10], [9]
+  LoopHead[8] -> [10], [9]
 
   Block[9] -> [11], ExitExc
     [0] assert(<>new2<>1130)
@@ -6702,7 +6702,7 @@ function[42] E<>funexpr@5:198-283<> {
 
   Block[5] -> [10]
 
-  Block[6] -> [8], [7]
+  LoopHead[6] -> [8], [7]
 
   Block[7] -> [9], ExitExc
     [0] assert(<>cond1<>1186)
@@ -6894,7 +6894,7 @@ function[45] xa<>funexpr@5:592-659<> {
 
   Block[15] -> [12]
 
-  Block[16] -> [18], [17]
+  LoopHead[16] -> [18], [17]
 
   Block[17] -> [19], ExitExc
     [0] assert(<>new2<>1322)
@@ -7001,7 +7001,7 @@ function[47] b {
     [2] <>obj<>1339 := @ToObject(<>z<>131) @ #785
     [3] <>d<>1328 := <>obj<>1339[<>b<>1327]
 
-  Block[6] -> [8], [7]
+  LoopHead[6] -> [8], [7]
 
   Block[7] -> [9], ExitExc
     [0] assert(<>obj<>1335[<>d<>1328])
@@ -7021,7 +7021,7 @@ function[47] b {
 
   Block[10] -> Exit
 
-  Block[11] -> [13], [12]
+  LoopHead[11] -> [13], [12]
 
   Block[12] -> [16], [15], ExitExc
     [0] assert(<>obj<>1339[<>b<>1327])
@@ -7468,7 +7468,7 @@ function[55] Na<>funexpr@9:8-101<> {
   Block[1] -> Exit, ExitExc
     [0] return(<>a<>1528)
 
-  Block[2] -> [4], [3]
+  LoopHead[2] -> [4], [3]
 
   Block[3] -> [6], ExitExc
     [0] assert(<>obj<>1532[<>b<>1529])
@@ -8432,7 +8432,7 @@ function[65] Za<>funexpr@11:49-12:454<> {
 
   Block[24] -> [127], [126]
 
-  Block[25] -> [27], [26]
+  LoopHead[25] -> [27], [26]
 
   Block[26] -> [30], [4]
     [0] assert(<>obj<>1776[<>s<>1733])
@@ -8453,7 +8453,7 @@ function[65] Za<>funexpr@11:49-12:454<> {
 
   Block[29] -> [70], [69]
 
-  Block[30] -> [32], [31]
+  LoopHead[30] -> [32], [31]
 
   Block[31] -> [36], [35], [4]
     [0] assert(<>obj<>1777[<>Y<>1735])
@@ -8509,7 +8509,7 @@ function[65] Za<>funexpr@11:49-12:454<> {
 
   Block[44] -> [41]
 
-  Block[45] -> [47], [46]
+  LoopHead[45] -> [47], [46]
 
   Block[46] -> [48], [4]
     [0] assert(<>new2<>1786)
@@ -8957,7 +8957,7 @@ function[66] Ya<>funexpr@12:458-13:25<> {
   Block[1] -> Exit, ExitExc
     [0] return(<>k<>114)
 
-  Block[2] -> [4], [3]
+  LoopHead[2] -> [4], [3]
 
   Block[3] -> [6], ExitExc
     [0] assert(<>d<>1876 < <>c<>1875)
@@ -9849,7 +9849,7 @@ function[84] jb<>funexpr@14:345-15:47<> {
 
   Block[18] -> [30]
 
-  Block[19] -> [21], [20]
+  LoopHead[19] -> [21], [20]
 
   Block[20] -> [23], ExitExc
     [0] assert(<>obj<>2116[<>c<>2102])
@@ -9996,7 +9996,7 @@ function[86] Sa<>funexpr@15:119-192<> {
 
   Block[1] -> Exit
 
-  Block[2] -> [4], [3]
+  LoopHead[2] -> [4], [3]
 
   Block[3] -> [6], ExitExc
     [0] assert(<>obj<>2155[<>b<>2151])
@@ -10423,7 +10423,7 @@ function[96] Bb<>funexpr@16:1352-17:46<> {
     [2] <>obj<>2550[<>obj<>2551[<>f<>2511]] := <>d<>2509
     [3] return(<>obj<>2550[<>obj<>2551[<>f<>2511]])
 
-  Block[6] -> [8], [7]
+  LoopHead[6] -> [8], [7]
 
   Block[7] -> [11], [10], ExitExc
     [0] assert(<>f<>2511 < <>m<>2512)
@@ -10506,7 +10506,7 @@ function[98] <>funexpr@16:1420-1497<> {
     [8] <>fun<>2536 := @ToObject(<>obj<>2532["apply"]) @ #1605
     [9] <>this<> := enterCode(<>obj<>2532)
 
-  Block[2] -> [4], [3]
+  LoopHead[2] -> [4], [3]
 
   Block[3] -> [5], ExitExc
     [0] assert(<>d<>2522 < <>f<>2523)
@@ -10964,7 +10964,7 @@ function[112] Xb<>funexpr@22:32-223<> {
 
   Block[24] -> [18]
 
-  Block[25] -> [27], [26]
+  LoopHead[25] -> [27], [26]
 
   Block[26] -> [30], [29], ExitExc
     [0] assert(<>y<>2807 < <>obj<>2808["length"])
@@ -11292,7 +11292,7 @@ function[116] $b<>funexpr@22:406-503<> {
     [11] <>fun<>2901 := @ToObject(<>obj<>2895["spl"]) @ #1840
     [12] <>this<> := enterCode(<>obj<>2895)
 
-  Block[10] -> [12], [11]
+  LoopHead[10] -> [12], [11]
 
   Block[11] -> [13], ExitExc
     [0] assert(<>y<>2888 < <>obj<>2889["length"])
@@ -11381,7 +11381,7 @@ function[117] ac<>funexpr@22:507-23:135<> {
 
   Block[11] -> [26]
 
-  Block[12] -> [14], [13]
+  LoopHead[12] -> [14], [13]
 
   Block[13] -> [17], [16], ExitExc
     [0] assert(<>cond1<>2917)
@@ -11451,7 +11451,7 @@ function[117] ac<>funexpr@22:507-23:135<> {
 
   Block[27] -> [26]
 
-  Block[28] -> [30], [29]
+  LoopHead[28] -> [30], [29]
 
   Block[29] -> [31], ExitExc
     [0] assert(<>y<>2928 < <>obj<>2929["length"])
@@ -11521,7 +11521,7 @@ function[118] bc<>funexpr@23:139-288<> {
 
   Block[5] -> [27]
 
-  Block[6] -> [8], [7]
+  LoopHead[6] -> [8], [7]
 
   Block[7] -> [11], [2]
     [0] assert(<>cond1<>2951)
@@ -11541,7 +11541,7 @@ function[118] bc<>funexpr@23:139-288<> {
 
   Block[10] -> [9]
 
-  Block[11] -> [13], [12]
+  LoopHead[11] -> [13], [12]
 
   Block[12] -> [15], [2]
     [0] assert(<>y<>2954 < <>obj<>2955["length"])
@@ -12292,7 +12292,7 @@ function[126] ic<>funexpr@25:292-380<> {
   Block[1] -> Exit, ExitExc
     [0] return(<>e<>112)
 
-  Block[2] -> [4], [3]
+  LoopHead[2] -> [4], [3]
 
   Block[3] -> [7], [6], ExitExc
     [0] assert(<>obj<>3138[<>b<>3134])
@@ -14594,7 +14594,7 @@ function[136] W<>funexpr@35:207-36:284<> {
 
   Block[79] -> [91]
 
-  Block[80] -> [82], [81]
+  LoopHead[80] -> [82], [81]
 
   Block[81] -> [84], [2]
     [0] assert(<>b<>3698 < <>f<>3700)
@@ -14938,7 +14938,7 @@ function[139] gb<>funexpr@37:244-316<> {
 
   Block[5] -> [16]
 
-  Block[6] -> [8], [7]
+  LoopHead[6] -> [8], [7]
 
   Block[7] -> [10], [4]
     [0] assert(<>obj<>3876[<>b<>3872])
@@ -17384,7 +17384,7 @@ function[146] nb<>funexpr@42:325-43:164<> {
     [1] <>obj<>4318 := @ToObject(<>obj<>4317["style"]) @ #2831
     [2] <>obj<>4318["opacity"] := <>f<>4273
 
-  Block[71] -> [73], [72]
+  LoopHead[71] -> [73], [72]
 
   Block[72] -> [74], [2]
     [0] assert(1 > <>b<>4271)
@@ -17496,7 +17496,7 @@ function[147] V<>funexpr@43:167-44:330<> {
   Block[19] -> Exit, ExitExc
     [0] return(<>d<>4326)
 
-  Block[20] -> [22], [21]
+  LoopHead[20] -> [22], [21]
 
   Block[21] -> [24], ExitExc
     [0] assert(<>obj<>4344[<>f<>4327])
@@ -17960,7 +17960,7 @@ function[148] Z<>funexpr@44:333-397<> {
 
   Block[1] -> Exit
 
-  Block[2] -> [4], [3]
+  LoopHead[2] -> [4], [3]
 
   Block[3] -> [7], [6], ExitExc
     [0] assert(<>f<>4459 < <>c<>4460)
@@ -19079,7 +19079,7 @@ function[163] k<>funexpr@48:273-415<> {
   Block[3] -> [23], [22], [2]
     [0] <>obj<>4803 := @ToObject(<>e<>4751) @ #3194
 
-  Block[4] -> [6], [5]
+  LoopHead[4] -> [6], [5]
 
   Block[5] -> [8], [2]
     [0] assert(<>obj<>4790[<>b<>4785])
@@ -19231,7 +19231,7 @@ function[164] l<>funexpr@48:418-560<> {
   Block[3] -> [23], [22], [2]
     [0] <>obj<>4837 := @ToObject(<>e<>4751) @ #3217
 
-  Block[4] -> [6], [5]
+  LoopHead[4] -> [6], [5]
 
   Block[5] -> [8], [2]
     [0] assert(<>obj<>4824[<>b<>4819])

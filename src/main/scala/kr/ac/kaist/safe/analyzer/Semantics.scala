@@ -163,17 +163,14 @@ class Semantics(
           })
           (newSt, AbsState.Bot)
         }
-        case Exit(_) => (st, AbsState.Bot)
-        case ExitExc(_) => (st, AbsState.Bot)
         case call: Call => CI(cp, call.callInst, st, AbsState.Bot)
-        case afterCall: AfterCall => (st, AbsState.Bot)
-        case afterCatch: AfterCatch => (st, AbsState.Bot)
         case block: NormalBlock =>
           block.getInsts.foldRight((st, AbsState.Bot))((inst, states) => {
             val (oldSt, oldExcSt) = states
             I(inst, oldSt, oldExcSt)
           })
         case ModelBlock(_, sem) => sem(st)
+        case _ => (st, AbsState.Bot)
       }
     }
   }

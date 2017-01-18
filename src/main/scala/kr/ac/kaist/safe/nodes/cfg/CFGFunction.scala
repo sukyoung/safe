@@ -70,6 +70,11 @@ class CFGFunction(
     addBlock(block)
     block
   }
+  def createLoopHead: LoopHead = {
+    val loopHead = LoopHead(this)
+    addBlock(loopHead)
+    loopHead
+  }
 
   // create model block
   def createModelBlock(sem: SemanticFun): ModelBlock = {
