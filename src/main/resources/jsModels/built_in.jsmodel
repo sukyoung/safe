@@ -4121,103 +4121,455 @@ Function: {
   \\],
   99: [\\
   function toString () {
+    // This function returns a String value. The contents of the String are implementation-dependent, but are intended to represent the Date in the current time zone in a convenient, human-readable form.
     return @ToString(this);
   }
   \\],
   100: [\\
-  function () {
+  function toDateString () {
+    // This function returns a String value. The contents of the String are implementation-dependent, but are intended to represent the ―date‖ portion of the Date in the current time zone in a convenient, human-readable form.
+    var S = @ToString(this);
+    b = 0;
+    for (var i = 0; i < S.length; i++) {
+      if (S[i] === " ") {
+        b += 1;
+      }
+      if (b === 3) {
+        break;
+      }
+    }
+    return S.slice(0,i);
   }
   \\],
   101: [\\
-  function () {
+  function toTimeString () {
+    // This function returns a String value. The contents of the String are implementation-dependent, but are intended to represent the ―time‖ portion of the Date in the current time zone in a convenient, human-readable form.
+    var S = @ToString(this);
+    b = 0;
+    for (var i = 0; i < S.length; i++) {
+      if (S[i] === " ") {
+        b += 1;
+      }
+      if (b === 3) {
+        break;
+      }
+    }
+    return S.slice(i);
   }
   \\],
   102: [\\
-  function () {
+  function toLocaleString () {
+    return @ToString(this);
   }
   \\],
   103: [\\
-  function () {
+  function toLocaleDateString() {
+    var S = @ToString(this);
+    b = 0;
+    for (var i = 0; i < S.length; i++) {
+      if (S[i] === " ") {
+        b += 1;
+      }
+      if (b === 3) {
+        break;
+      }
+    }
+    return S.slice(0,i);
   }
   \\],
   104: [\\
-  function () {
+  function toLocaleTimeString () {
+    var S = @ToString(this);
+    b = 0;
+    for (var i = 0; i < S.length; i++) {
+      if (S[i] === " ") {
+        b += 1;
+      }
+      if (b === 3) {
+        break;
+      }
+    }
+    return S.slice(i);
   }
   \\],
   105: [\\
-  function () {
+  function valueOf () {
+    // The valueOf function returns a Number, which is this time value.
+    return @PrimitiveValue(this);
   }
   \\],
   106: [\\
-  function () {
+  function getTime () {
+    // 1. Return this time value.
+    return @PrimitiveValue(this);
   }
   \\],
   107: [\\
-  function () {
+  function getFullYear () {
+    // Need LocalTime(t)
+    return @NumTop;
   }
   \\],
   108: [\\
-  function () {
+  function getUTCFullYear () {
+    // 1. Let t be this time value.
+    var t = @PrimitiveValue(this);
+    // 2. If t is NaN, return NaN.
+    if (@SameValue(t,NaN)) {
+      return NaN;
+    }
+    // 3. Return YearFromTime(t).
+    var y = 0;
+    var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+
+    var msPerDay = 86400000;
+    var TimeFromYear_y = msPerDay * DayFromYear_y;
+
+    while (TimeFromYear_y <= t) {
+      y += 1;
+      var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+
+      var TimeFromYear_y = msPerDay * DayFromYear_y;
+    }
+    y -= 1;
+    var YearFromTime_t = y;
+    return YearFromTime_t;
   }
   \\],
   109: [\\
-  function () {
+  function getMonth() {
+    // Need LocalTime(t)
+    return @NumTop;
   }
   \\],
   110: [\\
-  function () {
+  function getUTCMonth () {
+    // 1. Let t be this time value.
+    var t = @PrimitiveValue(this);
+    // 2. If t is NaN, return NaN.
+    if (@SameValue(t,NaN)) {
+      return NaN;
+    }
+    // 3. Return MonthFromTime(t).
+    var msPerDay = 86400000;
+    var Day_t = Math.floor(t/msPerDay);
+
+    var y = 0;
+    var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+
+    var TimeFromYear_y = msPerDay * DayFromYear_y;
+
+    while (TimeFromYear_y <= t) {
+      y += 1;
+      var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+
+      var TimeFromYear_y = msPerDay * DayFromYear_y;
+    }
+    y -= 1;
+    var YearFromTime_t = y;
+
+    var y = YearFromTime;
+
+    var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+
+    var DayWithinYear_t = Day_t - DayFromYear_y
+
+    var y = 0;
+    var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+
+    var msPerDay = 86400000;
+    var TimeFromYear_y = msPerDay * DayFromYear_y;
+
+    while (TimeFromYear_y <= t) {
+      y += 1;
+      var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+
+      var TimeFromYear_y = msPerDay * DayFromYear_y;
+    }
+    y -= 1;
+    var YearFromTime_t = y;
+
+    var y = YearFromTime_t;
+
+    if (y % 4 !== 0) {
+      var DaysInYear_y = 365;
+    }else if (y % 4 === 0 && y % 100 !== 0) {
+      var DaysInYear_y = 366;
+    }else if (y % 100 === 0 && y % 400 !== 0) {
+      var DaysInYear_y = 365;
+    }else if (y % 400 === 0) {
+      var DaysInYear_y = 366;
+    }
+
+    if (DaysInYear === 365) {
+      var InLeapYear_t = 0;
+    }else {
+      var InLeapYear_t = 1;
+    }
+
+    if (0 <= DayWithinYear_t < 31) {
+      var MonthFromTime_t = 0;
+    }else if (31 <= DayWithinYear_t < 59 + InLeapYear_t) {
+      var MonthFromTime_t = 1;
+    }else if (59 + InLeapYear_t <= DayWithinYear_t < 90 + InLeapYear_t) {
+      var MonthFromTime_t = 2;
+    }else if (90 + InLeapYear_t <= DayWithinYear_t < 120 + InLeapYear_t) {
+      var MonthFromTime_t = 3;
+    }else if (120 + InLeapYear_t <= DayWithinYear_t < 151 + InLeapYear_t) {
+      var MonthFromTime_t = 4;
+    }else if (151 + InLeapYear_t <= DayWithinYear_t < 181 + InLeapYear_t) {
+      var MonthFromTime_t = 5;
+    }else if (181 + InLeapYear_t <= DayWithinYear_t < 212 + InLeapYear_t) {
+      var MonthFromTime_t = 6;
+    }else if (212 + InLeapYear_t <= DayWithinYear_t < 243 + InLeapYear_t) {
+      var MonthFromTime_t = 7;
+    }else if (243 + InLeapYear_t <= DayWithinYear_t < 273 + InLeapYear_t) {
+      var MonthFromTime_t = 8;
+    }else if (273 + InLeapYear_t <= DayWithinYear_t < 304 + InLeapYear_t) {
+      var MonthFromTime_t = 9;
+    }else if (304 + InLeapYear_t <= DayWithinYear_t < 334 + InLeapYear_t) {
+      var MonthFromTime_t = 10;
+    }else if (334 + InLeapYear_t <= DayWithinYear_t < 365 + InLeapYear_t) {
+      var MonthFromTime_t = 11;
+    }
+    return MonthFromTime_t;
   }
   \\],
   111: [\\
-  function () {
+  function getDate () {
+    // Need LocalTime(t);
+    return @NumTop;
   }
   \\],
   112: [\\
-  function () {
+  function getUTCDate () {
+    // 1. Let t be this time value.
+    var t = @PrimitiveValue(this);
+    // 2. If t is NaN, return NaN.
+    if (@SameValue(t,NaN)) {
+      return NaN;
+    }
+    // 3. Return DateFromTime(t).
+
+    var msPerDay = 86400000;
+    var Day_t = Math.floor(t/msPerDay);
+
+    var y = 0;
+    var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+
+    var TimeFromYear_y = msPerDay * DayFromYear_y;
+
+    while (TimeFromYear_y <= t) {
+      y += 1;
+      var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+
+      var TimeFromYear_y = msPerDay * DayFromYear_y;
+    }
+    y -= 1;
+    var YearFromTime_t = y;
+
+    var y = YearFromTime;
+
+    var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+
+    var DayWithinYear_t = Day_t - DayFromYear_y
+
+    var y = 0;
+    var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+
+    var msPerDay = 86400000;
+    var TimeFromYear_y = msPerDay * DayFromYear_y;
+
+    while (TimeFromYear_y <= t) {
+      y += 1;
+      var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+
+      var TimeFromYear_y = msPerDay * DayFromYear_y;
+    }
+    y -= 1;
+    var YearFromTime_t = y;
+
+    var y = YearFromTime_t;
+
+    if (y % 4 !== 0) {
+      var DaysInYear_y = 365;
+    }else if (y % 4 === 0 && y % 100 !== 0) {
+      var DaysInYear_y = 366;
+    }else if (y % 100 === 0 && y % 400 !== 0) {
+      var DaysInYear_y = 365;
+    }else if (y % 400 === 0) {
+      var DaysInYear_y = 366;
+    }
+
+    if (DaysInYear === 365) {
+      var InLeapYear_t = 0;
+    }else {
+      var InLeapYear_t = 1;
+    }
+
+    if (0 <= DayWithinYear_t < 31) {
+      var MonthFromTime_t = 0;
+    }else if (31 <= DayWithinYear_t < 59 + InLeapYear_t) {
+      var MonthFromTime_t = 1;
+    }else if (59 + InLeapYear_t <= DayWithinYear_t < 90 + InLeapYear_t) {
+      var MonthFromTime_t = 2;
+    }else if (90 + InLeapYear_t <= DayWithinYear_t < 120 + InLeapYear_t) {
+      var MonthFromTime_t = 3;
+    }else if (120 + InLeapYear_t <= DayWithinYear_t < 151 + InLeapYear_t) {
+      var MonthFromTime_t = 4;
+    }else if (151 + InLeapYear_t <= DayWithinYear_t < 181 + InLeapYear_t) {
+      var MonthFromTime_t = 5;
+    }else if (181 + InLeapYear_t <= DayWithinYear_t < 212 + InLeapYear_t) {
+      var MonthFromTime_t = 6;
+    }else if (212 + InLeapYear_t <= DayWithinYear_t < 243 + InLeapYear_t) {
+      var MonthFromTime_t = 7;
+    }else if (243 + InLeapYear_t <= DayWithinYear_t < 273 + InLeapYear_t) {
+      var MonthFromTime_t = 8;
+    }else if (273 + InLeapYear_t <= DayWithinYear_t < 304 + InLeapYear_t) {
+      var MonthFromTime_t = 9;
+    }else if (304 + InLeapYear_t <= DayWithinYear_t < 334 + InLeapYear_t) {
+      var MonthFromTime_t = 10;
+    }else if (334 + InLeapYear_t <= DayWithinYear_t < 365 + InLeapYear_t) {
+      var MonthFromTime_t = 11;
+    }
+
+    if (MonthFromTime_t === 0) {
+      var DateFromTime = DayWithinYear_t + 1;
+    }else if (MonthFromTime_t === 1) {
+      var DateFromTime = DayWithinYear_t - 30;
+    }else if (MonthFromTime_t === 2) {
+      var DateFromTime = DayWithinYear_t - 58 - InLeapYear_t;
+    }else if (MonthFromTime_t === 3) {
+      var DateFromTime = DayWithinYear_t - 89 - InLeapYear_t;
+    }else if (MonthFromTime_t === 4) {
+      var DateFromTime = DayWithinYear_t - 119 - InLeapYear_t;
+    }else if (MonthFromTime_t === 5) {
+      var DateFromTime = DayWithinYear_t - 150 - InLeapYear_t;
+    }else if (MonthFromTime_t === 6) {
+      var DateFromTime = DayWithinYear_t - 180 - InLeapYear_t;
+    }else if (MonthFromTime_t === 7) {
+      var DateFromTime = DayWithinYear_t - 211 - InLeapYear_t;
+    }else if (MonthFromTime_t === 8) {
+      var DateFromTime = DayWithinYear_t - 242 - InLeapYear_t;
+    }else if (MonthFromTime_t === 9) {
+      var DateFromTime = DayWithinYear_t - 272 - InLeapYear_t;
+    }else if (MonthFromTime_t === 10) {
+      var DateFromTime = DayWithinYear_t - 303 - InLeapYear_t;
+    }else if (MonthFromTime_t === 11) {
+      var DateFromTime = DayWithinYear_t - 333 - InLeapYear_t;
+    }
+    return DateFromTime;
   }
   \\],
   113: [\\
-  function () {
+  function getDay () {
+    // Need Localtime(t);
+    return @NumTop;
   }
   \\],
   114: [\\
-  function () {
+  function getUTCDay () {
+    // 1. Let t be this time value.
+    var t = @PrimitiveValue(this);
+    // 2. If t is NaN, return NaN.
+    if (@SameValue(t,NaN)) {
+      return NaN;
+    }
+    // 3. Return WeekDay(t).
+    var msPerDay = 86400000;
+    var Day_t = Math.floor(t/msPerDay);
+
+    var WeekDay_t = (Day_t + 4) % 7;
+    return WeekDay_t;
   }
   \\],
   115: [\\
-  function () {
+  function getHours () {
+    // Need Local(t)
+    return @NumTop;
   }
   \\],
   116: [\\
-  function () {
+  function getUTCHours () {
+    // 1. Let t be this time value.
+    var t = @PrimitiveValue(this);
+    // 2. If t is NaN, return NaN.
+    if (@SameValue(t,NaN) {
+      return NaN;
+    }
+    // 3. Return HourFromTime(t).
+    var HoursPerDay = 24;
+    var msPerHour = 3600000;
+    var HourFromTime_t = Math.floor(t / msPerHour) % HoursPerDay;
+    return HourFromTime_t;
   }
   \\],
   117: [\\
-  function () {
+  function getMinutes () {
+    // Need LocalTime(t)
+    return @NumTop;
   }
   \\],
   118: [\\
-  function () {
+  function getUTCMinutes () {
+    // 1. Let t be this time value.
+    var t = @PrimitiveValue(this);
+    // 2. If t is NaN, return NaN.
+    if (@SameValue(t,NaN)) {
+      return NaN;
+    }
+    // 3. Return MinFromTime(t).
+    var MinutesPerHour = 60;
+    var msPerMinute = 60000;
+    var MinFromTime_t = Math.floor(t / msPerMinute) % MinutesPerHour;
+    return MinFromTime_t;
   }
   \\],
   119: [\\
-  function () {
+  function getSeconds () {
+    // Need LocalTime(t);
+    return @NumTop;
   }
   \\],
   120: [\\
-  function () {
+  function getUTCSeconds () {
+    // 1. Let t be this time value.
+    var t = @PrimitiveValue(this);
+    // 2. If t is NaN, return NaN.
+    if (@SameValue(t,NaN) {
+      return NaN;
+    }
+    // 3. Return SecFromTime(t).
+    var SecondsPerMinute= 60;
+    var msPerSecond = 1000;
+    var SecFromTime_t  = Math.floor(t / msPerSecond) % SecondsPerMinute;
+    return SecFromTime_t;
   }
   \\],
   121: [\\
-  function () {
+  function getMilliseconds () {
+    // Need LocalTime(t)
+    return @NumTop;
   }
   \\],
   122: [\\
-  function () {
+  function getUTCMilliseconds () {
+    // 1. Let t be this time value.
+    var t = @PrimitiveValue(this);
+    // 2. If t is NaN, return NaN.
+    if (@SameValue(t,NaN)) {
+      return NaN;
+    }
+    // 3. Return msFromTime(t).
+    var msPerSecond = 1000;
+    var msFromTime_t = t % msPerSecond;
+    return msFromTime_t;
   }
   \\],
   123: [\\
-  function () {
+  function getTimezoneOffset () {
+    // Need LocalTime(t)
+    return @NumTop;
   }
   \\],
   124: [\\
