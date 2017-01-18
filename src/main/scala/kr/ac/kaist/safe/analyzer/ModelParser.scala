@@ -153,13 +153,11 @@ object ModelParser extends RegexParsers with JavaTokenParsers {
 
   // JavaScript function
   private lazy val jsFun: Parser[Program] = """[\\""" ~> any <~ """\\]""" ^^ {
-    case fun => {
-      JSParser.stringToAST(fun) match {
-        case Succ((pgm, log)) =>
-          if (log.hasError) println(log)
-          pgm
-        case Fail(e) => throw ModelParseError(e.toString)
-      }
+    case fun => JSParser.stringToAST(fun)
+  } ^? {
+    case Succ((pgm, log)) => {
+      if (log.hasError) println(log)
+      pgm
     }
   }
   private lazy val jsFunMap: Parser[Map[Int, Program]] = "{" ~> (
