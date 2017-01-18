@@ -4311,7 +4311,7 @@ Function: {
     // 1. Let y be ToNumber(year).
     var y = @ToNumber(year);
     // 2. Let m be ToNumber(month).
-    var m = @ToNmber(month);
+    var m = @ToNumber(month);
     // 3. If date is supplied then let dt be ToNumber(date); else let dt be 1.
     if (arguments.length > 2) {
       var dt = @ToNumber(date);
@@ -4406,6 +4406,39 @@ Function: {
 
         var DayWithinYear_t = Day_t - DayFromYear_y
 
+        var y = 0;
+        var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+
+        var msPerDay = 86400000;
+        var TimeFromYear_y = msPerDay * DayFromYear_y;
+
+        while (TimeFromYear_y <= t) {
+          y += 1;
+          var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+
+          var TimeFromYear_y = msPerDay * DayFromYear_y;
+        }
+        y -= 1;
+        var YearFromTime_t = y;
+
+        var y = YearFromTime_t;
+
+        if (y % 4 !== 0) {
+          var DaysInYear_y = 365;
+        }else if (y % 4 === 0 && y % 100 !== 0) {
+          var DaysInYear_y = 366;
+        }else if (y % 100 === 0 && y % 400 !== 0) {
+          var DaysInYear_y = 365;
+        }else if (y % 400 === 0) {
+          var DaysInYear_y = 366;
+        }
+
+        if (DaysInYear === 365) {
+          var InLeapYear_t = 0;
+        }else {
+          var InLeapYear_t = 1;
+        }
+
         if (0 <= DayWithinYear_t < 31) {
           var MonthFromTime_t = 0;
         }else if (31 <= DayWithinYear_t < 59 + InLeapYear_t) {
@@ -4433,8 +4466,6 @@ Function: {
         }
         if (MonthFromTime_t === mn) {
           // DateFromTime(t)
-          var t = ;
-
           var msPerDay = 86400000;
           var Day_t = Math.floor(t/msPerDay);
 
