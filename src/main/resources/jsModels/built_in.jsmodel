@@ -3301,6 +3301,7 @@ Function: {
     }
     // 6. Return a value of Number type, whose value is the code unit value of the character at position position in the String S, where the first (leftmost) character in S is considered to be at position 0, the next one at position 1, and so on.
     // TODO implement @ToUint16
+    // Need char -> Unicode-16
     // return @ToUint16(S[position]);
     return @ToNumber(S[position]);
   }
@@ -3416,9 +3417,9 @@ Function: {
     var S = @ToString(this);
     // 3. Let That be ToString(that).
     var that = @ToString(that);
-
-    for (var i = 0; i < S.length; i++) {
     */
+    // TODO char -> Unicode-16 translation
+    return @NumTop;
   }
   \\],
   71: [\\
@@ -3636,7 +3637,11 @@ Function: {
   }
   \\],
   84: [\\
-  function () {
+  function fromCharCode () {
+    // Returns a String value containing as many characters as the number of arguments. Each argument specifies one character of the resulting String, with the first argument specifying the first character, and so on, from left to right. An argument is converted to a character by applying the operation ToUint16 (9.7) and regarding the resulting 16-bit integer as the code unit value of a character. If no arguments are supplied, the result is the empty String.
+    // Need ToUint16;
+    // Need unicode-16 -> char translation
+    return @StrTop
   }
   \\],
   85: [\\
