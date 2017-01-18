@@ -8,7 +8,7 @@ function[0] top-level {
     [0] x := 2
     [1] noop(EndOfFile)
 
-  Block[2] -> [4], [3]
+  LoopHead[2] -> [4], [3]
 
   Block[3] -> [5], ExitExc
     [0] assert(true)

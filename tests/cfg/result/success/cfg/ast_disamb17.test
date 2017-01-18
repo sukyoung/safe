@@ -11,7 +11,7 @@ function[0] top-level {
 
   Block[3] -> [2]
 
-  Block[4] -> [6], [5]
+  LoopHead[4] -> [6], [5]
 
   Block[5] -> [7], ExitExc
     [0] assert(true)

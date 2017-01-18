@@ -9,7 +9,7 @@ function[0] top-level {
 
   Block[1] -> [7]
 
-  Block[2] -> [4], [3]
+  LoopHead[2] -> [4], [3]
 
   Block[3] -> [5], ExitExc
     [0] assert(<>cond1<>3)
@@ -25,7 +25,7 @@ function[0] top-level {
   Block[6] -> Exit
     [0] noop(EndOfFile)
 
-  Block[7] -> [9], [8]
+  LoopHead[7] -> [9], [8]
 
   Block[8] -> [10], ExitExc
     [0] assert(true)

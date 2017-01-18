@@ -50,7 +50,7 @@ function[0] top-level {
     [1] <>Global<>ignore9 := <>Global<>ignore8
     [2] <>obj<>7 := @ToObject(node) @ #7
 
-  Block[12] -> [14], [13]
+  LoopHead[12] -> [14], [13]
 
   Block[13] -> [15], ExitExc
     [0] assert(<>obj<>7["parent"])

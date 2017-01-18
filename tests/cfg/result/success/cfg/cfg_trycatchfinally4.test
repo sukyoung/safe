@@ -36,7 +36,7 @@ function[0] top-level {
 
   Block[6] -> [5]
 
-  Block[7] -> [9], [8]
+  LoopHead[7] -> [9], [8]
 
   Block[8] -> [12], [11], [2]
     [0] assert(true)

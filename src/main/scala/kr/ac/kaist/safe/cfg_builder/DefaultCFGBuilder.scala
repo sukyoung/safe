@@ -528,7 +528,7 @@ class DefaultCFGBuilder(
         /* tail block */
         val tailBlock: NormalBlock = getTail(blocks, func)
         /* while loop head */
-        val headBlock: NormalBlock = func.createBlock
+        val headBlock: LoopHead = func.createLoopHead
         /* loop body */
         val loopBodyBlock: NormalBlock = func.createBlock
         /* loop out */

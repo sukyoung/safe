@@ -76,7 +76,7 @@ function[0] top-level {
 
   Block[16] -> [24]
 
-  Block[17] -> [19], [18]
+  LoopHead[17] -> [19], [18]
 
   Block[18] -> [22], [21], ExitExc
     [0] assert(true)
@@ -107,7 +107,7 @@ function[0] top-level {
 
   Block[27] -> [35]
 
-  Block[28] -> [30], [29]
+  LoopHead[28] -> [30], [29]
 
   Block[29] -> [33], [32], ExitExc
     [0] assert(true)
@@ -138,7 +138,7 @@ function[0] top-level {
 
   Block[38] -> [46]
 
-  Block[39] -> [41], [40]
+  LoopHead[39] -> [41], [40]
 
   Block[40] -> [44], [43], ExitExc
     [0] assert(true)

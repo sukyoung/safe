@@ -150,9 +150,9 @@ case object CmdPrint extends Command("print", "Print out various information.") 
                 println(s"$block of $func with $tp")
 
                 // Follow up the trace (Call relation "1(callee) : n(caller)" is possible)
-                val entryCP = ControlPoint(func.entry, tp)
-                c.semantics.getInterProcPred(entryCP) match {
-                  case Some(cpSet) => cpSet.foreach(predCP => predCP.block match {
+                val exitCP = ControlPoint(func.exit, tp)
+                c.semantics.getInterProcSucc(exitCP) match {
+                  case Some(cpMap) => cpMap.keySet.foreach(predCP => predCP.block match {
                     case call @ Call(_) => i(level + 1, call, predCP)
                     case _ =>
                   })

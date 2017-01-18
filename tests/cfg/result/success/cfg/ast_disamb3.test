@@ -13,7 +13,7 @@ function[0] top-level {
     [2] <>iterator<>6 := @iteratorInit(<>obj<>5) @ #2
     [3] <>cond1<>7 := @iteratorHasNext(<>obj<>5, <>iterator<>6)
 
-  Block[2] -> [4], [3]
+  LoopHead[2] -> [4], [3]
 
   Block[3] -> [5], ExitExc
     [0] assert(<>cond1<>3)
@@ -28,7 +28,7 @@ function[0] top-level {
 
   Block[6] -> [12]
 
-  Block[7] -> [9], [8]
+  LoopHead[7] -> [9], [8]
 
   Block[8] -> [10], ExitExc
     [0] assert(<>cond1<>7)
@@ -44,7 +44,7 @@ function[0] top-level {
   Block[11] -> [17], ExitExc
     [0] v := 0
 
-  Block[12] -> [14], [13]
+  LoopHead[12] -> [14], [13]
 
   Block[13] -> [15], ExitExc
     [0] assert(z < 5)
@@ -61,7 +61,7 @@ function[0] top-level {
   Block[16] -> Exit
     [0] noop(EndOfFile)
 
-  Block[17] -> [19], [18]
+  LoopHead[17] -> [19], [18]
 
   Block[18] -> [20], ExitExc
     [0] assert(v < 3)
