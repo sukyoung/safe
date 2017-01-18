@@ -4494,7 +4494,7 @@ Function: {
     // 1. Let t be this time value.
     var t = @PrimitiveValue(this);
     // 2. If t is NaN, return NaN.
-    if (@SameValue(t,NaN) {
+    if (@SameValue(t,NaN)) {
       return NaN;
     }
     // 3. Return HourFromTime(t).
@@ -4536,7 +4536,7 @@ Function: {
     // 1. Let t be this time value.
     var t = @PrimitiveValue(this);
     // 2. If t is NaN, return NaN.
-    if (@SameValue(t,NaN) {
+    if (@SameValue(t,NaN)) {
       return NaN;
     }
     // 3. Return SecFromTime(t).
