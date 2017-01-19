@@ -4587,7 +4587,7 @@ Function: {
 
     var v = return_val;
     //  2. Set the [[PrimitiveValue]] internal property of this Date object to v.
-    @PrimitiveValue(this) = v;
+    @PrimitiveValue(this,v);
     // 3. Return v.
     return v;
   }
@@ -4595,7 +4595,7 @@ Function: {
   125: [\\
   function setMilliseconds (ms) {
     // Need LocalTime(t)
-    @PrimitiveValue(this) = @NumTop;
+    @PrimitiveValue(this,@NumTop);
     return @NumTop;
   }
   \\],
@@ -4679,17 +4679,100 @@ Function: {
     }
     var v = return_val;
     // 4. Set the [[PrimitiveValue]] internal property of this Date object to v.
-
+    @PrimitiveValue(this,v);
     // 5. Return v.
     return v;
   }
   \\],
   127: [\\
-  function () {
+  function setSeconds (sec,ms) {
+    // Need LocalTime(t);
+    @PrimitiveValue(this,@NumTop);
+    return @NumTop;
   }
   \\],
   128: [\\
-  function () {
+  function setUTCSeconds (set,ms) {
+    // 1. Let t be this time value.
+    var t = @PrimitiveValue(this);
+    // 2. Let s be ToNumber(sec).
+    var s = @ToNumber(sec);
+    // 3. If ms is not specified, then let milli be msFromTime(t); otherwise, let milli be ToNumber(ms).
+    if (arguments.length > 1) {
+      var msPerSecond = 1000;
+      var msFromTime_t = t % msPerSecond;
+      var milli = msFromTime_t;
+    }else {
+      var milli = @ToNumber(ms);
+    }
+    // 4. Let date be MakeDate(Day(t), MakeTime(HourFromTime(t), MinFromTime(t), s, milli)).
+    var arg1;
+    var arg2;
+    var arg3;
+    var arg4;
+    // HourFromTime(t)
+    var HoursPerDay = 24;
+    var msPerHour = 3600000;
+    var HourFromTime_t = Math.floor(t / msPerHour) % HoursPerDay;
+    arg1 = HourFromTime_t;
+    // MinFromTime(t);
+    var MinutesPerHour = 60;
+    var msPerMinute = 60000;
+    var MinFromTime_t = Math.floor(t / msPerMinute) % MinutesPerHour;
+    arg2 = MinFromTime_t;
+    // Day(t)
+    msPerDay = 86400000;
+    var Day_t = Math.floor(t/msPerDay);
+    arg3 = Day_t;
+    // MakeTime
+    var hour = arg1;
+    var min = arg2;
+    var sec = s;
+    var ms = milli;
+    var return_val;
+
+    var HoursPerDay = 24;
+    var MinutesPerHour = 60;
+    var SecondsPerMinute= 60;
+    var msPerSecond = 1000;
+    var msPerMinute = 60000;
+    var msPerHour = 3600000;
+
+    if (hour === Infinity || min === Infinity || sec === Infinity || ms === Infinity) {
+      return_val = NaN;
+    }
+    var h = @ToInteger(hour);
+    var m = @ToInteger(min);
+    var s = @ToInteger(sec);
+    var milli = @ToInteger(ms);
+    var t = h * msPerHour + m * msPerMinute + s * msPerSecond + milli;
+    return_val = t;
+    arg4 = return_val;
+    // MakeDate(t)
+    var day = arg3;
+    var time = arg4;
+    var return_val;
+    var msPerDay = 86400000;
+    if (day === Infinity || time === Infinity) {
+      return_val = NaN;
+    }
+    return_val = day * msPerDay + time;
+    var date = return_val;
+    // 5. Let v be TimeClip(date).
+    var time = date;
+    var return_val;
+    if (time === Infinity) {
+      return_val = NaN;
+    }
+    if (Math.abs(time) > 8.64e+15) {
+      return_val = NaN;
+    }
+    return_val = @ToInteger(time);
+    var v = return_val;
+    // 6. Set the [[PrimitiveValue]] internal property of this Date object to v.
+    @PrimitiveValue(this,v);
+    // 7. Return v.
+    return v;
   }
   \\],
   129: [\\
