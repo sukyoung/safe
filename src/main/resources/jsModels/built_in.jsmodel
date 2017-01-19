@@ -4268,7 +4268,7 @@ Function: {
     y -= 1;
     var YearFromTime_t = y;
 
-    var y = YearFromTime;
+    var y = YearFromTime_t;
 
     var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
 
@@ -4368,7 +4368,7 @@ Function: {
     y -= 1;
     var YearFromTime_t = y;
 
-    var y = YearFromTime;
+    var y = YearFromTime_t;
 
     var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
 
@@ -4698,7 +4698,7 @@ Function: {
     // 2. Let s be ToNumber(sec).
     var s = @ToNumber(sec);
     // 3. If ms is not specified, then let milli be msFromTime(t); otherwise, let milli be ToNumber(ms).
-    if (arguments.length > 1) {
+    if (!(arguments.length > 1)) {
       var msPerSecond = 1000;
       var msFromTime_t = t % msPerSecond;
       var milli = msFromTime_t;
@@ -4776,51 +4776,1396 @@ Function: {
   }
   \\],
   129: [\\
-  function () {
+  function setMinutes (min,sec,ms) {
+    // Need LocalTime(t)
+    @PrimitiveValue(this,@NumTop);
+    return @NumTop;
   }
   \\],
   130: [\\
-  function () {
+  function setUTCMinutes (min,sec,ms) {
+    // 1. Let t be this time value.
+    var t = @PrimitiveValue(this);
+    //2. Let m be ToNumber(min).
+    var m = @ToNumber(min);
+    // 3. If sec is not specified, then let s be SecFromTime(t); otherwise, let s be ToNumber(sec).
+    if (!(arguements.length > 1)) {
+      var SecondsPerMinute= 60;
+      var msPerSecond = 1000;
+      var SecFromTime_t  = Math.floor(t / msPerSecond) % SecondsPerMinute;
+      var sec = SecFromTime_t;
+    }else {
+      var s = @ToNumber(sec);
+    }
+    // 4. If ms is not specified, then let milli be msFromTime(t); otherwise, let milli be ToNumber(ms).
+    if (!(arguments.length > 2)) {
+      var msPerSecond = 1000;
+      var msFromTime_t = t % msPerSecond;
+      var milli = msFromTime_t;
+    }else {
+      var milli = @ToNumber(ms);
+    }
+    // 5. Let date be MakeDate(Day(t), MakeTime(HourFromTime(t), m, s, milli)).
+    var arg1;
+    var arg2;
+    var arg3;
+    // HourFromTime(t)
+    var HoursPerDay = 24;
+    var msPerHour = 3600000;
+    var HourFromTime_t = Math.floor(t / msPerHour) % HoursPerDay;
+    arg1 = HourFromTime_t;
+    // Day(t)
+    var msPerDay = 86400000;
+    var Day_t = Math.floor(t/msPerDay);
+    arg2 = Day_t;
+    // MakeTime
+    var hour = arg1;
+    var min = m;
+    var sec = s;
+    var ms = milli;
+    var return_val;
+
+    var HoursPerDay = 24;
+    var MinutesPerHour = 60;
+    var SecondsPerMinute= 60;
+    var msPerSecond = 1000;
+    var msPerMinute = 60000;
+    var msPerHour = 3600000;
+
+
+    if (hour === Infinity || min === Infinity || sec === Infinity || ms === Infinity) {
+      return_val = NaN;
+    }
+    var h = @ToInteger(hour);
+    var m = @ToInteger(min);
+    var s = @ToInteger(sec);
+    var mlli = @ToInteger(ms);
+    var t = h * msPerHour + m * msPerMinute + s * msPerSecond + milli;
+    return_val = t;
+    arg3 = return_val;
+    // MakeDate
+    var day = arg2;
+    var time = arg3;
+    var return_val;
+    var msPerDay = 86400000;
+    if (day === Infinity || time === Infinity) {
+      return_val = NaN;
+    }
+    return_val = day * msPerDay + time;
+    var date = return_val;
+    // 6. Let v be TimeClip(date).
+    // TimeClip
+    var time = date;
+    var return_val;
+    if (time === Infinity) {
+      return_val = NaN;
+    }
+    if (Math.abs(time) > 8.64e+15) {
+      return_val = NaN;
+    }
+    return_val = @ToInteger(time);
+    var v = return_val;
+    // 7. Set the [[PrimitiveValue]] internal property of this Date object to v.
+    @PrimitiveValue(this,v);
+    //8. Return v.
+    return v;
   }
   \\],
   131: [\\
-  function () {
+  function setHours (hour,min,sec,ms) {
+    // Need LocalTime(t)
+    @PrimitiveValue(this,@NumTop);
+    return @NumTop;
   }
   \\],
   132: [\\
-  function () {
+  function setUTCHours (hour,min,sec,ms) {
+    // 1. Let t be this time value.
+    var t = @PrimitiveValue(this);
+    // 2. Let h be ToNumber(hour).
+    var h = @ToNumber(hour);
+    // 3. If min is not specified, then let m be MinFromTime(t); otherwise, let m be ToNumber(min).
+    if (!(arguments.length > 1)) {
+      var MinutesPerHour = 60;
+      var msPerMinute = 60000;
+      var MinFromTime_t = Math.floor(t / msPerMinute) % MinutesPerHour;
+      var m = MinFromTime_t;
+    }else {
+      var m = @ToNumber(min);
+    }
+    // 4. If sec is not specified, then let s be SecFromTime(t); otherwise, let s be ToNumber(sec).
+    if (!(arguments.length > 2)) {
+      var SecondsPerMinute= 60;
+      var msPerSecond = 1000;
+      var SecFromTime_t  = Math.floor(t / msPerSecond) % SecondsPerMinute;
+      var s = SecFromTime_t;
+    }else {
+      var s = @ToNumber(sec);
+    }
+    // 5. If ms is not specified, then let milli be msFromTime(t); otherwise, let milli be ToNumber(ms).
+    if (!(arguments.length > 3)) {
+      var msPerSecond = 1000;
+      var msFromTime_t = t % msPerSecond;
+      var ms = msFromTime_t;
+    }else {
+      var milli = @ToNumber(ms);
+    }
+    // 6. Let newDate be MakeDate(Day(t), MakeTime(h, m, s, milli)).
+    var arg1;
+    var arg2;
+    // Day(t)
+    var msPerDay = 86400000;
+    var Day_t = Math.floor(t/msPerDay);
+    arg1 = Day_t;
+    // MakeTime
+    var hour = h;
+    var min = m;
+    var sec = s;
+    var ms = milli;
+    var return_val;
+
+    var HoursPerDay = 24;
+    var MinutesPerHour = 60;
+    var SecondsPerMinute= 60;
+    var msPerSecond = 1000;
+    var msPerMinute = 60000;
+    var msPerHour = 3600000;
+
+
+    if (hour === Infinity || min === Infinity || sec === Infinity || ms === Infinity) {
+      return_val = NaN;
+    }
+    var h = @ToInteger(hour);
+    var m = @ToInteger(min);
+    var s = @ToInteger(sec);
+    var milli = @ToInteger(ms);
+    var t = h * msPerHour + m * msPerMinute + s * msPerSecond + milli;
+    return_val = t;
+    arg2 = return_val;
+    // MakeDate
+    var day = arg1;
+    var time = arg2;
+    var return_val;
+    var msPerDay = 86400000;
+    if (day === Infinity || time === Infinity) {
+      return_val = NaN;
+    }
+    return_val = day * msPerDay + time;
+    var newDate = return_val;
+    // 7. Let v be TimeClip(newDate).
+    var time = newDate;
+    var return_val;
+    if (time === Infinity) {
+      return_val = NaN;
+    }
+    if (Math.abs(time) > 8.64e+15) {
+      return_val = NaN;
+    }
+    return_val = @ToInteger(time);
+    var v = return_val;
+    // 8. Set the [[PrimitiveValue]] internal property of this Date object to v.
+    @PrimitiveValue(this,v);
+    // 9. Return v.
+    return v;
   }
   \\],
   133: [\\
-  function () {
+  function setDate (date) {
+    // Need LocalTime(t)
+    @PrimitiveValue(this,@NumTop);
+    return @NumTop;
   }
   \\],
   134: [\\
-  function () {
+  function setUTCDate (date) {
+    // 1. Let t be this time value.
+    var t = @PrimitiveValue(this);
+    // 2. Let dt be ToNumber(date).
+    var dt = @ToNumber(date);
+    // 3. Let newDate be MakeDate(MakeDay(YearFromTime(t), MonthFromTime(t), dt), TimeWithinDay(t)).
+    var arg1;
+    var arg2;
+    var arg3;
+    var arg4;
+    // YearFromTime(t);
+    var y = 0;
+    var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+
+    var msPerDay = 86400000;
+    var TimeFromYear_y = msPerDay * DayFromYear_y;
+
+    while (TimeFromYear_y <= t) {
+      y += 1;
+      var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+
+      var TimeFromYear_y = msPerDay * DayFromYear_y;
+    }
+    y -= 1;
+    var YearFromTime_t = y;
+    arg1 = YearFromTime_t;
+    // MonthFromTime(t)
+    var msPerDay = 86400000;
+    var Day_t = Math.floor(t/msPerDay);
+
+    var y = 0;
+    var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+
+    var TimeFromYear_y = msPerDay * DayFromYear_y;
+
+    while (TimeFromYear_y <= t) {
+      y += 1;
+      var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+
+      var TimeFromYear_y = msPerDay * DayFromYear_y;
+    }
+    y -= 1;
+    var YearFromTime_t = y;
+
+    var y = YearFromTime_t;
+
+    var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+
+    var DayWithinYear_t = Day_t - DayFromYear_y
+
+    var y = 0;
+    var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+
+    var msPerDay = 86400000;
+    var TimeFromYear_y = msPerDay * DayFromYear_y;
+
+    while (TimeFromYear_y <= t) {
+      y += 1;
+      var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+
+      var TimeFromYear_y = msPerDay * DayFromYear_y;
+    }
+    y -= 1;
+    var YearFromTime_t = y;
+
+    var y = YearFromTime_t;
+
+    if (y % 4 !== 0) {
+      var DaysInYear_y = 365;
+    }else if (y % 4 === 0 && y % 100 !== 0) {
+      var DaysInYear_y = 366;
+    }else if (y % 100 === 0 && y % 400 !== 0) {
+      var DaysInYear_y = 365;
+    }else if (y % 400 === 0) {
+      var DaysInYear_y = 366;
+    }
+
+    if (DaysInYear === 365) {
+      var InLeapYear_t = 0;
+    }else {
+      var InLeapYear_t = 1;
+    }
+
+    if (0 <= DayWithinYear_t < 31) {
+      var MonthFromTime_t = 0;
+    }else if (31 <= DayWithinYear_t < 59 + InLeapYear_t) {
+      var MonthFromTime_t = 1;
+    }else if (59 + InLeapYear_t <= DayWithinYear_t < 90 + InLeapYear_t) {
+      var MonthFromTime_t = 2;
+    }else if (90 + InLeapYear_t <= DayWithinYear_t < 120 + InLeapYear_t) {
+      var MonthFromTime_t = 3;
+    }else if (120 + InLeapYear_t <= DayWithinYear_t < 151 + InLeapYear_t) {
+      var MonthFromTime_t = 4;
+    }else if (151 + InLeapYear_t <= DayWithinYear_t < 181 + InLeapYear_t) {
+      var MonthFromTime_t = 5;
+    }else if (181 + InLeapYear_t <= DayWithinYear_t < 212 + InLeapYear_t) {
+      var MonthFromTime_t = 6;
+    }else if (212 + InLeapYear_t <= DayWithinYear_t < 243 + InLeapYear_t) {
+      var MonthFromTime_t = 7;
+    }else if (243 + InLeapYear_t <= DayWithinYear_t < 273 + InLeapYear_t) {
+      var MonthFromTime_t = 8;
+    }else if (273 + InLeapYear_t <= DayWithinYear_t < 304 + InLeapYear_t) {
+      var MonthFromTime_t = 9;
+    }else if (304 + InLeapYear_t <= DayWithinYear_t < 334 + InLeapYear_t) {
+      var MonthFromTime_t = 10;
+    }else if (334 + InLeapYear_t <= DayWithinYear_t < 365 + InLeapYear_t) {
+      var MonthFromTime_t = 11;
+    }
+    arg2 = MonthFromTime_t;
+    // TimeWithinDay(t)
+    var msPerDay = 86400000;
+    var TimeWithinDay_t = t % msPerDay;
+    arg3 = TimeWithinDay_t;
+    // MakeDay
+    var year = arg1;
+    var month = arg2;
+    var date = dt;
+    var return_val;
+    if (year === Infinity || month === Infinity || date === Infinity) {
+      return_val = NaN;
+    }
+    var y = @ToInteger(year);
+    var m = @ToInteger(month);
+    var dt = @ToInteger(date);
+    var ym = y + Math.floor(m/12);
+    var mn = m % 12;
+    var t = 0;
+    while (t < 8.64e+15) {
+      // YearFromTime(t)
+      var y = 0;
+      var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+
+      var TimeFromYear_y = msPerDay * DayFromYear_y;
+
+      while (TimeFromYear_y <= t) {
+        y += 1;
+        var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+
+        var TimeFromYear_y = msPerDay * DayFromYear_y;
+      }
+      y -= 1;
+      var YearFromTime_t = y;
+      if (YearFromTime_t === ym) {
+        // MonthFromTime(t)
+        var msPerDay = 86400000;
+        var Day_t = Math.floor(t/msPerDay);
+
+        var y = 0;
+        var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+
+        var TimeFromYear_y = msPerDay * DayFromYear_y;
+
+        while (TimeFromYear_y <= t) {
+          y += 1;
+          var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+
+          var TimeFromYear_y = msPerDay * DayFromYear_y;
+        }
+        y -= 1;
+        var YearFromTime_t = y;
+
+        var y = YearFromTime_t;
+
+        var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+
+        var DayWithinYear_t = Day_t - DayFromYear_y
+
+        var y = 0;
+        var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+
+        var msPerDay = 86400000;
+        var TimeFromYear_y = msPerDay * DayFromYear_y;
+
+        while (TimeFromYear_y <= t) {
+          y += 1;
+          var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+
+          var TimeFromYear_y = msPerDay * DayFromYear_y;
+        }
+        y -= 1;
+        var YearFromTime_t = y;
+
+        var y = YearFromTime_t;
+
+        if (y % 4 !== 0) {
+          var DaysInYear_y = 365;
+        }else if (y % 4 === 0 && y % 100 !== 0) {
+          var DaysInYear_y = 366;
+        }else if (y % 100 === 0 && y % 400 !== 0) {
+          var DaysInYear_y = 365;
+        }else if (y % 400 === 0) {
+          var DaysInYear_y = 366;
+        }
+
+        if (DaysInYear === 365) {
+          var InLeapYear_t = 0;
+        }else {
+          var InLeapYear_t = 1;
+        }
+
+        if (0 <= DayWithinYear_t < 31) {
+          var MonthFromTime_t = 0;
+        }else if (31 <= DayWithinYear_t < 59 + InLeapYear_t) {
+          var MonthFromTime_t = 1;
+        }else if (59 + InLeapYear_t <= DayWithinYear_t < 90 + InLeapYear_t) {
+          var MonthFromTime_t = 2;
+        }else if (90 + InLeapYear_t <= DayWithinYear_t < 120 + InLeapYear_t) {
+          var MonthFromTime_t = 3;
+        }else if (120 + InLeapYear_t <= DayWithinYear_t < 151 + InLeapYear_t) {
+          var MonthFromTime_t = 4;
+        }else if (151 + InLeapYear_t <= DayWithinYear_t < 181 + InLeapYear_t) {
+          var MonthFromTime_t = 5;
+        }else if (181 + InLeapYear_t <= DayWithinYear_t < 212 + InLeapYear_t) {
+          var MonthFromTime_t = 6;
+        }else if (212 + InLeapYear_t <= DayWithinYear_t < 243 + InLeapYear_t) {
+          var MonthFromTime_t = 7;
+        }else if (243 + InLeapYear_t <= DayWithinYear_t < 273 + InLeapYear_t) {
+          var MonthFromTime_t = 8;
+        }else if (273 + InLeapYear_t <= DayWithinYear_t < 304 + InLeapYear_t) {
+          var MonthFromTime_t = 9;
+        }else if (304 + InLeapYear_t <= DayWithinYear_t < 334 + InLeapYear_t) {
+          var MonthFromTime_t = 10;
+        }else if (334 + InLeapYear_t <= DayWithinYear_t < 365 + InLeapYear_t) {
+          var MonthFromTime_t = 11;
+        }
+        if (MonthFromTime_t === mn) {
+          // DateFromTime(t)
+          var msPerDay = 86400000;
+          var Day_t = Math.floor(t/msPerDay);
+
+          var y = 0;
+          var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+
+          var TimeFromYear_y = msPerDay * DayFromYear_y;
+
+          while (TimeFromYear_y <= t) {
+            y += 1;
+            var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+
+            var TimeFromYear_y = msPerDay * DayFromYear_y;
+          }
+          y -= 1;
+          var YearFromTime_t = y;
+
+          var y = YearFromTime_t;
+
+          var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+
+          var DayWithinYear_t = Day_t - DayFromYear_y
+
+          if (0 <= DayWithinYear_t < 31) {
+            var MonthFromTime_t = 0;
+          }else if (31 <= DayWithinYear_t < 59 + InLeapYear_t) {
+            var MonthFromTime_t = 1;
+          }else if (59 + InLeapYear_t <= DayWithinYear_t < 90 + InLeapYear_t) {
+            var MonthFromTime_t = 2;
+          }else if (90 + InLeapYear_t <= DayWithinYear_t < 120 + InLeapYear_t) {
+            var MonthFromTime_t = 3;
+          }else if (120 + InLeapYear_t <= DayWithinYear_t < 151 + InLeapYear_t) {
+            var MonthFromTime_t = 4;
+          }else if (151 + InLeapYear_t <= DayWithinYear_t < 181 + InLeapYear_t) {
+            var MonthFromTime_t = 5;
+          }else if (181 + InLeapYear_t <= DayWithinYear_t < 212 + InLeapYear_t) {
+            var MonthFromTime_t = 6;
+          }else if (212 + InLeapYear_t <= DayWithinYear_t < 243 + InLeapYear_t) {
+            var MonthFromTime_t = 7;
+          }else if (243 + InLeapYear_t <= DayWithinYear_t < 273 + InLeapYear_t) {
+            var MonthFromTime_t = 8;
+          }else if (273 + InLeapYear_t <= DayWithinYear_t < 304 + InLeapYear_t) {
+            var MonthFromTime_t = 9;
+          }else if (304 + InLeapYear_t <= DayWithinYear_t < 334 + InLeapYear_t) {
+            var MonthFromTime_t = 10;
+          }else if (334 + InLeapYear_t <= DayWithinYear_t < 365 + InLeapYear_t) {
+            var MonthFromTime_t = 11;
+          }
+
+          if (MonthFromTime_t === 0) {
+            var DateFromTime = DayWithinYear_t + 1;
+          }else if (MonthFromTime_t === 1) {
+            var DateFromTime = DayWithinYear_t - 30;
+          }else if (MonthFromTime_t === 2) {
+            var DateFromTime = DayWithinYear_t - 58 - InLeapYear_t;
+          }else if (MonthFromTime_t === 3) {
+            var DateFromTime = DayWithinYear_t - 89 - InLeapYear_t;
+          }else if (MonthFromTime_t === 4) {
+            var DateFromTime = DayWithinYear_t - 119 - InLeapYear_t;
+          }else if (MonthFromTime_t === 5) {
+            var DateFromTime = DayWithinYear_t - 150 - InLeapYear_t;
+          }else if (MonthFromTime_t === 6) {
+            var DateFromTime = DayWithinYear_t - 180 - InLeapYear_t;
+          }else if (MonthFromTime_t === 7) {
+            var DateFromTime = DayWithinYear_t - 211 - InLeapYear_t;
+          }else if (MonthFromTime_t === 8) {
+            var DateFromTime = DayWithinYear_t - 242 - InLeapYear_t;
+          }else if (MonthFromTime_t === 9) {
+            var DateFromTime = DayWithinYear_t - 272 - InLeapYear_t;
+          }else if (MonthFromTime_t === 10) {
+            var DateFromTime = DayWithinYear_t - 303 - InLeapYear_t;
+          }else if (MonthFromTime_t === 11) {
+            var DateFromTime = DayWithinYear_t - 333 - InLeapYear_t;
+          }
+          if (DateFromTime === 1){
+            break;
+          }
+        }
+      }
+      t += 1;
+    }
+    if (t === 8.64e+15) {
+      return_val = NaN;
+    }
+
+    var msPerDay = 86400000;
+    var Day_t = Math.floor(t/msPerDay);
+
+    return_val = Day_t + dt - 1;
+    arg4 = return_val;
+    // Makedate
+    var day = arg4;
+    var time = arg3;
+    var return_val;
+    var msPerDay = 86400000;
+    if (day === Infinity || time === Infinity) {
+      return_val = NaN;
+    }
+    return_val = day * msPerDay + time;
+    var newDate = return_val;
+    // 4. Let v be TimeClip(newDate).
+    var time = newDate;
+    var return_val;
+    if (time === Infinity) {
+      return_val = NaN;
+    }
+    if (Math.abs(time) > 8.64e+15) {
+      return_val = NaN;
+    }
+    return_val = @ToInteger(time);
+    var v = return_val;
+    // 5. Set the [[PrimitiveValue]] internal property of this Date object to v.
+    @PrimitiveValue(this,v);
+    // 6. Return v.
+    return v;
   }
   \\],
   135: [\\
-  function () {
+  function setMonth (month,date) {
+    // Need LocalTime(t);
+    @PrimitiveValue(this ,@NumTop);
+    return @NumTop;
   }
   \\],
   136: [\\
-  function () {
+  function setUTCMonth (month,date) {
+    // 1. Let t be this time value.
+    var t = @PrimitiveValue(this);
+    // 2. Let m be ToNumber(month).
+    var m = @ToNumber(month);
+    // 3. If date is not specified, then let dt be DateFromTime(t); otherwise, let dt be ToNumber(date).
+    if (!(arguments.length > 1)) {
+      var msPerDay = 86400000;
+      var Day_t = Math.floor(t/msPerDay);
+
+      var y = 0;
+      var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+
+      var TimeFromYear_y = msPerDay * DayFromYear_y;
+
+      while (TimeFromYear_y <= t) {
+        y += 1;
+        var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+
+        var TimeFromYear_y = msPerDay * DayFromYear_y;
+      }
+      y -= 1;
+      var YearFromTime_t = y;
+
+      var y = YearFromTime_t;
+
+      var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+
+      var DayWithinYear_t = Day_t - DayFromYear_y
+
+      var y = 0;
+      var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+
+      var msPerDay = 86400000;
+      var TimeFromYear_y = msPerDay * DayFromYear_y;
+
+      while (TimeFromYear_y <= t) {
+        y += 1;
+        var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+
+        var TimeFromYear_y = msPerDay * DayFromYear_y;
+      }
+      y -= 1;
+      var YearFromTime_t = y;
+
+      var y = YearFromTime_t;
+
+      if (y % 4 !== 0) {
+        var DaysInYear_y = 365;
+      }else if (y % 4 === 0 && y % 100 !== 0) {
+        var DaysInYear_y = 366;
+      }else if (y % 100 === 0 && y % 400 !== 0) {
+        var DaysInYear_y = 365;
+      }else if (y % 400 === 0) {
+        var DaysInYear_y = 366;
+      }
+
+      if (DaysInYear === 365) {
+        var InLeapYear_t = 0;
+      }else {
+        var InLeapYear_t = 1;
+      }
+
+      if (0 <= DayWithinYear_t < 31) {
+        var MonthFromTime_t = 0;
+      }else if (31 <= DayWithinYear_t < 59 + InLeapYear_t) {
+        var MonthFromTime_t = 1;
+      }else if (59 + InLeapYear_t <= DayWithinYear_t < 90 + InLeapYear_t) {
+        var MonthFromTime_t = 2;
+      }else if (90 + InLeapYear_t <= DayWithinYear_t < 120 + InLeapYear_t) {
+        var MonthFromTime_t = 3;
+      }else if (120 + InLeapYear_t <= DayWithinYear_t < 151 + InLeapYear_t) {
+        var MonthFromTime_t = 4;
+      }else if (151 + InLeapYear_t <= DayWithinYear_t < 181 + InLeapYear_t) {
+        var MonthFromTime_t = 5;
+      }else if (181 + InLeapYear_t <= DayWithinYear_t < 212 + InLeapYear_t) {
+        var MonthFromTime_t = 6;
+      }else if (212 + InLeapYear_t <= DayWithinYear_t < 243 + InLeapYear_t) {
+        var MonthFromTime_t = 7;
+      }else if (243 + InLeapYear_t <= DayWithinYear_t < 273 + InLeapYear_t) {
+        var MonthFromTime_t = 8;
+      }else if (273 + InLeapYear_t <= DayWithinYear_t < 304 + InLeapYear_t) {
+        var MonthFromTime_t = 9;
+      }else if (304 + InLeapYear_t <= DayWithinYear_t < 334 + InLeapYear_t) {
+        var MonthFromTime_t = 10;
+      }else if (334 + InLeapYear_t <= DayWithinYear_t < 365 + InLeapYear_t) {
+        var MonthFromTime_t = 11;
+      }
+
+      if (MonthFromTime_t === 0) {
+        var DateFromTime = DayWithinYear_t + 1;
+      }else if (MonthFromTime_t === 1) {
+        var DateFromTime = DayWithinYear_t - 30;
+      }else if (MonthFromTime_t === 2) {
+        var DateFromTime = DayWithinYear_t - 58 - InLeapYear_t;
+      }else if (MonthFromTime_t === 3) {
+        var DateFromTime = DayWithinYear_t - 89 - InLeapYear_t;
+      }else if (MonthFromTime_t === 4) {
+        var DateFromTime = DayWithinYear_t - 119 - InLeapYear_t;
+      }else if (MonthFromTime_t === 5) {
+        var DateFromTime = DayWithinYear_t - 150 - InLeapYear_t;
+      }else if (MonthFromTime_t === 6) {
+        var DateFromTime = DayWithinYear_t - 180 - InLeapYear_t;
+      }else if (MonthFromTime_t === 7) {
+        var DateFromTime = DayWithinYear_t - 211 - InLeapYear_t;
+      }else if (MonthFromTime_t === 8) {
+        var DateFromTime = DayWithinYear_t - 242 - InLeapYear_t;
+      }else if (MonthFromTime_t === 9) {
+        var DateFromTime = DayWithinYear_t - 272 - InLeapYear_t;
+      }else if (MonthFromTime_t === 10) {
+        var DateFromTime = DayWithinYear_t - 303 - InLeapYear_t;
+      }else if (MonthFromTime_t === 11) {
+        var DateFromTime = DayWithinYear_t - 333 - InLeapYear_t;
+      }
+      var dt = DateFromTime;
+    }else {
+      @ToNumber(date);
+    }
+    // 4. Let newDate be MakeDate(MakeDay(YearFromTime(t), m, dt), TimeWithinDay(t)).
+    var arg1;
+    var arg2;
+    var arg3;
+    // YearFromTime(t)
+    var y = 0;
+    var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+
+    var msPerDay = 86400000;
+    var TimeFromYear_y = msPerDay * DayFromYear_y;
+
+    while (TimeFromYear_y <= t) {
+      y += 1;
+      var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+
+      var TimeFromYear_y = msPerDay * DayFromYear_y;
+    }
+    y -= 1;
+    var YearFromTime_t = y;
+    arg1 = YearFromTime_t;
+    // TimeWithinDay(t)
+    var msPerDay = 86400000;
+    var TimeWithinDay_t = t % msPerDay;
+    arg2 = TimeWithinDay_t;
+    // MakeDay
+    var year = arg1;
+    var month = m;
+    var date = dt;
+    var return_val;
+    if (year === Infinity || month === Infinity || date === Infinity) {
+      return_val = NaN;
+    }
+    var y = @ToInteger(year);
+    var m = @ToInteger(month);
+    var dt = @ToInteger(date);
+    var ym = y + Math.floor(m/12);
+    var mn = m % 12;
+    var t = 0;
+    while (t < 8.64e+15) {
+      // YearFromTime(t)
+      var y = 0;
+      var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+
+      var TimeFromYear_y = msPerDay * DayFromYear_y;
+
+      while (TimeFromYear_y <= t) {
+        y += 1;
+        var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+
+        var TimeFromYear_y = msPerDay * DayFromYear_y;
+      }
+      y -= 1;
+      var YearFromTime_t = y;
+      if (YearFromTime_t === ym) {
+        // MonthFromTime(t)
+        var msPerDay = 86400000;
+        var Day_t = Math.floor(t/msPerDay);
+
+        var y = 0;
+        var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+
+        var TimeFromYear_y = msPerDay * DayFromYear_y;
+
+        while (TimeFromYear_y <= t) {
+          y += 1;
+          var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+
+          var TimeFromYear_y = msPerDay * DayFromYear_y;
+        }
+        y -= 1;
+        var YearFromTime_t = y;
+
+        var y = YearFromTime_t;
+
+        var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+
+        var DayWithinYear_t = Day_t - DayFromYear_y
+
+        var y = 0;
+        var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+
+        var msPerDay = 86400000;
+        var TimeFromYear_y = msPerDay * DayFromYear_y;
+
+        while (TimeFromYear_y <= t) {
+          y += 1;
+          var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+
+          var TimeFromYear_y = msPerDay * DayFromYear_y;
+        }
+        y -= 1;
+        var YearFromTime_t = y;
+
+        var y = YearFromTime_t;
+
+        if (y % 4 !== 0) {
+          var DaysInYear_y = 365;
+        }else if (y % 4 === 0 && y % 100 !== 0) {
+          var DaysInYear_y = 366;
+        }else if (y % 100 === 0 && y % 400 !== 0) {
+          var DaysInYear_y = 365;
+        }else if (y % 400 === 0) {
+          var DaysInYear_y = 366;
+        }
+
+        if (DaysInYear === 365) {
+          var InLeapYear_t = 0;
+        }else {
+          var InLeapYear_t = 1;
+        }
+
+        if (0 <= DayWithinYear_t < 31) {
+          var MonthFromTime_t = 0;
+        }else if (31 <= DayWithinYear_t < 59 + InLeapYear_t) {
+          var MonthFromTime_t = 1;
+        }else if (59 + InLeapYear_t <= DayWithinYear_t < 90 + InLeapYear_t) {
+          var MonthFromTime_t = 2;
+        }else if (90 + InLeapYear_t <= DayWithinYear_t < 120 + InLeapYear_t) {
+          var MonthFromTime_t = 3;
+        }else if (120 + InLeapYear_t <= DayWithinYear_t < 151 + InLeapYear_t) {
+          var MonthFromTime_t = 4;
+        }else if (151 + InLeapYear_t <= DayWithinYear_t < 181 + InLeapYear_t) {
+          var MonthFromTime_t = 5;
+        }else if (181 + InLeapYear_t <= DayWithinYear_t < 212 + InLeapYear_t) {
+          var MonthFromTime_t = 6;
+        }else if (212 + InLeapYear_t <= DayWithinYear_t < 243 + InLeapYear_t) {
+          var MonthFromTime_t = 7;
+        }else if (243 + InLeapYear_t <= DayWithinYear_t < 273 + InLeapYear_t) {
+          var MonthFromTime_t = 8;
+        }else if (273 + InLeapYear_t <= DayWithinYear_t < 304 + InLeapYear_t) {
+          var MonthFromTime_t = 9;
+        }else if (304 + InLeapYear_t <= DayWithinYear_t < 334 + InLeapYear_t) {
+          var MonthFromTime_t = 10;
+        }else if (334 + InLeapYear_t <= DayWithinYear_t < 365 + InLeapYear_t) {
+          var MonthFromTime_t = 11;
+        }
+        if (MonthFromTime_t === mn) {
+          // DateFromTime(t)
+          var msPerDay = 86400000;
+          var Day_t = Math.floor(t/msPerDay);
+
+          var y = 0;
+          var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+
+          var TimeFromYear_y = msPerDay * DayFromYear_y;
+
+          while (TimeFromYear_y <= t) {
+            y += 1;
+            var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+
+            var TimeFromYear_y = msPerDay * DayFromYear_y;
+          }
+          y -= 1;
+          var YearFromTime_t = y;
+
+          var y = YearFromTime_t;
+
+          var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+
+          var DayWithinYear_t = Day_t - DayFromYear_y
+
+          if (0 <= DayWithinYear_t < 31) {
+            var MonthFromTime_t = 0;
+          }else if (31 <= DayWithinYear_t < 59 + InLeapYear_t) {
+            var MonthFromTime_t = 1;
+          }else if (59 + InLeapYear_t <= DayWithinYear_t < 90 + InLeapYear_t) {
+            var MonthFromTime_t = 2;
+          }else if (90 + InLeapYear_t <= DayWithinYear_t < 120 + InLeapYear_t) {
+            var MonthFromTime_t = 3;
+          }else if (120 + InLeapYear_t <= DayWithinYear_t < 151 + InLeapYear_t) {
+            var MonthFromTime_t = 4;
+          }else if (151 + InLeapYear_t <= DayWithinYear_t < 181 + InLeapYear_t) {
+            var MonthFromTime_t = 5;
+          }else if (181 + InLeapYear_t <= DayWithinYear_t < 212 + InLeapYear_t) {
+            var MonthFromTime_t = 6;
+          }else if (212 + InLeapYear_t <= DayWithinYear_t < 243 + InLeapYear_t) {
+            var MonthFromTime_t = 7;
+          }else if (243 + InLeapYear_t <= DayWithinYear_t < 273 + InLeapYear_t) {
+            var MonthFromTime_t = 8;
+          }else if (273 + InLeapYear_t <= DayWithinYear_t < 304 + InLeapYear_t) {
+            var MonthFromTime_t = 9;
+          }else if (304 + InLeapYear_t <= DayWithinYear_t < 334 + InLeapYear_t) {
+            var MonthFromTime_t = 10;
+          }else if (334 + InLeapYear_t <= DayWithinYear_t < 365 + InLeapYear_t) {
+            var MonthFromTime_t = 11;
+          }
+
+          if (MonthFromTime_t === 0) {
+            var DateFromTime = DayWithinYear_t + 1;
+          }else if (MonthFromTime_t === 1) {
+            var DateFromTime = DayWithinYear_t - 30;
+          }else if (MonthFromTime_t === 2) {
+            var DateFromTime = DayWithinYear_t - 58 - InLeapYear_t;
+          }else if (MonthFromTime_t === 3) {
+            var DateFromTime = DayWithinYear_t - 89 - InLeapYear_t;
+          }else if (MonthFromTime_t === 4) {
+            var DateFromTime = DayWithinYear_t - 119 - InLeapYear_t;
+          }else if (MonthFromTime_t === 5) {
+            var DateFromTime = DayWithinYear_t - 150 - InLeapYear_t;
+          }else if (MonthFromTime_t === 6) {
+            var DateFromTime = DayWithinYear_t - 180 - InLeapYear_t;
+          }else if (MonthFromTime_t === 7) {
+            var DateFromTime = DayWithinYear_t - 211 - InLeapYear_t;
+          }else if (MonthFromTime_t === 8) {
+            var DateFromTime = DayWithinYear_t - 242 - InLeapYear_t;
+          }else if (MonthFromTime_t === 9) {
+            var DateFromTime = DayWithinYear_t - 272 - InLeapYear_t;
+          }else if (MonthFromTime_t === 10) {
+            var DateFromTime = DayWithinYear_t - 303 - InLeapYear_t;
+          }else if (MonthFromTime_t === 11) {
+            var DateFromTime = DayWithinYear_t - 333 - InLeapYear_t;
+          }
+          if (DateFromTime === 1){
+            break;
+          }
+        }
+      }
+      t += 1;
+    }
+    if (t === 8.64e+15) {
+      return_val = NaN;
+    }
+
+    var msPerDay = 86400000;
+    var Day_t = Math.floor(t/msPerDay);
+
+    return_val = Day_t + dt - 1;
+    arg3 = return_val;
+    // MakeDate
+    var day = arg3;
+    var time = arg2;
+    var return_val;
+    var msPerDay = 86400000;
+    if (day === Infinity || time === Infinity) {
+      return_val = NaN;
+    }
+    return_val = day * msPerDay + time;
+    var newDate = return_val;
+    // 5. Let v be TimeClip(newDate).
+    var time = newDate;
+    var return_val;
+    if (time === Infinity) {
+      return_val = NaN;
+    }
+    if (Math.abs(time) > 8.64e+15) {
+      return_val = NaN;
+    }
+    return_val = @ToInteger(time);
+    var v = return_val;
+    // 6. Set the [[PrimitiveValue]] internal property of this Date object to v.
+    @PrimitiveValue(this,v);
+    // 7. Return v.
+    return v;
   }
   \\],
   137: [\\
-  function () {
+  function setFullYear (year,month,date) {
+    // Need LocalTime(t);
+    @PrimitiveValue(this,@NumTop);
+    return @NumTop;
   }
   \\],
   138: [\\
-  function () {
+  function setUTCFullYear (year,month,date) {
+    // 1. Let t be this time value; but if this time value is NaN, let t be +0.
+    var t = @PrimitiveValue(this);
+    if (@SameValue(t,NaN)) {
+      var t = 0;
+    }
+    // 2. Let y be ToNumber(year).
+    var y = @ToNumber(year);
+    // 3. If month is not specified, then let m be MonthFromTime(t); otherwise, let m be ToNumber(month).
+    if (!(arguments.length > 1)) {
+      var msPerDay = 86400000;
+      var Day_t = Math.floor(t/msPerDay);
+
+      var y = 0;
+      var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+
+      var TimeFromYear_y = msPerDay * DayFromYear_y;
+
+      while (TimeFromYear_y <= t) {
+        y += 1;
+        var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+
+        var TimeFromYear_y = msPerDay * DayFromYear_y;
+      }
+      y -= 1;
+      var YearFromTime_t = y;
+
+      var y = YearFromTime_t;
+
+      var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+
+      var DayWithinYear_t = Day_t - DayFromYear_y
+
+      var y = 0;
+      var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+
+      var msPerDay = 86400000;
+      var TimeFromYear_y = msPerDay * DayFromYear_y;
+
+      while (TimeFromYear_y <= t) {
+        y += 1;
+        var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+
+        var TimeFromYear_y = msPerDay * DayFromYear_y;
+      }
+      y -= 1;
+      var YearFromTime_t = y;
+
+      var y = YearFromTime_t;
+
+      if (y % 4 !== 0) {
+        var DaysInYear_y = 365;
+      }else if (y % 4 === 0 && y % 100 !== 0) {
+        var DaysInYear_y = 366;
+      }else if (y % 100 === 0 && y % 400 !== 0) {
+        var DaysInYear_y = 365;
+      }else if (y % 400 === 0) {
+        var DaysInYear_y = 366;
+      }
+
+      if (DaysInYear === 365) {
+        var InLeapYear_t = 0;
+      }else {
+        var InLeapYear_t = 1;
+      }
+
+      if (0 <= DayWithinYear_t < 31) {
+        var MonthFromTime_t = 0;
+      }else if (31 <= DayWithinYear_t < 59 + InLeapYear_t) {
+        var MonthFromTime_t = 1;
+      }else if (59 + InLeapYear_t <= DayWithinYear_t < 90 + InLeapYear_t) {
+        var MonthFromTime_t = 2;
+      }else if (90 + InLeapYear_t <= DayWithinYear_t < 120 + InLeapYear_t) {
+        var MonthFromTime_t = 3;
+      }else if (120 + InLeapYear_t <= DayWithinYear_t < 151 + InLeapYear_t) {
+        var MonthFromTime_t = 4;
+      }else if (151 + InLeapYear_t <= DayWithinYear_t < 181 + InLeapYear_t) {
+        var MonthFromTime_t = 5;
+      }else if (181 + InLeapYear_t <= DayWithinYear_t < 212 + InLeapYear_t) {
+        var MonthFromTime_t = 6;
+      }else if (212 + InLeapYear_t <= DayWithinYear_t < 243 + InLeapYear_t) {
+        var MonthFromTime_t = 7;
+      }else if (243 + InLeapYear_t <= DayWithinYear_t < 273 + InLeapYear_t) {
+        var MonthFromTime_t = 8;
+      }else if (273 + InLeapYear_t <= DayWithinYear_t < 304 + InLeapYear_t) {
+        var MonthFromTime_t = 9;
+      }else if (304 + InLeapYear_t <= DayWithinYear_t < 334 + InLeapYear_t) {
+        var MonthFromTime_t = 10;
+      }else if (334 + InLeapYear_t <= DayWithinYear_t < 365 + InLeapYear_t) {
+        var MonthFromTime_t = 11;
+      }
+      var m = MonthFromTime_t;
+    }else {
+      var m = @ToNumber(m);
+    }
+    // 4. If date is not specified, then let dt be DateFromTime(t); otherwise, let dt be ToNumber(date).
+    if (!(arguments.length > 0)) {
+      var msPerDay = 86400000;
+      var Day_t = Math.floor(t/msPerDay);
+
+      var y = 0;
+      var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+
+      var TimeFromYear_y = msPerDay * DayFromYear_y;
+
+      while (TimeFromYear_y <= t) {
+        y += 1;
+        var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+
+        var TimeFromYear_y = msPerDay * DayFromYear_y;
+      }
+      y -= 1;
+      var YearFromTime_t = y;
+
+      var y = YearFromTime_t;
+
+      var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+
+      var DayWithinYear_t = Day_t - DayFromYear_y
+
+      var y = 0;
+      var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+
+      var msPerDay = 86400000;
+      var TimeFromYear_y = msPerDay * DayFromYear_y;
+
+      while (TimeFromYear_y <= t) {
+        y += 1;
+        var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+
+        var TimeFromYear_y = msPerDay * DayFromYear_y;
+      }
+      y -= 1;
+      var YearFromTime_t = y;
+
+      var y = YearFromTime_t;
+
+      if (y % 4 !== 0) {
+        var DaysInYear_y = 365;
+      }else if (y % 4 === 0 && y % 100 !== 0) {
+        var DaysInYear_y = 366;
+      }else if (y % 100 === 0 && y % 400 !== 0) {
+        var DaysInYear_y = 365;
+      }else if (y % 400 === 0) {
+        var DaysInYear_y = 366;
+      }
+
+      if (DaysInYear === 365) {
+        var InLeapYear_t = 0;
+      }else {
+        var InLeapYear_t = 1;
+      }
+
+      if (0 <= DayWithinYear_t < 31) {
+        var MonthFromTime_t = 0;
+      }else if (31 <= DayWithinYear_t < 59 + InLeapYear_t) {
+        var MonthFromTime_t = 1;
+      }else if (59 + InLeapYear_t <= DayWithinYear_t < 90 + InLeapYear_t) {
+        var MonthFromTime_t = 2;
+      }else if (90 + InLeapYear_t <= DayWithinYear_t < 120 + InLeapYear_t) {
+        var MonthFromTime_t = 3;
+      }else if (120 + InLeapYear_t <= DayWithinYear_t < 151 + InLeapYear_t) {
+        var MonthFromTime_t = 4;
+      }else if (151 + InLeapYear_t <= DayWithinYear_t < 181 + InLeapYear_t) {
+        var MonthFromTime_t = 5;
+      }else if (181 + InLeapYear_t <= DayWithinYear_t < 212 + InLeapYear_t) {
+        var MonthFromTime_t = 6;
+      }else if (212 + InLeapYear_t <= DayWithinYear_t < 243 + InLeapYear_t) {
+        var MonthFromTime_t = 7;
+      }else if (243 + InLeapYear_t <= DayWithinYear_t < 273 + InLeapYear_t) {
+        var MonthFromTime_t = 8;
+      }else if (273 + InLeapYear_t <= DayWithinYear_t < 304 + InLeapYear_t) {
+        var MonthFromTime_t = 9;
+      }else if (304 + InLeapYear_t <= DayWithinYear_t < 334 + InLeapYear_t) {
+        var MonthFromTime_t = 10;
+      }else if (334 + InLeapYear_t <= DayWithinYear_t < 365 + InLeapYear_t) {
+        var MonthFromTime_t = 11;
+      }
+
+      if (MonthFromTime_t === 0) {
+        var DateFromTime = DayWithinYear_t + 1;
+      }else if (MonthFromTime_t === 1) {
+        var DateFromTime = DayWithinYear_t - 30;
+      }else if (MonthFromTime_t === 2) {
+        var DateFromTime = DayWithinYear_t - 58 - InLeapYear_t;
+      }else if (MonthFromTime_t === 3) {
+        var DateFromTime = DayWithinYear_t - 89 - InLeapYear_t;
+      }else if (MonthFromTime_t === 4) {
+        var DateFromTime = DayWithinYear_t - 119 - InLeapYear_t;
+      }else if (MonthFromTime_t === 5) {
+        var DateFromTime = DayWithinYear_t - 150 - InLeapYear_t;
+      }else if (MonthFromTime_t === 6) {
+        var DateFromTime = DayWithinYear_t - 180 - InLeapYear_t;
+      }else if (MonthFromTime_t === 7) {
+        var DateFromTime = DayWithinYear_t - 211 - InLeapYear_t;
+      }else if (MonthFromTime_t === 8) {
+        var DateFromTime = DayWithinYear_t - 242 - InLeapYear_t;
+      }else if (MonthFromTime_t === 9) {
+        var DateFromTime = DayWithinYear_t - 272 - InLeapYear_t;
+      }else if (MonthFromTime_t === 10) {
+        var DateFromTime = DayWithinYear_t - 303 - InLeapYear_t;
+      }else if (MonthFromTime_t === 11) {
+        var DateFromTime = DayWithinYear_t - 333 - InLeapYear_t;
+      }
+      var dt = DateFromTime;
+    }else {
+      var dt = @ToNumber(dt);
+    }
+    // 5. Let newDate be MakeDate(MakeDay(y, m, dt), TimeWithinDay(t)).
+    var arg1;
+    var arg2;
+    // TimeWithinDay(t)
+    var msPerDay = 86400000;
+    var TimeWithinDay_t = t % msPerDay;
+    arg1 = TimeWithinDay_t;
+    // MakeDay
+    var year = y;
+    var month = m;
+    var date = dt;
+    var return_val;
+    if (year === Infinity || month === Infinity || date === Infinity) {
+      return_val = NaN;
+    }
+    var y = @ToInteger(year);
+    var m = @ToInteger(month);
+    var dt = @ToInteger(date);
+    var ym = y + Math.floor(m/12);
+    var mn = m % 12;
+    var t = 0;
+    while (t < 8.64e+15) {
+      // YearFromTime(t)
+      var y = 0;
+      var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+
+      var TimeFromYear_y = msPerDay * DayFromYear_y;
+
+      while (TimeFromYear_y <= t) {
+        y += 1;
+        var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+
+        var TimeFromYear_y = msPerDay * DayFromYear_y;
+      }
+      y -= 1;
+      var YearFromTime_t = y;
+      if (YearFromTime_t === ym) {
+        // MonthFromTime(t)
+        var msPerDay = 86400000;
+        var Day_t = Math.floor(t/msPerDay);
+
+        var y = 0;
+        var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+
+        var TimeFromYear_y = msPerDay * DayFromYear_y;
+
+        while (TimeFromYear_y <= t) {
+          y += 1;
+          var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+
+          var TimeFromYear_y = msPerDay * DayFromYear_y;
+        }
+        y -= 1;
+        var YearFromTime_t = y;
+
+        var y = YearFromTime_t;
+
+        var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+
+        var DayWithinYear_t = Day_t - DayFromYear_y
+
+        var y = 0;
+        var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+
+        var msPerDay = 86400000;
+        var TimeFromYear_y = msPerDay * DayFromYear_y;
+
+        while (TimeFromYear_y <= t) {
+          y += 1;
+          var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+
+          var TimeFromYear_y = msPerDay * DayFromYear_y;
+        }
+        y -= 1;
+        var YearFromTime_t = y;
+
+        var y = YearFromTime_t;
+
+        if (y % 4 !== 0) {
+          var DaysInYear_y = 365;
+        }else if (y % 4 === 0 && y % 100 !== 0) {
+          var DaysInYear_y = 366;
+        }else if (y % 100 === 0 && y % 400 !== 0) {
+          var DaysInYear_y = 365;
+        }else if (y % 400 === 0) {
+          var DaysInYear_y = 366;
+        }
+
+        if (DaysInYear === 365) {
+          var InLeapYear_t = 0;
+        }else {
+          var InLeapYear_t = 1;
+        }
+
+        if (0 <= DayWithinYear_t < 31) {
+          var MonthFromTime_t = 0;
+        }else if (31 <= DayWithinYear_t < 59 + InLeapYear_t) {
+          var MonthFromTime_t = 1;
+        }else if (59 + InLeapYear_t <= DayWithinYear_t < 90 + InLeapYear_t) {
+          var MonthFromTime_t = 2;
+        }else if (90 + InLeapYear_t <= DayWithinYear_t < 120 + InLeapYear_t) {
+          var MonthFromTime_t = 3;
+        }else if (120 + InLeapYear_t <= DayWithinYear_t < 151 + InLeapYear_t) {
+          var MonthFromTime_t = 4;
+        }else if (151 + InLeapYear_t <= DayWithinYear_t < 181 + InLeapYear_t) {
+          var MonthFromTime_t = 5;
+        }else if (181 + InLeapYear_t <= DayWithinYear_t < 212 + InLeapYear_t) {
+          var MonthFromTime_t = 6;
+        }else if (212 + InLeapYear_t <= DayWithinYear_t < 243 + InLeapYear_t) {
+          var MonthFromTime_t = 7;
+        }else if (243 + InLeapYear_t <= DayWithinYear_t < 273 + InLeapYear_t) {
+          var MonthFromTime_t = 8;
+        }else if (273 + InLeapYear_t <= DayWithinYear_t < 304 + InLeapYear_t) {
+          var MonthFromTime_t = 9;
+        }else if (304 + InLeapYear_t <= DayWithinYear_t < 334 + InLeapYear_t) {
+          var MonthFromTime_t = 10;
+        }else if (334 + InLeapYear_t <= DayWithinYear_t < 365 + InLeapYear_t) {
+          var MonthFromTime_t = 11;
+        }
+        if (MonthFromTime_t === mn) {
+          // DateFromTime(t)
+          var msPerDay = 86400000;
+          var Day_t = Math.floor(t/msPerDay);
+
+          var y = 0;
+          var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+
+          var TimeFromYear_y = msPerDay * DayFromYear_y;
+
+          while (TimeFromYear_y <= t) {
+            y += 1;
+            var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+
+            var TimeFromYear_y = msPerDay * DayFromYear_y;
+          }
+          y -= 1;
+          var YearFromTime_t = y;
+
+          var y = YearFromTime_t;
+
+          var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+
+          var DayWithinYear_t = Day_t - DayFromYear_y
+
+          if (0 <= DayWithinYear_t < 31) {
+            var MonthFromTime_t = 0;
+          }else if (31 <= DayWithinYear_t < 59 + InLeapYear_t) {
+            var MonthFromTime_t = 1;
+          }else if (59 + InLeapYear_t <= DayWithinYear_t < 90 + InLeapYear_t) {
+            var MonthFromTime_t = 2;
+          }else if (90 + InLeapYear_t <= DayWithinYear_t < 120 + InLeapYear_t) {
+            var MonthFromTime_t = 3;
+          }else if (120 + InLeapYear_t <= DayWithinYear_t < 151 + InLeapYear_t) {
+            var MonthFromTime_t = 4;
+          }else if (151 + InLeapYear_t <= DayWithinYear_t < 181 + InLeapYear_t) {
+            var MonthFromTime_t = 5;
+          }else if (181 + InLeapYear_t <= DayWithinYear_t < 212 + InLeapYear_t) {
+            var MonthFromTime_t = 6;
+          }else if (212 + InLeapYear_t <= DayWithinYear_t < 243 + InLeapYear_t) {
+            var MonthFromTime_t = 7;
+          }else if (243 + InLeapYear_t <= DayWithinYear_t < 273 + InLeapYear_t) {
+            var MonthFromTime_t = 8;
+          }else if (273 + InLeapYear_t <= DayWithinYear_t < 304 + InLeapYear_t) {
+            var MonthFromTime_t = 9;
+          }else if (304 + InLeapYear_t <= DayWithinYear_t < 334 + InLeapYear_t) {
+            var MonthFromTime_t = 10;
+          }else if (334 + InLeapYear_t <= DayWithinYear_t < 365 + InLeapYear_t) {
+            var MonthFromTime_t = 11;
+          }
+
+          if (MonthFromTime_t === 0) {
+            var DateFromTime = DayWithinYear_t + 1;
+          }else if (MonthFromTime_t === 1) {
+            var DateFromTime = DayWithinYear_t - 30;
+          }else if (MonthFromTime_t === 2) {
+            var DateFromTime = DayWithinYear_t - 58 - InLeapYear_t;
+          }else if (MonthFromTime_t === 3) {
+            var DateFromTime = DayWithinYear_t - 89 - InLeapYear_t;
+          }else if (MonthFromTime_t === 4) {
+            var DateFromTime = DayWithinYear_t - 119 - InLeapYear_t;
+          }else if (MonthFromTime_t === 5) {
+            var DateFromTime = DayWithinYear_t - 150 - InLeapYear_t;
+          }else if (MonthFromTime_t === 6) {
+            var DateFromTime = DayWithinYear_t - 180 - InLeapYear_t;
+          }else if (MonthFromTime_t === 7) {
+            var DateFromTime = DayWithinYear_t - 211 - InLeapYear_t;
+          }else if (MonthFromTime_t === 8) {
+            var DateFromTime = DayWithinYear_t - 242 - InLeapYear_t;
+          }else if (MonthFromTime_t === 9) {
+            var DateFromTime = DayWithinYear_t - 272 - InLeapYear_t;
+          }else if (MonthFromTime_t === 10) {
+            var DateFromTime = DayWithinYear_t - 303 - InLeapYear_t;
+          }else if (MonthFromTime_t === 11) {
+            var DateFromTime = DayWithinYear_t - 333 - InLeapYear_t;
+          }
+          if (DateFromTime === 1){
+            break;
+          }
+        }
+      }
+      t += 1;
+    }
+    if (t === 8.64e+15) {
+      return_val = NaN;
+    }
+
+    var msPerDay = 86400000;
+    var Day_t = Math.floor(t/msPerDay);
+
+    return_val = Day_t + dt - 1;
+    arg2 = return_val;
+    // MakeDate
+    var day = arg2;
+    var time = arg1;
+    var return_val;
+    var msPerDay = 86400000;
+    if (day === Infinity || time === Infinity) {
+      return_val = NaN;
+    }
+    return_val = day * msPerDay + time;
+    var newDate = return_val;
+    // 6. Let v be TimeClip(newDate).
+    var time = newDate;
+    var return_val;
+    if (time === Infinity) {
+      return_val = NaN;
+    }
+    if (Math.abs(time) > 8.64e+15) {
+      return_val = NaN;
+    }
+    return_val = @ToInteger(time);
+    var v = return_val;
+    // 7. Set the [[PrimitiveValue]] internal property of this Date object to v.
+    @PrimitiveValue(this,v);
+    // 8. Return v.
+    return v;
   }
   \\],
   139: [\\
-  function () {
+  function toUTCString () {
+    // Need to know internal structure of Date object
+    return @StrTop;
   }
   \\],
   140: [\\
-  function () {
+  function toISOString () {
+    // Need to know internal structure of Date object
+    return @StrTop;
   }
   \\],
   141: [\\
@@ -4838,7 +6183,9 @@ Function: {
   }
   \\],
   144: [\\
-  function () {
+  function parse () {
+    // TODO
+    return @NumTop;
   }
   \\],
   145: [\\
@@ -4935,7 +6282,7 @@ Function: {
         y -= 1;
         var YearFromTime_t = y;
 
-        var y = YearFromTime;
+        var y = YearFromTime_t;
 
         var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
 
@@ -5018,7 +6365,7 @@ Function: {
           y -= 1;
           var YearFromTime_t = y;
 
-          var y = YearFromTime;
+          var y = YearFromTime_t;
 
           var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
 
@@ -5143,7 +6490,9 @@ Function: {
   }
   \\],
   146: [\\
-  function () {
+  function now () {
+    // TODO
+    return @NumTop;
   }
   \\],
   147: [\\
