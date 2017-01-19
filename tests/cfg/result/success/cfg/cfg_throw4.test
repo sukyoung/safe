@@ -24,9 +24,9 @@ function[0] top-level {
 
   Block[6] -> [7]
 
-  LCont:[7] -> [1]
+  LCont[7] -> [1]
 
-  LBreak:[8] -> Exit, ExitExc
+  LBreak[8] -> Exit, ExitExc
     [0] x := "E"
     [1] noop(EndOfFile)
 

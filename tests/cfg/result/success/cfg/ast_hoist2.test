@@ -21,10 +21,10 @@ function[0] top-level {
   Block[3] -> [5], ExitExc
     [0] assert(! <>cond1<>6)
 
-  LCont:[4] -> [1]
+  LCont[4] -> [1]
     [0] <>cond1<>6 := @iteratorHasNext(<>obj<>4, <>iterator<>5)
 
-  LBreak:[5] -> Exit, ExitExc
+  LBreak[5] -> Exit, ExitExc
     [0] <>Global<>ignore6 := function (2) @ #4, #5
     [1] h := <>Global<>ignore6
     [2] noop(EndOfFile)
@@ -49,9 +49,9 @@ function[1] g {
   Block[3] -> [5], ExitExc
     [0] assert(! e1)
 
-  LCont:[4] -> [1]
+  LCont[4] -> [1]
 
-  LBreak:[5] -> Exit, ExitExc
+  LBreak[5] -> Exit, ExitExc
     [0] return(<>x<>1)
 
   Exit[-2]

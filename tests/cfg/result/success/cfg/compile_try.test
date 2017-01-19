@@ -4,47 +4,51 @@ function[0] top-level {
   Block[0] -> [1]
     [0] noop(StartOfFile)
 
-  Block[1] -> [2]
+  Try[1] -> [2]
     [0] throw("1")
 
-  Block[2] -> [3], [4]
+  Catch[2] -> [3], [4]
     [0] catch(<>e<>1)
     [1] <>Global<>ignore2 := "1"
 
-  Block[3] -> [5], ExitExc
+  Finally[3] -> [5], ExitExc
     [0] <>Global<>ignore4 := "2"
 
   Block[4] -> ExitExc, ExitExc
     [0] <>Global<>ignore4 := "2"
 
-  Block[5] -> [7]
+  Try[5] -> [7]
 
-  Block[6] -> [7]
+  Catch[6] -> [7]
     [0] catch(<>e<>2)
 
-  Block[7] -> [8]
+  Finally[7] -> [8]
 
-  Block[8] -> [9]
+  Try[8] -> [9]
 
-  Block[9] -> [11]
+  Finally[9] -> [10]
 
-  Block[10] -> [11]
+  Try[10] -> [12]
+
+  Catch[11] -> [12]
     [0] catch(<>e<>3)
 
-  Block[11] -> [12]
+  Finally[12] -> [13]
 
-  Block[12] -> [15]
+  Try[13] -> [16]
 
-  Block[13] -> [14]
+  Catch[14] -> [15]
     [0] catch(<>e<>4)
 
-  Block[14] -> Exit
+  Finally[15] -> Exit
     [0] noop(EndOfFile)
 
-  Block[15] -> [14]
+  Try[16] -> [18]
 
-  Block[16] -> [14]
+  Catch[17] -> [18]
     [0] catch(<>e<>5)
+
+  Finally[18] -> [15]
 
   Exit[-2]
 

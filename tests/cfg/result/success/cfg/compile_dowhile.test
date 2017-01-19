@@ -7,7 +7,7 @@ function[0] top-level {
 
   done:[1] -> [2]
 
-  LCont:[2] -> [3]
+  LCont[2] -> [3]
 
   LoopHead[3] -> [5], [4]
 
@@ -19,9 +19,9 @@ function[0] top-level {
 
   done:[6] -> [7]
 
-  LCont:[7] -> [3]
+  LCont[7] -> [3]
 
-  LBreak:[8] -> Exit
+  LBreak[8] -> Exit
     [0] noop(EndOfFile)
 
   Exit[-2]

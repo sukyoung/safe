@@ -5,19 +5,19 @@ function[0] top-level {
     [0] noop(StartOfFile)
     [1] x := 5
 
-  Block[1] -> [2], [18]
+  Try[1] -> [2], [18]
     [0] <>Global<>ignore3 := x
 
-  Block[2] -> [3], ExitExc
+  Finally[2] -> [3], ExitExc
     [0] x := 7
 
-  Block[3] -> [4], [11]
+  Try[3] -> [4], [11]
     [0] x := 2
 
-  Block[4] -> [5], ExitExc
+  Finally[4] -> [5], ExitExc
     [0] x := 10
 
-  Block[5] -> [7], [10]
+  Try[5] -> [7], [10]
     [0] <>obj<>1 := @ToObject(print) @ #1
     [1] <>temp<>2 := x
     [2] <>arguments<>3 := allocArg(1) @ #2
@@ -25,7 +25,7 @@ function[0] top-level {
     [4] <>fun<>4 := @GetBase(print)
     [5] <>this<> := enterCode(<>fun<>4)
 
-  Block[6] -> Exit, ExitExc
+  Finally[6] -> Exit, ExitExc
     [0] x := 9
     [1] x := 12
     [2] noop(EndOfFile)
@@ -43,7 +43,7 @@ function[0] top-level {
   Block[11] -> [12], ExitExc
     [0] x := 10
 
-  Block[12] -> [14], [17]
+  Try[12] -> [14], [17]
     [0] <>obj<>1 := @ToObject(print) @ #4
     [1] <>temp<>2 := x
     [2] <>arguments<>3 := allocArg(1) @ #5
@@ -51,7 +51,7 @@ function[0] top-level {
     [4] <>fun<>4 := @GetBase(print)
     [5] <>this<> := enterCode(<>fun<>4)
 
-  Block[13] -> ExitExc, ExitExc
+  Finally[13] -> ExitExc, ExitExc
     [0] x := 9
 
   Call[14] -> [17]
@@ -67,13 +67,13 @@ function[0] top-level {
   Block[18] -> [19], ExitExc
     [0] x := 7
 
-  Block[19] -> [20], [27]
+  Try[19] -> [20], [27]
     [0] x := 2
 
-  Block[20] -> [21], ExitExc
+  Finally[20] -> [21], ExitExc
     [0] x := 10
 
-  Block[21] -> [23], [26]
+  Try[21] -> [23], [26]
     [0] <>obj<>1 := @ToObject(print) @ #7
     [1] <>temp<>2 := x
     [2] <>arguments<>3 := allocArg(1) @ #8
@@ -81,7 +81,7 @@ function[0] top-level {
     [4] <>fun<>4 := @GetBase(print)
     [5] <>this<> := enterCode(<>fun<>4)
 
-  Block[22] -> ExitExc, ExitExc
+  Finally[22] -> ExitExc, ExitExc
     [0] x := 9
 
   Call[23] -> [26]
@@ -97,7 +97,7 @@ function[0] top-level {
   Block[27] -> [28], ExitExc
     [0] x := 10
 
-  Block[28] -> [30], [33]
+  Try[28] -> [30], [33]
     [0] <>obj<>1 := @ToObject(print) @ #10
     [1] <>temp<>2 := x
     [2] <>arguments<>3 := allocArg(1) @ #11
@@ -105,7 +105,7 @@ function[0] top-level {
     [4] <>fun<>4 := @GetBase(print)
     [5] <>this<> := enterCode(<>fun<>4)
 
-  Block[29] -> ExitExc, ExitExc
+  Finally[29] -> ExitExc, ExitExc
     [0] x := 9
 
   Call[30] -> [33]

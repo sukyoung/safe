@@ -5,12 +5,12 @@ function[0] top-level {
     [0] noop(StartOfFile)
     [1] z := 1
 
-  Block[1] -> [5], [4]
+  Try[1] -> [5], [4]
 
-  Block[2] -> [8], [7]
+  Catch[2] -> [8], [7]
     [0] catch(<>e<>1)
 
-  Block[3] -> [16]
+  Finally[3] -> [16]
 
   Block[4] -> [6], [2]
     [0] assert(true)
@@ -28,16 +28,16 @@ function[0] top-level {
     [5] <>obj<>2 := @ToObject(y) @ #2
     [6] throw(<>obj<>2["a"])
 
-  Block[7] -> [9], [37]
+  Block[7] -> [9], [39]
     [0] assert(<>e<>1 == "A")
     [1] <>Global<>ignore3 := undefined
 
-  Block[8] -> [9], [37]
+  Block[8] -> [9], [39]
     [0] assert(<>e<>1 != "A")
 
   Block[9] -> [10]
 
-  Block[10] -> [12], [15]
+  Try[10] -> [12], [15]
     [0] <>Global<>ignore4 := function (1) @ #4, #5
     [1] x := <>Global<>ignore4
     [2] <>obj<>7 := @ToObject(x) @ #6
@@ -55,7 +55,7 @@ function[0] top-level {
     [14] <>fun<>14 := @GetBase(x)
     [15] <>this<> := enterCode(<>fun<>14)
 
-  Block[11] -> [3], [37]
+  Finally[11] -> [3], [39]
     [0] <>obj<>15 := @ToObject(y) @ #10
     [1] <>Global<>ignore6 := alloc() @ #11
     [2] <>Global<>ignore6["test"] := - 23.8
@@ -68,7 +68,7 @@ function[0] top-level {
 
   AfterCatch[14] -> [15]
 
-  Block[15] -> [26], [37]
+  Block[15] -> [27], [39]
     [0] <>obj<>15 := @ToObject(y) @ #12
     [1] <>Global<>ignore6 := alloc() @ #13
     [2] <>Global<>ignore6["test"] := - 23.8
@@ -93,80 +93,84 @@ function[0] top-level {
 
   Block[21] -> [22]
 
-  LCont:[22] -> [16]
+  LCont[22] -> [16]
 
-  LBreak:[23] -> [24]
+  LBreak[23] -> [24]
 
-  Block[24] -> [48]
+  Try[24] -> [26]
 
-  Block[25] -> [48], ExitExc
+  Catch[25] -> [26], ExitExc
     [0] catch(<>e<>18)
     [1] <>Global<>ignore10 := <>e<>18
 
-  Block[26] -> [27]
-
-  LoopHead[27] -> [29], [28]
-
-  Block[28] -> [31], [30], ExitExc
-    [0] assert(true)
-    [1] <>old<>16 := x
-    [2] <>new<>17 := @ToNumber(<>old<>16)
-    [3] x := <>new<>17 - 1
-
-  Block[29] -> [34], ExitExc
-    [0] assert(! true)
-
-  Block[30] -> [34], ExitExc
-    [0] assert(<>new<>17 == 0)
-
-  Block[31] -> [32], ExitExc
-    [0] assert(<>new<>17 != 0)
-
-  Block[32] -> [33]
-
-  LCont:[33] -> [27]
-
-  LBreak:[34] -> [35]
-
-  Block[35] -> ExitExc
-
-  Block[36] -> ExitExc, ExitExc
-    [0] catch(<>e<>18)
-    [1] <>Global<>ignore10 := <>e<>18
-
-  Block[37] -> [38]
-
-  LoopHead[38] -> [40], [39]
-
-  Block[39] -> [42], [41], ExitExc
-    [0] assert(true)
-    [1] <>old<>16 := x
-    [2] <>new<>17 := @ToNumber(<>old<>16)
-    [3] x := <>new<>17 - 1
-
-  Block[40] -> [45], ExitExc
-    [0] assert(! true)
-
-  Block[41] -> [45], ExitExc
-    [0] assert(<>new<>17 == 0)
-
-  Block[42] -> [43], ExitExc
-    [0] assert(<>new<>17 != 0)
-
-  Block[43] -> [44]
-
-  LCont:[44] -> [38]
-
-  LBreak:[45] -> [46]
-
-  Block[46] -> ExitExc
-
-  Block[47] -> ExitExc, ExitExc
-    [0] catch(<>e<>18)
-    [1] <>Global<>ignore10 := <>e<>18
-
-  Block[48] -> Exit
+  Finally[26] -> Exit
     [0] noop(EndOfFile)
+
+  Block[27] -> [28]
+
+  LoopHead[28] -> [30], [29]
+
+  Block[29] -> [32], [31], ExitExc
+    [0] assert(true)
+    [1] <>old<>16 := x
+    [2] <>new<>17 := @ToNumber(<>old<>16)
+    [3] x := <>new<>17 - 1
+
+  Block[30] -> [35], ExitExc
+    [0] assert(! true)
+
+  Block[31] -> [35], ExitExc
+    [0] assert(<>new<>17 == 0)
+
+  Block[32] -> [33], ExitExc
+    [0] assert(<>new<>17 != 0)
+
+  Block[33] -> [34]
+
+  LCont[34] -> [28]
+
+  LBreak[35] -> [36]
+
+  Try[36] -> [38]
+
+  Catch[37] -> [38], ExitExc
+    [0] catch(<>e<>18)
+    [1] <>Global<>ignore10 := <>e<>18
+
+  Finally[38] -> ExitExc
+
+  Block[39] -> [40]
+
+  LoopHead[40] -> [42], [41]
+
+  Block[41] -> [44], [43], ExitExc
+    [0] assert(true)
+    [1] <>old<>16 := x
+    [2] <>new<>17 := @ToNumber(<>old<>16)
+    [3] x := <>new<>17 - 1
+
+  Block[42] -> [47], ExitExc
+    [0] assert(! true)
+
+  Block[43] -> [47], ExitExc
+    [0] assert(<>new<>17 == 0)
+
+  Block[44] -> [45], ExitExc
+    [0] assert(<>new<>17 != 0)
+
+  Block[45] -> [46]
+
+  LCont[46] -> [40]
+
+  LBreak[47] -> [48]
+
+  Try[48] -> [50]
+
+  Catch[49] -> [50], ExitExc
+    [0] catch(<>e<>18)
+    [1] <>Global<>ignore10 := <>e<>18
+
+  Finally[50] -> ExitExc
 
   Exit[-2]
 

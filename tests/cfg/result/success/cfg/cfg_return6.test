@@ -42,9 +42,9 @@ function[1] f {
   Block[4] -> [6], ExitExc
     [0] assert(! true)
 
-  LCont:[5] -> [2]
+  LCont[5] -> [2]
 
-  LBreak:[6] -> Exit
+  LBreak[6] -> Exit
 
   Exit[-2]
 
