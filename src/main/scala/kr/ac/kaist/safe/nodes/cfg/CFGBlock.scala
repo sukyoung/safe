@@ -154,7 +154,7 @@ case class AfterCatch(func: CFGFunction, call: Call) extends CFGBlock {
 }
 
 // normal block
-case class NormalBlock(func: CFGFunction) extends CFGBlock {
+case class NormalBlock(func: CFGFunction, label: LabelKind = NoLabel) extends CFGBlock {
   // block id
   val id: BlockId = func.getBId
 
@@ -171,7 +171,7 @@ case class NormalBlock(func: CFGFunction) extends CFGBlock {
   }
 
   // toString
-  override def toString: String = s"Block[$id]"
+  override def toString: String = s"$label[$id]"
   override def toString(indent: Int): String = {
     val pre = "  " * indent
     val s: StringBuilder = new StringBuilder

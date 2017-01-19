@@ -10,7 +10,7 @@ function[0] top-level {
   Block[2] -> [8], [7]
     [0] catch(<>e<>1)
 
-  Block[3] -> [17]
+  Block[3] -> [16]
 
   Block[4] -> [6], [2]
     [0] assert(true)
@@ -74,28 +74,28 @@ function[0] top-level {
     [2] <>Global<>ignore6["test"] := - 23.8
     [3] <>obj<>15["d"] := <>Global<>ignore6
 
-  Block[16] -> [24]
+  LoopHead[16] -> [18], [17]
 
-  LoopHead[17] -> [19], [18]
-
-  Block[18] -> [22], [21], ExitExc
+  Block[17] -> [20], [19], ExitExc
     [0] assert(true)
     [1] <>old<>16 := x
     [2] <>new<>17 := @ToNumber(<>old<>16)
     [3] x := <>new<>17 - 1
 
-  Block[19] -> [16], ExitExc
+  Block[18] -> [23], ExitExc
     [0] assert(! true)
 
-  Block[20] -> [17]
-
-  Block[21] -> [16], ExitExc
+  Block[19] -> [23], ExitExc
     [0] assert(<>new<>17 == 0)
 
-  Block[22] -> [23], ExitExc
+  Block[20] -> [21], ExitExc
     [0] assert(<>new<>17 != 0)
 
-  Block[23] -> [20]
+  Block[21] -> [22]
+
+  LCont:[22] -> [16]
+
+  LBreak:[23] -> [24]
 
   Block[24] -> [48]
 
@@ -103,30 +103,30 @@ function[0] top-level {
     [0] catch(<>e<>18)
     [1] <>Global<>ignore10 := <>e<>18
 
-  Block[26] -> [28]
+  Block[26] -> [27]
 
-  Block[27] -> [35]
+  LoopHead[27] -> [29], [28]
 
-  LoopHead[28] -> [30], [29]
-
-  Block[29] -> [33], [32], ExitExc
+  Block[28] -> [31], [30], ExitExc
     [0] assert(true)
     [1] <>old<>16 := x
     [2] <>new<>17 := @ToNumber(<>old<>16)
     [3] x := <>new<>17 - 1
 
-  Block[30] -> [27], ExitExc
+  Block[29] -> [34], ExitExc
     [0] assert(! true)
 
-  Block[31] -> [28]
-
-  Block[32] -> [27], ExitExc
+  Block[30] -> [34], ExitExc
     [0] assert(<>new<>17 == 0)
 
-  Block[33] -> [34], ExitExc
+  Block[31] -> [32], ExitExc
     [0] assert(<>new<>17 != 0)
 
-  Block[34] -> [31]
+  Block[32] -> [33]
+
+  LCont:[33] -> [27]
+
+  LBreak:[34] -> [35]
 
   Block[35] -> ExitExc
 
@@ -134,30 +134,30 @@ function[0] top-level {
     [0] catch(<>e<>18)
     [1] <>Global<>ignore10 := <>e<>18
 
-  Block[37] -> [39]
+  Block[37] -> [38]
 
-  Block[38] -> [46]
+  LoopHead[38] -> [40], [39]
 
-  LoopHead[39] -> [41], [40]
-
-  Block[40] -> [44], [43], ExitExc
+  Block[39] -> [42], [41], ExitExc
     [0] assert(true)
     [1] <>old<>16 := x
     [2] <>new<>17 := @ToNumber(<>old<>16)
     [3] x := <>new<>17 - 1
 
-  Block[41] -> [38], ExitExc
+  Block[40] -> [45], ExitExc
     [0] assert(! true)
 
-  Block[42] -> [39]
-
-  Block[43] -> [38], ExitExc
+  Block[41] -> [45], ExitExc
     [0] assert(<>new<>17 == 0)
 
-  Block[44] -> [45], ExitExc
+  Block[42] -> [43], ExitExc
     [0] assert(<>new<>17 != 0)
 
-  Block[45] -> [42]
+  Block[43] -> [44]
+
+  LCont:[44] -> [38]
+
+  LBreak:[45] -> [46]
 
   Block[46] -> ExitExc
 

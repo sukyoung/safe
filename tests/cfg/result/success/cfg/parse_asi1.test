@@ -24,45 +24,45 @@ function[0] top-level {
 
   AfterCatch[5] -> ExitExc
 
-  Block[6] -> [8], ExitExc
+  Block[6] -> [7], ExitExc
     [0] <>obj<>4 := @ToObject(getNode) @ #4
     [1] <>arguments<>5 := allocArg(0) @ #5
     [2] <>fun<>6 := @GetBase(getNode)
     [3] <>this<> := enterCode(<>fun<>6)
 
-  Block[7] -> Exit, ExitExc
+  Call[7] -> ExitExc
+    [0] call(<>obj<>4, <>this<>, <>arguments<>5) @ #6
+
+  AfterCall[8] -> [10]
+
+  AfterCatch[9] -> ExitExc
+
+  Block[10] -> [11], ExitExc
+    [0] node := <>Global<>ignore8
+    [1] <>Global<>ignore9 := <>Global<>ignore8
+    [2] <>obj<>7 := @ToObject(node) @ #7
+
+  LoopHead[11] -> [13], [12]
+
+  Block[12] -> [14], ExitExc
+    [0] assert(<>obj<>7["parent"])
+
+  Block[13] -> [15], ExitExc
+    [0] assert(! <>obj<>7["parent"])
+
+  LCont:[14] -> [11], ExitExc
+    [0] <>obj<>8 := @ToObject(node) @ #8
+    [1] node := <>obj<>8["parent"]
+    [2] <>Global<>ignore11 := <>obj<>8["parent"]
+    [3] <>obj<>7 := @ToObject(node) @ #9
+
+  LBreak:[15] -> Exit, ExitExc
     [0] <>Global<>ignore13 := i
     [1] <>old<>9 := j
     [2] <>new<>10 := @ToNumber(<>old<>9)
     [3] j := <>new<>10 + 1
     [4] <>Global<>ignore15 := <>new<>10 + 1
     [5] noop(EndOfFile)
-
-  Call[8] -> ExitExc
-    [0] call(<>obj<>4, <>this<>, <>arguments<>5) @ #6
-
-  AfterCall[9] -> [11]
-
-  AfterCatch[10] -> ExitExc
-
-  Block[11] -> [12], ExitExc
-    [0] node := <>Global<>ignore8
-    [1] <>Global<>ignore9 := <>Global<>ignore8
-    [2] <>obj<>7 := @ToObject(node) @ #7
-
-  LoopHead[12] -> [14], [13]
-
-  Block[13] -> [15], ExitExc
-    [0] assert(<>obj<>7["parent"])
-
-  Block[14] -> [7], ExitExc
-    [0] assert(! <>obj<>7["parent"])
-
-  Block[15] -> [12], ExitExc
-    [0] <>obj<>8 := @ToObject(node) @ #8
-    [1] node := <>obj<>8["parent"]
-    [2] <>Global<>ignore11 := <>obj<>8["parent"]
-    [3] <>obj<>7 := @ToObject(node) @ #9
 
   Exit[-2]
 

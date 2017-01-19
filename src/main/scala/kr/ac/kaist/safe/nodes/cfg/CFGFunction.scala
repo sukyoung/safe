@@ -65,8 +65,9 @@ class CFGFunction(
   }
 
   // create block
-  def createBlock: NormalBlock = {
-    val block = NormalBlock(this)
+  def createBlock: NormalBlock = createBlock(NoLabel)
+  def createBlock(label: LabelKind): NormalBlock = {
+    val block = NormalBlock(this, label)
     addBlock(block)
     block
   }
