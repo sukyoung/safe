@@ -68,6 +68,8 @@ object NodeUtil {
   val INTERNAL_GET_OWN_PROP = internalAPIName("GetOwnProperty")
   // 8.12.9 [[DefineOwnProperty]] (P, Desc, Throw)
   val INTERNAL_DEF_OWN_PROP = internalAPIName("DefineOwnProperty")
+  // 9.1 ToPrimitive
+  val INTERNAL_TO_PRIM = internalAPIName("ToPrimitive")
   // 9.2 ToBoolean
   val INTERNAL_TO_BOOL = internalAPIName("ToBoolean")
   // 9.3 ToNumber
@@ -140,6 +142,7 @@ object NodeUtil {
     INTERNAL_GET_BASE,
     INTERNAL_GET_OWN_PROP,
     INTERNAL_DEF_OWN_PROP,
+    INTERNAL_TO_PRIM,
     INTERNAL_TO_BOOL,
     INTERNAL_TO_NUM,
     INTERNAL_TO_INT,

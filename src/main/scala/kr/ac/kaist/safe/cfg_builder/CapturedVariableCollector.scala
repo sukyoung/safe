@@ -156,7 +156,7 @@ class CapturedVariableCollector(
           walk(index, locals) ++
           walk(rhs, locals)
       case IRThrow(_, expr) => walk(expr, locals)
-      case IRWhile(_, cond, body) =>
+      case IRWhile(_, cond, body, _, _) =>
         walk(cond, locals) ++ walk(body, locals)
       case _ =>
         excLog.signal(IRIgnored(stmt))
