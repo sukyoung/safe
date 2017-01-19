@@ -606,7 +606,7 @@ class Translator(program: Program) {
         IRSeq(s, ss)
       )
       isDoWhile = false
-      val stmt = IRSeq(s, newBody, IRWhile(s, r, newBody))
+      val stmt = IRSeq(s, newBody, IRWhile(s, r, newBody, labelName, cont))
       IRStmtUnit(s, IRLabelStmt(s, labelName, stmt))
 
     case While(_, cond, body) =>
@@ -620,7 +620,7 @@ class Translator(program: Program) {
         s,
         IRLabelStmt(s, cont, walkStmt(body, newEnv)) :: ssList
       )
-      val stmt = IRSeq(s, ssList :+ IRWhile(s, r, newBody))
+      val stmt = IRSeq(s, ssList :+ IRWhile(s, r, newBody, labelName, cont))
       IRStmtUnit(s, IRLabelStmt(s, labelName, stmt))
 
     case For(_, init, cond, action, body) =>
@@ -646,11 +646,10 @@ class Translator(program: Program) {
           IRSeq(
             s,
             IRSeq(s, front),
-            IRWhile(s, TRUE_BOOL,
-              IRSeq(
-                s,
-                nbody, IRSeq(s, back)
-              ))
+            IRWhile(s, TRUE_BOOL, IRSeq(
+              s,
+              nbody, IRSeq(s, back)
+            ), labelName, cont)
           )
         case Some(cexpr) =>
           val newtwo = freshId(cexpr, cexpr.span, "new2")
@@ -659,7 +658,7 @@ class Translator(program: Program) {
           IRSeq(
             s,
             IRSeq(s, front ++ ss2),
-            IRWhile(s, r2, IRSeq(s, newBody))
+            IRWhile(s, r2, IRSeq(s, newBody), labelName, cont)
           )
       }
       IRStmtUnit(s, IRLabelStmt(s, labelName, stmt))
@@ -694,7 +693,7 @@ class Translator(program: Program) {
           iteratorInit(s, iterator, obj),
           iteratorCheck
         )),
-        IRWhile(s, condone, newBody)
+        IRWhile(s, condone, newBody, labelName, cont)
       )
       IRStmtUnit(s, IRLabelStmt(s, labelName, stmt))
 

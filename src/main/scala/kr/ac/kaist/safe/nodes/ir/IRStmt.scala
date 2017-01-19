@@ -408,7 +408,9 @@ case class IRIf(
 case class IRWhile(
     override val ast: ASTNode,
     cond: IRExpr,
-    body: IRStmt
+    body: IRStmt,
+    breakLabel: IRId,
+    contLabel: IRId
 ) extends IRStmt(ast) {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder

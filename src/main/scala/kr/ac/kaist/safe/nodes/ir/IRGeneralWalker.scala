@@ -80,8 +80,8 @@ trait IRGeneralWalker[Result] {
       join(walk(ast) :: stmts.map(walk): _*)
     case IRIf(ast, expr, trueB, falseB) =>
       join(walk(ast) :: walk(expr) :: walk(trueB) :: walkOpt(falseB): _*)
-    case IRWhile(ast, cond, body) =>
-      join(walk(ast), walk(cond), walk(body))
+    case IRWhile(ast, cond, body, br, cont) =>
+      join(walk(ast), walk(cond), walk(body), walk(br), walk(cont))
     case IRTry(ast, body, name, catchB, finallyB) =>
       join(walk(ast) :: walk(body) :: walkOpt(name) ++ walkOpt(catchB) ++ walkOpt(finallyB): _*)
     case IRNoOp(ast, desc) =>
