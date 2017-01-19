@@ -574,6 +574,15 @@ class Semantics(
       val excSt = st.raiseException(retExcSet)
       (retSt, excSt)
     }
+    case (NodeUtil.INTERNAL_TO_PRIM, List(expr), None) => {
+      val (v, excSet) = V(expr, st)
+      val st1 =
+        if (!v.isBottom) st.varStore(lhs, AbsValue(TypeConversionHelper.ToPrimitive(v)))
+        else AbsState.Bot
+
+      val newExcSt = st.raiseException(excSet)
+      (st1, excSt + newExcSt)
+    }
     case (NodeUtil.INTERNAL_TO_BOOL, List(expr), None) => {
       val (v, excSet) = V(expr, st)
       val st1 =
