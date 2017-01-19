@@ -28,34 +28,34 @@ function[0] top-level {
     [1] <>obj<>3 := @ToObject(obj) @ #3
     [2] <>Global<>ignore7 := delete(<>obj<>3, "b")
 
-  Block[4] -> [7], [2]
+  Block[4] -> [6], [2]
     [0] assert(<>obj<>2["a"] != x)
 
   Block[5] -> [2]
     [0] throw(x)
 
-  Block[6] -> [5]
+  LoopHead[6] -> [8], [7]
 
-  LoopHead[7] -> [9], [8]
-
-  Block[8] -> [12], [11], [2]
+  Block[7] -> [10], [9], [2]
     [0] assert(true)
     [1] <>old<>4 := x
     [2] <>new<>5 := @ToNumber(<>old<>4)
     [3] x := <>new<>5 - 1
 
-  Block[9] -> [6], [2]
+  Block[8] -> [13], [2]
     [0] assert(! true)
 
-  Block[10] -> [7]
-
-  Block[11] -> [6], [2]
+  Block[9] -> [13], [2]
     [0] assert(<>new<>5)
 
-  Block[12] -> [13], [2]
+  Block[10] -> [11], [2]
     [0] assert(! <>new<>5)
 
-  Block[13] -> [10]
+  Block[11] -> [12]
+
+  LCont:[12] -> [6]
+
+  LBreak:[13] -> [5]
 
   Call[14] -> ExitExc
     [0] call(<>obj<>10, <>this<>, <>arguments<>11) @ #8

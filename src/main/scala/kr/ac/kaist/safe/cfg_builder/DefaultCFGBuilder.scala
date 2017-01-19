@@ -57,7 +57,7 @@ class DefaultCFGBuilder(
   private case object ThrowLabel extends JSLabel
   private case object ThrowEndLabel extends JSLabel
   private case object AfterCatchLabel extends JSLabel
-  private case class UserLabel(label: String) extends JSLabel
+  private case class NamedLabel(label: String) extends JSLabel
   private type LabelMap = Map[JSLabel, Set[CFGBlock]]
 
   ////////////////////////////////////////////////////////////////
@@ -385,8 +385,8 @@ class DefaultCFGBuilder(
         (List(tailBlock), lmap.updated(ThrowLabel, (ThrowLabel of lmap) + tailBlock))
       case IRBreak(_, label) =>
         val key: String = label.uniqueName
-        val bs: Set[CFGBlock] = lmap.getOrElse(UserLabel(key), HashSet()) ++ blocks.toSet
-        (Nil, lmap.updated(UserLabel(key), bs))
+        val bs: Set[CFGBlock] = lmap.getOrElse(NamedLabel(key), HashSet()) ++ blocks.toSet
+        (Nil, lmap.updated(NamedLabel(key), bs))
       /* PEI : internal @Call */
       case IRInternalCall(_, lhs, NodeUtil.INTERNAL_CALL, fun :: thisId :: args :: Nil) =>
         val tailBlock: NormalBlock = getTail(blocks, func)
@@ -494,9 +494,18 @@ class DefaultCFGBuilder(
             (List(endBlock), truelmap.updated(ThrowLabel, (ThrowLabel of truelmap) + trueBlock + falseBlock))
         }
       case IRLabelStmt(_, labelIR, stmt) =>
-        val block: NormalBlock = func.createBlock
         val (bs: List[CFGBlock], lm: LabelMap) = translateStmt(stmt, func, blocks, lmap)
-        val label: JSLabel = UserLabel(labelIR.uniqueName)
+        val label: JSLabel = NamedLabel(labelIR.uniqueName)
+        val labelKind = labelIR.originalName match {
+          case s if s startsWith "<>break<>" => LoopBreakLabel
+          case s if s startsWith "<>continue<>" => LoopContLabel
+          case s if s startsWith "<>label" => BranchLabel
+          case s if s startsWith "<>switch<>" => SwitchLabel
+          case s if s startsWith "<>Case" => CaseLabel
+          case s if s startsWith "<>default" => DefaultLabel
+          case s => UserLabel(s)
+        }
+        val block: NormalBlock = func.createBlock(labelKind)
         cfg.addEdge(bs, block)
         cfg.addEdge(label of lm toList, block)
         (List(block), lm - label)
@@ -616,7 +625,7 @@ class DefaultCFGBuilder(
   private def getTail(blocks: List[CFGBlock], func: CFGFunction): NormalBlock = {
     blocks match {
       case Nil => func.createBlock
-      case (block @ NormalBlock(_)) :: Nil => block
+      case (block: NormalBlock) :: Nil => block
       case _ =>
         val tailBlock: NormalBlock = func.createBlock
         blocks.foreach(cfg.addEdge(_, tailBlock))

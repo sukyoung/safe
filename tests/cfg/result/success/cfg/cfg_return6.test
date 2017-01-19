@@ -31,20 +31,20 @@ function[1] f {
   Block[0] -> Exit, ExitExc
     [0] return()
 
-  Block[1] -> Exit
+  Block[1] -> [2]
 
-  Block[2] -> [3]
+  LoopHead[2] -> [4], [3]
 
-  LoopHead[3] -> [5], [4]
-
-  Block[4] -> [6], ExitExc
+  Block[3] -> [5], ExitExc
     [0] assert(true)
     [1] x := "A"
 
-  Block[5] -> [1], ExitExc
+  Block[4] -> [6], ExitExc
     [0] assert(! true)
 
-  Block[6] -> [3]
+  LCont:[5] -> [2]
+
+  LBreak:[6] -> Exit
 
   Exit[-2]
 
