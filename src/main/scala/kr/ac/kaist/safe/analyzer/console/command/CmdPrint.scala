@@ -200,7 +200,7 @@ case object CmdPrint extends Command("print", "Print out various information.") 
           case _ => help
         }
         case "html" => rest match {
-          case name :: Nil => HTMLWriter.writeHTMLFile(c.cfg, Some(c.worklist), s"$name.html")
+          case name :: Nil => HTMLWriter.writeHTMLFile(c.cfg, c.semantics, Some(c.worklist), s"$name.html")
           case _ => help
         }
         case _ => help
