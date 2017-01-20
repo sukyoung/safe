@@ -6875,71 +6875,226 @@ Function: {
   }
   \\],
   150: [\\
-  function () {
+  function RegExp () {
+    return new RegExp();
   }
   \\],
   151: [\\
-  function () {
+  function RegExp () {
+    var obj = {};
+    @Class(obj,"RegExp");
+    @Prototype(obj,RegExp.prototype);
+    obj.source = @StrTop;
+    obj.global = @BoolTop;
+    obj.ignoreCase = @BoolTop;
+    obj.multiline = @BoolTop;
+    obj.lastIndex = @NumTop;
+    return obj;
   }
   \\],
   152: [\\
-  function () {
+  function toString() {
+    // 1. Let O be the this value.
+    var O = this;
+    // 2. If Type(O) is not Object, throw a TypeError exception.
+    if (!@SameValue(typeof O,"object")){
+      throw new TypeError();
+    }
+    // 3. Let name be the result of calling the [[Get]] internal method of O with argument "name".
+    var name = O.name;
+    // 4. If name is undefined, then let name be "Error"; else let name be ToString(name).
+    if (@SameValue(name,undefined)) {
+      var name = "Error";
+    }else {
+      var name = @ToString(name);
+    }
+    // 5. Let msg be the result of calling the [[Get]] internal method of O with argument "message".
+    var msg = O.message;
+    // 6. If msg is undefined, then let msg be the empty String; else let msg be ToString(msg).
+    if (@SameValue(msg,undefined)) {
+      var msg = "";
+    }else {
+      msg = @ToString(msg);
+    }
+    // 7. If name is the empty String, return msg.
+    if (@SameValue(name,"")) {
+      return msg;
+    }
+    // 8. If msg is the empty String, return name.
+    if (@SameValue(msg,"")) {
+      return name;
+    }
+    // 9. Return the result of concatenating name, ":", a single space character, and msg.
+    return name + ": " + msg;
   }
   \\],
   153: [\\
-  function () {
+  function Error (message) {
+    var obj ={};
+    @Prototype(obj,Error.prototype);
+    @Class(obj,"Error");
+    @Extensible(obj,true);
+    if (!@SameValue(message,undefined)) {
+      obj.message = @ToString(message);
+    }
+    return obj;
   }
   \\],
   154: [\\
-  function () {
+  function Error (message) {
+    var obj ={};
+    @Prototype(obj,Error.prototype);
+    @Class(obj,"Error");
+    @Extensible(obj,true);
+    if (!@SameValue(message,undefined)) {
+      obj.message = @ToString(message);
+    }
+    return obj;
   }
   \\],
   155: [\\
-  function () {
+  function EvalError (message) {
+    var obj = {};
+    @Prototype(obj,EvalError.prototype);
+    @Class(obj,"Error");
+    @Extensible(obj,true);
+    if (!@SameValue(message,undefined)) {
+      obj.message = @ToString(message);
+    }
+    return obj;
   }
   \\],
   156: [\\
-  function () {
+  function EvalError (message) {
+    var obj = {};
+    @Prototype(obj,EvalError.prototype);
+    @Class(obj,"Error");
+    @Extensible(obj,true);
+    if (!@SameValue(message,undefined)) {
+      obj.message = @ToString(message);
+    }
+    return obj;
   }
   \\],
   157: [\\
-  function () {
+  function RangeError (message) {
+    var obj = {};
+    @Prototype(obj,RangeError.prototype);
+    @Class(obj,"Error");
+    @Extensible(obj,true);
+    if (!@SameValue(message,undefined)) {
+      obj.message = @ToString(message);
+    }
+    return obj;
   }
   \\],
   158: [\\
-  function () {
+  function RangeError (message) {
+    var obj = {};
+    @Prototype(obj,RangeError.prototype);
+    @Class(obj,"Error");
+    @Extensible(obj,true);
+    if (!@SameValue(message,undefined)) {
+      obj.message = @ToString(message);
+    }
+    return obj;
   }
   \\],
   159: [\\
-  function () {
+  function ReferenceError (message) {
+    var obj = {};
+    @Prototype(obj,ReferenceError.prototype);
+    @Class(obj,"Error");
+    @Extensible(obj,true);
+    if (!@SameValue(message,undefined)) {
+      obj.message = @ToString(message);
+    }
+    return obj;
   }
   \\],
   160: [\\
-  function () {
+  function ReferenceError (message) {
+    var obj = {};
+    @Prototype(obj,ReferenceError.prototype);
+    @Class(obj,"Error");
+    @Extensible(obj,true);
+    if (!@SameValue(message,undefined)) {
+      obj.message = @ToString(message);
+    }
+    return obj;
   }
   \\],
   161: [\\
-  function () {
+  function SyntaxError (message) {
+    var obj = {};
+    @Prototype(obj,SyntaxError.prototype);
+    @Class(obj,"Error");
+    @Extensible(obj,true);
+    if (!@SameValue(message,undefined)) {
+      obj.message = @ToString(message);
+    }
+    return obj;
   }
   \\],
   162: [\\
-  function () {
+  function SyntaxError (message) {
+    var obj = {};
+    @Prototype(obj,SyntaxError.prototype);
+    @Class(obj,"Error");
+    @Extensible(obj,true);
+    if (!@SameValue(message,undefined)) {
+      obj.message = @ToString(message);
+    }
+    return obj;
+
   }
   \\],
   163: [\\
-  function () {
+  function TypeError (message) {
+    var obj = {};
+    @Prototype(obj,TypeError.prototype);
+    @Class(obj,"Error");
+    @Extensible(obj,true);
+    if (!@SameValue(message,undefined)) {
+      obj.message = @ToString(message);
+    }
+    return obj;
   }
   \\],
   164: [\\
-  function () {
+  function TypeError (message) {
+    var obj = {};
+    @Prototype(obj,TypeError.prototype);
+    @Class(obj,"Error");
+    @Extensible(obj,true);
+    if (!@SameValue(message,undefined)) {
+      obj.message = @ToString(message);
+    }
+    return obj;
   }
   \\],
   165: [\\
-  function () {
+  function URIError (message) {
+    var obj = {};
+    @Prototype(obj,URIError.prototype);
+    @Class(obj,"Error");
+    @Extensible(obj,true);
+    if (!@SameValue(message,undefined)) {
+      obj.message = @ToString(message);
+    }
+    return obj;
   }
   \\],
   166: [\\
-  function () {
+  function URIError (message) {
+    var obj = {};
+    @Prototype(obj,URIError.prototype);
+    @Class(obj,"Error");
+    @Extensible(obj,true);
+    if (!@SameValue(message,undefined)) {
+      obj.message = @ToString(message);
+    }
+    return obj;
   }
   \\],
   167: [\\
