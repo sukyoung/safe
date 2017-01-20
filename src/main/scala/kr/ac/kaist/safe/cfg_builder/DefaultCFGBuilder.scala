@@ -263,7 +263,7 @@ class DefaultCFGBuilder(
             val (catchbs: List[CFGBlock], catchlmap: LabelMap) = translateStmt(catb, func, List(catchBlock), trylmap - ThrowLabel - ThrowEndLabel - AfterCatchLabel)
 
             /* tail blocks */
-            val tailBlock: CFGBlock = func.createBlock(FinallyLabel)
+            val tailBlock: CFGBlock = func.createBlock(FinallyLabel(tryBlock))
             cfg.addEdge(trybs, tailBlock)
             cfg.addEdge(catchbs, tailBlock)
 
@@ -280,7 +280,7 @@ class DefaultCFGBuilder(
             cfg.addEdge(blocks, tryBlock)
 
             /* finally block */
-            val finBlock: NormalBlock = func.createBlock(FinallyLabel)
+            val finBlock: NormalBlock = func.createBlock(FinallyLabel(tryBlock))
 
             /* try body */
             val (trybs: List[CFGBlock], trylmap: LabelMap) = translateStmt(body, func, List(tryBlock), HashMap())
@@ -293,7 +293,7 @@ class DefaultCFGBuilder(
             val reslmap = (trylmap - AfterCatchLabel).foldLeft(finlmap) {
               case (map, (label, bs1)) => bs1.isEmpty match {
                 case false =>
-                  val dupBlock: NormalBlock = func.createBlock
+                  val dupBlock: NormalBlock = func.createBlock(FinallyLabel(tryBlock))
                   val (bs2: List[CFGBlock], lm: LabelMap) = translateStmt(finb, func, List(dupBlock), map)
                   label match {
                     case ThrowLabel =>
@@ -320,7 +320,7 @@ class DefaultCFGBuilder(
             catchBlock.createInst(CFGCatch(stmt, _, id2cfgId(x)))
 
             /* finally block */
-            val finBlock: NormalBlock = func.createBlock(FinallyLabel)
+            val finBlock: NormalBlock = func.createBlock(FinallyLabel(tryBlock))
 
             /* try body */
             val (trybs: List[CFGBlock], trylmap: LabelMap) = translateStmt(body, func, List(tryBlock), HashMap())
@@ -340,7 +340,7 @@ class DefaultCFGBuilder(
             val reslmap: LabelMap = (catchlmap - AfterCatchLabel).foldLeft(finlmap) {
               case (map, (label, bs1)) => bs1.isEmpty match {
                 case false =>
-                  val dupBlock: NormalBlock = func.createBlock
+                  val dupBlock: NormalBlock = func.createBlock(FinallyLabel(tryBlock))
                   val (bs2: List[CFGBlock], lm: LabelMap) = translateStmt(finb, func, List(dupBlock), map)
                   label match {
                     case ThrowLabel =>

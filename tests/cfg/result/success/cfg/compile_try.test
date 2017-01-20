@@ -14,7 +14,7 @@ function[0] top-level {
   Finally[3] -> [5], ExitExc
     [0] <>Global<>ignore4 := "2"
 
-  Block[4] -> ExitExc, ExitExc
+  Finally[4] -> ExitExc, ExitExc
     [0] <>Global<>ignore4 := "2"
 
   Try[5] -> [7]

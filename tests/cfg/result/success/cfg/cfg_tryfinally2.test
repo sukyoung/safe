@@ -37,10 +37,10 @@ function[0] top-level {
 
   AfterCatch[9] -> [10]
 
-  Block[10] -> ExitExc, ExitExc
+  Finally[10] -> ExitExc, ExitExc
     [0] x := 9
 
-  Block[11] -> [12], ExitExc
+  Finally[11] -> [12], ExitExc
     [0] x := 10
 
   Try[12] -> [14], [17]
@@ -61,10 +61,10 @@ function[0] top-level {
 
   AfterCatch[16] -> [17]
 
-  Block[17] -> ExitExc, ExitExc
+  Finally[17] -> ExitExc, ExitExc
     [0] x := 9
 
-  Block[18] -> [19], ExitExc
+  Finally[18] -> [19], ExitExc
     [0] x := 7
 
   Try[19] -> [20], [27]
@@ -91,10 +91,10 @@ function[0] top-level {
 
   AfterCatch[25] -> [26]
 
-  Block[26] -> ExitExc, ExitExc
+  Finally[26] -> ExitExc, ExitExc
     [0] x := 9
 
-  Block[27] -> [28], ExitExc
+  Finally[27] -> [28], ExitExc
     [0] x := 10
 
   Try[28] -> [30], [33]
@@ -115,7 +115,7 @@ function[0] top-level {
 
   AfterCatch[32] -> [33]
 
-  Block[33] -> ExitExc, ExitExc
+  Finally[33] -> ExitExc, ExitExc
     [0] x := 9
 
   Exit[-2]

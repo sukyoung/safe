@@ -68,7 +68,7 @@ function[0] top-level {
 
   AfterCatch[14] -> [15]
 
-  Block[15] -> [27], [39]
+  Finally[15] -> [27], [39]
     [0] <>obj<>15 := @ToObject(y) @ #12
     [1] <>Global<>ignore6 := alloc() @ #13
     [2] <>Global<>ignore6["test"] := - 23.8
@@ -106,7 +106,7 @@ function[0] top-level {
   Finally[26] -> Exit
     [0] noop(EndOfFile)
 
-  Block[27] -> [28]
+  Finally[27] -> [28]
 
   LoopHead[28] -> [30], [29]
 
@@ -139,7 +139,7 @@ function[0] top-level {
 
   Finally[38] -> ExitExc
 
-  Block[39] -> [40]
+  Finally[39] -> [40]
 
   LoopHead[40] -> [42], [41]
 

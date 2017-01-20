@@ -20,7 +20,7 @@ function[0] top-level {
 
   Finally[5] -> [3]
 
-  Block[6] -> [10]
+  Finally[6] -> [10]
 
   Try[7] -> [9]
 
@@ -32,7 +32,7 @@ function[0] top-level {
     [0] x := 16
     [1] noop(EndOfFile)
 
-  Block[10] -> [11], ExitExc
+  Finally[10] -> [11], ExitExc
     [0] x := 8
 
   Try[11] -> [13]
@@ -43,7 +43,7 @@ function[0] top-level {
 
   Finally[13] -> ExitExc
 
-  Block[14] -> [15], ExitExc
+  Finally[14] -> [15], ExitExc
     [0] x := 8
 
   Try[15] -> [17]

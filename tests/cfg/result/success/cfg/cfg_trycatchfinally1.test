@@ -22,12 +22,12 @@ function[0] top-level {
 
   Finally[5] -> [3]
 
-  Block[6] -> [7]
+  Finally[6] -> [7]
 
-  Block[7] -> ExitExc, ExitExc
+  Finally[7] -> ExitExc, ExitExc
     [0] x := 8
 
-  Block[8] -> ExitExc, ExitExc
+  Finally[8] -> ExitExc, ExitExc
     [0] x := 8
 
   Exit[-2]
