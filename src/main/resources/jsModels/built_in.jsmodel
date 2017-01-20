@@ -1109,7 +1109,7 @@ Heap: {
     [[HasInstance]]: null,
     [[Prototype]]: #Function.prototype,
     [[Scope]]: null,
-    "MAX_VALUE": <9223372036854775807, F, F, F>,
+    "MAX_VALUE": <1.7976931348623157E+308, F, F, F>,
     "MIN_VALUE": <4.9E-324, F, F, F>,
     "NEGATIVE_INFINITY": <-Infinity, F, F, F>,
     "NaN": <NaN, F, F, F>,
@@ -4301,7 +4301,7 @@ Function: {
       var DaysInYear_y = 366;
     }
 
-    if (DaysInYear === 365) {
+    if (DaysInYear_y === 365) {
       var InLeapYear_t = 0;
     }else {
       var InLeapYear_t = 1;
@@ -4401,7 +4401,7 @@ Function: {
       var DaysInYear_y = 366;
     }
 
-    if (DaysInYear === 365) {
+    if (DaysInYear_y === 365) {
       var InLeapYear_t = 0;
     }else {
       var InLeapYear_t = 1;
@@ -4794,7 +4794,7 @@ Function: {
     //2. Let m be ToNumber(min).
     var m = @ToNumber(min);
     // 3. If sec is not specified, then let s be SecFromTime(t); otherwise, let s be ToNumber(sec).
-    if (!(arguements.length > 1)) {
+    if (!(arguments.length > 1)) {
       var SecondsPerMinute= 60;
       var msPerSecond = 1000;
       var SecFromTime_t  = Math.floor(t / msPerSecond) % SecondsPerMinute;
@@ -5065,7 +5065,7 @@ Function: {
       var DaysInYear_y = 366;
     }
 
-    if (DaysInYear === 365) {
+    if (DaysInYear_y === 365) {
       var InLeapYear_t = 0;
     }else {
       var InLeapYear_t = 1;
@@ -5182,7 +5182,7 @@ Function: {
             var DaysInYear_y = 366;
           }
 
-          if (DaysInYear === 365) {
+          if (DaysInYear_y === 365) {
             var InLeapYear_t = 0;
           }else {
             var InLeapYear_t = 1;
@@ -5399,7 +5399,7 @@ Function: {
         var DaysInYear_y = 366;
       }
 
-      if (DaysInYear === 365) {
+      if (DaysInYear_y === 365) {
         var InLeapYear_t = 0;
       }else {
         var InLeapYear_t = 1;
@@ -5565,7 +5565,7 @@ Function: {
             var DaysInYear_y = 366;
           }
 
-          if (DaysInYear === 365) {
+          if (DaysInYear_y === 365) {
             var InLeapYear_t = 0;
           }else {
             var InLeapYear_t = 1;
@@ -5786,7 +5786,7 @@ Function: {
         var DaysInYear_y = 366;
       }
 
-      if (DaysInYear === 365) {
+      if (DaysInYear_y === 365) {
         var InLeapYear_t = 0;
       }else {
         var InLeapYear_t = 1;
@@ -5873,7 +5873,7 @@ Function: {
         var DaysInYear_y = 366;
       }
 
-      if (DaysInYear === 365) {
+      if (DaysInYear_y === 365) {
         var InLeapYear_t = 0;
       }else {
         var InLeapYear_t = 1;
@@ -6022,7 +6022,7 @@ Function: {
             var DaysInYear_y = 366;
           }
 
-          if (DaysInYear === 365) {
+          if (DaysInYear_y === 365) {
             var InLeapYear_t = 0;
           }else {
             var InLeapYear_t = 1;
@@ -6184,6 +6184,10 @@ Function: {
   140: [\\
   function toISOString () {
     // Need to know internal structure of Date object
+    var t = @PrimitiveValue(this);
+    if (@SameValue(t,Infinity) || @SameValue(t,-Infinity) || @SameValue(t,NaN)) {
+      throw new RangeError();
+    }
     return @StrTop;
   }
   \\],
@@ -6363,7 +6367,7 @@ Function: {
               var DaysInYear_y = 366;
             }
 
-            if (DaysInYear === 365) {
+            if (DaysInYear_y === 365) {
               var InLeapYear_t = 0;
             }else {
               var InLeapYear_t = 1;
@@ -6527,7 +6531,7 @@ Function: {
       // TODO Need UTC(t) -> Need LocalTZA
       var time = finalDate;
       var return_val;
-      if (time === Infinity) {
+      if (time === Infinity || time === -Infinity || @SameValue(time,NaN)) {
         return_val = NaN;
       }else if (Math.abs(time) > 8.64e+15) {
         return_val = NaN;
@@ -6676,7 +6680,7 @@ Function: {
             var DaysInYear_y = 366;
           }
 
-          if (DaysInYear === 365) {
+          if (DaysInYear_y === 365) {
             var InLeapYear_t = 0;
           }else {
             var InLeapYear_t = 1;
