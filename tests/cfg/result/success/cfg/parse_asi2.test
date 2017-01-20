@@ -54,7 +54,7 @@ function[0] top-level {
 
   Block[13] -> [14]
 
-  LCont:[14] -> [8], ExitExc
+  LCont[14] -> [8], ExitExc
     [0] <>old<>11 := i
     [1] <>new<>12 := @ToNumber(<>old<>11)
     [2] i := <>new<>12 + 1
@@ -62,9 +62,9 @@ function[0] top-level {
     [4] <>y<>7 := i
     [5] <>obj<>8 := @ToObject(quitchars) @ #7
 
-  LBreak:[15] -> [16]
+  LBreak[15] -> [16]
 
-  LCont:[16] -> [17], ExitExc
+  LCont[16] -> [17], ExitExc
     [0] <>obj<>3 := @ToObject(getc) @ #8
     [1] <>arguments<>4 := allocArg(0) @ #9
     [2] <>fun<>5 := @GetBase(getc)
@@ -80,7 +80,7 @@ function[0] top-level {
   Block[20] -> [5], ExitExc
     [0] c := <>new1<>6
 
-  LBreak:[21] -> [22]
+  LBreak[21] -> [22]
 
   charloop:[22] -> Exit
     [0] noop(EndOfFile)

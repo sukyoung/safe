@@ -71,7 +71,7 @@ case object CmdCFGBuild extends CommandObj("cfgBuild", CmdCompile >> CFGBuild) {
 
 // analyze
 case object CmdAnalyze extends CommandObj("analyze", CmdCFGBuild >> Analyze) {
-  override def display(result: (CFG, Int, CallContext, Semantics)): Unit = {
+  override def display(result: (CFG, Int, TracePartition, Semantics)): Unit = {
     val (cfg, iters, _, _) = result
 
     println(s"- # of iteration: $iters")

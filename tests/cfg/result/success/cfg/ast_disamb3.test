@@ -17,10 +17,10 @@ function[0] top-level {
   Block[3] -> [5], ExitExc
     [0] assert(! <>cond1<>3)
 
-  LCont:[4] -> [1]
+  LCont[4] -> [1]
     [0] <>cond1<>3 := @iteratorHasNext(<>obj<>1, <>iterator<>2)
 
-  LBreak:[5] -> [6], ExitExc
+  LBreak[5] -> [6], ExitExc
     [0] y := undefined
     [1] <>obj<>5 := collection
     [2] <>iterator<>6 := @iteratorInit(<>obj<>5) @ #2
@@ -36,10 +36,10 @@ function[0] top-level {
   Block[8] -> [10], ExitExc
     [0] assert(! <>cond1<>7)
 
-  LCont:[9] -> [6]
+  LCont[9] -> [6]
     [0] <>cond1<>7 := @iteratorHasNext(<>obj<>5, <>iterator<>6)
 
-  LBreak:[10] -> [11]
+  LBreak[10] -> [11]
 
   LoopHead[11] -> [13], [12]
 
@@ -49,13 +49,13 @@ function[0] top-level {
   Block[13] -> [15], ExitExc
     [0] assert(! z < 5)
 
-  LCont:[14] -> [11], ExitExc
+  LCont[14] -> [11], ExitExc
     [0] <>old<>9 := z
     [1] <>new<>10 := @ToNumber(<>old<>9)
     [2] z := <>new<>10 + 1
     [3] <>Global<>ignore3 := <>new<>10
 
-  LBreak:[15] -> [16], ExitExc
+  LBreak[15] -> [16], ExitExc
     [0] v := 0
 
   LoopHead[16] -> [18], [17]
@@ -66,13 +66,13 @@ function[0] top-level {
   Block[18] -> [20], ExitExc
     [0] assert(! v < 3)
 
-  LCont:[19] -> [16], ExitExc
+  LCont[19] -> [16], ExitExc
     [0] <>old<>11 := v
     [1] <>new<>12 := @ToNumber(<>old<>11)
     [2] v := <>new<>12 + 1
     [3] <>Global<>ignore6 := <>new<>12
 
-  LBreak:[20] -> Exit
+  LBreak[20] -> Exit
     [0] noop(EndOfFile)
 
   Exit[-2]

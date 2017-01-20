@@ -30,13 +30,13 @@ function[0] top-level {
 
   Block[9] -> [10]
 
-  LCont:[10] -> [4]
+  LCont[10] -> [4]
 
-  LBreak:[11] -> [12]
+  LBreak[11] -> [12]
 
-  LCont:[12] -> [1]
+  LCont[12] -> [1]
 
-  LBreak:[13] -> Exit, ExitExc
+  LBreak[13] -> Exit, ExitExc
     [0] x := 2
     [1] noop(EndOfFile)
 

@@ -51,7 +51,7 @@ function[0] top-level {
   Block[11] -> [12], ExitExc
     [0] data := <>Global<>ignore59
 
-  LCont:[12] -> [5], ExitExc
+  LCont[12] -> [5], ExitExc
     [0] <>old<>132 := index
     [1] <>new<>133 := @ToNumber(<>old<>132)
     [2] index := <>new<>133 + 1
@@ -59,7 +59,7 @@ function[0] top-level {
     [4] <>y<>122 := index
     [5] <>obj<>123 := @ToObject(paramArray) @ #80
 
-  LBreak:[13] -> Exit
+  LBreak[13] -> Exit
     [0] noop(EndOfFile)
 
   Exit[-2]
@@ -362,13 +362,13 @@ function[5] ProcessImageData {
     [7] <>obj<>97 := @ToObject(<>data<>43) @ #49
     [8] <>obj<>97[<>j<>62 * 4 + 2] := <>b<>65 * 255.0
 
-  LCont:[21] -> [7], ExitExc
+  LCont[21] -> [7], ExitExc
     [0] <>old<>98 := <>j<>62
     [1] <>new<>99 := @ToNumber(<>old<>98)
     [2] <>j<>62 := <>new<>99 + 1
     [3] <>Global<>ignore27 := <>new<>99
 
-  LBreak:[22] -> Exit, ExitExc
+  LBreak[22] -> Exit, ExitExc
     [0] return(<>data<>43)
 
   Exit[-2]

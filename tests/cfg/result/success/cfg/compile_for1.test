@@ -29,9 +29,9 @@ function[0] top-level {
 
   AfterCatch[6] -> ExitExc
 
-  LCont:[7] -> [1]
+  LCont[7] -> [1]
 
-  LBreak:[8] -> [9]
+  LBreak[8] -> [9]
 
   LoopHead[9] -> [11], [10]
 
@@ -42,13 +42,13 @@ function[0] top-level {
   Block[11] -> [13], ExitExc
     [0] assert(! null)
 
-  LCont:[12] -> [9], ExitExc
+  LCont[12] -> [9], ExitExc
     [0] <>old<>5 := c
     [1] <>new<>6 := @ToNumber(<>old<>5)
     [2] c := <>new<>6 + 1
     [3] <>Global<>ignore8 := <>new<>6
 
-  LBreak:[13] -> [14]
+  LBreak[13] -> [14]
 
   LoopHead[14] -> [16], [15]
 
@@ -62,13 +62,13 @@ function[0] top-level {
   Block[16] -> [18], ExitExc
     [0] assert(! true)
 
-  LCont:[17] -> [14], ExitExc
+  LCont[17] -> [14], ExitExc
     [0] <>old<>9 := b
     [1] <>new<>10 := @ToNumber(<>old<>9)
     [2] b := <>new<>10 - 1
     [3] <>Global<>ignore12 := <>new<>10
 
-  LBreak:[18] -> [19], ExitExc
+  LBreak[18] -> [19], ExitExc
     [0] <>Global<>ignore16 := "for"
 
   LoopHead[19] -> [21], [20]
@@ -79,10 +79,10 @@ function[0] top-level {
   Block[21] -> [23], ExitExc
     [0] assert(! 12)
 
-  LCont:[22] -> [19], ExitExc
+  LCont[22] -> [19], ExitExc
     [0] <>Global<>ignore18 := false
 
-  LBreak:[23] -> [24]
+  LBreak[23] -> [24]
 
   LoopHead[24] -> [26], [25]
 
@@ -94,9 +94,9 @@ function[0] top-level {
   Block[26] -> [28], ExitExc
     [0] assert(! true)
 
-  LCont:[27] -> [24]
+  LCont[27] -> [24]
 
-  LBreak:[28] -> Exit
+  LBreak[28] -> Exit
     [0] noop(EndOfFile)
 
   Exit[-2]

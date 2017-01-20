@@ -2005,12 +2005,12 @@ function[1] $A {
   Block[26] -> [28], ExitExc
     [0] assert(! <>new<>25)
 
-  LCont:[27] -> [24], ExitExc
+  LCont[27] -> [24], ExitExc
     [0] <>old<>24 := <>length<>2
     [1] <>new<>25 := @ToNumber(<>old<>24)
     [2] <>length<>2 := <>new<>25 - 1
 
-  LBreak:[28] -> Exit, ExitExc
+  LBreak[28] -> Exit, ExitExc
     [0] return(<>results<>3)
 
   Exit[-2]
@@ -2250,13 +2250,13 @@ function[5] $ {
 
   AfterCatch[12] -> ExitExc
 
-  LCont:[13] -> [3], ExitExc
+  LCont[13] -> [3], ExitExc
     [0] <>old<>92 := <>i<>77
     [1] <>new<>93 := @ToNumber(<>old<>92)
     [2] <>i<>77 := <>new<>93 + 1
     [3] <>Global<>ignore9 := <>new<>93
 
-  LBreak:[14] -> Exit, ExitExc
+  LBreak[14] -> Exit, ExitExc
     [0] return(<>elements<>78)
 
   Block[15] -> [16], ExitExc
@@ -2647,16 +2647,16 @@ function[11] <>funexpr@68:10-80:4<> {
     [1] <>obj<>220 := @ToObject(<>arguments<>218) @ #153
     [2] <>lambda<>217 := <>obj<>220[<>i<>215]
 
-  Block[3] -> [11], ExitExc
+  Block[3] -> [12], ExitExc
     [0] assert(! <>i<>215 < <>length<>216)
 
-  Block[4] -> [6], [5]
+  Try[4] -> [6], [5]
     [0] <>obj<>222 := @ToObject(<>lambda<>217) @ #154
     [1] <>arguments<>223 := allocArg(0) @ #155
     [2] <>fun<>224 := @GetBase(<>lambda<>217)
     [3] <>this<> := enterCode(<>fun<>224)
 
-  Block[5] -> [10]
+  Catch[5] -> [10]
     [0] catch(<>e<>221)
 
   Call[6] -> [5]
@@ -2666,16 +2666,18 @@ function[11] <>funexpr@68:10-80:4<> {
 
   AfterCatch[8] -> [5]
 
-  Block[9] -> [11], [5]
+  Block[9] -> [12], [5]
     [0] <>returnValue<>214 := <>Global<>ignore29
 
-  LCont:[10] -> [1], ExitExc
+  Finally[10] -> [11]
+
+  LCont[11] -> [1], ExitExc
     [0] <>old<>225 := <>i<>215
     [1] <>new<>226 := @ToNumber(<>old<>225)
     [2] <>i<>215 := <>new<>226 + 1
     [3] <>Global<>ignore27 := <>new<>226
 
-  LBreak:[11] -> Exit, ExitExc
+  LBreak[12] -> Exit, ExitExc
     [0] return(<>returnValue<>214)
 
   Exit[-2]
@@ -2887,13 +2889,13 @@ function[14] create {
 
   AfterCatch[37] -> ExitExc
 
-  LCont:[38] -> [32], ExitExc
+  LCont[38] -> [32], ExitExc
     [0] <>old<>289 := <>i<>238
     [1] <>new<>290 := @ToNumber(<>old<>289)
     [2] <>i<>238 := <>new<>290 + 1
     [3] <>Global<>ignore44 := <>new<>290
 
-  LBreak:[39] -> [41], [40], ExitExc
+  LBreak[39] -> [41], [40], ExitExc
     [0] <>obj<>291 := @ToObject(<>klass<>235) @ #207
     [1] <>obj<>292 := @ToObject(<>obj<>291["prototype"]) @ #208
 
@@ -3187,13 +3189,13 @@ function[16] addMethods {
     [1] <>obj<>378 := @ToObject(<>obj<>377["prototype"]) @ #278
     [2] <>obj<>378[<>property<>303] := <>value<>304
 
-  LCont:[62] -> [26], ExitExc
+  LCont[62] -> [26], ExitExc
     [0] <>old<>379 := <>i<>301
     [1] <>new<>380 := @ToNumber(<>old<>379)
     [2] <>i<>301 := <>new<>380 + 1
     [3] <>Global<>ignore55 := <>new<>380
 
-  LBreak:[63] -> Exit, ExitExc
+  LBreak[63] -> Exit, ExitExc
     [0] return(this)
 
   Exit[-2]
@@ -3274,10 +3276,10 @@ function[19] <>funexpr@87:28-92:4<> {
 
   Block[6] -> [7]
 
-  LCont:[7] -> [1]
+  LCont[7] -> [1]
     [0] <>cond1<>386 := @iteratorHasNext(<>obj<>384, <>iterator<>385)
 
-  LBreak:[8] -> Exit, ExitExc
+  LBreak[8] -> Exit, ExitExc
     [0] return(true)
 
   Exit[-2]
@@ -3642,10 +3644,10 @@ function[22] extend {
   Block[3] -> [5], ExitExc
     [0] assert(! <>cond1<>444)
 
-  LCont:[4] -> [1]
+  LCont[4] -> [1]
     [0] <>cond1<>444 := @iteratorHasNext(<>obj<>442, <>iterator<>443)
 
-  LBreak:[5] -> Exit, ExitExc
+  LBreak[5] -> Exit, ExitExc
     [0] return(<>destination<>438)
 
   Exit[-2]
@@ -3659,7 +3661,7 @@ function[23] inspect {
 
   Block[0] -> [1]
 
-  Block[1] -> [3], [2]
+  Try[1] -> [3], [2]
     [0] <>obj<>451 := @ToObject(<>isUndefined<>416) @ #302
     [1] <>temp<>452 := <>object<>448
     [2] <>arguments<>453 := allocArg(1) @ #303
@@ -3667,7 +3669,7 @@ function[23] inspect {
     [4] <>fun<>454 := @GetBase(<>isUndefined<>416)
     [5] <>this<> := enterCode(<>fun<>454)
 
-  Block[2] -> [22], [21]
+  Catch[2] -> [22], [21]
     [0] catch(<>e<>450)
 
   Call[3] -> [2]
@@ -3738,6 +3740,8 @@ function[23] inspect {
 
   Block[23] -> ExitExc
     [0] throw(<>e<>450)
+
+  Finally[24] -> Exit
 
   Exit[-2]
 
@@ -4070,13 +4074,13 @@ function[25] Str {
 
   Block[88] -> [89]
 
-  LCont:[89] -> [76], ExitExc
+  LCont[89] -> [76], ExitExc
     [0] <>old<>532 := <>i<>480
     [1] <>new<>533 := @ToNumber(<>old<>532)
     [2] <>i<>480 := <>new<>533 + 1
     [3] <>Global<>ignore76 := <>new<>533
 
-  LBreak:[90] -> [91], ExitExc
+  LBreak[90] -> [91], ExitExc
     [0] <>obj<>534 := @ToObject(<>stack<>476) @ #355
     [1] <>temp<>535 := <>value<>477
     [2] <>arguments<>536 := allocArg(1) @ #356
@@ -4160,13 +4164,13 @@ function[25] Str {
 
   AfterCatch[109] -> ExitExc
 
-  LCont:[110] -> [97], ExitExc
+  LCont[110] -> [97], ExitExc
     [0] <>old<>549 := <>i<>480
     [1] <>new<>550 := @ToNumber(<>old<>549)
     [2] <>i<>480 := <>new<>550 + 1
     [3] <>Global<>ignore82 := <>new<>550
 
-  LBreak:[111] -> [112], ExitExc
+  LBreak[111] -> [112], ExitExc
     [0] <>y<>551 := "["
     [1] <>obj<>552 := @ToObject(<>partial<>482) @ #368
     [2] <>temp<>553 := ","
@@ -4270,13 +4274,13 @@ function[25] Str {
 
   Block[137] -> [138]
 
-  LCont:[138] -> [121], ExitExc
+  LCont[138] -> [121], ExitExc
     [0] <>old<>578 := <>i<>480
     [1] <>new<>579 := @ToNumber(<>old<>578)
     [2] <>i<>480 := <>new<>579 + 1
     [3] <>Global<>ignore90 := <>new<>579
 
-  LBreak:[139] -> [140], ExitExc
+  LBreak[139] -> [140], ExitExc
     [0] <>y<>580 := "{"
     [1] <>obj<>581 := @ToObject(<>partial<>482) @ #389
     [2] <>temp<>582 := ","
@@ -4535,10 +4539,10 @@ function[29] keys {
 
   Block[25] -> [26]
 
-  LCont:[26] -> [14]
+  LCont[26] -> [14]
     [0] <>cond1<>636 := @iteratorHasNext(<>obj<>634, <>iterator<>635)
 
-  LBreak:[27] -> Exit, ExitExc
+  LBreak[27] -> Exit, ExitExc
     [0] return(<>results<>619)
 
   Exit[-2]
@@ -4581,10 +4585,10 @@ function[30] values {
 
   AfterCatch[6] -> ExitExc
 
-  LCont:[7] -> [1]
+  LCont[7] -> [1]
     [0] <>cond1<>653 := @iteratorHasNext(<>obj<>651, <>iterator<>652)
 
-  LBreak:[8] -> Exit, ExitExc
+  LBreak[8] -> Exit, ExitExc
     [0] return(<>results<>648)
 
   Exit[-2]
@@ -4870,12 +4874,12 @@ function[41] update {
   Block[3] -> [5], ExitExc
     [0] assert(! <>new<>773)
 
-  LCont:[4] -> [1], ExitExc
+  LCont[4] -> [1], ExitExc
     [0] <>old<>772 := <>length<>768
     [1] <>new<>773 := @ToNumber(<>old<>772)
     [2] <>length<>768 := <>new<>773 - 1
 
-  LBreak:[5] -> Exit, ExitExc
+  LBreak[5] -> Exit, ExitExc
     [0] return(<>array<>765)
 
   Exit[-2]
@@ -6160,7 +6164,7 @@ function[65] <>funexpr@507:17-518:4<> {
   Block[2] -> [10], ExitExc
     [0] assert(! ! <>obj<>1166["currentlyExecuting"])
 
-  Block[3] -> [5], [4]
+  Try[3] -> [5], [4]
     [0] <>obj<>1168 := @ToObject(this) @ #826
     [1] <>obj<>1168["currentlyExecuting"] := true
     [2] <>obj<>1169 := @ToObject(this) @ #827
@@ -6168,7 +6172,7 @@ function[65] <>funexpr@507:17-518:4<> {
     [4] <>fun<>1171 := @ToObject(<>obj<>1169["execute"]) @ #829
     [5] <>this<> := enterCode(<>obj<>1169)
 
-  Block[4] -> ExitExc
+  Catch[4] -> ExitExc
     [0] catch(<>e<>1167)
     [1] <>obj<>1173 := @ToObject(this) @ #832
     [2] <>obj<>1173["currentlyExecuting"] := false
@@ -6185,7 +6189,7 @@ function[65] <>funexpr@507:17-518:4<> {
     [0] <>obj<>1172 := @ToObject(this) @ #831
     [1] <>obj<>1172["currentlyExecuting"] := false
 
-  Block[9] -> [10]
+  Finally[9] -> [10]
 
   Block[10] -> Exit
 
@@ -6707,10 +6711,10 @@ function[70] gsub {
 
   Block[58] -> [59]
 
-  LCont:[59] -> [33], ExitExc
+  LCont[59] -> [33], ExitExc
     [0] <>obj<>1291 := @ToObject(<>source<>1257) @ #916
 
-  LBreak:[60] -> Exit, ExitExc
+  LBreak[60] -> Exit, ExitExc
     [0] return(<>result<>1256)
 
   Exit[-2]
@@ -9075,9 +9079,9 @@ function[98] evalJSON {
 
   Block[21] -> [22]
 
-  Block[22] -> [25], [24]
+  Try[22] -> [25], [24]
 
-  Block[23] -> [35]
+  Catch[23] -> [35]
     [0] catch(<>e<>2011)
 
   Block[24] -> [33], [23]
@@ -9112,7 +9116,7 @@ function[98] evalJSON {
 
   Branch[34] -> [35]
 
-  Block[35] -> [36], ExitExc
+  Finally[35] -> [36], ExitExc
     [0] <>fun<>2017 := @ToObject(SyntaxError) @ #1392
     [1] <>y<>2018 := "Badly formed JSON string: "
     [2] <>obj<>2019 := @ToObject(this) @ #1393
@@ -9848,9 +9852,9 @@ function[109] <>funexpr@792:45-813:6<> {
   Block[61] -> [62], ExitExc
     [0] <>match<>2148 := <>Global<>ignore209
 
-  LCont:[62] -> [24]
+  LCont[62] -> [24]
 
-  LBreak:[63] -> [64], ExitExc
+  LBreak[63] -> [64], ExitExc
     [0] <>y<>2209 := <>before<>2149
     [1] <>obj<>2210 := @ToObject(String) @ #1536
     [2] <>temp<>2211 := <>ctx<>2150
@@ -9946,7 +9950,7 @@ function[111] each {
   Block[0] -> [1], ExitExc
     [0] <>index<>2259 := 0
 
-  Block[1] -> [3], [2]
+  Try[1] -> [3], [2]
     [0] <>obj<>2262 := @ToObject(this) @ #1557
     [1] <>temp<>2274 := function (112) @ #1562, #1563
     [2] <>arguments<>2275 := allocArg(1) @ #1564
@@ -9954,7 +9958,7 @@ function[111] each {
     [4] <>fun<>2276 := @ToObject(<>obj<>2262["_each"]) @ #1565
     [5] <>this<> := enterCode(<>obj<>2262)
 
-  Block[2] -> [7], [6]
+  Catch[2] -> [7], [6]
     [0] catch(<>e<>2261)
 
   Call[3] -> [2]
@@ -9973,7 +9977,7 @@ function[111] each {
 
   Block[8] -> [9]
 
-  Block[9] -> Exit, ExitExc
+  Finally[9] -> Exit, ExitExc
     [0] return(this)
 
   Exit[-2]
@@ -10085,13 +10089,13 @@ function[113] eachSlice {
 
   AfterCatch[17] -> ExitExc
 
-  LCont:[18] -> [8], ExitExc
+  LCont[18] -> [8], ExitExc
     [0] <>old<>2287 := <>index<>2280
     [1] <>index<>2280 := <>old<>2287 + <>number<>2277
     [2] <>y<>2288 := <>old<>2287 + <>number<>2277
     [3] <>obj<>2289 := @ToObject(<>array<>2282) @ #1583
 
-  LBreak:[19] -> [20], ExitExc
+  LBreak[19] -> [20], ExitExc
     [0] <>obj<>2299 := @ToObject(<>slices<>2281) @ #1584
     [1] <>temp<>2300 := <>iterator<>2278
     [2] <>temp<>2301 := <>context<>2279
@@ -10861,10 +10865,10 @@ function[129] <>funexpr@920:35-923:6<> {
 
   AfterCatch[6] -> ExitExc
 
-  LCont:[7] -> [1], ExitExc
+  LCont[7] -> [1], ExitExc
     [0] <>obj<>2488 := @ToObject(<>slice<>2486) @ #1724
 
-  LBreak:[8] -> Exit, ExitExc
+  LBreak[8] -> Exit, ExitExc
     [0] return(<>slice<>2486)
 
   Exit[-2]
@@ -12013,13 +12017,13 @@ function[153] each {
 
   Block[9] -> [10]
 
-  LCont:[10] -> [1], ExitExc
+  LCont[10] -> [1], ExitExc
     [0] <>old<>2799 := <>i<>2787
     [1] <>new<>2800 := @ToNumber(<>old<>2799)
     [2] <>i<>2787 := <>new<>2800 + 1
     [3] <>Global<>ignore279 := <>new<>2800
 
-  LBreak:[11] -> Exit
+  LBreak[11] -> Exit
 
   Exit[-2]
 
@@ -12651,13 +12655,13 @@ function[172] indexOf {
 
   Block[12] -> [13]
 
-  LCont:[13] -> [7], ExitExc
+  LCont[13] -> [7], ExitExc
     [0] <>old<>2952 := <>i<>2947
     [1] <>new<>2953 := @ToNumber(<>old<>2952)
     [2] <>i<>2947 := <>new<>2953 + 1
     [3] <>Global<>ignore289 := <>new<>2953
 
-  LBreak:[14] -> Exit, ExitExc
+  LBreak[14] -> Exit, ExitExc
     [0] return(- 1)
 
   Exit[-2]
@@ -12856,13 +12860,13 @@ function[174] concat {
 
   AfterCatch[20] -> ExitExc
 
-  LCont:[21] -> [15], ExitExc
+  LCont[21] -> [15], ExitExc
     [0] <>old<>3006 := <>j<>2985
     [1] <>new<>3007 := @ToNumber(<>old<>3006)
     [2] <>j<>2985 := <>new<>3007 + 1
     [3] <>Global<>ignore301 := <>new<>3007
 
-  LBreak:[22] -> [28]
+  LBreak[22] -> [28]
 
   Block[23] -> [24]
 
@@ -12883,13 +12887,13 @@ function[174] concat {
 
   Branch[28] -> [29]
 
-  LCont:[29] -> [5], ExitExc
+  LCont[29] -> [5], ExitExc
     [0] <>old<>3012 := <>i<>2983
     [1] <>new<>3013 := @ToNumber(<>old<>3012)
     [2] <>i<>2983 := <>new<>3013 + 1
     [3] <>Global<>ignore296 := <>new<>3013
 
-  LBreak:[30] -> Exit, ExitExc
+  LBreak[30] -> Exit, ExitExc
     [0] return(<>array<>2981)
 
   Exit[-2]
@@ -13075,10 +13079,10 @@ function[178] _each {
 
   AfterCatch[6] -> ExitExc
 
-  LCont:[7] -> [1]
+  LCont[7] -> [1]
     [0] <>cond1<>3095 := @iteratorHasNext(<>obj<>3093, <>iterator<>3094)
 
-  LBreak:[8] -> Exit
+  LBreak[8] -> Exit
 
   Exit[-2]
 
@@ -13622,13 +13626,13 @@ function[192] <>funexpr@1294:28-1308:6<> {
 
   AfterCatch[23] -> ExitExc
 
-  LCont:[24] -> [14], ExitExc
+  LCont[24] -> [14], ExitExc
     [0] <>old<>3250 := <>i<>3224
     [1] <>new<>3251 := @ToNumber(<>old<>3250)
     [2] <>i<>3224 := <>new<>3251 + 1
     [3] <>Global<>ignore332 := <>new<>3251
 
-  LBreak:[25] -> [26], ExitExc
+  LBreak[25] -> [26], ExitExc
     [0] <>obj<>3252 := @ToObject(<>results<>3219) @ #2291
     [1] <>temp<>3253 := <>queryValues<>3223
     [2] <>arguments<>3254 := allocArg(1) @ #2292
@@ -14189,7 +14193,7 @@ function[207] _each {
   Block[15] -> [16], ExitExc
     [0] <>value<>3416 := <>Global<>ignore346
 
-  LCont:[16] -> [17], ExitExc
+  LCont[16] -> [17], ExitExc
     [0] <>obj<>3419 := @ToObject(this) @ #2431
     [1] <>temp<>3420 := <>value<>3416
     [2] <>arguments<>3421 := allocArg(1) @ #2432
@@ -14204,7 +14208,7 @@ function[207] _each {
 
   AfterCatch[19] -> ExitExc
 
-  LBreak:[20] -> Exit
+  LBreak[20] -> Exit
 
   Exit[-2]
 
@@ -14546,10 +14550,10 @@ function[217] <>funexpr@1454:15-1460:6<> {
   Block[4] -> [6], ExitExc
     [0] assert(<>new<>3536)
 
-  Block[5] -> [11], ExitExc
+  Block[5] -> [12], ExitExc
     [0] assert(! <>new<>3536)
 
-  Block[6] -> [8], [7]
+  Try[6] -> [8], [7]
     [0] <>obj<>3538 := @ToObject(<>responder<>3529) @ #2511
     [1] <>obj<>3539 := @ToObject(<>obj<>3538[<>callback<>3523]) @ #2512
     [2] <>temp<>3540 := <>responder<>3529
@@ -14566,7 +14570,7 @@ function[217] <>funexpr@1454:15-1460:6<> {
     [13] <>fun<>3546 := @ToObject(<>obj<>3539["apply"]) @ #2515
     [14] <>this<> := enterCode(<>obj<>3539)
 
-  Block[7] -> [11]
+  Catch[7] -> [11]
     [0] catch(<>e<>3537)
 
   Call[8] -> [7]
@@ -14576,7 +14580,9 @@ function[217] <>funexpr@1454:15-1460:6<> {
 
   AfterCatch[10] -> [7]
 
-  Block[11] -> Exit
+  Finally[11] -> [12]
+
+  Block[12] -> Exit
 
   Exit[-2]
 
@@ -14935,7 +14941,7 @@ function[222] <>funexpr@1498:12-1540:4<> {
   Block[35] -> [36], ExitExc
     [0] <>obj<>3683["parameters"] := <>Global<>ignore375
 
-  Block[36] -> [38], [37]
+  Try[36] -> [38], [37]
     [0] <>obj<>3688 := @ToObject(Ajax) @ #2635
     [1] <>fun<>3689 := @ToObject(<>obj<>3688["Response"]) @ #2636
     [2] <>temp<>3690 := this
@@ -14944,7 +14950,7 @@ function[222] <>funexpr@1498:12-1540:4<> {
     [5] <>proto<>3692 := <>fun<>3689["prototype"]
     [6] <>obj<>3693 := alloc(<>proto<>3692) @ #2638
 
-  Block[37] -> [101], ExitExc
+  Catch[37] -> [101], ExitExc
     [0] catch(<>e<>3687)
     [1] <>obj<>3763 := @ToObject(this) @ #2705
     [2] <>temp<>3764 := <>e<>3687
@@ -15197,14 +15203,16 @@ function[222] <>funexpr@1498:12-1540:4<> {
 
   Block[99] -> [100]
 
-  Branch[100] -> Exit
+  Branch[100] -> [104]
 
   Call[101] -> ExitExc
     [0] call(<>fun<>3766, <>this<>, <>arguments<>3765) @ #2708
 
-  AfterCall[102] -> Exit
+  AfterCall[102] -> [104]
 
   AfterCatch[103] -> ExitExc
+
+  Finally[104] -> Exit
 
   Exit[-2]
 
@@ -15459,12 +15467,12 @@ function[224] <>funexpr@1548:22-1580:4<> {
   Block[36] -> [38], ExitExc
     [0] assert(! <>i<>3786 < <>length<>3787)
 
-  LCont:[37] -> [34], ExitExc
+  LCont[37] -> [34], ExitExc
     [0] <>old<>3838 := <>i<>3786
     [1] <>i<>3786 := <>old<>3838 + 2
     [2] <>Global<>ignore396 := <>old<>3838 + 2
 
-  LBreak:[38] -> [39]
+  LBreak[38] -> [39]
 
   Block[39] -> [47]
 
@@ -15522,10 +15530,10 @@ function[224] <>funexpr@1548:22-1580:4<> {
 
   AfterCatch[53] -> ExitExc
 
-  LCont:[54] -> [48]
+  LCont[54] -> [48]
     [0] <>cond1<>3856 := @iteratorHasNext(<>obj<>3854, <>iterator<>3855)
 
-  LBreak:[55] -> Exit
+  LBreak[55] -> Exit
 
   Exit[-2]
 
@@ -15618,11 +15626,11 @@ function[227] <>funexpr@1587:14-1592:4<> {
 
   Block[0] -> [1]
 
-  Block[1] -> [4], [3], [2]
+  Try[1] -> [4], [3], [2]
     [0] <>obj<>3879 := @ToObject(this) @ #2786
     [1] <>obj<>3880 := @ToObject(<>obj<>3879["transport"]) @ #2787
 
-  Block[2] -> Exit, ExitExc
+  Catch[2] -> Exit, ExitExc
     [0] catch(<>e<>3878)
     [1] return(0)
 
@@ -15647,6 +15655,8 @@ function[227] <>funexpr@1587:14-1592:4<> {
 
   Block[8] -> Exit, [2]
     [0] return(<>new1<>3883)
+
+  Finally[9] -> Exit
 
   Exit[-2]
 
@@ -15697,7 +15707,7 @@ function[228] <>funexpr@1594:24-1624:4<> {
   Block[9] -> [78], ExitExc
     [0] assert(<>state<>3887 != "Complete")
 
-  Block[10] -> [13], [12], [11]
+  Try[10] -> [13], [12], [11]
     [0] <>obj<>3903 := @ToObject(this) @ #2800
     [1] <>obj<>3903["_complete"] := true
     [2] <>obj<>3904 := @ToObject(this) @ #2801
@@ -15705,7 +15715,7 @@ function[228] <>funexpr@1594:24-1624:4<> {
     [4] <>y<>3906 := "on"
     [5] <>obj<>3907 := @ToObject(<>response<>3888) @ #2803
 
-  Block[11] -> [27], ExitExc
+  Catch[11] -> [27], ExitExc
     [0] catch(<>e<>3902)
     [1] <>obj<>3924 := @ToObject(this) @ #2815
     [2] <>temp<>3925 := <>e<>3902
@@ -15781,7 +15791,7 @@ function[228] <>funexpr@1594:24-1624:4<> {
 
   AfterCatch[29] -> ExitExc
 
-  Block[30] -> [31], ExitExc
+  Finally[30] -> [31], ExitExc
     [0] <>obj<>3928 := @ToObject(<>response<>3888) @ #2819
     [1] <>temp<>3929 := "Content-type"
     [2] <>arguments<>3930 := allocArg(1) @ #2820
@@ -15944,11 +15954,11 @@ function[228] <>funexpr@1594:24-1624:4<> {
 
   Block[78] -> [79]
 
-  Block[79] -> [82], [81], [80]
+  Try[79] -> [82], [81], [80]
     [0] <>obj<>3958 := @ToObject(this) @ #2843
     [1] <>obj<>3959 := @ToObject(<>obj<>3958["options"]) @ #2844
 
-  Block[80] -> [91], ExitExc
+  Catch[80] -> [91], ExitExc
     [0] catch(<>e<>3957)
     [1] <>obj<>3976 := @ToObject(this) @ #2856
     [2] <>temp<>3977 := <>e<>3957
@@ -16002,28 +16012,30 @@ function[228] <>funexpr@1594:24-1624:4<> {
   Call[88] -> [80]
     [0] call(<>fun<>3975, <>this<>, <>arguments<>3974) @ #2855
 
-  AfterCall[89] -> [95], [94]
+  AfterCall[89] -> [94]
 
   AfterCatch[90] -> [80]
 
   Call[91] -> ExitExc
     [0] call(<>fun<>3979, <>this<>, <>arguments<>3978) @ #2859
 
-  AfterCall[92] -> [95], [94]
+  AfterCall[92] -> [94]
 
   AfterCatch[93] -> ExitExc
 
-  Block[94] -> [96], ExitExc
+  Finally[94] -> [96], [95]
+
+  Block[95] -> [97], ExitExc
     [0] assert(<>state<>3887 == "Complete")
     [1] <>obj<>3980 := @ToObject(this) @ #2860
     [2] <>obj<>3981 := @ToObject(<>obj<>3980["transport"]) @ #2861
     [3] <>obj<>3982 := @ToObject(Prototype) @ #2862
     [4] <>obj<>3981["onreadystatechange"] := <>obj<>3982["emptyFunction"]
 
-  Block[95] -> [96], ExitExc
+  Block[96] -> [97], ExitExc
     [0] assert(<>state<>3887 != "Complete")
 
-  Block[96] -> Exit
+  Block[97] -> Exit
 
   Exit[-2]
 
@@ -16137,7 +16149,7 @@ function[230] <>funexpr@1635:14-1639:4<> {
 
   Block[0] -> [1]
 
-  Block[1] -> [3], [2]
+  Try[1] -> [3], [2]
     [0] <>obj<>4019 := @ToObject(this) @ #2886
     [1] <>obj<>4020 := @ToObject(<>obj<>4019["transport"]) @ #2887
     [2] <>temp<>4021 := <>name<>4016
@@ -16146,7 +16158,7 @@ function[230] <>funexpr@1635:14-1639:4<> {
     [5] <>fun<>4023 := @ToObject(<>obj<>4020["getResponseHeader"]) @ #2889
     [6] <>this<> := enterCode(<>obj<>4020)
 
-  Block[2] -> Exit, ExitExc
+  Catch[2] -> Exit, ExitExc
     [0] catch(<>e<>4018)
     [1] return(null)
 
@@ -16168,6 +16180,8 @@ function[230] <>funexpr@1635:14-1639:4<> {
   Block[8] -> Exit, [2]
     [0] return(<>new1<>4025)
 
+  Finally[9] -> Exit
+
   Exit[-2]
 
   ExitExc[-3]
@@ -16179,11 +16193,11 @@ function[231] <>funexpr@1641:17-1647:4<> {
 
   Block[0] -> [1]
 
-  Block[1] -> [4], [3], [2]
+  Try[1] -> [4], [3], [2]
     [0] <>obj<>4030 := @ToObject(this) @ #2893
     [1] <>obj<>4031 := @ToObject(<>obj<>4030["transport"]) @ #2894
 
-  Block[2] -> [10], ExitExc
+  Catch[2] -> [10], ExitExc
     [0] catch(<>e<>4029)
     [1] <>obj<>4038 := @ToObject(this) @ #2899
     [2] <>temp<>4039 := <>e<>4029
@@ -16219,9 +16233,11 @@ function[231] <>funexpr@1641:17-1647:4<> {
   Call[10] -> ExitExc
     [0] call(<>fun<>4041, <>this<>, <>arguments<>4040) @ #2902
 
-  AfterCall[11] -> Exit
+  AfterCall[11] -> [13]
 
   AfterCatch[12] -> ExitExc
+
+  Finally[13] -> Exit
 
   Exit[-2]
 
@@ -16467,11 +16483,11 @@ function[234] <>funexpr@1691:18-1695:4<> {
 
   Block[0] -> [1]
 
-  Block[1] -> [4], [3], [2]
+  Try[1] -> [4], [3], [2]
     [0] <>obj<>4124 := @ToObject(this) @ #2971
     [1] <>obj<>4125 := @ToObject(<>obj<>4124["transport"]) @ #2972
 
-  Block[2] -> Exit, ExitExc
+  Catch[2] -> Exit, ExitExc
     [0] catch(<>e<>4123)
     [1] return("")
 
@@ -16486,6 +16502,8 @@ function[234] <>funexpr@1691:18-1695:4<> {
   Block[5] -> Exit, [2]
     [0] return(<>new1<>4126)
 
+  Finally[6] -> Exit
+
   Exit[-2]
 
   ExitExc[-3]
@@ -16497,13 +16515,13 @@ function[235] <>funexpr@1699:18-1703:4<> {
 
   Block[0] -> [1]
 
-  Block[1] -> [3], [2]
+  Try[1] -> [3], [2]
     [0] <>obj<>4134 := @ToObject(this) @ #2978
     [1] <>arguments<>4135 := allocArg(0) @ #2979
     [2] <>fun<>4136 := @ToObject(<>obj<>4134["getAllResponseHeaders"]) @ #2980
     [3] <>this<> := enterCode(<>obj<>4134)
 
-  Block[2] -> Exit, ExitExc
+  Catch[2] -> Exit, ExitExc
     [0] catch(<>e<>4133)
     [1] return(null)
 
@@ -16516,6 +16534,8 @@ function[235] <>funexpr@1699:18-1703:4<> {
 
   Block[6] -> Exit, [2]
     [0] return(<>new1<>4137)
+
+  Finally[7] -> Exit
 
   Exit[-2]
 
@@ -16637,13 +16657,13 @@ function[238] <>funexpr@1713:19-1723:4<> {
   Block[15] -> [16], ExitExc
     [0] <>json<>4158 := <>Global<>ignore430
 
-  Block[16] -> [19], [18], [17]
+  Try[16] -> [19], [18], [17]
     [0] <>obj<>4173 := @ToObject(<>json<>4158) @ #3008
     [1] <>obj<>4174 := @ToObject(this) @ #3009
     [2] <>obj<>4175 := @ToObject(<>obj<>4174["request"]) @ #3010
     [3] <>obj<>4176 := @ToObject(<>obj<>4175["options"]) @ #3011
 
-  Block[17] -> [29], ExitExc
+  Catch[17] -> [29], ExitExc
     [0] catch(<>e<>4172)
     [1] <>obj<>4186 := @ToObject(this) @ #3020
     [2] <>obj<>4187 := @ToObject(<>obj<>4186["request"]) @ #3021
@@ -16694,9 +16714,11 @@ function[238] <>funexpr@1713:19-1723:4<> {
   Call[29] -> ExitExc
     [0] call(<>fun<>4190, <>this<>, <>arguments<>4189) @ #3024
 
-  AfterCall[30] -> Exit
+  AfterCall[30] -> [32]
 
   AfterCatch[31] -> ExitExc
+
+  Finally[32] -> Exit
 
   Exit[-2]
 
@@ -16814,12 +16836,12 @@ function[239] <>funexpr@1725:21-1737:4<> {
 
   Branch[30] -> [31]
 
-  Block[31] -> [34], [33], [32]
+  Try[31] -> [34], [33], [32]
     [0] <>obj<>4218 := @ToObject(this) @ #3044
     [1] <>obj<>4219 := @ToObject(<>obj<>4218["responseText"]) @ #3045
     [2] <>obj<>4220 := @ToObject(<>options<>4193) @ #3046
 
-  Block[32] -> [44], ExitExc
+  Catch[32] -> [44], ExitExc
     [0] catch(<>e<>4217)
     [1] <>obj<>4230 := @ToObject(this) @ #3055
     [2] <>obj<>4231 := @ToObject(<>obj<>4230["request"]) @ #3056
@@ -16870,9 +16892,11 @@ function[239] <>funexpr@1725:21-1737:4<> {
   Call[44] -> ExitExc
     [0] call(<>fun<>4234, <>this<>, <>arguments<>4233) @ #3059
 
-  AfterCall[45] -> Exit
+  AfterCall[45] -> [47]
 
   AfterCatch[46] -> ExitExc
+
+  Finally[47] -> Exit
 
   Exit[-2]
 
@@ -17611,13 +17635,13 @@ function[248] document._getElementsByXPath<>funexpr@1830:34-1837:4<> {
 
   AfterCatch[24] -> ExitExc
 
-  LCont:[25] -> [11], ExitExc
+  LCont[25] -> [11], ExitExc
     [0] <>old<>4492 := <>i<>4462
     [1] <>new<>4493 := @ToNumber(<>old<>4492)
     [2] <>i<>4462 := <>new<>4493 + 1
     [3] <>Global<>ignore474 := <>new<>4493
 
-  LBreak:[26] -> Exit, ExitExc
+  LBreak[26] -> Exit, ExitExc
     [0] return(<>results<>4460)
 
   Exit[-2]
@@ -17730,7 +17754,7 @@ function[251] <>funexpr@1870:45-1878:4<> {
 
   Block[0] -> [1]
 
-  Block[1] -> [3], [2]
+  Try[1] -> [3], [2]
     [0] <>obj<>4512 := @ToObject(document) @ #3273
     [1] <>temp<>4513 := "<input name=\"x\">"
     [2] <>arguments<>4514 := allocArg(1) @ #3274
@@ -17738,7 +17762,7 @@ function[251] <>funexpr@1870:45-1878:4<> {
     [4] <>fun<>4515 := @ToObject(<>obj<>4512["createElement"]) @ #3275
     [5] <>this<> := enterCode(<>obj<>4512)
 
-  Block[2] -> Exit, ExitExc
+  Catch[2] -> Exit, ExitExc
     [0] catch(<>err<>4511)
     [1] return(false)
 
@@ -17784,6 +17808,8 @@ function[251] <>funexpr@1870:45-1878:4<> {
     [1] <>new1<>4522 := <>y<>4520 === "input"
 
   Block[15] -> [12]
+
+  Finally[16] -> Exit
 
   Exit[-2]
 
@@ -18393,12 +18419,12 @@ function[260] update {
 
   AfterCatch[14] -> ExitExc
 
-  LCont:[15] -> [9], ExitExc
+  LCont[15] -> [9], ExitExc
     [0] <>old<>4703 := <>i<>4689
     [1] <>new<>4704 := @ToNumber(<>old<>4703)
     [2] <>i<>4689 := <>new<>4704 - 1
 
-  LBreak:[16] -> [18], [17]
+  LBreak[16] -> [18], [17]
 
   Block[17] -> [20], [19], ExitExc
     [0] assert(<>content<>4686)
@@ -18587,10 +18613,10 @@ function[260] update {
 
   AfterCatch[68] -> ExitExc
 
-  LCont:[69] -> [63], ExitExc
+  LCont[69] -> [63], ExitExc
     [0] <>obj<>4741 := @ToObject(<>element<>4685) @ #3456
 
-  LBreak:[70] -> [71], ExitExc
+  LBreak[70] -> [71], ExitExc
     [0] <>obj<>4747 := @ToObject(Element) @ #3457
     [1] <>temp<>4748 := <>tagName<>4690
     [2] <>obj<>4749 := @ToObject(<>content<>4686) @ #3458
@@ -18703,10 +18729,10 @@ function[260] update {
 
   AfterCatch[100] -> ExitExc
 
-  LCont:[101] -> [95], ExitExc
+  LCont[101] -> [95], ExitExc
     [0] <>obj<>4777 := @ToObject(<>element<>4685) @ #3489
 
-  LBreak:[102] -> [103], ExitExc
+  LBreak[102] -> [103], ExitExc
     [0] <>obj<>4783 := @ToObject(Element) @ #3490
     [1] <>temp<>4784 := <>tagName<>4690
     [2] <>obj<>4785 := @ToObject(<>content<>4686) @ #3491
@@ -18947,7 +18973,7 @@ function[264] <>funexpr@1960:42-1972:6<> {
 
   Block[0] -> [1]
 
-  Block[1] -> [3], [2]
+  Try[1] -> [3], [2]
     [0] <>obj<>4846 := @ToObject(document) @ #3549
     [1] <>temp<>4847 := "table"
     [2] <>arguments<>4848 := allocArg(1) @ #3550
@@ -18955,7 +18981,7 @@ function[264] <>funexpr@1960:42-1972:6<> {
     [4] <>fun<>4849 := @ToObject(<>obj<>4846["createElement"]) @ #3551
     [5] <>this<> := enterCode(<>obj<>4846)
 
-  Block[2] -> Exit, ExitExc
+  Catch[2] -> Exit, ExitExc
     [0] catch(<>e<>4845)
     [1] return(true)
 
@@ -18993,7 +19019,9 @@ function[264] <>funexpr@1960:42-1972:6<> {
 
   Block[12] -> [13]
 
-  Branch[13] -> Exit
+  Branch[13] -> [14]
+
+  Finally[14] -> Exit
 
   Exit[-2]
 
@@ -19006,7 +19034,7 @@ function[265] <>funexpr@1974:41-1984:6<> {
 
   Block[0] -> [1]
 
-  Block[1] -> [3], [2]
+  Try[1] -> [3], [2]
     [0] <>obj<>4862 := @ToObject(document) @ #3562
     [1] <>temp<>4863 := "div"
     [2] <>arguments<>4864 := allocArg(1) @ #3563
@@ -19014,7 +19042,7 @@ function[265] <>funexpr@1974:41-1984:6<> {
     [4] <>fun<>4865 := @ToObject(<>obj<>4862["createElement"]) @ #3564
     [5] <>this<> := enterCode(<>obj<>4862)
 
-  Block[2] -> Exit, ExitExc
+  Catch[2] -> Exit, ExitExc
     [0] catch(<>e<>4861)
     [1] return(true)
 
@@ -19034,6 +19062,8 @@ function[265] <>funexpr@1974:41-1984:6<> {
     [5] <>isBuggy<>4859 := <>obj<>4868["length"] === 0
     [6] <>el<>4858 := null
     [7] return(<>isBuggy<>4859)
+
+  Finally[7] -> Exit
 
   Exit[-2]
 
@@ -19063,7 +19093,7 @@ function[266] <>funexpr@1989:54-2001:6<> {
     [0] <>s<>4874 := <>Global<>ignore545
     [1] <>isBuggy<>4875 := false
 
-  Block[5] -> [7], [6]
+  Try[5] -> [7], [6]
     [0] <>obj<>4882 := @ToObject(<>s<>4874) @ #3578
     [1] <>obj<>4883 := @ToObject(document) @ #3579
     [2] <>temp<>4884 := ""
@@ -19072,7 +19102,7 @@ function[266] <>funexpr@1989:54-2001:6<> {
     [5] <>fun<>4886 := @ToObject(<>obj<>4883["createTextNode"]) @ #3581
     [6] <>this<> := enterCode(<>obj<>4883)
 
-  Block[6] -> [24], ExitExc
+  Catch[6] -> [24], ExitExc
     [0] catch(<>e<>4881)
     [1] <>isBuggy<>4875 := true
 
@@ -19132,7 +19162,7 @@ function[266] <>funexpr@1989:54-2001:6<> {
 
   Block[23] -> [20]
 
-  Block[24] -> Exit, ExitExc
+  Finally[24] -> Exit, ExitExc
     [0] <>s<>4874 := null
     [1] return(<>isBuggy<>4875)
 
@@ -19755,10 +19785,10 @@ function[268] <>funexpr@2072:11-2106:4<> {
 
   AfterCatch[115] -> ExitExc
 
-  LCont:[116] -> [39]
+  LCont[116] -> [39]
     [0] <>cond1<>4992 := @iteratorHasNext(<>obj<>4990, <>iterator<>4991)
 
-  LBreak:[117] -> Exit, ExitExc
+  LBreak[117] -> Exit, ExitExc
     [0] return(<>element<>4957)
 
   Exit[-2]
@@ -20228,11 +20258,11 @@ function[272] <>funexpr@2132:23-2145:4<> {
 
   Block[23] -> [24]
 
-  LCont:[24] -> [8], ExitExc
+  LCont[24] -> [8], ExitExc
     [0] <>obj<>5168 := @ToObject(<>element<>5159) @ #3819
     [1] <>element<>5159 := <>obj<>5168[<>property<>5160]
 
-  LBreak:[25] -> Exit, ExitExc
+  LBreak[25] -> Exit, ExitExc
     [0] return(<>elements<>5162)
 
   Exit[-2]
@@ -20351,7 +20381,7 @@ function[275] <>funexpr@2155:20-2159:4<> {
   Block[13] -> [21], ExitExc
     [0] assert(! <>new1<>5210)
 
-  LCont:[14] -> [16], [15]
+  LCont[14] -> [16], [15]
 
   Block[15] -> [17], ExitExc
     [0] assert(<>element<>5201)
@@ -20373,7 +20403,7 @@ function[275] <>funexpr@2155:20-2159:4<> {
 
   Block[20] -> [17]
 
-  LBreak:[21] -> [22], ExitExc
+  LBreak[21] -> [22], ExitExc
     [0] <>obj<>5212 := @ToObject($) @ #3841
     [1] <>temp<>5213 := <>element<>5201
     [2] <>arguments<>5214 := allocArg(1) @ #3842
@@ -20467,9 +20497,9 @@ function[276] <>funexpr@2161:25-2170:4<> {
     [0] <>obj<>5238 := @ToObject(<>child<>5221) @ #3860
     [1] <>child<>5221 := <>obj<>5238["nextSibling"]
 
-  LCont:[18] -> [5]
+  LCont[18] -> [5]
 
-  LBreak:[19] -> Exit, ExitExc
+  LBreak[19] -> Exit, ExitExc
     [0] return(<>results<>5220)
 
   Exit[-2]
@@ -21459,7 +21489,7 @@ function[287] <>funexpr@2246:13-2253:4<> {
     [4] <>obj<>5545["idCounter"] := <>new<>5547 + 1
     [5] <>id<>5533 := <>y<>5544 + <>new<>5547
 
-  LCont:[12] -> [13], ExitExc
+  LCont[12] -> [13], ExitExc
     [0] <>obj<>5548 := @ToObject($) @ #4073
     [1] <>temp<>5549 := <>id<>5533
     [2] <>arguments<>5550 := allocArg(1) @ #4074
@@ -21490,7 +21520,7 @@ function[287] <>funexpr@2246:13-2253:4<> {
   Block[19] -> [24], ExitExc
     [0] assert(! <>new1<>5552)
 
-  LCont:[20] -> [21], ExitExc
+  LCont[20] -> [21], ExitExc
     [0] <>obj<>5548 := @ToObject($) @ #4077
     [1] <>temp<>5549 := <>id<>5533
     [2] <>arguments<>5550 := allocArg(1) @ #4078
@@ -21505,7 +21535,7 @@ function[287] <>funexpr@2246:13-2253:4<> {
 
   AfterCatch[23] -> ExitExc
 
-  LBreak:[24] -> [25], ExitExc
+  LBreak[24] -> [25], ExitExc
     [0] <>obj<>5553 := @ToObject(Element) @ #4080
     [1] <>temp<>5554 := <>element<>5532
     [2] <>temp<>5555 := "id"
@@ -21869,10 +21899,10 @@ function[289] <>funexpr@2269:19-2287:4<> {
 
   Branch[46] -> [47]
 
-  LCont:[47] -> [14]
+  LCont[47] -> [14]
     [0] <>cond1<>5626 := @iteratorHasNext(<>obj<>5624, <>iterator<>5625)
 
-  LBreak:[48] -> Exit, ExitExc
+  LBreak[48] -> Exit, ExitExc
     [0] return(<>element<>5605)
 
   Exit[-2]
@@ -22453,9 +22483,9 @@ function[297] <>funexpr@2328:20-2338:4<> {
   Block[30] -> [31], ExitExc
     [0] <>node<>5788 := <>nextNode<>5789
 
-  LCont:[31] -> [5]
+  LCont[31] -> [5]
 
-  LBreak:[32] -> Exit, ExitExc
+  LBreak[32] -> Exit, ExitExc
     [0] return(<>element<>5787)
 
   Exit[-2]
@@ -22628,11 +22658,11 @@ function[299] <>funexpr@2344:17-2357:4<> {
 
   Block[33] -> [34]
 
-  LCont:[34] -> [28], ExitExc
+  LCont[34] -> [28], ExitExc
     [0] <>obj<>5859 := @ToObject(<>element<>5834) @ #4283
     [1] <>element<>5834 := <>obj<>5859["parentNode"]
 
-  LBreak:[35] -> Exit, ExitExc
+  LBreak[35] -> Exit, ExitExc
     [0] return(false)
 
   Exit[-2]
@@ -23100,10 +23130,10 @@ function[303] <>funexpr@2382:13-2398:4<> {
     [0] <>obj<>5985 := @ToObject(<>styles<>5926) @ #4369
     [1] <>obj<>5977[<>field1<>5978] := <>obj<>5985[<>property<>5929]
 
-  LCont:[54] -> [31]
+  LCont[54] -> [31]
     [0] <>cond1<>5970 := @iteratorHasNext(<>obj<>5968, <>iterator<>5969)
 
-  LBreak:[55] -> Exit, ExitExc
+  LBreak[55] -> Exit, ExitExc
     [0] return(<>element<>5925)
 
   Exit[-2]
@@ -25341,7 +25371,7 @@ function[331] _descendants {
 
   Block[13] -> [14]
 
-  LCont:[14] -> [5], ExitExc
+  LCont[14] -> [5], ExitExc
     [0] <>old<>6676 := <>i<>6663
     [1] <>new<>6677 := @ToNumber(<>old<>6676)
     [2] <>i<>6663 := <>new<>6677 + 1
@@ -25349,7 +25379,7 @@ function[331] _descendants {
     [4] <>obj<>6670 := @ToObject(<>nodes<>6661) @ #4887
     [5] <>node<>6664 := <>obj<>6670[<>i<>6663]
 
-  LBreak:[15] -> Exit, ExitExc
+  LBreak[15] -> Exit, ExitExc
     [0] return(<>results<>6662)
 
   Exit[-2]
@@ -25598,7 +25628,7 @@ function[334] Element.Methods.setOpacity<>funexpr@2751:32-2766:4<> {
     [4] <>fun<>6764 := @ToObject(<>obj<>6762["toUpperCase"]) @ #4952
     [5] <>this<> := enterCode(<>obj<>6762)
 
-  Block[17] -> [43], ExitExc
+  Block[17] -> [44], ExitExc
     [0] assert(<>value<>6752 != 1)
 
   Call[18] -> ExitExc
@@ -25644,9 +25674,9 @@ function[334] Element.Methods.setOpacity<>funexpr@2751:32-2766:4<> {
   Block[28] -> [30], ExitExc
     [0] assert(! <>new<>6767)
 
-  Block[29] -> [43]
+  Block[29] -> [44]
 
-  Block[30] -> [32], [31]
+  Try[30] -> [32], [31]
     [0] <>obj<>6775 := @ToObject(document) @ #4957
     [1] <>temp<>6776 := " "
     [2] <>arguments<>6777 := allocArg(1) @ #4958
@@ -25654,7 +25684,7 @@ function[334] Element.Methods.setOpacity<>funexpr@2751:32-2766:4<> {
     [4] <>fun<>6778 := @ToObject(<>obj<>6775["createTextNode"]) @ #4959
     [5] <>this<> := enterCode(<>obj<>6775)
 
-  Block[31] -> [29]
+  Catch[31] -> [43]
     [0] catch(<>e<>6774)
 
   Call[32] -> [31]
@@ -25691,11 +25721,13 @@ function[334] Element.Methods.setOpacity<>funexpr@2751:32-2766:4<> {
   Call[40] -> [31]
     [0] call(<>fun<>6786, <>this<>, <>arguments<>6785) @ #4968
 
-  AfterCall[41] -> [29]
+  AfterCall[41] -> [43]
 
   AfterCatch[42] -> [31]
 
-  Block[43] -> Exit, ExitExc
+  Finally[43] -> [29]
+
+  Block[44] -> Exit, ExitExc
     [0] return(<>element<>6751)
 
   Exit[-2]
@@ -26164,12 +26196,12 @@ function[339] Element._getContentFromAnonymousElement<>funexpr@2805:43-2827:2<> 
   Block[22] -> [24], ExitExc
     [0] assert(! <>new<>6926)
 
-  LCont:[23] -> [20], ExitExc
+  LCont[23] -> [20], ExitExc
     [0] <>old<>6925 := <>i<>6899
     [1] <>new<>6926 := @ToNumber(<>old<>6925)
     [2] <>i<>6899 := <>new<>6926 - 1
 
-  LBreak:[24] -> [25]
+  LBreak[24] -> [25]
 
   Block[25] -> [26], ExitExc
     [0] <>obj<>6929 := @ToObject($A) @ #5082
@@ -26699,10 +26731,10 @@ function[349] extendElementWith {
 
   Branch[17] -> [18]
 
-  LCont:[18] -> [1]
+  LCont[18] -> [1]
     [0] <>cond1<>7108 := @iteratorHasNext(<>obj<>7106, <>iterator<>7107)
 
-  LBreak:[19] -> Exit
+  LBreak[19] -> Exit
 
   Exit[-2]
 
@@ -27478,10 +27510,10 @@ function[354] Element.addMethods<>funexpr@2967:22-3058:2<> {
 
   AfterCatch[89] -> ExitExc
 
-  LCont:[90] -> [74]
+  LCont[90] -> [74]
     [0] <>cond1<>7433 := @iteratorHasNext(<>obj<>7431, <>iterator<>7432)
 
-  LBreak:[91] -> [92]
+  LBreak[91] -> [92]
 
   Block[92] -> [93], ExitExc
     [0] <>obj<>7451 := @ToObject(Object) @ #5477
@@ -27682,10 +27714,10 @@ function[356] copy {
 
   Branch[24] -> [25]
 
-  LCont:[25] -> [4]
+  LCont[25] -> [4]
     [0] <>cond1<>7291 := @iteratorHasNext(<>obj<>7289, <>iterator<>7290)
 
-  LBreak:[26] -> Exit
+  LBreak[26] -> Exit
 
   Exit[-2]
 
@@ -28538,12 +28570,12 @@ function[367] <>funexpr@3149:10-3161:4<> {
   Block[20] -> [22], ExitExc
     [0] assert(! <>new<>7668)
 
-  LCont:[21] -> [18], ExitExc
+  LCont[21] -> [18], ExitExc
     [0] <>old<>7667 := <>i<>7649
     [1] <>new<>7668 := @ToNumber(<>old<>7667)
     [2] <>i<>7649 := <>new<>7668 - 1
 
-  LBreak:[22] -> [23]
+  LBreak[22] -> [23]
 
   Block[23] -> [24], ExitExc
     [0] <>obj<>7671 := @ToObject(Element) @ #5652
@@ -28659,12 +28691,12 @@ function[368] <>funexpr@3163:10-3175:4<> {
 
   AfterCatch[21] -> ExitExc
 
-  LCont:[22] -> [16], ExitExc
+  LCont[22] -> [16], ExitExc
     [0] <>old<>7698 := <>i<>7681
     [1] <>new<>7699 := @ToNumber(<>old<>7698)
     [2] <>i<>7681 := <>new<>7699 - 1
 
-  LBreak:[23] -> Exit, ExitExc
+  LBreak[23] -> Exit, ExitExc
     [0] return(null)
 
   Exit[-2]
@@ -29842,7 +29874,7 @@ function[373] isDisplayed {
   Block[20] -> [21], ExitExc
     [0] <>element<>7914 := <>Global<>ignore931
 
-  LCont:[21] -> [23], [22]
+  LCont[21] -> [23], [22]
 
   Block[22] -> [24], ExitExc
     [0] assert(<>element<>7914)
@@ -29864,7 +29896,7 @@ function[373] isDisplayed {
 
   Block[27] -> [24]
 
-  LBreak:[28] -> Exit, ExitExc
+  LBreak[28] -> Exit, ExitExc
     [0] return(true)
 
   Exit[-2]
@@ -30442,7 +30474,7 @@ function[378] getOffsetParent {
 
   Block[78] -> [79]
 
-  LCont:[79] -> [81], [80], ExitExc
+  LCont[79] -> [81], [80], ExitExc
     [0] <>obj<>8055 := @ToObject(<>element<>8007) @ #5930
     [1] <>element<>8007 := <>obj<>8055["parentNode"]
 
@@ -30467,7 +30499,7 @@ function[378] getOffsetParent {
 
   Block[85] -> [82]
 
-  LBreak:[86] -> [87], ExitExc
+  LBreak[86] -> [87], ExitExc
     [0] <>obj<>8080 := @ToObject($) @ #5932
     [1] <>obj<>8081 := @ToObject(document) @ #5933
     [2] <>temp<>8082 := <>obj<>8081["body"]
@@ -30550,7 +30582,7 @@ function[379] cumulativeOffset {
     [1] <>obj<>8101 := @ToObject(<>element<>8086) @ #5944
     [2] <>element<>8086 := <>obj<>8101["offsetParent"]
 
-  LCont:[13] -> [14]
+  LCont[13] -> [14]
 
   LoopHead[14] -> [16], [15]
 
@@ -30588,9 +30620,9 @@ function[379] cumulativeOffset {
     [1] <>obj<>8101 := @ToObject(<>element<>8086) @ #5947
     [2] <>element<>8086 := <>obj<>8101["offsetParent"]
 
-  LCont:[23] -> [14]
+  LCont[23] -> [14]
 
-  LBreak:[24] -> [25]
+  LBreak[24] -> [25]
 
   Block[25] -> [26], ExitExc
     [0] <>obj<>8102 := @ToObject(Element) @ #5948
@@ -30750,7 +30782,7 @@ function[380] positionedOffset {
 
   Block[30] -> [31]
 
-  LCont:[31] -> [32]
+  LCont[31] -> [32]
 
   LoopHead[32] -> [34], [33]
 
@@ -30843,9 +30875,9 @@ function[380] positionedOffset {
 
   Block[56] -> [57]
 
-  LCont:[57] -> [32]
+  LCont[57] -> [32]
 
-  LBreak:[58] -> [59], ExitExc
+  LBreak[58] -> [59], ExitExc
     [0] <>old<>8142 := <>valueL<>8115
     [1] <>obj<>8143 := @ToObject(<>layout<>8113) @ #5982
     [2] <>temp<>8144 := "margin-top"
@@ -30952,7 +30984,7 @@ function[381] cumulativeScrollOffset {
     [1] <>obj<>8174 := @ToObject(<>element<>8164) @ #5999
     [2] <>element<>8164 := <>obj<>8174["parentNode"]
 
-  LCont:[7] -> [8]
+  LCont[7] -> [8]
 
   LoopHead[8] -> [10], [9]
 
@@ -30990,9 +31022,9 @@ function[381] cumulativeScrollOffset {
     [1] <>obj<>8174 := @ToObject(<>element<>8164) @ #6002
     [2] <>element<>8164 := <>obj<>8174["parentNode"]
 
-  LCont:[17] -> [8]
+  LCont[17] -> [8]
 
-  LBreak:[18] -> [19], ExitExc
+  LBreak[18] -> [19], ExitExc
     [0] <>obj<>8175 := @ToObject(Element) @ #6003
     [1] <>fun<>8176 := @ToObject(<>obj<>8175["Offset"]) @ #6004
     [2] <>temp<>8177 := <>valueL<>8166
@@ -31127,7 +31159,7 @@ function[382] viewportOffset {
 
   Block[23] -> [24]
 
-  LCont:[24] -> [25], ExitExc
+  LCont[24] -> [25], ExitExc
     [0] <>obj<>8210 := @ToObject(<>element<>8189) @ #6021
     [1] <>element<>8189 := <>obj<>8210["offsetParent"]
 
@@ -31210,11 +31242,11 @@ function[382] viewportOffset {
 
   Block[46] -> [47]
 
-  LCont:[47] -> [25], ExitExc
+  LCont[47] -> [25], ExitExc
     [0] <>obj<>8210 := @ToObject(<>element<>8189) @ #6029
     [1] <>element<>8189 := <>obj<>8210["offsetParent"]
 
-  LBreak:[48] -> [50], [49], ExitExc
+  LBreak[48] -> [50], [49], ExitExc
     [0] <>element<>8189 := <>forElement<>8185
 
   Block[49] -> [52], [51], ExitExc
@@ -31251,7 +31283,7 @@ function[382] viewportOffset {
 
   Block[57] -> [58]
 
-  LCont:[58] -> [59], ExitExc
+  LCont[58] -> [59], ExitExc
     [0] <>obj<>8217 := @ToObject(<>element<>8189) @ #6032
     [1] <>element<>8189 := <>obj<>8217["parentNode"]
 
@@ -31297,11 +31329,11 @@ function[382] viewportOffset {
 
   Block[70] -> [71]
 
-  LCont:[71] -> [59], ExitExc
+  LCont[71] -> [59], ExitExc
     [0] <>obj<>8217 := @ToObject(<>element<>8189) @ #6035
     [1] <>element<>8189 := <>obj<>8217["parentNode"]
 
-  LBreak:[72] -> [73], ExitExc
+  LBreak[72] -> [73], ExitExc
     [0] <>obj<>8218 := @ToObject(Element) @ #6036
     [1] <>fun<>8219 := @ToObject(<>obj<>8218["Offset"]) @ #6037
     [2] <>temp<>8220 := <>valueL<>8187
@@ -35169,7 +35201,7 @@ function[437] cumulativeOffset<>funexpr@3860:24-3873:6<> {
     [0] <>obj<>9403 := @ToObject(<>element<>9380) @ #6926
     [1] <>element<>9380 := <>obj<>9403["offsetParent"]
 
-  LCont:[20] -> [21]
+  LCont[20] -> [21]
 
   LoopHead[21] -> [23], [22]
 
@@ -35241,9 +35273,9 @@ function[437] cumulativeOffset<>funexpr@3860:24-3873:6<> {
     [0] <>obj<>9403 := @ToObject(<>element<>9380) @ #6935
     [1] <>element<>9380 := <>obj<>9403["offsetParent"]
 
-  LCont:[39] -> [21]
+  LCont[39] -> [21]
 
-  LBreak:[40] -> [41], ExitExc
+  LBreak[40] -> [41], ExitExc
     [0] <>obj<>9404 := @ToObject(Element) @ #6936
     [1] <>fun<>9405 := @ToObject(<>obj<>9404["Offset"]) @ #6937
     [2] <>temp<>9406 := <>valueL<>9382
@@ -35671,13 +35703,13 @@ function[443] find {
 
   Branch[20] -> [21]
 
-  LCont:[21] -> [4], ExitExc
+  LCont[21] -> [4], ExitExc
     [0] <>old<>9546 := <>i<>9525
     [1] <>new<>9547 := @ToNumber(<>old<>9546)
     [2] <>i<>9525 := <>new<>9547 + 1
     [3] <>Global<>ignore1130 := <>new<>9547
 
-  LBreak:[22] -> Exit
+  LBreak[22] -> Exit
 
   Exit[-2]
 
@@ -35715,13 +35747,13 @@ function[444] extendElements {
 
   AfterCatch[6] -> ExitExc
 
-  LCont:[7] -> [1], ExitExc
+  LCont[7] -> [1], ExitExc
     [0] <>old<>9558 := <>i<>9549
     [1] <>new<>9559 := @ToNumber(<>old<>9558)
     [2] <>i<>9549 := <>new<>9559 + 1
     [3] <>Global<>ignore1134 := <>new<>9559
 
-  LBreak:[8] -> Exit, ExitExc
+  LBreak[8] -> Exit, ExitExc
     [0] return(<>elements<>9548)
 
   Exit[-2]
@@ -36309,14 +36341,14 @@ function[445] <>funexpr@3972:2-4942:2<> {
   Block[98] -> [99], ExitExc
     [0] <>obj<>11110[<>type<>9581] := <>Global<>ignore1360
 
-  LCont:[99] -> [68]
+  LCont[99] -> [68]
     [0] <>cond1<>11084 := @iteratorHasNext(<>obj<>11082, <>iterator<>11083)
 
-  LBreak:[100] -> [101], ExitExc
+  LBreak[100] -> [101], ExitExc
     [0] <>Global<>ignore1361 := function (502) @ #8007, #8008
     [1] <>makeArray<>9582 := <>Global<>ignore1361
 
-  Block[101] -> [103], [102]
+  Try[101] -> [103], [102]
     [0] <>obj<>11150 := @ToObject(Array) @ #8009
     [1] <>obj<>11151 := @ToObject(<>obj<>11150["prototype"]) @ #8010
     [2] <>obj<>11152 := @ToObject(<>obj<>11151["slice"]) @ #8011
@@ -36330,7 +36362,7 @@ function[445] <>funexpr@3972:2-4942:2<> {
     [10] <>fun<>11158 := @ToObject(<>obj<>11152["call"]) @ #8015
     [11] <>this<> := enterCode(<>obj<>11152)
 
-  Block[102] -> [106], ExitExc
+  Catch[102] -> [106], ExitExc
     [0] catch(<>e<>11149)
     [1] <>Global<>ignore1364 := function (503) @ #8042, #8043
     [2] <>makeArray<>9582 := <>Global<>ignore1364
@@ -36342,7 +36374,7 @@ function[445] <>funexpr@3972:2-4942:2<> {
 
   AfterCatch[105] -> [102]
 
-  Block[106] -> [108], [107], ExitExc
+  Finally[106] -> [108], [107], ExitExc
     [0] <>obj<>11196 := @ToObject(document) @ #8044
     [1] <>obj<>11197 := @ToObject(<>obj<>11196["documentElement"]) @ #8045
 
@@ -36615,21 +36647,21 @@ function[446] dirNodeCheck {
     [0] <>obj<>9614 := @ToObject(<>elem<>9597) @ #7060
     [1] <>elem<>9597 := <>obj<>9614[<>dir<>9588]
 
-  LCont:[37] -> [19]
+  LCont[37] -> [19]
 
-  LBreak:[38] -> [39], ExitExc
+  LBreak[38] -> [39], ExitExc
     [0] <>obj<>9615 := @ToObject(<>checkSet<>9591) @ #7061
     [1] <>obj<>9615[<>i<>9595] := <>match<>9598
 
   Block[39] -> [40]
 
-  LCont:[40] -> [7], ExitExc
+  LCont[40] -> [7], ExitExc
     [0] <>old<>9616 := <>i<>9595
     [1] <>new<>9617 := @ToNumber(<>old<>9616)
     [2] <>i<>9595 := <>new<>9617 + 1
     [3] <>Global<>ignore1143 := <>new<>9617
 
-  LBreak:[41] -> Exit
+  LBreak[41] -> Exit
 
   Exit[-2]
 
@@ -36796,21 +36828,21 @@ function[447] dirCheck {
     [0] <>obj<>9650 := @ToObject(<>elem<>9627) @ #7082
     [1] <>elem<>9627 := <>obj<>9650[<>dir<>9618]
 
-  LCont:[44] -> [19]
+  LCont[44] -> [19]
 
-  LBreak:[45] -> [46], ExitExc
+  LBreak[45] -> [46], ExitExc
     [0] <>obj<>9651 := @ToObject(<>checkSet<>9621) @ #7083
     [1] <>obj<>9651[<>i<>9625] := <>match<>9628
 
   Block[46] -> [47]
 
-  LCont:[47] -> [7], ExitExc
+  LCont[47] -> [7], ExitExc
     [0] <>old<>9652 := <>i<>9625
     [1] <>new<>9653 := @ToNumber(<>old<>9652)
     [2] <>i<>9625 := <>new<>9653 + 1
     [3] <>Global<>ignore1159 := <>new<>9653
 
-  LBreak:[48] -> Exit
+  LBreak[48] -> Exit
 
   Exit[-2]
 
@@ -37000,7 +37032,7 @@ function[449] Sizzle<>funexpr@3985:14-4101:2<> {
 
   Block[45] -> [46]
 
-  LCont:[46] -> [47], ExitExc
+  LCont[46] -> [47], ExitExc
     [0] <>obj<>9702 := @ToObject(<>chunker<>9573) @ #7123
     [1] <>temp<>9703 := ""
     [2] <>arguments<>9704 := allocArg(1) @ #7124
@@ -37033,7 +37065,7 @@ function[449] Sizzle<>funexpr@3985:14-4101:2<> {
   Block[54] -> [36], ExitExc
     [0] <>m<>9679 := <>y<>9711
 
-  LBreak:[55] -> [57], [56], ExitExc
+  LBreak[55] -> [57], [56], ExitExc
     [0] <>obj<>9720 := @ToObject(<>parts<>9678) @ #7131
 
   Block[56] -> [58], ExitExc
@@ -37236,10 +37268,10 @@ function[449] Sizzle<>funexpr@3985:14-4101:2<> {
   Block[108] -> [109], ExitExc
     [0] <>set<>9680 := <>Global<>ignore1193
 
-  LCont:[109] -> [91], ExitExc
+  LCont[109] -> [91], ExitExc
     [0] <>obj<>9752 := @ToObject(<>parts<>9678) @ #7170
 
-  LBreak:[110] -> [80]
+  LBreak[110] -> [80]
 
   Block[111] -> [240], [239]
 
@@ -37707,10 +37739,10 @@ function[449] Sizzle<>funexpr@3985:14-4101:2<> {
 
   AfterCatch[235] -> ExitExc
 
-  LCont:[236] -> [216], ExitExc
+  LCont[236] -> [216], ExitExc
     [0] <>obj<>9848 := @ToObject(<>parts<>9678) @ #7255
 
-  LBreak:[237] -> [238]
+  LBreak[237] -> [238]
 
   Block[238] -> [111]
 
@@ -37900,14 +37932,14 @@ function[449] Sizzle<>funexpr@3985:14-4101:2<> {
 
   Branch[288] -> [289]
 
-  LCont:[289] -> [263], ExitExc
+  LCont[289] -> [263], ExitExc
     [0] <>old<>9897 := <>i<>9691
     [1] <>new<>9898 := @ToNumber(<>old<>9897)
     [2] <>i<>9691 := <>new<>9898 + 1
     [3] <>Global<>ignore1211 := <>new<>9898
     [4] <>obj<>9878 := @ToObject(<>checkSet<>9681) @ #7281
 
-  LBreak:[290] -> [308]
+  LBreak[290] -> [308]
 
   Block[291] -> [292]
 
@@ -37958,14 +37990,14 @@ function[449] Sizzle<>funexpr@3985:14-4101:2<> {
 
   Branch[305] -> [306]
 
-  LCont:[306] -> [293], ExitExc
+  LCont[306] -> [293], ExitExc
     [0] <>old<>9908 := <>i<>9691
     [1] <>new<>9909 := @ToNumber(<>old<>9908)
     [2] <>i<>9691 := <>new<>9909 + 1
     [3] <>Global<>ignore1215 := <>new<>9909
     [4] <>obj<>9899 := @ToObject(<>checkSet<>9681) @ #7291
 
-  LBreak:[307] -> [308]
+  LBreak[307] -> [308]
 
   Branch[308] -> [258]
 
@@ -38098,7 +38130,7 @@ function[450] Sizzle.uniqueSort<>funexpr@4103:21-4118:2<> {
 
   Block[16] -> [17]
 
-  LCont:[17] -> [8], ExitExc
+  LCont[17] -> [8], ExitExc
     [0] <>old<>9947 := <>i<>9929
     [1] <>new<>9948 := @ToNumber(<>old<>9947)
     [2] <>i<>9929 := <>new<>9948 + 1
@@ -38106,7 +38138,7 @@ function[450] Sizzle.uniqueSort<>funexpr@4103:21-4118:2<> {
     [4] <>y<>9935 := <>i<>9929
     [5] <>obj<>9936 := @ToObject(<>results<>9928) @ #7316
 
-  LBreak:[18] -> [19]
+  LBreak[18] -> [19]
 
   Block[19] -> [20]
 
@@ -38355,13 +38387,13 @@ function[452] Sizzle.find<>funexpr@4124:15-4154:2<> {
 
   Block[48] -> [49]
 
-  LCont:[49] -> [4], ExitExc
+  LCont[49] -> [4], ExitExc
     [0] <>old<>10028 := <>i<>9969
     [1] <>new<>10029 := @ToNumber(<>old<>10028)
     [2] <>i<>9969 := <>new<>10029 + 1
     [3] <>Global<>ignore1232 := <>new<>10029
 
-  LBreak:[50] -> [52], [51]
+  LBreak[50] -> [52], [51]
 
   Block[51] -> [53], ExitExc
     [0] assert(! <>set<>9967)
@@ -38697,7 +38729,7 @@ function[453] Sizzle.filter<>funexpr@4156:17-4228:2<> {
 
   Block[79] -> [80]
 
-  LCont:[80] -> [53], ExitExc
+  LCont[80] -> [53], ExitExc
     [0] <>old<>10102 := <>i<>10051
     [1] <>new<>10103 := @ToNumber(<>old<>10102)
     [2] <>i<>10051 := <>new<>10103 + 1
@@ -38705,7 +38737,7 @@ function[453] Sizzle.filter<>funexpr@4156:17-4228:2<> {
     [4] <>obj<>10089 := @ToObject(<>curLoop<>10043) @ #7410
     [5] <>item<>10050 := <>obj<>10089[<>i<>10051]
 
-  LBreak:[81] -> [82]
+  LBreak[81] -> [82]
 
   Block[82] -> [84], [83]
 
@@ -38758,10 +38790,10 @@ function[453] Sizzle.filter<>funexpr@4156:17-4228:2<> {
 
   Block[96] -> [97]
 
-  LCont:[97] -> [26]
+  LCont[97] -> [26]
     [0] <>cond1<>10066 := @iteratorHasNext(<>obj<>10064, <>iterator<>10065)
 
-  LBreak:[98] -> [100], [99]
+  LBreak[98] -> [100], [99]
 
   Block[99] -> [102], [101], ExitExc
     [0] assert(<>expr<>10037 == <>old<>10041)
@@ -38781,7 +38813,7 @@ function[453] Sizzle.filter<>funexpr@4156:17-4228:2<> {
   Block[104] -> [105], ExitExc
     [0] <>old<>10041 := <>expr<>10037
 
-  LCont:[105] -> [107], [106]
+  LCont[105] -> [107], [106]
 
   Block[106] -> [108], ExitExc
     [0] assert(<>expr<>10037)
@@ -38803,7 +38835,7 @@ function[453] Sizzle.filter<>funexpr@4156:17-4228:2<> {
 
   Block[111] -> [108]
 
-  LBreak:[112] -> Exit, ExitExc
+  LBreak[112] -> Exit, ExitExc
     [0] return(<>curLoop<>10043)
 
   Exit[-2]
@@ -39009,7 +39041,7 @@ function[455] <>funexpr@4253:21-4275:17<> {
   Block[48] -> [56], ExitExc
     [0] assert(! <>new1<>10234)
 
-  LCont:[49] -> [51], [50], ExitExc
+  LCont[49] -> [51], [50], ExitExc
     [0] <>obj<>10232 := @ToObject(<>elem<>10211) @ #7481
     [1] <>elem<>10211 := <>obj<>10232["previousSibling"]
 
@@ -39033,7 +39065,7 @@ function[455] <>funexpr@4253:21-4275:17<> {
 
   Block[55] -> [52]
 
-  LBreak:[56] -> [58], [57], ExitExc
+  LBreak[56] -> [58], [57], ExitExc
     [0] <>obj<>10235 := @ToObject(<>checkSet<>10203) @ #7483
 
   Block[57] -> [69], ExitExc
@@ -39090,13 +39122,13 @@ function[455] <>funexpr@4253:21-4275:17<> {
 
   Block[74] -> [75]
 
-  LCont:[75] -> [35], ExitExc
+  LCont[75] -> [35], ExitExc
     [0] <>old<>10238 := <>i<>10209
     [1] <>new<>10239 := @ToNumber(<>old<>10238)
     [2] <>i<>10209 := <>new<>10239 + 1
     [3] <>Global<>ignore1270 := <>new<>10239
 
-  LBreak:[76] -> [78], [77]
+  LBreak[76] -> [78], [77]
 
   Block[77] -> [79], ExitExc
     [0] assert(<>isPartStrNotTag<>10208)
@@ -39245,13 +39277,13 @@ function[456] <>funexpr@4276:21-4303:17<> {
 
   Block[29] -> [30]
 
-  LCont:[30] -> [21], ExitExc
+  LCont[30] -> [21], ExitExc
     [0] <>old<>10279 := <>i<>10252
     [1] <>new<>10280 := @ToNumber(<>old<>10279)
     [2] <>i<>10252 := <>new<>10280 + 1
     [3] <>Global<>ignore1278 := <>new<>10280
 
-  LBreak:[31] -> [51]
+  LBreak[31] -> [51]
 
   Block[32] -> [33]
 
@@ -39292,13 +39324,13 @@ function[456] <>funexpr@4276:21-4303:17<> {
 
   Block[42] -> [43]
 
-  LCont:[43] -> [34], ExitExc
+  LCont[43] -> [34], ExitExc
     [0] <>old<>10286 := <>i<>10252
     [1] <>new<>10287 := @ToNumber(<>old<>10286)
     [2] <>i<>10252 := <>new<>10287 + 1
     [3] <>Global<>ignore1285 := <>new<>10287
 
-  LBreak:[44] -> [46], [45]
+  LBreak[44] -> [46], [45]
 
   Block[45] -> [47], ExitExc
     [0] assert(<>isPartStr<>10251)
@@ -39726,13 +39758,13 @@ function[460] <>funexpr@4332:22-4344:17<> {
 
   Block[19] -> [20]
 
-  LCont:[20] -> [7], ExitExc
+  LCont[20] -> [7], ExitExc
     [0] <>old<>10415 := <>i<>10393
     [1] <>new<>10416 := @ToNumber(<>old<>10415)
     [2] <>i<>10393 := <>new<>10416 + 1
     [3] <>Global<>ignore1305 := <>new<>10416
 
-  LBreak:[21] -> [23], [22], ExitExc
+  LBreak[21] -> [23], [22], ExitExc
     [0] <>obj<>10417 := @ToObject(<>ret<>10391) @ #7583
 
   Block[22] -> [24], ExitExc
@@ -39939,7 +39971,7 @@ function[462] <>funexpr@4350:23-4369:17<> {
 
   Block[42] -> [43]
 
-  LCont:[43] -> [15], ExitExc
+  LCont[43] -> [15], ExitExc
     [0] <>old<>10474 := <>i<>10439
     [1] <>new<>10475 := @ToNumber(<>old<>10474)
     [2] <>i<>10439 := <>new<>10475 + 1
@@ -39947,7 +39979,7 @@ function[462] <>funexpr@4350:23-4369:17<> {
     [4] <>obj<>10458 := @ToObject(<>curLoop<>10434) @ #7615
     [5] <>elem<>10440 := <>obj<>10458[<>i<>10439]
 
-  LBreak:[44] -> Exit, ExitExc
+  LBreak[44] -> Exit, ExitExc
     [0] return(false)
 
   Exit[-2]
@@ -40028,14 +40060,14 @@ function[464] <>funexpr@4373:21-4376:17<> {
   Block[3] -> [5], ExitExc
     [0] assert(<>obj<>10501[<>i<>10499] !== false)
 
-  LCont:[4] -> [1], ExitExc
+  LCont[4] -> [1], ExitExc
     [0] <>old<>10502 := <>i<>10499
     [1] <>new<>10503 := @ToNumber(<>old<>10502)
     [2] <>i<>10499 := <>new<>10503 + 1
     [3] <>Global<>ignore1315 := <>new<>10503
     [4] <>obj<>10501 := @ToObject(<>curLoop<>10498) @ #7630
 
-  LBreak:[5] -> [7], [6], ExitExc
+  LBreak[5] -> [7], [6], ExitExc
     [0] <>obj<>10504 := @ToObject(<>curLoop<>10498) @ #7631
 
   Block[6] -> [8], ExitExc
@@ -41281,13 +41313,13 @@ function[495] <>funexpr@4510:24-4528:17<> {
 
   Block[28] -> [29]
 
-  LCont:[29] -> [23], ExitExc
+  LCont[29] -> [23], ExitExc
     [0] <>old<>10922 := <>i<>10891
     [1] <>new<>10923 := @ToNumber(<>old<>10922)
     [2] <>i<>10891 := <>new<>10923 + 1
     [3] <>Global<>ignore1335 := <>new<>10923
 
-  LBreak:[30] -> Exit, ExitExc
+  LBreak[30] -> Exit, ExitExc
     [0] return(true)
 
   Block[31] -> [20]
@@ -41363,11 +41395,11 @@ function[496] <>funexpr@4529:23-4571:17<> {
 
   Block[20] -> [21]
 
-  LCont:[21] -> [15], ExitExc
+  LCont[21] -> [15], ExitExc
     [0] <>obj<>10939 := @ToObject(<>node<>10929) @ #7873
     [1] <>node<>10929 := <>obj<>10939["previousSibling"]
 
-  LBreak:[22] -> [24], [23]
+  LBreak[22] -> [24], [23]
 
   Block[23] -> Exit, ExitExc
     [0] assert(<>type<>10928 == "first")
@@ -41401,11 +41433,11 @@ function[496] <>funexpr@4529:23-4571:17<> {
 
   Block[32] -> [33]
 
-  LCont:[33] -> [27], ExitExc
+  LCont[33] -> [27], ExitExc
     [0] <>obj<>10941 := @ToObject(<>node<>10929) @ #7876
     [1] <>node<>10929 := <>obj<>10941["nextSibling"]
 
-  LBreak:[34] -> Exit, ExitExc
+  LBreak[34] -> Exit, ExitExc
     [0] return(true)
 
   Case[35] -> [37], [36], ExitExc
@@ -41496,12 +41528,12 @@ function[496] <>funexpr@4529:23-4571:17<> {
 
   Block[57] -> [58]
 
-  LCont:[58] -> [52], ExitExc
+  LCont[58] -> [52], ExitExc
     [0] <>obj<>10956 := @ToObject(<>node<>10929) @ #7886
     [1] <>node<>10929 := <>obj<>10956["nextSibling"]
     [2] <>Global<>ignore1347 := <>obj<>10956["nextSibling"]
 
-  LBreak:[59] -> [62], ExitExc
+  LBreak[59] -> [62], ExitExc
     [0] <>obj<>10957 := @ToObject(<>parent<>10933) @ #7887
     [1] <>obj<>10957["sizcache"] := <>doneName<>10932
 
@@ -42147,13 +42179,13 @@ function[503] makeArray<>funexpr@4645:20-4663:9<> {
 
   AfterCatch[20] -> ExitExc
 
-  LCont:[21] -> [15], ExitExc
+  LCont[21] -> [15], ExitExc
     [0] <>old<>11185 := <>i<>11162
     [1] <>new<>11186 := @ToNumber(<>old<>11185)
     [2] <>i<>11162 := <>new<>11186 + 1
     [3] <>Global<>ignore1370 := <>new<>11186
 
-  LBreak:[22] -> [23]
+  LBreak[22] -> [23]
 
   Block[23] -> [12]
 
@@ -42179,14 +42211,14 @@ function[503] makeArray<>funexpr@4645:20-4663:9<> {
 
   AfterCatch[29] -> ExitExc
 
-  LCont:[30] -> [24], ExitExc
+  LCont[30] -> [24], ExitExc
     [0] <>old<>11193 := <>i<>11162
     [1] <>new<>11194 := @ToNumber(<>old<>11193)
     [2] <>i<>11162 := <>new<>11194 + 1
     [3] <>Global<>ignore1374 := <>new<>11194
     [4] <>obj<>11187 := @ToObject(<>array<>11159) @ #8041
 
-  LBreak:[31] -> [23]
+  LBreak[31] -> [23]
 
   Exit[-2]
 
@@ -43079,14 +43111,14 @@ function[511] Expr.find.TAG<>funexpr@4752:32-4768:17<> {
 
   Block[15] -> [16]
 
-  LCont:[16] -> [7], ExitExc
+  LCont[16] -> [7], ExitExc
     [0] <>old<>11395 := <>i<>11379
     [1] <>new<>11396 := @ToNumber(<>old<>11395)
     [2] <>i<>11379 := <>new<>11396 + 1
     [3] <>Global<>ignore1415 := <>new<>11396
     [4] <>obj<>11387 := @ToObject(<>results<>11377) @ #8195
 
-  LBreak:[17] -> [18], ExitExc
+  LBreak[17] -> [18], ExitExc
     [0] <>results<>11377 := <>tmp<>11378
 
   Block[18] -> Exit, ExitExc
@@ -43205,10 +43237,10 @@ function[513] <>funexpr@4782:35-4807:2<> {
   Block[18] -> [20], ExitExc
     [0] assert(! <>cond1<>11475)
 
-  LCont:[19] -> [16]
+  LCont[19] -> [16]
     [0] <>cond1<>11475 := @iteratorHasNext(<>obj<>11473, <>iterator<>11474)
 
-  LBreak:[20] -> Exit, ExitExc
+  LBreak[20] -> Exit, ExitExc
     [0] <>div<>11426 := null
 
   Exit[-2]
@@ -43289,10 +43321,10 @@ function[514] Sizzle<>funexpr@4790:17-4800:9<> {
   Block[20] -> [22], ExitExc
     [0] assert(<>new<>11452)
 
-  Block[21] -> [32], ExitExc
+  Block[21] -> [33], ExitExc
     [0] assert(! <>new<>11452)
 
-  Block[22] -> [24], [23]
+  Try[22] -> [24], [23]
     [0] <>obj<>11454 := @ToObject(<>makeArray<>9582) @ #8236
     [1] <>obj<>11455 := @ToObject(<>context<>11442) @ #8237
     [2] <>temp<>11456 := <>query<>11441
@@ -43301,7 +43333,7 @@ function[514] Sizzle<>funexpr@4790:17-4800:9<> {
     [5] <>fun<>11458 := @ToObject(<>obj<>11455["querySelectorAll"]) @ #8239
     [6] <>this<> := enterCode(<>obj<>11455)
 
-  Block[23] -> [32]
+  Catch[23] -> [32]
     [0] catch(<>e<>11453)
 
   Call[24] -> [23]
@@ -43329,7 +43361,9 @@ function[514] Sizzle<>funexpr@4790:17-4800:9<> {
   Block[31] -> Exit, [23]
     [0] return(<>new1<>11463)
 
-  Block[32] -> [33], ExitExc
+  Finally[32] -> [33]
+
+  Block[33] -> [34], ExitExc
     [0] <>obj<>11464 := @ToObject(<>oldSizzle<>11425) @ #8243
     [1] <>temp<>11465 := <>query<>11441
     [2] <>temp<>11466 := <>context<>11442
@@ -43343,14 +43377,14 @@ function[514] Sizzle<>funexpr@4790:17-4800:9<> {
     [10] <>fun<>11470 := @GetBase(<>oldSizzle<>11425)
     [11] <>this<> := enterCode(<>fun<>11470)
 
-  Call[33] -> ExitExc
+  Call[34] -> ExitExc
     [0] call(<>obj<>11464, <>this<>, <>arguments<>11469) @ #8245
 
-  AfterCall[34] -> [36]
+  AfterCall[35] -> [37]
 
-  AfterCatch[35] -> ExitExc
+  AfterCatch[36] -> ExitExc
 
-  Block[36] -> Exit, ExitExc
+  Block[37] -> Exit, ExitExc
     [0] return(<>new1<>11471)
 
   Exit[-2]
@@ -43741,7 +43775,7 @@ function[520] posProcess<>funexpr@4921:18-4937:2<> {
   Block[14] -> [15], ExitExc
     [0] <>selector<>11567 := <>Global<>ignore1443
 
-  LCont:[15] -> [16], ExitExc
+  LCont[15] -> [16], ExitExc
     [0] <>obj<>11578 := @ToObject(<>Expr<>9579) @ #8335
     [1] <>obj<>11579 := @ToObject(<>obj<>11578["match"]) @ #8336
     [2] <>obj<>11580 := @ToObject(<>obj<>11579["PSEUDO"]) @ #8337
@@ -43761,7 +43795,7 @@ function[520] posProcess<>funexpr@4921:18-4937:2<> {
   Block[19] -> [8], ExitExc
     [0] <>match<>11571 := <>new1<>11584
 
-  LBreak:[20] -> [22], [21], ExitExc
+  LBreak[20] -> [22], [21], ExitExc
     [0] <>obj<>11594 := @ToObject(<>Expr<>9579) @ #8341
     [1] <>obj<>11595 := @ToObject(<>obj<>11594["relative"]) @ #8342
 
@@ -43805,13 +43839,13 @@ function[520] posProcess<>funexpr@4921:18-4937:2<> {
 
   AfterCatch[29] -> ExitExc
 
-  LCont:[30] -> [24], ExitExc
+  LCont[30] -> [24], ExitExc
     [0] <>old<>11604 := <>i<>11573
     [1] <>new<>11605 := @ToNumber(<>old<>11604)
     [2] <>i<>11573 := <>new<>11605 + 1
     [3] <>Global<>ignore1448 := <>new<>11605
 
-  LBreak:[31] -> [32], ExitExc
+  LBreak[31] -> [32], ExitExc
     [0] <>obj<>11606 := @ToObject(<>Sizzle<>9578) @ #8348
     [1] <>temp<>11607 := <>later<>11570
     [2] <>temp<>11608 := <>tmpSet<>11569
@@ -44503,7 +44537,7 @@ function[530] <>funexpr@5009:16-5022:4<> {
 
   AfterCatch[14] -> ExitExc
 
-  LCont:[15] -> [9], ExitExc
+  LCont[15] -> [9], ExitExc
     [0] <>old<>11805 := <>i<>11787
     [1] <>new<>11806 := @ToNumber(<>old<>11805)
     [2] <>i<>11787 := <>new<>11806 + 1
@@ -44511,7 +44545,7 @@ function[530] <>funexpr@5009:16-5022:4<> {
     [4] <>obj<>11800 := @ToObject(<>elements<>11783) @ #8485
     [5] <>element<>11784 := <>obj<>11800[<>i<>11787]
 
-  LBreak:[16] -> [17], ExitExc
+  LBreak[16] -> [17], ExitExc
     [0] <>obj<>11807 := @ToObject(<>arr<>11785) @ #8486
     [1] <>temp<>11808 := allocArray(0) @ #8487
     [2] <>temp<>11827 := function (531) @ #8502, #8503
@@ -44786,13 +44820,13 @@ function[532] <>funexpr@5024:14-5038:4<> {
 
   AfterCatch[53] -> ExitExc
 
-  LCont:[54] -> [24], ExitExc
+  LCont[54] -> [24], ExitExc
     [0] <>old<>11875 := <>i<>11837
     [1] <>new<>11876 := @ToNumber(<>old<>11875)
     [2] <>i<>11837 := <>new<>11876 + 1
     [3] <>Global<>ignore1490 := <>new<>11876
 
-  LBreak:[55] -> Exit, ExitExc
+  LBreak[55] -> Exit, ExitExc
     [0] return(<>matchingInputs<>11838)
 
   Exit[-2]
@@ -45861,13 +45895,13 @@ function[549] <>funexpr@5143:13-5152:4<> {
   Block[4] -> [5], ExitExc
     [0] <>element<>12180 := <>Global<>ignore1524
 
-  Block[5] -> [7], [6]
+  Try[5] -> [7], [6]
     [0] <>obj<>12187 := @ToObject(<>element<>12180) @ #8771
     [1] <>arguments<>12188 := allocArg(0) @ #8772
     [2] <>fun<>12189 := @ToObject(<>obj<>12187["focus"]) @ #8773
     [3] <>this<> := enterCode(<>obj<>12187)
 
-  Block[6] -> [38]
+  Catch[6] -> [38]
     [0] catch(<>e<>12186)
 
   Call[7] -> [6]
@@ -45975,7 +46009,7 @@ function[549] <>funexpr@5143:13-5152:4<> {
 
   Branch[37] -> [38]
 
-  Block[38] -> Exit, ExitExc
+  Finally[38] -> Exit, ExitExc
     [0] return(<>element<>12180)
 
   Exit[-2]
@@ -46372,13 +46406,13 @@ function[556] select {
   Block[34] -> [30], ExitExc
     [0] <>obj<>12323["selected"] := <>Global<>ignore1544
 
-  LCont:[35] -> [18], ExitExc
+  LCont[35] -> [18], ExitExc
     [0] <>old<>12328 := <>i<>12296
     [1] <>new<>12329 := @ToNumber(<>old<>12328)
     [2] <>i<>12296 := <>new<>12329 + 1
     [3] <>Global<>ignore1540 := <>new<>12329
 
-  LBreak:[36] -> Exit
+  LBreak[36] -> Exit
 
   Exit[-2]
 
@@ -46490,13 +46524,13 @@ function[558] selectMany {
 
   Block[16] -> [17]
 
-  LCont:[17] -> [4], ExitExc
+  LCont[17] -> [4], ExitExc
     [0] <>old<>12359 := <>i<>12344
     [1] <>new<>12360 := @ToNumber(<>old<>12359)
     [2] <>i<>12344 := <>new<>12360 + 1
     [3] <>Global<>ignore1550 := <>new<>12360
 
-  LBreak:[18] -> Exit, ExitExc
+  LBreak[18] -> Exit, ExitExc
     [0] return(<>values<>12342)
 
   Exit[-2]
@@ -48165,9 +48199,9 @@ function[578] findElement {
     [0] <>obj<>12742 := @ToObject(<>element<>12719) @ #9173
     [1] <>element<>12719 := <>obj<>12742["parentNode"]
 
-  LCont:[28] -> [8]
+  LCont[28] -> [8]
 
-  LBreak:[29] -> Exit
+  LBreak[29] -> Exit
 
   Exit[-2]
 
@@ -48890,17 +48924,17 @@ function[586] responder<>funexpr@5581:23-5593:12<> {
   Block[13] -> [24], ExitExc
     [0] assert(! <>new1<>12904)
 
-  Block[14] -> [16], [15]
+  Try[14] -> [16], [15]
     [0] <>obj<>12906 := @ToObject(<>parent<>12896) @ #9294
     [1] <>parent<>12896 := <>obj<>12906["parentNode"]
 
-  Block[15] -> [16], ExitExc
+  Catch[15] -> [16], ExitExc
     [0] catch(<>e<>12905)
     [1] <>parent<>12896 := <>element<>12815
 
-  Block[16] -> [17]
+  Finally[16] -> [17]
 
-  LCont:[17] -> [19], [18]
+  LCont[17] -> [19], [18]
 
   Block[18] -> [20], ExitExc
     [0] assert(<>parent<>12896)
@@ -48921,7 +48955,7 @@ function[586] responder<>funexpr@5581:23-5593:12<> {
 
   Block[23] -> [20]
 
-  LBreak:[24] -> [26], [25]
+  LBreak[24] -> [26], [25]
 
   Block[25] -> Exit, ExitExc
     [0] assert(<>parent<>12896 === <>element<>12815)
@@ -49030,13 +49064,13 @@ function[588] _destroyCache {
     [0] <>obj<>12940 := @ToObject(<>CACHE<>12633) @ #9324
     [1] <>obj<>12940[<>i<>12931] := null
 
-  LCont:[8] -> [1], ExitExc
+  LCont[8] -> [1], ExitExc
     [0] <>old<>12941 := <>i<>12931
     [1] <>new<>12942 := @ToNumber(<>old<>12941)
     [2] <>i<>12931 := <>new<>12942 + 1
     [3] <>Global<>ignore1618 := <>new<>12942
 
-  LBreak:[9] -> Exit
+  LBreak[9] -> Exit
 
   Exit[-2]
 
@@ -49383,12 +49417,12 @@ function[590] stopObserving {
 
   Block[38] -> [39]
 
-  LCont:[39] -> [33], ExitExc
+  LCont[39] -> [33], ExitExc
     [0] <>old<>13048 := <>i<>13002
     [1] <>new<>13049 := @ToNumber(<>old<>13048)
     [2] <>i<>13002 := <>new<>13049 - 1
 
-  LBreak:[40] -> [42], [41]
+  LBreak[40] -> [42], [41]
 
   Block[41] -> Exit, ExitExc
     [0] assert(! <>responder<>13003)
@@ -50714,7 +50748,7 @@ function[612] pollDoScroll {
 
   Block[0] -> [1]
 
-  Block[1] -> [3], [2]
+  Try[1] -> [3], [2]
     [0] <>obj<>13489 := @ToObject(document) @ #9751
     [1] <>obj<>13490 := @ToObject(<>obj<>13489["documentElement"]) @ #9752
     [2] <>temp<>13491 := "left"
@@ -50723,7 +50757,7 @@ function[612] pollDoScroll {
     [5] <>fun<>13493 := @ToObject(<>obj<>13490["doScroll"]) @ #9754
     [6] <>this<> := enterCode(<>obj<>13490)
 
-  Block[2] -> [6], ExitExc
+  Catch[2] -> [6], ExitExc
     [0] catch(<>e<>13488)
     [1] <>obj<>13494 := @ToObject(<>pollDoScroll<>13463) @ #9756
     [2] <>arguments<>13495 := allocArg(0) @ #9757
@@ -50748,7 +50782,7 @@ function[612] pollDoScroll {
     [0] <>timer<>13464 := <>Global<>ignore1714
     [1] return()
 
-  Block[10] -> [11], ExitExc
+  Finally[10] -> [11], ExitExc
     [0] <>obj<>13497 := @ToObject(<>fireContentLoadedEvent<>13461) @ #9760
     [1] <>arguments<>13498 := allocArg(0) @ #9761
     [2] <>fun<>13499 := @GetBase(<>fireContentLoadedEvent<>13461)
@@ -51918,7 +51952,7 @@ function[627] <>funexpr@5969:7-5985:4<> {
 
   Branch[75] -> [76]
 
-  LCont:[76] -> [40], ExitExc
+  LCont[76] -> [40], ExitExc
     [0] <>old<>13908 := <>i<>13829
     [1] <>new<>13909 := @ToNumber(<>old<>13908)
     [2] <>i<>13829 := <>new<>13909 + 1
@@ -51926,7 +51960,7 @@ function[627] <>funexpr@5969:7-5985:4<> {
     [4] <>obj<>13867 := @ToObject(<>nodes<>13828) @ #10059
     [5] <>child<>13830 := <>obj<>13867[<>i<>13829]
 
-  LBreak:[77] -> Exit, ExitExc
+  LBreak[77] -> Exit, ExitExc
     [0] return(<>elements<>13826)
 
   Exit[-2]
@@ -52664,13 +52698,13 @@ function[643] <>funexpr@6053:20-6064:6<> {
 
   Block[16] -> [17]
 
-  LCont:[17] -> [1], ExitExc
+  LCont[17] -> [1], ExitExc
     [0] <>old<>14135 := <>i<>14113
     [1] <>new<>14136 := @ToNumber(<>old<>14135)
     [2] <>i<>14113 := <>new<>14136 + 1
     [3] <>Global<>ignore1770 := <>new<>14136
 
-  LBreak:[18] -> Exit, ExitExc
+  LBreak[18] -> Exit, ExitExc
     [0] return(<>results<>14112)
 
   Exit[-2]
@@ -52763,13 +52797,13 @@ function[644] <>funexpr@6066:18-6075:6<> {
 
   Branch[20] -> [21]
 
-  LCont:[21] -> [4], ExitExc
+  LCont[21] -> [4], ExitExc
     [0] <>old<>14164 := <>i<>14144
     [1] <>new<>14165 := @ToNumber(<>old<>14164)
     [2] <>i<>14144 := <>new<>14165 + 1
     [3] <>Global<>ignore1778 := <>new<>14165
 
-  LBreak:[22] -> Exit
+  LBreak[22] -> Exit
 
   Exit[-2]
 

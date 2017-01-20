@@ -13,9 +13,9 @@ function[0] top-level {
   Block[3] -> [5], ExitExc
     [0] assert(! true)
 
-  LCont:[4] -> [1]
+  LCont[4] -> [1]
 
-  LBreak:[5] -> Exit, ExitExc
+  LBreak[5] -> Exit, ExitExc
     [0] x := 2
     [1] noop(EndOfFile)
 

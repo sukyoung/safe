@@ -21,10 +21,10 @@ function[0] top-level {
   Block[3] -> [5], ExitExc
     [0] assert(! <>cond1<>3)
 
-  LCont:[4] -> [1]
+  LCont[4] -> [1]
     [0] <>cond1<>3 := @iteratorHasNext(<>obj<>1, <>iterator<>2)
 
-  LBreak:[5] -> Exit
+  LBreak[5] -> Exit
     [0] noop(EndOfFile)
 
   Exit[-2]

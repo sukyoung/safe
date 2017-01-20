@@ -245,11 +245,11 @@ class DefaultCFGBuilder(
             catchVarMap += x.uniqueName
 
             /* try block */
-            val tryBlock: NormalBlock = func.createBlock
+            val tryBlock: NormalBlock = func.createBlock(TryLabel)
             cfg.addEdge(blocks, tryBlock)
 
             /* catch block */
-            val catchBlock: NormalBlock = func.createBlock
+            val catchBlock: NormalBlock = func.createBlock(CatchLabel)
             catchBlock.createInst(CFGCatch(stmt, _, id2cfgId(x)))
 
             /* try body */
@@ -263,28 +263,24 @@ class DefaultCFGBuilder(
             val (catchbs: List[CFGBlock], catchlmap: LabelMap) = translateStmt(catb, func, List(catchBlock), trylmap - ThrowLabel - ThrowEndLabel - AfterCatchLabel)
 
             /* tail blocks */
-            val tailbs: List[CFGBlock] = trybs match {
-              case block :: Nil if (ThrowLabel of trylmap).contains(block) =>
-                val newBlock: NormalBlock = func.createBlock
-                cfg.addEdge(trybs, newBlock)
-                cfg.addEdge(catchbs, newBlock)
-                List(newBlock)
-              case _ => trybs ++ catchbs
-            }
+            val tailBlock: CFGBlock = func.createBlock(FinallyLabel(tryBlock))
+            cfg.addEdge(trybs, tailBlock)
+            cfg.addEdge(catchbs, tailBlock)
+
             val lm: LabelMap = catchlmap.foldLeft(lmap) {
               case (m, (label, bs)) => m.contains(label) match {
                 case true => m.updated(label, (label of m) ++ bs)
                 case false => m.updated(label, bs)
               }
             }
-            (tailbs, lm)
+            (List(tailBlock), lm)
           case (None, None, Some(finb)) =>
             /* try block */
-            val tryBlock: NormalBlock = func.createBlock
+            val tryBlock: NormalBlock = func.createBlock(TryLabel)
             cfg.addEdge(blocks, tryBlock)
 
             /* finally block */
-            val finBlock: NormalBlock = func.createBlock
+            val finBlock: NormalBlock = func.createBlock(FinallyLabel(tryBlock))
 
             /* try body */
             val (trybs: List[CFGBlock], trylmap: LabelMap) = translateStmt(body, func, List(tryBlock), HashMap())
@@ -297,7 +293,7 @@ class DefaultCFGBuilder(
             val reslmap = (trylmap - AfterCatchLabel).foldLeft(finlmap) {
               case (map, (label, bs1)) => bs1.isEmpty match {
                 case false =>
-                  val dupBlock: NormalBlock = func.createBlock
+                  val dupBlock: NormalBlock = func.createBlock(FinallyLabel(tryBlock))
                   val (bs2: List[CFGBlock], lm: LabelMap) = translateStmt(finb, func, List(dupBlock), map)
                   label match {
                     case ThrowLabel =>
@@ -316,15 +312,15 @@ class DefaultCFGBuilder(
             catchVarMap += x.uniqueName
 
             /* try block */
-            val tryBlock: NormalBlock = func.createBlock
+            val tryBlock: NormalBlock = func.createBlock(TryLabel)
             cfg.addEdge(blocks, tryBlock)
 
             /* catch block */
-            val catchBlock: NormalBlock = func.createBlock
+            val catchBlock: NormalBlock = func.createBlock(CatchLabel)
             catchBlock.createInst(CFGCatch(stmt, _, id2cfgId(x)))
 
             /* finally block */
-            val finBlock: NormalBlock = func.createBlock
+            val finBlock: NormalBlock = func.createBlock(FinallyLabel(tryBlock))
 
             /* try body */
             val (trybs: List[CFGBlock], trylmap: LabelMap) = translateStmt(body, func, List(tryBlock), HashMap())
@@ -344,7 +340,7 @@ class DefaultCFGBuilder(
             val reslmap: LabelMap = (catchlmap - AfterCatchLabel).foldLeft(finlmap) {
               case (map, (label, bs1)) => bs1.isEmpty match {
                 case false =>
-                  val dupBlock: NormalBlock = func.createBlock
+                  val dupBlock: NormalBlock = func.createBlock(FinallyLabel(tryBlock))
                   val (bs2: List[CFGBlock], lm: LabelMap) = translateStmt(finb, func, List(dupBlock), map)
                   label match {
                     case ThrowLabel =>

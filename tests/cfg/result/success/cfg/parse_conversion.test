@@ -352,12 +352,12 @@ function[1] <>funexpr@1:2-17:208<> {
 
   Block[75] -> [180]
 
-  Block[76] -> [79], [78], [77]
+  Try[76] -> [79], [78], [77]
     [0] <>N<>29 := <>E<>24
     [1] <>y<>1163 := "landing"
     [2] <>obj<>1164 := @ToObject(<>N<>29) @ #743
 
-  Block[77] -> [174]
+  Catch[77] -> [174]
     [0] catch(<>O<>1162)
 
   Block[78] -> [80], [77]
@@ -703,7 +703,7 @@ function[1] <>funexpr@1:2-17:208<> {
 
   Branch[173] -> [174]
 
-  Block[174] -> [175], ExitExc
+  Finally[174] -> [175], ExitExc
     [0] <>P<>31 := <>E<>24
     [1] <>Q<>32 := 0
     [2] <>y<>1230 := <>Q<>32
@@ -720,7 +720,7 @@ function[1] <>funexpr@1:2-17:208<> {
   Block[177] -> [179], ExitExc
     [0] assert(! <>y<>1230 < <>obj<>1231["length"])
 
-  LCont:[178] -> [175], ExitExc
+  LCont[178] -> [175], ExitExc
     [0] <>old<>1234 := <>Q<>32
     [1] <>new<>1235 := @ToNumber(<>old<>1234)
     [2] <>Q<>32 := <>new<>1235 + 1
@@ -728,7 +728,7 @@ function[1] <>funexpr@1:2-17:208<> {
     [4] <>y<>1230 := <>Q<>32
     [5] <>obj<>1231 := @ToObject(<>q<>23) @ #790
 
-  LBreak:[179] -> [75]
+  LBreak[179] -> [75]
 
   Block[180] -> Exit
 
@@ -1224,7 +1224,7 @@ function[5] u {
 
   Block[43] -> [40]
 
-  LCont:[44] -> [27], ExitExc
+  LCont[44] -> [27], ExitExc
     [0] <>old<>154 := <>g<>120
     [1] <>new<>155 := @ToNumber(<>old<>154)
     [2] <>g<>120 := <>new<>155 + 1
@@ -1232,7 +1232,7 @@ function[5] u {
     [4] <>y<>142 := <>g<>120
     [5] <>obj<>143 := @ToObject(<>c<>118) @ #73
 
-  LBreak:[45] -> [47], [46], ExitExc
+  LBreak[45] -> [47], [46], ExitExc
     [0] <>y<>156 := 0
     [1] <>obj<>157 := @ToObject(<>e<>119) @ #74
 
@@ -1351,10 +1351,10 @@ function[5] u {
 
   Block[79] -> [80]
 
-  LCont:[80] -> [15]
+  LCont[80] -> [15]
     [0] <>cond1<>129 := @iteratorHasNext(<>obj<>127, <>iterator<>128)
 
-  LBreak:[81] -> [82], ExitExc
+  LBreak[81] -> [82], ExitExc
     [0] <>obj<>176 := @ToObject(<>d<>117) @ #89
     [1] <>temp<>177 := ";"
     [2] <>arguments<>178 := allocArg(1) @ #90
@@ -1717,13 +1717,13 @@ function[7] w {
 
   Block[63] -> [60]
 
-  LCont:[64] -> [7], ExitExc
+  LCont[64] -> [7], ExitExc
     [0] <>old<>271 := <>d<>202
     [1] <>new<>272 := @ToNumber(<>old<>271)
     [2] <>d<>202 := <>new<>272 + 1
     [3] <>Global<>ignore23 := <>new<>272
 
-  LBreak:[65] -> [67], [66], ExitExc
+  LBreak[65] -> [67], [66], ExitExc
     [0] <>y<>273 := 0
     [1] <>obj<>274 := @ToObject(<>b<>201) @ #164
 
@@ -2413,11 +2413,11 @@ function[9] z {
 
   Block[25] -> [19]
 
-  Block[26] -> [29], [28], [27]
+  Try[26] -> [29], [28], [27]
     [0] <>obj<>457 := @ToObject(<>b<>423) @ #294
     [1] <>obj<>458 := @ToObject(<>obj<>457["location"]) @ #295
 
-  Block[27] -> [31], ExitExc
+  Catch[27] -> [31], ExitExc
     [0] catch(<>g<>456)
     [1] <>e<>426 := ! 1
 
@@ -2435,7 +2435,7 @@ function[9] z {
   Block[30] -> [31], [27]
     [0] <>e<>426 := <>Global<>ignore39
 
-  Block[31] -> [33], [32]
+  Finally[31] -> [33], [32]
 
   Block[32] -> [34], ExitExc
     [0] assert(<>e<>426)
@@ -4168,10 +4168,10 @@ function[19] k<>funexpr@1:69-163<> {
 
   Block[16] -> [13]
 
-  LCont:[17] -> [1]
+  LCont[17] -> [1]
     [0] <>cond1<>948 := @iteratorHasNext(<>obj<>946, <>iterator<>947)
 
-  LBreak:[18] -> Exit
+  LBreak[18] -> Exit
 
   Exit[-2]
 
@@ -4205,13 +4205,13 @@ function[20] l<>funexpr@1:170-265<> {
   Block[3] -> [5], ExitExc
     [0] assert(! <>b<>969 < <>d<>970)
 
-  LCont:[4] -> [1], ExitExc
+  LCont[4] -> [1], ExitExc
     [0] <>old<>978 := <>b<>969
     [1] <>new<>979 := @ToNumber(<>old<>978)
     [2] <>b<>969 := <>new<>979 + 1
     [3] <>Global<>ignore82 := <>new<>979 + 1
 
-  LBreak:[5] -> Exit
+  LBreak[5] -> Exit
 
   Exit[-2]
 

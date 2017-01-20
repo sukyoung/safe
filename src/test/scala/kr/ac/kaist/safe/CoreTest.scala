@@ -19,7 +19,7 @@ import scala.util.{ Failure, Success, Try }
 import scala.util.Random.shuffle
 import scala.collection.immutable.HashSet
 import kr.ac.kaist.safe.analyzer.models.builtin.BuiltinGlobal
-import kr.ac.kaist.safe.analyzer.CallContext
+import kr.ac.kaist.safe.analyzer.TracePartition
 import kr.ac.kaist.safe.analyzer.Semantics
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.errors.error.ParserError
@@ -112,18 +112,18 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
   case object ParseError extends AnalysisResult
   case object Benchmark extends AnalysisResult
   case object Fail extends AnalysisResult
-  def analyzeTest(analysis: Try[(CFG, Int, CallContext, Semantics)], tag: Tag): (AnalysisResult, Int) = {
+  def analyzeTest(analysis: Try[(CFG, Int, TracePartition, Semantics)], tag: Tag): (AnalysisResult, Int) = {
     analysis match {
       case Failure(_) =>
         assert(false)
         (Fail, 0)
-      case Success((cfg, iter, globalCallCtx, _)) if tag == BenchTest =>
-        val normalSt = cfg.globalFunc.exit.getState(globalCallCtx)
+      case Success((cfg, iter, globalTP, _)) if tag == BenchTest =>
+        val normalSt = cfg.globalFunc.exit.getState(globalTP)
         assert(!normalSt.heap.isBottom)
         (Benchmark, iter)
-      case Success((cfg, iter, globalCallCtx, _)) =>
-        val normalSt = cfg.globalFunc.exit.getState(globalCallCtx)
-        val excSt = cfg.globalFunc.exitExc.getState(globalCallCtx)
+      case Success((cfg, iter, globalTP, _)) =>
+        val normalSt = cfg.globalFunc.exit.getState(globalTP)
+        val excSt = cfg.globalFunc.exitExc.getState(globalTP)
         assert(!normalSt.heap.isBottom)
         val ar = normalSt.heap.get(BuiltinGlobal.loc) match {
           case globalObj if globalObj.isBottom =>

@@ -4,9 +4,9 @@ function[0] top-level {
   Block[0] -> [1]
     [0] noop(StartOfFile)
 
-  Block[1] -> [4], [3]
+  Try[1] -> [4], [3]
 
-  Block[2] -> ExitExc
+  Catch[2] -> ExitExc
     [0] catch(<>e<>1)
     [1] throw(22)
 
@@ -17,10 +17,12 @@ function[0] top-level {
   Block[4] -> [5], [2]
     [0] assert(! true)
 
-  Block[5] -> ExitExc
+  Block[5] -> [6]
+
+  Finally[6] -> ExitExc
     [0] throw(33)
 
-  Block[6] -> Exit
+  Block[7] -> Exit
     [0] noop(EndOfFile)
 
   Exit[-2]
