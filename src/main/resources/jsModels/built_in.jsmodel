@@ -2956,7 +2956,7 @@ Function: {
         // i. Let kValue be the result of calling the [[Get]] internal method of O with argument Pk.
         var kValue = O[Pk];
         // ii. Call the [[Call]] internal method of callbackfn with T as the this value and argument list containing kValue, k, and O.
-        @Call(callbackfn,[kValue,k,O])
+        @Call(callbackfn,T,[kValue,k,O])
       }
       // d. Increase k by 1.
       k += 1;
