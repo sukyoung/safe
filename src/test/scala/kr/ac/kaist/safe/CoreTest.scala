@@ -19,8 +19,7 @@ import scala.util.{ Failure, Success, Try }
 import scala.util.Random.shuffle
 import scala.collection.immutable.HashSet
 import kr.ac.kaist.safe.analyzer.models.builtin.BuiltinGlobal
-import kr.ac.kaist.safe.analyzer.TracePartition
-import kr.ac.kaist.safe.analyzer.Semantics
+import kr.ac.kaist.safe.analyzer._
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.errors.error.ParserError
 import kr.ac.kaist.safe.nodes.ast.Program
@@ -28,7 +27,7 @@ import kr.ac.kaist.safe.nodes.ir.IRRoot
 import kr.ac.kaist.safe.nodes.cfg.CFG
 import kr.ac.kaist.safe.parser.Parser
 import kr.ac.kaist.safe.phase._
-import kr.ac.kaist.safe.util.ArgParser
+import kr.ac.kaist.safe.util._
 
 object ParseTest extends Tag("ParseTest")
 object ASTRewriteTest extends Tag("ASTRewriteTest")
@@ -244,6 +243,11 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
 
   val analysisDeatil = BASE_DIR + SEP + "tests" + SEP + "analysis-detail"
   val testJSON = BASE_DIR + SEP + "tests" + SEP + "test.json"
+
+  Analyze.jscache = {
+    val fileName = NodeUtil.jsModelsBase + "built_in.jsmodel"
+    Some(ModelParser.parseFile(fileName).get)
+  }
 
   val parser = new ArgParser(CmdBase, testSafeConfig)
   val analyzeConfig = Analyze.defaultConfig

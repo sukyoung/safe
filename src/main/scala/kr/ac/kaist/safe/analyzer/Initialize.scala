@@ -37,8 +37,10 @@ object Initialize {
 
     val modeledHeap: AbsHeap =
       if (jsModel) {
-        val fileName = NodeUtil.jsModelsBase + "built_in.jsmodel"
-        val model = ModelParser.parseFile(fileName, cfg).get
+        val model = Analyze.jscache getOrElse {
+          val fileName = NodeUtil.jsModelsBase + "built_in.jsmodel"
+          ModelParser.parseFile(fileName).get
+        }
         val heap = model.heap
         val idMap: Map[Int, Int] = model.funMap.foldLeft(HashMap[Int, Int]()) {
           case (map, (fid, pgm)) => {

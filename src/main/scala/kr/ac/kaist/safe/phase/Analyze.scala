@@ -119,6 +119,9 @@ case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, Int, TracePartiti
     ("jsModel", BoolOption(c => c.jsModel = true),
       "analysis with JavaScript models.")
   )
+
+  // cache for JS model
+  var jscache: Option[JSModel] = None
 }
 
 // Analyze phase config

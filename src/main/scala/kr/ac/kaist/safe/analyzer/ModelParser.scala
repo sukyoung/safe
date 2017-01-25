@@ -34,7 +34,7 @@ object ModelParser extends RegexParsers with JavaTokenParsers {
     in.close; sr.close
     result
   }
-  def parseFile(fileName: String, cfg: CFG): Try[JSModel] = {
+  def parseFile(fileName: String): Try[JSModel] = {
     val fs = new FileInputStream(new File(fileName))
     val sr = new InputStreamReader(fs, Charset.forName("UTF-8"))
     val in = new BufferedReader(sr)
