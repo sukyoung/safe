@@ -9,7 +9,7 @@
  * ****************************************************************************
  */
 
-package kr.ac.kaist.safe.analyzer
+package kr.ac.kaist.safe.analyzer.models
 
 import kr.ac.kaist.safe.parser.{ Parser => JSParser }
 import kr.ac.kaist.safe.nodes.ast.Program

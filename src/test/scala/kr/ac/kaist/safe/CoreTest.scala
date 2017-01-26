@@ -19,6 +19,7 @@ import scala.util.{ Failure, Success, Try }
 import scala.util.Random.shuffle
 import scala.collection.immutable.HashSet
 import kr.ac.kaist.safe.analyzer.models.builtin.BuiltinGlobal
+import kr.ac.kaist.safe.analyzer.models._
 import kr.ac.kaist.safe.analyzer._
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.errors.error.ParserError

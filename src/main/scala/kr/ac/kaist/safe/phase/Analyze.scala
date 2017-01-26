@@ -14,6 +14,7 @@ package kr.ac.kaist.safe.phase
 import scala.util.{ Failure, Success, Try }
 import kr.ac.kaist.safe.SafeConfig
 import kr.ac.kaist.safe.analyzer._
+import kr.ac.kaist.safe.analyzer.models.JSModel
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.analyzer.console.Console
