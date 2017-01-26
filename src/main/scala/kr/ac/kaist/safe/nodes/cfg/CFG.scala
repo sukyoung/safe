@@ -73,10 +73,8 @@ class CFG(
   def addJSModel(
     func: CFGFunction
   ): Unit = {
-    func.id = fidCount
     funcs ::= func
     funMap(func.id) = func
-    fidCount += 1
   }
 
   // add edge

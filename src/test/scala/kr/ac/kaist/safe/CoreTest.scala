@@ -114,9 +114,7 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
   case object Fail extends AnalysisResult
   def analyzeTest(analysis: Try[(CFG, Int, TracePartition, Semantics)], tag: Tag): (AnalysisResult, Int) = {
     analysis match {
-      case Failure(_) =>
-        assert(false)
-        (Fail, 0)
+      case Failure(e) => throw e
       case Success((cfg, iter, globalTP, sem)) if tag == BenchTest =>
         val normalSt = sem.getState(ControlPoint(cfg.globalFunc.exit, globalTP))
         assert(!normalSt.heap.isBottom)
