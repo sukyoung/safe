@@ -27,7 +27,7 @@ class Fixpoint(
       iters += 1
       consoleOpt.fold() { _.runFixpoint }
       val cp = worklist.pop
-      val st = cp.getState
+      val st = semantics.getState(cp)
       val (nextSt, nextExcSt) = semantics.C(cp, st)
       propagateNormal(cp, nextSt)
       propagateException(cp, nextExcSt)
@@ -43,10 +43,10 @@ class Fixpoint(
       case Nil => ()
       case lst => lst.foreach(block => {
         val succCP = cp.next(block, CFGEdgeNormal)
-        val oldSt = succCP.getState
+        val oldSt = semantics.getState(succCP)
         if (!(nextSt <= oldSt)) {
           val newSt = oldSt + nextSt
-          succCP.setState(newSt)
+          semantics.setState(succCP, newSt)
           worklist.add(succCP)
         }
       })
@@ -63,10 +63,10 @@ class Fixpoint(
       case Nil => ()
       case lst => lst.foreach(block => {
         val excSuccCP = cp.next(block, CFGEdgeExc)
-        val oldExcSt = excSuccCP.getState
+        val oldExcSt = semantics.getState(excSuccCP)
         if (!(nextExcSt <= oldExcSt)) {
           val newExcSet = oldExcSt + nextExcSt
-          excSuccCP.setState(newExcSet)
+          semantics.setState(excSuccCP, newExcSet)
           worklist.add(excSuccCP)
         }
       })
@@ -82,11 +82,11 @@ class Fixpoint(
       case Some(succMap) => {
         succMap.foreach {
           case (succCP, data) => {
-            val oldSt = succCP.getState
+            val oldSt = semantics.getState(succCP)
             val nextSt2 = semantics.E(cp, succCP, data, nextSt)
             if (!(nextSt2 <= nextSt)) {
               val newSt = oldSt + nextSt2
-              succCP.setState(newSt)
+              semantics.setState(succCP, newSt)
               worklist.add(succCP)
             }
           }

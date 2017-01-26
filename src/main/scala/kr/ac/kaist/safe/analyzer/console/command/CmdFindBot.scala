@@ -26,7 +26,7 @@ case object CmdFindBot extends Command("find-bot", "Find the instruction whose r
     args match {
       case Nil => {
         val cp = c.getCurCP
-        val st = cp.getState
+        val st = c.sem.getState(cp)
         val block = cp.block
         val insts = block.getInsts.reverse
         if (st.isBottom) println("This block has bottom state.")
@@ -34,8 +34,8 @@ case object CmdFindBot extends Command("find-bot", "Find the instruction whose r
           val (_, _, result) = insts.foldLeft((st, AbsState.Bot, true)) {
             case ((oldSt, oldExcSt, true), inst) => {
               val (st, excSt) = inst match {
-                case (i: CFGNormalInst) => c.semantics.I(i, oldSt, oldExcSt)
-                case (i: CFGCallInst) => c.semantics.CI(cp, i, oldSt, oldExcSt)
+                case (i: CFGNormalInst) => c.sem.I(i, oldSt, oldExcSt)
+                case (i: CFGCallInst) => c.sem.CI(cp, i, oldSt, oldExcSt)
               }
               if (st.isBottom) {
                 println("The result of the following instruction is bottom:")

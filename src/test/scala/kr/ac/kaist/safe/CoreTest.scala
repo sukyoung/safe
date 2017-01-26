@@ -116,13 +116,13 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
       case Failure(_) =>
         assert(false)
         (Fail, 0)
-      case Success((cfg, iter, globalTP, _)) if tag == BenchTest =>
-        val normalSt = cfg.globalFunc.exit.getState(globalTP)
+      case Success((cfg, iter, globalTP, sem)) if tag == BenchTest =>
+        val normalSt = sem.getState(ControlPoint(cfg.globalFunc.exit, globalTP))
         assert(!normalSt.heap.isBottom)
         (Benchmark, iter)
-      case Success((cfg, iter, globalTP, _)) =>
-        val normalSt = cfg.globalFunc.exit.getState(globalTP)
-        val excSt = cfg.globalFunc.exitExc.getState(globalTP)
+      case Success((cfg, iter, globalTP, sem)) =>
+        val normalSt = sem.getState(ControlPoint(cfg.globalFunc.exit, globalTP))
+        val excSt = sem.getState(ControlPoint(cfg.globalFunc.exitExc, globalTP))
         assert(!normalSt.heap.isBottom)
         val ar = normalSt.heap.get(BuiltinGlobal.loc) match {
           case globalObj if globalObj.isBottom =>

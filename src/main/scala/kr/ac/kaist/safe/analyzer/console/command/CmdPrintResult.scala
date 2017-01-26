@@ -26,9 +26,9 @@ case object CmdPrintResult extends Command("result", "Print out various informat
   }
 
   def run(c: Console, args: List[String]): Option[Target] = {
-    val sem = c.semantics
+    val sem = c.sem
     val cp = c.getCurCP
-    val st = cp.getState
+    val st = sem.getState(cp)
     val (resSt, resExcSt) = sem.C(cp, st)
     val stPattern = "(exc-|)state(-all|)".r
     val locPattern = "(exc-|)loc".r

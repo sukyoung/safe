@@ -39,14 +39,6 @@ sealed abstract class CFGBlock {
   def addSucc(edgeType: CFGEdgeType, node: CFGBlock): Unit = succs(edgeType) = node :: succs.getOrElse(edgeType, Nil)
   def addPred(edgeType: CFGEdgeType, node: CFGBlock): Unit = preds(edgeType) = node :: preds.getOrElse(edgeType, Nil)
 
-  // control point maps to state
-  protected val cpToState: MMap[TracePartition, AbsState] = MHashMap()
-  def getState(): Map[TracePartition, AbsState] = cpToState.toMap
-  def getState(tp: TracePartition): AbsState = cpToState.getOrElse(tp, AbsState.Bot)
-  def setState(tp: TracePartition, state: AbsState): Unit =
-    if (state.isBottom) cpToState -= tp
-    else cpToState(tp) = state
-
   // get inst.
   def getInsts: List[CFGInst] = Nil
 

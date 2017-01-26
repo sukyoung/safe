@@ -32,8 +32,8 @@ case object BugDetect extends PhaseObj[(CFG, Int, TracePartition, Semantics), Bu
     expr.ir.span.toString + ":\n    [Warning] The property " + name + " of the object \"" + obj.ir.ast.toString(0) + "\" is absent."
 
   // Move to CFGBlock?  Copied from HTMLWriter.
-  private def isReachableUserCode(block: CFGBlock): Boolean =
-    !block.getState.isEmpty && !NodeUtil.isModeled(block)
+  private def isReachableUserCode(sem: Semantics, block: CFGBlock): Boolean =
+    !sem.getState(block).isEmpty && !NodeUtil.isModeled(block)
 
   // Collect CFG expressions from CFG instructions
   private def collectExprs(i: CFGNormalInst): List[CFGExpr] = i match {
@@ -77,9 +77,9 @@ case object BugDetect extends PhaseObj[(CFG, Int, TracePartition, Semantics), Bu
 
   // Check block/instruction-level rules: ConditionalBranch
   private def checkBlock(block: CFGBlock, semantics: Semantics): List[String] =
-    if (isReachableUserCode(block) && !block.getInsts.isEmpty) {
+    if (isReachableUserCode(semantics, block) && !block.getInsts.isEmpty) {
       // TODO it is working only when for each CFGBlock has only one control point.
-      val (_, st) = block.getState.head
+      val (_, st) = semantics.getState(block).head
       val (bugs, _) =
         block.getInsts.foldRight(List[String](), st)((inst, r) => {
           val (bs, state) = r

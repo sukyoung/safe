@@ -21,6 +21,7 @@ import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.util._
 
 import scala.collection.immutable.{ HashMap, HashSet }
+import scala.collection.mutable.{ HashMap => MHashMap, Map => MMap }
 
 class Semantics(
     cfg: CFG,
@@ -31,6 +32,31 @@ class Semantics(
   private val AF = AbsBool.False
   private val AT = AbsBool.True
   private val AB = AbsBool.Bot
+
+  // control point maps to state
+  protected val cpToState: MMap[CFGBlock, MMap[TracePartition, AbsState]] = MHashMap()
+  def getState(block: CFGBlock): Map[TracePartition, AbsState] =
+    cpToState.getOrElse(block, {
+      val newMap = MHashMap[TracePartition, AbsState]()
+      cpToState(block) = newMap
+      newMap
+    }).toMap
+  def getState(cp: ControlPoint): AbsState = {
+    val block = cp.block
+    val tp = cp.tracePartition
+    getState(block).getOrElse(tp, AbsState.Bot)
+  }
+  def setState(cp: ControlPoint, state: AbsState): Unit = {
+    val block = cp.block
+    val tp = cp.tracePartition
+    val map = cpToState.getOrElse(block, {
+      val newMap = MHashMap[TracePartition, AbsState]()
+      cpToState(block) = newMap
+      newMap
+    })
+    if (state.isBottom) map -= tp
+    else map(tp) = state
+  }
 
   // Interprocedural edges
   case class EdgeData(old: OldAddrSet, env: AbsLexEnv, thisBinding: AbsValue) {

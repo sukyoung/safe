@@ -40,35 +40,35 @@ case object CmdPrint extends Command("print", "Print out various information.") 
       case Nil => help
       case subcmd :: rest => subcmd match {
         case "state" =>
-          val res = c.getCurCP.getState.toString
+          val res = c.sem.getState(c.getCurCP).toString
           rest match {
             case Nil => println(res)
             case key :: Nil => println(grep(key, res))
             case _ => help
           }
         case "state-all" =>
-          val res = c.getCurCP.getState.toStringAll
+          val res = c.sem.getState(c.getCurCP).toStringAll
           rest match {
             case Nil => println(res)
             case key :: Nil => println(grep(key, res))
             case _ => help
           }
         case "heap" =>
-          val res = c.getCurCP.getState.heap.toString
+          val res = c.sem.getState(c.getCurCP).heap.toString
           rest match {
             case Nil => println(res)
             case key :: Nil => println(grep(key, res))
             case _ => help
           }
         case "heap-all" =>
-          val res = c.getCurCP.getState.heap.toStringAll
+          val res = c.sem.getState(c.getCurCP).heap.toStringAll
           rest match {
             case Nil => println(res)
             case key :: Nil => println(grep(key, res))
             case _ => help
           }
         case "context" =>
-          val res = c.getCurCP.getState.context.toString
+          val res = c.sem.getState(c.getCurCP).context.toString
           rest match {
             case Nil => println(res)
             case key :: Nil => println(grep(key, res))
@@ -82,7 +82,7 @@ case object CmdPrint extends Command("print", "Print out various information.") 
           case locStr :: rest if rest.length <= 1 =>
             Loc.parse(locStr) match {
               case Success(loc) =>
-                val state = c.getCurCP.getState
+                val state = c.sem.getState(c.getCurCP)
                 val heap = state.heap
                 state.heap.toStringLoc(loc) match {
                   case Some(res) => println(res)
@@ -126,7 +126,7 @@ case object CmdPrint extends Command("print", "Print out various information.") 
             val curCP = c.getCurCP
 
             println("* successor map")
-            val succs = c.semantics.getInterProcSucc(curCP)
+            val succs = c.sem.getInterProcSucc(curCP)
             println(s"- src: $curCP")
             succs match {
               case Some(m) => {
@@ -151,7 +151,7 @@ case object CmdPrint extends Command("print", "Print out various information.") 
 
                 // Follow up the trace (Call relation "1(callee) : n(caller)" is possible)
                 val exitCP = ControlPoint(func.exit, tp)
-                c.semantics.getInterProcSucc(exitCP) match {
+                c.sem.getInterProcSucc(exitCP) match {
                   case Some(cpMap) => cpMap.keySet.foreach(predCP => predCP.block match {
                     case call @ Call(_) => i(level + 1, call, predCP)
                     case _ =>
@@ -177,7 +177,7 @@ case object CmdPrint extends Command("print", "Print out various information.") 
           case name :: Nil => {
             // computes reachable fid_set
             val cfg = c.cfg
-            val sem = c.semantics
+            val sem = c.sem
             val reachableFunSet = sem.getAllIPSucc.foldLeft(Set[CFGFunction]()) {
               case (set, (caller, calleeMap)) => {
                 set ++ (calleeMap.toSeq.map {
@@ -200,7 +200,7 @@ case object CmdPrint extends Command("print", "Print out various information.") 
           case _ => help
         }
         case "html" => rest match {
-          case name :: Nil => HTMLWriter.writeHTMLFile(c.cfg, c.semantics, Some(c.worklist), s"$name.html")
+          case name :: Nil => HTMLWriter.writeHTMLFile(c.cfg, c.sem, Some(c.worklist), s"$name.html")
           case _ => help
         }
         case _ => help
