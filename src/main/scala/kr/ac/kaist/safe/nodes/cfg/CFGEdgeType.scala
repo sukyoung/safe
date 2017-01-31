@@ -15,9 +15,5 @@ package kr.ac.kaist.safe.nodes.cfg
 sealed abstract class CFGEdgeType
 case object CFGEdgeNormal extends CFGEdgeType // normal edges
 case object CFGEdgeExc extends CFGEdgeType // exception edges
-case object CFGEdgeLoopCond extends CFGEdgeType // loop condition edges
-case object CFGEdgeLoop extends CFGEdgeType // loop edges
-case object CFGEdgeLoopIter extends CFGEdgeType // loop iteration edges
-case object CFGEdgeLoopOut extends CFGEdgeType // loop out edges
-case object CFGEdgeLoopBreak extends CFGEdgeType // loop break edges
-case object CFGEdgeLoopReturn extends CFGEdgeType // looop return edges
+case object CFGEdgeCall extends CFGEdgeType // call edges
+case object CFGEdgeRet extends CFGEdgeType // return edges

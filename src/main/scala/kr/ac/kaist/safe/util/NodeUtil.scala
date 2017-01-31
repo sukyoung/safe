@@ -56,21 +56,122 @@ object NodeUtil {
   def internalAPIName(name: String): String = INTERNAL_API_PREFIX + name
 
   // internal API call
-  // 9.3 ToNumber
-  val INTERNAL_TO_NUM = internalAPIName("ToNumber")
-  // 9.9 ToObject
-  val INTERNAL_TO_OBJ = internalAPIName("ToObject")
+  // 8.6.2 Object Internal Properties and Methods
+  val INTERNAL_CLASS = internalAPIName("Class")
+  val INTERNAL_PRIM_VAL = internalAPIName("PrimitiveValue")
+  val INTERNAL_PROTO = internalAPIName("Prototype")
+  val INTERNAL_EXTENSIBLE = internalAPIName("Extensible")
+  val INTERNAL_CALL = internalAPIName("Call")
   // 8.7 The Reference Specification Type
   val INTERNAL_GET_BASE = internalAPIName("GetBase")
+  // 8.12.1 [[GetOwnProperty]] (P)
+  val INTERNAL_GET_OWN_PROP = internalAPIName("GetOwnProperty")
+  // 8.12.9 [[DefineOwnProperty]] (P, Desc, Throw)
+  val INTERNAL_DEF_OWN_PROP = internalAPIName("DefineOwnProperty")
+  // 9.1 ToPrimitive
+  val INTERNAL_TO_PRIM = internalAPIName("ToPrimitive")
+  // 9.2 ToBoolean
+  val INTERNAL_TO_BOOL = internalAPIName("ToBoolean")
+  // 9.3 ToNumber
+  val INTERNAL_TO_NUM = internalAPIName("ToNumber")
+  // 9.4 ToInteger
+  val INTERNAL_TO_INT = internalAPIName("ToInteger")
+  // 9.6 ToUint32: (Unsigned 32 Bit Integer)
+  val INTERNAL_TO_UINT = internalAPIName("ToUint32")
+  // 9.8 ToString
+  val INTERNAL_TO_STR = internalAPIName("ToString")
+  // 9.9 ToObject
+  val INTERNAL_TO_OBJ = internalAPIName("ToObject")
+  // 9.11 IsCallable
+  val INTERNAL_IS_CALLABLE = internalAPIName("IsCallable")
+  // 9.12 The SameValue Algorithm
+  val INTERNAL_SAME_VALUE = internalAPIName("SameValue")
+  // 15.2.3.4 Object.getOwnPropertyNames ( O )
+  val INTERNAL_GET_OWN_PROP_NAMES = internalAPIName("getOwnPropertyNames")
+  // 15.5.2.1 new String (value)
+  val INTERNAL_STR_OBJ = internalAPIName("StrObj")
+  // 15.6.2.1 new Boolean (value)
+  val INTERNAL_BOOL_OBJ = internalAPIName("BoolObj")
+  // 15.7.2.1 new Number (value)
+  val INTERNAL_NUM_OBJ = internalAPIName("NumObj")
+  // 15.8.2.1 abs (x)
+  val INTERNAL_ABS = internalAPIName("abs")
+  // 15.8.2.2 acos (x)
+  val INTERNAL_ACOS = internalAPIName("acos")
+  // 15.8.2.3 asin (x)
+  val INTERNAL_ASIN = internalAPIName("asin")
+  // 15.8.2.4 atan (x)
+  val INTERNAL_ATAN = internalAPIName("atan")
+  // 15.8.2.5 atan2 (y, x)
+  val INTERNAL_ATAN_TWO = internalAPIName("atan2")
+  // 15.8.2.6 ceil (x)
+  val INTERNAL_CEIL = internalAPIName("ceil")
+  // 15.8.2.7 cos (x)
+  val INTERNAL_COS = internalAPIName("cos")
+  // 15.8.2.8 exp (x)
+  val INTERNAL_EXP = internalAPIName("exp")
+  // 15.8.2.9 floor (x)
+  val INTERNAL_FLOOR = internalAPIName("floor")
+  // 15.8.2.10 log (x)
+  val INTERNAL_LOG = internalAPIName("log")
+  // 15.8.2.11 max ( [ value1 [ , value2 [ , ... ] ] ] )
+  val INTERNAL_MAX = internalAPIName("max")
+  // 15.8.2.12 min ( [ value1 [ , value2 [ , ... ] ] ] )
+  val INTERNAL_MIN = internalAPIName("min")
+  // 15.8.2.13 pow (x, y)
+  val INTERNAL_POW = internalAPIName("pow")
+  // 15.8.2.15 round (x)
+  val INTERNAL_ROUND = internalAPIName("round")
+  // 15.8.2.16 sin (x)
+  val INTERNAL_SIN = internalAPIName("sin")
+  // 15.8.2.17 sqrt (x)
+  val INTERNAL_SQRT = internalAPIName("sqrt")
+  // 15.8.2.18 tan (x)
+  val INTERNAL_TAN = internalAPIName("tan")
   // Other helpers
   val INTERNAL_IS_OBJ = internalAPIName("isObject")
   val INTERNAL_ITER_INIT = internalAPIName("iteratorInit")
   val INTERNAL_HAS_NEXT = internalAPIName("iteratorHasNext")
   val INTERNAL_ITER_NEXT = internalAPIName("iteratorNext")
   val internalCallSet: Set[String] = HashSet(
-    INTERNAL_TO_NUM,
-    INTERNAL_TO_OBJ,
+    INTERNAL_CLASS,
+    INTERNAL_PRIM_VAL,
+    INTERNAL_PROTO,
+    INTERNAL_EXTENSIBLE,
+    INTERNAL_CALL,
     INTERNAL_GET_BASE,
+    INTERNAL_GET_OWN_PROP,
+    INTERNAL_DEF_OWN_PROP,
+    INTERNAL_TO_PRIM,
+    INTERNAL_TO_BOOL,
+    INTERNAL_TO_NUM,
+    INTERNAL_TO_INT,
+    INTERNAL_TO_UINT,
+    INTERNAL_TO_STR,
+    INTERNAL_TO_OBJ,
+    INTERNAL_IS_CALLABLE,
+    INTERNAL_SAME_VALUE,
+    INTERNAL_GET_OWN_PROP_NAMES,
+    INTERNAL_STR_OBJ,
+    INTERNAL_BOOL_OBJ,
+    INTERNAL_NUM_OBJ,
+    INTERNAL_ABS,
+    INTERNAL_ACOS,
+    INTERNAL_ASIN,
+    INTERNAL_ATAN,
+    INTERNAL_ATAN_TWO,
+    INTERNAL_CEIL,
+    INTERNAL_COS,
+    INTERNAL_EXP,
+    INTERNAL_FLOOR,
+    INTERNAL_LOG,
+    INTERNAL_MAX,
+    INTERNAL_MIN,
+    INTERNAL_POW,
+    INTERNAL_ROUND,
+    INTERNAL_SIN,
+    INTERNAL_SQRT,
+    INTERNAL_TAN,
     INTERNAL_IS_OBJ,
     INTERNAL_ITER_INIT,
     INTERNAL_HAS_NEXT,
@@ -134,14 +235,6 @@ object NodeUtil {
   // For modeling in JavaScript
   val jsModelsName = "jsModels"
   val jsModelsBase = BASE_DIR + "/src/main/resources/" + jsModelsName + "/"
-  val jsModels: List[String] =
-    List[String](
-      jsModelsBase + "__builtin__.js",
-      jsModelsBase + "__dom__.js"
-    )
-  /*
-      jsModelsBase + "__input__.js")
-   */
 
   def isModeled(node: ASTNode): Boolean =
     node.info.span.fileName.contains(jsModelsName)

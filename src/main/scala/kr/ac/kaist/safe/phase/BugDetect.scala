@@ -21,7 +21,7 @@ import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.util._
 
 // BugDetect phase
-case object BugDetect extends PhaseObj[(CFG, Int, CallContext, Semantics), BugDetectConfig, CFG] {
+case object BugDetect extends PhaseObj[(CFG, Int, TracePartition, Semantics), BugDetectConfig, CFG] {
   val name: String = "bugDetector"
   val help: String = "Detect possible bugs in JavaScript source files."
 
@@ -32,8 +32,8 @@ case object BugDetect extends PhaseObj[(CFG, Int, CallContext, Semantics), BugDe
     expr.ir.span.toString + ":\n    [Warning] The property " + name + " of the object \"" + obj.ir.ast.toString(0) + "\" is absent."
 
   // Move to CFGBlock?  Copied from HTMLWriter.
-  private def isReachableUserCode(block: CFGBlock): Boolean =
-    !block.getState.isEmpty && !NodeUtil.isModeled(block)
+  private def isReachableUserCode(sem: Semantics, block: CFGBlock): Boolean =
+    !sem.getState(block).isEmpty && !NodeUtil.isModeled(block)
 
   // Collect CFG expressions from CFG instructions
   private def collectExprs(i: CFGNormalInst): List[CFGExpr] = i match {
@@ -77,9 +77,9 @@ case object BugDetect extends PhaseObj[(CFG, Int, CallContext, Semantics), BugDe
 
   // Check block/instruction-level rules: ConditionalBranch
   private def checkBlock(block: CFGBlock, semantics: Semantics): List[String] =
-    if (isReachableUserCode(block) && !block.getInsts.isEmpty) {
+    if (isReachableUserCode(semantics, block) && !block.getInsts.isEmpty) {
       // TODO it is working only when for each CFGBlock has only one control point.
-      val (_, st) = block.getState.head
+      val (_, st) = semantics.getState(block).head
       val (bugs, _) =
         block.getInsts.foldRight(List[String](), st)((inst, r) => {
           val (bs, state) = r
@@ -108,7 +108,7 @@ case object BugDetect extends PhaseObj[(CFG, Int, CallContext, Semantics), BugDe
     } else List[String]()
 
   def apply(
-    in: (CFG, Int, CallContext, Semantics),
+    in: (CFG, Int, TracePartition, Semantics),
     safeConfig: SafeConfig,
     config: BugDetectConfig
   ): Try[CFG] = {

@@ -66,7 +66,7 @@ private object BuiltinRegExpHelper {
   val instanceAddr = SystemAddr("RegExp<instance>")
 
   def newREObject(source: AbsString, g: AbsBool, i: AbsBool, m: AbsBool): AbsObject = {
-    val IV = InternalValueUtil
+    val IV = AbsIValueUtil
     val afalse = AbsBool.False
     AbsObject.Empty
       .update(IClass, IV(AbsString("RegExp")))

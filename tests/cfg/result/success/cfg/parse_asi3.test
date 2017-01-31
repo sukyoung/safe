@@ -1,7 +1,7 @@
 function[0] top-level {
   Entry[-1] -> [0]
 
-  Block[0] -> [3], ExitExc
+  Block[0] -> [1], ExitExc
     [0] noop(StartOfFile)
     [1] <>temp<>1 := "q"
     [2] <>temp<>2 := "Q"
@@ -14,52 +14,48 @@ function[0] top-level {
     [9] <>fun<>5 := @GetBase(getc)
     [10] <>this<> := enterCode(<>fun<>5)
 
-  Block[1] -> Exit
-    [0] noop(EndOfFile)
-
-  Block[2] -> [1]
-
-  Call[3] -> ExitExc
+  Call[1] -> ExitExc
     [0] call(<>obj<>3, <>this<>, <>arguments<>4) @ #4
 
-  AfterCall[4] -> [6]
+  AfterCall[2] -> [4]
 
-  AfterCatch[5] -> ExitExc
+  AfterCatch[3] -> ExitExc
 
-  Block[6] -> [7], ExitExc
+  Block[4] -> [5], ExitExc
     [0] c := <>new1<>6
 
-  Block[7] -> [9], [8]
+  LoopHead[5] -> [7], [6]
 
-  Block[8] -> [12], ExitExc
+  Block[6] -> [8], ExitExc
     [0] assert(<>new1<>6)
     [1] i := 0
     [2] <>Global<>ignore3 := 0
     [3] <>y<>7 := i
     [4] <>obj<>8 := @ToObject(quitchars) @ #5
 
-  Block[9] -> [2], ExitExc
+  Block[7] -> [21], ExitExc
     [0] assert(! <>new1<>6)
 
-  Block[10] -> [19], ExitExc
-    [0] <>obj<>3 := @ToObject(getc) @ #8
-    [1] <>arguments<>4 := allocArg(0) @ #9
-    [2] <>fun<>5 := @GetBase(getc)
-    [3] <>this<> := enterCode(<>fun<>5)
+  LoopHead[8] -> [10], [9]
 
-  Block[11] -> [10]
-
-  Block[12] -> [14], [13]
-
-  Block[13] -> [17], [16], ExitExc
+  Block[9] -> [12], [11], ExitExc
     [0] assert(<>y<>7 < <>obj<>8["length"])
     [1] <>y<>9 := c
     [2] <>obj<>10 := @ToObject(quitchars) @ #6
 
-  Block[14] -> [11], ExitExc
+  Block[10] -> [15], ExitExc
     [0] assert(! <>y<>7 < <>obj<>8["length"])
 
-  Block[15] -> [12], ExitExc
+  Block[11] -> [15], ExitExc
+    [0] assert(<>y<>9 == <>obj<>10[i])
+
+  Block[12] -> [13], ExitExc
+    [0] assert(<>y<>9 != <>obj<>10[i])
+
+  Block[13] -> [14], ExitExc
+    [0] <>Global<>ignore7 := charloop
+
+  LCont[14] -> [8], ExitExc
     [0] <>old<>11 := i
     [1] <>new<>12 := @ToNumber(<>old<>11)
     [2] i := <>new<>12 + 1
@@ -67,24 +63,28 @@ function[0] top-level {
     [4] <>y<>7 := i
     [5] <>obj<>8 := @ToObject(quitchars) @ #7
 
-  Block[16] -> [11], ExitExc
-    [0] assert(<>y<>9 == <>obj<>10[i])
+  LBreak[15] -> [16]
 
-  Block[17] -> [18], ExitExc
-    [0] assert(<>y<>9 != <>obj<>10[i])
+  LCont[16] -> [17], ExitExc
+    [0] <>obj<>3 := @ToObject(getc) @ #8
+    [1] <>arguments<>4 := allocArg(0) @ #9
+    [2] <>fun<>5 := @GetBase(getc)
+    [3] <>this<> := enterCode(<>fun<>5)
 
-  Block[18] -> [15], ExitExc
-    [0] <>Global<>ignore7 := charloop
-
-  Call[19] -> ExitExc
+  Call[17] -> ExitExc
     [0] call(<>obj<>3, <>this<>, <>arguments<>4) @ #10
 
-  AfterCall[20] -> [22]
+  AfterCall[18] -> [20]
 
-  AfterCatch[21] -> ExitExc
+  AfterCatch[19] -> ExitExc
 
-  Block[22] -> [7], ExitExc
+  Block[20] -> [5], ExitExc
     [0] c := <>new1<>6
+
+  LBreak[21] -> [22]
+
+  charloop:[22] -> Exit
+    [0] noop(EndOfFile)
 
   Exit[-2]
 

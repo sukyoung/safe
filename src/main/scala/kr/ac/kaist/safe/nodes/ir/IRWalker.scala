@@ -34,8 +34,8 @@ trait IRWalker {
       IRArgs(ast, walk(lhs), elements.map(_.map(walk)))
     case IRCall(ast, lhs, fun, thisB, args) =>
       IRCall(ast, walk(lhs), walk(fun), walk(thisB), walk(args))
-    case IRInternalCall(ast, lhs, fun, first, second) =>
-      IRInternalCall(ast, walk(lhs), walk(fun), walk(first), second.map(walk))
+    case IRInternalCall(ast, lhs, name, args) =>
+      IRInternalCall(ast, walk(lhs), name, args.map(walk))
     case IRNew(ast, lhs, fun, args) =>
       IRNew(ast, walk(lhs), walk(fun), args.map(walk))
     case IRFunExpr(ast, lhs, ftn) =>
@@ -64,8 +64,8 @@ trait IRWalker {
       IRSeq(ast, stmts.map(walk))
     case IRIf(ast, expr, trueB, falseB) =>
       IRIf(ast, walk(expr), walk(trueB), falseB.map(walk))
-    case IRWhile(ast, cond, body) =>
-      IRWhile(ast, walk(cond), walk(body))
+    case IRWhile(ast, cond, body, br, cont) =>
+      IRWhile(ast, walk(cond), walk(body), walk(br), walk(cont))
     case IRTry(ast, body, name, catchB, finallyB) =>
       IRTry(ast, walk(body), name.map(walk), catchB.map(walk), finallyB.map(walk))
     case IRNoOp(ast, desc) =>

@@ -179,25 +179,25 @@ class Translator(program: Program) {
   }
 
   private def toObject(ast: ASTNode, lhs: IRId, arg: IRExpr): IRInternalCall =
-    IRInternalCall(ast, lhs, makeTId(ast, NU.INTERNAL_TO_OBJ, true), arg, None)
+    IRInternalCall(ast, lhs, NU.INTERNAL_TO_OBJ, List(arg))
 
   private def toNumber(ast: ASTNode, lhs: IRId, id: IRId): IRInternalCall =
-    IRInternalCall(ast, lhs, makeTId(ast, NU.INTERNAL_TO_NUM, true), id, None)
+    IRInternalCall(ast, lhs, NU.INTERNAL_TO_NUM, List(id))
 
   private def getBase(ast: ASTNode, lhs: IRId, f: IRId): IRInternalCall =
-    IRInternalCall(ast, lhs, makeTId(ast, NU.INTERNAL_GET_BASE, true), f, None)
+    IRInternalCall(ast, lhs, NU.INTERNAL_GET_BASE, List(f))
 
   private def iteratorInit(ast: ASTNode, iterator: IRId, obj: IRId): IRInternalCall =
-    IRInternalCall(ast, iterator, makeTId(ast, NU.INTERNAL_ITER_INIT, true), obj, None)
+    IRInternalCall(ast, iterator, NU.INTERNAL_ITER_INIT, List(obj))
 
   private def iteratorHasNext(ast: ASTNode, cond: IRId, obj: IRId, iterator: IRId): IRInternalCall =
-    IRInternalCall(ast, cond, makeTId(ast, NU.INTERNAL_HAS_NEXT, true), obj, Some(iterator))
+    IRInternalCall(ast, cond, NU.INTERNAL_HAS_NEXT, List(obj, iterator))
 
   private def iteratorKey(ast: ASTNode, key: IRId, obj: IRId, iterator: IRId): IRInternalCall =
-    IRInternalCall(ast, key, makeTId(ast, NU.INTERNAL_ITER_NEXT, true), obj, Some(iterator))
+    IRInternalCall(ast, key, NU.INTERNAL_ITER_NEXT, List(obj, iterator))
 
   private def isObject(ast: ASTNode, lhs: IRId, id: IRId): IRInternalCall =
-    IRInternalCall(ast, lhs, makeTId(ast, NU.INTERNAL_IS_OBJ, true), id, None)
+    IRInternalCall(ast, lhs, NU.INTERNAL_IS_OBJ, List(id))
 
   private def unescapeJava(s: String, e: StringLiteral): String =
     if (-1 == s.indexOf('\\')) s
@@ -606,7 +606,7 @@ class Translator(program: Program) {
         IRSeq(s, ss)
       )
       isDoWhile = false
-      val stmt = IRSeq(s, newBody, IRWhile(s, r, newBody))
+      val stmt = IRSeq(s, newBody, IRWhile(s, r, newBody, labelName, cont))
       IRStmtUnit(s, IRLabelStmt(s, labelName, stmt))
 
     case While(_, cond, body) =>
@@ -620,7 +620,7 @@ class Translator(program: Program) {
         s,
         IRLabelStmt(s, cont, walkStmt(body, newEnv)) :: ssList
       )
-      val stmt = IRSeq(s, ssList :+ IRWhile(s, r, newBody))
+      val stmt = IRSeq(s, ssList :+ IRWhile(s, r, newBody, labelName, cont))
       IRStmtUnit(s, IRLabelStmt(s, labelName, stmt))
 
     case For(_, init, cond, action, body) =>
@@ -646,11 +646,10 @@ class Translator(program: Program) {
           IRSeq(
             s,
             IRSeq(s, front),
-            IRWhile(s, TRUE_BOOL,
-              IRSeq(
-                s,
-                nbody, IRSeq(s, back)
-              ))
+            IRWhile(s, TRUE_BOOL, IRSeq(
+              s,
+              nbody, IRSeq(s, back)
+            ), labelName, cont)
           )
         case Some(cexpr) =>
           val newtwo = freshId(cexpr, cexpr.span, "new2")
@@ -659,7 +658,7 @@ class Translator(program: Program) {
           IRSeq(
             s,
             IRSeq(s, front ++ ss2),
-            IRWhile(s, r2, IRSeq(s, newBody))
+            IRWhile(s, r2, IRSeq(s, newBody), labelName, cont)
           )
       }
       IRStmtUnit(s, IRLabelStmt(s, labelName, stmt))
@@ -694,7 +693,7 @@ class Translator(program: Program) {
           iteratorInit(s, iterator, obj),
           iteratorCheck
         )),
-        IRWhile(s, condone, newBody)
+        IRWhile(s, condone, newBody, labelName, cont)
       )
       IRStmtUnit(s, IRLabelStmt(s, labelName, stmt))
 
@@ -1135,20 +1134,17 @@ class Translator(program: Program) {
             Some(mkExprS(e, res, obj)))
         ), res)
 
-    case FunApp(_, VarRef(_, Id(_, fun, _, _)), args) if (NU.isInternalCall(fun)) => args match {
-      case Nil =>
-        (List(IRInternalCall(e, res,
-          makeTId(e, fun, true), res, None)), res)
-      case _ =>
-        val last = args.last
-        val front = args.take(args.length - 1)
-        val newArgs = front.zipWithIndex.map { case (arg, index) => freshId(arg, arg.span, "new" + index) }
-        val results = front.zip(newArgs).map { case (arg, newArg) => (newArg, walkExpr(arg, env, newArg)) }
-        val ss1 = results.foldLeft(List[IRStmt]()) { case (l, (newArg, (stmts, expr))) => l ++ stmts :+ (mkExprS(e, newArg, expr)) }
-        val (ss2, r) = walkExpr(last, env, freshId(last, last.span, "new" + args.length))
-        (ss1 ++ ss2 :+ IRInternalCall(e, res,
-          makeTId(e, fun, true), r, None), res)
-    }
+    case FunApp(_, VarRef(_, Id(_, fun, _, _)), args) if (NU.isInternalCall(fun)) =>
+      val newArgs = args.zipWithIndex.map {
+        case (arg, index) => freshId(arg, arg.span, "new" + index)
+      }
+      val (ss, irArgs) = args.zip(newArgs).foldLeft(List[IRStmt](), List[IRExpr]()) {
+        case ((ss, irArgs), (arg, newArg)) => {
+          val (s, irArg) = walkExpr(arg, env, newArg)
+          (ss ++ s, irArgs :+ irArg)
+        }
+      }
+      (ss :+ IRInternalCall(e, res, fun, irArgs), res)
 
     case FunApp(_, fun, List(arg)) if (fun.isEval) =>
       val newone = freshId(arg, arg.span, "new1")

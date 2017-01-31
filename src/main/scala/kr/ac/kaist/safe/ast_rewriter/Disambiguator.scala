@@ -82,23 +82,29 @@ class Disambiguator(program: Program) {
    * EvalError, RangeError, ReferenceError, SyntaxError, TypeError, URIError
    */
 
+  // id not bound check
+  def idNotBoundErr(log: ExcLog, name: String, id: Id): Unit = {
+    if (!NU.isInternalCall(name) && !NU.isInternalValue(name))
+      log.signal(IdNotBoundError(name, id))
+  }
+
   // add environment
   private def addEnv(name: String, newid: Id): Unit = newid.uniqueName match {
-    case None => normalExcLog.signal(IdNotBoundError(name, newid))
+    case None => idNotBoundErr(normalExcLog, name, newid)
     case Some(uniq) => env = (name, uniq) :: env
   }
   private def addEnv(id: Id, newid: Id): Unit = newid.uniqueName match {
-    case None => normalExcLog.signal(IdNotBoundError(id.text, id))
+    case None => idNotBoundErr(normalExcLog, id.text, id)
     case Some(uniq) => env = (id.text, uniq) :: env
   }
   private def addEnv(newid: Id): Unit = newid.uniqueName match {
-    case None => normalExcLog.signal(IdNotBoundError(newid.text, newid))
+    case None => idNotBoundErr(normalExcLog, newid.text, newid)
     case Some(uniq) => env = (newid.text, uniq) :: env
   }
 
   // add label environment
   private def addLEnv(id: Id, newid: Id): Unit = newid.uniqueName match {
-    case None => normalExcLog.signal(IdNotBoundError(id.text, id))
+    case None => idNotBoundErr(normalExcLog, id.text, id)
     case Some(uniq) =>
       labEnv = LabEnv(labEnv.encIter, labEnv.encSwitch, labEnv.curStmt ++ labEnv.encStmt, (id.text, uniq) :: labEnv.curStmt)
   }
@@ -136,7 +142,7 @@ class Disambiguator(program: Program) {
       case Some((_, uniq)) => uniq
       case None =>
         if (!inWith)
-          assExcLog.signal(IdNotBoundError(id.text, id))
+          idNotBoundErr(assExcLog, id.text, id)
         name
     }
   }

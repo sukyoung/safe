@@ -5,14 +5,14 @@ function[0] top-level {
     [0] noop(StartOfFile)
     [1] x := 5
 
-  Block[1] -> [2], [3]
+  Try[1] -> [2], [3]
     [0] <>Global<>ignore3 := x
 
-  Block[2] -> Exit, ExitExc
+  Finally[2] -> Exit, ExitExc
     [0] x := 5
     [1] noop(EndOfFile)
 
-  Block[3] -> ExitExc, ExitExc
+  Finally[3] -> ExitExc, ExitExc
     [0] x := 5
 
   Exit[-2]

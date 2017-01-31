@@ -17,16 +17,15 @@ import kr.ac.kaist.safe.nodes.ir.IRNode
 import kr.ac.kaist.safe.util.NodeUtil
 import kr.ac.kaist.safe.analyzer.models.SemanticFun
 
-class CFGFunction(
+case class CFGFunction(
     override val ir: IRNode,
-    val cfg: CFG,
-    val argumentsName: String,
-    val argVars: List[CFGId],
-    val localVars: List[CFGId],
-    val name: String,
-    val isUser: Boolean
+    argumentsName: String,
+    argVars: List[CFGId],
+    localVars: List[CFGId],
+    name: String,
+    isUser: Boolean
 ) extends CFGNode(ir) {
-  val id: FunctionId = cfg.getFId
+  var id: FunctionId = 0 // XXX should be a value but for JS model for a while.
 
   val entry = Entry(this)
   val exit = Exit(this)
@@ -65,10 +64,16 @@ class CFGFunction(
   }
 
   // create block
-  def createBlock: NormalBlock = {
-    val block = NormalBlock(this)
+  def createBlock: NormalBlock = createBlock(NoLabel)
+  def createBlock(label: LabelKind): NormalBlock = {
+    val block = NormalBlock(this, label)
     addBlock(block)
     block
+  }
+  def createLoopHead: LoopHead = {
+    val loopHead = LoopHead(this)
+    addBlock(loopHead)
+    loopHead
   }
 
   // create model block
@@ -86,9 +91,7 @@ class CFGFunction(
 
   // equals
   override def equals(other: Any): Boolean = other match {
-    case (func: CFGFunction) =>
-      func.cfg == cfg &&
-        func.id == id
+    case (func: CFGFunction) => func.id == id
     case _ => false
   }
 

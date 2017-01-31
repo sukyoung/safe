@@ -1,15 +1,15 @@
 function[0] top-level {
   Entry[-1] -> [0]
 
-  Block[0] -> [1], ExitExc
+  Block[0] -> [2], ExitExc
     [0] noop(StartOfFile)
     [1] x := 1
 
-  Block[1] -> Exit
-    [0] noop(EndOfFile)
-
-  Block[2] -> [1], ExitExc
+  Block[1] -> [2], ExitExc
     [0] x := 2
+
+  lab:[2] -> Exit
+    [0] noop(EndOfFile)
 
   Exit[-2]
 

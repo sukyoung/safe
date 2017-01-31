@@ -59,7 +59,7 @@ function[1] buildKernel {
 
   AfterCatch[3] -> ExitExc
 
-  Block[4] -> [7], ExitExc
+  Block[4] -> [5], ExitExc
     [0] <>i<>3 := 0
     [1] <>obj<>13 := @ToObject(Math) @ #8
     [2] <>temp<>14 := - <>i<>3 * <>i<>3 / 2 * <>ss<>1
@@ -68,30 +68,23 @@ function[1] buildKernel {
     [5] <>fun<>16 := @ToObject(<>obj<>13["exp"]) @ #10
     [6] <>this<> := enterCode(<>obj<>13)
 
-  Block[5] -> [34], ExitExc
-    [0] kernelSize := <>i<>3
-    [1] <>j<>4 := 1
-    [2] <>Global<>ignore12 := 1
-
-  Block[6] -> [18]
-
-  Call[7] -> ExitExc
+  Call[5] -> ExitExc
     [0] call(<>fun<>16, <>this<>, <>arguments<>15) @ #11
 
-  AfterCall[8] -> [10]
+  AfterCall[6] -> [8]
 
-  AfterCatch[9] -> ExitExc
+  AfterCatch[7] -> ExitExc
 
-  Block[10] -> [12], [11], ExitExc
+  Block[8] -> [10], [9], ExitExc
     [0] <>g<>5 := <>y<>17 / <>factor<>2
 
-  Block[11] -> [5], ExitExc
+  Block[9] -> [32], ExitExc
     [0] assert(<>g<>5 < 0.001)
 
-  Block[12] -> [13], ExitExc
+  Block[10] -> [11], ExitExc
     [0] assert(! <>g<>5 < 0.001)
 
-  Block[13] -> [14], ExitExc
+  Block[11] -> [12], ExitExc
     [0] <>obj<>18 := @ToObject(kernel) @ #12
     [1] <>obj<>19 := @ToObject(<>obj<>18[0]) @ #13
     [2] <>temp<>20 := <>g<>5
@@ -100,22 +93,24 @@ function[1] buildKernel {
     [5] <>fun<>22 := @ToObject(<>obj<>19["push"]) @ #15
     [6] <>this<> := enterCode(<>obj<>19)
 
-  Call[14] -> ExitExc
+  Call[12] -> ExitExc
     [0] call(<>fun<>22, <>this<>, <>arguments<>21) @ #16
 
-  AfterCall[15] -> [17]
+  AfterCall[13] -> [15]
 
-  AfterCatch[16] -> ExitExc
+  AfterCatch[14] -> ExitExc
 
-  Block[17] -> [6], ExitExc
+  Block[15] -> [16], ExitExc
     [0] <>old<>23 := <>i<>3
     [1] <>new<>24 := @ToNumber(<>old<>23)
     [2] <>i<>3 := <>new<>24 + 1
     [3] <>Global<>ignore9 := <>new<>24 + 1
 
-  Block[18] -> [20], [19]
+  LCont[16] -> [17]
 
-  Block[19] -> [22], ExitExc
+  LoopHead[17] -> [19], [18]
+
+  Block[18] -> [20], ExitExc
     [0] assert(<>i<>3 < 7)
     [1] <>obj<>13 := @ToObject(Math) @ #17
     [2] <>temp<>14 := - <>i<>3 * <>i<>3 / 2 * <>ss<>1
@@ -124,28 +119,26 @@ function[1] buildKernel {
     [5] <>fun<>16 := @ToObject(<>obj<>13["exp"]) @ #19
     [6] <>this<> := enterCode(<>obj<>13)
 
-  Block[20] -> [5], ExitExc
+  Block[19] -> [32], ExitExc
     [0] assert(! <>i<>3 < 7)
 
-  Block[21] -> [18]
-
-  Call[22] -> ExitExc
+  Call[20] -> ExitExc
     [0] call(<>fun<>16, <>this<>, <>arguments<>15) @ #20
 
-  AfterCall[23] -> [25]
+  AfterCall[21] -> [23]
 
-  AfterCatch[24] -> ExitExc
+  AfterCatch[22] -> ExitExc
 
-  Block[25] -> [27], [26], ExitExc
+  Block[23] -> [25], [24], ExitExc
     [0] <>g<>5 := <>y<>17 / <>factor<>2
 
-  Block[26] -> [5], ExitExc
+  Block[24] -> [32], ExitExc
     [0] assert(<>g<>5 < 0.001)
 
-  Block[27] -> [28], ExitExc
+  Block[25] -> [26], ExitExc
     [0] assert(! <>g<>5 < 0.001)
 
-  Block[28] -> [29], ExitExc
+  Block[26] -> [27], ExitExc
     [0] <>obj<>18 := @ToObject(kernel) @ #21
     [1] <>obj<>19 := @ToObject(<>obj<>18[0]) @ #22
     [2] <>temp<>20 := <>g<>5
@@ -154,27 +147,29 @@ function[1] buildKernel {
     [5] <>fun<>22 := @ToObject(<>obj<>19["push"]) @ #24
     [6] <>this<> := enterCode(<>obj<>19)
 
-  Call[29] -> ExitExc
+  Call[27] -> ExitExc
     [0] call(<>fun<>22, <>this<>, <>arguments<>21) @ #25
 
-  AfterCall[30] -> [32]
+  AfterCall[28] -> [30]
 
-  AfterCatch[31] -> ExitExc
+  AfterCatch[29] -> ExitExc
 
-  Block[32] -> [21], ExitExc
+  Block[30] -> [31], ExitExc
     [0] <>old<>23 := <>i<>3
     [1] <>new<>24 := @ToNumber(<>old<>23)
     [2] <>i<>3 := <>new<>24 + 1
     [3] <>Global<>ignore9 := <>new<>24 + 1
 
-  Block[33] -> [55], ExitExc
-    [0] kernelSum := 0
-    [1] <>j<>4 := 1 - kernelSize
-    [2] <>Global<>ignore24 := 1 - kernelSize
+  LCont[31] -> [17]
 
-  Block[34] -> [36], [35]
+  LBreak[32] -> [33], ExitExc
+    [0] kernelSize := <>i<>3
+    [1] <>j<>4 := 1
+    [2] <>Global<>ignore12 := 1
 
-  Block[35] -> [38], ExitExc
+  LoopHead[33] -> [35], [34]
+
+  Block[34] -> [36], ExitExc
     [0] assert(<>j<>4 < kernelSize)
     [1] <>obj<>25 := @ToObject(kernel) @ #26
     [2] <>temp<>26 := allocArray(0) @ #27
@@ -183,31 +178,23 @@ function[1] buildKernel {
     [5] <>fun<>28 := @ToObject(<>obj<>25["push"]) @ #29
     [6] <>this<> := enterCode(<>obj<>25)
 
-  Block[36] -> [33], ExitExc
+  Block[35] -> [53], ExitExc
     [0] assert(! <>j<>4 < kernelSize)
 
-  Block[37] -> [34], ExitExc
-    [0] <>old<>41 := <>j<>4
-    [1] <>new<>42 := @ToNumber(<>old<>41)
-    [2] <>j<>4 := <>new<>42 + 1
-    [3] <>Global<>ignore14 := <>new<>42 + 1
-
-  Call[38] -> ExitExc
+  Call[36] -> ExitExc
     [0] call(<>fun<>28, <>this<>, <>arguments<>27) @ #30
 
-  AfterCall[39] -> [42]
+  AfterCall[37] -> [39]
 
-  AfterCatch[40] -> ExitExc
+  AfterCatch[38] -> ExitExc
 
-  Block[41] -> [37]
-
-  Block[42] -> [43], ExitExc
+  Block[39] -> [40], ExitExc
     [0] <>i<>3 := 0
     [1] <>Global<>ignore17 := 0
 
-  Block[43] -> [45], [44]
+  LoopHead[40] -> [42], [41]
 
-  Block[44] -> [47], ExitExc
+  Block[41] -> [43], ExitExc
     [0] assert(<>i<>3 < kernelSize)
     [1] <>obj<>29 := @ToObject(Math) @ #31
     [2] <>temp<>30 := - <>i<>3 * <>i<>3 + <>j<>4 * <>j<>4 / 2 * <>ss<>1
@@ -216,23 +203,17 @@ function[1] buildKernel {
     [5] <>fun<>32 := @ToObject(<>obj<>29["exp"]) @ #33
     [6] <>this<> := enterCode(<>obj<>29)
 
-  Block[45] -> [41], ExitExc
+  Block[42] -> [51], ExitExc
     [0] assert(! <>i<>3 < kernelSize)
 
-  Block[46] -> [43], ExitExc
-    [0] <>old<>39 := <>i<>3
-    [1] <>new<>40 := @ToNumber(<>old<>39)
-    [2] <>i<>3 := <>new<>40 + 1
-    [3] <>Global<>ignore19 := <>new<>40 + 1
-
-  Call[47] -> ExitExc
+  Call[43] -> ExitExc
     [0] call(<>fun<>32, <>this<>, <>arguments<>31) @ #34
 
-  AfterCall[48] -> [50]
+  AfterCall[44] -> [46]
 
-  AfterCatch[49] -> ExitExc
+  AfterCatch[45] -> ExitExc
 
-  Block[50] -> [51], ExitExc
+  Block[46] -> [47], ExitExc
     [0] <>g<>5 := <>y<>33 / <>factor<>2
     [1] <>obj<>34 := @ToObject(kernel) @ #35
     [2] <>obj<>35 := @ToObject(<>obj<>34[<>j<>4]) @ #36
@@ -242,36 +223,45 @@ function[1] buildKernel {
     [6] <>fun<>38 := @ToObject(<>obj<>35["push"]) @ #38
     [7] <>this<> := enterCode(<>obj<>35)
 
-  Call[51] -> ExitExc
+  Call[47] -> ExitExc
     [0] call(<>fun<>38, <>this<>, <>arguments<>37) @ #39
 
-  AfterCall[52] -> [46]
+  AfterCall[48] -> [50]
 
-  AfterCatch[53] -> ExitExc
+  AfterCatch[49] -> ExitExc
 
-  Block[54] -> Exit
+  LCont[50] -> [40], ExitExc
+    [0] <>old<>39 := <>i<>3
+    [1] <>new<>40 := @ToNumber(<>old<>39)
+    [2] <>i<>3 := <>new<>40 + 1
+    [3] <>Global<>ignore19 := <>new<>40 + 1
 
-  Block[55] -> [57], [56]
+  LBreak[51] -> [52]
 
-  Block[56] -> [60], ExitExc
+  LCont[52] -> [33], ExitExc
+    [0] <>old<>41 := <>j<>4
+    [1] <>new<>42 := @ToNumber(<>old<>41)
+    [2] <>j<>4 := <>new<>42 + 1
+    [3] <>Global<>ignore14 := <>new<>42 + 1
+
+  LBreak[53] -> [54], ExitExc
+    [0] kernelSum := 0
+    [1] <>j<>4 := 1 - kernelSize
+    [2] <>Global<>ignore24 := 1 - kernelSize
+
+  LoopHead[54] -> [56], [55]
+
+  Block[55] -> [57], ExitExc
     [0] assert(<>j<>4 < kernelSize)
     [1] <>i<>3 := 1 - kernelSize
     [2] <>Global<>ignore28 := 1 - kernelSize
 
-  Block[57] -> [54], ExitExc
+  Block[56] -> [71], ExitExc
     [0] assert(! <>j<>4 < kernelSize)
 
-  Block[58] -> [55], ExitExc
-    [0] <>old<>58 := <>j<>4
-    [1] <>new<>59 := @ToNumber(<>old<>58)
-    [2] <>j<>4 := <>new<>59 + 1
-    [3] <>Global<>ignore26 := <>new<>59 + 1
+  LoopHead[57] -> [59], [58]
 
-  Block[59] -> [58]
-
-  Block[60] -> [62], [61]
-
-  Block[61] -> [64], ExitExc
+  Block[58] -> [60], ExitExc
     [0] assert(<>i<>3 < kernelSize)
     [1] <>old<>43 := kernelSum
     [2] <>obj<>44 := @ToObject(kernel) @ #40
@@ -282,23 +272,17 @@ function[1] buildKernel {
     [7] <>fun<>48 := @ToObject(<>obj<>45["abs"]) @ #43
     [8] <>this<> := enterCode(<>obj<>45)
 
-  Block[62] -> [59], ExitExc
+  Block[59] -> [69], ExitExc
     [0] assert(! <>i<>3 < kernelSize)
 
-  Block[63] -> [60], ExitExc
-    [0] <>old<>56 := <>i<>3
-    [1] <>new<>57 := @ToNumber(<>old<>56)
-    [2] <>i<>3 := <>new<>57 + 1
-    [3] <>Global<>ignore30 := <>new<>57 + 1
-
-  Call[64] -> ExitExc
+  Call[60] -> ExitExc
     [0] call(<>fun<>48, <>this<>, <>arguments<>47) @ #44
 
-  AfterCall[65] -> [67]
+  AfterCall[61] -> [63]
 
-  AfterCatch[66] -> ExitExc
+  AfterCatch[62] -> ExitExc
 
-  Block[67] -> [68], ExitExc
+  Block[63] -> [64], ExitExc
     [0] <>obj<>50 := @ToObject(<>obj<>44[<>field1<>49]) @ #45
     [1] <>obj<>51 := @ToObject(Math) @ #46
     [2] <>temp<>52 := <>i<>3
@@ -307,15 +291,31 @@ function[1] buildKernel {
     [5] <>fun<>54 := @ToObject(<>obj<>51["abs"]) @ #48
     [6] <>this<> := enterCode(<>obj<>51)
 
-  Call[68] -> ExitExc
+  Call[64] -> ExitExc
     [0] call(<>fun<>54, <>this<>, <>arguments<>53) @ #49
 
-  AfterCall[69] -> [71]
+  AfterCall[65] -> [67]
 
-  AfterCatch[70] -> ExitExc
+  AfterCatch[66] -> ExitExc
 
-  Block[71] -> [63], ExitExc
+  Block[67] -> [68], ExitExc
     [0] kernelSum := <>old<>43 + <>obj<>50[<>field1<>55]
+
+  LCont[68] -> [57], ExitExc
+    [0] <>old<>56 := <>i<>3
+    [1] <>new<>57 := @ToNumber(<>old<>56)
+    [2] <>i<>3 := <>new<>57 + 1
+    [3] <>Global<>ignore30 := <>new<>57 + 1
+
+  LBreak[69] -> [70]
+
+  LCont[70] -> [54], ExitExc
+    [0] <>old<>58 := <>j<>4
+    [1] <>new<>59 := @ToNumber(<>old<>58)
+    [2] <>j<>4 := <>new<>59 + 1
+    [3] <>Global<>ignore26 := <>new<>59 + 1
+
+  LBreak[71] -> Exit
 
   Exit[-2]
 
@@ -326,32 +326,21 @@ function[1] buildKernel {
 function[2] gaussianBlur {
   Entry[-1] -> [0]
 
-  Block[0] -> [2], ExitExc
+  Block[0] -> [1], ExitExc
     [0] <>y<>60 := 0
 
-  Block[1] -> Exit, ExitExc
-    [0] return(squidImageData)
+  LoopHead[1] -> [3], [2]
 
-  Block[2] -> [4], [3]
-
-  Block[3] -> [7], ExitExc
+  Block[2] -> [4], ExitExc
     [0] assert(<>y<>60 < height)
     [1] <>x<>61 := 0
 
-  Block[4] -> [1], ExitExc
+  Block[3] -> [68], ExitExc
     [0] assert(! <>y<>60 < height)
 
-  Block[5] -> [2], ExitExc
-    [0] <>old<>139 := <>y<>60
-    [1] <>new<>140 := @ToNumber(<>old<>139)
-    [2] <>y<>60 := <>new<>140 + 1
-    [3] <>Global<>ignore34 := <>new<>140 + 1
+  LoopHead[4] -> [6], [5]
 
-  Block[6] -> [5]
-
-  Block[7] -> [9], [8]
-
-  Block[8] -> [12], ExitExc
+  Block[5] -> [7], ExitExc
     [0] assert(<>x<>61 < width)
     [1] <>r<>62 := 0
     [2] <>g<>63 := 0
@@ -359,77 +348,65 @@ function[2] gaussianBlur {
     [4] <>a<>65 := 0
     [5] <>j<>66 := 1 - kernelSize
 
-  Block[9] -> [6], ExitExc
+  Block[6] -> [66], ExitExc
     [0] assert(! <>x<>61 < width)
 
-  Block[10] -> [7], ExitExc
-    [0] <>old<>137 := <>x<>61
-    [1] <>new<>138 := @ToNumber(<>old<>137)
-    [2] <>x<>61 := <>new<>138 + 1
-    [3] <>Global<>ignore37 := <>new<>138 + 1
+  LoopHead[7] -> [9], [8]
 
-  Block[11] -> [10], ExitExc
-    [0] <>obj<>133 := @ToObject(squidImageData) @ #96
-    [1] <>obj<>133[4 * <>y<>60 * width + <>x<>61 + 0] := <>r<>62 / kernelSum
-    [2] <>obj<>134 := @ToObject(squidImageData) @ #97
-    [3] <>obj<>134[4 * <>y<>60 * width + <>x<>61 + 1] := <>g<>63 / kernelSum
-    [4] <>obj<>135 := @ToObject(squidImageData) @ #98
-    [5] <>obj<>135[4 * <>y<>60 * width + <>x<>61 + 2] := <>b<>64 / kernelSum
-    [6] <>obj<>136 := @ToObject(squidImageData) @ #99
-    [7] <>obj<>136[4 * <>y<>60 * width + <>x<>61 + 3] := <>a<>65 / kernelSum
+  Block[8] -> [11], [10], ExitExc
+    [0] assert(<>j<>66 < kernelSize)
+
+  Block[9] -> [64], ExitExc
+    [0] assert(! <>j<>66 < kernelSize)
+
+  Block[10] -> [16], ExitExc
+    [0] assert(<>y<>60 + <>j<>66 < 0)
+
+  Block[11] -> [12], ExitExc
+    [0] assert(! <>y<>60 + <>j<>66 < 0)
 
   Block[12] -> [14], [13]
 
-  Block[13] -> [19], [18], ExitExc
-    [0] assert(<>j<>66 < kernelSize)
-
-  Block[14] -> [11], ExitExc
-    [0] assert(! <>j<>66 < kernelSize)
-
-  Block[15] -> [12], ExitExc
-    [0] <>old<>131 := <>j<>66
-    [1] <>new<>132 := @ToNumber(<>old<>131)
-    [2] <>j<>66 := <>new<>132 + 1
-    [3] <>Global<>ignore44 := <>new<>132 + 1
-
-  Block[16] -> [25], ExitExc
-    [0] <>i<>67 := 1 - kernelSize
-
-  Block[17] -> [15]
-
-  Block[18] -> [17], ExitExc
-    [0] assert(<>y<>60 + <>j<>66 < 0)
-
-  Block[19] -> [20], ExitExc
-    [0] assert(! <>y<>60 + <>j<>66 < 0)
-
-  Block[20] -> [22], [21]
-
-  Block[21] -> [17], ExitExc
+  Block[13] -> [16], ExitExc
     [0] assert(<>y<>60 + <>j<>66 >= height)
 
-  Block[22] -> [23], ExitExc
+  Block[14] -> [15], ExitExc
     [0] assert(! <>y<>60 + <>j<>66 >= height)
 
-  Block[23] -> [16]
+  Block[15] -> [17]
 
-  Block[24] -> [15]
+  Branch[16] -> [63]
 
-  Block[25] -> [27], [26]
+  Branch[17] -> [18], ExitExc
+    [0] <>i<>67 := 1 - kernelSize
 
-  Block[26] -> [32], [31], ExitExc
+  LoopHead[18] -> [20], [19]
+
+  Block[19] -> [22], [21], ExitExc
     [0] assert(<>i<>67 < kernelSize)
 
-  Block[27] -> [24], ExitExc
+  Block[20] -> [62], ExitExc
     [0] assert(! <>i<>67 < kernelSize)
 
-  Block[28] -> [25], ExitExc
-    [0] <>old<>129 := <>i<>67
-    [1] <>new<>130 := @ToNumber(<>old<>129)
-    [2] <>i<>67 := <>new<>130 + 1
-    [3] <>Global<>ignore47 := <>new<>130 + 1
+  Block[21] -> [27], ExitExc
+    [0] assert(<>x<>61 + <>i<>67 < 0)
 
-  Block[29] -> [37], ExitExc
+  Block[22] -> [23], ExitExc
+    [0] assert(! <>x<>61 + <>i<>67 < 0)
+
+  Block[23] -> [25], [24]
+
+  Block[24] -> [27], ExitExc
+    [0] assert(<>x<>61 + <>i<>67 >= width)
+
+  Block[25] -> [26], ExitExc
+    [0] assert(! <>x<>61 + <>i<>67 >= width)
+
+  Block[26] -> [28]
+
+  Branch[27] -> [61]
+
+  Branch[28] -> [29], ExitExc
     [0] <>old<>69 := <>r<>62
     [1] <>obj<>70 := @ToObject(squidImageData) @ #52
     [2] <>y<>71 := <>obj<>70[4 * <>y<>60 + <>j<>66 * width + <>x<>61 + <>i<>67 + 0]
@@ -441,32 +418,14 @@ function[2] gaussianBlur {
     [8] <>fun<>76 := @ToObject(<>obj<>73["abs"]) @ #56
     [9] <>this<> := enterCode(<>obj<>73)
 
-  Block[30] -> [28]
-
-  Block[31] -> [30], ExitExc
-    [0] assert(<>x<>61 + <>i<>67 < 0)
-
-  Block[32] -> [33], ExitExc
-    [0] assert(! <>x<>61 + <>i<>67 < 0)
-
-  Block[33] -> [35], [34]
-
-  Block[34] -> [30], ExitExc
-    [0] assert(<>x<>61 + <>i<>67 >= width)
-
-  Block[35] -> [36], ExitExc
-    [0] assert(! <>x<>61 + <>i<>67 >= width)
-
-  Block[36] -> [29]
-
-  Call[37] -> ExitExc
+  Call[29] -> ExitExc
     [0] call(<>fun<>76, <>this<>, <>arguments<>75) @ #57
 
-  AfterCall[38] -> [40]
+  AfterCall[30] -> [32]
 
-  AfterCatch[39] -> ExitExc
+  AfterCatch[31] -> ExitExc
 
-  Block[40] -> [41], ExitExc
+  Block[32] -> [33], ExitExc
     [0] <>obj<>78 := @ToObject(<>obj<>72[<>field1<>77]) @ #58
     [1] <>obj<>79 := @ToObject(Math) @ #59
     [2] <>temp<>80 := <>i<>67
@@ -475,14 +434,14 @@ function[2] gaussianBlur {
     [5] <>fun<>82 := @ToObject(<>obj<>79["abs"]) @ #61
     [6] <>this<> := enterCode(<>obj<>79)
 
-  Call[41] -> ExitExc
+  Call[33] -> ExitExc
     [0] call(<>fun<>82, <>this<>, <>arguments<>81) @ #62
 
-  AfterCall[42] -> [44]
+  AfterCall[34] -> [36]
 
-  AfterCatch[43] -> ExitExc
+  AfterCatch[35] -> ExitExc
 
-  Block[44] -> [45], ExitExc
+  Block[36] -> [37], ExitExc
     [0] <>r<>62 := <>old<>69 + <>y<>71 * <>obj<>78[<>field1<>83]
     [1] <>old<>84 := <>g<>63
     [2] <>obj<>85 := @ToObject(squidImageData) @ #63
@@ -495,14 +454,14 @@ function[2] gaussianBlur {
     [9] <>fun<>91 := @ToObject(<>obj<>88["abs"]) @ #67
     [10] <>this<> := enterCode(<>obj<>88)
 
-  Call[45] -> ExitExc
+  Call[37] -> ExitExc
     [0] call(<>fun<>91, <>this<>, <>arguments<>90) @ #68
 
-  AfterCall[46] -> [48]
+  AfterCall[38] -> [40]
 
-  AfterCatch[47] -> ExitExc
+  AfterCatch[39] -> ExitExc
 
-  Block[48] -> [49], ExitExc
+  Block[40] -> [41], ExitExc
     [0] <>obj<>93 := @ToObject(<>obj<>87[<>field1<>92]) @ #69
     [1] <>obj<>94 := @ToObject(Math) @ #70
     [2] <>temp<>95 := <>i<>67
@@ -511,14 +470,14 @@ function[2] gaussianBlur {
     [5] <>fun<>97 := @ToObject(<>obj<>94["abs"]) @ #72
     [6] <>this<> := enterCode(<>obj<>94)
 
-  Call[49] -> ExitExc
+  Call[41] -> ExitExc
     [0] call(<>fun<>97, <>this<>, <>arguments<>96) @ #73
 
-  AfterCall[50] -> [52]
+  AfterCall[42] -> [44]
 
-  AfterCatch[51] -> ExitExc
+  AfterCatch[43] -> ExitExc
 
-  Block[52] -> [53], ExitExc
+  Block[44] -> [45], ExitExc
     [0] <>g<>63 := <>old<>84 + <>y<>86 * <>obj<>93[<>field1<>98]
     [1] <>old<>99 := <>b<>64
     [2] <>obj<>100 := @ToObject(squidImageData) @ #74
@@ -531,14 +490,14 @@ function[2] gaussianBlur {
     [9] <>fun<>106 := @ToObject(<>obj<>103["abs"]) @ #78
     [10] <>this<> := enterCode(<>obj<>103)
 
-  Call[53] -> ExitExc
+  Call[45] -> ExitExc
     [0] call(<>fun<>106, <>this<>, <>arguments<>105) @ #79
 
-  AfterCall[54] -> [56]
+  AfterCall[46] -> [48]
 
-  AfterCatch[55] -> ExitExc
+  AfterCatch[47] -> ExitExc
 
-  Block[56] -> [57], ExitExc
+  Block[48] -> [49], ExitExc
     [0] <>obj<>108 := @ToObject(<>obj<>102[<>field1<>107]) @ #80
     [1] <>obj<>109 := @ToObject(Math) @ #81
     [2] <>temp<>110 := <>i<>67
@@ -547,14 +506,14 @@ function[2] gaussianBlur {
     [5] <>fun<>112 := @ToObject(<>obj<>109["abs"]) @ #83
     [6] <>this<> := enterCode(<>obj<>109)
 
-  Call[57] -> ExitExc
+  Call[49] -> ExitExc
     [0] call(<>fun<>112, <>this<>, <>arguments<>111) @ #84
 
-  AfterCall[58] -> [60]
+  AfterCall[50] -> [52]
 
-  AfterCatch[59] -> ExitExc
+  AfterCatch[51] -> ExitExc
 
-  Block[60] -> [61], ExitExc
+  Block[52] -> [53], ExitExc
     [0] <>b<>64 := <>old<>99 + <>y<>101 * <>obj<>108[<>field1<>113]
     [1] <>old<>114 := <>a<>65
     [2] <>obj<>115 := @ToObject(squidImageData) @ #85
@@ -567,14 +526,14 @@ function[2] gaussianBlur {
     [9] <>fun<>121 := @ToObject(<>obj<>118["abs"]) @ #89
     [10] <>this<> := enterCode(<>obj<>118)
 
-  Call[61] -> ExitExc
+  Call[53] -> ExitExc
     [0] call(<>fun<>121, <>this<>, <>arguments<>120) @ #90
 
-  AfterCall[62] -> [64]
+  AfterCall[54] -> [56]
 
-  AfterCatch[63] -> ExitExc
+  AfterCatch[55] -> ExitExc
 
-  Block[64] -> [65], ExitExc
+  Block[56] -> [57], ExitExc
     [0] <>obj<>123 := @ToObject(<>obj<>117[<>field1<>122]) @ #91
     [1] <>obj<>124 := @ToObject(Math) @ #92
     [2] <>temp<>125 := <>i<>67
@@ -583,15 +542,56 @@ function[2] gaussianBlur {
     [5] <>fun<>127 := @ToObject(<>obj<>124["abs"]) @ #94
     [6] <>this<> := enterCode(<>obj<>124)
 
-  Call[65] -> ExitExc
+  Call[57] -> ExitExc
     [0] call(<>fun<>127, <>this<>, <>arguments<>126) @ #95
 
-  AfterCall[66] -> [68]
+  AfterCall[58] -> [60]
 
-  AfterCatch[67] -> ExitExc
+  AfterCatch[59] -> ExitExc
 
-  Block[68] -> [28], ExitExc
+  Block[60] -> [61], ExitExc
     [0] <>a<>65 := <>old<>114 + <>y<>116 * <>obj<>123[<>field1<>128]
+
+  LCont[61] -> [18], ExitExc
+    [0] <>old<>129 := <>i<>67
+    [1] <>new<>130 := @ToNumber(<>old<>129)
+    [2] <>i<>67 := <>new<>130 + 1
+    [3] <>Global<>ignore47 := <>new<>130 + 1
+
+  LBreak[62] -> [63]
+
+  LCont[63] -> [7], ExitExc
+    [0] <>old<>131 := <>j<>66
+    [1] <>new<>132 := @ToNumber(<>old<>131)
+    [2] <>j<>66 := <>new<>132 + 1
+    [3] <>Global<>ignore44 := <>new<>132 + 1
+
+  LBreak[64] -> [65], ExitExc
+    [0] <>obj<>133 := @ToObject(squidImageData) @ #96
+    [1] <>obj<>133[4 * <>y<>60 * width + <>x<>61 + 0] := <>r<>62 / kernelSum
+    [2] <>obj<>134 := @ToObject(squidImageData) @ #97
+    [3] <>obj<>134[4 * <>y<>60 * width + <>x<>61 + 1] := <>g<>63 / kernelSum
+    [4] <>obj<>135 := @ToObject(squidImageData) @ #98
+    [5] <>obj<>135[4 * <>y<>60 * width + <>x<>61 + 2] := <>b<>64 / kernelSum
+    [6] <>obj<>136 := @ToObject(squidImageData) @ #99
+    [7] <>obj<>136[4 * <>y<>60 * width + <>x<>61 + 3] := <>a<>65 / kernelSum
+
+  LCont[65] -> [4], ExitExc
+    [0] <>old<>137 := <>x<>61
+    [1] <>new<>138 := @ToNumber(<>old<>137)
+    [2] <>x<>61 := <>new<>138 + 1
+    [3] <>Global<>ignore37 := <>new<>138 + 1
+
+  LBreak[66] -> [67]
+
+  LCont[67] -> [1], ExitExc
+    [0] <>old<>139 := <>y<>60
+    [1] <>new<>140 := @ToNumber(<>old<>139)
+    [2] <>y<>60 := <>new<>140 + 1
+    [3] <>Global<>ignore34 := <>new<>140 + 1
+
+  LBreak[68] -> Exit, ExitExc
+    [0] return(squidImageData)
 
   Exit[-2]
 

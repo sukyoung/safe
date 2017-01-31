@@ -14,7 +14,7 @@ package kr.ac.kaist.safe.nodes.cfg
 import scala.collection.mutable.{ HashMap => MHashMap, Map => MMap }
 import kr.ac.kaist.safe.analyzer.domain.AbsState
 import kr.ac.kaist.safe.analyzer.domain.Utils._
-import kr.ac.kaist.safe.analyzer.CallContext
+import kr.ac.kaist.safe.analyzer.TracePartition
 import kr.ac.kaist.safe.analyzer.models.SemanticFun
 import kr.ac.kaist.safe.{ LINE_SEP, MAX_INST_PRINT_SIZE }
 import kr.ac.kaist.safe.util._
@@ -38,14 +38,6 @@ sealed abstract class CFGBlock {
   // add edge
   def addSucc(edgeType: CFGEdgeType, node: CFGBlock): Unit = succs(edgeType) = node :: succs.getOrElse(edgeType, Nil)
   def addPred(edgeType: CFGEdgeType, node: CFGBlock): Unit = preds(edgeType) = node :: preds.getOrElse(edgeType, Nil)
-
-  // control point maps to state
-  protected val cpToState: MMap[CallContext, AbsState] = MHashMap()
-  def getState(): Map[CallContext, AbsState] = cpToState.toMap
-  def getState(callCtx: CallContext): AbsState = cpToState.getOrElse(callCtx, AbsState.Bot)
-  def setState(callCtx: CallContext, state: AbsState): Unit =
-    if (state.isBottom) cpToState -= callCtx
-    else cpToState(callCtx) = state
 
   // get inst.
   def getInsts: List[CFGInst] = Nil
@@ -154,7 +146,7 @@ case class AfterCatch(func: CFGFunction, call: Call) extends CFGBlock {
 }
 
 // normal block
-case class NormalBlock(func: CFGFunction) extends CFGBlock {
+case class NormalBlock(func: CFGFunction, label: LabelKind = NoLabel) extends CFGBlock {
   // block id
   val id: BlockId = func.getBId
 
@@ -171,7 +163,7 @@ case class NormalBlock(func: CFGFunction) extends CFGBlock {
   }
 
   // toString
-  override def toString: String = s"Block[$id]"
+  override def toString: String = s"$label[$id]"
   override def toString(indent: Int): String = {
     val pre = "  " * indent
     val s: StringBuilder = new StringBuilder
@@ -200,6 +192,38 @@ case class NormalBlock(func: CFGFunction) extends CFGBlock {
       case head :: _ => (insts.last.span.begin, head.span.end)
       case Nil => (SourceLoc(), SourceLoc()) // TODO return correct span
     }
+    Span(fileName, begin, end)
+  }
+}
+
+// loop head
+case class LoopHead(func: CFGFunction) extends CFGBlock {
+  // block id
+  val id: BlockId = func.getBId
+
+  // break label block
+  var breakBlock: NormalBlock = _
+
+  // continue label block
+  var contBlock: NormalBlock = _
+
+  // inst list
+  override def getInsts: List[CFGNormalInst] = Nil
+
+  // toString
+  override def toString: String = s"LoopHead[$id]"
+  override def toString(indent: Int): String = {
+    val pre = "  " * indent
+    val s: StringBuilder = new StringBuilder
+    s.append(pre).append(toString)
+    s.append(getSuccsStr).append(LINE_SEP)
+    s.toString
+  }
+
+  // span
+  def span: Span = {
+    val fileName = func.span.fileName
+    val (begin, end) = (SourceLoc(), SourceLoc()) // TODO return correct span
     Span(fileName, begin, end)
   }
 }

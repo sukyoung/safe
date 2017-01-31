@@ -7,9 +7,11 @@
     "out": false,
     "number": "default",
     "maxStrSetSize": 1000,
-    "callsiteSensitivity": 0,
+    "callsiteSensitivity": 10,
+    "loopSensitivity": 0,
     "html": "",
     "snapshot": "",
-    "domModel": false
+    "domModel": false,
+    "jsModel": false
   }
 }

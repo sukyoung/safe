@@ -169,16 +169,14 @@ case class IRCall(
 case class IRInternalCall(
     override val ast: ASTNode,
     override val lhs: IRId,
-    fun: IRId,
-    first: IRExpr,
-    second: Option[IRId]
+    name: String,
+    args: List[IRExpr]
 ) extends IRAssign(ast, lhs) {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder
     s.append(lhs.toString(indent)).append(" = ")
-    s.append(fun.toString(indent)).append("(")
-    s.append(first.toString(indent))
-    second.map(e => s.append(", ").append(e.toString(indent)))
+    s.append(name).append("(")
+    s.append(args.map(_.toString(indent)).mkString(", "))
     s.append(")")
     s.toString
   }
@@ -410,7 +408,9 @@ case class IRIf(
 case class IRWhile(
     override val ast: ASTNode,
     cond: IRExpr,
-    body: IRStmt
+    body: IRStmt,
+    breakLabel: IRId,
+    contLabel: IRId
 ) extends IRStmt(ast) {
   override def toString(indent: Int): String = {
     val s: StringBuilder = new StringBuilder

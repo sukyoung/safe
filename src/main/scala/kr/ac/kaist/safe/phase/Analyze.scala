@@ -14,6 +14,7 @@ package kr.ac.kaist.safe.phase
 import scala.util.{ Failure, Success, Try }
 import kr.ac.kaist.safe.SafeConfig
 import kr.ac.kaist.safe.analyzer._
+import kr.ac.kaist.safe.analyzer.models.JSModel
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.analyzer.console.Console
@@ -24,7 +25,7 @@ import kr.ac.kaist.safe.nodes.cfg.CFG
 import kr.ac.kaist.safe.util._
 
 // Analyze phase
-case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, Int, CallContext, Semantics)] {
+case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, Int, TracePartition, Semantics)] {
   val name: String = "analyzer"
   val help: String = "Analyze JavaScript source files."
 
@@ -32,7 +33,7 @@ case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, Int, CallContext,
     cfg: CFG,
     safeConfig: SafeConfig,
     config: AnalyzeConfig
-  ): Try[(CFG, Int, CallContext, Semantics)] = {
+  ): Try[(CFG, Int, TracePartition, Semantics)] = {
     // initialization
     Utils.register(
       config.AbsUndef,
@@ -42,7 +43,7 @@ case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, Int, CallContext,
       config.AbsString,
       DefaultLoc(cfg)
     )
-    var initSt = Initialize(cfg)
+    var initSt = Initialize(cfg, config.jsModel)
 
     // handling snapshot mode
     config.snapshot.map(str =>
@@ -52,20 +53,24 @@ case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, Int, CallContext,
     if (safeConfig.html || config.domModel)
       initSt = Initialize.addDOM(initSt, cfg)
 
-    val globalCC = CallContextManager(config.callsiteSensitivity).globalCallContext
-    cfg.globalFunc.entry.setState(globalCC, initSt)
+    val callTP = CallContext(config.callsiteSensitivity, Nil)
+    val loopTP = LoopContext(config.loopSensitivity, None, None)
+    val globalTP = callTP * loopTP
+    val entryCP = ControlPoint(cfg.globalFunc.entry, globalTP)
 
     val worklist = Worklist(cfg)
-    worklist.add(ControlPoint(cfg.globalFunc.entry, globalCC))
-    val semantics = new Semantics(cfg, worklist)
+    worklist.add(entryCP)
+    val sem = new Semantics(cfg, worklist)
     val consoleOpt = config.console match {
-      case true => Some(new Console(cfg, worklist, semantics))
+      case true => Some(new Console(cfg, worklist, sem))
       case false => None
     }
-    val fixpoint = new Fixpoint(semantics, worklist, consoleOpt)
+
+    sem.setState(entryCP, initSt)
+    val fixpoint = new Fixpoint(sem, worklist, consoleOpt)
     val iters = fixpoint.compute()
 
-    val excLog = semantics.excLog
+    val excLog = sem.excLog
     // Report errors.
     if (excLog.hasError) {
       println(cfg.fileName + ":")
@@ -74,16 +79,17 @@ case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, Int, CallContext,
 
     // print html file: {htmlName}.html
     config.htmlName.map(name => {
-      HTMLWriter.writeHTMLFile(cfg, None, s"$name.html")
+      HTMLWriter.writeHTMLFile(cfg, sem, None, s"$name.html")
     })
 
     // dump exit state
     if (config.exitDump) {
-      val state = cfg.globalFunc.exit.getState(globalCC)
+      val exitCP = ControlPoint(cfg.globalFunc.exit, globalTP)
+      val state = sem.getState(exitCP)
       println(state.toString)
     }
 
-    Success((cfg, iters, globalCC, semantics))
+    Success((cfg, iters, globalTP, sem))
   }
 
   def defaultConfig: AnalyzeConfig = AnalyzeConfig()
@@ -100,6 +106,8 @@ case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, Int, CallContext,
       "the analyzer will use the AbsString Set domain with given size limit n."),
     ("callsiteSensitivity", NumOption((c, n) => if (n >= 0) c.callsiteSensitivity = n),
       "{number}-depth callsite-sensitive analysis will be executed."),
+    ("loopSensitivity", NumOption((c, n) => if (n >= 0) c.loopSensitivity = n),
+      "{number}-depth loop-sensitive analysis will be executed."),
     ("html", StrOption((c, s) => c.htmlName = Some(s)),
       "the resulting CFG with states will be drawn to the {string}.html"),
     ("snapshot", StrOption((c, s) => c.snapshot = Some(s)),
@@ -111,8 +119,13 @@ case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, Int, CallContext,
     }),
       "analysis with a selected number domain."),
     ("domModel", BoolOption(c => c.domModel = true),
-      "analysis with HTML DOM modelings.")
+      "analysis with HTML DOM modelings."),
+    ("jsModel", BoolOption(c => c.jsModel = true),
+      "analysis with JavaScript models.")
   )
+
+  // cache for JS model
+  var jscache: Option[JSModel] = None
 }
 
 // Analyze phase config
@@ -127,7 +140,9 @@ case class AnalyzeConfig(
   var AbsNumber: AbsNumberUtil = DefaultNumber,
   var AbsString: AbsStringUtil = StringSet(0),
   var callsiteSensitivity: Int = 0,
+  var loopSensitivity: Int = 0,
   var htmlName: Option[String] = None,
   var snapshot: Option[String] = None,
-  var domModel: Boolean = false
+  var domModel: Boolean = false,
+  var jsModel: Boolean = false
 ) extends Config

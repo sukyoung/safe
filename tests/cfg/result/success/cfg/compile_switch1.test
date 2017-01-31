@@ -1,58 +1,58 @@
 function[0] top-level {
   Entry[-1] -> [0]
 
-  Block[0] -> [8], [7], ExitExc
+  Block[0] -> [2], [1], ExitExc
     [0] noop(StartOfFile)
     [1] <>val<>1 := "1"
 
-  Block[1] -> Exit
-    [0] noop(EndOfFile)
-
-  Block[2] -> [1]
-
-  Block[3] -> [1], ExitExc
-    [0] <>Global<>ignore8 := "4"
-
-  Block[4] -> [2], ExitExc
-    [0] <>Global<>ignore6 := "3"
-
-  Block[5] -> [4], ExitExc
-    [0] <>Global<>ignore4 := "2"
-
-  Block[6] -> [5], ExitExc
-    [0] <>Global<>ignore2 := "1"
-
-  Block[7] -> [6], ExitExc
+  Block[1] -> [13], ExitExc
     [0] assert(<>val<>1 === 1)
 
-  Block[8] -> [11], [10], ExitExc
+  Block[2] -> [5], [4], ExitExc
     [0] assert(<>val<>1 !== 1)
 
-  Block[9] -> [2]
+  Block[3] -> [17]
 
-  Block[10] -> [5], ExitExc
+  Block[4] -> [14], ExitExc
     [0] assert(<>val<>1 === 2)
 
-  Block[11] -> [14], [13], ExitExc
+  Block[5] -> [8], [7], ExitExc
     [0] assert(<>val<>1 !== 2)
+
+  Block[6] -> [3]
+
+  Block[7] -> [15], ExitExc
+    [0] assert(<>val<>1 === 3)
+
+  Block[8] -> [11], [10], ExitExc
+    [0] assert(<>val<>1 !== 3)
+
+  Block[9] -> [6]
+
+  Block[10] -> [16], ExitExc
+    [0] assert(<>val<>1 === 4)
+
+  Block[11] -> [12], ExitExc
+    [0] assert(<>val<>1 !== 4)
 
   Block[12] -> [9]
 
-  Block[13] -> [4], ExitExc
-    [0] assert(<>val<>1 === 3)
+  Case[13] -> [14], ExitExc
+    [0] <>Global<>ignore2 := "1"
 
-  Block[14] -> [17], [16], ExitExc
-    [0] assert(<>val<>1 !== 3)
+  Case[14] -> [15], ExitExc
+    [0] <>Global<>ignore4 := "2"
 
-  Block[15] -> [12]
+  Case[15] -> [17], ExitExc
+    [0] <>Global<>ignore6 := "3"
 
-  Block[16] -> [3], ExitExc
-    [0] assert(<>val<>1 === 4)
+  Case[16] -> [18], ExitExc
+    [0] <>Global<>ignore8 := "4"
 
-  Block[17] -> [18], ExitExc
-    [0] assert(<>val<>1 !== 4)
+  Switch[17] -> [18]
 
-  Block[18] -> [15]
+  lab:[18] -> Exit
+    [0] noop(EndOfFile)
 
   Exit[-2]
 

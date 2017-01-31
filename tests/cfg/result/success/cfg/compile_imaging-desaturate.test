@@ -22,7 +22,7 @@ function[0] top-level {
     [0] assert(! <>cond<>6)
     [1] <>Global<>ignore4 := <>obj<>4
 
-  Block[7] -> [9], ExitExc
+  Block[7] -> [8], ExitExc
     [0] _sunSpiderStartDate := <>Global<>ignore4
     [1] <>Global<>ignore5 := alloc() @ #6
     [2] Pixastic := <>Global<>ignore5
@@ -46,12 +46,9 @@ function[0] top-level {
     [20] params := <>Global<>ignore17
     [21] pixcounter := 0
 
-  Block[8] -> Exit
-    [0] noop(EndOfFile)
+  LoopHead[8] -> [10], [9]
 
-  Block[9] -> [11], [10]
-
-  Block[10] -> [13], ExitExc
+  Block[9] -> [11], ExitExc
     [0] assert(pixcounter < 200)
     [1] <>obj<>57 := @ToObject(Pixastic) @ #38
     [2] <>obj<>58 := @ToObject(<>obj<>57["Actions"]) @ #39
@@ -62,21 +59,24 @@ function[0] top-level {
     [7] <>fun<>62 := @ToObject(<>obj<>59["process"]) @ #42
     [8] <>this<> := enterCode(<>obj<>59)
 
-  Block[11] -> [8], ExitExc
+  Block[10] -> [15], ExitExc
     [0] assert(! pixcounter < 200)
 
-  Block[12] -> [9], ExitExc
+  Call[11] -> ExitExc
+    [0] call(<>fun<>62, <>this<>, <>arguments<>61) @ #43
+
+  AfterCall[12] -> [14]
+
+  AfterCatch[13] -> ExitExc
+
+  LCont[14] -> [8], ExitExc
     [0] <>old<>63 := pixcounter
     [1] <>new<>64 := @ToNumber(<>old<>63)
     [2] pixcounter := <>new<>64 + 1
     [3] <>Global<>ignore20 := <>new<>64
 
-  Call[13] -> ExitExc
-    [0] call(<>fun<>62, <>this<>, <>arguments<>61) @ #43
-
-  AfterCall[14] -> [12]
-
-  AfterCatch[15] -> ExitExc
+  LBreak[15] -> Exit
+    [0] noop(EndOfFile)
 
   Exit[-2]
 
@@ -124,23 +124,21 @@ function[1] <>funexpr@24:15-42:6<> {
 
   Block[6] -> [3]
 
-  Block[7] -> [10], ExitExc
+  Block[7] -> [9], ExitExc
     [0] assert(<>useAverage<>11)
     [1] <>old<>31 := <>p<>16
     [2] <>new<>32 := @ToNumber(<>old<>31)
     [3] <>p<>16 := <>new<>32 - 1
 
-  Block[8] -> [16], ExitExc
+  Block[8] -> [15], ExitExc
     [0] assert(! <>useAverage<>11)
     [1] <>old<>42 := <>p<>16
     [2] <>new<>43 := @ToNumber(<>old<>42)
     [3] <>p<>16 := <>new<>43 - 1
 
-  Block[9] -> [14]
+  LoopHead[9] -> [11], [10]
 
-  Block[10] -> [12], [11]
-
-  Block[11] -> [13], ExitExc
+  Block[10] -> [12], ExitExc
     [0] assert(<>new<>32)
     [1] <>obj<>33 := @ToObject(<>data<>12) @ #20
     [2] <>old<>34 := <>pix<>17
@@ -158,22 +156,22 @@ function[1] <>funexpr@24:15-42:6<> {
     [14] <>obj<>35[<>pix<>17 + 1] := <>obj<>36[<>pix<>17 + 2]
     [15] <>obj<>33[<>old<>34 - 4] := <>obj<>35[<>pix<>17 + 1]
 
-  Block[12] -> [9], ExitExc
+  Block[11] -> [13], ExitExc
     [0] assert(! <>new<>32)
 
-  Block[13] -> [10], ExitExc
+  LCont[12] -> [9], ExitExc
     [0] <>old<>31 := <>p<>16
     [1] <>new<>32 := @ToNumber(<>old<>31)
     [2] <>p<>16 := <>new<>32 - 1
 
+  LBreak[13] -> [14]
+
   Block[14] -> Exit, ExitExc
     [0] return(true)
 
-  Block[15] -> [14]
+  LoopHead[15] -> [17], [16]
 
-  Block[16] -> [18], [17]
-
-  Block[17] -> [19], ExitExc
+  Block[16] -> [18], ExitExc
     [0] assert(<>new<>43)
     [1] <>obj<>44 := @ToObject(<>data<>12) @ #26
     [2] <>old<>45 := <>pix<>17
@@ -191,13 +189,15 @@ function[1] <>funexpr@24:15-42:6<> {
     [14] <>obj<>46[<>pix<>17 + 1] := <>obj<>47[<>pix<>17 + 2]
     [15] <>obj<>44[<>old<>45 - 4] := <>obj<>46[<>pix<>17 + 1]
 
-  Block[18] -> [15], ExitExc
+  Block[17] -> [19], ExitExc
     [0] assert(! <>new<>43)
 
-  Block[19] -> [16], ExitExc
+  LCont[18] -> [15], ExitExc
     [0] <>old<>42 := <>p<>16
     [1] <>new<>43 := @ToNumber(<>old<>42)
     [2] <>p<>16 := <>new<>43 - 1
+
+  LBreak[19] -> [14]
 
   Exit[-2]
 

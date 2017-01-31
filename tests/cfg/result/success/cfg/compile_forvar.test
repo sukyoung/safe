@@ -1,39 +1,39 @@
 function[0] top-level {
   Entry[-1] -> [0]
 
-  Block[0] -> [2], ExitExc
+  Block[0] -> [1], ExitExc
     [0] noop(StartOfFile)
     [1] <>obj<>1 := collection
     [2] <>iterator<>2 := @iteratorInit(<>obj<>1) @ #1
     [3] <>cond1<>3 := @iteratorHasNext(<>obj<>1, <>iterator<>2)
 
-  Block[1] -> [7]
+  LoopHead[1] -> [3], [2]
 
-  Block[2] -> [4], [3]
-
-  Block[3] -> [5], ExitExc
+  Block[2] -> [4], ExitExc
     [0] assert(<>cond1<>3)
     [1] <>key<>4 := @iteratorNext(<>obj<>1, <>iterator<>2)
     [2] x := <>key<>4
 
-  Block[4] -> [1], ExitExc
+  Block[3] -> [5], ExitExc
     [0] assert(! <>cond1<>3)
 
-  Block[5] -> [2]
+  LCont[4] -> [1]
     [0] <>cond1<>3 := @iteratorHasNext(<>obj<>1, <>iterator<>2)
 
-  Block[6] -> Exit
-    [0] noop(EndOfFile)
+  LBreak[5] -> [6]
 
-  Block[7] -> [9], [8]
+  LoopHead[6] -> [8], [7]
 
-  Block[8] -> [10], ExitExc
+  Block[7] -> [9], ExitExc
     [0] assert(true)
 
-  Block[9] -> [6], ExitExc
+  Block[8] -> [10], ExitExc
     [0] assert(! true)
 
-  Block[10] -> [7]
+  LCont[9] -> [6]
+
+  LBreak[10] -> Exit
+    [0] noop(EndOfFile)
 
   Exit[-2]
 

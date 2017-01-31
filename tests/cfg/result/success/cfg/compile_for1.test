@@ -1,18 +1,16 @@
 function[0] top-level {
   Entry[-1] -> [0]
 
-  Block[0] -> [2], ExitExc
+  Block[0] -> [1], ExitExc
     [0] noop(StartOfFile)
     [1] a := 1
     [2] b := 2
     [3] c := 3
     [4] <>Global<>ignore5 := a
 
-  Block[1] -> [10]
+  LoopHead[1] -> [3], [2]
 
-  Block[2] -> [4], [3]
-
-  Block[3] -> [6], ExitExc
+  Block[2] -> [4], ExitExc
     [0] assert("test")
     [1] <>obj<>1 := @ToObject(print) @ #1
     [2] <>temp<>2 := 7
@@ -21,83 +19,85 @@ function[0] top-level {
     [5] <>fun<>4 := @GetBase(print)
     [6] <>this<> := enterCode(<>fun<>4)
 
-  Block[4] -> [1], ExitExc
+  Block[3] -> [8], ExitExc
     [0] assert(! "test")
 
-  Block[5] -> [2]
-
-  Call[6] -> ExitExc
+  Call[4] -> ExitExc
     [0] call(<>obj<>1, <>this<>, <>arguments<>3) @ #3
 
-  AfterCall[7] -> [5]
+  AfterCall[5] -> [7]
 
-  AfterCatch[8] -> ExitExc
+  AfterCatch[6] -> ExitExc
 
-  Block[9] -> [15]
+  LCont[7] -> [1]
 
-  Block[10] -> [12], [11]
+  LBreak[8] -> [9]
 
-  Block[11] -> [13], ExitExc
+  LoopHead[9] -> [11], [10]
+
+  Block[10] -> [12], ExitExc
     [0] assert(null)
     [1] <>Global<>ignore10 := c
 
-  Block[12] -> [9], ExitExc
+  Block[11] -> [13], ExitExc
     [0] assert(! null)
 
-  Block[13] -> [10], ExitExc
+  LCont[12] -> [9], ExitExc
     [0] <>old<>5 := c
     [1] <>new<>6 := @ToNumber(<>old<>5)
     [2] c := <>new<>6 + 1
     [3] <>Global<>ignore8 := <>new<>6
 
-  Block[14] -> [20], ExitExc
-    [0] <>Global<>ignore16 := "for"
+  LBreak[13] -> [14]
 
-  Block[15] -> [17], [16]
+  LoopHead[14] -> [16], [15]
 
-  Block[16] -> [18], ExitExc
+  Block[15] -> [17], ExitExc
     [0] assert(true)
     [1] <>old<>7 := b
     [2] <>new<>8 := @ToNumber(<>old<>7)
     [3] b := <>new<>8 + 1
     [4] <>Global<>ignore14 := <>new<>8
 
-  Block[17] -> [14], ExitExc
+  Block[16] -> [18], ExitExc
     [0] assert(! true)
 
-  Block[18] -> [15], ExitExc
+  LCont[17] -> [14], ExitExc
     [0] <>old<>9 := b
     [1] <>new<>10 := @ToNumber(<>old<>9)
     [2] b := <>new<>10 - 1
     [3] <>Global<>ignore12 := <>new<>10
 
-  Block[19] -> [25]
+  LBreak[18] -> [19], ExitExc
+    [0] <>Global<>ignore16 := "for"
 
-  Block[20] -> [22], [21]
+  LoopHead[19] -> [21], [20]
 
-  Block[21] -> [19], ExitExc
+  Block[20] -> [23], ExitExc
     [0] assert(12)
 
-  Block[22] -> [19], ExitExc
+  Block[21] -> [23], ExitExc
     [0] assert(! 12)
 
-  Block[23] -> [20], ExitExc
+  LCont[22] -> [19], ExitExc
     [0] <>Global<>ignore18 := false
 
-  Block[24] -> Exit
-    [0] noop(EndOfFile)
+  LBreak[23] -> [24]
 
-  Block[25] -> [27], [26]
+  LoopHead[24] -> [26], [25]
 
-  Block[26] -> [28], ExitExc
+  Block[25] -> [27], ExitExc
     [0] assert(true)
     [1] d := 9
     [2] <>Global<>ignore21 := d
 
-  Block[27] -> [24], ExitExc
+  Block[26] -> [28], ExitExc
     [0] assert(! true)
 
-  Block[28] -> [25]
+  LCont[27] -> [24]
+
+  LBreak[28] -> Exit
+    [0] noop(EndOfFile)
 
   Exit[-2]
 

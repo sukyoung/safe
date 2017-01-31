@@ -17,8 +17,10 @@ import scala.collection.immutable.TreeMap
 import kr.ac.kaist.safe.analyzer.Worklist
 import kr.ac.kaist.safe.analyzer.models.builtin._
 import kr.ac.kaist.safe.analyzer.domain._
+import kr.ac.kaist.safe.analyzer.Semantics
 import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.util._
+import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.{ LINE_SEP, BASE_DIR }
 
 object HTMLWriter {
@@ -43,23 +45,36 @@ object HTMLWriter {
     }
   }
 
-  private def isReachable(block: CFGBlock): Boolean =
-    !block.getState.isEmpty
+  private def isReachable(block: CFGBlock, sem: Semantics): Boolean = sem.getState(block).exists {
+    case (tp, oldSt) => block.getInsts.lastOption match {
+      case None => true
+      case Some(inst) => {
+        val st = inst match {
+          case inst: CFGAssert => {
+            val (st, _) = sem.I(inst, oldSt, AbsState.Bot)
+            st
+          }
+          case _ => oldSt
+        }
+        !st.isBottom
+      }
+    }
+  }
 
-  def connectEdge(from: CFGBlock, succs: Set[CFGBlock], edgeStyle: String = NORMAL_EDGE): String = {
+  def connectEdge(from: CFGBlock, succs: Set[CFGBlock], edgeStyle: String = NORMAL_EDGE, sem: Semantics): String = {
     val fromId = getId(from)
     val sb = new StringBuilder
     succs.foreach(to => {
       val toId = getId(to)
       val color =
-        if (!isReachable(from) || !isReachable(to)) UNREACHABLE_COLOR
+        if (!isReachable(from, sem) || !isReachable(to, sem)) UNREACHABLE_COLOR
         else REACHABLE_COLOR
       sb.append(s"""{data: {source: '$fromId', target: '$toId'$edgeStyle, color: '$color'}},""" + LINE_SEP)
     })
     sb.toString
   }
 
-  def drawBlock(block: CFGBlock, wlOpt: Option[Worklist]): String = {
+  def drawBlock(block: CFGBlock, wlOpt: Option[Worklist], sem: Semantics): String = {
     val id = getId(block)
     val label = getLabel(block)
     val inWL = wlOpt match {
@@ -67,7 +82,7 @@ object HTMLWriter {
       case None => false
     }
     val color =
-      if (!isReachable(block)) UNREACHABLE_COLOR
+      if (!isReachable(block, sem)) UNREACHABLE_COLOR
       else REACHABLE_COLOR
     (block match {
       case (entry: Entry) =>
@@ -79,7 +94,7 @@ object HTMLWriter {
     }) + s"""{data: {id: '$id', content: '$label', border: 2, color: '$color', inWL: $inWL, bc: 'white'} },""" + LINE_SEP
   }
 
-  def drawEdge(block: CFGBlock): String = {
+  def drawEdge(block: CFGBlock, sem: Semantics): String = {
     val sb = new StringBuilder
     block match {
       case entry @ Entry(func) =>
@@ -88,12 +103,12 @@ object HTMLWriter {
         sb.append(s"""{data: {source: '$id', target: '$bid'$FUNC_LABEL_EDGE, color: '$REACHABLE_COLOR'}},""" + LINE_SEP)
       case exit @ Exit(func) =>
         val exitExc = func.exitExc
-        sb.append(connectEdge(exit, Set(exitExc), RELATED_EDGE))
-        sb.append(connectEdge(exitExc, Set(exit), RELATED_EDGE))
+        sb.append(connectEdge(exit, Set(exitExc), RELATED_EDGE, sem))
+        sb.append(connectEdge(exitExc, Set(exit), RELATED_EDGE, sem))
       case (call: Call) =>
         val acall = call.afterCall
         val acatch = call.afterCatch
-        sb.append(connectEdge(block, Set(acall, acatch), RELATED_EDGE))
+        sb.append(connectEdge(block, Set(acall, acatch), RELATED_EDGE, sem))
       case _ =>
     }
     block.getAllSucc.foreach {
@@ -106,9 +121,9 @@ object HTMLWriter {
         sb.append(connectEdge(block, blocks.filter(_ match {
           case ExitExc(_) => false
           case _ => true
-        }).toSet, EXC_EDGE))
+        }).toSet, EXC_EDGE, sem))
       case (_, blocks) =>
-        sb.append(connectEdge(block, blocks.toSet, NORMAL_EDGE))
+        sb.append(connectEdge(block, blocks.toSet, NORMAL_EDGE, sem))
     }
     sb.toString
   }
@@ -127,13 +142,13 @@ object HTMLWriter {
     sb.toString
   }
 
-  def addState(block: CFGBlock): String = {
+  def addState(block: CFGBlock, sem: Semantics): String = {
     val sb = new StringBuilder
     val id = getId(block)
     val label = getLabel(block)
     val func = block.func
-    if (isReachable(block)) {
-      val (_, st) = block.getState.head // TODO it is working only when for each CFGBlock has only one control point.
+    if (isReachable(block, sem)) {
+      val (_, st) = sem.getState(block).head // TODO it is working only when for each CFGBlock has only one control point.
       sb.append(s"'$id': [").append(LINE_SEP)
       // heap
       val h = st.heap
@@ -176,7 +191,9 @@ object HTMLWriter {
       // old address set
       val old = ctx.old
       val mayOld = old.mayOld.mkString(", ")
-      val mustOld = old.mustOld.mkString(", ")
+      val mustOld =
+        if (old.mustOld == null) "bottom"
+        else old.mustOld.mkString(", ")
       sb.append(s"{ value: {value: 'mayOld: [$mayOld]'} },").append(LINE_SEP)
       sb.append(s"{ value: {value: 'mustOld: [$mustOld]'} },").append(LINE_SEP)
       sb.append(s"],").append(LINE_SEP)
@@ -186,10 +203,11 @@ object HTMLWriter {
 
   def drawGraph(
     cfg: CFG,
+    sem: Semantics,
     wlOpt: Option[Worklist]
   ): String = {
     // computes reachable fid_set
-    val reachableFunSet = cfg.getAllFuncs.filter(f => isReachable(f.entry))
+    val reachableFunSet = cfg.getAllFuncs.filter(f => isReachable(f.entry, sem))
 
     // dump each function node
     val blocks = reachableFunSet.foldRight(List[CFGBlock]()) {
@@ -212,11 +230,11 @@ object HTMLWriter {
 var safe_DB = {
   nodes: [
 """)
-    blocks.foreach(block => sb.append(drawBlock(block, wlOpt)))
+    blocks.foreach(block => sb.append(drawBlock(block, wlOpt, sem)))
     sb.append("""  ],
   edges: [
 """)
-    blocks.foreach(block => sb.append(drawEdge(block)))
+    blocks.foreach(block => sb.append(drawEdge(block, sem)))
     sb.append("""  ],
   insts: {
 """)
@@ -224,7 +242,7 @@ var safe_DB = {
     sb.append("""  },
   state: {
 """)
-    blocks.foreach(block => sb.append(addState(block)))
+    blocks.foreach(block => sb.append(addState(block, sem)))
     sb.append(s"""  },
 };
         </script>
@@ -239,6 +257,7 @@ var safe_DB = {
 
   def writeHTMLFile(
     cfg: CFG,
+    sem: Semantics,
     wlOpt: Option[Worklist] = None,
     htmlfile: String = "cfg.html"
   ): Unit = {
@@ -253,13 +272,13 @@ var safe_DB = {
 
       val f = new File("debugger" + SEP + htmlfile)
       val fw = new FileWriter(f)
-      fw.write(drawGraph(cfg, wlOpt))
+      fw.write(drawGraph(cfg, sem, wlOpt))
       fw.close
       println(s"* success writing HTML file $htmlfile.")
     } catch {
       case e: Throwable =>
-        println(e)
         println(s"* error writing HTML file $htmlfile.")
+        throw e
     }
   }
 }

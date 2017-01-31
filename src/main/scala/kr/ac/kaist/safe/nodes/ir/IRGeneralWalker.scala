@@ -50,8 +50,8 @@ trait IRGeneralWalker[Result] {
       join(walk(ast) :: walk(lhs) :: elements.flatMap(walkOpt): _*)
     case IRCall(ast, lhs, fun, thisB, args) =>
       join(walk(ast), walk(lhs), walk(fun), walk(thisB), walk(args))
-    case IRInternalCall(ast, lhs, fun, first, second) =>
-      join(walk(ast) :: walk(lhs) :: walk(fun) :: walk(first) :: walkOpt(second): _*)
+    case IRInternalCall(ast, lhs, name, args) =>
+      join(walk(ast) :: walk(lhs) :: args.map(walk): _*)
     case IRNew(ast, lhs, fun, args) =>
       join(walk(ast) :: walk(lhs) :: walk(fun) :: args.map(walk): _*)
     case IRFunExpr(ast, lhs, ftn) =>
@@ -80,8 +80,8 @@ trait IRGeneralWalker[Result] {
       join(walk(ast) :: stmts.map(walk): _*)
     case IRIf(ast, expr, trueB, falseB) =>
       join(walk(ast) :: walk(expr) :: walk(trueB) :: walkOpt(falseB): _*)
-    case IRWhile(ast, cond, body) =>
-      join(walk(ast), walk(cond), walk(body))
+    case IRWhile(ast, cond, body, br, cont) =>
+      join(walk(ast), walk(cond), walk(body), walk(br), walk(cont))
     case IRTry(ast, body, name, catchB, finallyB) =>
       join(walk(ast) :: walk(body) :: walkOpt(name) ++ walkOpt(catchB) ++ walkOpt(finallyB): _*)
     case IRNoOp(ast, desc) =>

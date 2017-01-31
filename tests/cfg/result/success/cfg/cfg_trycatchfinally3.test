@@ -5,12 +5,12 @@ function[0] top-level {
     [0] noop(StartOfFile)
     [1] z := 1
 
-  Block[1] -> [5], [4]
+  Try[1] -> [5], [4]
 
-  Block[2] -> [8], [7]
+  Catch[2] -> [8], [7]
     [0] catch(<>e<>1)
 
-  Block[3] -> [17]
+  Finally[3] -> [16]
 
   Block[4] -> [6], [2]
     [0] assert(true)
@@ -28,16 +28,16 @@ function[0] top-level {
     [5] <>obj<>2 := @ToObject(y) @ #2
     [6] throw(<>obj<>2["a"])
 
-  Block[7] -> [9], [37]
+  Block[7] -> [9], [39]
     [0] assert(<>e<>1 == "A")
     [1] <>Global<>ignore3 := undefined
 
-  Block[8] -> [9], [37]
+  Block[8] -> [9], [39]
     [0] assert(<>e<>1 != "A")
 
   Block[9] -> [10]
 
-  Block[10] -> [12], [15]
+  Try[10] -> [12], [15]
     [0] <>Global<>ignore4 := function (1) @ #4, #5
     [1] x := <>Global<>ignore4
     [2] <>obj<>7 := @ToObject(x) @ #6
@@ -55,7 +55,7 @@ function[0] top-level {
     [14] <>fun<>14 := @GetBase(x)
     [15] <>this<> := enterCode(<>fun<>14)
 
-  Block[11] -> [3], [37]
+  Finally[11] -> [3], [39]
     [0] <>obj<>15 := @ToObject(y) @ #10
     [1] <>Global<>ignore6 := alloc() @ #11
     [2] <>Global<>ignore6["test"] := - 23.8
@@ -68,105 +68,109 @@ function[0] top-level {
 
   AfterCatch[14] -> [15]
 
-  Block[15] -> [26], [37]
+  Finally[15] -> [27], [39]
     [0] <>obj<>15 := @ToObject(y) @ #12
     [1] <>Global<>ignore6 := alloc() @ #13
     [2] <>Global<>ignore6["test"] := - 23.8
     [3] <>obj<>15["d"] := <>Global<>ignore6
 
-  Block[16] -> [24]
+  LoopHead[16] -> [18], [17]
 
-  Block[17] -> [19], [18]
-
-  Block[18] -> [22], [21], ExitExc
+  Block[17] -> [20], [19], ExitExc
     [0] assert(true)
     [1] <>old<>16 := x
     [2] <>new<>17 := @ToNumber(<>old<>16)
     [3] x := <>new<>17 - 1
 
-  Block[19] -> [16], ExitExc
+  Block[18] -> [23], ExitExc
     [0] assert(! true)
 
-  Block[20] -> [17]
-
-  Block[21] -> [16], ExitExc
+  Block[19] -> [23], ExitExc
     [0] assert(<>new<>17 == 0)
 
-  Block[22] -> [23], ExitExc
+  Block[20] -> [21], ExitExc
     [0] assert(<>new<>17 != 0)
 
-  Block[23] -> [20]
+  Block[21] -> [22]
 
-  Block[24] -> [48]
+  LCont[22] -> [16]
 
-  Block[25] -> [48], ExitExc
+  LBreak[23] -> [24]
+
+  Try[24] -> [26]
+
+  Catch[25] -> [26], ExitExc
     [0] catch(<>e<>18)
     [1] <>Global<>ignore10 := <>e<>18
 
-  Block[26] -> [28]
+  Finally[26] -> Exit
+    [0] noop(EndOfFile)
 
-  Block[27] -> [35]
+  Finally[27] -> [28]
 
-  Block[28] -> [30], [29]
+  LoopHead[28] -> [30], [29]
 
-  Block[29] -> [33], [32], ExitExc
+  Block[29] -> [32], [31], ExitExc
     [0] assert(true)
     [1] <>old<>16 := x
     [2] <>new<>17 := @ToNumber(<>old<>16)
     [3] x := <>new<>17 - 1
 
-  Block[30] -> [27], ExitExc
+  Block[30] -> [35], ExitExc
     [0] assert(! true)
 
-  Block[31] -> [28]
-
-  Block[32] -> [27], ExitExc
+  Block[31] -> [35], ExitExc
     [0] assert(<>new<>17 == 0)
 
-  Block[33] -> [34], ExitExc
+  Block[32] -> [33], ExitExc
     [0] assert(<>new<>17 != 0)
 
-  Block[34] -> [31]
+  Block[33] -> [34]
 
-  Block[35] -> ExitExc
+  LCont[34] -> [28]
 
-  Block[36] -> ExitExc, ExitExc
+  LBreak[35] -> [36]
+
+  Try[36] -> [38]
+
+  Catch[37] -> [38], ExitExc
     [0] catch(<>e<>18)
     [1] <>Global<>ignore10 := <>e<>18
 
-  Block[37] -> [39]
+  Finally[38] -> ExitExc
 
-  Block[38] -> [46]
+  Finally[39] -> [40]
 
-  Block[39] -> [41], [40]
+  LoopHead[40] -> [42], [41]
 
-  Block[40] -> [44], [43], ExitExc
+  Block[41] -> [44], [43], ExitExc
     [0] assert(true)
     [1] <>old<>16 := x
     [2] <>new<>17 := @ToNumber(<>old<>16)
     [3] x := <>new<>17 - 1
 
-  Block[41] -> [38], ExitExc
+  Block[42] -> [47], ExitExc
     [0] assert(! true)
 
-  Block[42] -> [39]
-
-  Block[43] -> [38], ExitExc
+  Block[43] -> [47], ExitExc
     [0] assert(<>new<>17 == 0)
 
   Block[44] -> [45], ExitExc
     [0] assert(<>new<>17 != 0)
 
-  Block[45] -> [42]
+  Block[45] -> [46]
 
-  Block[46] -> ExitExc
+  LCont[46] -> [40]
 
-  Block[47] -> ExitExc, ExitExc
+  LBreak[47] -> [48]
+
+  Try[48] -> [50]
+
+  Catch[49] -> [50], ExitExc
     [0] catch(<>e<>18)
     [1] <>Global<>ignore10 := <>e<>18
 
-  Block[48] -> Exit
-    [0] noop(EndOfFile)
+  Finally[50] -> ExitExc
 
   Exit[-2]
 

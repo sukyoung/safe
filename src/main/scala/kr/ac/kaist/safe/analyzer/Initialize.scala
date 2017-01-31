@@ -11,16 +11,18 @@
 
 package kr.ac.kaist.safe.analyzer
 
+import kr.ac.kaist.safe.{ SafeConfig, CmdCFGBuild }
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.analyzer.models._
 import kr.ac.kaist.safe.analyzer.models.builtin._
-import kr.ac.kaist.safe.nodes.cfg.CFG
+import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.util._
-import scala.collection.immutable.{ HashMap }
+import kr.ac.kaist.safe.phase._
+import scala.collection.immutable.HashMap
 
 object Initialize {
-  def apply(cfg: CFG): AbsState = {
+  def apply(cfg: CFG, jsModel: Boolean): AbsState = {
     val globalLocSet = AbsLoc(BuiltinGlobal.loc)
     val globalPureLocalEnv = AbsLexEnv.newPureLocal(globalLocSet)
     val initHeap = AbsHeap(HashMap(
@@ -33,7 +35,15 @@ object Initialize {
       PredefLoc.COLLAPSED -> AbsLexEnv(AbsDecEnvRec.Empty)
     ), OldAddrSet.Empty, globalLocSet)
 
-    val modeledHeap = BuiltinGlobal.initHeap(initHeap, cfg)
+    val modeledHeap: AbsHeap =
+      if (jsModel) {
+        val model = Analyze.jscache getOrElse {
+          val fileName = NodeUtil.jsModelsBase + "built_in.jsmodel"
+          ModelParser.parseFile(fileName).get
+        }
+        model.funcs.foreach(cfg.addJSModel(_))
+        AbsHeap(model.heap)
+      } else BuiltinGlobal.initHeap(initHeap, cfg)
 
     AbsState(modeledHeap, initCtx)
   }

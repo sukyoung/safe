@@ -71,14 +71,14 @@ case object CmdCFGBuild extends CommandObj("cfgBuild", CmdCompile >> CFGBuild) {
 
 // analyze
 case object CmdAnalyze extends CommandObj("analyze", CmdCFGBuild >> Analyze) {
-  override def display(result: (CFG, Int, CallContext, Semantics)): Unit = {
-    val (cfg, iters, _, _) = result
+  override def display(result: (CFG, Int, TracePartition, Semantics)): Unit = {
+    val (cfg, iters, _, sem) = result
 
     println(s"- # of iteration: $iters")
     // function info.
     val userFuncs = cfg.getUserFuncs
     println(s"- # of user functions: ${userFuncs.length}")
-    val unreachableList = userFuncs.filter(_.entry.getState.isEmpty)
+    val unreachableList = userFuncs.filter(f => sem.getState(f.entry).isEmpty)
     if (!unreachableList.isEmpty) {
       println(s"  * There are ${unreachableList.length} unreachable user functions:")
       unreachableList.foreach(func => {
@@ -87,7 +87,7 @@ case object CmdAnalyze extends CommandObj("analyze", CmdCFGBuild >> Analyze) {
       })
     }
     val modelFuncs = cfg.getAllFuncs.filter(func => {
-      !func.isUser && !func.entry.getState.isEmpty
+      !func.isUser && !sem.getState(func.entry).isEmpty
     })
     if (!modelFuncs.isEmpty) {
       println(s"  * ${modelFuncs.length} modeling functions are used:")
@@ -95,7 +95,7 @@ case object CmdAnalyze extends CommandObj("analyze", CmdCFGBuild >> Analyze) {
     }
 
     // block info.
-    val blocks = cfg.getAllBlocks.filter(!_.getState.isEmpty)
+    val blocks = cfg.getAllBlocks.filter(!sem.getState(_).isEmpty)
     println(s"- # of touched blocks: ${blocks.length}")
     val userBlocks = blocks.filter(_.func.isUser)
     println(s"    user blocks: ${userBlocks.length}")
@@ -112,5 +112,4 @@ case object CmdBugDetect extends CommandObj("bugDetect", CmdAnalyze >> BugDetect
   override def display(cfg: CFG): Unit = ()
 }
 
-// help
 case object CmdHelp extends CommandObj("help", CmdBase >> Help)

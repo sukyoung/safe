@@ -25,13 +25,13 @@ case object CmdRunInsts extends Command("run_insts", "Run instruction by instruc
     args match {
       case Nil => {
         val cp = c.getCurCP
-        val st = cp.getState
-        val block = cp.node
+        val st = c.sem.getState(cp)
+        val block = cp.block
         val insts = block.getInsts.reverse
         val reader = new ConsoleReader()
         insts match {
           case Nil => println("* no instructions")
-          case _ => println(c.getCurCP.node.toString(0))
+          case _ => println(c.getCurCP.block.toString(0))
         }
         val (resSt, resExcSt, _) = insts.foldLeft((st, AbsState.Bot, true)) {
           case ((oldSt, oldExcSt, true), inst) =>
@@ -63,8 +63,8 @@ case object CmdRunInsts extends Command("run_insts", "Run instruction by instruc
               case "q" => (oldSt, oldExcSt, false)
               case _ =>
                 val (st, excSt) = inst match {
-                  case i: CFGNormalInst => c.semantics.I(i, oldSt, oldExcSt)
-                  case i: CFGCallInst => c.semantics.CI(cp, i, oldSt, oldExcSt)
+                  case i: CFGNormalInst => c.sem.I(i, oldSt, oldExcSt)
+                  case i: CFGCallInst => c.sem.CI(cp, i, oldSt, oldExcSt)
                 }
                 (st, excSt, true)
             }
