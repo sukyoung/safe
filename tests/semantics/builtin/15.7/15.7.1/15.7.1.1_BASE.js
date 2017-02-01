@@ -8,5 +8,5 @@ var __result3 = Number(undefined);
 var __expect3 = NaN;
 
 var NaN;
-var __result4 = NaN;
-var __expect4 = Number(NaN);
+var __result4 = Number(NaN);
+var __expect4 = NaN;
