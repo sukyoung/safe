@@ -138,10 +138,13 @@ object BuiltinNumberProto extends ObjModel(
         // the resulting String value is returned.
         val n = BuiltinNumberHelper.getValue(thisV, h)
         val s =
-          if (AbsNumber(10) <= radix) TypeConversionHelper.ToString(n)
-          // If ToInteger(radix) is an integer from 2 to 36, but not 10,
-          // XXX: give up the precision! (Room for the analysis precision improvement!)
-          else AbsString.Top
+          TypeConversionHelper.SameValue(AbsNumber(10), radix).map({
+            TypeConversionHelper.ToString(n)
+          }, {
+            // If ToInteger(radix) is an integer from 2 to 36, but not 10,
+            // XXX: give up the precision! (Room for the analysis precision improvement!)
+            AbsString.Top
+          })(AbsString)
 
         (st, st.raiseException(excSet), AbsValue(s))
       })
