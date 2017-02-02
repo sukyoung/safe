@@ -2361,7 +2361,7 @@ Function: {
     // 3. Let len be ToUint32(lenVal).
     var len = @ToUint32(lenVal);
     // 4. Let middle be floor(len/2).
-    var middle = Math.floor(len/2);
+    var middle = @floor(len/2);
     // 5. Let lower be 0.
     var lower = 0;
     // 6. Repeat, while lower !=  middle
@@ -2760,7 +2760,7 @@ Function: {
     // 8. Else, n<0
     else{
       // a. Let k be len - abs(n).
-      var k = len - Math.abs(n);
+      var k = len - @abs(n);
       // b. If k is less than 0,then let k be 0.
       if (k<0){
         var k = 0;
@@ -2813,7 +2813,7 @@ Function: {
     // 7. Else,n<0
     else {
       // a. Let k be len - abs(n).
-      var k = len - Math.abs(n);
+      var k = len - @abs(n);
     }
     // 8. Repeat, while k≥ 0
     while (k>=0) {
@@ -3723,7 +3723,7 @@ Function: {
         }else {
           S = @ToString(n%radix) + S;
         }
-        n = Math.floor(n / radix);
+        n = @floor(n / radix);
       }
       return S;
     }
@@ -3781,7 +3781,7 @@ Function: {
       var n = 0;
       do{
         pre_diff = diff;
-        diff = Math.abs(n / (Math.pow(10,f)) - x);
+        diff = @abs(n / (@pow(10,f)) - x);
         n += 1;
       }while(diff < pre_diff);
       n -= 2;
@@ -3882,12 +3882,12 @@ Function: {
         // Get n
         var diff = Infinity;
         var pre_diff = Infinity;
-        var n = Math.pow(10,f);
+        var n = @pow(10,f);
         do{
           pre_diff = diff;
-          diff = Math.abs(n * (Math.pow(10,e-f)) - x);
+          diff = @abs(n * (@pow(10,e-f)) - x);
           n += 1;
-        }while((diff < pre_diff) && (n < Math.pow(10,f+1)));
+        }while((diff < pre_diff) && (n < @pow(10,f+1)));
         n -= 2;
       }
       // b. Else, fractionDigits is undefined
@@ -3922,12 +3922,12 @@ Function: {
         // Get n
         var diff = Infinity;
         var pre_diff = Infinity;
-        var n = Math.pow(10,f);
+        var n = @pow(10,f);
         do{
           pre_diff = diff;
-          diff = Math.abs(n * (Math.pow(10,e-f)) - x);
+          diff = @abs(n * (@pow(10,e-f)) - x);
           n += 1;
-        }while((diff < pre_diff) && (n < Math.pow(10,f+1)));
+        }while((diff < pre_diff) && (n < @pow(10,f+1)));
         n -= 2;
       }
       // c. Let m be the String consisting of the digits of the decimal representation of n (in order, with no leading zeroes).
@@ -4033,12 +4033,12 @@ Function: {
       // Get n
       var diff = Infinity;
       var pre_diff = Infinity;
-      var n = Math.pow(10,p-1);
+      var n = @pow(10,p-1);
       do{
         pre_diff = diff;
-        diff = Math.abs(n * (Math.pow(10,e-p+1)) - x);
+        diff = @abs(n * (@pow(10,e-p+1)) - x);
         n += 1;
-      }while((diff < pre_diff) && (n < Math.pow(10,p)))
+      }while((diff < pre_diff) && (n < @pow(10,p)))
       n -= 2;
       // b. Let m be the String consisting of the digits of the decimal representation of n (in order, with no leading zeroes).
       var m = @ToString(n);
@@ -4220,14 +4220,14 @@ Function: {
     }
     // 3. Return YearFromTime(t).
     var y = 0;
-    var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+    var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
     var msPerDay = 86400000;
     var TimeFromYear_y = msPerDay * DayFromYear_y;
 
     while (TimeFromYear_y <= t) {
       y += 1;
-      var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+      var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
       var TimeFromYear_y = msPerDay * DayFromYear_y;
     }
@@ -4252,16 +4252,16 @@ Function: {
     }
     // 3. Return MonthFromTime(t).
     var msPerDay = 86400000;
-    var Day_t = Math.floor(t/msPerDay);
+    var Day_t = @floor(t/msPerDay);
 
     var y = 0;
-    var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+    var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
     var TimeFromYear_y = msPerDay * DayFromYear_y;
 
     while (TimeFromYear_y <= t) {
       y += 1;
-      var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+      var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
       var TimeFromYear_y = msPerDay * DayFromYear_y;
     }
@@ -4270,19 +4270,19 @@ Function: {
 
     var y = YearFromTime_t;
 
-    var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+    var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
     var DayWithinYear_t = Day_t - DayFromYear_y
 
     var y = 0;
-    var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+    var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
     var msPerDay = 86400000;
     var TimeFromYear_y = msPerDay * DayFromYear_y;
 
     while (TimeFromYear_y <= t) {
       y += 1;
-      var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+      var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
       var TimeFromYear_y = msPerDay * DayFromYear_y;
     }
@@ -4352,16 +4352,16 @@ Function: {
     // 3. Return DateFromTime(t).
 
     var msPerDay = 86400000;
-    var Day_t = Math.floor(t/msPerDay);
+    var Day_t = @floor(t/msPerDay);
 
     var y = 0;
-    var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+    var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
     var TimeFromYear_y = msPerDay * DayFromYear_y;
 
     while (TimeFromYear_y <= t) {
       y += 1;
-      var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+      var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
       var TimeFromYear_y = msPerDay * DayFromYear_y;
     }
@@ -4370,19 +4370,19 @@ Function: {
 
     var y = YearFromTime_t;
 
-    var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+    var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
     var DayWithinYear_t = Day_t - DayFromYear_y
 
     var y = 0;
-    var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+    var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
     var msPerDay = 86400000;
     var TimeFromYear_y = msPerDay * DayFromYear_y;
 
     while (TimeFromYear_y <= t) {
       y += 1;
-      var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+      var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
       var TimeFromYear_y = msPerDay * DayFromYear_y;
     }
@@ -4477,7 +4477,7 @@ Function: {
     }
     // 3. Return WeekDay(t).
     var msPerDay = 86400000;
-    var Day_t = Math.floor(t/msPerDay);
+    var Day_t = @floor(t/msPerDay);
 
     var WeekDay_t = (Day_t + 4) % 7;
     return WeekDay_t;
@@ -4500,7 +4500,7 @@ Function: {
     // 3. Return HourFromTime(t).
     var HoursPerDay = 24;
     var msPerHour = 3600000;
-    var HourFromTime_t = Math.floor(t / msPerHour) % HoursPerDay;
+    var HourFromTime_t = @floor(t / msPerHour) % HoursPerDay;
     return HourFromTime_t;
   }
   \\],
@@ -4521,7 +4521,7 @@ Function: {
     // 3. Return MinFromTime(t).
     var MinutesPerHour = 60;
     var msPerMinute = 60000;
-    var MinFromTime_t = Math.floor(t / msPerMinute) % MinutesPerHour;
+    var MinFromTime_t = @floor(t / msPerMinute) % MinutesPerHour;
     return MinFromTime_t;
   }
   \\],
@@ -4542,7 +4542,7 @@ Function: {
     // 3. Return SecFromTime(t).
     var SecondsPerMinute= 60;
     var msPerSecond = 1000;
-    var SecFromTime_t  = Math.floor(t / msPerSecond) % SecondsPerMinute;
+    var SecFromTime_t  = @floor(t / msPerSecond) % SecondsPerMinute;
     return SecFromTime_t;
   }
   \\],
@@ -4580,7 +4580,7 @@ Function: {
     if (time === Infinity) {
       return_val = NaN;
     }
-    else if (Math.abs(time) > 8.64e+15) {
+    else if (@abs(time) > 8.64e+15) {
       return_val = NaN;
     }else {
       return_val = @ToInteger(time);
@@ -4611,17 +4611,17 @@ Function: {
     // HourFromTime(t)
     var HoursPerDay = 24;
     var msPerHour = 3600000;
-    var HourFromTime_t = Math.floor(t / msPerHour) % HoursPerDay;
+    var HourFromTime_t = @floor(t / msPerHour) % HoursPerDay;
     arg1 = HourFromTime_t;
     // MinFromTime(t)
     var MinutesPerHour = 60;
     var msPerMinute = 60000;
-    var MinFromTime_t = Math.floor(t / msPerMinute) % MinutesPerHour;
+    var MinFromTime_t = @floor(t / msPerMinute) % MinutesPerHour;
     arg2 = MinFromTime_t;
     // SecFromTime(t)
     var SecondsPerMinute= 60;
     var msPerSecond = 1000;
-    var SecFromTime_t  = Math.floor(t / msPerSecond) % SecondsPerMinute;
+    var SecFromTime_t  = @floor(t / msPerSecond) % SecondsPerMinute;
     arg3 = SecFromTime_t;
     arg4 = @ToNumber(ms);
     // MakeTime
@@ -4656,7 +4656,7 @@ Function: {
     // Day(t)
     var t = @PrimitiveValue(this);
     var msPerDay = 86400000;
-    var Day_t = Math.floor(t/msPerDay);
+    var Day_t = @floor(t/msPerDay);
     arg1 = Day_t;
     // MakeDate
     var day = arg1;
@@ -4675,7 +4675,7 @@ Function: {
     if (time === Infinity) {
       return_val = NaN;
     }
-    else if (Math.abs(time) > 8.64e+15) {
+    else if (@abs(time) > 8.64e+15) {
       return_val = NaN;
     }else {
       var v = return_val;
@@ -4715,16 +4715,16 @@ Function: {
     // HourFromTime(t)
     var HoursPerDay = 24;
     var msPerHour = 3600000;
-    var HourFromTime_t = Math.floor(t / msPerHour) % HoursPerDay;
+    var HourFromTime_t = @floor(t / msPerHour) % HoursPerDay;
     arg1 = HourFromTime_t;
     // MinFromTime(t);
     var MinutesPerHour = 60;
     var msPerMinute = 60000;
-    var MinFromTime_t = Math.floor(t / msPerMinute) % MinutesPerHour;
+    var MinFromTime_t = @floor(t / msPerMinute) % MinutesPerHour;
     arg2 = MinFromTime_t;
     // Day(t)
     msPerDay = 86400000;
-    var Day_t = Math.floor(t/msPerDay);
+    var Day_t = @floor(t/msPerDay);
     arg3 = Day_t;
     // MakeTime
     var hour = arg1;
@@ -4768,7 +4768,7 @@ Function: {
     if (time === Infinity) {
       return_val = NaN;
     }
-    else if(Math.abs(time) > 8.64e+15) {
+    else if(@abs(time) > 8.64e+15) {
       return_val = NaN;
     }else {
       return_val = @ToInteger(time);
@@ -4797,7 +4797,7 @@ Function: {
     if (!(arguments.length > 1)) {
       var SecondsPerMinute= 60;
       var msPerSecond = 1000;
-      var SecFromTime_t  = Math.floor(t / msPerSecond) % SecondsPerMinute;
+      var SecFromTime_t  = @floor(t / msPerSecond) % SecondsPerMinute;
       var sec = SecFromTime_t;
     }else {
       var s = @ToNumber(sec);
@@ -4817,11 +4817,11 @@ Function: {
     // HourFromTime(t)
     var HoursPerDay = 24;
     var msPerHour = 3600000;
-    var HourFromTime_t = Math.floor(t / msPerHour) % HoursPerDay;
+    var HourFromTime_t = @floor(t / msPerHour) % HoursPerDay;
     arg1 = HourFromTime_t;
     // Day(t)
     var msPerDay = 86400000;
-    var Day_t = Math.floor(t/msPerDay);
+    var Day_t = @floor(t/msPerDay);
     arg2 = Day_t;
     // MakeTime
     var hour = arg1;
@@ -4867,7 +4867,7 @@ Function: {
     if (time === Infinity) {
       return_val = NaN;
     }
-    else if (Math.abs(time) > 8.64e+15) {
+    else if (@abs(time) > 8.64e+15) {
       return_val = NaN;
     }else {
       return_val = @ToInteger(time);
@@ -4896,7 +4896,7 @@ Function: {
     if (!(arguments.length > 1)) {
       var MinutesPerHour = 60;
       var msPerMinute = 60000;
-      var MinFromTime_t = Math.floor(t / msPerMinute) % MinutesPerHour;
+      var MinFromTime_t = @floor(t / msPerMinute) % MinutesPerHour;
       var m = MinFromTime_t;
     }else {
       var m = @ToNumber(min);
@@ -4905,7 +4905,7 @@ Function: {
     if (!(arguments.length > 2)) {
       var SecondsPerMinute= 60;
       var msPerSecond = 1000;
-      var SecFromTime_t  = Math.floor(t / msPerSecond) % SecondsPerMinute;
+      var SecFromTime_t  = @floor(t / msPerSecond) % SecondsPerMinute;
       var s = SecFromTime_t;
     }else {
       var s = @ToNumber(sec);
@@ -4923,7 +4923,7 @@ Function: {
     var arg2;
     // Day(t)
     var msPerDay = 86400000;
-    var Day_t = Math.floor(t/msPerDay);
+    var Day_t = @floor(t/msPerDay);
     arg1 = Day_t;
     // MakeTime
     var hour = h;
@@ -4968,7 +4968,7 @@ Function: {
     if (time === Infinity) {
       return_val = NaN;
     }
-    else if (Math.abs(time) > 8.64e+15) {
+    else if (@abs(time) > 8.64e+15) {
       return_val = NaN;
     }else {
       return_val = @ToInteger(time);
@@ -5000,14 +5000,14 @@ Function: {
     var arg4;
     // YearFromTime(t);
     var y = 0;
-    var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+    var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
     var msPerDay = 86400000;
     var TimeFromYear_y = msPerDay * DayFromYear_y;
 
     while (TimeFromYear_y <= t) {
       y += 1;
-      var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+      var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
       var TimeFromYear_y = msPerDay * DayFromYear_y;
     }
@@ -5016,16 +5016,16 @@ Function: {
     arg1 = YearFromTime_t;
     // MonthFromTime(t)
     var msPerDay = 86400000;
-    var Day_t = Math.floor(t/msPerDay);
+    var Day_t = @floor(t/msPerDay);
 
     var y = 0;
-    var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+    var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
     var TimeFromYear_y = msPerDay * DayFromYear_y;
 
     while (TimeFromYear_y <= t) {
       y += 1;
-      var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+      var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
       var TimeFromYear_y = msPerDay * DayFromYear_y;
     }
@@ -5034,19 +5034,19 @@ Function: {
 
     var y = YearFromTime_t;
 
-    var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+    var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
     var DayWithinYear_t = Day_t - DayFromYear_y
 
     var y = 0;
-    var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+    var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
     var msPerDay = 86400000;
     var TimeFromYear_y = msPerDay * DayFromYear_y;
 
     while (TimeFromYear_y <= t) {
       y += 1;
-      var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+      var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
       var TimeFromYear_y = msPerDay * DayFromYear_y;
     }
@@ -5112,19 +5112,19 @@ Function: {
       var y = @ToInteger(year);
       var m = @ToInteger(month);
       var dt = @ToInteger(date);
-      var ym = y + Math.floor(m/12);
+      var ym = y + @floor(m/12);
       var mn = m % 12;
       var t = 0;
       while (t < 8.64e+15) {
         // YearFromTime(t)
         var y = 0;
-        var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+        var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
         var TimeFromYear_y = msPerDay * DayFromYear_y;
 
         while (TimeFromYear_y <= t) {
           y += 1;
-          var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+          var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
           var TimeFromYear_y = msPerDay * DayFromYear_y;
         }
@@ -5133,16 +5133,16 @@ Function: {
         if (YearFromTime_t === ym) {
           // MonthFromTime(t)
           var msPerDay = 86400000;
-          var Day_t = Math.floor(t/msPerDay);
+          var Day_t = @floor(t/msPerDay);
 
           var y = 0;
-          var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+          var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
           var TimeFromYear_y = msPerDay * DayFromYear_y;
 
           while (TimeFromYear_y <= t) {
             y += 1;
-            var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+            var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
             var TimeFromYear_y = msPerDay * DayFromYear_y;
           }
@@ -5151,19 +5151,19 @@ Function: {
 
           var y = YearFromTime_t;
 
-          var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+          var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
           var DayWithinYear_t = Day_t - DayFromYear_y
 
           var y = 0;
-          var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+          var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
           var msPerDay = 86400000;
           var TimeFromYear_y = msPerDay * DayFromYear_y;
 
           while (TimeFromYear_y <= t) {
             y += 1;
-            var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+            var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
             var TimeFromYear_y = msPerDay * DayFromYear_y;
           }
@@ -5216,16 +5216,16 @@ Function: {
           if (MonthFromTime_t === mn) {
             // DateFromTime(t)
             var msPerDay = 86400000;
-            var Day_t = Math.floor(t/msPerDay);
+            var Day_t = @floor(t/msPerDay);
 
             var y = 0;
-            var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+            var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
             var TimeFromYear_y = msPerDay * DayFromYear_y;
 
             while (TimeFromYear_y <= t) {
               y += 1;
-              var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+              var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
               var TimeFromYear_y = msPerDay * DayFromYear_y;
             }
@@ -5234,7 +5234,7 @@ Function: {
 
             var y = YearFromTime_t;
 
-            var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+            var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
             var DayWithinYear_t = Day_t - DayFromYear_y
 
@@ -5300,7 +5300,7 @@ Function: {
         return_val = NaN;
       }else {
       var msPerDay = 86400000;
-      var Day_t = Math.floor(t/msPerDay);
+      var Day_t = @floor(t/msPerDay);
       return_val = Day_t + dt - 1;
       }
     }
@@ -5322,7 +5322,7 @@ Function: {
     if (time === Infinity) {
       return_val = NaN;
     }
-    else if (Math.abs(time) > 8.64e+15) {
+    else if (@abs(time) > 8.64e+15) {
       return_val = NaN;
     }else {
       return_val = @ToInteger(time);
@@ -5350,16 +5350,16 @@ Function: {
     // 3. If date is not specified, then let dt be DateFromTime(t); otherwise, let dt be ToNumber(date).
     if (!(arguments.length > 1)) {
       var msPerDay = 86400000;
-      var Day_t = Math.floor(t/msPerDay);
+      var Day_t = @floor(t/msPerDay);
 
       var y = 0;
-      var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+      var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
       var TimeFromYear_y = msPerDay * DayFromYear_y;
 
       while (TimeFromYear_y <= t) {
         y += 1;
-        var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+        var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
         var TimeFromYear_y = msPerDay * DayFromYear_y;
       }
@@ -5368,19 +5368,19 @@ Function: {
 
       var y = YearFromTime_t;
 
-      var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+      var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
       var DayWithinYear_t = Day_t - DayFromYear_y
 
       var y = 0;
-      var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+      var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
       var msPerDay = 86400000;
       var TimeFromYear_y = msPerDay * DayFromYear_y;
 
       while (TimeFromYear_y <= t) {
         y += 1;
-        var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+        var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
         var TimeFromYear_y = msPerDay * DayFromYear_y;
       }
@@ -5466,14 +5466,14 @@ Function: {
     var arg3;
     // YearFromTime(t)
     var y = 0;
-    var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+    var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
     var msPerDay = 86400000;
     var TimeFromYear_y = msPerDay * DayFromYear_y;
 
     while (TimeFromYear_y <= t) {
       y += 1;
-      var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+      var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
       var TimeFromYear_y = msPerDay * DayFromYear_y;
     }
@@ -5495,19 +5495,19 @@ Function: {
       var y = @ToInteger(year);
       var m = @ToInteger(month);
       var dt = @ToInteger(date);
-      var ym = y + Math.floor(m/12);
+      var ym = y + @floor(m/12);
       var mn = m % 12;
       var t = 0;
       while (t < 8.64e+15) {
         // YearFromTime(t)
         var y = 0;
-        var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+        var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
         var TimeFromYear_y = msPerDay * DayFromYear_y;
 
         while (TimeFromYear_y <= t) {
           y += 1;
-          var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+          var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
           var TimeFromYear_y = msPerDay * DayFromYear_y;
         }
@@ -5516,16 +5516,16 @@ Function: {
         if (YearFromTime_t === ym) {
           // MonthFromTime(t)
           var msPerDay = 86400000;
-          var Day_t = Math.floor(t/msPerDay);
+          var Day_t = @floor(t/msPerDay);
 
           var y = 0;
-          var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+          var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
           var TimeFromYear_y = msPerDay * DayFromYear_y;
 
           while (TimeFromYear_y <= t) {
             y += 1;
-            var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+            var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
             var TimeFromYear_y = msPerDay * DayFromYear_y;
           }
@@ -5534,19 +5534,19 @@ Function: {
 
           var y = YearFromTime_t;
 
-          var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+          var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
           var DayWithinYear_t = Day_t - DayFromYear_y
 
           var y = 0;
-          var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+          var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
           var msPerDay = 86400000;
           var TimeFromYear_y = msPerDay * DayFromYear_y;
 
           while (TimeFromYear_y <= t) {
             y += 1;
-            var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+            var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
             var TimeFromYear_y = msPerDay * DayFromYear_y;
           }
@@ -5599,16 +5599,16 @@ Function: {
           if (MonthFromTime_t === mn) {
             // DateFromTime(t)
             var msPerDay = 86400000;
-            var Day_t = Math.floor(t/msPerDay);
+            var Day_t = @floor(t/msPerDay);
 
             var y = 0;
-            var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+            var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
             var TimeFromYear_y = msPerDay * DayFromYear_y;
 
             while (TimeFromYear_y <= t) {
               y += 1;
-              var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+              var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
               var TimeFromYear_y = msPerDay * DayFromYear_y;
             }
@@ -5617,7 +5617,7 @@ Function: {
 
             var y = YearFromTime_t;
 
-            var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+            var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
             var DayWithinYear_t = Day_t - DayFromYear_y
 
@@ -5684,7 +5684,7 @@ Function: {
       }
       else {
       var msPerDay = 86400000;
-      var Day_t = Math.floor(t/msPerDay);
+      var Day_t = @floor(t/msPerDay);
       return_val = Day_t + dt - 1;
       }
     }
@@ -5706,7 +5706,7 @@ Function: {
     if (time === Infinity) {
       return_val = NaN;
     }
-    else if (Math.abs(time) > 8.64e+15) {
+    else if (@abs(time) > 8.64e+15) {
       return_val = NaN;
     }else {
       return_val = @ToInteger(time);
@@ -5737,16 +5737,16 @@ Function: {
     // 3. If month is not specified, then let m be MonthFromTime(t); otherwise, let m be ToNumber(month).
     if (!(arguments.length > 1)) {
       var msPerDay = 86400000;
-      var Day_t = Math.floor(t/msPerDay);
+      var Day_t = @floor(t/msPerDay);
 
       var y = 0;
-      var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+      var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
       var TimeFromYear_y = msPerDay * DayFromYear_y;
 
       while (TimeFromYear_y <= t) {
         y += 1;
-        var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+        var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
         var TimeFromYear_y = msPerDay * DayFromYear_y;
       }
@@ -5755,19 +5755,19 @@ Function: {
 
       var y = YearFromTime_t;
 
-      var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+      var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
       var DayWithinYear_t = Day_t - DayFromYear_y
 
       var y = 0;
-      var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+      var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
       var msPerDay = 86400000;
       var TimeFromYear_y = msPerDay * DayFromYear_y;
 
       while (TimeFromYear_y <= t) {
         y += 1;
-        var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+        var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
         var TimeFromYear_y = msPerDay * DayFromYear_y;
       }
@@ -5824,16 +5824,16 @@ Function: {
     // 4. If date is not specified, then let dt be DateFromTime(t); otherwise, let dt be ToNumber(date).
     if (!(arguments.length > 0)) {
       var msPerDay = 86400000;
-      var Day_t = Math.floor(t/msPerDay);
+      var Day_t = @floor(t/msPerDay);
 
       var y = 0;
-      var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+      var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
       var TimeFromYear_y = msPerDay * DayFromYear_y;
 
       while (TimeFromYear_y <= t) {
         y += 1;
-        var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+        var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
         var TimeFromYear_y = msPerDay * DayFromYear_y;
       }
@@ -5842,19 +5842,19 @@ Function: {
 
       var y = YearFromTime_t;
 
-      var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+      var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
       var DayWithinYear_t = Day_t - DayFromYear_y
 
       var y = 0;
-      var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+      var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
       var msPerDay = 86400000;
       var TimeFromYear_y = msPerDay * DayFromYear_y;
 
       while (TimeFromYear_y <= t) {
         y += 1;
-        var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+        var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
         var TimeFromYear_y = msPerDay * DayFromYear_y;
       }
@@ -5952,19 +5952,19 @@ Function: {
       var y = @ToInteger(year);
       var m = @ToInteger(month);
       var dt = @ToInteger(date);
-      var ym = y + Math.floor(m/12);
+      var ym = y + @floor(m/12);
       var mn = m % 12;
       var t = 0;
       while (t < 8.64e+15) {
         // YearFromTime(t)
         var y = 0;
-        var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+        var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
         var TimeFromYear_y = msPerDay * DayFromYear_y;
 
         while (TimeFromYear_y <= t) {
           y += 1;
-          var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+          var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
           var TimeFromYear_y = msPerDay * DayFromYear_y;
         }
@@ -5973,16 +5973,16 @@ Function: {
         if (YearFromTime_t === ym) {
           // MonthFromTime(t)
           var msPerDay = 86400000;
-          var Day_t = Math.floor(t/msPerDay);
+          var Day_t = @floor(t/msPerDay);
 
           var y = 0;
-          var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+          var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
           var TimeFromYear_y = msPerDay * DayFromYear_y;
 
           while (TimeFromYear_y <= t) {
             y += 1;
-            var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+            var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
             var TimeFromYear_y = msPerDay * DayFromYear_y;
           }
@@ -5991,19 +5991,19 @@ Function: {
 
           var y = YearFromTime_t;
 
-          var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+          var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
           var DayWithinYear_t = Day_t - DayFromYear_y
 
           var y = 0;
-          var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+          var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
           var msPerDay = 86400000;
           var TimeFromYear_y = msPerDay * DayFromYear_y;
 
           while (TimeFromYear_y <= t) {
             y += 1;
-            var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+            var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
             var TimeFromYear_y = msPerDay * DayFromYear_y;
           }
@@ -6056,16 +6056,16 @@ Function: {
           if (MonthFromTime_t === mn) {
             // DateFromTime(t)
             var msPerDay = 86400000;
-            var Day_t = Math.floor(t/msPerDay);
+            var Day_t = @floor(t/msPerDay);
 
             var y = 0;
-            var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+            var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
             var TimeFromYear_y = msPerDay * DayFromYear_y;
 
             while (TimeFromYear_y <= t) {
               y += 1;
-              var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+              var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
               var TimeFromYear_y = msPerDay * DayFromYear_y;
             }
@@ -6074,7 +6074,7 @@ Function: {
 
             var y = YearFromTime_t;
 
-            var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+            var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
             var DayWithinYear_t = Day_t - DayFromYear_y
 
@@ -6141,7 +6141,7 @@ Function: {
       }
       else {
       var msPerDay = 86400000;
-      var Day_t = Math.floor(t/msPerDay);
+      var Day_t = @floor(t/msPerDay);
       return_val = Day_t + dt - 1;
       }
     }
@@ -6163,7 +6163,7 @@ Function: {
     if (time === Infinity) {
       return_val = NaN;
     }
-    else if (Math.abs(time) > 8.64e+15) {
+    else if (@abs(time) > 8.64e+15) {
       return_val = NaN;
     }else {
       return_val = @ToInteger(time);
@@ -6229,7 +6229,7 @@ Function: {
       if (time === Infinity) {
         return_val = NaN;
       }
-      else if (Math.abs(time) > 8.64e+15) {
+      else if (@abs(time) > 8.64e+15) {
         return_val = NaN;
       }else {
         return_val = @ToInteger(time);
@@ -6297,19 +6297,19 @@ Function: {
         var y = @ToInteger(year);
         var m = @ToInteger(month);
         var dt = @ToInteger(date);
-        var ym = y + Math.floor(m/12);
+        var ym = y + @floor(m/12);
         var mn = m % 12;
         var t = 0;
         while (t < 8.64e+15) {
           // YearFromTime(t)
           var y = 0;
-          var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+          var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
           var TimeFromYear_y = msPerDay * DayFromYear_y;
 
           while (TimeFromYear_y <= t) {
             y += 1;
-            var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+            var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
             var TimeFromYear_y = msPerDay * DayFromYear_y;
           }
@@ -6318,16 +6318,16 @@ Function: {
           if (YearFromTime_t === ym) {
             // MonthFromTime(t)
             var msPerDay = 86400000;
-            var Day_t = Math.floor(t/msPerDay);
+            var Day_t = @floor(t/msPerDay);
 
             var y = 0;
-            var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+            var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
             var TimeFromYear_y = msPerDay * DayFromYear_y;
 
             while (TimeFromYear_y <= t) {
               y += 1;
-              var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+              var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
               var TimeFromYear_y = msPerDay * DayFromYear_y;
             }
@@ -6336,19 +6336,19 @@ Function: {
 
             var y = YearFromTime_t;
 
-            var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+            var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
             var DayWithinYear_t = Day_t - DayFromYear_y
 
             var y = 0;
-            var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+            var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
             var msPerDay = 86400000;
             var TimeFromYear_y = msPerDay * DayFromYear_y;
 
             while (TimeFromYear_y <= t) {
               y += 1;
-              var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+              var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
               var TimeFromYear_y = msPerDay * DayFromYear_y;
             }
@@ -6401,16 +6401,16 @@ Function: {
             if (MonthFromTime_t === mn) {
               // DateFromTime(t)
               var msPerDay = 86400000;
-              var Day_t = Math.floor(t/msPerDay);
+              var Day_t = @floor(t/msPerDay);
 
               var y = 0;
-              var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+              var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
               var TimeFromYear_y = msPerDay * DayFromYear_y;
 
               while (TimeFromYear_y <= t) {
                 y += 1;
-                var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+                var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
                 var TimeFromYear_y = msPerDay * DayFromYear_y;
               }
@@ -6419,7 +6419,7 @@ Function: {
 
               var y = YearFromTime_t;
 
-              var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+              var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
               var DayWithinYear_t = Day_t - DayFromYear_y
 
@@ -6486,7 +6486,7 @@ Function: {
         }
         else {
         var msPerDay = 86400000;
-        var Day_t = Math.floor(t/msPerDay);
+        var Day_t = @floor(t/msPerDay);
         return_val = Day_t + dt - 1;
         }
       }
@@ -6533,7 +6533,7 @@ Function: {
       var return_val;
       if (time === Infinity || time === -Infinity || @SameValue(time,NaN)) {
         return_val = NaN;
-      }else if (Math.abs(time) > 8.64e+15) {
+      }else if (@abs(time) > 8.64e+15) {
         return_val = NaN;
       }else {
         return_val = @ToInteger(time);
@@ -6610,19 +6610,19 @@ Function: {
       var y = @ToInteger(year);
       var m = @ToInteger(month);
       var dt = @ToInteger(date);
-      var ym = y + Math.floor(m/12);
+      var ym = y + @floor(m/12);
       var mn = m % 12;
       var t = 0;
       while (t < 8.64e+15) {
         // YearFromTime(t)
         var y = 0;
-        var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+        var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
         var TimeFromYear_y = msPerDay * DayFromYear_y;
 
         while (TimeFromYear_y <= t) {
           y += 1;
-          var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+          var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
           var TimeFromYear_y = msPerDay * DayFromYear_y;
         }
@@ -6631,16 +6631,16 @@ Function: {
         if (YearFromTime_t === ym) {
           // MonthFromTime(t)
           var msPerDay = 86400000;
-          var Day_t = Math.floor(t/msPerDay);
+          var Day_t = @floor(t/msPerDay);
 
           var y = 0;
-          var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+          var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
           var TimeFromYear_y = msPerDay * DayFromYear_y;
 
           while (TimeFromYear_y <= t) {
             y += 1;
-            var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+            var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
             var TimeFromYear_y = msPerDay * DayFromYear_y;
           }
@@ -6649,19 +6649,19 @@ Function: {
 
           var y = YearFromTime_t;
 
-          var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+          var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
           var DayWithinYear_t = Day_t - DayFromYear_y
 
           var y = 0;
-          var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+          var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
           var msPerDay = 86400000;
           var TimeFromYear_y = msPerDay * DayFromYear_y;
 
           while (TimeFromYear_y <= t) {
             y += 1;
-            var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+            var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
             var TimeFromYear_y = msPerDay * DayFromYear_y;
           }
@@ -6714,16 +6714,16 @@ Function: {
           if (MonthFromTime_t === mn) {
             // DateFromTime(t)
             var msPerDay = 86400000;
-            var Day_t = Math.floor(t/msPerDay);
+            var Day_t = @floor(t/msPerDay);
 
             var y = 0;
-            var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+            var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
             var TimeFromYear_y = msPerDay * DayFromYear_y;
 
             while (TimeFromYear_y <= t) {
               y += 1;
-              var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+              var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
               var TimeFromYear_y = msPerDay * DayFromYear_y;
             }
@@ -6732,7 +6732,7 @@ Function: {
 
             var y = YearFromTime_t;
 
-            var DayFromYear_y = 365 * (y - 1970) + Math.floor((y - 1969) / 4) - Math.floor((y - 1901) / 100) + Math.floor((y - 1601) / 400);
+            var DayFromYear_y = 365 * (y - 1970) + @floor((y - 1969) / 4) - @floor((y - 1901) / 100) + @floor((y - 1601) / 400);
 
             var DayWithinYear_t = Day_t - DayFromYear_y
 
@@ -6798,7 +6798,7 @@ Function: {
         return_val = NaN;
       }else {
       var msPerDay = 86400000;
-      var Day_t = Math.floor(t/msPerDay);
+      var Day_t = @floor(t/msPerDay);
       return_val = Day_t + dt - 1;
       }
     }
@@ -6848,7 +6848,7 @@ Function: {
     if (time === Infinity) {
       return_val = NaN;
     }
-    else if (Math.abs(time) > 8.64e+15) {
+    else if (@abs(time) > 8.64e+15) {
       return_val = NaN;
     }else {
       return_val = @ToInteger(time);

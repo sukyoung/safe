@@ -25,7 +25,7 @@ import kr.ac.kaist.safe.util.Span
 class Console(
     val cfg: CFG,
     val worklist: Worklist,
-    val semantics: Semantics
+    val sem: Semantics
 ) {
   ////////////////////////////////////////////////////////////////
   // private variables
@@ -87,7 +87,7 @@ class Console(
     }
   }
   def moveCurCP(block: CFGBlock): Unit = {
-    val tpList: List[TracePartition] = block.getState().toList.map {
+    val tpList: List[TracePartition] = sem.getState(block).toList.map {
       case (tp, _) => tp
     }
     val len: Int = tpList.length

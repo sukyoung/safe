@@ -45,7 +45,7 @@ object HTMLWriter {
     }
   }
 
-  private def isReachable(block: CFGBlock, sem: Semantics): Boolean = block.getState.exists {
+  private def isReachable(block: CFGBlock, sem: Semantics): Boolean = sem.getState(block).exists {
     case (tp, oldSt) => block.getInsts.lastOption match {
       case None => true
       case Some(inst) => {
@@ -148,7 +148,7 @@ object HTMLWriter {
     val label = getLabel(block)
     val func = block.func
     if (isReachable(block, sem)) {
-      val (_, st) = block.getState.head // TODO it is working only when for each CFGBlock has only one control point.
+      val (_, st) = sem.getState(block).head // TODO it is working only when for each CFGBlock has only one control point.
       sb.append(s"'$id': [").append(LINE_SEP)
       // heap
       val h = st.heap

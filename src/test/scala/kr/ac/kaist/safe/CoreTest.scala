@@ -19,8 +19,8 @@ import scala.util.{ Failure, Success, Try }
 import scala.util.Random.shuffle
 import scala.collection.immutable.HashSet
 import kr.ac.kaist.safe.analyzer.models.builtin.BuiltinGlobal
-import kr.ac.kaist.safe.analyzer.TracePartition
-import kr.ac.kaist.safe.analyzer.Semantics
+import kr.ac.kaist.safe.analyzer.models._
+import kr.ac.kaist.safe.analyzer._
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.errors.error.ParserError
 import kr.ac.kaist.safe.nodes.ast.Program
@@ -28,7 +28,7 @@ import kr.ac.kaist.safe.nodes.ir.IRRoot
 import kr.ac.kaist.safe.nodes.cfg.CFG
 import kr.ac.kaist.safe.parser.Parser
 import kr.ac.kaist.safe.phase._
-import kr.ac.kaist.safe.util.ArgParser
+import kr.ac.kaist.safe.util._
 
 object ParseTest extends Tag("ParseTest")
 object ASTRewriteTest extends Tag("ASTRewriteTest")
@@ -114,16 +114,14 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
   case object Fail extends AnalysisResult
   def analyzeTest(analysis: Try[(CFG, Int, TracePartition, Semantics)], tag: Tag): (AnalysisResult, Int) = {
     analysis match {
-      case Failure(_) =>
-        assert(false)
-        (Fail, 0)
-      case Success((cfg, iter, globalTP, _)) if tag == BenchTest =>
-        val normalSt = cfg.globalFunc.exit.getState(globalTP)
+      case Failure(e) => throw e
+      case Success((cfg, iter, globalTP, sem)) if tag == BenchTest =>
+        val normalSt = sem.getState(ControlPoint(cfg.globalFunc.exit, globalTP))
         assert(!normalSt.heap.isBottom)
         (Benchmark, iter)
-      case Success((cfg, iter, globalTP, _)) =>
-        val normalSt = cfg.globalFunc.exit.getState(globalTP)
-        val excSt = cfg.globalFunc.exitExc.getState(globalTP)
+      case Success((cfg, iter, globalTP, sem)) =>
+        val normalSt = sem.getState(ControlPoint(cfg.globalFunc.exit, globalTP))
+        val excSt = sem.getState(ControlPoint(cfg.globalFunc.exitExc, globalTP))
         assert(!normalSt.heap.isBottom)
         val ar = normalSt.heap.get(BuiltinGlobal.loc) match {
           case globalObj if globalObj.isBottom =>
@@ -244,6 +242,11 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
 
   val analysisDeatil = BASE_DIR + SEP + "tests" + SEP + "analysis-detail"
   val testJSON = BASE_DIR + SEP + "tests" + SEP + "test.json"
+
+  Analyze.jscache = {
+    val fileName = NodeUtil.jsModelsBase + "built_in.jsmodel"
+    Some(ModelParser.parseFile(fileName).get)
+  }
 
   val parser = new ArgParser(CmdBase, testSafeConfig)
   val analyzeConfig = Analyze.defaultConfig

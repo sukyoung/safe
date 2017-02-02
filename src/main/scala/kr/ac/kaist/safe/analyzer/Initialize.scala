@@ -37,60 +37,12 @@ object Initialize {
 
     val modeledHeap: AbsHeap =
       if (jsModel) {
-        val fileName = NodeUtil.jsModelsBase + "built_in.jsmodel"
-        val model = ModelParser.parseFile(fileName, cfg).get
-        val heap = model.heap
-        val idMap: Map[Int, Int] = model.funMap.foldLeft(HashMap[Int, Int]()) {
-          case (map, (fid, pgm)) => {
-            val safeConfig = SafeConfig(CmdCFGBuild, silent = true)
-
-            // rewrite AST
-            val astRewriteConfig = ASTRewriteConfig()
-            val rPgm = ASTRewrite(pgm, safeConfig, astRewriteConfig).get
-
-            // compile
-            val compileConfig = CompileConfig()
-            val ir = Compile(rPgm, safeConfig, compileConfig).get
-
-            // cfg build
-            val cfgBuildConfig = CFGBuildConfig()
-            var funCFG = CFGBuild(ir, safeConfig, cfgBuildConfig).get
-            var func = funCFG.getFunc(1).get
-
-            // add model to CFG
-            cfg.addJSModel(func)
-
-            // address mutation
-            // TODO is system address good? how about incremental program address?
-            def mutate(addr: Address): SystemAddr = addr match {
-              case ProgramAddr(id) =>
-                SystemAddr(s"JSModel<${func.id},$addr>")
-              case sys: SystemAddr => sys
-            }
-            func.getAllBlocks.foreach(_.getInsts.foreach {
-              case i: CFGAlloc => i.addr = mutate(i.addr)
-              case i: CFGAllocArray => i.addr = mutate(i.addr)
-              case i: CFGAllocArg => i.addr = mutate(i.addr)
-              case i: CFGCallInst => i.addr = mutate(i.addr)
-              case i: CFGInternalCall => i.addrOpt = i.addrOpt.map(mutate(_))
-              case _ =>
-            })
-            map + (fid -> func.id)
-          }
+        val model = Analyze.jscache getOrElse {
+          val fileName = NodeUtil.jsModelsBase + "built_in.jsmodel"
+          ModelParser.parseFile(fileName).get
         }
-
-        // function id mutation
-        val result = Heap(heap.map.foldLeft(HashMap[Loc, Object]()) {
-          case (map, (loc, obj)) => {
-            val newIMap = obj.imap.foldLeft(HashMap[IName, IValue]()) {
-              case (map, (iname, FId(id))) => map + (iname -> FId(idMap(id)))
-              case (map, (iname, iv)) => map + (iname -> iv)
-            }
-            val newObj = Object(obj.amap, newIMap)
-            map + (loc -> newObj)
-          }
-        })
-        AbsHeap(result)
+        model.funcs.foreach(cfg.addJSModel(_))
+        AbsHeap(model.heap)
       } else BuiltinGlobal.initHeap(initHeap, cfg)
 
     AbsState(modeledHeap, initCtx)

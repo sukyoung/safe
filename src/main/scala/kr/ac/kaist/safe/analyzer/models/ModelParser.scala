@@ -9,13 +9,15 @@
  * ****************************************************************************
  */
 
-package kr.ac.kaist.safe.analyzer
+package kr.ac.kaist.safe.analyzer.models
 
+import kr.ac.kaist.safe.{ SafeConfig, CmdCFGBuild }
 import kr.ac.kaist.safe.parser.{ Parser => JSParser }
-import kr.ac.kaist.safe.nodes.ast.Program
 import kr.ac.kaist.safe.errors.error.ModelParseError
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.nodes.cfg._
+import kr.ac.kaist.safe.phase._
+import kr.ac.kaist.safe.util._
 import java.io._
 import java.nio.charset.Charset
 import scala.collection.immutable.HashMap
@@ -23,7 +25,7 @@ import scala.collection.immutable.HashMap
 import scala.util.{ Try, Success => Succ, Failure => Fail }
 import scala.util.parsing.combinator._
 
-case class JSModel(heap: Heap, funMap: Map[Int, Program])
+case class JSModel(heap: Heap, funcs: List[CFGFunction])
 
 // Argument parser by using Scala RegexParsers.
 object ModelParser extends RegexParsers with JavaTokenParsers {
@@ -34,7 +36,7 @@ object ModelParser extends RegexParsers with JavaTokenParsers {
     in.close; sr.close
     result
   }
-  def parseFile(fileName: String, cfg: CFG): Try[JSModel] = {
+  def parseFile(fileName: String): Try[JSModel] = {
     val fs = new FileInputStream(new File(fileName))
     val sr = new InputStreamReader(fs, Charset.forName("UTF-8"))
     val in = new BufferedReader(sr)
@@ -114,7 +116,7 @@ object ModelParser extends RegexParsers with JavaTokenParsers {
     jsIPrototype | jsIClass | jsIExtensible | jsIPrimitiveValue |
       jsICall | jsIConstruct | jsIScope | jsIHasInstance
   }
-  private lazy val jsFId: Parser[FId] = "fun(" ~> int <~ ")" ^^ { FId(_) }
+  private lazy val jsFId: Parser[FId] = "fun(" ~> int <~ ")" ^^ { case n => FId(-n) }
   private lazy val jsIValue: Parser[IValue] = jsValue | jsFId
   private lazy val jsIValueE: Parser[IValue] =
     jsIValue | "" ~> failure("illegal start of IValue")
@@ -152,11 +154,26 @@ object ModelParser extends RegexParsers with JavaTokenParsers {
     }
 
   // JavaScript function
-  private lazy val jsFun: Parser[Program] = """[\\""" ~> any <~ """\\]""" ^^ {
+  private lazy val jsFun: Parser[CFGFunction] = """[\\""" ~> any <~ """\\]""" ^^ {
     case fun => JSParser.stringToAST(fun) match {
       case Succ((pgm, log)) => {
         if (log.hasError) println(log)
-        Succ(pgm)
+        val safeConfig = SafeConfig(CmdCFGBuild, silent = true)
+
+        // rewrite AST
+        val astRewriteConfig = ASTRewriteConfig()
+        val rPgm = ASTRewrite(pgm, safeConfig, astRewriteConfig).get
+
+        // compile
+        val compileConfig = CompileConfig()
+        val ir = Compile(rPgm, safeConfig, compileConfig).get
+
+        // cfg build
+        val cfgBuildConfig = CFGBuildConfig()
+        var funCFG = CFGBuild(ir, safeConfig, cfgBuildConfig).get
+        var func = funCFG.getFunc(1).get
+
+        Succ(func)
       }
       case Fail(e) => {
         println(ModelParseError(e.toString))
@@ -164,13 +181,29 @@ object ModelParser extends RegexParsers with JavaTokenParsers {
       }
     }
   } ^? { case Succ(pgm) => pgm }
-  private lazy val jsFunMap: Parser[Map[Int, Program]] = "{" ~> (
+  private lazy val jsFuncs: Parser[List[CFGFunction]] = "{" ~> (
     repsepE((int <~ ":") ~! jsFun, ",")
   ) <~ "}" ^^ {
       case lst => {
-        lst.foldLeft(HashMap[Int, Program]()) {
-          case (map, id ~ fun) => {
-            map + (id -> fun)
+        lst.foldLeft(List[CFGFunction]()) {
+          case (funcs, mid ~ func) => {
+            func.id = -mid
+            // address mutation
+            // TODO is system address good? how about incremental program address?
+            def mutate(addr: Address): SystemAddr = addr match {
+              case ProgramAddr(id) =>
+                SystemAddr(s"JSModel-$mid<$addr>")
+              case sys: SystemAddr => sys
+            }
+            func.getAllBlocks.foreach(_.getInsts.foreach {
+              case i: CFGAlloc => i.addr = mutate(i.addr)
+              case i: CFGAllocArray => i.addr = mutate(i.addr)
+              case i: CFGAllocArg => i.addr = mutate(i.addr)
+              case i: CFGCallInst => i.addr = mutate(i.addr)
+              case i: CFGInternalCall => i.addrOpt = i.addrOpt.map(mutate(_))
+              case _ =>
+            })
+            func :: funcs
           }
         }
       }
@@ -178,7 +211,7 @@ object ModelParser extends RegexParsers with JavaTokenParsers {
 
   // JavaScript model
   private lazy val jsModel: Parser[JSModel] =
-    ("Heap" ~> ":" ~> jsHeap) ~! ("Function" ~> ":" ~> jsFunMap) ^^ {
-      case heap ~ funMap => JSModel(heap, funMap)
+    ("Heap" ~> ":" ~> jsHeap) ~! ("Function" ~> ":" ~> jsFuncs) ^^ {
+      case heap ~ funcs => JSModel(heap, funcs)
     }
 }

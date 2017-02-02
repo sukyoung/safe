@@ -60,7 +60,8 @@ class CFG(
     isUser: Boolean
   ): CFGFunction = {
     val func: CFGFunction =
-      new CFGFunction(ir, this, argumentsName, argVars, localVars, name, isUser)
+      new CFGFunction(ir, argumentsName, argVars, localVars, name, isUser)
+    func.id = getFId
     fidCount += 1
     funcs ::= func
     if (isUser) userFuncs ::= func
@@ -72,11 +73,8 @@ class CFG(
   def addJSModel(
     func: CFGFunction
   ): Unit = {
-    func.cfg = this
-    func.id = fidCount
     funcs ::= func
     funMap(func.id) = func
-    fidCount += 1
   }
 
   // add edge

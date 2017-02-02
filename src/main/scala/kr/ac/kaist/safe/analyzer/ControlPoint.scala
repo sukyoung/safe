@@ -19,8 +19,6 @@ case class ControlPoint(
     block: CFGBlock,
     tracePartition: TracePartition
 ) {
-  def getState: AbsState = block.getState(tracePartition)
-  def setState(st: AbsState): Unit = block.setState(tracePartition, st)
   def next(to: CFGBlock, edgeType: CFGEdgeType): ControlPoint = {
     ControlPoint(to, tracePartition.next(block, to, edgeType))
   }

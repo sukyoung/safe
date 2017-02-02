@@ -14,6 +14,7 @@ package kr.ac.kaist.safe.phase
 import scala.util.{ Failure, Success, Try }
 import kr.ac.kaist.safe.SafeConfig
 import kr.ac.kaist.safe.analyzer._
+import kr.ac.kaist.safe.analyzer.models.JSModel
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.analyzer.console.Console
@@ -55,19 +56,21 @@ case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, Int, TracePartiti
     val callTP = CallContext(config.callsiteSensitivity, Nil)
     val loopTP = LoopContext(config.loopSensitivity, None, None)
     val globalTP = callTP * loopTP
-    cfg.globalFunc.entry.setState(globalTP, initSt)
+    val entryCP = ControlPoint(cfg.globalFunc.entry, globalTP)
 
     val worklist = Worklist(cfg)
-    worklist.add(ControlPoint(cfg.globalFunc.entry, globalTP))
-    val semantics = new Semantics(cfg, worklist)
+    worklist.add(entryCP)
+    val sem = new Semantics(cfg, worklist)
     val consoleOpt = config.console match {
-      case true => Some(new Console(cfg, worklist, semantics))
+      case true => Some(new Console(cfg, worklist, sem))
       case false => None
     }
-    val fixpoint = new Fixpoint(semantics, worklist, consoleOpt)
+
+    sem.setState(entryCP, initSt)
+    val fixpoint = new Fixpoint(sem, worklist, consoleOpt)
     val iters = fixpoint.compute()
 
-    val excLog = semantics.excLog
+    val excLog = sem.excLog
     // Report errors.
     if (excLog.hasError) {
       println(cfg.fileName + ":")
@@ -76,16 +79,17 @@ case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, Int, TracePartiti
 
     // print html file: {htmlName}.html
     config.htmlName.map(name => {
-      HTMLWriter.writeHTMLFile(cfg, semantics, None, s"$name.html")
+      HTMLWriter.writeHTMLFile(cfg, sem, None, s"$name.html")
     })
 
     // dump exit state
     if (config.exitDump) {
-      val state = cfg.globalFunc.exit.getState(globalTP)
+      val exitCP = ControlPoint(cfg.globalFunc.exit, globalTP)
+      val state = sem.getState(exitCP)
       println(state.toString)
     }
 
-    Success((cfg, iters, globalTP, semantics))
+    Success((cfg, iters, globalTP, sem))
   }
 
   def defaultConfig: AnalyzeConfig = AnalyzeConfig()
@@ -119,6 +123,9 @@ case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, Int, TracePartiti
     ("jsModel", BoolOption(c => c.jsModel = true),
       "analysis with JavaScript models.")
   )
+
+  // cache for JS model
+  var jscache: Option[JSModel] = None
 }
 
 // Analyze phase config
