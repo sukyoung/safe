@@ -1,9 +1,9 @@
 var x;
 
-if (@Top) {
+if (@BoolTop) {
 	x = 1;
 }
-else if (@Top) {
+else if (@BoolTop) {
 	x = true;
 }
 else {

@@ -1,6 +1,6 @@
 var o = {};
 
-if (@Top)
+if (@BoolTop)
 	o.x = 123;
 else
 	o.y = 456;

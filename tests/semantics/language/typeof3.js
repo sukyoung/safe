@@ -1,11 +1,11 @@
 var x;
 
-if (@Top) {
+if (@BoolTop) {
 	x = {};
 	var __result1 = typeof x;
 	var __expect1 = "object";
 }
-else if (@Top) {
+else if (@BoolTop) {
 	x = [];
 	var __result2 = typeof x;
 	var __expect2 = "object";

@@ -1,6 +1,6 @@
 var x = {p:1};
 
-if (@Top) {
+if (@BoolTop) {
 	var __result1 = delete x.p;
 	var __expect1 = true;
 } else

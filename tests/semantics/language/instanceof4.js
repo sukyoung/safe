@@ -1,6 +1,6 @@
 var o;
 
-if (@Top)
+if (@BoolTop)
 	o = {};
 else
 	o = [];

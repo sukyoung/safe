@@ -3,7 +3,7 @@ var o2 = {x:123};
 var o3 = {x:123, y:456};
 var p;
 
-if (@Top)
+if (@BoolTop)
 	p = "x" 
 else
 	p = "y"

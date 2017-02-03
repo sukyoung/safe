@@ -1,12 +1,12 @@
 var o1;
 var o2;
 
-if (@Top)
+if (@BoolTop)
 	o1 = {};
 else
 	o1 = [];
 
-if (@Top)
+if (@BoolTop)
 	o2 = Object;
 else
 	o2 = Array;

@@ -1,8 +1,8 @@
 var x;
 
-if(@Top) {
+if(@BoolTop) {
 	x = 12;
-	if(@Top) {
+	if(@BoolTop) {
 		x = 34;
 	}
 	else {
@@ -11,7 +11,7 @@ if(@Top) {
 }
 else {
 	x = 56;
-	if(@Top) {
+	if(@BoolTop) {
 		l:{break l; x=-2;}
 	}
 	else {

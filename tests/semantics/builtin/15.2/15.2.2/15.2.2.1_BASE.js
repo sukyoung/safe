@@ -22,7 +22,7 @@ var __result5 = x5.y;
 var __expect5 = 10;
 
 var v;
-if (@Top) {
+if (@BoolTop) {
   v = 123;
 } else {
   v = "ABC";

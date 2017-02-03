@@ -1,6 +1,6 @@
 var x;
 
-if (@Top)
+if (@BoolTop)
 	x = [1];
 else
 	x = {"0":1};

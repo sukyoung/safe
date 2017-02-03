@@ -4,7 +4,7 @@ var o3 = [123,456];
 var o4 = [123,456,789];
 var p;
 
-if (@Top)
+if (@BoolTop)
 	p = "0" 
 else
 	p = "1"
