@@ -52,3 +52,7 @@ case class HeapParseError(msg: String) extends AnalyzeError(
 case class ModelParseError(msg: String) extends AnalyzeError(
   s"[ModelParseError]: $msg"
 )
+
+case object LocTopGammaError extends AnalyzeError(
+  "AbsLoc.Top.gamma is impossible"
+)

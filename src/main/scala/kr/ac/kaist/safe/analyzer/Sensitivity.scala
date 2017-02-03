@@ -35,14 +35,14 @@ sealed abstract class TracePartition {
 ////////////////////////////////////////////////////////////////////////////////
 object NoSensitivity extends Sensitivity {
   val initTP = EmptyTP
-  case object EmptyTP extends TracePartition {
-    def next(
-      from: CFGBlock,
-      to: CFGBlock,
-      edgeType: CFGEdgeType
-    ): EmptyTP.type = EmptyTP
-    override def toString: String = s"Empty"
-  }
+}
+case object EmptyTP extends TracePartition {
+  def next(
+    from: CFGBlock,
+    to: CFGBlock,
+    edgeType: CFGEdgeType
+  ): EmptyTP.type = EmptyTP
+  override def toString: String = s"Empty"
 }
 
 ////////////////////////////////////////////////////////////////////////////////
