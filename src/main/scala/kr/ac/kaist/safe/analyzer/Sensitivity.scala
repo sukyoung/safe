@@ -103,27 +103,30 @@ class LoopSensitivity(depth: Int) extends Sensitivity {
       edgeType: CFGEdgeType
     ): LoopContext = (from, to, edgeType) match {
       // function call
-      case (_, _: Entry, CFGEdgeCall) => LoopContext(None, None)
+      case (_, _: Entry, CFGEdgeCall) =>
+        LoopContext(None, None)
       // try start
-      case (_, tryB @ NormalBlock(_, TryLabel), CFGEdgeNormal) => copy(excOuter = Some(this, tryB))
+      case (_, tryB @ NormalBlock(_, TryLabel), CFGEdgeNormal) =>
+        copy(excOuter = Some(this, tryB))
       // catch
       case (_, NormalBlock(_, CatchLabel), _) => excOuter match {
         case Some((e, _)) => e
         case None => this
       }
       // catch
-      case (_, NormalBlock(_, FinallyLabel(tryBlock)), _) => excOuter match {
-        case Some((e, tb)) if tb == tryBlock => e
-        case _ => this
-      }
+      case (_, NormalBlock(_, FinallyLabel(tryBlock)), _) =>
+        excOuter match {
+          case Some((e, tb)) if tb == tryBlock => e
+          case _ => this
+        }
       // loop
       case (_, loopHead: LoopHead, CFGEdgeNormal) => infoOpt match {
         // loop iteration
-        case Some(info @ LoopInfo(l, k, outer)) if l == loopHead => {
+        case Some(info @ LoopInfo(l, k, outer)) if l == loopHead =>
           LoopContext(Some(info.nextIter(depth)), excOuter)
-        }
         // loop start
-        case _ => LoopContext(Some(LoopInfo(loopHead, 0, this)), excOuter)
+        case _ =>
+          LoopContext(Some(LoopInfo(loopHead, 0, this)), excOuter)
       }
       // loop break
       case (_, NormalBlock(_, LoopBreakLabel), _) => infoOpt match {
@@ -135,15 +138,18 @@ class LoopSensitivity(depth: Int) extends Sensitivity {
       case _ => this
     }
     override def toString: String = infoOpt match {
-      case Some(LoopInfo(loopHead, k, outer)) => s"Loop($loopHead, $k/$depth)"
+      case Some(LoopInfo(loopHead, k, outer)) =>
+        s"Loop($loopHead, $k/$depth)"
       case None => s"NoLoop"
     }
     override def equals(other: Any): Boolean = other match {
-      case LoopContext(oInfoOpt, _) if depth == depth => (infoOpt, oInfoOpt) match {
-        case (None, None) => true
-        case (Some(LoopInfo(llh, lk, _)), Some(LoopInfo(rlh, rk, _))) if llh == rlh && lk == rk => true
-        case _ => false
-      }
+      case LoopContext(oInfoOpt, _) if depth == depth =>
+        (infoOpt, oInfoOpt) match {
+          case (None, None) => true
+          case (Some(LoopInfo(llh, lk, _)), Some(LoopInfo(rlh, rk, _))) =>
+            llh == rlh && lk == rk
+          case _ => false
+        }
       case _ => false
     }
   }
