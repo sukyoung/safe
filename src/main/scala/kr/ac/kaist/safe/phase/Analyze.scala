@@ -53,10 +53,11 @@ case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, Int, TracePartiti
     if (safeConfig.html || config.domModel)
       initSt = Initialize.addDOM(initSt, cfg)
 
-    val callTP = CallContext(config.callsiteSensitivity, Nil)
-    val loopTP = LoopContext(config.loopSensitivity, None, None)
-    val globalTP = callTP * loopTP
-    val entryCP = ControlPoint(cfg.globalFunc.entry, globalTP)
+    val sens =
+      CallSiteSensitivity(config.callsiteSensitivity) *
+        LoopSensitivity(config.loopSensitivity)
+    val initTP = sens.initTP
+    val entryCP = ControlPoint(cfg.globalFunc.entry, initTP)
 
     val worklist = Worklist(cfg)
     worklist.add(entryCP)
@@ -84,12 +85,12 @@ case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, Int, TracePartiti
 
     // dump exit state
     if (config.exitDump) {
-      val exitCP = ControlPoint(cfg.globalFunc.exit, globalTP)
+      val exitCP = ControlPoint(cfg.globalFunc.exit, initTP)
       val state = sem.getState(exitCP)
       println(state.toString)
     }
 
-    Success((cfg, iters, globalTP, sem))
+    Success((cfg, iters, initTP, sem))
   }
 
   def defaultConfig: AnalyzeConfig = AnalyzeConfig()
