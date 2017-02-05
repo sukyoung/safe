@@ -13,7 +13,7 @@ package kr.ac.kaist.safe.analyzer
 
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.analyzer.domain.Utils._
-import kr.ac.kaist.safe.util.Address
+import kr.ac.kaist.safe.util.AllocSite
 
 import scala.collection.immutable.HashSet
 
@@ -195,14 +195,14 @@ object TypeConversionHelper {
     (obj3 + obj4 + obj5, excSet)
   }
 
-  def ToObject(value: AbsValue, st: AbsState, addr: Address): (AbsLoc, AbsState, Set[Exception]) = {
+  def ToObject(value: AbsValue, st: AbsState, asite: AllocSite): (AbsLoc, AbsState, Set[Exception]) = {
     val locSet = value.locset
     val (obj, excSet) = ToObject(value.pvalue)
 
     val (locSet1, st1) =
       if (!obj.isBottom) {
-        val loc = Loc(addr, Recent)
-        val state = st.oldify(addr)
+        val loc = Loc(asite, Recent)
+        val state = st.oldify(asite)
         (AbsLoc(loc), AbsState(state.heap.update(loc, obj), state.context))
       } else (AbsLoc.Bot, AbsState.Bot)
     val (locSet2, st2) =

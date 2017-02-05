@@ -16,13 +16,13 @@ import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.nodes.ir.IRModelFunc
 import kr.ac.kaist.safe.nodes.ast.{ ASTNodeInfo, ModelFunc }
-import kr.ac.kaist.safe.util.{ Address, Span, SystemAddr }
+import kr.ac.kaist.safe.util.{ AllocSite, Span, PredAllocSite }
 import scala.collection.immutable.HashSet
 
 abstract class Code {
   val argLen: Int = 0
   def getCFGFunc(cfg: CFG, name: String): CFGFunction
-  def getAllAddrSet: Set[Address] = HashSet()
+  def getAllASiteSet: Set[AllocSite] = HashSet()
   protected def createCFGFunc(
     cfg: CFG,
     name: String
@@ -51,10 +51,10 @@ object EmptyCode {
 
 class BasicCode(
     override val argLen: Int = 0,
-    addrSet: Set[Address] = HashSet(),
+    asiteSet: Set[AllocSite] = HashSet(),
     code: (AbsValue, AbsState) => (AbsState, AbsState, AbsValue)
 ) extends Code {
-  override def getAllAddrSet: Set[Address] = addrSet
+  override def getAllASiteSet: Set[AllocSite] = asiteSet
   def getCFGFunc(cfg: CFG, name: String): CFGFunction = {
     val (funName, argsName, func) = createCFGFunc(cfg, name)
     val sem: SemanticFun = createSemanticFunc(argsName)
@@ -80,26 +80,26 @@ class BasicCode(
 object BasicCode {
   def apply(
     argLen: Int = 0,
-    addrSet: Set[Address] = HashSet(),
+    asiteSet: Set[AllocSite] = HashSet(),
     code: (AbsValue, AbsState) => (AbsState, AbsState, AbsValue)
-  ): BasicCode = new BasicCode(argLen, addrSet, code)
+  ): BasicCode = new BasicCode(argLen, asiteSet, code)
 }
 
 class CallCode(
     override val argLen: Int = 0,
     funcId: CFGId, thisId: CFGId, argsId: CFGId, retId: CFGId,
-    beforeCallCode: (AbsValue, AbsState, Address) => (AbsState, AbsState),
+    beforeCallCode: (AbsValue, AbsState, AllocSite) => (AbsState, AbsState),
     afterCallCode: (AbsValue, AbsState) => (AbsState, AbsState, AbsValue)
 ) extends Code {
-  val callEnvAddr = SystemAddr("Function.prototype.call<env>")
-  override def getAllAddrSet: Set[Address] = HashSet(callEnvAddr)
+  val callEnvASite = PredAllocSite("Function.prototype.call<env>")
+  override def getAllASiteSet: Set[AllocSite] = HashSet(callEnvASite)
   def getCFGFunc(cfg: CFG, name: String): CFGFunction = {
     val (funName, argsName, func) = createCFGFunc(cfg, name)
-    val beforeSem: SemanticFun = createBeforeFunc(argsName, cfg.newProgramAddr)
+    val beforeSem: SemanticFun = createBeforeFunc(argsName, cfg.newUserASite)
     val beforeBlock: ModelBlock = func.createModelBlock(beforeSem)
 
     val callBlock: Call = func.createCall(
-      CFGCall(func.ir, _, CFGVarRef(func.ir, funcId), CFGVarRef(func.ir, thisId), CFGVarRef(func.ir, argsId), callEnvAddr),
+      CFGCall(func.ir, _, CFGVarRef(func.ir, funcId), CFGVarRef(func.ir, thisId), CFGVarRef(func.ir, argsId), callEnvASite),
       retId
     )
 
@@ -114,12 +114,12 @@ class CallCode(
     func
   }
 
-  private def createBeforeFunc(argsName: String, newAddr: Address): SemanticFun = st => {
+  private def createBeforeFunc(argsName: String, newASite: AllocSite): SemanticFun = st => {
     val heap = st.heap
     val context = st.context
     val localEnv = context.pureLocal.record.decEnvRec
     val (argV, _) = localEnv.GetBindingValue(argsName)
-    val (newSt, newExcSt) = beforeCallCode(argV, st, newAddr)
+    val (newSt, newExcSt) = beforeCallCode(argV, st, newASite)
     (newSt, newExcSt)
   }
 
@@ -139,7 +139,7 @@ object CallCode {
   def apply(
     argLen: Int = 0,
     funcId: CFGId, thisId: CFGId, argsId: CFGId, retId: CFGId,
-    beforeCallCode: (AbsValue, AbsState, Address) => (AbsState, AbsState),
+    beforeCallCode: (AbsValue, AbsState, AllocSite) => (AbsState, AbsState),
     afterCallCode: (AbsValue, AbsState) => (AbsState, AbsState, AbsValue)
   ): CallCode = new CallCode(argLen, funcId, thisId, argsId, retId, beforeCallCode, afterCallCode)
 }

@@ -188,19 +188,19 @@ object ModelParser extends RegexParsers with JavaTokenParsers {
         lst.foldLeft(List[CFGFunction]()) {
           case (funcs, mid ~ func) => {
             func.id = -mid
-            // address mutation
-            // TODO is system address good? how about incremental program address?
-            def mutate(addr: Address): SystemAddr = addr match {
-              case ProgramAddr(id) =>
-                SystemAddr(s"JSModel-$mid<$addr>")
-              case sys: SystemAddr => sys
+            // allocation site mutation
+            // TODO is predefined allocation site good? how about incremental user allocation site?
+            def mutate(asite: AllocSite): PredAllocSite = asite match {
+              case UserAllocSite(id) =>
+                PredAllocSite(s"JSModel-$mid<$asite>")
+              case sys: PredAllocSite => sys
             }
             func.getAllBlocks.foreach(_.getInsts.foreach {
-              case i: CFGAlloc => i.addr = mutate(i.addr)
-              case i: CFGAllocArray => i.addr = mutate(i.addr)
-              case i: CFGAllocArg => i.addr = mutate(i.addr)
-              case i: CFGCallInst => i.addr = mutate(i.addr)
-              case i: CFGInternalCall => i.addrOpt = i.addrOpt.map(mutate(_))
+              case i: CFGAlloc => i.asite = mutate(i.asite)
+              case i: CFGAllocArray => i.asite = mutate(i.asite)
+              case i: CFGAllocArg => i.asite = mutate(i.asite)
+              case i: CFGCallInst => i.asite = mutate(i.asite)
+              case i: CFGInternalCall => i.asiteOpt = i.asiteOpt.map(mutate(_))
               case _ =>
             })
             func :: funcs

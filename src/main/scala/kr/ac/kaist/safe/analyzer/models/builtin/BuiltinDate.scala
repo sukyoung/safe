@@ -17,10 +17,10 @@ import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.analyzer._
 import kr.ac.kaist.safe.analyzer.models._
-import kr.ac.kaist.safe.util.SystemAddr
+import kr.ac.kaist.safe.util.PredAllocSite
 
 object BuiltinDateHelper {
-  val instanceAddr = SystemAddr("Date<instance>")
+  val instanceASite = PredAllocSite("Date<instance>")
 
   def getValue(thisV: AbsValue, h: AbsHeap): AbsNumber = {
     thisV.pvalue.numval + thisV.locset.foldLeft(AbsNumber.Bot)((res, loc) => {
@@ -53,12 +53,12 @@ object BuiltinDateHelper {
 
   val constructor = BasicCode(
     argLen = 1,
-    addrSet = HashSet(instanceAddr),
+    asiteSet = HashSet(instanceASite),
     code = (args: AbsValue, st: AbsState) => {
       val h = st.heap
-      val addr = instanceAddr
-      val state = st.oldify(addr)
-      val loc = Loc(addr, Recent)
+      val asite = instanceASite
+      val state = st.oldify(asite)
+      val loc = Loc(asite, Recent)
       val newObj = AbsObject.newObject(BuiltinDateProto.loc)
       val argL = Helper.propLoad(args, Set(AbsString("length")), h).pvalue.numval
       val absNum = argL.getSingle match {
@@ -110,12 +110,12 @@ object BuiltinDateHelper {
 
   def setNumber(n: Int): BasicCode = BasicCode(
     argLen = n,
-    addrSet = HashSet(instanceAddr),
+    asiteSet = HashSet(instanceASite),
     code = (args: AbsValue, st: AbsState) => {
       val h = st.heap
-      val addr = instanceAddr
-      val state = st.oldify(addr)
-      val loc = Loc(addr, Recent)
+      val asite = instanceASite
+      val state = st.oldify(asite)
+      val loc = Loc(asite, Recent)
       val thisV = state.context.thisBinding
       var excSet = BuiltinHelper.checkExn(h, thisV, "Date")
       // XXX: give up the precision! (Room for the analysis precision improvement!)

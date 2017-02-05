@@ -16,7 +16,7 @@ import kr.ac.kaist.safe.analyzer.models.builtin._
 import kr.ac.kaist.safe.analyzer.TypeConversionHelper
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.nodes.cfg._
-import kr.ac.kaist.safe.util.Address
+import kr.ac.kaist.safe.util.AllocSite
 import scala.collection.immutable.HashSet
 
 /* 8.6 The Object Type */
@@ -31,7 +31,7 @@ case class Object(amap: Map[String, DataProp], imap: Map[IName, IValue])
 ////////////////////////////////////////////////////////////////////////////////
 trait AbsObject extends AbsDomain[Object, AbsObject] {
   /* substitute locR by locO */
-  def oldify(addr: Address): AbsObject
+  def oldify(asite: AllocSite): AbsObject
   def subsLoc(locR: Loc, locO: Loc): AbsObject
   def weakSubsLoc(locR: Loc, locO: Loc): AbsObject
 
@@ -239,7 +239,7 @@ object DefaultObject extends AbsObjectUtil {
     ///////////////////////////////////////////////////////////////
     def isEmpty: Boolean = this == Empty
 
-    def oldify(addr: Address): AbsObject = subsLoc(Loc(addr, Recent), Loc(addr, Old))
+    def oldify(asite: AllocSite): AbsObject = subsLoc(Loc(asite, Recent), Loc(asite, Old))
 
     /* substitute locR by locO */
     def subsLoc(locR: Loc, locO: Loc): AbsObject = this match {

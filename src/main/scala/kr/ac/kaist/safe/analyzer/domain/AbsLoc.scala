@@ -20,8 +20,8 @@ import scala.collection.immutable.HashSet
 ////////////////////////////////////////////////////////////////////////////////
 // concrete location type
 ////////////////////////////////////////////////////////////////////////////////
-case class Loc(address: Address, recency: RecencyTag = Recent) extends Value {
-  override def toString: String = s"${recency}${address}"
+case class Loc(asite: AllocSite, recency: RecencyTag = Recent) extends Value {
+  override def toString: String = s"${recency}${asite}"
 }
 
 object Loc {
@@ -30,16 +30,16 @@ object Loc {
     val sysPattern = "(#|##)([0-9a-zA-Z.<>]+)".r
     str match {
       case pgmPattern(prefix, idStr) =>
-        RecencyTag.parse(prefix).map(Loc(ProgramAddr(idStr.toInt), _))
+        RecencyTag.parse(prefix).map(Loc(UserAllocSite(idStr.toInt), _))
       case sysPattern(prefix, name) =>
-        RecencyTag.parse(prefix).map(Loc(SystemAddr(name), _))
+        RecencyTag.parse(prefix).map(Loc(PredAllocSite(name), _))
       case str => Failure(NoLoc(str))
     }
   }
   implicit def ordering[B <: Loc]: Ordering[B] = Ordering.by({
-    case Loc(address, _) => address match {
-      case ProgramAddr(id) => (id, "")
-      case SystemAddr(name) => (0, name)
+    case Loc(asite, _) => asite match {
+      case UserAllocSite(id) => (id, "")
+      case PredAllocSite(name) => (0, name)
     }
   })
 }
@@ -47,7 +47,7 @@ object Loc {
 // system location
 object SystemLoc {
   def apply(name: String, recency: RecencyTag = Recent): Loc =
-    Loc(SystemAddr(name), recency)
+    Loc(PredAllocSite(name), recency)
 }
 
 // recency tag
@@ -98,8 +98,8 @@ case class DefaultLoc(cfg: CFG) extends AbsLocUtil {
   lazy val Bot: Dom = LocSet()
 
   // TODO all location set
-  // lazy val locSet: Set[Loc] = cfg.getAllAddrSet.foldLeft(HashSet[Loc]()) {
-  //   case (set, addr) => set + Loc(addr, Recent) + Loc(addr, Old)
+  // lazy val locSet: Set[Loc] = cfg.getAllASiteSet.foldLeft(HashSet[Loc]()) {
+  //   case (set, asite) => set + Loc(asite, Recent) + Loc(asite, Old)
   // }
 
   def alpha(loc: Loc): AbsLoc = LocSet(loc)

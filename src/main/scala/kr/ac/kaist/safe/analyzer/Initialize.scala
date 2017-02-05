@@ -33,7 +33,7 @@ object Initialize {
       PredefLoc.GLOBAL_ENV -> AbsLexEnv(AbsGlobalEnvRec.Top),
       PredefLoc.PURE_LOCAL -> globalPureLocalEnv,
       PredefLoc.COLLAPSED -> AbsLexEnv(AbsDecEnvRec.Empty)
-    ), OldAddrSet.Empty, globalLocSet)
+    ), OldASiteSet.Empty, globalLocSet)
 
     val modeledHeap: AbsHeap =
       if (jsModel) {

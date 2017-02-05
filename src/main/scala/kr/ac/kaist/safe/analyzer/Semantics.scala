@@ -59,7 +59,7 @@ class Semantics(
   }
 
   // Interprocedural edges
-  case class EdgeData(old: OldAddrSet, env: AbsLexEnv, thisBinding: AbsValue) {
+  case class EdgeData(old: OldASiteSet, env: AbsLexEnv, thisBinding: AbsValue) {
     def +(other: EdgeData): EdgeData = EdgeData(
       this.old + other.old,
       this.env + other.env,
@@ -107,7 +107,7 @@ class Semantics(
             hi + ctx2.update(locEnv, objEnv)
           })
           AbsState(st.heap, ctx3
-            .setOldAddrSet(data.old)
+            .setOldASiteSet(data.old)
             .setThisBinding(data.thisBinding))
         }
       }
@@ -121,7 +121,7 @@ class Semantics(
           val (returnV, _) = localEnv.record.decEnvRec.GetBindingValue("@return")
           val ctx2 = ctx1.subsPureLocal(env1)
           val newSt = AbsState(st.heap, ctx2
-            .setOldAddrSet(old2)
+            .setOldASiteSet(old2)
             .setThisBinding(data.thisBinding))
           newSt.varStore(retVar, returnV)
         }
@@ -148,7 +148,7 @@ class Semantics(
           val (env3, _) = env2.SetMutableBinding("@exception_all", excValue + oldExcAllValue)
           val ctx2 = ctx1.subsPureLocal(envL.copyWith(record = env3))
           AbsState(st.heap, ctx2
-            .setOldAddrSet(c2)
+            .setOldASiteSet(c2)
             .setThisBinding(data.thisBinding))
         }
       case (ExitExc(f), _) =>
@@ -204,11 +204,11 @@ class Semantics(
   def I(i: CFGNormalInst, st: AbsState, excSt: AbsState): (AbsState, AbsState) = {
     i match {
       case _ if st.isBottom => (AbsState.Bot, excSt)
-      case CFGAlloc(_, _, x, e, newAddr) => {
+      case CFGAlloc(_, _, x, e, newASite) => {
         val objProtoSingleton = AbsLoc(BuiltinObjectProto.loc)
         // Recency Abstraction
-        val locR = Loc(newAddr, Recent)
-        val st1 = st.oldify(newAddr)
+        val locR = Loc(newASite, Recent)
+        val st1 = st.oldify(newASite)
         val (vLocSet, excSet) = e match {
           case None => (objProtoSingleton, ExcSetEmpty)
           case Some(proto) => {
@@ -225,17 +225,17 @@ class Semantics(
         val s1 = excSt + newExcSt
         (newSt, s1)
       }
-      case CFGAllocArray(_, _, x, n, newAddr) => {
-        val locR = Loc(newAddr, Recent)
-        val st1 = st.oldify(newAddr)
+      case CFGAllocArray(_, _, x, n, newASite) => {
+        val locR = Loc(newASite, Recent)
+        val st1 = st.oldify(newASite)
         val np = AbsNumber(n.toInt)
         val h2 = st1.heap.update(locR, AbsObject.newArrayObject(np))
         val newSt = AbsState(h2, st1.context).varStore(x, AbsValue(locR))
         (newSt, excSt)
       }
-      case CFGAllocArg(_, _, x, n, newAddr) => {
-        val locR = Loc(newAddr, Recent)
-        val st1 = st.oldify(newAddr)
+      case CFGAllocArg(_, _, x, n, newASite) => {
+        val locR = Loc(newASite, Recent)
+        val st1 = st.oldify(newASite)
         val absN = AbsNumber(n.toInt)
         val h2 = st1.heap.update(locR, AbsObject.newArgObject(absN))
         val newSt = AbsState(h2, st1.context).varStore(x, AbsValue(locR))
@@ -469,7 +469,7 @@ class Semantics(
 
   // internal API call
   // CFGInternalCall(ir, _, lhs, name, arguments, loc)
-  def IC(ir: IRNode, lhs: CFGId, name: String, args: List[CFGExpr], loc: Option[Address], st: AbsState, excSt: AbsState): (AbsState, AbsState) = (name, args, loc) match {
+  def IC(ir: IRNode, lhs: CFGId, name: String, args: List[CFGExpr], loc: Option[AllocSite], st: AbsState, excSt: AbsState): (AbsState, AbsState) = (name, args, loc) match {
     case (NodeUtil.INTERNAL_CLASS, List(exprO, exprP), None) => {
       val (v, excSetO) = V(exprO, st)
       val (p, excSetP) = V(exprP, st)
@@ -706,7 +706,7 @@ class Semantics(
     case (NodeUtil.INTERNAL_GET_OWN_PROP_NAMES, List(expr), Some(aNew)) => {
       val h = st.heap
       val (objV, excSet1) = V(expr, st)
-      val arrAddr = aNew
+      val arrASite = aNew
       val (keyStr, lenSet) = objV.locset.foldLeft((AbsString.Bot, Set[Option[Int]]())) {
         case ((str, lenSet), loc) => {
           val obj = h.get(loc)
@@ -760,9 +760,9 @@ class Semantics(
       retObj.isBottom match {
         case true => (AbsState.Bot, excSt)
         case false => {
-          val state = st.oldify(arrAddr)
-          val arrLoc = Loc(arrAddr, Recent)
-          val retHeap = state.heap.update(arrLoc, retObj.oldify(arrAddr))
+          val state = st.oldify(arrASite)
+          val arrLoc = Loc(arrASite, Recent)
+          val retHeap = state.heap.update(arrLoc, retObj.oldify(arrASite))
           val excSt = state.raiseException(retExcSet)
           val st2 = AbsState(retHeap, state.context)
           val retSt = st2.varStore(lhs, AbsValue(arrLoc))
@@ -996,8 +996,8 @@ class Semantics(
 
   def CI(cp: ControlPoint, i: CFGCallInst, st: AbsState, excSt: AbsState): (AbsState, AbsState) = {
     // cons, thisArg and arguments must not be bottom
-    val locR = Loc(i.addr, Recent)
-    val st1 = st.oldify(i.addr)
+    val locR = Loc(i.asite, Recent)
+    val st1 = st.oldify(i.asite)
     val (funVal, funExcSet) = V(i.fun, st1)
     val funLocSet = i match {
       case (_: CFGConstruct) => funVal.locset.filter(l => AT <= st1.heap.hasConstruct(l))
@@ -1042,7 +1042,7 @@ class Semantics(
               val exitCP = ControlPoint(funCFG.exit, newTP)
               val exitExcCP = ControlPoint(funCFG.exitExc, newTP)
               addIPEdge(cp, entryCP, EdgeData(
-                OldAddrSet.Empty,
+                OldASiteSet.Empty,
                 newEnv.copyWith(record = newRec2),
                 thisVal
               ))

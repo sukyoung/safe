@@ -15,7 +15,7 @@ import kr.ac.kaist.safe.analyzer.{ TypeConversionHelper, Helper }
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.analyzer.models._
-import kr.ac.kaist.safe.util.SystemAddr
+import kr.ac.kaist.safe.util.PredAllocSite
 import scala.collection.immutable.HashSet
 
 // 15.11 Error Objects
@@ -24,13 +24,13 @@ object BuiltinError extends FuncModel(
   // 15.11.1 Error(...)
   code = BasicCode(
     argLen = 1,
-    addrSet = HashSet(BuiltinErrorHelper.instanceAddr("Error")),
+    asiteSet = HashSet(BuiltinErrorHelper.instanceASite("Error")),
     code = BuiltinErrorHelper.construct("Error", BuiltinErrorProto.loc)
   ),
   // 15.11.2 new Error(...)
   construct = Some(BasicCode(
     argLen = 1,
-    addrSet = HashSet(BuiltinErrorHelper.instanceAddr("Error")),
+    asiteSet = HashSet(BuiltinErrorHelper.instanceASite("Error")),
     code = BuiltinErrorHelper.construct("Error", BuiltinErrorProto.loc)
   )),
   // 15.11.3.1 Error.prototype
@@ -59,7 +59,7 @@ object BuiltinErrorProto extends ObjModel(
 )
 
 private object BuiltinErrorHelper {
-  def instanceAddr(errorName: String): SystemAddr = SystemAddr(errorName + "<instance>")
+  def instanceASite(errorName: String): PredAllocSite = PredAllocSite(errorName + "<instance>")
 
   // 15.11.1.1, 15.11.2.1
   def construct(errorName: String, protoLoc: Loc)(args: AbsValue, st: AbsState): (AbsState, AbsState, AbsValue) = {
@@ -81,9 +81,9 @@ private object BuiltinErrorHelper {
 
     val errorObj = undefObject + notUndefObject
 
-    val errorAddr = instanceAddr(errorName)
-    val st1 = st.oldify(errorAddr)
-    val errorLoc = Loc(errorAddr, Recent)
+    val errorASite = instanceASite(errorName)
+    val st1 = st.oldify(errorASite)
+    val errorLoc = Loc(errorASite, Recent)
     val h2 = st1.heap.update(errorLoc, errorObj)
 
     (AbsState(h2, st1.context), AbsState.Bot, AbsValue(errorLoc))
@@ -144,7 +144,7 @@ object BuiltinEvalError extends FuncModel(
   // @function
   code = BasicCode(
     argLen = 1,
-    addrSet = HashSet(BuiltinErrorHelper.instanceAddr("EvalError")),
+    asiteSet = HashSet(BuiltinErrorHelper.instanceASite("EvalError")),
     code = BuiltinErrorHelper.construct("EvalError", BuiltinEvalErrorProto.loc)
   ),
   props = List(
@@ -153,7 +153,7 @@ object BuiltinEvalError extends FuncModel(
   // @construct
   construct = Some(BasicCode(
     argLen = 1,
-    addrSet = HashSet(BuiltinErrorHelper.instanceAddr("EvalError")),
+    asiteSet = HashSet(BuiltinErrorHelper.instanceASite("EvalError")),
     code = BuiltinErrorHelper.construct("EvalError", BuiltinEvalErrorProto.loc)
   )),
   protoModel = Some((BuiltinEvalErrorProto, F, F, F))
@@ -175,7 +175,7 @@ object BuiltinRangeError extends FuncModel(
   // @function
   code = BasicCode(
     argLen = 1,
-    addrSet = HashSet(BuiltinErrorHelper.instanceAddr("RangeError")),
+    asiteSet = HashSet(BuiltinErrorHelper.instanceASite("RangeError")),
     code = BuiltinErrorHelper.construct("RangeError", BuiltinRangeErrorProto.loc)
   ),
   props = List(
@@ -184,7 +184,7 @@ object BuiltinRangeError extends FuncModel(
   // @construct
   construct = Some(BasicCode(
     argLen = 1,
-    addrSet = HashSet(BuiltinErrorHelper.instanceAddr("RangeError")),
+    asiteSet = HashSet(BuiltinErrorHelper.instanceASite("RangeError")),
     code = BuiltinErrorHelper.construct("RangeError", BuiltinRangeErrorProto.loc)
   )),
   protoModel = Some((BuiltinRangeErrorProto, F, F, F))
@@ -206,7 +206,7 @@ object BuiltinRefError extends FuncModel(
   // @function
   code = BasicCode(
     argLen = 1,
-    addrSet = HashSet(BuiltinErrorHelper.instanceAddr("ReferenceError")),
+    asiteSet = HashSet(BuiltinErrorHelper.instanceASite("ReferenceError")),
     code = BuiltinErrorHelper.construct("ReferenceError", BuiltinRefErrorProto.loc)
   ),
   props = List(
@@ -215,7 +215,7 @@ object BuiltinRefError extends FuncModel(
   // @construct
   construct = Some(BasicCode(
     argLen = 1,
-    addrSet = HashSet(BuiltinErrorHelper.instanceAddr("ReferenceError")),
+    asiteSet = HashSet(BuiltinErrorHelper.instanceASite("ReferenceError")),
     code = BuiltinErrorHelper.construct("ReferenceError", BuiltinRefErrorProto.loc)
   )),
   protoModel = Some((BuiltinRefErrorProto, F, F, F))
@@ -237,7 +237,7 @@ object BuiltinSyntaxError extends FuncModel(
   // @function
   code = BasicCode(
     argLen = 1,
-    addrSet = HashSet(BuiltinErrorHelper.instanceAddr("SyntaxError")),
+    asiteSet = HashSet(BuiltinErrorHelper.instanceASite("SyntaxError")),
     code = BuiltinErrorHelper.construct("SyntaxError", BuiltinSyntaxErrorProto.loc)
   ),
   props = List(
@@ -246,7 +246,7 @@ object BuiltinSyntaxError extends FuncModel(
   // @construct
   construct = Some(BasicCode(
     argLen = 1,
-    addrSet = HashSet(BuiltinErrorHelper.instanceAddr("SyntaxError")),
+    asiteSet = HashSet(BuiltinErrorHelper.instanceASite("SyntaxError")),
     code = BuiltinErrorHelper.construct("SyntaxError", BuiltinSyntaxErrorProto.loc)
   )),
   protoModel = Some((BuiltinSyntaxErrorProto, F, F, F))
@@ -268,7 +268,7 @@ object BuiltinTypeError extends FuncModel(
   // @function
   code = BasicCode(
     argLen = 1,
-    addrSet = HashSet(BuiltinErrorHelper.instanceAddr("TypeError")),
+    asiteSet = HashSet(BuiltinErrorHelper.instanceASite("TypeError")),
     code = BuiltinErrorHelper.construct("TypeError", BuiltinTypeErrorProto.loc)
   ),
   props = List(
@@ -277,7 +277,7 @@ object BuiltinTypeError extends FuncModel(
   // @construct
   construct = Some(BasicCode(
     argLen = 1,
-    addrSet = HashSet(BuiltinErrorHelper.instanceAddr("TypeError")),
+    asiteSet = HashSet(BuiltinErrorHelper.instanceASite("TypeError")),
     code = BuiltinErrorHelper.construct("TypeError", BuiltinTypeErrorProto.loc)
   )),
   protoModel = Some((BuiltinTypeErrorProto, F, F, F))
@@ -299,7 +299,7 @@ object BuiltinURIError extends FuncModel(
   // @function
   code = BasicCode(
     argLen = 1,
-    addrSet = HashSet(BuiltinErrorHelper.instanceAddr("URIError")),
+    asiteSet = HashSet(BuiltinErrorHelper.instanceASite("URIError")),
     code = BuiltinErrorHelper.construct("URIError", BuiltinURIErrorProto.loc)
   ),
   props = List(
@@ -308,7 +308,7 @@ object BuiltinURIError extends FuncModel(
   // @construct
   construct = Some(BasicCode(
     argLen = 1,
-    addrSet = HashSet(BuiltinErrorHelper.instanceAddr("URIError")),
+    asiteSet = HashSet(BuiltinErrorHelper.instanceASite("URIError")),
     code = BuiltinErrorHelper.construct("URIError", BuiltinURIErrorProto.loc)
   )),
   protoModel = Some((BuiltinURIErrorProto, F, F, F))

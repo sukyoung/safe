@@ -43,11 +43,11 @@ case class CFGAlloc(
     override val block: NormalBlock,
     lhs: CFGId,
     protoOpt: Option[CFGExpr],
-    var addr: Address // XXX should be a value but for JS model for a while.
+    var asite: AllocSite // XXX should be a value but for JS model for a while.
 ) extends CFGNormalInst(ir, block) {
   override def toString: String = {
     val proto = protoOpt.getOrElse("")
-    s"$lhs := alloc($proto) @ #$addr"
+    s"$lhs := alloc($proto) @ #$asite"
   }
 }
 
@@ -57,9 +57,9 @@ case class CFGAllocArray(
     override val block: NormalBlock,
     lhs: CFGId,
     length: Int,
-    var addr: Address // XXX should be a value but for JS model for a while.
+    var asite: AllocSite // XXX should be a value but for JS model for a while.
 ) extends CFGNormalInst(ir, block) {
-  override def toString: String = s"$lhs := allocArray($length) @ #$addr"
+  override def toString: String = s"$lhs := allocArray($length) @ #$asite"
 }
 
 // x := allocArg(n)
@@ -68,9 +68,9 @@ case class CFGAllocArg(
     override val block: NormalBlock,
     lhs: CFGId,
     length: Int,
-    var addr: Address // XXX should be a value but for JS model for a while.
+    var asite: AllocSite // XXX should be a value but for JS model for a while.
 ) extends CFGNormalInst(ir, block) {
-  override def toString: String = s"$lhs := allocArg($length) @ #$addr"
+  override def toString: String = s"$lhs := allocArg($length) @ #$asite"
 }
 
 // this := enterCode(e)
@@ -142,14 +142,14 @@ case class CFGFunExpr(
     lhs: CFGId,
     nameOpt: Option[CFGId],
     func: CFGFunction,
-    addr1: Address,
-    addr2: Address,
-    addr3Opt: Option[Address]
+    asite1: AllocSite,
+    asite2: AllocSite,
+    asite3Opt: Option[AllocSite]
 ) extends CFGNormalInst(ir, block) {
   override def toString: String = {
     val name = nameOpt.getOrElse("")
-    s"$lhs := function $name(${func.id}) @ #$addr1, #$addr2" + (addr3Opt match {
-      case Some(addr) => s", #$addr"
+    s"$lhs := function $name(${func.id}) @ #$asite1, #$asite2" + (asite3Opt match {
+      case Some(asite) => s", #$asite"
       case None => ""
     })
   }
@@ -211,13 +211,13 @@ case class CFGInternalCall(
     lhs: CFGId,
     name: String,
     arguments: List[CFGExpr],
-    var addrOpt: Option[Address] // XXX should be a value but for JS model for a while.
+    var asiteOpt: Option[AllocSite] // XXX should be a value but for JS model for a while.
 ) extends CFGNormalInst(ir, block) {
   override def toString: String = {
     val arg = arguments.mkString(", ")
     s"$lhs := $name($arg)"
-  } + (addrOpt match {
-    case Some(addr) => s" @ #$addr"
+  } + (asiteOpt match {
+    case Some(asite) => s" @ #$asite"
     case None => ""
   })
 }
@@ -238,11 +238,11 @@ case class CFGInternalCall(
 //   override val block: NormalBlock,
 //   modelType: String,
 //   callType: String,
-//   addr1: Address,
-//   addr2: Address,
-//   addr3: Address
+//   asite1: AllocSite,
+//   asite2: AllocSite,
+//   asite3: AllocSite
 // ) extends CFGNormalInst(ir, block){
-//   override def toString: String = s"async($modelType, $callType) @ #$addr1, #$addr2, #$addr3"
+//   override def toString: String = s"async($modelType, $callType) @ #$asite1, #$asite2, #$asite3"
 // }
 
 /**
@@ -255,7 +255,7 @@ sealed abstract class CFGCallInst(
     val thisArg: CFGExpr,
     val arguments: CFGExpr
 ) extends CFGInst(ir, block) {
-  var addr: Address // XXX should be a value but for JS model for a while.
+  var asite: AllocSite // XXX should be a value but for JS model for a while.
 }
 
 // call(e1, e2, e3)
@@ -265,9 +265,9 @@ case class CFGCall(
     override val fun: CFGExpr,
     override val thisArg: CFGExpr,
     override val arguments: CFGExpr,
-    override var addr: Address // XXX should be a value but for JS model for a while.
+    override var asite: AllocSite // XXX should be a value but for JS model for a while.
 ) extends CFGCallInst(ir, block, fun, thisArg, arguments) {
-  override def toString: String = s"call($fun, $thisArg, $arguments) @ #$addr"
+  override def toString: String = s"call($fun, $thisArg, $arguments) @ #$asite"
 }
 
 // construct(e1, e2, e3)
@@ -277,7 +277,7 @@ case class CFGConstruct(
     override val fun: CFGExpr,
     override val thisArg: CFGExpr,
     override val arguments: CFGExpr,
-    override var addr: Address // XXX should be a value but for JS model for a while.
+    override var asite: AllocSite // XXX should be a value but for JS model for a while.
 ) extends CFGCallInst(ir, block, fun, thisArg, arguments) {
-  override def toString: String = s"construct($fun, $thisArg, $arguments) @ #$addr"
+  override def toString: String = s"construct($fun, $thisArg, $arguments) @ #$asite"
 }

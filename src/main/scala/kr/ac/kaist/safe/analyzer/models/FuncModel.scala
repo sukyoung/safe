@@ -47,8 +47,8 @@ class FuncModel(
         case None => (h, None, AB, AB, AB)
       }
 
-      // register address set
-      code.getAllAddrSet.foreach(cfg.registerSystemAddr(_))
+      // register allocation site set
+      code.getAllASiteSet.foreach(cfg.registerPredASite(_))
 
       // [model] function object
       val func = code.getCFGFunc(cfg, name)

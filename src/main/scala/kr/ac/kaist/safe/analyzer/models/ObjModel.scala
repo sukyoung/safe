@@ -21,14 +21,14 @@ class ObjModel(
     val name: String,
     val props: List[PropDesc] = Nil
 ) extends Model {
-  val addr: Address = SystemAddr(name)
-  val loc: Loc = Loc(addr, Recent)
+  val asite: AllocSite = PredAllocSite(name)
+  val loc: Loc = Loc(asite, Recent)
   def init(h: AbsHeap, cfg: CFG): (AbsHeap, AbsValue) =
     (initHeap(h, cfg), AbsValue(loc))
 
   def initHeap(h: AbsHeap, cfg: CFG): AbsHeap = {
     if (h.get(loc).isBottom) {
-      cfg.registerSystemAddr(addr)
+      cfg.registerPredASite(asite)
       initObj(h, cfg, loc, AbsObject.newObject, props)
     } else h
   }

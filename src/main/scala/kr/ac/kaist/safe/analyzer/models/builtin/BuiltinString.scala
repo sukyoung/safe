@@ -18,11 +18,11 @@ import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.analyzer._
 import kr.ac.kaist.safe.analyzer.models._
-import kr.ac.kaist.safe.util.SystemAddr
+import kr.ac.kaist.safe.util.PredAllocSite
 
 object BuiltinStringHelper {
-  val instanceAddr = SystemAddr("String<instance>")
-  val matchObjAddr = SystemAddr("String.prototype.match<object>")
+  val instanceASite = PredAllocSite("String<instance>")
+  val matchObjASite = PredAllocSite("String.prototype.match<object>")
 
   def typeConvert(args: AbsValue, st: AbsState): AbsString = {
     val h = st.heap
@@ -44,12 +44,12 @@ object BuiltinStringHelper {
 
   val constructor = BasicCode(
     argLen = 1,
-    addrSet = HashSet(instanceAddr),
+    asiteSet = HashSet(instanceASite),
     code = (args: AbsValue, st: AbsState) => {
       val num = typeConvert(args, st)
-      val addr = instanceAddr
-      val state = st.oldify(addr)
-      val loc = Loc(addr, Recent)
+      val asite = instanceASite
+      val state = st.oldify(asite)
+      val loc = Loc(asite, Recent)
       val heap = state.heap.update(loc, AbsObject.newStringObj(num))
       (AbsState(heap, state.context), AbsState.Bot, AbsValue(loc))
     }
@@ -57,11 +57,11 @@ object BuiltinStringHelper {
 
   val matchFunc = BasicCode(
     argLen = 1,
-    addrSet = HashSet(matchObjAddr),
+    asiteSet = HashSet(matchObjASite),
     code = (args: AbsValue, st: AbsState) => {
-      val addr = matchObjAddr
-      val state = st.oldify(addr)
-      val loc = Loc(addr, Recent)
+      val asite = matchObjASite
+      val state = st.oldify(asite)
+      val loc = Loc(asite, Recent)
       val heap = state.heap.update(loc, AbsObject.Top)
       (AbsState(heap, state.context), AbsState.Bot, AbsValue(Null, loc))
     }

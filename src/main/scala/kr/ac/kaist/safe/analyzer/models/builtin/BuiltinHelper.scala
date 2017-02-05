@@ -18,7 +18,7 @@ import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.analyzer._
 import kr.ac.kaist.safe.analyzer.models._
-import kr.ac.kaist.safe.util.SystemAddr
+import kr.ac.kaist.safe.util.PredAllocSite
 
 object BuiltinHelper {
   def checkExn(h: AbsHeap, absValue: AbsValue, clsName: String): HashSet[Exception] = {

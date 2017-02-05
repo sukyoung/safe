@@ -16,7 +16,7 @@ import kr.ac.kaist.safe.analyzer.models.PredefLoc
 import kr.ac.kaist.safe.analyzer.models.builtin.BuiltinGlobal
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.nodes.cfg._
-import kr.ac.kaist.safe.util.{ Address, SystemAddr }
+import kr.ac.kaist.safe.util.{ AllocSite, PredAllocSite }
 import scala.collection.immutable.{ HashMap }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -32,7 +32,7 @@ trait AbsState extends AbsDomain[State, AbsState] {
   val context: AbsContext
 
   def raiseException(excSet: Set[Exception]): AbsState
-  def oldify(addr: Address): AbsState
+  def oldify(asite: AllocSite): AbsState
 
   // Lookup
   def lookup(id: CFGId): (AbsValue, Set[Exception])
@@ -94,9 +94,9 @@ object DefaultState extends AbsStateUtil {
         val (newSt: AbsState, newExcSet: AbsLoc) = excSet.foldLeft((this, AbsLoc.Bot)) {
           case ((st, locSet), exc) => {
             val errModel = exc.getModel
-            val errAddr = SystemAddr(errModel.name + "<instance>")
-            val newSt = st.oldify(errAddr)
-            val loc = Loc(errAddr, Recent)
+            val errASite = PredAllocSite(errModel.name + "<instance>")
+            val newSt = st.oldify(errASite)
+            val loc = Loc(errASite, Recent)
             val (protoModel, _, _, _) = errModel.protoModel.get
             val newErrObj = AbsObject.newErrorObj(errModel.name, protoModel.loc)
             val retH = newSt.heap.update(loc, newErrObj)
@@ -112,8 +112,8 @@ object DefaultState extends AbsStateUtil {
       }
     }
 
-    def oldify(addr: Address): AbsState = {
-      Dom(this.heap.oldify(addr), this.context.oldify(addr))
+    def oldify(asite: AllocSite): AbsState = {
+      Dom(this.heap.oldify(asite), this.context.oldify(asite))
     }
 
     ////////////////////////////////////////////////////////////////
@@ -243,7 +243,7 @@ object DefaultState extends AbsStateUtil {
         "** context **" + LINE_SEP +
         context.toString + LINE_SEP +
         LINE_SEP +
-        "** old address set **" + LINE_SEP +
+        "** old allocation site set **" + LINE_SEP +
         context.old.toString
     }
   }

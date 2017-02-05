@@ -11,21 +11,21 @@
 
 package kr.ac.kaist.safe.util
 
-// address
-abstract sealed class Address
+// allocation site
+abstract sealed class AllocSite
 
-object Address {
-  implicit def ordering[B <: Address]: Ordering[B] = Ordering.by {
-    case addr => addr.toString
+object AllocSite {
+  implicit def ordering[B <: AllocSite]: Ordering[B] = Ordering.by {
+    case asite => asite.toString
   }
 }
 
-// program address
-case class ProgramAddr(id: Int) extends Address {
+// allocation site defined in user code
+case class UserAllocSite(id: Int) extends AllocSite {
   override def toString: String = id.toString
 }
 
-// system address
-case class SystemAddr(name: String) extends Address {
+// predefined allocation site
+case class PredAllocSite(name: String) extends AllocSite {
   override def toString: String = name
 }

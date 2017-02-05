@@ -47,19 +47,19 @@ trait AbsContext extends AbsDomain[Context, AbsContext] {
   // substitute locR by locO
   def subsLoc(locR: Loc, locO: Loc): AbsContext
 
-  def oldify(addr: Address): AbsContext
+  def oldify(asite: AllocSite): AbsContext
 
   def domIn(loc: Loc): Boolean
 
   def isBottom: Boolean
 
-  def setOldAddrSet(old: OldAddrSet): AbsContext
+  def setOldASiteSet(old: OldASiteSet): AbsContext
 
   def setThisBinding(thisBinding: AbsValue): AbsContext
 
   def getMap: Map[Loc, AbsLexEnv]
 
-  def old: OldAddrSet
+  def old: OldASiteSet
 
   def thisBinding: AbsValue
 
@@ -77,7 +77,7 @@ trait AbsContextUtil extends AbsDomainUtil[Context, AbsContext] {
   val Empty: AbsContext
   def apply(
     map: Map[Loc, AbsLexEnv],
-    old: OldAddrSet,
+    old: OldASiteSet,
     thisBinding: AbsValue
   ): AbsContext
 }
@@ -93,16 +93,16 @@ object DefaultContext extends AbsContextUtil {
   case class CtxMap(
     // TODO val varEnv: LexEnv // VariableEnvironment
     val map: Map[Loc, AbsLexEnv],
-    override val old: OldAddrSet,
+    override val old: OldASiteSet,
     override val thisBinding: AbsValue // ThisBinding
   ) extends Dom
-  lazy val Empty: AbsContext = CtxMap(EmptyMap, OldAddrSet.Empty, AbsLoc(BuiltinGlobal.loc))
+  lazy val Empty: AbsContext = CtxMap(EmptyMap, OldASiteSet.Empty, AbsLoc(BuiltinGlobal.loc))
 
   def alpha(ctx: Context): AbsContext = Top // TODO more precise
 
   def apply(
     map: Map[Loc, AbsLexEnv],
-    old: OldAddrSet,
+    old: OldASiteSet,
     thisBinding: AbsValue
   ): AbsContext = CtxMap(map, old, thisBinding)
 
@@ -250,12 +250,12 @@ object DefaultContext extends AbsContextUtil {
       }
     }
 
-    def oldify(addr: Address): AbsContext = this match {
+    def oldify(asite: AllocSite): AbsContext = this match {
       case Bot => Bot
       case Top => Top
       case CtxMap(map, _, _) => {
-        val locR = Loc(addr, Recent)
-        val locO = Loc(addr, Old)
+        val locR = Loc(asite, Recent)
+        val locO = Loc(asite, Old)
         val newCtx = if (this domIn locR) {
           update(locO, getOrElse(locR, AbsLexEnv.Bot)).remove(locR)
         } else this
@@ -269,7 +269,7 @@ object DefaultContext extends AbsContextUtil {
       case CtxMap(map, _, _) => map.contains(loc)
     }
 
-    def setOldAddrSet(old: OldAddrSet): AbsContext = this match {
+    def setOldASiteSet(old: OldASiteSet): AbsContext = this match {
       case Bot => Bot
       case Top => Top
       case CtxMap(map, _, thisBinding) => CtxMap(map, old, thisBinding)
@@ -287,9 +287,9 @@ object DefaultContext extends AbsContextUtil {
       case CtxMap(map, _, _) => map
     }
 
-    def old: OldAddrSet = this match {
-      case Bot => OldAddrSet.Bot
-      case Top => OldAddrSet.Bot // TODO it is not sound
+    def old: OldASiteSet = this match {
+      case Bot => OldASiteSet.Bot
+      case Top => OldASiteSet.Bot // TODO it is not sound
       case CtxMap(_, old, _) => old
     }
 

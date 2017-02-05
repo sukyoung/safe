@@ -13,12 +13,12 @@ package kr.ac.kaist.safe.analyzer.domain
 
 import scala.collection.immutable.HashSet
 import kr.ac.kaist.safe.LINE_SEP
-import kr.ac.kaist.safe.util.Address
+import kr.ac.kaist.safe.util.AllocSite
 import kr.ac.kaist.safe.analyzer.domain.Utils._
 
-case class OldAddrSet(mayOld: Set[Address], mustOld: Set[Address]) {
+case class OldASiteSet(mayOld: Set[AllocSite], mustOld: Set[AllocSite]) {
   /* partial order */
-  def <=(that: OldAddrSet): Boolean = {
+  def <=(that: OldASiteSet): Boolean = {
     if (this eq that) true
     else {
       this.mayOld.subsetOf(that.mayOld) &&
@@ -34,7 +34,7 @@ case class OldAddrSet(mayOld: Set[Address], mustOld: Set[Address]) {
   }
 
   /* join */
-  def +(that: OldAddrSet): OldAddrSet = {
+  def +(that: OldASiteSet): OldASiteSet = {
     if (this eq that) this
     else if (this.isBottom) that
     else if (that.isBottom) this
@@ -44,12 +44,12 @@ case class OldAddrSet(mayOld: Set[Address], mustOld: Set[Address]) {
         else if (that.mustOld == null) this.mustOld
         else this.mustOld.intersect(that.mustOld)
 
-      OldAddrSet(this.mayOld ++ that.mayOld, newMustOld)
+      OldASiteSet(this.mayOld ++ that.mayOld, newMustOld)
     }
   }
 
   /* meet */
-  def <>(that: OldAddrSet): OldAddrSet = {
+  def <>(that: OldASiteSet): OldASiteSet = {
     if (this eq that) this
     else {
       val newMustOld =
@@ -57,29 +57,29 @@ case class OldAddrSet(mayOld: Set[Address], mustOld: Set[Address]) {
         else if (that.mustOld == null) null
         else this.mustOld ++ that.mustOld
 
-      OldAddrSet(this.mayOld.intersect(that.mayOld), newMustOld)
+      OldASiteSet(this.mayOld.intersect(that.mayOld), newMustOld)
     }
   }
 
   /* substitute locR by locO */
-  def subsLoc(locR: Loc, locO: Loc): OldAddrSet = {
-    OldAddrSet(mayOld + locR.address, mustOld + locR.address)
+  def subsLoc(locR: Loc, locO: Loc): OldASiteSet = {
+    OldASiteSet(mayOld + locR.asite, mustOld + locR.asite)
   }
 
   /* weakly substitute locR by locO, that is keep locR together */
-  def weakSubsLoc(locR: Loc, locO: Loc): OldAddrSet = {
-    OldAddrSet(mayOld + locR.address, mustOld)
+  def weakSubsLoc(locR: Loc, locO: Loc): OldASiteSet = {
+    OldASiteSet(mayOld + locR.asite, mustOld)
   }
 
   override def toString: String = {
-    if (this.isBottom) "⊥OldAddrSet"
+    if (this.isBottom) "⊥OldASiteSet"
     else
       "mayOld: (" + mayOld.mkString(", ") + ")" + LINE_SEP +
         "mustOld: (" + mustOld.mkString(", ") + ")"
   }
 
-  def fixOldify(env: AbsLexEnv, mayOld: Set[Address], mustOld: Set[Address]): (OldAddrSet, AbsLexEnv) = {
-    if (this.isBottom) (OldAddrSet.Bot, AbsLexEnv.Bot)
+  def fixOldify(env: AbsLexEnv, mayOld: Set[AllocSite], mustOld: Set[AllocSite]): (OldASiteSet, AbsLexEnv) = {
+    if (this.isBottom) (OldASiteSet.Bot, AbsLexEnv.Bot)
     else {
       mayOld.foldLeft((this, env))((res, a) => {
         val (resCtx, resEnv) = res
@@ -99,7 +99,7 @@ case class OldAddrSet(mayOld: Set[Address], mustOld: Set[Address]) {
   }
 }
 
-object OldAddrSet {
-  val Bot: OldAddrSet = OldAddrSet(HashSet[Address](), null)
-  val Empty: OldAddrSet = OldAddrSet(HashSet[Address](), HashSet[Address]())
+object OldASiteSet {
+  val Bot: OldASiteSet = OldASiteSet(HashSet[AllocSite](), null)
+  val Empty: OldASiteSet = OldASiteSet(HashSet[AllocSite](), HashSet[AllocSite]())
 }

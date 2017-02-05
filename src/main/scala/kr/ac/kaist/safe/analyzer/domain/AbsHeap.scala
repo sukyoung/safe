@@ -47,7 +47,7 @@ trait AbsHeap extends AbsDomain[Heap, AbsHeap] {
 
   // substitute locR by locO
   def subsLoc(locR: Loc, locO: Loc): AbsHeap
-  def oldify(addr: Address): AbsHeap
+  def oldify(asite: AllocSite): AbsHeap
   def domIn(loc: Loc): Boolean
 
   // toString
@@ -188,7 +188,7 @@ object DefaultHeap extends AbsHeapUtil {
 
     override def toString: String = {
       buildString(loc => loc match {
-        case Loc(ProgramAddr(_), _) => true
+        case Loc(UserAllocSite(_), _) => true
         case BuiltinGlobal.loc => true
         case _ => false
       }).toString
@@ -252,11 +252,11 @@ object DefaultHeap extends AbsHeapUtil {
         HeapMap(newMap)
     }
 
-    def oldify(addr: Address): AbsHeap = this match {
+    def oldify(asite: AllocSite): AbsHeap = this match {
       case Top => Top
       case heap @ HeapMap(map) =>
-        val locR = Loc(addr, Recent)
-        val locO = Loc(addr, Old)
+        val locR = Loc(asite, Recent)
+        val locO = Loc(asite, Old)
         if (heap domIn locR) {
           update(locO, get(locR)).remove(locR).subsLoc(locR, locO)
         } else {

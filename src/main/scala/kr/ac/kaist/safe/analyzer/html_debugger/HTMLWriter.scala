@@ -163,7 +163,7 @@ object HTMLWriter {
               case (loc, obj) =>
                 val parent = loc match {
                   case BuiltinGlobal.loc => "heap"
-                  case Loc(SystemAddr(_), _) => "sysLoc"
+                  case Loc(PredAllocSite(_), _) => "sysLoc"
                   case _ => "heap"
                 }
                 sb.append(s"{ value: {value: '$loc', id: '$loc'}, parent: '$parent' },").append(LINE_SEP)
@@ -188,7 +188,7 @@ object HTMLWriter {
 
       val thisBinding = ctx.thisBinding
       sb.append(s"{ value: {value: 'this: $thisBinding'} },").append(LINE_SEP)
-      // old address set
+      // old allocation site set
       val old = ctx.old
       val mayOld = old.mayOld.mkString(", ")
       val mustOld =

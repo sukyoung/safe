@@ -18,10 +18,10 @@ import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.analyzer._
 import kr.ac.kaist.safe.analyzer.models._
-import kr.ac.kaist.safe.util.SystemAddr
+import kr.ac.kaist.safe.util.PredAllocSite
 
 object BuiltinBooleanHelper {
-  val instanceAddr = SystemAddr("Boolean<instance>")
+  val instanceASite = PredAllocSite("Boolean<instance>")
 
   def typeConvert(args: AbsValue, st: AbsState): AbsBool = {
     val h = st.heap
@@ -43,12 +43,12 @@ object BuiltinBooleanHelper {
 
   val constructor = BasicCode(
     argLen = 1,
-    addrSet = HashSet(instanceAddr),
+    asiteSet = HashSet(instanceASite),
     code = (args: AbsValue, st: AbsState) => {
       val bool = typeConvert(args, st)
-      val addr = instanceAddr
-      val state = st.oldify(addr)
-      val loc = Loc(addr, Recent)
+      val asite = instanceASite
+      val state = st.oldify(asite)
+      val loc = Loc(asite, Recent)
       val heap = state.heap.update(loc, AbsObject.newBooleanObj(bool))
 
       (AbsState(heap, state.context), AbsState.Bot, AbsValue(loc))
