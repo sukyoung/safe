@@ -14,6 +14,7 @@ package kr.ac.kaist.safe.analyzer
 import scala.collection.immutable.HashSet
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.analyzer.domain.Utils._
+import kr.ac.kaist.safe.util._
 
 ////////////////////////////////////////////////////////////////
 // Collection of Semantics helper functions
@@ -309,7 +310,7 @@ object Helper {
         val intersect = left.locset <> right.locset
         (left.locset.getSingle, right.locset.getSingle, intersect.getSingle) match {
           case (_, _, ConZero()) => afalse
-          case (ConOne(_), ConOne(_), ConOne(loc)) if loc.recency == Recent => atrue
+          case (ConOne(_), ConOne(_), ConOne(Recency(_, Recent))) => atrue
           case _ => AbsBool.Top
         }
       } else AbsBool.Bot
@@ -450,7 +451,7 @@ object Helper {
         val intersect = left.locset <> right.locset
         (left.locset.getSingle, right.locset.getSingle, intersect.getSingle) match {
           case (_, _, ConZero()) => afalse
-          case (ConOne(_), ConOne(_), ConOne(loc)) if loc.recency == Recent => atrue
+          case (ConOne(_), ConOne(_), ConOne(Recency(_, Recent))) => atrue
           case _ => AbsBool.Top
         }
       } else AbsBool.Bot

@@ -13,6 +13,7 @@ package kr.ac.kaist.safe.analyzer.domain
 
 import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.analyzer.models.builtin.BuiltinGlobal
+import kr.ac.kaist.safe.util._
 import kr.ac.kaist.safe.LINE_SEP
 import scala.collection.immutable.{ HashSet, HashMap }
 
@@ -38,10 +39,10 @@ trait AbsLexEnv extends AbsDomain[LexEnv, AbsLexEnv] {
   ): AbsLexEnv
 
   // substitute locR by locO
-  def subsLoc(locR: Loc, locO: Loc): AbsLexEnv
+  def subsLoc(locR: Recency, locO: Recency): AbsLexEnv
 
   // weak substitute locR by locO
-  def weakSubsLoc(locR: Loc, locO: Loc): AbsLexEnv
+  def weakSubsLoc(locR: Recency, locO: Recency): AbsLexEnv
 }
 
 trait AbsLexEnvUtil extends AbsDomainUtil[LexEnv, AbsLexEnv] {
@@ -157,10 +158,10 @@ object DefaultLexEnv extends AbsLexEnvUtil {
       nullOuter: AbsAbsent = this.nullOuter
     ): AbsLexEnv = Dom(record, outer, nullOuter)
 
-    def subsLoc(locR: Loc, locO: Loc): AbsLexEnv =
+    def subsLoc(locR: Recency, locO: Recency): AbsLexEnv =
       Dom(record.subsLoc(locR, locO), outer.subsLoc(locR, locO), nullOuter)
 
-    def weakSubsLoc(locR: Loc, locO: Loc): AbsLexEnv =
+    def weakSubsLoc(locR: Recency, locO: Recency): AbsLexEnv =
       Dom(record.weakSubsLoc(locR, locO), outer.subsLoc(locR, locO), nullOuter)
   }
 

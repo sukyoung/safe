@@ -15,7 +15,7 @@ import kr.ac.kaist.safe.analyzer.{ Helper, TypeConversionHelper }
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.analyzer.models._
-import kr.ac.kaist.safe.util.PredAllocSite
+import kr.ac.kaist.safe.util._
 
 import scala.collection.immutable.HashSet
 
@@ -147,7 +147,7 @@ private object BuiltinRegExpHelper {
       case Some(obj) =>
         val asite = instanceASite
         val st1 = st.oldify(asite)
-        val loc = Loc(asite, Recent)
+        val loc = Recency(asite, Recent)
         val h2 = st1.heap.update(loc, obj)
         (AbsState(h2, st1.context), AbsValue(loc))
       case None => (st, AbsValue.Bot)
@@ -234,7 +234,7 @@ private object BuiltinRegExpHelper {
       case Some(obj) =>
         val asite = instanceASite
         val st1 = st.oldify(asite)
-        val loc = Loc(asite, Recent)
+        val loc = Recency(asite, Recent)
         val h2 = st1.heap.update(loc, obj)
         (AbsState(h2, st1.context), AbsValue(loc))
       case None => (st, AbsValue.Bot)

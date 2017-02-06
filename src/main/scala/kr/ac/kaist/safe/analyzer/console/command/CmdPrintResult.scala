@@ -81,16 +81,16 @@ case object CmdPrintResult extends Command("result", "Print out various informat
     //     val (outS, outES) = sem.C(c.current, cmd, inS)
     //     cmd match {
     //       case Block(insts) =>
-    //         System.out.println("- Command")
+    //         println("- Command")
     //         for (inst <- insts) {
-    //           System.out.println("    [" + inst.getInstId + "] " + inst.toString)
+    //           println("    [" + inst.getInstId + "] " + inst.toString)
     //         }
-    //         System.out.println()
-    //       case _ => System.out.println("- Nothing")
+    //         println()
+    //       case _ => println("- Nothing")
     //     }
-    //     System.out.println(DomainPrinter.printHeap(0, outS._1, c.getCFG))
-    //     if (outS._2 == ContextBot) System.out.print("Context Bottom : ")
-    //     System.out.println(DomainPrinter.printContext(0, outS._2))
+    //     println(DomainPrinter.printHeap(0, outS._1, c.getCFG))
+    //     if (outS._2 == ContextBot) print("Context Bottom : ")
+    //     println(DomainPrinter.printContext(0, outS._2))
     //     if (!(outES <= StateBot))
     //       System.err.println(" * Exception state is not bottom.")
     //   } catch {
@@ -113,20 +113,20 @@ case object CmdPrintResult extends Command("result", "Print out various informat
     //       }
     //       cmd match {
     //         case Block(insts) =>
-    //           System.out.println("- Command")
+    //           println("- Command")
     //           for (inst <- insts) {
-    //             System.out.println("    [" + inst.getInstId + "] " + inst.toString)
+    //             println("    [" + inst.getInstId + "] " + inst.toString)
     //           }
-    //           System.out.println()
-    //         case _ => System.out.println("- Nothing")
+    //           println()
+    //         case _ => println("- Nothing")
     //       }
     //       val (outS, outES) = sem.C(c.current, cmd, inS)
     //       val name = DomainPrinter.printLoc(loc)
 
     //       if (outS._1.domIn(loc)) {
     //         val o = outS._1(loc)
-    //         System.out.println(name + " -> ")
-    //         System.out.println(DomainPrinter.printObj(4 + name.length, o))
+    //         println(name + " -> ")
+    //         println(DomainPrinter.printObj(4 + name.length, o))
     //       } else {
     //         println(" Not in heap : " + DomainPrinter.printLoc(loc))
     //       }
@@ -154,12 +154,12 @@ case object CmdPrintResult extends Command("result", "Print out various informat
     //       }
     //       cmd match {
     //         case Block(insts) =>
-    //           System.out.println("- Command")
+    //           println("- Command")
     //           for (inst <- insts) {
-    //             System.out.println("    [" + inst.getInstId + "] " + inst.toString)
+    //             println("    [" + inst.getInstId + "] " + inst.toString)
     //           }
-    //           System.out.println()
-    //         case _ => System.out.println("- Nothing")
+    //           println()
+    //         case _ => println("- Nothing")
     //       }
     //       val (_, outES) = sem.C(c.current, cmd, inS)
     //       if ((outES <= StateBot))
@@ -167,8 +167,8 @@ case object CmdPrintResult extends Command("result", "Print out various informat
     //       else {
     //         val name = DomainPrinter.printLoc(loc)
     //         val o = outES._1(loc)
-    //         System.out.println(name + " -> ")
-    //         System.out.println(DomainPrinter.printObj(4 + name.length, o))
+    //         println(name + " -> ")
+    //         println(DomainPrinter.printObj(4 + name.length, o))
     //       }
     //     }
     //     case None => {
@@ -185,10 +185,10 @@ case object CmdPrintResult extends Command("result", "Print out various informat
     //       succMap.foreach(kv => {
     //         val (ipSucc, (ctx, obj)) = kv
     //         val outS_E = sem.E(c.current, ipSucc, ctx, obj, outS)
-    //         System.out.println(" * for IPSucc : " + ipSucc)
-    //         System.out.println(DomainPrinter.printHeap(0, outS_E._1, c.getCFG))
-    //         if (outS_E._2 == ContextBot) System.out.print("Context Bottom : ")
-    //         System.out.println(DomainPrinter.printContext(0, outS_E._2))
+    //         println(" * for IPSucc : " + ipSucc)
+    //         println(DomainPrinter.printHeap(0, outS_E._1, c.getCFG))
+    //         if (outS_E._2 == ContextBot) print("Context Bottom : ")
+    //         println(DomainPrinter.printContext(0, outS_E._2))
     //       })
     //     case None => System.err.println(" * " + c.current + " does not have ipSucc.")
     //   }
@@ -198,8 +198,8 @@ case object CmdPrintResult extends Command("result", "Print out various informat
     //   val inS = c.current.getState
     //   val cmd = c.getCFG.getCmd(c.current._1)
     //   val (outS, _) = c.getSemantics.C(c.current, cmd, inS)
-    //   System.out.println(DomainPrinter.printLoc(sloc.get) + " -> ")
-    //   System.out.println(DomainPrinter.printObj(4 + name.length, outS._1(sloc.get)))
+    //   println(DomainPrinter.printLoc(sloc.get) + " -> ")
+    //   println(DomainPrinter.printObj(4 + name.length, outS._1(sloc.get)))
 
     //   c.getSemantics.getIPSucc(c.current) match {
     //     case Some(succMap) =>
@@ -211,9 +211,9 @@ case object CmdPrintResult extends Command("result", "Print out various informat
     //             if (outS_E._1.domIn(loc)) {
     //               val o = outS_E._1(loc)
     //               val name = DomainPrinter.printLoc(loc)
-    //               System.out.println(" * for IPSucc : " + ipSucc)
-    //               System.out.println(name + " -> ")
-    //               System.out.println(DomainPrinter.printObj(4 + name.length, o))
+    //               println(" * for IPSucc : " + ipSucc)
+    //               println(name + " -> ")
+    //               println(DomainPrinter.printObj(4 + name.length, o))
     //             } else {
     //               println(" Not in heap : " + DomainPrinter.printLoc(loc))
     //             }

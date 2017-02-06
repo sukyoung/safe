@@ -26,13 +26,14 @@ object Initialize {
     val globalLocSet = AbsLoc(BuiltinGlobal.loc)
     val globalPureLocalEnv = AbsLexEnv.newPureLocal(globalLocSet)
     val initHeap = AbsHeap(HashMap(
-      SystemLoc("Dummy", Old) -> AbsObject.Bot // TODO If delete, not working because not allowed update to bottom heap
+      BuiltinGlobal.loc -> AbsObject.Bot
+    // TODO If delete, not working because not allowed update to bottom heap
     ))
 
     val initCtx = AbsContext(HashMap[Loc, AbsLexEnv](
-      PredefLoc.GLOBAL_ENV -> AbsLexEnv(AbsGlobalEnvRec.Top),
-      PredefLoc.PURE_LOCAL -> globalPureLocalEnv,
-      PredefLoc.COLLAPSED -> AbsLexEnv(AbsDecEnvRec.Empty)
+      Loc.GLOBAL_ENV_REC -> AbsLexEnv(AbsGlobalEnvRec.Top),
+      Loc.PURE_LOCAL_REC -> globalPureLocalEnv,
+      Loc.COLLAPSED_OLD -> AbsLexEnv(AbsDecEnvRec.Empty)
     ), OldASiteSet.Empty, globalLocSet)
 
     val modeledHeap: AbsHeap =

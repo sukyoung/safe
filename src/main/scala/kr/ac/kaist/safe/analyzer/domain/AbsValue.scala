@@ -12,8 +12,8 @@
 package kr.ac.kaist.safe.analyzer.domain
 
 import kr.ac.kaist.safe.analyzer.domain.Utils._
-import kr.ac.kaist.safe.analyzer.models.PredefLoc
 import kr.ac.kaist.safe.analyzer.models.builtin.BuiltinGlobal
+import kr.ac.kaist.safe.util._
 
 ////////////////////////////////////////////////////////////////////////////////
 // concrete value type
@@ -28,9 +28,9 @@ trait AbsValue extends AbsDomain[Value, AbsValue] {
   val locset: AbsLoc
 
   /* substitute locR by locO */
-  def subsLoc(locR: Loc, locO: Loc): AbsValue
+  def subsLoc(locR: Recency, locO: Recency): AbsValue
   /* weakly substitute locR by locO, that is keep locR together */
-  def weakSubsLoc(locR: Loc, locO: Loc): AbsValue
+  def weakSubsLoc(locR: Recency, locO: Recency): AbsValue
   // TODO working but a more simple way exists with modifying getBase
   def getThis(h: AbsHeap): AbsLoc
 
@@ -107,10 +107,10 @@ object DefaultValue extends AbsValueUtil {
       }
     }
 
-    def subsLoc(locR: Loc, locO: Loc): AbsValue =
+    def subsLoc(locR: Recency, locO: Recency): AbsValue =
       Dom(this.pvalue, this.locset.subsLoc(locR, locO))
 
-    def weakSubsLoc(locR: Loc, locO: Loc): AbsValue =
+    def weakSubsLoc(locR: Recency, locO: Recency): AbsValue =
       Dom(this.pvalue, this.locset.weakSubsLoc(locR, locO))
 
     def typeCount: Int = {

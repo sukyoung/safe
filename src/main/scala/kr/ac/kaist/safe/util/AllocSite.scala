@@ -11,14 +11,10 @@
 
 package kr.ac.kaist.safe.util
 
-// allocation site
-abstract sealed class AllocSite
+import kr.ac.kaist.safe.analyzer.domain.Loc
 
-object AllocSite {
-  implicit def ordering[B <: AllocSite]: Ordering[B] = Ordering.by {
-    case asite => asite.toString
-  }
-}
+// allocation site
+abstract sealed class AllocSite extends Loc
 
 // allocation site defined in user code
 case class UserAllocSite(id: Int) extends AllocSite {

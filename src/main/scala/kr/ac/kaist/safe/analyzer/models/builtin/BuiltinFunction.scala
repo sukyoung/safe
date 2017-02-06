@@ -16,7 +16,7 @@ import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.analyzer.models._
 import kr.ac.kaist.safe.nodes.cfg._
-import kr.ac.kaist.safe.util.AllocSite
+import kr.ac.kaist.safe.util._
 
 import scala.collection.immutable.HashSet
 
@@ -161,7 +161,7 @@ private object BuiltinFunctionProtoHelper {
 
     // 9. [[Call]]
     val st1 = st.oldify(asite)
-    val argsLoc = Loc(asite, Old)
+    val argsLoc = Recency(asite, Old)
     val h3 = st1.heap.update(argsLoc, argList1 + argList2)
     val newState =
       AbsState(h3, st1.context)
@@ -213,7 +213,7 @@ private object BuiltinFunctionProtoHelper {
 
     // 4. [[Call]]
     val st1 = st.oldify(asite)
-    val argsLoc = Loc(asite, Old)
+    val argsLoc = Recency(asite, Old)
     val h3 = st1.heap.update(argsLoc, argList)
     val newState =
       AbsState(h3, st1.context)

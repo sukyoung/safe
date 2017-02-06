@@ -13,6 +13,7 @@ package kr.ac.kaist.safe.analyzer
 
 import kr.ac.kaist.safe.errors.error.HeapParseError
 import kr.ac.kaist.safe.analyzer.domain._
+import kr.ac.kaist.safe.util._
 import scala.collection.immutable.HashMap
 import spray.json._
 
@@ -67,7 +68,7 @@ object HeapParser extends DefaultJsonProtocol {
       case JsString("@undef") => Undef
 
       // location
-      case JsString(str) if str.startsWith("#") => SystemLoc(str.substring(1))
+      case JsString(str) if str.startsWith("#") => Recency(PredAllocSite(str.substring(1)))
 
       // string
       case JsString(str) => str
@@ -82,7 +83,7 @@ object HeapParser extends DefaultJsonProtocol {
     }
 
     private def readLoc(str: String): Loc = str.startsWith("#") match {
-      case true => SystemLoc(str.substring(1))
+      case true => Recency(PredAllocSite(str.substring(1)))
       case false => throw HeapParseError("wrong format for locations")
     }
 

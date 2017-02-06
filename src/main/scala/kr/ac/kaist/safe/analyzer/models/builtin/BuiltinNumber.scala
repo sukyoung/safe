@@ -18,7 +18,7 @@ import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.analyzer._
 import kr.ac.kaist.safe.analyzer.models._
-import kr.ac.kaist.safe.util.PredAllocSite
+import kr.ac.kaist.safe.util._
 
 object BuiltinNumberHelper {
   val instanceASite = PredAllocSite("Number<instance>")
@@ -48,7 +48,7 @@ object BuiltinNumberHelper {
       val num = typeConvert(args, st)
       val asite = instanceASite
       val state = st.oldify(asite)
-      val loc = Loc(asite, Recent)
+      val loc = Recency(asite, Recent)
       val heap = state.heap.update(loc, AbsObject.newNumberObj(num))
       (AbsState(heap, state.context), AbsState.Bot, AbsValue(loc))
     }

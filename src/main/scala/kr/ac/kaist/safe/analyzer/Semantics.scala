@@ -207,7 +207,7 @@ class Semantics(
       case CFGAlloc(_, _, x, e, newASite) => {
         val objProtoSingleton = AbsLoc(BuiltinObjectProto.loc)
         // Recency Abstraction
-        val locR = Loc(newASite, Recent)
+        val locR = Recency(newASite, Recent)
         val st1 = st.oldify(newASite)
         val (vLocSet, excSet) = e match {
           case None => (objProtoSingleton, ExcSetEmpty)
@@ -226,7 +226,7 @@ class Semantics(
         (newSt, s1)
       }
       case CFGAllocArray(_, _, x, n, newASite) => {
-        val locR = Loc(newASite, Recent)
+        val locR = Recency(newASite, Recent)
         val st1 = st.oldify(newASite)
         val np = AbsNumber(n.toInt)
         val h2 = st1.heap.update(locR, AbsObject.newArrayObject(np))
@@ -234,7 +234,7 @@ class Semantics(
         (newSt, excSt)
       }
       case CFGAllocArg(_, _, x, n, newASite) => {
-        val locR = Loc(newASite, Recent)
+        val locR = Recency(newASite, Recent)
         val st1 = st.oldify(newASite)
         val absN = AbsNumber(n.toInt)
         val h2 = st1.heap.update(locR, AbsObject.newArgObject(absN))
@@ -350,8 +350,8 @@ class Semantics(
       }
       case CFGFunExpr(_, block, lhs, None, f, aNew1, aNew2, None) => {
         //Recency Abstraction
-        val locR1 = Loc(aNew1, Recent)
-        val locR2 = Loc(aNew2, Recent)
+        val locR1 = Recency(aNew1, Recent)
+        val locR2 = Recency(aNew2, Recent)
         val st1 = st.oldify(aNew1)
         val st2 = st1.oldify(aNew2)
         val oNew = AbsObject.newObject(BuiltinObjectProto.loc)
@@ -368,9 +368,9 @@ class Semantics(
       }
       case CFGFunExpr(_, block, lhs, Some(name), f, aNew1, aNew2, Some(aNew3)) => {
         // Recency Abstraction
-        val locR1 = Loc(aNew1, Recent)
-        val locR2 = Loc(aNew2, Recent)
-        val locR3 = Loc(aNew3, Recent)
+        val locR1 = Recency(aNew1, Recent)
+        val locR2 = Recency(aNew2, Recent)
+        val locR3 = Recency(aNew3, Recent)
         val st1 = st.oldify(aNew1)
         val st2 = st1.oldify(aNew2)
         val st3 = st2.oldify(aNew3)
@@ -584,7 +584,7 @@ class Semantics(
       val (retSt, retV, excSet) = if (!desc.isBottom) {
         val (descObj, excSet) = AbsObject.FromPropertyDescriptor(desc)
         val state = st.oldify(aNew)
-        val descLoc = Loc(aNew, Recent)
+        val descLoc = Recency(aNew, Recent)
         val retH = state.heap.update(descLoc, descObj.oldify(aNew))
         val retV = AbsValue(undef, AbsLoc(descLoc))
         (AbsState(retH, state.context), retV, excSet)
@@ -761,7 +761,7 @@ class Semantics(
         case true => (AbsState.Bot, excSt)
         case false => {
           val state = st.oldify(arrASite)
-          val arrLoc = Loc(arrASite, Recent)
+          val arrLoc = Recency(arrASite, Recent)
           val retHeap = state.heap.update(arrLoc, retObj.oldify(arrASite))
           val excSt = state.raiseException(retExcSet)
           val st2 = AbsState(retHeap, state.context)
@@ -775,7 +775,7 @@ class Semantics(
       val (v, excSet) = V(expr, st)
       val str = TypeConversionHelper.ToString(v)
       val st1 = st.oldify(aNew)
-      val loc = Loc(aNew, Recent)
+      val loc = Recency(aNew, Recent)
       val heap = st1.heap.update(loc, AbsObject.newStringObj(str))
       val st2 = AbsState(heap, st1.context)
       val st3 =
@@ -788,7 +788,7 @@ class Semantics(
       val (v, excSet) = V(expr, st)
       val bool = TypeConversionHelper.ToBoolean(v)
       val st1 = st.oldify(aNew)
-      val loc = Loc(aNew, Recent)
+      val loc = Recency(aNew, Recent)
       val heap = st1.heap.update(loc, AbsObject.newBooleanObj(bool))
       val st2 = AbsState(heap, st1.context)
       val st3 =
@@ -801,7 +801,7 @@ class Semantics(
       val (v, excSet) = V(expr, st)
       val num = TypeConversionHelper.ToNumber(v)
       val st1 = st.oldify(aNew)
-      val loc = Loc(aNew, Recent)
+      val loc = Recency(aNew, Recent)
       val heap = st1.heap.update(loc, AbsObject.newNumberObj(num))
       val st2 = AbsState(heap, st1.context)
       val st3 =
@@ -996,7 +996,7 @@ class Semantics(
 
   def CI(cp: ControlPoint, i: CFGCallInst, st: AbsState, excSt: AbsState): (AbsState, AbsState) = {
     // cons, thisArg and arguments must not be bottom
-    val locR = Loc(i.asite, Recent)
+    val locR = Recency(i.asite, Recent)
     val st1 = st.oldify(i.asite)
     val (funVal, funExcSet) = V(i.fun, st1)
     val funLocSet = i match {

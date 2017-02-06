@@ -13,10 +13,10 @@ package kr.ac.kaist.safe.analyzer.domain
 
 import scala.collection.immutable.HashSet
 import kr.ac.kaist.safe.LINE_SEP
-import kr.ac.kaist.safe.util.AllocSite
 import kr.ac.kaist.safe.analyzer.domain.Utils._
+import kr.ac.kaist.safe.util._
 
-case class OldASiteSet(mayOld: Set[AllocSite], mustOld: Set[AllocSite]) {
+case class OldASiteSet(mayOld: Set[Loc], mustOld: Set[Loc]) {
   /* partial order */
   def <=(that: OldASiteSet): Boolean = {
     if (this eq that) true
@@ -62,13 +62,13 @@ case class OldASiteSet(mayOld: Set[AllocSite], mustOld: Set[AllocSite]) {
   }
 
   /* substitute locR by locO */
-  def subsLoc(locR: Loc, locO: Loc): OldASiteSet = {
-    OldASiteSet(mayOld + locR.asite, mustOld + locR.asite)
+  def subsLoc(locR: Recency, locO: Recency): OldASiteSet = {
+    OldASiteSet(mayOld + locR.loc, mustOld + locR.loc)
   }
 
   /* weakly substitute locR by locO, that is keep locR together */
-  def weakSubsLoc(locR: Loc, locO: Loc): OldASiteSet = {
-    OldASiteSet(mayOld + locR.asite, mustOld)
+  def weakSubsLoc(locR: Recency, locO: Recency): OldASiteSet = {
+    OldASiteSet(mayOld + locR.loc, mustOld)
   }
 
   override def toString: String = {
@@ -78,13 +78,13 @@ case class OldASiteSet(mayOld: Set[AllocSite], mustOld: Set[AllocSite]) {
         "mustOld: (" + mustOld.mkString(", ") + ")"
   }
 
-  def fixOldify(env: AbsLexEnv, mayOld: Set[AllocSite], mustOld: Set[AllocSite]): (OldASiteSet, AbsLexEnv) = {
+  def fixOldify(env: AbsLexEnv, mayOld: Set[Loc], mustOld: Set[Loc]): (OldASiteSet, AbsLexEnv) = {
     if (this.isBottom) (OldASiteSet.Bot, AbsLexEnv.Bot)
     else {
       mayOld.foldLeft((this, env))((res, a) => {
         val (resCtx, resEnv) = res
-        val locR = Loc(a, Recent)
-        val locO = Loc(a, Old)
+        val locR = Recency(a, Recent)
+        val locO = Recency(a, Old)
         if (mustOld contains a) {
           val newCtx = resCtx.subsLoc(locR, locO)
           val newEnv = resEnv.subsLoc(locR, locO)
@@ -100,6 +100,6 @@ case class OldASiteSet(mayOld: Set[AllocSite], mustOld: Set[AllocSite]) {
 }
 
 object OldASiteSet {
-  val Bot: OldASiteSet = OldASiteSet(HashSet[AllocSite](), null)
-  val Empty: OldASiteSet = OldASiteSet(HashSet[AllocSite](), HashSet[AllocSite]())
+  val Bot: OldASiteSet = OldASiteSet(HashSet[Loc](), null)
+  val Empty: OldASiteSet = OldASiteSet(HashSet[Loc](), HashSet[Loc]())
 }

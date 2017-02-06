@@ -15,7 +15,7 @@ import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.analyzer.models._
 import kr.ac.kaist.safe.analyzer._
-import kr.ac.kaist.safe.util.PredAllocSite
+import kr.ac.kaist.safe.util._
 import scala.collection.immutable.HashSet
 
 object BuiltinArray extends FuncModel(
@@ -321,7 +321,7 @@ object BuiltinArrayHelper {
     }
     val arrASite = arrInstanceASite
     val state = st.oldify(arrASite)
-    val arrLoc = Loc(arrASite, Recent)
+    val arrLoc = Recency(arrASite, Recent)
     val retH = state.heap.update(arrLoc, retObj.oldify(arrASite))
     val excSt = state.raiseException(retExcSet)
     (AbsState(retH, state.context), excSt, AbsLoc(arrLoc))
@@ -358,7 +358,7 @@ object BuiltinArrayHelper {
     // 4. Return the result of calling the [[Call]] internal method of func providing array as the this value and an
     //    empty arguments list.
     val tempArr = tempASite
-    val tempLoc = Loc(tempArr, Recent)
+    val tempLoc = Recency(tempArr, Recent)
     val newArgs = AbsObject.newArgObject()
     val tempH = h.update(tempLoc, newArgs)
     val tempSt = AbsState(tempH, state.context)
@@ -454,7 +454,7 @@ object BuiltinArrayHelper {
     }
     val arrASite = concatArrASite
     val state = st.oldify(arrASite)
-    val arrLoc = Loc(arrASite, Recent)
+    val arrLoc = Recency(arrASite, Recent)
     val retH = state.heap.update(arrLoc, retObj.oldify(arrASite))
     (AbsState(retH, state.context), AbsState.Bot, AbsLoc(arrLoc))
   }
@@ -818,7 +818,7 @@ object BuiltinArrayHelper {
     // 11. Return A.
     val arrASite = sliceArrASite
     val st1 = state.oldify(arrASite)
-    val arrLoc = Loc(arrASite, Recent)
+    val arrLoc = Recency(arrASite, Recent)
     val retH = st1.heap.update(arrLoc, retObj.oldify(arrASite))
     val excSt = st1.raiseException(retExcSet)
     (AbsState(retH, st1.context), excSt, AbsLoc(arrLoc))
@@ -910,7 +910,7 @@ object BuiltinArrayHelper {
     val arrASite = spliceArrASite
     val newSt = AbsState(retH, st.context)
     val state = newSt.oldify(arrASite)
-    val arrLoc = Loc(arrASite, Recent)
+    val arrLoc = Recency(arrASite, Recent)
     val finalH = state.heap.update(arrLoc, retArr.oldify(arrASite))
     val excSt = state.raiseException(retExcSet)
     (AbsState(finalH, state.context), excSt, AbsLoc(arrLoc))

@@ -18,7 +18,7 @@ import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.analyzer._
 import kr.ac.kaist.safe.analyzer.models._
-import kr.ac.kaist.safe.util.PredAllocSite
+import kr.ac.kaist.safe.util._
 
 object BuiltinStringHelper {
   val instanceASite = PredAllocSite("String<instance>")
@@ -49,7 +49,7 @@ object BuiltinStringHelper {
       val num = typeConvert(args, st)
       val asite = instanceASite
       val state = st.oldify(asite)
-      val loc = Loc(asite, Recent)
+      val loc = Recency(asite, Recent)
       val heap = state.heap.update(loc, AbsObject.newStringObj(num))
       (AbsState(heap, state.context), AbsState.Bot, AbsValue(loc))
     }
@@ -61,7 +61,7 @@ object BuiltinStringHelper {
     code = (args: AbsValue, st: AbsState) => {
       val asite = matchObjASite
       val state = st.oldify(asite)
-      val loc = Loc(asite, Recent)
+      val loc = Recency(asite, Recent)
       val heap = state.heap.update(loc, AbsObject.Top)
       (AbsState(heap, state.context), AbsState.Bot, AbsValue(Null, loc))
     }

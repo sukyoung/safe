@@ -13,8 +13,8 @@ package kr.ac.kaist.safe.nodes.cfg
 
 import scala.collection.immutable.HashSet
 import scala.collection.mutable.{ HashMap => MHashMap, Map => MMap }
-import kr.ac.kaist.safe.analyzer.models.PredefLoc._
 import kr.ac.kaist.safe.LINE_SEP
+import kr.ac.kaist.safe.analyzer.domain.Loc
 import kr.ac.kaist.safe.nodes.ir.IRNode
 import kr.ac.kaist.safe.util._
 
@@ -109,9 +109,9 @@ class CFG(
 
   // predefined allocation site set
   private var predASiteSet: Set[AllocSite] = HashSet(
-    GLOBAL_ENV.asite,
-    PURE_LOCAL.asite,
-    COLLAPSED.asite
+    Loc.GLOBAL_ENV,
+    Loc.PURE_LOCAL,
+    Loc.COLLAPSED
   )
   def getPredASiteSet: Set[AllocSite] = predASiteSet
   def registerPredASite(asite: AllocSite): Unit = predASiteSet += asite

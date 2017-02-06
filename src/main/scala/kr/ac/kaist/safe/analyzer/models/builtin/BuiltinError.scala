@@ -15,7 +15,7 @@ import kr.ac.kaist.safe.analyzer.{ TypeConversionHelper, Helper }
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.analyzer.models._
-import kr.ac.kaist.safe.util.PredAllocSite
+import kr.ac.kaist.safe.util._
 import scala.collection.immutable.HashSet
 
 // 15.11 Error Objects
@@ -83,7 +83,7 @@ private object BuiltinErrorHelper {
 
     val errorASite = instanceASite(errorName)
     val st1 = st.oldify(errorASite)
-    val errorLoc = Loc(errorASite, Recent)
+    val errorLoc = Recency(errorASite, Recent)
     val h2 = st1.heap.update(errorLoc, errorObj)
 
     (AbsState(h2, st1.context), AbsState.Bot, AbsValue(errorLoc))

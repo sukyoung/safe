@@ -16,7 +16,7 @@ import kr.ac.kaist.safe.analyzer.models.builtin._
 import kr.ac.kaist.safe.analyzer.TypeConversionHelper
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.nodes.cfg._
-import kr.ac.kaist.safe.util.AllocSite
+import kr.ac.kaist.safe.util._
 import scala.collection.immutable.HashSet
 
 /* 8.6 The Object Type */
@@ -32,8 +32,8 @@ case class Object(amap: Map[String, DataProp], imap: Map[IName, IValue])
 trait AbsObject extends AbsDomain[Object, AbsObject] {
   /* substitute locR by locO */
   def oldify(asite: AllocSite): AbsObject
-  def subsLoc(locR: Loc, locO: Loc): AbsObject
-  def weakSubsLoc(locR: Loc, locO: Loc): AbsObject
+  def subsLoc(locR: Recency, locO: Recency): AbsObject
+  def weakSubsLoc(locR: Recency, locO: Recency): AbsObject
 
   def apply(str: String): AbsDataProp
   def apply(astr: AbsString): AbsDataProp
@@ -239,10 +239,10 @@ object DefaultObject extends AbsObjectUtil {
     ///////////////////////////////////////////////////////////////
     def isEmpty: Boolean = this == Empty
 
-    def oldify(asite: AllocSite): AbsObject = subsLoc(Loc(asite, Recent), Loc(asite, Old))
+    def oldify(asite: AllocSite): AbsObject = subsLoc(Recency(asite, Recent), Recency(asite, Old))
 
     /* substitute locR by locO */
-    def subsLoc(locR: Loc, locO: Loc): AbsObject = this match {
+    def subsLoc(locR: Recency, locO: Recency): AbsObject = this match {
       case Top => Top
       case obj @ ObjMap(amap, imap) =>
         if (obj.isEmpty) obj
@@ -257,7 +257,7 @@ object DefaultObject extends AbsObjectUtil {
         }
     }
 
-    def weakSubsLoc(locR: Loc, locO: Loc): AbsObject = this match {
+    def weakSubsLoc(locR: Recency, locO: Recency): AbsObject = this match {
       case Top => Top
       case obj @ ObjMap(amap, imap) =>
         if (obj.isEmpty) obj

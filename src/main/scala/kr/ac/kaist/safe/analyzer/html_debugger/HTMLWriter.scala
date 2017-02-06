@@ -156,14 +156,14 @@ object HTMLWriter {
       h.getMap match {
         case None => sb.append("{ value: 'Top' }")
         case Some(map) => {
-          sb.append("{ value: {value: 'System Locations', id: 'sysLoc'}, parent: 'heap' },").append(LINE_SEP)
+          sb.append("{ value: {value: 'Predefined Locations', id: 'predLoc'}, parent: 'heap' },").append(LINE_SEP)
           map.toSeq
             .sortBy { case (loc, _) => loc }
             .foreach {
               case (loc, obj) =>
                 val parent = loc match {
                   case BuiltinGlobal.loc => "heap"
-                  case Loc(PredAllocSite(_), _) => "sysLoc"
+                  case Recency(PredAllocSite(_), _) => "predLoc"
                   case _ => "heap"
                 }
                 sb.append(s"{ value: {value: '$loc', id: '$loc'}, parent: '$parent' },").append(LINE_SEP)

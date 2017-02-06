@@ -13,7 +13,7 @@ package kr.ac.kaist.safe.analyzer
 
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.analyzer.domain.Utils._
-import kr.ac.kaist.safe.util.AllocSite
+import kr.ac.kaist.safe.util._
 
 import scala.collection.immutable.HashSet
 
@@ -201,7 +201,7 @@ object TypeConversionHelper {
 
     val (locSet1, st1) =
       if (!obj.isBottom) {
-        val loc = Loc(asite, Recent)
+        val loc = Recency(asite, Recent)
         val state = st.oldify(asite)
         (AbsLoc(loc), AbsState(state.heap.update(loc, obj), state.context))
       } else (AbsLoc.Bot, AbsState.Bot)
@@ -280,7 +280,7 @@ object TypeConversionHelper {
         val intersect = left.locset <> right.locset
         (left.locset.getSingle, right.locset.getSingle, intersect.getSingle) match {
           case (_, _, ConZero()) => AbsBool.False
-          case (ConOne(_), ConOne(_), ConOne(loc)) if loc.recency == Recent => AbsBool.True
+          case (ConOne(_), ConOne(_), ConOne(Recency(_, Recent))) => AbsBool.True
           case _ => AbsBool.Top
         }
       } else AbsBool.Bot

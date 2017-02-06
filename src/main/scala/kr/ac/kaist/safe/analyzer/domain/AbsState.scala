@@ -12,11 +12,10 @@
 package kr.ac.kaist.safe.analyzer.domain
 
 import kr.ac.kaist.safe.analyzer.domain.Utils._
-import kr.ac.kaist.safe.analyzer.models.PredefLoc
 import kr.ac.kaist.safe.analyzer.models.builtin.BuiltinGlobal
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.nodes.cfg._
-import kr.ac.kaist.safe.util.{ AllocSite, PredAllocSite }
+import kr.ac.kaist.safe.util._
 import scala.collection.immutable.{ HashMap }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -96,7 +95,7 @@ object DefaultState extends AbsStateUtil {
             val errModel = exc.getModel
             val errASite = PredAllocSite(errModel.name + "<instance>")
             val newSt = st.oldify(errASite)
-            val loc = Loc(errASite, Recent)
+            val loc = Recency(errASite, Recent)
             val (protoModel, _, _, _) = errModel.protoModel.get
             val newErrObj = AbsObject.newErrorObj(errModel.name, protoModel.loc)
             val retH = newSt.heap.update(loc, newErrObj)
@@ -128,7 +127,7 @@ object DefaultState extends AbsStateUtil {
         case CapturedVar =>
           AbsLexEnv.getId(localEnv.outer, x, true)(this)
         case CapturedCatchVar =>
-          val collapsedEnv = context.getOrElse(PredefLoc.COLLAPSED, AbsLexEnv.Bot)
+          val collapsedEnv = context.getOrElse(Loc.COLLAPSED_OLD, AbsLexEnv.Bot)
           collapsedEnv.record.decEnvRec.GetBindingValue(x)
         case GlobalVar => AbsGlobalEnvRec.Top.GetBindingValue(x, true)(heap)
       }
@@ -137,10 +136,10 @@ object DefaultState extends AbsStateUtil {
     def lookupBase(id: CFGId): AbsValue = {
       val x = id.text
       id.kind match {
-        case PureLocalVar => AbsLoc(PredefLoc.PURE_LOCAL)
+        case PureLocalVar => AbsLoc(Loc.PURE_LOCAL_REC)
         case CapturedVar =>
           AbsLexEnv.getIdBase(context.pureLocal.outer, x, false)(this)
-        case CapturedCatchVar => AbsLoc(PredefLoc.COLLAPSED)
+        case CapturedCatchVar => AbsLoc(Loc.COLLAPSED_OLD)
         case GlobalVar => AbsLoc(BuiltinGlobal.loc)
       }
     }
@@ -163,11 +162,11 @@ object DefaultState extends AbsStateUtil {
           val (newSt, _) = AbsLexEnv.setId(localEnv.outer, x, value, false)(this)
           newSt
         case CapturedCatchVar =>
-          val env = context.getOrElse(PredefLoc.COLLAPSED, AbsLexEnv.Bot).record.decEnvRec
+          val env = context.getOrElse(Loc.COLLAPSED_OLD, AbsLexEnv.Bot).record.decEnvRec
           val (newEnv, _) = env
             .CreateMutableBinding(x).fold(env)((e: AbsDecEnvRec) => e)
             .SetMutableBinding(x, value)
-          Dom(heap, context.update(PredefLoc.COLLAPSED, AbsLexEnv(newEnv)))
+          Dom(heap, context.update(Loc.COLLAPSED_OLD, AbsLexEnv(newEnv)))
         case GlobalVar =>
           val (_, newH, _) = AbsGlobalEnvRec.Top
             .SetMutableBinding(x, value, false)(heap)
@@ -200,7 +199,7 @@ object DefaultState extends AbsStateUtil {
           })
           Dom(heap, newCtx)
         case CapturedCatchVar =>
-          val collapsedLoc = PredefLoc.COLLAPSED
+          val collapsedLoc = Loc.COLLAPSED_OLD
           val env = context.getOrElse(collapsedLoc, AbsLexEnv.Bot)
           val envRec = env.record.decEnvRec
           val (newEnvRec, _) = envRec

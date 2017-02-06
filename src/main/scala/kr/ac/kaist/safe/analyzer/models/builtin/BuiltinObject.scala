@@ -15,7 +15,7 @@ import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.analyzer.models._
 import kr.ac.kaist.safe.analyzer._
-import kr.ac.kaist.safe.util.PredAllocSite
+import kr.ac.kaist.safe.util._
 import scala.collection.immutable.HashSet
 
 // 15.2 Object Objects
@@ -292,7 +292,7 @@ object BuiltinObjectHelper {
       val (descObj, excSet) = AbsObject.FromPropertyDescriptor(desc)
       val descASite = getOPDDescASite
       val state = st.oldify(descASite)
-      val descLoc = Loc(descASite, Recent)
+      val descLoc = Recency(descASite, Recent)
       val retH = state.heap.update(descLoc, descObj.oldify(descASite))
       val retV = AbsValue(undef, AbsLoc(descLoc))
       (AbsState(retH, state.context), retV, excSet)
@@ -357,7 +357,7 @@ object BuiltinObjectHelper {
       case true => (AbsState.Bot, st.raiseException(retExcSet), AbsValue.Bot)
       case false => {
         val state = st.oldify(arrASite)
-        val arrLoc = Loc(arrASite, Recent)
+        val arrLoc = Recency(arrASite, Recent)
         val retHeap = state.heap.update(arrLoc, retObj.oldify(arrASite))
         val excSt = state.raiseException(retExcSet)
 
@@ -384,7 +384,7 @@ object BuiltinObjectHelper {
     //    standard built-in function Object.defineProperties with arguments obj and Properties.
     val asite = createObjASite
     val state = st.oldify(asite)
-    val loc = Loc(asite, Recent)
+    val loc = Recency(asite, Recent)
     val newH = state.heap.update(loc, newObj.oldify(asite))
     val retV = AbsLoc(loc)
     val (retSt, e) =
@@ -633,7 +633,7 @@ object BuiltinObjectHelper {
     }
     // 6. Return array.
     val state = st.oldify(arrASite)
-    val arrLoc = Loc(arrASite, Recent)
+    val arrLoc = Recency(arrASite, Recent)
     val retHeap = state.heap.update(arrLoc, retObj.oldify(arrASite))
     val excSt = st.raiseException(retExcSet)
 
@@ -761,7 +761,7 @@ object BuiltinObjectHelper {
 
   private def newObjSt(st: AbsState, asite: PredAllocSite): (AbsValue, AbsState) = {
     val state = st.oldify(asite)
-    val loc = Loc(asite, Recent)
+    val loc = Recency(asite, Recent)
     val obj = AbsObject.newObject
     val heap = state.heap.update(loc, obj)
     (AbsValue(loc), AbsState(heap, state.context))

@@ -117,8 +117,8 @@ case object CmdPrint extends Command("print", "Print out various information.") 
         }
         case "worklist" => rest match {
           case Nil =>
-            System.out.println("* Worklist set")
-            System.out.println(c.worklist.toString)
+            println("* Worklist set")
+            println(c.worklist.toString)
           case _ => help
         }
         case "ipsucc" => rest match {

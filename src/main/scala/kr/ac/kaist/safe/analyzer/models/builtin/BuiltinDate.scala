@@ -17,7 +17,7 @@ import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.analyzer._
 import kr.ac.kaist.safe.analyzer.models._
-import kr.ac.kaist.safe.util.PredAllocSite
+import kr.ac.kaist.safe.util._
 
 object BuiltinDateHelper {
   val instanceASite = PredAllocSite("Date<instance>")
@@ -58,7 +58,7 @@ object BuiltinDateHelper {
       val h = st.heap
       val asite = instanceASite
       val state = st.oldify(asite)
-      val loc = Loc(asite, Recent)
+      val loc = Recency(asite, Recent)
       val newObj = AbsObject.newObject(BuiltinDateProto.loc)
       val argL = Helper.propLoad(args, Set(AbsString("length")), h).pvalue.numval
       val absNum = argL.getSingle match {
@@ -115,7 +115,7 @@ object BuiltinDateHelper {
       val h = st.heap
       val asite = instanceASite
       val state = st.oldify(asite)
-      val loc = Loc(asite, Recent)
+      val loc = Recency(asite, Recent)
       val thisV = state.context.thisBinding
       var excSet = BuiltinHelper.checkExn(h, thisV, "Date")
       // XXX: give up the precision! (Room for the analysis precision improvement!)

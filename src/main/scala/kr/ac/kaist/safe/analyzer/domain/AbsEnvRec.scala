@@ -13,6 +13,7 @@ package kr.ac.kaist.safe.analyzer.domain
 
 import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.LINE_SEP
+import kr.ac.kaist.safe.util._
 
 /* 10.2.1 Environment Records */
 
@@ -59,10 +60,10 @@ trait AbsEnvRec extends AbsDomain[EnvRec, AbsEnvRec] {
   def ImplicitThisValue(heap: AbsHeap): AbsValue
 
   // substitute locR by locO
-  def subsLoc(locR: Loc, locO: Loc): AbsEnvRec
+  def subsLoc(locR: Recency, locO: Recency): AbsEnvRec
 
   // weak substitute locR by locO
-  def weakSubsLoc(locR: Loc, locO: Loc): AbsEnvRec
+  def weakSubsLoc(locR: Recency, locO: Recency): AbsEnvRec
 }
 
 trait AbsEnvRecUtil extends AbsDomainUtil[EnvRec, AbsEnvRec] {
@@ -174,10 +175,10 @@ object DefaultEnvRec extends AbsEnvRecUtil {
     def ImplicitThisValue(heap: AbsHeap): AbsValue =
       decEnvRec.ImplicitThisValue + globalEnvRec.ImplicitThisValue(heap)
 
-    def subsLoc(locR: Loc, locO: Loc): AbsEnvRec =
+    def subsLoc(locR: Recency, locO: Recency): AbsEnvRec =
       Dom(decEnvRec.subsLoc(locR, locO), globalEnvRec)
 
-    def weakSubsLoc(locR: Loc, locO: Loc): AbsEnvRec =
+    def weakSubsLoc(locR: Recency, locO: Recency): AbsEnvRec =
       Dom(decEnvRec.weakSubsLoc(locR, locO), globalEnvRec)
   }
 }

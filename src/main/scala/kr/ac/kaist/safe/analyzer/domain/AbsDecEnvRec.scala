@@ -14,6 +14,7 @@ package kr.ac.kaist.safe.analyzer.domain
 import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.errors.error.ContextAssertionError
 import kr.ac.kaist.safe.LINE_SEP
+import kr.ac.kaist.safe.util._
 import scala.collection.immutable.{ HashMap, HashSet }
 
 /* 10.2.1.1 Declarative Environment Records */
@@ -69,10 +70,10 @@ trait AbsDecEnvRec extends AbsDomain[DecEnvRec, AbsDecEnvRec] {
   ): AbsDecEnvRec
 
   // substitute locR by locO
-  def subsLoc(locR: Loc, locO: Loc): AbsDecEnvRec
+  def subsLoc(locR: Recency, locO: Recency): AbsDecEnvRec
 
   // weak substitute locR by locO
-  def weakSubsLoc(locR: Loc, locO: Loc): AbsDecEnvRec
+  def weakSubsLoc(locR: Recency, locO: Recency): AbsDecEnvRec
 }
 
 trait AbsDecEnvRecUtil extends AbsDomainUtil[DecEnvRec, AbsDecEnvRec] {
@@ -366,7 +367,7 @@ object DefaultDecEnvRec extends AbsDecEnvRecUtil {
     }
 
     // substitute locR by locO
-    def subsLoc(locR: Loc, locO: Loc): Dom = {
+    def subsLoc(locR: Recency, locO: Recency): Dom = {
       def subs(map: EnvMap): EnvMap = map.foldLeft(EmptyMap) {
         case (m, (key, (bind, abs))) => {
           val newV = bind.value.subsLoc(locR, locO)
@@ -382,7 +383,7 @@ object DefaultDecEnvRec extends AbsDecEnvRecUtil {
     }
 
     // weak substitute locR by locO
-    def weakSubsLoc(locR: Loc, locO: Loc): Dom = {
+    def weakSubsLoc(locR: Recency, locO: Recency): Dom = {
       def subs(map: EnvMap): EnvMap = map.foldLeft(EmptyMap) {
         case (m, (key, (bind, abs))) => {
           val newV = bind.value.weakSubsLoc(locR, locO)

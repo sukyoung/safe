@@ -20,50 +20,37 @@ import scala.collection.immutable.HashSet
 ////////////////////////////////////////////////////////////////////////////////
 // concrete location type
 ////////////////////////////////////////////////////////////////////////////////
-case class Loc(asite: AllocSite, recency: RecencyTag = Recent) extends Value {
-  override def toString: String = s"${recency}${asite}"
-}
+abstract class Loc extends Value
 
 object Loc {
+  // predefined allocation sites
+  val GLOBAL_ENV: PredAllocSite = PredAllocSite("GlobalEnv")
+  val PURE_LOCAL: PredAllocSite = PredAllocSite("PureLocal")
+  val COLLAPSED: PredAllocSite = PredAllocSite("Collapsed")
+
+  val GLOBAL_ENV_REC: Recency = Recency(GLOBAL_ENV, Recent)
+  val PURE_LOCAL_REC: Recency = Recency(PURE_LOCAL, Recent)
+  val COLLAPSED_OLD: Recency = Recency(GLOBAL_ENV, Old)
+
   def parse(str: String): Try[Loc] = {
-    val pgmPattern = "(#|##)([0-9]+)".r
-    val sysPattern = "(#|##)([0-9a-zA-Z.<>]+)".r
+    val recency = "(#|##)(.+)".r
+    val userASite = "([0-9]+)".r
+    val predASite = "([0-9a-zA-Z.<>]+)".r
     str match {
-      case pgmPattern(prefix, idStr) =>
-        RecencyTag.parse(prefix).map(Loc(UserAllocSite(idStr.toInt), _))
-      case sysPattern(prefix, name) =>
-        RecencyTag.parse(prefix).map(Loc(PredAllocSite(name), _))
+      // allocation site
+      case userASite(id) => Try(UserAllocSite(id.toInt))
+      case predASite(name) => Success(PredAllocSite(name))
+      // recency abstraction
+      case recency("#", str) => parse(str).map(Recency(_, Recent))
+      case recency("##", str) => parse(str).map(Recency(_, Old))
+      // otherwise
       case str => Failure(NoLoc(str))
     }
   }
   implicit def ordering[B <: Loc]: Ordering[B] = Ordering.by({
-    case Loc(asite, _) => asite match {
-      case UserAllocSite(id) => (id, "")
-      case PredAllocSite(name) => (0, name)
-    }
+    case addrPart => addrPart.toString
   })
 }
-
-// system location
-object SystemLoc {
-  def apply(name: String, recency: RecencyTag = Recent): Loc =
-    Loc(PredAllocSite(name), recency)
-}
-
-// recency tag
-sealed abstract class RecencyTag(prefix: String) {
-  override def toString: String = prefix
-}
-object RecencyTag {
-  def parse(prefix: String): Try[RecencyTag] = prefix match {
-    case "#" => Success(Recent)
-    case "##" => Success(Old)
-    case str => Failure(NoRecencyTag(str))
-  }
-}
-
-case object Recent extends RecencyTag("#")
-case object Old extends RecencyTag("##")
 
 ////////////////////////////////////////////////////////////////////////////////
 // location abstract domain
@@ -79,9 +66,9 @@ trait AbsLoc extends AbsDomain[Loc, AbsLoc] {
   def +(loc: Loc): AbsLoc
   def -(loc: Loc): AbsLoc
   /* substitute locR by locO */
-  def subsLoc(locR: Loc, locO: Loc): AbsLoc
+  def subsLoc(locR: Recency, locO: Recency): AbsLoc
   /* weakly substitute locR by locO, that is keep locR together */
-  def weakSubsLoc(locR: Loc, locO: Loc): AbsLoc
+  def weakSubsLoc(locR: Recency, locO: Recency): AbsLoc
 }
 
 trait AbsLocUtil extends AbsDomainUtil[Loc, AbsLoc]
@@ -188,14 +175,14 @@ case class DefaultLoc(cfg: CFG) extends AbsLocUtil {
       case LocSet(set) => LocSet(set - loc)
     }
 
-    def subsLoc(locR: Loc, locO: Loc): AbsLoc = this match {
+    def subsLoc(locR: Recency, locO: Recency): AbsLoc = this match {
       case Top => Top // TODO LocSet(locSet - locR + locO)
       case LocSet(set) =>
         if (set contains locR) LocSet(set - locR + locO)
         else this
     }
 
-    def weakSubsLoc(locR: Loc, locO: Loc): AbsLoc = this match {
+    def weakSubsLoc(locR: Recency, locO: Recency): AbsLoc = this match {
       case Top => Top
       case LocSet(set) => LocSet(set + locO)
     }
