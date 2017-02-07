@@ -35,7 +35,6 @@ trait AbsValue extends AbsDomain[Value, AbsValue] {
   def getThis(h: AbsHeap): AbsLoc
 
   def typeCount: Int
-  def typeKinds: String
 }
 
 trait AbsValueUtil extends AbsDomainUtil[Value, AbsValue] {
@@ -118,13 +117,6 @@ object DefaultValue extends AbsValueUtil {
         pvalue.typeCount
       else
         pvalue.typeCount + 1
-    }
-
-    def typeKinds: String = {
-      val sb = new StringBuilder()
-      sb.append(pvalue.typeKinds)
-      if (!this.locset.isBottom) sb.append((if (sb.length > 0) ", " else "") + "Object")
-      sb.toString
     }
 
     def getThis(h: AbsHeap): AbsLoc = {

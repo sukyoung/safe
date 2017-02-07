@@ -47,9 +47,8 @@ object BuiltinStringHelper {
     asiteSet = HashSet(instanceASite),
     code = (args: AbsValue, st: AbsState) => {
       val num = typeConvert(args, st)
-      val asite = instanceASite
-      val state = st.oldify(asite)
-      val loc = Recency(asite, Recent)
+      val loc = Loc(instanceASite)
+      val state = st.oldify(loc)
       val heap = state.heap.update(loc, AbsObject.newStringObj(num))
       (AbsState(heap, state.context), AbsState.Bot, AbsValue(loc))
     }
@@ -59,9 +58,8 @@ object BuiltinStringHelper {
     argLen = 1,
     asiteSet = HashSet(matchObjASite),
     code = (args: AbsValue, st: AbsState) => {
-      val asite = matchObjASite
-      val state = st.oldify(asite)
-      val loc = Recency(asite, Recent)
+      val loc = Loc(matchObjASite)
+      val state = st.oldify(loc)
       val heap = state.heap.update(loc, AbsObject.Top)
       (AbsState(heap, state.context), AbsState.Bot, AbsValue(Null, loc))
     }

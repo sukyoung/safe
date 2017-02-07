@@ -81,9 +81,8 @@ private object BuiltinErrorHelper {
 
     val errorObj = undefObject + notUndefObject
 
-    val errorASite = instanceASite(errorName)
-    val st1 = st.oldify(errorASite)
-    val errorLoc = Recency(errorASite, Recent)
+    val errorLoc = Loc(instanceASite(errorName))
+    val st1 = st.oldify(errorLoc)
     val h2 = st1.heap.update(errorLoc, errorObj)
 
     (AbsState(h2, st1.context), AbsState.Bot, AbsValue(errorLoc))

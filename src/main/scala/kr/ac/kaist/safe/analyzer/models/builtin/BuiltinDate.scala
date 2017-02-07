@@ -56,9 +56,8 @@ object BuiltinDateHelper {
     asiteSet = HashSet(instanceASite),
     code = (args: AbsValue, st: AbsState) => {
       val h = st.heap
-      val asite = instanceASite
-      val state = st.oldify(asite)
-      val loc = Recency(asite, Recent)
+      val loc = Loc(instanceASite)
+      val state = st.oldify(loc)
       val newObj = AbsObject.newObject(BuiltinDateProto.loc)
       val argL = Helper.propLoad(args, Set(AbsString("length")), h).pvalue.numval
       val absNum = argL.getSingle match {
@@ -113,9 +112,8 @@ object BuiltinDateHelper {
     asiteSet = HashSet(instanceASite),
     code = (args: AbsValue, st: AbsState) => {
       val h = st.heap
-      val asite = instanceASite
-      val state = st.oldify(asite)
-      val loc = Recency(asite, Recent)
+      val loc = Loc(instanceASite)
+      val state = st.oldify(loc)
       val thisV = state.context.thisBinding
       var excSet = BuiltinHelper.checkExn(h, thisV, "Date")
       // XXX: give up the precision! (Room for the analysis precision improvement!)

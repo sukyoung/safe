@@ -310,7 +310,7 @@ object Helper {
         val intersect = left.locset <> right.locset
         (left.locset.getSingle, right.locset.getSingle, intersect.getSingle) match {
           case (_, _, ConZero()) => afalse
-          case (ConOne(_), ConOne(_), ConOne(Recency(_, Recent))) => atrue
+          case (ConOne(_), ConOne(_), ConOne(loc)) if loc.isConcrete => atrue
           case _ => AbsBool.Top
         }
       } else AbsBool.Bot
@@ -451,7 +451,7 @@ object Helper {
         val intersect = left.locset <> right.locset
         (left.locset.getSingle, right.locset.getSingle, intersect.getSingle) match {
           case (_, _, ConZero()) => afalse
-          case (ConOne(_), ConOne(_), ConOne(Recency(_, Recent))) => atrue
+          case (ConOne(_), ConOne(_), ConOne(loc)) if loc.isConcrete => atrue
           case _ => AbsBool.Top
         }
       } else AbsBool.Bot

@@ -47,7 +47,7 @@ trait AbsHeap extends AbsDomain[Heap, AbsHeap] {
 
   // substitute locR by locO
   def subsLoc(locR: Recency, locO: Recency): AbsHeap
-  def oldify(asite: AllocSite): AbsHeap
+  def oldify(loc: Loc): AbsHeap
   def domIn(loc: Loc): Boolean
 
   // toString
@@ -187,11 +187,7 @@ object DefaultHeap extends AbsHeapUtil {
     }
 
     override def toString: String = {
-      buildString(loc => loc match {
-        case Recency(UserAllocSite(_), _) => true
-        case BuiltinGlobal.loc => true
-        case _ => false
-      }).toString
+      buildString(loc => loc.isUser || loc == BuiltinGlobal.loc)
     }
 
     def get(loc: Loc): AbsObject = this match {
@@ -222,13 +218,12 @@ object DefaultHeap extends AbsHeapUtil {
       case Top => Top
       case heap @ HeapMap(map) =>
         if (!heap.isBottom) {
-          loc match {
-            case Recency(_, Recent) =>
-              if (obj.isBottom) AbsHeap.Bot
-              else HeapMap(map.updated(loc, obj))
-            case _ =>
-              if (obj.isBottom) heap.get(loc).fold(AbsHeap.Bot) { _ => heap }
-              else HeapMap(weakUpdated(map, loc, obj))
+          if (loc.isConcrete) {
+            if (obj.isBottom) AbsHeap.Bot
+            else HeapMap(map.updated(loc, obj))
+          } else {
+            if (obj.isBottom) heap.get(loc).fold(AbsHeap.Bot) { _ => heap }
+            else HeapMap(weakUpdated(map, loc, obj))
           }
         } else heap
     }
@@ -252,16 +247,19 @@ object DefaultHeap extends AbsHeapUtil {
         HeapMap(newMap)
     }
 
-    def oldify(asite: AllocSite): AbsHeap = this match {
-      case Top => Top
-      case heap @ HeapMap(map) =>
-        val locR = Recency(asite, Recent)
-        val locO = Recency(asite, Old)
-        if (heap domIn locR) {
-          update(locO, get(locR)).remove(locR).subsLoc(locR, locO)
-        } else {
-          subsLoc(locR, locO)
+    def oldify(loc: Loc): AbsHeap = loc match {
+      case locR @ Recency(subLoc, Recent) => this match {
+        case Top => Top
+        case heap @ HeapMap(map) => {
+          val locO = Recency(subLoc, Old)
+          if (heap domIn locR) {
+            update(locO, get(locR)).remove(locR).subsLoc(locR, locO)
+          } else {
+            subsLoc(locR, locO)
+          }
         }
+      }
+      case _ => this
     }
 
     def domIn(loc: Loc): Boolean = this match {

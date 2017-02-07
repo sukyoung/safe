@@ -290,10 +290,9 @@ object BuiltinObjectHelper {
     // 4. Return the result of calling FromPropertyDescriptor(desc) (8.10.4).
     val (retSt, retV, excSet2) = if (!desc.isBottom) {
       val (descObj, excSet) = AbsObject.FromPropertyDescriptor(desc)
-      val descASite = getOPDDescASite
-      val state = st.oldify(descASite)
-      val descLoc = Recency(descASite, Recent)
-      val retH = state.heap.update(descLoc, descObj.oldify(descASite))
+      val descLoc = Loc(getOPDDescASite)
+      val state = st.oldify(descLoc)
+      val retH = state.heap.update(descLoc, descObj.oldify(descLoc))
       val retV = AbsValue(undef, AbsLoc(descLoc))
       (AbsState(retH, state.context), retV, excSet)
     } else (st, AbsValue(undef), ExcSetEmpty)
@@ -306,7 +305,6 @@ object BuiltinObjectHelper {
   def getOwnPropertyNames(args: AbsValue, st: AbsState): (AbsState, AbsState, AbsValue) = {
     val h = st.heap
     val objV = Helper.propLoad(args, Set(AbsString("0")), h)
-    val arrASite = getOPNArrASite
     val (keyStr, lenSet) = objV.locset.foldLeft((AbsString.Bot, Set[Option[Int]]())) {
       case ((str, lenSet), loc) => {
         val obj = h.get(loc)
@@ -356,9 +354,9 @@ object BuiltinObjectHelper {
     retObj.isBottom match {
       case true => (AbsState.Bot, st.raiseException(retExcSet), AbsValue.Bot)
       case false => {
-        val state = st.oldify(arrASite)
-        val arrLoc = Recency(arrASite, Recent)
-        val retHeap = state.heap.update(arrLoc, retObj.oldify(arrASite))
+        val arrLoc = Loc(getOPNArrASite)
+        val state = st.oldify(arrLoc)
+        val retHeap = state.heap.update(arrLoc, retObj.oldify(arrLoc))
         val excSt = state.raiseException(retExcSet)
 
         (AbsState(retHeap, state.context), excSt, AbsValue(arrLoc))
@@ -382,10 +380,9 @@ object BuiltinObjectHelper {
     val newObj = obj.update(IPrototype, AbsIValueUtil(protoV))
     // 4. If the argument Properties is present and not undefined, add own properties to obj as if by calling the
     //    standard built-in function Object.defineProperties with arguments obj and Properties.
-    val asite = createObjASite
-    val state = st.oldify(asite)
-    val loc = Recency(asite, Recent)
-    val newH = state.heap.update(loc, newObj.oldify(asite))
+    val loc = Loc(createObjASite)
+    val state = st.oldify(loc)
+    val newH = state.heap.update(loc, newObj.oldify(loc))
     val retV = AbsLoc(loc)
     val (retSt, e) =
       if (propsV <= AbsUndef.Top) (AbsState(newH, state.context), ExcSetEmpty)
@@ -588,7 +585,6 @@ object BuiltinObjectHelper {
   def keys(args: AbsValue, st: AbsState): (AbsState, AbsState, AbsValue) = {
     val h = st.heap
     val objV = Helper.propLoad(args, Set(AbsString("0")), h)
-    val arrASite = keysArrASite
     val obj = h.get(objV.locset)
     val keyStr = obj.abstractKeySet((key, dp) => {
       AbsBool.True <= dp.enumerable
@@ -632,9 +628,9 @@ object BuiltinObjectHelper {
       }
     }
     // 6. Return array.
-    val state = st.oldify(arrASite)
-    val arrLoc = Recency(arrASite, Recent)
-    val retHeap = state.heap.update(arrLoc, retObj.oldify(arrASite))
+    val arrLoc = Loc(keysArrASite)
+    val state = st.oldify(arrLoc)
+    val retHeap = state.heap.update(arrLoc, retObj.oldify(arrLoc))
     val excSt = st.raiseException(retExcSet)
 
     (AbsState(retHeap, state.context), excSt, AbsValue(arrLoc))
@@ -760,8 +756,8 @@ object BuiltinObjectHelper {
   }
 
   private def newObjSt(st: AbsState, asite: PredAllocSite): (AbsValue, AbsState) = {
-    val state = st.oldify(asite)
-    val loc = Recency(asite, Recent)
+    val loc = Loc(asite)
+    val state = st.oldify(loc)
     val obj = AbsObject.newObject
     val heap = state.heap.update(loc, obj)
     (AbsValue(loc), AbsState(heap, state.context))

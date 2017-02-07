@@ -163,7 +163,7 @@ object HTMLWriter {
               case (loc, obj) =>
                 val parent = loc match {
                   case BuiltinGlobal.loc => "heap"
-                  case Recency(PredAllocSite(_), _) => "predLoc"
+                  case l if !l.isUser => "predLoc"
                   case _ => "heap"
                 }
                 sb.append(s"{ value: {value: '$loc', id: '$loc'}, parent: '$parent' },").append(LINE_SEP)

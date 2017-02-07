@@ -145,9 +145,8 @@ private object BuiltinRegExpHelper {
 
     val (st2, result1) = objOpt match {
       case Some(obj) =>
-        val asite = instanceASite
-        val st1 = st.oldify(asite)
-        val loc = Recency(asite, Recent)
+        val loc = Loc(instanceASite)
+        val st1 = st.oldify(loc)
         val h2 = st1.heap.update(loc, obj)
         (AbsState(h2, st1.context), AbsValue(loc))
       case None => (st, AbsValue.Bot)
@@ -232,9 +231,8 @@ private object BuiltinRegExpHelper {
 
     val (st2, result1) = objOpt match {
       case Some(obj) =>
-        val asite = instanceASite
-        val st1 = st.oldify(asite)
-        val loc = Recency(asite, Recent)
+        val loc = Loc(instanceASite)
+        val st1 = st.oldify(loc)
         val h2 = st1.heap.update(loc, obj)
         (AbsState(h2, st1.context), AbsValue(loc))
       case None => (st, AbsValue.Bot)

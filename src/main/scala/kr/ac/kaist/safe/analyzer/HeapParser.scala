@@ -68,7 +68,8 @@ object HeapParser extends DefaultJsonProtocol {
       case JsString("@undef") => Undef
 
       // location
-      case JsString(str) if str.startsWith("#") => Recency(PredAllocSite(str.substring(1)))
+      case JsString(str) if str.startsWith("#") =>
+        Loc(str.substring(1))
 
       // string
       case JsString(str) => str
@@ -83,7 +84,7 @@ object HeapParser extends DefaultJsonProtocol {
     }
 
     private def readLoc(str: String): Loc = str.startsWith("#") match {
-      case true => Recency(PredAllocSite(str.substring(1)))
+      case true => Loc(str.substring(1))
       case false => throw HeapParseError("wrong format for locations")
     }
 

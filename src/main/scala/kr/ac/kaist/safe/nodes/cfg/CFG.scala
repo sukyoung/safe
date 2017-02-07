@@ -109,9 +109,9 @@ class CFG(
 
   // predefined allocation site set
   private var predASiteSet: Set[AllocSite] = HashSet(
-    Loc.GLOBAL_ENV,
-    Loc.PURE_LOCAL,
-    Loc.COLLAPSED
+    PredAllocSite.GLOBAL_ENV,
+    PredAllocSite.PURE_LOCAL,
+    PredAllocSite.COLLAPSED
   )
   def getPredASiteSet: Set[AllocSite] = predASiteSet
   def registerPredASite(asite: AllocSite): Unit = predASiteSet += asite

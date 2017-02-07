@@ -21,8 +21,8 @@ class ObjModel(
     val name: String,
     val props: List[PropDesc] = Nil
 ) extends Model {
-  val asite: AllocSite = PredAllocSite(name)
-  val loc: Loc = Recency(asite, Recent)
+  val asite: PredAllocSite = PredAllocSite(name)
+  val loc: Loc = Loc(asite)
   def init(h: AbsHeap, cfg: CFG): (AbsHeap, AbsValue) =
     (initHeap(h, cfg), AbsValue(loc))
 

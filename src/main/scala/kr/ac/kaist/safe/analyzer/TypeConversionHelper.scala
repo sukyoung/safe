@@ -201,8 +201,8 @@ object TypeConversionHelper {
 
     val (locSet1, st1) =
       if (!obj.isBottom) {
-        val loc = Recency(asite, Recent)
-        val state = st.oldify(asite)
+        val loc = Loc(asite)
+        val state = st.oldify(loc)
         (AbsLoc(loc), AbsState(state.heap.update(loc, obj), state.context))
       } else (AbsLoc.Bot, AbsState.Bot)
     val (locSet2, st2) =
@@ -280,7 +280,7 @@ object TypeConversionHelper {
         val intersect = left.locset <> right.locset
         (left.locset.getSingle, right.locset.getSingle, intersect.getSingle) match {
           case (_, _, ConZero()) => AbsBool.False
-          case (ConOne(_), ConOne(_), ConOne(Recency(_, Recent))) => AbsBool.True
+          case (ConOne(_), ConOne(_), ConOne(loc)) if loc.isConcrete => AbsBool.True
           case _ => AbsBool.Top
         }
       } else AbsBool.Bot

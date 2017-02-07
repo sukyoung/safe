@@ -46,7 +46,7 @@ trait AbsContext extends AbsDomain[Context, AbsContext] {
   // substitute locR by locO
   def subsLoc(locR: Recency, locO: Recency): AbsContext
 
-  def oldify(asite: AllocSite): AbsContext
+  def oldify(loc: Loc): AbsContext
 
   def domIn(loc: Loc): Boolean
 
@@ -221,10 +221,10 @@ object DefaultContext extends AbsContextUtil {
       case Bot => Bot
       case Top => Top
       case CtxMap(map, old, thisBinding) => {
-        // recent location
-        loc match {
-          case Recency(_, Recent) => CtxMap(map.updated(loc, env), old, thisBinding)
-          case _ => CtxMap(weakUpdated(map, loc, env), old, thisBinding)
+        if (loc.isConcrete) {
+          CtxMap(map.updated(loc, env), old, thisBinding)
+        } else {
+          CtxMap(weakUpdated(map, loc, env), old, thisBinding)
         }
       }
     }
@@ -249,17 +249,19 @@ object DefaultContext extends AbsContextUtil {
       }
     }
 
-    def oldify(asite: AllocSite): AbsContext = this match {
-      case Bot => Bot
-      case Top => Top
-      case CtxMap(map, _, _) => {
-        val locR = Recency(asite, Recent)
-        val locO = Recency(asite, Old)
-        val newCtx = if (this domIn locR) {
-          update(locO, getOrElse(locR, AbsLexEnv.Bot)).remove(locR)
-        } else this
-        newCtx.subsLoc(locR, locO)
+    def oldify(loc: Loc): AbsContext = loc match {
+      case locR @ Recency(subLoc, Recent) => this match {
+        case Bot => Bot
+        case Top => Top
+        case CtxMap(map, _, _) => {
+          val locO = Recency(subLoc, Old)
+          val newCtx = if (this domIn locR) {
+            update(locO, getOrElse(locR, AbsLexEnv.Bot)).remove(locR)
+          } else this
+          newCtx.subsLoc(locR, locO)
+        }
       }
+      case _ => this
     }
 
     def domIn(loc: Loc): Boolean = this match {
@@ -350,7 +352,9 @@ object DefaultContext extends AbsContextUtil {
     ////////////////////////////////////////////////////////////////
     // pure local environment
     ////////////////////////////////////////////////////////////////
-    def pureLocal: AbsLexEnv = getOrElse(Loc.PURE_LOCAL_REC, AbsLexEnv.Bot)
-    def subsPureLocal(env: AbsLexEnv): AbsContext = update(Loc.PURE_LOCAL_REC, env)
+    def pureLocal: AbsLexEnv =
+      getOrElse(PredAllocSite.PURE_LOCAL, AbsLexEnv.Bot)
+    def subsPureLocal(env: AbsLexEnv): AbsContext =
+      update(PredAllocSite.PURE_LOCAL, env)
   }
 }

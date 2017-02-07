@@ -46,9 +46,8 @@ object BuiltinNumberHelper {
     asiteSet = HashSet(instanceASite),
     code = (args: AbsValue, st: AbsState) => {
       val num = typeConvert(args, st)
-      val asite = instanceASite
-      val state = st.oldify(asite)
-      val loc = Recency(asite, Recent)
+      val loc = Loc(instanceASite)
+      val state = st.oldify(loc)
       val heap = state.heap.update(loc, AbsObject.newNumberObj(num))
       (AbsState(heap, state.context), AbsState.Bot, AbsValue(loc))
     }

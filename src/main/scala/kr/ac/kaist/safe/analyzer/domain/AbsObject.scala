@@ -31,7 +31,7 @@ case class Object(amap: Map[String, DataProp], imap: Map[IName, IValue])
 ////////////////////////////////////////////////////////////////////////////////
 trait AbsObject extends AbsDomain[Object, AbsObject] {
   /* substitute locR by locO */
-  def oldify(asite: AllocSite): AbsObject
+  def oldify(loc: Loc): AbsObject
   def subsLoc(locR: Recency, locO: Recency): AbsObject
   def weakSubsLoc(locR: Recency, locO: Recency): AbsObject
 
@@ -239,7 +239,10 @@ object DefaultObject extends AbsObjectUtil {
     ///////////////////////////////////////////////////////////////
     def isEmpty: Boolean = this == Empty
 
-    def oldify(asite: AllocSite): AbsObject = subsLoc(Recency(asite, Recent), Recency(asite, Old))
+    def oldify(loc: Loc): AbsObject = loc match {
+      case locR @ Recency(subLoc, Recent) => subsLoc(locR, Recency(subLoc, Old))
+      case _ => this
+    }
 
     /* substitute locR by locO */
     def subsLoc(locR: Recency, locO: Recency): AbsObject = this match {

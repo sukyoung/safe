@@ -41,7 +41,7 @@ case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, Int, TracePartiti
       config.AbsBool,
       config.AbsNumber,
       config.AbsString,
-      DefaultLoc(cfg)
+      DefaultLoc
     )
     var initSt = Initialize(cfg, config.jsModel)
 

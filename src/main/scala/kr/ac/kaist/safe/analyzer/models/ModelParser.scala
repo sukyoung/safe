@@ -88,7 +88,7 @@ object ModelParser extends RegexParsers with JavaTokenParsers {
   private lazy val jsPValue: Parser[PValue] = jsNum | jsStr | jsNull | jsBool | jsUndef
 
   // JavaScript value
-  private lazy val jsLoc: Parser[Loc] = "#" ~> "[0-9a-zA-Z.<>]+".r ^^ { Recency(_, Recent) }
+  private lazy val jsLoc: Parser[Loc] = "#" ~> "[0-9a-zA-Z.<>]+".r ^^ { Loc(_) }
   private lazy val jsValue: Parser[Value] = jsPValue | jsLoc
   private lazy val jsValueE: Parser[Value] = jsValue | failure("illegal start of value")
 

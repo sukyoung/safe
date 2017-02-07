@@ -319,10 +319,9 @@ object BuiltinArrayHelper {
         (arrObj, HashSet(RangeError))
       }
     }
-    val arrASite = arrInstanceASite
-    val state = st.oldify(arrASite)
-    val arrLoc = Recency(arrASite, Recent)
-    val retH = state.heap.update(arrLoc, retObj.oldify(arrASite))
+    val arrLoc = Loc(arrInstanceASite)
+    val state = st.oldify(arrLoc)
+    val retH = state.heap.update(arrLoc, retObj.oldify(arrLoc))
     val excSt = state.raiseException(retExcSet)
     (AbsState(retH, state.context), excSt, AbsLoc(arrLoc))
   }
@@ -357,8 +356,7 @@ object BuiltinArrayHelper {
     // 3. If IsCallable(func) is false, then let func be the standard built-in method Object.prototype.toString (15.2.4.2).
     // 4. Return the result of calling the [[Call]] internal method of func providing array as the this value and an
     //    empty arguments list.
-    val tempArr = tempASite
-    val tempLoc = Recency(tempArr, Recent)
+    val tempLoc = Loc(tempASite)
     val newArgs = AbsObject.newArgObject()
     val tempH = h.update(tempLoc, newArgs)
     val tempSt = AbsState(tempH, state.context)
@@ -452,10 +450,9 @@ object BuiltinArrayHelper {
       }
       case ConMany() => Top
     }
-    val arrASite = concatArrASite
-    val state = st.oldify(arrASite)
-    val arrLoc = Recency(arrASite, Recent)
-    val retH = state.heap.update(arrLoc, retObj.oldify(arrASite))
+    val arrLoc = Loc(concatArrASite)
+    val state = st.oldify(arrLoc)
+    val retH = state.heap.update(arrLoc, retObj.oldify(arrLoc))
     (AbsState(retH, state.context), AbsState.Bot, AbsLoc(arrLoc))
   }
 
@@ -816,10 +813,9 @@ object BuiltinArrayHelper {
       case _ => (arr.update(AbsString.Top, AbsDataProp.Top), HashSet(TypeError))
     }
     // 11. Return A.
-    val arrASite = sliceArrASite
-    val st1 = state.oldify(arrASite)
-    val arrLoc = Recency(arrASite, Recent)
-    val retH = st1.heap.update(arrLoc, retObj.oldify(arrASite))
+    val arrLoc = Loc(sliceArrASite)
+    val st1 = state.oldify(arrLoc)
+    val retH = st1.heap.update(arrLoc, retObj.oldify(arrLoc))
     val excSt = st1.raiseException(retExcSet)
     (AbsState(retH, st1.context), excSt, AbsLoc(arrLoc))
   }
@@ -907,11 +903,10 @@ object BuiltinArrayHelper {
         (retH, arr + retArr, excSet ++ retExcSet)
       }
     }
-    val arrASite = spliceArrASite
+    val arrLoc = Loc(spliceArrASite)
     val newSt = AbsState(retH, st.context)
-    val state = newSt.oldify(arrASite)
-    val arrLoc = Recency(arrASite, Recent)
-    val finalH = state.heap.update(arrLoc, retArr.oldify(arrASite))
+    val state = newSt.oldify(arrLoc)
+    val finalH = state.heap.update(arrLoc, retArr.oldify(arrLoc))
     val excSt = state.raiseException(retExcSet)
     (AbsState(finalH, state.context), excSt, AbsLoc(arrLoc))
   }

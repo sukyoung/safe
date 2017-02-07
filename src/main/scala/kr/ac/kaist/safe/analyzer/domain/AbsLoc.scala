@@ -11,8 +11,8 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
-import kr.ac.kaist.safe.errors.error.{ NoRecencyTag, NoLoc, LocTopGammaError }
-import kr.ac.kaist.safe.nodes.cfg.CFG
+import kr.ac.kaist.safe.analyzer.domain.Utils.AbsLoc
+import kr.ac.kaist.safe.errors.error.{ NoLoc, LocTopGammaError }
 import kr.ac.kaist.safe.util._
 import scala.util.{ Try, Success, Failure }
 import scala.collection.immutable.HashSet
@@ -20,18 +20,21 @@ import scala.collection.immutable.HashSet
 ////////////////////////////////////////////////////////////////////////////////
 // concrete location type
 ////////////////////////////////////////////////////////////////////////////////
-abstract class Loc extends Value
+abstract class Loc extends Value {
+  def isConcrete: Boolean = this match {
+    case PredAllocSite.GLOBAL_ENV | PredAllocSite.PURE_LOCAL => true
+    case Recency(_, Recent) => true
+    case _ => false
+  }
+
+  def isUser: Boolean = this match {
+    case Recency(loc, _) => loc.isUser
+    case UserAllocSite(_) => true
+    case PredAllocSite(_) => false
+  }
+}
 
 object Loc {
-  // predefined allocation sites
-  val GLOBAL_ENV: PredAllocSite = PredAllocSite("GlobalEnv")
-  val PURE_LOCAL: PredAllocSite = PredAllocSite("PureLocal")
-  val COLLAPSED: PredAllocSite = PredAllocSite("Collapsed")
-
-  val GLOBAL_ENV_REC: Recency = Recency(GLOBAL_ENV, Recent)
-  val PURE_LOCAL_REC: Recency = Recency(PURE_LOCAL, Recent)
-  val COLLAPSED_OLD: Recency = Recency(GLOBAL_ENV, Old)
-
   def parse(str: String): Try[Loc] = {
     val recency = "(#|##)(.+)".r
     val userASite = "([0-9]+)".r
@@ -47,6 +50,10 @@ object Loc {
       case str => Failure(NoLoc(str))
     }
   }
+
+  def apply(str: String): Loc = Recency(PredAllocSite(str), Recent)
+  def apply(asite: AllocSite): Loc = Recency(asite, Recent)
+
   implicit def ordering[B <: Loc]: Ordering[B] = Ordering.by({
     case addrPart => addrPart.toString
   })
@@ -76,7 +83,7 @@ trait AbsLocUtil extends AbsDomainUtil[Loc, AbsLoc]
 ////////////////////////////////////////////////////////////////////////////////
 // default location abstract domain
 ////////////////////////////////////////////////////////////////////////////////
-case class DefaultLoc(cfg: CFG) extends AbsLocUtil {
+case object DefaultLoc extends AbsLocUtil {
   case object Top extends Dom
   case class LocSet(set: Set[Loc]) extends Dom
   object LocSet {

@@ -160,8 +160,8 @@ private object BuiltinFunctionProtoHelper {
     })
 
     // 9. [[Call]]
-    val st1 = st.oldify(asite)
-    val argsLoc = Recency(asite, Old)
+    val argsLoc = Loc(asite)
+    val st1 = st.oldify(argsLoc)
     val h3 = st1.heap.update(argsLoc, argList1 + argList2)
     val newState =
       AbsState(h3, st1.context)
@@ -212,8 +212,8 @@ private object BuiltinFunctionProtoHelper {
     })
 
     // 4. [[Call]]
-    val st1 = st.oldify(asite)
-    val argsLoc = Recency(asite, Old)
+    val argsLoc = Loc(asite)
+    val st1 = st.oldify(argsLoc)
     val h3 = st1.heap.update(argsLoc, argList)
     val newState =
       AbsState(h3, st1.context)

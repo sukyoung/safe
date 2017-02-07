@@ -31,9 +31,9 @@ object Initialize {
     ))
 
     val initCtx = AbsContext(HashMap[Loc, AbsLexEnv](
-      Loc.GLOBAL_ENV_REC -> AbsLexEnv(AbsGlobalEnvRec.Top),
-      Loc.PURE_LOCAL_REC -> globalPureLocalEnv,
-      Loc.COLLAPSED_OLD -> AbsLexEnv(AbsDecEnvRec.Empty)
+      PredAllocSite.GLOBAL_ENV -> AbsLexEnv(AbsGlobalEnvRec.Top),
+      PredAllocSite.PURE_LOCAL -> globalPureLocalEnv,
+      PredAllocSite.COLLAPSED -> AbsLexEnv(AbsDecEnvRec.Empty)
     ), OldASiteSet.Empty, globalLocSet)
 
     val modeledHeap: AbsHeap =

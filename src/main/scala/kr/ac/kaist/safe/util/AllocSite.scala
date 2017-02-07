@@ -25,3 +25,11 @@ case class UserAllocSite(id: Int) extends AllocSite {
 case class PredAllocSite(name: String) extends AllocSite {
   override def toString: String = name
 }
+object PredAllocSite {
+  // global environment
+  val GLOBAL_ENV: PredAllocSite = PredAllocSite("GlobalEnv")
+  // pure local environment
+  val PURE_LOCAL: PredAllocSite = PredAllocSite("PureLocal")
+  // collapsed environment for try-catch
+  val COLLAPSED: PredAllocSite = PredAllocSite("Collapsed")
+}
