@@ -12,6 +12,7 @@
 package kr.ac.kaist.safe.analyzer.domain
 
 import kr.ac.kaist.safe.analyzer.domain.Utils.AbsLoc
+import kr.ac.kaist.safe.analyzer.models.builtin.BuiltinGlobal
 import kr.ac.kaist.safe.errors.error.{ NoLoc, LocTopGammaError }
 import kr.ac.kaist.safe.util._
 import scala.util.{ Try, Success, Failure }
@@ -21,8 +22,14 @@ import scala.collection.immutable.HashSet
 // concrete location type
 ////////////////////////////////////////////////////////////////////////////////
 abstract class Loc extends Value {
+  private lazy val concreteSet: Set[Loc] = HashSet(
+    PredAllocSite.GLOBAL_ENV,
+    PredAllocSite.PURE_LOCAL,
+    BuiltinGlobal.loc
+  )
+
   def isConcrete: Boolean = this match {
-    case PredAllocSite.GLOBAL_ENV | PredAllocSite.PURE_LOCAL => true
+    case l if concreteSet contains l => true
     case Recency(_, Recent) => true
     case _ => false
   }
