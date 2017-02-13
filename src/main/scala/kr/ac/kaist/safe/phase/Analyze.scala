@@ -41,7 +41,8 @@ case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, Int, TracePartiti
       config.AbsBool,
       config.AbsNumber,
       config.AbsString,
-      DefaultLoc
+      DefaultLoc(config.aaddrType),
+      config.aaddrType
     )
     var initSt = Initialize(cfg, config.jsModel)
 
@@ -105,6 +106,11 @@ case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, Int, TracePartiti
       "the analysis results will be written to the outfile."),
     ("maxStrSetSize", NumOption((c, n) => if (n > 0) c.AbsString = StringSet(n)),
       "the analyzer will use the AbsString Set domain with given size limit n."),
+    ("aaddrType", StrOption((c, s) => s match {
+      case "normal" => c.aaddrType = NormalAAddr
+      case "recency" => c.aaddrType = RecencyAAddr
+      case str => throw NoChoiceError(s"there is no address abstraction type with name '$str'.")
+    }), "address abstraction type."),
     ("callsiteSensitivity", NumOption((c, n) => if (n >= 0) c.callsiteSensitivity = n),
       "{number}-depth callsite-sensitive analysis will be executed."),
     ("loopSensitivity", NumOption((c, n) => if (n >= 0) c.loopSensitivity = n),
@@ -117,8 +123,7 @@ case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, Int, TracePartiti
       case "default" => c.AbsNumber = DefaultNumber
       case "flat" => c.AbsNumber = FlatNumber
       case str => throw NoChoiceError(s"there is no abstract number domain with name '$str'.")
-    }),
-      "analysis with a selected number domain."),
+    }), "analysis with a selected number domain."),
     ("domModel", BoolOption(c => c.domModel = true),
       "analysis with HTML DOM modelings."),
     ("jsModel", BoolOption(c => c.jsModel = true),
@@ -145,5 +150,6 @@ case class AnalyzeConfig(
   var htmlName: Option[String] = None,
   var snapshot: Option[String] = None,
   var domModel: Boolean = false,
-  var jsModel: Boolean = false
+  var jsModel: Boolean = false,
+  var aaddrType: AAddrType = RecencyAAddr
 ) extends Config

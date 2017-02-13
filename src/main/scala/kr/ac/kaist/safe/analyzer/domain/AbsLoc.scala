@@ -11,7 +11,7 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
-import kr.ac.kaist.safe.analyzer.domain.Utils.AbsLoc
+import kr.ac.kaist.safe.analyzer.domain.Utils.AAddrType
 import kr.ac.kaist.safe.analyzer.models.builtin.BuiltinGlobal
 import kr.ac.kaist.safe.errors.error.{ NoLoc, LocTopGammaError }
 import kr.ac.kaist.safe.util._
@@ -58,8 +58,11 @@ object Loc {
     }
   }
 
-  def apply(str: String): Loc = Recency(PredAllocSite(str), Recent)
-  def apply(asite: AllocSite): Loc = Recency(asite, Recent)
+  def apply(str: String): Loc = apply(PredAllocSite(str))
+  def apply(asite: AllocSite): Loc = AAddrType match {
+    case NormalAAddr => asite
+    case RecencyAAddr => Recency(asite, Recent)
+  }
 
   implicit def ordering[B <: Loc]: Ordering[B] = Ordering.by({
     case addrPart => addrPart.toString
@@ -85,12 +88,14 @@ trait AbsLoc extends AbsDomain[Loc, AbsLoc] {
   def weakSubsLoc(locR: Recency, locO: Recency): AbsLoc
 }
 
-trait AbsLocUtil extends AbsDomainUtil[Loc, AbsLoc]
+trait AbsLocUtil extends AbsDomainUtil[Loc, AbsLoc] {
+  val abs: AAddrType
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // default location abstract domain
 ////////////////////////////////////////////////////////////////////////////////
-case object DefaultLoc extends AbsLocUtil {
+case class DefaultLoc(abs: AAddrType) extends AbsLocUtil {
   case object Top extends Dom
   case class LocSet(set: Set[Loc]) extends Dom
   object LocSet {
@@ -202,3 +207,7 @@ case object DefaultLoc extends AbsLocUtil {
     }
   }
 }
+
+sealed abstract class AAddrType
+case object NormalAAddr extends AAddrType
+case object RecencyAAddr extends AAddrType
