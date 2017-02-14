@@ -240,6 +240,7 @@ object DefaultLexEnv extends AbsLexEnvUtil {
     var visited = AbsLoc.Bot
     var newH = st.heap
     var newCtx = st.context
+    var ctxUpdatePairSet = HashSet[(Loc, AbsLexEnv)]()
     var excSet = ExcSetEmpty
     def visit(loc: Loc): Unit = if (!visited.contains(loc)) {
       visited += loc
@@ -249,7 +250,7 @@ object DefaultLexEnv extends AbsLexEnvUtil {
       exists.map[AbsAbsent](thenV = {
         val (er, h, e) = envRec.SetMutableBinding(name, value, strict)(st.heap)
         val newEnv = env.copyWith(record = er)
-        newCtx = newCtx.update(loc, newEnv)
+        ctxUpdatePairSet += ((loc, newEnv))
         newH = newH.weakUpdate(BuiltinGlobal.loc, h.get(BuiltinGlobal.loc))
         excSet ++= e
         AbsAbsent.Bot
@@ -268,6 +269,14 @@ object DefaultLexEnv extends AbsLexEnvUtil {
       })(AbsAbsent)
     }
     locSet.foreach(visit(_))
+    ctxUpdatePairSet.size match {
+      case 1 => ctxUpdatePairSet.foreach {
+        case (loc, newEnv) => newCtx = newCtx.update(loc, newEnv)
+      }
+      case _ => ctxUpdatePairSet.foreach {
+        case (loc, newEnv) => newCtx = newCtx.weakUpdate(loc, newEnv)
+      }
+    }
     (AbsState(newH, newCtx), excSet)
   }
 
