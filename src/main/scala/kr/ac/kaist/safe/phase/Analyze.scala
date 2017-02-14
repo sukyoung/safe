@@ -41,7 +41,7 @@ case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, Int, TracePartiti
       config.AbsBool,
       config.AbsNumber,
       config.AbsString,
-      DefaultLoc(config.aaddrType),
+      DefaultLoc,
       config.aaddrType
     )
     var initSt = Initialize(cfg, config.jsModel)
@@ -109,6 +109,7 @@ case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, Int, TracePartiti
     ("aaddrType", StrOption((c, s) => s match {
       case "normal" => c.aaddrType = NormalAAddr
       case "recency" => c.aaddrType = RecencyAAddr
+      case "concrete" => c.aaddrType = ConcreteAAddr
       case str => throw NoChoiceError(s"there is no address abstraction type with name '$str'.")
     }), "address abstraction type."),
     ("callsiteSensitivity", NumOption((c, n) => if (n >= 0) c.callsiteSensitivity = n),

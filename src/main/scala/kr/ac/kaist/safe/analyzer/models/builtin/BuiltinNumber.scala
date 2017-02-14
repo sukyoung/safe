@@ -137,7 +137,7 @@ object BuiltinNumberProto extends ObjModel(
         // the resulting String value is returned.
         val n = BuiltinNumberHelper.getValue(thisV, h)
         val s =
-          TypeConversionHelper.SameValue(AbsNumber(10), radix).map({
+          TypeConversionHelper.SameValue(h, AbsNumber(10), radix).map({
             TypeConversionHelper.ToString(n)
           }, {
             // If ToInteger(radix) is an integer from 2 to 36, but not 10,

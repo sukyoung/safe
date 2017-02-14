@@ -440,7 +440,7 @@ object BuiltinArrayHelper {
               valueList.reverse.zipWithIndex.foldLeft(arr) {
                 case (arr, (value, idx)) => {
                   val desc = AbsDesc((value, AbsAbsent.Bot), AT, AT, AT)
-                  val (newArr, _, _) = arr.DefineOwnProperty(AbsString(idx.toString), desc, false)
+                  val (newArr, _, _) = arr.DefineOwnProperty(h, AbsString(idx.toString), desc, false)
                   newArr
                 }
               }
@@ -800,7 +800,7 @@ object BuiltinArrayHelper {
               //     {[[Value]]: kValue, [[Writable]]: true, [[Enumerable]]: true, [[Configurable]]: true}, and false.
               val AT = (AbsBool.True, AbsAbsent.Bot)
               val desc = AbsDesc((kValue, AbsAbsent.Bot), AT, AT, AT)
-              val (retObj, _, excSet) = arr.DefineOwnProperty(AbsString(n.toString), desc, false)
+              val (retObj, _, excSet) = arr.DefineOwnProperty(h, AbsString(n.toString), desc, false)
               (retObj, excSet)
             } else (AbsObject.Bot, ExcSetEmpty)
             val falseObj = if (AbsBool.False <= kPresent) obj else AbsObject.Bot
@@ -864,7 +864,7 @@ object BuiltinArrayHelper {
               val retArr: AbsObject = (0 until actualDeleteCount).foldLeft(arr)((arr, k) => {
                 val kValue = thisObj.Get((actualStart + k).toString, h)
                 val desc = AbsDesc((kValue, AbsAbsent.Bot), AT, AT, AT)
-                val (newArr, _, _) = arr.DefineOwnProperty(AbsString(k.toString), desc, false)
+                val (newArr, _, _) = arr.DefineOwnProperty(h, AbsString(k.toString), desc, false)
                 newArr
               })
               val newLen = Math.max(argLen - 2, 0)

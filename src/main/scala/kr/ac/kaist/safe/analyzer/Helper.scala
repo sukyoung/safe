@@ -156,7 +156,7 @@ object Helper {
       else {
         visited += l1
         val locVal1 = AbsValue(l1)
-        val eqVal = bopSEq(locVal1, locVal2)
+        val eqVal = bopSEq(h, locVal1, locVal2)
         eqVal.pvalue.boolval.map(
           thenV = boolTrueVal,
           elseV = {
@@ -302,7 +302,7 @@ object Helper {
   }
 
   /* == */
-  private def bopEqHelp(left: AbsValue, right: AbsValue, objToPrimitive: (AbsValue, String) => AbsPValue): AbsValue = {
+  private def bopEqHelp(h: AbsHeap, left: AbsValue, right: AbsValue, objToPrimitive: (AbsValue, String) => AbsPValue): AbsValue = {
     val leftPV = left.pvalue
     val rightPV = right.pvalue
     val locsetTest =
@@ -310,7 +310,7 @@ object Helper {
         val intersect = left.locset <> right.locset
         (left.locset.getSingle, right.locset.getSingle, intersect.getSingle) match {
           case (_, _, ConZero()) => afalse
-          case (ConOne(_), ConOne(_), ConOne(loc)) if loc.isConcrete => atrue
+          case (ConOne(_), ConOne(_), ConOne(loc)) if h.isConcrete(loc) => atrue
           case _ => AbsBool.Top
         }
       } else AbsBool.Bot
@@ -428,21 +428,21 @@ object Helper {
   }
 
   def bopEqBetter(h: AbsHeap, left: AbsValue, right: AbsValue): AbsValue = {
-    bopEqHelp(left, right, (value, hint) => typeHelper.ToPrimitive(value.locset, h, hint))
+    bopEqHelp(h, left, right, (value, hint) => typeHelper.ToPrimitive(value.locset, h, hint))
   }
 
-  def bopEq(left: AbsValue, right: AbsValue): AbsValue = {
-    bopEqHelp(left, right, (value, hint) => typeHelper.ToPrimitive(value.locset, hint))
+  def bopEq(h: AbsHeap, left: AbsValue, right: AbsValue): AbsValue = {
+    bopEqHelp(h, left, right, (value, hint) => typeHelper.ToPrimitive(value.locset, hint))
   }
 
   /* != */
-  def bopNeq(left: AbsValue, right: AbsValue): AbsValue = {
-    val resAbsBool = bopEq(left, right).pvalue.boolval.negate
+  def bopNeq(h: AbsHeap, left: AbsValue, right: AbsValue): AbsValue = {
+    val resAbsBool = bopEq(h, left, right).pvalue.boolval.negate
     AbsValue(resAbsBool)
   }
 
   /* === */
-  def bopSEq(left: AbsValue, right: AbsValue): AbsValue = {
+  def bopSEq(h: AbsHeap, left: AbsValue, right: AbsValue): AbsValue = {
     val isMultiType =
       if ((left + right).typeCount > 1) afalse
       else AbsBool.Bot
@@ -451,7 +451,7 @@ object Helper {
         val intersect = left.locset <> right.locset
         (left.locset.getSingle, right.locset.getSingle, intersect.getSingle) match {
           case (_, _, ConZero()) => afalse
-          case (ConOne(_), ConOne(_), ConOne(loc)) if loc.isConcrete => atrue
+          case (ConOne(_), ConOne(_), ConOne(loc)) if h.isConcrete(loc) => atrue
           case _ => AbsBool.Top
         }
       } else AbsBool.Bot
@@ -466,8 +466,8 @@ object Helper {
   }
 
   /* !== */
-  def bopSNeq(left: AbsValue, right: AbsValue): AbsValue = {
-    val resAbsBool = bopSEq(left, right).pvalue.boolval.negate
+  def bopSNeq(h: AbsHeap, left: AbsValue, right: AbsValue): AbsValue = {
+    val resAbsBool = bopSEq(h, left, right).pvalue.boolval.negate
     AbsValue(resAbsBool)
   }
 

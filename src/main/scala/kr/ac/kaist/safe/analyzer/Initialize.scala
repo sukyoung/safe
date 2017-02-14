@@ -19,7 +19,7 @@ import kr.ac.kaist.safe.analyzer.models.builtin._
 import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.util._
 import kr.ac.kaist.safe.phase._
-import scala.collection.immutable.HashMap
+import scala.collection.immutable.{ HashMap, HashSet }
 
 object Initialize {
   def apply(cfg: CFG, jsModel: Boolean): AbsState = {
@@ -28,13 +28,13 @@ object Initialize {
     val initHeap = AbsHeap(HashMap(
       BuiltinGlobal.loc -> AbsObject.Bot
     // TODO If delete, not working because not allowed update to bottom heap
-    ))
+    ), HashSet[Concrete]())
 
     val initCtx = AbsContext(HashMap[Loc, AbsLexEnv](
       PredAllocSite.GLOBAL_ENV -> AbsLexEnv(AbsGlobalEnvRec.Top),
       PredAllocSite.PURE_LOCAL -> globalPureLocalEnv,
       PredAllocSite.COLLAPSED -> AbsLexEnv(AbsDecEnvRec.Empty)
-    ), OldASiteSet.Empty, globalLocSet)
+    ), HashSet[Concrete](), OldASiteSet.Empty, globalLocSet)
 
     val modeledHeap: AbsHeap =
       if (jsModel) {

@@ -22,28 +22,25 @@ import scala.collection.immutable.HashSet
 // concrete location type
 ////////////////////////////////////////////////////////////////////////////////
 abstract class Loc extends Value {
-  private lazy val concreteSet: Set[Loc] = HashSet(
-    PredAllocSite.GLOBAL_ENV,
-    PredAllocSite.PURE_LOCAL,
-    BuiltinGlobal.loc
-  )
-
-  def isConcrete: Boolean = this match {
-    case l if concreteSet contains l => true
-    case Recency(_, Recent) => true
-    case _ => false
-  }
-
   def isUser: Boolean = this match {
     case Recency(loc, _) => loc.isUser
+    case Concrete(loc) => loc.isUser
     case UserAllocSite(_) => true
     case PredAllocSite(_) => false
   }
 }
 
 object Loc {
+  // predefined special concrete location
+  lazy val predConSet: Set[Loc] = HashSet(
+    PredAllocSite.GLOBAL_ENV,
+    PredAllocSite.PURE_LOCAL,
+    BuiltinGlobal.loc
+  )
+
   def parse(str: String): Try[Loc] = {
     val recency = "(#|##)(.+)".r
+    val concrete = "\\*(.+)".r
     val userASite = "([0-9]+)".r
     val predASite = "([0-9a-zA-Z.<>]+)".r
     str match {
@@ -53,6 +50,8 @@ object Loc {
       // recency abstraction
       case recency("#", str) => parse(str).map(Recency(_, Recent))
       case recency("##", str) => parse(str).map(Recency(_, Old))
+      // concrete abstraction
+      case concrete(str) => parse(str).map(Concrete(_))
       // otherwise
       case str => Failure(NoLoc(str))
     }
@@ -62,6 +61,7 @@ object Loc {
   def apply(asite: AllocSite): Loc = AAddrType match {
     case NormalAAddr => asite
     case RecencyAAddr => Recency(asite, Recent)
+    case ConcreteAAddr => Concrete(asite)
   }
 
   implicit def ordering[B <: Loc]: Ordering[B] = Ordering.by({
@@ -79,7 +79,6 @@ trait AbsLoc extends AbsDomain[Loc, AbsLoc] {
   def foreach(f: Loc => Unit): Unit
   def foldLeft[T](initial: T)(f: (T, Loc) => T): T
   def map[T](f: Loc => T): Set[T]
-  def isConcrete: Boolean
   def +(loc: Loc): AbsLoc
   def -(loc: Loc): AbsLoc
   /* substitute locR by locO */
@@ -88,14 +87,12 @@ trait AbsLoc extends AbsDomain[Loc, AbsLoc] {
   def weakSubsLoc(locR: Recency, locO: Recency): AbsLoc
 }
 
-trait AbsLocUtil extends AbsDomainUtil[Loc, AbsLoc] {
-  val abs: AAddrType
-}
+trait AbsLocUtil extends AbsDomainUtil[Loc, AbsLoc]
 
 ////////////////////////////////////////////////////////////////////////////////
 // default location abstract domain
 ////////////////////////////////////////////////////////////////////////////////
-case class DefaultLoc(abs: AAddrType) extends AbsLocUtil {
+case object DefaultLoc extends AbsLocUtil {
   case object Top extends Dom
   case class LocSet(set: Set[Loc]) extends Dom
   object LocSet {
@@ -179,11 +176,6 @@ case class DefaultLoc(abs: AAddrType) extends AbsLocUtil {
       case LocSet(set) => set.map(f)
     }
 
-    def isConcrete: Boolean = this match {
-      case Top => false
-      case LocSet(set) => set.size == 1
-    }
-
     def +(loc: Loc): AbsLoc = this match {
       case Top => Top
       case LocSet(set) => LocSet(set + loc)
@@ -211,3 +203,4 @@ case class DefaultLoc(abs: AAddrType) extends AbsLocUtil {
 sealed abstract class AAddrType
 case object NormalAAddr extends AAddrType
 case object RecencyAAddr extends AAddrType
+case object ConcreteAAddr extends AAddrType

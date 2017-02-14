@@ -289,7 +289,7 @@ object BuiltinObjectHelper {
     val (desc, undef) = obj.GetOwnProperty(name)
     // 4. Return the result of calling FromPropertyDescriptor(desc) (8.10.4).
     val (retSt, retV, excSet2) = if (!desc.isBottom) {
-      val (descObj, excSet) = AbsObject.FromPropertyDescriptor(desc)
+      val (descObj, excSet) = AbsObject.FromPropertyDescriptor(h, desc)
       val descLoc = Loc(getOPDDescASite)
       val state = st.oldify(descLoc)
       val retH = state.heap.update(descLoc, descObj.oldify(descLoc))
@@ -342,7 +342,7 @@ object BuiltinObjectHelper {
           // b. Call the [[DefineOwnProperty]] internal method of array with arguments
           //    ToString(n), the PropertyDescriptor {[[Value]]: name, [[Writable]]:
           //    true, [[Enumerable]]: true, [[Configurable]]:true}, and false.
-          val (newObj, _, excSet) = obj.DefineOwnProperty(prop, desc, false)
+          val (newObj, _, excSet) = obj.DefineOwnProperty(h, prop, desc, false)
           (obj + newObj, e ++ excSet)
         }
       }
@@ -410,7 +410,7 @@ object BuiltinObjectHelper {
       case ((heap, e), loc) => {
         // 4. Call the [[DefineOwnProperty]] internal method of O with arguments name, desc, and true.
         val obj = heap.get(loc)
-        val (retObj, _, newExcSet) = obj.DefineOwnProperty(name, desc, true)
+        val (retObj, _, newExcSet) = obj.DefineOwnProperty(h, name, desc, true)
         // 5. Return O.
         val retH = heap.update(loc, retObj)
         (retH, e ++ newExcSet)
@@ -447,7 +447,7 @@ object BuiltinObjectHelper {
         //   a. Let desc be the result of calling the [[GetOwnProperty]] internal method of O with P.
         //   b. If desc.[[Configurable]] is true, set desc.[[Configurable]] to false.
         //   c. Call the [[DefineOwnProperty]] internal method of O with P, desc, and true as arguments.
-        val (newObj, excSet) = changeProps(obj, desc => {
+        val (newObj, excSet) = changeProps(h, obj, desc => {
           val (c, ca) = desc.configurable
           val newConfig = c.fold(AbsBool.Bot)(_ => AbsBool.False)
           desc.copyWith(configurable = (newConfig, ca))
@@ -479,7 +479,7 @@ object BuiltinObjectHelper {
         //   b. If desc.[[Writable]] is true, set desc.[[Writable]] to false.
         //   c. If desc.[[Configurable]] is true, set desc.[[Configurable]] to false.
         //   d. Call the [[DefineOwnProperty]] internal method of O with P, desc, and true as arguments.
-        val (newObj, excSet) = changeProps(obj, desc => {
+        val (newObj, excSet) = changeProps(h, obj, desc => {
           val (w, wa) = desc.writable
           val (c, ca) = desc.configurable
           val newWriteable = w.fold(AbsBool.Bot)(_ => AbsBool.False)
@@ -610,7 +610,7 @@ object BuiltinObjectHelper {
           case ((arr, e), index) => {
             // a. Call the [[DefineOwnProperty]] internal method of array with arguments ToString(index),
             //    the PropertyDescriptor {[[Value]]: P, [[Writable]]: true, [[Enumerable]]: true, [[Configurable]]: true}, and false.
-            val (newArr, _, excSet) = arr.DefineOwnProperty(AbsString(index.toString), desc, false)
+            val (newArr, _, excSet) = arr.DefineOwnProperty(h, AbsString(index.toString), desc, false)
             (newArr, e ++ excSet)
           }
         }
@@ -623,7 +623,7 @@ object BuiltinObjectHelper {
         // 4. For each own enumerable property of O whose name String is P (wiht index 0 until n)
         //   a. Call the [[DefineOwnProperty]] internal method of array with arguments ToString(index),
         //      the PropertyDescriptor {[[Value]]: P, [[Writable]]: true, [[Enumerable]]: true, [[Configurable]]: true}, and false.
-        val (newArr, _, excSet) = array.DefineOwnProperty(AbsString.Number, desc, false)
+        val (newArr, _, excSet) = array.DefineOwnProperty(h, AbsString.Number, desc, false)
         (newArr, excSet)
       }
     }
@@ -763,7 +763,7 @@ object BuiltinObjectHelper {
     (AbsValue(loc), AbsState(heap, state.context))
   }
 
-  private def changeProps(obj: AbsObject, f: AbsDesc => AbsDesc): (AbsObject, Set[Exception]) = {
+  private def changeProps(h: AbsHeap, obj: AbsObject, f: AbsDesc => AbsDesc): (AbsObject, Set[Exception]) = {
     // For each named own property name P of O,
     obj.abstractKeySet match {
       case ConInf() => (AbsObject.Top, HashSet(TypeError, RangeError))
@@ -774,7 +774,7 @@ object BuiltinObjectHelper {
           // create new PropertyDescriptor by using f.
           val newDesc = f(desc)
           // Call the [[DefineOwnProperty]] internal method of O with P, desc, and true as arguments.
-          val (retObj, _, excSet) = o.DefineOwnProperty(key, newDesc, true)
+          val (retObj, _, excSet) = o.DefineOwnProperty(h, key, newDesc, true)
           (retObj, e ++ excSet)
         }
       }
@@ -826,7 +826,7 @@ object BuiltinObjectHelper {
                 // b. Let desc be the result of calling ToPropertyDescriptor with descObj as the argument.
                 val desc = AbsDesc.ToPropertyDescriptor(descObj, h1)
                 // c. Call the [[DefineOwnProperty]] internal method of O with arguments P, desc, and true.
-                val (retObj, _, excSet) = obj.DefineOwnProperty(astr, desc, true)
+                val (retObj, _, excSet) = obj.DefineOwnProperty(h1, astr, desc, true)
                 (retObj, e ++ excSet)
               } else (obj, e)
             }

@@ -93,7 +93,7 @@ trait AbsObject extends AbsDomain[Object, AbsObject] {
   def DefaultValue(h: AbsHeap): AbsPValue
 
   //Section 8.12.9 [[DefineOwnProperty]](P, Desc, Throw)
-  def DefineOwnProperty(P: AbsString, Desc: AbsDesc, Throw: Boolean = true): (AbsObject, AbsBool, Set[Exception])
+  def DefineOwnProperty(h: AbsHeap, P: AbsString, Desc: AbsDesc, Throw: Boolean = true): (AbsObject, AbsBool, Set[Exception])
 }
 
 trait AbsObjectUtil extends AbsDomainUtil[Object, AbsObject] {
@@ -127,7 +127,7 @@ trait AbsObjectUtil extends AbsDomainUtil[Object, AbsObject] {
   def defaultValue(locSet: AbsLoc, h: AbsHeap, preferredType: String): AbsPValue
 
   // 8.10.4 FromPropertyDescriptor ( Desc )
-  def FromPropertyDescriptor(desc: AbsDesc): (AbsObject, Set[Exception])
+  def FromPropertyDescriptor(h: AbsHeap, desc: AbsDesc): (AbsObject, Set[Exception])
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -535,7 +535,7 @@ object DefaultObject extends AbsObjectUtil {
               if (ownDesc.isBottom) (Bot, ExcSetEmpty)
               else {
                 val valueDesc = AbsDesc((V, AbsAbsent.Bot))
-                val (o, _, e) = DefineOwnProperty(P, valueDesc, Throw)
+                val (o, _, e) = DefineOwnProperty(h, P, valueDesc, Throw)
                 (o, e)
               }
             val (undefObj, undefExcSet) =
@@ -548,7 +548,7 @@ object DefaultObject extends AbsObjectUtil {
                   (AbsBool.True, AbsAbsent.Bot),
                   (AbsBool.True, AbsAbsent.Bot)
                 )
-                val (o, _, e) = DefineOwnProperty(P, newDesc, Throw)
+                val (o, _, e) = DefineOwnProperty(h, P, newDesc, Throw)
                 (o, e)
               }
             (ownObj + undefObj, ownExcSet ++ undefExcSet)
@@ -655,7 +655,7 @@ object DefaultObject extends AbsObjectUtil {
     }
 
     //Section 8.12.9 [[DefineOwnProperty]](P, Desc, Throw)
-    def DefineOwnProperty(P: AbsString, Desc: AbsDesc, Throw: Boolean = true): (AbsObject, AbsBool, Set[Exception]) = this match {
+    def DefineOwnProperty(h: AbsHeap, P: AbsString, Desc: AbsDesc, Throw: Boolean = true): (AbsObject, AbsBool, Set[Exception]) = this match {
       case Top => (Top, AbsBool.Top, HashSet(TypeError, RangeError))
       case obj @ ObjMap(_, _) =>
         val Reject =
@@ -692,7 +692,7 @@ object DefaultObject extends AbsObjectUtil {
           else (Bot, AbsBool.Bot)
         // 6. Return true, if every field in Desc also occurs in current and same
         val (obj6, b6) =
-          if ((dva.isTop || (!dv.isBottom && AbsBool.True <= (TypeConversionHelper.SameValue(dv, cv)))) &&
+          if ((dva.isTop || (!dv.isBottom && AbsBool.True <= (TypeConversionHelper.SameValue(h, dv, cv)))) &&
             (dwa.isTop || (!dw.isBottom && AbsBool.True <= (dw === cw))) &&
             (dea.isTop || (!de.isBottom && AbsBool.True <= (de === ce))) &&
             (dca.isTop || (!dc.isBottom && AbsBool.True <= (dc === cc)))) (obj, AbsBool.True)
@@ -858,7 +858,7 @@ object DefaultObject extends AbsObjectUtil {
   }
 
   // 8.10.4 FromPropertyDescriptor ( Desc )
-  def FromPropertyDescriptor(desc: AbsDesc): (AbsObject, Set[Exception]) = {
+  def FromPropertyDescriptor(h: AbsHeap, desc: AbsDesc): (AbsObject, Set[Exception]) = {
     def put(
       obj: AbsObject,
       name: String,
@@ -866,6 +866,7 @@ object DefaultObject extends AbsObjectUtil {
     ): (AbsObject, AbsBool, Set[Exception]) = {
       val T = (AbsBool.True, AbsAbsent.Bot)
       obj.DefineOwnProperty(
+        h,
         AbsString(name),
         AbsDesc(pair, T, T, T),
         false

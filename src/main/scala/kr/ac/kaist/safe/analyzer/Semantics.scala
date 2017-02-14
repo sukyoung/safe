@@ -581,7 +581,7 @@ class Semantics(
       val name = TypeConversionHelper.ToString(p)
       val (desc, undef) = obj.GetOwnProperty(name)
       val (retSt, retV, excSet) = if (!desc.isBottom) {
-        val (descObj, excSet) = AbsObject.FromPropertyDescriptor(desc)
+        val (descObj, excSet) = AbsObject.FromPropertyDescriptor(st.heap, desc)
         val descLoc = Loc(aNew)
         val state = st.oldify(descLoc)
         val retH = state.heap.update(descLoc, descObj.oldify(aNew))
@@ -604,7 +604,7 @@ class Semantics(
       val (retH, retExcSet) = objV.locset.foldLeft((h, excSetO ++ excSetP ++ excSetA)) {
         case ((heap, e), loc) => {
           val obj = heap.get(loc)
-          val (retObj, _, newExcSet) = obj.DefineOwnProperty(name, desc, true)
+          val (retObj, _, newExcSet) = obj.DefineOwnProperty(h, name, desc, true)
           val retH = heap.update(loc, retObj)
           (retH, e ++ newExcSet)
         }
@@ -696,7 +696,7 @@ class Semantics(
       val (r, excSet2) = V(right, st)
       val st1 =
         if (!l.isBottom && !r.isBottom) {
-          st.varStore(lhs, AbsValue(TypeConversionHelper.SameValue(l, r)))
+          st.varStore(lhs, AbsValue(TypeConversionHelper.SameValue(st.heap, l, r)))
         } else AbsState.Bot
 
       val newExcSt = st.raiseException(excSet1 ++ excSet2)
@@ -745,7 +745,7 @@ class Semantics(
             // b. Call the [[DefineOwnProperty]] internal method of array with arguments
             //    ToString(n), the PropertyDescriptor {[[Value]]: name, [[Writable]]:
             //    true, [[Enumerable]]: true, [[Configurable]]:true}, and false.
-            val (newObj, _, excSet) = obj.DefineOwnProperty(prop, desc, false)
+            val (newObj, _, excSet) = obj.DefineOwnProperty(h, prop, desc, false)
             (obj + newObj, e ++ excSet)
           }
         }
@@ -1108,6 +1108,7 @@ class Semantics(
         case _ if v1.isBottom => (AbsValue.Bot, excSet1)
         case _ if v2.isBottom => (AbsValue.Bot, excSet1 ++ excSet2)
         case _ =>
+          val h = st.heap
           op.name match {
             case "|" => (Helper.bopBitOr(v1, v2), excSet1 ++ excSet2)
             case "&" => (Helper.bopBitAnd(v1, v2), excSet1 ++ excSet2)
@@ -1120,10 +1121,10 @@ class Semantics(
             case "*" => (Helper.bopMul(v1, v2), excSet1 ++ excSet2)
             case "/" => (Helper.bopDiv(v1, v2), excSet1 ++ excSet2)
             case "%" => (Helper.bopMod(v1, v2), excSet1 ++ excSet2)
-            case "==" => (Helper.bopEqBetter(st.heap, v1, v2), excSet1 ++ excSet2)
-            case "!=" => (Helper.bopNeq(v1, v2), excSet1 ++ excSet2)
-            case "===" => (Helper.bopSEq(v1, v2), excSet1 ++ excSet2)
-            case "!==" => (Helper.bopSNeq(v1, v2), excSet1 ++ excSet2)
+            case "==" => (Helper.bopEqBetter(h, v1, v2), excSet1 ++ excSet2)
+            case "!=" => (Helper.bopNeq(h, v1, v2), excSet1 ++ excSet2)
+            case "===" => (Helper.bopSEq(h, v1, v2), excSet1 ++ excSet2)
+            case "!==" => (Helper.bopSNeq(h, v1, v2), excSet1 ++ excSet2)
             case "<" => (Helper.bopLess(v1, v2), excSet1 ++ excSet2)
             case ">" => (Helper.bopGreater(v1, v2), excSet1 ++ excSet2)
             case "<=" => (Helper.bopLessEq(v1, v2), excSet1 ++ excSet2)

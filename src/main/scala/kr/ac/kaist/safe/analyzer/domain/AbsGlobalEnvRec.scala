@@ -140,6 +140,7 @@ object DefaultGlobalEnvRec extends AbsGlobalEnvRecUtil {
           //    [[Writable]]: true, [[Enumerable]]: true , [[Configurable]]:
           //    configValue}, and true as arguments.
           val (newObj, _, excSet) = bindings.DefineOwnProperty(
+            heap,
             AbsString(name),
             AbsDesc(Desc(Some(Undef), Some(true), Some(true), Some(configValue))),
             true
