@@ -116,13 +116,13 @@ class ArgParser(cmd: Command, safeConfig: SafeConfig) extends RegexParsers {
     ) { case (rule, prev) => phrase(rule) | prev }
 
     var result = success
-    result = args.foldLeft[Try[Unit]](success) {
+    result = jsonArgs.foldLeft[Try[Unit]](success) {
       case (result, arg) => result.flatMap {
         case _ => parse(parser, arg).get
       }
     }
 
-    result = jsonArgs.foldLeft[Try[Unit]](result) {
+    result = args.foldLeft[Try[Unit]](result) {
       case (result, arg) => result.flatMap {
         case _ => parse(parser, arg).get
       }

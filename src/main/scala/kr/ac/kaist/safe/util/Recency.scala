@@ -31,5 +31,5 @@ object Recency {
 sealed abstract class RecencyTag(prefix: String) {
   override def toString: String = prefix
 }
-case object Recent extends RecencyTag("#")
-case object Old extends RecencyTag("##")
+case object Recent extends RecencyTag("R")
+case object Old extends RecencyTag("O")

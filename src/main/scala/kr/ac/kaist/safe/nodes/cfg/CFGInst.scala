@@ -47,7 +47,7 @@ case class CFGAlloc(
 ) extends CFGNormalInst(ir, block) {
   override def toString: String = {
     val proto = protoOpt.getOrElse("")
-    s"$lhs := alloc($proto) @ #$asite"
+    s"$lhs := alloc($proto) @ $asite"
   }
 }
 
@@ -59,7 +59,7 @@ case class CFGAllocArray(
     length: Int,
     var asite: AllocSite // XXX should be a value but for JS model for a while.
 ) extends CFGNormalInst(ir, block) {
-  override def toString: String = s"$lhs := allocArray($length) @ #$asite"
+  override def toString: String = s"$lhs := allocArray($length) @ $asite"
 }
 
 // x := allocArg(n)
@@ -70,7 +70,7 @@ case class CFGAllocArg(
     length: Int,
     var asite: AllocSite // XXX should be a value but for JS model for a while.
 ) extends CFGNormalInst(ir, block) {
-  override def toString: String = s"$lhs := allocArg($length) @ #$asite"
+  override def toString: String = s"$lhs := allocArg($length) @ $asite"
 }
 
 // this := enterCode(e)
@@ -148,8 +148,8 @@ case class CFGFunExpr(
 ) extends CFGNormalInst(ir, block) {
   override def toString: String = {
     val name = nameOpt.getOrElse("")
-    s"$lhs := function $name(${func.id}) @ #$asite1, #$asite2" + (asite3Opt match {
-      case Some(asite) => s", #$asite"
+    s"$lhs := function $name(${func.id}) @ $asite1, $asite2" + (asite3Opt match {
+      case Some(asite) => s", $asite"
       case None => ""
     })
   }
@@ -217,7 +217,7 @@ case class CFGInternalCall(
     val arg = arguments.mkString(", ")
     s"$lhs := $name($arg)"
   } + (asiteOpt match {
-    case Some(asite) => s" @ #$asite"
+    case Some(asite) => s" @ $asite"
     case None => ""
   })
 }
@@ -242,7 +242,7 @@ case class CFGInternalCall(
 //   asite2: AllocSite,
 //   asite3: AllocSite
 // ) extends CFGNormalInst(ir, block){
-//   override def toString: String = s"async($modelType, $callType) @ #$asite1, #$asite2, #$asite3"
+//   override def toString: String = s"async($modelType, $callType) @ $asite1, $asite2, $asite3"
 // }
 
 /**
@@ -267,7 +267,7 @@ case class CFGCall(
     override val arguments: CFGExpr,
     override var asite: AllocSite // XXX should be a value but for JS model for a while.
 ) extends CFGCallInst(ir, block, fun, thisArg, arguments) {
-  override def toString: String = s"call($fun, $thisArg, $arguments) @ #$asite"
+  override def toString: String = s"call($fun, $thisArg, $arguments) @ $asite"
 }
 
 // construct(e1, e2, e3)
@@ -279,5 +279,5 @@ case class CFGConstruct(
     override val arguments: CFGExpr,
     override var asite: AllocSite // XXX should be a value but for JS model for a while.
 ) extends CFGCallInst(ir, block, fun, thisArg, arguments) {
-  override def toString: String = s"construct($fun, $thisArg, $arguments) @ #$asite"
+  override def toString: String = s"construct($fun, $thisArg, $arguments) @ $asite"
 }

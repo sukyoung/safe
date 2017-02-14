@@ -18,12 +18,12 @@ abstract sealed class AllocSite extends Loc
 
 // allocation site defined in user code
 case class UserAllocSite(id: Int) extends AllocSite {
-  override def toString: String = id.toString
+  override def toString: String = s"#$id"
 }
 
 // predefined allocation site
 case class PredAllocSite(name: String) extends AllocSite {
-  override def toString: String = name
+  override def toString: String = s"#$name"
 }
 object PredAllocSite {
   // global environment

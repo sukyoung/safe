@@ -34,22 +34,21 @@ object Loc {
   // predefined special concrete location
   lazy val predConSet: Set[Loc] = HashSet(
     PredAllocSite.GLOBAL_ENV,
-    PredAllocSite.PURE_LOCAL,
-    BuiltinGlobal.loc
+    PredAllocSite.PURE_LOCAL
   )
 
   def parse(str: String): Try[Loc] = {
-    val recency = "(#|##)(.+)".r
-    val concrete = "\\*(.+)".r
-    val userASite = "([0-9]+)".r
-    val predASite = "([0-9a-zA-Z.<>]+)".r
+    val recency = "(R|O)(.+)".r
+    val concrete = "C(.+)".r
+    val userASite = "#([0-9]+)".r
+    val predASite = "#([0-9a-zA-Z.<>]+)".r
     str match {
       // allocation site
       case userASite(id) => Try(UserAllocSite(id.toInt))
       case predASite(name) => Success(PredAllocSite(name))
       // recency abstraction
-      case recency("#", str) => parse(str).map(Recency(_, Recent))
-      case recency("##", str) => parse(str).map(Recency(_, Old))
+      case recency("R", str) => parse(str).map(Recency(_, Recent))
+      case recency("O", str) => parse(str).map(Recency(_, Old))
       // concrete abstraction
       case concrete(str) => parse(str).map(Concrete(_))
       // otherwise

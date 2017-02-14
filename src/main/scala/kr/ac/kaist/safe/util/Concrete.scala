@@ -17,5 +17,5 @@ import kr.ac.kaist.safe.analyzer.domain.Loc
 // concrete abstraction
 ////////////////////////////////////////////////////////////////////////////////
 case class Concrete(loc: Loc) extends Loc {
-  override def toString: String = s"*$loc"
+  override def toString: String = s"C$loc"
 }
