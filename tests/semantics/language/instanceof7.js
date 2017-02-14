@@ -7,5 +7,5 @@ try {
     __result2 = e instanceof @TypeErr;
 }
 
-var __expect1 = undefined;
+var __expect1;
 var __expect2 = true;
