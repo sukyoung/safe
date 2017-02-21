@@ -25820,7 +25820,7 @@ Heap: {
     "appVersion": <undefined, T, T, T>,
     "platform": <undefined, T, T, T>,
     "product": <undefined, T, T, T>,
-    "userAgent": <undefined, T, T, T>,
+    "userAgent": <string, T, T, T>,
     "language": <undefined, T, T, T>,
     "languages": <undefined, T, T, T>,
     "onLine": <undefined, T, T, T>,

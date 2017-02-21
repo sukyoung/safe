@@ -20,6 +20,11 @@ import kr.ac.kaist.safe.util._
 ////////////////////////////////////////////////////////////////////////////////
 abstract class Value extends IValue
 
+// helper values for modeling
+case object StringT extends Value
+case object NumberT extends Value
+case object BoolT extends Value
+
 ////////////////////////////////////////////////////////////////////////////////
 // value abstract domain
 ////////////////////////////////////////////////////////////////////////////////
@@ -53,6 +58,9 @@ object DefaultValue extends AbsValueUtil {
   def alpha(value: Value): AbsValue = value match {
     case (pvalue: PValue) => apply(AbsPValue(pvalue))
     case (loc: Loc) => apply(AbsLoc(loc))
+    case StringT => apply(AbsString.Top)
+    case NumberT => apply(AbsNumber.Top)
+    case BoolT => apply(AbsBool.Top)
   }
 
   def apply(pvalue: AbsPValue): AbsValue = Bot.copy(pvalue = pvalue)

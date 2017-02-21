@@ -136,7 +136,9 @@ object HTMLWriter {
     sb.append(s"'$id': [").append(LINE_SEP)
       .append(s"{ kind: 'Block', id: 'block', value: '$label of $func' },").append(LINE_SEP)
     block.getInsts.reverse.foreach(inst => {
-      sb.append(s"{ kind: 'Instructions', value: '$inst' },").append(LINE_SEP)
+      val instStr = inst.toString()
+        .replaceAll("\'", "\\\\\'")
+      sb.append(s"{ kind: 'Instructions', value: '$instStr' },").append(LINE_SEP)
     })
     sb.append(s"]," + LINE_SEP)
     sb.toString
@@ -168,7 +170,8 @@ object HTMLWriter {
                 }
                 sb.append(s"{ value: {value: '$loc', id: '$loc'}, parent: '$parent' },").append(LINE_SEP)
                 obj.toString.split(LINE_SEP).foreach(prop => {
-                  sb.append(s"{ value: {value: '$prop'}, parent: '$loc' },").append(LINE_SEP)
+                  val propStr = prop.replaceAll("\'", "\\\\\'")
+                  sb.append(s"{ value: {value: '$propStr'}, parent: '$loc' },").append(LINE_SEP)
                 })
             }
         }
@@ -182,7 +185,8 @@ object HTMLWriter {
           case (loc, obj) =>
             sb.append(s"{ value: {value: '$loc', id: '$loc'}, parent: 'ctx' },").append(LINE_SEP)
             obj.toString.split(LINE_SEP).foreach(prop => {
-              sb.append(s"{ value: {value: '$prop'}, parent: '$loc' },").append(LINE_SEP)
+              val propStr = prop.replaceAll("\'", "\\\\\'")
+              sb.append(s"{ value: {value: '$propStr'}, parent: '$loc' },").append(LINE_SEP)
             })
         }
 
