@@ -39,7 +39,7 @@ object Initialize {
     val modeledHeap: AbsHeap =
       if (jsModel) {
         val model = Analyze.jscache getOrElse {
-          val fileName = NodeUtil.jsModelsBase + "built_in.jsmodel"
+          val fileName = NodeUtil.jsModelsBase + "snapshot_and_built_in.jsmodel"
           ModelParser.parseFile(fileName).get
         }
         model.funcs.foreach(cfg.addJSModel(_))
