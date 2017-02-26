@@ -191,7 +191,7 @@ class Translator(program: Program) {
     IRInternalCall(ast, iterator, NU.INTERNAL_ITER_INIT, List(obj))
 
   private def iteratorHasNext(ast: ASTNode, cond: IRId, obj: IRId, iterator: IRId): IRInternalCall =
-    IRInternalCall(ast, cond, NU.INTERNAL_HAS_NEXT, List(obj, iterator))
+    IRInternalCall(ast, cond, NU.INTERNAL_ITER_HAS_NEXT, List(obj, iterator))
 
   private def iteratorKey(ast: ASTNode, key: IRId, obj: IRId, iterator: IRId): IRInternalCall =
     IRInternalCall(ast, key, NU.INTERNAL_ITER_NEXT, List(obj, iterator))

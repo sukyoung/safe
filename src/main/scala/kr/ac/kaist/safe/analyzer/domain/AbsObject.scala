@@ -57,6 +57,7 @@ trait AbsObject extends AbsDomain[Object, AbsObject] {
   def abstractKeySet: ConSet[AbsString]
   def abstractKeySet(filter: (AbsString, AbsDataProp) => Boolean): ConSet[AbsString]
   def collectKeySet(prefix: String): ConSet[String]
+  def keySetPair: (List[String], AbsString)
   def isDefinite(str: AbsString): Boolean
 
   ////////////////////////////////////////////////////////////////
@@ -362,6 +363,13 @@ object DefaultObject extends AbsObjectUtil {
     def collectKeySet(prefix: String): ConSet[String] = this match {
       case Top => ConInf()
       case ObjMap(amap, _) => amap.collectKeySet(prefix)
+    }
+    def keySetPair: (List[String], AbsString) = this match {
+      case Top => (Nil, AbsString.Top)
+      case ObjMap(amap, _) => {
+        val (strSet, astr) = amap.keySetPair
+        (strSet.toList.sortBy { _.toString }, astr) // TODO for-in order
+      }
     }
     def isDefinite(str: AbsString): Boolean = this match {
       case Top => false

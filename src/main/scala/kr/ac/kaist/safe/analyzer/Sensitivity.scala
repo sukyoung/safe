@@ -146,8 +146,8 @@ class LoopSensitivity(depth: Int) extends Sensitivity {
       case LoopContext(oInfoOpt, _) if depth == depth =>
         (infoOpt, oInfoOpt) match {
           case (None, None) => true
-          case (Some(LoopInfo(llh, lk, _)), Some(LoopInfo(rlh, rk, _))) =>
-            llh == rlh && lk == rk
+          case (Some(LoopInfo(llh, lk, louter)), Some(LoopInfo(rlh, rk, router))) =>
+            llh == rlh && lk == rk && louter == router
           case _ => false
         }
       case _ => false

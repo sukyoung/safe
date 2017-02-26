@@ -981,13 +981,71 @@ class Semantics(
       val newExcSt = st.raiseException(excSet)
       (st1, excSt + newExcSt)
     }
-    case (NodeUtil.INTERNAL_ITER_INIT, List(expr), Some(aNew)) => (st, excSt)
-    case (NodeUtil.INTERNAL_HAS_NEXT, List(expr2, expr3), None) =>
-      val st1 = st.varStore(lhs, AbsBool.Top)
-      (st1, excSt)
-    case (NodeUtil.INTERNAL_ITER_NEXT, List(expr2, expr3), None) =>
-      val st1 = st.varStore(lhs, AbsString.Top)
-      (st1, excSt)
+    case (NodeUtil.INTERNAL_ITER_INIT, List(expr), Some(aNew)) => {
+      val (v, excSet1) = V(expr, st)
+      val vObj = AbsValue(v.pvalue.copyWith(
+        undefval = AbsUndef.Bot,
+        nullval = AbsNull.Bot
+      ), v.locset)
+      val (locset, st1, excSet2) = TypeConversionHelper.ToObject(vObj, st, aNew)
+      val (locset2, st2) =
+        if (v.pvalue.undefval.isTop || v.pvalue.nullval.isTop) {
+          val heap = st.heap
+          val newObj = heap.get(locset) + AbsObject.Empty
+          val loc = Loc(aNew)
+          (locset + loc, AbsState(st1.heap + heap.update(loc, newObj), st.context))
+        } else (locset, st1)
+      val st3 = st2.varStore(lhs, AbsValue(AbsNumber(0), locset2))
+      val newExcSt = st.raiseException(excSet1 ++ excSet2)
+      (st3, excSt + newExcSt)
+    }
+    case (NodeUtil.INTERNAL_ITER_HAS_NEXT, List(_, expr), None) => {
+      val heap = st.heap
+      val (v, excSet) = V(expr, st)
+      val locset = v.locset
+      val cur = v.pvalue.numval
+      val boolV = cur.gamma match {
+        case ConInf() => AbsBool.Top
+        case ConFin(idxSet) => idxSet.foldLeft(AbsBool.Bot) {
+          case (b, idx) => locset.foldLeft(b) {
+            case (b, loc) => {
+              val (strList, astr) = heap.get(loc).keySetPair
+              if (idx < strList.length) b + AbsBool.True
+              else b + astr.fold(AbsBool.False) { _ => AbsBool.Top }
+            }
+          }
+        }
+      }
+      val st1 = st.varStore(lhs, boolV)
+      val newExcSt = st.raiseException(excSet)
+      (st1, newExcSt)
+    }
+    case (NodeUtil.INTERNAL_ITER_NEXT, List(_, expr @ CFGVarRef(_, id)), None) => {
+      val heap = st.heap
+      val (v, excSet) = V(expr, st)
+      val locset = v.locset
+      val cur = v.pvalue.numval
+      val strV = locset.foldLeft(AbsString.Bot) {
+        case (str, loc) => {
+          val obj = heap.get(loc)
+          val (strList, astr) = heap.get(loc).keySetPair
+          cur.gamma match {
+            case ConInf() => str + AbsString(strList.toSet) + astr
+            case ConFin(idxSet) => idxSet.foldLeft(str) {
+              case (str, Num(idx)) => {
+                if (idx < strList.length) str + AbsString(strList(idx.toInt))
+                else str + astr
+              }
+            }
+          }
+        }
+      }
+      val st1 = st.varStore(lhs, strV)
+      val next = AbsValue(cur.add(AbsNumber(1)), locset)
+      val st2 = st1.varStore(id, next)
+      val newExcSt = st.raiseException(excSet)
+      (st2, newExcSt)
+    }
     case _ =>
       excLog.signal(SemanticsNotYetImplementedError(ir))
       (AbsState.Bot, AbsState.Bot)
