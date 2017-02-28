@@ -8,7 +8,7 @@ function rec() {
 	x = f();  // x is recent, y is old
 	x.p = 1;  // strong update
 	y.p = "2";// weak update
-	if (@Top)
+	if (@BoolTop)
 		rec();
 	else
 		return;

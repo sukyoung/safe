@@ -15,7 +15,7 @@ import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.analyzer.models._
 import kr.ac.kaist.safe.analyzer._
-import kr.ac.kaist.safe.util.SystemAddr
+import kr.ac.kaist.safe.util._
 import scala.collection.immutable.HashSet
 
 // 15.2 Object Objects
@@ -25,14 +25,14 @@ object BuiltinObject extends FuncModel(
   // 15.2.1 The Object Constructor Called as a Function: Object([value])
   code = BasicCode(
     argLen = 1,
-    addrSet = HashSet(BuiltinObjectHelper.instanceAddr),
+    asiteSet = HashSet(BuiltinObjectHelper.instanceASite),
     code = BuiltinObjectHelper.construct
   ),
 
   // 15.2.2 The Object Constructor: new Object([value])
   construct = Some(BasicCode(
     argLen = 1,
-    addrSet = HashSet(BuiltinObjectHelper.instanceAddr),
+    asiteSet = HashSet(BuiltinObjectHelper.instanceASite),
     code = BuiltinObjectHelper.construct
   )),
 
@@ -51,7 +51,7 @@ object BuiltinObject extends FuncModel(
       name = "Object.getOwnPropertyDescriptor",
       code = BasicCode(
         argLen = 2,
-        addrSet = HashSet(BuiltinObjectHelper.getOPDDescAddr),
+        asiteSet = HashSet(BuiltinObjectHelper.getOPDDescASite),
         code = BuiltinObjectHelper.getOwnPropertyDescriptor
       )
     ), T, F, T),
@@ -61,7 +61,7 @@ object BuiltinObject extends FuncModel(
       name = "Object.getOwnPropertyNames",
       code = BasicCode(
         argLen = 1,
-        addrSet = HashSet(BuiltinObjectHelper.getOPNArrAddr),
+        asiteSet = HashSet(BuiltinObjectHelper.getOPNArrASite),
         code = BuiltinObjectHelper.getOwnPropertyNames
       )
     ), T, F, T),
@@ -71,9 +71,9 @@ object BuiltinObject extends FuncModel(
       name = "Object.create",
       code = BasicCode(
         argLen = 2,
-        addrSet = HashSet(
-          BuiltinObjectHelper.createObjAddr,
-          BuiltinObjectHelper.definePropsObjAddr
+        asiteSet = HashSet(
+          BuiltinObjectHelper.createObjASite,
+          BuiltinObjectHelper.definePropsObjASite
         ),
         code = BuiltinObjectHelper.create
       )
@@ -90,7 +90,7 @@ object BuiltinObject extends FuncModel(
       name = "Object.defineProperties",
       code = BasicCode(
         argLen = 2,
-        addrSet = HashSet(BuiltinObjectHelper.definePropsObjAddr),
+        asiteSet = HashSet(BuiltinObjectHelper.definePropsObjASite),
         code = BuiltinObjectHelper.defineProperties
       )
     ), T, F, T),
@@ -136,7 +136,7 @@ object BuiltinObject extends FuncModel(
       name = "Object.keys",
       code = BasicCode(
         argLen = 1,
-        addrSet = HashSet(BuiltinObjectHelper.keysArrAddr),
+        asiteSet = HashSet(BuiltinObjectHelper.keysArrASite),
         code = BuiltinObjectHelper.keys
       )
     ), T, F, T)
@@ -154,7 +154,7 @@ object BuiltinObjectProto extends ObjModel(
       name = "Object.prototype.toString",
       code = BasicCode(
         argLen = 0,
-        addrSet = HashSet(BuiltinObjectHelper.toStringObjAddr),
+        asiteSet = HashSet(BuiltinObjectHelper.toStringObjASite),
         code = BuiltinObjectHelper.toString
       )
     ), T, F, T),
@@ -166,7 +166,7 @@ object BuiltinObjectProto extends ObjModel(
       // we should fix this unsound manner by using CallCode.
       code = BasicCode(
         argLen = 0,
-        addrSet = HashSet(BuiltinObjectHelper.toStringObjAddr),
+        asiteSet = HashSet(BuiltinObjectHelper.toStringObjASite),
         code = BuiltinObjectHelper.toString
       )
     ), T, F, T),
@@ -176,7 +176,7 @@ object BuiltinObjectProto extends ObjModel(
       name = "Object.prototype.valueOf",
       code = BasicCode(
         argLen = 0,
-        addrSet = HashSet(BuiltinObjectHelper.valueOfObjAddr),
+        asiteSet = HashSet(BuiltinObjectHelper.valueOfObjASite),
         code = BuiltinObjectHelper.valueOf
       )
     ), T, F, T),
@@ -186,7 +186,7 @@ object BuiltinObjectProto extends ObjModel(
       name = "Object.prototype.hasOwnProperty",
       code = BasicCode(
         argLen = 1,
-        addrSet = HashSet(BuiltinObjectHelper.hasOPObjAddr),
+        asiteSet = HashSet(BuiltinObjectHelper.hasOPObjASite),
         code = BuiltinObjectHelper.hasOwnProperty
       )
     ), T, F, T),
@@ -196,7 +196,7 @@ object BuiltinObjectProto extends ObjModel(
       name = "Object.prototype.isPrototypeOf",
       code = BasicCode(
         argLen = 1,
-        addrSet = HashSet(BuiltinObjectHelper.isPObjAddr),
+        asiteSet = HashSet(BuiltinObjectHelper.isPObjASite),
         code = BuiltinObjectHelper.isPrototypeOf
       )
     ), T, F, T),
@@ -206,7 +206,7 @@ object BuiltinObjectProto extends ObjModel(
       name = "Object.prototype.propertyIsEnumerable",
       code = BasicCode(
         argLen = 1,
-        addrSet = HashSet(BuiltinObjectHelper.propIsEObjAddr),
+        asiteSet = HashSet(BuiltinObjectHelper.propIsEObjASite),
         code = BuiltinObjectHelper.propertyIsEnumerable
       )
     ), T, F, T)
@@ -215,19 +215,19 @@ object BuiltinObjectProto extends ObjModel(
 
 object BuiltinObjectHelper {
   ////////////////////////////////////////////////////////////////
-  // System Addresses
+  // Predefined Allocation Site
   ////////////////////////////////////////////////////////////////
-  val instanceAddr = SystemAddr("Object<instance>")
-  val getOPDDescAddr = SystemAddr("Object.getOwnPropertyDescriptor<descriptor>")
-  val getOPNArrAddr = SystemAddr("Object.getOwnPropertyNames<array>")
-  val createObjAddr = SystemAddr("Object.create<object>")
-  val keysArrAddr = SystemAddr("Object.keys<array>")
-  val toStringObjAddr = SystemAddr("Object.prototype.toString<object>")
-  val valueOfObjAddr = SystemAddr("Object.prototype.valueOf<object>")
-  val hasOPObjAddr = SystemAddr("Object.prototype.hasOwnProperty<object>")
-  val isPObjAddr = SystemAddr("Object.prototype.isPrototypeOf<object>")
-  val propIsEObjAddr = SystemAddr("Object.prototype.propertyIsEnumerable<object>")
-  val definePropsObjAddr = SystemAddr("Object.defineProperties<object>")
+  val instanceASite = PredAllocSite("Object<instance>")
+  val getOPDDescASite = PredAllocSite("Object.getOwnPropertyDescriptor<descriptor>")
+  val getOPNArrASite = PredAllocSite("Object.getOwnPropertyNames<array>")
+  val createObjASite = PredAllocSite("Object.create<object>")
+  val keysArrASite = PredAllocSite("Object.keys<array>")
+  val toStringObjASite = PredAllocSite("Object.prototype.toString<object>")
+  val valueOfObjASite = PredAllocSite("Object.prototype.valueOf<object>")
+  val hasOPObjASite = PredAllocSite("Object.prototype.hasOwnProperty<object>")
+  val isPObjASite = PredAllocSite("Object.prototype.isPrototypeOf<object>")
+  val propIsEObjASite = PredAllocSite("Object.prototype.propertyIsEnumerable<object>")
+  val definePropsObjASite = PredAllocSite("Object.defineProperties<object>")
 
   ////////////////////////////////////////////////////////////////
   // Object
@@ -235,7 +235,7 @@ object BuiltinObjectHelper {
   def construct(args: AbsValue, st: AbsState): (AbsState, AbsState, AbsValue) = {
     val h = st.heap
     val argV = Helper.propLoad(args, Set(AbsString("0")), h)
-    val addr = instanceAddr
+    val asite = instanceASite
 
     // 1. If value is supplied and it is not null or undefined,
     //    then, return ToObject(value)
@@ -244,7 +244,7 @@ object BuiltinObjectHelper {
     val (v1, st1) =
       if (argV.pvalue.copyWith(undefval = AbsUndef.Bot, nullval = AbsNull.Bot).isBottom && argV.locset.isBottom) (AbsValue.Bot, AbsState.Bot)
       else {
-        val (loc, state, _) = TypeConversionHelper.ToObject(argV, st, addr)
+        val (loc, state, _) = TypeConversionHelper.ToObject(argV, st, asite)
         (AbsValue(loc), state)
       }
 
@@ -252,7 +252,7 @@ object BuiltinObjectHelper {
     val pv = argV.pvalue
     val (v2, st2) =
       if (pv.undefval.isBottom && pv.nullval.isBottom) (AbsValue.Bot, AbsState.Bot)
-      else newObjSt(st, addr)
+      else newObjSt(st, asite)
 
     (st1 + st2, AbsState.Bot, v1 + v2)
   }
@@ -289,11 +289,10 @@ object BuiltinObjectHelper {
     val (desc, undef) = obj.GetOwnProperty(name)
     // 4. Return the result of calling FromPropertyDescriptor(desc) (8.10.4).
     val (retSt, retV, excSet2) = if (!desc.isBottom) {
-      val (descObj, excSet) = AbsObject.FromPropertyDescriptor(desc)
-      val descAddr = getOPDDescAddr
-      val state = st.oldify(descAddr)
-      val descLoc = Loc(descAddr, Recent)
-      val retH = state.heap.update(descLoc, descObj.oldify(descAddr))
+      val (descObj, excSet) = AbsObject.FromPropertyDescriptor(h, desc)
+      val descLoc = Loc(getOPDDescASite)
+      val state = st.oldify(descLoc)
+      val retH = state.heap.update(descLoc, descObj.oldify(descLoc))
       val retV = AbsValue(undef, AbsLoc(descLoc))
       (AbsState(retH, state.context), retV, excSet)
     } else (st, AbsValue(undef), ExcSetEmpty)
@@ -306,7 +305,6 @@ object BuiltinObjectHelper {
   def getOwnPropertyNames(args: AbsValue, st: AbsState): (AbsState, AbsState, AbsValue) = {
     val h = st.heap
     val objV = Helper.propLoad(args, Set(AbsString("0")), h)
-    val arrAddr = getOPNArrAddr
     val (keyStr, lenSet) = objV.locset.foldLeft((AbsString.Bot, Set[Option[Int]]())) {
       case ((str, lenSet), loc) => {
         val obj = h.get(loc)
@@ -344,7 +342,7 @@ object BuiltinObjectHelper {
           // b. Call the [[DefineOwnProperty]] internal method of array with arguments
           //    ToString(n), the PropertyDescriptor {[[Value]]: name, [[Writable]]:
           //    true, [[Enumerable]]: true, [[Configurable]]:true}, and false.
-          val (newObj, _, excSet) = obj.DefineOwnProperty(prop, desc, false)
+          val (newObj, _, excSet) = obj.DefineOwnProperty(h, prop, desc, false)
           (obj + newObj, e ++ excSet)
         }
       }
@@ -356,9 +354,9 @@ object BuiltinObjectHelper {
     retObj.isBottom match {
       case true => (AbsState.Bot, st.raiseException(retExcSet), AbsValue.Bot)
       case false => {
-        val state = st.oldify(arrAddr)
-        val arrLoc = Loc(arrAddr, Recent)
-        val retHeap = state.heap.update(arrLoc, retObj.oldify(arrAddr))
+        val arrLoc = Loc(getOPNArrASite)
+        val state = st.oldify(arrLoc)
+        val retHeap = state.heap.update(arrLoc, retObj.oldify(arrLoc))
         val excSt = state.raiseException(retExcSet)
 
         (AbsState(retHeap, state.context), excSt, AbsValue(arrLoc))
@@ -382,10 +380,9 @@ object BuiltinObjectHelper {
     val newObj = obj.update(IPrototype, AbsIValueUtil(protoV))
     // 4. If the argument Properties is present and not undefined, add own properties to obj as if by calling the
     //    standard built-in function Object.defineProperties with arguments obj and Properties.
-    val addr = createObjAddr
-    val state = st.oldify(addr)
-    val loc = Loc(addr, Recent)
-    val newH = state.heap.update(loc, newObj.oldify(addr))
+    val loc = Loc(createObjASite)
+    val state = st.oldify(loc)
+    val newH = state.heap.update(loc, newObj.oldify(loc))
     val retV = AbsLoc(loc)
     val (retSt, e) =
       if (propsV <= AbsUndef.Top) (AbsState(newH, state.context), ExcSetEmpty)
@@ -413,7 +410,7 @@ object BuiltinObjectHelper {
       case ((heap, e), loc) => {
         // 4. Call the [[DefineOwnProperty]] internal method of O with arguments name, desc, and true.
         val obj = heap.get(loc)
-        val (retObj, _, newExcSet) = obj.DefineOwnProperty(name, desc, true)
+        val (retObj, _, newExcSet) = obj.DefineOwnProperty(h, name, desc, true)
         // 5. Return O.
         val retH = heap.update(loc, retObj)
         (retH, e ++ newExcSet)
@@ -450,7 +447,7 @@ object BuiltinObjectHelper {
         //   a. Let desc be the result of calling the [[GetOwnProperty]] internal method of O with P.
         //   b. If desc.[[Configurable]] is true, set desc.[[Configurable]] to false.
         //   c. Call the [[DefineOwnProperty]] internal method of O with P, desc, and true as arguments.
-        val (newObj, excSet) = changeProps(obj, desc => {
+        val (newObj, excSet) = changeProps(h, obj, desc => {
           val (c, ca) = desc.configurable
           val newConfig = c.fold(AbsBool.Bot)(_ => AbsBool.False)
           desc.copyWith(configurable = (newConfig, ca))
@@ -482,7 +479,7 @@ object BuiltinObjectHelper {
         //   b. If desc.[[Writable]] is true, set desc.[[Writable]] to false.
         //   c. If desc.[[Configurable]] is true, set desc.[[Configurable]] to false.
         //   d. Call the [[DefineOwnProperty]] internal method of O with P, desc, and true as arguments.
-        val (newObj, excSet) = changeProps(obj, desc => {
+        val (newObj, excSet) = changeProps(h, obj, desc => {
           val (w, wa) = desc.writable
           val (c, ca) = desc.configurable
           val newWriteable = w.fold(AbsBool.Bot)(_ => AbsBool.False)
@@ -588,7 +585,6 @@ object BuiltinObjectHelper {
   def keys(args: AbsValue, st: AbsState): (AbsState, AbsState, AbsValue) = {
     val h = st.heap
     val objV = Helper.propLoad(args, Set(AbsString("0")), h)
-    val arrAddr = keysArrAddr
     val obj = h.get(objV.locset)
     val keyStr = obj.abstractKeySet((key, dp) => {
       AbsBool.True <= dp.enumerable
@@ -614,7 +610,7 @@ object BuiltinObjectHelper {
           case ((arr, e), index) => {
             // a. Call the [[DefineOwnProperty]] internal method of array with arguments ToString(index),
             //    the PropertyDescriptor {[[Value]]: P, [[Writable]]: true, [[Enumerable]]: true, [[Configurable]]: true}, and false.
-            val (newArr, _, excSet) = arr.DefineOwnProperty(AbsString(index.toString), desc, false)
+            val (newArr, _, excSet) = arr.DefineOwnProperty(h, AbsString(index.toString), desc, false)
             (newArr, e ++ excSet)
           }
         }
@@ -627,14 +623,14 @@ object BuiltinObjectHelper {
         // 4. For each own enumerable property of O whose name String is P (wiht index 0 until n)
         //   a. Call the [[DefineOwnProperty]] internal method of array with arguments ToString(index),
         //      the PropertyDescriptor {[[Value]]: P, [[Writable]]: true, [[Enumerable]]: true, [[Configurable]]: true}, and false.
-        val (newArr, _, excSet) = array.DefineOwnProperty(AbsString.Number, desc, false)
+        val (newArr, _, excSet) = array.DefineOwnProperty(h, AbsString.Number, desc, false)
         (newArr, excSet)
       }
     }
     // 6. Return array.
-    val state = st.oldify(arrAddr)
-    val arrLoc = Loc(arrAddr, Recent)
-    val retHeap = state.heap.update(arrLoc, retObj.oldify(arrAddr))
+    val arrLoc = Loc(keysArrASite)
+    val state = st.oldify(arrLoc)
+    val retHeap = state.heap.update(arrLoc, retObj.oldify(arrLoc))
     val excSt = st.raiseException(retExcSet)
 
     (AbsState(retHeap, state.context), excSt, AbsValue(arrLoc))
@@ -652,8 +648,8 @@ object BuiltinObjectHelper {
     // 2. If the this value is null, return "[object Null]".
     val (checkN, nu) = thisBinding.pvalue.nullval.fold((false, AbsString.Bot))(_ => (true, AbsString("[object Null]")))
     // 3. Let O be the result of calling ToObject passing the this value as the argument.
-    val addr = toStringObjAddr
-    val (loc1, st1, _) = TypeConversionHelper.ToObject(thisBinding, st, addr)
+    val asite = toStringObjASite
+    val (loc1, st1, _) = TypeConversionHelper.ToObject(thisBinding, st, asite)
     val obj = st1.heap.get(loc1)
     // 4. Let class be the value of the [[Class]] internal property of O.
     val className = obj(IClass).value.pvalue.strval
@@ -669,8 +665,8 @@ object BuiltinObjectHelper {
     val h = st.heap
     val thisBinding = st.context.thisBinding
     // 1. Let O be the result of calling ToObject passing the this value as the argument.
-    val addr = valueOfObjAddr
-    val (loc, state, excSet) = TypeConversionHelper.ToObject(thisBinding, st, addr)
+    val asite = valueOfObjASite
+    val (loc, state, excSet) = TypeConversionHelper.ToObject(thisBinding, st, asite)
     val excSt = st.raiseException(excSet)
 
     // 2. Return O.
@@ -684,8 +680,8 @@ object BuiltinObjectHelper {
     // 1. Let P be ToString(V).
     val prop = TypeConversionHelper.ToString(value)
     // 2. Let O be the result of calling ToObject passing the this value as the argument.
-    val addr = hasOPObjAddr
-    val (thisLoc, state, excSet) = TypeConversionHelper.ToObject(thisBinding, st, addr)
+    val asite = hasOPObjASite
+    val (thisLoc, state, excSet) = TypeConversionHelper.ToObject(thisBinding, st, asite)
     // 3. Let desc be the result of calling the [[GetOwnProperty]] internal method of O passing P as the argument.
     val obj = state.heap.get(thisLoc)
     val (desc, undef) = obj.GetOwnProperty(prop)
@@ -704,8 +700,8 @@ object BuiltinObjectHelper {
     // 1. If V is not an object, return false.
     val v1 = value.pvalue.fold(AbsBool.Bot)(_ => AbsBool.False)
     // 2. Let O be the result of calling ToObject passing the this value as the argument.
-    val addr = isPObjAddr
-    val (thisLoc, state, excSet) = TypeConversionHelper.ToObject(thisBinding, st, addr)
+    val asite = isPObjASite
+    val (thisLoc, state, excSet) = TypeConversionHelper.ToObject(thisBinding, st, asite)
     val h = state.heap
     // 3. Repeat
     var visited: Set[Loc] = HashSet()
@@ -736,8 +732,8 @@ object BuiltinObjectHelper {
     // 1. Let P be ToString(V).
     val prop = TypeConversionHelper.ToString(value)
     // 2. Let O be the result of calling ToObject passing the this value as the argument.
-    val addr = propIsEObjAddr
-    val (thisLoc, state, excSet) = TypeConversionHelper.ToObject(thisBinding, st, addr)
+    val asite = propIsEObjASite
+    val (thisLoc, state, excSet) = TypeConversionHelper.ToObject(thisBinding, st, asite)
     val h = state.heap
     // 3. Let desc be the result of calling the [[GetOwnProperty]] internal method of O passing P as the argument.
     val obj = h.get(thisLoc)
@@ -759,15 +755,15 @@ object BuiltinObjectHelper {
     else HashSet(TypeError)
   }
 
-  private def newObjSt(st: AbsState, addr: SystemAddr): (AbsValue, AbsState) = {
-    val state = st.oldify(addr)
-    val loc = Loc(addr, Recent)
+  private def newObjSt(st: AbsState, asite: PredAllocSite): (AbsValue, AbsState) = {
+    val loc = Loc(asite)
+    val state = st.oldify(loc)
     val obj = AbsObject.newObject
     val heap = state.heap.update(loc, obj)
     (AbsValue(loc), AbsState(heap, state.context))
   }
 
-  private def changeProps(obj: AbsObject, f: AbsDesc => AbsDesc): (AbsObject, Set[Exception]) = {
+  private def changeProps(h: AbsHeap, obj: AbsObject, f: AbsDesc => AbsDesc): (AbsObject, Set[Exception]) = {
     // For each named own property name P of O,
     obj.abstractKeySet match {
       case ConInf() => (AbsObject.Top, HashSet(TypeError, RangeError))
@@ -778,7 +774,7 @@ object BuiltinObjectHelper {
           // create new PropertyDescriptor by using f.
           val newDesc = f(desc)
           // Call the [[DefineOwnProperty]] internal method of O with P, desc, and true as arguments.
-          val (retObj, _, excSet) = o.DefineOwnProperty(key, newDesc, true)
+          val (retObj, _, excSet) = o.DefineOwnProperty(h, key, newDesc, true)
           (retObj, e ++ excSet)
         }
       }
@@ -807,8 +803,8 @@ object BuiltinObjectHelper {
     // 1. If Type(O) is not Object throw a TypeError exception.
     val excSet = objCheck(objV)
     // 2. Let props be ToObject(Properties).
-    val addr = definePropsObjAddr
-    val (loc1, st1, toExcSet) = TypeConversionHelper.ToObject(propsV, st, addr)
+    val asite = definePropsObjASite
+    val (loc1, st1, toExcSet) = TypeConversionHelper.ToObject(propsV, st, asite)
     val h1 = st1.heap
     val ctx1 = st1.context
     val props = h1.get(loc1)
@@ -830,7 +826,7 @@ object BuiltinObjectHelper {
                 // b. Let desc be the result of calling ToPropertyDescriptor with descObj as the argument.
                 val desc = AbsDesc.ToPropertyDescriptor(descObj, h1)
                 // c. Call the [[DefineOwnProperty]] internal method of O with arguments P, desc, and true.
-                val (retObj, _, excSet) = obj.DefineOwnProperty(astr, desc, true)
+                val (retObj, _, excSet) = obj.DefineOwnProperty(h1, astr, desc, true)
                 (retObj, e ++ excSet)
               } else (obj, e)
             }

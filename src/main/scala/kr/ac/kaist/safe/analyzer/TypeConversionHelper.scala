@@ -13,7 +13,7 @@ package kr.ac.kaist.safe.analyzer
 
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.analyzer.domain.Utils._
-import kr.ac.kaist.safe.util.Address
+import kr.ac.kaist.safe.util._
 
 import scala.collection.immutable.HashSet
 
@@ -195,14 +195,14 @@ object TypeConversionHelper {
     (obj3 + obj4 + obj5, excSet)
   }
 
-  def ToObject(value: AbsValue, st: AbsState, addr: Address): (AbsLoc, AbsState, Set[Exception]) = {
+  def ToObject(value: AbsValue, st: AbsState, asite: AllocSite): (AbsLoc, AbsState, Set[Exception]) = {
     val locSet = value.locset
     val (obj, excSet) = ToObject(value.pvalue)
 
     val (locSet1, st1) =
       if (!obj.isBottom) {
-        val loc = Loc(addr, Recent)
-        val state = st.oldify(addr)
+        val loc = Loc(asite)
+        val state = st.oldify(loc)
         (AbsLoc(loc), AbsState(state.heap.update(loc, obj), state.context))
       } else (AbsLoc.Bot, AbsState.Bot)
     val (locSet2, st2) =
@@ -265,7 +265,7 @@ object TypeConversionHelper {
   // This algorithm differs from the strict equal(===) in its
   // treatment of signed zeros and NaN
   ////////////////////////////////////////////////////////////////
-  def SameValue(left: AbsValue, right: AbsValue): AbsBool = {
+  def SameValue(h: AbsHeap, left: AbsValue, right: AbsValue): AbsBool = {
     val isMultiType =
       if ((left + right).typeCount > 1) AbsBool.False
       else AbsBool.Bot
@@ -280,7 +280,7 @@ object TypeConversionHelper {
         val intersect = left.locset <> right.locset
         (left.locset.getSingle, right.locset.getSingle, intersect.getSingle) match {
           case (_, _, ConZero()) => AbsBool.False
-          case (ConOne(_), ConOne(_), ConOne(loc)) if loc.recency == Recent => AbsBool.True
+          case (ConOne(_), ConOne(_), ConOne(loc)) if h.isConcrete(loc) => AbsBool.True
           case _ => AbsBool.Top
         }
       } else AbsBool.Bot

@@ -1,6 +1,6 @@
 var x;
 
-if(@Top)
+if(@BoolTop)
 	x = "111"
 else
 	x = "str"

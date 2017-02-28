@@ -2,7 +2,7 @@ var o1 = {p1:123};
 var o2 = { };
 var o3;
 
-if (@Top) {
+if (@BoolTop) {
 	o3 = o1; 
 } else {
 	o3 = o2;

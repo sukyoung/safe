@@ -7,7 +7,7 @@ var __expect1 = 123;
 var __result2;
 var __expect2 = "ABC";
 
-if (@Top) {
+if (@BoolTop) {
     foo({p: 123});
     __result1 = obj.p;
 } else {

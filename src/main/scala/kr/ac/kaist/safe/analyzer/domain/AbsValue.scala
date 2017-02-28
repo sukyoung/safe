@@ -12,13 +12,18 @@
 package kr.ac.kaist.safe.analyzer.domain
 
 import kr.ac.kaist.safe.analyzer.domain.Utils._
-import kr.ac.kaist.safe.analyzer.models.PredefLoc
 import kr.ac.kaist.safe.analyzer.models.builtin.BuiltinGlobal
+import kr.ac.kaist.safe.util._
 
 ////////////////////////////////////////////////////////////////////////////////
 // concrete value type
 ////////////////////////////////////////////////////////////////////////////////
 abstract class Value extends IValue
+
+// helper values for modeling
+case object StringT extends Value
+case object NumberT extends Value
+case object BoolT extends Value
 
 ////////////////////////////////////////////////////////////////////////////////
 // value abstract domain
@@ -28,14 +33,13 @@ trait AbsValue extends AbsDomain[Value, AbsValue] {
   val locset: AbsLoc
 
   /* substitute locR by locO */
-  def subsLoc(locR: Loc, locO: Loc): AbsValue
+  def subsLoc(locR: Recency, locO: Recency): AbsValue
   /* weakly substitute locR by locO, that is keep locR together */
-  def weakSubsLoc(locR: Loc, locO: Loc): AbsValue
+  def weakSubsLoc(locR: Recency, locO: Recency): AbsValue
   // TODO working but a more simple way exists with modifying getBase
   def getThis(h: AbsHeap): AbsLoc
 
   def typeCount: Int
-  def typeKinds: String
 }
 
 trait AbsValueUtil extends AbsDomainUtil[Value, AbsValue] {
@@ -54,6 +58,9 @@ object DefaultValue extends AbsValueUtil {
   def alpha(value: Value): AbsValue = value match {
     case (pvalue: PValue) => apply(AbsPValue(pvalue))
     case (loc: Loc) => apply(AbsLoc(loc))
+    case StringT => apply(AbsString.Top)
+    case NumberT => apply(AbsNumber.Top)
+    case BoolT => apply(AbsBool.Top)
   }
 
   def apply(pvalue: AbsPValue): AbsValue = Bot.copy(pvalue = pvalue)
@@ -107,10 +114,10 @@ object DefaultValue extends AbsValueUtil {
       }
     }
 
-    def subsLoc(locR: Loc, locO: Loc): AbsValue =
+    def subsLoc(locR: Recency, locO: Recency): AbsValue =
       Dom(this.pvalue, this.locset.subsLoc(locR, locO))
 
-    def weakSubsLoc(locR: Loc, locO: Loc): AbsValue =
+    def weakSubsLoc(locR: Recency, locO: Recency): AbsValue =
       Dom(this.pvalue, this.locset.weakSubsLoc(locR, locO))
 
     def typeCount: Int = {
@@ -118,13 +125,6 @@ object DefaultValue extends AbsValueUtil {
         pvalue.typeCount
       else
         pvalue.typeCount + 1
-    }
-
-    def typeKinds: String = {
-      val sb = new StringBuilder()
-      sb.append(pvalue.typeKinds)
-      if (!this.locset.isBottom) sb.append((if (sb.length > 0) ", " else "") + "Object")
-      sb.toString
     }
 
     def getThis(h: AbsHeap): AbsLoc = {

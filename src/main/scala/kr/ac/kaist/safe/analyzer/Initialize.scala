@@ -19,26 +19,27 @@ import kr.ac.kaist.safe.analyzer.models.builtin._
 import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.util._
 import kr.ac.kaist.safe.phase._
-import scala.collection.immutable.HashMap
+import scala.collection.immutable.{ HashMap, HashSet }
 
 object Initialize {
   def apply(cfg: CFG, jsModel: Boolean): AbsState = {
     val globalLocSet = AbsLoc(BuiltinGlobal.loc)
     val globalPureLocalEnv = AbsLexEnv.newPureLocal(globalLocSet)
     val initHeap = AbsHeap(HashMap(
-      SystemLoc("Dummy", Old) -> AbsObject.Bot // TODO If delete, not working because not allowed update to bottom heap
-    ))
+      BuiltinGlobal.loc -> AbsObject.Bot
+    // TODO If delete, not working because not allowed update to bottom heap
+    ), HashSet[Concrete]())
 
     val initCtx = AbsContext(HashMap[Loc, AbsLexEnv](
-      PredefLoc.GLOBAL_ENV -> AbsLexEnv(AbsGlobalEnvRec.Top),
-      PredefLoc.PURE_LOCAL -> globalPureLocalEnv,
-      PredefLoc.COLLAPSED -> AbsLexEnv(AbsDecEnvRec.Empty)
-    ), OldAddrSet.Empty, globalLocSet)
+      PredAllocSite.GLOBAL_ENV -> AbsLexEnv(AbsGlobalEnvRec.Top),
+      PredAllocSite.PURE_LOCAL -> globalPureLocalEnv,
+      PredAllocSite.COLLAPSED -> AbsLexEnv(AbsDecEnvRec.Empty)
+    ), HashSet[Concrete](), OldASiteSet.Empty, globalLocSet)
 
     val modeledHeap: AbsHeap =
       if (jsModel) {
         val model = Analyze.jscache getOrElse {
-          val fileName = NodeUtil.jsModelsBase + "built_in.jsmodel"
+          val fileName = NodeUtil.jsModelsBase + "snapshot_and_built_in.jsmodel"
           ModelParser.parseFile(fileName).get
         }
         model.funcs.foreach(cfg.addJSModel(_))

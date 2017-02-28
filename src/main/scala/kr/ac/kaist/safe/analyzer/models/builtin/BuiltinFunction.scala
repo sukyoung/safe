@@ -16,7 +16,7 @@ import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.analyzer.models._
 import kr.ac.kaist.safe.nodes.cfg._
-import kr.ac.kaist.safe.util.Address
+import kr.ac.kaist.safe.util._
 
 import scala.collection.immutable.HashSet
 
@@ -109,7 +109,7 @@ private object BuiltinFunctionProtoHelper {
   val atrue = AbsBool.True
 
   // 15.3.4.3 Fucntion.prototype.apply(thisArg, argArray)
-  def applyBeforeCall(funcId: CFGId, thisId: CFGId, argsId: CFGId)(args: AbsValue, st: AbsState, addr: Address): (AbsState, AbsState) = {
+  def applyBeforeCall(funcId: CFGId, thisId: CFGId, argsId: CFGId)(args: AbsValue, st: AbsState, asite: AllocSite): (AbsState, AbsState) = {
     val func = st.context.thisBinding.locset
     val thisArg = Helper.propLoad(args, HashSet(AbsString("0")), st.heap)
     val heap = st.heap
@@ -160,8 +160,8 @@ private object BuiltinFunctionProtoHelper {
     })
 
     // 9. [[Call]]
-    val st1 = st.oldify(addr)
-    val argsLoc = Loc(addr, Old)
+    val argsLoc = Loc(asite)
+    val st1 = st.oldify(argsLoc)
     val h3 = st1.heap.update(argsLoc, argList1 + argList2)
     val newState =
       AbsState(h3, st1.context)
@@ -173,7 +173,7 @@ private object BuiltinFunctionProtoHelper {
   }
 
   // 15.3.4.4 Function.prototype.call(thisArg [, arg1 [, arg2, ...]])
-  def callBeforeCall(funcId: CFGId, thisId: CFGId, argsId: CFGId)(args: AbsValue, st: AbsState, addr: Address): (AbsState, AbsState) = {
+  def callBeforeCall(funcId: CFGId, thisId: CFGId, argsId: CFGId)(args: AbsValue, st: AbsState, asite: AllocSite): (AbsState, AbsState) = {
     val func = st.context.thisBinding.locset
     val thisArg = Helper.propLoad(args, HashSet(AbsString("0")), st.heap)
     val heap = st.heap
@@ -212,8 +212,8 @@ private object BuiltinFunctionProtoHelper {
     })
 
     // 4. [[Call]]
-    val st1 = st.oldify(addr)
-    val argsLoc = Loc(addr, Old)
+    val argsLoc = Loc(asite)
+    val st1 = st.oldify(argsLoc)
     val h3 = st1.heap.update(argsLoc, argList)
     val newState =
       AbsState(h3, st1.context)

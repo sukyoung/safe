@@ -14,7 +14,7 @@ package kr.ac.kaist.safe.errors.error
 sealed abstract class ConsoleError(msg: String) extends SafeError(msg)
 
 case class NoRecencyTag(str: String) extends ConsoleError({
-  s"The given prefix '$str' is not recency tag(#, ##)."
+  s"The given prefix '$str' is not recency tag(R, O)."
 })
 
 case class NoLoc(str: String) extends ConsoleError({

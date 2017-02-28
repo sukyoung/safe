@@ -18,10 +18,10 @@ import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.analyzer._
 import kr.ac.kaist.safe.analyzer.models._
-import kr.ac.kaist.safe.util.SystemAddr
+import kr.ac.kaist.safe.util._
 
 object BuiltinNumberHelper {
-  val instanceAddr = SystemAddr("Number<instance>")
+  val instanceASite = PredAllocSite("Number<instance>")
 
   def typeConvert(args: AbsValue, st: AbsState): AbsNumber = {
     val h = st.heap
@@ -43,12 +43,11 @@ object BuiltinNumberHelper {
 
   val constructor = BasicCode(
     argLen = 1,
-    addrSet = HashSet(instanceAddr),
+    asiteSet = HashSet(instanceASite),
     code = (args: AbsValue, st: AbsState) => {
       val num = typeConvert(args, st)
-      val addr = instanceAddr
-      val state = st.oldify(addr)
-      val loc = Loc(addr, Recent)
+      val loc = Loc(instanceASite)
+      val state = st.oldify(loc)
       val heap = state.heap.update(loc, AbsObject.newNumberObj(num))
       (AbsState(heap, state.context), AbsState.Bot, AbsValue(loc))
     }
@@ -138,10 +137,13 @@ object BuiltinNumberProto extends ObjModel(
         // the resulting String value is returned.
         val n = BuiltinNumberHelper.getValue(thisV, h)
         val s =
-          if (AbsNumber(10) <= radix) TypeConversionHelper.ToString(n)
-          // If ToInteger(radix) is an integer from 2 to 36, but not 10,
-          // XXX: give up the precision! (Room for the analysis precision improvement!)
-          else AbsString.Top
+          TypeConversionHelper.SameValue(h, AbsNumber(10), radix).map({
+            TypeConversionHelper.ToString(n)
+          }, {
+            // If ToInteger(radix) is an integer from 2 to 36, but not 10,
+            // XXX: give up the precision! (Room for the analysis precision improvement!)
+            AbsString.Top
+          })(AbsString)
 
         (st, st.raiseException(excSet), AbsValue(s))
       })

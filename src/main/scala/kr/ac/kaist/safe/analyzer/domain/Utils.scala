@@ -21,7 +21,8 @@ object Utils {
     absBool: AbsBoolUtil,
     absNumber: AbsNumberUtil,
     absString: AbsStringUtil,
-    absLoc: AbsLocUtil
+    absLoc: AbsLocUtil,
+    aaddrType: AAddrType
   ): Unit = {
     AbsUndef = absUndef
     AbsNull = absNull
@@ -29,6 +30,7 @@ object Utils {
     AbsNumber = absNumber
     AbsString = absString
     AbsLoc = absLoc
+    AAddrType = aaddrType
   }
 
   // primitive values
@@ -38,6 +40,9 @@ object Utils {
   var AbsNumber: AbsNumberUtil = _
   var AbsString: AbsStringUtil = _
   var AbsPValue: AbsPValueUtil = DefaultPValue
+
+  // abstract address type
+  var AAddrType: AAddrType = _
 
   // location
   var AbsLoc: AbsLocUtil = _

@@ -3,4 +3,4 @@ for(var x=4; x; --x) {
 }
 
 var __result1 = o.p
-var __expect1 = 0
+var __expect1 = 1

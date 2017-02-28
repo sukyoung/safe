@@ -7,6 +7,7 @@
     "out": false,
     "number": "default",
     "maxStrSetSize": 1000,
+    "aaddrType": "recency",
     "callsiteSensitivity": 10,
     "loopSensitivity": 0,
     "html": "",

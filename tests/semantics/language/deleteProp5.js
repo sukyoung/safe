@@ -5,7 +5,7 @@ var o4 = {x:123, y:456, z:789};
 
 var p;
 
-if (@Top)
+if (@BoolTop)
 	p = "x" 
 else
 	p = "y"

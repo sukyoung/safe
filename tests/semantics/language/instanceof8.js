@@ -2,7 +2,7 @@ var __result1;
 var __result2;
 
 var o;
-if (@Top) {
+if (@BoolTop) {
     o = {};
 } else {
     o = function() {};

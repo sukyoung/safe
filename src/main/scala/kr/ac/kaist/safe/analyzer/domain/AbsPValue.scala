@@ -31,7 +31,6 @@ trait AbsPValue extends AbsDomain[PValue, AbsPValue] {
 
   def ===(that: AbsPValue): AbsBool
   def typeCount: Int
-  def typeKinds: String
   def toStringSet: Set[AbsString]
   def copyWith(
     undefval: AbsUndef = this.undefval,
@@ -148,11 +147,15 @@ object DefaultPValue extends AbsPValueUtil {
 
     def ===(that: AbsPValue): AbsBool = {
       val right = check(that)
+      val falseV =
+        if ((this + right).typeCount > 1) AbsBool.False
+        else AbsBool.Bot
       (this.undefval === right.undefval) +
         (this.nullval === right.nullval) +
         (this.boolval === right.boolval) +
         (this.numval === right.numval) +
-        (this.strval === right.strval)
+        (this.strval === right.strval) +
+        falseV
     }
 
     def typeCount: Int = {
@@ -163,16 +166,6 @@ object DefaultPValue extends AbsPValueUtil {
       this.numval.fold(()) { _ => count += 1 }
       this.strval.fold(()) { _ => count += 1 }
       count
-    }
-
-    def typeKinds: String = {
-      var lst: List[String] = Nil
-      this.undefval.fold(()) { _ => lst ::= "Undefined" }
-      this.nullval.fold(()) { _ => lst ::= "Null" }
-      this.boolval.fold(()) { _ => lst ::= "Boolean" }
-      this.numval.fold(()) { _ => lst ::= "Number" }
-      this.strval.fold(()) { _ => lst ::= "String" }
-      lst.mkString(", ")
     }
 
     def toStringSet: Set[AbsString] = {

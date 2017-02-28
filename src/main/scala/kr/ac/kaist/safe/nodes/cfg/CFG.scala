@@ -13,8 +13,8 @@ package kr.ac.kaist.safe.nodes.cfg
 
 import scala.collection.immutable.HashSet
 import scala.collection.mutable.{ HashMap => MHashMap, Map => MMap }
-import kr.ac.kaist.safe.analyzer.models.PredefLoc._
 import kr.ac.kaist.safe.LINE_SEP
+import kr.ac.kaist.safe.analyzer.domain.Loc
 import kr.ac.kaist.safe.nodes.ir.IRNode
 import kr.ac.kaist.safe.util._
 
@@ -98,27 +98,27 @@ class CFG(
     s.toString
   }
 
-  // program address size
-  private var pgmAddrSize: Int = 0
-  def getProgramAddrSize: Int = pgmAddrSize
-  def newProgramAddr: ProgramAddr = {
-    pgmAddrSize += 1
-    val addr = ProgramAddr(pgmAddrSize)
-    addr
+  // user defined allocation site size
+  private var userASiteSize: Int = 0
+  def getUserASiteSize: Int = userASiteSize
+  def newUserASite: UserAllocSite = {
+    userASiteSize += 1
+    val asite = UserAllocSite(userASiteSize)
+    asite
   }
 
-  // system address set
-  private var systemAddrSet: Set[Address] = HashSet(
-    GLOBAL_ENV.address,
-    PURE_LOCAL.address,
-    COLLAPSED.address
+  // predefined allocation site set
+  private var predASiteSet: Set[AllocSite] = HashSet(
+    PredAllocSite.GLOBAL_ENV,
+    PredAllocSite.PURE_LOCAL,
+    PredAllocSite.COLLAPSED
   )
-  def getSystemAddrSet: Set[Address] = systemAddrSet
-  def registerSystemAddr(addr: Address): Unit = systemAddrSet += addr
+  def getPredASiteSet: Set[AllocSite] = predASiteSet
+  def registerPredASite(asite: AllocSite): Unit = predASiteSet += asite
 
   // get all locations
-  def getAllAddrSet: Set[Address] =
-    (1 to pgmAddrSize).foldLeft(systemAddrSet)(_ + ProgramAddr(_))
+  def getAllASiteSet: Set[AllocSite] =
+    (1 to userASiteSize).foldLeft(predASiteSet)(_ + UserAllocSite(_))
 }
 
 object CFG {

@@ -3,7 +3,7 @@ var o2 = {1:123};
 var o3 = {1:123, x: 456};
 var p;
 
-if (@Top)
+if (@BoolTop)
 	p = "1" 
 else
 	p = "x"

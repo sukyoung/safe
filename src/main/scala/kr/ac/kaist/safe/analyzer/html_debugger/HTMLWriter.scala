@@ -136,7 +136,9 @@ object HTMLWriter {
     sb.append(s"'$id': [").append(LINE_SEP)
       .append(s"{ kind: 'Block', id: 'block', value: '$label of $func' },").append(LINE_SEP)
     block.getInsts.reverse.foreach(inst => {
-      sb.append(s"{ kind: 'Instructions', value: '$inst' },").append(LINE_SEP)
+      val instStr = inst.toString()
+        .replaceAll("\'", "\\\\\'")
+      sb.append(s"{ kind: 'Instructions', value: '$instStr' },").append(LINE_SEP)
     })
     sb.append(s"]," + LINE_SEP)
     sb.toString
@@ -156,19 +158,20 @@ object HTMLWriter {
       h.getMap match {
         case None => sb.append("{ value: 'Top' }")
         case Some(map) => {
-          sb.append("{ value: {value: 'System Locations', id: 'sysLoc'}, parent: 'heap' },").append(LINE_SEP)
+          sb.append("{ value: {value: 'Predefined Locations', id: 'predLoc'}, parent: 'heap' },").append(LINE_SEP)
           map.toSeq
             .sortBy { case (loc, _) => loc }
             .foreach {
               case (loc, obj) =>
                 val parent = loc match {
                   case BuiltinGlobal.loc => "heap"
-                  case Loc(SystemAddr(_), _) => "sysLoc"
+                  case l if !l.isUser => "predLoc"
                   case _ => "heap"
                 }
                 sb.append(s"{ value: {value: '$loc', id: '$loc'}, parent: '$parent' },").append(LINE_SEP)
                 obj.toString.split(LINE_SEP).foreach(prop => {
-                  sb.append(s"{ value: {value: '$prop'}, parent: '$loc' },").append(LINE_SEP)
+                  val propStr = prop.replaceAll("\'", "\\\\\'")
+                  sb.append(s"{ value: {value: '$propStr'}, parent: '$loc' },").append(LINE_SEP)
                 })
             }
         }
@@ -182,13 +185,14 @@ object HTMLWriter {
           case (loc, obj) =>
             sb.append(s"{ value: {value: '$loc', id: '$loc'}, parent: 'ctx' },").append(LINE_SEP)
             obj.toString.split(LINE_SEP).foreach(prop => {
-              sb.append(s"{ value: {value: '$prop'}, parent: '$loc' },").append(LINE_SEP)
+              val propStr = prop.replaceAll("\'", "\\\\\'")
+              sb.append(s"{ value: {value: '$propStr'}, parent: '$loc' },").append(LINE_SEP)
             })
         }
 
       val thisBinding = ctx.thisBinding
       sb.append(s"{ value: {value: 'this: $thisBinding'} },").append(LINE_SEP)
-      // old address set
+      // old allocation site set
       val old = ctx.old
       val mayOld = old.mayOld.mkString(", ")
       val mustOld =

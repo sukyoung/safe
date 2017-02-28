@@ -1,5 +1,5 @@
 var x;
-while(@Top) {
+while(@BoolTop) {
 	x = 123;
 	break;
 	x = 456; 

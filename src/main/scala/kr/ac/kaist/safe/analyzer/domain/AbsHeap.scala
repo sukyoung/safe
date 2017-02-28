@@ -11,7 +11,7 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
-import scala.collection.immutable.{ HashMap }
+import scala.collection.immutable.{ HashMap, HashSet }
 import scala.io.Source
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.analyzer.domain.Utils._
@@ -46,8 +46,8 @@ trait AbsHeap extends AbsDomain[Heap, AbsHeap] {
   def remove(loc: Loc): AbsHeap
 
   // substitute locR by locO
-  def subsLoc(locR: Loc, locO: Loc): AbsHeap
-  def oldify(addr: Address): AbsHeap
+  def subsLoc(locR: Recency, locO: Recency): AbsHeap
+  def oldify(loc: Loc): AbsHeap
   def domIn(loc: Loc): Boolean
 
   // toString
@@ -72,10 +72,13 @@ trait AbsHeap extends AbsDomain[Heap, AbsHeap] {
 
   // get all map
   def getMap: Option[Map[Loc, AbsObject]]
+
+  // location concrete check
+  def isConcrete(loc: Loc): Boolean
 }
 
 trait AbsHeapUtil extends AbsDomainUtil[Heap, AbsHeap] {
-  def apply(map: Map[Loc, AbsObject]): AbsHeap
+  def apply(map: Map[Loc, AbsObject], absSet: Set[Concrete]): AbsHeap
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -85,18 +88,19 @@ trait AbsHeapUtil extends AbsDomainUtil[Heap, AbsHeap] {
 object DefaultHeap extends AbsHeapUtil {
   case object Top extends Dom
   case class HeapMap(
-    val map: Map[Loc, AbsObject] = HashMap()
+    val map: Map[Loc, AbsObject],
+    val absSet: Set[Concrete]
   ) extends Dom
-  lazy val Bot: AbsHeap = HeapMap()
+  lazy val Bot: AbsHeap = HeapMap(HashMap(), HashSet())
 
   def alpha(heap: Heap): AbsHeap = {
     val map = heap.map.foldLeft[Map[Loc, AbsObject]](HashMap()) {
       case (map, (loc, obj)) => map + (loc -> AbsObject(obj))
     }
-    HeapMap(map)
+    HeapMap(map, HashSet())
   }
 
-  def apply(map: Map[Loc, AbsObject]): AbsHeap = HeapMap(map)
+  def apply(map: Map[Loc, AbsObject], absSet: Set[Concrete]): AbsHeap = HeapMap(map, absSet)
 
   sealed abstract class Dom extends AbsHeap {
     def gamma: ConSet[Heap] = ConInf() // TODO more precise
@@ -110,7 +114,7 @@ object DefaultHeap extends AbsHeapUtil {
       case (_, Top) => true
       case (Top, _) => false
       case (left: HeapMap, right: HeapMap) =>
-        if (left.map eq right.map) true
+        (if (left.map eq right.map) true
         else if (left.map.size > right.map.size) false
         else if (left.map.isEmpty) true
         else if (right.map.isEmpty) false
@@ -121,7 +125,7 @@ object DefaultHeap extends AbsHeapUtil {
             case Some(leftObj) => leftObj <= obj
             case None => false
           }
-        })
+        })) && (left.absSet subsetOf right.absSet)
     }
 
     def +(that: AbsHeap): AbsHeap = (this, check(that)) match {
@@ -146,7 +150,7 @@ object DefaultHeap extends AbsHeapUtil {
               }
             })
           }
-        HeapMap(newMap)
+        HeapMap(newMap, left.absSet ++ right.absSet)
     }
 
     def <>(that: AbsHeap): AbsHeap = (this, check(that)) match {
@@ -167,12 +171,12 @@ object DefaultHeap extends AbsHeapUtil {
               }
             )
           }
-        HeapMap(newMap)
+        HeapMap(newMap, left.absSet intersect right.absSet)
     }
 
     private def buildString(filter: Loc => Boolean): String = this match {
       case Top => "Top"
-      case heap @ HeapMap(map) =>
+      case heap @ HeapMap(map, absSet) =>
         val s = new StringBuilder
         if (heap.isBottom) s.append("⊥Heap")
         else {
@@ -180,23 +184,19 @@ object DefaultHeap extends AbsHeapUtil {
             map.toSeq.filter { case (loc, _) => filter(loc) }
               .sortBy { case (loc, _) => loc }
           sortedSeq.map {
-            case (loc, obj) => s.append(toStringLoc(loc, obj)).append(LINE_SEP)
+            case (loc, obj) => s.append(toStringLoc(loc, obj, isConcrete(loc))).append(LINE_SEP)
           }
         }
         s.toString
     }
 
     override def toString: String = {
-      buildString(loc => loc match {
-        case Loc(ProgramAddr(_), _) => true
-        case BuiltinGlobal.loc => true
-        case _ => false
-      }).toString
+      buildString(loc => loc.isUser || loc == BuiltinGlobal.loc)
     }
 
     def get(loc: Loc): AbsObject = this match {
       case Top => AbsObject.Top
-      case HeapMap(map) => map.get(loc) match {
+      case HeapMap(map, absSet) => map.get(loc) match {
         case Some(obj) => obj
         case None => AbsObject.Bot
       }
@@ -213,34 +213,36 @@ object DefaultHeap extends AbsHeapUtil {
 
     def weakUpdate(loc: Loc, obj: AbsObject): AbsHeap = this match {
       case Top => Top
-      case heap @ HeapMap(map) =>
-        if (!heap.isBottom) HeapMap(weakUpdated(map, loc, obj))
+      case heap @ HeapMap(map, absSet) =>
+        if (!heap.isBottom) HeapMap(weakUpdated(map, loc, obj), absSet)
         else heap
     }
 
     def update(loc: Loc, obj: AbsObject): AbsHeap = this match {
       case Top => Top
-      case heap @ HeapMap(map) =>
+      case heap @ HeapMap(map, absSet) =>
         if (!heap.isBottom) {
-          loc.recency match {
-            case Recent =>
-              if (obj.isBottom) AbsHeap.Bot
-              else HeapMap(map.updated(loc, obj))
-            case Old =>
-              if (obj.isBottom) heap.get(loc).fold(AbsHeap.Bot) { _ => heap }
-              else HeapMap(weakUpdated(map, loc, obj))
+          if (isConcrete(loc)) {
+            if (obj.isBottom) AbsHeap.Bot
+            else HeapMap(map.updated(loc, obj), absSet)
+          } else {
+            if (obj.isBottom) heap.get(loc).fold(AbsHeap.Bot) { _ => heap }
+            else HeapMap(weakUpdated(map, loc, obj), absSet)
           }
         } else heap
     }
 
     def remove(loc: Loc): AbsHeap = this match {
       case Top => Top
-      case HeapMap(map) => HeapMap(map - loc)
+      case HeapMap(map, absSet) => HeapMap(map - loc, loc match {
+        case locC @ Concrete(_) => absSet - locC
+        case _ => absSet
+      })
     }
 
-    def subsLoc(locR: Loc, locO: Loc): AbsHeap = this match {
+    def subsLoc(locR: Recency, locO: Recency): AbsHeap = this match {
       case Top => Top
-      case HeapMap(map) =>
+      case HeapMap(map, absSet) =>
         val newMap =
           if (map.isEmpty) map
           else {
@@ -249,41 +251,57 @@ object DefaultHeap extends AbsHeapUtil {
               m + (l -> obj.subsLoc(locR, locO))
             })
           }
-        HeapMap(newMap)
+        HeapMap(newMap, absSet)
     }
 
-    def oldify(addr: Address): AbsHeap = this match {
-      case Top => Top
-      case heap @ HeapMap(map) =>
-        val locR = Loc(addr, Recent)
-        val locO = Loc(addr, Old)
-        if (heap domIn locR) {
-          update(locO, get(locR)).remove(locR).subsLoc(locR, locO)
-        } else {
-          subsLoc(locR, locO)
+    def oldify(loc: Loc): AbsHeap = loc match {
+      case locR @ Recency(subLoc, Recent) => this match {
+        case Top => Top
+        case heap @ HeapMap(map, _) => {
+          val locO = Recency(subLoc, Old)
+          if (heap domIn locR) {
+            update(locO, get(locR)).remove(locR).subsLoc(locR, locO)
+          } else {
+            subsLoc(locR, locO)
+          }
         }
+      }
+      case locC @ Concrete(_) => this match {
+        case Top => Top
+        case HeapMap(map, absSet) => map contains locC match {
+          case true => HeapMap(map, absSet + locC)
+          case false => HeapMap(map, absSet)
+        }
+      }
+      case _ => this
     }
 
     def domIn(loc: Loc): Boolean = this match {
       case Top => true
-      case HeapMap(map) => map.contains(loc)
+      case HeapMap(map, _) => map.contains(loc)
     }
 
     def toStringAll: String = {
       buildString(_ => true).toString
     }
 
-    private def toStringLoc(loc: Loc, obj: AbsObject): String = {
+    private def toStringLoc(loc: Loc, obj: AbsObject, con: Boolean): String = {
       val s = new StringBuilder
-      val keyStr = loc.toString + " -> "
+      val keyStr = loc.toString + (loc match {
+        case Concrete(_) => con match {
+          case true => " -!> "
+          case false => " -?> "
+        }
+        case _ => " -> "
+      })
       s.append(keyStr)
       Useful.indentation(s, obj.toString, keyStr.length)
       s.toString
     }
 
     def toStringLoc(loc: Loc): Option[String] = this match {
-      case Top => Some(toStringLoc(loc, AbsObject.Top))
-      case HeapMap(map) => map.get(loc).map(toStringLoc(loc, _))
+      case Top => Some(toStringLoc(loc, AbsObject.Top, false))
+      case HeapMap(map, absSet) => map.get(loc).map(toStringLoc(loc, _, isConcrete(loc)))
     }
 
     ////////////////////////////////////////////////////////////////
@@ -426,7 +444,20 @@ object DefaultHeap extends AbsHeapUtil {
 
     def getMap: Option[Map[Loc, AbsObject]] = this match {
       case Top => None
-      case HeapMap(map) => Some(map)
+      case HeapMap(map, _) => Some(map)
+    }
+
+    ////////////////////////////////////////////////////////////////
+    // location concrete check
+    ////////////////////////////////////////////////////////////////
+    def isConcrete(loc: Loc): Boolean = loc match {
+      case locC @ Concrete(_) => this match {
+        case Top => false
+        case HeapMap(_, absSet) => !(absSet contains locC)
+      }
+      case Recency(_, Recent) => true
+      case l if Loc.predConSet contains l => true
+      case _ => false
     }
   }
 }

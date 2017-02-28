@@ -15,7 +15,7 @@ import kr.ac.kaist.safe.analyzer.{ Helper, TypeConversionHelper }
 import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.analyzer.models._
-import kr.ac.kaist.safe.util.SystemAddr
+import kr.ac.kaist.safe.util._
 
 import scala.collection.immutable.HashSet
 
@@ -25,13 +25,13 @@ object BuiltinRegExp extends FuncModel(
   // TODO 15.10.3.1 RegExp(pattern, flags)
   code = BasicCode(
     argLen = 2,
-    addrSet = HashSet(BuiltinRegExpHelper.instanceAddr),
+    asiteSet = HashSet(BuiltinRegExpHelper.instanceASite),
     code = BuiltinRegExpHelper.function
   ),
   // TODO 15.10.4.1 new RegExp(pattern, flags)
   construct = Some(BasicCode(
     argLen = 2,
-    addrSet = HashSet(BuiltinRegExpHelper.instanceAddr),
+    asiteSet = HashSet(BuiltinRegExpHelper.instanceASite),
     code = BuiltinRegExpHelper.construct
   )),
   protoModel = Some((BuiltinRegExpProto, F, F, F))
@@ -63,7 +63,7 @@ object BuiltinRegExpProto extends ObjModel(
 )
 
 private object BuiltinRegExpHelper {
-  val instanceAddr = SystemAddr("RegExp<instance>")
+  val instanceASite = PredAllocSite("RegExp<instance>")
 
   def newREObject(source: AbsString, g: AbsBool, i: AbsBool, m: AbsBool): AbsObject = {
     val IV = AbsIValueUtil
@@ -145,9 +145,8 @@ private object BuiltinRegExpHelper {
 
     val (st2, result1) = objOpt match {
       case Some(obj) =>
-        val addr = instanceAddr
-        val st1 = st.oldify(addr)
-        val loc = Loc(addr, Recent)
+        val loc = Loc(instanceASite)
+        val st1 = st.oldify(loc)
         val h2 = st1.heap.update(loc, obj)
         (AbsState(h2, st1.context), AbsValue(loc))
       case None => (st, AbsValue.Bot)
@@ -232,9 +231,8 @@ private object BuiltinRegExpHelper {
 
     val (st2, result1) = objOpt match {
       case Some(obj) =>
-        val addr = instanceAddr
-        val st1 = st.oldify(addr)
-        val loc = Loc(addr, Recent)
+        val loc = Loc(instanceASite)
+        val st1 = st.oldify(loc)
         val h2 = st1.heap.update(loc, obj)
         (AbsState(h2, st1.context), AbsValue(loc))
       case None => (st, AbsValue.Bot)

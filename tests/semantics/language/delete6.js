@@ -1,4 +1,4 @@
-if (@Top) {
+if (@BoolTop) {
     x = 1;
 }
 

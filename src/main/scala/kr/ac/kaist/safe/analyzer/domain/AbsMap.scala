@@ -371,6 +371,24 @@ sealed abstract class AbsMap(
     case ConFin(set) if set.forall(defset contains _) => true
     case _ => false
   }
+
+  def keySetPair: (Set[String], AbsString) = map.keySet.foldLeft(
+    (HashSet[String](), AbsString.Bot)
+  ) {
+      case ((strSet, astr), akey) => akey.gamma match {
+        case ConInf() => (strSet, astr + akey)
+        case ConFin(keySet) => keySet.foldLeft((strSet, astr)) {
+          case ((strSet, astr), key) => {
+            val isEnum = map(akey).enumerable
+            if (AbsBool.True <= isEnum) {
+              val isDef = defset contains key
+              if (isDef && (AbsBool.Top != isEnum)) (strSet + key, astr)
+              else (strSet, astr + AbsString(key))
+            } else (strSet, astr)
+          }
+        }
+      }
+    }
 }
 case class AbsMapFin(private val map: Map[AbsString, AbsDataProp], private val defset: DefSet) extends AbsMap(map, defset)
 case object AbsMapEmpty extends AbsMap(HashMap[AbsString, AbsDataProp](), DefSet.Empty)

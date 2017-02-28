@@ -243,15 +243,16 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
   val analysisDeatil = BASE_DIR + SEP + "tests" + SEP + "analysis-detail"
   val testJSON = BASE_DIR + SEP + "tests" + SEP + "test.json"
 
-  Analyze.jscache = {
-    val fileName = NodeUtil.jsModelsBase + "built_in.jsmodel"
-    Some(ModelParser.parseFile(fileName).get)
-  }
-
   val parser = new ArgParser(CmdBase, testSafeConfig)
   val analyzeConfig = Analyze.defaultConfig
   parser.addRule(analyzeConfig, Analyze.name, Analyze.options)
   parser(List(s"-json=$testJSON"))
+
+  Analyze.jscache = {
+    Utils.AAddrType = analyzeConfig.aaddrType
+    val fileName = NodeUtil.jsModelsBase + "built_in.jsmodel"
+    Some(ModelParser.parseFile(fileName).get)
+  }
 
   val analyzerTestDir = testDir + "semantics"
   for (file <- shuffle(walkTree(new File(analyzerTestDir))))

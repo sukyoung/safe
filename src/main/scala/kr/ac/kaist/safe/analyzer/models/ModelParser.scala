@@ -87,9 +87,15 @@ object ModelParser extends RegexParsers with JavaTokenParsers {
   private lazy val jsUndef: Parser[Undef] = "undefined" ^^^ { Undef }
   private lazy val jsPValue: Parser[PValue] = jsNum | jsStr | jsNull | jsBool | jsUndef
 
+  // JavaScript primitive type
+  private lazy val jsStrT: Parser[StringT.type] = "string" ^^^ { StringT }
+  private lazy val jsNumT: Parser[NumberT.type] = "number" ^^^ { NumberT }
+  private lazy val jsBoolT: Parser[BoolT.type] = "bool" ^^^ { BoolT }
+  private lazy val jsPrimType: Parser[Value] = jsStrT | jsNumT | jsBoolT
+
   // JavaScript value
-  private lazy val jsLoc: Parser[Loc] = "#" ~> "[0-9a-zA-Z.<>]+".r ^^ { SystemLoc(_, Recent) }
-  private lazy val jsValue: Parser[Value] = jsPValue | jsLoc
+  private lazy val jsLoc: Parser[Loc] = "#" ~> """[_\[\]0-9a-zA-Z.<>]+""".r ^^ { Loc(_) }
+  private lazy val jsValue: Parser[Value] = jsPValue | jsLoc | jsPrimType
   private lazy val jsValueE: Parser[Value] = jsValue | failure("illegal start of value")
 
   // JavaScript data property
@@ -188,19 +194,19 @@ object ModelParser extends RegexParsers with JavaTokenParsers {
         lst.foldLeft(List[CFGFunction]()) {
           case (funcs, mid ~ func) => {
             func.id = -mid
-            // address mutation
-            // TODO is system address good? how about incremental program address?
-            def mutate(addr: Address): SystemAddr = addr match {
-              case ProgramAddr(id) =>
-                SystemAddr(s"JSModel-$mid<$addr>")
-              case sys: SystemAddr => sys
+            // allocation site mutation
+            // TODO is predefined allocation site good? how about incremental user allocation site?
+            def mutate(asite: AllocSite): PredAllocSite = asite match {
+              case UserAllocSite(id) =>
+                PredAllocSite(s"JSModel-$mid<$asite>")
+              case pred: PredAllocSite => pred
             }
             func.getAllBlocks.foreach(_.getInsts.foreach {
-              case i: CFGAlloc => i.addr = mutate(i.addr)
-              case i: CFGAllocArray => i.addr = mutate(i.addr)
-              case i: CFGAllocArg => i.addr = mutate(i.addr)
-              case i: CFGCallInst => i.addr = mutate(i.addr)
-              case i: CFGInternalCall => i.addrOpt = i.addrOpt.map(mutate(_))
+              case i: CFGAlloc => i.asite = mutate(i.asite)
+              case i: CFGAllocArray => i.asite = mutate(i.asite)
+              case i: CFGAllocArg => i.asite = mutate(i.asite)
+              case i: CFGCallInst => i.asite = mutate(i.asite)
+              case i: CFGInternalCall => i.asiteOpt = i.asiteOpt.map(mutate(_))
               case _ =>
             })
             func :: funcs

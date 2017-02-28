@@ -1,5 +1,5 @@
 var __result1;
-var __expect1 = undefined;
+var __expect1;
 var __result2;
 var __expect2;
 

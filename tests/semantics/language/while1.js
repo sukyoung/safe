@@ -1,6 +1,6 @@
 var x = 123;
 
-while(@Top) {
+while(@BoolTop) {
 	x = 456;
 	break;
 	x = 789;

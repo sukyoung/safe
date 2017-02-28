@@ -13,6 +13,7 @@ package kr.ac.kaist.safe.analyzer.domain
 
 import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.analyzer.models.builtin.BuiltinGlobal
+import kr.ac.kaist.safe.util._
 import kr.ac.kaist.safe.LINE_SEP
 import scala.collection.immutable.{ HashSet, HashMap }
 
@@ -38,10 +39,10 @@ trait AbsLexEnv extends AbsDomain[LexEnv, AbsLexEnv] {
   ): AbsLexEnv
 
   // substitute locR by locO
-  def subsLoc(locR: Loc, locO: Loc): AbsLexEnv
+  def subsLoc(locR: Recency, locO: Recency): AbsLexEnv
 
   // weak substitute locR by locO
-  def weakSubsLoc(locR: Loc, locO: Loc): AbsLexEnv
+  def weakSubsLoc(locR: Recency, locO: Recency): AbsLexEnv
 }
 
 trait AbsLexEnvUtil extends AbsDomainUtil[LexEnv, AbsLexEnv] {
@@ -157,10 +158,10 @@ object DefaultLexEnv extends AbsLexEnvUtil {
       nullOuter: AbsAbsent = this.nullOuter
     ): AbsLexEnv = Dom(record, outer, nullOuter)
 
-    def subsLoc(locR: Loc, locO: Loc): AbsLexEnv =
+    def subsLoc(locR: Recency, locO: Recency): AbsLexEnv =
       Dom(record.subsLoc(locR, locO), outer.subsLoc(locR, locO), nullOuter)
 
-    def weakSubsLoc(locR: Loc, locO: Loc): AbsLexEnv =
+    def weakSubsLoc(locR: Recency, locO: Recency): AbsLexEnv =
       Dom(record.weakSubsLoc(locR, locO), outer.subsLoc(locR, locO), nullOuter)
   }
 
@@ -239,6 +240,7 @@ object DefaultLexEnv extends AbsLexEnvUtil {
     var visited = AbsLoc.Bot
     var newH = st.heap
     var newCtx = st.context
+    var ctxUpdatePairSet = HashSet[(Loc, AbsLexEnv)]()
     var excSet = ExcSetEmpty
     def visit(loc: Loc): Unit = if (!visited.contains(loc)) {
       visited += loc
@@ -248,7 +250,7 @@ object DefaultLexEnv extends AbsLexEnvUtil {
       exists.map[AbsAbsent](thenV = {
         val (er, h, e) = envRec.SetMutableBinding(name, value, strict)(st.heap)
         val newEnv = env.copyWith(record = er)
-        newCtx = newCtx.update(loc, newEnv)
+        ctxUpdatePairSet += ((loc, newEnv))
         newH = newH.weakUpdate(BuiltinGlobal.loc, h.get(BuiltinGlobal.loc))
         excSet ++= e
         AbsAbsent.Bot
@@ -267,6 +269,14 @@ object DefaultLexEnv extends AbsLexEnvUtil {
       })(AbsAbsent)
     }
     locSet.foreach(visit(_))
+    ctxUpdatePairSet.size match {
+      case 1 => ctxUpdatePairSet.foreach {
+        case (loc, newEnv) => newCtx = newCtx.update(loc, newEnv)
+      }
+      case _ => ctxUpdatePairSet.foreach {
+        case (loc, newEnv) => newCtx = newCtx.weakUpdate(loc, newEnv)
+      }
+    }
     (AbsState(newH, newCtx), excSet)
   }
 

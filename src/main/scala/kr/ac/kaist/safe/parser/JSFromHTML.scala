@@ -110,7 +110,7 @@ object JSFromHTML {
         source.close
         result
       } else {
-        System.out.println("WARNING: Cannot find " + srcName)
+        println("WARNING: Cannot find " + srcName)
         None
       }
     } else None

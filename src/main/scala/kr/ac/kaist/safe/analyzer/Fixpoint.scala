@@ -84,7 +84,7 @@ class Fixpoint(
           case (succCP, data) => {
             val oldSt = semantics.getState(succCP)
             val nextSt2 = semantics.E(cp, succCP, data, nextSt)
-            if (!(nextSt2 <= nextSt)) {
+            if (!(nextSt2 <= oldSt)) {
               val newSt = oldSt + nextSt2
               semantics.setState(succCP, newSt)
               worklist.add(succCP)

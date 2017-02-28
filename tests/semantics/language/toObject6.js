@@ -1,13 +1,13 @@
 var x;
-if (@Top) 
+if (@BoolTop) 
 	x = undefined;
-else if (@Top) 
+else if (@BoolTop) 
 	x = null;
-else if (@Top) 
+else if (@BoolTop) 
 	x = true;
-else if (@Top) 
+else if (@BoolTop) 
 	x = 1;
-else if (@Top)
+else if (@BoolTop)
 	x = "str";
 else
 	x = {};

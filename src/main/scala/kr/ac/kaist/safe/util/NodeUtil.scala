@@ -131,7 +131,7 @@ object NodeUtil {
   // Other helpers
   val INTERNAL_IS_OBJ = internalAPIName("isObject")
   val INTERNAL_ITER_INIT = internalAPIName("iteratorInit")
-  val INTERNAL_HAS_NEXT = internalAPIName("iteratorHasNext")
+  val INTERNAL_ITER_HAS_NEXT = internalAPIName("iteratorHasNext")
   val INTERNAL_ITER_NEXT = internalAPIName("iteratorNext")
   val internalCallSet: Set[String] = HashSet(
     INTERNAL_CLASS,
@@ -174,7 +174,7 @@ object NodeUtil {
     INTERNAL_TAN,
     INTERNAL_IS_OBJ,
     INTERNAL_ITER_INIT,
-    INTERNAL_HAS_NEXT,
+    INTERNAL_ITER_HAS_NEXT,
     INTERNAL_ITER_NEXT
   )
   def isInternalCall(id: String): Boolean = internalCallSet.contains(id)

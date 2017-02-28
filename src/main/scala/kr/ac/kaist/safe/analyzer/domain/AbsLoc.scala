@@ -11,8 +11,9 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
-import kr.ac.kaist.safe.errors.error.{ NoRecencyTag, NoLoc }
-import kr.ac.kaist.safe.nodes.cfg.CFG
+import kr.ac.kaist.safe.analyzer.domain.Utils.AAddrType
+import kr.ac.kaist.safe.analyzer.models.builtin.BuiltinGlobal
+import kr.ac.kaist.safe.errors.error.{ NoLoc, LocTopGammaError }
 import kr.ac.kaist.safe.util._
 import scala.util.{ Try, Success, Failure }
 import scala.collection.immutable.HashSet
@@ -20,50 +21,52 @@ import scala.collection.immutable.HashSet
 ////////////////////////////////////////////////////////////////////////////////
 // concrete location type
 ////////////////////////////////////////////////////////////////////////////////
-case class Loc(address: Address, recency: RecencyTag = Recent) extends Value {
-  override def toString: String = s"${recency}${address}"
+abstract class Loc extends Value {
+  def isUser: Boolean = this match {
+    case Recency(loc, _) => loc.isUser
+    case Concrete(loc) => loc.isUser
+    case UserAllocSite(_) => true
+    case PredAllocSite(_) => false
+  }
 }
 
 object Loc {
+  // predefined special concrete location
+  lazy val predConSet: Set[Loc] = HashSet(
+    PredAllocSite.GLOBAL_ENV,
+    PredAllocSite.PURE_LOCAL
+  )
+
   def parse(str: String): Try[Loc] = {
-    val pgmPattern = "(#|##)([0-9]+)".r
-    val sysPattern = "(#|##)([0-9a-zA-Z.<>]+)".r
+    val recency = "(R|O)(.+)".r
+    val concrete = "C(.+)".r
+    val userASite = "#([0-9]+)".r
+    val predASite = "#([0-9a-zA-Z.<>]+)".r
     str match {
-      case pgmPattern(prefix, idStr) =>
-        RecencyTag.parse(prefix).map(Loc(ProgramAddr(idStr.toInt), _))
-      case sysPattern(prefix, name) =>
-        RecencyTag.parse(prefix).map(Loc(SystemAddr(name), _))
+      // allocation site
+      case userASite(id) => Try(UserAllocSite(id.toInt))
+      case predASite(name) => Success(PredAllocSite(name))
+      // recency abstraction
+      case recency("R", str) => parse(str).map(Recency(_, Recent))
+      case recency("O", str) => parse(str).map(Recency(_, Old))
+      // concrete abstraction
+      case concrete(str) => parse(str).map(Concrete(_))
+      // otherwise
       case str => Failure(NoLoc(str))
     }
   }
+
+  def apply(str: String): Loc = apply(PredAllocSite(str))
+  def apply(asite: AllocSite): Loc = AAddrType match {
+    case NormalAAddr => asite
+    case RecencyAAddr => Recency(asite, Recent)
+    case ConcreteAAddr => Concrete(asite)
+  }
+
   implicit def ordering[B <: Loc]: Ordering[B] = Ordering.by({
-    case Loc(address, _) => address match {
-      case ProgramAddr(id) => (id, "")
-      case SystemAddr(name) => (0, name)
-    }
+    case addrPart => addrPart.toString
   })
 }
-
-// system location
-object SystemLoc {
-  def apply(name: String, recency: RecencyTag = Recent): Loc =
-    Loc(SystemAddr(name), recency)
-}
-
-// recency tag
-sealed abstract class RecencyTag(prefix: String) {
-  override def toString: String = prefix
-}
-object RecencyTag {
-  def parse(prefix: String): Try[RecencyTag] = prefix match {
-    case "#" => Success(Recent)
-    case "##" => Success(Old)
-    case str => Failure(NoRecencyTag(str))
-  }
-}
-
-case object Recent extends RecencyTag("#")
-case object Old extends RecencyTag("##")
 
 ////////////////////////////////////////////////////////////////////////////////
 // location abstract domain
@@ -75,13 +78,12 @@ trait AbsLoc extends AbsDomain[Loc, AbsLoc] {
   def foreach(f: Loc => Unit): Unit
   def foldLeft[T](initial: T)(f: (T, Loc) => T): T
   def map[T](f: Loc => T): Set[T]
-  def isConcrete: Boolean
   def +(loc: Loc): AbsLoc
   def -(loc: Loc): AbsLoc
   /* substitute locR by locO */
-  def subsLoc(locR: Loc, locO: Loc): AbsLoc
+  def subsLoc(locR: Recency, locO: Recency): AbsLoc
   /* weakly substitute locR by locO, that is keep locR together */
-  def weakSubsLoc(locR: Loc, locO: Loc): AbsLoc
+  def weakSubsLoc(locR: Recency, locO: Recency): AbsLoc
 }
 
 trait AbsLocUtil extends AbsDomainUtil[Loc, AbsLoc]
@@ -89,7 +91,7 @@ trait AbsLocUtil extends AbsDomainUtil[Loc, AbsLoc]
 ////////////////////////////////////////////////////////////////////////////////
 // default location abstract domain
 ////////////////////////////////////////////////////////////////////////////////
-case class DefaultLoc(cfg: CFG) extends AbsLocUtil {
+case object DefaultLoc extends AbsLocUtil {
   case object Top extends Dom
   case class LocSet(set: Set[Loc]) extends Dom
   object LocSet {
@@ -97,16 +99,17 @@ case class DefaultLoc(cfg: CFG) extends AbsLocUtil {
   }
   lazy val Bot: Dom = LocSet()
 
-  lazy val locSet: Set[Loc] = cfg.getAllAddrSet.foldLeft(HashSet[Loc]()) {
-    case (set, addr) => set + Loc(addr, Recent) + Loc(addr, Old)
-  }
+  // TODO all location set
+  // lazy val locSet: Set[Loc] = cfg.getAllASiteSet.foldLeft(HashSet[Loc]()) {
+  //   case (set, asite) => set + Loc(asite, Recent) + Loc(asite, Old)
+  // }
 
   def alpha(loc: Loc): AbsLoc = LocSet(loc)
   override def alpha(locset: Set[Loc]): AbsLoc = LocSet(locset)
 
   sealed abstract class Dom extends AbsLoc {
     def gamma: ConSet[Loc] = this match {
-      case Top => ConFin(locSet)
+      case Top => throw LocTopGammaError // TODO ConFin(locSet)
       case LocSet(set) => ConFin(set)
     }
 
@@ -153,28 +156,23 @@ case class DefaultLoc(cfg: CFG) extends AbsLocUtil {
     }
 
     def filter(f: Loc => Boolean): AbsLoc = this match {
-      case Top => LocSet(locSet.filter(f))
+      case Top => throw LocTopGammaError // TODO LocSet(locSet.filter(f))
       case LocSet(set) => LocSet(set.filter(f))
     }
 
     def foreach(f: Loc => Unit): Unit = this match {
-      case Top => locSet.foreach(f)
+      case Top => throw LocTopGammaError // TODO locSet.foreach(f)
       case LocSet(set) => set.foreach(f)
     }
 
     def foldLeft[T](initial: T)(f: (T, Loc) => T): T = this match {
-      case Top => locSet.foldLeft(initial)(f)
+      case Top => throw LocTopGammaError // TODO locSet.foldLeft(initial)(f)
       case LocSet(set) => set.foldLeft(initial)(f)
     }
 
     def map[T](f: Loc => T): Set[T] = this match {
-      case Top => locSet.map(f)
+      case Top => throw LocTopGammaError // TODO locSet.map(f)
       case LocSet(set) => set.map(f)
-    }
-
-    def isConcrete: Boolean = this match {
-      case Top => false
-      case LocSet(set) => set.size == 1
     }
 
     def +(loc: Loc): AbsLoc = this match {
@@ -183,20 +181,25 @@ case class DefaultLoc(cfg: CFG) extends AbsLocUtil {
     }
 
     def -(loc: Loc): AbsLoc = this match {
-      case Top => LocSet(locSet - loc)
+      case Top => Top // TODO LocSet(locSet - loc)
       case LocSet(set) => LocSet(set - loc)
     }
 
-    def subsLoc(locR: Loc, locO: Loc): AbsLoc = this match {
-      case Top => LocSet(locSet - locR + locO)
+    def subsLoc(locR: Recency, locO: Recency): AbsLoc = this match {
+      case Top => Top // TODO LocSet(locSet - locR + locO)
       case LocSet(set) =>
         if (set contains locR) LocSet(set - locR + locO)
         else this
     }
 
-    def weakSubsLoc(locR: Loc, locO: Loc): AbsLoc = this match {
+    def weakSubsLoc(locR: Recency, locO: Recency): AbsLoc = this match {
       case Top => Top
       case LocSet(set) => LocSet(set + locO)
     }
   }
 }
+
+sealed abstract class AAddrType
+case object NormalAAddr extends AAddrType
+case object RecencyAAddr extends AAddrType
+case object ConcreteAAddr extends AAddrType
