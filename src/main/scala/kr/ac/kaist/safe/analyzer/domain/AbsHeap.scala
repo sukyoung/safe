@@ -24,7 +24,27 @@ import spray.json._
 ////////////////////////////////////////////////////////////////////////////////
 // concrete heap type
 ////////////////////////////////////////////////////////////////////////////////
-case class Heap(map: Map[Loc, Object])
+case class Heap(map: Map[Loc, Object]) {
+  // TODO
+  def +(other: Heap): Heap = {
+    val emptyObj = Object(HashMap(), HashMap())
+    val otherObj = other.map.getOrElse(Loc(BuiltinGlobal.asite), emptyObj)
+    val thisObj = this.map.getOrElse(Loc(BuiltinGlobal.asite), emptyObj)
+    val newamap = otherObj.amap.foldLeft(thisObj.amap) {
+      case (map, (k, v)) => map + (k -> v)
+    }
+    val newimap = otherObj.imap.foldLeft(thisObj.imap) {
+      case (map, (k, v)) => map + (k -> v)
+    }
+    val newGlobObj = Object(newamap, newimap)
+
+    val newHeapMap = other.map.foldLeft(this.map) {
+      case (map, (k, v)) => map + (k -> v)
+    }
+    val finalHeapMap = newHeapMap + (Loc(BuiltinGlobal.asite) -> newGlobObj)
+    Heap(finalHeapMap)
+  }
+}
 object Heap {
   def parse(fileName: String): Heap =
     Source.fromFile(fileName)("UTF-8").mkString.parseJson.convertTo

@@ -25,7 +25,17 @@ import scala.collection.immutable.HashMap
 import scala.util.{ Try, Success => Succ, Failure => Fail }
 import scala.util.parsing.combinator._
 
-case class JSModel(heap: Heap, funcs: List[CFGFunction])
+case class JSModel(heap: Heap, funcs: List[CFGFunction] /*, fidMax: Int*/ )
+/*
+{
+  def +(other: JSModel): JSModel = {
+    // TODO
+    // 1. AbsHeap.scala
+    // 2. CFGFunction
+    // 3. Heap
+  }
+}
+*/
 
 // Argument parser by using Scala RegexParsers.
 object ModelParser extends RegexParsers with JavaTokenParsers {
