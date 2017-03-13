@@ -42,10 +42,10 @@ object Initialize {
           ///////////////
           val fileName = NodeUtil.jsModelsBase + "snapshot_and_built_in.jsmodel"
           /*
-          val fileNames: List[String]
-          fileNames.foldLeft(JSModel(Heap(HashMap()), Nil, 0)) {
+          val fileNames: List[String] = new java.io.File(NodeUtil.jsmodelBase).listFiles.filter(_.getName.endsWith(".jsmodel"))
+          val fileName = fileNames.foldLeft(JSModel(Heap(HashMap()), Nil, 0)) {
             case (model, fileName) =>
-              model + ModelParser.parseFile(fileName).get
+              model.+(ModelParser.parseFile(fileName).get)
           }
           */
           ///////////////

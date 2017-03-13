@@ -30,9 +30,17 @@ case class JSModel(heap: Heap, funcs: List[CFGFunction] /*, fidMax: Int*/ )
 {
   def +(other: JSModel): JSModel = {
     // TODO
-    // 1. AbsHeap.scala
+    // 1.AbsHeap.scala
+    val newHeap = this.heap.+(other.heap)
     // 2. CFGFunction
-    // 3. Heap
+    val newFuncs = other.funcs.foldLeft(this.funcs) {
+      case (funList,cfgFunc) => {
+        cfgFunc.id = cfgFunc.id + this.fidMax
+        cfgFunc :: funList
+      }
+    }
+    // 3.Heap
+
   }
 }
 */
