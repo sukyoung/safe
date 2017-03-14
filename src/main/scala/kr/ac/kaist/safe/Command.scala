@@ -25,7 +25,7 @@ sealed trait Command {
   def apply(args: List[String], testMode: Boolean): Try[Any]
 }
 
-sealed abstract class CommandObj[Result](
+class CommandObj[Result](
     override val name: String,
     pList: PhaseList[Result]
 ) extends Command {
@@ -112,5 +112,11 @@ case object CmdBugDetect extends CommandObj("bugDetect", CmdAnalyze >> BugDetect
   override def display(cfg: CFG): Unit = ()
 }
 
+// testRewrite
 case object CmdTestRewrite extends CommandObj("testRewrite", CmdParse >> TestRewrite)
+
+// androidCheck
+case object CmdAndroidCheck extends CommandObj("androidCheck", CmdBase >> AndroidCheck)
+
+// help
 case object CmdHelp extends CommandObj("help", CmdBase >> Help)

@@ -64,6 +64,7 @@ object Initialize {
     AbsState(st.heap + abstractHeap, st.context)
   }
 
+  // Global names for DOM are listed in safe/package.scala
   def addDOM(st: AbsState, cfg: CFG): AbsState = {
     val globalObj = st.heap.get(BuiltinGlobal.loc)
       .fold(AbsObject.Empty)(obj => obj)

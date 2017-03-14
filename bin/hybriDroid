@@ -1,0 +1,44 @@
+#!/bin/bash
+
+################################################################################
+#    Copyright (c) 2016, KAIST.
+#    All rights reserved.
+#
+#    Use is subject to license terms.
+#
+#    This distribution may include materials developed by third parties.
+################################################################################
+
+if [ -z "$SAFE_HOME" ]; then
+  echo "You need to set SAFE_HOME to the directory containing SAFE"
+  exit 1
+fi
+
+if (uname | egrep CYGWIN > /dev/null) ; then
+  SEP=";"
+else
+  SEP=":"
+fi
+
+if [ -z "$JAVA_HOME" ] ; then
+  JAVACMD=java
+else
+  JAVACMD="$JAVA_HOME/bin/java"
+fi
+
+tests=$SAFE_HOME/tests/android_tests/apps
+
+run(){
+echo "$2 ..."
+
+"$JAVACMD" -jar $SAFE_HOME/lib/hybridroid_types.jar $tests/$1 wala.properties $tests/$2-bridge.json > /dev/null
+$SAFE_HOME/bin/safe androidCheck $tests/$2-bridge.json > $tests/$2.out
+}
+
+run com.creativemobile.DragRacing-134.apk dragracing
+run com.daishin-175.apk daishin
+run com.dianxinos.dxbs-1570.apk dianxinos
+run com.gameloft.android.ANMP.GloftDMHM-22126.apk gameloft
+run com.gau.go.launcherex-344.apk launcherex
+run com.magmamobile.game.LostWords-2.apk lostwords
+run com.tripadvisor.tripadvisor-108.apk tripadvisor
