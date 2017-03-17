@@ -34,7 +34,7 @@ case object ASTRewrite extends PhaseObj[Program, ASTRewriteConfig, Program] {
     var excLog = hoister.excLog
 
     // disambiguate
-    val disambiguator = new Disambiguator(program)
+    val disambiguator = new Disambiguator(program, safeConfig.html)
     program = disambiguator.result
     excLog += disambiguator.excLog
 
@@ -44,7 +44,7 @@ case object ASTRewrite extends PhaseObj[Program, ASTRewriteConfig, Program] {
     excLog += withRewriter.excLog
 
     // Report errors.
-    if (excLog.hasError && !safeConfig.testMode) {
+    if (excLog.hasError && !safeConfig.testMode && !safeConfig.silent) {
       println(program.relFileName + ":")
       println(excLog)
     }
