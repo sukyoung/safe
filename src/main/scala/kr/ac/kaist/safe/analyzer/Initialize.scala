@@ -40,16 +40,15 @@ object Initialize {
       if (jsModel) {
         val model = Analyze.jscache getOrElse {
           ///////////////
-          val fileName = NodeUtil.jsModelsBase + "snapshot_and_built_in.jsmodel"
-          /*
-          val fileNames: List[String] = new java.io.File(NodeUtil.jsmodelBase).listFiles.filter(_.getName.endsWith(".jsmodel"))
-          val fileName = fileNames.foldLeft(JSModel(Heap(HashMap()), Nil, 0)) {
+          // val fileName = NodeUtil.jsModelsBase + "snapshot_and_built_in.jsmodel"
+          val fileNames: List[String] = new java.io.File(NodeUtil.jsModelsBase + "builtin/").list.toList
+          val mergeModel = fileNames.foldLeft(JSModel(Heap(HashMap()), Nil, 0)) {
             case (model, fileName) =>
               model.+(ModelParser.parseFile(fileName).get)
           }
-          */
           ///////////////
-          ModelParser.parseFile(fileName).get
+          // ModelParser.parseFile(fileName).get
+          mergeModel
         }
         model.funcs.foreach(cfg.addJSModel(_))
         AbsHeap(model.heap)

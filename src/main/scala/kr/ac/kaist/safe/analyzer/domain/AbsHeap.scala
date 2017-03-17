@@ -25,7 +25,6 @@ import spray.json._
 // concrete heap type
 ////////////////////////////////////////////////////////////////////////////////
 case class Heap(map: Map[Loc, Object]) {
-  // TODO
   def +(other: Heap): Heap = {
     val emptyObj = Object(HashMap(), HashMap())
     val otherObj = other.map.getOrElse(Loc(BuiltinGlobal.asite), emptyObj)

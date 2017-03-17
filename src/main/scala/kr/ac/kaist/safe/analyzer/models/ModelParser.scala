@@ -25,25 +25,41 @@ import scala.collection.immutable.HashMap
 import scala.util.{ Try, Success => Succ, Failure => Fail }
 import scala.util.parsing.combinator._
 
-case class JSModel(heap: Heap, funcs: List[CFGFunction] /*, fidMax: Int*/ )
-/*
-{
+case class JSModel(heap: Heap, funcs: List[CFGFunction], fidMax: Int) {
   def +(other: JSModel): JSModel = {
     // TODO
-    // 1.AbsHeap.scala
-    val newHeap = this.heap.+(other.heap)
-    // 2. CFGFunction
+    // 1. rearrange function id
     val newFuncs = other.funcs.foldLeft(this.funcs) {
-      case (funList,cfgFunc) => {
-        cfgFunc.id = cfgFunc.id + this.fidMax
+      case (funList, cfgFunc) => {
+        cfgFunc.id = cfgFunc.id - this.fidMax
         cfgFunc :: funList
       }
     }
-    // 3.Heap
-
+    // 2. revise function id in other.heap
+    val mdfHeapMap = other.heap.map.foldLeft(HashMap(): Map[Loc, Object]) {
+      case (heapMap, (loc, obj)) => {
+        val mdfimap = obj.imap.foldLeft(HashMap(): Map[IName, IValue]) {
+          case (inimap, (name, value)) => {
+            value match {
+              case FId(id) => {
+                val newFid = id - this.fidMax
+                inimap + (name -> FId(newFid))
+              }
+              case _ => inimap + (name -> value)
+            }
+          }
+        }
+        val mdfobj = Object(obj.amap, mdfimap)
+        heapMap + (loc -> mdfobj)
+      }
+    }
+    val mdfHeap = Heap(mdfHeapMap)
+    // 3. Heap + (AbsHeap.scala)
+    val newHeap = this.heap.+(mdfHeap)
+    val newFidMax = this.fidMax + other.fidMax
+    JSModel(newHeap, newFuncs, newFidMax)
   }
 }
-*/
 
 // Argument parser by using Scala RegexParsers.
 object ModelParser extends RegexParsers with JavaTokenParsers {
@@ -236,6 +252,8 @@ object ModelParser extends RegexParsers with JavaTokenParsers {
   // JavaScript model
   private lazy val jsModel: Parser[JSModel] =
     ("Heap" ~> ":" ~> jsHeap) ~! ("Function" ~> ":" ~> jsFuncs) ^^ {
-      case heap ~ funcs => JSModel(heap, funcs)
+      // XXX Assume that function id starts at 1 and it is incremented by 1.
+      // Also, there are no missing numbers in the middle. Therefore, fidMax = funcs.length
+      case heap ~ funcs => JSModel(heap, funcs, funcs.length)
     }
 }
