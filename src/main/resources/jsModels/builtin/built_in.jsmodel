@@ -216,9 +216,9 @@ Heap: {
     "length": <1, F, F, F>
   },
   #Boolean: {
-    [[Call]]: fun(87),
+    [[Call]]: fun(65),
     [[Class]]: "Function",
-    [[Construct]]: fun(88),
+    [[Construct]]: fun(66),
     [[Extensible]]: true,
     [[HasInstance]]: null,
     [[Prototype]]: #Function.prototype,
@@ -236,7 +236,7 @@ Heap: {
     "valueOf": <#Boolean.prototype.valueOf, T, F, T>
   },
   #Boolean.prototype.toString: {
-    [[Call]]: fun(85),
+    [[Call]]: fun(63),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -244,7 +244,7 @@ Heap: {
     "length": <1, F, F, F>
   },
   #Boolean.prototype.valueOf: {
-    [[Call]]: fun(86),
+    [[Call]]: fun(64),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -252,9 +252,9 @@ Heap: {
     "length": <1, F, F, F>
   },
   #Date: {
-    [[Call]]: fun(142),
+    [[Call]]: fun(120),
     [[Class]]: "Function",
-    [[Construct]]: fun(143),
+    [[Construct]]: fun(121),
     [[Extensible]]: true,
     [[HasInstance]]: null,
     [[Prototype]]: #Function.prototype,
@@ -266,7 +266,7 @@ Heap: {
     "prototype": <#Date.prototype, F, F, F>
   },
   #Date.UTC: {
-    [[Call]]: fun(145),
+    [[Call]]: fun(123),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -274,7 +274,7 @@ Heap: {
     "length": <7, F, F, F>
   },
   #Date.now: {
-    [[Call]]: fun(146),
+    [[Call]]: fun(124),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -282,7 +282,7 @@ Heap: {
     "length": <0, F, F, F>
   },
   #Date.parse: {
-    [[Call]]: fun(144),
+    [[Call]]: fun(122),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -340,7 +340,7 @@ Heap: {
     "valueOf": <#Date.prototype.valueOf, T, F, T>
   },
   #Date.prototype.constructor: {
-    [[Call]]: fun(98),
+    [[Call]]: fun(76),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -348,7 +348,7 @@ Heap: {
     "length": <1, F, F, F>
   },
   #Date.prototype.getDate: {
-    [[Call]]: fun(111),
+    [[Call]]: fun(89),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -356,7 +356,7 @@ Heap: {
     "length": <0, F, F, F>
   },
   #Date.prototype.getDay: {
-    [[Call]]: fun(113),
+    [[Call]]: fun(91),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -364,7 +364,7 @@ Heap: {
     "length": <0, F, F, F>
   },
   #Date.prototype.getFullYear: {
-    [[Call]]: fun(107),
+    [[Call]]: fun(85),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -372,7 +372,7 @@ Heap: {
     "length": <0, F, F, F>
   },
   #Date.prototype.getHours: {
-    [[Call]]: fun(115),
+    [[Call]]: fun(93),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -380,286 +380,6 @@ Heap: {
     "length": <0, F, F, F>
   },
   #Date.prototype.getMilliseconds: {
-    [[Call]]: fun(121),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <0, F, F, F>
-  },
-  #Date.prototype.getMinutes: {
-    [[Call]]: fun(117),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <0, F, F, F>
-  },
-  #Date.prototype.getMonth: {
-    [[Call]]: fun(109),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <0, F, F, F>
-  },
-  #Date.prototype.getSeconds: {
-    [[Call]]: fun(119),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <0, F, F, F>
-  },
-  #Date.prototype.getTime: {
-    [[Call]]: fun(106),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <0, F, F, F>
-  },
-  #Date.prototype.getTimezoneOffset: {
-    [[Call]]: fun(123),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <0, F, F, F>
-  },
-  #Date.prototype.getUTCDate: {
-    [[Call]]: fun(112),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <0, F, F, F>
-  },
-  #Date.prototype.getUTCDay: {
-    [[Call]]: fun(114),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <0, F, F, F>
-  },
-  #Date.prototype.getUTCFullYear: {
-    [[Call]]: fun(108),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <0, F, F, F>
-  },
-  #Date.prototype.getUTCHours: {
-    [[Call]]: fun(116),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <0, F, F, F>
-  },
-  #Date.prototype.getUTCMilliseconds: {
-    [[Call]]: fun(122),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <0, F, F, F>
-  },
-  #Date.prototype.getUTCMinutes: {
-    [[Call]]: fun(118),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <0, F, F, F>
-  },
-  #Date.prototype.getUTCMonth: {
-    [[Call]]: fun(110),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <0, F, F, F>
-  },
-  #Date.prototype.getUTCSeconds: {
-    [[Call]]: fun(120),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <0, F, F, F>
-  },
-  #Date.prototype.setDate: {
-    [[Call]]: fun(133),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <1, F, F, F>
-  },
-  #Date.prototype.setFullYear: {
-    [[Call]]: fun(137),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <3, F, F, F>
-  },
-  #Date.prototype.setHours: {
-    [[Call]]: fun(131),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <4, F, F, F>
-  },
-  #Date.prototype.setMilliseconds: {
-    [[Call]]: fun(125),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <1, F, F, F>
-  },
-  #Date.prototype.setMinutes: {
-    [[Call]]: fun(129),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <3, F, F, F>
-  },
-  #Date.prototype.setMonth: {
-    [[Call]]: fun(135),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <2, F, F, F>
-  },
-  #Date.prototype.setSeconds: {
-    [[Call]]: fun(127),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <2, F, F, F>
-  },
-  #Date.prototype.setTime: {
-    [[Call]]: fun(124),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <1, F, F, F>
-  },
-  #Date.prototype.setUTCDate: {
-    [[Call]]: fun(134),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <1, F, F, F>
-  },
-  #Date.prototype.setUTCFullYear: {
-    [[Call]]: fun(138),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <3, F, F, F>
-  },
-  #Date.prototype.setUTCHours: {
-    [[Call]]: fun(132),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <4, F, F, F>
-  },
-  #Date.prototype.setUTCMilliseconds: {
-    [[Call]]: fun(126),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <1, F, F, F>
-  },
-  #Date.prototype.setUTCMinutes: {
-    [[Call]]: fun(130),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <3, F, F, F>
-  },
-  #Date.prototype.setUTCMonth: {
-    [[Call]]: fun(136),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <2, F, F, F>
-  },
-  #Date.prototype.setUTCSeconds: {
-    [[Call]]: fun(128),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <2, F, F, F>
-  },
-  #Date.prototype.toDateString: {
-    [[Call]]: fun(100),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <0, F, F, F>
-  },
-  #Date.prototype.toISOString: {
-    [[Call]]: fun(140),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <0, F, F, F>
-  },
-  #Date.prototype.toJSON: {
-    [[Call]]: fun(141),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <1, F, F, F>
-  },
-  #Date.prototype.toLocaleDateString: {
-    [[Call]]: fun(103),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <0, F, F, F>
-  },
-  #Date.prototype.toLocaleString: {
-    [[Call]]: fun(102),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <0, F, F, F>
-  },
-  #Date.prototype.toLocaleTimeString: {
-    [[Call]]: fun(104),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <0, F, F, F>
-  },
-  #Date.prototype.toString: {
     [[Call]]: fun(99),
     [[Class]]: "Function",
     [[Extensible]]: true,
@@ -667,7 +387,39 @@ Heap: {
     [[Scope]]: null,
     "length": <0, F, F, F>
   },
-  #Date.prototype.toTimeString: {
+  #Date.prototype.getMinutes: {
+    [[Call]]: fun(95),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <0, F, F, F>
+  },
+  #Date.prototype.getMonth: {
+    [[Call]]: fun(87),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <0, F, F, F>
+  },
+  #Date.prototype.getSeconds: {
+    [[Call]]: fun(97),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <0, F, F, F>
+  },
+  #Date.prototype.getTime: {
+    [[Call]]: fun(84),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <0, F, F, F>
+  },
+  #Date.prototype.getTimezoneOffset: {
     [[Call]]: fun(101),
     [[Class]]: "Function",
     [[Extensible]]: true,
@@ -675,8 +427,256 @@ Heap: {
     [[Scope]]: null,
     "length": <0, F, F, F>
   },
+  #Date.prototype.getUTCDate: {
+    [[Call]]: fun(90),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <0, F, F, F>
+  },
+  #Date.prototype.getUTCDay: {
+    [[Call]]: fun(92),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <0, F, F, F>
+  },
+  #Date.prototype.getUTCFullYear: {
+    [[Call]]: fun(86),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <0, F, F, F>
+  },
+  #Date.prototype.getUTCHours: {
+    [[Call]]: fun(94),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <0, F, F, F>
+  },
+  #Date.prototype.getUTCMilliseconds: {
+    [[Call]]: fun(100),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <0, F, F, F>
+  },
+  #Date.prototype.getUTCMinutes: {
+    [[Call]]: fun(96),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <0, F, F, F>
+  },
+  #Date.prototype.getUTCMonth: {
+    [[Call]]: fun(88),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <0, F, F, F>
+  },
+  #Date.prototype.getUTCSeconds: {
+    [[Call]]: fun(98),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <0, F, F, F>
+  },
+  #Date.prototype.setDate: {
+    [[Call]]: fun(111),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
+  },
+  #Date.prototype.setFullYear: {
+    [[Call]]: fun(115),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <3, F, F, F>
+  },
+  #Date.prototype.setHours: {
+    [[Call]]: fun(109),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <4, F, F, F>
+  },
+  #Date.prototype.setMilliseconds: {
+    [[Call]]: fun(103),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
+  },
+  #Date.prototype.setMinutes: {
+    [[Call]]: fun(107),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <3, F, F, F>
+  },
+  #Date.prototype.setMonth: {
+    [[Call]]: fun(113),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <2, F, F, F>
+  },
+  #Date.prototype.setSeconds: {
+    [[Call]]: fun(105),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <2, F, F, F>
+  },
+  #Date.prototype.setTime: {
+    [[Call]]: fun(102),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
+  },
+  #Date.prototype.setUTCDate: {
+    [[Call]]: fun(112),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
+  },
+  #Date.prototype.setUTCFullYear: {
+    [[Call]]: fun(116),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <3, F, F, F>
+  },
+  #Date.prototype.setUTCHours: {
+    [[Call]]: fun(110),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <4, F, F, F>
+  },
+  #Date.prototype.setUTCMilliseconds: {
+    [[Call]]: fun(104),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
+  },
+  #Date.prototype.setUTCMinutes: {
+    [[Call]]: fun(108),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <3, F, F, F>
+  },
+  #Date.prototype.setUTCMonth: {
+    [[Call]]: fun(114),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <2, F, F, F>
+  },
+  #Date.prototype.setUTCSeconds: {
+    [[Call]]: fun(106),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <2, F, F, F>
+  },
+  #Date.prototype.toDateString: {
+    [[Call]]: fun(78),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <0, F, F, F>
+  },
+  #Date.prototype.toISOString: {
+    [[Call]]: fun(118),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <0, F, F, F>
+  },
+  #Date.prototype.toJSON: {
+    [[Call]]: fun(119),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
+  },
+  #Date.prototype.toLocaleDateString: {
+    [[Call]]: fun(81),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <0, F, F, F>
+  },
+  #Date.prototype.toLocaleString: {
+    [[Call]]: fun(80),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <0, F, F, F>
+  },
+  #Date.prototype.toLocaleTimeString: {
+    [[Call]]: fun(82),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <0, F, F, F>
+  },
+  #Date.prototype.toString: {
+    [[Call]]: fun(77),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <0, F, F, F>
+  },
+  #Date.prototype.toTimeString: {
+    [[Call]]: fun(79),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <0, F, F, F>
+  },
   #Date.prototype.toUTCString: {
-    [[Call]]: fun(139),
+    [[Call]]: fun(117),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -684,7 +684,7 @@ Heap: {
     "length": <0, F, F, F>
   },
   #Date.prototype.valueOf: {
-    [[Call]]: fun(105),
+    [[Call]]: fun(83),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -692,9 +692,9 @@ Heap: {
     "length": <0, F, F, F>
   },
   #Error: {
-    [[Call]]: fun(153),
+    [[Call]]: fun(131),
     [[Class]]: "Function",
-    [[Construct]]: fun(154),
+    [[Construct]]: fun(132),
     [[Extensible]]: true,
     [[HasInstance]]: null,
     [[Prototype]]: #Function.prototype,
@@ -712,7 +712,7 @@ Heap: {
     "toString": <#Error.prototype.toString, T, F, T>
   },
   #Error.prototype.toString: {
-    [[Call]]: fun(152),
+    [[Call]]: fun(130),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -720,9 +720,9 @@ Heap: {
     "length": <0, F, F, F>
   },
   #EvalError: {
-    [[Call]]: fun(155),
+    [[Call]]: fun(133),
     [[Class]]: "Function",
-    [[Construct]]: fun(156),
+    [[Construct]]: fun(134),
     [[Extensible]]: true,
     [[HasInstance]]: null,
     [[Prototype]]: #Function.prototype,
@@ -816,7 +816,6 @@ Heap: {
     "RangeError": <#RangeError, T, F, T>,
     "ReferenceError": <#ReferenceError, T, F, T>,
     "RegExp": <#RegExp, T, F, T>,
-    "String": <#String, T, F, T>,
     "SyntaxError": <#SyntaxError, T, F, T>,
     "TypeError": <#TypeError, T, F, T>,
     "URIError": <#URIError, T, F, T>,
@@ -911,7 +910,7 @@ Heap: {
     "stringify": <#JSON.stringify, T, F, T>
   },
   #JSON.parse: {
-    [[Call]]: fun(185),
+    [[Call]]: fun(163),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -919,7 +918,7 @@ Heap: {
     "length": <2, F, F, F>
   },
   #JSON.stringify: {
-    [[Call]]: fun(186),
+    [[Call]]: fun(164),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -958,7 +957,7 @@ Heap: {
     "tan": <#Math.tan, T, F, T>
   },
   #Math.abs: {
-    [[Call]]: fun(167),
+    [[Call]]: fun(145),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -966,7 +965,7 @@ Heap: {
     "length": <1, F, F, F>
   },
   #Math.acos: {
-    [[Call]]: fun(168),
+    [[Call]]: fun(146),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -974,7 +973,7 @@ Heap: {
     "length": <1, F, F, F>
   },
   #Math.asin: {
-    [[Call]]: fun(169),
+    [[Call]]: fun(147),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -982,7 +981,7 @@ Heap: {
     "length": <1, F, F, F>
   },
   #Math.atan: {
-    [[Call]]: fun(170),
+    [[Call]]: fun(148),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -990,7 +989,7 @@ Heap: {
     "length": <1, F, F, F>
   },
   #Math.atan2: {
-    [[Call]]: fun(171),
+    [[Call]]: fun(149),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -998,7 +997,7 @@ Heap: {
     "length": <2, F, F, F>
   },
   #Math.ceil: {
-    [[Call]]: fun(172),
+    [[Call]]: fun(150),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -1006,7 +1005,7 @@ Heap: {
     "length": <1, F, F, F>
   },
   #Math.cos: {
-    [[Call]]: fun(173),
+    [[Call]]: fun(151),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -1014,7 +1013,7 @@ Heap: {
     "length": <1, F, F, F>
   },
   #Math.exp: {
-    [[Call]]: fun(174),
+    [[Call]]: fun(152),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -1022,7 +1021,7 @@ Heap: {
     "length": <1, F, F, F>
   },
   #Math.floor: {
-    [[Call]]: fun(175),
+    [[Call]]: fun(153),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -1030,7 +1029,7 @@ Heap: {
     "length": <1, F, F, F>
   },
   #Math.log: {
-    [[Call]]: fun(176),
+    [[Call]]: fun(154),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -1038,7 +1037,7 @@ Heap: {
     "length": <1, F, F, F>
   },
   #Math.max: {
-    [[Call]]: fun(177),
+    [[Call]]: fun(155),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -1046,7 +1045,7 @@ Heap: {
     "length": <2, F, F, F>
   },
   #Math.min: {
-    [[Call]]: fun(178),
+    [[Call]]: fun(156),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -1054,7 +1053,7 @@ Heap: {
     "length": <2, F, F, F>
   },
   #Math.pow: {
-    [[Call]]: fun(179),
+    [[Call]]: fun(157),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -1062,7 +1061,7 @@ Heap: {
     "length": <2, F, F, F>
   },
   #Math.random: {
-    [[Call]]: fun(180),
+    [[Call]]: fun(158),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -1070,7 +1069,7 @@ Heap: {
     "length": <0, F, F, F>
   },
   #Math.round: {
-    [[Call]]: fun(181),
+    [[Call]]: fun(159),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -1078,7 +1077,7 @@ Heap: {
     "length": <1, F, F, F>
   },
   #Math.sin: {
-    [[Call]]: fun(182),
+    [[Call]]: fun(160),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -1086,7 +1085,7 @@ Heap: {
     "length": <1, F, F, F>
   },
   #Math.sqrt: {
-    [[Call]]: fun(183),
+    [[Call]]: fun(161),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -1094,7 +1093,7 @@ Heap: {
     "length": <1, F, F, F>
   },
   #Math.tan: {
-    [[Call]]: fun(184),
+    [[Call]]: fun(162),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -1102,9 +1101,9 @@ Heap: {
     "length": <1, F, F, F>
   },
   #Number: {
-    [[Call]]: fun(96),
+    [[Call]]: fun(74),
     [[Class]]: "Function",
-    [[Construct]]: fun(97),
+    [[Construct]]: fun(75),
     [[Extensible]]: true,
     [[HasInstance]]: null,
     [[Prototype]]: #Function.prototype,
@@ -1131,7 +1130,7 @@ Heap: {
     "valueOf": <#Number.prototype.valueOf, T, F, T>
   },
   #Number.prototype.constructor: {
-    [[Call]]: fun(89),
+    [[Call]]: fun(67),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -1139,7 +1138,7 @@ Heap: {
     "length": <1, F, F, F>
   },
   #Number.prototype.toExponential: {
-    [[Call]]: fun(94),
+    [[Call]]: fun(72),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -1147,7 +1146,7 @@ Heap: {
     "length": <1, F, F, F>
   },
   #Number.prototype.toFixed: {
-    [[Call]]: fun(93),
+    [[Call]]: fun(71),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -1155,7 +1154,7 @@ Heap: {
     "length": <1, F, F, F>
   },
   #Number.prototype.toLocaleString: {
-    [[Call]]: fun(91),
+    [[Call]]: fun(69),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -1163,7 +1162,7 @@ Heap: {
     "length": <0, F, F, F>
   },
   #Number.prototype.toPrecision: {
-    [[Call]]: fun(95),
+    [[Call]]: fun(73),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -1171,7 +1170,7 @@ Heap: {
     "length": <1, F, F, F>
   },
   #Number.prototype.toString: {
-    [[Call]]: fun(90),
+    [[Call]]: fun(68),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -1179,7 +1178,7 @@ Heap: {
     "length": <1, F, F, F>
   },
   #Number.prototype.valueOf: {
-    [[Call]]: fun(92),
+    [[Call]]: fun(70),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -1375,9 +1374,9 @@ Heap: {
     "length": <1, F, F, F>
   },
   #RangeError: {
-    [[Call]]: fun(157),
+    [[Call]]: fun(135),
     [[Class]]: "Function",
-    [[Construct]]: fun(158),
+    [[Construct]]: fun(136),
     [[Extensible]]: true,
     [[HasInstance]]: null,
     [[Prototype]]: #Function.prototype,
@@ -1395,9 +1394,9 @@ Heap: {
     "name": <"RangeError", T, F, T>
   },
   #ReferenceError: {
-    [[Call]]: fun(159),
+    [[Call]]: fun(137),
     [[Class]]: "Function",
-    [[Construct]]: fun(160),
+    [[Construct]]: fun(138),
     [[Extensible]]: true,
     [[HasInstance]]: null,
     [[Prototype]]: #Function.prototype,
@@ -1415,9 +1414,9 @@ Heap: {
     "name": <"ReferenceError", T, F, T>
   },
   #RegExp: {
-    [[Call]]: fun(150),
+    [[Call]]: fun(128),
     [[Class]]: "Function",
-    [[Construct]]: fun(151),
+    [[Construct]]: fun(129),
     [[Extensible]]: true,
     [[HasInstance]]: null,
     [[Prototype]]: #Function.prototype,
@@ -1435,7 +1434,7 @@ Heap: {
     "toString": <#RegExp.prototype.toString, T, F, T>
   },
   #RegExp.prototype.exec: {
-    [[Call]]: fun(147),
+    [[Call]]: fun(125),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -1443,7 +1442,7 @@ Heap: {
     "length": <1, F, F, F>
   },
   #RegExp.prototype.test: {
-    [[Call]]: fun(148),
+    [[Call]]: fun(126),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -1451,213 +1450,7 @@ Heap: {
     "length": <1, F, F, F>
   },
   #RegExp.prototype.toString: {
-    [[Call]]: fun(149),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <0, F, F, F>
-  },
-  #String: {
-    [[Call]]: fun(82),
-    [[Class]]: "Function",
-    [[Construct]]: fun(83),
-    [[Extensible]]: true,
-    [[HasInstance]]: null,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "fromCharCode": <#String.fromCharCode, T, F, T>,
-    "length": <1, F, F, F>,
-    "prototype": <#String.prototype, F, F, F>
-  },
-  #String.fromCharCode: {
-    [[Call]]: fun(84),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <1, F, F, F>
-  },
-  #String.prototype: {
-    [[Class]]: "String",
-    [[Extensible]]: true,
-    [[PrimitiveValue]]: "",
-    [[Prototype]]: #Object.prototype,
-    "charAt": <#String.prototype.charAt, T, F, T>,
-    "charCodeAt": <#String.prototype.charCodeAt, T, F, T>,
-    "concat": <#String.prototype.concat, T, F, T>,
-    "constructor": <#String, T, F, T>,
-    "indexOf": <#String.prototype.indexOf, T, F, T>,
-    "lastIndexOf": <#String.prototype.lastIndexOf, T, F, T>,
-    "localeCompare": <#String.prototype.localeCompare, T, F, T>,
-    "match": <#String.prototype.match, T, F, T>,
-    "replace": <#String.prototype.replace, T, F, T>,
-    "search": <#String.prototype.search, T, F, T>,
-    "slice": <#String.prototype.slice, T, F, T>,
-    "split": <#String.prototype.split, T, F, T>,
-    "substring": <#String.prototype.substring, T, F, T>,
-    "toLocaleLowerCase": <#String.prototype.toLocaleLowerCase, T, F, T>,
-    "toLocaleUpperCase": <#String.prototype.toLocaleUpperCase, T, F, T>,
-    "toLowerCase": <#String.prototype.toLowerCase, T, F, T>,
-    "toString": <#String.prototype.toString, T, F, T>,
-    "toUpperCase": <#String.prototype.toUpperCase, T, F, T>,
-    "trim": <#String.prototype.trim, T, F, T>,
-    "valueOf": <#String.prototype.valueOf, T, F, T>
-  },
-  #String.prototype.charAt: {
-    [[Call]]: fun(65),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <1, F, F, F>
-  },
-  #String.prototype.charCodeAt: {
-    [[Call]]: fun(66),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <1, F, F, F>
-  },
-  #String.prototype.concat: {
-    [[Call]]: fun(67),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <1, F, F, F>
-  },
-  #String.prototype.constructor: {
-    [[Call]]: fun(62),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <1, F, F, F>
-  },
-  #String.prototype.indexOf: {
-    [[Call]]: fun(68),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <1, F, F, F>
-  },
-  #String.prototype.lastIndexOf: {
-    [[Call]]: fun(69),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <1, F, F, F>
-  },
-  #String.prototype.localeCompare: {
-    [[Call]]: fun(70),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <1, F, F, F>
-  },
-  #String.prototype.match: {
-    [[Call]]: fun(71),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <1, F, F, F>
-  },
-  #String.prototype.replace: {
-    [[Call]]: fun(72),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <2, F, F, F>
-  },
-  #String.prototype.search: {
-    [[Call]]: fun(73),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <1, F, F, F>
-  },
-  #String.prototype.slice: {
-    [[Call]]: fun(74),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <2, F, F, F>
-  },
-  #String.prototype.split: {
-    [[Call]]: fun(75),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <2, F, F, F>
-  },
-  #String.prototype.substring: {
-    [[Call]]: fun(76),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <2, F, F, F>
-  },
-  #String.prototype.toLocaleLowerCase: {
-    [[Call]]: fun(78),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <0, F, F, F>
-  },
-  #String.prototype.toLocaleUpperCase: {
-    [[Call]]: fun(80),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <0, F, F, F>
-  },
-  #String.prototype.toLowerCase: {
-    [[Call]]: fun(77),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <0, F, F, F>
-  },
-  #String.prototype.toString: {
-    [[Call]]: fun(63),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <0, F, F, F>
-  },
-  #String.prototype.toUpperCase: {
-    [[Call]]: fun(79),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <0, F, F, F>
-  },
-  #String.prototype.trim: {
-    [[Call]]: fun(81),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <0, F, F, F>
-  },
-  #String.prototype.valueOf: {
-    [[Call]]: fun(64),
+    [[Call]]: fun(127),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -1665,9 +1458,9 @@ Heap: {
     "length": <0, F, F, F>
   },
   #SyntaxError: {
-    [[Call]]: fun(161),
+    [[Call]]: fun(139),
     [[Class]]: "Function",
-    [[Construct]]: fun(162),
+    [[Construct]]: fun(140),
     [[Extensible]]: true,
     [[HasInstance]]: null,
     [[Prototype]]: #Function.prototype,
@@ -1685,9 +1478,9 @@ Heap: {
     "name": <"SyntaxError", T, F, T>
   },
   #TypeError: {
-    [[Call]]: fun(163),
+    [[Call]]: fun(141),
     [[Class]]: "Function",
-    [[Construct]]: fun(164),
+    [[Construct]]: fun(142),
     [[Extensible]]: true,
     [[HasInstance]]: null,
     [[Prototype]]: #Function.prototype,
@@ -1705,9 +1498,9 @@ Heap: {
     "name": <"TypeError", T, F, T>
   },
   #URIError: {
-    [[Call]]: fun(165),
+    [[Call]]: fun(143),
     [[Class]]: "Function",
-    [[Construct]]: fun(166),
+    [[Construct]]: fun(144),
     [[Extensible]]: true,
     [[HasInstance]]: null,
     [[Prototype]]: #Function.prototype,
@@ -3248,404 +3041,6 @@ Function: {
   \\],
   63: [\\
   function toString () {
-    // it throws a TypeError exception if its this value is not a String or a String object.
-    if (typeof this === "string") return this;
-    else if (typeof this === "object" && this !== null && @Class(this) === "String") return @PrimitiveValue(this);
-    else throw new TypeError();
-  }
-  \\],
-  64: [\\
-  function valueOf () {
-    // it throws a TypeError exception if its this value is not a String or String object.
-    // Returns this String value.
-    if (typeof this === "string") return this;
-    else if (typeof this === "object" && this !== null && @Class(this) === "String") return @PrimitiveValue(this);
-    else throw new TypeError();
-  }
-  \\],
-  65: [\\
-  function charAt (pos) {
-    // 1. Call CheckObjectCoercible passing the this value as its argument.
-    if((@SameValue(undefined,this)) || (@SameValue(null,this))){
-      throw new TypeError();
-    }
-    // 2. Let S be the result of calling ToString, giving it the this value as its argument.
-    var S = @ToString(this);
-    // 3. Let position be ToInteger(pos).
-    var position = @ToInteger(pos);
-    // 4. Let size be the number of characters in S.
-    var size = S.length;
-    // 5. If position < 0 or position ≥ size, return empty String.
-    if((position<0) || (position>=size)){
-      return "";
-    }
-    // 6. Return a String of length 1, containing one character from S, namely the character at position position, where the first (leftmost) character in S is considered to be at position 0, the next one at position 1, and so on.
-    return S[position];
-  }
-  \\],
-  66: [\\
-  function charCodeAt (pos) {
-    // 1. Call CheckObjectCoercible passing the this value as its argument.
-    if((@SameValue(undefined,this)) || (@SameValue(null,this))){
-      throw new TypeError();
-    }
-    // 2. Let S be the result of calling ToString, giving it the this value as its argument.
-    var S = @ToString(this);
-    // 3. Let position be ToInteger(pos).
-    var position = @ToInteger(pos);
-    // 4. Let size be the number of characters in S.
-    var size = S.length;
-    // 5. If position < 0 or position ≥ size, return NaN.
-    if((position<0) || (position>=size)){
-      return NaN;
-    }
-    // 6. Return a value of Number type, whose value is the code unit value of the character at position position in the String S, where the first (leftmost) character in S is considered to be at position 0, the next one at position 1, and so on.
-    // TODO implement @ToUint16
-    // Need char -> Unicode-16
-    // return @ToUint16(S[position]);
-    return @ToNumber(S[position]);
-  }
-  \\],
-  67: [\\
-  function concat () {
-    // 1. Call CheckObjectCoercible passing the this value as its argument.
-    if (@SameValue(this,undefined) || @SameValue(this,null)){
-      throw new TypeError();
-    }
-    // 2. Let S be the result of calling ToString, giving it the this value as its argument.
-    var S = @ToString(this);
-    // 3. Let args be an internal list that is a copy of the argument list passed to this function.
-    var args = arguments;
-    // 4. Let R be S.
-    var R = S;
-    // 5. Repeat, while args is not empty
-    for (var i = 0; i < args.length; i++) {
-      // a. Remove the first element from args and let next be the value of that element.
-      var next = args[i];
-      // b. Let R be the String value consisting of the characters in the previous value of R followed by the characters of ToString(next).
-      var R = R + @ToString(next);
-    }
-    // 6. Return R.
-    return R;
-  }
-  \\],
-  68: [\\
-  function indexOf (searchString,position) {
-    // 1. Call CheckObjectCoercible passing the this value as its argument.
-    if (@SameValue(this,undefined) || @SameValue(this,null)){
-      throw new TypeError();
-    }
-    // 2. Let S be the result of calling ToString, giving it the this value as its argument.
-    var S = @ToString(this);
-    // 3. Let searchStr be ToString(searchString).
-    var searchStr = @ToString(searchString);
-    // 4. Let pos be ToInteger(position). (If position is undefined, this step produces the value 0).
-    var pos = @ToInteger(position);
-    // 5. Let len be the number of characters in S.
-    var len = S.length;
-    // 6. Let start be min(max(pos, 0), len).
-    var start = Math.min(Math.max(pos,0),len);
-    // 7. Let searchLen be the number of characters in searchStr.
-    var searchLen = searchStr.length;
-    //8. Return the smallest possible integer k not smaller than start such that k+ searchLen is not      greater than len,and for all nonnegative integers j less than searchLen, the character at position k+j of S is the same as the character at position j of searchStr; but if there is no such integer k, then return the value -1.
-    var k = start;
-    while (k+searchLen<=len) {
-      var p = 0;
-      for (var j=0;j<searchLen;j++) {
-        if (S[k+j] !== searchStr[j]) break;
-        p+=1;
-      }
-      if (p === searchLen){
-        return k;
-      }
-      k += 1;
-    }
-    return -1;
-  }
-  \\],
-  69: [\\
-  function lastIndexOf (searchString,position) {
-    // 1. Call CheckObjectCoercible passing the this value as its argument.
-    if(@SameValue(undefined,this) || @SameValue(null,this)){
-      throw new TypeError();
-    }
-    // 2. Let S be the result of calling ToString, giving it the this value as its argument.
-    var S = @ToString(this);
-    // 3. Let searchStr be ToString(searchString).
-    var searchStr = @ToString(searchString);
-    // 4. Let numPos be ToNumber(position). (If position is undefined, this step produces the value NaN).
-    var numPos = @ToNumber(position);
-    // 5. If numPos is NaN, let pos be + ; otherwise, let pos be ToInteger(numPos).
-    if (@SameValue(NaN,numPos)){
-      var pos = Infinity;
-    }else {
-      var pos = @ToInteger(numPos);
-    }
-    // 6. Let len be the number of characters in S.
-    var len = S.length;
-    // 7. Let start min(max(pos, 0), len).
-    var start = Math.min(Math.max(pos,0),len);
-    // 8. Let searchLen be the number of characters in searchStr.
-    var searchLen = searchStr.length;
-    // 9. Return the largest possible nonnegative integer k not larger than start such that k+ searchLen  is not greater than len, and for all nonnegative integers j less than searchLen, the character at         position k+j of S is the same as the character at position j of searchStr; but if there is no such        integer k, then return the value -1.
-    var k = start;
-    while (k>=0){
-      if ((k+searchLen) <= len){
-        var p = 0;
-        for (var j=0;j<searchLen;j++) {
-          if (S[k+j] !== searchStr[j]) {
-            break;
-          }
-          p += 1;
-        }
-        if (p === searchLen){
-          return k;
-        }
-      }
-    }
-    return -1;
-  }
-  \\],
-  70: [\\
-  function localeCompare (that) {
-    /*
-    // 1. Call CheckObjectCoercible passing the this value as its argument.
-     if (@SameValue(undefined,this) || @SameValue(null,this)){
-      throw new TypeError();
-    }
-    // 2. Let S be the result of calling ToString, giving it the this value as its argument.
-    var S = @ToString(this);
-    // 3. Let That be ToString(that).
-    var that = @ToString(that);
-    */
-    // TODO char -> Unicode-16 translation
-    return @NumTop;
-  }
-  \\],
-  71: [\\
-  function () {
-  }
-  \\],
-  72: [\\
-  function () {
-  }
-  \\],
-  73: [\\
-  function () {
-  }
-  \\],
-  74: [\\
-  function slice (start,end) {
-    // 1. Call CheckObjectCoercible passing the this value as its argument.
-    if (@SameValue(undefined,this) || @SameValue(null,this)){
-      throw new TypeError();
-    }
-    // 2. Let S be the result of calling ToString, giving it the this value as its argument.
-    var S = @ToString(this);
-    // 3. Let len be the number of characters in S.
-    var len = S.length;
-    // 4. Let intStart be ToInteger(start).
-    var intStart = @ToInteger(start);
-    // 5. If end is undefined, let intEnd be len; else let intEnd be ToInteger(end).
-    if (@SameValue(end,undefined)){
-      var intEnd = len;
-    }else {
-      var intEnd = @ToInteger(end);
-    }
-    // 6. If intStart is negative, let from be max(len + intStart,0); else let from be min(intStart, len).
-    if (intStart < 0) {
-      var from = Math.max(len+intStart,0);
-    }else {
-      var from = Math.min(intStart,len);
-    }
-    // 7. If intEnd is negative, let to be max(len + intEnd,0); else let to be min(intEnd, len).
-    if (intEnd < 0){
-      var to = Math.max(len + intEnd,0);
-    }else {
-      var to = Math.min(intEnd,len);
-    }
-    // 8. Let span be max(to – from,0).
-    var span = Math.max(to-from,0);
-    // 9. Return a String containing span consecutive characters from S beginning with the character at   position from.
-    var Str = "";
-    for (var i = 0;i<span;i++) {
-      Str = Str + S[from+i];
-    }
-    return Str;
-  }
-  \\],
-  75: [\\
-  function () {
-  }
-  \\],
-  76: [\\
-  function substring (start,end ) {
-    // 1. Call CheckObjectCoercible passing the this value as its argument.
-    if(@SameValue(this,undefined) || @SameValue(this,null)) {
-      throw new TypeError();
-    }
-    // 2. Let S be the result of calling ToString, giving it the this value as its argument.
-    var S = @ToString(this);
-    // 3. Let len be the number of characters in S.
-    var len = S.length;
-    // 4. Let intStart be ToInteger(start).
-    var intStart = @ToInteger(start);
-    // 5. If end is undefined, let intEnd be len; else let intEnd be ToInteger(end).
-    if (@SameValue(end,undefined)){
-      var intEnd = len;
-    }else {
-      var intEnd = @ToInteger(end);
-    }
-    // 6. Let finalStart be min(max(intStart, 0), len).
-    var finalStart = Math.min(Math.max(intStart,0),len);
-    // 7. Let finalEnd be min(max(intEnd, 0), len).
-    var finalEnd = Math.min(Math.max(intEnd,0),len);
-    // 8. Let from be min(finalStart, finalEnd).
-    var from = Math.min(finalStart,finalEnd);
-    // 9. Let to be max(finalStart, finalEnd).
-    var to = Math.max(finalStart,finalEnd);
-    // 10. Return a String whose length is to - from, containing characters from S, namely the characters with indices from through to -1, in ascending order.
-    var Str = "";
-    for (var i = 0; i<(to-from);i++){
-      Str = Str + S[from+i];
-    }
-    return Str;
-  }
-  \\],
-  77: [\\
-  function toLowerCase () {
-    // 1. Call CheckObjectCoercible passing the this value as its argument.
-    if(@SameValue(this,undefined) || @SameValue(this,null)) {
-      throw new TypeError();
-    }
-    //2. Let S be the result of calling ToString, giving it the this value as its argument.
-    var S = @ToString(this);
-    //3. Let L be a String where each character of L is either the Unicode lowercase equivalent of the corresponding character of S or the actual corresponding character of S if no Unicode lowercase equivalent exists.
-    alpha = {"A":"a","B":"b","C":"c","D":"d","E":"e","F":"f","G":"g","H":"h","I":"i","J":"j","K":"k","L":"l","M":"m","N":"n","O":"o","P":"p","Q":"q","R":"r","S":"s","T":"t","U":"u","V":"v","W":"w","X":"x","Y":"y","Z":"z"}
-    L = "";
-    for (var i = 0; i < S.length; i++){
-      if (S[i] in alpha) {
-        L += alpha[S[i]];
-      }else {
-        L += S[i];
-      }
-    }
-    //4. Return L.
-    return L;
-  }
-  \\],
-  78: [\\
-  function toLocaleLowerCase () {
-    // 1. Call CheckObjectCoercible passing the this value as its argument.
-    if(@SameValue(this,undefined) || @SameValue(this,null)) {
-      throw new TypeError();
-    }
-    //2. Let S be the result of calling ToString, giving it the this value as its argument.
-    var S = @ToString(this);
-    //3. Let L be a String where each character of L is either the Unicode lowercase equivalent of the corresponding character of S or the actual corresponding character of S if no Unicode lowercase equivalent exists.
-    alpha = {"A":"a","B":"b","C":"c","D":"d","E":"e","F":"f","G":"g","H":"h","I":"i","J":"j","K":"k","L":"l","M":"m","N":"n","O":"o","P":"p","Q":"q","R":"r","S":"s","T":"t","U":"u","V":"v","W":"w","X":"x","Y":"y","Z":"z"}
-    L = "";
-    for (var i = 0; i < S.length; i++){
-      if (S[i] in alpha) {
-        L += alpha[S[i]];
-      }else {
-        L += S[i];
-      }
-    }
-    //4. Return L.
-    return L;
-  }
-  \\],
-  79: [\\
-  function toUpperCase () {
-    // This function behaves in exactly the same way as String.prototype.toLowerCase, except that characters are mapped to their uppercase equivalents as specified in the Unicode Character Database.
-    if(@SameValue(this,undefined) || @SameValue(this,null)) {
-      throw new TypeError();
-    }
-    var S = @ToString(this);
-    alpha = {"a":"A","b":"B","c":"C","d":"D","e":"E","f":"F","g":"G","h":"H","i":"I","j":"J","k":"K","l":"L","m":"M","n":"N","o":"O","p":"P","q":"Q","r":"R","s":"S","t":"T","u":"U","v":"V","w":"W","x":"X","y":"Y","z":"Z"}
-    L = "";
-    for (var i = 0; i < S.length; i++){
-      if (S[i] in alpha) {
-        L += alpha[S[i]];
-      }else {
-        L += S[i];
-      }
-    }
-    return L;
-  }
-  \\],
-  80: [\\
-  function toLocaleUpperCase () {
-    // This function behaves in exactly the same way as String.prototype.toLowerCase, except that characters are mapped to their uppercase equivalents as specified in the Unicode Character Database.
-    if(@SameValue(this,undefined) || @SameValue(this,null)) {
-      throw new TypeError();
-    }
-    var S = @ToString(this);
-    alpha = {"a":"A","b":"B","c":"C","d":"D","e":"E","f":"F","g":"G","h":"H","i":"I","j":"J","k":"K","l":"L","m":"M","n":"N","o":"O","p":"P","q":"Q","r":"R","s":"S","t":"T","u":"U","v":"V","w":"W","x":"X","y":"Y","z":"Z"}
-    L = "";
-    for (var i = 0; i < S.length; i++){
-      if (S[i] in alpha) {
-        L += alpha[S[i]];
-      }else {
-        L += S[i];
-      }
-    }
-    return L;
-  }
-  \\],
-  81: [\\
-  function trim () {
-    // 1. Call CheckObjectCoercible passing the this value as its argument.
-    if (@SameValue(undefined,this) || @SameValue(null,this)){
-      throw new TypeError();
-    }
-    // 2. Let S be the result of calling ToString, giving it the this value as its argument.
-    var S = @ToString(this);
-    // 3. Let T be a String value that is a copy of S with both leading and trailing white space removed. The definition of white space is the union of WhiteSpace and LineTerminator.
-    var f = 0;
-    while (S[f] === " "){
-      f += 1;
-    }
-    var t = S.length - 1;
-    while (S[t] === " "){
-      t -= 1;
-    }
-    t +=1;
-    var T = S.substring(f,t);
-    // 4. Return T.
-    return T;
-  }
-  \\],
-  82: [\\
-  function String (value) {
-    // Returns a String value (not a String object) computed by ToString(value). If value is not supplied, the empty String "" is returned.
-    if(arguments.length === 0){
-      return "";
-    }else{
-      return @ToString(value);
-    }
-  }
-  \\],
-  83: [\\
-  function String (value) {
-    if (arguments.length === 0) {
-      return @StrObj("");
-    } else {
-      return @StrObj(value);
-    }
-  }
-  \\],
-  84: [\\
-  function fromCharCode () {
-    // Returns a String value containing as many characters as the number of arguments. Each argument specifies one character of the resulting String, with the first argument specifying the first character, and so on, from left to right. An argument is converted to a character by applying the operation ToUint16 (9.7) and regarding the resulting 16-bit integer as the code unit value of a character. If no arguments are supplied, the result is the empty String.
-    // Need ToUint16;
-    // Need unicode-16 -> char translation
-    return @StrTop
-  }
-  \\],
-  85: [\\
-  function toString () {
     // 1. Let B be the this value.
     var B = this;
     var b;
@@ -3661,7 +3056,7 @@ Function: {
     else return "false";
   }
   \\],
-  86: [\\
+  64: [\\
   function valueOf () {
     // 1. Let B be the this value.
     var B = this;
@@ -3677,21 +3072,21 @@ Function: {
     return b;
   }
   \\],
-  87: [\\
+  65: [\\
   function Boolean (value) {
     return @ToBoolean(value);
   }
   \\],
-  88: [\\
+  66: [\\
   function Boolean (value) {
     return @BoolObj(value);
   }
   \\],
-  89: [\\
+  67: [\\
   function () {
   }
   \\],
-  90: [\\
+  68: [\\
   function toString (radix) {
     // The toString function is not generic; it throws a TypeError exception if its this value is not a Number or a Number object.
     if (!@SameValue(typeof this,'number') && !@SameValue(@Class(this), 'Number')){
@@ -3729,7 +3124,7 @@ Function: {
     }
   }
   \\],
-  91: [\\
+  69: [\\
   function toLocaleString () {
     if (!@SameValue(typeof this,'number') && !@SameValue(@Class(this), 'Number')){
       throw new TypeError();
@@ -3737,7 +3132,7 @@ Function: {
     return @ToString(this);
   }
   \\],
-  92: [\\
+  70: [\\
   function valueOf () {
     // The valueOf function is not generic; it throws a TypeError exception if its this value is not a Number or a Number object. Therefore, it cannot be transferred to other kinds of objects for use as a method.
     if (typeof this === "number") return this;
@@ -3745,7 +3140,7 @@ Function: {
     else throw new TypeError();
   }
   \\],
-  93: [\\
+  71: [\\
   function toFixed (fractionDigits){
     // 1. Let f be ToInteger(fractionDigits). (If fractionDigits is undefined, this step produces the value 0).
     var f = @ToInteger(fractionDigits);
@@ -3818,7 +3213,7 @@ Function: {
     return s + m;
   }
   \\],
-  94: [\\
+  72: [\\
   function toExponential (fractionDigits) {
     // 1. Let x be this Number value.
     var x = this;
@@ -3970,7 +3365,7 @@ Function: {
     return m;
   }
   \\],
-  95: [\\
+  73: [\\
   function toPrecision (precision) {
     // 1. Let x be this Number value.
     var x = this;
@@ -4097,7 +3492,7 @@ Function: {
     return s + m;
   }
   \\],
-  96: [\\
+  74: [\\
   function Number (value) {
     if(arguments.length === 0){
       return +0;
@@ -4106,7 +3501,7 @@ Function: {
     }
   }
   \\],
-  97: [\\
+  75: [\\
   function Number (value) {
     if (arguments.length === 0) {
       return @NumObj(+0);
@@ -4115,17 +3510,17 @@ Function: {
     }
   }
   \\],
-  98: [\\
+  76: [\\
   function () {
   }
   \\],
-  99: [\\
+  77: [\\
   function toString () {
     // This function returns a String value. The contents of the String are implementation-dependent, but are intended to represent the Date in the current time zone in a convenient, human-readable form.
     return @ToString(this);
   }
   \\],
-  100: [\\
+  78: [\\
   function toDateString () {
     // This function returns a String value. The contents of the String are implementation-dependent, but are intended to represent the ―date‖ portion of the Date in the current time zone in a convenient, human-readable form.
     var S = @ToString(this);
@@ -4141,7 +3536,7 @@ Function: {
     return S.slice(0,i);
   }
   \\],
-  101: [\\
+  79: [\\
   function toTimeString () {
     // This function returns a String value. The contents of the String are implementation-dependent, but are intended to represent the ―time‖ portion of the Date in the current time zone in a convenient, human-readable form.
     var S = @ToString(this);
@@ -4157,12 +3552,12 @@ Function: {
     return S.slice(i);
   }
   \\],
-  102: [\\
+  80: [\\
   function toLocaleString () {
     return @ToString(this);
   }
   \\],
-  103: [\\
+  81: [\\
   function toLocaleDateString() {
     var S = @ToString(this);
     b = 0;
@@ -4177,7 +3572,7 @@ Function: {
     return S.slice(0,i);
   }
   \\],
-  104: [\\
+  82: [\\
   function toLocaleTimeString () {
     var S = @ToString(this);
     b = 0;
@@ -4192,25 +3587,25 @@ Function: {
     return S.slice(i);
   }
   \\],
-  105: [\\
+  83: [\\
   function valueOf () {
     // The valueOf function returns a Number, which is this time value.
     return @PrimitiveValue(this);
   }
   \\],
-  106: [\\
+  84: [\\
   function getTime () {
     // 1. Return this time value.
     return @PrimitiveValue(this);
   }
   \\],
-  107: [\\
+  85: [\\
   function getFullYear () {
     // Need LocalTime(t)
     return @NumTop;
   }
   \\],
-  108: [\\
+  86: [\\
   function getUTCFullYear () {
     // 1. Let t be this time value.
     var t = @PrimitiveValue(this);
@@ -4236,13 +3631,13 @@ Function: {
     return YearFromTime_t;
   }
   \\],
-  109: [\\
+  87: [\\
   function getMonth() {
     // Need LocalTime(t)
     return @NumTop;
   }
   \\],
-  110: [\\
+  88: [\\
   function getUTCMonth () {
     // 1. Let t be this time value.
     var t = @PrimitiveValue(this);
@@ -4335,13 +3730,13 @@ Function: {
     return MonthFromTime_t;
   }
   \\],
-  111: [\\
+  89: [\\
   function getDate () {
     // Need LocalTime(t);
     return @NumTop;
   }
   \\],
-  112: [\\
+  90: [\\
   function getUTCDate () {
     // 1. Let t be this time value.
     var t = @PrimitiveValue(this);
@@ -4461,13 +3856,13 @@ Function: {
     return DateFromTime;
   }
   \\],
-  113: [\\
+  91: [\\
   function getDay () {
     // Need Localtime(t);
     return @NumTop;
   }
   \\],
-  114: [\\
+  92: [\\
   function getUTCDay () {
     // 1. Let t be this time value.
     var t = @PrimitiveValue(this);
@@ -4483,13 +3878,13 @@ Function: {
     return WeekDay_t;
   }
   \\],
-  115: [\\
+  93: [\\
   function getHours () {
     // Need Local(t)
     return @NumTop;
   }
   \\],
-  116: [\\
+  94: [\\
   function getUTCHours () {
     // 1. Let t be this time value.
     var t = @PrimitiveValue(this);
@@ -4504,13 +3899,13 @@ Function: {
     return HourFromTime_t;
   }
   \\],
-  117: [\\
+  95: [\\
   function getMinutes () {
     // Need LocalTime(t)
     return @NumTop;
   }
   \\],
-  118: [\\
+  96: [\\
   function getUTCMinutes () {
     // 1. Let t be this time value.
     var t = @PrimitiveValue(this);
@@ -4525,13 +3920,13 @@ Function: {
     return MinFromTime_t;
   }
   \\],
-  119: [\\
+  97: [\\
   function getSeconds () {
     // Need LocalTime(t);
     return @NumTop;
   }
   \\],
-  120: [\\
+  98: [\\
   function getUTCSeconds () {
     // 1. Let t be this time value.
     var t = @PrimitiveValue(this);
@@ -4546,13 +3941,13 @@ Function: {
     return SecFromTime_t;
   }
   \\],
-  121: [\\
+  99: [\\
   function getMilliseconds () {
     // Need LocalTime(t)
     return @NumTop;
   }
   \\],
-  122: [\\
+  100: [\\
   function getUTCMilliseconds () {
     // 1. Let t be this time value.
     var t = @PrimitiveValue(this);
@@ -4566,13 +3961,13 @@ Function: {
     return msFromTime_t;
   }
   \\],
-  123: [\\
+  101: [\\
   function getTimezoneOffset () {
     // Need LocalTime(t)
     return @NumTop;
   }
   \\],
-  124: [\\
+  102: [\\
   function setTime (time) {
     // 1. Let v be TimeClip(ToNumber(time)).
     var time = @ToNumber(time);
@@ -4592,14 +3987,14 @@ Function: {
     return v;
   }
   \\],
-  125: [\\
+  103: [\\
   function setMilliseconds (ms) {
     // Need LocalTime(t)
     @PrimitiveValue(this,@NumTop);
     return @NumTop;
   }
   \\],
-  126: [\\
+  104: [\\
   function setUTCMilliseconds (ms) {
     // 1. Let t be this time value.
     var t = @PrimitiveValue(this);
@@ -4686,14 +4081,14 @@ Function: {
     return v;
   }
   \\],
-  127: [\\
+  105: [\\
   function setSeconds (sec,ms) {
     // Need LocalTime(t);
     @PrimitiveValue(this,@NumTop);
     return @NumTop;
   }
   \\],
-  128: [\\
+  106: [\\
   function setUTCSeconds (set,ms) {
     // 1. Let t be this time value.
     var t = @PrimitiveValue(this);
@@ -4780,14 +4175,14 @@ Function: {
     return v;
   }
   \\],
-  129: [\\
+  107: [\\
   function setMinutes (min,sec,ms) {
     // Need LocalTime(t)
     @PrimitiveValue(this,@NumTop);
     return @NumTop;
   }
   \\],
-  130: [\\
+  108: [\\
   function setUTCMinutes (min,sec,ms) {
     // 1. Let t be this time value.
     var t = @PrimitiveValue(this);
@@ -4879,14 +4274,14 @@ Function: {
     return v;
   }
   \\],
-  131: [\\
+  109: [\\
   function setHours (hour,min,sec,ms) {
     // Need LocalTime(t)
     @PrimitiveValue(this,@NumTop);
     return @NumTop;
   }
   \\],
-  132: [\\
+  110: [\\
   function setUTCHours (hour,min,sec,ms) {
     // 1. Let t be this time value.
     var t = @PrimitiveValue(this);
@@ -4980,14 +4375,14 @@ Function: {
     return v;
   }
   \\],
-  133: [\\
+  111: [\\
   function setDate (date) {
     // Need LocalTime(t)
     @PrimitiveValue(this,@NumTop);
     return @NumTop;
   }
   \\],
-  134: [\\
+  112: [\\
   function setUTCDate (date) {
     // 1. Let t be this time value.
     var t = @PrimitiveValue(this);
@@ -5334,14 +4729,14 @@ Function: {
     return v;
   }
   \\],
-  135: [\\
+  113: [\\
   function setMonth (month,date) {
     // Need LocalTime(t);
     @PrimitiveValue(this ,@NumTop);
     return @NumTop;
   }
   \\],
-  136: [\\
+  114: [\\
   function setUTCMonth (month,date) {
     // 1. Let t be this time value.
     var t = @PrimitiveValue(this);
@@ -5718,14 +5113,14 @@ Function: {
     return v;
   }
   \\],
-  137: [\\
+  115: [\\
   function setFullYear (year,month,date) {
     // Need LocalTime(t);
     @PrimitiveValue(this,@NumTop);
     return @NumTop;
   }
   \\],
-  138: [\\
+  116: [\\
   function setUTCFullYear (year,month,date) {
     // 1. Let t be this time value; but if this time value is NaN, let t be +0.
     var t = @PrimitiveValue(this);
@@ -6175,13 +5570,13 @@ Function: {
     return v;
   }
   \\],
-  139: [\\
+  117: [\\
   function toUTCString () {
     // Need to know internal structure of Date object
     return @StrTop;
   }
   \\],
-  140: [\\
+  118: [\\
   function toISOString () {
     // Need to know internal structure of Date object
     var t = @PrimitiveValue(this);
@@ -6191,17 +5586,17 @@ Function: {
     return @StrTop;
   }
   \\],
-  141: [\\
+  119: [\\
   function () {
   }
   \\],
-  142: [\\
+  120: [\\
   function Date (year,month,date,hours,minutes,seconds,ms) {
     // All of the arguments are optional; any arguments supplied are accepted but are completely ignored. A String is created and returned as if by the expression (new Date()).toString()
     return (new Date()).toString();
   }
   \\],
-  143: [\\
+  121: [\\
   function Date () {
     if (arguments.length === 0) {
       var obj = {};
@@ -6547,13 +5942,13 @@ Function: {
     }
   }
   \\],
-  144: [\\
+  122: [\\
   function parse () {
     // TODO
     return @NumTop;
   }
   \\],
-  145: [\\
+  123: [\\
   function UTC (year,month,date,hours,minutes,seconds,ms) {
     // 1. Let y be ToNumber(year).
     var y = @ToNumber(year);
@@ -6856,30 +6251,30 @@ Function: {
     return return_val;
   }
   \\],
-  146: [\\
+  124: [\\
   function now () {
     // TODO
     return @NumTop;
   }
   \\],
-  147: [\\
+  125: [\\
   function () {
   }
   \\],
-  148: [\\
+  126: [\\
   function () {
   }
   \\],
-  149: [\\
+  127: [\\
   function () {
   }
   \\],
-  150: [\\
+  128: [\\
   function RegExp () {
     return new RegExp();
   }
   \\],
-  151: [\\
+  129: [\\
   function RegExp () {
     var obj = {};
     @Class(obj,"RegExp");
@@ -6892,7 +6287,7 @@ Function: {
     return obj;
   }
   \\],
-  152: [\\
+  130: [\\
   function toString() {
     // 1. Let O be the this value.
     var O = this;
@@ -6928,7 +6323,7 @@ Function: {
     return name + ": " + msg;
   }
   \\],
-  153: [\\
+  131: [\\
   function Error (message) {
     var obj ={};
     @Prototype(obj,Error.prototype);
@@ -6940,7 +6335,7 @@ Function: {
     return obj;
   }
   \\],
-  154: [\\
+  132: [\\
   function Error (message) {
     var obj ={};
     @Prototype(obj,Error.prototype);
@@ -6952,7 +6347,7 @@ Function: {
     return obj;
   }
   \\],
-  155: [\\
+  133: [\\
   function EvalError (message) {
     var obj = {};
     @Prototype(obj,EvalError.prototype);
@@ -6964,7 +6359,7 @@ Function: {
     return obj;
   }
   \\],
-  156: [\\
+  134: [\\
   function EvalError (message) {
     var obj = {};
     @Prototype(obj,EvalError.prototype);
@@ -6976,7 +6371,7 @@ Function: {
     return obj;
   }
   \\],
-  157: [\\
+  135: [\\
   function RangeError (message) {
     var obj = {};
     @Prototype(obj,RangeError.prototype);
@@ -6988,7 +6383,7 @@ Function: {
     return obj;
   }
   \\],
-  158: [\\
+  136: [\\
   function RangeError (message) {
     var obj = {};
     @Prototype(obj,RangeError.prototype);
@@ -7000,7 +6395,7 @@ Function: {
     return obj;
   }
   \\],
-  159: [\\
+  137: [\\
   function ReferenceError (message) {
     var obj = {};
     @Prototype(obj,ReferenceError.prototype);
@@ -7012,7 +6407,7 @@ Function: {
     return obj;
   }
   \\],
-  160: [\\
+  138: [\\
   function ReferenceError (message) {
     var obj = {};
     @Prototype(obj,ReferenceError.prototype);
@@ -7024,7 +6419,7 @@ Function: {
     return obj;
   }
   \\],
-  161: [\\
+  139: [\\
   function SyntaxError (message) {
     var obj = {};
     @Prototype(obj,SyntaxError.prototype);
@@ -7036,7 +6431,7 @@ Function: {
     return obj;
   }
   \\],
-  162: [\\
+  140: [\\
   function SyntaxError (message) {
     var obj = {};
     @Prototype(obj,SyntaxError.prototype);
@@ -7049,7 +6444,7 @@ Function: {
 
   }
   \\],
-  163: [\\
+  141: [\\
   function TypeError (message) {
     var obj = {};
     @Prototype(obj,TypeError.prototype);
@@ -7061,7 +6456,7 @@ Function: {
     return obj;
   }
   \\],
-  164: [\\
+  142: [\\
   function TypeError (message) {
     var obj = {};
     @Prototype(obj,TypeError.prototype);
@@ -7073,7 +6468,7 @@ Function: {
     return obj;
   }
   \\],
-  165: [\\
+  143: [\\
   function URIError (message) {
     var obj = {};
     @Prototype(obj,URIError.prototype);
@@ -7085,7 +6480,7 @@ Function: {
     return obj;
   }
   \\],
-  166: [\\
+  144: [\\
   function URIError (message) {
     var obj = {};
     @Prototype(obj,URIError.prototype);
@@ -7097,57 +6492,57 @@ Function: {
     return obj;
   }
   \\],
-  167: [\\
+  145: [\\
   function abs (x) {
     return @abs(x);
   }
   \\],
-  168: [\\
+  146: [\\
   function acos (x) {
     return @acos(x);
   }
   \\],
-  169: [\\
+  147: [\\
   function asin (x) {
     return @asin(x);
   }
   \\],
-  170: [\\
+  148: [\\
   function atan (x) {
     return @atan(x);
   }
   \\],
-  171: [\\
+  149: [\\
   function atan2 (x, y) {
     return @atan2(x, y);
   }
   \\],
-  172: [\\
+  150: [\\
   function ceil (x) {
     return @ceil(x);
   }
   \\],
-  173: [\\
+  151: [\\
   function cos (x) {
     return @cos(x);
   }
   \\],
-  174: [\\
+  152: [\\
   function exp (x) {
     return @exp(x);
   }
   \\],
-  175: [\\
+  153: [\\
   function floor (x) {
     return @floor(x);
   }
   \\],
-  176: [\\
+  154: [\\
   function log (x) {
     return @log(x);
   }
   \\],
-  177: [\\
+  155: [\\
   function max () {
     var i, n = arguments.length, v = -Infinity;
     for (i = 0; i < n; i++) {
@@ -7159,7 +6554,7 @@ Function: {
     return v;
   }
   \\],
-  178: [\\
+  156: [\\
   function min () {
     var i, n = arguments.length, v = Infinity;
     for (i = 0; i < n; i++) {
@@ -7171,41 +6566,41 @@ Function: {
     return v;
   }
   \\],
-  179: [\\
+  157: [\\
   function pow (x, y) {
     return @pow(x, y);
   }
   \\],
-  180: [\\
+  158: [\\
   function random () {
     return @NumTop;
   }
   \\],
-  181: [\\
+  159: [\\
   function round (x) {
     return @round(x);
   }
   \\],
-  182: [\\
+  160: [\\
   function sin (x) {
     return @sin(x);
   }
   \\],
-  183: [\\
+  161: [\\
   function sqrt (x) {
     return @sqrt(x);
   }
   \\],
-  184: [\\
+  162: [\\
   function tan (x) {
     return @tan(x);
   }
   \\],
-  185: [\\
+  163: [\\
   function () {
   }
   \\],
-  186: [\\
+  164: [\\
   function () {
   }
   \\]

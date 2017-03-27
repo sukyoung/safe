@@ -55,7 +55,7 @@ case class JSModel(heap: Heap, funcs: List[CFGFunction], fidMax: Int) {
     }
     val mdfHeap = Heap(mdfHeapMap)
     // 3. Heap + (AbsHeap.scala)
-    val newHeap = this.heap.+(mdfHeap)
+    val newHeap = this.heap + mdfHeap
     val newFidMax = this.fidMax + other.fidMax
     JSModel(newHeap, newFuncs, newFidMax)
   }
@@ -77,6 +77,14 @@ object ModelParser extends RegexParsers with JavaTokenParsers {
     val result = parseModel(in)
     in.close; sr.close; fs.close
     result
+  }
+  def mergeJsModels(dir: String): JSModel = {
+    val fileNames: List[String] = new File(dir).list.toList
+    val mergeModel = fileNames.foldLeft(JSModel(Heap(HashMap()), Nil, 0)) {
+      case (model, fileName) =>
+        model + ModelParser.parseFile(dir + fileName).get
+    }
+    mergeModel
   }
 
   //////////////////////////////////////////////////////////////////////////
