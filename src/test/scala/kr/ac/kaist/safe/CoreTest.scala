@@ -250,8 +250,9 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
 
   Analyze.jscache = {
     Utils.AAddrType = analyzeConfig.aaddrType
-    val fileName = NodeUtil.jsModelsBase + "built_in.jsmodel"
-    Some(ModelParser.parseFile(fileName).get)
+    // val fileName = NodeUtil.jsModelsBase + "built_in.jsmodel"
+    // Some(ModelParser.parseFile(fileName).get)
+    Some(ModelParser.mergeJsModels(NodeUtil.jsModelsBase))
   }
 
   val analyzerTestDir = testDir + "semantics"

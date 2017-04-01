@@ -194,7 +194,9 @@ case object DefaultLoc extends AbsLocUtil {
 
     def weakSubsLoc(locR: Recency, locO: Recency): AbsLoc = this match {
       case Top => Top
-      case LocSet(set) => LocSet(set + locO)
+      case LocSet(set) =>
+        if (set contains locR) LocSet(set + locO)
+        else this
     }
   }
 }

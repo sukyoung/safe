@@ -15,7 +15,7 @@ import kr.ac.kaist.safe.errors.ExcLog
 import kr.ac.kaist.safe.errors.error._
 import kr.ac.kaist.safe.nodes.ast._
 import kr.ac.kaist.safe.util.{ NodeUtil => NU, Span }
-import kr.ac.kaist.safe.{ PRED_FUNS, PRED_VARS }
+import kr.ac.kaist.safe.{ PRED_FUNS, PRED_VARS, DOM_NAMES }
 
 /**
  * Eliminates ambiguities in an AST that can be resolved solely by knowing what
@@ -25,7 +25,7 @@ import kr.ac.kaist.safe.{ PRED_FUNS, PRED_VARS }
  *  - All name references that are undefined or used incorrectly are
  *    treated as static errors.
  */
-class Disambiguator(program: Program) {
+class Disambiguator(program: Program, domModel: Boolean) {
   ////////////////////////////////////////////////////////////////
   // results
   ////////////////////////////////////////////////////////////////
@@ -55,10 +55,11 @@ class Disambiguator(program: Program) {
   // environment for renaming identifiers.
   private type Env = List[(String, String)]
   private val EMPTY_LABEL = ("empty", "empty")
+  private val domEnv = if (domModel) DOM_NAMES.map(v => (v, v)) else List()
   private var env: Env = PRED_VARS.map(v => (v, v)) ++
-    PRED_FUNS.map(f => (f, f)) ++ List(
-      ("alert", "alert")
-    )
+    PRED_FUNS.map(f => (f, f)) ++
+    List(("alert", "alert")) ++
+    domEnv
 
   // label environment
   private case class LabEnv(
@@ -97,10 +98,7 @@ class Disambiguator(program: Program) {
     case None => idNotBoundErr(normalExcLog, id.text, id)
     case Some(uniq) => env = (id.text, uniq) :: env
   }
-  private def addEnv(newid: Id): Unit = newid.uniqueName match {
-    case None => idNotBoundErr(normalExcLog, newid.text, newid)
-    case Some(uniq) => env = (newid.text, uniq) :: env
-  }
+  private def addEnv(newid: Id): Unit = addEnv(newid, newid)
 
   // add label environment
   private def addLEnv(id: Id, newid: Id): Unit = newid.uniqueName match {

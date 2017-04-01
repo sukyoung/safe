@@ -1,0 +1,616 @@
+Heap: {
+  #Global: {
+    "String": <#String, T, F, T>
+  },
+  #String: {
+    [[Call]]: fun(21),
+    [[Class]]: "Function",
+    [[Construct]]: fun(22),
+    [[Extensible]]: true,
+    [[HasInstance]]: null,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "fromCharCode": <#String.fromCharCode, T, F, T>,
+    "length": <1, F, F, F>,
+    "prototype": <#String.prototype, F, F, F>
+  },
+  #String.fromCharCode: {
+    [[Call]]: fun(23),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
+  },
+  #String.prototype: {
+    [[Class]]: "String",
+    [[Extensible]]: true,
+    [[PrimitiveValue]]: "",
+    [[Prototype]]: #Object.prototype,
+    "charAt": <#String.prototype.charAt, T, F, T>,
+    "charCodeAt": <#String.prototype.charCodeAt, T, F, T>,
+    "concat": <#String.prototype.concat, T, F, T>,
+    "constructor": <#String, T, F, T>,
+    "indexOf": <#String.prototype.indexOf, T, F, T>,
+    "lastIndexOf": <#String.prototype.lastIndexOf, T, F, T>,
+    "localeCompare": <#String.prototype.localeCompare, T, F, T>,
+    "match": <#String.prototype.match, T, F, T>,
+    "replace": <#String.prototype.replace, T, F, T>,
+    "search": <#String.prototype.search, T, F, T>,
+    "slice": <#String.prototype.slice, T, F, T>,
+    "split": <#String.prototype.split, T, F, T>,
+    "substring": <#String.prototype.substring, T, F, T>,
+    "toLocaleLowerCase": <#String.prototype.toLocaleLowerCase, T, F, T>,
+    "toLocaleUpperCase": <#String.prototype.toLocaleUpperCase, T, F, T>,
+    "toLowerCase": <#String.prototype.toLowerCase, T, F, T>,
+    "toString": <#String.prototype.toString, T, F, T>,
+    "toUpperCase": <#String.prototype.toUpperCase, T, F, T>,
+    "trim": <#String.prototype.trim, T, F, T>,
+    "valueOf": <#String.prototype.valueOf, T, F, T>
+  },
+  #String.prototype.charAt: {
+    [[Call]]: fun(4),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
+  },
+  #String.prototype.charCodeAt: {
+    [[Call]]: fun(5),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
+  },
+  #String.prototype.concat: {
+    [[Call]]: fun(6),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
+  },
+  #String.prototype.constructor: {
+    [[Call]]: fun(1),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
+  },
+  #String.prototype.indexOf: {
+    [[Call]]: fun(7),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
+  },
+  #String.prototype.lastIndexOf: {
+    [[Call]]: fun(8),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
+  },
+  #String.prototype.localeCompare: {
+    [[Call]]: fun(9),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
+  },
+  #String.prototype.match: {
+    [[Call]]: fun(10),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
+  },
+  #String.prototype.replace: {
+    [[Call]]: fun(11),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <2, F, F, F>
+  },
+  #String.prototype.search: {
+    [[Call]]: fun(12),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <1, F, F, F>
+  },
+  #String.prototype.slice: {
+    [[Call]]: fun(13),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <2, F, F, F>
+  },
+  #String.prototype.split: {
+    [[Call]]: fun(14),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <2, F, F, F>
+  },
+  #String.prototype.substring: {
+    [[Call]]: fun(15),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <2, F, F, F>
+  },
+  #String.prototype.toLocaleLowerCase: {
+    [[Call]]: fun(17),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <0, F, F, F>
+  },
+  #String.prototype.toLocaleUpperCase: {
+    [[Call]]: fun(19),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <0, F, F, F>
+  },
+  #String.prototype.toLowerCase: {
+    [[Call]]: fun(16),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <0, F, F, F>
+  },
+  #String.prototype.toString: {
+    [[Call]]: fun(2),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <0, F, F, F>
+  },
+  #String.prototype.toUpperCase: {
+    [[Call]]: fun(18),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <0, F, F, F>
+  },
+  #String.prototype.trim: {
+    [[Call]]: fun(20),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <0, F, F, F>
+  },
+  #String.prototype.valueOf: {
+    [[Call]]: fun(3),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "length": <0, F, F, F>
+  }
+}
+
+Function: {
+  1: [\\
+  function () {
+  }
+  \\],
+  2: [\\
+  function toString () {
+    // it throws a TypeError exception if its this value is not a String or a String object.
+    if (typeof this === "string") return this;
+    else if (typeof this === "object" && this !== null && @Class(this) === "String") return @PrimitiveValue(this);
+    else throw new TypeError();
+  }
+  \\],
+  3: [\\
+  function valueOf () {
+    // it throws a TypeError exception if its this value is not a String or String object.
+    // Returns this String value.
+    if (typeof this === "string") return this;
+    else if (typeof this === "object" && this !== null && @Class(this) === "String") return @PrimitiveValue(this);
+    else throw new TypeError();
+  }
+  \\],
+  4: [\\
+  function charAt (pos) {
+    // 1. Call CheckObjectCoercible passing the this value as its argument.
+    if((@SameValue(undefined,this)) || (@SameValue(null,this))){
+      throw new TypeError();
+    }
+    // 2. Let S be the result of calling ToString, giving it the this value as its argument.
+    var S = @ToString(this);
+    // 3. Let position be ToInteger(pos).
+    var position = @ToInteger(pos);
+    // 4. Let size be the number of characters in S.
+    var size = S.length;
+    // 5. If position < 0 or position ≥ size, return empty String.
+    if((position<0) || (position>=size)){
+      return "";
+    }
+    // 6. Return a String of length 1, containing one character from S, namely the character at position position, where the first (leftmost) character in S is considered to be at position 0, the next one at position 1, and so on.
+    return S[position];
+  }
+  \\],
+  5: [\\
+  function charCodeAt (pos) {
+    // 1. Call CheckObjectCoercible passing the this value as its argument.
+    if((@SameValue(undefined,this)) || (@SameValue(null,this))){
+      throw new TypeError();
+    }
+    // 2. Let S be the result of calling ToString, giving it the this value as its argument.
+    var S = @ToString(this);
+    // 3. Let position be ToInteger(pos).
+    var position = @ToInteger(pos);
+    // 4. Let size be the number of characters in S.
+    var size = S.length;
+    // 5. If position < 0 or position ≥ size, return NaN.
+    if((position<0) || (position>=size)){
+      return NaN;
+    }
+    // 6. Return a value of Number type, whose value is the code unit value of the character at position position in the String S, where the first (leftmost) character in S is considered to be at position 0, the next one at position 1, and so on.
+    // TODO implement @ToUint16
+    // Need char -> Unicode-16
+    // return @ToUint16(S[position]);
+    return @ToNumber(S[position]);
+  }
+  \\],
+  6: [\\
+  function concat () {
+    // 1. Call CheckObjectCoercible passing the this value as its argument.
+    if (@SameValue(this,undefined) || @SameValue(this,null)){
+      throw new TypeError();
+    }
+    // 2. Let S be the result of calling ToString, giving it the this value as its argument.
+    var S = @ToString(this);
+    // 3. Let args be an internal list that is a copy of the argument list passed to this function.
+    var args = arguments;
+    // 4. Let R be S.
+    var R = S;
+    // 5. Repeat, while args is not empty
+    for (var i = 0; i < args.length; i++) {
+      // a. Remove the first element from args and let next be the value of that element.
+      var next = args[i];
+      // b. Let R be the String value consisting of the characters in the previous value of R followed by the characters of ToString(next).
+      var R = R + @ToString(next);
+    }
+    // 6. Return R.
+    return R;
+  }
+  \\],
+  7: [\\
+  function indexOf (searchString,position) {
+    // 1. Call CheckObjectCoercible passing the this value as its argument.
+    if (@SameValue(this,undefined) || @SameValue(this,null)){
+      throw new TypeError();
+    }
+    // 2. Let S be the result of calling ToString, giving it the this value as its argument.
+    var S = @ToString(this);
+    // 3. Let searchStr be ToString(searchString).
+    var searchStr = @ToString(searchString);
+    // 4. Let pos be ToInteger(position). (If position is undefined, this step produces the value 0).
+    var pos = @ToInteger(position);
+    // 5. Let len be the number of characters in S.
+    var len = S.length;
+    // 6. Let start be min(max(pos, 0), len).
+    var start = Math.min(Math.max(pos,0),len);
+    // 7. Let searchLen be the number of characters in searchStr.
+    var searchLen = searchStr.length;
+    //8. Return the smallest possible integer k not smaller than start such that k+ searchLen is not      greater than len,and for all nonnegative integers j less than searchLen, the character at position k+j of S is the same as the character at position j of searchStr; but if there is no such integer k, then return the value -1.
+    var k = start;
+    while (k+searchLen<=len) {
+      var p = 0;
+      for (var j=0;j<searchLen;j++) {
+        if (S[k+j] !== searchStr[j]) break;
+        p+=1;
+      }
+      if (p === searchLen){
+        return k;
+      }
+      k += 1;
+    }
+    return -1;
+  }
+  \\],
+  8: [\\
+  function lastIndexOf (searchString,position) {
+    // 1. Call CheckObjectCoercible passing the this value as its argument.
+    if(@SameValue(undefined,this) || @SameValue(null,this)){
+      throw new TypeError();
+    }
+    // 2. Let S be the result of calling ToString, giving it the this value as its argument.
+    var S = @ToString(this);
+    // 3. Let searchStr be ToString(searchString).
+    var searchStr = @ToString(searchString);
+    // 4. Let numPos be ToNumber(position). (If position is undefined, this step produces the value NaN).
+    var numPos = @ToNumber(position);
+    // 5. If numPos is NaN, let pos be + ; otherwise, let pos be ToInteger(numPos).
+    if (@SameValue(NaN,numPos)){
+      var pos = Infinity;
+    }else {
+      var pos = @ToInteger(numPos);
+    }
+    // 6. Let len be the number of characters in S.
+    var len = S.length;
+    // 7. Let start min(max(pos, 0), len).
+    var start = Math.min(Math.max(pos,0),len);
+    // 8. Let searchLen be the number of characters in searchStr.
+    var searchLen = searchStr.length;
+    // 9. Return the largest possible nonnegative integer k not larger than start such that k+ searchLen  is not greater than len, and for all nonnegative integers j less than searchLen, the character at         position k+j of S is the same as the character at position j of searchStr; but if there is no such        integer k, then return the value -1.
+    var k = start;
+    while (k>=0){
+      if ((k+searchLen) <= len){
+        var p = 0;
+        for (var j=0;j<searchLen;j++) {
+          if (S[k+j] !== searchStr[j]) {
+            break;
+          }
+          p += 1;
+        }
+        if (p === searchLen){
+          return k;
+        }
+      }
+    }
+    return -1;
+  }
+  \\],
+  9: [\\
+  function localeCompare (that) {
+    /*
+    // 1. Call CheckObjectCoercible passing the this value as its argument.
+     if (@SameValue(undefined,this) || @SameValue(null,this)){
+      throw new TypeError();
+    }
+    // 2. Let S be the result of calling ToString, giving it the this value as its argument.
+    var S = @ToString(this);
+    // 3. Let That be ToString(that).
+    var that = @ToString(that);
+    */
+    // TODO char -> Unicode-16 translation
+    return @NumTop;
+  }
+  \\],
+  10: [\\
+  function () {
+  }
+  \\],
+  11: [\\
+  function () {
+  }
+  \\],
+  12: [\\
+  function () {
+  }
+  \\],
+  13: [\\
+  function slice (start,end) {
+    // 1. Call CheckObjectCoercible passing the this value as its argument.
+    if (@SameValue(undefined,this) || @SameValue(null,this)){
+      throw new TypeError();
+    }
+    // 2. Let S be the result of calling ToString, giving it the this value as its argument.
+    var S = @ToString(this);
+    // 3. Let len be the number of characters in S.
+    var len = S.length;
+    // 4. Let intStart be ToInteger(start).
+    var intStart = @ToInteger(start);
+    // 5. If end is undefined, let intEnd be len; else let intEnd be ToInteger(end).
+    if (@SameValue(end,undefined)){
+      var intEnd = len;
+    }else {
+      var intEnd = @ToInteger(end);
+    }
+    // 6. If intStart is negative, let from be max(len + intStart,0); else let from be min(intStart, len).
+    if (intStart < 0) {
+      var from = Math.max(len+intStart,0);
+    }else {
+      var from = Math.min(intStart,len);
+    }
+    // 7. If intEnd is negative, let to be max(len + intEnd,0); else let to be min(intEnd, len).
+    if (intEnd < 0){
+      var to = Math.max(len + intEnd,0);
+    }else {
+      var to = Math.min(intEnd,len);
+    }
+    // 8. Let span be max(to – from,0).
+    var span = Math.max(to-from,0);
+    // 9. Return a String containing span consecutive characters from S beginning with the character at   position from.
+    var Str = "";
+    for (var i = 0;i<span;i++) {
+      Str = Str + S[from+i];
+    }
+    return Str;
+  }
+  \\],
+  14: [\\
+  function () {
+  }
+  \\],
+  15: [\\
+  function substring (start,end ) {
+    // 1. Call CheckObjectCoercible passing the this value as its argument.
+    if(@SameValue(this,undefined) || @SameValue(this,null)) {
+      throw new TypeError();
+    }
+    // 2. Let S be the result of calling ToString, giving it the this value as its argument.
+    var S = @ToString(this);
+    // 3. Let len be the number of characters in S.
+    var len = S.length;
+    // 4. Let intStart be ToInteger(start).
+    var intStart = @ToInteger(start);
+    // 5. If end is undefined, let intEnd be len; else let intEnd be ToInteger(end).
+    if (@SameValue(end,undefined)){
+      var intEnd = len;
+    }else {
+      var intEnd = @ToInteger(end);
+    }
+    // 6. Let finalStart be min(max(intStart, 0), len).
+    var finalStart = Math.min(Math.max(intStart,0),len);
+    // 7. Let finalEnd be min(max(intEnd, 0), len).
+    var finalEnd = Math.min(Math.max(intEnd,0),len);
+    // 8. Let from be min(finalStart, finalEnd).
+    var from = Math.min(finalStart,finalEnd);
+    // 9. Let to be max(finalStart, finalEnd).
+    var to = Math.max(finalStart,finalEnd);
+    // 10. Return a String whose length is to - from, containing characters from S, namely the characters with indices from through to -1, in ascending order.
+    var Str = "";
+    for (var i = 0; i<(to-from);i++){
+      Str = Str + S[from+i];
+    }
+    return Str;
+  }
+  \\],
+  16: [\\
+  function toLowerCase () {
+    // 1. Call CheckObjectCoercible passing the this value as its argument.
+    if(@SameValue(this,undefined) || @SameValue(this,null)) {
+      throw new TypeError();
+    }
+    //2. Let S be the result of calling ToString, giving it the this value as its argument.
+    var S = @ToString(this);
+    //3. Let L be a String where each character of L is either the Unicode lowercase equivalent of the corresponding character of S or the actual corresponding character of S if no Unicode lowercase equivalent exists.
+    alpha = {"A":"a","B":"b","C":"c","D":"d","E":"e","F":"f","G":"g","H":"h","I":"i","J":"j","K":"k","L":"l","M":"m","N":"n","O":"o","P":"p","Q":"q","R":"r","S":"s","T":"t","U":"u","V":"v","W":"w","X":"x","Y":"y","Z":"z"}
+    L = "";
+    for (var i = 0; i < S.length; i++){
+      if (S[i] in alpha) {
+        L += alpha[S[i]];
+      }else {
+        L += S[i];
+      }
+    }
+    //4. Return L.
+    return L;
+  }
+  \\],
+  17: [\\
+  function toLocaleLowerCase () {
+    // 1. Call CheckObjectCoercible passing the this value as its argument.
+    if(@SameValue(this,undefined) || @SameValue(this,null)) {
+      throw new TypeError();
+    }
+    //2. Let S be the result of calling ToString, giving it the this value as its argument.
+    var S = @ToString(this);
+    //3. Let L be a String where each character of L is either the Unicode lowercase equivalent of the corresponding character of S or the actual corresponding character of S if no Unicode lowercase equivalent exists.
+    alpha = {"A":"a","B":"b","C":"c","D":"d","E":"e","F":"f","G":"g","H":"h","I":"i","J":"j","K":"k","L":"l","M":"m","N":"n","O":"o","P":"p","Q":"q","R":"r","S":"s","T":"t","U":"u","V":"v","W":"w","X":"x","Y":"y","Z":"z"}
+    L = "";
+    for (var i = 0; i < S.length; i++){
+      if (S[i] in alpha) {
+        L += alpha[S[i]];
+      }else {
+        L += S[i];
+      }
+    }
+    //4. Return L.
+    return L;
+  }
+  \\],
+  18: [\\
+  function toUpperCase () {
+    // This function behaves in exactly the same way as String.prototype.toLowerCase, except that characters are mapped to their uppercase equivalents as specified in the Unicode Character Database.
+    if(@SameValue(this,undefined) || @SameValue(this,null)) {
+      throw new TypeError();
+    }
+    var S = @ToString(this);
+    alpha = {"a":"A","b":"B","c":"C","d":"D","e":"E","f":"F","g":"G","h":"H","i":"I","j":"J","k":"K","l":"L","m":"M","n":"N","o":"O","p":"P","q":"Q","r":"R","s":"S","t":"T","u":"U","v":"V","w":"W","x":"X","y":"Y","z":"Z"}
+    L = "";
+    for (var i = 0; i < S.length; i++){
+      if (S[i] in alpha) {
+        L += alpha[S[i]];
+      }else {
+        L += S[i];
+      }
+    }
+    return L;
+  }
+  \\],
+  19: [\\
+  function toLocaleUpperCase () {
+    // This function behaves in exactly the same way as String.prototype.toLowerCase, except that characters are mapped to their uppercase equivalents as specified in the Unicode Character Database.
+    if(@SameValue(this,undefined) || @SameValue(this,null)) {
+      throw new TypeError();
+    }
+    var S = @ToString(this);
+    alpha = {"a":"A","b":"B","c":"C","d":"D","e":"E","f":"F","g":"G","h":"H","i":"I","j":"J","k":"K","l":"L","m":"M","n":"N","o":"O","p":"P","q":"Q","r":"R","s":"S","t":"T","u":"U","v":"V","w":"W","x":"X","y":"Y","z":"Z"}
+    L = "";
+    for (var i = 0; i < S.length; i++){
+      if (S[i] in alpha) {
+        L += alpha[S[i]];
+      }else {
+        L += S[i];
+      }
+    }
+    return L;
+  }
+  \\],
+  20: [\\
+  function trim () {
+    // 1. Call CheckObjectCoercible passing the this value as its argument.
+    if (@SameValue(undefined,this) || @SameValue(null,this)){
+      throw new TypeError();
+    }
+    // 2. Let S be the result of calling ToString, giving it the this value as its argument.
+    var S = @ToString(this);
+    // 3. Let T be a String value that is a copy of S with both leading and trailing white space removed. The definition of white space is the union of WhiteSpace and LineTerminator.
+    var f = 0;
+    while (S[f] === " "){
+      f += 1;
+    }
+    var t = S.length - 1;
+    while (S[t] === " "){
+      t -= 1;
+    }
+    t +=1;
+    var T = S.substring(f,t);
+    // 4. Return T.
+    return T;
+  }
+  \\],
+  21: [\\
+  function String (value) {
+    // Returns a String value (not a String object) computed by ToString(value). If value is not supplied, the empty String "" is returned.
+    if(arguments.length === 0){
+      return "";
+    }else{
+      return @ToString(value);
+    }
+  }
+  \\],
+  22: [\\
+  function String (value) {
+    if (arguments.length === 0) {
+      return @StrObj("");
+    } else {
+      return @StrObj(value);
+    }
+  }
+  \\],
+  23: [\\
+  function fromCharCode () {
+    // Returns a String value containing as many characters as the number of arguments. Each argument specifies one character of the resulting String, with the first argument specifying the first character, and so on, from left to right. An argument is converted to a character by applying the operation ToUint16 (9.7) and regarding the resulting 16-bit integer as the code unit value of a character. If no arguments are supplied, the result is the empty String.
+    // Need ToUint16;
+    // Need unicode-16 -> char translation
+    return @StrTop
+  }
+  \\]
+}

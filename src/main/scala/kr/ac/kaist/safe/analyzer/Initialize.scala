@@ -39,8 +39,9 @@ object Initialize {
     val modeledHeap: AbsHeap =
       if (jsModel) {
         val model = Analyze.jscache getOrElse {
-          val fileName = NodeUtil.jsModelsBase + "snapshot_and_built_in.jsmodel"
-          ModelParser.parseFile(fileName).get
+          // val fileName = NodeUtil.jsModelsBase + "snapshot_and_built_in.jsmodel"
+          // ModelParser.parseFile(fileName).get
+          ModelParser.mergeJsModels(NodeUtil.jsModelsBase)
         }
         model.funcs.foreach(cfg.addJSModel(_))
         AbsHeap(model.heap)
@@ -55,6 +56,7 @@ object Initialize {
     AbsState(st.heap + abstractHeap, st.context)
   }
 
+  // Global names for DOM are listed in safe/package.scala
   def addDOM(st: AbsState, cfg: CFG): AbsState = {
     val globalObj = st.heap.get(BuiltinGlobal.loc)
       .fold(AbsObject.Empty)(obj => obj)
@@ -70,3 +72,4 @@ object Initialize {
     AbsState(domHeap, st.context)
   }
 }
+
