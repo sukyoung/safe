@@ -58,9 +58,10 @@ case class JSModel(heap: Heap, funcs: List[CFGFunction], fidMax: Int) {
     val newFidMax = this.fidMax + other.fidMax
     JSModel(newHeap, newFuncs, newFidMax)
   }
+  /*
   override def toString: String = {
-    NodeUtil.jsModelsBase
   }
+  */
 }
 
 // Argument parser by using Scala RegexParsers.
