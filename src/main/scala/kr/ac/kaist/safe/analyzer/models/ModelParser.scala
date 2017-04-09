@@ -27,7 +27,6 @@ import scala.util.parsing.combinator._
 
 case class JSModel(heap: Heap, funcs: List[CFGFunction], fidMax: Int) {
   def +(other: JSModel): JSModel = {
-    // TODO
     // 1. rearrange function id
     val newFuncs = other.funcs.foldLeft(this.funcs) {
       case (funList, cfgFunc) => {
@@ -59,6 +58,10 @@ case class JSModel(heap: Heap, funcs: List[CFGFunction], fidMax: Int) {
     val newFidMax = this.fidMax + other.fidMax
     JSModel(newHeap, newFuncs, newFidMax)
   }
+  /*
+  override def toString: String = {
+  }
+  */
 }
 
 // Argument parser by using Scala RegexParsers.
@@ -256,6 +259,38 @@ object ModelParser extends RegexParsers with JavaTokenParsers {
         }
       }
     }
+  private lazy val jsFuncsRewrite: Parser[(List[CFGFunction], Map[Int, Int])] = "{" ~> (
+    repsepE((int <~ ":") ~! jsFun, ",")
+  ) <~ "}" ^^ {
+      case lst => {
+        var fidMap = Map[Int, Int]()
+        var size = 0
+        val result = lst.foldLeft(List[CFGFunction]()) {
+          case (funcs, mid ~ func) => {
+            size += 1
+            fidMap += (mid -> size)
+            func.id = -mid
+            // allocation site mutation
+            // TODO is predefined allocation site good? how about incremental user allocation site?
+            def mutate(asite: AllocSite): PredAllocSite = asite match {
+              case UserAllocSite(id) =>
+                PredAllocSite(s"JSModel-$mid<$asite>")
+              case pred: PredAllocSite => pred
+            }
+            func.getAllBlocks.foreach(_.getInsts.foreach {
+              case i: CFGAlloc => i.asite = mutate(i.asite)
+              case i: CFGAllocArray => i.asite = mutate(i.asite)
+              case i: CFGAllocArg => i.asite = mutate(i.asite)
+              case i: CFGCallInst => i.asite = mutate(i.asite)
+              case i: CFGInternalCall => i.asiteOpt = i.asiteOpt.map(mutate(_))
+              case _ =>
+            })
+            func :: funcs
+          }
+        }
+        (result, fidMap)
+      }
+    }
 
   // JavaScript model
   private lazy val jsModel: Parser[JSModel] =
@@ -263,5 +298,40 @@ object ModelParser extends RegexParsers with JavaTokenParsers {
       // XXX Assume that function id starts at 1 and it is incremented by 1.
       // Also, there are no missing numbers in the middle. Therefore, fidMax = funcs.length
       case heap ~ funcs => JSModel(heap, funcs, funcs.length)
+    }
+
+  private lazy val jsModelRewrite: Parser[JSModel] =
+    ("Heap" ~> ":" ~> jsHeap) ~! ("Function" ~> ":" ~> jsFuncsRewrite) ^^ {
+      case heap ~ ((funcs, map)) => {
+        val model = JSModel(heap, funcs, funcs.length)
+        // Rewirte fid
+        // Not started at 1, not continuous
+        val newFuncs = funcs.foldLeft(List[CFGFunction]()) {
+          case (funList, cfgFunc) => {
+            cfgFunc.id = -map(-cfgFunc.id)
+            cfgFunc :: funList
+          }
+        }
+        val newHeapMap = heap.map.foldLeft(HashMap(): Map[Loc, Object]) {
+          case (heapMap, (loc, obj)) => {
+            val mdfimap = obj.imap.foldLeft(HashMap(): Map[IName, IValue]) {
+              case (inimap, (name, value)) => {
+                value match {
+                  case FId(id) => {
+                    val newFid = -map(-id)
+                    inimap + (name -> FId(newFid))
+                  }
+                  case _ => inimap + (name -> value)
+                }
+              }
+            }
+            val mdfobj = Object(obj.amap, mdfimap)
+            heapMap + (loc -> mdfobj)
+          }
+        }
+        val newHeap = Heap(newHeapMap)
+        val newModel = JSModel(newHeap, newFuncs, funcs.length)
+        newModel
+      }
     }
 }
