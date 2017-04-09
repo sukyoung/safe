@@ -13,31 +13,25 @@ package kr.ac.kaist.safe.phase
 
 import scala.util.{ Try, Success }
 import kr.ac.kaist.safe.{ LINE_SEP, SafeConfig }
-import kr.ac.kaist.safe.cfg_builder.{ DefaultCFGBuilder, DotWriter }
-import kr.ac.kaist.safe.nodes.ir.IRRoot
+import kr.ac.kaist.safe.cfg_builder.DotWriter
 import kr.ac.kaist.safe.nodes.cfg.CFG
 import kr.ac.kaist.safe.util._
 
-// CFGBuild phase
-case object CFGBuild extends PhaseObj[IRRoot, CFGBuildConfig, CFG] {
-  val name: String = "cfgBuilder"
+// CFGLoader phase
+case object CFGLoader extends PhaseObj[Unit, CFGLoaderConfig, CFG] {
+  val name: String = "cfgLoader"
   val help: String =
-    "Builds a control flow graph for JavaScript source files."
+    "Loads a control flow graph from a given JSON file."
   def apply(
-    ir: IRRoot,
+    unit: Unit,
     safeConfig: SafeConfig,
-    config: CFGBuildConfig
+    config: CFGLoaderConfig
   ): Try[CFG] = {
-    // Build CFG from IR.
-    val cbResult = new DefaultCFGBuilder(ir, safeConfig, config)
-    val cfg = cbResult.cfg
-    val excLog = cbResult.excLog
-
-    // Report errors.
-    if (excLog.hasError) {
-      println(cfg.relFileName + ":")
-      println(excLog)
-    }
+    val fileNames = safeConfig.fileNames
+    // TODO only one existing file is inserted.
+    // TODO check if it has the extension ".json"
+    val cfg = new CFG(null, null) // TODO load CFG from JSON file
+    // TODO if it has not well-formed JSON then throw an SAFE exception.
 
     // Pretty print to file.
     config.outFile.map(out => {
@@ -53,31 +47,23 @@ case object CFGBuild extends PhaseObj[IRRoot, CFGBuildConfig, CFG] {
       DotWriter.spawnDot(cfg, None, None, None, s"$name.gv", s"$name.pdf")
     })
 
-    // print JSON file: {jsonName}.json
-    config.jsonName.map(name => {
-      // TODO write into s"$name.json" file
-    })
-
     Success(cfg)
   }
 
-  def defaultConfig: CFGBuildConfig = CFGBuildConfig()
-  val options: List[PhaseOption[CFGBuildConfig]] = List(
+  def defaultConfig: CFGLoaderConfig = CFGLoaderConfig()
+  val options: List[PhaseOption[CFGLoaderConfig]] = List(
     ("silent", BoolOption(c => c.silent = true),
-      "messages during CFG building are muted."),
+      "messages during CFG loading are muted."),
     ("out", StrOption((c, s) => c.outFile = Some(s)),
-      "the resulting CFG will be written to the outfile."),
+      "the loaded CFG will be written to the outfile."),
     ("dot", StrOption((c, s) => c.dotName = Some(s)),
-      "the resulting CFG will be drawn to the {name}.gv and {name}.pdf"),
-    ("json", StrOption((c, s) => c.jsonName = Some(s)),
-      "the resulting CFG will be dumped into the {name}.json")
+      "the loaded CFG will be drawn to the {name}.gv and {name}.pdf")
   )
 }
 
-// CFGBuild phase config
-case class CFGBuildConfig(
+// CFGLoader phase config
+case class CFGLoaderConfig(
   var silent: Boolean = false,
   var outFile: Option[String] = None,
-  var dotName: Option[String] = None,
-  var jsonName: Option[String] = None
+  var dotName: Option[String] = None
 ) extends Config

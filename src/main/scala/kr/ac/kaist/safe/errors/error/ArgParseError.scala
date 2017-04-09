@@ -66,3 +66,7 @@ case class NoFileList(str: String) extends ArgParseError({
 case class NoFileName(str: String) extends ArgParseError({
   s"'$str' is not a file name."
 })
+
+case class NoMode(cmd: String, mode: String) extends ArgParseError({
+  s"'$cmd' command has no '$mode' mode."
+})
