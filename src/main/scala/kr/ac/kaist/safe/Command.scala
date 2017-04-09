@@ -56,9 +56,9 @@ class CommandObj[Result](
 
   def display(res: Result): Unit = ()
 
-  override def toString: String = pList.toString + LINE_SEP + modeMap.map {
-    case (mode, pList) => s"-$mode: " + pList.toString
-  }.mkString(LINE_SEP)
+  override def toString: String = modeMap.foldLeft(pList.toString) {
+    case (str, (mode, pList)) => s"$str$LINE_SEP--$mode: " + pList.toString
+  }
 
   def >>[C <: Config, R](phase: PhaseObj[Result, C, R]): PhaseList[R] = pList >> phase
 }
