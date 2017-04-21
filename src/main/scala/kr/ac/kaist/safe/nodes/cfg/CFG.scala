@@ -69,6 +69,13 @@ class CFG(
     func
   }
 
+  // add function - used when create cfg from json
+  def addFunction(func: CFGFunction): Unit = {
+    funcs ::= func
+    if (func.isUser) userFuncs ::= func
+    funMap(func.id) = func
+  }
+
   // add JS model
   ////////////////////////////////
   def addJSModel(
@@ -102,6 +109,7 @@ class CFG(
   // user defined allocation site size
   private var userASiteSize: Int = 0
   def getUserASiteSize: Int = userASiteSize
+  def setUserASiteSize(size: Int): Unit = { userASiteSize = size }
   def newUserASite: UserAllocSite = {
     userASiteSize += 1
     val asite = UserAllocSite(userASiteSize)
