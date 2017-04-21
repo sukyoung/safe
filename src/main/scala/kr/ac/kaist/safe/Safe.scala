@@ -150,7 +150,11 @@ object Safe {
       .append("* command list:").append(LINE_SEP)
       .append("    Each command consists of following phases.").append(LINE_SEP)
       .append("    format: {command} {phase} [>> {phase}]*").append(LINE_SEP).append(LINE_SEP)
-    commands foreach (cmd => s.append(s"    %-${INDENT}s".format(cmd.name)).append(cmd).append(LINE_SEP))
+    commands foreach (cmd => {
+      s.append(s"    %-${INDENT}s".format(cmd.name))
+        .append(cmd.toString.replace(LINE_SEP, LINE_SEP + "    " + " " * INDENT))
+        .append(LINE_SEP)
+    })
     s.append(LINE_SEP)
       .append("* phase list:").append(LINE_SEP)
       .append("    Each phase has following options.").append(LINE_SEP)
