@@ -55,6 +55,10 @@ object NodeUtil {
   val INTERNAL_API_PREFIX = "@"
   def internalAPIName(name: String): String = INTERNAL_API_PREFIX + name
 
+  // Event function call for DOM objects
+  val INTERNAL_GET_EVENT_FUNC = internalAPIName("GetEventFunc")
+  val INTERNAL_ADD_EVENT_FUNC = internalAPIName("AddEventFunc")
+
   // internal API call
   // 8.6.2 Object Internal Properties and Methods
   val INTERNAL_CLASS = internalAPIName("Class")
@@ -134,6 +138,8 @@ object NodeUtil {
   val INTERNAL_ITER_HAS_NEXT = internalAPIName("iteratorHasNext")
   val INTERNAL_ITER_NEXT = internalAPIName("iteratorNext")
   val internalCallSet: Set[String] = HashSet(
+    INTERNAL_GET_EVENT_FUNC,
+    INTERNAL_ADD_EVENT_FUNC,
     INTERNAL_CLASS,
     INTERNAL_PRIM_VAL,
     INTERNAL_PROTO,
