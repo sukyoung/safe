@@ -25,7 +25,7 @@ import scala.io.Codec
 import scala.util.Try
 import kr.ac.kaist.safe.errors.ExcLog
 import kr.ac.kaist.safe.nodes.ast.SourceElements
-import kr.ac.kaist.safe.util.NodeUtil.{ INTERNAL_BOOL_TOP, INTERNAL_GET_EVENT_FUNC }
+import kr.ac.kaist.safe.util.NodeUtil._
 
 object JSFromHTML {
   private def toList[T](jList: JList[T]): List[T] =
@@ -80,7 +80,9 @@ object JSFromHTML {
 
     // add event function call
     val codeContents3: List[(String, (Int, Int), String)] = {
-      val ss = ("#event#", bogus, s"while($INTERNAL_BOOL_TOP) { $INTERNAL_GET_EVENT_FUNC()(); }")
+      val evt = INTERNAL_EVENT_FUNC
+      val ss = ("#event#loop", bogus,
+        s"while($INTERNAL_BOOL_TOP) { $INTERNAL_CALL($evt.func, $evt.elem, []); }")
       codeContents2 :+ ss
     }
 

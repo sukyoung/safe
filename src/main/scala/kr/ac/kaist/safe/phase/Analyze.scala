@@ -50,9 +50,9 @@ case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, Int, TracePartiti
     config.snapshot.map(str =>
       initSt = Initialize.addSnapshot(initSt, str))
 
-    // handling HTML DOM modeling mode
-    if (safeConfig.html || config.domModel)
-      initSt = Initialize.addDOM(initSt, cfg)
+    // TODO handling HTML DOM modeling mode
+    // if (safeConfig.html || config.domModel)
+    //   initSt = Initialize.addDOM(initSt, cfg)
 
     val sens =
       CallSiteSensitivity(config.callsiteSensitivity) *

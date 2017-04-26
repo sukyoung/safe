@@ -55,10 +55,6 @@ object NodeUtil {
   val INTERNAL_API_PREFIX = "@"
   def internalAPIName(name: String): String = INTERNAL_API_PREFIX + name
 
-  // Event function call for DOM objects
-  val INTERNAL_GET_EVENT_FUNC = internalAPIName("GetEventFunc")
-  val INTERNAL_ADD_EVENT_FUNC = internalAPIName("AddEventFunc")
-
   // internal API call
   // 8.6.2 Object Internal Properties and Methods
   val INTERNAL_CLASS = internalAPIName("Class")
@@ -137,8 +133,8 @@ object NodeUtil {
   val INTERNAL_ITER_INIT = internalAPIName("iteratorInit")
   val INTERNAL_ITER_HAS_NEXT = internalAPIName("iteratorHasNext")
   val INTERNAL_ITER_NEXT = internalAPIName("iteratorNext")
+  val INTERNAL_ADD_EVENT_FUNC = internalAPIName("addEventFunc")
   val internalCallSet: Set[String] = HashSet(
-    INTERNAL_GET_EVENT_FUNC,
     INTERNAL_ADD_EVENT_FUNC,
     INTERNAL_CLASS,
     INTERNAL_PRIM_VAL,
@@ -187,6 +183,7 @@ object NodeUtil {
 
   // internal API value
   val INTERNAL_TOP = internalAPIName("Top")
+  val INTERNAL_BOT = internalAPIName("Bot")
   val INTERNAL_UINT = internalAPIName("UInt")
   val INTERNAL_GLOBAL = internalAPIName("Global")
   val INTERNAL_BOOL_TOP = internalAPIName("BoolTop")
@@ -209,6 +206,7 @@ object NodeUtil {
   val INTERNAL_ARRAY_CONST = internalAPIName("ArrayConst")
   val internalValueSet: Set[String] = HashSet(
     INTERNAL_TOP,
+    INTERNAL_BOT,
     INTERNAL_UINT,
     INTERNAL_GLOBAL,
     INTERNAL_BOOL_TOP,
@@ -231,6 +229,14 @@ object NodeUtil {
     INTERNAL_ARRAY_CONST
   )
   def isInternalValue(id: String): Boolean = internalValueSet.contains(id)
+
+  // internal API variable
+  val INTERNAL_EVENT_FUNC = internalAPIName("EventFunc")
+  val internalVarSet: Set[String] = HashSet(
+    INTERNAL_EVENT_FUNC
+  )
+  def isInternalVar(id: String): Boolean = internalVarSet.contains(id)
+  def getInternalVarId(text: String): CFGId = CFGTempId(text, GlobalVar)
 
   ////////////////////////////////////////////////////////////////
   // For all AST, IR, and CFG
@@ -256,6 +262,8 @@ object NodeUtil {
   def freshGlobalName(n: String): String = GLOBAL_PREFIX + n
   def funexprName(span: Span): String = freshName("funexpr@" + span.toStringWithoutFiles)
 
+  def isInternalAPI(s: String): Boolean =
+    isInternalCall(s) || isInternalValue(s) || isInternalVar(s)
   def isInternal(s: String): Boolean = s.containsSlice(INTERNAL_SYMBOL)
   def isGlobalName(s: String): Boolean = s.startsWith(GLOBAL_PREFIX)
   def isFunExprName(name: String): Boolean = name.containsSlice("<>funexpr")

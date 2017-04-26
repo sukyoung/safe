@@ -470,15 +470,13 @@ class Semantics(
   // internal API call
   // CFGInternalCall(ir, _, lhs, name, arguments, loc)
   def IC(ir: IRNode, lhs: CFGId, name: String, args: List[CFGExpr], loc: Option[AllocSite], st: AbsState, excSt: AbsState): (AbsState, AbsState) = (name, args, loc) match {
-    case (NodeUtil.INTERNAL_GET_EVENT_FUNC, List(), None) => {
-      val newSt = st.varStore(lhs, eventFuncLocs)
-      (newSt, excSt)
-    }
     case (NodeUtil.INTERNAL_ADD_EVENT_FUNC, List(exprV), None) => {
       val (v, excSetV) = V(exprV, st)
-      eventFuncLocs = eventFuncLocs + v.locset
-      val newExcSt = st.raiseException(excSetV)
-      (st, excSt + newExcSt)
+      val id = NodeUtil.getInternalVarId(NodeUtil.INTERNAL_EVENT_FUNC)
+      val (curV, excSetC) = st.lookup(id)
+      val newSt = st.varStore(id, curV.locset + v.locset)
+      val newExcSt = st.raiseException(excSetV ++ excSetC)
+      (newSt, excSt + newExcSt)
     }
     case (NodeUtil.INTERNAL_CLASS, List(exprO, exprP), None) => {
       val (v, excSetO) = V(exprO, st)
@@ -1286,7 +1284,4 @@ class Semantics(
 
     (st2, excSt + newExcSt)
   }
-
-  // locations for event functions
-  private var eventFuncLocs: AbsLoc = AbsLoc()
 }
