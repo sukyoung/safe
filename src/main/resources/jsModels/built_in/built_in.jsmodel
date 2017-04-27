@@ -1,40 +1,4 @@
 Heap: {
-  #Boolean: {
-    [[Call]]: fun(41),
-    [[Class]]: "Function",
-    [[Construct]]: fun(42),
-    [[Extensible]]: true,
-    [[HasInstance]]: null,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <1, F, F, F>,
-    "prototype": <#Boolean.prototype, F, F, F>
-  },
-  #Boolean.prototype: {
-    [[Class]]: "Boolean",
-    [[Extensible]]: true,
-    [[PrimitiveValue]]: false,
-    [[Prototype]]: #Object.prototype,
-    "constructor": <#Boolean, T, F, T>,
-    "toString": <#Boolean.prototype.toString, T, F, T>,
-    "valueOf": <#Boolean.prototype.valueOf, T, F, T>
-  },
-  #Boolean.prototype.toString: {
-    [[Call]]: fun(39),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <1, F, F, F>
-  },
-  #Boolean.prototype.valueOf: {
-    [[Call]]: fun(40),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <1, F, F, F>
-  },
   #Date: {
     [[Call]]: fun(96),
     [[Class]]: "Function",
@@ -585,7 +549,6 @@ Heap: {
     [[Prototype]]: #Object.prototype,
     "<>Global<>global": <#Global, F, F, F>,
     "<>Global<>true": <true, F, F, F>,
-    "Boolean": <#Boolean, T, F, T>,
     "Date": <#Date, T, F, T>,
     "Error": <#Error, T, F, T>,
     "EvalError": <#EvalError, T, F, T>,
@@ -1729,49 +1692,6 @@ Function: {
   \\],
   38: [\\
   function () {
-  }
-  \\],
-  39: [\\
-  function toString () {
-    // 1. Let B be the this value.
-    var B = this;
-    var b;
-    // 2. If Type(B) is Boolean, then let b be B.
-    if (typeof B === "Boolean") b = B;
-    // 3. Else if Type(B) is Object and the value of the [[Class]] internal property of B is "Boolean",
-    //    then let b be the value of the [[PrimitiveValue]] internal property of B.
-    else if (typeof B === "object" && B !== null && @Class(B) === "Boolean") b = @PrimitiveValue(B);
-    // 4. Else throw a TypeError exception.
-    else throw new TypeError();
-    // 5. If b is true, then return "true"; else return "false".
-    if (b) return "true";
-    else return "false";
-  }
-  \\],
-  40: [\\
-  function valueOf () {
-    // 1. Let B be the this value.
-    var B = this;
-    var b;
-    // 2. If Type(B) is Boolean, then let b be B.
-    if (typeof B === "boolean") b = B;
-    // 3. Else if Type(B) is Object and the value of the [[Class]] internal property of B is "Boolean",
-    //    then let b be the value of the [[PrimitiveValue]] internal property of B.
-    else if (typeof B === "object" && B !== null && @Class(B) === "Boolean") b = @PrimitiveValue(B);
-    // 4. Else throw a TypeError exception.
-    else throw new TypeError();
-    // 5. Return b.
-    return b;
-  }
-  \\],
-  41: [\\
-  function Boolean (value) {
-    return @ToBoolean(value);
-  }
-  \\],
-  42: [\\
-  function Boolean (value) {
-    return @BoolObj(value);
   }
   \\],
   43: [\\
