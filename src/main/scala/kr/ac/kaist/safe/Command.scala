@@ -12,7 +12,9 @@
 package kr.ac.kaist.safe
 
 import scala.util.Try
+import scala.collection.immutable.HashMap
 import kr.ac.kaist.safe.phase._
+import kr.ac.kaist.safe.errors.error.NoMode
 import kr.ac.kaist.safe.util.ArgParser
 import kr.ac.kaist.safe.nodes.ast.Program
 import kr.ac.kaist.safe.nodes.ir.IRRoot
@@ -27,21 +29,36 @@ sealed trait Command {
 
 class CommandObj[Result](
     override val name: String,
-    pList: PhaseList[Result]
+    pList: PhaseList[Result],
+    modeMap: Map[String, PhaseList[Result]] = HashMap[String, PhaseList[Result]]()
 ) extends Command {
-  def apply(args: List[String], testMode: Boolean = false): Try[Result] = {
+  def apply(
+    args: List[String],
+    testMode: Boolean = false
+  ): Try[Result] = {
     val safeConfig = SafeConfig(this, testMode = testMode)
     val parser = new ArgParser(this, safeConfig)
-    pList.getRunner(parser).flatMap {
-      case runner => parser(args).flatMap {
-        case _ => Safe(this, runner(_), safeConfig)
+    val modePattern = "--(.+)".r
+    (args match {
+      case modePattern(mode) :: remain => modeMap.get(mode) match {
+        case Some(pl) => (pl, remain)
+        case None => throw NoMode(name, mode)
+      }
+      case _ => (pList, args)
+    }) match {
+      case (pList, args) => pList.getRunner(parser).flatMap {
+        case runner => parser(args).flatMap {
+          case _ => Safe(this, runner(_), safeConfig)
+        }
       }
     }
   }
 
   def display(res: Result): Unit = ()
 
-  override def toString: String = pList.nameList.reverse.mkString(" >> ")
+  override def toString: String = modeMap.foldLeft(pList.toString) {
+    case (str, (mode, pList)) => s"$str$LINE_SEP--$mode: " + pList.toString
+  }
 
   def >>[C <: Config, R](phase: PhaseObj[Result, C, R]): PhaseList[R] = pList >> phase
 }
@@ -69,8 +86,15 @@ case object CmdCFGBuild extends CommandObj("cfgBuild", CmdCompile >> CFGBuild) {
   override def display(cfg: CFG): Unit = println(cfg.toString(0))
 }
 
+// cfgLoad
+case object CmdCFGLoad extends CommandObj("cfgLoad", CmdBase >> CFGLoader) {
+  override def display(cfg: CFG): Unit = println(cfg.toString(0))
+}
+
 // analyze
-case object CmdAnalyze extends CommandObj("analyze", CmdCFGBuild >> Analyze) {
+case object CmdAnalyze extends CommandObj("analyze", CmdCFGBuild >> Analyze, HashMap(
+  "cfgFromJson" -> (CmdCFGLoad >> Analyze)
+)) {
   override def display(result: (CFG, Int, TracePartition, Semantics)): Unit = {
     val (cfg, iters, _, sem) = result
 

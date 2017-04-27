@@ -442,33 +442,42 @@ class Semantics(
   }
 
   // internal API value
-  lazy val internalValueMap: Map[String, AbsValue] = HashMap(
-    NodeUtil.INTERNAL_TOP -> AbsValue.Top,
-    NodeUtil.INTERNAL_UINT -> AbsNumber.UInt,
-    NodeUtil.INTERNAL_GLOBAL -> AbsValue(BuiltinGlobal.loc),
-    NodeUtil.INTERNAL_BOOL_TOP -> AbsBool.Top,
-    NodeUtil.INTERNAL_NUM_TOP -> AbsNumber.Top,
-    NodeUtil.INTERNAL_STR_TOP -> AbsString.Top,
-    NodeUtil.INTERNAL_EVAL_ERR -> AbsValue(BuiltinEvalError.loc),
-    NodeUtil.INTERNAL_RANGE_ERR -> AbsValue(BuiltinRangeError.loc),
-    NodeUtil.INTERNAL_REF_ERR -> AbsValue(BuiltinRefError.loc),
-    NodeUtil.INTERNAL_SYNTAX_ERR -> AbsValue(BuiltinSyntaxError.loc),
-    NodeUtil.INTERNAL_TYPE_ERR -> AbsValue(BuiltinTypeError.loc),
-    NodeUtil.INTERNAL_URI_ERR -> AbsValue(BuiltinURIError.loc),
-    NodeUtil.INTERNAL_EVAL_ERR_PROTO -> AbsValue(BuiltinEvalErrorProto.loc),
-    NodeUtil.INTERNAL_RANGE_ERR_PROTO -> AbsValue(BuiltinRangeErrorProto.loc),
-    NodeUtil.INTERNAL_REF_ERR_PROTO -> AbsValue(BuiltinRefErrorProto.loc),
-    NodeUtil.INTERNAL_SYNTAX_ERR_PROTO -> AbsValue(BuiltinSyntaxErrorProto.loc),
-    NodeUtil.INTERNAL_TYPE_ERR_PROTO -> AbsValue(BuiltinTypeErrorProto.loc),
-    NodeUtil.INTERNAL_URI_ERR_PROTO -> AbsValue(BuiltinURIErrorProto.loc),
-    NodeUtil.INTERNAL_ERR_PROTO -> AbsValue(BuiltinErrorProto.loc),
-    NodeUtil.INTERNAL_OBJ_CONST -> AbsValue(BuiltinObject.loc),
-    NodeUtil.INTERNAL_ARRAY_CONST -> AbsValue(BuiltinArray.loc)
-  )
+  def getInternalValue(name: String): Option[AbsValue] = name match {
+    case (NodeUtil.INTERNAL_TOP) => Some(AbsValue.Top)
+    case (NodeUtil.INTERNAL_UINT) => Some(AbsNumber.UInt)
+    case (NodeUtil.INTERNAL_GLOBAL) => Some(AbsValue(BuiltinGlobal.loc))
+    case (NodeUtil.INTERNAL_BOOL_TOP) => Some(AbsBool.Top)
+    case (NodeUtil.INTERNAL_NUM_TOP) => Some(AbsNumber.Top)
+    case (NodeUtil.INTERNAL_STR_TOP) => Some(AbsString.Top)
+    case (NodeUtil.INTERNAL_EVAL_ERR) => Some(AbsValue(BuiltinEvalError.loc))
+    case (NodeUtil.INTERNAL_RANGE_ERR) => Some(AbsValue(BuiltinRangeError.loc))
+    case (NodeUtil.INTERNAL_REF_ERR) => Some(AbsValue(BuiltinRefError.loc))
+    case (NodeUtil.INTERNAL_SYNTAX_ERR) => Some(AbsValue(BuiltinSyntaxError.loc))
+    case (NodeUtil.INTERNAL_TYPE_ERR) => Some(AbsValue(BuiltinTypeError.loc))
+    case (NodeUtil.INTERNAL_URI_ERR) => Some(AbsValue(BuiltinURIError.loc))
+    case (NodeUtil.INTERNAL_EVAL_ERR_PROTO) => Some(AbsValue(BuiltinEvalErrorProto.loc))
+    case (NodeUtil.INTERNAL_RANGE_ERR_PROTO) => Some(AbsValue(BuiltinRangeErrorProto.loc))
+    case (NodeUtil.INTERNAL_REF_ERR_PROTO) => Some(AbsValue(BuiltinRefErrorProto.loc))
+    case (NodeUtil.INTERNAL_SYNTAX_ERR_PROTO) => Some(AbsValue(BuiltinSyntaxErrorProto.loc))
+    case (NodeUtil.INTERNAL_TYPE_ERR_PROTO) => Some(AbsValue(BuiltinTypeErrorProto.loc))
+    case (NodeUtil.INTERNAL_URI_ERR_PROTO) => Some(AbsValue(BuiltinURIErrorProto.loc))
+    case (NodeUtil.INTERNAL_ERR_PROTO) => Some(AbsValue(BuiltinErrorProto.loc))
+    case (NodeUtil.INTERNAL_OBJ_CONST) => Some(AbsValue(BuiltinObject.loc))
+    case (NodeUtil.INTERNAL_ARRAY_CONST) => Some(AbsValue(BuiltinArray.loc))
+    case _ => None
+  }
 
   // internal API call
   // CFGInternalCall(ir, _, lhs, name, arguments, loc)
   def IC(ir: IRNode, lhs: CFGId, name: String, args: List[CFGExpr], loc: Option[AllocSite], st: AbsState, excSt: AbsState): (AbsState, AbsState) = (name, args, loc) match {
+    case (NodeUtil.INTERNAL_ADD_EVENT_FUNC, List(exprV), None) => {
+      val (v, excSetV) = V(exprV, st)
+      val id = NodeUtil.getInternalVarId(NodeUtil.INTERNAL_EVENT_FUNC)
+      val (curV, excSetC) = st.lookup(id)
+      val newSt = st.varStore(id, curV.locset + v.locset)
+      val newExcSt = st.raiseException(excSetV ++ excSetC)
+      (newSt, excSt + newExcSt)
+    }
     case (NodeUtil.INTERNAL_CLASS, List(exprO, exprP), None) => {
       val (v, excSetO) = V(exprO, st)
       val (p, excSetP) = V(exprP, st)
@@ -1247,7 +1256,7 @@ class Semantics(
           }
       }
     }
-    case CFGInternalValue(ir, name) => internalValueMap.get(name) match {
+    case CFGInternalValue(ir, name) => getInternalValue(name) match {
       case Some(value) => (value, ExcSetEmpty)
       case None =>
         excLog.signal(SemanticsNotYetImplementedError(ir))

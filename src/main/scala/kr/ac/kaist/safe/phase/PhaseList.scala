@@ -23,6 +23,7 @@ sealed abstract class PhaseList[Result] {
   def >>[C <: Config, R](phase: PhaseObj[Result, C, R]): PhaseList[R] = PhaseCons(this, phase)
 
   val nameList: List[String]
+  override def toString: String = nameList.reverse.mkString(" >> ")
 }
 
 case object PhaseNil extends PhaseList[Unit] {
