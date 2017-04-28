@@ -14,6 +14,11 @@ package kr.ac.kaist.safe.json
 import kr.ac.kaist.safe.util._
 import kr.ac.kaist.safe.nodes.ast._
 import kr.ac.kaist.safe.nodes.ir._
+import kr.ac.kaist.safe.errors.error.{
+  ASTNodeParseError,
+  SpanParseError,
+  SourceLocParseError
+}
 
 import spray.json._
 import DefaultJsonProtocol._
@@ -39,6 +44,7 @@ object NodeProtocol extends DefaultJsonProtocol {
         Comment(ASTNodeInfo(span, comment), "")
       }
       case JsArray(Vector(sp, JsNull)) => Comment(ASTNodeInfo(sp.convertTo[Span]), "")
+      case _ => throw ASTNodeParseError(value)
     }
   }
 
@@ -58,6 +64,7 @@ object NodeProtocol extends DefaultJsonProtocol {
     def read(value: JsValue): Span = value match {
       case JsArray(Vector(JsString(name), begin, end)) =>
         Span(name, begin.convertTo[SourceLoc], end.convertTo[SourceLoc])
+      case _ => throw SpanParseError(value)
     }
   }
 
@@ -70,6 +77,7 @@ object NodeProtocol extends DefaultJsonProtocol {
     def read(value: JsValue): SourceLoc = value match {
       case JsArray(Vector(JsNumber(line), JsNumber(col), JsNumber(off))) =>
         SourceLoc(line.toInt, col.toInt, off.toInt)
+      case _ => throw SourceLocParseError(value)
     }
   }
 }

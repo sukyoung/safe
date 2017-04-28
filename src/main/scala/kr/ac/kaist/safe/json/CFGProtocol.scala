@@ -16,26 +16,15 @@ import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.nodes.ast._
 import kr.ac.kaist.safe.json.NodeProtocol._
+import kr.ac.kaist.safe.json.CFGExprProtocol._
 import kr.ac.kaist.safe.json.CFGInstProtocol._
 import kr.ac.kaist.safe.json.CFGFunctionProtocol._
+import kr.ac.kaist.safe.errors.error.CFGParseError
 
 import spray.json._
 import DefaultJsonProtocol._
 
 object CFGProtocol extends DefaultJsonProtocol {
-
-  implicit object AllocSiteJsonFormat extends RootJsonFormat[AllocSite] {
-
-    def write(aSite: AllocSite): JsValue = aSite match {
-      case UserAllocSite(id) => JsNumber(id)
-      case PredAllocSite(name) => JsString(name)
-    }
-
-    def read(value: JsValue): AllocSite = value match {
-      case JsNumber(id) => UserAllocSite(id.toInt)
-      case JsString(name) => PredAllocSite(name)
-    }
-  }
 
   implicit object CFGJsonFormat extends RootJsonFormat[CFG] {
 
@@ -70,6 +59,7 @@ object CFGProtocol extends DefaultJsonProtocol {
           cfg.registerPredASite(aSite.convertTo[AllocSite])
         cfg
       }
+      case _ => throw CFGParseError(value)
     }
   }
 }
