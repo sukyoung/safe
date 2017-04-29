@@ -1,0 +1,21 @@
+<html> <head>
+<script>
+var a = document.createElement('div');
+var result;
+
+a.value = 'b';
+var f1 = function() { result = this.value; }
+var f2 = function() { result = 'c'; }
+
+result = 'dummy1';
+a.addEventListener('onload', f1);
+result = 'dummy2';
+a.addEventListener('click', f2);
+result = 'a';
+var __result1 = result;
+var __expect1 = 'a';
+</script>
+</head>
+<body>
+</body>
+</html>

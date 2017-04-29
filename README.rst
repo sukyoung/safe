@@ -121,11 +121,13 @@ The current developers of SAFE 2.0 are as follows:
 
 * `Jihyeok Park`_ 
 * `Youngseo Choi`_
+* `Jaemin Hong`_
 * `Joonyoung Park`_
 * `Sukyoung Ryu`_ 
 
 .. _Jihyeok Park: https://github.com/jhnaldo
 .. _Youngseo Choi: https://github.com/YoungSeoChoi
+.. _Jaemin Hong: https://github.com/Medowhill
 .. _Joonyoung Park: https://github.com/GMBale
 .. _Sukyoung Ryu:  https://github.com/sukyoung
 

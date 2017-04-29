@@ -311,6 +311,8 @@ class Translator(program: Program) {
       }
     case Some(n) if id.isWith =>
       makeWId(id.text, n, !isLocal(n), id)
+    case Some(n) if NU.isInternalAPI(id.text) =>
+      makeTId(id, id.text, n, true)
     case Some(n) if NU.isInternal(id.text) =>
       makeTId(id, id.text, n, false)
     case Some(n) =>

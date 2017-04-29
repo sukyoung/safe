@@ -55,21 +55,5 @@ object Initialize {
     val abstractHeap = AbsHeap.alpha(concreteHeap)
     AbsState(st.heap + abstractHeap, st.context)
   }
-
-  // Global names for DOM are listed in safe/package.scala
-  def addDOM(st: AbsState, cfg: CFG): AbsState = {
-    val globalObj = st.heap.get(BuiltinGlobal.loc)
-      .fold(AbsObject.Empty)(obj => obj)
-
-    val domGlobalObj =
-      globalObj
-        .initializeUpdate("window", AbsDataProp(AbsValue(BuiltinGlobal.loc)))
-        .initializeUpdate("document", AbsDataProp(AbsValue(Document.loc)))
-
-    val domHeap = Document
-      .initHeap(st.heap, cfg)
-      .update(BuiltinGlobal.loc, domGlobalObj)
-    AbsState(domHeap, st.context)
-  }
 }
 

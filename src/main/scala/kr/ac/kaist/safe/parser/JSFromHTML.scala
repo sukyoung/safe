@@ -25,6 +25,7 @@ import scala.io.Codec
 import scala.util.Try
 import kr.ac.kaist.safe.errors.ExcLog
 import kr.ac.kaist.safe.nodes.ast.SourceElements
+import kr.ac.kaist.safe.util.NodeUtil._
 
 object JSFromHTML {
   private def toList[T](jList: JList[T]): List[T] =
@@ -77,7 +78,15 @@ object JSFromHTML {
         })
       }
 
-    Parser.scriptToAST(codeContents2)
+    // add event function call
+    val codeContents3: List[(String, (Int, Int), String)] = {
+      val evt = INTERNAL_EVENT_FUNC
+      val ss = ("#event#loop", bogus,
+        s"while($INTERNAL_BOOL_TOP) { $INTERNAL_CALL($evt.func, $evt.elem, []); }")
+      codeContents2 :+ ss
+    }
+
+    Parser.scriptToAST(codeContents3)
   }
 
   private def externalSource(name: String, filePath: String): Option[(String, (Int, Int), String)] = {

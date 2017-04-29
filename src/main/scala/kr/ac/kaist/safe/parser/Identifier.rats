@@ -20,7 +20,7 @@ import Unicode;
 
 option setOfString(JAVASCRIPT_RESERVED);
 
-transient String internal = s:("@" id) &{ NodeUtil.isInternalCall(s) || NodeUtil.isInternalValue(s)};
+transient String internal = s:("@" id) &{ NodeUtil.isInternalAPI(s) };
 transient String id       = s:(idstart idrest*) &{ !JAVASCRIPT_RESERVED.contains(s) };
 transient String idname   = s:(idstart idrest*);
 transient String idstart  = UnicodeLetter / [$] / [_] / [\\] UnicodeEscapeSequence ;

@@ -27,7 +27,6 @@ import scala.util.parsing.combinator._
 
 case class JSModel(heap: Heap, funcs: List[CFGFunction], fidMax: Int) {
   def +(other: JSModel): JSModel = {
-    // TODO
     // 1. rearrange function id
     val newFuncs = other.funcs.foldLeft(this.funcs) {
       case (funList, cfgFunc) => {
@@ -59,6 +58,17 @@ case class JSModel(heap: Heap, funcs: List[CFGFunction], fidMax: Int) {
     val newFidMax = this.fidMax + other.fidMax
     JSModel(newHeap, newFuncs, newFidMax)
   }
+  // TODO Complete the toString function
+  /*
+  override def toString: String = {
+    val return = "Heap: {\n"
+    heap.foldLeft() {
+      case ((loc, obj)) => {
+        
+      }
+    }
+  }
+  */
 }
 
 // Argument parser by using Scala RegexParsers.
@@ -229,12 +239,16 @@ object ModelParser extends RegexParsers with JavaTokenParsers {
       }
     }
   } ^? { case Succ(pgm) => pgm }
-  private lazy val jsFuncs: Parser[List[CFGFunction]] = "{" ~> (
+  private lazy val jsFuncs: Parser[(List[CFGFunction], Map[Int, Int])] = "{" ~> (
     repsepE((int <~ ":") ~! jsFun, ",")
   ) <~ "}" ^^ {
       case lst => {
-        lst.foldLeft(List[CFGFunction]()) {
+        var fidMap = Map[Int, Int]()
+        var size = 0
+        val result = lst.foldLeft(List[CFGFunction]()) {
           case (funcs, mid ~ func) => {
+            size += 1
+            fidMap += (mid -> size)
             func.id = -mid
             // allocation site mutation
             // TODO is predefined allocation site good? how about incremental user allocation site?
@@ -254,14 +268,45 @@ object ModelParser extends RegexParsers with JavaTokenParsers {
             func :: funcs
           }
         }
+        (result, fidMap)
       }
     }
 
   // JavaScript model
   private lazy val jsModel: Parser[JSModel] =
     ("Heap" ~> ":" ~> jsHeap) ~! ("Function" ~> ":" ~> jsFuncs) ^^ {
-      // XXX Assume that function id starts at 1 and it is incremented by 1.
-      // Also, there are no missing numbers in the middle. Therefore, fidMax = funcs.length
-      case heap ~ funcs => JSModel(heap, funcs, funcs.length)
+      case heap ~ ((funcs, map)) => {
+        // Check map whether it needs rewrite or not
+        if (map.keySet == map.values.toSet) {
+          JSModel(heap, funcs, funcs.length)
+        } else {
+          val newFuncs = funcs.foldLeft(List[CFGFunction]()) {
+            case (funList, cfgFunc) => {
+              cfgFunc.id = -map(-cfgFunc.id)
+              cfgFunc :: funList
+            }
+          }
+          val newHeapMap = heap.map.foldLeft(HashMap(): Map[Loc, Object]) {
+            case (heapMap, (loc, obj)) => {
+              val mdfimap = obj.imap.foldLeft(HashMap(): Map[IName, IValue]) {
+                case (inimap, (name, value)) => {
+                  value match {
+                    case FId(id) => {
+                      val newFid = -map(-id)
+                      inimap + (name -> FId(newFid))
+                    }
+                    case _ => inimap + (name -> value)
+                  }
+                }
+              }
+              val mdfobj = Object(obj.amap, mdfimap)
+              heapMap + (loc -> mdfobj)
+            }
+          }
+          val newHeap = Heap(newHeapMap)
+          val newModel = JSModel(newHeap, newFuncs, funcs.length)
+          newModel
+        }
+      }
     }
 }

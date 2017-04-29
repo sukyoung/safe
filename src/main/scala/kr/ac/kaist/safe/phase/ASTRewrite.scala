@@ -34,7 +34,7 @@ case object ASTRewrite extends PhaseObj[Program, ASTRewriteConfig, Program] {
     var excLog = hoister.excLog
 
     // disambiguate
-    val disambiguator = new Disambiguator(program, safeConfig.html)
+    val disambiguator = new Disambiguator(program)
     program = disambiguator.result
     excLog += disambiguator.excLog
 

@@ -12,7 +12,6 @@
     "loopSensitivity": 0,
     "html": "",
     "snapshot": "",
-    "domModel": false,
     "jsModel": false
   }
 }

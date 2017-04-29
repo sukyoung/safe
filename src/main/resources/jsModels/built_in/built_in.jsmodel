@@ -1,260 +1,8 @@
 Heap: {
-  #Array: {
-    [[Call]]: fun(59),
-    [[Class]]: "Function",
-    [[Construct]]: fun(60),
-    [[Extensible]]: true,
-    [[HasInstance]]: null,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "isArray": <#Array.isArray, T, F, T>,
-    "length": <1, F, F, F>,
-    "prototype": <#Array.prototype, F, F, F>
-  },
-  #Array.isArray: {
-    [[Call]]: fun(61),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <1, F, F, F>
-  },
-  #Array.prototype: {
-    [[Class]]: "Array",
-    [[Extensible]]: true,
-    [[Prototype]]: #Object.prototype,
-    "concat": <#Array.prototype.concat, T, F, T>,
-    "constructor": <#Array, T, F, T>,
-    "every": <#Array.prototype.every, T, F, T>,
-    "filter": <#Array.prototype.filter, T, F, T>,
-    "forEach": <#Array.prototype.forEach, T, F, T>,
-    "indexOf": <#Array.prototype.indexOf, T, F, T>,
-    "join": <#Array.prototype.join, T, F, T>,
-    "lastIndexOf": <#Array.prototype.lastIndexOf, T, F, T>,
-    "length": <0, T, F, T>,
-    "map": <#Array.prototype.map, T, F, T>,
-    "pop": <#Array.prototype.pop, T, F, T>,
-    "push": <#Array.prototype.push, T, F, T>,
-    "reduce": <#Array.prototype.reduce, T, F, T>,
-    "reduceRight": <#Array.prototype.reduceRight, T, F, T>,
-    "reverse": <#Array.prototype.reverse, T, F, T>,
-    "shift": <#Array.prototype.shift, T, F, T>,
-    "slice": <#Array.prototype.slice, T, F, T>,
-    "some": <#Array.prototype.some, T, F, T>,
-    "sort": <#Array.prototype.sort, T, F, T>,
-    "splice": <#Array.prototype.splice, T, F, T>,
-    "toLocaleString": <#Array.prototype.toLocaleString, T, F, T>,
-    "toString": <#Array.prototype.toString, T, F, T>,
-    "unshift": <#Array.prototype.unshift, T, F, T>
-  },
-  #Array.prototype.concat: {
-    [[Call]]: fun(40),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <1, F, F, F>
-  },
-  #Array.prototype.every: {
-    [[Call]]: fun(52),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <1, F, F, F>
-  },
-  #Array.prototype.filter: {
-    [[Call]]: fun(56),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <1, F, F, F>
-  },
-  #Array.prototype.forEach: {
-    [[Call]]: fun(54),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <1, F, F, F>
-  },
-  #Array.prototype.indexOf: {
-    [[Call]]: fun(50),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <1, F, F, F>
-  },
-  #Array.prototype.join: {
-    [[Call]]: fun(41),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <1, F, F, F>
-  },
-  #Array.prototype.lastIndexOf: {
-    [[Call]]: fun(51),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <1, F, F, F>
-  },
-  #Array.prototype.map: {
-    [[Call]]: fun(55),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <1, F, F, F>
-  },
-  #Array.prototype.pop: {
-    [[Call]]: fun(42),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <0, F, F, F>
-  },
-  #Array.prototype.push: {
-    [[Call]]: fun(43),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <1, F, F, F>
-  },
-  #Array.prototype.reduce: {
-    [[Call]]: fun(57),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <1, F, F, F>
-  },
-  #Array.prototype.reduceRight: {
-    [[Call]]: fun(58),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <1, F, F, F>
-  },
-  #Array.prototype.reverse: {
-    [[Call]]: fun(44),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <0, F, F, F>
-  },
-  #Array.prototype.shift: {
-    [[Call]]: fun(45),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <0, F, F, F>
-  },
-  #Array.prototype.slice: {
-    [[Call]]: fun(46),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <2, F, F, F>
-  },
-  #Array.prototype.some: {
-    [[Call]]: fun(53),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <1, F, F, F>
-  },
-  #Array.prototype.sort: {
-    [[Call]]: fun(47),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <1, F, F, F>
-  },
-  #Array.prototype.splice: {
-    [[Call]]: fun(48),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <2, F, F, F>
-  },
-  #Array.prototype.toLocaleString: {
-    [[Call]]: fun(39),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <0, F, F, F>
-  },
-  #Array.prototype.toString: {
-    [[Call]]: fun(38),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <0, F, F, F>
-  },
-  #Array.prototype.unshift: {
-    [[Call]]: fun(49),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <1, F, F, F>
-  },
-  #Boolean: {
-    [[Call]]: fun(87),
-    [[Class]]: "Function",
-    [[Construct]]: fun(88),
-    [[Extensible]]: true,
-    [[HasInstance]]: null,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <1, F, F, F>,
-    "prototype": <#Boolean.prototype, F, F, F>
-  },
-  #Boolean.prototype: {
-    [[Class]]: "Boolean",
-    [[Extensible]]: true,
-    [[PrimitiveValue]]: false,
-    [[Prototype]]: #Object.prototype,
-    "constructor": <#Boolean, T, F, T>,
-    "toString": <#Boolean.prototype.toString, T, F, T>,
-    "valueOf": <#Boolean.prototype.valueOf, T, F, T>
-  },
-  #Boolean.prototype.toString: {
-    [[Call]]: fun(85),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <1, F, F, F>
-  },
-  #Boolean.prototype.valueOf: {
-    [[Call]]: fun(86),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <1, F, F, F>
-  },
   #Date: {
-    [[Call]]: fun(142),
+    [[Call]]: fun(96),
     [[Class]]: "Function",
-    [[Construct]]: fun(143),
+    [[Construct]]: fun(97),
     [[Extensible]]: true,
     [[HasInstance]]: null,
     [[Prototype]]: #Function.prototype,
@@ -266,7 +14,7 @@ Heap: {
     "prototype": <#Date.prototype, F, F, F>
   },
   #Date.UTC: {
-    [[Call]]: fun(145),
+    [[Call]]: fun(99),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -274,7 +22,7 @@ Heap: {
     "length": <7, F, F, F>
   },
   #Date.now: {
-    [[Call]]: fun(146),
+    [[Call]]: fun(100),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -282,7 +30,7 @@ Heap: {
     "length": <0, F, F, F>
   },
   #Date.parse: {
-    [[Call]]: fun(144),
+    [[Call]]: fun(98),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -340,7 +88,7 @@ Heap: {
     "valueOf": <#Date.prototype.valueOf, T, F, T>
   },
   #Date.prototype.constructor: {
-    [[Call]]: fun(98),
+    [[Call]]: fun(52),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -348,7 +96,7 @@ Heap: {
     "length": <1, F, F, F>
   },
   #Date.prototype.getDate: {
-    [[Call]]: fun(111),
+    [[Call]]: fun(65),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -356,7 +104,7 @@ Heap: {
     "length": <0, F, F, F>
   },
   #Date.prototype.getDay: {
-    [[Call]]: fun(113),
+    [[Call]]: fun(67),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -364,7 +112,7 @@ Heap: {
     "length": <0, F, F, F>
   },
   #Date.prototype.getFullYear: {
-    [[Call]]: fun(107),
+    [[Call]]: fun(61),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -372,7 +120,7 @@ Heap: {
     "length": <0, F, F, F>
   },
   #Date.prototype.getHours: {
-    [[Call]]: fun(115),
+    [[Call]]: fun(69),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -380,7 +128,7 @@ Heap: {
     "length": <0, F, F, F>
   },
   #Date.prototype.getMilliseconds: {
-    [[Call]]: fun(121),
+    [[Call]]: fun(75),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -388,7 +136,7 @@ Heap: {
     "length": <0, F, F, F>
   },
   #Date.prototype.getMinutes: {
-    [[Call]]: fun(117),
+    [[Call]]: fun(71),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -396,7 +144,7 @@ Heap: {
     "length": <0, F, F, F>
   },
   #Date.prototype.getMonth: {
-    [[Call]]: fun(109),
+    [[Call]]: fun(63),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -404,7 +152,7 @@ Heap: {
     "length": <0, F, F, F>
   },
   #Date.prototype.getSeconds: {
-    [[Call]]: fun(119),
+    [[Call]]: fun(73),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -412,7 +160,7 @@ Heap: {
     "length": <0, F, F, F>
   },
   #Date.prototype.getTime: {
-    [[Call]]: fun(106),
+    [[Call]]: fun(60),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -420,7 +168,7 @@ Heap: {
     "length": <0, F, F, F>
   },
   #Date.prototype.getTimezoneOffset: {
-    [[Call]]: fun(123),
+    [[Call]]: fun(77),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -428,7 +176,7 @@ Heap: {
     "length": <0, F, F, F>
   },
   #Date.prototype.getUTCDate: {
-    [[Call]]: fun(112),
+    [[Call]]: fun(66),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -436,7 +184,7 @@ Heap: {
     "length": <0, F, F, F>
   },
   #Date.prototype.getUTCDay: {
-    [[Call]]: fun(114),
+    [[Call]]: fun(68),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -444,7 +192,7 @@ Heap: {
     "length": <0, F, F, F>
   },
   #Date.prototype.getUTCFullYear: {
-    [[Call]]: fun(108),
+    [[Call]]: fun(62),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -452,7 +200,7 @@ Heap: {
     "length": <0, F, F, F>
   },
   #Date.prototype.getUTCHours: {
-    [[Call]]: fun(116),
+    [[Call]]: fun(70),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -460,7 +208,7 @@ Heap: {
     "length": <0, F, F, F>
   },
   #Date.prototype.getUTCMilliseconds: {
-    [[Call]]: fun(122),
+    [[Call]]: fun(76),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -468,7 +216,7 @@ Heap: {
     "length": <0, F, F, F>
   },
   #Date.prototype.getUTCMinutes: {
-    [[Call]]: fun(118),
+    [[Call]]: fun(72),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -476,7 +224,7 @@ Heap: {
     "length": <0, F, F, F>
   },
   #Date.prototype.getUTCMonth: {
-    [[Call]]: fun(110),
+    [[Call]]: fun(64),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -484,7 +232,7 @@ Heap: {
     "length": <0, F, F, F>
   },
   #Date.prototype.getUTCSeconds: {
-    [[Call]]: fun(120),
+    [[Call]]: fun(74),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -492,7 +240,7 @@ Heap: {
     "length": <0, F, F, F>
   },
   #Date.prototype.setDate: {
-    [[Call]]: fun(133),
+    [[Call]]: fun(87),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -500,7 +248,7 @@ Heap: {
     "length": <1, F, F, F>
   },
   #Date.prototype.setFullYear: {
-    [[Call]]: fun(137),
+    [[Call]]: fun(91),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -508,7 +256,7 @@ Heap: {
     "length": <3, F, F, F>
   },
   #Date.prototype.setHours: {
-    [[Call]]: fun(131),
+    [[Call]]: fun(85),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -516,7 +264,7 @@ Heap: {
     "length": <4, F, F, F>
   },
   #Date.prototype.setMilliseconds: {
-    [[Call]]: fun(125),
+    [[Call]]: fun(79),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -524,7 +272,7 @@ Heap: {
     "length": <1, F, F, F>
   },
   #Date.prototype.setMinutes: {
-    [[Call]]: fun(129),
+    [[Call]]: fun(83),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -532,7 +280,7 @@ Heap: {
     "length": <3, F, F, F>
   },
   #Date.prototype.setMonth: {
-    [[Call]]: fun(135),
+    [[Call]]: fun(89),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -540,7 +288,7 @@ Heap: {
     "length": <2, F, F, F>
   },
   #Date.prototype.setSeconds: {
-    [[Call]]: fun(127),
+    [[Call]]: fun(81),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -548,7 +296,7 @@ Heap: {
     "length": <2, F, F, F>
   },
   #Date.prototype.setTime: {
-    [[Call]]: fun(124),
+    [[Call]]: fun(78),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -556,7 +304,7 @@ Heap: {
     "length": <1, F, F, F>
   },
   #Date.prototype.setUTCDate: {
-    [[Call]]: fun(134),
+    [[Call]]: fun(88),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -564,7 +312,7 @@ Heap: {
     "length": <1, F, F, F>
   },
   #Date.prototype.setUTCFullYear: {
-    [[Call]]: fun(138),
+    [[Call]]: fun(92),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -572,7 +320,7 @@ Heap: {
     "length": <3, F, F, F>
   },
   #Date.prototype.setUTCHours: {
-    [[Call]]: fun(132),
+    [[Call]]: fun(86),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -580,7 +328,7 @@ Heap: {
     "length": <4, F, F, F>
   },
   #Date.prototype.setUTCMilliseconds: {
-    [[Call]]: fun(126),
+    [[Call]]: fun(80),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -588,7 +336,7 @@ Heap: {
     "length": <1, F, F, F>
   },
   #Date.prototype.setUTCMinutes: {
-    [[Call]]: fun(130),
+    [[Call]]: fun(84),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -596,7 +344,7 @@ Heap: {
     "length": <3, F, F, F>
   },
   #Date.prototype.setUTCMonth: {
-    [[Call]]: fun(136),
+    [[Call]]: fun(90),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -604,7 +352,7 @@ Heap: {
     "length": <2, F, F, F>
   },
   #Date.prototype.setUTCSeconds: {
-    [[Call]]: fun(128),
+    [[Call]]: fun(82),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -612,7 +360,7 @@ Heap: {
     "length": <2, F, F, F>
   },
   #Date.prototype.toDateString: {
-    [[Call]]: fun(100),
+    [[Call]]: fun(54),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -620,7 +368,7 @@ Heap: {
     "length": <0, F, F, F>
   },
   #Date.prototype.toISOString: {
-    [[Call]]: fun(140),
+    [[Call]]: fun(94),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -628,7 +376,7 @@ Heap: {
     "length": <0, F, F, F>
   },
   #Date.prototype.toJSON: {
-    [[Call]]: fun(141),
+    [[Call]]: fun(95),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -636,7 +384,7 @@ Heap: {
     "length": <1, F, F, F>
   },
   #Date.prototype.toLocaleDateString: {
-    [[Call]]: fun(103),
+    [[Call]]: fun(57),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -644,7 +392,7 @@ Heap: {
     "length": <0, F, F, F>
   },
   #Date.prototype.toLocaleString: {
-    [[Call]]: fun(102),
+    [[Call]]: fun(56),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -652,7 +400,7 @@ Heap: {
     "length": <0, F, F, F>
   },
   #Date.prototype.toLocaleTimeString: {
-    [[Call]]: fun(104),
+    [[Call]]: fun(58),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -660,7 +408,7 @@ Heap: {
     "length": <0, F, F, F>
   },
   #Date.prototype.toString: {
-    [[Call]]: fun(99),
+    [[Call]]: fun(53),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -668,7 +416,7 @@ Heap: {
     "length": <0, F, F, F>
   },
   #Date.prototype.toTimeString: {
-    [[Call]]: fun(101),
+    [[Call]]: fun(55),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -676,7 +424,7 @@ Heap: {
     "length": <0, F, F, F>
   },
   #Date.prototype.toUTCString: {
-    [[Call]]: fun(139),
+    [[Call]]: fun(93),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -684,7 +432,7 @@ Heap: {
     "length": <0, F, F, F>
   },
   #Date.prototype.valueOf: {
-    [[Call]]: fun(105),
+    [[Call]]: fun(59),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -692,9 +440,9 @@ Heap: {
     "length": <0, F, F, F>
   },
   #Error: {
-    [[Call]]: fun(153),
+    [[Call]]: fun(107),
     [[Class]]: "Function",
-    [[Construct]]: fun(154),
+    [[Construct]]: fun(108),
     [[Extensible]]: true,
     [[HasInstance]]: null,
     [[Prototype]]: #Function.prototype,
@@ -712,7 +460,7 @@ Heap: {
     "toString": <#Error.prototype.toString, T, F, T>
   },
   #Error.prototype.toString: {
-    [[Call]]: fun(152),
+    [[Call]]: fun(106),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -720,9 +468,9 @@ Heap: {
     "length": <0, F, F, F>
   },
   #EvalError: {
-    [[Call]]: fun(155),
+    [[Call]]: fun(109),
     [[Class]]: "Function",
-    [[Construct]]: fun(156),
+    [[Construct]]: fun(110),
     [[Extensible]]: true,
     [[HasInstance]]: null,
     [[Prototype]]: #Function.prototype,
@@ -801,8 +549,6 @@ Heap: {
     [[Prototype]]: #Object.prototype,
     "<>Global<>global": <#Global, F, F, F>,
     "<>Global<>true": <true, F, F, F>,
-    "Array": <#Array, T, F, T>,
-    "Boolean": <#Boolean, T, F, T>,
     "Date": <#Date, T, F, T>,
     "Error": <#Error, T, F, T>,
     "EvalError": <#EvalError, T, F, T>,
@@ -816,7 +562,6 @@ Heap: {
     "RangeError": <#RangeError, T, F, T>,
     "ReferenceError": <#ReferenceError, T, F, T>,
     "RegExp": <#RegExp, T, F, T>,
-    "String": <#String, T, F, T>,
     "SyntaxError": <#SyntaxError, T, F, T>,
     "TypeError": <#TypeError, T, F, T>,
     "URIError": <#URIError, T, F, T>,
@@ -911,7 +656,7 @@ Heap: {
     "stringify": <#JSON.stringify, T, F, T>
   },
   #JSON.parse: {
-    [[Call]]: fun(185),
+    [[Call]]: fun(139),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -919,7 +664,7 @@ Heap: {
     "length": <2, F, F, F>
   },
   #JSON.stringify: {
-    [[Call]]: fun(186),
+    [[Call]]: fun(140),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -958,7 +703,7 @@ Heap: {
     "tan": <#Math.tan, T, F, T>
   },
   #Math.abs: {
-    [[Call]]: fun(167),
+    [[Call]]: fun(121),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -966,7 +711,7 @@ Heap: {
     "length": <1, F, F, F>
   },
   #Math.acos: {
-    [[Call]]: fun(168),
+    [[Call]]: fun(122),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -974,7 +719,7 @@ Heap: {
     "length": <1, F, F, F>
   },
   #Math.asin: {
-    [[Call]]: fun(169),
+    [[Call]]: fun(123),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -982,7 +727,7 @@ Heap: {
     "length": <1, F, F, F>
   },
   #Math.atan: {
-    [[Call]]: fun(170),
+    [[Call]]: fun(124),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -990,7 +735,7 @@ Heap: {
     "length": <1, F, F, F>
   },
   #Math.atan2: {
-    [[Call]]: fun(171),
+    [[Call]]: fun(125),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -998,7 +743,7 @@ Heap: {
     "length": <2, F, F, F>
   },
   #Math.ceil: {
-    [[Call]]: fun(172),
+    [[Call]]: fun(126),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -1006,7 +751,7 @@ Heap: {
     "length": <1, F, F, F>
   },
   #Math.cos: {
-    [[Call]]: fun(173),
+    [[Call]]: fun(127),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -1014,7 +759,7 @@ Heap: {
     "length": <1, F, F, F>
   },
   #Math.exp: {
-    [[Call]]: fun(174),
+    [[Call]]: fun(128),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -1022,7 +767,7 @@ Heap: {
     "length": <1, F, F, F>
   },
   #Math.floor: {
-    [[Call]]: fun(175),
+    [[Call]]: fun(129),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -1030,7 +775,7 @@ Heap: {
     "length": <1, F, F, F>
   },
   #Math.log: {
-    [[Call]]: fun(176),
+    [[Call]]: fun(130),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -1038,7 +783,7 @@ Heap: {
     "length": <1, F, F, F>
   },
   #Math.max: {
-    [[Call]]: fun(177),
+    [[Call]]: fun(131),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -1046,7 +791,7 @@ Heap: {
     "length": <2, F, F, F>
   },
   #Math.min: {
-    [[Call]]: fun(178),
+    [[Call]]: fun(132),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -1054,7 +799,7 @@ Heap: {
     "length": <2, F, F, F>
   },
   #Math.pow: {
-    [[Call]]: fun(179),
+    [[Call]]: fun(133),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -1062,7 +807,7 @@ Heap: {
     "length": <2, F, F, F>
   },
   #Math.random: {
-    [[Call]]: fun(180),
+    [[Call]]: fun(134),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -1070,7 +815,7 @@ Heap: {
     "length": <0, F, F, F>
   },
   #Math.round: {
-    [[Call]]: fun(181),
+    [[Call]]: fun(135),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -1078,7 +823,7 @@ Heap: {
     "length": <1, F, F, F>
   },
   #Math.sin: {
-    [[Call]]: fun(182),
+    [[Call]]: fun(136),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -1086,7 +831,7 @@ Heap: {
     "length": <1, F, F, F>
   },
   #Math.sqrt: {
-    [[Call]]: fun(183),
+    [[Call]]: fun(137),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -1094,7 +839,7 @@ Heap: {
     "length": <1, F, F, F>
   },
   #Math.tan: {
-    [[Call]]: fun(184),
+    [[Call]]: fun(138),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -1102,9 +847,9 @@ Heap: {
     "length": <1, F, F, F>
   },
   #Number: {
-    [[Call]]: fun(96),
+    [[Call]]: fun(50),
     [[Class]]: "Function",
-    [[Construct]]: fun(97),
+    [[Construct]]: fun(51),
     [[Extensible]]: true,
     [[HasInstance]]: null,
     [[Prototype]]: #Function.prototype,
@@ -1131,7 +876,7 @@ Heap: {
     "valueOf": <#Number.prototype.valueOf, T, F, T>
   },
   #Number.prototype.constructor: {
-    [[Call]]: fun(89),
+    [[Call]]: fun(43),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -1139,7 +884,7 @@ Heap: {
     "length": <1, F, F, F>
   },
   #Number.prototype.toExponential: {
-    [[Call]]: fun(94),
+    [[Call]]: fun(48),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -1147,7 +892,7 @@ Heap: {
     "length": <1, F, F, F>
   },
   #Number.prototype.toFixed: {
-    [[Call]]: fun(93),
+    [[Call]]: fun(47),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -1155,7 +900,7 @@ Heap: {
     "length": <1, F, F, F>
   },
   #Number.prototype.toLocaleString: {
-    [[Call]]: fun(91),
+    [[Call]]: fun(45),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -1163,7 +908,7 @@ Heap: {
     "length": <0, F, F, F>
   },
   #Number.prototype.toPrecision: {
-    [[Call]]: fun(95),
+    [[Call]]: fun(49),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -1171,7 +916,7 @@ Heap: {
     "length": <1, F, F, F>
   },
   #Number.prototype.toString: {
-    [[Call]]: fun(90),
+    [[Call]]: fun(44),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -1179,7 +924,7 @@ Heap: {
     "length": <1, F, F, F>
   },
   #Number.prototype.valueOf: {
-    [[Call]]: fun(92),
+    [[Call]]: fun(46),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -1375,9 +1120,9 @@ Heap: {
     "length": <1, F, F, F>
   },
   #RangeError: {
-    [[Call]]: fun(157),
+    [[Call]]: fun(111),
     [[Class]]: "Function",
-    [[Construct]]: fun(158),
+    [[Construct]]: fun(112),
     [[Extensible]]: true,
     [[HasInstance]]: null,
     [[Prototype]]: #Function.prototype,
@@ -1395,9 +1140,9 @@ Heap: {
     "name": <"RangeError", T, F, T>
   },
   #ReferenceError: {
-    [[Call]]: fun(159),
+    [[Call]]: fun(113),
     [[Class]]: "Function",
-    [[Construct]]: fun(160),
+    [[Construct]]: fun(114),
     [[Extensible]]: true,
     [[HasInstance]]: null,
     [[Prototype]]: #Function.prototype,
@@ -1415,9 +1160,9 @@ Heap: {
     "name": <"ReferenceError", T, F, T>
   },
   #RegExp: {
-    [[Call]]: fun(150),
+    [[Call]]: fun(104),
     [[Class]]: "Function",
-    [[Construct]]: fun(151),
+    [[Construct]]: fun(105),
     [[Extensible]]: true,
     [[HasInstance]]: null,
     [[Prototype]]: #Function.prototype,
@@ -1435,7 +1180,7 @@ Heap: {
     "toString": <#RegExp.prototype.toString, T, F, T>
   },
   #RegExp.prototype.exec: {
-    [[Call]]: fun(147),
+    [[Call]]: fun(101),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -1443,7 +1188,7 @@ Heap: {
     "length": <1, F, F, F>
   },
   #RegExp.prototype.test: {
-    [[Call]]: fun(148),
+    [[Call]]: fun(102),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -1451,213 +1196,7 @@ Heap: {
     "length": <1, F, F, F>
   },
   #RegExp.prototype.toString: {
-    [[Call]]: fun(149),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <0, F, F, F>
-  },
-  #String: {
-    [[Call]]: fun(82),
-    [[Class]]: "Function",
-    [[Construct]]: fun(83),
-    [[Extensible]]: true,
-    [[HasInstance]]: null,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "fromCharCode": <#String.fromCharCode, T, F, T>,
-    "length": <1, F, F, F>,
-    "prototype": <#String.prototype, F, F, F>
-  },
-  #String.fromCharCode: {
-    [[Call]]: fun(84),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <1, F, F, F>
-  },
-  #String.prototype: {
-    [[Class]]: "String",
-    [[Extensible]]: true,
-    [[PrimitiveValue]]: "",
-    [[Prototype]]: #Object.prototype,
-    "charAt": <#String.prototype.charAt, T, F, T>,
-    "charCodeAt": <#String.prototype.charCodeAt, T, F, T>,
-    "concat": <#String.prototype.concat, T, F, T>,
-    "constructor": <#String, T, F, T>,
-    "indexOf": <#String.prototype.indexOf, T, F, T>,
-    "lastIndexOf": <#String.prototype.lastIndexOf, T, F, T>,
-    "localeCompare": <#String.prototype.localeCompare, T, F, T>,
-    "match": <#String.prototype.match, T, F, T>,
-    "replace": <#String.prototype.replace, T, F, T>,
-    "search": <#String.prototype.search, T, F, T>,
-    "slice": <#String.prototype.slice, T, F, T>,
-    "split": <#String.prototype.split, T, F, T>,
-    "substring": <#String.prototype.substring, T, F, T>,
-    "toLocaleLowerCase": <#String.prototype.toLocaleLowerCase, T, F, T>,
-    "toLocaleUpperCase": <#String.prototype.toLocaleUpperCase, T, F, T>,
-    "toLowerCase": <#String.prototype.toLowerCase, T, F, T>,
-    "toString": <#String.prototype.toString, T, F, T>,
-    "toUpperCase": <#String.prototype.toUpperCase, T, F, T>,
-    "trim": <#String.prototype.trim, T, F, T>,
-    "valueOf": <#String.prototype.valueOf, T, F, T>
-  },
-  #String.prototype.charAt: {
-    [[Call]]: fun(65),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <1, F, F, F>
-  },
-  #String.prototype.charCodeAt: {
-    [[Call]]: fun(66),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <1, F, F, F>
-  },
-  #String.prototype.concat: {
-    [[Call]]: fun(67),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <1, F, F, F>
-  },
-  #String.prototype.constructor: {
-    [[Call]]: fun(62),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <1, F, F, F>
-  },
-  #String.prototype.indexOf: {
-    [[Call]]: fun(68),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <1, F, F, F>
-  },
-  #String.prototype.lastIndexOf: {
-    [[Call]]: fun(69),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <1, F, F, F>
-  },
-  #String.prototype.localeCompare: {
-    [[Call]]: fun(70),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <1, F, F, F>
-  },
-  #String.prototype.match: {
-    [[Call]]: fun(71),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <1, F, F, F>
-  },
-  #String.prototype.replace: {
-    [[Call]]: fun(72),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <2, F, F, F>
-  },
-  #String.prototype.search: {
-    [[Call]]: fun(73),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <1, F, F, F>
-  },
-  #String.prototype.slice: {
-    [[Call]]: fun(74),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <2, F, F, F>
-  },
-  #String.prototype.split: {
-    [[Call]]: fun(75),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <2, F, F, F>
-  },
-  #String.prototype.substring: {
-    [[Call]]: fun(76),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <2, F, F, F>
-  },
-  #String.prototype.toLocaleLowerCase: {
-    [[Call]]: fun(78),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <0, F, F, F>
-  },
-  #String.prototype.toLocaleUpperCase: {
-    [[Call]]: fun(80),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <0, F, F, F>
-  },
-  #String.prototype.toLowerCase: {
-    [[Call]]: fun(77),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <0, F, F, F>
-  },
-  #String.prototype.toString: {
-    [[Call]]: fun(63),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <0, F, F, F>
-  },
-  #String.prototype.toUpperCase: {
-    [[Call]]: fun(79),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <0, F, F, F>
-  },
-  #String.prototype.trim: {
-    [[Call]]: fun(81),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <0, F, F, F>
-  },
-  #String.prototype.valueOf: {
-    [[Call]]: fun(64),
+    [[Call]]: fun(103),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
@@ -1665,9 +1204,9 @@ Heap: {
     "length": <0, F, F, F>
   },
   #SyntaxError: {
-    [[Call]]: fun(161),
+    [[Call]]: fun(115),
     [[Class]]: "Function",
-    [[Construct]]: fun(162),
+    [[Construct]]: fun(116),
     [[Extensible]]: true,
     [[HasInstance]]: null,
     [[Prototype]]: #Function.prototype,
@@ -1685,9 +1224,9 @@ Heap: {
     "name": <"SyntaxError", T, F, T>
   },
   #TypeError: {
-    [[Call]]: fun(163),
+    [[Call]]: fun(117),
     [[Class]]: "Function",
-    [[Construct]]: fun(164),
+    [[Construct]]: fun(118),
     [[Extensible]]: true,
     [[HasInstance]]: null,
     [[Prototype]]: #Function.prototype,
@@ -1705,9 +1244,9 @@ Heap: {
     "name": <"TypeError", T, F, T>
   },
   #URIError: {
-    [[Call]]: fun(165),
+    [[Call]]: fun(119),
     [[Class]]: "Function",
-    [[Construct]]: fun(166),
+    [[Construct]]: fun(120),
     [[Extensible]]: true,
     [[HasInstance]]: null,
     [[Prototype]]: #Function.prototype,
@@ -2152,1546 +1691,14 @@ Function: {
   }
   \\],
   38: [\\
-  function toString() {
-    // 1. Let array be the result of calling ToObject on the this value.
-    var array = @ToObject(this);
-    // 2. Let func be the result of calling the [[Get]] internal method of array with argument "join".
-    var func = array.join;
-    // 3. If IsCallable(func) is false, then let func be the standard built-in method Object.prototype.toString (15.2.4.2).
-    if (!@IsCallable(func)) func = Object.prototype.toString;
-    // 4. Return the result of calling the [[Call]] internal method of func providing array as the this value and an empty arguments list.
-    return @Call(func, array, []);
-  }
-  \\],
-  39: [\\
-  function toLocaleString () {
-    // 1. Let array be the result of calling ToObject on the this value.
-    var array = @ToObject(this);
-    // 2. Let func be the result of calling the [[Get]] internal method of array with argument "join".
-    var func = array.join;
-    // 3. If IsCallable(func) is false, then let func be the standard built-in method Object.prototype.toString (15.2.4.2).
-    if (!@IsCallable(func)) func = Object.prototype.toString;
-    // 4. Return the result of calling the [[Call]] internal method of func providing array as the this value and an empty arguments list.
-    return @Call(func, array, []);
-  }
-  \\],
-  40: [\\
-  function concat () {
-    // 1. Let O be the result of calling ToObject passing the this value as the argument.
-    var O = @ToObject(this);
-    // 2. Let A be a new array created as if by the expression new Array() where Array is the standard built-in constructor with that name.
-    var A = new Array();
-    //3. Let n be 0.
-    var n = 0;
-    // for O
-    var E = O;
-    if(typeof E === 'object' && E !== null && @Class(E) === "Array"){
-      var k = 0;
-      var len = E.length;
-      while(k<len){
-        var P = @ToString(k);
-        var exists = (P in E);
-        if (exists) {
-          var subElement = E[P];
-          @DefineOwnProperty(A,@ToString(n),{value:subElement, writable:true, enumerable:true,       configurable:true});
-        }
-        n += 1;
-        k += 1;
-      }
-    }
-    else {
-      Object.defineProperty(A,@ToString(n),{value:E,writable:true,enumerable:true,configurable:      true});
-      n += 1;
-    }
-    // 4. Let items be an internal List whose first element is O and whose subsequent elements are, in left to right order, the arguments that were passed to this function invocation.
-    var items = arguments;
-    // 5. Repeat, while items is not empty
-    for (var i = 0; i < items.length; i++) {
-      // a. Remove the first element from items and let E be the value of the element.
-      var E = items[i];
-      // b. If the value of the [[Class]] internal property of E is "Array", then
-      if(typeof E === 'object' && E !== null && @Class(E) === "Array"){
-        // i. Let k be 0.
-        var k = 0;
-        // ii. Let len be the result of calling the [[Get]] internal method of E with argument "length".
-        var len = E.length;
-        // iii. Repeat, while k < len
-        while(k<len){
-          // 1. Let P be ToString(k).
-          var P = @ToString(k);
-          // 2. Let exists be the result of calling the [[HasProperty]] internal method of E with P.
-          var exists = (P in E);
-          // 3. If exists is true, then
-          if (exists) {
-            // a Let subElement be the result of calling the [[Get]] internal method of E with         argument P.
-            var subElement = E[P];
-            // b Call the [[DefineOwnProperty]] internal method of A with arguments ToString(n),       Property Descriptor {[[Value]]: subElement, [[Writable]]: true, [[Enumerable]]: true,                  [[Configurable]]: true}, and false.
-            @DefineOwnProperty(A,@ToString(n),{value:subElement, writable:true, enumerable:true,       configurable:true});
-          }
-          // 4. Increase n by 1.
-          n += 1;
-          // 5. Increase k by 1.
-          k += 1;
-        }
-      }
-      // c. Else, E is not an Array
-      else {
-        // i. Call the [[DefineOwnProperty]] internal method of A with arguments ToString(n), Property Descriptor {[[Value]]: E, [[Writable]]: true, [[Enumerable]]: true, [[Configurable]]: true}, and false.
-        Object.defineProperty(A,@ToString(n),{value:E,writable:true,enumerable:true,configurable:      true});
-        // ii. Increase n by 1.
-        n += 1;
-      }
-    }
-    A.length = n;
-    // 6. Return A.
-    return A;
-  }
-  \\],
-  41: [\\
-  function join (separator) {
-    // 1. Let O be the result of calling ToObject passing the this value as the argument.
-    var O = @ToObject(this);
-    // 2. Let lenVal be the result of calling the [[Get]] internal method of O with argument "length".
-    var lenVal = O.length;
-    // 3. Let len be ToUint32(lenVal).
-    var len = @ToUint32(lenVal);
-    // 4. If separator is undefined, let separator be the single-character String ",".
-    if (arguments.length === 0){
-        var separator = ",";
-    }
-    // 5. Let sep be ToString(separator).
-    var sep = @ToString(separator);
-    // 6. If len is zero, return the empty String.
-    if (len === 0){
-        return "";
-    }
-    // 7. Let element0 be the result of calling the [[Get]] internal method of O with argument "0".
-    var element0 = O[0];
-    // 8. If element0 is undefined or null, let R be the empty String; otherwise, Let R be ToString(element0).
-    if (@SameValue(element0,undefined) || @SameValue(element0,null)){
-        var R = "";
-    }else {
-        var R = @ToString(element0);
-    }
-    // 9. Let k be 1.
-    var k = 1;
-    // 10. Repeat, while k < len
-    while (k < len) {
-      // a. Let S be the String value produced by concatenating R and sep.
-      var S = R + sep;
-      // b. Let element be the result of calling the [[Get]] internal method of O with argument ToString(k).
-      var element = O[@ToString(k)];
-      // c. If element is undefined or null, Let next be the empty String; otherwise, let next be ToString(element).
-      if (@SameValue(element,undefined) || @SameValue(element,null)) {
-        var next = "";
-      }else {
-        var next = @ToString(element);
-      }
-      // d. Let R be a String value produced by concatenating S and next.
-      var R = S + next;
-      // e. Increase k by 1.
-      k += 1;
-    }
-    //11. Return R.
-    return R;
-  }
-  \\],
-  42: [\\
-  function pop () {
-    // 1. Let O be the result of calling ToObject passing the this value as the argument.
-    var O = @ToObject(this);
-    // 2. Let lenVal be the result of calling the [[Get]] internal method of O with argument "length".
-    var lenVal = O.length;
-    // 3. Let len be ToUint32(lenVal).
-    var len = @ToUint32(lenVal);
-    // 4. If len is zero,
-    if (@SameValue(len,0)) {
-      // a. Call the [[Put]] internal method of O with arguments "length", 0, and true.
-      O.length = 0;
-      // b. Return undefined.
-      return undefined;
-    }
-    // 5. Else, len > 0
-    else {
-      // a. Let indx be ToString(len–1).
-      var indx = len-1;
-      // b. Let element be the result of calling the [[Get]] internal method of O with argument indx.
-      var element = O[indx];
-      // c. Call the [[Delete]] internal method of O with arguments indx and true.
-      delete O[indx];
-      // d. Call the [[Put]] internal method of O with arguments "length", indx, and true.
-      O.length = indx;
-      // e. Return element.
-      return element;
-    }
+  function () {
   }
   \\],
   43: [\\
-  function push () {
-    // 1. Let O be the result of calling ToObject passing the this value as the argument.
-    var O = @ToObject(this);
-    // 2. Let lenVal be the result of calling the [[Get]] internal method of O with argument "length".
-    var lenVal = O.length;
-    // 3. Let n be ToUint32(lenVal).
-    var n = @ToUint32(lenVal);
-    // 4. Let items be an internal List whose elements are, in left to right order,
-    // the arguments that were passed to this function invocation.
-    var items = arguments;
-    // 5. Repeat, while items is not empty
-    for (var i = 0; i < items.length; i++) {
-      // a. Remove the first element from items and let E be the value of the element.
-      var E = items[i];
-      // b. Call the [[Put]] internal method of O with arguments ToString(n), E, and true.
-      O[@ToString(n)] = E
-      // c. Increase n by 1.
-      n++;
-    }
-    // 6. Call the [[Put]] internal method of O with arguments "length", n, and true.
-    O.length = n
-    // 7. Return n.
-    return n;
+  function () {
   }
   \\],
   44: [\\
-  function reverse () {
-    // 1. Let O be the result of calling ToObject passing the this value as the argument.
-    var O = @ToObject(this);
-    // 2. Let lenVal be the result of calling the [[Get]] internal method of O with argument "length".
-    var lenVal = O.length;
-    // 3. Let len be ToUint32(lenVal).
-    var len = @ToUint32(lenVal);
-    // 4. Let middle be floor(len/2).
-    var middle = @floor(len/2);
-    // 5. Let lower be 0.
-    var lower = 0;
-    // 6. Repeat, while lower !=  middle
-    while(lower != middle){
-      // a. Let upper be len-lower-1.
-      var upper = len-lower-1;
-      // b. Let upperP be ToString(upper).
-      var upperP = @ToString(upper);
-      // c. Let lowerP be ToString(lower).
-      var lowerP = @ToString(lower);
-      // d. Let lowerValue be the result of calling the [[Get]] internal method of O with argument lowerP.
-      var lowerValue = O[lowerP];
-      // e. Let upperValue be the result of calling the [[Get]] internal method of O with argument upperP .
-      var upperValue = O[upperP];
-      // f. Let lowerExists be the result of calling the [[HasProperty]] internal method of O with argument lowerP.
-      var lowerExists = (lowerP in O);
-      // g. Let upperExists be the result of calling the [[HasProperty]] internal method of O with argument upperP.
-      var upperExists = (upperP in O);
-      // h. If lowerExists is true and upperExists is true, then
-      if(lowerExists && upperExists){
-        // i. Call the [[Put]] internal method of O with arguments lowerP, upperValue, and true .
-        O[lowerP] = upperValue;
-        // ii. Call the [[Put]] internal method of O with arguments upperP, lowerValue, and true .
-        O[upperP] = lowerValue;
-      }
-      // i. Else if lowerExists is false and upperExists is true, then
-      else if(!lowerExists && upperExists){
-        // i. Call the [[Put]] internal method of O with arguments lowerP, upperValue, and true .
-        O[lowerP] = upperValue;
-        // ii. Call the [[Delete]] internal method of O, with arguments upperP and true.
-        delete O[upperP];
-      }
-      // j. Else if lowerExists is true and upperExists is false, then
-      else if (lowerExists && !upperExists){
-        // i. Call the [[Delete]] internal method of O, with arguments lowerP and true .
-        delete O[lowerP];
-         // ii. Call the [[Put]] internal method of O with arguments upperP, lowerValue, and true .
-         O[upperP] = lowerValue;
-      }
-      // k. Else both lowerExists and upperExists are false
-        // i. No action is required.
-      // l. Increase lower by 1.
-      lower += 1;
-    }
-    // 7. Return O .
-    return O;
-  }
-  \\],
-  45: [\\
-  function shift () {
-    // 1. Let O be the result of calling ToObject passing the this value as the argument.
-    var O = @ToObject(this);
-    // 2. Let lenVal be the result of calling the [[Get]] internal method of O with argument "length".
-    var lenVal = O.length;
-    // 3. Let len be ToUint32(lenVal).
-    var len = @ToUint32(lenVal);
-    // 4. If len is zero, then
-    if(@SameValue(len,0)){
-      // a. Call the [[Put]] internal method of O with arguments "length", 0, and true.
-      O.length = 0;
-      // b. Return undefined.
-      return undefined;
-    }
-    // 5. Let first be the result of calling the [[Get]] internal method of O with argument "0".
-    var first = O[0];
-    // 6. Let k be 1.
-    var k = 1;
-    // 7. Repeat, while k < len
-    while (k < len) {
-      // a. Let from be ToString(k).
-      var from = @ToString(k);
-      // b. Let to be ToString(k–1).
-      var to = @ToString(k-1);
-      // c. Let fromPresent be the result of calling the [[HasProperty]] internal method of O with argument from.
-      var fromPresent = (from in O);
-      // d. If fromPresent is true, then
-      if(fromPresent){
-        // i. Let fromVal be the result of calling the [[Get]] internal method of O with argument from.
-        var fromVal = O[from];
-        // ii. Call the [[Put]] internal method of O with arguments to, fromVal, and true.
-        O[to] = fromVal;
-      }
-      // e. Else, fromPresent is false
-      else{
-        // i. Call the [[Delete]] internal method of O with arguments to and true.
-        delete O[to];
-      }
-      // f. Increase k by 1.
-      k += 1;
-    }
-    // 8. Call the [[Delete]] internal method of O with arguments ToString(len–1) and true.
-    delete O[@ToString(len-1)];
-    // 9. Call the [[Put]] internal method of O with arguments "length", (len–1) , and true.
-    O.length = len-1;
-    // 10. Return first.
-    return first;
-  }
-  \\],
-  46: [\\
-  function slice (start, end) {
-    // 1. Let O be the result of calling ToObject passing the this value as the argument.
-    var O = @ToObject(this);
-    // 2. Let A be a new array created as if by the expression new Array() where Array is the standard built-in constructor with that name.
-    var A = new Array();
-    // 3. Let lenVal be the result of calling the [[Get]] internal method of O with argument "length".
-    var lenVal = O.length;
-    // 4. Let len be ToUint32(lenVal).
-    var len = @ToUint32(lenVal);
-    // 5. Let relativeStart be ToInteger(start).
-    var relativeStart = @ToInteger(start);
-    // 6. If relativeStart is negative, let k be max((len + relativeStart),0); else let k be           min(relativeStart, len).
-    if(relativeStart<0){
-      var k = Math.max(len+relativeStart,0);
-    }else{
-      var k = Math.min(relativeStart,len);
-    }
-    // 7. If end is undefined, let relativeEnd be len; else let relativeEnd be ToInteger(end).
-    if(@SameValue(end,undefined)){
-      var relativeEnd = len;
-    }else{
-      var relativeEnd = @ToInteger(end);
-    }
-    // 8. If relativeEnd is negative, let final be max((len + relativeEnd),0); else let final be       min(relativeEnd, len).
-    if(relativeEnd<0){
-      var final = Math.max(len+relativeEnd,0);
-    }else{
-      var final = Math.min(relativeEnd,len);
-    }
-    // 9. Let n be 0.
-    var n = 0;
-    // 10. Repeat, while k < final
-    while(k<final){
-      // a. Let Pk be ToString(k).
-      var Pk = @ToString(k);
-      // b. Let kPresent be the result of calling the [[HasProperty]] internal method of O with        argument Pk.
-      var kPresent = Pk in O;
-      // c. If kPresent is true, then
-      if(kPresent){
-        // i. Let kValue be the result of calling the [[Get]] internal method of O with argument Pk.
-        var kValue = O[Pk];
-        // ii. Call the [[DefineOwnProperty]] internal method of A with arguments ToString(n),         Property Descriptor {[[Value]]: kValue, [[Writable]]: true, [[Enumerable]]: true, [[Configurable]]:    true}, and false.
-        @DefineOwnProperty(A,@ToString(n),{value:kValue,writable:true,enumerable:true,configurable:    true});
-      }
-      // d. Increase k by 1.
-      k += 1;
-      // e. Increase n by 1.
-      n += 1;
-    }
-    A.length = n;
-    // 11. Return A.
-    return A;
-  }
-  \\],
-  47: [\\
-  function sort (comparefn) {
-    // modeled using bubble sort (http://en.wikipedia.org/wiki/Bubble_sort)
-    var O = @ToObject(this);
-    var len = O.length;
-    if (@SameValue(comparefn,undefined)) {
-      comparefn = function (left,right) {
-        if (left < right) {
-          return -1;
-        }else if (left == right) {
-          return 0;
-        }else if (left > right) {
-          return 1;
-        }
-      }
-    }
-    do {
-      var newn = 0;
-      for (var i = 1; i< n; i++) {
-        var result = compare(a[i-1],a[i]);
-        // a[i-1] > a[i]
-        if (result === 1) {
-          var temp = a[-1];
-          a[i-1] = a[i];
-          a[i] = temp;
-          newn = i;
-        }
-      }
-      n = newn;
-    }while (n != 0);
-    return O;
-  }
-  \\],
-  48: [\\
-  function splice (start, deleteCount) {
-    // 1. Let O be the result of calling ToObject passing the this value as the argument.
-    var O = @ToObject(this);
-    // 2. Let A be a new array created as if by the expression new Array()where Array is the standard  built-in constructor with that name.
-    var A = new Array();
-    // 3. Let lenVal be the result of calling the [[Get]] internal method of O with argument "length".
-    var lenVal = O.length;
-    // 4. Let len be ToUint32(lenVal).
-    var len = @ToUint32(lenVal);
-    // 5. Let relativeStart be ToInteger(start).
-    var relativeStart = @ToInteger(start);
-    // 6. If relativeStart is negative, let actualStart be max((len + relativeStart),0); else let actualStart be min(relativeStart, len).
-    if (relativeStart < 0) {
-      var actualStart = Math.max(len + relativeStart, 0);
-    }else {
-      var actualStart = Math.min(relativeStart, len);
-    }
-    // 7. Let actualDeleteCount be min(max(ToInteger(deleteCount),0), len – actualStart).
-    var actualDeleteCount = Math.min(Math.max(@ToInteger(deleteCount), 0),len - actualStart);
-    // 8. Let k be 0.
-    var k = 0;
-    // 9. Repeat, while k < actualDeleteCount
-    while (k < actualDeleteCount) {
-      // a. Let from be ToString(actualStart+k).
-      var from = @ToString(actualStart + k);
-      // b. Let fromPresent be the result of calling the [[HasProperty]] internal method of O with     argument from.
-      var fromPresent = (from in O);
-      // c. If fromPresent is true, then
-      if (fromPresent) {
-        // i. Let fromValue be the result of calling the [[Get]] internal method of O with argument    from.
-        var fromValue = O[from];
-        // ii. Call the [[DefineOwnProperty]] internal method of A with arguments ToString(k),         Property Descriptor {[[Value]]: fromValue, [[Writable]]: true, [[Enumerable]]: true, [[Configurable]]: true}, and false.
-        @DefineOwnProperty(A,@ToString(k),{value : fromValue, writable : true, enumerable : true,      configurable : true});
-      }
-      // d. Increment k by 1.
-      k += 1;
-    }
-    // 10. Let items be an internal List whose elements are, in left to right order, the portion of    the actual argument list starting with item1. The list will be empty if no such items are present.
-    items = new Array();
-    for (var i = 0;i < arguments.length - 2;i++) {
-      items[i] = arguments[i+2];
-    }
-    // 11. Let itemCount be the number of elements in items.
-    var itemCount = items.length;
-    // 12. If itemCount < actualDeleteCount, then
-    if ( itemCount < actualDeleteCount) {
-      // a. Let k be actualStart.
-      var k = actualStart;
-      // b. Repeat, while k < (len – actualDeleteCount)
-      while ( k < (len - actualDeleteCount)) {
-        // i. Let from be ToString(k+actualDeleteCount).
-        var from = @ToString(k + actualDeleteCount);
-        // ii. Let to be ToString(k+itemCount).
-        var to = @ToString(k + itemCount);
-        // iii. Let fromPresent be the result of calling the [[HasProperty]] internal method of O with argument from.
-        var fromPresent = (from in O);
-        // iv If fromPresent is true, then
-        if (fromPresent) {
-          // 1. Let fromValue be the result of calling the [[Get]] internal method of O with argument  from.
-          var fromValue = O[from];
-          // 2. Call the [[Put]] internal method of O with arguments to, fromValue, and true.
-          O[to] = fromValue;
-        }
-        // v. Else, fromPresent is false
-        else {
-          // 1. Call the [[Delete]] internal method of O with arguments to and true.
-          delete O[to];
-        }
-        // vi. Increase k by 1.
-        k += 1;
-      }
-      //c. Let k be len.
-      var k = len;
-      // d. Repeat, while k > (len – actualDeleteCount + itemCount)
-      while ( k > (len - actualDeleteCount + itemCount)) {
-        // i. Call the [[Delete]] internal method of O with arguments ToString(k–1) and true.
-       delete O[@ToString(k-1)];
-       // ii. Decrease k by 1.
-       k -= 1;
-      }
-    }
-    // 13. Else if itemCount > actualDeleteCount, then
-    else {
-      // a. Let k be (len – actualDeleteCount).
-      var k = len - actualDeleteCount;
-      // b. Repeat, while k > actualStart
-      while ( k > actualStart) {
-        // i. Let from be ToString(k + actualDeleteCount – 1).
-        var from = @ToString(k + actualDeleteCount - 1);
-        // ii. Let to be ToString(k + itemCount – 1)
-        var to = @ToString(k + itemCount - 1);
-        // iii. Let fromPresent be the result of calling the [[HasProperty]] internal method of O with argument from.
-        var fromPresent = (from in O);
-        // iv. If fromPresent is true, then
-        if (fromPresent) {
-          // 1. Let fromValue be the result of calling the [[Get]] internal method of O with argument  from.
-          var fromValue = O[from];
-          // 2. Call the [[Put]] internal method of O with arguments to, fromValue, and true.
-          O[to] = fromValue;
-        }
-        // v. Else, fromPresent is false
-        else {
-          // 1. Call the [[Delete]] internal method of O with argument to and true.
-          delete O[to];
-        }
-        // vi. Decrease k by 1.
-        k -= 1;
-      }
-    }
-    // 14. Let k be actualStart.
-    var k = actualStart;
-    // 15. Repeat, while items is not empty
-    for (var i = 0; i < items.length; i++) {
-      // a. Remove the first element from items and let E be the value of that element.
-      var E = items[i];
-      // b. Call the [[Put]] internal method of O with arguments ToString(k), E, and true.
-      O[@ToString(k)] = E;
-      // c. Increase k by 1.
-      k += 1;
-    }
-    // 16. Call the [[Put]] internal method of O with arguments "length", (len – actualDeleteCount +   itemCount), and true.
-    O.length = len - actualDeleteCount + itemCount;
-    A.length = actualDeleteCount;
-    // 17. Return A.
-    return A;
-  }
-  \\],
-  49: [\\
-  function unshift () {
-    // 1. Let O be the result of calling ToObject passing the this value as the argument.
-    var O = @ToObject(this);
-    // 2. Let lenVal be the result of calling the [[Get]] internal method of O with argument "length".
-    var lenVal = O.length;
-    // 3. Let len be ToUint32(lenVal).
-    var len = @ToUint32(lenVal);
-    // 4. Let argCount be the number of actual arguments.
-    var argCount = arguments.length;
-    // 5. Let k be len.
-    var k = len;
-    // 6. Repeat, while k > 0,
-    while (k > 0) {
-      // a. Let from be ToString(k–1).
-      var from = @ToString(k-1);
-      // b. Let to be ToString(k+argCount –1).
-      var to = @ToString(k + argCount - 1);
-      // c. Let fromPresent be the result of calling the [[HasProperty]] internal method of O with argument from.
-      var fromPresent = (from in O);
-      // d. If fromPresent is true, then
-      if (fromPresent) {
-        // i. Let fromValue be the result of calling the [[Get]] internal method of O with argument from.
-        var fromValue = O[from];
-        // ii. Call the [[Put]] internal method of O with arguments to, fromValue, and true.
-        O[to] = fromValue;
-      }
-      // e. Else, fromPresent is false
-      else {
-        // i. Call the [[Delete]] internal method of O with arguments to, and true.
-        delete O[to];
-      }
-      // f. Decrease k by 1.
-      k -= 1;
-    }
-    // 7. Let j be 0.
-    var j = 0;
-    // 8. Let items be an internal List whose elements are, in left to right order, the arguments that were passed to this function invocation.
-    var items = arguments;
-    // 9. Repeat, while items is not empty
-    for (var i = 0; i < items.length; i++) {
-      // a. Remove the first element from items and let E be the value of that element.
-      var E = items[i];
-      // b. Call the [[Put]] internal method of O with arguments ToString(j), E, and true.
-      O[@ToString(j)] = E;
-      // c. Increase j by 1.
-      j += 1;
-    }
-    // 10. Call the [[Put]] internal method of O with arguments "length", len+argCount, and true.
-    O.length = len + argCount;
-    // 11. Return len+argCount.
-    return len + argCount;
-  }
-  \\],
-  50: [\\
-  function indexOf (searchElement,fromIndex) {
-    // 1. Let O be the result of calling ToObject passing the this value as the argument.
-    var O = @ToObject(this);
-    // 2. Let lenValue be the result of calling the [[Get]] internal method of O with the argument "length".
-    var lenValue = O.length;
-    // 3. Let len be ToUint32(lenValue).
-    var len = @ToUint32(lenValue);
-    // 4. If len is 0, return -1.
-    if (@SameValue(len,0)){
-      return -1;
-    }
-    // 5. If argument fromIndex was passed let n be ToInteger(fromIndex); else let n be 0.
-    if (arguments.length >1){
-      var n = @ToInteger(fromIndex);
-    }else{
-      var n = 0;
-    }
-    // 6. If n ≥ len, return -1.
-    if (n>=len){
-      return -1;
-    }
-    // 7. Ifn≥0,then
-    if (n>=0){
-      // a. Let k be n.
-      var k = n;
-    }
-    // 8. Else, n<0
-    else{
-      // a. Let k be len - abs(n).
-      var k = len - @abs(n);
-      // b. If k is less than 0,then let k be 0.
-      if (k<0){
-        var k = 0;
-      }
-    }
-    // 9. Repeat, while k<len
-    while (k<len){
-      // a. Let kPresent be the result of calling the [[HasProperty]] internal method of O with argument ToString(k).
-      var kPresent = (@ToString(k) in O);
-      // b. If kPresent is true, then
-      if (kPresent){
-        // i. Let elementK be the result of calling the [[Get]] internal method of O with the argument ToString(k).
-        var elementK = O[@ToString(k)];
-        // ii. Let same be the result of applying the Strict Equality Comparison Algorithm to searchElement and elementK.
-        var same = (searchElement === elementK);
-        // iii. If same is true, return k.
-        if (same) {
-          return k;
-        }
-      }
-      // c. Increase k by 1.
-      k +=1;
-    }
-    // 10. Return -1.
-    return -1;
-  }
-  \\],
-  51: [\\
-  function lastIndexOf (searchElement,fromIndex) {
-    // 1. Let O be the result of calling ToObject passing the this value as the argument.
-    var O = @ToObject(this);
-    // 2. Let lenValue be the result of calling the [[Get]] internal method of O with the argument        "length".
-    var lenValue = O.length;
-    // 3. Let len be ToUint32(lenValue).
-    var len = @ToUint32(lenValue);
-    // 4. If len is 0, return -1.
-    if (@SameValue(len,0)) {
-      return -1;
-    }
-    // 5. If argument fromIndex was passed let n be ToInteger(fromIndex); else let n be len-1.
-    if(arguments.length>1){
-      var n = @ToInteger(fromIndex);
-    }else {
-      var n = len-1;
-    }
-    // 6. If n ≥ 0, then let k be min(n,len–1).
-    if (n>=0){
-      var k = Math.min(n,len-1);
-    }
-    // 7. Else,n<0
-    else {
-      // a. Let k be len - abs(n).
-      var k = len - @abs(n);
-    }
-    // 8. Repeat, while k≥ 0
-    while (k>=0) {
-      // a. Let kPresent be the result of calling the [[HasProperty]] internal method of O with argument  ToString(k).
-      var kPresent = (@ToString(k) in O);
-      // b. If kPresent is true, then
-      if (kPresent) {
-        // i. Let elementK be the result of calling the [[Get]] internal method of O with the argument    ToString(k).
-        var elementK = O[@ToString(k)];
-        // ii. Let same be the result of applying the Strict Equality Comparison Algorithm to             searchElement and elementK.
-        var same = (searchElement === elementK);
-        // iii. If same is true, return k.
-        if (same) {
-          return k;
-        }
-      }
-      // c. Decrease k by 1.
-      k -= 1;
-    }
-    // 9. Return -1.
-    return -1;
-  }
-  \\],
-  52: [\\
-  function every (callbackfn, thisArg) {
-    // 1. Let O be the result of calling ToObject passing the this value as the argument.
-    var O = @ToObject(this);
-    // 2. Let lenValue be the result of calling the [[Get]] internal method of O with the argument "length".
-    var lenValue = O.length;
-    // 3. Let len be ToUint32(lenValue).
-    var len = @ToUint32(lenValue);
-    // 4. If IsCallable(callbackfn) is false, throw a TypeError exception.
-    if (@IsCallable(callbackfn) === false) {
-      throw new TypeError();
-    }
-    // 5. If thisArg was supplied, let T be thisArg; else let T be undefined.
-    if (arguments.length > 1) {
-      var T = thisArg;
-    }else {
-      var T = undefined;
-    }
-    // 6. Let k be 0.
-    var k = 0;
-    // 7. Repeat, while k < len
-    while (k < len) {
-      // a. Let Pk be ToString(k).
-      var Pk = @ToString(k);
-      // b. Let kPresent be the result of calling the [[HasProperty]] internal method of O with argument Pk.
-      var kPresent = (Pk in O);
-      // c. If kPresent is true, then
-      if (kPresent) {
-        // i. Let kValue be the result of calling the [[Get]] internal method of O with argument Pk.
-        var kValue = O[Pk];
-        // ii. Let testResult be the result of calling the [[Call]] internal method of callbackfn with T as the this value and argument list containing kValue, k, and O.
-        var testResult = @Call(callbackfn,T,[kValue,k,O]);
-        // iii. If ToBoolean(testResult) is false, return false.
-        if (@ToBoolean(testResult) === false) {
-          return false;
-        }
-      }
-      // d. Increase k by 1.
-      k += 1;
-    }
-    //8. Return true.
-    return true;
-  }
-  \\],
-  53: [\\
-  function some (callbackfn, thisArg) {
-    // 1. Let O be the result of calling ToObject passing the this value as the argument.
-    var O = @ToObject(this);
-    // 2. Let lenValue be the result of calling the [[Get]] internal method of O with the argument "length".
-    var lenValue = O.length;
-    // 3. Let len be ToUint32(lenValue).
-    var len = @ToUint32(lenValue);
-    // 4. If IsCallable(callbackfn) is false, throw a TypeError exception.
-    if (@IsCallable(callbackfn) === false) {
-      throw new TypeError();
-    }
-    // 5. If thisArg was supplied, let T be thisArg; else let T be undefined.
-    if (arguments.length > 1) {
-      var T = thisArg;
-    }else {
-      var T = undefined;
-    }
-    // 6. Let k be 0.
-    var k = 0; 
-    // 7. Repeat, while k < len
-    while (k < len) {
-      // a. Let Pk be ToString(k).
-      var Pk = @ToString(k);
-      // b. Let kPresent be the result of calling the [[HasProperty]] internal method of O with argument Pk.
-      var kPresent = (Pk in O);
-      // c. If kPresent is true, then
-      if (kPresent) {
-        // i. Let kValue be the result of calling the [[Get]] internal method of O with argument Pk.
-        var kValue = O[Pk];
-        // ii. Let testResult be the result of calling the [[Call]] internal method of callbackfn with T as the this value and argument list containing kValue, k, and O.
-        var testResult = @Call(callbackfn,T,[kValue,k,O]);
-        // iii. If ToBoolean(testResult) is true, return true.
-        if (@ToBoolean(testResult) === true) {
-          return true;
-        }
-      }
-      // d. Increase k by 1.
-      k += 1;
-    }
-    // 8. Return false.
-    return false;
-  }
-  \\],
-  54: [\\
-  function forEach (callbackfn, thisArg) {
-    // 1. Let O be the result of calling ToObject passing the this value as the argument.
-    var O = @ToObject(this);
-    // 2. Let lenValue be the result of calling the [[Get]] internal method of O with the argument "length".
-    var lenValue = O.length;
-    // 3. Let len be ToUint32(lenValue).
-    var len = @ToUint32(lenValue);
-    // 4. If IsCallable(callbackfn) is false, throw a TypeError exception.
-    if (@IsCallable(callbackfn) === false) {
-      throw new TypeError();
-    }
-    // 5. If thisArg was supplied, let T be thisArg; else let T be undefined.
-    if (arguments.length > 1){
-      var T = thisArg;
-    }else {
-      var T = undefined;
-    }
-    // 6. Let k be 0.
-    var k = 0;
-    // 7. Repeat, while k < len
-    while (k < len) {
-      // a. Let Pk be ToString(k).
-      var Pk = @ToString(k);
-      // b. Let kPresent be the result of calling the [[HasProperty]] internal method of O with argument Pk.
-      var kPresent = (Pk in O);
-      // c. If kPresent is true, then
-      if (kPresent) {
-        // i. Let kValue be the result of calling the [[Get]] internal method of O with argument Pk.
-        var kValue = O[Pk];
-        // ii. Call the [[Call]] internal method of callbackfn with T as the this value and argument list containing kValue, k, and O.
-        @Call(callbackfn,T,[kValue,k,O])
-      }
-      // d. Increase k by 1.
-      k += 1;
-    }
-    // 8. Return undefined.
-    return undefined;
-  }
-  \\],
-  55: [\\
-  function map (callbackfn, thisArg) {
-    // 1. Let O be the result of calling ToObject passing the this value as the argument.
-    var O = @ToObject(this);
-    // 2. Let lenValue be the result of calling the [[Get]] internal method of O with the argument "length".
-    var lenValue = O.length;
-    // 3. Let len be ToUint32(lenValue).
-    var len = @ToUint32(lenValue);
-    // 4. If IsCallable(callbackfn) is false, throw a TypeError exception.
-    if (@IsCallable(callbackfn) === false) {
-      throw new TypeError();
-    }
-    // 5. If thisArg was supplied, let T be thisArg; else let T be undefined.
-    if (arguments.length > 1){
-      var T = thisArg;
-    }else {
-      var T = undefined;
-    }
-    // 6. Let A be a new array created as if by the expression new Array(len) where Array is the standard built-in constructor with that name and len is the value of len.
-    var A = new Array(len);
-    // 7. Let k be 0.
-    var k = 0;
-    // 8. Repeat, while k < len
-    while (k < len) {
-      // a. Let Pk be ToString(k).
-      var Pk = @ToString(k);
-      // b. Let kPresent be the result of calling the [[HasProperty]] internal method of O with argument Pk.
-      var kPresent = (Pk in O);
-      // c. If kPresent is true, then
-      if (kPresent) {
-        // i. Let kValue be the result of calling the [[Get]] internal method of O with argument Pk.
-        var kValue = O[Pk];
-        // ii. Let mappedValue be the result of calling the [[Call]] internal method of callbackfn with T as the this value and argument list containing kValue, k, and O.
-        var mappedValue = @Call(callbackfn,T,[kValue,k,O]);
-        // iii. Call the [[DefineOwnProperty]] internal method of A with arguments Pk, Property Descriptor {[[Value]]: mappedValue, [[Writable]]: true, [[Enumerable]]: true, [[Configurable]]: true}, and false.
-        @DefineOwnProperty(A,Pk,{value:mappedValue,writable:true,enumerable:true,configurable:true});
-      }
-      // d. Increase k by 1.
-      k += 1;
-    }
-    //9. Return A.
-    return A;
-  }
-  \\],
-  56: [\\
-  function filter (callbackfn, thisArg) {
-    // 1. Let O be the result of calling ToObject passing the this value as the argument.
-    var O = @ToObject(this);
-    // 2. Let lenValue be the result of calling the [[Get]] internal method of O with the argument "length".
-    var lenValue = O.length;
-    // 3. Let len be ToUint32(lenValue).
-    var len = @ToUint32(lenValue);
-    // 4. If IsCallable(callbackfn) is false, throw a TypeError exception.
-    if (@IsCallable(callbackfn) === false) {
-      throw new TypeError();
-    }
-    // 5. If thisArg was supplied, let T be thisArg; else let T be undefined.
-    if (arguments.length >1) {
-      var T = thisArg;
-    }else {
-      var T = undefined;
-    }
-    // 6. Let A be a new array created as if by the expression new Array() where Array is the standard built-in constructor with that name.
-    var A = new Array();
-    // 7. Letk be 0.
-    var k = 0;
-    // 8. Let to be 0.
-    var to = 0;
-    // 9. Repeat, while k < len
-    while (k < len) {
-      // a. Let Pk be ToString(k).
-      var Pk = @ToString(k);
-      // b. Let kPresent be the result of calling the [[HasProperty]] internal method of O with argument Pk.
-      var kPresent = (Pk in O);
-      // c. If kPresent is true, then
-      if (kPresent) {
-        // i. Let kValue be the result of calling the [[Get]] internal method of O with argument Pk.
-        var kValue = O[Pk];
-        // ii. Let selected be the result of calling the [[Call]] internal method of callbackfn with T as the this value and argument list containing kValue, k, and O.
-        var selected = @Call(callbackfn,T,[kValue,k,O]);
-        // iii. If ToBoolean(selected) is true, then
-        if (@ToBoolean(selected) === true) {
-          // 1. Call the [[DefineOwnProperty]] internal method of A with arguments ToString(to), Property Descriptor {[[Value]]: kValue, [[Writable]]: true, [[Enumerable]]: true, [[Configurable]]: true}, and false.
-          @DefineOwnProperty(A,@ToString(to),{value:kValue,writable:true,enumerable:true,configurable:true});
-          // 2. Increase to by 1.
-          to += 1;
-        }
-      }
-      // d. Increase k by 1.
-      k += 1;
-    }
-    // 10. Return A.
-    return A;
-  }
-  \\],
-  57: [\\
-  function reduce(callbackfn, initialValue) {
-    // 1. Let O be the result of calling ToObject passing the this value as the argument.
-    var O = @ToObject(this);
-    // 2. Let lenValue be the result of calling the [[Get]] internal method of O with the argument "length".
-    var lenValue = O.length;
-    // 3. Let len be ToUint32(lenValue).
-    var len = @ToUint32(lenValue);
-    // 4. If IsCallable(callbackfn) is false, throw a TypeError exception.
-    if (@IsCallable(callbackfn) === false) {
-      throw new TypeError();
-    }
-    // 5. If len is 0 and initialValue is not present, throw a TypeError exception.
-    if (len === 0 && arguments.length < 2) {
-      throw new TypeError();
-    }
-    // 6. Let k be 0.
-    var k = 0;
-    // 7. If initialValue is present, then
-    if (arguments.length > 1) {
-      // a. Set accumulator to initialValue.
-      var accumulator = initialValue;
-    }
-    // 8. Else, initialValue is not present
-    else {
-      // a. Let kPresent be false.
-      var kPresent = false;
-      // b. Repeat, while kPresent is false and k < len
-      while (kPresent === false && k < len) {
-        // i. Let Pk be ToString(k).
-        var Pk = @ToString(k);
-        //ii. Let kPresent be the result of calling the [[HasProperty]] internal method of O with argument Pk.
-        var kPresent = (Pk in O);
-        // iii. If kPresent is true, then
-        if (kPresent) {
-          // 1. Let accumulator be the result of calling the [[Get]] internal method of O with argument Pk.
-          var accumulator = O[Pk];
-        }
-        // iv. Increase k by 1.
-        k += 1;
-      }
-      // c. If kPresent is false, throw a TypeError exception.
-      if (!kPresent) {
-        throw new TypeError();
-      }
-    }
-    // 9. Repeat, while k < len
-    while (k < len) {
-      // a. Let Pk be ToString(k).
-      var Pk = @ToString(k);
-      // b. Let kPresent be the result of calling the [[HasProperty]] internal method of O with argument Pk.
-      var kPresent = (Pk in O);
-      // c. If kPresent is true, then
-      if (kPresent) {
-        // i. Let kValue be the result of calling the [[Get]] internal method of O with argument Pk.
-        var kValue = O[Pk];
-        // ii. Let accumulator be the result of calling the [[Call]] internal method of callbackfn with undefined as the this value and argument list containing accumulator, kValue, k, and O.
-        var accumulator = @Call(callbackfn,undefined,[accumulator,kValue,k,O]);
-      }
-      // d. Increase k by 1.
-      k += 1;
-    }
-    // 10. Return accumulator.
-    return accumulator;
-  }
-  \\],
-  58: [\\
-  function reduceRight (callbackfn, initialValue) {
-    // 1. Let O be the result of calling ToObject passing the this value as the argument.
-    var O = @ToObject(this);
-    // 2. Let lenValue be the result of calling the [[Get]] internal method of O with the argument "length".
-    var lenValue = O.length;
-    // 3. Let len be ToUint32(lenValue).
-    var len = @ToUint32(lenValue);
-    // 4. If IsCallable(callbackfn) is false, throw a TypeError exception.
-    if (@IsCallable(callbackfn) === false) {
-      throw new TypeError();
-    }
-    // 5. If len is 0 and initialValue is not present, throw a TypeError exception.
-    if (len === 0 && arguments.length < 2) {
-      throw new TypeError();
-    }
-    // 6. Let k be len-1.
-    var k = len - 1;
-    // 7. If initialValue is present, then
-    if (arguments.length > 1) {
-      // a. Set accumulator to initialValue.
-      var accumulator = initialValue;
-    }
-    // 8. Else, initialValue is not present
-    else {
-      // a. Let kPresent be false.
-      var kPresent = false;
-      // b. Repeat, while kPresent is false and k ≥ 0
-      while (kPresent === false && k >= 0) {
-        // i. Let Pk be ToString(k).
-        var Pk = @ToString(k);
-        // ii. Let kPresent be the result of calling the [[HasProperty]] internal method of O with argument Pk.
-        var kPresent = (Pk in O);
-        // iii. If kPresent is true, then
-        if (kPresent) {
-          // 1. Let accumulator be the result of calling the [[Get]] internal method of O with argument Pk.
-          var accumulator = O[Pk]
-        }
-        // iv. Decrease k by 1.
-        k -= 1;
-      }
-      // c. If kPresent is false, throw a TypeError exception.
-      if (!kPresent) {
-        throw new TypeError();
-      }
-    }
-    // 9. Repeat, while k ≥ 0
-    while (k >= 0) {
-      // a. Let Pk be ToString(k).
-      var Pk = @ToString(k);
-      // b. Let kPresent be the result of calling the [[HasProperty]] internal method of O with argument Pk.
-      var kPresent = (Pk in O);
-      // c. If kPresent is true, then
-      if (kPresent) {
-        //i. Let kValue be the result of calling the [[Get]] internal method of O with argument Pk.
-        var kValue = O[Pk];
-        // ii. Let accumulator be the result of calling the [[Call]] internal method of callbackfn with undefined as the this value and argument list containing accumulator, kValue, k, and O.
-        var accumulator = @Call(callbackfn,undefined,[accumulator,kValue,k,O]);
-      }
-      // d. Decrease k by 1.
-      k -= 1;
-    }
-    // 10. Return accumulator.
-    return accumulator;
-  }
-  \\],
-  59: [\\
-  function Array (len) {
-    var arr = [];
-    if (arguments.length === 1) {
-      if (typeof len === 'number') {
-        if (@SameValue(@ToUint32(len), len)) arr.length = len;
-        else throw new RangeError();
-      } else {
-        arr.length = 1;
-        arr[0] = len;
-      }
-    } else {
-      for (var i = 0; i < arguments.length; i++) {
-        arr[i] = arguments[i];
-      }
-      arr.length = arguments.length;
-    }
-    return arr;
-  }
-  \\],
-  60: [\\
-  function Array (len) {
-    var arr = [];
-    if (arguments.length === 1) {
-      if (typeof len === 'number') {
-        if (@SameValue(@ToUint32(len), len)) arr.length = len;
-        else throw new RangeError();
-      } else {
-        arr.length = 1;
-        arr[0] = len;
-      }
-    } else {
-      for (var i = 0; i < arguments.length; i++) {
-        arr[i] = arguments[i];
-      }
-      arr.length = arguments.length;
-    }
-    return arr;
-  }
-  \\],
-  61: [\\
-  function isArray (arg) {
-    // 1. If Type(arg) is not Object, return false.
-    if (typeof arg !== "object" || arg === null) return false;
-    // 2. If the value of the [[Class]] internal property of arg is "Array", then return true.
-    if (@SameValue(@Class(arg), "Array")) return true;
-    // 3. Return false.
-    return false;
-  }
-  \\],
-  62: [\\
-  function () {
-  }
-  \\],
-  63: [\\
-  function toString () {
-    // it throws a TypeError exception if its this value is not a String or a String object.
-    if (typeof this === "string") return this;
-    else if (typeof this === "object" && this !== null && @Class(this) === "String") return @PrimitiveValue(this);
-    else throw new TypeError();
-  }
-  \\],
-  64: [\\
-  function valueOf () {
-    // it throws a TypeError exception if its this value is not a String or String object.
-    // Returns this String value.
-    if (typeof this === "string") return this;
-    else if (typeof this === "object" && this !== null && @Class(this) === "String") return @PrimitiveValue(this);
-    else throw new TypeError();
-  }
-  \\],
-  65: [\\
-  function charAt (pos) {
-    // 1. Call CheckObjectCoercible passing the this value as its argument.
-    if((@SameValue(undefined,this)) || (@SameValue(null,this))){
-      throw new TypeError();
-    }
-    // 2. Let S be the result of calling ToString, giving it the this value as its argument.
-    var S = @ToString(this);
-    // 3. Let position be ToInteger(pos).
-    var position = @ToInteger(pos);
-    // 4. Let size be the number of characters in S.
-    var size = S.length;
-    // 5. If position < 0 or position ≥ size, return empty String.
-    if((position<0) || (position>=size)){
-      return "";
-    }
-    // 6. Return a String of length 1, containing one character from S, namely the character at position position, where the first (leftmost) character in S is considered to be at position 0, the next one at position 1, and so on.
-    return S[position];
-  }
-  \\],
-  66: [\\
-  function charCodeAt (pos) {
-    // 1. Call CheckObjectCoercible passing the this value as its argument.
-    if((@SameValue(undefined,this)) || (@SameValue(null,this))){
-      throw new TypeError();
-    }
-    // 2. Let S be the result of calling ToString, giving it the this value as its argument.
-    var S = @ToString(this);
-    // 3. Let position be ToInteger(pos).
-    var position = @ToInteger(pos);
-    // 4. Let size be the number of characters in S.
-    var size = S.length;
-    // 5. If position < 0 or position ≥ size, return NaN.
-    if((position<0) || (position>=size)){
-      return NaN;
-    }
-    // 6. Return a value of Number type, whose value is the code unit value of the character at position position in the String S, where the first (leftmost) character in S is considered to be at position 0, the next one at position 1, and so on.
-    // TODO implement @ToUint16
-    // Need char -> Unicode-16
-    // return @ToUint16(S[position]);
-    return @ToNumber(S[position]);
-  }
-  \\],
-  67: [\\
-  function concat () {
-    // 1. Call CheckObjectCoercible passing the this value as its argument.
-    if (@SameValue(this,undefined) || @SameValue(this,null)){
-      throw new TypeError();
-    }
-    // 2. Let S be the result of calling ToString, giving it the this value as its argument.
-    var S = @ToString(this);
-    // 3. Let args be an internal list that is a copy of the argument list passed to this function.
-    var args = arguments;
-    // 4. Let R be S.
-    var R = S;
-    // 5. Repeat, while args is not empty
-    for (var i = 0; i < args.length; i++) {
-      // a. Remove the first element from args and let next be the value of that element.
-      var next = args[i];
-      // b. Let R be the String value consisting of the characters in the previous value of R followed by the characters of ToString(next).
-      var R = R + @ToString(next);
-    }
-    // 6. Return R.
-    return R;
-  }
-  \\],
-  68: [\\
-  function indexOf (searchString,position) {
-    // 1. Call CheckObjectCoercible passing the this value as its argument.
-    if (@SameValue(this,undefined) || @SameValue(this,null)){
-      throw new TypeError();
-    }
-    // 2. Let S be the result of calling ToString, giving it the this value as its argument.
-    var S = @ToString(this);
-    // 3. Let searchStr be ToString(searchString).
-    var searchStr = @ToString(searchString);
-    // 4. Let pos be ToInteger(position). (If position is undefined, this step produces the value 0).
-    var pos = @ToInteger(position);
-    // 5. Let len be the number of characters in S.
-    var len = S.length;
-    // 6. Let start be min(max(pos, 0), len).
-    var start = Math.min(Math.max(pos,0),len);
-    // 7. Let searchLen be the number of characters in searchStr.
-    var searchLen = searchStr.length;
-    //8. Return the smallest possible integer k not smaller than start such that k+ searchLen is not      greater than len,and for all nonnegative integers j less than searchLen, the character at position k+j of S is the same as the character at position j of searchStr; but if there is no such integer k, then return the value -1.
-    var k = start;
-    while (k+searchLen<=len) {
-      var p = 0;
-      for (var j=0;j<searchLen;j++) {
-        if (S[k+j] !== searchStr[j]) break;
-        p+=1;
-      }
-      if (p === searchLen){
-        return k;
-      }
-      k += 1;
-    }
-    return -1;
-  }
-  \\],
-  69: [\\
-  function lastIndexOf (searchString,position) {
-    // 1. Call CheckObjectCoercible passing the this value as its argument.
-    if(@SameValue(undefined,this) || @SameValue(null,this)){
-      throw new TypeError();
-    }
-    // 2. Let S be the result of calling ToString, giving it the this value as its argument.
-    var S = @ToString(this);
-    // 3. Let searchStr be ToString(searchString).
-    var searchStr = @ToString(searchString);
-    // 4. Let numPos be ToNumber(position). (If position is undefined, this step produces the value NaN).
-    var numPos = @ToNumber(position);
-    // 5. If numPos is NaN, let pos be + ; otherwise, let pos be ToInteger(numPos).
-    if (@SameValue(NaN,numPos)){
-      var pos = Infinity;
-    }else {
-      var pos = @ToInteger(numPos);
-    }
-    // 6. Let len be the number of characters in S.
-    var len = S.length;
-    // 7. Let start min(max(pos, 0), len).
-    var start = Math.min(Math.max(pos,0),len);
-    // 8. Let searchLen be the number of characters in searchStr.
-    var searchLen = searchStr.length;
-    // 9. Return the largest possible nonnegative integer k not larger than start such that k+ searchLen  is not greater than len, and for all nonnegative integers j less than searchLen, the character at         position k+j of S is the same as the character at position j of searchStr; but if there is no such        integer k, then return the value -1.
-    var k = start;
-    while (k>=0){
-      if ((k+searchLen) <= len){
-        var p = 0;
-        for (var j=0;j<searchLen;j++) {
-          if (S[k+j] !== searchStr[j]) {
-            break;
-          }
-          p += 1;
-        }
-        if (p === searchLen){
-          return k;
-        }
-      }
-    }
-    return -1;
-  }
-  \\],
-  70: [\\
-  function localeCompare (that) {
-    /*
-    // 1. Call CheckObjectCoercible passing the this value as its argument.
-     if (@SameValue(undefined,this) || @SameValue(null,this)){
-      throw new TypeError();
-    }
-    // 2. Let S be the result of calling ToString, giving it the this value as its argument.
-    var S = @ToString(this);
-    // 3. Let That be ToString(that).
-    var that = @ToString(that);
-    */
-    // TODO char -> Unicode-16 translation
-    return @NumTop;
-  }
-  \\],
-  71: [\\
-  function () {
-  }
-  \\],
-  72: [\\
-  function () {
-  }
-  \\],
-  73: [\\
-  function () {
-  }
-  \\],
-  74: [\\
-  function slice (start,end) {
-    // 1. Call CheckObjectCoercible passing the this value as its argument.
-    if (@SameValue(undefined,this) || @SameValue(null,this)){
-      throw new TypeError();
-    }
-    // 2. Let S be the result of calling ToString, giving it the this value as its argument.
-    var S = @ToString(this);
-    // 3. Let len be the number of characters in S.
-    var len = S.length;
-    // 4. Let intStart be ToInteger(start).
-    var intStart = @ToInteger(start);
-    // 5. If end is undefined, let intEnd be len; else let intEnd be ToInteger(end).
-    if (@SameValue(end,undefined)){
-      var intEnd = len;
-    }else {
-      var intEnd = @ToInteger(end);
-    }
-    // 6. If intStart is negative, let from be max(len + intStart,0); else let from be min(intStart, len).
-    if (intStart < 0) {
-      var from = Math.max(len+intStart,0);
-    }else {
-      var from = Math.min(intStart,len);
-    }
-    // 7. If intEnd is negative, let to be max(len + intEnd,0); else let to be min(intEnd, len).
-    if (intEnd < 0){
-      var to = Math.max(len + intEnd,0);
-    }else {
-      var to = Math.min(intEnd,len);
-    }
-    // 8. Let span be max(to – from,0).
-    var span = Math.max(to-from,0);
-    // 9. Return a String containing span consecutive characters from S beginning with the character at   position from.
-    var Str = "";
-    for (var i = 0;i<span;i++) {
-      Str = Str + S[from+i];
-    }
-    return Str;
-  }
-  \\],
-  75: [\\
-  function () {
-  }
-  \\],
-  76: [\\
-  function substring (start,end ) {
-    // 1. Call CheckObjectCoercible passing the this value as its argument.
-    if(@SameValue(this,undefined) || @SameValue(this,null)) {
-      throw new TypeError();
-    }
-    // 2. Let S be the result of calling ToString, giving it the this value as its argument.
-    var S = @ToString(this);
-    // 3. Let len be the number of characters in S.
-    var len = S.length;
-    // 4. Let intStart be ToInteger(start).
-    var intStart = @ToInteger(start);
-    // 5. If end is undefined, let intEnd be len; else let intEnd be ToInteger(end).
-    if (@SameValue(end,undefined)){
-      var intEnd = len;
-    }else {
-      var intEnd = @ToInteger(end);
-    }
-    // 6. Let finalStart be min(max(intStart, 0), len).
-    var finalStart = Math.min(Math.max(intStart,0),len);
-    // 7. Let finalEnd be min(max(intEnd, 0), len).
-    var finalEnd = Math.min(Math.max(intEnd,0),len);
-    // 8. Let from be min(finalStart, finalEnd).
-    var from = Math.min(finalStart,finalEnd);
-    // 9. Let to be max(finalStart, finalEnd).
-    var to = Math.max(finalStart,finalEnd);
-    // 10. Return a String whose length is to - from, containing characters from S, namely the characters with indices from through to -1, in ascending order.
-    var Str = "";
-    for (var i = 0; i<(to-from);i++){
-      Str = Str + S[from+i];
-    }
-    return Str;
-  }
-  \\],
-  77: [\\
-  function toLowerCase () {
-    // 1. Call CheckObjectCoercible passing the this value as its argument.
-    if(@SameValue(this,undefined) || @SameValue(this,null)) {
-      throw new TypeError();
-    }
-    //2. Let S be the result of calling ToString, giving it the this value as its argument.
-    var S = @ToString(this);
-    //3. Let L be a String where each character of L is either the Unicode lowercase equivalent of the corresponding character of S or the actual corresponding character of S if no Unicode lowercase equivalent exists.
-    alpha = {"A":"a","B":"b","C":"c","D":"d","E":"e","F":"f","G":"g","H":"h","I":"i","J":"j","K":"k","L":"l","M":"m","N":"n","O":"o","P":"p","Q":"q","R":"r","S":"s","T":"t","U":"u","V":"v","W":"w","X":"x","Y":"y","Z":"z"}
-    L = "";
-    for (var i = 0; i < S.length; i++){
-      if (S[i] in alpha) {
-        L += alpha[S[i]];
-      }else {
-        L += S[i];
-      }
-    }
-    //4. Return L.
-    return L;
-  }
-  \\],
-  78: [\\
-  function toLocaleLowerCase () {
-    // 1. Call CheckObjectCoercible passing the this value as its argument.
-    if(@SameValue(this,undefined) || @SameValue(this,null)) {
-      throw new TypeError();
-    }
-    //2. Let S be the result of calling ToString, giving it the this value as its argument.
-    var S = @ToString(this);
-    //3. Let L be a String where each character of L is either the Unicode lowercase equivalent of the corresponding character of S or the actual corresponding character of S if no Unicode lowercase equivalent exists.
-    alpha = {"A":"a","B":"b","C":"c","D":"d","E":"e","F":"f","G":"g","H":"h","I":"i","J":"j","K":"k","L":"l","M":"m","N":"n","O":"o","P":"p","Q":"q","R":"r","S":"s","T":"t","U":"u","V":"v","W":"w","X":"x","Y":"y","Z":"z"}
-    L = "";
-    for (var i = 0; i < S.length; i++){
-      if (S[i] in alpha) {
-        L += alpha[S[i]];
-      }else {
-        L += S[i];
-      }
-    }
-    //4. Return L.
-    return L;
-  }
-  \\],
-  79: [\\
-  function toUpperCase () {
-    // This function behaves in exactly the same way as String.prototype.toLowerCase, except that characters are mapped to their uppercase equivalents as specified in the Unicode Character Database.
-    if(@SameValue(this,undefined) || @SameValue(this,null)) {
-      throw new TypeError();
-    }
-    var S = @ToString(this);
-    alpha = {"a":"A","b":"B","c":"C","d":"D","e":"E","f":"F","g":"G","h":"H","i":"I","j":"J","k":"K","l":"L","m":"M","n":"N","o":"O","p":"P","q":"Q","r":"R","s":"S","t":"T","u":"U","v":"V","w":"W","x":"X","y":"Y","z":"Z"}
-    L = "";
-    for (var i = 0; i < S.length; i++){
-      if (S[i] in alpha) {
-        L += alpha[S[i]];
-      }else {
-        L += S[i];
-      }
-    }
-    return L;
-  }
-  \\],
-  80: [\\
-  function toLocaleUpperCase () {
-    // This function behaves in exactly the same way as String.prototype.toLowerCase, except that characters are mapped to their uppercase equivalents as specified in the Unicode Character Database.
-    if(@SameValue(this,undefined) || @SameValue(this,null)) {
-      throw new TypeError();
-    }
-    var S = @ToString(this);
-    alpha = {"a":"A","b":"B","c":"C","d":"D","e":"E","f":"F","g":"G","h":"H","i":"I","j":"J","k":"K","l":"L","m":"M","n":"N","o":"O","p":"P","q":"Q","r":"R","s":"S","t":"T","u":"U","v":"V","w":"W","x":"X","y":"Y","z":"Z"}
-    L = "";
-    for (var i = 0; i < S.length; i++){
-      if (S[i] in alpha) {
-        L += alpha[S[i]];
-      }else {
-        L += S[i];
-      }
-    }
-    return L;
-  }
-  \\],
-  81: [\\
-  function trim () {
-    // 1. Call CheckObjectCoercible passing the this value as its argument.
-    if (@SameValue(undefined,this) || @SameValue(null,this)){
-      throw new TypeError();
-    }
-    // 2. Let S be the result of calling ToString, giving it the this value as its argument.
-    var S = @ToString(this);
-    // 3. Let T be a String value that is a copy of S with both leading and trailing white space removed. The definition of white space is the union of WhiteSpace and LineTerminator.
-    var f = 0;
-    while (S[f] === " "){
-      f += 1;
-    }
-    var t = S.length - 1;
-    while (S[t] === " "){
-      t -= 1;
-    }
-    t +=1;
-    var T = S.substring(f,t);
-    // 4. Return T.
-    return T;
-  }
-  \\],
-  82: [\\
-  function String (value) {
-    // Returns a String value (not a String object) computed by ToString(value). If value is not supplied, the empty String "" is returned.
-    if(arguments.length === 0){
-      return "";
-    }else{
-      return @ToString(value);
-    }
-  }
-  \\],
-  83: [\\
-  function String (value) {
-    if (arguments.length === 0) {
-      return @StrObj("");
-    } else {
-      return @StrObj(value);
-    }
-  }
-  \\],
-  84: [\\
-  function fromCharCode () {
-    // Returns a String value containing as many characters as the number of arguments. Each argument specifies one character of the resulting String, with the first argument specifying the first character, and so on, from left to right. An argument is converted to a character by applying the operation ToUint16 (9.7) and regarding the resulting 16-bit integer as the code unit value of a character. If no arguments are supplied, the result is the empty String.
-    // Need ToUint16;
-    // Need unicode-16 -> char translation
-    return @StrTop
-  }
-  \\],
-  85: [\\
-  function toString () {
-    // 1. Let B be the this value.
-    var B = this;
-    var b;
-    // 2. If Type(B) is Boolean, then let b be B.
-    if (typeof B === "Boolean") b = B;
-    // 3. Else if Type(B) is Object and the value of the [[Class]] internal property of B is "Boolean",
-    //    then let b be the value of the [[PrimitiveValue]] internal property of B.
-    else if (typeof B === "object" && B !== null && @Class(B) === "Boolean") b = @PrimitiveValue(B);
-    // 4. Else throw a TypeError exception.
-    else throw new TypeError();
-    // 5. If b is true, then return "true"; else return "false".
-    if (b) return "true";
-    else return "false";
-  }
-  \\],
-  86: [\\
-  function valueOf () {
-    // 1. Let B be the this value.
-    var B = this;
-    var b;
-    // 2. If Type(B) is Boolean, then let b be B.
-    if (typeof B === "boolean") b = B;
-    // 3. Else if Type(B) is Object and the value of the [[Class]] internal property of B is "Boolean",
-    //    then let b be the value of the [[PrimitiveValue]] internal property of B.
-    else if (typeof B === "object" && B !== null && @Class(B) === "Boolean") b = @PrimitiveValue(B);
-    // 4. Else throw a TypeError exception.
-    else throw new TypeError();
-    // 5. Return b.
-    return b;
-  }
-  \\],
-  87: [\\
-  function Boolean (value) {
-    return @ToBoolean(value);
-  }
-  \\],
-  88: [\\
-  function Boolean (value) {
-    return @BoolObj(value);
-  }
-  \\],
-  89: [\\
-  function () {
-  }
-  \\],
-  90: [\\
   function toString (radix) {
     // The toString function is not generic; it throws a TypeError exception if its this value is not a Number or a Number object.
     if (!@SameValue(typeof this,'number') && !@SameValue(@Class(this), 'Number')){
@@ -3729,7 +1736,7 @@ Function: {
     }
   }
   \\],
-  91: [\\
+  45: [\\
   function toLocaleString () {
     if (!@SameValue(typeof this,'number') && !@SameValue(@Class(this), 'Number')){
       throw new TypeError();
@@ -3737,7 +1744,7 @@ Function: {
     return @ToString(this);
   }
   \\],
-  92: [\\
+  46: [\\
   function valueOf () {
     // The valueOf function is not generic; it throws a TypeError exception if its this value is not a Number or a Number object. Therefore, it cannot be transferred to other kinds of objects for use as a method.
     if (typeof this === "number") return this;
@@ -3745,7 +1752,7 @@ Function: {
     else throw new TypeError();
   }
   \\],
-  93: [\\
+  47: [\\
   function toFixed (fractionDigits){
     // 1. Let f be ToInteger(fractionDigits). (If fractionDigits is undefined, this step produces the value 0).
     var f = @ToInteger(fractionDigits);
@@ -3818,7 +1825,7 @@ Function: {
     return s + m;
   }
   \\],
-  94: [\\
+  48: [\\
   function toExponential (fractionDigits) {
     // 1. Let x be this Number value.
     var x = this;
@@ -3970,7 +1977,7 @@ Function: {
     return m;
   }
   \\],
-  95: [\\
+  49: [\\
   function toPrecision (precision) {
     // 1. Let x be this Number value.
     var x = this;
@@ -4097,7 +2104,7 @@ Function: {
     return s + m;
   }
   \\],
-  96: [\\
+  50: [\\
   function Number (value) {
     if(arguments.length === 0){
       return +0;
@@ -4106,7 +2113,7 @@ Function: {
     }
   }
   \\],
-  97: [\\
+  51: [\\
   function Number (value) {
     if (arguments.length === 0) {
       return @NumObj(+0);
@@ -4115,17 +2122,17 @@ Function: {
     }
   }
   \\],
-  98: [\\
+  52: [\\
   function () {
   }
   \\],
-  99: [\\
+  53: [\\
   function toString () {
     // This function returns a String value. The contents of the String are implementation-dependent, but are intended to represent the Date in the current time zone in a convenient, human-readable form.
     return @ToString(this);
   }
   \\],
-  100: [\\
+  54: [\\
   function toDateString () {
     // This function returns a String value. The contents of the String are implementation-dependent, but are intended to represent the ―date‖ portion of the Date in the current time zone in a convenient, human-readable form.
     var S = @ToString(this);
@@ -4141,7 +2148,7 @@ Function: {
     return S.slice(0,i);
   }
   \\],
-  101: [\\
+  55: [\\
   function toTimeString () {
     // This function returns a String value. The contents of the String are implementation-dependent, but are intended to represent the ―time‖ portion of the Date in the current time zone in a convenient, human-readable form.
     var S = @ToString(this);
@@ -4157,12 +2164,12 @@ Function: {
     return S.slice(i);
   }
   \\],
-  102: [\\
+  56: [\\
   function toLocaleString () {
     return @ToString(this);
   }
   \\],
-  103: [\\
+  57: [\\
   function toLocaleDateString() {
     var S = @ToString(this);
     b = 0;
@@ -4177,7 +2184,7 @@ Function: {
     return S.slice(0,i);
   }
   \\],
-  104: [\\
+  58: [\\
   function toLocaleTimeString () {
     var S = @ToString(this);
     b = 0;
@@ -4192,25 +2199,25 @@ Function: {
     return S.slice(i);
   }
   \\],
-  105: [\\
+  59: [\\
   function valueOf () {
     // The valueOf function returns a Number, which is this time value.
     return @PrimitiveValue(this);
   }
   \\],
-  106: [\\
+  60: [\\
   function getTime () {
     // 1. Return this time value.
     return @PrimitiveValue(this);
   }
   \\],
-  107: [\\
+  61: [\\
   function getFullYear () {
     // Need LocalTime(t)
     return @NumTop;
   }
   \\],
-  108: [\\
+  62: [\\
   function getUTCFullYear () {
     // 1. Let t be this time value.
     var t = @PrimitiveValue(this);
@@ -4236,13 +2243,13 @@ Function: {
     return YearFromTime_t;
   }
   \\],
-  109: [\\
+  63: [\\
   function getMonth() {
     // Need LocalTime(t)
     return @NumTop;
   }
   \\],
-  110: [\\
+  64: [\\
   function getUTCMonth () {
     // 1. Let t be this time value.
     var t = @PrimitiveValue(this);
@@ -4335,13 +2342,13 @@ Function: {
     return MonthFromTime_t;
   }
   \\],
-  111: [\\
+  65: [\\
   function getDate () {
     // Need LocalTime(t);
     return @NumTop;
   }
   \\],
-  112: [\\
+  66: [\\
   function getUTCDate () {
     // 1. Let t be this time value.
     var t = @PrimitiveValue(this);
@@ -4461,13 +2468,13 @@ Function: {
     return DateFromTime;
   }
   \\],
-  113: [\\
+  67: [\\
   function getDay () {
     // Need Localtime(t);
     return @NumTop;
   }
   \\],
-  114: [\\
+  68: [\\
   function getUTCDay () {
     // 1. Let t be this time value.
     var t = @PrimitiveValue(this);
@@ -4483,13 +2490,13 @@ Function: {
     return WeekDay_t;
   }
   \\],
-  115: [\\
+  69: [\\
   function getHours () {
     // Need Local(t)
     return @NumTop;
   }
   \\],
-  116: [\\
+  70: [\\
   function getUTCHours () {
     // 1. Let t be this time value.
     var t = @PrimitiveValue(this);
@@ -4504,13 +2511,13 @@ Function: {
     return HourFromTime_t;
   }
   \\],
-  117: [\\
+  71: [\\
   function getMinutes () {
     // Need LocalTime(t)
     return @NumTop;
   }
   \\],
-  118: [\\
+  72: [\\
   function getUTCMinutes () {
     // 1. Let t be this time value.
     var t = @PrimitiveValue(this);
@@ -4525,13 +2532,13 @@ Function: {
     return MinFromTime_t;
   }
   \\],
-  119: [\\
+  73: [\\
   function getSeconds () {
     // Need LocalTime(t);
     return @NumTop;
   }
   \\],
-  120: [\\
+  74: [\\
   function getUTCSeconds () {
     // 1. Let t be this time value.
     var t = @PrimitiveValue(this);
@@ -4546,13 +2553,13 @@ Function: {
     return SecFromTime_t;
   }
   \\],
-  121: [\\
+  75: [\\
   function getMilliseconds () {
     // Need LocalTime(t)
     return @NumTop;
   }
   \\],
-  122: [\\
+  76: [\\
   function getUTCMilliseconds () {
     // 1. Let t be this time value.
     var t = @PrimitiveValue(this);
@@ -4566,13 +2573,13 @@ Function: {
     return msFromTime_t;
   }
   \\],
-  123: [\\
+  77: [\\
   function getTimezoneOffset () {
     // Need LocalTime(t)
     return @NumTop;
   }
   \\],
-  124: [\\
+  78: [\\
   function setTime (time) {
     // 1. Let v be TimeClip(ToNumber(time)).
     var time = @ToNumber(time);
@@ -4592,14 +2599,14 @@ Function: {
     return v;
   }
   \\],
-  125: [\\
+  79: [\\
   function setMilliseconds (ms) {
     // Need LocalTime(t)
     @PrimitiveValue(this,@NumTop);
     return @NumTop;
   }
   \\],
-  126: [\\
+  80: [\\
   function setUTCMilliseconds (ms) {
     // 1. Let t be this time value.
     var t = @PrimitiveValue(this);
@@ -4686,14 +2693,14 @@ Function: {
     return v;
   }
   \\],
-  127: [\\
+  81: [\\
   function setSeconds (sec,ms) {
     // Need LocalTime(t);
     @PrimitiveValue(this,@NumTop);
     return @NumTop;
   }
   \\],
-  128: [\\
+  82: [\\
   function setUTCSeconds (set,ms) {
     // 1. Let t be this time value.
     var t = @PrimitiveValue(this);
@@ -4780,14 +2787,14 @@ Function: {
     return v;
   }
   \\],
-  129: [\\
+  83: [\\
   function setMinutes (min,sec,ms) {
     // Need LocalTime(t)
     @PrimitiveValue(this,@NumTop);
     return @NumTop;
   }
   \\],
-  130: [\\
+  84: [\\
   function setUTCMinutes (min,sec,ms) {
     // 1. Let t be this time value.
     var t = @PrimitiveValue(this);
@@ -4879,14 +2886,14 @@ Function: {
     return v;
   }
   \\],
-  131: [\\
+  85: [\\
   function setHours (hour,min,sec,ms) {
     // Need LocalTime(t)
     @PrimitiveValue(this,@NumTop);
     return @NumTop;
   }
   \\],
-  132: [\\
+  86: [\\
   function setUTCHours (hour,min,sec,ms) {
     // 1. Let t be this time value.
     var t = @PrimitiveValue(this);
@@ -4980,14 +2987,14 @@ Function: {
     return v;
   }
   \\],
-  133: [\\
+  87: [\\
   function setDate (date) {
     // Need LocalTime(t)
     @PrimitiveValue(this,@NumTop);
     return @NumTop;
   }
   \\],
-  134: [\\
+  88: [\\
   function setUTCDate (date) {
     // 1. Let t be this time value.
     var t = @PrimitiveValue(this);
@@ -5334,14 +3341,14 @@ Function: {
     return v;
   }
   \\],
-  135: [\\
+  89: [\\
   function setMonth (month,date) {
     // Need LocalTime(t);
     @PrimitiveValue(this ,@NumTop);
     return @NumTop;
   }
   \\],
-  136: [\\
+  90: [\\
   function setUTCMonth (month,date) {
     // 1. Let t be this time value.
     var t = @PrimitiveValue(this);
@@ -5718,14 +3725,14 @@ Function: {
     return v;
   }
   \\],
-  137: [\\
+  91: [\\
   function setFullYear (year,month,date) {
     // Need LocalTime(t);
     @PrimitiveValue(this,@NumTop);
     return @NumTop;
   }
   \\],
-  138: [\\
+  92: [\\
   function setUTCFullYear (year,month,date) {
     // 1. Let t be this time value; but if this time value is NaN, let t be +0.
     var t = @PrimitiveValue(this);
@@ -6175,13 +4182,13 @@ Function: {
     return v;
   }
   \\],
-  139: [\\
+  93: [\\
   function toUTCString () {
     // Need to know internal structure of Date object
     return @StrTop;
   }
   \\],
-  140: [\\
+  94: [\\
   function toISOString () {
     // Need to know internal structure of Date object
     var t = @PrimitiveValue(this);
@@ -6191,17 +4198,17 @@ Function: {
     return @StrTop;
   }
   \\],
-  141: [\\
+  95: [\\
   function () {
   }
   \\],
-  142: [\\
+  96: [\\
   function Date (year,month,date,hours,minutes,seconds,ms) {
     // All of the arguments are optional; any arguments supplied are accepted but are completely ignored. A String is created and returned as if by the expression (new Date()).toString()
     return (new Date()).toString();
   }
   \\],
-  143: [\\
+  97: [\\
   function Date () {
     if (arguments.length === 0) {
       var obj = {};
@@ -6547,13 +4554,13 @@ Function: {
     }
   }
   \\],
-  144: [\\
+  98: [\\
   function parse () {
     // TODO
     return @NumTop;
   }
   \\],
-  145: [\\
+  99: [\\
   function UTC (year,month,date,hours,minutes,seconds,ms) {
     // 1. Let y be ToNumber(year).
     var y = @ToNumber(year);
@@ -6856,30 +4863,30 @@ Function: {
     return return_val;
   }
   \\],
-  146: [\\
+  100: [\\
   function now () {
     // TODO
     return @NumTop;
   }
   \\],
-  147: [\\
+  101: [\\
   function () {
   }
   \\],
-  148: [\\
+  102: [\\
   function () {
   }
   \\],
-  149: [\\
+  103: [\\
   function () {
   }
   \\],
-  150: [\\
+  104: [\\
   function RegExp () {
     return new RegExp();
   }
   \\],
-  151: [\\
+  105: [\\
   function RegExp () {
     var obj = {};
     @Class(obj,"RegExp");
@@ -6892,7 +4899,7 @@ Function: {
     return obj;
   }
   \\],
-  152: [\\
+  106: [\\
   function toString() {
     // 1. Let O be the this value.
     var O = this;
@@ -6928,7 +4935,7 @@ Function: {
     return name + ": " + msg;
   }
   \\],
-  153: [\\
+  107: [\\
   function Error (message) {
     var obj ={};
     @Prototype(obj,Error.prototype);
@@ -6940,7 +4947,7 @@ Function: {
     return obj;
   }
   \\],
-  154: [\\
+  108: [\\
   function Error (message) {
     var obj ={};
     @Prototype(obj,Error.prototype);
@@ -6952,7 +4959,7 @@ Function: {
     return obj;
   }
   \\],
-  155: [\\
+  109: [\\
   function EvalError (message) {
     var obj = {};
     @Prototype(obj,EvalError.prototype);
@@ -6964,7 +4971,7 @@ Function: {
     return obj;
   }
   \\],
-  156: [\\
+  110: [\\
   function EvalError (message) {
     var obj = {};
     @Prototype(obj,EvalError.prototype);
@@ -6976,7 +4983,7 @@ Function: {
     return obj;
   }
   \\],
-  157: [\\
+  111: [\\
   function RangeError (message) {
     var obj = {};
     @Prototype(obj,RangeError.prototype);
@@ -6988,7 +4995,7 @@ Function: {
     return obj;
   }
   \\],
-  158: [\\
+  112: [\\
   function RangeError (message) {
     var obj = {};
     @Prototype(obj,RangeError.prototype);
@@ -7000,7 +5007,7 @@ Function: {
     return obj;
   }
   \\],
-  159: [\\
+  113: [\\
   function ReferenceError (message) {
     var obj = {};
     @Prototype(obj,ReferenceError.prototype);
@@ -7012,7 +5019,7 @@ Function: {
     return obj;
   }
   \\],
-  160: [\\
+  114: [\\
   function ReferenceError (message) {
     var obj = {};
     @Prototype(obj,ReferenceError.prototype);
@@ -7024,7 +5031,7 @@ Function: {
     return obj;
   }
   \\],
-  161: [\\
+  115: [\\
   function SyntaxError (message) {
     var obj = {};
     @Prototype(obj,SyntaxError.prototype);
@@ -7036,7 +5043,7 @@ Function: {
     return obj;
   }
   \\],
-  162: [\\
+  116: [\\
   function SyntaxError (message) {
     var obj = {};
     @Prototype(obj,SyntaxError.prototype);
@@ -7049,7 +5056,7 @@ Function: {
 
   }
   \\],
-  163: [\\
+  117: [\\
   function TypeError (message) {
     var obj = {};
     @Prototype(obj,TypeError.prototype);
@@ -7061,7 +5068,7 @@ Function: {
     return obj;
   }
   \\],
-  164: [\\
+  118: [\\
   function TypeError (message) {
     var obj = {};
     @Prototype(obj,TypeError.prototype);
@@ -7073,7 +5080,7 @@ Function: {
     return obj;
   }
   \\],
-  165: [\\
+  119: [\\
   function URIError (message) {
     var obj = {};
     @Prototype(obj,URIError.prototype);
@@ -7085,7 +5092,7 @@ Function: {
     return obj;
   }
   \\],
-  166: [\\
+  120: [\\
   function URIError (message) {
     var obj = {};
     @Prototype(obj,URIError.prototype);
@@ -7097,57 +5104,57 @@ Function: {
     return obj;
   }
   \\],
-  167: [\\
+  121: [\\
   function abs (x) {
     return @abs(x);
   }
   \\],
-  168: [\\
+  122: [\\
   function acos (x) {
     return @acos(x);
   }
   \\],
-  169: [\\
+  123: [\\
   function asin (x) {
     return @asin(x);
   }
   \\],
-  170: [\\
+  124: [\\
   function atan (x) {
     return @atan(x);
   }
   \\],
-  171: [\\
+  125: [\\
   function atan2 (x, y) {
     return @atan2(x, y);
   }
   \\],
-  172: [\\
+  126: [\\
   function ceil (x) {
     return @ceil(x);
   }
   \\],
-  173: [\\
+  127: [\\
   function cos (x) {
     return @cos(x);
   }
   \\],
-  174: [\\
+  128: [\\
   function exp (x) {
     return @exp(x);
   }
   \\],
-  175: [\\
+  129: [\\
   function floor (x) {
     return @floor(x);
   }
   \\],
-  176: [\\
+  130: [\\
   function log (x) {
     return @log(x);
   }
   \\],
-  177: [\\
+  131: [\\
   function max () {
     var i, n = arguments.length, v = -Infinity;
     for (i = 0; i < n; i++) {
@@ -7159,7 +5166,7 @@ Function: {
     return v;
   }
   \\],
-  178: [\\
+  132: [\\
   function min () {
     var i, n = arguments.length, v = Infinity;
     for (i = 0; i < n; i++) {
@@ -7171,41 +5178,41 @@ Function: {
     return v;
   }
   \\],
-  179: [\\
+  133: [\\
   function pow (x, y) {
     return @pow(x, y);
   }
   \\],
-  180: [\\
+  134: [\\
   function random () {
     return @NumTop;
   }
   \\],
-  181: [\\
+  135: [\\
   function round (x) {
     return @round(x);
   }
   \\],
-  182: [\\
+  136: [\\
   function sin (x) {
     return @sin(x);
   }
   \\],
-  183: [\\
+  137: [\\
   function sqrt (x) {
     return @sqrt(x);
   }
   \\],
-  184: [\\
+  138: [\\
   function tan (x) {
     return @tan(x);
   }
   \\],
-  185: [\\
+  139: [\\
   function () {
   }
   \\],
-  186: [\\
+  140: [\\
   function () {
   }
   \\]

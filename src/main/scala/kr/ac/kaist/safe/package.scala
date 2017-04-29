@@ -77,6 +77,7 @@ package object safe {
   // All predefined variables and functions
   val PRED_ALL = PRED_VARS ++ PRED_FUNS
 
+  // Global names for DOM
   val DOM_NAMES = List(
     "window",
     "document"

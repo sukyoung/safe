@@ -1,0 +1,254 @@
+Heap: {
+  #Global: {
+    "Element": <#Element, T, F, T>,
+    "Node": <#Node, T, F, T>,
+    "EventTarget": <#EventTarget, T, F, T>,
+    "Document": <#Document, T, F, T>,
+    "HTMLDocument": <#HTMLDocument, T, F, T>,
+    "window": <#Global, F, T, F>,
+    "document": <#document, T, F, T>,
+    "location": <#location, F, T, T>,
+    "setInterval": <#Document.prototype.setInterval, T, T, T>,
+    "setTimeout": <#Document.prototype.setTimeout, T, T, T>
+  },
+  #Element: {
+    [[Call]]: fun(1),
+    [[Class]]: "Function",
+    [[Construct]]: fun(2),
+    [[Extensible]]: true,
+    [[HasInstance]]: null,
+    [[Prototype]]: #Node,
+    [[Scope]]: null,
+    "prototype": <#Element.prototype, F, F, F>
+  },
+  #Element.prototype: {
+    [[Class]]: "Element",
+    [[Extensible]]: true,
+    [[Prototype]]: #Node.prototype,
+    "constructor": <#Element, T, F, T>
+  },
+  #Node: {
+    [[Call]]: fun(3),
+    [[Class]]: "Function",
+    [[Construct]]: fun(4),
+    [[Extensible]]: true,
+    [[HasInstance]]: null,
+    [[Prototype]]: #EventTarget,
+    [[Scope]]: null,
+    "prototype": <#Node.prototype, F, F, F>
+  },
+  #Node.prototype: {
+    [[Class]]: "Node",
+    [[Extensible]]: true,
+    [[Prototype]]: #EventTarget.prototype,
+    "constructor": <#Node, T, F, T>,
+  },
+  #EventTarget: {
+    [[Call]]: fun(5),
+    [[Class]]: "Function",
+    [[Construct]]: fun(6),
+    [[Extensible]]: true,
+    [[HasInstance]]: null,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null,
+    "prototype": <#EventTarget.prototype, F, F, F>
+  },
+  #EventTarget.prototype: {
+    [[Class]]: "EventTarget",
+    [[Extensible]]: true,
+    [[Prototype]]: #Object.prototype,
+    "constructor": <#EventTarget, T, F, T>,
+    "addEventListener": <#EventTarget.prototype.addEventListener, T, T, T>
+  },
+  #EventTarget.prototype.addEventListener: {
+    [[Call]]: fun(7),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[HasInstance]]: null,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null
+  },
+  #document: {
+    [[Class]]: "HTMLDocument",
+    [[Extensible]]: true,
+    [[Prototype]]: #HTMLDocument.prototype
+  },
+  #HTMLDocument: {
+    [[Call]]: fun(8),
+    [[Class]]: "Function",
+    [[Construct]]: fun(9),
+    [[Extensible]]: true,
+    [[HasInstance]]: null,
+    [[Prototype]]: #Document,
+    [[Scope]]: null,
+    "prototype": <#HTMLDocument.prototype, F, F, F>
+  },
+  #HTMLDocument.prototype: {
+    [[Class]]: "HTMLDocument",
+    [[Extensible]]: true,
+    [[Prototype]]: #Document.prototype,
+    "constructor": <#HTMLDocument, T, F, T>
+  },
+  #Document: {
+    [[Call]]: fun(10),
+    [[Class]]: "Function",
+    [[Construct]]: fun(11),
+    [[Extensible]]: true,
+    [[HasInstance]]: null,
+    [[Prototype]]: #Node,
+    [[Scope]]: null,
+    "prototype": <#Document.prototype, F, F, F>
+  },
+  #Document.prototype: {
+    [[Class]]: "Document",
+    [[Extensible]]: true,
+    [[Prototype]]: #Node.prototype,
+    "constructor": <#Document, T, F, T>,
+    "createElement": <#Document.prototype.createElement, T, T, T>,
+    "location": <#location, F, T, T>,
+    "setInterval": <#Document.prototype.setInterval, T, T, T>,
+    "setTimeout": <#Document.prototype.setTimeout, T, T, T>,
+    "write": <#Document.prototype.write, F, T, T>,
+    "writeln": <#Document.prototype.writeln, F, T, T>,
+    "URL": <string, F, T, T>
+  },
+  #Document.prototype.createElement: {
+    [[Call]]: fun(12),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[HasInstance]]: null,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null
+  },
+  #Document.prototype.setInterval: {
+    [[Call]]: fun(17),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[HasInstance]]: null,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null
+  },
+  #Document.prototype.setTimeout: {
+    [[Call]]: fun(15),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[HasInstance]]: null,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null
+  },
+  #Document.prototype.write: {
+    [[Call]]: fun(13),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[HasInstance]]: null,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null
+  },
+  #Document.prototype.writeln: {
+    [[Call]]: fun(16),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[HasInstance]]: null,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null
+  },
+  #location: {
+    [[Class]]: "Object",
+    [[Extensible]]: true,
+    [[Prototype]]: #Location.prototype
+  },
+  #Location.prototype: {
+    [[Class]]: "Object",
+    [[Extensible]]: true,
+    [[Prototype]]: #Object.prototype,
+    "hash": <string, T, T, T>,
+    "replace": <#Location.prototype.replace, T, T, T>
+  },
+  #Location.prototype.replace: {
+    [[Call]]: fun(14),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[HasInstance]]: null,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null
+  }
+}
+
+Function: {
+  1: [\\
+  function Element() {
+  }
+  \\],
+  2: [\\
+  function Element() {
+  }
+  \\],
+  3: [\\
+  function Node() {
+  }
+  \\],
+  4: [\\
+  function Node() {
+  }
+  \\],
+  5: [\\
+  function EventTarget() {
+  }
+  \\],
+  6: [\\
+  function EventTarget() {
+  }
+  \\],
+  7: [\\
+  function addEventListener(type, func) {
+    var o = {
+      elem: this,
+      func: func
+    }
+    @addEventFunc(o);
+  }
+  \\],
+  8: [\\
+  function HTMLDocument() {
+  }
+  \\],
+  9: [\\
+  function HTMLDocument() {
+  }
+  \\],
+  10: [\\
+  function Document() {
+  }
+  \\],
+  11: [\\
+  function Document() {
+  }
+  \\],
+  12: [\\
+  function createElement() {
+    var o = {};
+    @Prototype(o, Element.prototype);
+    return o;
+  }
+  \\],
+  13: [\\
+  function write(stuff) {
+  }
+  \\],
+  14: [\\
+  function replace(name) {
+  }
+  \\],
+  15: [\\
+  function setTimeout(code) {
+  }
+  \\],
+  16: [\\
+  function writeln(stuff) {
+  }
+  \\],
+  17: [\\
+  function setInterval(code, delay) {
+  }
+  \\]
+}
