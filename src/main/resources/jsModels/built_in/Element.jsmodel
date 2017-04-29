@@ -8,6 +8,7 @@ Heap: {
     "window": <#Global, F, T, F>,
     "document": <#document, T, F, T>,
     "location": <#location, F, T, T>,
+    "setInterval": <#Document.prototype.setInterval, T, T, T>,
     "setTimeout": <#Document.prototype.setTimeout, T, T, T>
   },
   #Element: {
@@ -105,12 +106,22 @@ Heap: {
     "constructor": <#Document, T, F, T>,
     "createElement": <#Document.prototype.createElement, T, T, T>,
     "location": <#location, F, T, T>,
+    "setInterval": <#Document.prototype.setInterval, T, T, T>,
     "setTimeout": <#Document.prototype.setTimeout, T, T, T>,
     "write": <#Document.prototype.write, F, T, T>,
+    "writeln": <#Document.prototype.writeln, F, T, T>,
     "URL": <string, F, T, T>
   },
   #Document.prototype.createElement: {
     [[Call]]: fun(12),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[HasInstance]]: null,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null
+  },
+  #Document.prototype.setInterval: {
+    [[Call]]: fun(17),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[HasInstance]]: null,
@@ -127,6 +138,14 @@ Heap: {
   },
   #Document.prototype.write: {
     [[Call]]: fun(13),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[HasInstance]]: null,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null
+  },
+  #Document.prototype.writeln: {
+    [[Call]]: fun(16),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[HasInstance]]: null,
@@ -221,7 +240,15 @@ Function: {
   }
   \\],
   15: [\\
-  function setTimeout(fn, timeout) {
+  function setTimeout(code) {
+  }
+  \\],
+  16: [\\
+  function writeln(stuff) {
+  }
+  \\],
+  17: [\\
+  function setInterval(code, delay) {
   }
   \\]
 }
