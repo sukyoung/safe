@@ -11,6 +11,7 @@ lazy val astRewriteTest = taskKey[Unit]("Launch AST Rewrite tests")
 lazy val compileTest = taskKey[Unit]("Launch compile tests")
 lazy val cfgBuildTest = taskKey[Unit]("Launch cfg Build tests")
 lazy val analyzeTest = taskKey[Unit]("Launch analyze tests")
+lazy val htmlTest = taskKey[Unit]("Launch html tests")
 lazy val test262Test = taskKey[Unit]("Launch test262 tests")
 lazy val benchTest = taskKey[Unit]("Launch benchmarks tests")
 
@@ -61,12 +62,13 @@ lazy val root = (project in file(".")).
     },
     testOptions in Test += Tests.Argument("-fDG", baseDirectory.value + "/tests/detail"),
     compile <<= (compile in Compile) dependsOn (buildParsers in Compile, checkCopyrights in Compile),
-    test <<= (testOnly in Test).toTask(s" -- -n ParseTest -n ASTRewriteTest -n CompileTest -n CFGBuildTest -n AnalyzeTest") dependsOn compile,
+    test <<= (testOnly in Test).toTask(s" -- -n ParseTest -n ASTRewriteTest -n CompileTest -n CFGBuildTest -n AnalyzeTest -n HtmlTest") dependsOn compile,
     parseTest <<= (testOnly in Test).toTask(s" -- -n ParseTest") dependsOn compile,
     astRewriteTest <<= (testOnly in Test).toTask(s" -- -n ASTRewriteTest") dependsOn compile,
     compileTest <<= (testOnly in Test).toTask(s" -- -n CompileTest") dependsOn compile,
     cfgBuildTest <<= (testOnly in Test).toTask(s" -- -n CFGBuildTest") dependsOn compile,
     analyzeTest <<= (testOnly in Test).toTask(s" -- -n AnalyzeTest") dependsOn compile,
+    htmlTest <<= (testOnly in Test).toTask(s" -- -n HtmlTest") dependsOn compile,
     test262Test <<= (testOnly in Test).toTask(s" -- -n Test262Test") dependsOn compile,
     benchTest <<= (testOnly in Test).toTask(s" -- -n BenchTest") dependsOn compile
   )
