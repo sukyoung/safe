@@ -1,0 +1,19 @@
+<html> <head>
+<script>
+var a = document.createElement('div');
+var result;
+
+a.value = 'b';
+var f1 = function() { result = this.value; }
+var f2 = function() { result = 'c'; }
+
+result = 'dummy1';
+a.addEventListener('onload', f1);
+result = 'dummy2';
+a.addEventListener('click', f2);
+result = 'a';
+</script>
+</head>
+<body>
+</body>
+</html>

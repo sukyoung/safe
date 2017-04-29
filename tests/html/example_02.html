@@ -1,0 +1,33 @@
+<!-- 1 -->
+<!-- 
+NOTE:
+=======
+-->
+<html>
+<head>
+<title>Welcome!</title>
+</head>
+<body>
+
+<script>
+function A() {
+ this.f = new Object(); 
+}
+
+var a = new A();
+a.f = document.URL;
+
+function B() { 
+}
+B.prototype = a;
+
+var b = new B();
+var doc = document;
+var w = "write";
+doc[w](b.f);
+</script>
+
+<h1>Welcome to our system</h1>
+
+</body>
+</html>
