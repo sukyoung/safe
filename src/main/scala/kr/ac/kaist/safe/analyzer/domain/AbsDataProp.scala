@@ -17,11 +17,22 @@ import kr.ac.kaist.safe.analyzer.domain.Utils._
 // concrete data property type
 ////////////////////////////////////////////////////////////////////////////////
 case class DataProp(
-  value: Value,
-  writable: Bool,
-  enumerable: Bool,
-  configurable: Bool
-)
+    value: Value,
+    writable: Bool,
+    enumerable: Bool,
+    configurable: Bool
+) {
+  override def toString: String = {
+    var w = "F"
+    var e = "F"
+    var c = "F"
+    if (writable) w = "T"
+    if (enumerable) e = "T"
+    if (configurable) c = "T"
+    // XXX integer value translage to float value
+    s"<$value, $w, $e, $c>"
+  }
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // data property abstract domain

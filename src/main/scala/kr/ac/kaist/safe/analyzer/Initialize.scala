@@ -43,7 +43,9 @@ object Initialize {
           // ModelParser.parseFile(fileName).get
           ModelParser.mergeJsModels(NodeUtil.jsModelsBase)
         }
-        model.funcs.foreach(cfg.addJSModel(_))
+        model.funcs.foreach {
+          case (_, func) => cfg.addJSModel(func)
+        }
         AbsHeap(model.heap)
       } else BuiltinGlobal.initHeap(initHeap, cfg)
 

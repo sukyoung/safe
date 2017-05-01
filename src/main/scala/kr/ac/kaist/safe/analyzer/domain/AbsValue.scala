@@ -21,9 +21,12 @@ import kr.ac.kaist.safe.util._
 abstract class Value extends IValue
 
 // helper values for modeling
-case object StringT extends Value
-case object NumberT extends Value
-case object BoolT extends Value
+abstract class TypeValue(name: String) extends Value {
+  override def toString: String = name
+}
+case object StringT extends TypeValue("string")
+case object NumberT extends TypeValue("number")
+case object BoolT extends TypeValue("bool")
 
 ////////////////////////////////////////////////////////////////////////////////
 // value abstract domain

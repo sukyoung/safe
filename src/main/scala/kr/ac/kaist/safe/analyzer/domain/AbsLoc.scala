@@ -13,7 +13,7 @@ package kr.ac.kaist.safe.analyzer.domain
 
 import kr.ac.kaist.safe.analyzer.domain.Utils.AAddrType
 import kr.ac.kaist.safe.analyzer.models.builtin.BuiltinGlobal
-import kr.ac.kaist.safe.errors.error.{ NoLoc, LocTopGammaError }
+import kr.ac.kaist.safe.errors.error.{ NoLoc, LocTopGammaError, UserAllocSiteError }
 import kr.ac.kaist.safe.util._
 import scala.util.{ Try, Success, Failure }
 import scala.collection.immutable.HashSet
@@ -27,6 +27,13 @@ abstract class Loc extends Value {
     case Concrete(loc) => loc.isUser
     case UserAllocSite(_) => true
     case PredAllocSite(_) => false
+  }
+
+  override def toString: String = this match {
+    case Recency(loc, _) => loc.toString
+    case Concrete(loc) => loc.toString
+    case u @ UserAllocSite(_) => throw UserAllocSiteError(u)
+    case p @ PredAllocSite(_) => p.toString
   }
 }
 

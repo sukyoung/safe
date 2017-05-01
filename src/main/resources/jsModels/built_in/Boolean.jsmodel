@@ -1,47 +1,47 @@
 Heap: {
-  #Boolean: {
-    [[Call]]: fun(41),
+  #Global: {
+    "Boolean": <#Boolean, T, F, T>
+  },
+  #Boolean.prototype.toString: {
     [[Class]]: "Function",
-    [[Construct]]: fun(42),
     [[Extensible]]: true,
-    [[HasInstance]]: null,
     [[Prototype]]: #Function.prototype,
     [[Scope]]: null,
-    "length": <1, F, F, F>,
-    "prototype": <#Boolean.prototype, F, F, F>
+    [[Call]]: fun(1),
+    "length": <1.0, F, F, F>
   },
   #Boolean.prototype: {
     [[Class]]: "Boolean",
     [[Extensible]]: true,
-    [[PrimitiveValue]]: false,
     [[Prototype]]: #Object.prototype,
+    [[PrimitiveValue]]: false,
+    "valueOf": <#Boolean.prototype.valueOf, T, F, T>,
     "constructor": <#Boolean, T, F, T>,
-    "toString": <#Boolean.prototype.toString, T, F, T>,
-    "valueOf": <#Boolean.prototype.valueOf, T, F, T>
-  },
-  #Boolean.prototype.toString: {
-    [[Call]]: fun(39),
-    [[Class]]: "Function",
-    [[Extensible]]: true,
-    [[Prototype]]: #Function.prototype,
-    [[Scope]]: null,
-    "length": <1, F, F, F>
+    "toString": <#Boolean.prototype.toString, T, F, T>
   },
   #Boolean.prototype.valueOf: {
-    [[Call]]: fun(40),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[Prototype]]: #Function.prototype,
     [[Scope]]: null,
-    "length": <1, F, F, F>
+    [[Call]]: fun(2),
+    "length": <1.0, F, F, F>
   },
-  #Global: {
-    "Boolean": <#Boolean, T, F, T>
+  #Boolean: {
+    [[Construct]]: fun(4),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[Prototype]]: #Function.prototype,
+    [[HasInstance]]: null,
+    [[Scope]]: null,
+    [[Call]]: fun(3),
+    "length": <1.0, F, F, F>,
+    "prototype": <#Boolean.prototype, F, F, F>
   }
 }
 
 Function: {
-  39: [\\
+  1: [\\
   function toString () {
     // 1. Let B be the this value.
     var B = this;
@@ -58,7 +58,7 @@ Function: {
     else return "false";
   }
   \\],
-  40: [\\
+  2: [\\
   function valueOf () {
     // 1. Let B be the this value.
     var B = this;
@@ -74,12 +74,12 @@ Function: {
     return b;
   }
   \\],
-  41: [\\
+  3: [\\
   function Boolean (value) {
     return @ToBoolean(value);
   }
   \\],
-  42: [\\
+  4: [\\
   function Boolean (value) {
     return @BoolObj(value);
   }

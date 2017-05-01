@@ -42,7 +42,12 @@ case object IHasInstance extends IName {
 }
 
 abstract class IValue
-case class FId(id: FunctionId) extends IValue
+case class FId(id: FunctionId) extends IValue {
+  override def toString: String = {
+    val fid = -id
+    s"fun($fid)"
+  }
+}
 
 object AbsIValueUtil {
   val Bot: AbsIValue = AbsIValue(AbsValue.Bot, FidSetEmpty)
