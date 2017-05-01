@@ -35,6 +35,7 @@ object ASTRewriteTest extends Tag("ASTRewriteTest")
 object CompileTest extends Tag("CompileTest")
 object CFGBuildTest extends Tag("CFGBuildTest")
 object AnalyzeTest extends Tag("AnalyzeTest")
+object HtmlTest extends Tag("HtmlTest")
 object Test262Test extends Tag("Test262Test")
 object BenchTest extends Tag("BenchTest")
 
@@ -171,10 +172,11 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
     val filename = file.getName
     val name = file.toString
     val relPath = name.substring(BASE_DIR.length)
-    if (filename.endsWith(".js")) {
+    if (filename.endsWith(".js") || filename.endsWith(".html")) {
       registerTest(prefix + filename, tag) {
         val safeConfig = testSafeConfig.copy(fileNames = List(name))
         val cfg = getCFG(name)
+        if (filename.endsWith(".html")) analyzeConfig.jsModel = true
         val analysis = cfg.flatMap(Analyze(_, safeConfig, analyzeConfig))
         testList ::= relPath
         val (ar, iter) = analyzeTest(analysis, tag)
@@ -250,14 +252,17 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
 
   Analyze.jscache = {
     Utils.AAddrType = analyzeConfig.aaddrType
-    // val fileName = NodeUtil.jsModelsBase + "built_in.jsmodel"
-    // Some(ModelParser.parseFile(fileName).get)
     Some(ModelParser.mergeJsModels(NodeUtil.jsModelsBase))
   }
 
   val analyzerTestDir = testDir + "semantics"
   for (file <- shuffle(walkTree(new File(analyzerTestDir))))
     analyzeHelper("[Analyze]", AnalyzeTest, file)
+
+  val htmlTestDir = testDir + "html"
+  for (file <- shuffle(walkTree(new File(htmlTestDir)))) {
+    analyzeHelper("[HTMLDOM]", HtmlTest, file)
+  }
 
   val test262TestDir = testDir + "test262"
   for (file <- shuffle(walkTree(new File(test262TestDir))))

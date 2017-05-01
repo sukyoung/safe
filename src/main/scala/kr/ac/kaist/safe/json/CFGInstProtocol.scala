@@ -15,96 +15,331 @@ import kr.ac.kaist.safe.util._
 import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.json.NodeProtocol._
+import kr.ac.kaist.safe.json.CFGExprProtocol._
+import kr.ac.kaist.safe.errors.error.{ AllocSiteParseError, CFGInstParseError }
 
 import spray.json._
 import DefaultJsonProtocol._
 
 object CFGInstProtocol extends DefaultJsonProtocol {
 
-  implicit object EJSOpJsonFormat extends RootJsonFormat[EJSOp] {
+  implicit object AllocSiteJsonFormat extends RootJsonFormat[AllocSite] {
 
-    def write(op: EJSOp): JsValue = JsString(op.name)
+    def write(aSite: AllocSite): JsValue = aSite match {
+      case UserAllocSite(id) => JsNumber(id)
+      case PredAllocSite(name) => JsString(name)
+    }
 
-    def read(value: JsValue): EJSOp = value match {
-      case JsString(name) => EJSOp(name)
+    def read(value: JsValue): AllocSite = value match {
+      case JsNumber(id) => UserAllocSite(id.toInt)
+      case JsString(name) => PredAllocSite(name)
+      case _ => throw AllocSiteParseError(value)
     }
   }
 
-  implicit object EJSValJsonFormat extends RootJsonFormat[EJSVal] {
+  implicit object CFGInstJsonFormat extends RootJsonFormat[CFGInst] {
 
-    def write(value: EJSVal): JsValue = value match {
-      case EJSNumber(text, num) => JsArray(JsString(text), JsNumber(num))
-      case EJSString(str) => JsString(str)
-      case EJSBool(bool) => JsBoolean(bool)
-      case EJSUndef => JsObject()
-      case EJSNull => JsNull
+    var block: CFGBlock = _
+    def nBlock: NormalBlock = block.asInstanceOf[NormalBlock]
+    def cBlock: Call = block.asInstanceOf[Call]
+
+    def write(inst: CFGInst): JsValue = {
+      val name: String = inst.getClass.getName
+      inst match {
+        case CFGAlloc(ir, _, lhs, proto, asite) => JsArray(
+          JsString(name),
+          ir.toJson,
+          lhs.toJson,
+          proto match {
+            case Some(expr) => expr.toJson
+            case None => JsNull
+          },
+          asite.toJson
+        )
+        case CFGAllocArray(ir, _, lhs, length, asite) => JsArray(
+          JsString(name),
+          ir.toJson,
+          lhs.toJson,
+          JsNumber(length),
+          asite.toJson
+        )
+        case CFGAllocArg(ir, _, lhs, length, asite) => JsArray(
+          JsString(name),
+          ir.toJson,
+          lhs.toJson,
+          JsNumber(length),
+          asite.toJson
+        )
+        case CFGEnterCode(ir, _, lhs, expr) => JsArray(
+          JsString(name),
+          ir.toJson,
+          lhs.toJson,
+          expr.toJson
+        )
+        case CFGExprStmt(ir, _, lhs, right) => JsArray(
+          JsString(name),
+          ir.toJson,
+          lhs.toJson,
+          right.toJson
+        )
+        case CFGDelete(ir, _, lhs, expr) => JsArray(
+          JsString(name),
+          ir.toJson,
+          lhs.toJson,
+          expr.toJson
+        )
+        case CFGDeleteProp(ir, _, lhs, obj, index) => JsArray(
+          JsString(name),
+          ir.toJson,
+          lhs.toJson,
+          obj.toJson,
+          index.toJson
+        )
+        case CFGStore(ir, _, obj, index, rhs) => JsArray(
+          JsString(name),
+          ir.toJson,
+          obj.toJson,
+          index.toJson,
+          rhs.toJson
+        )
+        case CFGStoreStringIdx(ir, _, obj, index, rhs) => JsArray(
+          JsString(name),
+          ir.toJson,
+          obj.toJson,
+          index.asInstanceOf[EJSVal].toJson,
+          rhs.toJson
+        )
+        case CFGFunExpr(ir, _, lhs, nameOpt, func, asite1, asite2, asite3) => JsArray(
+          JsString(name),
+          ir.toJson,
+          lhs.toJson,
+          nameOpt match {
+            case Some(id) => id.toJson
+            case None => JsNull
+          },
+          JsNumber(func.id),
+          asite1.toJson,
+          asite2.toJson,
+          asite3 match {
+            case Some(site) => site.toJson
+            case None => JsNull
+          }
+        )
+        case CFGAssert(ir, _, expr, flag) => JsArray(
+          JsString(name),
+          ir.toJson,
+          expr.toJson,
+          JsBoolean(flag)
+        )
+        case CFGCatch(ir, _, nameId) => JsArray(
+          JsString(name),
+          ir.toJson,
+          nameId.toJson
+        )
+        case CFGReturn(ir, _, expr) => JsArray(
+          JsString(name),
+          ir.toJson,
+          expr match {
+            case Some(e) => e.toJson
+            case None => JsNull
+          }
+        )
+        case CFGThrow(ir, _, expr) => JsArray(
+          JsString(name),
+          ir.toJson,
+          expr.toJson
+        )
+        case CFGNoOp(ir, _, desc) => JsArray(
+          JsString(name),
+          ir.toJson,
+          JsString(desc)
+        )
+        case CFGInternalCall(ir, _, lhs, nameStr, arguments, asite) => JsArray(
+          JsString(name),
+          ir.toJson,
+          lhs.toJson,
+          JsString(nameStr),
+          JsArray(arguments.map(_.toJson).to[Vector]),
+          asite match {
+            case Some(site) => site.toJson
+            case None => JsNull
+          }
+        )
+        case CFGCall(ir, _, fun, arg, args, asite) => JsArray(
+          JsString(name),
+          ir.toJson,
+          fun.toJson,
+          arg.toJson,
+          args.toJson,
+          asite.toJson
+        )
+        case CFGConstruct(ir, _, fun, arg, args, asite) => JsArray(
+          JsString(name),
+          ir.toJson,
+          fun.toJson,
+          arg.toJson,
+          args.toJson,
+          asite.toJson
+        )
+      }
     }
 
-    def read(value: JsValue): EJSVal = value match {
-      case JsArray(Vector(JsString(text), JsNumber(num))) => EJSNumber(text, num.toDouble)
-      case JsString(str) => EJSString(str)
-      case JsBoolean(bool) => EJSBool(bool)
-      case JsObject(f) => EJSUndef
-      case JsNull => EJSNull
-    }
-  }
-
-  implicit object CFGExprJsonFormat extends RootJsonFormat[CFGExpr] {
-
-    def write(expr: CFGExpr): JsValue = expr match {
-      case CFGVarRef(ir, id) => JsArray(ir.toJson, id.toJson)
-      case CFGLoad(ir, obj, index) => JsArray(ir.toJson, obj.toJson, index.toJson)
-      case CFGThis(ir) => JsArray(ir.toJson)
-      case CFGBin(ir, first, op, second) =>
-        JsArray(ir.toJson, first.toJson, op.toJson, second.toJson)
-      case CFGUn(ir, op, expr) => JsArray(JsNull, ir.toJson, op.toJson, expr.toJson)
-      case CFGInternalValue(ir, name) => JsArray(ir.toJson, JsString(name))
-      case CFGVal(value) => JsArray(JsNull, value.toJson)
-    }
-
-    def read(value: JsValue): CFGExpr = value match {
-      case JsArray(Vector(ir)) => CFGThis(ir.convertTo[IRNode])
-      case JsArray(Vector(JsNull, value)) => CFGVal(value.convertTo[EJSVal])
-      case JsArray(Vector(ir, JsString(name))) => CFGInternalValue(ir.convertTo[IRNode], name)
-      case JsArray(Vector(ir, id)) => CFGVarRef(ir.convertTo[IRNode], id.convertTo[CFGId])
-      case JsArray(Vector(ir, obj, index)) =>
-        CFGLoad(ir.convertTo[IRNode], obj.convertTo[CFGExpr], index.convertTo[CFGExpr])
-      case JsArray(Vector(JsNull, ir, op, expr)) =>
-        CFGUn(ir.convertTo[IRNode], op.convertTo[EJSOp], expr.convertTo[CFGExpr])
-      case JsArray(Vector(ir, first, op, second)) =>
-        CFGBin(ir.convertTo[IRNode], first.convertTo[CFGExpr], op.convertTo[EJSOp],
-          second.convertTo[CFGExpr])
-    }
-  }
-
-  implicit object CFGIdJsonFormat extends RootJsonFormat[CFGId] {
-
-    def write(id: CFGId): JsValue = id match {
-      case CFGUserId(text, kind, name, from) =>
-        JsArray(JsString(text), kind.toJson, JsString(name), JsBoolean(from))
-      case CFGTempId(text, kind) => JsArray(JsString(text), kind.toJson)
-    }
-
-    def read(value: JsValue): CFGId = value match {
-      case JsArray(Vector(JsString(text), kind, JsString(name), JsBoolean(from))) =>
-        CFGUserId(text, kind.convertTo[VarKind], name, from)
-      case JsArray(Vector(JsString(text), kind)) => CFGTempId(text, kind.convertTo[VarKind])
-    }
-  }
-
-  implicit object VarKindJsonFormat extends RootJsonFormat[VarKind] {
-    val map: Map[String, VarKind] = Map(
-      "g" -> GlobalVar,
-      "p" -> PureLocalVar,
-      "c" -> CapturedVar,
-      "C" -> CapturedCatchVar
-    )
-    val imap: Map[VarKind, String] = map.map(_.swap)
-
-    def write(kind: VarKind): JsValue = JsString(imap(kind))
-
-    def read(value: JsValue): VarKind = value match {
-      case JsString(str) => map(str)
+    def read(value: JsValue): CFGInst = value match {
+      case JsArray(Vector(JsString("CFGAlloc"), ir, lhs, proto, asite)) =>
+        CFGAlloc(
+          ir.convertTo[IRNode],
+          nBlock,
+          lhs.convertTo[CFGId],
+          proto match {
+            case JsNull => None
+            case _ => Some(proto.convertTo[CFGExpr])
+          },
+          asite.convertTo[AllocSite]
+        )
+      case JsArray(Vector(JsString("CFGAllocArray"), ir, lhs, JsNumber(len), asite)) =>
+        CFGAllocArray(
+          ir.convertTo[IRNode],
+          nBlock,
+          lhs.convertTo[CFGId],
+          len.toInt,
+          asite.convertTo[AllocSite]
+        )
+      case JsArray(Vector(JsString("CFGAllocArg"), ir, lhs, JsNumber(len), asite)) =>
+        CFGAllocArg(
+          ir.convertTo[IRNode],
+          nBlock,
+          lhs.convertTo[CFGId],
+          len.toInt,
+          asite.convertTo[AllocSite]
+        )
+      case JsArray(Vector(JsString("CFGEnterCode"), ir, lhs, expr)) =>
+        CFGEnterCode(
+          ir.convertTo[IRNode],
+          nBlock,
+          lhs.convertTo[CFGId],
+          expr.convertTo[CFGExpr]
+        )
+      case JsArray(Vector(JsString("CFGExprStmt"), ir, lhs, right)) =>
+        CFGExprStmt(
+          ir.convertTo[IRNode],
+          nBlock,
+          lhs.convertTo[CFGId],
+          right.convertTo[CFGExpr]
+        )
+      case JsArray(Vector(JsString("CFGDelete"), ir, lhs, expr)) =>
+        CFGDelete(
+          ir.convertTo[IRNode],
+          nBlock,
+          lhs.convertTo[CFGId],
+          expr.convertTo[CFGExpr]
+        )
+      case JsArray(Vector(JsString("CFGDeleteProp"), ir, lhs, obj, index)) =>
+        CFGDeleteProp(
+          ir.convertTo[IRNode],
+          nBlock,
+          lhs.convertTo[CFGId],
+          obj.convertTo[CFGExpr],
+          index.convertTo[CFGExpr]
+        )
+      case JsArray(Vector(JsString("CFGStore"), ir, obj, index, rhs)) =>
+        CFGStore(
+          ir.convertTo[IRNode],
+          nBlock,
+          obj.convertTo[CFGExpr],
+          index.convertTo[CFGExpr],
+          rhs.convertTo[CFGExpr]
+        )
+      case JsArray(Vector(JsString("CFGStoreStringIdx"), ir, obj, index, rhs)) =>
+        CFGStoreStringIdx(
+          ir.convertTo[IRNode],
+          nBlock,
+          obj.convertTo[CFGExpr],
+          index.convertTo[EJSVal].asInstanceOf[EJSString],
+          rhs.convertTo[CFGExpr]
+        )
+      case JsArray(Vector(JsString("CFGFunExpr"), ir, lhs, name, fid, a1, a2, a3)) =>
+        CFGFunExpr(
+          ir.convertTo[IRNode],
+          nBlock,
+          lhs.convertTo[CFGId],
+          name match {
+            case JsNull => None
+            case _ => Some(name.convertTo[CFGId])
+          },
+          null, // TODO get function from fid by using functions list
+          a1.convertTo[AllocSite],
+          a2.convertTo[AllocSite],
+          a3 match {
+            case JsNull => None
+            case _ => Some(a3.convertTo[AllocSite])
+          }
+        )
+      case JsArray(Vector(JsString("CFGAssert"), ir, expr, JsBoolean(flag))) =>
+        CFGAssert(
+          ir.convertTo[IRNode],
+          nBlock,
+          expr.convertTo[CFGExpr],
+          flag
+        )
+      case JsArray(Vector(JsString("CFGCatch"), ir, name)) =>
+        CFGCatch(
+          ir.convertTo[IRNode],
+          nBlock,
+          name.convertTo[CFGId]
+        )
+      case JsArray(Vector(JsString("CFGReturn"), ir, expr)) =>
+        CFGReturn(
+          ir.convertTo[IRNode],
+          nBlock,
+          expr match {
+            case JsNull => None
+            case _ => Some(expr.convertTo[CFGExpr])
+          }
+        )
+      case JsArray(Vector(JsString("CFGThrow"), ir, expr)) =>
+        CFGThrow(
+          ir.convertTo[IRNode],
+          nBlock,
+          expr.convertTo[CFGExpr]
+        )
+      case JsArray(Vector(JsString("CFGNoOp"), ir, JsString(desc))) =>
+        CFGNoOp(
+          ir.convertTo[IRNode],
+          nBlock,
+          desc
+        )
+      case JsArray(Vector(JsString("CFGInternalCall"), ir, lhs,
+        JsString(name), JsArray(args), asite)) =>
+        CFGInternalCall(
+          ir.convertTo[IRNode],
+          nBlock,
+          lhs.convertTo[CFGId],
+          name,
+          args.map(_.convertTo[CFGExpr]).to[List],
+          asite match {
+            case JsNull => None
+            case _ => Some(asite.convertTo[AllocSite])
+          }
+        )
+      case JsArray(Vector(JsString("CFGCall"), ir, fun, arg, args, asite)) =>
+        CFGCall(
+          ir.convertTo[IRNode],
+          cBlock,
+          fun.convertTo[CFGExpr],
+          arg.convertTo[CFGExpr],
+          args.convertTo[CFGExpr],
+          asite.convertTo[AllocSite]
+        )
+      case JsArray(Vector(JsString("CFGConstruct"), ir, fun, arg, args, asite)) =>
+        CFGConstruct(
+          ir.convertTo[IRNode],
+          cBlock,
+          fun.convertTo[CFGExpr],
+          arg.convertTo[CFGExpr],
+          args.convertTo[CFGExpr],
+          asite.convertTo[AllocSite]
+        )
+      case _ => throw CFGInstParseError(value)
     }
   }
 }

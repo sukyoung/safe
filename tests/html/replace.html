@@ -1,0 +1,11 @@
+<html>
+  <head><title>Address based DOM XSS</title></head>
+  <body>
+    <script>
+      var payload = window.location.hash.substr(1);
+      location.replace(payload); 
+      var __result1 = payload;
+      var __expect1 = @StrTop;
+    </script>
+  </body>
+</html>

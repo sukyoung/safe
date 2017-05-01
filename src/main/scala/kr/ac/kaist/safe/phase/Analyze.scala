@@ -50,10 +50,6 @@ case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, Int, TracePartiti
     config.snapshot.map(str =>
       initSt = Initialize.addSnapshot(initSt, str))
 
-    // TODO handling HTML DOM modeling mode
-    // if (safeConfig.html || config.domModel)
-    //   initSt = Initialize.addDOM(initSt, cfg)
-
     val sens =
       CallSiteSensitivity(config.callsiteSensitivity) *
         LoopSensitivity(config.loopSensitivity)
@@ -125,8 +121,6 @@ case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, Int, TracePartiti
       case "flat" => c.AbsNumber = FlatNumber
       case str => throw NoChoiceError(s"there is no abstract number domain with name '$str'.")
     }), "analysis with a selected number domain."),
-    ("domModel", BoolOption(c => c.domModel = true),
-      "analysis with HTML DOM modelings."),
     ("jsModel", BoolOption(c => c.jsModel = true),
       "analysis with JavaScript models.")
   )
@@ -150,7 +144,6 @@ case class AnalyzeConfig(
   var loopSensitivity: Int = 0,
   var htmlName: Option[String] = None,
   var snapshot: Option[String] = None,
-  var domModel: Boolean = false,
   var jsModel: Boolean = false,
   var aaddrType: AAddrType = RecencyAAddr
 ) extends Config

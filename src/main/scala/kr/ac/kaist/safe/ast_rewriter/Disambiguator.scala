@@ -25,7 +25,7 @@ import kr.ac.kaist.safe.{ PRED_FUNS, PRED_VARS, DOM_NAMES }
  *  - All name references that are undefined or used incorrectly are
  *    treated as static errors.
  */
-class Disambiguator(program: Program, domModel: Boolean) {
+class Disambiguator(program: Program) {
   ////////////////////////////////////////////////////////////////
   // results
   ////////////////////////////////////////////////////////////////
@@ -55,11 +55,9 @@ class Disambiguator(program: Program, domModel: Boolean) {
   // environment for renaming identifiers.
   private type Env = List[(String, String)]
   private val EMPTY_LABEL = ("empty", "empty")
-  private val domEnv = if (domModel) DOM_NAMES.map(v => (v, v)) else List()
   private var env: Env = PRED_VARS.map(v => (v, v)) ++
     PRED_FUNS.map(f => (f, f)) ++
-    List(("alert", "alert")) ++
-    domEnv
+    List(("alert", "alert"))
 
   // label environment
   private case class LabEnv(

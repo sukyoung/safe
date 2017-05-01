@@ -6,7 +6,10 @@ Heap: {
     "Document": <#Document, T, F, T>,
     "HTMLDocument": <#HTMLDocument, T, F, T>,
     "window": <#Global, F, T, F>,
-    "document": <#document, T, F, T>
+    "document": <#document, T, F, T>,
+    "location": <#location, F, T, T>,
+    "setInterval": <#Document.prototype.setInterval, T, T, T>,
+    "setTimeout": <#Document.prototype.setTimeout, T, T, T>
   },
   #Element: {
     [[Call]]: fun(1),
@@ -101,10 +104,68 @@ Heap: {
     [[Extensible]]: true,
     [[Prototype]]: #Node.prototype,
     "constructor": <#Document, T, F, T>,
-    "createElement": <#Document.prototype.createElement, T, T, T>
+    "createElement": <#Document.prototype.createElement, T, T, T>,
+    "location": <#location, F, T, T>,
+    "setInterval": <#Document.prototype.setInterval, T, T, T>,
+    "setTimeout": <#Document.prototype.setTimeout, T, T, T>,
+    "write": <#Document.prototype.write, F, T, T>,
+    "writeln": <#Document.prototype.writeln, F, T, T>,
+    "URL": <string, F, T, T>
   },
   #Document.prototype.createElement: {
     [[Call]]: fun(12),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[HasInstance]]: null,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null
+  },
+  #Document.prototype.setInterval: {
+    [[Call]]: fun(17),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[HasInstance]]: null,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null
+  },
+  #Document.prototype.setTimeout: {
+    [[Call]]: fun(15),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[HasInstance]]: null,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null
+  },
+  #Document.prototype.write: {
+    [[Call]]: fun(13),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[HasInstance]]: null,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null
+  },
+  #Document.prototype.writeln: {
+    [[Call]]: fun(16),
+    [[Class]]: "Function",
+    [[Extensible]]: true,
+    [[HasInstance]]: null,
+    [[Prototype]]: #Function.prototype,
+    [[Scope]]: null
+  },
+  #location: {
+    [[Class]]: "Object",
+    [[Extensible]]: true,
+    [[Prototype]]: #Location.prototype
+  },
+  #Location.prototype: {
+    [[Class]]: "Object",
+    [[Extensible]]: true,
+    [[Prototype]]: #Object.prototype,
+    "hash": <string, T, T, T>,
+    "replace": <#Location.prototype.replace, T, T, T>
+  },
+  #Location.prototype.replace: {
+    [[Call]]: fun(14),
     [[Class]]: "Function",
     [[Extensible]]: true,
     [[HasInstance]]: null,
@@ -168,6 +229,26 @@ Function: {
     var o = {};
     @Prototype(o, Element.prototype);
     return o;
+  }
+  \\],
+  13: [\\
+  function write(stuff) {
+  }
+  \\],
+  14: [\\
+  function replace(name) {
+  }
+  \\],
+  15: [\\
+  function setTimeout(code) {
+  }
+  \\],
+  16: [\\
+  function writeln(stuff) {
+  }
+  \\],
+  17: [\\
+  function setInterval(code, delay) {
   }
   \\]
 }

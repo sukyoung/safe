@@ -15,8 +15,9 @@ import kr.ac.kaist.safe.util._
 import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.json.NodeProtocol._
-import kr.ac.kaist.safe.json.CFGInstProtocol._
+import kr.ac.kaist.safe.json.CFGExprProtocol._
 import kr.ac.kaist.safe.json.CFGBlockProtocol._
+import kr.ac.kaist.safe.errors.error.CFGFunctionParseError
 
 import spray.json._
 import DefaultJsonProtocol._
@@ -33,7 +34,7 @@ object CFGFunctionProtocol extends DefaultJsonProtocol {
         JsArray(localVars.map(_.toJson).to[Vector]),
         JsString(name),
         JsBoolean(isUser),
-        JsArray(func.getAllBlocks.map(_.toJson).to[Vector])
+        JsArray(func.getAllBlocks.drop(3).map(_.toJson).to[Vector])
       )
     }
 
@@ -60,6 +61,7 @@ object CFGFunctionProtocol extends DefaultJsonProtocol {
           block.convertTo[CFGBlock]
         func
       }
+      case _ => throw CFGFunctionParseError(value)
     }
   }
 }
