@@ -13,38 +13,57 @@ package kr.ac.kaist.safe.errors.error
 
 import spray.json._
 
-sealed abstract class JsonParseError(name: String, value: JsValue) extends SafeError({
-  s"${value.prettyPrint}: Format of json for $name is wrong."
-})
-
-case class AllocSiteParseError(value: JsValue) extends JsonParseError("AllocSite", value)
-
-case class CFGParseError(value: JsValue) extends JsonParseError("CFG", value)
-
-case class CFGFunctionParseError(value: JsValue) extends JsonParseError("CFGFunction", value)
-
-case class CFGBlockParseError(value: JsValue) extends JsonParseError("CFGBlock", value)
-
 case object ModelBlockToJsonError extends SafeError(
   s"Try converting ModelBlock to Json."
 )
 
-case class CFGInstParseError(value: JsValue) extends JsonParseError("CFGInst", value)
+sealed abstract class JsonParseError(msg: String) extends SafeError(msg)
 
-case class CFGExprParseError(value: JsValue) extends JsonParseError("CFGExpr", value)
+case class NotJsonFileError(name: String) extends JsonParseError({
+  s"$name is not a JSON file."
+})
 
-case class CFGIdParseError(value: JsValue) extends JsonParseError("CFGId", value)
+case class FunctionNotFoundError(name: String, id: Int) extends JsonParseError({
+  s"Cannot find a CFGFunction with fid $id while parsing $name."
+})
 
-case class EJSOpParseError(value: JsValue) extends JsonParseError("EJSOp", value)
+case class BlockNotFoundError(name: String, fid: Int, bid: Int) extends JsonParseError({
+  s"Cannot find a CFGBlock with fid $fid and bid $bid while parsing $name."
+})
 
-case class EJSValParseError(value: JsValue) extends JsonParseError("EJSVal", value)
+sealed abstract class JsonFormatError(
+  name: String,
+  value: JsValue
+) extends JsonParseError({
+  s"${value.prettyPrint}: Format of json for $name is wrong."
+})
 
-case class VarKindParseError(value: JsValue) extends JsonParseError("VarKind", value)
+case class AllocSiteParseError(value: JsValue) extends JsonFormatError("AllocSite", value)
 
-case class ASTNodeParseError(value: JsValue) extends JsonParseError("ASTNode", value)
+case class CFGParseError(value: JsValue) extends JsonFormatError("CFG", value)
 
-case class SpanParseError(value: JsValue) extends JsonParseError("Span", value)
+case class CFGEdgeParseError(value: JsValue) extends JsonFormatError("Edge of CFG", value)
 
-case class SourceLocParseError(value: JsValue) extends JsonParseError("SourceLoc", value)
+case class CFGFunctionParseError(value: JsValue) extends JsonFormatError("CFGFunction", value)
 
-case class LabelKindParseError(value: JsValue) extends JsonParseError("LabelKind", value)
+case class CFGBlockParseError(value: JsValue) extends JsonFormatError("CFGBlock", value)
+
+case class CFGInstParseError(value: JsValue) extends JsonFormatError("CFGInst", value)
+
+case class CFGExprParseError(value: JsValue) extends JsonFormatError("CFGExpr", value)
+
+case class CFGIdParseError(value: JsValue) extends JsonFormatError("CFGId", value)
+
+case class EJSOpParseError(value: JsValue) extends JsonFormatError("EJSOp", value)
+
+case class EJSValParseError(value: JsValue) extends JsonFormatError("EJSVal", value)
+
+case class VarKindParseError(value: JsValue) extends JsonFormatError("VarKind", value)
+
+case class ASTNodeParseError(value: JsValue) extends JsonFormatError("ASTNode", value)
+
+case class SpanParseError(value: JsValue) extends JsonFormatError("Span", value)
+
+case class SourceLocParseError(value: JsValue) extends JsonFormatError("SourceLoc", value)
+
+case class LabelKindParseError(value: JsValue) extends JsonFormatError("LabelKind", value)

@@ -19,7 +19,11 @@ import kr.ac.kaist.safe.json.NodeProtocol._
 import kr.ac.kaist.safe.json.CFGExprProtocol._
 import kr.ac.kaist.safe.json.CFGInstProtocol._
 import kr.ac.kaist.safe.json.CFGFunctionProtocol._
-import kr.ac.kaist.safe.errors.error.CFGParseError
+import kr.ac.kaist.safe.errors.error.{
+  CFGParseError,
+  CFGEdgeParseError,
+  BlockNotFoundError
+}
 
 import spray.json._
 import DefaultJsonProtocol._
@@ -72,9 +76,9 @@ object CFGProtocol extends DefaultJsonProtocol {
                   block.addSucc(edgeType, edgeBlock)
                 else
                   block.addPred(edgeType, edgeBlock)
-              case None => throw CFGParseError(b)
+              case None => throw BlockNotFoundError("CFG", fid.toInt, bid.toInt)
             }
-          case _ => throw CFGParseError(b)
+          case _ => throw CFGEdgeParseError(b)
         }
     }
     private def jsonToBlockEdge(
@@ -95,9 +99,9 @@ object CFGProtocol extends DefaultJsonProtocol {
               edge match {
                 case JsArray(Vector(JsNumber(edgeType), JsArray(blocks))) =>
                   jsonToEdge(cfg, block, imap(edgeType.toInt), blocks, isSucc)
-                case _ => throw CFGParseError(edge)
+                case _ => throw CFGEdgeParseError(edge)
               }
-        case None => throw CFGParseError(JsNull)
+        case None => throw BlockNotFoundError("CFG", fid, bid)
       }
     }
 
@@ -109,8 +113,7 @@ object CFGProtocol extends DefaultJsonProtocol {
       JsArray(
         ir.toJson,
         JsArray(cfg.globalFunc.localVars.map(_.toJson).to[Vector]),
-        // store except the first func (globalFunc)
-        JsArray(cfg.getAllFuncs.reverse.tail.map(_.toJson).to[Vector]),
+        JsArray(cfg.getAllFuncs.reverse.map(_.toJson).to[Vector]),
         JsNumber(cfg.getUserASiteSize),
         JsArray(cfg.getPredASiteSet.map(_.toJson).to[Vector]),
         // store edge information for whole blocks
@@ -128,8 +131,12 @@ object CFGProtocol extends DefaultJsonProtocol {
         JsArray(edges)
         )) => {
         val cfg: CFG = new CFG(ir.convertTo[IRNode], vars.map(_.convertTo[CFGId]).to[List])
-        for (func <- funcs)
+        CFGInstProtocol.cfg = cfg
+        CFGFunctionProtocol.restoreGlobalFunc(cfg.globalFunc, funcs(0))
+        for (func <- funcs.tail)
           cfg.addFunction(func.convertTo[CFGFunction])
+        for (func <- cfg.getAllFuncs)
+          CFGFunctionProtocol.restoreBlock(func)
         cfg.setUserASiteSize(user.toInt)
         for (aSite <- pred)
           cfg.registerPredASite(aSite.convertTo[AllocSite])

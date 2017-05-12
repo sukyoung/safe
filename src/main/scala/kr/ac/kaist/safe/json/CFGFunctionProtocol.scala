@@ -18,7 +18,7 @@ import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.json.NodeProtocol._
 import kr.ac.kaist.safe.json.CFGExprProtocol._
 import kr.ac.kaist.safe.json.CFGBlockProtocol._
-import kr.ac.kaist.safe.errors.error.CFGFunctionParseError
+import kr.ac.kaist.safe.errors.error.{ CFGFunctionParseError, BlockNotFoundError }
 
 import spray.json._
 import DefaultJsonProtocol._
@@ -59,28 +59,41 @@ object CFGFunctionProtocol extends DefaultJsonProtocol {
           name,
           isUser
         )
-        CFGBlockProtocol.func = func
-        for (block <- blocks)
-          CFGBlockJsonFormat.restoreBlock(func, block)
-        for (block <- func.getAllBlocks)
-          block match {
-            case head @ LoopHead(_) => {
-              func.getBlock(head.breakBlockId) match {
-                case Some(b) => head.breakBlock = b.asInstanceOf[NormalBlock]
-                case None => throw CFGFunctionParseError(value)
-              }
-              func.getBlock(head.contBlockId) match {
-                case Some(b) => head.contBlock = b.asInstanceOf[NormalBlock]
-                case None => throw CFGFunctionParseError(value)
-              }
-            }
-            case _ => 0
-          }
         for (captId <- captured)
           func.addCaptured(captId.convertTo[CFGId])
+        func.blockData = blocks
         func
       }
       case _ => throw CFGFunctionParseError(value)
     }
+  }
+
+  def restoreGlobalFunc(func: CFGFunction, value: JsValue): Unit = value match {
+    case JsArray(Vector(_, _, _, _, _, _, JsArray(blocks), JsArray(captured))) => {
+      for (captId <- captured)
+        func.addCaptured(captId.convertTo[CFGId])
+      func.blockData = blocks
+    }
+    case _ => throw CFGFunctionParseError(value)
+  }
+
+  def restoreBlock(func: CFGFunction): Unit = {
+    CFGBlockProtocol.func = func
+    for (block <- func.blockData)
+      CFGBlockJsonFormat.restoreBlock(func, block)
+    for (block <- func.getAllBlocks)
+      block match {
+        case head @ LoopHead(_) => {
+          func.getBlock(head.breakBlockId) match {
+            case Some(b) => head.breakBlock = b.asInstanceOf[NormalBlock]
+            case None => throw BlockNotFoundError("CFGFunction", func.id, head.breakBlockId)
+          }
+          func.getBlock(head.contBlockId) match {
+            case Some(b) => head.contBlock = b.asInstanceOf[NormalBlock]
+            case None => throw BlockNotFoundError("CFGFunction", func.id, head.contBlockId)
+          }
+        }
+        case _ => 0
+      }
   }
 }
