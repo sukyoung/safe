@@ -41,7 +41,11 @@ case object IHasInstance extends IName {
   override def toString: String = s"[[HasInstance]]" // TODO
 }
 
-abstract class IValue
+abstract class IValue {
+  def +(other: IValue): IValue = {
+    other
+  }
+}
 case class FId(id: FunctionId) extends IValue {
   override def toString: String = {
     val fid = -id

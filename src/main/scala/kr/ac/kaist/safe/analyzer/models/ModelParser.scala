@@ -29,14 +29,14 @@ import scala.util.parsing.combinator._
 
 case class JSModel(heap: Heap, funcs: List[(String, CFGFunction)], fidMax: Int) {
   def +(other: JSModel): JSModel = {
-    // 1. rearrange function id
+    // 1. rearrange function id in other.funcs
     val newFuncs = other.funcs.foldLeft(this.funcs) {
       case (funList, (body, cfgFunc)) => {
         cfgFunc.id = cfgFunc.id - this.fidMax
         (body, cfgFunc) :: funList
       }
     }
-    // 2. revise function id in other.heap
+    // 2. rearrange function id in other.heap
     val mdfHeapMap = other.heap.map.foldLeft(HashMap(): Map[Loc, Object]) {
       case (heapMap, (loc, obj)) => {
         val mdfimap = obj.imap.foldLeft(HashMap(): Map[IName, IValue]) {
@@ -59,6 +59,8 @@ case class JSModel(heap: Heap, funcs: List[(String, CFGFunction)], fidMax: Int) 
     val newHeap = this.heap + mdfHeap
     val newFidMax = this.fidMax + other.fidMax
     JSModel(newHeap, newFuncs, newFidMax)
+    // 4. rearrange function id again
+    // function id may be lost because of merging algorithm
   }
   // TODO Complete the toString function
   override def toString: String = {

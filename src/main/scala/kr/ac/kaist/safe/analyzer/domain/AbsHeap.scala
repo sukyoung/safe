@@ -27,22 +27,13 @@ import spray.json._
 case class Heap(map: Map[Loc, Object]) {
   def +(other: Heap): Heap = {
     val emptyObj = Object(HashMap[String, DataProp](), HashMap[IName, IValue]())
-    val globalLoc = Loc(PredAllocSite("Global"))
-    val otherObj = other.map.getOrElse(globalLoc, emptyObj)
-    val thisObj = this.map.getOrElse(globalLoc, emptyObj)
-    val newamap = otherObj.amap.foldLeft(thisObj.amap) {
-      case (map, (k, v)) => map + (k -> v)
-    }
-    val newimap = otherObj.imap.foldLeft(thisObj.imap) {
-      case (map, (k, v)) => map + (k -> v)
-    }
-    val newGlobObj = Object(newamap, newimap)
-
     val newHeapMap = other.map.foldLeft(this.map) {
-      case (map, (k, v)) => map + (k -> v)
+      case (map, (loc, obj)) => {
+        val newObj = map.getOrElse(loc, emptyObj) + obj
+        map + (loc -> newObj)
+      }
     }
-    val finalHeapMap = newHeapMap + (globalLoc -> newGlobObj)
-    Heap(finalHeapMap)
+    Heap(newHeapMap)
   }
 }
 object Heap {

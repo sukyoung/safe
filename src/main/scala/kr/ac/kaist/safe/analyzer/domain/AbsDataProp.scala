@@ -22,6 +22,10 @@ case class DataProp(
     enumerable: Bool,
     configurable: Bool
 ) {
+  def +(other: DataProp): DataProp = {
+    // can be several option
+    other
+  }
   override def toString: String = {
     var w = "F"
     var e = "F"
@@ -29,7 +33,6 @@ case class DataProp(
     if (writable) w = "T"
     if (enumerable) e = "T"
     if (configurable) c = "T"
-    // XXX integer value translage to float value
     s"<$value, $w, $e, $c>"
   }
 }
