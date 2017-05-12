@@ -28,6 +28,79 @@ object CFGProtocol extends DefaultJsonProtocol {
 
   implicit object CFGJsonFormat extends RootJsonFormat[CFG] {
 
+    private val map: Map[CFGEdgeType, Int] = Map(
+      CFGEdgeNormal -> 0,
+      CFGEdgeExc -> 1,
+      CFGEdgeCall -> 2,
+      CFGEdgeRet -> 3
+    )
+    private val imap: Map[Int, CFGEdgeType] = map.map(_.swap)
+
+    private def edgeToJson(
+      edges: Map[CFGEdgeType, List[CFGBlock]]
+    ): JsValue = JsArray(
+      edges.to[Vector].map(_ match {
+        case (edgeType, blocks) => JsArray(
+          JsNumber(map(edgeType)),
+          JsArray(blocks.map(block => JsArray(
+            JsNumber(block.func.id),
+            JsNumber(block.id)
+          )).to[Vector])
+        )
+      })
+    )
+    private def blockEdgeToJson(block: CFGBlock): JsValue = JsArray(
+      JsNumber(block.func.id),
+      JsNumber(block.id),
+      edgeToJson(block.getAllSucc),
+      edgeToJson(block.getAllPred)
+    )
+
+    private def jsonToEdge(
+      cfg: CFG,
+      block: CFGBlock,
+      edgeType: CFGEdgeType,
+      blocks: Vector[JsValue],
+      succ: Boolean
+    ): Unit = {
+      for (b <- blocks)
+        b match {
+          case JsArray(Vector(JsNumber(fid), JsNumber(bid))) =>
+            cfg.getBlock(fid.toInt, bid.toInt) match {
+              case Some(edgeBlock) =>
+                if (succ)
+                  block.addSucc(edgeType, edgeBlock)
+                else
+                  block.addPred(edgeType, edgeBlock)
+              case None => throw CFGParseError(b)
+            }
+          case _ => throw CFGParseError(b)
+        }
+    }
+    private def jsonToBlockEdge(
+      cfg: CFG,
+      fid: FunctionId,
+      bid: BlockId,
+      succ: Vector[JsValue],
+      pred: Vector[JsValue]
+    ): Unit = {
+      val succAndPred: Map[Boolean, Vector[JsValue]] = Map(
+        true -> succ,
+        false -> pred
+      )
+      cfg.getBlock(fid, bid) match {
+        case Some(block) =>
+          for ((isSucc, edges) <- succAndPred)
+            for (edge <- edges)
+              edge match {
+                case JsArray(Vector(JsNumber(edgeType), JsArray(blocks))) =>
+                  jsonToEdge(cfg, block, imap(edgeType.toInt), blocks, isSucc)
+                case _ => throw CFGParseError(edge)
+              }
+        case None => throw CFGParseError(JsNull)
+      }
+    }
+
     def write(cfg: CFG): JsValue = {
       val info: ASTNodeInfo = ASTNodeInfo(cfg.span, cfg.comment)
       val ast: ASTNode = Comment(info, "")
@@ -37,9 +110,11 @@ object CFGProtocol extends DefaultJsonProtocol {
         ir.toJson,
         JsArray(cfg.globalFunc.localVars.map(_.toJson).to[Vector]),
         // store except the first func (globalFunc)
-        JsArray(cfg.getAllFuncs.tail.map(_.toJson).to[Vector]),
+        JsArray(cfg.getAllFuncs.reverse.tail.map(_.toJson).to[Vector]),
         JsNumber(cfg.getUserASiteSize),
-        JsArray(cfg.getPredASiteSet.map(_.toJson).to[Vector])
+        JsArray(cfg.getPredASiteSet.map(_.toJson).to[Vector]),
+        // store edge information for whole blocks
+        JsArray(cfg.getAllBlocks.map(blockEdgeToJson(_)).to[Vector])
       )
     }
 
@@ -49,14 +124,25 @@ object CFGProtocol extends DefaultJsonProtocol {
         JsArray(vars),
         JsArray(funcs),
         JsNumber(user),
-        JsArray(pred))
-        ) => {
+        JsArray(pred),
+        JsArray(edges)
+        )) => {
         val cfg: CFG = new CFG(ir.convertTo[IRNode], vars.map(_.convertTo[CFGId]).to[List])
         for (func <- funcs)
           cfg.addFunction(func.convertTo[CFGFunction])
         cfg.setUserASiteSize(user.toInt)
         for (aSite <- pred)
           cfg.registerPredASite(aSite.convertTo[AllocSite])
+        for (edge <- edges)
+          edge match {
+            case JsArray(Vector(
+              JsNumber(fid),
+              JsNumber(bid),
+              JsArray(succ),
+              JsArray(pred)
+              )) => jsonToBlockEdge(cfg, fid.toInt, bid.toInt, succ, pred)
+            case _ => throw CFGParseError(value)
+          }
         cfg
       }
       case _ => throw CFGParseError(value)

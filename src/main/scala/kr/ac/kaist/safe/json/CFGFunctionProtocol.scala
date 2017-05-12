@@ -11,6 +11,7 @@
 
 package kr.ac.kaist.safe.json
 
+import scala.collection.mutable.{ MutableList => MList }
 import kr.ac.kaist.safe.util._
 import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.nodes.cfg._
@@ -34,7 +35,8 @@ object CFGFunctionProtocol extends DefaultJsonProtocol {
         JsArray(localVars.map(_.toJson).to[Vector]),
         JsString(name),
         JsBoolean(isUser),
-        JsArray(func.getAllBlocks.drop(3).map(_.toJson).to[Vector])
+        JsArray(func.getAllBlocks.reverse.drop(3).map(_.toJson).filter(_ != JsNull).to[Vector]),
+        JsArray(func.getCaptured.reverse.map(_.toJson).to[Vector])
       )
     }
 
@@ -46,7 +48,8 @@ object CFGFunctionProtocol extends DefaultJsonProtocol {
         JsArray(localVars),
         JsString(name),
         JsBoolean(isUser),
-        JsArray(blocks)
+        JsArray(blocks),
+        JsArray(captured)
         )) => {
         val func = CFGFunction(
           ir.convertTo[IRNode],
@@ -56,9 +59,25 @@ object CFGFunctionProtocol extends DefaultJsonProtocol {
           name,
           isUser
         )
+        CFGBlockProtocol.func = func
         for (block <- blocks)
-          // TODO add blocks to the list in the function
-          block.convertTo[CFGBlock]
+          CFGBlockJsonFormat.restoreBlock(func, block)
+        for (block <- func.getAllBlocks)
+          block match {
+            case head @ LoopHead(_) => {
+              func.getBlock(head.breakBlockId) match {
+                case Some(b) => head.breakBlock = b.asInstanceOf[NormalBlock]
+                case None => throw CFGFunctionParseError(value)
+              }
+              func.getBlock(head.contBlockId) match {
+                case Some(b) => head.contBlock = b.asInstanceOf[NormalBlock]
+                case None => throw CFGFunctionParseError(value)
+              }
+            }
+            case _ => 0
+          }
+        for (captId <- captured)
+          func.addCaptured(captId.convertTo[CFGId])
         func
       }
       case _ => throw CFGFunctionParseError(value)

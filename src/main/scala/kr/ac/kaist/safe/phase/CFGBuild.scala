@@ -17,6 +17,10 @@ import kr.ac.kaist.safe.cfg_builder.{ DefaultCFGBuilder, DotWriter }
 import kr.ac.kaist.safe.nodes.ir.IRRoot
 import kr.ac.kaist.safe.nodes.cfg.CFG
 import kr.ac.kaist.safe.util._
+import kr.ac.kaist.safe.json.CFGProtocol._
+
+import spray.json._
+import DefaultJsonProtocol._
 
 // CFGBuild phase
 case object CFGBuild extends PhaseObj[IRRoot, CFGBuildConfig, CFG] {
@@ -55,7 +59,11 @@ case object CFGBuild extends PhaseObj[IRRoot, CFGBuildConfig, CFG] {
 
     // print JSON file: {jsonName}.json
     config.jsonName.map(name => {
-      // TODO write into s"$name.json" file
+      val (fw, writer) = Useful.fileNameToWriters(s"$name.json")
+      writer.write(cfg.toJson.prettyPrint)
+      writer.close
+      fw.close
+      println("Dumped CFG to " + s"$name.json")
     })
 
     Success(cfg)

@@ -23,6 +23,8 @@ import DefaultJsonProtocol._
 
 object CFGInstProtocol extends DefaultJsonProtocol {
 
+  var block: CFGBlock = _
+
   implicit object AllocSiteJsonFormat extends RootJsonFormat[AllocSite] {
 
     def write(aSite: AllocSite): JsValue = aSite match {
@@ -37,13 +39,11 @@ object CFGInstProtocol extends DefaultJsonProtocol {
     }
   }
 
-  implicit object CFGInstJsonFormat extends RootJsonFormat[CFGInst] {
+  implicit object CFGNormalInstJsonFormat extends RootJsonFormat[CFGNormalInst] {
 
-    var block: CFGBlock = _
     def nBlock: NormalBlock = block.asInstanceOf[NormalBlock]
-    def cBlock: Call = block.asInstanceOf[Call]
 
-    def write(inst: CFGInst): JsValue = {
+    def write(inst: CFGNormalInst): JsValue = {
       val name: String = inst.getClass.getName
       inst match {
         case CFGAlloc(ir, _, lhs, proto, asite) => JsArray(
@@ -165,26 +165,10 @@ object CFGInstProtocol extends DefaultJsonProtocol {
             case None => JsNull
           }
         )
-        case CFGCall(ir, _, fun, arg, args, asite) => JsArray(
-          JsString(name),
-          ir.toJson,
-          fun.toJson,
-          arg.toJson,
-          args.toJson,
-          asite.toJson
-        )
-        case CFGConstruct(ir, _, fun, arg, args, asite) => JsArray(
-          JsString(name),
-          ir.toJson,
-          fun.toJson,
-          arg.toJson,
-          args.toJson,
-          asite.toJson
-        )
       }
     }
 
-    def read(value: JsValue): CFGInst = value match {
+    def read(value: JsValue): CFGNormalInst = value match {
       case JsArray(Vector(JsString("CFGAlloc"), ir, lhs, proto, asite)) =>
         CFGAlloc(
           ir.convertTo[IRNode],
@@ -321,6 +305,37 @@ object CFGInstProtocol extends DefaultJsonProtocol {
             case _ => Some(asite.convertTo[AllocSite])
           }
         )
+      case _ => throw CFGInstParseError(value)
+    }
+  }
+
+  implicit object CFGCallInstJsonFormat extends RootJsonFormat[CFGCallInst] {
+
+    def cBlock: Call = block.asInstanceOf[Call]
+
+    def write(inst: CFGCallInst): JsValue = {
+      val name: String = inst.getClass.getName
+      inst match {
+        case CFGCall(ir, _, fun, arg, args, asite) => JsArray(
+          JsString(name),
+          ir.toJson,
+          fun.toJson,
+          arg.toJson,
+          args.toJson,
+          asite.toJson
+        )
+        case CFGConstruct(ir, _, fun, arg, args, asite) => JsArray(
+          JsString(name),
+          ir.toJson,
+          fun.toJson,
+          arg.toJson,
+          args.toJson,
+          asite.toJson
+        )
+      }
+    }
+
+    def read(value: JsValue): CFGCallInst = value match {
       case JsArray(Vector(JsString("CFGCall"), ir, fun, arg, args, asite)) =>
         CFGCall(
           ir.convertTo[IRNode],

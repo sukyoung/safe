@@ -25,6 +25,10 @@ case class CFGFunctionParseError(value: JsValue) extends JsonParseError("CFGFunc
 
 case class CFGBlockParseError(value: JsValue) extends JsonParseError("CFGBlock", value)
 
+case object ModelBlockToJsonError extends SafeError(
+  s"Try converting ModelBlock to Json."
+)
+
 case class CFGInstParseError(value: JsValue) extends JsonParseError("CFGInst", value)
 
 case class CFGExprParseError(value: JsValue) extends JsonParseError("CFGExpr", value)

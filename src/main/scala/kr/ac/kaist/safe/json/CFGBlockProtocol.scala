@@ -15,7 +15,11 @@ import kr.ac.kaist.safe.util._
 import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.json.CFGExprProtocol._
 import kr.ac.kaist.safe.json.CFGInstProtocol._
-import kr.ac.kaist.safe.errors.error.{ CFGBlockParseError, LabelKindParseError }
+import kr.ac.kaist.safe.errors.error.{
+  CFGBlockParseError,
+  ModelBlockToJsonError,
+  LabelKindParseError
+}
 
 import spray.json._
 import DefaultJsonProtocol._
@@ -46,7 +50,10 @@ object CFGBlockProtocol extends DefaultJsonProtocol {
 
     def read(value: JsValue): LabelKind = value match {
       case JsArray(Vector(JsNumber(id))) => FinallyLabel(
-        func.getBlock(id.toInt).asInstanceOf[NormalBlock]
+        func.getBlock(id.toInt) match {
+          case Some(block) => block.asInstanceOf[NormalBlock]
+          case None => throw LabelKindParseError(value)
+        }
       )
       case JsString(name) => UserLabel(name)
       case JsNumber(n) => imap(n.toInt)
@@ -56,36 +63,51 @@ object CFGBlockProtocol extends DefaultJsonProtocol {
 
   implicit object CFGBlockJsonFormat extends RootJsonFormat[CFGBlock] {
 
-    def blockToJson(block: CFGBlock): JsValue = {
-      JsArray()
-    }
-
     def write(block: CFGBlock): JsValue = block match {
-      // do not convert Entry, Exit ExitExc to Json
-      // since they always exist 
-      case call @ Call(_) => JsArray(
-        JsNumber(call.afterCall.id),
-        JsNumber(call.afterCatch.id),
-        call.callInst.asInstanceOf[CFGInst].toJson
-      )
-      case AfterCall(_, retVar, _) => JsArray(
+      case AfterCall(_, retVar, call) => JsArray(
+        JsString("Call"),
+        call.callInst.toJson,
         retVar.toJson
       )
-      case AfterCatch(_, _) => JsArray()
       case NormalBlock(_, label) => JsArray(
-        label.toJson +:
-          block.getInsts.map(_.toJson).to[Vector]
+        JsString("Normal"),
+        label.toJson,
+        JsArray(block.getInsts.reverse.map(_.asInstanceOf[CFGNormalInst].toJson).to[Vector])
       )
       case head @ LoopHead(_) => JsArray(
         JsNumber(head.breakBlock.id),
         JsNumber(head.contBlock.id)
       )
-      case ModelBlock(_, _) => JsNull
-      case _ => throw CFGBlockParseError(JsNull)
+      case ModelBlock(_, _) => throw ModelBlockToJsonError
+      case _ => JsNull
     }
 
-    def read(value: JsValue): CFGBlock = value match {
-      case _ => throw CFGBlockParseError(value)
+    def read(value: JsValue): CFGBlock = throw CFGBlockParseError(value)
+
+    def restoreBlock(func: CFGFunction, block: JsValue): CFGBlock = block match {
+      case JsArray(Vector(JsString("Call"), callInst, retVar)) => {
+        func.createCall(
+          c => {
+            CFGInstProtocol.block = c
+            callInst.convertTo[CFGCallInst]
+          },
+          retVar.convertTo[CFGId]
+        )
+      }
+      case JsArray(Vector(JsString("Normal"), label, JsArray(insts))) => {
+        val b: NormalBlock = func.createBlock(label.convertTo[LabelKind])
+        CFGInstProtocol.block = b
+        for (inst <- insts)
+          b.createInst(n => inst.convertTo[CFGNormalInst])
+        b
+      }
+      case JsArray(Vector(JsNumber(breakBlock), JsNumber(contBlock))) => {
+        val h: LoopHead = func.createLoopHead
+        h.breakBlockId = breakBlock.toInt
+        h.contBlockId = contBlock.toInt
+        h
+      }
+      case _ => throw CFGBlockParseError(block)
     }
   }
 }
