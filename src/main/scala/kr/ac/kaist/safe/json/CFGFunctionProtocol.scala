@@ -81,19 +81,5 @@ object CFGFunctionProtocol extends DefaultJsonProtocol {
     CFGBlockProtocol.func = func
     for (block <- func.blockData)
       CFGBlockJsonFormat.restoreBlock(func, block)
-    for (block <- func.getAllBlocks)
-      block match {
-        case head @ LoopHead(_) => {
-          func.getBlock(head.breakBlockId) match {
-            case Some(b) => head.breakBlock = b.asInstanceOf[NormalBlock]
-            case None => throw BlockNotFoundError("CFGFunction", func.id, head.breakBlockId)
-          }
-          func.getBlock(head.contBlockId) match {
-            case Some(b) => head.contBlock = b.asInstanceOf[NormalBlock]
-            case None => throw BlockNotFoundError("CFGFunction", func.id, head.contBlockId)
-          }
-        }
-        case _ => 0
-      }
   }
 }

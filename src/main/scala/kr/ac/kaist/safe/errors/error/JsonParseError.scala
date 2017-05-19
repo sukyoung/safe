@@ -67,3 +67,13 @@ case class SpanParseError(value: JsValue) extends JsonFormatError("Span", value)
 case class SourceLocParseError(value: JsValue) extends JsonFormatError("SourceLoc", value)
 
 case class LabelKindParseError(value: JsValue) extends JsonFormatError("LabelKind", value)
+
+case class WorklistParseError(value: JsValue) extends JsonFormatError("Worklist", value)
+
+case class WorkParseError(value: JsValue) extends JsonFormatError("Work", value)
+
+case class ControlPointParseError(value: JsValue) extends JsonFormatError("ControlPoint", value)
+
+case class TracePartitionParseError(value: JsValue) extends JsonFormatError("TracePartition", value)
+
+case class LoopInfoParseError(value: JsValue) extends JsonFormatError("LoopInfo", value)

@@ -201,16 +201,6 @@ case class LoopHead(func: CFGFunction) extends CFGBlock {
   // block id
   val id: BlockId = func.getBId
 
-  // store bid of breakBlock (used when make LoopHead from JSON)
-  var breakBlockId: BlockId = -4
-  // break label block
-  var breakBlock: NormalBlock = _
-
-  // store bid of contBlock (used when make LoopHead from JSON)
-  var contBlockId: BlockId = -4
-  // continue label block
-  var contBlock: NormalBlock = _
-
   // inst list
   override def getInsts: List[CFGNormalInst] = Nil
 

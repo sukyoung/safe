@@ -46,7 +46,7 @@ object CFGProtocol extends DefaultJsonProtocol {
       edges.to[Vector].map(_ match {
         case (edgeType, blocks) => JsArray(
           JsNumber(map(edgeType)),
-          JsArray(blocks.map(block => JsArray(
+          JsArray(blocks.reverse.map(block => JsArray(
             JsNumber(block.func.id),
             JsNumber(block.id)
           )).to[Vector])
