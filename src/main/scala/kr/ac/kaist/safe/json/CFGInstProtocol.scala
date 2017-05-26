@@ -16,13 +16,18 @@ import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.json.NodeProtocol._
 import kr.ac.kaist.safe.json.CFGExprProtocol._
-import kr.ac.kaist.safe.errors.error.{ AllocSiteParseError, CFGInstParseError }
+import kr.ac.kaist.safe.errors.error.{
+  AllocSiteParseError,
+  CFGInstParseError,
+  FunctionNotFoundError
+}
 
 import spray.json._
 import DefaultJsonProtocol._
 
 object CFGInstProtocol extends DefaultJsonProtocol {
 
+  var cfg: CFG = _
   var block: CFGBlock = _
 
   implicit object AllocSiteJsonFormat extends RootJsonFormat[AllocSite] {
@@ -44,7 +49,7 @@ object CFGInstProtocol extends DefaultJsonProtocol {
     def nBlock: NormalBlock = block.asInstanceOf[NormalBlock]
 
     def write(inst: CFGNormalInst): JsValue = {
-      val name: String = inst.getClass.getName
+      val name: String = inst.getClass.getSimpleName
       inst match {
         case CFGAlloc(ir, _, lhs, proto, asite) => JsArray(
           JsString(name),
@@ -241,7 +246,7 @@ object CFGInstProtocol extends DefaultJsonProtocol {
           index.convertTo[EJSVal].asInstanceOf[EJSString],
           rhs.convertTo[CFGExpr]
         )
-      case JsArray(Vector(JsString("CFGFunExpr"), ir, lhs, name, fid, a1, a2, a3)) =>
+      case JsArray(Vector(JsString("CFGFunExpr"), ir, lhs, name, JsNumber(fid), a1, a2, a3)) =>
         CFGFunExpr(
           ir.convertTo[IRNode],
           nBlock,
@@ -250,7 +255,10 @@ object CFGInstProtocol extends DefaultJsonProtocol {
             case JsNull => None
             case _ => Some(name.convertTo[CFGId])
           },
-          null, // TODO get function from fid by using functions list
+          cfg.getFunc(fid.toInt) match {
+            case Some(f) => f
+            case None => throw FunctionNotFoundError("CFGInst", fid.toInt)
+          },
           a1.convertTo[AllocSite],
           a2.convertTo[AllocSite],
           a3 match {
@@ -314,7 +322,7 @@ object CFGInstProtocol extends DefaultJsonProtocol {
     def cBlock: Call = block.asInstanceOf[Call]
 
     def write(inst: CFGCallInst): JsValue = {
-      val name: String = inst.getClass.getName
+      val name: String = inst.getClass.getSimpleName
       inst match {
         case CFGCall(ir, _, fun, arg, args, asite) => JsArray(
           JsString(name),

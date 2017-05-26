@@ -128,9 +128,9 @@ class Translator(program: Program) {
 
   // make a non-global temporary id
   private def makeTId(span: Span, uniqueName: String): IRTmpId =
-    IRTmpId(null, uniqueName, uniqueName, false) // TODO handle null ASTNode
+    IRTmpId(NU.TEMP_AST, uniqueName, uniqueName, false)
   private def makeTId(span: Span, uniqueName: String, isGlobal: Boolean): IRTmpId =
-    IRTmpId(null, uniqueName, uniqueName, isGlobal) // TODO handle null ASTNode
+    IRTmpId(NU.TEMP_AST, uniqueName, uniqueName, isGlobal)
   private def makeTId(ast: ASTNode, uniqueName: String): IRTmpId =
     IRTmpId(ast, uniqueName, uniqueName, false)
 

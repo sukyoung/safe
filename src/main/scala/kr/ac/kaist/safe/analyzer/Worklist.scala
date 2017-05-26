@@ -24,6 +24,8 @@ case class Worklist(cfg: CFG) {
   // work list
   private var worklist: List[Work] = Nil
 
+  def getWorklist: List[Work] = worklist
+
   // order map for blocks
   private val orderMap: Map[CFGBlock, Int] = {
     val cfgBlockList: List[CFGBlock] = cfg.getAllBlocks.sortWith((b1, b2) => {

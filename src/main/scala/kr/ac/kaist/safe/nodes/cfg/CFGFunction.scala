@@ -17,6 +17,8 @@ import kr.ac.kaist.safe.nodes.ir.IRNode
 import kr.ac.kaist.safe.util.NodeUtil
 import kr.ac.kaist.safe.analyzer.models.SemanticFun
 
+import spray.json._
+
 case class CFGFunction(
     override val ir: IRNode,
     argumentsName: String,
@@ -43,6 +45,10 @@ case class CFGFunction(
   )
   def getBlock(bid: BlockId): Option[CFGBlock] = blockMap.get(bid)
   def getAllBlocks: List[CFGBlock] = blocks
+
+  // used when create CFGFunction from JSON
+  var blockData: Vector[JsValue] = _
+  var capturedData: Vector[JsValue] = _
 
   // append block
   private def addBlock(block: CFGBlock): CFGBlock = {
