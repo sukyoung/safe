@@ -14,7 +14,7 @@ import kr.ac.kaist.safe.nodes.ast._
 import kr.ac.kaist.safe.concolic.{ConcolicNodeUtil => CNU}
 import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.nodes.ir.{IRFactory => IF}
-import kr.ac.kaist.safe.util.{Coverage, NodeUtil => NU}
+import kr.ac.kaist.safe.util.Coverage
 import scala.collection.mutable.Map
 
 /* Instrumented IR statements:

@@ -14,7 +14,6 @@ package kr.ac.kaist.safe.parser
 import java.lang.{ Integer => JInteger }
 import scala.util.Success
 import kr.ac.kaist.safe.nodes.ast._
-import kr.ac.kaist.safe.util.{ NodeUtil => NU }
 
 /* Rewrites a JavaScript source code
  * using dynamic code generation with string constants

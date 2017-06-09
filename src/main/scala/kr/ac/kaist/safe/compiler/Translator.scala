@@ -16,7 +16,6 @@ import kr.ac.kaist.safe.errors.error._
 import kr.ac.kaist.safe.nodes.ast._
 import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.util._
-import kr.ac.kaist.safe.util.{ NodeUtil => NU }
 
 /* Translates JavaScript AST to IR. */
 class Translator(program: Program) {

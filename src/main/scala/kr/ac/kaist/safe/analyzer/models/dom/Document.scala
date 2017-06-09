@@ -15,7 +15,7 @@ import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.analyzer.models._
 import kr.ac.kaist.safe.analyzer._
-import kr.ac.kaist.safe.util.NodeUtil
+import NodeUtil
 
 object Document extends ObjModel(
   name = "Document",

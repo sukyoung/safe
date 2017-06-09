@@ -12,7 +12,7 @@
 package kr.ac.kaist.safe.nodes.ir
 
 import kr.ac.kaist.safe.nodes.ast.ASTNode
-import kr.ac.kaist.safe.util.NodeUtil
+import NodeUtil
 
 trait IRGeneralWalker[Result] {
   def join(args: Result*): Result

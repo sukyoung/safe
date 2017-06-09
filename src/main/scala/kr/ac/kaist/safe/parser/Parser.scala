@@ -18,7 +18,7 @@ import xtc.parser.{ Result, ParseError, SemanticValue }
 import kr.ac.kaist.safe.errors.ExcLog
 import kr.ac.kaist.safe.errors.error.{ ParserError, NotJSFileError, AlreadyMergedSourceError }
 import kr.ac.kaist.safe.nodes.ast._
-import kr.ac.kaist.safe.util.{ NodeUtil => NU, _ }
+import kr.ac.kaist.safe.util.{ _ }
 
 object Parser {
   // Used by DynamicRewriter

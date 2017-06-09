@@ -9,17 +9,16 @@
  * ****************************************************************************
  */
 
-package kr.ac.kaist.safe.util
+package kr.ac.kaist.safe.nodes
 
+import kr.ac.kaist.safe.{BASE_DIR, LINE_SEP}
 import kr.ac.kaist.safe.nodes.Node
 import kr.ac.kaist.safe.nodes.ast._
-import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.nodes.cfg._
-import kr.ac.kaist.safe.BASE_DIR
-import kr.ac.kaist.safe.LINE_SEP
-import java.io.BufferedWriter
-import java.io.IOException
-import scala.collection.immutable.{ HashMap, HashSet }
+import kr.ac.kaist.safe.nodes.ir._
+import kr.ac.kaist.safe.util.Span
+
+import scala.collection.immutable.{HashMap, HashSet}
 
 object NodeUtil {
   ////////////////////////////////////////////////////////////////

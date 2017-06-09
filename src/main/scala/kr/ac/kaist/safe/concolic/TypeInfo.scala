@@ -10,6 +10,7 @@
 package kr.ac.kaist.safe.concolic
 
 import _root_.java.util.{List => JList}
+import kr.ac.kaist.safe.util.useful.Lists
 
 class TypeInfo(t: String) {
   val paramType = t
@@ -32,6 +33,6 @@ class TypeInfo(t: String) {
   }
 
   def getJavaConstructor(): String = constructorNames(0)
-  def getJavaProperties(): JList[String] = toJavaList(properties) 
+  def getJavaProperties(): JList[String] = Lists.toJavaList(properties)
 
 }

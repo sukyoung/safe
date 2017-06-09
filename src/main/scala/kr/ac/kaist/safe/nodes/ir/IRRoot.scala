@@ -13,7 +13,7 @@ package kr.ac.kaist.safe.nodes.ir
 
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.nodes.ast.ASTNode
-import kr.ac.kaist.safe.util.NodeUtil
+import NodeUtil
 
 // IRRoot ::= Statement*
 case class IRRoot(

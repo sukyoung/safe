@@ -14,7 +14,7 @@ package kr.ac.kaist.safe.nodes.cfg
 import scala.collection.mutable.{ HashMap => MHashMap, Map => MMap }
 import kr.ac.kaist.safe.{ LINE_SEP, SIGNIFICANT_BITS }
 import kr.ac.kaist.safe.nodes.ir.IRNode
-import kr.ac.kaist.safe.util.NodeUtil
+import NodeUtil
 import kr.ac.kaist.safe.analyzer.models.SemanticFun
 
 case class CFGFunction(

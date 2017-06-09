@@ -13,7 +13,6 @@ package kr.ac.kaist.safe.nodes.ast
 
 import java.lang.Double
 import java.math.BigInteger
-import kr.ac.kaist.safe.util.{ NodeUtil => NU }
 import kr.ac.kaist.safe.LINE_SEP
 
 abstract class Expr(
