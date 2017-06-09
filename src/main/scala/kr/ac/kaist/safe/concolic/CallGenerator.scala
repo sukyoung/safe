@@ -33,9 +33,9 @@ class CallGenerator(coverage: Coverage) {
 
   val dummyId = IF.dummyIRId(CNU.freshConcolicName("CallGenerator"))
   val none: Option[IRId] = None
-  val startConcolic = new IRInternalCall(NF.dummyAst, dummyId, IF.makeTId(NF.dummyAst.span, CNU.freshConcolicName
+  val startConcolic = new IRInternalCall(NF.dummyAst, dummyId, IF.makeTId(NF.dummyAst, CNU.freshConcolicName
   ("StartConcolic")), dummyId, None)
-  val endConcolic = new IRInternalCall(NF.dummyAst, dummyId, IF.makeTId(NF.dummyAst.span, CNU.freshConcolicName
+  val endConcolic = new IRInternalCall(NF.dummyAst, dummyId, IF.makeTId(NF.dummyAst, CNU.freshConcolicName
   ("EndConcolic")), dummyId, None)
 
   def setupCall(target: String):Option[IRStmt] = {
@@ -95,7 +95,7 @@ class CallGenerator(coverage: Coverage) {
             list:+IRGenerator.additional2ir(s, env) 
           })
           val funapp = NF.makeFunApp(dummySpan, fun, args)
-          val res = IF.makeTId(funapp, dummySpan, NU.IGNORE_NAME)
+          val res = IF.makeTId(funapp, NU.IGNORE_NAME)
           val funir = IRGenerator.funapp2ir(funapp, env, res, target)
           val core = List(startConcolic, funir, endConcolic)
           // Make the cutline to calculate coverage.
@@ -110,7 +110,7 @@ class CallGenerator(coverage: Coverage) {
           val ir = additional.foldLeft[List[IRStmt]](List())((list, s) => {
             list:+IRGenerator.additional2ir(s, env) 
           })
-          val res = IF.makeTId(funapp, dummySpan, NU.IGNORE_NAME)
+          val res = IF.makeTId(funapp, NU.IGNORE_NAME)
           val funir = IRGenerator.funapp2ir(funapp, env, res, target)
           val core = List(startConcolic, funir, endConcolic)
 

@@ -14,7 +14,7 @@ import kr.ac.kaist.safe.errors.error.ConcolicError
 import kr.ac.kaist.safe.nodes.ast._
 import kr.ac.kaist.safe.nodes.{NodeFactory => NF}
 import kr.ac.kaist.safe.nodes_util.{IRFactory => IF, NodeRelation => NR, NodeUtil => NU}
-import kr.ac.kaist.safe.util.Span
+import kr.ac.kaist.safe.util.{Coverage, Span}
 import kr.ac.kaist.safe.util.useful.Options._
 import scala.util.Random
 
