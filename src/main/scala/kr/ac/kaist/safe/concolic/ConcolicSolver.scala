@@ -13,8 +13,10 @@ import _root_.java.math.BigInteger
 import kr.ac.kaist.safe.errors.error.ConcolicError
 import kr.ac.kaist.safe.nodes.ast._
 import kr.ac.kaist.safe.nodes.{NodeFactory => NF}
-import kr.ac.kaist.safe.nodes_util.{IRFactory => IF, NodeRelation => NR, NodeUtil => NU}
-import kr.ac.kaist.safe.util.{Coverage, Span}
+import kr.ac.kaist.safe.nodes.ir._
+import kr.ac.kaist.safe.nodes.ir.{IRFactory => IF}
+import kr.ac.kaist.safe.util.{Coverage, NodeRelation => NR, NodeUtil => NU, Span}
+import kr.ac.kaist.safe.util.useful.{Lists, Maps}
 import kr.ac.kaist.safe.util.useful.Options._
 import scala.util.Random
 
@@ -125,9 +127,10 @@ class ConcolicSolver(coverage: Coverage) {
       }
     }
     // Make a primitive result. 
-    var tmp = z3.solve(toJavaList(primitiveConstraints), num, toJavaOption(Some(function.getJavaObjects)), function.getJavaThisProperties) 
+    var tmp = z3.solve(Lists.toJavaList(primitiveConstraints), num, toJavaOption(Some(function.getJavaObjects)),
+      function.getJavaThisProperties)
     if (tmp.isSome) 
-      primitiveResult = toMap(tmp.unwrap).map(x => (x._1, x._2.intValue))
+      primitiveResult = Maps.toMap(tmp.unwrap).map(x => (x._1, x._2.intValue))
     
     // Build actual result combined object related result and primitive realted one.
     if (function.hasThisObject) {
@@ -193,7 +196,7 @@ class ConcolicSolver(coverage: Coverage) {
     stmts = stmts:+assignValue(arg, obj)
 
     if (constructor == "Array") {
-      val ref = NF.makeVarRef(dummySpan, NF.makeId(dummySpan, arg.getText, arg.getText))
+      val ref = NF.makeVarRef(dummySpan, NF.makeId(dummySpan, arg.text, arg.text))
       var lhs = NF.makeDot(dummySpan, ref, NF.makeId(dummySpan, "length", "length"))
       var rhs = NF.makeIntLiteral(dummySpan, new BigInteger(props(0)))
       stmts = stmts:+NF.makeExprStmt(dummySpan, NF.makeAssignOpApp(dummySpan, lhs, 
@@ -211,7 +214,7 @@ class ConcolicSolver(coverage: Coverage) {
     }
     else {
       stmts = props.foldLeft[List[Stmt]](stmts)((list, p) => {
-        val ref = NF.makeVarRef(dummySpan, NF.makeId(dummySpan, arg.getText, arg.getText))
+        val ref = NF.makeVarRef(dummySpan, NF.makeId(dummySpan, arg.text, arg.text))
         val lhs = NF.makeDot(dummySpan, ref, NF.makeId(dummySpan, p, p))
         var key = "i"+argnum+"."
         if (isThis)
@@ -242,8 +245,8 @@ class ConcolicSolver(coverage: Coverage) {
     var additional = List[Stmt]()
     for (k <- NR.ir2astMap.keySet) {
       k match { 
-        case SIRFunctional(_, name, params, args, fds, vds, body) =>
-          if (name.getUniqueName == constructor) { 
+        case IRFunctional(_, _, name, params, args, fds, vds, body) =>
+          if (name.uniqueName == constructor) {
             val constructorFunction = coverage.functions(constructor)
             val psize = constructorFunction.params.size
             var args = List[Expr]()

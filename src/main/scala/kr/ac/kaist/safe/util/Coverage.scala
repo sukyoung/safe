@@ -7,10 +7,13 @@
     This distribution may include materials developed by third parties.
  ******************************************************************************/
 
+package kr.ac.kaist.safe.util
+
 import _root_.java.util.{List => JList}
 import kr.ac.kaist.safe.concolic._
 import kr.ac.kaist.safe.nodes.ast._
 import kr.ac.kaist.safe.nodes.ir._
+import kr.ac.kaist.safe.util.useful.{Lists, Options}
 import kr.ac.kaist.jsaf.analysis.typing.{SemanticsExpr => SE}
 
 import scala.collection.mutable.HashMap
@@ -81,7 +84,7 @@ class Coverage() {
   def setupCall() = CG.setupCall(target) 
 
   def getConstraints = constraints
-  def getJavaConstraints:JList[ConstraintForm] = toJavaList(constraints)
+  def getJavaConstraints:JList[ConstraintForm] = Lists.toJavaList(constraints)
 
   // Check whether testing a function continue or not.
   def continue: Boolean = {isFirst = false; constraints.nonEmpty}

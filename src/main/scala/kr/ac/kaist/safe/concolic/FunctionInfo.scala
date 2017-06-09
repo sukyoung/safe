@@ -9,10 +9,10 @@
 
 package kr.ac.kaist.safe.concolic
 
+import scala.collection.mutable.Map
 import _root_.java.lang.{Integer => JInteger}
 import _root_.java.util.{HashMap => JavaHashMap, List => JList, Map => JavaMap}
-
-import scala.collection.mutable.Map
+import kr.ac.kaist.safe.util.useful.Lists
 
 
 class FunctionInfo() {
@@ -91,5 +91,5 @@ class FunctionInfo() {
     }
     result
   }
-  def getJavaThisProperties(): JList[String] = toJavaList(getThisProperties) 
+  def getJavaThisProperties(): JList[String] = Lists.toJavaList(getThisProperties)
 }

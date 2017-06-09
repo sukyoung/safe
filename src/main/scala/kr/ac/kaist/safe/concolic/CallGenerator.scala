@@ -16,7 +16,7 @@ import kr.ac.kaist.safe.nodes.ast._
 import kr.ac.kaist.safe.nodes.ir.{IRFactory => IF}
 import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.nodes.{NodeFactory => NF}
-import kr.ac.kaist.safe.util.{NodeUtil => NU}
+import kr.ac.kaist.safe.util.{Coverage, NodeUtil => NU}
 import kr.ac.kaist.jsaf.nodes_util.{NodeRelation => NR}
 
 
@@ -33,10 +33,9 @@ class CallGenerator(coverage: Coverage) {
 
   val dummyId = IF.dummyIRId(CNU.freshConcolicName("CallGenerator"))
   val none: Option[IRId] = None
-  val startConcolic = new IRInternalCall(NF.dummyAst, dummyId, IF.makeTId(NF.dummyAst, CNU.freshConcolicName
-  ("StartConcolic")), dummyId, None)
-  val endConcolic = new IRInternalCall(NF.dummyAst, dummyId, IF.makeTId(NF.dummyAst, CNU.freshConcolicName
-  ("EndConcolic")), dummyId, None)
+  // TODO Not sure if startConcolic and endConcolic were ported correctly
+  val startConcolic = new IRInternalCall(NF.dummyAst, dummyId, "StartConcolic", List(dummyId))
+  val endConcolic = new IRInternalCall(NF.dummyAst, dummyId, "EndConcolic", List(dummyId))
 
   def setupCall(target: String):Option[IRStmt] = {
     input = coverage.input

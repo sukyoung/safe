@@ -10,6 +10,8 @@
 package kr.ac.kaist.safe.concolic
 
 import scala.collection.mutable.{Queue, Stack}
+import kr.ac.kaist.safe.errors.error.ConcolicError
+import kr.ac.kaist.safe.util.useful.Options._
 
 class ConstraintExtractor {
   abstract class SymbolicTree 

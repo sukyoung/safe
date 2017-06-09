@@ -408,9 +408,9 @@ object NodeUtil {
   def makeASTNodeInfo(span: Span): ASTNodeInfo =
     if (keepComments && comment.isDefined) {
       val result = new ASTNodeInfo(span, comment)
-      comment = None
+      comment = None[Comment]
       result
-    } else new ASTNodeInfo(span, None)
+    } else new ASTNodeInfo(span, None[Comment])
 
   def escape(s: String): String = s.replaceAll("\\\\", "\\\\\\\\")
   def unescape(s: String): String = s.replaceAll("\\\\", "")

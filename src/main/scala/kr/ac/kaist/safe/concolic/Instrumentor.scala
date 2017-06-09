@@ -10,8 +10,12 @@
 package kr.ac.kaist.safe.concolic
 
 import _root_.java.util.{List => JList}
-
-import kr.ac.kaist.jsaf.nodes_util.{IRFactory => IF, NodeUtil => NU}
+import kr.ac.kaist.safe.nodes.ast._
+import kr.ac.kaist.safe.concolic.{ConcolicNodeUtil => CNU}
+import kr.ac.kaist.safe.nodes.ir._
+import kr.ac.kaist.safe.nodes.ir.{IRFactory => IF}
+import kr.ac.kaist.safe.util.{Coverage, NodeUtil => NU}
+import scala.collection.mutable.Map
 
 /* Instrumented IR statements:
  *   [IRRoot]
@@ -54,47 +58,40 @@ class Instrumentor(program: IRRoot, coverage: Coverage) extends IRWalker {
 
   var debug = false
 
-  def doit() = walk(program, IF.dummyIRId(NU.freshConcolicName("Main"))).asInstanceOf[IRRoot]
+  def doit() = walk(program, IF.dummyIRId(CNU.freshConcolicName("Main"))).asInstanceOf[IRRoot]
  
-  val dummyId = IF.dummyIRId(NU.freshConcolicName("Instrumentor"))
+  val dummyId = IF.dummyIRId(CNU.freshConcolicName("Instrumentor"))
 
-  def storeEnvironment(info: IRSpanInfo, v: IRId, env: IRId) = 
-    SIRInternalCall(info, dummyId, 
-                    IF.makeTId(info.getSpan, NU.freshConcolicName("StoreEnvironment")), v, Some(env))
+  def storeEnvironment(info: ASTNode, v: IRId, env: IRId) =
+    IRInternalCall(info, dummyId, "StoreEnvironment", List(v, env))
 
-  def storeThis(info: IRSpanInfo, env: IRId) = 
-    SIRInternalCall(info, dummyId,
-                    IF.makeTId(info.getSpan, NU.freshConcolicName("StoreThis")), dummyId, Some(env))
+  def storeThis(info: ASTNode, env: IRId) =
+    IRInternalCall(info, dummyId, "StoreThis", List(dummyId, env))
 
-  def storeVariable(info: IRSpanInfo, lhs: IRId, rhs: IRId) = 
-    SIRInternalCall(info, dummyId, 
-                    IF.makeTId(info.getSpan, NU.freshConcolicName("StoreVariable")), lhs, Some(rhs))
+  def storeVariable(info: ASTNode, lhs: IRId, rhs: IRId) =
+    IRInternalCall(info, dummyId, "StoreVariable", List(lhs, rhs))
 
-  def executeAssignment(info: IRSpanInfo, e: IRExpr, v: IRId, env: IRId) =
-    SIRSeq(info, List(storeEnvironment(info, v, env), 
-        SIRInternalCall(info, dummyId,
-                    IF.makeTId(info.getSpan, NU.freshConcolicName("ExecuteAssignment")), e, Some(v))))
+  def executeAssignment(info: ASTNode, e: IRExpr, v: IRId, env: IRId) =
+    IRSeq(info, List(storeEnvironment(info, v, env),
+        IRInternalCall(info, dummyId, "ExecuteAssignment", List(e, v))))
 
-  def executeStore(info: IRSpanInfo, obj: IRId, index: IRId, rhs: IRExpr, env: IRId) =
-    SIRSeq(info, List(storeEnvironment(info, obj, env), 
-      SIRInternalCall(info, obj, IF.makeTId(info.getSpan, NU.freshConcolicName("ExecuteStore")), rhs, Some(index))))
+  def executeStore(info: ASTNode, obj: IRId, index: IRId, rhs: IRExpr, env: IRId) =
+    IRSeq(info, List(storeEnvironment(info, obj, env),
+      IRInternalCall(info, obj, "ExecuteStore", List(rhs, index))))
 
-  def executeCondition(info: IRSpanInfo, e: IRExpr, env: IRId) =
-    SIRInternalCall(info, dummyId,
-                    IF.makeTId(info.getSpan, NU.freshConcolicName("ExecuteCondition")), e, Some(env))
-  def endCondition(info: IRSpanInfo, env: IRId) =
-    SIRInternalCall(info, dummyId,
-                    IF.makeTId(info.getSpan, NU.freshConcolicName("EndCondition")), dummyId, Some(env))
+  def executeCondition(info: ASTNode, e: IRExpr, env: IRId) =
+    IRInternalCall(info, dummyId, "ExecuteCondition", List(e, env))
+  def endCondition(info: ASTNode, env: IRId) =
+    IRInternalCall(info, dummyId, "EndCondition", List(dummyId, env))
 
-  def walkVarStmt(info: IRSpanInfo, v: IRId, n: IRNumber, env: IRId) = 
-    SIRInternalCall(info, v,
-                    IF.makeTId(info.getSpan, NU.freshConcolicName("WalkVarStmt")), n, Some(env))
+  def walkVarStmt(info: ASTNode, v: IRId, n: IRNumber, env: IRId) =
+    IRInternalCall(info, v, "WalkVarStmt", List(n, env))
 
-  def walkFunctional(info: IRSpanInfo, node: IRFunctional): IRFunctional = node match {
-    case SIRFunctional(i, name, params, args, fds, vds, body) =>
+  def walkFunctional(info: ASTNode, node: IRFunctional): IRFunctional = node match {
+    case IRFunctional(ast, fromSource, name, params, args, fds, vds, body) =>
       var n = 0
       val varstmt = vds.foldLeft[List[IRStmt]](List(storeThis(info, name)))((list, vd) => {
-        if (vd.isFromParam) {
+        if (vd.fromParam) {
           n += 1
           list:+walkVarStmt(vd, n-1, name)
         }
@@ -110,7 +107,7 @@ class Instrumentor(program: IRRoot, coverage: Coverage) extends IRWalker {
   }
 
   def fromParam(node: IRVarStmt) = node match {
-    case SIRVarStmt(info, lhs, fromparam) => fromparam
+    case IRVarStmt(info, lhs, fromparam) => fromparam
   }
   /* var x
    * ==>
@@ -118,7 +115,7 @@ class Instrumentor(program: IRRoot, coverage: Coverage) extends IRWalker {
    * walkVarStmt(x);
    */
   def walkVarStmt(node: IRVarStmt, num: Int, env: IRId):IRStmt = node match {
-    case SIRVarStmt(info, lhs, fromparam) => walkVarStmt(info, lhs, IF.makeNumber(false, num.toString, num), env)
+    case IRVarStmt(info, lhs, fromparam) => walkVarStmt(info, lhs, IF.makeNumber(false, num.toString, num), env)
   }
 
   def walk(node: Any, env: IRId):Any = {

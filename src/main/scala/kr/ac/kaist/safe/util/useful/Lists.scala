@@ -13,7 +13,7 @@ import _root_.java.util.{ArrayList => JArrayList}
 import _root_.java.util.{List => JList}
 import _root_.java.util.{Collection => JCollection}
 import _root_.junit.framework.TestCase
-import _root_.kr.ac.kaist.jsaf.useful.ArrayBackedList
+import _root_.kr.ac.kaist.safe.useful.ArrayBackedList
 import scala.collection.JavaConversions
 
 object Lists {
