@@ -36,7 +36,7 @@ object IRFactory {
                      name: IRId, params: List[IRId], args: List[IRStmt],
                      fds: List[IRFunDecl], vds: List[IRVarStmt],
                      body: List[IRStmt]): IRFunctional =
-    NF.putIr2ast(new IRFunctional(ast, fromSource, name, params, args, fds, vds, body), ast)
+    NF.putIr(new IRFunctional(ast, fromSource, name, params, args, fds, vds, body), ast)
 
   def makeFunctional(fromSource: Boolean, ast: Functional,
                      name: IRId, params: List[IRId], body: IRStmt): IRFunctional =
@@ -53,7 +53,7 @@ object IRFactory {
   def makeFunExpr(fromSource: Boolean, ast: Functional,
                   lhs: IRId, name: IRId, params: List[IRId], args: List[IRStmt],
                   fds: List[IRFunDecl], vds: List[IRVarStmt], body: List[IRStmt]): IRFunExpr =
-    NF.putIr2ast(new IRFunExpr(ast, lhs, makeFunctional(fromSource, ast, name, params, args, fds, vds, body)), ast)
+    NF.putIr(new IRFunExpr(ast, lhs, makeFunctional(fromSource, ast, name, params, args, fds, vds, body)), ast)
 
   def makeLoadStmt(fromSource: Boolean, ast: ASTNode, lhs: IRId, obj: IRId, index: IRExpr) =
     makeExprStmt(ast, lhs, makeLoad(fromSource, ast, obj, index))
@@ -65,11 +65,11 @@ object IRFactory {
     makeExprStmt(ast, lhs, right, true)
 
   def makeExprStmt(ast: ASTNode, lhs: IRId, right: IRExpr, isRef: Boolean): IRExprStmt =
-    NF.putIr2ast(new IRExprStmt(ast, lhs, right, isRef), ast) // ASTNode ast field of IRExprStmt was originally
+    NF.putIr(new IRExprStmt(ast, lhs, right, isRef), ast) // ASTNode ast field of IRExprStmt was originally
   // makeSpanInfo(false, span) with span passed as argument to this function
 
   def makeReturn(fromSource: Boolean, ast: ASTNode, expr: Option[IRExpr]) =
-    NF.putIr2ast(new IRReturn(ast, expr), ast)
+    NF.putIr(new IRReturn(ast, expr), ast)
 
   def makeObject(fromSource: Boolean, ast: ASTNode,
                  lhs: IRId, members: List[IRMember], proto: IRId): IRObject =
@@ -80,19 +80,19 @@ object IRFactory {
 
   def makeObject(fromSource: Boolean, ast: ASTNode,
                  lhs: IRId, members: List[IRMember], proto: Option[IRId]): IRObject =
-    NF.putIr2ast(new IRObject(ast, lhs, members, proto), ast)
+    NF.putIr(new IRObject(ast, lhs, members, proto), ast)
 
   def makeArray(fromSource: Boolean, ast: ASTNode, lhs: IRId, elements: List[Option[IRExpr]]) : IRArray =
-    NF.putIr2ast(new IRArray(ast, lhs, elements), ast)
+    NF.putIr(new IRArray(ast, lhs, elements), ast)
 
   def makeArrayNumber(fromSource: Boolean, ast: ASTNode, span: Span, lhs: IRId, elements: List[JDouble]) : IRStmt =
-    NF.putIr2ast(new IRArrayNumber(ast, lhs, elements), ast)
+    NF.putIr(new IRArrayNumber(ast, lhs, elements), ast)
 
   def makeArgs(ast: ASTNode, lhs: IRId, elements: List[Option[IRExpr]]) : IRArgs =
-    NF.putIr2ast(new IRArgs(ast, lhs, elements), ast)
+    NF.putIr(new IRArgs(ast, lhs, elements), ast)
 
   def makeLoad(fromSource: Boolean, ast: ASTNode, obj: IRId, index: IRExpr) =
-    NF.putIr2ast(new IRLoad(ast, obj, index), ast)
+    NF.putIr(new IRLoad(ast, obj, index), ast)
 
   def makeInternalCall(ast: ASTNode, lhs: IRId, fun: IRId, arg: IRExpr) : IRInternalCall =
     makeInternalCall(ast, lhs, fun, arg, None)
@@ -101,27 +101,27 @@ object IRFactory {
     makeInternalCall(ast, lhs, fun, arg1, Some(arg2))
 
   def makeInternalCall(ast: ASTNode, lhs: IRId, fun: IRId, arg1: IRExpr, arg2: Option[IRId]) : IRInternalCall =
-    NF.putIr2ast(new IRInternalCall(ast, lhs, fun.uniqueName, arg2.foldLeft(List(arg1))( (l, arg2) => l :+ arg2)), ast)
+    NF.putIr(new IRInternalCall(ast, lhs, fun.uniqueName, arg2.foldLeft(List(arg1))((l, arg2) => l :+ arg2)), ast)
 
   def makeCall(fromSource: Boolean, ast: ASTNode, lhs: IRId, fun: IRId, thisB: IRId, args: IRId) : IRCall =
-    NF.putIr2ast(new IRCall(ast, lhs, fun, thisB, args), ast)
+    NF.putIr(new IRCall(ast, lhs, fun, thisB, args), ast)
 
   def makeNew(fromSource: Boolean, ast: ASTNode, lhs: IRId, fun: IRId, args: List[IRId]) : IRNew =
-    NF.putIr2ast(new IRNew(ast, lhs, fun, args), ast)
+    NF.putIr(new IRNew(ast, lhs, fun, args), ast)
 
   def makeIf(fromSource: Boolean, ast: ASTNode, cond: IRExpr, trueB: IRStmt, falseB: Option[IRStmt]) =
-    NF.putIr2ast(new IRIf(ast, cond, trueB, falseB), ast)
+    NF.putIr(new IRIf(ast, cond, trueB, falseB), ast)
 
   def makeWhile(fromSource: Boolean, ast: ASTNode, cond: IRExpr, body: IRStmt) =
-    NF.putIr2ast(new IRWhile(ast, cond, body), ast)
+    NF.putIr(new IRWhile(ast, cond, body), ast)
 
   def makeTry(fromSource: Boolean, ast: ASTNode, body: IRStmt,
               name: Option[IRId], catchB: Option[IRStmt], finallyB:
   Option[IRStmt]) =
-    NF.putIr2ast(new IRTry(ast, body, name, catchB, finallyB), ast)
+    NF.putIr(new IRTry(ast, body, name, catchB, finallyB), ast)
 
   def makeStore(fromSource: Boolean, ast: ASTNode, obj: IRId, index: IRExpr, rhs: IRExpr) =
-    NF.putIr2ast(new IRStore(ast, obj, index, rhs), ast)
+    NF.putIr(new IRStore(ast, obj, index, rhs), ast)
 
   def makeSeq(ast: ASTNode, first: IRStmt, second: IRStmt): IRSeq =
     makeSeq(ast, List(first, second))
@@ -133,7 +133,7 @@ object IRFactory {
     makeSeq(ast, List(stmt))
 
   def makeSeq(ast: ASTNode, stmts: List[IRStmt]): IRSeq =
-    NF.putIr2ast(new IRSeq(ast, stmts), ast)
+    NF.putIr(new IRSeq(ast, stmts), ast)
 
   def makeStmtUnit(ast: ASTNode): IRStmtUnit =
     makeStmtUnit(ast, Nil)
@@ -145,11 +145,11 @@ object IRFactory {
     makeStmtUnit(ast, List(first, second))
 
   def makeStmtUnit(ast: ASTNode, stmts: List[IRStmt]): IRStmtUnit =
-    NF.putIr2ast(new IRStmtUnit(ast, stmts), ast)
+    NF.putIr(new IRStmtUnit(ast, stmts), ast)
 
 
   def makeField(fromSource: Boolean, ast: ASTNode, prop: IRId, expr: IRExpr) =
-    NF.putIr2ast(new IRField(ast, prop, expr), ast)
+    NF.putIr(new IRField(ast, prop, expr), ast)
 
   def makeBool(fromSource: Boolean, ast: ASTNode, bool: Boolean): IRVal =
     new IRVal(EJSBool(bool))
@@ -191,12 +191,12 @@ object IRFactory {
   ////////////////////////////////////////////////////////////////////////////////////////
 
   def makeThis(ast: ASTNode) =
-    NF.putIr2ast(new IRThis(ast), ast)
+    NF.putIr(new IRThis(ast), ast)
 
   // make a user id
   def makeUId(originalName: String, uniqueName: String, isGlobal: Boolean,
               ast: ASTNode, isWith: Boolean): IRUserId =
-    NF.putIr2ast(new IRUserId(ast, originalName, uniqueName, isGlobal, isWith), ast)
+    NF.putIr(new IRUserId(ast, originalName, uniqueName, isGlobal, isWith), ast)
 
   // make a withRewriter-generated id
   def makeWId(originalName: String, uniqueName: String, isGlobal: Boolean,
@@ -225,6 +225,6 @@ object IRFactory {
     makeTId(ast, uniqueName, uniqueName, isGlobal)
 
   def makeTId(ast: ASTNode, originalName: String, uniqueName: String, isGlobal: Boolean): IRTmpId =
-    NF.putIr2ast(new IRTmpId(ast, originalName, uniqueName, isGlobal), ast)
+    NF.putIr(new IRTmpId(ast, originalName, uniqueName, isGlobal), ast)
 
 }

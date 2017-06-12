@@ -180,13 +180,23 @@ object IRGenerator {
   def funexpr2ir(e: Expr, env: Env, res: IRId, lhs: Option[String], target: String):(List[IRStmt], IRExpr) = e match {
     case FunExpr(info, f@Functional(_, fds, vds, body, name, params, _)) =>
       if (name.text.equals("")) {
-        dummyFtn(0) match {
-          case IRFunctional(info, _, name, params, args, fds, vds, body) =>
-            return (List(IF.makeFunExpr(true, f, res, name, params, args, fds, vds, body)), res)
-          }
+            // TODO MV basically inlined the call to dummyFtn here, and removed the matching
+            //args, fds, vds = Nil
+            // don't care about fromSource = false
+            // name = IP.defId
+            // params = List(IP.thisTId, IP.argumentsTId).asInstanceOf[List[IRId]])
+            // body = toJavaList(for (i <- 1 to length) yield IF.dummyIRStmt(IF.dummyAst, IP.defSpan).asInstanceOf[IRStmt])
+            // length in definition of body is 0, so expression yields an empty 'list' -> body = Nil
+        val args: List[IRStmt] = Nil
+        val fds: List[IRFunDecl] = Nil
+        val vds: List[IRVarStmt] = Nil
+        val name = IP.defId
+        val params: List[IRId] = List(IP.thisTId, IP.argumentsTId)
+        val body: List[IRStmt] = Nil
+        return (List(IF.makeFunExpr(true, f, res, name, params, args, fds, vds, body)), res)
       }
       else {
-        for (k <- NR.irSet) {
+        for (k <- NF.irSet) {
           k match {
             case IRFunctional(info, _, name, params, args, fds, vds, body) =>
               if (target == name.uniqueName)
@@ -259,9 +269,4 @@ object IRGenerator {
       val (ss, _) = expr2ir(expr, env, varIgn(expr, expr.info.span))
       IF.makeStmtUnit(stmt, ss)
   }
-
-  def dummyFtn(length: Int): IRFunctional =
-    IF.makeFunctional(false, IF.dummyAST, IP.defId,
-                      List(IP.thisTId, IP.argumentsTId.asInstanceOf[List[IRId]]),
-                      (for (i <- 1 to length) yield IF.dummyIRStmt(IF.dummyAST).asInstanceOf[IRStmt]))
 }

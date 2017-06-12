@@ -130,7 +130,7 @@ class CallGenerator(coverage: Coverage) {
   }
 
   def makeArgs(target: String, isObject: Boolean):Option[List[Expr]] = {
-    for (k <- NR.irSet) {
+    for (k <- NF.irSet) {
       k match { 
         case IRFunctional(_, _, name, params, args, fds, vds, body) =>
           if (name.uniqueName == target) {

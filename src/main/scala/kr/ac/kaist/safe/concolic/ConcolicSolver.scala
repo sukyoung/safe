@@ -243,7 +243,7 @@ class ConcolicSolver(coverage: Coverage) {
 
   def assignArgs(constructor: String):(Option[List[Expr]], List[Stmt]) = {
     var additional = List[Stmt]()
-    for (k <- NR.irSet) {
+    for (k <- NF.irSet) {
       k match { 
         case IRFunctional(_, _, name, params, args, fds, vds, body) =>
           if (name.uniqueName == constructor) {

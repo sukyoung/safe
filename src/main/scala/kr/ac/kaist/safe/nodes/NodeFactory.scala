@@ -2,7 +2,7 @@ package kr.ac.kaist.safe.nodes
 
 import _root_.java.util.{List => JList}
 import _root_.java.math.BigInteger
-import scala.collection.mutable.{HashMap => MHashMap}
+import scala.collection.mutable.{HashMap => MHashMap, HashSet => MHashSet}
 
 import kr.ac.kaist.safe.nodes.ast._
 import kr.ac.kaist.safe.nodes.ir._
@@ -14,21 +14,14 @@ object NodeFactory {
   def makeDummyAST(info: ASTNodeInfo, name: String) = makeNoOp(info, name)
   val dummyAST = makeDummyAST("dummyAST")
 
-  // TODO MV I don't think code is needed anymore, as IRNodes now store their corresponding AST nodes?
-  // Maps the unique ids for IR nodes to their corresponding AST nodes
-  private var ir2astMap = new MHashMap[Long, ASTNode] // IRNode.uid -> ASTNode
-  private var irinfo2irMap = new MHashMap[Long, IRNode] // IRInfoNode.uid -> IRNode
-  def initIr2ast: Unit = {ir2astMap = new MHashMap; irinfo2irMap = new MHashMap}
-  def ir2ast(ir: IRNode): Option[ASTNode] = ir2astMap.get(ir.asInstanceOf[UIDObject].getUID)
-  def irinfo2ir(info: IRInfoNode): Option[IRNode] = irinfo2irMap.get(info.getUID)
-  def putIr2ast[A <: IRNode](ir: A, ast: ASTNode): A = {
-    ir2astMap.put(ir.asInstanceOf[UIDObject].getUID, ast)
-    ir match {
-      case ir: IRAbstractNode => irinfo2irMap.put(ir.info.getUID, ir)
-      case ir: IRExpr => irinfo2irMap.put(ir.getInfo.getUID, ir)
-      case ir: IRInfoNode => irinfo2irMap.put(ir.getUID, ir)
-      case _ =>
-    }
+  // TODO MV Removed original maps, as IRNodes now store their corresponding AST nodes?
+  ////////////////////////////////////////////////////////////////////////////////
+  // IR nodes created
+  ////////////////////////////////////////////////////////////////////////////////
+  type IRSet = MHashSet[IRNode]
+  val irSet = new IRSet
+  def putIr[A <: IRNode](ir: A, ast: ASTNode): A = {
+    irSet.add(ir)
     ir
   }
 

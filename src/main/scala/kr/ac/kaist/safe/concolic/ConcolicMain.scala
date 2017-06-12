@@ -17,7 +17,7 @@ import kr.ac.kaist.safe.nodes.{NodeFactory => NF}
 import kr.ac.kaist.safe.nodes.ast._
 import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.nodes.ir.{IRFactory => IF}
-import kr.ac.kaist.safe.util.Coverage
+import kr.ac.kaist.safe.util.{Coverage, NodeRelation}
 
 ////////////////////////////////////////////////////////////////////////////////
 // Concolic Test
