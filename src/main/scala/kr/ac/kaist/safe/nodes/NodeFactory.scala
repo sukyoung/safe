@@ -6,13 +6,15 @@ import scala.collection.mutable.{HashMap => MHashMap}
 
 import kr.ac.kaist.safe.nodes.ast._
 import kr.ac.kaist.safe.nodes.ir._
-import kr.ac.kaist.safe.util.{NodeUtil => NU, SourceLoc, Span}
+import kr.ac.kaist.safe.util.{NodeUtil => NU, SourceLoc, Span, UIDObject}
 import kr.ac.kaist.safe.util.useful.Lists
 
 object NodeFactory {
+  def makeDummyAST(name: String) = makeDummyAST(makeSpanInfo(makeSpan(name)), name)
+  def makeDummyAST(info: ASTNodeInfo, name: String) = makeNoOp(info, name)
+  val dummyAST = makeDummyAST("dummyAST")
 
-  val dummyAst = makeNoOp(makeSpanInfo(makeSpan("dummyAST")), "dummyAST")
-
+  // TODO MV I don't think code is needed anymore, as IRNodes now store their corresponding AST nodes?
   // Maps the unique ids for IR nodes to their corresponding AST nodes
   private var ir2astMap = new MHashMap[Long, ASTNode] // IRNode.uid -> ASTNode
   private var irinfo2irMap = new MHashMap[Long, IRNode] // IRInfoNode.uid -> IRNode
@@ -89,6 +91,12 @@ object NodeFactory {
 
   def makeIntLiteral(span: Span, intVal: BigInteger, radix: Int = 10) =
     new IntLiteral(NU.makeASTNodeInfo(span), intVal, radix)
+
+  def makeStringLiteral(span: Span, str: String, quote: String) =
+    new StringLiteral(NU.makeASTNodeInfo(span), quote, str, false)
+
+  def makeRegularExpression(span: Span, body: String, flags: String) =
+    new RegularExpression(NU.makeASTNodeInfo(span), body, flags)
 
   def makeId(span: Span, name: String, uniq: String): Id =
     makeId(span, name, Some(uniq))

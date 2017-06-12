@@ -34,8 +34,8 @@ class CallGenerator(coverage: Coverage) {
   val dummyId = IF.dummyIRId(CNU.freshConcolicName("CallGenerator"))
   val none: Option[IRId] = None
   // TODO Not sure if startConcolic and endConcolic were ported correctly
-  val startConcolic = new IRInternalCall(NF.dummyAst, dummyId, "StartConcolic", List(dummyId))
-  val endConcolic = new IRInternalCall(NF.dummyAst, dummyId, "EndConcolic", List(dummyId))
+  val startConcolic = new IRInternalCall(NF.dummyAST, dummyId, "StartConcolic", List(dummyId))
+  val endConcolic = new IRInternalCall(NF.dummyAST, dummyId, "EndConcolic", List(dummyId))
 
   def setupCall(target: String):Option[IRStmt] = {
     input = coverage.input
@@ -99,7 +99,7 @@ class CallGenerator(coverage: Coverage) {
           val core = List(startConcolic, funir, endConcolic)
           // Make the cutline to calculate coverage.
           //val cutline = new IRInternalCall(makeSpanInfo(false, span), lhs, fun, arg1, toJavaOption(arg2))
-          Some(new IRStmtUnit(NF.dummyAst, ir:::core))
+          Some(new IRStmtUnit(NF.dummyAST, ir:::core))
         case None => None
       }
     }
@@ -113,7 +113,7 @@ class CallGenerator(coverage: Coverage) {
           val funir = IRGenerator.funapp2ir(funapp, env, res, target)
           val core = List(startConcolic, funir, endConcolic)
 
-          Some(new IRStmtUnit(NF.dummyAst, ir:::core))
+          Some(new IRStmtUnit(NF.dummyAST, ir:::core))
         case None => None
       }
     }
@@ -130,7 +130,7 @@ class CallGenerator(coverage: Coverage) {
   }
 
   def makeArgs(target: String, isObject: Boolean):Option[List[Expr]] = {
-    for (k <- NR.ir2astMap.keySet) {
+    for (k <- NR.irSet) {
       k match { 
         case IRFunctional(_, _, name, params, args, fds, vds, body) =>
           if (name.uniqueName == target) {

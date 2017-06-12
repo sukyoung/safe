@@ -14,7 +14,7 @@ import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.nodes.{Node => ASTRootNode, _}
 
-import scala.collection.mutable.{HashMap => MHashMap, LinkedHashSet => MLinkedHashSet}
+import scala.collection.mutable.{HashMap => MHashMap, LinkedHashSet => MLinkedHashSet, HashSet => MHashSet}
 
 
 object NodeRelation {
@@ -74,6 +74,12 @@ object NodeRelation {
   var cfg2irMap:                                CFG2IRMap = null
 
   ////////////////////////////////////////////////////////////////////////////////
+  // IR nodes created
+  ////////////////////////////////////////////////////////////////////////////////
+  type IRSet =                                  MHashSet[IRNode]
+  var irSet:                                    IRSet = null
+
+  ////////////////////////////////////////////////////////////////////////////////
   // Reset & Set
   ////////////////////////////////////////////////////////////////////////////////
   var isSet                                     = false
@@ -105,6 +111,9 @@ object NodeRelation {
     ir2cfgMap = null
     cfg2astMap = null
     cfg2irMap = null
+
+    // IR nodes created
+    irSet = null
   }
 
   // Set
@@ -132,6 +141,10 @@ object NodeRelation {
     ir2cfgMap = new IR2CFGMap
     cfg2astMap = new CFG2ASTMap
     cfg2irMap = new CFG2IRMap
+
+    // IR nodes created
+    //TODO MV newly added to eventually replace original maps
+    irSet = new IRSet
 
     // Put AST's parent & children
     def putAST_AST(parent: Any, child: Any): Unit = {

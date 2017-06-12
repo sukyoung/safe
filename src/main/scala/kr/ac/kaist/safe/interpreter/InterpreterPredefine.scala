@@ -9,8 +9,11 @@
 
 package kr.ac.kaist.safe.interpreter
 
-import kr.ac.kaist.jsaf.interpreter.{InterpreterHelper => IH}
-import kr.ac.kaist.jsaf.nodes_util.{IRFactory => IF, NodeUtil => NU}
+import kr.ac.kaist.safe.interpreter.{InterpreterHelper => IH}
+import kr.ac.kaist.safe.interpreter.objects.JSObject
+import kr.ac.kaist.safe.util.{NodeUtil => NU, SourceLoc, Span}
+import kr.ac.kaist.safe.nodes.ir._
+import kr.ac.kaist.safe.nodes.ir.{IRFactory => IF}
 
 object InterpreterPredefine {
   ////////////////////////////////////////////////////////////////////////////////
@@ -32,13 +35,13 @@ object InterpreterPredefine {
 
   // Dummy source locations
   // Use only when we cannot get any meaningful source locations
-  val sourceLoc = new SourceLocRats(NU.freshFile("interpreter"), 0, 0, 0)
-  val defSpan = new Span(sourceLoc, sourceLoc)
+  val sourceLoc = new SourceLoc(0, 0, 0)
+  val defSpan = new Span(NU.freshFile("interpreter"), sourceLoc, sourceLoc)
   val defInfo = IF.makeSpanInfo(false, defSpan)
   val defId = IF.dummyIRId("interpreter")
 
   // Constant values
-  val undefined = IF.makeUndef(IF.dummyAst)
+  val undefined = IF.makeUndef(IF.dummyAST)
   val NaN = IF.makeNumber(false, "NaN", Double.NaN)
   val plusZero = IF.makeNumber(false, "+0.0", +0.0)
   val minusZero = IF.makeNumber(false, "-0.0", -0.0)
@@ -52,7 +55,7 @@ object InterpreterPredefine {
   val falsePV = PVal(falseV)
   val truePV = PVal(trueV)
   val undefV = PVal(undefined)
-  val nullV = PVal(IF.makeNull(IF.dummyAst))
+  val nullV = PVal(IF.makeNull(IF.dummyAST))
   val plusZeroV = PVal(plusZero)
   val minusZeroV = PVal(minusZero)
   val plusOneV = PVal(plusOne)
@@ -63,9 +66,9 @@ object InterpreterPredefine {
   val argumentsTId = IF.makeTId(IF.dummySpan("arguments"), argumentsName)
   //val resUndef = Normal(Some(undefV))
   val undefFtn =
-    IF.makeFunctional(false, IF.dummyAst, defId,
-                      toJavaList(List(thisTId, argumentsTId).asInstanceOf[List[IRId]]),
-                      IF.makeReturn(false, IF.dummyAst, defSpan, toJavaOption(Some(undefVar))))
+    IF.makeFunctional(false, IF.dummyAST, defId,
+                      List(thisTId, argumentsTId).asInstanceOf[List[IRId]],
+                      IF.makeReturn(false, IF.dummyAST, Some(undefVar)))
   val undefDP = new ObjectProp(Some(undefV), None, None, Some(false), Some(false), Some(false)) // IH.mkDataProp()
   val pvpn= varPrefix+"PrimitiveValue"
   val nullObj: JSObject = new JSObject(null, null, "Null", false, new PropTable)

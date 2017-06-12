@@ -16,6 +16,7 @@ import kr.ac.kaist.safe.errors.error._
 import kr.ac.kaist.safe.nodes.ast._
 import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.util._
+import kr.ac.kaist.safe.util.{NodeUtil => NU}
 
 /* Translates JavaScript AST to IR. */
 class Translator(program: Program) {
@@ -402,13 +403,6 @@ class Translator(program: Program) {
     case Parenthesized(_, e) => getAndArgs(e)
     case InfixOpApp(_, l, op, r) if op.text.equals("&&") => getAndArgs(l) ++ getAndArgs(r)
     case _ => List(expr)
-  }
-
-  private def getName(lhs: LHS): String = lhs match {
-    case VarRef(_, id) => id.text
-    case Dot(_, front, id) => getName(front) + "." + id.text
-    case _: This => "this"
-    case _ => ""
   }
 
   private def containsLhs(res: IRExpr, lhs: Expr, env: Env): Boolean = {
@@ -867,7 +861,7 @@ class Translator(program: Program) {
         Some(makeSeq(falseBranch, ss3, r3, res))), res)
 
     case AssignOpApp(_, lhs, Op(_, text), right: FunExpr) if text.equals("=") && lhs.isName =>
-      val name = getName(lhs)
+      val name = NU.getName(lhs)
       val (ss, r) = walkFunExpr(right, env, res, Some(name))
       if (containsLhs(r, lhs, env))
         walkLval(e, lhs, env, ss, r, false)

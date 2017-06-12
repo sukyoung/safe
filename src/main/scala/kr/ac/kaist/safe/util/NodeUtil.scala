@@ -419,11 +419,70 @@ object NodeUtil {
       result
     } else new ASTNodeInfo(span, None[Comment])
 
+  def getName(lhs: LHS): String = lhs match {
+    case VarRef(_, id) => id.text
+    case Dot(_, front, id) => getName(front) + "." + id.text
+    case _: This => "this"
+    case _ => ""
+  }
+
   def escape(s: String): String = s.replaceAll("\\\\", "\\\\\\\\")
   def unescape(s: String): String = s.replaceAll("\\\\", "")
 
   def lineTerminating(c: Char): Boolean =
     List('\u000a', '\u2028', '\u2029', '\u000d').contains(c)
+
+  def unescapeJava(s: String) =
+    if (-1 == s.indexOf('\\')) s
+    else {
+      val length = s.length
+      val buf = new StringBuilder(length)
+      var i = 0
+      while (i < length) {
+        var c = s.charAt(i)
+        if ('\\' != c) {
+          buf.append(c)
+          i += 1
+        } else  {
+          i += 1
+          if (i >= length) {
+            throw new IllegalArgumentException("incomplete escape sequence")
+          }
+          c = s.charAt(i)
+          c match {
+            case '"' => buf.append('"')
+            case '\'' => buf.append('\'')
+            case '\\' => buf.append('\\')
+            case 'b' => buf.append('\b')
+            case 'f' => buf.append('\f')
+            case 'n' => buf.append('\n')
+            case 'r' => buf.append('\r')
+            case 't' => buf.append('\t')
+            case 'v' => buf.append('\u000b')
+            case 'x' =>
+              i += 2
+              if (i >= length) {
+                throw new IllegalArgumentException("incomplete universal character"+
+                  " name " + s.substring(i-1))
+              }
+              val n = Integer.parseInt(s.substring(i-1, i+1), 16)
+              buf.append(n.asInstanceOf[Char])
+            case 'u' =>
+              i += 4
+              if (i >= length) {
+                throw new IllegalArgumentException("incomplete universal character"+
+                  " name " + s.substring(i-3))
+              }
+              val n = Integer.parseInt(s.substring(i-3, i+1), 16)
+              buf.append(n.asInstanceOf[Char])
+            case c if lineTerminating(c) =>
+            case _ => buf.append(c)
+          }
+          i += 1
+        }
+      }
+      buf.toString
+    }
 
   def setKeepComments(flag: Boolean): Unit = { keepComments = flag }
 
