@@ -6,7 +6,7 @@ import scala.collection.mutable.{HashMap => MHashMap}
 
 import kr.ac.kaist.safe.nodes.ast._
 import kr.ac.kaist.safe.nodes.ir._
-import kr.ac.kaist.safe.util.{SourceLoc, Span}
+import kr.ac.kaist.safe.util.{NodeUtil => NU, SourceLoc, Span}
 import kr.ac.kaist.safe.util.useful.Lists
 
 object NodeFactory {

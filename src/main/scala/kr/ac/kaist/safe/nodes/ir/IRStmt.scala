@@ -14,7 +14,7 @@ package kr.ac.kaist.safe.nodes.ir
 import java.lang.Double
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.nodes.ast.ASTNode
-import NodeUtil
+import kr.ac.kaist.safe.util.NodeUtil
 
 // Statement
 abstract class IRStmt(

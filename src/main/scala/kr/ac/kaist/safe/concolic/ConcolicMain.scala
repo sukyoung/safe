@@ -10,11 +10,14 @@
 package kr.ac.kaist.safe.concolic
 
 import java.io.{BufferedWriter, FileWriter}
-
-import edu.rice.cs.plt.tuple.{Option => JOption}
-import kr.ac.kaist.jsaf.nodes_util.{IRFactory => IF, NodeFactory => NF}
-
 import scala.collection.JavaConversions
+import edu.rice.cs.plt.tuple.{Option => JOption}
+import kr.ac.kaist.safe.interpreter.Interpreter
+import kr.ac.kaist.safe.nodes.{NodeFactory => NF}
+import kr.ac.kaist.safe.nodes.ast._
+import kr.ac.kaist.safe.nodes.ir._
+import kr.ac.kaist.safe.nodes.ir.{IRFactory => IF}
+import kr.ac.kaist.safe.util.Coverage
 
 ////////////////////////////////////////////////////////////////////////////////
 // Concolic Test

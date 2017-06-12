@@ -10,6 +10,7 @@
 package kr.ac.kaist.safe.util
 
 import _root_.java.util.{List => JList}
+import edu.rice.cs.plt.tuple.Option
 import kr.ac.kaist.safe.concolic._
 import kr.ac.kaist.safe.nodes.ast._
 import kr.ac.kaist.safe.nodes.ir._
@@ -37,7 +38,7 @@ class Coverage() {
     }
 
   // For concolic test
-  var inputIR: Option[IRStmt] = None
+  var inputIR: Option[IRStmt] = None[IRStmt]
   var input = Map[String, Id]()
   var additional = List[Stmt]()
 

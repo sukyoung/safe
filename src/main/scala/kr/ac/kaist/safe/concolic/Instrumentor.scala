@@ -14,7 +14,7 @@ import kr.ac.kaist.safe.nodes.ast._
 import kr.ac.kaist.safe.concolic.{ConcolicNodeUtil => CNU}
 import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.nodes.ir.{IRFactory => IF}
-import kr.ac.kaist.safe.util.Coverage
+import kr.ac.kaist.safe.util._
 import scala.collection.mutable.Map
 
 /* Instrumented IR statements:
@@ -84,11 +84,11 @@ class Instrumentor(program: IRRoot, coverage: Coverage) extends IRWalker {
   def endCondition(info: ASTNode, env: IRId) =
     IRInternalCall(info, dummyId, "EndCondition", List(dummyId, env))
 
-  def walkVarStmt(info: ASTNode, v: IRId, n: IRNumber, env: IRId) =
-    IRInternalCall(info, v, "WalkVarStmt", List(n, env))
+  def walkVarStmt(info: ASTNode, v: IRId, n: EJSNumber, env: IRId) =
+    IRInternalCall(info, v, "WalkVarStmt", List(IRVal(n), env))
 
   def walkFunctional(info: ASTNode, node: IRFunctional): IRFunctional = node match {
-    case IRFunctional(ast, fromSource, name, params, args, fds, vds, body) =>
+    case IRFunctional(ast, i, name, params, args, fds, vds, body) =>
       var n = 0
       val varstmt = vds.foldLeft[List[IRStmt]](List(storeThis(info, name)))((list, vd) => {
         if (vd.fromParam) {
@@ -98,7 +98,7 @@ class Instrumentor(program: IRRoot, coverage: Coverage) extends IRWalker {
         else 
           list
       })
-      SIRFunctional(i, name, params,
+      IRFunctional(ast, i, name, params,
         args.map(walk(_, name).asInstanceOf[IRStmt]),
         fds.map(walk(_, name).asInstanceOf[IRFunDecl]),
         vds,
@@ -129,8 +129,8 @@ class Instrumentor(program: IRRoot, coverage: Coverage) extends IRWalker {
      * SymbolicExecutor should perform "Initialize()"
      * when it encounters SIRRoot.
      */
-    case SIRRoot(info, fds, vds, irs) =>
-      SIRRoot(info, fds.map(walk(_, env).asInstanceOf[IRFunDecl]),
+    case IRRoot(info, fds, vds, irs) =>
+      IRRoot(info, fds.map(walk(_, env).asInstanceOf[IRFunDecl]),
               vds, 
               irs.map(walk(_, env).asInstanceOf[IRStmt]))
 
@@ -142,8 +142,8 @@ class Instrumentor(program: IRRoot, coverage: Coverage) extends IRWalker {
      * x = e
      * SIRInternalCall(info, "<>Concolic<>Instrumentor", "<>Concolic<>ExecuteAssignment", e, Some(x))
      */
-    case SIRExprStmt(info, lhs, right, ref) =>
-      SIRSeq(info, List(node.asInstanceOf[IRStmt], executeAssignment(info, right, lhs, env)))
+    case IRExprStmt(info, lhs, right, ref) =>
+      IRSeq(info, List(node.asInstanceOf[IRStmt], executeAssignment(info, right, lhs, env)))
 
     /* x = x(x, x)
      * ==>
@@ -152,8 +152,8 @@ class Instrumentor(program: IRRoot, coverage: Coverage) extends IRWalker {
      * EXECUTE_RECURSIVE(x);
      *
      */
-    case SIRCall(info, lhs, fun, thisB, args) =>
-      SIRSeq(info, List(storeEnvironment(info, lhs, env), node.asInstanceOf[IRStmt]))
+    case IRCall(info, lhs, fun, thisB, args) =>
+      IRSeq(info, List(storeEnvironment(info, lhs, env), node.asInstanceOf[IRStmt]))
 
     /* x = function f (x, x) {s*}
      * ==>
@@ -164,8 +164,8 @@ class Instrumentor(program: IRRoot, coverage: Coverage) extends IRWalker {
      *
      * SymbolicExecutor should perform "CHECK_FOCUS()" 
      */
-    case SIRFunExpr(info, lhs, ftn) =>  
-      SIRFunExpr(info, lhs, walkFunctional(info, ftn).asInstanceOf[IRFunctional])
+    case IRFunExpr(info, lhs, ftn) =>
+      IRFunExpr(info, lhs, walkFunctional(info, ftn).asInstanceOf[IRFunctional])
 
     /* function f (x, x) {s*}
      * ==>
@@ -177,21 +177,21 @@ class Instrumentor(program: IRRoot, coverage: Coverage) extends IRWalker {
      *
      * SymbolicExecutor should perform "CHECK_FOCUS()" 
      */
-    case SIRFunDecl(info, ftn) => 
-      SIRFunDecl(info, walkFunctional(info, ftn).asInstanceOf[IRFunctional])
+    case IRFunDecl(info, ftn) =>
+      IRFunDecl(info, walkFunctional(info, ftn).asInstanceOf[IRFunctional])
 
-    case SIRFunctional(i, name, params, args, fds, vds, body) => 
+    case IRFunctional(info, i, name, params, args, fds, vds, body) =>
       node
 
     /* return e?
      * ==>
      * return e?
      */
-    case SIRReturn(info, expr) => 
+    case IRReturn(info, expr) =>
       node
 
-    case SIRSeq(info, stmts) =>
-      SIRSeq(info, stmts.map(walk(_, env).asInstanceOf[IRStmt]))
+    case IRSeq(info, stmts) =>
+      IRSeq(info, stmts.map(walk(_, env).asInstanceOf[IRStmt]))
     
     /* if (e) then s (else s)?
      * ==>
@@ -203,13 +203,13 @@ class Instrumentor(program: IRRoot, coverage: Coverage) extends IRWalker {
      * if (e) then s (else s?)
      * SIRInternalCall(info, "<>Concolic<>Instrumentor", "<>Concolic<>EndCondition", e, None)
      */
-    case SIRIf(info, expr, trueB, falseB) =>
+    case IRIf(info, expr, trueB, falseB) =>
       if (info.isFromSource)
-        SIRSeq(info, List(executeCondition(info, expr, env), 
-          SIRIf(info, expr, walk(trueB, env).asInstanceOf[IRStmt],
+        IRSeq(info, List(executeCondition(info, expr, env),
+          IRIf(info, expr, walk(trueB, env).asInstanceOf[IRStmt],
             falseB match { case Some(s) => Some(walk(s, env).asInstanceOf[IRStmt]); case None => None}), endCondition(info, env)))
       else
-        SIRIf(info, expr, trueB, falseB)
+        IRIf(info, expr, trueB, falseB)
 
     /* while (e) s
      * ==>
@@ -233,7 +233,7 @@ class Instrumentor(program: IRRoot, coverage: Coverage) extends IRWalker {
     case SIRWhile(info, cond, body) =>
       //coverage.printCondition(cond)
       SIRWhile(info, cond, 
-        SIRSeq(info, List(executeCondition(info, cond, env), walk(body, env).asInstanceOf[IRStmt])))
+        IRSeq(info, List(executeCondition(info, cond, env), walk(body, env).asInstanceOf[IRStmt])))
 
     /* x[x] = e
      * ==>
@@ -243,70 +243,70 @@ class Instrumentor(program: IRRoot, coverage: Coverage) extends IRWalker {
      * x[x] = e
      * SIRInternalCall(info, x, "<>Concolic<>Instrumentor", "<>Concolic<>ExecuteStore",e, Some(x)) 
      */
-    case SIRStore(info, obj, index, rhs) => 
+    case IRStore(info, obj, index, rhs) =>
       //println("Instrumentor: "+new kr.ac.kaist.jsaf.nodes_util.JSIRUnparser(node.asInstanceOf[IRStore]).doit)
       index match {
-        case id: IRId => SIRSeq(info, List(node.asInstanceOf[IRStmt], executeStore(info, obj, id, rhs, env))) 
-        case SIRString(_, str) => SIRSeq(info, List(node.asInstanceOf[IRStmt], executeStore(info, obj, IF.dummyIRId(str), rhs, env)))
-        case SIRNumber(_, text, num) => SIRSeq(info, List(node.asInstanceOf[IRStmt], executeStore(info, obj, IF.dummyIRId(text), rhs, env)))
+        case id: IRId => IRSeq(info, List(node.asInstanceOf[IRStmt], executeStore(info, obj, id, rhs, env)))
+        case IRVal(EJSString(str)) => IRSeq(info, List(node.asInstanceOf[IRStmt], executeStore(info, obj, IF.dummyIRId(str), rhs, env)))
+        case IRVal(EJSNumber(text, num)) => IRSeq(info, List(node.asInstanceOf[IRStmt], executeStore(info, obj, IF.dummyIRId(text), rhs, env)))
       }
 
-    case SIRArray(info, lhs, elems) => 
+    case IRArray(info, lhs, elems) =>
       node
     
-    case SIRArrayNumber(info, lhs, elements) => 
+    case IRArrayNumber(info, lhs, elements) =>
       node
 
-    case SIRBreak(info, label) => 
+    case IRBreak(info, label) =>
       node
 
-    case SIRLabelStmt(info, label, stmt) =>
-      SIRLabelStmt(info, label, walk(stmt, env).asInstanceOf[IRStmt])
+    case IRLabelStmt(info, label, stmt) =>
+      IRLabelStmt(info, label, walk(stmt, env).asInstanceOf[IRStmt])
 
-    case SIRThrow(info, expr) => 
+    case IRThrow(info, expr) =>
       node
 
-    case SIRTry(info, body, name, catchB, finallyB) =>
-      SIRTry(info, walk(body, env).asInstanceOf[IRStmt], name,
+    case IRTry(info, body, name, catchB, finallyB) =>
+      IRTry(info, walk(body, env).asInstanceOf[IRStmt], name,
              catchB match { case Some(s) => Some(walk(s, env).asInstanceOf[IRStmt])
                             case None => None },
              finallyB match { case Some(s) => Some(walk(s, env).asInstanceOf[IRStmt])
                               case None => None })
 
-    case SIRStmtUnit(info, stmts) =>
-      SIRStmtUnit(info, stmts.map(walk(_, env).asInstanceOf[IRStmt]))
+    case IRStmtUnit(info, stmts) =>
+      IRStmtUnit(info, stmts.map(walk(_, env).asInstanceOf[IRStmt]))
 
-    case SIRDelete(info, lhs, id) => 
+    case IRDelete(info, lhs, id) =>
       node
 
-    case SIRDeleteProp(info, lhs, obj, index) => 
+    case IRDeleteProp(info, lhs, obj, index) =>
       node
 
-    case SIRObject(info, lhs, members, proto) => 
+    case IRObject(info, lhs, members, proto) =>
       node
 
-    case SIRArgs(info, lhs, elems) => 
+    case IRArgs(info, lhs, elems) =>
       node
 
     /* Instrument Global<>toNumber internal function to store new variable in symbolic memory. */
-    case SIRInternalCall(info, lhs, fun, first, second) => fun.getOriginalName match {
+    case IRInternalCall(info, lhs, fun, first, second) => fun.getOriginalName match {
       case "<>Global<>toNumber" => first match {
-        case id: IRId => SIRSeq(info, List(storeVariable(info, lhs, id), node.asInstanceOf[IRInternalCall]))  
+        case id: IRId => IRSeq(info, List(storeVariable(info, lhs, id), node.asInstanceOf[IRInternalCall]))
         case _ => node
       }
       case _ => node
     }
       //node
 
-    case SIRNew(info, lhs, fun, args) => 
-      SIRSeq(info, List(storeEnvironment(info, lhs, env), node.asInstanceOf[IRStmt]))
+    case IRNew(info, lhs, fun, args) =>
+      IRSeq(info, List(storeEnvironment(info, lhs, env), node.asInstanceOf[IRStmt]))
       //node
 
-    case SIREval(info, lhs, arg) => 
+    case IREval(info, lhs, arg) =>
       node
 
-    case SIRWith(info, id, stmt) =>
-      SIRWith(info, id, walk(stmt, env).asInstanceOf[IRStmt])
+    case IRWith(info, id, stmt) =>
+      IRWith(info, id, walk(stmt, env).asInstanceOf[IRStmt])
 
     case _ => node
     }

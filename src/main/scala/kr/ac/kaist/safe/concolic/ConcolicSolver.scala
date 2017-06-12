@@ -9,16 +9,16 @@
 
 package kr.ac.kaist.safe.concolic
 
-import _root_.java.math.BigInteger
+import java.math.BigInteger
+import scala.util.Random
 import kr.ac.kaist.safe.errors.error.ConcolicError
 import kr.ac.kaist.safe.nodes.ast._
 import kr.ac.kaist.safe.nodes.{NodeFactory => NF}
 import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.nodes.ir.{IRFactory => IF}
-import kr.ac.kaist.safe.util.{Coverage, NodeRelation => NR, Span}
+import kr.ac.kaist.safe.util.{Coverage, NodeRelation => NR, NodeUtil => NU, Span}
 import kr.ac.kaist.safe.util.useful.{Lists, Maps}
 import kr.ac.kaist.safe.util.useful.Options._
-import scala.util.Random
 
 class ConcolicSolver(coverage: Coverage) {
   var debug = false

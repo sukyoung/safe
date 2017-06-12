@@ -11,7 +11,7 @@
 
 package kr.ac.kaist.safe.nodes.cfg
 
-import NodeUtil
+import kr.ac.kaist.safe.util.NodeUtil
 
 sealed abstract class CFGId(
   val text: String,

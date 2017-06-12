@@ -13,7 +13,7 @@ package kr.ac.kaist.safe.nodes.ir
 
 import kr.ac.kaist.safe.LINE_SEP
 import kr.ac.kaist.safe.nodes.ast.Functional
-import NodeUtil
+import kr.ac.kaist.safe.util.NodeUtil
 
 // Common shape for functions
 case class IRFunctional(

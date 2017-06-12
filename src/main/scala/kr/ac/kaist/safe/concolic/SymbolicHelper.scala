@@ -250,7 +250,7 @@ class SymbolicHelper(I: Interpreter) {
               }
               case v1: IRLoad => findObjectName(v1.obj) match {
                 case Some(o1) =>
-                  val id1 = o1 + "." + v1.index.asInstanceOf[IRString].getStr
+                  val id1 = o1 + "." + v1.index.asInstanceOf[IRVal].value.asInstanceOf[EJSString].str
                   second match {
                     case v2: IRId =>
                       if (symbolic_memory.contains(id1) || symbolic_memory.contains(v2.uniqueName))
@@ -259,7 +259,7 @@ class SymbolicHelper(I: Interpreter) {
                         symbolic_memory -= id.uniqueName
                     case v2: IRLoad => findObjectName(v2.obj) match {
                       case Some(o2) => 
-                        val id2 = o2 + "." + v2.index.asInstanceOf[IRString].getStr
+                        val id2 = o2 + "." + v2.index.asInstanceOf[IRVal].value.asInstanceOf[EJSString].str
                         if (symbolic_memory.contains(id1) || symbolic_memory.contains(id2))
                           context = makeContext(id1, id2, op, c1, c2, STATEMENT) 
                         else
@@ -277,7 +277,7 @@ class SymbolicHelper(I: Interpreter) {
               case _ => second match {
                 case v2: IRLoad => findObjectName(v2.obj) match {
                   case Some(o2) => 
-                    val id2 = o2 + "." + v2.index.asInstanceOf[IRString].getStr
+                    val id2 = o2 + "." + v2.index.asInstanceOf[IRVal].value.asInstanceOf[EJSString].str
                     if (symbolic_memory.contains(id2))
                       context = (c1, setInstanceType(symbolic_memory(id2), c2))
                   case None =>
@@ -296,7 +296,7 @@ class SymbolicHelper(I: Interpreter) {
                   sid.makeSymbolicValue(symbol+index, value.getTypes)
                   symbolic_memory(id.uniqueName) = sid
                   index += 1
-                  val info = new SymbolicInfo(false, Some(sid), Some(op.getText), context._1, context._2, None)
+                  val info = new SymbolicInfo(false, Some(sid), Some(op.ast.toString()), context._1, context._2, None)
                   info.setType(STATEMENT)
                   report = report:+info
                 case None => throw new ConcolicError("Symbolic value doesn't match with concrete value.")
@@ -304,12 +304,12 @@ class SymbolicHelper(I: Interpreter) {
             }
         }
         case IRUn(_, op, expr) =>
-        case ir@SIRLoad(info, obj, _index) => findObjectName(obj) match {
+        case ir@IRLoad(info, obj, _index) => findObjectName(obj) match {
           case Some(o) =>
             val indexValue = _index match {
               case id: IRId => id.uniqueName
-              case SIRString(_, str) => str
-              case SIRNumber(_, text, num) => text
+              case IRVal(EJSString(str)) => str
+              case IRVal(EJSNumber(text, num)) => text
             }
             val v = o + "." + indexValue
             if (symbolic_memory.contains(v)) {
@@ -334,12 +334,12 @@ class SymbolicHelper(I: Interpreter) {
           else
             symbolic_memory -= id.uniqueName
         case _:IRThis =>
-        case n:IRNumber =>
+        case n@IRVal(EJSNumber(_, _)) =>
           symbolic_memory -= id.uniqueName
-        case s:IRString =>
-        case b:IRBool =>
-        case _:IRUndef =>
-        case _:IRNull =>
+        case s@IRVal(EJSString(_)) =>
+        case b@IRVal(EJSBool(_)) =>
+        case IRVal(EJSUndef) =>
+        case IRVal(EJSNull) =>
       }
     }
   }
@@ -381,7 +381,7 @@ class SymbolicHelper(I: Interpreter) {
               }
               case IRLoad(_, obj, index) => findObjectName(obj) match {
                 case Some(o) =>
-                  val id1 = o + "." + index.asInstanceOf[IRString].getStr
+                  val id1 = o + "." + index.asInstanceOf[IRVal].value.asInstanceOf[EJSString].str
                   second match {
                     case v2: IRId =>
                       if (symbolic_memory.contains(id1) || symbolic_memory.contains(v2.uniqueName))
@@ -389,7 +389,7 @@ class SymbolicHelper(I: Interpreter) {
                         context = makeContext(id1, v2.uniqueName, op, c1, c2, BRANCH)
                     case IRLoad(_, obj, index) => findObjectName(obj) match {
                       case Some(o) =>
-                        val id2 = o + "." + index.asInstanceOf[IRString].getStr
+                        val id2 = o + "." + index.asInstanceOf[IRVal].value.asInstanceOf[EJSString].str
                         if (symbolic_memory.contains(id1) || symbolic_memory.contains(id2))
                           //context = createContext(id1, id2, op, res1, res2)
                           context = makeContext(id1, id2, op, c1, c2, BRANCH) 
@@ -408,7 +408,7 @@ class SymbolicHelper(I: Interpreter) {
               case _ => second match {
                 case IRLoad(_, obj, index) => findObjectName(obj) match {
                   case Some(o) =>
-                    val id2 = o + "." + index.asInstanceOf[IRString].getStr
+                    val id2 = o + "." + index.asInstanceOf[IRVal].value.asInstanceOf[EJSString].str
                     if (symbolic_memory.contains(id2))
                       //context = symbolic_memory(id2) + op.getText + res1
                       context = (c1, setInstanceType(symbolic_memory(id2), c2))
@@ -422,7 +422,7 @@ class SymbolicHelper(I: Interpreter) {
               }
             }
             if (context != null) {
-              val info = new SymbolicInfo(true, None, Some(op.getText), context._1, context._2, branchTaken)
+              val info = new SymbolicInfo(true, None, Some(op.ast.toString()), context._1, context._2, branchTaken)
               info.setType(BRANCH)
               report = report:+info
             }
@@ -454,7 +454,7 @@ class SymbolicHelper(I: Interpreter) {
           }
         case IRLoad(info, obj, index) => findObjectName(obj) match {
           case Some(o) =>
-            val id = o+"."+index.asInstanceOf[IRString].getStr
+            val id = o+"."+index.asInstanceOf[IRVal].value.asInstanceOf[EJSString].str
             if (symbolic_memory.contains(id)) {
               val info = new SymbolicInfo(true, None, None, Some(symbolic_memory(id)), None, branchTaken)
               info.setType(BRANCH)
@@ -463,7 +463,7 @@ class SymbolicHelper(I: Interpreter) {
           case None =>
             System.out.println("8 The object should be in object memory.")
         }
-        case SIRBool(_, bool) =>
+        case IRVal(EJSBool(_)) =>
       }
     }
   }
@@ -524,7 +524,7 @@ class SymbolicHelper(I: Interpreter) {
                   }
                   case v1: IRLoad => findObjectName(v1.obj) match {
                     case Some(o1) => 
-                      val id1 = o1 + "." + v1.index.asInstanceOf[IRString].getStr
+                      val id1 = o1 + "." + v1.index.asInstanceOf[IRVal].value.asInstanceOf[EJSString].str
                       second match {
                         case v2: IRId =>
                           if (symbolic_memory.contains(id1) || symbolic_memory.contains(v2.uniqueName))
@@ -534,7 +534,7 @@ class SymbolicHelper(I: Interpreter) {
                             symbolic_memory -= id
                         case v2: IRLoad => findObjectName(v2.obj) match {
                           case Some(o2) => 
-                            val id2 = o2 + "." + v2.index.asInstanceOf[IRString].getStr
+                            val id2 = o2 + "." + v2.index.asInstanceOf[IRVal].value.asInstanceOf[EJSString].str
                             if (symbolic_memory.contains(id1) || symbolic_memory.contains(id2))
                               //context = createContext(id1, id2, op, res1, res2)
                               context = makeContext(id1, id2, op, c1, c2, STATEMENT) 
@@ -554,7 +554,7 @@ class SymbolicHelper(I: Interpreter) {
                   case _ => second match {
                     case v2: IRLoad => findObjectName(v2.obj) match {
                       case Some(o2) => 
-                        val id2 = o2 + "." + v2.index.asInstanceOf[IRString].getStr
+                        val id2 = o2 + "." + v2.index.asInstanceOf[IRVal].value.asInstanceOf[EJSString].str
                         if (symbolic_memory.contains(id2))
                           //context = symbolic_memory(id2) + op.getText + res1
                           context = (c1, setInstanceType(symbolic_memory(id2), c2))
@@ -576,7 +576,7 @@ class SymbolicHelper(I: Interpreter) {
                       sid.makeSymbolicValue(symbol+index, value.getTypes)
                       symbolic_memory(id) = sid
                       index += 1
-                      val info = new SymbolicInfo(false, Some(sid), Some(op.getText), context._1, context._2, None)
+                      val info = new SymbolicInfo(false, Some(sid), Some(op.ast.toString()), context._1, context._2, None)
                       info.setType(STATEMENT)
                       report = report:+info
                     case None => throw new ConcolicError("Symbolic value doesn't match with concrete value.")
@@ -594,12 +594,12 @@ class SymbolicHelper(I: Interpreter) {
                 symbolic_memory -= id
             case _:IRThis =>
             /* constant value */
-            case n:IRNumber =>
+            case n@IRVal(EJSNumber(_, _)) =>
               symbolic_memory -= id
-            case s:IRString =>
-            case b:IRBool =>
-            case _:IRUndef =>
-            case _:IRNull =>
+            case s@IRVal(EJSString(_)) =>
+            case b@IRVal(EJSBool(_)) =>
+            case IRVal(EJSUndef) =>
+            case IRVal(EJSNull) =>
           }
         case None =>
       }
@@ -709,14 +709,14 @@ class SymbolicHelper(I: Interpreter) {
       if (op.kind == EJSMul ||
           op.kind == EJSDiv ||
           op.kind == EJSRem)
-        return symbolic_memory(v1) + op.getText + res2
+        return symbolic_memory(v1) + op.ast.toString() + res2
       else 
-        return symbolic_memory(v1) + op.getText + symbolic_memory(v2)
+        return symbolic_memory(v1) + op.ast.toString() + symbolic_memory(v2)
     }
     else if (symbolic_memory.contains(v1)) 
-      return symbolic_memory(v1) + op.getText + res2
+      return symbolic_memory(v1) + op.ast.toString() + res2
     else 
-      return symbolic_memory(v2) + op.getText + res1
+      return symbolic_memory(v2) + op.ast.toString() + res1
   }
   def makeContext(v1: String, v2: String, op: IROp, c1: Option[SymbolicValue], c2: Option[SymbolicValue], contextType: Int): (Option[SymbolicValue], Option[SymbolicValue]) = {
     if (symbolic_memory.contains(v1) && symbolic_memory.contains(v2)) {
@@ -768,16 +768,16 @@ class SymbolicHelper(I: Interpreter) {
 
   def toStr(expr: IRExpr): String = expr match {
     case IRBin(_, first, op, second) =>
-      op.getText + toStr(expr)
+      op.ast.toString() + toStr(expr)
     case IRLoad(_, obj, index) =>
       obj.originalName + "[" + toStr(index) + "]"
     case id:IRId => id.originalName
     case _:IRThis => "this"
-    case n:IRNumber => n.getText
-    case s:IRString => s.getStr
-    case b:IRBool => b.isBool.toString
-    case _:IRUndef => "undefined"
-    case _:IRNull => "null"
+    case n@IRVal(EJSNumber(text, _)) => text
+    case s@IRVal(EJSString(str)) => str
+    case b@IRVal(EJSBool(bool)) => bool.toString
+    case IRVal(EJSUndef) => "undefined"
+    case IRVal(EJSNull) => "null"
   }
 
   def print() = {

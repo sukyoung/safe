@@ -16,8 +16,8 @@ import kr.ac.kaist.safe.nodes.ast._
 import kr.ac.kaist.safe.nodes.ir.{IRFactory => IF}
 import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.nodes.{NodeFactory => NF}
-import kr.ac.kaist.safe.util.Coverage
-import kr.ac.kaist.jsaf.nodes_util.{NodeRelation => NR}
+import kr.ac.kaist.safe.util.{Coverage, NodeUtil => NU}
+import kr.ac.kaist.safe.util.{NodeRelation => NR}
 
 
 import scala.collection.mutable.HashMap
@@ -69,7 +69,7 @@ class CallGenerator(coverage: Coverage) {
               if (input.contains("this."+p)) {
                 val ref = NF.makeVarRef(dummySpan, NF.makeId(dummySpan, objRef.text, objRef.text))
                 val lhs = NF.makeDot(dummySpan, ref, NF.makeId(dummySpan, p, p))
-                var rhs = NF.makeIntLiteral(dummySpan, new BigInteger(input("this."+p).toString)) 
+                val rhs = NF.makeIntLiteral(dummySpan, new BigInteger(input("this."+p).toString))
                 list:+NF.makeExprStmt(dummySpan, 
                                       NF.makeAssignOpApp(dummySpan, 
                                                         lhs, 
@@ -132,8 +132,8 @@ class CallGenerator(coverage: Coverage) {
   def makeArgs(target: String, isObject: Boolean):Option[List[Expr]] = {
     for (k <- NR.ir2astMap.keySet) {
       k match { 
-        case SIRFunctional(_, name, params, args, fds, vds, body) =>
-          if (name.getUniqueName == target) { 
+        case IRFunctional(_, _, name, params, args, fds, vds, body) =>
+          if (name.uniqueName == target) {
             val p = functions(target).params.size
             // calculate the number of input to generate
             if (!isObject)

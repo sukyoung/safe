@@ -1,22 +1,22 @@
 /**
- * *****************************************************************************
- * Copyright (c) 2016, KAIST.
- * All rights reserved.
- *
- * Use is subject to license terms.
- *
- * This distribution may include materials developed by third parties.
- * ****************************************************************************
- */
+  * *****************************************************************************
+  * Copyright (c) 2016, KAIST.
+  * All rights reserved.
+  *
+  * Use is subject to license terms.
+  *
+  * This distribution may include materials developed by third parties.
+  * ****************************************************************************
+  */
 
-package kr.ac.kaist.safe.nodes
+package kr.ac.kaist.safe.util
 
-import kr.ac.kaist.safe.{BASE_DIR, LINE_SEP}
 import kr.ac.kaist.safe.nodes.Node
 import kr.ac.kaist.safe.nodes.ast._
 import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.util.Span
+import kr.ac.kaist.safe.{BASE_DIR, LINE_SEP}
 
 import scala.collection.immutable.{HashMap, HashSet}
 
@@ -259,6 +259,14 @@ object NodeUtil {
     INTERNAL_SYMBOL + n + INTERNAL_SYMBOL + "%013d".format(getIId)
   // unique name generation for global names
   def freshGlobalName(n: String): String = GLOBAL_PREFIX + n
+  def getOriginalName(n: String) =
+    if (isGlobalName(n)) n.drop(10)
+    else {
+      if (!isInternal(n)) n
+      else n.drop(2).dropRight(kr.ac.kaist.safe.SIGNIFICANT_BITS)
+    }
+  val toObjectName = freshGlobalName("toObject")
+  val ignoreName = freshGlobalName("ignore")
   def funexprName(span: Span): String = freshName("funexpr@" + span.toStringWithoutFiles)
 
   def isInternalAPI(s: String): Boolean =
@@ -457,7 +465,7 @@ object NodeUtil {
   }
 
   def prFtn(s: StringBuilder, indent: Int, fds: List[FunDecl], vds: List[VarDecl],
-    body: List[SourceElement]): Unit = {
+            body: List[SourceElement]): Unit = {
     fds match {
       case Nil =>
       case _ =>

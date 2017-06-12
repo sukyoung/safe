@@ -9,45 +9,54 @@
 
 package kr.ac.kaist.safe.concolic
 
-import kr.ac.kaist.jsaf.interpreter.{InterpreterPredefine => IP}
-import kr.ac.kaist.jsaf.nodes_util.{IRFactory => IF, NodeFactory => NF, NodeRelation => NR, NodeUtil => NU}
+import kr.ac.kaist.safe.interpreter.{InterpreterPredefine => IP}
+import kr.ac.kaist.safe.errors.ExcLog
+import kr.ac.kaist.safe.errors.error.SafeError
+import kr.ac.kaist.safe.nodes.{NodeFactory => NF}
+import kr.ac.kaist.safe.nodes.ast._
+import kr.ac.kaist.safe.nodes.ir._
+import kr.ac.kaist.safe.nodes.ir.{IRFactory => IF}
+import kr.ac.kaist.safe.util.{NodeUtil => NU, NodeRelation => NR, Span}
+import kr.ac.kaist.safe.util.useful.Lists
 
 object IRGenerator {
-  val errors: ErrorLog = new ErrorLog
-  def signal(msg: String, hasAt: HasAt) = errors.signal(msg, hasAt)
+  val errors: ExcLog = new ExcLog
+  def signal(error: SafeError) = errors.signal(error)
 
   val dummySpan = IF.dummySpan("forConcolic")
-  def freshId(ast: ASTNode, span: Span): IRTmpId = freshId(ast, span, "temp")
-  def freshId(ast: ASTNode, span: Span, n: String): IRTmpId = 
-    IF.makeTId(ast, span, NU.freshName(n), false)
-  def freshId(span: Span, n: String): IRTmpId =
-    IF.makeTId(span, NU.freshName(n))
-  def freshId(): IRTmpId = freshId(dummySpan, "temp")
+  def freshId(ast: ASTNode): IRTmpId = freshId(ast, "temp")
+  def freshId(ast: ASTNode, n: String): IRTmpId =
+    IF.makeTId(ast, NU.freshName(n), false)
+// TODO MV No longer supported: can't create a TId from just a Span
+//  def freshId(span: Span, n: String): IRTmpId =
+// TODO MV No longer supported: can't create a TId from just a Span
+//    IF.makeTId(NF.makeSpanInfo(span), NU.freshName(n))
+//  def freshId(): IRTmpId = freshId(dummySpan, "temp")
 
   val globalName = NU.freshGlobalName("global")
-  val global = IF.makeTId(IF.dummySpan("global"), globalName, true)
+  val global = IF.makeTId(NF.makeSpanInfo(IF.dummySpan("global")), globalName, true)
   var ignoreId = 0
   def varIgn(ast: ASTNode, span: Span) = {
     ignoreId += 1
-    IF.makeTId(ast, span, NU.ignoreName+ignoreId)
+    IF.makeTId(ast, NU.ignoreName+ignoreId)
   }
-  def getSpan(n: AbstractNode) = n.getInfo.getSpan
-  def getSpan(n: ASTSpanInfo) = n.getSpan
+  def getSpan(n: ASTNode) = n.info.span
+  def getSpan(n: ASTNodeInfo) = n.span
 
-  def setUID[A <: AbstractNode](n: A, uid: Long): A = {n.setUID(uid); n}
+  def setUID[A <: ASTNode](n: A, uid: Long): A = {n.setUID(uid); n}
 
   type Env = List[(String, IRId)]
 
   val argName = "arguments"
 
-  def isObject(ast: ASTNode, span: Span, lhs: IRId, id: IRId) =
-    IF.makeInternalCall(ast, span, lhs, IF.makeTId(ast, span, NU.freshGlobalName("isObject"), true), id)
+  def isObject(ast: ASTNode, lhs: IRId, id: IRId) =
+    IF.makeInternalCall(ast, lhs, IF.makeTId(ast, NU.freshGlobalName("isObject"), true), id)
 
-  def toObject(ast: ASTNode, span: Span, lhs: IRId, arg: IRExpr) =
-    IF.makeInternalCall(ast, span, lhs, IF.makeTId(ast, span, NU.toObjectName, true), arg)
+  def toObject(ast: ASTNode, lhs: IRId, arg: IRExpr) =
+    IF.makeInternalCall(ast, lhs, IF.makeTId(ast, NU.toObjectName, true), arg)
     
-  def getBase(ast: ASTNode, span: Span, lhs: IRId, f: IRId) =
-    IF.makeInternalCall(ast, span, lhs, IF.makeTId(ast, span, NU.freshGlobalName("getBase"), true), f)
+  def getBase(ast: ASTNode, lhs: IRId, f: IRId) =
+    IF.makeInternalCall(ast, lhs, IF.makeTId(ast, NU.freshGlobalName("getBase"), true), f)
 
   def funexprId(span: Span, lhs: Option[String]) = {
     val uniq = lhs match { case None => NU.funexprName(span)
@@ -56,42 +65,42 @@ object IRGenerator {
   }
 
   def containsUserId(e: IRExpr): Boolean = e match {
-    case SIRBin(_, first, _, second) => containsUserId(first) || containsUserId(second)
-    case SIRUn(_, _, expr) => containsUserId(expr)
-    case SIRLoad(_, _:IRUserId, _) => true
-    case SIRLoad(_, _, index) => containsUserId(index)
+    case IRBin(_, first, _, second) => containsUserId(first) || containsUserId(second)
+    case IRUn(_, _, expr) => containsUserId(expr)
+    case IRLoad(_, _:IRUserId, _) => true
+    case IRLoad(_, _, index) => containsUserId(index)
     case _:IRUserId => true
     case _ => false
   }
 
   def mkExprS(ast: ASTNode, id: IRId, e: IRExpr): IRExprStmt =
-    mkExprS(ast, getSpan(ast.getInfo), id, e)
+    mkExprS(ast, ast.info.span, id, e)
   def mkExprS(ast: ASTNode, span: Span, id: IRId, e: IRExpr) =
-    if (containsUserId(e)) IF.makeExprStmt(ast, span, id, e, true)
-    else IF.makeExprStmt(ast, span, id, e)
+    if (containsUserId(e)) IF.makeExprStmt(ast, id, e, true)
+    else IF.makeExprStmt(ast, id, e)
 
 
   def expr2ir(e: Expr, env: Env, res: IRId): (List[IRStmt], IRExpr) = e match {
     case n:Null => (List(), IF.makeNull(n))
 
-    case b@SBool(info, isBool) =>
+    case b@Bool(info, isBool) =>
       (List(), if (isBool) IF.makeBool(true, b, true) else IF.makeBool(true, b, false))
 
-    case SDoubleLiteral(info, text, num) =>
+    case DoubleLiteral(info, text, num) =>
       (List(), IF.makeNumber(true, e, text, num))
 
-    case SIntLiteral(info, intVal, radix) =>
+    case IntLiteral(info, intVal, radix) =>
       (List(), IF.makeNumber(true, e, intVal.toString, intVal.doubleValue))
 
-    case SStringLiteral(info, _, str) =>
+    case StringLiteral(info, _, str, _) =>
       (List(), IF.makeString(true, e, NU.unescapeJava(str)))
 
-    case SObjectExpr(info, members) =>
+    case ObjectExpr(info, members) =>
       val new_members = members.map(member2ir(_, env, freshId))
       val stmts = new_members.foldLeft(List[IRStmt]())((l,p) => l++p._1)
       (stmts:+IF.makeObject(true, e, getSpan(info), res, new_members.map(p => p._2)), res)
-    case SParenthesized(_, expr) => expr2ir(expr, env, res)
-    case n@SNew(info, lhs) =>
+    case Parenthesized(_, expr) => expr2ir(expr, env, res)
+    case n@New(info, lhs) =>
       val span = getSpan(info)
       val objspan = getSpan(lhs)
       val fun = freshId(lhs, objspan, "fun")
@@ -102,7 +111,7 @@ object IRGenerator {
       val cond = freshId(e, span, "cond")
       val proto = freshId(lhs, objspan, "proto")
       val (ftn, args) = lhs match {
-        case SFunApp(_, f, as) =>
+        case FunApp(_, f, as) =>
           val newargs = as.map(a => freshId(a, getSpan(a)))
           val results = as.zipWithIndex.map(a => (newargs.apply(a._2), 
                                                   expr2ir(a._1, env, newargs.apply(a._2))))
@@ -117,28 +126,28 @@ object IRGenerator {
           isObject(e, span, cond, newObj),
           IF.makeIf(false, e, span, cond, mkExprS(e, res, newObj), Some(mkExprS(e, res, obj)))), res)
 
-    case SAssignOpApp(info, lhs, SOp(_, text), right:FunExpr)
+    case AssignOpApp(info, lhs, Op(_, text), right:FunExpr)
          if text.equals("=") && NU.isName(lhs) =>
       val name = NU.getName(lhs)
       val (ss, r) = funexpr2ir(right, env, res, Some(name), null)
       (lval2ir(e, lhs, env, ss, r)._1, r)
 
-    case SAssignOpApp(info, lhs, op, right) if op.getText.equals("=") =>
+    case AssignOpApp(info, lhs, op, right) if op.text.equals("=") =>
       val span = getSpan(info)
       val (ss, r) = expr2ir(right, env, res)
       lhs match {
         case bracket: Bracket => lval2ir(e, lhs, env, ss, r)
-        case dot@SDot(info, obj, member) => 
-          lval2ir(e, setUID(SBracket(info, obj, NF.makeStringLiteral(getSpan(member), member.getText, "\"")), dot.getUID),
+        case dot@Dot(info, obj, member) =>
+          lval2ir(e, setUID(Bracket(info, obj, NF.makeStringLiteral(getSpan(member), member.text, "\"")), dot.getUID),
                   env, ss, r)
         case vr: VarRef =>
           (lval2ir(e, lhs, env, ss, r)._1, r)
       }
-    case SVarRef(info, id) => (List(), IF.makeUId(id.getText, id.getUniqueName.get, true, id, getSpan(id), false))
+    case VarRef(info, id) => (List(), IF.makeUId(id.text, id.uniqueName.get, true, id, getSpan(id), false))
   }
 
   def lval2ir(ast: ASTNode, lhs: Expr, env: Env, stmts: List[IRStmt], e: IRExpr): (List[IRStmt], IRExpr) = lhs match {
-    case SBracket(info, first, index) =>
+    case Bracket(info, first, index) =>
       val span = getSpan(info)
       val firstspan = getSpan(first)
       val obj1   = freshId(first, firstspan, "obj1")
@@ -150,26 +159,26 @@ object IRGenerator {
       val back = stmts:+IF.makeStore(true, ast, span, obj, r2, e)
       (front++back, IF.makeLoad(true, lhs, span, obj, r2))
 
-    case SVarRef(info, id) =>
+    case VarRef(info, id) =>
       val irid = IF.makeUId(id.getText, id.getUniqueName.get, true, id, getSpan(id), false)
       (stmts:+mkExprS(ast, irid, e), irid)
   }
  
   def member2ir(m: Member, env: Env, res: IRId) = {
-    val span = getSpan(m.getInfo)
+    val span = getSpan(m.info)
     m match {
-      case SField(_, prop, expr) =>
+      case Field(_, prop, expr) =>
         val (ss, r) = expr2ir(expr, env, res)
         (ss, IF.makeField(true, m, span, prop2ir(prop), r))
     }
   }
 
   def prop2ir(prop: Property) = prop match {
-    case SPropId(info, id) => IF.makeNGId(id.getText, prop, getSpan(info))
+    case PropId(info, id) => IF.makeNGId(id.text, prop, getSpan(info))
   }
 
   def funexpr2ir(e: Expr, env: Env, res: IRId, lhs: Option[String], target: String):(List[IRStmt], IRExpr) = e match {
-    case SFunExpr(info, SFunctional(fds, vds, body, name, params)) =>
+    case FunExpr(info, SFunctional(fds, vds, body, name, params)) =>
       val span = getSpan(info)
       if (name.getText.equals("")) {
         dummyFtn(0) match {
@@ -192,7 +201,7 @@ object IRGenerator {
   }
   
   def funapp2ir(e: FunApp, env: Env, res: IRId, target: String): IRStmt = e match {
-    case SFunApp(info, v@SVarRef(_, fid), args) =>
+    case FunApp(info, v@VarRef(_, fid), args) =>
       val fspan = getSpan(v)
       val obj = freshId(v, fspan, "obj")
       val argsspan = NU.spanAll(args, fspan)
@@ -212,7 +221,7 @@ object IRGenerator {
     case SFunApp(info, dot@SDot(i, obj, member), args) =>
       funapp2ir(setUID(SFunApp(info, setUID(SBracket(i, obj, NF.makeStringLiteral(getSpan(member), member.getText, "\"")), dot.getUID), args), e.getUID), env, res, target) 
       
-    case SFunApp(info, b@SBracket(_, first, index), args) =>
+    case FunApp(info, b@Bracket(_, first, index), args) =>
       val firstspan = getSpan(first)
       val obj1 = freshId(first, firstspan, "obj1")
       val field1 = freshId(index, getSpan(index), "field1")
@@ -231,7 +240,7 @@ object IRGenerator {
             toObject(b, b.getInfo.getSpan, fun, IF.makeLoad(true, e, firstspan, obj, rr)),
             IF.makeCall(true, e, getSpan(info), res, fun, obj, arg))))
 
-    case SFunApp(info, fun, args) =>
+    case FunApp(info, fun, args) =>
       val fspan = getSpan(fun)
       val obj1 = freshId(fun, fspan, "obj1")
       val obj = freshId(fun, fspan, "obj")
@@ -249,13 +258,13 @@ object IRGenerator {
   }
 
   def additional2ir(stmt: Stmt, env: Env):IRStmt = stmt match {
-    case SExprStmt(info, expr@SAssignOpApp(_, _, op, _), isInternal) if op.getText.equals("=") =>
-      val (ss, _) = expr2ir(expr, env, varIgn(expr, expr.getInfo.getSpan))
-      IF.makeStmtUnit(stmt, info.getSpan, ss)
+    case ExprStmt(info, expr@AssignOpApp(_, _, op, _), isInternal) if op.text.equals("=") =>
+      val (ss, _) = expr2ir(expr, env, varIgn(expr, expr.info.span))
+      IF.makeStmtUnit(stmt, info.span, ss)
   }
 
   def dummyFtn(length: Int): IRFunctional =
     IF.makeFunctional(false, IF.dummyAst, IP.defId,
-                      toJavaList(List(IP.thisTId, IP.argumentsTId).asInstanceOf[List[IRId]]),
-                      toJavaList(for (i <- 1 to length) yield IF.dummyIRStmt(IF.dummyAst, IP.defSpan).asInstanceOf[IRStmt]))
+                      Lists.toJavaList(List(IP.thisTId, IP.argumentsTId).asInstanceOf[List[IRId]]),
+                      Lists.toJavaList(for (i <- 1 to length) yield IF.dummyIRStmt(IF.dummyAst, IP.defSpan).asInstanceOf[IRStmt]))
 }
