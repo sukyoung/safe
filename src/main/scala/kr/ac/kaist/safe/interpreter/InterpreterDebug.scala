@@ -9,8 +9,10 @@
 
 package kr.ac.kaist.safe.interpreter
 
-import kr.ac.kaist.jsaf.interpreter.{InterpreterPredefine => IP}
-import kr.ac.kaist.jsaf.nodes_util.{NodeUtil => NU}
+import kr.ac.kaist.safe.interpreter.{InterpreterPredefine => IP}
+import kr.ac.kaist.safe.nodes.ir._
+import kr.ac.kaist.safe.util.{NodeUtil => NU}
+import import kr.ac.kaist.safe.util._
 
 object InterpreterDebug {
 
@@ -34,15 +36,15 @@ object InterpreterDebug {
   }
 
   def prExpr(e: IRExpr): String = e match {
-    case SIRBin(_,f,o,s) => prExpr(f)+o.getText+prExpr(s)
-    case SIRUn(_,o,expr) => o.getText+prExpr(expr)
-    case id:IRId => getE(id.getUniqueName)
+    case IRBin(_,f,o,s) => prExpr(f)+o.toString+prExpr(s)
+    case IRUn(_,o,expr) => o.toString+prExpr(expr)
+    case id:IRId => getE(id.uniqueName)
     case _:IRThis => "this"
-    case _:IRUndef => "undefined"
-    case _:IRNull => "null"
-    case b:IRBool => b.isBool.toString
-    case n:IRNumber => n.toString //IH.toString(n)
-    case s:IRString => s.getStr
+    case IRVal(EJSUndef) => "undefined"
+    case IRVal(EJSNull) => "null"
+    case IRVal(b: EJSBool) => b.bool.toString
+    case IRVal(n: EJSNumber) => n.toString //IH.toString(n)
+    case IRVal(s: EJSString) => s.str
   }
 
 /*

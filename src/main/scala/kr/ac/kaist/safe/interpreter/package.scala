@@ -9,8 +9,14 @@
 
 package kr.ac.kaist.safe
 
-import kr.ac.kaist.jsaf.interpreter.{InterpreterDebug => ID, InterpreterHelper => IH, InterpreterPredefine => IP}
-import kr.ac.kaist.jsaf.nodes_util.{EJSCompletionType => CT, IRFactory => IF}
+import java.util.HashMap
+
+import kr.ac.kaist.safe.interpreter.{InterpreterDebug => ID, InterpreterHelper => IH, InterpreterPredefine => IP}
+import kr.ac.kaist.safe.interpreter.objects._
+import kr.ac.kaist.safe.nodes.ir._
+import kr.ac.kaist.safe.nodes.ir.{IRFactory => IF}
+import kr.ac.kaist.safe.util._
+import kr.ac.kaist.safe.util.{EJSCompletionType => CT}
 
 package object interpreter {
   ////////////////////////////////////////////////////////////////////////////////
@@ -38,21 +44,24 @@ package object interpreter {
   // Val = JSObject or PVal
   abstract class Val() extends ValError {
     override def equals(v: Any): Boolean = (this, v) match {
-      case (PVal(_:IRUndef), PVal(_:IRUndef)) => true
-      case (PVal(_:IRNull), PVal(_:IRNull)) => true
-      case (PVal(b1:IRBool), PVal(b2:IRBool)) => b1.isBool == b2.isBool
-      case (PVal(n1:IRNumber), PVal(n2:IRNumber)) => {
-        if(n1.getNum == 0 && n2.getNum == 0) java.lang.Double.doubleToLongBits(n1.getNum) == java.lang.Double.doubleToLongBits(n2.getNum) //IH.isPlusZero(n1) == IH.isPlusZero(n2)
-        else n1.getNum == n2.getNum
+      case (PVal(IRVal(EJSUndef)), PVal(IRVal(EJSUndef))) => true
+      case (PVal(IRVal(EJSNull)), PVal(IRVal(EJSNull))) => true
+      case (PVal(IRVal(b1:EJSBool)), PVal(IRVal(b2:EJSBool))) => b1.bool == b2.bool
+      case (PVal(IRVal(n1:EJSNumber)), PVal(IRVal(n2:EJSNumber))) => {
+        if(n1.num == 0 && n2.num == 0)
+          //IH.isPlusZero(n1) == IH.isPlusZero(n2)
+          java.lang.Double.doubleToLongBits(n1.num) == java.lang.Double.doubleToLongBits(n2.num)
+        else
+          n1.num == n2.num
       }
-      case (PVal(s1:IRString), PVal(s2:IRString)) => s1.getStr.equals(s2.getStr)
+      case (PVal(IRVal(s1:EJSString)), PVal(IRVal(s2:EJSString))) => s1.str.equals(s2.str)
       case (o1:JSObject, o2:JSObject) => o1.eq(o2)
       case _ => false
     }
   }
 
   // PVal
-  case class PVal(v: IRPVal) extends Val {
+  case class PVal(v: IRVal) extends Val {
     override def toString(): String = ID.prExpr(v)
   }
 

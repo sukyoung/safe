@@ -10,6 +10,8 @@
 package kr.ac.kaist.safe.interpreter.objects
 import kr.ac.kaist.safe.interpreter._
 import kr.ac.kaist.safe.interpreter.{InterpreterHelper => IH, InterpreterPredefine => IP}
+import kr.ac.kaist.safe.nodes.ir._
+import kr.ac.kaist.safe.util._
 
 class JSArray(_I: Interpreter,
               _proto: JSObject,
@@ -33,7 +35,7 @@ class JSArray(_I: Interpreter,
     val oldLenDesc = _getOwnProperty("length")
     if(oldLenDesc == null) throw new InterpreterError("_defineOwnPropertyArray", I.IS.span)
     // 2. Let oldLen be oldLenDesc.[[Value]].
-    var oldLen = oldLenDesc.value.get.asInstanceOf[PVal].v.asInstanceOf[IRNumber].getNum.toLong
+    var oldLen = oldLenDesc.value.get.asInstanceOf[PVal].v.value.asInstanceOf[EJSNumber].num.toLong
     // 3. If P is "length", then
     if (P.equals("length")) {
       // a. If the [[Value]] field of Desc is absent, then
@@ -73,8 +75,8 @@ class JSArray(_I: Interpreter,
       //    on A passing "length", newLenDesc, and Throw as arguments.
       super._defineOwnProperty("length", newLenDesc, Throw) match {
       // k. If succeeded is false, return false.
-        case f@PVal(SIRBool(_,false)) => return f
-        case f@PVal(SIRBool(_,true)) =>
+        case f@PVal(IRVal(EJSBool(false))) => return f
+        case f@PVal(IRVal(EJSBool(true))) =>
           // l. While newLen < oldLen repeat,
           while (newLen < oldLen) {
             // i. Set oldLen to oldLen - 1.
@@ -83,7 +85,7 @@ class JSArray(_I: Interpreter,
             //     ToString(oldLen) and false as arguments.
             _delete(oldLen.toString, false) match {
             // iii. If deleteSucceeded is false, then
-              case f@PVal(SIRBool(_,false)) =>
+              case f@PVal(IRVal(EJSBool(false))) =>
                 // 1. Set newLenDesc.[[Value] to oldLen+1.
                 newLenDesc.value = Some(PVal(I.IH.mkIRNum(oldLen+1)))
                 // 2. If newWritable is false, set newLenDesc.[[Writable] to false.
@@ -122,9 +124,9 @@ class JSArray(_I: Interpreter,
       //    passing P, Desc, and false as arguments.
       super._defineOwnProperty(P, Desc, false) match {
         // d. Reject if succeeded is false.
-        case f@PVal(SIRBool(_,false)) =>
+        case f@PVal(IRVal(EJSBool(false))) =>
           if (Throw) return IP.typeError else return IP.falsePV
-        case f@PVal(SIRBool(_,true)) =>
+        case f@PVal(IRVal(EJSBool(true))) =>
           // e. If index >= oldLen
           if (index >= oldLen) {
             // i. Set oldLenDesc.[[Value]] to index + 1.

@@ -10,8 +10,12 @@
 package kr.ac.kaist.safe.interpreter
 
 import edu.rice.cs.plt.tuple.{Option => JOption}
-import kr.ac.kaist.jsaf.interpreter.{InterpreterPredefine => IP}
-import kr.ac.kaist.jsaf.nodes_util.{IRFactory => IF, NodeUtil => NU}
+import kr.ac.kaist.safe.compiler.{Predefined}
+import kr.ac.kaist.safe.interpreter.{InterpreterPredefine => IP}
+import kr.ac.kaist.safe.interpreter.objects._
+import kr.ac.kaist.safe.nodes.ir.{IRFactory => IF}
+import kr.ac.kaist.safe.util.{Coverage, NodeUtil => NU, Span}
+import kr.ac.kaist.safe.util.useful.Sets
 
 class InterpreterState(val I: Interpreter) {
   var env: Env = new EmptyEnv()

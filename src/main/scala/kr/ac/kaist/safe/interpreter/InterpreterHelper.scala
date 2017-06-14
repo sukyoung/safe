@@ -10,24 +10,29 @@
 package kr.ac.kaist.safe.interpreter
 
 import edu.rice.cs.plt.tuple.{Option => JOption}
-import kr.ac.kaist.jsaf.interpreter.{InterpreterDebug => ID, InterpreterPredefine => IP}
-import kr.ac.kaist.jsaf.nodes_util.{IRFactory => IF, NodeUtil => NU}
+import java.text.DecimalFormat
+import kr.ac.kaist.safe.interpreter.{InterpreterDebug => ID, InterpreterPredefine => IP}
+import kr.ac.kaist.safe.interpreter.objects._
+import kr.ac.kaist.safe.nodes.ir._
+import kr.ac.kaist.safe.nodes.ir.{IRFactory => IF}
+import kr.ac.kaist.safe.util._
+import kr.ac.kaist.safe.util.{NodeUtil => NU}
 
 class InterpreterHelper(I: Interpreter) {
   ////////////////////////////////////////////////////////////////////////////////
   // Basic
   ////////////////////////////////////////////////////////////////////////////////
 
-  def isNaN(n: IRNumber) = n.getNum.isNaN
-  def isPlusZero(n: IRNumber) = java.lang.Double.doubleToLongBits(n.getNum) == 0x0000000000000000L
-  def isMinusZero(n: IRNumber) = java.lang.Double.doubleToLongBits(n.getNum) == 0x8000000000000000L
-  def isZero(n: IRNumber) = n.getNum == 0
-  def isPlusInfinity(n: IRNumber) = n.getNum == Double.PositiveInfinity
-  def isMinusInfinity(n: IRNumber) = n.getNum == Double.NegativeInfinity
-  def isInfinite(n: IRNumber) = n.getNum.isInfinite
-  def isUndef(id: IRId): Boolean = id.getUniqueName.equals(NU.freshGlobalName("undefVar")) || id.getUniqueName.equals("undefined")
+  def isNaN(n: EJSNumber) = n.num.isNaN
+  def isPlusZero(n: EJSNumber) = java.lang.Double.doubleToLongBits(n.num) == 0x0000000000000000L
+  def isMinusZero(n: EJSNumber) = java.lang.Double.doubleToLongBits(n.num) == 0x8000000000000000L
+  def isZero(n: EJSNumber) = n.num == 0
+  def isPlusInfinity(n: EJSNumber) = n.num == Double.PositiveInfinity
+  def isMinusInfinity(n: EJSNumber) = n.num == Double.NegativeInfinity
+  def isInfinite(n: EJSNumber) = n.num.isInfinite
+  def isUndef(id: IRId): Boolean = id.uniqueName.equals(NU.freshGlobalName("undefVar")) || id.uniqueName.equals("undefined")
   def isUndef(v: Val): Boolean = v match {
-    case PVal(_:IRUndef) => true
+    case PVal(IRVal(EJSUndef)) => true
     case _ => false
   }
   def isUndef(op: ObjectProp): Boolean = {
@@ -35,7 +40,7 @@ class InterpreterHelper(I: Interpreter) {
     else isUndef(op.value.get)
   }
   def isNull(v: Val): Boolean = v match {
-    case PVal(_:IRNull) => true
+    case PVal(IRVal(EJSNull)) => true
     case _ => false
   }
   def isWhiteSpace(c: Char): Boolean = {
@@ -72,17 +77,17 @@ class InterpreterHelper(I: Interpreter) {
     if (s.startsWith("-")) s.drop(1)
     else if (s.startsWith("+")) "-"+s.drop(1)
          else "-"+s
-  def negate(n: IRNumber): IRNumber = mkIRNum(n.getNum.unary_-)
+  def negate(n: EJSNumber): EJSNumber = mkIRNum(n.num.unary_-)
 
   def dummyInfo() = IF.makeSpanInfo(false, IF.dummySpan("forDummyInfo"))
   def getIRBool(b: Boolean) = if (b) IP.trueV else IP.falseV
   def dummyFtn(length: Int): IRFunctional =
-    IF.makeFunctional(false, IF.dummyAst, IP.defId,
-                      toJavaList(List(IP.thisTId, IP.argumentsTId).asInstanceOf[List[IRId]]),
-                      toJavaList(for (i <- 1 to length) yield IF.dummyIRStmt(IF.dummyAst, IP.defSpan).asInstanceOf[IRStmt]))
-  def mkIRStr(s: String) = IF.makeString(s, IF.dummyAst)
-  def mkIRBool(b: Boolean): IRBool = IF.makeBool(false, IF.dummyAst, b)
-  def mkIRNum(d: Double): IRNumber = {
+    IF.makeFunctional(false, IP.defId,
+                      List(IP.thisTId, IP.argumentsTId).asInstanceOf[List[IRId]],
+                      for (i <- 1 to length) yield IF.dummyIRStmt(IF.dummyAST).asInstanceOf[IRStmt])
+  def mkIRStr(s: String) = IF.makeString(s, IF.dummyAST)
+  def mkIRBool(b: Boolean): IRVal = IF.makeBool(false, IF.dummyAST, b)
+  def mkIRNum(d: Double): IRVal = {
     val name = d.toString
     IF.makeNumber(false, name, d)
   }
@@ -171,8 +176,8 @@ class InterpreterHelper(I: Interpreter) {
    * 10.4.3 Entering Function Code
    */
   def getThis(v: Val): ValError = v match {
-    case PVal(_:IRUndef | _:IRNull) => I.IS.GlobalObject
-    case PVal(_:IRBool | _:IRNumber | _:IRString) => toObject(v)
+    case PVal(IRVal(EJSUndef | EJSNull)) => I.IS.GlobalObject
+    case PVal(IRVal(_:EJSBool | _:EJSNumber | _:EJSString)) => toObject(v)
     case o: JSObject => o
   }
 
@@ -226,13 +231,13 @@ class InterpreterHelper(I: Interpreter) {
     while (true) {
       env match {
         case EmptyEnv() =>
-          if(x.isInstanceOf[IRUserId]) I.IS.GlobalObject.__putProp(x.getOriginalName, mkDataProp(IP.undefV, true, true, mutable && deletable))
-          else I.IS.GlobalObject.declEnvRec.s.put(x.getOriginalName, new StoreValue(IP.undefV, false, true, true))
+          if(x.isInstanceOf[IRUserId]) I.IS.GlobalObject.__putProp(x.originalName, mkDataProp(IP.undefV, true, true, mutable && deletable))
+          else I.IS.GlobalObject.declEnvRec.s.put(x.originalName, new StoreValue(IP.undefV, false, true, true))
           return env
         case ConsEnv(envRec, rest) => envRec match {
           case DeclEnvRec(s) =>
             // createBindingToDeclarative()
-            s.put(x.getOriginalName, new StoreValue(IP.undefV, false, mutable, mutable && deletable))
+            s.put(x.originalName, new StoreValue(IP.undefV, false, mutable, mutable && deletable))
             return env
           case ObjEnvRec(_) =>
             env = rest
@@ -245,18 +250,18 @@ class InterpreterHelper(I: Interpreter) {
   def createBinding(env: Env, x: IRId, mutable: Boolean, deletable: Boolean): Unit = {
     env match {
       case EmptyEnv() =>
-        if(x.isInstanceOf[IRUserId]) I.IS.GlobalObject.__putProp(x.getOriginalName, mkDataProp(IP.undefV, true, true, mutable && deletable))
-        else I.IS.GlobalObject.declEnvRec.s.put(x.getOriginalName, new StoreValue(IP.undefV, false, true, true))
+        if(x.isInstanceOf[IRUserId]) I.IS.GlobalObject.__putProp(x.originalName, mkDataProp(IP.undefV, true, true, mutable && deletable))
+        else I.IS.GlobalObject.declEnvRec.s.put(x.originalName, new StoreValue(IP.undefV, false, true, true))
       case ConsEnv(envRec, rest) => envRec match {
         case DeclEnvRec(s) =>
           // createBindingToDeclarative()
-          s.put(x.getOriginalName, new StoreValue(IP.undefV, false, mutable, mutable && deletable))
+          s.put(x.originalName, new StoreValue(IP.undefV, false, mutable, mutable && deletable))
       }
     }
   }
   // Create a variable to declarative environment
   def createBindingToDeclarative(declEnvRec: DeclEnvRec, x: IRId, mutable: Boolean, deletable: Boolean): Unit = {
-    declEnvRec.s.put(x.getOriginalName, new StoreValue(IP.undefV, false, mutable, mutable && deletable))
+    declEnvRec.s.put(x.originalName, new StoreValue(IP.undefV, false, mutable, mutable && deletable))
   }
 
   // Create and set at once
@@ -265,12 +270,12 @@ class InterpreterHelper(I: Interpreter) {
     while(true) {
       env match {
         case EmptyEnv() =>
-          if(x.isInstanceOf[IRUserId]) I.IS.GlobalObject.__putProp(x.getOriginalName, mkDataProp(v, true, true, mutable && deletable))
-          else I.IS.GlobalObject.declEnvRec.s.put(x.getOriginalName, new StoreValue(v, true, true, true))
+          if(x.isInstanceOf[IRUserId]) I.IS.GlobalObject.__putProp(x.originalName, mkDataProp(v, true, true, mutable && deletable))
+          else I.IS.GlobalObject.declEnvRec.s.put(x.originalName, new StoreValue(v, true, true, true))
           return v
         case ConsEnv(envRec, rest) => envRec match {
           case DeclEnvRec(s) =>
-            s.put(x.getOriginalName, new StoreValue(v, true, mutable, mutable && deletable))
+            s.put(x.originalName, new StoreValue(v, true, mutable, mutable && deletable))
             return v
           case ObjEnvRec(_) =>
             env = rest
@@ -284,7 +289,7 @@ class InterpreterHelper(I: Interpreter) {
    * 10.2.1.1.3 SetMutableBinding(N,V,S)
    */
   def setBinding(x: IRId, v: Val, ignoreImmutable: Boolean, strict: Boolean): ValError = {
-    val originalName = x.getOriginalName
+    val originalName = x.originalName
     var env = I.IS.env
     while(true) {
       env match {
@@ -310,7 +315,7 @@ class InterpreterHelper(I: Interpreter) {
   }
   // Target environment is specified.
   def setBinding(env: Env, x: IRId, v: Val, ignoreImmutable: Boolean, strict: Boolean): ValError = {
-    val originalName = x.getOriginalName
+    val originalName = x.originalName
     env match {
       case EmptyEnv() =>
         if(x.isInstanceOf[IRUserId]) I.IS.GlobalObject.__getProp(originalName).value = Some(v)
@@ -329,7 +334,7 @@ class InterpreterHelper(I: Interpreter) {
   }
   // Set a variable of declarative environment
   def setBindingToDeclarative(declEnvRec: DeclEnvRec, x: IRId, v: Val, ignoreImmutable: Boolean, strict: Boolean): ValError = {
-    val originalName = x.getOriginalName
+    val originalName = x.originalName
     val sv = declEnvRec.s.get(originalName)
     if(sv == null) throw new InterpreterError("setBindingToDeclarative:x="+x+" v="+v, I.IS.span)
     if(sv.mutable || ignoreImmutable) declEnvRec.s.get(originalName).setValue(v)
@@ -385,7 +390,7 @@ class InterpreterHelper(I: Interpreter) {
    * 10.2.2.1 GetIdentifierReference(lex, name, strict)
    */
   def lookup(x: IRId): EnvRec = {
-    val originalName = x.getOriginalName()
+    val originalName = x.originalName()
     var env = I.IS.env
     while(true) {
       env match {
@@ -456,7 +461,7 @@ class InterpreterHelper(I: Interpreter) {
     if(op.value.isDefined) {
       val v: Val = op.value.get
       if(v.isInstanceOf[PVal]) {
-        val pv: IRPVal = v.asInstanceOf[PVal].v
+        val pv: IRVal = v.asInstanceOf[PVal].v
         if(pv.isInstanceOf[IRNumber]) return pv.asInstanceOf[IRNumber].getNum.toInt
       }
     }
@@ -476,19 +481,19 @@ class InterpreterHelper(I: Interpreter) {
   ////////////////////////////////////////////////////////////////////////////////
 
   def typeOf(v: Val): Int = v match {
-    case PVal(_:IRUndef) => EJSType.UNDEFINED
-    case PVal(_:IRNull) => EJSType.NULL
-    case PVal(_:IRBool) => EJSType.BOOLEAN
-    case PVal(_:IRNumber) => EJSType.NUMBER
-    case PVal(_:IRString) => EJSType.STRING
+    case PVal(IRVal(EJSUndef)) => EJSType.UNDEFINED
+    case PVal(IRVal(EJSNull)) => EJSType.NULL
+    case PVal(IRVal(_:EJSBool)) => EJSType.BOOLEAN
+    case PVal(IRVal(_:EJSNumber)) => EJSType.NUMBER
+    case PVal(IRVal(_:EJSString)) => EJSType.STRING
     case _:JSObject => EJSType.OBJECT
   }
   def typeTag(v: Val): String = v match {
-    case PVal(_:IRUndef) => "undefined"
-    case PVal(_:IRNull) => "object"
-    case PVal(_:IRBool) => "boolean"
-    case PVal(_:IRNumber) => "number"
-    case PVal(_:IRString) => "string"
+    case PVal(IRVal(EJSUndef)) => "undefined"
+    case PVal(IRVal(EJSNull)) => "object"
+    case PVal(IRVal(_:EJSBool)) => "boolean"
+    case PVal(IRVal(_:EJSNumber)) => "number"
+    case PVal(IRVal(_:EJSString)) => "string"
     case _:JSObject => if(!isCallable(v)) "object" else "function"
   }
 
@@ -504,13 +509,13 @@ class InterpreterHelper(I: Interpreter) {
   def putValue(x: IRId, v: Val, b: Boolean): ValError = {
     val bs = lookup(x)
     if (debug > 0)
-      System.out.println("putValue:x="+x.getUniqueName+" v="+v+" bs="+bs+
-                         " isInternal(x)="+NU.isInternal(x.getUniqueName))
+      System.out.println("putValue:x="+x.uniqueName+" v="+v+" bs="+bs+
+                         " isInternal(x)="+NU.isInternal(x.uniqueName))
 
     bs match {
       // If a generated name by Translator, create a binding.
       case oer: ObjEnvRec =>
-        val originalName = x.getOriginalName()
+        val originalName = x.originalName
         if (oer.o != IP.nullObj) oer.o._put(originalName, v, b)
         else if (NU.isInternal(originalName)) createAndSetBinding(x, v, true, I.IS.eval)
         else if (b) IP.referenceError(x+" from putValue")
@@ -642,13 +647,13 @@ class InterpreterHelper(I: Interpreter) {
    * 9.2 ToBoolean
    */
   def toBoolean(v: Val): Boolean = v match {
-    case PVal(_:IRUndef) => false
-    case PVal(_:IRNull) => false
-    case PVal(SIRBool(_,b)) => b
-    case PVal(SIRNumber(_,"NaN", _)) => false
-    case PVal(SIRNumber(_,_, d)) => d != 0
-    case PVal(SIRString(_,"")) => false
-    case PVal(SIRString(_,text)) => true
+    case PVal(IRVal(EJSUndef)) => false
+    case PVal(IRVal(EJSNull)) => false
+    case PVal(IRVal(EJSBool(b))) => b
+    case PVal(IRVal(EJSNumber("NaN", _))) => false
+    case PVal(IRVal(EJSNumber(_, d))) => d != 0
+    case PVal(IRVal(EJSString(""))) => false
+    case PVal(IRVal(EJSString(text))) => true
     case _:JSObject => true
   }
 
@@ -661,12 +666,12 @@ class InterpreterHelper(I: Interpreter) {
     math.signum(y) * result
   }
 
-  def toNumber(v: Val): IRNumber = v match {
-    case PVal(_:IRUndef) => IP.NaN
-    case PVal(_:IRNull) => IP.plusZero
-    case PVal(SIRBool(_,b)) => if(b) mkIRNum(1) else IP.plusZero
-    case PVal(n:IRNumber) => n
-    case PVal(SIRString(_,text)) =>
+  def toNumber(v: Val): IRVal = v match {
+    case PVal(IRVal(EJSUndef)) => IP.NaN
+    case PVal(IRVal(EJSNull)) => IP.plusZero
+    case PVal(IRVal(EJSBool(b))) => if(b) mkIRNum(1) else IP.plusZero
+    case PVal(n@IRVal(_:EJSNumber)) => n
+    case PVal(IRVal(EJSString(text))) =>
       val reg    =
        "[+-]?(" +
        "([0-9]+[.]?([0-9]+)?([eE][+-]?[0-9]+)?)|" +
@@ -698,7 +703,7 @@ class InterpreterHelper(I: Interpreter) {
   /*
    * 9.4 ToInteger
    */
-  def toInteger(v: Val): IRNumber = toNumber(v) match {
+  def toInteger(v: Val): IRVal = toNumber(v) match {
     case n if isNaN(n) => IP.plusZero
     case n if (isZero(n) || isInfinite(n)) => n
     case n => mkIRNum(math.signum(n.getNum) * math.floor(math.abs(n.getNum)))

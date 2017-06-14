@@ -28,7 +28,7 @@ object IRFactory {
   }
   def dummyIRStmt(ast: ASTNode): IRSeq =
     makeSeq(ast, Nil.asInstanceOf[List[IRStmt]])
-  def dummyIRExpr(): IRExpr = makeTId(dummyAST, "_")
+  def dummyIRExpr: IRExpr = makeTId(dummyAST, "_")
   def dummyIRStmt(ast: ASTNode, msg: String): IRSeq =
     makeSeq(dummyAST, List(makeExprStmt(dummyAST, dummyIRId(msg), dummyIRExpr)))
 

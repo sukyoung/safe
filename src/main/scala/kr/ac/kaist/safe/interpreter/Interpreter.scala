@@ -17,7 +17,7 @@ import kr.ac.kaist.safe.nodes.ir.{IRFactory => IF}
 import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.util._
 import kr.ac.kaist.safe.util.{EJSCompletionType => CT}
-import kr.ac.kaist.safe.util.useful.Options
+import kr.ac.kaist.safe.util.useful.Options._
 
 class Interpreter extends IRWalker {
   /*
