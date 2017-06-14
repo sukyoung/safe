@@ -9,7 +9,8 @@
 
 package kr.ac.kaist.safe.interpreter.objects
 
-import kr.ac.kaist.jsaf.interpreter.{InterpreterHelper => IH, InterpreterPredefine => IP}
+import kr.ac.kaist.safe.interpreter._
+import kr.ac.kaist.safe.interpreter.{InterpreterHelper => IH, InterpreterPredefine => IP}
 
 class JSNumberPrototype(_I: Interpreter, _proto: JSObject)
   extends JSNumber(_I, _proto, "Number", true, propTable) {

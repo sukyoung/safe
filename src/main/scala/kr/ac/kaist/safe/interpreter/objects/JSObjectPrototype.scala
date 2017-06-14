@@ -9,7 +9,8 @@
 
 package kr.ac.kaist.safe.interpreter.objects
 
-import kr.ac.kaist.jsaf.interpreter.{InterpreterPredefine => IP}
+import kr.ac.kaist.safe.interpreter._
+import kr.ac.kaist.safe.interpreter.{InterpreterPredefine => IP}
 
 class JSObjectPrototype(_I: Interpreter, _proto: JSObject)
   extends JSObject(_I, _proto, "Object", true, propTable) {

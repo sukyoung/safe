@@ -9,7 +9,8 @@
 
 package kr.ac.kaist.safe.interpreter.objects
 
-import kr.ac.kaist.jsaf.interpreter.{InterpreterPredefine => IP}
+import kr.ac.kaist.safe.interpreter._
+import kr.ac.kaist.safe.interpreter.{InterpreterPredefine => IP}
 
 class JSEvalErrorPrototype(_I: Interpreter, _proto: JSObject)
   extends JSErrorObject(_I, _proto, "Error", true, propTable) {

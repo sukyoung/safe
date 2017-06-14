@@ -10,8 +10,14 @@
 package kr.ac.kaist.safe.interpreter
 
 import edu.rice.cs.plt.tuple.{Option => JOption}
-import kr.ac.kaist.jsaf.interpreter.{InterpreterDebug => ID, InterpreterPredefine => IP}
-import kr.ac.kaist.jsaf.nodes_util.{EJSCompletionType => CT, IRFactory => IF}
+import kr.ac.kaist.safe.concolic._
+import kr.ac.kaist.safe.interpreter.{InterpreterDebug => ID, InterpreterPredefine => IP}
+import kr.ac.kaist.safe.interpreter.objects._
+import kr.ac.kaist.safe.nodes.ir.{IRFactory => IF}
+import kr.ac.kaist.safe.nodes.ir._
+import kr.ac.kaist.safe.util._
+import kr.ac.kaist.safe.util.{EJSCompletionType => CT}
+import kr.ac.kaist.safe.util.useful.Options
 
 class Interpreter extends IRWalker {
   /*
@@ -45,12 +51,12 @@ class Interpreter extends IRWalker {
   ////////////////////////////////////////////////////////////////////////////////
 
   def doit(program: IRRoot, coverage: JOption[Coverage], printComp: Boolean = true) = {
-    def tsLab(l: IRId) = l.getUniqueName
+    def tsLab(l: IRId) = l.uniqueName
 
     // Set InterpreterState
     IS.coverage = toOption(coverage)
 
-    var SIRRoot(_, vds, fds, irs) = program
+    var IRRoot(_, vds, fds, irs) = program
 
     if (IS.coverage.isDefined) {
       val coverage = IS.coverage.get
@@ -111,18 +117,18 @@ class Interpreter extends IRWalker {
   ////////////////////////////////////////////////////////////////////////////////
 
   def walkId(id: IRId): ValError = try {
-    if (debug > 0) System.out.println("\nIRId " + id.getUniqueName + " base=" + IH.lookup(id))
+    if (debug > 0) System.out.println("\nIRId " + id.uniqueName + " base=" + IH.lookup(id))
     if (IH.isUndef(id)) IP.undefV
-    else IH.getBindingValue(IH.lookup(id), id.getOriginalName)
+    else IH.getBindingValue(IH.lookup(id), id.originalName)
   } catch {
     case e: DefaultValueError => return e.err
   }
 
   def walkExpr(e: IRExpr): ValError = try {
     e match {
-      case SIRBin(_, first, op, second) => walkExpr(first) match {
+      case IRBin(_, first, op, second) => walkExpr(first) match {
         case v1: Val => walkExpr(second) match {
-          case v2: Val => op.getKind match {
+          case v2: Val => op.kind match {
             /*
            * 11.8.6 The instanceof operator
            * 15.3.5.3 [[HasInstance]](V)

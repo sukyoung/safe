@@ -9,7 +9,8 @@
 
 package kr.ac.kaist.safe.interpreter.objects
 
-import kr.ac.kaist.jsaf.interpreter.{InterpreterPredefine => IP}
+import kr.ac.kaist.safe.interpreter._
+import kr.ac.kaist.safe.interpreter.{InterpreterPredefine => IP}
 
 class JSDateConstructor(_I: Interpreter, _proto: JSObject)
   extends JSFunction13(_I, _proto, "Function", true, propTable, _I.IH.dummyFtn(7), EmptyEnv(), true) {

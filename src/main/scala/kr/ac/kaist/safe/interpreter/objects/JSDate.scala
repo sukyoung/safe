@@ -9,6 +9,8 @@
 
 package kr.ac.kaist.safe.interpreter.objects
 
+import kr.ac.kaist.safe.interpreter._
+
 class JSDate(_I: Interpreter,
              _proto: JSObject,
              _className: String,
