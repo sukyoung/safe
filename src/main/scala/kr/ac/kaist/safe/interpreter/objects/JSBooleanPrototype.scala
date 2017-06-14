@@ -11,6 +11,8 @@ package kr.ac.kaist.safe.interpreter.objects
 
 import kr.ac.kaist.safe.interpreter._
 import kr.ac.kaist.safe.interpreter.{InterpreterPredefine => IP}
+import kr.ac.kaist.safe.nodes.ir._
+import kr.ac.kaist.safe.util._
 
 class JSBooleanPrototype(_I: Interpreter, _proto: JSObject)
   extends JSBoolean(_I, _proto, "Boolean", true, propTable) {
@@ -37,7 +39,7 @@ class JSBooleanPrototype(_I: Interpreter, _proto: JSObject)
    */
   def _toString(): Unit = {
     I.IS.tb match {
-      case PVal(SIRBool(_, b)) =>
+      case PVal(IRVal(EJSBool(b))) =>
         I.IS.comp.setReturn(PVal(I.IH.mkIRStr(b.toString)))
       case o: JSBoolean =>
         val b: Val = o._get(IP.pvpn)
@@ -52,7 +54,7 @@ class JSBooleanPrototype(_I: Interpreter, _proto: JSObject)
    */
   def _valueOf(): Unit = {
     I.IS.tb match {
-      case b@PVal(SIRBool(_,_)) =>
+      case b@PVal(IRVal(EJSBool(_))) =>
         I.IS.comp.setReturn(b)
       case o: JSBoolean =>
         val b: Val = o._get(IP.pvpn)

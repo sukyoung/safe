@@ -11,6 +11,8 @@ package kr.ac.kaist.safe.interpreter.objects
 
 import kr.ac.kaist.safe.interpreter._
 import kr.ac.kaist.safe.interpreter.{InterpreterPredefine => IP}
+import kr.ac.kaist.safe.nodes.ir._
+import kr.ac.kaist.safe.util._
 
 class JSMath(_I: Interpreter, _proto: JSObject)
   extends JSObject(_I, _proto, "Math", false, propTable) {
@@ -54,51 +56,51 @@ class JSMath(_I: Interpreter, _proto: JSObject)
   }
 
   override def __callBuiltinFunction(method: JSFunction, argsObj: JSObject): Unit = {
-    val args: List[IRNumber] = I.IH.arrayToList(argsObj).map(x => I.IH.toNumber(x))
-    val y: IRNumber = method match {
-      case I.IS.MathAbs => _abs(args.get(0))
-      case I.IS.MathAcos => _acos(args.get(0))
-      case I.IS.MathAsin => _asin(args.get(0))
-      case I.IS.MathAtan => _atan(args.get(0))
-      case I.IS.MathAtan2 => _atan2(args.get(0), args.get(1))
-      case I.IS.MathCeil => _ceil(args.get(0))
-      case I.IS.MathCos => _cos(args.get(0))
-      case I.IS.MathExp => _exp(args.get(0))
-      case I.IS.MathFloor => _floor(args.get(0))
-      case I.IS.MathLog => _log(args.get(0))
+    val args: List[EJSNumber] = I.IH.arrayToList(argsObj).map(x => I.IH.toNumber(x))
+    val y: EJSNumber = method match {
+      case I.IS.MathAbs => _abs(args.head)
+      case I.IS.MathAcos => _acos(args.head)
+      case I.IS.MathAsin => _asin(args.head)
+      case I.IS.MathAtan => _atan(args.head)
+      case I.IS.MathAtan2 => _atan2(args.head, args(1))
+      case I.IS.MathCeil => _ceil(args.head)
+      case I.IS.MathCos => _cos(args.head)
+      case I.IS.MathExp => _exp(args.head)
+      case I.IS.MathFloor => _floor(args.head)
+      case I.IS.MathLog => _log(args.head)
       case I.IS.MathMax => _max(args)
       case I.IS.MathMin => _min(args)
-      case I.IS.MathPow => _pow(args.get(0), args.get(1))
+      case I.IS.MathPow => _pow(args.head, args(1))
       case I.IS.MathRandom => _random()
-      case I.IS.MathRound => _round(args.get(0))
-      case I.IS.MathSin => _sin(args.get(0))
-      case I.IS.MathSqrt => _sqrt(args.get(0))
-      case I.IS.MathTan => _tan(args.get(0))
+      case I.IS.MathRound => _round(args.head)
+      case I.IS.MathSin => _sin(args.head)
+      case I.IS.MathSqrt => _sqrt(args.head)
+      case I.IS.MathTan => _tan(args.head)
     }
-    I.IS.comp.setReturn(PVal(y))
+    I.IS.comp.setReturn(PVal(IRVal(y)))
   }
 
   /*
    * 15.8.2 Function Properties of the Math Object
    */
-  def _abs(x: IRNumber): IRNumber = I.IH.mkIRNum(scala.math.abs(x.getNum))
-  def _acos(x: IRNumber): IRNumber = I.IH.mkIRNum(scala.math.acos(x.getNum))
-  def _asin(x: IRNumber): IRNumber = I.IH.mkIRNum(scala.math.asin(x.getNum))
-  def _atan(x: IRNumber): IRNumber = I.IH.mkIRNum(scala.math.atan(x.getNum))
-  def _atan2(y: IRNumber, x: IRNumber): IRNumber = I.IH.mkIRNum(scala.math.atan2(y.getNum, x.getNum))
-  def _ceil(x: IRNumber): IRNumber = I.IH.mkIRNum(scala.math.ceil(x.getNum))
-  def _cos(x: IRNumber): IRNumber = I.IH.mkIRNum(scala.math.cos(x.getNum))
-  def _exp(x: IRNumber): IRNumber = I.IH.mkIRNum(scala.math.exp(x.getNum))
-  def _floor(x: IRNumber): IRNumber = I.IH.mkIRNum(scala.math.floor(x.getNum))
-  def _log(x: IRNumber): IRNumber = I.IH.mkIRNum(scala.math.log(x.getNum))
-  def _max(xs: List[IRNumber]): IRNumber = I.IH.mkIRNum(
-    xs.foldRight(xs.get(0).getNum)((x, y) => scala.math.max(x.getNum, y)))
-  def _min(xs: List[IRNumber]): IRNumber = I.IH.mkIRNum(
-    xs.foldRight(xs.get(0).getNum)((x, y) => scala.math.min(x.getNum, y)))
-  def _pow(x: IRNumber, y: IRNumber): IRNumber = I.IH.mkIRNum(scala.math.pow(x.getNum, y.getNum))
-  def _random(): IRNumber = I.IH.mkIRNum(scala.math.random)
-  def _round(x: IRNumber): IRNumber = I.IH.mkIRNum(scala.math.round(x.getNum))
-  def _sin(x: IRNumber): IRNumber = I.IH.mkIRNum(scala.math.sin(x.getNum))
-  def _sqrt(x: IRNumber): IRNumber = I.IH.mkIRNum(scala.math.sqrt(x.getNum))
-  def _tan(x: IRNumber): IRNumber = I.IH.mkIRNum(scala.math.tan(x.getNum))
+  def _abs(x: EJSNumber): EJSNumber = I.IH.mkIRNum(scala.math.abs(x.num))
+  def _acos(x: EJSNumber): EJSNumber = I.IH.mkIRNum(scala.math.acos(x.num))
+  def _asin(x: EJSNumber): EJSNumber = I.IH.mkIRNum(scala.math.asin(x.num))
+  def _atan(x: EJSNumber): EJSNumber = I.IH.mkIRNum(scala.math.atan(x.num))
+  def _atan2(y: EJSNumber, x: EJSNumber): EJSNumber = I.IH.mkIRNum(scala.math.atan2(y.num, x.num))
+  def _ceil(x: EJSNumber): EJSNumber = I.IH.mkIRNum(scala.math.ceil(x.num))
+  def _cos(x: EJSNumber): EJSNumber = I.IH.mkIRNum(scala.math.cos(x.num))
+  def _exp(x: EJSNumber): EJSNumber = I.IH.mkIRNum(scala.math.exp(x.num))
+  def _floor(x: EJSNumber): EJSNumber = I.IH.mkIRNum(scala.math.floor(x.num))
+  def _log(x: EJSNumber): EJSNumber = I.IH.mkIRNum(scala.math.log(x.num))
+  def _max(xs: List[EJSNumber]): EJSNumber = I.IH.mkIRNum(
+    xs.foldRight(xs.head.num)((x, y) => scala.math.max(x.num, y)))
+  def _min(xs: List[EJSNumber]): EJSNumber = I.IH.mkIRNum(
+    xs.foldRight(xs.head.num)((x, y) => scala.math.min(x.num, y)))
+  def _pow(x: EJSNumber, y: EJSNumber): EJSNumber = I.IH.mkIRNum(scala.math.pow(x.num, y.num))
+  def _random(): EJSNumber = I.IH.mkIRNum(scala.math.random)
+  def _round(x: EJSNumber): EJSNumber = I.IH.mkIRNum(scala.math.round(x.num))
+  def _sin(x: EJSNumber): EJSNumber = I.IH.mkIRNum(scala.math.sin(x.num))
+  def _sqrt(x: EJSNumber): EJSNumber = I.IH.mkIRNum(scala.math.sqrt(x.num))
+  def _tan(x: EJSNumber): EJSNumber = I.IH.mkIRNum(scala.math.tan(x.num))
 }

@@ -11,6 +11,7 @@ package kr.ac.kaist.safe.interpreter.objects
 
 import kr.ac.kaist.safe.interpreter._
 import kr.ac.kaist.safe.interpreter.{InterpreterHelper => IH, InterpreterPredefine => IP}
+import kr.ac.kaist.safe.nodes.ir._
 
 // Created by 15.3.4.5 Function.prototype.bind(thisArg [, arg1 [, arg2, ...]])
 class JSFunction15(__I: Interpreter,

@@ -11,6 +11,8 @@ package kr.ac.kaist.safe.interpreter.objects
 
 import kr.ac.kaist.safe.interpreter._
 import kr.ac.kaist.safe.interpreter.{InterpreterPredefine => IP}
+import kr.ac.kaist.safe.nodes.ir._
+import kr.ac.kaist.safe.util.useful.Lists._
 
 abstract class JSFunction(_I: Interpreter,
                           _proto: JSObject,
@@ -24,7 +26,7 @@ abstract class JSFunction(_I: Interpreter,
   extends JSObject(_I, _proto, _className, _extensible, _property) {
 
   // Make a IR list in advance
-  val codeIRs: List[IRStmt] = toList(code.getFds) ++ toList(code.getVds) ++ toList(code.getArgs) ++ toList(code.getBody)
+  val codeIRs: List[IRStmt] = toList(code.fds) ++ toList(code.vds) ++ toList(code.args) ++ toList(code.body)
 
   ////////////////////////////////////////////////////////////////////////////////
   // 8. Types Table 9

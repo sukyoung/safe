@@ -11,13 +11,15 @@ package kr.ac.kaist.safe.interpreter.objects
 
 import kr.ac.kaist.safe.interpreter._
 import kr.ac.kaist.safe.interpreter.{InterpreterPredefine => IP}
+import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.nodes.ir.{IRFactory => IF}
+import kr.ac.kaist.safe.util.EJSType
 
 class JSObjectConstructor(_I: Interpreter, _proto: JSObject)
   extends JSFunction13(_I, _proto, "Object", true, propTable, IP.undefFtn, EmptyEnv(), true) {
   def init(): Unit = {
     // 15.2.3 Properties of the Object Constructor
-    property.put("length", I.IH.mkDataProp(PVal(IF.oneV), false, false, false))
+    property.put("length", I.IH.mkDataProp(PVal(IRVal(IF.oneV)), false, false, false))
     property.put("prototype", I.IH.mkDataProp(I.IS.ObjectPrototype, false, false, false))
     /*
     property.put("getPrototypeOf", IH.objProp(IS.ObjectGetPrototypeOf))
@@ -88,7 +90,7 @@ class JSObjectConstructor(_I: Interpreter, _proto: JSObject)
 
   // 15.2.2.1 new Object([value])
   override def _construct(argsObj: JSObject): JSObject = {
-    val length: Int = I.IH.toNumber(argsObj._get("length")).getNum.toInt
+    val length: Int = I.IH.toNumber(argsObj._get("length")).num.toInt
     val value: Val = argsObj._get("0")
     if (length >= 1) {
       val typeOfValue = I.IH.typeOf(value)

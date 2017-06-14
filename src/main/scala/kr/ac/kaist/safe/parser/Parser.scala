@@ -18,7 +18,8 @@ import xtc.parser.{ Result, ParseError, SemanticValue }
 import kr.ac.kaist.safe.errors.ExcLog
 import kr.ac.kaist.safe.errors.error.{ ParserError, NotJSFileError, AlreadyMergedSourceError }
 import kr.ac.kaist.safe.nodes.ast._
-import kr.ac.kaist.safe.util.{ _ }
+import kr.ac.kaist.safe.util._
+import kr.ac.kaist.safe.util.{NodeUtil => NU}
 
 object Parser {
   // Used by DynamicRewriter
@@ -150,6 +151,14 @@ object Parser {
       case HTMLFile => JSFromHTML.parseScripts(fileName)
       case JSTodoFile | NormalFile => Failure(NotJSFileError(fileName))
     }
+  }
+
+  def parsePgm(str: String, filename: String): Try[(Program, ExcLog)] = {
+    val sr = new StringReader(str)
+    val in = new BufferedReader(sr)
+    val pgm = parsePgm(in, filename, 0)
+    in.close; sr.close
+    pgm
   }
 
   private def parsePgm(in: BufferedReader, fileName: String, start: Int): Try[(Program, ExcLog)] = {

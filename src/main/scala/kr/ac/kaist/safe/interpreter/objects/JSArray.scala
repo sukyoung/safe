@@ -49,9 +49,9 @@ class JSArray(_I: Interpreter,
       // c. Let newLen be ToUint32(Desc.[[Value]]).
       val newLen = I.IH.toUint32(Desc.value.get)
       // d. If newLen is not equal to ToNumber( Desc.[[Value]]), throw a RangeError exception.
-      if (newLen != I.IH.toNumber(Desc.value.get).getNum) return IP.rangeError
+      if (newLen != I.IH.toNumber(Desc.value.get).num) return IP.rangeError
       // e. Set newLenDesc.[[Value] to newLen.
-      newLenDesc.value = Some(PVal(I.IH.mkIRNum(newLen)))
+      newLenDesc.value = Some(PVal(IRVal(I.IH.mkIRNum(newLen))))
       // f. If newLen >= oldLen, then
       if (newLen >= oldLen) {
         // i. Return the result of calling the default [[DefineOwnProperty]] internal method
@@ -87,7 +87,7 @@ class JSArray(_I: Interpreter,
             // iii. If deleteSucceeded is false, then
               case f@PVal(IRVal(EJSBool(false))) =>
                 // 1. Set newLenDesc.[[Value] to oldLen+1.
-                newLenDesc.value = Some(PVal(I.IH.mkIRNum(oldLen+1)))
+                newLenDesc.value = Some(PVal(IRVal(I.IH.mkIRNum(oldLen+1))))
                 // 2. If newWritable is false, set newLenDesc.[[Writable] to false.
                 if (newWritable == false) { newLenDesc.writable = Some(false) }
                 // 3. Call the default [[DefineOwnProperty]] internal method (8.12.9) on A passing

@@ -11,6 +11,7 @@ package kr.ac.kaist.safe.interpreter.objects
 
 import kr.ac.kaist.safe.interpreter._
 import kr.ac.kaist.safe.interpreter.{InterpreterPredefine => IP}
+import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.util.{EJSCompletionType => CT}
 
 class JSArrayPrototype(_I: Interpreter, _proto: JSObject)
@@ -20,7 +21,7 @@ class JSArrayPrototype(_I: Interpreter, _proto: JSObject)
      * 15.4.4 Properties of the Array Prototype Object
      */
     // 15.4.5.2 length
-    property.put("length", I.IH.mkDataProp(PVal(I.IH.mkIRNum(0)), true, false, false))
+    property.put("length", I.IH.mkDataProp(PVal(IRVal(I.IH.mkIRNum(0))), true, false, false))
     property.put("constructor", I.IH.objProp(I.IS.ArrayConstructor))
     property.put("toString", I.IH.objProp(I.IS.ArrayPrototypeToString))
     // 15.4.4.3
@@ -133,7 +134,7 @@ class JSArrayPrototype(_I: Interpreter, _proto: JSObject)
         val len = I.IH.toUint32(o._get("length"))
         len match {
           case 0 =>
-            o._put("length", PVal(I.IH.mkIRNum(0)), true)
+            o._put("length", PVal(IRVal(I.IH.mkIRNum(0))), true)
             I.IS.comp.setReturn(IP.undefV)
           case _ =>
             val indx = (len - 1).toString
@@ -154,8 +155,8 @@ class JSArrayPrototype(_I: Interpreter, _proto: JSObject)
           o._put(n.toString, e, true)
           n += 1
         }
-        o._put("length", PVal(I.IH.mkIRNum(n)), true)
-        I.IS.comp.setReturn(PVal(I.IH.mkIRNum(n)))
+        o._put("length", PVal(IRVal(I.IH.mkIRNum(n))), true)
+        I.IS.comp.setReturn(PVal(IRVal(I.IH.mkIRNum(n))))
       case err:JSError => I.IS.comp.setThrow(err, I.IS.span)
     }
   }
@@ -193,11 +194,11 @@ class JSArrayPrototype(_I: Interpreter, _proto: JSObject)
       case o: JSObject =>
         val a = I.IS.ArrayConstructor.construct(Nil)
         val len = I.IH.toUint32(o._get("length"))
-        var k: Long = I.IH.toInteger(start).getNum.toLong match {
+        var k: Long = I.IH.toInteger(start).num.toLong match {
           case relativeStart if relativeStart < 0 => (len + relativeStart) max 0
           case relativeStart => relativeStart min len
         }
-        val fin: Long = (if (I.IH.isUndef(end)) len else I.IH.toInteger(end).getNum.toLong) match {
+        val fin: Long = (if (I.IH.isUndef(end)) len else I.IH.toInteger(end).num.toLong) match {
           case relativeEnd if relativeEnd < 0 => (len + relativeEnd) max 0
           case relativeEnd => relativeEnd min len
         }
@@ -309,11 +310,11 @@ class JSArrayPrototype(_I: Interpreter, _proto: JSObject)
       case o: JSObject =>
         val a = I.IS.ArrayConstructor.construct(Nil)
         val len = I.IH.toUint32(o._get("length"))
-        val actualStart = I.IH.toInteger(start).getNum.toLong match {
+        val actualStart = I.IH.toInteger(start).num.toLong match {
           case relativeStart if relativeStart < 0 => (len + relativeStart) max 0
           case relativeStart => relativeStart min len
         }
-        val actualDeleteCount = (I.IH.toInteger(deleteCount).getNum.toLong max 0) min (len - actualStart)
+        val actualDeleteCount = (I.IH.toInteger(deleteCount).num.toLong max 0) min (len - actualStart)
         var k: Long = 0
         while (k < actualDeleteCount) {
           val from = (actualStart + k).toString
@@ -364,7 +365,7 @@ class JSArrayPrototype(_I: Interpreter, _proto: JSObject)
           o._put(k.toString, e, true)
           k += 1
         }
-        o._put("length", PVal(I.IH.mkIRNum(len - actualDeleteCount + itemCount)), true)
+        o._put("length", PVal(IRVal(I.IH.mkIRNum(len - actualDeleteCount + itemCount))), true)
         I.IS.comp.setReturn(a)
       case err:JSError => I.IS.comp.setThrow(err, I.IS.span)
     }

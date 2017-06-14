@@ -151,17 +151,23 @@ object IRFactory {
   def makeField(fromSource: Boolean, ast: ASTNode, prop: IRId, expr: IRExpr) =
     NF.putIr(new IRField(ast, prop, expr), ast)
 
-  def makeBool(fromSource: Boolean, ast: ASTNode, bool: Boolean): IRVal =
-    new IRVal(EJSBool(bool))
-  val trueV = makeBool(false, dummyAST, true)
-  val falseV = makeBool(false, dummyAST, false)
+  def makeBool(bool: Boolean): EJSBool =
+    EJSBool(bool)
+  def makeBoolIR(fromSource: Boolean, ast: ASTNode, bool: Boolean): IRVal =
+    new IRVal(makeBool(bool))
+  val trueV = makeBoolIR(false, dummyAST, true)
+  val falseV = makeBoolIR(false, dummyAST, false)
   def makeNull(ast: ASTNode) = new IRVal(EJSNull)
   def makeUndef(ast: ASTNode) = new IRVal(EJSUndef)
 
-  def makeNumber(fromSource: Boolean, text: String, num: Double): IRVal =
+  def makeNumber(fromSource: Boolean, text: String, num: Double): EJSNumber =
     makeNumber(fromSource, dummyAST, text, num)
-  def makeNumber(fromSource: Boolean, ast: ASTNode, text: String, num: Double): IRVal =
-    new IRVal(EJSNumber(text, num))
+  def makeNumber(fromSource: Boolean, ast: ASTNode, text: String, num: Double): EJSNumber =
+    EJSNumber(text, num)
+  def makeNumberIR(fromSource: Boolean, text: String, num: Double): IRVal =
+    makeNumberIR(fromSource, dummyAST, text, num)
+  def makeNumberIR(fromSource: Boolean, ast: ASTNode, text: String, num: Double): IRVal =
+    new IRVal(makeNumber(fromSource, ast, text, num))
   val oneV = makeNumber(false, "1", 1)
 
   val zero  = new IRVal(EJSString("0"))

@@ -9,21 +9,27 @@
 
 package kr.ac.kaist.safe.interpreter.objects
 
+import kr.ac.kaist.safe.compiler.Translator
 import kr.ac.kaist.safe.interpreter._
 import kr.ac.kaist.safe.interpreter.{InterpreterPredefine => IP}
+import kr.ac.kaist.safe.nodes.ast._
+import kr.ac.kaist.safe.nodes.ir._
+import kr.ac.kaist.safe.nodes.ir.{IRFactory => IF}
+import kr.ac.kaist.safe.parser._
 import kr.ac.kaist.safe.util.{EJSCompletionType => CT, NodeUtil => NU}
-import kr.ac.kaist.safe.nodes.ir.{IRFactory => IR}
+import kr.ac.kaist.safe.util._
+import kr.ac.kaist.safe.util.useful.Lists._
 
 class JSGlobal(_I: Interpreter, _proto: JSObject)
   extends JSObject(_I, _proto, "Global", true, propTable) {
   def init(): Unit = {
     // Internal identifiers created by Translator
-    property.put(NU.varTrue, I.IH.mkDataProp(IP.truePV, false, false, false))
-    property.put(NU.varOne, I.IH.mkDataProp(PVal(IF.oneV), false, false, false))
+    property.put(NU.VAR_TRUE, I.IH.mkDataProp(IP.truePV, false, false, false))
+    property.put(NU.VAR_ONE, I.IH.mkDataProp(PVal(IRVal(IF.oneV)), false, false, false))
 
     // 15.1.1 Value Properties of the Global Object
-    property.put("NaN", I.IH.mkDataProp(PVal(IP.NaN), false, false, false))
-    property.put("Infinity", I.IH.mkDataProp(PVal(IP.plusInfinity), false, false, false))
+    property.put("NaN", I.IH.mkDataProp(PVal(IRVal(IP.NaN)), false, false, false))
+    property.put("Infinity", I.IH.mkDataProp(PVal(IRVal(IP.plusInfinity)), false, false, false))
     property.put("undefined", I.IH.mkDataProp(PVal(IP.undefined), false, false, false))
 
     // 15.1.2 Function Properties of the Global Object
@@ -88,9 +94,9 @@ class JSGlobal(_I: Interpreter, _proto: JSObject)
   // 15.1.2.1 eval(x)
   def eval(x: Val, directCall: Boolean): Unit = {
     x match {
-      case PVal(s: IRString) =>
+      case PVal(IRVal(s: EJSString)) =>
         val prog: IRRoot = try {
-          var program: Program = Parser.parsePgm(s.getStr, "eval")
+          var program: Program = Parser.parsePgm(s.str, "eval")
           val hoister = new Hoister(program)
           program = hoister.doit.asInstanceOf[Program]
           val disambiguator = new Disambiguator(program, false)
@@ -120,7 +126,7 @@ class JSGlobal(_I: Interpreter, _proto: JSObject)
         I.IS.eval = true
         val oldCompletionValue = I.IS.comp.value
         I.IS.comp.value = null
-        I.walkIRs(toList(prog.getFds)++toList(prog.getVds)++toList(prog.getIrs))
+        I.walkIRs(toList(prog.fds)++toList(prog.vds)++toList(prog.irs))
         I.IS.env = oldEnv
         I.IS.tb = oldTb
         I.IS.eval = oldEval
@@ -155,7 +161,7 @@ class JSGlobal(_I: Interpreter, _proto: JSObject)
     // 8. If R != 0, then
     if(R != 0) {
       // a. If R < 2 or R > 36, then return NaN.
-      if(R < 2 || R > 36) {I.IS.comp.setReturn(PVal(IP.NaN)); return}
+      if(R < 2 || R > 36) {I.IS.comp.setReturn(PVal(IRVal(IP.NaN))); return}
       // b. If R != 16, let stripPrefix be false.
       stripPrefix = false
     }
@@ -179,7 +185,7 @@ class JSGlobal(_I: Interpreter, _proto: JSObject)
       (R > 10 && !((c >= '0' && c <= '9') || (c >= 'a' && c <= 'a' + R - 1))) // 11 ~ 36
     })
     val Z = {if(i == -1) S else S.substring(0, i)}
-    if(Z.isEmpty) {I.IS.comp.setReturn(PVal(IP.NaN)); return}
+    if(Z.isEmpty) {I.IS.comp.setReturn(PVal(IRVal(IP.NaN))); return}
     // 13. Let mathInt be the mathematical integer value that is represented by Z in radix-R notation,
     //     using the letters A-Z and a-z for digits with values 10 through 35. (However, ...)
     var mathInt: Double = 0.0
@@ -190,7 +196,7 @@ class JSGlobal(_I: Interpreter, _proto: JSObject)
     // 14. Let number be the Number value for mathInt.
     val number = mathInt
     // 15. Return sign * number.
-    I.IS.comp.setReturn(PVal(I.IH.mkIRNum(sign * number)))
+    I.IS.comp.setReturn(PVal(IRVal(I.IH.mkIRNum(sign * number))))
   }
 
   // 15.1.2.3 parseFloat(string)
@@ -208,10 +214,10 @@ class JSGlobal(_I: Interpreter, _proto: JSObject)
 
     // TODO: String.toDouble is used temporarily T_T
     try {
-      I.IS.comp.setReturn(PVal(I.IH.mkIRNum(trimmedString.toDouble)))
+      I.IS.comp.setReturn(PVal(IRVal(I.IH.mkIRNum(trimmedString.toDouble))))
     }
     catch {
-      case _: Throwable => I.IS.comp.setReturn(PVal(IP.NaN))
+      case _: Throwable => I.IS.comp.setReturn(PVal(IRVal(IP.NaN)))
     }
   }
 

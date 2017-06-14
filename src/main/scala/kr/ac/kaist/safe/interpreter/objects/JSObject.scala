@@ -11,7 +11,7 @@ package kr.ac.kaist.safe.interpreter.objects
 
 import kr.ac.kaist.safe.interpreter._
 import kr.ac.kaist.safe.interpreter.{InterpreterPredefine => IP}
-import kr.ac.kaist.safe.util.{EJSCompletionType => CT, NodeUtil => NU}
+import kr.ac.kaist.safe.util.{EJSType, EJSCompletionType => CT, NodeUtil => NU}
 
 /*
  * 8.6.2 Object Internal Properties and Methods

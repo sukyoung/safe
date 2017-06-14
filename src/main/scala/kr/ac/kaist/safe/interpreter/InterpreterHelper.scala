@@ -86,8 +86,8 @@ class InterpreterHelper(I: Interpreter) {
                       List(IP.thisTId, IP.argumentsTId).asInstanceOf[List[IRId]],
                       for (i <- 1 to length) yield IF.dummyIRStmt(IF.dummyAST).asInstanceOf[IRStmt])
   def mkIRStr(s: String) = IF.makeString(s, IF.dummyAST)
-  def mkIRBool(b: Boolean): IRVal = IF.makeBool(false, IF.dummyAST, b)
-  def mkIRNum(d: Double): IRVal = {
+  def mkIRBool(b: Boolean): EJSBool = IF.makeBool(b)
+  def mkIRNum(d: Double): EJSNumber = {
     val name = d.toString
     IF.makeNumber(false, name, d)
   }
@@ -666,11 +666,11 @@ class InterpreterHelper(I: Interpreter) {
     math.signum(y) * result
   }
 
-  def toNumber(v: Val): IRVal = v match {
+  def toNumber(v: Val): EJSNumber = v match {
     case PVal(IRVal(EJSUndef)) => IP.NaN
     case PVal(IRVal(EJSNull)) => IP.plusZero
     case PVal(IRVal(EJSBool(b))) => if(b) mkIRNum(1) else IP.plusZero
-    case PVal(n@IRVal(_:EJSNumber)) => n
+    case PVal(IRVal(n:EJSNumber)) => n
     case PVal(IRVal(EJSString(text))) =>
       val reg    =
        "[+-]?(" +
@@ -703,10 +703,10 @@ class InterpreterHelper(I: Interpreter) {
   /*
    * 9.4 ToInteger
    */
-  def toInteger(v: Val): IRVal = toNumber(v) match {
+  def toInteger(v: Val): EJSNumber = toNumber(v) match {
     case n if isNaN(n) => IP.plusZero
     case n if (isZero(n) || isInfinite(n)) => n
-    case n => mkIRNum(math.signum(n.getNum) * math.floor(math.abs(n.getNum)))
+    case n => mkIRNum(math.signum(n.num) * math.floor(math.abs(n.num)))
   }
 
   /*
@@ -716,9 +716,9 @@ class InterpreterHelper(I: Interpreter) {
     // 1. Let number be the result of calling ToNumber on the input argument.
     val n = toNumber(v)
     // 2. If number is NaN, +0, -0, +INF or -INF, return +0.
-    if(isNaN(n) || n.getNum == 0 || isInfinite(n)) return 0
+    if(isNaN(n) || n.num == 0 || isInfinite(n)) return 0
     // 3. Let posInt be sign(number) * floor(abs(number))
-    val posInt = math.signum(n.getNum) * math.floor(math.abs(n.getNum))
+    val posInt = math.signum(n.num) * math.floor(math.abs(n.num))
     // 4. Let int32bit be posInt modulo 2^32; that is, ...
     val int32bit = modulo(posInt, 0x100000000L);
     // 5. If int32bit is greater than or equal to 2^31, return int32bit - 2^32, otherwise return int32bit.
@@ -732,9 +732,9 @@ class InterpreterHelper(I: Interpreter) {
     // 1. Let number be the result of calling ToNumber on the input argument.
     val n = toNumber(v)
     // 2. If number is NaN, +0, -0, +INF or -INF, return +0.
-    if(isNaN(n) || n.getNum == 0 || isInfinite(n)) return 0
+    if(isNaN(n) || n.num == 0 || isInfinite(n)) return 0
     // 3. Let posInt be sign(number) * floor(abs(number))
-    val posInt = math.signum(n.getNum) * math.floor(math.abs(n.getNum))
+    val posInt = math.signum(n.num) * math.floor(math.abs(n.num))
     // 4. Let int32bit be posInt modulo 2^32; that is, ...
     val int32bit = modulo(posInt, 0x100000000L)
     // 5. Return int32bit.
@@ -748,9 +748,9 @@ class InterpreterHelper(I: Interpreter) {
     // 1. Let number be the result of calling ToNumber on the input argument.
     val n = toNumber(v)
     // 2. If number is NaN, +0, -0, +INF or -INF, return +0.
-    if(isNaN(n) || n.getNum == 0 || isInfinite(n)) return 0
+    if(isNaN(n) || n.num == 0 || isInfinite(n)) return 0
     // 3. Let posInt be sign(number) * floor(abs(number))
-    val posInt = math.signum(n.getNum) * math.floor(math.abs(n.getNum))
+    val posInt = math.signum(n.num) * math.floor(math.abs(n.num))
     // 4. Let int16bit be posInt modulo 2^16; that is, ...
     val int16bit = modulo(posInt, 0x10000);
     // 5. Return int16bit.
@@ -761,21 +761,21 @@ class InterpreterHelper(I: Interpreter) {
    * 9.8 ToString
    */
   def toString(v: Val): String = v match {
-    case PVal(_:IRUndef) => "undefined"
-    case PVal(_:IRNull) => "null"
-    case PVal(SIRBool(_,b)) => b.toString
-    case PVal(n:IRNumber) => toString(n)
-    case PVal(s:IRString) => s.getStr
+    case PVal(IRVal(EJSUndef)) => "undefined"
+    case PVal(IRVal(EJSNull)) => "null"
+    case PVal(IRVal(EJSBool(b))) => b.toString
+    case PVal(IRVal(n:EJSNumber)) => toString(n)
+    case PVal(IRVal(s:EJSString)) => s.str
     case _:JSObject => toString(toPrimitive(v, "String"))
   }
-  def toString(n: IRNumber): String = {
+  def toString(n: EJSNumber): String = {
     if (isNaN(n)) "NaN"
     else if (isPlusZero(n) || isMinusZero(n)) "0"
-    else if (n.getNum < 0) "-"+toString(negate(n))
+    else if (n.num < 0) "-"+toString(negate(n))
     else if (isInfinite(n)) "Infinity"
     else {
       // TODO: 9.8.1.5-10.
-      toString(n.getNum)
+      toString(n.num)
     }
   }
   def toString(n: Double): String = {
@@ -787,10 +787,10 @@ class InterpreterHelper(I: Interpreter) {
    * 9.9 ToObject
    */
   def toObject(v: Val): ValError = v match {
-    case PVal(_:IRUndef | _:IRNull) => IP.typeError
-    case PVal(s:IRString) => I.IS.StringConstructor.construct(Some(PVal(mkIRStr(s.getStr))))
-    case PVal(s:IRNumber) => I.IS.NumberConstructor.construct(Some(v))
-    case PVal(s:IRBool) => I.IS.BooleanConstructor.construct(v)
+    case PVal(IRVal(EJSUndef | EJSNull)) => IP.typeError
+    case PVal(IRVal(s:EJSString)) => I.IS.StringConstructor.construct(Some(PVal(mkIRStr(s.str))))
+    case PVal(IRVal(s:EJSNumber)) => I.IS.NumberConstructor.construct(Some(v))
+    case PVal(IRVal(s:EJSBool)) => I.IS.BooleanConstructor.construct(v)
     case obj:JSObject => obj
   }
 
@@ -798,7 +798,7 @@ class InterpreterHelper(I: Interpreter) {
    * 9.10 CheckObjectCoercible
    */
   def checkObjectCoercible(v: Val): ValError = v match {
-    case PVal(_:IRUndef | _:IRNull) => IP.typeError
+    case PVal(IRVal(EJSUndef | EJSNull)) => IP.typeError
     case _ => v
   }
 
@@ -823,13 +823,13 @@ class InterpreterHelper(I: Interpreter) {
    * 11.5.1 Applying the * Operator
    *   The result of a floating-point multiplication is governed by the rules of IEEE 754 binary double-precision arithmetic: ...
    */
-  def applyMultiplication(leftNum: IRNumber, rightNum:IRNumber): IRNumber = mkIRNum(leftNum.getNum * rightNum.getNum)
+  def applyMultiplication(leftNum: EJSNumber, rightNum:EJSNumber): EJSNumber = mkIRNum(leftNum.num * rightNum.num)
 
   /*
    * 11.5.2 Applying the / Operator
    *   The result of devision is determined by the specification of IEEE 754 arithmetic: ...
    */
-  def applyDivision(leftNum: IRNumber, rightNum:IRNumber): IRNumber = mkIRNum(leftNum.getNum / rightNum.getNum)
+  def applyDivision(leftNum: EJSNumber, rightNum:EJSNumber): EJSNumber = mkIRNum(leftNum.num / rightNum.num)
 
   /*
    * 11.5.3 Applying the % Operator
@@ -839,13 +839,13 @@ class InterpreterHelper(I: Interpreter) {
    *   Instead the ECMAScript language defined % on floating-point operations to behave in a manner analogous to
    *   that of the java integer remainder operator; this may be compared with the C library function fmod.
    */
-  def applyReminder(leftNum: IRNumber, rightNum:IRNumber): IRNumber = mkIRNum(leftNum.getNum % rightNum.getNum)
+  def applyReminder(leftNum: EJSNumber, rightNum:EJSNumber): EJSNumber = mkIRNum(leftNum.num % rightNum.num)
 
   /*
    * 11.6.3 Applying the Additive Operators to Numbers
    *   The result of an addition is determined using the rules of IEEE 754 binary double-precision arithmetic: ...
    */
-  def applyAddition(leftNum: IRNumber, rightNum:IRNumber): IRNumber = mkIRNum(leftNum.getNum + rightNum.getNum)
+  def applyAddition(leftNum: EJSNumber, rightNum:EJSNumber): EJSNumber = mkIRNum(leftNum.num + rightNum.num)
 
   /*
    * 11.8.5 The Abstract Relational Comparison Algorithm
@@ -873,7 +873,7 @@ class InterpreterHelper(I: Interpreter) {
        *   string equality and collating order defined in the Unicode specification.
        *   Therefore String values that are canonically equal according to the Unicode standard could test as unequal.
        */
-      case (PVal(SIRString(_,sx)), PVal(SIRString(_,sy))) => PVal(getIRBool(sx < sy))
+      case (PVal(IRVal(EJSString(sx))), PVal(IRVal(EJSString(sy)))) => PVal(getIRBool(sx < sy))
       // 3. If it is not the case that both type(px) is String and Type(py) is String, then
       // a. Let nx be the result of calling ToNumber(px).
       // b. Let ny be the result of calling ToNumber(py).
@@ -896,7 +896,7 @@ class InterpreterHelper(I: Interpreter) {
         // k. If nx is -INF, return true.
         case (nx, _) if isMinusInfinity(nx) => IP.truePV
         // l. If the mathematical value of nx is less than the mathematical value of ny ...
-        case (nx, ny) => PVal(getIRBool(nx.getNum < ny.getNum))
+        case (nx, ny) => PVal(getIRBool(nx.num < ny.num))
       }
     }
   }
@@ -908,16 +908,16 @@ class InterpreterHelper(I: Interpreter) {
     // 1. If Type(x) is the same as Type(y), then
     case (typeOfX, typeOfY) if typeOfX == typeOfY => (x, y) match {
       // a. If Type(x) is Undefined, return true.
-      case (PVal(_:IRUndef), PVal(_:IRUndef)) => true
+      case (PVal(IRVal(EJSUndef)), PVal(IRVal(EJSUndef))) => true
       // b. If Type(x) is Null, return true.
-      case (PVal(_:IRNull), PVal(_:IRNull)) => true
+      case (PVal(IRVal(EJSNull)), PVal(IRVal(EJSNull))) => true
       // c. If Type(x) is Number, then
-      case (PVal(x1:IRNumber), PVal(y1:IRNumber)) => {
+      case (PVal(IRVal(x1:EJSNumber)), PVal(IRVal(y1:EJSNumber))) => {
         //  i. If x is NaN, return false.
         // ii. If y is NaN, return false.
         if(isNaN(x1) || isNaN(y1)) false
         // iii. If x is the same Number value as y, return true.
-        else if(x1.getNum == y1.getNum) true
+        else if(x1.num == y1.num) true
         // iv. If x is +0 and y is -0, return true.
         //  v. If x is -0 and y is +0, return true.
         else if((isPlusZero(x1) && isMinusZero(y1)) || (isMinusZero(x1) && isPlusZero(y1))) true
@@ -925,9 +925,9 @@ class InterpreterHelper(I: Interpreter) {
         else false
       }
       // d. If Type(x) is String, ...
-      case (PVal(SIRString(_,sx)), PVal(SIRString(_,sy))) => sx == sy
+      case (PVal(IRVal(EJSString(sx))), PVal(IRVal(EJSString(sy)))) => sx == sy
       // e. If Type(x) is Boolean, ...
-      case (PVal(SIRBool(_,bx)), PVal(SIRBool(_,by))) => bx == by
+      case (PVal(IRVal(EJSBool(bx))), PVal(IRVal(EJSBool(by)))) => bx == by
       // f. Return true if x and y refer to the same object. Otherwise, return false.
       case (ox: JSObject, oy: JSObject) => ox == oy
     }
@@ -938,15 +938,15 @@ class InterpreterHelper(I: Interpreter) {
     // 4. If Type(x) is Number and Type(y) is String,
     case (typeOfX, EJSType.STRING) if EJSType.isNumber(typeOfX) =>
       // return the result of the comparison x == ToNumber(y).
-      abstractEqualityComparison(x, PVal(toNumber(y)))
+      abstractEqualityComparison(x, PVal(IRVal(toNumber(y))))
     // 5. If Type(x) is String and Type(y) is Number,
     case (EJSType.STRING, typeOfY) if EJSType.isNumber(typeOfY) =>
       // return the result of the comparison ToNumber(x) == y.
-      abstractEqualityComparison(PVal(toNumber(x)), y)
+      abstractEqualityComparison(PVal(IRVal(toNumber(x))), y)
     // 6. If Type(x) is Boolean, return the result of the comparison ToNumber(x) == y.
-    case (EJSType.BOOLEAN, typeOfY) => abstractEqualityComparison(PVal(toNumber(x)), y)
+    case (EJSType.BOOLEAN, typeOfY) => abstractEqualityComparison(PVal(IRVal(toNumber(x))), y)
     // 7. If Type(y) is Boolean, return the result of the comparison x == ToNumber(y).
-    case (typeOfX, EJSType.BOOLEAN) => abstractEqualityComparison(x, PVal(toNumber(y)))
+    case (typeOfX, EJSType.BOOLEAN) => abstractEqualityComparison(x, PVal(IRVal(toNumber(y))))
     // 8. If Type(x) is either String or Number and Type(y) is Object,
     case (typeOfX, EJSType.OBJECT) if (EJSType.isString(typeOfX) || EJSType.isNumber(typeOfX)) =>
       // return the result of the comparison x == ToPrimitive(y).

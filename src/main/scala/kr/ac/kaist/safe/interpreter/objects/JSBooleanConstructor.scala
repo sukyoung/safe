@@ -11,6 +11,7 @@ package kr.ac.kaist.safe.interpreter.objects
 
 import kr.ac.kaist.safe.interpreter._
 import kr.ac.kaist.safe.interpreter.{InterpreterPredefine => IP}
+import kr.ac.kaist.safe.nodes.ir._
 
 class JSBooleanConstructor(_I: Interpreter, _proto: JSObject)
   extends JSFunction13(_I, _proto, "Function", true,
@@ -40,6 +41,6 @@ class JSBooleanConstructor(_I: Interpreter, _proto: JSObject)
    * 15.6.1.1 Boolean (value)
    */
   override def _call(tb: Val, argsObj: JSObject): Unit = {
-    I.IS.comp.setReturn(PVal(I.IH.mkIRBool(I.IH.toBoolean(argsObj._get("0")))))
+    I.IS.comp.setReturn(PVal(IRVal(I.IH.mkIRBool(I.IH.toBoolean(argsObj._get("0"))))))
   }
 }

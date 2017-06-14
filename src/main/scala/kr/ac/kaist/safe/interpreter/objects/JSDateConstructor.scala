@@ -11,6 +11,8 @@ package kr.ac.kaist.safe.interpreter.objects
 
 import kr.ac.kaist.safe.interpreter._
 import kr.ac.kaist.safe.interpreter.{InterpreterPredefine => IP}
+import kr.ac.kaist.safe.nodes.ir._
+import kr.ac.kaist.safe.util._
 
 class JSDateConstructor(_I: Interpreter, _proto: JSObject)
   extends JSFunction13(_I, _proto, "Function", true, propTable, _I.IH.dummyFtn(7), EmptyEnv(), true) {
@@ -40,32 +42,32 @@ class JSDateConstructor(_I: Interpreter, _proto: JSObject)
     val min = if (!I.IH.isUndef(minutes)) I.IH.toNumber(minutes) else I.IH.mkIRNum(0)
     val s = if (!I.IH.isUndef(seconds)) I.IH.toNumber(seconds) else I.IH.mkIRNum(0)
     val milli = if (!I.IH.isUndef(ms)) I.IH.toNumber(ms) else I.IH.mkIRNum(0)
-    val yi = I.IH.toInteger(PVal(y)).getNum
+    val yi = I.IH.toInteger(PVal(IRVal(y))).num
     val yr = if (!I.IH.isNaN(y) && 0 <= yi && yi <= 99) I.IH.mkIRNum(1900 + yi) else y
     val finalDate = DH._makeDate(DH._makeDay(yr, m, dt), DH._makeTime(h, min, s, milli))
-    new JSDate(I, I.IS.DatePrototype, "Date", true, I.IH.numPropTable(finalDate.getNum))
+    new JSDate(I, I.IS.DatePrototype, "Date", true, I.IH.numPropTable(finalDate.num))
   }
   /*
    * 15.9.3.2 new Date(value)
    */
   def construct(value: Val): JSDate = {
     val V = I.IH.toPrimitive(value, "Number") match {
-      case v@PVal(_:IRString) => __parse(v)
+      case v@PVal(IRVal(_:EJSString)) => __parse(v)
       case v => I.IH.toNumber(v)
     }
-    new JSDate(I, I.IS.DatePrototype, "Date", true, I.IH.numPropTable(DH._timeClip(V).getNum))
+    new JSDate(I, I.IS.DatePrototype, "Date", true, I.IH.numPropTable(DH._timeClip(V).num))
   }
   /*
    * 15.9.3.3 new Date()
    */
   def construct(): JSDate =
-    new JSDate(I, I.IS.DatePrototype, "Date", true, I.IH.numPropTable(__now.getNum))
+    new JSDate(I, I.IS.DatePrototype, "Date", true, I.IH.numPropTable(__now.num))
 
   override def _construct(argsObj: JSObject): JSDate = {
     argsObj._get("length") match {
-      case PVal(n:IRNumber) if n.getNum == 0 => construct()
-      case PVal(n:IRNumber) if n.getNum == 1 => construct(argsObj._get("0"))
-      case PVal(n:IRNumber) if n.getNum >= 2 => construct(argsObj._get("0"),
+      case PVal(IRVal(n:EJSNumber)) if n.num == 0 => construct()
+      case PVal(IRVal(n:EJSNumber)) if n.num == 1 => construct(argsObj._get("0"))
+      case PVal(IRVal(n:EJSNumber)) if n.num >= 2 => construct(argsObj._get("0"),
                                                           argsObj._get("1"),
                                                           argsObj._get("2"),
                                                           argsObj._get("3"),
@@ -97,8 +99,8 @@ class JSDateConstructor(_I: Interpreter, _proto: JSObject)
    * 15.9.4.2 Date.parse(string)
    */
   def _parse(string: Val): Unit =
-    I.IS.comp.setReturn(PVal(__parse(string)))
-  def __parse(string: Val): IRNumber = {
+    I.IS.comp.setReturn(PVal(IRVal(__parse(string))))
+  def __parse(string: Val): EJSNumber = {
     /*
      * "YYYY-MM-DDTHH:mm:ss.sss"
      * This format includes date-only forms:
@@ -180,9 +182,9 @@ class JSDateConstructor(_I: Interpreter, _proto: JSObject)
                  DH._makeTime(I.IH.mkIRNum(h.toDouble),
                               I.IH.mkIRNum(m.toDouble),
                               I.IH.mkIRNum(0.0),
-                              I.IH.mkIRNum(0.0)))).getNum)
+                              I.IH.mkIRNum(0.0)))).num)
       }
-      I.IH.mkIRNum(tc.getNum - tzoffset.getNum)
+      I.IH.mkIRNum(tc.num - tzoffset.num)
     } catch {
       case _:MatchError => try {
         val format2(month, date, year, hours, minutes, seconds, ms, tzs, tzh, tzm) =
@@ -240,9 +242,9 @@ class JSDateConstructor(_I: Interpreter, _proto: JSObject)
                    DH._makeTime(I.IH.mkIRNum(h.toDouble),
                                 I.IH.mkIRNum(m.toDouble),
                                 I.IH.mkIRNum(0.0),
-                                I.IH.mkIRNum(0.0)))).getNum)
+                                I.IH.mkIRNum(0.0)))).num)
         }
-        I.IH.mkIRNum(tc.getNum - tzoffset.getNum)
+        I.IH.mkIRNum(tc.num - tzoffset.num)
       } catch {
         case _:MatchError => try {
           val format3(month, date, year, hours, minutes, seconds, ms, tzs, tzh, tzm) =
@@ -296,9 +298,9 @@ class JSDateConstructor(_I: Interpreter, _proto: JSObject)
                      DH._makeTime(I.IH.mkIRNum(h.toDouble),
                                   I.IH.mkIRNum(m.toDouble),
                                   I.IH.mkIRNum(0.0),
-                                  I.IH.mkIRNum(0.0)))).getNum)
+                                  I.IH.mkIRNum(0.0)))).num)
           }
-          I.IH.mkIRNum(tc.getNum - tzoffset.getNum)
+          I.IH.mkIRNum(tc.num - tzoffset.num)
         } catch {
           case _:MatchError => IP.NaN
         }
@@ -316,21 +318,21 @@ class JSDateConstructor(_I: Interpreter, _proto: JSObject)
     val min = if (!I.IH.isUndef(minutes)) I.IH.toNumber(minutes) else I.IH.mkIRNum(0)
     val s = if (!I.IH.isUndef(seconds)) I.IH.toNumber(seconds) else I.IH.mkIRNum(0)
     val milli = if (!I.IH.isUndef(ms)) I.IH.toNumber(ms) else I.IH.mkIRNum(0)
-    val yi = I.IH.toInteger(PVal(y)).getNum
+    val yi = I.IH.toInteger(PVal(IRVal(y))).num
     val yr = if (!I.IH.isNaN(y) && 0 <= yi && yi <= 99) I.IH.mkIRNum(1900 + yi) else y
     val tc = DH._timeClip(
                DH._makeDate(DH._makeDay(yr, m, dt),
                             DH._makeTime(h, min, s, milli)))
-    I.IS.comp.setReturn(PVal(tc))
+    I.IS.comp.setReturn(PVal(IRVal(tc)))
   }
   /*
    * 15.9.4.4 Date.now()
    */
-  def __now(): IRNumber = {
+  def __now(): EJSNumber = {
     // TODO: Check whether java.util.Calendar.getInstance.getTimeInMillis gives
     //       the JavaScript time value
     val date = new java.util.Date()
     I.IH.mkIRNum(date.getTime)
   }
-  def _now(): Unit = I.IS.comp.setReturn(PVal(__now))
+  def _now(): Unit = I.IS.comp.setReturn(PVal(IRVal(__now)))
 }

@@ -11,6 +11,8 @@ package kr.ac.kaist.safe.interpreter.objects
 
 import kr.ac.kaist.safe.interpreter._
 import kr.ac.kaist.safe.interpreter.{InterpreterPredefine => IP}
+import kr.ac.kaist.safe.nodes.ir._
+import kr.ac.kaist.safe.util._
 
 class JSArrayConstructor(_I: Interpreter, _proto: JSObject)
   extends JSFunction13(_I, _proto, "Array", true,
@@ -21,7 +23,7 @@ class JSArrayConstructor(_I: Interpreter, _proto: JSObject)
      */
     // The "length" property initially has the attributes
     // { [[Writable]]:true, [[Enumerable]]:false, [[Configurable]]:false }
-    property.put("length", I.IH.mkDataProp(PVal(I.IH.mkIRNum(1)), true, false, false))
+    property.put("length", I.IH.mkDataProp(PVal(IRVal(I.IH.mkIRNum(1))), true, false, false))
     // [[Writable]]: false, [[Enumerable]]: false, [[Configurable]]: false
     property.put("prototype", I.IH.mkDataProp(I.IS.ArrayPrototype))
     property.put("isArray", I.IH.objProp(I.IS.ArrayIsArray))
@@ -36,7 +38,7 @@ class JSArrayConstructor(_I: Interpreter, _proto: JSObject)
     // The "length" property initially has the attributes
     // { [[Writable]]:true, [[Enumerable]]:false, [[Configurable]]:false }
     var prop: PropTable = propTable
-    prop.put("length", I.IH.mkDataProp(PVal(I.IH.mkIRNum(args.length)), true, false, false))
+    prop.put("length", I.IH.mkDataProp(PVal(IRVal(I.IH.mkIRNum(args.length))), true, false, false))
     for (i <- 0 until args.length) {
       prop.put(i.toString, I.IH.mkDataProp(args(i), true, true, true))
     }
@@ -46,18 +48,18 @@ class JSArrayConstructor(_I: Interpreter, _proto: JSObject)
    * 15.4.2.2 new Array(len)
    */
   def construct(len: Val): JSArray = len match {
-    case PVal(n:IRNumber) if I.IH.toUint32(len) == n.getNum =>
+    case PVal(IRVal(n:EJSNumber)) if I.IH.toUint32(len) == n.num =>
       // The "length" property initially has the attributes
       // { [[Writable]]:true, [[Enumerable]]:false, [[Configurable]]:false }
       val prop = propTable
-      prop.put("length", I.IH.mkDataProp(PVal(n), true, false, false))
+      prop.put("length", I.IH.mkDataProp(PVal(IRVal(n)), true, false, false))
       new JSArray(I, I.IS.ArrayPrototype, "Array", true, prop)
-    case PVal(n:IRNumber) => throw new RangeErrorException
+    case PVal(IRVal(n:EJSNumber)) => throw new RangeErrorException
     case _ =>
       // The "length" property initially has the attributes
       // { [[Writable]]:true, [[Enumerable]]:false, [[Configurable]]:false }
       val prop = propTable
-      prop.put("length", I.IH.mkDataProp(PVal(I.IH.mkIRNum(1)), true, false, false))
+      prop.put("length", I.IH.mkDataProp(PVal(IRVal(I.IH.mkIRNum(1))), true, false, false))
       prop.put("0", I.IH.mkDataProp(len, true, true, true))
       new JSArray(I, I.IS.ArrayPrototype, "Array", true, prop)
   }
@@ -66,26 +68,26 @@ class JSArrayConstructor(_I: Interpreter, _proto: JSObject)
    * 10.6 Arguments Object
    */
   def apply(len: Val, name: String): JSArray = len match {
-    case PVal(n:IRNumber) if I.IH.toUint32(len) == n.getNum =>
+    case PVal(IRVal(n:EJSNumber)) if I.IH.toUint32(len) == n.num =>
       // The "length" property initially has the attributes
       // { [[Writable]]:true, [[Enumerable]]:false, [[Configurable]]:false }
       val prop = propTable
-      prop.put("length", I.IH.mkDataProp(PVal(n), true, false, false))
+      prop.put("length", I.IH.mkDataProp(PVal(IRVal(n)), true, false, false))
       new JSArray(I, I.IS.ObjectPrototype, name, true, prop)
-    case PVal(n:IRNumber) => throw new RangeErrorException
+    case PVal(IRVal(n:EJSNumber)) => throw new RangeErrorException
     case _ =>
       // The "length" property initially has the attributes
       // { [[Writable]]:true, [[Enumerable]]:false, [[Configurable]]:false }
       val prop = propTable
-      prop.put("length", I.IH.mkDataProp(PVal(I.IH.mkIRNum(1)), true, false, false))
+      prop.put("length", I.IH.mkDataProp(PVal(IRVal(I.IH.mkIRNum(1))), true, false, false))
       prop.put("0", I.IH.mkDataProp(len, true, true, true))
       new JSArray(I, I.IS.ObjectPrototype, name, true, prop)
   }
 
   override def _construct(argsObj: JSObject): JSArray = {
     argsObj._get("length") match {
-      case PVal(n:IRNumber) if n.getNum == 0 || n.getNum >= 2 => construct(I.IH.arrayToList(argsObj))
-      case PVal(n:IRNumber) if n.getNum == 1 => construct(argsObj._get("0"))
+      case PVal(IRVal(n:EJSNumber)) if n.num == 0 || n.num >= 2 => construct(I.IH.arrayToList(argsObj))
+      case PVal(IRVal(n:EJSNumber)) if n.num == 1 => construct(argsObj._get("0"))
     }
   }
 

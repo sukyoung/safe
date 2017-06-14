@@ -11,6 +11,8 @@ package kr.ac.kaist.safe.interpreter.objects
 
 import kr.ac.kaist.safe.interpreter._
 import kr.ac.kaist.safe.interpreter.{InterpreterHelper => IH, InterpreterPredefine => IP}
+import kr.ac.kaist.safe.nodes.ir._
+import kr.ac.kaist.safe.util._
 
 class JSNumberPrototype(_I: Interpreter, _proto: JSObject)
   extends JSNumber(_I, _proto, "Number", true, propTable) {
@@ -31,8 +33,8 @@ class JSNumberPrototype(_I: Interpreter, _proto: JSObject)
   override def __callBuiltinFunction(method: JSFunction, argsObj: JSObject): Unit = {
     method match {
       case I.IS.NumberPrototypeToString => argsObj._get("length") match {
-        case PVal(n:IRNumber) if n.getNum == 0 => _toString(None)
-        case PVal(n:IRNumber) if n.getNum >= 1 => _toString(Some(argsObj._get("0")))
+        case PVal(IRVal(n:EJSNumber)) if n.num == 0 => _toString(None)
+        case PVal(IRVal(n:EJSNumber)) if n.num >= 1 => _toString(Some(argsObj._get("0")))
       }
       // 15.7.4.3
       case I.IS.NumberPrototypeValueOf => _valueOf()
