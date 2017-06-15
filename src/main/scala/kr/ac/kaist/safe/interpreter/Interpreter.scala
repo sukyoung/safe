@@ -63,7 +63,7 @@ class Interpreter extends IRWalker {
 
       SH.initialize(coverage)
 
-      val inputIR = coverage.inputIR  match { case Some(ir) => List(ir); case None => List() }
+      val inputIR: List[IRStmt] = coverage.inputIR  match { case Some(ir) => List(ir); case None => List() }
       /*println("Input IR!!!!!!!!")
       if (coverage.inputIR.isSome)
         System.out.println(new kr.ac.kaist.jsaf.nodes_util.JSIRUnparser(coverage.inputIR.unwrap).doit)
@@ -135,7 +135,7 @@ class Interpreter extends IRWalker {
            *   Instead of checking whether v2 has a [[HasInstance]] internal method,
            *   we check whether v2 is a function object.
            */
-            case EJSOp.BIN_COMP_REL_INSTANCEOF => v2 match {
+            case EJSInstOf => v2 match {
               case o2: JSObject =>
                 if (IH.isCallable(v2)) {
                   val (l2prototype, _) = o2._getProperty("prototype");
@@ -152,77 +152,77 @@ class Interpreter extends IRWalker {
             /*
            * 11.8.7 The in operator
            */
-            case EJSOp.BIN_COMP_REL_IN => v2 match {
+            case EJSIn => v2 match {
               case o2: JSObject => PVal(IH.getIRBool(o2._hasProperty(IH.toString(v1))))
               case _ => IP.typeError
             }
             // 11.5.1 Applying the * Operator
-            case EJSOp.BIN_ARITH_MUL_MULTIPLICATION =>
-              PVal(IH.applyMultiplication(IH.toNumber(v1), IH.toNumber(v2)))
+            case EJSMul =>
+              PVal(IRVal(IH.applyMultiplication(IH.toNumber(v1), IH.toNumber(v2))))
             // 11.5.2 Applying the / Operator
-            case EJSOp.BIN_ARITH_MUL_DIVISION =>
-              PVal(IH.applyDivision(IH.toNumber(v1), IH.toNumber(v2)))
+            case EJSDiv =>
+              PVal(IRVal(IH.applyDivision(IH.toNumber(v1), IH.toNumber(v2))))
             // 11.5.3 Applying the % Operator
-            case EJSOp.BIN_ARITH_MUL_REMINDER =>
-              PVal(IH.applyReminder(IH.toNumber(v1), IH.toNumber(v2)))
+            case EJSRem =>
+              PVal(IRVal(IH.applyReminder(IH.toNumber(v1), IH.toNumber(v2))))
             // 11.6.1 The Addition Operator (+)
-            case EJSOp.ETC_PLUS =>
+            case EJSAdd =>
               // TODO: NOTE 1 ... Host objects may handle the absence of a hint in some other manner.
               val lPrim = IH.toPrimitive(v1, "") // 5. Let lprim be ToPrimitive(lval). NOTE 1 ...
               val rPrim = IH.toPrimitive(v2, "") // 6. Let rprim be ToPrimitive(rval). NOTE 1 ...
               // 7. If Type(lprim) is String or Type(rprim) is String, then
               if (IH.typeOf(lPrim) == EJSType.STRING || IH.typeOf(rPrim) == EJSType.STRING)
                 // a. Return the String that is the result of concatenating ToString(lprim) followed by ToString(rprim).
-                PVal(IH.mkIRStr(IH.toString(lPrim) + IH.toString(rPrim)))
+                PVal(IH.mkIRStrIR(IH.toString(lPrim) + IH.toString(rPrim)))
               // 8. Return the result of applying the additoin operation to ToNumber(lprim) and ToNumber(rprim).
-              else PVal(IH.applyAddition(IH.toNumber(lPrim), IH.toNumber(rPrim)))
+              else PVal(IRVal(IH.applyAddition(IH.toNumber(lPrim), IH.toNumber(rPrim))))
             // 11.6.2 The Subtraction Operator (-)
-            case EJSOp.ETC_MINUS =>
+            case EJSSub =>
               // 7. Return the result of applying the subtraction operation to lnum and rnum.
-              PVal(IH.applyAddition(IH.toNumber(v1), IH.negate(IH.toNumber(v2)))) // lnum + (-rnum)
+              PVal(IRVal(IH.applyAddition(IH.toNumber(v1), IH.negate(IH.toNumber(v2))))) // lnum + (-rnum)
             // 11.7.1 The Left Shift Operator (<<)
-            case EJSOp.BIN_BIT_SHIFT_LEFT =>
-              PVal(IH.mkIRNum(IH.toInt32(v1) << (IH.toUint32(v2) & 0x1F)))
-            // 11.7.2 The Signed Right Shift Operator (>>)
-            case EJSOp.BIN_BIT_SHIFT_SRIGHT =>
-              PVal(IH.mkIRNum(IH.toInt32(v1) >> (IH.toUint32(v2) & 0x1F)))
+            case EJSShiftLeft =>
+              PVal(IRVal(IH.mkIRNum(IH.toInt32(v1) << (IH.toUint32(v2) & 0x1F))))
+            // 11.7.2 The mkIRNumIR Right Shift Operator (>>)
+            case EJSShiftSRight =>
+              PVal(IH.mkIRNumIR(IH.toInt32(v1) >> (IH.toUint32(v2) & 0x1F)))
             // 11.7.3 The Unsigned Right Shift Operator (>>>)
-            case EJSOp.BIN_BIT_SHIFT_USRIGHT =>
-              PVal(IH.mkIRNum(IH.toUint32(v1) >>> (IH.toUint32(v2) & 0x1F)))
+            case EJSShiftUSRight =>
+              PVal(IH.mkIRNumIR(IH.toUint32(v1) >>> (IH.toUint32(v2) & 0x1F)))
             // 11.8.1 The Less-than Operator (<)
-            case EJSOp.BIN_COMP_REL_LESS => IH.abstractRelationalComparison(v1, v2) match {
-              case PVal(r: IRBool) => PVal(r)
-              case PVal(_: IRUndef) => IP.falsePV
+            case EJSLt => IH.abstractRelationalComparison(v1, v2) match {
+              case PVal(IRVal(r: EJSBool)) => PVal(IRVal(r))
+              case PVal(IRVal(EJSUndef)) => IP.falsePV
             }
             // 11.8.2 The Greater-than Operator (>)
-            case EJSOp.BIN_COMP_REL_GREATER => IH.abstractRelationalComparison(v2, v1, false) match {
-              case PVal(r: IRBool) => PVal(r)
-              case PVal(_: IRUndef) => IP.falsePV
+            case EJSGt => IH.abstractRelationalComparison(v2, v1, false) match {
+              case PVal(IRVal(r: EJSBool)) => PVal(IRVal(r))
+              case PVal(IRVal(EJSUndef)) => IP.falsePV
             }
             // 11.8.3 The Less-than-or-equal Operator (<=)
-            case EJSOp.BIN_COMP_REL_LESSEQUAL => IH.abstractRelationalComparison(v2, v1, false) match {
-              case PVal(SIRBool(_,b)) if b => IP.falsePV
-              case PVal(_: IRUndef) => IP.falsePV
+            case EJSLte => IH.abstractRelationalComparison(v2, v1, false) match {
+              case PVal(IRVal(EJSBool(b))) if b => IP.falsePV
+              case PVal(IRVal(EJSUndef)) => IP.falsePV
               case _ => IP.truePV
             }
             // 11.8.4 The Greater-than-or-equal Operator (>=)
-            case EJSOp.BIN_COMP_REL_GREATEREQUAL => IH.abstractRelationalComparison(v1, v2) match {
-              case PVal(SIRBool(_,b)) if b => IP.falsePV
-              case PVal(_: IRUndef) => IP.falsePV
+            case EJSGte => IH.abstractRelationalComparison(v1, v2) match {
+              case PVal(IRVal(EJSBool(b))) if b => IP.falsePV
+              case PVal(IRVal(EJSUndef)) => IP.falsePV
               case _ => IP.truePV
             }
             // 11.9.1 The Equals Operator (==)
-            case EJSOp.BIN_COMP_EQ_EQUAL => PVal(IH.getIRBool(IH.abstractEqualityComparison(v2, v1)))
+            case EJSEq => PVal(IH.getIRBool(IH.abstractEqualityComparison(v2, v1)))
             // 11.9.2 The Does-not-equals Operator (!=)
-            case EJSOp.BIN_COMP_EQ_NEQUAL => PVal(IH.getIRBool(!IH.abstractEqualityComparison(v2, v1)))
+            case EJSNEq => PVal(IH.getIRBool(!IH.abstractEqualityComparison(v2, v1)))
             // 11.9.4 The Strict Equals Operator (===)
-            case EJSOp.BIN_COMP_EQ_SEQUAL => PVal(IH.getIRBool(IH.abstractStrictEqualityComparison(v2, v1)))
+            case EJSSEq => PVal(IH.getIRBool(IH.abstractStrictEqualityComparison(v2, v1)))
             // 11.9.5 The Strict Equals Operator (!==)
-            case EJSOp.BIN_COMP_EQ_SNEQUAL => PVal(IH.getIRBool(!IH.abstractStrictEqualityComparison(v2, v1)))
+            case EJSSNEq => PVal(IH.getIRBool(!IH.abstractStrictEqualityComparison(v2, v1)))
             // 11.10 Binary Bitwise Operators
-            case EJSOp.BIN_BIT_BIT_AND => PVal(IH.mkIRNum(IH.toInt32(v1) & IH.toInt32(v2)))
-            case EJSOp.BIN_BIT_BIT_XOR => PVal(IH.mkIRNum(IH.toInt32(v1) ^ IH.toInt32(v2)))
-            case EJSOp.BIN_BIT_BIT_OR => PVal(IH.mkIRNum(IH.toInt32(v1) | IH.toInt32(v2)))
+            case EJSBitAnd => PVal(IH.mkIRNumIR(IH.toInt32(v1) & IH.toInt32(v2)))
+            case EJSBitXor => PVal(IH.mkIRNumIR(IH.toInt32(v1) ^ IH.toInt32(v2)))
+            case EJSBitOr => PVal(IH.mkIRNumIR(IH.toInt32(v1) | IH.toInt32(v2)))
             // 11.11 Binary Logical Operators
             /*
            * The && and || operators are desugared away by Translator.
@@ -236,24 +236,24 @@ class Interpreter extends IRWalker {
         case e1: JSError => e1
       }
 
-      case SIRUn(_, op, expr) => walkExpr(expr) match {
-        case v: Val => op.getKind match {
+      case IRUn(_, op, expr) => walkExpr(expr) match {
+        case v: Val => op.kind match {
           // 11.4.2 The void Operator
-          case EJSOp.UN_ETC_VOID => IP.undefV
+          case EJSVoid => IP.undefV
           // 11.4.3 The typeof Operator
-          case EJSOp.UN_ETC_TYPEOF => PVal(IH.mkIRStr(IH.typeTag(v)))
+          case EJSTypeOf => PVal(IH.mkIRStrIR(IH.typeTag(v)))
           // 11.4.6 Unary + Operator
-          case EJSOp.ETC_PLUS => PVal(IH.toNumber(v))
+          case EJSPos => PVal(IRVal(IH.toNumber(v)))
           // 11.4.7 Unary - Operator
-          case EJSOp.ETC_MINUS => PVal(IH.negate(IH.toNumber(v)))
+          case EJSNeg => PVal(IRVal(IH.negate(IH.toNumber(v))))
           // 11.4.8 Bitwise NOT Operator (~)
-          case EJSOp.UN_BIT_BIT_NOT => PVal(IH.mkIRNum(~IH.toInt32(v)))
+          case EJSBitNot => PVal(IH.mkIRNumIR(~IH.toInt32(v)))
           // 11.4.9 Logical NOT Operator (!)
-          case EJSOp.UN_BIT_LOG_NOT => PVal(IH.getIRBool(!IH.toBoolean(v)))
+          case EJSLogNot => PVal(IH.getIRBool(!IH.toBoolean(v)))
         }
-        case e: JSError => op.getKind match {
+        case e: JSError => op.kind match {
           // Implementation dependent : typeof JSError -> undefined
-          case EJSOp.UN_ETC_TYPEOF => IP.undefV
+          case EJSTypeOf => IP.undefV
           case _ => e
         }
       }
@@ -261,7 +261,7 @@ class Interpreter extends IRWalker {
       /*
      * 11.2.1 Property Accessors
      */
-     case SIRLoad(_, obj, index) => walkId(obj) match {
+     case IRLoad(_, obj, index) => walkId(obj) match {
         case v1: Val => walkExpr(index) match {
           case v2: Val =>
             IH.toObject(v1) match {
@@ -277,7 +277,7 @@ class Interpreter extends IRWalker {
       }
       case id: IRId => walkId(id)
       case _: IRThis => IS.tb
-      case v: IRPVal => PVal(v)
+      case v: IRVal => PVal(v)
     }
   } catch {
     case e: DefaultValueError => return e.err
@@ -285,25 +285,25 @@ class Interpreter extends IRWalker {
 
   def walkMember(m: IRMember): Any = {
     val oldSpan = IS.span
-    IS.span = m.getInfo.getSpan
+    IS.span = m.ast.span
     try {
       m match {
-        case SIRField(info, id, expr) =>
-          IS.span = info.getSpan
+        case IRField(info, id, expr) =>
+          IS.span = info.span
           walkExpr(expr) match {
-            case v: Val => (id.getOriginalName, IH.mkDataProp(v, true, true, true))
-            case e: JSError => IS.comp.setThrow(e, info.getSpan)
+            case v: Val => (id.originalName, IH.mkDataProp(v, true, true, true))
+            case e: JSError => IS.comp.setThrow(e, info.span)
           }
 
-        case SIRGetProp(info, ftn @ SIRFunctional(_, id, params, args, vds, fds, body)) =>
-          IS.span = info.getSpan
+        case IRGetProp(info, ftn @ IRFunctional(_, _, id, params, args, fds, vds, body)) =>
+          IS.span = info.span
           val o = IH.createFunctionObject(ftn, IS.env, IS.strict)
-          (id.getOriginalName, IH.mkAccessorProp(Some(o), None, true, true))
+          (id.originalName, IH.mkAccessorProp(Some(o), None, true, true))
 
-        case SIRSetProp(info, ftn @ SIRFunctional(_, id, params, args, vds, fds, body)) =>
-          IS.span = info.getSpan
+        case IRSetProp(info, ftn @ IRFunctional(_, _, id, params, args, vds, fds, body)) =>
+          IS.span = info.span
           val o = IH.createFunctionObject(ftn, IS.env, IS.strict)
-          (id.getOriginalName, IH.mkAccessorProp(None, Some(o), true, true))
+          (id.originalName, IH.mkAccessorProp(None, Some(o), true, true))
       }
     }
     catch {
@@ -339,20 +339,20 @@ class Interpreter extends IRWalker {
   /*
    * H,A,tb,ir --> H,A,ct
    */
-  override def walk(node: Any): Unit = {
+  override def walk(node: IRStmt): Unit = {
     val oldSpan = IS.span
     try {
     node match {
       /*
        * AST statement unit
        */
-      case u @ SIRStmtUnit(info, stmts) =>
-        IS.span = info.getSpan
+      case u @ IRStmtUnit(info, stmts) =>
+        IS.span = info.span
         if (IS.coverage.isDefined) {
           val cov = IS.coverage.get
           val uid = u.getUID
           if (!cov.execSet.contains(uid)) {
-            if (cov_debug) System.out.println("    executing.." + uid + " @ " + info.getSpan)
+            if (cov_debug) System.out.println("    executing.." + uid + " @ " + info.span)
             cov.executed = cov.executed + 1
             cov.execSet += uid
           }
@@ -364,9 +364,9 @@ class Interpreter extends IRWalker {
        * 12.2 Variable Statement
        * 
        */
-      case SIRVarStmt(info, id: IRId, fromParam) =>
-        IS.span = info.getSpan
-        if(!IH.hasBinding(id.getOriginalName)) {
+      case IRVarStmt(info, id: IRId, fromParam) =>
+        IS.span = info.span
+        if(!IH.hasBinding(id.originalName)) {
           if(fromParam) IH.createBinding(id, true, false)
           else IH.createBinding(id, true, IS.eval)
         }
@@ -378,57 +378,57 @@ class Interpreter extends IRWalker {
        */
       // Check ReferenceError only for identifiers from the original JavaScript program
       // that is, only when isRef is true
-      case SIRExprStmt(info, lhs, right, isRef) =>
-        IS.span = info.getSpan
+      case IRExprStmt(info, lhs, right, isRef) =>
+        IS.span = info.span
         walkExpr(right) match {
           case v: Val =>
             if (debug > 1)
-              System.out.println("\nExprStmt: lhs=" + lhs.getUniqueName + " right=" + ID.prExpr(right) + " v=" + v)
+              System.out.println("\nExprStmt: lhs=" + lhs.uniqueName + " right=" + ID.prExpr(right) + " v=" + v)
             IH.valError2NormalCompletion(IH.putValue(lhs, v, IS.strict))
           case e: ReferenceError =>
             if (debug > 1)
-              System.out.println("\nExprStmt: lhs=" + lhs.getUniqueName + " right=" + ID.prExpr(right) + " isRef=" + isRef)
-            if (isRef) IS.comp.setThrow(e, info.getSpan)
+              System.out.println("\nExprStmt: lhs=" + lhs.uniqueName + " right=" + ID.prExpr(right) + " isRef=" + isRef)
+            if (isRef) IS.comp.setThrow(e, info.span)
             else IH.valError2NormalCompletion(IH.putValue(lhs, IP.undefV, IS.strict))
           case e: JSError =>
-            IS.comp.setThrow(e, info.getSpan)
+            IS.comp.setThrow(e, info.span)
         }
 
       /*
        * 11.4.1 The delete Operator
        */
-      case SIRDelete(info, lhs, id) =>
-        IS.span = info.getSpan
+      case IRDelete(info, lhs, id) =>
+        IS.span = info.span
         walkId(id) match {
-          case v: Val => IH.delete(id.getOriginalName, IS.strict) match {
+          case v: Val => IH.delete(id.originalName, IS.strict) match {
             case res: Val => IH.valError2NormalCompletion(IH.putValue(lhs, res, IS.strict))
-            case err: JSError => IS.comp.setThrow(err, info.getSpan)
+            case err: JSError => IS.comp.setThrow(err, info.span)
           }
-          case e: JSError => IS.comp.setThrow(e, info.getSpan)
+          case e: JSError => IS.comp.setThrow(e, info.span)
         }
 
-      case SIRDeleteProp(info, lhs, obj, index) =>
-        IS.span = info.getSpan
+      case IRDeleteProp(info, lhs, obj, index) =>
+        IS.span = info.span
         walkId(obj) match {
           case o: JSObject => walkExpr(index) match {
             case v2: Val =>
               o._delete(IH.toString(v2), IS.strict) match {
                 case res: Val => IH.valError2NormalCompletion(IH.putValue(lhs, res, IS.strict))
-                case err: JSError => IS.comp.setThrow(err, info.getSpan)
+                case err: JSError => IS.comp.setThrow(err, info.span)
               }
-            case e2: JSError => IS.comp.setThrow(e2, info.getSpan)
+            case e2: JSError => IS.comp.setThrow(e2, info.span)
           }
           case pv: PVal =>
-            throw new InterpreterError("Translator should have inserted toObject already.", info.getSpan)
-          case e: JSError => IS.comp.setThrow(e, info.getSpan)
+            throw new InterpreterError("Translator should have inserted toObject already.", info.span)
+          case e: JSError => IS.comp.setThrow(e, info.span)
         }
 
       /*
        * 11.2.1 Property Accessors
        * 11.13 Assignment Operators: PutValue(lref, rval)
        */
-      case SIRStore(info, obj, index, rhs) =>
-        IS.span = info.getSpan
+      case IRStore(info, obj, index, rhs) =>
+        IS.span = info.span
         walkId(obj) match {
           // 8.7.2 PutValue(V, W)
           // 1. If Type(V) is not Reference, throw a ReferenceError exception. Happens only when simple assignment.
@@ -439,7 +439,7 @@ class Interpreter extends IRWalker {
               val v2str = IH.toString(v2)
               IH.toObject(v1) match {
                 // * IRStore 3
-                case _: TypeError => IS.comp.setThrow(IP.typeError, info.getSpan)
+                case _: TypeError => IS.comp.setThrow(IP.typeError, info.span)
                 // 3. If IsUnresolvableReference(V), then
                 // a. If IsStrictReference(V) is true, then
                 // i. Throw ReferenceError exception.
@@ -454,14 +454,14 @@ class Interpreter extends IRWalker {
                     // * IRStore 5
                     case _: PVal if (o._canPut(v2str) == false) =>
                       // a. If Throw is true, then throw a TypeError exception.
-                      if (IS.strict) { IS.comp.setThrow(IP.typeError, info.getSpan); return }
+                      if (IS.strict) { IS.comp.setThrow(IP.typeError, info.span); return }
                       else { IS.comp.setNormal(v3); return }
                     case _: PVal =>
                       val ownDesc = o._getOwnProperty(v2str)
                       if (ownDesc != null && IH.isDataDescriptor(ownDesc)) {
                         // * IRStore 6
                         // a. If Throw is true, then throw a TypeError exception.
-                        if (IS.strict) { IS.comp.setThrow(IP.typeError, info.getSpan); return }
+                        if (IS.strict) { IS.comp.setThrow(IP.typeError, info.span); return }
                         else { IS.comp.setNormal(v3); return }
                       }
                       // 5. Let desc be the result of calling the [[GetProperty]] internal method of O with argument P.
@@ -493,14 +493,14 @@ class Interpreter extends IRWalker {
                       // 7. Else, this is a request to create an own property on the transient object O
                       // * IRStore 9
                       // a. If Throw is true, then throw a TypeError exception.
-                      if (IS.strict) { IS.comp.setThrow(IP.typeError, info.getSpan); return }
+                      if (IS.strict) { IS.comp.setThrow(IP.typeError, info.span); return }
                       else { IS.comp.setNormal(v3); return }
                     // a.-1 If HasPrimitiveBase(V) is false, then let put be the [[Put]] internal method of base
                     //      which an object is not an array
                     case _ if (o.className != "Array") =>
                       o._put(v2str, v3, IS.strict) match {
                         // * IRStore 10
-                        case err: JSError => IS.comp.setThrow(err, info.getSpan); return
+                        case err: JSError => IS.comp.setThrow(err, info.span); return
                         // * IRStore 11
                         case _ => IS.comp.setNormal(v3); return
                       }
@@ -512,7 +512,7 @@ class Interpreter extends IRWalker {
                       if (!o._canPut(v2str)) {
                         // * IRStore 12
                         // a. If Throw is true, then throw a TypeError exception.
-                        if (IS.strict) { IS.comp.setThrow(IP.typeError, info.getSpan); return }
+                        if (IS.strict) { IS.comp.setThrow(IP.typeError, info.span); return }
                         // b. Else return.
                         else { IS.comp.setNormal(v3); return }
                       }
@@ -526,7 +526,7 @@ class Interpreter extends IRWalker {
                         // c. Return.
                         o._defineOwnProperty(v2str, valueDesc, IS.strict) match {
                           // * IRStore 13
-                          case err: JSError => IS.comp.setThrow(err, info.getSpan); return
+                          case err: JSError => IS.comp.setThrow(err, info.span); return
                           // * IRStore 14
                           case _ => IS.comp.setNormal(v3); return
                         }
@@ -562,57 +562,57 @@ class Interpreter extends IRWalker {
                       val newDesc = IH.mkDataProp(v3, true, true, true)
                       o._defineOwnProperty(v2str, newDesc, IS.strict) match {
                         // * IRStore 17
-                        case err: JSError => IS.comp.setThrow(err, info.getSpan); return
+                        case err: JSError => IS.comp.setThrow(err, info.span); return
                         // * IRStore 18
                         case _ => IS.comp.setNormal(v3)
                       }
                   }
                   // * IRStore 4
-                  case e3: JSError => IS.comp.setThrow(e3, info.getSpan)
+                  case e3: JSError => IS.comp.setThrow(e3, info.span)
                 }
                 case _ =>
-                  throw new InterpreterError("The result of toObject should be a location.", info.getSpan)
+                  throw new InterpreterError("The result of toObject should be a location.", info.span)
               }
             // * IRStore 2
-            case e2: JSError => IS.comp.setThrow(e2, info.getSpan)
+            case e2: JSError => IS.comp.setThrow(e2, info.span)
           }
         // 8.7.2 PutValue(V, W)
         // 1. If Type(V) is not Reference, throw a ReferenceError exception. Happens only when simple assignment.
         //    Processed during compile time. Look like "1 = 1"
         // * IRStore 1
-        case e1: JSError => IS.comp.setThrow(e1, info.getSpan)
+        case e1: JSError => IS.comp.setThrow(e1, info.span)
       }
 
       /*
        * 12.1 Block
        */
-      case SIRSeq(info, stmts) =>
-        IS.span = info.getSpan
+      case IRSeq(info, stmts) =>
+        IS.span = info.span
         walkIRs(stmts)
 
       /*
        * 12.5 The if Statement
        */
-      case SIRIf(info, expr, trueB, falseBOpt) =>
-        IS.span = info.getSpan
+      case IRIf(info, expr, trueB, falseBOpt) =>
+        IS.span = info.span
         walkExpr(expr) match {
           case v: Val =>
             if(IH.toBoolean(v)) walk(trueB)
             else if(falseBOpt.isDefined) walk(falseBOpt.get)
             else IS.comp.setNormal()
-          case e: JSError =>  IS.comp.setThrow(e, info.getSpan)
+          case e: JSError =>  IS.comp.setThrow(e, info.span)
         }
 
       /*
        * 12.6.2 The while Statement
        */
-      case SIRWhile(info, cond, body) =>
-        IS.span = info.getSpan
+      case IRWhile(info, cond, body, breakLabel, contLabel) =>
+        IS.span = info.span
         var cont: Boolean = false
         do {
           // evaluate SH.checkLoop before evaluating the body
           if (IS.coverage.isDefined && cont) {  
-            cont = SH.checkLoop(info.getSpan.toString)
+            cont = SH.checkLoop(info.span.toString)
             if (!cont) return
           }
           walkExpr(cond) match {
@@ -620,7 +620,7 @@ class Interpreter extends IRWalker {
               cont = IH.toBoolean(v)
               if(!cont) return
             case err: JSError =>
-              IS.comp.setThrow(err, info.getSpan)
+              IS.comp.setThrow(err, info.span)
               return
           }
           walk(body)
@@ -630,28 +630,28 @@ class Interpreter extends IRWalker {
       /*
        * 12.8 The break Statement
        */
-      case SIRBreak(info, label) =>
-        IS.span = info.getSpan
+      case IRBreak(info, label) =>
+        IS.span = info.span
         IS.comp.setBreak(label)
 
       /*
        * 12.9 The return Statement
        */
-      case SIRReturn(info, exprOpt) =>
-        IS.span = info.getSpan
+      case IRReturn(info, exprOpt) =>
+        IS.span = info.span
         exprOpt match {
           case None => IS.comp.setReturn(IP.undefV)
           case Some(expr) => walkExpr(expr) match {
             case v: Val => IS.comp.setReturn(v)
-            case e: JSError => IS.comp.setThrow(e, info.getSpan)
+            case e: JSError => IS.comp.setThrow(e, info.span)
           }
         }
 
       /*
        * 12.10 The with Statement
        */
-      case SIRWith(info, id, stmt) =>
-        IS.span = info.getSpan
+      case IRWith(info, id, stmt) =>
+        IS.span = info.span
         walkId(id) match {
           case v: Val => IH.toObject(v) match {
             case o: JSObject =>
@@ -659,34 +659,34 @@ class Interpreter extends IRWalker {
               IS.env = ConsEnv(ObjEnvRec(o), oldEnv)
               walk(stmt)
               IS.env = oldEnv
-            case e: JSError => IS.comp.setThrow(e, info.getSpan)
+            case e: JSError => IS.comp.setThrow(e, info.span)
           }
-          case e: JSError => IS.comp.setThrow(e, info.getSpan)
+          case e: JSError => IS.comp.setThrow(e, info.span)
         }
 
       /*
      * 12.12 Labelled Statement
      */
-      case SIRLabelStmt(info, id, stmt) =>
-        IS.span = info.getSpan
+      case IRLabelStmt(info, id, stmt) =>
+        IS.span = info.span
         walk(stmt)
-        if(IS.comp.Type == CT.BREAK && id.getOriginalName == IS.comp.label.getOriginalName) IS.comp.setNormal()
+        if(IS.comp.Type == CT.BREAK && id.originalName == IS.comp.label.originalName) IS.comp.setNormal()
 
       /*
      * 12.13 The throw Statement
      */
-      case SIRThrow(info, expr) =>
-        IS.span = info.getSpan
+      case IRThrow(info, expr) =>
+        IS.span = info.span
         walkExpr(expr) match {
-          case v: Val => IS.comp.setThrow(v, info.getSpan)
-          case e: JSError => IS.comp.setThrow(e, info.getSpan)
+          case v: Val => IS.comp.setThrow(v, info.span)
+          case e: JSError => IS.comp.setThrow(e, info.span)
         }
 
       /*
      * 12.14 The try Statement
      */
-      case SIRTry(info, body, nameOpt, catchBOpt, finallyBOpt) =>
-        IS.span = info.getSpan
+      case IRTry(info, body, nameOpt, catchBOpt, finallyBOpt) =>
+        IS.span = info.span
         (nameOpt, catchBOpt, finallyBOpt) match {
           case (Some(id: IRId), Some(catchB), None) =>
             walk(body)
@@ -699,7 +699,7 @@ class Interpreter extends IRWalker {
                   IH.popEnv()
                 case e: JSError =>
                   IH.popEnv()
-                  IS.comp.setThrow(e, info.getSpan)
+                  IS.comp.setThrow(e, info.span)
               }
             }
           case (None, None, Some(finallyB)) =>
@@ -721,7 +721,7 @@ class Interpreter extends IRWalker {
                   if(IS.comp.Type == CT.NORMAL) IS.comp = oldComp
                 case e: JSError =>
                   IH.popEnv()
-                  IS.comp.setThrow(e, info.getSpan)
+                  IS.comp.setThrow(e, info.span)
               }
             }
             else {
@@ -736,16 +736,16 @@ class Interpreter extends IRWalker {
      * 13 Function Definition
      * 10.5 Declaration Binding Instantiation - Step 5
      */
-      case SIRFunDecl(info, ftn @ SIRFunctional(_, id: IRId, params, args, vds, fds, body)) =>
-        IS.span = info.getSpan
-        val f = id.getOriginalName
+      case IRFunDecl(info, ftn @ IRFunctional(_, _, id: IRId, params, args, vds, fds, body)) =>
+        IS.span = info.span
+        val f = id.originalName
         val o = IH.createFunctionObject(ftn, IS.env, IS.strict)
         IH.hasBinding(f) match {
           case true => IS.env match {
             // Function Definition 2
             case EmptyEnv() =>
               val p = IS.GlobalObject._getProperty(f)._1
-              if (p == null) {IS.comp.setThrow(IP.typeError, info.getSpan); return } // If _getProperty() returns undefined.
+              if (p == null) {IS.comp.setThrow(IP.typeError, info.span); return } // If _getProperty() returns undefined.
               p.isConfigurable match {
                 // Function Definition 2-1
                 case true =>
@@ -753,24 +753,24 @@ class Interpreter extends IRWalker {
                     case v: Val =>
                       IH.setBinding(id, o, false, IS.strict) match {
                         case vv: Val => IS.comp.setNormal(vv)
-                        case err: JSError => IS.comp.setThrow(err, info.getSpan)
+                        case err: JSError => IS.comp.setThrow(err, info.span)
                       }
-                    case err: JSError => IS.comp.setThrow(err, info.getSpan)
+                    case err: JSError => IS.comp.setThrow(err, info.span)
                   }
                 // Function Definition 2-2
                 case false =>
                   if (IH.isDataDescriptor(p) && p.isWritable && p.isEnumerable) {
                     IH.setBinding(id, o, false, IS.strict) match {
                       case v: Val => IS.comp.setNormal()
-                      case err: JSError => IS.comp.setThrow(err, info.getSpan)
+                      case err: JSError => IS.comp.setThrow(err, info.span)
                     }
-                  } else IS.comp.setThrow(IP.typeError, info.getSpan)
+                  } else IS.comp.setThrow(IP.typeError, info.span)
               }
             // Function Definition 3
             case ConsEnv(first, rest) =>
               IH.setBinding(id, o, false, IS.strict) match {
                 case v: Val => IS.comp.setNormal()
-                case err: JSError => IS.comp.setThrow(err, info.getSpan)
+                case err: JSError => IS.comp.setThrow(err, info.span)
               }
           }
           // Function Definition 1
@@ -778,7 +778,7 @@ class Interpreter extends IRWalker {
             IH.createBinding(id, true, IS.eval)
             IH.setBinding(id, o, false, IS.strict) match {
               case v: Val => IS.comp.setNormal()
-              case err: JSError => IS.comp.setThrow(err, info.getSpan)
+              case err: JSError => IS.comp.setThrow(err, info.span)
             }
         }
 
@@ -786,8 +786,8 @@ class Interpreter extends IRWalker {
      * 11.2.3 Function Calls
      * 11.2.4 Argument Lists
      */
-      case SIRNew(info, lhs: IRId, fun: IRId, args) =>
-        IS.span = info.getSpan
+      case IRNew(info, lhs: IRId, fun: IRId, args) =>
+        IS.span = info.span
         walkId(fun) match {
           case f: JSFunction if f.const && args.size == 2 =>
             val oldEnv = IS.env
@@ -800,25 +800,25 @@ class Interpreter extends IRWalker {
                     val obj: JSObject = try {
                       f._construct(argsObj)
                     } catch {
-                      case e: ErrorException => IS.comp.setThrow(IP.error, info.getSpan); return
-                      case e: EvalErrorException => IS.comp.setThrow(IP.evalError, info.getSpan); return
-                      case e: RangeErrorException => IS.comp.setThrow(IP.rangeError, info.getSpan); return
+                      case e: ErrorException => IS.comp.setThrow(IP.error, info.span); return
+                      case e: EvalErrorException => IS.comp.setThrow(IP.evalError, info.span); return
+                      case e: RangeErrorException => IS.comp.setThrow(IP.rangeError, info.span); return
                       // TODO:
                       // case e:ReferenceError => return throwErr(referenceError, info)
-                      case e: SyntaxErrorException => IS.comp.setThrow(IP.syntaxError, info.getSpan); return
-                      case e: TypeErrorException => IS.comp.setThrow(IP.typeError, info.getSpan); return
-                      case e: URIErrorException => IS.comp.setThrow(IP.uriError, info.getSpan); return
-                      case e: NYIErrorException => IS.comp.setThrow(IP.nyiError, info.getSpan); return
+                      case e: SyntaxErrorException => IS.comp.setThrow(IP.syntaxError, info.span); return
+                      case e: TypeErrorException => IS.comp.setThrow(IP.typeError, info.span); return
+                      case e: URIErrorException => IS.comp.setThrow(IP.uriError, info.span); return
+                      case e: NYIErrorException => IS.comp.setThrow(IP.nyiError, info.span); return
                     }
                     // TODO:
                     obj.proto match {
-                      case IS.ErrorPrototype => IS.comp.setThrow(IP.error, info.getSpan)
-                      case IS.EvalErrorPrototype => IS.comp.setThrow(IP.evalError, info.getSpan)
-                      case IS.RangeErrorPrototype => IS.comp.setThrow(IP.rangeError, info.getSpan)
+                      case IS.ErrorPrototype => IS.comp.setThrow(IP.error, info.span)
+                      case IS.EvalErrorPrototype => IS.comp.setThrow(IP.evalError, info.span)
+                      case IS.RangeErrorPrototype => IS.comp.setThrow(IP.rangeError, info.span)
                       // case IS.ReferenceError => throwErr(referenceError, info)
-                      case IS.SyntaxErrorPrototype => IS.comp.setThrow(IP.syntaxError, info.getSpan)
-                      case IS.TypeErrorPrototype => IS.comp.setThrow(IP.typeError, info.getSpan)
-                      case IS.URIErrorPrototype => IS.comp.setThrow(IP.uriError, info.getSpan)
+                      case IS.SyntaxErrorPrototype => IS.comp.setThrow(IP.syntaxError, info.span)
+                      case IS.TypeErrorPrototype => IS.comp.setThrow(IP.typeError, info.span)
+                      case IS.URIErrorPrototype => IS.comp.setThrow(IP.uriError, info.span)
                       case _ =>
                         IH.valError2NormalCompletion(IH.putValue(lhs, obj, IS.strict))
                     }
@@ -826,76 +826,76 @@ class Interpreter extends IRWalker {
                     System.out.println("_arguments_ is expected but got " + v2)
                     IS.env = oldEnv
                     IS.tb = oldTb
-                    IS.comp.setThrow(IP.typeError, info.getSpan)
+                    IS.comp.setThrow(IP.typeError, info.span)
                 }
                 case err: JSError =>
                   IS.env = oldEnv
                   IS.tb = oldTb
-                  IS.comp.setThrow(err, info.getSpan)
+                  IS.comp.setThrow(err, info.span)
               }
               case err: JSError =>
                 IS.env = oldEnv
                 IS.tb = oldTb
-                IS.comp.setThrow(err, info.getSpan)
+                IS.comp.setThrow(err, info.span)
             }
           case f: JSFunction if args.size == 2 =>
             val obj: JSObject = walkId(args.head) match {
               case o: JSObject => o
-              case _ => throw new InterpreterError("This binding for function call should be an object!", info.getSpan	)
+              case _ => throw new InterpreterError("This binding for function call should be an object!", info.span	)
             }
             f._get("prototype") match {
               case o: JSObject => obj.proto = o
               case pv: PVal => obj.proto = IS.ObjectPrototype
             }
-            walk(SIRCall(info, lhs, fun, args(0), args(1)))
-          case _ => throw new InterpreterError("SIRNew should take two arguments!", info.getSpan)
+            walk(IRCall(info, lhs, fun, args(0), args(1)))
+          case _ => throw new InterpreterError("SIRNew should take two arguments!", info.span)
         }
 
       // Internal Function Calls
-      case SIRInternalCall(info, lhs: IRId, fun: IRId, arg1, arg2) =>
-        IS.span = info.getSpan
-        fun.getOriginalName match {
+      case IRInternalCall(info, lhs: IRId, fun: String, arg1 :: arg2 :: Nil) =>
+        IS.span = info.span
+        fun match {
           case "<>Concolic<>StartConcolic" =>
-            SH.startConcolic
+            SH.startConcolic()
           case "<>Concolic<>EndConcolic" =>
-            SH.endConcolic
+            SH.endConcolic()
           case "<>Concolic<>StoreEnvironment" =>
-            SH.storeEnvironment(arg1.asInstanceOf[IRId], arg2.get)
+            SH.storeEnvironment(arg1.asInstanceOf[IRId], arg2.asInstanceOf[IRId])
           case "<>Concolic<>StoreVariable" =>
-            SH.storeVariable(arg1.asInstanceOf[IRId], arg2.get)
+            SH.storeVariable(arg1.asInstanceOf[IRId], arg2.asInstanceOf[IRId])
           case "<>Concolic<>ExecuteAssignment" =>
-            val env = SH.getEnvironment(arg2.get)
-            var bs = IH.lookup(arg2.get)
+            val env = SH.getEnvironment(arg2.asInstanceOf[IRId])
+            var bs = IH.lookup(arg2.asInstanceOf[IRId])
             var loc = "Variable"
             bs match {
               case der: DeclEnvRec => loc = "LocalVariable"
               case _ =>
             }
-            val c: Option[SymbolicValue] = walkExpr(arg2.get) match {
+            val c: Option[SymbolicValue] = walkExpr(arg2.asInstanceOf[IRId]) match {
               case v: Val => 
                 var x = new SymbolicValue 
                 v match {
-                  case PVal(_: IRUndef) => x.makeSymbolicValueFromConcrete("Undefined")
-                  case PVal(_: IRNull) => x.makeSymbolicValueFromConcrete("Null") 
-                  case PVal(_: IRBool) => x.makeSymbolicValueFromConcrete(IH.toString(v), "Boolean") 
-                  case PVal(_: IRNumber) => x.makeSymbolicValueFromConcrete(IH.toString(v), "Number") 
-                  case PVal(_: IRString) => x.makeSymbolicValueFromConcrete(IH.toString(v), "String")
+                  case PVal(IRVal(EJSUndef)) => x.makeSymbolicValueFromConcrete("Undefined")
+                  case PVal(IRVal(EJSNull)) => x.makeSymbolicValueFromConcrete("Null")
+                  case PVal(IRVal(_: EJSBool)) => x.makeSymbolicValueFromConcrete(IH.toString(v), "Boolean")
+                  case PVal(IRVal(_: EJSNumber)) => x.makeSymbolicValueFromConcrete(IH.toString(v), "Number")
+                  case PVal(IRVal(_: EJSString)) => x.makeSymbolicValueFromConcrete(IH.toString(v), "String")
                   case o: JSObject => x.makeSymbolicValueFromConcrete("Object")
                 }                    
                 Some(x)
               case _: JSError => None
             }
             arg1 match {
-              case SIRBin(_, first, op, second) =>
+              case IRBin(_, first, op, second) =>
                 val c1: Option[SymbolicValue] = walkExpr(first) match {
                   case v: Val => 
                     var v1 = new SymbolicValue 
                     v match {
-                      case PVal(_: IRUndef) => v1.makeSymbolicValueFromConcrete("Undefined")
-                      case PVal(_: IRNull) => v1.makeSymbolicValueFromConcrete("Null") 
-                      case PVal(_: IRBool) => v1.makeSymbolicValueFromConcrete(IH.toString(v), "Boolean") 
-                      case PVal(_: IRNumber) => v1.makeSymbolicValueFromConcrete(IH.toString(v), "Number") 
-                      case PVal(_: IRString) => v1.makeSymbolicValueFromConcrete(IH.toString(v), "String")
+                      case PVal(IRVal(EJSUndef)) => v1.makeSymbolicValueFromConcrete("Undefined")
+                      case PVal(IRVal(EJSNull)) => v1.makeSymbolicValueFromConcrete("Null")
+                      case PVal(IRVal(_: EJSBool)) => v1.makeSymbolicValueFromConcrete(IH.toString(v), "Boolean")
+                      case PVal(IRVal(_: EJSNumber)) => v1.makeSymbolicValueFromConcrete(IH.toString(v), "Number")
+                      case PVal(IRVal(_: EJSString)) => v1.makeSymbolicValueFromConcrete(IH.toString(v), "String")
                       case o: JSObject => v1.makeSymbolicValueFromConcrete("Object")
                     }                    
                     Some(v1)
@@ -905,19 +905,19 @@ class Interpreter extends IRWalker {
                   case v: Val => 
                     var v2 = new SymbolicValue 
                     v match {
-                      case PVal(_: IRUndef) => v2.makeSymbolicValueFromConcrete("Undefined")
-                      case PVal(_: IRNull) => v2.makeSymbolicValueFromConcrete("Null") 
-                      case PVal(_: IRBool) => v2.makeSymbolicValueFromConcrete(IH.toString(v), "Boolean") 
-                      case PVal(_: IRNumber) => v2.makeSymbolicValueFromConcrete(IH.toString(v), "Number") 
-                      case PVal(_: IRString) => v2.makeSymbolicValueFromConcrete(IH.toString(v), "String")
+                      case PVal(IRVal(EJSUndef)) => v2.makeSymbolicValueFromConcrete("Undefined")
+                      case PVal(IRVal(EJSNull)) => v2.makeSymbolicValueFromConcrete("Null")
+                      case PVal(IRVal(_: EJSBool)) => v2.makeSymbolicValueFromConcrete(IH.toString(v), "Boolean")
+                      case PVal(IRVal(_: EJSNumber)) => v2.makeSymbolicValueFromConcrete(IH.toString(v), "Number")
+                      case PVal(IRVal(_: EJSString)) => v2.makeSymbolicValueFromConcrete(IH.toString(v), "String")
                       case o: JSObject => v2.makeSymbolicValueFromConcrete("Object")
                     }                    
                     Some(v2)
                   case _: JSError => None
                 }
-                SH.executeAssignment(loc, arg2.get, arg1, c, c1, c2, env)
+                SH.executeAssignment(loc, arg2.asInstanceOf[IRId], arg1, c, c1, c2, env)
               case _ => 
-                SH.executeAssignment(loc, arg2.get, arg1, c, None, None, env)
+                SH.executeAssignment(loc, arg2.asInstanceOf[IRId], arg1, c, None, None, env)
             }
           case "<>Concolic<>ExecuteStore" =>
             val env = SH.getEnvironment(lhs)
@@ -925,27 +925,27 @@ class Interpreter extends IRWalker {
               case v: Val => 
                 var x = new SymbolicValue 
                 v match {
-                  case PVal(_: IRUndef) => x.makeSymbolicValueFromConcrete("Undefined")
-                  case PVal(_: IRNull) => x.makeSymbolicValueFromConcrete("Null") 
-                  case PVal(_: IRBool) => x.makeSymbolicValueFromConcrete(IH.toString(v), "Boolean") 
-                  case PVal(_: IRNumber) => x.makeSymbolicValueFromConcrete(IH.toString(v), "Number") 
-                  case PVal(_: IRString) => x.makeSymbolicValueFromConcrete(IH.toString(v), "String")
+                  case PVal(IRVal(EJSUndef)) => x.makeSymbolicValueFromConcrete("Undefined")
+                  case PVal(IRVal(EJSNull)) => x.makeSymbolicValueFromConcrete("Null")
+                  case PVal(IRVal(_: EJSBool)) => x.makeSymbolicValueFromConcrete(IH.toString(v), "Boolean")
+                  case PVal(IRVal(_: EJSNumber)) => x.makeSymbolicValueFromConcrete(IH.toString(v), "Number")
+                  case PVal(IRVal(_: EJSString)) => x.makeSymbolicValueFromConcrete(IH.toString(v), "String")
                   case o: JSObject => x.makeSymbolicValueFromConcrete("Object")
                 }                    
                 Some(x)
               case _: JSError => None
             }
             arg1 match {
-              case SIRBin(_, first, op, second) =>
+              case IRBin(_, first, op, second) =>
                 val c1: Option[SymbolicValue] = walkExpr(first) match {
                   case v: Val => 
                     var v1 = new SymbolicValue 
                     v match {
-                      case PVal(_: IRUndef) => v1.makeSymbolicValueFromConcrete("Undefined")
-                      case PVal(_: IRNull) => v1.makeSymbolicValueFromConcrete("Null") 
-                      case PVal(_: IRBool) => v1.makeSymbolicValueFromConcrete(IH.toString(v), "Boolean") 
-                      case PVal(_: IRNumber) => v1.makeSymbolicValueFromConcrete(IH.toString(v), "Number") 
-                      case PVal(_: IRString) => v1.makeSymbolicValueFromConcrete(IH.toString(v), "String")
+                      case PVal(IRVal(EJSUndef)) => v1.makeSymbolicValueFromConcrete("Undefined")
+                      case PVal(IRVal(EJSNull)) => v1.makeSymbolicValueFromConcrete("Null")
+                      case PVal(IRVal(_: EJSBool)) => v1.makeSymbolicValueFromConcrete(IH.toString(v), "Boolean")
+                      case PVal(IRVal(_: EJSNumber)) => v1.makeSymbolicValueFromConcrete(IH.toString(v), "Number")
+                      case PVal(IRVal(_: EJSString)) => v1.makeSymbolicValueFromConcrete(IH.toString(v), "String")
                       case o: JSObject => v1.makeSymbolicValueFromConcrete("Object")
                     }                    
                     Some(v1)
@@ -955,19 +955,19 @@ class Interpreter extends IRWalker {
                   case v: Val => 
                     var v2 = new SymbolicValue 
                     v match {
-                      case PVal(_: IRUndef) => v2.makeSymbolicValueFromConcrete("Undefined")
-                      case PVal(_: IRNull) => v2.makeSymbolicValueFromConcrete("Null") 
-                      case PVal(_: IRBool) => v2.makeSymbolicValueFromConcrete(IH.toString(v), "Boolean") 
-                      case PVal(_: IRNumber) => v2.makeSymbolicValueFromConcrete(IH.toString(v), "Number") 
-                      case PVal(_: IRString) => v2.makeSymbolicValueFromConcrete(IH.toString(v), "String")
+                      case PVal(IRVal(EJSUndef)) => v2.makeSymbolicValueFromConcrete("Undefined")
+                      case PVal(IRVal(EJSNull)) => v2.makeSymbolicValueFromConcrete("Null")
+                      case PVal(IRVal(_: EJSBool)) => v2.makeSymbolicValueFromConcrete(IH.toString(v), "Boolean")
+                      case PVal(IRVal(_: EJSNumber)) => v2.makeSymbolicValueFromConcrete(IH.toString(v), "Number")
+                      case PVal(IRVal(_: EJSString)) => v2.makeSymbolicValueFromConcrete(IH.toString(v), "String")
                       case o: JSObject => v2.makeSymbolicValueFromConcrete("Object")
                     }                    
                     Some(v2)
                   case _: JSError => None
                 }
-                SH.executeStore(lhs, arg2.get.getUniqueName, arg1, c, c1, c2, env)
+                SH.executeStore(lhs, arg2.asInstanceOf[IRId].uniqueName, arg1, c, c1, c2, env)
               case _ => 
-                SH.executeStore(lhs, arg2.get.getUniqueName, arg1, c, None, None, env)
+                SH.executeStore(lhs, arg2.asInstanceOf[IRId].uniqueName, arg1, c, None, None, env)
             }
           case "<>Concolic<>ExecuteCondition" => {
             val branchTaken = walkExpr(arg1) match { 
@@ -975,16 +975,16 @@ class Interpreter extends IRWalker {
               case _: JSError => None 
             }
             arg1 match {
-              case SIRBin(_, first, op, second) => 
+              case IRBin(_, first, op, second) =>
                 val c1: Option[SymbolicValue] = walkExpr(first) match {
                   case v: Val => 
                     var v1 = new SymbolicValue 
                     v match {
-                      case PVal(_: IRUndef) => v1.makeSymbolicValueFromConcrete("Undefined")
-                      case PVal(_: IRNull) => v1.makeSymbolicValueFromConcrete("Null") 
-                      case PVal(_: IRBool) => v1.makeSymbolicValueFromConcrete(IH.toString(v), "Boolean") 
-                      case PVal(_: IRNumber) => v1.makeSymbolicValueFromConcrete(IH.toString(v), "Number") 
-                      case PVal(_: IRString) => v1.makeSymbolicValueFromConcrete(IH.toString(v), "String")
+                      case PVal(IRVal(EJSUndef)) => v1.makeSymbolicValueFromConcrete("Undefined")
+                      case PVal(IRVal(EJSNull)) => v1.makeSymbolicValueFromConcrete("Null")
+                      case PVal(IRVal(_: EJSBool)) => v1.makeSymbolicValueFromConcrete(IH.toString(v), "Boolean")
+                      case PVal(IRVal(_: EJSNumber)) => v1.makeSymbolicValueFromConcrete(IH.toString(v), "Number")
+                      case PVal(IRVal(_: EJSString)) => v1.makeSymbolicValueFromConcrete(IH.toString(v), "String")
                       case o: JSObject => v1.makeSymbolicValueFromConcrete("Object")
                     }                    
                     Some(v1)
@@ -994,34 +994,34 @@ class Interpreter extends IRWalker {
                   case v: Val => 
                     var v2 = new SymbolicValue 
                     v match {
-                      case PVal(_: IRUndef) => v2.makeSymbolicValueFromConcrete("Undefined")
-                      case PVal(_: IRNull) => v2.makeSymbolicValueFromConcrete("Null") 
-                      case PVal(_: IRBool) => v2.makeSymbolicValueFromConcrete(IH.toString(v), "Boolean") 
-                      case PVal(_: IRNumber) => v2.makeSymbolicValueFromConcrete(IH.toString(v), "Number") 
-                      case PVal(_: IRString) => v2.makeSymbolicValueFromConcrete(IH.toString(v), "String")
+                      case PVal(IRVal(EJSUndef)) => v2.makeSymbolicValueFromConcrete("Undefined")
+                      case PVal(IRVal(EJSNull)) => v2.makeSymbolicValueFromConcrete("Null")
+                      case PVal(IRVal(_: EJSBool)) => v2.makeSymbolicValueFromConcrete(IH.toString(v), "Boolean")
+                      case PVal(IRVal(_: EJSNumber)) => v2.makeSymbolicValueFromConcrete(IH.toString(v), "Number")
+                      case PVal(IRVal(_: EJSString)) => v2.makeSymbolicValueFromConcrete(IH.toString(v), "String")
                       case o: JSObject => v2.makeSymbolicValueFromConcrete("Object")
                     }                    
                     Some(v2)
                   case _: JSError => None
                 }
-                SH.executeCondition(arg1, branchTaken, c1, c2, arg2.get)
-              case SIRUn(_, op, e) => SH.executeCondition(arg1, branchTaken, None, None, arg2.get)
-              case v: IRId => SH.executeCondition(arg1, branchTaken, None, None, arg2.get)
-              case _ => SH.executeCondition(arg1, None, None, None, arg2.get)
+                SH.executeCondition(arg1, branchTaken, c1, c2, arg2.asInstanceOf[IRId])
+              case IRUn(_, op, e) => SH.executeCondition(arg1, branchTaken, None, None, arg2.asInstanceOf[IRId])
+              case v: IRId => SH.executeCondition(arg1, branchTaken, None, None, arg2.asInstanceOf[IRId])
+              case _ => SH.executeCondition(arg1, None, None, None, arg2.asInstanceOf[IRId])
             }
           }
           case "<>Concolic<>EndCondition" => 
-            SH.endCondition(arg2.get)
+            SH.endCondition(arg2.asInstanceOf[IRId])
           case "<>Concolic<>WalkVarStmt" =>
-            SH.walkVarStmt(lhs, arg1.asInstanceOf[IRNumber].getNum.toInt, arg2.get)
+            SH.walkVarStmt(lhs, arg1.asInstanceOf[IRVal].value.asInstanceOf[EJSNumber].num.toInt, arg2.asInstanceOf[IRId])
           case "<>Concolic<>StoreThis" =>
-            SH.storeThis(arg2.get)
+            SH.storeThis(arg2.asInstanceOf[IRId])
 
           case "<>Global<>toObject" => 
             if (IS.coverage.isDefined) {
               arg1 match {
-                case obj: IRId => SH.storeObject(obj.getUniqueName, lhs.getUniqueName)
-                case obj: IRThis => SH.storeObject("this", lhs.getUniqueName)
+                case obj: IRId => SH.storeObject(obj.uniqueName, lhs.uniqueName)
+                case obj: IRThis => SH.storeObject("this", lhs.uniqueName)
                 case _ =>
               }
             }
@@ -1029,21 +1029,21 @@ class Interpreter extends IRWalker {
               case v: Val => IH.toObject(v) match {
                 // (H', A, tb), x = l
                 case o: JSObject => IH.valError2NormalCompletion(IH.putValue(lhs, o, IS.strict))
-                case err: JSError => IS.comp.setThrow(err, info.getSpan)
+                case err: JSError => IS.comp.setThrow(err, info.span)
               }
-              case err: JSError => IS.comp.setThrow(err, info.getSpan)
+              case err: JSError => IS.comp.setThrow(err, info.span)
             }
           case "<>Global<>isObject" => walkExpr(arg1) match {
             // (H, A, tb), x = true
             case o: JSObject => IH.valError2NormalCompletion(IH.putValue(lhs, PVal(IH.getIRBool(true)), IS.strict))
             // (H, A, tb), x = false
             case pv: PVal => IH.valError2NormalCompletion(IH.putValue(lhs, PVal(IH.getIRBool(false)), IS.strict))
-            case err: JSError => IS.comp.setThrow(err, info.getSpan)
+            case err: JSError => IS.comp.setThrow(err, info.span)
           }
           case "<>Global<>toNumber" => walkExpr(arg1) match {
             // (H, A, tb), x = ToNumber(H, v)
-            case v: Val => IH.valError2NormalCompletion(IH.putValue(lhs, PVal(IH.toNumber(v)), IS.strict))
-            case err: JSError => IS.comp.setThrow(err, info.getSpan)
+            case v: Val => IH.valError2NormalCompletion(IH.putValue(lhs, PVal(IRVal(IH.toNumber(v))), IS.strict))
+            case err: JSError => IS.comp.setThrow(err, info.span)
           }
           case "<>Global<>getBase" =>
             val bs = IH.lookup(arg1.asInstanceOf[IRId])
@@ -1056,77 +1056,77 @@ class Interpreter extends IRWalker {
             case v: Val =>
               System.out.println(IH.toString(v))
               IS.comp.setNormal(null)
-            case err: JSError => IS.comp.setThrow(err, info.getSpan)
+            case err: JSError => IS.comp.setThrow(err, info.span)
           }
           case "<>Global<>printIS" => {
             //ID.prHeapEnv(IS)
             IH.valError2NormalCompletion(IH.putValue(lhs, IP.truePV, IS.strict))
           }
           case "<>Global<>getTickCount" => {
-            IH.valError2NormalCompletion(IH.putValue(lhs, PVal(IH.mkIRNum(System.currentTimeMillis())), IS.strict))
+            IH.valError2NormalCompletion(IH.putValue(lhs, PVal(IH.mkIRNumIR(System.currentTimeMillis())), IS.strict))
           }
           case "<>Global<>iteratorInit" => walkExpr(arg1) match {
             // TODO case for null or undefined
             case v: JSObject =>
               // (H', A, tb), x = l
               IH.valError2NormalCompletion(IH.putValue(lhs, IH.iteratorInit(IH.collectProps(v)), IS.strict))
-            case err: JSError => IS.comp.setThrow(err, info.getSpan)
-            case _ => IS.comp.setThrow(IP.typeError, info.getSpan)
+            case err: JSError => IS.comp.setThrow(err, info.span)
+            case _ => IS.comp.setThrow(IP.typeError, info.span)
           }
           case "<>Global<>iteratorHasNext" =>
             val (e1, e2) = (arg1, arg2)
             walkExpr(e1) match {
-              case v1: JSObject => walkId(e2.get) match {
+              case v1: JSObject => walkId(e2.asInstanceOf[IRId]) match {
                 case v2: JSObject => v2.__isInDomO(IH.next(v2, IH.toInt(v2.property.get("@i")), v1).toString) match {
                   // (H, A, tb), x = true
                   case true => IH.valError2NormalCompletion(IH.putValue(lhs, PVal(IH.getIRBool(true)), IS.strict))
                   // (H, A, tb), x = true
                   case false => IH.valError2NormalCompletion(IH.putValue(lhs, PVal(IH.getIRBool(false)), IS.strict))
                 }
-                case err: JSError => IS.comp.setThrow(err, info.getSpan)
-                case _ => IS.comp.setThrow(IP.typeError, info.getSpan)
+                case err: JSError => IS.comp.setThrow(err, info.span)
+                case _ => IS.comp.setThrow(IP.typeError, info.span)
               }
-              case err: JSError => IS.comp.setThrow(err, info.getSpan)
-              case _ => IS.comp.setThrow(IP.typeError, info.getSpan)
+              case err: JSError => IS.comp.setThrow(err, info.span)
+              case _ => IS.comp.setThrow(IP.typeError, info.span)
             }
           case "<>Global<>iteratorNext" =>
             val (e1, e2) = (arg1, arg2)
             walkExpr(e1) match {
-              case v1: JSObject => walkId(e2.get) match {
+              case v1: JSObject => walkId(e2.asInstanceOf[IRId]) match {
                 case v2: JSObject =>
                   val i = IH.next(v2, IH.toInt(v2.property.get("@i")), v1)
                   v2.__putProp("@i", IH.numProp(i + 1))
                   // (H', A, tb), x = H(v2).@property("i")
                   IH.valError2NormalCompletion(IH.putValue(lhs, IH.toVal(v2.property.get(i.toString)), IS.strict))
-                case err: JSError => IS.comp.setThrow(err, info.getSpan)
-                case _ => IS.comp.setThrow(IP.typeError, info.getSpan)
+                case err: JSError => IS.comp.setThrow(err, info.span)
+                case _ => IS.comp.setThrow(IP.typeError, info.span)
               }
-              case err: JSError => IS.comp.setThrow(err, info.getSpan)
-              case _ => IS.comp.setThrow(IP.typeError, info.getSpan)
+              case err: JSError => IS.comp.setThrow(err, info.span)
+              case _ => IS.comp.setThrow(IP.typeError, info.span)
             }
           case _ =>
-            IS.comp.setThrow(IP.nyiError, info.getSpan)
+            IS.comp.setThrow(IP.nyiError, info.span)
       }
 
-      case SIRCall(info, lhs: IRId, fun: IRId, thisB, args) =>
+      case IRCall(info, lhs: IRId, fun: IRId, thisB, args) =>
         if (IS.coverage.isDefined) {
           walkId(fun) match {
             case v: Val => v match {
               case f: JSFunction => 
-                if (!SH.checkRecursiveCall(f.code.getName.getUniqueName, args)) return
+                if (!SH.checkRecursiveCall(f.code.name.uniqueName, args)) return
             }
             case err: JSError =>
           }
         }
-        IS.span = info.getSpan
+        IS.span = info.span
         val oldEnv = IS.env
         val oldTb = IS.tb
         var valueToAssign: Val = null
         if (debug > 0)
-          System.out.println("\nIRCall:lhs=" + ID.getE(lhs.getUniqueName) + " fun=" + ID.getE(fun.getUniqueName) +
-            " thisB=" + ID.getE(thisB.getUniqueName) + " args=" + ID.getE(args.getUniqueName))
+          System.out.println("\nIRCall:lhs=" + ID.getE(lhs.uniqueName) + " fun=" + ID.getE(fun.uniqueName) +
+            " thisB=" + ID.getE(thisB.uniqueName) + " args=" + ID.getE(args.uniqueName))
         walkId(fun) match {
-          case err: JSError => IS.comp.setThrow(err, info.getSpan)
+          case err: JSError => IS.comp.setThrow(err, info.span)
           case v: Val => walkExpr(thisB) match {
             case v1: Val => walkId(args) match {
               case v2: Val => v match {
@@ -1140,17 +1140,17 @@ class Interpreter extends IRWalker {
                     else if(IS.comp.Type == CT.RETURN) valueToAssign = IS.comp.value
                   case _ =>
                     System.out.println("_arguments_ is expected but got " + v2)
-                    IS.comp.setThrow(IP.typeError, info.getSpan)
+                    IS.comp.setThrow(IP.typeError, info.span)
                 }
                 case pv =>
-                  System.out.println("Function is expected for " + fun.getUniqueName + " but got " + pv)
-                  IS.comp.setThrow(IP.typeError, info.getSpan)
+                  System.out.println("Function is expected for " + fun.uniqueName + " but got " + pv)
+                  IS.comp.setThrow(IP.typeError, info.span)
               }
               case err: JSError =>
-                IS.comp.setThrow(err, info.getSpan)
+                IS.comp.setThrow(err, info.span)
             }
             case err: JSError =>
-              IS.comp.setThrow(err, info.getSpan)
+              IS.comp.setThrow(err, info.span)
           }
         }
         IS.env = oldEnv
@@ -1161,8 +1161,8 @@ class Interpreter extends IRWalker {
        * 11.2.5 Function Expressions
        * 13 Function Definition
        */
-      case SIRFunExpr(info, lhs, ftn @ SIRFunctional(_, id, params, args, vds, fds, body)) =>
-        IS.span = info.getSpan
+      case IRFunExpr(info, lhs, ftn @ IRFunctional(_, _, id, params, args, vds, fds, body)) =>
+        IS.span = info.span
         IH.newDeclEnv()
         val o = IH.createFunctionObject(ftn, IS.env, IS.strict)
         IH.createAndSetBinding(id, o, false, IS.eval)
@@ -1174,13 +1174,13 @@ class Interpreter extends IRWalker {
        * 11.1.4 Array Initializer
        * Speically treat when it has more than 1,000 integer elements.
        */
-      case SIRArrayNumber(info, lhs, elements) =>
-        IS.span = info.getSpan
-        val arr: JSArray = IS.ArrayConstructor.construct(PVal(IH.mkIRNum(elements.size)))
+      case IRArrayNumber(info, lhs, elements) =>
+        IS.span = info.span
+        val arr: JSArray = IS.ArrayConstructor.construct(PVal(IH.mkIRNumIR(elements.size)))
         val vs = new Array[PVal](elements.size)
         var i: Int = 0
         elements.foreach(e => {
-          vs(i) = PVal(IF.makeNumber(false, e.toString, e))
+          vs(i) = PVal(IF.makeNumberIR(e.toString, e))
           i += 1
         })
         for (i <- 0 until vs.size) {
@@ -1192,17 +1192,17 @@ class Interpreter extends IRWalker {
       /*
        * 11.1.4 Array Initializer
        */
-      case SIRArray(info, lhs, elements) =>
-        IS.span = info.getSpan
+      case IRArray(info, lhs, elements) =>
+        IS.span = info.span
         // TODO:
         // IS.heap.put(l, IH.newArrObject(l, elements.size))
-        val arr: JSArray = IS.ArrayConstructor.construct(PVal(IH.mkIRNum(elements.size)))
+        val arr: JSArray = IS.ArrayConstructor.construct(PVal(IH.mkIRNumIR(elements.size)))
         val ves: List[Option[ValError]] = for (element <- elements) yield element match {
           case Some(element) => Some(walkExpr(element))
           case None => None
         }
         for (Some(err) <- ves if err.isInstanceOf[JSError]) {
-          IS.comp.setThrow(err, info.getSpan)
+          IS.comp.setThrow(err, info.span)
           return
         }
         // Now, there is no error.
@@ -1213,19 +1213,19 @@ class Interpreter extends IRWalker {
         // (H'', A', tb), x = l
         IH.valError2NormalCompletion(IH.putValue(lhs, arr, IS.strict))
 
-      case SIRArgs(info, lhs, elements) =>
+      case IRArgs(info, lhs, elements) =>
         if (IS.coverage.isDefined) SH.storeArguments(lhs, elements)
-        IS.span = info.getSpan
+        IS.span = info.span
         // TODO:
         // IS.heap.put(l, IH.newArrObject(l, elements.size))
         // TODO:
-        val o = IS.ArrayConstructor.apply(PVal(IH.mkIRNum(elements.size)), "Arguments")
+        val o = IS.ArrayConstructor.apply(PVal(IH.mkIRNumIR(elements.size)), "Arguments")
         val ves: List[Option[ValError]] = for (element <- elements) yield element match {
           case Some(element) => Some(walkExpr(element))
           case None => None
         }
         for (Some(err) <- ves if err.isInstanceOf[JSError]) {
-          IS.comp.setThrow(err, info.getSpan)
+          IS.comp.setThrow(err, info.span)
           return
         }
         // Now, there is no error.
@@ -1239,29 +1239,29 @@ class Interpreter extends IRWalker {
       /*
      * 11.1.5 Object Initializer
      */
-      case SIRObject(info, lhs, members, proto) =>
-        IS.span = info.getSpan
+      case IRObject(info, lhs, members, proto) =>
+        IS.span = info.span
         val o = IH.newObj()
         for (member <- members) walkMember(member) match {
-          case err: JSError => IS.comp.setThrow(err, info.getSpan); return
+          case err: JSError => IS.comp.setThrow(err, info.span); return
           case (x: PName, op: ObjectProp) =>
             o._defineOwnProperty(x, op, false)
         }
         // (H', A, tb), x = l
         IH.valError2NormalCompletion(IH.putValue(lhs, o, IS.strict))
 
-      case SIREval(info, lhs, arg) =>
-        IS.span = info.getSpan
+      case IREval(info, lhs, arg) =>
+        IS.span = info.span
         walkExpr(arg) match {
           case v: Val =>
             IS.GlobalObject.eval(v, true)
             if(IS.comp.Type == CT.RETURN) IH.valError2NormalCompletion(IH.putValue(lhs, IS.comp.value, IS.strict))
-          case err: JSError => IS.comp.setThrow(err, info.getSpan)
+          case err: JSError => IS.comp.setThrow(err, info.span)
         }
 
-      case n: IRAbstractNode =>
+      case n: IRNode =>
         System.out.println(n.toString) // for debugging
-        IS.comp.setThrow(IP.nyiError, n.getInfo.getSpan)
+        IS.comp.setThrow(IP.nyiError, n.ast.span)
 
       case _ =>
         System.out.println(node.toString) // for debugging

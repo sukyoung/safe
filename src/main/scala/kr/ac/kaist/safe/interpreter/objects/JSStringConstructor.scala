@@ -11,6 +11,8 @@ package kr.ac.kaist.safe.interpreter.objects
 
 import kr.ac.kaist.safe.interpreter._
 import kr.ac.kaist.safe.interpreter.{InterpreterPredefine => IP}
+import kr.ac.kaist.safe.nodes.ir._
+import kr.ac.kaist.safe.util._
 
 class JSStringConstructor(_I: Interpreter, _proto: JSObject)
   extends JSFunction13(_I, _proto, "String", true, propTable, _I.IH.dummyFtn(1), EmptyEnv(), true) {
@@ -38,15 +40,15 @@ class JSStringConstructor(_I: Interpreter, _proto: JSObject)
 
   override def _construct(argsObj: JSObject): JSString = {
     argsObj._get("length") match {
-      case PVal(n:IRNumber) if n.getNum == 0 => construct(None)
-      case PVal(n:IRNumber) if n.getNum >= 1 => construct(Some(argsObj._get("0")))
+      case PVal(IRVal(n:EJSNumber)) if n.num == 0 => construct(None)
+      case PVal(IRVal(n:EJSNumber)) if n.num >= 1 => construct(Some(argsObj._get("0")))
     }
   }
 
   override def _call(tb: Val, argsObj: JSObject): Unit = {
     argsObj._get("length") match {
-      case PVal(n:IRNumber) if n.getNum == 0 => I.IS.comp.setReturn(PVal(I.IH.mkIRStr("")))
-      case PVal(n:IRNumber) if n.getNum >= 1 => I.IS.comp.setReturn(PVal(I.IH.mkIRStr(I.IH.toString(argsObj._get("0")))))
+      case PVal(IRVal(n:EJSNumber)) if n.num == 0 => I.IS.comp.setReturn(PVal(I.IH.mkIRStrIR("")))
+      case PVal(IRVal(n:EJSNumber)) if n.num >= 1 => I.IS.comp.setReturn(PVal(I.IH.mkIRStrIR(I.IH.toString(argsObj._get("0")))))
     }
   }
 
@@ -58,6 +60,6 @@ class JSStringConstructor(_I: Interpreter, _proto: JSObject)
 
   def _fromCharCode(chars: List[Val]): Unit = {
     val str = chars.map((char: Val) => I.IH.toUint16(char).toChar).mkString
-    I.IS.comp.setReturn(PVal(I.IH.mkIRStr(str)))
+    I.IS.comp.setReturn(PVal(I.IH.mkIRStrIR(str)))
   }
 }

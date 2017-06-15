@@ -41,9 +41,9 @@ class JSErrorPrototype(_I: Interpreter, _proto: JSObject)
           case msg if I.IH.isUndef(msg) => ""
           case msg => I.IH.toString(msg)
         }
-        if (name == "") I.IS.comp.setReturn(PVal(I.IH.mkIRStr(msg)))
-        else if (msg == "") I.IS.comp.setReturn(PVal(I.IH.mkIRStr(name)))
-        else I.IS.comp.setReturn(PVal(I.IH.mkIRStr(name + ": " + msg)))
+        if (name == "") I.IS.comp.setReturn(PVal(I.IH.mkIRStrIR(msg)))
+        else if (msg == "") I.IS.comp.setReturn(PVal(I.IH.mkIRStrIR(name)))
+        else I.IS.comp.setReturn(PVal(I.IH.mkIRStrIR(name + ": " + msg)))
       case _ => I.IS.comp.setThrow(IP.typeError, I.IS.span)
     }
   }

@@ -11,12 +11,6 @@ import kr.ac.kaist.safe.util.useful.Lists
 object IRFactory {
 
   val dummyAST = NF.dummyAST
-  // For use only when there is no hope of attaching a true span.
-  def dummySpan(villain: String): Span = {
-    val name = if (villain.length != 0) villain else "dummySpan"
-    val sl = new SourceLoc(0,0,0)
-    new Span(name, sl,sl)
-  }
   def dummyIRId(name: String): IRId = makeTId(dummyAST, name)
   def dummyIRId(id: Id): IRId = {
     val name = id.text
@@ -42,8 +36,8 @@ object IRFactory {
                      name: IRId, params: List[IRId], body: IRStmt): IRFunctional =
     makeFunctional(fromSource, ast, name, params, Nil, Nil, Nil, List(body))
 
-  def makeFunctional(fromSource: Boolean, ast: Functional, name: IRId, params: List[IRId],
-                     body: List[IRStmt]): IRFunctional =
+  def makeFunctional(fromSource: Boolean, ast: Functional,
+                     name: IRId, params: List[IRId], body: List[IRStmt]): IRFunctional =
     makeFunctional(fromSource, ast, name, params, Nil, Nil, Nil, body)
 
   def makeFunExpr(fromSource: Boolean, ast: Functional, lhs: IRId, name: IRId,
@@ -112,8 +106,8 @@ object IRFactory {
   def makeIf(fromSource: Boolean, ast: ASTNode, cond: IRExpr, trueB: IRStmt, falseB: Option[IRStmt]) =
     NF.putIr(new IRIf(ast, cond, trueB, falseB), ast)
 
-  def makeWhile(fromSource: Boolean, ast: ASTNode, cond: IRExpr, body: IRStmt) =
-    NF.putIr(new IRWhile(ast, cond, body), ast)
+  def makeWhile(fromSource: Boolean, ast: ASTNode, cond: IRExpr, body: IRStmt, breakLabel: IRId, contLabel: IRId) =
+    NF.putIr(new IRWhile(ast, cond, body, breakLabel, contLabel), ast)
 
   def makeTry(fromSource: Boolean, ast: ASTNode, body: IRStmt,
               name: Option[IRId], catchB: Option[IRStmt], finallyB:
@@ -153,35 +147,30 @@ object IRFactory {
 
   def makeBool(bool: Boolean): EJSBool =
     EJSBool(bool)
-  def makeBoolIR(fromSource: Boolean, ast: ASTNode, bool: Boolean): IRVal =
+  def makeBoolIR(bool: Boolean): IRVal =
     new IRVal(makeBool(bool))
-  val trueV = makeBoolIR(false, dummyAST, true)
-  val falseV = makeBoolIR(false, dummyAST, false)
+  val trueV = makeBoolIR(true)
+  val falseV = makeBoolIR(false)
   def makeNull(ast: ASTNode) = new IRVal(EJSNull)
   def makeUndef(ast: ASTNode) = new IRVal(EJSUndef)
 
-  def makeNumber(fromSource: Boolean, text: String, num: Double): EJSNumber =
-    makeNumber(fromSource, dummyAST, text, num)
-  def makeNumber(fromSource: Boolean, ast: ASTNode, text: String, num: Double): EJSNumber =
+  def makeNumber(text: String, num: Double): EJSNumber =
     EJSNumber(text, num)
-  def makeNumberIR(fromSource: Boolean, text: String, num: Double): IRVal =
-    makeNumberIR(fromSource, dummyAST, text, num)
-  def makeNumberIR(fromSource: Boolean, ast: ASTNode, text: String, num: Double): IRVal =
-    new IRVal(makeNumber(fromSource, ast, text, num))
-  val oneV = makeNumber(false, "1", 1)
+  def makeNumberIR(text: String, num: Double): IRVal =
+    new IRVal(makeNumber(text, num))
+  val oneV = makeNumber("1", 1)
 
-  val zero  = new IRVal(EJSString("0"))
-  val one   = new IRVal(EJSString("1"))
-  val two   = new IRVal(EJSString("2"))
-  val three = new IRVal(EJSString("3"))
-  val four  = new IRVal(EJSString("4"))
-  val five  = new IRVal(EJSString("5"))
-  val six   = new IRVal(EJSString("6"))
-  val seven = new IRVal(EJSString("7"))
-  val eight = new IRVal(EJSString("8"))
-  val nine  = new IRVal(EJSString("9"))
-  def makeString(str: String, ast: ASTNode): IRVal = makeString(false, ast, str)
-  def makeString(fromSource: Boolean, ast: ASTNode, str1: String): IRVal = {
+  val zero  = EJSString("0")
+  val one   = EJSString("1")
+  val two   = EJSString("2")
+  val three = EJSString("3")
+  val four  = EJSString("4")
+  val five  = EJSString("5")
+  val six   = EJSString("6")
+  val seven = EJSString("7")
+  val eight = EJSString("8")
+  val nine  = EJSString("9")
+  def makeString(str1: String): EJSString = {
     if(str1.equals("0")) zero
     else if(str1.equals("1")) one
     else if(str1.equals("2")) two
@@ -192,8 +181,9 @@ object IRFactory {
     else if(str1.equals("7")) seven
     else if(str1.equals("8")) eight
     else if(str1.equals("9")) nine
-    else new IRVal(EJSString(str1))
+    else EJSString(str1)
   }
+  def makeStringIR(str: String): IRVal = IRVal(makeString(str))
   ////////////////////////////////////////////////////////////////////////////////////////
 
   def makeThis(ast: ASTNode) =

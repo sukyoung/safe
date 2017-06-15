@@ -23,18 +23,18 @@ object IRGenerator {
   val errors: ExcLog = new ExcLog
   def signal(error: SafeError) = errors.signal(error)
 
-  val dummySpan = IF.dummySpan("forConcolic")
+  val dummySpan = NU.dummySpan("forConcolic")
   def freshId(ast: ASTNode): IRTmpId = freshId(ast, "temp")
   def freshId(ast: ASTNode, n: String): IRTmpId =
     IF.makeTId(ast, NU.freshName(n), false)
 // TODO MV No longer supported: can't create a TId from just a Span
   def freshId(span: Span, n: String): IRTmpId =
-    IF.makeTId(NF.makeSpanInfo(span), NU.freshName(n))
+    IF.makeTId(NU.makeASTNodeInfo(span), NU.freshName(n))
 // TODO MV No longer supported: can't create a TId from just a Span
   def freshId(): IRTmpId = freshId(dummySpan, "temp")
 
   val globalName = NU.freshGlobalName("global")
-  val global = IF.makeTId(NF.makeSpanInfo(IF.dummySpan("global")), globalName, true)
+  val global = IF.makeTId(NU.makeASTNodeInfo(NU.dummySpan("global")), globalName, true)
   var ignoreId = 0
   def varIgn(ast: ASTNode, span: Span) = {
     ignoreId += 1
@@ -84,16 +84,16 @@ object IRGenerator {
     case n:Null => (List(), IF.makeNull(n))
 
     case b@Bool(info, isBool) =>
-      (List(), if (isBool) IF.makeBool(true, b, true) else IF.makeBool(true, b, false))
+      (List(), if (isBool) IF.makeBoolIR(true) else IF.makeBoolIR(false))
 
     case DoubleLiteral(info, text, num) =>
-      (List(), IF.makeNumber(true, e, text, num))
+      (List(), IF.makeNumberIR(text, num))
 
     case IntLiteral(info, intVal, radix) =>
-      (List(), IF.makeNumber(true, e, intVal.toString, intVal.doubleValue))
+      (List(), IF.makeNumberIR(intVal.toString, intVal.doubleValue))
 
     case StringLiteral(info, _, str, _) =>
-      (List(), IF.makeString(true, e, NU.unescapeJava(str)))
+      (List(), IF.makeStringIR(NU.unescapeJava(str)))
 
     case ObjectExpr(info, members) =>
       val new_members = members.map(member2ir(_, env, freshId))
@@ -120,7 +120,7 @@ object IRGenerator {
       }
       val (ssl, rl) = expr2ir(ftn, env, fun1)
       ((ssl:+toObject(lhs, fun, rl))++args++
-        List(IF.makeLoadStmt(false, e, proto, fun, IF.makeString("prototype", n)),
+        List(IF.makeLoadStmt(false, e, proto, fun, IF.makeString("prototype")),
           IF.makeObject(false, e, obj, Nil, Some(proto)),
           IF.makeNew(true, e, newObj, fun, List(obj, arg)),
           isObject(e, cond, newObj),

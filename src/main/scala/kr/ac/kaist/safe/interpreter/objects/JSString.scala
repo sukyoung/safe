@@ -11,6 +11,7 @@ package kr.ac.kaist.safe.interpreter.objects
 
 import kr.ac.kaist.safe.interpreter._
 import kr.ac.kaist.safe.interpreter.{InterpreterPredefine => IP}
+import kr.ac.kaist.safe.nodes.ir._
 
 class JSString(_I: Interpreter,
                _proto: JSObject,
@@ -25,16 +26,16 @@ class JSString(_I: Interpreter,
     val desc: ObjectProp = super._getOwnProperty(x)
     if (desc != null) desc
     else {
-      if (I.IH.toString(PVal(I.IH.mkIRNum(scala.math.abs(I.IH.toInteger(PVal(I.IH.mkIRStr(x))).getNum)))) != x) null
+      if (I.IH.toString(PVal(IRVal(I.IH.mkIRNum(scala.math.abs(I.IH.toInteger(PVal(I.IH.mkIRStrIR(x))).num))))) != x) null
       else {
         val str: String = I.IH.toString(_get(IP.pvpn))
         // TODO:
-        val index: Int = I.IH.toInt32(PVal(I.IH.mkIRStr(x)))
+        val index: Int = I.IH.toInt32(PVal(I.IH.mkIRStrIR(x)))
         val len: Int = str.length
         if (len <= index) null
         else {
           val resultStr: String = str.substring(index, index + 1)
-          I.IH.mkDataProp(PVal(I.IH.mkIRStr(resultStr)), false, true, false)
+          I.IH.mkDataProp(PVal(I.IH.mkIRStrIR(resultStr)), false, true, false)
         }
       }
     }

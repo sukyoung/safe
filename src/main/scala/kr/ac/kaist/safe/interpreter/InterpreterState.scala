@@ -13,6 +13,9 @@ import edu.rice.cs.plt.tuple.{Option => JOption}
 import kr.ac.kaist.safe.compiler.{Predefined}
 import kr.ac.kaist.safe.interpreter.{InterpreterPredefine => IP}
 import kr.ac.kaist.safe.interpreter.objects._
+import kr.ac.kaist.safe.nodes.{NodeFactory => NF}
+import kr.ac.kaist.safe.nodes.ast._
+import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.nodes.ir.{IRFactory => IF}
 import kr.ac.kaist.safe.util.{Coverage, NodeUtil => NU, Span}
 import kr.ac.kaist.safe.util.useful.Sets
@@ -88,12 +91,12 @@ class InterpreterState(val I: Interpreter) {
     }
   }
 
-  def info(): IRSpanInfo = IF.makeSpanInfo(false, span)
+  def info(): ASTNodeInfo = NU.makeASTNodeInfo(span)
 
   def dummyFtnObj(length: Int, builtin: JSObject): JSFunction = {
     val fv: IRFunctional = I.IH.dummyFtn(length)
     val prop = propTable
-    prop.put("length", I.IH.numProp(fv.getArgs.size))
+    prop.put("length", I.IH.numProp(fv.args.size))
     new JSFunction13(I, FunctionPrototype, "Function", true, prop, fv, EmptyEnv(), false, builtin)
   }
 

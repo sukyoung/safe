@@ -25,6 +25,15 @@ object NodeUtil {
   // local mutable (TODO have to handle)
   ////////////////////////////////////////////////////////////////
 
+
+  // For use only when there is no hope of attaching a true span.
+  def dummySpan(villain: String): Span = {
+    val name = if (villain.length != 0) villain else "dummySpan"
+    val sl = new SourceLoc(0,0,0)
+    new Span(name, sl,sl)
+  }
+  val dummySpan = dummySpan("")
+
   var iid = 0
   var nodesPrintId = 0
   var nodesPrintIdEnv: Map[String, String] = HashMap()

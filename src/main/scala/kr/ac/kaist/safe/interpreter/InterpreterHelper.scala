@@ -13,6 +13,8 @@ import edu.rice.cs.plt.tuple.{Option => JOption}
 import java.text.DecimalFormat
 import kr.ac.kaist.safe.interpreter.{InterpreterDebug => ID, InterpreterPredefine => IP}
 import kr.ac.kaist.safe.interpreter.objects._
+import kr.ac.kaist.safe.nodes.{NodeFactory => NF}
+import kr.ac.kaist.safe.nodes.ast._
 import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.nodes.ir.{IRFactory => IF}
 import kr.ac.kaist.safe.util._
@@ -79,18 +81,23 @@ class InterpreterHelper(I: Interpreter) {
          else "-"+s
   def negate(n: EJSNumber): EJSNumber = mkIRNum(n.num.unary_-)
 
-  def dummyInfo() = IF.makeSpanInfo(false, IF.dummySpan("forDummyInfo"))
+  def dummyInfo() = NU.makeASTNodeInfo(NU.dummySpan("forDummyInfo"))
   def getIRBool(b: Boolean) = if (b) IP.trueV else IP.falseV
-  def dummyFtn(length: Int): IRFunctional =
-    IF.makeFunctional(false, IP.defId,
-                      List(IP.thisTId, IP.argumentsTId).asInstanceOf[List[IRId]],
-                      for (i <- 1 to length) yield IF.dummyIRStmt(IF.dummyAST).asInstanceOf[IRStmt])
-  def mkIRStr(s: String) = IF.makeString(s, IF.dummyAST)
+  def dummyFtn(length: Int): IRFunctional = {
+    val body: List[IRStmt] = (1 to length).map( (_) => IF.dummyIRStmt(IF.dummyAST)).toList
+    val params: List[IRId] = List(IP.thisTId, IP.argumentsTId).asInstanceOf[List[IRId]]
+    val name: IRId = IP.defId
+    IF.makeFunctional(false, NF.dummyFunctional, name, params, body)
+  }
+  def mkIRStr(s: String): EJSString = IF.makeString(s)
+  def mkIRStrIR(s: String): IRVal = IF.makeStringIR(s)
   def mkIRBool(b: Boolean): EJSBool = IF.makeBool(b)
+  def mkIRBoolIR(b: Boolean): IRVal = IF.makeBoolIR(b)
   def mkIRNum(d: Double): EJSNumber = {
     val name = d.toString
-    IF.makeNumber(false, name, d)
+    IF.makeNumber(name, d)
   }
+  def mkIRNumIR(d: Double): IRVal = IRVal(mkIRNum(d))
   def mkEmptyObjectProp() = new ObjectProp(None, None, None, None, None, None)
   def mkDataProp(value: Val = IP.undefV,
                  writable: Boolean = false,
@@ -108,9 +115,9 @@ class InterpreterHelper(I: Interpreter) {
                      set: Option[Val],
                      enumerable: Boolean,
                      configurable: Boolean) = new ObjectProp(None, get, set, None, Some(enumerable), Some(configurable))
-  def strProp(s: String) = mkDataProp(PVal(mkIRStr(s)))
+  def strProp(s: String) = mkDataProp(PVal(mkIRStrIR(s)))
   def boolProp(b: Boolean) = mkDataProp(PVal(getIRBool(b)))
-  def numProp(d: Double) = mkDataProp(PVal(mkIRNum(d)))
+  def numProp(d: Double) = mkDataProp(PVal(mkIRNumIR(d)))
   /*
    * 15.1 The Global Object
    * Unless otherwise specified, the standard built-in properties of the global
@@ -132,19 +139,19 @@ class InterpreterHelper(I: Interpreter) {
   }
 
   def arrayToList(array: JSObject): List[Val] = {
-    val length: Int = toNumber(array._get("length")).getNum.toInt
+    val length: Int = toNumber(array._get("length")).num.toInt
     val l = for (i <- 0 until length) yield array._get(i.toString)
     l.toList
   }
   def arrayToOptionList(array: JSObject): List[Option[Val]] = {
-    val length: Int = toNumber(array._get("length")).getNum.toInt
+    val length: Int = toNumber(array._get("length")).num.toInt
     val l = for (i <- 0 until length)
             yield if (array._hasProperty(i.toString)) Some(array._get(i.toString))
                   else None
     l.toList
   }
   def argsObjectToArray(argsObj: JSObject, maxLength: Int): Array[Val] = {
-    val length: Int = toNumber(argsObj._get("length")).getNum.toInt
+    val length: Int = toNumber(argsObj._get("length")).num.toInt
     // If length < maxLength, the args is padded with the undefined.
     (for(i <- 0 until maxLength) yield if(i < length) argsObj._get(i.toString) else IP.undefV).toArray
   }
@@ -181,22 +188,22 @@ class InterpreterHelper(I: Interpreter) {
     case o: JSObject => o
   }
 
-  def call(info: IRSpanInfo, tb: Val, argsObject: JSObject, fun: JSFunction): Unit = {
-    val argsObj = newArgObj(fun, fun.code.getArgs.size, argsObject, false)
+  def call(info: ASTNodeInfo, tb: Val, argsObject: JSObject, fun: JSFunction): Unit = {
+    val argsObj = newArgObj(fun, fun.code.args.size, argsObject, false)
     I.IS.env = fun.scope
-    val argumentsId = fun.code.getParams.get(1)
+    val argumentsId = fun.code.params(1)
     newDeclEnv()
     createAndSetBinding(argumentsId, argsObject, false, I.IS.eval) match {
       case vf: Val =>
         I.IS.tb = getThis(tb) match {
           case o:JSObject => o
-          case err:JSError => I.IS.comp.setThrow(err, info.getSpan); return
+          case err:JSError => I.IS.comp.setThrow(err, info.span); return
         }
 
         if (fun.const) fun._call(I.IS.tb, argsObj)
         else if (fun.builtin != null) fun.builtin.__callBuiltinFunction(fun, argsObj)
         else I.walkIRs(fun.codeIRs)
-      case err: JSError => I.IS.comp.setThrow(err, info.getSpan)
+      case err: JSError => I.IS.comp.setThrow(err, info.span)
     }
   }
 
@@ -390,7 +397,7 @@ class InterpreterHelper(I: Interpreter) {
    * 10.2.2.1 GetIdentifierReference(lex, name, strict)
    */
   def lookup(x: IRId): EnvRec = {
-    val originalName = x.originalName()
+    val originalName = x.originalName
     var env = I.IS.env
     while(true) {
       env match {
@@ -462,7 +469,7 @@ class InterpreterHelper(I: Interpreter) {
       val v: Val = op.value.get
       if(v.isInstanceOf[PVal]) {
         val pv: IRVal = v.asInstanceOf[PVal].v
-        if(pv.isInstanceOf[IRNumber]) return pv.asInstanceOf[IRNumber].getNum.toInt
+        if(pv.value.isInstanceOf[EJSNumber]) return pv.value.asInstanceOf[EJSNumber].num.toInt
       }
     }
     throw new InterpreterError("toStr", I.IS.span)
@@ -788,7 +795,7 @@ class InterpreterHelper(I: Interpreter) {
    */
   def toObject(v: Val): ValError = v match {
     case PVal(IRVal(EJSUndef | EJSNull)) => IP.typeError
-    case PVal(IRVal(s:EJSString)) => I.IS.StringConstructor.construct(Some(PVal(mkIRStr(s.str))))
+    case PVal(IRVal(s:EJSString)) => I.IS.StringConstructor.construct(Some(PVal(mkIRStrIR(s.str))))
     case PVal(IRVal(s:EJSNumber)) => I.IS.NumberConstructor.construct(Some(v))
     case PVal(IRVal(s:EJSBool)) => I.IS.BooleanConstructor.construct(v)
     case obj:JSObject => obj
@@ -964,16 +971,16 @@ class InterpreterHelper(I: Interpreter) {
    */
   def abstractStrictEqualityComparison(x: Val, y: Val): Boolean = (x, y) match {
     // 2. If Type(x) is Undefined, return true.
-    case (PVal(_:IRUndef), PVal(_:IRUndef)) => true
+    case (PVal(IRVal(EJSUndef)), PVal(IRVal(EJSUndef))) => true
     // 3. If Type(x) is Null, return true.
-    case (PVal(_:IRNull), PVal(_:IRNull)) => true
+    case (PVal(IRVal(EJSNull)), PVal(IRVal(EJSNull))) => true
     // 4. If Type(x) is Number, then
-    case (PVal(x1:IRNumber), PVal(y1:IRNumber)) => {
+    case (PVal(IRVal(x1:EJSNumber)), PVal(IRVal(y1:EJSNumber))) => {
       // a. If x is NaN, return false.
       // b. If y is NaN, return false.
       if(isNaN(x1) || isNaN(y1)) false
       // c. If x is the same Number value as y, return true.
-      else if(x1.getNum == y1.getNum) true
+      else if(x1.num == y1.num) true
       // d. If x is +0 and y is -0, return true.
       // e. If x is -0 and y is +0, return true.
       else if((isPlusZero(x1) && isMinusZero(y1)) || (isMinusZero(x1) && isPlusZero(y1))) true
@@ -981,9 +988,9 @@ class InterpreterHelper(I: Interpreter) {
       else false
     }
     // 5. If Type(x) is String, then return true if x and y are exactly the same sequence of characters (...); otherwise, return false.
-    case (PVal(SIRString(_,sx)), PVal(SIRString(_,sy))) => sx == sy
+    case (PVal(IRVal(EJSString(sx))), PVal(IRVal(EJSString(sy)))) => sx == sy
     // 6. If Type(x) is Boolean, return true if x and y are both true or both false; otherwise, return false.
-    case (PVal(SIRBool(_,bx)), PVal(SIRBool(_,by))) => bx == by
+    case (PVal(IRVal(EJSBool(bx))), PVal(IRVal(EJSBool(by)))) => bx == by
     // 7. Return true if x and y refer to the same object. Otherwise, return false.
     case (ox: JSObject, oy: JSObject) => ox == oy
     // 1. If Type(x) is different from Type(y), return false.
@@ -1005,7 +1012,7 @@ class InterpreterHelper(I: Interpreter) {
     val F: JSFunction = new JSFunction13(I, I.IS.FunctionPrototype, "Function", true, propTable, code, scope)
     // 14. Let len be the number of formal parameters specified in FormalparameterList. If no parameters are specified, let len be 0.
     // TODO:
-    val len = code.getArgs.size
+    val len = code.args.size
     // 15. Call the [[DefineOwnProperty]] internal method of F with arguments "length", Property Descriptor
     //     {[[Value]]: len, [[Writable]]: false, [[Enumerable]]: false, [[Configurable]]: false}, and false.
     F._defineOwnProperty("length", numProp(len), false)
@@ -1069,7 +1076,7 @@ class InterpreterHelper(I: Interpreter) {
       for (i <- na until np) {
         o.property.put(i.toString, mkDataProp(IP.undefV, true, true, true))
       }
-    o.property.put("length", mkDataProp(PVal(mkIRNum(na)), true, false, true))
+    o.property.put("length", mkDataProp(PVal(mkIRNumIR(na)), true, false, true))
     if (b) o.property.put("callee", mkDataProp(fun, true, false, true))
     o
   }

@@ -117,12 +117,12 @@ class JSArrayPrototype(_I: Interpreter, _proto: JSObject)
           else I.IH.toString(x)
         }
         len match {
-          case 0 => I.IS.comp.setReturn(PVal(I.IH.mkIRStr("")))
+          case 0 => I.IS.comp.setReturn(PVal(I.IH.mkIRStrIR("")))
           case _ =>
             val str = I.IH.arrayToList(o).foldRight("")(
               (x: Val, y: String) => sep+ts(x)+y
             )
-            I.IS.comp.setReturn(PVal(I.IH.mkIRStr(str.substring(sep.length))))
+            I.IS.comp.setReturn(PVal(I.IH.mkIRStrIR(str.substring(sep.length))))
         }
       case err:JSError => I.IS.comp.setThrow(err, I.IS.span)
     }
@@ -140,7 +140,7 @@ class JSArrayPrototype(_I: Interpreter, _proto: JSObject)
             val indx = (len - 1).toString
             val element = o._get(indx)
             o._delete(indx, true)
-            o._put("length", PVal(I.IH.mkIRStr(indx)), true)
+            o._put("length", PVal(I.IH.mkIRStrIR(indx)), true)
             I.IS.comp.setReturn(element)
         }
       case err:JSError => I.IS.comp.setThrow(err, I.IS.span)

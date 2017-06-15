@@ -10,9 +10,13 @@ import kr.ac.kaist.safe.util.{NodeUtil => NU, SourceLoc, Span, UIDObject}
 import kr.ac.kaist.safe.util.useful.Lists
 
 object NodeFactory {
-  def makeDummyAST(name: String) = makeDummyAST(makeSpanInfo(makeSpan(name)), name)
-  def makeDummyAST(info: ASTNodeInfo, name: String) = makeNoOp(info, name)
-  val dummyAST = makeDummyAST("dummyAST")
+  def makeDummyAST(name: String): ASTNode = makeDummyAST(dummyASTInfo(name), name)
+  def makeDummyAST(info: ASTNodeInfo, name: String): ASTNode = makeNoOp(info, name)
+  val dummyAST: ASTNode = makeDummyAST("dummyAST")
+  def dummyASTInfo(villain: String): ASTNodeInfo = NU.makeASTNodeInfo(makeSpan(villain))
+  val dummyASTInfo: ASTNodeInfo = NU.makeASTNodeInfo(NU.dummySpan)
+  val dummyFunctional = makeEmptyFunctional(dummyASTInfo, makeId(NU.dummySpan("dummyFunctional"), "dummyFunctional"),
+                                            Nil, Nil, Nil, Nil, false)
 
   // TODO MV Removed original maps, as IRNodes now store their corresponding AST nodes?
   ////////////////////////////////////////////////////////////////////////////////
@@ -25,8 +29,6 @@ object NodeFactory {
     ir
   }
 
-  def makeSpanInfo(span: Span, comment: String): ASTNodeInfo =
-    new ASTNodeInfo(span, Some[Comment](makeComment(span, comment)))
   def makeSpanInfo(span: Span): ASTNodeInfo =
     new ASTNodeInfo(span, None[Comment])
 
@@ -101,7 +103,7 @@ object NodeFactory {
     new Id(NU.makeASTNodeInfo(span), name, uniq, false)
 
   def makeOp(span: Span, name: String) =
-    new Op(makeSpanInfo(span), name)
+    new Op(NU.makeASTNodeInfo(span), name)
 
   def makeComment(span: Span, comment: String): Comment =
     new Comment(NU.makeASTNodeInfo(span), comment)

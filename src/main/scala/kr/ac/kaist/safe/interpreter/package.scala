@@ -65,6 +65,11 @@ package object interpreter {
     override def toString(): String = ID.prExpr(v)
   }
 
+  object PVal {
+    def apply(value: EJSVal) = PVal(IRVal(value))
+    def apply(irVal: IRVal) = PVal(irVal)
+  }
+
   ////////////////////////////////////////////////////////////////////////////////
   // Error
   ////////////////////////////////////////////////////////////////////////////////

@@ -11,7 +11,8 @@ package kr.ac.kaist.safe.interpreter.objects
 
 import kr.ac.kaist.safe.interpreter._
 import kr.ac.kaist.safe.interpreter.{InterpreterPredefine => IP}
-import kr.ac.kaist.jsaf.nodes_util.{EJSCompletionType => CT}
+import kr.ac.kaist.safe.nodes.ir._
+import kr.ac.kaist.safe.util.{EJSCompletionType => CT}
 
 class JSRegExpPrototype(_I: Interpreter, _proto: JSObject)
   extends JSRegExp(_I, _proto, "RegExp", true, propTable, (s: String, i: Int) => None, "", "", 0) {
@@ -47,19 +48,19 @@ class JSRegExpPrototype(_I: Interpreter, _proto: JSObject)
 
         val rtn = a match {
           case None => {
-            r._put("lastIndex", PVal(I.IH.mkIRNum(0)), true)
+            r._put("lastIndex", PVal(IRVal(I.IH.mkIRNum(0))), true)
             IP.nullV
           }
           case Some(array) => {
             if (I.IH.toBoolean(global))
-              r._put("lastIndex", PVal(I.IH.mkIRNum(lastIdx)), true)
+              r._put("lastIndex", PVal(I.IH.mkIRNumIR(lastIdx)), true)
             val a: JSArray = I.IS.ArrayConstructor.construct(Nil)
-            a._defineOwnProperty("index", I.IH.mkDataProp(PVal(I.IH.mkIRNum(idx)), true, true, true), true)
-            a._defineOwnProperty("input", I.IH.mkDataProp(PVal(I.IH.mkIRStr(s)), true, true, true), true)
-            a._defineOwnProperty("length", I.IH.mkDataProp(PVal(I.IH.mkIRNum(length)), true, true, true), true)
+            a._defineOwnProperty("index", I.IH.mkDataProp(PVal(IRVal(I.IH.mkIRNum(idx))), true, true, true), true)
+            a._defineOwnProperty("input", I.IH.mkDataProp(PVal(IRVal(I.IH.mkIRStr(s))), true, true, true), true)
+            a._defineOwnProperty("length", I.IH.mkDataProp(PVal(IRVal(I.IH.mkIRNum(length))), true, true, true), true)
             for (i <- 0 to array.length-1) {
               val captureI: Val = array(i) match {
-                 case Some(s) => PVal(I.IH.mkIRStr(s))
+                 case Some(s) => PVal(I.IH.mkIRStrIR(s))
                  case None => IP.undefV
               }
               a._defineOwnProperty(i.toString,
@@ -88,7 +89,7 @@ class JSRegExpPrototype(_I: Interpreter, _proto: JSObject)
         val ignoreCase: String = if (I.IH.toBoolean(r._get("ignoreCase"))) "i" else ""
         val multiline: String = if (I.IH.toBoolean(r._get("multiline"))) "m" else ""
         val s: String = "/"+source+"/"+global+ignoreCase+multiline
-        I.IS.comp.setReturn(PVal(I.IH.mkIRStr(s)))
+        I.IS.comp.setReturn(PVal(I.IH.mkIRStrIR(s)))
       case _ => I.IS.comp.setThrow(IP.typeError, I.IS.span)
     }
   }

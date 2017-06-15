@@ -26,7 +26,7 @@ class JSArray(_I: Interpreter,
   override def _defineOwnProperty(P: Var, Desc: ObjectProp, Throw: Boolean): ValError = {
     def isArrayIndex(P: Var) : Boolean = {
       // ToString(ToUint32(P)) is equal to P and ToUint32(P) is not equal to (2^32)-1
-      val intP = I.IH.toUint32(PVal(I.IH.mkIRStr(P)))
+      val intP = I.IH.toUint32(PVal(I.IH.mkIRStrIR(P)))
       I.IH.toString(intP.toDouble).equals(P) && intP != 0xFFFFFFFFL
     }
     // 1. Let oldLenDesc be the result of calling the [[GetOwnProperty]] internal method of A passing "length" as the argument.
@@ -116,7 +116,7 @@ class JSArray(_I: Interpreter,
     // 4. Else if P is an array index (15.4), then
     else if (isArrayIndex(P)) {
       // a. Let index be ToUint32(P).
-      val index = I.IH.toUint32(PVal(I.IH.mkIRStr(P)))
+      val index = I.IH.toUint32(PVal(I.IH.mkIRStrIR(P)))
       // b. Reject if index >= oldLen and oldLenDesc.[[Writable]] is false.
       if (index >= oldLen && oldLenDesc.writable.get == false)
         { if (Throw) return IP.typeError else return IP.falsePV }
@@ -130,7 +130,7 @@ class JSArray(_I: Interpreter,
           // e. If index >= oldLen
           if (index >= oldLen) {
             // i. Set oldLenDesc.[[Value]] to index + 1.
-            oldLenDesc.value = Some(PVal(I.IH.mkIRNum(index+1)))
+            oldLenDesc.value = Some(PVal(I.IH.mkIRNumIR(index+1)))
             // ii. Call the default [[DefineOwnProperty]] internal method (8.12.9) on A passing "length",
             //     oldLenDesc, and false as arguments. This call will always return true.
             super._defineOwnProperty("length", oldLenDesc, false)

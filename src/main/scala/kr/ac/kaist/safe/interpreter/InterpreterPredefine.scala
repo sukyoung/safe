@@ -12,6 +12,7 @@ package kr.ac.kaist.safe.interpreter
 import kr.ac.kaist.safe.interpreter.{InterpreterHelper => IH}
 import kr.ac.kaist.safe.interpreter.objects.JSObject
 import kr.ac.kaist.safe.util.{NodeUtil => NU, SourceLoc, Span}
+import kr.ac.kaist.safe.nodes.{NodeFactory => NF}
 import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.nodes.ir.{IRFactory => IF}
 
@@ -37,19 +38,19 @@ object InterpreterPredefine {
   // Use only when we cannot get any meaningful source locations
   val sourceLoc = new SourceLoc(0, 0, 0)
   val defSpan = new Span(NU.freshFile("interpreter"), sourceLoc, sourceLoc)
-  val defInfo = IF.makeSpanInfo(false, defSpan)
+  val defInfo = NU.makeASTNodeInfo(defSpan)
   val defId = IF.dummyIRId("interpreter")
 
   // Constant values
   val undefined = IF.makeUndef(IF.dummyAST)
-  val NaN = IF.makeNumber(false, "NaN", Double.NaN)
-  val plusZero = IF.makeNumber(false, "+0.0", +0.0)
-  val minusZero = IF.makeNumber(false, "-0.0", -0.0)
-  val plusOne = IF.makeNumber(false, "+1.0", +1.0)
-  val minusOne = IF.makeNumber(false, "-1.0", -1.0)
-  val plusInfinity = IF.makeNumber(false, "Infinity", Double.PositiveInfinity)
-  val minusInfinity = IF.makeNumber(false, "-Infinity", Double.NegativeInfinity)
-  val undefVar = IF.makeTId(IF.dummySpan("undefVar"), NU.freshGlobalName("undefVar"))
+  val NaN = IF.makeNumber("NaN", Double.NaN)
+  val plusZero = IF.makeNumber("+0.0", +0.0)
+  val minusZero = IF.makeNumber("-0.0", -0.0)
+  val plusOne = IF.makeNumber("+1.0", +1.0)
+  val minusOne = IF.makeNumber("-1.0", -1.0)
+  val plusInfinity = IF.makeNumber("Infinity", Double.PositiveInfinity)
+  val minusInfinity = IF.makeNumber("-Infinity", Double.NegativeInfinity)
+  val undefVar = IF.makeTId(NF.dummyASTInfo("undefVar"), NU.freshGlobalName("undefVar"))
   val falseV = IF.falseV
   val trueV = IF.trueV
   val falsePV = PVal(falseV)
@@ -62,8 +63,8 @@ object InterpreterPredefine {
   val minusOneV = PVal(IRVal(minusOne))
   val thisName = NU.freshGlobalName("this")
   val argumentsName = NU.freshGlobalName("arguments")
-  val thisTId = IF.makeTId(IF.dummySpan("this"), thisName)
-  val argumentsTId = IF.makeTId(IF.dummySpan("arguments"), argumentsName)
+  val thisTId = IF.makeTId(NF.dummyASTInfo("this"), thisName)
+  val argumentsTId = IF.makeTId(NF.dummyASTInfo("arguments"), argumentsName)
   //val resUndef = Normal(Some(undefV))
   val undefFtn =
     IF.makeFunctional(false, IF.dummyAST, defId,

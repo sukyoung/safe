@@ -10,7 +10,7 @@
 package kr.ac.kaist.safe.util
 
 import _root_.java.util.{List => JList}
-import edu.rice.cs.plt.tuple.Option
+//import edu.rice.cs.plt.tuple.Option
 import kr.ac.kaist.safe.concolic._
 import kr.ac.kaist.safe.nodes.ast._
 import kr.ac.kaist.safe.nodes.ir._

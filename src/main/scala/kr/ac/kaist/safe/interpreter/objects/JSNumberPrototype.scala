@@ -54,12 +54,12 @@ class JSNumberPrototype(_I: Interpreter, _proto: JSObject)
         }
         r match {
           case r if !(2 <= r && r <= 36) => I.IS.comp.setThrow(IP.rangeError, I.IS.span)
-          case 10 => I.IS.comp.setReturn(PVal(I.IH.mkIRStr(I.IH.toString(o._get(IP.pvpn)))))
+          case 10 => I.IS.comp.setReturn(PVal(I.IH.mkIRStrIR(I.IH.toString(o._get(IP.pvpn)))))
           case r =>
             var s: String = ""
             // TODO: ToInteger vs. ToInt32
             val n: Int = I.IH.toInt32(o._get(IP.pvpn))
-            if (n == 0) I.IS.comp.setReturn(PVal(I.IH.mkIRStr("0")))
+            if (n == 0) I.IS.comp.setReturn(PVal(I.IH.mkIRStrIR("0")))
             else {
               var m: Int = n.abs
               while (m > 0) {
@@ -69,7 +69,7 @@ class JSNumberPrototype(_I: Interpreter, _proto: JSObject)
                 m /= r
               }
               if (n < 0) s += '-'
-              I.IS.comp.setReturn(PVal(I.IH.mkIRStr(s.reverse)))
+              I.IS.comp.setReturn(PVal(I.IH.mkIRStrIR(s.reverse)))
             }
         }
       case o: JSObject => I.IS.comp.setThrow(IP.typeError, I.IS.span)

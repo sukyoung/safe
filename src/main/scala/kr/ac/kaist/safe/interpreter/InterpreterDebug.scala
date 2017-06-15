@@ -11,17 +11,17 @@ package kr.ac.kaist.safe.interpreter
 
 import kr.ac.kaist.safe.interpreter.{InterpreterPredefine => IP}
 import kr.ac.kaist.safe.nodes.ir._
+import kr.ac.kaist.safe.util._
 import kr.ac.kaist.safe.util.{NodeUtil => NU}
-import import kr.ac.kaist.safe.util._
 
 object InterpreterDebug {
 
   var uniq_id = 0
   def fresh(id: String) = {
     uniq_id += 1
-    val stringarr = id.split(NU.internalSymbol)
+    val stringarr = id.split(NU.INTERNAL_SYMBOL)
     stringarr.update(stringarr.length-1, uniq_id.toString)
-    stringarr.foldLeft("")((s,a) => s+NU.internalSymbol+a)
+    stringarr.foldLeft("")((s,a) => s+NU.INTERNAL_SYMBOL+a)
   }
   type TmpIdEnv = List[(String, String)]
   var tmpEnv = Nil.asInstanceOf[TmpIdEnv]

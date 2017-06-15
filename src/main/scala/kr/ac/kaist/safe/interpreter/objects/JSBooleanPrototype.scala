@@ -40,10 +40,10 @@ class JSBooleanPrototype(_I: Interpreter, _proto: JSObject)
   def _toString(): Unit = {
     I.IS.tb match {
       case PVal(IRVal(EJSBool(b))) =>
-        I.IS.comp.setReturn(PVal(I.IH.mkIRStr(b.toString)))
+        I.IS.comp.setReturn(PVal(I.IH.mkIRStrIR(b.toString)))
       case o: JSBoolean =>
         val b: Val = o._get(IP.pvpn)
-        I.IS.comp.setReturn(PVal(I.IH.mkIRStr(I.IH.toBoolean(b).toString)))
+        I.IS.comp.setReturn(PVal(I.IH.mkIRStrIR(I.IH.toBoolean(b).toString)))
       case _ =>
         I.IS.comp.setThrow(IP.typeError, I.IS.span)
     }

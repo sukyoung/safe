@@ -95,12 +95,12 @@ class JSDatePrototype(_I: Interpreter, _proto: JSObject)
                                              DH._secFromTime(t).num.toInt,
                                              DH._msFromTime(t).num.toInt)
     val timezone = "Z"
-    I.IS.comp.setReturn(PVal(I.IH.mkIRStr(date+time+timezone)))
+    I.IS.comp.setReturn(PVal(I.IH.mkIRStrIR(date+time+timezone)))
   }
   def _toString(): Unit =
     I.IS.tb.asInstanceOf[JSDate]._get(IP.pvpn) match {
       case PVal(t:EJSNumber) => __toISOString(t)
-      case _ => I.IS.comp.setReturn(PVal(I.IH.mkIRStr("NaN")))
+      case _ => I.IS.comp.setReturn(PVal(I.IH.mkIRStrIR("NaN")))
     }
   // 15.9.5.3 - 15.9.5.7
   def _valueOf(): Unit =
@@ -200,6 +200,6 @@ class JSDatePrototype(_I: Interpreter, _proto: JSObject)
   def _toISOString(): Unit =
     I.IS.tb.asInstanceOf[JSDate]._get(IP.pvpn) match {
       case PVal(t:EJSNumber) => __toISOString(t)
-      case _ => I.IS.comp.setReturn(PVal(I.IH.mkIRStr("NaN")))
+      case _ => I.IS.comp.setReturn(PVal(I.IH.mkIRStrIR("NaN")))
     }
 }

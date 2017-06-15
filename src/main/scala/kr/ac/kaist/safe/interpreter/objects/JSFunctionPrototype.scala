@@ -53,7 +53,7 @@ class JSFunctionPrototype(_I: Interpreter, _proto: JSObject)
   // 15.3.4.2 toString()
   def _toString(): Unit = {
     if (!I.IH.isCallable(I.IS.tb)) I.IS.comp.setThrow(IP.typeError, I.IS.span)
-    else I.IS.comp.setReturn(PVal(I.IH.mkIRStr("[object Function]")))
+    else I.IS.comp.setReturn(PVal(I.IH.mkIRStrIR("[object Function]")))
   }
 
   // 15.3.4.3 Function.prototype.apply (thisArg, argArray)
