@@ -1,3 +1,14 @@
+/**
+ * *****************************************************************************
+ * Copyright (c) 2016, KAIST.
+ * All rights reserved.
+ *
+ * Use is subject to license terms.
+ *
+ * This distribution may include materials developed by third parties.
+ * ****************************************************************************
+ */
+
 package kr.ac.kaist.safe.nodes
 
 import _root_.java.util.{List => JList}
@@ -15,8 +26,14 @@ object NodeFactory {
   val dummyAST: ASTNode = makeDummyAST("dummyAST")
   def dummyASTInfo(villain: String): ASTNodeInfo = NU.makeASTNodeInfo(makeSpan(villain))
   val dummyASTInfo: ASTNodeInfo = NU.makeASTNodeInfo(NU.dummySpan)
+
   val dummyFunctional = makeEmptyFunctional(dummyASTInfo, makeId(NU.dummySpan("dummyFunctional"), "dummyFunctional"),
-                                            Nil, Nil, Nil, Nil, false)
+                                            Nil,
+                                            Nil,
+                                            Nil,
+                                            List(Id(dummyASTInfo, "dummyThis", isWith = false),
+                                                 Id(dummyASTInfo, "dummyArguments", isWith = false)),
+                                            false)
 
   // TODO MV Removed original maps, as IRNodes now store their corresponding AST nodes?
   ////////////////////////////////////////////////////////////////////////////////

@@ -1,13 +1,13 @@
 /**
-  * *****************************************************************************
-  * Copyright (c) 2016, KAIST.
-  * All rights reserved.
-  *
-  * Use is subject to license terms.
-  *
-  * This distribution may include materials developed by third parties.
-  * ****************************************************************************
-  */
+ * *****************************************************************************
+ * Copyright (c) 2016, KAIST.
+ * All rights reserved.
+ *
+ * Use is subject to license terms.
+ *
+ * This distribution may include materials developed by third parties.
+ * ****************************************************************************
+ */
 
 package kr.ac.kaist.safe.util
 
@@ -16,21 +16,20 @@ import kr.ac.kaist.safe.nodes.ast._
 import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.util.Span
-import kr.ac.kaist.safe.{BASE_DIR, LINE_SEP}
+import kr.ac.kaist.safe.{ BASE_DIR, LINE_SEP }
 
-import scala.collection.immutable.{HashMap, HashSet}
+import scala.collection.immutable.{ HashMap, HashSet }
 
 object NodeUtil {
   ////////////////////////////////////////////////////////////////
   // local mutable (TODO have to handle)
   ////////////////////////////////////////////////////////////////
 
-
   // For use only when there is no hope of attaching a true span.
   def dummySpan(villain: String): Span = {
     val name = if (villain.length != 0) villain else "dummySpan"
-    val sl = new SourceLoc(0,0,0)
-    new Span(name, sl,sl)
+    val sl = new SourceLoc(0, 0, 0)
+    new Span(name, sl, sl)
   }
   val dummySpan = dummySpan("")
 
@@ -268,7 +267,7 @@ object NodeUtil {
     INTERNAL_SYMBOL + n + INTERNAL_SYMBOL + "%013d".format(getIId)
   // unique name generation for global names
   def freshGlobalName(n: String): String = GLOBAL_PREFIX + n
-  def getOriginalName(n: String) =
+  def getOriginalName(n: String): String =
     if (isGlobalName(n)) n.drop(10)
     else {
       if (!isInternal(n)) n
@@ -441,7 +440,7 @@ object NodeUtil {
   def lineTerminating(c: Char): Boolean =
     List('\u000a', '\u2028', '\u2029', '\u000d').contains(c)
 
-  def unescapeJava(s: String) =
+  def unescapeJava(s: String): String =
     if (-1 == s.indexOf('\\')) s
     else {
       val length = s.length
@@ -452,7 +451,7 @@ object NodeUtil {
         if ('\\' != c) {
           buf.append(c)
           i += 1
-        } else  {
+        } else {
           i += 1
           if (i >= length) {
             throw new IllegalArgumentException("incomplete escape sequence")
@@ -471,18 +470,18 @@ object NodeUtil {
             case 'x' =>
               i += 2
               if (i >= length) {
-                throw new IllegalArgumentException("incomplete universal character"+
-                  " name " + s.substring(i-1))
+                throw new IllegalArgumentException("incomplete universal character" +
+                  " name " + s.substring(i - 1))
               }
-              val n = Integer.parseInt(s.substring(i-1, i+1), 16)
+              val n = Integer.parseInt(s.substring(i - 1, i + 1), 16)
               buf.append(n.asInstanceOf[Char])
             case 'u' =>
               i += 4
               if (i >= length) {
-                throw new IllegalArgumentException("incomplete universal character"+
-                  " name " + s.substring(i-3))
+                throw new IllegalArgumentException("incomplete universal character" +
+                  " name " + s.substring(i - 3))
               }
-              val n = Integer.parseInt(s.substring(i-3, i+1), 16)
+              val n = Integer.parseInt(s.substring(i - 3, i + 1), 16)
               buf.append(n.asInstanceOf[Char])
             case c if lineTerminating(c) =>
             case _ => buf.append(c)
@@ -533,7 +532,7 @@ object NodeUtil {
   }
 
   def prFtn(s: StringBuilder, indent: Int, fds: List[FunDecl], vds: List[VarDecl],
-            body: List[SourceElement]): Unit = {
+    body: List[SourceElement]): Unit = {
     fds match {
       case Nil =>
       case _ =>

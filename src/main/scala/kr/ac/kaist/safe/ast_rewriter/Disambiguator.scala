@@ -14,7 +14,7 @@ package kr.ac.kaist.safe.ast_rewriter
 import kr.ac.kaist.safe.errors.ExcLog
 import kr.ac.kaist.safe.errors.error._
 import kr.ac.kaist.safe.nodes.ast._
-import kr.ac.kaist.safe.util.Span
+import kr.ac.kaist.safe.util.{NodeUtil => NU, Span}
 import kr.ac.kaist.safe.{ PRED_FUNS, PRED_VARS, DOM_NAMES }
 
 /**

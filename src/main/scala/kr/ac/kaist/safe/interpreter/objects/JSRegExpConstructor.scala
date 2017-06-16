@@ -1,15 +1,18 @@
-/*******************************************************************************
-    Copyright (c) 2012-2014, KAIST, S-Core.
-    All rights reserved.
-
-    Use is subject to license terms.
-
-    This distribution may include materials developed by third parties.
- ******************************************************************************/
+/**
+ * *****************************************************************************
+ * Copyright (c) 2016, KAIST.
+ * All rights reserved.
+ *
+ * Use is subject to license terms.
+ *
+ * This distribution may include materials developed by third parties.
+ * ****************************************************************************
+ */
 
 package kr.ac.kaist.safe.interpreter.objects
 
 import kr.ac.kaist.safe.interpreter._
+import kr.ac.kaist.safe.util.regexp._
 
 class JSRegExpConstructor(_I: Interpreter, _proto: JSObject)
   extends JSFunction13(_I, _proto, "Array", true, propTable(), _I.IH.dummyFtn(0), EmptyEnv(), true) {
@@ -50,7 +53,7 @@ class JSRegExpConstructor(_I: Interpreter, _proto: JSObject)
       try {
         JSRegExpSolver.parse(s, f)
       } catch {
-        case e: kr.ac.kaist.jsaf.utils.regexp.SyntaxErrorException =>
+        case e: kr.ac.kaist.safe.util.regexp.SyntaxErrorException =>
           throw new SyntaxErrorException
       }
 
@@ -60,7 +63,7 @@ class JSRegExpConstructor(_I: Interpreter, _proto: JSObject)
     prop.put("global", I.IH.boolProp(b_g))
     prop.put("ignoreCase", I.IH.boolProp(b_i))
     prop.put("multiline", I.IH.boolProp(b_m))
-    prop.put("lastIndex", I.IH.mkDataProp(PVal(I.IH.mkIRNum(0)), true, false, false))
+    prop.put("lastIndex", I.IH.mkDataProp(PVal(I.IH.mkIRNumIR(0)), true, false, false))
 
     new JSRegExp(I, I.IS.RegExpPrototype, "RegExp", true, prop, matcher, p, f, nCapturingParens)
   }

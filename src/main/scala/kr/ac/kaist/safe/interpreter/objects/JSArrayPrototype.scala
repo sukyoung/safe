@@ -1,11 +1,13 @@
-/*******************************************************************************
-    Copyright (c) 2012-2013, KAIST, S-Core.
-    All rights reserved.
-
-    Use is subject to license terms.
-
-    This distribution may include materials developed by third parties.
- ******************************************************************************/
+/**
+ * *****************************************************************************
+ * Copyright (c) 2016, KAIST.
+ * All rights reserved.
+ *
+ * Use is subject to license terms.
+ *
+ * This distribution may include materials developed by third parties.
+ * ****************************************************************************
+ */
 
 package kr.ac.kaist.safe.interpreter.objects
 
@@ -273,7 +275,7 @@ class JSArrayPrototype(_I: Interpreter, _proto: JSObject)
                     comparefn.asInstanceOf[JSFunction]._call(IP.undefV, argsObj)
                     I.IS.env = oldEnv
                     I.IS.tb = oldTb
-                    if(I.IS.comp.Type == CT.RETURN) I.IH.toNumber(I.IS.comp.value).getNum < 0
+                    if(I.IS.comp.Type == CT.RETURN) I.IH.toNumber(I.IS.comp.value).num < 0
                     else if(I.IS.comp.Type == CT.THROW) throw new ThrowException(I.IS.comp.error) // TODO: !
                     else throw new InterpreterError("Array.prototype.sortCompare: ", I.IS.span)
                   }

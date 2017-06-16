@@ -1,11 +1,13 @@
-/*******************************************************************************
-    Copyright (c) 2012-2013, KAIST, S-Core.
-    All rights reserved.
-
-    Use is subject to license terms.
-
-    This distribution may include materials developed by third parties.
- ******************************************************************************/
+/**
+ * *****************************************************************************
+ * Copyright (c) 2016, KAIST.
+ * All rights reserved.
+ *
+ * Use is subject to license terms.
+ *
+ * This distribution may include materials developed by third parties.
+ * ****************************************************************************
+ */
 
 package kr.ac.kaist.safe.interpreter.objects
 
@@ -66,7 +68,7 @@ class JSFunctionPrototype(_I: Interpreter, _proto: JSObject)
         prop.put("length", I.IH.numProp(0))
 
         val a: JSObject = I.IH.newObj(prop)
-        val argsList: JSObject = I.IH.newArgObj(func, func.code.args.size(), a, I.IS.strict)
+        val argsList: JSObject = I.IH.newArgObj(func, func.code.args.size, a, I.IS.strict)
 
         func._call(thisArg, argsList)
       } else {

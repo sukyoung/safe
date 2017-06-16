@@ -1,11 +1,14 @@
-/*******************************************************************************
-    Copyright (c) 2012-2014, KAIST, S-Core.
-    All rights reserved.
+/**
+ * *****************************************************************************
+ * Copyright (c) 2016, KAIST.
+ * All rights reserved.
+ *
+ * Use is subject to license terms.
+ *
+ * This distribution may include materials developed by third parties.
+ * ****************************************************************************
+ */
 
-    Use is subject to license terms.
-
-    This distribution may include materials developed by third parties.
- ******************************************************************************/
 
 package kr.ac.kaist.safe.concolic
 
@@ -24,7 +27,7 @@ import scala.collection.mutable.HashMap
 import scala.util.Random
 
 class CallGenerator(coverage: Coverage) {
-  val dummySpan = IF.dummySpan("CallGenerator")
+  val dummySpan = NU.dummySpan("CallGenerator")
 
   var input: Map[String, Id] = null
   var functions: HashMap[String, FunctionInfo] = coverage.functions

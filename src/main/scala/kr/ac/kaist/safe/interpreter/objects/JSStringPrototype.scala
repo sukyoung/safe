@@ -1,19 +1,24 @@
-/*******************************************************************************
-    Copyright (c) 2012-2013, KAIST, S-Core.
-    All rights reserved.
-
-    Use is subject to license terms.
-
-    This distribution may include materials developed by third parties.
- ******************************************************************************/
+/**
+ * *****************************************************************************
+ * Copyright (c) 2016, KAIST.
+ * All rights reserved.
+ *
+ * Use is subject to license terms.
+ *
+ * This distribution may include materials developed by third parties.
+ * ****************************************************************************
+ */
 
 package kr.ac.kaist.safe.interpreter.objects
+
+import scala.collection.mutable.HashMap
 
 import kr.ac.kaist.safe.interpreter._
 import kr.ac.kaist.safe.interpreter.{InterpreterPredefine => IP}
 import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.util._
 import kr.ac.kaist.safe.util.{EJSCompletionType => CT}
+import kr.ac.kaist.safe.util.regexp._
 
 
 class JSStringPrototype(_I: Interpreter, _proto: JSObject)

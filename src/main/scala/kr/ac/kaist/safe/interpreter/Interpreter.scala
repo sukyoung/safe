@@ -1,11 +1,13 @@
-/*******************************************************************************
-    Copyright (c) 2012-2014, KAIST, S-Core.
-    All rights reserved.
-
-    Use is subject to license terms.
-
-    This distribution may include materials developed by third parties.
- ******************************************************************************/
+/**
+ * *****************************************************************************
+ * Copyright (c) 2016, KAIST.
+ * All rights reserved.
+ *
+ * Use is subject to license terms.
+ *
+ * This distribution may include materials developed by third parties.
+ * ****************************************************************************
+ */
 
 package kr.ac.kaist.safe.interpreter
 
@@ -1135,7 +1137,7 @@ class Interpreter extends IRWalker {
                     /*
                      * 10.4.3 Entering Function Code
                      */
-                    IH.call(info, v1, o2, f)
+                    IH.call(info.info, v1, o2, f)
                     if(IS.comp.Type == CT.NORMAL) valueToAssign = IP.undefV
                     else if(IS.comp.Type == CT.RETURN) valueToAssign = IS.comp.value
                   case _ =>

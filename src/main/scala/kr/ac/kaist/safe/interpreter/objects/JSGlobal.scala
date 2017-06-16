@@ -1,14 +1,18 @@
-/*******************************************************************************
-    Copyright (c) 2012-2014, KAIST, S-Core.
-    All rights reserved.
-
-    Use is subject to license terms.
-
-    This distribution may include materials developed by third parties.
- ******************************************************************************/
+/**
+ * *****************************************************************************
+ * Copyright (c) 2016, KAIST.
+ * All rights reserved.
+ *
+ * Use is subject to license terms.
+ *
+ * This distribution may include materials developed by third parties.
+ * ****************************************************************************
+ */
 
 package kr.ac.kaist.safe.interpreter.objects
 
+import kr.ac.kaist.safe.ast_rewriter._
+import kr.ac.kaist.safe.errors.ExcLog
 import kr.ac.kaist.safe.compiler.Translator
 import kr.ac.kaist.safe.interpreter._
 import kr.ac.kaist.safe.interpreter.{InterpreterPredefine => IP}
@@ -96,18 +100,20 @@ class JSGlobal(_I: Interpreter, _proto: JSObject)
     x match {
       case PVal(IRVal(s: EJSString)) =>
         val prog: IRRoot = try {
-          var program: Program = Parser.parsePgm(s.str, "eval")
-          val hoister = new Hoister(program)
-          program = hoister.doit.asInstanceOf[Program]
-          val disambiguator = new Disambiguator(program, false)
-          program = disambiguator.doit.asInstanceOf[Program]
-          val withRewriter = new WithRewriter(program, false)
-          program = withRewriter.doit.asInstanceOf[Program]
-          val translator = new Translator(program, Option.none[Coverage])
-          translator.doit.asInstanceOf[IRRoot]
-        } catch {
-          case _: Throwable =>
+          val tried: scala.util.Try[(Program, ExcLog)] = Parser.parsePgm(s.str, "eval")
+          if (tried.isFailure) {
             return I.IS.comp.setThrow(IP.syntaxError, I.IS.span)
+          } else {
+            var (program, _) = tried.get
+            val hoister = new Hoister(program)
+            program = hoister.result
+            val disambiguator = new Disambiguator(program)
+            program = disambiguator.result
+            val withRewriter = new WithRewriter(program, false)
+            program = withRewriter.result
+            val translator = new Translator(program)
+            translator.result
+          }
         }
         /*
          * 10.4.2 Entering Eval Code

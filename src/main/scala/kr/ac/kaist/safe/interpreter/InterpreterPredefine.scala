@@ -1,11 +1,13 @@
-/*******************************************************************************
-    Copyright (c) 2012-2013, KAIST, S-Core.
-    All rights reserved.
-
-    Use is subject to license terms.
-
-    This distribution may include materials developed by third parties.
- ******************************************************************************/
+/**
+ * *****************************************************************************
+ * Copyright (c) 2016, KAIST.
+ * All rights reserved.
+ *
+ * Use is subject to license terms.
+ *
+ * This distribution may include materials developed by third parties.
+ * ****************************************************************************
+ */
 
 package kr.ac.kaist.safe.interpreter
 
@@ -67,7 +69,7 @@ object InterpreterPredefine {
   val argumentsTId = IF.makeTId(NF.dummyASTInfo("arguments"), argumentsName)
   //val resUndef = Normal(Some(undefV))
   val undefFtn =
-    IF.makeFunctional(false, IF.dummyAST, defId,
+    IF.makeFunctional(false, NF.dummyFunctional, defId,
                       List(thisTId, argumentsTId).asInstanceOf[List[IRId]],
                       IF.makeReturn(false, IF.dummyAST, Some(undefVar)))
   val undefDP = new ObjectProp(Some(undefV), None, None, Some(false), Some(false), Some(false)) // IH.mkDataProp()

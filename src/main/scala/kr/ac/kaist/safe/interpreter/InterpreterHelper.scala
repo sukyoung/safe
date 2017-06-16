@@ -1,11 +1,13 @@
-/*******************************************************************************
-    Copyright (c) 2012-2014, KAIST, S-Core.
-    All rights reserved.
-
-    Use is subject to license terms.
-
-    This distribution may include materials developed by third parties.
- ******************************************************************************/
+/**
+ * *****************************************************************************
+ * Copyright (c) 2016, KAIST.
+ * All rights reserved.
+ *
+ * Use is subject to license terms.
+ *
+ * This distribution may include materials developed by third parties.
+ * ****************************************************************************
+ */
 
 package kr.ac.kaist.safe.interpreter
 
@@ -889,7 +891,7 @@ class InterpreterHelper(I: Interpreter) {
         // d. If ny is NaN, return undefined.
         case (nx, ny) if (isNaN(nx) || isNaN(ny)) => IP.undefV
         // e. If nx and ny are the same Number value, return false.
-        case (nx, ny) if abstractEqualityComparison(PVal(nx), PVal(ny)) => IP.falsePV
+        case (nx, ny) if abstractEqualityComparison(PVal(IRVal(nx)), PVal(IRVal(ny))) => IP.falsePV
         // f. If nx is +0 and ny is -0, return false.
         case (nx, ny) if (isPlusZero(nx) && isMinusZero(ny)) => IP.falsePV
         // g. If nx is -0 and ny is +0, return false.

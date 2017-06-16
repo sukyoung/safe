@@ -1,11 +1,13 @@
-/*******************************************************************************
-    Copyright (c) 2012-2013, KAIST, S-Core.
-    All rights reserved.
-
-    Use is subject to license terms.
-
-    This distribution may include materials developed by third parties.
- ******************************************************************************/
+/**
+ * *****************************************************************************
+ * Copyright (c) 2016, KAIST.
+ * All rights reserved.
+ *
+ * Use is subject to license terms.
+ *
+ * This distribution may include materials developed by third parties.
+ * ****************************************************************************
+ */
 
 package kr.ac.kaist.safe
 
@@ -63,11 +65,6 @@ package object interpreter {
   // PVal
   case class PVal(v: IRVal) extends Val {
     override def toString(): String = ID.prExpr(v)
-  }
-
-  object PVal {
-    def apply(value: EJSVal) = PVal(IRVal(value))
-    def apply(irVal: IRVal) = PVal(irVal)
   }
 
   ////////////////////////////////////////////////////////////////////////////////

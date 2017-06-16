@@ -1,5 +1,5 @@
 /*******************************************************************************
-    Copyright (c) 2013-2014, KAIST, S-Core.
+    Copyright (c) 2016, KAIST.
     All rights reserved.
 
     Use is subject to license terms.
