@@ -14,15 +14,14 @@ package kr.ac.kaist.safe.interpreter.objects
 import scala.collection.mutable.HashMap
 
 import kr.ac.kaist.safe.interpreter._
-import kr.ac.kaist.safe.interpreter.{InterpreterPredefine => IP}
+import kr.ac.kaist.safe.interpreter.{ InterpreterPredefine => IP }
 import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.util._
-import kr.ac.kaist.safe.util.{EJSCompletionType => CT}
+import kr.ac.kaist.safe.util.{ EJSCompletionType => CT }
 import kr.ac.kaist.safe.util.regexp._
 
-
 class JSStringPrototype(_I: Interpreter, _proto: JSObject)
-  extends JSString(_I, _proto, "String", true, propTable) {
+    extends JSString(_I, _proto, "String", true, propTable) {
   def init(): Unit = {
     /*
      * 15.5.4 Properties of the String Prototype Object
@@ -96,7 +95,7 @@ class JSStringPrototype(_I: Interpreter, _proto: JSObject)
 
   def _charAt(pos: Val): Unit = {
     I.IH.checkObjectCoercible(I.IS.tb) match {
-      case v:Val =>
+      case v: Val =>
         val s: String = I.IH.toString(I.IS.tb)
         val position: Int = I.IH.toUint32(pos).toInt
         val size: Int = s.size
@@ -104,13 +103,13 @@ class JSStringPrototype(_I: Interpreter, _proto: JSObject)
           I.IS.comp.setReturn(PVal(I.IH.mkIRStrIR("")))
         else
           I.IS.comp.setReturn(PVal(I.IH.mkIRStrIR(s.substring(position, position + 1))))
-      case err:JSError => I.IS.comp.setThrow(err, I.IS.span)
+      case err: JSError => I.IS.comp.setThrow(err, I.IS.span)
     }
   }
 
   def _charCodeAt(pos: Val): Unit = {
     I.IH.checkObjectCoercible(I.IS.tb) match {
-      case v:Val =>
+      case v: Val =>
         val s: String = I.IH.toString(I.IS.tb)
         val position: Int = I.IH.toUint32(pos).toInt
         val size: Int = s.size
@@ -118,24 +117,24 @@ class JSStringPrototype(_I: Interpreter, _proto: JSObject)
           I.IS.comp.setReturn(PVal(IRVal(IP.NaN)))
         else
           I.IS.comp.setReturn(PVal(IRVal(I.IH.mkIRNum(s(position).toInt))))
-      case err:JSError => I.IS.comp.setThrow(err, I.IS.span)
+      case err: JSError => I.IS.comp.setThrow(err, I.IS.span)
     }
   }
 
   def _concat(args: List[Val]): Unit = {
     I.IH.checkObjectCoercible(I.IS.tb) match {
-      case v:Val =>
+      case v: Val =>
         val s: String = I.IH.toString(I.IS.tb)
         val r: String = s + args.map((v: Val) => I.IH.toString(v)).mkString
         I.IS.comp.setReturn(PVal(I.IH.mkIRStrIR(r)))
-      case err:JSError => I.IS.comp.setThrow(err, I.IS.span)
+      case err: JSError => I.IS.comp.setThrow(err, I.IS.span)
     }
   }
 
   // _replace method has a code clone of _match method.
   def _match(regexp: Val): Unit = {
     I.IH.checkObjectCoercible(I.IS.tb) match {
-      case v:Val =>
+      case v: Val =>
         val s: String = I.IH.toString(I.IS.tb)
         val rx: JSRegExp = regexp match {
           case r: JSRegExp => r
@@ -162,7 +161,7 @@ class JSStringPrototype(_I: Interpreter, _proto: JSObject)
             val oldTb: Val = I.IS.tb
             I.IS.tb = rx
             I.IS.RegExpPrototype._exec(PVal(I.IH.mkIRStrIR(s)))
-            if(I.IS.comp.Type == CT.RETURN) {
+            if (I.IS.comp.Type == CT.RETURN) {
               I.IS.comp.value match {
                 case PVal(IRVal(EJSNull)) =>
                   I.IS.tb = oldTb
@@ -178,16 +177,17 @@ class JSStringPrototype(_I: Interpreter, _proto: JSObject)
                     previousLastIndex = thisIndex
                   }
                   val matchStr: Val = result._get("0")
-                  a._defineOwnProperty(n.toString,
-                                       I.IH.mkDataProp(matchStr, true, true, true),
-                                       true)
+                  a._defineOwnProperty(
+                    n.toString,
+                    I.IH.mkDataProp(matchStr, true, true, true),
+                    true
+                  )
                   n += 1
                 case _ =>
                   I.IS.tb = oldTb
                   return
               }
-            }
-            else {
+            } else {
               I.IS.tb = oldTb
               return
             }
@@ -197,14 +197,14 @@ class JSStringPrototype(_I: Interpreter, _proto: JSObject)
           else
             I.IS.comp.setReturn(a)
         }
-      case err:JSError => I.IS.comp.setThrow(err, I.IS.span)
+      case err: JSError => I.IS.comp.setThrow(err, I.IS.span)
     }
   }
 
   // _replace method has a code clone of _match method.
   def _replace(searchValue: Val, replaceValue: Val): Unit = {
     I.IH.checkObjectCoercible(I.IS.tb) match {
-      case v:Val =>
+      case v: Val =>
         val s: String = I.IH.toString(I.IS.tb)
         val (sr: List[(Int, JSArray)], m: Int) = searchValue match {
           case sv: JSRegExp =>
@@ -214,7 +214,7 @@ class JSStringPrototype(_I: Interpreter, _proto: JSObject)
               val oldTb: Val = I.IS.tb
               I.IS.tb = sv
               I.IS.RegExpPrototype._exec(PVal(I.IH.mkIRStrIR(s)))
-              if(I.IS.comp.Type == CT.RETURN) {
+              if (I.IS.comp.Type == CT.RETURN) {
                 I.IS.comp.value match {
                   case PVal(IRVal(EJSNull)) =>
                     I.IS.tb = oldTb
@@ -231,8 +231,7 @@ class JSStringPrototype(_I: Interpreter, _proto: JSObject)
                     I.IS.tb = oldTb
                     return
                 }
-              }
-              else {
+              } else {
                 I.IS.tb = oldTb
                 return
               }
@@ -247,7 +246,7 @@ class JSStringPrototype(_I: Interpreter, _proto: JSObject)
                 val oldTb: Val = I.IS.tb
                 I.IS.tb = sv
                 I.IS.RegExpPrototype._exec(PVal(I.IH.mkIRStrIR(s)))
-                if(I.IS.comp.Type == CT.RETURN) {
+                if (I.IS.comp.Type == CT.RETURN) {
                   I.IS.comp.value match {
                     case PVal(IRVal(EJSNull)) =>
                       I.IS.tb = oldTb
@@ -267,8 +266,7 @@ class JSStringPrototype(_I: Interpreter, _proto: JSObject)
                       I.IS.tb = oldTb
                       return
                   }
-                }
-                else {
+                } else {
                   I.IS.tb = oldTb
                   return
                 }
@@ -291,16 +289,20 @@ class JSStringPrototype(_I: Interpreter, _proto: JSObject)
               replaced += s.substring(lastEndIndex, index - matchStr.length)
               lastEndIndex = index
               // TODO: Settings for data property
-              a._defineOwnProperty((m+1).toString,
-                                   I.IH.mkDataProp(PVal(IRVal(I.IH.mkIRNum(index))), true, true, true),
-                                   true)
-              a._defineOwnProperty((m+2).toString,
-                                   I.IH.mkDataProp(PVal(I.IH.mkIRStrIR(s)), true, true, true),
-                                   true)
+              a._defineOwnProperty(
+                (m + 1).toString,
+                I.IH.mkDataProp(PVal(IRVal(I.IH.mkIRNum(index))), true, true, true),
+                true
+              )
+              a._defineOwnProperty(
+                (m + 2).toString,
+                I.IH.mkDataProp(PVal(I.IH.mkIRStrIR(s)), true, true, true),
+                true
+              )
               val argsList: JSObject = I.IH.newArgObj(fun, fun.code.args.size, a, I.IS.strict)
               var rs: String = null
               fun._call(I.IS.GlobalObject, argsList)
-              if(I.IS.comp.Type == CT.RETURN) rs = I.IH.toString(I.IS.comp.value)
+              if (I.IS.comp.Type == CT.RETURN) rs = I.IH.toString(I.IS.comp.value)
               else return
               replaced += rs
             }
@@ -317,29 +319,29 @@ class JSStringPrototype(_I: Interpreter, _proto: JSObject)
               lastEndIndex = index
               var i = 0
               while (i < len) {
-                if (i+2 <= len && newstring.substring(i, i+2) == "$$") {
+                if (i + 2 <= len && newstring.substring(i, i + 2) == "$$") {
                   replaced += '$'
                   i += 2
-                } else if (i+2 <= len && newstring.substring(i, i+2) == "$&") {
+                } else if (i + 2 <= len && newstring.substring(i, i + 2) == "$&") {
                   replaced += matchStr
                   i += 2
-                } else if (i+2 <= len && newstring.substring(i, i+2) == "$`") {
+                } else if (i + 2 <= len && newstring.substring(i, i + 2) == "$`") {
                   replaced += s.substring(0, index)
                   i += 2
-                } else if (i+2 <= len && newstring.substring(i, i+2) == "$'") {
+                } else if (i + 2 <= len && newstring.substring(i, i + 2) == "$'") {
                   replaced += s.substring(index)
                   i += 2
-                } else if (i+3 <= len && newstring(i) == '$' &&
-                           '0' <= newstring(i+1) && newstring(i+1) <= '9' &&
-                           '0' <= newstring(i+2) && newstring(i+2) <= '9' &&
-                           newstring.substring(i+1, i+3) != "00") {
-                  val v: Val = a._get(newstring.substring(i+1, i+3))
+                } else if (i + 3 <= len && newstring(i) == '$' &&
+                  '0' <= newstring(i + 1) && newstring(i + 1) <= '9' &&
+                  '0' <= newstring(i + 2) && newstring(i + 2) <= '9' &&
+                  newstring.substring(i + 1, i + 3) != "00") {
+                  val v: Val = a._get(newstring.substring(i + 1, i + 3))
                   val rs: String = if (I.IH.isUndef(v)) "" else I.IH.toString(v)
                   replaced += rs
                   i += 3
-                } else if (i+2 <= len && newstring(i) == '$' &&
-                           '1' <= newstring(i+1) && newstring(i+1) <= '9') {
-                  val v: Val = a._get(newstring.substring(i+1, i+2))
+                } else if (i + 2 <= len && newstring(i) == '$' &&
+                  '1' <= newstring(i + 1) && newstring(i + 1) <= '9') {
+                  val v: Val = a._get(newstring.substring(i + 1, i + 2))
                   val rs: String = if (I.IH.isUndef(v)) "" else I.IH.toString(v)
                   replaced += rs
                   i += 2
@@ -352,39 +354,39 @@ class JSStringPrototype(_I: Interpreter, _proto: JSObject)
             replaced += s.substring(lastEndIndex)
             I.IS.comp.setReturn(PVal(I.IH.mkIRStrIR(replaced)))
         }
-      case err:JSError => I.IS.comp.setThrow(err, I.IS.span)
+      case err: JSError => I.IS.comp.setThrow(err, I.IS.span)
     }
   }
 
   def _slice(start: Val, end: Val): Unit = {
     I.IH.checkObjectCoercible(I.IS.tb) match {
-      case v:Val =>
+      case v: Val =>
         val s: String = I.IH.toString(I.IS.tb)
         val len: Int = s.size
         val intStart: Int = I.IH.toUint32(start).toInt
         val intEnd: Int = if (I.IH.isUndef(end)) len
-                          else I.IH.toUint32(end).toInt
+        else I.IH.toUint32(end).toInt
         val from: Int = if (intStart < 0) (len + intStart) max 0
-                        else intStart min len
+        else intStart min len
         val to: Int = if (intEnd < 0) (len + intEnd) max 0
-                      else intEnd min len
+        else intEnd min len
         val span: Int = (to - from) max 0
         I.IS.comp.setReturn(PVal(I.IH.mkIRStrIR(s.substring(from, from + span))))
-      case err:JSError => I.IS.comp.setThrow(err, I.IS.span)
+      case err: JSError => I.IS.comp.setThrow(err, I.IS.span)
     }
   }
 
   def _split(separator: Val, limit: Val): Unit = {
     def splitMatch(s: String, q: Int, r: Any): MatchResult = {
       r match {
-        case r:JSRegExp => r._match(s, q)
-        case r:String =>
+        case r: JSRegExp => r._match(s, q)
+        case r: String =>
           val rl: Int = r.length
           val sl: Int = s.length
           if (q + rl > sl) None
           else {
             var ok: Boolean = true
-            for (i <- 0 until rl if s(q+i) != r(i)) { ok = false }
+            for (i <- 0 until rl if s(q + i) != r(i)) { ok = false }
             if (!ok) None
             else {
               val cap = new HashMap[Int, Option[String]]
@@ -394,7 +396,7 @@ class JSStringPrototype(_I: Interpreter, _proto: JSObject)
       }
     }
     I.IH.checkObjectCoercible(I.IS.tb) match {
-      case v:Val =>
+      case v: Val =>
         val str: String = I.IH.toString(I.IS.tb)
         val a: JSArray = I.IS.ArrayConstructor.construct(Nil)
         var lengthA: Int = 0
@@ -408,18 +410,22 @@ class JSStringPrototype(_I: Interpreter, _proto: JSObject)
         }
         if (lim == 0) I.IS.comp.setReturn(a)
         else if (I.IH.isUndef(separator)) {
-          a._defineOwnProperty("0",
-                               I.IH.mkDataProp(PVal(I.IH.mkIRStrIR(str)), true, true, true),
-                               false)
+          a._defineOwnProperty(
+            "0",
+            I.IH.mkDataProp(PVal(I.IH.mkIRStrIR(str)), true, true, true),
+            false
+          )
           I.IS.comp.setReturn(a)
         } else if (s == 0) {
           val z: MatchResult = splitMatch(str, 0, r)
           z match {
             case Some(y) => I.IS.comp.setReturn(a)
             case None =>
-              a._defineOwnProperty("0",
-                                   I.IH.mkDataProp(PVal(I.IH.mkIRStrIR(str)), true, true, true),
-                                   false)
+              a._defineOwnProperty(
+                "0",
+                I.IH.mkDataProp(PVal(I.IH.mkIRStrIR(str)), true, true, true),
+                false
+              )
               I.IS.comp.setReturn(a)
           }
         } else {
@@ -432,9 +438,11 @@ class JSStringPrototype(_I: Interpreter, _proto: JSObject)
                 if (e == p) q += 1
                 else {
                   val t: String = str.substring(p, q)
-                  a._defineOwnProperty(lengthA.toString,
-                                       I.IH.mkDataProp(PVal(I.IH.mkIRStrIR(t)), true, true, true),
-                                       false)
+                  a._defineOwnProperty(
+                    lengthA.toString,
+                    I.IH.mkDataProp(PVal(I.IH.mkIRStrIR(t)), true, true, true),
+                    false
+                  )
                   lengthA += 1
                   if (lengthA == lim) return I.IS.comp.setReturn(a)
                   p = e
@@ -445,9 +453,11 @@ class JSStringPrototype(_I: Interpreter, _proto: JSObject)
                       case Some(s) => PVal(I.IH.mkIRStrIR(s))
                       case None => IP.undefV
                     }
-                    a._defineOwnProperty(lengthA.toString,
-                                         I.IH.mkDataProp(capI, true, true, true),
-                                         false)
+                    a._defineOwnProperty(
+                      lengthA.toString,
+                      I.IH.mkDataProp(capI, true, true, true),
+                      false
+                    )
                     lengthA += 1
                     if (lengthA == lim) return I.IS.comp.setReturn(a)
                   }
@@ -457,38 +467,40 @@ class JSStringPrototype(_I: Interpreter, _proto: JSObject)
             }
           }
           val t: String = str.substring(p, s)
-          a._defineOwnProperty(lengthA.toString,
-                               I.IH.mkDataProp(PVal(I.IH.mkIRStrIR(t)), true, true, true),
-                               false)
+          a._defineOwnProperty(
+            lengthA.toString,
+            I.IH.mkDataProp(PVal(I.IH.mkIRStrIR(t)), true, true, true),
+            false
+          )
           I.IS.comp.setReturn(a)
         }
-      case err:JSError => I.IS.comp.setThrow(err, I.IS.span)
+      case err: JSError => I.IS.comp.setThrow(err, I.IS.span)
     }
   }
 
   def _substring(start: Val, end: Val): Unit = {
     I.IH.checkObjectCoercible(I.IS.tb) match {
-      case v:Val =>
+      case v: Val =>
         val s: String = I.IH.toString(I.IS.tb)
         val len: Int = s.size
         val intStart: Int = I.IH.toUint32(start).toInt
         val intEnd: Int = if (I.IH.isUndef(end)) len
-                          else I.IH.toUint32(end).toInt
+        else I.IH.toUint32(end).toInt
         val finalStart: Int = (intStart max 0) min len
         val finalEnd: Int = (intEnd max 0) min len
         val from: Int = finalStart min finalEnd
         val to: Int = finalStart max finalEnd
         I.IS.comp.setReturn(PVal(I.IH.mkIRStrIR(s.substring(from, to))))
-      case err:JSError => I.IS.comp.setThrow(err, I.IS.span)
+      case err: JSError => I.IS.comp.setThrow(err, I.IS.span)
     }
   }
 
   def _toLowerCase(): Unit = {
     I.IH.checkObjectCoercible(I.IS.tb) match {
-      case v:Val =>
+      case v: Val =>
         val s: String = I.IH.toString(I.IS.tb)
         I.IS.comp.setReturn(PVal(I.IH.mkIRStrIR(s.toLowerCase)))
-      case err:JSError => I.IS.comp.setThrow(err, I.IS.span)
+      case err: JSError => I.IS.comp.setThrow(err, I.IS.span)
     }
   }
 }

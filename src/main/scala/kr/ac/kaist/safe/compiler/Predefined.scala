@@ -1,15 +1,17 @@
-/*******************************************************************************
-    Copyright (c) 2016, KAIST.
-    All rights reserved.
-
-    Use is subject to license terms.
-
-    This distribution may include materials developed by third parties.
- ***************************************************************************** */
+/**
+ * *****************************************************************************
+ * Copyright (c) 2016, KAIST.
+ * All rights reserved.
+ *
+ * Use is subject to license terms.
+ *
+ * This distribution may include materials developed by third parties.
+ * ****************************************************************************
+ */
 
 package kr.ac.kaist.safe.compiler
 
-import kr.ac.kaist.safe.util.{NodeUtil => NU}
+import kr.ac.kaist.safe.util.{ NodeUtil => NU }
 
 class Predefined(params: ShellParameters) {
   val doms = List(
@@ -210,7 +212,8 @@ class Predefined(params: ShellParameters) {
     // predefined constant variables from IR
     NU.VAR_TRUE,
     NU.VAR_ONE,
-    NU.freshGlobalName("global"))
+    NU.freshGlobalName("global")
+  )
 
   val varsAll = params.command match {
     case ShellParameters.CMD_HTML => vars ++ doms

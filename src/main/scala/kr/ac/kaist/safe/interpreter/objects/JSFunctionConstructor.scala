@@ -12,10 +12,10 @@
 package kr.ac.kaist.safe.interpreter.objects
 
 import kr.ac.kaist.safe.interpreter._
-import kr.ac.kaist.safe.interpreter.{InterpreterPredefine => IP}
+import kr.ac.kaist.safe.interpreter.{ InterpreterPredefine => IP }
 
 class JSFunctionConstructor(_I: Interpreter, _proto: JSObject)
-  extends JSFunction13(_I, _proto, "Function", true, propTable, IP.undefFtn, EmptyEnv(), true) {
+    extends JSFunction13(_I, _proto, "Function", true, propTable, IP.undefFtn, EmptyEnv(), true) {
   def init(): Unit = {
     // 15.3.2 Properties of the Function Constructor
     property.put("length", I.IH.numProp(1))
@@ -40,7 +40,7 @@ class JSFunctionConstructor(_I: Interpreter, _proto: JSObject)
   override def _construct(argsObj: JSObject): JSObject = {
     // 1 ~ 10
     // TODO:
-    
+
     // 11. Return a new Function object created as specified in 13.2 passing P as the FormalparameterList(opt) and
     //     body as the FunctionBody. Pass in the Global Environment as the Scope parameter and strict as the Strict flag.
     I.IH.createFunctionObject(IP.undefFtn, EmptyEnv(), I.IS.strict)

@@ -11,8 +11,8 @@
 
 package kr.ac.kaist.safe.util.useful
 
-import _root_.java.util.{HashSet => JHashSet}
-import _root_.java.util.{Set => JavaSet}
+import _root_.java.util.{ HashSet => JHashSet }
+import _root_.java.util.{ Set => JavaSet }
 import scala.collection.JavaConversions
 
 object Sets {

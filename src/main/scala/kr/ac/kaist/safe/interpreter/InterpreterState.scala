@@ -11,15 +11,15 @@
 
 package kr.ac.kaist.safe.interpreter
 
-import edu.rice.cs.plt.tuple.{Option => JOption}
-import kr.ac.kaist.safe.compiler.{Predefined}
-import kr.ac.kaist.safe.interpreter.{InterpreterPredefine => IP}
+import edu.rice.cs.plt.tuple.{ Option => JOption }
+import kr.ac.kaist.safe.compiler.{ Predefined }
+import kr.ac.kaist.safe.interpreter.{ InterpreterPredefine => IP }
 import kr.ac.kaist.safe.interpreter.objects._
-import kr.ac.kaist.safe.nodes.{NodeFactory => NF}
+import kr.ac.kaist.safe.nodes.{ NodeFactory => NF }
 import kr.ac.kaist.safe.nodes.ast._
 import kr.ac.kaist.safe.nodes.ir._
-import kr.ac.kaist.safe.nodes.ir.{IRFactory => IF}
-import kr.ac.kaist.safe.util.{Coverage, NodeUtil => NU, Span}
+import kr.ac.kaist.safe.nodes.ir.{ IRFactory => IF }
+import kr.ac.kaist.safe.util.{ Coverage, NodeUtil => NU, Span }
 import kr.ac.kaist.safe.util.useful.Sets
 
 class InterpreterState(val I: Interpreter) {
@@ -72,23 +72,23 @@ class InterpreterState(val I: Interpreter) {
 
   def checkPredefined() {
     val notYetImplemented = Set("JSON", "decodeURIComponent", "encodeURIComponent", "encodeURI",
-                                "<>Global<>global", "decodeURI", "Exception")
+      "<>Global<>global", "decodeURI", "Exception")
     val predefNames = if (Shell.pred != null)
-                        Shell.pred.all.toSet.filterNot(notYetImplemented.contains(_))
-                      else
-                        (new Predefined(new ShellParameters())).all.toSet.filterNot(notYetImplemented.contains(_))
+      Shell.pred.all.toSet.filterNot(notYetImplemented.contains(_))
+    else
+      (new Predefined(new ShellParameters())).all.toSet.filterNot(notYetImplemented.contains(_))
     val interpNames = Sets.toSet[String](ObjectPrototype.property.map.keySet).filterNot(objectProps.contains(_)) ++
-                      Sets.toSet[String](GlobalObject.property.map.keySet)
+      Sets.toSet[String](GlobalObject.property.map.keySet)
     if (!interpNames.subsetOf(predefNames)) {
       System.out.println("The following names are defined in the initial heap of the interpreter\n"
-                         +"but not in the list of predefined names:\n  ")
-      interpNames.filterNot(predefNames.contains(_)).foreach((s:String) => System.out.print(s+" "))
+        + "but not in the list of predefined names:\n  ")
+      interpNames.filterNot(predefNames.contains(_)).foreach((s: String) => System.out.print(s + " "))
       throw new InterpreterError("Predefined names mismatch.", span)
     }
     if (!predefNames.subsetOf(interpNames)) {
       System.out.println("The following names are defined in the list of predefined names\n"
-                         +"but not in the initial heap of the interpreter:\n  ")
-      predefNames.filterNot(interpNames.contains(_)).foreach((s:String) => System.out.print(s+" "))
+        + "but not in the initial heap of the interpreter:\n  ")
+      predefNames.filterNot(interpNames.contains(_)).foreach((s: String) => System.out.print(s + " "))
       throw new InterpreterError("Predefined names mismatch.", span)
     }
   }

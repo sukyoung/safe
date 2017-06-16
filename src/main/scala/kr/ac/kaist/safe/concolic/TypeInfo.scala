@@ -11,7 +11,7 @@
 
 package kr.ac.kaist.safe.concolic
 
-import _root_.java.util.{List => JList}
+import _root_.java.util.{ List => JList }
 import kr.ac.kaist.safe.util.useful.Lists
 
 class TypeInfo(t: String) {
@@ -21,7 +21,7 @@ class TypeInfo(t: String) {
   var constructorNames = List[String]()
   def getConstructors() = constructorNames
   def addConstructors(x: List[String]) = {
-    var temp = constructorNames:::x
+    var temp = constructorNames ::: x
     temp.distinct
     constructorNames = temp
   }
@@ -29,7 +29,7 @@ class TypeInfo(t: String) {
   var properties = List[String]()
   def getProperties() = properties
   def setProperties(x: List[String]) = {
-    var temp = properties:::x
+    var temp = properties ::: x
     temp.distinct
     properties = temp
   }

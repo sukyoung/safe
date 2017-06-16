@@ -12,7 +12,7 @@
 package kr.ac.kaist.safe.interpreter.objects
 
 import kr.ac.kaist.safe.interpreter._
-import kr.ac.kaist.safe.interpreter.{InterpreterPredefine => IP}
+import kr.ac.kaist.safe.interpreter.{ InterpreterPredefine => IP }
 import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.util._
 
@@ -55,15 +55,15 @@ class JSDateHelper(IH: InterpreterHelper) {
     }
   def _dayFromYear(y: EJSNumber): EJSNumber = if (IH.isNaN(y)) IP.NaN else {
     val yn = y.num
-    IH.mkIRNum(365 * (yn - 1970) + scala.math.floor((yn - 1969)/4)
-      - scala.math.floor((yn - 1901)/100) + scala.math.floor((yn - 1601)/400))
+    IH.mkIRNum(365 * (yn - 1970) + scala.math.floor((yn - 1969) / 4)
+      - scala.math.floor((yn - 1901) / 100) + scala.math.floor((yn - 1601) / 400))
   }
   def _timeFromYear(y: EJSNumber): EJSNumber = if (IH.isNaN(y)) IP.NaN else
     IH.mkIRNum(_msPerDay * _dayFromYear(y).num)
   def _yearFromTime(t: EJSNumber): EJSNumber = if (IH.isNaN(t)) IP.NaN else {
     var (l, r): (Double, Double) = (__initYear - __yearRange, __initYear + __yearRange)
     while (l <= r) {
-      val mid = scala.math.floor((l + r)/2)
+      val mid = scala.math.floor((l + r) / 2)
       if (_timeFromYear(IH.mkIRNum(mid)).num <= t.num) l = mid + 1
       else r = mid - 1
     }
@@ -119,7 +119,7 @@ class JSDateHelper(IH: InterpreterHelper) {
       case 11 => IH.mkIRNum(dayWithinYear - 333 - inLeapYear)
     }
   }
-  
+
   /*
    * 15.9.1.6 Week Day
    */
@@ -189,10 +189,10 @@ class JSDateHelper(IH: InterpreterHelper) {
       var (l, r, t): (Double, Double, Double) = (-__msRange, __msRange, 0.0)
       val (nl, nr) = (IH.mkIRNum(l), IH.mkIRNum(r))
       if (__lessYMD(ym, mn, dd, _yearFromTime(nl), _monthFromTime(nl), _dateFromTime(nl)) ||
-          __lessYMD(_yearFromTime(nr), _monthFromTime(nr), _dateFromTime(nr), ym, mn, dd)) IP.NaN
+        __lessYMD(_yearFromTime(nr), _monthFromTime(nr), _dateFromTime(nr), ym, mn, dd)) IP.NaN
       else {
         while (l <= r) {
-          val mid = scala.math.floor((l + r)/2)
+          val mid = scala.math.floor((l + r) / 2)
           val nmid = IH.mkIRNum(mid)
           val (ymid, mmid, dmid) = (_yearFromTime(nmid), _monthFromTime(nmid), _dateFromTime(nmid))
           if (__lessYMD(ymid, mmid, dmid, ym, mn, dd)) l = mid + 1

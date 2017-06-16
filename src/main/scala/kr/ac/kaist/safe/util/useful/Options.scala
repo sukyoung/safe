@@ -11,7 +11,7 @@
 
 package kr.ac.kaist.safe.util.useful
 
-import _root_.edu.rice.cs.plt.tuple.{Option => JavaOption}
+import _root_.edu.rice.cs.plt.tuple.{ Option => JavaOption }
 import _root_.junit.framework.TestCase
 
 object Options {
@@ -33,14 +33,18 @@ object Options {
 class OptionsJUTest() extends TestCase {
   def testEmptyToJavaOption() = {
     val none = JavaOption.none
-    assert(Options.toOption(none) equals None,
-      "Java nones are not mapped to Scala nones")
+    assert(
+      Options.toOption(none) equals None,
+      "Java nones are not mapped to Scala nones"
+    )
   }
 
   def testNonEmptyToJavaOption() = {
     val some = JavaOption.some(1)
-    assert(Options.toOption(some) equals Some(1),
-      "Java somes are not mapped to Scala somes")
+    assert(
+      Options.toOption(some) equals Some(1),
+      "Java somes are not mapped to Scala somes"
+    )
   }
 }
 

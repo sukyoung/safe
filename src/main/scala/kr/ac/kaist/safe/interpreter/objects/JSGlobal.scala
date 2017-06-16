@@ -15,17 +15,17 @@ import kr.ac.kaist.safe.ast_rewriter._
 import kr.ac.kaist.safe.errors.ExcLog
 import kr.ac.kaist.safe.compiler.Translator
 import kr.ac.kaist.safe.interpreter._
-import kr.ac.kaist.safe.interpreter.{InterpreterPredefine => IP}
+import kr.ac.kaist.safe.interpreter.{ InterpreterPredefine => IP }
 import kr.ac.kaist.safe.nodes.ast._
 import kr.ac.kaist.safe.nodes.ir._
-import kr.ac.kaist.safe.nodes.ir.{IRFactory => IF}
+import kr.ac.kaist.safe.nodes.ir.{ IRFactory => IF }
 import kr.ac.kaist.safe.parser._
-import kr.ac.kaist.safe.util.{EJSCompletionType => CT, NodeUtil => NU}
+import kr.ac.kaist.safe.util.{ EJSCompletionType => CT, NodeUtil => NU }
 import kr.ac.kaist.safe.util._
 import kr.ac.kaist.safe.util.useful.Lists._
 
 class JSGlobal(_I: Interpreter, _proto: JSObject)
-  extends JSObject(_I, _proto, "Global", true, propTable) {
+    extends JSObject(_I, _proto, "Global", true, propTable) {
   def init(): Unit = {
     // Internal identifiers created by Translator
     property.put(NU.VAR_TRUE, I.IH.mkDataProp(IP.truePV, false, false, false))
@@ -72,7 +72,6 @@ class JSGlobal(_I: Interpreter, _proto: JSObject)
 
   val declEnvRec: DeclEnvRec = new DeclEnvRec(new Store)
   declEnvRec.s.put(NU.freshGlobalName("global"), new StoreValue(this, true, true, true))
-
 
   override def __callBuiltinFunction(method: JSFunction, argsObj: JSObject): Unit = {
     val args: Array[Val] = I.IH.argsObjectToArray(argsObj, 2)
@@ -132,18 +131,18 @@ class JSGlobal(_I: Interpreter, _proto: JSObject)
         I.IS.eval = true
         val oldCompletionValue = I.IS.comp.value
         I.IS.comp.value = null
-        I.walkIRs(toList(prog.fds)++toList(prog.vds)++toList(prog.irs))
+        I.walkIRs(toList(prog.fds) ++ toList(prog.vds) ++ toList(prog.irs))
         I.IS.env = oldEnv
         I.IS.tb = oldTb
         I.IS.eval = oldEval
-        if(I.IS.comp.Type == CT.NORMAL) {
-          if(I.IS.comp.value == null) I.IS.comp.setReturn(IP.undefV)
+        if (I.IS.comp.Type == CT.NORMAL) {
+          if (I.IS.comp.value == null) I.IS.comp.setReturn(IP.undefV)
           else I.IS.comp.setReturn()
         }
       case _ => I.IS.comp.setReturn(x)
     }
   }
-  
+
   // 15.1.2.2 parseInt(string, radix)
   def parseInt(string: Val, radix: Val): Unit = {
     // 1. Let inputString be ToString(string).
@@ -156,28 +155,27 @@ class JSGlobal(_I: Interpreter, _proto: JSObject)
     // 3. Let sign be 1.
     var sign = 1
     // 4. If S is not empty and the first character of S is a minus sign -, let sign be -1.
-    if(!S.isEmpty && S.charAt(0) == '-') sign = -1
+    if (!S.isEmpty && S.charAt(0) == '-') sign = -1
     // 5. If S is not empty and the first character of S is a plus sign + or a minus sign -,
     //    then remove the first character form S.
-    if(!S.isEmpty && (S.charAt(0) == '+' || S.charAt(0) == '-')) S = S.substring(1)
+    if (!S.isEmpty && (S.charAt(0) == '+' || S.charAt(0) == '-')) S = S.substring(1)
     // 6. Let R = ToInt32(radix).
     var R = I.IH.toInt32(radix)
     // 7. Let stripPrefix be true.
     var stripPrefix = true
     // 8. If R != 0, then
-    if(R != 0) {
+    if (R != 0) {
       // a. If R < 2 or R > 36, then return NaN.
-      if(R < 2 || R > 36) {I.IS.comp.setReturn(PVal(IRVal(IP.NaN))); return}
+      if (R < 2 || R > 36) { I.IS.comp.setReturn(PVal(IRVal(IP.NaN))); return }
       // b. If R != 16, let stripPrefix be false.
       stripPrefix = false
-    }
-    // 9. Else, R = 0
-    else if(R == 0) R = 10
+    } // 9. Else, R = 0
+    else if (R == 0) R = 10
     // 10. If stripPrefix is true, then
-    if(stripPrefix) {
+    if (stripPrefix) {
       // a. If the length of S is at least 2 and the first two characters of S are either "0x" or "0X",
       //    then remove the first two characters from S and let R = 16.
-      if(S.length > 2 && S.substring(0, 2).equals("0x")) {
+      if (S.length > 2 && S.substring(0, 2).equals("0x")) {
         S = S.substring(2)
         R = 16
       }
@@ -188,16 +186,16 @@ class JSGlobal(_I: Interpreter, _proto: JSObject)
     // 12. If Z is empty, return NaN.
     val i = S.indexWhere(c => {
       (R <= 10 && !(c >= '0' && c <= '0' + R - 1)) || // 2 ~ 10
-      (R > 10 && !((c >= '0' && c <= '9') || (c >= 'a' && c <= 'a' + R - 1))) // 11 ~ 36
+        (R > 10 && !((c >= '0' && c <= '9') || (c >= 'a' && c <= 'a' + R - 1))) // 11 ~ 36
     })
-    val Z = {if(i == -1) S else S.substring(0, i)}
-    if(Z.isEmpty) {I.IS.comp.setReturn(PVal(IRVal(IP.NaN))); return}
+    val Z = { if (i == -1) S else S.substring(0, i) }
+    if (Z.isEmpty) { I.IS.comp.setReturn(PVal(IRVal(IP.NaN))); return }
     // 13. Let mathInt be the mathematical integer value that is represented by Z in radix-R notation,
     //     using the letters A-Z and a-z for digits with values 10 through 35. (However, ...)
     var mathInt: Double = 0.0
-    for(c <- Z) {
-      if(c >= '0' && c <= '9') mathInt = mathInt * R + (c - '0')
-      else if(c >= 'a' && c <= 'z') mathInt = mathInt * R + (c - 'a' + 10)
+    for (c <- Z) {
+      if (c >= '0' && c <= '9') mathInt = mathInt * R + (c - '0')
+      else if (c >= 'a' && c <= 'z') mathInt = mathInt * R + (c - 'a' + 10)
     }
     // 14. Let number be the Number value for mathInt.
     val number = mathInt
@@ -221,8 +219,7 @@ class JSGlobal(_I: Interpreter, _proto: JSObject)
     // TODO: String.toDouble is used temporarily T_T
     try {
       I.IS.comp.setReturn(PVal(IRVal(I.IH.mkIRNum(trimmedString.toDouble))))
-    }
-    catch {
+    } catch {
       case _: Throwable => I.IS.comp.setReturn(PVal(IRVal(IP.NaN)))
     }
   }
@@ -245,7 +242,7 @@ class JSGlobal(_I: Interpreter, _proto: JSObject)
   ////////////////////////////////////////////////////////////////////////////////
   // 15.1.3 URI Handling Function Properties
   ////////////////////////////////////////////////////////////////////////////////
-  
+
   /*
   // 15.1.3.1 decodeURI(encodedURI)
   // TODO:

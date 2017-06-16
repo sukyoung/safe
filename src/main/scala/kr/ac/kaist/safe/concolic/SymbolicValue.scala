@@ -24,19 +24,19 @@ class SymbolicValue {
   var fromConcrete: Boolean = false
 
   def makeSymbolicValue(_type: String) = types = List(_type)
-  def makeSymbolicValue(_types: List[String]) = types = _types 
+  def makeSymbolicValue(_types: List[String]) = types = _types
   def makeSymbolicValue(_value: String, _type: String) = {
     value = _value
     types = List(_type)
   }
   def makeSymbolicValue(_value: String, _types: List[String]) = {
     value = _value
-    types = _types 
+    types = _types
   }
   def makeSymbolicValueFromConcrete(_type: String) = {
     types = List(_type)
     instance = _type
-    fromConcrete = true 
+    fromConcrete = true
   }
   def makeSymbolicValueFromConcrete(_value: String, _type: String) = {
     value = _value
@@ -44,11 +44,11 @@ class SymbolicValue {
     instance = _type
     fromConcrete = true
   }
-  
+
   def isObject: Boolean = {
     if (instance == null)
       false
-    else 
+    else
       instance.equals("Object")
   }
   def isNull: Boolean = {
@@ -60,7 +60,7 @@ class SymbolicValue {
 
   def isInput(): Boolean = {
     if (value == null)
-      return false 
+      return false
     value.contains("i") || value.contains("this")
   }
 

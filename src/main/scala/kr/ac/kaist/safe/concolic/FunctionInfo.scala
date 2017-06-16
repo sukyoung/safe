@@ -12,35 +12,32 @@
 package kr.ac.kaist.safe.concolic
 
 import scala.collection.mutable.Map
-import _root_.java.lang.{Integer => JInteger}
-import _root_.java.util.{HashMap => JavaHashMap, List => JList, Map => JavaMap}
+import _root_.java.lang.{ Integer => JInteger }
+import _root_.java.util.{ HashMap => JavaHashMap, List => JList, Map => JavaMap }
 import kr.ac.kaist.safe.util.useful.Lists
-
 
 class FunctionInfo() {
   /* STORE FUNCTION INFORMATION */
-  var params = Map[Int, List[TypeInfo]]() 
+  var params = Map[Int, List[TypeInfo]]()
   def storeParameter(n: Int, t: TypeInfo) = {
     val temp = params.get(n) match {
-      case Some(ts) => 
+      case Some(ts) =>
         if (ts.map(_.getType).contains(t.getType)) {
           if (t.getType == "Object") {
             var temp = ts.filter(_.getType == "Object")(0)
-            temp.addConstructors(t.getConstructors)  
+            temp.addConstructors(t.getConstructors)
 
             ts.filterNot(_.getType == "Object") :+ temp
-          }
-          else
+          } else
             ts
-        }
-        else 
-          ts:+t
-      case None => List(t) 
+        } else
+          ts :+ t
+      case None => List(t)
     }
     params(n) = temp
   }
 
-  var thisObject: TypeInfo = null 
+  var thisObject: TypeInfo = null
   def getThisObject = thisObject
   def setThisObject(x: TypeInfo) = thisObject = x
 
@@ -48,7 +45,7 @@ class FunctionInfo() {
   def getType(n: Int): List[String] = params(n).map(_.getType)
   def getObjectInformation(n: Int): Option[TypeInfo] = {
     val obj = params(n).filter(_.getType == "Object")
-    if (obj.nonEmpty) Some(obj(0)) 
+    if (obj.nonEmpty) Some(obj(0))
     else None
   }
   def getObjectConstructors(n: Int): List[String] = getObjectInformation(n) match {
@@ -69,7 +66,7 @@ class FunctionInfo() {
   def initDepth = depth = 0
   def checkRecursive(limit: Int) = {
     val res = if (depth < limit) true else false
-    depth += 1 
+    depth += 1
     res
   }
 
@@ -80,7 +77,7 @@ class FunctionInfo() {
   // only set a function as candidate when it has parameters
   def setCandidate = isCandidate = true
   def targeting = isTarget = true
-  def done = {isTarget = false; isCandidate = false; isProcess = false}
+  def done = { isTarget = false; isCandidate = false; isProcess = false }
 
   /* HELPER FUNCTIONS */
   def getJavaObjects(): JavaMap[JInteger, TypeInfo] = {
@@ -88,7 +85,7 @@ class FunctionInfo() {
     for (key <- params.keysIterator) {
       getObjectInformation(key) match {
         case Some(info) => result.put(key, info)
-        case None => 
+        case None =>
       }
     }
     result

@@ -12,13 +12,13 @@
 package kr.ac.kaist.safe.interpreter.objects
 
 import kr.ac.kaist.safe.interpreter._
-import kr.ac.kaist.safe.interpreter.{InterpreterPredefine => IP}
+import kr.ac.kaist.safe.interpreter.{ InterpreterPredefine => IP }
 import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.util._
 
 class JSArrayConstructor(_I: Interpreter, _proto: JSObject)
-  extends JSFunction13(_I, _proto, "Array", true,
-                       propTable, _I.IH.dummyFtn(0), EmptyEnv(), true) {
+    extends JSFunction13(_I, _proto, "Array", true,
+      propTable, _I.IH.dummyFtn(0), EmptyEnv(), true) {
   def init(): Unit = {
     /*
      * 15.4.3 Properties of the Array Constructor
@@ -50,13 +50,13 @@ class JSArrayConstructor(_I: Interpreter, _proto: JSObject)
    * 15.4.2.2 new Array(len)
    */
   def construct(len: Val): JSArray = len match {
-    case PVal(IRVal(n:EJSNumber)) if I.IH.toUint32(len) == n.num =>
+    case PVal(IRVal(n: EJSNumber)) if I.IH.toUint32(len) == n.num =>
       // The "length" property initially has the attributes
       // { [[Writable]]:true, [[Enumerable]]:false, [[Configurable]]:false }
       val prop = propTable
       prop.put("length", I.IH.mkDataProp(PVal(IRVal(n)), true, false, false))
       new JSArray(I, I.IS.ArrayPrototype, "Array", true, prop)
-    case PVal(IRVal(n:EJSNumber)) => throw new RangeErrorException
+    case PVal(IRVal(n: EJSNumber)) => throw new RangeErrorException
     case _ =>
       // The "length" property initially has the attributes
       // { [[Writable]]:true, [[Enumerable]]:false, [[Configurable]]:false }
@@ -70,13 +70,13 @@ class JSArrayConstructor(_I: Interpreter, _proto: JSObject)
    * 10.6 Arguments Object
    */
   def apply(len: Val, name: String): JSArray = len match {
-    case PVal(IRVal(n:EJSNumber)) if I.IH.toUint32(len) == n.num =>
+    case PVal(IRVal(n: EJSNumber)) if I.IH.toUint32(len) == n.num =>
       // The "length" property initially has the attributes
       // { [[Writable]]:true, [[Enumerable]]:false, [[Configurable]]:false }
       val prop = propTable
       prop.put("length", I.IH.mkDataProp(PVal(IRVal(n)), true, false, false))
       new JSArray(I, I.IS.ObjectPrototype, name, true, prop)
-    case PVal(IRVal(n:EJSNumber)) => throw new RangeErrorException
+    case PVal(IRVal(n: EJSNumber)) => throw new RangeErrorException
     case _ =>
       // The "length" property initially has the attributes
       // { [[Writable]]:true, [[Enumerable]]:false, [[Configurable]]:false }
@@ -88,8 +88,8 @@ class JSArrayConstructor(_I: Interpreter, _proto: JSObject)
 
   override def _construct(argsObj: JSObject): JSArray = {
     argsObj._get("length") match {
-      case PVal(IRVal(n:EJSNumber)) if n.num == 0 || n.num >= 2 => construct(I.IH.arrayToList(argsObj))
-      case PVal(IRVal(n:EJSNumber)) if n.num == 1 => construct(argsObj._get("0"))
+      case PVal(IRVal(n: EJSNumber)) if n.num == 0 || n.num >= 2 => construct(I.IH.arrayToList(argsObj))
+      case PVal(IRVal(n: EJSNumber)) if n.num == 1 => construct(argsObj._get("0"))
     }
   }
 
@@ -105,7 +105,7 @@ class JSArrayConstructor(_I: Interpreter, _proto: JSObject)
    * 15.4.3.2 Array.isArray(arg)
    */
   def _isArray(arg: Val): Unit = arg match {
-    case a:JSArray => I.IS.comp.setReturn(PVal(IP.trueV))
+    case a: JSArray => I.IS.comp.setReturn(PVal(IP.trueV))
     case _ => I.IS.comp.setReturn(PVal(IP.falseV))
   }
 }

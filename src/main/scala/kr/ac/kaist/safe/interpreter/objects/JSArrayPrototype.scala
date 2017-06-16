@@ -12,12 +12,12 @@
 package kr.ac.kaist.safe.interpreter.objects
 
 import kr.ac.kaist.safe.interpreter._
-import kr.ac.kaist.safe.interpreter.{InterpreterPredefine => IP}
+import kr.ac.kaist.safe.interpreter.{ InterpreterPredefine => IP }
 import kr.ac.kaist.safe.nodes.ir._
-import kr.ac.kaist.safe.util.{EJSCompletionType => CT}
+import kr.ac.kaist.safe.util.{ EJSCompletionType => CT }
 
 class JSArrayPrototype(_I: Interpreter, _proto: JSObject)
-  extends JSArray(_I, _proto, "Array", true, propTable) {
+    extends JSArray(_I, _proto, "Array", true, propTable) {
   def init(): Unit = {
     /*
      * 15.4.4 Properties of the Array Prototype Object
@@ -65,7 +65,7 @@ class JSArrayPrototype(_I: Interpreter, _proto: JSObject)
       case array: JSObject =>
         val func: JSFunction = array._get("join") match {
           // func is callable only if it is an object.
-          case o:JSFunction if I.IH.isCallable(o) => o
+          case o: JSFunction if I.IH.isCallable(o) => o
           case _ => I.IS.ObjectPrototypeToString
         }
         val oldEnv = I.IS.env
@@ -89,20 +89,24 @@ class JSArrayPrototype(_I: Interpreter, _proto: JSObject)
               for (k <- 0L until len) {
                 val p = k.toString
                 if (array._hasProperty(p)) {
-                  a._defineOwnProperty(n.toString,
-                                       I.IH.mkDataProp(array._get(p), true, true, true),
-                                       false)
+                  a._defineOwnProperty(
+                    n.toString,
+                    I.IH.mkDataProp(array._get(p), true, true, true),
+                    false
+                  )
                 }
                 n += 1
               }
             case _ =>
-              a._defineOwnProperty(n.toString,
-                                   I.IH.mkDataProp(e, true, true, true), false)
+              a._defineOwnProperty(
+                n.toString,
+                I.IH.mkDataProp(e, true, true, true), false
+              )
               n += 1
           }
         }
         I.IS.comp.setReturn(a)
-      case err:JSError => I.IS.comp.setThrow(err, I.IS.span)
+      case err: JSError => I.IS.comp.setThrow(err, I.IS.span)
     }
   }
 
@@ -122,11 +126,11 @@ class JSArrayPrototype(_I: Interpreter, _proto: JSObject)
           case 0 => I.IS.comp.setReturn(PVal(I.IH.mkIRStrIR("")))
           case _ =>
             val str = I.IH.arrayToList(o).foldRight("")(
-              (x: Val, y: String) => sep+ts(x)+y
+              (x: Val, y: String) => sep + ts(x) + y
             )
             I.IS.comp.setReturn(PVal(I.IH.mkIRStrIR(str.substring(sep.length))))
         }
-      case err:JSError => I.IS.comp.setThrow(err, I.IS.span)
+      case err: JSError => I.IS.comp.setThrow(err, I.IS.span)
     }
   }
 
@@ -145,13 +149,13 @@ class JSArrayPrototype(_I: Interpreter, _proto: JSObject)
             o._put("length", PVal(I.IH.mkIRStrIR(indx)), true)
             I.IS.comp.setReturn(element)
         }
-      case err:JSError => I.IS.comp.setThrow(err, I.IS.span)
+      case err: JSError => I.IS.comp.setThrow(err, I.IS.span)
     }
   }
 
   def _push(args: List[Val]): Unit = {
     I.IH.toObject(I.IS.tb) match {
-      case o: JSObject=>
+      case o: JSObject =>
         var n = I.IH.toUint32(o._get("length"))
         for (e <- args) {
           o._put(n.toString, e, true)
@@ -159,7 +163,7 @@ class JSArrayPrototype(_I: Interpreter, _proto: JSObject)
         }
         o._put("length", PVal(IRVal(I.IH.mkIRNum(n))), true)
         I.IS.comp.setReturn(PVal(IRVal(I.IH.mkIRNum(n))))
-      case err:JSError => I.IS.comp.setThrow(err, I.IS.span)
+      case err: JSError => I.IS.comp.setThrow(err, I.IS.span)
     }
   }
 
@@ -187,7 +191,7 @@ class JSArrayPrototype(_I: Interpreter, _proto: JSObject)
           lower += 1
         }
         I.IS.comp.setReturn(o)
-      case err:JSError => I.IS.comp.setThrow(err, I.IS.span)
+      case err: JSError => I.IS.comp.setThrow(err, I.IS.span)
     }
   }
 
@@ -215,7 +219,7 @@ class JSArrayPrototype(_I: Interpreter, _proto: JSObject)
           n += 1
         }
         I.IS.comp.setReturn(a)
-      case err:JSError => I.IS.comp.setThrow(err, I.IS.span)
+      case err: JSError => I.IS.comp.setThrow(err, I.IS.span)
     }
   }
 
@@ -225,7 +229,7 @@ class JSArrayPrototype(_I: Interpreter, _proto: JSObject)
         val len = I.IH.toUint32(o._get("length"))
         for (i <- 0L until len) {
           if (o.__isAccessorProp(i.toString) ||
-              o.__isDataProp(i.toString) && !o.__isWritable(i.toString)) {
+            o.__isDataProp(i.toString) && !o.__isWritable(i.toString)) {
             I.IS.comp.setReturn(o)
             return
           }
@@ -245,9 +249,11 @@ class JSArrayPrototype(_I: Interpreter, _proto: JSObject)
             val proto = o.proto
             for (i <- 0L until len) {
               if (proto._hasProperty(i.toString))
-                o._defineOwnProperty(i.toString,
-                                     I.IH.mkDataProp(o._get(i.toString), true, true, true),
-                                     false)
+                o._defineOwnProperty(
+                  i.toString,
+                  I.IH.mkDataProp(o._get(i.toString), true, true, true),
+                  false
+                )
             }
           }
         }
@@ -269,14 +275,14 @@ class JSArrayPrototype(_I: Interpreter, _proto: JSObject)
                     prop.put("length", I.IH.numProp(2))
                     val a = I.IH.newObj(prop)
                     val argsObj = I.IH.newArgObj(comparefn.asInstanceOf[JSFunction], 2, a, I.IS.strict)
-                    
+
                     val oldEnv = I.IS.env
                     val oldTb = I.IS.tb
                     comparefn.asInstanceOf[JSFunction]._call(IP.undefV, argsObj)
                     I.IS.env = oldEnv
                     I.IS.tb = oldTb
-                    if(I.IS.comp.Type == CT.RETURN) I.IH.toNumber(I.IS.comp.value).num < 0
-                    else if(I.IS.comp.Type == CT.THROW) throw new ThrowException(I.IS.comp.error) // TODO: !
+                    if (I.IS.comp.Type == CT.RETURN) I.IH.toNumber(I.IS.comp.value).num < 0
+                    else if (I.IS.comp.Type == CT.THROW) throw new ThrowException(I.IS.comp.error) // TODO: !
                     else throw new InterpreterError("Array.prototype.sortCompare: ", I.IS.span)
                   }
                 } else {
@@ -295,15 +301,17 @@ class JSArrayPrototype(_I: Interpreter, _proto: JSObject)
             }
           } else {
             ov match {
-              case Some(v) => o._defineOwnProperty(i.toString,
-                                                   I.IH.mkDataProp(v, true, true, true),
-                                                   false)
+              case Some(v) => o._defineOwnProperty(
+                i.toString,
+                I.IH.mkDataProp(v, true, true, true),
+                false
+              )
               case None =>
             }
           }
         }
         I.IS.comp.setReturn(o)
-      case err:JSError => I.IS.comp.setThrow(err, I.IS.span)
+      case err: JSError => I.IS.comp.setThrow(err, I.IS.span)
     }
   }
 
@@ -369,7 +377,7 @@ class JSArrayPrototype(_I: Interpreter, _proto: JSObject)
         }
         o._put("length", PVal(IRVal(I.IH.mkIRNum(len - actualDeleteCount + itemCount))), true)
         I.IS.comp.setReturn(a)
-      case err:JSError => I.IS.comp.setThrow(err, I.IS.span)
+      case err: JSError => I.IS.comp.setThrow(err, I.IS.span)
     }
   }
 }

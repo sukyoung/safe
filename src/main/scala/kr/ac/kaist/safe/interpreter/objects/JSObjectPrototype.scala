@@ -12,11 +12,11 @@
 package kr.ac.kaist.safe.interpreter.objects
 
 import kr.ac.kaist.safe.interpreter._
-import kr.ac.kaist.safe.interpreter.{InterpreterPredefine => IP}
+import kr.ac.kaist.safe.interpreter.{ InterpreterPredefine => IP }
 import kr.ac.kaist.safe.nodes.ir._
 
 class JSObjectPrototype(_I: Interpreter, _proto: JSObject)
-  extends JSObject(_I, _proto, "Object", true, propTable) {
+    extends JSObject(_I, _proto, "Object", true, propTable) {
   def init(): Unit = {
     // 15.2.4 Properties of the Object Prototype Object
     property.put("constructor", I.IH.objProp(I.IS.ObjectConstructor))
@@ -62,7 +62,7 @@ class JSObjectPrototype(_I: Interpreter, _proto: JSObject)
     case tb if I.IH.isNull(tb) => I.IS.comp.setReturn(PVal(I.IH.mkIRStrIR("[object Null]")))
     case tb =>
       val o = I.IH.toObject(tb).asInstanceOf[JSObject]
-      I.IS.comp.setReturn(PVal(I.IH.mkIRStrIR("[object "+o.className+"]")))
+      I.IS.comp.setReturn(PVal(I.IH.mkIRStrIR("[object " + o.className + "]")))
   }
 
   /*
@@ -81,7 +81,7 @@ class JSObjectPrototype(_I: Interpreter, _proto: JSObject)
     I.IH.toObject(I.IS.tb) match {
       case o: JSObject =>
         I.IS.comp.setReturn(PVal(IRVal(I.IH.mkIRBool(o._getOwnProperty(p) != null))))
-      case err:JSError => I.IS.comp.setThrow(err, I.IS.span)
+      case err: JSError => I.IS.comp.setThrow(err, I.IS.span)
     }
   }
 

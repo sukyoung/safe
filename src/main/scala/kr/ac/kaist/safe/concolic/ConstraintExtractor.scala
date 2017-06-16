@@ -11,19 +11,19 @@
 
 package kr.ac.kaist.safe.concolic
 
-import scala.collection.mutable.{Queue, Stack}
+import scala.collection.mutable.{ Queue, Stack }
 import kr.ac.kaist.safe.errors.error.ConcolicError
 import kr.ac.kaist.safe.util.useful.Options._
 
 class ConstraintExtractor {
-  abstract class SymbolicTree 
+  abstract class SymbolicTree
   case class Node(visited: Boolean, content: Option[ConstraintForm], left: Option[SymbolicTree], right: Option[SymbolicTree], dep: Int) extends SymbolicTree {
     var isVisit = visited
     val constraint = content
     var parents: Option[List[Node]] = None
     var leftChild = left
     var rightChild = right
-    
+
     var branchEnd: Node = null
 
     var depth = dep
@@ -35,8 +35,8 @@ class ConstraintExtractor {
     }
     def changeParent(from: Node, to: Node) = {
       var temp = parents.unwrap
-      for (i <- 0 until temp.length) { 
-        if (from.constraint == temp(i).constraint) 
+      for (i <- 0 until temp.length) {
+        if (from.constraint == temp(i).constraint)
           temp = temp.updated(i, to)
       }
       parents = Some(temp)
@@ -44,12 +44,12 @@ class ConstraintExtractor {
 
     def setBranchEnd(end: Node) = branchEnd = end
 
-    override def toString = "Node with a constraint: "+constraint+", and with visited flag: "+isVisit
+    override def toString = "Node with a constraint: " + constraint + ", and with visited flag: " + isVisit
   }
 
   // Initially expanded node would be root.
-  var root: SymbolicTree = Node(true, None, None, None, 0)  
-  var expanded: Node = null 
+  var root: SymbolicTree = Node(true, None, None, None, 0)
+  var expanded: Node = null
 
   var leaves: Stack[Node] = null
   var unvisited: Queue[Node] = null
@@ -59,14 +59,14 @@ class ConstraintExtractor {
   var branches: Stack[Node] = null
 
   var constraints: List[ConstraintForm] = null
-  
+
   var necessaries: List[SymbolicValue] = null
 
-  var debug = false 
+  var debug = false
 
   def initialize() = {
     unvisited = new Queue
-    root = Node(true, None, None, None, 0)  
+    root = Node(true, None, None, None, 0)
   }
 
   def modify(report: List[SymbolicInfo]) = {
@@ -84,7 +84,7 @@ class ConstraintExtractor {
     var newlyEnd = 0
     for (info <- report) {
       // Existing information just update the original tree.
-      if (matchPrevious(info) && newlyEnd == 0)  
+      if (matchPrevious(info) && newlyEnd == 0)
         update(info)
       // New information should be built as a subtree of the original tree.
       else {
@@ -120,21 +120,21 @@ class ConstraintExtractor {
 
       // Extract only symbolic values that is necessary to explore a chosen branch.
       var targetValues = constraints.filter(_.isBranchConstraint).foldLeft[List[SymbolicValue]](List())((list, constraint) => {
-        val temp = list:::constraint.getSymbolicValues 
+        val temp = list ::: constraint.getSymbolicValues
         temp.distinct
       })
       necessaries = List()
       val assignConstraints = constraints.filterNot(_.isBranchConstraint)
       while (targetValues.nonEmpty) {
         var sv = targetValues.head
-        necessaries = necessaries:+sv 
+        necessaries = necessaries :+ sv
 
         targetValues = targetValues.tail
         assignConstraints.find(_.getLhs == sv) match {
-          case Some(x) => 
-            if (x.getRhs.isSome) { 
-              val temp = x.getRhs.unwrap.getSymbolicValues:::targetValues
-              targetValues = temp.distinct  
+          case Some(x) =>
+            if (x.getRhs.isSome) {
+              val temp = x.getRhs.unwrap.getSymbolicValues ::: targetValues
+              targetValues = temp.distinct
             }
           case None =>
         }
@@ -160,7 +160,7 @@ class ConstraintExtractor {
 
   def collect(node: Node): Unit = {
     if (node.constraint.isSome)
-      constraints = node.constraint.unwrap::constraints 
+      constraints = node.constraint.unwrap :: constraints
     if (node.parents.isNone)
       return
     else {
@@ -177,20 +177,20 @@ class ConstraintExtractor {
     info.getType match {
       case 1 => // Statement
         left = target.leftChild.unwrap.asInstanceOf[Node]
-        left.depth = target.depth+1
+        left.depth = target.depth + 1
         leaves.push(left)
 
         setPrevious(left)
       case 2 => // Branch 
         left = target.leftChild.unwrap.asInstanceOf[Node]
         right = target.rightChild.unwrap.asInstanceOf[Node]
-        left.depth = target.depth+1
-        right.depth = target.depth+1
+        left.depth = target.depth + 1
+        right.depth = target.depth + 1
 
-        var child = if (!info.branchTaken) right else left 
-        var previousChild = if (!info.branchTaken) left else right 
+        var child = if (!info.branchTaken) right else left
+        var previousChild = if (!info.branchTaken) left else right
 
-        child.isVisit = true 
+        child.isVisit = true
 
         leaves.push(child)
         setPrevious(child)
@@ -201,26 +201,25 @@ class ConstraintExtractor {
       case 3 => // End of branch
         var child: Node = null
         if (target.leftChild.isNone && target.rightChild.isNone) {
-          child = previous(0) 
+          child = previous(0)
 
           var previousParent = child.getParent
 
           var depth = previousParent.depth
           if (target.depth > depth) depth = target.depth
-          child.depth = depth+1
+          child.depth = depth + 1
 
           if (previousParent.leftChild.isSome) target.rightChild = Some(child)
           else target.leftChild = Some(child)
 
           if (previousParent.leftChild.isSome) child.setParents(List(previousParent, target))
           else child.setParents(List(target, previousParent))
-        }
-        else {
-          child = 
+        } else {
+          child =
             if (target.leftChild.isSome) target.leftChild.unwrap.asInstanceOf[Node]
             else target.rightChild.unwrap.asInstanceOf[Node]
         }
-        child.depth = target.depth+1
+        child.depth = target.depth + 1
         leaves.push(child)
         setPrevious(child)
     }
@@ -238,15 +237,15 @@ class ConstraintExtractor {
       case 1 => // Statement
         val cond = new ConstraintForm
         cond.makeConstraint(info._id, info._lhs, info._op, info._rhs)
-        left = Node(true, Some(cond), None, None, target.depth+1)
+        left = Node(true, Some(cond), None, None, target.depth + 1)
         target.leftChild = Some(left)
         left.setParents(List(target))
 
         leaves.push(left)
       case 2 => // Branch 
-        val depth = target.depth+1
+        val depth = target.depth + 1
         // Put a true branch on the left side, and a false branch on the right side. 
-        val visitNode = Node(true, negate(info.branchTaken, info), None, None, depth) 
+        val visitNode = Node(true, negate(info.branchTaken, info), None, None, depth)
         val notvisitNode = Node(false, negate(!info.branchTaken, info), None, None, depth)
         left = if (info.branchTaken) visitNode else notvisitNode
         right = if (info.branchTaken) notvisitNode else visitNode
@@ -264,10 +263,10 @@ class ConstraintExtractor {
       case 3 => // End of branch
         var depth = cand1.depth
         // cand2 could be null because SymbolicHelper records only if-statements under certain conditions, however records every end-if-statements.
-        left = Node(true, None, None, None, depth+1)
+        left = Node(true, None, None, None, depth + 1)
         cand1.leftChild = Some(left)
         left.setParents(List(cand1))
-        
+
         if (branches.nonEmpty) {
           var branch = branches.pop
           branch.setBranchEnd(left)
@@ -279,7 +278,7 @@ class ConstraintExtractor {
 
   def negate(trueBranch: Boolean, info: SymbolicInfo): Option[ConstraintForm] = info._op match {
     case Some(op) =>
-      val operator = 
+      val operator =
         if (!trueBranch) op match {
           case "<" => Some(">=")
           case "<=" => Some(">")
@@ -292,7 +291,7 @@ class ConstraintExtractor {
         }
         else Some(op)
       val cond = new ConstraintForm
-      cond.makeConstraint(None, info._lhs, operator, info._rhs) 
+      cond.makeConstraint(None, info._lhs, operator, info._rhs)
       cond.setBranchConstraint
       Some(cond)
     case None => info._lhs match {
@@ -302,7 +301,7 @@ class ConstraintExtractor {
         val tmp = new SymbolicValue
         tmp.makeSymbolicValue("0", "Number")
         val cond = new ConstraintForm
-        cond.makeConstraint(None, Some(lhs), operator, Some(tmp)) 
+        cond.makeConstraint(None, Some(lhs), operator, Some(tmp))
         cond.setBranchConstraint
         return Some(cond)
       case None =>
@@ -320,32 +319,32 @@ class ConstraintExtractor {
 
   def findProperPrevious(node: Node) = {
     if (node.branchEnd != null)
-      previous = List(node.branchEnd) 
+      previous = List(node.branchEnd)
   }
 
   def matchPrevious(info: SymbolicInfo) = {
     // Transform the information to check equality. 
     val cond = info.getType match {
-      case 1 => 
+      case 1 =>
         val temp = new ConstraintForm
         temp.makeConstraint(info._id, info._lhs, info._op, info._rhs)
         temp.toString
-      case 2 => 
+      case 2 =>
         negate(info.branchTaken, info).unwrap.toString
-      case 3 => 
-        "" 
+      case 3 =>
+        ""
     }
     var result = false
     if (previous != null) {
-      for (node <- previous) { 
-        val temp = 
-          if (node.constraint.isSome) node.constraint.unwrap.toString 
+      for (node <- previous) {
+        val temp =
+          if (node.constraint.isSome) node.constraint.unwrap.toString
           else ""
         if (temp == cond)
           result = true
       }
     }
-    result 
+    result
   }
 
   def printTree(tree: SymbolicTree): Unit = {
@@ -354,12 +353,12 @@ class ConstraintExtractor {
     if (node.leftChild.isSome) {
       for (i <- 0 until node.depth)
         System.out.print("\t")
-      printTree(node.leftChild.unwrap) 
+      printTree(node.leftChild.unwrap)
     }
     if (node.rightChild.isSome) {
       for (i <- 0 until node.depth)
         System.out.print("\t")
-      printTree(node.rightChild.unwrap) 
+      printTree(node.rightChild.unwrap)
     }
   }
 }

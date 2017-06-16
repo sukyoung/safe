@@ -11,16 +11,16 @@
 
 package kr.ac.kaist.safe.interpreter
 
-import edu.rice.cs.plt.tuple.{Option => JOption}
+import edu.rice.cs.plt.tuple.{ Option => JOption }
 import java.text.DecimalFormat
-import kr.ac.kaist.safe.interpreter.{InterpreterDebug => ID, InterpreterPredefine => IP}
+import kr.ac.kaist.safe.interpreter.{ InterpreterDebug => ID, InterpreterPredefine => IP }
 import kr.ac.kaist.safe.interpreter.objects._
-import kr.ac.kaist.safe.nodes.{NodeFactory => NF}
+import kr.ac.kaist.safe.nodes.{ NodeFactory => NF }
 import kr.ac.kaist.safe.nodes.ast._
 import kr.ac.kaist.safe.nodes.ir._
-import kr.ac.kaist.safe.nodes.ir.{IRFactory => IF}
+import kr.ac.kaist.safe.nodes.ir.{ IRFactory => IF }
 import kr.ac.kaist.safe.util._
-import kr.ac.kaist.safe.util.{NodeUtil => NU}
+import kr.ac.kaist.safe.util.{ NodeUtil => NU }
 
 class InterpreterHelper(I: Interpreter) {
   ////////////////////////////////////////////////////////////////////////////////
@@ -51,25 +51,25 @@ class InterpreterHelper(I: Interpreter) {
     // 7.2 White Space
     // Table 2 - Whitespace Characters
     c == 0x0009 || // Tab
-    c == 0x000B || // Vertical Tab
-    c == 0x000C || // Form Feed
-    c == 0x0020 || // Space
-    c == 0x00A0 || // No-break space
-    c == 0xFEFF // Byte Order Mark
+      c == 0x000B || // Vertical Tab
+      c == 0x000C || // Form Feed
+      c == 0x0020 || // Space
+      c == 0x00A0 || // No-break space
+      c == 0xFEFF // Byte Order Mark
     // TODO: c == "Other category -Zs" (Any other Unicode "space separator")
   }
   def isLineTerminator(c: Char): Boolean = {
     // 7.3 Line Terminators
     // Table 3 - Line Terminator Characters
     c == 0x000A || // Line Feed
-    c == 0x000D || // Carriage Return
-    c == 0x2028 || // Line separator
-    c == 0x2029 // Paragraph separator
+      c == 0x000D || // Carriage Return
+      c == 0x2028 || // Line separator
+      c == 0x2029 // Paragraph separator
   }
   def leftTrim(s: String): String = {
     val chars = s.toCharArray()
-    for(i <- 0 until chars.length) {
-      if(!isWhiteSpace(chars(i)) && !isLineTerminator(chars(i)))
+    for (i <- 0 until chars.length) {
+      if (!isWhiteSpace(chars(i)) && !isLineTerminator(chars(i)))
         return s.substring(i)
     }
     ""
@@ -79,14 +79,14 @@ class InterpreterHelper(I: Interpreter) {
 
   def negate(s: String): String =
     if (s.startsWith("-")) s.drop(1)
-    else if (s.startsWith("+")) "-"+s.drop(1)
-         else "-"+s
+    else if (s.startsWith("+")) "-" + s.drop(1)
+    else "-" + s
   def negate(n: EJSNumber): EJSNumber = mkIRNum(n.num.unary_-)
 
   def dummyInfo() = NU.makeASTNodeInfo(NU.dummySpan("forDummyInfo"))
   def getIRBool(b: Boolean) = if (b) IP.trueV else IP.falseV
   def dummyFtn(length: Int): IRFunctional = {
-    val body: List[IRStmt] = (1 to length).map( (_) => IF.dummyIRStmt(IF.dummyAST)).toList
+    val body: List[IRStmt] = (1 to length).map((_) => IF.dummyIRStmt(IF.dummyAST)).toList
     val params: List[IRId] = List(IP.thisTId, IP.argumentsTId).asInstanceOf[List[IRId]]
     val name: IRId = IP.defId
     IF.makeFunctional(false, NF.dummyFunctional, name, params, body)
@@ -101,22 +101,30 @@ class InterpreterHelper(I: Interpreter) {
   }
   def mkIRNumIR(d: Double): IRVal = IRVal(mkIRNum(d))
   def mkEmptyObjectProp() = new ObjectProp(None, None, None, None, None, None)
-  def mkDataProp(value: Val = IP.undefV,
-                 writable: Boolean = false,
-                 enumerable: Boolean = false,
-                 configurable: Boolean = false) = new ObjectProp(Some(value), None, None, Some(writable), Some(enumerable), Some(configurable))
-  def mkDataProp(value: Option[Val],
-                 writable: Option[Boolean],
-                 enumerable: Boolean,
-                 configurable: Boolean) = new ObjectProp(value, None, None, writable, Some(enumerable), Some(configurable))
-  def mkAccessorProp(get: Val = IP.undefV,
-                     set: Val = IP.undefV,
-                     enumerable: Boolean = false,
-                     configurable: Boolean = false) = new ObjectProp(None, Some(get), Some(set), None, Some(enumerable), Some(configurable))
-  def mkAccessorProp(get: Option[Val],
-                     set: Option[Val],
-                     enumerable: Boolean,
-                     configurable: Boolean) = new ObjectProp(None, get, set, None, Some(enumerable), Some(configurable))
+  def mkDataProp(
+    value: Val = IP.undefV,
+    writable: Boolean = false,
+    enumerable: Boolean = false,
+    configurable: Boolean = false
+  ) = new ObjectProp(Some(value), None, None, Some(writable), Some(enumerable), Some(configurable))
+  def mkDataProp(
+    value: Option[Val],
+    writable: Option[Boolean],
+    enumerable: Boolean,
+    configurable: Boolean
+  ) = new ObjectProp(value, None, None, writable, Some(enumerable), Some(configurable))
+  def mkAccessorProp(
+    get: Val = IP.undefV,
+    set: Val = IP.undefV,
+    enumerable: Boolean = false,
+    configurable: Boolean = false
+  ) = new ObjectProp(None, Some(get), Some(set), None, Some(enumerable), Some(configurable))
+  def mkAccessorProp(
+    get: Option[Val],
+    set: Option[Val],
+    enumerable: Boolean,
+    configurable: Boolean
+  ) = new ObjectProp(None, get, set, None, Some(enumerable), Some(configurable))
   def strProp(s: String) = mkDataProp(PVal(mkIRStrIR(s)))
   def boolProp(b: Boolean) = mkDataProp(PVal(getIRBool(b)))
   def numProp(d: Double) = mkDataProp(PVal(mkIRNumIR(d)))
@@ -127,13 +135,13 @@ class InterpreterHelper(I: Interpreter) {
    * [[Configurable]]: true}
    */
   def objProp(o: JSObject) = mkDataProp(o, true, false, true)
-  def strPropTable(s: String): PropTable = {val prop = new PropTable; prop.put(IP.varPrefix+"PrimitiveValue", strProp(s)); prop}
-  def boolPropTable(b: Boolean): PropTable = {val prop = new PropTable; prop.put(IP.varPrefix+"PrimitiveValue", boolProp(b)); prop}
-  def numPropTable(d: Double): PropTable = {val prop = new PropTable; prop.put(IP.varPrefix+"PrimitiveValue", numProp(d)); prop}
+  def strPropTable(s: String): PropTable = { val prop = new PropTable; prop.put(IP.varPrefix + "PrimitiveValue", strProp(s)); prop }
+  def boolPropTable(b: Boolean): PropTable = { val prop = new PropTable; prop.put(IP.varPrefix + "PrimitiveValue", boolProp(b)); prop }
+  def numPropTable(d: Double): PropTable = { val prop = new PropTable; prop.put(IP.varPrefix + "PrimitiveValue", numProp(d)); prop }
   def inherit(o1: JSObject, o2: JSObject): Boolean = {
     var o1_pt = o1
-    while(true) {
-      if(o1_pt == IP.nullObj) return false
+    while (true) {
+      if (o1_pt == IP.nullObj) return false
       else if (o1_pt.equals(o2)) return true
       o1_pt = o1_pt.proto
     }
@@ -148,19 +156,19 @@ class InterpreterHelper(I: Interpreter) {
   def arrayToOptionList(array: JSObject): List[Option[Val]] = {
     val length: Int = toNumber(array._get("length")).num.toInt
     val l = for (i <- 0 until length)
-            yield if (array._hasProperty(i.toString)) Some(array._get(i.toString))
-                  else None
+      yield if (array._hasProperty(i.toString)) Some(array._get(i.toString))
+    else None
     l.toList
   }
   def argsObjectToArray(argsObj: JSObject, maxLength: Int): Array[Val] = {
     val length: Int = toNumber(argsObj._get("length")).num.toInt
     // If length < maxLength, the args is padded with the undefined.
-    (for(i <- 0 until maxLength) yield if(i < length) argsObj._get(i.toString) else IP.undefV).toArray
+    (for (i <- 0 until maxLength) yield if (i < length) argsObj._get(i.toString) else IP.undefV).toArray
   }
 
   def getVal(op: ObjectProp): Val = {
-    if(op.value.isDefined) op.value.get
-    else if(op.get.isDefined) op.get.get
+    if (op.value.isDefined) op.value.get
+    else if (op.get.isDefined) op.get.get
     else IP.undefV
   }
   //def isGlobal(o: JSObject): Boolean = o.isInstanceOf[JSGlobal]
@@ -175,18 +183,18 @@ class InterpreterHelper(I: Interpreter) {
     case res: Val => I.IS.comp.setNormal(res)
     case err: JSError => I.IS.comp.setThrow(err, I.IS.span)
   }
-  
+
   def valError2ReturnCompletion(ve: ValError): Unit = ve match {
-    case res:Val => I.IS.comp.setReturn(res)
-    case err:JSError => I.IS.comp.setThrow(err, I.IS.span)
+    case res: Val => I.IS.comp.setReturn(res)
+    case err: JSError => I.IS.comp.setThrow(err, I.IS.span)
   }
-  
+
   /*
    * 10.4.3 Entering Function Code
    */
   def getThis(v: Val): ValError = v match {
     case PVal(IRVal(EJSUndef | EJSNull)) => I.IS.GlobalObject
-    case PVal(IRVal(_:EJSBool | _:EJSNumber | _:EJSString)) => toObject(v)
+    case PVal(IRVal(_: EJSBool | _: EJSNumber | _: EJSString)) => toObject(v)
     case o: JSObject => o
   }
 
@@ -198,8 +206,8 @@ class InterpreterHelper(I: Interpreter) {
     createAndSetBinding(argumentsId, argsObject, false, I.IS.eval) match {
       case vf: Val =>
         I.IS.tb = getThis(tb) match {
-          case o:JSObject => o
-          case err:JSError => I.IS.comp.setThrow(err, info.span); return
+          case o: JSObject => o
+          case err: JSError => I.IS.comp.setThrow(err, info.span); return
         }
 
         if (fun.const) fun._call(I.IS.tb, argsObj)
@@ -240,7 +248,7 @@ class InterpreterHelper(I: Interpreter) {
     while (true) {
       env match {
         case EmptyEnv() =>
-          if(x.isInstanceOf[IRUserId]) I.IS.GlobalObject.__putProp(x.originalName, mkDataProp(IP.undefV, true, true, mutable && deletable))
+          if (x.isInstanceOf[IRUserId]) I.IS.GlobalObject.__putProp(x.originalName, mkDataProp(IP.undefV, true, true, mutable && deletable))
           else I.IS.GlobalObject.declEnvRec.s.put(x.originalName, new StoreValue(IP.undefV, false, true, true))
           return env
         case ConsEnv(envRec, rest) => envRec match {
@@ -253,13 +261,13 @@ class InterpreterHelper(I: Interpreter) {
         }
       }
     }
-    throw new InterpreterError("createBinding: x="+x, I.IS.span)
+    throw new InterpreterError("createBinding: x=" + x, I.IS.span)
   }
   // Target environment is specified.
   def createBinding(env: Env, x: IRId, mutable: Boolean, deletable: Boolean): Unit = {
     env match {
       case EmptyEnv() =>
-        if(x.isInstanceOf[IRUserId]) I.IS.GlobalObject.__putProp(x.originalName, mkDataProp(IP.undefV, true, true, mutable && deletable))
+        if (x.isInstanceOf[IRUserId]) I.IS.GlobalObject.__putProp(x.originalName, mkDataProp(IP.undefV, true, true, mutable && deletable))
         else I.IS.GlobalObject.declEnvRec.s.put(x.originalName, new StoreValue(IP.undefV, false, true, true))
       case ConsEnv(envRec, rest) => envRec match {
         case DeclEnvRec(s) =>
@@ -276,10 +284,10 @@ class InterpreterHelper(I: Interpreter) {
   // Create and set at once
   def createAndSetBinding(x: IRId, v: Val, mutable: Boolean, deletable: Boolean): ValError = {
     var env = I.IS.env
-    while(true) {
+    while (true) {
       env match {
         case EmptyEnv() =>
-          if(x.isInstanceOf[IRUserId]) I.IS.GlobalObject.__putProp(x.originalName, mkDataProp(v, true, true, mutable && deletable))
+          if (x.isInstanceOf[IRUserId]) I.IS.GlobalObject.__putProp(x.originalName, mkDataProp(v, true, true, mutable && deletable))
           else I.IS.GlobalObject.declEnvRec.s.put(x.originalName, new StoreValue(v, true, true, true))
           return v
         case ConsEnv(envRec, rest) => envRec match {
@@ -291,7 +299,7 @@ class InterpreterHelper(I: Interpreter) {
         }
       }
     }
-    throw new InterpreterError("createBinding: x="+x, I.IS.span)
+    throw new InterpreterError("createBinding: x=" + x, I.IS.span)
   }
 
   /*
@@ -300,19 +308,19 @@ class InterpreterHelper(I: Interpreter) {
   def setBinding(x: IRId, v: Val, ignoreImmutable: Boolean, strict: Boolean): ValError = {
     val originalName = x.originalName
     var env = I.IS.env
-    while(true) {
+    while (true) {
       env match {
         case EmptyEnv() =>
-          if (debug > 0) System.out.println("setBinding:x="+x+" v="+v)
-          if(x.isInstanceOf[IRUserId]) I.IS.GlobalObject.__getProp(originalName).value = Some(v)
+          if (debug > 0) System.out.println("setBinding:x=" + x + " v=" + v)
+          if (x.isInstanceOf[IRUserId]) I.IS.GlobalObject.__getProp(originalName).value = Some(v)
           else I.IS.GlobalObject.declEnvRec.s.get(originalName).setValue(v)
           return v
         case ConsEnv(er, rest) => er match {
           case DeclEnvRec(s) =>
             // setBindingToDeclarative()
             val sv = s.get(originalName)
-            if(sv == null) throw new InterpreterError("setBinding:x="+x+" v="+v, I.IS.span)
-            if(sv.mutable || ignoreImmutable) s.get(originalName).setValue(v)
+            if (sv == null) throw new InterpreterError("setBinding:x=" + x + " v=" + v, I.IS.span)
+            if (sv.mutable || ignoreImmutable) s.get(originalName).setValue(v)
             else if (strict) return IP.typeError
             return v
           case ObjEnvRec(_) =>
@@ -320,22 +328,22 @@ class InterpreterHelper(I: Interpreter) {
         }
       }
     }
-    throw new InterpreterError("setBinding:x="+x+" v="+v, I.IS.span)
+    throw new InterpreterError("setBinding:x=" + x + " v=" + v, I.IS.span)
   }
   // Target environment is specified.
   def setBinding(env: Env, x: IRId, v: Val, ignoreImmutable: Boolean, strict: Boolean): ValError = {
     val originalName = x.originalName
     env match {
       case EmptyEnv() =>
-        if(x.isInstanceOf[IRUserId]) I.IS.GlobalObject.__getProp(originalName).value = Some(v)
+        if (x.isInstanceOf[IRUserId]) I.IS.GlobalObject.__getProp(originalName).value = Some(v)
         else I.IS.GlobalObject.declEnvRec.s.get(originalName).setValue(v)
         v
       case ConsEnv(envRec, rest) => envRec match {
         case DeclEnvRec(s) =>
           // setBindingToDeclarative()
           val sv = s.get(originalName)
-          if(sv == null) throw new InterpreterError("setBinding:x="+x+" v="+v, I.IS.span)
-          if(sv.mutable || ignoreImmutable) s.get(originalName).setValue(v)
+          if (sv == null) throw new InterpreterError("setBinding:x=" + x + " v=" + v, I.IS.span)
+          if (sv.mutable || ignoreImmutable) s.get(originalName).setValue(v)
           else if (strict) return IP.typeError
           v
       }
@@ -345,8 +353,8 @@ class InterpreterHelper(I: Interpreter) {
   def setBindingToDeclarative(declEnvRec: DeclEnvRec, x: IRId, v: Val, ignoreImmutable: Boolean, strict: Boolean): ValError = {
     val originalName = x.originalName
     val sv = declEnvRec.s.get(originalName)
-    if(sv == null) throw new InterpreterError("setBindingToDeclarative:x="+x+" v="+v, I.IS.span)
-    if(sv.mutable || ignoreImmutable) declEnvRec.s.get(originalName).setValue(v)
+    if (sv == null) throw new InterpreterError("setBindingToDeclarative:x=" + x + " v=" + v, I.IS.span)
+    if (sv.mutable || ignoreImmutable) declEnvRec.s.get(originalName).setValue(v)
     else if (strict) return IP.typeError
     v
   }
@@ -361,14 +369,14 @@ class InterpreterHelper(I: Interpreter) {
       val sv = s.get(x)
       if (sv.init || sv.mutable) sv.value
       else {
-        if (I.IS.strict) IP.referenceError(x+" from getBindingValue")
+        if (I.IS.strict) IP.referenceError(x + " from getBindingValue")
         else IP.undefV
       }
     case ObjEnvRec(o) =>
-      if (o == IP.nullObj) return IP.referenceError(x+" from getBindingValue")
+      if (o == IP.nullObj) return IP.referenceError(x + " from getBindingValue")
       val v = o._get(x)
       if (!isUndef(v)) v
-      else if (I.IS.strict) IP.referenceError(x+" from getBindingValue")
+      else if (I.IS.strict) IP.referenceError(x + " from getBindingValue")
       else IP.undefV
   }
 
@@ -401,19 +409,19 @@ class InterpreterHelper(I: Interpreter) {
   def lookup(x: IRId): EnvRec = {
     val originalName = x.originalName
     var env = I.IS.env
-    while(true) {
+    while (true) {
       env match {
         case EmptyEnv() =>
           x match {
             case _: IRUserId =>
-              if(I.IS.GlobalObject.__isInDomO(originalName)) return I.IS.globalObjEnvRec
+              if (I.IS.GlobalObject.__isInDomO(originalName)) return I.IS.globalObjEnvRec
             case _: IRTmpId =>
-              if(I.IS.GlobalObject.declEnvRec.s.containsKey(originalName)) return I.IS.GlobalObject.declEnvRec
+              if (I.IS.GlobalObject.declEnvRec.s.containsKey(originalName)) return I.IS.GlobalObject.declEnvRec
           }
           return I.IS.nullObjEnvRec
         case ConsEnv(er, rest) => er match {
           case DeclEnvRec(s) =>
-            if(s.containsKey(originalName)) return er
+            if (s.containsKey(originalName)) return er
             else env = rest
           case ObjEnvRec(o) =>
             val obj = o._getProperty(originalName)._2
@@ -422,7 +430,7 @@ class InterpreterHelper(I: Interpreter) {
         }
       }
     }
-    throw new InterpreterError("lookup: "+x, I.IS.span)
+    throw new InterpreterError("lookup: " + x, I.IS.span)
   }
 
   def isInt(s: String): Boolean = {
@@ -430,14 +438,14 @@ class InterpreterHelper(I: Interpreter) {
       s.toInt
       true
     } catch {
-      case _:NumberFormatException => false
+      case _: NumberFormatException => false
     }
   }
   def isUint(s: String): Boolean = {
     try {
       s.toInt >= 0
     } catch {
-      case _:NumberFormatException => false
+      case _: NumberFormatException => false
     }
   }
 
@@ -457,9 +465,9 @@ class InterpreterHelper(I: Interpreter) {
   }
   def next(o: JSObject, n: Int, obj: JSObject): Int = {
     if (!o.__isInDomO(n.toString)) {
-      if (n >= toInt(o.property.get("length"))) n else next(o, n+1, obj)
-      } else if (obj != IP.nullObj && obj.__isEnumerable(toStr(o.property.get(n.toString)))) n
-    else next(o, n+1, obj)
+      if (n >= toInt(o.property.get("length"))) n else next(o, n + 1, obj)
+    } else if (obj != IP.nullObj && obj.__isEnumerable(toStr(o.property.get(n.toString)))) n
+    else next(o, n + 1, obj)
   }
 
   ////////////////////////////////////////////////////////////////////////////////
@@ -467,21 +475,21 @@ class InterpreterHelper(I: Interpreter) {
   ////////////////////////////////////////////////////////////////////////////////
 
   def toInt(op: ObjectProp): Int = {
-    if(op.value.isDefined) {
+    if (op.value.isDefined) {
       val v: Val = op.value.get
-      if(v.isInstanceOf[PVal]) {
+      if (v.isInstanceOf[PVal]) {
         val pv: IRVal = v.asInstanceOf[PVal].v
-        if(pv.value.isInstanceOf[EJSNumber]) return pv.value.asInstanceOf[EJSNumber].num.toInt
+        if (pv.value.isInstanceOf[EJSNumber]) return pv.value.asInstanceOf[EJSNumber].num.toInt
       }
     }
     throw new InterpreterError("toStr", I.IS.span)
   }
   def toStr(op: ObjectProp): String = {
-    if(op.value.isDefined) op.value.get.toString
+    if (op.value.isDefined) op.value.get.toString
     else throw new InterpreterError("toStr", I.IS.span)
   }
   def toVal(op: ObjectProp): Val = {
-    if(op.value.isDefined) op.value.get
+    if (op.value.isDefined) op.value.get
     else throw new InterpreterError("toStr", I.IS.span)
   }
 
@@ -492,18 +500,18 @@ class InterpreterHelper(I: Interpreter) {
   def typeOf(v: Val): Int = v match {
     case PVal(IRVal(EJSUndef)) => EJSType.UNDEFINED
     case PVal(IRVal(EJSNull)) => EJSType.NULL
-    case PVal(IRVal(_:EJSBool)) => EJSType.BOOLEAN
-    case PVal(IRVal(_:EJSNumber)) => EJSType.NUMBER
-    case PVal(IRVal(_:EJSString)) => EJSType.STRING
-    case _:JSObject => EJSType.OBJECT
+    case PVal(IRVal(_: EJSBool)) => EJSType.BOOLEAN
+    case PVal(IRVal(_: EJSNumber)) => EJSType.NUMBER
+    case PVal(IRVal(_: EJSString)) => EJSType.STRING
+    case _: JSObject => EJSType.OBJECT
   }
   def typeTag(v: Val): String = v match {
     case PVal(IRVal(EJSUndef)) => "undefined"
     case PVal(IRVal(EJSNull)) => "object"
-    case PVal(IRVal(_:EJSBool)) => "boolean"
-    case PVal(IRVal(_:EJSNumber)) => "number"
-    case PVal(IRVal(_:EJSString)) => "string"
-    case _:JSObject => if(!isCallable(v)) "object" else "function"
+    case PVal(IRVal(_: EJSBool)) => "boolean"
+    case PVal(IRVal(_: EJSNumber)) => "number"
+    case PVal(IRVal(_: EJSString)) => "string"
+    case _: JSObject => if (!isCallable(v)) "object" else "function"
   }
 
   /*
@@ -518,8 +526,8 @@ class InterpreterHelper(I: Interpreter) {
   def putValue(x: IRId, v: Val, b: Boolean): ValError = {
     val bs = lookup(x)
     if (debug > 0)
-      System.out.println("putValue:x="+x.uniqueName+" v="+v+" bs="+bs+
-                         " isInternal(x)="+NU.isInternal(x.uniqueName))
+      System.out.println("putValue:x=" + x.uniqueName + " v=" + v + " bs=" + bs +
+        " isInternal(x)=" + NU.isInternal(x.uniqueName))
 
     bs match {
       // If a generated name by Translator, create a binding.
@@ -527,7 +535,7 @@ class InterpreterHelper(I: Interpreter) {
         val originalName = x.originalName
         if (oer.o != IP.nullObj) oer.o._put(originalName, v, b)
         else if (NU.isInternal(originalName)) createAndSetBinding(x, v, true, I.IS.eval)
-        else if (b) IP.referenceError(x+" from putValue")
+        else if (b) IP.referenceError(x + " from putValue")
         else I.IS.GlobalObject._put(originalName, v, false)
       case der: DeclEnvRec =>
         setBindingToDeclarative(der, x, v, false, b)
@@ -557,21 +565,20 @@ class InterpreterHelper(I: Interpreter) {
     // 2. Let obj be the result of creating a new object as if by the expression new Object() where Object is the standard built-in constructor with that name.
     var obj: JSObject = newObj()
     // 3. If IsDataDescriptor(Desc) is true, then
-    if(isDataDescriptor(op)) {
-      if(op.value.isEmpty || op.writable.isEmpty) throw new InterpreterError("fromPropertyDescriptor: 3", I.IS.span)
+    if (isDataDescriptor(op)) {
+      if (op.value.isEmpty || op.writable.isEmpty) throw new InterpreterError("fromPropertyDescriptor: 3", I.IS.span)
       obj._defineOwnProperty("value", mkDataProp(op.value.get, true, true, true), false)
       obj._defineOwnProperty("writable", mkDataProp(PVal(getIRBool(op.writable.get)), true, true, true), false)
-    }
-    // 4. If IsAccessorDescriptor(Desc) must be true, so
-    else if(isAccessorDescriptor(op)) {
-      if(op.get.isEmpty || op.set.isEmpty) throw new InterpreterError("fromPropertyDescriptor: 4", I.IS.span)
+    } // 4. If IsAccessorDescriptor(Desc) must be true, so
+    else if (isAccessorDescriptor(op)) {
+      if (op.get.isEmpty || op.set.isEmpty) throw new InterpreterError("fromPropertyDescriptor: 4", I.IS.span)
       obj._defineOwnProperty("get", mkDataProp(op.get.get, true, true, true), false)
       obj._defineOwnProperty("set", mkDataProp(op.set.get, true, true, true), false)
     }
     // 5.
     obj._defineOwnProperty("enumerable", mkDataProp(PVal(getIRBool(op.isEnumerable)), true, true, true), false)
     // 6.
-      // NOTE: We don't make a property if the value does not exist.
+    // NOTE: We don't make a property if the value does not exist.
     obj._defineOwnProperty("configurable", mkDataProp(PVal(getIRBool(op.isConfigurable)), true, true, true), false)
     // 7. Return obj.
     obj
@@ -582,30 +589,30 @@ class InterpreterHelper(I: Interpreter) {
    */
   def toPropertyDescriptor(v: Val): (Option[ObjectProp], Option[JSError]) = {
     // 1. If Type(Obj) is not Object throw a TypeError exception.
-    if(typeOf(v) != EJSType.OBJECT) return (None, Some(IP.typeError))
+    if (typeOf(v) != EJSType.OBJECT) return (None, Some(IP.typeError))
     val obj: JSObject = v.asInstanceOf[JSObject]
     // 2. Let desc be the result of creating a new Property Descriptor that initially has no fields.
     var op: ObjectProp = mkEmptyObjectProp
     // 3 ~ 6
-    if(obj._hasProperty("enumerable")) op.enumerable = Some(toBoolean(obj._get("enumerable")))
-    if(obj._hasProperty("configurable")) op.configurable = Some(toBoolean(obj._get("configurable")))
-    if(obj._hasProperty("value")) op.value = Some(obj._get("value"))
-    if(obj._hasProperty("writable")) op.writable = Some(toBoolean(obj._get("writable")))
+    if (obj._hasProperty("enumerable")) op.enumerable = Some(toBoolean(obj._get("enumerable")))
+    if (obj._hasProperty("configurable")) op.configurable = Some(toBoolean(obj._get("configurable")))
+    if (obj._hasProperty("value")) op.value = Some(obj._get("value"))
+    if (obj._hasProperty("writable")) op.writable = Some(toBoolean(obj._get("writable")))
     // 7 ~ 8
-    if(obj._hasProperty("get")) {
+    if (obj._hasProperty("get")) {
       val getter = obj._get("get")
-      if(!isCallable(getter) && !isUndef(getter)) return (None, Some(IP.typeError))
+      if (!isCallable(getter) && !isUndef(getter)) return (None, Some(IP.typeError))
       op.get = Some(obj._get("get"))
     }
-    if(obj._hasProperty("set")) {
+    if (obj._hasProperty("set")) {
       val setter = obj._get("set")
-      if(!isCallable(setter) && !isUndef(setter)) return (None, Some(IP.typeError))
+      if (!isCallable(setter) && !isUndef(setter)) return (None, Some(IP.typeError))
       op.set = Some(obj._get("set"))
     }
     // 9. If either desc.[[Get]] or desc.[[Set]] are present, then
-    if(op.get.isDefined || op.set.isDefined) {
+    if (op.get.isDefined || op.set.isDefined) {
       // a. If either desc.[[Value]] or desc.[[Writable]] are present, then throw a TypeError exception.
-      if(op.value.isDefined || op.writable.isDefined) return (None, Some(IP.typeError))
+      if (op.value.isDefined || op.writable.isDefined) return (None, Some(IP.typeError))
     }
     (Some(op), None)
   }
@@ -615,26 +622,24 @@ class InterpreterHelper(I: Interpreter) {
     while (true) {
       env match {
         case EmptyEnv() =>
-          if(I.IS.GlobalObject.__isInDomO(x)) return I.IS.GlobalObject._delete(x, b)
+          if (I.IS.GlobalObject.__isInDomO(x)) return I.IS.GlobalObject._delete(x, b)
           else return IP.truePV
         case ConsEnv(envRec, rest) => envRec match {
           case DeclEnvRec(s) =>
             val sv = s.get(x)
-            if(sv != null) {
-              if(sv.configurable) {
+            if (sv != null) {
+              if (sv.configurable) {
                 s.remove(x)
                 return IP.truePV
-              }
-              else return IP.falsePV
-            }
-            else env = rest
+              } else return IP.falsePV
+            } else env = rest
           case ObjEnvRec(o) =>
             if (o.__isInDomO(x)) return o._delete(x, b)
             else env = rest
         }
       }
     }
-    throw new InterpreterError("delete: x="+x, I.IS.span)
+    throw new InterpreterError("delete: x=" + x, I.IS.span)
   }
 
   ////////////////////////////////////////////////////////////////////////////////
@@ -648,8 +653,8 @@ class InterpreterHelper(I: Interpreter) {
    * 9.1 ToPrimitive
    */
   def toPrimitive(v: Val, hint: String): PVal = v match {
-    case o:JSObject => o._defaultValue(hint)
-    case pv:PVal => pv
+    case o: JSObject => o._defaultValue(hint)
+    case pv: PVal => pv
   }
 
   /*
@@ -663,39 +668,39 @@ class InterpreterHelper(I: Interpreter) {
     case PVal(IRVal(EJSNumber(_, d))) => d != 0
     case PVal(IRVal(EJSString(""))) => false
     case PVal(IRVal(EJSString(text))) => true
-    case _:JSObject => true
+    case _: JSObject => true
   }
 
   /*
    * 9.3 ToNumber
    */
-  def modulo(x:Double, y:Long):Long = {
+  def modulo(x: Double, y: Long): Long = {
     var result = math.abs(x.toLong) % math.abs(y)
-    if(math.signum(x) < 0) return math.signum(y) * (math.abs(y) - result)
+    if (math.signum(x) < 0) return math.signum(y) * (math.abs(y) - result)
     math.signum(y) * result
   }
 
   def toNumber(v: Val): EJSNumber = v match {
     case PVal(IRVal(EJSUndef)) => IP.NaN
     case PVal(IRVal(EJSNull)) => IP.plusZero
-    case PVal(IRVal(EJSBool(b))) => if(b) mkIRNum(1) else IP.plusZero
-    case PVal(IRVal(n:EJSNumber)) => n
+    case PVal(IRVal(EJSBool(b))) => if (b) mkIRNum(1) else IP.plusZero
+    case PVal(IRVal(n: EJSNumber)) => n
     case PVal(IRVal(EJSString(text))) =>
-      val reg    =
-       "[+-]?(" +
-       "([0-9]+[.]?([0-9]+)?([eE][+-]?[0-9]+)?)|" +
-       "([.][0-9]+([eE][+-]?[0-9]+)?)|" +
-       "(0[xX][0-9a-fA-F]+))"
+      val reg =
+        "[+-]?(" +
+          "([0-9]+[.]?([0-9]+)?([eE][+-]?[0-9]+)?)|" +
+          "([.][0-9]+([eE][+-]?[0-9]+)?)|" +
+          "(0[xX][0-9a-fA-F]+))"
       text.trim match {
         case "" => IP.plusZero
         case str if (str.matches("[+]?Infinity")) => IP.plusInfinity
         case str if (str.equals("-Infinity")) => IP.minusInfinity
         case str if (str.matches(reg)) =>
           val (sign, s) = if (str.startsWith("-")) ("-", str.slice(1, str.size))
-                          else if (str.startsWith("+")) ("", str.slice(1, str.size))
-                          else ("", str)
+          else if (str.startsWith("+")) ("", str.slice(1, str.size))
+          else ("", str)
           val hex = s.startsWith("0x") || s.startsWith("0X")
-          val n = if (hex) sign+s.slice(2, str.size) else sign+s
+          val n = if (hex) sign + s.slice(2, str.size) else sign + s
           if (!hex) mkIRNum(java.lang.Double.parseDouble(n))
           else if (!n.contains("."))
             try {
@@ -725,15 +730,15 @@ class InterpreterHelper(I: Interpreter) {
     // 1. Let number be the result of calling ToNumber on the input argument.
     val n = toNumber(v)
     // 2. If number is NaN, +0, -0, +INF or -INF, return +0.
-    if(isNaN(n) || n.num == 0 || isInfinite(n)) return 0
+    if (isNaN(n) || n.num == 0 || isInfinite(n)) return 0
     // 3. Let posInt be sign(number) * floor(abs(number))
     val posInt = math.signum(n.num) * math.floor(math.abs(n.num))
     // 4. Let int32bit be posInt modulo 2^32; that is, ...
     val int32bit = modulo(posInt, 0x100000000L);
     // 5. If int32bit is greater than or equal to 2^31, return int32bit - 2^32, otherwise return int32bit.
-    if(int32bit >= 0x80000000L) (int32bit - 0x100000000L).toInt else int32bit.toInt
+    if (int32bit >= 0x80000000L) (int32bit - 0x100000000L).toInt else int32bit.toInt
   }
-  
+
   /*
    * 9.6 ToUint32: (Unsigned 32 Bit Integer)
    */
@@ -741,7 +746,7 @@ class InterpreterHelper(I: Interpreter) {
     // 1. Let number be the result of calling ToNumber on the input argument.
     val n = toNumber(v)
     // 2. If number is NaN, +0, -0, +INF or -INF, return +0.
-    if(isNaN(n) || n.num == 0 || isInfinite(n)) return 0
+    if (isNaN(n) || n.num == 0 || isInfinite(n)) return 0
     // 3. Let posInt be sign(number) * floor(abs(number))
     val posInt = math.signum(n.num) * math.floor(math.abs(n.num))
     // 4. Let int32bit be posInt modulo 2^32; that is, ...
@@ -757,7 +762,7 @@ class InterpreterHelper(I: Interpreter) {
     // 1. Let number be the result of calling ToNumber on the input argument.
     val n = toNumber(v)
     // 2. If number is NaN, +0, -0, +INF or -INF, return +0.
-    if(isNaN(n) || n.num == 0 || isInfinite(n)) return 0
+    if (isNaN(n) || n.num == 0 || isInfinite(n)) return 0
     // 3. Let posInt be sign(number) * floor(abs(number))
     val posInt = math.signum(n.num) * math.floor(math.abs(n.num))
     // 4. Let int16bit be posInt modulo 2^16; that is, ...
@@ -773,14 +778,14 @@ class InterpreterHelper(I: Interpreter) {
     case PVal(IRVal(EJSUndef)) => "undefined"
     case PVal(IRVal(EJSNull)) => "null"
     case PVal(IRVal(EJSBool(b))) => b.toString
-    case PVal(IRVal(n:EJSNumber)) => toString(n)
-    case PVal(IRVal(s:EJSString)) => s.str
-    case _:JSObject => toString(toPrimitive(v, "String"))
+    case PVal(IRVal(n: EJSNumber)) => toString(n)
+    case PVal(IRVal(s: EJSString)) => s.str
+    case _: JSObject => toString(toPrimitive(v, "String"))
   }
   def toString(n: EJSNumber): String = {
     if (isNaN(n)) "NaN"
     else if (isPlusZero(n) || isMinusZero(n)) "0"
-    else if (n.num < 0) "-"+toString(negate(n))
+    else if (n.num < 0) "-" + toString(negate(n))
     else if (isInfinite(n)) "Infinity"
     else {
       // TODO: 9.8.1.5-10.
@@ -788,7 +793,7 @@ class InterpreterHelper(I: Interpreter) {
     }
   }
   def toString(n: Double): String = {
-    if(n % 1 == 0) decimalFormat.format(n).toLowerCase
+    if (n % 1 == 0) decimalFormat.format(n).toLowerCase
     else n.toString.toLowerCase
   }
 
@@ -797,10 +802,10 @@ class InterpreterHelper(I: Interpreter) {
    */
   def toObject(v: Val): ValError = v match {
     case PVal(IRVal(EJSUndef | EJSNull)) => IP.typeError
-    case PVal(IRVal(s:EJSString)) => I.IS.StringConstructor.construct(Some(PVal(mkIRStrIR(s.str))))
-    case PVal(IRVal(s:EJSNumber)) => I.IS.NumberConstructor.construct(Some(v))
-    case PVal(IRVal(s:EJSBool)) => I.IS.BooleanConstructor.construct(v)
-    case obj:JSObject => obj
+    case PVal(IRVal(s: EJSString)) => I.IS.StringConstructor.construct(Some(PVal(mkIRStrIR(s.str))))
+    case PVal(IRVal(s: EJSNumber)) => I.IS.NumberConstructor.construct(Some(v))
+    case PVal(IRVal(s: EJSBool)) => I.IS.BooleanConstructor.construct(v)
+    case obj: JSObject => obj
   }
 
   /*
@@ -832,13 +837,13 @@ class InterpreterHelper(I: Interpreter) {
    * 11.5.1 Applying the * Operator
    *   The result of a floating-point multiplication is governed by the rules of IEEE 754 binary double-precision arithmetic: ...
    */
-  def applyMultiplication(leftNum: EJSNumber, rightNum:EJSNumber): EJSNumber = mkIRNum(leftNum.num * rightNum.num)
+  def applyMultiplication(leftNum: EJSNumber, rightNum: EJSNumber): EJSNumber = mkIRNum(leftNum.num * rightNum.num)
 
   /*
    * 11.5.2 Applying the / Operator
    *   The result of devision is determined by the specification of IEEE 754 arithmetic: ...
    */
-  def applyDivision(leftNum: EJSNumber, rightNum:EJSNumber): EJSNumber = mkIRNum(leftNum.num / rightNum.num)
+  def applyDivision(leftNum: EJSNumber, rightNum: EJSNumber): EJSNumber = mkIRNum(leftNum.num / rightNum.num)
 
   /*
    * 11.5.3 Applying the % Operator
@@ -848,13 +853,13 @@ class InterpreterHelper(I: Interpreter) {
    *   Instead the ECMAScript language defined % on floating-point operations to behave in a manner analogous to
    *   that of the java integer remainder operator; this may be compared with the C library function fmod.
    */
-  def applyReminder(leftNum: EJSNumber, rightNum:EJSNumber): EJSNumber = mkIRNum(leftNum.num % rightNum.num)
+  def applyReminder(leftNum: EJSNumber, rightNum: EJSNumber): EJSNumber = mkIRNum(leftNum.num % rightNum.num)
 
   /*
    * 11.6.3 Applying the Additive Operators to Numbers
    *   The result of an addition is determined using the rules of IEEE 754 binary double-precision arithmetic: ...
    */
-  def applyAddition(leftNum: EJSNumber, rightNum:EJSNumber): EJSNumber = mkIRNum(leftNum.num + rightNum.num)
+  def applyAddition(leftNum: EJSNumber, rightNum: EJSNumber): EJSNumber = mkIRNum(leftNum.num + rightNum.num)
 
   /*
    * 11.8.5 The Abstract Relational Comparison Algorithm
@@ -867,12 +872,12 @@ class InterpreterHelper(I: Interpreter) {
     // 2. Else the order of evaluation needs to be reversed to preserve left to right evaluation
     //   a. Let py be the result of calling ToPrimitive(y, hint Number).
     //   b. Let px be the result of calling ToPrimitive(x, hint Number).
-    val (px, py) = if(leftFirst)
-                     (toPrimitive(x, "Number"), toPrimitive(y, "Number"))
-                   else {
-                     val t = toPrimitive(y, "Number")
-                     (toPrimitive(x, "Number"), t)
-                   }
+    val (px, py) = if (leftFirst)
+      (toPrimitive(x, "Number"), toPrimitive(y, "Number"))
+    else {
+      val t = toPrimitive(y, "Number")
+      (toPrimitive(x, "Number"), t)
+    }
     (px, py) match {
       // 4. Else, both px, and py are Strings
       /*
@@ -921,15 +926,15 @@ class InterpreterHelper(I: Interpreter) {
       // b. If Type(x) is Null, return true.
       case (PVal(IRVal(EJSNull)), PVal(IRVal(EJSNull))) => true
       // c. If Type(x) is Number, then
-      case (PVal(IRVal(x1:EJSNumber)), PVal(IRVal(y1:EJSNumber))) => {
+      case (PVal(IRVal(x1: EJSNumber)), PVal(IRVal(y1: EJSNumber))) => {
         //  i. If x is NaN, return false.
         // ii. If y is NaN, return false.
-        if(isNaN(x1) || isNaN(y1)) false
+        if (isNaN(x1) || isNaN(y1)) false
         // iii. If x is the same Number value as y, return true.
-        else if(x1.num == y1.num) true
+        else if (x1.num == y1.num) true
         // iv. If x is +0 and y is -0, return true.
         //  v. If x is -0 and y is +0, return true.
-        else if((isPlusZero(x1) && isMinusZero(y1)) || (isMinusZero(x1) && isPlusZero(y1))) true
+        else if ((isPlusZero(x1) && isMinusZero(y1)) || (isMinusZero(x1) && isPlusZero(y1))) true
         // vi. Return false.
         else false
       }
@@ -977,15 +982,15 @@ class InterpreterHelper(I: Interpreter) {
     // 3. If Type(x) is Null, return true.
     case (PVal(IRVal(EJSNull)), PVal(IRVal(EJSNull))) => true
     // 4. If Type(x) is Number, then
-    case (PVal(IRVal(x1:EJSNumber)), PVal(IRVal(y1:EJSNumber))) => {
+    case (PVal(IRVal(x1: EJSNumber)), PVal(IRVal(y1: EJSNumber))) => {
       // a. If x is NaN, return false.
       // b. If y is NaN, return false.
-      if(isNaN(x1) || isNaN(y1)) false
+      if (isNaN(x1) || isNaN(y1)) false
       // c. If x is the same Number value as y, return true.
-      else if(x1.num == y1.num) true
+      else if (x1.num == y1.num) true
       // d. If x is +0 and y is -0, return true.
       // e. If x is -0 and y is +0, return true.
-      else if((isPlusZero(x1) && isMinusZero(y1)) || (isMinusZero(x1) && isPlusZero(y1))) true
+      else if ((isPlusZero(x1) && isMinusZero(y1)) || (isMinusZero(x1) && isPlusZero(y1))) true
       // f. Return false.
       else false
     }
@@ -1028,7 +1033,7 @@ class InterpreterHelper(I: Interpreter) {
     //     {[[Value]]: proto, [[Writable]]: true, [[Enumerable]]: false, [[Configurable]]: true}, and false.
     F._defineOwnProperty("prototype", objProp(proto), false)
     // 19. If Strict is true, then
-    if(strict == true) {
+    if (strict == true) {
       // TODO:
     }
     // 20. Return F
@@ -1046,7 +1051,7 @@ class InterpreterHelper(I: Interpreter) {
                              "length" -> numProp(fv.getArgs.size))
     new JSFunction13(ownLoc, IP.lFunctionPrototype, "Function", true, propT, fv, env)
   }*/
-  
+
   ////////////////////////////////////////////////////////////////////////////////
   // 15. Standard Built-in ECMAScript Objects
   ////////////////////////////////////////////////////////////////////////////////
@@ -1058,7 +1063,7 @@ class InterpreterHelper(I: Interpreter) {
   }
   def popEnv() = I.IS.env match {
     case EmptyEnv() =>
-    case ce:ConsEnv => I.IS.env = ce.rest
+    case ce: ConsEnv => I.IS.env = ce.rest
   }
 
   /*

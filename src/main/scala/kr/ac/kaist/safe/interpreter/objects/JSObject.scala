@@ -12,8 +12,8 @@
 package kr.ac.kaist.safe.interpreter.objects
 
 import kr.ac.kaist.safe.interpreter._
-import kr.ac.kaist.safe.interpreter.{InterpreterPredefine => IP}
-import kr.ac.kaist.safe.util.{EJSType, EJSCompletionType => CT, NodeUtil => NU}
+import kr.ac.kaist.safe.interpreter.{ InterpreterPredefine => IP }
+import kr.ac.kaist.safe.util.{ EJSType, EJSCompletionType => CT, NodeUtil => NU }
 
 /*
  * 8.6.2 Object Internal Properties and Methods
@@ -23,11 +23,13 @@ import kr.ac.kaist.safe.util.{EJSType, EJSCompletionType => CT, NodeUtil => NU}
  *     [[Put]], [[CanPut]], [[HasProperty]], [[Delete]],
  *     [[DefaultValue]], [[DefineOwnProperty]]
  */
-case class JSObject(val I: Interpreter,
-                    var proto: JSObject,
-                    var className: String,
-                    var extensible: Boolean,
-                    var property: PropTable) extends Val {
+case class JSObject(
+  val I: Interpreter,
+    var proto: JSObject,
+    var className: String,
+    var extensible: Boolean,
+    var property: PropTable
+) extends Val {
   ////////////////////////////////////////////////////////////////////////////////
   // Basic
   ////////////////////////////////////////////////////////////////////////////////
@@ -87,22 +89,22 @@ case class JSObject(val I: Interpreter,
    * 8.12.2 [[GetProperty]](P)
    */
   def _getProperty(x: PName): (ObjectProp, JSObject) =
-  {
-    var o: JSObject = this
-    var prop: ObjectProp = null
-    var cont: Boolean = true
-    while (cont) {
-      prop = o._getOwnProperty(x)
-      // 2. If prop is not undefined, return prop.
-      if (prop != null) cont = false
-      // 4. If proto is null, return undefined.
-      else if (o.proto == IP.nullObj) {
-        o = IP.nullObj
-        cont = false
-      } else o = o.proto
+    {
+      var o: JSObject = this
+      var prop: ObjectProp = null
+      var cont: Boolean = true
+      while (cont) {
+        prop = o._getOwnProperty(x)
+        // 2. If prop is not undefined, return prop.
+        if (prop != null) cont = false
+        // 4. If proto is null, return undefined.
+        else if (o.proto == IP.nullObj) {
+          o = IP.nullObj
+          cont = false
+        } else o = o.proto
+      }
+      (prop, o)
     }
-    (prop, o)
-  }
 
   /*
    * 8.12.3 [[Get]](P)
@@ -126,12 +128,12 @@ case class JSObject(val I: Interpreter,
         I.IH.call(I.IS.info, this, I.IS.NoArgs, getter)
         I.IS.env = oldEnv
         I.IS.tb = oldTb
-        if(I.IS.comp.value == null || (I.IS.comp.Type != CT.NORMAL && I.IS.comp.Type != CT.RETURN)) 
-          throw new InterpreterError(className + "._get("+x+") error.", I.IS.span)
+        if (I.IS.comp.value == null || (I.IS.comp.Type != CT.NORMAL && I.IS.comp.Type != CT.RETURN))
+          throw new InterpreterError(className + "._get(" + x + ") error.", I.IS.span)
         val returnValue = I.IS.comp.value
         I.IS.comp.value = oldValue
         returnValue
-      case _ => throw new InterpreterError(className + "._get("+x+") error.", I.IS.span)
+      case _ => throw new InterpreterError(className + "._get(" + x + ") error.", I.IS.span)
     }
   }
 
@@ -177,8 +179,8 @@ case class JSObject(val I: Interpreter,
         // a. Let valueDesc be the Property Descriptor {[[Value]]: V}.
         // b. Call the [[DefineOwnPropertry]] internal method of O passing P, valueDesc, and Throw as arguments.
         _defineOwnProperty(x, new ObjectProp(Some(v), None, None, None, None, None), b) match {
-        case err: JSError => err
-        case _ => v
+          case err: JSError => err
+          case _ => v
         }
       } else {
         // This may be either an own or inherited accessor property descriptor or an inherited data property descriptor.
@@ -199,12 +201,12 @@ case class JSObject(val I: Interpreter,
               I.IH.call(I.IS.info, this, args, setter)
               I.IS.env = oldEnv
               I.IS.tb = oldTb
-              if(I.IS.comp.value == null || (I.IS.comp.Type != CT.NORMAL && I.IS.comp.Type != CT.RETURN)) 
-                throw new InterpreterError(className + "._set("+x+") error.", I.IS.span)
+              if (I.IS.comp.value == null || (I.IS.comp.Type != CT.NORMAL && I.IS.comp.Type != CT.RETURN))
+                throw new InterpreterError(className + "._set(" + x + ") error.", I.IS.span)
               val returnValue = I.IS.comp.value
               I.IS.comp.value = oldValue
               returnValue
-            case _ => throw new InterpreterError(className + "._set("+x+") error.", I.IS.span)
+            case _ => throw new InterpreterError(className + "._set(" + x + ") error.", I.IS.span)
           }
         } else {
           val newDesc = I.IH.mkDataProp(v, true, true, true)
@@ -252,7 +254,7 @@ case class JSObject(val I: Interpreter,
         toString.asInstanceOf[JSFunction]._call(this, args)
         I.IS.env = oldEnv
         I.IS.tb = oldTb
-        if(I.IS.comp.Type == CT.RETURN && I.IS.comp.value.isInstanceOf[PVal]) Some(I.IS.comp.value.asInstanceOf[PVal])
+        if (I.IS.comp.Type == CT.RETURN && I.IS.comp.value.isInstanceOf[PVal]) Some(I.IS.comp.value.asInstanceOf[PVal])
         else None
       } else None
     }
@@ -265,7 +267,7 @@ case class JSObject(val I: Interpreter,
         valueOf.asInstanceOf[JSFunction]._call(this, args)
         I.IS.env = oldEnv
         I.IS.tb = oldTb
-        if(I.IS.comp.Type == CT.RETURN && I.IS.comp.value.isInstanceOf[PVal]) Some(I.IS.comp.value.asInstanceOf[PVal])
+        if (I.IS.comp.Type == CT.RETURN && I.IS.comp.value.isInstanceOf[PVal]) Some(I.IS.comp.value.asInstanceOf[PVal])
         else None
       } else None
     }
@@ -279,7 +281,7 @@ case class JSObject(val I: Interpreter,
       case "String" => EJSType.STRING
       case "Number" => EJSType.NUMBER
       case _ =>
-        if(this.isInstanceOf[JSDate]) EJSType.STRING
+        if (this.isInstanceOf[JSDate]) EJSType.STRING
         else EJSType.NUMBER
     }
 
@@ -300,7 +302,7 @@ case class JSObject(val I: Interpreter,
             getString match {
               case Some(pv) => pv
               case None => throw new DefaultValueError(IP.typeError)
-          }
+            }
         }
     }
   }
@@ -311,19 +313,18 @@ case class JSObject(val I: Interpreter,
   def _defineOwnProperty(x: Var, op: ObjectProp, b: Boolean): ValError = {
     // 1. Let current be the result of calling the [[GetOwnProperty]] internal method of O with property name P.
     val current = _getOwnProperty(x)
-    if(current == null) {
+    if (current == null) {
       // 2. Let extensible be the value of the [[Extensible]] internal property of O.
       // 3. If current is undefined and extensible is false, then Reject.
-      if(!extensible) { if(b) return IP.typeError else return IP.falsePV }
+      if (!extensible) { if (b) return IP.typeError else return IP.falsePV }
       // 4. If current is undefined and extensible is true, then
       else {
         // a. If IsGenericDescriptor(Desc) or IsDataDescriptor(Desc) is true, then
-        if(I.IH.isGenericDescriptor(op) || I.IH.isDataDescriptor(op)) {
+        if (I.IH.isGenericDescriptor(op) || I.IH.isDataDescriptor(op)) {
           // i. Create an own data property named P of object O whose [[Value]], [[Writable]], [[Enumerable]] and [[Configurable]] attribute values are described by Desc.
           //    If the value of an attribute field of Desc is absent, the attribute of the newly created property is set to its default value.
           __putProp(x, I.IH.mkDataProp(op.getValueOrDefault, op.getWritableOrDefault, op.getEnumerableOrDefault, op.getConfigurableOrDefault))
-        }
-        // b. Else, Desc must be an accessor Property Descriptor so,
+        } // b. Else, Desc must be an accessor Property Descriptor so,
         else {
           // i. Create an own accessor property named P of object O whose [[Get]], [[Set]], [[Enumerable]] and [[Configurable]] attribute values are described by Desc.
           //    If the value of an attribute field of Desc is absent, the attribute of the newly created property is set to its default value.
@@ -332,73 +333,68 @@ case class JSObject(val I: Interpreter,
       }
       // c. Return true.
       return IP.truePV
-    }
-    else {
+    } else {
       // 5. Return true, if every field in Desc is absent.
-      if(op.areAllAttributesAbsent) return IP.truePV
+      if (op.areAllAttributesAbsent) return IP.truePV
       // 6. Return true, if every field in Desc also occurs in current and the value of every field in Desc is the same value
       //    as the corresponding field in current when compared using the SameValue algorithm (9.12).
-      if(op.equals(current)) return IP.truePV
+      if (op.equals(current)) return IP.truePV
       // 7. If the [[Configurable]] field of current is false then
-      if(!current.isConfigurable) {
+      if (!current.isConfigurable) {
         // a. Reject, if the [[Configurable]] field of Desc is true.
-        if(op.isConfigurable) if(b) return IP.typeError else return IP.falsePV
+        if (op.isConfigurable) if (b) return IP.typeError else return IP.falsePV
         // b. Reject, if the [[Enumerable]] field of Desc is present and the [[Enumerable]] fields of current and Desc are the Boolean negation of each other.
-        if(op.enumerable.isDefined && current.enumerable.get != op.enumerable.get) if(b) return IP.typeError else return IP.falsePV
+        if (op.enumerable.isDefined && current.enumerable.get != op.enumerable.get) if (b) return IP.typeError else return IP.falsePV
       }
       // 8. If IsGenericDescriptor(Desc) is true, then no further validation is required.
-      if(I.IH.isGenericDescriptor(op)) {}
+      if (I.IH.isGenericDescriptor(op)) {}
       // 9. Else, if IsDataDescriptor(current) and IsDataDescriptor(Desc) have different result, then
-      else if(I.IH.isDataDescriptor(current) != I.IH.isDataDescriptor(op)) {
+      else if (I.IH.isDataDescriptor(current) != I.IH.isDataDescriptor(op)) {
         // a. Reject, if the [[Configurable]] field of current is false.
-        if(!current.isConfigurable) if(b) return IP.typeError else return IP.falsePV
+        if (!current.isConfigurable) if (b) return IP.typeError else return IP.falsePV
         // b. If IsDataDescriptor(current) is true, then
-        if(I.IH.isDataDescriptor(current)) {
+        if (I.IH.isDataDescriptor(current)) {
           // i. Convert the property named P of object O from a data property to an accessor property.
           //    Preserve the existing values of the converted property's [[Configurable]] and
           //    [[Enumerable]] attributes and set the rest of the property's attributes to their default values.
           __putProp(x, I.IH.mkAccessorProp(IP.undefV, IP.undefV, op.isEnumerable, op.isConfigurable))
-        }
-        // c. Else,
+        } // c. Else,
         else {
           // i. Convert the property named P of object O from a accessor property to an data property.
           //    Preserve the existing values of the converted property's [[Configurable]] and
           //    [[Enumerable]] attributes and set the rest of the property's attributes to their default values.
           __putProp(x, I.IH.mkDataProp(IP.undefV, false, op.isEnumerable, op.isConfigurable))
         }
-      }
-      // 10. Else, if IsDataDescriptor(current) and IsDataDescriptor(Desc) are both true, then
-      else if(I.IH.isDataDescriptor(current) && I.IH.isDataDescriptor(op)) {
+      } // 10. Else, if IsDataDescriptor(current) and IsDataDescriptor(Desc) are both true, then
+      else if (I.IH.isDataDescriptor(current) && I.IH.isDataDescriptor(op)) {
         // a. If the [[Configurable]] field of current is false, then
-        if(!current.isConfigurable) {
+        if (!current.isConfigurable) {
           // i. Reject, if the [[Writable]] field of current is false and the [[Writable]] field of Desc is true.
-          if(!current.isWritable && op.isWritable) if(b) return IP.typeError else return IP.falsePV
+          if (!current.isWritable && op.isWritable) if (b) return IP.typeError else return IP.falsePV
           // ii. If the [[Writable]] field of current is false, then
-          if(!current.isWritable) {
+          if (!current.isWritable) {
             // 1. Reject, if the [[Value]] field of Desc is present and SameValue(Desc.[[Value]], current.[[Value]]) is false.
-            if(op.value.isDefined && !I.IH.sameValue(op.value.get, current.value.get)) if(b) return IP.typeError else return IP.falsePV
+            if (op.value.isDefined && !I.IH.sameValue(op.value.get, current.value.get)) if (b) return IP.typeError else return IP.falsePV
           }
-        }
-        // b. else, the [[Configurable]] field of current is true, so any change is acceptable.
+        } // b. else, the [[Configurable]] field of current is true, so any change is acceptable.
         else {}
-      }
-      // 11. Else, IsAccessorDescriptor(current) and IsAccessorDescriptor(Desc) are both true so,
+      } // 11. Else, IsAccessorDescriptor(current) and IsAccessorDescriptor(Desc) are both true so,
       else {
         // a. If the [[Configurable]] field of current is false, then
-        if(!current.isConfigurable) {
+        if (!current.isConfigurable) {
           // i. Reject, if the [[Set]] field of Desc is present and SameValue(Desc.[[Set]], current.[[Set]]) is false.
-            if(op.set.isDefined && !I.IH.sameValue(op.set.get, current.set.get)) if(b) return IP.typeError else return IP.falsePV
+          if (op.set.isDefined && !I.IH.sameValue(op.set.get, current.set.get)) if (b) return IP.typeError else return IP.falsePV
           // i. Reject, if the [[Get]] field of Desc is present and SameValue(Desc.[[Get]], current.[[Get]]) is false.
-            if(op.get.isDefined && !I.IH.sameValue(op.get.get, current.get.get)) if(b) return IP.typeError else return IP.falsePV
+          if (op.get.isDefined && !I.IH.sameValue(op.get.get, current.get.get)) if (b) return IP.typeError else return IP.falsePV
         }
       }
       // 12. For each attribute field of Desc that is present, set the correspondingly named attribute of the property named P of object O to the value of the field.
-      if(op.value.isDefined) current.value = op.value
-      if(op.get.isDefined) current.get = op.get
-      if(op.set.isDefined) current.set = op.set
-      if(op.writable.isDefined) current.writable = op.writable
-      if(op.enumerable.isDefined) current.enumerable = op.enumerable
-      if(op.configurable.isDefined) current.configurable = op.configurable
+      if (op.value.isDefined) current.value = op.value
+      if (op.get.isDefined) current.get = op.get
+      if (op.set.isDefined) current.set = op.set
+      if (op.writable.isDefined) current.writable = op.writable
+      if (op.enumerable.isDefined) current.enumerable = op.enumerable
+      if (op.configurable.isDefined) current.configurable = op.configurable
       __putProp(x, current)
       // 13. Return true.
       return IP.truePV

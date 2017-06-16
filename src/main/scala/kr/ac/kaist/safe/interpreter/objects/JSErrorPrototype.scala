@@ -12,10 +12,10 @@
 package kr.ac.kaist.safe.interpreter.objects
 
 import kr.ac.kaist.safe.interpreter._
-import kr.ac.kaist.safe.interpreter.{InterpreterPredefine => IP}
+import kr.ac.kaist.safe.interpreter.{ InterpreterPredefine => IP }
 
 class JSErrorPrototype(_I: Interpreter, _proto: JSObject)
-  extends JSErrorObject(_I, _proto, "Error", true, propTable) {
+    extends JSErrorObject(_I, _proto, "Error", true, propTable) {
   def init(): Unit = {
     /*
      * 15.11.4 Properties of the Error Prototype Object

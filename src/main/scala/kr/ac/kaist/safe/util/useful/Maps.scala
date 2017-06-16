@@ -11,9 +11,9 @@
 
 package kr.ac.kaist.safe.util.useful
 
-import _root_.java.util.{HashMap => JavaHashMap, Map => JavaMap}
+import _root_.java.util.{ HashMap => JavaHashMap, Map => JavaMap }
 
-import scala.collection.{JavaConversions, Map => MMap}
+import scala.collection.{ JavaConversions, Map => MMap }
 
 object Maps {
   def toMap[S, T](jmap: JavaMap[S, T]): Map[S, T] = Map.empty ++ JavaConversions.mapAsScalaMap(jmap)

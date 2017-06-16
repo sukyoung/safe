@@ -11,10 +11,10 @@
 
 package kr.ac.kaist.safe.interpreter
 
-import kr.ac.kaist.safe.interpreter.{InterpreterPredefine => IP}
+import kr.ac.kaist.safe.interpreter.{ InterpreterPredefine => IP }
 import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.util._
-import kr.ac.kaist.safe.util.{NodeUtil => NU}
+import kr.ac.kaist.safe.util.{ NodeUtil => NU }
 
 object InterpreterDebug {
 
@@ -22,12 +22,12 @@ object InterpreterDebug {
   def fresh(id: String) = {
     uniq_id += 1
     val stringarr = id.split(NU.INTERNAL_SYMBOL)
-    stringarr.update(stringarr.length-1, uniq_id.toString)
-    stringarr.foldLeft("")((s,a) => s+NU.INTERNAL_SYMBOL+a)
+    stringarr.update(stringarr.length - 1, uniq_id.toString)
+    stringarr.foldLeft("")((s, a) => s + NU.INTERNAL_SYMBOL + a)
   }
   type TmpIdEnv = List[(String, String)]
   var tmpEnv = Nil.asInstanceOf[TmpIdEnv]
-  def addE(uniq: String, new_uniq: String) = tmpEnv = (uniq, new_uniq)::tmpEnv
+  def addE(uniq: String, new_uniq: String) = tmpEnv = (uniq, new_uniq) :: tmpEnv
   // def getE(uniq: String): String = uniq
   def getE(uniq: String): String = tmpEnv.find(p => p._1.equals(uniq)) match {
     case None =>
@@ -38,10 +38,10 @@ object InterpreterDebug {
   }
 
   def prExpr(e: IRExpr): String = e match {
-    case IRBin(_,f,o,s) => prExpr(f)+o.toString+prExpr(s)
-    case IRUn(_,o,expr) => o.toString+prExpr(expr)
-    case id:IRId => getE(id.uniqueName)
-    case _:IRThis => "this"
+    case IRBin(_, f, o, s) => prExpr(f) + o.toString + prExpr(s)
+    case IRUn(_, o, expr) => o.toString + prExpr(expr)
+    case id: IRId => getE(id.uniqueName)
+    case _: IRThis => "this"
     case IRVal(EJSUndef) => "undefined"
     case IRVal(EJSNull) => "null"
     case IRVal(b: EJSBool) => b.bool.toString
@@ -49,7 +49,7 @@ object InterpreterDebug {
     case IRVal(s: EJSString) => s.str
   }
 
-/*
+  /*
   def prHeapEnv(IS: InterpreterState) = {
     prHeap(IS.heap)
     System.out.println("Global object environment: " + toStringEnvRec(IS.GlobalObject.declEnvRec))
@@ -102,7 +102,7 @@ object InterpreterDebug {
     val sb: StringBuilder = new StringBuilder
     sb.append("{")
     val i = s.entrySet().iterator()
-    while(i.hasNext()) {
+    while (i.hasNext()) {
       val e = i.next()
       sb.append("    " + getE(e.getKey())).append(" |-> ").append(e.getValue().value).append(", ")
     }
@@ -129,16 +129,16 @@ object InterpreterDebug {
   */
   def toStringOV(op: ObjectProp): String = {
     var str = ""
-    if(op.value.isDefined) str+= "value:" + op.value.get + ", "
-    if(op.writable.isDefined) str+= "writable:" + op.writable.get + ", "
-    if(op.get.isDefined) str+= "get:" + op.get.get + ", "
-    if(op.set.isDefined) str+= "set:" + op.set.get + ", "
-    str+= "enumerable:" + op.enumerable + ", "
-    str+= "configurable:" + op.configurable
+    if (op.value.isDefined) str += "value:" + op.value.get + ", "
+    if (op.writable.isDefined) str += "writable:" + op.writable.get + ", "
+    if (op.get.isDefined) str += "get:" + op.get.get + ", "
+    if (op.set.isDefined) str += "set:" + op.set.get + ", "
+    str += "enumerable:" + op.enumerable + ", "
+    str += "configurable:" + op.configurable
 
     str
   }
-  
+
   var performanceTimer: Long = 0
   def timerStart(): Unit = performanceTimer = System.currentTimeMillis()
   def timerStop(): Unit = System.out.println((System.currentTimeMillis() - performanceTimer) + "ms")

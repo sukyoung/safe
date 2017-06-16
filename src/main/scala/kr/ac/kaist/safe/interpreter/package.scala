@@ -13,12 +13,12 @@ package kr.ac.kaist.safe
 
 import java.util.HashMap
 
-import kr.ac.kaist.safe.interpreter.{InterpreterDebug => ID, InterpreterHelper => IH, InterpreterPredefine => IP}
+import kr.ac.kaist.safe.interpreter.{ InterpreterDebug => ID, InterpreterHelper => IH, InterpreterPredefine => IP }
 import kr.ac.kaist.safe.interpreter.objects._
 import kr.ac.kaist.safe.nodes.ir._
-import kr.ac.kaist.safe.nodes.ir.{IRFactory => IF}
+import kr.ac.kaist.safe.nodes.ir.{ IRFactory => IF }
 import kr.ac.kaist.safe.util._
-import kr.ac.kaist.safe.util.{EJSCompletionType => CT}
+import kr.ac.kaist.safe.util.{ EJSCompletionType => CT }
 
 package object interpreter {
   ////////////////////////////////////////////////////////////////////////////////
@@ -31,33 +31,33 @@ package object interpreter {
   ////////////////////////////////////////////////////////////////////////////////
   // Type
   ////////////////////////////////////////////////////////////////////////////////
-  
+
   // Type aliases
   type Var = String
   type PName = String
-  
+
   ////////////////////////////////////////////////////////////////////////////////
   // Value & Error
   ////////////////////////////////////////////////////////////////////////////////
-  
+
   // ValError = Val or JSError
   abstract class ValError()
-  
+
   // Val = JSObject or PVal
   abstract class Val() extends ValError {
     override def equals(v: Any): Boolean = (this, v) match {
       case (PVal(IRVal(EJSUndef)), PVal(IRVal(EJSUndef))) => true
       case (PVal(IRVal(EJSNull)), PVal(IRVal(EJSNull))) => true
-      case (PVal(IRVal(b1:EJSBool)), PVal(IRVal(b2:EJSBool))) => b1.bool == b2.bool
-      case (PVal(IRVal(n1:EJSNumber)), PVal(IRVal(n2:EJSNumber))) => {
-        if(n1.num == 0 && n2.num == 0)
+      case (PVal(IRVal(b1: EJSBool)), PVal(IRVal(b2: EJSBool))) => b1.bool == b2.bool
+      case (PVal(IRVal(n1: EJSNumber)), PVal(IRVal(n2: EJSNumber))) => {
+        if (n1.num == 0 && n2.num == 0)
           //IH.isPlusZero(n1) == IH.isPlusZero(n2)
           java.lang.Double.doubleToLongBits(n1.num) == java.lang.Double.doubleToLongBits(n2.num)
         else
           n1.num == n2.num
       }
-      case (PVal(IRVal(s1:EJSString)), PVal(IRVal(s2:EJSString))) => s1.str.equals(s2.str)
-      case (o1:JSObject, o2:JSObject) => o1.eq(o2)
+      case (PVal(IRVal(s1: EJSString)), PVal(IRVal(s2: EJSString))) => s1.str.equals(s2.str)
+      case (o1: JSObject, o2: JSObject) => o1.eq(o2)
       case _ => false
     }
   }
@@ -70,10 +70,10 @@ package object interpreter {
   ////////////////////////////////////////////////////////////////////////////////
   // Error
   ////////////////////////////////////////////////////////////////////////////////
-  
+
   class InterpreterError(msg: String, span: Span) extends Exception
   class DefaultValueError(var err: JSError) extends Exception
-  
+
   /*
    * 4.2 Language Overview
    * the Error objects Error, EvalError, RangeError, ReferenceError,
@@ -99,7 +99,7 @@ package object interpreter {
     case _: TypeError => I.IS.TypeErrorConstructor.construct(IP.undefV)
     case _: URIError => I.IS.URIErrorConstructor.construct(IP.undefV)
   }
-  
+
   ////////////////////////////////////////////////////////////////////////////////
   // Environment Record
   ////////////////////////////////////////////////////////////////////////////////
@@ -112,7 +112,7 @@ package object interpreter {
    * an object environment record.
    */
   abstract class EnvRec()
-  
+
   /*
    * 10.2.1.1 Declarative Environment Records: A declarative environment record
    * binds the set of identifiers defined by the declarations contained within
@@ -121,10 +121,10 @@ package object interpreter {
   case class DeclEnvRec(s: Store) extends EnvRec
   type Store = HashMap[Var, StoreValue]
   class StoreValue(var value: ValError, var init: Boolean,
-                   var mutable: Boolean, var configurable: Boolean) extends BindingValue {
-    def setValue(v: ValError) {value = v; init = true;}
+      var mutable: Boolean, var configurable: Boolean) extends BindingValue {
+    def setValue(v: ValError) { value = v; init = true; }
   }
-  
+
   /*
    * 10.2.1.2 Object Environment Records: Each object environment record is
    * associated with an object called its binding object.
@@ -137,7 +137,7 @@ package object interpreter {
    * reference to an outer lexical environment.
    */
   abstract class Env()
-  
+
   /*
    * 10.2.3 The Global Environment
    * The global environment is a unique Lexical Environment which is created before
@@ -159,37 +159,39 @@ package object interpreter {
    *   Table 6: Attributes of a Named Accessor Property
    *   [[Get]], [[Set]], [[Enumerable]], [[Configurable]]
    */
-  class ObjectProp(var value: Option[Val],
-                   var get: Option[Val],
-                   var set: Option[Val],
-                   var writable: Option[Boolean],
-                   var enumerable: Option[Boolean],
-                   var configurable: Option[Boolean]) extends BindingValue {
+  class ObjectProp(
+    var value: Option[Val],
+      var get: Option[Val],
+      var set: Option[Val],
+      var writable: Option[Boolean],
+      var enumerable: Option[Boolean],
+      var configurable: Option[Boolean]
+  ) extends BindingValue {
     def areAllAttributesAbsent(): Boolean = value.isEmpty && get.isEmpty && set.isEmpty && writable.isEmpty && enumerable.isEmpty && configurable.isEmpty
-    def isWritable(): Boolean = if(writable.isDefined) writable.get else false
-    def isEnumerable(): Boolean = if(enumerable.isDefined) enumerable.get else false
-    def isConfigurable(): Boolean = if(configurable.isDefined) configurable.get else false
+    def isWritable(): Boolean = if (writable.isDefined) writable.get else false
+    def isEnumerable(): Boolean = if (enumerable.isDefined) enumerable.get else false
+    def isConfigurable(): Boolean = if (configurable.isDefined) configurable.get else false
     def copy(): ObjectProp = new ObjectProp(value, get, set, writable, enumerable, configurable)
-    
-    def getValueOrDefault(): Val = if(value.isDefined) value.get else IP.undefV
-    def getGetOrDefault(): Val = if(get.isDefined) get.get else IP.undefV
-    def getSetOrDefault(): Val = if(set.isDefined) set.get else IP.undefV
-    def getWritableOrDefault(): Boolean = if(writable.isDefined) writable.get else false
-    def getEnumerableOrDefault(): Boolean = if(enumerable.isDefined) enumerable.get else false
-    def getConfigurableOrDefault(): Boolean = if(configurable.isDefined) configurable.get else false
+
+    def getValueOrDefault(): Val = if (value.isDefined) value.get else IP.undefV
+    def getGetOrDefault(): Val = if (get.isDefined) get.get else IP.undefV
+    def getSetOrDefault(): Val = if (set.isDefined) set.get else IP.undefV
+    def getWritableOrDefault(): Boolean = if (writable.isDefined) writable.get else false
+    def getEnumerableOrDefault(): Boolean = if (enumerable.isDefined) enumerable.get else false
+    def getConfigurableOrDefault(): Boolean = if (configurable.isDefined) configurable.get else false
 
     override def equals(a: Any): Boolean = {
-      if(!a.isInstanceOf[ObjectProp]) false
+      if (!a.isInstanceOf[ObjectProp]) false
       else {
         val op = a.asInstanceOf[ObjectProp]
-        
-        if(value.isDefined != op.value.isDefined || (value.isDefined && !value.get.equals(op.value.get))) return false
-        if(get.isDefined != op.get.isDefined || (get.isDefined && !get.get.equals(op.get.get))) return false
-        if(set.isDefined != op.set.isDefined || (set.isDefined && !set.get.equals(op.set.get))) return false
-        if(writable.isDefined != op.writable.isDefined || (writable.isDefined && writable.get != op.writable.get)) return false
-        if(enumerable.isDefined != op.enumerable.isDefined || (enumerable.isDefined && enumerable.get != op.enumerable.get)) return false
-        if(configurable.isDefined != op.configurable.isDefined || (configurable.isDefined && configurable.get != op.configurable.get)) return false
-        
+
+        if (value.isDefined != op.value.isDefined || (value.isDefined && !value.get.equals(op.value.get))) return false
+        if (get.isDefined != op.get.isDefined || (get.isDefined && !get.get.equals(op.get.get))) return false
+        if (set.isDefined != op.set.isDefined || (set.isDefined && !set.get.equals(op.set.get))) return false
+        if (writable.isDefined != op.writable.isDefined || (writable.isDefined && writable.get != op.writable.get)) return false
+        if (enumerable.isDefined != op.enumerable.isDefined || (enumerable.isDefined && enumerable.get != op.enumerable.get)) return false
+        if (configurable.isDefined != op.configurable.isDefined || (configurable.isDefined && configurable.get != op.configurable.get)) return false
+
         true
       }
     }
@@ -242,7 +244,7 @@ package object interpreter {
   ////////////////////////////////////////////////////////////////////////////////
   // Completion
   ////////////////////////////////////////////////////////////////////////////////
-  
+
   /*
   /*
    * 8.9 The Completion Specification Type
@@ -263,19 +265,20 @@ package object interpreter {
   case class Throw(e: ValError, sp: Span) extends Abrupt
   */
   class Completion() {
-    def setNormal(): Unit = {Type = CT.NORMAL}
-    def setNormal(v: Val): Unit = {Type = CT.NORMAL; value = v}
-    def setBreak(l: IRId): Unit = {Type = CT.BREAK; label = l}
-    def setBreak(v: Val, l: IRId): Unit = {Type = CT.BREAK; value = v; label = l}
-    def setReturn(): Unit = {Type = CT.RETURN}
-    def setReturn(v: Val): Unit = {Type = CT.RETURN; value = v}
-    def setThrow(e: ValError, sp: Span): Unit = {Type = CT.THROW; error = e; span = sp}
+    def setNormal(): Unit = { Type = CT.NORMAL }
+    def setNormal(v: Val): Unit = { Type = CT.NORMAL; value = v }
+    def setBreak(l: IRId): Unit = { Type = CT.BREAK; label = l }
+    def setBreak(v: Val, l: IRId): Unit = { Type = CT.BREAK; value = v; label = l }
+    def setReturn(): Unit = { Type = CT.RETURN }
+    def setReturn(v: Val): Unit = { Type = CT.RETURN; value = v }
+    def setThrow(e: ValError, sp: Span): Unit = { Type = CT.THROW; error = e; span = sp }
     // Set last completion from another completion
     def setLastCompletion(c: Completion): Unit = {
       Type = c.Type
       Type match {
-        case CT.NORMAL => if(c.value != null) value = c.value
-        case CT.BREAK => if(c.value != null) value = c.value; label = c.label
+        case CT.NORMAL => if (c.value != null) value = c.value
+        case CT.BREAK =>
+          if (c.value != null) value = c.value; label = c.label
         case CT.RETURN => value = c.value
         case CT.THROW => error = c.error; span = c.span
       }

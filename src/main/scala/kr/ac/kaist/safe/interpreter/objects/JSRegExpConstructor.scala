@@ -15,7 +15,7 @@ import kr.ac.kaist.safe.interpreter._
 import kr.ac.kaist.safe.util.regexp._
 
 class JSRegExpConstructor(_I: Interpreter, _proto: JSObject)
-  extends JSFunction13(_I, _proto, "Array", true, propTable(), _I.IH.dummyFtn(0), EmptyEnv(), true) {
+    extends JSFunction13(_I, _proto, "Array", true, propTable(), _I.IH.dummyFtn(0), EmptyEnv(), true) {
   def init(): Unit = {
     /*
      * 15.10.5 Properties of the RegExp Constructor
@@ -39,7 +39,7 @@ class JSRegExpConstructor(_I: Interpreter, _proto: JSObject)
           // and *flags* is not **undefined**, then throw a **TypeError** exception."
           throw new TypeErrorException
         }
-      case pv:PVal =>
+      case pv: PVal =>
         val p = if (I.IH.isUndef(pattern)) "" else I.IH.toString(pattern)
         val f = if (I.IH.isUndef(flags)) "" else I.IH.toString(flags)
         (p, f)
@@ -56,7 +56,6 @@ class JSRegExpConstructor(_I: Interpreter, _proto: JSObject)
         case e: kr.ac.kaist.safe.util.regexp.SyntaxErrorException =>
           throw new SyntaxErrorException
       }
-
 
     val prop = propTable()
     prop.put("source", I.IH.strProp(s))

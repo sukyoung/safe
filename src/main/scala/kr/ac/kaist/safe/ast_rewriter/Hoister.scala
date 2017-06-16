@@ -15,7 +15,7 @@ import kr.ac.kaist.safe.errors.ExcLog
 import kr.ac.kaist.safe.errors.error._
 import kr.ac.kaist.safe.errors.warning._
 import kr.ac.kaist.safe.nodes.ast._
-import kr.ac.kaist.safe.util.{NodeUtil => NU, Span}
+import kr.ac.kaist.safe.util.{ NodeUtil => NU, Span }
 
 class Hoister(program: Program) {
   ////////////////////////////////////////////////////////////////

@@ -12,13 +12,13 @@
 package kr.ac.kaist.safe.interpreter.objects
 
 import kr.ac.kaist.safe.interpreter._
-import kr.ac.kaist.safe.interpreter.{InterpreterPredefine => IP}
+import kr.ac.kaist.safe.interpreter.{ InterpreterPredefine => IP }
 import kr.ac.kaist.safe.nodes.ir._
-import kr.ac.kaist.safe.nodes.ir.{IRFactory => IF}
+import kr.ac.kaist.safe.nodes.ir.{ IRFactory => IF }
 import kr.ac.kaist.safe.util.EJSType
 
 class JSObjectConstructor(_I: Interpreter, _proto: JSObject)
-  extends JSFunction13(_I, _proto, "Object", true, propTable, IP.undefFtn, EmptyEnv(), true) {
+    extends JSFunction13(_I, _proto, "Object", true, propTable, IP.undefFtn, EmptyEnv(), true) {
   def init(): Unit = {
     // 15.2.3 Properties of the Object Constructor
     property.put("length", I.IH.mkDataProp(PVal(IRVal(IF.oneV)), false, false, false))
@@ -83,11 +83,10 @@ class JSObjectConstructor(_I: Interpreter, _proto: JSObject)
   // 15.2.1.1 Object([value])
   override def _call(tb: Val, argsObj: JSObject): Unit = {
     val value: Val = argsObj._get("0")
-    if(I.IH.isNull(value) || I.IH.isUndef(value)) {
+    if (I.IH.isNull(value) || I.IH.isUndef(value)) {
       val obj: JSObject = _construct(argsObj)
       I.IS.comp.setReturn(obj)
-    }
-    else I.IH.valError2ReturnCompletion(I.IH.toObject(value))
+    } else I.IH.valError2ReturnCompletion(I.IH.toObject(value))
   }
 
   // 15.2.2.1 new Object([value])
@@ -96,13 +95,12 @@ class JSObjectConstructor(_I: Interpreter, _proto: JSObject)
     val value: Val = argsObj._get("0")
     if (length >= 1) {
       val typeOfValue = I.IH.typeOf(value)
-      if(typeOfValue == EJSType.OBJECT) {
+      if (typeOfValue == EJSType.OBJECT) {
         //  i. If the value is a native ECMAScript object, do not create a new object but simply return value.
         return value.asInstanceOf[JSObject]
         // ii. If the value is a host object, then actions are taken and a result is returned in an implementation-dependent manner that may depend on the host object.
         // TODO:
-      }
-      else if(typeOfValue == EJSType.STRING || typeOfValue == EJSType.BOOLEAN || typeOfValue == EJSType.NUMBER) {
+      } else if (typeOfValue == EJSType.STRING || typeOfValue == EJSType.BOOLEAN || typeOfValue == EJSType.NUMBER) {
         return I.IH.toObject(value).asInstanceOf[JSObject]
       }
     }
@@ -293,7 +291,7 @@ class JSObjectConstructor(_I: Interpreter, _proto: JSObject)
   def isExtensible(o: Val): Unit = o match {
     case o: JSObject =>
       if (o.extensible) I.IS.comp.setReturn(IP.truePV)
-        else I.IS.comp.setReturn(IP.falsePV)
+      else I.IS.comp.setReturn(IP.falsePV)
     case _ => I.IS.comp.setThrow(TypeError(), I.IS.span)
   }
 

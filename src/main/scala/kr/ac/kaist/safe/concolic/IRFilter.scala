@@ -20,7 +20,7 @@ object IRFilter extends IRWalker {
     IRRoot(info, vds, fds, irs)
   }
 
-  override def walk(node: Any):Boolean = node match {
+  override def walk(node: Any): Boolean = node match {
     case IRExprStmt(info, lhs, right, ref) => false
     case IRDelete(info, lhs, id) => false
     case IRDeleteProp(info, lhs, obj, index) => false
@@ -41,17 +41,17 @@ object IRFilter extends IRWalker {
     case IRVarStmt(info, lhs, fromParam) => true
     case IRThrow(info, expr) => false
     case IRSeq(info, stmts) =>
-      stmts.foldLeft(false)((includeFunc, s) => includeFunc || walk(s)) 
+      stmts.foldLeft(false)((includeFunc, s) => includeFunc || walk(s))
     case IRIf(info, expr, trueB, falseB) =>
-      val r1 = falseB match {case Some(s) => walk(s); case None => false}
+      val r1 = falseB match { case Some(s) => walk(s); case None => false }
       walk(trueB) || r1
     case IRWhile(info, cond, body) => walk(body)
     case IRTry(info, body, name, catchB, finallyB) =>
-      val r1 = catchB match {case Some(s) => walk(s); case None => false}
-      val r2 = finallyB match {case Some(s) => walk(s);case None => false}
+      val r1 = catchB match { case Some(s) => walk(s); case None => false }
+      val r2 = finallyB match { case Some(s) => walk(s); case None => false }
       walk(body) || r1 || r2
     case IRStmtUnit(info, stmts) =>
-      stmts.foldLeft(false)((includeFunc, s) => includeFunc || walk(s)) 
+      stmts.foldLeft(false)((includeFunc, s) => includeFunc || walk(s))
     case IRNoOp(info, desc) => false
   }
 }

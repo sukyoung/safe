@@ -11,9 +11,9 @@
 
 package kr.ac.kaist.safe.concolic
 
-import _root_.java.util.{List => JList}
+import _root_.java.util.{ List => JList }
 
-import kr.ac.kaist.jsaf.nodes_util.{IRFactory => IF, NodeUtil => NU}
+import kr.ac.kaist.jsaf.nodes_util.{ IRFactory => IF, NodeUtil => NU }
 
 class SymbolicInfo(cond: Boolean, id: Option[SymbolicValue], op: Option[String], lhs: Option[SymbolicValue], rhs: Option[SymbolicValue], branch: Option[Boolean]) {
   val _op = op
@@ -30,7 +30,7 @@ class SymbolicInfo(cond: Boolean, id: Option[SymbolicValue], op: Option[String],
    * 2 : Branch information
    * 3 : End of branch information
    */
-  var infoType: Int = 0 
+  var infoType: Int = 0
   def setType(t: Int) = infoType = t
   def getType = infoType
 
@@ -40,9 +40,9 @@ class SymbolicInfo(cond: Boolean, id: Option[SymbolicValue], op: Option[String],
   override def toString: String = {
     if (infoType == 3) return ""
     val x = unpackSymbolicOption(_id)
-    val y = unpackSymbolicOption(_lhs) + " " + unpackStringOption(_op) + " " + unpackSymbolicOption(_rhs)  
+    val y = unpackSymbolicOption(_lhs) + " " + unpackStringOption(_op) + " " + unpackSymbolicOption(_rhs)
     if (x.isEmpty) y
     else x + " = " + y
   }
-  override def equals(another: Any) = this.toString == another.asInstanceOf[SymbolicInfo].toString 
+  override def equals(another: Any) = this.toString == another.asInstanceOf[SymbolicInfo].toString
 }

@@ -11,7 +11,7 @@
 
 package kr.ac.kaist
 
-import kr.ac.kaist.safe.util.{NodeUtil => NU}
+import kr.ac.kaist.safe.util.{ NodeUtil => NU }
 
 package object safe {
   // Line seperator

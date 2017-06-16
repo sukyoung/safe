@@ -11,12 +11,12 @@
 
 package kr.ac.kaist.safe.interpreter
 
-import kr.ac.kaist.safe.interpreter.{InterpreterHelper => IH}
+import kr.ac.kaist.safe.interpreter.{ InterpreterHelper => IH }
 import kr.ac.kaist.safe.interpreter.objects.JSObject
-import kr.ac.kaist.safe.util.{NodeUtil => NU, SourceLoc, Span}
-import kr.ac.kaist.safe.nodes.{NodeFactory => NF}
+import kr.ac.kaist.safe.util.{ NodeUtil => NU, SourceLoc, Span }
+import kr.ac.kaist.safe.nodes.{ NodeFactory => NF }
 import kr.ac.kaist.safe.nodes.ir._
-import kr.ac.kaist.safe.nodes.ir.{IRFactory => IF}
+import kr.ac.kaist.safe.nodes.ir.{ IRFactory => IF }
 
 object InterpreterPredefine {
   ////////////////////////////////////////////////////////////////////////////////
@@ -70,9 +70,9 @@ object InterpreterPredefine {
   //val resUndef = Normal(Some(undefV))
   val undefFtn =
     IF.makeFunctional(false, NF.dummyFunctional, defId,
-                      List(thisTId, argumentsTId).asInstanceOf[List[IRId]],
-                      IF.makeReturn(false, IF.dummyAST, Some(undefVar)))
+      List(thisTId, argumentsTId).asInstanceOf[List[IRId]],
+      IF.makeReturn(false, IF.dummyAST, Some(undefVar)))
   val undefDP = new ObjectProp(Some(undefV), None, None, Some(false), Some(false), Some(false)) // IH.mkDataProp()
-  val pvpn= varPrefix+"PrimitiveValue"
+  val pvpn = varPrefix + "PrimitiveValue"
   val nullObj: JSObject = new JSObject(null, null, "Null", false, new PropTable)
 }

@@ -11,7 +11,7 @@
 
 package kr.ac.kaist.safe.util
 
-import scala.collection.mutable.{HashMap => MHashMap, HashSet => MHashSet}
+import scala.collection.mutable.{ HashMap => MHashMap, HashSet => MHashSet }
 
 package object regexp {
   type CharSet = MHashSet[Char]
@@ -27,12 +27,13 @@ package object regexp {
   case class CharEscapeValue(var ch: Char) extends EscapeValue
   case class IntEscapeValue(var n: Int) extends EscapeValue
 
-  class RegExpEnv(var input: String,
-                  var nCapturingParens: Int,
-                  var global: Boolean,
-                  var ignoreCase: Boolean,
-                  var multiline: Boolean)
-
+  class RegExpEnv(
+    var input: String,
+    var nCapturingParens: Int,
+    var global: Boolean,
+    var ignoreCase: Boolean,
+    var multiline: Boolean
+  )
 
   abstract class RegExpErrorKind
   case object ESyntax extends RegExpErrorKind

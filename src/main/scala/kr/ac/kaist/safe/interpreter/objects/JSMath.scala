@@ -12,12 +12,12 @@
 package kr.ac.kaist.safe.interpreter.objects
 
 import kr.ac.kaist.safe.interpreter._
-import kr.ac.kaist.safe.interpreter.{InterpreterPredefine => IP}
+import kr.ac.kaist.safe.interpreter.{ InterpreterPredefine => IP }
 import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.util._
 
 class JSMath(_I: Interpreter, _proto: JSObject)
-  extends JSObject(_I, _proto, "Math", false, propTable) {
+    extends JSObject(_I, _proto, "Math", false, propTable) {
   /*
    * 15.8 The Math Object
    */
@@ -96,9 +96,11 @@ class JSMath(_I: Interpreter, _proto: JSObject)
   def _floor(x: EJSNumber): EJSNumber = I.IH.mkIRNum(scala.math.floor(x.num))
   def _log(x: EJSNumber): EJSNumber = I.IH.mkIRNum(scala.math.log(x.num))
   def _max(xs: List[EJSNumber]): EJSNumber = I.IH.mkIRNum(
-    xs.foldRight(xs.head.num)((x, y) => scala.math.max(x.num, y)))
+    xs.foldRight(xs.head.num)((x, y) => scala.math.max(x.num, y))
+  )
   def _min(xs: List[EJSNumber]): EJSNumber = I.IH.mkIRNum(
-    xs.foldRight(xs.head.num)((x, y) => scala.math.min(x.num, y)))
+    xs.foldRight(xs.head.num)((x, y) => scala.math.min(x.num, y))
+  )
   def _pow(x: EJSNumber, y: EJSNumber): EJSNumber = I.IH.mkIRNum(scala.math.pow(x.num, y.num))
   def _random(): EJSNumber = I.IH.mkIRNum(scala.math.random)
   def _round(x: EJSNumber): EJSNumber = I.IH.mkIRNum(scala.math.round(x.num))

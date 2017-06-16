@@ -14,17 +14,16 @@ package kr.ac.kaist.safe.util
 import kr.ac.kaist.safe.nodes.ast._
 import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.nodes.ir._
-import kr.ac.kaist.safe.nodes.{Node => ASTRootNode, _}
+import kr.ac.kaist.safe.nodes.{ Node => ASTRootNode, _ }
 
-import scala.collection.mutable.{HashMap => MHashMap, LinkedHashSet => MLinkedHashSet, HashSet => MHashSet}
-
+import scala.collection.mutable.{ HashMap => MHashMap, LinkedHashSet => MLinkedHashSet, HashSet => MHashSet }
 
 object NodeRelation {
 
   ////////////////////////////////////////////////////////////////////////////////
   // Reset & Set
   ////////////////////////////////////////////////////////////////////////////////
-  var isSet                                     = false
+  var isSet = false
 
   // Reset
   def reset(): Unit = {
@@ -41,7 +40,7 @@ object NodeRelation {
     isSet = true
 
     // Elapsed time
-    if(!quiet) {
+    if (!quiet) {
       val elapsedTime = (System.nanoTime - startTime) / 1000000000.0;
       System.out.format("# Time for node relation computation(s): %.2f\n", new java.lang.Double(elapsedTime))
     }
@@ -51,8 +50,8 @@ object NodeRelation {
   // Dump
   ////////////////////////////////////////////////////////////////////////////////
 
-    // AST's parent
-    /*println("*** AST's parent ***")
+  // AST's parent
+  /*println("*** AST's parent ***")
     for(keyValue <- astParentMap) {
       val (child, parent) = keyValue
       if(parent == null) println("AST no parent. (Root)")
@@ -61,8 +60,8 @@ object NodeRelation {
     }
     println*/
 
-    // AST's children
-    /*println("*** AST's children ***")
+  // AST's children
+  /*println("*** AST's children ***")
     for(keyValue <- astChildMap) {
       val (parent, childList) = keyValue
       if(parent == null) println("AST no parent. (Root)")
@@ -71,8 +70,8 @@ object NodeRelation {
     }
     println*/
 
-    // AST's parent & children
-    /*{
+  // AST's parent & children
+  /*{
       println("*** AST's parent & children ***")
       var indent = 0
       def printAST(ast: ASTRootNode): Unit = {
@@ -87,8 +86,8 @@ object NodeRelation {
       println
     }*/
 
-    // IR's parent
-    /*println("*** IR's parent ***")
+  // IR's parent
+  /*println("*** IR's parent ***")
     for(keyValue <- irParentMap) {
       val (child, parent) = keyValue
       if(parent == null) println("IR no parent. (Root)")
@@ -97,8 +96,8 @@ object NodeRelation {
     }
     println*/
 
-    // IR's children
-    /*println("*** IR's children ***")
+  // IR's children
+  /*println("*** IR's children ***")
     for(keyValue <- irChildMap) {
       val (parent, childList) = keyValue
       if(parent == null) println("IR no parent. (Root)")
@@ -107,8 +106,8 @@ object NodeRelation {
     }
     println*/
 
-    // CFG's parent
-    /*println("*** CFG's parent ***")
+  // CFG's parent
+  /*println("*** CFG's parent ***")
     for(keyValue <- cfgParentMap) {
       val (child, parent) = keyValue
       if(parent == null) println("CFG no parent. (Root)")
@@ -117,8 +116,8 @@ object NodeRelation {
     }
     println*/
 
-    // CFG's children
-    /*println("*** CFG's children ***")
+  // CFG's children
+  /*println("*** CFG's children ***")
     for(keyValue <- cfgChildMap) {
       val (parent, childList) = keyValue
       if(parent == null) println("CFG no parent. (Root)")
@@ -127,8 +126,8 @@ object NodeRelation {
     }
     println*/
 
-    // AST -> IR
-    /*println("*** AST -> IR ***")
+  // AST -> IR
+  /*println("*** AST -> IR ***")
     for(keyValue <- ast2irMap) {
       val (ast, irList) = keyValue
       println("AST" + ast.getClass().getSimpleName() + '[' + getUID(ast) + "] : " + astToString(ast))
@@ -136,8 +135,8 @@ object NodeRelation {
     }
     println*/
 
-    // IR -> AST
-    /*println("*** IR -> AST ***")
+  // IR -> AST
+  /*println("*** IR -> AST ***")
     for(keyValue <- ir2astMap) {
       val (ir, ast) = keyValue
       println(ir.getClass().getSimpleName() + '[' + getUID(ir) + "] : " + irToString(ir))
@@ -145,8 +144,8 @@ object NodeRelation {
     }
     println*/
 
-    // AST -> CFG
-    /*println("*** AST -> CFG ***")
+  // AST -> CFG
+  /*println("*** AST -> CFG ***")
     for(value <- ast2cfgMap) {
       val (ast, cfgList) = value
       println("AST" + ast.getClass().getSimpleName() + '[' + getUID(ast) + "] : " + astToString(ast))
@@ -154,8 +153,8 @@ object NodeRelation {
     }
     println*/
 
-    // CFG -> AST
-    /*println("*** CFG -> AST ***")
+  // CFG -> AST
+  /*println("*** CFG -> AST ***")
     for(value <- cfg2astMap) {
       val (cfg, ast) = value
       println(cfg.getClass().getSimpleName() + " : " + cfgToString(cfg))

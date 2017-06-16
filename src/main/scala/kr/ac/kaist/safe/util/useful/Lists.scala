@@ -11,9 +11,9 @@
 
 package kr.ac.kaist.safe.util.useful
 
-import _root_.java.util.{ArrayList => JArrayList}
-import _root_.java.util.{List => JList}
-import _root_.java.util.{Collection => JCollection}
+import _root_.java.util.{ ArrayList => JArrayList }
+import _root_.java.util.{ List => JList }
+import _root_.java.util.{ Collection => JCollection }
 import _root_.junit.framework.TestCase
 import _root_.kr.ac.kaist.safe.useful.ArrayBackedList
 import scala.collection.JavaConversions
@@ -31,12 +31,12 @@ object Lists {
      that's a bit annoying. */
   def toList[T](xs: JList[T]): List[T] =
     JavaConversions.asScalaBuffer(new ArrayBackedList(xs)).toList
-    /* JavaConversions.asBuffer(Useful.list(xs)).toList */
-    /* List.fromArray[T]( xs.toArray(List[T]().toArray) ) */
+  /* JavaConversions.asBuffer(Useful.list(xs)).toList */
+  /* List.fromArray[T]( xs.toArray(List[T]().toArray) ) */
 
   def toListFromImmutable[T](xs: JList[T]): List[T] =
     JavaConversions.asScalaBuffer(xs).toList
-    /* JavaConversions.asBuffer(ArrayBackedList.fromImmutable(xs)).toList */
+  /* JavaConversions.asBuffer(ArrayBackedList.fromImmutable(xs)).toList */
 
   def map[S, T](list: JList[S], fun: S => T): JList[T] = toJavaList(toListFromImmutable(list).map(fun))
 
@@ -71,11 +71,11 @@ object Lists {
 
   /** The maximum element of a list. Throws an error if empty. */
   def max[A <% Ordered[A]](xs: List[A]): A =
-    xs.foldLeft[A](xs.head){ (x, y) => if (x > y) x else y }
+    xs.foldLeft[A](xs.head) { (x, y) => if (x > y) x else y }
 
   /** The minimum element of a list. Throws an error if empty. */
   def min[A <% Ordered[A]](xs: List[A]): A =
-    xs.foldLeft[A](xs.head){ (x, y) => if (x < y) x else y }
+    xs.foldLeft[A](xs.head) { (x, y) => if (x < y) x else y }
 }
 
 class JavaList[T] {
@@ -87,7 +87,9 @@ class JavaList[T] {
 class ListsJUTest() extends TestCase {
   def testEmptyToJavaList() = {
     val xs = List[Int]()
-    assert(Lists.toJavaList(xs).isEmpty,
-      "Empty Scala lists are not mapped to empty Java lists")
+    assert(
+      Lists.toJavaList(xs).isEmpty,
+      "Empty Scala lists are not mapped to empty Java lists"
+    )
   }
 }

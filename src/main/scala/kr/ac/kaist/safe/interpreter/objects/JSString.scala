@@ -12,15 +12,17 @@
 package kr.ac.kaist.safe.interpreter.objects
 
 import kr.ac.kaist.safe.interpreter._
-import kr.ac.kaist.safe.interpreter.{InterpreterPredefine => IP}
+import kr.ac.kaist.safe.interpreter.{ InterpreterPredefine => IP }
 import kr.ac.kaist.safe.nodes.ir._
 
-class JSString(_I: Interpreter,
-               _proto: JSObject,
-               _className: String,
-               _extensible: Boolean,
-               _property: PropTable)
-  extends JSObject(_I, _proto, _className, _extensible, _property) {
+class JSString(
+  _I: Interpreter,
+  _proto: JSObject,
+  _className: String,
+  _extensible: Boolean,
+  _property: PropTable
+)
+    extends JSObject(_I, _proto, _className, _extensible, _property) {
   /*
    * 15.5.5.2 [[GetOwnProperty]] ( P )
    */

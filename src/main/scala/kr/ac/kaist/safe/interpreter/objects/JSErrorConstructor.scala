@@ -12,11 +12,11 @@
 package kr.ac.kaist.safe.interpreter.objects
 
 import kr.ac.kaist.safe.interpreter._
-import kr.ac.kaist.safe.interpreter.{InterpreterPredefine => IP}
+import kr.ac.kaist.safe.interpreter.{ InterpreterPredefine => IP }
 
 class JSErrorConstructor(_I: Interpreter, _proto: JSObject)
-  extends JSFunction13(_I, _proto, "Function", true,
-                       propTable, _I.IH.dummyFtn(1), EmptyEnv(), true) {
+    extends JSFunction13(_I, _proto, "Function", true,
+      propTable, _I.IH.dummyFtn(1), EmptyEnv(), true) {
   def init(): Unit = {
     /*
      * 15.11.3 Properties of the Error Constructor
@@ -29,8 +29,8 @@ class JSErrorConstructor(_I: Interpreter, _proto: JSObject)
    */
   def construct(message: Val): JSErrorObject =
     new JSErrorObject(I, I.IS.ErrorPrototype, "Error", true,
-                      if (I.IH.isUndef(message)) propTable
-                      else I.IH.strPropTable(I.IH.toString(message)))
+      if (I.IH.isUndef(message)) propTable
+      else I.IH.strPropTable(I.IH.toString(message)))
 
   /*
    * 15.11.2 The Error Constructor

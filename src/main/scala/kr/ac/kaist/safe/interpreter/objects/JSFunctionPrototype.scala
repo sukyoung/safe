@@ -12,10 +12,10 @@
 package kr.ac.kaist.safe.interpreter.objects
 
 import kr.ac.kaist.safe.interpreter._
-import kr.ac.kaist.safe.interpreter.{InterpreterPredefine => IP}
+import kr.ac.kaist.safe.interpreter.{ InterpreterPredefine => IP }
 
 class JSFunctionPrototype(_I: Interpreter, _proto: JSObject)
-  extends JSFunction13(_I, _proto, "Function", true, propTable, IP.undefFtn, EmptyEnv()) {
+    extends JSFunction13(_I, _proto, "Function", true, propTable, IP.undefFtn, EmptyEnv()) {
   def init(): Unit = {
     // 15.3.4 Properties of the Function Prototype Object
     property.put("length", I.IH.numProp(0))
@@ -50,7 +50,7 @@ class JSFunctionPrototype(_I: Interpreter, _proto: JSObject)
    * The Function prototype object is itself a Function object (its [[Class]] is "Function") that,
    * when invoked, accepts any arguments and returns undefined.
    */
-  override def _call(tb: Val, argsObj: JSObject): Unit =  I.IS.comp.setReturn(IP.undefV)
+  override def _call(tb: Val, argsObj: JSObject): Unit = I.IS.comp.setReturn(IP.undefV)
 
   // 15.3.4.2 toString()
   def _toString(): Unit = {
@@ -95,7 +95,6 @@ class JSFunctionPrototype(_I: Interpreter, _proto: JSObject)
       }
     }
   }
-
 
   // 15.3.4.4 Function.prototype.call (thisArg [ , arg1 [ , arg2, ... ] ] )
   def _call(thisArg: Val, args: List[Val]): Unit = {

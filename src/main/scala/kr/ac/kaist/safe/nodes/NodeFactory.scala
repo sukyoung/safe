@@ -11,13 +11,13 @@
 
 package kr.ac.kaist.safe.nodes
 
-import _root_.java.util.{List => JList}
+import _root_.java.util.{ List => JList }
 import _root_.java.math.BigInteger
-import scala.collection.mutable.{HashMap => MHashMap, HashSet => MHashSet}
+import scala.collection.mutable.{ HashMap => MHashMap, HashSet => MHashSet }
 
 import kr.ac.kaist.safe.nodes.ast._
 import kr.ac.kaist.safe.nodes.ir._
-import kr.ac.kaist.safe.util.{NodeUtil => NU, SourceLoc, Span, UIDObject}
+import kr.ac.kaist.safe.util.{ NodeUtil => NU, SourceLoc, Span, UIDObject }
 import kr.ac.kaist.safe.util.useful.Lists
 
 object NodeFactory {
@@ -28,12 +28,14 @@ object NodeFactory {
   val dummyASTInfo: ASTNodeInfo = NU.makeASTNodeInfo(NU.dummySpan)
 
   val dummyFunctional = makeEmptyFunctional(dummyASTInfo, makeId(NU.dummySpan("dummyFunctional"), "dummyFunctional"),
-                                            Nil,
-                                            Nil,
-                                            Nil,
-                                            List(Id(dummyASTInfo, "dummyThis", isWith = false),
-                                                 Id(dummyASTInfo, "dummyArguments", isWith = false)),
-                                            false)
+    Nil,
+    Nil,
+    Nil,
+    List(
+      Id(dummyASTInfo, "dummyThis", isWith = false),
+      Id(dummyASTInfo, "dummyArguments", isWith = false)
+    ),
+    false)
 
   // TODO MV Removed original maps, as IRNodes now store their corresponding AST nodes?
   ////////////////////////////////////////////////////////////////////////////////
@@ -51,22 +53,20 @@ object NodeFactory {
 
   // For use only when there is no hope of attaching a true span.
   def makeSpan(villain: String): Span = {
-    val sl = new SourceLoc(0,0,0)
-    new Span(villain, sl,sl)
+    val sl = new SourceLoc(0, 0, 0)
+    new Span(villain, sl, sl)
   }
 
-
-
   def makeEmptyFunctional(info: ASTNodeInfo, name: Id, fds: List[FunDecl], vds: List[VarDecl],
-                          body: List[SourceElement], params: List[Id], strict: Boolean) =
+    body: List[SourceElement], params: List[Id], strict: Boolean) =
     new Functional(info, fds, vds, new SourceElements(info, body, strict), name, params, "")
 
   def makeFunctional(info: ASTNodeInfo, name: Id, fds: List[FunDecl], vds: List[VarDecl],
-                     body: List[SourceElement], params: List[Id], strict: Boolean, bodyS: String) =
-    new Functional(info,fds, vds, new SourceElements(info, body, strict), name, params, bodyS)
+    body: List[SourceElement], params: List[Id], strict: Boolean, bodyS: String) =
+    new Functional(info, fds, vds, new SourceElements(info, body, strict), name, params, bodyS)
 
   def makeFunDecl(span: Span, name: Id, params: JList[Id],
-                  body: JList[SourceElement], strict: Boolean) = {
+    body: JList[SourceElement], strict: Boolean) = {
     val info = NU.makeASTNodeInfo(span)
     val functional = makeEmptyFunctional(info, name, Nil, Nil, Lists.toList(body), Lists.toList(params), strict)
     new FunDecl(info, functional, strict)

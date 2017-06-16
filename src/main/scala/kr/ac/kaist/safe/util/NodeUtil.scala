@@ -31,7 +31,7 @@ object NodeUtil {
     val sl = new SourceLoc(0, 0, 0)
     new Span(name, sl, sl)
   }
-  val dummySpan = dummySpan("")
+  val dummySpan: Span = dummySpan("")
 
   var iid = 0
   var nodesPrintId = 0

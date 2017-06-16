@@ -19,7 +19,7 @@ import kr.ac.kaist.safe.errors.ExcLog
 import kr.ac.kaist.safe.errors.error.{ ParserError, NotJSFileError, AlreadyMergedSourceError }
 import kr.ac.kaist.safe.nodes.ast._
 import kr.ac.kaist.safe.util._
-import kr.ac.kaist.safe.util.{NodeUtil => NU}
+import kr.ac.kaist.safe.util.{ NodeUtil => NU }
 
 object Parser {
   // Used by DynamicRewriter
