@@ -16,7 +16,7 @@ import kr.ac.kaist.safe.interpreter.{ InterpreterPredefine => IP }
 import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.util._
 
-class JSDateConstructor(_I: Interpreter, _proto: JSObject)
+class JSDateConstructor(_I: InterpreterMain, _proto: JSObject)
     extends JSFunction13(_I, _proto, "Function", true, propTable, _I.IH.dummyFtn(7), EmptyEnv(), true) {
 
   val DH: JSDateHelper = new JSDateHelper(I.IH)

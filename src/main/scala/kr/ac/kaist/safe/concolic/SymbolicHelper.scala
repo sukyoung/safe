@@ -43,7 +43,7 @@ import kr.ac.kaist.safe.util.useful.Options._
  * op   ::= + | - | * | / | % | < | <= | > | >= | == | != | === | !==
  * uop  ::= !
  */
-class SymbolicHelper(I: Interpreter) {
+class SymbolicHelper(I: InterpreterMain) {
   val symbol = "s"
   val input_symbol = "i"
   val this_symbol = "this"

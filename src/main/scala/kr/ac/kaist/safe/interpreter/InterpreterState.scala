@@ -22,7 +22,7 @@ import kr.ac.kaist.safe.nodes.ir.{ IRFactory => IF }
 import kr.ac.kaist.safe.util.{ Coverage, NodeUtil => NU, Span }
 import kr.ac.kaist.safe.util.useful.Sets
 
-class InterpreterState(val I: Interpreter) {
+class InterpreterState(val I: InterpreterMain) {
   var env: Env = new EmptyEnv()
   var strict: Boolean = false
   var comp: Completion = new Completion()
@@ -72,11 +72,8 @@ class InterpreterState(val I: Interpreter) {
 
   def checkPredefined() {
     val notYetImplemented = Set("JSON", "decodeURIComponent", "encodeURIComponent", "encodeURI",
-      "<>Global<>global", "decodeURI", "Exception")
-    val predefNames = if (Shell.pred != null)
-      Shell.pred.all.toSet.filterNot(notYetImplemented.contains(_))
-    else
-      (new Predefined(new ShellParameters())).all.toSet.filterNot(notYetImplemented.contains(_))
+                                "<>Global<>global", "decodeURI", "Exception")
+    new Predefined(new ShellParameters())).all.toSet.filterNot(notYetImplemented.contains(_)
     val interpNames = Sets.toSet[String](ObjectPrototype.property.map.keySet).filterNot(objectProps.contains(_)) ++
       Sets.toSet[String](GlobalObject.property.map.keySet)
     if (!interpNames.subsetOf(predefNames)) {

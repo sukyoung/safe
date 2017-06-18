@@ -24,11 +24,11 @@ import kr.ac.kaist.safe.util.{ EJSType, EJSCompletionType => CT, NodeUtil => NU 
  *     [[DefaultValue]], [[DefineOwnProperty]]
  */
 case class JSObject(
-  val I: Interpreter,
-    var proto: JSObject,
-    var className: String,
-    var extensible: Boolean,
-    var property: PropTable
+                     val I: InterpreterMain,
+                     var proto: JSObject,
+                     var className: String,
+                     var extensible: Boolean,
+                     var property: PropTable
 ) extends Val {
   ////////////////////////////////////////////////////////////////////////////////
   // Basic

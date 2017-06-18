@@ -17,11 +17,12 @@ import kr.ac.kaist.safe.interpreter.{ InterpreterDebug => ID, InterpreterPredefi
 import kr.ac.kaist.safe.interpreter.objects._
 import kr.ac.kaist.safe.nodes.ir.{ IRFactory => IF }
 import kr.ac.kaist.safe.nodes.ir._
+import kr.ac.kaist.safe.phase._
 import kr.ac.kaist.safe.util._
 import kr.ac.kaist.safe.util.{ EJSCompletionType => CT }
 import kr.ac.kaist.safe.util.useful.Options._
 
-class Interpreter extends IRWalker {
+class InterpreterMain extends IRWalker {
   /*
    * TODO:
    * - Regular expressions
@@ -52,13 +53,14 @@ class Interpreter extends IRWalker {
   // Run
   ////////////////////////////////////////////////////////////////////////////////
 
-  def doit(program: IRRoot, coverage: JOption[Coverage], printComp: Boolean = true) = {
+  def doit(config: InterpreterConfig,
+            program: IRRoot, coverage: JOption[Coverage], printComp: Boolean = true) = {
     def tsLab(l: IRId) = l.uniqueName
 
     // Set InterpreterState
     IS.coverage = toOption(coverage)
 
-    var IRRoot(_, vds, fds, irs) = program
+    val IRRoot(_, vds, fds, irs) = program
 
     if (IS.coverage.isDefined) {
       val coverage = IS.coverage.get

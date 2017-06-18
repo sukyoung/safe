@@ -19,7 +19,7 @@ import kr.ac.kaist.safe.analyzer._
 import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.analyzer.models.builtin._
 import kr.ac.kaist.safe.errors.error.NoFileName
-import kr.ac.kaist.safe.interpreter.Interpreter
+import kr.ac.kaist.safe.interpreter.InterpreterMain
 import kr.ac.kaist.safe.nodes.{ NodeFactory => NF }
 import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.nodes.ir._
@@ -68,7 +68,7 @@ object ConcolicMain {
     //coverage.debug = true;
     //coverage.timing = true;
 
-    val interpreter = new Interpreter
+    val interpreter = new InterpreterMain
     val extractor = new ConstraintExtractor
     val solver = new ConcolicSolver(coverage)
     if (coverage.debug) {

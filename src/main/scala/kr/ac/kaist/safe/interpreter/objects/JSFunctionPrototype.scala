@@ -14,7 +14,7 @@ package kr.ac.kaist.safe.interpreter.objects
 import kr.ac.kaist.safe.interpreter._
 import kr.ac.kaist.safe.interpreter.{ InterpreterPredefine => IP }
 
-class JSFunctionPrototype(_I: Interpreter, _proto: JSObject)
+class JSFunctionPrototype(_I: InterpreterMain, _proto: JSObject)
     extends JSFunction13(_I, _proto, "Function", true, propTable, IP.undefFtn, EmptyEnv()) {
   def init(): Unit = {
     // 15.3.4 Properties of the Function Prototype Object

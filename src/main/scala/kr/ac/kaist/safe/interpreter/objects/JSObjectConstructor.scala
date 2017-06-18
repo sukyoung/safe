@@ -17,7 +17,7 @@ import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.nodes.ir.{ IRFactory => IF }
 import kr.ac.kaist.safe.util.EJSType
 
-class JSObjectConstructor(_I: Interpreter, _proto: JSObject)
+class JSObjectConstructor(_I: InterpreterMain, _proto: JSObject)
     extends JSFunction13(_I, _proto, "Object", true, propTable, IP.undefFtn, EmptyEnv(), true) {
   def init(): Unit = {
     // 15.2.3 Properties of the Object Constructor

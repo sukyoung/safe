@@ -17,15 +17,15 @@ import kr.ac.kaist.safe.nodes.ir._
 
 // Created by 15.3.4.5 Function.prototype.bind(thisArg [, arg1 [, arg2, ...]])
 class JSFunction15(
-  __I: Interpreter,
-  __proto: JSObject,
-  __className: String,
-  __extensible: Boolean,
-  __property: PropTable,
-  __code: IRFunctional,
-  __scope: Env,
-  __const: Boolean = false,
-  __builtin: JSObject = null
+                    __I: InterpreterMain,
+                    __proto: JSObject,
+                    __className: String,
+                    __extensible: Boolean,
+                    __property: PropTable,
+                    __code: IRFunctional,
+                    __scope: Env,
+                    __const: Boolean = false,
+                    __builtin: JSObject = null
 )
     extends JSFunction(__I, __proto, __className, __extensible, __property, __code, __scope, __const, __builtin) {
   ////////////////////////////////////////////////////////////////////////////////

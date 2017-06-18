@@ -14,7 +14,7 @@ package kr.ac.kaist.safe.interpreter.objects
 import kr.ac.kaist.safe.interpreter._
 import kr.ac.kaist.safe.util.regexp._
 
-class JSRegExpConstructor(_I: Interpreter, _proto: JSObject)
+class JSRegExpConstructor(_I: InterpreterMain, _proto: JSObject)
     extends JSFunction13(_I, _proto, "Array", true, propTable(), _I.IH.dummyFtn(0), EmptyEnv(), true) {
   def init(): Unit = {
     /*

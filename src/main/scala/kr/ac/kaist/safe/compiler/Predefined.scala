@@ -13,7 +13,7 @@ package kr.ac.kaist.safe.compiler
 
 import kr.ac.kaist.safe.util.{ NodeUtil => NU }
 
-class Predefined(params: ShellParameters) {
+class Predefined() {
   val doms = List(
     // DOM non-functions
     "CanvasGradient",
@@ -215,12 +215,14 @@ class Predefined(params: ShellParameters) {
     NU.freshGlobalName("global")
   )
 
-  val varsAll = params.command match {
-    case ShellParameters.CMD_HTML => vars ++ doms
-    case ShellParameters.CMD_HTML_SPARSE => vars ++ doms
-    case ShellParameters.CMD_WEBAPP_BUG_DETECTOR => vars ++ doms
-    case _ => vars
-  }
+//  TODO MV Simplified this
+//  val varsAll = params.command match {
+//    case ShellParameters.CMD_HTML => vars ++ doms
+//    case ShellParameters.CMD_HTML_SPARSE => vars ++ doms
+//    case ShellParameters.CMD_WEBAPP_BUG_DETECTOR => vars ++ doms
+//    case _ => vars
+//  }
+  val varsAll = vars ++ doms
 
   val funs = List(
     // 15.1.2 Function Properties of the Global Object

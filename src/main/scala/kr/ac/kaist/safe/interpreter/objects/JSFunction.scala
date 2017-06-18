@@ -17,15 +17,15 @@ import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.util.useful.Lists._
 
 abstract class JSFunction(
-  _I: Interpreter,
-  _proto: JSObject,
-  _className: String,
-  _extensible: Boolean,
-  _property: PropTable,
-  var code: IRFunctional,
-  var scope: Env,
-  var const: Boolean,
-  var builtin: JSObject
+                           _I: InterpreterMain,
+                           _proto: JSObject,
+                           _className: String,
+                           _extensible: Boolean,
+                           _property: PropTable,
+                           var code: IRFunctional,
+                           var scope: Env,
+                           var const: Boolean,
+                           var builtin: JSObject
 )
     extends JSObject(_I, _proto, _className, _extensible, _property) {
 
