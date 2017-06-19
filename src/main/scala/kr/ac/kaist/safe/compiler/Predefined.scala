@@ -11,9 +11,10 @@
 
 package kr.ac.kaist.safe.compiler
 
+import kr.ac.kaist.safe.phase.{ InterpreterConfig, InterpreterModes }
 import kr.ac.kaist.safe.util.{ NodeUtil => NU }
 
-class Predefined() {
+class Predefined(config: InterpreterConfig) {
   val doms = List(
     // DOM non-functions
     "CanvasGradient",
@@ -215,14 +216,12 @@ class Predefined() {
     NU.freshGlobalName("global")
   )
 
-//  TODO MV Simplified this
-//  val varsAll = params.command match {
-//    case ShellParameters.CMD_HTML => vars ++ doms
-//    case ShellParameters.CMD_HTML_SPARSE => vars ++ doms
-//    case ShellParameters.CMD_WEBAPP_BUG_DETECTOR => vars ++ doms
-//    case _ => vars
-//  }
-  val varsAll = vars ++ doms
+  val varsAll = config.mode match {
+    case InterpreterModes.HTML |
+      InterpreterModes.HTML_SPARSE |
+      InterpreterModes.WEBAPP_BUG_DETECTOR => vars ++ doms
+    case _ => vars
+  }
 
   val funs = List(
     // 15.1.2 Function Properties of the Global Object
@@ -238,12 +237,12 @@ class Predefined() {
     "encodeURIComponent"
   )
   val tizens =
-    if (params.opt_Tizen == true)
+    if (config.tizens)
       List("tizen")
     else List()
 
   val jquery =
-    if (params.opt_jQuery == true)
+    if (config.jquery)
       List("$", "jQuery")
     else List()
 

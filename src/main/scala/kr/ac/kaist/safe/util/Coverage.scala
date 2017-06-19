@@ -17,7 +17,8 @@ import kr.ac.kaist.safe.concolic._
 import kr.ac.kaist.safe.nodes.ast._
 import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.nodes.cfg._
-import kr.ac.kaist.safe.util.useful.{ Lists, Options }
+import kr.ac.kaist.safe.util.useful.Lists
+import kr.ac.kaist.safe.util.useful.Options._
 import kr.ac.kaist.safe.analyzer._
 //TODO MV import kr.ac.kaist.safe.analyzer.typing.{ SemanticsExpr => SE }
 
@@ -42,7 +43,7 @@ class Coverage() {
     }
 
   // For concolic test
-  var inputIR: Option[IRStmt] = None[IRStmt]
+  var inputIR: Option[IRStmt] = None
   var input = Map[String, Id]()
   var additional = List[Stmt]()
 
@@ -65,11 +66,11 @@ class Coverage() {
   functions.put("<>Concolic<>Main", new FunctionInfo)
 
   // For assistance
-  // To initialize when it first tests a function. 
+  // To initialize when it first tests a function.
   var isFirst: Boolean = true
 
   def setInput(result: Option[Map[String, (Id, List[Stmt])]]) = {
-    // Initialize 
+    // Initialize
     input = Map[String, Id]()
     additional = List[Stmt]()
     result match {
@@ -175,7 +176,7 @@ class Coverage() {
                   var tinfo = new TypeInfo(t)
                   if (t == "Object") {
                     if (state </ StateBot) {
-                      // Compute object 
+                      // Compute object
                       var lset = v_i._2.toSet
                       val obj = computeObject(hh, lset)
 
@@ -270,7 +271,7 @@ class Coverage() {
     lset = proto("constructor")._1._1._2.toSet
     val constructor = computeObject(heap, lset)
 
-    // Get constructor names 
+    // Get constructor names
     val temp = constructor("@construct")._3.toSet
     temp.map(cfg.getFuncName(_)).toList
   }

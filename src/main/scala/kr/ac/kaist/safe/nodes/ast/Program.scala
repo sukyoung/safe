@@ -11,6 +11,8 @@
 
 package kr.ac.kaist.safe.nodes.ast
 
+import kr.ac.kaist.safe.util.{ NodeUtil => NU }
+
 // Program ::= SourceElement*
 case class Program(
     override val info: ASTNodeInfo,

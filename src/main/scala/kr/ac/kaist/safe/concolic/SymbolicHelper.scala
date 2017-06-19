@@ -23,7 +23,7 @@ import kr.ac.kaist.safe.util.useful.Options._
 
 /* Now, consider only binary operation and integer type.
  * Reference:
- * s    ::= begin 
+ * s    ::= begin
           | x = e
           | x = x(x, x)
           | x = function f (x, x) {s*}
@@ -51,7 +51,7 @@ class SymbolicHelper(I: InterpreterMain) {
 
   // Mapping between object declaration and object reference
   var objectMemory = new HashMap[String, String]
-  // Mapping between arguments and symbolic value 
+  // Mapping between arguments and symbolic value
   var argumentsMemory = new HashMap[String, List[Option[SymbolicValue]]]
   val symbolic_memory = new HashMap[String, SymbolicValue]
 
@@ -63,7 +63,7 @@ class SymbolicHelper(I: InterpreterMain) {
   def getEnvironment(v: IRId) = environments(v.uniqueName)
   def ignoreCall(f: IRId) = environments.get(f.uniqueName) match {
     case Some(e) => e.uniqueName == "<>Concolic<>Main"
-    case None => false //true 
+    case None => false //true
   }
 
   var report = List[SymbolicInfo]()
@@ -196,10 +196,10 @@ class SymbolicHelper(I: InterpreterMain) {
     }
   }
 
-  /* If its environment, that is the function in which the 'executeAssignment' statement is instrumented is targeted, 
-   * the symbolic execution proceeds and its change is reported to build symbolic execution tree. 
-   * Otherwise, just report symbolic variables which don't represent local variables. 
-   * When local variables are in that expressions, just use concrete value instead of symbolic varialbes of local variables. 
+  /* If its environment, that is the function in which the 'executeAssignment' statement is instrumented is targeted,
+   * the symbolic execution proceeds and its change is reported to build symbolic execution tree.
+   * Otherwise, just report symbolic variables which don't represent local variables.
+   * When local variables are in that expressions, just use concrete value instead of symbolic varialbes of local variables.
    */
   def executeAssignment(loc: String, id: IRId, expr: IRExpr, c: Option[SymbolicValue], c1: Option[SymbolicValue], c2: Option[SymbolicValue], env: IRId) = {
     if (checkFocus(env)) {
@@ -207,7 +207,7 @@ class SymbolicHelper(I: InterpreterMain) {
         /* variable op varialbe */
         //TODO: extend the range to cover all expressions, first and second
         case IRBin(_, first, op, second) => op.kind match {
-          //TODO: find simple way to distinguish operation type 
+          //TODO: find simple way to distinguish operation type
           // op is supported by the constraint solver
           case EJSInstOf => symbolic_memory -= id.uniqueName
           case EJSIn => symbolic_memory -= id.uniqueName
@@ -231,9 +231,9 @@ class SymbolicHelper(I: InterpreterMain) {
             // BIN_COMP_REL_GREATEREQUAL
             // BIN_COMP_EQ_EQUAL
             // BIN_COMP_EQ_NEQUAL
-            // BIN_COMP_EQ_SEQUAL 
+            // BIN_COMP_EQ_SEQUAL
             // BIN_COMP_EQ_SNEQUAL
-            //TODO: When c2 or c1 are None, we have to error reporting. 
+            //TODO: When c2 or c1 are None, we have to error reporting.
             var context: (Option[SymbolicValue], Option[SymbolicValue]) = null
             first match {
               case v1: IRId => second match {
@@ -348,7 +348,7 @@ class SymbolicHelper(I: InterpreterMain) {
     if (checkFocus(env)) {
       expr match {
         case IRBin(_, first, op, second) => op.kind match {
-          //TODO: find simple way to distinguish operation type 
+          //TODO: find simple way to distinguish operation type
           case EJSInstOf =>
           case EJSIn =>
           case EJSMul =>
@@ -483,7 +483,7 @@ class SymbolicHelper(I: InterpreterMain) {
           expr match {
             //TODO: extend the range to cover all expressions, first and second
             case IRBin(_, first, op, second) => op.kind match {
-              //TODO: find simple way to distinguish operation type 
+              //TODO: find simple way to distinguish operation type
               // op is supported by the constraint solver
               case EJSInstOf => symbolic_memory -= id
               case EJSIn => symbolic_memory -= id
@@ -737,7 +737,7 @@ class SymbolicHelper(I: InterpreterMain) {
       return (c1, setInstanceType(symbolic_memory(v2), c2))
   }
 
-  // TODO: Handle multiple type instance. 
+  // TODO: Handle multiple type instance.
   def setInstanceType(symbol: SymbolicValue, concrete: Option[SymbolicValue]): Option[SymbolicValue] = {
     var result: Option[SymbolicValue] = None
     concrete match {

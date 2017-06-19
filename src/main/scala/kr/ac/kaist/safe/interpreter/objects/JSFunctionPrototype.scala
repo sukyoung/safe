@@ -87,7 +87,7 @@ class JSFunctionPrototype(_I: InterpreterMain, _proto: JSObject)
             prop.put("length", I.IH.numProp(index))
 
             val a: JSObject = I.IH.newObj(prop)
-            val argsList: JSObject = I.IH.newArgObj(func, func.code.args.size(), a, I.IS.strict)
+            val argsList: JSObject = I.IH.newArgObj(func, func.code.args.size, a, I.IS.strict)
 
             func._call(thisArg, argsList)
           case _ => I.IS.comp.setThrow(IP.typeError, I.IS.span)
@@ -109,7 +109,7 @@ class JSFunctionPrototype(_I: InterpreterMain, _proto: JSObject)
       prop.put("length", I.IH.numProp(args.size))
 
       val a: JSObject = I.IH.newObj(prop)
-      val argsList: JSObject = I.IH.newArgObj(func, func.code.args.size(), a, I.IS.strict)
+      val argsList: JSObject = I.IH.newArgObj(func, func.code.args.size, a, I.IS.strict)
 
       func._call(thisArg, argsList)
     }

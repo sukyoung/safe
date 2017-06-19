@@ -160,7 +160,7 @@ package object interpreter {
    *   [[Get]], [[Set]], [[Enumerable]], [[Configurable]]
    */
   class ObjectProp(
-    var value: Option[Val],
+      var value: Option[Val],
       var get: Option[Val],
       var set: Option[Val],
       var writable: Option[Boolean],

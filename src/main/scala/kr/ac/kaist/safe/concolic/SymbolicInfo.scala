@@ -13,8 +13,6 @@ package kr.ac.kaist.safe.concolic
 
 import _root_.java.util.{ List => JList }
 
-import kr.ac.kaist.jsaf.nodes_util.{ IRFactory => IF, NodeUtil => NU }
-
 class SymbolicInfo(cond: Boolean, id: Option[SymbolicValue], op: Option[String], lhs: Option[SymbolicValue], rhs: Option[SymbolicValue], branch: Option[Boolean]) {
   val _op = op
   val _id = id

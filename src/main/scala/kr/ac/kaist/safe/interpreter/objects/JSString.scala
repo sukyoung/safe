@@ -16,11 +16,11 @@ import kr.ac.kaist.safe.interpreter.{ InterpreterPredefine => IP }
 import kr.ac.kaist.safe.nodes.ir._
 
 class JSString(
-                _I: InterpreterMain,
-                _proto: JSObject,
-                _className: String,
-                _extensible: Boolean,
-                _property: PropTable
+  _I: InterpreterMain,
+  _proto: JSObject,
+  _className: String,
+  _extensible: Boolean,
+  _property: PropTable
 )
     extends JSObject(_I, _proto, _className, _extensible, _property) {
   /*

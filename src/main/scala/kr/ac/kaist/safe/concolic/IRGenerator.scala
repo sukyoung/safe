@@ -126,7 +126,7 @@ object IRGenerator {
       val (ssl, rl) = expr2ir(ftn, env, fun1)
       ((ssl :+ toObject(lhs, fun, rl)) ++ args ++
         List(
-          IF.makeLoadStmt(false, e, proto, fun, IF.makeString("prototype")),
+          IF.makeLoadStmt(false, e, proto, fun, IF.makeStringIR("prototype")),
           IF.makeObject(false, e, obj, Nil, Some(proto)),
           IF.makeNew(true, e, newObj, fun, List(obj, arg)),
           isObject(e, cond, newObj),

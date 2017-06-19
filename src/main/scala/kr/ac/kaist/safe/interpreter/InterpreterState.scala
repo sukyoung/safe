@@ -12,17 +12,18 @@
 package kr.ac.kaist.safe.interpreter
 
 import edu.rice.cs.plt.tuple.{ Option => JOption }
-import kr.ac.kaist.safe.compiler.{ Predefined }
+import kr.ac.kaist.safe.compiler.Predefined
 import kr.ac.kaist.safe.interpreter.{ InterpreterPredefine => IP }
 import kr.ac.kaist.safe.interpreter.objects._
 import kr.ac.kaist.safe.nodes.{ NodeFactory => NF }
 import kr.ac.kaist.safe.nodes.ast._
 import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.nodes.ir.{ IRFactory => IF }
+import kr.ac.kaist.safe.phase.InterpreterConfig
 import kr.ac.kaist.safe.util.{ Coverage, NodeUtil => NU, Span }
 import kr.ac.kaist.safe.util.useful.Sets
 
-class InterpreterState(val I: InterpreterMain) {
+class InterpreterState(val I: InterpreterMain, val config: InterpreterConfig) {
   var env: Env = new EmptyEnv()
   var strict: Boolean = false
   var comp: Completion = new Completion()
@@ -67,25 +68,25 @@ class InterpreterState(val I: InterpreterMain) {
     TypeErrorPrototype.init()
     URIErrorConstructor.init()
     URIErrorPrototype.init()
-    checkPredefined
+    checkPredefined(config)
   }
 
-  def checkPredefined() {
+  def checkPredefined(config: InterpreterConfig) {
     val notYetImplemented = Set("JSON", "decodeURIComponent", "encodeURIComponent", "encodeURI",
-                                "<>Global<>global", "decodeURI", "Exception")
-    new Predefined(new ShellParameters())).all.toSet.filterNot(notYetImplemented.contains(_)
-    val interpNames = Sets.toSet[String](ObjectPrototype.property.map.keySet).filterNot(objectProps.contains(_)) ++
+      "<>Global<>global", "decodeURI", "Exception")
+    val predefNames = new Predefined(config).all.toSet.diff(notYetImplemented)
+    val interpNames = Sets.toSet[String](ObjectPrototype.property.map.keySet).diff(objectProps) ++
       Sets.toSet[String](GlobalObject.property.map.keySet)
     if (!interpNames.subsetOf(predefNames)) {
       System.out.println("The following names are defined in the initial heap of the interpreter\n"
         + "but not in the list of predefined names:\n  ")
-      interpNames.filterNot(predefNames.contains(_)).foreach((s: String) => System.out.print(s + " "))
+      interpNames.diff(predefNames).foreach((s: String) => System.out.print(s + " "))
       throw new InterpreterError("Predefined names mismatch.", span)
     }
     if (!predefNames.subsetOf(interpNames)) {
       System.out.println("The following names are defined in the list of predefined names\n"
         + "but not in the initial heap of the interpreter:\n  ")
-      predefNames.filterNot(interpNames.contains(_)).foreach((s: String) => System.out.print(s + " "))
+      predefNames.diff(interpNames).foreach((s: String) => System.out.print(s + " "))
       throw new InterpreterError("Predefined names mismatch.", span)
     }
   }
@@ -94,7 +95,7 @@ class InterpreterState(val I: InterpreterMain) {
 
   def dummyFtnObj(length: Int, builtin: JSObject): JSFunction = {
     val fv: IRFunctional = I.IH.dummyFtn(length)
-    val prop = propTable
+    val prop = propTable()
     prop.put("length", I.IH.numProp(fv.args.size))
     new JSFunction13(I, FunctionPrototype, "Function", true, prop, fv, EmptyEnv(), false, builtin)
   }

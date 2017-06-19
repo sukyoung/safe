@@ -16,11 +16,11 @@ import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.util._
 
 class JSArray(
-               _I: InterpreterMain,
-               _proto: JSObject,
-               _className: String,
-               _extensible: Boolean,
-               _property: PropTable
+  _I: InterpreterMain,
+  _proto: JSObject,
+  _className: String,
+  _extensible: Boolean,
+  _property: PropTable
 )
     extends JSObject(_I, _proto, _className, _extensible, _property) {
   /*

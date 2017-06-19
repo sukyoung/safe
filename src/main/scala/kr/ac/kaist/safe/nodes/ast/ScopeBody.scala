@@ -12,6 +12,7 @@
 package kr.ac.kaist.safe.nodes.ast
 
 import kr.ac.kaist.safe.LINE_SEP
+import kr.ac.kaist.safe.util.{ NodeUtil => NU }
 
 // Common body for program and functions
 abstract class ScopeBody(

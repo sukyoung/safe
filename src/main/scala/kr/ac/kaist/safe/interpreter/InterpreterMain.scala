@@ -17,12 +17,12 @@ import kr.ac.kaist.safe.interpreter.{ InterpreterDebug => ID, InterpreterPredefi
 import kr.ac.kaist.safe.interpreter.objects._
 import kr.ac.kaist.safe.nodes.ir.{ IRFactory => IF }
 import kr.ac.kaist.safe.nodes.ir._
-import kr.ac.kaist.safe.phase._
+import kr.ac.kaist.safe.phase.InterpreterConfig
 import kr.ac.kaist.safe.util._
 import kr.ac.kaist.safe.util.{ EJSCompletionType => CT }
 import kr.ac.kaist.safe.util.useful.Options._
 
-class InterpreterMain extends IRWalker {
+class InterpreterMain(config: InterpreterConfig) extends IRWalker {
   /*
    * TODO:
    * - Regular expressions
@@ -39,7 +39,7 @@ class InterpreterMain extends IRWalker {
   // Interpreter classes
   ////////////////////////////////////////////////////////////////////////////////
   val IH: InterpreterHelper = new InterpreterHelper(this)
-  val IS: InterpreterState = new InterpreterState(this)
+  val IS: InterpreterState = new InterpreterState(this, config)
   val SH: SymbolicHelper = new SymbolicHelper(this)
   IS.init
 
@@ -53,12 +53,12 @@ class InterpreterMain extends IRWalker {
   // Run
   ////////////////////////////////////////////////////////////////////////////////
 
-  def doit(config: InterpreterConfig,
-            program: IRRoot, coverage: JOption[Coverage], printComp: Boolean = true) = {
+  def doit(program: IRRoot, printComp: Boolean = true) = {
     def tsLab(l: IRId) = l.uniqueName
 
     // Set InterpreterState
-    IS.coverage = toOption(coverage)
+    // TODO MV Simplified this to avoid using Coverage, was originally: IS.coverage = coverage
+    IS.coverage = None
 
     val IRRoot(_, vds, fds, irs) = program
 
@@ -83,7 +83,7 @@ class InterpreterMain extends IRWalker {
       walkIRs(vds ++ fds ++ irs.filterNot(_.isInstanceOf[IRNoOp]))
     if (printComp) IS.lastComp.Type match {
       case CT.NORMAL =>
-        if (!IS.coverage.isDefined) {
+        if (IS.coverage.isEmpty) {
           if (IS.lastComp.value != null) System.out.println("Normal(" + IH.toString(IS.lastComp.value) + ")")
           else System.out.println("Normal(empty)")
         }

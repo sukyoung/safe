@@ -54,7 +54,7 @@ class JSRegExpConstructor(_I: InterpreterMain, _proto: JSObject)
         JSRegExpSolver.parse(s, f)
       } catch {
         case e: kr.ac.kaist.safe.util.regexp.SyntaxErrorException =>
-          throw new SyntaxErrorException
+          throw new kr.ac.kaist.safe.interpreter.SyntaxErrorException
       }
 
     val prop = propTable()

@@ -98,10 +98,11 @@ class JSGlobal(_I: InterpreterMain, _proto: JSObject)
   def eval(x: Val, directCall: Boolean): Unit = {
     x match {
       case PVal(IRVal(s: EJSString)) =>
-        val prog: IRRoot = try {
+        val prog: IRRoot = {
           val tried: scala.util.Try[(Program, ExcLog)] = Parser.parsePgm(s.str, "eval")
           if (tried.isFailure) {
-            return I.IS.comp.setThrow(IP.syntaxError, I.IS.span)
+            I.IS.comp.setThrow(IP.syntaxError, I.IS.span)
+            return
           } else {
             var (program, _) = tried.get
             val hoister = new Hoister(program)

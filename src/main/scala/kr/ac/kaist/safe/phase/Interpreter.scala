@@ -1,17 +1,15 @@
 /**
-  * *****************************************************************************
-  * Copyright (c) 2016, KAIST.
-  * All rights reserved.
-  *
-  * Use is subject to license terms.
-  *
-  * This distribution may include materials developed by third parties.
-  * ****************************************************************************
-  */
+ * *****************************************************************************
+ * Copyright (c) 2016, KAIST.
+ * All rights reserved.
+ *
+ * Use is subject to license terms.
+ *
+ * This distribution may include materials developed by third parties.
+ * ****************************************************************************
+ */
 
-package main.scala.kr.ac.kaist.safe.phase
-
-import kr.ac.kaist.safe.util.Coverage
+package kr.ac.kaist.safe.phase
 
 import scala.util._
 import kr.ac.kaist.safe.SafeConfig
@@ -27,7 +25,7 @@ object Interpreter extends PhaseObj[IRRoot, InterpreterConfig, Unit] {
   val defaultConfig: InterpreterConfig = InterpreterConfig(InterpreterModes.OTHER, false, false)
 
   def apply(input: IRRoot, safeConfig: SafeConfig, config: InterpreterConfig): Try[Unit] = {
-    new InterpreterMain().doit(config, input, None[Coverage])
+    new InterpreterMain(config).doit(input)
     Success()
   }
 

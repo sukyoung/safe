@@ -15,7 +15,6 @@ import kr.ac.kaist.safe.nodes.Node
 import kr.ac.kaist.safe.nodes.ast._
 import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.nodes.ir._
-import kr.ac.kaist.safe.util.Span
 import kr.ac.kaist.safe.{ BASE_DIR, LINE_SEP }
 
 import scala.collection.immutable.{ HashMap, HashSet }
@@ -423,9 +422,9 @@ object NodeUtil {
   def makeASTNodeInfo(span: Span): ASTNodeInfo =
     if (keepComments && comment.isDefined) {
       val result = new ASTNodeInfo(span, comment)
-      comment = None[Comment]
+      comment = None
       result
-    } else new ASTNodeInfo(span, None[Comment])
+    } else new ASTNodeInfo(span, None)
 
   def getName(lhs: LHS): String = lhs match {
     case VarRef(_, id) => id.text

@@ -25,7 +25,7 @@ import scala.io.Codec
 import scala.util.Try
 import kr.ac.kaist.safe.errors.ExcLog
 import kr.ac.kaist.safe.nodes.ast.SourceElements
-import NodeUtil._
+import kr.ac.kaist.safe.util.NodeUtil._
 
 object JSFromHTML {
   private def toList[T](jList: JList[T]): List[T] =

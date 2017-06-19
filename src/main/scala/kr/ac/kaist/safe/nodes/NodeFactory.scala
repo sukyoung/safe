@@ -49,7 +49,7 @@ object NodeFactory {
   }
 
   def makeSpanInfo(span: Span): ASTNodeInfo =
-    new ASTNodeInfo(span, None[Comment])
+    new ASTNodeInfo(span, None)
 
   // For use only when there is no hope of attaching a true span.
   def makeSpan(villain: String): Span = {
