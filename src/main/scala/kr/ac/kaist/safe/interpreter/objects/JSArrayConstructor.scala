@@ -16,7 +16,7 @@ import kr.ac.kaist.safe.interpreter.{ InterpreterPredefine => IP }
 import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.util._
 
-class JSArrayConstructor(_I: InterpreterMain, _proto: JSObject)
+class JSArrayConstructor(_I: Interpreter, _proto: JSObject)
     extends JSFunction13(_I, _proto, "Array", true,
       propTable, _I.IH.dummyFtn(0), EmptyEnv(), true) {
   def init(): Unit = {

@@ -14,7 +14,7 @@ package kr.ac.kaist.safe.interpreter.objects
 import kr.ac.kaist.safe.interpreter._
 
 class JSBoolean(
-  _I: InterpreterMain,
+  _I: Interpreter,
   _proto: JSObject,
   _className: String,
   _extensible: Boolean,

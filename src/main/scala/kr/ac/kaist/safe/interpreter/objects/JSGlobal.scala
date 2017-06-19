@@ -24,7 +24,7 @@ import kr.ac.kaist.safe.util.{ EJSCompletionType => CT, NodeUtil => NU }
 import kr.ac.kaist.safe.util._
 import kr.ac.kaist.safe.util.useful.Lists._
 
-class JSGlobal(_I: InterpreterMain, _proto: JSObject)
+class JSGlobal(_I: Interpreter, _proto: JSObject)
     extends JSObject(_I, _proto, "Global", true, propTable) {
   def init(): Unit = {
     // Internal identifiers created by Translator

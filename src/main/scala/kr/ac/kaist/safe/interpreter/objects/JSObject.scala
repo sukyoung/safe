@@ -24,7 +24,7 @@ import kr.ac.kaist.safe.util.{ EJSType, EJSCompletionType => CT, NodeUtil => NU 
  *     [[DefaultValue]], [[DefineOwnProperty]]
  */
 case class JSObject(
-    val I: InterpreterMain,
+    val I: Interpreter,
     var proto: JSObject,
     var className: String,
     var extensible: Boolean,

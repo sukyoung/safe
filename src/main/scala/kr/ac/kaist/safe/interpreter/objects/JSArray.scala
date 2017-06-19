@@ -16,7 +16,7 @@ import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.util._
 
 class JSArray(
-  _I: InterpreterMain,
+  _I: Interpreter,
   _proto: JSObject,
   _className: String,
   _extensible: Boolean,

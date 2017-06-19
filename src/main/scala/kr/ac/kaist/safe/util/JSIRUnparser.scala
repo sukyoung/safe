@@ -11,11 +11,10 @@
 
 package kr.ac.kaist.safe.util
 
-
 import kr.ac.kaist.safe.SIGNIFICANT_BITS
 import kr.ac.kaist.safe.nodes.ast._
 import kr.ac.kaist.safe.nodes.ir._
-import kr.ac.kaist.safe.util.{ NodeUtil => NU }
+import kr.ac.kaist.safe.util.{ NodeUtil => NU, _ }
 
 /* Converts an IR to a string which is the concrete version of that IR
  */
@@ -31,10 +30,10 @@ class JSIRUnparser(program: IRNode) {
   def decreaseIndent = indent -= 1
   def getIndent = {
     val s: StringBuilder = new StringBuilder
-    for (i <- 0 to indent-1) s.append(tab)
+    for (i <- 0 to indent - 1) s.append(tab)
     s.toString
   }
-  def isOneline(node: Any):Boolean = node match {
+  def isOneline(node: Any): Boolean = node match {
     case _: ABlock => false
     case Some(in) => isOneline(in)
     case _ => !(node.isInstanceOf[ABlock])
@@ -55,7 +54,7 @@ class JSIRUnparser(program: IRNode) {
       }
       case _ =>
         if (result.length > width && sep.equals(", "))
-          join(all.tail, sep, result.append(", \n"+getIndent).append(walk(all.head)))
+          join(all.tail, sep, result.append(", \n" + getIndent).append(walk(all.head)))
         else
           join(all.tail, sep, result.append(sep).append(walk(all.head)))
     }
@@ -73,7 +72,7 @@ class JSIRUnparser(program: IRNode) {
   def getE(uniq: String): String = env.find(p => p._1.equals(uniq)) match {
     case None =>
       val new_uniq = fresh
-      env = (uniq, new_uniq)::env
+      env = (uniq, new_uniq) :: env
       new_uniq
     case Some((_, new_uniq)) => new_uniq
   }
@@ -86,21 +85,21 @@ class JSIRUnparser(program: IRNode) {
       case '\f' => s.append("\\f")
       case '\r' => s.append("\\r")
       case '\u000b' => s.append("\\v")
-      case '"'  => s.append("\\\"")
+      case '"' => s.append("\\\"")
       case '\'' => s.append("'")
       case '\\' => s.append("\\")
-      case c => s.append(c+"")
+      case c => s.append(c + "")
     }
   }
 
   def printFun(s: StringBuilder, header: String, name: IRId, params: List[IRId],
-               args: List[IRStmt], fds: List[IRFunDecl], vds: List[IRVarStmt],
-               body: List[IRStmt]) = {
+    args: List[IRStmt], fds: List[IRFunDecl], vds: List[IRVarStmt],
+    body: List[IRStmt]) = {
     s.append(header).append(walk(name)).append("(")
     s.append(join(params, ", ", new StringBuilder("")))
     s.append(") \n").append(getIndent).append("{\n")
     increaseIndent
-    s.append(getIndent).append(join(fds++vds++args++body, "\n"+getIndent, new StringBuilder("")))
+    s.append(getIndent).append(join(fds ++ vds ++ args ++ body, "\n" + getIndent, new StringBuilder("")))
     decreaseIndent
     s.append("\n").append(getIndent).append("}")
     s.toString
@@ -109,7 +108,7 @@ class JSIRUnparser(program: IRNode) {
   def id2str(n: String): String = {
     val size = SIGNIFICANT_BITS
     if (!NU.isInternal(n)) n
-    else if (!NU.isGlobalName(n)) n.dropRight(size)+getE(n.takeRight(size))
+    else if (!NU.isGlobalName(n)) n.dropRight(size) + getE(n.takeRight(size))
     else n
   }
 
@@ -117,7 +116,7 @@ class JSIRUnparser(program: IRNode) {
    * This rule is applied recursively
    * Principle: All case already has indentation at the front and newline at the end.
    */
-  def walk(node:Any): String = node match {
+  def walk(node: Any): String = node match {
     case IRArray(_, lhs, elements) =>
       val s: StringBuilder = new StringBuilder
       s.append(walk(lhs)).append(" = ")
@@ -129,7 +128,7 @@ class JSIRUnparser(program: IRNode) {
       val s: StringBuilder = new StringBuilder
       s.append(walk(lhs)).append(" = ")
       s.append("[")
-      s.append("A LOT!!! "+elements.size+" elements are not printed here.")
+      s.append("A LOT!!! " + elements.size + " elements are not printed here.")
       s.append("]")
       s.toString
     case IRArgs(_, lhs, elements) =>
@@ -145,17 +144,17 @@ class JSIRUnparser(program: IRNode) {
       s.append(walk(op)).append(" ")
       s.append(walk(right))
       s.toString
-    case IRVal(EJSBool(b)) => if(b) "true" else "false"
+    case IRVal(EJSBool(b)) => if (b) "true" else "false"
     case IRBreak(_, label) =>
       val s: StringBuilder = new StringBuilder
-      s.append("break ")append(walk(label))
+      s.append("break ") append (walk(label))
       s.toString
     case IRInternalCall(_, lhs, fun, first :: rest) =>
       val s: StringBuilder = new StringBuilder
       s.append(walk(lhs)).append(" = ")
       s.append(walk(fun)).append("(")
       s.append(walk(first))
-      rest.foreach( (r) => s.append(", ").append(walk(rest.head)) )
+      rest.foreach((r) => s.append(", ").append(walk(rest.head)))
       s.append(")")
       s.toString
     case IRCall(_, lhs, fun, thisB, args) =>
@@ -199,20 +198,20 @@ class JSIRUnparser(program: IRNode) {
       val s: StringBuilder = new StringBuilder
       printFun(s, "get ", name, params, args, fds, vds, body)
       s.toString
-    case id:IRId => id2str(id.uniqueName)
+    case id: IRId => id2str(id.uniqueName)
     case IRIf(_, expr, trueBranch, falseBranch) =>
       val s: StringBuilder = new StringBuilder
       var oneline: Boolean = isOneline(trueBranch)
       s.append("if(").append(walk(expr)).append(")\n")
-      if(oneline) increaseIndent
+      if (oneline) increaseIndent
       s.append(getIndent).append(walk(trueBranch))
-      if(oneline) decreaseIndent
-      if(falseBranch.isDefined){
+      if (oneline) decreaseIndent
+      if (falseBranch.isDefined) {
         oneline = isOneline(falseBranch)
         s.append("\n").append(getIndent).append("else\n")
-        if(oneline) increaseIndent
+        if (oneline) increaseIndent
         s.append(getIndent).append(walk(falseBranch))
-        if(oneline) decreaseIndent
+        if (oneline) decreaseIndent
       }
       s.toString
     case IRLabelStmt(_, label, stmt) =>
@@ -228,14 +227,14 @@ class JSIRUnparser(program: IRNode) {
       val s: StringBuilder = new StringBuilder
       s.append(walk(lhs)).append(" = {\n")
       increaseIndent
-      s.append(getIndent).append(join(members, ",\n"+getIndent, new StringBuilder("")))
-      if(proto.isDefined) {
+      s.append(getIndent).append(join(members, ",\n" + getIndent, new StringBuilder("")))
+      if (proto.isDefined) {
         s.append("[[Prototype]]=").append(walk(proto.get))
       }
       decreaseIndent
       s.append("\n").append(getIndent).append("}")
       s.toString
-    case op@IROp(ast, _) => op.name
+    case op @ IROp(ast, _) => op.name
     case IRReturn(_, expr) =>
       val s: StringBuilder = new StringBuilder
       s.append("return")
@@ -243,17 +242,17 @@ class JSIRUnparser(program: IRNode) {
       s.toString
     case IRRoot(_, fds, vds, irs) =>
       val s: StringBuilder = new StringBuilder
-      s.append(getIndent).append(join(fds, "\n"+getIndent, new StringBuilder("")))
+      s.append(getIndent).append(join(fds, "\n" + getIndent, new StringBuilder("")))
       s.append("\n")
-      s.append(getIndent).append(join(vds, "\n"+getIndent, new StringBuilder("")))
+      s.append(getIndent).append(join(vds, "\n" + getIndent, new StringBuilder("")))
       s.append("\n")
-      s.append(getIndent).append(join(irs, "\n"+getIndent, new StringBuilder("")))
+      s.append(getIndent).append(join(irs, "\n" + getIndent, new StringBuilder("")))
       s.toString
     case IRSeq(_, stmts) =>
       val s: StringBuilder = new StringBuilder
       s.append("{\n")
       increaseIndent
-      s.append(getIndent).append(join(stmts, "\n"+getIndent, new StringBuilder("")))
+      s.append(getIndent).append(join(stmts, "\n" + getIndent, new StringBuilder("")))
       decreaseIndent
       s.append("\n").append(getIndent).append("}")
       s.toString
@@ -279,20 +278,20 @@ class JSIRUnparser(program: IRNode) {
     case IRTry(_, body, name, catchBlock, fin) =>
       val s: StringBuilder = new StringBuilder
       s.append("try\n").append(getIndent).append(walk(body))
-      if(catchBlock.isDefined) {
+      if (catchBlock.isDefined) {
         s.append("\n").append(getIndent)
         var oneline: Boolean = isOneline(body)
         s.append("catch(").append(walk(name.get)).append(")\n")
-        if(oneline) increaseIndent
+        if (oneline) increaseIndent
         s.append(getIndent).append(walk(catchBlock.get))
-        if(oneline) decreaseIndent
+        if (oneline) decreaseIndent
       }
-      if(fin.isDefined) {
+      if (fin.isDefined) {
         var oneline: Boolean = isOneline(fin)
         s.append("\n").append(getIndent).append("finally\n")
-        if(oneline) increaseIndent
+        if (oneline) increaseIndent
         s.append(getIndent).append(walk(fin))
-        if(oneline) decreaseIndent
+        if (oneline) decreaseIndent
       }
       s.toString
     case IRUn(_, op, expr) =>
@@ -309,7 +308,7 @@ class JSIRUnparser(program: IRNode) {
       s.append(walk(obj)).append("[").append(walk(index)).append("]")
       s.toString
     case IRVal(EJSUndef) => "undefined"
-    case _:IRThis => "this"
+    case _: IRThis => "this"
     case IRVarStmt(_, lhs, _) =>
       val s: StringBuilder = new StringBuilder
       s.append("var ").append(walk(lhs))
@@ -319,21 +318,21 @@ class JSIRUnparser(program: IRNode) {
       var oneline: Boolean = isOneline(body)
       s.append("while(")
       s.append(walk(cond)).append(")\n")
-      if(oneline) increaseIndent
+      if (oneline) increaseIndent
       s.append(getIndent).append(walk(body))
-      if(oneline) decreaseIndent
+      if (oneline) decreaseIndent
       s.toString
     case IRWith(_, expr, stmt) =>
       val s: StringBuilder = new StringBuilder
       var oneline: Boolean = isOneline(stmt)
       s.append("with(")
       s.append(walk(expr)).append(")\n")
-      if(oneline) increaseIndent
+      if (oneline) increaseIndent
       s.append(getIndent).append(walk(stmt))
-      if(oneline) decreaseIndent
+      if (oneline) decreaseIndent
       s.toString
     case Some(in) => walk(in)
-    case xs:List[_] =>
+    case xs: List[_] =>
       val s: StringBuilder = new StringBuilder
       s.append(join(xs, ", ", new StringBuilder("")))
       s.toString
@@ -342,12 +341,12 @@ class JSIRUnparser(program: IRNode) {
       val s: StringBuilder = new StringBuilder
       s.append("{\n")
       increaseIndent
-      s.append(getIndent).append(join(stmts, "\n"+getIndent, new StringBuilder("")))
+      s.append(getIndent).append(join(stmts, "\n" + getIndent, new StringBuilder("")))
       decreaseIndent
       s.append("\n").append(getIndent).append("}")
       s.toString
-    case _:IRNoOp => ""
+    case _: IRNoOp => ""
     case None => ""
-    case _ => "#@#"+node.getClass.toString
+    case _ => "#@#" + node.getClass.toString
   }
 }

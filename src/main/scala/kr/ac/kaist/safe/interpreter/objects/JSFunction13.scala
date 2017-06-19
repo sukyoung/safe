@@ -17,7 +17,7 @@ import kr.ac.kaist.safe.nodes.ir._
 
 // Created by 13.2 Creating Function Objects
 class JSFunction13(
-  __I: InterpreterMain,
+  __I: Interpreter,
   __proto: JSObject,
   __className: String,
   __extensible: Boolean,

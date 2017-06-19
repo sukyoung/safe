@@ -16,7 +16,7 @@ import kr.ac.kaist.safe.interpreter.{ InterpreterPredefine => IP }
 import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.util.{ EJSCompletionType => CT }
 
-class JSArrayPrototype(_I: InterpreterMain, _proto: JSObject)
+class JSArrayPrototype(_I: Interpreter, _proto: JSObject)
     extends JSArray(_I, _proto, "Array", true, propTable) {
   def init(): Unit = {
     /*

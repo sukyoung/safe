@@ -22,7 +22,7 @@ import kr.ac.kaist.safe.nodes.ir.{ IRFactory => IF }
 import kr.ac.kaist.safe.util._
 import kr.ac.kaist.safe.util.{ NodeUtil => NU }
 
-class InterpreterHelper(I: InterpreterMain) {
+class InterpreterHelper(I: Interpreter) {
   ////////////////////////////////////////////////////////////////////////////////
   // Basic
   ////////////////////////////////////////////////////////////////////////////////

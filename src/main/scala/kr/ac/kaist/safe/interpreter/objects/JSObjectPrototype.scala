@@ -15,7 +15,7 @@ import kr.ac.kaist.safe.interpreter._
 import kr.ac.kaist.safe.interpreter.{ InterpreterPredefine => IP }
 import kr.ac.kaist.safe.nodes.ir._
 
-class JSObjectPrototype(_I: InterpreterMain, _proto: JSObject)
+class JSObjectPrototype(_I: Interpreter, _proto: JSObject)
     extends JSObject(_I, _proto, "Object", true, propTable) {
   def init(): Unit = {
     // 15.2.4 Properties of the Object Prototype Object

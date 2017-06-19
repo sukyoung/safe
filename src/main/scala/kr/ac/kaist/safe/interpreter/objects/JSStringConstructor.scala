@@ -16,7 +16,7 @@ import kr.ac.kaist.safe.interpreter.{ InterpreterPredefine => IP }
 import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.util._
 
-class JSStringConstructor(_I: InterpreterMain, _proto: JSObject)
+class JSStringConstructor(_I: Interpreter, _proto: JSObject)
     extends JSFunction13(_I, _proto, "String", true, propTable, _I.IH.dummyFtn(1), EmptyEnv(), true) {
   def init(): Unit = {
     /*

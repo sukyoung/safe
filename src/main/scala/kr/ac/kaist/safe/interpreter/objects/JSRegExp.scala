@@ -15,7 +15,7 @@ import kr.ac.kaist.safe.interpreter._
 import kr.ac.kaist.safe.util.regexp._
 
 class JSRegExp(
-  _I: InterpreterMain,
+  _I: Interpreter,
   _proto: JSObject,
   _className: String,
   _extensible: Boolean,

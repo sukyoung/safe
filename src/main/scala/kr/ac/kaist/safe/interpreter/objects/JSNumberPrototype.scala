@@ -16,7 +16,7 @@ import kr.ac.kaist.safe.interpreter.{ InterpreterHelper => IH, InterpreterPredef
 import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.util._
 
-class JSNumberPrototype(_I: InterpreterMain, _proto: JSObject)
+class JSNumberPrototype(_I: Interpreter, _proto: JSObject)
     extends JSNumber(_I, _proto, "Number", true, propTable) {
   def init(): Unit = {
     /*

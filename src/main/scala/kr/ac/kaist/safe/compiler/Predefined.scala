@@ -11,10 +11,10 @@
 
 package kr.ac.kaist.safe.compiler
 
-import kr.ac.kaist.safe.phase.{ InterpreterConfig, InterpreterModes }
+import kr.ac.kaist.safe.phase.{ InterpretConfig, InterpreterModes }
 import kr.ac.kaist.safe.util.{ NodeUtil => NU }
 
-class Predefined(config: InterpreterConfig) {
+class Predefined(config: InterpretConfig) {
   val doms = List(
     // DOM non-functions
     "CanvasGradient",

@@ -14,7 +14,6 @@ package kr.ac.kaist.safe.util.useful
 import _root_.java.util.{ ArrayList => JArrayList }
 import _root_.java.util.{ List => JList }
 import _root_.java.util.{ Collection => JCollection }
-import _root_.junit.framework.TestCase
 import _root_.kr.ac.kaist.safe.useful.ArrayBackedList
 import scala.collection.JavaConversions
 
@@ -82,14 +81,4 @@ class JavaList[T] {
   def apply(xs: T*) = Lists.toJavaList(xs)
 
   def unapplySeq(xs: JList[T]) = Some(Lists.toListFromImmutable(xs))
-}
-
-class ListsJUTest() extends TestCase {
-  def testEmptyToJavaList() = {
-    val xs = List[Int]()
-    assert(
-      Lists.toJavaList(xs).isEmpty,
-      "Empty Scala lists are not mapped to empty Java lists"
-    )
-  }
 }

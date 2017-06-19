@@ -43,7 +43,7 @@ import kr.ac.kaist.safe.util.useful.Options._
  * op   ::= + | - | * | / | % | < | <= | > | >= | == | != | === | !==
  * uop  ::= !
  */
-class SymbolicHelper(I: InterpreterMain) {
+class SymbolicHelper(I: Interpreter) {
   val symbol = "s"
   val input_symbol = "i"
   val this_symbol = "this"
@@ -72,7 +72,7 @@ class SymbolicHelper(I: InterpreterMain) {
   val BRANCH = 2
   val ENDBRANCH = 3
 
-  var coverage: Coverage = null
+  ??? // TODO MV Removed: var coverage: Coverage = null
 
   val maxDepth = 3
   var loopDepth = new HashMap[String, Int]
@@ -83,29 +83,30 @@ class SymbolicHelper(I: InterpreterMain) {
   // Estimate time
   var startTime: Long = 0
 
-  def initialize(cov: Coverage) = {
-    coverage = cov
-
-    index = 0
-    input_index = 0
-
-    symbolic_memory.clear()
-    objectMemory.clear()
-
-    argumentsMemory.clear()
-    recursive = List()
-    coverage.functions.map(_._2.initDepth)
-
-    loopDepth.clear()
-
-    report = List[SymbolicInfo]()
-
-    System.out.println
-    var target = coverage.target
-    if (target != null && target.contains("@"))
-      target = target.substring(0, target.indexOf("@"))
-    System.out.println("Current target function: " + target)
-  }
+  // TODO MV Simplified, was originally: def initialize(cov: Coverage)
+  def initialize() = ??? // {
+  //    coverage = cov
+  //
+  //    index = 0
+  //    input_index = 0
+  //
+  //    symbolic_memory.clear()
+  //    objectMemory.clear()
+  //
+  //    argumentsMemory.clear()
+  //    recursive = List()
+  //    coverage.functions.foreach(_._2.initDepth)
+  //
+  //    loopDepth.clear()
+  //
+  //    report = List[SymbolicInfo]()
+  //
+  //    System.out.println
+  //    var target = coverage.target
+  //    if (target != null && target.contains("@"))
+  //      target = target.substring(0, target.indexOf("@"))
+  //    System.out.println("Current target function: " + target)
+  //  }
 
   // Initialize the symbolic memorys
   def walkVarStmt(id: IRId, n: Int, env: IRId): Unit = {
@@ -115,81 +116,83 @@ class SymbolicHelper(I: InterpreterMain) {
           // Only when an argument of a recursive call is not concrete value.
           case Some(sv) =>
             symbolic_memory(id.uniqueName) = sv
-            coverage.functions(env.uniqueName).getObjectProperties(n) match {
-              case Some(props) =>
-                val constructors = coverage.functions(env.uniqueName).getObjectConstructors(n)
-                if (constructors(0) == "Array") {
-                  val length = props(0).toInt
-                  for (p <- 0 until length) {
-                    var propValue = new SymbolicValue
-                    propValue.makeSymbolicValue(obj2str(sv.getValue, p.toString), "Number")
-                    symbolic_memory(obj2str(id.uniqueName, p.toString)) = propValue
-                  }
-                } else {
-                  for (prop <- props) {
-                    var propValue = new SymbolicValue
-                    // Suppose types of properties could be only 'Number'
-                    propValue.makeSymbolicValue(obj2str(sv.getValue, prop), "Number")
-                    symbolic_memory(obj2str(id.uniqueName, prop)) = propValue
-                  }
-                }
-              case None =>
-            }
+          // TODO MV Removed following match-expression
+          //            coverage.functions(env.uniqueName).getObjectProperties(n) match {
+          //              case Some(props) =>
+          //                val constructors = coverage.functions(env.uniqueName).getObjectConstructors(n)
+          //                if (constructors.head == "Array") {
+          //                  val length: Int = TODO MV Simplified: props.head.toInt
+          //                  for (p <- 0 until length) {
+          //                    var propValue = new SymbolicValue
+          //                    propValue.makeSymbolicValue(obj2str(sv.getValue, p.toString), "Number")
+          //                    symbolic_memory(obj2str(id.uniqueName, p.toString)) = propValue
+          //                  }
+          //                } else {
+          //                  for (prop <- props) {
+          //                    var propValue = new SymbolicValue
+          //                    // Suppose types of properties could be only 'Number'
+          //                    propValue.makeSymbolicValue(obj2str(sv.getValue, prop), "Number")
+          //                    symbolic_memory(obj2str(id.uniqueName, prop)) = propValue
+          //                  }
+          //                }
+          //              case None =>
+          //            }
           case None =>
             symbolic_memory -= id.uniqueName
         }
       } else {
         //TODO: Handle multiple types
-        val ptype = coverage.functions(env.uniqueName).getType(n)(0)
-        var value = new SymbolicValue
-        value.makeSymbolicValue(symbol + index, ptype)
+        // TODO MV Simplified: val ptype = coverage.functions(env.uniqueName).getType(n).head
+        val value = new SymbolicValue
+        // TODO MV Simplified: value.makeSymbolicValue(symbol + index, ptype)
         symbolic_memory(id.uniqueName) = value
 
-        var inputValue = new SymbolicValue
-        inputValue.makeSymbolicValue(input_symbol + input_index, ptype)
-        var info = new SymbolicInfo(false, Some(value), None, Some(inputValue), None, None)
+        val inputValue = new SymbolicValue
+        // TODO MV Simplified: inputValue.makeSymbolicValue(input_symbol + input_index, ptype)
+        val info = new SymbolicInfo(false, Some(value), None, Some(inputValue), None, None)
         info.setType(STATEMENT)
 
         report = report :+ info
 
         // When parameter is object
-        coverage.functions(env.uniqueName).getObjectProperties(n) match {
-          case Some(props) =>
-            val constructors = coverage.functions(env.uniqueName).getObjectConstructors(n)
-            // Consider when an argument is an empty object.
-            if (constructors.nonEmpty) {
-              if (constructors(0) == "Array") {
-                val length = props(0).toInt
-                for (p <- 0 until length) {
-                  var propValue = new SymbolicValue
-                  propValue.makeSymbolicValue(obj2str(symbol + index, p.toString), "Number")
-                  symbolic_memory(obj2str(id.uniqueName, p.toString)) = propValue
-
-                  var propInputValue = new SymbolicValue
-                  propInputValue.makeSymbolicValue(obj2str(input_symbol + input_index, p.toString), "Number")
-                  var info = new SymbolicInfo(false, Some(propValue), None, Some(propInputValue), None, None)
-                  info.setType(STATEMENT)
-
-                  report = report :+ info
-                }
-              } else {
-                for (prop <- props) {
-                  // Suppose types of properties could be only 'Number'
-                  var propValue = new SymbolicValue
-                  propValue.makeSymbolicValue(obj2str(symbol + index, prop), "Number")
-                  symbolic_memory(obj2str(id.uniqueName, prop)) = propValue
-
-                  var propInputValue = new SymbolicValue
-                  propInputValue.makeSymbolicValue(obj2str(input_symbol + input_index, prop), "Number")
-                  var info = new SymbolicInfo(false, Some(propValue), None, Some(propInputValue), None, None)
-                  info.setType(STATEMENT)
-
-                  report = report :+ info
-                }
-              }
-            }
-          case None =>
-        }
+        // TODO MV Removed following block:
+        //        coverage.functions(env.uniqueName).getObjectProperties(n) match {
+        //          case Some(props) =>
+        //            val constructors = coverage.functions(env.uniqueName).getObjectConstructors(n)
+        //            // Consider when an argument is an empty object.
+        //            if (constructors.nonEmpty) {
+        //              if (constructors.head == "Array") {
+        //                val length = props.head.toInt
+        //                for (p <- 0 until length) {
+        //                  var propValue = new SymbolicValue
+        //                  propValue.makeSymbolicValue(obj2str(symbol + index, p.toString), "Number")
+        //                  symbolic_memory(obj2str(id.uniqueName, p.toString)) = propValue
+        //
+        //                  var propInputValue = new SymbolicValue
+        //                  propInputValue.makeSymbolicValue(obj2str(input_symbol + input_index, p.toString), "Number")
+        //                  var info = new SymbolicInfo(false, Some(propValue), None, Some(propInputValue), None, None)
+        //                  info.setType(STATEMENT)
+        //
+        //                  report = report :+ info
+        //                }
+        //              } else {
+        //                for (prop <- props) {
+        //                  // Suppose types of properties could be only 'Number'
+        //                  var propValue = new SymbolicValue
+        //                  propValue.makeSymbolicValue(obj2str(symbol + index, prop), "Number")
+        //                  symbolic_memory(obj2str(id.uniqueName, prop)) = propValue
+        //
+        //                  var propInputValue = new SymbolicValue
+        //                  propInputValue.makeSymbolicValue(obj2str(input_symbol + input_index, prop), "Number")
+        //                  var info = new SymbolicInfo(false, Some(propValue), None, Some(propInputValue), None, None)
+        //                  info.setType(STATEMENT)
+        //
+        //                  report = report :+ info
+        //                }
+        //              }
+        //            }
+        //          case None =>
+        //        }
         index += 1
         input_index += 1
       }
@@ -639,7 +642,7 @@ class SymbolicHelper(I: InterpreterMain) {
         report = report :+ info
 
         // When parameter is object
-        val thisProps = coverage.functions(env.uniqueName).getThisProperties
+        val thisProps: List[String] = ??? // TODO MV Simplified:  coverage.functions(env.uniqueName).getThisProperties
         for (prop <- thisProps) {
           var propValue = new SymbolicValue
           // Suppose types of properties could be only 'Number'
@@ -665,18 +668,20 @@ class SymbolicHelper(I: InterpreterMain) {
       symbolic_memory(v.uniqueName) = symbolic_memory(old.uniqueName)
   }
 
-  def checkRecursiveCall(f: String, args: IRId): Boolean = coverage.functions.get(f) match {
-    case Some(fun) =>
-      val res = fun.checkRecursive(maxDepth)
-      if (isRecursiveCall(f)) {
-        recursive = argumentsMemory.get(args.uniqueName) match {
-          case Some(sv) => sv
-          case None => List()
-        }
-      }
-      res
-    case None => true
-  }
+  def checkRecursiveCall(f: String, args: IRId): Boolean = ???
+  // TODO MV Simplified:
+  //    coverage.functions.get(f) match {
+  //    case Some(fun) =>
+  //      val res = fun.checkRecursive(maxDepth)
+  //      if (isRecursiveCall(f)) {
+  //        recursive = argumentsMemory.get(args.uniqueName) match {
+  //          case Some(sv) => sv
+  //          case None => List()
+  //        }
+  //      }
+  //      res
+  //    case None => true
+  //  }
 
   def checkLoop(loop: String): Boolean = {
     var res = true
@@ -750,9 +755,9 @@ class SymbolicHelper(I: InterpreterMain) {
     return result
   }
 
-  def isRecursiveCall(f: String) = coverage.checkTarget(f) && coverage.functions(f).isRecursive
+  def isRecursiveCall(f: String): Boolean = ??? // TODO MV Simplified: coverage.checkTarget(f) && coverage.functions(f).isRecursive
 
-  def checkFocus(f: IRId) = coverage.checkTarget(f.uniqueName) && doConcolic
+  def checkFocus(f: IRId): Boolean = doConcolic && ??? // TODO MV Simplified: coverage.checkTarget(f.uniqueName)
   // Flag for symbolic exeuction
   def startConcolic() = {
     doConcolic = true

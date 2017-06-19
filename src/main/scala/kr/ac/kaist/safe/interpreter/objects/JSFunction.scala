@@ -17,7 +17,7 @@ import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.util.useful.Lists._
 
 abstract class JSFunction(
-  _I: InterpreterMain,
+  _I: Interpreter,
   _proto: JSObject,
   _className: String,
   _extensible: Boolean,

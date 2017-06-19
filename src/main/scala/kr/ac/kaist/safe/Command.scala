@@ -139,5 +139,8 @@ case object CmdBugDetect extends CommandObj("bugDetect", CmdAnalyze >> BugDetect
 // jsModelRewrite
 case object CmdJSModelRewrite extends CommandObj("jsModelRewrite", CmdBase >> JSModelRewrite)
 
+// interpret
+case object CmdInterpret extends CommandObj("interpret", CmdCompile >> Interpret)
+
 // help
 case object CmdHelp extends CommandObj("help", CmdBase >> Help)

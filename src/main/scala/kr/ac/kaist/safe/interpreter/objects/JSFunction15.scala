@@ -17,7 +17,7 @@ import kr.ac.kaist.safe.nodes.ir._
 
 // Created by 15.3.4.5 Function.prototype.bind(thisArg [, arg1 [, arg2, ...]])
 class JSFunction15(
-  __I: InterpreterMain,
+  __I: Interpreter,
   __proto: JSObject,
   __className: String,
   __extensible: Boolean,

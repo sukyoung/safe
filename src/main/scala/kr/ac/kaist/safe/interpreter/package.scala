@@ -89,7 +89,7 @@ package object interpreter {
   case class URIError() extends JSError()
   case class NYIError() extends JSError()
 
-  def exnLoc(I: InterpreterMain, ve: ValError): Val = ve match {
+  def exnLoc(I: Interpreter, ve: ValError): Val = ve match {
     case v: Val => v
     case _: Error => I.IS.ErrorConstructor.construct(IP.undefV)
     case _: EvalError => I.IS.EvalErrorConstructor.construct(IP.undefV)

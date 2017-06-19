@@ -19,18 +19,20 @@ import kr.ac.kaist.safe.nodes.{ NodeFactory => NF }
 import kr.ac.kaist.safe.nodes.ast._
 import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.nodes.ir.{ IRFactory => IF }
-import kr.ac.kaist.safe.phase.InterpreterConfig
-import kr.ac.kaist.safe.util.{ Coverage, NodeUtil => NU, Span }
+import kr.ac.kaist.safe.phase.InterpretConfig
+// TODO MV Simplified: import kr.ac.kaist.safe.util.{ Coverage, NodeUtil => NU, Span }
+import kr.ac.kaist.safe.util.{ NodeUtil => NU, Span }
 import kr.ac.kaist.safe.util.useful.Sets
 
-class InterpreterState(val I: InterpreterMain, val config: InterpreterConfig) {
+class InterpreterState(val I: Interpreter, val config: InterpretConfig) {
   var env: Env = new EmptyEnv()
   var strict: Boolean = false
   var comp: Completion = new Completion()
   var lastComp: Completion = new Completion()
   var eval: Boolean = false
   var span: Span = IP.defSpan
-  var coverage: Option[Coverage] = None
+  // TODO MV Simplified: var coverage: Option[Coverage] = None
+  var coverage = None
   var objectProps = Set[String]()
 
   def init() {
@@ -71,7 +73,7 @@ class InterpreterState(val I: InterpreterMain, val config: InterpreterConfig) {
     checkPredefined(config)
   }
 
-  def checkPredefined(config: InterpreterConfig) {
+  def checkPredefined(config: InterpretConfig) {
     val notYetImplemented = Set("JSON", "decodeURIComponent", "encodeURIComponent", "encodeURI",
       "<>Global<>global", "decodeURI", "Exception")
     val predefNames = new Predefined(config).all.toSet.diff(notYetImplemented)

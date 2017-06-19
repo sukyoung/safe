@@ -17,7 +17,7 @@ import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.util.{ EJSCompletionType => CT }
 import kr.ac.kaist.safe.util.regexp._
 
-class JSRegExpPrototype(_I: InterpreterMain, _proto: JSObject)
+class JSRegExpPrototype(_I: Interpreter, _proto: JSObject)
     extends JSRegExp(_I, _proto, "RegExp", true, propTable, (s: String, i: Int) => None, "", "", 0) {
   def init(): Unit = {
     /*

@@ -16,7 +16,7 @@ import kr.ac.kaist.safe.interpreter.{ InterpreterPredefine => IP }
 import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.util._
 
-class JSBooleanPrototype(_I: InterpreterMain, _proto: JSObject)
+class JSBooleanPrototype(_I: Interpreter, _proto: JSObject)
     extends JSBoolean(_I, _proto, "Boolean", true, propTable) {
   def init(): Unit = {
     /*

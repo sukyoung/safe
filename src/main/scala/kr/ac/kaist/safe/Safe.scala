@@ -77,6 +77,7 @@ object Safe {
     CmdCFGLoad,
     CmdAnalyze,
     CmdBugDetect,
+    CmdInterpret,
     CmdHelp
   )
   val cmdMap = commands.foldLeft[Map[String, Command]](HashMap()) {
@@ -91,6 +92,7 @@ object Safe {
     CFGBuild,
     Analyze,
     BugDetect,
+    Interpret,
     Help
   )
 

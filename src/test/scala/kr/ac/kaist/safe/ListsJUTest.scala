@@ -9,15 +9,17 @@
  * ****************************************************************************
  */
 
-package kr.ac.kaist.safe.interpreter.objects
+package kr.ac.kaist.safe
 
-import kr.ac.kaist.safe.interpreter._
+import junit.framework.TestCase
+import kr.ac.kaist.safe.util.useful.Lists
 
-class JSDate(
-  _I: Interpreter,
-  _proto: JSObject,
-  _className: String,
-  _extensible: Boolean,
-  _property: PropTable
-)
-    extends JSObject(_I, _proto, _className, _extensible, _property)
+class ListsJUTest() extends TestCase {
+  def testEmptyToJavaList() = {
+    val xs = List[Int]()
+    assert(
+      Lists.toJavaList(xs).isEmpty,
+      "Empty Scala lists are not mapped to empty Java lists"
+    )
+  }
+}

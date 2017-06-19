@@ -20,7 +20,7 @@ import kr.ac.kaist.safe.util._
 import kr.ac.kaist.safe.util.{ EJSCompletionType => CT }
 import kr.ac.kaist.safe.util.regexp._
 
-class JSStringPrototype(_I: InterpreterMain, _proto: JSObject)
+class JSStringPrototype(_I: Interpreter, _proto: JSObject)
     extends JSString(_I, _proto, "String", true, propTable) {
   def init(): Unit = {
     /*
