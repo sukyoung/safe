@@ -40,8 +40,8 @@ class Translator(program: Program) {
   private val DEBUG = false
 
   // default operators
-  private val PLUS = IROp(NU.TEMP_AST, EJSEtcAdd)
-  private val MINUS = IROp(NU.TEMP_AST, EJSEtcSub)
+  private def PLUS(isUnOp: Boolean) = IROp(NU.TEMP_AST, if (isUnOp) EJSPos else EJSAdd)
+  private def MINUS(isUnOp: Boolean) = IROp(NU.TEMP_AST, if (isUnOp) EJSNeg else EJSSub)
   private val TYPEOF = IROp(NU.TEMP_AST, EJSTypeOf)
   private val EQUALS = IROp(NU.TEMP_AST, EJSEq)
   private val STRICT_EQ = IROp(NU.TEMP_AST, EJSSEq)
@@ -879,7 +879,7 @@ class Translator(program: Program) {
         val y = freshId(right, right.span, "y")
         val oldVal = freshId(lhs, lhs.span, OLD_NAME)
         val (ss, r) = walkExpr(right, env, y)
-        val bin = IRBin(e, oldVal, IROp(NU.TEMP_AST, EJSOp(op.text.substring(0, op.text.length - 1))), r)
+        val bin = IRBin(e, oldVal, IROp(NU.TEMP_AST, EJSOp(op.text.substring(0, op.text.length - 1), false)), r)
         (walkLval(e, lhs, addE(env, OLD_NAME, oldVal), ss, bin, true) match { case (stmts, _) => stmts }, bin)
       }
 
@@ -891,7 +891,7 @@ class Translator(program: Program) {
         (
           walkLval(e, lhs, addE(env, OLD_NAME, oldVal), List(toNumber(lhs, newVal, oldVal)),
             IRBin(e, newVal,
-              if (op.text.equals("++")) PLUS else MINUS,
+              if (op.text.equals("++")) PLUS(false) else MINUS(false),
               ONE_NUM), true) match { case (stmts, _) => stmts },
           newVal
         )
@@ -907,7 +907,7 @@ class Translator(program: Program) {
         val oldVal = freshId(right, rightspan, OLD_NAME)
         val newVal = freshId(right, rightspan, "new")
         val bin = IRBin(e, newVal,
-          if (opText.equals("++")) PLUS else MINUS,
+          if (opText.equals("++")) PLUS(false) else MINUS(false),
           ONE_NUM)
         (walkLval(e, right, addE(env, OLD_NAME, oldVal),
           List(toNumber(right, newVal, oldVal)),
@@ -942,7 +942,7 @@ class Translator(program: Program) {
       } else {
         val y = freshId(right, right.span, "y")
         val (ss, r) = walkExpr(right, env, y)
-        (ss, IRUn(e, IROp(NU.TEMP_AST, EJSOp(opText)), r))
+        (ss, IRUn(e, IROp(NU.TEMP_AST, EJSOp(opText, true)), r))
       }
 
     case infix @ InfixOpApp(_, left, op, right) if op.text.equals("&&") =>
@@ -1018,9 +1018,9 @@ class Translator(program: Program) {
       val (ss2, r2) = walkExpr(right, env, z)
       ss2 match {
         case Nil =>
-          (ss1, IRBin(e, r1, IROp(NU.TEMP_AST, EJSOp(op.text)), r2))
+          (ss1, IRBin(e, r1, IROp(NU.TEMP_AST, EJSOp(op.text, false)), r2))
         case _ =>
-          ((ss1 :+ mkExprS(left, y, r1)) ++ ss2, IRBin(e, y, IROp(NU.TEMP_AST, EJSOp(op.text)), r2))
+          ((ss1 :+ mkExprS(left, y, r1)) ++ ss2, IRBin(e, y, IROp(NU.TEMP_AST, EJSOp(op.text, false)), r2))
       }
 
     case VarRef(_, id @ Id(_, name, _, _)) if NU.isInternalValue(name) =>

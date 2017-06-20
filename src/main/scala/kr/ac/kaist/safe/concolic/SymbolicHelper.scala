@@ -72,7 +72,7 @@ class SymbolicHelper(I: Interpreter) {
   val BRANCH = 2
   val ENDBRANCH = 3
 
-  ??? // TODO MV Removed: var coverage: Coverage = null
+  // TODO MV Removed: var coverage: Coverage = null
 
   val maxDepth = 3
   var loopDepth = new HashMap[String, Int]

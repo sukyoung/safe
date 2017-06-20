@@ -35,7 +35,7 @@ object IRGenerator {
   // TODO MV No longer supported: can't create a TId from just a Span
   def freshId(): IRTmpId = freshId(dummySpan, "temp")
 
-  val globalName = NU.freshGlobalName("global")
+  val globalName = NU.INTERNAL_GLOBAL
   val global = IF.makeTId(NU.makeASTNodeInfo(NU.dummySpan("global")), globalName, true)
   var ignoreId = 0
   def varIgn(ast: ASTNode, span: Span) = {
@@ -52,13 +52,13 @@ object IRGenerator {
   val argName = "arguments"
 
   def isObject(ast: ASTNode, lhs: IRId, id: IRId) =
-    IF.makeInternalCall(ast, lhs, IF.makeTId(ast, NU.freshGlobalName("isObject"), true), id)
+    IF.makeInternalCall(ast, lhs, IF.makeTId(ast, NU.INTERNAL_IS_OBJ, true), id)
 
   def toObject(ast: ASTNode, lhs: IRId, arg: IRExpr) =
-    IF.makeInternalCall(ast, lhs, IF.makeTId(ast, NU.toObjectName, true), arg)
+    IF.makeInternalCall(ast, lhs, IF.makeTId(ast, NU.INTERNAL_TO_OBJ, true), arg)
 
   def getBase(ast: ASTNode, lhs: IRId, f: IRId) =
-    IF.makeInternalCall(ast, lhs, IF.makeTId(ast, NU.freshGlobalName("getBase"), true), f)
+    IF.makeInternalCall(ast, lhs, IF.makeTId(ast, NU.INTERNAL_GET_BASE, true), f)
 
   def funexprId(span: Span, lhs: Option[String]) = {
     val uniq = lhs match {
