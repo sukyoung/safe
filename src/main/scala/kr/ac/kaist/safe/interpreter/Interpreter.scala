@@ -821,7 +821,7 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
                         case e: URIErrorException =>
                           IS.comp.setThrow(IP.uriError, info.span); return node
                         // TODO MV Remove print("823") in line below
-                        case e: NYIErrorException => println("823"); IS.comp.setThrow(IP.nyiError, info.span); return node
+                        case e: NYIErrorException => IS.comp.setThrow(IP.nyiError, info.span); return node
                       }
                       // TODO:
                       obj.proto match {
@@ -861,7 +861,9 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
                 case pv: PVal => obj.proto = IS.ObjectPrototype
               }
               walk(IRCall(info, lhs, fun, args(0), args(1)))
-            case _ => throw new InterpreterError("SIRNew should take two arguments!", info.span)
+            case _ if args.size != 2 => throw new InterpreterError("SIRNew should take two arguments!", info.span)
+            case _ =>
+              IS.comp.setThrow(TypeError(), info.span)
           }
 
         // Internal Function Calls
@@ -1118,7 +1120,6 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
                 case _ => IS.comp.setThrow(IP.typeError, info.span)
               }
             case _ =>
-              println(s"1120: $fun") // TODO MV Remove this print
               IS.comp.setThrow(IP.nyiError, info.span)
           }
 
@@ -1275,12 +1276,10 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
           }
 
         case n: IRNode =>
-          println("1276") // TODO MV Remove this print
           System.out.println(n.toString: String) // for debugging
           IS.comp.setThrow(IP.nyiError, n.ast.span)
 
         case _ =>
-          println("1281") // TODO MV Remove this print
           System.out.println(node.toString: String) // for debugging
           IS.comp.setThrow(IP.nyiError, IS.span)
       }
