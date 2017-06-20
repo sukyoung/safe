@@ -1078,7 +1078,7 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
             case "<>Global<>getTickCount" => {
               IH.valError2NormalCompletion(IH.putValue(lhs, PVal(IH.mkIRNumIR(System.currentTimeMillis())), IS.strict))
             }
-            case "<>Global<>iteratorInit" => walkExpr(args.head) match {
+            case NU.INTERNAL_ITER_INIT => walkExpr(args.head) match {
               // TODO case for null or undefined
               case v: JSObject =>
                 // (H', A, tb), x = l
@@ -1086,7 +1086,7 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
               case err: JSError => IS.comp.setThrow(err, info.span)
               case _ => IS.comp.setThrow(IP.typeError, info.span)
             }
-            case "<>Global<>iteratorHasNext" =>
+            case NU.INTERNAL_ITER_HAS_NEXT =>
               val (e1, e2) = (args.head, args(1))
               walkExpr(e1) match {
                 case v1: JSObject => walkId(e2.asInstanceOf[IRId]) match {
@@ -1102,7 +1102,7 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
                 case err: JSError => IS.comp.setThrow(err, info.span)
                 case _ => IS.comp.setThrow(IP.typeError, info.span)
               }
-            case "<>Global<>iteratorNext" =>
+            case NU.INTERNAL_ITER_NEXT =>
               val (e1, e2) = (args.head, args(1))
               walkExpr(e1) match {
                 case v1: JSObject => walkId(e2.asInstanceOf[IRId]) match {
