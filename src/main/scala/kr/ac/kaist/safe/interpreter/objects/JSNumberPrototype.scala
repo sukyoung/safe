@@ -32,11 +32,11 @@ class JSNumberPrototype(_I: Interpreter, _proto: JSObject)
     // 15.7.4.7
   }
 
-  override def __callBuiltinFunction(method: JSFunction, argsObj: JSObject): Unit = {
+  override def callBuiltinFunction(method: JSFunction, argsObj: JSObject): Unit = {
     method match {
-      case I.IS.NumberPrototypeToString => argsObj._get("length") match {
+      case I.IS.NumberPrototypeToString => argsObj.get("length") match {
         case PVal(IRVal(n: EJSNumber)) if n.num == 0 => _toString(None)
-        case PVal(IRVal(n: EJSNumber)) if n.num >= 1 => _toString(Some(argsObj._get("0")))
+        case PVal(IRVal(n: EJSNumber)) if n.num >= 1 => _toString(Some(argsObj.get("0")))
       }
       // 15.7.4.3
       case I.IS.NumberPrototypeValueOf => _valueOf()
@@ -56,11 +56,11 @@ class JSNumberPrototype(_I: Interpreter, _proto: JSObject)
         }
         r match {
           case r if !(2 <= r && r <= 36) => I.IS.comp.setThrow(IP.rangeError, I.IS.span)
-          case 10 => I.IS.comp.setReturn(PVal(I.IH.mkIRStrIR(I.IH.toString(o._get(IP.pvpn)))))
+          case 10 => I.IS.comp.setReturn(PVal(I.IH.mkIRStrIR(I.IH.toString(o.get(IP.pvpn)))))
           case r =>
             var s: String = ""
             // TODO: ToInteger vs. ToInt32
-            val n: Int = I.IH.toInt32(o._get(IP.pvpn))
+            val n: Int = I.IH.toInt32(o.get(IP.pvpn))
             if (n == 0) I.IS.comp.setReturn(PVal(I.IH.mkIRStrIR("0")))
             else {
               var m: Int = n.abs
@@ -81,7 +81,7 @@ class JSNumberPrototype(_I: Interpreter, _proto: JSObject)
 
   def _valueOf(): Unit = {
     I.IH.toObject(I.IS.tb) match {
-      case o: JSNumber => I.IS.comp.setReturn(o._get(IP.pvpn))
+      case o: JSNumber => I.IS.comp.setReturn(o.get(IP.pvpn))
       case o: JSObject => I.IS.comp.setThrow(IP.typeError, I.IS.span)
       case err: JSError => I.IS.comp.setThrow(err, I.IS.span)
     }

@@ -14,9 +14,9 @@ package kr.ac.kaist.safe.interpreter.objects
 import kr.ac.kaist.safe.interpreter._
 import kr.ac.kaist.safe.interpreter.{ InterpreterPredefine => IP }
 
-class JSEvalErrorConstructor(_I: Interpreter, _proto: JSObject)
-    extends JSFunction13(_I, _proto, "Function", true,
-      propTable, _I.IH.dummyFtn(1), EmptyEnv(), true) {
+class JSEvalErrorConstructor(I: Interpreter, proto: JSObject)
+    extends JSFunction13(I, proto, "Function", true,
+      propTable, I.IH.dummyFtn(1), EmptyEnv(), true) {
   def init(): Unit = {
     /*
      * 15.11.7.5 Properties of the NativeError Constructors
@@ -35,12 +35,12 @@ class JSEvalErrorConstructor(_I: Interpreter, _proto: JSObject)
   /*
    * 15.11.7.3 The NativeError Constructors
    */
-  override def _construct(argsObj: JSObject): JSErrorObject =
-    construct(argsObj._get("0"))
+  override def construct(argsObj: JSObject): JSErrorObject =
+    construct(argsObj.get("0"))
 
   /*
    * 15.11.7.1 NativeError Constructors Called as Functions
    */
-  override def _call(tb: Val, argsObj: JSObject): Unit =
-    I.IS.comp.setReturn(_construct(argsObj))
+  override def call(tb: Val, argsObj: JSObject): Unit =
+    I.IS.comp.setReturn(construct(argsObj))
 }

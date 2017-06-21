@@ -26,13 +26,13 @@ class JSString(
   /*
    * 15.5.5.2 [[GetOwnProperty]] ( P )
    */
-  override def _getOwnProperty(x: PName): ObjectProp = {
-    val desc: ObjectProp = super._getOwnProperty(x)
+  override def getOwnProperty(x: PName): ObjectProp = {
+    val desc: ObjectProp = super.getOwnProperty(x)
     if (desc != null) desc
     else {
       if (I.IH.toString(PVal(IRVal(I.IH.mkIRNum(scala.math.abs(I.IH.toInteger(PVal(I.IH.mkIRStrIR(x))).num))))) != x) null
       else {
-        val str: String = I.IH.toString(_get(IP.pvpn))
+        val str: String = I.IH.toString(get(IP.pvpn))
         // TODO:
         val index: Int = I.IH.toInt32(PVal(I.IH.mkIRStrIR(x)))
         val len: Int = str.length

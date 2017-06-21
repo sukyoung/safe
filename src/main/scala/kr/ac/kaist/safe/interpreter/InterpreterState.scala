@@ -97,7 +97,7 @@ class InterpreterState(val I: Interpreter, val config: InterpretConfig) {
 
   def dummyFtnObj(length: Int, builtin: JSObject): JSFunction = {
     val fv: IRFunctional = I.IH.dummyFtn(length)
-    val prop = propTable()
+    val prop = propTable
     prop.put("length", I.IH.numProp(fv.args.size))
     new JSFunction13(I, FunctionPrototype, "Function", true, prop, fv, EmptyEnv(), false, builtin)
   }

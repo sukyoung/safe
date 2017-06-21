@@ -46,7 +46,7 @@ class JSDateConstructor(_I: Interpreter, _proto: JSObject)
     val milli = if (!I.IH.isUndef(ms)) I.IH.toNumber(ms) else I.IH.mkIRNum(0)
     val yi = I.IH.toInteger(PVal(IRVal(y))).num
     val yr = if (!I.IH.isNaN(y) && 0 <= yi && yi <= 99) I.IH.mkIRNum(1900 + yi) else y
-    val finalDate = DH._makeDate(DH._makeDay(yr, m, dt), DH._makeTime(h, min, s, milli))
+    val finalDate = DH.makeDate(DH.makeDay(yr, m, dt), DH.makeTime(h, min, s, milli))
     new JSDate(I, I.IS.DatePrototype, "Date", true, I.IH.numPropTable(finalDate.num))
   }
   /*
@@ -57,7 +57,7 @@ class JSDateConstructor(_I: Interpreter, _proto: JSObject)
       case v @ PVal(IRVal(_: EJSString)) => __parse(v)
       case v => I.IH.toNumber(v)
     }
-    new JSDate(I, I.IS.DatePrototype, "Date", true, I.IH.numPropTable(DH._timeClip(V).num))
+    new JSDate(I, I.IS.DatePrototype, "Date", true, I.IH.numPropTable(DH.timeClip(V).num))
   }
   /*
    * 15.9.3.3 new Date()
@@ -65,40 +65,40 @@ class JSDateConstructor(_I: Interpreter, _proto: JSObject)
   def construct(): JSDate =
     new JSDate(I, I.IS.DatePrototype, "Date", true, I.IH.numPropTable(__now.num))
 
-  override def _construct(argsObj: JSObject): JSDate = {
-    argsObj._get("length") match {
+  override def construct(argsObj: JSObject): JSDate = {
+    argsObj.get("length") match {
       case PVal(IRVal(n: EJSNumber)) if n.num == 0 => construct()
-      case PVal(IRVal(n: EJSNumber)) if n.num == 1 => construct(argsObj._get("0"))
+      case PVal(IRVal(n: EJSNumber)) if n.num == 1 => construct(argsObj.get("0"))
       case PVal(IRVal(n: EJSNumber)) if n.num >= 2 => construct(
-        argsObj._get("0"),
-        argsObj._get("1"),
-        argsObj._get("2"),
-        argsObj._get("3"),
-        argsObj._get("4"),
-        argsObj._get("5"),
-        argsObj._get("6")
+        argsObj.get("0"),
+        argsObj.get("1"),
+        argsObj.get("2"),
+        argsObj.get("3"),
+        argsObj.get("4"),
+        argsObj.get("5"),
+        argsObj.get("6")
       )
     }
   }
 
-  override def __callBuiltinFunction(method: JSFunction, argsObj: JSObject): Unit = {
+  override def callBuiltinFunction(method: JSFunction, argsObj: JSObject): Unit = {
     method match {
-      case I.IS.DateParse => _parse(argsObj._get("0"))
+      case I.IS.DateParse => _parse(argsObj.get("0"))
       case I.IS.DateUTC => _utc(
-        argsObj._get("0"),
-        argsObj._get("1"),
-        argsObj._get("2"),
-        argsObj._get("3"),
-        argsObj._get("4"),
-        argsObj._get("5"),
-        argsObj._get("6")
+        argsObj.get("0"),
+        argsObj.get("1"),
+        argsObj.get("2"),
+        argsObj.get("3"),
+        argsObj.get("4"),
+        argsObj.get("5"),
+        argsObj.get("6")
       )
       case I.IS.DateNow => _now()
     }
   }
 
-  override def _call(tb: Val, argsObj: JSObject): Unit = {
-    I.IS.DatePrototype.__toISOString(__now)
+  override def call(tb: Val, argsObj: JSObject): Unit = {
+    I.IS.DatePrototype.toISOString(__now)
   }
 
   /*
@@ -157,14 +157,14 @@ class JSDateConstructor(_I: Interpreter, _proto: JSObject)
         case (h: String, min: String, s: String, milli: String) =>
           (h.toDouble, min.toDouble, s.toDouble, milli.toDouble)
       }
-      val tc = DH._timeClip(
-        DH._makeDate(
-          DH._makeDay(
+      val tc = DH.timeClip(
+        DH.makeDate(
+          DH.makeDay(
             I.IH.mkIRNum(yr),
             I.IH.mkIRNum(m - 1),
             I.IH.mkIRNum(dt)
           ),
-          DH._makeTime(
+          DH.makeTime(
             I.IH.mkIRNum(h),
             I.IH.mkIRNum(min),
             I.IH.mkIRNum(s),
@@ -175,14 +175,14 @@ class JSDateConstructor(_I: Interpreter, _proto: JSObject)
       val tzoffset = (tzs, tzh, tzm) match {
         case (null, null, null) => I.IH.mkIRNum(0)
         case (s @ "+", h: String, m: String) =>
-          DH._timeClip(
-            DH._makeDate(
-              DH._makeDay(
-                I.IH.mkIRNum(DH.__initYear),
+          DH.timeClip(
+            DH.makeDate(
+              DH.makeDay(
+                I.IH.mkIRNum(DH.initYear),
                 I.IH.mkIRNum(0.0),
                 I.IH.mkIRNum(1.0)
               ),
-              DH._makeTime(
+              DH.makeTime(
                 I.IH.mkIRNum(h.toDouble),
                 I.IH.mkIRNum(m.toDouble),
                 I.IH.mkIRNum(0.0),
@@ -192,14 +192,14 @@ class JSDateConstructor(_I: Interpreter, _proto: JSObject)
           )
         case (s @ "-", h: String, m: String) =>
           I.IH.mkIRNum(
-            -DH._timeClip(
-              DH._makeDate(
-                DH._makeDay(
-                  I.IH.mkIRNum(DH.__initYear),
+            -DH.timeClip(
+              DH.makeDate(
+                DH.makeDay(
+                  I.IH.mkIRNum(DH.initYear),
                   I.IH.mkIRNum(0.0),
                   I.IH.mkIRNum(1.0)
                 ),
-                DH._makeTime(
+                DH.makeTime(
                   I.IH.mkIRNum(h.toDouble),
                   I.IH.mkIRNum(m.toDouble),
                   I.IH.mkIRNum(0.0),
@@ -236,14 +236,14 @@ class JSDateConstructor(_I: Interpreter, _proto: JSObject)
           case (h: String, min: String, s: String, milli: String) =>
             (h.toDouble, min.toDouble, s.toDouble, milli.toDouble)
         }
-        val tc = DH._timeClip(
-          DH._makeDate(
-            DH._makeDay(
+        val tc = DH.timeClip(
+          DH.makeDate(
+            DH.makeDay(
               I.IH.mkIRNum(yr),
               I.IH.mkIRNum(m - 1),
               I.IH.mkIRNum(dt)
             ),
-            DH._makeTime(
+            DH.makeTime(
               I.IH.mkIRNum(h),
               I.IH.mkIRNum(min),
               I.IH.mkIRNum(s),
@@ -254,14 +254,14 @@ class JSDateConstructor(_I: Interpreter, _proto: JSObject)
         val tzoffset = (tzs, tzh, tzm) match {
           case (null, null, null) => I.IH.mkIRNum(0)
           case (s @ "+", h: String, m: String) =>
-            DH._timeClip(
-              DH._makeDate(
-                DH._makeDay(
-                  I.IH.mkIRNum(DH.__initYear),
+            DH.timeClip(
+              DH.makeDate(
+                DH.makeDay(
+                  I.IH.mkIRNum(DH.initYear),
                   I.IH.mkIRNum(0.0),
                   I.IH.mkIRNum(1.0)
                 ),
-                DH._makeTime(
+                DH.makeTime(
                   I.IH.mkIRNum(h.toDouble),
                   I.IH.mkIRNum(m.toDouble),
                   I.IH.mkIRNum(0.0),
@@ -271,14 +271,14 @@ class JSDateConstructor(_I: Interpreter, _proto: JSObject)
             )
           case (s @ "-", h: String, m: String) =>
             I.IH.mkIRNum(
-              -DH._timeClip(
-                DH._makeDate(
-                  DH._makeDay(
-                    I.IH.mkIRNum(DH.__initYear),
+              -DH.timeClip(
+                DH.makeDate(
+                  DH.makeDay(
+                    I.IH.mkIRNum(DH.initYear),
                     I.IH.mkIRNum(0.0),
                     I.IH.mkIRNum(1.0)
                   ),
-                  DH._makeTime(
+                  DH.makeTime(
                     I.IH.mkIRNum(h.toDouble),
                     I.IH.mkIRNum(m.toDouble),
                     I.IH.mkIRNum(0.0),
@@ -311,14 +311,14 @@ class JSDateConstructor(_I: Interpreter, _proto: JSObject)
             case (h: String, min: String, s: String, milli: String) =>
               (h.toDouble, min.toDouble, s.toDouble, milli.toDouble)
           }
-          val tc = DH._timeClip(
-            DH._makeDate(
-              DH._makeDay(
+          val tc = DH.timeClip(
+            DH.makeDate(
+              DH.makeDay(
                 I.IH.mkIRNum(yr),
                 I.IH.mkIRNum(m - 1),
                 I.IH.mkIRNum(dt)
               ),
-              DH._makeTime(
+              DH.makeTime(
                 I.IH.mkIRNum(h),
                 I.IH.mkIRNum(min),
                 I.IH.mkIRNum(s),
@@ -329,14 +329,14 @@ class JSDateConstructor(_I: Interpreter, _proto: JSObject)
           val tzoffset = (tzs, tzh, tzm) match {
             case (null, null, null) => I.IH.mkIRNum(0)
             case (s @ "+", h: String, m: String) =>
-              DH._timeClip(
-                DH._makeDate(
-                  DH._makeDay(
-                    I.IH.mkIRNum(DH.__initYear),
+              DH.timeClip(
+                DH.makeDate(
+                  DH.makeDay(
+                    I.IH.mkIRNum(DH.initYear),
                     I.IH.mkIRNum(0.0),
                     I.IH.mkIRNum(1.0)
                   ),
-                  DH._makeTime(
+                  DH.makeTime(
                     I.IH.mkIRNum(h.toDouble),
                     I.IH.mkIRNum(m.toDouble),
                     I.IH.mkIRNum(0.0),
@@ -346,14 +346,14 @@ class JSDateConstructor(_I: Interpreter, _proto: JSObject)
               )
             case (s @ "-", h: String, m: String) =>
               I.IH.mkIRNum(
-                -DH._timeClip(
-                  DH._makeDate(
-                    DH._makeDay(
-                      I.IH.mkIRNum(DH.__initYear),
+                -DH.timeClip(
+                  DH.makeDate(
+                    DH.makeDay(
+                      I.IH.mkIRNum(DH.initYear),
                       I.IH.mkIRNum(0.0),
                       I.IH.mkIRNum(1.0)
                     ),
-                    DH._makeTime(
+                    DH.makeTime(
                       I.IH.mkIRNum(h.toDouble),
                       I.IH.mkIRNum(m.toDouble),
                       I.IH.mkIRNum(0.0),
@@ -383,10 +383,10 @@ class JSDateConstructor(_I: Interpreter, _proto: JSObject)
     val milli = if (!I.IH.isUndef(ms)) I.IH.toNumber(ms) else I.IH.mkIRNum(0)
     val yi = I.IH.toInteger(PVal(IRVal(y))).num
     val yr = if (!I.IH.isNaN(y) && 0 <= yi && yi <= 99) I.IH.mkIRNum(1900 + yi) else y
-    val tc = DH._timeClip(
-      DH._makeDate(
-        DH._makeDay(yr, m, dt),
-        DH._makeTime(h, min, s, milli)
+    val tc = DH.timeClip(
+      DH.makeDate(
+        DH.makeDay(yr, m, dt),
+        DH.makeTime(h, min, s, milli)
       )
     )
     I.IS.comp.setReturn(PVal(IRVal(tc)))

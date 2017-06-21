@@ -51,7 +51,7 @@ class JSObjectConstructor(_I: Interpreter, _proto: JSObject)
   // Basic
   ////////////////////////////////////////////////////////////////////////////////
 
-  override def __callBuiltinFunction(method: JSFunction, argsObj: JSObject): Unit = {
+  override def callBuiltinFunction(method: JSFunction, argsObj: JSObject): Unit = {
     val args: Array[Val] = I.IH.argsObjectToArray(argsObj, 3)
     method match {
       /*
@@ -81,18 +81,18 @@ class JSObjectConstructor(_I: Interpreter, _proto: JSObject)
   ////////////////////////////////////////////////////////////////////////////////
 
   // 15.2.1.1 Object([value])
-  override def _call(tb: Val, argsObj: JSObject): Unit = {
-    val value: Val = argsObj._get("0")
+  override def call(tb: Val, argsObj: JSObject): Unit = {
+    val value: Val = argsObj.get("0")
     if (I.IH.isNull(value) || I.IH.isUndef(value)) {
-      val obj: JSObject = _construct(argsObj)
+      val obj: JSObject = construct(argsObj)
       I.IS.comp.setReturn(obj)
     } else I.IH.valError2ReturnCompletion(I.IH.toObject(value))
   }
 
   // 15.2.2.1 new Object([value])
-  override def _construct(argsObj: JSObject): JSObject = {
-    val length: Int = I.IH.toNumber(argsObj._get("length")).num.toInt
-    val value: Val = argsObj._get("0")
+  override def construct(argsObj: JSObject): JSObject = {
+    val length: Int = I.IH.toNumber(argsObj.get("length")).num.toInt
+    val value: Val = argsObj.get("0")
     if (length >= 1) {
       val typeOfValue = I.IH.typeOf(value)
       if (typeOfValue == EJSType.OBJECT) {
@@ -120,7 +120,7 @@ class JSObjectConstructor(_I: Interpreter, _proto: JSObject)
   def getOwnPropertyDescriptor(o: Val, p: Val): Unit = o match {
     case o: JSObject =>
       val name = I.IH.toString(p)
-      val desc = o._getOwnProperty(name)
+      val desc = o.getOwnProperty(name)
       if (desc == null)
         I.IS.comp.setReturn(IP.undefV)
       else
@@ -140,13 +140,13 @@ class JSObjectConstructor(_I: Interpreter, _proto: JSObject)
       val prop: PropTable = new PropTable
       prop.put("length", I.IH.numProp(0))
       val args: JSObject = I.IH.newArgObj(I.IS.ObjectConstructor, 1, I.IH.newObj(prop), false)
-      val obj: JSObject = _construct(args)
+      val obj: JSObject = construct(args)
       obj.proto = o
       if (!I.IH.isUndef(properties)) defineProperties(obj, properties)
       I.IS.comp.setReturn(obj)
     case o if I.IH.isNull(o) =>
       val args: JSObject = I.IH.newArgObj(I.IS.ObjectConstructor, 1, I.IH.newObj, false)
-      val obj: JSObject = _construct(args)
+      val obj: JSObject = construct(args)
       obj.proto = IP.nullObj
       if (!I.IH.isUndef(properties)) defineProperties(obj, properties)
       I.IS.comp.setReturn(obj)
@@ -160,7 +160,7 @@ class JSObjectConstructor(_I: Interpreter, _proto: JSObject)
       val (desc, e) = I.IH.toPropertyDescriptor(attributes)
       desc match {
         case Some(desc) =>
-          o._defineOwnProperty(name, desc, true)
+          o.defineOwnProperty(name, desc, true)
           I.IS.comp.setReturn(o)
         case _ => e match {
           case Some(e) => I.IS.comp.setThrow(e, I.IS.span)
@@ -178,7 +178,7 @@ class JSObjectConstructor(_I: Interpreter, _proto: JSObject)
           val names: List[PName] = props.property.keys
           var descriptors: List[(PName, ObjectProp)] = Nil
           for (p <- names) {
-            val descObj = props._get(p)
+            val descObj = props.get(p)
             val (desc, e) = I.IH.toPropertyDescriptor(descObj)
             desc match {
               case Some(desc) =>
@@ -192,7 +192,7 @@ class JSObjectConstructor(_I: Interpreter, _proto: JSObject)
               }
             }
           }
-          for ((p, desc) <- descriptors) o._defineOwnProperty(p, desc, true)
+          for ((p, desc) <- descriptors) o.defineOwnProperty(p, desc, true)
           I.IS.comp.setReturn(o)
         case err: JSError => I.IS.comp.setThrow(err, I.IS.span)
       }
@@ -251,7 +251,7 @@ class JSObjectConstructor(_I: Interpreter, _proto: JSObject)
   def isSealed(o: Val): Unit = o match {
     case o: JSObject =>
       for (p <- o.property.keys) {
-        val desc = o._getOwnProperty(p)
+        val desc = o.getOwnProperty(p)
         desc.configurable match {
           case Some(true) =>
             I.IS.comp.setReturn(IP.falsePV)
@@ -268,7 +268,7 @@ class JSObjectConstructor(_I: Interpreter, _proto: JSObject)
   def isFrozen(o: Val): Unit = o match {
     case o: JSObject =>
       for (p <- o.property.keys) {
-        val desc = o._getOwnProperty(p)
+        val desc = o.getOwnProperty(p)
         if (I.IH.isDataDescriptor(desc)) desc.writable match {
           case Some(true) =>
             I.IS.comp.setReturn(IP.falsePV)

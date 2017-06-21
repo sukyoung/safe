@@ -57,7 +57,7 @@ class JSMath(_I: Interpreter, _proto: JSObject)
     property.put("tan", I.IH.objProp(I.IS.MathTan))
   }
 
-  override def __callBuiltinFunction(method: JSFunction, argsObj: JSObject): Unit = {
+  override def callBuiltinFunction(method: JSFunction, argsObj: JSObject): Unit = {
     val args: List[EJSNumber] = I.IH.arrayToList(argsObj).map(x => I.IH.toNumber(x))
     val y: EJSNumber = method match {
       case I.IS.MathAbs => _abs(args.head)

@@ -45,17 +45,17 @@ class JSNumberConstructor(_I: Interpreter, _proto: JSObject)
       }))
   }
 
-  override def _construct(argsObj: JSObject): JSNumber = {
-    argsObj._get("length") match {
+  override def construct(argsObj: JSObject): JSNumber = {
+    argsObj.get("length") match {
       case PVal(IRVal(n: EJSNumber)) if n.num == 0 => construct(None)
-      case PVal(IRVal(n: EJSNumber)) if n.num >= 1 => construct(Some(argsObj._get("0")))
+      case PVal(IRVal(n: EJSNumber)) if n.num >= 1 => construct(Some(argsObj.get("0")))
     }
   }
 
-  override def _call(tb: Val, argsObj: JSObject): Unit = {
-    argsObj._get("length") match {
+  override def call(tb: Val, argsObj: JSObject): Unit = {
+    argsObj.get("length") match {
       case PVal(IRVal(n: EJSNumber)) if n.num == 0 => I.IS.comp.setReturn(PVal(IRVal(I.IH.mkIRNum(0))))
-      case PVal(IRVal(n: EJSNumber)) if n.num >= 1 => I.IS.comp.setReturn(PVal(IRVal(I.IH.toNumber(argsObj._get("0")))))
+      case PVal(IRVal(n: EJSNumber)) if n.num >= 1 => I.IS.comp.setReturn(PVal(IRVal(I.IH.toNumber(argsObj.get("0")))))
     }
   }
 }

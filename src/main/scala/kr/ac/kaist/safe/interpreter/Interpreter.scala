@@ -142,7 +142,7 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
             case EJSInstOf => v2 match {
               case o2: JSObject =>
                 if (IH.isCallable(v2)) {
-                  val (l2prototype, _) = o2._getProperty("prototype");
+                  val (l2prototype, _) = o2.getProperty("prototype");
                   val l2prototypeValue = l2prototype.getValueOrDefault
                   v1 match {
                     case o1: JSObject if l2prototypeValue.isInstanceOf[JSObject] =>
@@ -157,7 +157,7 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
            * 11.8.7 The in operator
            */
             case EJSIn => v2 match {
-              case o2: JSObject => PVal(IH.getIRBool(o2._hasProperty(IH.toString(v1))))
+              case o2: JSObject => PVal(IH.getIRBool(o2.hasProperty(IH.toString(v1))))
               case _ => IP.typeError
             }
             // 11.5.1 Applying the * Operator
@@ -271,7 +271,7 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
             IH.toObject(v1) match {
               case err: TypeError => err
               case o: JSObject =>
-                o._get(IH.toString(v2))
+                o.get(IH.toString(v2))
               case _ =>
                 throw new InterpreterError("The result of toObject should be a location.", IS.span)
             }
@@ -416,7 +416,7 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
           walkId(obj) match {
             case o: JSObject => walkExpr(index) match {
               case v2: Val =>
-                o._delete(IH.toString(v2), IS.strict) match {
+                o.delete(IH.toString(v2), IS.strict) match {
                   case res: Val => IH.valError2NormalCompletion(IH.putValue(lhs, res, IS.strict))
                   case err: JSError => IS.comp.setThrow(err, info.span)
                 }
@@ -456,12 +456,12 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
                   case o: JSObject => walkExpr(rhs) match {
                     case v3: Val => v1 match {
                       // * IRStore 5
-                      case _: PVal if (o._canPut(v2str) == false) =>
+                      case _: PVal if (o.canPut(v2str) == false) =>
                         // a. If Throw is true, then throw a TypeError exception.
                         if (IS.strict) { IS.comp.setThrow(IP.typeError, info.span); return node }
                         else { IS.comp.setNormal(v3); return node }
                       case _: PVal =>
-                        val ownDesc = o._getOwnProperty(v2str)
+                        val ownDesc = o.getOwnProperty(v2str)
                         if (ownDesc != null && IH.isDataDescriptor(ownDesc)) {
                           // * IRStore 6
                           // a. If Throw is true, then throw a TypeError exception.
@@ -471,7 +471,7 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
                         // 5. Let desc be the result of calling the [[GetProperty]] internal method of O with argument P.
                         //    This may be either an own or inherited accessor property descriptor
                         //    or an inherited data property descriptor.
-                        val desc = o._getProperty(v2str)._1
+                        val desc = o.getProperty(v2str)._1
                         // 6. If IsAccessorDescriptor(desc) is true, then
                         if (desc != null && IH.isAccessorDescriptor(desc)) {
                           // * IRStore 7
@@ -484,7 +484,7 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
                               //    providing base as the this value  and an argument list containing only W.
                               // TODO:
                               val args: JSArray = IS.ArrayConstructor.apply(IP.plusOneV, "Arguments")
-                              args._defineOwnProperty("0", IH.mkDataProp(v3, true, true, true), false)
+                              args.defineOwnProperty("0", IH.mkDataProp(v3, true, true, true), false)
                               val oldEnv = IS.env
                               val oldTb = IS.tb
                               IH.call(IS.info, o, args, setter)
@@ -502,7 +502,7 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
                       // a.-1 If HasPrimitiveBase(V) is false, then let put be the [[Put]] internal method of base
                       //      which an object is not an array
                       case _ if (o.className != "Array") =>
-                        o._put(v2str, v3, IS.strict) match {
+                        o.put(v2str, v3, IS.strict) match {
                           // * IRStore 10
                           case err: JSError =>
                             IS.comp.setThrow(err, info.span); return node
@@ -514,7 +514,7 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
                       case _ =>
                         // 8.12.5 [[Put]] ( P, V, Throw )
                         // 1. If the result of calling the [[CanPut]] internal method of O with argument P is false, then
-                        if (!o._canPut(v2str)) {
+                        if (!o.canPut(v2str)) {
                           // * IRStore 12
                           // a. If Throw is true, then throw a TypeError exception.
                           if (IS.strict) { IS.comp.setThrow(IP.typeError, info.span); return node }
@@ -522,14 +522,14 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
                           else { IS.comp.setNormal(v3); return node }
                         }
                         // 2. Let ownDesc be the result of calling the [[GetOwnProperty]] internal method of O with argument P.
-                        val ownDesc = o._getOwnProperty(v2str)
+                        val ownDesc = o.getOwnProperty(v2str)
                         // 3. If IsDataDescriptor(ownDesc) is true, then
                         if (ownDesc != null && IH.isDataDescriptor(ownDesc)) {
                           // a. Let valueDesc be the Property Descriptor {[[Value]]: V}.
                           val valueDesc = new ObjectProp(Some(v3), None, None, None, None, None)
                           // b. Call the [[DefineOwnProperty]] internal method of O passing P, valueDesc, and Throw as arguments.
                           // c. Return.
-                          o._defineOwnProperty(v2str, valueDesc, IS.strict) match {
+                          o.defineOwnProperty(v2str, valueDesc, IS.strict) match {
                             // * IRStore 13
                             case err: JSError =>
                               IS.comp.setThrow(err, info.span); return node
@@ -540,7 +540,7 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
                         // 4. Let desc be the result of calling the [[GetProperty]] internal method of O with argument P.
                         //    This may be either an own or inherited accessor property descriptor
                         //    or an inherited data property descriptor.
-                        val desc = o._getProperty(v2str)._1
+                        val desc = o.getProperty(v2str)._1
                         // 5. If IsAccessorDescriptor(desc) is true, then
                         if (desc != null && IH.isAccessorDescriptor(desc)) {
                           // * IRStore 15
@@ -553,7 +553,7 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
                               //    providing base as the this value  and an argument list containing only W.
                               // TODO:
                               val args = IS.ArrayConstructor.apply(IP.plusOneV, "Arguments")
-                              args._defineOwnProperty("0", IH.mkDataProp(v3, true, true, true), false)
+                              args.defineOwnProperty("0", IH.mkDataProp(v3, true, true, true), false)
                               val oldEnv = IS.env
                               val oldTb = IS.tb
                               IH.call(IS.info, o, args, setter)
@@ -566,7 +566,7 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
                         // a. Let newDesc be the Property Descriptor
                         //    {[[Value]]: V, [[Writable]]: true, [[Enumerable]]: true, [[Configurable]]: true}.
                         val newDesc = IH.mkDataProp(v3, true, true, true)
-                        o._defineOwnProperty(v2str, newDesc, IS.strict) match {
+                        o.defineOwnProperty(v2str, newDesc, IS.strict) match {
                           // * IRStore 17
                           case err: JSError =>
                             IS.comp.setThrow(err, info.span); return node
@@ -750,12 +750,12 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
             case true => IS.env match {
               // Function Definition 2
               case EmptyEnv() =>
-                val p = IS.GlobalObject._getProperty(f)._1
+                val p = IS.GlobalObject.getProperty(f)._1
                 if (p == null) { IS.comp.setThrow(IP.typeError, info.span); return node } // If _getProperty() returns undefined.
                 p.isConfigurable match {
                   // Function Definition 2-1
                   case true =>
-                    IS.GlobalObject._defineOwnProperty(f, IH.mkDataProp(IP.undefV, true, true, IS.eval), true) match {
+                    IS.GlobalObject.defineOwnProperty(f, IH.mkDataProp(IP.undefV, true, true, IS.eval), true) match {
                       case v: Val =>
                         IH.setBinding(id, o, false, IS.strict) match {
                           case vv: Val => IS.comp.setNormal(vv)
@@ -804,7 +804,7 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
                   case v2: Val => v2 match {
                     case argsObj: JSObject =>
                       val obj: JSObject = try {
-                        f._construct(argsObj)
+                        f.construct(argsObj)
                       } catch {
                         case e: ErrorException =>
                           IS.comp.setThrow(IP.error, info.span); return node
@@ -856,7 +856,7 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
                 case o: JSObject => o
                 case _ => throw new InterpreterError("This binding for function call should be an object!", info.span)
               }
-              f._get("prototype") match {
+              f.get("prototype") match {
                 case o: JSObject => obj.proto = o
                 case pv: PVal => obj.proto = IS.ObjectPrototype
               }
@@ -1092,7 +1092,7 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
               val (e1, e2) = (args.head, args(1))
               walkExpr(e1) match {
                 case v1: JSObject => walkId(e2.asInstanceOf[IRId]) match {
-                  case v2: JSObject => v2.__isInDomO(IH.next(v2, IH.toInt(v2.property.get("@i")), v1).toString) match {
+                  case v2: JSObject => v2.isInDomO(IH.next(v2, IH.toInt(v2.property.get("@i")), v1).toString) match {
                     // (H, A, tb), x = true
                     case true => IH.valError2NormalCompletion(IH.putValue(lhs, PVal(IH.getIRBool(true)), IS.strict))
                     // (H, A, tb), x = true
@@ -1110,7 +1110,7 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
                 case v1: JSObject => walkId(e2.asInstanceOf[IRId]) match {
                   case v2: JSObject =>
                     val i = IH.next(v2, IH.toInt(v2.property.get("@i")), v1)
-                    v2.__putProp("@i", IH.numProp(i + 1))
+                    v2.putProp("@i", IH.numProp(i + 1))
                     // (H', A, tb), x = H(v2).@property("i")
                     IH.valError2NormalCompletion(IH.putValue(lhs, IH.toVal(v2.property.get(i.toString)), IS.strict))
                   case err: JSError => IS.comp.setThrow(err, info.span)
@@ -1199,7 +1199,7 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
             i += 1
           })
           for (i <- 0 until vs.size) {
-            arr._defineOwnProperty(i.toString, IH.mkDataProp(vs(i), true, true, true), false)
+            arr.defineOwnProperty(i.toString, IH.mkDataProp(vs(i), true, true, true), false)
           }
           // (H'', A', tb), x = l
           IH.valError2NormalCompletion(IH.putValue(lhs, arr, IS.strict))
@@ -1223,7 +1223,7 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
           // Now, there is no error.
           val vs: List[Option[Val]] = for (v <- ves) yield v.asInstanceOf[Option[Val]]
           for ((Some(vi), i) <- vs.view.zipWithIndex) {
-            arr._defineOwnProperty(i.toString, IH.mkDataProp(vi, true, true, true), false)
+            arr.defineOwnProperty(i.toString, IH.mkDataProp(vi, true, true, true), false)
           }
           // (H'', A', tb), x = l
           IH.valError2NormalCompletion(IH.putValue(lhs, arr, IS.strict))
@@ -1246,7 +1246,7 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
           // Now, there is no error.
           val vs: List[Option[Val]] = for (v <- ves) yield v.asInstanceOf[Option[Val]]
           for ((Some(vi), i) <- vs.view.zipWithIndex) {
-            o._defineOwnProperty(i.toString, IH.mkDataProp(vi, true, true, true), false)
+            o.defineOwnProperty(i.toString, IH.mkDataProp(vi, true, true, true), false)
           }
           // (H'', A', tb), x = l
           IH.valError2NormalCompletion(IH.putValue(lhs, o, IS.strict))
@@ -1261,7 +1261,7 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
             case err: JSError =>
               IS.comp.setThrow(err, info.span); return node
             case (x: PName, op: ObjectProp) =>
-              o._defineOwnProperty(x, op, false)
+              o.defineOwnProperty(x, op, false)
           }
           // (H', A, tb), x = l
           IH.valError2NormalCompletion(IH.putValue(lhs, o, IS.strict))

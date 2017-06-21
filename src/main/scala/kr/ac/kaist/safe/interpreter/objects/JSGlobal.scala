@@ -24,8 +24,8 @@ import kr.ac.kaist.safe.util.{ EJSCompletionType => CT, NodeUtil => NU }
 import kr.ac.kaist.safe.util._
 import kr.ac.kaist.safe.util.useful.Lists._
 
-class JSGlobal(_I: Interpreter, _proto: JSObject)
-    extends JSObject(_I, _proto, "Global", true, propTable) {
+class JSGlobal(I: Interpreter, proto: JSObject)
+    extends JSObject(I, proto, "Global", true, propTable) {
   def init(): Unit = {
     // Internal identifiers created by Translator
     property.put(NU.VAR_TRUE, I.IH.mkDataProp(IP.truePV, false, false, false))
@@ -73,7 +73,7 @@ class JSGlobal(_I: Interpreter, _proto: JSObject)
   val declEnvRec: DeclEnvRec = new DeclEnvRec(new Store)
   declEnvRec.s.put(NU.freshGlobalName("global"), new StoreValue(this, true, true, true))
 
-  override def __callBuiltinFunction(method: JSFunction, argsObj: JSObject): Unit = {
+  override def callBuiltinFunction(method: JSFunction, argsObj: JSObject): Unit = {
     val args: Array[Val] = I.IH.argsObjectToArray(argsObj, 2)
     method match {
       case I.IS.GlobalEval => eval(args(0), false)

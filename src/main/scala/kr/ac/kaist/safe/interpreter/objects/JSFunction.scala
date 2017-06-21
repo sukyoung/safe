@@ -17,17 +17,17 @@ import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.util.useful.Lists._
 
 abstract class JSFunction(
-  _I: Interpreter,
-  _proto: JSObject,
-  _className: String,
-  _extensible: Boolean,
-  _property: PropTable,
+  I: Interpreter,
+  proto: JSObject,
+  className: String,
+  extensible: Boolean,
+  property: PropTable,
   var code: IRFunctional,
   var scope: Env,
   var const: Boolean,
   var builtin: JSObject
 )
-    extends JSObject(_I, _proto, _className, _extensible, _property) {
+    extends JSObject(I, proto, className, extensible, property) {
 
   // Make a IR list in advance
   val codeIRs: List[IRStmt] = toList(code.fds) ++ toList(code.vds) ++ toList(code.args) ++ toList(code.body)
@@ -39,14 +39,14 @@ abstract class JSFunction(
   ////////////////////////////////////////////////////////////////////////////////
 
   // [[Call]]
-  def _call(tb: Val, argsObj: JSObject): Unit
+  def call(tb: Val, argsObj: JSObject): Unit
 
   // [[Construct]]
-  def _construct(argsObj: JSObject): JSObject
+  def construct(argsObj: JSObject): JSObject
 
   // [[HasInstance]](V)
-  def _hasInstance(v: Val): Unit
+  def hasInstance(v: Val): Unit
 
   // 15.3.5.4 [[Get]](P)
-  def _get(p: Val): Unit = I.IS.comp.setThrow(IP.nyiError, I.IS.span)
+  def get(p: Val): Unit = I.IS.comp.setThrow(IP.nyiError, I.IS.span)
 }

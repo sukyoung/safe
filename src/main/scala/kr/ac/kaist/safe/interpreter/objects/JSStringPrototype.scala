@@ -49,22 +49,22 @@ class JSStringPrototype(_I: Interpreter, _proto: JSObject)
     // 15.5.4.20
   }
 
-  override def __callBuiltinFunction(method: JSFunction, argsObj: JSObject): Unit = {
+  override def callBuiltinFunction(method: JSFunction, argsObj: JSObject): Unit = {
     method match {
       case I.IS.StringPrototypeToString => _toString()
       case I.IS.StringPrototypeValueOf => _valueOf()
-      case I.IS.StringPrototypeCharAt => _charAt(argsObj._get("0"))
-      case I.IS.StringPrototypeCharCodeAt => _charCodeAt(argsObj._get("0"))
+      case I.IS.StringPrototypeCharAt => _charAt(argsObj.get("0"))
+      case I.IS.StringPrototypeCharCodeAt => _charCodeAt(argsObj.get("0"))
       case I.IS.StringPrototypeConcat => _concat(I.IH.arrayToList(argsObj))
       // 15.5.4.7
       // 15.5.4.8
       // 15.5.4.9
-      case I.IS.StringPrototypeMatch => _match(argsObj._get("0"))
-      case I.IS.StringPrototypeReplace => _replace(argsObj._get("0"), argsObj._get("1"))
+      case I.IS.StringPrototypeMatch => _match(argsObj.get("0"))
+      case I.IS.StringPrototypeReplace => _replace(argsObj.get("0"), argsObj.get("1"))
       // 15.5.4.12
-      case I.IS.StringPrototypeSlice => _slice(argsObj._get("0"), argsObj._get("1"))
-      case I.IS.StringPrototypeSplit => _split(argsObj._get("0"), argsObj._get("1"))
-      case I.IS.StringPrototypeSubstring => _substring(argsObj._get("0"), argsObj._get("1"))
+      case I.IS.StringPrototypeSlice => _slice(argsObj.get("0"), argsObj.get("1"))
+      case I.IS.StringPrototypeSplit => _split(argsObj.get("0"), argsObj.get("1"))
+      case I.IS.StringPrototypeSubstring => _substring(argsObj.get("0"), argsObj.get("1"))
       case I.IS.StringPrototypeToLowerCase => _toLowerCase()
       // 15.5.4.17
       // 15.5.4.18
@@ -77,7 +77,7 @@ class JSStringPrototype(_I: Interpreter, _proto: JSObject)
     // Equivalent to valueOf
     I.IH.toObject(I.IS.tb) match {
       case o: JSString =>
-        I.IS.comp.setReturn(o._get(IP.pvpn))
+        I.IS.comp.setReturn(o.get(IP.pvpn))
       case o: JSObject =>
         I.IS.comp.setThrow(IP.typeError, I.IS.span)
       case err: JSError => I.IS.comp.setThrow(err, I.IS.span)
@@ -87,7 +87,7 @@ class JSStringPrototype(_I: Interpreter, _proto: JSObject)
   def _valueOf(): Unit = {
     // Equivalent to toString
     I.IH.toObject(I.IS.tb) match {
-      case o: JSString => I.IS.comp.setReturn(o._get(IP.pvpn))
+      case o: JSString => I.IS.comp.setReturn(o.get(IP.pvpn))
       case o: JSObject => I.IS.comp.setThrow(IP.typeError, I.IS.span)
       case err: JSError => I.IS.comp.setThrow(err, I.IS.span)
     }
@@ -141,7 +141,7 @@ class JSStringPrototype(_I: Interpreter, _proto: JSObject)
           case _ =>
             I.IS.RegExpConstructor.construct(regexp, IP.undefV)
         }
-        val global: Boolean = I.IH.toBoolean(rx._get("global"))
+        val global: Boolean = I.IH.toBoolean(rx.get("global"))
         if (!global) {
           // TODO: Env?
           val oldTb: Val = I.IS.tb
@@ -151,7 +151,7 @@ class JSStringPrototype(_I: Interpreter, _proto: JSObject)
           result
         } else {
           // TODO:
-          rx._put("lastIndex", PVal(IRVal(I.IH.mkIRNum(0))), true)
+          rx.put("lastIndex", PVal(IRVal(I.IH.mkIRNum(0))), true)
           val a: JSArray = I.IS.ArrayConstructor.construct(Nil)
           var previousLastIndex: Int = 0
           var n: Int = 0
@@ -168,16 +168,16 @@ class JSStringPrototype(_I: Interpreter, _proto: JSObject)
                   lastMatch = false
                 case result: JSArray =>
                   I.IS.tb = oldTb
-                  val thisIndex: Int = I.IH.toUint32(rx._get("lastIndex")).toInt
+                  val thisIndex: Int = I.IH.toUint32(rx.get("lastIndex")).toInt
                   if (thisIndex == previousLastIndex) {
                     // TODO:
-                    rx._put("lastIndex", PVal(IRVal(I.IH.mkIRNum(thisIndex + 1))), true)
+                    rx.put("lastIndex", PVal(IRVal(I.IH.mkIRNum(thisIndex + 1))), true)
                     previousLastIndex = thisIndex + 1
                   } else {
                     previousLastIndex = thisIndex
                   }
-                  val matchStr: Val = result._get("0")
-                  a._defineOwnProperty(
+                  val matchStr: Val = result.get("0")
+                  a.defineOwnProperty(
                     n.toString,
                     I.IH.mkDataProp(matchStr, true, true, true),
                     true
@@ -208,7 +208,7 @@ class JSStringPrototype(_I: Interpreter, _proto: JSObject)
         val s: String = I.IH.toString(I.IS.tb)
         val (sr: List[(Int, JSArray)], m: Int) = searchValue match {
           case sv: JSRegExp =>
-            if (!I.IH.toBoolean(sv._get("global"))) {
+            if (!I.IH.toBoolean(sv.get("global"))) {
               sv.property.put("global", I.IH.boolProp(true))
               // TODO: Env?
               val oldTb: Val = I.IS.tb
@@ -218,13 +218,13 @@ class JSStringPrototype(_I: Interpreter, _proto: JSObject)
                 I.IS.comp.value match {
                   case PVal(IRVal(EJSNull)) =>
                     I.IS.tb = oldTb
-                    sv._put("lastIndex", IP.plusZeroV, true)
+                    sv.put("lastIndex", IP.plusZeroV, true)
                     sv.property.put("global", I.IH.boolProp(false))
                     (Nil, sv.nCapturingParens)
                   case result: JSArray =>
                     I.IS.tb = oldTb
-                    val thisIndex: Int = I.IH.toUint32(sv._get("lastIndex")).toInt
-                    sv._put("lastIndex", IP.plusZeroV, true)
+                    val thisIndex: Int = I.IH.toUint32(sv.get("lastIndex")).toInt
+                    sv.put("lastIndex", IP.plusZeroV, true)
                     sv.property.put("global", I.IH.boolProp(false))
                     (List((thisIndex, result)), sv.nCapturingParens)
                   case _ =>
@@ -237,7 +237,7 @@ class JSStringPrototype(_I: Interpreter, _proto: JSObject)
               }
             } else {
               // TODO:
-              sv._put("lastIndex", PVal(IRVal(I.IH.mkIRNum(0))), true)
+              sv.put("lastIndex", PVal(IRVal(I.IH.mkIRNum(0))), true)
               var a: List[(Int, JSArray)] = Nil
               var previousLastIndex: Int = 0
               var lastMatch: Boolean = true
@@ -253,10 +253,10 @@ class JSStringPrototype(_I: Interpreter, _proto: JSObject)
                       lastMatch = false
                     case result: JSArray =>
                       I.IS.tb = oldTb
-                      val thisIndex: Int = I.IH.toUint32(sv._get("lastIndex")).toInt
+                      val thisIndex: Int = I.IH.toUint32(sv.get("lastIndex")).toInt
                       if (thisIndex == previousLastIndex) {
                         // TODO: {FireFox, IE, Safari, Chrome} do not update lastIndex here.
-                        sv._put("lastIndex", PVal(IRVal(I.IH.mkIRNum(thisIndex + 1))), true)
+                        sv.put("lastIndex", PVal(IRVal(I.IH.mkIRNum(thisIndex + 1))), true)
                         previousLastIndex = thisIndex + 1
                       } else {
                         previousLastIndex = thisIndex
@@ -285,23 +285,23 @@ class JSStringPrototype(_I: Interpreter, _proto: JSObject)
             var replaced: String = ""
             var lastEndIndex: Int = 0
             for ((index, a) <- sr) {
-              val matchStr: String = I.IH.toString(a._get("0"))
+              val matchStr: String = I.IH.toString(a.get("0"))
               replaced += s.substring(lastEndIndex, index - matchStr.length)
               lastEndIndex = index
               // TODO: Settings for data property
-              a._defineOwnProperty(
+              a.defineOwnProperty(
                 (m + 1).toString,
                 I.IH.mkDataProp(PVal(IRVal(I.IH.mkIRNum(index))), true, true, true),
                 true
               )
-              a._defineOwnProperty(
+              a.defineOwnProperty(
                 (m + 2).toString,
                 I.IH.mkDataProp(PVal(I.IH.mkIRStrIR(s)), true, true, true),
                 true
               )
               val argsList: JSObject = I.IH.newArgObj(fun, fun.code.args.size, a, I.IS.strict)
               var rs: String = null
-              fun._call(I.IS.GlobalObject, argsList)
+              fun.call(I.IS.GlobalObject, argsList)
               if (I.IS.comp.Type == CT.RETURN) rs = I.IH.toString(I.IS.comp.value)
               else return
               replaced += rs
@@ -314,7 +314,7 @@ class JSStringPrototype(_I: Interpreter, _proto: JSObject)
             var replaced: String = ""
             var lastEndIndex: Int = 0
             for ((index, a) <- sr) {
-              val matchStr: String = I.IH.toString(a._get("0"))
+              val matchStr: String = I.IH.toString(a.get("0"))
               replaced += s.substring(lastEndIndex, index - matchStr.length)
               lastEndIndex = index
               var i = 0
@@ -335,13 +335,13 @@ class JSStringPrototype(_I: Interpreter, _proto: JSObject)
                   '0' <= newstring(i + 1) && newstring(i + 1) <= '9' &&
                   '0' <= newstring(i + 2) && newstring(i + 2) <= '9' &&
                   newstring.substring(i + 1, i + 3) != "00") {
-                  val v: Val = a._get(newstring.substring(i + 1, i + 3))
+                  val v: Val = a.get(newstring.substring(i + 1, i + 3))
                   val rs: String = if (I.IH.isUndef(v)) "" else I.IH.toString(v)
                   replaced += rs
                   i += 3
                 } else if (i + 2 <= len && newstring(i) == '$' &&
                   '1' <= newstring(i + 1) && newstring(i + 1) <= '9') {
-                  val v: Val = a._get(newstring.substring(i + 1, i + 2))
+                  val v: Val = a.get(newstring.substring(i + 1, i + 2))
                   val rs: String = if (I.IH.isUndef(v)) "" else I.IH.toString(v)
                   replaced += rs
                   i += 2
@@ -410,7 +410,7 @@ class JSStringPrototype(_I: Interpreter, _proto: JSObject)
         }
         if (lim == 0) I.IS.comp.setReturn(a)
         else if (I.IH.isUndef(separator)) {
-          a._defineOwnProperty(
+          a.defineOwnProperty(
             "0",
             I.IH.mkDataProp(PVal(I.IH.mkIRStrIR(str)), true, true, true),
             false
@@ -421,7 +421,7 @@ class JSStringPrototype(_I: Interpreter, _proto: JSObject)
           z match {
             case Some(y) => I.IS.comp.setReturn(a)
             case None =>
-              a._defineOwnProperty(
+              a.defineOwnProperty(
                 "0",
                 I.IH.mkDataProp(PVal(I.IH.mkIRStrIR(str)), true, true, true),
                 false
@@ -438,7 +438,7 @@ class JSStringPrototype(_I: Interpreter, _proto: JSObject)
                 if (e == p) q += 1
                 else {
                   val t: String = str.substring(p, q)
-                  a._defineOwnProperty(
+                  a.defineOwnProperty(
                     lengthA.toString,
                     I.IH.mkDataProp(PVal(I.IH.mkIRStrIR(t)), true, true, true),
                     false
@@ -453,7 +453,7 @@ class JSStringPrototype(_I: Interpreter, _proto: JSObject)
                       case Some(s) => PVal(I.IH.mkIRStrIR(s))
                       case None => IP.undefV
                     }
-                    a._defineOwnProperty(
+                    a.defineOwnProperty(
                       lengthA.toString,
                       I.IH.mkDataProp(capI, true, true, true),
                       false
@@ -467,7 +467,7 @@ class JSStringPrototype(_I: Interpreter, _proto: JSObject)
             }
           }
           val t: String = str.substring(p, s)
-          a._defineOwnProperty(
+          a.defineOwnProperty(
             lengthA.toString,
             I.IH.mkDataProp(PVal(I.IH.mkIRStrIR(t)), true, true, true),
             false

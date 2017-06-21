@@ -12,9 +12,6 @@
 package kr.ac.kaist.safe.concolic
 
 import scala.collection.mutable.Map
-import _root_.java.lang.{ Integer => JInteger }
-import _root_.java.util.{ HashMap => JavaHashMap, List => JList, Map => JavaMap }
-import kr.ac.kaist.safe.util.useful.Lists
 
 class FunctionInfo() {
   /* STORE FUNCTION INFORMATION */
@@ -22,12 +19,12 @@ class FunctionInfo() {
   def storeParameter(n: Int, t: TypeInfo) = {
     val temp = params.get(n) match {
       case Some(ts) =>
-        if (ts.map(_.getType).contains(t.getType)) {
-          if (t.getType == "Object") {
-            var temp = ts.filter(_.getType == "Object")(0)
-            temp.addConstructors(t.getConstructors)
+        if (ts.map(_.paramType).contains(t.paramType)) {
+          if (t.paramType == "Object") {
+            val temp = ts.filter(_.paramType == "Object").head
+            temp.addConstructors(t.constructorNames)
 
-            ts.filterNot(_.getType == "Object") :+ temp
+            ts.filterNot(_.paramType == "Object") :+ temp
           } else
             ts
         } else
@@ -42,53 +39,40 @@ class FunctionInfo() {
   def setThisObject(x: TypeInfo) = thisObject = x
 
   /* USE FUNCTION INFORMATION */
-  def getType(n: Int): List[String] = params(n).map(_.getType)
+  def getType(n: Int): List[String] = params(n).map(_.paramType)
   def getObjectInformation(n: Int): Option[TypeInfo] = {
-    val obj = params(n).filter(_.getType == "Object")
-    if (obj.nonEmpty) Some(obj(0))
+    val obj = params(n).filter(_.paramType == "Object")
+    if (obj.nonEmpty) Some(obj.head)
     else None
   }
   def getObjectConstructors(n: Int): List[String] = getObjectInformation(n) match {
-    case Some(info) => info.getConstructors
+    case Some(info) => info.constructorNames
     case None => List[String]()
   }
   def getObjectProperties(n: Int): Option[List[String]] = getObjectInformation(n) match {
-    case Some(info) => Some(info.getProperties)
+    case Some(info) => Some(info.properties)
     case None => None
   }
 
-  def getThisConstructors() = thisObject.getConstructors
-  def getThisProperties(): List[String] = if (thisObject != null) thisObject.getProperties else List()
-  def hasThisObject() = thisObject != null
+  def getThisConstructors: List[String] = thisObject.constructorNames
+  def getThisProperties: List[String] = if (thisObject != null) thisObject.properties else List()
+  def hasThisObject: Boolean = thisObject != null
 
   /* CHECK FOR CONCOLIC TESTING */
-  var depth = 0
-  def initDepth = depth = 0
+  var depth: Int = 0
+  def initDepth(): Unit = depth = 0
   def checkRecursive(limit: Int) = {
     val res = if (depth < limit) true else false
     depth += 1
     res
   }
 
-  def isRecursive = depth > 1
+  def isRecursive: Boolean = depth > 1
   var isTarget: Boolean = false
   var isCandidate: Boolean = false
   var isProcess: Boolean = false
   // only set a function as candidate when it has parameters
-  def setCandidate = isCandidate = true
-  def targeting = isTarget = true
-  def done = { isTarget = false; isCandidate = false; isProcess = false }
-
-  /* HELPER FUNCTIONS */
-  def getJavaObjects(): JavaMap[JInteger, TypeInfo] = {
-    var result = new JavaHashMap[JInteger, TypeInfo]
-    for (key <- params.keysIterator) {
-      getObjectInformation(key) match {
-        case Some(info) => result.put(key, info)
-        case None =>
-      }
-    }
-    result
-  }
-  def getJavaThisProperties(): JList[String] = Lists.toJavaList(getThisProperties)
+  def setCandidate(): Unit = isCandidate = true
+  def targeting(): Unit = isTarget = true
+  def done(): Unit = { isTarget = false; isCandidate = false; isProcess = false }
 }

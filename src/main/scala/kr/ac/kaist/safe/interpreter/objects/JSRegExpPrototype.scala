@@ -29,10 +29,10 @@ class JSRegExpPrototype(_I: Interpreter, _proto: JSObject)
     property.put("toString", I.IH.objProp(I.IS.RegExpPrototypeToString))
   }
 
-  override def __callBuiltinFunction(method: JSFunction, argsObj: JSObject): Unit = {
+  override def callBuiltinFunction(method: JSFunction, argsObj: JSObject): Unit = {
     method match {
-      case I.IS.RegExpPrototypeExec => _exec(argsObj._get("0"))
-      case I.IS.RegExpPrototypeTest => _test(argsObj._get("0"))
+      case I.IS.RegExpPrototypeExec => _exec(argsObj.get("0"))
+      case I.IS.RegExpPrototypeTest => _test(argsObj.get("0"))
       case I.IS.RegExpPrototypeToString => _toString()
     }
   }
@@ -41,9 +41,9 @@ class JSRegExpPrototype(_I: Interpreter, _proto: JSObject)
     I.IH.toObject(I.IS.tb) match {
       case r: JSRegExp =>
         val s: String = I.IH.toString(string) // puppy 1
-        val lastIndex: Val = r._get("lastIndex")
+        val lastIndex: Val = r.get("lastIndex")
         var i: Int = I.IH.toUint32(lastIndex).toInt
-        val global: Val = r._get("global")
+        val global: Val = r.get("global")
         if (!I.IH.toBoolean(global))
           i = 0
 
@@ -51,22 +51,22 @@ class JSRegExpPrototype(_I: Interpreter, _proto: JSObject)
 
         val rtn = a match {
           case None => {
-            r._put("lastIndex", PVal(IRVal(I.IH.mkIRNum(0))), true)
+            r.put("lastIndex", PVal(IRVal(I.IH.mkIRNum(0))), true)
             IP.nullV
           }
           case Some(array) => {
             if (I.IH.toBoolean(global))
-              r._put("lastIndex", PVal(I.IH.mkIRNumIR(lastIdx)), true)
+              r.put("lastIndex", PVal(I.IH.mkIRNumIR(lastIdx)), true)
             val a: JSArray = I.IS.ArrayConstructor.construct(Nil)
-            a._defineOwnProperty("index", I.IH.mkDataProp(PVal(IRVal(I.IH.mkIRNum(idx))), true, true, true), true)
-            a._defineOwnProperty("input", I.IH.mkDataProp(PVal(IRVal(I.IH.mkIRStr(s))), true, true, true), true)
-            a._defineOwnProperty("length", I.IH.mkDataProp(PVal(IRVal(I.IH.mkIRNum(length))), true, true, true), true)
+            a.defineOwnProperty("index", I.IH.mkDataProp(PVal(IRVal(I.IH.mkIRNum(idx))), true, true, true), true)
+            a.defineOwnProperty("input", I.IH.mkDataProp(PVal(IRVal(I.IH.mkIRStr(s))), true, true, true), true)
+            a.defineOwnProperty("length", I.IH.mkDataProp(PVal(IRVal(I.IH.mkIRNum(length))), true, true, true), true)
             for (i <- 0 to array.length - 1) {
               val captureI: Val = array(i) match {
                 case Some(s) => PVal(I.IH.mkIRStrIR(s))
                 case None => IP.undefV
               }
-              a._defineOwnProperty(
+              a.defineOwnProperty(
                 i.toString,
                 I.IH.mkDataProp(captureI, true, true, true),
                 true
@@ -89,10 +89,10 @@ class JSRegExpPrototype(_I: Interpreter, _proto: JSObject)
   def _toString(): Unit = { // puppy 5
     I.IH.toObject(I.IS.tb) match {
       case r: JSRegExp =>
-        val source: String = I.IH.toString(r._get("source"))
-        val global: String = if (I.IH.toBoolean(r._get("global"))) "g" else ""
-        val ignoreCase: String = if (I.IH.toBoolean(r._get("ignoreCase"))) "i" else ""
-        val multiline: String = if (I.IH.toBoolean(r._get("multiline"))) "m" else ""
+        val source: String = I.IH.toString(r.get("source"))
+        val global: String = if (I.IH.toBoolean(r.get("global"))) "g" else ""
+        val ignoreCase: String = if (I.IH.toBoolean(r.get("ignoreCase"))) "i" else ""
+        val multiline: String = if (I.IH.toBoolean(r.get("multiline"))) "m" else ""
         val s: String = "/" + source + "/" + global + ignoreCase + multiline
         I.IS.comp.setReturn(PVal(I.IH.mkIRStrIR(s)))
       case _ => I.IS.comp.setThrow(IP.typeError, I.IS.span)

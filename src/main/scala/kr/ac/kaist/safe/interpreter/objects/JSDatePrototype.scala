@@ -16,8 +16,8 @@ import kr.ac.kaist.safe.interpreter.{ InterpreterPredefine => IP }
 import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.util._
 
-class JSDatePrototype(_I: Interpreter, _proto: JSObject)
-    extends JSDate(_I, _proto, "Date", true, propTable) {
+class JSDatePrototype(I: Interpreter, proto: JSObject)
+    extends JSDate(I, proto, "Date", true, propTable) {
 
   val DH: JSDateHelper = new JSDateHelper(I.IH)
 
@@ -55,31 +55,31 @@ class JSDatePrototype(_I: Interpreter, _proto: JSObject)
     // 15.9.5.44
   }
 
-  override def __callBuiltinFunction(method: JSFunction, argsObj: JSObject): Unit = {
+  override def callBuiltinFunction(method: JSFunction, argsObj: JSObject): Unit = {
     I.IS.tb match {
       case tb: JSDate => method match {
         case I.IS.DatePrototypeToString => _toString()
         // 15.9.5.3 - 15.9.5.7
-        case I.IS.DatePrototypeValueOf => _valueOf()
-        case I.IS.DatePrototypeGetTime => _getTime()
-        case I.IS.DatePrototypeGetFullYear => _getFullYear()
-        case I.IS.DatePrototypeGetUTCFullYear => _getUTCFullYear()
-        case I.IS.DatePrototypeGetMonth => _getMonth()
-        case I.IS.DatePrototypeGetUTCMonth => _getUTCMonth()
-        case I.IS.DatePrototypeGetDate => _getDate()
-        case I.IS.DatePrototypeGetUTCDate => _getUTCDate()
-        case I.IS.DatePrototypeGetDay => _getDay()
-        case I.IS.DatePrototypeGetUTCDay => _getUTCDay()
-        case I.IS.DatePrototypeGetHours => _getHours()
-        case I.IS.DatePrototypeGetUTCHours => _getUTCHours()
-        case I.IS.DatePrototypeGetMinutes => _getMinutes()
-        case I.IS.DatePrototypeGetUTCMinutes => _getUTCMinutes()
-        case I.IS.DatePrototypeGetSeconds => _getSeconds()
-        case I.IS.DatePrototypeGetUTCSeconds => _getUTCSeconds()
-        case I.IS.DatePrototypeGetMilliseconds => _getMilliseconds()
-        case I.IS.DatePrototypeGetUTCMilliseconds => _getUTCMilliseconds()
-        case I.IS.DatePrototypeGetTimezoneOffset => _getTimezoneOffset()
-        case I.IS.DatePrototypeSetTime => _setTime(argsObj._get("0"))
+        case I.IS.DatePrototypeValueOf => valueOf()
+        case I.IS.DatePrototypeGetTime => getTime()
+        case I.IS.DatePrototypeGetFullYear => getFullYear()
+        case I.IS.DatePrototypeGetUTCFullYear => getUTCFullYear()
+        case I.IS.DatePrototypeGetMonth => getMonth()
+        case I.IS.DatePrototypeGetUTCMonth => getUTCMonth()
+        case I.IS.DatePrototypeGetDate => getDate()
+        case I.IS.DatePrototypeGetUTCDate => getUTCDate()
+        case I.IS.DatePrototypeGetDay => getDay()
+        case I.IS.DatePrototypeGetUTCDay => getUTCDay()
+        case I.IS.DatePrototypeGetHours => getHours()
+        case I.IS.DatePrototypeGetUTCHours => getUTCHours()
+        case I.IS.DatePrototypeGetMinutes => getMinutes()
+        case I.IS.DatePrototypeGetUTCMinutes => getUTCMinutes()
+        case I.IS.DatePrototypeGetSeconds => getSeconds()
+        case I.IS.DatePrototypeGetUTCSeconds => getUTCSeconds()
+        case I.IS.DatePrototypeGetMilliseconds => getMilliseconds()
+        case I.IS.DatePrototypeGetUTCMilliseconds => getUTCMilliseconds()
+        case I.IS.DatePrototypeGetTimezoneOffset => getTimezoneOffset()
+        case I.IS.DatePrototypeSetTime => setTime(argsObj.get("0"))
         // 15.9.5.28 - 15.9.5.42
         case I.IS.DatePrototypeToISOString => _toString()
         // 15.9.5.44
@@ -88,124 +88,124 @@ class JSDatePrototype(_I: Interpreter, _proto: JSObject)
     }
   }
 
-  def __toISOString(t: EJSNumber): Unit = {
+  def toISOString(t: EJSNumber): Unit = {
     val date = "%02d-%02d-%02d".format(
-      DH._yearFromTime(t).num.toInt,
-      DH._monthFromTime(t).num.toInt + 1,
-      DH._dateFromTime(t).num.toInt
+      DH.yearFromTime(t).num.toInt,
+      DH.monthFromTime(t).num.toInt + 1,
+      DH.dateFromTime(t).num.toInt
     )
     val time = "T%02d:%02d:%02d.%03d".format(
-      DH._hourFromTime(t).num.toInt,
-      DH._minFromTime(t).num.toInt,
-      DH._secFromTime(t).num.toInt,
-      DH._msFromTime(t).num.toInt
+      DH.hourFromTime(t).num.toInt,
+      DH.minFromTime(t).num.toInt,
+      DH.secFromTime(t).num.toInt,
+      DH.msFromTime(t).num.toInt
     )
     val timezone = "Z"
     I.IS.comp.setReturn(PVal(I.IH.mkIRStrIR(date + time + timezone)))
   }
   def _toString(): Unit =
-    I.IS.tb.asInstanceOf[JSDate]._get(IP.pvpn) match {
-      case PVal(IRVal(t: EJSNumber)) => __toISOString(t)
+    I.IS.tb.asInstanceOf[JSDate].get(IP.pvpn) match {
+      case PVal(IRVal(t: EJSNumber)) => toISOString(t)
       case _ => I.IS.comp.setReturn(PVal(I.IH.mkIRStrIR("NaN")))
     }
   // 15.9.5.3 - 15.9.5.7
-  def _valueOf(): Unit =
-    I.IS.comp.setReturn(I.IS.tb.asInstanceOf[JSDate]._get(IP.pvpn))
-  def _getTime(): Unit =
-    I.IS.comp.setReturn(I.IS.tb.asInstanceOf[JSDate]._get(IP.pvpn))
-  def _getFullYear(): Unit =
-    I.IS.tb.asInstanceOf[JSDate]._get(IP.pvpn) match {
-      case PVal(IRVal(t: EJSNumber)) => I.IS.comp.setReturn(PVal(IRVal(DH._yearFromTime(DH._localTime(t)))))
+  def valueOf(): Unit =
+    I.IS.comp.setReturn(I.IS.tb.asInstanceOf[JSDate].get(IP.pvpn))
+  def getTime(): Unit =
+    I.IS.comp.setReturn(I.IS.tb.asInstanceOf[JSDate].get(IP.pvpn))
+  def getFullYear(): Unit =
+    I.IS.tb.asInstanceOf[JSDate].get(IP.pvpn) match {
+      case PVal(IRVal(t: EJSNumber)) => I.IS.comp.setReturn(PVal(IRVal(DH.yearFromTime(DH.localTime(t)))))
       case _ => I.IS.comp.setReturn(PVal(IRVal(IP.NaN)))
     }
-  def _getUTCFullYear(): Unit =
-    I.IS.tb.asInstanceOf[JSDate]._get(IP.pvpn) match {
-      case PVal(IRVal(t: EJSNumber)) => I.IS.comp.setReturn(PVal(IRVal(DH._yearFromTime(t))))
+  def getUTCFullYear(): Unit =
+    I.IS.tb.asInstanceOf[JSDate].get(IP.pvpn) match {
+      case PVal(IRVal(t: EJSNumber)) => I.IS.comp.setReturn(PVal(IRVal(DH.yearFromTime(t))))
       case _ => I.IS.comp.setReturn(PVal(IRVal(IP.NaN)))
     }
-  def _getMonth(): Unit =
-    I.IS.tb.asInstanceOf[JSDate]._get(IP.pvpn) match {
-      case PVal(IRVal(t: EJSNumber)) => I.IS.comp.setReturn(PVal(IRVal(DH._monthFromTime(DH._localTime(t)))))
+  def getMonth(): Unit =
+    I.IS.tb.asInstanceOf[JSDate].get(IP.pvpn) match {
+      case PVal(IRVal(t: EJSNumber)) => I.IS.comp.setReturn(PVal(IRVal(DH.monthFromTime(DH.localTime(t)))))
       case _ => I.IS.comp.setReturn(PVal(IRVal(IP.NaN)))
     }
-  def _getUTCMonth(): Unit =
-    I.IS.tb.asInstanceOf[JSDate]._get(IP.pvpn) match {
-      case PVal(IRVal(t: EJSNumber)) => I.IS.comp.setReturn(PVal(IRVal(DH._monthFromTime(t))))
+  def getUTCMonth(): Unit =
+    I.IS.tb.asInstanceOf[JSDate].get(IP.pvpn) match {
+      case PVal(IRVal(t: EJSNumber)) => I.IS.comp.setReturn(PVal(IRVal(DH.monthFromTime(t))))
       case _ => I.IS.comp.setReturn(PVal(IRVal(IP.NaN)))
     }
-  def _getDate(): Unit =
-    I.IS.tb.asInstanceOf[JSDate]._get(IP.pvpn) match {
-      case PVal(IRVal(t: EJSNumber)) => I.IS.comp.setReturn(PVal(IRVal(DH._dateFromTime(DH._localTime(t)))))
+  def getDate(): Unit =
+    I.IS.tb.asInstanceOf[JSDate].get(IP.pvpn) match {
+      case PVal(IRVal(t: EJSNumber)) => I.IS.comp.setReturn(PVal(IRVal(DH.dateFromTime(DH.localTime(t)))))
       case _ => I.IS.comp.setReturn(PVal(IRVal(IP.NaN)))
     }
-  def _getUTCDate(): Unit =
-    I.IS.tb.asInstanceOf[JSDate]._get(IP.pvpn) match {
-      case PVal(IRVal(t: EJSNumber)) => I.IS.comp.setReturn(PVal(IRVal(DH._dateFromTime(t))))
+  def getUTCDate(): Unit =
+    I.IS.tb.asInstanceOf[JSDate].get(IP.pvpn) match {
+      case PVal(IRVal(t: EJSNumber)) => I.IS.comp.setReturn(PVal(IRVal(DH.dateFromTime(t))))
       case _ => I.IS.comp.setReturn(PVal(IRVal(IP.NaN)))
     }
-  def _getDay(): Unit =
-    I.IS.tb.asInstanceOf[JSDate]._get(IP.pvpn) match {
-      case PVal(IRVal(t: EJSNumber)) => I.IS.comp.setReturn(PVal(IRVal(DH._weekDay(DH._localTime(t)))))
+  def getDay(): Unit =
+    I.IS.tb.asInstanceOf[JSDate].get(IP.pvpn) match {
+      case PVal(IRVal(t: EJSNumber)) => I.IS.comp.setReturn(PVal(IRVal(DH.weekDay(DH.localTime(t)))))
       case _ => I.IS.comp.setReturn(PVal(IRVal(IP.NaN)))
     }
-  def _getUTCDay(): Unit =
-    I.IS.tb.asInstanceOf[JSDate]._get(IP.pvpn) match {
-      case PVal(IRVal(t: EJSNumber)) => I.IS.comp.setReturn(PVal(IRVal(DH._weekDay(t))))
+  def getUTCDay(): Unit =
+    I.IS.tb.asInstanceOf[JSDate].get(IP.pvpn) match {
+      case PVal(IRVal(t: EJSNumber)) => I.IS.comp.setReturn(PVal(IRVal(DH.weekDay(t))))
       case _ => I.IS.comp.setReturn(PVal(IRVal(IP.NaN)))
     }
-  def _getHours(): Unit =
-    I.IS.tb.asInstanceOf[JSDate]._get(IP.pvpn) match {
-      case PVal(IRVal(t: EJSNumber)) => I.IS.comp.setReturn(PVal(IRVal(DH._hourFromTime(DH._localTime(t)))))
+  def getHours(): Unit =
+    I.IS.tb.asInstanceOf[JSDate].get(IP.pvpn) match {
+      case PVal(IRVal(t: EJSNumber)) => I.IS.comp.setReturn(PVal(IRVal(DH.hourFromTime(DH.localTime(t)))))
       case _ => I.IS.comp.setReturn(PVal(IRVal(IP.NaN)))
     }
-  def _getUTCHours(): Unit =
-    I.IS.tb.asInstanceOf[JSDate]._get(IP.pvpn) match {
-      case PVal(IRVal(t: EJSNumber)) => I.IS.comp.setReturn(PVal(IRVal(DH._hourFromTime(t))))
+  def getUTCHours(): Unit =
+    I.IS.tb.asInstanceOf[JSDate].get(IP.pvpn) match {
+      case PVal(IRVal(t: EJSNumber)) => I.IS.comp.setReturn(PVal(IRVal(DH.hourFromTime(t))))
       case _ => I.IS.comp.setReturn(PVal(IRVal(IP.NaN)))
     }
-  def _getMinutes(): Unit =
-    I.IS.tb.asInstanceOf[JSDate]._get(IP.pvpn) match {
-      case PVal(IRVal(t: EJSNumber)) => I.IS.comp.setReturn(PVal(IRVal(DH._minFromTime(DH._localTime(t)))))
+  def getMinutes(): Unit =
+    I.IS.tb.asInstanceOf[JSDate].get(IP.pvpn) match {
+      case PVal(IRVal(t: EJSNumber)) => I.IS.comp.setReturn(PVal(IRVal(DH.minFromTime(DH.localTime(t)))))
       case _ => I.IS.comp.setReturn(PVal(IRVal(IP.NaN)))
     }
-  def _getUTCMinutes(): Unit =
-    I.IS.tb.asInstanceOf[JSDate]._get(IP.pvpn) match {
-      case PVal(IRVal(t: EJSNumber)) => I.IS.comp.setReturn(PVal(IRVal(DH._minFromTime(t))))
+  def getUTCMinutes(): Unit =
+    I.IS.tb.asInstanceOf[JSDate].get(IP.pvpn) match {
+      case PVal(IRVal(t: EJSNumber)) => I.IS.comp.setReturn(PVal(IRVal(DH.minFromTime(t))))
       case _ => I.IS.comp.setReturn(PVal(IRVal(IP.NaN)))
     }
-  def _getSeconds(): Unit =
-    I.IS.tb.asInstanceOf[JSDate]._get(IP.pvpn) match {
-      case PVal(IRVal(t: EJSNumber)) => I.IS.comp.setReturn(PVal(IRVal(DH._secFromTime(DH._localTime(t)))))
+  def getSeconds(): Unit =
+    I.IS.tb.asInstanceOf[JSDate].get(IP.pvpn) match {
+      case PVal(IRVal(t: EJSNumber)) => I.IS.comp.setReturn(PVal(IRVal(DH.secFromTime(DH.localTime(t)))))
       case _ => I.IS.comp.setReturn(PVal(IRVal(IP.NaN)))
     }
-  def _getUTCSeconds(): Unit =
-    I.IS.tb.asInstanceOf[JSDate]._get(IP.pvpn) match {
-      case PVal(IRVal(t: EJSNumber)) => I.IS.comp.setReturn(PVal(IRVal(DH._secFromTime(t))))
+  def getUTCSeconds(): Unit =
+    I.IS.tb.asInstanceOf[JSDate].get(IP.pvpn) match {
+      case PVal(IRVal(t: EJSNumber)) => I.IS.comp.setReturn(PVal(IRVal(DH.secFromTime(t))))
       case _ => I.IS.comp.setReturn(PVal(IRVal(IP.NaN)))
     }
-  def _getMilliseconds(): Unit =
-    I.IS.tb.asInstanceOf[JSDate]._get(IP.pvpn) match {
-      case PVal(IRVal(t: EJSNumber)) => I.IS.comp.setReturn(PVal(IRVal(DH._msFromTime(DH._localTime(t)))))
+  def getMilliseconds(): Unit =
+    I.IS.tb.asInstanceOf[JSDate].get(IP.pvpn) match {
+      case PVal(IRVal(t: EJSNumber)) => I.IS.comp.setReturn(PVal(IRVal(DH.msFromTime(DH.localTime(t)))))
       case _ => I.IS.comp.setReturn(PVal(IRVal(IP.NaN)))
     }
-  def _getUTCMilliseconds(): Unit =
-    I.IS.tb.asInstanceOf[JSDate]._get(IP.pvpn) match {
-      case PVal(IRVal(t: EJSNumber)) => I.IS.comp.setReturn(PVal(IRVal(DH._msFromTime(t))))
+  def getUTCMilliseconds(): Unit =
+    I.IS.tb.asInstanceOf[JSDate].get(IP.pvpn) match {
+      case PVal(IRVal(t: EJSNumber)) => I.IS.comp.setReturn(PVal(IRVal(DH.msFromTime(t))))
       case _ => I.IS.comp.setReturn(PVal(IRVal(IP.NaN)))
     }
-  def _getTimezoneOffset(): Unit =
-    I.IS.tb.asInstanceOf[JSDate]._get(IP.pvpn) match {
-      case PVal(IRVal(t: EJSNumber)) => I.IS.comp.setReturn(PVal(IRVal(I.IH.mkIRNum(t.num - DH._localTime(t).num))))
+  def getTimezoneOffset(): Unit =
+    I.IS.tb.asInstanceOf[JSDate].get(IP.pvpn) match {
+      case PVal(IRVal(t: EJSNumber)) => I.IS.comp.setReturn(PVal(IRVal(I.IH.mkIRNum(t.num - DH.localTime(t).num))))
       case _ => I.IS.comp.setReturn(PVal(IRVal(IP.NaN)))
     }
-  def _setTime(time: Val): Unit = {
-    val v = PVal(IRVal(DH._timeClip(I.IH.toNumber(time))))
-    I.IS.tb.asInstanceOf[JSDate].__putProp(IP.pvpn, I.IH.mkDataProp(v))
+  def setTime(time: Val): Unit = {
+    val v = PVal(IRVal(DH.timeClip(I.IH.toNumber(time))))
+    I.IS.tb.asInstanceOf[JSDate].putProp(IP.pvpn, I.IH.mkDataProp(v))
     I.IS.comp.setReturn(v)
   }
-  def _toISOString(): Unit =
-    I.IS.tb.asInstanceOf[JSDate]._get(IP.pvpn) match {
-      case PVal(IRVal(t: EJSNumber)) => __toISOString(t)
+  def toISOString(): Unit =
+    I.IS.tb.asInstanceOf[JSDate].get(IP.pvpn) match {
+      case PVal(IRVal(t: EJSNumber)) => toISOString(t)
       case _ => I.IS.comp.setReturn(PVal(I.IH.mkIRStrIR("NaN")))
     }
 }

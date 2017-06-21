@@ -32,7 +32,7 @@ class JSFunctionPrototype(_I: Interpreter, _proto: JSObject)
   // Basic
   ////////////////////////////////////////////////////////////////////////////////
 
-  override def __callBuiltinFunction(method: JSFunction, argsObj: JSObject): Unit = {
+  override def callBuiltinFunction(method: JSFunction, argsObj: JSObject): Unit = {
     val args: Array[Val] = I.IH.argsObjectToArray(argsObj, 2)
     method match {
       case I.IS.FunctionPrototypeToString => _toString()
@@ -50,7 +50,7 @@ class JSFunctionPrototype(_I: Interpreter, _proto: JSObject)
    * The Function prototype object is itself a Function object (its [[Class]] is "Function") that,
    * when invoked, accepts any arguments and returns undefined.
    */
-  override def _call(tb: Val, argsObj: JSObject): Unit = I.IS.comp.setReturn(IP.undefV)
+  override def call(tb: Val, argsObj: JSObject): Unit = I.IS.comp.setReturn(IP.undefV)
 
   // 15.3.4.2 toString()
   def _toString(): Unit = {
@@ -70,17 +70,17 @@ class JSFunctionPrototype(_I: Interpreter, _proto: JSObject)
         val a: JSObject = I.IH.newObj(prop)
         val argsList: JSObject = I.IH.newArgObj(func, func.code.args.size, a, I.IS.strict)
 
-        func._call(thisArg, argsList)
+        func.call(thisArg, argsList)
       } else {
         argArray match {
           case args: JSObject =>
-            val len: Val = args._get("length")
+            val len: Val = args.get("length")
             val n: Long = I.IH.toUint32(len)
             val prop: PropTable = propTable
             var index: Long = 0
             while (index < n) {
               val indexName: String = index.toString
-              val nextArg: Val = args._get(indexName)
+              val nextArg: Val = args.get(indexName)
               prop.put(indexName, I.IH.mkDataProp(nextArg))
               index += 1
             }
@@ -89,7 +89,7 @@ class JSFunctionPrototype(_I: Interpreter, _proto: JSObject)
             val a: JSObject = I.IH.newObj(prop)
             val argsList: JSObject = I.IH.newArgObj(func, func.code.args.size, a, I.IS.strict)
 
-            func._call(thisArg, argsList)
+            func.call(thisArg, argsList)
           case _ => I.IS.comp.setThrow(IP.typeError, I.IS.span)
         }
       }
@@ -111,7 +111,7 @@ class JSFunctionPrototype(_I: Interpreter, _proto: JSObject)
       val a: JSObject = I.IH.newObj(prop)
       val argsList: JSObject = I.IH.newArgObj(func, func.code.args.size, a, I.IS.strict)
 
-      func._call(thisArg, argsList)
+      func.call(thisArg, argsList)
     }
   }
 

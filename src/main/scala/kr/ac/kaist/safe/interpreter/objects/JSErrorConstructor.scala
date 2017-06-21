@@ -35,12 +35,12 @@ class JSErrorConstructor(_I: Interpreter, _proto: JSObject)
   /*
    * 15.11.2 The Error Constructor
    */
-  override def _construct(argsObj: JSObject): JSErrorObject =
-    construct(argsObj._get("0"))
+  override def construct(argsObj: JSObject): JSErrorObject =
+    construct(argsObj.get("0"))
 
   /*
    * 15.11.1 The Error Constructor Called as a Function
    */
-  override def _call(tb: Val, argsObj: JSObject): Unit =
-    I.IS.comp.setReturn(_construct(argsObj))
+  override def call(tb: Val, argsObj: JSObject): Unit =
+    I.IS.comp.setReturn(construct(argsObj))
 }

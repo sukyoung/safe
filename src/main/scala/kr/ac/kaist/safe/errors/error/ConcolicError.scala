@@ -12,6 +12,6 @@
 package kr.ac.kaist.safe.errors.error
 
 class ConcolicError(msg: String) extends Exception(msg) {
-  override def toString = msg
+  override def toString: String = msg
 }
 

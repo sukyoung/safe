@@ -35,11 +35,11 @@ class JSFunction15(
   ////////////////////////////////////////////////////////////////////////////////
 
   // 15.3.4.5.1 [[Call]]
-  override def _call(tb: Val, argsObj: JSObject): Unit = I.IS.comp.setThrow(IP.nyiError, I.IS.span)
+  override def call(tb: Val, argsObj: JSObject): Unit = I.IS.comp.setThrow(IP.nyiError, I.IS.span)
 
   // 15.3.4.5.2 [[Construct]]
-  override def _construct(argsObj: JSObject): JSObject = throw new InterpreterError("JSFunction15::_construct()", I.IS.span)
+  override def construct(argsObj: JSObject): JSObject = throw new InterpreterError("JSFunction15::_construct()", I.IS.span)
 
   // 15.3.4.5.3 [[HasInstance]](V)
-  override def _hasInstance(v: Val): Unit = I.IS.comp.setThrow(IP.nyiError, I.IS.span)
+  override def hasInstance(v: Val): Unit = I.IS.comp.setThrow(IP.nyiError, I.IS.span)
 }

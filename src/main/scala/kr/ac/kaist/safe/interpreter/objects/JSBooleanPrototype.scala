@@ -29,7 +29,7 @@ class JSBooleanPrototype(_I: Interpreter, _proto: JSObject)
     property.put("valueOf", I.IH.objProp(I.IS.BooleanPrototypeValueOf))
   }
 
-  override def __callBuiltinFunction(method: JSFunction, argsObj: JSObject): Unit = {
+  override def callBuiltinFunction(method: JSFunction, argsObj: JSObject): Unit = {
     method match {
       case I.IS.BooleanPrototypeToString => _toString()
       case I.IS.BooleanPrototypeValueOf => _valueOf()
@@ -44,7 +44,7 @@ class JSBooleanPrototype(_I: Interpreter, _proto: JSObject)
       case PVal(IRVal(EJSBool(b))) =>
         I.IS.comp.setReturn(PVal(I.IH.mkIRStrIR(b.toString)))
       case o: JSBoolean =>
-        val b: Val = o._get(IP.pvpn)
+        val b: Val = o.get(IP.pvpn)
         I.IS.comp.setReturn(PVal(I.IH.mkIRStrIR(I.IH.toBoolean(b).toString)))
       case _ =>
         I.IS.comp.setThrow(IP.typeError, I.IS.span)
@@ -59,7 +59,7 @@ class JSBooleanPrototype(_I: Interpreter, _proto: JSObject)
       case b @ PVal(IRVal(EJSBool(_))) =>
         I.IS.comp.setReturn(b)
       case o: JSBoolean =>
-        val b: Val = o._get(IP.pvpn)
+        val b: Val = o.get(IP.pvpn)
         I.IS.comp.setReturn(b)
       case _ =>
         I.IS.comp.setThrow(IP.typeError, I.IS.span)

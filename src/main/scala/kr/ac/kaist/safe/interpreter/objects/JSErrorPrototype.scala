@@ -26,7 +26,7 @@ class JSErrorPrototype(_I: Interpreter, _proto: JSObject)
     property.put("toString", I.IH.objProp(I.IS.ErrorPrototypeToString))
   }
 
-  override def __callBuiltinFunction(method: JSFunction, argsObj: JSObject): Unit = {
+  override def callBuiltinFunction(method: JSFunction, argsObj: JSObject): Unit = {
     method match {
       case I.IS.ErrorPrototypeToString => _toString()
     }
@@ -35,11 +35,11 @@ class JSErrorPrototype(_I: Interpreter, _proto: JSObject)
   def _toString(): Unit = {
     I.IS.tb match {
       case o: JSObject =>
-        val name: String = o._get("name") match {
+        val name: String = o.get("name") match {
           case name if I.IH.isUndef(name) => "Error"
           case name => I.IH.toString(name)
         }
-        val msg: String = o._get("message") match {
+        val msg: String = o.get("message") match {
           case msg if I.IH.isUndef(msg) => ""
           case msg => I.IH.toString(msg)
         }

@@ -36,7 +36,7 @@ class JSObjectPrototype(_I: Interpreter, _proto: JSObject)
   // Basic
   ////////////////////////////////////////////////////////////////////////////////
 
-  override def __callBuiltinFunction(method: JSFunction, argsObj: JSObject): Unit = {
+  override def callBuiltinFunction(method: JSFunction, argsObj: JSObject): Unit = {
     val args: Array[Val] = I.IH.argsObjectToArray(argsObj, 1)
     method match {
       case I.IS.ObjectPrototypeToString => _toString()
@@ -80,7 +80,7 @@ class JSObjectPrototype(_I: Interpreter, _proto: JSObject)
     val p: String = I.IH.toString(v)
     I.IH.toObject(I.IS.tb) match {
       case o: JSObject =>
-        I.IS.comp.setReturn(PVal(IRVal(I.IH.mkIRBool(o._getOwnProperty(p) != null))))
+        I.IS.comp.setReturn(PVal(IRVal(I.IH.mkIRBool(o.getOwnProperty(p) != null))))
       case err: JSError => I.IS.comp.setThrow(err, I.IS.span)
     }
   }

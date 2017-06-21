@@ -36,13 +36,13 @@ class JSBooleanConstructor(_I: Interpreter, _proto: JSObject)
       I.IH.boolPropTable(I.IH.toBoolean(value)))
   }
 
-  override def _construct(argsObj: JSObject): JSBoolean = construct(argsObj._get("0"))
+  override def construct(argsObj: JSObject): JSBoolean = construct(argsObj.get("0"))
 
   /*
    * 15.6.1 The Boolean Constructor Called as a Function
    * 15.6.1.1 Boolean (value)
    */
-  override def _call(tb: Val, argsObj: JSObject): Unit = {
-    I.IS.comp.setReturn(PVal(IRVal(I.IH.mkIRBool(I.IH.toBoolean(argsObj._get("0"))))))
+  override def call(tb: Val, argsObj: JSObject): Unit = {
+    I.IS.comp.setReturn(PVal(IRVal(I.IH.mkIRBool(I.IH.toBoolean(argsObj.get("0"))))))
   }
 }

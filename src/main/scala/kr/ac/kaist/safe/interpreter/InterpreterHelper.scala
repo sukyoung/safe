@@ -149,21 +149,21 @@ class InterpreterHelper(I: Interpreter) {
   }
 
   def arrayToList(array: JSObject): List[Val] = {
-    val length: Int = toNumber(array._get("length")).num.toInt
-    val l = for (i <- 0 until length) yield array._get(i.toString)
+    val length: Int = toNumber(array.get("length")).num.toInt
+    val l = for (i <- 0 until length) yield array.get(i.toString)
     l.toList
   }
   def arrayToOptionList(array: JSObject): List[Option[Val]] = {
-    val length: Int = toNumber(array._get("length")).num.toInt
+    val length: Int = toNumber(array.get("length")).num.toInt
     val l = for (i <- 0 until length)
-      yield if (array._hasProperty(i.toString)) Some(array._get(i.toString))
+      yield if (array.hasProperty(i.toString)) Some(array.get(i.toString))
     else None
     l.toList
   }
   def argsObjectToArray(argsObj: JSObject, maxLength: Int): Array[Val] = {
-    val length: Int = toNumber(argsObj._get("length")).num.toInt
+    val length: Int = toNumber(argsObj.get("length")).num.toInt
     // If length < maxLength, the args is padded with the undefined.
-    (for (i <- 0 until maxLength) yield if (i < length) argsObj._get(i.toString) else IP.undefV).toArray
+    (for (i <- 0 until maxLength) yield if (i < length) argsObj.get(i.toString) else IP.undefV).toArray
   }
 
   def getVal(op: ObjectProp): Val = {
@@ -210,8 +210,8 @@ class InterpreterHelper(I: Interpreter) {
           case err: JSError => I.IS.comp.setThrow(err, info.span); return
         }
 
-        if (fun.const) fun._call(I.IS.tb, argsObj)
-        else if (fun.builtin != null) fun.builtin.__callBuiltinFunction(fun, argsObj)
+        if (fun.const) fun.call(I.IS.tb, argsObj)
+        else if (fun.builtin != null) fun.builtin.callBuiltinFunction(fun, argsObj)
         else I.walkIRs(fun.codeIRs)
       case err: JSError => I.IS.comp.setThrow(err, info.span)
     }
@@ -228,7 +228,7 @@ class InterpreterHelper(I: Interpreter) {
     var env = I.IS.env
     while (true) {
       env match {
-        case EmptyEnv() => return I.IS.GlobalObject._hasProperty(x)
+        case EmptyEnv() => return I.IS.GlobalObject.hasProperty(x)
         case ConsEnv(envRec, rest) => envRec match {
           case DeclEnvRec(s) => return isInDomS(s, x)
           case ObjEnvRec(_) => env = rest
@@ -248,7 +248,7 @@ class InterpreterHelper(I: Interpreter) {
     while (true) {
       env match {
         case EmptyEnv() =>
-          if (x.isInstanceOf[IRUserId]) I.IS.GlobalObject.__putProp(x.originalName, mkDataProp(IP.undefV, true, true, mutable && deletable))
+          if (x.isInstanceOf[IRUserId]) I.IS.GlobalObject.putProp(x.originalName, mkDataProp(IP.undefV, true, true, mutable && deletable))
           else I.IS.GlobalObject.declEnvRec.s.put(x.originalName, new StoreValue(IP.undefV, false, true, true))
           return env
         case ConsEnv(envRec, rest) => envRec match {
@@ -267,7 +267,7 @@ class InterpreterHelper(I: Interpreter) {
   def createBinding(env: Env, x: IRId, mutable: Boolean, deletable: Boolean): Unit = {
     env match {
       case EmptyEnv() =>
-        if (x.isInstanceOf[IRUserId]) I.IS.GlobalObject.__putProp(x.originalName, mkDataProp(IP.undefV, true, true, mutable && deletable))
+        if (x.isInstanceOf[IRUserId]) I.IS.GlobalObject.putProp(x.originalName, mkDataProp(IP.undefV, true, true, mutable && deletable))
         else I.IS.GlobalObject.declEnvRec.s.put(x.originalName, new StoreValue(IP.undefV, false, true, true))
       case ConsEnv(envRec, rest) => envRec match {
         case DeclEnvRec(s) =>
@@ -287,7 +287,7 @@ class InterpreterHelper(I: Interpreter) {
     while (true) {
       env match {
         case EmptyEnv() =>
-          if (x.isInstanceOf[IRUserId]) I.IS.GlobalObject.__putProp(x.originalName, mkDataProp(v, true, true, mutable && deletable))
+          if (x.isInstanceOf[IRUserId]) I.IS.GlobalObject.putProp(x.originalName, mkDataProp(v, true, true, mutable && deletable))
           else I.IS.GlobalObject.declEnvRec.s.put(x.originalName, new StoreValue(v, true, true, true))
           return v
         case ConsEnv(envRec, rest) => envRec match {
@@ -312,7 +312,7 @@ class InterpreterHelper(I: Interpreter) {
       env match {
         case EmptyEnv() =>
           if (debug > 0) System.out.println("setBinding:x=" + x + " v=" + v)
-          if (x.isInstanceOf[IRUserId]) I.IS.GlobalObject.__getProp(originalName).value = Some(v)
+          if (x.isInstanceOf[IRUserId]) I.IS.GlobalObject.getProp(originalName).value = Some(v)
           else I.IS.GlobalObject.declEnvRec.s.get(originalName).setValue(v)
           return v
         case ConsEnv(er, rest) => er match {
@@ -335,7 +335,7 @@ class InterpreterHelper(I: Interpreter) {
     val originalName = x.originalName
     env match {
       case EmptyEnv() =>
-        if (x.isInstanceOf[IRUserId]) I.IS.GlobalObject.__getProp(originalName).value = Some(v)
+        if (x.isInstanceOf[IRUserId]) I.IS.GlobalObject.getProp(originalName).value = Some(v)
         else I.IS.GlobalObject.declEnvRec.s.get(originalName).setValue(v)
         v
       case ConsEnv(envRec, rest) => envRec match {
@@ -374,7 +374,7 @@ class InterpreterHelper(I: Interpreter) {
       }
     case ObjEnvRec(o) =>
       if (o == IP.nullObj) return IP.referenceError(x + " from getBindingValue")
-      val v = o._get(x)
+      val v = o.get(x)
       if (!isUndef(v)) v
       else if (I.IS.strict) IP.referenceError(x + " from getBindingValue")
       else IP.undefV
@@ -414,7 +414,7 @@ class InterpreterHelper(I: Interpreter) {
         case EmptyEnv() =>
           x match {
             case _: IRUserId =>
-              if (I.IS.GlobalObject.__isInDomO(originalName)) return I.IS.globalObjEnvRec
+              if (I.IS.GlobalObject.isInDomO(originalName)) return I.IS.globalObjEnvRec
             case _: IRTmpId =>
               if (I.IS.GlobalObject.declEnvRec.s.containsKey(originalName)) return I.IS.GlobalObject.declEnvRec
           }
@@ -424,7 +424,7 @@ class InterpreterHelper(I: Interpreter) {
             if (s.containsKey(originalName)) return er
             else env = rest
           case ObjEnvRec(o) =>
-            val obj = o._getProperty(originalName)._2
+            val obj = o.getProperty(originalName)._2
             if (obj != IP.nullObj) return er
             else env = rest
         }
@@ -464,9 +464,9 @@ class InterpreterHelper(I: Interpreter) {
     else obj.property.keys ++ collectProps(obj.proto)
   }
   def next(o: JSObject, n: Int, obj: JSObject): Int = {
-    if (!o.__isInDomO(n.toString)) {
+    if (!o.isInDomO(n.toString)) {
       if (n >= toInt(o.property.get("length"))) n else next(o, n + 1, obj)
-    } else if (obj != IP.nullObj && obj.__isEnumerable(toStr(o.property.get(n.toString)))) n
+    } else if (obj != IP.nullObj && obj.isEnumerable(toStr(o.property.get(n.toString)))) n
     else next(o, n + 1, obj)
   }
 
@@ -533,10 +533,10 @@ class InterpreterHelper(I: Interpreter) {
       // If a generated name by Translator, create a binding.
       case oer: ObjEnvRec =>
         val originalName = x.originalName
-        if (oer.o != IP.nullObj) oer.o._put(originalName, v, b)
+        if (oer.o != IP.nullObj) oer.o.put(originalName, v, b)
         else if (NU.isInternal(originalName)) createAndSetBinding(x, v, true, I.IS.eval)
         else if (b) IP.referenceError(x + " from putValue")
-        else I.IS.GlobalObject._put(originalName, v, false)
+        else I.IS.GlobalObject.put(originalName, v, false)
       case der: DeclEnvRec =>
         setBindingToDeclarative(der, x, v, false, b)
     }
@@ -567,19 +567,19 @@ class InterpreterHelper(I: Interpreter) {
     // 3. If IsDataDescriptor(Desc) is true, then
     if (isDataDescriptor(op)) {
       if (op.value.isEmpty || op.writable.isEmpty) throw new InterpreterError("fromPropertyDescriptor: 3", I.IS.span)
-      obj._defineOwnProperty("value", mkDataProp(op.value.get, true, true, true), false)
-      obj._defineOwnProperty("writable", mkDataProp(PVal(getIRBool(op.writable.get)), true, true, true), false)
+      obj.defineOwnProperty("value", mkDataProp(op.value.get, true, true, true), false)
+      obj.defineOwnProperty("writable", mkDataProp(PVal(getIRBool(op.writable.get)), true, true, true), false)
     } // 4. If IsAccessorDescriptor(Desc) must be true, so
     else if (isAccessorDescriptor(op)) {
       if (op.get.isEmpty || op.set.isEmpty) throw new InterpreterError("fromPropertyDescriptor: 4", I.IS.span)
-      obj._defineOwnProperty("get", mkDataProp(op.get.get, true, true, true), false)
-      obj._defineOwnProperty("set", mkDataProp(op.set.get, true, true, true), false)
+      obj.defineOwnProperty("get", mkDataProp(op.get.get, true, true, true), false)
+      obj.defineOwnProperty("set", mkDataProp(op.set.get, true, true, true), false)
     }
     // 5.
-    obj._defineOwnProperty("enumerable", mkDataProp(PVal(getIRBool(op.isEnumerable)), true, true, true), false)
+    obj.defineOwnProperty("enumerable", mkDataProp(PVal(getIRBool(op.isEnumerable)), true, true, true), false)
     // 6.
     // NOTE: We don't make a property if the value does not exist.
-    obj._defineOwnProperty("configurable", mkDataProp(PVal(getIRBool(op.isConfigurable)), true, true, true), false)
+    obj.defineOwnProperty("configurable", mkDataProp(PVal(getIRBool(op.isConfigurable)), true, true, true), false)
     // 7. Return obj.
     obj
   }
@@ -594,20 +594,20 @@ class InterpreterHelper(I: Interpreter) {
     // 2. Let desc be the result of creating a new Property Descriptor that initially has no fields.
     var op: ObjectProp = mkEmptyObjectProp
     // 3 ~ 6
-    if (obj._hasProperty("enumerable")) op.enumerable = Some(toBoolean(obj._get("enumerable")))
-    if (obj._hasProperty("configurable")) op.configurable = Some(toBoolean(obj._get("configurable")))
-    if (obj._hasProperty("value")) op.value = Some(obj._get("value"))
-    if (obj._hasProperty("writable")) op.writable = Some(toBoolean(obj._get("writable")))
+    if (obj.hasProperty("enumerable")) op.enumerable = Some(toBoolean(obj.get("enumerable")))
+    if (obj.hasProperty("configurable")) op.configurable = Some(toBoolean(obj.get("configurable")))
+    if (obj.hasProperty("value")) op.value = Some(obj.get("value"))
+    if (obj.hasProperty("writable")) op.writable = Some(toBoolean(obj.get("writable")))
     // 7 ~ 8
-    if (obj._hasProperty("get")) {
-      val getter = obj._get("get")
+    if (obj.hasProperty("get")) {
+      val getter = obj.get("get")
       if (!isCallable(getter) && !isUndef(getter)) return (None, Some(IP.typeError))
-      op.get = Some(obj._get("get"))
+      op.get = Some(obj.get("get"))
     }
-    if (obj._hasProperty("set")) {
-      val setter = obj._get("set")
+    if (obj.hasProperty("set")) {
+      val setter = obj.get("set")
       if (!isCallable(setter) && !isUndef(setter)) return (None, Some(IP.typeError))
-      op.set = Some(obj._get("set"))
+      op.set = Some(obj.get("set"))
     }
     // 9. If either desc.[[Get]] or desc.[[Set]] are present, then
     if (op.get.isDefined || op.set.isDefined) {
@@ -622,7 +622,7 @@ class InterpreterHelper(I: Interpreter) {
     while (true) {
       env match {
         case EmptyEnv() =>
-          if (I.IS.GlobalObject.__isInDomO(x)) return I.IS.GlobalObject._delete(x, b)
+          if (I.IS.GlobalObject.isInDomO(x)) return I.IS.GlobalObject.delete(x, b)
           else return IP.truePV
         case ConsEnv(envRec, rest) => envRec match {
           case DeclEnvRec(s) =>
@@ -634,7 +634,7 @@ class InterpreterHelper(I: Interpreter) {
               } else return IP.falsePV
             } else env = rest
           case ObjEnvRec(o) =>
-            if (o.__isInDomO(x)) return o._delete(x, b)
+            if (o.isInDomO(x)) return o.delete(x, b)
             else env = rest
         }
       }
@@ -653,7 +653,7 @@ class InterpreterHelper(I: Interpreter) {
    * 9.1 ToPrimitive
    */
   def toPrimitive(v: Val, hint: String): PVal = v match {
-    case o: JSObject => o._defaultValue(hint)
+    case o: JSObject => o.defaultValue(hint)
     case pv: PVal => pv
   }
 
@@ -1022,16 +1022,16 @@ class InterpreterHelper(I: Interpreter) {
     val len = code.args.size
     // 15. Call the [[DefineOwnProperty]] internal method of F with arguments "length", Property Descriptor
     //     {[[Value]]: len, [[Writable]]: false, [[Enumerable]]: false, [[Configurable]]: false}, and false.
-    F._defineOwnProperty("length", numProp(len), false)
+    F.defineOwnProperty("length", numProp(len), false)
     // 16. Let proto be the result of creating a new object as would be constructed by the expression new Object()
     //     where Object is the standard built-in constructor with that name.
     val proto: JSObject = new JSObject(I, I.IS.ObjectPrototype, "Object", true, propTable) // JSObject::_construct()
     // 17. Call the [[DefineOwnProperty]] internal method of proto with arguments "constructor", Property Descriptor
     //     {[[Value]]: F, [[Writable]]: true, [[Enumerable]]: false, [[Configurable]]: true}, and false.
-    proto._defineOwnProperty("constructor", objProp(F), false)
+    proto.defineOwnProperty("constructor", objProp(F), false)
     // 18. Call the [[DefineOwnProperty]] internal method of F with arguments "prototype", Property Descriptor
     //     {[[Value]]: proto, [[Writable]]: true, [[Enumerable]]: false, [[Configurable]]: true}, and false.
-    F._defineOwnProperty("prototype", objProp(proto), false)
+    F.defineOwnProperty("prototype", objProp(proto), false)
     // 19. If Strict is true, then
     if (strict == true) {
       // TODO:

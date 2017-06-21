@@ -167,18 +167,18 @@ package object interpreter {
       var enumerable: Option[Boolean],
       var configurable: Option[Boolean]
   ) extends BindingValue {
-    def areAllAttributesAbsent(): Boolean = value.isEmpty && get.isEmpty && set.isEmpty && writable.isEmpty && enumerable.isEmpty && configurable.isEmpty
-    def isWritable(): Boolean = if (writable.isDefined) writable.get else false
-    def isEnumerable(): Boolean = if (enumerable.isDefined) enumerable.get else false
-    def isConfigurable(): Boolean = if (configurable.isDefined) configurable.get else false
+    def areAllAttributesAbsent: Boolean = value.isEmpty && get.isEmpty && set.isEmpty && writable.isEmpty && enumerable.isEmpty && configurable.isEmpty
+    def isWritable: Boolean = if (writable.isDefined) writable.get else false
+    def isEnumerable: Boolean = if (enumerable.isDefined) enumerable.get else false
+    def isConfigurable: Boolean = if (configurable.isDefined) configurable.get else false
     def copy(): ObjectProp = new ObjectProp(value, get, set, writable, enumerable, configurable)
 
-    def getValueOrDefault(): Val = if (value.isDefined) value.get else IP.undefV
-    def getGetOrDefault(): Val = if (get.isDefined) get.get else IP.undefV
-    def getSetOrDefault(): Val = if (set.isDefined) set.get else IP.undefV
-    def getWritableOrDefault(): Boolean = if (writable.isDefined) writable.get else false
-    def getEnumerableOrDefault(): Boolean = if (enumerable.isDefined) enumerable.get else false
-    def getConfigurableOrDefault(): Boolean = if (configurable.isDefined) configurable.get else false
+    def getValueOrDefault: Val = if (value.isDefined) value.get else IP.undefV
+    def getGetOrDefault: Val = if (get.isDefined) get.get else IP.undefV
+    def getSetOrDefault: Val = if (set.isDefined) set.get else IP.undefV
+    def getWritableOrDefault: Boolean = if (writable.isDefined) writable.get else false
+    def getEnumerableOrDefault: Boolean = if (enumerable.isDefined) enumerable.get else false
+    def getConfigurableOrDefault: Boolean = if (configurable.isDefined) configurable.get else false
 
     override def equals(a: Any): Boolean = {
       if (!a.isInstanceOf[ObjectProp]) false
@@ -210,7 +210,7 @@ package object interpreter {
     def containsKey(key: PName): Boolean = map.containsKey(key)
     def containsValue(value: ObjectProp): Boolean = map.containsValue(value)
     def get(key: PName): ObjectProp = map.get(key)
-    def isEmpty(): Boolean = map.isEmpty
+    def isEmpty: Boolean = map.isEmpty
     def keys(): List[PName] = {
       var l = List[PName]()
       val i = order.keySet.iterator
@@ -239,7 +239,7 @@ package object interpreter {
       l.reverse
     }
   }
-  def propTable(): PropTable = new PropTable
+  def propTable: PropTable = new PropTable
 
   ////////////////////////////////////////////////////////////////////////////////
   // Completion

@@ -43,19 +43,19 @@ class JSArrayPrototype(_I: Interpreter, _proto: JSObject)
    * It is permitted for the this to be an object for which the value of the
    * [[Class]] internal property is not "Array".
    */
-  override def __callBuiltinFunction(method: JSFunction, argsObj: JSObject): Unit = {
+  override def callBuiltinFunction(method: JSFunction, argsObj: JSObject): Unit = {
     method match {
       case I.IS.ArrayPrototypeToString => _toString(argsObj)
       // 15.4.4.3
       case I.IS.ArrayPrototypeConcat => _concat(I.IH.arrayToList(argsObj))
-      case I.IS.ArrayPrototypeJoin => _join(argsObj._get("0"))
+      case I.IS.ArrayPrototypeJoin => _join(argsObj.get("0"))
       case I.IS.ArrayPrototypePop => _pop()
       case I.IS.ArrayPrototypePush => _push(I.IH.arrayToList(argsObj))
       case I.IS.ArrayPrototypeReverse => _reverse()
       // 15.4.4.9
-      case I.IS.ArrayPrototypeSlice => _slice(argsObj._get("0"), argsObj._get("1"))
-      case I.IS.ArrayPrototypeSort => _sort(argsObj._get("0"))
-      case I.IS.ArrayPrototypeSplice => _splice(argsObj._get("0"), argsObj._get("1"), I.IH.arrayToList(argsObj).drop(2))
+      case I.IS.ArrayPrototypeSlice => _slice(argsObj.get("0"), argsObj.get("1"))
+      case I.IS.ArrayPrototypeSort => _sort(argsObj.get("0"))
+      case I.IS.ArrayPrototypeSplice => _splice(argsObj.get("0"), argsObj.get("1"), I.IH.arrayToList(argsObj).drop(2))
       // 15.4.4.13 - 15.4.4.22
     }
   }
@@ -63,7 +63,7 @@ class JSArrayPrototype(_I: Interpreter, _proto: JSObject)
   def _toString(argsObj: JSObject): Unit = {
     I.IH.toObject(I.IS.tb) match {
       case array: JSObject =>
-        val func: JSFunction = array._get("join") match {
+        val func: JSFunction = array.get("join") match {
           // func is callable only if it is an object.
           case o: JSFunction if I.IH.isCallable(o) => o
           case _ => I.IS.ObjectPrototypeToString
@@ -85,20 +85,20 @@ class JSArrayPrototype(_I: Interpreter, _proto: JSObject)
         for (e <- args) {
           e match {
             case array: JSArray =>
-              val len: Long = I.IH.toUint32(array._get("length"))
+              val len: Long = I.IH.toUint32(array.get("length"))
               for (k <- 0L until len) {
                 val p = k.toString
-                if (array._hasProperty(p)) {
-                  a._defineOwnProperty(
+                if (array.hasProperty(p)) {
+                  a.defineOwnProperty(
                     n.toString,
-                    I.IH.mkDataProp(array._get(p), true, true, true),
+                    I.IH.mkDataProp(array.get(p), true, true, true),
                     false
                   )
                 }
                 n += 1
               }
             case _ =>
-              a._defineOwnProperty(
+              a.defineOwnProperty(
                 n.toString,
                 I.IH.mkDataProp(e, true, true, true), false
               )
@@ -113,7 +113,7 @@ class JSArrayPrototype(_I: Interpreter, _proto: JSObject)
   def _join(separator: Val): Unit = {
     I.IH.toObject(I.IS.tb) match {
       case o: JSObject =>
-        val len = I.IH.toUint32(o._get("length"))
+        val len = I.IH.toUint32(o.get("length"))
         val sep = separator match {
           case IP.undefV => ","
           case _ => I.IH.toString(separator)
@@ -137,16 +137,16 @@ class JSArrayPrototype(_I: Interpreter, _proto: JSObject)
   def _pop(): Unit = {
     I.IH.toObject(I.IS.tb) match {
       case o: JSObject =>
-        val len = I.IH.toUint32(o._get("length"))
+        val len = I.IH.toUint32(o.get("length"))
         len match {
           case 0 =>
-            o._put("length", PVal(IRVal(I.IH.mkIRNum(0))), true)
+            o.put("length", PVal(IRVal(I.IH.mkIRNum(0))), true)
             I.IS.comp.setReturn(IP.undefV)
           case _ =>
             val indx = (len - 1).toString
-            val element = o._get(indx)
-            o._delete(indx, true)
-            o._put("length", PVal(I.IH.mkIRStrIR(indx)), true)
+            val element = o.get(indx)
+            o.delete(indx, true)
+            o.put("length", PVal(I.IH.mkIRStrIR(indx)), true)
             I.IS.comp.setReturn(element)
         }
       case err: JSError => I.IS.comp.setThrow(err, I.IS.span)
@@ -156,12 +156,12 @@ class JSArrayPrototype(_I: Interpreter, _proto: JSObject)
   def _push(args: List[Val]): Unit = {
     I.IH.toObject(I.IS.tb) match {
       case o: JSObject =>
-        var n = I.IH.toUint32(o._get("length"))
+        var n = I.IH.toUint32(o.get("length"))
         for (e <- args) {
-          o._put(n.toString, e, true)
+          o.put(n.toString, e, true)
           n += 1
         }
-        o._put("length", PVal(IRVal(I.IH.mkIRNum(n))), true)
+        o.put("length", PVal(IRVal(I.IH.mkIRNum(n))), true)
         I.IS.comp.setReturn(PVal(IRVal(I.IH.mkIRNum(n))))
       case err: JSError => I.IS.comp.setThrow(err, I.IS.span)
     }
@@ -170,23 +170,23 @@ class JSArrayPrototype(_I: Interpreter, _proto: JSObject)
   def _reverse(): Unit = {
     I.IH.toObject(I.IS.tb) match {
       case o: JSObject =>
-        val len: Long = I.IH.toUint32(o._get("length"))
+        val len: Long = I.IH.toUint32(o.get("length"))
         val middle: Long = scala.math.floor(len / 2).toLong
         var lower: Long = 0
         while (lower != middle) {
           val upper: Long = len - lower - 1
           val (upperP, lowerP) = (upper.toString, lower.toString)
-          val (upperValue, lowerValue) = (o._get(upperP), o._get(lowerP))
-          val (upperExists, lowerExists) = (o._hasProperty(upperP), o._hasProperty(lowerP))
+          val (upperValue, lowerValue) = (o.get(upperP), o.get(lowerP))
+          val (upperExists, lowerExists) = (o.hasProperty(upperP), o.hasProperty(lowerP))
           if (lowerExists && upperExists) {
-            o._put(lowerP, upperValue, true)
-            o._put(upperP, lowerValue, true)
+            o.put(lowerP, upperValue, true)
+            o.put(upperP, lowerValue, true)
           } else if (!lowerExists && upperExists) {
-            o._put(lowerP, upperValue, true)
-            o._delete(upperP, true)
+            o.put(lowerP, upperValue, true)
+            o.delete(upperP, true)
           } else if (lowerExists && !upperExists) {
-            o._delete(lowerP, true)
-            o._put(upperP, lowerValue, true)
+            o.delete(lowerP, true)
+            o.put(upperP, lowerValue, true)
           }
           lower += 1
         }
@@ -199,7 +199,7 @@ class JSArrayPrototype(_I: Interpreter, _proto: JSObject)
     I.IH.toObject(I.IS.tb) match {
       case o: JSObject =>
         val a = I.IS.ArrayConstructor.construct(Nil)
-        val len = I.IH.toUint32(o._get("length"))
+        val len = I.IH.toUint32(o.get("length"))
         var k: Long = I.IH.toInteger(start).num.toLong match {
           case relativeStart if relativeStart < 0 => (len + relativeStart) max 0
           case relativeStart => relativeStart min len
@@ -211,9 +211,9 @@ class JSArrayPrototype(_I: Interpreter, _proto: JSObject)
         var n: Long = 0
         while (k < fin) {
           val pk = k.toString
-          if (o._hasProperty(pk)) {
-            val kValue = o._get(pk)
-            a._defineOwnProperty(n.toString, I.IH.mkDataProp(kValue, true, true, true), false)
+          if (o.hasProperty(pk)) {
+            val kValue = o.get(pk)
+            a.defineOwnProperty(n.toString, I.IH.mkDataProp(kValue, true, true, true), false)
           }
           k += 1
           n += 1
@@ -226,21 +226,21 @@ class JSArrayPrototype(_I: Interpreter, _proto: JSObject)
   def _sort(comparefn: Val): Unit = {
     I.IH.toObject(I.IS.tb) match {
       case o: JSArray =>
-        val len = I.IH.toUint32(o._get("length"))
+        val len = I.IH.toUint32(o.get("length"))
         for (i <- 0L until len) {
-          if (o.__isAccessorProp(i.toString) ||
-            o.__isDataProp(i.toString) && !o.__isWritable(i.toString)) {
+          if (o.isAccessorProp(i.toString) ||
+            o.isDataProp(i.toString) && !o.isWritable(i.toString)) {
             I.IS.comp.setReturn(o)
             return
           }
         }
-        if (o.__isSparse()) {
+        if (o.isSparse) {
           if (!o.extensible) {
             I.IS.comp.setReturn(o)
             return
           }
           for (i <- 0L until len) {
-            if (o.__isDataProp(i.toString) && !o.__isConfigurable(i.toString)) {
+            if (o.isDataProp(i.toString) && !o.isConfigurable(i.toString)) {
               I.IS.comp.setReturn(o)
               return
             }
@@ -248,10 +248,10 @@ class JSArrayPrototype(_I: Interpreter, _proto: JSObject)
           if (o.proto != IP.nullObj) {
             val proto = o.proto
             for (i <- 0L until len) {
-              if (proto._hasProperty(i.toString))
-                o._defineOwnProperty(
+              if (proto.hasProperty(i.toString))
+                o.defineOwnProperty(
                   i.toString,
-                  I.IH.mkDataProp(o._get(i.toString), true, true, true),
+                  I.IH.mkDataProp(o.get(i.toString), true, true, true),
                   false
                 )
             }
@@ -278,7 +278,7 @@ class JSArrayPrototype(_I: Interpreter, _proto: JSObject)
 
                     val oldEnv = I.IS.env
                     val oldTb = I.IS.tb
-                    comparefn.asInstanceOf[JSFunction]._call(IP.undefV, argsObj)
+                    comparefn.asInstanceOf[JSFunction].call(IP.undefV, argsObj)
                     I.IS.env = oldEnv
                     I.IS.tb = oldTb
                     if (I.IS.comp.Type == CT.RETURN) I.IH.toNumber(I.IS.comp.value).num < 0
@@ -294,14 +294,14 @@ class JSArrayPrototype(_I: Interpreter, _proto: JSObject)
         }
         val list: List[Option[Val]] = I.IH.arrayToOptionList(o)
         for ((ov, i) <- list.sortWith(sortCompare).zipWithIndex) {
-          if (o._hasProperty(i.toString)) {
+          if (o.hasProperty(i.toString)) {
             ov match {
-              case Some(v) => o._put(i.toString, v, false)
-              case None => o._delete(i.toString, false)
+              case Some(v) => o.put(i.toString, v, false)
+              case None => o.delete(i.toString, false)
             }
           } else {
             ov match {
-              case Some(v) => o._defineOwnProperty(
+              case Some(v) => o.defineOwnProperty(
                 i.toString,
                 I.IH.mkDataProp(v, true, true, true),
                 false
@@ -319,7 +319,7 @@ class JSArrayPrototype(_I: Interpreter, _proto: JSObject)
     I.IH.toObject(I.IS.tb) match {
       case o: JSObject =>
         val a = I.IS.ArrayConstructor.construct(Nil)
-        val len = I.IH.toUint32(o._get("length"))
+        val len = I.IH.toUint32(o.get("length"))
         val actualStart = I.IH.toInteger(start).num.toLong match {
           case relativeStart if relativeStart < 0 => (len + relativeStart) max 0
           case relativeStart => relativeStart min len
@@ -328,10 +328,10 @@ class JSArrayPrototype(_I: Interpreter, _proto: JSObject)
         var k: Long = 0
         while (k < actualDeleteCount) {
           val from = (actualStart + k).toString
-          val fromPresent = o._hasProperty(from)
+          val fromPresent = o.hasProperty(from)
           if (fromPresent) {
-            val fromValue = o._get(from)
-            a._defineOwnProperty(k.toString, I.IH.mkDataProp(fromValue, true, true, true), false)
+            val fromValue = o.get(from)
+            a.defineOwnProperty(k.toString, I.IH.mkDataProp(fromValue, true, true, true), false)
           }
           k += 1
         }
@@ -341,18 +341,18 @@ class JSArrayPrototype(_I: Interpreter, _proto: JSObject)
           while (k < len - actualDeleteCount) {
             val from = (k + actualDeleteCount).toString
             val to = (k + itemCount).toString
-            val fromPresent = o._hasProperty(from)
+            val fromPresent = o.hasProperty(from)
             if (fromPresent) {
-              val fromValue = o._get(from)
-              o._put(to, fromValue, true)
+              val fromValue = o.get(from)
+              o.put(to, fromValue, true)
             } else {
-              o._delete(to, true)
+              o.delete(to, true)
             }
             k += 1
           }
           k = len
           while (k > len - actualDeleteCount + itemCount) {
-            o._delete((k - 1).toString, true)
+            o.delete((k - 1).toString, true)
             k -= 1
           }
         } else if (itemCount > actualDeleteCount) {
@@ -360,22 +360,22 @@ class JSArrayPrototype(_I: Interpreter, _proto: JSObject)
           while (k > actualStart) {
             val from = (k + actualDeleteCount - 1).toString
             val to = (k + itemCount - 1).toString
-            val fromPresent = o._hasProperty(from)
+            val fromPresent = o.hasProperty(from)
             if (fromPresent) {
-              val fromValue = o._get(from)
-              o._put(to, fromValue, true)
+              val fromValue = o.get(from)
+              o.put(to, fromValue, true)
             } else {
-              o._delete(to, true)
+              o.delete(to, true)
             }
             k -= 1
           }
         }
         k = actualStart
         for (e <- items) {
-          o._put(k.toString, e, true)
+          o.put(k.toString, e, true)
           k += 1
         }
-        o._put("length", PVal(IRVal(I.IH.mkIRNum(len - actualDeleteCount + itemCount))), true)
+        o.put("length", PVal(IRVal(I.IH.mkIRNum(len - actualDeleteCount + itemCount))), true)
         I.IS.comp.setReturn(a)
       case err: JSError => I.IS.comp.setThrow(err, I.IS.span)
     }

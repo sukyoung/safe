@@ -86,20 +86,20 @@ class JSArrayConstructor(_I: Interpreter, _proto: JSObject)
       new JSArray(I, I.IS.ObjectPrototype, name, true, prop)
   }
 
-  override def _construct(argsObj: JSObject): JSArray = {
-    argsObj._get("length") match {
+  override def construct(argsObj: JSObject): JSArray = {
+    argsObj.get("length") match {
       case PVal(IRVal(n: EJSNumber)) if n.num == 0 || n.num >= 2 => construct(I.IH.arrayToList(argsObj))
-      case PVal(IRVal(n: EJSNumber)) if n.num == 1 => construct(argsObj._get("0"))
+      case PVal(IRVal(n: EJSNumber)) if n.num == 1 => construct(argsObj.get("0"))
     }
   }
 
-  override def __callBuiltinFunction(method: JSFunction, argsObj: JSObject): Unit = {
+  override def callBuiltinFunction(method: JSFunction, argsObj: JSObject): Unit = {
     method match {
-      case I.IS.ArrayIsArray => _isArray(argsObj._get("0"))
+      case I.IS.ArrayIsArray => _isArray(argsObj.get("0"))
     }
   }
 
-  override def _call(tb: Val, argsObj: JSObject): Unit = I.IS.comp.setReturn(_construct(argsObj))
+  override def call(tb: Val, argsObj: JSObject): Unit = I.IS.comp.setReturn(construct(argsObj))
 
   /*
    * 15.4.3.2 Array.isArray(arg)

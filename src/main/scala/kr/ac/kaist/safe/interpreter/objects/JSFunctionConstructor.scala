@@ -23,10 +23,10 @@ class JSFunctionConstructor(_I: Interpreter, _proto: JSObject)
     property.put("prototype", I.IH.objProp(I.IS.FunctionPrototype))
   }
 
-  override def __callBuiltinFunction(method: JSFunction, argsObj: JSObject): Unit = {
+  override def callBuiltinFunction(method: JSFunction, argsObj: JSObject): Unit = {
     // Call the prototype's method
     if (proto == IP.nullObj) I.IS.comp.setThrow(IP.referenceError(method + "from the Function Object"), I.IS.span)
-    else proto.__callBuiltinFunction(method, argsObj)
+    else proto.callBuiltinFunction(method, argsObj)
   }
 
   ////////////////////////////////////////////////////////////////////////////////
@@ -34,10 +34,10 @@ class JSFunctionConstructor(_I: Interpreter, _proto: JSObject)
   ////////////////////////////////////////////////////////////////////////////////
 
   // 15.3.1.1 Function(p1, p2, ... , pn, body)
-  override def _call(tb: Val, argsObj: JSObject): Unit = I.IS.comp.setReturn(_construct(argsObj))
+  override def call(tb: Val, argsObj: JSObject): Unit = I.IS.comp.setReturn(construct(argsObj))
 
   // 15.3.2.1 new Function(p1, p2, ... , pn, body)
-  override def _construct(argsObj: JSObject): JSObject = {
+  override def construct(argsObj: JSObject): JSObject = {
     // 1 ~ 10
     // TODO:
 

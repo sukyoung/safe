@@ -35,7 +35,7 @@ class JSFunction13(
   ////////////////////////////////////////////////////////////////////////////////
 
   // 13.2.1 [[Call]]
-  override def _call(tb: Val, argsObj: JSObject): Unit = {
+  override def call(tb: Val, argsObj: JSObject): Unit = {
     val oldEnv = I.IS.env
     val oldTb = I.IS.tb
     try {
@@ -47,8 +47,8 @@ class JSFunction13(
   }
 
   // 13.2.2 [[Construct]]
-  override def _construct(argsObj: JSObject): JSObject = throw new InterpreterError("JSFunction13::_construct()", I.IS.span)
+  override def construct(argsObj: JSObject): JSObject = throw new InterpreterError("JSFunction13::_construct()", I.IS.span)
 
   // 15.3.5.3 [[HasInstance]](V)
-  override def _hasInstance(v: Val): Unit = I.IS.comp.setThrow(IP.nyiError, I.IS.span)
+  override def hasInstance(v: Val): Unit = I.IS.comp.setThrow(IP.nyiError, I.IS.span)
 }

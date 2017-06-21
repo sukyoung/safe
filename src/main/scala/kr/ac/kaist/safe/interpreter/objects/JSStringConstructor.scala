@@ -40,21 +40,21 @@ class JSStringConstructor(_I: Interpreter, _proto: JSObject)
     new JSString(I, I.IS.StringPrototype, "String", true, prop)
   }
 
-  override def _construct(argsObj: JSObject): JSString = {
-    argsObj._get("length") match {
+  override def construct(argsObj: JSObject): JSString = {
+    argsObj.get("length") match {
       case PVal(IRVal(n: EJSNumber)) if n.num == 0 => construct(None)
-      case PVal(IRVal(n: EJSNumber)) if n.num >= 1 => construct(Some(argsObj._get("0")))
+      case PVal(IRVal(n: EJSNumber)) if n.num >= 1 => construct(Some(argsObj.get("0")))
     }
   }
 
-  override def _call(tb: Val, argsObj: JSObject): Unit = {
-    argsObj._get("length") match {
+  override def call(tb: Val, argsObj: JSObject): Unit = {
+    argsObj.get("length") match {
       case PVal(IRVal(n: EJSNumber)) if n.num == 0 => I.IS.comp.setReturn(PVal(I.IH.mkIRStrIR("")))
-      case PVal(IRVal(n: EJSNumber)) if n.num >= 1 => I.IS.comp.setReturn(PVal(I.IH.mkIRStrIR(I.IH.toString(argsObj._get("0")))))
+      case PVal(IRVal(n: EJSNumber)) if n.num >= 1 => I.IS.comp.setReturn(PVal(I.IH.mkIRStrIR(I.IH.toString(argsObj.get("0")))))
     }
   }
 
-  override def __callBuiltinFunction(method: JSFunction, argsObj: JSObject): Unit = {
+  override def callBuiltinFunction(method: JSFunction, argsObj: JSObject): Unit = {
     method match {
       case I.IS.StringFromCharCode => _fromCharCode(I.IH.arrayToList(argsObj))
     }

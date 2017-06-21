@@ -27,7 +27,7 @@ class JSArray(
    * 15.4.5.1 [[DefineOwnProperty]](P, Desc, Throw) for Array
    * P = x; Desc = op; Throw = b
    */
-  override def _defineOwnProperty(P: Var, Desc: ObjectProp, Throw: Boolean): ValError = {
+  override def defineOwnProperty(P: Var, Desc: ObjectProp, Throw: Boolean): ValError = {
     def isArrayIndex(P: Var): Boolean = {
       // ToString(ToUint32(P)) is equal to P and ToUint32(P) is not equal to (2^32)-1
       val intP = I.IH.toUint32(PVal(I.IH.mkIRStrIR(P)))
@@ -36,7 +36,7 @@ class JSArray(
     // 1. Let oldLenDesc be the result of calling the [[GetOwnProperty]] internal method of A passing "length" as the argument.
     //    The result will never be undefined or an accessor descriptor
     //    because Array objects are created with a length data property that cannot be deleted or reconfigured.
-    val oldLenDesc = _getOwnProperty("length")
+    val oldLenDesc = getOwnProperty("length")
     if (oldLenDesc == null) throw new InterpreterError("_defineOwnPropertyArray", I.IS.span)
     // 2. Let oldLen be oldLenDesc.[[Value]].
     var oldLen = oldLenDesc.value.get.asInstanceOf[PVal].v.value.asInstanceOf[EJSNumber].num.toLong
@@ -46,7 +46,7 @@ class JSArray(
       if (!Desc.value.isDefined) {
         // i. Return the result of calling the default [[DefineOwnProperty]] internal method (8.12.9)
         //    on A passing "length", Desc, and Throw as arguments.
-        return super._defineOwnProperty("length", Desc, Throw)
+        return super.defineOwnProperty("length", Desc, Throw)
       }
       // b. Let newLenDesc be a copy of Desc.
       val newLenDesc = Desc.copy
@@ -60,7 +60,7 @@ class JSArray(
       if (newLen >= oldLen) {
         // i. Return the result of calling the default [[DefineOwnProperty]] internal method
         //    (8.12.9) on A passing "length", newLenDesc, and Throw as arguments.
-        return super._defineOwnProperty("length", newLenDesc, Throw)
+        return super.defineOwnProperty("length", newLenDesc, Throw)
       }
       // g. Reject if oldLenDesc.[[Writable]] is false.
       if (oldLenDesc.writable.isDefined && !oldLenDesc.writable.get) { if (Throw) return IP.typeError else return IP.falsePV }
@@ -76,7 +76,7 @@ class JSArray(
       }
       // j. Let succeeded be the result of calling the default [[DefineOwnProperty]] internal method (8.12.9)
       //    on A passing "length", newLenDesc, and Throw as arguments.
-      super._defineOwnProperty("length", newLenDesc, Throw) match {
+      super.defineOwnProperty("length", newLenDesc, Throw) match {
         // k. If succeeded is false, return false.
         case f @ PVal(IRVal(EJSBool(false))) => return f
         case f @ PVal(IRVal(EJSBool(true))) =>
@@ -86,7 +86,7 @@ class JSArray(
             oldLen = oldLen - 1
             // ii. Let deleteSucceeded be the result of calling the [[Delete]] internal method of A passing
             //     ToString(oldLen) and false as arguments.
-            _delete(oldLen.toString, false) match {
+            delete(oldLen.toString, false) match {
               // iii. If deleteSucceeded is false, then
               case f @ PVal(IRVal(EJSBool(false))) =>
                 // 1. Set newLenDesc.[[Value] to oldLen+1.
@@ -95,7 +95,7 @@ class JSArray(
                 if (newWritable == false) { newLenDesc.writable = Some(false) }
                 // 3. Call the default [[DefineOwnProperty]] internal method (8.12.9) on A passing
                 //    "length", newLenDesc, and false as arguments.
-                super._defineOwnProperty("length", newLenDesc, false) match {
+                super.defineOwnProperty("length", newLenDesc, false) match {
                   case err: JSError => return err
                   case _ => if (Throw) return IP.typeError else return IP.falsePV
                 }
@@ -108,7 +108,7 @@ class JSArray(
             // i. Call the default [[DefineOwnProperty]] internal method (8.12.9) on A passing "length",
             //    Property Descriptor{[[Writable]]: false}, and false as arguments. This call will always
             //    return true.
-            super._defineOwnProperty(
+            super.defineOwnProperty(
               "length",
               new ObjectProp(None, None, None, Some(false), None, None), false
             )
@@ -125,7 +125,7 @@ class JSArray(
       if (index >= oldLen && oldLenDesc.writable.get == false) { if (Throw) return IP.typeError else return IP.falsePV }
       // c. Let succeeded be the result of calling the default [[DefineOwnProperty]] internal method (8.12.9) on A
       //    passing P, Desc, and false as arguments.
-      super._defineOwnProperty(P, Desc, false) match {
+      super.defineOwnProperty(P, Desc, false) match {
         // d. Reject if succeeded is false.
         case f @ PVal(IRVal(EJSBool(false))) =>
           if (Throw) return IP.typeError else return IP.falsePV
@@ -136,7 +136,7 @@ class JSArray(
             oldLenDesc.value = Some(PVal(I.IH.mkIRNumIR(index + 1)))
             // ii. Call the default [[DefineOwnProperty]] internal method (8.12.9) on A passing "length",
             //     oldLenDesc, and false as arguments. This call will always return true.
-            super._defineOwnProperty("length", oldLenDesc, false)
+            super.defineOwnProperty("length", oldLenDesc, false)
           }
           // f. Return true.
           return IP.truePV
@@ -145,6 +145,6 @@ class JSArray(
     }
     // 5. Return the result of calling the default [[DefineOwnProperty]] internal method (8.12.9)
     //    on A passing P, Desc, and Throw as arguments.
-    return super._defineOwnProperty(P, Desc, Throw)
+    return super.defineOwnProperty(P, Desc, Throw)
   }
 }

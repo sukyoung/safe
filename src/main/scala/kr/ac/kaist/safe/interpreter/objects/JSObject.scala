@@ -39,34 +39,34 @@ case class JSObject(
    * 8.12.1 [[GetOwnProperty]](P)
    * Dom(o) = { x | x |-> _ \in o.@property }
    */
-  def __isInDomO(p: PName): Boolean = property.containsKey(p)
+  def isInDomO(p: PName): Boolean = property.containsKey(p)
 
-  def __getProp(x: PName): ObjectProp = property.get(x)
-  def __putProp(x: PName, op: ObjectProp): Unit = property.put(x, op)
+  def getProp(x: PName): ObjectProp = property.get(x)
+  def putProp(x: PName, op: ObjectProp): Unit = property.put(x, op)
 
-  def __isDataProp(x: PName): Boolean = {
-    val (op, _) = _getProperty(x)
+  def isDataProp(x: PName): Boolean = {
+    val (op, _) = getProperty(x)
     op != null && I.IH.isDataDescriptor(op)
   }
-  def __isAccessorProp(x: PName): Boolean = {
-    val (op, _) = _getProperty(x)
+  def isAccessorProp(x: PName): Boolean = {
+    val (op, _) = getProperty(x)
     op != null && I.IH.isAccessorDescriptor(op)
   }
 
-  def __isWritable(x: PName): Boolean = {
-    val (op, _) = _getProperty(x)
+  def isWritable(x: PName): Boolean = {
+    val (op, _) = getProperty(x)
     op != null && op.isWritable
   }
-  def __isEnumerable(x: PName): Boolean = {
-    val (op, _) = _getProperty(x)
+  def isEnumerable(x: PName): Boolean = {
+    val (op, _) = getProperty(x)
     op != null && op.isEnumerable
   }
-  def __isConfigurable(x: PName): Boolean = {
-    val (op, _) = _getProperty(x)
+  def isConfigurable(x: PName): Boolean = {
+    val (op, _) = getProperty(x)
     op != null && op.isConfigurable
   }
 
-  def __callBuiltinFunction(method: JSFunction, argsObj: JSObject): Unit = throw new InterpreterError("JSObject::__callBuiltinFunction()", I.IS.span)
+  def callBuiltinFunction(method: JSFunction, argsObj: JSObject): Unit = throw new InterpreterError("JSObject::__callBuiltinFunction()", I.IS.span)
 
   ////////////////////////////////////////////////////////////////////////////////
   // 8. Types
@@ -78,7 +78,7 @@ case class JSObject(
    * If O doesn't have an own property with name P, return undefined.
    *   Returns null, if the undefined should be returned.
    */
-  def _getOwnProperty(x: PName): ObjectProp = {
+  def getOwnProperty(x: PName): ObjectProp = {
     val v = property.get(x)
     // 1. If O doesn't have an own property with name P, return undefined.
     if (v == null) null // null means undefined.
@@ -88,13 +88,13 @@ case class JSObject(
   /*
    * 8.12.2 [[GetProperty]](P)
    */
-  def _getProperty(x: PName): (ObjectProp, JSObject) =
+  def getProperty(x: PName): (ObjectProp, JSObject) =
     {
       var o: JSObject = this
       var prop: ObjectProp = null
       var cont: Boolean = true
       while (cont) {
-        prop = o._getOwnProperty(x)
+        prop = o.getOwnProperty(x)
         // 2. If prop is not undefined, return prop.
         if (prop != null) cont = false
         // 4. If proto is null, return undefined.
@@ -110,8 +110,8 @@ case class JSObject(
    * 8.12.3 [[Get]](P)
    * H(l).[[Get]](P)
    */
-  def _get(x: PName): Val = {
-    val (desc, _) = _getProperty(x)
+  def get(x: PName): Val = {
+    val (desc, _) = getProperty(x)
     // 2. if desc is undefined, return undefined.
     if (desc == null) IP.undefV
     else if (I.IH.isDataDescriptor(desc)) desc.value.get
@@ -140,8 +140,8 @@ case class JSObject(
   /*
    * 8.12.4 [[CanPut]](P)
    */
-  def _canPut(x: PName): Boolean = {
-    val desc = _getOwnProperty(x)
+  def canPut(x: PName): Boolean = {
+    val desc = getOwnProperty(x)
     // 2. If desc is not undefined, then
     if (desc != null) {
       if (I.IH.isAccessorDescriptor(desc)) {
@@ -151,7 +151,7 @@ case class JSObject(
       } else desc.isWritable
     } else if (proto == IP.nullObj) extensible
     else {
-      val (inherited, _) = proto._getProperty(x)
+      val (inherited, _) = proto.getProperty(x)
       // 6. If inherited is undefined, return the value of the [[Extensible]] internal property of O.
       if (inherited == null) extensible
       else if (I.IH.isAccessorDescriptor(inherited)) {
@@ -168,23 +168,23 @@ case class JSObject(
   /*
    * 8.12.5 [[Put]](P,V,Throw)
    */
-  def _put(x: PName, v: Val, b: Boolean): ValError = {
-    if (!_canPut(x)) {
+  def put(x: PName, v: Val, b: Boolean): ValError = {
+    if (!canPut(x)) {
       // a. If Throw is true, then throw a TypeError exception.
       if (b) IP.typeError
       else v
     } else {
-      val ownDesc = _getOwnProperty(x)
+      val ownDesc = getOwnProperty(x)
       if (ownDesc != null && I.IH.isDataDescriptor(ownDesc)) {
         // a. Let valueDesc be the Property Descriptor {[[Value]]: V}.
         // b. Call the [[DefineOwnPropertry]] internal method of O passing P, valueDesc, and Throw as arguments.
-        _defineOwnProperty(x, new ObjectProp(Some(v), None, None, None, None, None), b) match {
+        defineOwnProperty(x, new ObjectProp(Some(v), None, None, None, None, None), b) match {
           case err: JSError => err
           case _ => v
         }
       } else {
         // This may be either an own or inherited accessor property descriptor or an inherited data property descriptor.
-        val (desc, _) = _getProperty(x)
+        val (desc, _) = getProperty(x)
         if (desc != null && I.IH.isAccessorDescriptor(desc)) {
           // a. Let setter be desc.[[Set]] which cannot be undefined.
           // b. Call the [[Call]] internal method of setter providing O as the this value and providing V as the sole argument.
@@ -192,7 +192,7 @@ case class JSObject(
             case setter: JSFunction =>
               // Argument
               val args: JSArray = I.IS.ArrayConstructor.apply(IP.plusOneV, "Arguments")
-              args._defineOwnProperty("0", I.IH.mkDataProp(v, true, true, true), false)
+              args.defineOwnProperty("0", I.IH.mkDataProp(v, true, true, true), false)
 
               val oldValue = I.IS.comp.value
               I.IS.comp.value = null
@@ -210,7 +210,7 @@ case class JSObject(
           }
         } else {
           val newDesc = I.IH.mkDataProp(v, true, true, true)
-          _defineOwnProperty(x, newDesc, b) match {
+          defineOwnProperty(x, newDesc, b) match {
             case err: JSError => err
             case _ => v
           }
@@ -222,16 +222,16 @@ case class JSObject(
   /*
    * 8.12.6 [[HasProperty]](P)
    */
-  def _hasProperty(p: PName): Boolean = {
-    val (desc, _) = _getProperty(p)
+  def hasProperty(p: PName): Boolean = {
+    val (desc, _) = getProperty(p)
     return desc != null
   }
 
   /*
    * 8.12.7 [[Delete]](P, Throw)
    */
-  def _delete(x: PName, b: Boolean): ValError = {
-    val desc = _getOwnProperty(x)
+  def delete(x: PName, b: Boolean): ValError = {
+    val desc = getOwnProperty(x)
     // 2. If desc is undefined, then return true.
     if (desc == null) return IP.truePV
     else if (desc.isConfigurable) {
@@ -244,14 +244,14 @@ case class JSObject(
   /*
    * 8.12.8 [[DefaultValue]](hint)
    */
-  def _defaultValue(hint: String): PVal = {
+  def defaultValue(hint: String): PVal = {
     def getString(): Option[PVal] = {
-      val toString: Val = _get("toString")
+      val toString: Val = get("toString")
       if (I.IH.isCallable(toString)) {
         val args: JSObject = I.IS.ArrayConstructor.construct(Nil)
         val oldEnv = I.IS.env
         val oldTb = I.IS.tb
-        toString.asInstanceOf[JSFunction]._call(this, args)
+        toString.asInstanceOf[JSFunction].call(this, args)
         I.IS.env = oldEnv
         I.IS.tb = oldTb
         if (I.IS.comp.Type == CT.RETURN && I.IS.comp.value.isInstanceOf[PVal]) Some(I.IS.comp.value.asInstanceOf[PVal])
@@ -259,12 +259,12 @@ case class JSObject(
       } else None
     }
     def getValue(): Option[PVal] = {
-      val valueOf = _get("valueOf")
+      val valueOf = get("valueOf")
       if (I.IH.isCallable(valueOf)) {
         val args: JSObject = I.IS.ArrayConstructor.construct(Nil)
         val oldEnv = I.IS.env
         val oldTb = I.IS.tb
-        valueOf.asInstanceOf[JSFunction]._call(this, args)
+        valueOf.asInstanceOf[JSFunction].call(this, args)
         I.IS.env = oldEnv
         I.IS.tb = oldTb
         if (I.IS.comp.Type == CT.RETURN && I.IS.comp.value.isInstanceOf[PVal]) Some(I.IS.comp.value.asInstanceOf[PVal])
@@ -310,9 +310,9 @@ case class JSObject(
   /*
    * 8.12.9 [[DefineOwnProperty]](P, Desc, Throw)
    */
-  def _defineOwnProperty(x: Var, op: ObjectProp, b: Boolean): ValError = {
+  def defineOwnProperty(x: Var, op: ObjectProp, b: Boolean): ValError = {
     // 1. Let current be the result of calling the [[GetOwnProperty]] internal method of O with property name P.
-    val current = _getOwnProperty(x)
+    val current = getOwnProperty(x)
     if (current == null) {
       // 2. Let extensible be the value of the [[Extensible]] internal property of O.
       // 3. If current is undefined and extensible is false, then Reject.
@@ -323,12 +323,12 @@ case class JSObject(
         if (I.IH.isGenericDescriptor(op) || I.IH.isDataDescriptor(op)) {
           // i. Create an own data property named P of object O whose [[Value]], [[Writable]], [[Enumerable]] and [[Configurable]] attribute values are described by Desc.
           //    If the value of an attribute field of Desc is absent, the attribute of the newly created property is set to its default value.
-          __putProp(x, I.IH.mkDataProp(op.getValueOrDefault, op.getWritableOrDefault, op.getEnumerableOrDefault, op.getConfigurableOrDefault))
+          putProp(x, I.IH.mkDataProp(op.getValueOrDefault, op.getWritableOrDefault, op.getEnumerableOrDefault, op.getConfigurableOrDefault))
         } // b. Else, Desc must be an accessor Property Descriptor so,
         else {
           // i. Create an own accessor property named P of object O whose [[Get]], [[Set]], [[Enumerable]] and [[Configurable]] attribute values are described by Desc.
           //    If the value of an attribute field of Desc is absent, the attribute of the newly created property is set to its default value.
-          __putProp(x, I.IH.mkAccessorProp(op.getGetOrDefault, op.getSetOrDefault, op.getEnumerableOrDefault, op.getConfigurableOrDefault))
+          putProp(x, I.IH.mkAccessorProp(op.getGetOrDefault, op.getSetOrDefault, op.getEnumerableOrDefault, op.getConfigurableOrDefault))
         }
       }
       // c. Return true.
@@ -357,13 +357,13 @@ case class JSObject(
           // i. Convert the property named P of object O from a data property to an accessor property.
           //    Preserve the existing values of the converted property's [[Configurable]] and
           //    [[Enumerable]] attributes and set the rest of the property's attributes to their default values.
-          __putProp(x, I.IH.mkAccessorProp(IP.undefV, IP.undefV, op.isEnumerable, op.isConfigurable))
+          putProp(x, I.IH.mkAccessorProp(IP.undefV, IP.undefV, op.isEnumerable, op.isConfigurable))
         } // c. Else,
         else {
           // i. Convert the property named P of object O from a accessor property to an data property.
           //    Preserve the existing values of the converted property's [[Configurable]] and
           //    [[Enumerable]] attributes and set the rest of the property's attributes to their default values.
-          __putProp(x, I.IH.mkDataProp(IP.undefV, false, op.isEnumerable, op.isConfigurable))
+          putProp(x, I.IH.mkDataProp(IP.undefV, false, op.isEnumerable, op.isConfigurable))
         }
       } // 10. Else, if IsDataDescriptor(current) and IsDataDescriptor(Desc) are both true, then
       else if (I.IH.isDataDescriptor(current) && I.IH.isDataDescriptor(op)) {
@@ -395,17 +395,17 @@ case class JSObject(
       if (op.writable.isDefined) current.writable = op.writable
       if (op.enumerable.isDefined) current.enumerable = op.enumerable
       if (op.configurable.isDefined) current.configurable = op.configurable
-      __putProp(x, current)
+      putProp(x, current)
       // 13. Return true.
-      return IP.truePV
+      IP.truePV
     }
   }
 
   // 15.4
-  def __isSparse(): Boolean = {
-    val len = _get("length")
+  def isSparse: Boolean = {
+    val len = get("length")
     for (i <- 0L until I.IH.toUint32(len)) {
-      val elem = _getOwnProperty(i.toString)
+      val elem = getOwnProperty(i.toString)
       if (elem == null || I.IH.isUndef(elem)) return true
     }
     false

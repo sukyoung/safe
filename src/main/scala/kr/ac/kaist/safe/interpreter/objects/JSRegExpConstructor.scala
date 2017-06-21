@@ -15,7 +15,7 @@ import kr.ac.kaist.safe.interpreter._
 import kr.ac.kaist.safe.util.regexp._
 
 class JSRegExpConstructor(_I: Interpreter, _proto: JSObject)
-    extends JSFunction13(_I, _proto, "Array", true, propTable(), _I.IH.dummyFtn(0), EmptyEnv(), true) {
+    extends JSFunction13(_I, _proto, "Array", true, propTable, _I.IH.dummyFtn(0), EmptyEnv(), true) {
   def init(): Unit = {
     /*
      * 15.10.5 Properties of the RegExp Constructor
@@ -57,7 +57,7 @@ class JSRegExpConstructor(_I: Interpreter, _proto: JSObject)
           throw new kr.ac.kaist.safe.interpreter.SyntaxErrorException
       }
 
-    val prop = propTable()
+    val prop = propTable
     prop.put("source", I.IH.strProp(s))
     prop.put("global", I.IH.boolProp(b_g))
     prop.put("ignoreCase", I.IH.boolProp(b_i))
@@ -72,9 +72,9 @@ class JSRegExpConstructor(_I: Interpreter, _proto: JSObject)
    * 15.10.3.1 RegExp(pattern, flags)
    * TODO
    */
-  override def _call(tb: Val, argsObj: JSObject): Unit = I.IS.comp.setReturn(_construct(argsObj))
+  override def call(tb: Val, argsObj: JSObject): Unit = I.IS.comp.setReturn(construct(argsObj))
 
-  override def _construct(argsObj: JSObject): JSRegExp = {
-    construct(argsObj._get("0"), argsObj._get("1"))
+  override def construct(argsObj: JSObject): JSRegExp = {
+    construct(argsObj.get("0"), argsObj.get("1"))
   }
 }
