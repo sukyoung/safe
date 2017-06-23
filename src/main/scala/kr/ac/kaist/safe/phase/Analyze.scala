@@ -34,6 +34,10 @@ case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, Int, TracePartiti
     safeConfig: SafeConfig,
     config: AnalyzeConfig
   ): Try[(CFG, Int, TracePartition, Semantics)] = {
+    analyze(cfg, config)
+  }
+
+  def analyze(cfg: CFG, config: AnalyzeConfig): Try[(CFG, Int, TracePartition, Semantics)] = {
     // initialization
     Utils.register(
       config.AbsUndef,

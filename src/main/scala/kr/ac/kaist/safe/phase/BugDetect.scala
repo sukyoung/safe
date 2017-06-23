@@ -33,7 +33,7 @@ case object BugDetect extends PhaseObj[(CFG, Int, TracePartition, Semantics), Bu
 
   // Move to CFGBlock?  Copied from HTMLWriter.
   private def isReachableUserCode(sem: Semantics, block: CFGBlock): Boolean =
-    !sem.getState(block).isEmpty && !NodeUtil.isModeled(block)
+    sem.getState(block).nonEmpty && !NodeUtil.isModeled(block)
 
   // Collect CFG expressions from CFG instructions
   private def collectExprs(i: CFGNormalInst): List[CFGExpr] = i match {
@@ -77,7 +77,7 @@ case object BugDetect extends PhaseObj[(CFG, Int, TracePartition, Semantics), Bu
 
   // Check block/instruction-level rules: ConditionalBranch
   private def checkBlock(block: CFGBlock, semantics: Semantics): List[String] =
-    if (isReachableUserCode(semantics, block) && !block.getInsts.isEmpty) {
+    if (isReachableUserCode(semantics, block) && block.getInsts.nonEmpty) {
       // TODO it is working only when for each CFGBlock has only one control point.
       val (_, st) = semantics.getState(block).head
       val (bugs, _) =

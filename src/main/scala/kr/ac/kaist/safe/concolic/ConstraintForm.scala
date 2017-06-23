@@ -14,7 +14,7 @@ package kr.ac.kaist.safe.concolic
 import _root_.java.util.{ List => JList }
 import _root_.edu.rice.cs.plt.tuple.{ Option => JavaOption }
 import _root_.kr.ac.kaist.safe.util.useful.Options._
-// TODO REM import kr.ac.kaist.jsaf.nodes_util.{IRFactory => IF, NodeUtil => NU}
+// TODO MV removed: import kr.ac.kaist.jsaf.nodes_util.{IRFactory => IF, NodeUtil => NU}
 
 class ConstraintForm() {
   //var lhs: String = null

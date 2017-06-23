@@ -23,6 +23,7 @@ import kr.ac.kaist.safe.util.useful.Lists
 object NodeFactory {
   def makeDummyAST(name: String): ASTNode = makeDummyAST(dummyASTInfo(name), name)
   def makeDummyAST(info: ASTNodeInfo, name: String): ASTNode = makeNoOp(info, name)
+  def makeDummyAST(span: Span): ASTNode = makeNoOp(NU.makeASTNodeInfo(span), span.fileName)
   val dummyAST: ASTNode = makeDummyAST("dummyAST")
   def dummyASTInfo(villain: String): ASTNodeInfo = NU.makeASTNodeInfo(makeSpan(villain))
   val dummyASTInfo: ASTNodeInfo = NU.makeASTNodeInfo(NU.dummySpan)

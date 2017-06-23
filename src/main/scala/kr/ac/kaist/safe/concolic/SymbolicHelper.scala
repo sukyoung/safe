@@ -72,7 +72,7 @@ class SymbolicHelper(I: Interpreter) {
   val BRANCH = 2
   val ENDBRANCH = 3
 
-  // TODO MV Removed: var coverage: Coverage = null
+  var coverage: Coverage = null
 
   val maxDepth = 3
   var loopDepth = new HashMap[String, Int]
@@ -84,29 +84,29 @@ class SymbolicHelper(I: Interpreter) {
   var startTime: Long = 0
 
   // TODO MV Simplified, was originally: def initialize(cov: Coverage)
-  def initialize() = ??? // {
-  //    coverage = cov
-  //
-  //    index = 0
-  //    input_index = 0
-  //
-  //    symbolic_memory.clear()
-  //    objectMemory.clear()
-  //
-  //    argumentsMemory.clear()
-  //    recursive = List()
-  //    coverage.functions.foreach(_._2.initDepth)
-  //
-  //    loopDepth.clear()
-  //
-  //    report = List[SymbolicInfo]()
-  //
-  //    System.out.println
-  //    var target = coverage.target
-  //    if (target != null && target.contains("@"))
-  //      target = target.substring(0, target.indexOf("@"))
-  //    System.out.println("Current target function: " + target)
-  //  }
+  def initialize(cov: Coverage) = {
+      coverage = cov
+
+      index = 0
+      input_index = 0
+
+      symbolic_memory.clear()
+      objectMemory.clear()
+
+      argumentsMemory.clear()
+      recursive = List()
+      coverage.functions.foreach(_._2.initDepth)
+
+      loopDepth.clear()
+
+      report = List[SymbolicInfo]()
+
+      System.out.println
+      var target = coverage.target
+      if (target != null && target.contains("@"))
+        target = target.substring(0, target.indexOf("@"))
+      System.out.println("Current target function: " + target)
+    }
 
   // Initialize the symbolic memorys
   def walkVarStmt(id: IRId, n: Int, env: IRId): Unit = {

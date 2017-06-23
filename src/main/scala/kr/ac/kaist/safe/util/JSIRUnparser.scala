@@ -20,14 +20,14 @@ import kr.ac.kaist.safe.util.{ NodeUtil => NU, _ }
  */
 class JSIRUnparser(program: IRNode) {
 
-  def doit() = walk(program)
-  val width = 50
+  def doit(): String = walk(program)
+  val width: Int = 50
 
   /* indentation utilities *************************************************/
   var indent = 0
   val tab: StringBuilder = new StringBuilder("  ")
-  def increaseIndent = indent += 1
-  def decreaseIndent = indent -= 1
+  def increaseIndent(): Unit = indent += 1
+  def decreaseIndent(): Unit = indent -= 1
   def getIndent = {
     val s: StringBuilder = new StringBuilder
     for (i <- 0 to indent - 1) s.append(tab)
@@ -36,7 +36,7 @@ class JSIRUnparser(program: IRNode) {
   def isOneline(node: Any): Boolean = node match {
     case _: ABlock => false
     case Some(in) => isOneline(in)
-    case _ => !(node.isInstanceOf[ABlock])
+    case _ => !node.isInstanceOf[ABlock]
   }
 
   /* utility methods ********************************************************/
@@ -60,8 +60,11 @@ class JSIRUnparser(program: IRNode) {
     }
   }
 
-  var uniq_id = 0
-  def fresh() = { uniq_id += 1; uniq_id.toString }
+  var uniq_id: Int = 0
+  def fresh: String = {
+    uniq_id += 1
+    uniq_id.toString
+  }
   type Env = List[(String, String)]
   var env = Nil.asInstanceOf[Env]
   /*

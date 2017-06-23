@@ -36,11 +36,13 @@ object Interpret extends PhaseObj[IRRoot, InterpretConfig, Unit] {
       "Interpret a Tizen application."),
     ("jquery", BoolOption((c: InterpretConfig) => c.jquery = true),
       //TODO MV
-      "TODO MV no idea what this option does.")
+      "TODO MV no idea what this option does."),
+    ("ecma", BoolOption((c: InterpretConfig) => c.ECMASpecTest = true),
+      "Interpret a Tizen application.")
   )
 
   def apply(input: IRRoot, safeConfig: SafeConfig, config: InterpretConfig): Try[Unit] = {
-    new Interpreter(config).doit(input)
+    new Interpreter(config).doit(input, None)
     Success()
   }
 
@@ -56,5 +58,6 @@ object InterpreterModes extends Enumeration {
 case class InterpretConfig(
   var mode: InterpreterModes.Mode = InterpreterModes.OTHER,
   var tizens: Boolean = false,
-  var jquery: Boolean = false
+  var jquery: Boolean = false,
+  var ECMASpecTest: Boolean = true
 ) extends Config

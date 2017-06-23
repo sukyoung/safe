@@ -53,7 +53,7 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
   // Run
   ////////////////////////////////////////////////////////////////////////////////
 
-  def doit(program: IRRoot, printComp: Boolean = true) = {
+  def doit(program: IRRoot, coverage: Option[Coverage], printComp: Boolean = true) = {
     def tsLab(l: IRId) = l.uniqueName
 
     // Set InterpreterState
@@ -66,7 +66,7 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
       val coverage = IS.coverage.get
 
       // TODO MV Simplified: was originally: SH.initialize(coverage)
-      SH.initialize()
+      SH.initialize(coverage)
 
       val inputIR: List[IRStmt] = ??? // TODO MV Simplified: was originally: coverage.inputIR match { case Some(ir) => List(ir); case None => List() }
       /*println("Input IR!!!!!!!!")
@@ -114,6 +114,41 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
           case _ => System.out.println("Throw(" + IS.lastComp.error.toString + ") @ " + IS.lastComp.span)
         }
     }
+    if (config.ECMASpecTest) {
+      assert(checkResults, "Value of a computed result does not equal corresponding expected value")
+    }
+
+  }
+
+  def checkResults: Boolean = {
+    println("hier")
+    val resultPrefix = "__result"
+    val expectPrefix = "__expect"
+    @scala.annotation.tailrec
+    def loopEnvs(env: Env): Boolean = {
+      println(env)
+      env match {
+        case EmptyEnv() => true
+        case ConsEnv(first, rest) => first match {
+          case DeclEnvRec(store) =>
+            val set: Set[String] = kr.ac.kaist.safe.util.useful.Sets.toSet(store.keySet())
+            val resultsNames = set.filter(_.startsWith(resultPrefix))
+            val resultsZipped: Set[(String, StoreValue, String, StoreValue)] = resultsNames.map((resultName: String) => {
+              val resultValue = store.get(resultName)
+              val expectedName: String = expectPrefix + resultName.stripPrefix(resultPrefix)
+              val expectedValue = store.get(expectedName)
+              (resultName, resultValue, expectedName, expectedValue)
+            })
+            println(resultsZipped)
+            val firstEnvMatches = resultsZipped.forall({
+              case (_, resultValue, _, expectedValue) =>
+                resultValue.value == expectedValue.value
+            })
+            firstEnvMatches && loopEnvs(rest)
+        }
+      }
+    }
+    loopEnvs(IS.env)
   }
 
   ////////////////////////////////////////////////////////////////////////////////
