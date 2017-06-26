@@ -1,7 +1,7 @@
 #!/bin/sh
 
 ################################################################################
-#    Copyright (c) 2016, KAIST.
+#    Copyright (c) 2016-2017, KAIST.
 #    All rights reserved.
 #
 #    Use is subject to license terms.
@@ -22,14 +22,14 @@ strdiff() {
 for dir in $WKSPACE/src $WKSPACE/tests
 do
   cd $dir
-  files_2016_java=`find $dir -name "*.java" -newer ../timestamp -print`
-  files_2016_rats=`find $dir -name "*.rats" -newer ../timestamp -print`
-  files_2016_scala=`find $dir -name "*.scala" -newer ../timestamp -print`
+  files_2017_java=`find $dir -name "*.java" -newer ../timestamp -print`
+  files_2017_rats=`find $dir -name "*.rats" -newer ../timestamp -print`
+  files_2017_scala=`find $dir -name "*.scala" -newer ../timestamp -print`
 
-  for fil in $files_2016_java $files_2016_rats $files_2016_scala
+  for fil in $files_2017_java $files_2017_rats $files_2017_scala
   do
-    res=`grep "2016, KAIST" $fil`
-    if strdiff "$res" "2016, KAIST" ; then
+    res=`grep "2017, KAIST" $fil`
+    if strdiff "$res" "2017, KAIST" ; then
       if (strdiff "$fil" "main/java/kr/ac/kaist/safe/parser/JS.java") ; then
         echo "  $fil"
       fi
