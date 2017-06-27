@@ -16,6 +16,7 @@ import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.json.NodeProtocol._
 import kr.ac.kaist.safe.json.CFGExprProtocol._
+import kr.ac.kaist.safe.json.AbsValueProtocol._
 import kr.ac.kaist.safe.errors.error.{
   AllocSiteParseError,
   CFGInstParseError,
@@ -29,20 +30,6 @@ object CFGInstProtocol extends DefaultJsonProtocol {
 
   var cfg: CFG = _
   var block: CFGBlock = _
-
-  implicit object AllocSiteJsonFormat extends RootJsonFormat[AllocSite] {
-
-    def write(aSite: AllocSite): JsValue = aSite match {
-      case UserAllocSite(id) => JsNumber(id)
-      case PredAllocSite(name) => JsString(name)
-    }
-
-    def read(value: JsValue): AllocSite = value match {
-      case JsNumber(id) => UserAllocSite(id.toInt)
-      case JsString(name) => PredAllocSite(name)
-      case _ => throw AllocSiteParseError(value)
-    }
-  }
 
   implicit object CFGNormalInstJsonFormat extends RootJsonFormat[CFGNormalInst] {
 

@@ -19,6 +19,7 @@ import kr.ac.kaist.safe.json.NodeProtocol._
 import kr.ac.kaist.safe.json.CFGExprProtocol._
 import kr.ac.kaist.safe.json.CFGInstProtocol._
 import kr.ac.kaist.safe.json.CFGFunctionProtocol._
+import kr.ac.kaist.safe.json.AbsValueProtocol._
 import kr.ac.kaist.safe.errors.error.{
   CFGParseError,
   CFGEdgeParseError,
