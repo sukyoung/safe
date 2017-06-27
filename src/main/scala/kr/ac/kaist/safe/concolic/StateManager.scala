@@ -135,14 +135,14 @@ class StateManager(bugDetector: BugDetector) {
 
       for(inst <- block.getInsts) {
         // Insert the instruction input CState into the cache
-        cacheKey = (block, inst.getInstId)
+        cacheKey = (block, inst.id)
         inCache.put(cacheKey, normalCState)
 
         val previousNormalCState = normalCState
-        normalCState = new IHashMap[CallContext, State]
+        normalCState = new IHashMap[TracePartition, AbsState]
         //exceptionState = StateBot
-        val normals = new MHashSet[CallContext]
-        val bottoms = new MHashSet[CallContext]
+        val normals = new MHashSet[TracePartition]
+        val bottoms = new MHashSet[TracePartition]
         for((callContext, state) <- previousNormalCState) {
           if(cfg.getInfeasibleNodeMap.get((block, callContext)).isEmpty) {
             val (newNormalState, newExceptionState) = semantics.I((block, callContext), inst, state.heap, state.context, HeapBot, ContextBot)
@@ -160,10 +160,6 @@ class StateManager(bugDetector: BugDetector) {
         }
 
         //if(normals.size == 0) {
-        val span = inst.getInfo match {
-          case Some(info) => info.getSpan.toString
-          case None => "?"
-        }
         //for(callContext <- bottoms) {
         //  println("- HeapBot(" + block + "," + callContext + ") / " + span + " : [" + inst.getInstId + "] " + inst)
         //}
@@ -174,7 +170,7 @@ class StateManager(bugDetector: BugDetector) {
       }
 
       // Insert the instruction output CState into the cache
-      cacheKey = (block, -1, _MOST_SENSITIVE)
+      cacheKey = (block, -1)
       outCache.put(cacheKey, normalCState)
     }
 

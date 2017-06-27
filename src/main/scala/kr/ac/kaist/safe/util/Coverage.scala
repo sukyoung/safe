@@ -13,6 +13,8 @@ package kr.ac.kaist.safe.util
 
 import _root_.java.util.{ List => JList }
 import kr.ac.kaist.safe.analyzer._
+import kr.ac.kaist.safe.analyzer.domain.{ AbsLoc, AbsHeap }
+import kr.ac.kaist.safe.analyzer.domain.DefaultState._
 import kr.ac.kaist.safe.concolic._
 import kr.ac.kaist.safe.nodes.ast._
 import kr.ac.kaist.safe.nodes.ir._
@@ -120,8 +122,9 @@ class Coverage(var cfg: CFG,
   def checkTarget(fun: String) = functions.get(fun) match { case Some(f) => f.isTarget; case None => false }
 
   // Using static analysis, store function information.
-  def updateFunction(): Unit = {
-    for (k <- NodeRelation.cfg2irMap.keySet) {
+  def updateFunction(cfgRoot: CFGNode): Unit = {
+    val cfgNodes = CFGCollector.collect(cfgRoot)
+    for (k <- cfgNodes) {
       k match {
         case inst @ CFGConstruct(iid, info, cons, thisArg, arguments, addr, addr2) => identifyFunction(inst, thisArg) //identifyFunction(inst)
         case inst @ CFGCall(iid, info, fun, thisArg, arguments, addr, addr2) => identifyFunction(inst, thisArg) //identifyFunction(inst)
@@ -138,35 +141,39 @@ class Coverage(var cfg: CFG,
     // To find a constructor name of this argument.
     val thisinfo = new TypeInfo("Object")
 
-    var cstate = stateManager.getOutputCState(cfgBlock, inst.getInstId, _MOST_SENSITIVE)
+    var cstate = semantics.getState(cfgBlock)  //stateManager.getOutputCState(cfgBlock, inst.id)
     var thisNames = List[String]()
-    for ((callContext, state) <- cstate) {
-      var lset = state._1(SinglePureLocalLoc)(thisArg.toString)._1._1._2.toSet
+    for ((callContext, Dom(heap, _)) <- cstate) {
+      val lset = heap.get(PredAllocSite.PURE_LOCAL)(thisArg.toString).value.locset
       // Compute this object
-      val thisObj = computeObject(state._1, lset)
-      val temp = thisNames ::: computeConstructorName(state._1, thisObj)
+      val thisObj = computeObject(heap, lset)
+      val temp = thisNames ::: computeConstructorName(heap, thisObj)
       thisNames = temp.distinct
     }
     thisinfo.addConstructors(thisNames)
 
     // To find other information of a function like argument type, it uses different heap, input states, because only successor nodes of input states can be entry nodes of functions.
-    var finfo = new FunctionInfo
-    cstate = stateManager.getInputCState(cfgBlock, inst.getInstId, _MOST_SENSITIVE)
+    val finfo = new FunctionInfo
+    cstate = stateManager.getInputCState(cfgBlock, inst.id)
     for ((callContext, state) <- cstate) {
-      val controlPoint: ControlPoint = (cfgBlock, callContext)
+      val controlPoint: ControlPoint = ControlPoint(cfgBlock, callContext)
 
-      semantics.getIPSucc(controlPoint) match {
+      semantics.getInterProcSucc(controlPoint) match {
         case Some(succMap) =>
+          // succMap = Map[ControlPoint, EdgeData]; succCp = ControlPoint
           for ((succCP, (succContext, succObj)) <- succMap) {
 
-            val fid = succCP._1._1
-            val argvars = cfg.getArgVars(fid)
+            val succBlock: CFGBlock = succCP.block
+            val func = succBlock.func
+            val argvars = func.argVars  // cfg.getArgVars(func)
 
-            for ((callContext, state) <- stateManager.getOutputCState(succCP._1, inst.getInstId, _MOST_SENSITIVE)) {
-              val arglset = state._1(SinglePureLocalLoc)(cfg.getArgumentsName(fid))._1._1._2
+            for ((tp, Dom(heap, state)) <- semantics.getState(succBlock)) {  // TODO MV original: stateManager
+//              case Dom(heap, state) =>
+            // .getOutputCState(succCP._1, inst.id)) {
+              val arglset = heap.get(PredAllocSite.PURE_LOCAL)(func.argumentsName).value.locset
               // Number of an argument
               var i = 0
-              val h_n = argvars.foldLeft(state._1)((hh, x) => {
+              val h_n = argvars.foldLeft(heap)((hh, x) => {
                 val v_i = arglset.foldLeft(ValueBot)((vv, argloc) => {
                   vv + Helper.Proto(hh, argloc, AbsString.alpha(i.toString))
                 })
@@ -215,11 +222,11 @@ class Coverage(var cfg: CFG,
               })
 
               // Compute this object.
-              functionName = cfg.getFuncName(fid)
-              if (cfg.isUserFunction(fid))
+              functionName = func.name
+              if (func.isUser)
                 finfo.setCandidate
               if (functionName.contains(".")) {
-                val thislset = state._1(SinglePureLocalLoc)("@this")._2._2.toSet
+                val thislset = state._1(PredAllocSite.PURE_LOCAL)("@this")._2._2.toSet
                 val thisObj = computeObject(h_n, thislset)
 
                 var properties = computePropertyList(thisObj, true)
@@ -253,7 +260,7 @@ class Coverage(var cfg: CFG,
     properties
   }
 
-  def computeObject(heap: Heap, lset: Set[Loc]): Obj = {
+  def computeObject(heap: AbsHeap, lset: AbsLoc): Obj = {
     if (lset.size == 0)
       Obj.bottom
     else if (lset.size == 1)
@@ -273,6 +280,6 @@ class Coverage(var cfg: CFG,
 
     // Get constructor names
     val temp = constructor("@construct")._3.toSet
-    temp.map(cfg.getFuncName(_)).toList
+    temp.map(_.name).toList
   }
 }
