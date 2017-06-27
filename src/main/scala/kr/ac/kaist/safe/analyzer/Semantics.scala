@@ -470,14 +470,6 @@ class Semantics(
   // internal API call
   // CFGInternalCall(ir, _, lhs, name, arguments, loc)
   def IC(ir: IRNode, lhs: CFGId, name: String, args: List[CFGExpr], loc: Option[AllocSite], st: AbsState, excSt: AbsState): (AbsState, AbsState) = (name, args, loc) match {
-    case (NodeUtil.INTERNAL_ADD_EVENT_FUNC, List(exprV), None) => {
-      val (v, excSetV) = V(exprV, st)
-      val id = NodeUtil.getInternalVarId(NodeUtil.INTERNAL_EVENT_FUNC)
-      val (curV, excSetC) = st.lookup(id)
-      val newSt = st.varStore(id, curV.locset + v.locset)
-      val newExcSt = st.raiseException(excSetV ++ excSetC)
-      (newSt, excSt + newExcSt)
-    }
     case (NodeUtil.INTERNAL_CLASS, List(exprO, exprP), None) => {
       val (v, excSetO) = V(exprO, st)
       val (p, excSetP) = V(exprP, st)
@@ -1027,7 +1019,7 @@ class Semantics(
       }
       val st1 = st.varStore(lhs, boolV)
       val newExcSt = st.raiseException(excSet)
-      (st1, newExcSt)
+      (st1, excSt + newExcSt)
     }
     case (NodeUtil.INTERNAL_ITER_NEXT, List(_, expr @ CFGVarRef(_, id)), None) => {
       val heap = st.heap
@@ -1053,7 +1045,25 @@ class Semantics(
       val next = AbsValue(cur.add(AbsNumber(1)), locset)
       val st2 = st1.varStore(id, next)
       val newExcSt = st.raiseException(excSet)
-      (st2, newExcSt)
+      (st2, excSt + newExcSt)
+    }
+    case (NodeUtil.INTERNAL_ADD_EVENT_FUNC, List(exprV), None) => {
+      val (v, excSetV) = V(exprV, st)
+      val id = NodeUtil.getInternalVarId(NodeUtil.INTERNAL_EVENT_FUNC)
+      val (curV, excSetC) = st.lookup(id)
+      val newSt = st.varStore(id, curV.locset + v.locset)
+      val newExcSt = st.raiseException(excSetV ++ excSetC)
+      (newSt, excSt + newExcSt)
+    }
+    case (NodeUtil.INTERNAL_GET_LOC, List(exprV), None) => {
+      val (v, excSetV) = V(exprV, st)
+      val locset = v.pvalue.strval.gamma match {
+        case ConInf() => AbsLoc.Top
+        case ConFin(strset) => AbsLoc(strset.map(str => Loc(str)))
+      }
+      val newSt = st.varStore(lhs, locset)
+      val newExcSt = st.raiseException(excSetV)
+      (newSt, excSt + newExcSt)
     }
     case _ =>
       excLog.signal(SemanticsNotYetImplementedError(ir))
