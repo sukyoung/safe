@@ -131,3 +131,7 @@ case class AbsContextParseError(value: JsValue) extends JsonFormatError("AbsCont
 case class AbsHeapParseError(value: JsValue) extends JsonFormatError("AbsHeap", value)
 
 case class AbsStateParseError(value: JsValue) extends JsonFormatError("AbsState", value)
+
+case class EdgeDataParseError(value: JsValue) extends JsonFormatError("EdgeData", value)
+
+case class SemanticsParseError(value: JsValue) extends JsonFormatError("Semantics", value)

@@ -101,6 +101,7 @@ object AbsValueProtocol extends DefaultJsonProtocol {
     }
   }
 
+  // TODO
   implicit object AbsStringJsonFormat extends RootJsonFormat[AbsString] {
     /*
     val map: Map[AbsString, Int] = Map(

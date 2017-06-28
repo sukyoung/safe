@@ -35,6 +35,8 @@ class Semantics(
 
   // control point maps to state
   protected val cpToState: MMap[CFGBlock, MMap[TracePartition, AbsState]] = MHashMap()
+  def getAllState: Map[CFGBlock, Map[TracePartition, AbsState]] =
+    cpToState.toMap map { case (block, mmap) => block -> mmap.toMap }
   def getState(block: CFGBlock): Map[TracePartition, AbsState] =
     cpToState.getOrElse(block, {
       val newMap = MHashMap[TracePartition, AbsState]()
@@ -58,24 +60,11 @@ class Semantics(
     else map(tp) = state
   }
 
-  // Interprocedural edges
-  case class EdgeData(old: OldASiteSet, env: AbsLexEnv, thisBinding: AbsValue) {
-    def +(other: EdgeData): EdgeData = EdgeData(
-      this.old + other.old,
-      this.env + other.env,
-      this.thisBinding + other.thisBinding
-    )
-    def <=(other: EdgeData): Boolean = {
-      this.old <= other.old &&
-        this.env <= other.env &&
-        this.thisBinding <= other.thisBinding
-    }
-    def </(other: EdgeData): Boolean = !(this <= other)
-  }
   type IPSucc = Map[ControlPoint, EdgeData]
   type IPSuccMap = Map[ControlPoint, IPSucc]
   private var ipSuccMap: IPSuccMap = HashMap()
   def getAllIPSucc: IPSuccMap = ipSuccMap
+  def setAllIPSucc(newMap: IPSuccMap): Unit = { ipSuccMap = newMap }
   def getInterProcSucc(cp: ControlPoint): Option[IPSucc] = ipSuccMap.get(cp)
 
   // Adds inter-procedural call edge from call-block cp1 to entry-block cp2.
@@ -1284,4 +1273,19 @@ class Semantics(
 
     (st2, excSt + newExcSt)
   }
+}
+
+// Interprocedural edges
+case class EdgeData(old: OldASiteSet, env: AbsLexEnv, thisBinding: AbsValue) {
+  def +(other: EdgeData): EdgeData = EdgeData(
+    this.old + other.old,
+    this.env + other.env,
+    this.thisBinding + other.thisBinding
+  )
+  def <=(other: EdgeData): Boolean = {
+    this.old <= other.old &&
+      this.env <= other.env &&
+      this.thisBinding <= other.thisBinding
+  }
+  def </(other: EdgeData): Boolean = !(this <= other)
 }
