@@ -101,33 +101,14 @@ object AbsValueProtocol extends DefaultJsonProtocol {
     }
   }
 
-  // TODO
   implicit object AbsStringJsonFormat extends RootJsonFormat[AbsString] {
-    /*
-    val map: Map[AbsString, Int] = Map(
-      StringSet.Top -> 0,
-      StringSet.Number -> 1,
-      StringSet.Other -> 2
-    )
-    val imap: Map[Int, AbsString] = map.map(_.swap)
 
-    def write(str: AbsString): JsValue = str match {
-      case StringSet.StrSet(values) => JsArray(values.to[Vector].map(JsString(_)))
-      case _ => JsNumber(map(str))
-    }
+    def write(str: AbsString): JsValue = str.json
+
     def read(value: JsValue): AbsString = value match {
-      case JsArray(values) => StringSet.StrSet(
-        values.map(_ match {
-        case JsString(s) => s
-        case _ => throw AbsStringParseError(value)
-      }).to[Set]
-      )
-      case JsNumber(n) => imap(n.toInt)
+      case JsArray(Vector(JsNumber(size), v)) => StringSet(size.toInt).fromJson(v)
       case _ => throw AbsStringParseError(value)
     }
-  */
-    def write(str: AbsString): JsValue = JsNull
-    def read(value: JsValue): AbsString = throw AbsStringParseError(value)
   }
 
   implicit object AllocSiteJsonFormat extends RootJsonFormat[AllocSite] {

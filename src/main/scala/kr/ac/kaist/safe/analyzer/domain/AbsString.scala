@@ -11,6 +11,8 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
+import spray.json._
+
 ////////////////////////////////////////////////////////////////////////////////
 // concrete string type
 ////////////////////////////////////////////////////////////////////////////////
@@ -43,6 +45,8 @@ trait AbsString extends AbsDomain[Str, AbsString] {
 
   def toAbsNumber: AbsNumber
   def toAbsBoolean: AbsBool
+
+  def json: JsValue
 }
 
 trait AbsStringUtil extends AbsDomainUtil[Str, AbsString] {
