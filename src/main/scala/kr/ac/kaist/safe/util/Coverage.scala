@@ -13,7 +13,7 @@ package kr.ac.kaist.safe.util
 
 import _root_.java.util.{ List => JList }
 import kr.ac.kaist.safe.analyzer._
-import kr.ac.kaist.safe.analyzer.domain.{ AbsLoc, AbsHeap }
+import kr.ac.kaist.safe.analyzer.domain._
 import kr.ac.kaist.safe.analyzer.domain.DefaultState._
 import kr.ac.kaist.safe.concolic._
 import kr.ac.kaist.safe.nodes.ast._
@@ -26,9 +26,8 @@ import kr.ac.kaist.safe.util.useful.Options._
 
 import scala.collection.mutable.HashMap
 
-class Coverage(var cfg: CFG,
-               var semantics: Semantics,
-               var stateManager: StateManager) {
+class Coverage(var cfg: CFG, //TODO MV Originally also included: var stateManager: StateManager
+               var semantics: Semantics) {
   var debug = false
   var timing = false
 
@@ -95,14 +94,14 @@ class Coverage(var cfg: CFG,
 
   // Check whether testing a function continue or not.
   def continue: Boolean = { isFirst = false; constraints.nonEmpty }
-  def existCandidate = functions.filter(x => x._2.isCandidate).nonEmpty
-  def removeTarget = {
+  def existCandidate = functions.exists(x => x._2.isCandidate)
+  def removeTarget(): Unit = {
     functions.get(target) match {
       case Some(info) =>
         // Need to initialize
         constraints = List[ConstraintForm]()
         input = Map[String, Id]()
-        info.done
+        info.done()
       case None =>
         System.out.println("Target should be function type")
     }
@@ -154,7 +153,7 @@ class Coverage(var cfg: CFG,
 
     // To find other information of a function like argument type, it uses different heap, input states, because only successor nodes of input states can be entry nodes of functions.
     val finfo = new FunctionInfo
-    cstate = stateManager.getInputCState(cfgBlock, inst.id)
+    cstate = semantics.getState(cfgBlock)  //TODO MV Originally: stateManager.getInputCState(cfgBlock, inst.id)
     for ((callContext, state) <- cstate) {
       val controlPoint: ControlPoint = ControlPoint(cfgBlock, callContext)
 
@@ -166,41 +165,42 @@ class Coverage(var cfg: CFG,
             val succBlock: CFGBlock = succCP.block
             val func = succBlock.func
             val argvars = func.argVars  // cfg.getArgVars(func)
+            functionName = func.name
 
-            for ((tp, Dom(heap, state)) <- semantics.getState(succBlock)) {  // TODO MV original: stateManager
-//              case Dom(heap, state) =>
-            // .getOutputCState(succCP._1, inst.id)) {
+            // TODO MV original: stateManagercase.getOutputCState(succCP._1, inst.id)) {
+            for ((tp, state@Dom(heap, context)) <- semantics.getState(succBlock)) {
               val arglset = heap.get(PredAllocSite.PURE_LOCAL)(func.argumentsName).value.locset
               // Number of an argument
               var i = 0
               val h_n = argvars.foldLeft(heap)((hh, x) => {
-                val v_i = arglset.foldLeft(ValueBot)((vv, argloc) => {
-                  vv + Helper.Proto(hh, argloc, AbsString.alpha(i.toString))
+                val v_i = arglset.foldLeft(DefaultValue.Bot)((vv, argloc) => {
+                  vv + hh.protoBase(argloc, Utils.AbsString.alpha(i.toString))
                 })
 
-                var v_i_types = v_i.typeKinds.split(", ")
+                val v_i_types = v_i.typeKinds
                 for (t <- v_i_types) {
-                  var tinfo = new TypeInfo(t)
+                  val tinfo = new TypeInfo(t)
                   if (t == "Object") {
-                    if (state </ StateBot) {
+                    if (state </ DefaultState.Bot) {
                       // Compute object
-                      var lset = v_i._2.toSet
+                      val lset = v_i.locset
                       val obj = computeObject(hh, lset)
 
                       // TODO: WARNING, just use one location in location set.
                       // To distinguish array objects and user generated objects
                       var isArray = false
                       for (l <- lset) {
-                        Helper.IsArray(hh, l).getSingle match {
-                          case Some(bool) => isArray = isArray || bool
-                          case None =>
+                        hh.isArray(l).getSingle match {
+                          case ConMany() =>
+                          case ConOne(bool) => isArray = isArray || bool
+                          case ConZero() =>
                         }
                       }
 
                       if (isArray) {
                         tinfo.addConstructors(List("Array"))
                         val arrayObj = computeObject(hh, lset)
-                        var length = arrayObj("length")._1._1._1.toString
+                        var length = arrayObj("length").value.pvalue.toString
                         if (length == "UInt")
                           length = "0"
                         tinfo.setProperties(List(length))
@@ -209,7 +209,7 @@ class Coverage(var cfg: CFG,
                         tinfo.addConstructors(computeConstructorName(hh, obj))
 
                         // Compute object properties
-                        val properties = computePropertyList(obj, false)
+                        val properties: List[String] = computePropertyList(obj, false)
                         tinfo.setProperties(properties)
                       }
                     }
@@ -218,18 +218,18 @@ class Coverage(var cfg: CFG,
                 }
                 //finfo.setCandidate
                 i += 1
-                Helper.CreateMutableBinding(hh, x, v_i)
+                state.createMutableBinding(x, v_i)
+                state.heap
               })
 
               // Compute this object.
-              functionName = func.name
               if (func.isUser)
-                finfo.setCandidate
+                finfo.setCandidate()
               if (functionName.contains(".")) {
-                val thislset = state._1(PredAllocSite.PURE_LOCAL)("@this")._2._2.toSet
+                val thislset = state.heap.get(PredAllocSite.PURE_LOCAL)("@this").value.locset
                 val thisObj = computeObject(h_n, thislset)
 
-                var properties = computePropertyList(thisObj, true)
+                val properties = computePropertyList(thisObj, true)
                 thisinfo.setProperties(properties)
               }
             }
@@ -249,33 +249,44 @@ class Coverage(var cfg: CFG,
     }
   }
 
-  def computePropertyList(obj: Obj, onlyPrimitive: Boolean): List[String] = {
-    var properties = obj.getProps.foldLeft[List[String]](List())((list, prop) => {
-      val p = obj(prop)._1._1._1
+  def computePropertyList(obj: AbsObject, onlyPrimitive: Boolean): List[String] = {
+    val properties = obj.abstractKeySet
+    val propertiesSet: Set[AbsString] = properties match {
+      case ConFin(s) => s
+      case ConInf() => Set()
+    }
+    val propValuesAbs: List[AbsString] = propertiesSet.foldLeft[List[AbsString]](Nil)((list, prop) => {
+      val p = obj(prop).value
       if (!onlyPrimitive || !p.typeKinds.contains("Object"))
         prop :: list
       else
         list
     })
-    properties
+    val propValuesConc = propValuesAbs.reduce( (list: List[String], x: AbsString) => {
+      val f = x.gamma match {
+        case ConFin(strings) =>
+          strings.map(_.str).toList
+        case ConInf() =>
+          Nil
+      }
+      list ++ f})
+    propValuesConc
   }
 
-  def computeObject(heap: AbsHeap, lset: AbsLoc): Obj = {
-    if (lset.size == 0)
-      Obj.bottom
-    else if (lset.size == 1)
-      heap(lset.head)
-    else
-      lset.tail.foldLeft(heap(lset.head))((o, l) => o + heap(l))
+  def computeObject(heap: AbsHeap, lset: AbsLoc): AbsObject = {
+    lset.foldLeft(DefaultObject.Bot)({
+      case (obj, loc) =>
+        obj + heap.get(loc)
+    })
   }
 
-  def computeConstructorName(heap: Heap, obj: Obj): List[String] = {
+  def computeConstructorName(heap: AbsHeap, obj: AbsObject): List[String] = {
     // Compute prototype object
-    var lset = obj("@proto")._1._1._2.toSet
+    var lset = obj("@proto").value.locset
     val proto = computeObject(heap, lset)
 
     // Compute constructor object
-    lset = proto("constructor")._1._1._2.toSet
+    lset = proto("constructor").value.locset
     val constructor = computeObject(heap, lset)
 
     // Get constructor names

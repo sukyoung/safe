@@ -56,8 +56,9 @@ object ConcolicMain {
     worklist.add(entryCP)
 
     val semantics = new Semantics(cfg, worklist)
-    val stateManager = new StateManager(cfg, semantics)
-    val coverage = new Coverage(cfg, semantics, stateManager)
+// TODO MV Removed: val stateManager = new StateManager(cfg, semantics)
+//    val coverage = new Coverage(cfg, semantics, stateManager)
+    val coverage = new Coverage(cfg, semantics)
     // coverage.typing = new Typing(cfg, true, false)
     coverage.typing.analyze(cfg, AnalyzeConfig())
     // Store function information using the result of the analysis

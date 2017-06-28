@@ -40,6 +40,7 @@ trait AbsValue extends AbsDomain[Value, AbsValue] {
   def getThis(h: AbsHeap): AbsLoc
 
   def typeCount: Int
+  def typeKinds: Set[String]
 }
 
 trait AbsValueUtil extends AbsDomainUtil[Value, AbsValue] {
@@ -125,6 +126,20 @@ object DefaultValue extends AbsValueUtil {
         pvalue.typeCount
       else
         pvalue.typeCount + 1
+    }
+
+    def typeKinds: Set[String] = {
+
+      val typeKindsSet: Set[(AbsDomain[_, _], String)] = Set((pvalue.boolval, "Boolean"),
+                                                             (pvalue.nullval, "Null"),
+                                                             (pvalue.numval, "Number"),
+                                                             (pvalue.strval, "String"),
+                                                             (pvalue.undefval, "Undefined"),
+                                                             (locset, "Object"))
+      typeKindsSet.filter({
+        case (value, _) =>
+          value.isBottom
+      }).map(_._2)
     }
 
     def getThis(h: AbsHeap): AbsLoc = {
