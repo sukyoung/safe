@@ -39,7 +39,7 @@ case class StringSet(maxSetSize: Int) extends AbsStringUtil {
     else Top
   }
 
-  sealed abstract class Dom(maxSetSize: Int = 0) extends AbsString {
+  sealed abstract class Dom extends AbsString {
     def gamma: ConSet[Str] = this match {
       case StrSet(set) => ConFin(set)
       case Top | Number | Other => ConInf()
