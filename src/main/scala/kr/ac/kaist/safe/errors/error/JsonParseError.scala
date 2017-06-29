@@ -19,6 +19,10 @@ case object ModelBlockToJsonError extends SafeError(
 
 sealed abstract class JsonParseError(msg: String) extends SafeError(msg)
 
+case object NotDumpFormatError extends JsonParseError({
+  s"Dump file has a wrong format."
+})
+
 case class NotJsonFileError(name: String) extends JsonParseError({
   s"$name is not a JSON file."
 })

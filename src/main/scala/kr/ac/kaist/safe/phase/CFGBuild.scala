@@ -57,15 +57,6 @@ case object CFGBuild extends PhaseObj[IRRoot, CFGBuildConfig, CFG] {
       DotWriter.spawnDot(cfg, None, None, None, s"$name.gv", s"$name.pdf")
     })
 
-    // print JSON file: {jsonName}.json
-    config.jsonName.map(name => {
-      val (fw, writer) = Useful.fileNameToWriters(s"$name.json")
-      writer.write(cfg.toJson.prettyPrint)
-      writer.close
-      fw.close
-      println("Dumped CFG to " + s"$name.json")
-    })
-
     Success(cfg)
   }
 
@@ -76,9 +67,7 @@ case object CFGBuild extends PhaseObj[IRRoot, CFGBuildConfig, CFG] {
     ("out", StrOption((c, s) => c.outFile = Some(s)),
       "the resulting CFG will be written to the outfile."),
     ("dot", StrOption((c, s) => c.dotName = Some(s)),
-      "the resulting CFG will be drawn to the {name}.gv and {name}.pdf"),
-    ("json", StrOption((c, s) => c.jsonName = Some(s)),
-      "the resulting CFG will be dumped into the {name}.json")
+      "the resulting CFG will be drawn to the {name}.gv and {name}.pdf")
   )
 }
 
@@ -86,6 +75,5 @@ case object CFGBuild extends PhaseObj[IRRoot, CFGBuildConfig, CFG] {
 case class CFGBuildConfig(
   var silent: Boolean = false,
   var outFile: Option[String] = None,
-  var dotName: Option[String] = None,
-  var jsonName: Option[String] = None
+  var dotName: Option[String] = None
 ) extends Config

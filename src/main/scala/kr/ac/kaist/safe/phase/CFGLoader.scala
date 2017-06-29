@@ -20,6 +20,7 @@ import kr.ac.kaist.safe.util._
 import kr.ac.kaist.safe.json.CFGProtocol._
 import kr.ac.kaist.safe.errors.error.{
   NotJsonFileError,
+  NotDumpFormatError,
   JsonParseError,
   NoFileError
 }
@@ -44,7 +45,10 @@ case object CFGLoader extends PhaseObj[Unit, CFGLoaderConfig, CFG] {
         case JSONFile =>
           try {
             val source: Source = Source.fromFile(fileName, "utf-8")
-            val cfg: CFG = source.mkString.parseJson.convertTo[CFG]
+            val cfg: CFG = source.mkString.parseJson match {
+              case JsArray(Vector(cfg, _, _)) => cfg.convertTo[CFG]
+              case _ => return Failure(NotDumpFormatError)
+            }
             source.close
 
             // Pretty print to file.
