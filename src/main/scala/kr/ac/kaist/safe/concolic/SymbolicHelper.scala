@@ -85,28 +85,28 @@ class SymbolicHelper(I: Interpreter) {
 
   // TODO MV Simplified, was originally: def initialize(cov: Coverage)
   def initialize(cov: Coverage) = {
-      coverage = cov
+    coverage = cov
 
-      index = 0
-      input_index = 0
+    index = 0
+    input_index = 0
 
-      symbolic_memory.clear()
-      objectMemory.clear()
+    symbolic_memory.clear()
+    objectMemory.clear()
 
-      argumentsMemory.clear()
-      recursive = List()
-      coverage.functions.foreach(_._2.initDepth)
+    argumentsMemory.clear()
+    recursive = List()
+    coverage.functions.foreach(_._2.initDepth)
 
-      loopDepth.clear()
+    loopDepth.clear()
 
-      report = List[SymbolicInfo]()
+    report = List[SymbolicInfo]()
 
-      System.out.println
-      var target = coverage.target
-      if (target != null && target.contains("@"))
-        target = target.substring(0, target.indexOf("@"))
-      System.out.println("Current target function: " + target)
-    }
+    System.out.println
+    var target = coverage.target
+    if (target != null && target.contains("@"))
+      target = target.substring(0, target.indexOf("@"))
+    System.out.println("Current target function: " + target)
+  }
 
   // Initialize the symbolic memorys
   def walkVarStmt(id: IRId, n: Int, env: IRId): Unit = {

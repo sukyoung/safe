@@ -38,9 +38,10 @@ object JavaSome {
 }
 
 object JavaNone {
+
   def apply[T](): JavaOption[T] = JavaOption.none()
 
-  def unapply[T](opt: JavaOption[T]) =
-    if (opt.isNone) Some()
+  def unapply[T](opt: JavaOption[T]): Option[Unit] =
+    if (opt.isNone) Some[Unit](())
     else None
 }

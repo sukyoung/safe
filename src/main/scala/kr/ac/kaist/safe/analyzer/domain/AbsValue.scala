@@ -130,12 +130,14 @@ object DefaultValue extends AbsValueUtil {
 
     def typeKinds: Set[String] = {
 
-      val typeKindsSet: Set[(AbsDomain[_, _], String)] = Set((pvalue.boolval, "Boolean"),
-                                                             (pvalue.nullval, "Null"),
-                                                             (pvalue.numval, "Number"),
-                                                             (pvalue.strval, "String"),
-                                                             (pvalue.undefval, "Undefined"),
-                                                             (locset, "Object"))
+      val typeKindsSet: Set[(AbsDomain[_, _], String)] = Set(
+        (pvalue.boolval, "Boolean"),
+        (pvalue.nullval, "Null"),
+        (pvalue.numval, "Number"),
+        (pvalue.strval, "String"),
+        (pvalue.undefval, "Undefined"),
+        (locset, "Object")
+      )
       typeKindsSet.filter({
         case (value, _) =>
           value.isBottom

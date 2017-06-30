@@ -13,10 +13,10 @@ package kr.ac.kaist.safe.util.useful
 
 import _root_.java.util.{ HashMap => JavaHashMap, Map => JavaMap }
 
-import scala.collection.{ JavaConversions, Map => MMap }
+import scala.collection.{ JavaConverters, Map => MMap }
 
 object Maps {
-  def toMap[S, T](jmap: JavaMap[S, T]): Map[S, T] = Map.empty ++ JavaConversions.mapAsScalaMap(jmap)
+  def toMap[S, T](jmap: JavaMap[S, T]): Map[S, T] = Map.empty ++ JavaConverters.mapAsScalaMap(jmap)
 
   def toJavaMap[S, T](smap: MMap[S, T]): JavaMap[S, T] = {
     var jmap = new JavaHashMap[S, T]()

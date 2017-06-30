@@ -105,8 +105,6 @@ class InterpreterState(val I: Interpreter, val config: InterpretConfig) {
   // ...
   val ftnArrPropTable = new PropTable
   ftnArrPropTable.put("length", I.IH.numProp(0))
-  // An empty arguments object
-  val NoArgs: JSArray = new JSArray(I, ObjectPrototype, "Arguments", true, ftnArrPropTable)
 
   // Placeholder
   // THE ORDER OF THE OBJECTS IS IMPORTANT!
@@ -145,6 +143,9 @@ class InterpreterState(val I: Interpreter, val config: InterpretConfig) {
   val GlobalObject: JSGlobal = new JSGlobal(I, ObjectPrototype)
   val MathObject: JSMath = new JSMath(I, ObjectPrototype)
   //val BuiltInStandAlone = List(GlobalObject, MathObject)
+
+  // An empty arguments object
+  val NoArgs: JSArray = new JSArray(I, ObjectPrototype, "Arguments", true, ftnArrPropTable)
 
   // 15.1 Global Object
   val GlobalEval: JSFunction = dummyFtnObj(1, GlobalObject)

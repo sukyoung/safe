@@ -82,6 +82,7 @@ trait AbsHeap extends AbsDomain[Heap, AbsHeap] {
   def canPutVar(x: String): AbsBool
 
   // proto
+  def proto(loc: Loc, absStr: AbsString): AbsValue
   def protoBase(loc: Loc, absStr: AbsString): AbsLoc
 
   // store

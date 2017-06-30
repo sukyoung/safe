@@ -13,9 +13,7 @@ package kr.ac.kaist.safe.util.useful
 
 import _root_.java.util.{ ArrayList => JArrayList }
 import _root_.java.util.{ List => JList }
-import _root_.java.util.{ Collection => JCollection }
-import _root_.kr.ac.kaist.safe.useful.ArrayBackedList
-import scala.collection.JavaConversions
+import scala.collection.{ JavaConversions, JavaConverters }
 
 object Lists {
 
@@ -29,12 +27,13 @@ object Lists {
   /* Conversion recommended by Martin Odersky, with some type trickery
      that's a bit annoying. */
   def toList[T](xs: JList[T]): List[T] =
-    JavaConversions.asScalaBuffer(new ArrayBackedList(xs)).toList
+    JavaConverters.asScalaBuffer(new ArrayBackedList(xs)).toList
+
   /* JavaConversions.asBuffer(Useful.list(xs)).toList */
   /* List.fromArray[T]( xs.toArray(List[T]().toArray) ) */
 
   def toListFromImmutable[T](xs: JList[T]): List[T] =
-    JavaConversions.asScalaBuffer(xs).toList
+    JavaConverters.asScalaBuffer(xs).toList
   /* JavaConversions.asBuffer(ArrayBackedList.fromImmutable(xs)).toList */
 
   def map[S, T](list: JList[S], fun: S => T): JList[T] = toJavaList(toListFromImmutable(list).map(fun))

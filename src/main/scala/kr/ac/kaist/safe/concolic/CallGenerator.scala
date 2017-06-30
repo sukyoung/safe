@@ -70,7 +70,7 @@ class CallGenerator(coverage: Coverage) {
               if (input.contains("this." + p)) {
                 val ref = NF.makeVarRef(dummySpan, NF.makeId(dummySpan, objRef.text, objRef.text))
                 val lhs = NF.makeDot(dummySpan, ref, NF.makeId(dummySpan, p, p))
-                val rhs = NF.makeIntLiteral(dummySpan, new BigInteger(input("this." + p).toString))
+                val rhs = NF.makeIntLiteral(dummySpan, new BigInteger(input("this." + p).toString()))
                 list :+ NF.makeExprStmt(
                   dummySpan,
                   NF.makeAssignOpApp(

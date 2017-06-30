@@ -213,13 +213,13 @@ class Instrumentor(program: IRRoot, coverage: Coverage) extends IRWalker {
         // I assume here that every IRIf comes from source and have removed the else-branch.
         // Original else-branch was: IRIf(info, expr, trueB, falseB)
         IRSeq(info, List(
-                executeCondition(info, expr, env),
-                IRIf(info, expr, walk(trueB, env).asInstanceOf[IRStmt],
-                     falseB match {
-                       case Some(s) => Some(walk(s, env).asInstanceOf[IRStmt])
-                       case None => None
-                     }),
-                endCondition(info, env)
+          executeCondition(info, expr, env),
+          IRIf(info, expr, walk(trueB, env).asInstanceOf[IRStmt],
+            falseB match {
+              case Some(s) => Some(walk(s, env).asInstanceOf[IRStmt])
+              case None => None
+            }),
+          endCondition(info, env)
         ))
 
       /* while (e) s
@@ -244,8 +244,8 @@ class Instrumentor(program: IRRoot, coverage: Coverage) extends IRWalker {
       case IRWhile(info, cond, body, breakLabel, contLabel) =>
         //coverage.printCondition(cond)
         IRWhile(info, cond,
-                IRSeq(info, List(executeCondition(info, cond, env), walk(body, env).asInstanceOf[IRStmt])),
-                breakLabel, contLabel)
+          IRSeq(info, List(executeCondition(info, cond, env), walk(body, env).asInstanceOf[IRStmt])),
+          breakLabel, contLabel)
 
       /* x[x] = e
      * ==>

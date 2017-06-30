@@ -31,24 +31,24 @@ object IRSimplifier extends IRWalker {
   }
   def convertListOptExpr(elems: List[Option[IRExpr]]): (List[IRStmt], List[Option[IRExpr]]) =
     elems.foldLeft((List[IRStmt](), List[Option[IRExpr]]()))((p, oe) => {
-                    val (ns, oee) = convert(oe)
-                    (p._1 ++ ns, p._2 :+ oee)
-                  })
+      val (ns, oee) = convert(oe)
+      (p._1 ++ ns, p._2 :+ oee)
+    })
 
   def convertFunctional(f: IRFunctional): IRFunctional = f match {
     case IRFunctional(ast, i, name, params, args, fds, vds, body) =>
       val newFds: List[IRFunDecl] = fds.map(walk(_).asInstanceOf[IRFunDecl])
       IRFunctional(ast, i, name, params,
-                   args.map(walk(_).asInstanceOf[IRStmt]),
-                   newFds,
-                   vds,
-                   body.map(walk(_).asInstanceOf[IRStmt]))
+        args.map(walk(_).asInstanceOf[IRStmt]),
+        newFds,
+        vds,
+        body.map(walk(_).asInstanceOf[IRStmt]))
   }
-   
+
   def dummyAst(span: Span) = NF.makeNoOp(span, "IRSimplifier.dummyAst")
   def freshId(span: Span): IRTmpId = IF.makeTId(NF.makeDummyAST(span), NU.freshName("temp"))
   def needMore(expr: IRExpr): Boolean = expr match {
-    case _:IRBin | _:IRUn | _:IRLoad => true
+    case _: IRBin | _: IRUn | _: IRLoad => true
     case _ => false
   }
   def convertExpr(expr: IRExpr): (List[IRStmt], IRExpr) = expr match {
@@ -56,42 +56,50 @@ object IRSimplifier extends IRWalker {
       val (names1, expr1) = convertExpr(first)
       val (names2, expr2) = convertExpr(second)
       val (expr1s, expr1e) =
-          if (needMore(expr1)) {
-            val firstspan = first.span
-            val firstname = freshId(firstspan)
-            (List(IF.makeExprStmtIgnore(first.ast, firstname, expr1)),
-             firstname)
-          } else (Nil, expr1)
+        if (needMore(expr1)) {
+          val firstspan = first.span
+          val firstname = freshId(firstspan)
+          (
+            List(IF.makeExprStmtIgnore(first.ast, firstname, expr1)),
+            firstname
+          )
+        } else (Nil, expr1)
       val (expr2s, expr2e) =
-          if (needMore(expr2)) {
-            val secondspan = second.span
-            val secondname = freshId(secondspan)
-            (List(IF.makeExprStmtIgnore(second.ast, secondname, expr2)),
-             secondname)
-          } else (Nil, expr2)
-      (((names1++names2)++expr1s)++expr2s, IRBin(info, expr1e, op, expr2e))
+        if (needMore(expr2)) {
+          val secondspan = second.span
+          val secondname = freshId(secondspan)
+          (
+            List(IF.makeExprStmtIgnore(second.ast, secondname, expr2)),
+            secondname
+          )
+        } else (Nil, expr2)
+      (((names1 ++ names2) ++ expr1s) ++ expr2s, IRBin(info, expr1e, op, expr2e))
 
     case IRUn(info, op, arg) =>
       val (names, expr) = convertExpr(arg)
       val (exprs, expre) =
-          if (needMore(expr)) {
-            val span = arg.span
-            val name = freshId(span)
-            (List(IF.makeExprStmtIgnore(arg.ast, name, expr)),
-             name)
-          } else (Nil, expr)
-      (names++exprs, IRUn(info, op, expre))
+        if (needMore(expr)) {
+          val span = arg.span
+          val name = freshId(span)
+          (
+            List(IF.makeExprStmtIgnore(arg.ast, name, expr)),
+            name
+          )
+        } else (Nil, expr)
+      (names ++ exprs, IRUn(info, op, expre))
 
     case IRLoad(info, obj, index) =>
       val (names, expr) = convertExpr(index)
       val (exprs, expre) =
-          if (needMore(expr)) {
-            val span = index.span
-            val name = freshId(span)
-            (List(IF.makeExprStmtIgnore(index.ast, name, expr)),
-             name)
-          } else (Nil, expr)
-      (names++exprs, IRLoad(info, obj, expre))
+        if (needMore(expr)) {
+          val span = index.span
+          val name = freshId(span)
+          (
+            List(IF.makeExprStmtIgnore(index.ast, name, expr)),
+            name
+          )
+        } else (Nil, expr)
+      (names ++ exprs, IRLoad(info, obj, expre))
 
     case _ => (Nil, expr)
   }
@@ -108,7 +116,7 @@ object IRSimplifier extends IRWalker {
 
   override def walk(node: IRRoot): IRRoot = node match {
     case IRRoot(info, fds, vds, irs) =>
-      val newFds: List[IRFunDecl] = fds.map( (fd: IRFunDecl) => walk(fd).asInstanceOf[IRFunDecl])
+      val newFds: List[IRFunDecl] = fds.map((fd: IRFunDecl) => walk(fd).asInstanceOf[IRFunDecl])
       IRRoot(info, newFds, vds, irs.map(walk))
   }
 
@@ -131,15 +139,15 @@ object IRSimplifier extends IRWalker {
 
     case IRObject(ast, lhs, members, proto) =>
       val (names, newmembers) = members.foldLeft((List[IRStmt](), List[IRMember]()))((p, m) => {
-                                                  val (ns, mm) = convert(m)
-                                                  (p._1 ++ ns, p._2 :+ mm)
-                                                })
+        val (ns, mm) = convert(m)
+        (p._1 ++ ns, p._2 :+ mm)
+      })
       IRSeq(ast, names :+ IRObject(ast, lhs, newmembers, proto))
 
     case IRArray(ast, lhs, elems) =>
       val (names, newelems) = convertListOptExpr(elems)
       IRSeq(ast, names :+ IRArray(ast, lhs, newelems))
-    
+
     case IRArrayNumber(ast, lhs, elements) => node
 
     case IRArgs(ast, lhs, elems) =>
@@ -166,7 +174,7 @@ object IRSimplifier extends IRWalker {
     case IRStore(ast, obj, index, rhs) =>
       val (namesi, newindex) = convertExpr(IRLoad(ast, obj, index))
       val (namesr, newrhs) = convertExpr(rhs)
-      IRSeq(ast, (namesi++namesr) :+ IRStore(ast, obj, newindex.asInstanceOf[IRLoad].index, newrhs))
+      IRSeq(ast, (namesi ++ namesr) :+ IRStore(ast, obj, newindex.asInstanceOf[IRLoad].index, newrhs))
 
     case n: IRFunDecl =>
       walk(n)
@@ -201,13 +209,13 @@ object IRSimplifier extends IRWalker {
         case None => None
       }
       IRSeq(ast, names :+ IRIf(ast, newexpr, walk(trueB).asInstanceOf[IRStmt],
-                               newfalseB))
+        newfalseB))
 
     case IRWhile(ast, cond, body, breakLabel, contLabel) =>
       val (names, newcond) = convertExpr(cond)
       IRSeq(ast, names :+ IRWhile(ast, newcond,
-                                  IRSeq(ast, walk(body).asInstanceOf[IRStmt] +: names),
-                                  breakLabel, contLabel))
+        IRSeq(ast, walk(body).asInstanceOf[IRStmt] +: names),
+        breakLabel, contLabel))
 
     case IRTry(info, body, name, catchB, finallyB) =>
       val newcatchB = catchB match {

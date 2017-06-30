@@ -22,7 +22,8 @@ object Concolic extends PhaseObj[(IRRoot, CFG), ConcolicConfig, Int] {
 
   val name: String = "concolic"
   val help: String = "Performs concolic testing."
-  val defaultConfig = ConcolicConfig()
+  val defaultConfig: ConcolicConfig = ConcolicConfig()
+  val options: List[PhaseOption[ConcolicConfig]] = Nil
 
   def apply(
     input: (IRRoot, CFG),

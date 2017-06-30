@@ -11,6 +11,10 @@
 
 package kr.ac.kaist.safe.concolic
 
+import java.util.{ List => JList }
+
+import kr.ac.kaist.safe.util.useful.Lists
+
 case class TypeInfo(
     paramType: String,
     constructorNames: List[String] = Nil,
@@ -25,5 +29,8 @@ case class TypeInfo(
     val distinctProperties = (properties ::: x).distinct
     this.copy(properties = distinctProperties)
   }
+
+  def getJavaConstructor(): String = constructorNames.head
+  def getJavaProperties(): JList[String] = Lists.toJavaList(properties)
 
 }

@@ -120,12 +120,12 @@ object ModelParser extends RegexParsers with JavaTokenParsers {
       "-Infinity" ^^^ Double.NegativeInfinity
   private lazy val int: Parser[Int] = wholeNumber ^^ { _.toInt }
   private lazy val str: Parser[String] = "\"" ~> "[^\"]*".r <~ "\""
-  private lazy val t: Parser[Boolean] = "true" ^^^ { true }
-  private lazy val f: Parser[Boolean] = "false" ^^^ { false }
-  private lazy val bool: Parser[Boolean] = t | f
-  private lazy val T: Parser[Boolean] = "T" ^^^ { true }
-  private lazy val F: Parser[Boolean] = "F" ^^^ { false }
-  private lazy val shortBool: Parser[Boolean] = T | F
+  private lazy val smallT: Parser[Boolean] = "true" ^^^ { true }
+  private lazy val smallF: Parser[Boolean] = "false" ^^^ { false }
+  private lazy val bool: Parser[Boolean] = smallT | smallF
+  private lazy val capitalT: Parser[Boolean] = "T" ^^^ { true }
+  private lazy val capitalF: Parser[Boolean] = "F" ^^^ { false }
+  private lazy val shortBool: Parser[Boolean] = capitalT | capitalF
   private lazy val any: Parser[String] = """[^\\]*""".r
 
   // JavaScript primitive value

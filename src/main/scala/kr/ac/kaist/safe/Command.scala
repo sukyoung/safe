@@ -11,6 +11,7 @@
 
 package kr.ac.kaist.safe
 
+import scala.collection.parallel.Splitter
 import scala.util.Try
 import scala.collection.immutable.HashMap
 import kr.ac.kaist.safe.phase._
@@ -79,6 +80,11 @@ case object CmdASTRewrite extends CommandObj("astRewrite", CmdParse >> ASTRewrit
 // compile
 case object CmdCompile extends CommandObj("compile", CmdASTRewrite >> Compile) {
   override def display(ir: IRRoot): Unit = println(ir.toString(0))
+}
+
+// concolic
+case object CmdConcolic extends CommandObj("concolic", CmdCompile >> new PhaseSplitter(CFGBuild) >> Concolic) {
+  override def display(result: Int): Unit = println(result)
 }
 
 // cfgBuild

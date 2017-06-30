@@ -13,10 +13,13 @@ package kr.ac.kaist.safe.concolic
 
 import kr.ac.kaist.safe.nodes.ir._
 
-object IRFilter extends IRWalker {
+object IRFilter extends IRGeneralWalker[Boolean] {
+
+  def join(args: Boolean*): Boolean = args.exists((arg) => arg)
+
   def doit(program: IRRoot) = {
     var IRRoot(info, vds, fds, irs) = program
-    irs = irs.filter(walk(_))
+    irs = irs.filter(walk)
     IRRoot(info, vds, fds, irs)
   }
 

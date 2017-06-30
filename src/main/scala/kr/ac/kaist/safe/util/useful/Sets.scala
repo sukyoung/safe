@@ -13,7 +13,7 @@ package kr.ac.kaist.safe.util.useful
 
 import _root_.java.util.{ HashSet => JHashSet }
 import _root_.java.util.{ Set => JavaSet }
-import scala.collection.JavaConversions
+import scala.collection.JavaConverters
 
 object Sets {
 
@@ -26,6 +26,6 @@ object Sets {
 
   /** Creates an immutable set. */
   def toSet[T](jset: JavaSet[T]): Set[T] =
-    Set(JavaConversions.asScalaSet(jset).toSeq: _*)
+    Set(JavaConverters.asScalaSet(jset).toSeq: _*)
 
 }

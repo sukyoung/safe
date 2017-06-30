@@ -26,8 +26,10 @@ import kr.ac.kaist.safe.util.useful.Options._
 
 import scala.collection.mutable.HashMap
 
-class Coverage(var cfg: CFG, //TODO MV Originally also included: var stateManager: StateManager
-               var semantics: Semantics) {
+class Coverage(
+    var cfg: CFG, //TODO MV Originally also included: var stateManager: StateManager
+    var semantics: Semantics
+) {
   var debug = false
   var timing = false
 
@@ -125,8 +127,10 @@ class Coverage(var cfg: CFG, //TODO MV Originally also included: var stateManage
     val cfgNodes = CFGCollector.collect(cfgRoot)
     for (k <- cfgNodes) {
       k match {
-        case inst @ CFGConstruct(iid, info, cons, thisArg, arguments, addr, addr2) => identifyFunction(inst, thisArg) //identifyFunction(inst)
-        case inst @ CFGCall(iid, info, fun, thisArg, arguments, addr, addr2) => identifyFunction(inst, thisArg) //identifyFunction(inst)
+        case inst @ CFGConstruct(ir, block, fun, thisArg, arguments, asite) => identifyFunction(inst, thisArg)
+        //identifyFunction(inst)
+        case inst @ CFGCall(ir, block, fun, thisArg, arguments, asite) => identifyFunction(inst, thisArg)
+        //identifyFunction(inst)
         case _ =>
       }
     }
@@ -140,41 +144,41 @@ class Coverage(var cfg: CFG, //TODO MV Originally also included: var stateManage
     // To find a constructor name of this argument.
     val thisinfo = new TypeInfo("Object")
 
-    var cstate = semantics.getState(cfgBlock)  //stateManager.getOutputCState(cfgBlock, inst.id)
+    var cstate = semantics.getState(cfgBlock) //stateManager.getOutputCState(cfgBlock, inst.id)
     var thisNames = List[String]()
     for ((callContext, Dom(heap, _)) <- cstate) {
-      val lset = heap.get(PredAllocSite.PURE_LOCAL)(thisArg.toString).value.locset
+      val lset = heap.get(PredAllocSite.PURE_LOCAL)(thisArg.toString()).value.locset
       // Compute this object
       val thisObj = computeObject(heap, lset)
-      val temp = thisNames ::: computeConstructorName(heap, thisObj)
+      val temp = thisNames ::: computeConstructorName(heap, thisObj, functionName)
       thisNames = temp.distinct
     }
     thisinfo.addConstructors(thisNames)
 
     // To find other information of a function like argument type, it uses different heap, input states, because only successor nodes of input states can be entry nodes of functions.
     val finfo = new FunctionInfo
-    cstate = semantics.getState(cfgBlock)  //TODO MV Originally: stateManager.getInputCState(cfgBlock, inst.id)
+    cstate = semantics.getState(cfgBlock) //TODO MV Originally: stateManager.getInputCState(cfgBlock, inst.id)
     for ((callContext, state) <- cstate) {
       val controlPoint: ControlPoint = ControlPoint(cfgBlock, callContext)
 
       semantics.getInterProcSucc(controlPoint) match {
         case Some(succMap) =>
           // succMap = Map[ControlPoint, EdgeData]; succCp = ControlPoint
-          for ((succCP, (succContext, succObj)) <- succMap) {
+          for ((succCP, _) <- succMap) {
 
             val succBlock: CFGBlock = succCP.block
             val func = succBlock.func
-            val argvars = func.argVars  // cfg.getArgVars(func)
+            val argvars = func.argVars // cfg.getArgVars(func)
             functionName = func.name
 
             // TODO MV original: stateManagercase.getOutputCState(succCP._1, inst.id)) {
-            for ((tp, state@Dom(heap, context)) <- semantics.getState(succBlock)) {
+            for ((tp, state @ Dom(heap, context)) <- semantics.getState(succBlock)) {
               val arglset = heap.get(PredAllocSite.PURE_LOCAL)(func.argumentsName).value.locset
               // Number of an argument
               var i = 0
               val h_n = argvars.foldLeft(heap)((hh, x) => {
-                val v_i = arglset.foldLeft(DefaultValue.Bot)((vv, argloc) => {
-                  vv + hh.protoBase(argloc, Utils.AbsString.alpha(i.toString))
+                val v_i = arglset.foldLeft[AbsValue](DefaultValue.Bot)((vv, argloc) => {
+                  vv + hh.proto(argloc, Utils.AbsString.alpha(i.toString))
                 })
 
                 val v_i_types = v_i.typeKinds
@@ -206,7 +210,7 @@ class Coverage(var cfg: CFG, //TODO MV Originally also included: var stateManage
                         tinfo.setProperties(List(length))
                       } else {
                         // Compute object constructor name
-                        tinfo.addConstructors(computeConstructorName(hh, obj))
+                        tinfo.addConstructors(computeConstructorName(hh, obj, functionName))
 
                         // Compute object properties
                         val properties: List[String] = computePropertyList(obj, false)
@@ -250,26 +254,27 @@ class Coverage(var cfg: CFG, //TODO MV Originally also included: var stateManage
   }
 
   def computePropertyList(obj: AbsObject, onlyPrimitive: Boolean): List[String] = {
-    val properties = obj.abstractKeySet
-    val propertiesSet: Set[AbsString] = properties match {
+    val propNames = obj.abstractKeySet
+    val propNamesSet: Set[AbsString] = propNames match {
       case ConFin(s) => s
       case ConInf() => Set()
     }
-    val propValuesAbs: List[AbsString] = propertiesSet.foldLeft[List[AbsString]](Nil)((list, prop) => {
+    val propValuesAbs: List[AbsString] = propNamesSet.foldLeft[List[AbsString]](Nil)((list, prop) => {
       val p = obj(prop).value
       if (!onlyPrimitive || !p.typeKinds.contains("Object"))
         prop :: list
       else
         list
     })
-    val propValuesConc = propValuesAbs.reduce( (list: List[String], x: AbsString) => {
-      val f = x.gamma match {
+    val propValuesConc: List[String] = propValuesAbs.foldLeft[List[String]](Nil)((list, x) => {
+      val concreteStrings = x.gamma match {
         case ConFin(strings) =>
           strings.map(_.str).toList
         case ConInf() =>
           Nil
       }
-      list ++ f})
+      list ++ concreteStrings
+    })
     propValuesConc
   }
 
@@ -280,17 +285,20 @@ class Coverage(var cfg: CFG, //TODO MV Originally also included: var stateManage
     })
   }
 
-  def computeConstructorName(heap: AbsHeap, obj: AbsObject): List[String] = {
+  def computeConstructorName(heap: AbsHeap, obj: AbsObject, functionName: String): List[String] = {
     // Compute prototype object
-    var lset = obj("@proto").value.locset
-    val proto = computeObject(heap, lset)
+    // TODO MV Removed following 6 lines:
+    //    val lset1 = obj("@proto").value.locset
+    //    val proto = computeObject(heap, lset1)
+    //
+    //    // Compute constructor object
+    //    val lset2 = proto("constructor").value.locset
+    //    val constructor = computeObject(heap, lset2)
 
-    // Compute constructor object
-    lset = proto("constructor").value.locset
-    val constructor = computeObject(heap, lset)
+    List(functionName)
 
     // Get constructor names
-    val temp = constructor("@construct")._3.toSet
-    temp.map(_.name).toList
+    // TODO MV Originally: val temp = constructor("@construct")._3.toSet
+    //    temp.map(_.name).toList
   }
 }

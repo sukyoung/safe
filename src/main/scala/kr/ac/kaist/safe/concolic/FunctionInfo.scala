@@ -42,8 +42,7 @@ class FunctionInfo() {
   def getType(n: Int): List[String] = params(n).map(_.paramType)
   def getObjectInformation(n: Int): Option[TypeInfo] = {
     val obj = params(n).filter(_.paramType == "Object")
-    if (obj.nonEmpty) Some(obj.head)
-    else None
+    obj.headOption
   }
   def getObjectConstructors(n: Int): List[String] = getObjectInformation(n) match {
     case Some(info) => info.constructorNames
@@ -75,4 +74,16 @@ class FunctionInfo() {
   def setCandidate(): Unit = isCandidate = true
   def targeting(): Unit = isTarget = true
   def done(): Unit = { isTarget = false; isCandidate = false; isProcess = false }
+
+  /* HELPER FUNCTIONS */
+  def getObjects: Map[Integer, TypeInfo] = {
+    val result = Map[Integer, TypeInfo]()
+    for (key <- params.keysIterator) {
+      getObjectInformation(key) match {
+        case Some(info) => result.put(key, info)
+        case None =>
+      }
+    }
+    result
+  }
 }

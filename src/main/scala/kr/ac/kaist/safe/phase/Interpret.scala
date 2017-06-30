@@ -42,8 +42,8 @@ object Interpret extends PhaseObj[IRRoot, InterpretConfig, Unit] {
   )
 
   def apply(input: IRRoot, safeConfig: SafeConfig, config: InterpretConfig): Try[Unit] = {
-    new Interpreter(config).doit(input, None)
-    Success()
+    val interpreter = new Interpreter(config)
+    Success(interpreter.doit(input, None))
   }
 
 }

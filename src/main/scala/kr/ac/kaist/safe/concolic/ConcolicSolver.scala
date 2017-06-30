@@ -126,10 +126,15 @@ class ConcolicSolver(coverage: Coverage) {
       }
     }
     // Make a primitive result.
-    var tmp = z3.solve(Lists.toJavaList(primitiveConstraints), num, toJavaOption(Some(function.getJavaObjects)),
-      function.getJavaThisProperties)
-    if (tmp.isSome)
+    val tmp = z3.solve(
+      Lists.toJavaList[ConstraintForm](primitiveConstraints),
+      num,
+      toJavaOption(Some(Maps.toJavaMap[Integer, TypeInfo](function.getObjects))),
+      Lists.toJavaList(function.getThisProperties)
+    )
+    if (tmp.isSome) {
       primitiveResult = Maps.toMap(tmp.unwrap).map(x => (x._1, x._2.intValue))
+    }
 
     // Build actual result combined object related result and primitive realted one.
     if (function.hasThisObject) {
@@ -137,7 +142,7 @@ class ConcolicSolver(coverage: Coverage) {
       val arg = NF.makeId(dummySpan, fresh, fresh)
       //TODO: Handle multiple type
       val thisNames = function.getThisConstructors
-      result += "this" -> Pair(arg, assignObject(true, 0, arg, thisNames(0), function.getThisProperties, primitiveResult, true))
+      result += "this" -> (arg, assignObject(true, 0, arg, thisNames(0), function.getThisProperties, primitiveResult, true))
     }
     for (i <- 0 until num by 1) {
       val fresh = NU.freshName("a")
@@ -145,7 +150,7 @@ class ConcolicSolver(coverage: Coverage) {
       function.getObjectProperties(i) match {
         case Some(props) =>
           if (objectResult.contains("i" + i) && objectResult("i" + i) == "null") {
-            result += "i" + i -> Pair(arg, List(assignValue(arg, NF.makeNull(dummySpan))))
+            result += "i" + i -> (arg, List(assignValue(arg, NF.makeNull(dummySpan))))
           } else {
             /* Change to use VarRef
              * var x = new f()
@@ -153,11 +158,11 @@ class ConcolicSolver(coverage: Coverage) {
              */
             var stmts: List[Stmt] = assignEmptyObject(arg)
             //TODO: Handle multiple type
-            var constructors = function.getObjectConstructors(i)
+            val constructors = function.getObjectConstructors(i)
             if (constructors.nonEmpty)
               stmts = assignObject(false, i, arg, constructors(0), props, primitiveResult, true)
 
-            result += "i" + i -> Pair(arg, stmts)
+            result += "i" + i -> (arg, stmts)
           }
         case None =>
           var value = NF.makeIntLiteral(dummySpan, new BigInteger(new Random().nextInt(10).toString))

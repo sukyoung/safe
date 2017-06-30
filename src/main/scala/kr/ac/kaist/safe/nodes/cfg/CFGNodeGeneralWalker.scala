@@ -18,7 +18,7 @@ trait CFGNodeGeneralWalker[Result] {
   def join(args: Result*): Result
 
   def walkOpt(opt: Option[Any]): List[Result] =
-    opt.map[List[Result]]( (n: Any) => List(n match {
+    opt.map[List[Result]]((n: Any) => List(n match {
       case n: AllocSite =>
         walk(n)
       case n: CFGExpr =>
@@ -61,8 +61,8 @@ trait CFGNodeGeneralWalker[Result] {
     case CFGFunction(ir, argsName, argVars, localVars, name, isUser) =>
       join(walk(ir) :: argVars.map(walk) ++ localVars.map(walk): _*)
     case CFGFunExpr(ir, block, lhs, nameOpt, func, asite1, asite2, asite3Opt) =>
-      join( (walk(ir) :: walk(block) :: walk(lhs) :: walkOpt(nameOpt)) :+
-            walk(func) :+ walk(asite1) :+ walk(asite2) :+ walkOpt(asite3Opt) :+ walk(asite1): _*)
+      join(((walk(ir) :: walk(block) :: walk(lhs) :: walkOpt(nameOpt)) :+ walk(func)) ++
+        (walk(asite1) :: walk(asite2) :: walkOpt(asite3Opt)) :+ walk(asite1): _*)
     case CFGInternalCall(ir, block, lhs, name, args, asiteOpt) =>
       join(walk(ir) :: walk(block) :: walk(lhs) :: args.map(walk) ++ walkOpt(asiteOpt): _*)
     case CFGInternalValue(ir, name) =>

@@ -13,6 +13,7 @@ package kr.ac.kaist.safe.concolic
 
 import java.io.{ BufferedWriter, FileWriter }
 import scala.collection.immutable.{ HashMap, HashSet }
+import scala.util._
 import edu.rice.cs.plt.tuple.{ Option => JOption }
 
 import kr.ac.kaist.safe.SafeConfig
@@ -35,8 +36,8 @@ object ConcolicMain {
   /**
    * Working on a very simple concolic testing...
    */
-  def concolic(ir: IRRoot, cfg: CFG): Int = {
-    var return_code = 0
+  def concolic(ir: IRRoot, cfg: CFG): Try[Int] = {
+    val return_code = 0
     IRGenerator.ignoreId = 0
 
     // Initialize AbsString cache
@@ -56,8 +57,8 @@ object ConcolicMain {
     worklist.add(entryCP)
 
     val semantics = new Semantics(cfg, worklist)
-// TODO MV Removed: val stateManager = new StateManager(cfg, semantics)
-//    val coverage = new Coverage(cfg, semantics, stateManager)
+    // TODO MV Removed: val stateManager = new StateManager(cfg, semantics)
+    //    val coverage = new Coverage(cfg, semantics, stateManager)
     val coverage = new Coverage(cfg, semantics)
     // coverage.typing = new Typing(cfg, true, false)
     coverage.typing.analyze(cfg, AnalyzeConfig())
@@ -154,7 +155,7 @@ object ConcolicMain {
     } while (coverage.existCandidate)
     // System.out.println("Total statements: " + coverage.total)
     // System.out.println("Executed statements: " + coverage.executed)
-    return_code
+    Success(return_code)
   }
 
   /*def solveConstraints(): Option[Map[String, (Id, List[Stmt])]] = {
