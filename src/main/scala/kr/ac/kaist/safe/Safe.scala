@@ -80,6 +80,7 @@ object Safe {
     CmdTestRewrite,
     CmdAndroidCheck,
     CmdJSModelRewrite,
+    CmdWALARewrite,
     CmdHelp
   )
   val cmdMap = commands.foldLeft[Map[String, Command]](HashMap()) {
