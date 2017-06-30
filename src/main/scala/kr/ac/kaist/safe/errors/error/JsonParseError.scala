@@ -77,3 +77,61 @@ case class ControlPointParseError(value: JsValue) extends JsonFormatError("Contr
 case class TracePartitionParseError(value: JsValue) extends JsonFormatError("TracePartition", value)
 
 case class LoopInfoParseError(value: JsValue) extends JsonFormatError("LoopInfo", value)
+
+case class AbsUndefParseError(value: JsValue) extends JsonFormatError("AbsUndef", value)
+
+case class AbsNullParseError(value: JsValue) extends JsonFormatError("AbsNull", value)
+
+case class AbsBoolParseError(value: JsValue) extends JsonFormatError("AbsBool", value)
+
+case class AbsNumberParseError(value: JsValue) extends JsonFormatError("AbsNumber", value)
+
+case class AbsStringParseError(value: JsValue) extends JsonFormatError("AbsString", value)
+
+case class RecencyTagParseError(value: JsValue) extends JsonFormatError("RecencyTag", value)
+
+case class AbsLocParseError(value: JsValue) extends JsonFormatError("AbsLoc", value)
+
+case class AbsPValueParseError(value: JsValue) extends JsonFormatError("AbsPValue", value)
+
+case class AbsValueParseError(value: JsValue) extends JsonFormatError("AbsValue", value)
+
+case class DefSetParseError(value: JsValue) extends JsonFormatError("DefSet", value)
+
+case class AbsDataPropParseError(value: JsValue) extends JsonFormatError("AbsDataProp", value)
+
+case class AbsMapParseError(value: JsValue) extends JsonFormatError("AbsMap", value)
+
+case class INameParseError(value: JsValue) extends JsonFormatError("IName", value)
+
+case class AbsIValueParseError(value: JsValue) extends JsonFormatError("AbsIValue", value)
+
+case class ObjInternalMapParseError(value: JsValue) extends JsonFormatError("ObjInternalMap", value)
+
+case class AbsObjectParseError(value: JsValue) extends JsonFormatError("AbsObject", value)
+
+case class AbsAbsentParseError(value: JsValue) extends JsonFormatError("AbsAbsent", value)
+
+case class AbsBindingParseError(value: JsValue) extends JsonFormatError("AbsBinding", value)
+
+case class EnvMapParseError(value: JsValue) extends JsonFormatError("EnvMap", value)
+
+case class AbsDecEnvRecParseError(value: JsValue) extends JsonFormatError("AbsDecEnvRec", value)
+
+case class AbsGlobalEnvRecParseError(value: JsValue) extends JsonFormatError("AbsGlobalEnvRec", value)
+
+case class AbsEnvRecParseError(value: JsValue) extends JsonFormatError("AbsEnvRec", value)
+
+case class AbsLexEnvParseError(value: JsValue) extends JsonFormatError("AbsLexEnv", value)
+
+case class OldASiteSetParseError(value: JsValue) extends JsonFormatError("OldASiteSet", value)
+
+case class AbsContextParseError(value: JsValue) extends JsonFormatError("AbsContext", value)
+
+case class AbsHeapParseError(value: JsValue) extends JsonFormatError("AbsHeap", value)
+
+case class AbsStateParseError(value: JsValue) extends JsonFormatError("AbsState", value)
+
+case class EdgeDataParseError(value: JsValue) extends JsonFormatError("EdgeData", value)
+
+case class SemanticsParseError(value: JsValue) extends JsonFormatError("Semantics", value)

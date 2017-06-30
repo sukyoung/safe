@@ -14,6 +14,9 @@ package kr.ac.kaist.safe.analyzer.domain
 import kr.ac.kaist.safe.analyzer.domain.Utils._
 import scala.collection.immutable.HashSet
 import scala.util.Try
+import kr.ac.kaist.safe.errors.error.AbsStringParseError
+
+import spray.json._
 
 // string set domain with max set size
 case class StringSet(maxSetSize: Int) extends AbsStringUtil {
@@ -39,7 +42,31 @@ case class StringSet(maxSetSize: Int) extends AbsStringUtil {
     else Top
   }
 
-  sealed abstract class Dom(maxSetSize: Int = 0) extends AbsString {
+  val jsonMap: Map[AbsString, Int] = Map(
+    Top -> 0,
+    Number -> 1,
+    Other -> 2
+  )
+  val jsonIMap: Map[Int, AbsString] = jsonMap.map(_.swap)
+
+  def fromJson(value: JsValue): AbsString = value match {
+    case JsArray(values) => StrSet(
+      values.map(_ match {
+      case JsString(s) => s
+      case _ => throw AbsStringParseError(value)
+    }).to[Set]
+    )
+    case JsNumber(n) => jsonIMap(n.toInt)
+    case _ => throw AbsStringParseError(value)
+  }
+
+  sealed abstract class Dom extends AbsString {
+
+    def json: JsValue = this match {
+      case StrSet(values) => JsArray(JsNumber(maxSetSize), JsArray(values.to[Vector].map(JsString(_))))
+      case _ => JsArray(JsNumber(maxSetSize), JsNumber(jsonMap(this)))
+    }
+
     def gamma: ConSet[Str] = this match {
       case StrSet(set) => ConFin(set)
       case Top | Number | Other => ConInf()

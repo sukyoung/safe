@@ -75,7 +75,7 @@ object CFGBlockProtocol extends DefaultJsonProtocol {
         JsArray(block.getInsts.reverse.map(_.asInstanceOf[CFGNormalInst].toJson).to[Vector])
       )
       case head @ LoopHead(_) => JsArray()
-      case ModelBlock(_, _) => throw ModelBlockToJsonError
+      // case ModelBlock(_, _) => throw ModelBlockToJsonError
       case _ => JsNull
     }
 

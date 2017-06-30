@@ -13,12 +13,18 @@ package kr.ac.kaist.safe.json
 
 import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.analyzer._
+import kr.ac.kaist.safe.analyzer.domain._
+import kr.ac.kaist.safe.json.AbsStateProtocol._
+import kr.ac.kaist.safe.json.AbsLexEnvProtocol._
+import kr.ac.kaist.safe.json.AbsValueProtocol._
 import kr.ac.kaist.safe.errors.error.{
   WorklistParseError,
   ControlPointParseError,
   TracePartitionParseError,
   LoopInfoParseError,
-  BlockNotFoundError
+  BlockNotFoundError,
+  EdgeDataParseError,
+  SemanticsParseError
 }
 
 import spray.json._
@@ -27,6 +33,7 @@ import DefaultJsonProtocol._
 object WorklistProtocol extends DefaultJsonProtocol {
 
   var cfg: CFG = _
+  var worklist: Worklist = _
 
   implicit object TracePartitionJsonFormat extends RootJsonFormat[TracePartition] {
 
@@ -157,6 +164,77 @@ object WorklistProtocol extends DefaultJsonProtocol {
         worklist
       }
       case _ => throw WorklistParseError(value)
+    }
+  }
+
+  implicit object EdgeDataJsonFormat extends RootJsonFormat[EdgeData] {
+
+    def write(data: EdgeData): JsValue = data match {
+      case EdgeData(old, env, binding) => JsArray(
+        old.toJson, env.toJson, binding.toJson
+      )
+    }
+
+    def read(value: JsValue): EdgeData = value match {
+      case JsArray(Vector(old, env, binding)) => EdgeData(
+        old.convertTo[OldASiteSet],
+        env.convertTo[AbsLexEnv],
+        binding.convertTo[AbsValue]
+      )
+      case _ => throw EdgeDataParseError(value)
+    }
+  }
+
+  implicit object SemanticsFormat extends RootJsonFormat[Semantics] {
+
+    def write(sem: Semantics): JsValue = JsArray(
+      JsArray(sem.getAllState.foldLeft[Vector[JsValue]](Vector()) {
+        case (vec, (block, map)) => vec ++ (map.toSeq map {
+          case (tp, state) => JsArray(Vector(
+            ControlPoint(block, tp).toJson,
+            state.toJson
+          ))
+        })
+      }),
+      JsArray(sem.getAllIPSucc.to[Vector] map {
+        case (cp1, map) => JsArray(Vector(
+          cp1.toJson,
+          JsArray(map.to[Vector] map {
+            case (cp2, edge) => JsArray(Vector(
+              cp2.toJson,
+              edge.toJson
+            ))
+          })
+        ))
+      })
+    )
+
+    def read(value: JsValue): Semantics = value match {
+      case JsArray(Vector(JsArray(state), JsArray(succ))) => {
+        val sem = new Semantics(cfg, worklist)
+        for (cpAndSt <- state)
+          cpAndSt match {
+            case JsArray(Vector(cp, st)) => sem.setState(
+              cp.convertTo[ControlPoint], st.convertTo[AbsState]
+            )
+            case _ => throw SemanticsParseError(value)
+          }
+        sem.setAllIPSucc(succ.map(_ match {
+          case JsArray(Vector(cp1, JsArray(map))) => (
+            cp1.convertTo[ControlPoint],
+            map.map(_ match {
+              case JsArray(Vector(cp2, edge)) => (
+                cp2.convertTo[ControlPoint],
+                edge.convertTo[EdgeData]
+              )
+              case _ => throw SemanticsParseError(value)
+            }).toMap
+          )
+          case _ => throw SemanticsParseError(value)
+        }).toMap)
+        sem
+      }
+      case _ => throw SemanticsParseError(value)
     }
   }
 }
