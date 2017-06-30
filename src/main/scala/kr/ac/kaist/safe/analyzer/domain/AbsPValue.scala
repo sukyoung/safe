@@ -55,17 +55,17 @@ trait AbsPValueUtil extends AbsDomainUtil[PValue, AbsPValue] {
 // default primitive value abstract domain
 ////////////////////////////////////////////////////////////////////////////////
 object DefaultPValue extends AbsPValueUtil {
-  lazy val Bot: Dom =
-    Dom(AbsUndef.Bot, AbsNull.Bot, AbsBool.Bot, AbsNumber.Bot, AbsString.Bot)
+  //  lazy val Bot: Dom =
+  //    Dom(AbsUndef.Bot, AbsNull.Bot, AbsBool.Bot, AbsNumber.Bot, AbsString.Bot)
 
-  //  lazy val Bot: Dom = {
-  //    val v1: AbsUndef = AbsUndef.Bot
-  //    val v2: AbsNull = AbsNull.Bot
-  //    val v3: AbsBool = AbsBool.Bot
-  //    val v4: AbsNumber = AbsNumber.Bot
-  //    val v5: AbsString = AbsString.Bot
-  //    Dom(v1, v2, v3, v4, v5)
-  //  }
+  lazy val Bot: Dom = {
+    val v1: AbsUndef = AbsUndef.Bot
+    val v2: AbsNull = AbsNull.Bot
+    val v3: AbsBool = AbsBool.Bot
+    val v4: AbsNumber = AbsNumber.Bot
+    val v5: AbsString = AbsString.Bot
+    Dom(v1, v2, v3, v4, v5)
+  }
   lazy val Top: Dom =
     Dom(AbsUndef.Top, AbsNull.Top, AbsBool.Top, AbsNumber.Top, AbsString.Top)
 

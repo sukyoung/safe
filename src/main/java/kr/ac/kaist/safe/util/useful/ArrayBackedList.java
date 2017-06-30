@@ -9,7 +9,7 @@
  * ****************************************************************************
  */
 
-package kr.ac.kaist.safe.useful;
+package kr.ac.kaist.safe.util.useful;
 
 import java.util.*;
 

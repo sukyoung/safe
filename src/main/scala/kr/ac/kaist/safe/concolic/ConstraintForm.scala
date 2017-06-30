@@ -47,9 +47,7 @@ class ConstraintForm() {
 
   def getLhs: SymbolicValue = lhs
   def getOp: Option[String] = op
-  def getJavaOp: JavaOption[String] = toJavaOption(op)
   def getRhs: Option[ConstraintForm] = rhs
-  def getJavaRhs: JavaOption[ConstraintForm] = toJavaOption(rhs)
 
   def objectRelated: Boolean = {
     if (lhs == null) return false

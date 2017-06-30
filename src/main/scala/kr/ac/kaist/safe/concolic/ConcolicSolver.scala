@@ -127,13 +127,13 @@ class ConcolicSolver(coverage: Coverage) {
     }
     // Make a primitive result.
     val tmp = z3.solve(
-      Lists.toJavaList[ConstraintForm](primitiveConstraints),
+      primitiveConstraints,
       num,
-      toJavaOption(Some(Maps.toJavaMap[Integer, TypeInfo](function.getObjects))),
-      Lists.toJavaList(function.getThisProperties)
+      Some(function.getObjects),
+      function.getThisProperties
     )
     if (tmp.isSome) {
-      primitiveResult = Maps.toMap(tmp.unwrap).map(x => (x._1, x._2.intValue))
+      primitiveResult = tmp.get.map(x => (x._1, x._2.intValue)).toMap
     }
 
     // Build actual result combined object related result and primitive realted one.

@@ -20,8 +20,7 @@ import kr.ac.kaist.safe.nodes.ast._
 import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.nodes.ir.{ IRFactory => IF }
 import kr.ac.kaist.safe.phase.InterpretConfig
-// TODO MV Simplified: import kr.ac.kaist.safe.util.{ Coverage, NodeUtil => NU, Span }
-import kr.ac.kaist.safe.util.{ NodeUtil => NU, Span }
+import kr.ac.kaist.safe.util.{ Coverage, NodeUtil => NU, Span }
 import kr.ac.kaist.safe.util.useful.Sets
 
 class InterpreterState(val I: Interpreter, val config: InterpretConfig) {
@@ -32,7 +31,7 @@ class InterpreterState(val I: Interpreter, val config: InterpretConfig) {
   var eval: Boolean = false
   var span: Span = IP.defSpan
   // TODO MV Simplified: var coverage: Option[Coverage] = None
-  var coverage = None
+  var coverage: Option[Coverage] = None
   var objectProps = Set[String]()
 
   def init() {

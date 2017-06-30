@@ -58,7 +58,7 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
 
     // Set InterpreterState
     // TODO MV Simplified this to avoid using Coverage, was originally: IS.coverage = coverage
-    IS.coverage = None
+    IS.coverage = coverage
 
     val IRRoot(_, vds, fds, irs) = program
 
@@ -68,7 +68,7 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
       // TODO MV Simplified: was originally: SH.initialize(coverage)
       SH.initialize(coverage)
 
-      val inputIR: List[IRStmt] = ??? // TODO MV Simplified: was originally: coverage.inputIR match { case Some(ir) => List(ir); case None => List() }
+      val inputIR: List[IRStmt] = coverage.inputIR match { case Some(ir) => List(ir); case None => List() }
       /*println("Input IR!!!!!!!!")
       if (coverage.inputIR.isSome)
         System.out.println(new kr.ac.kaist.jsaf.nodes_util.JSIRUnparser(coverage.inputIR.unwrap).doit)
@@ -76,7 +76,7 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
 
       walkIRs(vds ++ fds ++ irs.filterNot(_.isInstanceOf[IRNoOp]) ++ inputIR)
 
-      // TODO MV Removed: was originally: coverage.report = SH.report
+      coverage.report = SH.report
 
       //if (coverage.debug) 
       //SH.print
@@ -121,12 +121,10 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
   }
 
   def checkResults: Boolean = {
-    println("hier")
     val resultPrefix = "__result"
     val expectPrefix = "__expect"
     @scala.annotation.tailrec
     def loopEnvs(env: Env): Boolean = {
-      println(env)
       env match {
         case EmptyEnv() => true
         case ConsEnv(first, rest) => first match {
@@ -139,7 +137,6 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
               val expectedValue = store.get(expectedName)
               (resultName, resultValue, expectedName, expectedValue)
             })
-            println(resultsZipped)
             val firstEnvMatches = resultsZipped.forall({
               case (_, resultValue, _, expectedValue) =>
                 resultValue.value == expectedValue.value

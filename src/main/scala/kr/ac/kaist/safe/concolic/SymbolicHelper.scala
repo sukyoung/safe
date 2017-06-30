@@ -668,20 +668,19 @@ class SymbolicHelper(I: Interpreter) {
       symbolic_memory(v.uniqueName) = symbolic_memory(old.uniqueName)
   }
 
-  def checkRecursiveCall(f: String, args: IRId): Boolean = ???
-  // TODO MV Simplified:
-  //    coverage.functions.get(f) match {
-  //    case Some(fun) =>
-  //      val res = fun.checkRecursive(maxDepth)
-  //      if (isRecursiveCall(f)) {
-  //        recursive = argumentsMemory.get(args.uniqueName) match {
-  //          case Some(sv) => sv
-  //          case None => List()
-  //        }
-  //      }
-  //      res
-  //    case None => true
-  //  }
+  def checkRecursiveCall(f: String, args: IRId): Boolean = coverage.functions.get(f) match {
+    case Some(fun) =>
+      val res = fun.checkRecursive(maxDepth)
+      if (isRecursiveCall(f)) {
+        recursive = argumentsMemory.get(args.uniqueName) match {
+          case Some(sv) => sv
+          case None => List()
+        }
+      }
+      res
+    case None =>
+      true
+  }
 
   def checkLoop(loop: String): Boolean = {
     var res = true

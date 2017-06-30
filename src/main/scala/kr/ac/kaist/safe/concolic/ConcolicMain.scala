@@ -12,6 +12,8 @@
 package kr.ac.kaist.safe.concolic
 
 import java.io.{ BufferedWriter, FileWriter }
+import kr.ac.kaist.safe.analyzer.domain._
+
 import scala.collection.immutable.{ HashMap, HashSet }
 import scala.util._
 import edu.rice.cs.plt.tuple.{ Option => JOption }
@@ -33,10 +35,26 @@ import kr.ac.kaist.safe.util.{ NodeUtil => NU, Concrete, Coverage, NodeRelation 
 // Concolic Test
 ////////////////////////////////////////////////////////////////////////////////
 object ConcolicMain {
+
+  private def init(): Unit = {
+    Utils.register(
+      DefaultUndef,
+      DefaultNull,
+      DefaultBool,
+      DefaultNumber,
+      StringSet(0),
+      DefaultLoc,
+      RecencyAAddr
+    )
+  }
+
   /**
    * Working on a very simple concolic testing...
    */
   def concolic(ir: IRRoot, cfg: CFG): Try[Int] = {
+
+    init()
+
     val return_code = 0
     IRGenerator.ignoreId = 0
 
