@@ -86,15 +86,8 @@ case object CmdCFGBuild extends CommandObj("cfgBuild", CmdCompile >> CFGBuild) {
   override def display(cfg: CFG): Unit = println(cfg.toString(0))
 }
 
-// cfgLoad
-case object CmdCFGLoad extends CommandObj("cfgLoad", CmdBase >> CFGLoader) {
-  override def display(cfg: CFG): Unit = println(cfg.toString(0))
-}
-
 // analyze
-case object CmdAnalyze extends CommandObj("analyze", CmdCFGBuild >> Analyze, HashMap(
-  "cfgFromJson" -> (CmdCFGLoad >> Analyze)
-)) {
+case object CmdAnalyze extends CommandObj("analyze", CmdCFGBuild >> Analyze) {
   override def display(result: (CFG, Int, TracePartition, Semantics)): Unit = {
     val (cfg, iters, _, sem) = result
 
