@@ -25,15 +25,17 @@ import kr.ac.kaist.safe.nodes.cfg.CFG
 import kr.ac.kaist.safe.util._
 
 // Analyze phase
-case object Analyze extends PhaseObj[CFG, AnalyzeConfig, (CFG, Int, TracePartition, Semantics)] {
+case object Analyze extends PhaseObj[(CFG, Worklist, Semantics, TracePartition), AnalyzeConfig, (CFG, Int, TracePartition, Semantics)] {
   val name: String = "analyzer"
   val help: String = "Analyze JavaScript source files."
 
   def apply(
-    cfg: CFG,
+    in: (CFG, Worklist, Semantics, TracePartition),
     safeConfig: SafeConfig,
     config: AnalyzeConfig
   ): Try[(CFG, Int, TracePartition, Semantics)] = {
+    val (cfg, _, _, _) = in
+
     // initialization
     Utils.register(
       config.AbsUndef,
