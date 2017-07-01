@@ -138,5 +138,8 @@ case object CmdAndroidCheck extends CommandObj("androidCheck", CmdBase >> Androi
 // jsModelRewrite
 case object CmdJSModelRewrite extends CommandObj("jsModelRewrite", CmdBase >> JSModelRewrite)
 
+// WALAModelRewrite
+case object CmdWALARewrite extends CommandObj("walaModelRewrite", CmdBase >> WALARewrite);
+
 // help
 case object CmdHelp extends CommandObj("help", CmdBase >> Help)
