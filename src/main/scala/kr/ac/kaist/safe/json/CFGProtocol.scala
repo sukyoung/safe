@@ -15,6 +15,7 @@ import kr.ac.kaist.safe.util._
 import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.nodes.ir._
 import kr.ac.kaist.safe.nodes.ast._
+import kr.ac.kaist.safe.analyzer.Initialize
 import kr.ac.kaist.safe.json.NodeProtocol._
 import kr.ac.kaist.safe.json.CFGExprProtocol._
 import kr.ac.kaist.safe.json.CFGInstProtocol._
@@ -114,9 +115,9 @@ object CFGProtocol extends DefaultJsonProtocol {
       JsArray(
         ir.toJson,
         JsArray(cfg.globalFunc.localVars.map(_.toJson).to[Vector]),
-        JsArray(cfg.getAllFuncs.reverse.map(_.toJson).to[Vector]),
+        JsArray(cfg.getAllFuncs.reverse.filter(_.isUser).map(_.toJson).to[Vector]),
         JsNumber(cfg.getUserASiteSize),
-        JsArray(cfg.getPredASiteSet.map(_.toJson).to[Vector]),
+        // JsArray(cfg.getPredASiteSet.map(_.toJson).to[Vector]),
         // store edge information for whole blocks
         JsArray(cfg.getAllBlocks.map(blockEdgeToJson(_)).to[Vector])
       )
@@ -128,7 +129,7 @@ object CFGProtocol extends DefaultJsonProtocol {
         JsArray(vars),
         JsArray(funcs),
         JsNumber(user),
-        JsArray(pred),
+        // JsArray(pred),
         JsArray(edges)
         )) => {
         val cfg: CFG = new CFG(ir.convertTo[IRNode], vars.map(_.convertTo[CFGId]).to[List])
@@ -139,8 +140,9 @@ object CFGProtocol extends DefaultJsonProtocol {
         for (func <- cfg.getAllFuncs)
           CFGFunctionProtocol.restoreBlock(func)
         cfg.setUserASiteSize(user.toInt)
-        for (aSite <- pred)
-          cfg.registerPredASite(aSite.convertTo[AllocSite])
+        // for (aSite <- pred)
+        //   cfg.registerPredASite(aSite.convertTo[AllocSite])
+        Initialize(cfg, false)
         for (edge <- edges)
           edge match {
             case JsArray(Vector(

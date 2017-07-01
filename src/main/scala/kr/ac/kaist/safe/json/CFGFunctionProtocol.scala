@@ -28,13 +28,13 @@ object CFGFunctionProtocol extends DefaultJsonProtocol {
   implicit object CFGFunctionJsonFormat extends RootJsonFormat[CFGFunction] {
 
     def write(func: CFGFunction): JsValue = func match {
-      case CFGFunction(ir, argsName, argVars, localVars, name, isUser) => JsArray(
+      case CFGFunction(ir, argsName, argVars, localVars, name, _) => JsArray(
         ir.toJson,
         JsString(argsName),
         JsArray(argVars.map(_.toJson).to[Vector]),
         JsArray(localVars.map(_.toJson).to[Vector]),
         JsString(name),
-        JsBoolean(isUser),
+        // JsBoolean(isUser),
         JsArray(func.getAllBlocks.reverse.drop(3).map(_.toJson).filter(_ != JsNull).to[Vector]),
         JsArray(func.getCaptured.reverse.map(_.toJson).to[Vector])
       )
@@ -47,7 +47,7 @@ object CFGFunctionProtocol extends DefaultJsonProtocol {
         JsArray(argVars),
         JsArray(localVars),
         JsString(name),
-        JsBoolean(isUser),
+        // JsBoolean(isUser),
         JsArray(blocks),
         JsArray(captured)
         )) => {
@@ -57,7 +57,7 @@ object CFGFunctionProtocol extends DefaultJsonProtocol {
           argVars.map(_.convertTo[CFGId]).to[List],
           localVars.map(_.convertTo[CFGId]).to[List],
           name,
-          isUser
+          true
         )
         for (captId <- captured)
           func.addCaptured(captId.convertTo[CFGId])
@@ -69,7 +69,7 @@ object CFGFunctionProtocol extends DefaultJsonProtocol {
   }
 
   def restoreGlobalFunc(func: CFGFunction, value: JsValue): Unit = value match {
-    case JsArray(Vector(_, _, _, _, _, _, JsArray(blocks), JsArray(captured))) => {
+    case JsArray(Vector(_, _, _, _, _, JsArray(blocks), JsArray(captured))) => {
       for (captId <- captured)
         func.addCaptured(captId.convertTo[CFGId])
       func.blockData = blocks
