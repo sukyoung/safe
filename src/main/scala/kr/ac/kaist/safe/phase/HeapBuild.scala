@@ -18,6 +18,7 @@ import kr.ac.kaist.safe.nodes.cfg.CFG
 import kr.ac.kaist.safe.util._
 import kr.ac.kaist.safe.analyzer._
 import kr.ac.kaist.safe.analyzer.domain._
+import kr.ac.kaist.safe.analyzer.models.JSModel
 import kr.ac.kaist.safe.errors.error.NoChoiceError
 
 // HeapBuild phase
@@ -85,6 +86,9 @@ case object HeapBuild extends PhaseObj[CFG, HeapBuildConfig, (CFG, Worklist, Sem
     ("jsModel", BoolOption(c => c.jsModel = true),
       "analysis with JavaScript models.")
   )
+
+  // cache for JS model
+  var jscache: Option[JSModel] = None
 }
 
 // HeapBuild phase config

@@ -38,7 +38,7 @@ object Initialize {
 
     val modeledHeap: AbsHeap =
       if (jsModel) {
-        val model = Analyze.jscache getOrElse {
+        val model = HeapBuild.jscache getOrElse {
           // val fileName = NodeUtil.jsModelsBase + "snapshot_and_built_in.jsmodel"
           // ModelParser.parseFile(fileName).get
           ModelParser.mergeJsModels(NodeUtil.jsModelsBase)

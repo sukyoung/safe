@@ -14,7 +14,6 @@ package kr.ac.kaist.safe.phase
 import scala.util.{ Failure, Success, Try }
 import kr.ac.kaist.safe.SafeConfig
 import kr.ac.kaist.safe.analyzer._
-import kr.ac.kaist.safe.analyzer.models.JSModel
 import kr.ac.kaist.safe.analyzer.console.Console
 import kr.ac.kaist.safe.analyzer.html_debugger.HTMLWriter
 import kr.ac.kaist.safe.LINE_SEP
@@ -76,9 +75,6 @@ case object Analyze extends PhaseObj[(CFG, Worklist, Semantics, TracePartition),
     ("html", StrOption((c, s) => c.htmlName = Some(s)),
       "the resulting CFG with states will be drawn to the {string}.html")
   )
-
-  // cache for JS model
-  var jscache: Option[JSModel] = None
 }
 
 // Analyze phase config
