@@ -176,7 +176,7 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
       registerTest(prefix + filename, tag) {
         val safeConfig = testSafeConfig.copy(fileNames = List(name))
         val cfg = getCFG(name)
-        if (filename.endsWith(".html")) analyzeConfig.jsModel = true
+        if (filename.endsWith(".html")) heapBuildConfig.jsModel = true
         val heapBuild = cfg.flatMap(HeapBuild(_, safeConfig, heapBuildConfig))
         val analysis = heapBuild.flatMap(Analyze(_, safeConfig, analyzeConfig))
         testList ::= relPath
@@ -254,7 +254,7 @@ class CoreTest extends FlatSpec with BeforeAndAfterAll {
   parser(List(s"-json=$testJSON"))
 
   Analyze.jscache = {
-    Utils.AAddrType = analyzeConfig.aaddrType
+    Utils.AAddrType = heapBuildConfig.aaddrType
     Some(ModelParser.mergeJsModels(NodeUtil.jsModelsBase))
   }
 

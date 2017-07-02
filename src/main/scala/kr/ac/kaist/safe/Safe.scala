@@ -92,6 +92,7 @@ object Safe {
     ASTRewrite,
     Compile,
     CFGBuild,
+    HeapBuild,
     Analyze,
     BugDetect,
     TestRewrite,
