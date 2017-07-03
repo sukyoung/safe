@@ -17,6 +17,7 @@ import kr.ac.kaist.safe.analyzer.console.{ Console => Con, Target }
 import kr.ac.kaist.safe.util.Useful
 import kr.ac.kaist.safe.json.CFGProtocol._
 import kr.ac.kaist.safe.json.WorklistProtocol._
+import kr.ac.kaist.safe.json.ConfigProtocol._
 
 import spray.json._
 
@@ -30,7 +31,8 @@ case object CmdDump extends Command("dump", "Dump current analysis data.") {
         writer.write(JsArray(
           c.cfg.toJson,
           c.worklist.toJson,
-          c.sem.toJson
+          c.sem.toJson,
+          c.config.toJson
         ).prettyPrint)
         writer.close
         fw.close

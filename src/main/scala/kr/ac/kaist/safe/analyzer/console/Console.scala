@@ -21,11 +21,13 @@ import kr.ac.kaist.safe.analyzer.{ Worklist, Semantics, ControlPoint, TraceParti
 import kr.ac.kaist.safe.analyzer.console.command._
 import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.util.Span
+import kr.ac.kaist.safe.phase.HeapBuildConfig
 
 class Console(
     val cfg: CFG,
     val worklist: Worklist,
-    val sem: Semantics
+    val sem: Semantics,
+    val config: HeapBuildConfig
 ) {
   ////////////////////////////////////////////////////////////////
   // private variables

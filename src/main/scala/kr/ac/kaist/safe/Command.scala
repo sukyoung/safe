@@ -88,8 +88,8 @@ case object CmdCFGBuild extends CommandObj("cfgBuild", CmdCompile >> CFGBuild) {
 
 // heapBuild
 case object CmdHeapBuild extends CommandObj("heapBuild", CmdCFGBuild >> HeapBuild) {
-  override def display(result: (CFG, Worklist, Semantics, TracePartition)): Unit = {
-    val (cfg, _, _, _) = result
+  override def display(result: (CFG, Worklist, Semantics, TracePartition, HeapBuildConfig)): Unit = {
+    val (cfg, _, _, _, _) = result
     println(cfg.toString(0))
   }
 }
