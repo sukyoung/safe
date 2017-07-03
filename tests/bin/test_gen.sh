@@ -15,4 +15,3 @@ cd $WKSPACE
 ./parse_test_gen.sh
 ./compile_test_gen.sh
 ./cfgBuild_test_gen.sh
-./cfgDump_test_gen.sh
