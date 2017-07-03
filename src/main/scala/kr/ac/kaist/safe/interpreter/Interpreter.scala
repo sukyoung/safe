@@ -57,7 +57,6 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
     def tsLab(l: IRId) = l.uniqueName
 
     // Set InterpreterState
-    // TODO MV Simplified this to avoid using Coverage, was originally: IS.coverage = coverage
     IS.coverage = coverage
 
     val IRRoot(_, vds, fds, irs) = program
@@ -65,7 +64,6 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
     if (IS.coverage.isDefined) {
       val coverage = IS.coverage.get
 
-      // TODO MV Simplified: was originally: SH.initialize(coverage)
       SH.initialize(coverage)
 
       val inputIR: List[IRStmt] = coverage.inputIR match { case Some(ir) => List(ir); case None => List() }
@@ -372,8 +370,6 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
   /*
    * H,A,tb,ir --> H,A,ct
    */
-  // TODO MV this walk method probably has to return an IRStmt now, considering its (overridden) base method,
-  // but I don't know which IRStmt to return, so let's return the input node
   override def walk(node: IRStmt): IRStmt = {
     val oldSpan = IS.span
     try {
@@ -386,12 +382,11 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
           if (IS.coverage.isDefined) {
             val cov = IS.coverage.get
             val uid = u.getUID
-            // TODO MV Removed:
-            //            if (!cov.execSet.contains(uid)) {
-            //              if (cov_debug) System.out.println("    executing.." + uid + " @ " + info.span)
-            //              cov.executed = cov.executed + 1
-            //              cov.execSet += uid
-            //            }
+            if (!cov.execSet.contains(uid)) {
+              if (cov_debug) System.out.println("    executing.." + uid + " @ " + info.span)
+              cov.executed = cov.executed + 1
+              cov.execSet += uid
+            }
           }
           //System.out.println("uid="+uid + " at"+getSpan(info))
           walkStmtUnit(stmts)
@@ -852,7 +847,6 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
                           IS.comp.setThrow(IP.typeError, info.span); return node
                         case e: URIErrorException =>
                           IS.comp.setThrow(IP.uriError, info.span); return node
-                        // TODO MV Remove print("823") in line below
                         case e: NYIErrorException => IS.comp.setThrow(IP.nyiError, info.span); return node
                       }
                       // TODO:

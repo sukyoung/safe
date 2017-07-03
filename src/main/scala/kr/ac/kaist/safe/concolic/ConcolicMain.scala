@@ -74,106 +74,111 @@ object ConcolicMain {
     val worklist = Worklist(cfg)
     worklist.add(entryCP)
 
-    val semantics = new Semantics(cfg, worklist)
-    // TODO MV Removed: val stateManager = new StateManager(cfg, semantics)
-    //    val coverage = new Coverage(cfg, semantics, stateManager)
-    val coverage = new Coverage(cfg, semantics)
-    // coverage.typing = new Typing(cfg, true, false)
-    coverage.typing.analyze(cfg, AnalyzeConfig())
-    // Store function information using the result of the analysis
-    coverage.updateFunction(cfg)
+    //    val semantics = new Semantics(cfg, worklist)
+    // TODO MV cfg == cfg2 ?
+    val tryAnalysisResult = Analyze.analyze(cfg, AnalyzeConfig())
+    tryAnalysisResult.flatMap({
+      case (cg2, iters, tp, semantics) =>
+        // TODO MV Removed: val stateManager = new StateManager(cfg, semantics)
+        //    val coverage = new Coverage(cfg, semantics, stateManager)
+        val coverage = new Coverage(cfg, semantics)
+        // coverage.typing = new Typing(cfg, true, false)
+        // Store function information using the result of the analysis
+        coverage.updateFunction(cfg)
 
-    // Filtering to ignore original body
-    var fir = IRFilter.doit(ir)
+        // Filtering to ignore original body
+        var fir = IRFilter.doit(ir)
 
-    fir = IRSimplifier.doit(fir)
-    //System.out.println(new JSIRUnparser(fir).doit)
+        fir = IRSimplifier.doit(fir)
+        //System.out.println(new JSIRUnparser(fir).doit)
 
-    val instrumentor = new Instrumentor(fir, coverage)
-    fir = instrumentor.doit
-    //instrumentor.debugOn
+        val instrumentor = new Instrumentor(fir, coverage)
+        fir = instrumentor.doit
+        //instrumentor.debugOn
 
-    //coverage.debug = true;
-    //coverage.timing = true;
+        //coverage.debug = true;
+        //coverage.timing = true;
 
-    val interpreter = new Interpreter(InterpretConfig(InterpreterModes.OTHER))
-    val extractor = new ConstraintExtractor
-    val solver = new ConcolicSolver(coverage)
-    if (coverage.debug) {
-      solver.debug = true
-      extractor.debug = true
-    }
-
-    do {
-      var inputNumber = 0
-      do {
-        System.out.println
-        var startTime = System.nanoTime
-        val result = coverage.functions.get(coverage.target) match {
-          case Some(f) =>
-            val temp = solver.solve(coverage.getConstraints, coverage.inum, f)
-            if (temp.nonEmpty)
-              Some(temp)
-            else
-              None
-          case None => None
-        }
-        //solveConstraints
-
-        coverage.setInput(result)
-        coverage.setupCall match {
-          case Some(ir) =>
-            val inputIR = instrumentor.walk(ir, IRFactory.dummyIRId(coverage.target)).asInstanceOf[IRStmt]
-            /*System.out.println("Input IR!!!!!!!!")
-            System.out.println(new JSIRUnparser(ir).doit)
-            System.out.println*/
-            // Print instrumented IR
-            /*if (Shell.params.opt_OutFileName != null) {
-              val outfile = Shell.params.opt_OutFileName
-              try {
-                val pair: Pair[FileWriter, BufferedWriter] = Useful.filenameToBufferedWriter(outfile)
-                val (fw, writer) = (pair.first, pair.second)
-                ASTIO.writeJavaAst(ir, outfile)
-                writer.close
-                fw.close
-                System.out.println("Dumped IR to " + outfile)
-              }
-              catch {
-                case e: IOException => {
-                  throw new IOException("IOException " + e + "while writing " + outfile)
-                }
-              }
-            }*/
-            inputNumber = inputNumber + 1
-            coverage.inputIR = Some(inputIR)
-
-            if (coverage.timing)
-              System.out.println("Generating test input takes " + (System.nanoTime - startTime) / 1000000 + " times.")
-            startTime = System.nanoTime
-
-            interpreter.doit(fir, Some(coverage), true)
-
-            if (coverage.timing)
-              System.out.println("Interpreting the input takes " + (System.nanoTime - startTime) / 1000000 + " times.")
-
-          case None =>
-            coverage.inputIR = None
-            interpreter.doit(ir, Some(coverage), true)
+        val interpreter = new Interpreter(InterpretConfig(InterpreterModes.OTHER))
+        val extractor = new ConstraintExtractor
+        val solver = new ConcolicSolver(coverage)
+        if (coverage.debug) {
+          solver.debug = true
+          extractor.debug = true
         }
 
-        if (coverage.isFirst)
-          extractor.initialize
-        extractor.modify(coverage.report)
-        coverage.constraints = extractor.constraints
-        coverage.necessaries = extractor.necessaries
+        do {
+          var inputNumber = 0
+          do {
+            System.out.println
+            var startTime = System.nanoTime
+            val result = coverage.functions.get(coverage.target) match {
+              case Some(f) =>
+                val temp = solver.solve(coverage.getConstraints, coverage.inum, f)
+                if (temp.nonEmpty)
+                  Some(temp)
+                else
+                  None
+              case None => None
+            }
+            //solveConstraints
 
-      } while (coverage.continue)
-      coverage.removeTarget
-      //System.out.println("Total number of inputs: " + inputNumber)
-    } while (coverage.existCandidate)
-    // System.out.println("Total statements: " + coverage.total)
-    // System.out.println("Executed statements: " + coverage.executed)
-    Success(return_code)
+            coverage.setInput(result)
+            coverage.setupCall match {
+              case Some(ir) =>
+                val inputIR = instrumentor.walk(ir, IRFactory.dummyIRId(coverage.target)).asInstanceOf[IRStmt]
+                /*System.out.println("Input IR!!!!!!!!")
+                System.out.println(new JSIRUnparser(ir).doit)
+                System.out.println*/
+                // Print instrumented IR
+                /*if (Shell.params.opt_OutFileName != null) {
+                  val outfile = Shell.params.opt_OutFileName
+                  try {
+                    val pair: Pair[FileWriter, BufferedWriter] = Useful.filenameToBufferedWriter(outfile)
+                    val (fw, writer) = (pair.first, pair.second)
+                    ASTIO.writeJavaAst(ir, outfile)
+                    writer.close
+                    fw.close
+                    System.out.println("Dumped IR to " + outfile)
+                  }
+                  catch {
+                    case e: IOException => {
+                      throw new IOException("IOException " + e + "while writing " + outfile)
+                    }
+                  }
+                }*/
+                inputNumber = inputNumber + 1
+                coverage.inputIR = Some(inputIR)
+
+                if (coverage.timing)
+                  System.out.println("Generating test input takes " + (System.nanoTime - startTime) / 1000000 + " times.")
+                startTime = System.nanoTime
+
+                interpreter.doit(fir, Some(coverage), true)
+
+                if (coverage.timing)
+                  System.out.println("Interpreting the input takes " + (System.nanoTime - startTime) / 1000000 + " times.")
+
+              case None =>
+                coverage.inputIR = None
+                interpreter.doit(ir, Some(coverage), true)
+            }
+
+            if (coverage.isFirst) {
+              extractor.initialize()
+            }
+            extractor.modify(coverage.report)
+            coverage.constraints = extractor.constraints
+            coverage.necessaries = extractor.necessaries
+
+          } while (coverage.continue)
+          coverage.removeTarget()
+          //System.out.println("Total number of inputs: " + inputNumber)
+        } while (coverage.existCandidate)
+        // System.out.println("Total statements: " + coverage.total)
+        // System.out.println("Executed statements: " + coverage.executed)
+        Success(return_code)
+    })
   }
 
   /*def solveConstraints(): Option[Map[String, (Id, List[Stmt])]] = {

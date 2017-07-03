@@ -30,7 +30,6 @@ class InterpreterState(val I: Interpreter, val config: InterpretConfig) {
   var lastComp: Completion = new Completion()
   var eval: Boolean = false
   var span: Span = IP.defSpan
-  // TODO MV Simplified: var coverage: Option[Coverage] = None
   var coverage: Option[Coverage] = None
   var objectProps = Set[String]()
 

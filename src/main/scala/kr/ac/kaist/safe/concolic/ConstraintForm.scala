@@ -11,11 +11,6 @@
 
 package kr.ac.kaist.safe.concolic
 
-import _root_.java.util.{ List => JList }
-import _root_.edu.rice.cs.plt.tuple.{ Option => JavaOption }
-import _root_.kr.ac.kaist.safe.util.useful.Options._
-// TODO MV removed: import kr.ac.kaist.jsaf.nodes_util.{IRFactory => IF, NodeUtil => NU}
-
 class ConstraintForm() {
   //var lhs: String = null
   var lhs: SymbolicValue = null
@@ -26,7 +21,7 @@ class ConstraintForm() {
     case Some(_id) =>
       lhs = _id
       op = Some("=")
-      var tmp = new ConstraintForm
+      val tmp = new ConstraintForm
       tmp.makeConstraint(None, left, operator, right)
       rhs = Some(tmp)
     // Conditional information
@@ -51,20 +46,17 @@ class ConstraintForm() {
 
   def objectRelated: Boolean = {
     if (lhs == null) return false
-    var left = lhs.isObject || lhs.isNull
-    var right = false
-    if (rhs.isSome) {
-      right = rhs.unwrap.objectRelated
-    }
+    val left = lhs.isObject || lhs.isNull
+    val right = rhs.map(_.objectRelated).getOrElse(false)
     left || right
   }
 
   var branchConstraint: Boolean = false
-  def setBranchConstraint() = branchConstraint = true
-  def isBranchConstraint() = branchConstraint
+  def setBranchConstraint(): Unit = branchConstraint = true
+  def isBranchConstraint: Boolean = branchConstraint
 
   def getSymbolicValues(): List[SymbolicValue] = {
-    var result = List(getLhs)
+    val result = List(getLhs)
     getRhs match {
       case Some(x) => result ::: x.getSymbolicValues
       case None => result
@@ -72,15 +64,15 @@ class ConstraintForm() {
   }
 
   override def toString: String = {
-    var operator = op match {
+    val operator = op match {
       case Some(x) => " " + x + " "
       case None => ""
     }
-    var right = rhs match {
+    val right = rhs match {
       case Some(x) => x.toString
       case None => ""
     }
-    return lhs.toString + operator + right
+    lhs.toString + operator + right
   }
 }
 

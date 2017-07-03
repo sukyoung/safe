@@ -22,13 +22,12 @@ import kr.ac.kaist.safe.nodes.cfg._
 import kr.ac.kaist.safe.phase._
 import kr.ac.kaist.safe.util.useful.Lists
 import kr.ac.kaist.safe.util.useful.Options._
-//TODO MV import kr.ac.kaist.safe.analyzer.typing.{ SemanticsExpr => SE }
 
 import scala.collection.mutable.HashMap
 
 class Coverage(
-    var cfg: CFG, //TODO MV Originally also included: var stateManager: StateManager
-    var semantics: Semantics
+    var cfg: CFG,
+    val semantics: Semantics
 ) {
   var debug = false
   var timing = false
@@ -96,7 +95,7 @@ class Coverage(
 
   // Check whether testing a function continue or not.
   def continue: Boolean = { isFirst = false; constraints.nonEmpty }
-  def existCandidate = functions.exists(x => x._2.isCandidate)
+  def existCandidate: Boolean = functions.exists({ case (_, x) => x.isCandidate })
   def removeTarget(): Unit = {
     functions.get(target) match {
       case Some(info) =>
@@ -108,7 +107,7 @@ class Coverage(
         System.out.println("Target should be function type")
     }
     if (functions.nonEmpty) {
-      var filters = functions.filter(x => x._2.isCandidate)
+      val filters = functions.filter({ case (_, x) => x.isCandidate })
       if (filters.nonEmpty) {
         // Sort because of test file
         target = filters.keySet.toList.sorted.head
@@ -127,10 +126,10 @@ class Coverage(
     val cfgNodes = CFGCollector.collect(cfgRoot)
     for (k <- cfgNodes) {
       k match {
-        case inst @ CFGConstruct(ir, block, fun, thisArg, arguments, asite) => identifyFunction(inst, thisArg)
-        //identifyFunction(inst)
-        case inst @ CFGCall(ir, block, fun, thisArg, arguments, asite) => identifyFunction(inst, thisArg)
-        //identifyFunction(inst)
+        case inst @ CFGConstruct(ir, block, fun, thisArg, arguments, asite) =>
+          identifyFunction(inst, thisArg)
+        case inst @ CFGCall(ir, block, fun, thisArg, arguments, asite) =>
+          identifyFunction(inst, thisArg)
         case _ =>
       }
     }

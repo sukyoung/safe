@@ -29,10 +29,8 @@ object IRGenerator {
   def freshId(ast: ASTNode): IRTmpId = freshId(ast, "temp")
   def freshId(ast: ASTNode, n: String): IRTmpId =
     IF.makeTId(ast, NU.freshName(n), false)
-  // TODO MV No longer supported: can't create a TId from just a Span
   def freshId(span: Span, n: String): IRTmpId =
     IF.makeTId(NU.makeASTNodeInfo(span), NU.freshName(n))
-  // TODO MV No longer supported: can't create a TId from just a Span
   def freshId(): IRTmpId = freshId(dummySpan, "temp")
 
   val globalName = NU.INTERNAL_GLOBAL
@@ -186,20 +184,10 @@ object IRGenerator {
   def funexpr2ir(e: Expr, env: Env, res: IRId, lhs: Option[String], target: String): (List[IRStmt], IRExpr) = e match {
     case FunExpr(info, f @ Functional(_, fds, vds, body, name, params, _)) =>
       if (name.text.equals("")) {
-        // TODO MV basically inlined the call to dummyFtn here, and removed the matching
-        //args, fds, vds = Nil
-        // don't care about fromSource = false
-        // name = IP.defId
-        // params = List(IP.thisTId, IP.argumentsTId).asInstanceOf[List[IRId]])
-        // body = toJavaList(for (i <- 1 to length) yield IF.dummyIRStmt(IF.dummyAst, IP.defSpan).asInstanceOf[IRStmt])
-        // length in definition of body is 0, so expression yields an empty 'list' -> body = Nil
-        val args: List[IRStmt] = Nil
-        val fds: List[IRFunDecl] = Nil
-        val vds: List[IRVarStmt] = Nil
-        val name = IP.defId
-        val params: List[IRId] = List(IP.thisTId, IP.argumentsTId)
-        val body: List[IRStmt] = Nil
-        return (List(IF.makeFunExpr(true, f, res, name, params, args, fds, vds, body)), res)
+        dummyFtn(0) match {
+          case IRFunctional(ast, fromSource, name, params, args, fds, vds, body) =>
+            return (List(IF.makeFunExpr(true, f, res, name, params, args, fds, vds, body)), res)
+        }
       } else {
         for (k <- NF.irSet) {
           k match {
@@ -287,5 +275,16 @@ object IRGenerator {
     case ExprStmt(info, expr @ AssignOpApp(_, _, op, _), isInternal) if op.text.equals("=") =>
       val (ss, _) = expr2ir(expr, env, varIgn(expr, expr.info.span))
       IF.makeStmtUnit(stmt, ss)
+  }
+
+  def dummyFtn(length: Int): IRFunctional = {
+    val body: List[IRStmt] = List.tabulate(length)((_) => IF.dummyIRStmt(NF.makeDummyAST(IP.defSpan)))
+    IF.makeFunctional(
+      false,
+      NF.dummyFunctional,
+      IP.defId,
+      List[IRId](IP.thisTId, IP.argumentsTId),
+      body
+    )
   }
 }

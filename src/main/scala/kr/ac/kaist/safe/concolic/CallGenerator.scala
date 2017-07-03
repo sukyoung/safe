@@ -43,7 +43,7 @@ class CallGenerator(coverage: Coverage) {
     additional = coverage.additional
 
     if (target == null) return None
-    var env = List[(String, IRId)]()
+    val env = List[(String, IRId)]()
     // For prototype functions.
     if (target.contains(".")) {
       // Tokenize target name to generate each object and function.
