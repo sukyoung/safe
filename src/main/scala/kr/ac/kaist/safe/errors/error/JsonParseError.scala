@@ -139,3 +139,11 @@ case class AbsStateParseError(value: JsValue) extends JsonFormatError("AbsState"
 case class EdgeDataParseError(value: JsValue) extends JsonFormatError("EdgeData", value)
 
 case class SemanticsParseError(value: JsValue) extends JsonFormatError("Semantics", value)
+
+case class AbsNumberUtilParseError(value: JsValue) extends JsonFormatError("AbsNumberUtil", value)
+
+case class AbsStringUtilParseError(value: JsValue) extends JsonFormatError("AbsStringUtil", value)
+
+case class AAddrTypeParseError(value: JsValue) extends JsonFormatError("AAddrType", value)
+
+case class HeapBuildConfigParseError(value: JsValue) extends JsonFormatError("HeapBuildConfig", value)
