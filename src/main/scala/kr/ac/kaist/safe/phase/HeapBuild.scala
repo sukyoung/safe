@@ -64,6 +64,8 @@ case object HeapBuild extends PhaseObj[CFG, HeapBuildConfig, (CFG, Worklist, Sem
 
   def defaultConfig: HeapBuildConfig = HeapBuildConfig()
   val options: List[PhaseOption[HeapBuildConfig]] = List(
+    ("silent", BoolOption(c => c.silent = true),
+      "messages during heap building are muted."),
     ("maxStrSetSize", NumOption((c, n) => if (n > 0) c.AbsString = StringSet(n)),
       "the analyzer will use the AbsString Set domain with given size limit n."),
     ("aaddrType", StrOption((c, s) => s match {
@@ -93,6 +95,7 @@ case object HeapBuild extends PhaseObj[CFG, HeapBuildConfig, (CFG, Worklist, Sem
 
 // HeapBuild phase config
 case class HeapBuildConfig(
+  var silent: Boolean = false,
   var AbsUndef: AbsUndefUtil = DefaultUndef,
   var AbsNull: AbsNullUtil = DefaultNull,
   var AbsBool: AbsBoolUtil = DefaultBool,
