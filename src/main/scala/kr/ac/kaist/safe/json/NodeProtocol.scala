@@ -25,6 +25,8 @@ import DefaultJsonProtocol._
 
 object NodeProtocol extends DefaultJsonProtocol {
 
+  var test = false
+
   implicit object SourceLocJsonFormat extends RootJsonFormat[SourceLoc] {
 
     def write(loc: SourceLoc): JsValue = loc match {
@@ -41,7 +43,7 @@ object NodeProtocol extends DefaultJsonProtocol {
   implicit object SpanJsonFormat extends RootJsonFormat[Span] {
 
     def write(span: Span): JsValue = span match {
-      case Span(name, begin, end) => JsArray(JsString(name), begin.toJson, end.toJson)
+      case Span(name, begin, end) => JsArray(JsString(if (test) "" else name), begin.toJson, end.toJson)
     }
 
     def read(value: JsValue): Span = value match {

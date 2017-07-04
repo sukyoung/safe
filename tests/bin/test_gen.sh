@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ################################################################################
-#    Copyright (c) 2016, KAIST.
+#    Copyright (c) 2016-2017, KAIST.
 #    All rights reserved.
 #
 #    Use is subject to license terms.
@@ -15,3 +15,4 @@ cd $WKSPACE
 ./parse_test_gen.sh
 ./compile_test_gen.sh
 ./cfgBuild_test_gen.sh
+./dump_test_gen.sh
