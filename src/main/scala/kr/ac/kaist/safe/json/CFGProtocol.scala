@@ -32,6 +32,8 @@ import DefaultJsonProtocol._
 
 object CFGProtocol extends DefaultJsonProtocol {
 
+  var jsModel = false
+
   implicit object CFGJsonFormat extends RootJsonFormat[CFG] {
 
     private val map: Map[CFGEdgeType, Int] = Map(
@@ -117,7 +119,6 @@ object CFGProtocol extends DefaultJsonProtocol {
         JsArray(cfg.globalFunc.localVars.map(_.toJson).to[Vector]),
         JsArray(cfg.getAllFuncs.reverse.filter(_.isUser).map(_.toJson).to[Vector]),
         JsNumber(cfg.getUserASiteSize),
-        // JsArray(cfg.getPredASiteSet.map(_.toJson).to[Vector]),
         // store edge information for whole blocks
         JsArray(cfg.getAllBlocks.map(blockEdgeToJson(_)).to[Vector])
       )
@@ -129,7 +130,6 @@ object CFGProtocol extends DefaultJsonProtocol {
         JsArray(vars),
         JsArray(funcs),
         JsNumber(user),
-        // JsArray(pred),
         JsArray(edges)
         )) => {
         val cfg: CFG = new CFG(ir.convertTo[IRNode], vars.map(_.convertTo[CFGId]).to[List])
@@ -140,9 +140,7 @@ object CFGProtocol extends DefaultJsonProtocol {
         for (func <- cfg.getAllFuncs)
           CFGFunctionProtocol.restoreBlock(func)
         cfg.setUserASiteSize(user.toInt)
-        // for (aSite <- pred)
-        //   cfg.registerPredASite(aSite.convertTo[AllocSite])
-        Initialize(cfg, false)
+        Initialize(cfg, jsModel)
         for (edge <- edges)
           edge match {
             case JsArray(Vector(
