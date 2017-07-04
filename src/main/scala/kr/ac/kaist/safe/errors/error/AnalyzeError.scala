@@ -12,6 +12,7 @@
 package kr.ac.kaist.safe.errors.error
 
 import kr.ac.kaist.safe.nodes.ir.IRNode
+import kr.ac.kaist.safe.util.UserAllocSite
 
 ////////////////////////////////////////////////////////////////////////////////
 // Analyze Error
@@ -56,3 +57,7 @@ case class ModelParseError(msg: String) extends AnalyzeError(
 case object LocTopGammaError extends AnalyzeError(
   "AbsLoc.Top.gamma is impossible"
 )
+
+case class UserAllocSiteError(u: UserAllocSite) extends AnalyzeError({
+  s"[UserAllocSiteError]: $u."
+})

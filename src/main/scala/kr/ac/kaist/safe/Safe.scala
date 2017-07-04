@@ -78,7 +78,6 @@ object Safe {
     CmdBugDetect,
     CmdTestRewrite,
     CmdAndroidCheck,
-    CmdJSModelRewrite,
     CmdWALARewrite,
     CmdHelp
   )
