@@ -32,7 +32,8 @@ case object CmdDump extends Command("dump", "Dump current analysis data.") {
           c.cfg.toJson,
           c.worklist.toJson,
           c.sem.toJson,
-          c.config.toJson
+          c.config.toJson,
+          JsNumber(c.getIter - 1)
         ).prettyPrint)
         writer.close
         fw.close

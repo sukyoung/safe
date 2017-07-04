@@ -21,8 +21,8 @@ class Fixpoint(
     worklist: Worklist,
     consoleOpt: Option[Console]
 ) {
-  def compute(): Int = {
-    var iters = 0
+  def compute(initIters: Int = 0): Int = {
+    var iters = initIters
     while (!worklist.isEmpty) {
       iters += 1
       consoleOpt.fold() { _.runFixpoint }

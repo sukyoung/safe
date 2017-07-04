@@ -27,7 +27,8 @@ class Console(
     val cfg: CFG,
     val worklist: Worklist,
     val sem: Semantics,
-    val config: HeapBuildConfig
+    val config: HeapBuildConfig,
+    private var iter: Int = -1
 ) {
   ////////////////////////////////////////////////////////////////
   // private variables
@@ -35,8 +36,7 @@ class Console(
 
   private val reader = new ConsoleReader()
   private val out: PrintWriter = new PrintWriter(reader.getOutput)
-  private var iter: Int = -1
-  private var target: Target = TargetIter(0)
+  private var target: Target = TargetIter(iter + 1)
   private var cur: ControlPoint = _
   private var home: ControlPoint = _
   private var breakList: TreeSet[CFGBlock] = TreeSet()
