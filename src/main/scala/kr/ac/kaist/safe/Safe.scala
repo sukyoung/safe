@@ -93,6 +93,7 @@ object Safe {
     Compile,
     CFGBuild,
     HeapBuild,
+    JsonLoad,
     Analyze,
     BugDetect,
     TestRewrite,
