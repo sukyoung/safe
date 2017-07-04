@@ -29,6 +29,9 @@ class Coverage(
     var cfg: CFG,
     val semantics: Semantics
 ) {
+
+  val irRoot: IRNode = cfg.ir
+
   var debug = false
   var timing = false
 
@@ -94,7 +97,10 @@ class Coverage(
   def getJavaConstraints: JList[ConstraintForm] = Lists.toJavaList(constraints)
 
   // Check whether testing a function continue or not.
-  def continue: Boolean = { isFirst = false; constraints.nonEmpty }
+  def continue: Boolean = {
+    isFirst = false
+    constraints.nonEmpty
+  }
   def existCandidate: Boolean = functions.exists({ case (_, x) => x.isCandidate })
   def removeTarget(): Unit = {
     functions.get(target) match {
@@ -141,7 +147,7 @@ class Coverage(
     var functionName: String = cfgBlock.func.name //null
 
     // To find a constructor name of this argument.
-    val thisinfo = new TypeInfo("Object")
+    var thisinfo = new TypeInfo("Object")
 
     var cstate = semantics.getState(cfgBlock) //stateManager.getOutputCState(cfgBlock, inst.id)
     var thisNames = List[String]()
@@ -152,7 +158,7 @@ class Coverage(
       val temp = thisNames ::: computeConstructorName(heap, thisObj, functionName)
       thisNames = temp.distinct
     }
-    thisinfo.addConstructors(thisNames)
+    thisinfo = thisinfo.addConstructors(thisNames)
 
     // To find other information of a function like argument type, it uses different heap, input states, because only successor nodes of input states can be entry nodes of functions.
     val finfo = new FunctionInfo
@@ -182,7 +188,7 @@ class Coverage(
 
                 val v_i_types = v_i.typeKinds
                 for (t <- v_i_types) {
-                  val tinfo = new TypeInfo(t)
+                  var tinfo = new TypeInfo(t)
                   if (t == "Object") {
                     if (state </ DefaultState.Bot) {
                       // Compute object
@@ -201,7 +207,7 @@ class Coverage(
                       }
 
                       if (isArray) {
-                        tinfo.addConstructors(List("Array"))
+                        tinfo = tinfo.addConstructors(List("Array"))
                         val arrayObj = computeObject(hh, lset)
                         var length = arrayObj("length").value.pvalue.toString
                         if (length == "UInt")
@@ -209,7 +215,7 @@ class Coverage(
                         tinfo.setProperties(List(length))
                       } else {
                         // Compute object constructor name
-                        tinfo.addConstructors(computeConstructorName(hh, obj, functionName))
+                        tinfo = tinfo.addConstructors(computeConstructorName(hh, obj, functionName))
 
                         // Compute object properties
                         val properties: List[String] = computePropertyList(obj, false)
@@ -245,8 +251,9 @@ class Coverage(
       //if (!functionName.contains("constructor"))
       //finfo.setCandidate
 
-      if (functionName.contains("."))
+      if (functionName.contains(".")) {
         finfo.setThisObject(thisinfo)
+      }
 
       functions.put(functionName, finfo)
     }

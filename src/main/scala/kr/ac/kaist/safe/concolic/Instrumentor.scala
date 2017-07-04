@@ -65,33 +65,33 @@ class Instrumentor(program: IRRoot, coverage: Coverage) extends IRWalker {
   val dummyId = IF.dummyIRId(CNU.freshConcolicName("Instrumentor"))
 
   def storeEnvironment(info: ASTNode, v: IRId, env: IRId) =
-    IRInternalCall(info, dummyId, "StoreEnvironment", List(v, env))
+    IRInternalCall(info, dummyId, CNU.freshConcolicName("StoreEnvironment"), List(v, env))
 
   def storeThis(info: ASTNode, env: IRId) =
-    IRInternalCall(info, dummyId, "StoreThis", List(dummyId, env))
+    IRInternalCall(info, dummyId, CNU.freshConcolicName("StoreThis"), List(dummyId, env))
 
   def storeVariable(info: ASTNode, lhs: IRId, rhs: IRId) =
-    IRInternalCall(info, dummyId, "StoreVariable", List(lhs, rhs))
+    IRInternalCall(info, dummyId, CNU.freshConcolicName("StoreVariable"), List(lhs, rhs))
 
   def executeAssignment(info: ASTNode, e: IRExpr, v: IRId, env: IRId) =
     IRSeq(info, List(
       storeEnvironment(info, v, env),
-      IRInternalCall(info, dummyId, "ExecuteAssignment", List(e, v))
+      IRInternalCall(info, dummyId, CNU.freshConcolicName("ExecuteAssignment"), List(e, v))
     ))
 
   def executeStore(info: ASTNode, obj: IRId, index: IRId, rhs: IRExpr, env: IRId) =
     IRSeq(info, List(
       storeEnvironment(info, obj, env),
-      IRInternalCall(info, obj, "ExecuteStore", List(rhs, index))
+      IRInternalCall(info, obj, CNU.freshConcolicName("ExecuteStore"), List(rhs, index))
     ))
 
   def executeCondition(info: ASTNode, e: IRExpr, env: IRId) =
-    IRInternalCall(info, dummyId, "ExecuteCondition", List(e, env))
+    IRInternalCall(info, dummyId, CNU.freshConcolicName("ExecuteCondition"), List(e, env))
   def endCondition(info: ASTNode, env: IRId) =
-    IRInternalCall(info, dummyId, "EndCondition", List(dummyId, env))
+    IRInternalCall(info, dummyId, CNU.freshConcolicName("EndCondition"), List(dummyId, env))
 
   def walkVarStmt(info: ASTNode, v: IRId, n: EJSNumber, env: IRId) =
-    IRInternalCall(info, v, "WalkVarStmt", List(IRVal(n), env))
+    IRInternalCall(info, v, CNU.freshConcolicName("WalkVarStmt"), List(IRVal(n), env))
 
   def walkFunctional(info: ASTNode, node: IRFunctional): IRFunctional = node match {
     case IRFunctional(ast, i, name, params, args, fds, vds, body) =>

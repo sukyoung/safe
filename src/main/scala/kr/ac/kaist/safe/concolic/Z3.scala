@@ -154,8 +154,8 @@ final class Z3 {
         {
           if (exprMap.contains("i" + i)) result.put("i" + i, model.getConstInterp(exprMap.get("i" + i).get).toString.toInt)
           if (objects.contains(i)) {
-            if (objects(i).getJavaConstructor == "Array") {
-              val length: String = objects(i).getJavaProperties.get(0)
+            if (objects(i).getConstructor == "Array") {
+              val length: String = objects(i).getProperties.head
               var j: Int = 0
               while (j < length.toInt) {
                 result.put("i" + i + "." + Integer.toString(j), model.getConstInterp(exprMap.get("i" + i + "." + Integer.toString(j)).get).toString.toInt)

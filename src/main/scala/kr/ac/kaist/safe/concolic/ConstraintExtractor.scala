@@ -103,16 +103,16 @@ class ConstraintExtractor {
       System.out.println("================== Affected Report ===================")
       System.out.println(affected.map(_.toString))
       System.out.println("======================================================")
-      System.out.println("============== Symbolic Exeuction Tree ===============")
+      System.out.println("============== Symbolic Execution Tree ===============")
       printTree(root)
       System.out.println("======================================================")
     }
 
-    extract
+    extract()
 
   }
 
-  def extract() = {
+  def extract(): Unit = {
     if (unvisited.isEmpty) System.out.println("DONE")
     else {
       expanded = unvisited.dequeue
@@ -165,7 +165,7 @@ class ConstraintExtractor {
       return
     else {
       val parents = node.parents.unwrap
-      var target = if (parents.length > 1 && !parents(1).isVisit) parents(1) else parents(0)
+      val target = if (parents.length > 1 && !parents(1).isVisit) parents(1) else parents(0)
       collect(target)
     }
   }
@@ -187,8 +187,8 @@ class ConstraintExtractor {
         left.depth = target.depth + 1
         right.depth = target.depth + 1
 
-        var child = if (!info.branchTaken) right else left
-        var previousChild = if (!info.branchTaken) left else right
+        val child = if (!info.branchTaken) right else left
+        val previousChild = if (!info.branchTaken) left else right
 
         child.isVisit = true
 
@@ -226,18 +226,16 @@ class ConstraintExtractor {
   }
 
   def insert(info: SymbolicInfo): Unit = {
-    var cand1 = leaves.pop
-    var target = cand1
+    val cand1 = leaves.pop
+    val target = cand1
     if (!target.isVisit)
       throw new ConcolicError("All of adjacent leaves are not visited.")
 
-    var left: Node = null
-    var right: Node = null
     info.getType match {
       case 1 => // Statement
         val cond = new ConstraintForm
         cond.makeConstraint(info._id, info._lhs, info._op, info._rhs)
-        left = Node(true, Some(cond), None, None, target.depth + 1)
+        val left: Node = Node(true, Some(cond), None, None, target.depth + 1)
         target.leftChild = Some(left)
         left.setParents(List(target))
 
@@ -247,8 +245,8 @@ class ConstraintExtractor {
         // Put a true branch on the left side, and a false branch on the right side. 
         val visitNode = Node(true, negate(info.branchTaken, info), None, None, depth)
         val notvisitNode = Node(false, negate(!info.branchTaken, info), None, None, depth)
-        left = if (info.branchTaken) visitNode else notvisitNode
-        right = if (info.branchTaken) notvisitNode else visitNode
+        val left: Node = if (info.branchTaken) visitNode else notvisitNode
+        val right: Node = if (info.branchTaken) notvisitNode else visitNode
 
         target.leftChild = Some(left)
         target.rightChild = Some(right)
@@ -261,14 +259,14 @@ class ConstraintExtractor {
 
         unvisited += notvisitNode
       case 3 => // End of branch
-        var depth = cand1.depth
+        val depth = cand1.depth
         // cand2 could be null because SymbolicHelper records only if-statements under certain conditions, however records every end-if-statements.
-        left = Node(true, None, None, None, depth + 1)
+        val left: Node = Node(true, None, None, None, depth + 1)
         cand1.leftChild = Some(left)
         left.setParents(List(cand1))
 
         if (branches.nonEmpty) {
-          var branch = branches.pop
+          val branch = branches.pop
           branch.setBranchEnd(left)
         }
 

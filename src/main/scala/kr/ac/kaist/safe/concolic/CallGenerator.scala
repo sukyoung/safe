@@ -35,8 +35,8 @@ class CallGenerator(coverage: Coverage) {
   val dummyId = IF.dummyIRId(CNU.freshConcolicName("CallGenerator"))
   val none: Option[IRId] = None
   // TODO Not sure if startConcolic and endConcolic were ported correctly
-  val startConcolic = new IRInternalCall(NF.dummyAST, dummyId, "StartConcolic", List(dummyId))
-  val endConcolic = new IRInternalCall(NF.dummyAST, dummyId, "EndConcolic", List(dummyId))
+  val startConcolic = new IRInternalCall(NF.dummyAST, dummyId, CNU.freshConcolicName("StartConcolic"), List(dummyId))
+  val endConcolic = new IRInternalCall(NF.dummyAST, dummyId, CNU.freshConcolicName("EndConcolic"), List(dummyId))
 
   def setupCall(target: String): Option[IRStmt] = {
     input = coverage.input
@@ -52,7 +52,7 @@ class CallGenerator(coverage: Coverage) {
         throw new ConcolicError("Only a.x function forms are supported.")
       val constructors = functions(target).getThisConstructors
       //TODO: Handle multiple type
-      val first = constructors(0)
+      val first = constructors.head
       val second = if (target.contains("prototype")) token(2) else token(1)
 
       val objRef = input.get("this") match {
@@ -133,7 +133,8 @@ class CallGenerator(coverage: Coverage) {
   }
 
   def makeArgs(target: String, isObject: Boolean): Option[List[Expr]] = {
-    for (k <- NF.irSet) {
+    val irCollection: Set[IRNode] = IRCollector.collect(coverage.irRoot)
+    for (k <- irCollection) {
       k match {
         case IRFunctional(_, _, name, params, args, fds, vds, body) =>
           if (name.uniqueName == target) {

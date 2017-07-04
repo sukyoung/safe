@@ -164,8 +164,9 @@ class Semantics(
   }
 
   def C(cp: ControlPoint, st: AbsState): (AbsState, AbsState) = {
-    if (st.isBottom) (AbsState.Bot, AbsState.Bot)
-    else {
+    if (st.isBottom) {
+      (AbsState.Bot, AbsState.Bot)
+    } else {
       val h = st.heap
       val ctx = st.context
       val old = ctx.old

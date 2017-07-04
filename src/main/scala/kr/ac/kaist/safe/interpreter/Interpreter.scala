@@ -1145,7 +1145,8 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
                 case err: JSError => IS.comp.setThrow(err, info.span)
                 case _ => IS.comp.setThrow(IP.typeError, info.span)
               }
-            case _ =>
+            case x =>
+              println(s"x = $x")
               IS.comp.setThrow(IP.nyiError, info.span)
           }
 

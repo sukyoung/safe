@@ -271,7 +271,11 @@ package object interpreter {
     def setBreak(v: Val, l: IRId): Unit = { Type = CT.BREAK; value = v; label = l }
     def setReturn(): Unit = { Type = CT.RETURN }
     def setReturn(v: Val): Unit = { Type = CT.RETURN; value = v }
-    def setThrow(e: ValError, sp: Span): Unit = { Type = CT.THROW; error = e; span = sp }
+    def setThrow(e: ValError, sp: Span): Unit = {
+      Type = CT.THROW
+      error = e
+      span = sp
+    }
     // Set last completion from another completion
     def setLastCompletion(c: Completion): Unit = {
       Type = c.Type

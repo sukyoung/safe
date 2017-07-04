@@ -110,7 +110,7 @@ object ConcolicMain {
         do {
           var inputNumber = 0
           do {
-            System.out.println
+            System.out.println("Iterating in ConcolicMain")
             var startTime = System.nanoTime
             val result = coverage.functions.get(coverage.target) match {
               case Some(f) =>
@@ -124,7 +124,7 @@ object ConcolicMain {
             //solveConstraints
 
             coverage.setInput(result)
-            coverage.setupCall match {
+            coverage.setupCall() match {
               case Some(ir) =>
                 val inputIR = instrumentor.walk(ir, IRFactory.dummyIRId(coverage.target)).asInstanceOf[IRStmt]
                 /*System.out.println("Input IR!!!!!!!!")

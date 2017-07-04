@@ -22,9 +22,8 @@ class FunctionInfo() {
         if (ts.map(_.paramType).contains(t.paramType)) {
           if (t.paramType == "Object") {
             val temp = ts.filter(_.paramType == "Object").head
-            temp.addConstructors(t.constructorNames)
-
-            ts.filterNot(_.paramType == "Object") :+ temp
+            val temp2 = temp.addConstructors(t.constructorNames)
+            ts.filterNot(_.paramType == "Object") :+ temp2
           } else
             ts
         } else
