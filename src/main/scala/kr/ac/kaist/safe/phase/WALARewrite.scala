@@ -167,7 +167,7 @@ case object WALARewrite extends PhaseObj[Unit, WALARewriteConfig, Unit] {
   )
 }
 
-// JSModelRewrite phase config
+// WALARewrite phase config
 case class WALARewriteConfig(
   var outFile: Option[String] = None
 ) extends Config

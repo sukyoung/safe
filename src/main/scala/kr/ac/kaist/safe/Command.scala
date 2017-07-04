@@ -153,9 +153,6 @@ case object CmdTestRewrite extends CommandObj("testRewrite", CmdParse >> TestRew
 // androidCheck
 case object CmdAndroidCheck extends CommandObj("androidCheck", CmdBase >> AndroidCheck)
 
-// jsModelRewrite
-case object CmdJSModelRewrite extends CommandObj("jsModelRewrite", CmdBase >> JSModelRewrite)
-
 // WALAModelRewrite
 case object CmdWALARewrite extends CommandObj("walaModelRewrite", CmdBase >> WALARewrite);
 
