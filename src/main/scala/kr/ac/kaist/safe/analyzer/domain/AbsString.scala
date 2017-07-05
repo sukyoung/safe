@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright (c) 2016, KAIST.
+ * Copyright (c) 2016-2017, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -11,10 +11,14 @@
 
 package kr.ac.kaist.safe.analyzer.domain
 
+import spray.json._
+
 ////////////////////////////////////////////////////////////////////////////////
 // concrete string type
 ////////////////////////////////////////////////////////////////////////////////
-case class Str(str: String) extends PValue
+case class Str(str: String) extends PValue {
+  override def toString: String = s""""$str""""
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // string abstract domain
@@ -41,6 +45,8 @@ trait AbsString extends AbsDomain[Str, AbsString] {
 
   def toAbsNumber: AbsNumber
   def toAbsBoolean: AbsBool
+
+  def json: JsValue
 }
 
 trait AbsStringUtil extends AbsDomainUtil[Str, AbsString] {

@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright (c) 2016, KAIST.
+ * Copyright (c) 2016-2017, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -86,14 +86,25 @@ case object CmdCFGBuild extends CommandObj("cfgBuild", CmdCompile >> CFGBuild) {
   override def display(cfg: CFG): Unit = println(cfg.toString(0))
 }
 
-// cfgLoad
-case object CmdCFGLoad extends CommandObj("cfgLoad", CmdBase >> CFGLoader) {
-  override def display(cfg: CFG): Unit = println(cfg.toString(0))
+// heapBuild
+case object CmdHeapBuild extends CommandObj("heapBuild", CmdCFGBuild >> HeapBuild) {
+  override def display(result: (CFG, Worklist, Semantics, TracePartition, HeapBuildConfig, Int)): Unit = {
+    val (cfg, _, _, _, _, _) = result
+    println(cfg.toString(0))
+  }
+}
+
+// jsonLoad
+case object CmdJsonLoad extends CommandObj("jsonLoad", CmdBase >> JsonLoad) {
+  override def display(result: (CFG, Worklist, Semantics, TracePartition, HeapBuildConfig, Int)): Unit = {
+    val (cfg, _, _, _, _, _) = result
+    println(cfg.toString(0))
+  }
 }
 
 // analyze
-case object CmdAnalyze extends CommandObj("analyze", CmdCFGBuild >> Analyze, HashMap(
-  "cfgFromJson" -> (CmdCFGLoad >> Analyze)
+case object CmdAnalyze extends CommandObj("analyze", CmdHeapBuild >> Analyze, HashMap(
+  "fromJson" -> (CmdJsonLoad >> Analyze)
 )) {
   override def display(result: (CFG, Int, TracePartition, Semantics)): Unit = {
     val (cfg, iters, _, sem) = result
@@ -135,9 +146,6 @@ case object CmdAnalyze extends CommandObj("analyze", CmdCFGBuild >> Analyze, Has
 case object CmdBugDetect extends CommandObj("bugDetect", CmdAnalyze >> BugDetect) {
   override def display(cfg: CFG): Unit = ()
 }
-
-// jsModelRewrite
-case object CmdJSModelRewrite extends CommandObj("jsModelRewrite", CmdBase >> JSModelRewrite)
 
 // help
 case object CmdHelp extends CommandObj("help", CmdBase >> Help)

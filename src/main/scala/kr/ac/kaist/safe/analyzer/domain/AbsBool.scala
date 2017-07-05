@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright (c) 2016, KAIST.
+ * Copyright (c) 2016-2017, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -14,7 +14,9 @@ package kr.ac.kaist.safe.analyzer.domain
 ////////////////////////////////////////////////////////////////////////////////
 // concrete boolean type
 ////////////////////////////////////////////////////////////////////////////////
-case class Bool(b: Boolean) extends PValue
+case class Bool(b: Boolean) extends PValue {
+  override def toString: String = b.toString
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // boolean abstract domain

@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright (c) 2016, KAIST.
+ * Copyright (c) 2016-2017, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -38,12 +38,14 @@ object Initialize {
 
     val modeledHeap: AbsHeap =
       if (jsModel) {
-        val model = Analyze.jscache getOrElse {
+        val model = HeapBuild.jscache getOrElse {
           // val fileName = NodeUtil.jsModelsBase + "snapshot_and_built_in.jsmodel"
           // ModelParser.parseFile(fileName).get
           ModelParser.mergeJsModels(NodeUtil.jsModelsBase)
         }
-        model.funcs.foreach(cfg.addJSModel(_))
+        model.funcs.foreach {
+          case (_, func) => cfg.addJSModel(func)
+        }
         AbsHeap(model.heap)
       } else BuiltinGlobal.initHeap(initHeap, cfg)
 

@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright (c) 2016, KAIST.
+ * Copyright (c) 2016-2017, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -74,7 +74,8 @@ object Safe {
     CmdASTRewrite,
     CmdCompile,
     CmdCFGBuild,
-    CmdCFGLoad,
+    CmdHeapBuild,
+    CmdJsonLoad,
     CmdAnalyze,
     CmdBugDetect,
     CmdHelp
@@ -89,6 +90,8 @@ object Safe {
     ASTRewrite,
     Compile,
     CFGBuild,
+    HeapBuild,
+    JsonLoad,
     Analyze,
     BugDetect,
     Help

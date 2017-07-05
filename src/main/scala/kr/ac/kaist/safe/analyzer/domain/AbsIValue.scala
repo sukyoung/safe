@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright (c) 2016, KAIST.
+ * Copyright (c) 2016-2017, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -41,8 +41,17 @@ case object IHasInstance extends IName {
   override def toString: String = s"[[HasInstance]]" // TODO
 }
 
-abstract class IValue
-case class FId(id: FunctionId) extends IValue
+abstract class IValue {
+  def +(other: IValue): IValue = {
+    other
+  }
+}
+case class FId(id: FunctionId) extends IValue {
+  override def toString: String = {
+    val fid = -id
+    s"fun($fid)"
+  }
+}
 
 object AbsIValueUtil {
   val Bot: AbsIValue = AbsIValue(AbsValue.Bot, FidSetEmpty)

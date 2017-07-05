@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright (c) 2016, KAIST.
+ * Copyright (c) 2016-2017, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -38,10 +38,6 @@ class DefaultCFGBuilder(
   // private global
   ////////////////////////////////////////////////////////////////
 
-  // break label map
-  private var breakMap: Map[String, LoopHead] = _
-  // continue label map
-  private var contMap: Map[String, NormalBlock] = _
   // collect catch variable
   private var catchVarMap: Set[String] = _
   // captured variable set
@@ -77,8 +73,6 @@ class DefaultCFGBuilder(
   // initialize global variables
   private def init: (CFG, ExcLog) = {
     val cvResult = new CapturedVariableCollector(ir, safeConfig, config)
-    breakMap = HashMap()
-    contMap = HashMap()
     catchVarMap = HashSet()
     captured = cvResult.result
     cfgIdMap = HashMap()
@@ -509,14 +503,6 @@ class DefaultCFGBuilder(
           case s => UserLabel(s)
         }
         val block: NormalBlock = func.createBlock(labelKind)
-        labelKind match {
-          case LoopBreakLabel => breakMap.get(labelUniq) match {
-            case Some(b: LoopHead) => b.breakBlock = block
-            case None => // TODO Error handling
-          }
-          case LoopContLabel => contMap += labelUniq -> block
-          case _ =>
-        }
         cfg.addEdge(bs, block)
         cfg.addEdge(label of lm toList, block)
         (List(block), lm - label)
@@ -549,11 +535,6 @@ class DefaultCFGBuilder(
         val tailBlock: NormalBlock = getTail(blocks, func)
         /* while loop head */
         val headBlock: LoopHead = func.createLoopHead
-        contMap.get(cont.uniqueName) match {
-          case Some(contBlock) => headBlock.contBlock = contBlock
-          case None => // TODO Error handling
-        }
-        breakMap += br.uniqueName -> headBlock
         /* loop body */
         val loopBodyBlock: NormalBlock = func.createBlock
         /* loop out */

@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright (c) 2016, KAIST.
+ * Copyright (c) 2016-2017, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -148,7 +148,7 @@ object Parser {
         pair
       }
       case HTMLFile => JSFromHTML.parseScripts(fileName)
-      case JSTodoFile | NormalFile => Failure(NotJSFileError(fileName))
+      case JSONFile | JSTodoFile | NormalFile => Failure(NotJSFileError(fileName))
     }
   }
 

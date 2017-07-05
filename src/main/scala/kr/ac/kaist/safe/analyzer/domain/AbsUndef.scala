@@ -1,6 +1,6 @@
 /**
  * *****************************************************************************
- * Copyright (c) 2016, KAIST.
+ * Copyright (c) 2016-2017, KAIST.
  * All rights reserved.
  *
  * Use is subject to license terms.
@@ -15,7 +15,9 @@ package kr.ac.kaist.safe.analyzer.domain
 // concrete undefined type
 ////////////////////////////////////////////////////////////////////////////////
 sealed abstract class Undef extends PValue
-case object Undef extends Undef
+case object Undef extends Undef {
+  override def toString: String = "undefined"
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // undefined abstract domain
