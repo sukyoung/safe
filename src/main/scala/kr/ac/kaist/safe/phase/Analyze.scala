@@ -22,8 +22,7 @@ import kr.ac.kaist.safe.util._
 import kr.ac.kaist.safe.json.NodeProtocol
 
 // Analyze phase
-case object Analyze extends PhaseObj[(CFG, Worklist, Semantics, TracePartition, HeapBuildConfig, Int),
-  AnalyzeConfig, (CFG, Int, TracePartition, Semantics)] {
+case object Analyze extends PhaseObj[(CFG, Worklist, Semantics, TracePartition, HeapBuildConfig, Int), AnalyzeConfig, (CFG, Int, TracePartition, Semantics)] {
   val name: String = "analyzer"
   val help: String = "Analyze JavaScript source files."
 
