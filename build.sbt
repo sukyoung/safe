@@ -14,6 +14,7 @@ lazy val analyzeTest = taskKey[Unit]("Launch analyze tests")
 lazy val htmlTest = taskKey[Unit]("Launch html tests")
 lazy val test262Test = taskKey[Unit]("Launch test262 tests")
 lazy val benchTest = taskKey[Unit]("Launch benchmarks tests")
+lazy val dumpTest = taskKey[Unit]("Launch dump tests")
 
 lazy val root = (project in file(".")).
   settings(
@@ -70,7 +71,8 @@ lazy val root = (project in file(".")).
     analyzeTest <<= (testOnly in Test).toTask(s" -- -n AnalyzeTest") dependsOn compile,
     htmlTest <<= (testOnly in Test).toTask(s" -- -n HtmlTest") dependsOn compile,
     test262Test <<= (testOnly in Test).toTask(s" -- -n Test262Test") dependsOn compile,
-    benchTest <<= (testOnly in Test).toTask(s" -- -n BenchTest") dependsOn compile
+    benchTest <<= (testOnly in Test).toTask(s" -- -n BenchTest") dependsOn compile,
+    dumpTest <<= (testOnly in Test).toTask(s" -- -n DumpTest") dependsOn compile
   )
 
 scalacOptions in ThisBuild ++= Seq("-deprecation", "-feature",
