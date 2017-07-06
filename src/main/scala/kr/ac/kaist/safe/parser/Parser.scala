@@ -35,15 +35,20 @@ object Parser {
     result
   }
 
+  def normalized(s: String): String = s.replaceAll("\\s+", "").replaceAll("\\n+", "")
   // Used by DynamicRewriter
   def stringToE(str: (String, (Int, Int), String)): Try[(Expr, ExcLog)] = {
     val (fileName, (line, offset), code) = str
     val sr = new StringReader(code)
     val in = new BufferedReader(sr)
     val expr = resultToAST[Expr](new JS(in, fileName), _.JSExpr(0))
-    val result = expr.map {
-      case (e, log) =>
-        (NU.AddLinesWalker.addLines(e, line - 1, offset - 1), log)
+    val result = expr match {
+      case Success((e, log)) =>
+        if (normalized(e.toString(0)) == normalized(code))
+          Try((NU.AddLinesWalker.addLines(e, line - 1, offset - 1), log))
+        else
+          Failure(ParserError("eval with an unsupported argument", e.info.span))
+      case fail => fail
     }
     in.close; sr.close
     result

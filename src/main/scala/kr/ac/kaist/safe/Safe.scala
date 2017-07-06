@@ -74,6 +74,8 @@ object Safe {
     CmdASTRewrite,
     CmdCompile,
     CmdCFGBuild,
+    CmdHeapBuild,
+    CmdJsonLoad,
     CmdAnalyze,
     CmdBugDetect,
     CmdTestRewrite,
