@@ -296,7 +296,7 @@ class SymbolicHelper(I: Interpreter) {
                   sid.makeSymbolicValue(symbol + index, value.getTypes)
                   symbolic_memory(id.uniqueName) = sid
                   index += 1
-                  val info = new SymbolicInfo(false, Some(sid), Some(op.ast.toString()), context._1, context._2, None)
+                  val info = new SymbolicInfo(false, Some(sid), Some(op.name), context._1, context._2, None)
                   info.setType(STATEMENT)
                   report = report :+ info
                 case None => throw new ConcolicError("Symbolic value doesn't match with concrete value.")
@@ -422,7 +422,7 @@ class SymbolicHelper(I: Interpreter) {
               }
             }
             if (context != null) {
-              val info = new SymbolicInfo(true, None, Some(op.ast.toString()), context._1, context._2, branchTaken)
+              val info = new SymbolicInfo(true, None, Some(op.name), context._1, context._2, branchTaken)
               info.setType(BRANCH)
               report = report :+ info
             }
@@ -576,7 +576,7 @@ class SymbolicHelper(I: Interpreter) {
                       sid.makeSymbolicValue(symbol + index, value.getTypes)
                       symbolic_memory(id) = sid
                       index += 1
-                      val info = new SymbolicInfo(false, Some(sid), Some(op.ast.toString()), context._1, context._2, None)
+                      val info = new SymbolicInfo(false, Some(sid), Some(op.name), context._1, context._2, None)
                       info.setType(STATEMENT)
                       report = report :+ info
                     case None => throw new ConcolicError("Symbolic value doesn't match with concrete value.")

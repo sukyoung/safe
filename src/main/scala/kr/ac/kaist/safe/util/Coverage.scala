@@ -147,7 +147,7 @@ class Coverage(
     var functionName: String = cfgBlock.func.name //null
 
     // To find a constructor name of this argument.
-    var thisinfo = new TypeInfo("Object")
+    val thisinfo = new TypeInfo("Object")
 
     var cstate = semantics.getState(cfgBlock) //stateManager.getOutputCState(cfgBlock, inst.id)
     var thisNames = List[String]()
@@ -158,7 +158,7 @@ class Coverage(
       val temp = thisNames ::: computeConstructorName(heap, thisObj, functionName)
       thisNames = temp.distinct
     }
-    thisinfo = thisinfo.addConstructors(thisNames)
+    thisinfo.addConstructors(thisNames)
 
     // To find other information of a function like argument type, it uses different heap, input states, because only successor nodes of input states can be entry nodes of functions.
     val finfo = new FunctionInfo
@@ -176,9 +176,19 @@ class Coverage(
             val argvars = func.argVars // cfg.getArgVars(func)
             functionName = func.name
 
+            val whatisthiseven = semantics.getState(succBlock)
             // TODO MV original: stateManagercase.getOutputCState(succCP._1, inst.id)) {
-            for ((tp, state @ Dom(heap, context)) <- semantics.getState(succBlock)) {
-              val arglset = heap.get(PredAllocSite.PURE_LOCAL)(func.argumentsName).value.locset
+            for ((tp, state @ Dom(heap, context)) <- whatisthiseven) {
+              val something = context.pureLocal.record.decEnvRec.GetBindingValue(func.argumentsName)
+              //              Utils.AbsLexEnv.getId(Loc(PredAllocSite.PURE_LOCAL), func.argumentsName, true)
+              //              val userLocs = heap.allUserLocKeys
+              //              state.lookup(func.argumentsName)
+              val aaa: AbsObject = heap.get(PredAllocSite.PURE_LOCAL)
+              val aab: AbsDataProp = aaa(func.argumentsName)
+              val aad: AbsValue = aab.value
+              //              TODO MV Original: val arglset = aad.locset
+              //             TODO MV New: val arglset = fuckingkutkloteding._1.locset
+              val arglset = something._1.locset
               // Number of an argument
               var i = 0
               val h_n = argvars.foldLeft(heap)((hh, x) => {
@@ -188,7 +198,7 @@ class Coverage(
 
                 val v_i_types = v_i.typeKinds
                 for (t <- v_i_types) {
-                  var tinfo = new TypeInfo(t)
+                  val tinfo = new TypeInfo(t)
                   if (t == "Object") {
                     if (state </ DefaultState.Bot) {
                       // Compute object
@@ -207,7 +217,7 @@ class Coverage(
                       }
 
                       if (isArray) {
-                        tinfo = tinfo.addConstructors(List("Array"))
+                        tinfo.addConstructors(List("Array"))
                         val arrayObj = computeObject(hh, lset)
                         var length = arrayObj("length").value.pvalue.toString
                         if (length == "UInt")
@@ -215,7 +225,7 @@ class Coverage(
                         tinfo.setProperties(List(length))
                       } else {
                         // Compute object constructor name
-                        tinfo = tinfo.addConstructors(computeConstructorName(hh, obj, functionName))
+                        tinfo.addConstructors(computeConstructorName(hh, obj, functionName))
 
                         // Compute object properties
                         val properties: List[String] = computePropertyList(obj, false)

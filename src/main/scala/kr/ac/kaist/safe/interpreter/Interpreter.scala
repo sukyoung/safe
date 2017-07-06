@@ -59,7 +59,7 @@ class Interpreter(config: InterpretConfig) extends IRWalker {
     // Set InterpreterState
     IS.coverage = coverage
 
-    val IRRoot(_, vds, fds, irs) = program
+    val IRRoot(_, fds, vds, irs) = program
 
     if (IS.coverage.isDefined) {
       val coverage = IS.coverage.get

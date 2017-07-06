@@ -140,7 +140,7 @@ object DefaultValue extends AbsValueUtil {
       )
       typeKindsSet.filter({
         case (value, _) =>
-          value.isBottom
+          !value.isBottom
       }).map(_._2)
     }
 

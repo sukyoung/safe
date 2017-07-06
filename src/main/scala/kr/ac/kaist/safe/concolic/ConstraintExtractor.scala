@@ -276,6 +276,7 @@ class ConstraintExtractor {
 
   def negate(trueBranch: Boolean, info: SymbolicInfo): Option[ConstraintForm] = info._op match {
     case Some(op) =>
+      println(info)
       val operator =
         if (!trueBranch) op match {
           case "<" => Some(">=")

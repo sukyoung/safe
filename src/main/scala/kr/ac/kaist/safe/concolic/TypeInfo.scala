@@ -13,17 +13,17 @@ package kr.ac.kaist.safe.concolic
 
 case class TypeInfo(
     paramType: String,
-    constructorNames: List[String] = Nil,
-    properties: List[String] = Nil
+    var constructorNames: List[String] = Nil,
+    var properties: List[String] = Nil
 ) {
-  def addConstructors(x: List[String]): TypeInfo = {
+  def addConstructors(x: List[String]): Unit = {
     val distinctConstructorNames = (constructorNames ::: x).distinct
-    this.copy(constructorNames = distinctConstructorNames)
+    constructorNames = distinctConstructorNames
   }
 
-  def setProperties(x: List[String]): TypeInfo = {
+  def setProperties(x: List[String]): Unit = {
     val distinctProperties = (properties ::: x).distinct
-    this.copy(properties = distinctProperties)
+    properties = distinctProperties
   }
 
   def getConstructor: String = constructorNames.head
