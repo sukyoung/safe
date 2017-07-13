@@ -156,8 +156,9 @@ class CallGenerator(coverage: Coverage) {
 
                     var addstmt: List[Stmt] = (new ConcolicSolver(coverage)).assignEmptyObject(arg)
                     var constructors = functions(target).getObjectConstructors(n)
-                    if (constructors.nonEmpty)
+                    if (constructors.nonEmpty) {
                       addstmt = (new ConcolicSolver(coverage)).assignObject(false, n, arg, constructors(0), props, Map[String, Int](), true)
+                    }
                     additional = additional ::: addstmt
                     args = args :+ NF.makeVarRef(dummySpan, arg)
                   }

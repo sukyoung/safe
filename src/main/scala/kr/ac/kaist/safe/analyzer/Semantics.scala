@@ -234,7 +234,6 @@ class Semantics(
         (newSt, excSt)
       }
       case CFGAllocArg(_, _, x, n, newASite) => {
-        println(s"In CFGAllocArg")
         val loc = Loc(newASite)
         val st1 = st.oldify(loc)
         val absN = AbsNumber(n.toInt)

@@ -39,7 +39,7 @@ final class Z3 {
     val solver: Solver = ctx.mkSolver
     while (mutConslist.nonEmpty) {
       val constraint: ConstraintForm = mutConslist.head
-      mutConslist = mutConslist.drop(0)
+      mutConslist = mutConslist.drop(1)
       if (constraint.getOp.isDefined) {
         val op: String = constraint.getOp.get
         val lhs: String = constraint.getLhs.getValue

@@ -200,10 +200,12 @@ class ConcolicSolver(coverage: Coverage) {
     val obj = NF.makeNew(dummySpan, NF.makeFunApp(dummySpan, fun, args))
     stmts = stmts :+ assignValue(arg, obj)
 
+    println("in assignObject")
+
     if (constructor == "Array") {
       val ref = NF.makeVarRef(dummySpan, NF.makeId(dummySpan, arg.text, arg.text))
       var lhs = NF.makeDot(dummySpan, ref, NF.makeId(dummySpan, "length", "length"))
-      var rhs = NF.makeIntLiteral(dummySpan, new BigInteger(props(0)))
+      var rhs = NF.makeIntLiteral(dummySpan, new BigInteger(props.head))
       stmts = stmts :+ NF.makeExprStmt(dummySpan, NF.makeAssignOpApp(dummySpan, lhs,
         NF.makeOp(dummySpan, "="),
         rhs))

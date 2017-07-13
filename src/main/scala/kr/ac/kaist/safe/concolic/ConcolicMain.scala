@@ -125,7 +125,6 @@ object ConcolicMain {
 
             coverage.setInput(result)
             val setupResult = coverage.setupCall()
-            println(s"Result of setupCall() is $setupResult")
             setupResult match {
               case Some(ir) =>
                 val inputIR = instrumentor.walk(ir, IRFactory.dummyIRId(coverage.target)).asInstanceOf[IRStmt]

@@ -97,9 +97,6 @@ trait AbsHeap extends AbsDomain[Heap, AbsHeap] {
 
   // location concrete check
   def isConcrete(loc: Loc): Boolean
-
-  //TODO MV debugging
-  def allUserLocKeys: AbsHeap
 }
 
 trait AbsHeapUtil extends AbsDomainUtil[Heap, AbsHeap] {
@@ -128,14 +125,6 @@ object DefaultHeap extends AbsHeapUtil {
   def apply(map: Map[Loc, AbsObject], absSet: Set[Concrete]): AbsHeap = HeapMap(map, absSet)
 
   sealed abstract class Dom extends AbsHeap {
-
-    //TODO MV Debugging
-    def allUserLocKeys: AbsHeap = this match {
-      case Top => Top
-      case h @ HeapMap(map, _) =>
-        val filteredMap: Map[Loc, AbsObject] = map.filter({ case (loc, _) => loc.isUser; case _ => false })
-        h.copy(map = filteredMap)
-    }
 
     def gamma: ConSet[Heap] = ConInf() // TODO more precise
 

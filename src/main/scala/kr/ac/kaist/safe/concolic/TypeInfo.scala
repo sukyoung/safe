@@ -22,6 +22,7 @@ case class TypeInfo(
   }
 
   def setProperties(x: List[String]): Unit = {
+    println(s"In setProperties, $this x = $x")
     val distinctProperties = (properties ::: x).distinct
     properties = distinctProperties
   }
