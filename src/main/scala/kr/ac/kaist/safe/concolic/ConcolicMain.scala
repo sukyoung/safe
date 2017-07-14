@@ -67,7 +67,7 @@ object ConcolicMain {
     ), HashSet[Concrete]())
     BuiltinGlobal.initHeap(initHeap, cfg)
 
-    val sens = CallSiteSensitivity(1) * LoopSensitivity(1)
+    val sens = CallSiteSensitivity(1)
     val initTP = sens.initTP
     val entryCP = ControlPoint(cfg.globalFunc.entry, initTP)
 
