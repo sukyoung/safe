@@ -220,8 +220,9 @@ class Coverage(
                         tinfo.addConstructors(List("Array"))
                         val arrayObj = computeObject(hh, lset)
                         var length = arrayObj("length").value.pvalue.toString
-                        if (length == "UInt")
+                        if (length == "UInt" || length == "Top(number)") {
                           length = "0"
+                        }
                         tinfo.setProperties(List(length))
                       } else {
                         // Compute object constructor name
