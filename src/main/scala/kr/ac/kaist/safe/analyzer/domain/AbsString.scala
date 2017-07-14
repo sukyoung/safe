@@ -57,6 +57,4 @@ trait AbsStringUtil extends AbsDomainUtil[Str, AbsString] {
   val Other: AbsString
 
   def fromCharCode(n: AbsNumber): AbsString
-
-  def fromJson(value: JsValue): AbsString
 }
