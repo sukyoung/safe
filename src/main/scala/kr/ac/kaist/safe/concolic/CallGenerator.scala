@@ -137,7 +137,6 @@ class CallGenerator(coverage: Coverage) {
     for (k <- irCollection) {
       k match {
         case IRFunctional(_, _, name, params, args, fds, vds, body) =>
-          println(name)
           if (name.uniqueName == target) {
             val p = functions(target).params.size
             // calculate the number of input to generate

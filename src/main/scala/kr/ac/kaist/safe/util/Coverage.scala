@@ -155,7 +155,7 @@ class Coverage(
       val lset = heap.get(PredAllocSite.PURE_LOCAL)(thisArg.toString()).value.locset
       // Compute this object
       val thisObj = computeObject(heap, lset)
-      val temp = thisNames ::: computeConstructorName(heap, thisObj, functionName)
+      val temp = thisNames ::: computeConstructorName(heap, thisObj)
       thisNames = temp.distinct
     }
     thisinfo.addConstructors(thisNames)
@@ -226,7 +226,7 @@ class Coverage(
                         tinfo.setProperties(List(length))
                       } else {
                         // Compute object constructor name
-                        tinfo.addConstructors(computeConstructorName(hh, obj, functionName))
+                        tinfo.addConstructors(computeConstructorName(hh, obj))
 
                         // Compute object properties
                         val properties: List[String] = computePropertyList(obj, false)
@@ -302,20 +302,20 @@ class Coverage(
     })
   }
 
-  def computeConstructorName(heap: AbsHeap, obj: AbsObject, functionName: String): List[String] = {
+  def computeConstructorName(heap: AbsHeap, obj: AbsObject): List[String] = {
     // Compute prototype object
-    // TODO MV Removed following 6 lines:
-    //    val lset1 = obj("@proto").value.locset
-    //    val proto = computeObject(heap, lset1)
-    //
-    //    // Compute constructor object
-    //    val lset2 = proto("constructor").value.locset
-    //    val constructor = computeObject(heap, lset2)
+    val lset1 = obj(IPrototype).value.locset
+    val proto = computeObject(heap, lset1)
 
-    List(functionName)
+    // Compute constructor object
+    val lset2 = proto("constructor").value.locset
+    val constructor = computeObject(heap, lset2)
 
     // Get constructor names
-    // TODO MV Originally: val temp = constructor("@construct")._3.toSet
+    val temp = constructor(IConstruct).fidset
+    temp.map((fid: FunctionId) => cfg.getFunc(fid).get.name).toList
+
+    //    val temp = constructor("@construct")._3.toSet
     //    temp.map(_.name).toList
   }
 }
