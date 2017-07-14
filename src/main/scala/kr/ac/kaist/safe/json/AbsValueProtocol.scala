@@ -13,6 +13,7 @@ package kr.ac.kaist.safe.json
 
 import kr.ac.kaist.safe.util._
 import kr.ac.kaist.safe.analyzer.domain._
+import kr.ac.kaist.safe.analyzer.domain.Utils._
 import kr.ac.kaist.safe.errors.error.{
   AbsUndefParseError,
   AbsNullParseError,
@@ -106,7 +107,7 @@ object AbsValueProtocol extends DefaultJsonProtocol {
     def write(str: AbsString): JsValue = str.json
 
     def read(value: JsValue): AbsString = value match {
-      case JsArray(Vector(JsNumber(size), v)) => StringSet(size.toInt).fromJson(v)
+      case JsArray(Vector(JsNumber(size), v)) => AbsString.fromJson(v)
       case _ => throw AbsStringParseError(value)
     }
   }
